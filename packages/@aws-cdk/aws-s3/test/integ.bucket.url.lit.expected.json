@@ -24,9 +24,6 @@
             }
           ]
         ]
-      },
-      "Export": {
-        "Name": "aws-cdk-s3-urls:BucketURL"
       }
     },
     "ObjectURL": {
@@ -49,9 +46,6 @@
             "/myfolder/myfile.txt"
           ]
         ]
-      },
-      "Export": {
-        "Name": "aws-cdk-s3-urls:ObjectURL"
       }
     }
   }

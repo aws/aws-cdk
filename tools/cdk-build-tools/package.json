@@ -1,12 +1,13 @@
 {
   "name": "cdk-build-tools",
   "private": true,
-  "version": "0.22.0",
+  "version": "0.28.0",
   "description": "Tools package with shared build scripts for CDK packages",
   "main": "lib/index.js",
   "repository": {
     "type": "git",
-    "url": "https://github.com/awslabs/aws-cdk.git"
+    "url": "https://github.com/awslabs/aws-cdk.git",
+    "directory": "tools/cdk-build-tools"
   },
   "bin": {
     "cdk-build": "bin/cdk-build",
@@ -27,19 +28,24 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@types/fs-extra": "^5.0.4",
-    "@types/yargs": "^8.0.3",
-    "pkglint": "^0.22.0"
+    "@types/fs-extra": "^5.0.5",
+    "@types/jest": "^24.0.11",
+    "@types/yargs": "^13.0.0",
+    "pkglint": "^0.28.0"
   },
   "dependencies": {
-    "awslint": "^0.22.0",
-    "fs-extra": "^7.0.0",
-    "jsii": "^0.7.13",
-    "jsii-pacmak": "^0.7.13",
+    "awslint": "^0.28.0",
+    "fs-extra": "^7.0.1",
+    "jest": "^24.7.1",
+    "jsii": "^0.10.2",
+    "jsii-pacmak": "^0.10.2",
     "nodeunit": "^0.11.3",
-    "nyc": "^13.0.1",
-    "typescript": "^3.1.2",
-    "yargs": "^9.0.1"
+    "nyc": "^14.0.0",
+    "pkglint": "^0.28.0",
+    "ts-jest": "^24.0.2",
+    "tslint": "^5.16.0",
+    "typescript": "^3.4.3",
+    "yargs": "^13.2.2"
   },
   "keywords": [
     "aws",

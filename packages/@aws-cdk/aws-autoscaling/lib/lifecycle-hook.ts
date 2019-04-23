@@ -1,9 +1,8 @@
 import api = require('@aws-cdk/aws-autoscaling-api');
 import iam = require('@aws-cdk/aws-iam');
-import cdk = require('@aws-cdk/cdk');
+import { Construct, Resource } from '@aws-cdk/cdk';
 import { IAutoScalingGroup } from './auto-scaling-group';
 import { CfnLifecycleHook } from './autoscaling.generated';
-import { LazyDependable } from './util';
 
 /**
  * Basic properties for a lifecycle hook
@@ -14,45 +13,45 @@ export interface BasicLifecycleHookProps {
    *
    * @default Automatically generated name
    */
-  lifecycleHookName?: string;
+  readonly lifecycleHookName?: string;
 
   /**
    * The action the Auto Scaling group takes when the lifecycle hook timeout elapses or if an unexpected failure occurs.
    *
    * @default Continue
    */
-  defaultResult?: DefaultResult;
+  readonly defaultResult?: DefaultResult;
 
   /**
    * Maximum time between calls to RecordLifecycleActionHeartbeat for the hook
    *
    * If the lifecycle hook times out, perform the action in DefaultResult.
    */
-  heartbeatTimeoutSec?: number;
+  readonly heartbeatTimeoutSec?: number;
 
   /**
    * The state of the Amazon EC2 instance to which you want to attach the lifecycle hook.
    */
-  lifecycleTransition: LifecycleTransition;
+  readonly lifecycleTransition: LifecycleTransition;
 
   /**
    * Additional data to pass to the lifecycle hook target
    *
    * @default No metadata
    */
-  notificationMetadata?: string;
+  readonly notificationMetadata?: string;
 
   /**
    * The target of the lifecycle hook
    */
-  notificationTarget: api.ILifecycleHookTarget;
+  readonly notificationTarget: api.ILifecycleHookTarget;
 
   /**
    * The role that allows publishing to the notification target
    *
    * @default A role is automatically created
    */
-  role?: iam.IRole;
+  readonly role?: iam.IRole;
 }
 
 /**
@@ -62,10 +61,10 @@ export interface LifecycleHookProps extends BasicLifecycleHookProps {
   /**
    * The AutoScalingGroup to add the lifecycle hook to
    */
-  autoScalingGroup: IAutoScalingGroup;
+  readonly autoScalingGroup: IAutoScalingGroup;
 }
 
-export class LifecycleHook extends cdk.Construct implements api.ILifecycleHook {
+export class LifecycleHook extends Resource implements api.ILifecycleHook {
   /**
    * The role that allows the ASG to publish to the notification target
    */
@@ -76,7 +75,7 @@ export class LifecycleHook extends cdk.Construct implements api.ILifecycleHook {
    */
   public readonly lifecycleHookName: string;
 
-  constructor(scope: cdk.Construct, id: string, props: LifecycleHookProps) {
+  constructor(scope: Construct, id: string, props: LifecycleHookProps) {
     super(scope, id);
 
     this.role = props.role || new iam.Role(this, 'Role', {
@@ -99,10 +98,7 @@ export class LifecycleHook extends cdk.Construct implements api.ILifecycleHook {
     // A LifecycleHook resource is going to do a permissions test upon creation,
     // so we have to make sure the role has full permissions before creating the
     // lifecycle hook.
-    // The LazyDependable makes sure we take a dependency on anything that gets
-    // added to the dependencyElements array, even if it happens after this
-    // point.
-    resource.addDependency(new LazyDependable(this.role));
+    resource.node.addDependency(this.role);
 
     this.lifecycleHookName = resource.lifecycleHookName;
   }

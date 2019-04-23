@@ -36,14 +36,14 @@ export function findCfnResources(assembly: reflect.Assembly): CfnResourceSpec[] 
 
   return assembly.classes.filter(c => isCfnResource(c)).map(layer1 => {
     const basename = layer1.name.substr('Cfn'.length);
-    const doc = layer1.docs.docs.link || '';
+    const docLink = layer1.docs.docs.see || '';
 
     // HACK: extract full CFN name from initializer docs
-    const initializerDoc = (layer1.initializer && layer1.initializer.docs.docs.comment) || '';
-    const out = /Creates a new ``([^`]+)``/.exec(initializerDoc);
+    const initializerDoc = (layer1.initializer && layer1.initializer.docs.docs.summary) || '';
+    const out = /a new `([^`]+)`/.exec(initializerDoc);
     const fullname = out && out[1];
     if (!fullname) {
-      throw new Error('Unable to extract CloudFormation resource name from initializer documentation');
+      throw new Error(`Unable to extract CloudFormation resource name from initializer documentation of ${layer1}`);
     }
 
     const namespace = fullname.split('::').slice(0, 2).join('::');
@@ -51,7 +51,7 @@ export function findCfnResources(assembly: reflect.Assembly): CfnResourceSpec[] 
     const resource: CfnResourceSpec = {
       namespace,
       fullname,
-      doc,
+      doc: docLink,
       basename,
       attributes: parseResourceAttributes(layer1)
     };
@@ -60,11 +60,15 @@ export function findCfnResources(assembly: reflect.Assembly): CfnResourceSpec[] 
   });
 
   function parseResourceAttributes(cfnResourceClass: reflect.ClassType) {
-    return cfnResourceClass.properties.filter(p => p.docs.docs.cloudformation_attribute).map(p => p.name);
+    return cfnResourceClass.ownProperties.filter(p => (p.docs.docs.custom || {}).cloudformationAttribute).map(p => p.name);
   }
 
   function isCfnResource(c: reflect.ClassType) {
-    const resourceBaseClass = c.system.findFqn('@aws-cdk/cdk.Resource');
+    const cdkAssembly = '@aws-cdk/cdk';
+    if (!c.system.includesAssembly(cdkAssembly)) {
+      return false;
+    }
+    const resourceBaseClass = c.system.findFqn(`${cdkAssembly}.CfnResource`);
 
     if (!isConstruct(c)) {
       return false;

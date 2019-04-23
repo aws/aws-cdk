@@ -15,6 +15,10 @@ const privateZone = new PrivateHostedZone(stack, 'PrivateZone', {
 const publicZone = new PublicHostedZone(stack, 'PublicZone', {
   zoneName: 'cdk.test'
 });
+const publicSubZone = new PublicHostedZone(stack, 'PublicSubZone', {
+  zoneName: 'sub.cdk.test'
+});
+publicZone.addDelegation(publicSubZone);
 
 new TxtRecord(privateZone, 'TXT', {
   zone: privateZone,
@@ -29,7 +33,7 @@ new CnameRecord(stack, 'CNAME', {
   recordValue: 'server'
 });
 
-new cdk.Output(stack, 'PrivateZoneId', { value: privateZone.hostedZoneId });
-new cdk.Output(stack, 'PublicZoneId', { value: publicZone.hostedZoneId });
+new cdk.CfnOutput(stack, 'PrivateZoneId', { value: privateZone.hostedZoneId });
+new cdk.CfnOutput(stack, 'PublicZoneId', { value: publicZone.hostedZoneId });
 
 app.run();

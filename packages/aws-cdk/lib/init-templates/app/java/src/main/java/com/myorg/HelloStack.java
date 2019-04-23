@@ -1,6 +1,6 @@
 package com.myorg;
 
-import software.amazon.awscdk.App;
+import software.amazon.awscdk.Construct;
 import software.amazon.awscdk.Stack;
 import software.amazon.awscdk.StackProps;
 import software.amazon.awscdk.services.iam.User;
@@ -11,12 +11,12 @@ import software.amazon.awscdk.services.sqs.Queue;
 import software.amazon.awscdk.services.sqs.QueueProps;
 
 public class HelloStack extends Stack {
-    public HelloStack(final App parent, final String name) {
-        this(parent, name, null);
+    public HelloStack(final Construct parent, final String id) {
+        this(parent, id, null);
     }
 
-    public HelloStack(final App parent, final String name, final StackProps props) {
-        super(parent, name, props);
+    public HelloStack(final Construct parent, final String id, final StackProps props) {
+        super(parent, id, props);
 
         Queue queue = new Queue(this, "MyFirstQueue", QueueProps.builder()
                 .withVisibilityTimeoutSec(300)

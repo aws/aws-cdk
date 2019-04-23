@@ -1,18 +1,11 @@
 {
   "lerna": "2.5.1",
   "packages": [
-    "examples/*",
     "packages/*",
     "packages/@aws-cdk/*",
+    "packages/@aws-cdk/*/lambda-packages/*",
     "tools/*"
   ],
-  "command": {
-    "bootstrap": {
-      "npmClientArgs": [
-        "--no-package-lock"
-      ]
-    }
-  },
   "rejectCycles": "true",
-  "version": "0.22.0"
+  "version": "0.28.0"
 }

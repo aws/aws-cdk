@@ -62,7 +62,7 @@ extra_navlinks = []
 
 # -- Project information -----------------------------------------------------
 
-copyright = u'2018, Amazon Web Services'
+copyright = u'2019, Amazon Web Services'
 author = u'Amazon Web Services'
 
 # CDK_VERSION automatically replaced by build script

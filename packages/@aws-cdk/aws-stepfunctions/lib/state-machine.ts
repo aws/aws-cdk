@@ -1,7 +1,7 @@
 import cloudwatch = require('@aws-cdk/aws-cloudwatch');
 import events = require('@aws-cdk/aws-events');
 import iam = require('@aws-cdk/aws-iam');
-import cdk = require('@aws-cdk/cdk');
+import { CfnOutput, Construct, IResource, Resource } from '@aws-cdk/cdk';
 import { StateGraph } from './state-graph';
 import { CfnStateMachine } from './stepfunctions.generated';
 import { IChainable } from './types';
@@ -15,36 +15,36 @@ export interface StateMachineProps {
      *
      * @default A name is automatically generated
      */
-    stateMachineName?: string;
+    readonly stateMachineName?: string;
 
     /**
      * Definition for this state machine
      */
-    definition: IChainable;
+    readonly definition: IChainable;
 
     /**
      * The execution role for the state machine service
      *
      * @default A role is automatically created
      */
-    role?: iam.Role;
+    readonly role?: iam.Role;
 
     /**
      * Maximum run time for this state machine
      *
      * @default No timeout
      */
-    timeoutSec?: number;
+    readonly timeoutSec?: number;
 }
 
 /**
  * Define a StepFunctions State Machine
  */
-export class StateMachine extends cdk.Construct implements IStateMachine, events.IEventRuleTarget {
+export class StateMachine extends Resource implements IStateMachine, events.IEventRuleTarget {
     /**
      * Import a state machine
      */
-    public static import(scope: cdk.Construct, id: string, props: StateMachineImportProps): IStateMachine {
+    public static import(scope: Construct, id: string, props: StateMachineImportProps): IStateMachine {
         return new ImportedStateMachine(scope, id, props);
     }
 
@@ -68,12 +68,11 @@ export class StateMachine extends cdk.Construct implements IStateMachine, events
      */
     private eventsRole?: iam.Role;
 
-    constructor(scope: cdk.Construct, id: string, props: StateMachineProps) {
+    constructor(scope: Construct, id: string, props: StateMachineProps) {
         super(scope, id);
 
-        const stack = cdk.Stack.find(this);
         this.role = props.role || new iam.Role(this, 'Role', {
-            assumedBy: new iam.ServicePrincipal(`states.${stack.region}.amazonaws.com`),
+            assumedBy: new iam.ServicePrincipal(`states.${this.node.stack.region}.amazonaws.com`),
         });
 
         const graph = new StateGraph(props.definition.startState, `State Machine ${id} definition`);
@@ -195,7 +194,7 @@ export class StateMachine extends cdk.Construct implements IStateMachine, events
      */
     public export(): StateMachineImportProps {
         return {
-            stateMachineArn: new cdk.Output(this, 'StateMachineArn', { value: this.stateMachineArn }).makeImportValue().toString(),
+            stateMachineArn: new CfnOutput(this, 'StateMachineArn', { value: this.stateMachineArn }).makeImportValue().toString(),
         };
     }
 }
@@ -203,7 +202,7 @@ export class StateMachine extends cdk.Construct implements IStateMachine, events
 /**
  * A State Machine
  */
-export interface IStateMachine extends cdk.IConstruct {
+export interface IStateMachine extends IResource {
     /**
      * The ARN of the state machine
      */
@@ -227,17 +226,17 @@ export interface StateMachineImportProps {
     /**
      * The ARN of the state machine
      */
-    stateMachineArn: string;
+    readonly stateMachineArn: string;
 }
 
-class ImportedStateMachine extends cdk.Construct implements IStateMachine {
+class ImportedStateMachine extends Resource implements IStateMachine {
     public readonly stateMachineArn: string;
     public readonly stateMachineName: string;
 
-    constructor(scope: cdk.Construct, id: string, private readonly props: StateMachineImportProps) {
+    constructor(scope: Construct, id: string, private readonly props: StateMachineImportProps) {
         super(scope, id);
         this.stateMachineArn = props.stateMachineArn;
-        this.stateMachineName = cdk.Stack.find(this).parseArn(props.stateMachineArn).resourceName!;
+        this.stateMachineName = this.node.stack.parseArn(props.stateMachineArn).resourceName!;
     }
 
     public export() {

@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/aws-ecr",
-  "version": "0.22.0",
+  "version": "0.28.0",
   "description": "The CDK Construct Library for AWS::ECR",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -20,12 +20,17 @@
         "signAssembly": true,
         "assemblyOriginatorKeyFile": "../../key.snk"
       },
-      "sphinx": {}
+      "sphinx": {},
+      "python": {
+        "distName": "aws-cdk.aws-ecr",
+        "module": "aws_cdk.aws_ecr"
+      }
     }
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/awslabs/aws-cdk.git"
+    "url": "https://github.com/awslabs/aws-cdk.git",
+    "directory": "packages/@aws-cdk/aws-ecr"
   },
   "scripts": {
     "build": "cdk-build",
@@ -41,6 +46,10 @@
   "cdk-build": {
     "cloudformation": "AWS::ECR"
   },
+  "nyc": {
+    "lines": 78,
+    "statements": 79
+  },
   "keywords": [
     "aws",
     "cdk",
@@ -54,24 +63,22 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "^0.22.0",
-    "cdk-build-tools": "^0.22.0",
-    "cdk-integ-tools": "^0.22.0",
-    "cfn2ts": "^0.22.0",
-    "pkglint": "^0.22.0"
+    "@aws-cdk/assert": "^0.28.0",
+    "cdk-build-tools": "^0.28.0",
+    "cdk-integ-tools": "^0.28.0",
+    "cfn2ts": "^0.28.0",
+    "pkglint": "^0.28.0"
   },
   "dependencies": {
-    "@aws-cdk/aws-codepipeline-api": "^0.22.0",
-    "@aws-cdk/aws-events": "^0.22.0",
-    "@aws-cdk/aws-iam": "^0.22.0",
-    "@aws-cdk/cdk": "^0.22.0"
+    "@aws-cdk/aws-events": "^0.28.0",
+    "@aws-cdk/aws-iam": "^0.28.0",
+    "@aws-cdk/cdk": "^0.28.0"
   },
   "homepage": "https://github.com/awslabs/aws-cdk",
   "peerDependencies": {
-    "@aws-cdk/aws-codepipeline-api": "^0.22.0",
-    "@aws-cdk/aws-events": "^0.22.0",
-    "@aws-cdk/aws-iam": "^0.22.0",
-    "@aws-cdk/cdk": "^0.22.0"
+    "@aws-cdk/aws-events": "^0.28.0",
+    "@aws-cdk/aws-iam": "^0.28.0",
+    "@aws-cdk/cdk": "^0.28.0"
   },
   "engines": {
     "node": ">= 8.10.0"

@@ -12,14 +12,14 @@ export interface BaseNetworkListenerProps {
   /**
    * The port on which the listener listens for requests.
    */
-  port: number;
+  readonly port: number;
 
   /**
    * Default target groups to load balance to
    *
    * @default None
    */
-  defaultTargetGroups?: INetworkTargetGroup[];
+  readonly defaultTargetGroups?: INetworkTargetGroup[];
 }
 
 /**
@@ -29,7 +29,7 @@ export interface NetworkListenerProps extends BaseNetworkListenerProps {
   /**
    * The load balancer to attach this listener to
    */
-  loadBalancer: INetworkLoadBalancer;
+  readonly loadBalancer: INetworkLoadBalancer;
 }
 
 /**
@@ -105,7 +105,7 @@ export class NetworkListener extends BaseListener implements INetworkListener {
    */
   public export(): NetworkListenerImportProps {
     return {
-      listenerArn: new cdk.Output(this, 'ListenerArn', { value: this.listenerArn }).makeImportValue().toString()
+      listenerArn: new cdk.CfnOutput(this, 'ListenerArn', { value: this.listenerArn }).makeImportValue().toString()
     };
   }
 
@@ -114,7 +114,7 @@ export class NetworkListener extends BaseListener implements INetworkListener {
 /**
  * Properties to reference an existing listener
  */
-export interface INetworkListener extends cdk.IConstruct, cdk.IDependable {
+export interface INetworkListener extends cdk.IConstruct {
   /**
    * ARN of the listener
    */
@@ -133,15 +133,13 @@ export interface NetworkListenerImportProps {
   /**
    * ARN of the listener
    */
-  listenerArn: string;
+  readonly listenerArn: string;
 }
 
 /**
  * An imported Network Listener
  */
 class ImportedNetworkListener extends cdk.Construct implements INetworkListener {
-  public readonly dependencyElements: cdk.IDependable[] = [];
-
   /**
    * ARN of the listener
    */
@@ -167,7 +165,7 @@ export interface AddNetworkTargetsProps {
    *
    * @default Determined from protocol if known
    */
-  port: number;
+  readonly port: number;
 
   /**
    * The targets to add to this target group.
@@ -176,7 +174,7 @@ export interface AddNetworkTargetsProps {
    * target. If you use either `Instance` or `IPAddress` as targets, all
    * target must be of the same type.
    */
-  targets?: INetworkLoadBalancerTarget[];
+  readonly targets?: INetworkLoadBalancerTarget[];
 
   /**
    * The name of the target group.
@@ -187,28 +185,28 @@ export interface AddNetworkTargetsProps {
    *
    * @default Automatically generated
    */
-  targetGroupName?: string;
+  readonly targetGroupName?: string;
 
   /**
    * The amount of time for Elastic Load Balancing to wait before deregistering a target.
    *
-   * The range is 0–3600 seconds.
+   * The range is 0-3600 seconds.
    *
    * @default 300
    */
-  deregistrationDelaySec?: number;
+  readonly deregistrationDelaySec?: number;
 
   /**
    * Indicates whether Proxy Protocol version 2 is enabled.
    *
    * @default false
    */
-  proxyProtocolV2?: boolean;
+  readonly proxyProtocolV2?: boolean;
 
   /**
    * Health check configuration
    *
    * @default No health check
    */
-  healthCheck?: HealthCheck;
+  readonly healthCheck?: HealthCheck;
 }

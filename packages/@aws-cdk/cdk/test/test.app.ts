@@ -1,42 +1,27 @@
 import cxapi = require('@aws-cdk/cx-api');
-import fs = require('fs');
 import { Test } from 'nodeunit';
-import os = require('os');
-import path = require('path');
-import { Construct, Resource, Stack, StackProps } from '../lib';
+import { CfnResource, Construct, Stack, StackProps } from '../lib';
 import { App } from '../lib/app';
 
-function withApp(context: { [key: string]: any } | undefined, block: (app: App) => void) {
-  const outdir = fs.mkdtempSync(path.join(os.tmpdir(), 'cdk-app-test'));
-  process.env[cxapi.OUTDIR_ENV] = outdir;
-
-  if (context) {
-    process.env[cxapi.CONTEXT_ENV] = JSON.stringify(context);
-  } else {
-    delete process.env[cxapi.CONTEXT_ENV];
-  }
-
-  const app = new App();
+function withApp(context: { [key: string]: any } | undefined, block: (app: App) => void): cxapi.SynthesizeResponse {
+  const app = new App({ context });
 
   block(app);
 
-  app.run();
+  const session = app.run();
 
-  const outfile = path.join(outdir, cxapi.OUTFILE_NAME);
-  const response = JSON.parse(fs.readFileSync(outfile).toString());
-  fs.unlinkSync(outfile);
-  fs.rmdirSync(outdir);
-  return response;
+  // return the legacy manifest
+  return session.store.readJson(cxapi.OUTFILE_NAME);
 }
 
 function synth(context?: { [key: string]: any }): cxapi.SynthesizeResponse {
   return withApp(context, app => {
     const stack1 = new Stack(app, 'stack1', { env: { account: '12345', region: 'us-east-1' } });
-    new Resource(stack1, 's1c1', { type: 'DummyResource', properties: { Prop1: 'Prop1' } });
-    const r2 = new Resource(stack1, 's1c2', { type: 'DummyResource', properties: { Foo: 123 } });
+    new CfnResource(stack1, 's1c1', { type: 'DummyResource', properties: { Prop1: 'Prop1' } });
+    const r2 = new CfnResource(stack1, 's1c2', { type: 'DummyResource', properties: { Foo: 123 } });
 
     const stack2 = new Stack(app, 'stack2');
-    new Resource(stack2, 's2c1', { type: 'DummyResource', properties: { Prog2: 'Prog2' } });
+    new CfnResource(stack2, 's2c1', { type: 'DummyResource', properties: { Prog2: 'Prog2' } });
     const c1 = new MyConstruct(stack2, 's1c2');
 
     // add some metadata
@@ -56,7 +41,7 @@ function synthStack(name: string, includeMetadata: boolean = false, context?: an
   }
 
   if (!includeMetadata) {
-    delete stack.metadata;
+    delete (stack as any).metadata;
   }
 
   return stack;
@@ -67,8 +52,9 @@ export = {
     const response = synth();
 
     // clean up metadata so assertion will be sane
-    response.stacks.forEach(s => delete s.metadata);
-    delete response.runtime;
+    response.stacks.forEach(s => delete (s as any).metadata);
+    delete (response as any).runtime;
+    delete (response as any).artifacts;
 
     test.deepEqual(response, {
       version: '0.19.0',
@@ -98,15 +84,9 @@ export = {
   'synth(name) can be used programmatically'(test: Test) {
     const prog = new App();
     const stack = new Stack(prog, 'MyStack');
-    new Resource(stack, 'MyResource', { type: 'MyResourceType' });
+    new CfnResource(stack, 'MyResource', { type: 'MyResourceType' });
 
-    let throws;
-    try {
-      prog.synthesizeStacks(['foo']);
-    } catch (e) {
-      throws = e.message;
-    }
-    test.ok(throws.indexOf('Cannot find stack foo') !== -1);
+    test.throws(() => prog.synthesizeStacks(['foo']), /foo/);
 
     test.deepEqual(prog.synthesizeStack('MyStack').template,
       { Resources: { MyResource: { Type: 'MyResourceType' } } });
@@ -212,7 +192,7 @@ export = {
 
     test.throws(() => {
       app.synthesizeStacks(['Parent']);
-    }, /Stack validation failed with the following errors/);
+    }, /Validation failed with the following errors/);
 
     test.done();
   },
@@ -268,13 +248,26 @@ export = {
     test.done();
   },
 
+  'runtime library versions disabled'(test: Test) {
+    const context: any = {};
+    context[cxapi.DISABLE_VERSION_REPORTING] = true;
+
+    const response = withApp(context, app => {
+      const stack = new Stack(app, 'stack1');
+      new CfnResource(stack, 'MyResource', { type: 'Resource::Type' });
+    });
+
+    test.equals(response.runtime, undefined);
+    test.done();
+  },
+
   'runtime library versions'(test: Test) {
     const response = withApp({}, app => {
       const stack = new Stack(app, 'stack1');
-      new Resource(stack, 'MyResource', { type: 'Resource::Type' });
+      new CfnResource(stack, 'MyResource', { type: 'Resource::Type' });
     });
 
-    const libs = response.runtime.libraries;
+    const libs = (response.runtime && response.runtime.libraries) || { };
 
     const version = require('../package.json').version;
     test.deepEqual(libs['@aws-cdk/cdk'], version);
@@ -288,10 +281,10 @@ export = {
 
     const response = withApp({}, app => {
       const stack = new Stack(app, 'stack1');
-      new Resource(stack, 'MyResource', { type: 'Resource::Type' });
+      new CfnResource(stack, 'MyResource', { type: 'Resource::Type' });
     });
 
-    const libs = response.runtime.libraries;
+    const libs = (response.runtime && response.runtime.libraries) || { };
     test.deepEqual(libs['jsii-runtime'], `Java/1.2.3.4`);
 
     delete process.env.JSII_AGENT;
@@ -301,10 +294,10 @@ export = {
   'version reporting includes only @aws-cdk, aws-cdk and jsii libraries'(test: Test) {
     const response = withApp({}, app => {
       const stack = new Stack(app, 'stack1');
-      new Resource(stack, 'MyResource', { type: 'Resource::Type' });
+      new CfnResource(stack, 'MyResource', { type: 'Resource::Type' });
     });
 
-    const libs = response.runtime.libraries;
+    const libs = (response.runtime && response.runtime.libraries) || { };
 
     const version = require('../package.json').version;
     test.deepEqual(libs, {
@@ -315,14 +308,39 @@ export = {
 
     test.done();
   },
+
+  'deep stack is shown and synthesized properly'(test: Test) {
+    // WHEN
+    const response = withApp(undefined, (app) => {
+      const topStack = new Stack(app, 'Stack');
+      const topResource = new CfnResource(topStack, 'Res', { type: 'CDK::TopStack::Resource' });
+
+      const bottomStack = new Stack(topResource, 'Stack');
+      new CfnResource(bottomStack, 'Res', { type: 'CDK::BottomStack::Resource' });
+    });
+
+    // THEN
+    test.deepEqual(response.stacks.map(s => ({ name: s.name, template: s.template })), [
+      {
+        name: 'StackResStack7E4AFA86',
+        template: { Resources: { Res: { Type: 'CDK::BottomStack::Resource' } } },
+      },
+      {
+        name: 'Stack',
+        template: { Resources: { Res: { Type: 'CDK::TopStack::Resource' } } },
+      }
+    ]);
+
+    test.done();
+  },
 };
 
 class MyConstruct extends Construct {
   constructor(scope: Construct, id: string) {
     super(scope, id);
 
-    new Resource(this, 'r1', { type: 'ResourceType1' });
-    new Resource(this, 'r2', { type: 'ResourceType2', properties: { FromContext: this.node.getContext('ctx1') } });
+    new CfnResource(this, 'r1', { type: 'ResourceType1' });
+    new CfnResource(this, 'r2', { type: 'ResourceType2', properties: { FromContext: this.node.getContext('ctx1') } });
   }
 }
 

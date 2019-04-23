@@ -4,7 +4,6 @@ import elb = require('@aws-cdk/aws-elasticloadbalancing');
 import cdk = require('@aws-cdk/cdk');
 import { BaseService, BaseServiceProps } from '../base/base-service';
 import { NetworkMode, TaskDefinition } from '../base/task-definition';
-import { ICluster } from '../cluster';
 import { CfnService } from '../ecs.generated';
 import { isEc2Compatible } from '../util';
 
@@ -13,14 +12,9 @@ import { isEc2Compatible } from '../util';
  */
 export interface Ec2ServiceProps extends BaseServiceProps {
   /**
-   * Cluster where service will be deployed
-   */
-  cluster: ICluster;
-
-  /**
    * Task Definition used for running tasks in the service
    */
-  taskDefinition: TaskDefinition;
+  readonly taskDefinition: TaskDefinition;
 
   /**
    * In what subnets to place the task's ENIs
@@ -29,7 +23,7 @@ export interface Ec2ServiceProps extends BaseServiceProps {
    *
    * @default Private subnets
    */
-  vpcPlacement?: ec2.VpcPlacementStrategy;
+  readonly vpcSubnets?: ec2.SubnetSelection;
 
   /**
    * Existing security group to use for the task's ENIs
@@ -38,14 +32,14 @@ export interface Ec2ServiceProps extends BaseServiceProps {
    *
    * @default A new security group is created
    */
-  securityGroup?: ec2.ISecurityGroup;
+  readonly securityGroup?: ec2.ISecurityGroup;
 
   /**
    * Whether to start tasks on distinct instances
    *
    * @default true
    */
-  placeOnDistinctInstances?: boolean;
+  readonly placeOnDistinctInstances?: boolean;
 
   /**
    * Deploy exactly one task on each instance in your cluster.
@@ -55,7 +49,7 @@ export interface Ec2ServiceProps extends BaseServiceProps {
    *
    * @default false
    */
-  daemon?: boolean;
+  readonly daemon?: boolean;
 }
 
 /**
@@ -70,11 +64,18 @@ export class Ec2Service extends BaseService implements elb.ILoadBalancerTarget {
   private readonly constraints: CfnService.PlacementConstraintProperty[];
   private readonly strategies: CfnService.PlacementStrategyProperty[];
   private readonly daemon: boolean;
-  private readonly cluster: ICluster;
 
   constructor(scope: cdk.Construct, id: string, props: Ec2ServiceProps) {
     if (props.daemon && props.desiredCount !== undefined) {
       throw new Error('Daemon mode launches one task on every instance. Don\'t supply desiredCount.');
+    }
+
+    if (props.daemon && props.maximumPercent !== undefined && props.maximumPercent !== 100) {
+      throw new Error('Maximum percent must be 100 for daemon mode.');
+    }
+
+    if (props.daemon && props.minimumHealthyPercent !== undefined && props.minimumHealthyPercent !== 0) {
+      throw new Error('Minimum healthy percent must be 0 for daemon mode.');
     }
 
     if (!isEc2Compatible(props.taskDefinition.compatibility)) {
@@ -85,6 +86,8 @@ export class Ec2Service extends BaseService implements elb.ILoadBalancerTarget {
       ...props,
       // If daemon, desiredCount must be undefined and that's what we want. Otherwise, default to 1.
       desiredCount: props.daemon || props.desiredCount !== undefined ? props.desiredCount : 1,
+      maximumPercent: props.daemon && props.maximumPercent === undefined ? 100 : props.maximumPercent,
+      minimumHealthyPercent: props.daemon && props.minimumHealthyPercent === undefined ? 0 : props.minimumHealthyPercent ,
     },
     {
       cluster: props.cluster.clusterName,
@@ -95,14 +98,13 @@ export class Ec2Service extends BaseService implements elb.ILoadBalancerTarget {
       schedulingStrategy: props.daemon ? 'DAEMON' : 'REPLICA',
     }, props.cluster.clusterName, props.taskDefinition);
 
-    this.cluster = props.cluster;
     this.clusterName = props.cluster.clusterName;
     this.constraints = [];
     this.strategies = [];
     this.daemon = props.daemon || false;
 
     if (props.taskDefinition.networkMode === NetworkMode.AwsVpc) {
-      this.configureAwsVpcNetworking(props.cluster.vpc, false, props.vpcPlacement, props.securityGroup);
+      this.configureAwsVpcNetworking(props.cluster.vpc, false, props.vpcSubnets, props.securityGroup);
     } else {
       // Either None, Bridge or Host networking. Copy SecurityGroup from ASG.
       validateNoNetworkingProps(props);
@@ -244,8 +246,8 @@ export class Ec2Service extends BaseService implements elb.ILoadBalancerTarget {
  * Validate combinations of networking arguments
  */
 function validateNoNetworkingProps(props: Ec2ServiceProps) {
-  if (props.vpcPlacement !== undefined || props.securityGroup !== undefined) {
-    throw new Error('vpcPlacement and securityGroup can only be used in AwsVpc networking mode');
+  if (props.vpcSubnets !== undefined || props.securityGroup !== undefined) {
+    throw new Error('vpcSubnets and securityGroup can only be used in AwsVpc networking mode');
   }
 }
 

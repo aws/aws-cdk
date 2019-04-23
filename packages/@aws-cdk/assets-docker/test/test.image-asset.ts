@@ -1,7 +1,10 @@
-import { expect, haveResource } from '@aws-cdk/assert';
+import { expect, haveResource, SynthUtils } from '@aws-cdk/assert';
 import iam = require('@aws-cdk/aws-iam');
 import cdk = require('@aws-cdk/cdk');
+import cxapi = require('@aws-cdk/cx-api');
+import fs = require('fs');
 import { Test } from 'nodeunit';
+import os = require('os');
 import path = require('path');
 import { DockerImageAsset } from '../lib';
 
@@ -18,7 +21,7 @@ export = {
     });
 
     // THEN
-    const template = stack.toCloudFormation();
+    const template = SynthUtils.toCloudFormation(stack);
 
     test.deepEqual(template.Parameters.ImageImageName5E684353, {
       Type: 'String',
@@ -61,22 +64,13 @@ export = {
                   ":",
                   { "Ref": "AWS::AccountId" },
                   ":repository/",
-                  {
-                      "Fn::GetAtt": [
-                        "ImageAdoptRepositoryE1E84E35",
-                        "RepositoryName"
-                      ]
-                  }
+                  { "Fn::GetAtt": [ "ImageAdoptRepositoryE1E84E35", "RepositoryName" ] }
                 ]
               ]
             }
           },
           {
-            "Action": [
-              "ecr:GetAuthorizationToken",
-              "logs:CreateLogStream",
-              "logs:PutLogEvents"
-            ],
+            "Action": "ecr:GetAuthorizationToken",
             "Effect": "Allow",
             "Resource": "*"
           }
@@ -104,7 +98,7 @@ export = {
     // WHEN
     asset.repository.addToResourcePolicy(new iam.PolicyStatement()
       .addAction('BOOM')
-      .addPrincipal(new iam.ServicePrincipal('DAMN')));
+      .addPrincipal(new iam.ServicePrincipal('test.service')));
 
     // THEN
     expect(stack).to(haveResource('Custom::ECRAdoptedRepository', {
@@ -117,7 +111,7 @@ export = {
             "Action": "BOOM",
             "Effect": "Allow",
             "Principal": {
-              "Service": "DAMN"
+              "Service": "test.service"
             }
           }
         ],
@@ -126,5 +120,56 @@ export = {
     }));
 
     test.done();
+  },
+
+  'fails if the directory does not exist'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // THEN
+    test.throws(() => {
+      new DockerImageAsset(stack, 'MyAsset', {
+        directory: `/does/not/exist/${Math.floor(Math.random() * 9999)}`
+      });
+    }, /Cannot find image directory at/);
+    test.done();
+  },
+
+  'fails if the directory does not contain a Dockerfile'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // THEN
+    test.throws(() => {
+      new DockerImageAsset(stack, 'Asset', {
+        directory: __dirname
+      });
+    }, /No 'Dockerfile' found in/);
+    test.done();
+  },
+
+  'docker directory is staged if asset staging is enabled'(test: Test) {
+    const workdir = mkdtempSync();
+    process.chdir(workdir);
+
+    const app = new cdk.App({
+      context: { [cxapi.ASSET_STAGING_DIR_CONTEXT]: '.stage-me' }
+    });
+
+    const stack = new cdk.Stack(app, 'stack');
+
+    new DockerImageAsset(stack, 'MyAsset', {
+      directory: path.join(__dirname, 'demo-image')
+    });
+
+    app.run();
+
+    test.ok(fs.existsSync('.stage-me/96e3ffe92a19cbaa6c558942f7a60246/Dockerfile'));
+    test.ok(fs.existsSync('.stage-me/96e3ffe92a19cbaa6c558942f7a60246/index.py'));
+    test.done();
   }
 };
+
+function mkdtempSync() {
+  return fs.mkdtempSync(path.join(os.tmpdir(), 'test.assets'));
+}

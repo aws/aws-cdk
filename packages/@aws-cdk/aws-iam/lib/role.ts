@@ -1,7 +1,10 @@
-import { Construct, IConstruct, IDependable, Output, Stack } from '@aws-cdk/cdk';
+import { CfnOutput, Construct, Resource } from '@aws-cdk/cdk';
+import { Grant } from './grant';
 import { CfnRole } from './iam.generated';
-import { IPrincipal, Policy } from './policy';
-import { ArnPrincipal, PolicyDocument, PolicyPrincipal, PolicyStatement } from './policy-document';
+import { IIdentity } from './identity-base';
+import { Policy } from './policy';
+import { ArnPrincipal, PolicyDocument, PolicyStatement, PrincipalPolicyFragment } from './policy-document';
+import { IPrincipal } from './principals';
 import { AttachedPolicies, undefinedIfEmpty } from './util';
 
 export interface RoleProps {
@@ -12,7 +15,7 @@ export interface RoleProps {
    * You can later modify the assume role policy document by accessing it via
    * the `assumeRolePolicy` property.
    */
-  assumedBy: PolicyPrincipal;
+  readonly assumedBy: IPrincipal;
 
   /**
    * ID that the role assumer needs to provide when assuming this role
@@ -22,14 +25,14 @@ export interface RoleProps {
    *
    * @default No external ID required
    */
-  externalId?: string;
+  readonly externalId?: string;
 
   /**
    * A list of ARNs for managed policies associated with this role.
    * You can add managed policies later using `attachManagedPolicy(arn)`.
    * @default No managed policies.
    */
-  managedPolicyArns?: string[];
+  readonly managedPolicyArns?: string[];
 
   /**
    * A list of named policies to inline into this role. These policies will be
@@ -38,13 +41,13 @@ export interface RoleProps {
    * dependencies that could otherwise be introduced).
    * @default No policy is inlined in the Role resource.
    */
-  inlinePolicies?: { [name: string]: PolicyDocument };
+  readonly inlinePolicies?: { [name: string]: PolicyDocument };
 
   /**
    * The path associated with this role. For information about IAM paths, see
    * Friendly Names and Paths in IAM User Guide.
    */
-  path?: string;
+  readonly path?: string;
 
   /**
    * A name for the IAM role. For valid values, see the RoleName parameter for
@@ -60,7 +63,7 @@ export interface RoleProps {
    * acknowledge your template's capabilities. For more information, see
    * Acknowledging IAM Resources in AWS CloudFormation Templates.
    */
-  roleName?: string;
+  readonly roleName?: string;
 
   /**
    * The maximum session duration (in seconds) that you want to set for the
@@ -81,7 +84,7 @@ export interface RoleProps {
    *
    * @link https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_use.html
    */
-  maxSessionDurationSec?: number;
+  readonly maxSessionDurationSec?: number;
 }
 
 /**
@@ -90,13 +93,17 @@ export interface RoleProps {
  * Defines an IAM role. The role is created with an assume policy document associated with
  * the specified AWS service principal defined in `serviceAssumeRole`.
  */
-export class Role extends Construct implements IRole {
+export class Role extends Resource implements IRole {
   /**
    * Import a role that already exists
    */
   public static import(scope: Construct, id: string, props: RoleImportProps): IRole {
     return new ImportedRole(scope, id, props);
   }
+
+  public readonly grantPrincipal: IPrincipal = this;
+
+  public readonly assumeRoleAction: string = 'sts:AssumeRole';
 
   /**
    * The assume role policy document associated with this role.
@@ -120,14 +127,9 @@ export class Role extends Construct implements IRole {
   public readonly roleName: string;
 
   /**
-   * Returns the ARN of this role.
-   */
-  public readonly principal: PolicyPrincipal;
-
-  /**
    * Returns the role.
    */
-  public readonly dependencyElements: IDependable[];
+  public readonly policyFragment: PrincipalPolicyFragment;
 
   private defaultPolicy?: Policy;
   private readonly managedPolicyArns: string[];
@@ -152,9 +154,8 @@ export class Role extends Construct implements IRole {
 
     this.roleId = role.roleId;
     this.roleArn = role.roleArn;
-    this.principal = new ArnPrincipal(this.roleArn);
     this.roleName = role.roleName;
-    this.dependencyElements = [ role ];
+    this.policyFragment = new ArnPrincipal(this.roleArn).policyFragment;
 
     function _flatten(policies?: { [name: string]: PolicyDocument }) {
       if (policies == null || Object.keys(policies).length === 0) {
@@ -171,23 +172,23 @@ export class Role extends Construct implements IRole {
 
   public export(): RoleImportProps {
     return {
-      roleArn: new Output(this, 'RoleArn', { value: this.roleArn }).makeImportValue(),
-      roleId: new Output(this, 'RoleId', { value: this.roleId }).makeImportValue()
+      roleArn: new CfnOutput(this, 'RoleArn', { value: this.roleArn }).makeImportValue(),
+      roleId: new CfnOutput(this, 'RoleId', { value: this.roleId }).makeImportValue()
     };
   }
 
   /**
    * Adds a permission to the role's default policy document.
    * If there is no default policy attached to this role, it will be created.
-   * @param permission The permission statement to add to the policy document
+   * @param statement The permission statement to add to the policy document
    */
-  public addToPolicy(statement: PolicyStatement) {
+  public addToPolicy(statement: PolicyStatement): boolean {
     if (!this.defaultPolicy) {
       this.defaultPolicy = new Policy(this, 'DefaultPolicy');
       this.attachInlinePolicy(this.defaultPolicy);
-      this.dependencyElements.push(this.defaultPolicy);
     }
     this.defaultPolicy.addStatement(statement);
+    return true;
   }
 
   /**
@@ -206,12 +207,31 @@ export class Role extends Construct implements IRole {
     this.attachedPolicies.attach(policy);
     policy.attachToRole(this);
   }
+
+  /**
+   * Grant the actions defined in actions to the identity Principal on this resource.
+   */
+  public grant(grantee: IPrincipal, ...actions: string[]) {
+    return Grant.addToPrincipal({
+      grantee,
+      actions,
+      resourceArns: [this.roleArn],
+      scope: this
+    });
+  }
+
+  /**
+   * Grant permissions to the given principal to pass this role.
+   */
+  public grantPassRole(identity: IPrincipal) {
+    return this.grant(identity, 'iam:PassRole');
+  }
 }
 
 /**
  * A Role object
  */
-export interface IRole extends IConstruct, IPrincipal, IDependable {
+export interface IRole extends IIdentity {
   /**
    * Returns the ARN of this role.
    */
@@ -232,9 +252,19 @@ export interface IRole extends IConstruct, IPrincipal, IDependable {
    * Export this role to another stack.
    */
   export(): RoleImportProps;
+
+  /**
+   * Grant the actions defined in actions to the identity Principal on this resource.
+   */
+  grant(grantee: IPrincipal, ...actions: string[]): Grant;
+
+  /**
+   * Grant permissions to the given principal to pass this role.
+   */
+  grantPassRole(grantee: IPrincipal): Grant;
 }
 
-function createAssumeRolePolicy(principal: PolicyPrincipal, externalId?: string) {
+function createAssumeRolePolicy(principal: IPrincipal, externalId?: string) {
   const statement = new PolicyStatement();
   statement
       .addPrincipal(principal)
@@ -264,7 +294,7 @@ export interface RoleImportProps {
   /**
    * The role's ARN
    */
-  roleArn: string;
+  readonly roleArn: string;
 
   /**
    * The stable and unique string identifying the role. For example,
@@ -273,16 +303,17 @@ export interface RoleImportProps {
    * @default If "roleId" is not specified for an imported role, then
    * `role.roleId` will throw an exception. In most cases, role ID is not really needed.
    */
-  roleId?: string;
+  readonly roleId?: string;
 }
 
 /**
  * A role that already exists
  */
 class ImportedRole extends Construct implements IRole {
+  public readonly grantPrincipal: IPrincipal = this;
+  public readonly assumeRoleAction: string = 'sts:AssumeRole';
+  public readonly policyFragment: PrincipalPolicyFragment;
   public readonly roleArn: string;
-  public readonly principal: PolicyPrincipal;
-  public readonly dependencyElements: IDependable[] = [];
 
   private readonly _roleId?: string;
 
@@ -290,7 +321,7 @@ class ImportedRole extends Construct implements IRole {
     super(scope, id);
     this.roleArn = props.roleArn;
     this._roleId = props.roleId;
-    this.principal = new ArnPrincipal(this.roleArn);
+    this.policyFragment = new ArnPrincipal(this.roleArn).policyFragment;
   }
 
   public get roleId() {
@@ -301,15 +332,16 @@ class ImportedRole extends Construct implements IRole {
   }
 
   public get roleName() {
-    return Stack.find(this).parseArn(this.roleArn).resourceName!;
+    return this.node.stack.parseArn(this.roleArn).resourceName!;
   }
 
   public export() {
     return this.props;
   }
 
-  public addToPolicy(_statement: PolicyStatement): void {
-    // FIXME: Add warning that we're ignoring this
+  public addToPolicy(_statement: PolicyStatement): boolean {
+    // Statement will be added to resource instead
+    return false;
   }
 
   public attachInlinePolicy(_policy: Policy): void {
@@ -318,5 +350,24 @@ class ImportedRole extends Construct implements IRole {
 
   public attachManagedPolicy(_arn: string): void {
     // FIXME: Add warning that we're ignoring this
+  }
+
+  /**
+   * Grant the actions defined in actions to the identity Principal on this resource.
+   */
+  public grant(grantee: IPrincipal, ...actions: string[]): Grant {
+    return Grant.addToPrincipal({
+      grantee,
+      actions,
+      resourceArns: [this.roleArn],
+      scope: this
+    });
+  }
+
+  /**
+   * Grant permissions to the given principal to pass this role.
+   */
+  public grantPassRole(identity: IPrincipal): Grant {
+    return this.grant(identity, 'iam:PassRole');
   }
 }

@@ -1,4 +1,4 @@
-import { FunctionBase } from './lambda-ref';
+import { FunctionBase } from './function-base';
 
 /**
  * An abstract class which represents an AWS Lambda event source.

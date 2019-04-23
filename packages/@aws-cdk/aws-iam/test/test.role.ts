@@ -1,7 +1,7 @@
-import { expect, haveResource } from '@aws-cdk/assert';
-import { Resource, Stack } from '@aws-cdk/cdk';
+import { expect, haveResource, haveResourceLike, SynthUtils } from '@aws-cdk/assert';
+import { Stack } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
-import { ArnPrincipal, CompositePrincipal, FederatedPrincipal, PolicyStatement, Role, ServicePrincipal } from '../lib';
+import { ArnPrincipal, CompositePrincipal, FederatedPrincipal, PolicyStatement, Role, ServicePrincipal, User } from '../lib';
 
 export = {
   'default role'(test: Test) {
@@ -21,6 +21,32 @@ export = {
               Effect: 'Allow',
               Principal: { Service: 'sns.amazonaws.com' } } ],
              Version: '2012-10-17' } } } } });
+    test.done();
+  },
+
+  'a role can grant PassRole permissions'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+    const role = new Role(stack, 'Role', { assumedBy: new ServicePrincipal('henk.amazonaws.com') });
+    const user = new User(stack, 'User');
+
+    // WHEN
+    role.grantPassRole(user);
+
+    // THEN
+    expect(stack).to(haveResourceLike('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: "iam:PassRole",
+            Effect: "Allow",
+            Resource: { "Fn::GetAtt": [ "Role1ABCC5F0", "Arn" ] }
+          }
+        ],
+        Version: "2012-10-17"
+      },
+    }));
+
     test.done();
   },
 
@@ -61,10 +87,10 @@ export = {
       assumedBy: new ServicePrincipal('sns.amazonaws.com')
     });
 
-    test.ok(!('MyRoleDefaultPolicyA36BE1DD' in stack.toCloudFormation().Resources), 'initially created without a policy');
+    test.ok(!('MyRoleDefaultPolicyA36BE1DD' in SynthUtils.toCloudFormation(stack).Resources), 'initially created without a policy');
 
     role.addToPolicy(new PolicyStatement().addResource('myresource').addAction('myaction'));
-    test.ok(stack.toCloudFormation().Resources.MyRoleDefaultPolicyA36BE1DD, 'policy resource created');
+    test.ok(SynthUtils.toCloudFormation(stack).Resources.MyRoleDefaultPolicyA36BE1DD, 'policy resource created');
 
     expect(stack).toMatch({ Resources:
       { MyRoleF48FFE04:
@@ -92,7 +118,7 @@ export = {
     const stack = new Stack();
 
     const role = new Role(stack, 'MyRole', {
-      assumedBy: new ServicePrincipal('service'),
+      assumedBy: new ServicePrincipal('test.service'),
       managedPolicyArns: [ 'managed1', 'managed2' ]
     });
 
@@ -105,20 +131,9 @@ export = {
            { Statement:
             [ { Action: 'sts:AssumeRole',
               Effect: 'Allow',
-              Principal: { Service: 'service' } } ],
+              Principal: { Service: 'test.service' } } ],
              Version: '2012-10-17' },
           ManagedPolicyArns: [ 'managed1', 'managed2', 'managed3' ] } } } });
-    test.done();
-  },
-
-  'role implements IDependable to allow resources to depend on it'(test: Test) {
-    const stack = new Stack();
-    const role = new Role(stack, 'MyRole', { assumedBy: new ServicePrincipal('foo') });
-
-    test.equal(role.dependencyElements.length, 1);
-
-    const roleResource = role.dependencyElements[0] as Resource;
-    test.equal(roleResource.resourceType, 'AWS::IAM::Role');
     test.done();
   },
 
@@ -213,7 +228,7 @@ export = {
 
     new Role(stack, 'MyRole', {
       assumedBy: new CompositePrincipal(
-        new ServicePrincipal('boom.amazonaws.com'),
+        new ServicePrincipal('boom.amazonaws.test'),
         new ArnPrincipal('1111111')
       )
     });
@@ -225,7 +240,7 @@ export = {
             Action: "sts:AssumeRole",
             Effect: "Allow",
             Principal: {
-              Service: "boom.amazonaws.com",
+              Service: "boom.amazonaws.test",
               AWS: "1111111"
             }
           }
@@ -250,18 +265,18 @@ export = {
 
     // THEN
     test.deepEqual(stack.node.resolve(exportedRole), {
-      roleArn: { 'Fn::ImportValue': 'MyRoleRoleArn3388B7E2' },
-      roleId: { 'Fn::ImportValue': 'MyRoleRoleIdF7B258D8' }
+      roleArn: { 'Fn::ImportValue': 'Stack:MyRoleRoleArn3388B7E2' },
+      roleId: { 'Fn::ImportValue': 'Stack:MyRoleRoleIdF7B258D8' }
     });
 
-    test.deepEqual(stack.node.resolve(importedRole.roleArn), { 'Fn::ImportValue': 'MyRoleRoleArn3388B7E2' });
-    test.deepEqual(stack.node.resolve(importedRole.roleId), { 'Fn::ImportValue': 'MyRoleRoleIdF7B258D8' });
+    test.deepEqual(stack.node.resolve(importedRole.roleArn), { 'Fn::ImportValue': 'Stack:MyRoleRoleArn3388B7E2' });
+    test.deepEqual(stack.node.resolve(importedRole.roleId), { 'Fn::ImportValue': 'Stack:MyRoleRoleIdF7B258D8' });
     test.deepEqual(stack.node.resolve(importedRole.roleName), {
       'Fn::Select': [ 1, {
         'Fn::Split': [ '/', {
           'Fn::Select': [ 5, {
             'Fn::Split': [ ':', {
-              'Fn::ImportValue': 'MyRoleRoleArn3388B7E2'
+              'Fn::ImportValue': 'Stack:MyRoleRoleArn3388B7E2'
             } ]
           } ]
         } ]

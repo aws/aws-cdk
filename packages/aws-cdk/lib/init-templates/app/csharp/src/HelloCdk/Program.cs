@@ -9,7 +9,7 @@ namespace HelloCdk
     {
         static void Main(string[] args)
         {
-            var app = new App();
+            var app = new App(null);
 
             // A CDK app can contain multiple stacks. You can view a list of all the stacks in your
             // app by typing `cdk list`.

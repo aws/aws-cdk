@@ -1,6 +1,6 @@
 import { Stack, Token } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
-import { Anyone, AnyPrincipal, CanonicalUserPrincipal, PolicyDocument, PolicyPrincipal, PolicyStatement } from '../lib';
+import { Anyone, AnyPrincipal, CanonicalUserPrincipal, IPrincipal, PolicyDocument, PolicyStatement } from '../lib';
 import { ArnPrincipal, CompositePrincipal, FederatedPrincipal, PrincipalPolicyFragment, ServicePrincipal } from '../lib';
 
 export = {
@@ -14,7 +14,7 @@ export = {
     p.addResource('yourQueue');
 
     p.addAllResources();
-    p.addAwsAccountPrincipal(`my${new Token({ account: 'account' })}name`);
+    p.addAwsAccountPrincipal(`my${new Token({ account: 'account' })}name`);
     p.limitToAccount('12221121221');
 
     test.deepEqual(stack.node.resolve(p), { Action:
@@ -212,30 +212,58 @@ export = {
   'statementCount returns the number of statement in the policy document'(test: Test) {
     const p = new PolicyDocument();
     test.equal(p.statementCount, 0);
-    p.addStatement(new PolicyStatement());
+    p.addStatement(new PolicyStatement().addAction('action1'));
     test.equal(p.statementCount, 1);
-    p.addStatement(new PolicyStatement());
+    p.addStatement(new PolicyStatement().addAction('action2'));
     test.equal(p.statementCount, 2);
     test.done();
   },
 
-  'the { AWS: "*" } principal is represented as `Anyone` or `AnyPrincipal`'(test: Test) {
-    const stack = new Stack();
-    const p = new PolicyDocument();
+  '{ AWS: "*" } principal': {
+    'is represented as `Anyone`'(test: Test) {
+      const stack = new Stack();
+      const p = new PolicyDocument();
 
-    p.addStatement(new PolicyStatement().addPrincipal(new Anyone()));
-    p.addStatement(new PolicyStatement().addPrincipal(new AnyPrincipal()));
-    p.addStatement(new PolicyStatement().addAnyPrincipal());
+      p.addStatement(new PolicyStatement().addPrincipal(new Anyone()));
 
-    test.deepEqual(stack.node.resolve(p), {
-      Statement: [
-        { Effect: 'Allow', Principal: '*' },
-        { Effect: 'Allow', Principal: '*' },
-        { Effect: 'Allow', Principal: '*' }
-      ],
-      Version: '2012-10-17'
-    });
-    test.done();
+      test.deepEqual(stack.node.resolve(p), {
+        Statement: [
+          { Effect: 'Allow', Principal: '*' }
+        ],
+        Version: '2012-10-17'
+      });
+      test.done();
+    },
+
+    'is represented as `AnyPrincipal`'(test: Test) {
+      const stack = new Stack();
+      const p = new PolicyDocument();
+
+      p.addStatement(new PolicyStatement().addPrincipal(new AnyPrincipal()));
+
+      test.deepEqual(stack.node.resolve(p), {
+        Statement: [
+          { Effect: 'Allow', Principal: '*' }
+        ],
+        Version: '2012-10-17'
+      });
+      test.done();
+    },
+
+    'is represented as `addAnyPrincipal`'(test: Test) {
+      const stack = new Stack();
+      const p = new PolicyDocument();
+
+      p.addStatement(new PolicyStatement().addAnyPrincipal());
+
+      test.deepEqual(stack.node.resolve(p), {
+        Statement: [
+          { Effect: 'Allow', Principal: '*' }
+        ],
+        Version: '2012-10-17'
+      });
+      test.done();
+    }
   },
 
   'addAwsPrincipal/addArnPrincipal are the aliases'(test: Test) {
@@ -294,9 +322,11 @@ export = {
 
   'addPrincipal correctly merges array in'(test: Test) {
     const stack = new Stack();
-    const arrayPrincipal: PolicyPrincipal = {
+    const arrayPrincipal: IPrincipal = {
+      get grantPrincipal() { return this; },
       assumeRoleAction: 'sts:AssumeRole',
-      policyFragment: () => new PrincipalPolicyFragment({ AWS: ['foo', 'bar'] }),
+      policyFragment: new PrincipalPolicyFragment({ AWS: ['foo', 'bar'] }),
+      addToPolicy() { return false; }
     };
     const s = new PolicyStatement().addAccountRootPrincipal()
                                    .addPrincipal(arrayPrincipal);
@@ -317,18 +347,65 @@ export = {
     const stack = new Stack();
     const s = new PolicyStatement()
       .addAwsPrincipal('349494949494')
-      .addServicePrincipal('ec2.amazonaws.com')
+      .addServicePrincipal('test.service')
       .addResource('resource')
       .addAction('action');
 
     test.deepEqual(stack.node.resolve(s), {
       Action: 'action',
       Effect: 'Allow',
-      Principal: { AWS: '349494949494', Service: 'ec2.amazonaws.com' },
+      Principal: { AWS: '349494949494', Service: 'test.service' },
       Resource: 'resource'
     });
 
     test.done();
+  },
+
+  'Service principals': {
+    'regional service principals resolve appropriately'(test: Test) {
+      const stack = new Stack(undefined, undefined, { env: { region: 'cn-north-1' } });
+      const s = new PolicyStatement()
+        .addAction('test:Action')
+        .addServicePrincipal('codedeploy.amazonaws.com');
+
+      test.deepEqual(stack.node.resolve(s), {
+        Effect: 'Allow',
+        Action: 'test:Action',
+        Principal: { Service: 'codedeploy.cn-north-1.amazonaws.com.cn' }
+      });
+
+      test.done();
+    },
+
+    'regional service principals resolve appropriately (with user-set region)'(test: Test) {
+      const stack = new Stack(undefined, undefined, { env: { region: 'cn-northeast-1' } });
+      const s = new PolicyStatement()
+        .addAction('test:Action')
+        .addServicePrincipal('codedeploy.amazonaws.com', { region: 'cn-north-1' });
+
+      test.deepEqual(stack.node.resolve(s), {
+        Effect: 'Allow',
+        Action: 'test:Action',
+        Principal: { Service: 'codedeploy.cn-north-1.amazonaws.com.cn' }
+      });
+
+      test.done();
+    },
+
+    'obscure service principals resolve to the user-provided value'(test: Test) {
+      const stack = new Stack(undefined, undefined, { env: { region: 'cn-north-1' } });
+      const s = new PolicyStatement()
+        .addAction('test:Action')
+        .addServicePrincipal('test.service-principal.dev');
+
+      test.deepEqual(stack.node.resolve(s), {
+        Effect: 'Allow',
+        Action: 'test:Action',
+        Principal: { Service: 'test.service-principal.dev' }
+      });
+
+      test.done();
+    },
   },
 
   'CompositePrincipal can be used to represent a principal that has multiple types': {
@@ -392,4 +469,109 @@ export = {
       test.done();
     }
   },
+
+  'duplicate statements': {
+
+    'without tokens'(test: Test) {
+      // GIVEN
+      const stack = new Stack();
+      const p = new PolicyDocument();
+
+      const statement = new PolicyStatement()
+        .addResources('resource1', 'resource2')
+        .addActions('action1', 'action2')
+        .addServicePrincipal('service')
+        .addConditions({
+          a: {
+            b: 'c'
+          },
+          d: {
+            e: 'f'
+          }
+        });
+
+      // WHEN
+      p.addStatement(statement);
+      p.addStatement(statement);
+      p.addStatement(statement);
+
+      // THEN
+      test.equal(stack.node.resolve(p).Statement.length, 1);
+      test.done();
+    },
+
+    'with tokens'(test: Test) {
+      // GIVEN
+      const stack = new Stack();
+      const p = new PolicyDocument();
+
+      const statement1 = new PolicyStatement()
+        .addResource(new Token(() => 'resource').toString())
+        .addAction(new Token(() => 'action').toString());
+      const statement2 = new PolicyStatement()
+        .addResource(new Token(() => 'resource').toString())
+        .addAction(new Token(() => 'action').toString());
+
+      // WHEN
+      p.addStatement(statement1);
+      p.addStatement(statement2);
+
+      // THEN
+      test.equal(stack.node.resolve(p).Statement.length, 1);
+      test.done();
+    },
+
+    'with base document'(test: Test) {
+      // GIVEN
+      const stack = new Stack();
+
+      // WHEN
+      const p = new PolicyDocument({
+        Statement: [
+          {
+            Action: 'action',
+            Effect: 'Allow',
+            Resource: 'resource'
+          },
+          {
+            Action: 'action',
+            Effect: 'Allow',
+            Resource: 'resource'
+          }
+        ]
+      });
+
+      p.addStatement(new PolicyStatement()
+        .addAction('action')
+        .addResource('resource'));
+
+      // THEN
+      test.equal(stack.node.resolve(p).Statement.length, 1);
+      test.done();
+    }
+  },
+
+  'autoAssignSids enables auto-assignment of a unique SID for each statement'(test: Test) {
+    // GIVEN
+    const doc = new PolicyDocument();
+    doc.addStatement(new PolicyStatement().addAction('action1').addResource('resource1'));
+    doc.addStatement(new PolicyStatement().addAction('action1').addResource('resource1'));
+    doc.addStatement(new PolicyStatement().addAction('action1').addResource('resource1'));
+    doc.addStatement(new PolicyStatement().addAction('action1').addResource('resource1'));
+    doc.addStatement(new PolicyStatement().addAction('action2').addResource('resource2'));
+
+    // WHEN
+    doc.autoAssignSids();
+
+    // THEN
+    const stack = new Stack();
+    test.deepEqual(stack.node.resolve(doc), {
+      Version: '2012-10-17',
+      Statement: [
+        { Action: 'action1', Effect: 'Allow', Resource: 'resource1', Sid: '0' },
+        { Action: 'action2', Effect: 'Allow', Resource: 'resource2', Sid: '1' }
+      ],
+    });
+    test.done();
+  }
 };

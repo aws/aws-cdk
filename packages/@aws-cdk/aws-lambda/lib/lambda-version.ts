@@ -1,5 +1,5 @@
-import { Construct } from '@aws-cdk/cdk';
-import { IFunction } from './lambda-ref';
+import { Construct, Resource } from '@aws-cdk/cdk';
+import { IFunction } from './function-base';
 import { CfnVersion } from './lambda.generated';
 
 /**
@@ -13,19 +13,19 @@ export interface VersionProps {
    *
    * @default No validation is performed
    */
-  codeSha256?: string;
+  readonly codeSha256?: string;
 
   /**
    * Description of the version
    *
    * @default Description of the Lambda
    */
-  description?: string;
+  readonly description?: string;
 
   /**
    * Function to get the value of
    */
-  lambda: IFunction;
+  readonly lambda: IFunction;
 }
 
 /**
@@ -44,7 +44,7 @@ export interface VersionProps {
  * the right deployment, specify the `codeSha256` property while
  * creating the `Version.
  */
-export class Version extends Construct {
+export class Version extends Resource {
   /**
    * The most recently deployed version of this function.
    */

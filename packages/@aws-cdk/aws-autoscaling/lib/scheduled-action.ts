@@ -1,6 +1,5 @@
-import cdk = require('@aws-cdk/cdk');
+import { Construct, Resource } from '@aws-cdk/cdk';
 import { IAutoScalingGroup } from './auto-scaling-group';
-
 import { CfnScheduledAction } from './autoscaling.generated';
 
 /**
@@ -16,21 +15,21 @@ export interface BasicScheduledActionProps {
    *
    * @example 0 8 * * ?
    */
-  schedule: string;
+  readonly schedule: string;
 
   /**
    * When this scheduled action becomes active.
    *
    * @default The rule is activate immediately
    */
-  startTime?: Date
+  readonly startTime?: Date
 
   /**
    * When this scheduled action expires.
    *
    * @default The rule never expires.
    */
-  endTime?: Date;
+  readonly endTime?: Date;
 
   /**
    * The new minimum capacity.
@@ -41,7 +40,7 @@ export interface BasicScheduledActionProps {
    *
    * @default No new minimum capacity
    */
-  minCapacity?: number;
+  readonly minCapacity?: number;
 
   /**
    * The new maximum capacity.
@@ -52,7 +51,7 @@ export interface BasicScheduledActionProps {
    *
    * @default No new maximum capacity
    */
-  maxCapacity?: number;
+  readonly maxCapacity?: number;
 
   /**
    * The new desired capacity.
@@ -61,7 +60,7 @@ export interface BasicScheduledActionProps {
    *
    * At least one of maxCapacity, minCapacity, or desiredCapacity must be supplied.
    */
-  desiredCapacity?: number;
+  readonly desiredCapacity?: number;
 }
 
 /**
@@ -71,7 +70,7 @@ export interface ScheduledActionProps extends BasicScheduledActionProps {
   /**
    * The AutoScalingGroup to apply the scheduled actions to
    */
-  autoScalingGroup: IAutoScalingGroup;
+  readonly autoScalingGroup: IAutoScalingGroup;
 }
 
 const CRON_PART = '(\\*|\\?|[0-9]+)';
@@ -81,8 +80,8 @@ const CRON_EXPRESSION = new RegExp('^' + [CRON_PART, CRON_PART, CRON_PART, CRON_
 /**
  * Define a scheduled scaling action
  */
-export class ScheduledAction extends cdk.Construct {
-  constructor(scope: cdk.Construct, id: string, props: ScheduledActionProps) {
+export class ScheduledAction extends Resource {
+  constructor(scope: Construct, id: string, props: ScheduledActionProps) {
     super(scope, id);
 
     if (!CRON_EXPRESSION.exec(props.schedule)) {

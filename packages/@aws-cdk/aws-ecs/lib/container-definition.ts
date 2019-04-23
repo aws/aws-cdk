@@ -1,15 +1,12 @@
 import iam = require('@aws-cdk/aws-iam');
 import cdk = require('@aws-cdk/cdk');
 import { NetworkMode, TaskDefinition } from './base/task-definition';
-import { IContainerImage } from './container-image';
+import { ContainerImage } from './container-image';
 import { CfnTaskDefinition } from './ecs.generated';
 import { LinuxParameters } from './linux-parameters';
 import { LogDriver } from './log-drivers/log-driver';
 
-/**
- * Properties of a container definition
- */
-export interface ContainerDefinitionProps {
+export interface ContainerDefinitionOptions {
   /**
    * The image to use for a container.
    *
@@ -17,7 +14,7 @@ export interface ContainerDefinitionProps {
    * repositories (repository-url/image:tag).
    * TODO: Update these to specify using classes of IContainerImage
    */
-  image: IContainerImage;
+  readonly image: ContainerImage;
 
   /**
    * The CMD value to pass to the container.
@@ -26,47 +23,47 @@ export interface ContainerDefinitionProps {
    *
    * @default CMD value built into container image
    */
-  command?: string[];
+  readonly command?: string[];
 
   /**
    * The minimum number of CPU units to reserve for the container.
    */
-  cpu?: number;
+  readonly cpu?: number;
 
   /**
    * Indicates whether networking is disabled within the container.
    *
    * @default false
    */
-  disableNetworking?: boolean;
+  readonly disableNetworking?: boolean;
 
   /**
    * A list of DNS search domains that are provided to the container.
    *
    * @default No search domains
    */
-  dnsSearchDomains?: string[];
+  readonly dnsSearchDomains?: string[];
 
   /**
    * A list of DNS servers that Amazon ECS provides to the container.
    *
    * @default Default DNS servers
    */
-  dnsServers?: string[];
+  readonly dnsServers?: string[];
 
   /**
    * A key-value map of labels for the container.
    *
    * @default No labels
    */
-  dockerLabels?: { [key: string]: string };
+  readonly dockerLabels?: { [key: string]: string };
 
   /**
    * A list of custom labels for SELinux and AppArmor multi-level security systems.
    *
    * @default No security labels
    */
-  dockerSecurityOptions?: string[];
+  readonly dockerSecurityOptions?: string[];
 
   /**
    * The ENTRYPOINT value to pass to the container.
@@ -74,14 +71,14 @@ export interface ContainerDefinitionProps {
    * @see https://docs.docker.com/engine/reference/builder/#entrypoint
    * @default Entry point configured in container
    */
-  entryPoint?: string[];
+  readonly entryPoint?: string[];
 
   /**
    * The environment variables to pass to the container.
    *
    * @default No environment variables
    */
-  environment?: { [key: string]: string };
+  readonly environment?: { [key: string]: string };
 
   /**
    * Indicates whether the task stops if this container fails.
@@ -94,28 +91,28 @@ export interface ContainerDefinitionProps {
    *
    * @default true
    */
-  essential?: boolean;
+  readonly essential?: boolean;
 
   /**
    * A list of hostnames and IP address mappings to append to the /etc/hosts file on the container.
    *
    * @default No extra hosts
    */
-  extraHosts?: { [name: string]: string };
+  readonly extraHosts?: { [name: string]: string };
 
   /**
    * Container health check.
    *
    * @default Health check configuration from container
    */
-  healthCheck?: HealthCheck;
+  readonly healthCheck?: HealthCheck;
 
   /**
    * The name that Docker uses for the container hostname.
    *
    * @default Automatic hostname
    */
-  hostname?: string;
+  readonly hostname?: string;
 
   /**
    * The hard limit (in MiB) of memory to present to the container.
@@ -125,7 +122,7 @@ export interface ContainerDefinitionProps {
    *
    * At least one of memoryLimitMiB and memoryReservationMiB is required for non-Fargate services.
    */
-  memoryLimitMiB?: number;
+  readonly memoryLimitMiB?: number;
 
   /**
    * The soft limit (in MiB) of memory to reserve for the container.
@@ -137,40 +134,50 @@ export interface ContainerDefinitionProps {
    *
    * At least one of memoryLimitMiB and memoryReservationMiB is required for non-Fargate services.
    */
-  memoryReservationMiB?: number;
+  readonly memoryReservationMiB?: number;
 
   /**
    * Indicates whether the container is given full access to the host container instance.
    *
    * @default false
    */
-  privileged?: boolean;
+  readonly privileged?: boolean;
 
   /**
    * Indicates whether the container's root file system is mounted as read only.
    *
    * @default false
    */
-  readonlyRootFilesystem?: boolean;
+  readonly readonlyRootFilesystem?: boolean;
 
   /**
    * The user name to use inside the container.
    *
    * @default root
    */
-  user?: string;
+  readonly user?: string;
 
   /**
    * The working directory in the container to run commands in.
    *
    * @default /
    */
-  workingDirectory?: string;
+  readonly workingDirectory?: string;
 
   /**
    * Configures a custom log driver for the container.
    */
-  logging?: LogDriver;
+  readonly logging?: LogDriver;
+}
+
+/**
+ * Properties of a container definition
+ */
+export interface ContainerDefinitionProps extends ContainerDefinitionOptions {
+  /**
+   * The task this container definition belongs to.
+   */
+  readonly taskDefinition: TaskDefinition;
 }
 
 /**
@@ -222,14 +229,15 @@ export class ContainerDefinition extends cdk.Construct {
    */
   private readonly links = new Array<string>();
 
-  constructor(scope: cdk.Construct, id: string, taskDefinition: TaskDefinition, private readonly props: ContainerDefinitionProps) {
+  constructor(scope: cdk.Construct, id: string, private readonly props: ContainerDefinitionProps) {
     super(scope, id);
     this.essential = props.essential !== undefined ? props.essential : true;
-    this.taskDefinition = taskDefinition;
+    this.taskDefinition = props.taskDefinition;
     this.memoryLimitSpecified = props.memoryLimitMiB !== undefined || props.memoryReservationMiB !== undefined;
 
     props.image.bind(this);
     if (props.logging) { props.logging.bind(this); }
+    props.taskDefinition._linkContainer(this);
   }
 
   /**
@@ -282,19 +290,24 @@ export class ContainerDefinition extends cdk.Construct {
    * Add one or more port mappings to this container
    */
   public addPortMappings(...portMappings: PortMapping[]) {
-    for (const pm of portMappings) {
+    this.portMappings.push(...portMappings.map(pm => {
       if (this.taskDefinition.networkMode === NetworkMode.AwsVpc || this.taskDefinition.networkMode === NetworkMode.Host) {
         if (pm.containerPort !== pm.hostPort && pm.hostPort !== undefined) {
           throw new Error(`Host port ${pm.hostPort} does not match container port ${pm.containerPort}.`);
         }
       }
+
       if (this.taskDefinition.networkMode === NetworkMode.Bridge) {
         if (pm.hostPort === undefined) {
-          pm.hostPort = 0;
+          pm = {
+            ...pm,
+            hostPort: 0
+          };
         }
       }
-    }
-    this.portMappings.push(...portMappings);
+
+      return pm;
+    }));
   }
 
   /**
@@ -371,7 +384,7 @@ export class ContainerDefinition extends cdk.Construct {
       portMappings: this.portMappings.map(renderPortMapping),
       privileged: this.props.privileged,
       readonlyRootFilesystem: this.props.readonlyRootFilesystem,
-      repositoryCredentials: undefined, // FIXME
+      repositoryCredentials: this.props.image.toRepositoryCredentialsJson(),
       ulimits: this.ulimits.map(renderUlimit),
       user: this.props.user,
       volumesFrom: this.volumesFrom.map(renderVolumeFrom),
@@ -395,7 +408,7 @@ export interface HealthCheck {
    *
    * If you provide a shell command as a single string, you have to quote command-line arguments.
    */
-  command: string[];
+  readonly command: string[];
 
   /**
    * Time period in seconds between each health check execution.
@@ -404,7 +417,7 @@ export interface HealthCheck {
    *
    * @default 30
    */
-  intervalSeconds?: number;
+  readonly intervalSeconds?: number;
 
   /**
    * Number of times to retry a failed health check before the container is considered unhealthy.
@@ -413,7 +426,7 @@ export interface HealthCheck {
    *
    * @default 3
    */
-  retries?: number;
+  readonly retries?: number;
 
   /**
    * Grace period after startup before failed health checks count.
@@ -422,7 +435,7 @@ export interface HealthCheck {
    *
    * @default No start period
    */
-  startPeriod?: number;
+  readonly startPeriod?: number;
 
   /**
    * The time period in seconds to wait for a health check to succeed before it is considered a failure.
@@ -431,7 +444,7 @@ export interface HealthCheck {
    *
    * @default 5
    */
-  timeout?: number;
+  readonly timeout?: number;
 }
 
 function renderKV(env: { [key: string]: string }, keyName: string, valueName: string): any {
@@ -483,17 +496,17 @@ export interface Ulimit {
   /**
    * What resource to enforce a limit on
    */
-  name: UlimitName,
+  readonly name: UlimitName,
 
   /**
    * Soft limit of the resource
    */
-  softLimit: number,
+  readonly softLimit: number,
 
   /**
    * Hard limit of the resource
    */
-  hardLimit: number,
+  readonly hardLimit: number,
 }
 
 /**
@@ -532,7 +545,7 @@ export interface PortMapping {
   /**
    * Port inside the container
    */
-  containerPort: number;
+  readonly containerPort: number;
 
   /**
    * Port on the host
@@ -543,14 +556,14 @@ export interface PortMapping {
    * In Bridge networking mode, leave this out or set it to non-reserved
    * non-ephemeral port.
    */
-  hostPort?: number;
+  readonly hostPort?: number;
 
   /**
    * Protocol
    *
    * @default Tcp
    */
-  protocol?: Protocol
+  readonly protocol?: Protocol
 }
 
 /**
@@ -577,16 +590,16 @@ function renderPortMapping(pm: PortMapping): CfnTaskDefinition.PortMappingProper
 }
 
 export interface ScratchSpace {
-  containerPath: string,
-  readOnly: boolean,
-  sourcePath: string
-  name: string,
+  readonly containerPath: string,
+  readonly readOnly: boolean,
+  readonly sourcePath: string
+  readonly name: string,
 }
 
 export interface MountPoint {
-  containerPath: string,
-  readOnly: boolean,
-  sourceVolume: string,
+  readonly containerPath: string,
+  readonly readOnly: boolean,
+  readonly sourceVolume: string,
 }
 
 function renderMountPoint(mp: MountPoint): CfnTaskDefinition.MountPointProperty {
@@ -604,12 +617,12 @@ export interface VolumeFrom {
   /**
    * Name of the source container
    */
-  sourceContainer: string,
+  readonly sourceContainer: string,
 
   /**
    * Whether the volume is read only
    */
-  readOnly: boolean,
+  readonly readOnly: boolean,
 }
 
 function renderVolumeFrom(vf: VolumeFrom): CfnTaskDefinition.VolumeFromProperty {

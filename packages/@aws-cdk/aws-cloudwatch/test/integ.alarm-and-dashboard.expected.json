@@ -8,10 +8,8 @@
       "Properties": {
         "ComparisonOperator": "GreaterThanOrEqualToThreshold",
         "EvaluationPeriods": 3,
-        "MetricName": "ApproximateNumberOfMessagesVisible",
-        "Namespace": "AWS/SQS",
-        "Period": 300,
         "Threshold": 100,
+        "DatapointsToAlarm": 2,
         "Dimensions": [
           {
             "Name": "QueueName",
@@ -23,6 +21,9 @@
             }
           }
         ],
+        "MetricName": "ApproximateNumberOfMessagesVisible",
+        "Namespace": "AWS/SQS",
+        "Period": 300,
         "Statistic": "Average"
       }
     },
@@ -33,7 +34,7 @@
           "Fn::Join": [
             "",
             [
-              "{\"widgets\":[{\"type\":\"text\",\"width\":6,\"height\":2,\"x\":0,\"y\":0,\"properties\":{\"markdown\":\"# This is my dashboard\"}},{\"type\":\"text\",\"width\":6,\"height\":2,\"x\":6,\"y\":0,\"properties\":{\"markdown\":\"you like?\"}},{\"type\":\"metric\",\"width\":6,\"height\":6,\"x\":0,\"y\":2,\"properties\":{\"view\":\"timeSeries\",\"title\":\"Messages in queue\",\"region\":\"",
+              "{\"start\":\"-9H\",\"end\":\"2018-12-17T06:00:00.000Z\",\"periodOverride\":\"inherit\",\"widgets\":[{\"type\":\"text\",\"width\":6,\"height\":2,\"x\":0,\"y\":0,\"properties\":{\"markdown\":\"# This is my dashboard\"}},{\"type\":\"text\",\"width\":6,\"height\":2,\"x\":6,\"y\":0,\"properties\":{\"markdown\":\"you like?\"}},{\"type\":\"metric\",\"width\":6,\"height\":6,\"x\":0,\"y\":2,\"properties\":{\"view\":\"timeSeries\",\"title\":\"Messages in queue\",\"region\":\"",
               {
                 "Ref": "AWS::Region"
               },

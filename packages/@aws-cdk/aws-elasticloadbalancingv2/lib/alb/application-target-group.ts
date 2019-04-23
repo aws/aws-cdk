@@ -5,7 +5,7 @@ import { BaseTargetGroupProps, ITargetGroup, loadBalancerNameFromListenerArn, Lo
          TargetGroupBase, TargetGroupImportProps } from '../shared/base-target-group';
 import { ApplicationProtocol } from '../shared/enums';
 import { ImportedTargetGroupBase } from '../shared/imported';
-import { determineProtocolAndPort, LazyDependable } from '../shared/util';
+import { determineProtocolAndPort } from '../shared/util';
 import { IApplicationListener } from './application-listener';
 import { HttpCodeTarget } from './application-load-balancer';
 
@@ -18,14 +18,14 @@ export interface ApplicationTargetGroupProps extends BaseTargetGroupProps {
    *
    * @default Determined from port if known
    */
-  protocol?: ApplicationProtocol;
+  readonly protocol?: ApplicationProtocol;
 
   /**
    * The port on which the listener listens for requests.
    *
    * @default Determined from protocol if known
    */
-  port?: number;
+  readonly port?: number;
 
   /**
    * The time period during which the load balancer sends a newly registered
@@ -35,7 +35,7 @@ export interface ApplicationTargetGroupProps extends BaseTargetGroupProps {
    *
    * @default 0
    */
-  slowStartSec?: number;
+  readonly slowStartSec?: number;
 
   /**
    * The stickiness cookie expiration period.
@@ -47,7 +47,7 @@ export interface ApplicationTargetGroupProps extends BaseTargetGroupProps {
    *
    * @default 86400 (1 day)
    */
-  stickinessCookieDurationSec?: number;
+  readonly stickinessCookieDurationSec?: number;
 
   /**
    * The targets to add to this target group.
@@ -56,13 +56,13 @@ export interface ApplicationTargetGroupProps extends BaseTargetGroupProps {
    * target. If you use either `Instance` or `IPAddress` as targets, all
    * target must be of the same type.
    */
-  targets?: IApplicationLoadBalancerTarget[];
+  readonly targets?: IApplicationLoadBalancerTarget[];
 }
 
 /**
  * Define an Application Target Group
  */
-export class ApplicationTargetGroup extends TargetGroupBase {
+export class ApplicationTargetGroup extends TargetGroupBase implements IApplicationTargetGroup {
   /**
    * Import an existing target group
    */
@@ -140,14 +140,14 @@ export class ApplicationTargetGroup extends TargetGroupBase {
    *
    * Don't call this directly. It will be called by listeners.
    */
-  public registerListener(listener: IApplicationListener, dependable?: cdk.IDependable) {
+  public registerListener(listener: IApplicationListener, associatingConstruct?: cdk.IConstruct) {
     // Notify this listener of all connectables that we know about.
     // Then remember for new connectables that might get added later.
     for (const member of this.connectableMembers) {
       listener.registerConnectable(member.connectable, member.portRange);
     }
     this.listeners.push(listener);
-    this.loadBalancerAssociationDependencies.push(dependable || listener);
+    this.loadBalancerAttachedDependencies.add(associatingConstruct || listener);
   }
 
   /**
@@ -324,19 +324,15 @@ export interface IApplicationTargetGroup extends ITargetGroup {
    *
    * Don't call this directly. It will be called by listeners.
    */
-  registerListener(listener: IApplicationListener, dependable?: cdk.IDependable): void;
+  registerListener(listener: IApplicationListener, associatingConstruct?: cdk.IConstruct): void;
 }
 
 /**
  * An imported application target group
  */
 class ImportedApplicationTargetGroup extends ImportedTargetGroupBase implements IApplicationTargetGroup {
-  public registerListener(_listener: IApplicationListener, _dependable?: cdk.IDependable) {
+  public registerListener(_listener: IApplicationListener, _associatingConstruct?: cdk.IConstruct) {
     // Nothing to do, we know nothing of our members
-  }
-
-  public loadBalancerDependency(): cdk.IDependable {
-    return new LazyDependable([]);
   }
 }
 

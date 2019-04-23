@@ -34,8 +34,8 @@ export = {
     // Lifecycle Hook has a dependency on the policy object
     expect(stack).to(haveResource('AWS::AutoScaling::LifecycleHook', {
       DependsOn: [
+        "ASGLifecycleHookTransitionRoleDefaultPolicy2E50C7DB",
         "ASGLifecycleHookTransitionRole3AAA6BB7",
-        "ASGLifecycleHookTransitionRoleDefaultPolicy2E50C7DB"
       ]
     }, ResourcePart.CompleteDefinition));
 
@@ -46,7 +46,7 @@ export = {
           {
             Action: "sts:AssumeRole",
             Effect: "Allow",
-            Principal: { Service: "autoscaling.amazonaws.com" }
+            Principal: { Service: { "Fn::Join": ["", ["autoscaling.", { Ref: "AWS::URLSuffix" }]] } }
           }
         ],
       }

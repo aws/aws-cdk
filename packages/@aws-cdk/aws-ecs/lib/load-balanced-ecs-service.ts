@@ -15,7 +15,7 @@ export interface LoadBalancedEc2ServiceProps extends LoadBalancedServiceBaseProp
    *
    * At least one of memoryLimitMiB and memoryReservationMiB is required.
    */
-  memoryLimitMiB?: number;
+  readonly memoryLimitMiB?: number;
 
   /**
    * The soft limit (in MiB) of memory to reserve for the container.
@@ -27,7 +27,7 @@ export interface LoadBalancedEc2ServiceProps extends LoadBalancedServiceBaseProp
    *
    * At least one of memoryLimitMiB and memoryReservationMiB is required.
    */
-  memoryReservationMiB?: number;
+  readonly memoryReservationMiB?: number;
 }
 
 /**

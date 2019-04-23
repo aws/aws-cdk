@@ -88,7 +88,7 @@ def find_lerna_list():
       raise RuntimeError('Run this script from somewhere underneath lerna.json!')
     cwd = next
 
-  return json.loads(subprocess.check_output(['node_modules/.bin/lerna', 'ls', '--all', '--json'], shell=False, cwd=cwd).decode('utf-8'))
+  return json.loads(subprocess.check_output(['npx', 'lerna', 'ls', '--all', '--json'], shell=False, cwd=cwd).decode('utf-8'))
 
 
 if __name__ == '__main__':

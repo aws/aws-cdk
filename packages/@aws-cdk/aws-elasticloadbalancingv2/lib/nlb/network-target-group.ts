@@ -3,7 +3,6 @@ import { BaseTargetGroupProps, ITargetGroup, loadBalancerNameFromListenerArn, Lo
          TargetGroupBase, TargetGroupImportProps } from '../shared/base-target-group';
 import { Protocol } from '../shared/enums';
 import { ImportedTargetGroupBase } from '../shared/imported';
-import { LazyDependable } from '../shared/util';
 import { INetworkListener } from './network-listener';
 
 /**
@@ -13,14 +12,14 @@ export interface NetworkTargetGroupProps extends BaseTargetGroupProps {
   /**
    * The port on which the listener listens for requests.
    */
-  port: number;
+  readonly port: number;
 
   /**
    * Indicates whether Proxy Protocol version 2 is enabled.
    *
    * @default false
    */
-  proxyProtocolV2?: boolean;
+  readonly proxyProtocolV2?: boolean;
 
   /**
    * The targets to add to this target group.
@@ -29,13 +28,13 @@ export interface NetworkTargetGroupProps extends BaseTargetGroupProps {
    * target. If you use either `Instance` or `IPAddress` as targets, all
    * target must be of the same type.
    */
-  targets?: INetworkLoadBalancerTarget[];
+  readonly targets?: INetworkLoadBalancerTarget[];
 }
 
 /**
  * Define a Network Target Group
  */
-export class NetworkTargetGroup extends TargetGroupBase {
+export class NetworkTargetGroup extends TargetGroupBase implements INetworkTargetGroup {
   /**
    * Import an existing listener
    */
@@ -76,7 +75,7 @@ export class NetworkTargetGroup extends TargetGroupBase {
    * Don't call this directly. It will be called by listeners.
    */
   public registerListener(listener: INetworkListener) {
-    this.loadBalancerAssociationDependencies.push(listener);
+    this.loadBalancerAttachedDependencies.add(listener);
     this.listeners.push(listener);
   }
 
@@ -110,10 +109,6 @@ export interface INetworkTargetGroup extends ITargetGroup {
 class ImportedNetworkTargetGroup extends ImportedTargetGroupBase implements INetworkTargetGroup {
   public registerListener(_listener: INetworkListener) {
     // Nothing to do, we know nothing of our members
-  }
-
-  public loadBalancerDependency(): cdk.IDependable {
-    return new LazyDependable([]);
   }
 }
 

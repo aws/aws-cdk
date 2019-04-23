@@ -15,7 +15,7 @@ export interface BasicTaskProps {
      *
      * @default No comment
      */
-    comment?: string;
+    readonly comment?: string;
 
     /**
      * JSONPath expression to select part of the state to be the input to this state.
@@ -25,7 +25,7 @@ export interface BasicTaskProps {
      *
      * @default $
      */
-    inputPath?: string;
+    readonly inputPath?: string;
 
     /**
      * JSONPath expression to select part of the state to be the output to this state.
@@ -35,7 +35,7 @@ export interface BasicTaskProps {
      *
      * @default $
      */
-    outputPath?: string;
+    readonly outputPath?: string;
 
     /**
      * JSONPath expression to indicate where to inject the state's output
@@ -45,7 +45,7 @@ export interface BasicTaskProps {
      *
      * @default $
      */
-    resultPath?: string;
+    readonly resultPath?: string;
 
     /**
      * Maximum run time of this state
@@ -54,7 +54,7 @@ export interface BasicTaskProps {
      *
      * @default 60
      */
-    timeoutSeconds?: number;
+    readonly timeoutSeconds?: number;
 }
 
 /**
@@ -91,7 +91,7 @@ export interface TaskProps extends BasicTaskProps {
      *
      * @default No heart beat timeout
      */
-    heartbeatSeconds?: number;
+    readonly heartbeatSeconds?: number;
 }
 
 /**
@@ -294,35 +294,35 @@ export interface StepFunctionsTaskResourceProps {
     /**
      * The ARN of the resource
      */
-    resourceArn: string;
+    readonly resourceArn: string;
 
     /**
      * Additional policy statements to add to the execution role
      *
      * @default No policy roles
      */
-    policyStatements?: iam.PolicyStatement[];
+    readonly policyStatements?: iam.PolicyStatement[];
 
     /**
      * Prefix for singular metric names of activity actions
      *
      * @default No such metrics
      */
-    metricPrefixSingular?: string;
+    readonly metricPrefixSingular?: string;
 
     /**
      * Prefix for plural metric names of activity actions
      *
      * @default No such metrics
      */
-    metricPrefixPlural?: string;
+    readonly metricPrefixPlural?: string;
 
     /**
      * The dimensions to attach to metrics
      *
      * @default No metrics
      */
-    metricDimensions?: cloudwatch.DimensionHash;
+    readonly metricDimensions?: cloudwatch.DimensionHash;
 }
 
 /**

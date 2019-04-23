@@ -1,13 +1,11 @@
-import codepipeline = require('@aws-cdk/aws-codepipeline-api');
 import events = require('@aws-cdk/aws-events');
 import iam = require('@aws-cdk/aws-iam');
-import cdk = require('@aws-cdk/cdk');
-import { CommonPipelineSourceActionProps, PipelineSourceAction } from './pipeline-action';
+import { Construct, IConstruct, IResource, Resource, Token } from '@aws-cdk/cdk';
 
 /**
  * Represents an ECR repository.
  */
-export interface IRepository extends cdk.IConstruct {
+export interface IRepository extends IResource {
   /**
    * The name of the repository
    */
@@ -41,31 +39,19 @@ export interface IRepository extends cdk.IConstruct {
   addToResourcePolicy(statement: iam.PolicyStatement): void;
 
   /**
-   * Convenience method for creating a new {@link PipelineSourceAction},
-   * and adding it to the given Stage.
-   *
-   * @param stage the Pipeline Stage to add the new Action to
-   * @param name the name of the newly created Action
-   * @param props the optional construction properties of the new Action
-   * @returns the newly created {@link PipelineSourceAction}
-   */
-  addToPipeline(stage: codepipeline.IStage, name: string, props?: CommonPipelineSourceActionProps):
-      PipelineSourceAction;
-
-  /**
    * Grant the given principal identity permissions to perform the actions on this repository
    */
-  grant(identity?: iam.IPrincipal, ...actions: string[]): void;
+  grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant;
 
   /**
    * Grant the given identity permissions to pull images in this repository.
    */
-  grantPull(identity?: iam.IPrincipal): void;
+  grantPull(grantee: iam.IGrantable): iam.Grant;
 
   /**
    * Grant the given identity permissions to pull and push images to this repository.
    */
-  grantPullPush(identity?: iam.IPrincipal): void;
+  grantPullPush(grantee: iam.IGrantable): iam.Grant;
 
   /**
    * Defines an AWS CloudWatch event rule that can trigger a target when an image is pushed to this
@@ -92,7 +78,7 @@ export interface RepositoryImportProps {
    * account/region as the current stack, you can set `repositoryName` instead
    * and the ARN will be formatted with the current region and account.
    */
-  repositoryArn?: string;
+  readonly repositoryArn?: string;
 
   /**
    * The full name of the repository to import.
@@ -104,17 +90,17 @@ export interface RepositoryImportProps {
    * If the repository is in the same region/account as the stack, it is sufficient
    * to only specify the repository name.
    */
-  repositoryName?: string;
+  readonly repositoryName?: string;
 }
 
 /**
  * Base class for ECR repository. Reused between imported repositories and owned repositories.
  */
-export abstract class RepositoryBase extends cdk.Construct implements IRepository {
+export abstract class RepositoryBase extends Resource implements IRepository {
   /**
    * Import a repository
    */
-  public static import(scope: cdk.Construct, id: string, props: RepositoryImportProps): IRepository {
+  public static import(scope: Construct, id: string, props: RepositoryImportProps): IRepository {
     return new ImportedRepository(scope, id, props);
   }
 
@@ -122,8 +108,8 @@ export abstract class RepositoryBase extends cdk.Construct implements IRepositor
    * Returns an ECR ARN for a repository that resides in the same account/region
    * as the current stack.
    */
-  public static arnForLocalRepository(repositoryName: string, scope: cdk.IConstruct): string {
-    return cdk.Stack.find(scope).formatArn({
+  public static arnForLocalRepository(repositoryName: string, scope: IConstruct): string {
+    return scope.node.stack.formatArn({
       service: 'ecr',
       resource: 'repository',
       resourceName: repositoryName
@@ -164,7 +150,7 @@ export abstract class RepositoryBase extends cdk.Construct implements IRepositor
    */
   public repositoryUriForTag(tag?: string): string {
     const tagSuffix = tag ? `:${tag}` : '';
-    const parts = cdk.Stack.find(this).parseArn(this.repositoryArn);
+    const parts = this.node.stack.parseArn(this.repositoryArn);
     return `${parts.account}.dkr.ecr.${parts.region}.amazonaws.com/${this.repositoryName}${tagSuffix}`;
   }
 
@@ -172,15 +158,6 @@ export abstract class RepositoryBase extends cdk.Construct implements IRepositor
    * Export this repository from the stack
    */
   public abstract export(): RepositoryImportProps;
-
-  public addToPipeline(stage: codepipeline.IStage, name: string, props: CommonPipelineSourceActionProps = {}):
-      PipelineSourceAction {
-    return new PipelineSourceAction(this, name, {
-      stage,
-      repository: this,
-      ...props,
-    });
-  }
 
   /**
    * Defines an AWS CloudWatch event rule that can trigger a target when an image is pushed to this
@@ -212,38 +189,41 @@ export abstract class RepositoryBase extends cdk.Construct implements IRepositor
   /**
    * Grant the given principal identity permissions to perform the actions on this repository
    */
-  public grant(identity?: iam.IPrincipal, ...actions: string[]) {
-    if (!identity) {
-      return;
-    }
-    identity.addToPolicy(new iam.PolicyStatement()
-      .addResource(this.repositoryArn)
-      .addActions(...actions));
+  public grant(grantee: iam.IGrantable, ...actions: string[]) {
+    return iam.Grant.addToPrincipalOrResource({
+      grantee,
+      actions,
+      resourceArns: [this.repositoryArn],
+      resource: this,
+    });
   }
 
   /**
    * Grant the given identity permissions to use the images in this repository
    */
-  public grantPull(identity?: iam.IPrincipal) {
-    this.grant(identity, "ecr:BatchCheckLayerAvailability", "ecr:GetDownloadUrlForLayer", "ecr:BatchGetImage");
+  public grantPull(grantee: iam.IGrantable) {
+    const ret = this.grant(grantee, "ecr:BatchCheckLayerAvailability", "ecr:GetDownloadUrlForLayer", "ecr:BatchGetImage");
 
-    if (identity) {
-      identity.addToPolicy(new iam.PolicyStatement()
-        .addActions("ecr:GetAuthorizationToken", "logs:CreateLogStream", "logs:PutLogEvents")
-        .addAllResources());
-    }
+    iam.Grant.addToPrincipal({
+      grantee,
+      actions: ["ecr:GetAuthorizationToken"],
+      resourceArns: ['*'],
+      scope: this,
+    });
+
+    return ret;
   }
 
   /**
    * Grant the given identity permissions to pull and push images to this repository.
    */
-  public grantPullPush(identity?: iam.IPrincipal) {
-      this.grantPull(identity);
-      this.grant(identity,
-        "ecr:PutImage",
-        "ecr:InitiateLayerUpload",
-        "ecr:UploadLayerPart",
-        "ecr:CompleteLayerUpload");
+  public grantPullPush(grantee: iam.IGrantable) {
+    this.grantPull(grantee);
+    return this.grant(grantee,
+      "ecr:PutImage",
+      "ecr:InitiateLayerUpload",
+      "ecr:UploadLayerPart",
+      "ecr:CompleteLayerUpload");
   }
 }
 
@@ -254,14 +234,14 @@ class ImportedRepository extends RepositoryBase {
   public readonly repositoryName: string;
   public readonly repositoryArn: string;
 
-  constructor(scope: cdk.Construct, id: string, private readonly props: RepositoryImportProps) {
+  constructor(scope: Construct, id: string, private readonly props: RepositoryImportProps) {
     super(scope, id);
 
     if (props.repositoryArn) {
       this.repositoryArn = props.repositoryArn;
     } else {
       if (!props.repositoryName) {
-        throw new Error('If "repositoruyArn" is not specified, you must specify "repositoryName", ' +
+        throw new Error('If "repositoryArn" is not specified, you must specify "repositoryName", ' +
           'which also implies that the repository resides in the same region/account as this stack');
       }
 
@@ -274,7 +254,7 @@ class ImportedRepository extends RepositoryBase {
       // if repositoryArn is a token, the repository name is also required. this is because
       // repository names can include "/" (e.g. foo/bar/myrepo) and it is impossible to
       // parse the name from an ARN using CloudFormation's split/select.
-      if (cdk.unresolved(this.repositoryArn)) {
+      if (Token.unresolved(this.repositoryArn)) {
         throw new Error('repositoryArn is a late-bound value, and therefore repositoryName is required');
       }
 

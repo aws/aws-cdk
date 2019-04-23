@@ -3,11 +3,11 @@ import { Policy } from './policy';
 
 const MAX_POLICY_NAME_LEN = 128;
 
-export function undefinedIfEmpty<T>(f: () => T[]): Token {
+export function undefinedIfEmpty(f: () => string[]): string[] {
   return new Token(() => {
     const array = f();
     return (array && array.length > 0) ? array : undefined;
-  });
+  }).toList();
 }
 
 /**
@@ -43,4 +43,22 @@ export class AttachedPolicies {
 
     this.policies.push(policy);
   }
+}
+
+/**
+ * Merge two dictionaries that represent IAM principals
+ */
+export function mergePrincipal(target: { [key: string]: string[] }, source: { [key: string]: string[] }) {
+  for (const key of Object.keys(source)) {
+    target[key] = target[key] || [];
+
+    const value = source[key];
+    if (!Array.isArray(value)) {
+      throw new Error(`Principal value must be an array (it will be normalized later): ${value}`);
+    }
+
+    target[key].push(...value);
+  }
+
+  return target;
 }

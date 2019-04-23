@@ -1,15 +1,12 @@
-// import { validateArtifactBounds, validateSourceAction } from '../lib/validation';
 import { expect, haveResourceLike } from '@aws-cdk/assert';
-import codebuild = require('@aws-cdk/aws-codebuild');
-import codecommit = require('@aws-cdk/aws-codecommit');
-import actions = require('@aws-cdk/aws-codepipeline-api');
 import cdk = require('@aws-cdk/cdk');
 import { Test } from 'nodeunit';
 import codepipeline = require('../lib');
+import validations = require('../lib/validation');
+import { FakeBuildAction } from './fake-build-action';
+import { FakeSourceAction } from './fake-source-action';
 
 // tslint:disable:object-literal-key-quotes
-
-class TestAction extends actions.Action {}
 
 export = {
   'artifact bounds validation': {
@@ -38,28 +35,123 @@ export = {
   'action type validation': {
 
     'must be source and is source'(test: Test) {
-      const result = actions.validateSourceAction(true, actions.ActionCategory.Source, 'test action', 'test stage');
+      const result = validations.validateSourceAction(true, codepipeline.ActionCategory.Source, 'test action', 'test stage');
       test.deepEqual(result.length, 0);
       test.done();
     },
 
     'must be source and is not source'(test: Test) {
-      const result = actions.validateSourceAction(true, actions.ActionCategory.Deploy, 'test action', 'test stage');
+      const result = validations.validateSourceAction(true, codepipeline.ActionCategory.Deploy, 'test action', 'test stage');
       test.deepEqual(result.length, 1);
       test.ok(result[0].match(/may only contain Source actions/), 'the validation should have failed');
       test.done();
     },
 
     'cannot be source and is source'(test: Test) {
-      const result = actions.validateSourceAction(false, actions.ActionCategory.Source, 'test action', 'test stage');
+      const result = validations.validateSourceAction(false, codepipeline.ActionCategory.Source, 'test action', 'test stage');
       test.deepEqual(result.length, 1);
       test.ok(result[0].match(/may only occur in first stage/), 'the validation should have failed');
       test.done();
     },
 
     'cannot be source and is not source'(test: Test) {
-      const result = actions.validateSourceAction(false, actions.ActionCategory.Deploy, 'test action', 'test stage');
+      const result = validations.validateSourceAction(false, codepipeline.ActionCategory.Deploy, 'test action', 'test stage');
       test.deepEqual(result.length, 0);
+      test.done();
+    },
+  },
+
+  'action Artifacts validation': {
+    'validates that input Artifacts are within bounds'(test: Test) {
+      const stack = new cdk.Stack();
+      const sourceOutput = new codepipeline.Artifact();
+      const extraOutput1 = new codepipeline.Artifact('A1');
+      const extraOutput2 = new codepipeline.Artifact('A2');
+      const extraOutput3 = new codepipeline.Artifact('A3');
+
+      new codepipeline.Pipeline(stack, 'Pipeline', {
+        stages: [
+          {
+            name: 'Source',
+            actions: [
+              new FakeSourceAction({
+                actionName: 'Source',
+                output: sourceOutput,
+                extraOutputs: [
+                  extraOutput1,
+                  extraOutput2,
+                  extraOutput3,
+                ],
+              }),
+            ],
+          },
+          {
+            name: 'Build',
+            actions: [
+              new FakeBuildAction({
+                actionName: 'Build',
+                input: sourceOutput,
+                extraInputs: [
+                  extraOutput1,
+                  extraOutput2,
+                  extraOutput3,
+                ],
+              }),
+            ],
+          },
+        ],
+      });
+
+      test.throws(() => {
+        expect(stack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
+        }));
+      }, /Build\/Fake cannot have more than 3 input artifacts/);
+
+      test.done();
+    },
+
+    'validates that output Artifacts are within bounds'(test: Test) {
+      const stack = new cdk.Stack();
+      const sourceOutput = new codepipeline.Artifact();
+      const extraOutput1 = new codepipeline.Artifact('A1');
+      const extraOutput2 = new codepipeline.Artifact('A2');
+      const extraOutput3 = new codepipeline.Artifact('A3');
+      const extraOutput4 = new codepipeline.Artifact('A4');
+
+      new codepipeline.Pipeline(stack, 'Pipeline', {
+        stages: [
+          {
+            name: 'Source',
+            actions: [
+              new FakeSourceAction({
+                actionName: 'Source',
+                output: sourceOutput,
+                extraOutputs: [
+                  extraOutput1,
+                  extraOutput2,
+                  extraOutput3,
+                  extraOutput4,
+                ],
+              }),
+            ],
+          },
+          {
+            name: 'Build',
+            actions: [
+              new FakeBuildAction({
+                actionName: 'Build',
+                input: sourceOutput,
+              }),
+            ],
+          },
+        ],
+      });
+
+      test.throws(() => {
+        expect(stack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
+        }));
+      }, /Source\/Fake cannot have more than 4 output artifacts/);
+
       test.done();
     },
   },
@@ -68,15 +160,26 @@ export = {
     const stack = new cdk.Stack();
     const pipeline = new codepipeline.Pipeline(stack, 'pipeline');
 
-    const repo = new codecommit.Repository(stack, 'Repo', {
-      repositoryName: 'Repo',
+    const sourceOutput = new codepipeline.Artifact();
+    const sourceAction = new FakeSourceAction({
+      actionName: 'CodeCommit',
+      output: sourceOutput,
     });
-    const sourceStage = pipeline.addStage('Source');
-    repo.addToPipeline(sourceStage, 'CodeCommit');
+    pipeline.addStage({
+      name: 'Source',
+      actions: [sourceAction],
+    });
 
-    const project = new codebuild.PipelineProject(stack, 'Project');
-    const buildStage = pipeline.addStage('Build');
-    project.addToPipeline(buildStage, 'CodeBuild');
+    pipeline.addStage({
+      name: 'Build',
+      actions: [
+        new FakeBuildAction({
+          actionName: 'CodeBuild',
+          input: sourceOutput,
+          output: new codepipeline.Artifact(),
+        }),
+      ],
+    });
 
     expect(stack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
       "Stages": [
@@ -88,7 +191,7 @@ export = {
               "InputArtifacts": [],
               "OutputArtifacts": [
                 {
-                  "Name": "Artifact_RepoCodeCommit7910F5F9",
+                  "Name": "Artifact_Source_CodeCommit",
                 },
               ],
             }
@@ -101,12 +204,12 @@ export = {
               "Name": "CodeBuild",
               "InputArtifacts": [
                 {
-                  "Name": "Artifact_RepoCodeCommit7910F5F9",
+                  "Name": "Artifact_Source_CodeCommit",
                 }
               ],
               "OutputArtifacts": [
                 {
-                  "Name": "Artifact_ProjectCodeBuildE34AD2EC",
+                  "Name": "Artifact_Build_CodeBuild",
                 },
               ],
             }
@@ -117,21 +220,95 @@ export = {
 
     test.done();
   },
+
+  'the same Action cannot be added to 2 different Stages'(test: Test) {
+    const stack = new cdk.Stack();
+
+    const sourceOutput = new codepipeline.Artifact();
+    const pipeline = new codepipeline.Pipeline(stack, 'Pipeline', {
+      stages: [
+        {
+          name: 'Source',
+          actions: [
+            new FakeSourceAction({
+              actionName: 'Source',
+              output: sourceOutput,
+            }),
+          ],
+        },
+      ],
+    });
+
+    const action = new FakeBuildAction({ actionName: 'FakeAction', input: sourceOutput });
+    const stage2 = {
+      name: 'Stage2',
+      actions: [action],
+    };
+    const stage3 = {
+      name: 'Stage3',
+      actions: [action],
+    };
+
+    pipeline.addStage(stage2); // fine
+    test.throws(() => {
+      pipeline.addStage(stage3);
+    }, /FakeAction/);
+
+    test.done();
+  },
+
+  'input Artifacts': {
+    'can be added multiple times to an Action safely'(test: Test) {
+      const artifact = new codepipeline.Artifact('SomeArtifact');
+      const action = new FakeBuildAction({
+        actionName: 'CodeBuild',
+        input: artifact,
+        extraInputs: [artifact],
+      });
+
+      test.equal(action.inputs.length, 1);
+
+      test.done();
+    },
+
+    'can have duplicate names'(test: Test) {
+      const artifact1 = new codepipeline.Artifact('SomeArtifact');
+      const artifact2 = new codepipeline.Artifact('SomeArtifact');
+
+      test.doesNotThrow(() => {
+        new FakeBuildAction({
+          actionName: 'CodeBuild',
+          input: artifact1,
+          extraInputs: [artifact2],
+        });
+      });
+
+      test.done();
+    },
+  },
+
+  'output Artifacts': {
+    'accept multiple Artifacts with the same name safely'(test: Test) {
+      const action = new FakeSourceAction({
+        actionName: 'CodeBuild',
+        output: new codepipeline.Artifact('Artifact1'),
+        extraOutputs: [
+          new codepipeline.Artifact('Artifact1'),
+          new codepipeline.Artifact('Artifact1'),
+        ],
+      });
+
+      test.equal(action.outputs.length, 1);
+
+      test.done();
+    },
+  },
 };
 
 function boundsValidationResult(numberOfArtifacts: number, min: number, max: number): string[] {
-  const stack = new cdk.Stack();
-  const pipeline = new codepipeline.Pipeline(stack, 'pipeline');
-  const stage = new codepipeline.Stage(stack, 'stage', { pipeline });
-  const action = new TestAction(stack, 'TestAction', {
-    stage,
-    artifactBounds: actions.defaultBounds(),
-    category: actions.ActionCategory.Test,
-    provider: 'test provider'
-  });
-  const artifacts: actions.Artifact[] = [];
+  const artifacts: codepipeline.Artifact[] = [];
   for (let i = 0; i < numberOfArtifacts; i++) {
-    artifacts.push(new actions.Artifact(action, `TestArtifact${i}`));
+    artifacts.push(new codepipeline.Artifact(`TestArtifact${i}`));
   }
-  return actions.validateArtifactBounds('output', artifacts, min, max, 'testCategory', 'testProvider');
+  return validations.validateArtifactBounds('output', artifacts, min, max, 'testCategory', 'testProvider');
 }

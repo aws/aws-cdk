@@ -1,6 +1,6 @@
 import iam = require('@aws-cdk/aws-iam');
-import cdk = require('@aws-cdk/cdk');
-import { ContainerDefinition, ContainerDefinitionProps } from '../container-definition';
+import { Construct, Resource, Token } from '@aws-cdk/cdk';
+import { ContainerDefinition, ContainerDefinitionOptions } from '../container-definition';
 import { CfnTaskDefinition } from '../ecs.generated';
 import { isEc2Compatible, isFargateCompatible } from '../util';
 
@@ -13,7 +13,7 @@ export interface CommonTaskDefinitionProps {
    *
    * @default Automatically generated name
    */
-  family?: string;
+  readonly family?: string;
 
   /**
    * The IAM role assumed by the ECS agent.
@@ -23,19 +23,19 @@ export interface CommonTaskDefinitionProps {
    *
    * @default An execution role will be automatically created if you use ECR images in your task definition
    */
-  executionRole?: iam.Role;
+  readonly executionRole?: iam.IRole;
 
   /**
    * The IAM role assumable by your application code running inside the container
    *
    * @default A task role is automatically created for you
    */
-  taskRole?: iam.Role;
+  readonly taskRole?: iam.IRole;
 
   /**
    * See: https://docs.aws.amazon.com/AmazonECS/latest/developerguide//task_definition_parameters.html#volumes
    */
-  volumes?: Volume[];
+  readonly volumes?: Volume[];
 }
 
 /**
@@ -49,7 +49,7 @@ export interface TaskDefinitionProps extends CommonTaskDefinitionProps {
    *
    * @default NetworkMode.Bridge for EC2 tasks, AwsVpc for Fargate tasks.
    */
-  networkMode?: NetworkMode;
+  readonly networkMode?: NetworkMode;
 
   /**
    * An array of placement constraint objects to use for the task. You can
@@ -58,12 +58,12 @@ export interface TaskDefinitionProps extends CommonTaskDefinitionProps {
    *
    * Not supported in Fargate.
    */
-  placementConstraints?: PlacementConstraint[];
+  readonly placementConstraints?: PlacementConstraint[];
 
   /**
    * What launch types this task definition should be compatible with.
    */
-  compatibility: Compatibility;
+  readonly compatibility: Compatibility;
 
   /**
    * The number of cpu units used by the task.
@@ -74,7 +74,7 @@ export interface TaskDefinitionProps extends CommonTaskDefinitionProps {
    * 2048 (2 vCPU) - Available memory values: Between 4GB and 16GB in 1GB increments
    * 4096 (4 vCPU) - Available memory values: Between 8GB and 30GB in 1GB increments
    */
-  cpu?: string;
+  readonly cpu?: string;
 
   /**
    * The amount (in MiB) of memory used by the task.
@@ -92,13 +92,13 @@ export interface TaskDefinitionProps extends CommonTaskDefinitionProps {
    *
    * Between 8GB and 30GB in 1GB increments - Available cpu values: 4096 (4 vCPU)
    */
-  memoryMiB?: string;
+  readonly memoryMiB?: string;
 }
 
 /**
  * Base class for Ecs and Fargate task definitions
  */
-export class TaskDefinition extends cdk.Construct {
+export class TaskDefinition extends Resource {
   /**
    * The family name of this task definition
    */
@@ -112,7 +112,7 @@ export class TaskDefinition extends cdk.Construct {
   /**
    * Task role used by this task definition
    */
-  public readonly taskRole: iam.Role;
+  public readonly taskRole: iam.IRole;
 
   /**
    * Network mode used by this task definition
@@ -134,6 +134,13 @@ export class TaskDefinition extends cdk.Construct {
   public compatibility: Compatibility;
 
   /**
+   * Execution role for this task definition
+   *
+   * May not exist, will be created as needed.
+   */
+  public executionRole?: iam.IRole;
+
+  /**
    * All containers
    */
   protected readonly containers = new Array<ContainerDefinition>();
@@ -144,18 +151,11 @@ export class TaskDefinition extends cdk.Construct {
   private readonly volumes: Volume[] = [];
 
   /**
-   * Execution role for this task definition
-   *
-   * Will be created as needed.
-   */
-  private executionRole?: iam.Role;
-
-  /**
    * Placement constraints for task instances
    */
   private readonly placementConstraints = new Array<CfnTaskDefinition.TaskDefinitionPlacementConstraintProperty>();
 
-  constructor(scope: cdk.Construct, id: string, props: TaskDefinitionProps) {
+  constructor(scope: Construct, id: string, props: TaskDefinitionProps) {
     super(scope, id);
 
     this.family = props.family || this.node.uniqueId;
@@ -186,9 +186,9 @@ export class TaskDefinition extends cdk.Construct {
     });
 
     const taskDef = new CfnTaskDefinition(this, 'Resource', {
-      containerDefinitions: new cdk.Token(() => this.containers.map(x => x.renderContainerDefinition())),
-      volumes: new cdk.Token(() => this.volumes),
-      executionRoleArn: new cdk.Token(() => this.executionRole && this.executionRole.roleArn).toString(),
+      containerDefinitions: new Token(() => this.containers.map(x => x.renderContainerDefinition())),
+      volumes: new Token(() => this.volumes),
+      executionRoleArn: new Token(() => this.executionRole && this.executionRole.roleArn).toString(),
       family: this.family,
       taskRoleArn: this.taskRole.roleArn,
       requiresCompatibilities: [
@@ -196,7 +196,7 @@ export class TaskDefinition extends cdk.Construct {
         ...(isFargateCompatible(props.compatibility) ? ["FARGATE"] : []),
       ],
       networkMode: this.networkMode,
-      placementConstraints: !isFargateCompatible(this.compatibility) ? new cdk.Token(this.placementConstraints) : undefined,
+      placementConstraints: !isFargateCompatible(this.compatibility) ? new Token(this.placementConstraints) : undefined,
       cpu: props.cpu,
       memory: props.memoryMiB,
     });
@@ -225,14 +225,19 @@ export class TaskDefinition extends cdk.Construct {
   /**
    * Create a new container to this task definition
    */
-  public addContainer(id: string, props: ContainerDefinitionProps) {
-    const container = new ContainerDefinition(this, id, this, props);
+  public addContainer(id: string, props: ContainerDefinitionOptions) {
+    return new ContainerDefinition(this, id, { taskDefinition: this, ...props });
+  }
+
+  /**
+   * Links a container to this task definition.
+   * @internal
+   */
+  public _linkContainer(container: ContainerDefinition) {
     this.containers.push(container);
     if (this.defaultContainer === undefined && container.essential) {
       this.defaultContainer = container;
     }
-
-    return container;
   }
 
   /**
@@ -340,17 +345,17 @@ export interface Volume {
   /**
    * Path on the host
    */
-  host?: Host;
+  readonly host?: Host;
 
   /**
    * A name for the volume
    */
-  name: string;
+  readonly name: string;
 
   /**
    * Specifies this configuration when using Docker volumes
    */
-  dockerVolumeConfiguration?: DockerVolumeConfiguration;
+  readonly dockerVolumeConfiguration?: DockerVolumeConfiguration;
 }
 
 /**
@@ -360,7 +365,7 @@ export interface Host {
   /**
    * Source path on the host
    */
-  sourcePath?: string;
+  readonly sourcePath?: string;
 }
 
 /**
@@ -372,27 +377,27 @@ export interface DockerVolumeConfiguration {
    *
    * @default false
    */
-  autoprovision?: boolean;
+  readonly autoprovision?: boolean;
   /**
    * The Docker volume driver to use
    */
-  driver: string;
+  readonly driver: string;
   /**
    * A map of Docker driver specific options passed through
    *
    * @default No options
    */
-  driverOpts?: string[];
+  readonly driverOpts?: string[];
   /**
    * Custom metadata to add to your Docker volume
    *
    * @default No labels
    */
-  labels?: string[];
+  readonly labels?: string[];
   /**
    * The scope for the Docker volume which determines it's lifecycle
    */
-  scope: Scope;
+  readonly scope: Scope;
 }
 
 export enum Scope {
@@ -414,12 +419,12 @@ export interface PlacementConstraint {
   /**
    * The type of constraint
    */
-  type: PlacementConstraintType;
+  readonly type: PlacementConstraintType;
 
   /**
    * Additional information for the constraint
    */
-  expression?: string;
+  readonly expression?: string;
 }
 
 /**

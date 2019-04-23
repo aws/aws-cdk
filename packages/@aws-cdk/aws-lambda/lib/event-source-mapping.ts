@@ -1,5 +1,6 @@
 import cdk = require('@aws-cdk/cdk');
-import { IFunction } from './lambda-ref';
+import { Resource } from '@aws-cdk/cdk';
+import { IFunction } from './function-base';
 import { CfnEventSourceMapping } from './lambda.generated';
 
 export interface EventSourceMappingProps {
@@ -7,12 +8,12 @@ export interface EventSourceMappingProps {
    * The Amazon Resource Name (ARN) of the event source. Any record added to
    * this stream can invoke the Lambda function.
    */
-  eventSourceArn: string;
+  readonly eventSourceArn: string;
 
   /**
    * The target AWS Lambda function.
    */
-  target: IFunction;
+  readonly target: IFunction;
 
   /**
    * The largest number of records that AWS Lambda will retrieve from your event
@@ -24,14 +25,14 @@ export interface EventSourceMappingProps {
    * @default The default for Amazon Kinesis and Amazon DynamoDB is 100 records.
    * Both the default and maximum for Amazon SQS are 10 messages.
    */
-  batchSize?: number;
+  readonly batchSize?: number;
 
   /**
    * Set to false to disable the event source upon creation.
    *
    * @default true
    */
-  enabled?: boolean;
+  readonly enabled?: boolean;
 
   /**
    * The position in the DynamoDB or Kinesis stream where AWS Lambda should
@@ -39,7 +40,7 @@ export interface EventSourceMappingProps {
    *
    * @see https://docs.aws.amazon.com/kinesis/latest/APIReference/API_GetShardIterator.html#Kinesis-GetShardIterator-request-ShardIteratorType
    */
-  startingPosition?: StartingPosition
+  readonly startingPosition?: StartingPosition
 }
 
 /**
@@ -54,7 +55,7 @@ export interface EventSourceMappingProps {
  * The `SqsEventSource` class will automatically create the mapping, and will also
  * modify the Lambda's execution role so it can consume messages from the queue.
  */
-export class EventSourceMapping extends cdk.Construct {
+export class EventSourceMapping extends Resource {
   constructor(scope: cdk.Construct, id: string, props: EventSourceMappingProps) {
     super(scope, id);
 

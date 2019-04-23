@@ -3,6 +3,43 @@ import { Chain } from '../chain';
 import { IChainable, INextable } from '../types';
 import { State, StateType } from './state';
 
+export class WaitDuration {
+    /**
+     * Wait a fixed number of seconds
+     */
+    public static seconds(duration: number) { return new WaitDuration({ Seconds: duration }); }
+
+    /**
+     * Wait until the given ISO8601 timestamp
+     *
+     * @example 2016-03-14T01:59:00Z
+     */
+    public static timestamp(timestamp: string) { return new WaitDuration({ Timestamp: timestamp }); }
+
+    /**
+     * Wait for a number of seconds stored in the state object.
+     *
+     * @example $.waitSeconds
+     */
+    public static secondsPath(path: string) { return new WaitDuration({ SecondsPath: path }); }
+
+    /**
+     * Wait until a timestamp found in the state object.
+     *
+     * @example $.waitTimestamp
+     */
+    public static timestampPath(path: string) { return new WaitDuration({ TimestampPath: path }); }
+
+    private constructor(private readonly json: any) { }
+
+    /**
+     * @internal
+     */
+    public get _json() {
+        return this.json;
+    }
+}
+
 /**
  * Properties for defining a Wait state
  */
@@ -12,41 +49,12 @@ export interface WaitProps {
      *
      * @default No comment
      */
-    comment?: string;
+    readonly comment?: string;
 
     /**
-     * Wait a fixed number of seconds
-     *
-     * Exactly one of seconds, secondsPath, timestamp, timestampPath must be supplied.
+     * Wait duration.
      */
-    seconds?: number;
-
-    /**
-     * Wait until the given ISO8601 timestamp
-     *
-     * Exactly one of seconds, secondsPath, timestamp, timestampPath must be supplied.
-     *
-     * @example 2016-03-14T01:59:00Z
-     */
-    timestamp?: string;
-
-    /**
-     * Wait for a number of seconds stored in the state object.
-     *
-     * Exactly one of seconds, secondsPath, timestamp, timestampPath must be supplied.
-     *
-     * @example $.waitSeconds
-     */
-    secondsPath?: string;
-
-    /**
-     * Wait until a timestamp found in the state object.
-     *
-     * Exactly one of seconds, secondsPath, timestamp, timestampPath must be supplied.
-     *
-     * @example $.waitTimestamp
-     */
-    timestampPath?: string;
+    readonly duration: WaitDuration;
 }
 
 /**
@@ -57,19 +65,12 @@ export interface WaitProps {
 export class Wait extends State implements INextable {
     public readonly endStates: INextable[];
 
-    private readonly seconds?: number;
-    private readonly timestamp?: string;
-    private readonly secondsPath?: string;
-    private readonly timestampPath?: string;
+    private readonly duration: WaitDuration;
 
     constructor(scope: cdk.Construct, id: string, props: WaitProps) {
         super(scope, id, props);
 
-        this.seconds = props.seconds;
-        this.timestamp = props.timestamp;
-        this.secondsPath = props.secondsPath;
-        this.timestampPath = props.timestampPath;
-
+        this.duration = props.duration;
         this.endStates = [this];
     }
 
@@ -88,10 +89,7 @@ export class Wait extends State implements INextable {
         return {
             Type: StateType.Wait,
             Comment: this.comment,
-            Seconds: this.seconds,
-            Timestamp: this.timestamp,
-            SecondsPath: this.secondsPath,
-            TimestampPath: this.timestampPath,
+            ...this.duration._json,
             ...this.renderNextEnd(),
         };
     }

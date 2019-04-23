@@ -11,28 +11,28 @@ export interface MetricWidgetProps {
   /**
    * Title for the graph
    */
-  title?: string;
+  readonly title?: string;
 
   /**
    * The region the metrics of this graph should be taken from
    *
    * @default Current region
    */
-  region?: string;
+  readonly region?: string;
 
   /**
    * Width of the widget, in a grid of 24 units wide
    *
    * @default 6
    */
-  width?: number;
+  readonly width?: number;
 
   /**
    * Height of the widget
    *
    * @default Depends on the type of widget
    */
-  height?: number;
+  readonly height?: number;
 }
 
 /**
@@ -42,14 +42,14 @@ export interface AlarmWidgetProps extends MetricWidgetProps {
   /**
    * The alarm to show
    */
-  alarm: Alarm;
+  readonly alarm: Alarm;
 
   /**
    * Range of left Y axis
    *
    * @default 0..automatic
    */
-  leftAxisRange?: YAxisRange;
+  readonly leftAxisRange?: YAxisRange;
 }
 
 /**
@@ -73,7 +73,7 @@ export class AlarmWidget extends ConcreteWidget {
       properties: {
         view: 'timeSeries',
         title: this.props.title,
-        region: this.props.region || new cdk.Aws().region,
+        region: this.props.region || cdk.Aws.region,
         annotations: {
           alarms: [this.props.alarm.alarmArn]
         },
@@ -92,41 +92,41 @@ export interface GraphWidgetProps extends MetricWidgetProps {
   /**
    * Metrics to display on left Y axis
    */
-  left?: Metric[];
+  readonly left?: Metric[];
 
   /**
    * Metrics to display on right Y axis
    */
-  right?: Metric[];
+  readonly right?: Metric[];
 
   /**
    * Annotations for the left Y axis
    */
-  leftAnnotations?: HorizontalAnnotation[];
+  readonly leftAnnotations?: HorizontalAnnotation[];
 
   /**
    * Annotations for the right Y axis
    */
-  rightAnnotations?: HorizontalAnnotation[];
+  readonly rightAnnotations?: HorizontalAnnotation[];
 
   /**
    * Whether the graph should be shown as stacked lines
    */
-  stacked?: boolean;
+  readonly stacked?: boolean;
 
   /**
    * Range of left Y axis
    *
    * @default 0..automatic
    */
-  leftAxisRange?: YAxisRange;
+  readonly leftAxisRange?: YAxisRange;
 
   /**
    * Range of right Y axis
    *
    * @default 0..automatic
    */
-  rightAxisRange?: YAxisRange;
+  readonly rightAxisRange?: YAxisRange;
 }
 
 /**
@@ -150,7 +150,7 @@ export class GraphWidget extends ConcreteWidget {
       properties: {
         view: 'timeSeries',
         title: this.props.title,
-        region: this.props.region || new cdk.Aws().region,
+        region: this.props.region || cdk.Aws.region,
         metrics: (this.props.left || []).map(m => metricJson(m, 'left')).concat(
              (this.props.right || []).map(m => metricJson(m, 'right'))),
         annotations: {
@@ -173,7 +173,7 @@ export interface SingleValueWidgetProps extends MetricWidgetProps {
   /**
    * Metrics to display
    */
-  metrics: Metric[];
+  readonly metrics: Metric[];
 }
 
 /**
@@ -197,7 +197,7 @@ export class SingleValueWidget extends ConcreteWidget {
       properties: {
         view: 'singleValue',
         title: this.props.title,
-        region: this.props.region || new cdk.Aws().region,
+        region: this.props.region || cdk.Aws.region,
         metrics: this.props.metrics.map(m => metricJson(m, 'left'))
       }
     }];
@@ -213,14 +213,14 @@ export interface YAxisRange {
    *
    * @default Automatic
    */
-  min?: number;
+  readonly min?: number;
 
   /**
    * The maximum value
    *
    * @default Automatic
    */
-  max?: number;
+  readonly max?: number;
 }
 
 /**
@@ -230,35 +230,35 @@ export interface HorizontalAnnotation {
   /**
    * The value of the annotation
    */
-  value: number;
+  readonly value: number;
 
   /**
    * Label for the annotation
    *
    * @default No label
    */
-  label?: string;
+  readonly label?: string;
 
   /**
    * Hex color code to be used for the annotation
    *
    * @default Automatic color
    */
-  color?: string;
+  readonly color?: string;
 
   /**
    * Add shading above or below the annotation
    *
    * @default No shading
    */
-  fill?: Shading;
+  readonly fill?: Shading;
 
   /**
    * Whether the annotation is visible
    *
    * @default true
    */
-  visible?: boolean;
+  readonly visible?: boolean;
 }
 
 export enum Shading {

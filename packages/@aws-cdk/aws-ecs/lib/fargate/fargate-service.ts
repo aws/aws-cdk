@@ -2,7 +2,6 @@ import ec2 = require('@aws-cdk/aws-ec2');
 import cdk = require('@aws-cdk/cdk');
 import { BaseService, BaseServiceProps } from '../base/base-service';
 import { TaskDefinition } from '../base/task-definition';
-import { ICluster } from '../cluster';
 import { isFargateCompatible } from '../util';
 
 /**
@@ -10,35 +9,30 @@ import { isFargateCompatible } from '../util';
  */
 export interface FargateServiceProps extends BaseServiceProps {
   /**
-   * Cluster where service will be deployed
-   */
-  cluster: ICluster; // should be required? do we assume 'default' exists?
-
-  /**
    * Task Definition used for running tasks in the service
    */
-  taskDefinition: TaskDefinition;
+  readonly taskDefinition: TaskDefinition;
 
   /**
    * Assign public IP addresses to each task
    *
    * @default Use subnet default
    */
-  assignPublicIp?: boolean;
+  readonly assignPublicIp?: boolean;
 
   /**
    * In what subnets to place the task's ENIs
    *
    * @default Private subnets
    */
-  vpcPlacement?: ec2.VpcPlacementStrategy;
+  readonly vpcSubnets?: ec2.SubnetSelection;
 
   /**
    * Existing security group to use for the tasks
    *
    * @default A new security group is created
    */
-  securityGroup?: ec2.ISecurityGroup;
+  readonly securityGroup?: ec2.ISecurityGroup;
 
   /**
    * Fargate platform version to run this service on
@@ -48,7 +42,7 @@ export interface FargateServiceProps extends BaseServiceProps {
    *
    * @default Latest
    */
-  platformVersion?: FargatePlatformVersion;
+  readonly platformVersion?: FargatePlatformVersion;
 }
 
 /**
@@ -70,7 +64,7 @@ export class FargateService extends BaseService {
       platformVersion: props.platformVersion,
     }, props.cluster.clusterName, props.taskDefinition);
 
-    this.configureAwsVpcNetworking(props.cluster.vpc, props.assignPublicIp, props.vpcPlacement, props.securityGroup);
+    this.configureAwsVpcNetworking(props.cluster.vpc, props.assignPublicIp, props.vpcSubnets, props.securityGroup);
 
     if (!props.taskDefinition.defaultContainer) {
       throw new Error('A TaskDefinition must have at least one essential container');
@@ -90,7 +84,14 @@ export enum FargatePlatformVersion {
   Latest = 'LATEST',
 
   /**
-   * Version 1.2
+   * Version 1.3.0
+   *
+   * Supports secrets, task recycling.
+   */
+  Version1_3 = '1.3.0',
+
+  /**
+   * Version 1.2.0
    *
    * Supports private registries.
    */

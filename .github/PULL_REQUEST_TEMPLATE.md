@@ -4,14 +4,15 @@
 ### Pull Request Checklist
 
 * [ ] Testing
-  - Unit test added
-  - __CLI change?:__ manually run [integration tests](https://github.com/awslabs/aws-cdk/blob/master/packages/aws-cdk/integ-tests/test.sh) and paste output as a PR comment
+  - Unit test added (prefer not to modify an existing test, otherwise, it's probably a breaking change)
+  - __CLI change?:__ coordinate update of integration tests with team
   - __cdk-init template change?:__ coordinated update of integration tests with team
 * [ ] Docs
   - __jsdocs__: All public APIs documented
   - __README__: README and/or documentation topic updated
+  - __Design__: For significant features, design document added to `design` folder
 * [ ] Title and Description
-  - __Change type__: title prefixed with **fix**, **feat** will appear in changelog
+  - __Change type__: title prefixed with **fix**, **feat** and module name in parens, which will appear in changelog
   - __Title__: use lower-case and doesn't end with a period
   - __Breaking?__: last paragraph: "BREAKING CHANGE: <describe what changed + link for details>"
   - __Issues__: Indicate issues fixed via: "**Fixes #xxx**" or "**Closes #xxx**"

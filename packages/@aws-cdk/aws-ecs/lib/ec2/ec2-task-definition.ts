@@ -12,7 +12,7 @@ export interface Ec2TaskDefinitionProps extends CommonTaskDefinitionProps {
    *
    * @default NetworkMode.Bridge for EC2 tasks, AwsVpc for Fargate tasks.
    */
-  networkMode?: NetworkMode;
+  readonly networkMode?: NetworkMode;
 
   /**
    * An array of placement constraint objects to use for the task. You can
@@ -21,7 +21,7 @@ export interface Ec2TaskDefinitionProps extends CommonTaskDefinitionProps {
    *
    * Not supported in Fargate.
    */
-  placementConstraints?: PlacementConstraint[];
+  readonly placementConstraints?: PlacementConstraint[];
 }
 
 /**

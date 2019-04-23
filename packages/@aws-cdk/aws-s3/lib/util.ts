@@ -9,7 +9,7 @@ export function parseBucketArn(construct: cdk.IConstruct, props: BucketImportPro
   }
 
   if (props.bucketName) {
-    return cdk.Stack.find(construct).formatArn({
+    return construct.node.stack.formatArn({
       // S3 Bucket names are globally unique in a partition,
       // and so their ARNs have empty region and account components
       region: '',
@@ -34,7 +34,7 @@ export function parseBucketName(construct: cdk.IConstruct, props: BucketImportPr
 
     const resolved = construct.node.resolve(props.bucketArn);
     if (typeof(resolved) === 'string') {
-      const components = cdk.Stack.find(construct).parseArn(resolved);
+      const components = construct.node.stack.parseArn(resolved);
       if (components.service !== 's3') {
         throw new Error('Invalid ARN. Expecting "s3" service:' + resolved);
       }

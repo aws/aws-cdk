@@ -13,14 +13,11 @@
     "MyLayer38944FA5": {
       "Type": "AWS::Lambda::LayerVersion",
       "Properties": {
-        "CompatibleRuntimes": [
-          "nodejs8.10"
-        ],
         "Content": {
-          "s3Bucket": {
+          "S3Bucket": {
             "Ref": "MyLayerCodeS3Bucket20DB8EB9"
           },
-          "s3Key": {
+          "S3Key": {
             "Fn::Join": [
               "",
               [
@@ -54,6 +51,9 @@
             ]
           }
         },
+        "CompatibleRuntimes": [
+          "nodejs8.10"
+        ],
         "Description": "A layer to test the L2 construct",
         "LicenseInfo": "Apache-2.0"
       }
@@ -79,7 +79,17 @@
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": {
-                "Service": "lambda.amazonaws.com"
+                "Service": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "lambda.",
+                      {
+                        "Ref": "AWS::URLSuffix"
+                      }
+                    ]
+                  ]
+                }
               }
             }
           ],

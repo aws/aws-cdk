@@ -53,7 +53,7 @@ export class AdoptedRepository extends ecr.RepositoryBase {
 
     const adopter = new cfn.CustomResource(this, 'Resource', {
       resourceType: 'Custom::ECRAdoptedRepository',
-      lambdaProvider: fn,
+      provider: cfn.CustomResourceProvider.lambda(fn),
       properties: {
         RepositoryName: props.repositoryName,
         PolicyDocument: this.policyDocument

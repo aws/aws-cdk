@@ -14,17 +14,17 @@ export interface MetricProps {
    *
    * @default No dimensions
    */
-  dimensions?: DimensionHash;
+  readonly dimensions?: DimensionHash;
 
   /**
    * Namespace of the metric.
    */
-  namespace: string;
+  readonly namespace: string;
 
   /**
    * Name of the metric.
    */
-  metricName: string;
+  readonly metricName: string;
 
   /**
    * The period over which the specified statistic is applied.
@@ -33,7 +33,7 @@ export interface MetricProps {
    *
    * @default 300
    */
-  periodSec?: number;
+  readonly periodSec?: number;
 
   /**
    * What function to use for aggregating.
@@ -49,22 +49,22 @@ export interface MetricProps {
    *
    * @default Average
    */
-  statistic?: string;
+  readonly statistic?: string;
 
   /**
    * Unit for the metric that is associated with the alarm
    */
-  unit?: Unit;
+  readonly unit?: Unit;
 
   /**
    * Label for this metric when added to a Graph in a Dashboard
    */
-  label?: string;
+  readonly label?: string;
 
   /**
    * Color for this metric when added to a Graph in a Dashboard
    */
-  color?: string;
+  readonly color?: string;
 }
 
 /**
@@ -85,14 +85,14 @@ export class Metric {
   /**
    * Grant permissions to the given identity to write metrics.
    *
-   * @param identity The IAM identity to give permissions to.
+   * @param grantee The IAM identity to give permissions to.
    */
-  public static grantPutMetricData(identity?: iam.IPrincipal) {
-    if (!identity) { return; }
-
-    identity.addToPolicy(new iam.PolicyStatement()
-      .addAllResources()
-      .addAction("cloudwatch:PutMetricData"));
+  public static grantPutMetricData(grantee: iam.IGrantable): iam.Grant {
+    return iam.Grant.addToPrincipal({
+      grantee,
+      actions: ['cloudwatch:PutMetricData'],
+      resourceArns: ['*']
+    });
   }
 
   public readonly dimensions?: DimensionHash;
@@ -148,7 +148,7 @@ export class Metric {
    * Combines both properties that may adjust the metric (aggregation) as well
    * as alarm properties.
    */
-  public newAlarm(scope: cdk.Construct, id: string, props: NewAlarmProps): Alarm {
+  public newAlarm(scope: cdk.Construct, id: string, props: MetricAlarmProps): Alarm {
     return new Alarm(scope, id, {
       metric: this.with({
         statistic: props.statistic,
@@ -157,6 +157,7 @@ export class Metric {
       alarmName: props.alarmName,
       alarmDescription: props.alarmDescription,
       comparisonOperator: props.comparisonOperator,
+      datapointsToAlarm: props.datapointsToAlarm,
       threshold: props.threshold,
       evaluationPeriods: props.evaluationPeriods,
       evaluateLowSampleCountPercentile: props.evaluateLowSampleCountPercentile,
@@ -188,12 +189,12 @@ export interface Dimension {
   /**
    * Name of the dimension
    */
-  name: string;
+  readonly name: string;
 
   /**
    * Value of the dimension
    */
-  value: any;
+  readonly value: any;
 }
 
 /**
@@ -249,7 +250,7 @@ export interface MetricCustomization {
    *
    * @default No dimensions
    */
-  dimensions?: DimensionHash;
+  readonly dimensions?: DimensionHash;
 
   /**
    * The period over which the specified statistic is applied.
@@ -258,7 +259,7 @@ export interface MetricCustomization {
    *
    * @default 300
    */
-  periodSec?: number;
+  readonly periodSec?: number;
 
   /**
    * What function to use for aggregating.
@@ -274,28 +275,28 @@ export interface MetricCustomization {
    *
    * @default Average
    */
-  statistic?: string;
+  readonly statistic?: string;
 
   /**
    * Unit for the metric that is associated with the alarm
    */
-  unit?: Unit;
+  readonly unit?: Unit;
 
   /**
    * Label for this metric when added to a Graph in a Dashboard
    */
-  label?: string;
+  readonly label?: string;
 
   /**
    * Color for this metric when added to a Graph in a Dashboard
    */
-  color?: string;
+  readonly color?: string;
 }
 
 /**
- * Properties to make an alarm from a metric
+ * Properties needed to make an alarm from a metric
  */
-export interface NewAlarmProps {
+export interface MetricAlarmProps {
   /**
    * The period over which the specified statistic is applied.
    *
@@ -303,7 +304,7 @@ export interface NewAlarmProps {
    *
    * @default 300
    */
-  periodSec?: number;
+  readonly periodSec?: number;
 
   /**
    * What function to use for aggregating.
@@ -319,59 +320,70 @@ export interface NewAlarmProps {
    *
    * @default Average
    */
-  statistic?: string;
+  readonly statistic?: string;
 
   /**
    * Name of the alarm
    *
    * @default Automatically generated name
    */
-  alarmName?: string;
+  readonly alarmName?: string;
 
   /**
    * Description for the alarm
    *
    * @default No description
    */
-  alarmDescription?: string;
+  readonly alarmDescription?: string;
 
   /**
    * Comparison to use to check if metric is breaching
    *
    * @default GreaterThanOrEqualToThreshold
    */
-  comparisonOperator?: ComparisonOperator;
+  readonly comparisonOperator?: ComparisonOperator;
 
   /**
    * The value against which the specified statistic is compared.
    */
-  threshold: number;
+  readonly threshold: number;
 
   /**
    * The number of periods over which data is compared to the specified threshold.
    */
-  evaluationPeriods: number;
+  readonly evaluationPeriods: number;
 
   /**
    * Specifies whether to evaluate the data and potentially change the alarm state if there are too few data points to be statistically significant.
    *
    * Used only for alarms that are based on percentiles.
    */
-  evaluateLowSampleCountPercentile?: string;
+  readonly evaluateLowSampleCountPercentile?: string;
 
   /**
    * Sets how this alarm is to handle missing data points.
    *
    * @default TreatMissingData.Missing
    */
-  treatMissingData?: TreatMissingData;
+  readonly treatMissingData?: TreatMissingData;
 
   /**
    * Whether the actions for this alarm are enabled
    *
    * @default true
    */
-  actionsEnabled?: boolean;
+  readonly actionsEnabled?: boolean;
+
+  /**
+   * The number of datapoints that must be breaching to trigger the alarm. This is used only if you are setting an "M
+   * out of N" alarm. In that case, this value is the M. For more information, see Evaluating an Alarm in the Amazon
+   * CloudWatch User Guide.
+   *
+   * @default ``evaluationPeriods``
+   *
+   * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/AlarmThatSendsEmail.html#alarm-evaluation
+   */
+  readonly datapointsToAlarm?: number;
 }
 
 function ifUndefined<T>(x: T | undefined, def: T | undefined): T | undefined {

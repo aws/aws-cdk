@@ -83,7 +83,7 @@ import autoscaling = require('@aws-cdk/aws-autoscaling');
 
 // Create the load balancer in a VPC. 'internetFacing' is 'false'
 // by default, which creates an internal load balancer.
-const lb = new elbv2.NetworkLoadBalancer(stack, 'LB', {
+const lb = new elbv2.NetworkLoadBalancer(this, 'LB', {
     vpc,
     internetFacing: true
 });

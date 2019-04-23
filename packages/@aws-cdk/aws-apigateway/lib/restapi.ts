@@ -1,20 +1,20 @@
 import iam = require('@aws-cdk/aws-iam');
-import cdk = require('@aws-cdk/cdk');
+import { CfnOutput, Construct, IResource, Resource } from '@aws-cdk/cdk';
 import { CfnAccount, CfnRestApi } from './apigateway.generated';
 import { Deployment } from './deployment';
 import { Integration } from './integration';
 import { Method, MethodOptions } from './method';
-import { IRestApiResource, ProxyResource, Resource, ResourceOptions } from './resource';
+import { IRestApiResource, ResourceBase, ResourceOptions } from './resource';
 import { Stage, StageOptions } from './stage';
 
 export interface RestApiImportProps {
   /**
    * The REST API ID of an existing REST API resource.
    */
-  restApiId: string;
+  readonly restApiId: string;
 }
 
-export interface IRestApi extends cdk.IConstruct {
+export interface IRestApi extends IResource {
   /**
    * The ID of this API Gateway RestApi.
    */
@@ -49,7 +49,7 @@ export interface RestApiProps extends ResourceOptions {
    *
    * @default true
    */
-  deploy?: boolean;
+  readonly deploy?: boolean;
 
   /**
    * Options for the API Gateway stage that will always point to the latest
@@ -58,7 +58,7 @@ export interface RestApiProps extends ResourceOptions {
    *
    * @default defaults based on defaults of `StageOptions`
    */
-  deployOptions?: StageOptions;
+  readonly deployOptions?: StageOptions;
 
   /**
    * Retains old deployment resources when the API changes. This allows
@@ -67,38 +67,38 @@ export interface RestApiProps extends ResourceOptions {
    *
    * @default false
    */
-  retainDeployments?: boolean;
+  readonly retainDeployments?: boolean;
 
   /**
    * A name for the API Gateway RestApi resource.
    *
    * @default construct-id defaults to the id of the RestApi construct
    */
-  restApiName?: string;
+  readonly restApiName?: string;
 
   /**
    * Custom header parameters for the request.
    * @see https://docs.aws.amazon.com/cli/latest/reference/apigateway/import-rest-api.html
    */
-  parameters?: { [key: string]: string };
+  readonly parameters?: { [key: string]: string };
 
   /**
    * A policy document that contains the permissions for this RestApi
    */
-  policy?: iam.PolicyDocument;
+  readonly policy?: iam.PolicyDocument;
 
   /**
    * A description of the purpose of this API Gateway RestApi resource.
    * @default No description
    */
-  description?: string;
+  readonly description?: string;
 
   /**
    * The source of the API key for metering requests according to a usage
    * plan.
    * @default undefined metering is disabled
    */
-  apiKeySourceType?: ApiKeySourceType;
+  readonly apiKeySourceType?: ApiKeySourceType;
 
   /**
    * The list of binary media mine-types that are supported by the RestApi
@@ -106,13 +106,13 @@ export interface RestApiProps extends ResourceOptions {
    *
    * @default By default, RestApi supports only UTF-8-encoded text payloads
    */
-  binaryMediaTypes?: string[];
+  readonly binaryMediaTypes?: string[];
 
   /**
    * A list of the endpoint types of the API. Use this property when creating
    * an API.
    */
-  endpointTypes?: EndpointType[];
+  readonly endpointTypes?: EndpointType[];
 
   /**
    * Indicates whether to roll back the resource if a warning occurs while API
@@ -120,7 +120,7 @@ export interface RestApiProps extends ResourceOptions {
    *
    * @default false
    */
-  failOnWarnings?: boolean;
+  readonly failOnWarnings?: boolean;
 
   /**
    * A nullable integer that is used to enable compression (with non-negative
@@ -132,18 +132,18 @@ export interface RestApiProps extends ResourceOptions {
    *
    * @default undefined compression is disabled
    */
-  minimumCompressionSize?: number;
+  readonly minimumCompressionSize?: number;
 
   /**
    * The ID of the API Gateway RestApi resource that you want to clone.
    */
-  cloneFrom?: IRestApi;
+  readonly cloneFrom?: IRestApi;
 
   /**
    * Automatically configure an AWS CloudWatch role for API Gateway.
    * @default true
    */
-  cloudWatchRole?: boolean;
+  readonly cloudWatchRole?: boolean;
 }
 
 /**
@@ -154,14 +154,14 @@ export interface RestApiProps extends ResourceOptions {
  * By default, the API will automatically be deployed and accessible from a
  * public endpoint.
  */
-export class RestApi extends cdk.Construct implements cdk.IDependable, IRestApi {
+export class RestApi extends Resource implements IRestApi {
   /**
    * Imports an existing REST API resource.
-   * @param parent Parent construct
+   * @param scope Parent construct
    * @param id Construct ID
    * @param props Imported rest API properties
    */
-  public static import(scope: cdk.Construct, id: string, props: RestApiImportProps): IRestApi {
+  public static import(scope: Construct, id: string, props: RestApiImportProps): IRestApi {
     return new ImportedRestApi(scope, id, props);
   }
 
@@ -176,11 +176,6 @@ export class RestApi extends cdk.Construct implements cdk.IDependable, IRestApi 
    * This will be undefined if `deploy` is false.
    */
   public latestDeployment?: Deployment;
-
-  /**
-   * Allows taking a dependency on this construct.
-   */
-  public readonly dependencyElements = new Array<cdk.IDependable>();
 
   /**
    * API Gateway stage that points to the latest deployment (if defined).
@@ -201,7 +196,7 @@ export class RestApi extends cdk.Construct implements cdk.IDependable, IRestApi 
 
   private readonly methods = new Array<Method>();
 
-  constructor(scope: cdk.Construct, id: string, props: RestApiProps = { }) {
+  constructor(scope: Construct, id: string, props: RestApiProps = { }) {
     super(scope, id);
 
     const resource = new CfnRestApi(this, 'Resource', {
@@ -226,32 +221,7 @@ export class RestApi extends cdk.Construct implements cdk.IDependable, IRestApi 
       this.configureCloudWatchRole(resource);
     }
 
-    this.dependencyElements.push(resource);
-    if (this.latestDeployment) {
-      this.dependencyElements.push(this.latestDeployment);
-    }
-    if (this.deploymentStage) {
-      this.dependencyElements.push(this.deploymentStage);
-    }
-
-    // configure the "root" resource
-    this.root = {
-      node: this.node,
-      addResource: (pathPart: string, options?: ResourceOptions) => {
-        return new Resource(this, pathPart, { parent: this.root, pathPart, ...options });
-      },
-      addMethod: (httpMethod: string, integration?: Integration, options?: MethodOptions) => {
-        return new Method(this, httpMethod, { resource: this.root, httpMethod, integration, options });
-      },
-      addProxy: (options?: ResourceOptions) => {
-        return new ProxyResource(this, '{proxy+}', { parent: this.root, ...options });
-      },
-      defaultIntegration: props.defaultIntegration,
-      defaultMethodOptions: props.defaultMethodOptions,
-      resourceApi: this,
-      resourceId: resource.restApiRootResourceId,
-      resourcePath: '/'
-    };
+    this.root = new RootResource(this, props, resource.restApiRootResourceId);
   }
 
   /**
@@ -260,7 +230,7 @@ export class RestApi extends cdk.Construct implements cdk.IDependable, IRestApi 
    */
   public export(): RestApiImportProps {
     return {
-      restApiId: new cdk.Output(this, 'RestApiId', { value: this.restApiId }).makeImportValue().toString()
+      restApiId: new CfnOutput(this, 'RestApiId', { value: this.restApiId }).makeImportValue().toString()
     };
   }
 
@@ -301,7 +271,7 @@ export class RestApi extends cdk.Construct implements cdk.IDependable, IRestApi 
       method = '*';
     }
 
-    return cdk.Stack.find(this).formatArn({
+    return this.node.stack.formatArn({
       service: 'execute-api',
       resource: this.restApiId,
       sep: '/',
@@ -312,6 +282,8 @@ export class RestApi extends cdk.Construct implements cdk.IDependable, IRestApi 
   /**
    * Internal API used by `Method` to keep an inventory of methods at the API
    * level for validation purposes.
+   *
+   * @internal
    */
   public _attachMethod(method: Method) {
     this.methods.push(method);
@@ -347,7 +319,7 @@ export class RestApi extends cdk.Construct implements cdk.IDependable, IRestApi 
         ...props.deployOptions
       });
 
-      new cdk.Output(this, 'Endpoint', { value: this.urlForPath() });
+      new CfnOutput(this, 'Endpoint', { value: this.urlForPath() });
     } else {
       if (props.deployOptions) {
         throw new Error(`Cannot set 'deployOptions' if 'deploy' is disabled`);
@@ -358,7 +330,7 @@ export class RestApi extends cdk.Construct implements cdk.IDependable, IRestApi 
   private configureCloudWatchRole(apiResource: CfnRestApi) {
     const role = new iam.Role(this, 'CloudWatchRole', {
       assumedBy: new iam.ServicePrincipal('apigateway.amazonaws.com'),
-      managedPolicyArns: [ cdk.Stack.find(this).formatArn({
+      managedPolicyArns: [ this.node.stack.formatArn({
         service: 'iam',
         region: '',
         account: 'aws',
@@ -372,7 +344,7 @@ export class RestApi extends cdk.Construct implements cdk.IDependable, IRestApi 
       cloudWatchRoleArn: role.roleArn
     });
 
-    resource.addDependency(apiResource);
+    resource.node.addDependency(apiResource);
   }
 }
 
@@ -405,10 +377,10 @@ export enum EndpointType {
   Private = 'PRIVATE'
 }
 
-class ImportedRestApi extends cdk.Construct implements IRestApi {
+class ImportedRestApi extends Construct implements IRestApi {
   public restApiId: string;
 
-  constructor(scope: cdk.Construct, id: string, private readonly props: RestApiImportProps) {
+  constructor(scope: Construct, id: string, private readonly props: RestApiImportProps) {
     super(scope, id);
 
     this.restApiId = props.restApiId;
@@ -416,5 +388,25 @@ class ImportedRestApi extends cdk.Construct implements IRestApi {
 
   public export() {
     return this.props;
+  }
+}
+
+class RootResource extends ResourceBase {
+  public readonly parentResource?: IRestApiResource;
+  public readonly resourceApi: RestApi;
+  public readonly resourceId: string;
+  public readonly resourcePath: string;
+  public readonly defaultIntegration?: Integration | undefined;
+  public readonly defaultMethodOptions?: MethodOptions | undefined;
+
+  constructor(api: RestApi, props: RestApiProps, resourceId: string) {
+    super(api, 'Default');
+
+    this.parentResource = undefined;
+    this.defaultIntegration = props.defaultIntegration;
+    this.defaultMethodOptions = props.defaultMethodOptions;
+    this.resourceApi = api;
+    this.resourceId = resourceId;
+    this.resourcePath = '/';
   }
 }

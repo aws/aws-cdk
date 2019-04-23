@@ -1,6 +1,6 @@
-import { Construct } from '@aws-cdk/cdk';
+import { Construct, Resource } from '@aws-cdk/cdk';
 import { CfnSubscription } from './sns.generated';
-import { ITopic } from './topic-ref';
+import { ITopic } from './topic-base';
 
 /**
  * Properties for creating a new subscription
@@ -9,19 +9,28 @@ export interface SubscriptionProps {
   /**
    * What type of subscription to add.
    */
-  protocol: SubscriptionProtocol;
+  readonly protocol: SubscriptionProtocol;
 
   /**
    * The subscription endpoint.
    *
    * The meaning of this value depends on the value for 'protocol'.
    */
-  endpoint: any;
+  readonly endpoint: any;
 
   /**
    * The topic to subscribe to.
    */
-  topic: ITopic;
+  readonly topic: ITopic;
+
+  /**
+   * true if raw message delivery is enabled for the subscription. Raw messages are free of JSON formatting and can be
+   * sent to HTTP/S and Amazon SQS endpoints. For more information, see GetSubscriptionAttributes in the Amazon Simple
+   * Notification Service API Reference.
+   *
+   * @default false
+   */
+  readonly rawMessageDelivery?: boolean;
 }
 
 /**
@@ -30,14 +39,19 @@ export interface SubscriptionProps {
  * Prefer to use the `ITopic.subscribeXxx()` methods to creating instances of
  * this class.
  */
-export class Subscription extends Construct {
+export class Subscription extends Resource {
   constructor(scope: Construct, id: string, props: SubscriptionProps) {
     super(scope, id);
+
+    if (props.rawMessageDelivery && ['http', 'https', 'sqs'].indexOf(props.protocol) < 0) {
+      throw new Error('Raw message delivery can only be enabled for HTTP/S and SQS subscriptions.');
+    }
 
     new CfnSubscription(this, 'Resource', {
       endpoint: props.endpoint,
       protocol: props.protocol,
-      topicArn: props.topic.topicArn
+      topicArn: props.topic.topicArn,
+      rawMessageDelivery: props.rawMessageDelivery,
     });
 
   }

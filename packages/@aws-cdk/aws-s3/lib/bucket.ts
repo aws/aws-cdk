@@ -1,18 +1,17 @@
-import actions = require('@aws-cdk/aws-codepipeline-api');
 import events = require('@aws-cdk/aws-events');
 import iam = require('@aws-cdk/aws-iam');
 import kms = require('@aws-cdk/aws-kms');
 import { IBucketNotificationDestination } from '@aws-cdk/aws-s3-notifications';
-import cdk = require('@aws-cdk/cdk');
+import { applyRemovalPolicy, CfnOutput, Construct, IResource, RemovalPolicy, Resource, Token } from '@aws-cdk/cdk';
+import { EOL } from 'os';
 import { BucketPolicy } from './bucket-policy';
 import { BucketNotifications } from './notifications-resource';
 import perms = require('./perms');
-import { CommonPipelineSourceActionProps, PipelineSourceAction } from './pipeline-action';
 import { LifecycleRule } from './rule';
 import { CfnBucket } from './s3.generated';
 import { parseBucketArn, parseBucketName } from './util';
 
-export interface IBucket extends cdk.IConstruct {
+export interface IBucket extends IResource {
   /**
    * The ARN of the bucket.
    */
@@ -54,17 +53,6 @@ export interface IBucket extends cdk.IConstruct {
   export(): BucketImportProps;
 
   /**
-   * Convenience method for creating a new {@link PipelineSourceAction},
-   * and adding it to the given Stage.
-   *
-   * @param stage the Pipeline Stage to add the new Action to
-   * @param name the name of the newly created Action
-   * @param props the properties of the new Action
-   * @returns the newly created {@link PipelineSourceAction}
-   */
-  addToPipeline(stage: actions.IStage, name: string, props: CommonPipelineSourceActionProps): PipelineSourceAction;
-
-  /**
    * Adds a statement to the resource policy for a principal (i.e.
    * account/role/service) to perform actions on this bucket and/or it's
    * contents. Use `bucketArn` and `arnForObjects(keys)` to obtain ARNs for
@@ -104,7 +92,7 @@ export interface IBucket extends cdk.IConstruct {
    * @param identity The principal
    * @param objectsKeyPattern Restrict the permission to a certain key pattern (default '*')
    */
-  grantRead(identity?: iam.IPrincipal, objectsKeyPattern?: any): void;
+  grantRead(identity: iam.IGrantable, objectsKeyPattern?: any): iam.Grant;
 
   /**
    * Grant write permissions to this bucket to an IAM principal.
@@ -115,7 +103,7 @@ export interface IBucket extends cdk.IConstruct {
    * @param identity The principal
    * @param objectsKeyPattern Restrict the permission to a certain key pattern (default '*')
    */
-  grantWrite(identity?: iam.IPrincipal, objectsKeyPattern?: any): void;
+  grantWrite(identity: iam.IGrantable, objectsKeyPattern?: any): iam.Grant;
 
   /**
    * Grants s3:PutObject* and s3:Abort* permissions for this bucket to an IAM principal.
@@ -125,7 +113,7 @@ export interface IBucket extends cdk.IConstruct {
    * @param identity The principal
    * @param objectsKeyPattern Restrict the permission to a certain key pattern (default '*')
    */
-  grantPut(identity?: iam.IPrincipal, objectsKeyPattern?: any): void;
+  grantPut(identity: iam.IGrantable, objectsKeyPattern?: any): iam.Grant;
 
   /**
    * Grants s3:DeleteObject* permission to an IAM pricipal for objects
@@ -134,7 +122,7 @@ export interface IBucket extends cdk.IConstruct {
    * @param identity The principal
    * @param objectsKeyPattern Restrict the permission to a certain key pattern (default '*')
    */
-  grantDelete(identity?: iam.IPrincipal, objectsKeyPattern?: any): void;
+  grantDelete(identity: iam.IGrantable, objectsKeyPattern?: any): iam.Grant;
 
   /**
    * Grants read/write permissions for this bucket and it's contents to an IAM
@@ -146,7 +134,7 @@ export interface IBucket extends cdk.IConstruct {
    * @param identity The principal
    * @param objectsKeyPattern Restrict the permission to a certain key pattern (default '*')
    */
-  grantReadWrite(identity?: iam.IPrincipal, objectsKeyPattern?: any): void;
+  grantReadWrite(identity: iam.IGrantable, objectsKeyPattern?: any): iam.Grant;
 
   /**
    * Allows unrestricted access to objects from this bucket.
@@ -171,7 +159,7 @@ export interface IBucket extends cdk.IConstruct {
    * @param allowedActions the set of S3 actions to allow. Default is "s3:GetObject".
    * @returns The `iam.PolicyStatement` object, which can be used to apply e.g. conditions.
    */
-  grantPublicAccess(keyPrefix?: string, ...allowedActions: string[]): iam.PolicyStatement;
+  grantPublicAccess(keyPrefix?: string, ...allowedActions: string[]): iam.Grant;
 
   /**
    * Defines a CloudWatch Event Rule that triggers upon putting an object into the Bucket.
@@ -194,7 +182,7 @@ export interface BucketImportProps {
    * The ARN of the bucket. At least one of bucketArn or bucketName must be
    * defined in order to initialize a bucket ref.
    */
-  bucketArn?: string;
+  readonly bucketArn?: string;
 
   /**
    * The name of the bucket. If the underlying value of ARN is a string, the
@@ -202,21 +190,21 @@ export interface BucketImportProps {
    * some features that require the bucket name such as auto-creating a bucket
    * policy, won't work.
    */
-  bucketName?: string;
+  readonly bucketName?: string;
 
   /**
    * The domain name of the bucket.
    *
    * @default Inferred from bucket name
    */
-  bucketDomainName?: string;
+  readonly bucketDomainName?: string;
 
   /**
    * The website URL of the bucket (if static web hosting is enabled).
    *
    * @default Inferred from bucket name
    */
-  bucketWebsiteUrl?: string;
+  readonly bucketWebsiteUrl?: string;
 
   /**
    * The format of the website URL of the bucket. This should be true for
@@ -224,7 +212,7 @@ export interface BucketImportProps {
    *
    * @default false
    */
-  bucketWebsiteNewUrlFormat?: boolean;
+  readonly bucketWebsiteNewUrlFormat?: boolean;
 }
 
 /**
@@ -244,7 +232,7 @@ export interface BucketImportProps {
  *   Bucket.import(this, 'MyImportedBucket', ref);
  *
  */
-export abstract class BucketBase extends cdk.Construct implements IBucket {
+export abstract class BucketBase extends Resource implements IBucket {
   /**
    * The ARN of the bucket.
    */
@@ -280,26 +268,14 @@ export abstract class BucketBase extends cdk.Construct implements IBucket {
   protected abstract autoCreatePolicy = false;
 
   /**
+   * Whether to disallow public access
+   */
+  protected abstract disallowPublicAccess?: boolean;
+
+  /**
    * Exports this bucket from the stack.
    */
   public abstract export(): BucketImportProps;
-
-  /**
-   * Convenience method for creating a new {@link PipelineSourceAction},
-   * and adding it to the given Stage.
-   *
-   * @param stage the Pipeline Stage to add the new Action to
-   * @param name the name of the newly created Action
-   * @param props the properties of the new Action
-   * @returns the newly created {@link PipelineSourceAction}
-   */
-  public addToPipeline(stage: actions.IStage, name: string, props: CommonPipelineSourceActionProps): PipelineSourceAction {
-    return new PipelineSourceAction(this, name, {
-      stage,
-      bucket: this,
-      ...props,
-    });
-  }
 
   public onPutObject(name: string, target?: events.IEventRuleTarget, path?: string): events.EventRule {
     const eventRule = new events.EventRule(this, name, {
@@ -364,8 +340,7 @@ export abstract class BucketBase extends cdk.Construct implements IBucket {
    * @returns an ObjectS3Url token
    */
   public urlForObject(key?: string): string {
-    const stack = cdk.Stack.find(this);
-    const components = [ `https://s3.${stack.region}.${stack.urlSuffix}/${this.bucketName}` ];
+    const components = [ `https://s3.${this.node.stack.region}.${this.node.stack.urlSuffix}/${this.bucketName}` ];
     if (key) {
       // trim prepending '/'
       if (typeof key === 'string' && key.startsWith('/')) {
@@ -401,8 +376,8 @@ export abstract class BucketBase extends cdk.Construct implements IBucket {
    * @param identity The principal
    * @param objectsKeyPattern Restrict the permission to a certain key pattern (default '*')
    */
-  public grantRead(identity?: iam.IPrincipal, objectsKeyPattern: any = '*') {
-    this.grant(identity, perms.BUCKET_READ_ACTIONS, perms.KEY_READ_ACTIONS,
+  public grantRead(identity: iam.IGrantable, objectsKeyPattern: any = '*') {
+    return this.grant(identity, perms.BUCKET_READ_ACTIONS, perms.KEY_READ_ACTIONS,
       this.bucketArn,
       this.arnForObjects(objectsKeyPattern));
   }
@@ -416,8 +391,8 @@ export abstract class BucketBase extends cdk.Construct implements IBucket {
    * @param identity The principal
    * @param objectsKeyPattern Restrict the permission to a certain key pattern (default '*')
    */
-  public grantWrite(identity?: iam.IPrincipal, objectsKeyPattern: any = '*') {
-    this.grant(identity, perms.BUCKET_WRITE_ACTIONS, perms.KEY_WRITE_ACTIONS,
+  public grantWrite(identity: iam.IGrantable, objectsKeyPattern: any = '*') {
+    return this.grant(identity, perms.BUCKET_WRITE_ACTIONS, perms.KEY_WRITE_ACTIONS,
       this.bucketArn,
       this.arnForObjects(objectsKeyPattern));
   }
@@ -430,8 +405,8 @@ export abstract class BucketBase extends cdk.Construct implements IBucket {
    * @param identity The principal
    * @param objectsKeyPattern Restrict the permission to a certain key pattern (default '*')
    */
-  public grantPut(identity?: iam.IPrincipal, objectsKeyPattern: any = '*') {
-    this.grant(identity, perms.BUCKET_PUT_ACTIONS, perms.KEY_WRITE_ACTIONS,
+  public grantPut(identity: iam.IGrantable, objectsKeyPattern: any = '*') {
+    return this.grant(identity, perms.BUCKET_PUT_ACTIONS, perms.KEY_WRITE_ACTIONS,
       this.arnForObjects(objectsKeyPattern));
   }
 
@@ -442,8 +417,8 @@ export abstract class BucketBase extends cdk.Construct implements IBucket {
    * @param identity The principal
    * @param objectsKeyPattern Restrict the permission to a certain key pattern (default '*')
    */
-  public grantDelete(identity?: iam.IPrincipal, objectsKeyPattern: any = '*') {
-    this.grant(identity, perms.BUCKET_DELETE_ACTIONS, [],
+  public grantDelete(identity: iam.IGrantable, objectsKeyPattern: any = '*') {
+    return this.grant(identity, perms.BUCKET_DELETE_ACTIONS, [],
       this.arnForObjects(objectsKeyPattern));
   }
 
@@ -457,11 +432,11 @@ export abstract class BucketBase extends cdk.Construct implements IBucket {
    * @param identity The principal
    * @param objectsKeyPattern Restrict the permission to a certain key pattern (default '*')
    */
-  public grantReadWrite(identity?: iam.IPrincipal, objectsKeyPattern: any = '*') {
+  public grantReadWrite(identity: iam.IGrantable, objectsKeyPattern: any = '*') {
     const bucketActions = perms.BUCKET_READ_ACTIONS.concat(perms.BUCKET_WRITE_ACTIONS);
     const keyActions = perms.KEY_READ_ACTIONS.concat(perms.KEY_WRITE_ACTIONS);
 
-    this.grant(identity,
+    return this.grant(identity,
       bucketActions,
       keyActions,
       this.bucketArn,
@@ -489,47 +464,96 @@ export abstract class BucketBase extends cdk.Construct implements IBucket {
    *
    * @param keyPrefix the prefix of S3 object keys (e.g. `home/*`). Default is "*".
    * @param allowedActions the set of S3 actions to allow. Default is "s3:GetObject".
-   * @returns The `iam.PolicyStatement` object, which can be used to apply e.g. conditions.
    */
-  public grantPublicAccess(keyPrefix = '*', ...allowedActions: string[]): iam.PolicyStatement {
+  public grantPublicAccess(keyPrefix = '*', ...allowedActions: string[]) {
+    if (this.disallowPublicAccess) {
+      throw new Error("Cannot grant public access when 'blockPublicPolicy' is enabled");
+    }
+
     allowedActions = allowedActions.length > 0 ? allowedActions : [ 's3:GetObject' ];
 
-    const statement = new iam.PolicyStatement()
-      .addActions(...allowedActions)
-      .addResource(this.arnForObjects(keyPrefix))
-      .addPrincipal(new iam.Anyone());
-
-    this.addToResourcePolicy(statement);
-    return statement;
+    return iam.Grant.addToPrincipalOrResource({
+      actions: allowedActions,
+      resourceArns: [this.arnForObjects(keyPrefix)],
+      grantee: new iam.Anyone(),
+      resource: this,
+    });
   }
 
-  private grant(identity: iam.IPrincipal | undefined,
+  private grant(grantee: iam.IGrantable,
                 bucketActions: string[],
                 keyActions: string[],
                 resourceArn: string, ...otherResourceArns: string[]) {
-
-    if (!identity) {
-      return;
-    }
-
     const resources = [ resourceArn, ...otherResourceArns ];
 
-    identity.addToPolicy(new iam.PolicyStatement()
-      .addResources(...resources)
-      .addActions(...bucketActions));
+    const ret = iam.Grant.addToPrincipalOrResource({
+      grantee,
+      actions: bucketActions,
+      resourceArns: resources,
+      resource: this,
+    });
 
-    // grant key permissions if there's an associated key.
     if (this.encryptionKey) {
-      // KMS permissions need to be granted both directions
-      identity.addToPolicy(new iam.PolicyStatement()
-        .addResource(this.encryptionKey.keyArn)
-        .addActions(...keyActions));
-
-      this.encryptionKey.addToResourcePolicy(new iam.PolicyStatement()
-        .addAllResources()
-        .addPrincipal(identity.principal)
-        .addActions(...keyActions));
+      this.encryptionKey.grant(grantee, ...keyActions);
     }
+
+    return ret;
+  }
+}
+
+export interface BlockPublicAccessOptions {
+  /**
+   * Whether to block public ACLs
+   *
+   * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/access-control-block-public-access.html#access-control-block-public-access-options
+   */
+  readonly blockPublicAcls?: boolean;
+
+  /**
+   * Whether to block public policy
+   *
+   * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/access-control-block-public-access.html#access-control-block-public-access-options
+   */
+  readonly blockPublicPolicy?: boolean;
+
+  /**
+   * Whether to ignore public ACLs
+   *
+   * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/access-control-block-public-access.html#access-control-block-public-access-options
+   */
+  readonly ignorePublicAcls?: boolean;
+
+  /**
+   * Whether to restrict public access
+   *
+   * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/access-control-block-public-access.html#access-control-block-public-access-options
+   */
+  readonly restrictPublicBuckets?: boolean;
+}
+
+export class BlockPublicAccess {
+  public static readonly BlockAll = new BlockPublicAccess({
+    blockPublicAcls: true,
+    blockPublicPolicy: true,
+    ignorePublicAcls: true,
+    restrictPublicBuckets: true
+  });
+
+  public static readonly BlockAcls = new BlockPublicAccess({
+    blockPublicAcls: true,
+    ignorePublicAcls: true
+  });
+
+  public blockPublicAcls: boolean | undefined;
+  public blockPublicPolicy: boolean | undefined;
+  public ignorePublicAcls: boolean | undefined;
+  public restrictPublicBuckets: boolean | undefined;
+
+  constructor(options: BlockPublicAccessOptions) {
+    this.blockPublicAcls = options.blockPublicAcls;
+    this.blockPublicPolicy = options.blockPublicPolicy;
+    this.ignorePublicAcls = options.ignorePublicAcls;
+    this.restrictPublicBuckets = options.restrictPublicBuckets;
   }
 }
 
@@ -542,7 +566,7 @@ export interface BucketProps {
    *
    * @default Unencrypted
    */
-  encryption?: BucketEncryption;
+  readonly encryption?: BucketEncryption;
 
   /**
    * External KMS key to use for bucket encryption.
@@ -554,53 +578,60 @@ export interface BucketProps {
    * @default If encryption is set to "Kms" and this property is undefined, a
    * new KMS key will be created and associated with this bucket.
    */
-  encryptionKey?: kms.IEncryptionKey;
+  readonly encryptionKey?: kms.IEncryptionKey;
 
   /**
    * Physical name of this bucket.
    *
    * @default Assigned by CloudFormation (recommended)
    */
-  bucketName?: string;
+  readonly bucketName?: string;
 
   /**
    * Policy to apply when the bucket is removed from this stack.
    *
    * @default The bucket will be orphaned
    */
-  removalPolicy?: cdk.RemovalPolicy;
+  readonly removalPolicy?: RemovalPolicy;
 
   /**
    * Whether this bucket should have versioning turned on or not.
    *
    * @default false
    */
-  versioned?: boolean;
+  readonly versioned?: boolean;
 
   /**
    * Rules that define how Amazon S3 manages objects during their lifetime.
    *
    * @default No lifecycle rules
    */
-  lifecycleRules?: LifecycleRule[];
+  readonly lifecycleRules?: LifecycleRule[];
 
   /**
    * The name of the index document (e.g. "index.html") for the website. Enables static website
    * hosting for this bucket.
    */
-  websiteIndexDocument?: string;
+  readonly websiteIndexDocument?: string;
 
   /**
    * The name of the error document (e.g. "404.html") for the website.
    * `websiteIndexDocument` must also be set if this is set.
    */
-  websiteErrorDocument?: string;
+  readonly websiteErrorDocument?: string;
 
   /**
    * Grants public read access to all objects in the bucket.
    * Similar to calling `bucket.grantPublicAccess()`
    */
-  publicReadAccess?: boolean;
+  readonly publicReadAccess?: boolean;
+
+  /**
+   * The block public access configuration of this bucket.
+   *
+   * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/access-control-block-public-access.html
+   */
+  readonly blockPublicAccess?: BlockPublicAccess;
 }
 
 /**
@@ -613,12 +644,12 @@ export class Bucket extends BucketBase {
   /**
    * Creates a Bucket construct that represents an external bucket.
    *
-   * @param parent The parent creating construct (usually `this`).
+   * @param scope The parent creating construct (usually `this`).
    * @param id The construct's name.
    * @param props A `BucketAttributes` object. Can be obtained from a call to
    * `bucket.export()` or manually created.
    */
-  public static import(scope: cdk.Construct, id: string, props: BucketImportProps): IBucket {
+  public static import(scope: Construct, id: string, props: BucketImportProps): IBucket {
     return new ImportedBucket(scope, id, props);
   }
 
@@ -630,24 +661,29 @@ export class Bucket extends BucketBase {
   public readonly encryptionKey?: kms.IEncryptionKey;
   public policy?: BucketPolicy;
   protected autoCreatePolicy = true;
+  protected disallowPublicAccess?: boolean;
   private readonly lifecycleRules: LifecycleRule[] = [];
   private readonly versioned?: boolean;
   private readonly notifications: BucketNotifications;
 
-  constructor(scope: cdk.Construct, id: string, props: BucketProps = {}) {
+  constructor(scope: Construct, id: string, props: BucketProps = {}) {
     super(scope, id);
 
     const { bucketEncryption, encryptionKey } = this.parseEncryption(props);
+    if (props.bucketName && !Token.unresolved(props.bucketName)) {
+      this.validateBucketName(props.bucketName);
+    }
 
     const resource = new CfnBucket(this, 'Resource', {
       bucketName: props && props.bucketName,
       bucketEncryption,
       versioningConfiguration: props.versioned ? { status: 'Enabled' } : undefined,
-      lifecycleConfiguration: new cdk.Token(() => this.parseLifecycleConfiguration()),
-      websiteConfiguration: this.renderWebsiteConfiguration(props)
+      lifecycleConfiguration: new Token(() => this.parseLifecycleConfiguration()),
+      websiteConfiguration: this.renderWebsiteConfiguration(props),
+      publicAccessBlockConfiguration: props.blockPublicAccess
     });
 
-    cdk.applyRemovalPolicy(resource, props.removalPolicy !== undefined ? props.removalPolicy : cdk.RemovalPolicy.Orphan);
+    applyRemovalPolicy(resource, props.removalPolicy !== undefined ? props.removalPolicy : RemovalPolicy.Orphan);
 
     this.versioned = props.versioned;
     this.encryptionKey = encryptionKey;
@@ -656,6 +692,7 @@ export class Bucket extends BucketBase {
     this.domainName = resource.bucketDomainName;
     this.bucketWebsiteUrl = resource.bucketWebsiteUrl;
     this.dualstackDomainName = resource.bucketDualStackDomainName;
+    this.disallowPublicAccess = props.blockPublicAccess && props.blockPublicAccess.blockPublicPolicy;
 
     // Add all lifecycle rules
     (props.lifecycleRules || []).forEach(this.addLifecycleRule.bind(this));
@@ -674,10 +711,10 @@ export class Bucket extends BucketBase {
    */
   public export(): BucketImportProps {
     return {
-      bucketArn: new cdk.Output(this, 'BucketArn', { value: this.bucketArn }).makeImportValue().toString(),
-      bucketName: new cdk.Output(this, 'BucketName', { value: this.bucketName }).makeImportValue().toString(),
-      bucketDomainName: new cdk.Output(this, 'DomainName', { value: this.domainName }).makeImportValue().toString(),
-      bucketWebsiteUrl: new cdk.Output(this, 'WebsiteURL', { value: this.bucketWebsiteUrl }).makeImportValue().toString()
+      bucketArn: new CfnOutput(this, 'BucketArn', { value: this.bucketArn }).makeImportValue().toString(),
+      bucketName: new CfnOutput(this, 'BucketName', { value: this.bucketName }).makeImportValue().toString(),
+      bucketDomainName: new CfnOutput(this, 'DomainName', { value: this.domainName }).makeImportValue().toString(),
+      bucketWebsiteUrl: new CfnOutput(this, 'WebsiteURL', { value: this.bucketWebsiteUrl }).makeImportValue().toString()
     };
   }
 
@@ -741,6 +778,40 @@ export class Bucket extends BucketBase {
    */
   public onObjectRemoved(dest: IBucketNotificationDestination, ...filters: NotificationKeyFilter[]) {
     return this.onEvent(EventType.ObjectRemoved, dest, ...filters);
+  }
+
+  private validateBucketName(bucketName: string) {
+    const errors: string[] = [];
+
+    // Rules codified from https://docs.aws.amazon.com/AmazonS3/latest/dev/BucketRestrictions.html
+    if (bucketName.length < 3 || bucketName.length > 63) {
+      errors.push('Bucket name must be at least 3 and no more than 63 characters');
+    }
+    const charsetMatch = bucketName.match(/[^a-z0-9.-]/);
+    if (charsetMatch) {
+      errors.push('Bucket name must only contain lowercase characters and the symbols, period (.) and dash (-) '
+        + `(offset: ${charsetMatch.index})`);
+    }
+    if (!/[a-z0-9]/.test(bucketName.charAt(0))) {
+      errors.push('Bucket name must start and end with a lowercase character or number '
+        + '(offset: 0)');
+    }
+    if (!/[a-z0-9]/.test(bucketName.charAt(bucketName.length - 1))) {
+      errors.push('Bucket name must start and end with a lowercase character or number '
+        + `(offset: ${bucketName.length - 1})`);
+    }
+    const consecSymbolMatch = bucketName.match(/\.-|-\.|\.\./);
+    if (consecSymbolMatch) {
+      errors.push('Bucket name must not have dash next to period, or period next to dash, or consecutive periods '
+        + `(offset: ${consecSymbolMatch.index})`);
+    }
+    if (/^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$/.test(bucketName)) {
+      errors.push('Bucket name must not resemble an IP address');
+    }
+
+    if (errors.length > 0) {
+      throw new Error(`Invalid S3 bucket name (value: ${bucketName})${EOL}${errors.join(EOL)}`);
+    }
   }
 
   /**
@@ -1001,12 +1072,12 @@ export interface NotificationKeyFilter {
   /**
    * S3 keys must have the specified prefix.
    */
-  prefix?: string;
+  readonly prefix?: string;
 
   /**
    * S3 keys must have the specified suffix.
    */
-  suffix?: string;
+  readonly suffix?: string;
 }
 
 class ImportedBucket extends BucketBase {
@@ -1020,7 +1091,9 @@ class ImportedBucket extends BucketBase {
   public policy?: BucketPolicy;
   protected autoCreatePolicy: boolean;
 
-  constructor(scope: cdk.Construct, id: string, private readonly props: BucketImportProps) {
+  protected disallowPublicAccess?: boolean;
+
+  constructor(scope: Construct, id: string, private readonly props: BucketImportProps) {
     super(scope, id);
 
     const bucketName = parseBucketName(this, props);
@@ -1037,6 +1110,7 @@ class ImportedBucket extends BucketBase {
       ? false
       : props.bucketWebsiteNewUrlFormat;
     this.policy = undefined;
+    this.disallowPublicAccess = false;
   }
 
   /**
@@ -1052,7 +1126,7 @@ class ImportedBucket extends BucketBase {
 
   private generateBucketWebsiteUrl() {
     return this.bucketWebsiteNewUrlFormat
-      ? `${this.bucketName}.s3-website.${cdk.Stack.find(this).region}.${cdk.Stack.find(this).urlSuffix}`
-      : `${this.bucketName}.s3-website-${cdk.Stack.find(this).region}.${cdk.Stack.find(this).urlSuffix}`;
+      ? `${this.bucketName}.s3-website.${this.node.stack.region}.${this.node.stack.urlSuffix}`
+      : `${this.bucketName}.s3-website-${this.node.stack.region}.${this.node.stack.urlSuffix}`;
   }
 }

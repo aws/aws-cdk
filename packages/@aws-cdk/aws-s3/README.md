@@ -63,8 +63,9 @@ A bucket policy will be automatically created for the bucket upon the first call
 ```ts
 const bucket = new Bucket(this, 'MyBucket');
 bucket.addToResourcePolicy(new iam.PolicyStatement()
-    .addActions('s3:GetObject')
-    .addAllResources());
+  .addActions('s3:GetObject')
+  .addResources(bucket.arnForObjects('file.txt'))
+  .addAccountRootPrincipal());
 ```
 
 Most of the time, you won't have to manipulate the bucket policy directly.
@@ -80,57 +81,6 @@ bucket.grantReadWrite(lambda.role);
 
 Will give the Lambda's execution role permissions to read and write
 from the bucket.
-
-### Buckets as sources in CodePipeline
-
-This package also defines an Action that allows you to use a
-Bucket as a source in CodePipeline:
-
-```ts
-import codepipeline = require('@aws-cdk/aws-codepipeline');
-import s3 = require('@aws-cdk/aws-s3');
-
-const sourceBucket = new s3.Bucket(this, 'MyBucket', {
-    versioned: true, // a Bucket used as a source in CodePipeline must be versioned
-});
-
-const pipeline = new codepipeline.Pipeline(this, 'MyPipeline');
-const sourceStage = pipeline.addStage('Source');
-const sourceAction = new s3.PipelineSourceAction(this, 'S3Source', {
-    stage: sourceStage,
-    bucket: sourceBucket,
-    bucketKey: 'path/to/file.zip',
-});
-```
-
-You can also add the Bucket to the Pipeline directly:
-
-```ts
-// equivalent to the code above:
-const sourceAction = sourceBucket.addToPipeline(sourceStage, 'S3Source', {
-    bucketKey: 'path/to/file.zip',
-});
-```
-
-By default, the Pipeline will poll the Bucket to detect changes.
-You can change that behavior to use CloudWatch Events by setting the `pollForSourceChanges`
-property to `false` (it's `true` by default).
-If you do that, make sure the source Bucket is part of an AWS CloudTrail Trail -
-otherwise, the CloudWatch Events will not be emitted,
-and your Pipeline will not react to changes in the Bucket.
-You can do it through the CDK:
-
-```typescript
-import cloudtrail = require('@aws-cdk/aws-cloudtrail');
-
-const key = 'some/key.zip';
-const trail = new cloudtrail.CloudTrail(this, 'CloudTrail');
-trail.addS3EventSelector([sourceBucket.arnForObjects(key)], cloudtrail.ReadWriteType.WriteOnly);
-const sourceAction = sourceBucket.addToPipeline(sourceStage, 'S3Source', {
-  bucketKey: key,
-  pollForSourceChanges: false, // default: true
-});
-```
 
 ### Sharing buckets between stacks
 
@@ -188,3 +138,33 @@ bucket.onEvent(s3.EventType.ObjectRemoved, myQueue, { prefix: 'foo/', suffix: '.
 ```
 
 [S3 Bucket Notifications]: https://docs.aws.amazon.com/AmazonS3/latest/dev/NotificationHowTo.html
+
+
+### Block Public Access
+
+Use `blockPublicAccess` to specify [block public access settings] on the bucket.
+
+Enable all block public access settings:
+```ts
+const bucket = new Bucket(this, 'MyBlockedBucket', {
+    blockPublicAccess: BlockPublicAccess.BlockAll
+});
+```
+
+Block and ignore public ACLs:
+```ts
+const bucket = new Bucket(this, 'MyBlockedBucket', {
+    blockPublicAccess: BlockPublicAccess.BlockAcls
+});
+```
+
+Alternatively, specify the settings manually:
+```ts
+const bucket = new Bucket(this, 'MyBlockedBucket', {
+    blockPublicAccess: new BlockPublicAccess({ blockPublicPolicy: true })
+});
+```
+
+When `blockPublicPolicy` is set to `true`, `grantPublicRead()` throws an error.
+
+[block public access settings]: https://docs.aws.amazon.com/AmazonS3/latest/dev/access-control-block-public-access.html

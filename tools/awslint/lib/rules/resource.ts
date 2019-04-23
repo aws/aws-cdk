@@ -1,7 +1,7 @@
 import reflect = require('jsii-reflect');
 import { CfnResourceSpec, findCfnResources } from '../cfn-resources';
 import { Linter } from '../linter';
-import { CONSTRUCT_FQN, CONSTRUCT_INTERFACE_FQN, isConstruct } from '../util';
+import { CONSTRUCT_FQN, CONSTRUCT_INTERFACE_FQN } from '../util';
 
 export const resourceLinter = new Linter<ResourceLinterContext>(assembly => {
   return findCfnResources(assembly).map(cfn => ({
@@ -10,6 +10,8 @@ export const resourceLinter = new Linter<ResourceLinterContext>(assembly => {
     ts: assembly.system,
   }));
 });
+
+const GRANT_RESULT_FQN = '@aws-cdk/aws-iam.Grant';
 
 interface ResourceLinterContext {
   readonly ts: reflect.TypeSystem;
@@ -38,26 +40,12 @@ resourceLinter.add({
 });
 
 resourceLinter.add({
-  code: 'resource-class-is-construct',
-  message: `resource classes must extend "cdk.Construct" directly or indirectly`,
+  code: 'resource-class-extends-resource',
+  message: `resource classes must extend "cdk.Resource" directly or indirectly`,
   eval: e => {
     if (!e.ctx.resourceClass) { return; }
-    e.assert(isConstruct(e.ctx.resourceClass), e.ctx.resourceClass.fqn);
-  }
-});
-
-resourceLinter.add({
-  code: 'resource-props',
-  message: 'an interface for resource props must be defined',
-  eval: e => {
-    if (!e.ctx.resourceClass) { return; }
-    const fqn = `${e.ctx.assembly.name}.${e.ctx.resource.basename}Props`;
-    const resourcePropsInterface = e.ctx.ts.interfaces.find(i => i.fqn === fqn);
-    if (!e.assert(resourcePropsInterface, fqn)) {
-      return;
-    }
-
-    e.ctx.resourcePropsInterface = resourcePropsInterface;
+    const resourceBase = e.ctx.ts.findClass('@aws-cdk/cdk.Resource');
+    e.assert(e.ctx.resourceClass.extends(resourceBase), e.ctx.resourceClass.fqn);
   }
 });
 
@@ -80,6 +68,16 @@ resourceLinter.add({
 });
 
 resourceLinter.add({
+  code: 'resource-interface-extends-resource',
+  message: 'construct interfaces of AWS resources must extend cdk.IResource',
+  eval: e => {
+    if (!e.ctx.resourceInterface) { return; }
+    const interfaceBase = e.ctx.ts.findInterface('@aws-cdk/cdk.IResource');
+    e.assert(e.ctx.resourceInterface.extends(interfaceBase), e.ctx.resourceInterface.fqn);
+  }
+});
+
+resourceLinter.add({
   code: 'import-props-interface',
   message: 'every resource must have an "FooImportProps" interface',
   eval: e => {
@@ -97,10 +95,10 @@ resourceLinter.add({
 
 resourceLinter.add({
   code: 'resource-interface-extends-construct',
-  message: 'resource interface must extends cdk.IConstruct',
+  message: 'resource interface must extend cdk.IConstruct',
   eval: e => {
     if (!e.ctx.resourceInterface) { return; }
-    e.assert(e.ctx.resourceInterface.interfaces.some(i => i.fqn === CONSTRUCT_INTERFACE_FQN), e.ctx.resourceInterface.fqn);
+    e.assert(e.ctx.resourceInterface.getInterfaces(true).some(i => i.fqn === CONSTRUCT_INTERFACE_FQN), e.ctx.resourceInterface.fqn);
   }
 });
 
@@ -113,7 +111,7 @@ resourceLinter.add({
     // verify that the interface has all attributes as readonly properties
     const resourceAttributes = new Array<reflect.Property>();
     for (const attr of e.ctx.resource.attributes) {
-      const attribute: reflect.Property | undefined = e.ctx.resourceInterface.properties.find(p => p.name === attr);
+      const attribute: reflect.Property | undefined = e.ctx.resourceInterface.ownProperties.find(p => p.name === attr);
       const scope: string = e.ctx.resourceInterface.fqn + '.' + attr;
       if (e.assert(attribute, scope)) {
         resourceAttributes.push(attribute);
@@ -143,13 +141,13 @@ resourceLinter.add({
     if (!e.ctx.resourceInterface) { return; }
     if (!e.ctx.importPropsInterface) { return; }
 
-    const importMethod = e.ctx.resourceClass.methods.find(m => m.static && m.name === 'import');
+    const importMethod = e.ctx.resourceClass.ownMethods.find(m => m.static && m.name === 'import');
     if (!e.assert(importMethod, e.ctx.resourceClass.fqn)) {
       return;
     }
 
     e.assertSignature(importMethod, {
-      returns: e.ctx.resourceInterface.fqn,
+      returns: e.ctx.resourceInterface,
       parameters: [
         { name: 'scope', type: CONSTRUCT_FQN },
         { name: 'id', type: 'string' },
@@ -165,7 +163,7 @@ resourceLinter.add({
   eval: e => {
     if (!e.ctx.resourceInterface) { return; }
 
-    const exportMethod = e.ctx.resourceInterface.methods.find(m => m.name === 'export');
+    const exportMethod = e.ctx.resourceInterface.ownMethods.find(m => m.name === 'export');
     if (!e.assert(exportMethod, e.ctx.resourceInterface.fqn)) {
       return;
     }
@@ -173,8 +171,25 @@ resourceLinter.add({
     if (!e.ctx.importPropsInterface) { return; }
 
     e.assertSignature(exportMethod, {
-      returns: e.ctx.importPropsInterface.fqn,
+      returns: e.ctx.importPropsInterface,
       parameters: []
     });
+  }
+});
+
+resourceLinter.add({
+  code: 'grant-result',
+  message: `"grant" method must return ${GRANT_RESULT_FQN}`,
+  eval: e => {
+    if (!e.ctx.resourceClass) { return; }
+
+    const grantResultType = e.ctx.ts.findFqn(GRANT_RESULT_FQN);
+    const grantMethods = e.ctx.resourceClass.allMethods.filter(m => m.name.startsWith('grant'));
+
+    for (const grantMethod of grantMethods) {
+      e.assertSignature(grantMethod, {
+        returns: grantResultType
+      });
+    }
   }
 });

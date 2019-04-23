@@ -5,8 +5,7 @@ import { ITargetGroup } from './base-target-group';
 /**
  * Base class for listeners
  */
-export abstract class BaseListener extends cdk.Construct implements cdk.IDependable {
-  public readonly dependencyElements: cdk.IDependable[];
+export abstract class BaseListener extends cdk.Construct {
   public readonly listenerArn: string;
   private readonly defaultActions: any[] = [];
 
@@ -18,7 +17,6 @@ export abstract class BaseListener extends cdk.Construct implements cdk.IDependa
       defaultActions: new cdk.Token(() => this.defaultActions),
     });
 
-    this.dependencyElements = [resource];
     this.listenerArn = resource.ref;
   }
 
@@ -34,6 +32,7 @@ export abstract class BaseListener extends cdk.Construct implements cdk.IDependa
 
   /**
    * Add a TargetGroup to the list of default actions of this listener
+   * @internal
    */
   protected _addDefaultTargetGroup(targetGroup: ITargetGroup) {
     this.defaultActions.push({

@@ -1,4 +1,5 @@
 import reflect = require('jsii-reflect');
+import { PrimitiveType } from 'jsii-spec';
 
 export interface LinterOptions {
   /**
@@ -115,10 +116,16 @@ export class Evaluation<T> {
     return this.assert(actual === expected, scope, ` (expected="${expected}",actual="${actual}")`);
   }
 
-  public assertSignature(method: reflect.Method, expectations: MethodSignatureExpectations) {
+  public assertTypesEqual(ts: reflect.TypeSystem, actual: TypeSpecifier, expected: TypeSpecifier, scope: string) {
+    const a = typeReferenceFrom(ts, actual);
+    const e = typeReferenceFrom(ts, expected);
+    return this.assert(a.toString() === e.toString(), scope, ` (expected="${e}",actual="${a}")`);
+  }
+
+  public assertSignature(method: reflect.Callable, expectations: MethodSignatureExpectations) {
     const scope = method.parentType.fqn + '.' + method.name;
-    if (expectations.returns) {
-      this.assertEquals(expectations.returns.toString(), expectations.returns, scope);
+    if (expectations.returns && reflect.Method.isMethod(method)) {
+      this.assertTypesEqual(method.system, method.returns.type, expectations.returns, scope);
     }
 
     if (expectations.parameters) {
@@ -135,18 +142,7 @@ export class Evaluation<T> {
             this.assertEquals(actualName, expectedName, pscope);
           }
           if (expect.type) {
-            const expectedType = expect.type;
-            const actualType = (() => {
-              if (actual.type.fqn) {
-                return actual.type.fqn.fqn;
-              }
-              if (actual.type.primitive) {
-                return actual.type.primitive;
-              }
-              return actual.type.toString();
-            })();
-
-            this.assertEquals(actualType, expectedType, pscope);
+            this.assertTypesEqual(method.system, actual.type, expect.type, pscope);
           }
         }
       }
@@ -205,9 +201,19 @@ export interface Rule<T> {
   eval(linter: Evaluation<T>): void;
 }
 
+/**
+ * A type constraint
+ *
+ * Be super flexible about how types can be represented. Ultimately, we will
+ * compare what you give to a TypeReference, because that's what's in the JSII
+ * Reflect model. However, if you already have a real Type, or just a string to
+ * a user-defined type, that's fine too. We'll Do The Right Thing.
+ */
+export type TypeSpecifier = reflect.TypeReference | reflect.Type | string;
+
 export interface MethodSignatureParameterExpectation {
   name?: string;
-  type?: string;
+  type?: TypeSpecifier;
 
   /** should this param be optional? */
   optional?: boolean;
@@ -215,14 +221,14 @@ export interface MethodSignatureParameterExpectation {
 
 export interface MethodSignatureExpectations {
   parameters?: MethodSignatureParameterExpectation[];
-  returns?: string;
+  returns?: TypeSpecifier;
 }
 
 export enum DiagnosticLevel {
   Skipped,
   Success,
-  Error,
   Warning,
+  Error,
 }
 
 export interface Diagnostic<T> {
@@ -231,4 +237,25 @@ export interface Diagnostic<T> {
   rule: Rule<T>
   scope: string;
   message: string;
+}
+
+/**
+ * Convert a type specifier to a TypeReference
+ */
+function typeReferenceFrom(ts: reflect.TypeSystem, x: TypeSpecifier): reflect.TypeReference {
+  if (isTypeReference(x)) { return x; }
+
+  if (typeof x === 'string') {
+    if (x.indexOf('.') === -1) {
+      return new reflect.TypeReference(ts, { primitive: x as PrimitiveType });
+    } else {
+      return new reflect.TypeReference(ts, { fqn: x });
+    }
+  }
+
+  return new reflect.TypeReference(ts, x);
+}
+
+function isTypeReference(x: any): x is reflect.TypeReference {
+  return x instanceof reflect.TypeReference;
 }

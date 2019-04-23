@@ -8,6 +8,8 @@
 set -euo pipefail
 scriptdir=$(cd $(dirname $0) && pwd)
 
+rm -f CHANGELOG.md.new
+
 function update-spec() {
     local title=$1
     local url=$2
@@ -15,6 +17,12 @@ function update-spec() {
     local gunzip=$4
 
     local intermediate="$(mktemp -d)/new.json"
+
+    # fail if the spec has changes, otherwise we won't be able to determine the diff
+    if [ -n "$(git status --porcelain ${target})" ]; then
+        echo "The file ${target} has changes, revert them before cfn-update"
+        exit 1
+    fi
 
     echo >&2 "Downloading from ${url}..."
     if ${gunzip}; then
@@ -26,14 +34,9 @@ function update-spec() {
     echo >&2 "Sorting..."
     sort-json ${intermediate}
 
-    echo >&2 "Updaging CHANGELOG.md..."
-    touch CHANGELOG.md
-    mv CHANGELOG.md CHANGELOG.md.bak
-    rm -f CHANGELOG.md
-    node build-tools/spec-diff.js "${title}" "${target}" "${intermediate}" > CHANGELOG.md
-    echo "" >> CHANGELOG.md
-    cat CHANGELOG.md.bak >> CHANGELOG.md
-    rm CHANGELOG.md.bak
+    echo >&2 "Updating CHANGELOG.md..."
+    node build-tools/spec-diff.js "${title}" "${target}" "${intermediate}" >> CHANGELOG.md.new
+    echo "" >> CHANGELOG.md.new
 
     echo >&2 "Updarting source spec..."
     rm -f ${target}
@@ -52,6 +55,21 @@ update-spec \
     spec-source/000_sam.spec.json \
     false
 
+npm run build
+
 echo >&2 "Creating missing AWS construct libraries for new resource types..."
-node ${scriptdir}/create-missing-libraries.js
+node ${scriptdir}/create-missing-libraries.js || {
+    echo "------------------------------------------------------------------------------------"
+    echo "cfn-spec update script failed when trying to create modules for new services"
+    echo "Fix the error (you will likely need to add RefKind patches), and then run 'npm run update' again"
+    exit 1
+}
+
+# update decdk dep list
+(cd ${scriptdir}/../../../decdk && node ./deps.js || true)
+
+# append old changelog after new and replace as the last step because otherwise we will not be idempotent
+cat CHANGELOG.md >> CHANGELOG.md.new
+cp CHANGELOG.md.new CHANGELOG.md
+
 

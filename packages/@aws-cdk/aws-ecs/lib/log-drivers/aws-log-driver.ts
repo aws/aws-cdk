@@ -18,14 +18,14 @@ export interface AwsLogDriverProps {
    *
    *     prefix-name/container-name/ecs-task-id
    */
-  streamPrefix: string;
+  readonly streamPrefix: string;
 
   /**
    * The log group to log to
    *
    * @default A log group is automatically created
    */
-  logGroup?: logs.ILogGroup;
+  readonly logGroup?: logs.ILogGroup;
 
   /**
    * This option defines a multiline start pattern in Python strftime format.
@@ -34,7 +34,7 @@ export interface AwsLogDriverProps {
    * following lines that don’t match the pattern. Thus the matched line is
    * the delimiter between log messages.
    */
-  datetimeFormat?: string;
+  readonly datetimeFormat?: string;
 
   /**
    * This option defines a multiline start pattern using a regular expression.
@@ -43,7 +43,7 @@ export interface AwsLogDriverProps {
    * following lines that don’t match the pattern. Thus the matched line is
    * the delimiter between log messages.
    */
-  multilinePattern?: string;
+  readonly multilinePattern?: string;
 }
 
 /**
@@ -73,13 +73,12 @@ export class AwsLogDriver extends LogDriver {
    * Return the log driver CloudFormation JSON
    */
   public renderLogDriver(): CfnTaskDefinition.LogConfigurationProperty {
-    const stack = cdk.Stack.find(this);
     return {
       logDriver: 'awslogs',
       options: removeEmpty({
         'awslogs-group': this.logGroup.logGroupName,
         'awslogs-stream-prefix': this.props.streamPrefix,
-        'awslogs-region': stack.region,
+        'awslogs-region': this.node.stack.region,
         'awslogs-datetime-format': this.props.datetimeFormat,
         'awslogs-multiline-pattern': this.props.multilinePattern,
       }),

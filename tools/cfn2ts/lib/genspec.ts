@@ -19,8 +19,8 @@ export const CORE_NAMESPACE = 'cdk';
  * This refers to TypeScript constructs (typically a class)
  */
 export class CodeName {
-  public static forCfnResource(specName: SpecName): CodeName {
-    const className = RESOURCE_CLASS_PREFIX + specName.resourceName;
+  public static forCfnResource(specName: SpecName, affix: string): CodeName {
+    const className = RESOURCE_CLASS_PREFIX + specName.resourceName + affix;
     return new CodeName(packageName(specName), '', className, specName);
   }
 
@@ -87,7 +87,7 @@ export class CodeName {
   }
 }
 
-export const TAG_NAME = new CodeName('', CORE_NAMESPACE, 'Tag');
+export const TAG_NAME = new CodeName('', CORE_NAMESPACE, 'CfnTag');
 export const TOKEN_NAME = new CodeName('', CORE_NAMESPACE, 'Token');
 
 /**
@@ -119,7 +119,17 @@ export function packageName(module: SpecName | string): string {
     throw new Error(`Module component name must be "AWS::Xxx" or "Alexa::Xxx" (module: ${module})`);
   }
 
-  return parts[parts.length - 1].toLowerCase();
+  return overridePackageName(parts[parts.length - 1].toLowerCase());
+}
+
+/**
+ * Overrides special-case namespaces like serverless=>sam
+ */
+function overridePackageName(name: string) {
+  if (name === 'serverless') {
+    return 'sam';
+  }
+  return name;
 }
 
 /**
@@ -275,13 +285,7 @@ function specTypeToCodeType(resourceContext: CodeName, type: string): CodeName {
  * Translate a list of type references in a resource context to a list of code names
  */
 export function specTypesToCodeTypes(resourceContext: CodeName, types: string[]): CodeName[] {
-  const ret = [];
-
-  for (const type of types) {
-    ret.push(specTypeToCodeType(resourceContext, type));
-  }
-
-  return ret;
+  return types.map(type => specTypeToCodeType(resourceContext, type));
 }
 
 export interface PropertyVisitor<T> {

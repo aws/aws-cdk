@@ -1,11 +1,22 @@
 import appscaling = require('@aws-cdk/aws-applicationautoscaling');
 import cloudwatch = require('@aws-cdk/aws-cloudwatch');
 import elbv2 = require('@aws-cdk/aws-elasticloadbalancingv2');
+import { Construct } from '@aws-cdk/cdk';
+
+// tslint:disable-next-line:no-empty-interface
+export interface ScalableTaskCountProps extends appscaling.BaseScalableAttributeProps {
+
+}
 
 /**
  * Scalable attribute representing task count
  */
 export class ScalableTaskCount extends appscaling.BaseScalableAttribute {
+
+  constructor(scope: Construct, id: string, props: ScalableTaskCountProps) {
+    super(scope, id, props);
+  }
+
   /**
    * Scale out or in based on time
    */
@@ -88,7 +99,7 @@ export interface CpuUtilizationScalingProps extends appscaling.BaseTargetTrackin
   /**
    * Target average CPU utilization across the task
    */
-  targetUtilizationPercent: number;
+  readonly targetUtilizationPercent: number;
 }
 
 /**
@@ -98,7 +109,7 @@ export interface MemoryUtilizationScalingProps extends appscaling.BaseTargetTrac
   /**
    * Target average memory utilization across the task
    */
-  targetUtilizationPercent: number;
+  readonly targetUtilizationPercent: number;
 }
 
 /**
@@ -108,12 +119,12 @@ export interface RequestCountScalingProps extends appscaling.BaseTargetTrackingP
   /**
    * ALB requests per target
    */
-  requestsPerTarget: number;
+  readonly requestsPerTarget: number;
 
   /**
    * ALB Target Group
    */
-  targetGroup: elbv2.ApplicationTargetGroup;
+  readonly targetGroup: elbv2.ApplicationTargetGroup;
 }
 
 /**
@@ -128,10 +139,10 @@ export interface TrackCustomMetricProps extends appscaling.BaseTargetTrackingPro
    * - metric > targetValue => scale out
    * - metric < targetValue => scale in
    */
-  metric: cloudwatch.Metric;
+  readonly metric: cloudwatch.Metric;
 
   /**
    * The target value to achieve for the metric
    */
-  targetValue: number;
+  readonly targetValue: number;
 }

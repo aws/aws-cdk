@@ -50,7 +50,19 @@ export class SDK {
   private readonly credentialsCache: CredentialsCache;
   private readonly profile?: string;
 
-  constructor(options: SDKOptions) {
+  /**
+   * Default retry options for SDK clients
+   *
+   * Biggest bottleneck is CloudFormation, with a 1tps call rate. We want to be
+   * a little more tenacious than the defaults, and with a little more breathing
+   * room between calls (defaults are {retries=3, base=100}).
+   *
+   * I've left this running in a tight loop for an hour and the throttle errors
+   * haven't escaped the retry mechanism.
+   */
+  private readonly retryOptions = { maxRetries: 6, retryDelayOptions: { base: 300 }};
+
+  constructor(options: SDKOptions = {}) {
     this.profile = options.profile;
 
     const defaultCredentialProvider = makeCLICompatibleCredentialProvider(options.profile, options.ec2creds);
@@ -78,6 +90,7 @@ export class SDK {
 
   public async cloudFormation(environment: Environment, mode: Mode): Promise<AWS.CloudFormation> {
     return new AWS.CloudFormation({
+      ...this.retryOptions,
       region: environment.region,
       credentials: await this.credentialsCache.get(environment.account, mode)
     });
@@ -85,6 +98,7 @@ export class SDK {
 
   public async ec2(awsAccountId: string | undefined, region: string | undefined, mode: Mode): Promise<AWS.EC2> {
     return new AWS.EC2({
+      ...this.retryOptions,
       region,
       credentials: await this.credentialsCache.get(awsAccountId, mode)
     });
@@ -92,6 +106,7 @@ export class SDK {
 
   public async ssm(awsAccountId: string | undefined, region: string | undefined, mode: Mode): Promise<AWS.SSM> {
     return new AWS.SSM({
+      ...this.retryOptions,
       region,
       credentials: await this.credentialsCache.get(awsAccountId, mode)
     });
@@ -99,6 +114,7 @@ export class SDK {
 
   public async s3(environment: Environment, mode: Mode): Promise<AWS.S3> {
     return new AWS.S3({
+      ...this.retryOptions,
       region: environment.region,
       credentials: await this.credentialsCache.get(environment.account, mode)
     });
@@ -106,6 +122,7 @@ export class SDK {
 
   public async route53(awsAccountId: string | undefined, region: string | undefined, mode: Mode): Promise<AWS.Route53> {
     return new AWS.Route53({
+      ...this.retryOptions,
       region,
       credentials: await this.credentialsCache.get(awsAccountId, mode),
     });
@@ -113,6 +130,7 @@ export class SDK {
 
   public async ecr(environment: Environment, mode: Mode): Promise<AWS.ECR> {
     return new AWS.ECR({
+      ...this.retryOptions,
       region: environment.region,
       credentials: await this.credentialsCache.get(environment.account, mode)
     });

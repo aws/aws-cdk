@@ -2,20 +2,27 @@ import { Documented, PrimitiveType } from './base-types';
 
 export type Property = ScalarProperty | CollectionProperty;
 export type ScalarProperty = PrimitiveProperty | ComplexProperty | UnionProperty;
-export type CollectionProperty = ListProperty | MapProperty | UnionProperty;
+export type CollectionProperty = ListProperty | MapProperty | UnionProperty;
 export type ListProperty = PrimitiveListProperty | ComplexListProperty;
 export type MapProperty = PrimitiveMapProperty | ComplexMapProperty;
+export type TagProperty = TagPropertyStandard | TagPropertyAutoScalingGroup | TagPropertyJson | TagPropertyStringMap;
 
 export interface PropertyBase extends Documented {
-  /** Indicates whether the property is required. */
-  Required: boolean;
+  /**
+   * Indicates whether the property is required.
+   *
+   * @default false
+   */
+  Required?: boolean;
   /**
    * During a stack update, the update behavior when you add, remove, or modify the property. AWS CloudFormation
    * replaces the resource when you change `Ìmmutable``properties. AWS CloudFormation doesn't replace the resource
    * when you change ``Mutable`` properties. ``Conditional`` updates can be mutable or immutable, depending on, for
    * example, which other properties you updated.
+   *
+   * @default UpdateType.Mutable
    */
-  UpdateType: UpdateType;
+  UpdateType?: UpdateType;
 
   /**
    * During a stack update, what kind of additional scrutiny changes to this property should be subjected to
@@ -77,6 +84,22 @@ export interface PrimitiveMapProperty extends MapPropertyBase {
 export interface ComplexMapProperty extends MapPropertyBase {
   /** Valid values for the property */
   ItemType: string;
+}
+
+export interface TagPropertyStandard extends PropertyBase {
+  ItemType: 'Tag';
+}
+
+export interface TagPropertyAutoScalingGroup extends PropertyBase {
+  ItemType: 'TagProperty';
+}
+
+export interface TagPropertyJson extends PropertyBase {
+  PrimitiveType: PrimitiveType.Json;
+}
+
+export interface TagPropertyStringMap extends PropertyBase {
+  PrimitiveItemType: 'String';
 }
 
 /**
@@ -196,4 +219,35 @@ export enum PropertyScrutinyType {
 
 export function isPropertyScrutinyType(str: string): str is PropertyScrutinyType {
   return (PropertyScrutinyType as any)[str] !== undefined;
+}
+
+/**
+ * This function validates that the property **can** be a Tag Property
+ *
+ * The property is only a Tag if the name of this property is Tags, which is
+ * validated using `ResourceType.isTaggable(resource)`.
+ */
+export function isTagProperty(prop: Property): prop is TagProperty {
+  return (
+    isTagPropertyStandard(prop) ||
+    isTagPropertyAutoScalingGroup(prop) ||
+    isTagPropertyJson(prop) ||
+    isTagPropertyStringMap(prop)
+  );
+}
+
+export function isTagPropertyStandard(prop: Property): prop is TagPropertyStandard {
+  return (prop as TagPropertyStandard).ItemType === 'Tag';
+}
+
+export function isTagPropertyAutoScalingGroup(prop: Property): prop is TagPropertyAutoScalingGroup {
+  return (prop as TagPropertyAutoScalingGroup).ItemType === 'TagProperty';
+}
+
+export function isTagPropertyJson(prop: Property): prop is TagPropertyJson {
+  return (prop as TagPropertyJson).PrimitiveType === PrimitiveType.Json;
+}
+
+export function isTagPropertyStringMap(prop: Property): prop is TagPropertyStringMap {
+  return (prop as TagPropertyStringMap).PrimitiveItemType === 'String';
 }

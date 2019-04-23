@@ -1,4 +1,4 @@
-import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
+import { expect, haveResource, haveResourceLike, ResourcePart } from '@aws-cdk/assert';
 import iam = require('@aws-cdk/aws-iam');
 import cdk = require('@aws-cdk/cdk');
 import { Test } from 'nodeunit';
@@ -127,6 +127,27 @@ export = {
     test.done();
   },
 
+  'lifecycle rules can be added upon initialization'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new ecr.Repository(stack, 'Repo', {
+      lifecycleRules: [
+        { maxImageCount: 3 }
+      ]
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::ECR::Repository', {
+      "LifecyclePolicy": {
+        // tslint:disable-next-line:max-line-length
+        "LifecyclePolicyText": "{\"rules\":[{\"rulePriority\":1,\"selection\":{\"tagStatus\":\"any\",\"countType\":\"imageCountMoreThan\",\"countNumber\":3},\"action\":{\"type\":\"expire\"}}]}"
+      }
+    }));
+    test.done();
+  },
+
   'calculate repository URI'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
@@ -160,11 +181,11 @@ export = {
 
     // THEN
     test.deepEqual(repo2.node.resolve(repo2.repositoryArn), {
-      'Fn::ImportValue': 'RepoRepositoryArn7F2901C9'
+      'Fn::ImportValue': 'Stack:RepoRepositoryArn7F2901C9'
     });
 
     test.deepEqual(repo2.node.resolve(repo2.repositoryName), {
-      'Fn::ImportValue': 'RepoRepositoryName58A7E467'
+      'Fn::ImportValue': 'Stack:RepoRepositoryName58A7E467'
     });
 
     test.done();
@@ -323,4 +344,19 @@ export = {
       test.done();
     }
   },
+
+  '"retain" can be used to retain the repo when the resource is deleted'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new ecr.Repository(stack, 'Repo', { retain: true });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::ECR::Repository', {
+      "Type": "AWS::ECR::Repository",
+      "DeletionPolicy": "Retain"
+    }, ResourcePart.CompleteDefinition));
+    test.done();
+  }
 };

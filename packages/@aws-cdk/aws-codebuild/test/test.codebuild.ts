@@ -1,5 +1,6 @@
 import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
 import codecommit = require('@aws-cdk/aws-codecommit');
+import ec2 = require('@aws-cdk/aws-ec2');
 import s3 = require('@aws-cdk/aws-s3');
 import cdk = require('@aws-cdk/cdk');
 import { Test } from 'nodeunit';
@@ -28,7 +29,7 @@ export = {
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": {
-              "Service": "codebuild.amazonaws.com"
+              "Service": { "Fn::Join": ["", ["codebuild.", { Ref: "AWS::URLSuffix" }]] }
               }
             }
             ],
@@ -127,7 +128,7 @@ export = {
           "Environment": {
             "Type": "LINUX_CONTAINER",
             "PrivilegedMode": false,
-            "Image": "aws/codebuild/ubuntu-base:14.04",
+            "Image": "aws/codebuild/standard:1.0",
             "ComputeType": "BUILD_GENERAL1_SMALL"
           }
           }
@@ -142,7 +143,7 @@ export = {
 
       const repo = new codecommit.Repository(stack, 'MyRepo', { repositoryName: 'hello-cdk' });
 
-      const source = new codebuild.CodeCommitSource({ repository: repo });
+      const source = new codebuild.CodeCommitSource({ repository: repo, cloneDepth: 2 });
 
       new codebuild.Project(stack, 'MyProject', {
         source
@@ -166,7 +167,7 @@ export = {
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": {
-              "Service": "codebuild.amazonaws.com"
+              "Service": { "Fn::Join": ["", ["codebuild.", { Ref: "AWS::URLSuffix" }]] }
               }
             }
             ],
@@ -265,7 +266,7 @@ export = {
           },
           "Environment": {
             "ComputeType": "BUILD_GENERAL1_SMALL",
-            "Image": "aws/codebuild/ubuntu-base:14.04",
+            "Image": "aws/codebuild/standard:1.0",
             "PrivilegedMode": false,
             "Type": "LINUX_CONTAINER"
           },
@@ -282,6 +283,7 @@ export = {
               "CloneUrlHttp"
             ]
             },
+            "GitCloneDepth": 2,
             "Type": "CODECOMMIT"
           }
           }
@@ -319,7 +321,7 @@ export = {
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": {
-              "Service": "codebuild.amazonaws.com"
+              "Service": { "Fn::Join": ["", ["codebuild.", { Ref: "AWS::URLSuffix" }]] }
               }
             }
             ],
@@ -468,6 +470,79 @@ export = {
       });
       test.done();
     },
+    'with GitHub source'(test: Test) {
+      const stack = new cdk.Stack();
+
+      new codebuild.Project(stack, 'Project', {
+        source: new codebuild.GitHubSource({
+          owner: 'testowner',
+          repo: 'testrepo',
+          cloneDepth: 3,
+          webhook: true,
+          reportBuildStatus: false,
+        })
+      });
+
+      expect(stack).to(haveResource('AWS::CodeBuild::Project', {
+        Source: {
+          Type: "GITHUB",
+          Location: 'https://github.com/testowner/testrepo.git',
+          ReportBuildStatus: false,
+          GitCloneDepth: 3,
+        }
+      }));
+
+      expect(stack).to(haveResourceLike('AWS::CodeBuild::Project', {
+        Triggers: {
+          Webhook: true,
+        },
+      }));
+
+      test.done();
+    },
+    'with GitHubEnterprise source'(test: Test) {
+      const stack = new cdk.Stack();
+
+      new codebuild.Project(stack, 'MyProject', {
+        source: new codebuild.GitHubEnterpriseSource({
+          httpsCloneUrl: 'https://github.testcompany.com/testowner/testrepo',
+          ignoreSslErrors: true,
+          cloneDepth: 4,
+        })
+      });
+
+      expect(stack).to(haveResource('AWS::CodeBuild::Project', {
+        Source: {
+          Type: "GITHUB_ENTERPRISE",
+          InsecureSsl: true,
+          GitCloneDepth: 4,
+          Location: 'https://github.testcompany.com/testowner/testrepo'
+        }
+      }));
+
+      test.done();
+    },
+    'with Bitbucket source'(test: Test) {
+      const stack = new cdk.Stack();
+
+      new codebuild.Project(stack, 'Project', {
+        source: new codebuild.BitBucketSource({
+          owner: 'testowner',
+          repo: 'testrepo',
+          cloneDepth: 5,
+        })
+      });
+
+      expect(stack).to(haveResource('AWS::CodeBuild::Project', {
+        Source: {
+          Type: 'BITBUCKET',
+          Location: 'https://bitbucket.org/testowner/testrepo.git',
+          GitCloneDepth: 5,
+        },
+      }));
+
+      test.done();
+    },
     'fail creating a Project when no build spec is given'(test: Test) {
       const stack = new cdk.Stack();
 
@@ -478,6 +553,99 @@ export = {
 
       test.done();
     },
+    'with VPC configuration'(test: Test) {
+      const stack = new cdk.Stack();
+
+      const bucket = new s3.Bucket(stack, 'MyBucket');
+      const vpc = new ec2.VpcNetwork(stack, 'MyVPC');
+      const securityGroup = new ec2.SecurityGroup(stack, 'SecurityGroup1', {
+          groupName: 'Bob',
+          vpc,
+          allowAllOutbound: true,
+          description: 'Example',
+      });
+      new codebuild.Project(stack, 'MyProject', {
+        source: new codebuild.S3BucketSource({
+          bucket,
+          path: 'path/to/source.zip',
+        }),
+        vpc,
+        securityGroups: [securityGroup]
+      });
+      expect(stack).to(haveResourceLike("AWS::CodeBuild::Project", {
+        "VpcConfig": {
+          "SecurityGroupIds": [
+            {
+              "Fn::GetAtt": [
+                "SecurityGroup1F554B36F",
+                "GroupId"
+              ]
+            }
+          ],
+          "Subnets": [
+            {
+              "Ref": "MyVPCPrivateSubnet1Subnet641543F4"
+            },
+            {
+              "Ref": "MyVPCPrivateSubnet2SubnetA420D3F0"
+            },
+            {
+              "Ref": "MyVPCPrivateSubnet3SubnetE1B8B1B4"
+            }
+          ],
+          "VpcId": {
+            "Ref": "MyVPCAFB07A31"
+          }
+        }
+      }));
+      test.done();
+    },
+    'without VPC configuration but security group identified'(test: Test) {
+      const stack = new cdk.Stack();
+
+      const bucket = new s3.Bucket(stack, 'MyBucket');
+      const vpc = new ec2.VpcNetwork(stack, 'MyVPC');
+      const securityGroup = new ec2.SecurityGroup(stack, 'SecurityGroup1', {
+          groupName: 'Bob',
+          vpc,
+          allowAllOutbound: true,
+          description: 'Example',
+      });
+
+      test.throws(() =>
+        new codebuild.Project(stack, 'MyProject', {
+          source: new codebuild.S3BucketSource({
+            bucket,
+            path: 'path/to/source.zip',
+          }),
+          securityGroups: [securityGroup]
+        })
+      , /Cannot configure 'securityGroup' or 'allowAllOutbound' without configuring a VPC/);
+      test.done();
+    },
+    'with VPC configuration but allowAllOutbound identified'(test: Test) {
+      const stack = new cdk.Stack();
+      const bucket = new s3.Bucket(stack, 'MyBucket');
+      const vpc = new ec2.VpcNetwork(stack, 'MyVPC');
+      const securityGroup = new ec2.SecurityGroup(stack, 'SecurityGroup1', {
+          groupName: 'Bob',
+          vpc,
+          allowAllOutbound: true,
+          description: 'Example',
+      });
+      test.throws(() =>
+        new codebuild.Project(stack, 'MyProject', {
+          source: new codebuild.S3BucketSource({
+            bucket,
+            path: 'path/to/source.zip',
+          }),
+          vpc,
+          allowAllOutbound: true,
+          securityGroups: [securityGroup]
+        })
+      , /Configure 'allowAllOutbound' directly on the supplied SecurityGroup/);
+      test.done();
+    }
   },
 
   'using timeout and path in S3 artifacts sets it correctly'(test: Test) {
@@ -671,7 +839,7 @@ export = {
           "Environment": {
           "Type": "LINUX_CONTAINER",
           "PrivilegedMode": false,
-          "Image": "aws/codebuild/ubuntu-base:14.04",
+          "Image": "aws/codebuild/standard:1.0",
           "ComputeType": "BUILD_GENERAL1_SMALL"
           }
         }));
@@ -679,7 +847,7 @@ export = {
         test.done();
       },
 
-      'if sourcde is set to CodePipeline, and artifacts are not set, they are defaulted to CodePipeline'(test: Test) {
+      'if source is set to CodePipeline, and artifacts are not set, they are defaulted to CodePipeline'(test: Test) {
         const stack = new cdk.Stack();
 
         new codebuild.Project(stack, 'MyProject', {
@@ -702,7 +870,7 @@ export = {
           "Environment": {
           "Type": "LINUX_CONTAINER",
           "PrivilegedMode": false,
-          "Image": "aws/codebuild/ubuntu-base:14.04",
+          "Image": "aws/codebuild/standard:1.0",
           "ComputeType": "BUILD_GENERAL1_SMALL"
           }
         }));
@@ -907,7 +1075,7 @@ export = {
         }
       ],
       "PrivilegedMode": false,
-      "Image": "aws/codebuild/ubuntu-base:14.04",
+      "Image": "aws/codebuild/standard:1.0",
       "ComputeType": "BUILD_GENERAL1_SMALL"
       }
     }));
@@ -950,6 +1118,40 @@ export = {
         environment: invalidEnvironment,
       });
     }, /Windows images do not support the Small ComputeType/);
+
+    test.done();
+  },
+
+  'badge support test'(test: Test) {
+    const stack = new cdk.Stack();
+
+    interface BadgeValidationTestCase {
+      source: codebuild.BuildSource,
+      shouldPassValidation: boolean
+    }
+
+    const repo = new codecommit.Repository(stack, 'MyRepo', { repositoryName: 'hello-cdk' });
+    const bucket = new s3.Bucket(stack, 'MyBucket');
+
+    const cases: BadgeValidationTestCase[] = [
+      { source: new codebuild.NoSource(), shouldPassValidation: false },
+      { source: new codebuild.CodePipelineSource(), shouldPassValidation: false },
+      { source: new codebuild.CodeCommitSource({ repository: repo }), shouldPassValidation: false },
+      { source: new codebuild.S3BucketSource({ bucket, path: 'path/to/source.zip' }), shouldPassValidation: false },
+      { source: new codebuild.GitHubSource({ owner: 'awslabs', repo: 'aws-cdk' }), shouldPassValidation: true },
+      { source: new codebuild.GitHubEnterpriseSource({ httpsCloneUrl: 'url' }), shouldPassValidation: true },
+      { source: new codebuild.BitBucketSource({ owner: 'awslabs', repo: 'aws-cdk' }), shouldPassValidation: true }
+    ];
+
+    cases.forEach(testCase => {
+      const source = testCase.source;
+      const validationBlock = () => { new codebuild.Project(stack, `MyProject-${source.type}`, { source, badge: true }); };
+      if (testCase.shouldPassValidation) {
+        test.doesNotThrow(validationBlock, Error, `Badge is not supported for source type ${source.type}`);
+      } else {
+        test.throws(validationBlock, Error, `Badge is not supported for source type ${source.type}`);
+      }
+    });
 
     test.done();
   }

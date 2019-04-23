@@ -40,6 +40,16 @@ granting permissions to other AWS accounts or organizations.
 
 [Example of Lambda Layer usage](test/integ.layer-version.lit.ts)
 
+## Event Rule Target
+
+You can use an AWS Lambda function as a target for an Amazon CloudWatch event
+rule:
+
+```ts
+import targets = require('@aws-cdk/aws-events-targets');
+rule.addTarget(new targets.LambdaFunction(myFunction));
+```
+
 ### Event Sources
 
 AWS Lambda supports a [variety of event sources](https://docs.aws.amazon.com/lambda/latest/dg/invoking-lambda-function.html).
@@ -71,50 +81,6 @@ fn.addEventSource(new S3EventSource(bucket, {
 ```
 
 See the documentation for the __@aws-cdk/aws-lambda-event-sources__ module for more details.
-
-### Lambda in CodePipeline
-
-This module also contains an Action that allows you to invoke a Lambda function from CodePipeline:
-
-```ts
-import codepipeline = require('@aws-cdk/aws-codepipeline');
-
-const pipeline = new codepipeline.Pipeline(this, 'MyPipeline');
-const lambdaStage = pipeline.addStage('Lambda');
-new lambda.PipelineInvokeAction(this, 'Lambda', {
-    stage: lambdaStage,
-    lambda: fn,
-});
-```
-
-You can also add the Lambda to the Pipeline directly:
-
-```ts
-// equivalent to the code above:
-fn.addToPipeline(lambdaStage, 'Lambda');
-```
-
-The Lambda Action can have up to 5 inputs,
-and up to 5 outputs:
-
-```typescript
-const lambdaAction = fn.addToPipeline(lambdaStage, 'Lambda', {
-  inputArtifacts: [
-    sourceAction.outputArtifact,
-    buildAction.outputArtifact,
-  ],
-  outputArtifactNames: [
-    'Out1',
-    'Out2',
-  ],
-});
-
-lambdaAction.outputArtifacts(); // returns the list of output Artifacts
-lambdaAction.outputArtifact('Out2'); // returns the named output Artifact, or throws an exception if not found
-```
-
-See [the AWS documentation](https://docs.aws.amazon.com/codepipeline/latest/userguide/actions-invoke-lambda-function.html)
-on how to write a Lambda function invoked from CodePipeline.
 
 ### Lambda with DLQ
 

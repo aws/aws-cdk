@@ -12,7 +12,17 @@
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": {
-                "Service": "lambda.amazonaws.com"
+                "Service": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "lambda.",
+                      {
+                        "Ref": "AWS::URLSuffix"
+                      }
+                    ]
+                  ]
+                }
               }
             }
           ],
@@ -105,8 +115,8 @@
         }
       },
       "DependsOn": [
-        "MyFunctionServiceRole3C357FF2",
-        "MyFunctionServiceRoleDefaultPolicyB705ABD4"
+        "MyFunctionServiceRoleDefaultPolicyB705ABD4",
+        "MyFunctionServiceRole3C357FF2"
       ]
     },
     "MyQueueURLParameterA4918D6E": {

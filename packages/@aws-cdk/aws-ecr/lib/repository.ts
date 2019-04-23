@@ -1,5 +1,5 @@
 import iam = require('@aws-cdk/aws-iam');
-import cdk = require('@aws-cdk/cdk');
+import { CfnOutput, Construct, DeletionPolicy, Token } from '@aws-cdk/cdk';
 import { CfnRepository } from './ecr.generated';
 import { CountType, LifecycleRule, TagStatus } from './lifecycle';
 import { RepositoryBase, RepositoryImportProps } from "./repository-ref";
@@ -10,14 +10,14 @@ export interface RepositoryProps {
    *
    * @default Automatically generated name.
    */
-  repositoryName?: string;
+  readonly repositoryName?: string;
 
   /**
    * Life cycle rules to apply to this registry
    *
    * @default No life cycle rules
    */
-  lifecycleRules?: LifecycleRule[];
+  readonly lifecycleRules?: LifecycleRule[];
 
   /**
    * The AWS account ID associated with the registry that contains the repository.
@@ -25,7 +25,7 @@ export interface RepositoryProps {
    * @see https://docs.aws.amazon.com/AmazonECR/latest/APIReference/API_PutLifecyclePolicy.html
    * @default The default registry is assumed.
    */
-  lifecycleRegistryId?: string;
+  readonly lifecycleRegistryId?: string;
 
   /**
    * Retain the repository on stack deletion
@@ -35,7 +35,7 @@ export interface RepositoryProps {
    *
    * @default false
    */
-  retain?: boolean;
+  readonly retain?: boolean;
 }
 
 /**
@@ -48,18 +48,18 @@ export class Repository extends RepositoryBase {
   private readonly registryId?: string;
   private policyDocument?: iam.PolicyDocument;
 
-  constructor(scope: cdk.Construct, id: string, props: RepositoryProps = {}) {
+  constructor(scope: Construct, id: string, props: RepositoryProps = {}) {
     super(scope, id);
 
     const resource = new CfnRepository(this, 'Resource', {
       repositoryName: props.repositoryName,
       // It says "Text", but they actually mean "Object".
-      repositoryPolicyText: new cdk.Token(() => this.policyDocument),
-      lifecyclePolicy: new cdk.Token(() => this.renderLifecyclePolicy()),
+      repositoryPolicyText: new Token(() => this.policyDocument),
+      lifecyclePolicy: new Token(() => this.renderLifecyclePolicy()),
     });
 
     if (props.retain) {
-      resource.options.deletionPolicy = cdk.DeletionPolicy.Retain;
+      resource.options.deletionPolicy = DeletionPolicy.Retain;
     }
 
     this.registryId = props.lifecycleRegistryId;
@@ -76,8 +76,8 @@ export class Repository extends RepositoryBase {
    */
   public export(): RepositoryImportProps {
     return {
-      repositoryArn: new cdk.Output(this, 'RepositoryArn', { value: this.repositoryArn }).makeImportValue().toString(),
-      repositoryName: new cdk.Output(this, 'RepositoryName', { value: this.repositoryName }).makeImportValue().toString()
+      repositoryArn: new CfnOutput(this, 'RepositoryArn', { value: this.repositoryArn }).makeImportValue().toString(),
+      repositoryName: new CfnOutput(this, 'RepositoryName', { value: this.repositoryName }).makeImportValue().toString()
     };
   }
 
@@ -97,7 +97,7 @@ export class Repository extends RepositoryBase {
   public addLifecycleRule(rule: LifecycleRule) {
     // Validate rule here so users get errors at the expected location
     if (rule.tagStatus === undefined) {
-      rule.tagStatus = rule.tagPrefixList === undefined ? TagStatus.Any : TagStatus.Tagged;
+      rule = { ...rule, tagStatus: rule.tagPrefixList === undefined ? TagStatus.Any : TagStatus.Tagged };
     }
 
     if (rule.tagStatus === TagStatus.Tagged && (rule.tagPrefixList === undefined || rule.tagPrefixList.length === 0)) {

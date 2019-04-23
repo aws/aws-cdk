@@ -33,21 +33,21 @@ export interface ConnectionsProps {
    *
    * @default Derived from securityGroup if set.
    */
-  securityGroupRule?: ISecurityGroupRule;
+  readonly securityGroupRule?: ISecurityGroupRule;
 
   /**
    * What securityGroup(s) this object is managing connections for
    *
    * @default No security groups
    */
-  securityGroups?: ISecurityGroup[];
+  readonly securityGroups?: ISecurityGroup[];
 
   /**
    * Default port range for initiating connections to and from this object
    *
    * @default No default port range
    */
-  defaultPortRange?: IPortRange;
+  readonly defaultPortRange?: IPortRange;
 }
 
 /**
@@ -82,7 +82,15 @@ export class Connections implements IConnectable {
    */
   private readonly _securityGroupRules = new ReactiveList<ISecurityGroupRule>();
 
+  /**
+   * When doing bidirectional grants between Connections, make sure we don't recursive infinitely
+   */
   private skip: boolean = false;
+
+  /**
+   * When doing bidirectional grants between Security Groups in different stacks, put the rule on the other SG
+   */
+  private remoteRule: boolean = false;
 
   constructor(props: ConnectionsProps = {}) {
     this.connections = this;
@@ -116,15 +124,21 @@ export class Connections implements IConnectable {
   public allowTo(other: IConnectable, portRange: IPortRange, description?: string) {
     if (this.skip) { return; }
 
+    const remoteRule = this.remoteRule; // Capture current value into local for callback to close over
     this._securityGroups.forEachAndForever(securityGroup => {
       other.connections._securityGroupRules.forEachAndForever(rule => {
-        securityGroup.addEgressRule(rule, portRange, description);
+        securityGroup.addEgressRule(rule, portRange, description, remoteRule);
       });
     });
 
     this.skip = true;
-    other.connections.allowFrom(this, portRange, description);
-    this.skip = false;
+    other.connections.remoteRule = true;
+    try {
+      other.connections.allowFrom(this, portRange, description);
+    } finally {
+      this.skip = false;
+      other.connections.remoteRule = false;
+    }
   }
 
   /**
@@ -133,15 +147,21 @@ export class Connections implements IConnectable {
   public allowFrom(other: IConnectable, portRange: IPortRange, description?: string) {
     if (this.skip) { return; }
 
+    const remoteRule = this.remoteRule; // Capture current value into local for callback to close over
     this._securityGroups.forEachAndForever(securityGroup => {
       other.connections._securityGroupRules.forEachAndForever(rule => {
-        securityGroup.addIngressRule(rule, portRange, description);
+        securityGroup.addIngressRule(rule, portRange, description, remoteRule);
       });
     });
 
     this.skip = true;
-    other.connections.allowTo(this, portRange, description);
-    this.skip = false;
+    other.connections.remoteRule = true;
+    try {
+      other.connections.allowTo(this, portRange, description);
+    } finally {
+      this.skip = false;
+      other.connections.remoteRule = false;
+    }
   }
 
   /**

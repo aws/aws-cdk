@@ -1,4 +1,4 @@
-## AWS CodeBuild Construct Library
+# AWS CodeBuild
 
 AWS CodeBuild is a fully managed continuous integration service that compiles
 source code, runs tests, and produces software packages that are ready to
@@ -9,7 +9,7 @@ started quickly by using prepackaged build environments, or you can create
 custom build environments that use your own build tools. With CodeBuild, you are
 charged by the minute for the compute resources you use.
 
-### Installation
+## Installation
 
 Install the module:
 
@@ -27,25 +27,25 @@ The `codebuild.Project` construct represents a build project resource. See the
 reference documentation for a comprehensive list of initialization properties,
 methods and attributes.
 
-### Source
+## Source
 
 Build projects are usually associated with a _source_, which is specified via
 the `source` property which accepts a class that extends the `BuildSource`
 abstract base class. The supported sources are:
 
-#### `NoSource`
+### `NoSource`
 
-This is the default and implies that no source will be associated with this
+This is the default and implies that no source is associated with this
 build project.
 
 The `buildSpec` option is required in this case.
 
-Here's an AWS CodeBuild project with no source which simply prints `Hello,
+Here's a CodeBuild project with no source which simply prints `Hello,
 CodeBuild!`:
 
 [Minimal Example](./test/integ.defaults.lit.ts)
 
-#### `CodeCommitSource`
+### `CodeCommitSource`
 
 Use an AWS CodeCommit repository as the source of this build:
 
@@ -59,7 +59,7 @@ new codebuild.Project(this, 'MyFirstCodeCommitProject', {
 });
 ```
 
-#### `S3BucketSource`
+### `S3BucketSource`
 
 Create a CodeBuild project with an S3 bucket as the source:
 
@@ -76,12 +76,12 @@ new codebuild.Project(this, 'MyProject', {
 });
 ```
 
-#### `CodePipelineSource`
+### `CodePipelineSource`
 
-Used as a special source type when an AWS CodeBuild project is used as an AWS
+Used as a special source type when a CodeBuild project is used as a
 CodePipeline action.
 
-#### `GitHubSource` and `GitHubEnterpriseSource`
+### `GitHubSource` and `GitHubEnterpriseSource`
 
 These source types can be used to build code from a GitHub repository.
 Example:
@@ -90,20 +90,25 @@ Example:
 const gitHubSource = new codebuild.GitHubSource({
   owner: 'awslabs',
   repo: 'aws-cdk',
-  oauthToken: new cdk.SecretParameter(this, 'GitHubOAuthToken', {
-    ssmParameter: 'my-github-token',
-  }),
   webhook: true, // optional, default: false
 });
 ```
 
-#### `BitBucketSource`
+To provide GitHub credentials, please either go to AWS CodeBuild Console to connect
+or call `ImportSourceCredentials` to persist your personal access token.
+Example:
+
+```
+aws codebuild import-source-credentials --server-type GITHUB --auth-type PERSONAL_ACCESS_TOKEN --token <token_value>
+```
+
+### `BitBucketSource`
 
 This source type can be used to build code from a BitBucket repository.
 
-### Environment
+## Environment
 
-By default, projects will use a small instance with an Ubuntu 14.04 image. You
+By default, projects use a small instance with an Ubuntu 18.04 image. You
 can use the `environment` property to customize the build environment:
 
 * `buildImage` defines the Docker image used. See [Images](#images) below for
@@ -113,9 +118,9 @@ can use the `environment` property to customize the build environment:
 * `environmentVariables` can be set at this level (and also at the project
   level).
 
-### Images
+## Images
 
-The AWS CodeBuild library supports both Linux and Windows images via the
+The CodeBuild library supports both Linux and Windows images via the
 `LinuxBuildImage` and `WindowsBuildImage` classes, respectively.
 
 You can either specify one of the predefined Windows/Linux images by using one
@@ -140,24 +145,26 @@ The following example shows how to define an image from an ECR repository:
 
 [ECR example](./test/integ.ecr.lit.ts)
 
-### Events
+## Events
 
-AWS CodeBuild projects can be used either as a source for events or be triggered
+CodeBuild projects can be used either as a source for events or be triggered
 by events via an event rule.
 
-#### Using Project as an event target
+### Using Project as an event target
 
-The `Project` construct implements the `IEventRuleTarget` interface. This means
-that it can be used as a target for event rules:
+The `@aws-cdk/aws-events-targets.CodeBuildProject` allows using an AWS CodeBuild
+project as a AWS CloudWatch event rule target:
 
 ```ts
 // start build when a commit is pushed
-codeCommitRepository.onCommit('OnCommit', project);
+const targets = require('@aws-cdk/aws-events-targets');
+
+codeCommitRepository.onCommit('OnCommit', new targets.CodeBuildProject(project));
 ```
 
-#### Using Project as an event source
+### Using Project as an event source
 
-To define CloudWatch event rules for build projects, use one of the `onXxx`
+To define Amazon CloudWatch event rules for build projects, use one of the `onXxx`
 methods:
 
 ```ts
@@ -165,75 +172,7 @@ const rule = project.onStateChange('BuildStateChange');
 rule.addTarget(lambdaFunction);
 ```
 
-
-### Using an AWS CodeBuild Project as an AWS CodePipeline action
-
-Example of a Project used in CodePipeline, alongside CodeCommit:
-
-```ts
-import codebuild = require('@aws-cdk/aws-codebuild');
-import codecommit = require('@aws-cdk/aws-codecommit');
-import codepipeline = require('@aws-cdk/aws-codepipeline');
-
-const repository = new codecommit.Repository(this, 'MyRepository', {
-  repositoryName: 'MyRepository',
-});
-
-const project = new codebuild.PipelineProject(this, 'MyProject');
-
-const pipeline = new codepipeline.Pipeline(this, 'MyPipeline');
-
-const sourceStage = pipeline.addStage('Source');
-repository.addToPipeline(sourceStage, 'CodeCommit');
-
-const buildStage = pipeline.addStage('Build');
-new codebuild.PipelineBuildAction(this, 'CodeBuild', {
-  stage: buildStage,
-  project,
-});
-```
-
-The `PipelineProject` utility class is a simple sugar around the `Project`
-class, it's equivalent to:
-
-```ts
-const project = new codebuild.Project(this, 'MyProject', {
-  source: new codebuild.CodePipelineSource(),
-  artifacts: new codebuild.CodePipelineBuildArtifacts(),
-  // rest of the properties from PipelineProject are passed unchanged...
-}
-```
-
-You can also add the Project to the Pipeline directly:
-
-```ts
-// equivalent to the code above:
-const buildAction = project.addToPipeline(buildStage, 'CodeBuild');
-```
-
-In addition to the build Action, there is also a test Action. It works very
-similarly to the build Action, the only difference is that the test Action does
-not always produce an output artifact.
-
-Examples:
-
-```ts
-new codebuild.PipelineTestAction(this, 'IntegrationTest', {
-  stage: buildStage,
-  project,
-  // outputArtifactName is optional - if you don't specify it,
-  // the Action will have an undefined `outputArtifact` property
-  outputArtifactName: 'IntegrationTestOutput',
-});
-
-// equivalent to the code above:
-project.addToPipelineAsTest(buildStage, 'IntegrationTest', {
-    // of course, this property is optional here as well
-    outputArtifactName: 'IntegrationTestOutput',
-});
-```
-
-### Secondary sources and artifacts
+## Secondary sources and artifacts
 
 CodeBuild Projects can get their sources from multiple places, and produce
 multiple outputs. For example:
@@ -242,16 +181,16 @@ multiple outputs. For example:
 const project = new codebuild.Project(this, 'MyProject', {
   secondarySources: [
     new codebuild.CodeCommitSource({
-    identifier: 'source2',
-    repository: repo,
+      identifier: 'source2',
+      repository: repo,
     }),
   ],
   secondaryArtifacts: [
     new codebuild.S3BucketBuildArtifacts({
-    identifier: 'artifact2',
-    bucket: bucket,
-    path: 'some/path',
-    name: 'file.zip',
+      identifier: 'artifact2',
+      bucket: bucket,
+      path: 'some/path',
+      name: 'file.zip',
     }),
   ],
   // ...
@@ -261,7 +200,7 @@ const project = new codebuild.Project(this, 'MyProject', {
 Note that the `identifier` property is required for both secondary sources and
 artifacts.
 
-The contents of the secondary source will be available to the build under the
+The contents of the secondary source is available to the build under the
 directory specified by the `CODEBUILD_SRC_DIR_<identifier>` environment variable
 (so, `CODEBUILD_SRC_DIR_source2` in the above case).
 
@@ -277,89 +216,71 @@ const project = new codebuild.Project(this, 'MyProject', {
   buildSpec: {
     version: '0.2',
     phases: {
-    build: {
-      commands: [
-        'cd $CODEBUILD_SRC_DIR_source2',
-        'touch output2.txt',
-      ],
-    },
-    },
-    artifacts: {
-    'secondary-artifacts': {
-      'artifact2': {
-        'base-directory': '$CODEBUILD_SRC_DIR_source2',
-        'files': [
-        'output2.txt',
-        ],
-      },
-    },
-    },
-  },
-});
-```
-
-#### Multiple inputs and outputs in CodePipeline
-
-When you want to have multiple inputs and/or outputs for a Project used in a
-Pipeline, instead of using the `secondarySources` and `secondaryArtifacts`
-properties, you need to use the `additionalInputArtifacts` and
-`additionalOutputArtifactNames` properties of the CodeBuild CodePipeline
-Actions. Example:
-
-```ts
-const sourceStage = pipeline.addStage('Source');
-const sourceAction1 = repository1.addToPipeline(sourceStage, 'Source1');
-const sourceAction2 = repository2.addToPipeline(sourceStage, 'Source2', {
-  outputArtifactName: 'source2',
-});
-
-const buildStage = pipeline.addStage('Build');
-const buildAction = project.addToPipeline(buildStage, 'Build', {
-    inputArtifact: sourceAction1.outputArtifact,
-    outputArtifactName: 'artifact1', // for better buildspec readability - see below
-    additionalInputArtifacts: [
-        sourceAction2.outputArtifact, // this is where 'source2' comes from
-    ],
-    additionalOutputArtifactNames: [
-        'artifact2',
-    ],
-});
-```
-
-**Note**: when a CodeBuild Action in a Pipeline has more than one output, it
-will only use the `secondary-artifacts` field of the buildspec, never the
-primary output specification directly under `artifacts`. Because of that, it
-pays to name even your primary output artifact on the Pipeline, like we did
-above, so that you know what name to use in the buildspec.
-
-Example buildspec for the above project:
-
-```ts
-const project = new codebuild.PipelineProject(this, 'MyProject', {
-  buildSpec: {
-    version: '0.2',
-    phases: {
-    build: {
-      commands: [
-        // By default, you're in a directory with the contents of the repository from sourceAction1.
-          // Use the CODEBUILD_SRC_DIR_source2 environment variable
-          // to get a path to the directory with the contents of the second input repository.
+      build: {
+        commands: [
+          'cd $CODEBUILD_SRC_DIR_source2',
+          'touch output2.txt',
         ],
       },
     },
     artifacts: {
       'secondary-artifacts': {
-        'artifact1': {
-          // primary Action output artifact,
-          // available as buildAction.outputArtifact
-        },
         'artifact2': {
-          // additional output artifact,
-          // available as buildAction.additionalOutputArtifact('artifact2')
+          'base-directory': '$CODEBUILD_SRC_DIR_source2',
+          'files': [
+            'output2.txt',
+          ],
         },
       },
     },
   },
-  // ...
+});
+```
+
+### Definition of VPC configuration in CodeBuild Project
+
+Typically, resources in an VPC are not accessible by AWS CodeBuild. To enable
+access, you must provide additional VPC-specific configuration information as
+part of your CodeBuild project configuration. This includes the VPC ID, the
+VPC subnet IDs, and the VPC security group IDs. VPC-enabled builds are then
+able to access resources inside your VPC.
+
+For further Information see https://docs.aws.amazon.com/codebuild/latest/userguide/vpc-support.html
+
+**Use Cases**
+VPC connectivity from AWS CodeBuild builds makes it possible to:
+
+* Run integration tests from your build against data in an Amazon RDS database that's isolated on a private subnet.
+* Query data in an Amazon ElastiCache cluster directly from tests.
+* Interact with internal web services hosted on Amazon EC2, Amazon ECS, or services that use internal Elastic Load Balancing.
+* Retrieve dependencies from self-hosted, internal artifact repositories, such as PyPI for Python, Maven for Java, and npm for Node.js.
+* Access objects in an Amazon S3 bucket configured to allow access through an Amazon VPC endpoint only.
+* Query external web services that require fixed IP addresses through the Elastic IP address of the NAT gateway or NAT instance associated with your subnet(s).
+
+Your builds can access any resource that's hosted in your VPC.
+
+**Enable Amazon VPC Access in your CodeBuild Projects**
+
+Include these settings in your VPC configuration:
+
+* For VPC ID, choose the VPC that CodeBuild uses.
+* For Subnets, choose a private subnet SubnetSelection with NAT translation that includes or has routes to the resources used CodeBuild.
+* For Security Groups, choose the security groups that CodeBuild uses to allow access to resources in the VPCs.
+
+For example:
+
+```ts
+const stack = new cdk.Stack(app, 'aws-cdk-codebuild-project-vpc');
+const vpc = new ec2.VpcNetwork(stack, 'MyVPC');
+const securityGroup = new ec2.SecurityGroup(stack, 'SecurityGroup1', {
+    allowAllOutbound: true,
+    description: 'Example',
+    groupName: 'MySecurityGroup',
+    vpc: vpc,
+});
+new Project(stack, 'MyProject', {
+    buildScriptAsset: new assets.ZipDirectoryAsset(stack, 'Bundle', { path: 'script_bundle' }),
+    securityGroups: [securityGroup],
+    vpc: vpc
 });
 ```

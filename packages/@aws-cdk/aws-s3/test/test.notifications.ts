@@ -1,4 +1,4 @@
-import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
+import { expect, haveResource, haveResourceLike, SynthUtils } from '@aws-cdk/assert';
 import s3n = require('@aws-cdk/aws-s3-notifications');
 import cdk = require('@aws-cdk/cdk');
 import { Stack } from '@aws-cdk/cdk';
@@ -42,6 +42,24 @@ export = {
 
     test.done();
   },
+  'when notification are added, you can tag the lambda'(test: Test) {
+    const stack = new cdk.Stack();
+    stack.node.apply(new cdk.Tag('Lambda', 'AreTagged'));
+
+    const bucket = new s3.Bucket(stack, 'MyBucket');
+
+    const topic = new Topic(stack, 'MyTopic');
+
+    bucket.onEvent(s3.EventType.ObjectCreated, topic);
+
+    expect(stack).to(haveResource('AWS::S3::Bucket'));
+    expect(stack).to(haveResource('AWS::Lambda::Function', {
+      Tags: [{Key: 'Lambda', Value: 'AreTagged'}],
+      Description: 'AWS CloudFormation handler for "Custom::S3BucketNotifications" resources (@aws-cdk/aws-s3)' }));
+    expect(stack).to(haveResource('Custom::S3BucketNotifications'));
+
+    test.done();
+  },
 
   'bucketNotificationTarget is not called during synthesis'(test: Test) {
     const stack = new cdk.Stack();
@@ -76,7 +94,7 @@ export = {
         },
         "Effect": "Allow",
         "Principal": {
-          "Service": "s3.amazonaws.com"
+          "Service": { "Fn::Join": ["", ["s3.", { Ref: "AWS::URLSuffix" }]] }
         },
         "Resource": {
           "Ref": "TopicBFC7AF6E"
@@ -277,7 +295,7 @@ export = {
     const stack = new Stack();
 
     const bucket = new s3.Bucket(stack, 'Bucket');
-    const dependent = new cdk.Resource(stack, 'Dependent', { type: 'DependOnMe' });
+    const dependent = new cdk.CfnResource(stack, 'Dependent', { type: 'DependOnMe' });
     const dest: s3n.IBucketNotificationDestination = {
       asBucketNotificationDestination: () => ({
         arn: 'arn',
@@ -288,7 +306,8 @@ export = {
 
     bucket.onObjectCreated(dest);
 
-    test.deepEqual(stack.toCloudFormation().Resources.BucketNotifications8F2E257D, {
+    stack.node.prepareTree();
+    test.deepEqual(SynthUtils.toCloudFormation(stack).Resources.BucketNotifications8F2E257D, {
       Type: 'Custom::S3BucketNotifications',
       Properties: {
         ServiceToken: { 'Fn::GetAtt': [ 'BucketNotificationsHandler050a0587b7544547bf325f094a3db8347ECC3691', 'Arn' ] },

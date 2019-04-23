@@ -1,9 +1,9 @@
-import cdk = require('@aws-cdk/cdk');
+import { IResource } from '@aws-cdk/cdk';
 
 /**
  * Imported or created hosted zone
  */
-export interface IHostedZone extends cdk.IConstruct {
+export interface IHostedZone extends IResource {
   /**
    * ID of this hosted zone, such as "Z23ABC4XYZL05B"
    */
@@ -35,10 +35,10 @@ export interface HostedZoneImportProps {
   /**
    * Identifier of the hosted zone
    */
-  hostedZoneId: string;
+  readonly hostedZoneId: string;
 
   /**
    * Name of the hosted zone
    */
-  zoneName: string;
+  readonly zoneName: string;
 }

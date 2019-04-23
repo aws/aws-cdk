@@ -355,7 +355,17 @@
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": {
-                "Service": "ecs-tasks.amazonaws.com"
+                "Service": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "ecs-tasks.",
+                      {
+                        "Ref": "AWS::URLSuffix"
+                      }
+                    ]
+                  ]
+                }
               }
             }
           ],
@@ -451,9 +461,11 @@
               }
             ]
           }
-        }
+        },
+        "ServiceRegistries": []
       },
       "DependsOn": [
+        "LBPublicListenerFargateGroup5EE2FBAF",
         "LBPublicListener6E1F3D94"
       ]
     },
@@ -583,7 +595,8 @@
         "Type": "application"
       },
       "DependsOn": [
-        "VpcIGWD7BA715C"
+        "VpcPublicSubnet1DefaultRoute3DA9E72A",
+        "VpcPublicSubnet2DefaultRoute97F91067"
       ]
     },
     "LBSecurityGroup8A41EA2B": {
@@ -650,12 +663,12 @@
       "Properties": {
         "Port": 80,
         "Protocol": "HTTP",
-        "VpcId": {
-          "Ref": "Vpc8378EB38"
-        },
         "TargetGroupAttributes": [],
         "Targets": [],
-        "TargetType": "ip"
+        "TargetType": "ip",
+        "VpcId": {
+          "Ref": "Vpc8378EB38"
+        }
       }
     }
   },
@@ -666,9 +679,6 @@
           "LB8A12904C",
           "DNSName"
         ]
-      },
-      "Export": {
-        "Name": "aws-ecs-integ:LoadBalancerDNS"
       }
     }
   }

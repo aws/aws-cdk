@@ -11,12 +11,12 @@ export interface DynamoEventSourceProps {
    *
    * @default 100
    */
-  batchSize?: number;
+  readonly batchSize?: number;
 
   /**
    * Where to begin consuming the DynamoDB stream.
    */
-  startingPosition: lambda.StartingPosition;
+  readonly startingPosition: lambda.StartingPosition;
 }
 
 /**
@@ -37,7 +37,7 @@ export class DynamoEventSource implements lambda.IEventSource {
       startingPosition: this.props.startingPosition
     });
 
-    this.table.grantStreamRead(target.role);
-    dynamodb.Table.grantListStreams(target.role);
+    this.table.grantStreamRead(target);
+    dynamodb.Table.grantListStreams(target);
   }
 }

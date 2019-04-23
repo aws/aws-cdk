@@ -7,7 +7,13 @@ import { Timers } from "./timer";
  * Run the compiler on the current package
  */
 export async function compileCurrentPackage(timers: Timers, compilers: CompilerOverrides = {}): Promise<void> {
-  await shell(packageCompiler(compilers), timers);
+  const stdout = await shell(packageCompiler(compilers), timers);
+
+  // WORKAROUND: jsii 0.8.2 does not exit with non-zero on compilation errors
+  // until this is released: https://github.com/awslabs/jsii/pull/442
+  if (stdout.trim()) {
+    throw new Error(`Compilation failed`);
+  }
 
   // Find files in bin/ that look like they should be executable, and make them so.
   const scripts = currentPackageJson().bin || {};
@@ -16,7 +22,7 @@ export async function compileCurrentPackage(timers: Timers, compilers: CompilerO
   }
 
   // Always call linters
-  await shell(['tslint', '--project', '.'], timers);
+  await shell([compilers.tslint || require.resolve('tslint/bin/tslint'), '--project', '.'], timers);
   await shell(['pkglint'], timers);
   await shell([ path.join(__dirname, '..', 'bin', 'cdk-awslint') ], timers);
 }

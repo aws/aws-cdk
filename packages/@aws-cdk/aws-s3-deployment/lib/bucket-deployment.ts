@@ -11,19 +11,19 @@ export interface BucketDeploymentProps {
   /**
    * The source from which to deploy the contents of this bucket.
    */
-  source: ISource;
+  readonly source: ISource;
 
   /**
    * The S3 bucket to sync the contents of the zip file to.
    */
-  destinationBucket: s3.IBucket;
+  readonly destinationBucket: s3.IBucket;
 
   /**
    * Key prefix in the destination bucket.
    *
    * @default "/" (unzip to root of the destination bucket)
    */
-  destinationKeyPrefix?: string;
+  readonly destinationKeyPrefix?: string;
 
   /**
    * If this is set to "false", the destination files will be deleted when the
@@ -36,7 +36,7 @@ export interface BucketDeploymentProps {
    *
    * @default true - when resource is deleted/updated, files are retained
    */
-  retainOnDelete?: boolean;
+  readonly retainOnDelete?: boolean;
 }
 
 export class BucketDeployment extends cdk.Construct {
@@ -54,11 +54,11 @@ export class BucketDeployment extends cdk.Construct {
 
     const source = props.source.bind(this);
 
-    source.bucket.grantRead(handler.role);
-    props.destinationBucket.grantReadWrite(handler.role);
+    source.bucket.grantRead(handler);
+    props.destinationBucket.grantReadWrite(handler);
 
     new cloudformation.CustomResource(this, 'CustomResource', {
-      lambdaProvider: handler,
+      provider: cloudformation.CustomResourceProvider.lambda(handler),
       resourceType: 'Custom::CDKBucketDeployment',
       properties: {
         SourceBucketName: source.bucket.bucketName,

@@ -1,0 +1,87 @@
+{
+  "name": "@aws-cdk/region-info",
+  "version": "0.28.0",
+  "description": "AWS region information, such as service principal names",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "jsii": {
+    "outdir": "dist",
+    "targets": {
+      "java": {
+        "package": "software.amazon.awscdk.regioninfo",
+        "maven": {
+          "groupId": "software.amazon.awscdk",
+          "artifactId": "cdk-region-info"
+        }
+      },
+      "dotnet": {
+        "namespace": "Amazon.CDK.RegionInfo",
+        "packageId": "Amazon.CDK.RegionInfo",
+        "signAssembly": true,
+        "assemblyOriginatorKeyFile": "../../key.snk"
+      },
+      "sphinx": {},
+      "python": {
+        "distName": "aws-cdk.region-info",
+        "module": "aws_cdk.region_info"
+      }
+    }
+  },
+  "cdk-build": {
+    "pre": [
+      "npm run gen"
+    ]
+  },
+  "scripts": {
+    "gen": "bash build-tools/generate.sh",
+    "build": "cdk-build",
+    "watch": "cdk-watch",
+    "lint": "cdk-lint",
+    "test": "cdk-test",
+    "pkglint": "pkglint -f",
+    "package": "cdk-package"
+  },
+  "author": {
+    "name": "Amazon Web Services",
+    "url": "https://aws.amazon.com",
+    "organization": true
+  },
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "@types/fs-extra": "^5.0.5",
+    "cdk-build-tools": "^0.28.0",
+    "fs-extra": "^7.0.1",
+    "pkglint": "^0.28.0"
+  },
+  "jest": {
+    "coverageReporters": [
+      "lcov",
+      "text-summary",
+      "html"
+    ],
+    "coverageThreshold": {
+      "global": {
+        "statements": 80,
+        "branches": 80
+      }
+    },
+    "preset": "ts-jest",
+    "testMatch": [
+      "**/__tests__/**/*.ts?(x)",
+      "**/?(*.)+(spec|test).ts?(x)"
+    ]
+  },
+  "repository": {
+    "url": "https://github.com/awslabs/aws-cdk.git",
+    "type": "git",
+    "directory": "packages/@aws-cdk/region-info"
+  },
+  "keywords": [
+    "aws",
+    "cdk"
+  ],
+  "homepage": "https://github.com/awslabs/aws-cdk",
+  "engines": {
+    "node": ">= 8.10.0"
+  }
+}

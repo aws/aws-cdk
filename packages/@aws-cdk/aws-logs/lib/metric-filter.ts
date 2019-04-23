@@ -1,4 +1,4 @@
-import cdk = require('@aws-cdk/cdk');
+import { Construct, Resource } from '@aws-cdk/cdk';
 import { ILogGroup } from './log-group';
 import { CfnMetricFilter } from './logs.generated';
 import { IFilterPattern } from './pattern';
@@ -10,22 +10,22 @@ export interface MetricFilterProps {
   /**
    * The log group to create the filter on.
    */
-  logGroup: ILogGroup;
+  readonly logGroup: ILogGroup;
 
   /**
    * Pattern to search for log events.
    */
-  filterPattern: IFilterPattern;
+  readonly filterPattern: IFilterPattern;
 
   /**
    * The namespace of the metric to emit.
    */
-  metricNamespace: string;
+  readonly metricNamespace: string;
 
   /**
    * The name of the metric to emit.
    */
-  metricName: string;
+  readonly metricName: string;
 
   /**
    * The value to emit for the metric.
@@ -42,21 +42,21 @@ export interface MetricFilterProps {
    *
    * @default "1"
    */
-  metricValue?: string;
+  readonly metricValue?: string;
 
   /**
    * The value to emit if the pattern does not match a particular event.
    *
    * @default No metric emitted.
    */
-  defaultValue?: number;
+  readonly defaultValue?: number;
 }
 
 /**
  * A filter that extracts information from CloudWatch Logs and emits to CloudWatch Metrics
  */
-export class MetricFilter extends cdk.Construct {
-  constructor(scope: cdk.Construct, id: string, props: MetricFilterProps) {
+export class MetricFilter extends Resource {
+  constructor(scope: Construct, id: string, props: MetricFilterProps) {
     super(scope, id);
 
     // It looks odd to map this object to a singleton list, but that's how

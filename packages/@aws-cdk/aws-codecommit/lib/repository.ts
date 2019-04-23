@@ -1,10 +1,8 @@
-import actions = require('@aws-cdk/aws-codepipeline-api');
 import events = require('@aws-cdk/aws-events');
-import cdk = require('@aws-cdk/cdk');
+import { CfnOutput, Construct, IResource, Resource } from '@aws-cdk/cdk';
 import { CfnRepository } from './codecommit.generated';
-import { CommonPipelineSourceActionProps, PipelineSourceAction } from './pipeline-action';
 
-export interface IRepository extends cdk.IConstruct {
+export interface IRepository extends IResource {
   /** The ARN of this Repository. */
   readonly repositoryArn: string;
 
@@ -16,17 +14,6 @@ export interface IRepository extends cdk.IConstruct {
 
   /** The SSH clone URL */
   readonly repositoryCloneUrlSsh: string;
-
-  /**
-   * Convenience method for creating a new {@link PipelineSourceAction},
-   * and adding it to the given Stage.
-   *
-   * @param stage the Pipeline Stage to add the new Action to
-   * @param name the name of the newly created Action
-   * @param props the properties of the new Action
-   * @returns the newly created {@link PipelineSourceAction}
-   */
-  addToPipeline(stage: actions.IStage, name: string, props?: CommonPipelineSourceActionProps): PipelineSourceAction;
 
   /**
    * Defines a CloudWatch event rule which triggers for repository events. Use
@@ -96,7 +83,7 @@ export interface RepositoryImportProps {
    * The name of an existing CodeCommit Repository that we are referencing.
    * Must be in the same account and region as the root Stack.
    */
-  repositoryName: string;
+  readonly repositoryName: string;
 }
 
 /**
@@ -108,7 +95,7 @@ export interface RepositoryImportProps {
  * If you want to reference an already existing Repository,
  * use the {@link Repository.import} method.
  */
-export abstract class RepositoryBase extends cdk.Construct implements IRepository {
+export abstract class RepositoryBase extends Resource implements IRepository {
   /** The ARN of this Repository. */
   public abstract readonly repositoryArn: string;
 
@@ -122,23 +109,6 @@ export abstract class RepositoryBase extends cdk.Construct implements IRepositor
   public abstract readonly repositoryCloneUrlSsh: string;
 
   public abstract export(): RepositoryImportProps;
-
-  /**
-   * Convenience method for creating a new {@link PipelineSourceAction},
-   * and adding it to the given Stage.
-   *
-   * @param stage the Pipeline Stage to add the new Action to
-   * @param name the name of the newly created Action
-   * @param props the properties of the new Action
-   * @returns the newly created {@link PipelineSourceAction}
-   */
-  public addToPipeline(stage: actions.IStage, name: string, props: CommonPipelineSourceActionProps = {}): PipelineSourceAction {
-    return new PipelineSourceAction(this, name, {
-      stage,
-      repository: this,
-      ...props,
-    });
-  }
 
   /**
    * Defines a CloudWatch event rule which triggers for repository events. Use
@@ -241,10 +211,10 @@ class ImportedRepository extends RepositoryBase {
   public readonly repositoryArn: string;
   public readonly repositoryName: string;
 
-  constructor(scope: cdk.Construct, id: string, private readonly props: RepositoryImportProps) {
+  constructor(scope: Construct, id: string, private readonly props: RepositoryImportProps) {
     super(scope, id);
 
-    this.repositoryArn = cdk.Stack.find(this).formatArn({
+    this.repositoryArn = this.node.stack.formatArn({
       service: 'codecommit',
       resource: props.repositoryName,
     });
@@ -263,9 +233,8 @@ class ImportedRepository extends RepositoryBase {
     return this.repositoryCloneUrl('ssh');
   }
 
-  private repositoryCloneUrl(protocol: 'https' | 'ssh'): string {
-    const stack = cdk.Stack.find(this);
-    return `${protocol}://git-codecommit.${stack.region}.${stack.urlSuffix}/v1/repos/${this.repositoryName}`;
+  private repositoryCloneUrl(protocol: 'https' | 'ssh'): string {
+    return `${protocol}://git-codecommit.${this.node.stack.region}.${this.node.stack.urlSuffix}/v1/repos/${this.repositoryName}`;
   }
 }
 
@@ -273,13 +242,13 @@ export interface RepositoryProps {
   /**
    * Name of the repository. This property is required for all repositories.
    */
-  repositoryName: string;
+  readonly repositoryName: string;
 
   /**
    * A description of the repository. Use the description to identify the
    * purpose of the repository.
    */
-  description?: string;
+  readonly description?: string;
 }
 
 /**
@@ -295,14 +264,14 @@ export class Repository extends RepositoryBase {
    * @param props the properties used to identify the existing Repository
    * @returns a reference to the existing Repository
    */
-  public static import(scope: cdk.Construct, id: string, props: RepositoryImportProps): IRepository {
+  public static import(scope: Construct, id: string, props: RepositoryImportProps): IRepository {
     return new ImportedRepository(scope, id, props);
   }
 
   private readonly repository: CfnRepository;
   private readonly triggers = new Array<CfnRepository.RepositoryTriggerProperty>();
 
-  constructor(scope: cdk.Construct, id: string, props: RepositoryProps) {
+  constructor(scope: Construct, id: string, props: RepositoryProps) {
     super(scope, id);
 
     this.repository = new CfnRepository(this, 'Resource', {
@@ -335,7 +304,7 @@ export class Repository extends RepositoryBase {
    */
   public export(): RepositoryImportProps {
     return {
-      repositoryName: new cdk.Output(this, 'RepositoryName', { value: this.repositoryName }).makeImportValue().toString()
+      repositoryName: new CfnOutput(this, 'RepositoryName', { value: this.repositoryName }).makeImportValue().toString()
     };
   }
 
@@ -381,27 +350,27 @@ export interface RepositoryTriggerOptions {
    /**
     * A name for the trigger.Triggers on a repository must have unique names
     */
-  name?: string;
+  readonly name?: string;
 
   /**
    * The repository events for which AWS CodeCommit sends information to the
    * target, which you specified in the DestinationArn property.If you don't
    * specify events, the trigger runs for all repository events.
    */
-  events?: RepositoryEventTrigger[];
+  readonly events?: RepositoryEventTrigger[];
 
   /**
    * The names of the branches in the AWS CodeCommit repository that contain
    * events that you want to include in the trigger. If you don't specify at
    * least one branch, the trigger applies to all branches.
    */
-  branches?: string[];
+  readonly branches?: string[];
 
   /**
    * When an event is triggered, additional information that AWS CodeCommit
    * includes when it sends information to the target.
    */
-  customData?: string;
+  readonly customData?: string;
 }
 
 /**

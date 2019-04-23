@@ -5,17 +5,17 @@ import os = require('os');
 import path = require('path');
 import semver = require('semver');
 import { debug } from '../../logging';
-import { DEFAULTS, PER_USER_DEFAULTS, Settings } from '../../settings';
+import { Configuration, PROJECT_CONFIG, USER_DEFAULTS } from '../../settings';
 import { SDK } from '../util/sdk';
 
 /** Invokes the cloud executable and returns JSON output */
-export async function execProgram(aws: SDK, config: Settings): Promise<cxapi.SynthesizeResponse> {
+export async function execProgram(aws: SDK, config: Configuration): Promise<cxapi.SynthesizeResponse> {
   const env: { [key: string]: string } = { };
 
-  const context = config.get(['context']);
+  const context = config.context.all;
   await populateDefaultEnvironmentIfNeeded(aws, context);
 
-  let pathMetadata: boolean = config.get(['pathMetadata']);
+  let pathMetadata: boolean = config.settings.get(['pathMetadata']);
   if (pathMetadata === undefined) {
       pathMetadata = true; // defaults to true
   }
@@ -24,7 +24,7 @@ export async function execProgram(aws: SDK, config: Settings): Promise<cxapi.Syn
     context[cxapi.PATH_METADATA_ENABLE_CONTEXT] = true;
   }
 
-  let assetMetadata: boolean = config.get(['assetMetadata']);
+  let assetMetadata: boolean = config.settings.get(['assetMetadata']);
   if (assetMetadata === undefined) {
     assetMetadata = true; // defaults to true
   }
@@ -33,13 +33,25 @@ export async function execProgram(aws: SDK, config: Settings): Promise<cxapi.Syn
     context[cxapi.ASSET_RESOURCE_METADATA_ENABLED_CONTEXT] = true;
   }
 
+  let versionReporting: boolean = config.settings.get(['versionReporting']);
+  if (versionReporting === undefined) {
+    versionReporting = true; // defaults to true
+  }
+
+  if (!versionReporting) {
+    context[cxapi.DISABLE_VERSION_REPORTING] = true;
+  }
+
+  const stagingDir = config.settings.get(['staging']);
+  context[cxapi.ASSET_STAGING_DIR_CONTEXT] = stagingDir;
+
   debug('context:', context);
 
   env[cxapi.CONTEXT_ENV] = JSON.stringify(context);
 
-  const app = config.get(['app']);
+  const app = config.settings.get(['app']);
   if (!app) {
-    throw new Error(`--app is required either in command-line, in ${DEFAULTS} or in ${PER_USER_DEFAULTS}`);
+    throw new Error(`--app is required either in command-line, in ${PROJECT_CONFIG} or in ${USER_DEFAULTS}`);
   }
 
   const commandLine = await guessExecutable(appToArray(app));

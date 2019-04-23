@@ -1,10 +1,11 @@
 import ec2 = require('@aws-cdk/aws-ec2');
+import secretsmanager = require('@aws-cdk/aws-secretsmanager');
 import cdk = require('@aws-cdk/cdk');
 
 /**
  * Create a clustered database with a given number of instances.
  */
-export interface IDatabaseCluster extends cdk.IConstruct, ec2.IConnectable {
+export interface IDatabaseCluster extends cdk.IConstruct, ec2.IConnectable, secretsmanager.ISecretAttachmentTarget {
   /**
    * Identifier of the cluster
    */
@@ -48,38 +49,38 @@ export interface DatabaseClusterImportProps {
   /**
    * The database port
    */
-  port: string;
+  readonly port: string;
 
   /**
    * The security group for this database cluster
    */
-  securityGroupId: string;
+  readonly securityGroupId: string;
 
   /**
    * Identifier for the cluster
    */
-  clusterIdentifier: string;
+  readonly clusterIdentifier: string;
 
   /**
    * Identifier for the instances
    */
-  instanceIdentifiers: string[];
+  readonly instanceIdentifiers: string[];
   // Actual underlying type: DBInstanceId[], but we have to type it more loosely for Java's benefit.
 
   /**
    * Cluster endpoint address
    */
-  clusterEndpointAddress: string;
+  readonly clusterEndpointAddress: string;
 
   /**
    * Reader endpoint address
    */
-  readerEndpointAddress: string;
+  readonly readerEndpointAddress: string;
 
   /**
    * Endpoint addresses of individual instances
    */
-  instanceEndpointAddresses: string[];
+  readonly instanceEndpointAddresses: string[];
 }
 
 /**

@@ -6,7 +6,7 @@ import { debug,  print, warning } from '../../lib/logging';
 import { CommandOptions } from '../command-api';
 
 export const command = 'docs';
-export const describe = 'Opens the documentation in a browser';
+export const describe = 'Opens the reference documentation in a browser';
 export const aliases = ['doc'];
 export const builder = {
   browser: {
@@ -29,7 +29,7 @@ export async function realHandler(options: CommandOptions): Promise<number> {
   const docVersion = require('../../package.json').version;
   const url = `https://awslabs.github.io/aws-cdk/versions/${docVersion}/`;
   print(colors.green(url));
-  const browserCommand = options.args.browser.replace(/%u/g, url);
+  const browserCommand = (options.args.browser as string).replace(/%u/g, url);
   debug(`Opening documentation ${colors.green(browserCommand)}`);
   return new Promise<number>((resolve, _reject) => {
     childProcess.exec(browserCommand, (err, stdout, stderr) => {

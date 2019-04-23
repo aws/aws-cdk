@@ -532,6 +532,29 @@
         "Name": "cdk.test."
       }
     },
+    "PublicZonecdktestsubcdktest83558650": {
+      "Type": "AWS::Route53::RecordSet",
+      "Properties": {
+        "Name": "sub.cdk.test.",
+        "Type": "NS",
+        "HostedZoneId": {
+          "Ref": "PublicZone2E1C4E34"
+        },
+        "ResourceRecords": {
+          "Fn::GetAtt": [
+            "PublicSubZoneDBD26A0A",
+            "NameServers"
+          ]
+        },
+        "TTL": "172800"
+      }
+    },
+    "PublicSubZoneDBD26A0A": {
+      "Type": "AWS::Route53::HostedZone",
+      "Properties": {
+        "Name": "sub.cdk.test."
+      }
+    },
     "CNAMEC70A2D52": {
       "Type": "AWS::Route53::RecordSet",
       "Properties": {
@@ -551,17 +574,11 @@
     "PrivateZoneId": {
       "Value": {
         "Ref": "PrivateZone27242E85"
-      },
-      "Export": {
-        "Name": "aws-cdk-route53-integ:PrivateZoneId"
       }
     },
     "PublicZoneId": {
       "Value": {
         "Ref": "PublicZone2E1C4E34"
-      },
-      "Export": {
-        "Name": "aws-cdk-route53-integ:PublicZoneId"
       }
     }
   }

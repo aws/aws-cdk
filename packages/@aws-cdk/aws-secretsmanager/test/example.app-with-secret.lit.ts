@@ -1,16 +1,26 @@
+import iam = require('@aws-cdk/aws-iam');
 import cdk = require('@aws-cdk/cdk');
 import secretsmanager = require('../lib');
 
+class ExampleStack extends cdk.Stack {
+  constructor(scope: cdk.App, id: string) {
+    super(scope, id);
+
+    /// !show
+    const loginSecret = secretsmanager.Secret.import(this, 'Secret', {
+      secretArn: 'SomeLogin'
+    });
+
+    new iam.User(this, 'User', {
+      // Get the 'password' field from the secret that looks like
+      // { "username": "XXXX", "password": "YYYY" }
+      password: loginSecret.secretJsonValue('password')
+    });
+    /// !hide
+
+  }
+}
+
 const app = new cdk.App();
-const stack = new cdk.Stack(app, 'aws-cdk-rds-integ');
-
-/// !show
-const loginSecret = new secretsmanager.SecretString(stack, 'Secret', { secretId: 'SomeLogin', });
-
-// DO NOT ACTUALLY DO THIS, as this will expose your secret.
-// This code only exists to show how the secret would be used.
-new cdk.Output(stack, 'SecretUsername', { value: loginSecret.jsonFieldValue('username') });
-new cdk.Output(stack, 'SecretPassword', { value: loginSecret.jsonFieldValue('password') });
-/// !hide
-
+new ExampleStack(app, 'aws-cdk-secret-integ');
 app.run();

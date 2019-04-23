@@ -14,12 +14,12 @@ export interface BaseApplicationListenerRuleProps {
    *
    * Priorities must be unique.
    */
-  priority: number;
+  readonly priority: number;
 
   /**
    * Target groups to forward requests to
    */
-  targetGroups?: IApplicationTargetGroup[];
+  readonly targetGroups?: IApplicationTargetGroup[];
 
   /**
    * Rule applies if the requested host matches the indicated host
@@ -30,7 +30,7 @@ export interface BaseApplicationListenerRuleProps {
    *
    * @default No host condition
    */
-  hostHeader?: string;
+  readonly hostHeader?: string;
 
   /**
    * Rule applies if the requested path matches the given path pattern
@@ -41,7 +41,7 @@ export interface BaseApplicationListenerRuleProps {
    *
    * @default No path condition
    */
-  pathPattern?: string;
+  readonly pathPattern?: string;
 }
 
 /**
@@ -51,22 +51,17 @@ export interface ApplicationListenerRuleProps extends BaseApplicationListenerRul
   /**
    * The listener to attach the rule to
    */
-  listener: IApplicationListener;
+  readonly listener: IApplicationListener;
 }
 
 /**
  * Define a new listener rule
  */
-export class ApplicationListenerRule extends cdk.Construct implements cdk.IDependable {
+export class ApplicationListenerRule extends cdk.Construct {
   /**
    * The ARN of this rule
    */
   public readonly listenerRuleArn: string;
-
-  /**
-   * The elements of this rule to add ordering dependencies on
-   */
-  public readonly dependencyElements: cdk.IDependable[] = [];
 
   private readonly conditions: {[key: string]: string[] | undefined} = {};
 
@@ -98,7 +93,6 @@ export class ApplicationListenerRule extends cdk.Construct implements cdk.IDepen
 
     (props.targetGroups || []).forEach(this.addTargetGroup.bind(this));
 
-    this.dependencyElements.push(resource);
     this.listenerRuleArn = resource.ref;
   }
 

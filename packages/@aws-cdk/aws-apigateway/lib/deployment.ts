@@ -1,4 +1,4 @@
-import cdk = require('@aws-cdk/cdk');
+import { Construct, DeletionPolicy, Resource, Token } from '@aws-cdk/cdk';
 import crypto = require('crypto');
 import { CfnDeployment, CfnDeploymentProps } from './apigateway.generated';
 import { IRestApi } from './restapi';
@@ -7,12 +7,12 @@ export interface DeploymentProps  {
   /**
    * The Rest API to deploy.
    */
-  api: IRestApi;
+  readonly api: IRestApi;
 
   /**
    * A description of the purpose of the API Gateway deployment.
    */
-  description?: string;
+  readonly description?: string;
 
   /**
    * When an API Gateway model is updated, a new deployment will automatically be created.
@@ -21,7 +21,7 @@ export interface DeploymentProps  {
    *
    * @default false
    */
-  retainDeployments?: boolean;
+  readonly retainDeployments?: boolean;
 }
 
 /**
@@ -51,21 +51,16 @@ export interface DeploymentProps  {
  * Furthermore, since a deployment does not reference any of the REST API
  * resources and methods, CloudFormation will likely provision it before these
  * resources are created, which means that it will represent a "half-baked"
- * model. Use the `addDependency(dep)` method to circumvent that. This is done
+ * model. Use the `node.addDependency(dep)` method to circumvent that. This is done
  * automatically for the `restApi.latestDeployment` deployment.
  */
-export class Deployment extends cdk.Construct implements cdk.IDependable {
+export class Deployment extends Resource {
   public readonly deploymentId: string;
   public readonly api: IRestApi;
 
-  /**
-   * Allows taking a dependency on this construct.
-   */
-  public readonly dependencyElements = new Array<cdk.IDependable>();
-
   private readonly resource: LatestDeploymentResource;
 
-  constructor(scope: cdk.Construct, id: string, props: DeploymentProps) {
+  constructor(scope: Construct, id: string, props: DeploymentProps) {
     super(scope, id);
 
     this.resource = new LatestDeploymentResource(this, 'Resource', {
@@ -74,20 +69,11 @@ export class Deployment extends cdk.Construct implements cdk.IDependable {
     });
 
     if (props.retainDeployments) {
-      this.resource.options.deletionPolicy = cdk.DeletionPolicy.Retain;
+      this.resource.options.deletionPolicy = DeletionPolicy.Retain;
     }
 
     this.api = props.api;
-    this.deploymentId = new cdk.Token(() => this.resource.deploymentId).toString();
-    this.dependencyElements.push(this.resource);
-  }
-
-  /**
-   * Adds a dependency for this deployment. Should be called by all resources and methods
-   * so they are provisioned before this Deployment.
-   */
-  public addDependency(dep: cdk.IDependable) {
-    this.resource.addDependency(dep);
+    this.deploymentId = new Token(() => this.resource.deploymentId).toString();
   }
 
   /**
@@ -107,16 +93,16 @@ class LatestDeploymentResource extends CfnDeployment {
   private originalLogicalId?: string;
   private lazyLogicalIdRequired: boolean;
   private lazyLogicalId?: string;
-  private logicalIdToken: cdk.Token;
+  private logicalIdToken: Token;
   private hashComponents = new Array<any>();
 
-  constructor(scope: cdk.Construct, id: string, props: CfnDeploymentProps) {
+  constructor(scope: Construct, id: string, props: CfnDeploymentProps) {
     super(scope, id, props);
 
     // from this point, don't allow accessing logical ID before synthesis
     this.lazyLogicalIdRequired = true;
 
-    this.logicalIdToken = new cdk.Token(() => this.lazyLogicalId);
+    this.logicalIdToken = new Token(() => this.lazyLogicalId);
   }
 
   /**
@@ -141,7 +127,7 @@ class LatestDeploymentResource extends CfnDeployment {
    * Returns a lazy reference to this resource (evaluated only upon synthesis).
    */
   public get ref() {
-    return new cdk.Token(() => ({ Ref: this.lazyLogicalId })).toString();
+    return new Token(() => ({ Ref: this.lazyLogicalId })).toString();
   }
 
   /**
@@ -182,5 +168,7 @@ class LatestDeploymentResource extends CfnDeployment {
 
       this.lazyLogicalId = this.originalLogicalId + md5.digest("hex");
     }
+
+    super.prepare();
   }
 }

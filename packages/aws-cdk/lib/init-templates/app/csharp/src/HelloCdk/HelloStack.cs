@@ -7,7 +7,7 @@ namespace HelloCdk
 {
     public class HelloStack : Stack
     {
-        public HelloStack(App parent, string name, IStackProps props) : base(parent, name, props)
+        public HelloStack(Construct parent, string id, IStackProps props) : base(parent, id, props)
         {
             // The CDK includes built-in constructs for most resource types, such as Queues and Topics.
             var queue = new Queue(this, "MyFirstQueue", new QueueProps
@@ -20,7 +20,7 @@ namespace HelloCdk
                 DisplayName = "My First Topic Yeah"
             });
 
-            topic.SubscribeQueue(queue);
+            topic.SubscribeQueue(queue, null);
 
             // You can also define your own constructs and use them in your stack.
             HelloConstruct hello = new HelloConstruct(this, "Buckets", new HelloConstructProps()
@@ -28,7 +28,7 @@ namespace HelloCdk
                 BucketCount = 5
             });
 
-            // Create a new user with read access to the HelloConstruct resource.         
+            // Create a new user with read access to the HelloConstruct resource.
             User user = new User(this, "MyUser", new UserProps());
             hello.GrantRead(user);
         }

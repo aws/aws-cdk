@@ -1,7 +1,6 @@
 import codecommit = require('@aws-cdk/aws-codecommit');
 import iam = require('@aws-cdk/aws-iam');
 import s3 = require('@aws-cdk/aws-s3');
-import cdk = require('@aws-cdk/cdk');
 import { CfnProject } from './codebuild.generated';
 import { Project } from './project';
 
@@ -13,7 +12,7 @@ export interface BuildSourceProps {
    * The source identifier.
    * This property is required on secondary sources.
    */
-  identifier?: string;
+  readonly identifier?: string;
 }
 
 /**
@@ -22,6 +21,7 @@ export interface BuildSourceProps {
 export abstract class BuildSource {
   public readonly identifier?: string;
   public abstract readonly type: SourceType;
+  public readonly badgeSupported: boolean = false;
 
   constructor(props: BuildSourceProps) {
     this.identifier = props.identifier;
@@ -31,6 +31,8 @@ export abstract class BuildSource {
    * Called by the project when the source is added so that the source can perform
    * binding operations on the source. For example, it can grant permissions to the
    * code build project to read from the S3 bucket.
+   *
+   * @internal
    */
   public _bind(_project: Project) {
     // by default, do nothing
@@ -72,17 +74,51 @@ export class NoSource extends BuildSource {
 }
 
 /**
+ * The construction properties common to all build sources that are backed by Git.
+ */
+export interface GitBuildSourceProps extends BuildSourceProps {
+  /**
+   * The depth of history to download. Minimum value is 0.
+   * If this value is 0, greater than 25, or not provided,
+   * then the full history is downloaded with each build of the project.
+   */
+  readonly cloneDepth?: number;
+}
+
+/**
+ * A common superclass of all build sources that are backed by Git.
+ */
+export abstract class GitBuildSource extends BuildSource {
+  public readonly badgeSupported: boolean = true;
+  private readonly cloneDepth?: number;
+
+  protected constructor(props: GitBuildSourceProps) {
+    super(props);
+
+    this.cloneDepth = props.cloneDepth;
+  }
+
+  public toSourceJSON(): CfnProject.SourceProperty {
+    return {
+      ...super.toSourceJSON(),
+      gitCloneDepth: this.cloneDepth
+    };
+  }
+}
+
+/**
  * Construction properties for {@link CodeCommitSource}.
  */
-export interface CodeCommitSourceProps extends BuildSourceProps {
-  repository: codecommit.IRepository;
+export interface CodeCommitSourceProps extends GitBuildSourceProps {
+  readonly repository: codecommit.IRepository;
 }
 
 /**
  * CodeCommit Source definition for a CodeBuild project.
  */
-export class CodeCommitSource extends BuildSource {
+export class CodeCommitSource extends GitBuildSource {
   public readonly type: SourceType = SourceType.CodeCommit;
+  public readonly badgeSupported: boolean = false;
   private readonly repo: codecommit.IRepository;
 
   constructor(props: CodeCommitSourceProps) {
@@ -90,6 +126,9 @@ export class CodeCommitSource extends BuildSource {
     this.repo = props.repository;
   }
 
+  /**
+   * @internal
+   */
   public _bind(project: Project) {
     // https://docs.aws.amazon.com/codebuild/latest/userguide/setting-up.html
     project.addToRolePolicy(new iam.PolicyStatement()
@@ -108,8 +147,8 @@ export class CodeCommitSource extends BuildSource {
  * Construction properties for {@link S3BucketSource}.
  */
 export interface S3BucketSourceProps extends BuildSourceProps {
-  bucket: s3.IBucket;
-  path: string;
+  readonly bucket: s3.IBucket;
+  readonly path: string;
 }
 
 /**
@@ -126,8 +165,11 @@ export class S3BucketSource extends BuildSource {
     this.path = props.path;
   }
 
+  /**
+   * @internal
+   */
   public _bind(project: Project) {
-    this.bucket.grantRead(project.role);
+    this.bucket.grantRead(project);
   }
 
   protected toSourceProperty(): any {
@@ -153,57 +195,48 @@ export class CodePipelineSource extends BuildSource {
 /**
  * Construction properties for {@link GitHubSource} and {@link GitHubEnterpriseSource}.
  */
-export interface GitHubSourceProps extends BuildSourceProps {
+export interface GitHubSourceProps extends GitBuildSourceProps {
   /**
    * The GitHub account/user that owns the repo.
    *
    * @example 'awslabs'
    */
-  owner: string;
+  readonly owner: string;
 
   /**
    * The name of the repo (without the username).
    *
    * @example 'aws-cdk'
    */
-  repo: string;
-
-  /**
-   * The oAuthToken used to authenticate when cloning source git repo.
-   * Note that you need to give CodeBuild permissions to your GitHub account in order for the token to work.
-   * That is a one-time operation that can be done through the AWS Console for CodeBuild.
-   */
-  oauthToken: cdk.Secret;
+  readonly repo: string;
 
   /**
    * Whether to create a webhook that will trigger a build every time a commit is pushed to the GitHub repository.
    *
    * @default false
    */
-  webhook?: boolean;
+  readonly webhook?: boolean;
 
   /**
    * Whether to send GitHub notifications on your build's start and end.
    *
    * @default true
    */
-  reportBuildStatus?: boolean;
+  readonly reportBuildStatus?: boolean;
 }
 
 /**
  * GitHub Source definition for a CodeBuild project.
  */
-export class GitHubSource extends BuildSource {
+export class GitHubSource extends GitBuildSource {
   public readonly type: SourceType = SourceType.GitHub;
   private readonly httpsCloneUrl: string;
-  private readonly oauthToken: cdk.Secret;
   private readonly reportBuildStatus: boolean;
   private readonly webhook?: boolean;
 
   constructor(props: GitHubSourceProps) {
     super(props);
     this.httpsCloneUrl = `https://github.com/${props.owner}/${props.repo}.git`;
-    this.oauthToken = props.oauthToken;
     this.webhook = props.webhook;
     this.reportBuildStatus = props.reportBuildStatus === undefined ? true : props.reportBuildStatus;
   }
@@ -218,7 +251,6 @@ export class GitHubSource extends BuildSource {
 
   protected toSourceProperty(): any {
     return {
-      auth: { type: 'OAUTH', resource: this.oauthToken },
       location: this.httpsCloneUrl,
       reportBuildStatus: this.reportBuildStatus,
     };
@@ -228,44 +260,36 @@ export class GitHubSource extends BuildSource {
 /**
  * Construction properties for {@link GitHubEnterpriseSource}.
  */
-export interface GitHubEnterpriseSourceProps extends BuildSourceProps {
+export interface GitHubEnterpriseSourceProps extends GitBuildSourceProps {
   /**
    * The HTTPS URL of the repository in your GitHub Enterprise installation.
    */
-  httpsCloneUrl: string;
-
-  /**
-   * The OAuth token used to authenticate when cloning the git repository.
-   */
-  oauthToken: cdk.Secret;
+  readonly httpsCloneUrl: string;
 
   /**
    * Whether to ignore SSL errors when connecting to the repository.
    *
    * @default false
    */
-  ignoreSslErrors?: boolean;
+  readonly ignoreSslErrors?: boolean;
 }
 
 /**
  * GitHub Enterprise Source definition for a CodeBuild project.
  */
-export class GitHubEnterpriseSource extends BuildSource {
-  public readonly type: SourceType = SourceType.GitHubEnterPrise;
+export class GitHubEnterpriseSource extends GitBuildSource {
+  public readonly type: SourceType = SourceType.GitHubEnterprise;
   private readonly httpsCloneUrl: string;
-  private readonly oauthToken: cdk.Secret;
   private readonly ignoreSslErrors?: boolean;
 
   constructor(props: GitHubEnterpriseSourceProps) {
     super(props);
     this.httpsCloneUrl = props.httpsCloneUrl;
-    this.oauthToken = props.oauthToken;
     this.ignoreSslErrors = props.ignoreSslErrors;
   }
 
   protected toSourceProperty(): any {
     return {
-      auth: { type: 'OAUTH', resource: this.oauthToken },
       location: this.httpsCloneUrl,
       insecureSsl: this.ignoreSslErrors,
     };
@@ -275,26 +299,26 @@ export class GitHubEnterpriseSource extends BuildSource {
 /**
  * Construction properties for {@link BitBucketSource}.
  */
-export interface BitBucketSourceProps extends BuildSourceProps {
+export interface BitBucketSourceProps extends GitBuildSourceProps {
   /**
    * The BitBucket account/user that owns the repo.
    *
    * @example 'awslabs'
    */
-  owner: string;
+  readonly owner: string;
 
   /**
    * The name of the repo (without the username).
    *
    * @example 'aws-cdk'
    */
-  repo: string;
+  readonly repo: string;
 }
 
 /**
  * BitBucket Source definition for a CodeBuild project.
  */
-export class BitBucketSource extends BuildSource {
+export class BitBucketSource extends GitBuildSource {
   public readonly type: SourceType = SourceType.BitBucket;
   private readonly httpsCloneUrl: any;
 
@@ -318,7 +342,7 @@ export enum SourceType {
   CodeCommit = 'CODECOMMIT',
   CodePipeline = 'CODEPIPELINE',
   GitHub = 'GITHUB',
-  GitHubEnterPrise = 'GITHUB_ENTERPRISE',
+  GitHubEnterprise = 'GITHUB_ENTERPRISE',
   BitBucket = 'BITBUCKET',
   S3 = 'S3',
 }

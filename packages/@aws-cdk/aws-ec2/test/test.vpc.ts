@@ -1,7 +1,7 @@
 import { countResources, expect, haveResource, haveResourceLike, isSuperObject } from '@aws-cdk/assert';
-import { AvailabilityZoneProvider, Construct, Stack, Tags } from '@aws-cdk/cdk';
+import { AvailabilityZoneProvider, Construct, Stack, Tag } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
-import { DefaultInstanceTenancy, IVpcNetwork, SubnetType, VpcNetwork } from '../lib';
+import { CfnVPC, DefaultInstanceTenancy, IVpcNetwork, SubnetType, VpcNetwork } from '../lib';
 
 export = {
   "When creating a VPC": {
@@ -28,8 +28,14 @@ export = {
       'the Name tag is defaulted to path'(test: Test) {
         const stack = getTestStack();
         new VpcNetwork(stack, 'TheVPC');
-        expect(stack).to(haveResource('AWS::EC2::VPC',
-          hasTags( [ {Key: 'Name', Value: 'TheVPC'} ])));
+        expect(stack).to(
+          haveResource('AWS::EC2::VPC',
+            hasTags( [ {Key: 'Name', Value: 'TheVPC'} ]))
+        );
+        expect(stack).to(
+          haveResource('AWS::EC2::InternetGateway',
+            hasTags( [ {Key: 'Name', Value: 'TheVPC'} ]))
+        );
         test.done();
       },
 
@@ -37,28 +43,19 @@ export = {
 
     "with all of the properties set, it successfully sets the correct VPC properties"(test: Test) {
       const stack = getTestStack();
-      const tags = {
-        first: 'foo',
-        second: 'bar',
-        third: 'barz',
-
-      };
       new VpcNetwork(stack, 'TheVPC', {
         cidr: "192.168.0.0/16",
         enableDnsHostnames: false,
         enableDnsSupport: false,
         defaultInstanceTenancy: DefaultInstanceTenancy.Dedicated,
-        tags,
       });
 
-      const cfnTags = toCfnTags(tags);
       expect(stack).to(haveResource('AWS::EC2::VPC', {
         CidrBlock: '192.168.0.0/16',
         EnableDnsHostnames: false,
         EnableDnsSupport: false,
         InstanceTenancy: DefaultInstanceTenancy.Dedicated,
       }));
-      expect(stack).to(haveResource('AWS::EC2::VPC', hasTags(cfnTags)));
       test.done();
     },
 
@@ -118,31 +115,95 @@ export = {
       test.done();
     },
 
-    "with custom subents, the VPC should have the right number of subnets, an IGW, and a NAT Gateway per AZ"(test: Test) {
+    "with subnets and reserved subnets defined, VPC subnet count should not contain reserved subnets "(test: Test) {
+      const stack = getTestStack();
+      new VpcNetwork(stack, 'TheVPC', {
+        cidr: '10.0.0.0/16',
+        subnetConfiguration: [
+          {
+            cidrMask: 24,
+            subnetType: SubnetType.Private,
+            name: 'Private',
+          },
+          {
+            cidrMask: 24,
+            name: 'reserved',
+            subnetType: SubnetType.Private,
+            reserved: true,
+          },
+          {
+            cidrMask: 28,
+            name: 'rds',
+            subnetType: SubnetType.Isolated,
+          }
+        ],
+        maxAZs: 3
+      });
+      expect(stack).to(countResources("AWS::EC2::Subnet", 6));
+      test.done();
+    },
+    "with reserved subnets, any other subnets should not have cidrBlock from within reserved space"(test: Test) {
+      const stack = getTestStack();
+      new VpcNetwork(stack, 'TheVPC', {
+        cidr: '10.0.0.0/16',
+        subnetConfiguration: [
+          {
+            cidrMask: 24,
+            name: 'ingress',
+            subnetType: SubnetType.Private,
+          },
+          {
+            cidrMask: 24,
+            name: 'reserved',
+            subnetType: SubnetType.Private,
+            reserved: true,
+          },
+          {
+            cidrMask: 24,
+            name: 'rds',
+            subnetType: SubnetType.Private,
+          }
+        ],
+        maxAZs: 3
+      });
+      for (let i = 0; i < 3; i++) {
+        expect(stack).to(haveResource("AWS::EC2::Subnet", {
+          CidrBlock: `10.0.${i}.0/24`
+        }));
+      }
+      for (let i = 3; i < 6; i++) {
+        expect(stack).notTo(haveResource("AWS::EC2::Subnet", {
+          CidrBlock: `10.0.${i}.0/24`
+        }));
+      }
+      for (let i = 6; i < 9; i++) {
+        expect(stack).to(haveResource("AWS::EC2::Subnet", {
+          CidrBlock: `10.0.${i}.0/24`
+        }));
+      }
+      test.done();
+    },
+    "with custom subnets, the VPC should have the right number of subnets, an IGW, and a NAT Gateway per AZ"(test: Test) {
       const stack = getTestStack();
       const zones = new AvailabilityZoneProvider(stack).availabilityZones.length;
       new VpcNetwork(stack, 'TheVPC', {
         cidr: '10.0.0.0/21',
         subnetConfiguration: [
-        {
-          cidrMask: 24,
-          name: 'ingress',
-          subnetType: SubnetType.Public,
-          tags: {
-            type: 'Public',
-            init: 'No',
+          {
+            cidrMask: 24,
+            name: 'ingress',
+            subnetType: SubnetType.Public,
           },
-        },
-        {
-          cidrMask: 24,
-          name: 'application',
-          subnetType: SubnetType.Private,
-        },
-        {
-          cidrMask: 28,
-          name: 'rds',
-          subnetType: SubnetType.Isolated,
-        }
+          {
+            cidrMask: 24,
+            name: 'application',
+            subnetType: SubnetType.Private,
+          },
+          {
+            cidrMask: 28,
+            name: 'rds',
+            subnetType: SubnetType.Isolated,
+          }
         ],
         maxAZs: 3
       });
@@ -151,20 +212,14 @@ export = {
       expect(stack).to(countResources("AWS::EC2::Subnet", 9));
       for (let i = 0; i < 6; i++) {
         expect(stack).to(haveResource("AWS::EC2::Subnet", {
-        CidrBlock: `10.0.${i}.0/24`
+          CidrBlock: `10.0.${i}.0/24`
         }));
       }
       for (let i = 0; i < 3; i++) {
         expect(stack).to(haveResource("AWS::EC2::Subnet", {
-        CidrBlock: `10.0.6.${i * 16}/28`
+          CidrBlock: `10.0.6.${i * 16}/28`
         }));
       }
-      expect(stack).to(haveResource("AWS::EC2::Subnet", hasTags(
-        [
-          { Key: 'type', Value: 'Public'},
-          { Key: 'init', Value: 'No'},
-        ],
-      )));
       test.done();
     },
     "with custom subents and natGateways = 2 there should be only two NATGW"(test: Test) {
@@ -302,20 +357,16 @@ export = {
             subnetType: SubnetType.Private,
           },
         ],
-        natGatewayPlacement: {
+        natGatewaySubnets: {
           subnetName: 'egress'
         },
       });
       expect(stack).to(countResources("AWS::EC2::NatGateway", 3));
       for (let i = 1; i < 4; i++) {
-        expect(stack).to(haveResource("AWS::EC2::NatGateway", {
-          Tags: [
-            {
-              Key: 'Name',
-              Value: `VPC/egressSubnet${i}`,
-            }
-          ]
-        }));
+        expect(stack).to(haveResource('AWS::EC2::Subnet', hasTags([{
+          Key: 'Name',
+          Value: `VPC/egressSubnet${i}`,
+        }])));
       }
       test.done();
     },
@@ -334,12 +385,159 @@ export = {
             subnetType: SubnetType.Private,
           },
         ],
-        natGatewayPlacement: {
+        natGatewaySubnets: {
           subnetName: 'notthere',
         },
       }));
       test.done();
     },
+    'with a vpn gateway'(test: Test) {
+      const stack = getTestStack();
+      new VpcNetwork(stack, 'VPC', {
+        vpnGateway: true,
+        vpnGatewayAsn: 65000
+      });
+
+      expect(stack).to(haveResource('AWS::EC2::VPNGateway', {
+        AmazonSideAsn: 65000,
+        Type: 'ipsec.1'
+      }));
+
+      expect(stack).to(haveResource('AWS::EC2::VPCGatewayAttachment', {
+        VpcId: {
+          Ref: 'VPCB9E5F0B4'
+        },
+        VpnGatewayId: {
+          Ref: 'VPCVpnGatewayB5ABAE68'
+        }
+      }));
+
+      expect(stack).to(haveResource('AWS::EC2::VPNGatewayRoutePropagation', {
+        RouteTableIds: [
+          {
+            Ref: 'VPCPrivateSubnet1RouteTableBE8A6027'
+          },
+          {
+            Ref: 'VPCPrivateSubnet2RouteTable0A19E10E'
+          },
+          {
+            Ref: 'VPCPrivateSubnet3RouteTable192186F8'
+          }
+        ],
+        VpnGatewayId: {
+          Ref: 'VPCVpnGatewayB5ABAE68'
+        }
+      }));
+
+      test.done();
+    },
+    'with a vpn gateway and route propagation on isolated subnets'(test: Test) {
+      const stack = getTestStack();
+      new VpcNetwork(stack, 'VPC', {
+        subnetConfiguration: [
+          { subnetType: SubnetType.Private, name: 'Private' },
+          { subnetType: SubnetType.Isolated, name: 'Isolated' },
+        ],
+        vpnGateway: true,
+        vpnRoutePropagation: [
+          {
+            subnetType: SubnetType.Isolated
+          }
+        ]
+      });
+
+      expect(stack).to(haveResource('AWS::EC2::VPNGatewayRoutePropagation', {
+        RouteTableIds: [
+          {
+            Ref: 'VPCIsolatedSubnet1RouteTableEB156210'
+          },
+          {
+            Ref: 'VPCIsolatedSubnet2RouteTable9B4F78DC'
+          },
+          {
+            Ref: 'VPCIsolatedSubnet3RouteTableCB6A1FDA'
+          }
+        ],
+        VpnGatewayId: {
+          Ref: 'VPCVpnGatewayB5ABAE68'
+        }
+      }));
+
+      test.done();
+    },
+    'with a vpn gateway and route propagation on private and isolated subnets'(test: Test) {
+      const stack = getTestStack();
+      new VpcNetwork(stack, 'VPC', {
+        subnetConfiguration: [
+          { subnetType: SubnetType.Private, name: 'Private' },
+          { subnetType: SubnetType.Isolated, name: 'Isolated' },
+        ],
+        vpnGateway: true,
+        vpnRoutePropagation: [
+          {
+            subnetType: SubnetType.Private
+          },
+          {
+            subnetType: SubnetType.Isolated
+          }
+        ]
+      });
+
+      expect(stack).to(haveResource('AWS::EC2::VPNGatewayRoutePropagation', {
+        RouteTableIds: [
+          {
+            Ref: 'VPCPrivateSubnet1RouteTableBE8A6027'
+          },
+          {
+            Ref: 'VPCPrivateSubnet2RouteTable0A19E10E'
+          },
+          {
+            Ref: 'VPCPrivateSubnet3RouteTable192186F8'
+          },
+          {
+            Ref: 'VPCIsolatedSubnet1RouteTableEB156210'
+          },
+          {
+            Ref: 'VPCIsolatedSubnet2RouteTable9B4F78DC'
+          },
+          {
+            Ref: 'VPCIsolatedSubnet3RouteTableCB6A1FDA'
+          }
+        ],
+        VpnGatewayId: {
+          Ref: 'VPCVpnGatewayB5ABAE68'
+        }
+      }));
+
+      test.done();
+    },
+    'fails when specifying vpnConnections with vpnGateway set to false'(test: Test) {
+      // GIVEN
+      const stack = new Stack();
+
+      test.throws(() => new VpcNetwork(stack, 'VpcNetwork', {
+        vpnGateway: false,
+        vpnConnections: {
+          VpnConnection: {
+            asn: 65000,
+            ip: '192.0.2.1'
+          }
+        }
+      }), /`vpnConnections`.+`vpnGateway`.+false/);
+
+      test.done();
+    },
+    'fails when specifying vpnGatewayAsn with vpnGateway set to false'(test: Test) {
+      // GIVEN
+      const stack = new Stack();
+
+      test.throws(() => new VpcNetwork(stack, 'VpcNetwork', {
+        vpnGateway: false,
+        vpnGatewayAsn: 65000,
+      }), /`vpnGatewayAsn`.+`vpnGateway`.+false/);
+
+      test.done();
+    }
 
   },
 
@@ -362,11 +560,12 @@ export = {
       const noPropTags = {
         BusinessUnit: 'Marketing',
       };
-      const allTags: Tags = {...tags, ...noPropTags};
+      const allTags  = {...tags, ...noPropTags};
 
-      const vpc = new VpcNetwork(stack, 'TheVPC', { tags: allTags });
+      const vpc = new VpcNetwork(stack, 'TheVPC');
       // overwrite to set propagate
-      vpc.tags.setTag('BusinessUnit', 'Marketing', {propagate: false});
+      vpc.node.apply(new Tag('BusinessUnit', 'Marketing', {includeResourceTypes: [CfnVPC.resourceTypeName]}));
+      vpc.node.apply(new Tag('VpcType', 'Good'));
       expect(stack).to(haveResource("AWS::EC2::VPC", hasTags(toCfnTags(allTags))));
       const taggables = ['Subnet', 'InternetGateway', 'NatGateway', 'RouteTable'];
       const propTags = toCfnTags(tags);
@@ -393,64 +592,116 @@ export = {
     },
     'Tags can be added after the Vpc is created with `vpc.tags.setTag(...)`'(test: Test) {
       const stack = getTestStack();
+
       const vpc = new VpcNetwork(stack, 'TheVPC');
       const tag = {Key: 'Late', Value: 'Adder'};
       expect(stack).notTo(haveResource('AWS::EC2::VPC', hasTags([tag])));
-      vpc.tags.setTag(tag.Key, tag.Value);
+      vpc.node.apply(new Tag(tag.Key, tag.Value));
       expect(stack).to(haveResource('AWS::EC2::VPC', hasTags([tag])));
       test.done();
     },
   },
 
-  'can select public subnets'(test: Test) {
-    // GIVEN
-    const stack = getTestStack();
-    const vpc = new VpcNetwork(stack, 'VPC');
+  'subnet selection': {
+    'selecting default subnets returns the private ones'(test: Test) {
+      // GIVEN
+      const stack = getTestStack();
+      const vpc = new VpcNetwork(stack, 'VPC');
 
-    // WHEN
-    const nets = vpc.subnets({ subnetsToUse: SubnetType.Public });
+      // WHEN
+      const { subnetIds } = vpc.selectSubnets();
 
-    // THEN
-    test.deepEqual(nets, vpc.publicSubnets);
+      // THEN
+      test.deepEqual(subnetIds, vpc.privateSubnets.map(s => s.subnetId));
+      test.done();
+    },
 
-    test.done();
-  },
+    'can select public subnets'(test: Test) {
+      // GIVEN
+      const stack = getTestStack();
+      const vpc = new VpcNetwork(stack, 'VPC');
 
-  'can select isolated subnets'(test: Test) {
-    // GIVEN
-    const stack = getTestStack();
-    const vpc = new VpcNetwork(stack, 'VPC', {
-      subnetConfiguration: [
-        { subnetType: SubnetType.Private, name: 'Private' },
-        { subnetType: SubnetType.Isolated, name: 'Isolated' },
-      ]
-    });
+      // WHEN
+      const { subnetIds } = vpc.selectSubnets({ subnetType: SubnetType.Public });
 
-    // WHEN
-    const nets = vpc.subnets({ subnetsToUse: SubnetType.Isolated });
+      // THEN
+      test.deepEqual(subnetIds, vpc.publicSubnets.map(s => s.subnetId));
 
-    // THEN
-    test.deepEqual(nets, vpc.isolatedSubnets);
+      test.done();
+    },
 
-    test.done();
-  },
+    'can select isolated subnets'(test: Test) {
+      // GIVEN
+      const stack = getTestStack();
+      const vpc = new VpcNetwork(stack, 'VPC', {
+        subnetConfiguration: [
+          { subnetType: SubnetType.Private, name: 'Private' },
+          { subnetType: SubnetType.Isolated, name: 'Isolated' },
+        ]
+      });
 
-  'can select subnets by name'(test: Test) {
-    // GIVEN
-    const stack = getTestStack();
-    const vpc = new VpcNetwork(stack, 'VPC', {
-      subnetConfiguration: [
-        { subnetType: SubnetType.Private, name: 'DontTalkToMe' },
-        { subnetType: SubnetType.Isolated, name: 'DontTalkAtAll' },
-      ]
-    });
+      // WHEN
+      const { subnetIds } = vpc.selectSubnets({ subnetType: SubnetType.Isolated });
 
-    // WHEN
-    const nets = vpc.subnets({ subnetName: 'DontTalkToMe' });
+      // THEN
+      test.deepEqual(subnetIds, vpc.isolatedSubnets.map(s => s.subnetId));
 
-    // THEN
-    test.deepEqual(nets, vpc.privateSubnets);
-    test.done();
+      test.done();
+    },
+
+    'can select subnets by name'(test: Test) {
+      // GIVEN
+      const stack = getTestStack();
+      const vpc = new VpcNetwork(stack, 'VPC', {
+        subnetConfiguration: [
+          { subnetType: SubnetType.Private, name: 'DontTalkToMe' },
+          { subnetType: SubnetType.Isolated, name: 'DontTalkAtAll' },
+        ]
+      });
+
+      // WHEN
+      const { subnetIds } = vpc.selectSubnets({ subnetName: 'DontTalkToMe' });
+
+      // THEN
+      test.deepEqual(subnetIds, vpc.privateSubnets.map(s => s.subnetId));
+      test.done();
+    },
+
+    'selecting default subnets in a VPC with only public subnets throws an error'(test: Test) {
+      // GIVEN
+      const stack = new Stack();
+      const vpc = VpcNetwork.import(stack, 'VPC', {
+        vpcId: 'vpc-1234',
+        availabilityZones: ['dummy1a', 'dummy1b', 'dummy1c'],
+        publicSubnetIds: ['pub-1', 'pub-2', 'pub-3'],
+      });
+
+      test.throws(() => {
+        vpc.selectSubnets();
+      }, /There are no 'Private' subnets in this VPC/);
+
+      test.done();
+    },
+
+    'select subnets with az restriction'(test: Test) {
+      // GIVEN
+      const stack = getTestStack();
+      const vpc = new VpcNetwork(stack, 'VpcNetwork', {
+        maxAZs: 1,
+        subnetConfiguration: [
+          {name: 'app', subnetType: SubnetType.Private },
+          {name: 'db', subnetType: SubnetType.Private },
+        ]
+      });
+
+      // WHEN
+      const { subnetIds } = vpc.selectSubnets({ onePerAz: true });
+
+      // THEN
+      test.deepEqual(subnetIds.length, 1);
+      test.deepEqual(subnetIds[0], vpc.privateSubnets[0].subnetId);
+      test.done();
+    }
   },
 
   'export/import': {
@@ -510,11 +761,11 @@ export = {
       });
 
       // WHEN
-      const nets = importedVpc.subnets({ subnetsToUse: SubnetType.Isolated });
+      const { subnetIds } = importedVpc.selectSubnets({ subnetType: SubnetType.Isolated });
 
       // THEN
       test.equal(3, importedVpc.isolatedSubnets.length);
-      test.deepEqual(nets, importedVpc.isolatedSubnets);
+      test.deepEqual(subnetIds, importedVpc.isolatedSubnets.map(s => s.subnetId));
 
       test.done();
     },
@@ -533,16 +784,17 @@ export = {
         });
 
         // WHEN
-        const nets = importedVpc.subnets({ subnetName: isolatedName });
+        const { subnetIds } = importedVpc.selectSubnets({ subnetName: isolatedName });
 
         // THEN
         test.equal(3, importedVpc.isolatedSubnets.length);
-        test.deepEqual(nets, importedVpc.isolatedSubnets);
+        test.deepEqual(subnetIds, importedVpc.isolatedSubnets.map(s => s.subnetId));
       }
 
       test.done();
     },
   },
+
 };
 
 function getTestStack(): Stack {
@@ -563,7 +815,7 @@ function doImportExportTest(constructFn: (scope: Construct) => VpcNetwork): IVpc
   return VpcNetwork.import(stack2, 'VPC2', vpc1.export());
 }
 
-function toCfnTags(tags: Tags): Array<{Key: string, Value: string}> {
+function toCfnTags(tags: any): Array<{Key: string, Value: string}> {
   return Object.keys(tags).map( key => {
     return {Key: key, Value: tags[key]};
   });
@@ -586,8 +838,11 @@ function hasTags(expectedTags: Array<{Key: string, Value: string}>): (props: any
       });
       return actualTags.length === expectedTags.length;
     } catch (e) {
-      // tslint:disable-next-line:no-console
-      console.error('Invalid Tags array in ', props);
+      // tslint:disable:no-console
+      console.error('Tags are incorrect');
+      console.error('found tags ', props.Tags);
+      console.error('expected tags ', expectedTags);
+      // tslint:enable:no-console
       throw e;
     }
   };
