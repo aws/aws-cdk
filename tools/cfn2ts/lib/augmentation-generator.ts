@@ -82,11 +82,11 @@ export class AugmentationGenerator {
     this.code.line(`/**`);
     this.code.line(` * Return the given named metric for this ${resource.resourceName}`);
     this.code.line(` */`);
-    this.code.line(`metric(metricName: string, props?: cloudwatch.MetricCustomization): cloudwatch.Metric;`);
+    this.code.line(`metric(metricName: string, props?: cloudwatch.MetricOptions): cloudwatch.Metric;`);
   }
 
   private emitMetricFunction(className: string, metrics: schema.ResourceMetricAugmentations) {
-    this.code.line(`${className}.prototype.metric = function(metricName: string, props?: cloudwatch.MetricCustomization) {`);
+    this.code.line(`${className}.prototype.metric = function(metricName: string, props?: cloudwatch.MetricOptions) {`);
     this.code.line(`  return new cloudwatch.Metric({`);
     this.code.line(`    namespace: '${metrics.namespace}',`);
     this.code.line(`    metricName,`);
@@ -108,11 +108,11 @@ export class AugmentationGenerator {
     this.code.line(` *`);
     this.code.line(` * ${metricStatistic(metric)} over 5 minutes`);
     this.code.line(` */`);
-    this.code.line(`metric${metricFunctionName(metric)}(props?: cloudwatch.MetricCustomization): cloudwatch.Metric;`);
+    this.code.line(`metric${metricFunctionName(metric)}(props?: cloudwatch.MetricOptions): cloudwatch.Metric;`);
   }
 
   private emitSpecificMetricFunction(className: string, metric: schema.ResourceMetric) {
-    this.code.line(`${className}.prototype.metric${metricFunctionName(metric)} = function(props?: cloudwatch.MetricCustomization) {`);
+    this.code.line(`${className}.prototype.metric${metricFunctionName(metric)} = function(props?: cloudwatch.MetricOptions) {`);
     this.code.line(`  return this.metric('${metric.name}', { statistic: '${metricStatistic(metric)}', ...props });`);
     this.code.line('};');
   }

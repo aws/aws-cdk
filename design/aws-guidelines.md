@@ -340,9 +340,9 @@ export interface IFoo extends cdk.IConstruct, ISomething {
   addToPipeline(stage: pipelineapi.IStage, name: string, props?: FooActionProps): FooAction;
 
   // metrics
-  metric(metricName: string, props?: cloudwatch.MetricCustomization): cloudwatch.Metric;
-  metricFoo(props?: cloudwatch.MetricCustomization): cloudwatch.Metric;
-  metricBar(props?: cloudwatch.MetricCustomization): cloudwatch.Metric;
+  metric(metricName: string, props?: cloudwatch.MetricOptions): cloudwatch.Metric;
+  metricFoo(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
+  metricBar(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
 
   // export
   export(): FooImportProps;

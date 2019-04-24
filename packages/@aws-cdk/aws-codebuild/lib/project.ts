@@ -78,7 +78,7 @@ export interface IProject extends IResource, iam.IGrantable {
    * @param metricName The name of the metric
    * @param props Customization properties
    */
-  metric(metricName: string, props: cloudwatch.MetricCustomization): cloudwatch.Metric;
+  metric(metricName: string, props: cloudwatch.MetricOptions): cloudwatch.Metric;
 
   /**
    * Measures the number of builds triggered.
@@ -89,7 +89,7 @@ export interface IProject extends IResource, iam.IGrantable {
    *
    * @default sum over 5 minutes
    */
-  metricBuilds(props?: cloudwatch.MetricCustomization): cloudwatch.Metric;
+  metricBuilds(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
 
   /**
    * Measures the duration of all builds over time.
@@ -100,7 +100,7 @@ export interface IProject extends IResource, iam.IGrantable {
    *
    * @default average over 5 minutes
    */
-  metricDuration(props?: cloudwatch.MetricCustomization): cloudwatch.Metric;
+  metricDuration(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
 
   /**
    * Measures the number of successful builds.
@@ -111,7 +111,7 @@ export interface IProject extends IResource, iam.IGrantable {
    *
    * @default sum over 5 minutes
    */
-  metricSucceededBuilds(props?: cloudwatch.MetricCustomization): cloudwatch.Metric;
+  metricSucceededBuilds(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
 
   /**
    * Measures the number of builds that failed because of client error or
@@ -123,7 +123,7 @@ export interface IProject extends IResource, iam.IGrantable {
    *
    * @default sum over 5 minutes
    */
-  metricFailedBuilds(props?: cloudwatch.MetricCustomization): cloudwatch.Metric;
+  metricFailedBuilds(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
 
   /**
    * Export this Project. Allows referencing this Project in a different CDK Stack.
@@ -271,7 +271,7 @@ export abstract class ProjectBase extends Resource implements IProject {
    * @param metricName The name of the metric
    * @param props Customization properties
    */
-  public metric(metricName: string, props: cloudwatch.MetricCustomization) {
+  public metric(metricName: string, props: cloudwatch.MetricOptions) {
     return new cloudwatch.Metric({
       namespace: 'AWS/CodeBuild',
       metricName,
@@ -289,7 +289,7 @@ export abstract class ProjectBase extends Resource implements IProject {
    *
    * @default sum over 5 minutes
    */
-  public metricBuilds(props?: cloudwatch.MetricCustomization) {
+  public metricBuilds(props?: cloudwatch.MetricOptions) {
     return this.metric('Builds', {
       statistic: 'sum',
       ...props,
@@ -305,7 +305,7 @@ export abstract class ProjectBase extends Resource implements IProject {
    *
    * @default average over 5 minutes
    */
-  public metricDuration(props?: cloudwatch.MetricCustomization) {
+  public metricDuration(props?: cloudwatch.MetricOptions) {
     return this.metric('Duration', {
       statistic: 'avg',
       ...props
@@ -321,7 +321,7 @@ export abstract class ProjectBase extends Resource implements IProject {
    *
    * @default sum over 5 minutes
    */
-  public metricSucceededBuilds(props?: cloudwatch.MetricCustomization) {
+  public metricSucceededBuilds(props?: cloudwatch.MetricOptions) {
     return this.metric('SucceededBuilds', {
       statistic: 'sum',
       ...props,
@@ -338,7 +338,7 @@ export abstract class ProjectBase extends Resource implements IProject {
    *
    * @default sum over 5 minutes
    */
-  public metricFailedBuilds(props?: cloudwatch.MetricCustomization) {
+  public metricFailedBuilds(props?: cloudwatch.MetricOptions) {
     return this.metric('FailedBuilds', {
       statistic: 'sum',
       ...props,

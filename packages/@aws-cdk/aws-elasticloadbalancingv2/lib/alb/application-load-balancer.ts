@@ -120,7 +120,7 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
    *
    * @default Average over 5 minutes
    */
-  public metric(metricName: string, props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
+  public metric(metricName: string, props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return new cloudwatch.Metric({
       namespace: 'AWS/ApplicationELB',
       metricName,
@@ -135,7 +135,7 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
    *
    * @default Sum over 5 minutes
    */
-  public metricActiveConnectionCount(props?: cloudwatch.MetricCustomization) {
+  public metricActiveConnectionCount(props?: cloudwatch.MetricOptions) {
     return this.metric('ActiveConnectionCount', {
       statistic: 'sum',
       ...props
@@ -149,7 +149,7 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
    *
    * @default Sum over 5 minutes
    */
-  public metricClientTlsNegotiationErrorCount(props?: cloudwatch.MetricCustomization) {
+  public metricClientTlsNegotiationErrorCount(props?: cloudwatch.MetricOptions) {
     return this.metric('ClientTLSNegotiationErrorCount', {
       statistic: 'sum',
       ...props
@@ -161,7 +161,7 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
    *
    * @default Sum over 5 minutes
    */
-  public metricConsumedLCUs(props?: cloudwatch.MetricCustomization) {
+  public metricConsumedLCUs(props?: cloudwatch.MetricOptions) {
     return this.metric('ConsumedLCUs', {
       statistic: 'sum',
       ...props
@@ -173,7 +173,7 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
    *
    * @default Sum over 5 minutes
    */
-  public metricHttpFixedResponseCount(props?: cloudwatch.MetricCustomization) {
+  public metricHttpFixedResponseCount(props?: cloudwatch.MetricOptions) {
     return this.metric('HTTP_Fixed_Response_Count', {
       statistic: 'Sum',
       ...props
@@ -185,7 +185,7 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
    *
    * @default Sum over 5 minutes
    */
-  public metricHttpRedirectCount(props?: cloudwatch.MetricCustomization) {
+  public metricHttpRedirectCount(props?: cloudwatch.MetricOptions) {
     return this.metric('HTTP_Redirect_Count', {
       statistic: 'Sum',
       ...props
@@ -198,7 +198,7 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
    *
    * @default Sum over 5 minutes
    */
-  public metricHttpRedirectUrlLimitExceededCount(props?: cloudwatch.MetricCustomization) {
+  public metricHttpRedirectUrlLimitExceededCount(props?: cloudwatch.MetricOptions) {
     return this.metric('HTTP_Redirect_Url_Limit_Exceeded_Count', {
       statistic: 'Sum',
       ...props
@@ -212,7 +212,7 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
    *
    * @default Sum over 5 minutes
    */
-  public metricHttpCodeElb(code: HttpCodeElb, props?: cloudwatch.MetricCustomization) {
+  public metricHttpCodeElb(code: HttpCodeElb, props?: cloudwatch.MetricOptions) {
     return this.metric(code, {
       statistic: 'Sum',
       ...props
@@ -227,7 +227,7 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
    *
    * @default Sum over 5 minutes
    */
-  public metricHttpCodeTarget(code: HttpCodeTarget, props?: cloudwatch.MetricCustomization) {
+  public metricHttpCodeTarget(code: HttpCodeTarget, props?: cloudwatch.MetricOptions) {
     return this.metric(code, {
       statistic: 'Sum',
       ...props
@@ -239,7 +239,7 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
    *
    * @default Sum over 5 minutes
    */
-  public metricIPv6ProcessedBytes(props?: cloudwatch.MetricCustomization) {
+  public metricIPv6ProcessedBytes(props?: cloudwatch.MetricOptions) {
     return this.metric('IPv6ProcessedBytes', {
       statistic: 'Sum',
       ...props
@@ -251,7 +251,7 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
    *
    * @default Sum over 5 minutes
    */
-  public metricIPv6RequestCount(props?: cloudwatch.MetricCustomization) {
+  public metricIPv6RequestCount(props?: cloudwatch.MetricOptions) {
     return this.metric('IPv6RequestCount', {
       statistic: 'Sum',
       ...props
@@ -264,7 +264,7 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
    *
    * @default Sum over 5 minutes
    */
-  public metricNewConnectionCount(props?: cloudwatch.MetricCustomization) {
+  public metricNewConnectionCount(props?: cloudwatch.MetricOptions) {
     return this.metric('NewConnectionCount', {
       statistic: 'Sum',
       ...props
@@ -276,7 +276,7 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
    *
    * @default Sum over 5 minutes
    */
-  public metricProcessedBytes(props?: cloudwatch.MetricCustomization) {
+  public metricProcessedBytes(props?: cloudwatch.MetricOptions) {
     return this.metric('ProcessedBytes', {
       statistic: 'Sum',
       ...props
@@ -289,7 +289,7 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
    *
    * @default Sum over 5 minutes
    */
-  public metricRejectedConnectionCount(props?: cloudwatch.MetricCustomization) {
+  public metricRejectedConnectionCount(props?: cloudwatch.MetricOptions) {
     return this.metric('RejectedConnectionCount', {
       statistic: 'Sum',
       ...props
@@ -303,7 +303,7 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
    *
    * @default Sum over 5 minutes
    */
-  public metricRequestCount(props?: cloudwatch.MetricCustomization) {
+  public metricRequestCount(props?: cloudwatch.MetricOptions) {
     return this.metric('RequestCount', {
       statistic: 'Sum',
       ...props
@@ -315,7 +315,7 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
    *
    * @default Sum over 5 minutes
    */
-  public metricRuleEvaluations(props?: cloudwatch.MetricCustomization) {
+  public metricRuleEvaluations(props?: cloudwatch.MetricOptions) {
     return this.metric('RuleEvaluations', {
       statistic: 'Sum',
       ...props
@@ -327,7 +327,7 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
    *
    * @default Sum over 5 minutes
    */
-  public metricTargetConnectionErrorCount(props?: cloudwatch.MetricCustomization) {
+  public metricTargetConnectionErrorCount(props?: cloudwatch.MetricOptions) {
     return this.metric('TargetConnectionErrorCount', {
       statistic: 'Sum',
       ...props
@@ -339,7 +339,7 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
    *
    * @default Average over 5 minutes
    */
-  public metricTargetResponseTime(props?: cloudwatch.MetricCustomization) {
+  public metricTargetResponseTime(props?: cloudwatch.MetricOptions) {
     return this.metric('TargetResponseTime', {
       statistic: 'Average',
       ...props
@@ -353,7 +353,7 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
    *
    * @default Sum over 5 minutes
    */
-  public metricTargetTLSNegotiationErrorCount(props?: cloudwatch.MetricCustomization) {
+  public metricTargetTLSNegotiationErrorCount(props?: cloudwatch.MetricOptions) {
     return this.metric('TargetTLSNegotiationErrorCount', {
       statistic: 'Sum',
       ...props
@@ -369,7 +369,7 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
    *
    * @default Sum over 5 minutes
    */
-  public metricElbAuthError(props?: cloudwatch.MetricCustomization) {
+  public metricElbAuthError(props?: cloudwatch.MetricOptions) {
     return this.metric('ELBAuthError', {
       statistic: 'Sum',
       ...props
@@ -383,7 +383,7 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
    *
    * @default Sum over 5 minutes
    */
-  public metricElbAuthFailure(props?: cloudwatch.MetricCustomization) {
+  public metricElbAuthFailure(props?: cloudwatch.MetricOptions) {
     return this.metric('ELBAuthFailure', {
       statistic: 'Sum',
       ...props
@@ -397,7 +397,7 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
    *
    * @default Average over 5 minutes
    */
-  public metricElbAuthLatency(props?: cloudwatch.MetricCustomization) {
+  public metricElbAuthLatency(props?: cloudwatch.MetricOptions) {
     return this.metric('ELBAuthLatency', {
       statistic: 'Average',
       ...props
@@ -412,7 +412,7 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
    *
    * @default Sum over 5 minutes
    */
-  public metricElbAuthSuccess(props?: cloudwatch.MetricCustomization) {
+  public metricElbAuthSuccess(props?: cloudwatch.MetricOptions) {
     return this.metric('ELBAuthSuccess', {
       statistic: 'Sum',
       ...props

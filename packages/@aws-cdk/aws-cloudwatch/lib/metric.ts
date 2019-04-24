@@ -129,7 +129,7 @@ export class Metric {
    *
    * @param props The set of properties to change.
    */
-  public with(props: MetricCustomization): Metric {
+  public with(props: MetricOptions): Metric {
     return new Metric({
       dimensions: ifUndefined(props.dimensions, this.dimensions),
       namespace: this.namespace,
@@ -244,7 +244,7 @@ export enum Unit {
 /**
  * Properties of a metric that can be changed
  */
-export interface MetricCustomization {
+export interface MetricOptions {
   /**
    * Dimensions of the metric
    *
