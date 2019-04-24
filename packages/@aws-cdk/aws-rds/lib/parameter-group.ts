@@ -87,6 +87,13 @@ export class ParameterGroup extends ParameterGroupBase {
 }
 
 /**
+ * Construction properties for a ClusterParameterGroup
+ */
+// tslint:disable-next-line:no-empty-interface
+export interface ClusterParameterGroupProps extends ParameterGroupProps {
+
+}
+/**
  * A cluster parameter group
  */
 export class ClusterParameterGroup extends ParameterGroupBase {
@@ -95,7 +102,7 @@ export class ClusterParameterGroup extends ParameterGroupBase {
    */
   public readonly parameterGroupName: string;
 
-  constructor(scope: Construct, id: string, props: ParameterGroupProps) {
+  constructor(scope: Construct, id: string, props: ClusterParameterGroupProps) {
     super(scope, id);
 
     const resource = new CfnDBClusterParameterGroup(this, 'Resource', {
