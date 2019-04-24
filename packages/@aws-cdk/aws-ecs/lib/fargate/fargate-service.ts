@@ -1,8 +1,10 @@
 import ec2 = require('@aws-cdk/aws-ec2');
 import cdk = require('@aws-cdk/core');
 import { Construct, Resource } from '@aws-cdk/core';
-import { BaseService, BaseServiceOptions, IService, LaunchType } from '../base/base-service';
+import { BaseService, BaseServiceOptions, IService, LaunchType, TracingOptions } from '../base/base-service';
 import { TaskDefinition } from '../base/task-definition';
+import { Protocol } from '../container-definition';
+import { ContainerImage } from '../container-image';
 
 /**
  * The properties for defining a service using the Fargate launch type.
@@ -98,6 +100,27 @@ export class FargateService extends BaseService implements IFargateService {
       throw new Error('A TaskDefinition must have at least one essential container');
     }
   }
+
+  /**
+   * Adds AWS X-Ray daemon as a sidecar container to enable tracing
+   */
+  public addTracing(props: TracingOptions = {}) {
+    // TODO: adjust task size based on container-level resources (cpu/memory)?
+    const optIn = props.createLogs !== undefined ? props.createLogs : true;
+    const xray = this.taskDefinition.addContainer("xray", {
+      image: ContainerImage.fromRegistry("amazon/aws-xray-daemon"),
+      cpu: props.cpu,
+      memoryReservationMiB: props.memoryReservationMiB,
+      essential: props.essential || false,
+      logging: optIn ? this.createAWSLogDriver(this.node.id) : undefined,
+    });
+
+    xray.addPortMappings({
+      containerPort: 2000,
+      protocol: Protocol.Udp
+    });
+  }
+
 }
 
 /**

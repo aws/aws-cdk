@@ -494,5 +494,118 @@ export = {
     });
 
     test.done();
-  }
+  },
+  'Allows adding tracing with AWS X-ray with defaults'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+    const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+    const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
+
+    taskDefinition.addContainer('web', {
+      image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+    });
+
+    const service = new ecs.FargateService(stack, 'FargateService', {
+      cluster,
+      taskDefinition
+    });
+
+    // WHEN
+    service.addTracing();
+
+    // THEN
+    expect(stack).to(haveResourceLike('AWS::ECS::TaskDefinition', {
+      Family: 'FargateTaskDef',
+      NetworkMode: ecs.NetworkMode.AwsVpc,
+      RequiresCompatibilities: ['FARGATE'],
+      Cpu: '256',
+      Memory: '512',
+      ContainerDefinitions: [
+        {
+          Essential: true,
+          Image: 'amazon/amazon-ecs-sample',
+          Name: 'web',
+        },
+        {
+          Essential: false,
+          Image: 'amazon/aws-xray-daemon',
+          Name: 'xray',
+          PortMappings: [
+            {
+              ContainerPort: 2000,
+              Protocol: 'udp'
+            }
+          ],
+          LogConfiguration: {
+            LogDriver: "awslogs",
+            Options: {
+              "awslogs-group": {
+                Ref: "FargateServiceLoggingLogGroup9B16742A"
+              },
+              "awslogs-stream-prefix": "FargateService",
+              "awslogs-region": { Ref: "AWS::Region" }
+            }
+          },
+        }
+      ]
+    }));
+
+    test.done();
+  },
+
+  'Allows adding tracing with AWS X-ray with options'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+    const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+    const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
+
+    taskDefinition.addContainer('web', {
+      image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+    });
+
+    const service = new ecs.FargateService(stack, 'FargateService', {
+      cluster,
+      taskDefinition
+    });
+
+    // WHEN
+    service.addTracing({
+      cpu: 32,
+      memoryReservationMiB: 512,
+      essential: true
+    });
+
+    // THEN
+    expect(stack).to(haveResourceLike('AWS::ECS::TaskDefinition', {
+      Family: 'FargateTaskDef',
+      NetworkMode: ecs.NetworkMode.AwsVpc,
+      RequiresCompatibilities: ['FARGATE'],
+      Cpu: '256',
+      Memory: '512',
+      ContainerDefinitions: [
+        {
+          Essential: true,
+          Image: 'amazon/amazon-ecs-sample',
+          Name: 'web',
+        },
+        {
+          Cpu: 32,
+          Essential: true,
+          Image: 'amazon/aws-xray-daemon',
+          MemoryReservation: 512,
+          Name: 'xray',
+          PortMappings: [
+            {
+              ContainerPort: 2000,
+              Protocol: 'udp'
+            }
+          ],
+        }
+      ]
+    }));
+
+    test.done();
+  },
 };
