@@ -289,7 +289,7 @@ export class TaskDefinition extends TaskDefinitionBase {
   }
 
   /**
-   * Create a new container to this task definition
+   * Create a new container within this task definition
    */
   public addContainer(id: string, props: ContainerDefinitionOptions) {
     return new ContainerDefinition(this, id, { taskDefinition: this, ...props });

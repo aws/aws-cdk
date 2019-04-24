@@ -9,6 +9,7 @@ import cdk = require('@aws-cdk/cdk');
 import { NetworkMode, TaskDefinition } from '../base/task-definition';
 import { ICluster } from '../cluster';
 import { CfnService } from '../ecs.generated';
+import { AwsLogDriver } from '../log-drivers/aws-log-driver';
 import { ScalableTaskCount } from './scalable-task-count';
 
 export interface IService extends IResource {
@@ -252,6 +253,13 @@ export abstract class BaseService extends Resource
     };
   }
 
+  /**
+   * Set up AWS logging for this construct
+   */
+  protected createAWSLogDriver(prefix: string): AwsLogDriver {
+    return new AwsLogDriver(this, 'Logging', { streamPrefix: prefix });
+  }
+
   private renderServiceRegistry(registry: ServiceRegistry): CfnService.ServiceRegistryProperty {
     return {
       registryArn: registry.arn,
@@ -427,4 +435,49 @@ export interface ServiceRegistry {
    * used, you must specify either a containerName and containerPort combination or a port value, but not both.
    */
   readonly containerPort?: number;
+}
+
+/**
+ * Options for adding an AWS x-ray sidecar container to a Task Definition
+ */
+export interface TracingOptions {
+  /**
+   * The minimum number of CPU units to reserve for the container.
+   */
+  readonly cpu?: number
+  /**
+   * The hard limit (in MiB) of memory to present to the container.
+   *
+   * If your container attempts to exceed the allocated memory, the container
+   * is terminated.
+   *
+   * At least one of memoryLimitMiB and memoryReservationMiB is required for non-Fargate services.
+   */
+  readonly memoryLimitMiB?: number;
+
+  /**
+   * The soft limit (in MiB) of memory to reserve for the container.
+   *
+   * When system memory is under contention, Docker attempts to keep the
+   * container memory within the limit. If the container requires more memory,
+   * it can consume up to the value specified by the Memory property or all of
+   * the available memory on the container instance—whichever comes first.
+   *
+   * At least one of memoryLimitMiB and memoryReservationMiB is required for non-Fargate services.
+   */
+  readonly memoryReservationMiB?: number;
+
+  /**
+   * Whether or not this container is essential
+   *
+   * @default false
+   */
+  readonly essential?: boolean;
+
+  /**
+   * Whether to create an AWS log driver
+   *
+   * @default true
+   */
+  readonly createLogs?: boolean;
 }
