@@ -1,6 +1,7 @@
 import events = require('@aws-cdk/aws-events');
 import cdk = require('@aws-cdk/cdk');
 import { Action, IPipeline, IStage } from "./action";
+import { Artifact } from "./artifact";
 import { CfnPipeline } from './codepipeline.generated';
 import { Pipeline, StageProps } from './pipeline';
 import { validateName } from "./validation";
@@ -45,6 +46,22 @@ export class Stage implements IStage {
   }
 
   public render(): CfnPipeline.StageDeclarationProperty {
+    // first, assign names to output Artifacts who don't have one
+    for (const action of this.actions) {
+      const outputArtifacts = action.outputs;
+
+      const unnamedOutputs = outputArtifacts.filter(o => !o.artifactName);
+
+      for (const outputArtifact of outputArtifacts) {
+        if (!outputArtifact.artifactName) {
+          const artifactName = `Artifact_${this.stageName}_${action.actionName}` + (unnamedOutputs.length === 1
+            ? ''
+            : '_' + (unnamedOutputs.indexOf(outputArtifact) + 1));
+          (outputArtifact as any)._setName(artifactName);
+        }
+      }
+    }
+
     return {
       name: this.stageName,
       actions: this._actions.map(action => this.renderAction(action)),
@@ -75,8 +92,26 @@ export class Stage implements IStage {
     return rule;
   }
 
-  protected validate(): string[] {
-    return this.validateHasActions();
+  public validate(): string[] {
+    return [
+      ...this.validateHasActions(),
+      ...this.validateActions(),
+    ];
+  }
+
+  private validateHasActions(): string[] {
+    if (this._actions.length === 0) {
+      return [`Stage '${this.stageName}' must have at least one action`];
+    }
+    return [];
+  }
+
+  private validateActions(): string[] {
+    const ret = new Array<string>();
+    for (const action of this.actions) {
+      ret.push(...action._validate());
+    }
+    return ret;
   }
 
   private attachActionToPipeline(action: Action) {
@@ -86,10 +121,12 @@ export class Stage implements IStage {
   }
 
   private renderAction(action: Action): CfnPipeline.ActionDeclarationProperty {
+    const outputArtifacts = this.renderArtifacts(action.outputs);
+    const inputArtifacts = this.renderArtifacts(action.inputs);
     return {
       name: action.actionName,
-      // TODO: remove "as any"
-      inputArtifacts: (action as any).actionInputArtifacts.map((a: any) => ({ name: a.artifactName })),
+      inputArtifacts,
+      outputArtifacts,
       actionTypeId: {
         category: action.category.toString(),
         version: action.version,
@@ -97,17 +134,14 @@ export class Stage implements IStage {
         provider: action.provider,
       },
       configuration: action.configuration,
-      // TODO: remove "as any"
-      outputArtifacts: (action as any).actionOutputArtifacts.map((a: any) => ({ name: a.artifactName })),
       runOrder: action.runOrder,
       roleArn: action.role ? action.role.roleArn : undefined
     };
   }
 
-  private validateHasActions(): string[] {
-    if (this._actions.length === 0) {
-      return [`Stage '${this.stageName}' must have at least one action`];
-    }
-    return [];
+  private renderArtifacts(artifacts: Artifact[]): CfnPipeline.InputArtifactProperty[] {
+    return artifacts
+      .filter(a => a.artifactName)
+      .map(a => ({ name: a.artifactName! }));
   }
 }

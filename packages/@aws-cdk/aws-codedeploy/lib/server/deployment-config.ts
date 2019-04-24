@@ -65,6 +65,38 @@ class DefaultServerDeploymentConfig implements IServerDeploymentConfig {
   }
 }
 
+export class MinimumHealthyHosts {
+
+  /**
+   * The minimum healhty hosts threshold expressed as an absolute number.
+   */
+  public static count(value: number): MinimumHealthyHosts {
+    return new MinimumHealthyHosts({
+      type: 'HOST_COUNT',
+      value
+    });
+  }
+
+  /**
+   * The minmum healhty hosts threshold expressed as a percentage of the fleet.
+   */
+  public static percentage(value: number): MinimumHealthyHosts {
+    return new MinimumHealthyHosts({
+      type: 'FLEET_PERCENT',
+      value
+    });
+  }
+
+  private constructor(private readonly json: CfnDeploymentConfig.MinimumHealthyHostsProperty) { }
+
+  /**
+   * @internal
+   */
+  public get _json() {
+    return this.json;
+  }
+}
+
 /**
  * Construction properties of {@link ServerDeploymentConfig}.
  */
@@ -77,20 +109,9 @@ export interface ServerDeploymentConfigProps {
   readonly deploymentConfigName?: string;
 
   /**
-   * The minimum healhty hosts threshold expressed as an absolute number.
-   * If you've specified this value,
-   * you can't specify {@link #minHealthyHostPercentage},
-   * however one of this or {@link #minHealthyHostPercentage} is required.
+   * Minimum number of healthy hosts.
    */
-  readonly minHealthyHostCount?: number;
-
-  /**
-   * The minmum healhty hosts threshold expressed as a percentage of the fleet.
-   * If you've specified this value,
-   * you can't specify {@link #minHealthyHostCount},
-   * however one of this or {@link #minHealthyHostCount} is required.
-   */
-  readonly minHealthyHostPercentage?: number;
+  readonly minimumHealthyHosts: MinimumHealthyHosts;
 }
 
 /**
@@ -121,7 +142,7 @@ export class ServerDeploymentConfig extends cdk.Construct implements IServerDepl
 
     const resource = new CfnDeploymentConfig(this, 'Resource', {
       deploymentConfigName: props.deploymentConfigName,
-      minimumHealthyHosts: this.minimumHealthyHosts(props),
+      minimumHealthyHosts: props.minimumHealthyHosts._json,
     });
 
     this.deploymentConfigName = resource.ref.toString();
@@ -136,23 +157,6 @@ export class ServerDeploymentConfig extends cdk.Construct implements IServerDepl
       deploymentConfigName: new cdk.CfnOutput(this, 'DeploymentConfigName', {
         value: this.deploymentConfigName,
       }).makeImportValue().toString(),
-    };
-  }
-
-  private minimumHealthyHosts(props: ServerDeploymentConfigProps):
-      CfnDeploymentConfig.MinimumHealthyHostsProperty {
-    if (props.minHealthyHostCount === undefined && props.minHealthyHostPercentage === undefined) {
-      throw new Error('At least one of minHealthyHostCount or minHealthyHostPercentage must be specified when creating ' +
-        'a custom Server DeploymentConfig');
-    }
-    if (props.minHealthyHostCount !== undefined && props.minHealthyHostPercentage !== undefined) {
-      throw new Error('Both minHealthyHostCount and minHealthyHostPercentage cannot be specified when creating ' +
-        'a custom Server DeploymentConfig');
-    }
-
-    return {
-      type: props.minHealthyHostCount !== undefined ? 'HOST_COUNT' : 'FLEET_PERCENT',
-      value: props.minHealthyHostCount !== undefined  ? props.minHealthyHostCount : props.minHealthyHostPercentage!,
     };
   }
 }

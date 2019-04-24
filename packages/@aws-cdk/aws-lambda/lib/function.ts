@@ -241,7 +241,7 @@ export class Function extends FunctionBase {
   /**
    * Return the given named metric for this Lambda
    */
-  public static metricAll(metricName: string, props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
+  public static metricAll(metricName: string, props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return new cloudwatch.Metric({
       namespace: 'AWS/Lambda',
       metricName,
@@ -253,7 +253,7 @@ export class Function extends FunctionBase {
    *
    * @default sum over 5 minutes
    */
-  public static metricAllErrors(props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
+  public static metricAllErrors(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return this.metricAll('Errors', { statistic: 'sum', ...props });
   }
 
@@ -262,7 +262,7 @@ export class Function extends FunctionBase {
    *
    * @default average over 5 minutes
    */
-  public static metricAllDuration(props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
+  public static metricAllDuration(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return this.metricAll('Duration', props);
   }
 
@@ -271,7 +271,7 @@ export class Function extends FunctionBase {
    *
    * @default sum over 5 minutes
    */
-  public static metricAllInvocations(props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
+  public static metricAllInvocations(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return this.metricAll('Invocations', { statistic: 'sum', ...props });
   }
 
@@ -280,7 +280,7 @@ export class Function extends FunctionBase {
    *
    * @default sum over 5 minutes
    */
-  public static metricAllThrottles(props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
+  public static metricAllThrottles(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return this.metricAll('Throttles', { statistic: 'sum', ...props });
   }
 
@@ -289,7 +289,7 @@ export class Function extends FunctionBase {
    *
    * @default max over 5 minutes
    */
-  public static metricAllConcurrentExecutions(props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
+  public static metricAllConcurrentExecutions(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     // Mini-FAQ: why max? This metric is a gauge that is emitted every
     // minute, so either max or avg or a percentile make sense (but sum
     // doesn't). Max is more sensitive to spiky load changes which is
@@ -304,7 +304,7 @@ export class Function extends FunctionBase {
    *
    * @default max over 5 minutes
    */
-  public static metricAllUnreservedConcurrentExecutions(props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
+  public static metricAllUnreservedConcurrentExecutions(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return this.metricAll('UnreservedConcurrentExecutions', { statistic: 'max', ...props });
   }
 
@@ -605,7 +605,7 @@ export class Function extends FunctionBase {
   }
 }
 
-export class ImportedFunction extends FunctionBase {
+class ImportedFunction extends FunctionBase {
   public readonly grantPrincipal: iam.IPrincipal;
   public readonly functionName: string;
   public readonly functionArn: string;

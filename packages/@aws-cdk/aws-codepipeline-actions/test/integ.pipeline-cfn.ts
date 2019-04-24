@@ -16,15 +16,25 @@ const bucket = new s3.Bucket(stack, 'PipelineBucket', {
   removalPolicy: cdk.RemovalPolicy.Destroy,
 });
 
+const sourceOutput = new codepipeline.Artifact('SourceArtifact');
+const additionalArtifact = new codepipeline.Artifact('AdditionalArtifact');
 const source = new cpactions.S3SourceAction({
   actionName: 'Source',
-  outputArtifactName: 'SourceArtifact',
+  output: sourceOutput,
   bucket,
   bucketKey: 'key',
 });
 const sourceStage = {
   name: 'Source',
-  actions: [source],
+  actions: [
+    source,
+    new cpactions.S3SourceAction({
+      actionName: 'AdditionalSource',
+      output: additionalArtifact,
+      bucket,
+      bucketKey: 'additional/key',
+    }),
+  ],
 };
 
 const changeSetName = "ChangeSetIntegTest";
@@ -32,9 +42,6 @@ const stackName = "IntegTest-TestActionStack";
 const role = new Role(stack, 'CfnChangeSetRole', {
   assumedBy: new ServicePrincipal('cloudformation.amazonaws.com'),
 });
-
-// fake Artifact, just for testing
-const additionalArtifact = new codepipeline.Artifact('AdditionalArtifact');
 
 pipeline.addStage(sourceStage);
 pipeline.addStage({
@@ -45,15 +52,15 @@ pipeline.addStage({
       changeSetName,
       stackName,
       deploymentRole: role,
-      templatePath: source.outputArtifact.atPath('test.yaml'),
+      templatePath: sourceOutput.atPath('test.yaml'),
       adminPermissions: false,
       parameterOverrides: {
-        BucketName: source.outputArtifact.bucketName,
-        ObjectKey: source.outputArtifact.objectKey,
+        BucketName: sourceOutput.bucketName,
+        ObjectKey: sourceOutput.objectKey,
         Url: additionalArtifact.url,
-        OtherParam: source.outputArtifact.getParam('params.json', 'OtherParam'),
+        OtherParam: sourceOutput.getParam('params.json', 'OtherParam'),
       },
-      additionalInputArtifacts: [additionalArtifact],
+      extraInputs: [additionalArtifact],
     }),
   ],
 });
