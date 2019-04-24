@@ -75,14 +75,14 @@ rule.addTarget(lambdaFunction);
 
 ### Connecting
 
-To control who can access the cluster/instance, use the `.connections` attribute. RDS database have
+To control who can access the cluster or instance, use the `.connections` attribute. RDS databases have
 a default port, so you don't need to specify the port:
 
 ```ts
 cluster.connections.allowFromAnyIpv4('Open to the world');
 ```
 
-The endpoints to access your cluster database will be available as the `.clusterEndpoint` and `.readerEndpoint`
+The endpoints to access your database cluster will be available as the `.clusterEndpoint` and `.readerEndpoint`
 attributes:
 
 ```ts
@@ -95,15 +95,15 @@ const address = instance.instanceEndpoint.socketAddress;   // "HOSTNAME:PORT"
 ```
 
 ### Rotating master password
-When the master password is generated and stored in AWS Secrets Manager, it can be rotated automatically both for a cluster and an instance:
+When the master password is generated and stored in AWS Secrets Manager, it can be rotated automatically:
 
 [example of setting up master password rotation for a cluster](test/integ.cluster-rotation.lit.ts)
 
 Rotation of the master password is also supported for an existing cluster:
 ```ts
-new RotationSingleUser(stack, 'Rotation', {
+new SecretRotation(stack, 'Rotation', {
     secret: importedSecret,
-    engine: DatabaseEngine.Oracle,
+    application: SecretRotationApplication.OracleRotationSingleUser
     target: importedCluster, // or importedInstance
     vpc: importedVpc,
 })
@@ -122,7 +122,7 @@ The `importedSecret` must be a JSON string with the following format:
 ```
 
 ### Metrics
-Database instances expose [metrics (cloudwatch.Metric)](https://github.com/awslabs/aws-cdk/blob/master/packages/%40aws-cdk/aws-cloudwatch/README.md):
+Database instances expose metrics (`cloudwatch.Metric`):
 ```ts
 // The number of database connections in use (average over 5 minutes)
 const dbConnections = instance.metricDatabaseConnections();
