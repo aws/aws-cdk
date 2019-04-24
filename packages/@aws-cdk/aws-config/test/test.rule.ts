@@ -1,4 +1,5 @@
 import { expect, haveResource, ResourcePart } from '@aws-cdk/assert';
+import targets = require('@aws-cdk/aws-events-targets');
 import lambda = require('@aws-cdk/aws-lambda');
 import cdk = require('@aws-cdk/cdk');
 import { Test } from 'nodeunit';
@@ -278,7 +279,7 @@ export = {
     });
 
     // WHEN
-    rule.onComplianceChange('ComplianceChange', fn);
+    rule.onComplianceChange('ComplianceChange', new targets.LambdaFunction(fn));
 
     expect(stack).to(haveResource('AWS::Events::Rule', {
       EventPattern: {
