@@ -75,6 +75,7 @@
   "dependencies": {
     "@aws-cdk/aws-events": "^0.28.0",
     "@aws-cdk/aws-iam": "^0.28.0",
+    "@aws-cdk/aws-kms": "^0.28.0",
     "@aws-cdk/aws-s3": "^0.28.0",
     "@aws-cdk/cdk": "^0.28.0"
   },
@@ -82,6 +83,7 @@
   "peerDependencies": {
     "@aws-cdk/aws-events": "^0.28.0",
     "@aws-cdk/aws-iam": "^0.28.0",
+    "@aws-cdk/aws-kms": "^0.28.0",
     "@aws-cdk/aws-s3": "^0.28.0",
     "@aws-cdk/cdk": "^0.28.0"
   },
