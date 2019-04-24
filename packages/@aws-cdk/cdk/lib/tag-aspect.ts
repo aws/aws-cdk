@@ -1,7 +1,8 @@
 import { IAspect } from './aspect';
-import { CfnResource, ITaggable } from './cfn-resource';
-import { Stack } from './stack';
+import { CfnResource} from './cfn-resource';
 import { IConstruct } from './construct';
+import { Stack } from './stack';
+import { ITaggable } from './tag-manager';
 
 /**
  * Properties for a tag

@@ -5,7 +5,7 @@ import { Construct, IConstruct, PATH_SEP } from './construct';
 import { Environment } from './environment';
 import { HashedAddressingScheme, IAddressingScheme, LogicalIDs } from './logical-id';
 import { ISynthesisSession } from './synthesis';
-import { TagManager } from './tag-manager';
+import { ITaggable } from './tag-manager';
 import { makeUniqueId } from './uniqueid';
 
 export interface StackProps {
@@ -41,13 +41,6 @@ export interface StackProps {
    * @default true
    */
   readonly autoDeploy?: boolean;
-}
-
-export interface ITaggable {
-  /**
-   * TagManager to set, remove and format tags
-   */
-  readonly tags: TagManager;
 }
 
 const STACK_SYMBOL = Symbol.for('@aws-cdk/cdk.Stack');
@@ -562,7 +555,10 @@ export class Stack extends Construct {
 
     visit(this);
 
+    this.node.addMetadata(cxapi.TAGS_METADATA_KEY, [new Tag("Team", "Isma"), new Tag("Group", "fdsajkl3")]);
+
     const app = this.parentApp();
+
     if (app && app.node.metadata.length > 0) {
       output[PATH_SEP] = app.node.metadata;
     }
@@ -573,6 +569,18 @@ export class Stack extends Construct {
       if (node.node.metadata.length > 0) {
         // Make the path absolute
         output[PATH_SEP + node.node.path] = node.node.metadata.map(md => node.node.resolve(md) as cxapi.MetadataEntry);
+      }
+
+      const resource = node as Stack;
+      if (Stack.isTaggable(resource)) {
+        node.node.addMetadata(cxapi.TAGS_METADATA_KEY, [new Tag("Team", "Isma"), new Tag("Group", "fdsajkl3")]);
+        print(resource);
+        print(resource.tags);
+        print(resource.tags.renderTags());
+        // const stackTags = resource.tags.renderTags()
+        // stackTags.map(tag => node.node.)
+        // node.node.metadata.map(md => node.node.resolve(md) as cxapi.MetadataEntry);
+        // this.applyStackTag(resource);
       }
 
       for (const child of node.node.children) {
@@ -672,11 +680,13 @@ function cfnElements(node: IConstruct, into: CfnElement[] = []): CfnElement[] {
 }
 
 // These imports have to be at the end to prevent circular imports
+import { print } from 'util';
 import { ArnComponents, arnFromComponents, parseArn } from './arn';
 import { CfnElement } from './cfn-element';
 import { CfnReference } from './cfn-reference';
 import { CfnResource } from './cfn-resource';
 import { Aws, ScopedAws } from './pseudo';
+import { Tag } from './tag-aspect';
 
 /**
  * Find all resources in a set of constructs

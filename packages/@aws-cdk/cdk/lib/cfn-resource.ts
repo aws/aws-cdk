@@ -2,7 +2,7 @@ import cxapi = require('@aws-cdk/cx-api');
 import { CfnCondition } from './cfn-condition';
 import { Construct, IConstruct } from './construct';
 import { CreationPolicy, DeletionPolicy, UpdatePolicy } from './resource-policy';
-import { TagManager } from './tag-manager';
+import { ITaggable } from './tag-manager';
 import { capitalizePropertyNames, ignoreEmpty, PostResolveToken } from './util';
 // import required to be here, otherwise causes a cycle when running the generated JavaScript
 // tslint:disable-next-line:ordered-imports
@@ -21,12 +21,6 @@ export interface CfnResourceProps {
   readonly properties?: any;
 }
 
-export interface ITaggable {
-  /**
-   * TagManager to set, remove and format tags
-   */
-  readonly tags: TagManager;
-}
 /**
  * Represents a CloudFormation resource.
  */

@@ -158,6 +158,13 @@ const TAG_FORMATTERS: {[key: string]: ITagFormatter} = {
   [TagType.NotTaggable]: new NoFormat(),
 };
 
+export interface ITaggable {
+  /**
+   * TagManager to set, remove and format tags
+   */
+  readonly tags: TagManager;
+}
+
 /**
  * TagManager facilitates a common implementation of tagging for Constructs.
  */
