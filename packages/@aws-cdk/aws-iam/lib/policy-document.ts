@@ -3,16 +3,24 @@ import { Default, RegionInfo } from '@aws-cdk/region-info';
 import { IPrincipal } from './principals';
 import { mergePrincipal } from './util';
 
-export class PolicyDocument extends cdk.Token {
+export class PolicyDocument extends cdk.Token implements cdk.IResolvedValuePostProcessor {
   private statements = new Array<PolicyStatement>();
+  private _autoAssignSids = false;
 
   /**
    * Creates a new IAM policy document.
    * @param defaultDocument An IAM policy document to use as an initial
    * policy. All statements of this document will be copied in.
    */
-  constructor(private readonly baseDocument?: any) {
+  constructor(private readonly baseDocument: any = {}) {
     super();
+  }
+
+  /**
+   * Will automatically assign a unique SID to each statement, unless an SID is provided.
+   */
+  public autoAssignSids() {
+    this._autoAssignSids = true;
   }
 
   public resolve(_context: cdk.ResolveContext): any {
@@ -20,11 +28,47 @@ export class PolicyDocument extends cdk.Token {
       return undefined;
     }
 
-    const doc = this.baseDocument || { };
-    doc.Statement = doc.Statement || [ ];
-    doc.Version = doc.Version || '2012-10-17';
-    doc.Statement = doc.Statement.concat(this.statements);
+    const doc = {
+      ...this.baseDocument,
+      Statement: (this.baseDocument.Statement || []).concat(this.statements),
+      Version: this.baseDocument.Version || '2012-10-17'
+    };
+
     return doc;
+  }
+
+  /**
+   * Removes duplicate statements
+   */
+  public postProcess(input: any, _context: cdk.ResolveContext): any {
+    if (!input || !input.Statement) {
+      return input;
+    }
+
+    const jsonStatements = new Set<string>();
+    const uniqueStatements: any[] = [];
+
+    for (const statement of input.Statement) {
+      const jsonStatement = JSON.stringify(statement);
+      if (!jsonStatements.has(jsonStatement)) {
+        uniqueStatements.push(statement);
+        jsonStatements.add(jsonStatement);
+      }
+    }
+
+    // assign unique SIDs (the statement index) if `autoAssignSids` is enabled
+    const statements = uniqueStatements.map((s, i) => {
+      if (this._autoAssignSids && !s.Sid) {
+        s.Sid = i.toString();
+      }
+
+      return s;
+    });
+
+    return {
+      ...input,
+      Statement: statements
+    };
   }
 
   get isEmpty(): boolean {
@@ -39,6 +83,11 @@ export class PolicyDocument extends cdk.Token {
     return this.statements.length;
   }
 
+  /**
+   * Adds a statement to the policy document.
+   *
+   * @param statement the statement to add.
+   */
   public addStatement(statement: PolicyStatement): PolicyDocument {
     this.statements.push(statement);
     return this;
@@ -285,12 +334,13 @@ export class CompositePrincipal extends PrincipalBase {
  * Represents a statement in an IAM policy document.
  */
 export class PolicyStatement extends cdk.Token {
+  public sid?: string;
+
   private action = new Array<any>();
   private principal: { [key: string]: any[] } = {};
   private resource = new Array<any>();
   private condition: { [key: string]: any } = { };
   private effect?: PolicyStatementEffect;
-  private sid?: any;
 
   constructor(effect: PolicyStatementEffect = PolicyStatementEffect.Allow) {
     super();
@@ -345,7 +395,7 @@ export class PolicyStatement extends cdk.Token {
    * Adds a service principal to this policy statement.
    *
    * @param service the service name for which a service principal is requested (e.g: `s3.amazonaws.com`).
-   * @param region  the region in which the service principal lives (defaults to the current stack's region).
+   * @param opts    options for adding the service principal (such as specifying a principal in a different region)
    */
   public addServicePrincipal(service: string, opts?: ServicePrincipalOpts): this {
     return this.addPrincipal(new ServicePrincipal(service, opts));
@@ -395,6 +445,9 @@ export class PolicyStatement extends cdk.Token {
     return this.resource && this.resource.length > 0;
   }
 
+  /**
+   * @deprecated Use `statement.sid = value`
+   */
   public describe(sid: string): PolicyStatement {
     this.sid = sid;
     return this;

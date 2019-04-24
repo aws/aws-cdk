@@ -308,7 +308,7 @@
         },
         "Environment": {
           "ComputeType": "BUILD_GENERAL1_SMALL",
-          "Image": "aws/codebuild/ubuntu-base:14.04",
+          "Image": "aws/codebuild/standard:1.0",
           "PrivilegedMode": false,
           "Type": "LINUX_CONTAINER"
         },
@@ -455,20 +455,6 @@
                   "Arn"
                 ]
               }
-            },
-            {
-              "Action": [
-                "codebuild:BatchGetBuilds",
-                "codebuild:StartBuild",
-                "codebuild:StopBuild"
-              ],
-              "Effect": "Allow",
-              "Resource": {
-                "Fn::GetAtt": [
-                  "MyBuildProject30DB9D6E",
-                  "Arn"
-                ]
-              }
             }
           ],
           "Version": "2012-10-17"
@@ -544,7 +530,7 @@
                 "Name": "build",
                 "OutputArtifacts": [
                   {
-                    "Name": "Artifact_build_awscdkcodepipelinecodecommitcodebuildMyBuildProject20018D4F"
+                    "Name": "Artifact_build_build"
                   }
                 ],
                 "RunOrder": 1

@@ -26,6 +26,11 @@
               {
                 "@aws-cdk/aws-codepipeline-actions.CodeCommitSourceAction":  {
                   "repository": { "Ref": "Repo" },
+                  "output": {
+                    "artifact": {
+                      "name": "Source"
+                    }
+                  },
                   "actionName": "Source"
                 }
               }
@@ -35,12 +40,35 @@
             "name": "Build",
             "actions": [
               {
-                "@aws-cdk/aws-codepipeline-actions.CodeBuildBuildAction":   {
+                "@aws-cdk/aws-codepipeline-actions.CodeBuildAction":   {
                   "actionName": "Build",
                   "project": { "Ref": "BuildProject" },
-                  "inputArtifact": {
-                    "@aws-cdk/aws-codepipeline.Artifact": {
-                      "artifactName": "Source"
+                  "input": {
+                    "artifact": {
+                      "name": "Source"
+                    }
+                  },
+                  "output": {
+                    "artifact": {
+                      "name": "Build"
+                    }
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "name": "Deploy",
+            "actions": [
+              {
+                "@aws-cdk/aws-codepipeline-actions.CloudFormationCreateUpdateStackAction": {
+                  "actionName": "Deploy",
+                  "stackName": "MyStack",
+                  "adminPermissions": true,
+                  "templatePath":  {
+                    "artifactPath": {
+                      "artifactName": "Build",
+                      "fileName": "template.yaml"
                     }
                   }
                 }

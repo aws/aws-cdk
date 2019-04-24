@@ -144,7 +144,7 @@ export = {
                 scheduleExpression: 'rate(1 minute)'
         });
         const stateMachine = new stepfunctions.StateMachine(stack, 'SM', {
-                definition: new stepfunctions.Wait(stack, 'Hello', {  })
+                definition: new stepfunctions.Wait(stack, 'Hello', { duration: stepfunctions.WaitDuration.seconds(10)  })
             });
 
         // WHEN

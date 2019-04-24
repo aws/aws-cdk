@@ -1,5 +1,5 @@
 import iam = require('@aws-cdk/aws-iam');
-import cdk = require('@aws-cdk/cdk');
+import { Construct, Resource } from '@aws-cdk/cdk';
 import { CfnScalableTarget } from './applicationautoscaling.generated';
 import { BasicStepScalingPolicyProps, StepScalingPolicy } from './step-scaling-policy';
 import { BasicTargetTrackingScalingPolicyProps, TargetTrackingScalingPolicy } from './target-tracking-scaling-policy';
@@ -61,7 +61,7 @@ export interface ScalableTargetProps {
 /**
  * Define a scalable target
  */
-export class ScalableTarget extends cdk.Construct {
+export class ScalableTarget extends Resource {
   /**
    * ID of the Scalable Target
    *
@@ -76,7 +76,7 @@ export class ScalableTarget extends cdk.Construct {
 
   private readonly actions = new Array<CfnScalableTarget.ScheduledActionProperty>();
 
-  constructor(scope: cdk.Construct, id: string, props: ScalableTargetProps) {
+  constructor(scope: Construct, id: string, props: ScalableTargetProps) {
     super(scope, id);
 
     if (props.maxCapacity < 0) {

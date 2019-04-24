@@ -21,14 +21,18 @@ const pipeline = new codepipeline.Pipeline(stack, 'Pipeline', {
   artifactBucket: bucket,
 });
 
+const source1Output = new codepipeline.Artifact();
 const sourceAction1 = new cpactions.CodeCommitSourceAction({
   actionName: 'Source1',
   repository,
+  output: source1Output,
 });
+const source2Output = new codepipeline.Artifact();
 const sourceAction2 = new cpactions.S3SourceAction({
   actionName: 'Source2',
   bucketKey: 'some/path',
   bucket,
+  output: source2Output,
 });
 pipeline.addStage({
   name: 'Source',
@@ -39,26 +43,28 @@ pipeline.addStage({
 });
 
 const project = new codebuild.PipelineProject(stack, 'MyBuildProject');
-const buildAction = new cpactions.CodeBuildBuildAction({
+const buildAction = new cpactions.CodeBuildAction({
   actionName: 'Build1',
   project,
-  inputArtifact: sourceAction1.outputArtifact,
-  additionalInputArtifacts: [
-    sourceAction2.outputArtifact,
+  input: source1Output,
+  extraInputs: [
+    source2Output,
   ],
-  additionalOutputArtifactNames: [
-    'CustomOutput1',
+  output: new codepipeline.Artifact(),
+  extraOutputs: [
+    new codepipeline.Artifact(),
   ],
 });
-const testAction = new cpactions.CodeBuildTestAction({
+const testAction = new cpactions.CodeBuildAction({
+  type: cpactions.CodeBuildActionType.TEST,
   actionName: 'Build2',
   project,
-  inputArtifact: sourceAction2.outputArtifact,
-  additionalInputArtifacts: [
-    sourceAction1.outputArtifact,
+  input: source2Output,
+  extraInputs: [
+    source1Output,
   ],
-  additionalOutputArtifactNames: [
-    'CustomOutput2',
+  extraOutputs: [
+    new codepipeline.Artifact('CustomOutput2'),
   ],
 });
 pipeline.addStage({
@@ -68,19 +74,5 @@ pipeline.addStage({
     testAction,
   ],
 });
-
-// some assertions on the Action helper methods
-if (buildAction.additionalOutputArtifacts().length !== 1) {
-  throw new Error(`Expected build Action to have 1 additional output artifact, but was: ${buildAction.additionalOutputArtifacts()}`);
-}
-buildAction.additionalOutputArtifact('CustomOutput1'); // that it doesn't throw
-
-if (testAction.outputArtifact) {
-  throw new Error(`Expected test Action output Artifact to be undefined, was: ${testAction.outputArtifact}`);
-}
-if (testAction.additionalOutputArtifacts().length !== 1) {
-  throw new Error(`Expected test Action to have 1 additional output artifact, but was: ${testAction.additionalOutputArtifacts()}`);
-}
-testAction.additionalOutputArtifact('CustomOutput2'); // that it doesn't throw
 
 app.run();

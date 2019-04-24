@@ -173,7 +173,7 @@ export class Fn {
    * attribute, update policy attribute, and property values in the Resources
    * section and Outputs sections of a template. You can use the AWS::NoValue
    * pseudo parameter as a return value to remove the corresponding property.
-   * @param condition A reference to a condition in the Conditions section. Use
+   * @param conditionId A reference to a condition in the Conditions section. Use
    * the condition's name to reference it.
    * @param valueIfTrue A value to be returned if the specified condition
    * evaluates to true.

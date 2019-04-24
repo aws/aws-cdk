@@ -90,11 +90,16 @@ Example:
 const gitHubSource = new codebuild.GitHubSource({
   owner: 'awslabs',
   repo: 'aws-cdk',
-  oauthToken: new secretsmanager.SecretString(this, 'GitHubOAuthToken', {
-    secretId: 'my-github-token',
-  }).stringValue,
   webhook: true, // optional, default: false
 });
+```
+
+To provide GitHub credentials, please either go to AWS CodeBuild Console to connect
+or call `ImportSourceCredentials` to persist your personal access token.
+Example:
+
+```
+aws codebuild import-source-credentials --server-type GITHUB --auth-type PERSONAL_ACCESS_TOKEN --token <token_value>
 ```
 
 ### `BitBucketSource`
@@ -103,7 +108,7 @@ This source type can be used to build code from a BitBucket repository.
 
 ## Environment
 
-By default, projects use a small instance with an Ubuntu 14.04 image. You
+By default, projects use a small instance with an Ubuntu 18.04 image. You
 can use the `environment` property to customize the build environment:
 
 * `buildImage` defines the Docker image used. See [Images](#images) below for
@@ -147,12 +152,14 @@ by events via an event rule.
 
 ### Using Project as an event target
 
-The `Project` construct implements the `IEventRuleTarget` interface. This means
-that it can be used as a target for event rules:
+The `@aws-cdk/aws-events-targets.CodeBuildProject` allows using an AWS CodeBuild
+project as a AWS CloudWatch event rule target:
 
 ```ts
 // start build when a commit is pushed
-codeCommitRepository.onCommit('OnCommit', project);
+const targets = require('@aws-cdk/aws-events-targets');
+
+codeCommitRepository.onCommit('OnCommit', new targets.CodeBuildProject(project));
 ```
 
 ### Using Project as an event source

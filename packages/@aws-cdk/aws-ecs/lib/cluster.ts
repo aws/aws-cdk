@@ -3,7 +3,7 @@ import cloudwatch = require ('@aws-cdk/aws-cloudwatch');
 import ec2 = require('@aws-cdk/aws-ec2');
 import iam = require('@aws-cdk/aws-iam');
 import cloudmap = require('@aws-cdk/aws-servicediscovery');
-import cdk = require('@aws-cdk/cdk');
+import { CfnOutput, Construct, IResource, Resource, SSMParameterProvider } from '@aws-cdk/cdk';
 import { InstanceDrainHook } from './drain-hook/instance-drain-hook';
 import { CfnCluster } from './ecs.generated';
 
@@ -27,11 +27,11 @@ export interface ClusterProps {
 /**
  * A container cluster that runs on your EC2 instances
  */
-export class Cluster extends cdk.Construct implements ICluster {
+export class Cluster extends Resource implements ICluster {
   /**
    * Import an existing cluster
    */
-  public static import(scope: cdk.Construct, id: string, props: ClusterImportProps): ICluster {
+  public static import(scope: Construct, id: string, props: ClusterImportProps): ICluster {
     return new ImportedCluster(scope, id, props);
   }
 
@@ -65,7 +65,7 @@ export class Cluster extends cdk.Construct implements ICluster {
    */
   private _hasEc2Capacity: boolean = false;
 
-  constructor(scope: cdk.Construct, id: string, props: ClusterProps) {
+  constructor(scope: Construct, id: string, props: ClusterProps) {
     super(scope, id);
 
     const cluster = new CfnCluster(this, 'Resource', {clusterName: props.clusterName});
@@ -185,7 +185,7 @@ export class Cluster extends cdk.Construct implements ICluster {
    */
   public export(): ClusterImportProps {
     return {
-      clusterName: new cdk.CfnOutput(this, 'ClusterName', { value: this.clusterName }).makeImportValue().toString(),
+      clusterName: new CfnOutput(this, 'ClusterName', { value: this.clusterName }).makeImportValue().toString(),
       clusterArn: this.clusterArn,
       vpc: this.vpc.export(),
       securityGroups: this.connections.securityGroups.map(sg => sg.export()),
@@ -199,7 +199,7 @@ export class Cluster extends cdk.Construct implements ICluster {
    *
    * @default average over 5 minutes
    */
-  public metricCpuReservation(props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
+  public metricCpuReservation(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return this.metric('CPUReservation', props);
   }
 
@@ -208,14 +208,14 @@ export class Cluster extends cdk.Construct implements ICluster {
    *
    * @default average over 5 minutes
    */
-  public metricMemoryReservation(props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
+  public metricMemoryReservation(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return this.metric('MemoryReservation', props );
   }
 
   /**
    * Return the given named metric for this Cluster
    */
-  public metric(metricName: string, props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
+  public metric(metricName: string, props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return new cloudwatch.Metric({
       namespace: 'AWS/ECS',
       metricName,
@@ -253,8 +253,8 @@ export class EcsOptimizedAmi implements ec2.IMachineImageSource {
   /**
    * Return the correct image
    */
-  public getImage(scope: cdk.Construct): ec2.MachineImage {
-    const ssmProvider = new cdk.SSMParameterProvider(scope, {
+  public getImage(scope: Construct): ec2.MachineImage {
+    const ssmProvider = new SSMParameterProvider(scope, {
       parameterName: this.amiParameterName
     });
 
@@ -268,7 +268,7 @@ export class EcsOptimizedAmi implements ec2.IMachineImageSource {
 /**
  * An ECS cluster
  */
-export interface ICluster extends cdk.IConstruct {
+export interface ICluster extends IResource {
   /**
    * Name of the cluster
    */
@@ -349,7 +349,7 @@ export interface ClusterImportProps {
 /**
  * An Cluster that has been imported
  */
-class ImportedCluster extends cdk.Construct implements ICluster {
+class ImportedCluster extends Construct implements ICluster {
   /**
    * Name of the cluster
    */
@@ -380,7 +380,7 @@ class ImportedCluster extends cdk.Construct implements ICluster {
    */
   private _defaultNamespace?: cloudmap.INamespace;
 
-  constructor(scope: cdk.Construct, id: string, private readonly props: ClusterImportProps) {
+  constructor(scope: Construct, id: string, private readonly props: ClusterImportProps) {
     super(scope, id);
     this.clusterName = props.clusterName;
     this.vpc = ec2.VpcNetwork.import(this, "vpc", props.vpc);

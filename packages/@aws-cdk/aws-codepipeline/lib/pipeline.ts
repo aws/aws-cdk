@@ -2,7 +2,7 @@ import events = require('@aws-cdk/aws-events');
 import iam = require('@aws-cdk/aws-iam');
 import kms = require('@aws-cdk/aws-kms');
 import s3 = require('@aws-cdk/aws-s3');
-import cdk = require('@aws-cdk/cdk');
+import { Construct, RemovalPolicy, Resource, Token } from '@aws-cdk/cdk';
 import { Action, IPipeline, IStage } from "./action";
 import { CfnPipeline } from './codepipeline.generated';
 import { CrossRegionScaffoldStack } from './cross-region-scaffold-stack';
@@ -117,7 +117,7 @@ export interface PipelineProps {
  *
  * // ... add more stages
  */
-export class Pipeline extends cdk.Construct implements IPipeline {
+export class Pipeline extends Resource implements IPipeline {
   /**
    * The IAM role AWS CodePipeline will use to perform actions or assume roles for actions with
    * a more specific IAM role.
@@ -151,7 +151,7 @@ export class Pipeline extends cdk.Construct implements IPipeline {
   private readonly artifactStores: { [region: string]: any };
   private readonly _crossRegionScaffoldStacks: { [region: string]: CrossRegionScaffoldStack } = {};
 
-  constructor(scope: cdk.Construct, id: string, props?: PipelineProps) {
+  constructor(scope: Construct, id: string, props?: PipelineProps) {
     super(scope, id);
     props = props || {};
 
@@ -164,7 +164,7 @@ export class Pipeline extends cdk.Construct implements IPipeline {
       propsBucket = new s3.Bucket(this, 'ArtifactsBucket', {
         encryptionKey,
         encryption: s3.BucketEncryption.Kms,
-        removalPolicy: cdk.RemovalPolicy.Orphan
+        removalPolicy: RemovalPolicy.Orphan
       });
     }
     this.artifactBucket = propsBucket;
@@ -174,8 +174,8 @@ export class Pipeline extends cdk.Construct implements IPipeline {
     });
 
     const codePipeline = new CfnPipeline(this, 'Resource', {
-      artifactStore: new cdk.Token(() => this.renderArtifactStore()) as any,
-      stages: new cdk.Token(() => this.renderStages()) as any,
+      artifactStore: new Token(() => this.renderArtifactStore()) as any,
+      stages: new Token(() => this.renderStages()) as any,
       roleArn: this.role.roleArn,
       restartExecutionOnUpdate: props && props.restartExecutionOnUpdate,
       name: props && props.pipelineName,
@@ -327,8 +327,10 @@ export class Pipeline extends cdk.Construct implements IPipeline {
    */
   protected validate(): string[] {
     return [
+      ...this.validateSourceActionLocations(),
       ...this.validateHasStages(),
-      ...this.validateSourceActionLocations()
+      ...this.validateStages(),
+      ...this.validateArtifacts(),
     ];
   }
 
@@ -447,6 +449,50 @@ export class Pipeline extends cdk.Construct implements IPipeline {
       return ['Pipeline must have at least two stages'];
     }
     return [];
+  }
+
+  private validateStages(): string[] {
+    const ret = new Array<string>();
+    for (const stage of this.stages) {
+      ret.push(...stage.validate());
+    }
+    return ret;
+  }
+
+  private validateArtifacts(): string[] {
+    const ret = new Array<string>();
+
+    const outputArtifactNames = new Set<string>();
+    for (const stage of this.stages) {
+      const sortedActions = stage.actions.sort((a1, a2) => a1.runOrder - a2.runOrder);
+
+      // start with inputs
+      for (const action of sortedActions) {
+        const inputArtifacts = action.inputs;
+        for (const inputArtifact of inputArtifacts) {
+          if (!inputArtifact.artifactName) {
+            ret.push(`Action '${action.actionName}' has an unnamed input Artifact that's not used as an output`);
+          } else if (!outputArtifactNames.has(inputArtifact.artifactName)) {
+            ret.push(`Artifact '${inputArtifact.artifactName}' was used as input before being used as output`);
+          }
+        }
+      }
+
+      // then process outputs by adding them to the Set
+      for (const action of sortedActions) {
+        const outputArtifacts = action.outputs;
+        for (const outputArtifact of outputArtifacts) {
+          // output Artifacts always have a name set
+          if (outputArtifactNames.has(outputArtifact.artifactName!)) {
+            ret.push(`Artifact '${outputArtifact.artifactName}' has been used as an output more than once`);
+          } else {
+            outputArtifactNames.add(outputArtifact.artifactName!);
+          }
+        }
+      }
+    }
+
+    return ret;
   }
 
   private renderArtifactStore(): CfnPipeline.ArtifactStoreProperty {

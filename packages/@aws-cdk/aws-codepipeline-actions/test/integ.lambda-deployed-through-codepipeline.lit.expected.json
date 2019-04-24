@@ -352,7 +352,7 @@
                 "Name": "CdkCode_Source",
                 "OutputArtifacts": [
                   {
-                    "Name": "Artifact_CdkCode_Source_PipelineStackCdkCodeRepo766C119A"
+                    "Name": "Artifact_Source_CdkCode_Source"
                   }
                 ],
                 "RunOrder": 1
@@ -378,7 +378,7 @@
                 "Name": "LambdaCode_Source",
                 "OutputArtifacts": [
                   {
-                    "Name": "Artifact_LambdaCode_Source_PipelineStackLambdaCodeRepo0F311735"
+                    "Name": "Artifact_Source_LambdaCode_Source"
                   }
                 ],
                 "RunOrder": 1
@@ -402,13 +402,13 @@
                 },
                 "InputArtifacts": [
                   {
-                    "Name": "Artifact_CdkCode_Source_PipelineStackCdkCodeRepo766C119A"
+                    "Name": "Artifact_Source_CdkCode_Source"
                   }
                 ],
                 "Name": "CDK_Build",
                 "OutputArtifacts": [
                   {
-                    "Name": "Artifact_CDK_Build_PipelineStackCdkBuildProject3F998A60"
+                    "Name": "Artifact_Build_CDK_Build"
                   }
                 ],
                 "RunOrder": 1
@@ -427,13 +427,13 @@
                 },
                 "InputArtifacts": [
                   {
-                    "Name": "Artifact_LambdaCode_Source_PipelineStackLambdaCodeRepo0F311735"
+                    "Name": "Artifact_Source_LambdaCode_Source"
                   }
                 ],
                 "Name": "Lambda_Build",
                 "OutputArtifacts": [
                   {
-                    "Name": "Artifact_Lambda_Build_PipelineStackLambdaBuildProjectC90BA2C4"
+                    "Name": "Artifact_Build_Lambda_Build"
                   }
                 ],
                 "RunOrder": 1
@@ -453,7 +453,7 @@
                 "Configuration": {
                   "StackName": "LambdaStackDeployedName",
                   "ActionMode": "CREATE_UPDATE",
-                  "TemplatePath": "Artifact_CDK_Build_PipelineStackCdkBuildProject3F998A60::LambdaStack.template.yaml",
+                  "TemplatePath": "Artifact_Build_CDK_Build::LambdaStack.template.yaml",
                   "Capabilities": "CAPABILITY_NAMED_IAM",
                   "RoleArn": {
                     "Fn::GetAtt": [
@@ -461,14 +461,14 @@
                       "Arn"
                     ]
                   },
-                  "ParameterOverrides": "{\"LambdaLambdaSourceBucketNameParameter159473FC\":{\"Fn::GetArtifactAtt\":[\"Artifact_Lambda_Build_PipelineStackLambdaBuildProjectC90BA2C4\",\"BucketName\"]},\"LambdaLambdaSourceObjectKeyParameter06573F1D\":{\"Fn::GetArtifactAtt\":[\"Artifact_Lambda_Build_PipelineStackLambdaBuildProjectC90BA2C4\",\"ObjectKey\"]}}"
+                  "ParameterOverrides": "{\"LambdaLambdaSourceBucketNameParameter159473FC\":{\"Fn::GetArtifactAtt\":[\"Artifact_Build_Lambda_Build\",\"BucketName\"]},\"LambdaLambdaSourceObjectKeyParameter06573F1D\":{\"Fn::GetArtifactAtt\":[\"Artifact_Build_Lambda_Build\",\"ObjectKey\"]}}"
                 },
                 "InputArtifacts": [
                   {
-                    "Name": "Artifact_Lambda_Build_PipelineStackLambdaBuildProjectC90BA2C4"
+                    "Name": "Artifact_Build_Lambda_Build"
                   },
                   {
-                    "Name": "Artifact_CDK_Build_PipelineStackCdkBuildProject3F998A60"
+                    "Name": "Artifact_Build_CDK_Build"
                   }
                 ],
                 "Name": "Lambda_CFN_Deploy",

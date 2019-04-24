@@ -1,6 +1,6 @@
 import cxapi = require('@aws-cdk/cx-api');
 import { Test } from 'nodeunit';
-import { ArnComponents, Construct, ConstructOrder, Root, Stack, Token } from '../lib';
+import { App as Root, ArnComponents, Construct, ConstructOrder, Stack, Token } from '../lib';
 
 // tslint:disable:variable-name
 // tslint:disable:max-line-length
@@ -169,10 +169,10 @@ export = {
   'construct.toString() and construct.toTreeString() can be used for diagnostics'(test: Test) {
     const t = createTree();
 
-    test.equal(t.root.toString(), 'Root');
+    test.equal(t.root.toString(), 'App');
     test.equal(t.child1_1_1.toString(), 'Construct [Child1/Child11/Child111]');
     test.equal(t.child2.toString(), 'Construct [Child2]');
-    test.equal(t.root.node.toTreeString(), 'Root\n  Construct [Child1]\n    Construct [Child11]\n      Construct [Child111]\n    Construct [Child12]\n  Construct [Child2]\n    Construct [Child21]\n');
+    test.equal(t.root.node.toTreeString(), 'App\n  Construct [Child1]\n    Construct [Child11]\n      Construct [Child111]\n    Construct [Child12]\n  Construct [Child2]\n    Construct [Child21]\n');
     test.done();
   },
 
@@ -253,7 +253,7 @@ export = {
     // THEN: They have different paths
     test.throws(() => {
       new Construct(root, 'SameName');
-    }, /There is already a Construct with name 'SameName' in Root/);
+    }, /There is already a Construct with name 'SameName' in App/);
 
     // WHEN
     const c0 = new Construct(root, 'c0');

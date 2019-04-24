@@ -70,6 +70,14 @@ export class Ec2Service extends BaseService implements elb.ILoadBalancerTarget {
       throw new Error('Daemon mode launches one task on every instance. Don\'t supply desiredCount.');
     }
 
+    if (props.daemon && props.maximumPercent !== undefined && props.maximumPercent !== 100) {
+      throw new Error('Maximum percent must be 100 for daemon mode.');
+    }
+
+    if (props.daemon && props.minimumHealthyPercent !== undefined && props.minimumHealthyPercent !== 0) {
+      throw new Error('Minimum healthy percent must be 0 for daemon mode.');
+    }
+
     if (!isEc2Compatible(props.taskDefinition.compatibility)) {
       throw new Error('Supplied TaskDefinition is not configured for compatibility with EC2');
     }
@@ -78,6 +86,8 @@ export class Ec2Service extends BaseService implements elb.ILoadBalancerTarget {
       ...props,
       // If daemon, desiredCount must be undefined and that's what we want. Otherwise, default to 1.
       desiredCount: props.daemon || props.desiredCount !== undefined ? props.desiredCount : 1,
+      maximumPercent: props.daemon && props.maximumPercent === undefined ? 100 : props.maximumPercent,
+      minimumHealthyPercent: props.daemon && props.minimumHealthyPercent === undefined ? 0 : props.minimumHealthyPercent ,
     },
     {
       cluster: props.cluster.clusterName,
@@ -193,7 +203,7 @@ export class Ec2Service extends BaseService implements elb.ILoadBalancerTarget {
   /**
    * Return the given named metric for this Service
    */
-  public metric(metricName: string, props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
+  public metric(metricName: string, props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return new cloudwatch.Metric({
       namespace: 'AWS/ECS',
       metricName,
@@ -207,7 +217,7 @@ export class Ec2Service extends BaseService implements elb.ILoadBalancerTarget {
    *
    * @default average over 5 minutes
    */
-  public metricMemoryUtilization(props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
+  public metricMemoryUtilization(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return this.metric('MemoryUtilization', props );
   }
 
@@ -216,7 +226,7 @@ export class Ec2Service extends BaseService implements elb.ILoadBalancerTarget {
    *
    * @default average over 5 minutes
    */
-  public metricCpuUtilization(props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
+  public metricCpuUtilization(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return this.metric('CPUUtilization', props);
   }
 

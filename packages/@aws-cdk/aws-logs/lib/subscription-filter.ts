@@ -1,5 +1,5 @@
 import iam = require('@aws-cdk/aws-iam');
-import cdk = require('@aws-cdk/cdk');
+import { Construct, Resource } from '@aws-cdk/cdk';
 import { ILogGroup } from './log-group';
 import { CfnSubscriptionFilter } from './logs.generated';
 import { IFilterPattern } from './pattern';
@@ -63,8 +63,8 @@ export interface SubscriptionFilterProps {
 /**
  * A new Subscription on a CloudWatch log group.
  */
-export class SubscriptionFilter extends cdk.Construct {
-  constructor(scope: cdk.Construct, id: string, props: SubscriptionFilterProps) {
+export class SubscriptionFilter extends Resource {
+  constructor(scope: Construct, id: string, props: SubscriptionFilterProps) {
     super(scope, id);
 
     const destProps = props.destination.logSubscriptionDestination(props.logGroup);
