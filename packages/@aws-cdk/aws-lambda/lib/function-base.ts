@@ -1,6 +1,5 @@
 import cloudwatch = require('@aws-cdk/aws-cloudwatch');
 import ec2 = require('@aws-cdk/aws-ec2');
-import events = require('@aws-cdk/aws-events');
 import iam = require('@aws-cdk/aws-iam');
 import logs = require('@aws-cdk/aws-logs');
 import s3n = require('@aws-cdk/aws-s3-notifications');
@@ -11,7 +10,7 @@ import { IEventSource } from './event-source';
 import { CfnPermission } from './lambda.generated';
 import { Permission } from './permission';
 
-export interface IFunction extends IResource, events.IEventRuleTarget, logs.ILogSubscriptionDestination,
+export interface IFunction extends IResource, logs.ILogSubscriptionDestination,
   s3n.IBucketNotificationDestination, ec2.IConnectable, stepfunctions.IStepFunctionsTaskResource, iam.IGrantable {
 
   /**
@@ -57,28 +56,28 @@ export interface IFunction extends IResource, events.IEventRuleTarget, logs.ILog
   /**
    * Return the given named metric for this Lambda
    */
-  metric(metricName: string, props?: cloudwatch.MetricCustomization): cloudwatch.Metric;
+  metric(metricName: string, props?: cloudwatch.MetricOptions): cloudwatch.Metric;
 
   /**
    * Metric for the Duration of this Lambda
    *
    * @default average over 5 minutes
    */
-  metricDuration(props?: cloudwatch.MetricCustomization): cloudwatch.Metric;
+  metricDuration(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
 
   /**
    * Metric for the number of invocations of this Lambda
    *
    * @default sum over 5 minutes
    */
-  metricInvocations(props?: cloudwatch.MetricCustomization): cloudwatch.Metric;
+  metricInvocations(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
 
   /**
    * Metric for the number of throttled invocations of this Lambda
    *
    * @default sum over 5 minutes
    */
-  metricThrottles(props?: cloudwatch.MetricCustomization): cloudwatch.Metric;
+  metricThrottles(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
 
   /**
    * Export this Function (without the role)
@@ -213,26 +212,6 @@ export abstract class FunctionBase extends Resource implements IFunction  {
    */
   public get isBoundToVpc(): boolean {
     return !!this._connections;
-  }
-
-  /**
-   * Returns a RuleTarget that can be used to trigger this Lambda as a
-   * result from a CloudWatch event.
-   */
-  public asEventRuleTarget(ruleArn: string, ruleId: string): events.EventRuleTargetProps {
-    const permissionId = `AllowEventRule${ruleId}`;
-    if (!this.node.tryFindChild(permissionId)) {
-      this.addPermission(permissionId, {
-        action: 'lambda:InvokeFunction',
-        principal: new iam.ServicePrincipal('events.amazonaws.com'),
-        sourceArn: ruleArn
-      });
-    }
-
-    return {
-      id: this.node.id,
-      arn: this.functionArn,
-    };
   }
 
   /**

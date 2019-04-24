@@ -2,6 +2,7 @@ import { expect, haveResource, haveResourceLike, SynthUtils } from '@aws-cdk/ass
 import codebuild = require('@aws-cdk/aws-codebuild');
 import codecommit = require('@aws-cdk/aws-codecommit');
 import codepipeline = require('@aws-cdk/aws-codepipeline');
+import targets = require('@aws-cdk/aws-events-targets');
 import lambda = require('@aws-cdk/aws-lambda');
 import s3 = require('@aws-cdk/aws-s3');
 import sns = require('@aws-cdk/aws-sns');
@@ -20,9 +21,10 @@ export = {
     });
 
     const pipeline = new codepipeline.Pipeline(stack, 'Pipeline');
+    const sourceOutput = new codepipeline.Artifact('SourceArtifact');
     const source = new cpactions.CodeCommitSourceAction({
       actionName: 'source',
-      outputArtifactName: 'SourceArtifact',
+      output: sourceOutput,
       repository,
     });
     pipeline.addStage({
@@ -36,9 +38,9 @@ export = {
     pipeline.addStage({
       name: 'build',
       actions: [
-        new cpactions.CodeBuildBuildAction({
+        new cpactions.CodeBuildAction({
           actionName: 'build',
-          inputArtifact: source.outputArtifact,
+          input: sourceOutput,
           project,
         }),
       ],
@@ -78,7 +80,7 @@ export = {
         new cpactions.GitHubSourceAction({
           actionName: 'GH',
           runOrder: 8,
-          outputArtifactName: 'A',
+          output: new codepipeline.Artifact('A'),
           branch: 'branch',
           oauthToken: SecretValue.plainText(secret.stringValue),
           owner: 'foo',
@@ -174,7 +176,7 @@ export = {
       actions: [
         new cpactions.S3SourceAction({
           actionName: 'A1',
-          outputArtifactName: 'Artifact',
+          output: new codepipeline.Artifact('Artifact'),
           bucket: new s3.Bucket(stack, 'Bucket'),
           bucketKey: 'Key'
         }),
@@ -188,7 +190,7 @@ export = {
       ],
     });
 
-    pipeline.onStateChange('OnStateChange', topic, {
+    pipeline.onStateChange('OnStateChange', new targets.SnsTopic(topic), {
       description: 'desc',
       scheduleExpression: 'now',
       eventPattern: {
@@ -318,16 +320,18 @@ export = {
     const pipeline = new codepipeline.Pipeline(stack, 'Pipeline');
 
     const bucket = new s3.Bucket(stack, 'Bucket');
+    const source1Output = new codepipeline.Artifact('sourceArtifact1');
     const source1 = new cpactions.S3SourceAction({
       actionName: 'SourceAction1',
       bucketKey: 'some/key',
-      outputArtifactName: 'sourceArtifact1',
+      output: source1Output,
       bucket,
     });
+    const source2Output = new codepipeline.Artifact('sourceArtifact2');
     const source2 = new cpactions.S3SourceAction({
       actionName: 'SourceAction2',
       bucketKey: 'another/key',
-      outputArtifactName: 'sourceArtifact2',
+      output: source2Output,
       bucket,
     });
     pipeline.addStage({
@@ -342,14 +346,14 @@ export = {
       actionName: 'InvokeAction',
       lambda: lambdaFun,
       userParameters: 'foo-bar/42',
-      inputArtifacts: [
-          source2.outputArtifact,
-          source1.outputArtifact,
+      inputs: [
+          source2Output,
+          source1Output,
       ],
-      outputArtifactNames: [
-          'lambdaOutput1',
-          'lambdaOutput2',
-          'lambdaOutput3',
+      outputs: [
+          new codepipeline.Artifact('lambdaOutput1'),
+          new codepipeline.Artifact('lambdaOutput2'),
+          new codepipeline.Artifact('lambdaOutput3'),
       ],
     });
     pipeline.addStage({
@@ -407,8 +411,7 @@ export = {
       ]
     }));
 
-    test.equal(lambdaAction.outputArtifacts().length, 3);
-    test.notEqual(lambdaAction.outputArtifact('lambdaOutput2'), undefined);
+    test.equal(lambdaAction.outputs.length, 3);
 
     expect(stack, /* skip validation */ true).to(haveResource('AWS::IAM::Policy', {
       "PolicyDocument": {
@@ -440,7 +443,7 @@ export = {
       const stack = new Stack();
       const sourceAction = new cpactions.CodeCommitSourceAction({
         actionName: 'stage',
-        outputArtifactName: 'SomeArtifact',
+        output: new codepipeline.Artifact('SomeArtifact'),
         repository: repositoryForTesting(stack),
       });
 
@@ -453,7 +456,7 @@ export = {
       const stack = new Stack();
       const sourceAction = new cpactions.CodeCommitSourceAction({
         actionName: 'stage',
-        outputArtifactName: 'SomeArtifact',
+        output: new codepipeline.Artifact('SomeArtifact'),
         repository: repositoryForTesting(stack),
         pollForSourceChanges: false,
       });
@@ -484,9 +487,11 @@ export = {
         },
       });
 
+      const sourceOutput = new codepipeline.Artifact('SourceOutput');
       const sourceAction = new cpactions.S3SourceAction({
         actionName: 'BucketSource',
         bucketKey: '/some/key',
+        output: sourceOutput,
         bucket,
       });
       pipeline.addStage({
@@ -500,14 +505,14 @@ export = {
           new cpactions.CloudFormationCreateReplaceChangeSetAction({
             actionName: 'Action1',
             changeSetName: 'ChangeSet',
-            templatePath: sourceAction.outputArtifact.atPath('template.yaml'),
+            templatePath: sourceOutput.atPath('template.yaml'),
             stackName: 'SomeStack',
             region: pipelineRegion,
             adminPermissions: false,
           }),
           new cpactions.CloudFormationCreateUpdateStackAction({
             actionName: 'Action2',
-            templatePath: sourceAction.outputArtifact.atPath('template.yaml'),
+            templatePath: sourceOutput.atPath('template.yaml'),
             stackName: 'OtherStack',
             region: 'us-east-1',
             adminPermissions: false,

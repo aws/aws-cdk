@@ -16,7 +16,7 @@ const CODEPIPELINE_TYPE = 'CODEPIPELINE';
 const S3_BUCKET_ENV = 'SCRIPT_S3_BUCKET';
 const S3_KEY_ENV = 'SCRIPT_S3_KEY';
 
-export interface IProject extends IResource, events.IEventRuleTarget, iam.IGrantable {
+export interface IProject extends IResource, iam.IGrantable {
   /** The ARN of this Project. */
   readonly projectArn: string;
 
@@ -78,7 +78,7 @@ export interface IProject extends IResource, events.IEventRuleTarget, iam.IGrant
    * @param metricName The name of the metric
    * @param props Customization properties
    */
-  metric(metricName: string, props: cloudwatch.MetricCustomization): cloudwatch.Metric;
+  metric(metricName: string, props: cloudwatch.MetricOptions): cloudwatch.Metric;
 
   /**
    * Measures the number of builds triggered.
@@ -89,7 +89,7 @@ export interface IProject extends IResource, events.IEventRuleTarget, iam.IGrant
    *
    * @default sum over 5 minutes
    */
-  metricBuilds(props?: cloudwatch.MetricCustomization): cloudwatch.Metric;
+  metricBuilds(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
 
   /**
    * Measures the duration of all builds over time.
@@ -100,7 +100,7 @@ export interface IProject extends IResource, events.IEventRuleTarget, iam.IGrant
    *
    * @default average over 5 minutes
    */
-  metricDuration(props?: cloudwatch.MetricCustomization): cloudwatch.Metric;
+  metricDuration(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
 
   /**
    * Measures the number of successful builds.
@@ -111,7 +111,7 @@ export interface IProject extends IResource, events.IEventRuleTarget, iam.IGrant
    *
    * @default sum over 5 minutes
    */
-  metricSucceededBuilds(props?: cloudwatch.MetricCustomization): cloudwatch.Metric;
+  metricSucceededBuilds(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
 
   /**
    * Measures the number of builds that failed because of client error or
@@ -123,7 +123,7 @@ export interface IProject extends IResource, events.IEventRuleTarget, iam.IGrant
    *
    * @default sum over 5 minutes
    */
-  metricFailedBuilds(props?: cloudwatch.MetricCustomization): cloudwatch.Metric;
+  metricFailedBuilds(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
 
   /**
    * Export this Project. Allows referencing this Project in a different CDK Stack.
@@ -166,9 +166,6 @@ export abstract class ProjectBase extends Resource implements IProject {
 
   /** The IAM service Role of this Project. */
   public abstract readonly role?: iam.IRole;
-
-  /** A role used by CloudWatch events to trigger a build */
-  private eventsRole?: iam.Role;
 
   public abstract export(): ProjectImportProps;
 
@@ -274,7 +271,7 @@ export abstract class ProjectBase extends Resource implements IProject {
    * @param metricName The name of the metric
    * @param props Customization properties
    */
-  public metric(metricName: string, props: cloudwatch.MetricCustomization) {
+  public metric(metricName: string, props: cloudwatch.MetricOptions) {
     return new cloudwatch.Metric({
       namespace: 'AWS/CodeBuild',
       metricName,
@@ -292,7 +289,7 @@ export abstract class ProjectBase extends Resource implements IProject {
    *
    * @default sum over 5 minutes
    */
-  public metricBuilds(props?: cloudwatch.MetricCustomization) {
+  public metricBuilds(props?: cloudwatch.MetricOptions) {
     return this.metric('Builds', {
       statistic: 'sum',
       ...props,
@@ -308,7 +305,7 @@ export abstract class ProjectBase extends Resource implements IProject {
    *
    * @default average over 5 minutes
    */
-  public metricDuration(props?: cloudwatch.MetricCustomization) {
+  public metricDuration(props?: cloudwatch.MetricOptions) {
     return this.metric('Duration', {
       statistic: 'avg',
       ...props
@@ -324,7 +321,7 @@ export abstract class ProjectBase extends Resource implements IProject {
    *
    * @default sum over 5 minutes
    */
-  public metricSucceededBuilds(props?: cloudwatch.MetricCustomization) {
+  public metricSucceededBuilds(props?: cloudwatch.MetricOptions) {
     return this.metric('SucceededBuilds', {
       statistic: 'sum',
       ...props,
@@ -341,32 +338,11 @@ export abstract class ProjectBase extends Resource implements IProject {
    *
    * @default sum over 5 minutes
    */
-  public metricFailedBuilds(props?: cloudwatch.MetricCustomization) {
+  public metricFailedBuilds(props?: cloudwatch.MetricOptions) {
     return this.metric('FailedBuilds', {
       statistic: 'sum',
       ...props,
     });
-  }
-
-  /**
-   * Allows using build projects as event rule targets.
-   */
-  public asEventRuleTarget(_ruleArn: string, _ruleId: string): events.EventRuleTargetProps {
-    if (!this.eventsRole) {
-      this.eventsRole = new iam.Role(this, 'EventsRole', {
-        assumedBy: new iam.ServicePrincipal('events.amazonaws.com')
-      });
-
-      this.eventsRole.addToPolicy(new iam.PolicyStatement()
-        .addAction('codebuild:StartBuild')
-        .addResource(this.projectArn));
-    }
-
-    return {
-      id: this.node.id,
-      arn: this.projectArn,
-      roleArn: this.eventsRole.roleArn,
-    };
   }
 }
 
@@ -777,11 +753,11 @@ export class Project extends ProjectBase {
     if (this.source.type === SourceType.CodePipeline) {
       if (this._secondarySources.length > 0) {
         ret.push('A Project with a CodePipeline Source cannot have secondary sources. ' +
-          "Use the CodeBuild Pipeline Actions' `additionalInputArtifacts` property instead");
+          "Use the CodeBuild Pipeline Actions' `extraInputs` property instead");
       }
       if (this._secondaryArtifacts.length > 0) {
         ret.push('A Project with a CodePipeline Source cannot have secondary artifacts. ' +
-          "Use the CodeBuild Pipeline Actions' `additionalOutputArtifactNames` property instead");
+          "Use the CodeBuild Pipeline Actions' `extraOutputs` property instead");
       }
     }
     return ret;

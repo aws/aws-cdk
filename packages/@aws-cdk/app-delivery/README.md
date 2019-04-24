@@ -50,8 +50,10 @@ const pipeline = new codepipeline.Pipeline(pipelineStack, 'CodePipeline', {
 });
 
 // Configure the CodePipeline source - where your CDK App's source code is hosted
+const sourceOutput = new codepipeline.Artifact();
 const source = new codepipeline_actions.GitHubSourceAction({
   actionName: 'GitHub',
+  output: sourceOutput,
   /* ... */
 });
 pipeline.addStage({
@@ -69,23 +71,24 @@ const project = new codebuild.PipelineProject(pipelineStack, 'CodeBuild', {
   * },
   */
 });
-const buildAction = new codepipeline_actions.CodeBuildBuildAction({
+const synthesizedApp = new codepipeline.Artifact();
+const buildAction = new codepipeline_actions.CodeBuildAction({
   actionName: 'CodeBuild',
   project,
-  inputArtifact: source.outputArtifact,
+  input: sourceOutput,
+  output: synthesizedApp,
 });
 pipeline.addStage({
   name: 'build',
   actions: [buildAction],
 });
-const synthesizedApp = buildAction.outputArtifact;
 
 // Optionally, self-update the pipeline stack
 const selfUpdateStage = pipeline.addStage({ name: 'SelfUpdate' });
 new cicd.PipelineDeployStackAction(pipelineStack, 'SelfUpdatePipeline', {
   stage: selfUpdateStage,
   stack: pipelineStack,
-  inputArtifact: synthesizedApp,
+  input: synthesizedApp,
 });
 
 // Now add our service stacks
@@ -95,7 +98,7 @@ const serviceStackA = new MyServiceStackA(app, 'ServiceStackA', { /* ... */ });
 const deployServiceAAction = new cicd.PipelineDeployStackAction(pipelineStack, 'DeployServiceStackA', {
   stage: deployStage,
   stack: serviceStackA,
-  inputArtifact: synthesizedApp,
+  input: synthesizedApp,
   // See the note below for details about this option.
   adminPermissions: false, 
 });
@@ -114,7 +117,7 @@ const serviceStackB = new MyServiceStackB(app, 'ServiceStackB', { /* ... */ });
 new cicd.PipelineDeployStackAction(pipelineStack, 'DeployServiceStackB', {
   stage: deployStage,
   stack: serviceStackB,
-  inputArtifact: synthesizedApp,
+  input: synthesizedApp,
   createChangeSetRunOrder: 998,
   adminPermissions: true, // no need to modify the role with admin
 }); 
@@ -148,7 +151,7 @@ artifacts:
   files: '**/*'
 ```
 
-The `PipelineDeployStackAction` expects it's `inputArtifact` to contain the result of 
+The `PipelineDeployStackAction` expects it's `input` to contain the result of 
 synthesizing a CDK App using the `cdk synth -o <directory>`.
 
 
