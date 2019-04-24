@@ -26,13 +26,17 @@ const pipeline = new codepipeline.Pipeline(pipelineStack, 'Pipeline');
 
 // add the source code repository containing this code to your Pipeline,
 // and the source code of the Lambda Function, if they're separate
+const cdkSourceOutput = new codepipeline.Artifact();
 const cdkSourceAction = new codepipeline_actions.CodeCommitSourceAction({
-  repository: new codecommit.Repository(pipelineStack, 'CdkCodeRepo', { repositoryName: 'CdkCodeRepo'}),
+  repository: new codecommit.Repository(pipelineStack, 'CdkCodeRepo', { repositoryName: 'CdkCodeRepo' }),
   actionName: 'CdkCode_Source',
+  output: cdkSourceOutput,
 });
+const lambdaSourceOutput = new codepipeline.Artifact();
 const lambdaSourceAction = new codepipeline_actions.CodeCommitSourceAction({
-  repository: new codecommit.Repository(pipelineStack, 'LambdaCodeRepo', { repositoryName: 'LambdaCodeRepo'}),
+  repository: new codecommit.Repository(pipelineStack, 'LambdaCodeRepo', { repositoryName: 'LambdaCodeRepo' }),
   actionName: 'LambdaCode_Source',
+  output: lambdaSourceOutput,
 });
 pipeline.addStage({
   name: 'Source',
@@ -64,10 +68,12 @@ const cdkBuildProject = new codebuild.Project(pipelineStack, 'CdkBuildProject', 
     },
   },
 });
-const cdkBuildAction = new codepipeline_actions.CodeBuildBuildAction({
+const cdkBuildOutput = new codepipeline.Artifact();
+const cdkBuildAction = new codepipeline_actions.CodeBuildAction({
   actionName: 'CDK_Build',
   project: cdkBuildProject,
-  inputArtifact: cdkSourceAction.outputArtifact,
+  input: cdkSourceOutput,
+  output: cdkBuildOutput,
 });
 
 // build your Lambda code, using CodeBuild
@@ -95,10 +101,12 @@ const lambdaBuildProject = new codebuild.Project(pipelineStack, 'LambdaBuildProj
     },
   },
 });
-const lambdaBuildAction = new codepipeline_actions.CodeBuildBuildAction({
+const lambdaBuildOutput = new codepipeline.Artifact();
+const lambdaBuildAction = new codepipeline_actions.CodeBuildAction({
   actionName: 'Lambda_Build',
   project: lambdaBuildProject,
-  inputArtifact: lambdaSourceAction.outputArtifact,
+  input: lambdaSourceOutput,
+  output: lambdaBuildOutput,
 });
 
 pipeline.addStage({
@@ -112,14 +120,14 @@ pipeline.addStage({
   actions: [
     new codepipeline_actions.CloudFormationCreateUpdateStackAction({
       actionName: 'Lambda_CFN_Deploy',
-      templatePath: cdkBuildAction.outputArtifact.atPath('LambdaStack.template.yaml'),
+      templatePath: cdkBuildOutput.atPath('LambdaStack.template.yaml'),
       stackName: 'LambdaStackDeployedName',
       adminPermissions: true,
       parameterOverrides: {
-        ...lambdaCode.assign(lambdaBuildAction.outputArtifact.s3Coordinates),
+        ...lambdaCode.assign(lambdaBuildOutput.s3Coordinates),
       },
-      additionalInputArtifacts: [
-        lambdaBuildAction.outputArtifact,
+      extraInputs: [
+        lambdaBuildOutput,
       ],
     }),
   ],

@@ -17,10 +17,12 @@ const bucket = new s3.Bucket(stack, 'MyBucket', {
   removalPolicy: cdk.RemovalPolicy.Destroy,
 });
 
+const sourceOutput = new codepipeline.Artifact();
 const sourceAction = new cpactions.S3SourceAction({
   actionName: 'S3',
   bucketKey: 'some/path',
   bucket,
+  output: sourceOutput,
 });
 
 new codepipeline.Pipeline(stack, 'MyPipeline', {
@@ -36,7 +38,7 @@ new codepipeline.Pipeline(stack, 'MyPipeline', {
         new cpactions.CloudFormationCreateUpdateStackAction({
           actionName: 'CFN_Deploy',
           stackName: 'aws-cdk-codepipeline-cross-region-deploy-stack',
-          templatePath: sourceAction.outputArtifact.atPath('template.yml'),
+          templatePath: sourceOutput.atPath('template.yml'),
           adminPermissions: false,
           region,
         }),

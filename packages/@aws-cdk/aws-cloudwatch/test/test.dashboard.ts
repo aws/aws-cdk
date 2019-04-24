@@ -120,9 +120,25 @@ export = {
     test.done();
   },
 
-  'work around CloudFormation bug'(test: Test) {
-    // See: https://github.com/awslabs/aws-cdk/issues/213
+  'DashboardName is set when provided'(test: Test) {
+    // GIVEN
+    const app = new App();
+    const stack = new Stack(app, 'MyStack');
 
+    // WHEN
+    new Dashboard(stack, 'MyDashboard', {
+      dashboardName: 'MyCustomDashboardName'
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::CloudWatch::Dashboard', {
+      DashboardName: 'MyCustomDashboardName'
+    }));
+
+    test.done();
+  },
+
+  'DashboardName is not generated if not provided'(test: Test) {
     // GIVEN
     const app = new App();
     const stack = new Stack(app, 'MyStack');
@@ -131,9 +147,7 @@ export = {
     new Dashboard(stack, 'MyDashboard');
 
     // THEN
-    expect(stack).to(haveResource('AWS::CloudWatch::Dashboard', {
-      DashboardName: 'MyStack-MyDashboardCD351363'
-    }));
+    expect(stack).to(haveResource('AWS::CloudWatch::Dashboard', {}));
 
     test.done();
   }
