@@ -61,9 +61,9 @@ export interface OptionConfiguration {
  */
 export interface OptionGroupProps {
   /**
-   * The name of the database engine that this option group is associated with.
+   * The database engine that this option group is associated with.
    */
-  readonly engineName: DatabaseInstanceEngine
+  readonly engine: DatabaseInstanceEngine;
 
   /**
    * The major version number of the database engine that this option group
@@ -106,9 +106,9 @@ export class OptionGroup extends Resource implements IOptionGroup {
     super(scope, id);
 
     const optionGroup = new CfnOptionGroup(this, 'Resource', {
-      engineName: props.engineName.engine,
+      engineName: props.engine.name,
       majorEngineVersion: props.majorEngineVersion,
-      optionGroupDescription: props.description || `Option group for ${props.engineName.engine} ${props.majorEngineVersion}`,
+      optionGroupDescription: props.description || `Option group for ${props.engine.name} ${props.majorEngineVersion}`,
       optionConfigurations: this.renderConfigurations(props.configurations)
     });
 

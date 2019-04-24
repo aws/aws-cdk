@@ -267,7 +267,7 @@ export class DatabaseCluster extends DatabaseClusterBase implements IDatabaseClu
 
     const cluster = new CfnDBCluster(this, 'Resource', {
       // Basic
-      engine: props.engine.engine,
+      engine: props.engine.name,
       dbClusterIdentifier: props.clusterIdentifier,
       dbSubnetGroupName: subnetGroup.ref,
       vpcSecurityGroupIds: [this.securityGroupId],
@@ -321,7 +321,7 @@ export class DatabaseCluster extends DatabaseClusterBase implements IDatabaseClu
 
       const instance = new CfnDBInstance(this, `Instance${instanceIndex}`, {
         // Link to cluster
-        engine: props.engine.engine,
+        engine: props.engine.name,
         dbClusterIdentifier: cluster.ref,
         dbInstanceIdentifier: instanceIdentifier,
         // Instance properties

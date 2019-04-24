@@ -25,7 +25,7 @@ class DatabaseInstanceStack extends cdk.Stack {
 
     /// Add XMLDB and OEM with option group
     const optionGroup = new rds.OptionGroup(this, 'OptionGroup', {
-      engineName: rds.DatabaseInstanceEngine.OracleSE1,
+      engine: rds.DatabaseInstanceEngine.OracleSE1,
       majorEngineVersion: '11.2',
       configurations: [
         {

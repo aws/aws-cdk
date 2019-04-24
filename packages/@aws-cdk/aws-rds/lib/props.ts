@@ -15,15 +15,15 @@ export class DatabaseClusterEngine {
   /**
    * The engine.
    */
-  public readonly engine: string;
+  public readonly name: string;
 
   /**
    * The secret rotation application.
    */
   public readonly secretRotationApplication: SecretRotationApplication;
 
-  constructor(engine: string, secretRotationApplication: SecretRotationApplication) {
-    this.engine = engine;
+  constructor(name: string, secretRotationApplication: SecretRotationApplication) {
+    this.name = name;
     this.secretRotationApplication = secretRotationApplication;
   }
 }

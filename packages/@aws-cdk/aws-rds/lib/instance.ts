@@ -607,7 +607,7 @@ export abstract class DatabaseInstanceSource extends DatabaseInstanceNew impleme
       allowMajorVersionUpgrade: props.allowMajorVersionUpgrade,
       dbName: props.databaseName,
       dbParameterGroupName: props.parameterGroup && props.parameterGroup.parameterGroupName,
-      engine: props.engine.engine,
+      engine: props.engine.name,
       engineVersion: props.engineVersion,
       licenseModel: props.licenseModel,
       timezone: props.timezone

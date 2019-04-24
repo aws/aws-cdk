@@ -11,7 +11,7 @@ export = {
 
     // WHEN
     new OptionGroup(stack, 'Options', {
-      engineName: DatabaseInstanceEngine.OracleSE1,
+      engine: DatabaseInstanceEngine.OracleSE1,
       majorEngineVersion: '11.2',
       configurations: [
         {
@@ -42,7 +42,7 @@ export = {
 
     // WHEN
     const optionGroup = new OptionGroup(stack, 'Options', {
-      engineName: DatabaseInstanceEngine.OracleSE1,
+      engine: DatabaseInstanceEngine.OracleSE1,
       majorEngineVersion: '11.2',
       configurations: [
         {
@@ -100,7 +100,7 @@ export = {
 
     // THEN
     test.throws(() => new OptionGroup(stack, 'Options', {
-      engineName: DatabaseInstanceEngine.OracleSE1,
+      engine: DatabaseInstanceEngine.OracleSE1,
       majorEngineVersion: '11.2',
       configurations: [
         {
@@ -117,7 +117,7 @@ export = {
     // GIVEN
     const stack = new cdk.Stack();
     const group = new OptionGroup(stack, 'Options', {
-      engineName: DatabaseInstanceEngine.OracleSE1,
+      engine: DatabaseInstanceEngine.OracleSE1,
       majorEngineVersion: '11.2',
       configurations: [
         {
