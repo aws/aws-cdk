@@ -1,5 +1,6 @@
 import { countResources, expect, haveResource, ResourcePart } from '@aws-cdk/assert';
 import ec2 = require('@aws-cdk/aws-ec2');
+import targets = require('@aws-cdk/aws-events-targets');
 import lambda = require('@aws-cdk/aws-lambda');
 import logs = require('@aws-cdk/aws-logs');
 import cdk = require('@aws-cdk/cdk');
@@ -333,7 +334,7 @@ export = {
     });
 
     // WHEN
-    instance.onEvent('InstanceEvent', fn);
+    instance.onEvent('InstanceEvent', new targets.LambdaFunction(fn));
 
     // THEN
     expect(stack).to(haveResource('AWS::Events::Rule', {

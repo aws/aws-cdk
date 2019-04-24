@@ -1,5 +1,6 @@
 import cloudwatch = require('@aws-cdk/aws-cloudwatch');
 import ec2 = require('@aws-cdk/aws-ec2');
+import targets = require('@aws-cdk/aws-events-targets');
 import lambda = require('@aws-cdk/aws-lambda');
 import logs = require('@aws-cdk/aws-logs');
 import cdk = require('@aws-cdk/cdk');
@@ -96,7 +97,7 @@ class DatabaseInstanceStack extends cdk.Stack {
       runtime: lambda.Runtime.NodeJS810
     });
 
-    availabilityRule.addTarget(fn);
+    availabilityRule.addTarget(new targets.LambdaFunction(fn));
     /// !hide
   }
 }
