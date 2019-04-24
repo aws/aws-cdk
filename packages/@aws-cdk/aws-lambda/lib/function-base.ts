@@ -56,28 +56,28 @@ export interface IFunction extends IResource, logs.ILogSubscriptionDestination,
   /**
    * Return the given named metric for this Lambda
    */
-  metric(metricName: string, props?: cloudwatch.MetricCustomization): cloudwatch.Metric;
+  metric(metricName: string, props?: cloudwatch.MetricOptions): cloudwatch.Metric;
 
   /**
    * Metric for the Duration of this Lambda
    *
    * @default average over 5 minutes
    */
-  metricDuration(props?: cloudwatch.MetricCustomization): cloudwatch.Metric;
+  metricDuration(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
 
   /**
    * Metric for the number of invocations of this Lambda
    *
    * @default sum over 5 minutes
    */
-  metricInvocations(props?: cloudwatch.MetricCustomization): cloudwatch.Metric;
+  metricInvocations(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
 
   /**
    * Metric for the number of throttled invocations of this Lambda
    *
    * @default sum over 5 minutes
    */
-  metricThrottles(props?: cloudwatch.MetricCustomization): cloudwatch.Metric;
+  metricThrottles(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
 
   /**
    * Export this Function (without the role)
