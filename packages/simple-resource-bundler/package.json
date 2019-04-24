@@ -2,8 +2,6 @@
   "name": "simple-resource-bundler",
   "version": "0.29.0",
   "description": "Command-line tool to embed resources into JS libraries",
-  "main": "bundler.js",
-  "types": "bundler.d.ts",
   "bin": {
     "simple-resource-bundler": "bin/simple-resource-bundler"
   },
