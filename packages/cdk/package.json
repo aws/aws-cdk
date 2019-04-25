@@ -2,7 +2,6 @@
   "name": "cdk",
   "version": "0.29.0",
   "description": "AWS CDK Toolkit",
-  "main": " bin/cdk",
   "bin": {
     "cdk": "bin/cdk"
   },
