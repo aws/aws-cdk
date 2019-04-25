@@ -125,7 +125,7 @@ export class StateMachine extends Resource implements IStateMachine, events.IEve
      *
      * @default sum over 5 minutes
      */
-    public metric(metricName: string, props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
+    public metric(metricName: string, props?: cloudwatch.MetricOptions): cloudwatch.Metric {
         return new cloudwatch.Metric({
             namespace: 'AWS/States',
             metricName,
@@ -140,7 +140,7 @@ export class StateMachine extends Resource implements IStateMachine, events.IEve
      *
      * @default sum over 5 minutes
      */
-    public metricFailed(props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
+    public metricFailed(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
         return this.metric('ExecutionsFailed', props);
     }
 
@@ -149,7 +149,7 @@ export class StateMachine extends Resource implements IStateMachine, events.IEve
      *
      * @default sum over 5 minutes
      */
-    public metricThrottled(props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
+    public metricThrottled(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
         return this.metric('ExecutionThrottled', props);
     }
 
@@ -158,7 +158,7 @@ export class StateMachine extends Resource implements IStateMachine, events.IEve
      *
      * @default sum over 5 minutes
      */
-    public metricAborted(props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
+    public metricAborted(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
         return this.metric('ExecutionsAborted', props);
     }
 
@@ -167,7 +167,7 @@ export class StateMachine extends Resource implements IStateMachine, events.IEve
      *
      * @default sum over 5 minutes
      */
-    public metricSucceeded(props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
+    public metricSucceeded(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
         return this.metric('ExecutionsSucceeded', props);
     }
 
@@ -176,7 +176,7 @@ export class StateMachine extends Resource implements IStateMachine, events.IEve
      *
      * @default sum over 5 minutes
      */
-    public metricTimedOut(props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
+    public metricTimedOut(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
         return this.metric('ExecutionsTimedOut', props);
     }
 
@@ -185,7 +185,7 @@ export class StateMachine extends Resource implements IStateMachine, events.IEve
      *
      * @default sum over 5 minutes
      */
-    public metricStarted(props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
+    public metricStarted(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
         return this.metric('ExecutionsStarted', props);
     }
 
