@@ -310,7 +310,7 @@ export class VirtualNode extends VirtualNodeBase {
         logging: {
           accessLog: {
             file: {
-              path: '/dev/stdoout',
+              path: '/dev/stdout',
             },
           },
         },
