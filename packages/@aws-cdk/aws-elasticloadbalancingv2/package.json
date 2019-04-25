@@ -66,6 +66,7 @@
     "pkglint": "^0.29.0"
   },
   "dependencies": {
+    "@aws-cdk/aws-certificatemanager": "^0.29.0",
     "@aws-cdk/aws-cloudwatch": "^0.29.0",
     "@aws-cdk/aws-codedeploy-api": "^0.29.0",
     "@aws-cdk/aws-ec2": "^0.29.0",
