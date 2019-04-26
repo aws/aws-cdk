@@ -108,10 +108,8 @@ export class CdkToolkit {
         print('%s: deploying...', colors.bold(stack.name));
       }
 
-      print('%s: with tags...', options.tags);
       if (!options.tags || options.tags.length === 0) {
         options.tags = this.appStacks.getTagsFromStackMetadata(stack);
-        print('%s: with tags...', options.tags);
       }
 
       try {

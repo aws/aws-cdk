@@ -229,20 +229,23 @@ export class AppStacks {
   }
 
   public getTagsFromStackMetadata(stack: SelectedStack): Tag[] {
-    const tags = [];
+    const metadataTags: Tag[] = [];
     for (const id of Object.keys(stack.metadata)) {
       const metadata = stack.metadata[id];
-      print('%s: metadata...', metadata);
       for (const entry of metadata) {
         if (entry.type === cxapi.TAGS_METADATA_KEY) {
-          for (const tag of entry.data) {
-            print('%s: metadata tags...', tag);
-            tags.push(tag);
+          if (entry.data) {
+            entry.data.forEach((tags: { key: string; value: string }) => {
+              metadataTags.push({
+                Key: tags.key,
+                Value: tags.value
+              });
+            });
           }
         }
       }
     }
-    return tags;
+    return metadataTags;
   }
 
   /**
