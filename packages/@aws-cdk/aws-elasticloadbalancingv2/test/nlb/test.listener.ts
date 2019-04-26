@@ -181,7 +181,7 @@ export = {
     const stack = new cdk.Stack();
     const vpc = new ec2.VpcNetwork(stack, 'Stack');
     const lb = new elbv2.NetworkLoadBalancer(stack, 'LB', { vpc });
-  
+
     test.throws(() => lb.addListener('Listener', {
         port: 443,
         protocol: elbv2.Protocol.Http,
