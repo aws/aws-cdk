@@ -199,7 +199,7 @@ export class Cluster extends Resource implements ICluster {
    *
    * @default average over 5 minutes
    */
-  public metricCpuReservation(props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
+  public metricCpuReservation(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return this.metric('CPUReservation', props);
   }
 
@@ -208,14 +208,14 @@ export class Cluster extends Resource implements ICluster {
    *
    * @default average over 5 minutes
    */
-  public metricMemoryReservation(props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
+  public metricMemoryReservation(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return this.metric('MemoryReservation', props );
   }
 
   /**
    * Return the given named metric for this Cluster
    */
-  public metric(metricName: string, props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
+  public metric(metricName: string, props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return new cloudwatch.Metric({
       namespace: 'AWS/ECS',
       metricName,

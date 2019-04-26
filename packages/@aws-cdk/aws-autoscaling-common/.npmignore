@@ -17,4 +17,5 @@ lambda/src
 lambda/test
 lambda/*.sh
 *.snk
-tsconfig.*
+
+*.tsbuildinfo

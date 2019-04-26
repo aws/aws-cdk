@@ -209,7 +209,7 @@ export abstract class BaseService extends cdk.Construct
   /**
    * Return the given named metric for this Service
    */
-  public metric(metricName: string, props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
+  public metric(metricName: string, props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return new cloudwatch.Metric({
       namespace: 'AWS/ECS',
       metricName,

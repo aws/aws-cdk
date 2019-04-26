@@ -1,7 +1,7 @@
 import cdk = require('@aws-cdk/cdk');
 import { BaseListener } from '../shared/base-listener';
 import { HealthCheck } from '../shared/base-target-group';
-import { Protocol } from '../shared/enums';
+import { Protocol, SslPolicy } from '../shared/enums';
 import { INetworkLoadBalancer } from './network-load-balancer';
 import { INetworkLoadBalancerTarget, INetworkTargetGroup, NetworkTargetGroup } from './network-target-group';
 
@@ -20,6 +20,31 @@ export interface BaseNetworkListenerProps {
    * @default None
    */
   readonly defaultTargetGroups?: INetworkTargetGroup[];
+
+  /**
+   * Protocol for listener, expects TCP or TLS
+   */
+  readonly protocol?: Protocol;
+
+  /**
+   * Certificate list of ACM cert ARNs
+   */
+  readonly certificates?: INetworkListenerCertificateProps[];
+
+  /**
+   * SSL Policy
+   */
+  readonly sslPolicy?: SslPolicy;
+}
+
+/**
+ * Properties for adding a certificate to a listener
+ */
+export interface INetworkListenerCertificateProps {
+  /**
+   * Certificate ARN from ACM
+   */
+  readonly certificateArn: string
 }
 
 /**
@@ -49,10 +74,27 @@ export class NetworkListener extends BaseListener implements INetworkListener {
   private readonly loadBalancer: INetworkLoadBalancer;
 
   constructor(scope: cdk.Construct, id: string, props: NetworkListenerProps) {
+    const certs = props.certificates || [];
+    const proto = props.protocol || (certs.length > 0 ? Protocol.Tls : Protocol.Tcp);
+
+    if ([Protocol.Tcp, Protocol.Tls].indexOf(proto) === -1) {
+      throw new Error(`The protocol must be either ${Protocol.Tcp} or ${Protocol.Tls}. Found ${props.protocol}`);
+    }
+
+    if (proto === Protocol.Tls && certs.filter(v => v != null).length === 0) {
+      throw new Error(`When the protocol is set to TLS, you must specify certificates`);
+    }
+
+    if (proto !== Protocol.Tls && certs.length > 0) {
+      throw new Error(`Protocol must be TLS when certificates have been specified`);
+    }
+
     super(scope, id, {
       loadBalancerArn: props.loadBalancer.loadBalancerArn,
-      protocol: Protocol.Tcp,
+      protocol: proto,
       port: props.port,
+      sslPolicy: props.sslPolicy,
+      certificates: props.certificates
     });
 
     this.loadBalancer = props.loadBalancer;
@@ -108,7 +150,6 @@ export class NetworkListener extends BaseListener implements INetworkListener {
       listenerArn: new cdk.CfnOutput(this, 'ListenerArn', { value: this.listenerArn }).makeImportValue().toString()
     };
   }
-
 }
 
 /**

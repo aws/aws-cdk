@@ -202,7 +202,7 @@ export class Ec2Service extends BaseService implements elb.ILoadBalancerTarget {
   /**
    * Return the given named metric for this Service
    */
-  public metric(metricName: string, props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
+  public metric(metricName: string, props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return new cloudwatch.Metric({
       namespace: 'AWS/ECS',
       metricName,
@@ -216,7 +216,7 @@ export class Ec2Service extends BaseService implements elb.ILoadBalancerTarget {
    *
    * @default average over 5 minutes
    */
-  public metricMemoryUtilization(props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
+  public metricMemoryUtilization(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return this.metric('MemoryUtilization', props );
   }
 
@@ -225,7 +225,7 @@ export class Ec2Service extends BaseService implements elb.ILoadBalancerTarget {
    *
    * @default average over 5 minutes
    */
-  public metricCpuUtilization(props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
+  public metricCpuUtilization(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return this.metric('CPUUtilization', props);
   }
 
