@@ -13,4 +13,4 @@ dist
 
 !lib/init-templates/*/*/tsconfig.json
 
-tsconfig.tsbuildinfo
+*.tsbuildinfo

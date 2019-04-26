@@ -10,8 +10,7 @@ coverage
 *.tgz
 *.snk
 
-
 # Include .jsii
 !.jsii
 
-tsconfig.tsbuildinfo
+*.tsbuildinfo
