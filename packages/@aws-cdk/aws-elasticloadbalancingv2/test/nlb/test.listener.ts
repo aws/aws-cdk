@@ -177,19 +177,48 @@ export = {
     test.done();
   },
 
-  'Failing TLS listener'(test: Test) {
+  'Invalid Protocol listener'(test: Test) {
+    const stack = new cdk.Stack();
+    const vpc = new ec2.VpcNetwork(stack, 'Stack');
+    const lb = new elbv2.NetworkLoadBalancer(stack, 'LB', { vpc });
+  
+    test.throws(() => lb.addListener('Listener', {
+        port: 443,
+        protocol: elbv2.Protocol.Http,
+        defaultTargetGroups: [new elbv2.NetworkTargetGroup(stack, 'Group', { vpc, port: 80 })]
+      }), Error, '/The protocol must be either TCP or TLS. Found HTTP/');
+
+    test.done();
+  },
+
+  'Protocol & certs TLS listener'(test: Test) {
     const stack = new cdk.Stack();
     const vpc = new ec2.VpcNetwork(stack, 'Stack');
     const lb = new elbv2.NetworkLoadBalancer(stack, 'LB', { vpc });
 
-    lb.addListener('Listener', {
+    test.throws(() => lb.addListener('Listener', {
       port: 443,
       protocol: elbv2.Protocol.Tls,
-      sslPolicy: elbv2.SslPolicy.TLS12,
       defaultTargetGroups: [new elbv2.NetworkTargetGroup(stack, 'Group', { vpc, port: 80 })]
+    }), Error, '/When the protocol is set to TLS, you must specify certificates/');
+
+    test.done();
+  },
+
+  'TLS and certs specified listener'(test: Test) {
+    const stack = new cdk.Stack();
+    const vpc = new ec2.VpcNetwork(stack, 'Stack');
+    const lb = new elbv2.NetworkLoadBalancer(stack, 'LB', { vpc });
+    const cert = new acm.Certificate(stack, 'Certificate', {
+      domainName: 'example.com'
     });
 
-    test.throws(() => expect(stack), '/When the protocol is set to TLS, you must specify certificates at: NetworkLoadBalancer [LB]/');
+    test.throws(() => lb.addListener('Listener', {
+      port: 443,
+      protocol: elbv2.Protocol.Tcp,
+      certificates: [ { certificateArn: cert.certificateArn } ],
+      defaultTargetGroups: [new elbv2.NetworkTargetGroup(stack, 'Group', { vpc, port: 80 })]
+    }), Error, '/Protocol must be TLS when certificates have been specified/');
 
     test.done();
   },

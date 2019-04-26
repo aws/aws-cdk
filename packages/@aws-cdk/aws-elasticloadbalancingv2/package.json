@@ -83,7 +83,8 @@
     "@aws-cdk/aws-iam": "^0.29.0",
     "@aws-cdk/aws-route53": "^0.29.0",
     "@aws-cdk/aws-s3": "^0.29.0",
-    "@aws-cdk/cdk": "^0.29.0"
+    "@aws-cdk/cdk": "^0.29.0",
+    "@aws-cdk/aws-certificatemanager": "^0.29.0"
   },
   "engines": {
     "node": ">= 8.10.0"
