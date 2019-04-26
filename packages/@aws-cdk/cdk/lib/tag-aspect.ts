@@ -1,3 +1,4 @@
+// import cxapi = require('@aws-cdk/cx-api');
 import { IAspect } from './aspect';
 import { CfnResource} from './cfn-resource';
 import { IConstruct } from './construct';
@@ -78,16 +79,9 @@ export abstract class TagBase implements IAspect {
     if (!isCfnResource && !isStack) {
       return;
     }
-    if (isCfnResource) {
-      const resource = construct as CfnResource;
-      if (CfnResource.isTaggable(resource)) {
+    const resource = isCfnResource ? construct as CfnResource : construct as Stack;
+    if (CfnResource.isTaggable(resource)) {
         this.applyTag(resource);
-      }
-    } else {
-      const resource = construct as Stack;
-      if (Stack.isTaggable(resource)) {
-        this.applyTag(resource);
-      }
     }
   }
 
@@ -115,7 +109,7 @@ export class Tag extends TagBase {
   }
 
   protected applyTag(resource: ITaggable) {
-    if (resource.tags.applyTagAspectHere(this.props.includeResourceTypes, this.props.excludeResourceTypes)) {
+    if (resource.tags.applyTagAspectHere(this.props.includeResourceTypes, this.props.excludeResourceTypes) || Stack.isStack(resource)) {
       resource.tags.setTag(
         this.key,
         this.value,
@@ -138,7 +132,7 @@ export class RemoveTag extends TagBase {
   }
 
   protected applyTag(resource: ITaggable): void {
-    if (resource.tags.applyTagAspectHere(this.props.includeResourceTypes, this.props.excludeResourceTypes)) {
+    if (resource.tags.applyTagAspectHere(this.props.includeResourceTypes, this.props.excludeResourceTypes) || Stack.isStack(resource)) {
       resource.tags.removeTag(this.key, this.props.priority !== undefined ? this.props.priority : this.defaultPriority);
     }
   }

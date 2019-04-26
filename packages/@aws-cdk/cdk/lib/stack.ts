@@ -5,9 +5,7 @@ import { Construct, IConstruct, PATH_SEP } from './construct';
 import { Environment } from './environment';
 import { HashedAddressingScheme, IAddressingScheme, LogicalIDs } from './logical-id';
 import { ISynthesisSession } from './synthesis';
-import { ITaggable } from './tag-manager';
 import { makeUniqueId } from './uniqueid';
-
 export interface StackProps {
   /**
    * The AWS environment (account/region) where this stack will be deployed.
@@ -41,6 +39,8 @@ export interface StackProps {
    * @default true
    */
   readonly autoDeploy?: boolean;
+
+  readonly tags?: { [key: string]: string };
 }
 
 const STACK_SYMBOL = Symbol.for('@aws-cdk/cdk.Stack');
@@ -49,6 +49,7 @@ const STACK_SYMBOL = Symbol.for('@aws-cdk/cdk.Stack');
  * A root construct which represents a single CloudFormation stack.
  */
 export class Stack extends Construct {
+
   /**
    * Adds a metadata annotation "aws:cdk:physical-name" to the construct if physicalName
    * is non-null. This can be used later by tools and aspects to determine if resources
@@ -71,14 +72,9 @@ export class Stack extends Construct {
     return obj[STACK_SYMBOL] === true;
   }
 
-  /**
-   * Check whether the given construct is Taggable
-   */
-  public static isTaggable(construct: any): construct is ITaggable {
-    return (construct as any).tags !== undefined;
-  }
-
   private static readonly VALID_STACK_NAME_REGEX = /^[A-Za-z][A-Za-z0-9-]*$/;
+
+  public readonly tags: TagManager = new TagManager(TagType.Standard, "AWS:Cloudformation::Stack");
 
   /**
    * Lists all missing contextual information.
@@ -161,6 +157,13 @@ export class Stack extends Construct {
     this.logicalIds = new LogicalIDs(props && props.namingScheme ? props.namingScheme : new HashedAddressingScheme());
     this.name = props.stackName !== undefined ? props.stackName : this.calculateStackName();
     this.autoDeploy = props && props.autoDeploy === false ? false : true;
+    if (props.tags) {
+      for (const key in props.tags) {
+        if (props.tags.hasOwnProperty(key)) {
+          this.tags.setTag(key, props.tags[key]);
+        }
+      }
+    }
   }
 
   /**
@@ -198,6 +201,7 @@ export class Stack extends Construct {
   public _toCloudFormation() {
     // before we begin synthesis, we shall lock this stack, so children cannot be added
     this.node.lock();
+    this.node.addMetadata(cxapi.TAGS_METADATA_KEY, this.tags.renderTags());
 
     try {
       const template: any = {
@@ -555,8 +559,6 @@ export class Stack extends Construct {
 
     visit(this);
 
-    this.node.addMetadata(cxapi.TAGS_METADATA_KEY, [new Tag("Team", "Isma"), new Tag("Group", "fdsajkl3")]);
-
     const app = this.parentApp();
 
     if (app && app.node.metadata.length > 0) {
@@ -566,21 +568,10 @@ export class Stack extends Construct {
     return output;
 
     function visit(node: IConstruct) {
+
       if (node.node.metadata.length > 0) {
         // Make the path absolute
         output[PATH_SEP + node.node.path] = node.node.metadata.map(md => node.node.resolve(md) as cxapi.MetadataEntry);
-      }
-
-      const resource = node as Stack;
-      if (Stack.isTaggable(resource)) {
-        node.node.addMetadata(cxapi.TAGS_METADATA_KEY, [new Tag("Team", "Isma"), new Tag("Group", "fdsajkl3")]);
-        print(resource);
-        print(resource.tags);
-        print(resource.tags.renderTags());
-        // const stackTags = resource.tags.renderTags()
-        // stackTags.map(tag => node.node.)
-        // node.node.metadata.map(md => node.node.resolve(md) as cxapi.MetadataEntry);
-        // this.applyStackTag(resource);
       }
 
       for (const child of node.node.children) {
@@ -680,13 +671,12 @@ function cfnElements(node: IConstruct, into: CfnElement[] = []): CfnElement[] {
 }
 
 // These imports have to be at the end to prevent circular imports
-import { print } from 'util';
 import { ArnComponents, arnFromComponents, parseArn } from './arn';
 import { CfnElement } from './cfn-element';
 import { CfnReference } from './cfn-reference';
-import { CfnResource } from './cfn-resource';
+import { CfnResource, TagType } from './cfn-resource';
 import { Aws, ScopedAws } from './pseudo';
-import { Tag } from './tag-aspect';
+import { TagManager } from './tag-manager';
 
 /**
  * Find all resources in a set of constructs
