@@ -20,4 +20,4 @@ dist
 # Include .jsii
 !.jsii
 
-tsconfig.*
+tsconfig.tsbuildinfo

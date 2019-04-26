@@ -15,4 +15,4 @@ dist
 !lib/adopt-repository/*
 *.snk
 
-tsconfig.*
+tsconfig.tsbuildinfo

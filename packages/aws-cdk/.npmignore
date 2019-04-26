@@ -10,6 +10,7 @@ dist
 .LAST_PACKAGE
 .LAST_BUILD
 *.snk
-tsconfig.*
 
 !lib/init-templates/*/*/tsconfig.json
+
+tsconfig.tsbuildinfo

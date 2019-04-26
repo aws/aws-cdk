@@ -15,4 +15,4 @@ coverage
 !.jsii
 
 *.snk
-tsconfig.*
+tsconfig.tsbuildinfo

@@ -9,4 +9,4 @@ dist
 .LAST_PACKAGE
 .LAST_BUILD
 *.snk
-tsconfig.*
+tsconfig.tsbuildinfo

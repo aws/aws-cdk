@@ -254,9 +254,9 @@ export class NoTscBuildInfo extends ValidationRule {
     if (pkg.json.private) { return; }
 
     // If we don't add this, the published package will contain TSC build files,
-    // (tsconfig.tsbuildinfo) and might as well strip tsconfig.json while we're
-    // at it.
-    fileShouldContain(this.name, pkg, '.npmignore', 'tsconfig.*');
+    // (tsconfig.tsbuildinfo). We also want to strip tsconfig.json in the future,
+    // but for now the DOCS BUILD requires it.
+    fileShouldContain(this.name, pkg, '.npmignore', 'tsconfig.tsbuildinfo');
   }
 }
 
