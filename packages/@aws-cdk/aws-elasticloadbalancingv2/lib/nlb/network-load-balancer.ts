@@ -58,7 +58,7 @@ export class NetworkLoadBalancer extends BaseLoadBalancer implements INetworkLoa
    *
    * @default Average over 5 minutes
    */
-  public metric(metricName: string, props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
+  public metric(metricName: string, props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return new cloudwatch.Metric({
       namespace: 'AWS/NetworkELB',
       metricName,
@@ -76,7 +76,7 @@ export class NetworkLoadBalancer extends BaseLoadBalancer implements INetworkLoa
    *
    * @default Average over 5 minutes
    */
-  public metricActiveFlowCount(props?: cloudwatch.MetricCustomization) {
+  public metricActiveFlowCount(props?: cloudwatch.MetricOptions) {
     return this.metric('ActiveFlowCount', {
       statistic: 'Average',
       ...props
@@ -88,7 +88,7 @@ export class NetworkLoadBalancer extends BaseLoadBalancer implements INetworkLoa
    *
    * @default Sum over 5 minutes
    */
-  public metricConsumedLCUs(props?: cloudwatch.MetricCustomization) {
+  public metricConsumedLCUs(props?: cloudwatch.MetricOptions) {
     return this.metric('ConsumedLCUs', {
       statistic: 'Sum',
       ...props
@@ -100,7 +100,7 @@ export class NetworkLoadBalancer extends BaseLoadBalancer implements INetworkLoa
    *
    * @default Average over 5 minutes
    */
-  public metricHealthyHostCount(props?: cloudwatch.MetricCustomization) {
+  public metricHealthyHostCount(props?: cloudwatch.MetricOptions) {
     return this.metric('HealthyHostCount', {
       statistic: 'Average',
       ...props
@@ -112,7 +112,7 @@ export class NetworkLoadBalancer extends BaseLoadBalancer implements INetworkLoa
    *
    * @default Average over 5 minutes
    */
-  public metricUnHealthyHostCount(props?: cloudwatch.MetricCustomization) {
+  public metricUnHealthyHostCount(props?: cloudwatch.MetricOptions) {
     return this.metric('UnHealthyHostCount', {
       statistic: 'Average',
       ...props
@@ -124,7 +124,7 @@ export class NetworkLoadBalancer extends BaseLoadBalancer implements INetworkLoa
    *
    * @default Sum over 5 minutes
    */
-  public metricNewFlowCount(props?: cloudwatch.MetricCustomization) {
+  public metricNewFlowCount(props?: cloudwatch.MetricOptions) {
     return this.metric('NewFlowCount', {
       statistic: 'Sum',
       ...props
@@ -136,7 +136,7 @@ export class NetworkLoadBalancer extends BaseLoadBalancer implements INetworkLoa
    *
    * @default Sum over 5 minutes
    */
-  public metricProcessedBytes(props?: cloudwatch.MetricCustomization) {
+  public metricProcessedBytes(props?: cloudwatch.MetricOptions) {
     return this.metric('ProcessedBytes', {
       statistic: 'Sum',
       ...props
@@ -150,7 +150,7 @@ export class NetworkLoadBalancer extends BaseLoadBalancer implements INetworkLoa
    *
    * @default Sum over 5 minutes
    */
-  public metricTcpClientResetCount(props?: cloudwatch.MetricCustomization) {
+  public metricTcpClientResetCount(props?: cloudwatch.MetricOptions) {
     return this.metric('TCP_Client_Reset_Count', {
       statistic: 'Sum',
       ...props
@@ -162,7 +162,7 @@ export class NetworkLoadBalancer extends BaseLoadBalancer implements INetworkLoa
    *
    * @default Sum over 5 minutes
    */
-  public metricTcpElbResetCount(props?: cloudwatch.MetricCustomization) {
+  public metricTcpElbResetCount(props?: cloudwatch.MetricOptions) {
     return this.metric('TCP_ELB_Reset_Count', {
       statistic: 'Sum',
       ...props
@@ -176,7 +176,7 @@ export class NetworkLoadBalancer extends BaseLoadBalancer implements INetworkLoa
    *
    * @default Sum over 5 minutes
    */
-  public metricTcpTargetResetCount(props?: cloudwatch.MetricCustomization) {
+  public metricTcpTargetResetCount(props?: cloudwatch.MetricOptions) {
     return this.metric('TCP_Target_Reset_Count', {
       statistic: 'Sum',
       ...props

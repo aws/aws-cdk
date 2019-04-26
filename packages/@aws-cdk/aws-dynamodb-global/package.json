@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/aws-dynamodb-global",
-  "version": "0.28.0",
+  "version": "0.29.0",
   "description": "Build a global dynamodb table",
   "license": "Apache-2.0",
   "homepage": "https://github.com/awslabs/aws-cdk",
@@ -45,25 +45,25 @@
     "global"
   ],
   "dependencies": {
-    "@aws-cdk/aws-cloudformation": "^0.28.0",
-    "@aws-cdk/aws-dynamodb": "^0.28.0",
-    "@aws-cdk/aws-lambda": "^0.28.0",
-    "@aws-cdk/aws-iam": "^0.28.0",
-    "@aws-cdk/cdk": "^0.28.0"
+    "@aws-cdk/aws-cloudformation": "^0.29.0",
+    "@aws-cdk/aws-dynamodb": "^0.29.0",
+    "@aws-cdk/aws-iam": "^0.29.0",
+    "@aws-cdk/aws-lambda": "^0.29.0",
+    "@aws-cdk/cdk": "^0.29.0"
   },
   "devDependencies": {
-    "@aws-cdk/assert": "^0.28.0",
-    "cdk-build-tools": "^0.28.0",
-    "cdk-integ-tools": "^0.28.0",
-    "cfn2ts": "^0.28.0",
-    "pkglint": "^0.28.0"
+    "@aws-cdk/assert": "^0.29.0",
+    "cdk-build-tools": "^0.29.0",
+    "cdk-integ-tools": "^0.29.0",
+    "cfn2ts": "^0.29.0",
+    "pkglint": "^0.29.0"
   },
   "peerDependencies": {
-    "@aws-cdk/cdk": "^0.28.0",
-    "@aws-cdk/aws-dynamodb": "^0.28.0",
-    "@aws-cdk/aws-lambda": "^0.28.0",
-    "@aws-cdk/aws-cloudformation": "^0.28.0",
-    "@aws-cdk/aws-iam": "^0.28.0"
+    "@aws-cdk/aws-cloudformation": "^0.29.0",
+    "@aws-cdk/aws-dynamodb": "^0.29.0",
+    "@aws-cdk/aws-iam": "^0.29.0",
+    "@aws-cdk/aws-lambda": "^0.29.0",
+    "@aws-cdk/cdk": "^0.29.0"
   },
   "scripts": {
     "build": "cdk-build",
