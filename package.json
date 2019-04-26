@@ -4,7 +4,7 @@
     "include": "dependencies/node-version"
   },
   "scripts": {
-    "pkglint": "tools/pkglint/bin/pkglint -f .",
+    "pkglint": "lerna --scope pkglint run build && lerna run pkglint",
     "build-all": "tsc -b"
   },
   "devDependencies": {
