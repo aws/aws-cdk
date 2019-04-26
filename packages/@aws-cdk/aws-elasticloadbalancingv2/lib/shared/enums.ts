@@ -30,7 +30,12 @@ export enum Protocol {
   /**
    * TCP
    */
-  Tcp = 'TCP'
+  Tcp = 'TCP',
+
+  /**
+   * TLS
+   */
+  Tls = 'TLS'
 }
 
 /**
