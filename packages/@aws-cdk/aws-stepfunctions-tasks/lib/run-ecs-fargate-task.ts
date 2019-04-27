@@ -1,32 +1,32 @@
 import ec2 = require('@aws-cdk/aws-ec2');
 import ecs = require('@aws-cdk/aws-ecs');
 import cdk = require('@aws-cdk/cdk');
-import { BaseRunTask, BaseRunTaskProps } from './base-run-task';
+import { BaseRunTask, CommonRunTaskProps } from './base-run-task';
 
 /**
  * Properties to define an ECS service
  */
-export interface FargateRunTaskProps extends BaseRunTaskProps {
+export interface RunEcsFargateTaskProps extends CommonRunTaskProps {
   /**
    * Assign public IP addresses to each task
    *
    * @default false
    */
-  assignPublicIp?: boolean;
+  readonly assignPublicIp?: boolean;
 
   /**
    * In what subnets to place the task's ENIs
    *
    * @default Private subnet if assignPublicIp, public subnets otherwise
    */
-  vpcPlacement?: ec2.VpcPlacementStrategy;
+  readonly subnets?: ec2.SubnetSelection;
 
   /**
    * Existing security group to use for the tasks
    *
    * @default A new security group is created
    */
-  securityGroup?: ec2.ISecurityGroup;
+  readonly securityGroup?: ec2.ISecurityGroup;
 
   /**
    * Fargate platform version to run this service on
@@ -36,14 +36,14 @@ export interface FargateRunTaskProps extends BaseRunTaskProps {
    *
    * @default Latest
    */
-  platformVersion?: ecs.FargatePlatformVersion;
+  readonly platformVersion?: ecs.FargatePlatformVersion;
 }
 
 /**
  * Start a service on an ECS cluster
  */
-export class FargateRunTask extends BaseRunTask {
-  constructor(scope: cdk.Construct, id: string, props: FargateRunTaskProps) {
+export class RunEcsFargateTask extends BaseRunTask {
+  constructor(scope: cdk.Construct, id: string, props: RunEcsFargateTaskProps) {
     if (!props.taskDefinition.isFargateCompatible) {
       throw new Error('Supplied TaskDefinition is not configured for compatibility with EC2');
     }
@@ -52,9 +52,13 @@ export class FargateRunTask extends BaseRunTask {
       throw new Error('A TaskDefinition must have at least one essential container');
     }
 
-    super(scope, id, props);
+    super(scope, id, {
+      ...props,
+      parameters: {
+        LaunchType: 'FARGATE',
+      },
+    });
 
-    this._parameters.LaunchType = 'FARGATE';
-    this.configureAwsVpcNetworking(props.cluster.vpc, props.assignPublicIp, props.vpcPlacement, props.securityGroup);
+    this.configureAwsVpcNetworking(props.cluster.vpc, props.assignPublicIp, props.subnets, props.securityGroup);
   }
 }

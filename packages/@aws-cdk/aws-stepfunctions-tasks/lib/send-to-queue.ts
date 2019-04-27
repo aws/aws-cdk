@@ -10,21 +10,21 @@ export interface SendMessageTaskProps extends stepfunctions.BasicTaskProps {
   /**
    * The topic to send a message to to
    */
-  queue: sqs.IQueue;
+  readonly queue: sqs.IQueue;
 
   /**
    * The message body to send to the queue.
    *
    * Exactly one of `messageBody` and `messageBodyPath` is required.
    */
-  messageBody?: string;
+  readonly messageBody?: string;
 
   /**
    * JSONPath for the message body to send to the queue.
    *
    * Exactly one of `messageBody` and `messageBodyPath` is required.
    */
-  messageBodyPath?: string;
+  readonly messageBodyPath?: string;
 
   /**
    * The length of time, in seconds, for which to delay a specific message.
@@ -33,28 +33,28 @@ export interface SendMessageTaskProps extends stepfunctions.BasicTaskProps {
    *
    * @default Default value of the queue is used
    */
-  delaySeconds?: number;
+  readonly delaySeconds?: number;
 
   /**
    * JSONPath expression for delaySeconds setting
    *
    * @default Default value of the queue is used
    */
-  delaySecondsPath?: string;
+  readonly delaySecondsPath?: string;
 
   /**
    * The token used for deduplication of sent messages.
    *
    * @default Use content-based deduplication
    */
-  messageDeduplicationId?: string;
+  readonly messageDeduplicationId?: string;
 
   /**
    * JSONPath expression for deduplication ID
    *
    * @default Use content-based deduplication
    */
-  messageDeduplicationIdPath?: string;
+  readonly messageDeduplicationIdPath?: string;
 
   /**
    * The tag that specifies that a message belongs to a specific message group.
@@ -64,14 +64,14 @@ export interface SendMessageTaskProps extends stepfunctions.BasicTaskProps {
    *
    * @default No group ID
    */
-  messageGroupId?: string;
+  readonly messageGroupId?: string;
 
   /**
    * JSONPath expression for message group ID
    *
    * @default No group ID
    */
-  messageGroupIdPath?: string;
+  readonly messageGroupIdPath?: string;
 }
 
 /**

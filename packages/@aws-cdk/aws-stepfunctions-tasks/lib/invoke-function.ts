@@ -14,7 +14,7 @@ export interface InvokeFunctionProps extends stepfunctions.BasicTaskProps {
   /**
    * The function to run
    */
-  function: lambda.IFunction;
+  readonly function: lambda.IFunction;
 }
 
 /**
@@ -44,7 +44,7 @@ export class InvokeFunction extends stepfunctions.Task {
    *
    * @default sum over 5 minutes
    */
-  public metric(metricName: string, props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
+  public metric(metricName: string, props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return new cloudwatch.Metric({
       namespace: 'AWS/States',
       metricName,
@@ -59,7 +59,7 @@ export class InvokeFunction extends stepfunctions.Task {
    *
    * @default average over 5 minutes
    */
-  public metricRunTime(props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
+  public metricRunTime(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return this.metric(METRIC_PREFIX_SINGULAR + 'RunTime', { statistic: 'avg', ...props });
   }
 
@@ -68,7 +68,7 @@ export class InvokeFunction extends stepfunctions.Task {
    *
    * @default average over 5 minutes
    */
-  public metricScheduleTime(props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
+  public metricScheduleTime(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return this.metric(METRIC_PREFIX_SINGULAR + 'ScheduleTime', { statistic: 'avg', ...props });
   }
 
@@ -77,7 +77,7 @@ export class InvokeFunction extends stepfunctions.Task {
    *
    * @default average over 5 minutes
    */
-  public metricTime(props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
+  public metricTime(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return this.metric(METRIC_PREFIX_SINGULAR + 'Time', { statistic: 'avg', ...props });
   }
 
@@ -86,7 +86,7 @@ export class InvokeFunction extends stepfunctions.Task {
    *
    * @default sum over 5 minutes
    */
-  public metricScheduled(props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
+  public metricScheduled(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return this.metric(METRIC_PREFIX_PLURAL + 'Scheduled', props);
   }
 
@@ -95,7 +95,7 @@ export class InvokeFunction extends stepfunctions.Task {
    *
    * @default sum over 5 minutes
    */
-  public metricTimedOut(props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
+  public metricTimedOut(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return this.metric(METRIC_PREFIX_PLURAL + 'TimedOut', props);
   }
 
@@ -104,7 +104,7 @@ export class InvokeFunction extends stepfunctions.Task {
    *
    * @default sum over 5 minutes
    */
-  public metricStarted(props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
+  public metricStarted(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return this.metric(METRIC_PREFIX_PLURAL + 'Started', props);
   }
 
@@ -113,7 +113,7 @@ export class InvokeFunction extends stepfunctions.Task {
    *
    * @default sum over 5 minutes
    */
-  public metricSucceeded(props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
+  public metricSucceeded(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return this.metric(METRIC_PREFIX_PLURAL + 'Succeeded', props);
   }
 
@@ -122,7 +122,7 @@ export class InvokeFunction extends stepfunctions.Task {
    *
    * @default sum over 5 minutes
    */
-  public metricFailed(props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
+  public metricFailed(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return this.metric(METRIC_PREFIX_PLURAL + 'Failed', props);
   }
 
@@ -131,7 +131,7 @@ export class InvokeFunction extends stepfunctions.Task {
    *
    * @default sum over 5 minutes
    */
-  public metricHeartbeatTimedOut(props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
+  public metricHeartbeatTimedOut(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return this.metric(METRIC_PREFIX_PLURAL + 'HeartbeatTimedOut', props);
   }
 }

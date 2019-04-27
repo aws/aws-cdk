@@ -23,7 +23,7 @@
       "sphinx": {},
       "python": {
         "distName": "aws-cdk.aws-stepfunctions-tasks",
-        "module": "aws_cdk.aws_stepfunctions.tasks"
+        "module": "aws_cdk.aws_stepfunctions_tasks"
       }
     }
   },

@@ -169,6 +169,7 @@ export class Task extends State implements INextable {
             Type: StateType.Task,
             Comment: this.comment,
             Resource: this.resourceArn,
+            Parameters: this.parameters,
             ResultPath: renderJsonPath(this.resultPath),
             TimeoutSeconds: this.timeoutSeconds,
             HeartbeatSeconds: this.heartbeatSeconds,

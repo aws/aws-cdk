@@ -10,28 +10,28 @@ export interface PublishTaskProps extends stepfunctions.BasicTaskProps {
   /**
    * The topic to publish to
    */
-  topic: sns.ITopic;
+  readonly topic: sns.ITopic;
 
   /**
    * The text message to send to the queue.
    *
    * Exactly one of `message`, `messageObject` and `messagePath` is required.
    */
-  message?: string;
+  readonly message?: string;
 
   /**
    * JSONPath expression of the message to send to the queue
    *
    * Exactly one of `message`, `messageObject` and `messagePath` is required.
    */
-  messagePath?: string;
+  readonly messagePath?: string;
 
   /**
    * Object to be JSON-encoded and used as message
    *
    * Exactly one of `message`, `messageObject` and `messagePath` is required.
    */
-  messageObject?: string;
+  readonly messageObject?: string;
 
   /**
    * If true, send a different message to every subscription type
@@ -43,17 +43,17 @@ export interface PublishTaskProps extends stepfunctions.BasicTaskProps {
    *
    * @see https://docs.aws.amazon.com/sns/latest/api/API_Publish.html#API_Publish_RequestParameters
    */
-  messagePerSubscriptionType?: boolean;
+  readonly messagePerSubscriptionType?: boolean;
 
   /**
    * Message subject
    */
-  subject?: string;
+  readonly subject?: string;
 
   /**
    * JSONPath expression of subject
    */
-  subjectPath?: string;
+  readonly subjectPath?: string;
 }
 
 /**

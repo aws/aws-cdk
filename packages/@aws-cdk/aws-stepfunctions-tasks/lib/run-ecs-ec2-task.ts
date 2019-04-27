@@ -1,12 +1,12 @@
 import ec2 = require('@aws-cdk/aws-ec2');
 import ecs = require('@aws-cdk/aws-ecs');
 import cdk = require('@aws-cdk/cdk');
-import { BaseRunTask, BaseRunTaskProps } from './base-run-task';
+import { BaseRunTask, CommonRunTaskProps } from './base-run-task';
 
 /**
  * Properties to run an ECS task on EC2 in StepFunctionsan ECS
  */
-export interface Ec2RunTaskProps extends BaseRunTaskProps {
+export interface RunEcsEc2TaskProps extends CommonRunTaskProps {
   /**
    * In what subnets to place the task's ENIs
    *
@@ -14,7 +14,7 @@ export interface Ec2RunTaskProps extends BaseRunTaskProps {
    *
    * @default Private subnets
    */
-  vpcPlacement?: ec2.VpcPlacementStrategy;
+  readonly subnets?: ec2.SubnetSelection;
 
   /**
    * Existing security group to use for the task's ENIs
@@ -23,25 +23,25 @@ export interface Ec2RunTaskProps extends BaseRunTaskProps {
    *
    * @default A new security group is created
    */
-  securityGroup?: ec2.ISecurityGroup;
+  readonly securityGroup?: ec2.ISecurityGroup;
 
   /**
    * Whether to start services on distinct instances
    *
    * @default false
    */
-  placeOnDistinctInstances?: boolean;
+  readonly placeOnDistinctInstances?: boolean;
 }
 
 /**
  * Run an ECS/EC2 Task in a StepFunctions workflow
  */
-export class Ec2RunTask extends BaseRunTask {
+export class RunEcsEc2Task extends BaseRunTask {
   private readonly constraints: any[];
   private readonly strategies: any[];
   private readonly cluster: ecs.ICluster;
 
-  constructor(scope: cdk.Construct, id: string, props: Ec2RunTaskProps) {
+  constructor(scope: cdk.Construct, id: string, props: RunEcsEc2TaskProps) {
     if (!props.taskDefinition.isEc2Compatible) {
       throw new Error('Supplied TaskDefinition is not configured for compatibility with EC2');
     }
@@ -50,18 +50,21 @@ export class Ec2RunTask extends BaseRunTask {
       throw new Error('A TaskDefinition must have at least one essential container');
     }
 
-    super(scope, id, props);
+    super(scope, id, {
+      ...props,
+      parameters: {
+        LaunchType: 'EC2',
+        PlacementConstraints: new cdk.Token(() => this.constraints.length > 0 ? this.constraints : undefined),
+        PlacementStrategy: new cdk.Token(() => this.constraints.length > 0 ? this.strategies : undefined),
+      }
+    });
 
     this.cluster = props.cluster;
     this.constraints = [];
     this.strategies = [];
 
-    this._parameters.LaunchType = 'EC2';
-    this._parameters.PlacementConstraints = new cdk.Token(() => this.constraints.length > 0 ? this.constraints : undefined);
-    this._parameters.PlacementStrategy = new cdk.Token(() => this.constraints.length > 0 ? this.strategies : undefined);
-
     if (props.taskDefinition.networkMode === ecs.NetworkMode.AwsVpc) {
-      this.configureAwsVpcNetworking(props.cluster.vpc, false, props.vpcPlacement, props.securityGroup);
+      this.configureAwsVpcNetworking(props.cluster.vpc, false, props.subnets, props.securityGroup);
     } else {
       // Either None, Bridge or Host networking. Copy SecurityGroup from ASG.
       validateNoNetworkingProps(props);
@@ -143,8 +146,8 @@ export class Ec2RunTask extends BaseRunTask {
 /**
  * Validate combinations of networking arguments
  */
-function validateNoNetworkingProps(props: Ec2RunTaskProps) {
-  if (props.vpcPlacement !== undefined || props.securityGroup !== undefined) {
+function validateNoNetworkingProps(props: RunEcsEc2TaskProps) {
+  if (props.subnets !== undefined || props.securityGroup !== undefined) {
     throw new Error('vpcPlacement and securityGroup can only be used in AwsVpc networking mode');
   }
 }

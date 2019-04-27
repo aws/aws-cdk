@@ -14,4 +14,4 @@ dist
 !.jsii
 
 *.snk
-tsconfig.*
+*.tsbuildinfo

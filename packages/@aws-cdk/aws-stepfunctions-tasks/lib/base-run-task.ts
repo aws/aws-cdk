@@ -7,16 +7,16 @@ import cdk = require('@aws-cdk/cdk');
 /**
  * Properties for SendMessageTask
  */
-export interface BaseRunTaskProps extends stepfunctions.BasicTaskProps {
+export interface CommonRunTaskProps extends stepfunctions.BasicTaskProps {
   /**
    * The topic to run the task on
    */
-  cluster: ecs.ICluster;
+  readonly cluster: ecs.ICluster;
 
   /**
    * Task Definition used for running tasks in the service
    */
-  taskDefinition: ecs.TaskDefinition;
+  readonly taskDefinition: ecs.TaskDefinition;
 
   /**
    * Container setting overrides
@@ -24,14 +24,24 @@ export interface BaseRunTaskProps extends stepfunctions.BasicTaskProps {
    * Key is the name of the container to override, value is the
    * values you want to override.
    */
-  containerOverrides?: ContainerOverride[];
+  readonly containerOverrides?: ContainerOverride[];
 
   /**
    * Whether to wait for the task to complete and return the response
    *
    * @default true
    */
-  synchronous?: boolean;
+  readonly synchronous?: boolean;
+}
+
+/**
+ * Construction properties for the BaseRunTaskProps
+ */
+export interface BaseRunTaskProps extends CommonRunTaskProps {
+  /**
+   * Additional parameters to pass to the base task
+   */
+  readonly parameters?: {[key: string]: any};
 }
 
 export interface ContainerOverride {
@@ -40,75 +50,75 @@ export interface ContainerOverride {
    *
    * Exactly one of `containerName` and `containerNamePath` is required.
    */
-  containerName?: string;
+  readonly containerName?: string;
 
   /**
    * JSONPath expression for the name of the container inside the task definition
    *
    * Exactly one of `containerName` and `containerNamePath` is required.
    */
-  containerNamePath?: string;
+  readonly containerNamePath?: string;
 
   /**
    * Command to run inside the container
    *
    * @default Default command
    */
-  command?: string[];
+  readonly command?: string[];
 
   /**
    * JSON expression for command to run inside the container
    *
    * @default Default command
    */
-  commandPath?: string;
+  readonly commandPath?: string;
 
   /**
    * Variables to set in the container's environment
    */
-  environment?: TaskEnvironmentVariable[];
+  readonly environment?: TaskEnvironmentVariable[];
 
   /**
    * The number of cpu units reserved for the container
    *
    * @Default The default value from the task definition.
    */
-  cpu?: number;
+  readonly cpu?: number;
 
   /**
    * JSON expression for the number of CPU units
    *
    * @Default The default value from the task definition.
    */
-  cpuPath?: string;
+  readonly cpuPath?: string;
 
   /**
    * Hard memory limit on the container
    *
    * @Default The default value from the task definition.
    */
-  memoryLimit?: number;
+  readonly memoryLimit?: number;
 
   /**
    * JSON expression path for the hard memory limit
    *
    * @Default The default value from the task definition.
    */
-  memoryLimitPath?: string;
+  readonly memoryLimitPath?: string;
 
   /**
    * Soft memory limit on the container
    *
    * @Default The default value from the task definition.
    */
-  memoryReservation?: number;
+  readonly memoryReservation?: number;
 
   /**
    * JSONExpr path for memory limit on the container
    *
    * @Default The default value from the task definition.
    */
-  memoryReservationPath?: number;
+  readonly memoryReservationPath?: number;
 }
 
 /**
@@ -120,28 +130,28 @@ export interface TaskEnvironmentVariable {
    *
    * Exactly one of `name` and `namePath` must be specified.
    */
-  name?: string;
+  readonly name?: string;
 
   /**
    * JSONExpr for the name of the variable
    *
    * Exactly one of `name` and `namePath` must be specified.
    */
-  namePath?: string;
+  readonly namePath?: string;
 
   /**
    * Value of the environment variable
    *
    * Exactly one of `value` and `valuePath` must be specified.
    */
-  value?: string;
+  readonly value?: string;
 
   /**
    * JSONPath expr for the environment variable
    *
    * Exactly one of `value` and `valuePath` must be specified.
    */
-  valuePath?: string;
+  readonly valuePath?: string;
 }
 
 /**
@@ -154,7 +164,6 @@ export class BaseRunTask extends stepfunctions.Task implements ec2.IConnectable 
   public readonly connections: ec2.Connections = new ec2.Connections();
 
   protected networkConfiguration?: any;
-  protected readonly _parameters: {[key: string]: any} = {};
   protected readonly taskDefinition: ecs.TaskDefinition;
   private readonly sync: boolean;
 
@@ -162,26 +171,26 @@ export class BaseRunTask extends stepfunctions.Task implements ec2.IConnectable 
     super(scope, id, {
       ...props,
       resourceArn: 'arn:aws:states:::ecs:runTask' + (props.synchronous !== false ? '.sync' : ''),
-      parameters: new cdk.Token(() => ({
+      parameters: {
         Cluster: props.cluster.clusterArn,
         TaskDefinition: props.taskDefinition.taskDefinitionArn,
-        NetworkConfiguration: this.networkConfiguration,
-        ...this._parameters
-      }))
+        NetworkConfiguration: new cdk.Token(() => this.networkConfiguration),
+        Overrides: renderOverrides(props.containerOverrides),
+        ...props.parameters,
+      }
     });
 
     this.sync = props.synchronous !== false;
-    this._parameters.Overrides = this.renderOverrides(props.containerOverrides);
     this.taskDefinition = props.taskDefinition;
   }
 
   protected configureAwsVpcNetworking(
       vpc: ec2.IVpcNetwork,
       assignPublicIp?: boolean,
-      subnetSelection?: ec2.VpcSubnetSelection,
+      subnetSelection?: ec2.SubnetSelection,
       securityGroup?: ec2.ISecurityGroup) {
     if (subnetSelection === undefined) {
-      subnetSelection = { subnetsToUse: assignPublicIp ? ec2.SubnetType.Public : ec2.SubnetType.Private };
+      subnetSelection = { subnetType: assignPublicIp ? ec2.SubnetType.Public : ec2.SubnetType.Private };
     }
     if (securityGroup === undefined) {
       securityGroup = new ec2.SecurityGroup(this, 'SecurityGroup', { vpc });
@@ -225,27 +234,10 @@ export class BaseRunTask extends stepfunctions.Task implements ec2.IConnectable 
           resourceName: 'StepFunctionsGetEventsForECSTaskRule'
       })));
     }
-  }
 
-  private renderOverrides(containerOverrides?: ContainerOverride[]) {
-    if (!containerOverrides) { return undefined; }
-
-    const ret = new Array<any>();
-    for (const override of containerOverrides) {
-      ret.push({
-        ...extractRequired(override, 'containerName', 'Name'),
-        ...extractOptional(override, 'command', 'Command'),
-        ...extractOptional(override, 'cpu', 'Cpu'),
-        ...extractOptional(override, 'memoryLimit', 'Memory'),
-        ...extractOptional(override, 'memoryReservation', 'MemoryReservation'),
-        Environment: override.environment && override.environment.map(e => ({
-          ...extractRequired(e, 'name', 'Name'),
-          ...extractRequired(e, 'value', 'Value'),
-        }))
-      });
+    for (const policyStatement of policyStatements) {
+      graph.registerPolicyStatement(policyStatement);
     }
-
-    return { ContainerOverrides: ret };
   }
 
   private taskExecutionRoles(): iam.IRole[] {
@@ -264,6 +256,27 @@ function extractRequired(obj: any, srcKey: string, dstKey: string) {
       throw new Error(`Supply exactly one of '${srcKey}' or '${srcKey}Path'`);
     }
     return mapValue(obj, srcKey, dstKey);
+}
+
+function renderOverrides(containerOverrides?: ContainerOverride[]) {
+  if (!containerOverrides) { return undefined; }
+
+  const ret = new Array<any>();
+  for (const override of containerOverrides) {
+    ret.push({
+      ...extractRequired(override, 'containerName', 'Name'),
+      ...extractOptional(override, 'command', 'Command'),
+      ...extractOptional(override, 'cpu', 'Cpu'),
+      ...extractOptional(override, 'memoryLimit', 'Memory'),
+      ...extractOptional(override, 'memoryReservation', 'MemoryReservation'),
+      Environment: override.environment && override.environment.map(e => ({
+        ...extractRequired(e, 'name', 'Name'),
+        ...extractRequired(e, 'value', 'Value'),
+      }))
+    });
+  }
+
+  return { ContainerOverrides: ret };
 }
 
 function extractOptional(obj: any, srcKey: string, dstKey: string) {
