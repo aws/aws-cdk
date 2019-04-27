@@ -10,6 +10,13 @@ App Mesh supports microservice applications that use service discovery naming fo
 
 For futher information on **AWS AppMesh** visit the [AWS Docs for AppMesh](https://docs.aws.amazon.com/app-mesh/index.html).
 
+## Create the App and Stack
+
+```typescript
+const app = new cdk.App();
+const stack = new cdk.Stack(app, "stack")
+```
+
 ## Creating the Mesh
 
 A service mesh is a logical boundary for network traffic between the services that reside within it.
@@ -19,9 +26,7 @@ After you create your service mesh, you can create virtual services, virtual nod
 The following example creates the `AppMesh` service mesh with the default filter of `DROP_ALL`, see [docs](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-appmesh-mesh-egressfilter.html) here for more info on egress filters.
 
 ```typescript
-export const app = new cdk.App();
-
-const mesh = new Mesh(this, 'AppMesh', {
+const mesh = new Mesh(stack, 'AppMesh', {
   name: 'myAwsmMesh',
 });
 ```
@@ -29,7 +34,7 @@ const mesh = new Mesh(this, 'AppMesh', {
 The mesh can also be created with the "ALLOW_ALL" egress filter by overwritting the property.
 
 ```typescript
-const mesh = new Mesh(this, 'AppMesh', {
+const mesh = new Mesh(stack, 'AppMesh', {
   name: 'myAwsmMesh',
   meshSpec: {
     egressFilter: appmesh.MeshFilterType.Allow_All,
@@ -54,7 +59,30 @@ const router = mesh.addVirtualRouter('router', {
 });
 ```
 
+The router can also be created using the constructor and passing in the mesh instead of calling the addVirtualRouter() method for the mesh.
+
+```typescript
+const mesh = new Mesh(stack, 'AppMesh', {
+  name: 'myAwsmMesh',
+  meshSpec: {
+    egressFilter: appmesh.MeshFilterType.Allow_All,
+  },
+});
+
+const router = new appmesh.VirtualRouter(stack, 'router', {
+  mesh, // notice that mesh is a required property when creating a router with a new statement
+  portMappings: [
+    {
+      port: 8081,
+      protocol: appmesh.Protocol.HTTP,
+    },
+  ],
+})
+```
+
 The listener protocol can be either `HTTP` or `TCP`.
+
+The same pattern applies to all constructs within the appmesh library, for any mesh.addXZY method, a new constuctor can also be used. This is particularly useful for cross stack resources are required. Where creating the `mesh` as part of an infrastructure stack and creating the `resources` such as `nodes` is more useful to keep in the application stack.
 
 ## Adding VirtualService
 
@@ -86,6 +114,16 @@ mesh.addVirtualService('virtual-service', {
 });
 ```
 
+* creating a virtual service using the constructor
+
+```typescript
+const service = new appmesh.VirtualService(stack, 'virtual-service', {
+  mesh,
+  virtualServiceName: `my-service.default.svc.cluster.local`,
+  virtualRouter: router,
+})
+```
+
 **Note** that only one must of `virtualNodeName` or `virtualRouterName` must be chosen.
 
 ## Adding a VirtualNode
@@ -108,7 +146,7 @@ const namespace = new cloudmap.PrivateDnsNamespace(stack, 'test-namespace', {
   name: 'domain.local',
 });
 
-const virtualNode = mesh.addVirtualNode('virtual-node', {
+const node = mesh.addVirtualNode('virtual-node', {
   hostname: 'node-a',
   namespace,
   listeners: {
@@ -131,6 +169,38 @@ const virtualNode = mesh.addVirtualNode('virtual-node', {
     ],
   },
 });
+
+```
+
+Create a `VirtualNode` with the the constructor and add tags.
+
+```typescript
+const node = new appmesh.VirtualNode(stack, 'node', {
+  mesh,
+  hostname: 'node-1',
+  namespace,
+  listener: {
+    portMappings: [
+      {
+        port: 8080,
+        protocol: appmesh.Protocol.HTTP,
+      },
+    ],
+    healthChecks: [
+      {
+        healthyThreshold: 3,
+        intervalMillis: 5000, // min
+        path: '/ping',
+        port: 8080,
+        protocol: appmesh.Protocol.HTTP,
+        timeoutMillis: 2000, // min
+        unhealthyThreshold: 2,
+      },
+    ],
+  },
+});
+
+cars_vn.node.apply(new cdk.Tag('Environment', 'Dev'));
 ```
 
 The listeners property can be left blank dded later with the `mesh.addListeners()` method. The `healthcheck` property is optional but if specifying a listener, the `portMappings` must contain at least one property.
