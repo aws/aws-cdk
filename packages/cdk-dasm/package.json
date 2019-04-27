@@ -9,7 +9,7 @@
     "url": "https://github.com/awslabs/aws-cdk.git"
   },
   "bin": {
-    "decdk": "bin/cdk-dasm"
+    "cdk-dasm": "bin/cdk-dasm"
   },
   "scripts": {
     "build": "tsc && chmod +x bin/cdk-dasm",
