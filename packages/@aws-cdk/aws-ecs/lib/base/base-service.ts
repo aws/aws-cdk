@@ -231,10 +231,6 @@ export abstract class BaseService extends cdk.Construct
     }
     this.connections.addSecurityGroup(securityGroup);
 
-    if (assignPublicIp === undefined && subnets.every(s => vpc.isPublicSubnet(s))) {
-      assignPublicIp = true;
-    }
-
     this.networkConfiguration = {
       awsvpcConfiguration: {
         assignPublicIp: assignPublicIp ? 'ENABLED' : 'DISABLED',

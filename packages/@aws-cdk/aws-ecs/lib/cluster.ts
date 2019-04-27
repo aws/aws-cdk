@@ -322,11 +322,6 @@ export interface ClusterImportProps {
   readonly clusterArn?: string;
 
   /**
-   * ARN of the cluster
-   */
-  clusterArn?: string;
-
-  /**
    * VPC that the cluster instances are running in
    */
   readonly vpc: ec2.VpcNetworkImportProps;
@@ -398,7 +393,7 @@ class ImportedCluster extends Construct implements ICluster {
       resourceName: props.clusterName,
     });
 
-    this.clusterArn = props.clusterArn !== undefined ? props.clusterArn : cdk.Stack.find(this).formatArn({
+    this.clusterArn = props.clusterArn !== undefined ? props.clusterArn : this.node.stack.formatArn({
       service: 'ecs',
       resource: 'cluster',
       resourceName: props.clusterName,

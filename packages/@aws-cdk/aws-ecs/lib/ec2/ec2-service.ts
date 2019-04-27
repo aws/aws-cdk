@@ -77,7 +77,7 @@ export class Ec2Service extends BaseService implements elb.ILoadBalancerTarget {
       throw new Error('Minimum healthy percent must be 0 for daemon mode.');
     }
 
-    if (!TaskDefinition.isEc2Compatible(props.taskDefinition)) {
+    if (!props.taskDefinition.isEc2Compatible) {
       throw new Error('Supplied TaskDefinition is not configured for compatibility with EC2');
     }
 

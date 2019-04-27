@@ -49,7 +49,7 @@ export interface FargateServiceProps extends BaseServiceProps {
  */
 export class FargateService extends BaseService {
   constructor(scope: cdk.Construct, id: string, props: FargateServiceProps) {
-    if (!TaskDefinition.isFargateCompatible(props.taskDefinition)) {
+    if (!props.taskDefinition.isFargateCompatible) {
       throw new Error('Supplied TaskDefinition is not configured for compatibility with Fargate');
     }
 

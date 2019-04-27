@@ -99,20 +99,6 @@ export interface TaskDefinitionProps extends CommonTaskDefinitionProps {
  */
 export class TaskDefinition extends Resource {
   /**
-   * Return true if the given task definition can be run on an EC2 cluster
-   */
-  public static isEc2Compatible(taskDefinition: TaskDefinition): boolean {
-    return [Compatibility.Ec2, Compatibility.Ec2AndFargate].includes(taskDefinition.compatibility);
-  }
-
-  /**
-   * Return true if the given task definition can be run on a Fargate cluster
-   */
-  public static isFargateCompatible(taskDefinition: TaskDefinition): boolean {
-    return [Compatibility.Fargate, Compatibility.Ec2AndFargate].includes(taskDefinition.compatibility);
-  }
-
-  /**
    * The family name of this task definition
    */
   public readonly family: string;
@@ -179,16 +165,16 @@ export class TaskDefinition extends Resource {
     }
 
     this.networkMode = props.networkMode !== undefined ? props.networkMode :
-                       TaskDefinition.isFargateCompatible(this) ? NetworkMode.AwsVpc : NetworkMode.Bridge;
-    if (TaskDefinition.isFargateCompatible(this) && this.networkMode !== NetworkMode.AwsVpc) {
+                       this.isFargateCompatible ? NetworkMode.AwsVpc : NetworkMode.Bridge;
+    if (this.isFargateCompatible && this.networkMode !== NetworkMode.AwsVpc) {
       throw new Error(`Fargate tasks can only have AwsVpc network mode, got: ${this.networkMode}`);
     }
 
-    if (props.placementConstraints && props.placementConstraints.length > 0 && TaskDefinition.isFargateCompatible(this)) {
+    if (props.placementConstraints && props.placementConstraints.length > 0 && this.isFargateCompatible) {
       throw new Error('Cannot set placement constraints on tasks that run on Fargate');
     }
 
-    if (TaskDefinition.isFargateCompatible(this) && (!props.cpu || !props.memoryMiB)) {
+    if (this.isFargateCompatible && (!props.cpu || !props.memoryMiB)) {
       throw new Error(`Fargate-compatible tasks require both CPU (${props.cpu}) and memory (${props.memoryMiB}) specifications`);
     }
 
