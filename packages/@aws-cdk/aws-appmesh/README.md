@@ -14,7 +14,7 @@ For futher information on **AWS AppMesh** visit the [AWS Docs for AppMesh](https
 
 ```typescript
 const app = new cdk.App();
-const stack = new cdk.Stack(app, "stack")
+const stack = new cdk.Stack(app, 'stack');
 ```
 
 ## Creating the Mesh
@@ -77,7 +77,7 @@ const router = new appmesh.VirtualRouter(stack, 'router', {
       protocol: appmesh.Protocol.HTTP,
     },
   ],
-})
+});
 ```
 
 The listener protocol can be either `HTTP` or `TCP`.
@@ -92,12 +92,12 @@ We recommend that you use the service discovery name of the real service that yo
 
 For the provider property:
 
-* If you want the virtual service to spread traffic across multiple virtual nodes, select Virtual router and then choose the virtual router to use from the drop-down menu.
-* If you want the virtual service to reach a virtual node directly, without a virtual router, select Virtual node and then choose the virtual node to use from the drop-down menu.
-* If you don't want the virtual service to route traffic at this time (for example, if your virtual nodes or virtual router doesn't exist yet), leave blank. You can update the provider for this virtual service later.
+- If you want the virtual service to spread traffic across multiple virtual nodes, select Virtual router and then choose the virtual router to use from the drop-down menu.
+- If you want the virtual service to reach a virtual node directly, without a virtual router, select Virtual node and then choose the virtual node to use from the drop-down menu.
+- If you don't want the virtual service to route traffic at this time (for example, if your virtual nodes or virtual router doesn't exist yet), leave blank. You can update the provider for this virtual service later.
 
- * Adds a virtual router as the provider
-  
+- Adds a virtual router as the provider
+
 ```typescript
 mesh.addVirtualService('virtual-service', {
   virtualRouter: router,
@@ -105,7 +105,7 @@ mesh.addVirtualService('virtual-service', {
 });
 ```
 
-* Adds a virtual node as the provider
+- Adds a virtual node as the provider
 
 ```typescript
 mesh.addVirtualService('virtual-service', {
@@ -114,14 +114,14 @@ mesh.addVirtualService('virtual-service', {
 });
 ```
 
-* creating a virtual service using the constructor
+- creating a virtual service using the constructor
 
 ```typescript
 const service = new appmesh.VirtualService(stack, 'virtual-service', {
   mesh,
   virtualServiceName: `my-service.default.svc.cluster.local`,
   virtualRouter: router,
-})
+});
 ```
 
 **Note** that only one must of `virtualNodeName` or `virtualRouterName` must be chosen.
@@ -169,7 +169,6 @@ const node = mesh.addVirtualNode('virtual-node', {
     ],
   },
 });
-
 ```
 
 Create a `VirtualNode` with the the constructor and add tags.
@@ -226,7 +225,26 @@ router.addRoute('route', {
 });
 ```
 
-multiple routes may also be added at once.
+Add a single route with multiple targets and split traffic 50/50
+
+```typescript
+router.addRoute('route', {
+  routeTargets: [
+    {
+      virtualNode,
+      weight: 50,
+    },
+    {
+      virtualNode2,
+      weight: 50,
+    },
+  ],
+  prefix: `/path-to-app`,
+  isHttpRoute: true,
+});
+```
+
+multiple routes may also be added at once to different applications or targets.
 
 ```typescript
 ratingsRouter.addRoutes(
@@ -236,7 +254,7 @@ ratingsRouter.addRoutes(
       routeTargets: [
         {
           virtualNode,
-          weight: 50,
+          weight: 1,
         },
       ],
       prefix: `/path-to-app`,
@@ -246,10 +264,10 @@ ratingsRouter.addRoutes(
       routeTargets: [
         {
           virtualNode: virtualNode2,
-          weight: 50,
+          weight: 1,
         },
       ],
-      prefix: `/path-to-app`,
+      prefix: `/path-to-app2`,
       isHttpRoute: true,
     },
   ]
