@@ -34,7 +34,8 @@ export = {
           mesh,
         });
 
-        const node = mesh.addVirtualNode('test-node', {
+        const node = new appmesh.VirtualNode(stack, 'test-node', {
+          mesh,
           hostname: 'test',
           namespace,
           listener: {
