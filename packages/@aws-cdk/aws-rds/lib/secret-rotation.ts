@@ -130,8 +130,8 @@ export class SecretRotation extends Construct {
       }),
     });
 
-    // Cannot use rotationLambda.addPermission because it currently does not
-    // return a cdk.Construct and we need to add a dependency.
+    // Cannot use rotationLambda.addPermission because it's a no-op on imported
+    // functions.
     const permission = new lambda.CfnPermission(this, 'Permission', {
       action: 'lambda:InvokeFunction',
       functionName: rotationFunctionName,
