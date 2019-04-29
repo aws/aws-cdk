@@ -638,7 +638,7 @@
           "Logging": {
             "AccessLog": {
               "File": {
-                "Path": "/dev/stdoout"
+                "Path": "/dev/stdout"
               }
             }
           },
@@ -689,7 +689,7 @@
           "Logging": {
             "AccessLog": {
               "File": {
-                "Path": "/dev/stdoout"
+                "Path": "/dev/stdout"
               }
             }
           },
@@ -731,7 +731,7 @@
           "Logging": {
             "AccessLog": {
               "File": {
-                "Path": "/dev/stdoout"
+                "Path": "/dev/stdout"
               }
             }
           },
