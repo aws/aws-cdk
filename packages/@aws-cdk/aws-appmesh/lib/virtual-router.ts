@@ -2,8 +2,8 @@ import cdk = require('@aws-cdk/cdk');
 
 import { CfnVirtualRouter } from './appmesh.generated';
 import { IMesh, Mesh } from './mesh';
+import { Route, RouteBaseProps } from './route';
 import { PortMappingProps, Protocol } from './shared-interfaces';
-import { Route, RouteBaseProps } from './virtual-route';
 
 /**
  * Interface with properties ncecessary to import a reusable VirtualRouter
