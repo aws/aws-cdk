@@ -50,6 +50,7 @@ const sourceAction = new codepipeline_actions.GitHubSourceAction({
   oauthToken: token.value,
   output: sourceOutput,
   branch: 'develop', // default: 'master'
+  trigger: codepipeline_actions.GitHubTrigger.Poll // default: 'WebHook', 'None' is also possible for no Source trigger
 });
 pipeline.addStage({
   name: 'Source',
