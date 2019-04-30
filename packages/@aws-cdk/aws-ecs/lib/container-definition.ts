@@ -168,6 +168,11 @@ export interface ContainerDefinitionOptions {
    * Configures a custom log driver for the container.
    */
   readonly logging?: LogDriver;
+
+  /**
+   * Configures Linux Parameters
+   */
+  readonly linuxParameters?: LinuxParameters;
 }
 
 /**
@@ -187,7 +192,7 @@ export class ContainerDefinition extends cdk.Construct {
   /**
    * Access Linux Parameters
    */
-  public readonly linuxParameters = new LinuxParameters();
+  public readonly linuxParameters?: LinuxParameters;
 
   /**
    * The configured mount points
@@ -234,6 +239,7 @@ export class ContainerDefinition extends cdk.Construct {
     this.essential = props.essential !== undefined ? props.essential : true;
     this.taskDefinition = props.taskDefinition;
     this.memoryLimitSpecified = props.memoryLimitMiB !== undefined || props.memoryReservationMiB !== undefined;
+    this.linuxParameters = props.linuxParameters;
 
     props.image.bind(this);
     if (props.logging) { props.logging.bind(this); }
@@ -394,7 +400,7 @@ export class ContainerDefinition extends cdk.Construct {
       extraHosts: this.props.extraHosts && renderKV(this.props.extraHosts, 'hostname', 'ipAddress'),
       healthCheck: this.props.healthCheck && renderHealthCheck(this.props.healthCheck),
       links: this.links,
-      linuxParameters: this.linuxParameters.renderLinuxParameters(),
+      linuxParameters: this.linuxParameters && this.linuxParameters.renderLinuxParameters(),
     };
   }
 }
