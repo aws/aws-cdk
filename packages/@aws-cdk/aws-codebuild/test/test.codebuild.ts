@@ -5,7 +5,6 @@ import s3 = require('@aws-cdk/aws-s3');
 import cdk = require('@aws-cdk/cdk');
 import { Test } from 'nodeunit';
 import codebuild = require('../lib');
-import { WebhookFilterType } from '../lib';
 
 // tslint:disable:object-literal-key-quotes
 
@@ -481,15 +480,9 @@ export = {
           cloneDepth: 3,
           webhook: true,
           reportBuildStatus: false,
-          filterGroups: [
-            [
-              { type: WebhookFilterType.Event, pattern: 'PUSH' },
-              { type: WebhookFilterType.HeadRef, pattern: 'master', excludeMatchedPattern: false },
-            ],
-            [
-              { type: WebhookFilterType.Event, pattern: 'PULL_REQUEST_OPEN' },
-              { type: WebhookFilterType.BaseRef, pattern: 'master' },
-            ],
+          webhookFilters: [
+            codebuild.FilterGroup.inEventOf(codebuild.EventAction.PUSH).andTagIsNot('stable'),
+            codebuild.FilterGroup.inEventOf(codebuild.EventAction.PULL_REQUEST_REOPENED).andBaseBranchIs('master'),
           ],
         })
       });
@@ -509,11 +502,11 @@ export = {
           FilterGroups: [
             [
               { Type: 'EVENT', Pattern: 'PUSH' },
-              { Type: 'HEAD_REF', Pattern: 'master', ExcludeMatchedPattern: false },
+              { Type: 'HEAD_REF', Pattern: 'refs/tags/stable', ExcludeMatchedPattern: true },
             ],
             [
-              { Type: 'EVENT', Pattern: 'PULL_REQUEST_OPEN' },
-              { Type: 'BASE_REF', Pattern: 'master' },
+              { Type: 'EVENT', Pattern: 'PULL_REQUEST_REOPENED' },
+              { Type: 'BASE_REF', Pattern: 'refs/heads/master' },
             ],
           ],
         },
@@ -524,6 +517,7 @@ export = {
     'with GitHubEnterprise source'(test: Test) {
       const stack = new cdk.Stack();
 
+      const pushFilterGroup = codebuild.FilterGroup.inEventOf(codebuild.EventAction.PUSH);
       new codebuild.Project(stack, 'MyProject', {
         source: new codebuild.GitHubEnterpriseSource({
           httpsCloneUrl: 'https://github.testcompany.com/testowner/testrepo',
@@ -531,15 +525,10 @@ export = {
           cloneDepth: 4,
           webhook: true,
           reportBuildStatus: false,
-          filterGroups: [
-            [
-              { type: WebhookFilterType.Event, pattern: 'PUSH' },
-              { type: WebhookFilterType.HeadRef, pattern: 'master', excludeMatchedPattern: false },
-            ],
-            [
-              { type: WebhookFilterType.Event, pattern: 'PULL_REQUEST_OPEN' },
-              { type: WebhookFilterType.BaseRef, pattern: 'master' },
-            ],
+          webhookFilters: [
+            pushFilterGroup.andBranchIs('master'),
+            pushFilterGroup.andBranchIs('develop'),
+            pushFilterGroup.andFilePathIs('ReadMe.md'),
           ],
         })
       });
@@ -560,11 +549,15 @@ export = {
           FilterGroups: [
             [
               { Type: 'EVENT', Pattern: 'PUSH' },
-              { Type: 'HEAD_REF', Pattern: 'master', ExcludeMatchedPattern: false },
+              { Type: 'HEAD_REF', Pattern: 'refs/heads/master' },
             ],
             [
-              { Type: 'EVENT', Pattern: 'PULL_REQUEST_OPEN' },
-              { Type: 'BASE_REF', Pattern: 'master' },
+              { Type: 'EVENT', Pattern: 'PUSH' },
+              { Type: 'HEAD_REF', Pattern: 'refs/heads/develop' },
+            ],
+            [
+              { Type: 'EVENT', Pattern: 'PUSH' },
+              { Type: 'FILE_PATH', Pattern: 'ReadMe.md' },
             ],
           ],
         },
@@ -580,17 +573,14 @@ export = {
           owner: 'testowner',
           repo: 'testrepo',
           cloneDepth: 5,
-          webhook: true,
           reportBuildStatus: false,
-          filterGroups: [
-            [
-              { type: WebhookFilterType.Event, pattern: 'PUSH' },
-              { type: WebhookFilterType.HeadRef, pattern: 'master', excludeMatchedPattern: false },
-            ],
-            [
-              { type: WebhookFilterType.Event, pattern: 'PULL_REQUEST_OPEN' },
-              { type: WebhookFilterType.BaseRef, pattern: 'master' },
-            ],
+          webhookFilters: [
+            codebuild.FilterGroup.inEventOf(
+              codebuild.EventAction.PULL_REQUEST_CREATED,
+              codebuild.EventAction.PULL_REQUEST_UPDATED,
+            ).andTagIs('v.*'),
+            // duplicate event actions are fine
+            codebuild.FilterGroup.inEventOf(codebuild.EventAction.PUSH, codebuild.EventAction.PUSH).andActorAccountIsNot('aws-cdk-dev'),
           ],
         })
       });
@@ -609,12 +599,12 @@ export = {
           Webhook: true,
           FilterGroups: [
             [
-              { Type: 'EVENT', Pattern: 'PUSH' },
-              { Type: 'HEAD_REF', Pattern: 'master', ExcludeMatchedPattern: false },
+              { Type: 'EVENT', Pattern: 'PULL_REQUEST_CREATED, PULL_REQUEST_UPDATED' },
+              { Type: 'HEAD_REF', Pattern: 'refs/tags/v.*' },
             ],
             [
-              { Type: 'EVENT', Pattern: 'PULL_REQUEST_OPEN' },
-              { Type: 'BASE_REF', Pattern: 'master' },
+              { Type: 'EVENT', Pattern: 'PUSH' },
+              { Type: 'ACTOR_ACCOUNT_ID', Pattern: 'aws-cdk-dev', ExcludeMatchedPattern: true },
             ],
           ],
         },
@@ -1235,25 +1225,70 @@ export = {
     test.done();
   },
 
-  'filter groups validation'(test: Test) {
-    const stack = new cdk.Stack();
+  'webhook Filters': {
+    'a Group cannot be created with an empty set of event actions'(test: Test) {
+      test.throws(() => {
+        codebuild.FilterGroup.inEventOf();
+      }, /A filter group must contain at least one event action/);
 
-    // should throw exception when webhook is not specified but filterGroups is
-    test.throws(() => {
-      new codebuild.Project(stack, 'Project', {
-        source: new codebuild.GitHubSource({
-          owner: 'testowner',
-          repo: 'testrepo',
-          cloneDepth: 3,
-          filterGroups: [
-            [
-              { type: WebhookFilterType.Event, pattern: 'PUSH' }
-            ]
-          ],
-        })
-      });
-    }, Error, "filterGroups property could only be set when webhook property is true");
+      test.done();
+    },
 
-    test.done();
-  }
+    'cannot have base ref conditions if the Group contains the PUSH action'(test: Test) {
+      const filterGroup = codebuild.FilterGroup.inEventOf(codebuild.EventAction.PULL_REQUEST_CREATED,
+        codebuild.EventAction.PUSH);
+
+      test.throws(() => {
+        filterGroup.andBaseRefIs('.*');
+      }, /A base reference condition cannot be added if a Group contains a PUSH event action/);
+
+      test.done();
+    },
+
+    'cannot have file path conditions if the Group contains any action other than PUSH'(test: Test) {
+      const filterGroup = codebuild.FilterGroup.inEventOf(codebuild.EventAction.PULL_REQUEST_CREATED,
+        codebuild.EventAction.PUSH);
+
+      test.throws(() => {
+        filterGroup.andFilePathIsNot('.*\\.java');
+      }, /A file path condition cannot be added if a Group contains any event action other than PUSH/);
+
+      test.done();
+    },
+
+    'BitBucket sources do not support the PULL_REQUEST_REOPENED event action'(test: Test) {
+      const stack = new cdk.Stack();
+
+      test.throws(() => {
+        new codebuild.Project(stack, 'Project', {
+          source: new codebuild.BitBucketSource({
+            owner: 'owner',
+            repo: 'repo',
+            webhookFilters: [
+              codebuild.FilterGroup.inEventOf(codebuild.EventAction.PULL_REQUEST_REOPENED),
+            ],
+          }),
+        });
+      }, /BitBucket sources do not support the PULL_REQUEST_REOPENED webhook event action/);
+
+      test.done();
+    },
+
+    'BitBucket sources do not support file path conditions'(test: Test) {
+      const stack = new cdk.Stack();
+      const filterGroup = codebuild.FilterGroup.inEventOf(codebuild.EventAction.PUSH).andFilePathIs('.*');
+
+      test.throws(() => {
+        new codebuild.Project(stack, 'Project', {
+          source: new codebuild.BitBucketSource({
+            owner: 'owner',
+            repo: 'repo',
+            webhookFilters: [filterGroup],
+          }),
+        });
+      }, /BitBucket sources do not support file path conditions for webhook filters/);
+
+      test.done();
+    },
+  },
 };

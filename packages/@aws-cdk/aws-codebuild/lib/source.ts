@@ -39,7 +39,8 @@ export abstract class BuildSource {
     return;
   }
 
-  public toSourceJSON(): CfnProject.SourceProperty {
+  /** @internal */
+  public _toSourceJSON(): CfnProject.SourceProperty {
     const sourceProp = this.toSourceProperty();
     return {
       sourceIdentifier: this.identifier,
@@ -48,7 +49,8 @@ export abstract class BuildSource {
     };
   }
 
-  public buildTriggers(): CfnProject.ProjectTriggersProperty | undefined {
+  /** @internal */
+  public _buildTriggers(): CfnProject.ProjectTriggersProperty | undefined {
     return undefined;
   }
 
@@ -97,25 +99,289 @@ export abstract class GitBuildSource extends BuildSource {
     this.cloneDepth = props.cloneDepth;
   }
 
-  public toSourceJSON(): CfnProject.SourceProperty {
+  /** @internal */
+  public _toSourceJSON(): CfnProject.SourceProperty {
     return {
-      ...super.toSourceJSON(),
+      ...super._toSourceJSON(),
       gitCloneDepth: this.cloneDepth
     };
   }
 }
 
 /**
- * The construction properties common to all external build sources that are backed by Git.
+ * The types of webhook event actions.
  */
-export interface ExternalGitBuildSourceProps extends GitBuildSourceProps {
+export enum EventAction {
   /**
-   * Whether to create a webhook that will trigger a build every time a commit is pushed to the repository.
-   *
-   * @default false
+   * A push (of a branch, or a tag) to the repository.
    */
-  readonly webhook?: boolean;
+  PUSH = 'PUSH',
 
+  /**
+   * Creating a Pull Request.
+   */
+  PULL_REQUEST_CREATED = 'PULL_REQUEST_CREATED',
+
+  /**
+   * Updating an Pull Request.
+   */
+  PULL_REQUEST_UPDATED = 'PULL_REQUEST_UPDATED',
+
+  /**
+   * Re-opening a previously closed Pull Request.
+   * Note that this event is only supported for GitHub and GitHubEnterprise sources.
+   */
+  PULL_REQUEST_REOPENED = 'PULL_REQUEST_REOPENED',
+}
+
+const FILE_PATH_WEBHOOK_COND = 'FILE_PATH';
+
+/**
+ * An object that represents a group of filter conditions for a webhook.
+ * Every condition in a given FilterGroup must be true in order for the whole group to be true.
+ * You construct instances of it by calling the {@link #inEventOf} static factory method,
+ * and then calling various `andXyz` instance methods to create modified instances of it
+ * (this class is immutable).
+ *
+ * You pass instances of this class to the `webhookFilters` property when constructing a source.
+ */
+export class FilterGroup {
+  /**
+   * Creates a new event FilterGroup that triggers on any of the provided actions.
+   *
+   * @param actions the actions to trigger the webhook on
+   */
+  public static inEventOf(...actions: EventAction[]): FilterGroup {
+    return new FilterGroup(new Set(actions), []);
+  }
+
+  private readonly actions: Set<EventAction>;
+  private readonly filters: CfnProject.WebhookFilterProperty[];
+
+  private constructor(actions: Set<EventAction>, filters: CfnProject.WebhookFilterProperty[]) {
+    if (actions.size === 0) {
+      throw new Error('A filter group must contain at least one event action');
+    }
+    this.actions = actions;
+    this.filters = filters;
+  }
+
+  /**
+   * Create a new FilterGroup with an added condition:
+   * the event must affect the given branch.
+   *
+   * @param branchName the name of the branch (can be a regular expression)
+   */
+  public andBranchIs(branchName: string): FilterGroup {
+    return this.addHeadBranchFilter(branchName, true);
+  }
+
+  /**
+   * Create a new FilterGroup with an added condition:
+   * the event must not affect the given branch.
+   *
+   * @param branchName the name of the branch (can be a regular expression)
+   */
+  public andBranchIsNot(branchName: string): FilterGroup {
+    return this.addHeadBranchFilter(branchName, false);
+  }
+
+  /**
+   * Create a new FilterGroup with an added condition:
+   * the event must affect the given tag.
+   *
+   * @param tagName the name of the tag (can be a regular expression)
+   */
+  public andTagIs(tagName: string): FilterGroup {
+    return this.addHeadTagFilter(tagName, true);
+  }
+
+  /**
+   * Create a new FilterGroup with an added condition:
+   * the event must not affect the given tag.
+   *
+   * @param tagName the name of the tag (can be a regular expression)
+   */
+  public andTagIsNot(tagName: string): FilterGroup {
+    return this.addHeadTagFilter(tagName, false);
+  }
+
+  /**
+   * Create a new FilterGroup with an added condition:
+   * the event must affect a Git reference (ie., a branch or a tag)
+   * that matches the given pattern.
+   *
+   * @param pattern a regular expression
+   */
+  public andHeadRefIs(pattern: string) {
+    return this.addHeadRefFilter(pattern, true);
+  }
+
+  /**
+   * Create a new FilterGroup with an added condition:
+   * the event must not affect a Git reference (ie., a branch or a tag)
+   * that matches the given pattern.
+   *
+   * @param pattern a regular expression
+   */
+  public andHeadRefIsNot(pattern: string) {
+    return this.addHeadRefFilter(pattern, false);
+  }
+
+  /**
+   * Create a new FilterGroup with an added condition:
+   * the account ID of the actor initiating the event must match the given pattern.
+   *
+   * @param pattern a regular expression
+   */
+  public andActorAccountIs(pattern: string): FilterGroup {
+    return this.addActorAccountId(pattern, true);
+  }
+
+  /**
+   * Create a new FilterGroup with an added condition:
+   * the account ID of the actor initiating the event must not match the given pattern.
+   *
+   * @param pattern a regular expression
+   */
+  public andActorAccountIsNot(pattern: string): FilterGroup {
+    return this.addActorAccountId(pattern, false);
+  }
+
+  /**
+   * Create a new FilterGroup with an added condition:
+   * the Pull Request that is the source of the event must target the given base branch.
+   * Note that you cannot use this method if this Group contains the `PUSH` event action.
+   *
+   * @param branchName the name of the branch (can be a regular expression)
+   */
+  public andBaseBranchIs(branchName: string): FilterGroup {
+    return this.addBaseBranchFilter(branchName, true);
+  }
+
+  /**
+   * Create a new FilterGroup with an added condition:
+   * the Pull Request that is the source of the event must not target the given base branch.
+   * Note that you cannot use this method if this Group contains the `PUSH` event action.
+   *
+   * @param branchName the name of the branch (can be a regular expression)
+   */
+  public andBaseBranchIsNot(branchName: string): FilterGroup {
+    return this.addBaseBranchFilter(branchName, false);
+  }
+
+  /**
+   * Create a new FilterGroup with an added condition:
+   * the Pull Request that is the source of the event must target the given Git reference.
+   * Note that you cannot use this method if this Group contains the `PUSH` event action.
+   *
+   * @param pattern a regular expression
+   */
+  public andBaseRefIs(pattern: string): FilterGroup {
+    return this.addBaseRefFilter(pattern, true);
+  }
+
+  /**
+   * Create a new FilterGroup with an added condition:
+   * the Pull Request that is the source of the event must not target the given Git reference.
+   * Note that you cannot use this method if this Group contains the `PUSH` event action.
+   *
+   * @param pattern a regular expression
+   */
+  public andBaseRefIsNot(pattern: string): FilterGroup {
+    return this.addBaseRefFilter(pattern, false);
+  }
+
+  /**
+   * Create a new FilterGroup with an added condition:
+   * the push that is the source of the event must affect a file that matches the given pattern.
+   * Note that you can only use this method if this Group contains only the `PUSH` event action,
+   * and only for GitHub and GitHubEnterprise sources.
+   *
+   * @param pattern a regular expression
+   */
+  public andFilePathIs(pattern: string): FilterGroup {
+    return this.addFilePathFilter(pattern, true);
+  }
+
+  /**
+   * Create a new FilterGroup with an added condition:
+   * the push that is the source of the event must not affect a file that matches the given pattern.
+   * Note that you can only use this method if this Group contains only the `PUSH` event action,
+   * and only for GitHub and GitHubEnterprise sources.
+   *
+   * @param pattern a regular expression
+   */
+  public andFilePathIsNot(pattern: string): FilterGroup {
+    return this.addFilePathFilter(pattern, false);
+  }
+
+  /** @internal */
+  public get _actions(): EventAction[] {
+    return set2Array(this.actions);
+  }
+
+  /** @internal */
+  public get _filters(): CfnProject.WebhookFilterProperty[] {
+    return this.filters.slice();
+  }
+
+  /** @internal */
+  public _toJson(): CfnProject.WebhookFilterProperty[] {
+    const eventFilter: CfnProject.WebhookFilterProperty = {
+      type: 'EVENT',
+      pattern: set2Array(this.actions).join(', '),
+    };
+    return [eventFilter].concat(this.filters);
+  }
+
+  private addHeadBranchFilter(branchName: string, include: boolean): FilterGroup {
+    return this.addHeadRefFilter(`refs/heads/${branchName}`, include);
+  }
+
+  private addHeadTagFilter(tagName: string, include: boolean): FilterGroup {
+    return this.addHeadRefFilter(`refs/tags/${tagName}`, include);
+  }
+
+  private addHeadRefFilter(refName: string, include: boolean) {
+    return this.addFilter('HEAD_REF', refName, include);
+  }
+
+  private addActorAccountId(accountId: string, include: boolean) {
+    return this.addFilter('ACTOR_ACCOUNT_ID', accountId, include);
+  }
+
+  private addBaseBranchFilter(branchName: string, include: boolean): FilterGroup {
+    return this.addBaseRefFilter(`refs/heads/${branchName}`, include);
+  }
+
+  private addBaseRefFilter(refName: string, include: boolean) {
+    if (this.actions.has(EventAction.PUSH)) {
+      throw new Error('A base reference condition cannot be added if a Group contains a PUSH event action');
+    }
+    return this.addFilter('BASE_REF', refName, include);
+  }
+
+  private addFilePathFilter(pattern: string, include: boolean): FilterGroup {
+    if (this.actions.size !== 1 || !this.actions.has(EventAction.PUSH)) {
+      throw new Error('A file path condition cannot be added if a Group contains any event action other than PUSH');
+    }
+    return this.addFilter(FILE_PATH_WEBHOOK_COND, pattern, include);
+  }
+
+  private addFilter(type: string, pattern: string, include: boolean) {
+    return new FilterGroup(this.actions, this.filters.concat([{
+      type,
+      pattern,
+      excludeMatchedPattern: include ? undefined : true,
+    }]));
+  }
+}
+
+/**
+ * The construction properties common to all third-party build sources that are backed by Git.
+ */
+export interface ThirdPartyGitBuildSourceProps extends GitBuildSourceProps {
   /**
    * Whether to send notifications on your build's start and end.
    *
@@ -124,43 +390,53 @@ export interface ExternalGitBuildSourceProps extends GitBuildSourceProps {
   readonly reportBuildStatus?: boolean;
 
   /**
-   * A list of lists of WebhookFilter objects used to determine which webhook events are triggered.
+   * Whether to create a webhook that will trigger a build every time an event happens in the repository.
+   *
+   * @default true if any `webhookFilters` were provided, false otherwise
    */
-  readonly filterGroups?: WebhookFilter[][];
+  readonly webhook?: boolean;
+
+  /**
+   * A list of webhook filters that can constraint what events in the repository will trigger a build.
+   * A build is triggered if any of the provided filter groups match.
+   * Only valid if `webhook` was not provided as false.
+   *
+   * @default every push and every Pull Request (create or update) triggers a build
+   */
+  readonly webhookFilters?: FilterGroup[];
 }
 
 /**
- * A common superclass of all external build sources that are backed by Git.
+ * A common superclass of all third-party build sources that are backed by Git.
  */
-export abstract class ExternalGitBuildSource extends GitBuildSource {
+export abstract class ThirdPartyGitBuildSource extends GitBuildSource {
   public readonly badgeSupported: boolean = true;
+  protected readonly webhookFilters: FilterGroup[];
   private readonly reportBuildStatus: boolean;
   private readonly webhook?: boolean;
-  private readonly filterGroups?: WebhookFilter[][];
 
-  protected constructor(props: ExternalGitBuildSourceProps) {
+  protected constructor(props: ThirdPartyGitBuildSourceProps) {
     super(props);
 
     this.webhook = props.webhook;
     this.reportBuildStatus = props.reportBuildStatus === undefined ? true : props.reportBuildStatus;
-    this.filterGroups = props.filterGroups;
+    this.webhookFilters = props.webhookFilters || [];
   }
 
-  public buildTriggers(): CfnProject.ProjectTriggersProperty | undefined {
-    if (!this.webhook && this.filterGroups) {
-      throw new Error("filterGroups property could only be set when webhook property is true");
-    }
-    return this.webhook === undefined
-      ? undefined
-      : {
-        webhook: this.webhook,
-        filterGroups: this.filterGroups,
-      };
+  /** @internal */
+  public _buildTriggers(): CfnProject.ProjectTriggersProperty | undefined {
+    const anyFilterGroupsProvided = this.webhookFilters.length > 0;
+    const webhook = this.webhook === undefined ? (anyFilterGroupsProvided ? true : undefined) : this.webhook;
+    return webhook === undefined ? undefined : {
+      webhook,
+      filterGroups: anyFilterGroupsProvided ? this.webhookFilters.map(fg => fg._toJson()) : undefined,
+    };
   }
 
-  public toSourceJSON(): CfnProject.SourceProperty {
+  /** @internal */
+  public _toSourceJSON(): CfnProject.SourceProperty {
     return {
-      ...super.toSourceJSON(),
+      ...super._toSourceJSON(),
       reportBuildStatus: this.reportBuildStatus,
     };
   }
@@ -254,7 +530,7 @@ export class CodePipelineSource extends BuildSource {
 /**
  * Construction properties for {@link GitHubSource} and {@link GitHubEnterpriseSource}.
  */
-export interface GitHubSourceProps extends ExternalGitBuildSourceProps {
+export interface GitHubSourceProps extends ThirdPartyGitBuildSourceProps {
   /**
    * The GitHub account/user that owns the repo.
    *
@@ -273,7 +549,7 @@ export interface GitHubSourceProps extends ExternalGitBuildSourceProps {
 /**
  * GitHub Source definition for a CodeBuild project.
  */
-export class GitHubSource extends ExternalGitBuildSource {
+export class GitHubSource extends ThirdPartyGitBuildSource {
   public readonly type: SourceType = SourceType.GitHub;
   private readonly httpsCloneUrl: string;
 
@@ -292,7 +568,7 @@ export class GitHubSource extends ExternalGitBuildSource {
 /**
  * Construction properties for {@link GitHubEnterpriseSource}.
  */
-export interface GitHubEnterpriseSourceProps extends ExternalGitBuildSourceProps {
+export interface GitHubEnterpriseSourceProps extends ThirdPartyGitBuildSourceProps {
   /**
    * The HTTPS URL of the repository in your GitHub Enterprise installation.
    */
@@ -309,7 +585,7 @@ export interface GitHubEnterpriseSourceProps extends ExternalGitBuildSourceProps
 /**
  * GitHub Enterprise Source definition for a CodeBuild project.
  */
-export class GitHubEnterpriseSource extends ExternalGitBuildSource {
+export class GitHubEnterpriseSource extends ThirdPartyGitBuildSource {
   public readonly type: SourceType = SourceType.GitHubEnterprise;
   private readonly httpsCloneUrl: string;
   private readonly ignoreSslErrors?: boolean;
@@ -331,7 +607,7 @@ export class GitHubEnterpriseSource extends ExternalGitBuildSource {
 /**
  * Construction properties for {@link BitBucketSource}.
  */
-export interface BitBucketSourceProps extends ExternalGitBuildSourceProps {
+export interface BitBucketSourceProps extends ThirdPartyGitBuildSourceProps {
   /**
    * The BitBucket account/user that owns the repo.
    *
@@ -350,7 +626,7 @@ export interface BitBucketSourceProps extends ExternalGitBuildSourceProps {
 /**
  * BitBucket Source definition for a CodeBuild project.
  */
-export class BitBucketSource extends ExternalGitBuildSource {
+export class BitBucketSource extends ThirdPartyGitBuildSource {
   public readonly type: SourceType = SourceType.BitBucket;
   private readonly httpsCloneUrl: any;
 
@@ -359,46 +635,38 @@ export class BitBucketSource extends ExternalGitBuildSource {
     this.httpsCloneUrl = `https://bitbucket.org/${props.owner}/${props.repo}.git`;
   }
 
+  /** @internal */
+  public _buildTriggers(): CfnProject.ProjectTriggersProperty | undefined {
+    // BitBucket sources don't support the PULL_REQUEST_REOPENED event action
+    if (this.anyWebhookFilterContainsPrReopenedEventAction()) {
+      throw new Error('BitBucket sources do not support the PULL_REQUEST_REOPENED webhook event action');
+    }
+
+    // they also don't support file path conditions
+    if (this.anyWebhookFilterContainsFilePathConditions()) {
+      throw new Error('BitBucket sources do not support file path conditions for webhook filters');
+    }
+
+    return super._buildTriggers();
+  }
+
   protected toSourceProperty(): any {
     return {
       location: this.httpsCloneUrl
     };
   }
-}
 
-/**
- * Filter used to determine which webhooks trigger a build
- */
-export interface WebhookFilter {
-  /**
-   * The type of webhook filter.
-   */
-  readonly type: WebhookFilterType,
+  private anyWebhookFilterContainsPrReopenedEventAction() {
+    return this.webhookFilters.findIndex(fg => {
+      return fg._actions.findIndex(a => a === EventAction.PULL_REQUEST_REOPENED) !== -1;
+    }) !== -1;
+  }
 
-  /**
-   * A regular expression pattern.
-   */
-  readonly pattern: string,
-
-  /**
-   * Used to indicate that the pattern determines which webhook events do not trigger a build.
-   * If true, then a webhook event that does not match the pattern triggers a build.
-   * If false, then a webhook event that matches the pattern triggers a build.
-   *
-   * @default false
-   */
-  readonly excludeMatchedPattern?: boolean,
-}
-
-/**
- * Filter types for webhook filters
- */
-export enum WebhookFilterType {
-  Event = 'EVENT',
-  ActorAccountId = 'ACTOR_ACCOUNT_ID',
-  HeadRef = 'HEAD_REF',
-  BaseRef = 'BASE_REF',
-  FilePath = 'FILE_PATH',
+  private anyWebhookFilterContainsFilePathConditions() {
+    return this.webhookFilters.findIndex(fg => {
+      return fg._filters.findIndex(f => f.type === FILE_PATH_WEBHOOK_COND) !== -1;
+    }) !== -1;
+  }
 }
 
 /**
@@ -412,4 +680,10 @@ export enum SourceType {
   GitHubEnterprise = 'GITHUB_ENTERPRISE',
   BitBucket = 'BITBUCKET',
   S3 = 'S3',
+}
+
+function set2Array<T>(set: Set<T>): T[] {
+  const ret: T[] = [];
+  set.forEach(el => ret.push(el));
+  return ret;
 }

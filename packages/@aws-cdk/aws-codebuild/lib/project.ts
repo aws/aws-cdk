@@ -625,7 +625,7 @@ export class Project extends ProjectBase {
         throw new Error(`Badge is not supported for source type ${this.source.type}`);
       }
 
-      const sourceJson = this.source.toSourceJSON();
+      const sourceJson = this.source._toSourceJSON();
       if (typeof buildSpec === 'string') {
         return {
           ...sourceJson,
@@ -670,7 +670,7 @@ export class Project extends ProjectBase {
       timeoutInMinutes: props.timeout,
       secondarySources: new Token(() => this.renderSecondarySources()),
       secondaryArtifacts: new Token(() => this.renderSecondaryArtifacts()),
-      triggers: this.source.buildTriggers(),
+      triggers: this.source._buildTriggers(),
       vpcConfig: this.configureVpc(props),
     });
 
@@ -822,7 +822,7 @@ export class Project extends ProjectBase {
   private renderSecondarySources(): CfnProject.SourceProperty[] | undefined {
     return this._secondarySources.length === 0
       ? undefined
-      : this._secondarySources.map((secondarySource) => secondarySource.toSourceJSON());
+      : this._secondarySources.map((secondarySource) => secondarySource._toSourceJSON());
   }
 
   private renderSecondaryArtifacts(): CfnProject.ArtifactsProperty[] | undefined {
@@ -889,7 +889,7 @@ export class Project extends ProjectBase {
     if (props.artifacts) {
       return props.artifacts;
     }
-    if (this.source.toSourceJSON().type === CODEPIPELINE_TYPE) {
+    if (this.source._toSourceJSON().type === CODEPIPELINE_TYPE) {
       return new CodePipelineBuildArtifacts();
     } else {
       return new NoBuildArtifacts();
@@ -897,7 +897,7 @@ export class Project extends ProjectBase {
   }
 
   private validateCodePipelineSettings(artifacts: BuildArtifacts) {
-    const sourceType = this.source.toSourceJSON().type;
+    const sourceType = this.source._toSourceJSON().type;
     const artifactsType = artifacts.toArtifactsJSON().type;
 
     if ((sourceType === CODEPIPELINE_TYPE || artifactsType === CODEPIPELINE_TYPE) &&
