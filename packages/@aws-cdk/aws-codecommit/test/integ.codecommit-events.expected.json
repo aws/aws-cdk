@@ -44,42 +44,6 @@
     },
     "MyTopic86869434": {
       "Type": "AWS::SNS::Topic"
-    },
-    "MyTopicPolicy12A5EC17": {
-      "Type": "AWS::SNS::TopicPolicy",
-      "Properties": {
-        "PolicyDocument": {
-          "Statement": [
-            {
-              "Action": "sns:Publish",
-              "Effect": "Allow",
-              "Principal": {
-                "Service": {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "events.",
-                      {
-                        "Ref": "AWS::URLSuffix"
-                      }
-                    ]
-                  ]
-                }
-              },
-              "Resource": {
-                "Ref": "MyTopic86869434"
-              },
-              "Sid": "0"
-            }
-          ],
-          "Version": "2012-10-17"
-        },
-        "Topics": [
-          {
-            "Ref": "MyTopic86869434"
-          }
-        ]
-      }
     }
   }
 }
