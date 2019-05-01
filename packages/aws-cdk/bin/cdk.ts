@@ -248,7 +248,7 @@ async function initCommandLine() {
     const app = configuration.settings.get(['app']);
 
     const environments = app ? await globEnvironmentsFromStacks(appStacks, environmentGlobs) : environmentsFromDescriptors(environmentGlobs);
- 
+
     // Bucket name can be passed using --toolkit-bucket-name or set in cdk.json
     const bucketName = configuration.settings.get(['toolkitBucketName']) || toolkitBucketName;
 
