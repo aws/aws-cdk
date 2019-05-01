@@ -19,6 +19,16 @@ export interface IOptionGroup extends IResource {
 }
 
 /**
+ * Construction properties for an imported option group.
+ */
+export interface OptionGroupImportProps {
+  /**
+   * The name of the option group.
+   */
+  readonly optionGroupName: string;
+}
+
+/**
  * Configuration properties for an option.
  */
 export interface OptionConfiguration {
@@ -89,7 +99,12 @@ export class OptionGroup extends Resource implements IOptionGroup {
    * Import an existing option group.
    */
   public static import(scope: Construct, id: string, props: OptionGroupImportProps): IOptionGroup {
-    return new ImportedOptionGroup(scope, id, props);
+    class Import extends Construct {
+      public readonly optionGroupName = props.optionGroupName;
+
+      public export() { return props; }
+    }
+    return new Import(scope, id);
   }
 
   /**
@@ -159,26 +174,5 @@ export class OptionGroup extends Resource implements IOptionGroup {
     }
 
     return configs;
-  }
-}
-
-export interface OptionGroupImportProps {
-  /**
-   * The name of the option group.
-   */
-  readonly optionGroupName: string;
-}
-
-class ImportedOptionGroup extends Construct implements IOptionGroup {
-  public readonly optionGroupName: string;
-
-  constructor(scope: Construct, id: string, private readonly props: OptionGroupImportProps) {
-    super(scope, id);
-
-    this.optionGroupName = props.optionGroupName;
-  }
-
-  public export() {
-    return this.props;
   }
 }

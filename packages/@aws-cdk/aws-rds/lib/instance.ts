@@ -406,7 +406,7 @@ export interface DatabaseInstanceNewProps {
 /**
  * A new database instance.
  */
-export abstract class DatabaseInstanceNew extends DatabaseInstanceBase implements IDatabaseInstance {
+abstract class DatabaseInstanceNew extends DatabaseInstanceBase implements IDatabaseInstance {
   public readonly securityGroupId: string;
   public readonly vpc: ec2.IVpcNetwork;
 
@@ -589,7 +589,7 @@ export interface DatabaseInstanceSourceProps extends DatabaseInstanceNewProps {
 /**
  * A new source database instance (not a read replica)
  */
-export abstract class DatabaseInstanceSource extends DatabaseInstanceNew implements IDatabaseInstance {
+abstract class DatabaseInstanceSource extends DatabaseInstanceNew implements IDatabaseInstance {
   public abstract readonly secret?: secretsmanager.ISecret;
 
   protected readonly sourceCfnProps: CfnDBInstanceProps;

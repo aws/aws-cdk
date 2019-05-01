@@ -17,6 +17,48 @@ export interface IParameterGroup extends IResource {
 }
 
 /**
+ * Construction properties for an imported parameter group
+ */
+export interface ParameterGroupImportProps {
+  /**
+   * The name of the parameter group
+   */
+  readonly parameterGroupName: string;
+}
+
+/**
+ * A new cluster or instance parameter group
+ */
+abstract class ParameterGroupBase extends Resource implements IParameterGroup {
+  /**
+   * Imports a parameter group
+   */
+  public static import(scope: Construct, id: string, props: ParameterGroupImportProps): IParameterGroup {
+    class Import extends Construct implements IParameterGroup {
+      public readonly parameterGroupName = props.parameterGroupName;
+
+      public export() { return props; }
+    }
+
+    return new Import(scope, id);
+  }
+
+  /**
+   * The name of the parameter group
+   */
+  public abstract readonly parameterGroupName: string;
+
+  /**
+   * Exports this parameter group from the stack
+   */
+  public export(): ParameterGroupImportProps {
+    return {
+      parameterGroupName: new CfnOutput(this, 'ParameterGroupName', { value: this.parameterGroupName }).makeImportValue().toString()
+    };
+  }
+}
+
+/**
  * Properties for a parameter group
  */
 export interface ParameterGroupProps {
@@ -36,32 +78,6 @@ export interface ParameterGroupProps {
    * The parameters in this parameter group
    */
   readonly parameters: { [key: string]: string };
-}
-
-/**
- * A new cluster or instance parameter group
- */
-export abstract class ParameterGroupBase extends Resource implements IParameterGroup {
-  /**
-   * Imports a parameter group
-   */
-  public static import(scope: Construct, id: string, props: ParameterGroupImportProps): IParameterGroup {
-    return new ImportedParameterGroup(scope, id, props);
-  }
-
-  /**
-   * The name of the parameter group
-   */
-  public abstract readonly parameterGroupName: string;
-
-  /**
-   * Exports this parameter group from the stack
-   */
-  public export(): ParameterGroupImportProps {
-    return {
-      parameterGroupName: new CfnOutput(this, 'ParameterGroupName', { value: this.parameterGroupName }).makeImportValue().toString()
-    };
-  }
 }
 
 /**
@@ -112,38 +128,5 @@ export class ClusterParameterGroup extends ParameterGroupBase {
     });
 
     this.parameterGroupName = resource.dbClusterParameterGroupName;
-  }
-}
-
-/**
- * Construction properties for an ImportedParameterGroup
- */
-export interface ParameterGroupImportProps {
-  /**
-   * The name of the parameter group
-   */
-  readonly parameterGroupName: string;
-}
-
-/**
- * An imported cluster or instance parameter group
- */
-class ImportedParameterGroup extends Construct implements IParameterGroup {
-  /**
-   * The name of the parameter group
-   */
-  public readonly parameterGroupName: string;
-
-  constructor(scope: Construct, id: string, private readonly props: ParameterGroupImportProps) {
-    super(scope, id);
-
-    this.parameterGroupName = props.parameterGroupName;
-  }
-
-  /**
-   * Exports this parameter group from the stack
-   */
-  public export(): ParameterGroupImportProps {
-    return this.props;
   }
 }

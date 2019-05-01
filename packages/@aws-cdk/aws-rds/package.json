@@ -93,5 +93,10 @@
   },
   "engines": {
     "node": ">= 8.10.0"
+  },
+  "awslint": {
+    "exclude": [
+      "construct-base-is-private:@aws-cdk/aws-rds.DatabaseInstanceBase"
+    ]
   }
 }
