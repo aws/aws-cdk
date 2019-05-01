@@ -36,25 +36,30 @@ export interface IRule extends IResource {
 }
 
 /**
- * The maximum frequency at which the AWS Config rule runs evaluations.
+ * Construction properties for an imported rule.
  */
-export enum MaximumExecutionFrequency {
-  ONE_HOUR = 'One_Hour',
-  THREE_HOURS = 'Three_Hours',
-  SIX_HOURS = 'Six_Hours',
-  TWELVE_HOURS = 'Twelve_Hours',
-  TWENTY_FOUR_HOURS = 'TwentyFour_Hours'
+export interface RuleImportProps {
+  /**
+   * The rule name.
+   */
+  readonly ruleName: string;
 }
 
 /**
  * A new or imported rule.
  */
-export abstract class Rule extends Resource implements IRule {
+abstract class RuleBase extends Resource implements IRule {
   /**
    * Imports an existing rule.
    */
   public static import(scope: Construct, id: string, props: RuleImportProps): IRule {
-    return new ImportedRule(scope, id, props);
+    class Import extends RuleBase implements IRule {
+      public readonly ruleName = props.ruleName;
+
+      public export() { return props; }
+    }
+
+    return new Import(scope, id);
   }
 
   public abstract readonly ruleName: string;
@@ -103,7 +108,7 @@ export abstract class Rule extends Resource implements IRule {
 /**
  * A new managed or custom rule.
  */
-export abstract class RuleNew extends Rule implements IRule {
+abstract class RuleNew extends RuleBase implements IRule {
   /**
    * The arn of the rule.
    */
@@ -180,6 +185,17 @@ export abstract class RuleNew extends Rule implements IRule {
 
     this.scope = scope;
   }
+}
+
+/**
+ * The maximum frequency at which the AWS Config rule runs evaluations.
+ */
+export enum MaximumExecutionFrequency {
+  ONE_HOUR = 'One_Hour',
+  THREE_HOURS = 'Three_Hours',
+  SIX_HOURS = 'Six_Hours',
+  TWELVE_HOURS = 'Twelve_Hours',
+  TWENTY_FOUR_HOURS = 'TwentyFour_Hours'
 }
 
 /**
@@ -354,32 +370,5 @@ export class CustomRule extends RuleNew implements IRule {
     if (props.configurationChanges) {
       this.isCustomWithChanges = true;
     }
-  }
-}
-
-/**
- * Construction properties for an ImportedRule.
- */
-export interface RuleImportProps {
-  /**
-   * The rule name.
-   */
-  readonly ruleName: string;
-}
-
-/**
- * An imported rule.
- */
-class ImportedRule extends Rule implements IRule {
-  public readonly ruleName: string;
-
-  constructor(scope: Construct, id: string, private readonly props: RuleImportProps) {
-    super(scope, id);
-
-    this.ruleName = props.ruleName;
-  }
-
-  public export() {
-    return this.props;
   }
 }

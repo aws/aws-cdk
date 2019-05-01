@@ -252,7 +252,7 @@ export = {
     // WHEN
     const exportedRule = rule.export();
 
-    const importedRule = config.Rule.import(stack, 'ImportedRule', {
+    const importedRule = config.ManagedRule.import(stack, 'ImportedRule', {
       ruleName: 'name'
     });
 
