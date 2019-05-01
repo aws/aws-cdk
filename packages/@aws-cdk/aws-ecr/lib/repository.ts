@@ -98,7 +98,7 @@ export interface RepositoryImportProps {
 /**
  * Base class for ECR repository. Reused between imported repositories and owned repositories.
  */
-abstract class RepositoryBase extends Resource implements IRepository {
+export abstract class RepositoryBase extends Resource implements IRepository {
   /**
    * Import a repository
    */
