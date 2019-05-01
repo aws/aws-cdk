@@ -1,6 +1,6 @@
 import cdk = require('@aws-cdk/cdk');
 import { CfnApplication } from '../codedeploy.generated';
-import { applicationNameToArn } from '../utils';
+import { arnForApplication } from '../utils';
 
 /**
  * Represents a reference to a CodeDeploy Application deploying to EC2/on-premise instances.
@@ -41,7 +41,7 @@ class ImportedServerApplication extends cdk.Construct implements IServerApplicat
     super(scope, id);
 
     this.applicationName = props.applicationName;
-    this.applicationArn = applicationNameToArn(this.applicationName, this);
+    this.applicationArn = arnForApplication(this.applicationName);
   }
 
   public export(): ServerApplicationImportProps {
@@ -90,7 +90,7 @@ export class ServerApplication extends cdk.Construct implements IServerApplicati
     });
 
     this.applicationName = resource.ref;
-    this.applicationArn = applicationNameToArn(this.applicationName, this);
+    this.applicationArn = arnForApplication(this.applicationName);
   }
 
   public export(): ServerApplicationImportProps {
