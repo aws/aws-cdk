@@ -1,6 +1,6 @@
 import { Stack } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
-import { AlarmWidget, GraphWidget, Metric, Shading, SingleValueWidget } from '../lib';
+import { AlarmWidget, GraphWidget, Metric, Shading, SingleValueWidget, YAxis } from '../lib';
 
 export = {
   'add metrics to graphs on either axis'(test: Test) {
@@ -200,6 +200,51 @@ export = {
           }]
         },
         yAxis: { left: { min: 0 }, right: { min: 0 } }
+      }
+    }]);
+
+    test.done();
+  },
+
+  'add yAxis to graph'(test: Test) {
+    // WHEN
+    const stack = new Stack();
+    const widget = new GraphWidget({
+      title: 'My fancy graph',
+      left: [
+        new Metric({ namespace: 'CDK', metricName: 'Test' })
+      ],
+      right: [
+        new Metric({ namespace: 'CDK', metricName: 'Tast' })
+      ],
+      leftYAxis: new YAxis({
+        label: "Left yAxis",
+        max: 100
+      }),
+      rightYAxis: new YAxis({
+        label: "Right yAxis",
+        min: 10,
+        showUnits: false
+      })
+    });
+
+    // THEN
+    test.deepEqual(stack.node.resolve(widget.toJson()), [{
+      type: 'metric',
+      width: 6,
+      height: 6,
+      properties: {
+        view: 'timeSeries',
+        title: 'My fancy graph',
+        region: { Ref: 'AWS::Region' },
+        metrics: [
+          ['CDK', 'Test', { yAxis: 'left', period: 300, stat: 'Average' }],
+          ['CDK', 'Tast', { yAxis: 'right', period: 300, stat: 'Average' }]
+        ],
+        annotations: { horizontal: [] },
+        yAxis: {
+          left: { label: "Left yAxis", min: 0, max: 100 },
+          right: { label: "Right yAxis", min: 10, showUnits: false } }
       }
     }]);
 
