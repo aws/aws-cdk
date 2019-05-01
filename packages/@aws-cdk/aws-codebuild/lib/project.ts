@@ -128,7 +128,7 @@ export interface IProject extends IResource, iam.IGrantable {
   /**
    * Export this Project. Allows referencing this Project in a different CDK Stack.
    */
-  export(): ProjectImportProps;
+  export(): ProjectAttributes;
 }
 
 /**
@@ -137,7 +137,7 @@ export interface IProject extends IResource, iam.IGrantable {
  * @see Project.import
  * @see Project.export
  */
-export interface ProjectImportProps {
+export interface ProjectAttributes {
   /**
    * The human-readable name of the CodeBuild Project we're referencing.
    * The Project must be in the same account and region as the root Stack.
@@ -167,7 +167,7 @@ abstract class ProjectBase extends Resource implements IProject {
   /** The IAM service Role of this Project. */
   public abstract readonly role?: iam.IRole;
 
-  public abstract export(): ProjectImportProps;
+  public abstract export(): ProjectAttributes;
 
   /**
    * Defines a CloudWatch event rule triggered when the build project state
@@ -346,30 +346,6 @@ abstract class ProjectBase extends Resource implements IProject {
   }
 }
 
-class ImportedProject extends ProjectBase {
-  public readonly grantPrincipal: iam.IPrincipal;
-  public readonly projectArn: string;
-  public readonly projectName: string;
-  public readonly role?: iam.Role = undefined;
-
-  constructor(scope: Construct, id: string, private readonly props: ProjectImportProps) {
-    super(scope, id);
-
-    this.projectArn = this.node.stack.formatArn({
-      service: 'codebuild',
-      resource: 'project',
-      resourceName: props.projectName,
-    });
-    this.grantPrincipal = new iam.ImportedResourcePrincipal({ resource: this });
-
-    this.projectName = props.projectName;
-  }
-
-  public export() {
-    return this.props;
-  }
-}
-
 export interface CommonProjectProps {
   /**
    * A description of the project. Use the description to identify the purpose
@@ -533,6 +509,29 @@ export interface ProjectProps extends CommonProjectProps {
  * A representation of a CodeBuild Project.
  */
 export class Project extends ProjectBase {
+
+  public static fromProjectArn(scope: Construct, id: string, projectArn: string): IProject {
+    class Import extends ProjectBase {
+      public readonly grantPrincipal: iam.IPrincipal;
+      public readonly projectArn = projectArn;
+      public readonly projectName = scope.node.stack.parseArn(projectArn).resourceName!;
+      public readonly role?: iam.Role = undefined;
+
+      constructor(s: Construct, i: string) {
+        super(s, i);
+        this.grantPrincipal = new iam.ImportedResourcePrincipal({ resource: this });
+      }
+
+      public export(): ProjectAttributes {
+        return {
+          projectName: this.projectName
+        };
+      }
+    }
+
+    return new Import(scope, id);
+  }
+
   /**
    * Import a Project defined either outside the CDK,
    * or in a different CDK Stack
@@ -545,11 +544,37 @@ export class Project extends ProjectBase {
    *
    * @param scope the parent Construct for this Construct
    * @param id the logical name of this Construct
-   * @param props the properties of the referenced Project
+   * @param projectName the name of the project to import
    * @returns a reference to the existing Project
    */
-  public static import(scope: Construct, id: string, props: ProjectImportProps): IProject {
-    return new ImportedProject(scope, id, props);
+  public static fromProjectName(scope: Construct, id: string, projectName: string): IProject {
+    class Import extends ProjectBase {
+      public readonly grantPrincipal: iam.IPrincipal;
+      public readonly projectArn: string;
+      public readonly projectName: string;
+      public readonly role?: iam.Role = undefined;
+
+      constructor(s: Construct, i: string) {
+        super(s, i);
+
+        this.projectArn = this.node.stack.formatArn({
+          service: 'codebuild',
+          resource: 'project',
+          resourceName: projectName,
+        });
+
+        this.grantPrincipal = new iam.ImportedResourcePrincipal({ resource: this });
+        this.projectName = projectName;
+      }
+
+      public export(): ProjectAttributes {
+        return {
+          projectName
+        };
+      }
+    }
+
+    return new Import(scope, id);
   }
 
   public readonly grantPrincipal: iam.IPrincipal;
@@ -687,7 +712,7 @@ export class Project extends ProjectBase {
   /**
    * Export this Project. Allows referencing this Project in a different CDK Stack.
    */
-  public export(): ProjectImportProps {
+  public export(): ProjectAttributes {
     return {
       projectName: new CfnOutput(this, 'ProjectName', { value: this.projectName }).makeImportValue().toString(),
     };

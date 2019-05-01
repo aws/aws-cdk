@@ -1,7 +1,7 @@
 import iam = require('@aws-cdk/aws-iam');
 import kms = require('@aws-cdk/aws-kms');
 import s3 = require('@aws-cdk/aws-s3');
-import { CfnOutput, Construct, IResource, Resource } from '@aws-cdk/cdk';
+import { CfnOutput, Construct, Fn, IResource, Resource } from '@aws-cdk/cdk';
 import { DataFormat } from './data-format';
 import { IDatabase } from './database';
 import { CfnTable } from './glue.generated';
@@ -11,7 +11,7 @@ export interface ITable extends IResource {
   readonly tableArn: string;
   readonly tableName: string;
 
-  export(): TableImportProps;
+  export(): TableAttributes;
 }
 
 /**
@@ -49,7 +49,7 @@ export enum TableEncryption {
   ClientSideKms = 'CSE-KMS'
 }
 
-export interface TableImportProps {
+export interface TableAttributes {
   readonly tableArn: string;
   readonly tableName: string;
 }
@@ -143,6 +143,16 @@ export interface TableProps {
  * A Glue table.
  */
 export class Table extends Resource implements ITable {
+
+  public static fromTableArn(scope: Construct, id: string, tableArn: string): ITable {
+    const tableName = Fn.select(1, Fn.split('/', scope.node.stack.parseArn(tableArn).resourceName!));
+
+    return Table.fromTableAttributes(scope, id, {
+      tableArn,
+      tableName
+    });
+  }
+
   /**
    * Creates a Table construct that represents an external table.
    *
@@ -150,8 +160,16 @@ export class Table extends Resource implements ITable {
    * @param id The construct's id.
    * @param props A `TableImportProps` object. Can be obtained from a call to `table.export()` or manually created.
    */
-  public static import(scope: Construct, id: string, props: TableImportProps): ITable {
-    return new ImportedTable(scope, id, props);
+  public static fromTableAttributes(scope: Construct, id: string, props: TableAttributes): ITable {
+    class Import extends Construct implements ITable {
+      public readonly tableArn = props.tableArn;
+      public readonly tableName = props.tableName;
+      public export(): TableAttributes {
+        return props;
+      }
+    }
+
+    return new Import(scope, id);
   }
 
   /**
@@ -254,7 +272,7 @@ export class Table extends Resource implements ITable {
     this.tableArn = `${this.database.databaseArn}/${this.tableName}`;
   }
 
-  public export(): TableImportProps {
+  public export(): TableAttributes {
     return {
       tableName: new CfnOutput(this, 'TableName', { value: this.tableName }).makeImportValue().toString(),
       tableArn: new CfnOutput(this, 'TableArn', { value: this.tableArn }).makeImportValue().toString(),
@@ -396,19 +414,4 @@ function renderColumns(columns?: Array<Column | Column>) {
       comment: column.comment
     };
   });
-}
-
-class ImportedTable extends Construct implements ITable {
-  public readonly tableArn: string;
-  public readonly tableName: string;
-
-  constructor(scope: Construct, id: string, private readonly props: TableImportProps) {
-    super(scope, id);
-    this.tableArn = props.tableArn;
-    this.tableName = props.tableName;
-  }
-
-  public export(): TableImportProps {
-    return this.props;
-  }
 }

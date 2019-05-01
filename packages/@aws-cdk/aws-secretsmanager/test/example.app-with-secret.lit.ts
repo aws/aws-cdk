@@ -7,7 +7,7 @@ class ExampleStack extends cdk.Stack {
     super(scope, id);
 
     /// !show
-    const loginSecret = secretsmanager.Secret.import(this, 'Secret', {
+    const loginSecret = secretsmanager.Secret.fromSecretAttributes(this, 'Secret', {
       secretArn: 'SomeLogin'
     });
 

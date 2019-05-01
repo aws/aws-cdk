@@ -245,7 +245,7 @@ export = {
 
       // WHEN
       const props = fn.export();
-      const imported = lambda.Function.import(stack2, 'Imported', props);
+      const imported = lambda.Function.fromFunctionAttributes(stack2, 'Imported', props);
 
       // Can call addPermission() but it won't do anything
       imported.addPermission('Hello', {
@@ -1103,7 +1103,7 @@ export = {
   'using an incompatible layer'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack(undefined, 'TestStack');
-    const layer = lambda.LayerVersion.import(stack, 'TestLayer', {
+    const layer = lambda.LayerVersion.fromLayerVersionAttributes(stack, 'TestLayer', {
       layerVersionArn: 'arn:aws:...',
       compatibleRuntimes: [lambda.Runtime.NodeJS810],
     });
@@ -1123,7 +1123,7 @@ export = {
   'using more than 5 layers'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack(undefined, 'TestStack');
-    const layers = new Array(6).fill(lambda.LayerVersion.import(stack, 'TestLayer', {
+    const layers = new Array(6).fill(lambda.LayerVersion.fromLayerVersionAttributes(stack, 'TestLayer', {
       layerVersionArn: 'arn:aws:...',
       compatibleRuntimes: [lambda.Runtime.NodeJS810],
     }));

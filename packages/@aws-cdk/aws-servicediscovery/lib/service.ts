@@ -125,10 +125,28 @@ export interface ServiceProps extends DnsServiceProps {
   readonly namespace: INamespace;
 }
 
+abstract class ServiceBase extends Resource implements IService {
+  public abstract namespace: INamespace;
+  public abstract serviceId: string;
+  public abstract serviceArn: string;
+  public abstract dnsRecordType: DnsRecordType;
+  public abstract routingPolicy: RoutingPolicy;
+  public abstract readonly serviceName: string;
+}
+
 /**
  * Define a CloudMap Service
  */
-export class Service extends Resource implements IService {
+export class Service extends ServiceBase {
+
+  public static fromServiceName(scope: Construct, id: string, serviceName: string): IService {
+    class Import extends ServiceBase {
+
+    }
+
+    return new Import(scope, id);
+  }
+
   /**
    * A name for the Cloudmap Service.
    */

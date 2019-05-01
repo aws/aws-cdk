@@ -77,5 +77,11 @@
   },
   "engines": {
     "node": ">= 8.10.0"
+  },
+  "awslint": {
+    "exclude": [
+      "from-method:@aws-cdk/aws-cognito.UserPool",
+      "from-arn:UserPool.fromUserPoolArn"
+    ]
   }
 }

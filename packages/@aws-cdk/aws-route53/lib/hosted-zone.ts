@@ -1,6 +1,6 @@
 import ec2 = require('@aws-cdk/aws-ec2');
 import { CfnOutput, Construct, Resource, Token } from '@aws-cdk/cdk';
-import { HostedZoneImportProps, IHostedZone } from './hosted-zone-ref';
+import { HostedZoneAttributes, IHostedZone } from './hosted-zone-ref';
 import { ZoneDelegationRecord } from './records';
 import { CfnHostedZone } from './route53.generated';
 import { validateZoneName } from './util';
@@ -43,11 +43,37 @@ export interface HostedZoneProps extends CommonHostedZoneProps {
 }
 
 export class HostedZone extends Resource implements IHostedZone {
+
+  public static fromHostedZoneId(scope: Construct, id: string, hostedZoneId: string): IHostedZone {
+    class Import extends Construct implements IHostedZone {
+      public readonly hostedZoneId = hostedZoneId;
+      public get zoneName(): string {
+        throw new Error(`HostedZone.fromHostedZoneId doesn't support "zoneName"`);
+      }
+      public export(): HostedZoneAttributes {
+        return {
+          hostedZoneId: this.hostedZoneId,
+          zoneName: this.zoneName
+        };
+      }
+    }
+
+    return new Import(scope, id);
+  }
+
   /**
    * Imports a hosted zone from another stack.
    */
-  public static import(scope: Construct, id: string, props: HostedZoneImportProps): IHostedZone {
-    return new ImportedHostedZone(scope, id, props);
+  public static fromHostedZoneAttributes(scope: Construct, id: string, attrs: HostedZoneAttributes): IHostedZone {
+    class Import extends Construct implements IHostedZone {
+      public readonly hostedZoneId = attrs.hostedZoneId;
+      public readonly zoneName = attrs.zoneName;
+      public export() {
+        return attrs;
+      }
+    }
+
+    return new Import(scope, id);
   }
 
   public readonly hostedZoneId: string;
@@ -80,7 +106,7 @@ export class HostedZone extends Resource implements IHostedZone {
     }
   }
 
-  public export(): HostedZoneImportProps {
+  public export(): HostedZoneAttributes {
     return {
       hostedZoneId: new CfnOutput(this, 'HostedZoneId', { value: this.hostedZoneId }).makeImportValue(),
       zoneName: this.zoneName,
@@ -171,24 +197,5 @@ export class PrivateHostedZone extends HostedZone {
     super(scope, id, props);
 
     this.addVpc(props.vpc);
-  }
-}
-
-/**
- * Imported hosted zone
- */
-class ImportedHostedZone extends Construct implements IHostedZone {
-  public readonly hostedZoneId: string;
-  public readonly zoneName: string;
-
-  constructor(scope: Construct, name: string, private readonly props: HostedZoneImportProps) {
-    super(scope, name);
-
-    this.hostedZoneId = props.hostedZoneId;
-    this.zoneName = props.zoneName;
-  }
-
-  public export() {
-    return this.props;
   }
 }

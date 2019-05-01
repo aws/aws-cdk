@@ -2,9 +2,11 @@ import { expect, haveResource, SynthUtils } from '@aws-cdk/assert';
 import iam = require('@aws-cdk/aws-iam');
 import kms = require('@aws-cdk/aws-kms');
 import cdk = require('@aws-cdk/cdk');
+import { Stack } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
 import { EOL } from 'os';
 import s3 = require('../lib');
+import { Bucket } from '../lib';
 
 // to make it easy to copy & paste from output:
 // tslint:disable:object-literal-key-quotes
@@ -564,7 +566,7 @@ export = {
       const stack = new cdk.Stack();
 
       const bucketArn = 'arn:aws:s3:::my-bucket';
-      const bucket = s3.Bucket.import(stack, 'ImportedBucket', { bucketArn });
+      const bucket = s3.Bucket.fromBucketAttributes(stack, 'ImportedBucket', { bucketArn });
 
       // this is a no-op since the bucket is external
       bucket.addToResourcePolicy(new iam.PolicyStatement().addResource('foo').addAction('bar'));
@@ -587,7 +589,7 @@ export = {
 
     'import can also be used to import arbitrary ARNs'(test: Test) {
       const stack = new cdk.Stack();
-      const bucket = s3.Bucket.import(stack, 'ImportedBucket', { bucketArn: 'arn:aws:s3:::my-bucket' });
+      const bucket = s3.Bucket.fromBucketAttributes(stack, 'ImportedBucket', { bucketArn: 'arn:aws:s3:::my-bucket' });
       bucket.addToResourcePolicy(new iam.PolicyStatement().addAllResources().addAction('*'));
 
       // at this point we technically didn't create any resources in the consuming stack.
@@ -690,7 +692,7 @@ export = {
       });
 
       const stack2 = new cdk.Stack(undefined, 'S2');
-      const importedBucket = s3.Bucket.import(stack2, 'ImportedBucket', bucketRef);
+      const importedBucket = s3.Bucket.fromBucketAttributes(stack2, 'ImportedBucket', bucketRef);
       const user = new iam.User(stack2, 'MyUser');
       importedBucket.grantRead(user);
 
@@ -1137,7 +1139,7 @@ export = {
 
     const stackB = new cdk.Stack();
     const user = new iam.User(stackB, 'UserWhoNeedsAccess');
-    const theBucketFromStackAAsARefInStackB = s3.Bucket.import(stackB, 'RefToBucketFromStackA', refToBucketFromStackA);
+    const theBucketFromStackAAsARefInStackB = s3.Bucket.fromBucketAttributes(stackB, 'RefToBucketFromStackA', refToBucketFromStackA);
     theBucketFromStackAAsARefInStackB.grantRead(user);
 
     expect(stackA).toMatch({
@@ -1491,5 +1493,33 @@ export = {
       test.deepEqual(bucket.node.resolve(bucket.bucketWebsiteUrl), { 'Fn::GetAtt': [ 'Website32962D0B', 'WebsiteURL' ] });
       test.done();
     }
-  }
+  },
+
+  'Bucket.fromBucketArn'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    const bucket = Bucket.fromBucketArn(stack, 'my-bucket', 'arn:aws:s3:::my_corporate_bucket');
+
+    // THEN
+    test.deepEqual(bucket.bucketName, 'my_corporate_bucket');
+    test.deepEqual(bucket.bucketArn, 'arn:aws:s3:::my_corporate_bucket');
+    test.done();
+  },
+
+  'Bucket.fromBucketName'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    const bucket = Bucket.fromBucketName(stack, 'imported-bucket', 'my-bucket-name');
+
+    // THEN
+    test.deepEqual(bucket.bucketName, 'my-bucket-name');
+    test.deepEqual(stack.node.resolve(bucket.bucketArn), {
+      'Fn::Join': [ '', [ 'arn:', { Ref: 'AWS::Partition' }, ':s3:::my-bucket-name' ] ]
+    });
+    test.done();
+  },
 };

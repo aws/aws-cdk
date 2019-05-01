@@ -5,9 +5,10 @@ import fs = require('fs-extra');
 import reflect = require('jsii-reflect');
 import path = require('path');
 import yargs = require('yargs');
-import { constructLinter, DiagnosticLevel, moduleLinter, resourceLinter } from '../lib';
+import { constructLinter, DiagnosticLevel, importsLinter, moduleLinter, resourceLinter } from '../lib';
 
-const LINTERS = [ moduleLinter, constructLinter, resourceLinter ];
+const LINTERS = [ moduleLinter, constructLinter, resourceLinter, importsLinter ];
+
 let stackTrace = false;
 
 async function main() {

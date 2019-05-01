@@ -264,9 +264,7 @@ export class ServerDeploymentGroup extends ServerDeploymentGroupBase {
 
     this._autoScalingGroups = props.autoScalingGroups || [];
     this.installAgent = props.installAgent === undefined ? true : props.installAgent;
-    this.codeDeployBucket = s3.Bucket.import(this, 'CodeDeployBucket', {
-      bucketName: `aws-codedeploy-${this.node.stack.region}`,
-    });
+    this.codeDeployBucket = s3.Bucket.fromBucketName(this, `aws-codedeploy-${this.node.stack.region}`);
     for (const asg of this._autoScalingGroups) {
       this.addCodeDeployAgentInstallUserData(asg);
     }

@@ -1,7 +1,7 @@
 import cloudwatch = require('@aws-cdk/aws-cloudwatch');
 import events = require('@aws-cdk/aws-events');
 import iam = require('@aws-cdk/aws-iam');
-import { CfnOutput, Construct, IResource, Resource } from '@aws-cdk/cdk';
+import { Construct, IResource, Resource } from '@aws-cdk/cdk';
 import { StateGraph } from './state-graph';
 import { CfnStateMachine } from './stepfunctions.generated';
 import { IChainable } from './types';
@@ -44,8 +44,12 @@ export class StateMachine extends Resource implements IStateMachine, events.IEve
     /**
      * Import a state machine
      */
-    public static import(scope: Construct, id: string, props: StateMachineImportProps): IStateMachine {
-        return new ImportedStateMachine(scope, id, props);
+    public static fromStateMachineArn(scope: Construct, id: string, stateMachineArn: string): IStateMachine {
+        class Import extends Resource implements IStateMachine {
+            public readonly stateMachineArn = stateMachineArn;
+        }
+
+        return new Import(scope, id);
     }
 
     /**
@@ -188,15 +192,6 @@ export class StateMachine extends Resource implements IStateMachine, events.IEve
     public metricStarted(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
         return this.metric('ExecutionsStarted', props);
     }
-
-    /**
-     * Export this state machine
-     */
-    public export(): StateMachineImportProps {
-        return {
-            stateMachineArn: new CfnOutput(this, 'StateMachineArn', { value: this.stateMachineArn }).makeImportValue().toString(),
-        };
-    }
 }
 
 /**
@@ -207,31 +202,4 @@ export interface IStateMachine extends IResource {
      * The ARN of the state machine
      */
     readonly stateMachineArn: string;
-
-    /**
-     * Export this state machine
-     */
-    export(): StateMachineImportProps;
-}
-
-/**
- * Properties for an imported state machine
- */
-export interface StateMachineImportProps {
-    /**
-     * The ARN of the state machine
-     */
-    readonly stateMachineArn: string;
-}
-
-class ImportedStateMachine extends Resource implements IStateMachine {
-    public readonly stateMachineArn: string;
-    constructor(scope: Construct, id: string, private readonly props: StateMachineImportProps) {
-        super(scope, id);
-        this.stateMachineArn = props.stateMachineArn;
-    }
-
-    public export() {
-        return this.props;
-    }
 }

@@ -705,6 +705,19 @@ export = {
       test.done();
     },
   },
+
+  'Pipeline.fromPipelineArn'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    const pl = codepipeline.Pipeline.fromPipelineArn(stack, 'arn:aws:codepipeline:us-east-1:123456789012:MyDemoPipeline');
+
+    // THEN
+    test.deepEqual(pl.pipelineArn, 'arn:aws:codepipeline:us-east-1:123456789012:MyDemoPipeline');
+    test.deepEqual(pl.pipelineName, 'MyDemoPipeline');
+    test.done();
+  }
 };
 
 function stageForTesting(stack: Stack): codepipeline.IStage {

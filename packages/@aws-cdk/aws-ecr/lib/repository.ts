@@ -1,6 +1,6 @@
 import events = require('@aws-cdk/aws-events');
 import iam = require('@aws-cdk/aws-iam');
-import { CfnOutput, Construct, DeletionPolicy, IConstruct, IResource, Resource, Token } from '@aws-cdk/cdk';
+import { Construct, DeletionPolicy, IConstruct, IResource, Resource, Token } from '@aws-cdk/cdk';
 import { CfnRepository } from './ecr.generated';
 import { CountType, LifecycleRule, TagStatus } from './lifecycle';
 
@@ -63,61 +63,12 @@ export interface IRepository extends IResource {
    * @param imageTag Only trigger on the specific image tag
    */
   onImagePushed(name: string, target?: events.IEventRuleTarget, imageTag?: string): events.EventRule;
-
-  /**
-   * Export this repository from the stack
-   */
-  export(): RepositoryImportProps;
-}
-
-export interface RepositoryImportProps {
-  /**
-   * The ARN of the repository to import.
-   *
-   * At least one of `repositoryArn` or `repositoryName` is required.
-   *
-   * @default If you only have a repository name and the repository is in the same
-   * account/region as the current stack, you can set `repositoryName` instead
-   * and the ARN will be formatted with the current region and account.
-   */
-  readonly repositoryArn?: string;
-
-  /**
-   * The full name of the repository to import.
-   *
-   * This is only needed if the repository ARN is not a concrete string, in which
-   * case it is impossible to safely parse the ARN and extract full repository
-   * names from it if it includes multiple components (e.g. `foo/bar/myrepo`).
-   *
-   * If the repository is in the same region/account as the stack, it is sufficient
-   * to only specify the repository name.
-   */
-  readonly repositoryName?: string;
 }
 
 /**
  * Base class for ECR repository. Reused between imported repositories and owned repositories.
  */
 export abstract class RepositoryBase extends Resource implements IRepository {
-  /**
-   * Import a repository
-   */
-  public static import(scope: Construct, id: string, props: RepositoryImportProps): IRepository {
-    return new ImportedRepository(scope, id, props);
-  }
-
-  /**
-   * Returns an ECR ARN for a repository that resides in the same account/region
-   * as the current stack.
-   */
-  public static arnForLocalRepository(repositoryName: string, scope: IConstruct): string {
-    return scope.node.stack.formatArn({
-      service: 'ecr',
-      resource: 'repository',
-      resourceName: repositoryName
-    });
-  }
-
   /**
    * The name of the repository
    */
@@ -155,11 +106,6 @@ export abstract class RepositoryBase extends Resource implements IRepository {
     const parts = this.node.stack.parseArn(this.repositoryArn);
     return `${parts.account}.dkr.ecr.${parts.region}.amazonaws.com/${this.repositoryName}${tagSuffix}`;
   }
-
-  /**
-   * Export this repository from the stack
-   */
-  public abstract export(): RepositoryImportProps;
 
   /**
    * Defines an AWS CloudWatch event rule that can trigger a target when an image is pushed to this
@@ -229,50 +175,6 @@ export abstract class RepositoryBase extends Resource implements IRepository {
   }
 }
 
-/**
- * An already existing repository
- */
-class ImportedRepository extends RepositoryBase {
-  public readonly repositoryName: string;
-  public readonly repositoryArn: string;
-
-  constructor(scope: Construct, id: string, private readonly props: RepositoryImportProps) {
-    super(scope, id);
-
-    if (props.repositoryArn) {
-      this.repositoryArn = props.repositoryArn;
-    } else {
-      if (!props.repositoryName) {
-        throw new Error('If "repositoryArn" is not specified, you must specify "repositoryName", ' +
-          'which also implies that the repository resides in the same region/account as this stack');
-      }
-
-      this.repositoryArn = RepositoryBase.arnForLocalRepository(props.repositoryName, this);
-    }
-
-    if (props.repositoryName) {
-      this.repositoryName = props.repositoryName;
-    } else {
-      // if repositoryArn is a token, the repository name is also required. this is because
-      // repository names can include "/" (e.g. foo/bar/myrepo) and it is impossible to
-      // parse the name from an ARN using CloudFormation's split/select.
-      if (Token.unresolved(this.repositoryArn)) {
-        throw new Error('repositoryArn is a late-bound value, and therefore repositoryName is required');
-      }
-
-      this.repositoryName = this.repositoryArn.split('/').slice(1).join('/');
-    }
-  }
-
-  public export(): RepositoryImportProps {
-    return this.props;
-  }
-
-  public addToResourcePolicy(_statement: iam.PolicyStatement) {
-    // FIXME: Add annotation about policy we dropped on the floor
-  }
-}
-
 export interface RepositoryProps {
   /**
    * Name for this repository
@@ -307,10 +209,79 @@ export interface RepositoryProps {
   readonly retain?: boolean;
 }
 
+export interface RepositoryAttributes {
+  readonly repositoryName: string;
+  readonly repositoryArn: string;
+}
+
 /**
  * Define an ECR repository
  */
 export class Repository extends RepositoryBase {
+  /**
+   * Import a repository
+   */
+  public static fromRepositoryAttributes(scope: Construct, id: string, attrs: RepositoryAttributes): IRepository {
+    class Import extends RepositoryBase {
+      public readonly repositoryName = attrs.repositoryName;
+      public readonly repositoryArn = attrs.repositoryArn;
+
+      public addToResourcePolicy(_statement: iam.PolicyStatement) {
+        // dropped
+      }
+    }
+
+    return new Import(scope, id);
+  }
+
+  public static fromRepositoryArn(scope: Construct, id: string, repositoryArn: string): IRepository {
+
+    // if repositoryArn is a token, the repository name is also required. this is because
+    // repository names can include "/" (e.g. foo/bar/myrepo) and it is impossible to
+    // parse the name from an ARN using CloudFormation's split/select.
+    if (Token.unresolved(repositoryArn)) {
+      throw new Error('"repositoryArn" is a late-bound value, and therefore "repositoryName" is required. Use `fromRepositoryAttributes` instead');
+    }
+
+    const repositoryName = repositoryArn.split('/').slice(1).join('/');
+
+    class Import extends RepositoryBase {
+      public repositoryName = repositoryName;
+      public repositoryArn = repositoryArn;
+
+      public addToResourcePolicy(_statement: iam.PolicyStatement): void {
+        // dropped
+      }
+    }
+
+    return new Import(scope, id);
+  }
+
+  public static fromRepositoryName(scope: Construct, id: string, repositoryName: string): IRepository {
+    class Import extends RepositoryBase {
+      public repositoryName = repositoryName;
+      public repositoryArn = Repository.arnForLocalRepository(repositoryName, scope);
+
+      public addToResourcePolicy(_statement: iam.PolicyStatement): void {
+        // dropped
+      }
+    }
+
+    return new Import(scope, id);
+  }
+
+  /**
+   * Returns an ECR ARN for a repository that resides in the same account/region
+   * as the current stack.
+   */
+  public static arnForLocalRepository(repositoryName: string, scope: IConstruct): string {
+    return scope.node.stack.formatArn({
+      service: 'ecr',
+      resource: 'repository',
+      resourceName: repositoryName
+    });
+  }
+
   public readonly repositoryName: string;
   public readonly repositoryArn: string;
   private readonly lifecycleRules = new Array<LifecycleRule>();
@@ -338,16 +309,6 @@ export class Repository extends RepositoryBase {
 
     this.repositoryName = resource.repositoryName;
     this.repositoryArn = resource.repositoryArn;
-  }
-
-  /**
-   * Export this repository from the stack
-   */
-  public export(): RepositoryImportProps {
-    return {
-      repositoryArn: new CfnOutput(this, 'RepositoryArn', { value: this.repositoryArn }).makeImportValue().toString(),
-      repositoryName: new CfnOutput(this, 'RepositoryName', { value: this.repositoryName }).makeImportValue().toString()
-    };
   }
 
   public addToResourcePolicy(statement: iam.PolicyStatement) {

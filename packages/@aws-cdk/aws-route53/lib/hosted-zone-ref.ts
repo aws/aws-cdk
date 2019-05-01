@@ -25,13 +25,13 @@ export interface IHostedZone extends IResource {
   /**
    * Export the hosted zone
    */
-  export(): HostedZoneImportProps;
+  export(): HostedZoneAttributes;
 }
 
 /**
  * Reference to a hosted zone
  */
-export interface HostedZoneImportProps {
+export interface HostedZoneAttributes {
   /**
    * Identifier of the hosted zone
    */

@@ -72,13 +72,13 @@ export interface IRepository extends IResource {
    *
    * @see import
    */
-  export(): RepositoryImportProps;
+  export(): RepositoryAttributes;
 }
 
 /**
  * Properties for the {@link Repository.import} method.
  */
-export interface RepositoryImportProps {
+export interface RepositoryAttributes {
   /**
    * The name of an existing CodeCommit Repository that we are referencing.
    * Must be in the same account and region as the root Stack.
@@ -108,7 +108,7 @@ abstract class RepositoryBase extends Resource implements IRepository {
   /** The SSH clone URL */
   public abstract readonly repositoryCloneUrlSsh: string;
 
-  public abstract export(): RepositoryImportProps;
+  public abstract export(): RepositoryAttributes;
 
   /**
    * Defines a CloudWatch event rule which triggers for repository events. Use
@@ -211,7 +211,7 @@ class ImportedRepository extends RepositoryBase {
   public readonly repositoryArn: string;
   public readonly repositoryName: string;
 
-  constructor(scope: Construct, id: string, private readonly props: RepositoryImportProps) {
+  constructor(scope: Construct, id: string, private readonly props: RepositoryAttributes) {
     super(scope, id);
 
     this.repositoryArn = this.node.stack.formatArn({
@@ -255,17 +255,27 @@ export interface RepositoryProps {
  * Provides a CodeCommit Repository
  */
 export class Repository extends RepositoryBase {
+
+  public static fromRepositoryName(scope: Construct, id: string, repositoryName: string): IRepository {
+    return Repository.fromRepositoryAttributes(scope, id, { repositoryName });
+  }
+
+  public static fromRepositoryArn(scope: Construct, id: string, repositoryArn: string): IRepository {
+    // arn:aws:codecommit:us-east-1:123456789012:MyDemoRepo
+    return Repository.fromRepositoryName(scope, id, scope.node.stack.parseArn(repositoryArn).resource);
+  }
+
   /**
    * Import a Repository defined either outside the CDK, or in a different Stack
    * (exported with the {@link export} method).
    *
    * @param scope the parent Construct for the Repository
    * @param id the name of the Repository Construct
-   * @param props the properties used to identify the existing Repository
+   * @param attrs the properties used to identify the existing Repository
    * @returns a reference to the existing Repository
    */
-  public static import(scope: Construct, id: string, props: RepositoryImportProps): IRepository {
-    return new ImportedRepository(scope, id, props);
+  public static fromRepositoryAttributes(scope: Construct, id: string, attrs: RepositoryAttributes): IRepository {
+    return new ImportedRepository(scope, id, attrs);
   }
 
   private readonly repository: CfnRepository;
@@ -302,7 +312,7 @@ export class Repository extends RepositoryBase {
    *
    * @see import
    */
-  public export(): RepositoryImportProps {
+  public export(): RepositoryAttributes {
     return {
       repositoryName: new CfnOutput(this, 'RepositoryName', { value: this.repositoryName }).makeImportValue().toString()
     };

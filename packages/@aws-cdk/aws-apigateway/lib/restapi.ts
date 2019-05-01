@@ -7,7 +7,7 @@ import { Method, MethodOptions } from './method';
 import { IRestApiResource, ResourceBase, ResourceOptions } from './resource';
 import { Stage, StageOptions } from './stage';
 
-export interface RestApiImportProps {
+export interface RestApiAttributes {
   /**
    * The REST API ID of an existing REST API resource.
    */
@@ -34,7 +34,7 @@ export interface IRestApi extends IResource {
    * Exports a REST API resource from this stack.
    * @returns REST API props that can be imported to another stack.
    */
-  export(): RestApiImportProps;
+  export(): RestApiAttributes;
 }
 
 export interface RestApiProps extends ResourceOptions {
@@ -165,20 +165,25 @@ export interface RestApiProps extends ResourceOptions {
  * public endpoint.
  */
 export class RestApi extends Resource implements IRestApi {
+
+  public static fromRestApiId(scope: Construct, id: string, restApiId: string): IRestApi {
+    return RestApi.fromRestApiAttributes(scope, id, { restApiId });
+  }
+
   /**
    * Imports an existing REST API resource.
    * @param scope Parent construct
    * @param id Construct ID
-   * @param props Imported rest API properties
+   * @param attrs Imported rest API properties
    */
-  public static import(scope: Construct, id: string, props: RestApiImportProps): IRestApi {
+  public static fromRestApiAttributes(scope: Construct, id: string, attrs: RestApiAttributes): IRestApi {
     class Import extends Construct implements IRestApi {
-      public restApiId = props.restApiId;
+      public restApiId = attrs.restApiId;
       public get restApiRootResourceId() {
-        if (!props.restApiRootResourceId) { throw new Error(`Imported REST API does not have "restApiRootResourceId"`); }
-        return props.restApiRootResourceId;
+        if (!attrs.restApiRootResourceId) { throw new Error(`Imported REST API does not have "restApiRootResourceId"`); }
+        return attrs.restApiRootResourceId;
       }
-      public export() { return props; }
+      public export() { return attrs; }
     }
 
     return new Import(scope, id);
@@ -252,7 +257,7 @@ export class RestApi extends Resource implements IRestApi {
    * Exports a REST API resource from this stack.
    * @returns REST API props that can be imported to another stack.
    */
-  public export(): RestApiImportProps {
+  public export(): RestApiAttributes {
     return {
       restApiId: new CfnOutput(this, 'RestApiId', { value: this.restApiId }).makeImportValue().toString()
     };

@@ -28,10 +28,10 @@ export interface IDatabase extends IResource {
    */
   readonly locationUri: string;
 
-  export(): DatabaseImportProps;
+  export(): DatabaseAttributes;
 }
 
-export interface DatabaseImportProps {
+export interface DatabaseAttributes {
   readonly catalogArn: string;
   readonly catalogId: string;
   readonly databaseArn: string;
@@ -57,15 +57,53 @@ export interface DatabaseProps {
  * A Glue database.
  */
 export class Database extends Resource {
+
+  public static fromDatabaseArn(scope: Construct, id: string, databaseArn: string): IDatabase {
+    class Import extends Construct implements IDatabase {
+      public databaseArn = databaseArn;
+      public databaseName = scope.node.stack.parseArn(databaseArn).resourceName!;
+      public catalogArn = scope.node.stack.formatArn({ service: 'glue', resource: 'catalog' });
+      public catalogId = scope.node.stack.accountId;
+
+      public get locationUri(): string {
+        throw new Error(`glue.Database.fromDatabaseArn: no "locationUri"`);
+      }
+
+      public export(): DatabaseAttributes {
+        return {
+          catalogArn: this.catalogArn,
+          catalogId: this.catalogId,
+          databaseName: this.databaseName,
+          databaseArn: this.databaseArn,
+          locationUri: this.locationUri,
+        };
+      }
+    }
+
+    return new Import(scope, id);
+  }
+
   /**
    * Creates a Database construct that represents an external database.
    *
    * @param scope The scope creating construct (usually `this`).
    * @param id The construct's id.
-   * @param props A `DatabaseImportProps` object. Can be obtained from a call to `database.export()` or manually created.
+   * @param attrs A `DatabaseImportProps` object. Can be obtained from a call to `database.export()` or manually created.
    */
-  public static import(scope: Construct, id: string, props: DatabaseImportProps): IDatabase {
-    return new ImportedDatabase(scope, id, props);
+  public static import(scope: Construct, id: string, attrs: DatabaseAttributes): IDatabase {
+
+    class Import extends Construct implements IDatabase {
+      public readonly catalogArn = attrs.catalogArn;
+      public readonly catalogId = attrs.catalogId;
+      public readonly databaseArn = attrs.databaseArn;
+      public readonly databaseName = attrs.databaseName;
+      public readonly locationUri = attrs.locationUri;
+      public export() {
+        return attrs;
+      }
+    }
+
+    return new Import(scope, id);
   }
 
   /**
@@ -129,7 +167,7 @@ export class Database extends Resource {
   /**
    * Exports this database from the stack.
    */
-  public export(): DatabaseImportProps {
+  public export(): DatabaseAttributes {
     return {
       catalogArn: new CfnOutput(this, 'CatalogArn', { value: this.catalogArn }).makeImportValue().toString(),
       catalogId: new CfnOutput(this, 'CatalogId', { value: this.catalogId }).makeImportValue().toString(),
@@ -137,26 +175,5 @@ export class Database extends Resource {
       databaseName: new CfnOutput(this, 'DatabaseName', { value: this.databaseName }).makeImportValue().toString(),
       locationUri: new CfnOutput(this, 'LocationURI', { value: this.locationUri }).makeImportValue().toString()
     };
-  }
-}
-
-class ImportedDatabase extends Construct implements IDatabase {
-  public readonly catalogArn: string;
-  public readonly catalogId: string;
-  public readonly databaseArn: string;
-  public readonly databaseName: string;
-  public readonly locationUri: string;
-
-  constructor(parent: Construct, name: string, private readonly props: DatabaseImportProps) {
-    super(parent, name);
-    this.catalogArn = props.catalogArn;
-    this.catalogId = props.catalogId;
-    this.databaseArn = props.databaseArn;
-    this.databaseName = props.databaseName;
-    this.locationUri = props.locationUri;
-  }
-
-  public export() {
-    return this.props;
   }
 }

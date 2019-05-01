@@ -42,10 +42,10 @@ export interface ISecurityGroup extends IResource, ISecurityGroupRule, IConnecta
   /**
    * Export the security group
    */
-  export(): SecurityGroupImportProps;
+  export(): SecurityGroupAttributes;
 }
 
-export interface SecurityGroupImportProps {
+export interface SecurityGroupAttributes {
   /**
    * ID of security group
    */
@@ -137,7 +137,7 @@ abstract class SecurityGroupBase extends Resource implements ISecurityGroup {
   /**
    * Export this SecurityGroup for use in a different Stack
    */
-  public abstract export(): SecurityGroupImportProps;
+  public abstract export(): SecurityGroupAttributes;
 }
 
 /**
@@ -254,20 +254,40 @@ export interface SecurityGroupProps {
  * the template).
  */
 export class SecurityGroup extends SecurityGroupBase {
+
+  /**
+   * Import an existing security group into this app.
+   */
+  public static fromSecurityGroupId(scope: Construct, id: string, securityGroupId: string): ISecurityGroup {
+    class Import extends SecurityGroupBase {
+      public securityGroupId = securityGroupId;
+
+      public get securityGroupVpcId(): string {
+        throw new Error(`Security group imported without "securityGroupVpcId"`);
+      }
+
+      public export(): SecurityGroupAttributes {
+        return { securityGroupId };
+      }
+    }
+
+    return new Import(scope, id);
+  }
+
   /**
    * Import an existing SecurityGroup
    */
-  public static import(scope: Construct, id: string, props: SecurityGroupImportProps): ISecurityGroup {
+  public static fromSecurityGroupAttributes(scope: Construct, id: string, attrs: SecurityGroupAttributes): ISecurityGroup {
     class Import extends SecurityGroupBase {
-      public readonly securityGroupId = props.securityGroupId;
+      public readonly securityGroupId = attrs.securityGroupId;
 
       public get securityGroupVpcId() {
-        if (!props.securityGroupVpcId) { throw new Error(`Imported security group did not specify 'securityGroupVpcId'`); }
-        return props.securityGroupVpcId;
+        if (!attrs.securityGroupVpcId) { throw new Error(`Imported security group did not specify 'securityGroupVpcId'`); }
+        return attrs.securityGroupVpcId;
       }
 
       public export() {
-        return props;
+        return attrs;
       }
     }
 
@@ -326,7 +346,7 @@ export class SecurityGroup extends SecurityGroupBase {
   /**
    * Export this SecurityGroup for use in a different Stack
    */
-  public export(): SecurityGroupImportProps {
+  public export(): SecurityGroupAttributes {
     return {
       securityGroupId: new CfnOutput(this, 'SecurityGroupId', { value: this.securityGroupId }).makeImportValue().toString()
     };

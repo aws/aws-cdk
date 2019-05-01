@@ -34,7 +34,7 @@ export interface ISecret extends IResource {
    *
    * @return import props that can be passed back to ``Secret.import``.
    */
-  export(): SecretImportProps;
+  export(): SecretAttributes;
 
   /**
    * Grants reading the secret value to some role.
@@ -87,7 +87,7 @@ export interface SecretProps {
 /**
  * Attributes required to import an existing secret into the Stack.
  */
-export interface SecretImportProps {
+export interface SecretAttributes {
   /**
    * The encryption key that is used to encrypt the secret, unless the default SecretsManager key is used.
    */
@@ -106,7 +106,7 @@ abstract class SecretBase extends Resource implements ISecret {
   public abstract readonly encryptionKey?: kms.IEncryptionKey;
   public abstract readonly secretArn: string;
 
-  public abstract export(): SecretImportProps;
+  public abstract export(): SecretAttributes;
 
   public grantRead(grantee: iam.IGrantable, versionStages?: string[]): iam.Grant {
     // @see https://docs.aws.amazon.com/fr_fr/secretsmanager/latest/userguide/auth-and-access_identity-based-policies.html
@@ -153,15 +153,20 @@ abstract class SecretBase extends Resource implements ISecret {
  * Creates a new secret in AWS SecretsManager.
  */
 export class Secret extends SecretBase {
+
+  public static fromSecretArn(scope: Construct, id: string, secretArn: string): ISecret {
+    return Secret.fromSecretAttributes(scope, id, { secretArn });
+  }
+
   /**
    * Import an existing secret into the Stack.
    *
    * @param scope the scope of the import.
    * @param id    the ID of the imported Secret in the construct tree.
-   * @param props the attributes of the imported secret.
+   * @param attrs the attributes of the imported secret.
    */
-  public static import(scope: Construct, id: string, props: SecretImportProps): ISecret {
-    return new ImportedSecret(scope, id, props);
+  public static fromSecretAttributes(scope: Construct, id: string, attrs: SecretAttributes): ISecret {
+    return new ImportedSecret(scope, id, attrs);
   }
 
   public readonly encryptionKey?: kms.IEncryptionKey;
@@ -199,7 +204,7 @@ export class Secret extends SecretBase {
     });
   }
 
-  public export(): SecretImportProps {
+  public export(): SecretAttributes {
     return {
       encryptionKey: this.encryptionKey,
       secretArn: this.secretArn,
@@ -289,7 +294,7 @@ export class AttachedSecret extends SecretBase implements ISecret {
     this.secretArn = attachment.secretTargetAttachmentSecretArn;
   }
 
-  public export(): SecretImportProps {
+  public export(): SecretAttributes {
     return {
       encryptionKey: this.encryptionKey,
       secretArn: this.secretArn,
@@ -378,7 +383,7 @@ class ImportedSecret extends SecretBase {
   public readonly encryptionKey?: kms.IEncryptionKey;
   public readonly secretArn: string;
 
-  constructor(scope: Construct, id: string, private readonly props: SecretImportProps) {
+  constructor(scope: Construct, id: string, private readonly props: SecretAttributes) {
     super(scope, id);
 
     this.encryptionKey = props.encryptionKey;

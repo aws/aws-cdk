@@ -333,7 +333,7 @@ export = {
     const stack = new cdk.Stack();
 
     // WHEN
-    const imported = apigateway.RestApi.import(stack, 'imported-api', {
+    const imported = apigateway.RestApi.fromRestApiAttributes(stack, 'imported-api', {
       restApiId: 'api-rxt4498f'
     });
 
@@ -493,7 +493,7 @@ export = {
   '"cloneFrom" can be used to clone an existing API'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
-    const cloneFrom = apigateway.RestApi.import(stack, 'RestApi', {
+    const cloneFrom = apigateway.RestApi.fromRestApiAttributes(stack, 'RestApi', {
       restApiId: 'foobar'
     });
 
