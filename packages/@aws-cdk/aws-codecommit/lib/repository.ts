@@ -95,7 +95,7 @@ export interface RepositoryImportProps {
  * If you want to reference an already existing Repository,
  * use the {@link Repository.import} method.
  */
-export abstract class RepositoryBase extends Resource implements IRepository {
+abstract class RepositoryBase extends Resource implements IRepository {
   /** The ARN of this Repository. */
   public abstract readonly repositoryArn: string;
 

@@ -177,6 +177,7 @@ Here are a few useful commands:
 
  * `npm run awslint` in every module will run __awslint__ for that module.
  * `npm run awslint list` prints all rules (details and rationale in the guidelines doc)
+ * `scripts/foreach.sh npm run awslint` will start linting the entire repo, progressively. Rerun `scripts/foreach.sh` after fixing to continue.
  * `lerna run awslint --no-bail --stream 2> awslint.txt` will run __awslint__ in all modules and collect all results into awslint.txt
  * `lerna run awslint -- -i <RULE>` will run awslint throughout the repo and
    evaluate only the rule specified [awslint README](./tools/awslint/README.md)

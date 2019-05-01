@@ -79,6 +79,18 @@ heading "${next}: ${command} (${remaining} remaining)"
 
 (
   cd ${next}
+
+  # special-case "npm run" - skip any modules that simply don't have
+  # that script (similar to how "lerna run" behaves)
+  if [[ "${command}" == "npm run"* ]]; then
+    script="$(echo ${command} | cut -d" " -f3)"
+    exists=$(node -pe "require('./package.json').scripts.${script} || ''")
+    if [ -z "${exists}" ]; then
+      echo "skipping (no "${script}" script in package.json)"
+      exit 0
+    fi
+  fi
+
   sh -c "${command}" &> /tmp/foreach.stdio || {
     cd ${base}
     cat /tmp/foreach.stdio | ${scriptdir}/path-prefix ${next}

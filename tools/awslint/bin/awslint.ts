@@ -8,6 +8,7 @@ import yargs = require('yargs');
 import { constructLinter, DiagnosticLevel, moduleLinter, resourceLinter } from '../lib';
 
 const LINTERS = [ moduleLinter, constructLinter, resourceLinter ];
+let stackTrace = false;
 
 async function main() {
   const argv = yargs
@@ -42,6 +43,8 @@ async function main() {
   }
 
   const args = argv.argv;
+
+  stackTrace = args.verbose || args.debug;
 
   if (args._.length > 1) {
     argv.showHelp();
@@ -208,6 +211,9 @@ async function main() {
 
 main().catch(e => {
   console.error(colors.red(e.message));
+  if (stackTrace) {
+    console.error(e.stack);
+  }
   process.exit(1);
 });
 

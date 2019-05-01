@@ -1,5 +1,5 @@
 import cdk = require('@aws-cdk/cdk');
-import { arnForDeploymentConfigName } from '../utils';
+import { arnForDeploymentConfig } from '../utils';
 
 /**
  * The Deployment Configuration of a Lambda Deployment Group.
@@ -12,19 +12,7 @@ import { arnForDeploymentConfigName } from '../utils';
  */
 export interface ILambdaDeploymentConfig {
   readonly deploymentConfigName: string;
-  deploymentConfigArn(scope: cdk.IConstruct): string;
-}
-
-class DefaultLambdaDeploymentConfig implements ILambdaDeploymentConfig {
-  public readonly deploymentConfigName: string;
-
-  constructor(deploymentConfigName: string) {
-    this.deploymentConfigName = `CodeDeployDefault.Lambda${deploymentConfigName}`;
-  }
-
-  public deploymentConfigArn(scope: cdk.IConstruct): string {
-    return arnForDeploymentConfigName(this.deploymentConfigName, scope);
-  }
+  readonly deploymentConfigArn: string;
 }
 
 /**
@@ -41,24 +29,6 @@ export interface LambdaDeploymentConfigImportProps {
   readonly deploymentConfigName: string;
 }
 
-class ImportedLambdaDeploymentConfig extends cdk.Construct implements ILambdaDeploymentConfig {
-  public readonly deploymentConfigName: string;
-
-  constructor(scope: cdk.Construct, id: string, private readonly props: LambdaDeploymentConfigImportProps) {
-    super(scope, id);
-
-    this.deploymentConfigName = props.deploymentConfigName;
-  }
-
-  public deploymentConfigArn(scope: cdk.IConstruct): string {
-    return arnForDeploymentConfigName(this.deploymentConfigName, scope);
-  }
-
-  public export() {
-    return this.props;
-  }
-}
-
 /**
  * A custom Deployment Configuration for a Lambda Deployment Group.
  *
@@ -67,29 +37,36 @@ class ImportedLambdaDeploymentConfig extends cdk.Construct implements ILambdaDep
  * (private constructor) and does not extend {@link cdk.Construct}
  */
 export class LambdaDeploymentConfig {
-  public static readonly AllAtOnce: ILambdaDeploymentConfig = new DefaultLambdaDeploymentConfig('AllAtOnce');
-  public static readonly Canary10Percent30Minutes: ILambdaDeploymentConfig = new DefaultLambdaDeploymentConfig('Canary10Percent30Minutes');
-  public static readonly Canary10Percent5Minutes: ILambdaDeploymentConfig = new DefaultLambdaDeploymentConfig('Canary10Percent5Minutes');
-  public static readonly Canary10Percent10Minutes: ILambdaDeploymentConfig = new DefaultLambdaDeploymentConfig('Canary10Percent10Minutes');
-  public static readonly Canary10Percent15Minutes: ILambdaDeploymentConfig = new DefaultLambdaDeploymentConfig('Canary10Percent15Minutes');
-  public static readonly Linear10PercentEvery10Minutes: ILambdaDeploymentConfig = new DefaultLambdaDeploymentConfig('Linear10PercentEvery10Minutes');
-  public static readonly Linear10PercentEvery1Minute: ILambdaDeploymentConfig = new DefaultLambdaDeploymentConfig('Linear10PercentEvery1Minute');
-  public static readonly Linear10PercentEvery2Minutes: ILambdaDeploymentConfig = new DefaultLambdaDeploymentConfig('Linear10PercentEvery2Minutes');
-  public static readonly Linear10PercentEvery3Minutes: ILambdaDeploymentConfig = new DefaultLambdaDeploymentConfig('Linear10PercentEvery3Minutes');
+  public static readonly AllAtOnce                     = deploymentConfig('CodeDeployDefault.LambdaAllAtOnce');
+  public static readonly Canary10Percent30Minutes      = deploymentConfig('CodeDeployDefault.LambdaCanary10Percent30Minutes');
+  public static readonly Canary10Percent5Minutes       = deploymentConfig('CodeDeployDefault.LambdaCanary10Percent5Minutes');
+  public static readonly Canary10Percent10Minutes      = deploymentConfig('CodeDeployDefault.LambdaCanary10Percent10Minutes');
+  public static readonly Canary10Percent15Minutes      = deploymentConfig('CodeDeployDefault.LambdaCanary10Percent15Minutes');
+  public static readonly Linear10PercentEvery10Minutes = deploymentConfig('CodeDeployDefault.LambdaLinear10PercentEvery10Minutes');
+  public static readonly Linear10PercentEvery1Minute   = deploymentConfig('CodeDeployDefault.LambdaLinear10PercentEvery1Minute');
+  public static readonly Linear10PercentEvery2Minutes  = deploymentConfig('CodeDeployDefault.LambdaLinear10PercentEvery2Minutes');
+  public static readonly Linear10PercentEvery3Minutes  = deploymentConfig('CodeDeployDefault.LambdaLinear10PercentEvery3Minutes');
 
   /**
    * Import a custom Deployment Configuration for a Lambda Deployment Group defined outside the CDK.
    *
-   * @param scope the parent Construct for this new Construct
-   * @param id the logical ID of this new Construct
+   * @param _scope the parent Construct for this new Construct
+   * @param _id the logical ID of this new Construct
    * @param props the properties of the referenced custom Deployment Configuration
    * @returns a Construct representing a reference to an existing custom Deployment Configuration
    */
-  public static import(scope: cdk.Construct, id: string, props: LambdaDeploymentConfigImportProps): ILambdaDeploymentConfig {
-    return new ImportedLambdaDeploymentConfig(scope, id, props);
+  public static import(_scope: cdk.Construct, _id: string, props: LambdaDeploymentConfigImportProps): ILambdaDeploymentConfig {
+    return deploymentConfig(props.deploymentConfigName);
   }
 
   private constructor() {
     // nothing to do until CFN supports custom lambda deployment configurations
   }
+}
+
+function deploymentConfig(name: string): ILambdaDeploymentConfig {
+  return {
+    deploymentConfigName: name,
+    deploymentConfigArn: arnForDeploymentConfig(name)
+  };
 }

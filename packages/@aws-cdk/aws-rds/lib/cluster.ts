@@ -116,7 +116,7 @@ export interface DatabaseClusterProps {
 /**
  * A new or imported clustered database.
  */
-export abstract class DatabaseClusterBase extends Resource implements IDatabaseCluster {
+abstract class DatabaseClusterBase extends Resource implements IDatabaseCluster {
   /**
    * Import an existing DatabaseCluster from properties
    */
