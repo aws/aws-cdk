@@ -147,12 +147,12 @@ export interface IBucket extends IResource {
    * Without arguments, this method will grant read ("s3:GetObject") access to
    * all objects ("*") in the bucket.
    *
-   * The method returns the `iam.PolicyStatement` object, which can then be modified
+   * The method returns the `iam.Grant` object, which can then be modified
    * as needed. For example, you can add a condition that will restrict access only
    * to an IPv4 range like this:
    *
-   *     const statement = bucket.grantPublicAccess();
-   *     statement.addCondition('IpAddress', { "aws:SourceIp": "54.240.143.0/24" });
+   *     const grant = bucket.grantPublicAccess();
+   *     grant.resourceStatement!.addCondition(‘IpAddress’, { “aws:SourceIp”: “54.240.143.0/24” });
    *
    *
    * @param keyPrefix the prefix of S3 object keys (e.g. `home/*`). Default is "*".
@@ -454,12 +454,12 @@ export abstract class BucketBase extends Resource implements IBucket {
    * Without arguments, this method will grant read ("s3:GetObject") access to
    * all objects ("*") in the bucket.
    *
-   * The method returns the `iam.PolicyStatement` object, which can then be modified
+   * The method returns the `iam.Grant` object, which can then be modified
    * as needed. For example, you can add a condition that will restrict access only
    * to an IPv4 range like this:
    *
-   *     const statement = bucket.grantPublicAccess();
-   *     statement.addCondition('IpAddress', { "aws:SourceIp": "54.240.143.0/24" });
+   *     const grant = bucket.grantPublicAccess();
+   *     grant.resourceStatement!.addCondition(‘IpAddress’, { “aws:SourceIp”: “54.240.143.0/24” });
    *
    *
    * @param keyPrefix the prefix of S3 object keys (e.g. `home/*`). Default is "*".
