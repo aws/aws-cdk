@@ -87,7 +87,7 @@ export interface LogGroupImportProps {
 /**
  * An CloudWatch Log Group
  */
-export abstract class LogGroupBase extends Resource implements ILogGroup {
+abstract class LogGroupBase extends Resource implements ILogGroup {
   /**
    * The ARN of this log group
    */

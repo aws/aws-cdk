@@ -155,7 +155,7 @@ export interface ProjectImportProps {
  * (or one defined in a different CDK Stack),
  * use the {@link import} method.
  */
-export abstract class ProjectBase extends Resource implements IProject {
+abstract class ProjectBase extends Resource implements IProject {
   public abstract readonly grantPrincipal: iam.IPrincipal;
 
   /** The ARN of this Project. */

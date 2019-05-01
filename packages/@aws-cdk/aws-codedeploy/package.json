@@ -95,7 +95,7 @@
   },
   "awslint": {
     "exclude": [
-      "construct-ctor:@aws-cdk/aws-codedeploy.ServerDeploymentGroupBase.<initializer>.params[2]"
+      "construct-interface-extends-iconstruct:@aws-cdk/aws-codedeploy.IServerDeploymentConfig"
     ]
   }
 }

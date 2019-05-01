@@ -1,6 +1,6 @@
 import cdk = require("@aws-cdk/cdk");
 import { CfnApplication } from "../codedeploy.generated";
-import { applicationNameToArn } from "../utils";
+import { arnForApplication } from "../utils";
 
 /**
  * Represents a reference to a CodeDeploy Application deploying to AWS Lambda.
@@ -60,7 +60,7 @@ export class LambdaApplication extends cdk.Construct implements ILambdaApplicati
     });
 
     this.applicationName = resource.ref;
-    this.applicationArn = applicationNameToArn(this.applicationName, this);
+    this.applicationArn = arnForApplication(this.applicationName);
   }
 
   public export(): LambdaApplicationImportProps {
@@ -92,7 +92,7 @@ class ImportedLambdaApplication extends cdk.Construct implements ILambdaApplicat
     super(scope, id);
 
     this.applicationName = props.applicationName;
-    this.applicationArn = applicationNameToArn(props.applicationName, this);
+    this.applicationArn = arnForApplication(props.applicationName);
   }
 
   public export(): LambdaApplicationImportProps {

@@ -52,7 +52,7 @@ export interface ReceiptRuleSetProps {
 /**
  * A new or imported receipt rule set.
  */
-export abstract class ReceiptRuleSetBase extends Resource implements IReceiptRuleSet {
+abstract class ReceiptRuleSetBase extends Resource implements IReceiptRuleSet {
   public abstract readonly name: string;
 
   private lastAddedRule?: ReceiptRule;

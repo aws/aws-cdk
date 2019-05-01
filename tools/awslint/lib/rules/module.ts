@@ -1,6 +1,6 @@
 import reflect = require('jsii-reflect');
-import { findCfnResources } from '../cfn-resources';
 import { Linter } from '../linter';
+import { findCfnResources } from './resource';
 
 interface ModuleLinterContext  {
   readonly assembly: reflect.Assembly;

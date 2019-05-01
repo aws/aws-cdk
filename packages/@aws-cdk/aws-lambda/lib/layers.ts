@@ -67,7 +67,7 @@ export interface ILayerVersion extends IResource {
 /**
  * A reference to a Lambda Layer version.
  */
-export abstract class LayerVersionBase extends Resource implements ILayerVersion {
+abstract class LayerVersionBase extends Resource implements ILayerVersion {
   public abstract readonly layerVersionArn: string;
   public abstract readonly compatibleRuntimes?: Runtime[];
 

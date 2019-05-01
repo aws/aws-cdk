@@ -102,7 +102,7 @@ export interface SecretImportProps {
 /**
  * The common behavior of Secrets. Users should not use this class directly, and instead use ``Secret``.
  */
-export abstract class SecretBase extends Resource implements ISecret {
+abstract class SecretBase extends Resource implements ISecret {
   public abstract readonly encryptionKey?: kms.IEncryptionKey;
   public abstract readonly secretArn: string;
 
