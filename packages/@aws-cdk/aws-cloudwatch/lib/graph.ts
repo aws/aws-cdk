@@ -3,6 +3,7 @@ import { Alarm } from "./alarm";
 import { Metric } from "./metric";
 import { parseStatistic } from './util.statistic';
 import { ConcreteWidget } from "./widget";
+import { YAxis } from "./yaxis";
 
 /**
  * Basic properties for widgets that display metrics
@@ -45,11 +46,9 @@ export interface AlarmWidgetProps extends MetricWidgetProps {
   readonly alarm: Alarm;
 
   /**
-   * Range of left Y axis
-   *
-   * @default 0..automatic
+   * Left Y axis
    */
-  readonly leftAxisRange?: YAxisRange;
+  readonly leftYAxis?: YAxis;
 }
 
 /**
@@ -78,7 +77,7 @@ export class AlarmWidget extends ConcreteWidget {
           alarms: [this.props.alarm.alarmArn]
         },
         yAxis: {
-          left: this.props.leftAxisRange !== undefined ? this.props.leftAxisRange : { min: 0 }
+          left: this.props.leftYAxis !== undefined ? this.props.leftYAxis : { min: 0 }
         }
       }
     }];
@@ -115,18 +114,14 @@ export interface GraphWidgetProps extends MetricWidgetProps {
   readonly stacked?: boolean;
 
   /**
-   * Range of left Y axis
-   *
-   * @default 0..automatic
+   * Left Y axis
    */
-  readonly leftAxisRange?: YAxisRange;
+  readonly leftYAxis?: YAxis;
 
   /**
-   * Range of right Y axis
-   *
-   * @default 0..automatic
+   * Right Y axis
    */
-  readonly rightAxisRange?: YAxisRange;
+  readonly rightYAxis?: YAxis;
 }
 
 /**
@@ -158,8 +153,8 @@ export class GraphWidget extends ConcreteWidget {
                 (this.props.rightAnnotations || []).map(mapAnnotation('right')))
         },
         yAxis: {
-          left: this.props.leftAxisRange !== undefined ? this.props.leftAxisRange : { min: 0 },
-          right: this.props.rightAxisRange !== undefined ? this.props.rightAxisRange : { min: 0 },
+          left: this.props.leftYAxis !== undefined ? this.props.leftYAxis : { min: 0 },
+          right: this.props.rightYAxis !== undefined ? this.props.rightYAxis : { min: 0 },
         }
       }
     }];
@@ -202,25 +197,6 @@ export class SingleValueWidget extends ConcreteWidget {
       }
     }];
   }
-}
-
-/**
- * A minimum and maximum value for either the left or right Y axis
- */
-export interface YAxisRange {
-  /**
-   * The minimum value
-   *
-   * @default Automatic
-   */
-  readonly min?: number;
-
-  /**
-   * The maximum value
-   *
-   * @default Automatic
-   */
-  readonly max?: number;
 }
 
 /**
