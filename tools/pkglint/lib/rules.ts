@@ -246,17 +246,18 @@ export class CDKPackage extends ValidationRule {
   }
 }
 
-export class NoTscBuildInfo extends ValidationRule {
+export class NoTsBuildInfo extends ValidationRule {
   public readonly name = 'no-tsc-build-info';
 
   public validate(pkg: PackageJson): void {
     // skip private packages
     if (pkg.json.private) { return; }
 
-    // If we don't add this, the published package will contain TSC build files,
-    // (tsconfig.tsbuildinfo) and might as well strip tsconfig.json while we're
-    // at it.
-    fileShouldContain(this.name, pkg, '.npmignore', 'tsconfig.*');
+    // Stop 'tsconfig.tsbuildinfo' and regular '.tsbuildinfo' files from being
+    // published to NPM.
+    // We might at some point also want to strip tsconfig.json but for now,
+    // the TypeScript DOCS BUILD needs to it to load the typescript source.
+    fileShouldContain(this.name, pkg, '.npmignore', '*.tsbuildinfo');
   }
 }
 

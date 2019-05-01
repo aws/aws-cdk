@@ -13,6 +13,11 @@ export interface ISecurityGroup extends IResource, ISecurityGroupRule, IConnecta
   readonly securityGroupId: string;
 
   /**
+   * The ID of the VPC this security group is part of.
+   */
+  readonly securityGroupVpcId: string;
+
+  /**
    * Add an ingress rule for the current security group
    *
    * `remoteRule` controls where the Rule object is created if the peer is also a
@@ -45,12 +50,18 @@ export interface SecurityGroupImportProps {
    * ID of security group
    */
   readonly securityGroupId: string;
+
+  /**
+   * The VPC ID this security group is part of. If not provided, the `securityGroupVpcId` property
+   * will throw an exception.
+   */
+  readonly securityGroupVpcId?: string;
 }
 
 /**
  * A SecurityGroup that is not created in this template
  */
-export abstract class SecurityGroupBase extends Resource implements ISecurityGroup {
+abstract class SecurityGroupBase extends Resource implements ISecurityGroup {
   /**
    * Return whether the indicated object is a security group
    */
@@ -59,6 +70,8 @@ export abstract class SecurityGroupBase extends Resource implements ISecurityGro
   }
 
   public abstract readonly securityGroupId: string;
+  public abstract readonly securityGroupVpcId: string;
+
   public readonly canInlineRule = false;
   public readonly connections: Connections = new Connections({ securityGroups: [this] });
 
@@ -245,7 +258,20 @@ export class SecurityGroup extends SecurityGroupBase {
    * Import an existing SecurityGroup
    */
   public static import(scope: Construct, id: string, props: SecurityGroupImportProps): ISecurityGroup {
-    return new ImportedSecurityGroup(scope, id, props);
+    class Import extends SecurityGroupBase {
+      public readonly securityGroupId = props.securityGroupId;
+
+      public get securityGroupVpcId() {
+        if (!props.securityGroupVpcId) { throw new Error(`Imported security group did not specify 'securityGroupVpcId'`); }
+        return props.securityGroupVpcId;
+      }
+
+      public export() {
+        return props;
+      }
+    }
+
+    return new Import(scope, id);
   }
 
   /**
@@ -262,6 +288,11 @@ export class SecurityGroup extends SecurityGroupBase {
    * The ID of the security group
    */
   public readonly securityGroupId: string;
+
+  /**
+   * The VPC ID this security group is part of.
+   */
+  public readonly securityGroupVpcId: string;
 
   private readonly securityGroup: CfnSecurityGroup;
   private readonly directIngressRules: CfnSecurityGroup.IngressProperty[] = [];
@@ -285,6 +316,7 @@ export class SecurityGroup extends SecurityGroupBase {
     });
 
     this.securityGroupId = this.securityGroup.securityGroupId;
+    this.securityGroupVpcId = this.securityGroup.securityGroupVpcId;
     this.groupName = this.securityGroup.securityGroupName;
     this.vpcId = this.securityGroup.securityGroupVpcId;
 
@@ -487,23 +519,6 @@ export interface ConnectionRule {
    * @default No description
    */
   readonly description?: string;
-}
-
-/**
- * A SecurityGroup that hasn't been created here
- */
-class ImportedSecurityGroup extends SecurityGroupBase {
-  public readonly securityGroupId: string;
-
-  constructor(scope: Construct, id: string, private readonly props: SecurityGroupImportProps) {
-    super(scope, id);
-
-    this.securityGroupId = props.securityGroupId;
-  }
-
-  public export() {
-    return this.props;
-  }
 }
 
 /**

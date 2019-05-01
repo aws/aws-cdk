@@ -78,7 +78,7 @@ The `CompositePrincipal` class can also be used to define complex principals, fo
 ```ts
 const role = new iam.Role(this, 'MyRole', {
   assumedBy: new iam.CompositePrincipal(
-    new iam.ServicePrincipal('ec2.amazonawas.com'),
+    new iam.ServicePrincipal('ec2.amazonaws.com'),
     new iam.AccountPrincipal('1818188181818187272')
   )
 });

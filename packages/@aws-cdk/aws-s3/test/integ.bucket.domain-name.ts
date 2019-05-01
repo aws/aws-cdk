@@ -13,8 +13,8 @@ class TestStack extends cdk.Stack {
       bucketArn: "arn:aws:s3:::my-bucket-test"
     });
 
-    new cdk.CfnOutput(this, 'RealBucketDomain', { value: bucket.domainName });
-    new cdk.CfnOutput(this, 'ImportedBucketDomain', { value: bucket2.domainName });
+    new cdk.CfnOutput(this, 'RealBucketDomain', { value: bucket.bucketDomainName });
+    new cdk.CfnOutput(this, 'ImportedBucketDomain', { value: bucket2.bucketDomainName });
     /// !hide
   }
 }
