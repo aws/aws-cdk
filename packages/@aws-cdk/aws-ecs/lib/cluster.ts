@@ -266,6 +266,48 @@ export class EcsOptimizedAmi implements ec2.IMachineImageSource {
 }
 
 /**
+ * Construct a GPU-based Linux machine image from the latest ECS Optimized AMI published in SSM
+ */
+export class EcsGpuOptimizedAmi implements ec2.IMachineImageSource {
+  private readonly amiParameterName: string = '/aws/service/ecs/optimized-ami/amazon-linux-2/gpu/recommended';
+
+  /**
+   * Return the correct image
+   */
+  public getImage(scope: Construct): ec2.MachineImage {
+    const ssmProvider = new SSMParameterProvider(scope, {
+      parameterName: this.amiParameterName
+    });
+
+    const json = ssmProvider.parameterValue("{\"image_id\": \"\"}");
+    const ami = JSON.parse(json).image_id;
+
+    return new ec2.MachineImage(ami, new ec2.LinuxOS());
+  }
+}
+
+/**
+ * Construct a ARM-based Linux machine image from the latest ECS Optimized AMI published in SSM
+ */
+export class EcsArmOptimizedAmi implements ec2.IMachineImageSource {
+  private readonly amiParameterName: string = '/aws/service/ecs/optimized-ami/amazon-linux-2/arm64/recommended';
+
+  /**
+   * Return the correct image
+   */
+  public getImage(scope: Construct): ec2.MachineImage {
+    const ssmProvider = new SSMParameterProvider(scope, {
+      parameterName: this.amiParameterName
+    });
+
+    const json = ssmProvider.parameterValue("{\"image_id\": \"\"}");
+    const ami = JSON.parse(json).image_id;
+
+    return new ec2.MachineImage(ami, new ec2.LinuxOS());
+  }
+}
+
+/**
  * An ECS cluster
  */
 export interface ICluster extends IResource {
