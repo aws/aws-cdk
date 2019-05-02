@@ -252,9 +252,7 @@ export = {
     // WHEN
     const exportedRule = rule.export();
 
-    const importedRule = config.ManagedRule.import(stack, 'ImportedRule', {
-      ruleName: 'name'
-    });
+    const importedRule = config.ManagedRule.fromRuleName(stack, 'ImportedRule', 'name');
 
     // THEN
     test.deepEqual(stack.node.resolve(exportedRule), {

@@ -16,7 +16,7 @@ export interface IRule extends IResource {
   /**
    * Exports this rule from stack.
    */
-  export(): RuleImportProps;
+  export(): RuleAttributes;
 
   /**
    * Defines a CloudWatch event rule which triggers for rule events. Use
@@ -38,7 +38,7 @@ export interface IRule extends IResource {
 /**
  * Construction properties for an imported rule.
  */
-export interface RuleImportProps {
+export interface RuleAttributes {
   /**
    * The rule name.
    */
@@ -52,11 +52,13 @@ abstract class RuleBase extends Resource implements IRule {
   /**
    * Imports an existing rule.
    */
-  public static import(scope: Construct, id: string, props: RuleImportProps): IRule {
+  public static fromRuleName(scope: Construct, id: string, ruleName: string): IRule {
     class Import extends RuleBase implements IRule {
-      public readonly ruleName = props.ruleName;
+      public ruleName = ruleName;
 
-      public export() { return props; }
+      public export(): RuleAttributes {
+        return { ruleName };
+      }
     }
 
     return new Import(scope, id);
@@ -64,7 +66,7 @@ abstract class RuleBase extends Resource implements IRule {
 
   public abstract readonly ruleName: string;
 
-  public abstract export(): RuleImportProps;
+  public abstract export(): RuleAttributes;
 
   /**
    * Defines a CloudWatch event rule which triggers for rule events. Use
@@ -131,7 +133,7 @@ abstract class RuleNew extends RuleBase implements IRule {
   /**
    * Exports this rule from the stack.
    */
-  public export(): RuleImportProps {
+  public export(): RuleAttributes {
     return {
       ruleName: new CfnOutput(this, 'RuleName', { value: this.ruleName }).makeImportValue().toString()
     };
