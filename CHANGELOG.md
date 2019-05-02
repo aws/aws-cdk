@@ -1,10 +1,50 @@
+
+
 # Change Log
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.30.0](https://github.com/awslabs/aws-cdk/compare/v0.29.0...v0.30.0) (2019-05-02)
+
+### Bug Fixes
+
+* **cdk-dasm:** fix bin for cdk-dasm ([#2383](https://github.com/awslabs/aws-cdk/issues/2383)) ([760f518](https://github.com/awslabs/aws-cdk/commit/760f518))
+
+### Code Refactoring
+
+* **awslint:** construct-base-is-private, resource-attribute ([#2349](https://github.com/awslabs/aws-cdk/issues/2349)) ([973b506](https://github.com/awslabs/aws-cdk/commit/973b506)), closes [#2426](https://github.com/awslabs/aws-cdk/issues/2426) [#2409](https://github.com/awslabs/aws-cdk/issues/2409)
+
+### Features
+
+* **cdk-test:** check API compatibility ([#2356](https://github.com/awslabs/aws-cdk/issues/2356)) ([1642925](https://github.com/awslabs/aws-cdk/commit/1642925)), closes [#145](https://github.com/awslabs/aws-cdk/issues/145)
+* **codepipeline:** allow creation of GitHub Pipelines without source trigger ([#2332](https://github.com/awslabs/aws-cdk/issues/2332)) ([ed39a8c](https://github.com/awslabs/aws-cdk/commit/ed39a8c))
+* **elbv2:** add TLS listener for NLB ([#2122](https://github.com/awslabs/aws-cdk/issues/2122)) ([71d694f](https://github.com/awslabs/aws-cdk/commit/71d694f))
+
+
+
+### BREAKING CHANGES
+
+* `s3.Bucket.domainName` renamed to `s3.Bucket.bucketDomainName`.
+* `codedeploy.IXxxDeploymentConfig.deploymentConfigArn` is now a property and not a method.
+* `ec2.SecurityGroupBase` is now private
+* `ec2.VpcNetworkBase` is now private
+* `kinesis.StreamBase` is now private
+* `kms.EncryptionKeyBase` is now private
+* `logs.LogGroupBase` is now private
+* `ssm.ParameterBase` is now private
+* `eks.ClusterBase` is now private
+* `codebuild.ProjectBase` is now private
+* `codecommit.RepositoryBase` is now private
+* `codedeploy.ServerDeploymentGroupBase` is now private
+* `eks.ClusterBase` is now private
+* `lambda.LayerVersionBase` is now private
+* `rds.DatabaseClusterBase` is now private
+* `secretsmanager.SecretBase` is now private
+* `ses.ReceiptRuleSetBase` is now private
+* **codepipeline:** the `pollForSourceChanges` property in `GitHubSourceAction` has been renamed to `trigger`, and its type changed from a `boolean` to an enum.
+
 
 ## [0.29.0](https://github.com/awslabs/aws-cdk/compare/v0.28.0...v0.29.0) (2019-04-24)
-
 
 ### Bug Fixes
 
