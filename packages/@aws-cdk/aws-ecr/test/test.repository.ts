@@ -189,7 +189,7 @@ export = {
 
     // WHEN/THEN
     test.throws(() => ecr.Repository.fromRepositoryArn(stack, 'arn', cdk.Fn.getAtt('Boom', 'Boom').toString()),
-      /repositoryArn is a late-bound value, and therefore repositoryName is required/);
+      /\"repositoryArn\" is a late-bound value, and therefore \"repositoryName\" is required\. Use \`fromRepositoryAttributes\` instead/);
 
     test.done();
   },
