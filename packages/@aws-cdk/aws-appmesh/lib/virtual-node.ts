@@ -132,7 +132,7 @@ export interface VirtualNodeProps {
   readonly listener?: ListenerProps;
 }
 
-export abstract class VirtualNodeBase extends cdk.Resource implements IVirtualNode {
+abstract class VirtualNodeBase extends cdk.Resource implements IVirtualNode {
   /**
    * The name of the VirtualNode
    */

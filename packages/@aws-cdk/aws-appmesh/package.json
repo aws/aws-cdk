@@ -84,6 +84,11 @@
   },
   "awslint": {
     "exclude": [
+      "resource-attribute:@aws-cdk/aws-appmesh.Mesh.meshUid",
+      "resource-attribute:@aws-cdk/aws-appmesh.Route.routeUid",
+      "resource-attribute:@aws-cdk/aws-appmesh.VirtualNode.virtualNodeUid",
+      "resource-attribute:@aws-cdk/aws-appmesh.VirtualRouter.virtualRouterUid",
+      "resource-attribute:@aws-cdk/aws-appmesh.VirtualService.virtualServiceUid",
       "resource-attribute:@aws-cdk/aws-appmesh.IMesh.meshUid",
       "resource-attribute:@aws-cdk/aws-appmesh.IVirtualNode.virtualNodeUid",
       "resource-attribute:@aws-cdk/aws-appmesh.IVirtualService.virtualServiceUid",

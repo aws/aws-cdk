@@ -128,7 +128,7 @@ export interface IMesh extends cdk.IResource {
 /**
  * Represents a new or imported AppMesh mesh
  */
-export abstract class MeshBase extends cdk.Resource implements IMesh {
+abstract class MeshBase extends cdk.Resource implements IMesh {
   /**
    * The name of the AppMesh mesh
    */

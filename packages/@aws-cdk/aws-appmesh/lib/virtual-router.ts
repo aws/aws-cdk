@@ -80,7 +80,7 @@ export interface VirtualRouterBaseProps {
   readonly virtualRouterName?: string;
 }
 
-export abstract class VirtualRouterBase extends cdk.Resource implements IVirtualRouter {
+abstract class VirtualRouterBase extends cdk.Resource implements IVirtualRouter {
   /**
    * The name of the VirtualRouter
    */
