@@ -10,11 +10,20 @@ const GRANT_RESULT_FQN = '@aws-cdk/aws-iam.Grant';
 
 export const resourceLinter = new Linter(a => ResourceReflection.findAll(a));
 
+interface Attribute {
+  property: reflect.Property;
+  name: string;
+}
+
 export class ResourceReflection {
   /**
    * @returns all resource constructs (everything that extends `cdk.Resource`)
    */
   public static findAll(assembly: reflect.Assembly) {
+    if (!assembly.system.assemblies.find(a => a.name === CORE_MODULE)) {
+      return []; // not part of the dep stack
+    }
+
     const baseResource = assembly.system.findClass(RESOURCE_BASE_CLASS_FQN);
 
     return ConstructReflection
@@ -23,7 +32,7 @@ export class ResourceReflection {
       .map(c => new ResourceReflection(c));
   }
 
-  public readonly attributes: reflect.Property[]; // actual attribute props
+  public readonly attributes: Attribute[]; // actual attribute props
   public readonly fqn: string; // expected fqn of resource class
 
   public readonly assembly: reflect.Assembly;
@@ -35,29 +44,67 @@ export class ResourceReflection {
     this.assembly = construct.classType.assembly;
     this.sys = this.assembly.system;
 
-    const resourceFullName = determineCloudFormationResourceName(construct.classType);
-    const cfn = CfnResourceReflection.findByName(this.sys, resourceFullName);
+    const cfn = tryResolveCfnResource(construct.classType);
     if (!cfn) {
-      throw new Error(`Cannot find L1 class for L2 ${construct.fqn}. Is "${resourceFullName}" an actual CloudFormation resource. If not, ` +
-        `use the "@resource" in the class's jsdoc tag to indicate the full resource name (e.g. "AWS::Route53::HostedZone")`);
+      throw new Error(`Cannot find L1 class for L2 ${construct.fqn}. ` +
+        `Is "${guessResourceName(construct.fqn)}" an actual CloudFormation resource. ` +
+        `If not, use the "@resource" doc tag to indicate the full resource name (e.g. "@resource AWS::Route53::HostedZone")`);
     }
+
     this.cfn = cfn;
     this.basename = construct.classType.name;
     this.fqn = construct.fqn;
     this.attributes = this.findAttributeProperties();
   }
 
-  private findAttributeProperties() {
-    const result = new Array<reflect.Property>();
+  private findAttributeProperties(): Attribute[] {
+    const result = new Array<Attribute>();
 
     for (const attr of this.cfn.attributeNames) {
       const attribute = this.construct.classType.allProperties.find(p => p.name === attr);
       if (attribute) {
-        result.push(attribute);
+        result.push({
+          property: attribute,
+          name: attr
+        });
       }
     }
 
+    for (const p of this.construct.classType.allProperties) {
+      const attrName = this.findAttributeTag(p);
+      if (!attrName) {
+        continue;
+      }
+
+      result.push({
+        name: attrName,
+        property: p
+      });
+    }
+
     return result;
+  }
+
+  private findAttributeTag(p: reflect.Property): string | undefined {
+    const attrName = p.docs.customTag('attribute');
+    if (attrName) {
+      return attrName;
+    }
+
+    if (!p.overrides) {
+      return undefined;
+    }
+
+    if (p.overrides.isInterfaceType() || p.overrides.isClassType()) {
+      for (const base of p.overrides.allProperties.filter(x => x.name === p.name)) {
+        const baseAttrName = this.findAttributeTag(base);
+        if (baseAttrName) {
+          return baseAttrName;
+        }
+      }
+    }
+
+    return undefined;
   }
 }
 
@@ -98,6 +145,8 @@ resourceLinter.add({
     const resourceInterface = e.ctx.construct.interfaceType;
     if (!resourceInterface) { return; }
 
+    console.error(e.ctx.attributes.map(x=>x.name));
+
     for (const name of e.ctx.cfn.attributeNames) {
       const found = e.ctx.attributes.find(a => a.name === name);
       e.assert(found, `${e.ctx.fqn}.${name}`, name);
@@ -110,7 +159,7 @@ resourceLinter.add({
   message: 'resource attributes must be immutable (readonly)',
   eval: e => {
     for (const att of e.ctx.attributes) {
-      e.assert(att.immutable, att.parentType.fqn + '.' + att.name);
+      e.assert(att.property.immutable, att.property.parentType.fqn + '.' + att.name);
     }
   }
 });
@@ -130,22 +179,42 @@ resourceLinter.add({
   }
 });
 
-function determineCloudFormationResourceName(cls: reflect.ClassType) {
-  const tag = cls.docs.customTag('resource');
+function tryResolveCfnResource(resourceClass: reflect.ClassType): CfnResourceReflection | undefined {
+  const sys = resourceClass.system;
+
+  // if there is a @resource doc tag, it takes precedece
+  const tag = resourceClass.docs.customTag('resource');
   if (tag) {
-    return tag;
+    return CfnResourceReflection.findByName(sys, tag);
   }
 
-  const match = /@aws-cdk\/([a-z]+)-([a-z0-9]+)\.([A-Z][a-zA-Z0-9]+)/.exec(cls.fqn);
-  if (!match) {
-    throw new Error(`Unable to parse resource construct FQN: ${cls.fqn}`);
+  // parse the FQN of the class name and see if we can find a matching CFN resource
+  const guess = guessResourceName(resourceClass.fqn);
+  if (guess) {
+    const cfn = CfnResourceReflection.findByName(sys, guess);
+    if (cfn) {
+      return cfn;
+    }
   }
+
+  // try to resolve through ancestors
+  for (const base of resourceClass.getAncestors()) {
+    const ret = tryResolveCfnResource(base);
+    if (ret) {
+      return ret;
+    }
+  }
+
+  // failed misrably
+  return undefined;
+}
+
+function guessResourceName(fqn: string) {
+  const match = /@aws-cdk\/([a-z]+)-([a-z0-9]+)\.([A-Z][a-zA-Z0-9]+)/.exec(fqn);
+  if (!match) { return undefined; }
 
   const [ , org, ns, rs ] = match;
-
-  if (!org || !ns || !rs) {
-    throw new Error(`Unable to parse resource construct FQN: ${cls.fqn}`);
-  }
+  if (!org || !ns || !rs) { return undefined; }
 
   return `${org}::${ns}::${rs}`;
 }

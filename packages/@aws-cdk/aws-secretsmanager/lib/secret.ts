@@ -197,8 +197,8 @@ export class Secret extends SecretBase {
    *
    * @returns an AttachedSecret
    */
-  public addTargetAttachment(id: string, options: AttachedSecretOptions): AttachedSecret {
-    return new AttachedSecret(this, id, {
+  public addTargetAttachment(id: string, options: AttachedSecretOptions): SecretTargetAttachment {
+    return new SecretTargetAttachment(this, id, {
       secret: this,
       ...options
     });
@@ -265,21 +265,38 @@ export interface AttachedSecretOptions {
 /**
  * Construction properties for an AttachedSecret.
  */
-export interface AttachedSecretProps extends AttachedSecretOptions {
+export interface SecretTargetAttachmentProps extends AttachedSecretOptions {
   /**
    * The secret to attach to the target.
    */
   readonly secret: ISecret;
 }
 
+export interface ISecretTargetAttachment extends ISecret { }
+
 /**
  * An attached secret.
  */
-export class AttachedSecret extends SecretBase implements ISecret {
+export class SecretTargetAttachment extends SecretBase implements ISecretTargetAttachment {
+
+  public static fromSecretTargetAttachmentSecretArn(scope: Construct, id: string, secretTargetAttachmentSecretArn: string): ISecretTargetAttachment {
+    class Import extends SecretBase implements ISecretTargetAttachment {
+      public encryptionKey?: kms.IEncryptionKey | undefined;
+      public secretArn = secretTargetAttachmentSecretArn;
+      public export(): SecretAttributes {
+        return {
+          secretArn: this.secretArn
+        };
+      }
+    }
+
+    return new Import(scope, id);
+  }
+
   public readonly encryptionKey?: kms.IEncryptionKey;
   public readonly secretArn: string;
 
-  constructor(scope: Construct, id: string, props: AttachedSecretProps) {
+  constructor(scope: Construct, id: string, props: SecretTargetAttachmentProps) {
     super(scope, id);
 
     const attachment = new secretsmanager.CfnSecretTargetAttachment(this, 'Resource', {

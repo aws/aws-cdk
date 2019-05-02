@@ -711,7 +711,7 @@ export = {
     const stack = new Stack();
 
     // WHEN
-    const pl = codepipeline.Pipeline.fromPipelineArn(stack, 'arn:aws:codepipeline:us-east-1:123456789012:MyDemoPipeline');
+    const pl = codepipeline.Pipeline.fromPipelineArn(stack, 'imported', 'arn:aws:codepipeline:us-east-1:123456789012:MyDemoPipeline');
 
     // THEN
     test.deepEqual(pl.pipelineArn, 'arn:aws:codepipeline:us-east-1:123456789012:MyDemoPipeline');

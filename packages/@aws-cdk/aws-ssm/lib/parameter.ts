@@ -42,6 +42,8 @@ export interface IParameter extends IResource {
 export interface IStringParameter extends IParameter {
   /**
    * The parameter value. Value must not nest another parameter. Do not use {{}} in the value.
+   *
+   * @attribute parameterValue
    */
   readonly stringValue: string;
 }
@@ -53,6 +55,8 @@ export interface IStringListParameter extends IParameter {
   /**
    * The parameter value. Value must not nest another parameter. Do not use {{}} in the value. Values in the array
    * cannot contain commas (``,``).
+   *
+   * @attribute parameterValue
    */
   readonly stringListValue: string[];
 }
@@ -142,20 +146,21 @@ const STRINGLIST_PARAM_TYPE = 'StringList';
 
 /**
  * Creates a new String SSM Parameter.
+ * @resource AWS::SSM::Parameter
  */
 export class StringParameter extends ParameterBase implements IStringParameter {
 
   /**
    * Imports an external string parameter.
    */
-  public static fromName(scope: Construct, parameterName: string): IStringParameter {
+  public static fromStringParameterName(scope: Construct, id: string, stringParameterName: string): IStringParameter {
     class Import extends ParameterBase {
-      public readonly parameterName = parameterName;
+      public readonly parameterName = stringParameterName;
       public readonly parameterType = STRING_PARAM_TYPE;
-      public readonly stringValue = new CfnDynamicReference(CfnDynamicReferenceService.Ssm, parameterName).toString();
+      public readonly stringValue = new CfnDynamicReference(CfnDynamicReferenceService.Ssm, stringParameterName).toString();
     }
 
-    return new Import(scope, parameterName);
+    return new Import(scope, id);
   }
 
   public readonly parameterName: string;
@@ -185,20 +190,21 @@ export class StringParameter extends ParameterBase implements IStringParameter {
 
 /**
  * Creates a new StringList SSM Parameter.
+ * @resource AWS::SSM::Parameter
  */
 export class StringListParameter extends ParameterBase implements IStringListParameter {
 
   /**
    * Imports an external parameter of type string list.
    */
-  public static fromName(scope: Construct, parameterName: string): IStringListParameter {
+  public static fromStringListParameterName(scope: Construct, id: string, stringListParameterName: string): IStringListParameter {
     class Import extends ParameterBase {
-      public readonly parameterName = parameterName;
+      public readonly parameterName = stringListParameterName;
       public readonly parameterType = STRINGLIST_PARAM_TYPE;
-      public readonly stringListValue = Fn.split(',', new CfnDynamicReference(CfnDynamicReferenceService.Ssm, parameterName).toString());
+      public readonly stringListValue = Fn.split(',', new CfnDynamicReference(CfnDynamicReferenceService.Ssm, stringListParameterName).toString());
     }
 
-    return new Import(scope, parameterName);
+    return new Import(scope, id);
   }
 
   public readonly parameterName: string;

@@ -130,7 +130,7 @@ export = {
     const stack = new Stack();
 
     // WHEN
-    const param = ssm.StringParameter.fromName(stack, 'MyParamName');
+    const param = ssm.StringParameter.fromStringParameterName(stack, 'MyParamName', 'MyParamName');
 
     // THEN
     test.deepEqual(stack.node.resolve(param.parameterArn), {
@@ -154,7 +154,7 @@ export = {
     const stack = new Stack();
 
     // WHEN
-    const param = ssm.StringListParameter.fromName(stack, 'MyParamName');
+    const param = ssm.StringListParameter.fromStringListParameterName(stack, 'MyParamName', 'MyParamName');
 
     // THEN
     test.deepEqual(stack.node.resolve(param.parameterArn), {

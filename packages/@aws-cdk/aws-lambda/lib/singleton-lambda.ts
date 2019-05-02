@@ -33,6 +33,8 @@ export interface SingletonFunctionProps extends FunctionProps {
  *
  * The lambda is identified using the value of 'uuid'. Run 'uuidgen'
  * for every SingletonLambda you create.
+ *
+ * @resource AWS::Lambda::Function
  */
 export class SingletonFunction extends FunctionBase {
   public readonly grantPrincipal: iam.IPrincipal;
