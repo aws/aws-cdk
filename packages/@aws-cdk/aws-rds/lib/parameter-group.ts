@@ -13,13 +13,13 @@ export interface IParameterGroup extends IResource {
   /**
    * Exports this parameter group from the stack
    */
-  export(): ParameterGroupImportProps;
+  export(): ParameterGroupAttributes;
 }
 
 /**
  * Construction properties for an imported parameter group
  */
-export interface ParameterGroupImportProps {
+export interface ParameterGroupAttributes {
   /**
    * The name of the parameter group
    */
@@ -33,11 +33,13 @@ abstract class ParameterGroupBase extends Resource implements IParameterGroup {
   /**
    * Imports a parameter group
    */
-  public static import(scope: Construct, id: string, props: ParameterGroupImportProps): IParameterGroup {
+  public static fromParameterGroupName(scope: Construct, id: string, parameterGroupName: string): IParameterGroup {
     class Import extends Construct implements IParameterGroup {
-      public readonly parameterGroupName = props.parameterGroupName;
+      public readonly parameterGroupName = parameterGroupName;
 
-      public export() { return props; }
+      public export(): ParameterGroupAttributes {
+        return { parameterGroupName };
+      }
     }
 
     return new Import(scope, id);
@@ -51,7 +53,7 @@ abstract class ParameterGroupBase extends Resource implements IParameterGroup {
   /**
    * Exports this parameter group from the stack
    */
-  public export(): ParameterGroupImportProps {
+  public export(): ParameterGroupAttributes {
     return {
       parameterGroupName: new CfnOutput(this, 'ParameterGroupName', { value: this.parameterGroupName }).makeImportValue().toString()
     };

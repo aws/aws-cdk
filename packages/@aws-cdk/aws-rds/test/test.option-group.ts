@@ -128,7 +128,7 @@ export = {
 
     // WHEN
     const exported = group.export();
-    const imported = OptionGroup.import(stack, 'ImportOptions', exported);
+    const imported = OptionGroup.fromOptionGroupName(stack, 'ImportOptions', exported.optionGroupName);
 
     // THEN
     test.deepEqual(stack.node.resolve(exported), { optionGroupName: { 'Fn::ImportValue': 'Stack:OptionsOptionGroupName16F3CF77' } });

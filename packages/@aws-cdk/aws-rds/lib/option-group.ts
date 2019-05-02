@@ -15,13 +15,13 @@ export interface IOptionGroup extends IResource {
   /**
    * Exports this option group from the stack.
    */
-  export(): OptionGroupImportProps;
+  export(): OptionGroupAttributes;
 }
 
 /**
  * Construction properties for an imported option group.
  */
-export interface OptionGroupImportProps {
+export interface OptionGroupAttributes {
   /**
    * The name of the option group.
    */
@@ -98,11 +98,13 @@ export class OptionGroup extends Resource implements IOptionGroup {
   /**
    * Import an existing option group.
    */
-  public static import(scope: Construct, id: string, props: OptionGroupImportProps): IOptionGroup {
+  public static fromOptionGroupName(scope: Construct, id: string, optionGroupName: string): IOptionGroup {
     class Import extends Construct {
-      public readonly optionGroupName = props.optionGroupName;
+      public readonly optionGroupName = optionGroupName;
 
-      public export() { return props; }
+      public export(): OptionGroupAttributes {
+        return { optionGroupName };
+      }
     }
     return new Import(scope, id);
   }
@@ -130,7 +132,7 @@ export class OptionGroup extends Resource implements IOptionGroup {
     this.optionGroupName = optionGroup.optionGroupName;
   }
 
-  public export(): OptionGroupImportProps {
+  public export(): OptionGroupAttributes {
     return {
       optionGroupName: new CfnOutput(this, 'OptionGroupName', { value: this.optionGroupName }).makeImportValue().toString(),
     };
