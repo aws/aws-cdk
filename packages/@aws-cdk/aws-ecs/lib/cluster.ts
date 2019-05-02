@@ -119,7 +119,7 @@ export class Cluster extends Resource implements ICluster {
     const autoScalingGroup = new autoscaling.AutoScalingGroup(this, id, {
       ...options,
       vpc: this.vpc,
-      machineImage: new EcsOptimizedAmi(),
+      machineImage: options.machineImage || new EcsOptimizedAmi(),
       updateType: options.updateType || autoscaling.UpdateType.ReplacingUpdate,
       instanceType: options.instanceType,
     });
@@ -474,6 +474,13 @@ export interface AddAutoScalingGroupCapacityOptions {
    * @default 300
    */
   readonly taskDrainTimeSeconds?: number;
+
+  /**
+   * The machine image for the ECS instances
+   *
+   * @default - No default machine image
+   */
+  readonly machineImage?: ec2.IMachineImageSource;
 }
 
 /**
