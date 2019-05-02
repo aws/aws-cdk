@@ -1,15 +1,27 @@
 import { Construct } from '@aws-cdk/cdk';
-import { BaseNamespaceProps, NamespaceBase, NamespaceType } from './namespace';
+import { BaseNamespaceProps, INamespace, NamespaceBase, NamespaceType } from './namespace';
 import { BaseServiceProps, Service } from './service';
 import { CfnHttpNamespace } from './servicediscovery.generated';
 
-// tslint:disable:no-empty-interface
 export interface HttpNamespaceProps extends BaseNamespaceProps {}
+
+export interface IHttpNamespace extends INamespace {
+  /**
+   * The Amazon Resource Name (ARN) of the namespace, such as
+   * arn:aws:service-discovery:us-east-1:123456789012:http-namespace/http-namespace-a1bzhi.
+   */
+  readonly httpNamespaceArn: string;
+
+  /**
+   * The ID of the namespace.
+   */
+  readonly httpNamespaceId: string;
+}
 
 /**
  * Define an HTTP Namespace
  */
-export class HttpNamespace extends NamespaceBase {
+export class HttpNamespace extends NamespaceBase implements IHttpNamespace {
   /**
    * A name for the namespace.
    */
@@ -43,6 +55,9 @@ export class HttpNamespace extends NamespaceBase {
     this.namespaceArn = ns.httpNamespaceArn;
     this.type = NamespaceType.Http;
   }
+
+  public get httpNamespaceArn() { return this.namespaceArn; }
+  public get httpNamespaceId() { return this.namespaceId; }
 
   /**
    * Creates a service within the namespace

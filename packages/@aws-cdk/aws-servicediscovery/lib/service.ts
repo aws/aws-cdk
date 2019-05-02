@@ -134,14 +134,27 @@ abstract class ServiceBase extends Resource implements IService {
   public abstract readonly serviceName: string;
 }
 
+export interface ServiceAttributes {
+  readonly serviceName: string;
+  readonly serviceId: string;
+  readonly serviceArn: string;
+  readonly dnsRecordType: DnsRecordType;
+  readonly routingPolicy: RoutingPolicy;
+}
+
 /**
  * Define a CloudMap Service
  */
 export class Service extends ServiceBase {
 
-  public static fromServiceName(scope: Construct, id: string, serviceName: string): IService {
+  public static fromServiceAttributes(scope: Construct, id: string, attrs: ServiceAttributes): IService {
     class Import extends ServiceBase {
-
+      public namespace: INamespace;
+      public serviceId = attrs.serviceId;
+      public serviceArn = attrs.serviceArn;
+      public dnsRecordType = attrs.dnsRecordType;
+      public routingPolicy = attrs.routingPolicy;
+      public serviceName = attrs.serviceName;
     }
 
     return new Import(scope, id);

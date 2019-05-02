@@ -31,8 +31,8 @@ export class Cluster extends Resource implements ICluster {
   /**
    * Import an existing cluster
    */
-  public static import(scope: Construct, id: string, props: ClusterImportProps): ICluster {
-    return new ImportedCluster(scope, id, props);
+  public static fromClusterAttributes(scope: Construct, id: string, attrs: ClusterAttributes): ICluster {
+    return new ImportedCluster(scope, id, attrs);
   }
 
   /**
@@ -183,7 +183,7 @@ export class Cluster extends Resource implements ICluster {
   /**
    * Export the Cluster
    */
-  public export(): ClusterImportProps {
+  public export(): ClusterAttributes {
     return {
       clusterName: new CfnOutput(this, 'ClusterName', { value: this.clusterName }).makeImportValue().toString(),
       clusterArn: this.clusterArn,
@@ -302,13 +302,13 @@ export interface ICluster extends IResource {
   /**
    * Export the Cluster
    */
-  export(): ClusterImportProps;
+  export(): ClusterAttributes;
 }
 
 /**
  * Properties to import an ECS cluster
  */
-export interface ClusterImportProps {
+export interface ClusterAttributes {
   /**
    * Name of the cluster
    */
@@ -329,7 +329,7 @@ export interface ClusterImportProps {
   /**
    * Security group of the cluster instances
    */
-  readonly securityGroups: ec2.SecurityGroupImportProps[];
+  readonly securityGroups: ec2.SecurityGroupAttributes[];
 
   /**
    * Whether the given cluster has EC2 capacity
@@ -380,7 +380,7 @@ class ImportedCluster extends Construct implements ICluster {
    */
   private _defaultNamespace?: cloudmap.INamespace;
 
-  constructor(scope: Construct, id: string, private readonly props: ClusterImportProps) {
+  constructor(scope: Construct, id: string, private readonly props: ClusterAttributes) {
     super(scope, id);
     this.clusterName = props.clusterName;
     this.vpc = ec2.VpcNetwork.import(this, "vpc", props.vpc);
@@ -395,7 +395,7 @@ class ImportedCluster extends Construct implements ICluster {
 
     let i = 1;
     for (const sgProps of props.securityGroups) {
-      this.connections.addSecurityGroup(ec2.SecurityGroup.import(this, `SecurityGroup${i}`, sgProps));
+      this.connections.addSecurityGroup(ec2.SecurityGroup.fromSecurityGroupAttributes(this, `SecurityGroup${i}`, sgProps));
       i++;
     }
   }

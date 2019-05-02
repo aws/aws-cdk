@@ -3,7 +3,7 @@ import { Linter } from '../linter';
 import { ResourceReflection } from './resource';
 
 export const importsLinter = new Linter<ImportsReflection>(assembly => ResourceReflection
-  .findAllResources(assembly)
+  .findAll(assembly)
   .filter(r => r.construct && r.construct.interfaceType) // only resources that have an interface can have "fromXxx" methods
   .map(construct => new ImportsReflection(construct)));
 
@@ -41,22 +41,9 @@ class ImportsReflection {
 
 importsLinter.add({
   code: 'from-method',
-  message: 'resource should have at least one "fromXxx" static method (usually "fromXxxArn")',
+  message: 'resource should have at least one "fromXxx" static method or "fromXxxAttributes"',
   eval: e => {
-    e.assert(e.ctx.fromMethods.length > 0, e.ctx.resource.fqn);
-  }
-});
-
-importsLinter.add({
-  code: 'from-arn',
-  message: 'if the resource has an ARN attribute, it must provide a fromXxxArn import method',
-  eval: e => {
-    const hasArn = e.ctx.resource.attributeNames.find(a => a.endsWith('Arn'));
-    if (!hasArn) {
-      return;
-    }
-
-    e.assert(e.ctx.fromMethods.find(m => m.name.endsWith('Arn')), `${e.ctx.resource.basename}.from${e.ctx.resource.basename}Arn`);
+    e.assert(e.ctx.fromMethods.length > 0 || e.ctx.fromAttributesMethod, e.ctx.resource.fqn);
   }
 });
 
@@ -86,7 +73,7 @@ importsLinter.add({
   message: 'resources with more than one attribute (arn + name are considered a single attribute) must implement the fromAttributes:',
   eval: e => {
     const prefix = e.ctx.prefix;
-    const uniques = Array.from(new Set(e.ctx.resource.attributeNames.map(x => {
+    const uniques = Array.from(new Set(e.ctx.resource.cfn.attributeNames.map(x => {
       if (x === `${prefix}Name` || x === `${prefix}Arn`) {
         return `${prefix}ArnOrName`;
       } else {

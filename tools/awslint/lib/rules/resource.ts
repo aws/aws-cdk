@@ -1,115 +1,70 @@
 import reflect = require('jsii-reflect');
 import { Linter } from '../linter';
+import { CfnResourceReflection } from './cfn-resource';
 import { CORE_MODULE } from './common';
 import { ConstructReflection } from './construct';
 
-const CFN_RESOURCE_BASE_CLASS_FQN = `${CORE_MODULE}.CfnResource`;
 const RESOURCE_BASE_CLASS_FQN = `${CORE_MODULE}.Resource`;
 const RESOURCE_BASE_INTERFACE_FQN = `${CORE_MODULE}.IResource`;
 const GRANT_RESULT_FQN = '@aws-cdk/aws-iam.Grant';
 
-export const resourceLinter = new Linter<ResourceReflection>(assembly => findCfnResources(assembly));
+export const resourceLinter = new Linter(a => ResourceReflection.findAll(a));
 
 export class ResourceReflection {
-  public static isResourceConstruct(construct: ConstructReflection) {
-    const classType = construct.classType;
-    const baseResource = classType.system.findClass(RESOURCE_BASE_CLASS_FQN);
-    return classType.extends(baseResource);
-  }
-
   /**
-   * @returns all resource constructs
+   * @returns all resource constructs (everything that extends `cdk.Resource`)
    */
-  public static findAllResources(assembly: reflect.Assembly) {
-    return findCfnResources(assembly).filter(r => r.hasConstruct);
+  public static findAll(assembly: reflect.Assembly) {
+    const baseResource = assembly.system.findClass(RESOURCE_BASE_CLASS_FQN);
+
+    return ConstructReflection
+      .findAllConstructs(assembly)
+      .filter(c => c.classType.extends(baseResource))
+      .map(c => new ResourceReflection(c));
   }
 
-  public readonly fullname: string; // AWS::S3::Bucket
-  public readonly namespace: string; // AWS::S3
-  public readonly basename: string; // Bucket
-  public readonly doc: string; // link to CloudFormation docs
-  public readonly attributeNames: string[]; // bucketArn, bucketName, queueUrl
   public readonly attributes: reflect.Property[]; // actual attribute props
   public readonly fqn: string; // expected fqn of resource class
 
   public readonly assembly: reflect.Assembly;
   public readonly sys: reflect.TypeSystem;
+  public readonly cfn: CfnResourceReflection;
+  public readonly basename: string; // i.e. Bucket
 
-  private readonly _construct?: ConstructReflection; // the resource construct
+  constructor(public readonly construct: ConstructReflection) {
+    this.assembly = construct.classType.assembly;
+    this.sys = this.assembly.system;
 
-  constructor(public readonly cfnResource: reflect.ClassType) {
-    this.sys = cfnResource.system;
-    this.basename = cfnResource.name.substr('Cfn'.length);
-    this.doc = cfnResource.docs.docs.see || '';
-
-    // HACK: extract full CFN name from initializer docs
-    const initializerDoc = (cfnResource.initializer && cfnResource.initializer.docs.docs.summary) || '';
-    const out = /a new `([^`]+)`/.exec(initializerDoc);
-    const fullname = out && out[1];
-    if (!fullname) {
-      throw new Error(`Unable to extract CloudFormation resource name from initializer documentation of ${cfnResource}`);
+    const resourceFullName = determineCloudFormationResourceName(construct.classType);
+    const cfn = CfnResourceReflection.findByName(this.sys, resourceFullName);
+    if (!cfn) {
+      throw new Error(`Cannot find L1 class for L2 ${construct.fqn}. Is "${resourceFullName}" an actual CloudFormation resource. If not, ` +
+        `use the "@resource" in the class's jsdoc tag to indicate the full resource name (e.g. "AWS::Route53::HostedZone")`);
     }
-    this.fullname = fullname;
-    this.namespace = fullname.split('::').slice(0, 2).join('::');
-    this.attributeNames = parseResourceAttributes(cfnResource);
-
-    function parseResourceAttributes(cfnResourceClass: reflect.ClassType) {
-      return cfnResourceClass.ownProperties.filter(p => (p.docs.docs.custom || {}).cloudformationAttribute).map(p => p.name);
-    }
-
-    this.assembly = cfnResource.assembly;
-
-    this.fqn = `${this.assembly.name}.${this.basename}`;
-    this._construct = ConstructReflection
-      .findAllConstructs(this.assembly)
-      .find(c => c.fqn === this.fqn);
-
+    this.cfn = cfn;
+    this.basename = construct.classType.name;
+    this.fqn = construct.fqn;
     this.attributes = this.findAttributeProperties();
   }
 
-  public get construct(): ConstructReflection {
-    if (!this._construct) {
-      throw new Error(`Resource ${this.fullname} does not have a corresponding AWS construct`);
-    }
-    return this._construct;
-  }
-
-  public get hasConstruct(): boolean {
-    return !!this._construct;
-  }
-
   private findAttributeProperties() {
-    if (!this.hasConstruct) {
-      return [];
-    }
+    const result = new Array<reflect.Property>();
 
-    const resiult = new Array<reflect.Property>();
-    for (const attr of this.attributeNames) {
+    for (const attr of this.cfn.attributeNames) {
       const attribute = this.construct.classType.allProperties.find(p => p.name === attr);
       if (attribute) {
-        resiult.push(attribute);
+        result.push(attribute);
       }
     }
 
-    return resiult;
+    return result;
   }
 }
-
-resourceLinter.add({
-  code: 'resource-class',
-  message: 'every resource must have a resource class (L2)',
-  warning: true,
-  eval: e => {
-    e.assert(e.ctx.hasConstruct, e.ctx.fqn);
-  }
-});
 
 resourceLinter.add({
   code: 'resource-class-extends-resource',
   message: `resource classes must extend "cdk.Resource" directly or indirectly`,
   eval: e => {
-    if (!e.ctx.hasConstruct) { return; }
-
     const resourceBase = e.ctx.sys.findClass(RESOURCE_BASE_CLASS_FQN);
     e.assert(e.ctx.construct.classType.extends(resourceBase), e.ctx.construct.fqn);
   }
@@ -120,7 +75,6 @@ resourceLinter.add({
   warning: true,
   message: 'every resource must have a resource interface',
   eval: e => {
-    if (!e.ctx.hasConstruct) { return; }
     e.assert(e.ctx.construct.interfaceType, e.ctx.construct.fqn);
   }
 });
@@ -129,7 +83,7 @@ resourceLinter.add({
   code: 'resource-interface-extends-resource',
   message: 'construct interfaces of AWS resources must extend cdk.IResource',
   eval: e => {
-    const resourceInterface = e.ctx.hasConstruct && e.ctx.construct.interfaceType;
+    const resourceInterface = e.ctx.construct.interfaceType;
     if (!resourceInterface) { return; }
 
     const interfaceBase = e.ctx.sys.findInterface(RESOURCE_BASE_INTERFACE_FQN);
@@ -139,14 +93,14 @@ resourceLinter.add({
 
 resourceLinter.add({
   code: 'resource-attribute',
-  message: 'resources must represent all attributes as properties',
+  message: 'resources must represent all attributes as properties. missing: ',
   eval: e => {
-    const resourceInterface = e.ctx.hasConstruct && e.ctx.construct.interfaceType;
+    const resourceInterface = e.ctx.construct.interfaceType;
     if (!resourceInterface) { return; }
 
-    for (const name of e.ctx.attributeNames) {
+    for (const name of e.ctx.cfn.attributeNames) {
       const found = e.ctx.attributes.find(a => a.name === name);
-      e.assert(found, `${e.ctx.fqn}.${name}`);
+      e.assert(found, `${e.ctx.fqn}.${name}`, name);
     }
   }
 });
@@ -165,8 +119,6 @@ resourceLinter.add({
   code: 'grant-result',
   message: `"grant" method must return ${GRANT_RESULT_FQN}`,
   eval: e => {
-    if (!e.ctx.hasConstruct) { return; }
-
     const grantResultType = e.ctx.sys.findFqn(GRANT_RESULT_FQN);
     const grantMethods = e.ctx.construct.classType.allMethods.filter(m => m.name.startsWith('grant'));
 
@@ -178,37 +130,22 @@ resourceLinter.add({
   }
 });
 
-/**
- * Given a jsii assembly, extracts all CloudFormation resources from CFN classes
- */
-export function findCfnResources(assembly: reflect.Assembly): ResourceReflection[] {
-  return assembly.classes.filter(c => isCfnResource(c)).map(layer1 => {
-    return new ResourceReflection(layer1);
-  });
-
-  function isCfnResource(c: reflect.ClassType) {
-    if (!c.system.includesAssembly(CORE_MODULE)) {
-      return false;
-    }
-
-    // skip CfnResource itself
-    if (c.fqn === CFN_RESOURCE_BASE_CLASS_FQN) {
-      return false;
-    }
-
-    if (!ConstructReflection.isConstructClass(c)) {
-      return false;
-    }
-
-    const cfnResourceClass = c.system.findFqn(CFN_RESOURCE_BASE_CLASS_FQN);
-    if (!c.extends(cfnResourceClass)) {
-      return false;
-    }
-
-    if (!c.name.startsWith('Cfn')) {
-      return false;
-    }
-
-    return true;
+function determineCloudFormationResourceName(cls: reflect.ClassType) {
+  const tag = cls.docs.customTag('resource');
+  if (tag) {
+    return tag;
   }
+
+  const match = /@aws-cdk\/([a-z]+)-([a-z0-9]+)\.([A-Z][a-zA-Z0-9]+)/.exec(cls.fqn);
+  if (!match) {
+    throw new Error(`Unable to parse resource construct FQN: ${cls.fqn}`);
+  }
+
+  const [ , org, ns, rs ] = match;
+
+  if (!org || !ns || !rs) {
+    throw new Error(`Unable to parse resource construct FQN: ${cls.fqn}`);
+  }
+
+  return `${org}::${ns}::${rs}`;
 }

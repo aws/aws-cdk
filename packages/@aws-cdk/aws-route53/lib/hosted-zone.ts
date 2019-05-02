@@ -123,15 +123,30 @@ export class HostedZone extends Resource implements IHostedZone {
   }
 }
 
-// tslint:disable-next-line:no-empty-interface
-export interface PublicHostedZoneProps extends CommonHostedZoneProps {
-
-}
+export interface PublicHostedZoneProps extends CommonHostedZoneProps { }
+export interface IPublicHostedZone extends IHostedZone { }
 
 /**
  * Create a Route53 public hosted zone.
+ *
+ * @resource AWS::Route53::HostedZone
  */
-export class PublicHostedZone extends HostedZone {
+export class PublicHostedZone extends HostedZone implements IPublicHostedZone {
+
+  public static fromPublicHostedZoneId(scope: Construct, id: string, publicHostedZoneId: string): IPublicHostedZone {
+    class Import extends Resource implements IPublicHostedZone {
+      public readonly hostedZoneId = publicHostedZoneId;
+      public get zoneName(): string { throw new Error(`cannot retrieve "zoneName" from an an imported hosted zone`); }
+      public export(): HostedZoneAttributes {
+        return {
+          hostedZoneId: this.hostedZoneId,
+          zoneName: this.zoneName
+        };
+      }
+    }
+    return new Import(scope, id);
+  }
+
   constructor(scope: Construct, id: string, props: PublicHostedZoneProps) {
     super(scope, id, props);
   }
@@ -186,13 +201,32 @@ export interface PrivateHostedZoneProps extends CommonHostedZoneProps {
   readonly vpc: ec2.IVpcNetwork;
 }
 
+export interface IPrivateHostedZone extends IHostedZone {}
+
 /**
  * Create a Route53 private hosted zone for use in one or more VPCs.
  *
  * Note that `enableDnsHostnames` and `enableDnsSupport` must have been enabled
  * for the VPC you're configuring for private hosted zones.
+ *
+ * @resource AWS::Route53::HostedZone
  */
-export class PrivateHostedZone extends HostedZone {
+export class PrivateHostedZone extends HostedZone implements IPrivateHostedZone {
+
+  public static fromPrivateHostedZoneId(scope: Construct, id: string, privateHostedZoneId: string): IPrivateHostedZone {
+    class Import extends Resource implements IPrivateHostedZone {
+      public readonly hostedZoneId = privateHostedZoneId;
+      public get zoneName(): string { throw new Error(`cannot retrieve "zoneName" from an an imported hosted zone`); }
+      public export(): HostedZoneAttributes {
+        return {
+          hostedZoneId: this.hostedZoneId,
+          zoneName: this.zoneName
+        };
+      }
+    }
+    return new Import(scope, id);
+  }
+
   constructor(scope: Construct, id: string, props: PrivateHostedZoneProps) {
     super(scope, id, props);
 

@@ -107,6 +107,9 @@ export interface LambdaDeploymentGroupProps {
   readonly autoRollback?: AutoRollbackConfig;
 }
 
+/**
+ * @resource AWS::CodeDeploy::DeploymentGroup
+ */
 export class LambdaDeploymentGroup extends cdk.Construct implements ILambdaDeploymentGroup {
   /**
    * Import an Lambda Deployment Group defined either outside the CDK,

@@ -95,7 +95,8 @@
   },
   "awslint": {
     "exclude": [
-      "construct-interface-extends-iconstruct:@aws-cdk/aws-codedeploy.IServerDeploymentConfig"
+      "construct-interface-extends-iconstruct:@aws-cdk/aws-codedeploy.IServerDeploymentConfig",
+      "resource-interface-extends-resource:@aws-cdk/aws-codedeploy.IServerDeploymentConfig"
     ]
   }
 }
