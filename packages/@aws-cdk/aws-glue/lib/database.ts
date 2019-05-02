@@ -88,9 +88,9 @@ export class Database extends Resource {
    *
    * @param scope The scope creating construct (usually `this`).
    * @param id The construct's id.
-   * @param attrs A `DatabaseImportProps` object. Can be obtained from a call to `database.export()` or manually created.
+   * @param attrs A `DatabaseAttributes` object. Can be obtained from a call to `database.export()` or manually created.
    */
-  public static import(scope: Construct, id: string, attrs: DatabaseAttributes): IDatabase {
+  public static fromDatabaseAttributes(scope: Construct, id: string, attrs: DatabaseAttributes): IDatabase {
 
     class Import extends Construct implements IDatabase {
       public readonly catalogArn = attrs.catalogArn;

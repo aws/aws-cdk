@@ -145,8 +145,6 @@ resourceLinter.add({
     const resourceInterface = e.ctx.construct.interfaceType;
     if (!resourceInterface) { return; }
 
-    console.error(e.ctx.attributes.map(x=>x.name));
-
     for (const name of e.ctx.cfn.attributeNames) {
       const found = e.ctx.attributes.find(a => a.name === name);
       e.assert(found, `${e.ctx.fqn}.${name}`, name);

@@ -40,6 +40,15 @@ class ImportsReflection {
 }
 
 importsLinter.add({
+  code: 'no-static-import',
+  message: 'static "import" methods are deprecated in favor of "fromAttributes" (see guidelines)',
+  eval: e => {
+    const hasImport = e.ctx.resource.construct.classType.allMethods.find(x => x.static && x.name === 'import');
+    e.assert(!hasImport, e.ctx.resource.fqn + '.import');
+  }
+});
+
+importsLinter.add({
   code: 'from-method',
   message: 'resource should have at least one "fromXxx" static method or "fromXxxAttributes"',
   eval: e => {
