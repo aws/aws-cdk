@@ -87,7 +87,7 @@ export interface StreamImportProps {
  *   Stream.import(this, 'MyImportedStream', ref);
  *
  */
-export abstract class StreamBase extends Resource implements IStream {
+abstract class StreamBase extends Resource implements IStream {
   /**
    * The ARN of the stream.
    */

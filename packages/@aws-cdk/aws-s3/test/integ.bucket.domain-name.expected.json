@@ -7,12 +7,24 @@
   "Outputs": {
     "RealBucketDomain": {
       "Value": {
-        "Fn::GetAtt":["MyBucketF68F3FF0","DomainName"]
+        "Fn::GetAtt": [
+          "MyBucketF68F3FF0",
+          "DomainName"
+        ]
       }
     },
     "ImportedBucketDomain": {
-      "Value": "my-bucket-test.s3.amazonaws.com"
+      "Value": {
+        "Fn::Join": [
+          "",
+          [
+            "my-bucket-test.s3.",
+            {
+              "Ref": "AWS::URLSuffix"
+            }
+          ]
+        ]
+      }
     }
   }
 }
-
