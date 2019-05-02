@@ -74,7 +74,7 @@ export class Stack extends Construct {
 
   private static readonly VALID_STACK_NAME_REGEX = /^[A-Za-z][A-Za-z0-9-]*$/;
 
-  public readonly tags: TagManager = new TagManager(TagType.Standard, "AWS:Cloudformation::Stack");
+  public readonly tags: TagManager;
 
   /**
    * Lists all missing contextual information.
@@ -157,13 +157,8 @@ export class Stack extends Construct {
     this.logicalIds = new LogicalIDs(props && props.namingScheme ? props.namingScheme : new HashedAddressingScheme());
     this.name = props.stackName !== undefined ? props.stackName : this.calculateStackName();
     this.autoDeploy = props && props.autoDeploy === false ? false : true;
-    if (props.tags) {
-      for (const key in props.tags) {
-        if (props.tags.hasOwnProperty(key)) {
-          this.tags.setTag(key, props.tags[key]);
-        }
-      }
-    }
+    const tags = props === undefined ? undefined : props.tags;
+    this.tags = new TagManager(TagType.KeyValue, "AWS:Cloudformation::Stack", tags);
   }
 
   /**

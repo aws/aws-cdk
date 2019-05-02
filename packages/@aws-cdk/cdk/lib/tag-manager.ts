@@ -18,6 +18,10 @@ interface CfnAsgTag {
   propagateAtLaunch: boolean;
 }
 
+interface StackTag {
+  Key: string;
+  Value: string;
+}
 /**
  * Interface for converter between CloudFormation and internal tag representations
  */
@@ -142,6 +146,33 @@ class MapFormatter implements ITagFormatter {
   }
 }
 
+class KeyValueFormatter implements ITagFormatter {
+  public parseTags(keyValueTags: any, priority: number): Tag[] {
+    const tags: Tag[] = [];
+    for (const key in keyValueTags.tags) {
+      if (keyValueTags.tags.hasOwnProperty(key)) {
+        const value = keyValueTags.tags[key];
+        tags.push({
+          key,
+          value,
+          priority
+        });
+      }
+    }
+    return tags;
+  }
+  public formatTags(unformattedTags: Tag[]): any {
+    const tags: StackTag[] = [];
+    unformattedTags.forEach(tag => {
+      tags.push({
+        Key: tag.key,
+        Value: tag.value
+      });
+    });
+    return tags;
+  }
+}
+
 class NoFormat implements ITagFormatter {
   public parseTags(_cfnPropertyTags: any): Tag[] {
     return [];
@@ -155,6 +186,7 @@ const TAG_FORMATTERS: {[key: string]: ITagFormatter} = {
   [TagType.AutoScalingGroup]: new AsgFormatter(),
   [TagType.Standard]: new StandardFormatter(),
   [TagType.Map]: new MapFormatter(),
+  [TagType.KeyValue]: new KeyValueFormatter(),
   [TagType.NotTaggable]: new NoFormat(),
 };
 

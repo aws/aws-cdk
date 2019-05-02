@@ -258,6 +258,7 @@ export enum TagType {
   Standard = 'StandardTag',
   AutoScalingGroup = 'AutoScalingGroupTag',
   Map = 'StringToStringMap',
+  KeyValue = 'KeyValue',
   NotTaggable = 'NotTaggable',
 }
 

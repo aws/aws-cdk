@@ -229,19 +229,12 @@ export class AppStacks {
   }
 
   public getTagsFromStackMetadata(stack: SelectedStack): Tag[] {
-    const metadataTags: Tag[] = [];
+    let metadataTags: Tag[] = [];
     for (const id of Object.keys(stack.metadata)) {
       const metadata = stack.metadata[id];
       for (const entry of metadata) {
         if (entry.type === cxapi.TAGS_METADATA_KEY) {
-          if (entry.data) {
-            entry.data.forEach((tags: { key: string; value: string }) => {
-              metadataTags.push({
-                Key: tags.key,
-                Value: tags.value
-              });
-            });
-          }
+          metadataTags = entry.data;
         }
       }
     }
