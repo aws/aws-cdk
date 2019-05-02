@@ -25,7 +25,7 @@ The following languages are currently supported:
 
 The CDK is currently in developer preview and we look forward to community feedback and collaboration!
 
-[User Guide] |
+[Developer Guide] |
 [Tutorial] |
 [API Reference](https://awslabs.github.io/aws-cdk/reference.html) |
 [Examples](https://github.com/aws-samples/aws-cdk-examples) |
@@ -87,7 +87,7 @@ Read the [docs](https://awslabs.github.io/aws-cdk/):
 $ cdk docs
 ```
 
-For a detailed walkthrough, see [Tutorial] in the AWS CDK [User Guide].
+For a detailed walkthrough, see [Tutorial] in the AWS CDK [Developer Guide].
 
 ## Getting Help
 
