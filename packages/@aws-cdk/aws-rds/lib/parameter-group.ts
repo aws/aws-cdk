@@ -17,7 +17,7 @@ export interface IParameterGroup extends IResource {
 }
 
 /**
- * Construction properties for an imported parameter group
+ * Reference to an existing parameter group
  */
 export interface ParameterGroupAttributes {
   /**

@@ -19,7 +19,7 @@ export interface IOptionGroup extends IResource {
 }
 
 /**
- * Construction properties for an imported option group.
+ * Reference to an existing option group.
  */
 export interface OptionGroupAttributes {
   /**
