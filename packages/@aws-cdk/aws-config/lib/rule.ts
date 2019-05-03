@@ -36,7 +36,7 @@ export interface IRule extends IResource {
 }
 
 /**
- * Construction properties for an imported rule.
+ * Reference to an existing rule.
  */
 export interface RuleAttributes {
   /**
@@ -54,7 +54,7 @@ abstract class RuleBase extends Resource implements IRule {
    */
   public static fromRuleName(scope: Construct, id: string, ruleName: string): IRule {
     class Import extends RuleBase implements IRule {
-      public ruleName = ruleName;
+      public readonly ruleName = ruleName;
 
       public export(): RuleAttributes {
         return { ruleName };
