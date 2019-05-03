@@ -20,7 +20,7 @@ import { PluginHost } from '../lib/plugin';
 import { parseRenames } from '../lib/renames';
 import { serializeStructure } from '../lib/serialize';
 import { Configuration, Settings } from '../lib/settings';
-import { VERSION } from '../lib/version';
+import { DISPLAY_VERSION } from '../lib/version';
 
 // tslint:disable-next-line:no-var-requires
 const promptly = require('promptly');
@@ -76,7 +76,7 @@ async function parseCommandLineArguments() {
       .option('language', { type: 'string', alias: 'l', desc: 'the language to be used for the new project (default can be configured in ~/.cdk.json)', choices: initTemplateLanuages })
       .option('list', { type: 'boolean', desc: 'list the available templates' }))
     .commandDir('../lib/commands', { exclude: /^_.*/ })
-    .version(VERSION)
+    .version(DISPLAY_VERSION)
     .demandCommand(1, '') // just print help
     .help()
     .alias('h', 'help')
@@ -97,7 +97,7 @@ async function initCommandLine() {
     setVerbose();
   }
 
-  debug('CDK toolkit version:', VERSION);
+  debug('CDK toolkit version:', DISPLAY_VERSION);
   debug('Command line arguments:', argv);
 
   const aws = new SDK({
