@@ -44,14 +44,21 @@ export = {
       test.deepEqual(mgr.renderTags(), undefined );
       test.done();
     },
+    '#hasTags() returns false'(test: Test) {
+      const mgr = new TagManager(TagType.Standard, 'AWS::Resource::Type');
+      test.equal(mgr.hasTags(), false );
+      test.done();
+    }
   },
-  '#renderTags() handles standard, map, and ASG tag formats'(test: Test) {
+  '#renderTags() handles standard, map, keyValue, and ASG tag formats'(test: Test) {
     const tagged: TagManager[] = [];
     const standard = new TagManager(TagType.Standard, 'AWS::Resource::Type');
     const asg = new TagManager(TagType.AutoScalingGroup, 'AWS::Resource::Type');
+    const keyValue = new TagManager(TagType.KeyValue, 'AWS::Resource::Type');
     const mapper = new TagManager(TagType.Map, 'AWS::Resource::Type');
     tagged.push(standard);
     tagged.push(asg);
+    tagged.push(keyValue);
     tagged.push(mapper);
     for (const res of tagged) {
       res.setTag('foo', 'bar');
@@ -65,10 +72,21 @@ export = {
       {key: 'foo', value: 'bar', propagateAtLaunch: true},
       {key: 'asg', value: 'only', propagateAtLaunch: false},
     ]);
+    test.deepEqual(keyValue.renderTags(), [
+      { Key: 'foo', Value : 'bar' },
+      { Key: 'asg', Value : 'only' }
+    ]);
     test.deepEqual(mapper.renderTags(), {
       foo: 'bar',
       asg: 'only',
     });
+    test.done();
+  },
+  'when there are tags it hasTags returns true'(test: Test) {
+    const mgr = new TagManager(TagType.Standard, 'AWS::Resource::Type');
+    mgr.setTag('key', 'myVal', 2);
+    mgr.setTag('key', 'newVal', 1);
+    test.equal(mgr.hasTags(), true);
     test.done();
   },
   'tags with higher or equal priority always take precedence'(test: Test) {
