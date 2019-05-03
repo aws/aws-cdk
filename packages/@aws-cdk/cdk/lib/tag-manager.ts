@@ -256,6 +256,10 @@ export class TagManager {
     return true;
   }
 
+  public hasTags(): boolean {
+    return this.tags.size > 0;
+  }
+
   private _setTag(...tags: Tag[]) {
     for (const tag of tags) {
       if (tag.priority >= (this.priorities.get(tag.key) || 0)) {

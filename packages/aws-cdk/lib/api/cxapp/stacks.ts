@@ -228,17 +228,16 @@ export class AppStacks {
     }
   }
 
-  public getTagsFromStackMetadata(stack: SelectedStack): Tag[] {
-    let metadataTags: Tag[] = [];
+  public getTagsFromStackMetadata(stack: SelectedStack): Tag[] | undefined {
     for (const id of Object.keys(stack.metadata)) {
       const metadata = stack.metadata[id];
       for (const entry of metadata) {
         if (entry.type === cxapi.TAGS_METADATA_KEY) {
-          metadataTags = entry.data;
+          return entry.data;
         }
       }
     }
-    return metadataTags;
+    return;
   }
 
   /**

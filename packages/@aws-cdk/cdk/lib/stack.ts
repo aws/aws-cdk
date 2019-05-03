@@ -196,7 +196,9 @@ export class Stack extends Construct {
   public _toCloudFormation() {
     // before we begin synthesis, we shall lock this stack, so children cannot be added
     this.node.lock();
-    this.node.addMetadata(cxapi.TAGS_METADATA_KEY, this.tags.renderTags());
+    if (this.tags.hasTags()) {
+      this.node.addMetadata(cxapi.TAGS_METADATA_KEY, this.tags.renderTags());
+    }
 
     try {
       const template: any = {
