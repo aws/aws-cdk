@@ -1,3 +1,36 @@
+# CloudFormation Resource Specification v2.32.0
+
+## New Resource Types
+
+* AWS::Greengrass::ResourceDefinition
+
+## Attribute Changes
+
+
+## Property Changes
+
+* AWS::SSM::Parameter Tags (__added__)
+* AWS::ServiceCatalog::CloudFormationProvisionedProduct Tags.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+
+## Property Type Changes
+
+* AWS::Cognito::UserPool.EmailConfiguration EmailSendingAccount (__added__)
+* AWS::Greengrass::FunctionDefinition.FunctionConfiguration MemorySize.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::Greengrass::FunctionDefinition.FunctionConfiguration Timeout.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::Greengrass::FunctionDefinitionVersion.FunctionConfiguration MemorySize.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::Greengrass::FunctionDefinitionVersion.FunctionConfiguration Timeout.Required (__changed__)
+  * Old: true
+  * New: false
+
+
 # CloudFormation Resource Specification v2.30.0
 
 ## New Resource Types
