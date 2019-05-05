@@ -20,7 +20,7 @@ import { PluginHost } from '../lib/plugin';
 import { parseRenames } from '../lib/renames';
 import { serializeStructure } from '../lib/serialize';
 import { Configuration, Settings } from '../lib/settings';
-import { DISPLAY_VERSION } from '../lib/version';
+import version = require('../lib/version');
 
 // tslint:disable-next-line:no-var-requires
 const promptly = require('promptly');
@@ -76,7 +76,7 @@ async function parseCommandLineArguments() {
       .option('language', { type: 'string', alias: 'l', desc: 'the language to be used for the new project (default can be configured in ~/.cdk.json)', choices: initTemplateLanuages })
       .option('list', { type: 'boolean', desc: 'list the available templates' }))
     .commandDir('../lib/commands', { exclude: /^_.*/ })
-    .version(DISPLAY_VERSION)
+    .version(version.DISPLAY_VERSION)
     .demandCommand(1, '') // just print help
     .help()
     .alias('h', 'help')
@@ -96,8 +96,7 @@ async function initCommandLine() {
   if (argv.verbose) {
     setVerbose();
   }
-
-  debug('CDK toolkit version:', DISPLAY_VERSION);
+  debug('CDK toolkit version:', version.DISPLAY_VERSION);
   debug('Command line arguments:', argv);
 
   const aws = new SDK({
@@ -152,15 +151,19 @@ async function initCommandLine() {
   // Bundle up global objects so the commands have access to them
   const commandOptions = { args: argv, appStacks, configuration, aws };
 
-  const returnValue = argv.commandHandler
-    ? await (argv.commandHandler as (opts: typeof commandOptions) => any)(commandOptions)
-    : await main(cmd, argv);
-  if (typeof returnValue === 'object') {
-    return toJsonOrYaml(returnValue);
-  } else if (typeof returnValue === 'string') {
-    return returnValue;
-  } else {
-    return returnValue;
+  try {
+    const returnValue = argv.commandHandler
+      ? await (argv.commandHandler as (opts: typeof commandOptions) => any)(commandOptions)
+      : await main(cmd, argv);
+    if (typeof returnValue === 'object') {
+      return toJsonOrYaml(returnValue);
+    } else if (typeof returnValue === 'string') {
+      return returnValue;
+    } else {
+      return returnValue;
+    }
+  } finally {
+    await version.displayVersionMessage();
   }
 
   async function main(command: string, args: any): Promise<number | string | {} | void> {
