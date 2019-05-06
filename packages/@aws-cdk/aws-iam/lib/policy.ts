@@ -56,6 +56,8 @@ export class Policy extends Resource {
 
   /**
    * The name of this policy.
+   *
+   * @attribute
    */
   public readonly policyName: string;
 

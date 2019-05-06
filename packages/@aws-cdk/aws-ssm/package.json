@@ -80,7 +80,9 @@
     "exclude": [
       "export:@aws-cdk/aws-ssm.IParameter",
       "import-props-interface:@aws-cdk/aws-ssm.ParameterImportProps",
-      "resource-attribute:@aws-cdk/aws-ssm.IParameter.parameterValue"
+      "resource-attribute:@aws-cdk/aws-ssm.IParameter.parameterValue",
+      "from-attributes:fromStringParameterAttributes",
+      "from-attributes:fromStringListParameterAttributes"
     ]
   }
 }

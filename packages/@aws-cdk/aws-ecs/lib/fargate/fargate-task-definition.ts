@@ -41,6 +41,7 @@ export interface FargateTaskDefinitionProps extends CommonTaskDefinitionProps {
 
 /**
  * A definition for Tasks on a Fargate cluster
+ * @resource AWS::ECS::TaskDefinition
  */
 export class FargateTaskDefinition extends TaskDefinition {
   /**

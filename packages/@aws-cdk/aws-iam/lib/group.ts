@@ -39,13 +39,16 @@ export interface GroupProps {
 export class Group extends Resource implements IIdentity {
   public readonly grantPrincipal: IPrincipal = this;
   public readonly assumeRoleAction: string = 'sts:AssumeRole';
+
   /**
    * The runtime name of this group.
+   * @attribute
    */
   public readonly groupName: string;
 
   /**
    * The ARN of this group.
+   * @attribute
    */
   public readonly groupArn: string;
 

@@ -80,5 +80,11 @@
   },
   "engines": {
     "node": ">= 8.10.0"
+  },
+  "awslint": {
+    "exclude": [
+      "from-attributes:fromPrivateHostedZoneAttributes",
+      "from-attributes:fromPublicHostedZoneAttributes"
+    ]
   }
 }
