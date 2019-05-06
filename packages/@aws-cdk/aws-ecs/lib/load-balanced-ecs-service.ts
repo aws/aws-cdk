@@ -34,6 +34,12 @@ export interface LoadBalancedEc2ServiceProps extends LoadBalancedServiceBaseProp
  * A single task running on an ECS cluster fronted by a load balancer
  */
 export class LoadBalancedEc2Service extends LoadBalancedServiceBase {
+
+  /**
+   * The ECS service in this construct
+   */
+  public readonly service: Ec2Service;
+
   constructor(scope: cdk.Construct, id: string, props: LoadBalancedEc2ServiceProps) {
     super(scope, id, props);
 
@@ -56,6 +62,7 @@ export class LoadBalancedEc2Service extends LoadBalancedServiceBase {
       taskDefinition
     });
 
+    this.service = service;
     this.addServiceAsTarget(service);
   }
 }

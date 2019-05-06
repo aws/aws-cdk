@@ -76,6 +76,9 @@ export interface LoadBalancedFargateServiceProps extends LoadBalancedServiceBase
  */
 export class LoadBalancedFargateService extends LoadBalancedServiceBase {
 
+  /**
+   * The Fargate service in this construct
+   */
   public readonly service: FargateService;
 
   constructor(scope: cdk.Construct, id: string, props: LoadBalancedFargateServiceProps) {
