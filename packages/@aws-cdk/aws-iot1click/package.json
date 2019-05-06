@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/aws-iot1click",
-  "version": "0.30.0",
+  "version": "0.31.0",
   "description": "The CDK Construct Library for AWS::IoT1Click",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -59,16 +59,16 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "^0.30.0",
-    "cdk-build-tools": "^0.30.0",
-    "cfn2ts": "^0.30.0",
-    "pkglint": "^0.30.0"
+    "@aws-cdk/assert": "^0.31.0",
+    "cdk-build-tools": "^0.31.0",
+    "cfn2ts": "^0.31.0",
+    "pkglint": "^0.31.0"
   },
   "dependencies": {
-    "@aws-cdk/cdk": "^0.30.0"
+    "@aws-cdk/cdk": "^0.31.0"
   },
   "peerDependencies": {
-    "@aws-cdk/cdk": "^0.30.0"
+    "@aws-cdk/cdk": "^0.31.0"
   },
   "engines": {
     "node": ">= 8.10.0"
