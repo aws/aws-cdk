@@ -4,7 +4,6 @@ import kms = require('@aws-cdk/aws-kms');
 import s3 = require('@aws-cdk/aws-s3');
 import cdk = require('@aws-cdk/cdk');
 import { Test } from 'nodeunit';
-
 import glue = require('../lib');
 
 export = {
@@ -1488,6 +1487,19 @@ export = {
       }));
       test.done();
     }
+  },
+
+  'Table.fromTableArn'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const table = glue.Table.fromTableArn(stack, 'boom', 'arn:aws:glue:us-east-1:123456789012:table/db1/tbl1');
+
+    // THEN
+    test.deepEqual(table.tableArn, 'arn:aws:glue:us-east-1:123456789012:table/db1/tbl1');
+    test.deepEqual(table.tableName, 'tbl1');
+    test.done();
   }
 };
 

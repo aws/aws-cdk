@@ -341,10 +341,7 @@ export = {
 
     // WHEN
     const exportedRule = myRule.export();
-
-    const importedRule = EventRule.import(stack, 'ImportedRule', {
-      eventRuleArn: 'arn:of:rule'
-    });
+    const importedRule = EventRule.fromEventRuleArn(stack, 'ImportedRule', 'arn:of:rule');
 
     // THEN
     test.deepEqual(stack.node.resolve(exportedRule), { eventRuleArn: { 'Fn::ImportValue': 'Stack:MyRuleRuleArnDB13ADB1' } });

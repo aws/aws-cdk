@@ -4667,6 +4667,18 @@
         ],
         "description": "Set RefKind of AWS::AppMesh::VirtualService to Arn"
       }
+    },
+    "AWS::Greengrass::ResourceDefinition": {
+      "patch": {
+        "operations": [
+          {
+            "op": "add",
+            "path": "/RefKind",
+            "value": "Id"
+          }
+        ],
+        "description": "Set RefKind of AWS::Greengrass::ResourceDefinition to Id"
+      }
     }
   }
 }

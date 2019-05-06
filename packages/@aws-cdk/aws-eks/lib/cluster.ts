@@ -1,11 +1,110 @@
 import autoscaling = require('@aws-cdk/aws-autoscaling');
 import ec2 = require('@aws-cdk/aws-ec2');
 import iam = require('@aws-cdk/aws-iam');
-import { CfnOutput, Construct, Tag } from '@aws-cdk/cdk';
+import { CfnOutput, Construct, IResource, Resource, Tag } from '@aws-cdk/cdk';
 import { EksOptimizedAmi, nodeTypeForInstanceType } from './ami';
-import { ClusterBase, ClusterImportProps, ICluster } from './cluster-base';
 import { CfnCluster } from './eks.generated';
 import { maxPodsForInstanceType } from './instance-data';
+
+/**
+ * An EKS cluster
+ */
+export interface ICluster extends IResource, ec2.IConnectable {
+  /**
+   * The VPC in which this Cluster was created
+   */
+  readonly vpc: ec2.IVpcNetwork;
+
+  /**
+   * The physical name of the Cluster
+   * @attribute
+   */
+  readonly clusterName: string;
+
+  /**
+   * The unique ARN assigned to the service by AWS
+   * in the form of arn:aws:eks:
+   * @attribute
+   */
+  readonly clusterArn: string;
+
+  /**
+   * The API Server endpoint URL
+   * @attribute
+   */
+  readonly clusterEndpoint: string;
+
+  /**
+   * The certificate-authority-data for your cluster.
+   * @attribute
+   */
+  readonly clusterCertificateAuthorityData: string;
+
+  /**
+   * Export cluster references to use in other stacks
+   */
+  export(): ClusterAttributes;
+}
+
+/**
+ * A SecurityGroup Reference, object not created with this template.
+ */
+abstract class ClusterBase extends Resource implements ICluster {
+  public abstract readonly connections: ec2.Connections;
+  public abstract readonly vpc: ec2.IVpcNetwork;
+  public abstract readonly clusterName: string;
+  public abstract readonly clusterArn: string;
+  public abstract readonly clusterEndpoint: string;
+  public abstract readonly clusterCertificateAuthorityData: string;
+
+  /**
+   * Export cluster references to use in other stacks
+   */
+  public export(): ClusterAttributes {
+    return {
+      vpc: this.vpc.export(),
+      clusterName: this.makeOutput('ClusterNameExport', this.clusterName),
+      clusterArn: this.makeOutput('ClusterArn', this.clusterArn),
+      clusterEndpoint: this.makeOutput('ClusterEndpoint', this.clusterEndpoint),
+      clusterCertificateAuthorityData: this.makeOutput('ClusterCAData', this.clusterCertificateAuthorityData),
+      securityGroups: this.connections.securityGroups.map(sg => sg.export()),
+    };
+  }
+
+  private makeOutput(name: string, value: any): string {
+    return new CfnOutput(this, name, { value }).makeImportValue().toString();
+  }
+}
+
+export interface ClusterAttributes {
+  /**
+   * The VPC in which this Cluster was created
+   */
+  readonly vpc: ec2.VpcNetworkImportProps;
+
+  /**
+   * The physical name of the Cluster
+   */
+  readonly clusterName: string;
+
+  /**
+   * The unique ARN assigned to the service by AWS
+   * in the form of arn:aws:eks:
+   */
+  readonly clusterArn: string;
+
+  /**
+   * The API Server endpoint URL
+   */
+  readonly clusterEndpoint: string;
+
+  /**
+   * The certificate-authority-data for your cluster.
+   */
+  readonly clusterCertificateAuthorityData: string;
+
+  readonly securityGroups: ec2.SecurityGroupAttributes[];
+}
 
 /**
  * Properties to instantiate the Cluster
@@ -74,10 +173,10 @@ export class Cluster extends ClusterBase {
    *
    * @param scope the construct scope, in most cases 'this'
    * @param id the id or name to import as
-   * @param props the cluster properties to use for importing information
+   * @param attrs the cluster properties to use for importing information
    */
-  public static import(scope: Construct, id: string, props: ClusterImportProps): ICluster {
-    return new ImportedCluster(scope, id, props);
+  public static fromClusterAttributes(scope: Construct, id: string, attrs: ClusterAttributes): ICluster {
+    return new ImportedCluster(scope, id, attrs);
   }
 
   /**
@@ -314,7 +413,7 @@ class ImportedCluster extends ClusterBase {
   public readonly clusterEndpoint: string;
   public readonly connections = new ec2.Connections();
 
-  constructor(scope: Construct, id: string, props: ClusterImportProps) {
+  constructor(scope: Construct, id: string, props: ClusterAttributes) {
     super(scope, id);
 
     this.vpc = ec2.VpcNetwork.import(this, "VPC", props.vpc);
@@ -325,7 +424,7 @@ class ImportedCluster extends ClusterBase {
 
     let i = 1;
     for (const sgProps of props.securityGroups) {
-      this.connections.addSecurityGroup(ec2.SecurityGroup.import(this, `SecurityGroup${i}`, sgProps));
+      this.connections.addSecurityGroup(ec2.SecurityGroup.fromSecurityGroupId(this, `SecurityGroup${i}`, sgProps.securityGroupId));
       i++;
     }
   }

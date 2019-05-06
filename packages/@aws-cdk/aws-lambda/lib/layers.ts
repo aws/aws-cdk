@@ -38,6 +38,7 @@ export interface LayerVersionProps {
 export interface ILayerVersion extends IResource {
   /**
    * The ARN of the Lambda Layer version that this Layer defines.
+   * @attribute
    */
   readonly layerVersionArn: string;
 
@@ -50,7 +51,7 @@ export interface ILayerVersion extends IResource {
    * Exports this layer for use in another Stack. The resulting object can be passed to the ``LayerVersion.import``
    * function to obtain an ``ILayerVersion`` in the user stack.
    */
-  export(): LayerVersionImportProps;
+  export(): LayerVersionAttributes;
 
   /**
    * Grants usage of this layer to specific entities. Usage within the same account where the layer is defined is always
@@ -67,7 +68,7 @@ export interface ILayerVersion extends IResource {
 /**
  * A reference to a Lambda Layer version.
  */
-export abstract class LayerVersionBase extends Resource implements ILayerVersion {
+abstract class LayerVersionBase extends Resource implements ILayerVersion {
   public abstract readonly layerVersionArn: string;
   public abstract readonly compatibleRuntimes?: Runtime[];
 
@@ -85,7 +86,7 @@ export abstract class LayerVersionBase extends Resource implements ILayerVersion
     return this;
   }
 
-  public export(): LayerVersionImportProps {
+  public export(): LayerVersionAttributes {
     return {
       layerVersionArn: new CfnOutput(this, 'LayerVersionArn', { value: this.layerVersionArn }).makeImportValue().toString(),
       compatibleRuntimes: this.compatibleRuntimes,
@@ -114,7 +115,7 @@ export interface LayerVersionUsageGrantee {
 /**
  * Properties necessary to import a LayerVersion.
  */
-export interface LayerVersionImportProps {
+export interface LayerVersionAttributes {
   /**
    * The ARN of the LayerVersion.
    */
@@ -130,15 +131,35 @@ export interface LayerVersionImportProps {
  * Defines a new Lambda Layer version.
  */
 export class LayerVersion extends LayerVersionBase {
+
+  /**
+   * Imports a layer version by ARN. Assumes it is compatible with all Lambda runtimes.
+   */
+  public static fromLayerVersionArn(scope: Construct, id: string, layerVersionArn: string): ILayerVersion {
+    return LayerVersion.fromLayerVersionAttributes(scope, id, {
+      layerVersionArn,
+      compatibleRuntimes: Runtime.All
+    });
+  }
+
   /**
    * Imports a Layer that has been defined externally.
    *
    * @param scope the parent Construct that will use the imported layer.
    * @param id    the id of the imported layer in the construct tree.
-   * @param props the properties of the imported layer.
+   * @param attrs the properties of the imported layer.
    */
-  public static import(scope: Construct, id: string, props: LayerVersionImportProps): ILayerVersion {
-    return new ImportedLayerVersion(scope, id, props);
+  public static fromLayerVersionAttributes(scope: Construct, id: string, attrs: LayerVersionAttributes): ILayerVersion {
+    if (attrs.compatibleRuntimes && attrs.compatibleRuntimes.length === 0) {
+      throw new Error('Attempted to import a Lambda layer that supports no runtime!');
+    }
+
+    class Import extends LayerVersionBase {
+      public readonly layerVersionArn = attrs.layerVersionArn;
+      public readonly compatibleRuntimes = attrs.compatibleRuntimes;
+    }
+
+    return new Import(scope, id);
   }
 
   public readonly layerVersionArn: string;
@@ -164,22 +185,6 @@ export class LayerVersion extends LayerVersionBase {
     });
 
     this.layerVersionArn = resource.layerVersionArn;
-    this.compatibleRuntimes = props.compatibleRuntimes;
-  }
-}
-
-class ImportedLayerVersion extends LayerVersionBase {
-  public readonly layerVersionArn: string;
-  public readonly compatibleRuntimes?: Runtime[];
-
-  public constructor(parent: Construct, id: string, props: LayerVersionImportProps) {
-    super(parent, id);
-
-    if (props.compatibleRuntimes && props.compatibleRuntimes.length === 0) {
-      throw new Error('Attempted to import a Lambda layer that supports no runtime!');
-    }
-
-    this.layerVersionArn = props.layerVersionArn;
     this.compatibleRuntimes = props.compatibleRuntimes;
   }
 }
@@ -219,7 +224,7 @@ export class SingletonLayerVersion extends Construct implements ILayerVersion {
     return this.layerVersion.compatibleRuntimes;
   }
 
-  public export(): LayerVersionImportProps {
+  public export(): LayerVersionAttributes {
     return {
       layerVersionArn: this.layerVersionArn,
       compatibleRuntimes: this.compatibleRuntimes,

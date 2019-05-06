@@ -20,12 +20,19 @@ export const RESOLVE_METHOD = 'resolve';
  */
 export class Token {
   /**
-   * Returns true if obj is a token (i.e. has the resolve() method or is a string
-   * that includes token markers), or it's a listifictaion of a Token string.
+   * @deprecated use `Token.isToken`
+   */
+  public static unresolved(obj: any): boolean {
+    return unresolved(obj);
+  }
+
+  /**
+   * Returns true if obj is a token (i.e. has the resolve() method or is a
+   * string or array which includes token markers).
    *
    * @param obj The object to test.
    */
-  public static unresolved(obj: any): boolean {
+  public static isToken(obj: any): boolean {
     return unresolved(obj);
   }
 

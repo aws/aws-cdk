@@ -7,7 +7,7 @@ import { ITargetGroup } from './base-target-group';
  */
 export abstract class BaseListener extends cdk.Construct {
   public readonly listenerArn: string;
-  private readonly defaultActions: any[] = [];
+  private readonly defaultActions: CfnListener.ActionProperty[] = [];
 
   constructor(scope: cdk.Construct, id: string, additionalProps: any) {
     super(scope, id);
@@ -31,11 +31,19 @@ export abstract class BaseListener extends cdk.Construct {
   }
 
   /**
+   * Add an action to the list of default actions of this listener
+   * @internal
+   */
+  protected _addDefaultAction(action: CfnListener.ActionProperty) {
+    this.defaultActions.push(action);
+  }
+
+  /**
    * Add a TargetGroup to the list of default actions of this listener
    * @internal
    */
   protected _addDefaultTargetGroup(targetGroup: ITargetGroup) {
-    this.defaultActions.push({
+    this._addDefaultAction({
       targetGroupArn: targetGroup.targetGroupArn,
       type: 'forward'
     });

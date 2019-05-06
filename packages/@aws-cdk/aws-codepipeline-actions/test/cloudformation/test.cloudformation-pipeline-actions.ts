@@ -369,9 +369,7 @@ export = {
   'Action service role is passed to template'(test: Test) {
     const stack = new TestFixture();
 
-    const importedRole = Role.import(stack, 'ImportedRole', {
-      roleArn: 'arn:aws:iam::000000000000:role/action-role'
-    });
+    const importedRole = Role.fromRoleArn(stack, 'ImportedRole', 'arn:aws:iam::000000000000:role/action-role');
     const freshRole = new Role(stack, 'FreshRole', {
       assumedBy: new ServicePrincipal('magicservice')
     });

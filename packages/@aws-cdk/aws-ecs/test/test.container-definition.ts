@@ -360,7 +360,7 @@ export = {
     test.done();
   },
 
-  'can specify Health Check values'(test: Test) {
+  'can specify Health Check values in shell form'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
     const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
@@ -396,15 +396,85 @@ export = {
     test.done();
   },
 
+  'can specify Health Check values in array form starting with CMD-SHELL'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
+    const hcCommand = "curl localhost:8000";
+
+    // WHEN
+    taskDefinition.addContainer('cont', {
+      image: ecs.ContainerImage.fromRegistry('test'),
+      memoryLimitMiB: 1024,
+      healthCheck: {
+        command: ["CMD-SHELL", hcCommand],
+        intervalSeconds: 20,
+        retries: 5,
+        startPeriod: 10
+      }
+    });
+
+    // THEN
+    expect(stack).to(haveResourceLike('AWS::ECS::TaskDefinition', {
+      ContainerDefinitions: [
+        {
+          HealthCheck: {
+            Command: ["CMD-SHELL", hcCommand],
+            Interval: 20,
+            Retries: 5,
+            Timeout: 5,
+            StartPeriod: 10
+          },
+        }
+      ]
+    }));
+
+    test.done();
+  },
+
+  'can specify Health Check values in array form starting with CMD'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
+    const hcCommand = "curl localhost:8000";
+
+    // WHEN
+    taskDefinition.addContainer('cont', {
+      image: ecs.ContainerImage.fromRegistry('test'),
+      memoryLimitMiB: 1024,
+      healthCheck: {
+        command: ["CMD", hcCommand],
+        intervalSeconds: 20,
+        retries: 5,
+        startPeriod: 10
+      }
+    });
+
+    // THEN
+    expect(stack).to(haveResourceLike('AWS::ECS::TaskDefinition', {
+      ContainerDefinitions: [
+        {
+          HealthCheck: {
+            Command: ["CMD", hcCommand],
+            Interval: 20,
+            Retries: 5,
+            Timeout: 5,
+            StartPeriod: 10
+          },
+        }
+      ]
+    }));
+
+    test.done();
+  },
+
   'can specify private registry credentials'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
     const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
     const mySecretArn = 'arn:aws:secretsmanager:region:1234567890:secret:MyRepoSecret-6f8hj3';
 
-    const repoCreds = secretsmanager.Secret.import(stack, 'MyRepoSecret', {
-        secretArn: mySecretArn,
-    });
+    const repoCreds = secretsmanager.Secret.fromSecretArn(stack, 'MyRepoSecret', mySecretArn);
 
     // WHEN
     taskDefinition.addContainer('Container', {
