@@ -219,37 +219,6 @@ abstract class RepositoryBase extends Resource implements IRepository {
   }
 }
 
-class ImportedRepository extends RepositoryBase {
-  public readonly repositoryArn: string;
-  public readonly repositoryName: string;
-
-  constructor(scope: Construct, id: string, private readonly props: RepositoryAttributes) {
-    super(scope, id);
-
-    this.repositoryArn = this.node.stack.formatArn({
-      service: 'codecommit',
-      resource: props.repositoryName,
-    });
-    this.repositoryName = props.repositoryName;
-  }
-
-  public export() {
-    return this.props;
-  }
-
-  public get repositoryCloneUrlHttp() {
-    return this.repositoryCloneUrl('https');
-  }
-
-  public get repositoryCloneUrlSsh() {
-    return this.repositoryCloneUrl('ssh');
-  }
-
-  private repositoryCloneUrl(protocol: 'https' | 'ssh'): string {
-    return `${protocol}://git-codecommit.${this.node.stack.region}.${this.node.stack.urlSuffix}/v1/repos/${this.repositoryName}`;
-  }
-}
-
 export interface RepositoryProps {
   /**
    * Name of the repository. This property is required for all repositories.
@@ -268,26 +237,30 @@ export interface RepositoryProps {
  */
 export class Repository extends RepositoryBase {
 
-  public static fromRepositoryName(scope: Construct, id: string, repositoryName: string): IRepository {
-    return Repository.fromRepositoryAttributes(scope, id, { repositoryName });
-  }
-
-  public static fromRepositoryArn(scope: Construct, id: string, repositoryArn: string): IRepository {
-    // arn:aws:codecommit:us-east-1:123456789012:MyDemoRepo
-    return Repository.fromRepositoryName(scope, id, scope.node.stack.parseArn(repositoryArn).resource);
-  }
-
   /**
-   * Import a Repository defined either outside the CDK, or in a different Stack
-   * (exported with the {@link export} method).
-   *
-   * @param scope the parent Construct for the Repository
-   * @param id the name of the Repository Construct
-   * @param attrs the properties used to identify the existing Repository
-   * @returns a reference to the existing Repository
+   * Imports a codecommit repository.
+   * @param repositoryArn (e.g. `arn:aws:codecommit:us-east-1:123456789012:MyDemoRepo`)
    */
-  public static fromRepositoryAttributes(scope: Construct, id: string, attrs: RepositoryAttributes): IRepository {
-    return new ImportedRepository(scope, id, attrs);
+  public static fromRepositoryArn(scope: Construct, id: string, repositoryArn: string): IRepository {
+    const stack = scope.node.stack;
+    const repositoryName = stack.parseArn(repositoryArn).resource;
+    const makeCloneUrl = (protocol: 'https' | 'ssh') =>
+      `${protocol}://git-codecommit.${stack.region}.${stack.urlSuffix}/v1/repos/${repositoryName}`;
+
+    class Import extends RepositoryBase {
+      public readonly repositoryArn = repositoryArn;
+      public readonly repositoryName = repositoryName;
+      public readonly repositoryCloneUrlHttp = makeCloneUrl('https');
+      public readonly repositoryCloneUrlSsh = makeCloneUrl('ssh');
+      public export() {
+        return {
+          repositoryArn: this.repositoryArn,
+          repositoryName: this.repositoryName
+        };
+      }
+    }
+
+    return new Import(scope, id);
   }
 
   private readonly repository: CfnRepository;
