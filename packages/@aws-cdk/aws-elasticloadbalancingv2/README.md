@@ -50,6 +50,17 @@ listener.addTargets('ApplicationFleet', {
 The security groups of the load balancer and the target are automatically
 updated to allow the network traffic.
 
+Use the `addFixedResponse()` method to add fixed response rules on the listener:
+
+```ts
+listener.addFixedResponse('Fixed', {
+    pathPattern: '/ok',
+    contentType: elbv2.ContentType.TEXT_PLAIN,
+    messageBody: 'OK',
+    statusCode: '200'
+});
+```
+
 #### Conditions
 
 It's possible to route traffic to targets based on conditions in the incoming
