@@ -270,7 +270,7 @@ export interface AttachedSecretProps extends AttachedSecretOptions {
 /**
  * An attached secret.
  */
-export class AttachedSecret extends SecretBase implements ISecret {
+export class AttachedSecret extends SecretBase {
   public readonly encryptionKey?: kms.IEncryptionKey;
   public readonly secretArn: string;
 
