@@ -55,11 +55,9 @@ Use the `addFixedResponse()` method to add fixed response rules on the listener:
 ```ts
 listener.addFixedResponse('Fixed', {
     pathPattern: '/ok',
-    fixedResponse: {
-        contentType: elbv2.ContentType.TEXT_PLAIN,
-        messageBody: 'OK',
-        statusCode: '200'
-    }
+    contentType: elbv2.ContentType.TEXT_PLAIN,
+    messageBody: 'OK',
+    statusCode: '200'
 });
 ```
 

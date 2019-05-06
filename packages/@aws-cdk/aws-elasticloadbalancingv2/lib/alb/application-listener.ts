@@ -219,18 +219,24 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
   public addFixedResponse(id: string, props: AddFixedResponseProps) {
     checkAddRuleProps(props);
 
-    validateFixedResponse(props.fixedResponse);
+    const fixedResponse: FixedResponse = {
+      statusCode: props.statusCode,
+      contentType: props.contentType,
+      messageBody: props.messageBody
+    };
+
+    validateFixedResponse(fixedResponse);
 
     if (props.priority) {
       new ApplicationListenerRule(this, id + 'Rule', {
         listener: this,
         priority: props.priority,
-        fixedResponse: props.fixedResponse,
+        fixedResponse,
         ...props
       });
     } else {
       this._addDefaultAction({
-        fixedResponseConfig: props.fixedResponse,
+        fixedResponseConfig: fixedResponse,
         type: 'fixed-response'
       });
     }
@@ -564,11 +570,7 @@ export interface AddApplicationTargetsProps extends AddRuleProps {
 /**
  * Properties for adding a fixed response to a listener
  */
-export interface AddFixedResponseProps extends AddRuleProps {
-  /**
-   * The fixed response
-   */
-  readonly fixedResponse: FixedResponse
+export interface AddFixedResponseProps extends AddRuleProps, FixedResponse {
 }
 
 function checkAddRuleProps(props: AddRuleProps) {

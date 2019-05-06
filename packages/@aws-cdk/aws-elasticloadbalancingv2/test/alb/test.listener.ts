@@ -496,18 +496,14 @@ export = {
 
     // WHEN
     listener.addFixedResponse('Default', {
-      fixedResponse: {
-        contentType: elbv2.ContentType.TEXT_PLAIN,
-        messageBody: 'Not Found',
-        statusCode: '404'
-      }
+      contentType: elbv2.ContentType.TEXT_PLAIN,
+      messageBody: 'Not Found',
+      statusCode: '404'
     });
     listener.addFixedResponse('Hello', {
       priority: 10,
       pathPattern: '/hello',
-      fixedResponse: {
-        statusCode: '503'
-      }
+      statusCode: '503'
     });
 
     // THEN
@@ -553,9 +549,7 @@ export = {
 
       // THEN
       test.throws(() => listener.addFixedResponse('Default', {
-        fixedResponse: {
-          statusCode: '301'
-        }
+        statusCode: '301'
       }), /`statusCode`/);
 
       test.done();
@@ -574,10 +568,8 @@ export = {
 
       // THEN
       test.throws(() => listener.addFixedResponse('Default', {
-        fixedResponse: {
-          messageBody: 'a'.repeat(1025),
-          statusCode: '500'
-        }
+        messageBody: 'a'.repeat(1025),
+        statusCode: '500'
       }), /`messageBody`/);
 
       test.done();
