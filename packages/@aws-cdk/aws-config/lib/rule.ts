@@ -10,8 +10,27 @@ import { CfnConfigRule } from './config.generated';
 export interface IRule extends IResource {
   /**
    * The name of the rule.
+   * @attribute
    */
-  readonly ruleName: string;
+  readonly configRuleName: string;
+
+  /**
+   * The arn of the rule.
+   * @attribute
+   */
+  readonly configRuleArn?: string;
+
+  /**
+   * The id of the rule.
+   * @attribute
+   */
+  readonly configRuleId?: string;
+
+  /**
+   * The compliance status of the rule.
+   * @attribute
+   */
+  readonly configRuleComplianceType?: string;
 
   /**
    * Exports this rule from stack.
@@ -42,7 +61,7 @@ export interface RuleAttributes {
   /**
    * The rule name.
    */
-  readonly ruleName: string;
+  readonly configRuleName: string;
 }
 
 /**
@@ -51,20 +70,22 @@ export interface RuleAttributes {
 abstract class RuleBase extends Resource implements IRule {
   /**
    * Imports an existing rule.
+   *
+   * @param configRuleName the name of the rule
    */
-  public static fromRuleName(scope: Construct, id: string, ruleName: string): IRule {
-    class Import extends RuleBase implements IRule {
-      public readonly ruleName = ruleName;
+  public static fromConfigRuleName(scope: Construct, id: string, configRuleName: string): IRule {
+    class Import extends RuleBase {
+      public readonly configRuleName = configRuleName;
 
       public export(): RuleAttributes {
-        return { ruleName };
+        return { configRuleName };
       }
     }
 
     return new Import(scope, id);
   }
 
-  public abstract readonly ruleName: string;
+  public abstract readonly configRuleName: string;
 
   public abstract export(): RuleAttributes;
 
@@ -77,7 +98,7 @@ abstract class RuleBase extends Resource implements IRule {
     rule.addEventPattern({
       source: ['aws.config'],
       detail: {
-        configRuleName: [this.ruleName]
+        configRuleName: [this.configRuleName]
       }
     });
     rule.addTarget(target);
@@ -110,21 +131,10 @@ abstract class RuleBase extends Resource implements IRule {
 /**
  * A new managed or custom rule.
  */
-abstract class RuleNew extends RuleBase implements IRule {
-  /**
-   * The arn of the rule.
-   */
-  public abstract readonly ruleArn: string;
-
-  /**
-   * The id of the rule.
-   */
-  public abstract readonly ruleId: string;
-
-  /**
-   * The compliance status of the rule.
-   */
-  public abstract readonly ruleComplianceType: string;
+abstract class RuleNew extends RuleBase {
+  public abstract readonly configRuleArn: string;
+  public abstract readonly configRuleId: string;
+  public abstract readonly configRuleComplianceType: string;
 
   protected scope?: CfnConfigRule.ScopeProperty;
   protected isManaged?: boolean;
@@ -135,7 +145,7 @@ abstract class RuleNew extends RuleBase implements IRule {
    */
   public export(): RuleAttributes {
     return {
-      ruleName: new CfnOutput(this, 'RuleName', { value: this.ruleName }).makeImportValue().toString()
+      configRuleName: new CfnOutput(this, 'RuleName', { value: this.configRuleName }).makeImportValue().toString()
     };
   }
 
@@ -247,12 +257,14 @@ export interface ManagedRuleProps extends RuleProps {
 
 /**
  * A new managed rule.
+ *
+ * @resource AWS::Config::ConfigRule
  */
-export class ManagedRule extends RuleNew implements IRule {
-  public readonly ruleName: string;
-  public readonly ruleArn: string;
-  public readonly ruleId: string;
-  public readonly ruleComplianceType: string;
+export class ManagedRule extends RuleNew {
+  public readonly configRuleName: string;
+  public readonly configRuleArn: string;
+  public readonly configRuleId: string;
+  public readonly configRuleComplianceType: string;
 
   constructor(scope: Construct, id: string, props: ManagedRuleProps) {
     super(scope, id);
@@ -269,10 +281,10 @@ export class ManagedRule extends RuleNew implements IRule {
       }
     });
 
-    this.ruleName = rule.configRuleName;
-    this.ruleArn = rule.configRuleArn;
-    this.ruleId = rule.configRuleId;
-    this.ruleComplianceType = rule.configRuleComplianceType;
+    this.configRuleName = rule.configRuleName;
+    this.configRuleArn = rule.configRuleArn;
+    this.configRuleId = rule.configRuleId;
+    this.configRuleComplianceType = rule.configRuleComplianceType;
 
     this.isManaged = true;
   }
@@ -303,12 +315,14 @@ export interface CustomRuleProps extends RuleProps {
 }
 /**
  * A new custom rule.
+ *
+ * @resource AWS::Config::ConfigRule
  */
-export class CustomRule extends RuleNew implements IRule {
-  public readonly ruleName: string;
-  public readonly ruleArn: string;
-  public readonly ruleId: string;
-  public readonly ruleComplianceType: string;
+export class CustomRule extends RuleNew {
+  public readonly configRuleName: string;
+  public readonly configRuleArn: string;
+  public readonly configRuleId: string;
+  public readonly configRuleComplianceType: string;
 
   constructor(scope: Construct, id: string, props: CustomRuleProps) {
     super(scope, id);
@@ -364,10 +378,10 @@ export class CustomRule extends RuleNew implements IRule {
       }
     });
 
-    this.ruleName = rule.configRuleName;
-    this.ruleArn = rule.configRuleArn;
-    this.ruleId = rule.configRuleId;
-    this.ruleComplianceType = rule.configRuleComplianceType;
+    this.configRuleName = rule.configRuleName;
+    this.configRuleArn = rule.configRuleArn;
+    this.configRuleId = rule.configRuleId;
+    this.configRuleComplianceType = rule.configRuleComplianceType;
 
     if (props.configurationChanges) {
       this.isCustomWithChanges = true;

@@ -252,13 +252,13 @@ export = {
     // WHEN
     const exportedRule = rule.export();
 
-    const importedRule = config.ManagedRule.fromRuleName(stack, 'ImportedRule', 'name');
+    const importedRule = config.ManagedRule.fromConfigRuleName(stack, 'ImportedRule', 'name');
 
     // THEN
     test.deepEqual(stack.node.resolve(exportedRule), {
-      ruleName: { 'Fn::ImportValue': 'Stack:RuleRuleName1741A255' }
+      configRuleName: { 'Fn::ImportValue': 'Stack:RuleRuleName1741A255' }
     });
-    test.deepEqual(importedRule.ruleName, 'name');
+    test.deepEqual(importedRule.configRuleName, 'name');
 
     test.done();
   },

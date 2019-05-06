@@ -20,6 +20,8 @@ export interface AccessKeysRotatedProps extends RuleProps {
  * specified in `maxDays`.
  *
  * @see https://docs.aws.amazon.com/config/latest/developerguide/access-keys-rotated.html
+ *
+ * @resource AWS::Config::ConfigRule
  */
 export class AccessKeysRotated extends ManagedRule {
   constructor(scope: Construct, id: string, props: AccessKeysRotatedProps = {}) {
@@ -54,6 +56,8 @@ export interface CloudFormationStackDriftDetectionCheckProps extends RuleProps {
  * has drifted, from its expected configuration.
  *
  * @see https://docs.aws.amazon.com/config/latest/developerguide/cloudformation-stack-drift-detection-check.html
+ *
+ * @resource AWS::Config::ConfigRule
  */
 export class CloudFormationStackDriftDetectionCheck extends ManagedRule {
   private role: iam.Role;
@@ -97,6 +101,8 @@ export interface CloudFormationStackNotificationCheckProps extends RuleProps {
  * a SNS topic. Optionally checks whether specified SNS topics are used.
  *
  * @see https://docs.aws.amazon.com/config/latest/developerguide/cloudformation-stack-notification-check.html
+ *
+ * @resource AWS::Config::ConfigRule
  */
 export class CloudFormationStackNotificationCheck extends ManagedRule {
   constructor(scope: Construct, id: string, props: CloudFormationStackNotificationCheckProps = {}) {
