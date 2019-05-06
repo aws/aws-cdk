@@ -574,6 +574,13 @@ export class Construct implements IConstruct {
   }
 
   /**
+   * Check whether the given construct is Taggable
+   */
+  public static isTaggable(construct: any): construct is ITaggable {
+    return (construct as any).tags !== undefined;
+  }
+
+  /**
    * Construct node.
    */
   public readonly node: ConstructNode;
@@ -727,3 +734,4 @@ export interface OutgoingReference {
 
 // Import this _after_ everything else to help node work the classes out in the correct order...
 import { Reference } from './reference';
+import { ITaggable } from './tag-manager';

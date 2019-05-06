@@ -2,7 +2,6 @@ import cxapi = require('@aws-cdk/cx-api');
 import { CfnCondition } from './cfn-condition';
 import { Construct, IConstruct } from './construct';
 import { CreationPolicy, DeletionPolicy, UpdatePolicy } from './resource-policy';
-import { ITaggable } from './tag-manager';
 import { capitalizePropertyNames, ignoreEmpty, PostResolveToken } from './util';
 // import required to be here, otherwise causes a cycle when running the generated JavaScript
 // tslint:disable-next-line:ordered-imports
@@ -46,13 +45,6 @@ export class CfnResource extends CfnRefElement {
    */
   public static isCfnResource(construct: IConstruct): construct is CfnResource {
     return (construct as any).resourceType !== undefined;
-  }
-
-  /**
-   * Check whether the given construct is Taggable
-   */
-  public static isTaggable(construct: any): construct is ITaggable {
-    return (construct as any).tags !== undefined;
   }
 
   /**

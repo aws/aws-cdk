@@ -212,7 +212,7 @@ export class Settings {
     return ret;
   }
 
-  private static parseStringContextListToObject(argv: yargs.Arguments) {
+  private static parseStringContextListToObject(argv: yargs.Arguments): any {
     const context: any = {};
 
     for (const assignment of ((argv as any).context || [])) {
@@ -230,7 +230,7 @@ export class Settings {
     return context;
   }
 
-  private static parseStringTagsListToObject(argv: yargs.Arguments) {
+  private static parseStringTagsListToObject(argv: yargs.Arguments): Tag[] {
     const tags: Tag[] = [];
 
     for (const assignment of ((argv as any).tags || [])) {
