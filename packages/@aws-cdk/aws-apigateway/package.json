@@ -20,7 +20,6 @@
         "signAssembly": true,
         "assemblyOriginatorKeyFile": "../../key.snk"
       },
-      "sphinx": {},
       "python": {
         "distName": "aws-cdk.aws-apigateway",
         "module": "aws_cdk.aws_apigateway"
@@ -87,7 +86,9 @@
   },
   "awslint": {
     "exclude": [
-      "resource-attribute:@aws-cdk/aws-apigateway.IRestApi.restApiRootResourceId"
+      "resource-attribute:@aws-cdk/aws-apigateway.IRestApi.restApiRootResourceId",
+      "from-method:@aws-cdk/aws-apigateway.Resource",
+      "construct-base-is-private:@aws-cdk/aws-apigateway.ResourceBase"
     ]
   }
 }

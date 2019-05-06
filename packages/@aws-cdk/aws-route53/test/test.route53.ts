@@ -78,7 +78,7 @@ export = {
     });
 
     const zoneRef = zone.export();
-    const importedZone = HostedZone.import(stack2, 'Imported', zoneRef);
+    const importedZone = HostedZone.fromHostedZoneAttributes(stack2, 'Imported', zoneRef);
     new TxtRecord(importedZone as any, 'Record', {
       zone: importedZone,
       recordName: 'lookHere',

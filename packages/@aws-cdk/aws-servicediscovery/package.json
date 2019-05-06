@@ -20,7 +20,6 @@
         "signAssembly": true,
         "assemblyOriginatorKeyFile": "../../key.snk"
       },
-      "sphinx": {},
       "python": {
         "distName": "aws-cdk.aws-servicediscovery",
         "module": "aws_cdk.aws_servicediscovery"
@@ -83,13 +82,20 @@
   },
   "awslint": {
     "exclude": [
-      "export:@aws-cdk/aws-servicediscovery.IService",
-      "export:@aws-cdk/aws-servicediscovery.IInstance",
-      "import-props-interface:@aws-cdk/aws-servicediscovery.ServiceImportProps",
-      "import-props-interface:@aws-cdk/aws-servicediscovery.InstanceImportProps",
-      "resource-interface:@aws-cdk/aws-servicediscovery.IHttpNamespace",
-      "resource-interface:@aws-cdk/aws-servicediscovery.IPublicDnsNamespace",
-      "resource-interface:@aws-cdk/aws-servicediscovery.IPrivateDnsNamespace"
+      "from-attributes:fromPrivateDnsNamespaceAttributes",
+      "from-arn:Service.fromServiceArn",
+      "from-arn:HttpNamespace.fromHttpNamespaceArn",
+      "from-attributes:fromHttpNamespaceAttributes",
+      "from-method:@aws-cdk/aws-servicediscovery.PrivateDnsNamespace",
+      "from-arn:PrivateDnsNamespace.fromPrivateDnsNamespaceArn",
+      "from-method:@aws-cdk/aws-servicediscovery.HttpNamespace",
+      "from-method:@aws-cdk/aws-servicediscovery.PublicDnsNamespace",
+      "from-arn:PublicDnsNamespace.fromPublicDnsNamespaceArn",
+      "from-attributes:fromPublicDnsNamespaceAttributes",
+      "from-method:@aws-cdk/aws-servicediscovery.Service",
+      "from-attributes:@aws-cdk/aws-servicediscovery.HttpNamespace.fromHttpNamespaceAttributes",
+      "from-attributes:@aws-cdk/aws-servicediscovery.PrivateDnsNamespace.fromPrivateDnsNamespaceAttributes",
+      "from-attributes:@aws-cdk/aws-servicediscovery.PublicDnsNamespace.fromPublicDnsNamespaceAttributes"
     ]
   }
 }

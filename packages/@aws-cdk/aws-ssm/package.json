@@ -20,7 +20,6 @@
         "signAssembly": true,
         "assemblyOriginatorKeyFile": "../../key.snk"
       },
-      "sphinx": {},
       "python": {
         "distName": "aws-cdk.aws-ssm",
         "module": "aws_cdk.aws_ssm"
@@ -81,7 +80,9 @@
     "exclude": [
       "export:@aws-cdk/aws-ssm.IParameter",
       "import-props-interface:@aws-cdk/aws-ssm.ParameterImportProps",
-      "resource-attribute:@aws-cdk/aws-ssm.IParameter.parameterValue"
+      "resource-attribute:@aws-cdk/aws-ssm.IParameter.parameterValue",
+      "from-attributes:fromStringParameterAttributes",
+      "from-attributes:fromStringListParameterAttributes"
     ]
   }
 }

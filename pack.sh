@@ -24,9 +24,6 @@ for dir in $(find packages -name dist | grep -v node_modules); do
   rsync -av $dir/ ${distdir}/
 done
 
-# Build docs
-/bin/bash ./build-docs.sh
-
 # Get version from lerna
 version="$(cat ${root}/lerna.json | grep version | cut -d '"' -f4)"
 

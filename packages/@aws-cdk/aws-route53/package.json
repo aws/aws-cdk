@@ -20,7 +20,6 @@
         "signAssembly": true,
         "assemblyOriginatorKeyFile": "../../key.snk"
       },
-      "sphinx": {},
       "python": {
         "distName": "aws-cdk.aws-route53",
         "module": "aws_cdk.aws_route53"
@@ -81,5 +80,11 @@
   },
   "engines": {
     "node": ">= 8.10.0"
+  },
+  "awslint": {
+    "exclude": [
+      "from-attributes:fromPrivateHostedZoneAttributes",
+      "from-attributes:fromPublicHostedZoneAttributes"
+    ]
   }
 }

@@ -504,7 +504,7 @@ export = {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = mockVpc(stack);
-    const importedRole = iam.Role.import(stack, 'ImportedRole', { roleArn: 'arn:aws:iam::123456789012:role/HelloDude' });
+    const importedRole = iam.Role.fromRoleArn(stack, 'ImportedRole', 'arn:aws:iam::123456789012:role/HelloDude');
 
     // WHEN
     const asg = new autoscaling.AutoScalingGroup(stack, 'MyASG', {
@@ -534,9 +534,7 @@ function mockVpc(stack: cdk.Stack) {
 }
 
 function mockSecurityGroup(stack: cdk.Stack) {
-  return ec2.SecurityGroup.import(stack, 'MySG', {
-    securityGroupId: 'most-secure',
-  });
+  return ec2.SecurityGroup.fromSecurityGroupId(stack, 'MySG', 'most-secure');
 }
 
 function getTestStack(): cdk.Stack {

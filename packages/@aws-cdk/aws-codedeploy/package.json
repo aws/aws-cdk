@@ -20,7 +20,6 @@
         "signAssembly": true,
         "assemblyOriginatorKeyFile": "../../key.snk"
       },
-      "sphinx": {},
       "python": {
         "distName": "aws-cdk.aws-codedeploy",
         "module": "aws_cdk.aws_codedeploy"
@@ -95,7 +94,8 @@
   },
   "awslint": {
     "exclude": [
-      "construct-interface-extends-iconstruct:@aws-cdk/aws-codedeploy.IServerDeploymentConfig"
+      "construct-interface-extends-iconstruct:@aws-cdk/aws-codedeploy.IServerDeploymentConfig",
+      "resource-interface-extends-resource:@aws-cdk/aws-codedeploy.IServerDeploymentConfig"
     ]
   }
 }

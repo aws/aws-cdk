@@ -20,7 +20,6 @@
           "artifactId": "secretsmanager"
         }
       },
-      "sphinx": {},
       "python": {
         "distName": "aws-cdk.aws-secretsmanager",
         "module": "aws_cdk.aws_secretsmanager"
@@ -82,5 +81,11 @@
   },
   "engines": {
     "node": ">= 8.10.0"
+  },
+  "awslint": {
+    "exclude": [
+      "from-signature:@aws-cdk/aws-secretsmanager.SecretTargetAttachment.fromSecretTargetAttachmentSecretArn",
+      "from-attributes:fromSecretTargetAttachmentAttributes"
+    ]
   }
 }
