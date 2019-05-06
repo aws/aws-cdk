@@ -164,11 +164,12 @@ configuration's order of precedence is:
 Some of the interesting keys that can be used in the JSON configuration files:
 ```js
 {
-    "app": "node bin/main.js", // Command to start the CDK app     (--app='node bin/main.js')
-    "context": {               // Context entries                  (--context=key=value)
+    "app": "node bin/main.js",        // Command to start the CDK app     (--app='node bin/main.js')
+    "context": {                      // Context entries                  (--context=key=value)
         "key": "value",
     },
-    "toolkitStackName": "foo", // Customize 'bootstrap' stack name (--toolkit-stack-name=foo)
-    "versionReporting": false, // Opt-out of version reporting     (--no-version-reporting)
+    "toolkitStackName": "foo",        // Customize 'bootstrap' stack name (--toolkit-stack-name=foo)
+    "toolkitBucketName": "fooBucket", // Customize 'bootstrap' bucket name(--toolkit-bucket-name=fooBucket)
+    "versionReporting": false,        // Opt-out of version reporting     (--no-version-reporting)
 }
 ```
