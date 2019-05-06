@@ -33,8 +33,7 @@
         "packageId": "Amazon.CDK.AWS.DynamoDB.Global",
         "signAssembly": true,
         "assemblyOriginatorKeyFile": "../../key.snk"
-      },
-      "sphinx": {}
+      }
     }
   },
   "keywords": [

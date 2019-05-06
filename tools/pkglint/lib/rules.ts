@@ -212,15 +212,6 @@ export class JSIIPythonTarget extends ValidationRule {
   }
 }
 
-export class JSIISphinxTarget extends ValidationRule {
-  public readonly name = 'jsii/sphinx';
-
-  public validate(pkg: PackageJson): void {
-    if (!isJSII(pkg)) { return; }
-    expectJSON(this.name, pkg, 'jsii.targets.sphinx', { });
-  }
-}
-
 export class CDKPackage extends ValidationRule {
   public readonly name = 'package-info/scripts/package';
 

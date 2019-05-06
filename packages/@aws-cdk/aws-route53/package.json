@@ -20,7 +20,6 @@
         "signAssembly": true,
         "assemblyOriginatorKeyFile": "../../key.snk"
       },
-      "sphinx": {},
       "python": {
         "distName": "aws-cdk.aws-route53",
         "module": "aws_cdk.aws_route53"

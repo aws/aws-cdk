@@ -13,7 +13,6 @@
         },
         "package": "software.amazon.awscdk.appdelivery"
       },
-      "sphinx": {},
       "dotnet": {
         "namespace": "Amazon.CDK.AppDelivery",
         "packageId": "Amazon.CDK.AppDelivery",
