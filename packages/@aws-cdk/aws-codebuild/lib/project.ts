@@ -17,10 +17,16 @@ const S3_BUCKET_ENV = 'SCRIPT_S3_BUCKET';
 const S3_KEY_ENV = 'SCRIPT_S3_KEY';
 
 export interface IProject extends IResource, iam.IGrantable {
-  /** The ARN of this Project. */
+  /**
+   * The ARN of this Project.
+   * @attribute
+   */
   readonly projectArn: string;
 
-  /** The human-visible name of this Project. */
+  /**
+   * The human-visible name of this Project.
+   * @attribute
+   */
   readonly projectName: string;
 
   /** The IAM service Role of this Project. Undefined for imported Projects. */

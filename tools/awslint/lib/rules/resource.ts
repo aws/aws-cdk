@@ -3,6 +3,7 @@ import { Linter } from '../linter';
 import { CfnResourceReflection } from './cfn-resource';
 import { CORE_MODULE } from './common';
 import { ConstructReflection } from './construct';
+import { getDocTag } from './util';
 
 const RESOURCE_BASE_CLASS_FQN = `${CORE_MODULE}.Resource`;
 const RESOURCE_BASE_INTERFACE_FQN = `${CORE_MODULE}.IResource`;
@@ -10,9 +11,16 @@ const GRANT_RESULT_FQN = '@aws-cdk/aws-iam.Grant';
 
 export const resourceLinter = new Linter(a => ResourceReflection.findAll(a));
 
-interface Attribute {
+export interface Attribute {
+  site: AttributeSite;
+  siteType: reflect.ClassType | reflect.InterfaceType;
   property: reflect.Property;
-  name: string;
+  name: string; // bucketArn
+}
+
+export enum AttributeSite {
+  Interface = 'interface',
+  Class = 'class'
 }
 
 export class ResourceReflection {
@@ -28,7 +36,7 @@ export class ResourceReflection {
 
     return ConstructReflection
       .findAllConstructs(assembly)
-      .filter(c => c.classType.extends(baseResource))
+      .filter(c => c.classType.extends(baseResource) || getDocTag(c.classType, 'resource'))
       .map(c => new ResourceReflection(c));
   }
 
@@ -57,55 +65,55 @@ export class ResourceReflection {
     this.attributes = this.findAttributeProperties();
   }
 
+  /**
+   * Attribute properties are all the properties that begin with the type name (e.g. bucketXxx).
+   */
   private findAttributeProperties(): Attribute[] {
     const result = new Array<Attribute>();
 
-    for (const attr of this.cfn.attributeNames) {
-      const attribute = this.construct.classType.allProperties.find(p => p.name === attr);
-      if (attribute) {
-        result.push({
-          property: attribute,
-          name: attr
-        });
-      }
-    }
-
     for (const p of this.construct.classType.allProperties) {
-      const attrName = this.findAttributeTag(p);
-      if (!attrName) {
+      // an attribute property is a property which starts with the type name
+      // (e.g. "bucketXxx") and/or has an @attribute doc tag.
+      const tag = getDocTag(p, 'attribute');
+      if (!p.name.startsWith(this.cfn.attributePrefix) && !tag) {
         continue;
       }
 
+      // if there's an `@attribute` doc tag with a value other than "true"
+      // it should be used as the attribute name instead of the property name
+      const propertyName = (tag && tag !== 'true') ? tag : p.name;
+
+      // check if this attribute is defined on an interface or on a class
+      const siteType = findDeclarationSite(p);
+      const site = siteType.isInterfaceType() ? AttributeSite.Interface : AttributeSite.Class;
+
+      if (!siteType.isClassType() && !siteType.isInterfaceType()) {
+        throw new Error(
+          `Attribute property ${p.name} must be either defined on ` +
+          `an interface or on a class and it is defined on ${siteType.fqn} which is neither`);
+      }
+
       result.push({
-        name: attrName,
+        site,
+        siteType,
+        name: propertyName,
         property: p
       });
     }
 
     return result;
   }
+}
 
-  private findAttributeTag(p: reflect.Property): string | undefined {
-    const attrName = p.docs.customTag('attribute');
-    if (attrName) {
-      return attrName;
+function findDeclarationSite(prop: reflect.Property): reflect.ClassType | reflect.InterfaceType {
+  if (!prop.overrides || (!prop.overrides.isClassType() && !prop.overrides.isInterfaceType())) {
+    if (!prop.parentType.isClassType() && !prop.parentType.isInterfaceType()) {
+      throw new Error('invalid parent type');
     }
-
-    if (!p.overrides) {
-      return undefined;
-    }
-
-    if (p.overrides.isInterfaceType() || p.overrides.isClassType()) {
-      for (const base of p.overrides.allProperties.filter(x => x.name === p.name)) {
-        const baseAttrName = this.findAttributeTag(base);
-        if (baseAttrName) {
-          return baseAttrName;
-        }
-      }
-    }
-
-    return undefined;
+    return prop.parentType;
   }
+
+  return findDeclarationSite(prop.overrides.allProperties.find(p => p.name === prop.name)!);
 }
 
 resourceLinter.add({
@@ -140,24 +148,11 @@ resourceLinter.add({
 
 resourceLinter.add({
   code: 'resource-attribute',
-  message: 'resources must represent all attributes as properties. missing: ',
+  message: 'resources must represent all cloudformation attributes as attribute properties. missing property: ',
   eval: e => {
-    const resourceInterface = e.ctx.construct.interfaceType;
-    if (!resourceInterface) { return; }
-
     for (const name of e.ctx.cfn.attributeNames) {
       const found = e.ctx.attributes.find(a => a.name === name);
       e.assert(found, `${e.ctx.fqn}.${name}`, name);
-    }
-  }
-});
-
-resourceLinter.add({
-  code: 'resource-attribute-immutable',
-  message: 'resource attributes must be immutable (readonly)',
-  eval: e => {
-    for (const att of e.ctx.attributes) {
-      e.assert(att.property.immutable, att.property.parentType.fqn + '.' + att.name);
     }
   }
 });

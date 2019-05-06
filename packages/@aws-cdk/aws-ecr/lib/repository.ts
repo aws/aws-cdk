@@ -10,11 +10,13 @@ import { CountType, LifecycleRule, TagStatus } from './lifecycle';
 export interface IRepository extends IResource {
   /**
    * The name of the repository
+   * @attribute
    */
   readonly repositoryName: string;
 
   /**
    * The ARN of the repository
+   * @attribute
    */
   readonly repositoryArn: string;
 
@@ -23,6 +25,7 @@ export interface IRepository extends IResource {
    *
    *    ACCOUNT.dkr.ecr.REGION.amazonaws.com/REPOSITORY
    *
+   * @attribute
    */
   readonly repositoryUri: string;
 

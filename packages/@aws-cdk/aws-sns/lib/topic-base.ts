@@ -15,8 +15,14 @@ export interface ITopic extends
   s3n.IBucketNotificationDestination,
   autoscaling_api.ILifecycleHookTarget {
 
+  /**
+   * @attribute
+   */
   readonly topicArn: string;
 
+  /**
+   * @attribute
+   */
   readonly topicName: string;
 
   /**

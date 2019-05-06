@@ -9,11 +9,13 @@ export interface IHttpNamespace extends INamespace {
   /**
    * The Amazon Resource Name (ARN) of the namespace, such as
    * arn:aws:service-discovery:us-east-1:123456789012:http-namespace/http-namespace-a1bzhi.
+   * @attribute
    */
   readonly httpNamespaceArn: string;
 
   /**
    * The ID of the namespace.
+   * @attribute
    */
   readonly httpNamespaceId: string;
 }

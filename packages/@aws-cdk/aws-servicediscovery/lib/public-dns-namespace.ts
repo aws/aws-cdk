@@ -9,11 +9,13 @@ export interface PublicDnsNamespaceProps extends BaseNamespaceProps {}
 export interface IPublicDnsNamespace extends INamespace {
   /**
    * The ID of the public namespace.
+   * @attribute
    */
   readonly publicDnsNamespaceId: string;
 
   /**
    * The Amazon Resource Name (ARN) of the public namespace.
+   * @attribute
    */
   readonly publicDnsNamespaceArn: string;
 }

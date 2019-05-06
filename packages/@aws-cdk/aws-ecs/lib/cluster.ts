@@ -271,11 +271,13 @@ export class EcsOptimizedAmi implements ec2.IMachineImageSource {
 export interface ICluster extends IResource {
   /**
    * Name of the cluster
+   * @attribute
    */
   readonly clusterName: string;
 
   /**
    * The ARN of this cluster
+   * @attribute
    */
   readonly clusterArn: string;
 
@@ -395,7 +397,7 @@ class ImportedCluster extends Construct implements ICluster {
 
     let i = 1;
     for (const sgProps of props.securityGroups) {
-      this.connections.addSecurityGroup(ec2.SecurityGroup.fromSecurityGroupAttributes(this, `SecurityGroup${i}`, sgProps));
+      this.connections.addSecurityGroup(ec2.SecurityGroup.fromSecurityGroupId(this, `SecurityGroup${i}`, sgProps.securityGroupId));
       i++;
     }
   }

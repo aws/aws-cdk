@@ -14,26 +14,37 @@ import { parseBucketArn, parseBucketName } from './util';
 export interface IBucket extends IResource {
   /**
    * The ARN of the bucket.
+   * @attribute
    */
   readonly bucketArn: string;
 
   /**
    * The name of the bucket.
+   * @attribute
    */
   readonly bucketName: string;
 
   /**
+   * The URL of the static website.
+   * @attribute bucketWebsiteURL
+   */
+  readonly bucketWebsiteUrl: string;
+
+  /**
    * The IPv4 DNS name of the specified bucket.
+   * @attribute
    */
   readonly bucketDomainName: string;
 
   /**
    * The IPv6 DNS name of the specified bucket.
+   * @attribute
    */
   readonly bucketDualStackDomainName: string;
 
   /**
    * The regional domain name of the specified bucket.
+   * @attribute
    */
   readonly bucketRegionalDomainName: string;
 
@@ -41,13 +52,6 @@ export interface IBucket extends IResource {
    * Optional KMS encryption key associated with this bucket.
    */
   readonly encryptionKey?: kms.IEncryptionKey;
-
-  /**
-   * The https:// URL of this bucket.
-   * @example https://s3.us-west-1.amazonaws.com/onlybucket
-   * Similar to calling `urlForObject` with no object key.
-   */
-  readonly bucketUrl: string;
 
   /**
    * The resource policy assoicated with this bucket.
@@ -256,6 +260,7 @@ abstract class BucketBase extends Resource implements IBucket {
   public abstract readonly bucketArn: string;
   public abstract readonly bucketName: string;
   public abstract readonly bucketDomainName: string;
+  public abstract readonly bucketWebsiteUrl: string;
   public abstract readonly bucketRegionalDomainName: string;
   public abstract readonly bucketDualStackDomainName: string;
 
@@ -330,15 +335,6 @@ abstract class BucketBase extends Resource implements IBucket {
     if (this.policy) {
       this.policy.document.addStatement(permission);
     }
-  }
-
-  /**
-   * The https:// URL of this bucket.
-   * @example https://s3.us-west-1.amazonaws.com/onlybucket
-   * Similar to calling `urlForObject` with no object key.
-   */
-  public get bucketUrl() {
-    return this.urlForObject();
   }
 
   /**

@@ -10,6 +10,7 @@ import { CfnReceiptRule } from './ses.generated';
 export interface IReceiptRule extends IResource {
   /**
    * The name of the receipt rule.
+   * @attribute
    */
   readonly receiptRuleName: string;
 

@@ -17,22 +17,26 @@ export interface ICluster extends IResource, ec2.IConnectable {
 
   /**
    * The physical name of the Cluster
+   * @attribute
    */
   readonly clusterName: string;
 
   /**
    * The unique ARN assigned to the service by AWS
    * in the form of arn:aws:eks:
+   * @attribute
    */
   readonly clusterArn: string;
 
   /**
    * The API Server endpoint URL
+   * @attribute
    */
   readonly clusterEndpoint: string;
 
   /**
    * The certificate-authority-data for your cluster.
+   * @attribute
    */
   readonly clusterCertificateAuthorityData: string;
 
@@ -420,7 +424,7 @@ class ImportedCluster extends ClusterBase {
 
     let i = 1;
     for (const sgProps of props.securityGroups) {
-      this.connections.addSecurityGroup(ec2.SecurityGroup.fromSecurityGroupAttributes(this, `SecurityGroup${i}`, sgProps));
+      this.connections.addSecurityGroup(ec2.SecurityGroup.fromSecurityGroupId(this, `SecurityGroup${i}`, sgProps.securityGroupId));
       i++;
     }
   }

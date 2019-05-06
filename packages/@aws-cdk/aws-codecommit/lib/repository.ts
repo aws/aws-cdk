@@ -3,16 +3,28 @@ import { CfnOutput, Construct, IResource, Resource } from '@aws-cdk/cdk';
 import { CfnRepository } from './codecommit.generated';
 
 export interface IRepository extends IResource {
-  /** The ARN of this Repository. */
+  /**
+   * The ARN of this Repository.
+   * @attribute
+   */
   readonly repositoryArn: string;
 
-  /** The human-visible name of this Repository. */
+  /**
+   * The human-visible name of this Repository.
+   * @attribute
+   */
   readonly repositoryName: string;
 
-  /** The HTTP clone URL */
+  /**
+   * The HTTP clone URL
+   * @attribute
+   */
   readonly repositoryCloneUrlHttp: string;
 
-  /** The SSH clone URL */
+  /**
+   * The SSH clone URL
+   * @attribute
+   */
   readonly repositoryCloneUrlSsh: string;
 
   /**

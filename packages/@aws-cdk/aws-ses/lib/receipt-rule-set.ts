@@ -8,6 +8,7 @@ import { CfnReceiptRuleSet } from './ses.generated';
 export interface IReceiptRuleSet extends IResource {
   /**
    * The receipt rule set name.
+   * @attribute
    */
   readonly receiptRuleSetName: string;
 

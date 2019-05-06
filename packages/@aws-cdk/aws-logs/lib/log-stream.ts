@@ -5,6 +5,7 @@ import { CfnLogStream } from './logs.generated';
 export interface ILogStream extends IResource {
   /**
    * The name of this log stream
+   * @attribute
    */
   readonly logStreamName: string;
 }

@@ -90,15 +90,15 @@ export class HostedZone extends Resource implements IHostedZone {
 
     validateZoneName(props.zoneName);
 
-    const hostedZone = new CfnHostedZone(this, 'Resource', {
+    const resource = new CfnHostedZone(this, 'Resource', {
       name: props.zoneName + '.',
       hostedZoneConfig: props.comment ? { comment: props.comment } : undefined,
       queryLoggingConfig: props.queryLogsLogGroupArn ? { cloudWatchLogsLogGroupArn: props.queryLogsLogGroupArn } : undefined,
       vpcs: new Token(() => this.vpcs.length === 0 ? undefined : this.vpcs)
     });
 
-    this.hostedZoneId = hostedZone.ref;
-    this.hostedZoneNameServers = hostedZone.hostedZoneNameServers;
+    this.hostedZoneId = resource.ref;
+    this.hostedZoneNameServers = resource.hostedZoneNameServers;
     this.zoneName = props.zoneName;
 
     for (const vpc of props.vpcs || []) {

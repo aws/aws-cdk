@@ -10,8 +10,16 @@ import { arnForDeploymentConfig } from '../utils';
  * instantiate the {@link ServerDeploymentConfig} Construct.
  */
 export interface IServerDeploymentConfig {
+  /**
+   * @attribute
+   */
   readonly deploymentConfigName: string;
+
+  /**
+   * @attribute
+   */
   readonly deploymentConfigArn: string;
+
   export(): ServerDeploymentConfigAttributes;
 }
 

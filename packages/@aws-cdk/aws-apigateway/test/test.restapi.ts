@@ -280,12 +280,12 @@ export = {
     const r2 = api.root.addResource('r2');
 
     // THEN
-    test.deepEqual(api.root.resourcePath, '/');
-    test.deepEqual(r1.resourcePath, '/r1');
-    test.deepEqual(r11.resourcePath, '/r1/r1_1');
-    test.deepEqual(r12.resourcePath, '/r1/r1_2');
-    test.deepEqual(r121.resourcePath, '/r1/r1_2/r1_2_1');
-    test.deepEqual(r2.resourcePath, '/r2');
+    test.deepEqual(api.root.path, '/');
+    test.deepEqual(r1.path, '/r1');
+    test.deepEqual(r11.path, '/r1/r1_1');
+    test.deepEqual(r12.path, '/r1/r1_2');
+    test.deepEqual(r121.path, '/r1/r1_2/r1_2_1');
+    test.deepEqual(r2.path, '/r2');
     test.done();
   },
 
@@ -333,10 +333,7 @@ export = {
     const stack = new cdk.Stack();
 
     // WHEN
-    const imported = apigateway.RestApi.fromRestApiAttributes(stack, 'imported-api', {
-      restApiId: 'api-rxt4498f'
-    });
-
+    const imported = apigateway.RestApi.fromRestApiId(stack, 'imported-api', 'api-rxt4498f');
     const api = new apigateway.RestApi(stack, 'MyRestApi');
     api.root.addMethod('GET');
 
@@ -493,9 +490,7 @@ export = {
   '"cloneFrom" can be used to clone an existing API'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
-    const cloneFrom = apigateway.RestApi.fromRestApiAttributes(stack, 'RestApi', {
-      restApiId: 'foobar'
-    });
+    const cloneFrom = apigateway.RestApi.fromRestApiId(stack, 'RestApi', 'foobar');
 
     // WHEN
     const api = new apigateway.RestApi(stack, 'api', {

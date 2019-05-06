@@ -38,6 +38,7 @@ export interface LayerVersionProps {
 export interface ILayerVersion extends IResource {
   /**
    * The ARN of the Lambda Layer version that this Layer defines.
+   * @attribute
    */
   readonly layerVersionArn: string;
 

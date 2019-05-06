@@ -16,11 +16,13 @@ export interface ISecret extends IResource {
 
   /**
    * The ARN of the secret in AWS Secrets Manager.
+   * @attribute
    */
   readonly secretArn: string;
 
   /**
    * Retrieve the value of the stored secret as a `SecretValue`.
+   * @attribute
    */
   readonly secretValue: SecretValue;
 
@@ -272,7 +274,14 @@ export interface SecretTargetAttachmentProps extends AttachedSecretOptions {
   readonly secret: ISecret;
 }
 
-export interface ISecretTargetAttachment extends ISecret { }
+export interface ISecretTargetAttachment extends ISecret {
+  /**
+   * Same as `secretArn`
+   *
+   * @attribute
+   */
+  readonly secretTargetAttachmentSecretArn: string;
+}
 
 /**
  * An attached secret.
@@ -283,6 +292,7 @@ export class SecretTargetAttachment extends SecretBase implements ISecretTargetA
     class Import extends SecretBase implements ISecretTargetAttachment {
       public encryptionKey?: kms.IEncryptionKey | undefined;
       public secretArn = secretTargetAttachmentSecretArn;
+      public secretTargetAttachmentSecretArn = secretTargetAttachmentSecretArn;
       public export(): SecretAttributes {
         return {
           secretArn: this.secretArn
@@ -295,6 +305,11 @@ export class SecretTargetAttachment extends SecretBase implements ISecretTargetA
 
   public readonly encryptionKey?: kms.IEncryptionKey;
   public readonly secretArn: string;
+
+  /**
+   * @attribute
+   */
+  public readonly secretTargetAttachmentSecretArn: string;
 
   constructor(scope: Construct, id: string, props: SecretTargetAttachmentProps) {
     super(scope, id);
@@ -309,6 +324,7 @@ export class SecretTargetAttachment extends SecretBase implements ISecretTargetA
 
     // This allows to reference the secret after attachment (dependency).
     this.secretArn = attachment.secretTargetAttachmentSecretArn;
+    this.secretTargetAttachmentSecretArn = attachment.secretTargetAttachmentSecretArn;
   }
 
   public export(): SecretAttributes {

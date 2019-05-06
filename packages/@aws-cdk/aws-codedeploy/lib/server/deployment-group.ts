@@ -11,10 +11,17 @@ import { arnForDeploymentGroup, renderAlarmConfiguration, renderAutoRollbackConf
 import { IServerApplication, ServerApplication } from './application';
 import { IServerDeploymentConfig, ServerDeploymentConfig } from './deployment-config';
 
-export interface IServerDeploymentGroup extends cdk.IConstruct {
+export interface IServerDeploymentGroup extends cdk.IResource {
   readonly application: IServerApplication;
   readonly role?: iam.Role;
+  /**
+   * @attribute
+   */
   readonly deploymentGroupName: string;
+
+  /**
+   * @attribute
+   */
   readonly deploymentGroupArn: string;
   readonly deploymentConfig: IServerDeploymentConfig;
   readonly autoScalingGroups?: autoscaling.AutoScalingGroup[];
@@ -58,7 +65,7 @@ export interface ServerDeploymentGroupAttributes {
  * or one defined in a different CDK Stack,
  * use the {@link #import} method.
  */
-abstract class ServerDeploymentGroupBase extends cdk.Construct implements IServerDeploymentGroup {
+abstract class ServerDeploymentGroupBase extends cdk.Resource implements IServerDeploymentGroup {
   public abstract readonly application: IServerApplication;
   public abstract readonly role?: iam.Role;
   public abstract readonly deploymentGroupName: string;

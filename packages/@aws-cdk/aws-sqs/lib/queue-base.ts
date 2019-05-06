@@ -8,16 +8,19 @@ import { QueuePolicy } from './policy';
 export interface IQueue extends IResource, s3n.IBucketNotificationDestination, autoscaling_api.ILifecycleHookTarget {
   /**
    * The ARN of this queue
+   * @attribute
    */
   readonly queueArn: string;
 
   /**
    * The URL of this queue
+   * @attribute
    */
   readonly queueUrl: string;
 
   /**
    * The name of this queue
+   * @attribute
    */
   readonly queueName: string;
 

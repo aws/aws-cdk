@@ -8,7 +8,14 @@ import { CfnTable } from './glue.generated';
 import { Column } from './schema';
 
 export interface ITable extends IResource {
+  /**
+   * @attribute
+   */
   readonly tableArn: string;
+
+  /**
+   * @attribute
+   */
   readonly tableName: string;
 
   export(): TableAttributes;

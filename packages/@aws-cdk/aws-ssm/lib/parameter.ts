@@ -8,16 +8,19 @@ import ssm = require('./ssm.generated');
 export interface IParameter extends IResource {
   /**
    * The ARN of the SSM Parameter resource.
+   * @attribute
    */
   readonly parameterArn: string;
 
   /**
    * The name of the SSM Parameter resource.
+   * @attribute
    */
   readonly parameterName: string;
 
   /**
    * The type of the SSM Parameter resource.
+   * @attribute
    */
   readonly parameterType: string;
 

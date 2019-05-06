@@ -66,6 +66,7 @@ export class ScalableTarget extends Resource {
    * ID of the Scalable Target
    *
    * @example service/ecsStack-MyECSCluster-AB12CDE3F4GH/ecsStack-MyECSService-AB12CDE3F4GH|ecs:service:DesiredCount|ecs
+   * @attribute
    */
   public readonly scalableTargetId: string;
 

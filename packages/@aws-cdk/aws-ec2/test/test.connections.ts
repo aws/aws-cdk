@@ -37,7 +37,7 @@ export = {
     const sg1 = new SecurityGroup(stack, 'SomeSecurityGroup', { vpc, allowAllOutbound: false });
     const somethingConnectable = new SomethingConnectable(new Connections({ securityGroups: [sg1] }));
 
-    const securityGroup = SecurityGroup.fromSecurityGroupAttributes(stack, 'ImportedSG', { securityGroupId: 'sg-12345' });
+    const securityGroup = SecurityGroup.fromSecurityGroupId(stack, 'ImportedSG', 'sg-12345');
 
     // WHEN
     somethingConnectable.connections.allowTo(securityGroup, new TcpAllPorts(), 'Connect there');

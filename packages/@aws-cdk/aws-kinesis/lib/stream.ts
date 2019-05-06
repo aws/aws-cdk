@@ -7,11 +7,15 @@ import { CfnStream } from './kinesis.generated';
 export interface IStream extends IResource, logs.ILogSubscriptionDestination {
   /**
    * The ARN of the stream.
+   *
+   * @attribute
    */
   readonly streamArn: string;
 
   /**
    * The name of the stream
+   *
+   * @attribute
    */
   readonly streamName: string;
 

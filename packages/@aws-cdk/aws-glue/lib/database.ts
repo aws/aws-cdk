@@ -15,11 +15,15 @@ export interface IDatabase extends IResource {
 
   /**
    * The ARN of the database.
+   *
+   * @attribute
    */
   readonly databaseArn: string;
 
   /**
    * The name of the database.
+   *
+   * @attribute
    */
   readonly databaseName: string;
 

@@ -200,6 +200,8 @@ export class Pipeline extends PipelineBase {
 
   /**
    * The version of the pipeline
+   *
+   * @attribute
    */
   public readonly pipelineVersion: string;
 

@@ -190,8 +190,19 @@ export class Table extends Resource {
     });
  }
 
+ /**
+  * @attribute
+  */
   public readonly tableArn: string;
+
+  /**
+   * @attribute
+   */
   public readonly tableName: string;
+
+  /**
+   * @attribute
+   */
   public readonly tableStreamArn: string;
 
   private readonly table: CfnTable;

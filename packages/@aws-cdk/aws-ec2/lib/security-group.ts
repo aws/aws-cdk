@@ -9,13 +9,9 @@ const isSecurityGroupSymbol = Symbol.for('aws-cdk:isSecurityGroup');
 export interface ISecurityGroup extends IResource, ISecurityGroupRule, IConnectable {
   /**
    * ID for the current security group
+   * @attribute
    */
   readonly securityGroupId: string;
-
-  /**
-   * The ID of the VPC this security group is part of.
-   */
-  readonly securityGroupVpcId: string;
 
   /**
    * Add an ingress rule for the current security group
@@ -50,12 +46,6 @@ export interface SecurityGroupAttributes {
    * ID of security group
    */
   readonly securityGroupId: string;
-
-  /**
-   * The VPC ID this security group is part of. If not provided, the `securityGroupVpcId` property
-   * will throw an exception.
-   */
-  readonly securityGroupVpcId?: string;
 }
 
 /**
@@ -70,7 +60,6 @@ abstract class SecurityGroupBase extends Resource implements ISecurityGroup {
   }
 
   public abstract readonly securityGroupId: string;
-  public abstract readonly securityGroupVpcId: string;
 
   public readonly canInlineRule = false;
   public readonly connections: Connections = new Connections({ securityGroups: [this] });
@@ -261,11 +250,6 @@ export class SecurityGroup extends SecurityGroupBase {
   public static fromSecurityGroupId(scope: Construct, id: string, securityGroupId: string): ISecurityGroup {
     class Import extends SecurityGroupBase {
       public securityGroupId = securityGroupId;
-
-      public get securityGroupVpcId(): string {
-        throw new Error(`Security group imported without "securityGroupVpcId"`);
-      }
-
       public export(): SecurityGroupAttributes {
         return { securityGroupId };
       }
@@ -275,42 +259,23 @@ export class SecurityGroup extends SecurityGroupBase {
   }
 
   /**
-   * Import an existing SecurityGroup
-   */
-  public static fromSecurityGroupAttributes(scope: Construct, id: string, attrs: SecurityGroupAttributes): ISecurityGroup {
-    class Import extends SecurityGroupBase {
-      public readonly securityGroupId = attrs.securityGroupId;
-
-      public get securityGroupVpcId() {
-        if (!attrs.securityGroupVpcId) { throw new Error(`Imported security group did not specify 'securityGroupVpcId'`); }
-        return attrs.securityGroupVpcId;
-      }
-
-      public export() {
-        return attrs;
-      }
-    }
-
-    return new Import(scope, id);
-  }
-
-  /**
    * An attribute that represents the security group name.
+   *
+   * @attribute
    */
-  public readonly groupName: string;
-
-  /**
-   * An attribute that represents the physical VPC ID this security group is part of.
-   */
-  public readonly vpcId: string;
+  public readonly securityGroupName: string;
 
   /**
    * The ID of the security group
+   *
+   * @attribute
    */
   public readonly securityGroupId: string;
 
   /**
    * The VPC ID this security group is part of.
+   *
+   * @attribute
    */
   public readonly securityGroupVpcId: string;
 
@@ -337,8 +302,7 @@ export class SecurityGroup extends SecurityGroupBase {
 
     this.securityGroupId = this.securityGroup.securityGroupId;
     this.securityGroupVpcId = this.securityGroup.securityGroupVpcId;
-    this.groupName = this.securityGroup.securityGroupName;
-    this.vpcId = this.securityGroup.securityGroupVpcId;
+    this.securityGroupName = this.securityGroup.securityGroupName;
 
     this.addDefaultEgressRule();
   }

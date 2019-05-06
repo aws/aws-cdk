@@ -59,6 +59,7 @@ export class StateMachine extends Resource implements IStateMachine, events.IEve
 
     /**
      * The name of the state machine
+     * @attribute
      */
     public readonly stateMachineName: string;
 
@@ -200,6 +201,7 @@ export class StateMachine extends Resource implements IStateMachine, events.IEve
 export interface IStateMachine extends IResource {
     /**
      * The ARN of the state machine
+     * @attribute
      */
     readonly stateMachineArn: string;
 }

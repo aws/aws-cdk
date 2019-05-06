@@ -14,11 +14,13 @@ export interface PrivateDnsNamespaceProps extends BaseNamespaceProps {
 export interface IPrivateDnsNamespace extends INamespace {
   /**
    * The ID of the private namespace.
+   * @attribute
    */
   readonly privateDnsNamespaceId: string;
 
   /**
    * The Amazon Resource Name (ARN) of the private namespace.
+   * @attribute
    */
   readonly privateDnsNamespaceArn: string;
 }

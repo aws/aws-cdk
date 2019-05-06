@@ -11,6 +11,7 @@ import { CfnService } from './servicediscovery.generated';
 export interface IService extends IResource {
   /**
    * A name for the Cloudmap Service.
+   * @attribute
    */
   readonly serviceName: string;
 
@@ -21,11 +22,13 @@ export interface IService extends IResource {
 
   /**
    * The ID of the namespace that you want to use for DNS configuration.
+   * @attribute
    */
   readonly serviceId: string;
 
   /**
    * The Arn of the namespace that you want to use for DNS configuration.
+   * @attribute
    */
   readonly serviceArn: string;
 

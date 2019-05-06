@@ -5,6 +5,8 @@ import { apexDomain } from './util';
 export interface ICertificate extends IResource {
   /**
    * The certificate's ARN
+   *
+   * @attribute
    */
   readonly certificateArn: string;
 

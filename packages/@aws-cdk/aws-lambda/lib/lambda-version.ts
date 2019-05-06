@@ -47,8 +47,9 @@ export interface VersionProps {
 export class Version extends Resource {
   /**
    * The most recently deployed version of this function.
+   * @attribute
    */
-  public readonly functionVersion: string;
+  public readonly version: string;
 
   /**
    * Lambda object this version is associated with
@@ -64,7 +65,7 @@ export class Version extends Resource {
       functionName: props.lambda.functionName
     });
 
-    this.functionVersion = version.version;
+    this.version = version.version;
     this.lambda = props.lambda;
   }
 }

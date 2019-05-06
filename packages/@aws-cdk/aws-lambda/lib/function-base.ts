@@ -20,11 +20,15 @@ export interface IFunction extends IResource, logs.ILogSubscriptionDestination,
 
   /**
    * The name of the function.
+   *
+   * @attribute
    */
   readonly functionName: string;
 
   /**
    * The ARN fo the function.
+   *
+   * @attribute
    */
   readonly functionArn: string;
 

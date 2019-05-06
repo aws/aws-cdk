@@ -685,6 +685,7 @@ function validatePercentage(x?: number): number | undefined {
 export interface IAutoScalingGroup extends IResource {
   /**
    * The name of the AutoScalingGroup
+   * @attribute
    */
   readonly autoScalingGroupName: string;
 

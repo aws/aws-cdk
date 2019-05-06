@@ -53,6 +53,8 @@ export interface AliasProps {
 export class Alias extends FunctionBase {
   /**
    * Name of this alias.
+   *
+   * @attribute
    */
   public readonly aliasName: string;
   /**
@@ -88,7 +90,7 @@ export class Alias extends FunctionBase {
       name: props.aliasName,
       description: props.description,
       functionName: this.underlyingLambda.functionName,
-      functionVersion: props.version.functionVersion,
+      functionVersion: props.version.version,
       routingConfig: this.determineRoutingConfig(props)
     });
 
@@ -143,7 +145,7 @@ export class Alias extends FunctionBase {
     return {
       additionalVersionWeights: props.additionalVersions.map(vw => {
         return {
-          functionVersion: vw.version.functionVersion,
+          functionVersion: vw.version.version,
           functionWeight: vw.weight
         };
       })

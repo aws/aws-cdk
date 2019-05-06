@@ -259,21 +259,25 @@ export interface UserPoolAttributes {
 export interface IUserPool extends IResource {
   /**
    * The physical ID of this user pool resource
+   * @attribute
    */
   readonly userPoolId: string;
 
   /**
    * The ARN of this user pool resource
+   * @attribute
    */
   readonly userPoolArn: string;
 
   /**
    * The provider name of this user pool resource
+   * @attribute
    */
   readonly userPoolProviderName: string;
 
   /**
    * The provider URL of this user pool resource
+   * @attribute
    */
   readonly userPoolProviderUrl: string;
 

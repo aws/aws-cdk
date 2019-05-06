@@ -1,6 +1,6 @@
 import reflect = require('jsii-reflect');
 import { Linter } from '../linter';
-import { ResourceReflection } from './resource';
+import { AttributeSite, ResourceReflection } from './resource';
 
 export const importsLinter = new Linter<ImportsReflection>(assembly => ResourceReflection
   .findAll(assembly)
@@ -52,6 +52,11 @@ importsLinter.add({
   code: 'from-method',
   message: 'resource should have at least one "fromXxx" static method or "fromXxxAttributes"',
   eval: e => {
+    // no attributes are defined on the interface, so we don't expect any "from" methods.
+    if (!e.ctx.resource.attributes.some(a => a.site === AttributeSite.Interface)) {
+      return;
+    }
+
     e.assert(e.ctx.fromMethods.length > 0 || e.ctx.fromAttributesMethod, e.ctx.resource.fqn);
   }
 });
@@ -67,7 +72,7 @@ importsLinter.add({
 
       e.assertSignature(method, {
         parameters: [
-          { name: 'scope', type: e.ctx.resource.construct.rootClass },
+          { name: 'scope', type: e.ctx.resource.construct.ROOT_CLASS },
           { name: 'id', type: 'string' },
           { name: argName, type: 'string' }
         ],
@@ -81,8 +86,11 @@ importsLinter.add({
   code: 'from-attributes',
   message: 'resources with more than one attribute (arn + name are considered a single attribute) must implement the fromAttributes:',
   eval: e => {
-    const prefix = e.ctx.prefix;
-    const uniques = Array.from(new Set(e.ctx.resource.cfn.attributeNames.map(x => {
+    const prefix = e.ctx.resource.cfn.attributePrefix;
+
+    // we only count the number of attributes defined on the interface
+    const attributesOnInterface = e.ctx.resource.attributes.filter(s => s.site === AttributeSite.Interface);
+    const uniques = Array.from(new Set(attributesOnInterface.map(x => x.name).map(x => {
       if (x === `${prefix}Name` || x === `${prefix}Arn`) {
         return `${prefix}ArnOrName`;
       } else {
@@ -94,13 +102,13 @@ importsLinter.add({
       return;
     }
 
-    if (!e.assert(e.ctx.fromAttributesMethod, e.ctx.fromAttributesMethodName, uniques.join(','))) {
+    if (!e.assert(e.ctx.fromAttributesMethod, e.ctx.resource.fqn + '.' + e.ctx.fromAttributesMethodName, uniques.join(','))) {
       return;
     }
 
     e.assertSignature(e.ctx.fromAttributesMethod, {
       parameters: [
-        { name: 'scope', type: e.ctx.resource.construct.rootClass },
+        { name: 'scope', type: e.ctx.resource.construct.ROOT_CLASS },
         { name: 'id', type: 'string' },
         { name: 'attrs', type: e.ctx.attributesStruct }
       ]

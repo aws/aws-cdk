@@ -32,6 +32,7 @@ export interface VpcLinkProps {
 export class VpcLink extends Resource {
   /**
    * Physical ID of the VpcLink resource
+   * @attribute
    */
   public readonly vpcLinkId: string;
 

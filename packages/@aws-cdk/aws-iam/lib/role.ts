@@ -304,17 +304,23 @@ export class Role extends Resource implements IRole {
 export interface IRole extends IIdentity {
   /**
    * Returns the ARN of this role.
+   *
+   * @attribute
    */
   readonly roleArn: string;
 
   /**
    * Returns the stable and unique string identifying the role. For example,
    * AIDAJQABLZS4A3QDU576Q.
+   *
+   * @attribute
    */
   readonly roleId: string;
 
   /**
    * Returns the name of this role.
+   *
+   * @attribute
    */
   readonly roleName: string;
 

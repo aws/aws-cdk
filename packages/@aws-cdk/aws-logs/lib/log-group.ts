@@ -10,11 +10,13 @@ import { ILogSubscriptionDestination, SubscriptionFilter } from './subscription-
 export interface ILogGroup extends IResource {
   /**
    * The ARN of this log group
+   * @attribute
    */
   readonly logGroupArn: string;
 
   /**
    * The name of this log group
+   * @attribute
    */
   readonly logGroupName: string;
 
