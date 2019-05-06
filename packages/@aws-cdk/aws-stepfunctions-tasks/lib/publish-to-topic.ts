@@ -1,17 +1,13 @@
+import cloudwatch = require('@aws-cdk/aws-cloudwatch');
 import iam = require('@aws-cdk/aws-iam');
 import sns = require('@aws-cdk/aws-sns');
-import stepfunctions = require('@aws-cdk/aws-stepfunctions');
+import sfn = require('@aws-cdk/aws-stepfunctions');
 import cdk = require('@aws-cdk/cdk');
 
 /**
  * Properties for PublishTask
  */
-export interface PublishTaskProps extends stepfunctions.BasicTaskProps {
-  /**
-   * The topic to publish to
-   */
-  readonly topic: sns.ITopic;
-
+export interface PublishToTopicProps {
   /**
    * The text message to send to the queue.
    *
@@ -57,10 +53,22 @@ export interface PublishTaskProps extends stepfunctions.BasicTaskProps {
 }
 
 /**
- * A StepFunctions Task to publish to an SNS Topic
+ * A StepFunctions Task to invoke a Lambda function.
+ *
+ * A Function can be used directly as a Resource, but this class mirrors
+ * integration with other AWS services via a specific class instance.
  */
-export class PublishTask extends stepfunctions.Task {
-  constructor(scope: cdk.Construct, id: string, props: PublishTaskProps) {
+export class PublishToTopic implements sfn.ITaskResource {
+  public readonly resourceArn: string;
+  public readonly policyStatements?: iam.PolicyStatement[] | undefined;
+  public readonly metricDimensions?: cloudwatch.DimensionHash | undefined;
+  public readonly metricPrefixSingular?: string;
+  public readonly metricPrefixPlural?: string;
+
+  public readonly heartbeatSeconds?: number | undefined;
+  public readonly parameters?: { [name: string]: any; } | undefined;
+
+  constructor(topic: sns.ITopic, props: PublishToTopicProps) {
     if ((props.message !== undefined ? 1 : 0)
       + (props.messagePath !== undefined ? 1 : 0)
       + (props.messageObject !== undefined ? 1 : 0) !== 1) {
@@ -71,23 +79,22 @@ export class PublishTask extends stepfunctions.Task {
       throw new Error(`Supply either 'subject' or 'subjectPath'`);
     }
 
-    super(scope, id, {
-      ...props,
-      resourceArn: 'arn:aws:states:::sns:publish',
-      policyStatements: [new iam.PolicyStatement()
-        .addAction('sns:Publish')
-        .addResource(props.topic.topicArn)
-      ],
-      parameters: {
-        "TopicArn": props.topic.topicArn,
-        "Message": props.messageObject
-            ? new cdk.Token(() => this.node.stringifyJson(props.messageObject))
-            : props.message,
-        "Message.$": props.messagePath,
-        "MessageStructure": props.messagePerSubscriptionType ? "json" : undefined,
-        "Subject": props.subject,
-        "Subject.$": props.subjectPath
-      }
-    });
+    this.resourceArn = 'arn:aws:states:::sns:publish';
+    this.policyStatements = [new iam.PolicyStatement()
+      .addAction('sns:Publish')
+      .addResource(topic.topicArn)
+    ];
+    this.parameters = {
+      "TopicArn": topic.topicArn,
+      "Message": props.messageObject
+          ? new cdk.Token(() => topic.node.stringifyJson(props.messageObject))
+          : props.message,
+      "Message.$": props.messagePath,
+      "MessageStructure": props.messagePerSubscriptionType ? "json" : undefined,
+      "Subject": props.subject,
+      "Subject.$": props.subjectPath
+    };
+
+    // No IAM permissions necessary, execution role implicitly has Activity permissions.
   }
 }

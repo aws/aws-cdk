@@ -1,14 +1,20 @@
-import iam = require('@aws-cdk/aws-iam');
+import cloudwatch = require('@aws-cdk/aws-cloudwatch');
 import cdk = require('@aws-cdk/cdk');
 import { Chain } from '../chain';
 import { StateGraph } from '../state-graph';
+import { ITaskResource } from '../task-resource';
 import { CatchProps, IChainable, INextable, RetryProps } from '../types';
 import { renderJsonPath, State, StateType } from './state';
 
 /**
  * Props that are common to all tasks
  */
-export interface BasicTaskProps {
+export interface TaskProps {
+    /**
+     * Resource to be invoked in this workflow
+     */
+    readonly resource: ITaskResource;
+
     /**
      * An optional description for this state
      *
@@ -57,51 +63,6 @@ export interface BasicTaskProps {
 }
 
 /**
- * Properties for defining a Task state
- */
-export interface TaskProps extends BasicTaskProps {
-    /**
-     * The resource that represents the work to be executed
-     *
-     * Either the ARN of a Lambda Function or Activity, or a special
-     * ARN.
-     */
-    readonly resourceArn: string;
-
-    /**
-     * Parameters pass a collection of key-value pairs, either static values or JSONPath expressions that select from the input.
-     *
-     * What is passed here will be merged with any default parameters
-     * configured by the `resource`. For example, a DynamoDB table target
-     * will
-     *
-     * @see
-     * https://docs.aws.amazon.com/step-functions/latest/dg/input-output-inputpath-params.html#input-output-parameters
-     *
-     * @default No parameters
-     */
-    readonly parameters?: { [name: string]: any };
-
-    /**
-     * Maximum time between heart beats
-     *
-     * If the time between heart beats takes longer than this, a 'Timeout' error is raised.
-     *
-     * This is only relevant when using an Activity type as resource.
-     *
-     * @default No heart beat timeout
-     */
-    readonly heartbeatSeconds?: number;
-
-    /**
-     * Additional policy statements to add to the execution role
-     *
-     * @default No policy roles
-     */
-    readonly policyStatements?: iam.PolicyStatement[];
-}
-
-/**
  * Define a Task state in the state machine
  *
  * Reaching a Task state causes some work to be executed, represented by the
@@ -114,17 +75,13 @@ export interface TaskProps extends BasicTaskProps {
 export class Task extends State implements INextable {
     public readonly endStates: INextable[];
     private readonly timeoutSeconds?: number;
-    private readonly heartbeatSeconds?: number;
-    private readonly resourceArn: string;
-    private readonly policyStatements?: iam.PolicyStatement[];
+    private readonly resource: ITaskResource;
 
     constructor(scope: cdk.Construct, id: string, props: TaskProps) {
         super(scope, id, props);
 
         this.timeoutSeconds = props.timeoutSeconds;
-        this.heartbeatSeconds = props.heartbeatSeconds;
-        this.resourceArn = props.resourceArn;
-        this.policyStatements = props.policyStatements;
+        this.resource = props.resource;
         this.endStates = [this];
     }
 
@@ -168,18 +125,121 @@ export class Task extends State implements INextable {
             ...this.renderInputOutput(),
             Type: StateType.Task,
             Comment: this.comment,
-            Resource: this.resourceArn,
+            Resource: this.resource.resourceArn,
             Parameters: this.parameters,
             ResultPath: renderJsonPath(this.resultPath),
             TimeoutSeconds: this.timeoutSeconds,
-            HeartbeatSeconds: this.heartbeatSeconds,
+            HeartbeatSeconds: this.resource.heartbeatSeconds,
         };
+    }
+
+    /**
+     * Return the given named metric for this Task
+     *
+     * @default sum over 5 minutes
+     */
+    public metric(metricName: string, props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+        return new cloudwatch.Metric({
+            namespace: 'AWS/States',
+            metricName,
+            dimensions: this.resource.metricDimensions,
+            statistic: 'sum',
+            ...props
+        });
+    }
+
+    /**
+     * The interval, in milliseconds, between the time the Task starts and the time it closes.
+     *
+     * @default average over 5 minutes
+     */
+    public metricRunTime(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+        return this.taskMetric(this.resource.metricPrefixSingular, 'RunTime', { statistic: 'avg', ...props });
+    }
+
+    /**
+     * The interval, in milliseconds, for which the activity stays in the schedule state.
+     *
+     * @default average over 5 minutes
+     */
+    public metricScheduleTime(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+        return this.taskMetric(this.resource.metricPrefixSingular, 'ScheduleTime', { statistic: 'avg', ...props });
+    }
+
+    /**
+     * The interval, in milliseconds, between the time the activity is scheduled and the time it closes.
+     *
+     * @default average over 5 minutes
+     */
+    public metricTime(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+        return this.taskMetric(this.resource.metricPrefixSingular, 'Time', { statistic: 'avg', ...props });
+    }
+
+    /**
+     * Metric for the number of times this activity is scheduled
+     *
+     * @default sum over 5 minutes
+     */
+    public metricScheduled(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+        return this.taskMetric(this.resource.metricPrefixPlural, 'Scheduled', props);
+    }
+
+    /**
+     * Metric for the number of times this activity times out
+     *
+     * @default sum over 5 minutes
+     */
+    public metricTimedOut(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+        return this.taskMetric(this.resource.metricPrefixPlural, 'TimedOut', props);
+    }
+
+    /**
+     * Metric for the number of times this activity is started
+     *
+     * @default sum over 5 minutes
+     */
+    public metricStarted(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+        return this.taskMetric(this.resource.metricPrefixPlural, 'Started', props);
+    }
+
+    /**
+     * Metric for the number of times this activity succeeds
+     *
+     * @default sum over 5 minutes
+     */
+    public metricSucceeded(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+        return this.taskMetric(this.resource.metricPrefixPlural, 'Succeeded', props);
+    }
+
+    /**
+     * Metric for the number of times this activity fails
+     *
+     * @default sum over 5 minutes
+     */
+    public metricFailed(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+        return this.taskMetric(this.resource.metricPrefixPlural, 'Failed', props);
+    }
+
+    /**
+     * Metric for the number of times the heartbeat times out for this activity
+     *
+     * @default sum over 5 minutes
+     */
+    public metricHeartbeatTimedOut(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+        return this.taskMetric(this.resource.metricPrefixPlural, 'HeartbeatTimedOut', props);
     }
 
     protected onBindToGraph(graph: StateGraph) {
         super.onBindToGraph(graph);
-        for (const policyStatement of this.policyStatements || []) {
+        for (const policyStatement of this.resource.policyStatements || []) {
             graph.registerPolicyStatement(policyStatement);
         }
+    }
+
+    private taskMetric(prefix: string | undefined, suffix: string, props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+        if (prefix === undefined) {
+            throw new Error('This Task Resource does not expose metrics');
+        }
+        return this.metric(prefix + suffix, props);
     }
 }

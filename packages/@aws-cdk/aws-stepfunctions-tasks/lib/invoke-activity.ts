@@ -1,19 +1,11 @@
 import cloudwatch = require('@aws-cdk/aws-cloudwatch');
-import stepfunctions = require('@aws-cdk/aws-stepfunctions');
-import cdk = require('@aws-cdk/cdk');
-
-const METRIC_PREFIX_SINGULAR = 'Activity';
-const METRIC_PREFIX_PLURAL = 'Activities';
+import iam = require('@aws-cdk/aws-iam');
+import sfn = require('@aws-cdk/aws-stepfunctions');
 
 /**
  * Properties for FunctionTask
  */
-export interface InvokeActivityProps extends stepfunctions.BasicTaskProps {
-  /**
-   * The activity to invoke
-   */
-  readonly activity: stepfunctions.IActivity;
-
+export interface InvokeActivityProps {
   /**
    * Maximum time between heart beats
    *
@@ -30,113 +22,21 @@ export interface InvokeActivityProps extends stepfunctions.BasicTaskProps {
  * A Function can be used directly as a Resource, but this class mirrors
  * integration with other AWS services via a specific class instance.
  */
-export class InvokeActivity extends stepfunctions.Task {
-  private readonly activityArn: string;
+export class InvokeActivity implements sfn.ITaskResource {
+  public readonly resourceArn: string;
+  public readonly policyStatements?: iam.PolicyStatement[] | undefined;
+  public readonly metricDimensions?: cloudwatch.DimensionHash | undefined;
+  public readonly metricPrefixSingular?: string = 'Activity';
+  public readonly metricPrefixPlural?: string = 'Activities';
 
-  constructor(scope: cdk.Construct, id: string, props: InvokeActivityProps) {
-    super(scope, id, {
-      ...props,
-      resourceArn: props.activity.activityArn,
-      heartbeatSeconds: props.heartbeatSeconds,
-      // No IAM permissions necessary, execution role implicitly has Activity permissions.
-    });
+  public readonly heartbeatSeconds?: number | undefined;
+  public readonly parameters?: { [name: string]: any; } | undefined;
 
-    this.activityArn = props.activity.activityArn;
-  }
+  constructor(activity: sfn.IActivity, props: InvokeActivityProps = {}) {
+    this.resourceArn = activity.activityArn;
+    this.metricDimensions = { ActivityArn: activity.activityArn };
+    this.heartbeatSeconds = props.heartbeatSeconds;
 
-  /**
-   * Return the given named metric for this Task
-   *
-   * @default sum over 5 minutes
-   */
-  public metric(metricName: string, props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    return new cloudwatch.Metric({
-      namespace: 'AWS/States',
-      metricName,
-      dimensions: { ActivityArn: this.activityArn },
-      statistic: 'sum',
-      ...props
-    });
-  }
-
-  /**
-   * The interval, in milliseconds, between the time the Task starts and the time it closes.
-   *
-   * @default average over 5 minutes
-   */
-  public metricRunTime(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    return this.metric(METRIC_PREFIX_SINGULAR + 'RunTime', { statistic: 'avg', ...props });
-  }
-
-  /**
-   * The interval, in milliseconds, for which the activity stays in the schedule state.
-   *
-   * @default average over 5 minutes
-   */
-  public metricScheduleTime(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    return this.metric(METRIC_PREFIX_SINGULAR + 'ScheduleTime', { statistic: 'avg', ...props });
-  }
-
-  /**
-   * The interval, in milliseconds, between the time the activity is scheduled and the time it closes.
-   *
-   * @default average over 5 minutes
-   */
-  public metricTime(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    return this.metric(METRIC_PREFIX_SINGULAR + 'Time', { statistic: 'avg', ...props });
-  }
-
-  /**
-   * Metric for the number of times this activity is scheduled
-   *
-   * @default sum over 5 minutes
-   */
-  public metricScheduled(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    return this.metric(METRIC_PREFIX_PLURAL + 'Scheduled', props);
-  }
-
-  /**
-   * Metric for the number of times this activity times out
-   *
-   * @default sum over 5 minutes
-   */
-  public metricTimedOut(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    return this.metric(METRIC_PREFIX_PLURAL + 'TimedOut', props);
-  }
-
-  /**
-   * Metric for the number of times this activity is started
-   *
-   * @default sum over 5 minutes
-   */
-  public metricStarted(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    return this.metric(METRIC_PREFIX_PLURAL + 'Started', props);
-  }
-
-  /**
-   * Metric for the number of times this activity succeeds
-   *
-   * @default sum over 5 minutes
-   */
-  public metricSucceeded(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    return this.metric(METRIC_PREFIX_PLURAL + 'Succeeded', props);
-  }
-
-  /**
-   * Metric for the number of times this activity fails
-   *
-   * @default sum over 5 minutes
-   */
-  public metricFailed(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    return this.metric(METRIC_PREFIX_PLURAL + 'Failed', props);
-  }
-
-  /**
-   * Metric for the number of times the heartbeat times out for this activity
-   *
-   * @default sum over 5 minutes
-   */
-  public metricHeartbeatTimedOut(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    return this.metric(METRIC_PREFIX_PLURAL + 'HeartbeatTimedOut', props);
+    // No IAM permissions necessary, execution role implicitly has Activity permissions.
   }
 }

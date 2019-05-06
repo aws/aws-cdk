@@ -1,17 +1,12 @@
+import cloudwatch = require('@aws-cdk/aws-cloudwatch');
 import iam = require('@aws-cdk/aws-iam');
 import sqs = require('@aws-cdk/aws-sqs');
-import stepfunctions = require('@aws-cdk/aws-stepfunctions');
-import cdk = require('@aws-cdk/cdk');
+import sfn = require('@aws-cdk/aws-stepfunctions');
 
 /**
  * Properties for SendMessageTask
  */
-export interface SendMessageTaskProps extends stepfunctions.BasicTaskProps {
-  /**
-   * The topic to send a message to to
-   */
-  readonly queue: sqs.IQueue;
-
+export interface SendToQueueProps {
   /**
    * The message body to send to the queue.
    *
@@ -75,10 +70,22 @@ export interface SendMessageTaskProps extends stepfunctions.BasicTaskProps {
 }
 
 /**
- * A StepFunctions Task to send a message to an SQS Queue
+ * A StepFunctions Task to invoke a Lambda function.
+ *
+ * A Function can be used directly as a Resource, but this class mirrors
+ * integration with other AWS services via a specific class instance.
  */
-export class SendMessageTask extends stepfunctions.Task {
-  constructor(scope: cdk.Construct, id: string, props: SendMessageTaskProps) {
+export class SendToQueue implements sfn.ITaskResource {
+  public readonly resourceArn: string;
+  public readonly policyStatements?: iam.PolicyStatement[] | undefined;
+  public readonly metricDimensions?: cloudwatch.DimensionHash | undefined;
+  public readonly metricPrefixSingular?: string;
+  public readonly metricPrefixPlural?: string;
+
+  public readonly heartbeatSeconds?: number | undefined;
+  public readonly parameters?: { [name: string]: any; } | undefined;
+
+  constructor(queue: sqs.IQueue, props: SendToQueueProps) {
     if ((props.messageBody !== undefined) === (props.messageBodyPath !== undefined)) {
       throw new Error(`Supply exactly one of 'messageBody' and 'messageBodyPath'`);
     }
@@ -95,24 +102,23 @@ export class SendMessageTask extends stepfunctions.Task {
       throw new Error(`Supply either of 'messageGroupId' or 'messageGroupIdPath'`);
     }
 
-    super(scope, id, {
-      ...props,
-      resourceArn: 'arn:aws:states:::sqs:sendMessage',
-      policyStatements: [new iam.PolicyStatement()
-        .addAction('sns:Publish')
-        .addResource(props.queue.queueArn)
-      ],
-      parameters: {
-        'QueueUrl': props.queue.queueUrl,
-        'MessageBody': props.messageBody,
-        'MessageBody.$': props.messageBodyPath,
-        'DelaySeconds': props.delaySeconds,
-        'DelaySeconds.$': props.delaySecondsPath,
-        'MessageDeduplicationId': props.messageDeduplicationId,
-        'MessageDeduplicationId.$': props.messageDeduplicationIdPath,
-        'MessageGroupId': props.messageGroupId,
-        'MessageGroupId.$': props.messageGroupIdPath,
-      }
-    });
+    this.resourceArn = 'arn:aws:states:::sqs:sendMessage';
+    this.policyStatements = [new iam.PolicyStatement()
+      .addAction('sqs:SendMessage')
+      .addResource(queue.queueArn)
+    ];
+    this.parameters = {
+      'QueueUrl': queue.queueUrl,
+      'MessageBody': props.messageBody,
+      'MessageBody.$': props.messageBodyPath,
+      'DelaySeconds': props.delaySeconds,
+      'DelaySeconds.$': props.delaySecondsPath,
+      'MessageDeduplicationId': props.messageDeduplicationId,
+      'MessageDeduplicationId.$': props.messageDeduplicationIdPath,
+      'MessageGroupId': props.messageGroupId,
+      'MessageGroupId.$': props.messageGroupIdPath,
+    };
+
+    // No IAM permissions necessary, execution role implicitly has Activity permissions.
   }
 }

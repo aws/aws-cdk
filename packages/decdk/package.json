@@ -118,6 +118,7 @@
     "@aws-cdk/aws-sqs": "^0.29.0",
     "@aws-cdk/aws-ssm": "^0.29.0",
     "@aws-cdk/aws-stepfunctions": "^0.29.0",
+    "@aws-cdk/aws-stepfunctions-tasks": "^0.29.0",
     "@aws-cdk/aws-waf": "^0.29.0",
     "@aws-cdk/aws-wafregional": "^0.29.0",
     "@aws-cdk/aws-workspaces": "^0.29.0",
@@ -130,7 +131,8 @@
     "jsii-reflect": "^0.10.3",
     "jsonschema": "^1.2.4",
     "yaml": "1.5.0",
-    "yargs": "^13.2.2"
+    "yargs": "^13.2.2",
+    "@aws-cdk/aws-stepfunctions-tasks": "^0.29.0"
   },
   "devDependencies": {
     "@types/fs-extra": "^5.0.5",

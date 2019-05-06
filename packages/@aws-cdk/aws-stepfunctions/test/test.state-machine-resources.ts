@@ -10,11 +10,13 @@ export = {
         // GIVEN
         const stack = new cdk.Stack();
         const task = new stepfunctions.Task(stack, 'Task', {
-            resourceArn: 'resource',
-            policyStatements: [new iam.PolicyStatement()
-                .addAction('resource:Everything')
-                .addResource('resource')
-            ],
+            resource: {
+                resourceArn: 'resource',
+                policyStatements: [new iam.PolicyStatement()
+                    .addAction('resource:Everything')
+                    .addResource('resource')
+                ],
+            }
         });
 
         // WHEN
@@ -43,7 +45,9 @@ export = {
         // GIVEN
         const stack = new cdk.Stack();
         const task = new stepfunctions.Task(stack, 'Task', {
-            resourceArn: 'resource'
+            resource: {
+                resourceArn: 'resource'
+            }
         });
 
         const para = new stepfunctions.Parallel(stack, 'Para');
@@ -75,15 +79,17 @@ export = {
         // GIVEN
         const stack = new cdk.Stack();
         const task = new stepfunctions.Task(stack, 'Task', {
-            resourceArn: 'resource',
             inputPath: "$",
             outputPath: "$.state",
-            parameters: {
-                "input.$": "$",
-                "stringArgument": "inital-task",
-                "numberArgument": 123,
-                "booleanArgument": true,
-                "arrayArgument": ["a", "b", "c"]
+            resource: {
+                resourceArn: 'resource',
+                parameters: {
+                    "input.$": "$",
+                    "stringArgument": "inital-task",
+                    "numberArgument": 123,
+                    "booleanArgument": true,
+                    "arrayArgument": ["a", "b", "c"]
+                }
             }
         });
 
