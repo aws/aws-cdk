@@ -26,7 +26,7 @@ export interface IBucket extends IResource {
 
   /**
    * The URL of the static website.
-   * @attribute bucketWebsiteURL
+   * @attribute
    */
   readonly bucketWebsiteUrl: string;
 

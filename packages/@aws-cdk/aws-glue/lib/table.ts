@@ -165,14 +165,14 @@ export class Table extends Resource implements ITable {
    *
    * @param scope The scope creating construct (usually `this`).
    * @param id The construct's id.
-   * @param props A `TableImportProps` object. Can be obtained from a call to `table.export()` or manually created.
+   * @param attrs A `TableImportProps` object. Can be obtained from a call to `table.export()` or manually created.
    */
-  public static fromTableAttributes(scope: Construct, id: string, props: TableAttributes): ITable {
+  public static fromTableAttributes(scope: Construct, id: string, attrs: TableAttributes): ITable {
     class Import extends Construct implements ITable {
-      public readonly tableArn = props.tableArn;
-      public readonly tableName = props.tableName;
+      public readonly tableArn = attrs.tableArn;
+      public readonly tableName = attrs.tableName;
       public export(): TableAttributes {
-        return props;
+        return attrs;
       }
     }
 

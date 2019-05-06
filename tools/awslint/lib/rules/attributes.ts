@@ -31,8 +31,7 @@ attributesLinter.add({
   code: 'attribute-tag',
   message: 'attribute properties must have an "@attribute" doctag on: ',
   eval: e => {
-    const tagTarget = e.ctx.attr.siteType.allProperties.find(p => p.name === e.ctx.attr.name)!;
-    const tag = tagTarget.docs.customTag('attribute');
-    e.assert(tag, e.ctx.fqn, `${e.ctx.attr.siteType.fqn}.${tagTarget.name}`);
+    const tag = e.ctx.attr.property.docs.customTag('attribute');
+    e.assert(tag, e.ctx.fqn, `${e.ctx.attr.property.parentType.fqn}.${e.ctx.attr.name}`);
   }
 });

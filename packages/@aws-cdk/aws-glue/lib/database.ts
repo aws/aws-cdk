@@ -60,7 +60,7 @@ export interface DatabaseProps {
 /**
  * A Glue database.
  */
-export class Database extends Resource {
+export class Database extends Resource implements IDatabase {
 
   public static fromDatabaseArn(scope: Construct, id: string, databaseArn: string): IDatabase {
     class Import extends Construct implements IDatabase {

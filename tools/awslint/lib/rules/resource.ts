@@ -13,7 +13,6 @@ export const resourceLinter = new Linter(a => ResourceReflection.findAll(a));
 
 export interface Attribute {
   site: AttributeSite;
-  siteType: reflect.ClassType | reflect.InterfaceType;
   property: reflect.Property;
   name: string; // bucketArn
 }
@@ -84,20 +83,13 @@ export class ResourceReflection {
       const propertyName = (tag && tag !== 'true') ? tag : p.name;
 
       // check if this attribute is defined on an interface or on a class
-      const siteType = findDeclarationSite(p);
-      const site = siteType.isInterfaceType() ? AttributeSite.Interface : AttributeSite.Class;
-
-      if (!siteType.isClassType() && !siteType.isInterfaceType()) {
-        throw new Error(
-          `Attribute property ${p.name} must be either defined on ` +
-          `an interface or on a class and it is defined on ${siteType.fqn} which is neither`);
-      }
+      const property = findDeclarationSite(p);
+      const site = property.parentType.isInterfaceType() ? AttributeSite.Interface : AttributeSite.Class;
 
       result.push({
         site,
-        siteType,
         name: propertyName,
-        property: p
+        property
       });
     }
 
@@ -105,15 +97,19 @@ export class ResourceReflection {
   }
 }
 
-function findDeclarationSite(prop: reflect.Property): reflect.ClassType | reflect.InterfaceType {
+function findDeclarationSite(prop: reflect.Property): reflect.Property {
   if (!prop.overrides || (!prop.overrides.isClassType() && !prop.overrides.isInterfaceType())) {
     if (!prop.parentType.isClassType() && !prop.parentType.isInterfaceType()) {
       throw new Error('invalid parent type');
     }
-    return prop.parentType;
+    return prop;
   }
 
-  return findDeclarationSite(prop.overrides.allProperties.find(p => p.name === prop.name)!);
+  const overridesProp = prop.overrides.allProperties.find(p => p.name === prop.name);
+  if (!overridesProp) {
+    throw new Error(`Cannot find property ${prop.name} in override site ${prop.overrides.fqn}`);
+  }
+  return findDeclarationSite(overridesProp);
 }
 
 resourceLinter.add({

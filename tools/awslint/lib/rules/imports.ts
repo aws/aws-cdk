@@ -84,25 +84,9 @@ importsLinter.add({
 
 importsLinter.add({
   code: 'from-attributes',
-  message: 'resources with more than one attribute (arn + name are considered a single attribute) must implement the fromAttributes:',
+  message: 'static fromXxxAttributes is a factory of IXxx from its primitive attributes',
   eval: e => {
-    const prefix = e.ctx.resource.cfn.attributePrefix;
-
-    // we only count the number of attributes defined on the interface
-    const attributesOnInterface = e.ctx.resource.attributes.filter(s => s.site === AttributeSite.Interface);
-    const uniques = Array.from(new Set(attributesOnInterface.map(x => x.name).map(x => {
-      if (x === `${prefix}Name` || x === `${prefix}Arn`) {
-        return `${prefix}ArnOrName`;
-      } else {
-        return x;
-      }
-    })));
-
-    if (uniques.length <= 1) {
-      return;
-    }
-
-    if (!e.assert(e.ctx.fromAttributesMethod, e.ctx.resource.fqn + '.' + e.ctx.fromAttributesMethodName, uniques.join(','))) {
+    if (!e.ctx.fromAttributesMethod) {
       return;
     }
 
