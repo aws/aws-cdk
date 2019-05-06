@@ -20,7 +20,6 @@
           "artifactId": "appstream"
         }
       },
-      "sphinx": {},
       "python": {
         "distName": "aws-cdk.aws-appstream",
         "module": "aws_cdk.aws_appstream"
