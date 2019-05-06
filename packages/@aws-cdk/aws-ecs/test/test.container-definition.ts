@@ -511,46 +511,92 @@ export = {
     test.done();
   },
 
-  'can specify linux parameters'(test: Test) {
-    // GIVEN
-    const stack = new cdk.Stack();
-    const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
+  'Can specify linux parameters': {
+    'before calling addContainer'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
 
-    const linuxParameters = new ecs.LinuxParameters(stack, 'LinuxParameters', {
-      initProcessEnabled: true,
-      sharedMemorySize: 1024,
-    });
+      const linuxParameters = new ecs.LinuxParameters(stack, 'LinuxParameters', {
+        initProcessEnabled: true,
+        sharedMemorySize: 1024,
+      });
 
-    linuxParameters.addCapabilities(ecs.Capability.All);
-    linuxParameters.dropCapabilities(ecs.Capability.Kill);
+      linuxParameters.addCapabilities(ecs.Capability.All);
+      linuxParameters.dropCapabilities(ecs.Capability.Kill);
 
-    // WHEN
-    taskDefinition.addContainer('cont', {
-      image: ecs.ContainerImage.fromRegistry('test'),
-      memoryLimitMiB: 1024,
-      linuxParameters,
-    });
+      // WHEN
+      taskDefinition.addContainer('cont', {
+        image: ecs.ContainerImage.fromRegistry('test'),
+        memoryLimitMiB: 1024,
+        linuxParameters,
+      });
 
-    // THEN
-    expect(stack).to(haveResourceLike('AWS::ECS::TaskDefinition', {
-      ContainerDefinitions: [
-        {
-          Image: 'test',
-          LinuxParameters: {
-            Capabilities: {
-              Add: ["ALL"],
-              Drop: ["KILL"]
+      // THEN
+      expect(stack).to(haveResourceLike('AWS::ECS::TaskDefinition', {
+        ContainerDefinitions: [
+          {
+            Image: 'test',
+            LinuxParameters: {
+              Capabilities: {
+                Add: ["ALL"],
+                Drop: ["KILL"]
+              },
+              Devices: [],
+              Tmpfs: [],
+              InitProcessEnabled: true,
+              SharedMemorySize: 1024,
             },
-            Devices: [],
-            Tmpfs: [],
-            InitProcessEnabled: true,
-            SharedMemorySize: 1024,
-          },
-        }
-      ]
-    }));
+          }
+        ]
+      }));
 
-    test.done();
+      test.done();
+    },
+
+    'after calling addContainer'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
+
+      const linuxParameters = new ecs.LinuxParameters(stack, 'LinuxParameters', {
+        initProcessEnabled: true,
+        sharedMemorySize: 1024,
+      });
+
+      linuxParameters.addCapabilities(ecs.Capability.All);
+
+      // WHEN
+      taskDefinition.addContainer('cont', {
+        image: ecs.ContainerImage.fromRegistry('test'),
+        memoryLimitMiB: 1024,
+        linuxParameters,
+      });
+
+      // Mutate linuxParameter after added to a container
+      linuxParameters.dropCapabilities(ecs.Capability.Setuid);
+
+      // THEN
+      expect(stack).to(haveResourceLike('AWS::ECS::TaskDefinition', {
+        ContainerDefinitions: [
+          {
+            Image: 'test',
+            LinuxParameters: {
+              Capabilities: {
+                Add: ["ALL"],
+                Drop: ["SETUID"]
+              },
+              Devices: [],
+              Tmpfs: [],
+              InitProcessEnabled: true,
+              SharedMemorySize: 1024,
+            },
+          }
+        ]
+      }));
+
+      test.done();
+    },
   },
 
   // render extra hosts test
