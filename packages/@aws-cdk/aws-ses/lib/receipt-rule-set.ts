@@ -87,7 +87,7 @@ abstract class ReceiptRuleSetBase extends Resource implements IReceiptRuleSet {
 /**
  * A new receipt rule set.
  */
-export class ReceiptRuleSet extends ReceiptRuleSetBase implements IReceiptRuleSet {
+export class ReceiptRuleSet extends ReceiptRuleSetBase {
   /**
    * Import an exported receipt rule set.
    */
