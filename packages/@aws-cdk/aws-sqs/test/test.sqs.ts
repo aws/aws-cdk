@@ -98,7 +98,7 @@ export = {
 
     // WHEN
     const ref = queue.export();
-    const imports = sqs.Queue.import(stack, 'Imported', ref);
+    const imports = sqs.Queue.fromQueueAttributes(stack, 'Imported', ref);
 
     // THEN
 
@@ -158,7 +158,7 @@ export = {
 
     'grants also work on imported queues'(test: Test) {
       const stack = new Stack();
-      const queue = Queue.import(stack, 'Import', {
+      const queue = Queue.fromQueueAttributes(stack, 'Import', {
         queueArn: 'arn:aws:sqs:us-east-1:123456789012:queue1',
         queueUrl: 'https://queue-url'
       });

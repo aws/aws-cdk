@@ -1,8 +1,8 @@
-import { CfnOutput, Construct, Token } from '@aws-cdk/cdk';
+import { CfnOutput, Construct, Resource, Token } from '@aws-cdk/cdk';
 import { EventPattern } from './event-pattern';
 import { CfnRule } from './events.generated';
 import { TargetInputTemplate } from './input-options';
-import { EventRuleImportProps, IEventRule } from './rule-ref';
+import { EventRuleAttributes, IEventRule } from './rule-ref';
 import { IEventRuleTarget } from './target';
 import { mergeEventPattern } from './util';
 
@@ -62,13 +62,19 @@ export interface EventRuleProps {
 
 /**
  * Defines a CloudWatch Event Rule in this stack.
+ *
+ * @resource AWS::Events::Rule
  */
-export class EventRule extends Construct implements IEventRule {
-  /**
-   * Imports a rule by ARN into this stack.
-   */
-  public static import(scope: Construct, id: string, props: EventRuleImportProps): IEventRule {
-    return new ImportedEventRule(scope, id, props);
+export class EventRule extends Resource implements IEventRule {
+
+  public static fromEventRuleArn(scope: Construct, id: string, eventRuleArn: string): IEventRule {
+    class Import extends Resource implements IEventRule {
+      public ruleArn = eventRuleArn;
+      public export(): EventRuleAttributes {
+        return { eventRuleArn };
+      }
+    }
+    return new Import(scope, id);
   }
 
   public readonly ruleArn: string;
@@ -102,7 +108,7 @@ export class EventRule extends Construct implements IEventRule {
   /**
    * Exports this rule resource from this stack and returns an import token.
    */
-  public export(): EventRuleImportProps {
+  public export(): EventRuleAttributes {
     return {
       eventRuleArn: new CfnOutput(this, 'RuleArn', { value: this.ruleArn }).makeImportValue().toString()
     };
@@ -238,19 +244,5 @@ export class EventRule extends Construct implements IEventRule {
     }
 
     return out;
-  }
-}
-
-class ImportedEventRule extends Construct implements IEventRule {
-  public readonly ruleArn: string;
-
-  constructor(scope: Construct, id: string, private readonly props: EventRuleImportProps) {
-    super(scope, id);
-
-    this.ruleArn = props.eventRuleArn;
-  }
-
-  public export() {
-    return this.props;
   }
 }

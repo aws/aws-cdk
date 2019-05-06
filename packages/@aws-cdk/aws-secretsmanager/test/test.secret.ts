@@ -296,7 +296,7 @@ export = {
     const secretArn = 'arn::of::a::secret';
 
     // WHEN
-    const secret = secretsmanager.Secret.import(stack, 'Secret', {
+    const secret = secretsmanager.Secret.fromSecretAttributes(stack, 'Secret', {
       secretArn, encryptionKey
     });
 
@@ -399,7 +399,7 @@ export = {
     const stack = new Stack();
 
     // WHEN
-    const imported = secretsmanager.Secret.import(stack, 'Imported', { secretArn: 'my-secret-arn' }).secretJsonValue('password');
+    const imported = secretsmanager.Secret.fromSecretAttributes(stack, 'Imported', { secretArn: 'my-secret-arn' }).secretJsonValue('password');
     const value = SecretValue.secretsManager('my-secret-arn', { jsonField: 'password' });
 
     // THEN

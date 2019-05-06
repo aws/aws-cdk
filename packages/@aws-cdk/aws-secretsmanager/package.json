@@ -81,5 +81,11 @@
   },
   "engines": {
     "node": ">= 8.10.0"
+  },
+  "awslint": {
+    "exclude": [
+      "from-signature:@aws-cdk/aws-secretsmanager.SecretTargetAttachment.fromSecretTargetAttachmentSecretArn",
+      "from-attributes:fromSecretTargetAttachmentAttributes"
+    ]
   }
 }

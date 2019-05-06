@@ -8,16 +8,19 @@ import { QueuePolicy } from './policy';
 export interface IQueue extends IResource, s3n.IBucketNotificationDestination, autoscaling_api.ILifecycleHookTarget {
   /**
    * The ARN of this queue
+   * @attribute
    */
   readonly queueArn: string;
 
   /**
    * The URL of this queue
+   * @attribute
    */
   readonly queueUrl: string;
 
   /**
    * The name of this queue
+   * @attribute
    */
   readonly queueName: string;
 
@@ -29,7 +32,7 @@ export interface IQueue extends IResource, s3n.IBucketNotificationDestination, a
   /**
    * Export a queue
    */
-  export(): QueueImportProps;
+  export(): QueueAttributes;
 
   /**
    * Adds a statement to the IAM resource policy associated with this queue.
@@ -136,7 +139,7 @@ export abstract class QueueBase extends Resource implements IQueue {
   /**
    * Export a queue
    */
-  public abstract export(): QueueImportProps;
+  public abstract export(): QueueAttributes;
 
   /**
    * Adds a statement to the IAM resource policy associated with this queue.
@@ -284,7 +287,7 @@ export abstract class QueueBase extends Resource implements IQueue {
 /**
  * Reference to a queue
  */
-export interface QueueImportProps {
+export interface QueueAttributes {
   /**
    * The ARN of the queue.
    */
@@ -293,7 +296,7 @@ export interface QueueImportProps {
   /**
    * The URL of the queue.
    */
-  readonly queueUrl: string;
+  readonly queueUrl?: string;
 
   /**
    * The name of the queue.

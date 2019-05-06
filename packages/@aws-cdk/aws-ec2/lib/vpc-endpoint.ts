@@ -470,7 +470,7 @@ class ImportedInterfaceVpcEndpoint extends cdk.Construct implements IInterfaceVp
 
     this.connections = new Connections({
       defaultPortRange: new TcpPortFromAttribute(props.port),
-      securityGroups: [SecurityGroup.import(this, 'SecurityGroup', props)],
+      securityGroups: [SecurityGroup.fromSecurityGroupId(this, 'SecurityGroup', props.securityGroupId)],
     });
   }
 

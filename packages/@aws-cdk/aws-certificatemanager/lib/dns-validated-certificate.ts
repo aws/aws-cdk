@@ -4,7 +4,7 @@ import lambda = require('@aws-cdk/aws-lambda');
 import route53 = require('@aws-cdk/aws-route53');
 import cdk = require('@aws-cdk/cdk');
 import path = require('path');
-import { CertificateImportProps, CertificateProps, ICertificate } from './certificate';
+import { CertificateAttributes, CertificateProps, ICertificate } from './certificate';
 
 export interface DnsValidatedCertificateProps extends CertificateProps {
     /**
@@ -74,7 +74,7 @@ export class DnsValidatedCertificate extends cdk.Construct implements ICertifica
     /**
      * Export this certificate from the stack
      */
-    public export(): CertificateImportProps {
+    public export(): CertificateAttributes {
         return {
             certificateArn: new cdk.CfnOutput(this, 'Arn', { value: this.certificateArn }).makeImportValue().toString()
         };

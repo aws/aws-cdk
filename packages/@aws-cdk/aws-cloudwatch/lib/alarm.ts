@@ -65,11 +65,15 @@ export enum TreatMissingData {
 export class Alarm extends Resource {
   /**
    * ARN of this alarm
+   *
+   * @attribute
    */
   public readonly alarmArn: string;
 
   /**
    * Name of this alarm.
+   *
+   * @attribute
    */
   public readonly alarmName: string;
 

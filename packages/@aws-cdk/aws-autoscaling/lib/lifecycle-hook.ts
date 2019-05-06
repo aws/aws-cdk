@@ -72,6 +72,7 @@ export class LifecycleHook extends Resource implements api.ILifecycleHook {
 
   /**
    * The name of this lifecycle hook
+   * @attribute
    */
   public readonly lifecycleHookName: string;
 

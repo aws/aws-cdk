@@ -114,7 +114,7 @@ export = {
     const cluster = new eks.Cluster(stack1, 'Cluster', { vpc });
 
     // WHEN
-    const imported = eks.Cluster.import(stack2, 'Imported', cluster.export());
+    const imported = eks.Cluster.fromClusterAttributes(stack2, 'Imported', cluster.export());
 
     // THEN
     test.deepEqual(stack2.node.resolve(imported.clusterArn), {

@@ -121,7 +121,7 @@ export class LoadBalancedFargateServiceApplet extends cdk.Stack {
     }
     let certificate;
     if (props.certificate) {
-      certificate = Certificate.import(this, 'Cert', { certificateArn: props.certificate });
+      certificate = Certificate.fromCertificateArn(this, 'Cert', props.certificate);
     }
 
     // Instantiate Fargate Service with just cluster and image

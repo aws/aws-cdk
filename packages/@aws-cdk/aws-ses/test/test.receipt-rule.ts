@@ -117,10 +117,7 @@ export = {
     const stack = new Stack();
 
     // WHEN
-    const receiptRule = ReceiptRule.import(stack, 'ImportedRule', {
-      name: 'MyRule'
-    });
-
+    const receiptRule = ReceiptRule.fromReceiptRuleName(stack, 'ImportedRule', 'MyRule');
     const receiptRuleSet = new ReceiptRuleSet(stack, 'RuleSet');
 
     receiptRuleSet.addRule('MyRule', {

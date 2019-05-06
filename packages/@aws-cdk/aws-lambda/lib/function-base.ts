@@ -20,11 +20,15 @@ export interface IFunction extends IResource, logs.ILogSubscriptionDestination,
 
   /**
    * The name of the function.
+   *
+   * @attribute
    */
   readonly functionName: string;
 
   /**
    * The ARN fo the function.
+   *
+   * @attribute
    */
   readonly functionArn: string;
 
@@ -82,7 +86,7 @@ export interface IFunction extends IResource, logs.ILogSubscriptionDestination,
   /**
    * Export this Function (without the role)
    */
-  export(): FunctionImportProps;
+  export(): FunctionAttributes;
 
   addEventSource(source: IEventSource): void;
 }
@@ -90,7 +94,7 @@ export interface IFunction extends IResource, logs.ILogSubscriptionDestination,
 /**
  * Represents a Lambda function defined outside of this stack.
  */
-export interface FunctionImportProps {
+export interface FunctionAttributes {
   /**
    * The ARN of the Lambda function.
    *
@@ -260,7 +264,7 @@ export abstract class FunctionBase extends Resource implements IFunction  {
   /**
    * Export this Function (without the role)
    */
-  public abstract export(): FunctionImportProps;
+  public abstract export(): FunctionAttributes;
 
   /**
    * Allows this Lambda to be used as a destination for bucket notifications.

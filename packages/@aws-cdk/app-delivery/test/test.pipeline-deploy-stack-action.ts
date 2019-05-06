@@ -327,7 +327,7 @@ function createSelfUpdatingStack(pipelineStack: cdk.Stack): SelfUpdatingPipeline
   });
 
   // simple source
-  const bucket = s3.Bucket.import( pipeline, 'PatternBucket', { bucketArn: 'arn:aws:s3:::totally-fake-bucket' });
+  const bucket = s3.Bucket.fromBucketArn( pipeline, 'PatternBucket', 'arn:aws:s3:::totally-fake-bucket');
   const sourceOutput = new codepipeline.Artifact('SourceOutput');
   const sourceAction = new cpactions.S3SourceAction({
     actionName: 'S3Source',

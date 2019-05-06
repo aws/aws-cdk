@@ -106,9 +106,7 @@ export = {
     const vpc = ec2.VpcNetwork.importFromContext(stack, 'VPC', {
       vpcId: "VPC12345"
     });
-    const sg = ec2.SecurityGroup.import(stack, 'SG', {
-      securityGroupId: "SecurityGroupId12345"
-    });
+    const sg = ec2.SecurityGroup.fromSecurityGroupId(stack, 'SG', "SecurityGroupId12345");
 
     // WHEN
     new DatabaseCluster(stack, 'Database', {

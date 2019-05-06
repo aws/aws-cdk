@@ -55,6 +55,7 @@ export interface DeploymentProps  {
  * automatically for the `restApi.latestDeployment` deployment.
  */
 export class Deployment extends Resource {
+  /** @attribute */
   public readonly deploymentId: string;
   public readonly api: IRestApi;
 

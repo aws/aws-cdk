@@ -35,6 +35,8 @@ export interface LambdaDeploymentConfigImportProps {
  * Note: This class currently stands as namespaced container of the default configurations
  * until CloudFormation supports custom Lambda Deployment Configs. Until then it is closed
  * (private constructor) and does not extend {@link cdk.Construct}
+ *
+ * @resource AWS::CodeDeploy::DeploymentConfig
  */
 export class LambdaDeploymentConfig {
   public static readonly AllAtOnce                     = deploymentConfig('CodeDeployDefault.LambdaAllAtOnce');

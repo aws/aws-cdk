@@ -98,6 +98,46 @@ export interface PipelineProps {
   readonly stages?: StageProps[];
 }
 
+abstract class PipelineBase extends Resource implements IPipeline {
+  public abstract pipelineName: string;
+  public abstract pipelineArn: string;
+  private eventsRole?: iam.Role;
+  public abstract grantBucketRead(identity: iam.IGrantable): iam.Grant;
+  public abstract grantBucketReadWrite(identity: iam.IGrantable): iam.Grant;
+
+  /**
+   * Allows the pipeline to be used as a CloudWatch event rule target.
+   *
+   * Usage:
+   *
+   *    const pipeline = new Pipeline(this, 'MyPipeline');
+   *    const rule = new EventRule(this, 'MyRule', { schedule: 'rate(1 minute)' });
+   *    rule.addTarget(pipeline);
+   *
+   */
+  public asEventRuleTarget(_ruleArn: string, _ruleId: string): events.EventRuleTargetProps {
+    // the first time the event rule target is retrieved, we define an IAM
+    // role assumable by the CloudWatch events service which is allowed to
+    // start the execution of this pipeline. no need to define more than one
+    // role per pipeline.
+    if (!this.eventsRole) {
+      this.eventsRole = new iam.Role(this, 'EventsRole', {
+        assumedBy: new iam.ServicePrincipal('events.amazonaws.com')
+      });
+
+      this.eventsRole.addToPolicy(new iam.PolicyStatement()
+        .addResource(this.pipelineArn)
+        .addAction('codepipeline:StartPipelineExecution'));
+    }
+
+    return {
+      id: this.node.id,
+      arn: this.pipelineArn,
+      roleArn: this.eventsRole.roleArn,
+    };
+  }
+}
+
 /**
  * An AWS CodePipeline pipeline with its associated IAM role and S3 bucket.
  *
@@ -117,7 +157,31 @@ export interface PipelineProps {
  *
  * // ... add more stages
  */
-export class Pipeline extends Resource implements IPipeline {
+export class Pipeline extends PipelineBase {
+
+  /**
+   * Import a pipeline into this app.
+   * @param scope the scope into which to import this pipeline
+   * @param pipelineArn The ARN of the pipeline (e.g. `arn:aws:codepipeline:us-east-1:123456789012:MyDemoPipeline`)
+   */
+  public static fromPipelineArn(scope: Construct, id: string, pipelineArn: string): IPipeline {
+
+    class Import extends PipelineBase {
+      public pipelineName = scope.node.stack.parseArn(pipelineArn).resource;
+      public pipelineArn = pipelineArn;
+
+      public grantBucketRead(identity: iam.IGrantable): iam.Grant {
+        return iam.Grant.drop(identity, `grant read permissions to the artifacts bucket of ${pipelineArn}`);
+      }
+
+      public grantBucketReadWrite(identity: iam.IGrantable): iam.Grant {
+        return iam.Grant.drop(identity, `grant read/write permissions to the artifacts bucket of ${pipelineArn}`);
+      }
+    }
+
+    return new Import(scope, id);
+  }
+
   /**
    * The IAM role AWS CodePipeline will use to perform actions or assume roles for actions with
    * a more specific IAM role.
@@ -136,6 +200,8 @@ export class Pipeline extends Resource implements IPipeline {
 
   /**
    * The version of the pipeline
+   *
+   * @attribute
    */
   public readonly pipelineVersion: string;
 
@@ -145,7 +211,6 @@ export class Pipeline extends Resource implements IPipeline {
   public readonly artifactBucket: s3.IBucket;
 
   private readonly stages = new Array<Stage>();
-  private eventsRole?: iam.Role;
   private readonly pipelineResource: CfnPipeline;
   private readonly crossRegionReplicationBuckets: { [region: string]: string };
   private readonly artifactStores: { [region: string]: any };
@@ -231,38 +296,6 @@ export class Pipeline extends Resource implements IPipeline {
    */
   public addToRolePolicy(statement: iam.PolicyStatement) {
     this.role.addToPolicy(statement);
-  }
-
-  /**
-   * Allows the pipeline to be used as a CloudWatch event rule target.
-   *
-   * Usage:
-   *
-   *    const pipeline = new Pipeline(this, 'MyPipeline');
-   *    const rule = new EventRule(this, 'MyRule', { schedule: 'rate(1 minute)' });
-   *    rule.addTarget(pipeline);
-   *
-   */
-  public asEventRuleTarget(_ruleArn: string, _ruleId: string): events.EventRuleTargetProps {
-    // the first time the event rule target is retrieved, we define an IAM
-    // role assumable by the CloudWatch events service which is allowed to
-    // start the execution of this pipeline. no need to define more than one
-    // role per pipeline.
-    if (!this.eventsRole) {
-      this.eventsRole = new iam.Role(this, 'EventsRole', {
-        assumedBy: new iam.ServicePrincipal('events.amazonaws.com')
-      });
-
-      this.eventsRole.addToPolicy(new iam.PolicyStatement()
-        .addResource(this.pipelineArn)
-        .addAction('codepipeline:StartPipelineExecution'));
-    }
-
-    return {
-      id: this.node.id,
-      arn: this.pipelineArn,
-      roleArn: this.eventsRole.roleArn,
-    };
   }
 
   /**
@@ -375,7 +408,7 @@ export class Pipeline extends Resource implements IPipeline {
       replicationBucketName = crossRegionScaffoldStack.replicationBucketName;
     }
 
-    const replicationBucket = s3.Bucket.import(this, 'CrossRegionCodePipelineReplicationBucket-' + region, {
+    const replicationBucket = s3.Bucket.fromBucketAttributes(this, 'CrossRegionCodePipelineReplicationBucket-' + region, {
       bucketName: replicationBucketName,
     });
     replicationBucket.grantReadWrite(this.role);

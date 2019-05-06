@@ -1,13 +1,13 @@
 import iam = require('@aws-cdk/aws-iam');
-import { CfnOutput, Construct, IResource, Resource } from '@aws-cdk/cdk';
+import { CfnOutput, Construct, IResource as IResourceBase, Resource } from '@aws-cdk/cdk';
 import { CfnAccount, CfnRestApi } from './apigateway.generated';
 import { Deployment } from './deployment';
 import { Integration } from './integration';
 import { Method, MethodOptions } from './method';
-import { IRestApiResource, ResourceBase, ResourceOptions } from './resource';
+import { IResource, ResourceBase, ResourceOptions } from './resource';
 import { Stage, StageOptions } from './stage';
 
-export interface RestApiImportProps {
+export interface RestApiAttributes {
   /**
    * The REST API ID of an existing REST API resource.
    */
@@ -19,22 +19,18 @@ export interface RestApiImportProps {
   readonly restApiRootResourceId?: string;
 }
 
-export interface IRestApi extends IResource {
+export interface IRestApi extends IResourceBase {
   /**
    * The ID of this API Gateway RestApi.
+   * @attribute
    */
   readonly restApiId: string;
-
-  /**
-   * The resource ID of the root resource.
-   */
-  readonly restApiRootResourceId: string;
 
   /**
    * Exports a REST API resource from this stack.
    * @returns REST API props that can be imported to another stack.
    */
-  export(): RestApiImportProps;
+  export(): RestApiAttributes;
 }
 
 export interface RestApiProps extends ResourceOptions {
@@ -165,20 +161,11 @@ export interface RestApiProps extends ResourceOptions {
  * public endpoint.
  */
 export class RestApi extends Resource implements IRestApi {
-  /**
-   * Imports an existing REST API resource.
-   * @param scope Parent construct
-   * @param id Construct ID
-   * @param props Imported rest API properties
-   */
-  public static import(scope: Construct, id: string, props: RestApiImportProps): IRestApi {
-    class Import extends Construct implements IRestApi {
-      public restApiId = props.restApiId;
-      public get restApiRootResourceId() {
-        if (!props.restApiRootResourceId) { throw new Error(`Imported REST API does not have "restApiRootResourceId"`); }
-        return props.restApiRootResourceId;
-      }
-      public export() { return props; }
+
+  public static fromRestApiId(scope: Construct, id: string, restApiId: string): IRestApi {
+    class Import extends Resource implements IRestApi {
+      public readonly restApiId = restApiId;
+      public export(): RestApiAttributes { return { restApiId }; }
     }
 
     return new Import(scope, id);
@@ -191,6 +178,8 @@ export class RestApi extends Resource implements IRestApi {
 
   /**
    * The resource ID of the root resource.
+   *
+   * @attribute
    */
   public readonly restApiRootResourceId: string;
 
@@ -216,7 +205,7 @@ export class RestApi extends Resource implements IRestApi {
    *    api.root.addResource('friends').addMethod('GET', getFriendsHandler); // "GET /friends"
    *
    */
-  public readonly root: IRestApiResource;
+  public readonly root: IResource;
 
   private readonly methods = new Array<Method>();
 
@@ -252,7 +241,7 @@ export class RestApi extends Resource implements IRestApi {
    * Exports a REST API resource from this stack.
    * @returns REST API props that can be imported to another stack.
    */
-  public export(): RestApiImportProps {
+  public export(): RestApiAttributes {
     return {
       restApiId: new CfnOutput(this, 'RestApiId', { value: this.restApiId }).makeImportValue().toString()
     };
@@ -402,10 +391,10 @@ export enum EndpointType {
 }
 
 class RootResource extends ResourceBase {
-  public readonly parentResource?: IRestApiResource;
-  public readonly resourceApi: RestApi;
+  public readonly parentResource?: IResource;
+  public readonly restApi: RestApi;
   public readonly resourceId: string;
-  public readonly resourcePath: string;
+  public readonly path: string;
   public readonly defaultIntegration?: Integration | undefined;
   public readonly defaultMethodOptions?: MethodOptions | undefined;
 
@@ -415,8 +404,8 @@ class RootResource extends ResourceBase {
     this.parentResource = undefined;
     this.defaultIntegration = props.defaultIntegration;
     this.defaultMethodOptions = props.defaultMethodOptions;
-    this.resourceApi = api;
+    this.restApi = api;
     this.resourceId = resourceId;
-    this.resourcePath = '/';
+    this.path = '/';
   }
 }

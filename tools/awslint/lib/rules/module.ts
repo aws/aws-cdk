@@ -1,6 +1,6 @@
 import reflect = require('jsii-reflect');
 import { Linter } from '../linter';
-import { findCfnResources } from './resource';
+import { CfnResourceReflection } from './cfn-resource';
 
 interface ModuleLinterContext  {
   readonly assembly: reflect.Assembly;
@@ -8,7 +8,7 @@ interface ModuleLinterContext  {
 }
 
 export const moduleLinter = new Linter<ModuleLinterContext>(assembly => {
-  const cfnResources = findCfnResources(assembly);
+  const cfnResources = CfnResourceReflection.findAll(assembly);
   if (cfnResources.length === 0) {
     return undefined; // no resources
   }

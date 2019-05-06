@@ -75,7 +75,7 @@ export interface WhiteListReceiptFilterProps {
 /**
  * A white list receipt filter.
  */
-export class WhiteListReceiptFilter extends Resource {
+export class WhiteListReceiptFilter extends Construct {
   constructor(scope: Construct, id: string, props: WhiteListReceiptFilterProps) {
     super(scope, id);
 

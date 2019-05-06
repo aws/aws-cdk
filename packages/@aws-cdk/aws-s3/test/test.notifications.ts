@@ -323,7 +323,7 @@ export = {
   'CloudWatch Events': {
     'onPutItem contains the Bucket ARN itself when path is undefined'(test: Test) {
       const stack = new cdk.Stack();
-      const bucket = s3.Bucket.import(stack, 'Bucket', {
+      const bucket = s3.Bucket.fromBucketAttributes(stack, 'Bucket', {
         bucketName: 'MyBucket',
       });
       bucket.onPutObject('PutRule');
@@ -366,7 +366,7 @@ export = {
 
     "onPutItem contains the path when it's provided"(test: Test) {
       const stack = new cdk.Stack();
-      const bucket = s3.Bucket.import(stack, 'Bucket', {
+      const bucket = s3.Bucket.fromBucketAttributes(stack, 'Bucket', {
         bucketName: 'MyBucket',
       });
       bucket.onPutObject('PutRule', undefined, 'my/path.zip');

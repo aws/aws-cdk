@@ -14,26 +14,37 @@ import { parseBucketArn, parseBucketName } from './util';
 export interface IBucket extends IResource {
   /**
    * The ARN of the bucket.
+   * @attribute
    */
   readonly bucketArn: string;
 
   /**
    * The name of the bucket.
+   * @attribute
    */
   readonly bucketName: string;
 
   /**
+   * The URL of the static website.
+   * @attribute
+   */
+  readonly bucketWebsiteUrl: string;
+
+  /**
    * The IPv4 DNS name of the specified bucket.
+   * @attribute
    */
   readonly bucketDomainName: string;
 
   /**
    * The IPv6 DNS name of the specified bucket.
+   * @attribute
    */
   readonly bucketDualStackDomainName: string;
 
   /**
    * The regional domain name of the specified bucket.
+   * @attribute
    */
   readonly bucketRegionalDomainName: string;
 
@@ -41,13 +52,6 @@ export interface IBucket extends IResource {
    * Optional KMS encryption key associated with this bucket.
    */
   readonly encryptionKey?: kms.IEncryptionKey;
-
-  /**
-   * The https:// URL of this bucket.
-   * @example https://s3.us-west-1.amazonaws.com/onlybucket
-   * Similar to calling `urlForObject` with no object key.
-   */
-  readonly bucketUrl: string;
 
   /**
    * The resource policy assoicated with this bucket.
@@ -60,7 +64,7 @@ export interface IBucket extends IResource {
   /**
    * Exports this bucket from the stack.
    */
-  export(): BucketImportProps;
+  export(): BucketAttributes;
 
   /**
    * Adds a statement to the resource policy for a principal (i.e.
@@ -187,7 +191,7 @@ export interface IBucket extends IResource {
  * `bucket.export()`. Then, the consumer can use `Bucket.import(this, ref)` and
  * get a `Bucket`.
  */
-export interface BucketImportProps {
+export interface BucketAttributes {
   /**
    * The ARN of the bucket. At least one of bucketArn or bucketName must be
    * defined in order to initialize a bucket ref.
@@ -256,6 +260,7 @@ abstract class BucketBase extends Resource implements IBucket {
   public abstract readonly bucketArn: string;
   public abstract readonly bucketName: string;
   public abstract readonly bucketDomainName: string;
+  public abstract readonly bucketWebsiteUrl: string;
   public abstract readonly bucketRegionalDomainName: string;
   public abstract readonly bucketDualStackDomainName: string;
 
@@ -286,7 +291,7 @@ abstract class BucketBase extends Resource implements IBucket {
   /**
    * Exports this bucket from the stack.
    */
-  public abstract export(): BucketImportProps;
+  public abstract export(): BucketAttributes;
 
   public onPutObject(name: string, target?: events.IEventRuleTarget, path?: string): events.EventRule {
     const eventRule = new events.EventRule(this, name, {
@@ -330,15 +335,6 @@ abstract class BucketBase extends Resource implements IBucket {
     if (this.policy) {
       this.policy.document.addStatement(permission);
     }
-  }
-
-  /**
-   * The https:// URL of this bucket.
-   * @example https://s3.us-west-1.amazonaws.com/onlybucket
-   * Similar to calling `urlForObject` with no object key.
-   */
-  public get bucketUrl() {
-    return this.urlForObject();
   }
 
   /**
@@ -652,26 +648,35 @@ export interface BucketProps {
  * BucketResource.
  */
 export class Bucket extends BucketBase {
+
+  public static fromBucketArn(scope: Construct, id: string, bucketArn: string): IBucket {
+    return Bucket.fromBucketAttributes(scope, id, { bucketArn });
+  }
+
+  public static fromBucketName(scope: Construct, id: string, bucketName: string): IBucket {
+    return Bucket.fromBucketAttributes(scope, id, { bucketName });
+  }
+
   /**
    * Creates a Bucket construct that represents an external bucket.
    *
    * @param scope The parent creating construct (usually `this`).
    * @param id The construct's name.
-   * @param props A `BucketAttributes` object. Can be obtained from a call to
+   * @param attrs A `BucketAttributes` object. Can be obtained from a call to
    * `bucket.export()` or manually created.
    */
-  public static import(scope: Construct, id: string, props: BucketImportProps): IBucket {
+  public static fromBucketAttributes(scope: Construct, id: string, attrs: BucketAttributes): IBucket {
     const region = scope.node.stack.region;
     const urlSuffix = scope.node.stack.urlSuffix;
 
-    const bucketName = parseBucketName(scope, props);
+    const bucketName = parseBucketName(scope, attrs);
     if (!bucketName) {
       throw new Error('Bucket name is required');
     }
 
-    const newUrlFormat = props.bucketWebsiteNewUrlFormat === undefined
+    const newUrlFormat = attrs.bucketWebsiteNewUrlFormat === undefined
       ? false
-      : props.bucketWebsiteNewUrlFormat;
+      : attrs.bucketWebsiteNewUrlFormat;
 
     const websiteUrl = newUrlFormat
       ? `${bucketName}.s3-website.${region}.${urlSuffix}`
@@ -679,11 +684,11 @@ export class Bucket extends BucketBase {
 
     class Import extends BucketBase {
       public readonly bucketName = bucketName!;
-      public readonly bucketArn = parseBucketArn(scope, props);
-      public readonly bucketDomainName = props.bucketDomainName || `${bucketName}.s3.${urlSuffix}`;
-      public readonly bucketWebsiteUrl = props.bucketWebsiteUrl || websiteUrl;
-      public readonly bucketRegionalDomainName = props.bucketRegionalDomainName || `${bucketName}.s3.${region}.${urlSuffix}`;
-      public readonly bucketDualStackDomainName = props.bucketDualStackDomainName || `${bucketName}.s3.dualstack.${region}.${urlSuffix}`;
+      public readonly bucketArn = parseBucketArn(scope, attrs);
+      public readonly bucketDomainName = attrs.bucketDomainName || `${bucketName}.s3.${urlSuffix}`;
+      public readonly bucketWebsiteUrl = attrs.bucketWebsiteUrl || websiteUrl;
+      public readonly bucketRegionalDomainName = attrs.bucketRegionalDomainName || `${bucketName}.s3.${region}.${urlSuffix}`;
+      public readonly bucketDualStackDomainName = attrs.bucketDualStackDomainName || `${bucketName}.s3.dualstack.${region}.${urlSuffix}`;
       public readonly bucketWebsiteNewUrlFormat = newUrlFormat;
       public readonly encryptionKey?: kms.EncryptionKey;
       public policy?: BucketPolicy = undefined;
@@ -694,7 +699,7 @@ export class Bucket extends BucketBase {
        * Exports this bucket from the stack.
        */
       public export() {
-        return props;
+        return attrs;
       }
     }
 
@@ -762,7 +767,7 @@ export class Bucket extends BucketBase {
   /**
    * Exports this bucket from the stack.
    */
-  public export(): BucketImportProps {
+  public export(): BucketAttributes {
     return {
       bucketArn: new CfnOutput(this, 'BucketArn', { value: this.bucketArn }).makeImportValue().toString(),
       bucketName: new CfnOutput(this, 'BucketName', { value: this.bucketName }).makeImportValue().toString(),

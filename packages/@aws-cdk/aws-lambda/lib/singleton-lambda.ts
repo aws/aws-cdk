@@ -1,7 +1,7 @@
 import iam = require('@aws-cdk/aws-iam');
 import cdk = require('@aws-cdk/cdk');
 import { Function as LambdaFunction, FunctionProps } from './function';
-import { FunctionBase, FunctionImportProps, IFunction } from './function-base';
+import { FunctionAttributes, FunctionBase, IFunction } from './function-base';
 import { Permission } from './permission';
 
 /**
@@ -33,6 +33,8 @@ export interface SingletonFunctionProps extends FunctionProps {
  *
  * The lambda is identified using the value of 'uuid'. Run 'uuidgen'
  * for every SingletonLambda you create.
+ *
+ * @resource AWS::Lambda::Function
  */
 export class SingletonFunction extends FunctionBase {
   public readonly grantPrincipal: iam.IPrincipal;
@@ -55,7 +57,7 @@ export class SingletonFunction extends FunctionBase {
     this.canCreatePermissions = true; // Doesn't matter, addPermission is overriden anyway
   }
 
-  public export(): FunctionImportProps {
+  public export(): FunctionAttributes {
     return this.lambdaFunction.export();
   }
 

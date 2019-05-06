@@ -1,15 +1,28 @@
 import { Construct } from '@aws-cdk/cdk';
-import { BaseNamespaceProps, NamespaceBase, NamespaceType } from './namespace';
+import { BaseNamespaceProps, INamespace, NamespaceBase, NamespaceType } from './namespace';
 import { DnsServiceProps, Service } from './service';
 import { CfnPublicDnsNamespace} from './servicediscovery.generated';
 
 // tslint:disable:no-empty-interface
 export interface PublicDnsNamespaceProps extends BaseNamespaceProps {}
 
+export interface IPublicDnsNamespace extends INamespace {
+  /**
+   * The ID of the public namespace.
+   * @attribute
+   */
+  readonly publicDnsNamespaceId: string;
+
+  /**
+   * The Amazon Resource Name (ARN) of the public namespace.
+   * @attribute
+   */
+  readonly publicDnsNamespaceArn: string;
+}
 /**
  * Define a Public DNS Namespace
  */
-export class PublicDnsNamespace extends NamespaceBase {
+export class PublicDnsNamespace extends NamespaceBase implements IPublicDnsNamespace {
   /**
    * A name for the namespace.
    */
@@ -43,6 +56,9 @@ export class PublicDnsNamespace extends NamespaceBase {
     this.namespaceArn = ns.publicDnsNamespaceArn;
     this.type = NamespaceType.DnsPublic;
   }
+
+  public get publicDnsNamespaceArn() { return this.namespaceArn; }
+  public get publicDnsNamespaceId() { return this.namespaceId; }
 
   /**
    * Creates a service within the namespace

@@ -7,11 +7,15 @@ import { CfnStream } from './kinesis.generated';
 export interface IStream extends IResource, logs.ILogSubscriptionDestination {
   /**
    * The ARN of the stream.
+   *
+   * @attribute
    */
   readonly streamArn: string;
 
   /**
    * The name of the stream
+   *
+   * @attribute
    */
   readonly streamName: string;
 
@@ -23,7 +27,7 @@ export interface IStream extends IResource, logs.ILogSubscriptionDestination {
   /**
    * Exports this stream from the stack.
    */
-  export(): StreamImportProps;
+  export(): StreamAttributes;
 
   /**
    * Grant read permissions for this stream and its contents to an IAM
@@ -58,7 +62,7 @@ export interface IStream extends IResource, logs.ILogSubscriptionDestination {
  * `stream.export()`. Then, the consumer can use `Stream.import(this, ref)` and
  * get a `Stream`.
  */
-export interface StreamImportProps {
+export interface StreamAttributes {
   /**
    * The ARN of the stream.
    */
@@ -108,7 +112,7 @@ abstract class StreamBase extends Resource implements IStream {
    */
   private cloudWatchLogsRole?: iam.Role;
 
-  public abstract export(): StreamImportProps;
+  public abstract export(): StreamAttributes;
 
   /**
    * Grant write permissions for this stream and its contents to an IAM
@@ -281,15 +285,33 @@ export interface StreamProps {
  * A Kinesis stream. Can be encrypted with a KMS key.
  */
 export class Stream extends StreamBase {
+
+  public static fromStreamArn(scope: Construct, id: string, streamArn: string): IStream {
+    return Stream.fromStreamAttributes(scope, id, { streamArn });
+  }
+
   /**
    * Creates a Stream construct that represents an external stream.
    *
    * @param scope The parent creating construct (usually `this`).
    * @param id The construct's name.
-   * @param props Stream import properties
+   * @param attrs Stream import properties
    */
-  public static import(scope: Construct, id: string, props: StreamImportProps): IStream {
-    return new ImportedStream(scope, id, props);
+  public static fromStreamAttributes(scope: Construct, id: string, attrs: StreamAttributes): IStream {
+    const encryptionKey = attrs.encryptionKey
+      ? kms.EncryptionKey.import(scope, 'Key', attrs.encryptionKey)
+      : undefined;
+
+    class Import extends StreamBase {
+      public readonly streamArn = attrs.streamArn;
+      public readonly streamName = scope.node.stack.parseArn(attrs.streamArn).resourceName!;
+      public readonly encryptionKey = encryptionKey;
+      public export() {
+        return attrs;
+      }
+    }
+
+    return new Import(scope, id);
   }
 
   public readonly streamArn: string;
@@ -325,7 +347,7 @@ export class Stream extends StreamBase {
   /**
    * Exports this stream from the stack.
    */
-  public export(): StreamImportProps {
+  public export(): StreamAttributes {
     return {
       streamArn: new CfnOutput(this, 'StreamArn', { value: this.streamArn }).makeImportValue().toString(),
       encryptionKey: this.encryptionKey ? this.encryptionKey.export() : undefined,
@@ -383,30 +405,4 @@ export enum StreamEncryption {
    * If `encryptionKey` is specified, this key will be used, otherwise, one will be defined.
    */
   Kms = 'KMS',
-}
-
-class ImportedStream extends StreamBase {
-  public readonly streamArn: string;
-  public readonly streamName: string;
-  public readonly encryptionKey?: kms.IEncryptionKey;
-
-  constructor(scope: Construct, id: string, private readonly props: StreamImportProps) {
-    super(scope, id);
-
-    this.streamArn = props.streamArn;
-
-    // Get the name from the ARN
-    this.streamName = this.node.stack.parseArn(props.streamArn).resourceName!;
-
-    if (props.encryptionKey) {
-      // TODO: import "scope" should be changed to "this"
-      this.encryptionKey = kms.EncryptionKey.import(scope, 'Key', props.encryptionKey);
-    } else {
-      this.encryptionKey = undefined;
-    }
-  }
-
-  public export() {
-    return this.props;
-  }
 }

@@ -93,9 +93,7 @@ export = {
     const stack = new Stack();
 
     // WHEN
-    const receiptRuleSet = ReceiptRuleSet.import(stack, 'ImportedRuleSet', {
-      name: 'MyRuleSet'
-    });
+    const receiptRuleSet = ReceiptRuleSet.fromReceiptRuleSetName(stack, 'ImportedRuleSet', 'MyRuleSet');
 
     receiptRuleSet.addRule('MyRule');
 

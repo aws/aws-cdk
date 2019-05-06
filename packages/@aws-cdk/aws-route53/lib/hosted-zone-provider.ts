@@ -1,7 +1,7 @@
 import cdk = require('@aws-cdk/cdk');
 import cxapi = require('@aws-cdk/cx-api');
 import { HostedZone } from './hosted-zone';
-import { HostedZoneImportProps, IHostedZone } from './hosted-zone-ref';
+import { HostedZoneAttributes, IHostedZone } from './hosted-zone-ref';
 
 /**
  * Zone properties for looking up the Hosted Zone
@@ -41,12 +41,12 @@ export class HostedZoneProvider {
    * This method calls `findHostedZone` and returns the imported hosted zone
    */
   public findAndImport(scope: cdk.Construct, id: string): IHostedZone {
-    return HostedZone.import(scope, id, this.findHostedZone());
+    return HostedZone.fromHostedZoneAttributes(scope, id, this.findHostedZone());
   }
   /**
    * Return the hosted zone meeting the filter
    */
-  public findHostedZone(): HostedZoneImportProps {
+  public findHostedZone(): HostedZoneAttributes {
     const zone = this.provider.getValue(DEFAULT_HOSTED_ZONE) as HostedZoneContextResponse;
     // CDK handles the '.' at the end, so remove it here
     if (zone.Name.endsWith('.')) {

@@ -74,11 +74,13 @@ export class User extends Resource implements IIdentity {
 
   /**
    * An attribute that represents the user name.
+   * @attribute
    */
   public readonly userName: string;
 
   /**
    * An attribute that represents the user's ARN.
+   * @attribute
    */
   public readonly userArn: string;
 

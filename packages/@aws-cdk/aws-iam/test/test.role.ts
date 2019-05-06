@@ -261,7 +261,7 @@ export = {
 
     // WHEN
     const exportedRole = myRole.export();
-    const importedRole = Role.import(stack, 'ImportedRole', exportedRole);
+    const importedRole = Role.fromRoleAttributes(stack, 'ImportedRole', exportedRole);
 
     // THEN
     test.deepEqual(stack.node.resolve(exportedRole), {

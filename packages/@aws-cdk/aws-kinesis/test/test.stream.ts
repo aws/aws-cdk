@@ -857,7 +857,7 @@ export = {
 
       const stackB = new cdk.Stack();
       const user = new iam.User(stackB, 'UserWhoNeedsAccess');
-      const theStreamFromStackAAsARefInStackB = Stream.import(stackB, 'RefToStreamFromStackA', refToStreamFromStackA);
+      const theStreamFromStackAAsARefInStackB = Stream.fromStreamAttributes(stackB, 'RefToStreamFromStackA', refToStreamFromStackA);
       theStreamFromStackAAsARefInStackB.grantRead(user);
 
       expect(stackA).toMatch({
@@ -931,7 +931,7 @@ export = {
 
       const stackB = new cdk.Stack();
       const user = new iam.User(stackB, 'UserWhoNeedsAccess');
-      const theStreamFromStackAAsARefInStackB = Stream.import(stackB, 'RefToStreamFromStackA', refToStreamFromStackA);
+      const theStreamFromStackAAsARefInStackB = Stream.fromStreamAttributes(stackB, 'RefToStreamFromStackA', refToStreamFromStackA);
       theStreamFromStackAAsARefInStackB.grantRead(user);
 
       expect(stackA).toMatch({

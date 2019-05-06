@@ -307,7 +307,7 @@ export = {
     const stack2 = new cdk.Stack();
 
     // WHEN
-    const cluster2 = ecs.Cluster.import(stack2, 'Cluster', cluster1.export());
+    const cluster2 = ecs.Cluster.fromClusterAttributes(stack2, 'Cluster', cluster1.export());
 
     // THEN
     test.equal(cluster2.defaultNamespace!.type, cloudmap.NamespaceType.DnsPrivate);

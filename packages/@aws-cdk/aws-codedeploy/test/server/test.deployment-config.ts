@@ -44,9 +44,7 @@ export = {
     'can be imported'(test: Test) {
       const stack = new cdk.Stack();
 
-      const deploymentConfig = codedeploy.ServerDeploymentConfig.import(stack, 'MyDC', {
-        deploymentConfigName: 'MyDC',
-      });
+      const deploymentConfig = codedeploy.ServerDeploymentConfig.fromServerDeploymentConfigName(stack, 'MyDC', 'MyDC');
 
       test.notEqual(deploymentConfig, undefined);
 

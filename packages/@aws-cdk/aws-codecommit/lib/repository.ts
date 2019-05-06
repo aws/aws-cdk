@@ -3,16 +3,28 @@ import { CfnOutput, Construct, IResource, Resource } from '@aws-cdk/cdk';
 import { CfnRepository } from './codecommit.generated';
 
 export interface IRepository extends IResource {
-  /** The ARN of this Repository. */
+  /**
+   * The ARN of this Repository.
+   * @attribute
+   */
   readonly repositoryArn: string;
 
-  /** The human-visible name of this Repository. */
+  /**
+   * The human-visible name of this Repository.
+   * @attribute
+   */
   readonly repositoryName: string;
 
-  /** The HTTP clone URL */
+  /**
+   * The HTTP clone URL
+   * @attribute
+   */
   readonly repositoryCloneUrlHttp: string;
 
-  /** The SSH clone URL */
+  /**
+   * The SSH clone URL
+   * @attribute
+   */
   readonly repositoryCloneUrlSsh: string;
 
   /**
@@ -72,13 +84,13 @@ export interface IRepository extends IResource {
    *
    * @see import
    */
-  export(): RepositoryImportProps;
+  export(): RepositoryAttributes;
 }
 
 /**
  * Properties for the {@link Repository.import} method.
  */
-export interface RepositoryImportProps {
+export interface RepositoryAttributes {
   /**
    * The name of an existing CodeCommit Repository that we are referencing.
    * Must be in the same account and region as the root Stack.
@@ -108,7 +120,7 @@ abstract class RepositoryBase extends Resource implements IRepository {
   /** The SSH clone URL */
   public abstract readonly repositoryCloneUrlSsh: string;
 
-  public abstract export(): RepositoryImportProps;
+  public abstract export(): RepositoryAttributes;
 
   /**
    * Defines a CloudWatch event rule which triggers for repository events. Use
@@ -207,37 +219,6 @@ abstract class RepositoryBase extends Resource implements IRepository {
   }
 }
 
-class ImportedRepository extends RepositoryBase {
-  public readonly repositoryArn: string;
-  public readonly repositoryName: string;
-
-  constructor(scope: Construct, id: string, private readonly props: RepositoryImportProps) {
-    super(scope, id);
-
-    this.repositoryArn = this.node.stack.formatArn({
-      service: 'codecommit',
-      resource: props.repositoryName,
-    });
-    this.repositoryName = props.repositoryName;
-  }
-
-  public export() {
-    return this.props;
-  }
-
-  public get repositoryCloneUrlHttp() {
-    return this.repositoryCloneUrl('https');
-  }
-
-  public get repositoryCloneUrlSsh() {
-    return this.repositoryCloneUrl('ssh');
-  }
-
-  private repositoryCloneUrl(protocol: 'https' | 'ssh'): string {
-    return `${protocol}://git-codecommit.${this.node.stack.region}.${this.node.stack.urlSuffix}/v1/repos/${this.repositoryName}`;
-  }
-}
-
 export interface RepositoryProps {
   /**
    * Name of the repository. This property is required for all repositories.
@@ -255,17 +236,31 @@ export interface RepositoryProps {
  * Provides a CodeCommit Repository
  */
 export class Repository extends RepositoryBase {
+
   /**
-   * Import a Repository defined either outside the CDK, or in a different Stack
-   * (exported with the {@link export} method).
-   *
-   * @param scope the parent Construct for the Repository
-   * @param id the name of the Repository Construct
-   * @param props the properties used to identify the existing Repository
-   * @returns a reference to the existing Repository
+   * Imports a codecommit repository.
+   * @param repositoryArn (e.g. `arn:aws:codecommit:us-east-1:123456789012:MyDemoRepo`)
    */
-  public static import(scope: Construct, id: string, props: RepositoryImportProps): IRepository {
-    return new ImportedRepository(scope, id, props);
+  public static fromRepositoryArn(scope: Construct, id: string, repositoryArn: string): IRepository {
+    const stack = scope.node.stack;
+    const repositoryName = stack.parseArn(repositoryArn).resource;
+    const makeCloneUrl = (protocol: 'https' | 'ssh') =>
+      `${protocol}://git-codecommit.${stack.region}.${stack.urlSuffix}/v1/repos/${repositoryName}`;
+
+    class Import extends RepositoryBase {
+      public readonly repositoryArn = repositoryArn;
+      public readonly repositoryName = repositoryName;
+      public readonly repositoryCloneUrlHttp = makeCloneUrl('https');
+      public readonly repositoryCloneUrlSsh = makeCloneUrl('ssh');
+      public export() {
+        return {
+          repositoryArn: this.repositoryArn,
+          repositoryName: this.repositoryName
+        };
+      }
+    }
+
+    return new Import(scope, id);
   }
 
   private readonly repository: CfnRepository;
@@ -302,7 +297,7 @@ export class Repository extends RepositoryBase {
    *
    * @see import
    */
-  public export(): RepositoryImportProps {
+  public export(): RepositoryAttributes {
     return {
       repositoryName: new CfnOutput(this, 'RepositoryName', { value: this.repositoryName }).makeImportValue().toString()
     };

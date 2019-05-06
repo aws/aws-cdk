@@ -34,7 +34,7 @@ export = {
       const application = codedeploy.ServerApplication.import(stack, 'MyApp', {
         applicationName: 'MyApp',
       });
-      const deploymentGroup = codedeploy.ServerDeploymentGroup.import(stack, 'MyDG', {
+      const deploymentGroup = codedeploy.ServerDeploymentGroup.fromServerDeploymentGroupAttributes(stack, 'MyDG', {
         application,
         deploymentGroupName: 'MyDG',
       });

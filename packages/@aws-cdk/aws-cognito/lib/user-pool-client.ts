@@ -51,17 +51,33 @@ export interface UserPoolClientProps {
  * Define a UserPool App Client
  */
 export class UserPoolClient extends Resource {
-  public readonly clientId: string;
+  /**
+   * @attribute
+   */
+  public readonly userPoolClientId: string;
+
+  /**
+   * @attribute
+   */
+  public readonly userPoolClientName: string;
+
+  /**
+   * @attribute
+   */
+  public readonly userPoolClientClientSecret: string;
 
   constructor(scope: Construct, id: string, props: UserPoolClientProps) {
     super(scope, id);
 
-    const userPoolClient = new CfnUserPoolClient(this, 'Resource', {
+    const resource = new CfnUserPoolClient(this, 'Resource', {
       clientName: props.clientName,
       generateSecret: props.generateSecret,
       userPoolId: props.userPool.userPoolId,
       explicitAuthFlows: props.enabledAuthFlows
     });
-    this.clientId = userPoolClient.userPoolClientId;
+
+    this.userPoolClientId = resource.userPoolClientId;
+    this.userPoolClientClientSecret = resource.userPoolClientClientSecret;
+    this.userPoolClientName = resource.userPoolClientName;
   }
 }
