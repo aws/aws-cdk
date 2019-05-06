@@ -12,7 +12,7 @@ import { ILambdaDeploymentConfig, LambdaDeploymentConfig } from './deployment-co
 /**
  * Interface for a Lambda deployment groups.
  */
-export interface ILambdaDeploymentGroup extends cdk.IConstruct {
+export interface ILambdaDeploymentGroup extends cdk.IResource {
   /**
    * The reference to the CodeDeploy Lambda Application that this Deployment Group belongs to.
    */
@@ -20,18 +20,20 @@ export interface ILambdaDeploymentGroup extends cdk.IConstruct {
 
   /**
    * The physical name of the CodeDeploy Deployment Group.
+   * @attribute
    */
   readonly deploymentGroupName: string;
 
   /**
    * The ARN of this Deployment Group.
+   * @attribute
    */
   readonly deploymentGroupArn: string;
 
   /**
    * Export this Deployment Group for use in another stack or application.
    */
-  export(): LambdaDeploymentGroupImportProps;
+  export(): LambdaDeploymentGroupAttributes;
 }
 
 /**
@@ -107,18 +109,24 @@ export interface LambdaDeploymentGroupProps {
   readonly autoRollback?: AutoRollbackConfig;
 }
 
-export class LambdaDeploymentGroup extends cdk.Construct implements ILambdaDeploymentGroup {
+/**
+ * @resource AWS::CodeDeploy::DeploymentGroup
+ */
+export class LambdaDeploymentGroup extends cdk.Resource implements ILambdaDeploymentGroup {
   /**
    * Import an Lambda Deployment Group defined either outside the CDK,
    * or in a different CDK Stack and exported using the {@link #export} method.
    *
    * @param scope the parent Construct for this new Construct
    * @param id the logical ID of this new Construct
-   * @param props the properties of the referenced Deployment Group
+   * @param attrs the properties of the referenced Deployment Group
    * @returns a Construct representing a reference to an existing Deployment Group
    */
-  public static import(scope: cdk.Construct, id: string, props: LambdaDeploymentGroupImportProps): ILambdaDeploymentGroup {
-    return new ImportedLambdaDeploymentGroup(scope, id, props);
+  public static fromLambdaDeploymentGroupAttributes(
+      scope: cdk.Construct,
+      id: string,
+      attrs: LambdaDeploymentGroupAttributes): ILambdaDeploymentGroup {
+    return new ImportedLambdaDeploymentGroup(scope, id, attrs);
   }
 
   public readonly application: ILambdaApplication;
@@ -225,7 +233,7 @@ export class LambdaDeploymentGroup extends cdk.Construct implements ILambdaDeplo
     });
   }
 
-  public export(): LambdaDeploymentGroupImportProps {
+  public export(): LambdaDeploymentGroupAttributes {
     return {
       application: this.application,
       deploymentGroupName: new cdk.CfnOutput(this, 'DeploymentGroupName', {
@@ -241,7 +249,7 @@ export class LambdaDeploymentGroup extends cdk.Construct implements ILambdaDeplo
  * @see LambdaDeploymentGroup#import
  * @see ILambdaDeploymentGroup#export
  */
-export interface LambdaDeploymentGroupImportProps {
+export interface LambdaDeploymentGroupAttributes {
   /**
    * The reference to the CodeDeploy Lambda Application
    * that this Deployment Group belongs to.
@@ -260,7 +268,7 @@ class ImportedLambdaDeploymentGroup extends cdk.Construct implements ILambdaDepl
   public readonly deploymentGroupName: string;
   public readonly deploymentGroupArn: string;
 
-  constructor(scope: cdk.Construct, id: string, private readonly props: LambdaDeploymentGroupImportProps) {
+  constructor(scope: cdk.Construct, id: string, private readonly props: LambdaDeploymentGroupAttributes) {
     super(scope, id);
     this.application = props.application;
     this.deploymentGroupName = props.deploymentGroupName;

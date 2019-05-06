@@ -82,7 +82,7 @@ export = {
       databaseName: 'test_database'
     });
 
-    glue.Database.import(new cdk.Stack(), 'Database', db.export());
+    glue.Database.fromDatabaseAttributes(new cdk.Stack(), 'Database', db.export());
 
     expect(stack).toMatch({
       Resources: {

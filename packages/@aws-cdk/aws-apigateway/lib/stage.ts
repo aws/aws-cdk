@@ -133,6 +133,9 @@ export interface MethodDeploymentOptions {
 }
 
 export class Stage extends Resource {
+  /**
+   * @attribute
+   */
   public readonly stageName: string;
 
   private readonly restApi: IRestApi;

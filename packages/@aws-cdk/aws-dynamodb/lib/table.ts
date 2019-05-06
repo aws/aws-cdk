@@ -190,8 +190,19 @@ export class Table extends Resource {
     });
  }
 
+ /**
+  * @attribute
+  */
   public readonly tableArn: string;
+
+  /**
+   * @attribute
+   */
   public readonly tableName: string;
+
+  /**
+   * @attribute
+   */
   public readonly tableStreamArn: string;
 
   private readonly table: CfnTable;
@@ -623,14 +634,12 @@ export class Table extends Resource {
    */
   private makeScalingRole(): iam.IRole {
     // Use a Service Linked Role.
-    return iam.Role.import(this, 'ScalingRole', {
-      roleArn: this.node.stack.formatArn({
-        // https://docs.aws.amazon.com/autoscaling/application/userguide/application-auto-scaling-service-linked-roles.html
-        service: 'iam',
-        resource: 'role/aws-service-role/dynamodb.application-autoscaling.amazonaws.com',
-        resourceName: 'AWSServiceRoleForApplicationAutoScaling_DynamoDBTable'
-      })
-    });
+    // https://docs.aws.amazon.com/autoscaling/application/userguide/application-auto-scaling-service-linked-roles.html
+    return iam.Role.fromRoleArn(this, 'ScalingRole', this.node.stack.formatArn({
+      service: 'iam',
+      resource: 'role/aws-service-role/dynamodb.application-autoscaling.amazonaws.com',
+      resourceName: 'AWSServiceRoleForApplicationAutoScaling_DynamoDBTable'
+    }));
   }
 
   /**

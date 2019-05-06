@@ -35,6 +35,8 @@ export class ConstructReflection {
       .map(c => new ConstructReflection(c));
   }
 
+  public readonly ROOT_CLASS: reflect.ClassType; // cdk.Construct
+
   public readonly fqn: string;
   public readonly interfaceFqn: string;
   public readonly propsFqn: string;
@@ -42,19 +44,18 @@ export class ConstructReflection {
   public readonly propsType?: reflect.InterfaceType;
   public readonly initializer?: reflect.Initializer;
   public readonly hasPropsArgument: boolean;
-  public readonly rootClass: reflect.ClassType; // cdk.Construct
   public readonly sys: reflect.TypeSystem;
 
   constructor(public readonly classType: reflect.ClassType) {
     this.fqn = classType.fqn;
     this.sys = classType.system;
+    this.ROOT_CLASS = this.sys.findClass(CONSTRUCT_FQN);
     this.interfaceFqn = `${classType.assembly.name}.I${classType.name}`;
     this.propsFqn = `${classType.assembly.name}.${classType.name}Props`;
     this.interfaceType = this.tryFindInterface();
     this.propsType = this.tryFindProps();
     this.initializer = classType.initializer;
     this.hasPropsArgument = this.initializer != null && this.initializer.parameters.length >= 3;
-    this.rootClass = this.sys.findClass(CONSTRUCT_FQN);
   }
 
   private tryFindInterface() {

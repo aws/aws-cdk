@@ -24,7 +24,17 @@ const tokenish = fc.array(nonEmptyString, 2, 2).map(arr => ({ [arr[0]]: arr[1] }
 const anyValue = fc.oneof<any>(nonEmptyString, tokenish);
 
 export = nodeunit.testCase({
-  FnJoin: {
+  'eager resolution for non-tokens': {
+    'Fn.select'(test: nodeunit.Test) {
+      test.deepEqual(Fn.select(2, [ 'hello', 'you', 'dude' ]), 'dude');
+      test.done();
+    },
+    'Fn.split'(test: nodeunit.Test) {
+      test.deepEqual(Fn.split(':', 'hello:world:yeah'), [ 'hello', 'world', 'yeah' ]);
+      test.done();
+    }
+  },
+  'FnJoin': {
     'rejects empty list of arguments to join'(test: nodeunit.Test) {
       test.throws(() => Fn.join('.', []));
       test.done();

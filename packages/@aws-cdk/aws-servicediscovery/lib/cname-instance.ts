@@ -28,6 +28,7 @@ export interface CnameInstanceProps extends CnameInstanceBaseProps {
 
 /*
  * Instance that is accessible using a domain name (CNAME).
+ * @resource AWS::ServiceDiscovery::Instance
  */
 export class CnameInstance extends InstanceBase {
   /**
