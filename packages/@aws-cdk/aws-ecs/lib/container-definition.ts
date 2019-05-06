@@ -478,7 +478,7 @@ function getHealthCheckCommand(hc: HealthCheck): string[] {
     return hcCommand;
   }
 
-  if (cmd[0] !== "CMD" || cmd[0] !== 'CMD-SHELL') {
+  if (cmd[0] !== "CMD" && cmd[0] !== 'CMD-SHELL') {
     hcCommand.push('CMD');
   }
 
