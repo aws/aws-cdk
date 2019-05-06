@@ -1,8 +1,30 @@
 
 
+
+
 # Change Log
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
+
+## [0.30.1](https://github.com/awslabs/aws-cdk/compare/v0.30.0...v0.30.1) (2019-05-06)
+
+
+### Bug Fixes
+
+* update jsii to v10.0.4 ([#2479](https://github.com/awslabs/aws-cdk/issues/2479)) ([1df4e2d](https://github.com/awslabs/aws-cdk/commit/1df4e2d)), closes [#2478](https://github.com/awslabs/aws-cdk/issues/2478)
+* **aws-ecs:** expose readonly service on LoadBalancedEc2Service ([#2395](https://github.com/awslabs/aws-cdk/issues/2395)) ([52af870](https://github.com/awslabs/aws-cdk/commit/52af870)), closes [#2378](https://github.com/awslabs/aws-cdk/issues/2378)
+* **ecs:** correct logic of healthcheck command ([#2462](https://github.com/awslabs/aws-cdk/issues/2462)) ([fa29d3b](https://github.com/awslabs/aws-cdk/commit/fa29d3b)), closes [#2461](https://github.com/awslabs/aws-cdk/issues/2461)
+* **ecs:** fix memoryReservationLimit in LoadBalancedEcsService ([#2463](https://github.com/awslabs/aws-cdk/issues/2463)) ([6b50927](https://github.com/awslabs/aws-cdk/commit/6b50927)), closes [#2263](https://github.com/awslabs/aws-cdk/issues/2263)
+* **lambda:** allow grantInvoke with principals ([#2391](https://github.com/awslabs/aws-cdk/issues/2391)) ([b3792aa](https://github.com/awslabs/aws-cdk/commit/b3792aa))
+
+
+### Features
+
+* **bootstrap:** allow specifying the toolkit staging bucket name ([#2407](https://github.com/awslabs/aws-cdk/issues/2407)) ([3bfc641](https://github.com/awslabs/aws-cdk/commit/3bfc641)), closes [#2390](https://github.com/awslabs/aws-cdk/issues/2390)
+* **codebuild:** add webhook Filter Groups. ([#2319](https://github.com/awslabs/aws-cdk/issues/2319)) ([fd74d07](https://github.com/awslabs/aws-cdk/commit/fd74d07)), closes [#1842](https://github.com/awslabs/aws-cdk/issues/1842)
+
+
+
 
 ## [0.30.0](https://github.com/awslabs/aws-cdk/compare/v0.29.0...v0.30.0) (2019-05-02)
 

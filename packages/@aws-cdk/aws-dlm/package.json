@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/aws-dlm",
-  "version": "0.30.0",
+  "version": "0.30.1",
   "description": "The CDK Construct Library for AWS::DLM",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -60,16 +60,16 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "^0.30.0",
-    "cdk-build-tools": "^0.30.0",
-    "cfn2ts": "^0.30.0",
-    "pkglint": "^0.30.0"
+    "@aws-cdk/assert": "^0.30.1",
+    "cdk-build-tools": "^0.30.1",
+    "cfn2ts": "^0.30.1",
+    "pkglint": "^0.30.1"
   },
   "dependencies": {
-    "@aws-cdk/cdk": "^0.30.0"
+    "@aws-cdk/cdk": "^0.30.1"
   },
   "peerDependencies": {
-    "@aws-cdk/cdk": "^0.30.0"
+    "@aws-cdk/cdk": "^0.30.1"
   },
   "engines": {
     "node": ">= 8.10.0"
