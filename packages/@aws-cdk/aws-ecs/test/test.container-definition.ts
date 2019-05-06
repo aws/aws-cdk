@@ -360,7 +360,7 @@ export = {
     test.done();
   },
 
-  'can specify Health Check values'(test: Test) {
+  'can specify Health Check values in shell form'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
     const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
@@ -384,6 +384,78 @@ export = {
         {
           HealthCheck: {
             Command: ["CMD-SHELL", hcCommand],
+            Interval: 20,
+            Retries: 5,
+            Timeout: 5,
+            StartPeriod: 10
+          },
+        }
+      ]
+    }));
+
+    test.done();
+  },
+
+  'can specify Health Check values in array form starting with CMD-SHELL'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
+    const hcCommand = "curl localhost:8000";
+
+    // WHEN
+    taskDefinition.addContainer('cont', {
+      image: ecs.ContainerImage.fromRegistry('test'),
+      memoryLimitMiB: 1024,
+      healthCheck: {
+        command: ["CMD-SHELL", hcCommand],
+        intervalSeconds: 20,
+        retries: 5,
+        startPeriod: 10
+      }
+    });
+
+    // THEN
+    expect(stack).to(haveResourceLike('AWS::ECS::TaskDefinition', {
+      ContainerDefinitions: [
+        {
+          HealthCheck: {
+            Command: ["CMD-SHELL", hcCommand],
+            Interval: 20,
+            Retries: 5,
+            Timeout: 5,
+            StartPeriod: 10
+          },
+        }
+      ]
+    }));
+
+    test.done();
+  },
+
+  'can specify Health Check values in array form starting with CMD'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
+    const hcCommand = "curl localhost:8000";
+
+    // WHEN
+    taskDefinition.addContainer('cont', {
+      image: ecs.ContainerImage.fromRegistry('test'),
+      memoryLimitMiB: 1024,
+      healthCheck: {
+        command: ["CMD", hcCommand],
+        intervalSeconds: 20,
+        retries: 5,
+        startPeriod: 10
+      }
+    });
+
+    // THEN
+    expect(stack).to(haveResourceLike('AWS::ECS::TaskDefinition', {
+      ContainerDefinitions: [
+        {
+          HealthCheck: {
+            Command: ["CMD", hcCommand],
             Interval: 20,
             Retries: 5,
             Timeout: 5,
