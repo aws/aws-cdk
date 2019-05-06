@@ -56,7 +56,7 @@ export interface DatabaseProps {
 /**
  * A Glue database.
  */
-export class Database extends Resource {
+export class Database extends Resource implements IDatabase {
   /**
    * Creates a Database construct that represents an external database.
    *

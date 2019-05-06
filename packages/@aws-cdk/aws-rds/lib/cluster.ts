@@ -173,7 +173,7 @@ abstract class DatabaseClusterBase extends cdk.Construct implements IDatabaseClu
 /**
  * Create a clustered database with a given number of instances.
  */
-export class DatabaseCluster extends DatabaseClusterBase implements IDatabaseCluster {
+export class DatabaseCluster extends DatabaseClusterBase {
   /**
    * Identifier of the cluster
    */
