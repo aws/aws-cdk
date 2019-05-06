@@ -235,6 +235,8 @@ export class VirtualRouter extends VirtualRouterBase {
   private addListeners(props: VirtualRouterBaseProps) {
     if (props.portMappings.length <= 0) {
       throw new Error('Portmappings cannot be empty for VirtualRouter listeners');
+    } else if (props.portMappings.length > 1) {
+      throw new Error('Only a listener length of one (1) is supported as of current release of Virtual Router Spec');
     }
 
     if (props.portMappings) {
