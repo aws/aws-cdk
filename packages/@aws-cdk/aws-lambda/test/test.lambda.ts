@@ -1020,6 +1020,62 @@ export = {
     test.done();
   },
 
+  'grantInvoke with a service principal'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fn = new lambda.Function(stack, 'Function', {
+      code: lambda.Code.inline('xxx'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NodeJS810,
+    });
+    const service = new iam.ServicePrincipal('apigateway.amazonaws.com');
+
+    // WHEN
+    fn.grantInvoke(service);
+
+    // THEN
+    expect(stack).to(haveResource('AWS::Lambda::Permission', {
+      Action: 'lambda:InvokeFunction',
+      FunctionName: {
+        'Fn::GetAtt': [
+          'Function76856677',
+          'Arn'
+        ]
+      },
+      Principal: 'apigateway.amazonaws.com'
+    }));
+
+    test.done();
+  },
+
+  'grantInvoke with an account principal'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fn = new lambda.Function(stack, 'Function', {
+      code: lambda.Code.inline('xxx'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NodeJS810,
+    });
+    const account = new iam.AccountPrincipal('123456789012');
+
+    // WHEN
+    fn.grantInvoke(account);
+
+    // THEN
+    expect(stack).to(haveResource('AWS::Lambda::Permission', {
+      Action: 'lambda:InvokeFunction',
+      FunctionName: {
+        'Fn::GetAtt': [
+          'Function76856677',
+          'Arn'
+        ]
+      },
+      Principal: '123456789012'
+    }));
+
+    test.done();
+  },
+
   'Can use metricErrors on a lambda Function'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();

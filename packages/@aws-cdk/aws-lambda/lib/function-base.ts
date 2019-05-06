@@ -228,7 +228,7 @@ export abstract class FunctionBase extends Resource implements IFunction  {
       resource: {
         addToResourcePolicy: (_statement) => {
           // Couldn't add permissions to the principal, so add them locally.
-          const identifier = 'Invoke' + JSON.stringify(grantee!.grantPrincipal.policyFragment.principalJson);
+          const identifier = `Invoke${grantee.grantPrincipal}`; // calls the .toString() of the princpal
           this.addPermission(identifier, {
             principal: grantee.grantPrincipal!,
             action: 'lambda:InvokeFunction',
