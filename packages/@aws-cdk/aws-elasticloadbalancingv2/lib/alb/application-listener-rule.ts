@@ -17,9 +17,16 @@ export interface BaseApplicationListenerRuleProps {
   readonly priority: number;
 
   /**
-   * Target groups to forward requests to
+   * Target groups to forward requests to. Only one of `targetGroups` or
+   * `fixedResponse` can be specified.
    */
   readonly targetGroups?: IApplicationTargetGroup[];
+
+  /**
+   * Fixed response to return. Only one of `fixedResponse` or
+   * `targetGroups` can be specified.
+   */
+  readonly fixedResponse?: FixedResponse;
 
   /**
    * Rule applies if the requested host matches the indicated host
@@ -55,6 +62,41 @@ export interface ApplicationListenerRuleProps extends BaseApplicationListenerRul
 }
 
 /**
+ * The content type for a fixed response
+ */
+export enum ContentType {
+  TEXT_PLAIN = 'text/plain',
+  TEXT_CSS = 'text/css',
+  TEXT_HTML =  'text/html',
+  APPLICATION_JAVASCRIPT = 'application/javascript',
+  APPLICATION_JSON = 'application/json'
+}
+
+/**
+ * A fixed response
+ */
+export interface FixedResponse {
+  /**
+   * The HTTP response code (2XX, 4XX or 5XX)
+   */
+  readonly statusCode: string;
+
+  /**
+   * The content type
+   *
+   * @default text/plain
+   */
+  readonly contentType?: ContentType;
+
+  /**
+   * The message
+   *
+   * @default no message
+   */
+  readonly messageBody?: string;
+}
+
+/**
  * Define a new listener rule
  */
 export class ApplicationListenerRule extends cdk.Construct {
@@ -75,6 +117,10 @@ export class ApplicationListenerRule extends cdk.Construct {
       throw new Error(`At least one of 'hostHeader' or 'pathPattern' is required when defining a load balancing rule.`);
     }
 
+    if (props.targetGroups && props.fixedResponse) {
+      throw new Error('Cannot combine `targetGroups` with `fixedResponse`.');
+    }
+
     this.listener = props.listener;
 
     const resource = new CfnListenerRule(this, 'Resource', {
@@ -92,6 +138,10 @@ export class ApplicationListenerRule extends cdk.Construct {
     }
 
     (props.targetGroups || []).forEach(this.addTargetGroup.bind(this));
+
+    if (props.fixedResponse) {
+      this.addFixedResponse(props.fixedResponse);
+    }
 
     this.listenerRuleArn = resource.ref;
   }
@@ -115,6 +165,18 @@ export class ApplicationListenerRule extends cdk.Construct {
   }
 
   /**
+   * Add a fixed response
+   */
+  public addFixedResponse(fixedResponse: FixedResponse) {
+    validateFixedResponse(fixedResponse);
+
+    this.actions.push({
+      fixedResponseConfig: fixedResponse,
+      type: 'fixed-response'
+    });
+  }
+
+  /**
    * Validate the rule
    */
   protected validate() {
@@ -135,5 +197,20 @@ export class ApplicationListenerRule extends cdk.Construct {
       }
     }
     return ret;
+  }
+}
+
+/**
+ * Validate the status code and message body of a fixed response
+ *
+ * @internal
+ */
+export function validateFixedResponse(fixedResponse: FixedResponse) {
+  if (fixedResponse.statusCode && !/^(2|4|5)\d\d$/.test(fixedResponse.statusCode)) {
+    throw new Error('`statusCode` must be 2XX, 4XX or 5XX.');
+  }
+
+  if (fixedResponse.messageBody && fixedResponse.messageBody.length > 1024) {
+    throw new Error('`messageBody` cannot have more than 1024 characters.');
   }
 }

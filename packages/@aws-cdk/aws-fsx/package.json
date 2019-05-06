@@ -20,7 +20,6 @@
           "artifactId": "fsx"
         }
       },
-      "sphinx": {},
       "python": {
         "distName": "aws-cdk.aws-fsx",
         "module": "aws_cdk.aws_fsx"

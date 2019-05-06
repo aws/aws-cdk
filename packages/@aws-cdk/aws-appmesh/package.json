@@ -23,8 +23,7 @@
       "python": {
         "distName": "aws-cdk.aws-appmesh",
         "module": "aws_cdk.aws_appmesh"
-      },
-      "sphinx": {}
+      }
     }
   },
   "repository": {
