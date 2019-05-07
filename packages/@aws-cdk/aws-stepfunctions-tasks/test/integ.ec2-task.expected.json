@@ -33,7 +33,17 @@
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": {
-                "Service": "ec2.amazonaws.com"
+                "Service": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "ec2.",
+                      {
+                        "Ref": "AWS::URLSuffix"
+                      }
+                    ]
+                  ]
+                }
               }
             }
           ],
@@ -115,8 +125,8 @@
         }
       },
       "DependsOn": [
-        "FargateClusterDefaultAutoScalingGroupInstanceRole0C1F7FF7",
-        "FargateClusterDefaultAutoScalingGroupInstanceRoleDefaultPolicy3BD78F3E"
+        "FargateClusterDefaultAutoScalingGroupInstanceRoleDefaultPolicy3BD78F3E",
+        "FargateClusterDefaultAutoScalingGroupInstanceRole0C1F7FF7"
       ]
     },
     "FargateClusterDefaultAutoScalingGroupASG36A4948F": {
@@ -153,21 +163,6 @@
     "FargateClusterDefaultAutoScalingGroupDrainECSHookTopic92C2F1DA": {
       "Type": "AWS::SNS::Topic"
     },
-    "FargateClusterDefaultAutoScalingGroupDrainECSHookTopicFunctionSubscription129830E9": {
-      "Type": "AWS::SNS::Subscription",
-      "Properties": {
-        "Endpoint": {
-          "Fn::GetAtt": [
-            "FargateClusterDefaultAutoScalingGroupDrainECSHookFunctionE3D5BEE8",
-            "Arn"
-          ]
-        },
-        "Protocol": "lambda",
-        "TopicArn": {
-          "Ref": "FargateClusterDefaultAutoScalingGroupDrainECSHookTopic92C2F1DA"
-        }
-      }
-    },
     "FargateClusterDefaultAutoScalingGroupDrainECSHookFunctionServiceRole7FEDCD32": {
       "Type": "AWS::IAM::Role",
       "Properties": {
@@ -177,7 +172,17 @@
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": {
-                "Service": "lambda.amazonaws.com"
+                "Service": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "lambda.",
+                      {
+                        "Ref": "AWS::URLSuffix"
+                      }
+                    ]
+                  ]
+                }
               }
             }
           ],
@@ -260,19 +265,43 @@
             }
           }
         },
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-ecs-integ2/FargateCluster/DefaultAutoScalingGroup"
+          }
+        ],
         "Timeout": 310
       },
       "DependsOn": [
-        "FargateClusterDefaultAutoScalingGroupDrainECSHookFunctionServiceRole7FEDCD32",
-        "FargateClusterDefaultAutoScalingGroupDrainECSHookFunctionServiceRoleDefaultPolicyB91C5343"
+        "FargateClusterDefaultAutoScalingGroupDrainECSHookFunctionServiceRoleDefaultPolicyB91C5343",
+        "FargateClusterDefaultAutoScalingGroupDrainECSHookFunctionServiceRole7FEDCD32"
       ]
+    },
+    "FargateClusterDefaultAutoScalingGroupDrainECSHookFunctionTopicSubscriptionA4A8D57E": {
+      "Type": "AWS::SNS::Subscription",
+      "Properties": {
+        "Protocol": "lambda",
+        "TopicArn": {
+          "Ref": "FargateClusterDefaultAutoScalingGroupDrainECSHookTopic92C2F1DA"
+        },
+        "Endpoint": {
+          "Fn::GetAtt": [
+            "FargateClusterDefaultAutoScalingGroupDrainECSHookFunctionE3D5BEE8",
+            "Arn"
+          ]
+        }
+      }
     },
     "FargateClusterDefaultAutoScalingGroupDrainECSHookFunctionTopicA1F1F9E9": {
       "Type": "AWS::Lambda::Permission",
       "Properties": {
         "Action": "lambda:InvokeFunction",
         "FunctionName": {
-          "Ref": "FargateClusterDefaultAutoScalingGroupDrainECSHookFunctionE3D5BEE8"
+          "Fn::GetAtt": [
+            "FargateClusterDefaultAutoScalingGroupDrainECSHookFunctionE3D5BEE8",
+            "Arn"
+          ]
         },
         "Principal": "sns.amazonaws.com",
         "SourceArn": {
@@ -289,7 +318,17 @@
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": {
-                "Service": "autoscaling.amazonaws.com"
+                "Service": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "autoscaling.",
+                      {
+                        "Ref": "AWS::URLSuffix"
+                      }
+                    ]
+                  ]
+                }
               }
             }
           ],
@@ -340,8 +379,8 @@
         }
       },
       "DependsOn": [
-        "FargateClusterDefaultAutoScalingGroupLifecycleHookDrainHookRole410D556D",
-        "FargateClusterDefaultAutoScalingGroupLifecycleHookDrainHookRoleDefaultPolicy4958D19D"
+        "FargateClusterDefaultAutoScalingGroupLifecycleHookDrainHookRoleDefaultPolicy4958D19D",
+        "FargateClusterDefaultAutoScalingGroupLifecycleHookDrainHookRole410D556D"
       ]
     },
     "TaskDefTaskRole1EDB4A67": {
@@ -353,7 +392,17 @@
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": {
-                "Service": "ecs-tasks.amazonaws.com"
+                "Service": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "ecs-tasks.",
+                      {
+                        "Ref": "AWS::URLSuffix"
+                      }
+                    ]
+                  ]
+                }
               }
             }
           ],
@@ -527,7 +576,17 @@
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": {
-                "Service": "ecs-tasks.amazonaws.com"
+                "Service": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "ecs-tasks.",
+                      {
+                        "Ref": "AWS::URLSuffix"
+                      }
+                    ]
+                  ]
+                }
               }
             }
           ],
@@ -575,11 +634,7 @@
               }
             },
             {
-              "Action": [
-                "ecr:GetAuthorizationToken",
-                "logs:CreateLogStream",
-                "logs:PutLogEvents"
-              ],
+              "Action": "ecr:GetAuthorizationToken",
               "Effect": "Allow",
               "Resource": "*"
             },
@@ -640,7 +695,17 @@
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": {
-                "Service": "lambda.amazonaws.com"
+                "Service": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "lambda.",
+                      {
+                        "Ref": "AWS::URLSuffix"
+                      }
+                    ]
+                  ]
+                }
               }
             }
           ],
@@ -773,8 +838,8 @@
         "Timeout": 300
       },
       "DependsOn": [
-        "AdoptEcrRepositorydbc60defc59544bcaa5c28c95d68f62cServiceRoleD788AA17",
-        "AdoptEcrRepositorydbc60defc59544bcaa5c28c95d68f62cServiceRoleDefaultPolicy6BC8737C"
+        "AdoptEcrRepositorydbc60defc59544bcaa5c28c95d68f62cServiceRoleDefaultPolicy6BC8737C",
+        "AdoptEcrRepositorydbc60defc59544bcaa5c28c95d68f62cServiceRoleD788AA17"
       ]
     },
     "TaskLoggingLogGroupC7E938D4": {
@@ -896,7 +961,7 @@
           "Fn::Join": [
             "",
             [
-              "{\"StartAt\":\"Start\",\"States\":{\"Start\":{\"Type\":\"Pass\",\"Result\":{\"SomeKey\":\"SomeValue\"},\"Next\":\"RunEc2\"},\"RunEc2\":{\"End\":true,\"Parameters\":{\"Cluster\":\"",
+              "{\"StartAt\":\"Start\",\"States\":{\"Start\":{\"Type\":\"Pass\",\"Result\":{\"SomeKey\":\"SomeValue\"},\"Next\":\"Run\"},\"Run\":{\"End\":true,\"Parameters\":{\"Cluster\":\"",
               {
                 "Fn::GetAtt": [
                   "FargateCluster7CCD5F93",

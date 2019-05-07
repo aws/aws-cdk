@@ -1,12 +1,12 @@
 import ec2 = require('@aws-cdk/aws-ec2');
 import ecs = require('@aws-cdk/aws-ecs');
 import cdk = require('@aws-cdk/cdk');
-import { BaseRunTask, CommonRunTaskProps } from './base-run-task';
+import { CommonEcsRunTaskProps, EcsRunTaskBase } from './ecs-run-task-base';
 
 /**
  * Properties to define an ECS service
  */
-export interface RunEcsFargateTaskProps extends CommonRunTaskProps {
+export interface EcsRunFargateTaskProps extends CommonEcsRunTaskProps {
   /**
    * Assign public IP addresses to each task
    *
@@ -42,8 +42,8 @@ export interface RunEcsFargateTaskProps extends CommonRunTaskProps {
 /**
  * Start a service on an ECS cluster
  */
-export class RunEcsFargateTask extends BaseRunTask {
-  constructor(scope: cdk.Construct, id: string, props: RunEcsFargateTaskProps) {
+export class EcsRunFargateTask extends EcsRunTaskBase {
+  constructor(scope: cdk.Construct, id: string, props: EcsRunFargateTaskProps) {
     if (!props.taskDefinition.isFargateCompatible) {
       throw new Error('Supplied TaskDefinition is not configured for compatibility with EC2');
     }

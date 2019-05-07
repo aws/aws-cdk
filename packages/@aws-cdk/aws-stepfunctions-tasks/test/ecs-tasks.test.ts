@@ -4,32 +4,42 @@ import ecs = require('@aws-cdk/aws-ecs');
 import sfn = require('@aws-cdk/aws-stepfunctions');
 import { Stack } from '@aws-cdk/cdk';
 import tasks = require('../lib');
+import { JsonPath, NumberValue } from '../lib';
+
+let stack: Stack;
+let vpc: ec2.VpcNetwork;
+let cluster: ecs.Cluster;
+
+beforeEach(() => {
+  // GIVEN
+  stack = new Stack();
+  vpc = new ec2.VpcNetwork(stack, 'Vpc');
+  cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+  cluster.addCapacity('Capacity', {
+    instanceType: new ec2.InstanceType('t3.medium')
+  });
+});
 
 test('Running a Fargate Task', () => {
-  // GIVEN
-  const stack = new Stack();
-
-  const vpc = new ec2.VpcNetwork(stack, 'Vpc');
-  const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
   const taskDefinition = new ecs.TaskDefinition(stack, 'TD', {
     memoryMiB: '512',
     cpu: '256',
     compatibility: ecs.Compatibility.Fargate
   });
-  taskDefinition.addContainer('henk', {
+  taskDefinition.addContainer('TheContainer', {
     image: ecs.ContainerImage.fromRegistry('foo/bar'),
     memoryLimitMiB: 256,
   });
 
   // WHEN
-  const runTask = new sfn.Task(stack, 'Run', { task: new tasks.RunEcsFargateTask(stack, 'RunFargate', {
+  const runTask = new sfn.Task(stack, 'Run', { task: new tasks.EcsRunFargateTask(stack, 'RunFargate', {
     cluster,
     taskDefinition,
     containerOverrides: [
       {
         containerName: 'TheContainer',
         environment: [
-          {name: 'SOME_KEY', valuePath: '$.SomeKey'}
+          {name: 'SOME_KEY', value: JsonPath.stringFromPath('$.SomeKey')}
         ]
       }
     ]
@@ -112,32 +122,23 @@ test('Running a Fargate Task', () => {
 });
 
 test('Running an EC2 Task with bridge network', () => {
-  // GIVEN
-  const stack = new Stack();
-
-  const vpc = new ec2.VpcNetwork(stack, 'Vpc');
-  const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
-  cluster.addCapacity('Capacity', {
-    instanceType: new ec2.InstanceType('t3.medium')
-  });
-
   const taskDefinition = new ecs.TaskDefinition(stack, 'TD', {
     compatibility: ecs.Compatibility.Ec2
   });
-  taskDefinition.addContainer('henk', {
+  taskDefinition.addContainer('TheContainer', {
     image: ecs.ContainerImage.fromRegistry('foo/bar'),
     memoryLimitMiB: 256,
   });
 
   // WHEN
-  const runTask = new sfn.Task(stack, 'Run', { task: new tasks.RunEcsEc2Task(stack, 'RunEc2', {
+  const runTask = new sfn.Task(stack, 'Run', { task: new tasks.EcsRunEc2Task(stack, 'RunEc2', {
     cluster,
     taskDefinition,
     containerOverrides: [
       {
         containerName: 'TheContainer',
         environment: [
-          {name: 'SOME_KEY', valuePath: '$.SomeKey'}
+          {name: 'SOME_KEY', value: JsonPath.stringFromPath('$.SomeKey')}
         ]
       }
     ]
@@ -209,24 +210,15 @@ test('Running an EC2 Task with bridge network', () => {
 });
 
 test('Running an EC2 Task with placement strategies', () => {
-  // GIVEN
-  const stack = new Stack();
-
-  const vpc = new ec2.VpcNetwork(stack, 'Vpc');
-  const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
-  cluster.addCapacity('Capacity', {
-    instanceType: new ec2.InstanceType('t3.medium')
-  });
-
   const taskDefinition = new ecs.TaskDefinition(stack, 'TD', {
     compatibility: ecs.Compatibility.Ec2
   });
-  taskDefinition.addContainer('henk', {
+  taskDefinition.addContainer('TheContainer', {
     image: ecs.ContainerImage.fromRegistry('foo/bar'),
     memoryLimitMiB: 256,
   });
 
-  const ec2Task = new tasks.RunEcsEc2Task(stack, 'RunEc2', {
+  const ec2Task = new tasks.EcsRunEc2Task(stack, 'RunEc2', {
     cluster,
     taskDefinition,
   });
@@ -257,6 +249,54 @@ test('Running an EC2 Task with placement strategies', () => {
         { Field: "cpu", Type: "binpack", },
         { Type: "random", },
       ],
+    },
+    Resource: "arn:aws:states:::ecs:runTask.sync",
+    Type: "Task",
+  });
+});
+
+test('Running an EC2 Task with overridden number values', () => {
+  const taskDefinition = new ecs.TaskDefinition(stack, 'TD', {
+    compatibility: ecs.Compatibility.Ec2
+  });
+  taskDefinition.addContainer('TheContainer', {
+    image: ecs.ContainerImage.fromRegistry('foo/bar'),
+    memoryLimitMiB: 256,
+  });
+
+  const ec2Task = new tasks.EcsRunEc2Task(stack, 'RunEc2', {
+    cluster,
+    taskDefinition,
+    containerOverrides: [
+      {
+        containerName: 'TheContainer',
+        command: JsonPath.listFromPath('$.TheCommand'),
+        cpu: NumberValue.fromNumber(5),
+        memoryLimit: JsonPath.numberFromPath('$.MemoryLimit'),
+      }
+    ]
+  });
+
+  // WHEN
+  const runTask = new sfn.Task(stack, 'Run', { task: ec2Task });
+
+  // THEN
+  expect(stack.node.resolve(runTask.toStateJson())).toEqual({
+    End: true,
+    Parameters: {
+      Cluster: {"Fn::GetAtt": ["ClusterEB0386A7", "Arn"]},
+      LaunchType: "EC2",
+      TaskDefinition: {Ref: "TD49C78F36"},
+      Overrides: {
+        ContainerOverrides: [
+          {
+            "Command.$": "$.TheCommand",
+            "Cpu": 5,
+            "Memory.$": "$.MemoryLimit",
+            "Name": "TheContainer",
+          },
+        ],
+      },
     },
     Resource: "arn:aws:states:::ecs:runTask.sync",
     Type: "Task",

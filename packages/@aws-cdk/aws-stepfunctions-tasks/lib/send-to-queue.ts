@@ -2,6 +2,8 @@ import cloudwatch = require('@aws-cdk/aws-cloudwatch');
 import iam = require('@aws-cdk/aws-iam');
 import sqs = require('@aws-cdk/aws-sqs');
 import sfn = require('@aws-cdk/aws-stepfunctions');
+import { renderNumber, renderString } from './json-path';
+import { NumberValue } from './number-value';
 
 /**
  * Properties for SendMessageTask
@@ -9,17 +11,8 @@ import sfn = require('@aws-cdk/aws-stepfunctions');
 export interface SendToQueueProps {
   /**
    * The message body to send to the queue.
-   *
-   * Exactly one of `messageBody` and `messageBodyPath` is required.
    */
-  readonly messageBody?: string;
-
-  /**
-   * JSONPath for the message body to send to the queue.
-   *
-   * Exactly one of `messageBody` and `messageBodyPath` is required.
-   */
-  readonly messageBodyPath?: string;
+  readonly messageBody: string;
 
   /**
    * The length of time, in seconds, for which to delay a specific message.
@@ -28,14 +21,7 @@ export interface SendToQueueProps {
    *
    * @default Default value of the queue is used
    */
-  readonly delaySeconds?: number;
-
-  /**
-   * JSONPath expression for delaySeconds setting
-   *
-   * @default Default value of the queue is used
-   */
-  readonly delaySecondsPath?: string;
+  readonly delaySeconds?: NumberValue;
 
   /**
    * The token used for deduplication of sent messages.
@@ -43,13 +29,6 @@ export interface SendToQueueProps {
    * @default Use content-based deduplication
    */
   readonly messageDeduplicationId?: string;
-
-  /**
-   * JSONPath expression for deduplication ID
-   *
-   * @default Use content-based deduplication
-   */
-  readonly messageDeduplicationIdPath?: string;
 
   /**
    * The tag that specifies that a message belongs to a specific message group.
@@ -60,13 +39,6 @@ export interface SendToQueueProps {
    * @default No group ID
    */
   readonly messageGroupId?: string;
-
-  /**
-   * JSONPath expression for message group ID
-   *
-   * @default No group ID
-   */
-  readonly messageGroupIdPath?: string;
 }
 
 /**
@@ -86,37 +58,17 @@ export class SendToQueue implements sfn.IStepFunctionsTask {
   public readonly parameters?: { [name: string]: any; } | undefined;
 
   constructor(queue: sqs.IQueue, props: SendToQueueProps) {
-    if ((props.messageBody !== undefined) === (props.messageBodyPath !== undefined)) {
-      throw new Error(`Supply exactly one of 'messageBody' and 'messageBodyPath'`);
-    }
-
-    if ((props.delaySeconds !== undefined) && (props.delaySecondsPath !== undefined)) {
-      throw new Error(`Supply either of 'delaySeconds' or 'delaySecondsPath'`);
-    }
-
-    if ((props.messageDeduplicationId !== undefined) && (props.messageDeduplicationIdPath !== undefined)) {
-      throw new Error(`Supply either of 'messageDeduplicationId' or 'messageDeduplicationIdPath'`);
-    }
-
-    if ((props.messageGroupId !== undefined) && (props.messageGroupIdPath !== undefined)) {
-      throw new Error(`Supply either of 'messageGroupId' or 'messageGroupIdPath'`);
-    }
-
     this.resourceArn = 'arn:aws:states:::sqs:sendMessage';
     this.policyStatements = [new iam.PolicyStatement()
       .addAction('sqs:SendMessage')
       .addResource(queue.queueArn)
     ];
     this.parameters = {
-      'QueueUrl': queue.queueUrl,
-      'MessageBody': props.messageBody,
-      'MessageBody.$': props.messageBodyPath,
-      'DelaySeconds': props.delaySeconds,
-      'DelaySeconds.$': props.delaySecondsPath,
-      'MessageDeduplicationId': props.messageDeduplicationId,
-      'MessageDeduplicationId.$': props.messageDeduplicationIdPath,
-      'MessageGroupId': props.messageGroupId,
-      'MessageGroupId.$': props.messageGroupIdPath,
+      QueueUrl: queue.queueUrl,
+      ...renderString('MessageBody', props.messageBody),
+      ...renderNumber('DelaySeconds', props.delaySeconds),
+      ...renderString('MessageDeduplicationId', props.messageDeduplicationId),
+      ...renderString('MessageGroupId', props.messageGroupId),
     };
 
     // No IAM permissions necessary, execution role implicitly has Activity permissions.

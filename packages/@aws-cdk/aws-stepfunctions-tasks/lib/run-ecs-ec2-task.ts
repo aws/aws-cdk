@@ -1,12 +1,12 @@
 import ec2 = require('@aws-cdk/aws-ec2');
 import ecs = require('@aws-cdk/aws-ecs');
 import cdk = require('@aws-cdk/cdk');
-import { BaseRunTask, CommonRunTaskProps } from './base-run-task';
+import { CommonEcsRunTaskProps, EcsRunTaskBase } from './ecs-run-task-base';
 
 /**
  * Properties to run an ECS task on EC2 in StepFunctionsan ECS
  */
-export interface RunEcsEc2TaskProps extends CommonRunTaskProps {
+export interface EcsRunEc2TaskProps extends CommonEcsRunTaskProps {
   /**
    * In what subnets to place the task's ENIs
    *
@@ -36,12 +36,12 @@ export interface RunEcsEc2TaskProps extends CommonRunTaskProps {
 /**
  * Run an ECS/EC2 Task in a StepFunctions workflow
  */
-export class RunEcsEc2Task extends BaseRunTask {
+export class EcsRunEc2Task extends EcsRunTaskBase {
   private readonly constraints: any[];
   private readonly strategies: any[];
   private readonly cluster: ecs.ICluster;
 
-  constructor(scope: cdk.Construct, id: string, props: RunEcsEc2TaskProps) {
+  constructor(scope: cdk.Construct, id: string, props: EcsRunEc2TaskProps) {
     if (!props.taskDefinition.isEc2Compatible) {
       throw new Error('Supplied TaskDefinition is not configured for compatibility with EC2');
     }
@@ -146,7 +146,7 @@ export class RunEcsEc2Task extends BaseRunTask {
 /**
  * Validate combinations of networking arguments
  */
-function validateNoNetworkingProps(props: RunEcsEc2TaskProps) {
+function validateNoNetworkingProps(props: EcsRunEc2TaskProps) {
   if (props.subnets !== undefined || props.securityGroup !== undefined) {
     throw new Error('vpcPlacement and securityGroup can only be used in AwsVpc networking mode');
   }

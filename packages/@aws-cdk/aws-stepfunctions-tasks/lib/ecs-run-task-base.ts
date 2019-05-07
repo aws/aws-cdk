@@ -3,12 +3,13 @@ import ec2 = require('@aws-cdk/aws-ec2');
 import ecs = require('@aws-cdk/aws-ecs');
 import iam = require('@aws-cdk/aws-iam');
 import cdk = require('@aws-cdk/cdk');
-import { ContainerOverride } from './base-run-task-types';
+import { ContainerOverride } from './ecs-run-task-base-types';
+import { renderNumber, renderString, renderStringList } from './json-path';
 
 /**
- * Properties for SendMessageTask
+ * Basic properties for ECS Tasks
  */
-export interface CommonRunTaskProps {
+export interface CommonEcsRunTaskProps {
   /**
    * The topic to run the task on
    */
@@ -38,7 +39,7 @@ export interface CommonRunTaskProps {
 /**
  * Construction properties for the BaseRunTaskProps
  */
-export interface BaseRunTaskProps extends CommonRunTaskProps {
+export interface EcsRunTaskBaseProps extends CommonEcsRunTaskProps {
   /**
    * Additional parameters to pass to the base task
    */
@@ -48,7 +49,7 @@ export interface BaseRunTaskProps extends CommonRunTaskProps {
 /**
  * A StepFunctions Task to run a Task on ECS or Fargate
  */
-export class BaseRunTask extends cdk.Construct implements ec2.IConnectable {
+export class EcsRunTaskBase extends cdk.Construct implements ec2.IConnectable {
   /**
    * Manage allowed network traffic for this service
    */
@@ -64,7 +65,7 @@ export class BaseRunTask extends cdk.Construct implements ec2.IConnectable {
   protected readonly taskDefinition: ecs.TaskDefinition;
   private readonly sync: boolean;
 
-  constructor(scope: cdk.Construct, id: string, private readonly props: BaseRunTaskProps) {
+  constructor(scope: cdk.Construct, id: string, private readonly props: EcsRunTaskBaseProps) {
     super(scope, id);
 
     this.resourceArn = 'arn:aws:states:::ecs:runTask' + (props.synchronous !== false ? '.sync' : '');
@@ -134,6 +135,28 @@ export class BaseRunTask extends cdk.Construct implements ec2.IConnectable {
     return policyStatements;
   }
 
+  /**
+   * Validate this service
+   *
+   * Check that all mentioned container overrides exist in the task definition
+   * (but only if the name is not a token, in which case we can't tell).
+   */
+  protected validate(): string[] {
+    const ret = super.validate();
+
+    for (const override of this.props.containerOverrides || []) {
+      const name = override.containerName;
+      if (!cdk.Token.unresolved(name)) {
+        const cont = this.props.taskDefinition.node.tryFindChild(name);
+        if (!cont) {
+          ret.push(`Overrides mention container with name '${name}', but no such container in task definition`);
+        }
+      }
+    }
+
+    return ret;
+  }
+
   private taskExecutionRoles(): iam.IRole[] {
     // Need to be able to pass both Task and Execution role, apparently
     const ret = new Array<iam.IRole>();
@@ -145,48 +168,23 @@ export class BaseRunTask extends cdk.Construct implements ec2.IConnectable {
   }
 }
 
-function extractRequired(obj: any, srcKey: string, dstKey: string) {
-    if ((obj[srcKey] !== undefined) === (obj[srcKey + 'Path'] !== undefined)) {
-      throw new Error(`Supply exactly one of '${srcKey}' or '${srcKey}Path'`);
-    }
-    return mapValue(obj, srcKey, dstKey);
-}
-
 function renderOverrides(containerOverrides?: ContainerOverride[]) {
   if (!containerOverrides) { return undefined; }
 
   const ret = new Array<any>();
   for (const override of containerOverrides) {
     ret.push({
-      ...extractRequired(override, 'containerName', 'Name'),
-      ...extractOptional(override, 'command', 'Command'),
-      ...extractOptional(override, 'cpu', 'Cpu'),
-      ...extractOptional(override, 'memoryLimit', 'Memory'),
-      ...extractOptional(override, 'memoryReservation', 'MemoryReservation'),
+      ...renderString('Name', override.containerName),
+      ...renderStringList('Command', override.command),
+      ...renderNumber('Cpu', override.cpu),
+      ...renderNumber('Memory', override.memoryLimit),
+      ...renderNumber('MemoryReservation', override.memoryReservation),
       Environment: override.environment && override.environment.map(e => ({
-        ...extractRequired(e, 'name', 'Name'),
-        ...extractRequired(e, 'value', 'Value'),
+        ...renderString('Name', e.name),
+        ...renderString('Value', e.value),
       }))
     });
   }
 
   return { ContainerOverrides: ret };
-}
-
-function extractOptional(obj: any, srcKey: string, dstKey: string) {
-    if ((obj[srcKey] !== undefined) && (obj[srcKey + 'Path'] !== undefined)) {
-      throw new Error(`Supply only one of '${srcKey}' or '${srcKey}Path'`);
-    }
-    return mapValue(obj, srcKey, dstKey);
-}
-
-function mapValue(obj: any, srcKey: string, dstKey: string) {
-  if (obj[srcKey + 'Path'] !== undefined && !obj[srcKey + 'Path'].startsWith('$.')) {
-    throw new Error(`Value for '${srcKey}Path' must start with '$.', got: '${obj[srcKey + 'Path']}'`);
-  }
-
-  return {
-    [dstKey]: obj[srcKey],
-    [dstKey + '.$']: obj[srcKey + 'Path']
-  };
 }

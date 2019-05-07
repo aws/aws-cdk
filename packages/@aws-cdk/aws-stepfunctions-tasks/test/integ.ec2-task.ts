@@ -13,7 +13,7 @@ const vpc = ec2.VpcNetwork.importFromContext(stack, 'Vpc', {
 });
 
 const cluster = new ecs.Cluster(stack, 'FargateCluster', { vpc });
-cluster.addCapacity('Capacity', {
+cluster.addCapacity('DefaultAutoScalingGroup', {
   instanceType: new ec2.InstanceType('t2.micro'),
   vpcSubnets: { subnetType: ec2.SubnetType.Public },
 });
@@ -21,7 +21,7 @@ cluster.addCapacity('Capacity', {
 // Build task definition
 const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
 taskDefinition.addContainer('TheContainer', {
-  image: ecs.ContainerImage.fromAsset(stack, 'EventImage', { directory: path.resolve(__dirname, '..', 'eventhandler-image') }),
+  image: ecs.ContainerImage.fromAsset(stack, 'EventImage', { directory: path.resolve(__dirname, 'eventhandler-image') }),
   memoryLimitMiB: 256,
   logging: new ecs.AwsLogDriver(stack, 'TaskLogging', { streamPrefix: 'EventDemo' })
 });
@@ -29,7 +29,7 @@ taskDefinition.addContainer('TheContainer', {
 // Build state machine
 const definition = new sfn.Pass(stack, 'Start', {
     result: { SomeKey: 'SomeValue' }
-}).next(new sfn.Task(stack, 'Run', { task: new tasks.RunEcsEc2Task(stack, 'RunEc2', {
+}).next(new sfn.Task(stack, 'Run', { task: new tasks.EcsRunEc2Task(stack, 'RunEc2', {
   cluster, taskDefinition,
   containerOverrides: [
     {
@@ -37,7 +37,7 @@ const definition = new sfn.Pass(stack, 'Start', {
       environment: [
         {
           name: 'SOME_KEY',
-          valuePath: '$.SomeKey'
+          value: tasks.JsonPath.stringFromPath('$.SomeKey')
         }
       ]
     }

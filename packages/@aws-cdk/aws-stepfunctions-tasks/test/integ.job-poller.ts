@@ -15,7 +15,7 @@ class JobPollerStack extends cdk.Stack {
         });
         const waitX = new sfn.Wait(this, 'Wait X Seconds', { duration: sfn.WaitDuration.secondsPath('$.wait_time') });
         const getStatus = new sfn.Task(this, 'Get Job Status', {
-            task: new tasks.InvokeActivity(submitJobActivity),
+            task: new tasks.InvokeActivity(checkJobActivity),
             inputPath: '$.guid',
             resultPath: '$.status',
         });

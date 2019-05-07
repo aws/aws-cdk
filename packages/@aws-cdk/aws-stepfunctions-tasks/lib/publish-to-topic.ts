@@ -3,6 +3,7 @@ import iam = require('@aws-cdk/aws-iam');
 import sns = require('@aws-cdk/aws-sns');
 import sfn = require('@aws-cdk/aws-stepfunctions');
 import cdk = require('@aws-cdk/cdk');
+import { renderString } from './json-path';
 
 /**
  * Properties for PublishTask
@@ -11,16 +12,9 @@ export interface PublishToTopicProps {
   /**
    * The text message to send to the queue.
    *
-   * Exactly one of `message`, `messageObject` and `messagePath` is required.
+   * Exactly one of `message` and `messageObject` is required.
    */
   readonly message?: string;
-
-  /**
-   * JSONPath expression of the message to send to the queue
-   *
-   * Exactly one of `message`, `messageObject` and `messagePath` is required.
-   */
-  readonly messagePath?: string;
 
   /**
    * Object to be JSON-encoded and used as message
@@ -45,11 +39,6 @@ export interface PublishToTopicProps {
    * Message subject
    */
   readonly subject?: string;
-
-  /**
-   * JSONPath expression of subject
-   */
-  readonly subjectPath?: string;
 }
 
 /**
@@ -69,14 +58,8 @@ export class PublishToTopic implements sfn.IStepFunctionsTask {
   public readonly parameters?: { [name: string]: any; } | undefined;
 
   constructor(topic: sns.ITopic, props: PublishToTopicProps) {
-    if ((props.message !== undefined ? 1 : 0)
-      + (props.messagePath !== undefined ? 1 : 0)
-      + (props.messageObject !== undefined ? 1 : 0) !== 1) {
-      throw new Error(`Supply exactly one of 'message', 'messageObject' or 'messagePath'`);
-    }
-
-    if (props.subject !== undefined && props.subjectPath !== undefined) {
-      throw new Error(`Supply either 'subject' or 'subjectPath'`);
+    if ((props.message === undefined) === (props.messageObject === undefined)) {
+      throw new Error(`Supply exactly one of 'message' or 'messageObject'`);
     }
 
     this.resourceArn = 'arn:aws:states:::sns:publish';
@@ -85,14 +68,12 @@ export class PublishToTopic implements sfn.IStepFunctionsTask {
       .addResource(topic.topicArn)
     ];
     this.parameters = {
-      "TopicArn": topic.topicArn,
-      "Message": props.messageObject
-          ? new cdk.Token(() => topic.node.stringifyJson(props.messageObject))
-          : props.message,
-      "Message.$": props.messagePath,
-      "MessageStructure": props.messagePerSubscriptionType ? "json" : undefined,
-      "Subject": props.subject,
-      "Subject.$": props.subjectPath
+      TopicArn: topic.topicArn,
+      ...(props.messageObject
+          ? { Message: new cdk.Token(() => topic.node.stringifyJson(props.messageObject)) }
+          : renderString('Message', props.message)),
+      MessageStructure: props.messagePerSubscriptionType ? "json" : undefined,
+      ...renderString('Subject', props.subject),
     };
 
     // No IAM permissions necessary, execution role implicitly has Activity permissions.

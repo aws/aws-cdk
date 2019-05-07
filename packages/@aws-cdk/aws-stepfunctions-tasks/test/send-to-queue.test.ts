@@ -11,7 +11,7 @@ test('publish to queue', () => {
   // WHEN
   const pub = new sfn.Task(stack, 'Send', { task: new tasks.SendToQueue(queue, {
     messageBody: 'Send this message',
-    messageDeduplicationIdPath: '$.deduping',
+    messageDeduplicationId: tasks.JsonPath.stringFromPath('$.deduping'),
   }) });
 
   // THEN

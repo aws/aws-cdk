@@ -86,7 +86,6 @@
     "@aws-cdk/aws-secretsmanager": "^0.29.0",
     "@aws-cdk/aws-servicediscovery": "^0.29.0",
     "@aws-cdk/aws-sns": "^0.29.0",
-    "@aws-cdk/aws-stepfunctions": "^0.29.0",
     "@aws-cdk/cdk": "^0.29.0",
     "@aws-cdk/cx-api": "^0.29.0"
   },

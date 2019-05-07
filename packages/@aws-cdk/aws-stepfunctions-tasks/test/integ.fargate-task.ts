@@ -20,7 +20,7 @@ const taskDefinition = new ecs.FargateTaskDefinition(stack, 'TaskDef', {
   cpu: '256'
 });
 taskDefinition.addContainer('TheContainer', {
-  image: ecs.ContainerImage.fromAsset(stack, 'EventImage', { directory: path.resolve(__dirname, '..', 'eventhandler-image') }),
+  image: ecs.ContainerImage.fromAsset(stack, 'EventImage', { directory: path.resolve(__dirname, 'eventhandler-image') }),
   memoryLimitMiB: 256,
   logging: new ecs.AwsLogDriver(stack, 'TaskLogging', { streamPrefix: 'EventDemo' })
 });
@@ -28,7 +28,7 @@ taskDefinition.addContainer('TheContainer', {
 // Build state machine
 const definition = new sfn.Pass(stack, 'Start', {
     result: { SomeKey: 'SomeValue' }
-}).next(new sfn.Task(stack, 'Run', { task: new tasks.RunEcsFargateTask(stack, 'RunFargate', {
+}).next(new sfn.Task(stack, 'RunFargate', { task: new tasks.EcsRunFargateTask(stack, 'FargateTask', {
   cluster, taskDefinition,
   assignPublicIp: true,
   containerOverrides: [
@@ -37,7 +37,7 @@ const definition = new sfn.Pass(stack, 'Start', {
       environment: [
         {
           name: 'SOME_KEY',
-          valuePath: '$.SomeKey'
+          value: tasks.JsonPath.stringFromPath('$.SomeKey')
         }
       ]
     }
