@@ -55,7 +55,7 @@ export function validateArtifactName(artifactName: string | undefined): void {
 
 function validateAgainstRegex(regex: RegExp, thing: string, name: string | undefined) {
   // name could be a Token - in that case, skip validation altogether
-  if (cdk.unresolved(name)) {
+  if (cdk.Token.unresolved(name)) {
     return;
   }
 
