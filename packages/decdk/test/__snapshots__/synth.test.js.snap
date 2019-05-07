@@ -616,14 +616,6 @@ Object {
             "Essential": true,
             "Image": "redis",
             "Links": Array [],
-            "LinuxParameters": Object {
-              "Capabilities": Object {
-                "Add": Array [],
-                "Drop": Array [],
-              },
-              "Devices": Array [],
-              "Tmpfs": Array [],
-            },
             "Memory": 1024,
             "MountPoints": Array [],
             "Name": "ContainerDef",
