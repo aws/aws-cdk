@@ -107,7 +107,7 @@ export interface StringListParameterProps extends ParameterOptions {
 /**
  * Basic features shared across all types of SSM Parameters.
  */
-export abstract class ParameterBase extends Resource implements IParameter {
+abstract class ParameterBase extends Resource implements IParameter {
   public abstract readonly parameterName: string;
   public abstract readonly parameterType: string;
 

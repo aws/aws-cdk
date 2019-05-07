@@ -19,7 +19,7 @@ const source = new cpactions.GitHubSourceAction({
   owner: 'awslabs',
   repo: 'aws-cdk',
   oauthToken: cdk.SecretValue.plainText('DummyToken'),
-  pollForSourceChanges: true,
+  trigger: cpactions.GitHubTrigger.Poll,
   output: sourceOutput,
 });
 pipeline.addStage({

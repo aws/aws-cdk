@@ -115,7 +115,7 @@ export interface DatabaseClusterProps {
 /**
  * A new or imported clustered database.
  */
-export abstract class DatabaseClusterBase extends cdk.Construct implements IDatabaseCluster {
+abstract class DatabaseClusterBase extends cdk.Construct implements IDatabaseCluster {
   /**
    * Import an existing DatabaseCluster from properties
    */

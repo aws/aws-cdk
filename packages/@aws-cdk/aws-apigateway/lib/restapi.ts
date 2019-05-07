@@ -12,6 +12,11 @@ export interface RestApiImportProps {
    * The REST API ID of an existing REST API resource.
    */
   readonly restApiId: string;
+
+  /**
+   * The resource ID of the root resource.
+   */
+  readonly restApiRootResourceId?: string;
 }
 
 export interface IRestApi extends IResource {
@@ -19,6 +24,11 @@ export interface IRestApi extends IResource {
    * The ID of this API Gateway RestApi.
    */
   readonly restApiId: string;
+
+  /**
+   * The resource ID of the root resource.
+   */
+  readonly restApiRootResourceId: string;
 
   /**
    * Exports a REST API resource from this stack.
@@ -162,13 +172,27 @@ export class RestApi extends Resource implements IRestApi {
    * @param props Imported rest API properties
    */
   public static import(scope: Construct, id: string, props: RestApiImportProps): IRestApi {
-    return new ImportedRestApi(scope, id, props);
+    class Import extends Construct implements IRestApi {
+      public restApiId = props.restApiId;
+      public get restApiRootResourceId() {
+        if (!props.restApiRootResourceId) { throw new Error(`Imported REST API does not have "restApiRootResourceId"`); }
+        return props.restApiRootResourceId;
+      }
+      public export() { return props; }
+    }
+
+    return new Import(scope, id);
   }
 
   /**
    * The ID of this API Gateway RestApi.
    */
   public readonly restApiId: string;
+
+  /**
+   * The resource ID of the root resource.
+   */
+  public readonly restApiRootResourceId: string;
 
   /**
    * API Gateway deployment that represents the latest changes of the API.
@@ -375,20 +399,6 @@ export enum EndpointType {
    * For a private API and its custom domain name.
    */
   Private = 'PRIVATE'
-}
-
-class ImportedRestApi extends Construct implements IRestApi {
-  public restApiId: string;
-
-  constructor(scope: Construct, id: string, private readonly props: RestApiImportProps) {
-    super(scope, id);
-
-    this.restApiId = props.restApiId;
-  }
-
-  public export() {
-    return this.props;
-  }
 }
 
 class RootResource extends ResourceBase {
