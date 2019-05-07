@@ -193,6 +193,15 @@ export class StateMachine extends Resource implements IStateMachine, events.IEve
     public metricStarted(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
         return this.metric('ExecutionsStarted', props);
     }
+
+    /**
+     * Metric for the interval, in milliseconds, between the time the execution starts and the time it closes
+     *
+     * @default sum over 5 minutes
+     */
+    public metricTime(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+        return this.metric('ExecutionTime', props);
+    }
 }
 
 /**
