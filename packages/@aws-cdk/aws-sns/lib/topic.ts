@@ -1,6 +1,6 @@
 import { CfnOutput, Construct } from '@aws-cdk/cdk';
 import { CfnTopic } from './sns.generated';
-import { ITopic, TopicBase, TopicImportProps } from './topic-base';
+import { ITopic, TopicAttributes, TopicBase } from './topic-base';
 
 /**
  * Properties for a new SNS topic
@@ -29,11 +29,20 @@ export interface TopicProps {
  * A new SNS topic
  */
 export class Topic extends TopicBase {
+
+  public static fromTopicArn(scope: Construct, id: string, topicArn: string): ITopic {
+    // arn:aws:sns:region:account-id:topicname
+    return Topic.fromTopicAttributes(scope, id, {
+      topicArn,
+      topicName: scope.node.stack.parseArn(topicArn).resource
+    });
+  }
+
   /**
    * Import a Topic defined elsewhere
    */
-  public static import(scope: Construct, id: string, props: TopicImportProps): ITopic {
-    return new ImportedTopic(scope, id, props);
+  public static fromTopicAttributes(scope: Construct, id: string, attrs: TopicAttributes): ITopic {
+    return new ImportedTopic(scope, id, attrs);
   }
 
   public readonly topicArn: string;
@@ -56,7 +65,7 @@ export class Topic extends TopicBase {
   /**
    * Export this Topic
    */
-  public export(): TopicImportProps {
+  public export(): TopicAttributes {
     return {
       topicArn: new CfnOutput(this, 'TopicArn', { value: this.topicArn }).makeImportValue().toString(),
       topicName: new CfnOutput(this, 'TopicName', { value: this.topicName }).makeImportValue().toString(),
@@ -73,13 +82,13 @@ class ImportedTopic extends TopicBase {
 
   protected autoCreatePolicy: boolean = false;
 
-  constructor(scope: Construct, id: string, private readonly props: TopicImportProps) {
+  constructor(scope: Construct, id: string, private readonly props: TopicAttributes) {
     super(scope, id);
     this.topicArn = props.topicArn;
     this.topicName = props.topicName;
   }
 
-  public export(): TopicImportProps {
+  public export(): TopicAttributes {
     return this.props;
   }
 }

@@ -9,6 +9,7 @@ const isSecurityGroupSymbol = Symbol.for('aws-cdk:isSecurityGroup');
 export interface ISecurityGroup extends IResource, ISecurityGroupRule, IConnectable {
   /**
    * ID for the current security group
+   * @attribute
    */
   readonly securityGroupId: string;
 
@@ -37,10 +38,10 @@ export interface ISecurityGroup extends IResource, ISecurityGroupRule, IConnecta
   /**
    * Export the security group
    */
-  export(): SecurityGroupImportProps;
+  export(): SecurityGroupAttributes;
 }
 
-export interface SecurityGroupImportProps {
+export interface SecurityGroupAttributes {
   /**
    * ID of security group
    */
@@ -50,7 +51,7 @@ export interface SecurityGroupImportProps {
 /**
  * A SecurityGroup that is not created in this template
  */
-export abstract class SecurityGroupBase extends Resource implements ISecurityGroup {
+abstract class SecurityGroupBase extends Resource implements ISecurityGroup {
   /**
    * Return whether the indicated object is a security group
    */
@@ -59,6 +60,7 @@ export abstract class SecurityGroupBase extends Resource implements ISecurityGro
   }
 
   public abstract readonly securityGroupId: string;
+
   public readonly canInlineRule = false;
   public readonly connections: Connections = new Connections({ securityGroups: [this] });
 
@@ -124,7 +126,7 @@ export abstract class SecurityGroupBase extends Resource implements ISecurityGro
   /**
    * Export this SecurityGroup for use in a different Stack
    */
-  public abstract export(): SecurityGroupImportProps;
+  public abstract export(): SecurityGroupAttributes;
 }
 
 /**
@@ -241,27 +243,41 @@ export interface SecurityGroupProps {
  * the template).
  */
 export class SecurityGroup extends SecurityGroupBase {
+
   /**
-   * Import an existing SecurityGroup
+   * Import an existing security group into this app.
    */
-  public static import(scope: Construct, id: string, props: SecurityGroupImportProps): ISecurityGroup {
-    return new ImportedSecurityGroup(scope, id, props);
+  public static fromSecurityGroupId(scope: Construct, id: string, securityGroupId: string): ISecurityGroup {
+    class Import extends SecurityGroupBase {
+      public securityGroupId = securityGroupId;
+      public export(): SecurityGroupAttributes {
+        return { securityGroupId };
+      }
+    }
+
+    return new Import(scope, id);
   }
 
   /**
    * An attribute that represents the security group name.
+   *
+   * @attribute
    */
-  public readonly groupName: string;
-
-  /**
-   * An attribute that represents the physical VPC ID this security group is part of.
-   */
-  public readonly vpcId: string;
+  public readonly securityGroupName: string;
 
   /**
    * The ID of the security group
+   *
+   * @attribute
    */
   public readonly securityGroupId: string;
+
+  /**
+   * The VPC ID this security group is part of.
+   *
+   * @attribute
+   */
+  public readonly securityGroupVpcId: string;
 
   private readonly securityGroup: CfnSecurityGroup;
   private readonly directIngressRules: CfnSecurityGroup.IngressProperty[] = [];
@@ -285,8 +301,8 @@ export class SecurityGroup extends SecurityGroupBase {
     });
 
     this.securityGroupId = this.securityGroup.securityGroupId;
-    this.groupName = this.securityGroup.securityGroupName;
-    this.vpcId = this.securityGroup.securityGroupVpcId;
+    this.securityGroupVpcId = this.securityGroup.securityGroupVpcId;
+    this.securityGroupName = this.securityGroup.securityGroupName;
 
     this.addDefaultEgressRule();
   }
@@ -294,7 +310,7 @@ export class SecurityGroup extends SecurityGroupBase {
   /**
    * Export this SecurityGroup for use in a different Stack
    */
-  public export(): SecurityGroupImportProps {
+  public export(): SecurityGroupAttributes {
     return {
       securityGroupId: new CfnOutput(this, 'SecurityGroupId', { value: this.securityGroupId }).makeImportValue().toString()
     };
@@ -487,23 +503,6 @@ export interface ConnectionRule {
    * @default No description
    */
   readonly description?: string;
-}
-
-/**
- * A SecurityGroup that hasn't been created here
- */
-class ImportedSecurityGroup extends SecurityGroupBase {
-  public readonly securityGroupId: string;
-
-  constructor(scope: Construct, id: string, private readonly props: SecurityGroupImportProps) {
-    super(scope, id);
-
-    this.securityGroupId = props.securityGroupId;
-  }
-
-  public export() {
-    return this.props;
-  }
 }
 
 /**

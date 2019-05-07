@@ -105,6 +105,7 @@ export class TaskDefinition extends Resource {
 
   /**
    * ARN of this task definition
+   * @attribute
    */
   public readonly taskDefinitionArn: string;
 

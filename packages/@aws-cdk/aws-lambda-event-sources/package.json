@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/aws-lambda-event-sources",
-  "version": "0.29.0",
+  "version": "0.31.0",
   "description": "Event sources for AWS Lambda",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -20,7 +20,6 @@
         "signAssembly": true,
         "assemblyOriginatorKeyFile": "../../key.snk"
       },
-      "sphinx": {},
       "python": {
         "distName": "aws-cdk.aws-lambda-event-sources",
         "module": "aws_cdk.aws_lambda_event_sources"
@@ -55,35 +54,35 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "^0.29.0",
-    "cdk-build-tools": "^0.29.0",
-    "cdk-integ-tools": "^0.29.0",
-    "pkglint": "^0.29.0"
+    "@aws-cdk/assert": "^0.31.0",
+    "cdk-build-tools": "^0.31.0",
+    "cdk-integ-tools": "^0.31.0",
+    "pkglint": "^0.31.0"
   },
   "dependencies": {
-    "@aws-cdk/aws-apigateway": "^0.29.0",
-    "@aws-cdk/aws-dynamodb": "^0.29.0",
-    "@aws-cdk/aws-events": "^0.29.0",
-    "@aws-cdk/aws-iam": "^0.29.0",
-    "@aws-cdk/aws-kinesis": "^0.29.0",
-    "@aws-cdk/aws-lambda": "^0.29.0",
-    "@aws-cdk/aws-s3": "^0.29.0",
-    "@aws-cdk/aws-sns": "^0.29.0",
-    "@aws-cdk/aws-sqs": "^0.29.0",
-    "@aws-cdk/cdk": "^0.29.0"
+    "@aws-cdk/aws-apigateway": "^0.31.0",
+    "@aws-cdk/aws-dynamodb": "^0.31.0",
+    "@aws-cdk/aws-events": "^0.31.0",
+    "@aws-cdk/aws-iam": "^0.31.0",
+    "@aws-cdk/aws-kinesis": "^0.31.0",
+    "@aws-cdk/aws-lambda": "^0.31.0",
+    "@aws-cdk/aws-s3": "^0.31.0",
+    "@aws-cdk/aws-sns": "^0.31.0",
+    "@aws-cdk/aws-sqs": "^0.31.0",
+    "@aws-cdk/cdk": "^0.31.0"
   },
   "homepage": "https://github.com/awslabs/aws-cdk",
   "peerDependencies": {
-    "@aws-cdk/aws-apigateway": "^0.29.0",
-    "@aws-cdk/aws-dynamodb": "^0.29.0",
-    "@aws-cdk/aws-events": "^0.29.0",
-    "@aws-cdk/aws-iam": "^0.29.0",
-    "@aws-cdk/aws-kinesis": "^0.29.0",
-    "@aws-cdk/aws-lambda": "^0.29.0",
-    "@aws-cdk/aws-s3": "^0.29.0",
-    "@aws-cdk/aws-sns": "^0.29.0",
-    "@aws-cdk/aws-sqs": "^0.29.0",
-    "@aws-cdk/cdk": "^0.29.0"
+    "@aws-cdk/aws-apigateway": "^0.31.0",
+    "@aws-cdk/aws-dynamodb": "^0.31.0",
+    "@aws-cdk/aws-events": "^0.31.0",
+    "@aws-cdk/aws-iam": "^0.31.0",
+    "@aws-cdk/aws-kinesis": "^0.31.0",
+    "@aws-cdk/aws-lambda": "^0.31.0",
+    "@aws-cdk/aws-s3": "^0.31.0",
+    "@aws-cdk/aws-sns": "^0.31.0",
+    "@aws-cdk/aws-sqs": "^0.31.0",
+    "@aws-cdk/cdk": "^0.31.0"
   },
   "engines": {
     "node": ">= 8.10.0"

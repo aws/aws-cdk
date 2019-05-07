@@ -15,7 +15,14 @@ export interface ActivityProps {
  * Define a new StepFunctions activity
  */
 export class Activity extends Resource implements IActivity {
+    /**
+     * @attribute
+     */
     public readonly activityArn: string;
+
+    /**
+     * @attribute
+     */
     public readonly activityName: string;
 
     constructor(scope: Construct, id: string, props: ActivityProps = {}) {

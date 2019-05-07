@@ -3,8 +3,90 @@
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
 
-## [0.29.0](https://github.com/awslabs/aws-cdk/compare/v0.28.0...v0.29.0) (2019-04-24)
+# [0.31.0](https://github.com/awslabs/aws-cdk/compare/v0.30.0...v0.31.0) (2019-05-06)
 
+
+### Bug Fixes
+
+* **aws-ecs:** expose readonly service on LoadBalancedEc2Service ([#2395](https://github.com/awslabs/aws-cdk/issues/2395)) ([52af870](https://github.com/awslabs/aws-cdk/commit/52af870)), closes [#2378](https://github.com/awslabs/aws-cdk/issues/2378)
+* **ecs:** correct logic of healthcheck command ([#2462](https://github.com/awslabs/aws-cdk/issues/2462)) ([fa29d3b](https://github.com/awslabs/aws-cdk/commit/fa29d3b)), closes [#2461](https://github.com/awslabs/aws-cdk/issues/2461)
+* **ecs:** fix memoryReservationLimit in LoadBalancedEcsService ([#2463](https://github.com/awslabs/aws-cdk/issues/2463)) ([6b50927](https://github.com/awslabs/aws-cdk/commit/6b50927)), closes [#2263](https://github.com/awslabs/aws-cdk/issues/2263)
+* **lambda:** allow grantInvoke with principals ([#2391](https://github.com/awslabs/aws-cdk/issues/2391)) ([b3792aa](https://github.com/awslabs/aws-cdk/commit/b3792aa))
+* update jsii to 0.10.5 ([#2482](https://github.com/awslabs/aws-cdk/issues/2482)) ([e4ec30a](https://github.com/awslabs/aws-cdk/commit/e4ec30a))
+* update jsii to v10.0.4 ([#2479](https://github.com/awslabs/aws-cdk/issues/2479)) ([1df4e2d](https://github.com/awslabs/aws-cdk/commit/1df4e2d)), closes [#2478](https://github.com/awslabs/aws-cdk/issues/2478)
+
+
+### Code Refactoring
+
+* convert "import" to "from" methods ([#2456](https://github.com/awslabs/aws-cdk/issues/2456)) ([862ed7b](https://github.com/awslabs/aws-cdk/commit/862ed7b)), closes [#2450](https://github.com/awslabs/aws-cdk/issues/2450) [#2428](https://github.com/awslabs/aws-cdk/issues/2428) [#2424](https://github.com/awslabs/aws-cdk/issues/2424) [#2429](https://github.com/awslabs/aws-cdk/issues/2429) [#2425](https://github.com/awslabs/aws-cdk/issues/2425) [#2422](https://github.com/awslabs/aws-cdk/issues/2422) [#2423](https://github.com/awslabs/aws-cdk/issues/2423) [#89](https://github.com/awslabs/aws-cdk/issues/89)
+
+
+### Features
+
+* **bootstrap:** allow specifying the toolkit staging bucket name ([#2407](https://github.com/awslabs/aws-cdk/issues/2407)) ([3bfc641](https://github.com/awslabs/aws-cdk/commit/3bfc641)), closes [#2390](https://github.com/awslabs/aws-cdk/issues/2390)
+* **codebuild:** add webhook Filter Groups. ([#2319](https://github.com/awslabs/aws-cdk/issues/2319)) ([fd74d07](https://github.com/awslabs/aws-cdk/commit/fd74d07)), closes [#1842](https://github.com/awslabs/aws-cdk/issues/1842)
+* **elbv2:** add fixed response support for application load balancers ([#2328](https://github.com/awslabs/aws-cdk/issues/2328)) ([750bc8b](https://github.com/awslabs/aws-cdk/commit/750bc8b))
+
+
+### BREAKING CHANGES
+
+* all `Foo.import` static methods are now `Foo.fromFooAttributes`
+* all `FooImportProps` structs are now called `FooAttributes`
+* `stepfunctions.StateMachine.export` has been removed.
+* `ses.ReceiptRule.name` is now `ses.ReceiptRule.receiptRuleName`
+* `ses.ReceiptRuleSet.name` is now `ses.ReceiptRuleSet.receiptRuleSetName`
+* `secretsmanager.AttachedSecret` is now called `secretsmanager.SecretTargetAttachment` to match service semantics
+* `ecr.Repository.export` has been removed
+* `s3.Bucket.bucketUrl` is now called `s3.Bucket.bucketWebsiteUrl`
+* `lambda.Version.functionVersion` is now called `lambda.Version.version`
+* `ec2.SecurityGroup.groupName` is now `ec2.SecurityGroup.securityGroupName`
+* `cognito.UserPoolClient.clientId` is now `cognito.UserPoolClient.userPoolClientId`
+* `apigateway.IRestApiResource` is now `apigateway.IResource`
+* `apigateway.IResource.resourcePath` is now `apigateway.IResource.path`
+* `apigateway.IResource.resourceApi` is now `apigateway.IResource.restApi`
+
+
+## [0.30.0](https://github.com/awslabs/aws-cdk/compare/v0.29.0...v0.30.0) (2019-05-02)
+
+### Bug Fixes
+
+* **cdk-dasm:** fix bin for cdk-dasm ([#2383](https://github.com/awslabs/aws-cdk/issues/2383)) ([760f518](https://github.com/awslabs/aws-cdk/commit/760f518))
+
+### Code Refactoring
+
+* **awslint:** construct-base-is-private, resource-attribute ([#2349](https://github.com/awslabs/aws-cdk/issues/2349)) ([973b506](https://github.com/awslabs/aws-cdk/commit/973b506)), closes [#2426](https://github.com/awslabs/aws-cdk/issues/2426) [#2409](https://github.com/awslabs/aws-cdk/issues/2409)
+
+### Features
+
+* **cdk-test:** check API compatibility ([#2356](https://github.com/awslabs/aws-cdk/issues/2356)) ([1642925](https://github.com/awslabs/aws-cdk/commit/1642925)), closes [#145](https://github.com/awslabs/aws-cdk/issues/145)
+* **codepipeline:** allow creation of GitHub Pipelines without source trigger ([#2332](https://github.com/awslabs/aws-cdk/issues/2332)) ([ed39a8c](https://github.com/awslabs/aws-cdk/commit/ed39a8c))
+* **elbv2:** add TLS listener for NLB ([#2122](https://github.com/awslabs/aws-cdk/issues/2122)) ([71d694f](https://github.com/awslabs/aws-cdk/commit/71d694f))
+
+
+
+### BREAKING CHANGES
+
+* `s3.Bucket.domainName` renamed to `s3.Bucket.bucketDomainName`.
+* `codedeploy.IXxxDeploymentConfig.deploymentConfigArn` is now a property and not a method.
+* `ec2.SecurityGroupBase` is now private
+* `ec2.VpcNetworkBase` is now private
+* `kinesis.StreamBase` is now private
+* `kms.EncryptionKeyBase` is now private
+* `logs.LogGroupBase` is now private
+* `ssm.ParameterBase` is now private
+* `eks.ClusterBase` is now private
+* `codebuild.ProjectBase` is now private
+* `codecommit.RepositoryBase` is now private
+* `codedeploy.ServerDeploymentGroupBase` is now private
+* `eks.ClusterBase` is now private
+* `lambda.LayerVersionBase` is now private
+* `rds.DatabaseClusterBase` is now private
+* `secretsmanager.SecretBase` is now private
+* `ses.ReceiptRuleSetBase` is now private
+* **codepipeline:** the `pollForSourceChanges` property in `GitHubSourceAction` has been renamed to `trigger`, and its type changed from a `boolean` to an enum.
+
+
+## [0.29.0](https://github.com/awslabs/aws-cdk/compare/v0.28.0...v0.29.0) (2019-04-24)
 
 ### Bug Fixes
 

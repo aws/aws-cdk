@@ -1,8 +1,182 @@
+import events = require('@aws-cdk/aws-events');
 import iam = require('@aws-cdk/aws-iam');
-import { CfnOutput, Construct, DeletionPolicy, Token } from '@aws-cdk/cdk';
+import { Construct, DeletionPolicy, IConstruct, IResource, Resource, Token } from '@aws-cdk/cdk';
 import { CfnRepository } from './ecr.generated';
 import { CountType, LifecycleRule, TagStatus } from './lifecycle';
-import { RepositoryBase, RepositoryImportProps } from "./repository-ref";
+
+/**
+ * Represents an ECR repository.
+ */
+export interface IRepository extends IResource {
+  /**
+   * The name of the repository
+   * @attribute
+   */
+  readonly repositoryName: string;
+
+  /**
+   * The ARN of the repository
+   * @attribute
+   */
+  readonly repositoryArn: string;
+
+  /**
+   * The URI of this repository (represents the latest image):
+   *
+   *    ACCOUNT.dkr.ecr.REGION.amazonaws.com/REPOSITORY
+   *
+   * @attribute
+   */
+  readonly repositoryUri: string;
+
+  /**
+   * Returns the URI of the repository for a certain tag. Can be used in `docker push/pull`.
+   *
+   *    ACCOUNT.dkr.ecr.REGION.amazonaws.com/REPOSITORY[:TAG]
+   *
+   * @param tag Image tag to use (tools usually default to "latest" if omitted)
+   */
+  repositoryUriForTag(tag?: string): string;
+
+  /**
+   * Add a policy statement to the repository's resource policy
+   */
+  addToResourcePolicy(statement: iam.PolicyStatement): void;
+
+  /**
+   * Grant the given principal identity permissions to perform the actions on this repository
+   */
+  grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant;
+
+  /**
+   * Grant the given identity permissions to pull images in this repository.
+   */
+  grantPull(grantee: iam.IGrantable): iam.Grant;
+
+  /**
+   * Grant the given identity permissions to pull and push images to this repository.
+   */
+  grantPullPush(grantee: iam.IGrantable): iam.Grant;
+
+  /**
+   * Defines an AWS CloudWatch event rule that can trigger a target when an image is pushed to this
+   * repository.
+   * @param name The name of the rule
+   * @param target An IEventRuleTarget to invoke when this event happens (you can add more targets using `addTarget`)
+   * @param imageTag Only trigger on the specific image tag
+   */
+  onImagePushed(name: string, target?: events.IEventRuleTarget, imageTag?: string): events.EventRule;
+}
+
+/**
+ * Base class for ECR repository. Reused between imported repositories and owned repositories.
+ */
+export abstract class RepositoryBase extends Resource implements IRepository {
+  /**
+   * The name of the repository
+   */
+  public abstract readonly repositoryName: string;
+
+  /**
+   * The ARN of the repository
+   */
+  public abstract readonly repositoryArn: string;
+
+  /**
+   * Add a policy statement to the repository's resource policy
+   */
+  public abstract addToResourcePolicy(statement: iam.PolicyStatement): void;
+
+  /**
+   * The URI of this repository (represents the latest image):
+   *
+   *    ACCOUNT.dkr.ecr.REGION.amazonaws.com/REPOSITORY
+   *
+   */
+  public get repositoryUri() {
+    return this.repositoryUriForTag();
+  }
+
+  /**
+   * Returns the URL of the repository. Can be used in `docker push/pull`.
+   *
+   *    ACCOUNT.dkr.ecr.REGION.amazonaws.com/REPOSITORY[:TAG]
+   *
+   * @param tag Optional image tag
+   */
+  public repositoryUriForTag(tag?: string): string {
+    const tagSuffix = tag ? `:${tag}` : '';
+    const parts = this.node.stack.parseArn(this.repositoryArn);
+    return `${parts.account}.dkr.ecr.${parts.region}.amazonaws.com/${this.repositoryName}${tagSuffix}`;
+  }
+
+  /**
+   * Defines an AWS CloudWatch event rule that can trigger a target when an image is pushed to this
+   * repository.
+   * @param name The name of the rule
+   * @param target An IEventRuleTarget to invoke when this event happens (you can add more targets using `addTarget`)
+   * @param imageTag Only trigger on the specific image tag
+   */
+  public onImagePushed(name: string, target?: events.IEventRuleTarget, imageTag?: string): events.EventRule {
+    return new events.EventRule(this, name, {
+      targets: target ? [target] : undefined,
+      eventPattern: {
+        source: ['aws.ecr'],
+        detail: {
+          eventName: [
+            'PutImage',
+          ],
+          requestParameters: {
+            repositoryName: [
+              this.repositoryName,
+            ],
+            imageTag: imageTag ? [imageTag] : undefined,
+          },
+        },
+      },
+    });
+  }
+
+  /**
+   * Grant the given principal identity permissions to perform the actions on this repository
+   */
+  public grant(grantee: iam.IGrantable, ...actions: string[]) {
+    return iam.Grant.addToPrincipalOrResource({
+      grantee,
+      actions,
+      resourceArns: [this.repositoryArn],
+      resource: this,
+    });
+  }
+
+  /**
+   * Grant the given identity permissions to use the images in this repository
+   */
+  public grantPull(grantee: iam.IGrantable) {
+    const ret = this.grant(grantee, "ecr:BatchCheckLayerAvailability", "ecr:GetDownloadUrlForLayer", "ecr:BatchGetImage");
+
+    iam.Grant.addToPrincipal({
+      grantee,
+      actions: ["ecr:GetAuthorizationToken"],
+      resourceArns: ['*'],
+      scope: this,
+    });
+
+    return ret;
+  }
+
+  /**
+   * Grant the given identity permissions to pull and push images to this repository.
+   */
+  public grantPullPush(grantee: iam.IGrantable) {
+    this.grantPull(grantee);
+    return this.grant(grantee,
+      "ecr:PutImage",
+      "ecr:InitiateLayerUpload",
+      "ecr:UploadLayerPart",
+      "ecr:CompleteLayerUpload");
+  }
+}
 
 export interface RepositoryProps {
   /**
@@ -38,10 +212,79 @@ export interface RepositoryProps {
   readonly retain?: boolean;
 }
 
+export interface RepositoryAttributes {
+  readonly repositoryName: string;
+  readonly repositoryArn: string;
+}
+
 /**
  * Define an ECR repository
  */
 export class Repository extends RepositoryBase {
+  /**
+   * Import a repository
+   */
+  public static fromRepositoryAttributes(scope: Construct, id: string, attrs: RepositoryAttributes): IRepository {
+    class Import extends RepositoryBase {
+      public readonly repositoryName = attrs.repositoryName;
+      public readonly repositoryArn = attrs.repositoryArn;
+
+      public addToResourcePolicy(_statement: iam.PolicyStatement) {
+        // dropped
+      }
+    }
+
+    return new Import(scope, id);
+  }
+
+  public static fromRepositoryArn(scope: Construct, id: string, repositoryArn: string): IRepository {
+
+    // if repositoryArn is a token, the repository name is also required. this is because
+    // repository names can include "/" (e.g. foo/bar/myrepo) and it is impossible to
+    // parse the name from an ARN using CloudFormation's split/select.
+    if (Token.unresolved(repositoryArn)) {
+      throw new Error('"repositoryArn" is a late-bound value, and therefore "repositoryName" is required. Use `fromRepositoryAttributes` instead');
+    }
+
+    const repositoryName = repositoryArn.split('/').slice(1).join('/');
+
+    class Import extends RepositoryBase {
+      public repositoryName = repositoryName;
+      public repositoryArn = repositoryArn;
+
+      public addToResourcePolicy(_statement: iam.PolicyStatement): void {
+        // dropped
+      }
+    }
+
+    return new Import(scope, id);
+  }
+
+  public static fromRepositoryName(scope: Construct, id: string, repositoryName: string): IRepository {
+    class Import extends RepositoryBase {
+      public repositoryName = repositoryName;
+      public repositoryArn = Repository.arnForLocalRepository(repositoryName, scope);
+
+      public addToResourcePolicy(_statement: iam.PolicyStatement): void {
+        // dropped
+      }
+    }
+
+    return new Import(scope, id);
+  }
+
+  /**
+   * Returns an ECR ARN for a repository that resides in the same account/region
+   * as the current stack.
+   */
+  public static arnForLocalRepository(repositoryName: string, scope: IConstruct): string {
+    return scope.node.stack.formatArn({
+      service: 'ecr',
+      resource: 'repository',
+      resourceName: repositoryName
+    });
+  }
+
   public readonly repositoryName: string;
   public readonly repositoryArn: string;
   private readonly lifecycleRules = new Array<LifecycleRule>();
@@ -69,16 +312,6 @@ export class Repository extends RepositoryBase {
 
     this.repositoryName = resource.repositoryName;
     this.repositoryArn = resource.repositoryArn;
-  }
-
-  /**
-   * Export this repository from the stack
-   */
-  public export(): RepositoryImportProps {
-    return {
-      repositoryArn: new CfnOutput(this, 'RepositoryArn', { value: this.repositoryArn }).makeImportValue().toString(),
-      repositoryName: new CfnOutput(this, 'RepositoryName', { value: this.repositoryName }).makeImportValue().toString()
-    };
   }
 
   public addToResourcePolicy(statement: iam.PolicyStatement) {

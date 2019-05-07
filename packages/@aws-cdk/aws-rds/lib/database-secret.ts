@@ -21,6 +21,8 @@ export interface DatabaseSecretProps {
 
 /**
  * A database secret.
+ *
+ * @resource AWS::SecretsManager::Secret
  */
 export class DatabaseSecret extends secretsmanager.Secret {
   constructor(scope: cdk.Construct, id: string, props: DatabaseSecretProps) {

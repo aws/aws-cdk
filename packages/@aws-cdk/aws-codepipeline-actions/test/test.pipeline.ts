@@ -1,4 +1,4 @@
-import { expect, haveResource, haveResourceLike, SynthUtils } from '@aws-cdk/assert';
+import { expect, haveResource, haveResourceLike, not, SynthUtils } from '@aws-cdk/assert';
 import codebuild = require('@aws-cdk/aws-codebuild');
 import codecommit = require('@aws-cdk/aws-codecommit');
 import codepipeline = require('@aws-cdk/aws-codepipeline');
@@ -67,6 +67,124 @@ export = {
     test.done();
   },
 
+  'pipeline with GitHub source with poll trigger'(test: Test) {
+    const stack = new Stack();
+
+    const secret = new CfnParameter(stack, 'GitHubToken', { type: 'String', default: 'my-token' });
+
+    const p = new codepipeline.Pipeline(stack, 'P');
+
+    p.addStage({
+      name: 'Source',
+      actions: [
+        new cpactions.GitHubSourceAction({
+          actionName: 'GH',
+          runOrder: 8,
+          output: new codepipeline.Artifact('A'),
+          branch: 'branch',
+          oauthToken: SecretValue.plainText(secret.stringValue),
+          owner: 'foo',
+          repo: 'bar',
+          trigger: cpactions.GitHubTrigger.Poll
+        }),
+      ],
+    });
+
+    p.addStage({
+      name: 'Two',
+      actions: [
+        new cpactions.ManualApprovalAction({ actionName: 'Boo' }),
+      ],
+    });
+
+    expect(stack).to(not(haveResourceLike('AWS::CodePipeline::Webhook')));
+
+    expect(stack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
+      "Stages": [
+      {
+        "Actions": [
+          {
+            "Configuration": {
+              "PollForSourceChanges": true
+            },
+            "Name": "GH"
+          }
+        ],
+        "Name": "Source"
+      },
+      {
+        "Actions": [
+          {
+            "Name": "Boo",
+          }
+        ],
+        "Name": "Two"
+      }
+      ]
+    }));
+
+    test.done();
+  },
+
+  'pipeline with GitHub source without triggers'(test: Test) {
+    const stack = new Stack();
+
+    const secret = new CfnParameter(stack, 'GitHubToken', { type: 'String', default: 'my-token' });
+
+    const p = new codepipeline.Pipeline(stack, 'P');
+
+    p.addStage({
+      name: 'Source',
+      actions: [
+        new cpactions.GitHubSourceAction({
+          actionName: 'GH',
+          runOrder: 8,
+          output: new codepipeline.Artifact('A'),
+          branch: 'branch',
+          oauthToken: SecretValue.plainText(secret.stringValue),
+          owner: 'foo',
+          repo: 'bar',
+          trigger: cpactions.GitHubTrigger.None
+        }),
+      ],
+    });
+
+    p.addStage({
+      name: 'Two',
+      actions: [
+        new cpactions.ManualApprovalAction({ actionName: 'Boo' }),
+      ],
+    });
+
+    expect(stack).to(not(haveResourceLike('AWS::CodePipeline::Webhook')));
+
+    expect(stack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
+      "Stages": [
+      {
+        "Actions": [
+          {
+            "Configuration": {
+              "PollForSourceChanges": false
+            },
+            "Name": "GH"
+          }
+        ],
+        "Name": "Source"
+      },
+      {
+        "Actions": [
+          {
+            "Name": "Boo",
+          }
+        ],
+        "Name": "Two"
+      }
+      ]
+    }));
+
+    test.done();
+  },
+
   'github action uses ThirdParty owner'(test: Test) {
     const stack = new Stack();
 
@@ -95,6 +213,8 @@ export = {
         new cpactions.ManualApprovalAction({ actionName: 'Boo' }),
       ],
     });
+
+    expect(stack).to(haveResourceLike('AWS::CodePipeline::Webhook'));
 
     expect(stack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
       "ArtifactStore": {
@@ -585,6 +705,19 @@ export = {
       test.done();
     },
   },
+
+  'Pipeline.fromPipelineArn'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    const pl = codepipeline.Pipeline.fromPipelineArn(stack, 'imported', 'arn:aws:codepipeline:us-east-1:123456789012:MyDemoPipeline');
+
+    // THEN
+    test.deepEqual(pl.pipelineArn, 'arn:aws:codepipeline:us-east-1:123456789012:MyDemoPipeline');
+    test.deepEqual(pl.pipelineName, 'MyDemoPipeline');
+    test.done();
+  }
 };
 
 function stageForTesting(stack: Stack): codepipeline.IStage {

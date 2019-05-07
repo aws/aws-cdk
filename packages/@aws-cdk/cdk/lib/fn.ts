@@ -10,7 +10,6 @@ import { ResolveContext, Token } from './token';
  * http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference.html
  */
 export class Fn {
-
   /**
    * The ``Fn::GetAtt`` intrinsic function returns the value of an attribute
    * from a resource in the template.
@@ -36,6 +35,10 @@ export class Fn {
    * @returns a token represented as a string
    */
   public static join(delimiter: string, listOfValues: string[]): string {
+    if (listOfValues.length === 0) {
+      throw new Error(`FnJoin requires at least one value to be provided`);
+    }
+
     return new FnJoin(delimiter, listOfValues).toString();
   }
 
@@ -49,6 +52,12 @@ export class Fn {
    * @returns a token represented as a string array
    */
   public static split(delimiter: string, source: string): string[] {
+
+    // short-circut if source is not a token
+    if (!Token.isToken(source)) {
+      return source.split(delimiter);
+    }
+
     return new FnSplit(delimiter, source).toList();
   }
 
@@ -59,6 +68,10 @@ export class Fn {
    * @returns a token represented as a string
    */
   public static select(index: number, array: string[]): string {
+    if (!Token.isToken(array)) {
+      return array[index];
+    }
+
     return new FnSelect(index, array).toString();
   }
 

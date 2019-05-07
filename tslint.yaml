@@ -48,4 +48,8 @@ rules:
     variable-name: [true, "ban-keywords", "check-format", "allow-leading-underscore", "allow-pascal-case"]
 
     # Unhandled promises are the source of all kinds of bugs and race conditions...
-    no-floating-promises: true
+    no-floating-promises: ["Promise"]
+
+    # We require empty interfaces for AWS construct guideline compliance
+    no-empty-interface: false
+
