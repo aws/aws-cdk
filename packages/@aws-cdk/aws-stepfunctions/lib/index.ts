@@ -6,7 +6,7 @@ export * from './state-machine-fragment';
 export * from './state-transition-metrics';
 export * from './chain';
 export * from './state-graph';
-export * from './task-resource';
+export * from './step-functions-task';
 
 export * from './states/choice';
 export * from './states/fail';

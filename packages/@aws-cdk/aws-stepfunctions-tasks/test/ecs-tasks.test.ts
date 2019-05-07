@@ -22,7 +22,7 @@ test('Running a Fargate Task', () => {
   });
 
   // WHEN
-  const runTask = new tasks.RunEcsFargateTask(stack, 'Run', {
+  const runTask = new sfn.Task(stack, 'Run', { task: new tasks.RunEcsFargateTask(stack, 'RunFargate', {
     cluster,
     taskDefinition,
     containerOverrides: [
@@ -33,7 +33,7 @@ test('Running a Fargate Task', () => {
         ]
       }
     ]
-  });
+  }) });
 
   new sfn.StateMachine(stack, 'SM', {
     definition: runTask
@@ -48,7 +48,7 @@ test('Running a Fargate Task', () => {
       NetworkConfiguration: {
         AwsvpcConfiguration: {
           AssignPublicIp: "DISABLED",
-          SecurityGroups: [{"Fn::GetAtt": ["RunSecurityGroupFBA8EDA8", "GroupId"]}],
+          SecurityGroups: [{"Fn::GetAtt": ["RunFargateSecurityGroup709740F2", "GroupId"]}],
           Subnets: [
             {Ref: "VpcPrivateSubnet1Subnet536B997A"},
             {Ref: "VpcPrivateSubnet2Subnet3788AAA1"},
@@ -130,7 +130,7 @@ test('Running an EC2 Task with bridge network', () => {
   });
 
   // WHEN
-  const runTask = new tasks.RunEcsEc2Task(stack, 'Run', {
+  const runTask = new sfn.Task(stack, 'Run', { task: new tasks.RunEcsEc2Task(stack, 'RunEc2', {
     cluster,
     taskDefinition,
     containerOverrides: [
@@ -141,7 +141,7 @@ test('Running an EC2 Task with bridge network', () => {
         ]
       }
     ]
-  });
+  }) });
 
   new sfn.StateMachine(stack, 'SM', {
     definition: runTask
@@ -205,5 +205,60 @@ test('Running an EC2 Task with bridge network', () => {
         }
       ],
     },
+  });
+});
+
+test('Running an EC2 Task with placement strategies', () => {
+  // GIVEN
+  const stack = new Stack();
+
+  const vpc = new ec2.VpcNetwork(stack, 'Vpc');
+  const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+  cluster.addCapacity('Capacity', {
+    instanceType: new ec2.InstanceType('t3.medium')
+  });
+
+  const taskDefinition = new ecs.TaskDefinition(stack, 'TD', {
+    compatibility: ecs.Compatibility.Ec2
+  });
+  taskDefinition.addContainer('henk', {
+    image: ecs.ContainerImage.fromRegistry('foo/bar'),
+    memoryLimitMiB: 256,
+  });
+
+  const ec2Task = new tasks.RunEcsEc2Task(stack, 'RunEc2', {
+    cluster,
+    taskDefinition,
+  });
+  ec2Task.placeSpreadAcross();
+  ec2Task.placePackedBy(ecs.BinPackResource.Cpu);
+  ec2Task.placeRandomly();
+  ec2Task.placeOnMemberOf('blieptuut');
+
+  // WHEN
+  const runTask = new sfn.Task(stack, 'Run', { task: ec2Task });
+
+  new sfn.StateMachine(stack, 'SM', {
+    definition: runTask
+  });
+
+  // THEN
+  expect(stack.node.resolve(runTask.toStateJson())).toEqual({
+    End: true,
+    Parameters: {
+      Cluster: {"Fn::GetAtt": ["ClusterEB0386A7", "Arn"]},
+      LaunchType: "EC2",
+      TaskDefinition: {Ref: "TD49C78F36"},
+      PlacementConstraints: [
+        { Type: "memberOf", expression: "blieptuut", },
+      ],
+      PlacementStrategy: [
+        { Field: "instanceId", Type: "spread", },
+        { Field: "cpu", Type: "binpack", },
+        { Type: "random", },
+      ],
+    },
+    Resource: "arn:aws:states:::ecs:runTask.sync",
+    Type: "Task",
   });
 });

@@ -1,4 +1,5 @@
 import sqs = require('@aws-cdk/aws-sqs');
+import sfn = require('@aws-cdk/aws-stepfunctions');
 import cdk = require('@aws-cdk/cdk');
 import tasks = require('../lib');
 
@@ -8,11 +9,10 @@ test('publish to queue', () => {
   const queue = new sqs.Queue(stack, 'Queue');
 
   // WHEN
-  const pub = new tasks.SendMessageTask(stack, 'Send', {
-    queue,
+  const pub = new sfn.Task(stack, 'Send', { task: new tasks.SendToQueue(queue, {
     messageBody: 'Send this message',
     messageDeduplicationIdPath: '$.deduping',
-  });
+  }) });
 
   // THEN
   expect(stack.node.resolve(pub.toStateJson())).toEqual({

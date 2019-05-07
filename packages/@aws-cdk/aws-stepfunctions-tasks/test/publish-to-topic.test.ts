@@ -1,4 +1,5 @@
 import sns = require('@aws-cdk/aws-sns');
+import sfn = require('@aws-cdk/aws-stepfunctions');
 import cdk = require('@aws-cdk/cdk');
 import tasks = require('../lib');
 
@@ -8,10 +9,9 @@ test('publish to SNS', () => {
   const topic = new sns.Topic(stack, 'Topic');
 
   // WHEN
-  const pub = new tasks.PublishTask(stack, 'Publish', {
-    topic,
+  const pub = new sfn.Task(stack, 'Publish', { task: new tasks.PublishToTopic(topic, {
     message: 'Send this message'
-  });
+  }) });
 
   // THEN
   expect(stack.node.resolve(pub.toStateJson())).toEqual({

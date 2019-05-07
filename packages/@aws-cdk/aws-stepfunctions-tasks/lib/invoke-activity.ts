@@ -22,7 +22,7 @@ export interface InvokeActivityProps {
  * A Function can be used directly as a Resource, but this class mirrors
  * integration with other AWS services via a specific class instance.
  */
-export class InvokeActivity implements sfn.ITaskResource {
+export class InvokeActivity implements sfn.IStepFunctionsTask {
   public readonly resourceArn: string;
   public readonly policyStatements?: iam.PolicyStatement[] | undefined;
   public readonly metricDimensions?: cloudwatch.DimensionHash | undefined;

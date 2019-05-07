@@ -10,7 +10,7 @@ export = {
         // GIVEN
         const stack = new cdk.Stack();
         const task = new stepfunctions.Task(stack, 'Task', {
-            resource: {
+            task: {
                 resourceArn: 'resource',
                 policyStatements: [new iam.PolicyStatement()
                     .addAction('resource:Everything')
@@ -45,8 +45,13 @@ export = {
         // GIVEN
         const stack = new cdk.Stack();
         const task = new stepfunctions.Task(stack, 'Task', {
-            resource: {
-                resourceArn: 'resource'
+            task: {
+                resourceArn: 'resource',
+                policyStatements: [
+                    new iam.PolicyStatement()
+                        .addAction('resource:Everything')
+                        .addResource('resource')
+                ]
             }
         });
 
@@ -81,7 +86,7 @@ export = {
         const task = new stepfunctions.Task(stack, 'Task', {
             inputPath: "$",
             outputPath: "$.state",
-            resource: {
+            task: {
                 resourceArn: 'resource',
                 parameters: {
                     "input.$": "$",

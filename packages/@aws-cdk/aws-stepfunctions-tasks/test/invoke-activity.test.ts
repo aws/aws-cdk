@@ -9,7 +9,7 @@ test('Activity can be used in a Task', () => {
 
   // WHEN
   const activity = new sfn.Activity(stack, 'Activity');
-  const task = new tasks.InvokeActivity(stack, 'Task', { activity });
+  const task = new sfn.Task(stack, 'Task', { task: new tasks.InvokeActivity(activity) });
   new sfn.StateMachine(stack, 'SM', {
     definition: task
   });
@@ -30,7 +30,7 @@ test('Activity Task metrics and Activity metrics are the same', () => {
   // GIVEN
   const stack = new Stack();
   const activity = new sfn.Activity(stack, 'Activity');
-  const task = new tasks.InvokeActivity(stack, 'Invoke', { activity });
+  const task = new sfn.Task(stack, 'Invoke', { task: new tasks.InvokeActivity(activity) });
 
   // WHEN
   const activityMetrics = [

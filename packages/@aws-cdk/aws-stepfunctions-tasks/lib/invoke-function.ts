@@ -9,7 +9,7 @@ import sfn = require('@aws-cdk/aws-stepfunctions');
  * A Function can be used directly as a Resource, but this class mirrors
  * integration with other AWS services via a specific class instance.
  */
-export class InvokeFunction implements sfn.ITaskResource {
+export class InvokeFunction implements sfn.IStepFunctionsTask {
   public readonly resourceArn: string;
   public readonly policyStatements?: iam.PolicyStatement[] | undefined;
   public readonly metricDimensions?: cloudwatch.DimensionHash | undefined;

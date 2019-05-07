@@ -4,7 +4,7 @@ import iam = require('@aws-cdk/aws-iam');
 /**
  * Interface for resources that can be used as tasks
  */
-export interface ITaskResource {
+export interface IStepFunctionsTask {
   /**
    * The resource that represents the work to be executed
    *
