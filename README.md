@@ -27,7 +27,7 @@ The CDK is currently in developer preview and we look forward to community feedb
 
 [Developer Guide] |
 [Tutorial] |
-[API Reference](https://awslabs.github.io/aws-cdk/reference.html) |
+[API Reference](https://docs.aws.amazon.com/cdk/api/latest/docs/aws-construct-library.html) |
 [Examples](https://github.com/aws-samples/aws-cdk-examples) |
 [Getting Help](#getting-help)
 
