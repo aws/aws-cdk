@@ -71,14 +71,6 @@ export = {
           Memory: 512,
           Image: "amazon/amazon-ecs-sample",
           Links: [],
-          LinuxParameters: {
-            Capabilities: {
-              Add: [],
-              Drop: []
-            },
-            Devices: [],
-            Tmpfs: []
-          },
           MountPoints: [],
           Name: "web",
           PortMappings: [{
