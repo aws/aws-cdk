@@ -1,12 +1,13 @@
 import { exec as _exec } from 'child_process';
 import colors = require('colors/safe');
-import { open as _open, stat as _stat } from 'fs';
+import { close as _close, open as _open, stat as _stat } from 'fs';
 import semver = require('semver');
 import { promisify } from 'util';
 import { debug, print, warning } from '../lib/logging';
 
 const ONE_DAY_IN_SECONDS = 1 * 24 * 60 * 60;
 
+const close = promisify(_close);
 const exec = promisify(_exec);
 const open = promisify(_open);
 const stat = promisify(_stat);
@@ -21,7 +22,7 @@ function commit(): string {
   return require('../build-info.json').commit;
 }
 
-export class CacheFile {
+export class TimestampFile {
   private readonly file: string;
 
   // File modify times are accurate only till the second, hence using seconds as precision
@@ -51,18 +52,19 @@ export class CacheFile {
   }
 
   public async update(): Promise<void> {
-    await open(this.file, 'w');
+    const fd = await open(this.file, 'w');
+    await close(fd);
   }
 }
 
 // Export for unit testing only.
 // Don't use directly, use displayVersionMessage() instead.
-export async function latestVersionIfHigher(currentVersion: string, cacheFile: CacheFile): Promise<string | null> {
+export async function latestVersionIfHigher(currentVersion: string, cacheFile: TimestampFile): Promise<string | null> {
   if (!(await cacheFile.hasExpired())) {
     return null;
   }
 
-  const { stdout, stderr } = await exec(`npm view cdk version`);
+  const { stdout, stderr } = await exec(`npm view aws-cdk version`);
   if (stderr && stderr.trim().length > 0) {
     debug(`The 'npm view' command generated an error stream with content [${stderr.trim()}]`);
   }
@@ -80,9 +82,13 @@ export async function latestVersionIfHigher(currentVersion: string, cacheFile: C
   }
 }
 
-const versionCheckCache = new CacheFile(`${__dirname}/../.LAST_VERSION_CHECK`, ONE_DAY_IN_SECONDS);
+const versionCheckCache = new TimestampFile(`${__dirname}/../.LAST_VERSION_CHECK`, ONE_DAY_IN_SECONDS);
 
 export async function displayVersionMessage(): Promise<void> {
+  if (!process.stdout.isTTY) {
+    return;
+  }
+
   try {
     const laterVersion = await latestVersionIfHigher(versionNumber(), versionCheckCache);
     if (laterVersion) {
@@ -93,6 +99,6 @@ export async function displayVersionMessage(): Promise<void> {
       print('********************************************************');
     }
   } catch (err) {
-    warning(`Could not run version check due to error ${err.message} - ${err.stack}`);
+    warning(`Could not run version check due to error ${err.message}`);
   }
 }
