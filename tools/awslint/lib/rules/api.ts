@@ -121,7 +121,7 @@ apiLinter.add({
         return;
       }
 
-      // classes are okay as long as they are not constructs
+      // classes are okay as long as they are not resource constructs
       if (type.type && type.type.isClassType()) {
         if (!ResourceReflection.isResourceClass(type.type)) {
           return;

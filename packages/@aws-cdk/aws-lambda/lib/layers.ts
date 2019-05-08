@@ -62,9 +62,9 @@ export interface ILayerVersion extends IResource {
    * permission on the layer version.
    *
    * @param id the ID of the grant in the construct tree.
-   * @param grantee the identification of the grantee.
+   * @param permission the identification of the grantee.
    */
-  addPermission(id: string, grantee: LayerVersionPermission): void;
+  addPermission(id: string, permission: LayerVersionPermission): void;
 }
 
 /**
@@ -74,16 +74,16 @@ abstract class LayerVersionBase extends Resource implements ILayerVersion {
   public abstract readonly layerVersionArn: string;
   public abstract readonly compatibleRuntimes?: Runtime[];
 
-  public addPermission(id: string, grantee: LayerVersionPermission) {
-    if (grantee.organizationId != null && grantee.accountId !== '*') {
-      throw new Error(`OrganizationId can only be specified if AwsAccountId is '*', but it is ${grantee.accountId}`);
+  public addPermission(id: string, permission: LayerVersionPermission) {
+    if (permission.organizationId != null && permission.accountId !== '*') {
+      throw new Error(`OrganizationId can only be specified if AwsAccountId is '*', but it is ${permission.accountId}`);
     }
 
     new CfnLayerVersionPermission(this, id, {
       action: 'lambda:GetLayerVersion',
       layerVersionArn: this.layerVersionArn,
-      principal: grantee.accountId,
-      organizationId: grantee.organizationId,
+      principal: permission.accountId,
+      organizationId: permission.organizationId,
     });
   }
 

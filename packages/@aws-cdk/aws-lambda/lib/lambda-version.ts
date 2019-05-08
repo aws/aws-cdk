@@ -42,7 +42,14 @@ export interface VersionProps {
 }
 
 export interface VersionAttributes {
+  /**
+   * The version.
+   */
   readonly version: string;
+
+  /**
+   * The lambda function.
+   */
   readonly lambda: IFunction;
 }
 
