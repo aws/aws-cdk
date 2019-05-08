@@ -564,9 +564,22 @@ export class BlockPublicAccess {
   }
 }
 
+/**
+ * Specifies a metrics configuration for the CloudWatch request metrics from an Amazon S3 bucket.
+ */
 export interface BucketMetrics {
+  /**
+   * The ID used to identify the metrics configuration.
+   */
   readonly id: string;
+  /**
+   * The prefix that an object must have to be included in the metrics results.
+   */
   readonly prefix?: string;
+  /**
+   * Specifies a list of tag filters to use as a metrics configuration filter.
+   * The metrics configuration includes only objects that meet the filter's criteria.
+   */
   readonly tagFilters?: {[tag: string]: any};
 }
 
@@ -809,6 +822,11 @@ export class Bucket extends BucketBase {
     this.lifecycleRules.push(rule);
   }
 
+  /**
+   * Adds a metrics configuration for the CloudWatch request metrics from the bucket.
+   *
+   * @param metric The metric configuration to add
+   */
   public addMetric(metric: BucketMetrics) {
     this.metrics.push(metric);
   }
