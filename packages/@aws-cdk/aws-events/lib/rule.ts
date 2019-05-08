@@ -1,7 +1,6 @@
 import { CfnOutput, Construct, Resource, Token } from '@aws-cdk/cdk';
 import { EventPattern } from './event-pattern';
 import { CfnRule } from './events.generated';
-import { TargetInputTemplate } from './input-options';
 import { EventRuleAttributes, IEventRule } from './rule-ref';
 import { IEventRuleTarget } from './target';
 import { mergeEventPattern } from './util';
@@ -120,11 +119,10 @@ export class EventRule extends Resource implements IEventRule {
    *
    * No-op if target is undefined.
    */
-  public addTarget(target?: IEventRuleTarget, inputOptions?: TargetInputTemplate) {
+  public addTarget(target?: IEventRuleTarget) {
     if (!target) { return; }
-    const self = this;
 
-    const targetProps = target.asEventRuleTarget(this.ruleArn, this.node.uniqueId);
+    const targetProps = target.bind(this);
 
     // check if a target with this ID already exists
     if (this.targets.find(t => t.id === targetProps.id)) {
@@ -133,41 +131,11 @@ export class EventRule extends Resource implements IEventRule {
 
     this.targets.push({
       ...targetProps,
-      inputTransformer: renderTransformer(),
+      inputTransformer: targetProps.inputTemplate !== undefined && targetProps.inputPathsMap !== undefined ? {
+        inputTemplate: targetProps.inputTemplate,
+        inputPathsMap: targetProps.inputPathsMap,
+      } : undefined,
     });
-
-    function renderTransformer(): CfnRule.InputTransformerProperty | undefined {
-      if (!inputOptions) {
-        return undefined;
-      }
-
-      if (inputOptions.jsonTemplate && inputOptions.textTemplate) {
-        throw new Error('"jsonTemplate" and "textTemplate" are mutually exclusive');
-      }
-
-      if (!inputOptions.jsonTemplate && !inputOptions.textTemplate) {
-        throw new Error('One of "jsonTemplate" or "textTemplate" are required');
-      }
-
-      let inputTemplate: any;
-
-      if (inputOptions.jsonTemplate) {
-        inputTemplate = typeof inputOptions.jsonTemplate === 'string'
-            ? inputOptions.jsonTemplate
-            : self.node.stringifyJson(inputOptions.jsonTemplate);
-      } else {
-        inputTemplate = typeof(inputOptions.textTemplate) === 'string'
-            // Newline separated list of JSON-encoded strings
-            ? inputOptions.textTemplate.split('\n').map(x => self.node.stringifyJson(x)).join('\n')
-            // Some object, stringify it, then stringify the string for proper escaping
-            : self.node.stringifyJson(self.node.stringifyJson(inputOptions.textTemplate));
-      }
-
-      return {
-        inputPathsMap: inputOptions.pathsMap,
-        inputTemplate
-      };
-    }
   }
 
   /**

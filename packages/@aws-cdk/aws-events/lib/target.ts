@@ -1,6 +1,24 @@
 import { CfnRule } from './events.generated';
+import { IEventRule } from './rule-ref';
 
-export interface EventRuleTargetProps {
+/**
+ * An abstract target for EventRules.
+ */
+export interface IEventRuleTarget {
+  /**
+   * Returns the rule target specification.
+   * NOTE: Do not use the various `inputXxx` options. They can be set in a call to `addTarget`.
+   *
+   * @param ruleArn The ARN of the CloudWatch Event Rule that would trigger this target.
+   * @param ruleUniqueId A unique ID for this rule. Can be used to implement idempotency.
+   */
+  bind(rule: IEventRule): EventRuleTargetProperties;
+}
+
+/**
+ * Properties for an event rule target
+ */
+export interface EventRuleTargetProperties {
   /**
    * A unique, user-defined identifier for the target. Acceptable values
    * include alphanumeric characters, periods (.), hyphens (-), and
@@ -39,18 +57,24 @@ export interface EventRuleTargetProps {
    * Command.
    */
   readonly runCommandParameters?: CfnRule.RunCommandParametersProperty;
-}
 
-/**
- * An abstract target for EventRules.
- */
-export interface IEventRuleTarget {
   /**
-   * Returns the rule target specification.
-   * NOTE: Do not use the various `inputXxx` options. They can be set in a call to `addTarget`.
-   *
-   * @param ruleArn The ARN of the CloudWatch Event Rule that would trigger this target.
-   * @param ruleUniqueId A unique ID for this rule. Can be used to implement idempotency.
+   * Literal input to the target service (must be valid JSON)
    */
-  asEventRuleTarget(ruleArn: string, ruleUniqueId: string): EventRuleTargetProps;
+  readonly input?: string;
+
+  /**
+   * JsonPath to take input from the input event
+   */
+  readonly inputPath?: string;
+
+  /**
+   * Input template to insert paths map into
+   */
+  readonly inputTemplate?: string;
+
+  /**
+   * Paths map to extract values from event and insert into `inputTemplate`
+   */
+  readonly inputPathsMap?: {[key: string]: string};
 }

@@ -287,7 +287,41 @@ you can configure on your instances.
 To start an Amazon ECS task on an Amazon EC2-backed Cluster, instantiate an
 `Ec2TaskEventRuleTarget` instead of an `Ec2Service`:
 
-[example of CloudWatch Events integration](test/ec2/integ.event-task.lit.ts)
+```ts
+import targets = require('@aws-cdk/aws-events-targets');
+
+// Create a Task Definition for the container to start
+const taskDefinition = new ecs.Ec2TaskDefinition(this, 'TaskDef');
+taskDefinition.addContainer('TheContainer', {
+  image: ecs.ContainerImage.fromAsset(this, 'EventImage', {
+    directory: path.resolve(__dirname, '..', 'eventhandler-image')
+  }),
+  memoryLimitMiB: 256,
+  logging: new ecs.AwsLogDriver(this, 'TaskLogging', { streamPrefix: 'EventDemo' })
+});
+
+// An EventRule that describes the event trigger (in this case a scheduled run)
+const rule = new events.EventRule(this, 'Rule', {
+  scheduleExpression: 'rate(1 minute)',
+});
+
+// Use as the target of the EventRule
+const target = new targets.Ec2EventRuleTarget(this, 'EventTarget', {
+  cluster,
+  taskDefinition,
+  taskCount: 1
+});
+
+// Pass an environment variable to the container 'TheContainer' in the task
+rule.addTarget(target, {
+  jsonTemplate: JSON.stringify({
+    containerOverrides: [{
+      name: 'TheContainer',
+      environment: [{ name: 'I_WAS_TRIGGERED', value: 'From CloudWatch Events' }]
+    }]
+  })
+});
+```
 
 > Note: it is currently not possible to start AWS Fargate tasks in this way.
 
