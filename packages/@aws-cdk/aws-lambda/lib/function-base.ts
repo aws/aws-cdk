@@ -3,7 +3,6 @@ import ec2 = require('@aws-cdk/aws-ec2');
 import iam = require('@aws-cdk/aws-iam');
 import logs = require('@aws-cdk/aws-logs');
 import s3n = require('@aws-cdk/aws-s3-notifications');
-import stepfunctions = require('@aws-cdk/aws-stepfunctions');
 import cdk = require('@aws-cdk/cdk');
 import { IResource, Resource } from '@aws-cdk/cdk';
 import { IEventSource } from './event-source';
@@ -12,7 +11,7 @@ import { CfnPermission } from './lambda.generated';
 import { Permission } from './permission';
 
 export interface IFunction extends IResource, logs.ILogSubscriptionDestination,
-  s3n.IBucketNotificationDestination, ec2.IConnectable, stepfunctions.IStepFunctionsTaskResource, iam.IGrantable {
+  s3n.IBucketNotificationDestination, ec2.IConnectable, iam.IGrantable {
 
   /**
    * Logical ID of this Function.
@@ -303,19 +302,6 @@ export abstract class FunctionBase extends Resource implements IFunction  {
       type: s3n.BucketNotificationDestinationType.Lambda,
       arn: this.functionArn,
       dependencies: permission ? [ permission ] : undefined
-    };
-  }
-
-  public asStepFunctionsTaskResource(_callingTask: stepfunctions.Task): stepfunctions.StepFunctionsTaskResourceProps {
-    return {
-      resourceArn: this.functionArn,
-      metricPrefixSingular: 'LambdaFunction',
-      metricPrefixPlural: 'LambdaFunctions',
-      metricDimensions: { LambdaFunctionArn: this.functionArn },
-      policyStatements: [new iam.PolicyStatement()
-        .addResource(this.functionArn)
-        .addActions("lambda:InvokeFunction")
-      ]
     };
   }
 

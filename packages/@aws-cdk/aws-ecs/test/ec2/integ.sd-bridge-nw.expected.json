@@ -775,14 +775,6 @@
             "Essential": true,
             "Image": "amazon/amazon-ecs-sample",
             "Links": [],
-            "LinuxParameters": {
-              "Capabilities": {
-                "Add": [],
-                "Drop": []
-              },
-              "Devices": [],
-              "Tmpfs": []
-            },
             "Memory": 256,
             "MountPoints": [],
             "Name": "frontend",
@@ -799,7 +791,6 @@
         ],
         "Family": "awsecsintegecsfrontendTD16AB905D",
         "NetworkMode": "bridge",
-        "PlacementConstraints": [],
         "RequiresCompatibilities": [
           "EC2"
         ],
@@ -828,8 +819,6 @@
         "DesiredCount": 1,
         "LaunchType": "EC2",
         "LoadBalancers": [],
-        "PlacementConstraints": [],
-        "PlacementStrategies": [],
         "SchedulingStrategy": "REPLICA",
         "ServiceRegistries": [
           {

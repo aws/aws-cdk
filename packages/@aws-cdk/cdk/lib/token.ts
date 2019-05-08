@@ -1,6 +1,6 @@
 import { IConstruct } from "./construct";
-import { TOKEN_MAP } from "./encoding";
-import { unresolved } from './unresolved';
+import { unresolved } from "./encoding";
+import { TokenMap } from "./token-map";
 
 /**
  * If objects has a function property by this name, they will be considered tokens, and this
@@ -93,7 +93,7 @@ export class Token {
     }
 
     if (this.tokenStringification === undefined) {
-      this.tokenStringification = TOKEN_MAP.registerString(this, this.displayName);
+      this.tokenStringification = TokenMap.instance().registerString(this, this.displayName);
     }
     return this.tokenStringification;
   }
@@ -128,7 +128,7 @@ export class Token {
     }
 
     if (this.tokenListification === undefined) {
-      this.tokenListification = TOKEN_MAP.registerList(this, this.displayName);
+      this.tokenListification = TokenMap.instance().registerList(this, this.displayName);
     }
     return this.tokenListification;
   }
