@@ -16,6 +16,32 @@ export interface ActivityProps {
  */
 export class Activity extends Resource implements IActivity {
     /**
+     * Construct an Activity from an existing Activity ARN
+     */
+    public static fromActivityArn(scope: Construct, id: string, activityArn: string): IActivity {
+        class Imported extends Construct implements IActivity {
+            public get activityArn() { return activityArn; }
+            public get activityName() {
+                return this.node.stack.parseArn(activityArn, ':').resourceName || '';
+            }
+        }
+
+        return new Imported(scope, id);
+    }
+
+    /**
+     * Construct an Activity from an existing Activity Name
+     */
+    public static fromActivityName(scope: Construct, id: string, activityName: string): IActivity {
+        return Activity.fromActivityArn(scope, id, scope.node.stack.formatArn({
+            service: 'states',
+            resource: 'activity',
+            resourceName: activityName,
+            sep: ':',
+        }));
+    }
+
+    /**
      * @attribute
      */
     public readonly activityArn: string;
@@ -144,11 +170,15 @@ export class Activity extends Resource implements IActivity {
 export interface IActivity extends IResource {
     /**
      * The ARN of the activity
+     *
+     * @attribute
      */
     readonly activityArn: string;
 
     /**
      * The name of the activity
+     *
+     * @attribute
      */
     readonly activityName: string;
 }
