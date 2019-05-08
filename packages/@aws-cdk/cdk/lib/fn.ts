@@ -2,7 +2,6 @@ import { ICfnConditionExpression } from './cfn-condition';
 import { minimalCloudFormationJoin } from './instrinsics';
 import { resolve } from './resolve';
 import { ResolveContext, Token } from './token';
-import { unresolved } from './unresolved';
 
 // tslint:disable:max-line-length
 
@@ -652,7 +651,7 @@ class FnJoin extends Token {
   }
 
   public resolve(context: ResolveContext): any {
-    if (unresolved(this.listOfValues)) {
+    if (Token.isToken(this.listOfValues)) {
       // This is a list token, don't try to do smart things with it.
       return { 'Fn::Join': [ this.delimiter, this.listOfValues ] };
     }

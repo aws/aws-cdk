@@ -395,6 +395,12 @@ class ImportedCluster extends Construct implements ICluster {
       resourceName: props.clusterName,
     });
 
+    this.clusterArn = props.clusterArn !== undefined ? props.clusterArn : this.node.stack.formatArn({
+      service: 'ecs',
+      resource: 'cluster',
+      resourceName: props.clusterName,
+    });
+
     let i = 1;
     for (const sgProps of props.securityGroups) {
       this.connections.addSecurityGroup(ec2.SecurityGroup.fromSecurityGroupId(this, `SecurityGroup${i}`, sgProps.securityGroupId));

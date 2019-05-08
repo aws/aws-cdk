@@ -791,7 +791,6 @@
         ],
         "Family": "awsecsintegecsTaskDef8DD0C801",
         "NetworkMode": "awsvpc",
-        "PlacementConstraints": [],
         "RequiresCompatibilities": [
           "EC2"
         ],
@@ -841,8 +840,6 @@
             ]
           }
         },
-        "PlacementConstraints": [],
-        "PlacementStrategies": [],
         "SchedulingStrategy": "REPLICA",
         "ServiceRegistries": [
           {

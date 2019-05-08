@@ -2,7 +2,7 @@ import { CfnOutput, Construct, IResource, Resource, Token } from '@aws-cdk/cdk';
 import { Connections, IConnectable } from './connections';
 import { CfnSecurityGroup, CfnSecurityGroupEgress, CfnSecurityGroupIngress } from './ec2.generated';
 import { IPortRange, ISecurityGroupRule } from './security-group-rule';
-import { IVpcNetwork } from './vpc-ref';
+import { IVpcNetwork } from './vpc';
 
 const isSecurityGroupSymbol = Symbol.for('aws-cdk:isSecurityGroup');
 
