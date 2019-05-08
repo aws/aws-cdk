@@ -186,7 +186,7 @@ export class Ec2Service extends BaseService implements elb.ILoadBalancerTarget {
     }
 
     for (const strategy of strategies) {
-      this.strategies.push(...strategy._json);
+      this.strategies.push(...strategy.toJson());
     }
   }
 
@@ -195,7 +195,7 @@ export class Ec2Service extends BaseService implements elb.ILoadBalancerTarget {
    */
   public addPlacementConstraints(...constraints: PlacementConstraint[]) {
     for (const constraint of constraints) {
-      this.constraints.push(...constraint._json);
+      this.constraints.push(...constraint.toJson());
     }
   }
 

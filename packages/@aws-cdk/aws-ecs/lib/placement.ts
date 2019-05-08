@@ -83,9 +83,9 @@ export class PlacementStrategy {
   }
 
   /**
-   * @internal
+   * Return the placement JSON
    */
-  public get _json() {
+  public toJson(): CfnService.PlacementStrategyProperty[] {
     return this.json;
   }
 }
@@ -119,9 +119,9 @@ export class PlacementConstraint {
   }
 
   /**
-   * @internal
+   * Return the placement JSON
    */
-  public get _json() {
+  public toJson(): CfnService.PlacementConstraintProperty[] {
     return this.json;
   }
 }

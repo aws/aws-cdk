@@ -222,7 +222,7 @@ test('Running an EC2 Task with placement strategies', () => {
     cluster,
     taskDefinition,
     placementStrategies: [
-      ecs.PlacementStrategy.spreadAcross(),
+      ecs.PlacementStrategy.spreadAcrossInstances(),
       ecs.PlacementStrategy.packedByCpu(),
       ecs.PlacementStrategy.randomly(),
     ],
@@ -244,7 +244,7 @@ test('Running an EC2 Task with placement strategies', () => {
       LaunchType: "EC2",
       TaskDefinition: {Ref: "TD49C78F36"},
       PlacementConstraints: [
-        { Type: "memberOf", expression: "blieptuut", },
+        { Type: "memberOf", Expression: "blieptuut", },
       ],
       PlacementStrategy: [
         { Field: "instanceId", Type: "spread", },

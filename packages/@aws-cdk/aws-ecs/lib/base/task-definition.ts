@@ -256,7 +256,7 @@ export class TaskDefinition extends Resource {
     if (isFargateCompatible(this.compatibility)) {
       throw new Error('Cannot set placement constraints on tasks that run on Fargate');
     }
-    this.placementConstraints.push(...constraint._json);
+    this.placementConstraints.push(...constraint.toJson());
   }
 
   /**

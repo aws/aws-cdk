@@ -60,8 +60,8 @@ export class RunEcsEc2Task extends EcsRunTaskBase {
       ...props,
       parameters: {
         LaunchType: 'EC2',
-        PlacementConstraints: mapArray(props.placementConstraints, c => c._json),
-        PlacementStrategy: mapArray(props.placementStrategies, c => c._json),
+        PlacementConstraints: noEmpty(flatten((props.placementConstraints || []).map(c => c.toJson().map(uppercaseKeys)))),
+        PlacementStrategy: noEmpty(flatten((props.placementStrategies || []).map(c => c.toJson().map(uppercaseKeys)))),
       }
     });
 
@@ -84,7 +84,19 @@ function validateNoNetworkingProps(props: RunEcsEc2TaskProps) {
   }
 }
 
-function mapArray<A, B>(xs: A[] | undefined, fn: (x: A) => B): B[] | undefined {
-  if (xs === undefined || xs.length === 0) { return undefined; }
-  return xs.map(fn);
+function uppercaseKeys(obj: {[key: string]: any}): {[key: string]: any} {
+  const ret: {[key: string]: any}  = {};
+  for (const key of Object.keys(obj)) {
+    ret[key.slice(0, 1).toUpperCase() + key.slice(1)] = obj[key];
+  }
+  return ret;
+}
+
+function flatten<A>(xs: A[][]): A[] {
+  return Array.prototype.concat([], ...xs);
+}
+
+function noEmpty<A>(xs: A[]): A[] | undefined {
+  if (xs.length === 0) { return undefined; }
+  return xs;
 }

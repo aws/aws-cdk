@@ -546,7 +546,6 @@
         },
         "Family": "awsecsinteg2TaskDef1F38909D",
         "NetworkMode": "bridge",
-        "PlacementConstraints": [],
         "RequiresCompatibilities": [
           "EC2"
         ],
