@@ -131,6 +131,9 @@ export class Cluster extends Resource implements ICluster {
 
   /**
    * Add compute capacity to this ECS cluster in the form of an AutoScalingGroup
+   * @param autoScalingGroup the ASG to add to this cluster.
+   * [disable-awslint:ref-via-interface] is needed in order to install the ECS
+   * agent by updating the ASGs user data.
    */
   public addAutoScalingGroup(autoScalingGroup: autoscaling.AutoScalingGroup, options: AddAutoScalingGroupCapacityOptions = {}) {
     this._hasEc2Capacity = true;

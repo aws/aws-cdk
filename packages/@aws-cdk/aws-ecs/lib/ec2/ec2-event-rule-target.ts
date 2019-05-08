@@ -1,7 +1,7 @@
 import events = require ('@aws-cdk/aws-events');
 import iam = require('@aws-cdk/aws-iam');
 import cdk = require('@aws-cdk/cdk');
-import { TaskDefinition } from '../base/task-definition';
+import { ITaskDefinition } from '../base/task-definition';
 import { ICluster } from '../cluster';
 import { isEc2Compatible } from '../util';
 
@@ -17,7 +17,7 @@ export interface Ec2EventRuleTargetProps {
   /**
    * Task Definition of the task that should be started
    */
-  readonly taskDefinition: TaskDefinition;
+  readonly taskDefinition: ITaskDefinition;
 
   /**
    * How many tasks should be started when this event is triggered
@@ -32,7 +32,7 @@ export interface Ec2EventRuleTargetProps {
  */
 export class Ec2EventRuleTarget extends cdk.Construct implements events.IEventRuleTarget {
   private readonly cluster: ICluster;
-  private readonly taskDefinition: TaskDefinition;
+  private readonly taskDefinition: ITaskDefinition;
   private readonly taskCount: number;
 
   constructor(scope: cdk.Construct, id: string, props: Ec2EventRuleTargetProps) {
@@ -76,9 +76,11 @@ export class Ec2EventRuleTarget extends cdk.Construct implements events.IEventRu
    * they can reuse the same role.
    */
   public get eventsRole(): iam.IRole {
-    let role = this.taskDefinition.node.tryFindChild('EventsRole') as iam.IRole;
+    const stack = this.node.stack;
+    const id = `${this.taskDefinition.node.uniqueId}-EventsRole`;
+    let role = stack.node.tryFindChild(id) as iam.IRole;
     if (role === undefined) {
-      role = new iam.Role(this.taskDefinition, 'EventsRole', {
+      role = new iam.Role(stack, id, {
         assumedBy: new iam.ServicePrincipal('events.amazonaws.com')
       });
     }

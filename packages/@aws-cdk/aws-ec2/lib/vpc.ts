@@ -790,7 +790,7 @@ export class VpcNetwork extends VpcNetworkBase {
       });
 
       (this.publicSubnets as VpcPublicSubnet[]).forEach(publicSubnet => {
-        publicSubnet.addDefaultIGWRouteEntry(igw, att);
+        publicSubnet.addDefaultInternetRoute(igw.ref, att);
       });
 
       // if gateways are needed create them
@@ -803,7 +803,7 @@ export class VpcNetwork extends VpcNetworkBase {
           // round robin the available NatGW since one is not in your AZ
           ngwId = ngwArray[i % ngwArray.length];
         }
-        privateSubnet.addDefaultNatRouteEntry(ngwId);
+        privateSubnet.addDefaultNatRoute(ngwId);
       });
     }
 
@@ -1114,31 +1114,36 @@ export class VpcSubnet extends cdk.Construct implements IVpcSubnet {
     return this.internetDependencies;
   }
 
-  protected addDefaultRouteToNAT(natGatewayId: string) {
-    const route = new CfnRoute(this, `DefaultRoute`, {
-      routeTableId: this.routeTableId!,
-      destinationCidrBlock: '0.0.0.0/0',
-      natGatewayId
-    });
-    this.internetDependencies.add(route);
-  }
-
   /**
    * Create a default route that points to a passed IGW, with a dependency
    * on the IGW's attachment to the VPC.
+   *
+   * @param gatewayId the logical ID (ref) of the gateway attached to your VPC
+   * @param gatewayAttachment the gateway attachment construct to be added as a dependency
    */
-  protected addDefaultRouteToIGW(
-    gateway: CfnInternetGateway,
-    gatewayAttachment: CfnVPCGatewayAttachment) {
+  public addDefaultInternetRoute(gatewayId: string, gatewayAttachment: cdk.IDependable) {
     const route = new CfnRoute(this, `DefaultRoute`, {
       routeTableId: this.routeTableId!,
       destinationCidrBlock: '0.0.0.0/0',
-      gatewayId: gateway.ref
+      gatewayId
     });
     route.node.addDependency(gatewayAttachment);
 
     // Since the 'route' depends on the gateway attachment, just
     // depending on the route is enough.
+    this.internetDependencies.add(route);
+  }
+
+  /**
+   * Adds an entry to this subnets route table that points to the passed NATGatwayId
+   * @param natGatewayId The ID of the NAT gateway
+   */
+  public addDefaultNatRoute(natGatewayId: string) {
+    const route = new CfnRoute(this, `DefaultRoute`, {
+      routeTableId: this.routeTableId!,
+      destinationCidrBlock: '0.0.0.0/0',
+      natGatewayId
+    });
     this.internetDependencies.add(route);
   }
 }
@@ -1155,16 +1160,6 @@ export class VpcPublicSubnet extends VpcSubnet {
 
   constructor(scope: cdk.Construct, id: string, props: VpcPublicSubnetProps) {
     super(scope, id, props);
-  }
-
-  /**
-   * Create a default route that points to a passed IGW, with a dependency
-   * on the IGW's attachment to the VPC.
-   */
-  public addDefaultIGWRouteEntry(
-    gateway: CfnInternetGateway,
-    gatewayAttachment: CfnVPCGatewayAttachment) {
-    this.addDefaultRouteToIGW(gateway, gatewayAttachment);
   }
 
   /**
@@ -1195,13 +1190,6 @@ export interface VpcPrivateSubnetProps extends VpcSubnetProps {
 export class VpcPrivateSubnet extends VpcSubnet {
   constructor(scope: cdk.Construct, id: string, props: VpcPrivateSubnetProps) {
     super(scope, id, props);
-  }
-
-  /**
-   * Adds an entry to this subnets route table that points to the passed NATGatwayId
-   */
-  public addDefaultNatRouteEntry(natGatewayId: string) {
-    this.addDefaultRouteToNAT(natGatewayId);
   }
 }
 

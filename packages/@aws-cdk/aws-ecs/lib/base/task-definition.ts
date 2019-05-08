@@ -1,8 +1,26 @@
 import iam = require('@aws-cdk/aws-iam');
-import { Construct, Resource, Token } from '@aws-cdk/cdk';
+import { Construct, IResource, Resource, Token } from '@aws-cdk/cdk';
 import { ContainerDefinition, ContainerDefinitionOptions } from '../container-definition';
 import { CfnTaskDefinition } from '../ecs.generated';
 import { isEc2Compatible, isFargateCompatible } from '../util';
+
+export interface ITaskDefinition extends IResource {
+  /**
+   * ARN of this task definition
+   * @attribute
+   */
+  readonly taskDefinitionArn: string;
+
+  /**
+   * Execution role for this task definition
+   */
+  readonly executionRole?: iam.IRole;
+
+  /**
+   * What launch types this task definition should be compatible with.
+   */
+  readonly compatibility: Compatibility;
+}
 
 /**
  * Properties common to all Task definitions
@@ -98,7 +116,22 @@ export interface TaskDefinitionProps extends CommonTaskDefinitionProps {
 /**
  * Base class for Ecs and Fargate task definitions
  */
-export class TaskDefinition extends Resource {
+export class TaskDefinition extends Resource implements ITaskDefinition {
+
+  /**
+   * Imports a task definition by ARN.
+   *
+   * The task will have a compatibility of EC2+Fargate.
+   */
+  public static fromTaskDefinitionArn(scope: Construct, id: string, taskDefinitionArn: string): ITaskDefinition {
+    class Import extends Resource implements ITaskDefinition {
+      public readonly taskDefinitionArn = taskDefinitionArn;
+      public readonly compatibility = Compatibility.Ec2AndFargate;
+    }
+
+    return new Import(scope, id);
+  }
+
   /**
    * The family name of this task definition
    */
@@ -132,14 +165,7 @@ export class TaskDefinition extends Resource {
   /**
    * What launching modes this task is compatible with
    */
-  public compatibility: Compatibility;
-
-  /**
-   * Execution role for this task definition
-   *
-   * May not exist, will be created as needed.
-   */
-  public executionRole?: iam.IRole;
+  public readonly compatibility: Compatibility;
 
   /**
    * All containers
@@ -155,6 +181,8 @@ export class TaskDefinition extends Resource {
    * Placement constraints for task instances
    */
   private readonly placementConstraints = new Array<CfnTaskDefinition.TaskDefinitionPlacementConstraintProperty>();
+
+  private _executionRole?: iam.IRole;
 
   constructor(scope: Construct, id: string, props: TaskDefinitionProps) {
     super(scope, id);
@@ -180,7 +208,7 @@ export class TaskDefinition extends Resource {
       throw new Error(`Fargate-compatible tasks require both CPU (${props.cpu}) and memory (${props.memoryMiB}) specifications`);
     }
 
-    this.executionRole = props.executionRole;
+    this._executionRole = props.executionRole;
 
     this.taskRole = props.taskRole || new iam.Role(this, 'TaskRole', {
         assumedBy: new iam.ServicePrincipal('ecs-tasks.amazonaws.com'),
@@ -207,6 +235,10 @@ export class TaskDefinition extends Resource {
     }
 
     this.taskDefinitionArn = taskDef.taskDefinitionArn;
+  }
+
+  public get executionRole(): iam.IRole | undefined {
+    return this._executionRole;
   }
 
   /**
@@ -273,12 +305,12 @@ export class TaskDefinition extends Resource {
    * Create the execution role if it doesn't exist
    */
   public obtainExecutionRole(): iam.IRole {
-    if (!this.executionRole) {
-      this.executionRole = new iam.Role(this, 'ExecutionRole', {
+    if (!this._executionRole) {
+      this._executionRole = new iam.Role(this, 'ExecutionRole', {
         assumedBy: new iam.ServicePrincipal('ecs-tasks.amazonaws.com'),
       });
     }
-    return this.executionRole;
+    return this._executionRole;
   }
 
   /**
@@ -475,6 +507,8 @@ export enum Compatibility {
 export interface ITaskDefinitionExtension {
   /**
    * Apply the extension to the given TaskDefinition
+   *
+   * @param taskDefinition [disable-awslint:ref-via-interface]
    */
   extend(taskDefinition: TaskDefinition): void;
 }

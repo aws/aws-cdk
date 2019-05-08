@@ -54,15 +54,17 @@ export interface ILayerVersion extends IResource {
   export(): LayerVersionAttributes;
 
   /**
-   * Grants usage of this layer to specific entities. Usage within the same account where the layer is defined is always
-   * allowed and does not require calling this method. Note that the principal that creates the Lambda function using
-   * the layer (for example, a CloudFormation changeset execution role) also needs to have the
-   * ``lambda:GetLayerVersion`` permission on the layer version.
+   * Add permission for this layer version to specific entities. Usage within
+   * the same account where the layer is defined is always allowed and does not
+   * require calling this method. Note that the principal that creates the
+   * Lambda function using the layer (for example, a CloudFormation changeset
+   * execution role) also needs to have the ``lambda:GetLayerVersion``
+   * permission on the layer version.
    *
    * @param id the ID of the grant in the construct tree.
    * @param grantee the identification of the grantee.
    */
-  grantUsage(id: string, grantee: LayerVersionUsageGrantee): ILayerVersion
+  addPermission(id: string, grantee: LayerVersionPermission): void;
 }
 
 /**
@@ -72,7 +74,7 @@ abstract class LayerVersionBase extends Resource implements ILayerVersion {
   public abstract readonly layerVersionArn: string;
   public abstract readonly compatibleRuntimes?: Runtime[];
 
-  public grantUsage(id: string, grantee: LayerVersionUsageGrantee): ILayerVersion {
+  public addPermission(id: string, grantee: LayerVersionPermission) {
     if (grantee.organizationId != null && grantee.accountId !== '*') {
       throw new Error(`OrganizationId can only be specified if AwsAccountId is '*', but it is ${grantee.accountId}`);
     }
@@ -83,7 +85,6 @@ abstract class LayerVersionBase extends Resource implements ILayerVersion {
       principal: grantee.accountId,
       organizationId: grantee.organizationId,
     });
-    return this;
   }
 
   public export(): LayerVersionAttributes {
@@ -97,7 +98,7 @@ abstract class LayerVersionBase extends Resource implements ILayerVersion {
 /**
  * Identification of an account (or organization) that is allowed to access a Lambda Layer Version.
  */
-export interface LayerVersionUsageGrantee {
+export interface LayerVersionPermission {
   /**
    * The AWS Account id of the account that is authorized to use a Lambda Layer Version. The wild-card ``'*'`` can be
    * used to grant access to "any" account (or any account in an organization when ``organizationId`` is specified).
@@ -231,9 +232,8 @@ export class SingletonLayerVersion extends Construct implements ILayerVersion {
     };
   }
 
-  public grantUsage(id: string, grantee: LayerVersionUsageGrantee): ILayerVersion {
-    this.layerVersion.grantUsage(id, grantee);
-    return this;
+  public addPermission(id: string, grantee: LayerVersionPermission) {
+    this.layerVersion.addPermission(id, grantee);
   }
 
   private ensureLayerVersion(props: SingletonLayerVersionProps): ILayerVersion {

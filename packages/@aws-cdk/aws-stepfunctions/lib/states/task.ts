@@ -270,6 +270,8 @@ export class Task extends State implements INextable {
 export interface IStepFunctionsTaskResource {
     /**
      * Return the properties required for using this object as a Task resource
+     *
+     * @param callingTask [disable-awslint:ref-via-interface]
      */
     asStepFunctionsTaskResource(callingTask: Task): StepFunctionsTaskResourceProps;
 }

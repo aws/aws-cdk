@@ -317,6 +317,7 @@ export class Cluster extends ClusterBase {
    * the right AMI and the `maxPods` number based on your instance type.
    *
    * @see https://docs.aws.amazon.com/eks/latest/userguide/launch-workers.html
+   * @param autoScalingGroup [disable-awslint:ref-via-interface]
    */
   public addAutoScalingGroup(autoScalingGroup: autoscaling.AutoScalingGroup, options: AddAutoScalingGroupOptions) {
     // self rules

@@ -1,6 +1,7 @@
 import ec2 = require('@aws-cdk/aws-ec2');
 import cdk = require('@aws-cdk/cdk');
-import { BaseService, BaseServiceProps } from '../base/base-service';
+import { Construct, Resource } from '@aws-cdk/cdk';
+import { BaseService, BaseServiceProps, IService } from '../base/base-service';
 import { TaskDefinition } from '../base/task-definition';
 import { isFargateCompatible } from '../util';
 
@@ -10,6 +11,8 @@ import { isFargateCompatible } from '../util';
 export interface FargateServiceProps extends BaseServiceProps {
   /**
    * Task Definition used for running tasks in the service
+   *
+   * [disable-awslint:ref-via-interface]
    */
   readonly taskDefinition: TaskDefinition;
 
@@ -45,10 +48,24 @@ export interface FargateServiceProps extends BaseServiceProps {
   readonly platformVersion?: FargatePlatformVersion;
 }
 
+export interface IFargateService extends IService {
+
+}
+
 /**
  * Start a service on an ECS cluster
+ *
+ * @resource AWS::ECS::Service
  */
-export class FargateService extends BaseService {
+export class FargateService extends BaseService implements IFargateService {
+
+  public static fromFargateServiceArn(scope: Construct, id: string, fargateServiceArn: string): IFargateService {
+    class Import extends Resource implements IFargateService {
+      public readonly serviceArn = fargateServiceArn;
+    }
+    return new Import(scope, id);
+  }
+
   constructor(scope: cdk.Construct, id: string, props: FargateServiceProps) {
     if (!isFargateCompatible(props.taskDefinition.compatibility)) {
       throw new Error('Supplied TaskDefinition is not configured for compatibility with Fargate');
