@@ -118,6 +118,7 @@
     "@aws-cdk/aws-sqs": "^0.31.0",
     "@aws-cdk/aws-ssm": "^0.31.0",
     "@aws-cdk/aws-stepfunctions": "^0.31.0",
+    "@aws-cdk/aws-stepfunctions-tasks": "^0.31.0",
     "@aws-cdk/aws-waf": "^0.31.0",
     "@aws-cdk/aws-wafregional": "^0.31.0",
     "@aws-cdk/aws-workspaces": "^0.31.0",
