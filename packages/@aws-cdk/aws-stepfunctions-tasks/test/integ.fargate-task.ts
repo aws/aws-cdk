@@ -28,7 +28,7 @@ taskDefinition.addContainer('TheContainer', {
 // Build state machine
 const definition = new sfn.Pass(stack, 'Start', {
     result: { SomeKey: 'SomeValue' }
-}).next(new sfn.Task(stack, 'RunFargate', { task: new tasks.EcsRunFargateTask(stack, 'FargateTask', {
+}).next(new sfn.Task(stack, 'RunFargate', { task: new tasks.RunEcsFargateTask(stack, 'FargateTask', {
   cluster, taskDefinition,
   assignPublicIp: true,
   containerOverrides: [

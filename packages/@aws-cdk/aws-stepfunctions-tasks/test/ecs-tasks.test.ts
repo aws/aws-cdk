@@ -32,7 +32,7 @@ test('Running a Fargate Task', () => {
   });
 
   // WHEN
-  const runTask = new sfn.Task(stack, 'Run', { task: new tasks.EcsRunFargateTask(stack, 'RunFargate', {
+  const runTask = new sfn.Task(stack, 'Run', { task: new tasks.RunEcsFargateTask(stack, 'RunFargate', {
     cluster,
     taskDefinition,
     containerOverrides: [
@@ -131,7 +131,7 @@ test('Running an EC2 Task with bridge network', () => {
   });
 
   // WHEN
-  const runTask = new sfn.Task(stack, 'Run', { task: new tasks.EcsRunEc2Task(stack, 'RunEc2', {
+  const runTask = new sfn.Task(stack, 'Run', { task: new tasks.RunEcsEc2Task(stack, 'RunEc2', {
     cluster,
     taskDefinition,
     containerOverrides: [
@@ -218,7 +218,7 @@ test('Running an EC2 Task with placement strategies', () => {
     memoryLimitMiB: 256,
   });
 
-  const ec2Task = new tasks.EcsRunEc2Task(stack, 'RunEc2', {
+  const ec2Task = new tasks.RunEcsEc2Task(stack, 'RunEc2', {
     cluster,
     taskDefinition,
   });
@@ -264,7 +264,7 @@ test('Running an EC2 Task with overridden number values', () => {
     memoryLimitMiB: 256,
   });
 
-  const ec2Task = new tasks.EcsRunEc2Task(stack, 'RunEc2', {
+  const ec2Task = new tasks.RunEcsEc2Task(stack, 'RunEc2', {
     cluster,
     taskDefinition,
     containerOverrides: [

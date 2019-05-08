@@ -112,7 +112,7 @@ couple of the tasks available are:
   queue that you poll on a compute fleet you manage yourself)
 * `tasks.PublishToTopic` -- publish a message to an SNS topic
 * `tasks.SendToQueue` -- send a message to an SQS queue
-* `tasks.EcsRunFargateTask`/`ecs.EcsRunEc2Task` -- run a container task,
+* `tasks.RunEcsFargateTask`/`ecs.RunEcsEc2Task` -- run a container task,
   depending on the type of capacity.
 
 #### Task parameters from the state json
@@ -186,7 +186,7 @@ import ecs = require('@aws-cdk/aws-ecs');
 
 // See examples in ECS library for initialization of 'cluster' and 'taskDefinition'
 
-const fargateTask = new ecs.EcsRunFargateTask(task, 'FargateTask', {
+const fargateTask = new ecs.RunEcsFargateTask(task, 'FargateTask', {
   cluster,
   taskDefinition,
   containerOverrides: [
