@@ -1,3 +1,35 @@
+# CloudFormation Resource Specification v3.0.0
+
+## New Resource Types
+
+* AWS::ApiGatewayV2::ApiMapping
+* AWS::ApiGatewayV2::DomainName
+
+## Attribute Changes
+
+
+## Property Changes
+
+* AWS::FSx::FileSystem Tags.ItemType (__changed__)
+  * Old: TagEntry
+  * New: Tag
+
+## Property Type Changes
+
+* Tag Key.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dms-endpoint-tag.html#cfn-dms-endpoint-tag-key
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iotanalytics-datastore-tag.html#cfn-iotanalytics-datastore-tag-key
+* Tag Key.Required (__changed__)
+  * Old: false
+  * New: true
+* Tag Value.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dms-endpoint-tag.html#cfn-dms-endpoint-tag-value
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iotanalytics-datastore-tag.html#cfn-iotanalytics-datastore-tag-value
+* Tag Value.Required (__changed__)
+  * Old: false
+  * New: true
+
+
 # CloudFormation Resource Specification v2.32.0
 
 ## New Resource Types
