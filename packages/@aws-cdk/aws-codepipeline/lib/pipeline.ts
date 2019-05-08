@@ -5,7 +5,6 @@ import s3 = require('@aws-cdk/aws-s3');
 import { Construct, RemovalPolicy, Resource, Stack, Token } from '@aws-cdk/cdk';
 import { Action, IPipeline, IStage } from "./action";
 import { CfnPipeline } from './codepipeline.generated';
-import { CrossRegionScaffoldStack } from './cross-region-scaffold-stack';
 import { Stage } from './stage';
 import { validateName, validateSourceAction } from "./validation";
 
@@ -598,3 +597,6 @@ export abstract class CrossRegionScaffolding extends Stack {
    */
   public abstract readonly replicationBucketName: string;
 }
+
+// cyclic dependency
+import { CrossRegionScaffoldStack } from './cross-region-scaffold-stack';
