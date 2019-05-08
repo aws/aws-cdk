@@ -143,16 +143,16 @@ export class Stack extends Construct {
 
     Object.defineProperty(this, STACK_SYMBOL, { value: true });
 
-    if (name && !Stack.VALID_STACK_NAME_REGEX.test(name)) {
-      throw new Error(`Stack name must match the regular expression: ${Stack.VALID_STACK_NAME_REGEX.toString()}, got '${name}'`);
-    }
-
     this.configuredEnv = props.env || {};
     this.env = this.parseEnvironment(props.env);
 
     this.logicalIds = new LogicalIDs(props && props.namingScheme ? props.namingScheme : new HashedAddressingScheme());
     this.name = props.stackName !== undefined ? props.stackName : this.calculateStackName();
     this.autoDeploy = props && props.autoDeploy === false ? false : true;
+
+    if (!Stack.VALID_STACK_NAME_REGEX.test(this.name)) {
+      throw new Error(`Stack name must match the regular expression: ${Stack.VALID_STACK_NAME_REGEX.toString()}, got '${name}'`);
+    }
   }
 
   /**
