@@ -18,7 +18,7 @@ export function minimalCloudFormationJoin(delimiter: string, values: any[]): any
   return values;
 
   function isPlainString(obj: any): boolean {
-    return typeof obj === 'string' && !require('./token').Token.unresolved(obj);
+    return typeof obj === 'string' && !require('./token').Token.isToken(obj);
   }
 
   function isSplicableFnJoinInstrinsic(obj: any): boolean {

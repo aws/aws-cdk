@@ -146,7 +146,7 @@ export class EcsRunTaskBase extends cdk.Construct implements ec2.IConnectable {
 
     for (const override of this.props.containerOverrides || []) {
       const name = override.containerName;
-      if (!cdk.Token.unresolved(name)) {
+      if (!cdk.Token.isToken(name)) {
         const cont = this.props.taskDefinition.node.tryFindChild(name);
         if (!cont) {
           ret.push(`Overrides mention container with name '${name}', but no such container in task definition`);

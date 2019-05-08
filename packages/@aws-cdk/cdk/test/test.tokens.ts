@@ -124,9 +124,9 @@ export = {
   },
 
   'isToken(obj) can be used to determine if an object is a token'(test: Test) {
-    test.ok(Token.unresolved({ resolve: () => 123 }));
-    test.ok(Token.unresolved({ a: 1, b: 2, resolve: () => 'hello' }));
-    test.ok(!Token.unresolved({ a: 1, b: 2, resolve: 3 }));
+    test.ok(Token.isToken({ resolve: () => 123 }));
+    test.ok(Token.isToken({ a: 1, b: 2, resolve: () => 'hello' }));
+    test.ok(!Token.isToken({ a: 1, b: 2, resolve: 3 }));
     test.done();
   },
 

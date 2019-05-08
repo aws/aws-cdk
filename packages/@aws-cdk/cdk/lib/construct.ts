@@ -82,7 +82,7 @@ export class ConstructNode {
     // escape any path separators so they don't wreck havoc
     this.id = this._escapePathSeparator(this.id);
 
-    if (Token.unresolved(id)) {
+    if (Token.isToken(id)) {
       throw new Error(`Cannot use tokens in construct ID: ${id}`);
     }
   }
