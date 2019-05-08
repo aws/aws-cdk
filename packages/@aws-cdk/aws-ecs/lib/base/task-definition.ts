@@ -2,6 +2,7 @@ import iam = require('@aws-cdk/aws-iam');
 import { Construct, Resource, Token } from '@aws-cdk/cdk';
 import { ContainerDefinition, ContainerDefinitionOptions } from '../container-definition';
 import { CfnTaskDefinition } from '../ecs.generated';
+import { PlacementConstraint } from '../placement';
 
 /**
  * Properties common to all Task definitions
@@ -196,7 +197,8 @@ export class TaskDefinition extends Resource {
         ...(isFargateCompatible(props.compatibility) ? ["FARGATE"] : []),
       ],
       networkMode: this.networkMode,
-      placementConstraints: !isFargateCompatible(this.compatibility) ? new Token(this.placementConstraints) : undefined,
+      placementConstraints: new Token(
+        () => !isFargateCompatible(this.compatibility) && this.placementConstraints.length > 0 ? this.placementConstraints : undefined),
       cpu: props.cpu,
       memory: props.memoryMiB,
     });
@@ -254,8 +256,7 @@ export class TaskDefinition extends Resource {
     if (isFargateCompatible(this.compatibility)) {
       throw new Error('Cannot set placement constraints on tasks that run on Fargate');
     }
-    const pc = this.renderPlacementConstraint(constraint);
-    this.placementConstraints.push(pc);
+    this.placementConstraints.push(...constraint._json);
   }
 
   /**
@@ -311,16 +312,6 @@ export class TaskDefinition extends Resource {
       }
     }
     return ret;
-  }
-
-  /**
-   * Render the placement constraints
-   */
-  private renderPlacementConstraint(pc: PlacementConstraint): CfnTaskDefinition.TaskDefinitionPlacementConstraintProperty {
-    return {
-      type: pc.type,
-      expression: pc.expression
-    };
   }
 }
 
@@ -424,36 +415,6 @@ export enum Scope {
    * Docker volumes are persist after the task stops
    */
   Shared = "shared"
-}
-
-/**
- * A constraint on how instances should be placed
- */
-export interface PlacementConstraint {
-  /**
-   * The type of constraint
-   */
-  readonly type: PlacementConstraintType;
-
-  /**
-   * Additional information for the constraint
-   */
-  readonly expression?: string;
-}
-
-/**
- * A placement constraint type
- */
-export enum PlacementConstraintType {
-  /**
-   * Place each task on a different instance
-   */
-  DistinctInstance = "distinctInstance",
-
-  /**
-   * Place tasks only on instances matching the expression in 'expression'
-   */
-  MemberOf = "memberOf"
 }
 
 /**

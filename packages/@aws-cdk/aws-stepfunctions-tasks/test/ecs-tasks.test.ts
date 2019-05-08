@@ -221,11 +221,13 @@ test('Running an EC2 Task with placement strategies', () => {
   const ec2Task = new tasks.RunEcsEc2Task({
     cluster,
     taskDefinition,
+    placementStrategies: [
+      ecs.PlacementStrategy.spreadAcross(),
+      ecs.PlacementStrategy.packedByCpu(),
+      ecs.PlacementStrategy.randomly(),
+    ],
+    placementConstraints: [ecs.PlacementConstraint.memberOf('blieptuut')],
   });
-  ec2Task.placeSpreadAcross();
-  ec2Task.placePackedBy(ecs.BinPackResource.Cpu);
-  ec2Task.placeRandomly();
-  ec2Task.placeOnMemberOf('blieptuut');
 
   // WHEN
   const runTask = new sfn.Task(stack, 'Run', { task: ec2Task });

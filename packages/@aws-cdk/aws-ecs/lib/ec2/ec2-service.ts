@@ -5,6 +5,7 @@ import cdk = require('@aws-cdk/cdk');
 import { BaseService, BaseServiceProps } from '../base/base-service';
 import { NetworkMode, TaskDefinition } from '../base/task-definition';
 import { CfnService } from '../ecs.generated';
+import { BinPackResource, PlacementConstraint, PlacementStrategy } from '../placement';
 
 /**
  * Properties to define an ECS service
@@ -34,11 +35,18 @@ export interface Ec2ServiceProps extends BaseServiceProps {
   readonly securityGroup?: ec2.ISecurityGroup;
 
   /**
-   * Whether to start tasks on distinct instances
+   * Placement constraints
    *
-   * @default true
+   * @default No constraints
    */
-  readonly placeOnDistinctInstances?: boolean;
+  readonly placementConstraints?: PlacementConstraint[];
+
+  /**
+   * Placement strategies
+   *
+   * @default No strategies
+   */
+  readonly placementStrategies?: PlacementStrategy[];
 
   /**
    * Deploy exactly one task on each instance in your cluster.
@@ -92,8 +100,8 @@ export class Ec2Service extends BaseService implements elb.ILoadBalancerTarget {
       cluster: props.cluster.clusterName,
       taskDefinition: props.taskDefinition.taskDefinitionArn,
       launchType: 'EC2',
-      placementConstraints: new cdk.Token(() => this.constraints),
-      placementStrategies: new cdk.Token(() => this.strategies),
+      placementConstraints: new cdk.Token(() => this.constraints.length > 0 ? this.constraints : undefined),
+      placementStrategies: new cdk.Token(() => this.strategies.length > 0 ? this.strategies : undefined),
       schedulingStrategy: props.daemon ? 'DAEMON' : 'REPLICA',
     }, props.cluster.clusterName, props.taskDefinition);
 
@@ -110,9 +118,8 @@ export class Ec2Service extends BaseService implements elb.ILoadBalancerTarget {
       this.connections.addSecurityGroup(...props.cluster.connections.securityGroups);
     }
 
-    if (props.placeOnDistinctInstances !== false) {
-      this.constraints.push({ type: 'distinctInstance' });
-    }
+    this.addPlacementConstraints(...props.placementConstraints || []);
+    this.addPlacementStrategies(...props.placementStrategies || []);
 
     if (!this.taskDefinition.defaultContainer) {
       throw new Error('A TaskDefinition must have at least one essential container');
@@ -126,11 +133,10 @@ export class Ec2Service extends BaseService implements elb.ILoadBalancerTarget {
    * be placed on instances matching all expressions.
    *
    * @see https://docs.aws.amazon.com/AmazonECS/latest/developerguide/cluster-query-language.html
+   * @deprecated Use addPlacementConstraints() instead.
    */
   public placeOnMemberOf(...expressions: string[]) {
-    for (const expression of expressions) {
-      this.constraints.push({ type: 'memberOf', expression });
-    }
+    this.addPlacementConstraints(PlacementConstraint.memberOf(...expressions));
   }
 
   /**
@@ -141,17 +147,13 @@ export class Ec2Service extends BaseService implements elb.ILoadBalancerTarget {
    * is supplied, spreading is done in order.
    *
    * @default attributes instanceId
+   * @deprecated Use addPlacementStrategies() instead.
    */
   public placeSpreadAcross(...fields: string[]) {
-    if (this.daemon) {
-      throw new Error("Can't configure spreading placement for a service with daemon=true");
-    }
-
     if (fields.length === 0) {
-      fields = [BuiltInAttributes.InstanceId];
-    }
-    for (const field of fields) {
-      this.strategies.push({ type: 'spread', field });
+      this.addPlacementStrategies(PlacementStrategy.spreadAcrossInstances());
+    } else {
+      this.addPlacementStrategies(PlacementStrategy.spreadAcross(...fields));
     }
   }
 
@@ -159,24 +161,42 @@ export class Ec2Service extends BaseService implements elb.ILoadBalancerTarget {
    * Try to place tasks on instances with the least amount of indicated resource available
    *
    * This ensures the total consumption of this resource is lowest.
+   *
+   * @deprecated Use addPlacementStrategies() instead.
    */
   public placePackedBy(resource: BinPackResource) {
-    if (this.daemon) {
-      throw new Error("Can't configure packing placement for a service with daemon=true");
-    }
-
-    this.strategies.push({ type: 'binpack', field: resource });
+    this.addPlacementStrategies(PlacementStrategy.packedBy(resource));
   }
 
   /**
    * Place tasks randomly across the available instances.
+   *
+   * @deprecated Use addPlacementStrategies() instead.
    */
   public placeRandomly() {
-    if (this.daemon) {
-      throw new Error("Can't configure random placement for a service with daemon=true");
+    this.addPlacementStrategies(PlacementStrategy.randomly());
+  }
+
+  /**
+   * Add one or more placement strategies
+   */
+  public addPlacementStrategies(...strategies: PlacementStrategy[]) {
+    if (strategies.length > 0 && this.daemon) {
+      throw new Error("Can't configure placement strategies when daemon=true");
     }
 
-    this.strategies.push({ type: 'random' });
+    for (const strategy of strategies) {
+      this.strategies.push(...strategy._json);
+    }
+  }
+
+  /**
+   * Add one or more placement strategies
+   */
+  public addPlacementConstraints(...constraints: PlacementConstraint[]) {
+    for (const constraint of constraints) {
+      this.constraints.push(...constraint._json);
+    }
   }
 
   /**
@@ -280,19 +300,4 @@ export class BuiltInAttributes {
    * Either 'linux' or 'windows'.
    */
   public static readonly OsType = 'attribute:ecs.os-type';
-}
-
-/**
- * Instance resource used for bin packing
- */
-export enum BinPackResource {
-  /**
-   * Fill up hosts' CPU allocations first
-   */
-  Cpu = 'cpu',
-
-  /**
-   * Fill up hosts' memory allocations first
-   */
-  Memory = 'memory',
 }

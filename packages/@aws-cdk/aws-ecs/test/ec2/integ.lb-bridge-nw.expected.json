@@ -803,7 +803,6 @@
         ],
         "Family": "awsecsintegecsTaskDef8DD0C801",
         "NetworkMode": "bridge",
-        "PlacementConstraints": [],
         "RequiresCompatibilities": [
           "EC2"
         ],
@@ -840,12 +839,6 @@
             }
           }
         ],
-        "PlacementConstraints": [
-          {
-            "Type": "distinctInstance"
-          }
-        ],
-        "PlacementStrategies": [],
         "SchedulingStrategy": "REPLICA",
         "ServiceRegistries": []
       },
