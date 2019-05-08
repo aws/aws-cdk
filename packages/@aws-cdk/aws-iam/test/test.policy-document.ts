@@ -286,6 +286,22 @@ export = {
     test.done();
   },
 
+  'addResources() will not break a list-encoded Token'(test: Test) {
+    const stack = new Stack();
+
+    const statement = new PolicyStatement()
+      .addActions(...new Token(() => ['a', 'b', 'c']).toList())
+      .addResources(...new Token(() => ['x', 'y', 'z']).toList());
+
+    test.deepEqual(stack.node.resolve(statement), {
+      Effect: 'Allow',
+      Action: ['a', 'b', 'c'],
+      Resource: ['x', 'y', 'z'],
+    });
+
+    test.done();
+  },
+
   'addCanonicalUserPrincipal can be used to add cannonical user principals'(test: Test) {
     const stack = new Stack();
     const p = new PolicyDocument();

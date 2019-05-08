@@ -3,7 +3,7 @@ export * from './tag-aspect';
 
 export * from './construct';
 export * from './token';
-export * from './unresolved';
+export * from './token-map';
 export * from './tag-manager';
 export * from './dependency';
 

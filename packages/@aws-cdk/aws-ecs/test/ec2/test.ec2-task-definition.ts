@@ -16,7 +16,6 @@ export = {
       expect(stack).to(haveResource("AWS::ECS::TaskDefinition", {
         Family: "Ec2TaskDef",
         ContainerDefinitions: [],
-        PlacementConstraints: [],
         Volumes: [],
         NetworkMode: ecs.NetworkMode.Bridge,
         RequiresCompatibilities: ["EC2"]
@@ -184,10 +183,9 @@ export = {
       // GIVEN
       const stack = new cdk.Stack();
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', {
-        placementConstraints: [{
-          expression: "attribute:ecs.instance-type =~ t2.*",
-          type: ecs.PlacementConstraintType.MemberOf
-        }]
+        placementConstraints: [
+          ecs.PlacementConstraint.memberOf("attribute:ecs.instance-type =~ t2.*"),
+        ]
       });
 
       taskDefinition.addContainer("web", {

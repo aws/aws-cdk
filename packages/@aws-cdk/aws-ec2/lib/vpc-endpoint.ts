@@ -4,7 +4,7 @@ import { Connections, IConnectable } from './connections';
 import { CfnVPCEndpoint } from './ec2.generated';
 import { SecurityGroup } from './security-group';
 import { TcpPort, TcpPortFromAttribute } from './security-group-rule';
-import { IVpcNetwork, SubnetSelection, SubnetType } from './vpc-ref';
+import { IVpcNetwork, SubnetSelection, SubnetType } from './vpc';
 
 /**
  * A VPC endpoint.

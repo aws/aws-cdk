@@ -2,7 +2,6 @@ import ec2 = require('@aws-cdk/aws-ec2');
 import cdk = require('@aws-cdk/cdk');
 import { BaseService, BaseServiceProps } from '../base/base-service';
 import { TaskDefinition } from '../base/task-definition';
-import { isFargateCompatible } from '../util';
 
 /**
  * Properties to define a Fargate service
@@ -16,14 +15,14 @@ export interface FargateServiceProps extends BaseServiceProps {
   /**
    * Assign public IP addresses to each task
    *
-   * @default false
+   * @default Use subnet default
    */
   readonly assignPublicIp?: boolean;
 
   /**
    * In what subnets to place the task's ENIs
    *
-   * @default Private subnet if assignPublicIp, public subnets otherwise
+   * @default Private subnets
    */
   readonly vpcSubnets?: ec2.SubnetSelection;
 
@@ -50,7 +49,7 @@ export interface FargateServiceProps extends BaseServiceProps {
  */
 export class FargateService extends BaseService {
   constructor(scope: cdk.Construct, id: string, props: FargateServiceProps) {
-    if (!isFargateCompatible(props.taskDefinition.compatibility)) {
+    if (!props.taskDefinition.isFargateCompatible) {
       throw new Error('Supplied TaskDefinition is not configured for compatibility with Fargate');
     }
 

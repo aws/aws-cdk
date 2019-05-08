@@ -49,7 +49,7 @@ async function main() {
     if (testFiles.length > 0) {
       throw new Error(`Jest is enabled, but ${testFiles.length} nodeunit tests were found!`);
     }
-    await shell([args.jest, '--testEnvironment=node', '--coverage'], { timers });
+    await shell([args.jest, '--testEnvironment=node', '--coverage', '--coverageReporters', 'html', 'lcov', 'text-summary'], { timers });
   } else if (testFiles.length > 0) {
     const testCommand: string[] = [];
 

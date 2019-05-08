@@ -1,0 +1,105 @@
+{
+  "name": "@aws-cdk/aws-stepfunctions-tasks",
+  "version": "0.31.0",
+  "description": "Task integrations for AWS StepFunctions",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "jsii": {
+    "outdir": "dist",
+    "targets": {
+      "java": {
+        "package": "software.amazon.awscdk.services.stepfunctions.tasks",
+        "maven": {
+          "groupId": "software.amazon.awscdk",
+          "artifactId": "stepfunctions-tasks"
+        }
+      },
+      "dotnet": {
+        "namespace": "Amazon.CDK.AWS.StepFunctions.Tasks",
+        "packageId": "Amazon.CDK.AWS.StepFunctions.Tasks",
+        "signAssembly": true,
+        "assemblyOriginatorKeyFile": "../../key.snk"
+      },
+      "sphinx": {},
+      "python": {
+        "distName": "aws-cdk.aws-stepfunctions-tasks",
+        "module": "aws_cdk.aws_stepfunctions_tasks"
+      }
+    }
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/awslabs/aws-cdk.git",
+    "directory": "packages/@aws-cdk/aws-stepfunctions-tasks"
+  },
+  "scripts": {
+    "build": "cdk-build",
+    "watch": "cdk-watch",
+    "lint": "cdk-lint",
+    "test": "cdk-test",
+    "integ": "cdk-integ",
+    "pkglint": "pkglint -f",
+    "package": "cdk-package",
+    "awslint": "cdk-awslint",
+    "cfn2ts": "cfn2ts"
+  },
+  "jest": {
+    "moduleFileExtensions": [
+      "js"
+    ],
+    "coverageThreshold": {
+      "global": {
+        "branches": 70,
+        "statements": 80
+      }
+    }
+  },
+  "keywords": [
+    "aws",
+    "cdk",
+    "cloudlib",
+    "aws-cloudlib",
+    "aws-clib",
+    "cloudwatch",
+    "events"
+  ],
+  "author": {
+    "name": "Amazon Web Services",
+    "url": "https://aws.amazon.com",
+    "organization": true
+  },
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "@aws-cdk/assert": "^0.31.0",
+    "cdk-build-tools": "^0.31.0",
+    "cdk-integ-tools": "^0.31.0",
+    "pkglint": "^0.31.0",
+    "jest": "^24.7.1"
+  },
+  "dependencies": {
+    "@aws-cdk/aws-cloudwatch": "^0.31.0",
+    "@aws-cdk/aws-ec2": "^0.31.0",
+    "@aws-cdk/aws-ecs": "^0.31.0",
+    "@aws-cdk/aws-stepfunctions": "^0.31.0",
+    "@aws-cdk/cdk": "^0.31.0",
+    "@aws-cdk/aws-iam": "^0.31.0",
+    "@aws-cdk/aws-lambda": "^0.31.0",
+    "@aws-cdk/aws-sns": "^0.31.0",
+    "@aws-cdk/aws-sqs": "^0.31.0"
+  },
+  "homepage": "https://github.com/awslabs/aws-cdk",
+  "peerDependencies": {
+    "@aws-cdk/aws-cloudwatch": "^0.31.0",
+    "@aws-cdk/aws-ec2": "^0.31.0",
+    "@aws-cdk/aws-ecs": "^0.31.0",
+    "@aws-cdk/aws-stepfunctions": "^0.31.0",
+    "@aws-cdk/cdk": "^0.31.0",
+    "@aws-cdk/aws-iam": "^0.31.0",
+    "@aws-cdk/aws-lambda": "^0.31.0",
+    "@aws-cdk/aws-sns": "^0.31.0",
+    "@aws-cdk/aws-sqs": "^0.31.0"
+  },
+  "engines": {
+    "node": ">= 8.10.0"
+  }
+}

@@ -2,7 +2,7 @@ import cloudwatch = require('@aws-cdk/aws-cloudwatch');
 import cdk = require('@aws-cdk/cdk');
 import net = require('net');
 import { CfnCustomerGateway, CfnVPNConnection, CfnVPNConnectionRoute } from './ec2.generated';
-import { IVpcNetwork } from './vpc-ref';
+import { IVpcNetwork } from './vpc';
 
 export interface IVpnConnection extends cdk.IConstruct {
   /**

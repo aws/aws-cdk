@@ -120,7 +120,7 @@ export class ApplicationTargetGroup extends TargetGroupBase implements IApplicat
    */
   public registerConnectable(connectable: ec2.IConnectable, portRange?: ec2.IPortRange) {
     if (portRange === undefined) {
-      if (cdk.unresolved(this.defaultPort)) {
+      if (cdk.Token.isToken(this.defaultPort)) {
         portRange = new ec2.TcpPortFromAttribute(this.defaultPort);
       } else {
         portRange = new ec2.TcpPort(parseInt(this.defaultPort, 10));

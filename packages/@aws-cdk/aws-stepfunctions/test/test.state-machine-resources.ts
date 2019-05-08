@@ -10,7 +10,15 @@ export = {
         // GIVEN
         const stack = new cdk.Stack();
         const task = new stepfunctions.Task(stack, 'Task', {
-            resource: new FakeResource(),
+            task: {
+                bind: () => ({
+                    resourceArn: 'resource',
+                    policyStatements: [new iam.PolicyStatement()
+                        .addAction('resource:Everything')
+                        .addResource('resource')
+                    ],
+                })
+            }
         });
 
         // WHEN
@@ -39,7 +47,16 @@ export = {
         // GIVEN
         const stack = new cdk.Stack();
         const task = new stepfunctions.Task(stack, 'Task', {
-            resource: new FakeResource(),
+            task: {
+                bind: () => ({
+                    resourceArn: 'resource',
+                    policyStatements: [
+                        new iam.PolicyStatement()
+                            .addAction('resource:Everything')
+                            .addResource('resource')
+                    ]
+                })
+            }
         });
 
         const para = new stepfunctions.Parallel(stack, 'Para');
@@ -67,47 +84,23 @@ export = {
         test.done();
     },
 
-    'Task metrics use values returned from resource'(test: Test) {
-        // GIVEN
-        const stack = new cdk.Stack();
-
-        // WHEN
-        const task = new stepfunctions.Task(stack, 'Task', { resource: new FakeResource() });
-
-        // THEN
-        const sharedMetric = {
-            periodSec: 300,
-            namespace: 'AWS/States',
-            dimensions: { ResourceArn: 'resource' },
-        };
-        test.deepEqual(stack.node.resolve(task.metricRunTime()), {
-            ...sharedMetric,
-            metricName: 'FakeResourceRunTime',
-            statistic: 'Average'
-        });
-
-        test.deepEqual(stack.node.resolve(task.metricFailed()), {
-            ...sharedMetric,
-            metricName: 'FakeResourcesFailed',
-            statistic: 'Sum'
-        });
-
-        test.done();
-    },
-
     'Task should render InputPath / Parameters / OutputPath correctly'(test: Test) {
         // GIVEN
         const stack = new cdk.Stack();
         const task = new stepfunctions.Task(stack, 'Task', {
-            resource: new FakeResource(),
             inputPath: "$",
             outputPath: "$.state",
-            parameters: {
-                "input.$": "$",
-                "stringArgument": "inital-task",
-                "numberArgument": 123,
-                "booleanArgument": true,
-                "arrayArgument": ["a", "b", "c"]
+            task: {
+                bind: () => ({
+                    resourceArn: 'resource',
+                    parameters: {
+                        "input.$": "$",
+                        "stringArgument": "inital-task",
+                        "numberArgument": 123,
+                        "booleanArgument": true,
+                        "arrayArgument": ["a", "b", "c"]
+                    }
+                })
             }
         });
 
@@ -166,20 +159,3 @@ export = {
         test.done();
     },
 };
-
-class FakeResource implements stepfunctions.IStepFunctionsTaskResource {
-    public asStepFunctionsTaskResource(_callingTask: stepfunctions.Task): stepfunctions.StepFunctionsTaskResourceProps {
-        const resourceArn = 'resource';
-
-        return {
-            resourceArn,
-            policyStatements: [new iam.PolicyStatement()
-                .addAction('resource:Everything')
-                .addResource('resource')
-            ],
-            metricPrefixSingular: 'FakeResource',
-            metricPrefixPlural: 'FakeResources',
-            metricDimensions: { ResourceArn: resourceArn },
-         };
-    }
-}

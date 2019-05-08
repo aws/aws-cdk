@@ -1,10 +1,12 @@
 import { IConstruct } from './construct';
-import { containsListToken, TOKEN_MAP } from "./encoding";
+import { containsListTokenElement, TokenString, unresolved } from "./encoding";
 import { RESOLVE_OPTIONS } from "./options";
 import { isResolvedValuePostProcessor, RESOLVE_METHOD, ResolveContext, Token } from "./token";
-import { unresolved } from "./unresolved";
+import { TokenMap } from './token-map';
 
 // This file should not be exported to consumers, resolving should happen through Construct.resolve()
+
+const tokenMap = TokenMap.instance();
 
 /**
  * Resolves an object by evaluating all tokens and removing any undefined or empty objects or arrays.
@@ -49,7 +51,7 @@ export function resolve(obj: any, context: ResolveContext): any {
   // string - potentially replace all stringified Tokens
   //
   if (typeof(obj) === 'string') {
-    return TOKEN_MAP.resolveStringTokens(obj, context);
+    return resolveStringTokens(obj, context);
   }
 
   //
@@ -65,8 +67,8 @@ export function resolve(obj: any, context: ResolveContext): any {
   //
 
   if (Array.isArray(obj)) {
-    if (containsListToken(obj)) {
-      return TOKEN_MAP.resolveListTokens(obj, context);
+    if (containsListTokenElement(obj)) {
+      return resolveListTokens(obj, context);
     }
 
     const arr = obj
@@ -153,4 +155,32 @@ export function findTokens(scope: IConstruct, fn: () => any): Token[] {
  */
 function isConstruct(x: any): boolean {
   return x._children !== undefined && x._metadata !== undefined;
+}
+
+/**
+ * Replace any Token markers in this string with their resolved values
+ */
+function resolveStringTokens(s: string, context: ResolveContext): any {
+  const str = TokenString.forStringToken(s);
+  const fragments = str.split(tokenMap.lookupToken.bind(tokenMap));
+  // require() here to break cyclic dependencies
+  const ret = fragments.mapUnresolved(x => resolve(x, context)).join(require('./cfn-concat').cloudFormationConcat);
+  if (unresolved(ret)) {
+    return resolve(ret, context);
+  }
+  return ret;
+}
+
+function resolveListTokens(xs: string[], context: ResolveContext): any {
+  // Must be a singleton list token, because concatenation is not allowed.
+  if (xs.length !== 1) {
+    throw new Error(`Cannot add elements to list token, got: ${xs}`);
+  }
+
+  const str = TokenString.forListToken(xs[0]);
+  const fragments = str.split(tokenMap.lookupToken.bind(tokenMap));
+  if (fragments.length !== 1) {
+    throw new Error(`Cannot concatenate strings in a tokenized string array, got: ${xs[0]}`);
+  }
+  return fragments.mapUnresolved(x => resolve(x, context)).values[0];
 }

@@ -217,11 +217,11 @@ export class StringListParameter extends ParameterBase implements IStringListPar
   constructor(scope: Construct, id: string, props: StringListParameterProps) {
     super(scope, id);
 
-    if (props.stringListValue.find(str => !Token.unresolved(str) && str.indexOf(',') !== -1)) {
+    if (props.stringListValue.find(str => !Token.isToken(str) && str.indexOf(',') !== -1)) {
       throw new Error('Values of a StringList SSM Parameter cannot contain the \',\' character. Use a string parameter instead.');
     }
 
-    if (props.allowedPattern && !Token.unresolved(props.stringListValue)) {
+    if (props.allowedPattern && !Token.isToken(props.stringListValue)) {
       props.stringListValue.forEach(str => _assertValidValue(str, props.allowedPattern!));
     }
 
@@ -249,7 +249,7 @@ export class StringListParameter extends ParameterBase implements IStringListPar
  *         ``cdk.unresolved``).
  */
 function _assertValidValue(value: string, allowedPattern: string): void {
-  if (Token.unresolved(value) || Token.unresolved(allowedPattern)) {
+  if (Token.isToken(value) || Token.isToken(allowedPattern)) {
     // Unable to perform validations against unresolved tokens
     return;
   }

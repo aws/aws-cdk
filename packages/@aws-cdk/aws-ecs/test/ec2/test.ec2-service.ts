@@ -42,8 +42,6 @@ export = {
         DesiredCount: 1,
         LaunchType: "EC2",
         LoadBalancers: [],
-        PlacementConstraints: [],
-        PlacementStrategies: [],
         SchedulingStrategy: "REPLICA"
       }));
 
@@ -329,7 +327,7 @@ export = {
       new ecs.Ec2Service(stack, "Ec2Service", {
         cluster,
         taskDefinition,
-        placeOnDistinctInstances: true
+        placementConstraints: [ecs.PlacementConstraint.distinctInstances()]
       });
 
       // THEN

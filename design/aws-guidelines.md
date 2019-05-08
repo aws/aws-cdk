@@ -143,7 +143,7 @@ into an `{ "Fn::Join" }` expression which includes the relevant intrinsic
 functions.
 
 If needed, you can query whether an object includes unresolved tokens by using
-the `cdk.unresolved(x)` function.
+the `cdk.isToken(x)` function.
 
 Resource attributes should use a type that corresponds to the __resolved__ AWS
 CloudFormation type (e.g. `string`, `string[]`).
