@@ -158,7 +158,7 @@ export class Asset extends cdk.Construct {
    *
    * @see https://github.com/awslabs/aws-cdk/issues/1432
    *
-   * @param resource The CloudFormation resource which is using this asset.
+   * @param resource The CloudFormation resource which is using this asset [disable-awslint:ref-via-interface]
    * @param resourceProperty The property name where this asset is referenced
    * (e.g. "Code" for AWS::Lambda::Function)
    */

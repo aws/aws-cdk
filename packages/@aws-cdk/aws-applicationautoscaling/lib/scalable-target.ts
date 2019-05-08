@@ -1,8 +1,15 @@
 import iam = require('@aws-cdk/aws-iam');
-import { Construct, Resource } from '@aws-cdk/cdk';
+import { Construct, IResource, Resource } from '@aws-cdk/cdk';
 import { CfnScalableTarget } from './applicationautoscaling.generated';
 import { BasicStepScalingPolicyProps, StepScalingPolicy } from './step-scaling-policy';
 import { BasicTargetTrackingScalingPolicyProps, TargetTrackingScalingPolicy } from './target-tracking-scaling-policy';
+
+export interface IScalableTarget extends IResource {
+  /**
+   * @attribute
+   */
+  readonly scalableTargetId: string;
+}
 
 /**
  * Properties for a scalable target
@@ -61,7 +68,15 @@ export interface ScalableTargetProps {
 /**
  * Define a scalable target
  */
-export class ScalableTarget extends Resource {
+export class ScalableTarget extends Resource implements IScalableTarget {
+
+  public static fromScalableTargetId(scope: Construct, id: string, scalableTargetId: string): IScalableTarget {
+    class Import extends Resource implements IScalableTarget {
+      public readonly scalableTargetId = scalableTargetId;
+    }
+    return new Import(scope, id);
+  }
+
   /**
    * ID of the Scalable Target
    *

@@ -9,7 +9,7 @@ export interface IIdentity extends IPrincipal, IResource {
   /**
    * Attaches an inline policy to this principal.
    * This is the same as calling `policy.addToXxx(principal)`.
-   * @param policy The policy resource to attach to this principal.
+   * @param policy The policy resource to attach to this principal [disable-awslint:ref-via-interface]
    */
   attachInlinePolicy(policy: Policy): void;
 

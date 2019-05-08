@@ -1,5 +1,6 @@
 import autoscaling = require('@aws-cdk/aws-autoscaling');
 import ec2 = require('@aws-cdk/aws-ec2');
+import { VpcSubnet } from '@aws-cdk/aws-ec2';
 import iam = require('@aws-cdk/aws-iam');
 import { CfnOutput, Construct, IResource, Resource, Tag } from '@aws-cdk/cdk';
 import { EksOptimizedAmi, nodeTypeForInstanceType } from './ami';
@@ -317,6 +318,7 @@ export class Cluster extends ClusterBase {
    * the right AMI and the `maxPods` number based on your instance type.
    *
    * @see https://docs.aws.amazon.com/eks/latest/userguide/launch-workers.html
+   * @param autoScalingGroup [disable-awslint:ref-via-interface]
    */
   public addAutoScalingGroup(autoScalingGroup: autoscaling.AutoScalingGroup, options: AddAutoScalingGroupOptions) {
     // self rules
@@ -364,7 +366,7 @@ export class Cluster extends ClusterBase {
    */
   private tagSubnets() {
     for (const subnet of this.vpc.privateSubnets) {
-      if (!isRealSubnetConstruct(subnet)) {
+      if (!VpcSubnet.isVpcSubnet(subnet)) {
         // Just give up, all of them will be the same.
         this.node.addWarning('Could not auto-tag private subnets with "kubernetes.io/role/internal-elb=1", please remember to do this manually');
         return;
@@ -373,10 +375,6 @@ export class Cluster extends ClusterBase {
       subnet.node.apply(new Tag("kubernetes.io/role/internal-elb", "1"));
     }
   }
-}
-
-function isRealSubnetConstruct(subnet: ec2.IVpcSubnet): subnet is ec2.VpcSubnet {
-  return (subnet as any).addDefaultRouteToIGW !== undefined;
 }
 
 /**

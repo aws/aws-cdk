@@ -104,15 +104,5 @@
   },
   "engines": {
     "node": ">= 8.10.0"
-  },
-  "awslint": {
-    "exclude": [
-      "construct-base-is-private:@aws-cdk/aws-lambda.FunctionBase",
-      "grant-result:@aws-cdk/aws-lambda.LayerVersion.grantUsage",
-      "from-method:@aws-cdk/aws-lambda.Alias",
-      "from-attributes:fromAliasAttributes",
-      "from-method:@aws-cdk/aws-lambda.SingletonFunction",
-      "from-method:@aws-cdk/aws-lambda.Version"
-    ]
   }
 }

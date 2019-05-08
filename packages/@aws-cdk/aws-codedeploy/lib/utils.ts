@@ -15,7 +15,7 @@ export function arnForDeploymentConfig(name: string): string {
   return `arn:${Aws.partition}:codedeploy:${Aws.region}:${Aws.accountId}:deploymentconfig:${name}`;
 }
 
-export function renderAlarmConfiguration(alarms: cloudwatch.Alarm[], ignorePollAlarmFailure?: boolean):
+export function renderAlarmConfiguration(alarms: cloudwatch.IAlarm[], ignorePollAlarmFailure?: boolean):
       CfnDeploymentGroup.AlarmConfigurationProperty | undefined {
   return alarms.length === 0
     ? undefined
@@ -32,7 +32,7 @@ enum AutoRollbackEvent {
   DeploymentStopOnRequest = 'DEPLOYMENT_STOP_ON_REQUEST'
 }
 
-export function renderAutoRollbackConfiguration(alarms: cloudwatch.Alarm[], autoRollbackConfig: AutoRollbackConfig = {}):
+export function renderAutoRollbackConfiguration(alarms: cloudwatch.IAlarm[], autoRollbackConfig: AutoRollbackConfig = {}):
     CfnDeploymentGroup.AutoRollbackConfigurationProperty | undefined {
   const events = new Array<string>();
 

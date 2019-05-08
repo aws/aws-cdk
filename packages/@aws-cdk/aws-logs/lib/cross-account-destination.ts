@@ -17,7 +17,7 @@ export interface CrossAccountDestinationProps {
    *
    * The role must be assumable by 'logs.{REGION}.amazonaws.com'.
    */
-  readonly role: iam.Role;
+  readonly role: iam.IRole;
 
   /**
    * The log destination target's ARN

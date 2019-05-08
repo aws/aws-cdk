@@ -1,7 +1,7 @@
 import { findAlarmThresholds, normalizeIntervals } from '@aws-cdk/aws-autoscaling-common';
 import cloudwatch = require('@aws-cdk/aws-cloudwatch');
 import cdk = require('@aws-cdk/cdk');
-import { ScalableTarget } from './scalable-target';
+import { IScalableTarget } from './scalable-target';
 import { AdjustmentType, MetricAggregationType, StepScalingAction } from './step-scaling-action';
 
 export interface BasicStepScalingPolicyProps {
@@ -52,7 +52,7 @@ export interface StepScalingPolicyProps extends BasicStepScalingPolicyProps {
   /**
    * The scaling target
    */
-  readonly scalingTarget: ScalableTarget;
+  readonly scalingTarget: IScalableTarget;
 }
 
 /**

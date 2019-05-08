@@ -845,76 +845,6 @@
         ]
       }
     },
-    "TaskDefEventsRoleFB3B67B8": {
-      "Type": "AWS::IAM::Role",
-      "Properties": {
-        "AssumeRolePolicyDocument": {
-          "Statement": [
-            {
-              "Action": "sts:AssumeRole",
-              "Effect": "Allow",
-              "Principal": {
-                "Service": {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "events.",
-                      {
-                        "Ref": "AWS::URLSuffix"
-                      }
-                    ]
-                  ]
-                }
-              }
-            }
-          ],
-          "Version": "2012-10-17"
-        }
-      }
-    },
-    "TaskDefEventsRoleDefaultPolicyA124E85B": {
-      "Type": "AWS::IAM::Policy",
-      "Properties": {
-        "PolicyDocument": {
-          "Statement": [
-            {
-              "Action": "ecs:RunTask",
-              "Condition": {
-                "ArnEquals": {
-                  "ecs:cluster": {
-                    "Fn::GetAtt": [
-                      "EcsCluster97242B84",
-                      "Arn"
-                    ]
-                  }
-                }
-              },
-              "Effect": "Allow",
-              "Resource": {
-                "Ref": "TaskDef54694570"
-              }
-            },
-            {
-              "Action": "iam:PassRole",
-              "Effect": "Allow",
-              "Resource": {
-                "Fn::GetAtt": [
-                  "TaskDefExecutionRoleB4775C97",
-                  "Arn"
-                ]
-              }
-            }
-          ],
-          "Version": "2012-10-17"
-        },
-        "PolicyName": "TaskDefEventsRoleDefaultPolicyA124E85B",
-        "Roles": [
-          {
-            "Ref": "TaskDefEventsRoleFB3B67B8"
-          }
-        ]
-      }
-    },
     "EventImageAdoptRepositoryDFAAC242": {
       "Type": "Custom::ECRAdoptedRepository",
       "Properties": {
@@ -1127,10 +1057,80 @@
             },
             "RoleArn": {
               "Fn::GetAtt": [
-                "TaskDefEventsRoleFB3B67B8",
+                "awsecsintegecsTaskDef8DD0C801EventsRoleC617AC5B",
                 "Arn"
               ]
             }
+          }
+        ]
+      }
+    },
+    "awsecsintegecsTaskDef8DD0C801EventsRoleC617AC5B": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "events.",
+                      {
+                        "Ref": "AWS::URLSuffix"
+                      }
+                    ]
+                  ]
+                }
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      }
+    },
+    "awsecsintegecsTaskDef8DD0C801EventsRoleDefaultPolicy2DFC09DA": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "ecs:RunTask",
+              "Condition": {
+                "ArnEquals": {
+                  "ecs:cluster": {
+                    "Fn::GetAtt": [
+                      "EcsCluster97242B84",
+                      "Arn"
+                    ]
+                  }
+                }
+              },
+              "Effect": "Allow",
+              "Resource": {
+                "Ref": "TaskDef54694570"
+              }
+            },
+            {
+              "Action": "iam:PassRole",
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "TaskDefExecutionRoleB4775C97",
+                  "Arn"
+                ]
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "awsecsintegecsTaskDef8DD0C801EventsRoleDefaultPolicy2DFC09DA",
+        "Roles": [
+          {
+            "Ref": "awsecsintegecsTaskDef8DD0C801EventsRoleC617AC5B"
           }
         ]
       }

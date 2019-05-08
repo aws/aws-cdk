@@ -51,7 +51,7 @@ export = {
           InputTransformer: {
             InputTemplate: "{\"argument\":\"hello\"}"
           },
-          RoleArn: { "Fn::GetAtt": ["TaskDefEventsRoleFB3B67B8", "Arn"] }
+          RoleArn: { "Fn::GetAtt": ["TaskDefEventsRole7BD19E45", "Arn"] }
         }
       ]
     }));

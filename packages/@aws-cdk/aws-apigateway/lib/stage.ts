@@ -69,7 +69,7 @@ export interface StageOptions extends MethodDeploymentOptions {
 
 export interface StageProps extends StageOptions {
   /**
-   * The deployment that this stage points to.
+   * The deployment that this stage points to [disable-awslint:ref-via-interface].
    */
   readonly deployment: Deployment;
 }

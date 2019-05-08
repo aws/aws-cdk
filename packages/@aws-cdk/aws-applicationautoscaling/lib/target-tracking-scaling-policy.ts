@@ -1,7 +1,7 @@
 import cloudwatch = require('@aws-cdk/aws-cloudwatch');
 import cdk = require('@aws-cdk/cdk');
 import { CfnScalingPolicy } from './applicationautoscaling.generated';
-import { ScalableTarget } from './scalable-target';
+import { IScalableTarget } from './scalable-target';
 
 /**
  * Base interface for target tracking props
@@ -95,7 +95,7 @@ export interface TargetTrackingScalingPolicyProps extends BasicTargetTrackingSca
   /*
    * The scalable target
    */
-  readonly scalingTarget: ScalableTarget;
+  readonly scalingTarget: IScalableTarget;
 }
 
 export class TargetTrackingScalingPolicy extends cdk.Construct {

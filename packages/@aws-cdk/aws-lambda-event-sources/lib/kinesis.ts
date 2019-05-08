@@ -29,9 +29,8 @@ export class KinesisEventSource implements lambda.IEventSource {
     }
   }
 
-  public bind(target: lambda.FunctionBase) {
-    new lambda.EventSourceMapping(target, `KinesisEventSource:${this.stream.node.uniqueId}`, {
-      target,
+  public bind(target: lambda.IFunction) {
+    target.addEventSourceMapping(`KinesisEventSource:${this.stream.node.uniqueId}`, {
       batchSize: this.props.batchSize || 100,
       startingPosition: this.props.startingPosition,
       eventSourceArn: this.stream.streamArn,

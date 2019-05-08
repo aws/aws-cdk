@@ -1,8 +1,20 @@
-import { Construct, Resource, Token } from '@aws-cdk/cdk';
+import { Construct, IResource, Resource, Token } from '@aws-cdk/cdk';
 import { CfnAlarm } from './cloudwatch.generated';
 import { HorizontalAnnotation } from './graph';
 import { Dimension, Metric, MetricAlarmProps, Statistic, Unit } from './metric';
 import { parseStatistic } from './util.statistic';
+
+export interface IAlarm extends IResource {
+  /**
+   * @attribute
+   */
+  readonly alarmArn: string;
+
+  /**
+   * @attribute
+   */
+  readonly alarmName: string;
+}
 
 /**
  * Properties for Alarms
@@ -62,7 +74,16 @@ export enum TreatMissingData {
 /**
  * An alarm on a CloudWatch metric
  */
-export class Alarm extends Resource {
+export class Alarm extends Resource implements IAlarm {
+
+  public static fromAlarmArn(scope: Construct, id: string, alarmArn: string): IAlarm {
+    class Import extends Resource implements IAlarm {
+      public readonly alarmArn = alarmArn;
+      public readonly alarmName = scope.node.stack.parseArn(alarmArn, ':').resourceName!;
+    }
+    return new Import(scope, id);
+  }
+
   /**
    * ARN of this alarm
    *

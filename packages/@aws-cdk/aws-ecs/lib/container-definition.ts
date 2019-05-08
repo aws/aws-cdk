@@ -181,6 +181,8 @@ export interface ContainerDefinitionOptions {
 export interface ContainerDefinitionProps extends ContainerDefinitionOptions {
   /**
    * The task this container definition belongs to.
+   *
+   * [disable-awslint:ref-via-interface]
    */
   readonly taskDefinition: TaskDefinition;
 }

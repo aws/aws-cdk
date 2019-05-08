@@ -24,9 +24,8 @@ export class SqsEventSource implements lambda.IEventSource {
     }
   }
 
-  public bind(target: lambda.FunctionBase) {
-    new lambda.EventSourceMapping(target, `SqsEventSource:${this.queue.node.uniqueId}`, {
-      target,
+  public bind(target: lambda.IFunction) {
+    target.addEventSourceMapping(`SqsEventSource:${this.queue.node.uniqueId}`, {
       batchSize: this.props.batchSize,
       eventSourceArn: this.queue.queueArn,
     });

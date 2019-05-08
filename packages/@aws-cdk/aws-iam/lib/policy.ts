@@ -1,10 +1,17 @@
-import { Construct, Resource, Token } from '@aws-cdk/cdk';
-import { Group } from './group';
+import { Construct, IResource, Resource, Token } from '@aws-cdk/cdk';
+import { IGroup } from './group';
 import { CfnPolicy } from './iam.generated';
 import { PolicyDocument, PolicyStatement } from './policy-document';
 import { IRole } from './role';
-import { User } from './user';
+import { IUser } from './user';
 import { generatePolicyName, undefinedIfEmpty } from './util';
+
+export interface IPolicy extends IResource {
+  /**
+   * @attribute
+   */
+  readonly policyName: string;
+}
 
 export interface PolicyProps {
   /**
@@ -21,7 +28,7 @@ export interface PolicyProps {
    * Users to attach this policy to.
    * You can also use `attachToUser(user)` to attach this policy to a user.
    */
-  readonly users?: User[];
+  readonly users?: IUser[];
 
   /**
    * Roles to attach this policy to.
@@ -33,7 +40,7 @@ export interface PolicyProps {
    * Groups to attach this policy to.
    * You can also use `attachToGroup(group)` to attach this policy to a group.
    */
-  readonly groups?: Group[];
+  readonly groups?: IGroup[];
 
   /**
    * Initial set of permissions to add to this policy document.
@@ -48,7 +55,16 @@ export interface PolicyProps {
  * Policies](http://docs.aws.amazon.com/IAM/latest/UserGuide/policies_overview.html)
  * in the IAM User Guide guide.
  */
-export class Policy extends Resource {
+export class Policy extends Resource implements IPolicy {
+
+  public static fromPolicyName(scope: Construct, id: string, policyName: string): IPolicy {
+    class Import extends Resource implements IPolicy {
+      public readonly policyName = policyName;
+    }
+
+    return new Import(scope, id);
+  }
+
   /**
    * The policy document.
    */
@@ -62,8 +78,8 @@ export class Policy extends Resource {
   public readonly policyName: string;
 
   private readonly roles = new Array<IRole>();
-  private readonly users = new Array<User>();
-  private readonly groups = new Array<Group>();
+  private readonly users = new Array<IUser>();
+  private readonly groups = new Array<IGroup>();
 
   constructor(scope: Construct, id: string, props: PolicyProps = {}) {
     super(scope, id);
@@ -108,7 +124,7 @@ export class Policy extends Resource {
   /**
    * Attaches this policy to a user.
    */
-  public attachToUser(user: User) {
+  public attachToUser(user: IUser) {
     if (this.users.find(u => u === user)) { return; }
     this.users.push(user);
     user.attachInlinePolicy(this);
@@ -126,7 +142,7 @@ export class Policy extends Resource {
   /**
    * Attaches this policy to a group.
    */
-  public attachToGroup(group: Group) {
+  public attachToGroup(group: IGroup) {
     if (this.groups.find(g => g === group)) { return; }
     this.groups.push(group);
     group.attachInlinePolicy(this);

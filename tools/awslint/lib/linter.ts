@@ -1,5 +1,6 @@
 import reflect = require('jsii-reflect');
 import { PrimitiveType } from 'jsii-spec';
+import util = require('util');
 
 export interface LinterOptions {
   /**
@@ -85,17 +86,16 @@ export class Linter<T> extends LinterBase {
       ctxs = [ ctxs ];
     }
 
-    const results = new Array<Diagnostic>();
+    const diag = new Array<Diagnostic>();
 
     for (const ctx of ctxs) {
       for (const rule of Object.values(this._rules)) {
-        const evaluation = new Evaluation(ctx, rule, options);
+        const evaluation = new Evaluation(ctx, rule, diag, options);
         rule.eval(evaluation);
-        results.push(...evaluation.diagnostics);
       }
     }
 
-    return results;
+    return diag;
   }
 }
 
@@ -105,18 +105,26 @@ export class Linter<T> extends LinterBase {
 export class Evaluation<T> {
   public readonly ctx: T;
   public readonly options: LinterOptions;
-  public diagnostics = new Array<Diagnostic>();
-  private readonly curr: ConcreteRule<T>;
 
-  constructor(ctx: T, rule: ConcreteRule<T>, options: LinterOptions) {
+  private readonly curr: ConcreteRule<T>;
+  private readonly diagnostics: Diagnostic[];
+
+  constructor(ctx: T, rule: ConcreteRule<T>, diagnostics: Diagnostic[], options: LinterOptions) {
     this.ctx = ctx;
     this.options = options;
     this.curr = rule;
+    this.diagnostics = diagnostics;
   }
 
   public assert(condition: any, scope: string, extra?: string): condition is true {
+
+    // deduplicate: skip if this specific assertion ("rule:scope") was already examined
+    if (this.diagnostics.find(d => d.rule.code === this.curr.code && d.scope === scope)) {
+      return condition;
+    }
+
     const include = this.shouldEvaluate(this.curr.code, scope);
-    const message = this.curr.message + (extra || '');
+    const message = util.format(this.curr.message, extra || '');
 
     let level: DiagnosticLevel;
     if (!include) {

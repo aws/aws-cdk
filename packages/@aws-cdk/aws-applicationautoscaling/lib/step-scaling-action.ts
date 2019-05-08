@@ -1,7 +1,7 @@
 import cloudwatch = require('@aws-cdk/aws-cloudwatch');
 import cdk = require('@aws-cdk/cdk');
 import { CfnScalingPolicy } from './applicationautoscaling.generated';
-import { ScalableTarget } from './scalable-target';
+import { IScalableTarget } from './scalable-target';
 
 /**
  * Properties for a scaling policy
@@ -10,7 +10,7 @@ export interface StepScalingActionProps {
   /**
    * The scalable target
    */
-  readonly scalingTarget: ScalableTarget;
+  readonly scalingTarget: IScalableTarget;
 
   /**
    * A name for the scaling policy

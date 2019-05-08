@@ -39,31 +39,35 @@ export class CfnResourceReflection {
    * Returns all CFN resource classes within an assembly.
    */
   public static findAll(assembly: reflect.Assembly) {
-    return assembly.classes.filter(c => {
-      if (!c.system.includesAssembly(CORE_MODULE)) {
-        return false;
-      }
+    return assembly.classes
+      .filter(c => this.isCfnResource(c))
+      .map(c => new CfnResourceReflection(c));
+  }
 
-      // skip CfnResource itself
-      if (c.fqn === CFN_RESOURCE_BASE_CLASS_FQN) {
-        return false;
-      }
+  public static isCfnResource(c: reflect.ClassType) {
+    if (!c.system.includesAssembly(CORE_MODULE)) {
+      return false;
+    }
 
-      if (!ConstructReflection.isConstructClass(c)) {
-        return false;
-      }
+    // skip CfnResource itself
+    if (c.fqn === CFN_RESOURCE_BASE_CLASS_FQN) {
+      return false;
+    }
 
-      const cfnResourceClass = c.system.findFqn(CFN_RESOURCE_BASE_CLASS_FQN);
-      if (!c.extends(cfnResourceClass)) {
-        return false;
-      }
+    if (!ConstructReflection.isConstructClass(c)) {
+      return false;
+    }
 
-      if (!c.name.startsWith('Cfn')) {
-        return false;
-      }
+    const cfnResourceClass = c.system.findFqn(CFN_RESOURCE_BASE_CLASS_FQN);
+    if (!c.extends(cfnResourceClass)) {
+      return false;
+    }
 
-      return true;
-    }).map(c => new CfnResourceReflection(c));
+    if (!c.name.startsWith('Cfn')) {
+      return false;
+    }
+
+    return true;
   }
 
   public readonly classType: reflect.ClassType;

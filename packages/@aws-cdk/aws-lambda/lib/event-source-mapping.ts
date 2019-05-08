@@ -3,17 +3,12 @@ import { Resource } from '@aws-cdk/cdk';
 import { IFunction } from './function-base';
 import { CfnEventSourceMapping } from './lambda.generated';
 
-export interface EventSourceMappingProps {
+export interface EventSourceMappingOptions {
   /**
    * The Amazon Resource Name (ARN) of the event source. Any record added to
    * this stream can invoke the Lambda function.
    */
   readonly eventSourceArn: string;
-
-  /**
-   * The target AWS Lambda function.
-   */
-  readonly target: IFunction;
 
   /**
    * The largest number of records that AWS Lambda will retrieve from your event
@@ -41,6 +36,13 @@ export interface EventSourceMappingProps {
    * @see https://docs.aws.amazon.com/kinesis/latest/APIReference/API_GetShardIterator.html#Kinesis-GetShardIterator-request-ShardIteratorType
    */
   readonly startingPosition?: StartingPosition
+}
+
+export interface EventSourceMappingProps extends EventSourceMappingOptions {
+  /**
+   * The target AWS Lambda function.
+   */
+  readonly target: IFunction;
 }
 
 /**

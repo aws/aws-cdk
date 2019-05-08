@@ -71,7 +71,7 @@ export interface LambdaDeploymentGroupProps {
    * @default []
    * @see https://docs.aws.amazon.com/codedeploy/latest/userguide/monitoring-create-alarms.html
    */
-  readonly alarms?: cloudwatch.Alarm[];
+  readonly alarms?: cloudwatch.IAlarm[];
 
   /**
    * The service Role of this Deployment Group.
@@ -83,6 +83,8 @@ export interface LambdaDeploymentGroupProps {
   /**
    * Lambda Alias to shift traffic. Updating the version
    * of the alias will trigger a CodeDeploy deployment.
+   *
+   * [disable-awslint:ref-via-interface] since we need to modify the alias CFN resource update policy
    */
   readonly alias: lambda.Alias;
 
@@ -134,7 +136,7 @@ export class LambdaDeploymentGroup extends cdk.Resource implements ILambdaDeploy
   public readonly deploymentGroupArn: string;
   public readonly role: iam.IRole;
 
-  private readonly alarms: cloudwatch.Alarm[];
+  private readonly alarms: cloudwatch.IAlarm[];
   private preHook?: lambda.IFunction;
   private postHook?: lambda.IFunction;
 
@@ -188,7 +190,7 @@ export class LambdaDeploymentGroup extends cdk.Resource implements ILambdaDeploy
    *
    * @param alarm the alarm to associate with this Deployment Group
    */
-  public addAlarm(alarm: cloudwatch.Alarm): void {
+  public addAlarm(alarm: cloudwatch.IAlarm): void {
     this.alarms.push(alarm);
   }
 

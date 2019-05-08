@@ -1,4 +1,5 @@
 *.tsbuildinfo
+.cdk.staging
 
 .vscode
 # VSCode extension
