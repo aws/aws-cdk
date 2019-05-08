@@ -4,6 +4,7 @@ import { close as _close, open as _open, stat as _stat } from 'fs';
 import semver = require('semver');
 import { promisify } from 'util';
 import { debug, print, warning } from '../lib/logging';
+import { formatAsBanner } from '../lib/util/console-formatters';
 
 const ONE_DAY_IN_SECONDS = 1 * 24 * 60 * 60;
 
@@ -92,11 +93,11 @@ export async function displayVersionMessage(): Promise<void> {
   try {
     const laterVersion = await latestVersionIfHigher(versionNumber(), versionCheckCache);
     if (laterVersion) {
-      const fmt = colors.green(laterVersion as string);
-      print('********************************************************');
-      print(`***  Newer version of the CDK is available [${fmt}]  ***`);
-      print(`***  Upgrade now by running "npm up -g cdk"          ***`);
-      print('********************************************************');
+      const bannerMsg = formatAsBanner([
+        `Newer version of CDK is available [${colors.green(laterVersion as string)}]`,
+        `Upgrade recommended`,
+      ]);
+      bannerMsg.forEach((e) => print(e));
     }
   } catch (err) {
     warning(`Could not run version check due to error ${err.message}`);
