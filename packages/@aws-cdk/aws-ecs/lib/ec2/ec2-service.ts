@@ -116,8 +116,8 @@ export class Ec2Service extends BaseService implements IEc2Service, elb.ILoadBal
       cluster: props.cluster.clusterName,
       taskDefinition: props.taskDefinition.taskDefinitionArn,
       launchType: 'EC2',
-      placementConstraints: new cdk.Token(() => this.constraints.length > 0 ? this.constraints : undefined),
-      placementStrategies: new cdk.Token(() => this.strategies.length > 0 ? this.strategies : undefined),
+      placementConstraints: new Token(() => this.constraints.length > 0 ? this.constraints : undefined),
+      placementStrategies: new Token(() => this.strategies.length > 0 ? this.strategies : undefined),
       schedulingStrategy: props.daemon ? 'DAEMON' : 'REPLICA',
     }, props.cluster.clusterName, props.taskDefinition);
 

@@ -3,6 +3,7 @@ import iam = require('@aws-cdk/aws-iam');
 import cdk = require('@aws-cdk/cdk');
 import { ITaskDefinition } from '../base/task-definition';
 import { ICluster } from '../cluster';
+import { isEc2Compatible } from '../util';
 
 /**
  * Properties to define an EC2 Event Task
@@ -37,7 +38,7 @@ export class Ec2EventRuleTarget extends cdk.Construct implements events.IEventRu
   constructor(scope: cdk.Construct, id: string, props: Ec2EventRuleTargetProps) {
     super(scope, id);
 
-    if (!props.taskDefinition.isEc2Compatible) {
+    if (!isEc2Compatible(props.taskDefinition.compatibility)) {
       throw new Error('Supplied TaskDefinition is not configured for compatibility with EC2');
     }
 

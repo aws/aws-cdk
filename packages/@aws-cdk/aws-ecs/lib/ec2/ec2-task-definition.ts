@@ -1,6 +1,5 @@
 import { Construct, Resource } from '@aws-cdk/cdk';
-import { CommonTaskDefinitionProps, Compatibility, ITaskDefinition, NetworkMode, PlacementConstraint, TaskDefinition } from '../base/task-definition';
-import { CommonTaskDefinitionProps, Compatibility, NetworkMode, TaskDefinition } from '../base/task-definition';
+import { CommonTaskDefinitionProps, Compatibility, ITaskDefinition, NetworkMode, TaskDefinition } from '../base/task-definition';
 import { PlacementConstraint } from '../placement';
 
 /**
