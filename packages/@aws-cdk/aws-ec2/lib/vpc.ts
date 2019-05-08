@@ -1049,10 +1049,17 @@ export interface VpcSubnetProps {
   readonly mapPublicIpOnLaunch?: boolean;
 }
 
+const IS_VPC_SUBNET = Symbol.for('@aws-cdk/aws-ec2.VpcSubnet');
+
 /**
  * Represents a new VPC subnet resource
  */
 export class VpcSubnet extends cdk.Construct implements IVpcSubnet {
+
+  public static isVpcSubnet(o: any): o is VpcSubnet {
+    return IS_VPC_SUBNET in o;
+  }
+
   public static import(scope: cdk.Construct, id: string, props: VpcSubnetImportProps): IVpcSubnet {
     return new ImportedVpcSubnet(scope, id, props);
   }
@@ -1081,6 +1088,9 @@ export class VpcSubnet extends cdk.Construct implements IVpcSubnet {
 
   constructor(scope: cdk.Construct, id: string, props: VpcSubnetProps) {
     super(scope, id);
+
+    Object.defineProperty(this, IS_VPC_SUBNET, { value: true });
+
     this.node.apply(new cdk.Tag(NAME_TAG, this.node.path));
 
     this.availabilityZone = props.availabilityZone;
