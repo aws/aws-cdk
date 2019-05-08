@@ -53,6 +53,8 @@ export class FargateTaskDefinition extends TaskDefinition implements IFargateTas
     class Import extends Resource implements IFargateTaskDefinition {
       public readonly taskDefinitionArn = fargateTaskDefinitionArn;
       public readonly compatibility = Compatibility.Fargate;
+      public readonly isEc2Compatible = false;
+      public readonly isFargateCompatible = true;
     }
 
     return new Import(scope, id);

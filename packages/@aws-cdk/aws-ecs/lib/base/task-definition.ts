@@ -20,6 +20,16 @@ export interface ITaskDefinition extends IResource {
    * What launch types this task definition should be compatible with.
    */
   readonly compatibility: Compatibility;
+
+  /**
+   * Return true if the task definition can be run on an EC2 cluster
+   */
+  readonly isEc2Compatible: boolean;
+
+  /**
+   * Return true if the task definition can be run on a Fargate cluster
+   */
+  readonly isFargateCompatible: boolean;
 }
 
 /**
@@ -113,10 +123,31 @@ export interface TaskDefinitionProps extends CommonTaskDefinitionProps {
   readonly memoryMiB?: string;
 }
 
+abstract class TaskDefinitionBase extends Resource implements ITaskDefinition {
+
+  public abstract readonly compatibility: Compatibility;
+  public abstract readonly taskDefinitionArn: string;
+  public abstract readonly executionRole?: iam.IRole;
+
+  /**
+   * Return true if the task definition can be run on an EC2 cluster
+   */
+  public get isEc2Compatible(): boolean {
+    return isEc2Compatible(this.compatibility);
+  }
+
+  /**
+   * Return true if the task definition can be run on a Fargate cluster
+   */
+  public get isFargateCompatible(): boolean {
+    return isFargateCompatible(this.compatibility);
+  }
+}
+
 /**
  * Base class for Ecs and Fargate task definitions
  */
-export class TaskDefinition extends Resource implements ITaskDefinition {
+export class TaskDefinition extends TaskDefinitionBase {
 
   /**
    * Imports a task definition by ARN.
@@ -124,9 +155,10 @@ export class TaskDefinition extends Resource implements ITaskDefinition {
    * The task will have a compatibility of EC2+Fargate.
    */
   public static fromTaskDefinitionArn(scope: Construct, id: string, taskDefinitionArn: string): ITaskDefinition {
-    class Import extends Resource implements ITaskDefinition {
+    class Import extends TaskDefinitionBase {
       public readonly taskDefinitionArn = taskDefinitionArn;
       public readonly compatibility = Compatibility.Ec2AndFargate;
+      public readonly executionRole?: iam.IRole = undefined;
     }
 
     return new Import(scope, id);
@@ -311,20 +343,6 @@ export class TaskDefinition extends Resource implements ITaskDefinition {
       });
     }
     return this._executionRole;
-  }
-
-  /**
-   * Return true if the task definition can be run on an EC2 cluster
-   */
-  public get isEc2Compatible(): boolean {
-    return isEc2Compatible(this.compatibility);
-  }
-
-  /**
-   * Return true if the task definition can be run on a Fargate cluster
-   */
-  public get isFargateCompatible(): boolean {
-    return isFargateCompatible(this.compatibility);
   }
 
   /**

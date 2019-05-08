@@ -40,6 +40,8 @@ export class Ec2TaskDefinition extends TaskDefinition implements IEc2TaskDefinit
     class Import extends Resource implements IEc2TaskDefinition {
       public readonly taskDefinitionArn = ec2TaskDefinitionArn;
       public readonly compatibility = Compatibility.Ec2;
+      public readonly isEc2Compatible = true;
+      public readonly isFargateCompatible = false;
     }
     return new Import(scope, id);
   }
