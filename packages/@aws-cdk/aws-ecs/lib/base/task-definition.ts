@@ -2,7 +2,7 @@ import iam = require('@aws-cdk/aws-iam');
 import { Construct, Resource, Token } from '@aws-cdk/cdk';
 import { ContainerDefinition, ContainerDefinitionOptions } from '../container-definition';
 import { CfnTaskDefinition } from '../ecs.generated';
-import { isEc2Compatible, isFargateCompatible } from '../util';
+import { PlacementConstraint } from '../placement';
 
 /**
  * Properties common to all Task definitions
@@ -167,16 +167,16 @@ export class TaskDefinition extends Resource {
     }
 
     this.networkMode = props.networkMode !== undefined ? props.networkMode :
-                       isFargateCompatible(this.compatibility) ? NetworkMode.AwsVpc : NetworkMode.Bridge;
-    if (isFargateCompatible(this.compatibility) && this.networkMode !== NetworkMode.AwsVpc) {
+                       this.isFargateCompatible ? NetworkMode.AwsVpc : NetworkMode.Bridge;
+    if (this.isFargateCompatible && this.networkMode !== NetworkMode.AwsVpc) {
       throw new Error(`Fargate tasks can only have AwsVpc network mode, got: ${this.networkMode}`);
     }
 
-    if (props.placementConstraints && props.placementConstraints.length > 0 && isFargateCompatible(this.compatibility)) {
+    if (props.placementConstraints && props.placementConstraints.length > 0 && this.isFargateCompatible) {
       throw new Error('Cannot set placement constraints on tasks that run on Fargate');
     }
 
-    if (isFargateCompatible(this.compatibility) && (!props.cpu || !props.memoryMiB)) {
+    if (this.isFargateCompatible && (!props.cpu || !props.memoryMiB)) {
       throw new Error(`Fargate-compatible tasks require both CPU (${props.cpu}) and memory (${props.memoryMiB}) specifications`);
     }
 
@@ -197,7 +197,8 @@ export class TaskDefinition extends Resource {
         ...(isFargateCompatible(props.compatibility) ? ["FARGATE"] : []),
       ],
       networkMode: this.networkMode,
-      placementConstraints: !isFargateCompatible(this.compatibility) ? new Token(this.placementConstraints) : undefined,
+      placementConstraints: new Token(
+        () => !isFargateCompatible(this.compatibility) && this.placementConstraints.length > 0 ? this.placementConstraints : undefined),
       cpu: props.cpu,
       memory: props.memoryMiB,
     });
@@ -255,8 +256,7 @@ export class TaskDefinition extends Resource {
     if (isFargateCompatible(this.compatibility)) {
       throw new Error('Cannot set placement constraints on tasks that run on Fargate');
     }
-    const pc = this.renderPlacementConstraint(constraint);
-    this.placementConstraints.push(pc);
+    this.placementConstraints.push(...constraint.toJson());
   }
 
   /**
@@ -282,6 +282,20 @@ export class TaskDefinition extends Resource {
   }
 
   /**
+   * Return true if the task definition can be run on an EC2 cluster
+   */
+  public get isEc2Compatible(): boolean {
+    return isEc2Compatible(this.compatibility);
+  }
+
+  /**
+   * Return true if the task definition can be run on a Fargate cluster
+   */
+  public get isFargateCompatible(): boolean {
+    return isFargateCompatible(this.compatibility);
+  }
+
+  /**
    * Validate this task definition
    */
   protected validate(): string[] {
@@ -298,16 +312,6 @@ export class TaskDefinition extends Resource {
       }
     }
     return ret;
-  }
-
-  /**
-   * Render the placement constraints
-   */
-  private renderPlacementConstraint(pc: PlacementConstraint): CfnTaskDefinition.TaskDefinitionPlacementConstraintProperty {
-    return {
-      type: pc.type,
-      expression: pc.expression
-    };
   }
 }
 
@@ -414,36 +418,6 @@ export enum Scope {
 }
 
 /**
- * A constraint on how instances should be placed
- */
-export interface PlacementConstraint {
-  /**
-   * The type of constraint
-   */
-  readonly type: PlacementConstraintType;
-
-  /**
-   * Additional information for the constraint
-   */
-  readonly expression?: string;
-}
-
-/**
- * A placement constraint type
- */
-export enum PlacementConstraintType {
-  /**
-   * Place each task on a different instance
-   */
-  DistinctInstance = "distinctInstance",
-
-  /**
-   * Place tasks only on instances matching the expression in 'expression'
-   */
-  MemberOf = "memberOf"
-}
-
-/**
  * Task compatibility
  */
 export enum Compatibility {
@@ -477,4 +451,18 @@ export interface ITaskDefinitionExtension {
    * Apply the extension to the given TaskDefinition
    */
   extend(taskDefinition: TaskDefinition): void;
+}
+
+/**
+ * Return true if the given task definition can be run on an EC2 cluster
+ */
+function isEc2Compatible(compatibility: Compatibility): boolean {
+  return [Compatibility.Ec2, Compatibility.Ec2AndFargate].includes(compatibility);
+}
+
+/**
+ * Return true if the given task definition can be run on a Fargate cluster
+ */
+function isFargateCompatible(compatibility: Compatibility): boolean {
+  return [Compatibility.Fargate, Compatibility.Ec2AndFargate].includes(compatibility);
 }

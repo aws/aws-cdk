@@ -752,7 +752,7 @@ export class Bucket extends BucketBase {
     super(scope, id);
 
     const { bucketEncryption, encryptionKey } = this.parseEncryption(props);
-    if (props.bucketName && !Token.unresolved(props.bucketName)) {
+    if (props.bucketName && !Token.isToken(props.bucketName)) {
       this.validateBucketName(props.bucketName);
     }
 

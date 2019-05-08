@@ -791,7 +791,6 @@
         ],
         "Family": "awsecsintegecsfrontendTD16AB905D",
         "NetworkMode": "bridge",
-        "PlacementConstraints": [],
         "RequiresCompatibilities": [
           "EC2"
         ],
@@ -820,8 +819,6 @@
         "DesiredCount": 1,
         "LaunchType": "EC2",
         "LoadBalancers": [],
-        "PlacementConstraints": [],
-        "PlacementStrategies": [],
         "SchedulingStrategy": "REPLICA",
         "ServiceRegistries": [
           {
