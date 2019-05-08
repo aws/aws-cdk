@@ -1,8 +1,8 @@
 import cloudwatch = require ('@aws-cdk/aws-cloudwatch');
 import ec2 = require('@aws-cdk/aws-ec2');
 import elb = require('@aws-cdk/aws-elasticloadbalancing');
-import cdk = require('@aws-cdk/cdk');
-import { BaseService, BaseServiceProps } from '../base/base-service';
+import { Construct, Resource, Token } from '@aws-cdk/cdk';
+import { BaseService, BaseServiceProps, IService } from '../base/base-service';
 import { NetworkMode, TaskDefinition } from '../base/task-definition';
 import { CfnService } from '../ecs.generated';
 import { BinPackResource, PlacementConstraint, PlacementStrategy } from '../placement';
@@ -13,6 +13,8 @@ import { BinPackResource, PlacementConstraint, PlacementStrategy } from '../plac
 export interface Ec2ServiceProps extends BaseServiceProps {
   /**
    * Task Definition used for running tasks in the service
+   *
+   * [disable-awslint:ref-via-interface]
    */
   readonly taskDefinition: TaskDefinition;
 
@@ -59,10 +61,24 @@ export interface Ec2ServiceProps extends BaseServiceProps {
   readonly daemon?: boolean;
 }
 
+export interface IEc2Service extends IService {
+
+}
+
 /**
  * Start a service on an ECS cluster
+ *
+ * @resource AWS::ECS::Service
  */
-export class Ec2Service extends BaseService implements elb.ILoadBalancerTarget {
+export class Ec2Service extends BaseService implements IEc2Service, elb.ILoadBalancerTarget {
+
+  public static fromEc2ServiceArn(scope: Construct, id: string, ec2ServiceArn: string): IEc2Service {
+    class Import extends Resource implements IEc2Service {
+      public readonly serviceArn = ec2ServiceArn;
+    }
+    return new Import(scope, id);
+  }
+
   /**
    * Name of the cluster
    */
@@ -72,7 +88,7 @@ export class Ec2Service extends BaseService implements elb.ILoadBalancerTarget {
   private readonly strategies: CfnService.PlacementStrategyProperty[];
   private readonly daemon: boolean;
 
-  constructor(scope: cdk.Construct, id: string, props: Ec2ServiceProps) {
+  constructor(scope: Construct, id: string, props: Ec2ServiceProps) {
     if (props.daemon && props.desiredCount !== undefined) {
       throw new Error('Daemon mode launches one task on every instance. Don\'t supply desiredCount.');
     }
@@ -100,8 +116,8 @@ export class Ec2Service extends BaseService implements elb.ILoadBalancerTarget {
       cluster: props.cluster.clusterName,
       taskDefinition: props.taskDefinition.taskDefinitionArn,
       launchType: 'EC2',
-      placementConstraints: new cdk.Token(() => this.constraints.length > 0 ? this.constraints : undefined),
-      placementStrategies: new cdk.Token(() => this.strategies.length > 0 ? this.strategies : undefined),
+      placementConstraints: new Token(() => this.constraints.length > 0 ? this.constraints : undefined),
+      placementStrategies: new Token(() => this.strategies.length > 0 ? this.strategies : undefined),
       schedulingStrategy: props.daemon ? 'DAEMON' : 'REPLICA',
     }, props.cluster.clusterName, props.taskDefinition);
 

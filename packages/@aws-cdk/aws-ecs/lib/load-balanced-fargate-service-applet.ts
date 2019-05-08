@@ -109,7 +109,7 @@ export interface LoadBalancedFargateServiceAppletProps extends cdk.StackProps {
  * load balancer, ECS cluster, VPC, and (optionally) Route53 alias record.
  */
 export class LoadBalancedFargateServiceApplet extends cdk.Stack {
-  constructor(scope: cdk.App, id: string, props: LoadBalancedFargateServiceAppletProps) {
+  constructor(scope: cdk.Construct, id: string, props: LoadBalancedFargateServiceAppletProps) {
     super(scope, id, props);
 
     const vpc = new VpcNetwork(this, 'MyVpc', { maxAZs: 2 });
