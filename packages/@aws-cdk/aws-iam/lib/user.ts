@@ -1,5 +1,5 @@
 import { Construct, Resource, SecretValue } from '@aws-cdk/cdk';
-import { Group } from './group';
+import { IGroup } from './group';
 import { CfnUser } from './iam.generated';
 import { IIdentity } from './identity-base';
 import { Policy } from './policy';
@@ -8,12 +8,17 @@ import { ArnPrincipal, PrincipalPolicyFragment } from './policy-document';
 import { IPrincipal } from './principals';
 import { AttachedPolicies, undefinedIfEmpty } from './util';
 
+export interface IUser extends IIdentity {
+  readonly userName: string;
+  addToGroup(group: IGroup): void;
+}
+
 export interface UserProps {
   /**
    * Groups to add this user to. You can also use `addToGroup` to add this
    * user to a group.
    */
-  readonly groups?: Group[];
+  readonly groups?: IGroup[];
 
   /**
    * A list of ARNs for managed policies attacherd to this user.
@@ -114,7 +119,7 @@ export class User extends Resource implements IIdentity {
   /**
    * Adds this user to a group.
    */
-  public addToGroup(group: Group) {
+  public addToGroup(group: IGroup) {
     this.groups.push(group.groupName);
   }
 

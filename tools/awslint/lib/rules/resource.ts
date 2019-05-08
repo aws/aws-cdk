@@ -23,6 +23,15 @@ export enum AttributeSite {
 }
 
 export class ResourceReflection {
+
+  /**
+   * @returns true if `classType` represents an AWS resource (i.e. extends `cdk.Resource`).
+   */
+  public static isResourceClass(classType: reflect.ClassType) {
+    const baseResource = classType.system.findClass(RESOURCE_BASE_CLASS_FQN);
+    return classType.extends(baseResource) || getDocTag(classType, 'resource');
+  }
+
   /**
    * @returns all resource constructs (everything that extends `cdk.Resource`)
    */
@@ -31,11 +40,9 @@ export class ResourceReflection {
       return []; // not part of the dep stack
     }
 
-    const baseResource = assembly.system.findClass(RESOURCE_BASE_CLASS_FQN);
-
     return ConstructReflection
       .findAllConstructs(assembly)
-      .filter(c => c.classType.extends(baseResource) || getDocTag(c.classType, 'resource'))
+      .filter(c => ResourceReflection.isResourceClass(c.classType))
       .map(c => new ResourceReflection(c));
   }
 
@@ -71,6 +78,10 @@ export class ResourceReflection {
     const result = new Array<Attribute>();
 
     for (const p of this.construct.classType.allProperties) {
+      if (p.protected) {
+        continue; // skip any protected properties
+      }
+
       // an attribute property is a property which starts with the type name
       // (e.g. "bucketXxx") and/or has an @attribute doc tag.
       const tag = getDocTag(p, 'attribute');

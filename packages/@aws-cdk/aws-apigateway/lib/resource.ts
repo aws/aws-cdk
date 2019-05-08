@@ -144,7 +144,10 @@ export abstract class ResourceBase extends ResourceConstruct implements IResourc
     return this.children[pathPart];
   }
 
-  public trackChild(pathPart: string, resource: Resource) {
+  /**
+   * @internal
+   */
+  public _trackChild(pathPart: string, resource: Resource) {
     this.children[pathPart] = resource;
   }
 
@@ -194,7 +197,7 @@ export class Resource extends ResourceBase {
     this.parentResource = props.parent;
 
     if (props.parent instanceof ResourceBase) {
-      props.parent.trackChild(props.pathPart, this);
+      props.parent._trackChild(props.pathPart, this);
     }
 
     const resourceProps: CfnResourceProps = {
