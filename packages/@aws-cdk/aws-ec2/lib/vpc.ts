@@ -121,7 +121,7 @@ export enum SubnetType {
    * This can be good for subnets with RDS or
    * Elasticache endpoints
    */
-  Isolated = 1,
+  Isolated = 'Isolated',
 
   /**
    * Subnet that routes to the internet, but not vice versa.
@@ -135,7 +135,7 @@ export enum SubnetType {
    * experimental cost conscious accounts or accounts where HA outbound
    * traffic is not needed.
    */
-  Private = 2,
+  Private = 'Private',
 
   /**
    * Subnet connected to the Internet
@@ -147,7 +147,7 @@ export enum SubnetType {
    *
    * Public subnets route outbound traffic via an Internet Gateway.
    */
-  Public = 3
+  Public = 'Public'
 }
 
 /**
