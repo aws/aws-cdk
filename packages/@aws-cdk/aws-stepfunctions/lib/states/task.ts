@@ -2,7 +2,7 @@ import cloudwatch = require('@aws-cdk/aws-cloudwatch');
 import cdk = require('@aws-cdk/cdk');
 import { Chain } from '../chain';
 import { StateGraph } from '../state-graph';
-import { IStepFunctionsTask } from '../step-functions-task';
+import { IStepFunctionsTask, StepFunctionsTaskProperties } from '../step-functions-task';
 import { CatchProps, IChainable, INextable, RetryProps } from '../types';
 import { renderJsonPath, State, StateType } from './state';
 
@@ -75,13 +75,13 @@ export interface TaskProps {
 export class Task extends State implements INextable {
     public readonly endStates: INextable[];
     private readonly timeoutSeconds?: number;
-    private readonly task: IStepFunctionsTask;
+    private readonly taskProps: StepFunctionsTaskProperties;
 
     constructor(scope: cdk.Construct, id: string, props: TaskProps) {
         super(scope, id, props);
 
         this.timeoutSeconds = props.timeoutSeconds;
-        this.task = props.task;
+        this.taskProps = props.task.bind(this);
         this.endStates = [this];
     }
 
@@ -125,11 +125,11 @@ export class Task extends State implements INextable {
             ...this.renderInputOutput(),
             Type: StateType.Task,
             Comment: this.comment,
-            Resource: this.task.resourceArn,
-            Parameters: this.task.parameters,
+            Resource: this.taskProps.resourceArn,
+            Parameters: this.taskProps.parameters,
             ResultPath: renderJsonPath(this.resultPath),
             TimeoutSeconds: this.timeoutSeconds,
-            HeartbeatSeconds: this.task.heartbeatSeconds,
+            HeartbeatSeconds: this.taskProps.heartbeatSeconds,
         };
     }
 
@@ -142,7 +142,7 @@ export class Task extends State implements INextable {
         return new cloudwatch.Metric({
             namespace: 'AWS/States',
             metricName,
-            dimensions: this.task.metricDimensions,
+            dimensions: this.taskProps.metricDimensions,
             statistic: 'sum',
             ...props
         });
@@ -154,7 +154,7 @@ export class Task extends State implements INextable {
      * @default average over 5 minutes
      */
     public metricRunTime(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-        return this.taskMetric(this.task.metricPrefixSingular, 'RunTime', { statistic: 'avg', ...props });
+        return this.taskMetric(this.taskProps.metricPrefixSingular, 'RunTime', { statistic: 'avg', ...props });
     }
 
     /**
@@ -163,7 +163,7 @@ export class Task extends State implements INextable {
      * @default average over 5 minutes
      */
     public metricScheduleTime(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-        return this.taskMetric(this.task.metricPrefixSingular, 'ScheduleTime', { statistic: 'avg', ...props });
+        return this.taskMetric(this.taskProps.metricPrefixSingular, 'ScheduleTime', { statistic: 'avg', ...props });
     }
 
     /**
@@ -172,7 +172,7 @@ export class Task extends State implements INextable {
      * @default average over 5 minutes
      */
     public metricTime(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-        return this.taskMetric(this.task.metricPrefixSingular, 'Time', { statistic: 'avg', ...props });
+        return this.taskMetric(this.taskProps.metricPrefixSingular, 'Time', { statistic: 'avg', ...props });
     }
 
     /**
@@ -181,7 +181,7 @@ export class Task extends State implements INextable {
      * @default sum over 5 minutes
      */
     public metricScheduled(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-        return this.taskMetric(this.task.metricPrefixPlural, 'Scheduled', props);
+        return this.taskMetric(this.taskProps.metricPrefixPlural, 'Scheduled', props);
     }
 
     /**
@@ -190,7 +190,7 @@ export class Task extends State implements INextable {
      * @default sum over 5 minutes
      */
     public metricTimedOut(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-        return this.taskMetric(this.task.metricPrefixPlural, 'TimedOut', props);
+        return this.taskMetric(this.taskProps.metricPrefixPlural, 'TimedOut', props);
     }
 
     /**
@@ -199,7 +199,7 @@ export class Task extends State implements INextable {
      * @default sum over 5 minutes
      */
     public metricStarted(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-        return this.taskMetric(this.task.metricPrefixPlural, 'Started', props);
+        return this.taskMetric(this.taskProps.metricPrefixPlural, 'Started', props);
     }
 
     /**
@@ -208,7 +208,7 @@ export class Task extends State implements INextable {
      * @default sum over 5 minutes
      */
     public metricSucceeded(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-        return this.taskMetric(this.task.metricPrefixPlural, 'Succeeded', props);
+        return this.taskMetric(this.taskProps.metricPrefixPlural, 'Succeeded', props);
     }
 
     /**
@@ -217,7 +217,7 @@ export class Task extends State implements INextable {
      * @default sum over 5 minutes
      */
     public metricFailed(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-        return this.taskMetric(this.task.metricPrefixPlural, 'Failed', props);
+        return this.taskMetric(this.taskProps.metricPrefixPlural, 'Failed', props);
     }
 
     /**
@@ -226,12 +226,12 @@ export class Task extends State implements INextable {
      * @default sum over 5 minutes
      */
     public metricHeartbeatTimedOut(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-        return this.taskMetric(this.task.metricPrefixPlural, 'HeartbeatTimedOut', props);
+        return this.taskMetric(this.taskProps.metricPrefixPlural, 'HeartbeatTimedOut', props);
     }
 
     protected onBindToGraph(graph: StateGraph) {
         super.onBindToGraph(graph);
-        for (const policyStatement of this.task.policyStatements || []) {
+        for (const policyStatement of this.taskProps.policyStatements || []) {
             graph.registerPolicyStatement(policyStatement);
         }
     }

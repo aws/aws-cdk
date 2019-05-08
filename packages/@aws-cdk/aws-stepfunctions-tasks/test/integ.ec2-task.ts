@@ -29,7 +29,7 @@ taskDefinition.addContainer('TheContainer', {
 // Build state machine
 const definition = new sfn.Pass(stack, 'Start', {
     result: { SomeKey: 'SomeValue' }
-}).next(new sfn.Task(stack, 'Run', { task: new tasks.RunEcsEc2Task(stack, 'RunEc2', {
+}).next(new sfn.Task(stack, 'Run', { task: new tasks.RunEcsEc2Task({
   cluster, taskDefinition,
   containerOverrides: [
     {

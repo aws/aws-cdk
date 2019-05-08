@@ -518,14 +518,6 @@
               ]
             },
             "Links": [],
-            "LinuxParameters": {
-              "Capabilities": {
-                "Add": [],
-                "Drop": []
-              },
-              "Devices": [],
-              "Tmpfs": []
-            },
             "LogConfiguration": {
               "LogDriver": "awslogs",
               "Options": {

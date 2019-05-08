@@ -186,7 +186,7 @@ import ecs = require('@aws-cdk/aws-ecs');
 
 // See examples in ECS library for initialization of 'cluster' and 'taskDefinition'
 
-const fargateTask = new ecs.RunEcsFargateTask(task, 'FargateTask', {
+const fargateTask = new ecs.RunEcsFargateTask({
   cluster,
   taskDefinition,
   containerOverrides: [

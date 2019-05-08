@@ -1,5 +1,3 @@
-import cloudwatch = require('@aws-cdk/aws-cloudwatch');
-import iam = require('@aws-cdk/aws-iam');
 import sfn = require('@aws-cdk/aws-stepfunctions');
 
 /**
@@ -23,20 +21,17 @@ export interface InvokeActivityProps {
  * integration with other AWS services via a specific class instance.
  */
 export class InvokeActivity implements sfn.IStepFunctionsTask {
-  public readonly resourceArn: string;
-  public readonly policyStatements?: iam.PolicyStatement[] | undefined;
-  public readonly metricDimensions?: cloudwatch.DimensionHash | undefined;
-  public readonly metricPrefixSingular?: string = 'Activity';
-  public readonly metricPrefixPlural?: string = 'Activities';
+  constructor(private readonly activity: sfn.IActivity, private readonly props: InvokeActivityProps = {}) {
+  }
 
-  public readonly heartbeatSeconds?: number | undefined;
-  public readonly parameters?: { [name: string]: any; } | undefined;
-
-  constructor(activity: sfn.IActivity, props: InvokeActivityProps = {}) {
-    this.resourceArn = activity.activityArn;
-    this.metricDimensions = { ActivityArn: activity.activityArn };
-    this.heartbeatSeconds = props.heartbeatSeconds;
-
-    // No IAM permissions necessary, execution role implicitly has Activity permissions.
+  public bind(_task: sfn.Task): sfn.StepFunctionsTaskProperties {
+    return {
+      resourceArn: this.activity.activityArn,
+      metricDimensions: { ActivityArn: this.activity.activityArn },
+      heartbeatSeconds: this.props.heartbeatSeconds,
+      // No IAM permissions necessary, execution role implicitly has Activity permissions.
+      metricPrefixSingular: 'Activity',
+      metricPrefixPlural: 'Activities',
+    };
   }
 }

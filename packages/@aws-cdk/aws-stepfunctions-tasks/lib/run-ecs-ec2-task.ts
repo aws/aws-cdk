@@ -1,7 +1,7 @@
 import ec2 = require('@aws-cdk/aws-ec2');
 import ecs = require('@aws-cdk/aws-ecs');
 import cdk = require('@aws-cdk/cdk');
-import { CommonEcsRunTaskProps, EcsRunTaskBase } from './ecs-run-task-base';
+import { CommonEcsRunTaskProps, EcsRunTaskBase } from './run-ecs-task-base';
 
 /**
  * Properties to run an ECS task on EC2 in StepFunctionsan ECS
@@ -39,18 +39,21 @@ export interface RunEcsEc2TaskProps extends CommonEcsRunTaskProps {
 export class RunEcsEc2Task extends EcsRunTaskBase {
   private readonly constraints: any[];
   private readonly strategies: any[];
-  private readonly cluster: ecs.ICluster;
 
-  constructor(scope: cdk.Construct, id: string, props: RunEcsEc2TaskProps) {
+  constructor(props: RunEcsEc2TaskProps) {
     if (!props.taskDefinition.isEc2Compatible) {
       throw new Error('Supplied TaskDefinition is not configured for compatibility with EC2');
+    }
+
+    if (!props.cluster.hasEc2Capacity) {
+      throw new Error('Cluster for this service needs Ec2 capacity. Call addXxxCapacity() on the cluster.');
     }
 
     if (!props.taskDefinition.defaultContainer) {
       throw new Error('A TaskDefinition must have at least one essential container');
     }
 
-    super(scope, id, {
+    super({
       ...props,
       parameters: {
         LaunchType: 'EC2',
@@ -59,7 +62,6 @@ export class RunEcsEc2Task extends EcsRunTaskBase {
       }
     });
 
-    this.cluster = props.cluster;
     this.constraints = [];
     this.strategies = [];
 
@@ -129,17 +131,6 @@ export class RunEcsEc2Task extends EcsRunTaskBase {
    */
   public placeRandomly() {
     this.strategies.push({ Type: 'random' });
-  }
-
-  /**
-   * Validate this Ec2Service
-   */
-  protected validate(): string[] {
-    const ret = super.validate();
-    if (!this.cluster.hasEc2Capacity) {
-      ret.push('Cluster for this service needs Ec2 capacity. Call addXxxCapacity() on the cluster.');
-    }
-    return ret;
   }
 }
 

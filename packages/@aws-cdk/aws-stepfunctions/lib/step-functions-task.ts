@@ -1,10 +1,21 @@
 import cloudwatch = require('@aws-cdk/aws-cloudwatch');
 import iam = require('@aws-cdk/aws-iam');
+import { Task } from './states/task';
 
 /**
  * Interface for resources that can be used as tasks
  */
 export interface IStepFunctionsTask {
+  /**
+   * Called when the task object is used in a workflow
+   */
+  bind(task: Task): StepFunctionsTaskProperties;
+}
+
+/**
+ * Properties that define what kind of task should be created
+ */
+export interface StepFunctionsTaskProperties {
   /**
    * The resource that represents the work to be executed
    *

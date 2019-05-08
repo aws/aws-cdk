@@ -11,11 +11,13 @@ export = {
         const stack = new cdk.Stack();
         const task = new stepfunctions.Task(stack, 'Task', {
             task: {
-                resourceArn: 'resource',
-                policyStatements: [new iam.PolicyStatement()
-                    .addAction('resource:Everything')
-                    .addResource('resource')
-                ],
+                bind: () => ({
+                    resourceArn: 'resource',
+                    policyStatements: [new iam.PolicyStatement()
+                        .addAction('resource:Everything')
+                        .addResource('resource')
+                    ],
+                })
             }
         });
 
@@ -46,12 +48,14 @@ export = {
         const stack = new cdk.Stack();
         const task = new stepfunctions.Task(stack, 'Task', {
             task: {
-                resourceArn: 'resource',
-                policyStatements: [
-                    new iam.PolicyStatement()
-                        .addAction('resource:Everything')
-                        .addResource('resource')
-                ]
+                bind: () => ({
+                    resourceArn: 'resource',
+                    policyStatements: [
+                        new iam.PolicyStatement()
+                            .addAction('resource:Everything')
+                            .addResource('resource')
+                    ]
+                })
             }
         });
 
@@ -87,14 +91,16 @@ export = {
             inputPath: "$",
             outputPath: "$.state",
             task: {
-                resourceArn: 'resource',
-                parameters: {
-                    "input.$": "$",
-                    "stringArgument": "inital-task",
-                    "numberArgument": 123,
-                    "booleanArgument": true,
-                    "arrayArgument": ["a", "b", "c"]
-                }
+                bind: () => ({
+                    resourceArn: 'resource',
+                    parameters: {
+                        "input.$": "$",
+                        "stringArgument": "inital-task",
+                        "numberArgument": 123,
+                        "booleanArgument": true,
+                        "arrayArgument": ["a", "b", "c"]
+                    }
+                })
             }
         });
 

@@ -1,4 +1,3 @@
-import cloudwatch = require('@aws-cdk/aws-cloudwatch');
 import iam = require('@aws-cdk/aws-iam');
 import sqs = require('@aws-cdk/aws-sqs');
 import sfn = require('@aws-cdk/aws-stepfunctions');
@@ -48,29 +47,23 @@ export interface SendToQueueProps {
  * integration with other AWS services via a specific class instance.
  */
 export class SendToQueue implements sfn.IStepFunctionsTask {
-  public readonly resourceArn: string;
-  public readonly policyStatements?: iam.PolicyStatement[] | undefined;
-  public readonly metricDimensions?: cloudwatch.DimensionHash | undefined;
-  public readonly metricPrefixSingular?: string;
-  public readonly metricPrefixPlural?: string;
+  constructor(private readonly queue: sqs.IQueue, private readonly props: SendToQueueProps) {
+  }
 
-  public readonly heartbeatSeconds?: number | undefined;
-  public readonly parameters?: { [name: string]: any; } | undefined;
-
-  constructor(queue: sqs.IQueue, props: SendToQueueProps) {
-    this.resourceArn = 'arn:aws:states:::sqs:sendMessage';
-    this.policyStatements = [new iam.PolicyStatement()
-      .addAction('sqs:SendMessage')
-      .addResource(queue.queueArn)
-    ];
-    this.parameters = {
-      QueueUrl: queue.queueUrl,
-      ...renderString('MessageBody', props.messageBody),
-      ...renderNumber('DelaySeconds', props.delaySeconds),
-      ...renderString('MessageDeduplicationId', props.messageDeduplicationId),
-      ...renderString('MessageGroupId', props.messageGroupId),
+  public bind(_task: sfn.Task): sfn.StepFunctionsTaskProperties {
+    return {
+      resourceArn: 'arn:aws:states:::sqs:sendMessage',
+      policyStatements: [new iam.PolicyStatement()
+        .addAction('sqs:SendMessage')
+        .addResource(this.queue.queueArn)
+      ],
+      parameters: {
+        QueueUrl: this.queue.queueUrl,
+        ...renderString('MessageBody', this.props.messageBody),
+        ...renderNumber('DelaySeconds', this.props.delaySeconds),
+        ...renderString('MessageDeduplicationId', this.props.messageDeduplicationId),
+        ...renderString('MessageGroupId', this.props.messageGroupId),
+      }
     };
-
-    // No IAM permissions necessary, execution role implicitly has Activity permissions.
   }
 }

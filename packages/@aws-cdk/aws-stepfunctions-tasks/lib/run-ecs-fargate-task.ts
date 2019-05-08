@@ -1,7 +1,6 @@
 import ec2 = require('@aws-cdk/aws-ec2');
 import ecs = require('@aws-cdk/aws-ecs');
-import cdk = require('@aws-cdk/cdk');
-import { CommonEcsRunTaskProps, EcsRunTaskBase } from './ecs-run-task-base';
+import { CommonEcsRunTaskProps, EcsRunTaskBase } from './run-ecs-task-base';
 
 /**
  * Properties to define an ECS service
@@ -43,7 +42,7 @@ export interface RunEcsFargateTaskProps extends CommonEcsRunTaskProps {
  * Start a service on an ECS cluster
  */
 export class RunEcsFargateTask extends EcsRunTaskBase {
-  constructor(scope: cdk.Construct, id: string, props: RunEcsFargateTaskProps) {
+  constructor(props: RunEcsFargateTaskProps) {
     if (!props.taskDefinition.isFargateCompatible) {
       throw new Error('Supplied TaskDefinition is not configured for compatibility with EC2');
     }
@@ -52,7 +51,7 @@ export class RunEcsFargateTask extends EcsRunTaskBase {
       throw new Error('A TaskDefinition must have at least one essential container');
     }
 
-    super(scope, id, {
+    super({
       ...props,
       parameters: {
         LaunchType: 'FARGATE',

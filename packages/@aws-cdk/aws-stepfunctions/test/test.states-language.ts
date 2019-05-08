@@ -726,5 +726,9 @@ function render(sm: stepfunctions.IChainable) {
 }
 
 class FakeTask implements IStepFunctionsTask {
-    public readonly resourceArn = 'resource';
+    public bind(_task: stepfunctions.Task): stepfunctions.StepFunctionsTaskProperties {
+        return {
+            resourceArn: 'resource'
+        };
+    }
 }

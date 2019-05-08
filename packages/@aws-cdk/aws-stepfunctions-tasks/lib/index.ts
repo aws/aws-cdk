@@ -1,7 +1,7 @@
 export * from './invoke-function';
 export * from './invoke-activity';
-export * from './ecs-run-task-base'; // Remove this once we can
-export * from './ecs-run-task-base-types';
+export * from './run-ecs-task-base'; // Remove this once we can
+export * from './run-ecs-task-base-types';
 export * from './publish-to-topic';
 export * from './send-to-queue';
 export * from './run-ecs-ec2-task';

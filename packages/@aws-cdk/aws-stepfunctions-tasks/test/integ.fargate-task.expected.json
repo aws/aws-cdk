@@ -138,14 +138,6 @@
               ]
             },
             "Links": [],
-            "LinuxParameters": {
-              "Capabilities": {
-                "Add": [],
-                "Drop": []
-              },
-              "Devices": [],
-              "Tmpfs": []
-            },
             "LogConfiguration": {
               "LogDriver": "awslogs",
               "Options": {
@@ -597,7 +589,7 @@
           "Fn::Join": [
             "",
             [
-              "{\"StartAt\":\"Start\",\"States\":{\"Start\":{\"Type\":\"Pass\",\"Result\":{\"SomeKey\":\"SomeValue\"},\"Next\":\"RunFargate\"},\"RunFargate\":{\"End\":true,\"Parameters\":{\"Cluster\":\"",
+              "{\"StartAt\":\"Start\",\"States\":{\"Start\":{\"Type\":\"Pass\",\"Result\":{\"SomeKey\":\"SomeValue\"},\"Next\":\"FargateTask\"},\"FargateTask\":{\"End\":true,\"Parameters\":{\"Cluster\":\"",
               {
                 "Fn::GetAtt": [
                   "FargateCluster7CCD5F93",

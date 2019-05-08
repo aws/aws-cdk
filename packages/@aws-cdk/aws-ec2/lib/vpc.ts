@@ -3,7 +3,7 @@ import { ConcreteDependable, Construct, IConstruct, IDependable } from '@aws-cdk
 import { CfnEIP, CfnInternetGateway, CfnNatGateway, CfnRoute, CfnVPNGateway, CfnVPNGatewayRoutePropagation } from './ec2.generated';
 import { CfnRouteTable, CfnSubnet, CfnSubnetRouteTableAssociation, CfnVPC, CfnVPCGatewayAttachment } from './ec2.generated';
 import { NetworkBuilder } from './network-util';
-import { DEFAULT_SUBNET_NAME, ExportSubnetGroup, ImportSubnetGroup, subnetId, subnetName  } from './util';
+import { defaultSubnetName, ExportSubnetGroup, ImportSubnetGroup, subnetId, subnetName  } from './util';
 import { GatewayVpcEndpoint, GatewayVpcEndpointAwsService, GatewayVpcEndpointOptions } from './vpc-endpoint';
 import { InterfaceVpcEndpoint, InterfaceVpcEndpointOptions } from './vpc-endpoint';
 import { VpcNetworkProvider, VpcNetworkProviderProps } from './vpc-network-provider';
@@ -661,11 +661,11 @@ export class VpcNetwork extends VpcNetworkBase {
   public static readonly DEFAULT_SUBNETS: SubnetConfiguration[] = [
     {
       subnetType: SubnetType.Public,
-      name: DEFAULT_SUBNET_NAME[SubnetType.Public],
+      name: defaultSubnetName(SubnetType.Public),
     },
     {
       subnetType: SubnetType.Private,
-      name: DEFAULT_SUBNET_NAME[SubnetType.Private],
+      name: defaultSubnetName(SubnetType.Private),
     }
   ];
 
@@ -1281,7 +1281,7 @@ function reifySelectionDefaults(placement: SubnetSelection): SubnetSelection {
  */
 function describeSelection(placement: SubnetSelection): string {
   if (placement.subnetType !== undefined) {
-    return `'${DEFAULT_SUBNET_NAME[placement.subnetType]}' subnets`;
+    return `'${defaultSubnetName(placement.subnetType)}' subnets`;
   }
   if (placement.subnetName !== undefined) {
     return `subnets named '${placement.subnetName}'`;

@@ -1,4 +1,3 @@
-import cloudwatch = require('@aws-cdk/aws-cloudwatch');
 import iam = require('@aws-cdk/aws-iam');
 import sns = require('@aws-cdk/aws-sns');
 import sfn = require('@aws-cdk/aws-stepfunctions');
@@ -48,34 +47,27 @@ export interface PublishToTopicProps {
  * integration with other AWS services via a specific class instance.
  */
 export class PublishToTopic implements sfn.IStepFunctionsTask {
-  public readonly resourceArn: string;
-  public readonly policyStatements?: iam.PolicyStatement[] | undefined;
-  public readonly metricDimensions?: cloudwatch.DimensionHash | undefined;
-  public readonly metricPrefixSingular?: string;
-  public readonly metricPrefixPlural?: string;
-
-  public readonly heartbeatSeconds?: number | undefined;
-  public readonly parameters?: { [name: string]: any; } | undefined;
-
-  constructor(topic: sns.ITopic, props: PublishToTopicProps) {
+  constructor(private readonly topic: sns.ITopic, private readonly props: PublishToTopicProps) {
     if ((props.message === undefined) === (props.messageObject === undefined)) {
       throw new Error(`Supply exactly one of 'message' or 'messageObject'`);
     }
+  }
 
-    this.resourceArn = 'arn:aws:states:::sns:publish';
-    this.policyStatements = [new iam.PolicyStatement()
-      .addAction('sns:Publish')
-      .addResource(topic.topicArn)
-    ];
-    this.parameters = {
-      TopicArn: topic.topicArn,
-      ...(props.messageObject
-          ? { Message: new cdk.Token(() => topic.node.stringifyJson(props.messageObject)) }
-          : renderString('Message', props.message)),
-      MessageStructure: props.messagePerSubscriptionType ? "json" : undefined,
-      ...renderString('Subject', props.subject),
+  public bind(task: sfn.Task): sfn.StepFunctionsTaskProperties {
+    return {
+      resourceArn: 'arn:aws:states:::sns:publish',
+      policyStatements: [new iam.PolicyStatement()
+        .addAction('sns:Publish')
+        .addResource(this.topic.topicArn)
+      ],
+      parameters: {
+        TopicArn: this.topic.topicArn,
+        ...(this.props.messageObject
+            ? { Message: new cdk.Token(() => task.node.stringifyJson(this.props.messageObject)) }
+            : renderString('Message', this.props.message)),
+        MessageStructure: this.props.messagePerSubscriptionType ? "json" : undefined,
+        ...renderString('Subject', this.props.subject),
+      }
     };
-
-    // No IAM permissions necessary, execution role implicitly has Activity permissions.
   }
 }
