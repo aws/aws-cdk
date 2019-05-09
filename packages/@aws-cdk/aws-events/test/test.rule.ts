@@ -2,7 +2,7 @@ import { expect, haveResource } from '@aws-cdk/assert';
 import cdk = require('@aws-cdk/cdk');
 import { Stack } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
-import { IEventRule, IEventRuleTarget } from '../lib';
+import { EventField, EventTargetInput, IEventRule, IEventRuleTarget } from '../lib';
 import { EventRule } from '../lib/rule';
 
 // tslint:disable:object-literal-key-quotes
@@ -167,10 +167,7 @@ export = {
         id: 'T2',
         arn: 'ARN2',
         roleArn: 'IAM-ROLE-ARN',
-        inputTemplate: 'This is <bla>',
-        inputPathsMap: {
-          bla: '$.detail.bla'
-        },
+        input: EventTargetInput.fromText(`This is ${EventField.fromPath('$.detail.bla', 'bla')}`).toInputProperties(),
       })
     };
 
@@ -223,7 +220,7 @@ export = {
     // a plain string should just be stringified (i.e. double quotes added and escaped)
     rule.addTarget({
       bind: () => ({
-        id: 'T2', arn: 'ARN2', roleArn: 'IAM-ROLE-ARN', input: 'Hello, "world"'
+        id: 'T2', arn: 'ARN2', roleArn: 'IAM-ROLE-ARN', input: EventTargetInput.fromText('Hello, "world"').toInputProperties()
       })
     });
 
@@ -232,7 +229,7 @@ export = {
     rule.addTarget({
       bind: () => ({
         id: 'T1', arn: 'ARN1', kinesisParameters: { partitionKeyPath: 'partitionKeyPath' },
-        inpuTemplate: cdk.Fn.join('', [ 'a', 'b' ]).toString()
+        input: EventTargetInput.fromText(cdk.Fn.join('', [ 'a', 'b' ]).toString()).toInputProperties(),
       })
     });
 
@@ -240,10 +237,7 @@ export = {
     rule.addTarget({
       bind: () => ({
         id: 'T3', arn: 'ARN3',
-        inputTemplate: '{ "foo": <bar> }',
-        inputPathsMap: {
-          bar: '$.detail.bar'
-        }
+        input: EventTargetInput.fromObject({ foo: EventField.fromPath('$.detail.bar') }).toInputProperties()
       })
     });
 
@@ -252,7 +246,7 @@ export = {
     rule.addTarget({
       bind: () => ({
         id: 'T4', arn: 'ARN4',
-        inputTemplate: cdk.Fn.join(' ', ['"', 'hello', '\"world\"', '"']),
+        input: EventTargetInput.fromText(cdk.Fn.join(' ', ['"', 'hello', '\"world\"', '"']).toString()).toInputProperties(),
       })
     });
 
@@ -267,17 +261,13 @@ export = {
             {
             "Arn": "ARN2",
             "Id": "T2",
-            "InputTransformer": {
-              "InputTemplate": "\"Hello, \\\"world\\\"\""
-            },
+            "Input": "\"Hello, \\\"world\\\"\"",
             "RoleArn": "IAM-ROLE-ARN"
             },
             {
             "Arn": "ARN1",
             "Id": "T1",
-            "InputTransformer": {
-              "InputTemplate": "\"ab\""
-            },
+            "Input": "\"ab\"",
             "KinesisParameters": {
               "PartitionKeyPath": "partitionKeyPath"
             }
@@ -350,7 +340,6 @@ export = {
 
     test.done();
   },
-
 
   'rule can be disabled'(test: Test) {
     // GIVEN

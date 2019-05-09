@@ -59,6 +59,18 @@ export interface EventRuleTargetProperties {
   readonly runCommandParameters?: CfnRule.RunCommandParametersProperty;
 
   /**
+   * What input to send to the event target
+   *
+   * @default the entire event
+   */
+  readonly input?: EventRuleTargetInputProperties;
+}
+
+/**
+ * The input properties for an event target
+ */
+export interface EventRuleTargetInputProperties {
+  /**
    * Literal input to the target service (must be valid JSON)
    */
   readonly input?: string;

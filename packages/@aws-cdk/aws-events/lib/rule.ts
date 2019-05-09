@@ -131,9 +131,11 @@ export class EventRule extends Resource implements IEventRule {
 
     this.targets.push({
       ...targetProps,
-      inputTransformer: targetProps.inputTemplate !== undefined && targetProps.inputPathsMap !== undefined ? {
-        inputTemplate: targetProps.inputTemplate,
-        inputPathsMap: targetProps.inputPathsMap,
+      input: targetProps.input && targetProps.input.input,
+      inputPath: targetProps.input && targetProps.input.inputPath,
+      inputTransformer: targetProps.input && targetProps.input.inputTemplate !== undefined ? {
+        inputTemplate: targetProps.input.inputTemplate,
+        inputPathsMap: targetProps.input.inputPathsMap,
       } : undefined,
     });
   }

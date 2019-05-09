@@ -1,3 +1,4 @@
+export * from './input';
 export * from './rule';
 export * from './rule-ref';
 export * from './target';
