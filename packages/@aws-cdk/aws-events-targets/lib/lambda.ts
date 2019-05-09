@@ -18,13 +18,13 @@ export class LambdaFunction implements events.IEventRuleTarget {
    * Returns a RuleTarget that can be used to trigger this Lambda as a
    * result from a CloudWatch event.
    */
-  public asEventRuleTarget(ruleArn: string, ruleId: string): events.EventRuleTargetProps {
-    const permissionId = `AllowEventRule${ruleId}`;
+  public bind(rule: events.IEventRule): events.EventRuleTargetProperties {
+    const permissionId = `AllowEventRule${rule.node.uniqueId}`;
     if (!this.handler.node.tryFindChild(permissionId)) {
       this.handler.addPermission(permissionId, {
         action: 'lambda:InvokeFunction',
         principal: new iam.ServicePrincipal('events.amazonaws.com'),
-        sourceArn: ruleArn
+        sourceArn: rule.ruleArn
       });
     }
 

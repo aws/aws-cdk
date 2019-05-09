@@ -23,7 +23,7 @@ export class PolicyDocument extends cdk.Token implements cdk.IResolvedValuePostP
     this._autoAssignSids = true;
   }
 
-  public resolve(_context: cdk.ResolveContext): any {
+  public resolve(_context: cdk.IResolveContext): any {
     if (this.isEmpty) {
       return undefined;
     }
@@ -40,7 +40,7 @@ export class PolicyDocument extends cdk.Token implements cdk.IResolvedValuePostP
   /**
    * Removes duplicate statements
    */
-  public postProcess(input: any, _context: cdk.ResolveContext): any {
+  public postProcess(input: any, _context: cdk.IResolveContext): any {
     if (!input || !input.Statement) {
       return input;
     }
@@ -513,7 +513,7 @@ export class PolicyStatement extends cdk.Token {
   //
   // Serialization
   //
-  public resolve(_context: cdk.ResolveContext): any {
+  public resolve(_context: cdk.IResolveContext): any {
     return this.toJson();
   }
 
@@ -589,7 +589,7 @@ class StackDependentToken extends cdk.Token {
     super();
   }
 
-  public resolve(context: cdk.ResolveContext) {
+  public resolve(context: cdk.IResolveContext) {
     return this.fn(context.scope.node.stack);
   }
 }
@@ -600,7 +600,7 @@ class ServicePrincipalToken extends cdk.Token {
     super();
   }
 
-  public resolve(ctx: cdk.ResolveContext) {
+  public resolve(ctx: cdk.IResolveContext) {
     const region = this.opts.region || ctx.scope.node.stack.region;
     const fact = RegionInfo.get(region).servicePrincipal(this.service);
     return fact || Default.servicePrincipal(this.service, region, ctx.scope.node.stack.urlSuffix);
