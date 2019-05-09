@@ -19,4 +19,11 @@ export function cloudFormationConcat(left: any | undefined, right: any | undefin
   return { 'Fn::Join': ['', minimalCloudFormationJoin('', parts)] };
 }
 
+export class CloudFormationConcat implements IFragmentConcatenator {
+  public join(left: any, right: any) {
+    return cloudFormationConcat(left, right);
+  }
+}
+
+import { IFragmentConcatenator } from "./encoding";
 import { minimalCloudFormationJoin } from "./instrinsics";

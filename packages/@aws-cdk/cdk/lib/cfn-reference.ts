@@ -49,7 +49,7 @@ export class CfnReference extends Reference {
     Object.defineProperty(this, CFN_REFERENCE_SYMBOL, { value: true });
   }
 
-  public resolve(context: ResolveContext): any {
+  public resolve(context: IResolveContext): any {
     // If we have a special token for this consuming stack, resolve that. Otherwise resolve as if
     // we are in the same stack.
     const token = this.replacementTokens.get(context.scope.node.stack);
@@ -112,4 +112,4 @@ export class CfnReference extends Reference {
 import { CfnOutput } from "./cfn-output";
 import { Construct, IConstruct } from "./construct";
 import { Stack } from "./stack";
-import { ResolveContext, Token } from "./token";
+import { IResolveContext, Token } from "./token";

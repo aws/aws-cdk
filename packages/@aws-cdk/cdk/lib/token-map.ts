@@ -50,14 +50,26 @@ export class TokenMap {
   }
 
   /**
+   * Lookup a token from an encoded value
+   */
+  public tokenFromEncoding(x: any): Token | undefined {
+    if (typeof 'x' === 'string') { return this.lookupString(x); }
+    if (Array.isArray(x)) { return this.lookupList(x); }
+    if (typeof x === 'object' && x !== null && Token.isToken(x)) {
+      return x as Token;
+    }
+    return undefined;
+  }
+
+  /**
    * Reverse a string representation into a Token object
    */
   public lookupString(s: string): Token | undefined {
     const str = TokenString.forStringToken(s);
     const fragments = str.split(this.lookupToken.bind(this));
     if (fragments.length === 1) {
-      const v = fragments.values[0];
-      if (typeof v !== 'string') { return v as Token; }
+      const first = fragments.firstFragment;
+      if (first.type === 'token') { return first.token; }
     }
     return undefined;
   }
@@ -70,8 +82,8 @@ export class TokenMap {
     const str = TokenString.forListToken(xs[0]);
     const fragments = str.split(this.lookupToken.bind(this));
     if (fragments.length === 1) {
-      const v = fragments.values[0];
-      if (typeof v !== 'string') { return v as Token; }
+      const first = fragments.firstFragment;
+      if (first.type === 'token') { return first.token; }
     }
     return undefined;
   }

@@ -64,10 +64,10 @@ export class Token {
   /**
    * @returns The resolved value for this token.
    */
-  public resolve(_context: ResolveContext): any {
+  public resolve(context: IResolveContext): any {
     let value = this.valueOrFunction;
     if (typeof(value) === 'function') {
-      value = value();
+      value = value(context);
     }
 
     return value;
@@ -137,9 +137,16 @@ export class Token {
 /**
  * Current resolution context for tokens
  */
-export interface ResolveContext {
+export interface IResolveContext {
+  /**
+   * The scope from which resolution has been initiated
+   */
   readonly scope: IConstruct;
-  readonly prefix: string[];
+
+  /**
+   * Resolve an inner object
+   */
+  resolve(x: any): any;
 }
 
 /**
@@ -149,7 +156,7 @@ export interface IResolvedValuePostProcessor {
   /**
    * Process the completely resolved value, after full recursion/resolution has happened
    */
-  postProcess(input: any, context: ResolveContext): any;
+  postProcess(input: any, context: IResolveContext): any;
 }
 
 /**
