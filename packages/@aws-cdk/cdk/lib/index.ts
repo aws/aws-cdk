@@ -7,7 +7,7 @@ export * from './token-map';
 export * from './tag-manager';
 export * from './dependency';
 
-export * from './cloudformation-json';
+export * from './cloudformation-lang';
 export * from './reference';
 export * from './cfn-condition';
 export * from './fn';

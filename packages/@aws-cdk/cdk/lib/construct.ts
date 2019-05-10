@@ -1,8 +1,8 @@
 import cxapi = require('@aws-cdk/cx-api');
 import { IAspect } from './aspect';
-import { CloudFormationJSON } from './cloudformation-json';
+import { CLOUDFORMATION_TOKEN_RESOLVER, CloudFormationLang } from './cloudformation-lang';
 import { IDependable } from './dependency';
-import { DefaultTokenResolver, resolve } from './resolve';
+import { resolve } from './resolve';
 import { Token } from './token';
 import { makeUniqueId } from './uniqueid';
 
@@ -457,7 +457,7 @@ export class ConstructNode {
     return resolve(obj, {
       scope: this.host,
       prefix: [],
-      resolver: new DefaultTokenResolver(new CloudFormationConcat()),
+      resolver: CLOUDFORMATION_TOKEN_RESOLVER,
     });
   }
 
@@ -465,7 +465,7 @@ export class ConstructNode {
    * Convert an object, potentially containing tokens, to a JSON string
    */
   public stringifyJson(obj: any): string {
-    return CloudFormationJSON.stringify(obj).toString();
+    return CloudFormationLang.toJSON(obj).toString();
   }
 
   /**
@@ -726,5 +726,4 @@ export interface OutgoingReference {
 }
 
 // Import this _after_ everything else to help node work the classes out in the correct order...
-import { CloudFormationConcat } from './cfn-concat';
 import { Reference } from './reference';

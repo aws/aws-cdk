@@ -1,10 +1,11 @@
-import { isIntrinsic } from "./instrinsics";
+import { isIntrinsic, minimalCloudFormationJoin } from "./instrinsics";
+import { DefaultTokenResolver } from "./resolve";
 import { IResolveContext, Token } from "./token";
 
 /**
- * Class for JSON routines that are framework-aware
+ * Routines that know how to do operations at the CloudFormation document language level
  */
-export class CloudFormationJSON {
+export class CloudFormationLang {
   /**
    * Turn an arbitrary structure potentially containing Tokens into a JSON string.
    *
@@ -18,7 +19,7 @@ export class CloudFormationJSON {
    * @param obj The object to stringify
    * @param context The Construct from which to resolve any Tokens found in the object
    */
-  public static stringify(obj: any): string {
+  public static toJSON(obj: any): string {
     return new Token((ctx: IResolveContext) => {
       // Resolve inner value first so that if they evaluate to literals, we
       // maintain the type (and discard 'undefined's).
@@ -63,6 +64,28 @@ export class CloudFormationJSON {
       return new IntrinsicToken(() => deepQuoteStringsForJSON(intrinsic));
     }
   }
+
+  /**
+   * Produce a CloudFormation expression to concat two arbitrary expressions when resolving
+   */
+  public static concat(left: any | undefined, right: any | undefined): any {
+    if (left === undefined && right === undefined) { return ''; }
+
+    const parts = new Array<any>();
+    if (left !== undefined) { parts.push(left); }
+    if (right !== undefined) { parts.push(right); }
+
+    // Some case analysis to produce minimal expressions
+    if (parts.length === 1) { return parts[0]; }
+    if (parts.length === 2 && typeof parts[0] === 'string' && typeof parts[1] === 'string') {
+      return parts[0] + parts[1];
+    }
+
+    // Otherwise return a Join intrinsic (already in the target document language to avoid taking
+    // circular dependencies on FnJoin & friends)
+    return { 'Fn::Join': ['', minimalCloudFormationJoin('', parts)] };
+  }
+
 }
 
 /**
@@ -100,3 +123,12 @@ function deepQuoteStringsForJSON(x: any): any {
 
   return x;
 }
+
+/**
+ * Default Token resolver for CloudFormation templates
+ */
+export const CLOUDFORMATION_TOKEN_RESOLVER = new DefaultTokenResolver({
+  join(left: any, right: any) {
+    return CloudFormationLang.concat(left, right);
+  }
+});
