@@ -1,6 +1,5 @@
 import cdk = require('@aws-cdk/cdk');
-import { VpcSubnet } from './vpc';
-import { IVpcSubnet, SubnetType } from "./vpc-ref";
+import { IVpcSubnet, SubnetType, VpcSubnet } from './vpc';
 
 /**
  * Turn an arbitrary string into one that can be used as a CloudFormation identifier by stripping special characters
@@ -14,11 +13,13 @@ export function slugify(x: string): string {
 /**
  * The default names for every subnet type
  */
-export const DEFAULT_SUBNET_NAME = {
-  [SubnetType.Public]: 'Public',
-  [SubnetType.Private]: 'Private',
-  [SubnetType.Isolated]: 'Isolated',
-};
+export function defaultSubnetName(type: SubnetType) {
+  switch (type) {
+    case SubnetType.Public: return 'Public';
+    case SubnetType.Private: return 'Private';
+    case SubnetType.Isolated: return  'Isolated';
+  }
+}
 
 /**
  * Return a subnet name from its construct ID
@@ -87,7 +88,7 @@ export class ExportSubnetGroup {
 
     // Splat down to [ INGRESS, EGRESS, ... ]
     const groupNames = range(this.groups).map(i => netNames[i * this.azs]);
-    if (groupNames.length === 1 && groupNames[0] === DEFAULT_SUBNET_NAME[this.type]) { return undefined; }
+    if (groupNames.length === 1 && groupNames[0] === defaultSubnetName(this.type)) { return undefined; }
 
     return groupNames;
   }
@@ -114,7 +115,7 @@ export class ImportSubnetGroup {
       throw new Error(`Amount of ${idField} (${this.subnetIds.length}) must be a multiple of availability zones (${this.availabilityZones.length}).`);
     }
 
-    this.names = this.normalizeNames(names, DEFAULT_SUBNET_NAME[type], nameField);
+    this.names = this.normalizeNames(names, defaultSubnetName(type), nameField);
   }
 
   public import(scope: cdk.Construct): IVpcSubnet[] {

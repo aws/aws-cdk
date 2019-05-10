@@ -1,7 +1,7 @@
 import route53 = require('@aws-cdk/aws-route53');
 import s3 = require('@aws-cdk/aws-s3');
 import cdk = require('@aws-cdk/cdk');
-import { CfnCloudFrontOriginAccessIdentity, CfnDistribution } from './cloudfront.generated';
+import { CfnDistribution } from './cloudfront.generated';
 
 export enum HttpVersion {
   HTTP1_1 = "http1.1",
@@ -237,12 +237,12 @@ export interface S3OriginConfig {
   /**
    * The source bucket to serve content from
    */
-  readonly s3BucketSource: s3.IBucket,
+  readonly s3BucketSource: s3.IBucket;
 
   /**
-   * The optional origin identity cloudfront will use when calling your s3 bucket.
+   * The optional ID of the origin identity cloudfront will use when calling your s3 bucket.
    */
-  readonly originAccessIdentity?: CfnCloudFrontOriginAccessIdentity
+  readonly originAccessIdentityId?: string;
 }
 
 /**
@@ -570,8 +570,8 @@ export class CloudFrontWebDistribution extends cdk.Construct implements route53.
           : originConfig.customOriginSource!.domainName,
         originPath: originConfig.originPath,
         originCustomHeaders: originHeaders.length > 0 ? originHeaders : undefined,
-        s3OriginConfig: originConfig.s3OriginSource && originConfig.s3OriginSource.originAccessIdentity
-          ? { originAccessIdentity: `origin-access-identity/cloudfront/${originConfig.s3OriginSource.originAccessIdentity.ref}` }
+        s3OriginConfig: originConfig.s3OriginSource && originConfig.s3OriginSource.originAccessIdentityId
+          ? { originAccessIdentity: `origin-access-identity/cloudfront/${originConfig.s3OriginSource.originAccessIdentityId}` }
           : originConfig.s3OriginSource
           ? { }
           : undefined,

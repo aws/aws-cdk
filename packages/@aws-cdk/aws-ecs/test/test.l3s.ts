@@ -198,7 +198,7 @@ export = {
       image: ecs.ContainerImage.fromRegistry('test'),
       domainName: 'api.example.com',
       domainZone: zone,
-      certificate: Certificate.import(stack, 'Cert', { certificateArn: 'helloworld' })
+      certificate: Certificate.fromCertificateArn(stack, 'Cert', 'helloworld')
     });
 
     // THEN - stack contains a load balancer and a service

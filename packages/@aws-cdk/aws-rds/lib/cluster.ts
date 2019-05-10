@@ -173,7 +173,7 @@ abstract class DatabaseClusterBase extends cdk.Construct implements IDatabaseClu
 /**
  * Create a clustered database with a given number of instances.
  */
-export class DatabaseCluster extends DatabaseClusterBase implements IDatabaseCluster {
+export class DatabaseCluster extends DatabaseClusterBase {
   /**
    * Identifier of the cluster
    */
@@ -437,7 +437,7 @@ class ImportedDatabaseCluster extends DatabaseClusterBase implements IDatabaseCl
     this.securityGroupId = props.securityGroupId;
     this.defaultPortRange = new ec2.TcpPortFromAttribute(props.port);
     this.connections = new ec2.Connections({
-      securityGroups: [ec2.SecurityGroup.import(this, 'SecurityGroup', props)],
+      securityGroups: [ec2.SecurityGroup.fromSecurityGroupId(this, 'SecurityGroup', props.securityGroupId)],
       defaultPortRange: this.defaultPortRange
     });
     this.clusterIdentifier = props.clusterIdentifier;

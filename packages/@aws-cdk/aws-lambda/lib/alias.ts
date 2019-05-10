@@ -1,7 +1,7 @@
 import cloudwatch = require('@aws-cdk/aws-cloudwatch');
 import { CfnOutput, Construct } from '@aws-cdk/cdk';
-import { FunctionBase, FunctionImportProps, IFunction } from './function-base';
-import { Version } from './lambda-version';
+import { FunctionAttributes, FunctionBase, IFunction } from './function-base';
+import { IVersion } from './lambda-version';
 import { CfnAlias } from './lambda.generated';
 
 /**
@@ -20,7 +20,7 @@ export interface AliasProps {
    *
    * Use lambda.addVersion() to obtain a new lambda version to refer to.
    */
-  readonly version: Version;
+  readonly version: IVersion;
 
   /**
    * Name of this alias
@@ -53,6 +53,8 @@ export interface AliasProps {
 export class Alias extends FunctionBase {
   /**
    * Name of this alias.
+   *
+   * @attribute
    */
   public readonly aliasName: string;
   /**
@@ -88,7 +90,7 @@ export class Alias extends FunctionBase {
       name: props.aliasName,
       description: props.description,
       functionName: this.underlyingLambda.functionName,
-      functionVersion: props.version.functionVersion,
+      functionVersion: props.version.version,
       routingConfig: this.determineRoutingConfig(props)
     });
 
@@ -124,7 +126,7 @@ export class Alias extends FunctionBase {
     });
   }
 
-  public export(): FunctionImportProps {
+  public export(): FunctionAttributes {
     return {
       functionArn: new CfnOutput(this, 'AliasArn', { value: this.functionArn }).makeImportValue().toString()
     };
@@ -143,7 +145,7 @@ export class Alias extends FunctionBase {
     return {
       additionalVersionWeights: props.additionalVersions.map(vw => {
         return {
-          functionVersion: vw.version.functionVersion,
+          functionVersion: vw.version.version,
           functionWeight: vw.weight
         };
       })
@@ -174,7 +176,7 @@ export interface VersionWeight {
   /**
    * The version to route traffic to
    */
-  readonly version: Version;
+  readonly version: IVersion;
 
   /**
    * How much weight to assign to this version (0..1)

@@ -81,7 +81,7 @@ export = {
       const somethingConnectable = new SomethingConnectable(new ec2.Connections({ securityGroups: [securityGroup] }));
 
       // WHEN
-      const importedLambda = lambda.Function.import(stack2, 'Lambda', this.lambda.export());
+      const importedLambda = lambda.Function.fromFunctionAttributes(stack2, 'Lambda', this.lambda.export());
       importedLambda.connections.allowTo(somethingConnectable, new ec2.TcpAllPorts(), 'Lambda can call connectable');
 
       // THEN: SomeSecurityGroup accepts connections from Lambda

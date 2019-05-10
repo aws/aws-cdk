@@ -1,5 +1,6 @@
 import autoscaling = require('@aws-cdk/aws-autoscaling');
 import ec2 = require('@aws-cdk/aws-ec2');
+import { VpcSubnet } from '@aws-cdk/aws-ec2';
 import iam = require('@aws-cdk/aws-iam');
 import { CfnOutput, Construct, IResource, Resource, Tag } from '@aws-cdk/cdk';
 import { EksOptimizedAmi, nodeTypeForInstanceType } from './ami';
@@ -17,29 +18,33 @@ export interface ICluster extends IResource, ec2.IConnectable {
 
   /**
    * The physical name of the Cluster
+   * @attribute
    */
   readonly clusterName: string;
 
   /**
    * The unique ARN assigned to the service by AWS
    * in the form of arn:aws:eks:
+   * @attribute
    */
   readonly clusterArn: string;
 
   /**
    * The API Server endpoint URL
+   * @attribute
    */
   readonly clusterEndpoint: string;
 
   /**
    * The certificate-authority-data for your cluster.
+   * @attribute
    */
   readonly clusterCertificateAuthorityData: string;
 
   /**
    * Export cluster references to use in other stacks
    */
-  export(): ClusterImportProps;
+  export(): ClusterAttributes;
 }
 
 /**
@@ -56,7 +61,7 @@ abstract class ClusterBase extends Resource implements ICluster {
   /**
    * Export cluster references to use in other stacks
    */
-  public export(): ClusterImportProps {
+  public export(): ClusterAttributes {
     return {
       vpc: this.vpc.export(),
       clusterName: this.makeOutput('ClusterNameExport', this.clusterName),
@@ -72,7 +77,7 @@ abstract class ClusterBase extends Resource implements ICluster {
   }
 }
 
-export interface ClusterImportProps {
+export interface ClusterAttributes {
   /**
    * The VPC in which this Cluster was created
    */
@@ -99,7 +104,7 @@ export interface ClusterImportProps {
    */
   readonly clusterCertificateAuthorityData: string;
 
-  readonly securityGroups: ec2.SecurityGroupImportProps[];
+  readonly securityGroups: ec2.SecurityGroupAttributes[];
 }
 
 /**
@@ -169,10 +174,10 @@ export class Cluster extends ClusterBase {
    *
    * @param scope the construct scope, in most cases 'this'
    * @param id the id or name to import as
-   * @param props the cluster properties to use for importing information
+   * @param attrs the cluster properties to use for importing information
    */
-  public static import(scope: Construct, id: string, props: ClusterImportProps): ICluster {
-    return new ImportedCluster(scope, id, props);
+  public static fromClusterAttributes(scope: Construct, id: string, attrs: ClusterAttributes): ICluster {
+    return new ImportedCluster(scope, id, attrs);
   }
 
   /**
@@ -313,6 +318,7 @@ export class Cluster extends ClusterBase {
    * the right AMI and the `maxPods` number based on your instance type.
    *
    * @see https://docs.aws.amazon.com/eks/latest/userguide/launch-workers.html
+   * @param autoScalingGroup [disable-awslint:ref-via-interface]
    */
   public addAutoScalingGroup(autoScalingGroup: autoscaling.AutoScalingGroup, options: AddAutoScalingGroupOptions) {
     // self rules
@@ -360,7 +366,7 @@ export class Cluster extends ClusterBase {
    */
   private tagSubnets() {
     for (const subnet of this.vpc.privateSubnets) {
-      if (!isRealSubnetConstruct(subnet)) {
+      if (!VpcSubnet.isVpcSubnet(subnet)) {
         // Just give up, all of them will be the same.
         this.node.addWarning('Could not auto-tag private subnets with "kubernetes.io/role/internal-elb=1", please remember to do this manually');
         return;
@@ -369,10 +375,6 @@ export class Cluster extends ClusterBase {
       subnet.node.apply(new Tag("kubernetes.io/role/internal-elb", "1"));
     }
   }
-}
-
-function isRealSubnetConstruct(subnet: ec2.IVpcSubnet): subnet is ec2.VpcSubnet {
-  return (subnet as any).addDefaultRouteToIGW !== undefined;
 }
 
 /**
@@ -409,7 +411,7 @@ class ImportedCluster extends ClusterBase {
   public readonly clusterEndpoint: string;
   public readonly connections = new ec2.Connections();
 
-  constructor(scope: Construct, id: string, props: ClusterImportProps) {
+  constructor(scope: Construct, id: string, props: ClusterAttributes) {
     super(scope, id);
 
     this.vpc = ec2.VpcNetwork.import(this, "VPC", props.vpc);
@@ -420,7 +422,7 @@ class ImportedCluster extends ClusterBase {
 
     let i = 1;
     for (const sgProps of props.securityGroups) {
-      this.connections.addSecurityGroup(ec2.SecurityGroup.import(this, `SecurityGroup${i}`, sgProps));
+      this.connections.addSecurityGroup(ec2.SecurityGroup.fromSecurityGroupId(this, `SecurityGroup${i}`, sgProps.securityGroupId));
       i++;
     }
   }

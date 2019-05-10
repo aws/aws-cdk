@@ -766,14 +766,6 @@
             "Essential": true,
             "Image": "amazon/amazon-ecs-sample",
             "Links": [],
-            "LinuxParameters": {
-              "Capabilities": {
-                "Add": [],
-                "Drop": []
-              },
-              "Devices": [],
-              "Tmpfs": []
-            },
             "Memory": 256,
             "MountPoints": [],
             "Name": "web",
@@ -789,7 +781,6 @@
         ],
         "Family": "awsecsintegTaskDef6FDFB69A",
         "NetworkMode": "awsvpc",
-        "PlacementConstraints": [],
         "RequiresCompatibilities": [
           "EC2"
         ],
@@ -847,8 +838,6 @@
             ]
           }
         },
-        "PlacementConstraints": [],
-        "PlacementStrategies": [],
         "SchedulingStrategy": "REPLICA",
         "ServiceRegistries": []
       },

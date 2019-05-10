@@ -4,8 +4,20 @@ import { IIdentity } from './identity-base';
 import { Policy } from './policy';
 import { ArnPrincipal, PolicyStatement, PrincipalPolicyFragment } from './policy-document';
 import { IPrincipal } from './principals';
-import { User } from './user';
+import { IUser } from './user';
 import { AttachedPolicies, undefinedIfEmpty } from './util';
+
+export interface IGroup extends IIdentity {
+  /**
+   * @attribute
+   */
+  readonly groupName: string;
+
+  /**
+   * @attribute
+   */
+  readonly groupArn: string;
+}
 
 export interface GroupProps {
   /**
@@ -36,47 +48,18 @@ export interface GroupProps {
   readonly path?: string;
 }
 
-export class Group extends Resource implements IIdentity {
+abstract class GroupBase extends Resource implements IGroup {
+  public abstract readonly groupName: string;
+  public abstract readonly groupArn: string;
+
   public readonly grantPrincipal: IPrincipal = this;
   public readonly assumeRoleAction: string = 'sts:AssumeRole';
-  /**
-   * The runtime name of this group.
-   */
-  public readonly groupName: string;
 
-  /**
-   * The ARN of this group.
-   */
-  public readonly groupArn: string;
-
-  public readonly policyFragment: PrincipalPolicyFragment;
-
-  private readonly managedPolicies: string[];
   private readonly attachedPolicies = new AttachedPolicies();
   private defaultPolicy?: Policy;
 
-  constructor(scope: Construct, id: string, props: GroupProps = {}) {
-    super(scope, id);
-
-    this.managedPolicies = props.managedPolicyArns || [];
-
-    const group = new CfnGroup(this, 'Resource', {
-      groupName: props.groupName,
-      managedPolicyArns: undefinedIfEmpty(() => this.managedPolicies),
-      path: props.path,
-    });
-
-    this.groupName = group.groupName;
-    this.groupArn = group.groupArn;
-    this.policyFragment = new ArnPrincipal(this.groupArn).policyFragment;
-  }
-
-  /**
-   * Attaches a managed policy to this group.
-   * @param arn The ARN of the managed policy to attach.
-   */
-  public attachManagedPolicy(arn: string) {
-    this.managedPolicies.push(arn);
+  public get policyFragment(): PrincipalPolicyFragment {
+    return new ArnPrincipal(this.groupArn).policyFragment;
   }
 
   /**
@@ -88,10 +71,14 @@ export class Group extends Resource implements IIdentity {
     policy.attachToGroup(this);
   }
 
+  public attachManagedPolicy(_arn: string) {
+    // drop
+  }
+
   /**
    * Adds a user to this group.
    */
-  public addUser(user: User) {
+  public addUser(user: IUser) {
     user.addToGroup(this);
   }
 
@@ -106,5 +93,50 @@ export class Group extends Resource implements IIdentity {
 
     this.defaultPolicy.addStatement(statement);
     return true;
+  }
+}
+
+export class Group extends GroupBase {
+
+  /**
+   * Imports a group from ARN
+   * @param groupArn (e.g. `arn:aws:iam::account-id:group/group-name`)
+   */
+  public static fromGroupArn(scope: Construct, id: string, groupArn: string): IGroup {
+    const groupName = scope.node.stack.parseArn(groupArn).resourceName!;
+    class Import extends GroupBase {
+      public groupName = groupName;
+      public groupArn = groupArn;
+    }
+
+    return new Import(scope, id);
+  }
+
+  public readonly groupName: string;
+  public readonly groupArn: string;
+
+  private readonly managedPolicies: string[];
+
+  constructor(scope: Construct, id: string, props: GroupProps = {}) {
+    super(scope, id);
+
+    this.managedPolicies = props.managedPolicyArns || [];
+
+    const group = new CfnGroup(this, 'Resource', {
+      groupName: props.groupName,
+      managedPolicyArns: undefinedIfEmpty(() => this.managedPolicies),
+      path: props.path,
+    });
+
+    this.groupName = group.groupName;
+    this.groupArn = group.groupArn;
+  }
+
+  /**
+   * Attaches a managed policy to this group.
+   * @param arn The ARN of the managed policy to attach.
+   */
+  public attachManagedPolicy(arn: string) {
+    this.managedPolicies.push(arn);
   }
 }

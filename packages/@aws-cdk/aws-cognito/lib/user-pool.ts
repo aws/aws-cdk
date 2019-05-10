@@ -234,7 +234,7 @@ export interface UserPoolProps {
   readonly lambdaTriggers?: UserPoolTriggers;
 }
 
-export interface UserPoolImportProps {
+export interface UserPoolAttributes {
   /**
    * The ID of an existing user pool
    */
@@ -259,21 +259,25 @@ export interface UserPoolImportProps {
 export interface IUserPool extends IResource {
   /**
    * The physical ID of this user pool resource
+   * @attribute
    */
   readonly userPoolId: string;
 
   /**
    * The ARN of this user pool resource
+   * @attribute
    */
   readonly userPoolArn: string;
 
   /**
    * The provider name of this user pool resource
+   * @attribute
    */
   readonly userPoolProviderName: string;
 
   /**
    * The provider URL of this user pool resource
+   * @attribute
    */
   readonly userPoolProviderUrl: string;
 
@@ -281,7 +285,7 @@ export interface IUserPool extends IResource {
    * Exports a User Pool from this stack
    * @returns user pool props that can be imported into another stack
    */
-  export(): UserPoolImportProps;
+  export(): UserPoolAttributes;
 }
 
 /**
@@ -292,10 +296,24 @@ export class UserPool extends Resource implements IUserPool {
    * Import an existing user pool resource
    * @param scope Parent construct
    * @param id Construct ID
-   * @param props Imported user pool properties
+   * @param attrs Imported user pool properties
    */
-  public static import(scope: Construct, id: string, props: UserPoolImportProps): IUserPool {
-    return new ImportedUserPool(scope, id, props);
+  public static fromUserPoolAttributes(scope: Construct, id: string, attrs: UserPoolAttributes): IUserPool {
+    /**
+     * Define a user pool which has been declared in another stack
+     */
+    class Import extends Construct implements IUserPool {
+      public readonly userPoolId = attrs.userPoolId;
+      public readonly userPoolArn = attrs.userPoolArn;
+      public readonly userPoolProviderName = attrs.userPoolProviderName;
+      public readonly userPoolProviderUrl = attrs.userPoolProviderUrl;
+
+      public export(): UserPoolAttributes {
+        return attrs;
+      }
+    }
+
+    return new Import(scope, id);
   }
 
   /**
@@ -475,7 +493,7 @@ export class UserPool extends Resource implements IUserPool {
     this.triggers = { ...this.triggers, verifyAuthChallengeResponse: fn.functionArn };
   }
 
-  public export(): UserPoolImportProps {
+  public export(): UserPoolAttributes {
     return {
       userPoolId: new CfnOutput(this, 'UserPoolId', { value: this.userPoolId }).makeImportValue().toString(),
       userPoolArn: new CfnOutput(this, 'UserPoolArn', { value: this.userPoolArn }).makeImportValue().toString(),
@@ -490,43 +508,5 @@ export class UserPool extends Resource implements IUserPool {
       principal: new iam.ServicePrincipal('cognito-idp.amazonaws.com'),
       sourceArn: this.userPoolArn
     });
-  }
-}
-
-/**
- * Define a user pool which has been declared in another stack
- */
-class ImportedUserPool extends Construct implements IUserPool {
-  /**
-   * The ID of an existing user pool
-   */
-  public readonly userPoolId: string;
-
-  /**
-   * The ARN of the imported user pool
-   */
-  public readonly userPoolArn: string;
-
-  /**
-   * The provider name of the imported user pool
-   */
-  public readonly userPoolProviderName: string;
-
-  /**
-   * The URL of the imported user pool
-   */
-  public readonly userPoolProviderUrl: string;
-
-  constructor(scope: Construct, id: string, private readonly props: UserPoolImportProps) {
-    super(scope, id);
-
-    this.userPoolId = props.userPoolId;
-    this.userPoolArn = props.userPoolArn;
-    this.userPoolProviderName = props.userPoolProviderName;
-    this.userPoolProviderUrl = props.userPoolProviderUrl;
-  }
-
-  public export(): UserPoolImportProps {
-    return this.props;
   }
 }

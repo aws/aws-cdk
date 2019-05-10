@@ -1,5 +1,5 @@
 import iam = require('@aws-cdk/aws-iam');
-import { Construct, Fn, IResource, Resource, Token } from '@aws-cdk/cdk';
+import { CfnDynamicReference, CfnDynamicReferenceService, Construct, Fn, IResource, Resource, Token } from '@aws-cdk/cdk';
 import ssm = require('./ssm.generated');
 
 /**
@@ -8,16 +8,19 @@ import ssm = require('./ssm.generated');
 export interface IParameter extends IResource {
   /**
    * The ARN of the SSM Parameter resource.
+   * @attribute
    */
   readonly parameterArn: string;
 
   /**
    * The name of the SSM Parameter resource.
+   * @attribute
    */
   readonly parameterName: string;
 
   /**
    * The type of the SSM Parameter resource.
+   * @attribute
    */
   readonly parameterType: string;
 
@@ -42,6 +45,8 @@ export interface IParameter extends IResource {
 export interface IStringParameter extends IParameter {
   /**
    * The parameter value. Value must not nest another parameter. Do not use {{}} in the value.
+   *
+   * @attribute parameterValue
    */
   readonly stringValue: string;
 }
@@ -53,6 +58,8 @@ export interface IStringListParameter extends IParameter {
   /**
    * The parameter value. Value must not nest another parameter. Do not use {{}} in the value. Values in the array
    * cannot contain commas (``,``).
+   *
+   * @attribute parameterValue
    */
   readonly stringListValue: string[];
 }
@@ -137,57 +144,28 @@ abstract class ParameterBase extends Resource implements IParameter {
   }
 }
 
-export interface ParameterProps extends ParameterOptions {
-  /**
-   * The type of parameter.
-   */
-  readonly type: ParameterType;
-
-  /**
-   * The parameter value.
-   */
-  readonly value: string;
-}
-
-/**
- * The type of the SSM parameter.
- */
-export enum ParameterType {
-  STRING = 'String',
-  STRING_LIST = 'StringList'
-}
-
-/**
- * SSM parameter.
- *
- * Use `StringParameter` and `StringListParameter` for a strong-typed version.
- */
-export class Parameter extends ParameterBase {
-  public readonly parameterName: string;
-  public readonly parameterType: string;
-  public readonly parameterValue: string;
-
-  constructor(scope: Construct, id: string, props: ParameterProps) {
-    super(scope, id);
-
-    const resource = new ssm.CfnParameter(this, 'Resource', {
-      allowedPattern: props.allowedPattern,
-      description: props.description,
-      name: props.name,
-      type: props.type,
-      value: props.value
-    });
-
-    this.parameterName = resource.parameterName;
-    this.parameterType = resource.parameterType;
-    this.parameterValue = resource.parameterValue;
-  }
-}
+const STRING_PARAM_TYPE = 'String';
+const STRINGLIST_PARAM_TYPE = 'StringList';
 
 /**
  * Creates a new String SSM Parameter.
+ * @resource AWS::SSM::Parameter
  */
 export class StringParameter extends ParameterBase implements IStringParameter {
+
+  /**
+   * Imports an external string parameter.
+   */
+  public static fromStringParameterName(scope: Construct, id: string, stringParameterName: string): IStringParameter {
+    class Import extends ParameterBase {
+      public readonly parameterName = stringParameterName;
+      public readonly parameterType = STRING_PARAM_TYPE;
+      public readonly stringValue = new CfnDynamicReference(CfnDynamicReferenceService.Ssm, stringParameterName).toString();
+    }
+
+    return new Import(scope, id);
+  }
+
   public readonly parameterName: string;
   public readonly parameterType: string;
   public readonly stringValue: string;
@@ -203,7 +181,7 @@ export class StringParameter extends ParameterBase implements IStringParameter {
       allowedPattern: props.allowedPattern,
       description: props.description,
       name: props.name,
-      type: 'String',
+      type: STRING_PARAM_TYPE,
       value: props.stringValue,
     });
 
@@ -215,8 +193,23 @@ export class StringParameter extends ParameterBase implements IStringParameter {
 
 /**
  * Creates a new StringList SSM Parameter.
+ * @resource AWS::SSM::Parameter
  */
 export class StringListParameter extends ParameterBase implements IStringListParameter {
+
+  /**
+   * Imports an external parameter of type string list.
+   */
+  public static fromStringListParameterName(scope: Construct, id: string, stringListParameterName: string): IStringListParameter {
+    class Import extends ParameterBase {
+      public readonly parameterName = stringListParameterName;
+      public readonly parameterType = STRINGLIST_PARAM_TYPE;
+      public readonly stringListValue = Fn.split(',', new CfnDynamicReference(CfnDynamicReferenceService.Ssm, stringListParameterName).toString());
+    }
+
+    return new Import(scope, id);
+  }
+
   public readonly parameterName: string;
   public readonly parameterType: string;
   public readonly stringListValue: string[];
@@ -224,11 +217,11 @@ export class StringListParameter extends ParameterBase implements IStringListPar
   constructor(scope: Construct, id: string, props: StringListParameterProps) {
     super(scope, id);
 
-    if (props.stringListValue.find(str => !Token.unresolved(str) && str.indexOf(',') !== -1)) {
+    if (props.stringListValue.find(str => !Token.isToken(str) && str.indexOf(',') !== -1)) {
       throw new Error('Values of a StringList SSM Parameter cannot contain the \',\' character. Use a string parameter instead.');
     }
 
-    if (props.allowedPattern && !Token.unresolved(props.stringListValue)) {
+    if (props.allowedPattern && !Token.isToken(props.stringListValue)) {
       props.stringListValue.forEach(str => _assertValidValue(str, props.allowedPattern!));
     }
 
@@ -236,7 +229,7 @@ export class StringListParameter extends ParameterBase implements IStringListPar
       allowedPattern: props.allowedPattern,
       description: props.description,
       name: props.name,
-      type: 'StringList',
+      type: STRINGLIST_PARAM_TYPE,
       value: props.stringListValue.join(','),
     });
 
@@ -256,7 +249,7 @@ export class StringListParameter extends ParameterBase implements IStringListPar
  *         ``cdk.unresolved``).
  */
 function _assertValidValue(value: string, allowedPattern: string): void {
-  if (Token.unresolved(value) || Token.unresolved(allowedPattern)) {
+  if (Token.isToken(value) || Token.isToken(allowedPattern)) {
     // Unable to perform validations against unresolved tokens
     return;
   }

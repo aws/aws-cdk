@@ -148,8 +148,8 @@ export = {
         test.done();
       },
     }
-
   },
+
   "Ingress Port": {
     "With network mode AwsVpc": {
       "Ingress port should be the same as container port"(test: Test) {
@@ -176,6 +176,7 @@ export = {
         test.done();
       },
     },
+
     "With network mode Host ": {
       "Ingress port should be the same as container port"(test: Test) {
         // GIVEN
@@ -268,7 +269,6 @@ export = {
       }
     });
 
-    // THEN
     // THEN
     expect(stack).to(haveResourceLike('AWS::ECS::TaskDefinition', {
       ContainerDefinitions: [
@@ -474,16 +474,14 @@ export = {
     const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
     const mySecretArn = 'arn:aws:secretsmanager:region:1234567890:secret:MyRepoSecret-6f8hj3';
 
-    const repoCreds = secretsmanager.Secret.import(stack, 'MyRepoSecret', {
-        secretArn: mySecretArn,
-    });
+    const repoCreds = secretsmanager.Secret.fromSecretArn(stack, 'MyRepoSecret', mySecretArn);
 
     // WHEN
     taskDefinition.addContainer('Container', {
-        image: ecs.ContainerImage.fromRegistry('user-x/my-app', {
-            credentials: repoCreds
-        }),
-        memoryLimitMiB: 2048,
+      image: ecs.ContainerImage.fromRegistry('user-x/my-app', {
+        credentials: repoCreds
+      }),
+      memoryLimitMiB: 2048,
     });
 
     // THEN
@@ -491,26 +489,114 @@ export = {
       ContainerDefinitions: [
         {
           Image: 'user-x/my-app',
-            RepositoryCredentials: {
-              CredentialsParameter: mySecretArn
-            },
+          RepositoryCredentials: {
+            CredentialsParameter: mySecretArn
+          },
         }
       ]
     }));
 
     expect(stack).to(haveResourceLike('AWS::IAM::Policy', {
       PolicyDocument: {
-          Statement: [
-              {
-                  Action: "secretsmanager:GetSecretValue",
-                  Effect: "Allow",
-                  Resource: mySecretArn
-              }
-          ]
+        Statement: [
+          {
+            Action: "secretsmanager:GetSecretValue",
+            Effect: "Allow",
+            Resource: mySecretArn
+          }
+        ]
       }
     }));
 
     test.done();
+  },
+
+  'Can specify linux parameters': {
+    'before calling addContainer'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
+
+      const linuxParameters = new ecs.LinuxParameters(stack, 'LinuxParameters', {
+        initProcessEnabled: true,
+        sharedMemorySize: 1024,
+      });
+
+      linuxParameters.addCapabilities(ecs.Capability.All);
+      linuxParameters.dropCapabilities(ecs.Capability.Kill);
+
+      // WHEN
+      taskDefinition.addContainer('cont', {
+        image: ecs.ContainerImage.fromRegistry('test'),
+        memoryLimitMiB: 1024,
+        linuxParameters,
+      });
+
+      // THEN
+      expect(stack).to(haveResourceLike('AWS::ECS::TaskDefinition', {
+        ContainerDefinitions: [
+          {
+            Image: 'test',
+            LinuxParameters: {
+              Capabilities: {
+                Add: ["ALL"],
+                Drop: ["KILL"]
+              },
+              Devices: [],
+              Tmpfs: [],
+              InitProcessEnabled: true,
+              SharedMemorySize: 1024,
+            },
+          }
+        ]
+      }));
+
+      test.done();
+    },
+
+    'after calling addContainer'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
+
+      const linuxParameters = new ecs.LinuxParameters(stack, 'LinuxParameters', {
+        initProcessEnabled: true,
+        sharedMemorySize: 1024,
+      });
+
+      linuxParameters.addCapabilities(ecs.Capability.All);
+
+      // WHEN
+      taskDefinition.addContainer('cont', {
+        image: ecs.ContainerImage.fromRegistry('test'),
+        memoryLimitMiB: 1024,
+        linuxParameters,
+      });
+
+      // Mutate linuxParameter after added to a container
+      linuxParameters.dropCapabilities(ecs.Capability.Setuid);
+
+      // THEN
+      expect(stack).to(haveResourceLike('AWS::ECS::TaskDefinition', {
+        ContainerDefinitions: [
+          {
+            Image: 'test',
+            LinuxParameters: {
+              Capabilities: {
+                Add: ["ALL"],
+                Drop: ["SETUID"]
+              },
+              Devices: [],
+              Tmpfs: [],
+              InitProcessEnabled: true,
+              SharedMemorySize: 1024,
+            },
+          }
+        ]
+      }));
+
+      test.done();
+    },
   },
 
   // render extra hosts test
