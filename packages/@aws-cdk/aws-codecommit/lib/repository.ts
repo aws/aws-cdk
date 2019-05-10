@@ -1,5 +1,5 @@
 import events = require('@aws-cdk/aws-events');
-import { CfnOutput, Construct, IResource, Resource } from '@aws-cdk/cdk';
+import { CfnOutput, Construct, IConstruct, IResource, Resource, Stack } from '@aws-cdk/cdk';
 import { CfnRepository } from './codecommit.generated';
 
 export interface IRepository extends IResource {
@@ -244,14 +244,12 @@ export class Repository extends RepositoryBase {
   public static fromRepositoryArn(scope: Construct, id: string, repositoryArn: string): IRepository {
     const stack = scope.node.stack;
     const repositoryName = stack.parseArn(repositoryArn).resource;
-    const makeCloneUrl = (protocol: 'https' | 'ssh') =>
-      `${protocol}://git-codecommit.${stack.region}.${stack.urlSuffix}/v1/repos/${repositoryName}`;
 
     class Import extends RepositoryBase {
       public readonly repositoryArn = repositoryArn;
       public readonly repositoryName = repositoryName;
-      public readonly repositoryCloneUrlHttp = makeCloneUrl('https');
-      public readonly repositoryCloneUrlSsh = makeCloneUrl('ssh');
+      public readonly repositoryCloneUrlHttp = Repository.makeCloneUrl(stack, repositoryName, 'https');
+      public readonly repositoryCloneUrlSsh = Repository.makeCloneUrl(stack, repositoryName, 'ssh');
       public export() {
         return {
           repositoryArn: this.repositoryArn,
@@ -261,6 +259,37 @@ export class Repository extends RepositoryBase {
     }
 
     return new Import(scope, id);
+  }
+
+  public static fromRepositoryName(scope: Construct, id: string, repositoryName: string): IRepository {
+    const stack = scope.node.stack;
+
+    class Import extends RepositoryBase {
+      public repositoryName = repositoryName;
+      public repositoryArn = Repository.arnForLocalRepository(repositoryName, scope);
+      public readonly repositoryCloneUrlHttp = Repository.makeCloneUrl(stack, repositoryName, 'https');
+      public readonly repositoryCloneUrlSsh = Repository.makeCloneUrl(stack, repositoryName, 'ssh');
+
+      public export() {
+        return {
+          repositoryArn: this.repositoryArn,
+          repositoryName: this.repositoryName,
+        };
+      }
+    }
+
+    return new Import(scope, id);
+  }
+
+  private static makeCloneUrl(stack: Stack, repositoryName: string, protocol: 'https' | 'ssh') {
+    return `${protocol}://git-codecommit.${stack.region}.${stack.urlSuffix}/v1/repos/${repositoryName}`;
+  }
+
+  private static arnForLocalRepository(repositoryName: string, scope: IConstruct): string {
+    return scope.node.stack.formatArn({
+      service: 'codecommit',
+      resource: repositoryName,
+    });
   }
 
   private readonly repository: CfnRepository;
