@@ -532,8 +532,8 @@ export class Pipeline extends PipelineBase {
     const bucketKey = this.artifactBucket.encryptionKey;
     if (bucketKey) {
       encryptionKey = {
-        type: 'KMS',
-        id: bucketKey.keyArn,
+        Type: 'KMS',
+        Id: bucketKey.keyArn,
       };
     }
 
