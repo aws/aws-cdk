@@ -312,7 +312,10 @@
                           {
                             "Ref": "AWS::AccountId"
                           },
-                          ":subnet/[[subnets]]"
+                          ":subnet/",
+                          {
+                            "Ref": "MyVPCPrivateSubnet1Subnet641543F4"
+                          }
                         ]
                       ]
                     }
