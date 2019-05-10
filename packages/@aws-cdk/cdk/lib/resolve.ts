@@ -18,7 +18,7 @@ const tokenMap = TokenMap.instance();
 export interface IResolveOptions {
   scope: IConstruct;
   resolver: ITokenResolver;
-  prefix: string[];
+  prefix?: string[];
 }
 
 /**
@@ -29,13 +29,14 @@ export interface IResolveOptions {
  * @param prefix Prefix key path components for diagnostics.
  */
 export function resolve(obj: any, options: IResolveOptions): any {
-  const pathName = '/' + options.prefix.join('/');
+  const prefix = options.prefix || [];
+  const pathName = '/' + prefix.join('/');
 
   /**
    * Make a new resolution context
    */
   function makeContext(appendPath?: string): IResolveContext {
-    const newPrefix = appendPath !== undefined ? options.prefix.concat([appendPath]) : options.prefix;
+    const newPrefix = appendPath !== undefined ? prefix.concat([appendPath]) : options.prefix;
     return {
       scope: options.scope,
       resolve(x: any) { return resolve(x, { ...options, prefix: newPrefix }); }
@@ -43,7 +44,7 @@ export function resolve(obj: any, options: IResolveOptions): any {
   }
 
   // protect against cyclic references by limiting depth.
-  if (options.prefix.length > 200) {
+  if (prefix.length > 200) {
     throw new Error('Unable to resolve object tree with circular reference. Path: ' + pathName);
   }
 
@@ -198,12 +199,7 @@ export class DefaultTokenResolver implements ITokenResolver {
    */
   public resolveString(s: TokenString, context: IResolveContext) {
     const fragments = s.split(tokenMap.lookupToken.bind(tokenMap));
-
-    // require() here to break cyclic dependencies
-    const ret = fragments.mapTokens(context.resolve).join(this.concat);
-
-    // Recurse
-    return context.resolve(ret);
+    return fragments.mapTokens(context.resolve).join(this.concat);
   }
 
   public resolveList(xs: string[], context: IResolveContext) {

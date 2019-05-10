@@ -144,6 +144,7 @@ class TokenizedStringFragments {
    */
   public join(concat: IFragmentConcatenator): any {
     if (this.fragments.length === 0) { return concat.join(undefined, undefined); }
+    if (this.fragments.length === 1) { return this.firstValue; }
 
     const values = this.fragments.map(fragmentValue);
 

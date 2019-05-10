@@ -1,5 +1,6 @@
+import { IFragmentConcatenator, TokenString } from "./encoding";
 import { isIntrinsic, minimalCloudFormationJoin } from "./instrinsics";
-import { DefaultTokenResolver } from "./resolve";
+import { DefaultTokenResolver, resolve } from "./resolve";
 import { IResolveContext, Token } from "./token";
 
 /**
@@ -36,50 +37,34 @@ export class CloudFormationLang {
     //
     // A final resolve() on that string (done by the framework) will yield the string
     // we're after.
-
-
-    return new Token((ctx: IResolveContext) => {
-      // Resolve inner value first so that if they evaluate to literals, we
-      // maintain the type (and discard 'undefined's).
-      //
-      // Then replace intrinsics with a special subclass of Token that
-      // overrides toJSON() to the marker string, so if we resolve() the
-      // strings again it evaluates to the right string. It also
-      // deep-escapes any strings inside the intrinsic, so that if literal
-      // strings are used in {Fn::Join} or something, they will end up
-      // escaped in the final JSON output.
-      const resolved = ctx.resolve(obj);
-
-      // We can just directly return this value, since resolve() will be called
-      // on our return value anyway.
-      return JSON.stringify(deepReplaceIntrinsics(resolved));
-    }).toString();
-
-    /**
-     * Recurse into a structure, replace all intrinsics with IntrinsicTokens.
-     */
-    function deepReplaceIntrinsics(x: any): any {
-      if (x == null) { return x; }
-
-      if (isIntrinsic(x)) {
-        return wrapIntrinsic(x);
+    //
+    // Resolving and wrapping are done in go using the resolver framework.
+    class IntrinsincWrapper extends DefaultTokenResolver {
+      constructor() {
+        super(CLOUDFORMATION_CONCAT);
       }
 
-      if (Array.isArray(x)) {
-        return x.map(deepReplaceIntrinsics);
+      public resolveToken(t: Token, context: IResolveContext) {
+        return wrap(super.resolveToken(t, context));
       }
-
-      if (typeof x === 'object') {
-        for (const key of Object.keys(x)) {
-          x[key] = deepReplaceIntrinsics(x[key]);
-        }
+      public resolveString(s: TokenString, context: IResolveContext) {
+        return wrap(super.resolveString(s, context));
       }
-
-      return x;
+      public resolveList(l: string[], context: IResolveContext) {
+        return wrap(super.resolveList(l, context));
+      }
     }
 
-    function wrapIntrinsic(intrinsic: any): IntrinsicToken {
-      return new IntrinsicToken(() => deepQuoteStringsForJSON(intrinsic));
+    // We need a ResolveContext to get started so return a Token
+    return new Token((ctx: IResolveContext) => {
+      return JSON.stringify(resolve(obj, {
+        scope: ctx.scope,
+        resolver: new IntrinsincWrapper()
+      }));
+    }).toString();
+
+    function wrap(value: any): any {
+      return isIntrinsic(value) ? new IntrinsicToken(() => deepQuoteStringsForJSON(value)) : value;
     }
   }
 
@@ -142,11 +127,13 @@ function deepQuoteStringsForJSON(x: any): any {
   return x;
 }
 
-/**
- * Default Token resolver for CloudFormation templates
- */
-export const CLOUDFORMATION_TOKEN_RESOLVER = new DefaultTokenResolver({
+const CLOUDFORMATION_CONCAT: IFragmentConcatenator = {
   join(left: any, right: any) {
     return CloudFormationLang.concat(left, right);
   }
-});
+};
+
+/**
+ * Default Token resolver for CloudFormation templates
+ */
+export const CLOUDFORMATION_TOKEN_RESOLVER = new DefaultTokenResolver(CLOUDFORMATION_CONCAT);
