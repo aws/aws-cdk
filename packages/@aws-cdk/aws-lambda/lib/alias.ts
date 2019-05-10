@@ -1,7 +1,7 @@
 import cloudwatch = require('@aws-cdk/aws-cloudwatch');
 import { CfnOutput, Construct } from '@aws-cdk/cdk';
 import { FunctionAttributes, FunctionBase, IFunction } from './function-base';
-import { Version } from './lambda-version';
+import { IVersion } from './lambda-version';
 import { CfnAlias } from './lambda.generated';
 
 /**
@@ -20,7 +20,7 @@ export interface AliasProps {
    *
    * Use lambda.addVersion() to obtain a new lambda version to refer to.
    */
-  readonly version: Version;
+  readonly version: IVersion;
 
   /**
    * Name of this alias
@@ -176,7 +176,7 @@ export interface VersionWeight {
   /**
    * The version to route traffic to
    */
-  readonly version: Version;
+  readonly version: IVersion;
 
   /**
    * How much weight to assign to this version (0..1)

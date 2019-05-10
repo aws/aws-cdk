@@ -161,7 +161,7 @@ export class PublicHostedZone extends HostedZone implements IPublicHostedZone {
    * @param delegate the zone being delegated to.
    * @param opts     options for creating the DNS record, if any.
    */
-  public addDelegation(delegate: PublicHostedZone, opts: ZoneDelegationOptions = {}): void {
+  public addDelegation(delegate: IPublicHostedZone, opts: ZoneDelegationOptions = {}): void {
     new ZoneDelegationRecord(this, `${this.zoneName} -> ${delegate.zoneName}`, {
       zone: this,
       delegatedZoneName: delegate.zoneName,

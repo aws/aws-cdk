@@ -13,7 +13,7 @@ import { IServerDeploymentConfig, ServerDeploymentConfig } from './deployment-co
 
 export interface IServerDeploymentGroup extends cdk.IResource {
   readonly application: IServerApplication;
-  readonly role?: iam.Role;
+  readonly role?: iam.IRole;
   /**
    * @attribute
    */
@@ -67,7 +67,7 @@ export interface ServerDeploymentGroupAttributes {
  */
 abstract class ServerDeploymentGroupBase extends cdk.Resource implements IServerDeploymentGroup {
   public abstract readonly application: IServerApplication;
-  public abstract readonly role?: iam.Role;
+  public abstract readonly role?: iam.IRole;
   public abstract readonly deploymentGroupName: string;
   public abstract readonly deploymentGroupArn: string;
   public readonly deploymentConfig: IServerDeploymentConfig;
@@ -150,7 +150,7 @@ export interface ServerDeploymentGroupProps {
    * The service Role of this Deployment Group.
    * If you don't provide one, a new Role will be created.
    */
-  readonly role?: iam.Role;
+  readonly role?: iam.IRole;
 
   /**
    * The physical, human-readable name of the CodeDeploy Deployment Group.
@@ -169,7 +169,11 @@ export interface ServerDeploymentGroupProps {
   /**
    * The auto-scaling groups belonging to this Deployment Group.
    *
-   * Auto-scaling groups can also be added after the Deployment Group is created using the {@link #addAutoScalingGroup} method.
+   * Auto-scaling groups can also be added after the Deployment Group is created
+   * using the {@link #addAutoScalingGroup} method.
+   *
+   * [disable-awslint:ref-via-interface] is needed because we update userdata
+   * for ASGs to install the codedeploy agent.
    *
    * @default []
    */
@@ -217,7 +221,7 @@ export interface ServerDeploymentGroupProps {
    * @default []
    * @see https://docs.aws.amazon.com/codedeploy/latest/userguide/monitoring-create-alarms.html
    */
-  readonly alarms?: cloudwatch.Alarm[];
+  readonly alarms?: cloudwatch.IAlarm[];
 
   /**
    * Whether to continue a deployment even if fetching the alarm status from CloudWatch failed.
@@ -254,14 +258,14 @@ export class ServerDeploymentGroup extends ServerDeploymentGroupBase {
   }
 
   public readonly application: IServerApplication;
-  public readonly role?: iam.Role;
+  public readonly role?: iam.IRole;
   public readonly deploymentGroupArn: string;
   public readonly deploymentGroupName: string;
 
   private readonly _autoScalingGroups: autoscaling.AutoScalingGroup[];
   private readonly installAgent: boolean;
   private readonly codeDeployBucket: s3.IBucket;
-  private readonly alarms: cloudwatch.Alarm[];
+  private readonly alarms: cloudwatch.IAlarm[];
 
   constructor(scope: cdk.Construct, id: string, props: ServerDeploymentGroupProps = {}) {
     super(scope, id, props.deploymentConfig);
@@ -321,7 +325,9 @@ export class ServerDeploymentGroup extends ServerDeploymentGroupBase {
   /**
    * Adds an additional auto-scaling group to this Deployment Group.
    *
-   * @param asg the auto-scaling group to add to this Deployment Group
+   * @param asg the auto-scaling group to add to this Deployment Group.
+   * [disable-awslint:ref-via-interface] is needed in order to install the code
+   * deploy agent by updating the ASGs user data.
    */
   public addAutoScalingGroup(asg: autoscaling.AutoScalingGroup): void {
     this._autoScalingGroups.push(asg);
@@ -333,7 +339,7 @@ export class ServerDeploymentGroup extends ServerDeploymentGroupBase {
    *
    * @param alarm the alarm to associate with this Deployment Group
    */
-  public addAlarm(alarm: cloudwatch.Alarm): void {
+  public addAlarm(alarm: cloudwatch.IAlarm): void {
     this.alarms.push(alarm);
   }
 

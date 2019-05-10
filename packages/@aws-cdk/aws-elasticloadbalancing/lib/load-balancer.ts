@@ -109,6 +109,7 @@ export interface HealthCheck {
 export interface ILoadBalancerTarget extends IConnectable {
   /**
    * Attach load-balanced target to a classic ELB
+   * @param loadBalancer [disable-awslint:ref-via-interface] The load balancer to attach the target to
    */
   attachToClassicLB(loadBalancer: LoadBalancer): void;
 }
