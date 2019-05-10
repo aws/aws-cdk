@@ -903,9 +903,9 @@ export class Project extends ProjectBase {
     this.addToRolePolicy(new iam.PolicyStatement()
       .addResource(`arn:aws:ec2:${Aws.region}:${Aws.accountId}:network-interface/*`)
       .addCondition('StringEquals', {
-        "ec2:Subnet": [
-          `arn:aws:ec2:${Aws.region}:${Aws.accountId}:subnet/[[subnets]]`
-        ],
+        "ec2:Subnet": props.vpc
+          .selectSubnets(props.subnetSelection).subnetIds
+          .map(si => `arn:aws:ec2:${Aws.region}:${Aws.accountId}:subnet/${si}`),
         "ec2:AuthorizedService": "codebuild.amazonaws.com"
       })
       .addAction('ec2:CreateNetworkInterfacePermission'));
