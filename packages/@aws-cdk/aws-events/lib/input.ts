@@ -103,7 +103,8 @@ class LiteralEventInput extends EventTargetInput {
  *
  *    "{ \"this is the\": <field> }"
  *
- * To achieve the latter, we use the cooperation of the JSONification framework.
+ * To achieve the latter, we postprocess the JSON string to remove the surrounding
+ * quotes by using a string replace.
  */
 class FieldAwareEventInput extends EventTargetInput {
   constructor(private readonly input: any, private readonly objectScope: boolean) {
@@ -126,6 +127,8 @@ class FieldAwareEventInput extends EventTargetInput {
       return key;
     }
 
+    const self = this;
+
     class EventFieldReplacer extends DefaultTokenResolver {
       constructor() {
         super(new StringConcat());
@@ -140,15 +143,9 @@ class FieldAwareEventInput extends EventTargetInput {
         }
         inputPathsMap[key] = t.path;
 
-        return `<${key}>`;
+        return self.keyPlaceholder(key);
       }
     }
-
-    console.log('resolving', this.input);
-    console.log('resolved ', resolve(this.input, {
-      scope: rule,
-      resolver: new EventFieldReplacer()
-    }));
 
     const resolved = CloudFormationLang.toJSON(resolve(this.input, {
       scope: rule,
@@ -161,11 +158,42 @@ class FieldAwareEventInput extends EventTargetInput {
     }
 
     return {
-      inputTemplate: resolved,
+      inputTemplate: this.unquoteKeyPlaceholders(resolved),
       inputPathsMap
     };
   }
+
+  /**
+   * Return a template placeholder for the given key
+   *
+   * In object scope we'll need to get rid of surrounding quotes later on, so
+   * return a bracing that's unlikely to occur naturally (like tokens).
+   */
+  private keyPlaceholder(key: string) {
+    if (!this.objectScope) { return `<${key}>`; }
+    return UNLIKELY_OPENING_STRING + key + UNLIKELY_CLOSING_STRING;
+  }
+
+  /**
+   * Removing surrounding quotes from any object placeholders
+   *
+   * Those have been put there by JSON.stringify(), but we need to
+   * remove them.
+   */
+  private unquoteKeyPlaceholders(sub: string) {
+    if (!this.objectScope) { return sub; }
+
+    return new Token((ctx: IResolveContext) =>
+      ctx.resolve(sub).replace(OPENING_STRING_REGEX, '<').replace(CLOSING_STRING_REGEX, '>')
+    ).toString();
+  }
 }
+
+const UNLIKELY_OPENING_STRING = '<<${';
+const UNLIKELY_CLOSING_STRING = '}>>';
+
+const OPENING_STRING_REGEX = new RegExp(regexQuote('"' + UNLIKELY_OPENING_STRING), 'g');
+const CLOSING_STRING_REGEX = new RegExp(regexQuote(UNLIKELY_CLOSING_STRING + '"'), 'g');
 
 /**
  * Represents a field in the event pattern
@@ -244,4 +272,11 @@ class StringConcat implements IFragmentConcatenator {
     if (right === undefined) { return `${left}`; }
     return `${left}${right}`;
   }
+}
+
+/**
+ * Quote a string for use in a regex
+ */
+function regexQuote(s: string) {
+  return s.replace(/[.?*+^$[\]\\(){}|-]/g, "\\$&");
 }

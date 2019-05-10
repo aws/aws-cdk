@@ -87,7 +87,6 @@ export class CloudFormationLang {
     // circular dependencies on FnJoin & friends)
     return { 'Fn::Join': ['', minimalCloudFormationJoin('', parts)] };
   }
-
 }
 
 /**
