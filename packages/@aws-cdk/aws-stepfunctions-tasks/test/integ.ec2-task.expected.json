@@ -835,9 +835,6 @@
     },
     "TaskLoggingLogGroupC7E938D4": {
       "Type": "AWS::Logs::LogGroup",
-      "Properties": {
-        "RetentionInDays": 365
-      },
       "DeletionPolicy": "Retain"
     },
     "StateMachineRoleB840431D": {

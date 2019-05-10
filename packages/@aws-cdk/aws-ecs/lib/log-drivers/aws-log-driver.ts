@@ -28,6 +28,14 @@ export interface AwsLogDriverProps {
   readonly logGroup?: logs.ILogGroup;
 
   /**
+   * The number of days log events are kept in CloudWatch Logs when the log
+   * group is automatically created by this construct.
+   *
+   * @default logs never expire
+   */
+  readonly logRetentionDays?: logs.RetentionDays;
+
+  /**
    * This option defines a multiline start pattern in Python strftime format.
    *
    * A log message consists of a line that matches the pattern and any
@@ -57,8 +65,13 @@ export class AwsLogDriver extends LogDriver {
 
   constructor(scope: cdk.Construct, id: string, private readonly props: AwsLogDriverProps) {
     super(scope, id);
+
+    if (props.logGroup && props.logRetentionDays) {
+      throw new Error('Cannot specify both `logGroup` and `logRetentionDays`.');
+    }
+
     this.logGroup = props.logGroup || new logs.LogGroup(this, 'LogGroup', {
-        retentionDays: 365,
+        retentionDays: props.logRetentionDays || Infinity,
     });
   }
 
