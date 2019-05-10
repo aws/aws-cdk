@@ -3,6 +3,18 @@ import iam = require('@aws-cdk/aws-iam');
 import sns = require('@aws-cdk/aws-sns');
 
 /**
+ * Customize the SNS Topic Event Target
+ */
+export interface SnsTopicProps {
+  /**
+   * The message to send to the topic
+   *
+   * @default the entire CloudWatch event
+   */
+  message?: events.EventTargetInput;
+}
+
+/**
  * Use an SNS topic as a target for AWS CloudWatch event rules.
  *
  * @example
@@ -13,8 +25,7 @@ import sns = require('@aws-cdk/aws-sns');
  *
  */
 export class SnsTopic implements events.IEventRuleTarget {
-  constructor(public readonly topic: sns.ITopic) {
-
+  constructor(public readonly topic: sns.ITopic, private readonly props: SnsTopicProps = {}) {
   }
 
   /**
@@ -30,6 +41,7 @@ export class SnsTopic implements events.IEventRuleTarget {
     return {
       id: this.topic.node.id,
       arn: this.topic.topicArn,
+      input: this.props.message && this.props.message.toInputProperties(),
     };
   }
 }
