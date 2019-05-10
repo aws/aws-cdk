@@ -1,5 +1,6 @@
 import colors = require('colors/safe');
 import yargs = require('yargs');
+import version = require('../../lib/version');
 import { CommandOptions } from '../command-api';
 import { print } from '../logging';
 import { Context, PROJECT_CONFIG } from '../settings';
@@ -44,6 +45,7 @@ export async function realHandler(options: CommandOptions): Promise<number> {
       listContext(contextValues);
     }
   }
+  await version.displayVersionMessage();
 
   return 0;
 }

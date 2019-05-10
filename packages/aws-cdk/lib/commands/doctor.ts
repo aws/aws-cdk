@@ -3,7 +3,7 @@ import colors = require('colors/safe');
 import process = require('process');
 import yargs = require('yargs');
 import { print } from '../../lib/logging';
-import { VERSION } from '../../lib/version';
+import version = require('../../lib/version');
 import { CommandOptions } from '../command-api';
 
 export const command = 'doctor';
@@ -21,6 +21,7 @@ export async function realHandler(_options: CommandOptions): Promise<number> {
       exitStatus = -1;
     }
   }
+  await version.displayVersionMessage();
   return exitStatus;
 }
 
@@ -33,7 +34,7 @@ const verifications: Array<() => boolean | Promise<boolean>> = [
 // ### Verifications ###
 
 function displayVersionInformation() {
-  print(`ℹ️ CDK Version: ${colors.green(VERSION)}`);
+  print(`ℹ️ CDK Version: ${colors.green(version.DISPLAY_VERSION)}`);
   return true;
 }
 

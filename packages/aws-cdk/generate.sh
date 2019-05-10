@@ -8,10 +8,9 @@ if [ -z "${commit}" ]; then
   commit="$(git rev-parse --verify HEAD)"
 fi
 
-cat > lib/version.ts <<HERE
-// Generated at $(date -u +"%Y-%m-%dT%H:%M:%SZ") by generate.sh
-
-/** The qualified version number for this CDK toolkit. */
-// tslint:disable-next-line:no-var-requires
-export const VERSION = \`\${require('../package.json').version.replace(/\\+[0-9a-f]+\$/, '')} (build ${commit:0:7})\`;
+cat > build-info.json <<HERE
+{
+  "comment": "Generated at $(date -u +"%Y-%m-%dT%H:%M:%SZ") by generate.sh",
+  "commit": "${commit:0:7}"
+}
 HERE
