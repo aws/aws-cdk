@@ -1,5 +1,5 @@
 import { IConstruct } from './construct';
-import { containsListTokenElement, IFragmentConcatenator, NullConcat, TokenString, unresolved } from "./encoding";
+import { containsListTokenElement, NullConcat, TokenString, unresolved } from "./encoding";
 import { IResolveContext, isResolvedValuePostProcessor, RESOLVE_METHOD, Token } from "./token";
 import { TokenMap } from './token-map';
 
@@ -169,6 +169,18 @@ export interface ITokenResolver {
 }
 
 /**
+ * Function used to concatenate symbols in the target document language
+ *
+ * Interface so it could potentially be exposed over jsii.
+ */
+export interface IFragmentConcatenator {
+  /**
+   * Join the fragment on the left and on the right
+   */
+  join(left: any | undefined, right: any | undefined): any;
+}
+
+/**
  * Default resolver implementation
  */
 export class DefaultTokenResolver implements ITokenResolver {
@@ -231,18 +243,22 @@ export function findTokens(scope: IConstruct, fn: () => any): Token[] {
     // Swallow potential errors that might occur because we might not have validate()d.
   }
 
-  return Array.from(resolver.tokensSeen);
+  return resolver.tokens;
 }
 
 /**
  * Remember all Tokens encountered while resolving
  */
 export class RememberingTokenResolver extends DefaultTokenResolver {
-  public readonly tokensSeen = new Set<Token>();
+  private readonly tokensSeen = new Set<Token>();
 
   public resolveToken(t: Token, context: IResolveContext) {
     this.tokensSeen.add(t);
     return super.resolveToken(t, context);
+  }
+
+  public get tokens(): Token[] {
+    return Array.from(this.tokensSeen);
   }
 }
 

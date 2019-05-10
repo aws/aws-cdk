@@ -1,3 +1,4 @@
+import { IFragmentConcatenator } from "./resolve";
 import { RESOLVE_METHOD, Token } from "./token";
 
 // Details for encoding and decoding Tokens into native types; should not be exported
@@ -178,18 +179,6 @@ function regexQuote(s: string) {
 }
 
 /**
- * Function used to concatenate symbols in the target document language
- *
- * Interface so it could potentially be exposed over jsii.
- */
-export interface IFragmentConcatenator {
-  /**
-   * Join the fragment on the left and on the right
-   */
-  join(left: any | undefined, right: any | undefined): any;
-}
-
-/**
  * Concatenator that disregards the input
  *
  * Can be used when traversing the tokens is important, but the
@@ -198,19 +187,6 @@ export interface IFragmentConcatenator {
 export class NullConcat implements IFragmentConcatenator {
   public join(_left: any | undefined, _right: any | undefined): any {
     return undefined;
-  }
-}
-
-/**
- * Converts all fragments to strings and concats those
- *
- * Drops 'undefined's.
- */
-export class StringConcat implements IFragmentConcatenator {
-  public join(left: any | undefined, right: any | undefined): any {
-    if (left === undefined) { return right !== undefined ? `${right}` : undefined; }
-    if (right === undefined) { return `${left}`; }
-    return `${left}${right}`;
   }
 }
 

@@ -1,4 +1,4 @@
-import { CloudFormationLang, DefaultTokenResolver, IResolveContext, resolve, StringConcat, Token } from '@aws-cdk/cdk';
+import { CloudFormationLang, DefaultTokenResolver, IFragmentConcatenator, IResolveContext, resolve, Token } from '@aws-cdk/cdk';
 import { IEventRule } from './rule-ref';
 
 /**
@@ -232,3 +232,16 @@ function isEventField(x: any): x is EventField {
 }
 
 const EVENT_FIELD_SYMBOL = Symbol.for('@aws-cdk/aws-events.EventField');
+
+/**
+ * Converts all fragments to strings and concats those
+ *
+ * Drops 'undefined's.
+ */
+class StringConcat implements IFragmentConcatenator {
+  public join(left: any | undefined, right: any | undefined): any {
+    if (left === undefined) { return right !== undefined ? `${right}` : undefined; }
+    if (right === undefined) { return `${left}`; }
+    return `${left}${right}`;
+  }
+}

@@ -1,6 +1,6 @@
-import { IFragmentConcatenator, TokenString } from "./encoding";
+import { TokenString } from "./encoding";
 import { isIntrinsic, minimalCloudFormationJoin } from "./instrinsics";
-import { DefaultTokenResolver, resolve } from "./resolve";
+import { DefaultTokenResolver, IFragmentConcatenator, resolve } from "./resolve";
 import { IResolveContext, Token } from "./token";
 
 /**
@@ -18,7 +18,6 @@ export class CloudFormationLang {
    * in CloudFormation will fail.
    *
    * @param obj The object to stringify
-   * @param context The Construct from which to resolve any Tokens found in the object
    */
   public static toJSON(obj: any): string {
     // This works in two stages:
