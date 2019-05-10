@@ -351,7 +351,6 @@ export = {
     test.done();
   },
 
-
   'rule can be disabled'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();

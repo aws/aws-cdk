@@ -105,6 +105,11 @@ export class Token {
    * it's not possible to do this properly, so we just throw an error here.
    */
   public toJSON(): any {
+    // We can't do the right work here because in case we contain a function, we
+    // won't know the type of value that function represents (in the simplest
+    // case, string or number), and we can't know that without an
+    // IResolveContext to actually do the resolution, which we don't have.
+
     // tslint:disable-next-line:max-line-length
     throw new Error('JSON.stringify() cannot be applied to structure with a Token in it. Use this.node.stringifyJson() instead.');
   }

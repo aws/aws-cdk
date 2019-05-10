@@ -20,6 +20,24 @@ export class CloudFormationLang {
    * @param context The Construct from which to resolve any Tokens found in the object
    */
   public static toJSON(obj: any): string {
+    // This works in two stages:
+    //
+    // First, resolve everything. This gets rid of the lazy evaluations, evaluation
+    // to the real types of things (for example, would a function return a string, an
+    // intrinsic, or a number? We have to resolve to know).
+    //
+    // We then to through the returned result, identify things that evaluated to
+    // CloudFormation intrinsics, and re-wrap those in Tokens that have a
+    // toJSON() method returning their string representation. If we then call
+    // JSON.stringify() on that result, that gives us essentially the same
+    // string that we started with, except with the non-token characters quoted.
+    //
+    //    {"field": "${TOKEN}"} --> {\"field\": \"${TOKEN}\"}
+    //
+    // A final resolve() on that string (done by the framework) will yield the string
+    // we're after.
+
+
     return new Token((ctx: IResolveContext) => {
       // Resolve inner value first so that if they evaluate to literals, we
       // maintain the type (and discard 'undefined's).
