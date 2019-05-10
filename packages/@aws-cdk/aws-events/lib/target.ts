@@ -1,4 +1,5 @@
 import { CfnRule } from './events.generated';
+import { EventTargetInput } from './input';
 import { IEventRule } from './rule-ref';
 
 /**
@@ -62,30 +63,5 @@ export interface EventRuleTargetProperties {
    *
    * @default the entire event
    */
-  readonly input?: EventRuleTargetInputProperties;
-}
-
-/**
- * The input properties for an event target
- */
-export interface EventRuleTargetInputProperties {
-  /**
-   * Literal input to the target service (must be valid JSON)
-   */
-  readonly input?: string;
-
-  /**
-   * JsonPath to take input from the input event
-   */
-  readonly inputPath?: string;
-
-  /**
-   * Input template to insert paths map into
-   */
-  readonly inputTemplate?: string;
-
-  /**
-   * Paths map to extract values from event and insert into `inputTemplate`
-   */
-  readonly inputPathsMap?: {[key: string]: string};
+  readonly input?: EventTargetInput;
 }

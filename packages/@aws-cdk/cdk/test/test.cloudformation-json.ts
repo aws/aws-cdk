@@ -49,6 +49,20 @@ export = {
     test.done();
   },
 
+  'constant string has correct amount of quotes applied'(test: Test) {
+    const stack = new Stack();
+
+    const inputString = 'Hello, "world"';
+
+    // WHEN
+    const resolved = stack.node.resolve(CloudFormationLang.toJSON(inputString));
+
+    // THEN
+    test.deepEqual(evaluateCFN(resolved), JSON.stringify(inputString));
+
+    test.done();
+  },
+
   'integer Tokens behave correctly in stringification and JSONification'(test: Test) {
     // GIVEN
     const stack = new Stack();

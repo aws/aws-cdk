@@ -167,7 +167,7 @@ export = {
         id: 'T2',
         arn: 'ARN2',
         roleArn: 'IAM-ROLE-ARN',
-        input: EventTargetInput.fromText(`This is ${EventField.fromPath('$.detail.bla', 'bla')}`).toInputProperties(),
+        input: EventTargetInput.fromText(`This is ${EventField.fromPath('$.detail.bla', 'bla')}`),
       })
     };
 
@@ -220,7 +220,7 @@ export = {
     // a plain string should just be stringified (i.e. double quotes added and escaped)
     rule.addTarget({
       bind: () => ({
-        id: 'T2', arn: 'ARN2', roleArn: 'IAM-ROLE-ARN', input: EventTargetInput.fromText('Hello, "world"').toInputProperties()
+        id: 'T2', arn: 'ARN2', roleArn: 'IAM-ROLE-ARN', input: EventTargetInput.fromText('Hello, "world"')
       })
     });
 
@@ -229,7 +229,7 @@ export = {
     rule.addTarget({
       bind: () => ({
         id: 'T1', arn: 'ARN1', kinesisParameters: { partitionKeyPath: 'partitionKeyPath' },
-        input: EventTargetInput.fromText(cdk.Fn.join('', [ 'a', 'b' ]).toString()).toInputProperties(),
+        input: EventTargetInput.fromText(cdk.Fn.join('', [ 'a', 'b' ]).toString()),
       })
     });
 
@@ -237,16 +237,15 @@ export = {
     rule.addTarget({
       bind: () => ({
         id: 'T3', arn: 'ARN3',
-        input: EventTargetInput.fromObject({ foo: EventField.fromPath('$.detail.bar') }).toInputProperties()
+        input: EventTargetInput.fromObject({ foo: EventField.fromPath('$.detail.bar') }),
       })
     });
 
-    // tokens can also used for JSON templates, but that means escaping is
-    // the responsibility of the user.
+    // tokens can also used for JSON templates.
     rule.addTarget({
       bind: () => ({
         id: 'T4', arn: 'ARN4',
-        input: EventTargetInput.fromText(cdk.Fn.join(' ', ['"', 'hello', '\"world\"', '"']).toString()).toInputProperties(),
+        input: EventTargetInput.fromText(cdk.Fn.join(' ', ['hello', '"world"']).toString()),
       })
     });
 
@@ -259,35 +258,33 @@ export = {
           "ScheduleExpression": "rate(1 minute)",
           "Targets": [
             {
-            "Arn": "ARN2",
-            "Id": "T2",
-            "Input": "\"Hello, \\\"world\\\"\"",
-            "RoleArn": "IAM-ROLE-ARN"
+              "Arn": "ARN2",
+              "Id": "T2",
+              "Input": '"Hello, \\"world\\""',
+              "RoleArn": "IAM-ROLE-ARN"
             },
             {
-            "Arn": "ARN1",
-            "Id": "T1",
-            "Input": "\"ab\"",
-            "KinesisParameters": {
-              "PartitionKeyPath": "partitionKeyPath"
-            }
+              "Arn": "ARN1",
+              "Id": "T1",
+              "Input": "\"ab\"",
+              "KinesisParameters": {
+                "PartitionKeyPath": "partitionKeyPath"
+              }
             },
             {
-            "Arn": "ARN3",
-            "Id": "T3",
-            "InputTransformer": {
-              "InputPathsMap": {
-              "bar": "$.detail.bar"
-              },
-              "InputTemplate": "{ \"foo\": <bar> }"
-            }
+              "Arn": "ARN3",
+              "Id": "T3",
+              "InputTransformer": {
+                "InputPathsMap": {
+                  "f1": "$.detail.bar"
+                },
+                "InputTemplate": "{\"foo\": <f1>}"
+              }
             },
             {
-            "Arn": "ARN4",
-            "Id": "T4",
-            "InputTransformer": {
-              "InputTemplate": "\" hello \"world\" \""
-            }
+              "Arn": "ARN4",
+              "Id": "T4",
+              "Input": '"hello \\"world\\""'
             }
           ]
         }

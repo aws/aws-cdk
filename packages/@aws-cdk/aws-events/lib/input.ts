@@ -1,10 +1,10 @@
-import { Token } from '@aws-cdk/cdk';
-import { EventRuleTargetInputProperties } from './target';
+import { CloudFormationLang, DefaultTokenResolver, IResolveContext, resolve, StringConcat, Token } from '@aws-cdk/cdk';
+import { IEventRule } from './rule-ref';
 
 /**
  * The input to send to the event target
  */
-export class EventTargetInput {
+export abstract class EventTargetInput {
   /**
    * Pass text to the event target
    *
@@ -12,7 +12,7 @@ export class EventTargetInput {
    * matched event.
    */
   public static fromText(text: string): EventTargetInput {
-    return new EventTargetInput({ input: JSON.stringify(text) });
+    return new FieldAwareEventInput(text, false);
   }
 
   /**
@@ -22,24 +22,148 @@ export class EventTargetInput {
    * matched event.
    */
   public static fromObject(obj: any): EventTargetInput {
-    return new EventTargetInput({ input: JSON.stringify(obj) });
+    return new FieldAwareEventInput(obj, true);
   }
 
   /**
    * Take the event target input from a path in the event JSON
    */
   public static fromEventPath(path: string): EventTargetInput {
-    return new EventTargetInput({ inputPath: path });
+    return new LiteralEventInput({ inputPath: path });
   }
 
-  private constructor(private readonly props: EventRuleTargetInputProperties) {
+  protected constructor() {
   }
 
   /**
    * Return the input properties for this input object
    */
-  public toInputProperties() {
+  public abstract bind(rule: IEventRule): EventRuleTargetInputProperties;
+}
+
+/**
+ * The input properties for an event target
+ */
+export interface EventRuleTargetInputProperties {
+  /**
+   * Literal input to the target service (must be valid JSON)
+   */
+  readonly input?: string;
+
+  /**
+   * JsonPath to take input from the input event
+   */
+  readonly inputPath?: string;
+
+  /**
+   * Input template to insert paths map into
+   */
+  readonly inputTemplate?: string;
+
+  /**
+   * Paths map to extract values from event and insert into `inputTemplate`
+   */
+  readonly inputPathsMap?: {[key: string]: string};
+}
+
+/**
+ * Event Input that is directly derived from the construct
+ */
+class LiteralEventInput extends EventTargetInput {
+  constructor(private readonly props: EventRuleTargetInputProperties) {
+    super();
+  }
+
+  /**
+   * Return the input properties for this input object
+   */
+  public bind(_rule: IEventRule): EventRuleTargetInputProperties {
     return this.props;
+  }
+}
+
+/**
+ * Input object that can contain field replacements
+ *
+ * Evaluation is done in the bind() method because token resolution
+ * requires access to the construct tree.
+ *
+ * Multiple tokens that use the same path will use the same substitution
+ * key.
+ *
+ * One weird exception: if we're in object context, we MUST skip the quotes
+ * around the placeholder. I assume this is so once a trivial string replace is
+ * done later on by CWE, numbers are still numbers.
+ *
+ * So in string context:
+ *
+ *    "this is a string with a <field>"
+ *
+ * But in object context:
+ *
+ *    "{ \"this is the\": <field> }"
+ *
+ * To achieve the latter, we use the cooperation of the JSONification framework.
+ */
+class FieldAwareEventInput extends EventTargetInput {
+  constructor(private readonly input: any, private readonly objectScope: boolean) {
+    super();
+  }
+
+  public bind(rule: IEventRule): EventRuleTargetInputProperties {
+    Array.isArray(this.objectScope);
+    let fieldCounter = 0;
+    const pathToKey = new Map<string, string>();
+    const inputPathsMap: {[key: string]: string} = {};
+
+    function keyForField(f: EventField) {
+      const existing = pathToKey.get(f.path);
+      if (existing !== undefined) { return existing; }
+
+      fieldCounter += 1;
+      const key = f.nameHint || `f${fieldCounter}`;
+      pathToKey.set(f.path, key);
+      return key;
+    }
+
+    class EventFieldReplacer extends DefaultTokenResolver {
+      constructor() {
+        super(new StringConcat());
+      }
+
+      public resolveToken(t: Token, _context: IResolveContext) {
+        if (!isEventField(t)) { return t; }
+
+        const key = keyForField(t);
+        if (inputPathsMap[key] && inputPathsMap[key] !== t.path) {
+          throw new Error(`Single key '${key}' is used for two different JSON paths: '${t.path}' and '${inputPathsMap[key]}'`);
+        }
+        inputPathsMap[key] = t.path;
+
+        return `<${key}>`;
+      }
+    }
+
+    console.log('resolving', this.input);
+    console.log('resolved ', resolve(this.input, {
+      scope: rule,
+      resolver: new EventFieldReplacer()
+    }));
+
+    const resolved = CloudFormationLang.toJSON(resolve(this.input, {
+      scope: rule,
+      resolver: new EventFieldReplacer()
+    }));
+
+    if (Object.keys(inputPathsMap).length === 0) {
+      // Nothing special, just return 'input'
+      return { input: resolved };
+    }
+
+    return {
+      inputTemplate: resolved,
+      inputPathsMap
+    };
   }
 }
 
@@ -93,16 +217,18 @@ export class EventField extends Token {
    * Extract a custom JSON path from the event
    */
   public static fromPath(path: string, nameHint?: string): string {
-    EventField.fieldCounter += 1;
-
-    nameHint = nameHint || `f${EventField.fieldCounter}`;
-
-    return new EventField(`<${nameHint}>`, path).toString();
+    return new EventField(path, nameHint).toString();
   }
 
-  private static fieldCounter = 0;
+  private constructor(public readonly path: string, public readonly nameHint?: string) {
+    super(() => path);
 
-  private constructor(public readonly key: string, public readonly path: string) {
-    super(key);
+    Object.defineProperty(this, EVENT_FIELD_SYMBOL, { value: true });
   }
 }
+
+function isEventField(x: any): x is EventField {
+  return typeof x === 'object' && x !== null && x[EVENT_FIELD_SYMBOL];
+}
+
+const EVENT_FIELD_SYMBOL = Symbol.for('@aws-cdk/aws-events.EventField');

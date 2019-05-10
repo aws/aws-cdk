@@ -123,6 +123,7 @@ export class EventRule extends Resource implements IEventRule {
     if (!target) { return; }
 
     const targetProps = target.bind(this);
+    const inputProps = targetProps.input && targetProps.input.bind(this);
 
     // check if a target with this ID already exists
     if (this.targets.find(t => t.id === targetProps.id)) {
@@ -131,11 +132,11 @@ export class EventRule extends Resource implements IEventRule {
 
     this.targets.push({
       ...targetProps,
-      input: targetProps.input && targetProps.input.input,
-      inputPath: targetProps.input && targetProps.input.inputPath,
-      inputTransformer: targetProps.input && targetProps.input.inputTemplate !== undefined ? {
-        inputTemplate: targetProps.input.inputTemplate,
-        inputPathsMap: targetProps.input.inputPathsMap,
+      input: inputProps && inputProps.input,
+      inputPath: inputProps && inputProps.inputPath,
+      inputTransformer: inputProps && inputProps.inputTemplate !== undefined ? {
+        inputTemplate: inputProps.inputTemplate,
+        inputPathsMap: inputProps.inputPathsMap,
       } : undefined,
     });
   }

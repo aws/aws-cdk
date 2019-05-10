@@ -85,7 +85,7 @@ type Fragment =  LiteralFragment | TokenFragment | IntrinsicFragment;
 /**
  * Fragments of a string with markers
  */
-class TokenizedStringFragments {
+export class TokenizedStringFragments {
   public readonly fragments = new Array<Fragment>();
 
   public get firstFragment(): Fragment {
@@ -206,7 +206,7 @@ export class NullConcat implements IFragmentConcatenator {
  *
  * Drops 'undefined's.
  */
-export class StringConat implements IFragmentConcatenator {
+export class StringConcat implements IFragmentConcatenator {
   public join(left: any | undefined, right: any | undefined): any {
     if (left === undefined) { return right !== undefined ? `${right}` : undefined; }
     if (right === undefined) { return `${left}`; }
