@@ -8,42 +8,42 @@ export interface ApiKeyProps {
    * A list of resources this api key is associated with.
    * @default none
    */
-  resources?: IRestApiResource[];
+  readonly resources?: IRestApiResource[];
 
   /**
    * An AWS Marketplace customer identifier to use when integrating with the AWS SaaS Marketplace.
    * @link http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-apigateway-apikey.html#cfn-apigateway-apikey-customerid
    * @default none
    */
-  customerId?: string;
+  readonly customerId?: string;
 
   /**
    * A description of the purpose of the API key.
    * @link http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-apigateway-apikey.html#cfn-apigateway-apikey-description
    * @default none
    */
-  description?: string;
+  readonly description?: string;
 
   /**
    * Indicates whether the API key can be used by clients.
    * @link http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-apigateway-apikey.html#cfn-apigateway-apikey-enabled
    * @default true
    */
-  enabled?: boolean;
+  readonly enabled?: boolean;
 
   /**
    * Specifies whether the key identifier is distinct from the created API key value.
    * @link http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-apigateway-apikey.html#cfn-apigateway-apikey-generatedistinctid
    * @default false
    */
-  generateDistinctId?: boolean;
+  readonly generateDistinctIdgenerateDistinctId?: boolean;
 
   /**
    * A name for the API key.
    * @link http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-apigateway-apikey.html#cfn-apigateway-apikey-name
    * @default none
    */
-  name?: string;
+  readonly name?: string;
 }
 
 /**

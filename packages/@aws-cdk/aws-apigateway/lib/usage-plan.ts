@@ -13,12 +13,12 @@ export interface ThrottleSettings {
   /**
    * The API request steady-state rate limit (average requests per second over an extended period of time)
    */
-  rateLimit?: number;
+  readonly rateLimit?: number;
 
   /**
    * The maximum API request rate limit over a time ranging from one to a few seconds.
    */
-  burstLimit?: number;
+  readonly burstLimit?: number;
 }
 
 /**
@@ -37,25 +37,25 @@ export interface QuotaSettings {
   /**
    * The maximum number of requests that users can make within the specified time period.
    */
-  limit?: number;
+  readonly limit?: number;
 
   /**
    * For the initial time period, the number of requests to subtract from the specified limit.
    */
-  offset?: number;
+  readonly offset?: number;
 
   /**
    * The time period for which the maximum limit of requests applies.
    */
-  period?: Period;
+  readonly period?: Period;
 }
 
 /**
  * Represents per-method throttling for a resource.
  */
 export interface ThrottlingPerMethod {
-  method: Method,
-  throttle: ThrottleSettings
+  readonly method: Method,
+  readonly throttle: ThrottleSettings
 }
 
 /**
@@ -69,36 +69,36 @@ export enum UsagePlanKeyType {
  * Represents the API stages that a usage plan applies to.
  */
 export interface UsagePlanPerApiStage {
-  api?: IRestApiResource,
-  stage?: Stage,
-  throttle?: ThrottlingPerMethod[]
+  readonly api?: IRestApiResource,
+  readonly stage?: Stage,
+  readonly throttle?: ThrottlingPerMethod[]
 }
 
 export interface UsagePlanProps {
   /**
    * API Stages to be associated which the usage plan.
    */
-  apiStages?: UsagePlanPerApiStage[],
+  readonly apiStages?: UsagePlanPerApiStage[],
 
   /**
    * Represents usage plan purpose.
    */
-  description?: string,
+  readonly description?: string,
 
   /**
    * Number of requests clients can make in a given time period.
    */
-  quota?: QuotaSettings
+  readonly quota?: QuotaSettings
 
   /**
    * Overall throttle settings for the API.
    */
-  throttle?: ThrottleSettings,
+  readonly throttle?: ThrottleSettings,
 
   /**
    * Name for this usage plan.
    */
-  name?: string,
+  readonly name?: string,
 }
 
 export class UsagePlan extends cdk.Construct {
