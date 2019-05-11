@@ -585,9 +585,6 @@
     },
     "L3LoggingLogGroupBD1F02DD": {
       "Type": "AWS::Logs::LogGroup",
-      "Properties": {
-        "RetentionInDays": 365
-      },
       "DeletionPolicy": "Retain"
     },
     "L3Service616D5A93": {
