@@ -1,10 +1,11 @@
-import { resolve, Stack } from '@aws-cdk/cdk';
+import { Stack } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
 import { AlarmWidget, GraphWidget, Metric, Shading, SingleValueWidget } from '../lib';
 
 export = {
   'add metrics to graphs on either axis'(test: Test) {
     // WHEN
+    const stack = new Stack();
     const widget = new GraphWidget({
       title: 'My fancy graph',
       left: [
@@ -16,7 +17,7 @@ export = {
     });
 
     // THEN
-    test.deepEqual(resolve(widget.toJson()), [{
+    test.deepEqual(stack.node.resolve(widget.toJson()), [{
       type: 'metric',
       width: 6,
       height: 6,
@@ -38,12 +39,13 @@ export = {
 
   'label and color are respected in constructor'(test: Test) {
     // WHEN
+    const stack = new Stack();
     const widget = new GraphWidget({
       left: [new Metric({ namespace: 'CDK', metricName: 'Test', label: 'MyMetric', color: '000000' }) ],
     });
 
     // THEN
-    test.deepEqual(resolve(widget.toJson()), [{
+    test.deepEqual(stack.node.resolve(widget.toJson()), [{
       type: 'metric',
       width: 6,
       height: 6,
@@ -63,6 +65,7 @@ export = {
 
   'singlevalue widget'(test: Test) {
     // GIVEN
+    const stack = new Stack();
     const metric = new Metric({ namespace: 'CDK', metricName: 'Test' });
 
     // WHEN
@@ -71,7 +74,7 @@ export = {
     });
 
     // THEN
-    test.deepEqual(resolve(widget.toJson()), [{
+    test.deepEqual(stack.node.resolve(widget.toJson()), [{
       type: 'metric',
       width: 6,
       height: 3,
@@ -102,7 +105,7 @@ export = {
     });
 
     // THEN
-    test.deepEqual(resolve(widget.toJson()), [{
+    test.deepEqual(stack.node.resolve(widget.toJson()), [{
       type: 'metric',
       width: 6,
       height: 6,
@@ -121,6 +124,7 @@ export = {
 
   'add annotations to graph'(test: Test) {
     // WHEN
+    const stack = new Stack();
     const widget = new GraphWidget({
       title: 'My fancy graph',
       left: [
@@ -135,7 +139,7 @@ export = {
     });
 
     // THEN
-    test.deepEqual(resolve(widget.toJson()), [{
+    test.deepEqual(stack.node.resolve(widget.toJson()), [{
       type: 'metric',
       width: 6,
       height: 6,
@@ -178,7 +182,7 @@ export = {
     });
 
     // THEN
-    test.deepEqual(resolve(widget.toJson()), [{
+    test.deepEqual(stack.node.resolve(widget.toJson()), [{
       type: 'metric',
       width: 6,
       height: 6,

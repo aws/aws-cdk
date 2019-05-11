@@ -1,4 +1,4 @@
-import { FunctionRef } from './lambda-ref';
+import { IFunction } from './function-base';
 
 /**
  * An abstract class which represents an AWS Lambda event source.
@@ -9,5 +9,5 @@ export interface IEventSource {
    * function.
    * @param target That lambda function to bind to.
    */
-  bind(target: FunctionRef): void;
+  bind(target: IFunction): void;
 }

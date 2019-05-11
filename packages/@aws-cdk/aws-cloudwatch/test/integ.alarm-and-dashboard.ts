@@ -6,12 +6,13 @@
 
 import cdk = require('@aws-cdk/cdk');
 import cloudwatch = require('../lib');
+import { PeriodOverride } from '../lib';
 
 const app = new cdk.App();
 
 const stack = new cdk.Stack(app, `aws-cdk-cloudwatch`);
 
-const queue = new cdk.Resource(stack, 'queue', { type: 'AWS::SQS::Queue' });
+const queue = new cdk.CfnResource(stack, 'queue', { type: 'AWS::SQS::Queue' });
 
 const metric = new cloudwatch.Metric({
   namespace: 'AWS/SQS',
@@ -21,10 +22,16 @@ const metric = new cloudwatch.Metric({
 
 const alarm = metric.newAlarm(stack, 'Alarm', {
   threshold: 100,
-  evaluationPeriods: 3
+  evaluationPeriods: 3,
+  datapointsToAlarm: 2,
 });
 
-const dashboard = new cloudwatch.Dashboard(stack, 'Dash');
+const dashboard = new cloudwatch.Dashboard(stack, 'Dash', {
+  dashboardName: 'MyCustomDashboardName',
+  start: '-9H',
+  end: '2018-12-17T06:00:00.000Z',
+  periodOverride: PeriodOverride.Inherit
+});
 dashboard.add(
   new cloudwatch.TextWidget({ markdown: '# This is my dashboard' }),
   new cloudwatch.TextWidget({ markdown: 'you like?' }),

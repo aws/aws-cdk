@@ -5,7 +5,7 @@ Add an SNS Topic to your stack:
 ```ts
 import sns = require('@aws-cdk/aws-sns');
 
-const topic = new sns.Topic(stack, 'Topic', {
+const topic = new sns.Topic(this, 'Topic', {
     displayName: 'Customer subscription topic'
 });
 ```
@@ -18,7 +18,7 @@ topic.
 Add an HTTPS Subscription to your topic:
 
 ```ts
-const myTopic = new sns.Topic(stack, 'MyTopic');
+const myTopic = new sns.Topic(this, 'MyTopic');
 
 myTopic.subscribeUrl('MyHttpsSubscription', 'https://foobar.com/');
 ```
@@ -32,9 +32,15 @@ reading the initial message from the queue and visiting the link found in it.
 
 ### CloudWatch Event Rule Target
 
-SNS topics can be used as targets for CloudWatch event rules:
+SNS topics can be used as targets for CloudWatch event rules.
 
-[Example of CloudWatch Event rules](examples/sns-codecommit-event-rule-target.lit.ts)
+Use the `@aws-cdk/aws-events-targets.SnsTopicTarget`:
 
-This will result in adding a target to the event rule and will also modify
-the topic resource policy to allow CloudWatch events to publish to the topic.
+```ts
+import targets = require('@aws-cdk/aws-events-targets');
+
+codeCommitRepository.onCommit(new targets.SnsTopicTarget(myTopic));
+```
+
+This will result in adding a target to the event rule and will also modify the
+topic resource policy to allow CloudWatch events to publish to the topic.

@@ -67,9 +67,6 @@
     },
     "VPCPublicSubnet1DefaultRoute91CEF279": {
       "Type": "AWS::EC2::Route",
-      "DependsOn": [
-        "VPCVPCGW99B986DC"
-      ],
       "Properties": {
         "RouteTableId": {
           "Ref": "VPCPublicSubnet1RouteTableFEE4B781"
@@ -78,7 +75,10 @@
         "GatewayId": {
           "Ref": "VPCIGWB7E252D3"
         }
-      }
+      },
+      "DependsOn": [
+        "VPCVPCGW99B986DC"
+      ]
     },
     "VPCPublicSubnet1EIP6AD938E8": {
       "Type": "AWS::EC2::EIP",
@@ -158,9 +158,6 @@
     },
     "VPCPublicSubnet2DefaultRouteB7481BBA": {
       "Type": "AWS::EC2::Route",
-      "DependsOn": [
-        "VPCVPCGW99B986DC"
-      ],
       "Properties": {
         "RouteTableId": {
           "Ref": "VPCPublicSubnet2RouteTable6F1A15F1"
@@ -169,7 +166,10 @@
         "GatewayId": {
           "Ref": "VPCIGWB7E252D3"
         }
-      }
+      },
+      "DependsOn": [
+        "VPCVPCGW99B986DC"
+      ]
     },
     "VPCPublicSubnet2EIP4947BC00": {
       "Type": "AWS::EC2::EIP",
@@ -352,7 +352,17 @@
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": {
-                "Service": "lambda.amazonaws.com"
+                "Service": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "lambda.",
+                      {
+                        "Ref": "AWS::URLSuffix"
+                      }
+                    ]
+                  ]
+                }
               }
             }
           ],

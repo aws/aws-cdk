@@ -1,5 +1,5 @@
-import cdk = require('@aws-cdk/cdk');
-import { CommonTaskDefinitionProps, Compatibility, NetworkMode, TaskDefinition } from '../base/task-definition';
+import { Construct, Resource } from '@aws-cdk/cdk';
+import { CommonTaskDefinitionProps, Compatibility, ITaskDefinition, NetworkMode, TaskDefinition } from '../base/task-definition';
 
 /**
  * Properties to define a Fargate Task
@@ -16,7 +16,7 @@ export interface FargateTaskDefinitionProps extends CommonTaskDefinitionProps {
    *
    * @default 256
    */
-  cpu?: string;
+  readonly cpu?: string;
 
   /**
    * The amount (in MiB) of memory used by the task.
@@ -36,13 +36,30 @@ export interface FargateTaskDefinitionProps extends CommonTaskDefinitionProps {
    *
    * @default 512
    */
-  memoryMiB?: string;
+  readonly memoryMiB?: string;
+}
+
+export interface IFargateTaskDefinition extends ITaskDefinition {
+
 }
 
 /**
  * A definition for Tasks on a Fargate cluster
+ * @resource AWS::ECS::TaskDefinition
  */
-export class FargateTaskDefinition extends TaskDefinition {
+export class FargateTaskDefinition extends TaskDefinition implements IFargateTaskDefinition {
+
+  public static fromFargateTaskDefinitionArn(scope: Construct, id: string, fargateTaskDefinitionArn: string): IFargateTaskDefinition {
+    class Import extends Resource implements IFargateTaskDefinition {
+      public readonly taskDefinitionArn = fargateTaskDefinitionArn;
+      public readonly compatibility = Compatibility.Fargate;
+      public readonly isEc2Compatible = false;
+      public readonly isFargateCompatible = true;
+    }
+
+    return new Import(scope, id);
+  }
+
   /**
    * The configured network mode
    */
@@ -51,8 +68,8 @@ export class FargateTaskDefinition extends TaskDefinition {
   // we need to explicitly write the type here, as type deduction for enums won't lead to
   // the import being generated in the .d.ts file.
 
-  constructor(parent: cdk.Construct, name: string, props: FargateTaskDefinitionProps = {}) {
-    super(parent, name, {
+  constructor(scope: Construct, id: string, props: FargateTaskDefinitionProps = {}) {
+    super(scope, id, {
       ...props,
       cpu: props.cpu || '256',
       memoryMiB: props.memoryMiB || '512',

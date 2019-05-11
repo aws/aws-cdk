@@ -94,6 +94,60 @@ times. After three tries, if Amazon SNS still could not successfully invoke the
 Lambda function, then Amazon SNS will send a delivery status failure message to
 CloudWatch.
 
+### DynamoDB Streams
+
+You can write Lambda functions to process change events from a DynamoDB Table. An event is emitted to a DynamoDB stream (if configured) whenever a write (Put, Delete, Update) 
+operation is performed against the table. See [Using AWS Lambda with Amazon DynamoDB](https://docs.aws.amazon.com/lambda/latest/dg/with-ddb.html) for more information.
+
+To process events with a Lambda function, first create or update a DynamoDB table and enable a `streamSpecification` configuration. Then, create a `DynamoEventSource` 
+and add it to your Lambda function. The following parameters will impact Amazon DynamoDB's polling behavior:
+
+* __batchSize__: Determines how many records are buffered before invoking your lambnda function - could impact your function's memory usage (if too high) and ability to keep up with incoming data velocity (if too low).
+* __startingPosition__: Will determine where to being consumption, either at the most recent ('LATEST') record or the oldest record ('TRIM_HORIZON'). 'TRIM_HORIZON' will ensure you process all available data, while 'LATEST' will ignore all reocrds that arrived prior to attaching the event source.
+
+```ts
+import dynamodb = require('@aws-cdk/aws-dynamodb');
+import lambda = require('@aws-cdk/aws-lambda');
+import { DynamoEventSource } from '@aws-cdk/aws-lambda-event-sources';
+
+const table = new dynamodb.Table(..., {
+  partitionKey: ...,
+  streamSpecification: dynamodb.StreamViewType.NewImage // make sure stream is configured
+});
+
+const function = new lambda.Function(...);
+function.addEventSource(new DynamoEventSource(table, {
+  startingPosition: lambda.StartingPosition.TrimHorizon
+}));
+```
+
+### Kinesis
+
+You can write Lambda functions to process streaming data in Amazon Kinesis Streams. For more information about Amazon SQS, see [Amazon Kinesis
+Service](https://aws.amazon.com/kinesis/data-streams/). To view a sample event,
+see [Amazon SQS Event](https://docs.aws.amazon.com/lambda/latest/dg/eventsources.html#eventsources-kinesis-streams).
+
+To set up Amazon Kinesis as an event source for AWS Lambda, you
+first create or update an Amazon Kinesis stream and select custom values for the
+event source parameters. The following parameters will impact Amazon Kinesis's polling
+behavior:
+
+* __batchSize__: Determines how many records are buffered before invoking your lambnda function - could impact your function's memory usage (if too high) and ability to keep up with incoming data velocity (if too low).
+* __startingPosition__: Will determine where to being consumption, either at the most recent ('LATEST') record or the oldest record ('TRIM_HORIZON'). 'TRIM_HORIZON' will ensure you process all available data, while 'LATEST' will ignore all reocrds that arrived prior to attaching the event source.
+
+```ts
+import lambda = require('@aws-cdk/aws-lambda');
+import kinesis = require('@aws-cdk/aws-kinesis');
+import { KinesisEventSource } from '@aws-cdk/aws-lambda-event-sources';
+
+const stream = new kinesis.Stream(this, 'MyStream');
+
+myFunction.addEventSource(new KinesisEventSource(queue, {
+  batchSize: 100, // default
+  startingPosition: lambda.StartingPosition.TrimHorizon
+});
+```
+
 ## Roadmap
 
 Eventually, this module will support all the event sources described under

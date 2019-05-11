@@ -1,5 +1,5 @@
 import s3 = require('@aws-cdk/aws-s3');
-import { cloudformation } from './codebuild.generated';
+import { CfnProject } from './codebuild.generated';
 import { Project } from './project';
 
 /**
@@ -10,7 +10,7 @@ export interface BuildArtifactsProps {
    * The artifact identifier.
    * This property is required on secondary artifacts.
    */
-  identifier?: string;
+  readonly identifier?: string;
 }
 
 /**
@@ -24,11 +24,14 @@ export abstract class BuildArtifacts {
     this.identifier = props.identifier;
   }
 
+  /**
+   * @internal
+   */
   public _bind(_project: Project) {
     return;
   }
 
-  public toArtifactsJSON(): cloudformation.ProjectResource.ArtifactsProperty {
+  public toArtifactsJSON(): CfnProject.ArtifactsProperty {
     const artifactsProp = this.toArtifactsProperty();
     return {
       artifactIdentifier: this.identifier,
@@ -79,22 +82,22 @@ export interface S3BucketBuildArtifactsProps extends BuildArtifactsProps {
   /**
    * The name of the output bucket.
    */
-  bucket: s3.BucketRef;
+  readonly bucket: s3.IBucket;
 
   /**
    * The path inside of the bucket for the build output .zip file or folder.
    * If a value is not specified, then build output will be stored at the root of the
    * bucket (or under the <build-id> directory if `includeBuildId` is set to true).
    */
-  path?: string;
+  readonly path?: string;
 
   /**
    * The name of the build output ZIP file or folder inside the bucket.
    *
    * The full S3 object key will be "<path>/<build-id>/<name>" or
-   * "<path>/<name>" depending on whether `includeBuildID` is set to true.
+   * "<path>/<name>" depending on whether `includeBuildId` is set to true.
    */
-  name: string;
+  readonly name: string;
 
   /**
    * Indicates if the build ID should be included in the path. If this is set to true,
@@ -102,7 +105,7 @@ export interface S3BucketBuildArtifactsProps extends BuildArtifactsProps {
    *
    * @default true
    */
-  includeBuildID?: boolean;
+  readonly includeBuildId?: boolean;
 
   /**
    * If this is true, all build output will be packaged into a single .zip file.
@@ -110,7 +113,7 @@ export interface S3BucketBuildArtifactsProps extends BuildArtifactsProps {
    *
    * @default true - files will be archived
    */
-  packageZip?: boolean;
+  readonly packageZip?: boolean;
 }
 
 /**
@@ -123,15 +126,18 @@ export class S3BucketBuildArtifacts extends BuildArtifacts {
     super(props);
   }
 
+  /**
+   * @internal
+   */
   public _bind(project: Project) {
-    this.props.bucket.grantReadWrite(project.role);
+    this.props.bucket.grantReadWrite(project);
   }
 
   protected toArtifactsProperty(): any {
     return {
       location: this.props.bucket.bucketName,
       path: this.props.path,
-      namespaceType: this.props.includeBuildID === false ? 'NONE' : 'BUILD_ID',
+      namespaceType: this.props.includeBuildId === false ? 'NONE' : 'BUILD_ID',
       name: this.props.name,
       packaging: this.props.packageZip === false ? 'NONE' : 'ZIP',
     };

@@ -11,26 +11,25 @@ export interface SqsEventSourceProps {
    *
    * @default 10
    */
-  batchSize?: number;
+  readonly batchSize?: number;
 }
 
 /**
  * Use an Amazon SQS queue as an event source for AWS Lambda.
  */
 export class SqsEventSource implements lambda.IEventSource {
-  constructor(readonly queue: sqs.QueueRef, private readonly props: SqsEventSourceProps = { }) {
+  constructor(readonly queue: sqs.IQueue, private readonly props: SqsEventSourceProps = { }) {
     if (this.props.batchSize !== undefined && (this.props.batchSize < 1 || this.props.batchSize > 10)) {
       throw new Error(`Maximum batch size must be between 1 and 10 inclusive (given ${this.props.batchSize})`);
     }
   }
 
-  public bind(target: lambda.FunctionRef) {
-    new lambda.EventSourceMapping(target, `SqsEventSource:${this.queue.uniqueId}`, {
-      target,
+  public bind(target: lambda.IFunction) {
+    target.addEventSourceMapping(`SqsEventSource:${this.queue.node.uniqueId}`, {
       batchSize: this.props.batchSize,
       eventSourceArn: this.queue.queueArn,
     });
 
-    this.queue.grantConsumeMessages(target.role);
+    this.queue.grantConsumeMessages(target);
   }
 }

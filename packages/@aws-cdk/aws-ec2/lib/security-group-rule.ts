@@ -105,7 +105,7 @@ export class AnyIPv6 extends CidrIPv6 {
  * https://docs.aws.amazon.com/AmazonVPC/latest/UserGuide/vpc-endpoints.html
  */
 export class PrefixList implements ISecurityGroupRule, IConnectable {
-  public readonly canInlineRule = true;
+  public readonly canInlineRule = false;
   public readonly connections: Connections = new Connections({ securityGroupRule: this });
   public readonly uniqueId: string;
 
@@ -114,7 +114,7 @@ export class PrefixList implements ISecurityGroupRule, IConnectable {
   }
 
   public toIngressRuleJSON(): any {
-    throw new Error('Prefix lists can only be used for egress rules');
+    return { sourcePrefixListId: this.prefixListId };
   }
 
   public toEgressRuleJSON(): any {
@@ -350,6 +350,7 @@ export class IcmpPing implements IPortRange {
     return {
       ipProtocol: Protocol.Icmp,
       fromPort: 8,
+      toPort: -1
     };
   }
 

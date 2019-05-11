@@ -7,17 +7,17 @@ export interface SSMParameterContextQuery {
   /**
    * Query account
    */
-  account?: string;
+  readonly account?: string;
 
   /**
    * Query region
    */
-  region?: string;
+  readonly region?: string;
 
   /**
    * Parameter name to query
    */
-  parameterName?: string;
+  readonly parameterName?: string;
 }
 
 // Response is a string

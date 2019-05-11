@@ -1,7 +1,8 @@
 import { expect, haveResource, matchTemplate } from '@aws-cdk/assert';
+import iam = require('@aws-cdk/aws-iam');
 import { Stack } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
-import { LogGroup, LogGroupRef } from '../lib';
+import { LogGroup, RetentionDays } from '../lib';
 
 export = {
   'fixed retention'(test: Test) {
@@ -10,7 +11,7 @@ export = {
 
     // WHEN
     new LogGroup(stack, 'LogGroup', {
-      retentionDays: 7
+      retentionDays: RetentionDays.OneWeek
     });
 
     // THEN
@@ -30,7 +31,7 @@ export = {
 
     // THEN
     expect(stack).to(haveResource('AWS::Logs::LogGroup', {
-      RetentionInDays: 730
+      RetentionInDays: 731
     }));
 
     test.done();
@@ -80,17 +81,16 @@ export = {
 
   'export/import'(test: Test) {
     // GIVEN
-    const stack1 = new Stack();
-    const lg = new LogGroup(stack1, 'LogGroup');
     const stack2 = new Stack();
 
     // WHEN
-    const imported = LogGroupRef.import(stack2, 'Import', lg.export());
+    const imported = LogGroup.fromLogGroupArn(stack2, 'lg', 'arn:aws:logs:us-east-1:123456789012:log-group:my-log-group');
     imported.newStream(stack2, 'MakeMeAStream');
 
     // THEN
-    expect(stack2).to(haveResource('AWS::Logs::LogStream', {}));
-
+    expect(stack2).to(haveResource('AWS::Logs::LogStream', {
+      LogGroupName: "my-log-group"
+    }));
     test.done();
   },
 
@@ -118,6 +118,56 @@ export = {
     test.equal(metric.metricName, 'Field');
 
     test.done();
-  }
+  },
 
+  'extractMetric allows passing in namespaces with "/"'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+    const lg = new LogGroup(stack, 'LogGroup');
+
+    // WHEN
+    const metric = lg.extractMetric('$.myField', 'MyNamespace/MyService', 'Field');
+
+    // THEN
+    expect(stack).to(haveResource('AWS::Logs::MetricFilter', {
+      FilterPattern: "{ $.myField = \"*\" }",
+      MetricTransformations: [
+        {
+          MetricName: "Field",
+          MetricNamespace: "MyNamespace/MyService",
+          MetricValue: "$.myField"
+        }
+      ]
+    }));
+    test.equal(metric.namespace, 'MyNamespace/MyService');
+    test.equal(metric.metricName, 'Field');
+
+    test.done();
+  },
+
+  'grant'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+    const lg = new LogGroup(stack, 'LogGroup');
+    const user = new iam.User(stack, 'User');
+
+    // WHEN
+    lg.grantWrite(user);
+
+    // THEN
+    expect(stack).to(haveResource('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: [ "logs:CreateLogStream", "logs:PutLogEvents" ],
+            Effect: "Allow",
+            Resource: { "Fn::GetAtt": [ "LogGroupF5B46931", "Arn" ] }
+          }
+        ],
+        Version: "2012-10-17"
+      }
+    }));
+
+    test.done();
+  },
 };

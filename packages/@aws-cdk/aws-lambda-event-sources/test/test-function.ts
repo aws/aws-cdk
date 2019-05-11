@@ -2,8 +2,8 @@ import lambda = require('@aws-cdk/aws-lambda');
 import cdk = require('@aws-cdk/cdk');
 
 export class TestFunction extends lambda.Function {
-  constructor(parent: cdk.Construct, id: string) {
-    super(parent, id, {
+  constructor(scope: cdk.Construct, id: string) {
+    super(scope, id, {
       handler: 'index.handler',
       code: lambda.Code.inline(`exports.handler = ${handler.toString()}`),
       runtime: lambda.Runtime.NodeJS810

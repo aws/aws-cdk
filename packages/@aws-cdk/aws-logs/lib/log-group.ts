@@ -1,29 +1,83 @@
 import cloudwatch = require('@aws-cdk/aws-cloudwatch');
-import cdk = require('@aws-cdk/cdk');
+import iam = require('@aws-cdk/aws-iam');
+import { applyRemovalPolicy, Construct, IResource, RemovalPolicy, Resource } from '@aws-cdk/cdk';
 import { LogStream } from './log-stream';
-import { cloudformation } from './logs.generated';
+import { CfnLogGroup } from './logs.generated';
 import { MetricFilter } from './metric-filter';
 import { FilterPattern, IFilterPattern } from './pattern';
 import { ILogSubscriptionDestination, SubscriptionFilter } from './subscription-filter';
 
-/**
- * Properties for importing a LogGroup
- */
-export interface LogGroupRefProps {
-  logGroupArn: string;
+export interface ILogGroup extends IResource {
+  /**
+   * The ARN of this log group
+   * @attribute
+   */
+  readonly logGroupArn: string;
+
+  /**
+   * The name of this log group
+   * @attribute
+   */
+  readonly logGroupName: string;
+
+  /**
+   * Create a new Log Stream for this Log Group
+   *
+   * @param scope Parent construct
+   * @param id Unique identifier for the construct in its parent
+   * @param props Properties for creating the LogStream
+   */
+  newStream(scope: Construct, id: string, props?: NewLogStreamProps): LogStream;
+
+  /**
+   * Create a new Subscription Filter on this Log Group
+   *
+   * @param scope Parent construct
+   * @param id Unique identifier for the construct in its parent
+   * @param props Properties for creating the SubscriptionFilter
+   */
+  newSubscriptionFilter(scope: Construct, id: string, props: NewSubscriptionFilterProps): SubscriptionFilter;
+
+  /**
+   * Create a new Metric Filter on this Log Group
+   *
+   * @param scope Parent construct
+   * @param id Unique identifier for the construct in its parent
+   * @param props Properties for creating the MetricFilter
+   */
+  newMetricFilter(scope: Construct, id: string, props: NewMetricFilterProps): MetricFilter;
+
+  /**
+   * Extract a metric from structured log events in the LogGroup
+   *
+   * Creates a MetricFilter on this LogGroup that will extract the value
+   * of the indicated JSON field in all records where it occurs.
+   *
+   * The metric will be available in CloudWatch Metrics under the
+   * indicated namespace and name.
+   *
+   * @param jsonField JSON field to extract (example: '$.myfield')
+   * @param metricNamespace Namespace to emit the metric under
+   * @param metricName Name to emit the metric under
+   * @returns A Metric object representing the extracted metric
+   */
+  extractMetric(jsonField: string, metricNamespace: string, metricName: string): cloudwatch.Metric;
+
+  /**
+   * Give permissions to write to create and write to streams in this log group
+   */
+  grantWrite(grantee: iam.IGrantable): iam.Grant;
+
+  /**
+   * Give the indicated permissions on this log group and all streams
+   */
+  grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant;
 }
 
 /**
  * An CloudWatch Log Group
  */
-export abstract class LogGroupRef extends cdk.Construct {
-  /**
-   * Import an existing LogGroup
-   */
-  public static import(parent: cdk.Construct, id: string, props: LogGroupRefProps): LogGroupRef {
-    return new ImportedLogGroup(parent, id, props);
-  }
-
+abstract class LogGroupBase extends Resource implements ILogGroup {
   /**
    * The ARN of this log group
    */
@@ -37,12 +91,12 @@ export abstract class LogGroupRef extends cdk.Construct {
   /**
    * Create a new Log Stream for this Log Group
    *
-   * @param parent Parent construct
+   * @param scope Parent construct
    * @param id Unique identifier for the construct in its parent
    * @param props Properties for creating the LogStream
    */
-  public newStream(parent: cdk.Construct, id: string, props: NewLogStreamProps = {}): LogStream {
-    return new LogStream(parent, id, {
+  public newStream(scope: Construct, id: string, props: NewLogStreamProps = {}): LogStream {
+    return new LogStream(scope, id, {
       logGroup: this,
       ...props
     });
@@ -51,12 +105,12 @@ export abstract class LogGroupRef extends cdk.Construct {
   /**
    * Create a new Subscription Filter on this Log Group
    *
-   * @param parent Parent construct
+   * @param scope Parent construct
    * @param id Unique identifier for the construct in its parent
    * @param props Properties for creating the SubscriptionFilter
    */
-  public newSubscriptionFilter(parent: cdk.Construct, id: string, props: NewSubscriptionFilterProps): SubscriptionFilter {
-    return new SubscriptionFilter(parent, id, {
+  public newSubscriptionFilter(scope: Construct, id: string, props: NewSubscriptionFilterProps): SubscriptionFilter {
+    return new SubscriptionFilter(scope, id, {
       logGroup: this,
       ...props
     });
@@ -65,24 +119,15 @@ export abstract class LogGroupRef extends cdk.Construct {
   /**
    * Create a new Metric Filter on this Log Group
    *
-   * @param parent Parent construct
+   * @param scope Parent construct
    * @param id Unique identifier for the construct in its parent
    * @param props Properties for creating the MetricFilter
    */
-  public newMetricFilter(parent: cdk.Construct, id: string, props: NewMetricFilterProps): MetricFilter {
-    return new MetricFilter(parent, id, {
+  public newMetricFilter(scope: Construct, id: string, props: NewMetricFilterProps): MetricFilter {
+    return new MetricFilter(scope, id, {
       logGroup: this,
       ...props
     });
-  }
-
-  /**
-   * Export this LogGroup
-   */
-  public export(): LogGroupRefProps {
-    return {
-      logGroupArn: new cdk.Output(this, 'LogGroupArn', { value: this.logGroupArn }).makeImportValue().toString()
-    };
   }
 
   /**
@@ -110,6 +155,117 @@ export abstract class LogGroupRef extends cdk.Construct {
 
     return new cloudwatch.Metric({ metricName, namespace: metricNamespace });
   }
+
+  /**
+   * Give permissions to write to create and write to streams in this log group
+   */
+  public grantWrite(grantee: iam.IGrantable) {
+    return this.grant(grantee, 'logs:CreateLogStream', 'logs:PutLogEvents');
+  }
+
+  /**
+   * Give the indicated permissions on this log group and all streams
+   */
+  public grant(grantee: iam.IGrantable, ...actions: string[]) {
+    return iam.Grant.addToPrincipal({
+      grantee,
+      actions,
+      // A LogGroup ARN out of CloudFormation already includes a ':*' at the end to include the log streams under the group.
+      // See https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-logs-loggroup.html#w2ab1c21c10c63c43c11
+      resourceArns: [this.logGroupArn],
+      scope: this,
+    });
+  }
+}
+
+/**
+ * How long, in days, the log contents will be retained.
+ */
+export enum RetentionDays {
+  /**
+   * 1 day
+   */
+  OneDay = 1,
+
+  /**
+   * 3 days
+   */
+  ThreeDays = 3,
+
+  /**
+   * 5 days
+   */
+  FiveDays = 5,
+
+  /**
+   * 1 week
+   */
+  OneWeek = 7,
+
+  /**
+   * 2 weeks
+   */
+  TwoWeeks =  14,
+
+  /**
+   * 1 month
+   */
+  OneMonth = 30,
+
+  /**
+   * 2 months
+   */
+  TwoMonths = 60,
+
+  /**
+   * 3 months
+   */
+  ThreeMonths = 90,
+
+  /**
+   * 4 months
+   */
+  FourMonths = 120,
+
+  /**
+   * 5 months
+   */
+  FiveMonths = 150,
+
+  /**
+   * 6 months
+   */
+  SixMonths = 180,
+
+  /**
+   * 1 year
+   */
+  OneYear = 365,
+
+  /**
+   * 13 months
+   */
+  ThirteenMonths = 400,
+
+  /**
+   * 18 months
+   */
+  EighteenMonths = 545,
+
+  /**
+   * 2 years
+   */
+  TwoYears = 731,
+
+  /**
+   * 5 years
+   */
+  FiveYears = 1827,
+
+  /**
+   * 10 years
+   */
+  TenYears = 3653
 }
 
 /**
@@ -121,16 +277,16 @@ export interface LogGroupProps {
    *
    * @default Automatically generated
    */
-  logGroupName?: string;
+  readonly logGroupName?: string;
 
   /**
    * How long, in days, the log contents will be retained.
    *
    * To retain all logs, set this value to Infinity.
    *
-   * @default 730 days (2 years)
+   * @default 731 days (2 years)
    */
-  retentionDays?: number;
+  readonly retentionDays?: RetentionDays;
 
   /**
    * Retain the log group if the stack or containing construct ceases to exist
@@ -142,13 +298,25 @@ export interface LogGroupProps {
    *
    * @default true
    */
-  retainLogGroup?: boolean;
+  readonly retainLogGroup?: boolean;
 }
 
 /**
  * Define a CloudWatch Log Group
  */
-export class LogGroup extends LogGroupRef {
+export class LogGroup extends LogGroupBase {
+  /**
+   * Import an existing LogGroup
+   */
+  public static fromLogGroupArn(scope: Construct, id: string, logGroupArn: string): ILogGroup {
+    class Import extends LogGroupBase {
+      public readonly logGroupArn = logGroupArn;
+      public readonly logGroupName = scope.node.stack.parseArn(logGroupArn, ':').resourceName!;
+    }
+
+    return new Import(scope, id);
+  }
+
   /**
    * The ARN of this log group
    */
@@ -159,50 +327,28 @@ export class LogGroup extends LogGroupRef {
    */
   public readonly logGroupName: string;
 
-  constructor(parent: cdk.Construct, id: string, props: LogGroupProps = {}) {
-    super(parent, id);
+  constructor(scope: Construct, id: string, props: LogGroupProps = {}) {
+    super(scope, id);
 
     let retentionInDays = props.retentionDays;
-    if (retentionInDays === undefined) { retentionInDays = 730; }
+    if (retentionInDays === undefined) { retentionInDays = RetentionDays.TwoYears; }
     if (retentionInDays === Infinity) { retentionInDays = undefined; }
 
     if (retentionInDays !== undefined && retentionInDays <= 0) {
       throw new Error(`retentionInDays must be positive, got ${retentionInDays}`);
     }
 
-    const resource = new cloudformation.LogGroupResource(this, 'Resource', {
+    const resource = new CfnLogGroup(this, 'Resource', {
       logGroupName: props.logGroupName,
       retentionInDays,
     });
 
     if (props.retainLogGroup !== false) {
-      cdk.applyRemovalPolicy(resource, cdk.RemovalPolicy.Orphan);
+      applyRemovalPolicy(resource, RemovalPolicy.Orphan);
     }
 
     this.logGroupArn = resource.logGroupArn;
     this.logGroupName = resource.logGroupName;
-  }
-}
-
-/**
- * An imported CloudWatch Log Group
- */
-class ImportedLogGroup extends LogGroupRef {
-  /**
-   * The ARN of this log group
-   */
-  public readonly logGroupArn: string;
-
-  /**
-   * The name of this log group
-   */
-  public readonly logGroupName: string;
-
-  constructor(parent: cdk.Construct, id: string, props: LogGroupRefProps) {
-    super(parent, id);
-
-    this.logGroupArn = props.logGroupArn;
-    this.logGroupName = cdk.ArnUtils.resourceNameComponent(props.logGroupArn, ':');
   }
 }
 
@@ -217,7 +363,7 @@ export interface NewLogStreamProps {
    *
    * @default Automatically generated
    */
-  logStreamName?: string;
+  readonly logStreamName?: string;
 }
 
 /**
@@ -229,12 +375,12 @@ export interface NewSubscriptionFilterProps {
    *
    * For example, a Kinesis stream or a Lambda function.
    */
-  destination: ILogSubscriptionDestination;
+  readonly destination: ILogSubscriptionDestination;
 
   /**
    * Log events matching this pattern will be sent to the destination.
    */
-  filterPattern: IFilterPattern;
+  readonly filterPattern: IFilterPattern;
 }
 
 /**
@@ -244,17 +390,17 @@ export interface NewMetricFilterProps {
   /**
    * Pattern to search for log events.
    */
-  filterPattern: IFilterPattern;
+  readonly filterPattern: IFilterPattern;
 
   /**
    * The namespace of the metric to emit.
    */
-  metricNamespace: string;
+  readonly metricNamespace: string;
 
   /**
    * The name of the metric to emit.
    */
-  metricName: string;
+  readonly metricName: string;
 
   /**
    * The value to emit for the metric.
@@ -271,12 +417,12 @@ export interface NewMetricFilterProps {
    *
    * @default "1"
    */
-  metricValue?: string;
+  readonly metricValue?: string;
 
   /**
    * The value to emit if the pattern does not match a particular event.
    *
    * @default No metric emitted.
    */
-  defaultValue?: number;
+  readonly defaultValue?: number;
 }

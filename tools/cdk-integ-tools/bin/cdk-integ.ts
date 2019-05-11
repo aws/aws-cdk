@@ -8,19 +8,27 @@ import { IntegrationTests, STATIC_TEST_CONTEXT } from '../lib/integ-helpers';
 async function main() {
   const argv = yargs
     .usage('Usage: cdk-integ [TEST...]')
+      .option('list', { type: 'boolean', default: false, desc: 'List tests instead of running them' })
       .option('clean', { type: 'boolean', default: true, desc: 'Skips stack clean up after test is completed (use --no-clean to negate)' })
       .option('verbose', { type: 'boolean', default: false, alias: 'v', desc: 'Verbose logs' })
       .argv;
 
   const tests = await new IntegrationTests('test').fromCliArgs(argv._);
 
+  if (argv.list) {
+    process.stdout.write(tests.map(t => t.name).join(' ') + '\n');
+    return;
+  }
+
   for (const test of tests) {
     console.error(`Trying to deploy ${test.name}`);
 
     const args = new Array<string>();
 
-    // inject "--no-path-metadata" so aws:cdk:path entries are not added to CFN metadata
+    // don't inject cloudformation metadata into template
     args.push('--no-path-metadata');
+    args.push('--no-asset-metadata');
+    args.push('--no-staging');
 
     // inject "--verbose" to the command line of "cdk" if we are in verbose mode
     if (argv.verbose) {
@@ -28,7 +36,8 @@ async function main() {
     }
 
     try {
-      await test.invoke([ ...args, 'deploy' ], { verbose: argv.verbose }); // Note: no context, so use default user settings!
+      // tslint:disable-next-line:max-line-length
+      await test.invoke([ ...args, 'deploy', '--require-approval', 'never' ], { verbose: argv.verbose }); // Note: no context, so use default user settings!
 
       console.error(`Success! Writing out reference synth.`);
 

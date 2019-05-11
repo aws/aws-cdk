@@ -1,45 +1,17 @@
-import { Construct, IDependable, Token } from '@aws-cdk/cdk';
-import { Group } from './group';
-import { cloudformation } from './iam.generated';
-import { PolicyDocument, PolicyPrincipal, PolicyStatement } from './policy-document';
-import { Role } from './role';
-import { User } from './user';
+import { Construct, IResource, Resource, Token } from '@aws-cdk/cdk';
+import { IGroup } from './group';
+import { CfnPolicy } from './iam.generated';
+import { PolicyDocument, PolicyStatement } from './policy-document';
+import { IRole } from './role';
+import { IUser } from './user';
 import { generatePolicyName, undefinedIfEmpty } from './util';
 
-/**
- * A construct that represents an IAM principal, such as a user, group or role.
- */
-export interface IPrincipal {
+export interface IPolicy extends IResource {
   /**
-   * The IAM principal of this identity (i.e. AWS principal, service principal, etc).
+   * @attribute
    */
-  readonly principal: PolicyPrincipal;
-
-  /**
-   * Adds an IAM statement to the default inline policy associated with this
-   * principal. If a policy doesn't exist, it is created.
-   */
-  addToPolicy(statement: PolicyStatement): void;
-
-  /**
-   * Attaches an inline policy to this principal.
-   * This is the same as calling `policy.addToXxx(principal)`.
-   * @param policy The policy resource to attach to this principal.
-   */
-  attachInlinePolicy(policy: Policy): void;
-
-  /**
-   * Attaches a managed policy to this principal.
-   * @param arn The ARN of the managed policy
-   */
-  attachManagedPolicy(arn: string): void;
+  readonly policyName: string;
 }
-
-/**
- * @deprecated Use IPrincipal
- */
-// tslint:disable-next-line:no-empty-interface
-export type IIdentityResource = IPrincipal;
 
 export interface PolicyProps {
   /**
@@ -50,31 +22,31 @@ export interface PolicyProps {
    * @default Uses the logical ID of the policy resource, which is ensured to
    *      be unique within the stack.
    */
-  policyName?: string;
+  readonly policyName?: string;
 
   /**
    * Users to attach this policy to.
    * You can also use `attachToUser(user)` to attach this policy to a user.
    */
-  users?: User[];
+  readonly users?: IUser[];
 
   /**
    * Roles to attach this policy to.
    * You can also use `attachToRole(role)` to attach this policy to a role.
    */
-  roles?: Role[];
+  readonly roles?: IRole[];
 
   /**
    * Groups to attach this policy to.
    * You can also use `attachToGroup(group)` to attach this policy to a group.
    */
-  groups?: Group[];
+  readonly groups?: IGroup[];
 
   /**
    * Initial set of permissions to add to this policy document.
    * You can also use `addPermission(statement)` to add permissions later.
    */
-  statements?: PolicyStatement[];
+  readonly statements?: PolicyStatement[];
 }
 
 /**
@@ -83,7 +55,16 @@ export interface PolicyProps {
  * Policies](http://docs.aws.amazon.com/IAM/latest/UserGuide/policies_overview.html)
  * in the IAM User Guide guide.
  */
-export class Policy extends Construct implements IDependable {
+export class Policy extends Resource implements IPolicy {
+
+  public static fromPolicyName(scope: Construct, id: string, policyName: string): IPolicy {
+    class Import extends Resource implements IPolicy {
+      public readonly policyName = policyName;
+    }
+
+    return new Import(scope, id);
+  }
+
   /**
    * The policy document.
    */
@@ -91,24 +72,21 @@ export class Policy extends Construct implements IDependable {
 
   /**
    * The name of this policy.
+   *
+   * @attribute
    */
   public readonly policyName: string;
 
-  /**
-   * Lists all the elements consumers should "depend-on".
-   */
-  public readonly dependencyElements: IDependable[];
+  private readonly roles = new Array<IRole>();
+  private readonly users = new Array<IUser>();
+  private readonly groups = new Array<IGroup>();
 
-  private readonly roles = new Array<Role>();
-  private readonly users = new Array<User>();
-  private readonly groups = new Array<Group>();
+  constructor(scope: Construct, id: string, props: PolicyProps = {}) {
+    super(scope, id);
 
-  constructor(parent: Construct, name: string, props: PolicyProps = {}) {
-    super(parent, name);
-
-    const resource = new cloudformation.PolicyResource(this, 'Resource', {
+    const resource = new CfnPolicy(this, 'Resource', {
       policyDocument: this.document,
-      policyName: new Token(() => this.policyName),
+      policyName: new Token(() => this.policyName).toString(),
       roles: undefinedIfEmpty(() => this.roles.map(r => r.roleName)),
       users: undefinedIfEmpty(() => this.users.map(u => u.userName)),
       groups: undefinedIfEmpty(() => this.groups.map(g => g.groupName)),
@@ -118,7 +96,6 @@ export class Policy extends Construct implements IDependable {
     // policy names are limited to 128. the last 8 chars are a stack-unique hash, so
     // that shouod be sufficient to ensure uniqueness within a principal.
     this.policyName = props.policyName || generatePolicyName(resource.logicalId);
-    this.dependencyElements = [ resource ];
 
     if (props.users) {
       props.users.forEach(u => this.attachToUser(u));
@@ -147,7 +124,7 @@ export class Policy extends Construct implements IDependable {
   /**
    * Attaches this policy to a user.
    */
-  public attachToUser(user: User) {
+  public attachToUser(user: IUser) {
     if (this.users.find(u => u === user)) { return; }
     this.users.push(user);
     user.attachInlinePolicy(this);
@@ -156,7 +133,7 @@ export class Policy extends Construct implements IDependable {
   /**
    * Attaches this policy to a role.
    */
-  public attachToRole(role: Role) {
+  public attachToRole(role: IRole) {
     if (this.roles.find(r => r === role)) { return; }
     this.roles.push(role);
     role.attachInlinePolicy(this);
@@ -165,13 +142,13 @@ export class Policy extends Construct implements IDependable {
   /**
    * Attaches this policy to a group.
    */
-  public attachToGroup(group: Group) {
+  public attachToGroup(group: IGroup) {
     if (this.groups.find(g => g === group)) { return; }
     this.groups.push(group);
     group.attachInlinePolicy(this);
   }
 
-  public validate(): string[] {
+  protected validate(): string[] {
     const result = new Array<string>();
 
     // validate that the policy document is not empty

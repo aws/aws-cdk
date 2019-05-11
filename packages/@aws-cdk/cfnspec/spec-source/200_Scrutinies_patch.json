@@ -1,0 +1,86 @@
+{
+    "ResourceTypes": {
+        "AWS::Lambda::Permission": {
+            "patch": {
+                "description": "Permission scrutiny",
+                "operations": [
+                    {
+                        "op": "add",
+                        "path": "/ScrutinyType",
+                        "value": "LambdaPermission"
+                    }
+                ]
+            }
+        },
+        "AWS::SNS::Subscription": {
+            "patch": {
+                "description": "SNS: These are not IAM policies",
+                "operations": [
+                    {
+                        "op": "add",
+                        "path": "/Properties/DeliveryPolicy/ScrutinyType",
+                        "value": "None"
+                    },
+                    {
+                        "op": "add",
+                        "path": "/Properties/FilterPolicy/ScrutinyType",
+                        "value": "None"
+                    }
+                ]
+            }
+        },
+        "AWS::SQS::Queue": {
+            "patch": {
+                "description": "SQS: Not an IAM policy",
+                "operations": [
+                    {
+                        "op": "add",
+                        "path": "/Properties/RedrivePolicy/ScrutinyType",
+                        "value": "None"
+                    }
+                ]
+            }
+        },
+        "AWS::EC2::SecurityGroup": {
+            "patch": {
+                "description": "SecurityGroup: Mark ingress/egress rules",
+                "operations": [
+                    {
+                        "op": "add",
+                        "path": "/Properties/SecurityGroupIngress/ScrutinyType",
+                        "value": "IngressRules"
+                    },
+                    {
+                        "op": "add",
+                        "path": "/Properties/SecurityGroupEgress/ScrutinyType",
+                        "value": "EgressRules"
+                    }
+                ]
+            }
+        },
+        "AWS::EC2::SecurityGroupIngress": {
+            "patch": {
+                "description": "SecurityGroupIngress: Mark ingress rules",
+                "operations": [
+                    {
+                        "op": "add",
+                        "path": "/ScrutinyType",
+                        "value": "IngressRuleResource"
+                    }
+                ]
+            }
+        },
+        "AWS::EC2::SecurityGroupEgress": {
+            "patch": {
+                "description": "SecurityGroupEgress: Mark egress rules",
+                "operations": [
+                    {
+                        "op": "add",
+                        "path": "/ScrutinyType",
+                        "value": "EgressRuleResource"
+                    }
+                ]
+            }
+        }
+    }
+}

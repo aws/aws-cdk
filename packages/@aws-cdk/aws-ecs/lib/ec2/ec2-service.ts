@@ -1,26 +1,22 @@
 import cloudwatch = require ('@aws-cdk/aws-cloudwatch');
 import ec2 = require('@aws-cdk/aws-ec2');
 import elb = require('@aws-cdk/aws-elasticloadbalancing');
-import cdk = require('@aws-cdk/cdk');
-import { BaseService, BaseServiceProps } from '../base/base-service';
+import { Construct, Resource, Token } from '@aws-cdk/cdk';
+import { BaseService, BaseServiceProps, IService } from '../base/base-service';
 import { NetworkMode, TaskDefinition } from '../base/task-definition';
-import { ICluster } from '../cluster';
-import { cloudformation } from '../ecs.generated';
-import { isEc2Compatible } from '../util';
+import { CfnService } from '../ecs.generated';
+import { BinPackResource, PlacementConstraint, PlacementStrategy } from '../placement';
 
 /**
  * Properties to define an ECS service
  */
 export interface Ec2ServiceProps extends BaseServiceProps {
   /**
-   * Cluster where service will be deployed
-   */
-  cluster: ICluster;
-
-  /**
    * Task Definition used for running tasks in the service
+   *
+   * [disable-awslint:ref-via-interface]
    */
-  taskDefinition: TaskDefinition;
+  readonly taskDefinition: TaskDefinition;
 
   /**
    * In what subnets to place the task's ENIs
@@ -29,7 +25,7 @@ export interface Ec2ServiceProps extends BaseServiceProps {
    *
    * @default Private subnets
    */
-  vpcPlacement?: ec2.VpcPlacementStrategy;
+  readonly vpcSubnets?: ec2.SubnetSelection;
 
   /**
    * Existing security group to use for the task's ENIs
@@ -38,14 +34,21 @@ export interface Ec2ServiceProps extends BaseServiceProps {
    *
    * @default A new security group is created
    */
-  securityGroup?: ec2.SecurityGroupRef;
+  readonly securityGroup?: ec2.ISecurityGroup;
 
   /**
-   * Whether to start services on distinct instances
+   * Placement constraints
    *
-   * @default true
+   * @default No constraints
    */
-  placeOnDistinctInstances?: boolean;
+  readonly placementConstraints?: PlacementConstraint[];
+
+  /**
+   * Placement strategies
+   *
+   * @default No strategies
+   */
+  readonly placementStrategies?: PlacementStrategy[];
 
   /**
    * Deploy exactly one task on each instance in your cluster.
@@ -55,63 +58,84 @@ export interface Ec2ServiceProps extends BaseServiceProps {
    *
    * @default false
    */
-  daemon?: boolean;
+  readonly daemon?: boolean;
+}
+
+export interface IEc2Service extends IService {
+
 }
 
 /**
  * Start a service on an ECS cluster
+ *
+ * @resource AWS::ECS::Service
  */
-export class Ec2Service extends BaseService implements elb.ILoadBalancerTarget {
+export class Ec2Service extends BaseService implements IEc2Service, elb.ILoadBalancerTarget {
+
+  public static fromEc2ServiceArn(scope: Construct, id: string, ec2ServiceArn: string): IEc2Service {
+    class Import extends Resource implements IEc2Service {
+      public readonly serviceArn = ec2ServiceArn;
+    }
+    return new Import(scope, id);
+  }
+
   /**
    * Name of the cluster
    */
   public readonly clusterName: string;
 
-  private readonly constraints: cloudformation.ServiceResource.PlacementConstraintProperty[];
-  private readonly strategies: cloudformation.ServiceResource.PlacementStrategyProperty[];
+  private readonly constraints: CfnService.PlacementConstraintProperty[];
+  private readonly strategies: CfnService.PlacementStrategyProperty[];
   private readonly daemon: boolean;
-  private readonly cluster: ICluster;
 
-  constructor(parent: cdk.Construct, name: string, props: Ec2ServiceProps) {
+  constructor(scope: Construct, id: string, props: Ec2ServiceProps) {
     if (props.daemon && props.desiredCount !== undefined) {
       throw new Error('Daemon mode launches one task on every instance. Don\'t supply desiredCount.');
     }
 
-    if (!isEc2Compatible(props.taskDefinition.compatibility)) {
+    if (props.daemon && props.maximumPercent !== undefined && props.maximumPercent !== 100) {
+      throw new Error('Maximum percent must be 100 for daemon mode.');
+    }
+
+    if (props.daemon && props.minimumHealthyPercent !== undefined && props.minimumHealthyPercent !== 0) {
+      throw new Error('Minimum healthy percent must be 0 for daemon mode.');
+    }
+
+    if (!props.taskDefinition.isEc2Compatible) {
       throw new Error('Supplied TaskDefinition is not configured for compatibility with EC2');
     }
 
-    super(parent, name, {
+    super(scope, id, {
       ...props,
       // If daemon, desiredCount must be undefined and that's what we want. Otherwise, default to 1.
       desiredCount: props.daemon || props.desiredCount !== undefined ? props.desiredCount : 1,
+      maximumPercent: props.daemon && props.maximumPercent === undefined ? 100 : props.maximumPercent,
+      minimumHealthyPercent: props.daemon && props.minimumHealthyPercent === undefined ? 0 : props.minimumHealthyPercent ,
     },
     {
       cluster: props.cluster.clusterName,
       taskDefinition: props.taskDefinition.taskDefinitionArn,
       launchType: 'EC2',
-      placementConstraints: new cdk.Token(() => this.constraints),
-      placementStrategies: new cdk.Token(() => this.strategies),
+      placementConstraints: new Token(() => this.constraints.length > 0 ? this.constraints : undefined),
+      placementStrategies: new Token(() => this.strategies.length > 0 ? this.strategies : undefined),
       schedulingStrategy: props.daemon ? 'DAEMON' : 'REPLICA',
     }, props.cluster.clusterName, props.taskDefinition);
 
-    this.cluster = props.cluster;
     this.clusterName = props.cluster.clusterName;
     this.constraints = [];
     this.strategies = [];
     this.daemon = props.daemon || false;
 
     if (props.taskDefinition.networkMode === NetworkMode.AwsVpc) {
-      this.configureAwsVpcNetworking(props.cluster.vpc, false, props.vpcPlacement, props.securityGroup);
+      this.configureAwsVpcNetworking(props.cluster.vpc, false, props.vpcSubnets, props.securityGroup);
     } else {
       // Either None, Bridge or Host networking. Copy SecurityGroup from ASG.
       validateNoNetworkingProps(props);
       this.connections.addSecurityGroup(...props.cluster.connections.securityGroups);
     }
 
-    if (props.placeOnDistinctInstances) {
-      this.constraints.push({ type: 'distinctInstance' });
-    }
+    this.addPlacementConstraints(...props.placementConstraints || []);
+    this.addPlacementStrategies(...props.placementStrategies || []);
 
     if (!this.taskDefinition.defaultContainer) {
       throw new Error('A TaskDefinition must have at least one essential container');
@@ -119,17 +143,16 @@ export class Ec2Service extends BaseService implements elb.ILoadBalancerTarget {
   }
 
   /**
-   * Place services only on instances matching the given query expression
+   * Place tasks only on instances matching the given query expression
    *
    * You can specify multiple expressions in one call. The tasks will only
    * be placed on instances matching all expressions.
    *
    * @see https://docs.aws.amazon.com/AmazonECS/latest/developerguide/cluster-query-language.html
+   * @deprecated Use addPlacementConstraints() instead.
    */
   public placeOnMemberOf(...expressions: string[]) {
-    for (const expression of expressions) {
-      this.constraints.push({ type: 'memberOf', expression });
-    }
+    this.addPlacementConstraints(PlacementConstraint.memberOf(...expressions));
   }
 
   /**
@@ -140,17 +163,13 @@ export class Ec2Service extends BaseService implements elb.ILoadBalancerTarget {
    * is supplied, spreading is done in order.
    *
    * @default attributes instanceId
+   * @deprecated Use addPlacementStrategies() instead.
    */
   public placeSpreadAcross(...fields: string[]) {
-    if (this.daemon) {
-      throw new Error("Can't configure spreading placement for a service with daemon=true");
-    }
-
     if (fields.length === 0) {
-      fields = [BuiltInAttributes.InstanceId];
-    }
-    for (const field of fields) {
-      this.strategies.push({ type: 'spread', field });
+      this.addPlacementStrategies(PlacementStrategy.spreadAcrossInstances());
+    } else {
+      this.addPlacementStrategies(PlacementStrategy.spreadAcross(...fields));
     }
   }
 
@@ -158,24 +177,42 @@ export class Ec2Service extends BaseService implements elb.ILoadBalancerTarget {
    * Try to place tasks on instances with the least amount of indicated resource available
    *
    * This ensures the total consumption of this resource is lowest.
+   *
+   * @deprecated Use addPlacementStrategies() instead.
    */
   public placePackedBy(resource: BinPackResource) {
-    if (this.daemon) {
-      throw new Error("Can't configure packing placement for a service with daemon=true");
-    }
-
-    this.strategies.push({ type: 'binpack', field: resource });
+    this.addPlacementStrategies(PlacementStrategy.packedBy(resource));
   }
 
   /**
    * Place tasks randomly across the available instances.
+   *
+   * @deprecated Use addPlacementStrategies() instead.
    */
   public placeRandomly() {
-    if (this.daemon) {
-      throw new Error("Can't configure random placement for a service with daemon=true");
+    this.addPlacementStrategies(PlacementStrategy.randomly());
+  }
+
+  /**
+   * Add one or more placement strategies
+   */
+  public addPlacementStrategies(...strategies: PlacementStrategy[]) {
+    if (strategies.length > 0 && this.daemon) {
+      throw new Error("Can't configure placement strategies when daemon=true");
     }
 
-    this.strategies.push({ type: 'random' });
+    for (const strategy of strategies) {
+      this.strategies.push(...strategy.toJson());
+    }
+  }
+
+  /**
+   * Add one or more placement strategies
+   */
+  public addPlacementConstraints(...constraints: PlacementConstraint[]) {
+    for (const constraint of constraints) {
+      this.constraints.push(...constraint.toJson());
+    }
   }
 
   /**
@@ -193,7 +230,7 @@ export class Ec2Service extends BaseService implements elb.ILoadBalancerTarget {
 
     this.loadBalancers.push({
       loadBalancerName: loadBalancer.loadBalancerName,
-      containerName: this.taskDefinition.defaultContainer!.id,
+      containerName: this.taskDefinition.defaultContainer!.node.id,
       containerPort: this.taskDefinition.defaultContainer!.containerPort,
     });
   }
@@ -201,7 +238,7 @@ export class Ec2Service extends BaseService implements elb.ILoadBalancerTarget {
   /**
    * Return the given named metric for this Service
    */
-  public metric(metricName: string, props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
+  public metric(metricName: string, props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return new cloudwatch.Metric({
       namespace: 'AWS/ECS',
       metricName,
@@ -215,7 +252,7 @@ export class Ec2Service extends BaseService implements elb.ILoadBalancerTarget {
    *
    * @default average over 5 minutes
    */
-  public metricMemoryUtilization(props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
+  public metricMemoryUtilization(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return this.metric('MemoryUtilization', props );
   }
 
@@ -224,14 +261,14 @@ export class Ec2Service extends BaseService implements elb.ILoadBalancerTarget {
    *
    * @default average over 5 minutes
    */
-  public metricCpuUtilization(props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
+  public metricCpuUtilization(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return this.metric('CPUUtilization', props);
   }
 
   /**
    * Validate this Ec2Service
    */
-  public validate(): string[] {
+  protected validate(): string[] {
     const ret = super.validate();
     if (!this.cluster.hasEc2Capacity) {
       ret.push('Cluster for this service needs Ec2 capacity. Call addXxxCapacity() on the cluster.');
@@ -244,8 +281,8 @@ export class Ec2Service extends BaseService implements elb.ILoadBalancerTarget {
  * Validate combinations of networking arguments
  */
 function validateNoNetworkingProps(props: Ec2ServiceProps) {
-  if (props.vpcPlacement !== undefined || props.securityGroup !== undefined) {
-    throw new Error('vpcPlacement and securityGroup can only be used in AwsVpc networking mode');
+  if (props.vpcSubnets !== undefined || props.securityGroup !== undefined) {
+    throw new Error('vpcSubnets and securityGroup can only be used in AwsVpc networking mode');
   }
 }
 
@@ -279,19 +316,4 @@ export class BuiltInAttributes {
    * Either 'linux' or 'windows'.
    */
   public static readonly OsType = 'attribute:ecs.os-type';
-}
-
-/**
- * Instance resource used for bin packing
- */
-export enum BinPackResource {
-  /**
-   * Fill up hosts' CPU allocations first
-   */
-  Cpu = 'cpu',
-
-  /**
-   * Fill up hosts' memory allocations first
-   */
-  Memory = 'memory',
 }

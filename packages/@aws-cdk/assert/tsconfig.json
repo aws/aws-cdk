@@ -3,6 +3,7 @@
         "target":"es2018",
         "lib": ["es2016", "es2017.object", "es2017.string"],
         "module": "commonjs",
+        "composite": true,
         "declaration": true,
         "strict": true,
         "noImplicitAny": true,
@@ -17,6 +18,13 @@
         "inlineSources": true,
         "strictPropertyInitialization": false,
         "experimentalDecorators": true
-    }
+    },
+    "include": ["**/*.ts" ],
+    "exclude": ["node_modules"],
+    "references": [
+        { "path": "../cdk" },
+        { "path": "../cx-api" },
+        { "path": "../cfnspec" },
+        { "path": "../cloudformation-diff" }
+    ]
 }
-

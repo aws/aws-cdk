@@ -12,7 +12,17 @@
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": {
-                "Service": "codepipeline.amazonaws.com"
+                "Service": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "codepipeline.",
+                      {
+                        "Ref": "AWS::URLSuffix"
+                      }
+                    ]
+                  ]
+                }
               }
             }
           ],
@@ -63,7 +73,7 @@
               "Effect": "Allow",
               "Resource": {
                 "Fn::GetAtt": [
-                  "DeployStackChangeSetRole4923A126",
+                  "CodePipelineDeployChangeSetRoleF9F2B343",
                   "Arn"
                 ]
               }
@@ -145,12 +155,6 @@
     "CodePipelineB74E5936": {
       "Type": "AWS::CodePipeline::Pipeline",
       "Properties": {
-        "ArtifactStore": {
-          "Location": {
-            "Ref": "ArtifactBucket7410C9EF"
-          },
-          "Type": "S3"
-        },
         "RoleArn": {
           "Fn::GetAtt": [
             "CodePipelineRoleB3A660B4",
@@ -202,7 +206,7 @@
                   "TemplatePath": "Artifact_CICDGitHubF8BA7ADD::CICD.template.yaml",
                   "RoleArn": {
                     "Fn::GetAtt": [
-                      "DeployStackChangeSetRole4923A126",
+                      "CodePipelineDeployChangeSetRoleF9F2B343",
                       "Arn"
                     ]
                   }
@@ -236,14 +240,20 @@
             ],
             "Name": "Deploy"
           }
-        ]
+        ],
+        "ArtifactStore": {
+          "Location": {
+            "Ref": "ArtifactBucket7410C9EF"
+          },
+          "Type": "S3"
+        }
       },
       "DependsOn": [
-        "CodePipelineRoleB3A660B4",
-        "CodePipelineRoleDefaultPolicy8D520A8D"
+        "CodePipelineRoleDefaultPolicy8D520A8D",
+        "CodePipelineRoleB3A660B4"
       ]
     },
-    "DeployStackChangeSetRole4923A126": {
+    "CodePipelineDeployChangeSetRoleF9F2B343": {
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
@@ -252,7 +262,17 @@
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": {
-                "Service": "cloudformation.amazonaws.com"
+                "Service": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "cloudformation.",
+                      {
+                        "Ref": "AWS::URLSuffix"
+                      }
+                    ]
+                  ]
+                }
               }
             }
           ],

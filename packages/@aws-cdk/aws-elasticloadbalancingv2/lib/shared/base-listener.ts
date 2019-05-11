@@ -1,31 +1,29 @@
 import cdk = require('@aws-cdk/cdk');
-import { cloudformation } from '../elasticloadbalancingv2.generated';
+import { CfnListener } from '../elasticloadbalancingv2.generated';
 import { ITargetGroup } from './base-target-group';
 
 /**
  * Base class for listeners
  */
-export abstract class BaseListener extends cdk.Construct implements cdk.IDependable {
-  public readonly dependencyElements: cdk.IDependable[];
+export abstract class BaseListener extends cdk.Construct {
   public readonly listenerArn: string;
-  private readonly defaultActions: any[] = [];
+  private readonly defaultActions: CfnListener.ActionProperty[] = [];
 
-  constructor(parent: cdk.Construct, id: string, additionalProps: any) {
-    super(parent, id);
+  constructor(scope: cdk.Construct, id: string, additionalProps: any) {
+    super(scope, id);
 
-    const resource = new cloudformation.ListenerResource(this, 'Resource', {
+    const resource = new CfnListener(this, 'Resource', {
       ...additionalProps,
       defaultActions: new cdk.Token(() => this.defaultActions),
     });
 
-    this.dependencyElements = [resource];
     this.listenerArn = resource.ref;
   }
 
   /**
    * Validate this listener
    */
-  public validate(): string[] {
+  protected validate(): string[] {
     if (this.defaultActions.length === 0) {
       return ['Listener needs at least one default target group (call addTargetGroups)'];
     }
@@ -33,10 +31,19 @@ export abstract class BaseListener extends cdk.Construct implements cdk.IDependa
   }
 
   /**
+   * Add an action to the list of default actions of this listener
+   * @internal
+   */
+  protected _addDefaultAction(action: CfnListener.ActionProperty) {
+    this.defaultActions.push(action);
+  }
+
+  /**
    * Add a TargetGroup to the list of default actions of this listener
+   * @internal
    */
   protected _addDefaultTargetGroup(targetGroup: ITargetGroup) {
-    this.defaultActions.push({
+    this._addDefaultAction({
       targetGroupArn: targetGroup.targetGroupArn,
       type: 'forward'
     });

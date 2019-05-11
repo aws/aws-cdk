@@ -1,6 +1,7 @@
 import { expect, haveResource } from '@aws-cdk/assert';
 import ec2 = require('@aws-cdk/aws-ec2');
 import { InstanceType } from '@aws-cdk/aws-ec2';
+import cloudmap = require('@aws-cdk/aws-servicediscovery');
 import cdk = require('@aws-cdk/cdk');
 import { Test } from 'nodeunit';
 import ecs = require('../lib');
@@ -15,7 +16,7 @@ export = {
         vpc,
       });
 
-      cluster.addDefaultAutoScalingGroupCapacity({
+      cluster.addCapacity('DefaultAutoScalingGroup', {
         instanceType: new ec2.InstanceType('t2.micro')
       });
 
@@ -120,7 +121,7 @@ export = {
               Action: "sts:AssumeRole",
               Effect: "Allow",
               Principal: {
-                Service: "ec2.amazonaws.com"
+                Service: { "Fn::Join": ["", ["ec2.", { Ref: "AWS::URLSuffix" }]] }
               }
             }
           ],
@@ -164,7 +165,7 @@ export = {
       });
 
       // WHEN
-      cluster.addDefaultAutoScalingGroupCapacity({
+      cluster.addCapacity('DefaultAutoScalingGroup', {
         instanceType: new ec2.InstanceType('t2.micro')
       });
 
@@ -188,7 +189,7 @@ export = {
     const vpc = new ec2.VpcNetwork(stack, 'MyVpc', {});
 
     const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
-    cluster.addDefaultAutoScalingGroupCapacity({
+    cluster.addCapacity('DefaultAutoScalingGroup', {
       instanceType: new InstanceType("m3.large")
     });
 
@@ -206,9 +207,9 @@ export = {
     const vpc = new ec2.VpcNetwork(stack, 'MyVpc', {});
 
     const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
-    cluster.addDefaultAutoScalingGroupCapacity({
+    cluster.addCapacity('DefaultAutoScalingGroup', {
       instanceType: new ec2.InstanceType('t2.micro'),
-      instanceCount: 3
+      desiredCapacity: 3
     });
 
     // THEN
@@ -218,4 +219,102 @@ export = {
 
     test.done();
   },
+
+  "allows adding default service discovery namespace"(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.VpcNetwork(stack, 'MyVpc', {});
+
+    const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+    cluster.addCapacity('DefaultAutoScalingGroup', {
+      instanceType: new ec2.InstanceType('t2.micro'),
+    });
+
+    // WHEN
+    cluster.addDefaultCloudMapNamespace({
+      name: "foo.com"
+    });
+
+    // THEN
+    expect(stack).to(haveResource("AWS::ServiceDiscovery::PrivateDnsNamespace", {
+       Name: 'foo.com',
+        Vpc: {
+          Ref: 'MyVpcF9F0CA6F'
+        }
+    }));
+
+    test.done();
+  },
+
+  "allows adding public service discovery namespace"(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.VpcNetwork(stack, 'MyVpc', {});
+
+    const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+    cluster.addCapacity('DefaultAutoScalingGroup', {
+      instanceType: new ec2.InstanceType('t2.micro'),
+    });
+
+    // WHEN
+    cluster.addDefaultCloudMapNamespace({
+      name: "foo.com",
+      type: ecs.NamespaceType.PublicDns
+    });
+
+    // THEN
+    expect(stack).to(haveResource("AWS::ServiceDiscovery::PublicDnsNamespace", {
+       Name: 'foo.com',
+    }));
+
+    test.done();
+  },
+
+  "throws if default service discovery namespace added more than once"(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.VpcNetwork(stack, 'MyVpc', {});
+
+    const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+    cluster.addCapacity('DefaultAutoScalingGroup', {
+      instanceType: new ec2.InstanceType('t2.micro'),
+    });
+
+    // WHEN
+    cluster.addDefaultCloudMapNamespace({
+      name: "foo.com"
+    });
+
+    // THEN
+    test.throws(() => {
+      cluster.addDefaultCloudMapNamespace({
+        name: "foo.com"
+      });
+    }, /Can only add default namespace once./);
+
+    test.done();
+  },
+
+  'export/import of a cluster with a namespace'(test: Test) {
+    // GIVEN
+    const stack1 = new cdk.Stack();
+    const vpc1 = new ec2.VpcNetwork(stack1, 'Vpc');
+    const cluster1 = new ecs.Cluster(stack1, 'Cluster', { vpc: vpc1 });
+    cluster1.addDefaultCloudMapNamespace({
+      name: 'hello.com',
+    });
+
+    const stack2 = new cdk.Stack();
+
+    // WHEN
+    const cluster2 = ecs.Cluster.fromClusterAttributes(stack2, 'Cluster', cluster1.export());
+
+    // THEN
+    test.equal(cluster2.defaultNamespace!.type, cloudmap.NamespaceType.DnsPrivate);
+    test.deepEqual(stack2.node.resolve(cluster2.defaultNamespace!.namespaceId), {
+      'Fn::ImportValue': 'Stack:ClusterDefaultServiceDiscoveryNamespaceNamespaceId516C01B9',
+    });
+
+    test.done();
+  }
 };

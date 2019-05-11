@@ -1,24 +1,77 @@
 import iam = require('@aws-cdk/aws-iam');
 import kms = require('@aws-cdk/aws-kms');
 import logs = require('@aws-cdk/aws-logs');
-import cdk = require('@aws-cdk/cdk');
-import { cloudformation } from './kinesis.generated';
+import { CfnOutput, Construct, HashedAddressingScheme, IResource, Resource } from '@aws-cdk/cdk';
+import { CfnStream } from './kinesis.generated';
+
+export interface IStream extends IResource, logs.ILogSubscriptionDestination {
+  /**
+   * The ARN of the stream.
+   *
+   * @attribute
+   */
+  readonly streamArn: string;
+
+  /**
+   * The name of the stream
+   *
+   * @attribute
+   */
+  readonly streamName: string;
+
+  /**
+   * Optional KMS encryption key associated with this stream.
+   */
+  readonly encryptionKey?: kms.IEncryptionKey;
+
+  /**
+   * Exports this stream from the stack.
+   */
+  export(): StreamAttributes;
+
+  /**
+   * Grant read permissions for this stream and its contents to an IAM
+   * principal (Role/Group/User).
+   *
+   * If an encryption key is used, permission to ues the key to decrypt the
+   * contents of the stream will also be granted.
+   */
+  grantRead(grantee: iam.IGrantable): iam.Grant;
+
+  /**
+   * Grant write permissions for this stream and its contents to an IAM
+   * principal (Role/Group/User).
+   *
+   * If an encryption key is used, permission to ues the key to encrypt the
+   * contents of the stream will also be granted.
+   */
+  grantWrite(grantee: iam.IGrantable): iam.Grant;
+
+  /**
+   * Grants read/write permissions for this stream and its contents to an IAM
+   * principal (Role/Group/User).
+   *
+   * If an encryption key is used, permission to use the key for
+   * encrypt/decrypt will also be granted.
+   */
+  grantReadWrite(grantee: iam.IGrantable): iam.Grant;
+}
 
 /**
  * A reference to a stream. The easiest way to instantiate is to call
  * `stream.export()`. Then, the consumer can use `Stream.import(this, ref)` and
  * get a `Stream`.
  */
-export interface StreamRefProps {
+export interface StreamAttributes {
   /**
    * The ARN of the stream.
    */
-  streamArn: string;
+  readonly streamArn: string;
 
   /**
    * The KMS key securing the contents of the stream if encryption is enabled.
    */
-  encryptionKey?: kms.EncryptionKeyRefProps;
+  readonly encryptionKey?: kms.EncryptionKeyImportProps;
 }
 
 /**
@@ -30,27 +83,15 @@ export interface StreamRefProps {
  *
  * Or imported from an existing stream:
  *
- *   StreamRef.import(this, 'MyImportedStream', { streamArn: ... });
+ *   Stream.import(this, 'MyImportedStream', { streamArn: ... });
  *
  * You can also export a stream and import it into another stack:
  *
  *   const ref = myStream.export();
- *   StreamRef.import(this, 'MyImportedStream', ref);
+ *   Stream.import(this, 'MyImportedStream', ref);
  *
  */
-export abstract class StreamRef extends cdk.Construct implements logs.ILogSubscriptionDestination {
-  /**
-   * Creates a Stream construct that represents an external stream.
-   *
-   * @param parent The parent creating construct (usually `this`).
-   * @param name The construct's name.
-   * @param ref A StreamRefProps object. Can be obtained from a call to
-   * `stream.export()`.
-   */
-  public static import(parent: cdk.Construct, name: string, props: StreamRefProps): StreamRef {
-    return new ImportedStreamRef(parent, name, props);
-  }
-
+abstract class StreamBase extends Resource implements IStream {
   /**
    * The ARN of the stream.
    */
@@ -64,22 +105,14 @@ export abstract class StreamRef extends cdk.Construct implements logs.ILogSubscr
   /**
    * Optional KMS encryption key associated with this stream.
    */
-  public abstract readonly encryptionKey?: kms.EncryptionKeyRef;
+  public abstract readonly encryptionKey?: kms.IEncryptionKey;
 
   /**
    * The role that can be used by CloudWatch logs to write to this stream
    */
   private cloudWatchLogsRole?: iam.Role;
 
-  /**
-   * Exports this stream from the stack.
-   */
-  public export(): StreamRefProps {
-    return {
-      streamArn: new cdk.Output(this, 'StreamArn', { value: this.streamArn }).makeImportValue().toString(),
-      encryptionKey: this.encryptionKey ? this.encryptionKey.export() : undefined,
-    };
-  }
+  public abstract export(): StreamAttributes;
 
   /**
    * Grant write permissions for this stream and its contents to an IAM
@@ -88,23 +121,14 @@ export abstract class StreamRef extends cdk.Construct implements logs.ILogSubscr
    * If an encryption key is used, permission to ues the key to decrypt the
    * contents of the stream will also be granted.
    */
-  public grantRead(identity?: iam.IPrincipal) {
-    if (!identity) {
-      return;
+  public grantRead(grantee: iam.IGrantable) {
+    const ret = this.grant(grantee, 'kinesis:DescribeStream', 'kinesis:GetRecords', 'kinesis:GetShardIterator');
+
+    if (this.encryptionKey) {
+      this.encryptionKey.grantDecrypt(grantee);
     }
-    this.grant(
-      identity,
-      {
-        streamActions: [
-          'kinesis:DescribeStream',
-          'kinesis:GetRecords',
-          'kinesis:GetShardIterator'
-        ],
-        keyActions: [
-          'kms:Decrypt'
-        ]
-      }
-    );
+
+    return ret;
   }
 
   /**
@@ -114,25 +138,14 @@ export abstract class StreamRef extends cdk.Construct implements logs.ILogSubscr
    * If an encryption key is used, permission to ues the key to decrypt the
    * contents of the stream will also be granted.
    */
-  public grantWrite(identity?: iam.IPrincipal) {
-    if (!identity) {
-      return;
+  public grantWrite(grantee: iam.IGrantable) {
+    const ret = this.grant(grantee, 'kinesis:DescribeStream', 'kinesis:PutRecord', 'kinesis:PutRecords');
+
+    if (this.encryptionKey) {
+      this.encryptionKey.grantEncrypt(grantee);
     }
 
-    this.grant(
-      identity,
-      {
-        streamActions: [
-          'kinesis:DescribeStream',
-          'kinesis:PutRecord',
-          'kinesis:PutRecords'
-        ],
-        keyActions: [
-          'kms:GenerateDataKey',
-          'kms:Encrypt'
-        ]
-      }
-    );
+    return ret;
   }
 
   /**
@@ -142,35 +155,28 @@ export abstract class StreamRef extends cdk.Construct implements logs.ILogSubscr
    * If an encryption key is used, permission to use the key for
    * encrypt/decrypt will also be granted.
    */
-  public grantReadWrite(identity?: iam.IPrincipal) {
-    if (!identity) {
-      return;
+  public grantReadWrite(grantee: iam.IGrantable) {
+    const ret = this.grant(
+        grantee,
+        'kinesis:DescribeStream',
+        'kinesis:GetRecords',
+        'kinesis:GetShardIterator',
+        'kinesis:PutRecord',
+        'kinesis:PutRecords');
+
+    if (this.encryptionKey) {
+      this.encryptionKey.grantEncryptDecrypt(grantee);
     }
-    this.grant(
-      identity,
-      {
-        streamActions: [
-          'kinesis:DescribeStream',
-          'kinesis:GetRecords',
-          'kinesis:GetShardIterator',
-          'kinesis:PutRecord',
-          'kinesis:PutRecords'
-        ],
-        keyActions: [
-          'kms:Decrypt',
-          'kms:GenerateDataKey',
-          'kms:Encrypt'
-        ]
-      }
-    );
+
+    return ret;
   }
 
-  public logSubscriptionDestination(sourceLogGroup: logs.LogGroupRef): logs.LogSubscriptionDestination {
+  public logSubscriptionDestination(sourceLogGroup: logs.ILogGroup): logs.LogSubscriptionDestination {
     // Following example from https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/SubscriptionFilters.html#DestinationKinesisExample
     if (!this.cloudWatchLogsRole) {
       // Create a role to be assumed by CWL that can write to this stream and pass itself.
       this.cloudWatchLogsRole = new iam.Role(this, 'CloudWatchLogsCanPutRecords', {
-        assumedBy: new iam.ServicePrincipal(new cdk.FnConcat('logs.', new cdk.AwsRegion(), '.amazonaws.com').toString()),
+        assumedBy: new iam.ServicePrincipal(`logs.${this.node.stack.region}.amazonaws.com`)
       });
       this.cloudWatchLogsRole.addToPolicy(new iam.PolicyStatement().addAction('kinesis:PutRecord').addResource(this.streamArn));
       this.cloudWatchLogsRole.addToPolicy(new iam.PolicyStatement().addAction('iam:PassRole').addResource(this.cloudWatchLogsRole.roleArn));
@@ -178,8 +184,8 @@ export abstract class StreamRef extends cdk.Construct implements logs.ILogSubscr
 
     // We've now made it possible for CloudWatch events to write to us. In case the LogGroup is in a
     // different account, we must add a Destination in between as well.
-    const sourceStack = cdk.Stack.find(sourceLogGroup);
-    const thisStack = cdk.Stack.find(this);
+    const sourceStack = sourceLogGroup.node.stack;
+    const thisStack = this.node.stack;
 
     // Case considered: if both accounts are undefined, we can't make any assumptions. Better
     // to assume we don't need to do anything special.
@@ -195,9 +201,10 @@ export abstract class StreamRef extends cdk.Construct implements logs.ILogSubscr
   /**
    * Generate a CloudWatch Logs Destination and return the properties in the form o a subscription destination
    */
-  private crossAccountLogSubscriptionDestination(sourceLogGroup: logs.LogGroupRef): logs.LogSubscriptionDestination {
-    const sourceStack = cdk.Stack.find(sourceLogGroup);
-    const thisStack = cdk.Stack.find(this);
+  private crossAccountLogSubscriptionDestination(sourceLogGroup: logs.ILogGroup): logs.LogSubscriptionDestination {
+    const sourceLogGroupConstruct: Construct = sourceLogGroup as any;
+    const sourceStack = sourceLogGroupConstruct.node.stack;
+    const thisStack = this.node.stack;
 
     if (!sourceStack.env.account || !thisStack.env.account) {
       throw new Error('SubscriptionFilter stack and Destination stack must either both have accounts defined, or both not have accounts');
@@ -205,7 +212,10 @@ export abstract class StreamRef extends cdk.Construct implements logs.ILogSubscr
 
     // Take some effort to construct a unique ID for the destination that is unique to the
     // combination of (stream, loggroup).
-    const uniqueId =  new cdk.HashedAddressingScheme().allocateAddress([sourceLogGroup.path.replace('/', ''), sourceStack.env.account!]);
+    const uniqueId =  new HashedAddressingScheme().allocateAddress([
+      sourceLogGroupConstruct.node.path.replace('/', ''),
+      sourceStack.env.account!
+    ]);
 
     // The destination lives in the target account
     const dest = new logs.CrossAccountDestination(this, `CWLDestination${uniqueId}`, {
@@ -221,17 +231,13 @@ export abstract class StreamRef extends cdk.Construct implements logs.ILogSubscr
     return dest.logSubscriptionDestination(sourceLogGroup);
   }
 
-  private grant(identity: iam.IPrincipal, actions: { streamActions: string[], keyActions: string[] }) {
-    identity.addToPolicy(new iam.PolicyStatement()
-      .addResource(this.streamArn)
-      .addActions(...actions.streamActions));
-
-    // grant key permissions if there's an associated key.
-    if (this.encryptionKey) {
-      identity.addToPolicy(new iam.PolicyStatement()
-        .addResource(this.encryptionKey.keyArn)
-        .addActions(...actions.keyActions));
-    }
+  private grant(grantee: iam.IGrantable, ...actions: string[]) {
+    return iam.Grant.addToPrincipal({
+      grantee,
+      actions,
+      resourceArns: [this.streamArn],
+      scope: this,
+    });
   }
 }
 
@@ -240,19 +246,19 @@ export interface StreamProps {
    * Enforces a particular physical stream name.
    * @default <generated>
    */
-  streamName?: string;
+  readonly streamName?: string;
 
   /**
    * The number of hours for the data records that are stored in shards to remain accessible.
    * @default 24
    */
-  retentionPeriodHours?: number;
+  readonly retentionPeriodHours?: number;
 
   /**
    * The number of shards for the stream.
    * @default 1
    */
-  shardCount?: number;
+  readonly shardCount?: number;
 
   /**
    * The kind of server-side encryption to apply to this stream.
@@ -262,7 +268,7 @@ export interface StreamProps {
    *
    * @default Unencrypted
    */
-  encryption?: StreamEncryption;
+  readonly encryption?: StreamEncryption;
 
   /**
    * External KMS key to use for stream encryption.
@@ -272,21 +278,50 @@ export interface StreamProps {
    * @default If encryption is set to "Kms" and this property is undefined, a
    * new KMS key will be created and associated with this stream.
    */
-  encryptionKey?: kms.EncryptionKeyRef;
+  readonly encryptionKey?: kms.IEncryptionKey;
 }
 
 /**
  * A Kinesis stream. Can be encrypted with a KMS key.
  */
-export class Stream extends StreamRef {
+export class Stream extends StreamBase {
+
+  public static fromStreamArn(scope: Construct, id: string, streamArn: string): IStream {
+    return Stream.fromStreamAttributes(scope, id, { streamArn });
+  }
+
+  /**
+   * Creates a Stream construct that represents an external stream.
+   *
+   * @param scope The parent creating construct (usually `this`).
+   * @param id The construct's name.
+   * @param attrs Stream import properties
+   */
+  public static fromStreamAttributes(scope: Construct, id: string, attrs: StreamAttributes): IStream {
+    const encryptionKey = attrs.encryptionKey
+      ? kms.EncryptionKey.import(scope, 'Key', attrs.encryptionKey)
+      : undefined;
+
+    class Import extends StreamBase {
+      public readonly streamArn = attrs.streamArn;
+      public readonly streamName = scope.node.stack.parseArn(attrs.streamArn).resourceName!;
+      public readonly encryptionKey = encryptionKey;
+      public export() {
+        return attrs;
+      }
+    }
+
+    return new Import(scope, id);
+  }
+
   public readonly streamArn: string;
   public readonly streamName: string;
-  public readonly encryptionKey?: kms.EncryptionKeyRef;
+  public readonly encryptionKey?: kms.IEncryptionKey;
 
-  private readonly stream: cloudformation.StreamResource;
+  private readonly stream: CfnStream;
 
-  constructor(parent: cdk.Construct, name: string, props: StreamProps = {}) {
-    super(parent, name);
+  constructor(scope: Construct, id: string, props: StreamProps = {}) {
+    super(scope, id);
 
     const shardCount = props.shardCount || 1;
     const retentionPeriodHours = props.retentionPeriodHours || 24;
@@ -296,7 +331,7 @@ export class Stream extends StreamRef {
 
     const { streamEncryption, encryptionKey } = this.parseEncryption(props);
 
-    this.stream = new cloudformation.StreamResource(this, "Resource", {
+    this.stream = new CfnStream(this, "Resource", {
       name: props.streamName,
       retentionPeriodHours,
       shardCount,
@@ -306,7 +341,17 @@ export class Stream extends StreamRef {
     this.streamName = this.stream.streamId;
     this.encryptionKey = encryptionKey;
 
-    if (props.streamName) { this.addMetadata('aws:cdk:hasPhysicalName', props.streamName); }
+    if (props.streamName) { this.node.addMetadata('aws:cdk:hasPhysicalName', props.streamName); }
+  }
+
+  /**
+   * Exports this stream from the stack.
+   */
+  public export(): StreamAttributes {
+    return {
+      streamArn: new CfnOutput(this, 'StreamArn', { value: this.streamArn }).makeImportValue().toString(),
+      encryptionKey: this.encryptionKey ? this.encryptionKey.export() : undefined,
+    };
   }
 
   /**
@@ -314,8 +359,8 @@ export class Stream extends StreamRef {
    * user's configuration.
    */
   private parseEncryption(props: StreamProps): {
-    streamEncryption?: cloudformation.StreamResource.StreamEncryptionProperty,
-    encryptionKey?: kms.EncryptionKeyRef
+    streamEncryption?: CfnStream.StreamEncryptionProperty,
+    encryptionKey?: kms.IEncryptionKey
   } {
 
     // default to unencrypted.
@@ -332,10 +377,10 @@ export class Stream extends StreamRef {
 
     if (encryptionType === StreamEncryption.Kms) {
       const encryptionKey = props.encryptionKey || new kms.EncryptionKey(this, 'Key', {
-        description: `Created by ${this.path}`
+        description: `Created by ${this.node.path}`
       });
 
-      const streamEncryption: cloudformation.StreamResource.StreamEncryptionProperty = {
+      const streamEncryption: CfnStream.StreamEncryptionProperty = {
         encryptionType: 'KMS',
         keyId: encryptionKey.keyArn
       };
@@ -360,25 +405,4 @@ export enum StreamEncryption {
    * If `encryptionKey` is specified, this key will be used, otherwise, one will be defined.
    */
   Kms = 'KMS',
-}
-
-class ImportedStreamRef extends StreamRef {
-  public readonly streamArn: string;
-  public readonly streamName: string;
-  public readonly encryptionKey?: kms.EncryptionKeyRef;
-
-  constructor(parent: cdk.Construct, name: string, props: StreamRefProps) {
-    super(parent, name);
-
-    this.streamArn = props.streamArn;
-
-    // Get the name from the ARN
-    this.streamName = cdk.ArnUtils.parse(props.streamArn).resourceName!;
-
-    if (props.encryptionKey) {
-      this.encryptionKey = kms.EncryptionKeyRef.import(parent, 'Key', props.encryptionKey);
-    } else {
-      this.encryptionKey = undefined;
-    }
-  }
 }

@@ -13,7 +13,7 @@ export interface ChoiceProps {
      *
      * @default No comment
      */
-    comment?: string;
+    readonly comment?: string;
 
     /**
      * JSONPath expression to select part of the state to be the input to this state.
@@ -23,7 +23,7 @@ export interface ChoiceProps {
      *
      * @default $
      */
-    inputPath?: string;
+    readonly inputPath?: string;
 
     /**
      * JSONPath expression to select part of the state to be the output to this state.
@@ -33,7 +33,7 @@ export interface ChoiceProps {
      *
      * @default $
      */
-    outputPath?: string;
+    readonly outputPath?: string;
 }
 
 /**
@@ -45,8 +45,8 @@ export interface ChoiceProps {
 export class Choice extends State {
     public readonly endStates: INextable[] = [];
 
-    constructor(parent: cdk.Construct, id: string, props: ChoiceProps = {}) {
-        super(parent, id, props);
+    constructor(scope: cdk.Construct, id: string, props: ChoiceProps = {}) {
+        super(scope, id, props);
     }
 
     /**
@@ -109,7 +109,7 @@ export interface AfterwardsOptions {
      *
      * @default false
      */
-    includeErrorHandlers?: boolean;
+    readonly includeErrorHandlers?: boolean;
 
     /**
      * Whether to include the default/otherwise transition for the current Choice state
@@ -119,7 +119,7 @@ export interface AfterwardsOptions {
      *
      * @default false
      */
-    includeOtherwise?: boolean;
+    readonly includeOtherwise?: boolean;
 }
 
 /**

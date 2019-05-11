@@ -71,6 +71,73 @@ export = {
     test.done();
   },
 
+  'LambdaRestApi supports function Alias'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    const handler = new lambda.Function(stack, 'handler', {
+      handler: 'index.handler',
+      code: lambda.Code.inline('boom'),
+      runtime: lambda.Runtime.NodeJS610,
+    });
+    const alias = new lambda.Alias(stack, 'alias', {
+      aliasName: 'my-alias',
+      version: new lambda.Version(stack, 'version', {
+        lambda: handler
+      })
+    });
+
+    // WHEN
+    const api = new apigw.LambdaRestApi(stack, 'lambda-rest-api', { handler: alias });
+
+    // THEN -- can't customize further
+    test.throws(() => {
+      api.root.addResource('cant-touch-this');
+    });
+
+    // THEN -- template proxies everything
+    expect(stack).to(haveResource('AWS::ApiGateway::Resource', {
+      "PathPart": "{proxy+}"
+    }));
+
+    expect(stack).to(haveResource('AWS::ApiGateway::Method', {
+      "HttpMethod": "ANY",
+      "ResourceId": {
+        "Ref": "lambdarestapiproxyE3AE07E3"
+      },
+      "RestApiId": {
+        "Ref": "lambdarestapiAAD10924"
+      },
+      "AuthorizationType": "NONE",
+      "Integration": {
+        "IntegrationHttpMethod": "POST",
+        "Type": "AWS_PROXY",
+        "Uri": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":apigateway:",
+              {
+                "Ref": "AWS::Region"
+              },
+              ":lambda:path/2015-03-31/functions/",
+              {
+                "Ref": "alias68BF17F5"
+              },
+              "/invocations"
+            ]
+          ]
+        }
+      }
+    }));
+
+    test.done();
+  },
+
   'when "proxy" is set to false, users need to define the model'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();

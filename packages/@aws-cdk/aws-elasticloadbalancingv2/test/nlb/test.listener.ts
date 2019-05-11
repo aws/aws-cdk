@@ -1,4 +1,5 @@
 import { expect, haveResource, MatchStyle } from '@aws-cdk/assert';
+import acm = require('@aws-cdk/aws-certificatemanager');
 import ec2 = require('@aws-cdk/aws-ec2');
 import cdk = require('@aws-cdk/cdk');
 import { Test } from 'nodeunit';
@@ -125,21 +126,107 @@ export = {
     });
 
     // WHEN
-    const resource = new cdk.Resource(stack, 'MyResource', {
-      type: 'SomeResource',
-    });
-    resource.addDependency(group.loadBalancerDependency());
+    new ResourceWithLBDependency(stack, 'MyResource', group);
 
     // THEN
     expect(stack).toMatch({
       Resources: {
         MyResource: {
-          Type: "SomeResource",
-          DependsOn: [ "LBListener49E825B4" ]
+          Type: "Test::Resource",
+          DependsOn: [
+            // 2nd dependency is there because of the structure of the construct tree.
+            // It does not harm.
+            "LBListenerGroupGroup79B304FF",
+            "LBListener49E825B4",
+          ]
         }
       }
     }, MatchStyle.SUPERSET);
 
     test.done();
   },
+
+  'Trivial add TLS listener'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.VpcNetwork(stack, 'Stack');
+    const lb = new elbv2.NetworkLoadBalancer(stack, 'LB', { vpc });
+    const cert = new acm.Certificate(stack, 'Certificate', {
+      domainName: 'example.com'
+    });
+
+    // WHEN
+    lb.addListener('Listener', {
+      port: 443,
+      protocol: elbv2.Protocol.Tls,
+      certificates: [ { certificateArn: cert.certificateArn } ],
+      sslPolicy: elbv2.SslPolicy.TLS12,
+      defaultTargetGroups: [new elbv2.NetworkTargetGroup(stack, 'Group', { vpc, port: 80 })]
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::Listener', {
+      Protocol: 'TLS',
+      Port: 443,
+      Certificates: [
+        { CertificateArn: { Ref: "Certificate4E7ABB08" } }
+      ],
+      SslPolicy: "ELBSecurityPolicy-TLS-1-2-2017-01"
+    }));
+
+    test.done();
+  },
+
+  'Invalid Protocol listener'(test: Test) {
+    const stack = new cdk.Stack();
+    const vpc = new ec2.VpcNetwork(stack, 'Stack');
+    const lb = new elbv2.NetworkLoadBalancer(stack, 'LB', { vpc });
+
+    test.throws(() => lb.addListener('Listener', {
+        port: 443,
+        protocol: elbv2.Protocol.Http,
+        defaultTargetGroups: [new elbv2.NetworkTargetGroup(stack, 'Group', { vpc, port: 80 })]
+      }), Error, '/The protocol must be either TCP or TLS. Found HTTP/');
+
+    test.done();
+  },
+
+  'Protocol & certs TLS listener'(test: Test) {
+    const stack = new cdk.Stack();
+    const vpc = new ec2.VpcNetwork(stack, 'Stack');
+    const lb = new elbv2.NetworkLoadBalancer(stack, 'LB', { vpc });
+
+    test.throws(() => lb.addListener('Listener', {
+      port: 443,
+      protocol: elbv2.Protocol.Tls,
+      defaultTargetGroups: [new elbv2.NetworkTargetGroup(stack, 'Group', { vpc, port: 80 })]
+    }), Error, '/When the protocol is set to TLS, you must specify certificates/');
+
+    test.done();
+  },
+
+  'TLS and certs specified listener'(test: Test) {
+    const stack = new cdk.Stack();
+    const vpc = new ec2.VpcNetwork(stack, 'Stack');
+    const lb = new elbv2.NetworkLoadBalancer(stack, 'LB', { vpc });
+    const cert = new acm.Certificate(stack, 'Certificate', {
+      domainName: 'example.com'
+    });
+
+    test.throws(() => lb.addListener('Listener', {
+      port: 443,
+      protocol: elbv2.Protocol.Tcp,
+      certificates: [ { certificateArn: cert.certificateArn } ],
+      defaultTargetGroups: [new elbv2.NetworkTargetGroup(stack, 'Group', { vpc, port: 80 })]
+    }), Error, '/Protocol must be TLS when certificates have been specified/');
+
+    test.done();
+  },
 };
+
+class ResourceWithLBDependency extends cdk.CfnResource {
+  constructor(scope: cdk.Construct, id: string, targetGroup: elbv2.ITargetGroup) {
+    super(scope, id, { type: 'Test::Resource' });
+    this.node.addDependency(targetGroup.loadBalancerAttached);
+  }
+}

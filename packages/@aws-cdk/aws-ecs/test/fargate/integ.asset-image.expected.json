@@ -67,9 +67,6 @@
     },
     "VpcPublicSubnet1DefaultRoute3DA9E72A": {
       "Type": "AWS::EC2::Route",
-      "DependsOn": [
-        "VpcVPCGWBF912B6E"
-      ],
       "Properties": {
         "RouteTableId": {
           "Ref": "VpcPublicSubnet1RouteTable6C95E38E"
@@ -78,7 +75,10 @@
         "GatewayId": {
           "Ref": "VpcIGWD7BA715C"
         }
-      }
+      },
+      "DependsOn": [
+        "VpcVPCGWBF912B6E"
+      ]
     },
     "VpcPublicSubnet1EIPD7E02669": {
       "Type": "AWS::EC2::EIP",
@@ -158,9 +158,6 @@
     },
     "VpcPublicSubnet2DefaultRoute97F91067": {
       "Type": "AWS::EC2::Route",
-      "DependsOn": [
-        "VpcVPCGWBF912B6E"
-      ],
       "Properties": {
         "RouteTableId": {
           "Ref": "VpcPublicSubnet2RouteTable94F7E489"
@@ -169,7 +166,10 @@
         "GatewayId": {
           "Ref": "VpcIGWD7BA715C"
         }
-      }
+      },
+      "DependsOn": [
+        "VpcVPCGWBF912B6E"
+      ]
     },
     "VpcPublicSubnet2EIP3C605A87": {
       "Type": "AWS::EC2::EIP",
@@ -347,7 +347,7 @@
       "Type": "AWS::ECS::Cluster"
     },
     "ImageAdoptRepositoryE1E84E35": {
-      "Type": "AWS::CloudFormation::CustomResource",
+      "Type": "Custom::ECRAdoptedRepository",
       "Properties": {
         "ServiceToken": {
           "Fn::GetAtt": [
@@ -355,8 +355,18 @@
             "Arn"
           ]
         },
-        "RepositoryArn": {
-          "Ref": "ImageRepositoryC2BE7AD4"
+        "RepositoryName": {
+          "Fn::Select": [
+            0,
+            {
+              "Fn::Split": [
+                ":",
+                {
+                  "Ref": "ImageImageName5E684353"
+                }
+              ]
+            }
+          ]
         }
       }
     },
@@ -369,7 +379,17 @@
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": {
-                "Service": "lambda.amazonaws.com"
+                "Service": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "lambda.",
+                      {
+                        "Ref": "AWS::URLSuffix"
+                      }
+                    ]
+                  ]
+                }
               }
             }
           ],
@@ -406,7 +426,37 @@
               ],
               "Effect": "Allow",
               "Resource": {
-                "Ref": "ImageRepositoryC2BE7AD4"
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":ecr:",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ":",
+                    {
+                      "Ref": "AWS::AccountId"
+                    },
+                    ":repository/",
+                    {
+                      "Fn::Select": [
+                        0,
+                        {
+                          "Fn::Split": [
+                            ":",
+                            {
+                              "Ref": "ImageImageName5E684353"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                ]
               }
             }
           ],
@@ -472,252 +522,9 @@
         "Timeout": 300
       },
       "DependsOn": [
-        "AdoptEcrRepositorydbc60defc59544bcaa5c28c95d68f62cServiceRoleD788AA17",
-        "AdoptEcrRepositorydbc60defc59544bcaa5c28c95d68f62cServiceRoleDefaultPolicy6BC8737C"
+        "AdoptEcrRepositorydbc60defc59544bcaa5c28c95d68f62cServiceRoleDefaultPolicy6BC8737C",
+        "AdoptEcrRepositorydbc60defc59544bcaa5c28c95d68f62cServiceRoleD788AA17"
       ]
-    },
-    "FargateServiceTaskDefTaskRole8CDCF85E": {
-      "Type": "AWS::IAM::Role",
-      "Properties": {
-        "AssumeRolePolicyDocument": {
-          "Statement": [
-            {
-              "Action": "sts:AssumeRole",
-              "Effect": "Allow",
-              "Principal": {
-                "Service": "ecs-tasks.amazonaws.com"
-              }
-            }
-          ],
-          "Version": "2012-10-17"
-        }
-      }
-    },
-    "FargateServiceTaskDef940E3A80": {
-      "Type": "AWS::ECS::TaskDefinition",
-      "Properties": {
-        "ContainerDefinitions": [
-          {
-            "Essential": true,
-            "Image": {
-              "Fn::Join": [
-                "",
-                [
-                  {
-                    "Fn::GetAtt": [
-                      "ImageAdoptRepositoryE1E84E35",
-                      "RepositoryUri"
-                    ]
-                  },
-                  ":",
-                  {
-                    "Ref": "ImageTagE17D8A6B"
-                  }
-                ]
-              ]
-            },
-            "Links": [],
-            "LinuxParameters": {
-              "Capabilities": {
-                "Add": [],
-                "Drop": []
-              },
-              "Devices": [],
-              "Tmpfs": []
-            },
-            "LogConfiguration":{
-              "LogDriver":"awslogs",
-              "Options": {
-                "awslogs-group": {
-                  "Ref": "FargateServiceLoggingLogGroup9B16742A"
-                },
-                "awslogs-stream-prefix": "FargateService",
-                "awslogs-region": {
-                  "Ref": "AWS::Region"
-                }
-              }
-            },
-            "MountPoints": [],
-            "Name": "web",
-            "PortMappings": [
-              {
-                "ContainerPort": 8000,
-                "Protocol": "tcp"
-              }
-            ],
-            "Ulimits": [],
-            "VolumesFrom": []
-          }
-        ],
-        "Cpu": "256",
-        "ExecutionRoleArn": {
-          "Fn::GetAtt": [
-            "FargateServiceTaskDefExecutionRole9194820E",
-            "Arn"
-          ]
-        },
-        "Family": "awsecsintegFargateServiceTaskDefE1C73F14",
-        "Memory": "512",
-        "NetworkMode": "awsvpc",
-        "RequiresCompatibilities": [
-          "FARGATE"
-        ],
-        "TaskRoleArn": {
-          "Fn::GetAtt": [
-            "FargateServiceTaskDefTaskRole8CDCF85E",
-            "Arn"
-          ]
-        },
-        "Volumes": []
-      }
-    },
-    "FargateServiceTaskDefExecutionRole9194820E": {
-      "Type": "AWS::IAM::Role",
-      "Properties": {
-        "AssumeRolePolicyDocument": {
-          "Statement": [
-            {
-              "Action": "sts:AssumeRole",
-              "Effect": "Allow",
-              "Principal": {
-                "Service": "ecs-tasks.amazonaws.com"
-              }
-            }
-          ],
-          "Version": "2012-10-17"
-        }
-      }
-    },
-    "FargateServiceTaskDefExecutionRoleDefaultPolicy827E7CA2": {
-      "Type": "AWS::IAM::Policy",
-      "Properties": {
-        "PolicyDocument": {
-          "Statement": [
-            {
-              "Action": [
-                "ecr:BatchCheckLayerAvailability",
-                "ecr:GetDownloadUrlForLayer",
-                "ecr:BatchGetImage"
-              ],
-              "Effect": "Allow",
-              "Resource": {
-                "Ref": "ImageRepositoryC2BE7AD4"
-              }
-            },
-            {
-              "Action": [
-                "ecr:GetAuthorizationToken",
-                "logs:CreateLogStream",
-                "logs:PutLogEvents"
-              ],
-              "Effect": "Allow",
-              "Resource": "*"
-            }
-          ],
-          "Version": "2012-10-17"
-        },
-        "PolicyName": "FargateServiceTaskDefExecutionRoleDefaultPolicy827E7CA2",
-        "Roles": [
-          {
-            "Ref": "FargateServiceTaskDefExecutionRole9194820E"
-          }
-        ]
-      }
-    },
-    "FargateServiceLoggingLogGroup9B16742A": {
-        "Type": "AWS::Logs::LogGroup",
-        "Properties": {
-          "RetentionInDays": 365
-        },
-        "DeletionPolicy": "Retain"
-    },
-    "FargateServiceECC8084D": {
-      "Type": "AWS::ECS::Service",
-      "Properties": {
-        "TaskDefinition": {
-          "Ref": "FargateServiceTaskDef940E3A80"
-        },
-        "Cluster": {
-          "Ref": "ClusterEB0386A7"
-        },
-        "DeploymentConfiguration": {
-          "MaximumPercent": 200,
-          "MinimumHealthyPercent": 50
-        },
-        "DesiredCount": 1,
-        "LaunchType": "FARGATE",
-        "LoadBalancers": [
-          {
-            "ContainerName": "web",
-            "ContainerPort": 8000,
-            "TargetGroupArn": {
-              "Ref": "FargateServiceLBPublicListenerECSGroupBE57E081"
-            }
-          }
-        ],
-        "NetworkConfiguration": {
-          "AwsvpcConfiguration": {
-            "AssignPublicIp": "DISABLED",
-            "SecurityGroups": [
-              {
-                "Fn::GetAtt": [
-                  "FargateServiceSecurityGroup262B61DD",
-                  "GroupId"
-                ]
-              }
-            ],
-            "Subnets": [
-              {
-                "Ref": "VpcPrivateSubnet1Subnet536B997A"
-              },
-              {
-                "Ref": "VpcPrivateSubnet2Subnet3788AAA1"
-              }
-            ]
-          }
-        }
-      },
-      "DependsOn": [
-        "FargateServiceLBPublicListener4B4929CA"
-      ]
-    },
-    "FargateServiceSecurityGroup262B61DD": {
-      "Type": "AWS::EC2::SecurityGroup",
-      "Properties": {
-        "GroupDescription": "aws-ecs-integ/FargateService/Service/SecurityGroup",
-        "SecurityGroupEgress": [
-          {
-            "CidrIp": "0.0.0.0/0",
-            "Description": "Allow all outbound traffic by default",
-            "IpProtocol": "-1"
-          }
-        ],
-        "SecurityGroupIngress": [],
-        "VpcId": {
-          "Ref": "Vpc8378EB38"
-        }
-      }
-    },
-    "FargateServiceSecurityGroupfromawsecsintegFargateServiceLBSecurityGroup129467A18000AD32AE25": {
-      "Type": "AWS::EC2::SecurityGroupIngress",
-      "Properties": {
-        "IpProtocol": "tcp",
-        "Description": "Load balancer to target",
-        "FromPort": 8000,
-        "GroupId": {
-          "Fn::GetAtt": [
-            "FargateServiceSecurityGroup262B61DD",
-            "GroupId"
-          ]
-        },
-        "SourceSecurityGroupId": {
-          "Fn::GetAtt": [
-            "FargateServiceLBSecurityGroup5F444C78",
-            "GroupId"
-          ]
-        },
-        "ToPort": 8000
-      }
     },
     "FargateServiceLBB353E155": {
       "Type": "AWS::ElasticLoadBalancingV2::LoadBalancer",
@@ -741,7 +548,11 @@
           }
         ],
         "Type": "application"
-      }
+      },
+      "DependsOn": [
+        "VpcPublicSubnet1DefaultRoute3DA9E72A",
+        "VpcPublicSubnet2DefaultRoute97F91067"
+      ]
     },
     "FargateServiceLBSecurityGroup5F444C78": {
       "Type": "AWS::EC2::SecurityGroup",
@@ -807,23 +618,389 @@
       "Properties": {
         "Port": 80,
         "Protocol": "HTTP",
-        "VpcId": {
-          "Ref": "Vpc8378EB38"
-        },
         "TargetGroupAttributes": [],
         "Targets": [],
-        "TargetType": "ip"
+        "TargetType": "ip",
+        "VpcId": {
+          "Ref": "Vpc8378EB38"
+        }
+      }
+    },
+    "FargateServiceTaskDefTaskRole8CDCF85E": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "ecs-tasks.",
+                      {
+                        "Ref": "AWS::URLSuffix"
+                      }
+                    ]
+                  ]
+                }
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      }
+    },
+    "FargateServiceTaskDef940E3A80": {
+      "Type": "AWS::ECS::TaskDefinition",
+      "Properties": {
+        "ContainerDefinitions": [
+          {
+            "Essential": true,
+            "Image": {
+              "Fn::Join": [
+                "",
+                [
+                  {
+                    "Fn::Select": [
+                      4,
+                      {
+                        "Fn::Split": [
+                          ":",
+                          {
+                            "Fn::Join": [
+                              "",
+                              [
+                                "arn:",
+                                {
+                                  "Ref": "AWS::Partition"
+                                },
+                                ":ecr:",
+                                {
+                                  "Ref": "AWS::Region"
+                                },
+                                ":",
+                                {
+                                  "Ref": "AWS::AccountId"
+                                },
+                                ":repository/",
+                                {
+                                  "Fn::GetAtt": [
+                                    "ImageAdoptRepositoryE1E84E35",
+                                    "RepositoryName"
+                                  ]
+                                }
+                              ]
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  ".dkr.ecr.",
+                  {
+                    "Fn::Select": [
+                      3,
+                      {
+                        "Fn::Split": [
+                          ":",
+                          {
+                            "Fn::Join": [
+                              "",
+                              [
+                                "arn:",
+                                {
+                                  "Ref": "AWS::Partition"
+                                },
+                                ":ecr:",
+                                {
+                                  "Ref": "AWS::Region"
+                                },
+                                ":",
+                                {
+                                  "Ref": "AWS::AccountId"
+                                },
+                                ":repository/",
+                                {
+                                  "Fn::GetAtt": [
+                                    "ImageAdoptRepositoryE1E84E35",
+                                    "RepositoryName"
+                                  ]
+                                }
+                              ]
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  ".amazonaws.com/",
+                  {
+                    "Fn::GetAtt": [
+                      "ImageAdoptRepositoryE1E84E35",
+                      "RepositoryName"
+                    ]
+                  },
+                  ":",
+                  {
+                    "Fn::Select": [
+                      1,
+                      {
+                        "Fn::Split": [
+                          ":",
+                          {
+                            "Ref": "ImageImageName5E684353"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              ]
+            },
+            "Links": [],
+            "LogConfiguration": {
+              "LogDriver": "awslogs",
+              "Options": {
+                "awslogs-group": {
+                  "Ref": "FargateServiceLoggingLogGroup9B16742A"
+                },
+                "awslogs-stream-prefix": "FargateService",
+                "awslogs-region": {
+                  "Ref": "AWS::Region"
+                }
+              }
+            },
+            "MountPoints": [],
+            "Name": "web",
+            "PortMappings": [
+              {
+                "ContainerPort": 8000,
+                "Protocol": "tcp"
+              }
+            ],
+            "Ulimits": [],
+            "VolumesFrom": []
+          }
+        ],
+        "Cpu": "256",
+        "ExecutionRoleArn": {
+          "Fn::GetAtt": [
+            "FargateServiceTaskDefExecutionRole9194820E",
+            "Arn"
+          ]
+        },
+        "Family": "awsecsintegFargateServiceTaskDefE1C73F14",
+        "Memory": "512",
+        "NetworkMode": "awsvpc",
+        "RequiresCompatibilities": [
+          "FARGATE"
+        ],
+        "TaskRoleArn": {
+          "Fn::GetAtt": [
+            "FargateServiceTaskDefTaskRole8CDCF85E",
+            "Arn"
+          ]
+        },
+        "Volumes": []
+      }
+    },
+    "FargateServiceTaskDefExecutionRole9194820E": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "ecs-tasks.",
+                      {
+                        "Ref": "AWS::URLSuffix"
+                      }
+                    ]
+                  ]
+                }
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      }
+    },
+    "FargateServiceTaskDefExecutionRoleDefaultPolicy827E7CA2": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "ecr:BatchCheckLayerAvailability",
+                "ecr:GetDownloadUrlForLayer",
+                "ecr:BatchGetImage"
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":ecr:",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ":",
+                    {
+                      "Ref": "AWS::AccountId"
+                    },
+                    ":repository/",
+                    {
+                      "Fn::GetAtt": [
+                        "ImageAdoptRepositoryE1E84E35",
+                        "RepositoryName"
+                      ]
+                    }
+                  ]
+                ]
+              }
+            },
+            {
+              "Action": "ecr:GetAuthorizationToken",
+              "Effect": "Allow",
+              "Resource": "*"
+            },
+            {
+              "Action": [
+                "logs:CreateLogStream",
+                "logs:PutLogEvents"
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "FargateServiceLoggingLogGroup9B16742A",
+                  "Arn"
+                ]
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "FargateServiceTaskDefExecutionRoleDefaultPolicy827E7CA2",
+        "Roles": [
+          {
+            "Ref": "FargateServiceTaskDefExecutionRole9194820E"
+          }
+        ]
+      }
+    },
+    "FargateServiceLoggingLogGroup9B16742A": {
+      "Type": "AWS::Logs::LogGroup",
+      "DeletionPolicy": "Retain"
+    },
+    "FargateServiceECC8084D": {
+      "Type": "AWS::ECS::Service",
+      "Properties": {
+        "TaskDefinition": {
+          "Ref": "FargateServiceTaskDef940E3A80"
+        },
+        "Cluster": {
+          "Ref": "ClusterEB0386A7"
+        },
+        "DeploymentConfiguration": {
+          "MaximumPercent": 200,
+          "MinimumHealthyPercent": 50
+        },
+        "DesiredCount": 1,
+        "LaunchType": "FARGATE",
+        "LoadBalancers": [
+          {
+            "ContainerName": "web",
+            "ContainerPort": 8000,
+            "TargetGroupArn": {
+              "Ref": "FargateServiceLBPublicListenerECSGroupBE57E081"
+            }
+          }
+        ],
+        "NetworkConfiguration": {
+          "AwsvpcConfiguration": {
+            "AssignPublicIp": "DISABLED",
+            "SecurityGroups": [
+              {
+                "Fn::GetAtt": [
+                  "FargateServiceSecurityGroup262B61DD",
+                  "GroupId"
+                ]
+              }
+            ],
+            "Subnets": [
+              {
+                "Ref": "VpcPrivateSubnet1Subnet536B997A"
+              },
+              {
+                "Ref": "VpcPrivateSubnet2Subnet3788AAA1"
+              }
+            ]
+          }
+        },
+        "ServiceRegistries": []
+      },
+      "DependsOn": [
+        "FargateServiceLBPublicListenerECSGroupBE57E081",
+        "FargateServiceLBPublicListener4B4929CA"
+      ]
+    },
+    "FargateServiceSecurityGroup262B61DD": {
+      "Type": "AWS::EC2::SecurityGroup",
+      "Properties": {
+        "GroupDescription": "aws-ecs-integ/FargateService/Service/SecurityGroup",
+        "SecurityGroupEgress": [
+          {
+            "CidrIp": "0.0.0.0/0",
+            "Description": "Allow all outbound traffic by default",
+            "IpProtocol": "-1"
+          }
+        ],
+        "SecurityGroupIngress": [],
+        "VpcId": {
+          "Ref": "Vpc8378EB38"
+        }
+      }
+    },
+    "FargateServiceSecurityGroupfromawsecsintegFargateServiceLBSecurityGroup129467A18000AD32AE25": {
+      "Type": "AWS::EC2::SecurityGroupIngress",
+      "Properties": {
+        "IpProtocol": "tcp",
+        "Description": "Load balancer to target",
+        "FromPort": 8000,
+        "GroupId": {
+          "Fn::GetAtt": [
+            "FargateServiceSecurityGroup262B61DD",
+            "GroupId"
+          ]
+        },
+        "SourceSecurityGroupId": {
+          "Fn::GetAtt": [
+            "FargateServiceLBSecurityGroup5F444C78",
+            "GroupId"
+          ]
+        },
+        "ToPort": 8000
       }
     }
   },
   "Parameters": {
-    "ImageRepositoryC2BE7AD4": {
+    "ImageImageName5E684353": {
       "Type": "String",
-      "Description": "Repository ARN for asset \"aws-ecs-integ/Image\""
-    },
-    "ImageTagE17D8A6B": {
-      "Type": "String",
-      "Description": "Tag for asset \"aws-ecs-integ/Image\""
+      "Description": "ECR repository name and tag asset \"aws-ecs-integ/Image\""
     },
     "AdoptEcrRepositorydbc60defc59544bcaa5c28c95d68f62cCodeS3Bucket92AB06B6": {
       "Type": "String",
@@ -841,9 +1018,6 @@
           "FargateServiceLBB353E155",
           "DNSName"
         ]
-      },
-      "Export": {
-        "Name": "aws-ecs-integ:FargateServiceLoadBalancerDNS9433D5F6"
       }
     },
     "LoadBalancerDNS": {
@@ -852,9 +1026,6 @@
           "FargateServiceLBB353E155",
           "DNSName"
         ]
-      },
-      "Export": {
-        "Name": "aws-ecs-integ:LoadBalancerDNS"
       }
     }
   }

@@ -12,12 +12,20 @@ export class IntegrationTests {
   constructor(private readonly directory: string) {
   }
 
-  public fromCliArgs(tests?: string[]): Promise<IntegrationTest[]> {
+  public async fromCliArgs(tests?: string[]): Promise<IntegrationTest[]> {
+    let allTests = await this.discover();
+
     if (tests && tests.length > 0) {
-      return this.request(tests);
-    } else {
-      return this.discover();
+      // Pare down found tests to filter
+      allTests = allTests.filter(t => tests.includes(t.name));
+
+      const selectedNames = allTests.map(t => t.name);
+      for (const unmatched of tests.filter(t => !selectedNames.includes(t))) {
+        process.stderr.write(`No such integ test: ${unmatched}\n`);
+      }
     }
+
+    return allTests;
   }
 
   public async discover(): Promise<IntegrationTest[]> {
@@ -53,33 +61,33 @@ export class IntegrationTests {
 export class IntegrationTest {
   public readonly expectedFileName: string;
   private readonly expectedFilePath: string;
-  private readonly cdkConfigPath: string;
+  private readonly cdkContextPath: string;
 
   constructor(private readonly directory: string, public readonly name: string) {
     const baseName = this.name.endsWith('.js') ? this.name.substr(0, this.name.length - 3) : this.name;
     this.expectedFileName = baseName + '.expected.json';
     this.expectedFilePath = path.join(this.directory, this.expectedFileName);
-    this.cdkConfigPath = path.join(this.directory, 'cdk.json');
+    this.cdkContextPath = path.join(this.directory, 'cdk.context.json');
   }
 
   public async invoke(args: string[], options: { json?: boolean, context?: any, verbose?: boolean } = { }): Promise<any> {
     // Write context to cdk.json, afterwards delete. We need to do this because there is no way
     // to pass structured context data from the command-line, currently.
     if (options.context) {
-      await this.writeCdkConfig({ context: options.context, versionReporting: false });
+      await this.writeCdkContext(options.context);
     } else {
-      this.deleteCdkConfig();
+      this.deleteCdkContext();
     }
 
     try {
       const cdk = require.resolve('aws-cdk/bin/cdk');
-      return exec([cdk, '-a', `node ${this.name}`].concat(args), {
+      return exec([cdk, '-a', `node ${this.name}`, '--no-version-reporting'].concat(args), {
         cwd: this.directory,
         json: options.json,
-        verbose: options.verbose
+        verbose: options.verbose,
       });
     } finally {
-      this.deleteCdkConfig();
+      this.deleteCdkContext();
     }
   }
 
@@ -95,13 +103,13 @@ export class IntegrationTest {
     await util.promisify(fs.writeFile)(this.expectedFilePath, JSON.stringify(actual, undefined, 2), { encoding: 'utf-8' });
   }
 
-  private async writeCdkConfig(config: any) {
-    await util.promisify(fs.writeFile)(this.cdkConfigPath, JSON.stringify(config, undefined, 2), { encoding: 'utf-8' });
+  private async writeCdkContext(config: any) {
+    await util.promisify(fs.writeFile)(this.cdkContextPath, JSON.stringify(config, undefined, 2), { encoding: 'utf-8' });
   }
 
-  private deleteCdkConfig() {
-    if (fs.existsSync(this.cdkConfigPath)) {
-      fs.unlinkSync(this.cdkConfigPath);
+  private deleteCdkContext() {
+    if (fs.existsSync(this.cdkContextPath)) {
+      fs.unlinkSync(this.cdkContextPath);
     }
   }
 }
@@ -129,6 +137,10 @@ export const STATIC_TEST_CONTEXT = {
 function exec(commandLine: string[], options: { cwd?: string, json?: boolean, verbose?: boolean} = { }): any {
   const proc = spawnSync(commandLine[0], commandLine.slice(1), {
     stdio: [ 'ignore', 'pipe', options.verbose ? 'inherit' : 'pipe' ], // inherit STDERR in verbose mode
+    env: {
+      ...process.env,
+      CDK_INTEG_MODE: '1'
+    },
     cwd: options.cwd
   });
 

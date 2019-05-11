@@ -1,119 +1,94 @@
 #!/usr/bin/env node
 import 'source-map-support/register';
 
-import cxapi = require('@aws-cdk/cx-api');
 import colors = require('colors/safe');
 import fs = require('fs-extra');
-import util = require('util');
 import yargs = require('yargs');
 
-import { bootstrapEnvironment, deployStack, destroyStack, loadToolkitInfo, Mode, SDK } from '../lib';
+import { bootstrapEnvironment, destroyStack, SDK } from '../lib';
 import { environmentsFromDescriptors, globEnvironmentsFromStacks } from '../lib/api/cxapp/environments';
-import { AppStacks, listStackNames } from '../lib/api/cxapp/stacks';
-import { printStackDiff } from '../lib/diff';
+import { execProgram } from '../lib/api/cxapp/exec';
+import { AppStacks, ExtendedStackSelection, listStackNames } from '../lib/api/cxapp/stacks';
+import { CloudFormationDeploymentTarget, DEFAULT_TOOLKIT_STACK_NAME } from '../lib/api/deployment-target';
+import { leftPad } from '../lib/api/util/string-manipulation';
+import { CdkToolkit } from '../lib/cdk-toolkit';
+import { RequireApproval } from '../lib/diff';
 import { availableInitLanguages, cliInit, printAvailableTemplates } from '../lib/init';
 import { interactive } from '../lib/interactive';
-import { data, debug, error, highlight, print, setVerbose, success, warning } from '../lib/logging';
+import { data, debug, error, highlight, print, setVerbose, success } from '../lib/logging';
 import { PluginHost } from '../lib/plugin';
 import { parseRenames } from '../lib/renames';
-import { deserializeStructure, serializeStructure } from '../lib/serialize';
+import { serializeStructure } from '../lib/serialize';
 import { Configuration, Settings } from '../lib/settings';
-import { VERSION } from '../lib/version';
+import version = require('../lib/version');
 
 // tslint:disable-next-line:no-var-requires
 const promptly = require('promptly');
-
-const DEFAULT_TOOLKIT_STACK_NAME = 'CDKToolkit';
 
 // tslint:disable:no-shadowed-variable max-line-length
 async function parseCommandLineArguments() {
   const initTemplateLanuages = await availableInitLanguages;
   return yargs
+    .env('CDK')
     .usage('Usage: cdk -a <cdk-app> COMMAND')
-    .option('app', { type: 'string', alias: 'a', desc: 'REQUIRED: Command-line for executing your CDK app (e.g. "node bin/my-app.js")' })
-    .option('context', { type: 'array', alias: 'c', desc: 'Add contextual string parameter.', nargs: 1, requiresArg: 'KEY=VALUE' })
+    .option('app', { type: 'string', alias: 'a', desc: 'REQUIRED: Command-line for executing your CDK app (e.g. "node bin/my-app.js")', requiresArg: true })
+    .option('context', { type: 'array', alias: 'c', desc: 'Add contextual string parameter (KEY=VALUE)', nargs: 1, requiresArg: true })
     .option('plugin', { type: 'array', alias: 'p', desc: 'Name or path of a node package that extend the CDK features. Can be specified multiple times', nargs: 1 })
-    .option('rename', { type: 'string', desc: 'Rename stack name if different then the one defined in the cloud executable', requiresArg: '[ORIGINAL:]RENAMED' })
+    .option('rename', { type: 'string', desc: 'Rename stack name if different from the one defined in the cloud executable ([ORIGINAL:]RENAMED)', requiresArg: true })
     .option('trace', { type: 'boolean', desc: 'Print trace for stack warnings' })
     .option('strict', { type: 'boolean', desc: 'Do not construct stacks with warnings' })
     .option('ignore-errors', { type: 'boolean', default: false, desc: 'Ignores synthesis errors, which will likely produce an invalid output' })
-    .option('json', { type: 'boolean', alias: 'j', desc: 'Use JSON output instead of YAML' })
-    .option('verbose', { type: 'boolean', alias: 'v', desc: 'Show debug logs' })
-    .option('profile', { type: 'string', desc: 'Use the indicated AWS profile as the default environment' })
-    .option('proxy', { type: 'string', desc: 'Use the indicated proxy. Will read from HTTPS_PROXY environment variable if not specified.' })
+    .option('json', { type: 'boolean', alias: 'j', desc: 'Use JSON output instead of YAML', default: false })
+    .option('verbose', { type: 'boolean', alias: 'v', desc: 'Show debug logs', default: false })
+    .option('profile', { type: 'string', desc: 'Use the indicated AWS profile as the default environment', requiresArg: true })
+    .option('proxy', { type: 'string', desc: 'Use the indicated proxy. Will read from HTTPS_PROXY environment variable if not specified.', requiresArg: true })
     .option('ec2creds', { type: 'boolean', alias: 'i', default: undefined, desc: 'Force trying to fetch EC2 instance credentials. Default: guess EC2 instance status.' })
     .option('version-reporting', { type: 'boolean', desc: 'Include the "AWS::CDK::Metadata" resource in synthesized templates (enabled by default)', default: undefined })
     .option('path-metadata', { type: 'boolean', desc: 'Include "aws:cdk:path" CloudFormation metadata for each resource (enabled by default)', default: true })
-    .option('role-arn', { type: 'string', alias: 'r', desc: 'ARN of Role to use when invoking CloudFormation', default: undefined })
+    .option('asset-metadata', { type: 'boolean', desc: 'Include "aws:asset:*" CloudFormation metadata for resources that user assets (enabled by default)', default: true })
+    .option('role-arn', { type: 'string', alias: 'r', desc: 'ARN of Role to use when invoking CloudFormation', default: undefined, requiresArg: true })
+    .option('toolkit-stack-name', { type: 'string', desc: 'The name of the CDK toolkit stack', requiresArg: true })
+    .option('staging', { type: 'string', desc: 'directory name for staging assets (use --no-asset-staging to disable)', default: '.cdk.staging' })
     .command([ 'list', 'ls' ], 'Lists all stacks in the app', yargs => yargs
       .option('long', { type: 'boolean', default: false, alias: 'l', desc: 'display environment information for each stack' }))
     .command([ 'synthesize [STACKS..]', 'synth [STACKS..]' ], 'Synthesizes and prints the CloudFormation template for this stack', yargs => yargs
+      .option('exclusively', { type: 'boolean', alias: 'e', desc: 'only deploy requested stacks, don\'t include dependencies' })
       .option('interactive', { type: 'boolean', alias: 'i', desc: 'interactively watch and show template updates' })
-      .option('output', { type: 'string', alias: 'o', desc: 'write CloudFormation template for requested stacks to the given directory' }))
+      .option('output', { type: 'string', alias: 'o', desc: 'write CloudFormation template for requested stacks to the given directory', requiresArg: true })
+      .option('numbered', { type: 'boolean', alias: 'n', desc: 'prefix filenames with numbers to indicate deployment ordering' }))
     .command('bootstrap [ENVIRONMENTS..]', 'Deploys the CDK toolkit stack into an AWS environment', yargs => yargs
-      .option('toolkit-stack-name', { type: 'string', desc: 'the name of the CDK toolkit stack' }))
+      .option('toolkit-bucket-name', { type: 'string', alias: 'b', desc: 'The name of the CDK toolkit bucket', default: undefined }))
     .command('deploy [STACKS..]', 'Deploys the stack(s) named STACKS into your AWS account', yargs => yargs
-      .option('toolkit-stack-name', { type: 'string', desc: 'the name of the CDK toolkit stack' }))
+      .option('build-exclude', { type: 'array', alias: 'E', nargs: 1, desc: 'do not rebuild asset with the given ID. Can be specified multiple times.', default: [] })
+      .option('exclusively', { type: 'boolean', alias: 'e', desc: 'only deploy requested stacks, don\'t include dependencies' })
+      .option('require-approval', { type: 'string', choices: [RequireApproval.Never, RequireApproval.AnyChange, RequireApproval.Broadening], desc: 'what security-sensitive changes need manual approval' }))
+      .option('ci', { type: 'boolean', desc: 'Force CI detection. Use --no-ci to disable CI autodetection.', default: process.env.CI !== undefined })
     .command('destroy [STACKS..]', 'Destroy the stack(s) named STACKS', yargs => yargs
+      .option('exclusively', { type: 'boolean', alias: 'x', desc: 'only deploy requested stacks, don\'t include dependees' })
       .option('force', { type: 'boolean', alias: 'f', desc: 'Do not ask for confirmation before destroying the stacks' }))
-    .command('diff [STACK]', 'Compares the specified stack with the deployed stack or a local template file', yargs => yargs
-      .option('template', { type: 'string', desc: 'the path to the CloudFormation template to compare with' })
+    .command('diff [STACKS..]', 'Compares the specified stack with the deployed stack or a local template file, and returns with status 1 if any difference is found', yargs => yargs
+      .option('exclusively', { type: 'boolean', alias: 'e', desc: 'only diff requested stacks, don\'t include dependencies' })
+      .option('context-lines', { type: 'number', desc: 'number of context lines to include in arbitrary JSON diff rendering', default: 3, requiresArg: true })
+      .option('template', { type: 'string', desc: 'the path to the CloudFormation template to compare with', requiresArg: true })
       .option('strict', { type: 'boolean', desc: 'do not filter out AWS::CDK::Metadata resources', default: false }))
     .command('metadata [STACK]', 'Returns all metadata associated with this stack')
     .command('init [TEMPLATE]', 'Create a new, empty CDK project from a template. Invoked without TEMPLATE, the app template will be used.', yargs => yargs
       .option('language', { type: 'string', alias: 'l', desc: 'the language to be used for the new project (default can be configured in ~/.cdk.json)', choices: initTemplateLanuages })
       .option('list', { type: 'boolean', desc: 'list the available templates' }))
-    .commandDir('../lib/commands', { exclude: /^_.*/, visit: decorateCommand })
-    .version(VERSION)
+    .commandDir('../lib/commands', { exclude: /^_.*/ })
+    .version(version.DISPLAY_VERSION)
     .demandCommand(1, '') // just print help
     .help()
+    .alias('h', 'help')
     .epilogue([
       'If your app has a single stack, there is no need to specify the stack name',
       'If one of cdk.json or ~/.cdk.json exists, options specified there will be used as defaults. Settings in cdk.json take precedence.'
     ].join('\n\n'))
     .argv;
 }
-// tslint:enable:no-shadowed-variable max-line-length
 
-/**
- * Decorates commands discovered by ``yargs.commandDir`` in order to apply global
- * options as appropriate.
- *
- * Command handlers are supposed to be (args) => void, but ours are actually
- * (args) => Promise<number>, so we deal with the asyncness by copying the actual
- * handler object to `args.commandHandler` which will be 'await'ed later on
- * (instead of awaiting 'main').
- *
- * Also adds exception handling so individual command handlers don't all have to do it.
- *
- * @param commandObject is the command to be decorated.
- * @returns a decorated ``CommandModule``.
- */
-function decorateCommand(commandObject: yargs.CommandModule): yargs.CommandModule {
-  return {
-    ...commandObject,
-    handler(args: yargs.Arguments) {
-      if (args.verbose) {
-        setVerbose();
-      }
-      args.commandHandler = wrapExceptionHandler(args.verbose, commandObject.handler as any)(args);
-    }
-  };
-}
-
-function wrapExceptionHandler(verbose: boolean, fn: (args: any) => Promise<number>) {
-  return async (a: any) => {
-    try {
-      return await fn(a);
-    } catch (e) {
-      if (verbose) {
-        error(e);
-      } else {
-        error(e.message);
-      }
-      return 1;
-    }
-  };
+if (!process.stdout.isTTY) {
+  colors.disable();
 }
 
 async function initCommandLine() {
@@ -121,8 +96,7 @@ async function initCommandLine() {
   if (argv.verbose) {
     setVerbose();
   }
-
-  debug('CDK toolkit version:', VERSION);
+  debug('CDK toolkit version:', version.DISPLAY_VERSION);
   debug('Command line arguments:', argv);
 
   const aws = new SDK({
@@ -131,13 +105,20 @@ async function initCommandLine() {
     ec2creds: argv.ec2creds,
   });
 
-  const configuration = new Configuration(argumentsToSettings());
+  const configuration = new Configuration(argv);
   await configuration.load();
-  configuration.logDefaults();
 
-  const appStacks = new AppStacks(argv, configuration, aws);
+  const provisioner = new CloudFormationDeploymentTarget({ aws });
 
-  const renames = parseRenames(argv.rename);
+  const appStacks = new AppStacks({
+    verbose: argv.trace || argv.verbose,
+    ignoreErrors: argv['ignore-errors'],
+    strict: argv.strict,
+    configuration,
+    aws,
+    synthesizer: execProgram,
+    renames: parseRenames(argv.rename)
+  });
 
   /** Function to load plug-ins, using configurations additively. */
   function loadPlugins(...settings: Settings[]) {
@@ -163,24 +144,39 @@ async function initCommandLine() {
     }
   }
 
-  loadPlugins(configuration.combined);
+  loadPlugins(configuration.settings);
 
   const cmd = argv._[0];
 
-  const returnValue = await (argv.commandHandler || main(cmd, argv));
-  if (typeof returnValue === 'object') {
-    return toJsonOrYaml(returnValue);
-  } else if (typeof returnValue === 'string') {
-    return returnValue;
-  } else {
-    return returnValue;
+  // Bundle up global objects so the commands have access to them
+  const commandOptions = { args: argv, appStacks, configuration, aws };
+
+  try {
+    const returnValue = argv.commandHandler
+      ? await (argv.commandHandler as (opts: typeof commandOptions) => any)(commandOptions)
+      : await main(cmd, argv);
+    if (typeof returnValue === 'object') {
+      return toJsonOrYaml(returnValue);
+    } else if (typeof returnValue === 'string') {
+      return returnValue;
+    } else {
+      return returnValue;
+    }
+  } finally {
+    await version.displayVersionMessage();
   }
 
-  async function main(command: string, args: any): Promise<number | string | {} | void> {
-    const toolkitStackName: string = configuration.combined.get(['toolkitStackName']) || DEFAULT_TOOLKIT_STACK_NAME;
+  async function main(command: string, args: any): Promise<number | string | {} | void> {
+    const toolkitStackName: string = configuration.settings.get(['toolkitStackName']) || DEFAULT_TOOLKIT_STACK_NAME;
+
+    if (toolkitStackName !== DEFAULT_TOOLKIT_STACK_NAME) {
+      print(`Toolkit stack: ${colors.bold(toolkitStackName)}`);
+    }
 
     args.STACKS = args.STACKS || [];
     args.ENVIRONMENTS = args.ENVIRONMENTS || [];
+
+    const cli = new CdkToolkit({ appStacks, provisioner });
 
     switch (command) {
       case 'ls':
@@ -188,26 +184,40 @@ async function initCommandLine() {
         return await cliList({ long: args.long });
 
       case 'diff':
-        return await diffStack(await findStack(args.STACK), args.template, args.strict);
+        return await cli.diff({
+          stackNames: args.STACKS,
+          exclusively: args.exclusively,
+          templatePath: args.template,
+          strict: args.strict,
+          contextLines: args.contextLines
+        });
 
       case 'bootstrap':
-        return await cliBootstrap(args.ENVIRONMENTS, toolkitStackName, args.roleArn);
+        return await cliBootstrap(args.ENVIRONMENTS, toolkitStackName, args.roleArn, args.toolkitBucketName);
 
       case 'deploy':
-        return await cliDeploy(args.STACKS, toolkitStackName, args.roleArn);
+        return await cli.deploy({
+          stackNames: args.STACKS,
+          exclusively: args.exclusively,
+          toolkitStackName,
+          roleArn: args.roleArn,
+          requireApproval: configuration.settings.get(['requireApproval']),
+          ci: args.ci,
+          reuseAssets: args['build-exclude']
+        });
 
       case 'destroy':
-        return await cliDestroy(args.STACKS, args.force, args.roleArn);
+        return await cliDestroy(args.STACKS, args.exclusively, args.force, args.roleArn);
 
       case 'synthesize':
       case 'synth':
-        return await cliSynthesize(args.STACKS, args.interactive, args.output, args.json);
+        return await cliSynthesize(args.STACKS, args.exclusively, args.interactive, args.output, args.json, args.numbered);
 
       case 'metadata':
         return await cliMetadata(await findStack(args.STACK));
 
       case 'init':
-        const language = configuration.combined.get(['language']);
+        const language = configuration.settings.get(['language']);
         if (args.list) {
           return await printAvailableTemplates(language);
         } else {
@@ -232,20 +242,23 @@ async function initCommandLine() {
    *             all stacks are implicitly selected.
    * @param toolkitStackName the name to be used for the CDK Toolkit stack.
    */
-  async function cliBootstrap(environmentGlobs: string[], toolkitStackName: string, roleArn: string | undefined): Promise<void> {
+  async function cliBootstrap(environmentGlobs: string[], toolkitStackName: string, roleArn: string | undefined, toolkitBucketName: string | undefined): Promise<void> {
     // Two modes of operation.
     //
     // If there is an '--app' argument, we select the environments from the app. Otherwise we just take the user
     // at their word that they know the name of the environment.
 
-    const app = configuration.combined.get(['app']);
+    const app = configuration.settings.get(['app']);
 
     const environments = app ? await globEnvironmentsFromStacks(appStacks, environmentGlobs) : environmentsFromDescriptors(environmentGlobs);
+
+    // Bucket name can be passed using --toolkit-bucket-name or set in cdk.json
+    const bucketName = configuration.settings.get(['toolkitBucketName']) || toolkitBucketName;
 
     await Promise.all(environments.map(async (environment) => {
       success(' ⏳  Bootstrapping environment %s...', colors.blue(environment.name));
       try {
-        const result = await bootstrapEnvironment(environment, aws, toolkitStackName, roleArn);
+        const result = await bootstrapEnvironment(environment, aws, toolkitStackName, roleArn, bucketName);
         const message = result.noOp ? ' ✅  Environment %s bootstrapped (no changes).'
                       : ' ✅  Environment %s bootstrapped.';
         success(message, colors.blue(environment.name));
@@ -266,11 +279,15 @@ async function initCommandLine() {
    * should be supplied, where the templates will be written.
    */
   async function cliSynthesize(stackNames: string[],
+                               exclusively: boolean,
                                doInteractive: boolean,
                                outputDir: string|undefined,
-                               json: boolean): Promise<void> {
-    const stacks = await appStacks.selectStacks(...stackNames);
-    renames.validateSelectedStacks(stacks);
+                               json: boolean,
+                               numbered: boolean): Promise<any> {
+    // Only autoselect dependencies if it doesn't interfere with user request or output options
+    const autoSelectDependencies = !exclusively && outputDir !== undefined;
+
+    const stacks = await appStacks.selectStacks(stackNames, autoSelectDependencies ? ExtendedStackSelection.Upstream : ExtendedStackSelection.None);
 
     if (doInteractive) {
       if (stacks.length !== 1) {
@@ -279,22 +296,38 @@ async function initCommandLine() {
       return await interactive(stacks[0], argv.verbose, (stack) => appStacks.synthesizeStack(stack));
     }
 
-    if (stacks.length > 1 && outputDir == null) {
+    // This is a slight hack; in integ mode we allow multiple stacks to be synthesized to stdout sequentially.
+    // This is to make it so that we can support multi-stack integ test expectations, without so drastically
+    // having to change the synthesis format that we have to rerun all integ tests.
+    //
+    // Because this feature is not useful to consumers (the output is missing
+    // the stack names), it's not exposed as a CLI flag. Instead, it's hidden
+    // behind an environment variable.
+    const isIntegMode = process.env.CDK_INTEG_MODE === '1';
+
+    if (stacks.length > 1 && outputDir == null && !isIntegMode) {
       // tslint:disable-next-line:max-line-length
       throw new Error(`Multiple stacks selected (${listStackNames(stacks)}), but output is directed to stdout. Either select one stack, or use --output to send templates to a directory.`);
     }
 
     if (outputDir == null) {
-      return stacks[0].template;  // Will be printed in main()
+      // What we return here will be printed in 'main'
+      if (stacks.length > 1) {
+        // Only possible in integ mode
+        return stacks.map(s => s.template);
+      }
+      return stacks[0].template;
     }
 
     fs.mkdirpSync(outputDir);
 
+    let i = 0;
     for (const stack of stacks) {
-      const finalName = renames.finalName(stack.name);
-      const fileName = `${outputDir}/${finalName}.template.${json ? 'json' : 'yaml'}`;
+      const prefix = numbered ? leftPad(`${i}`, 3, '0') + '.' : '';
+      const fileName = `${outputDir}/${prefix}${stack.name}.template.${json ? 'json' : 'yaml'}`;
       highlight(fileName);
       await fs.writeFile(fileName, toJsonOrYaml(stack.template));
+      i++;
     }
 
     return undefined; // Nothing to print
@@ -323,113 +356,29 @@ async function initCommandLine() {
     return 0; // exit-code
   }
 
-  async function cliDeploy(stackNames: string[], toolkitStackName: string, roleArn: string | undefined) {
-    const stacks = await appStacks.selectStacks(...stackNames);
-    renames.validateSelectedStacks(stacks);
+  async function cliDestroy(stackNames: string[], exclusively: boolean, force: boolean, roleArn: string | undefined) {
+    const stacks = await appStacks.selectStacks(stackNames, exclusively ? ExtendedStackSelection.None : ExtendedStackSelection.Downstream);
 
-    for (const stack of stacks) {
-      if (stacks.length !== 1) { highlight(stack.name); }
-      if (!stack.environment) {
-        // tslint:disable-next-line:max-line-length
-        throw new Error(`Stack ${stack.name} does not define an environment, and AWS credentials could not be obtained from standard locations or no region was configured.`);
-      }
-      const toolkitInfo = await loadToolkitInfo(stack.environment, aws, toolkitStackName);
-      const deployName = renames.finalName(stack.name);
-
-      if (deployName !== stack.name) {
-        print('%s: deploying... (was %s)', colors.bold(deployName), colors.bold(stack.name));
-      } else {
-        print('%s: deploying...', colors.bold(stack.name));
-      }
-
-      try {
-        const result = await deployStack({ stack, sdk: aws, toolkitInfo, deployName, roleArn });
-        const message = result.noOp
-          ? ` ✅  %s (no changes)`
-          : ` ✅  %s`;
-
-        success('\n' + message, stack.name);
-
-        if (Object.keys(result.outputs).length > 0) {
-          print('\nOutputs:');
-        }
-
-        for (const name of Object.keys(result.outputs)) {
-          const value = result.outputs[name];
-          print('%s.%s = %s', colors.cyan(deployName), colors.cyan(name), colors.underline(colors.cyan(value)));
-        }
-
-        print('\nStack ARN:');
-
-        data(result.stackArn);
-      } catch (e) {
-        error('\n ❌  %s failed: %s', colors.bold(stack.name), e);
-        throw e;
-      }
-    }
-  }
-
-  async function cliDestroy(stackNames: string[], force: boolean, roleArn: string | undefined) {
-    const stacks = await appStacks.selectStacks(...stackNames);
-    renames.validateSelectedStacks(stacks);
+    // The stacks will have been ordered for deployment, so reverse them for deletion.
+    stacks.reverse();
 
     if (!force) {
       // tslint:disable-next-line:max-line-length
-      const confirmed = await util.promisify(promptly.confirm)(`Are you sure you want to delete: ${colors.blue(stacks.map(s => s.name).join(', '))} (y/n)?`);
+      const confirmed = await promptly.confirm(`Are you sure you want to delete: ${colors.blue(stacks.map(s => s.name).join(', '))} (y/n)?`);
       if (!confirmed) {
         return;
       }
     }
 
     for (const stack of stacks) {
-      const deployName = renames.finalName(stack.name);
-
-      success('%s: destroying...', colors.blue(deployName));
+      success('%s: destroying...', colors.blue(stack.name));
       try {
-        await destroyStack({ stack, sdk: aws, deployName, roleArn });
-        success('\n ✅  %s: destroyed', colors.blue(deployName));
+        await destroyStack({ stack, sdk: aws, deployName: stack.name, roleArn });
+        success('\n ✅  %s: destroyed', colors.blue(stack.name));
       } catch (e) {
-        error('\n ❌  %s: destroy failed', colors.blue(deployName), e);
+        error('\n ❌  %s: destroy failed', colors.blue(stack.name), e);
         throw e;
       }
-    }
-  }
-
-  async function diffStack(stackName: string, templatePath: string | undefined, strict: boolean): Promise<number> {
-    const stack = await appStacks.synthesizeStack(stackName);
-    const currentTemplate = await readCurrentTemplate(stack, templatePath);
-    if (printStackDiff(currentTemplate, stack, strict) === 0) {
-      return 0;
-    } else {
-      return 1;
-    }
-  }
-
-  async function readCurrentTemplate(stack: cxapi.SynthesizedStack, templatePath?: string): Promise<{ [key: string]: any }> {
-    if (templatePath) {
-      if (!await fs.pathExists(templatePath)) {
-        throw new Error(`There is no file at ${templatePath}`);
-      }
-      const fileContent = await fs.readFile(templatePath, { encoding: 'UTF-8' });
-      return parseTemplate(fileContent);
-    } else {
-      const cfn = await aws.cloudFormation(stack.environment, Mode.ForReading);
-      const stackName = renames.finalName(stack.name);
-      try {
-        const response = await cfn.getTemplate({ StackName: stackName }).promise();
-        return (response.TemplateBody && parseTemplate(response.TemplateBody)) || {};
-      } catch (e) {
-        if (e.code === 'ValidationError' && e.message === `Stack with id ${stackName} does not exist`) {
-          return {};
-        } else {
-          throw e;
-        }
-      }
-    }
-
-    /* Attempt to parse YAML, fall back to JSON. */
-    function parseTemplate(text: string): any {
-      return deserializeStructure(text);
     }
   }
 
@@ -437,7 +386,7 @@ async function initCommandLine() {
    * Match a single stack from the list of available stacks
    */
   async function findStack(name: string): Promise<string> {
-    const stacks = await appStacks.selectStacks(name);
+    const stacks = await appStacks.selectStacks([name], ExtendedStackSelection.None);
 
     // Could have been a glob so check that we evaluated to exactly one
     if (stacks.length > 1) {
@@ -445,36 +394,6 @@ async function initCommandLine() {
     }
 
     return stacks[0].name;
-  }
-
-  /** Convert the command-line arguments into a Settings object */
-  function argumentsToSettings() {
-    const context: any = {};
-
-    // Turn list of KEY=VALUE strings into an object
-    for (const assignment of (argv.context || [])) {
-      const parts = assignment.split('=', 2);
-      if (parts.length === 2) {
-        debug('CLI argument context: %s=%s', parts[0], parts[1]);
-        if (parts[0].match(/^aws:.+/)) {
-          throw new Error(`User-provided context cannot use keys prefixed with 'aws:', but ${parts[0]} was provided.`);
-        }
-        context[parts[0]] = parts[1];
-      } else {
-        warning('Context argument is not an assignment (key=value): %s', assignment);
-      }
-    }
-
-    return new Settings({
-      app: argv.app,
-      browser: argv.browser,
-      context,
-      language: argv.language,
-      plugin: argv.plugin,
-      toolkitStackName: argv.toolkitStackName,
-      versionReporting: argv.versionReporting,
-      pathMetadata: argv.pathMetadata,
-    });
   }
 
   function toJsonOrYaml(object: any): string {

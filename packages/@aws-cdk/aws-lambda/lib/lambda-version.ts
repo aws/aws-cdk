@@ -1,11 +1,24 @@
-import { Construct } from '@aws-cdk/cdk';
-import { FunctionRef } from './lambda-ref';
-import { cloudformation } from './lambda.generated';
+import { Construct, IResource, Resource } from '@aws-cdk/cdk';
+import { IFunction } from './function-base';
+import { CfnVersion } from './lambda.generated';
+
+export interface IVersion extends IResource {
+  /**
+   * The most recently deployed version of this function.
+   * @attribute
+   */
+  readonly version: string;
+
+  /**
+   * The underlying AWS Lambda function.
+   */
+  readonly lambda: IFunction;
+}
 
 /**
  * Properties for a new Lambda version
  */
-export interface FunctionVersionProps {
+export interface VersionProps {
   /**
    * SHA256 of the version of the Lambda source code
    *
@@ -13,19 +26,31 @@ export interface FunctionVersionProps {
    *
    * @default No validation is performed
    */
-  codeSha256?: string;
+  readonly codeSha256?: string;
 
   /**
    * Description of the version
    *
    * @default Description of the Lambda
    */
-  description?: string;
+  readonly description?: string;
 
   /**
    * Function to get the value of
    */
-  lambda: FunctionRef;
+  readonly lambda: IFunction;
+}
+
+export interface VersionAttributes {
+  /**
+   * The version.
+   */
+  readonly version: string;
+
+  /**
+   * The lambda function.
+   */
+  readonly lambda: IFunction;
 }
 
 /**
@@ -44,27 +69,29 @@ export interface FunctionVersionProps {
  * the right deployment, specify the `codeSha256` property while
  * creating the `Version.
  */
-export class FunctionVersion extends Construct {
-  /**
-   * The most recently deployed version of this function.
-   */
-  public readonly functionVersion: string;
+export class Version extends Resource implements IVersion {
 
-  /**
-   * Lambda object this version is associated with
-   */
-  public readonly lambda: FunctionRef;
+  public static fromVersionAttributes(scope: Construct, id: string, attrs: VersionAttributes): IVersion {
+    class Import extends Resource implements IVersion {
+      public readonly version = attrs.version;
+      public readonly lambda = attrs.lambda;
+    }
+    return new Import(scope, id);
+  }
 
-  constructor(parent: Construct, name: string, props: FunctionVersionProps) {
-    super(parent, name);
+  public readonly version: string;
+  public readonly lambda: IFunction;
 
-    const version = new cloudformation.VersionResource(this, 'Resource', {
+  constructor(scope: Construct, id: string, props: VersionProps) {
+    super(scope, id);
+
+    const version = new CfnVersion(this, 'Resource', {
       codeSha256: props.codeSha256,
       description: props.description,
       functionName: props.lambda.functionName
     });
 
-    this.functionVersion = version.version;
+    this.version = version.version;
     this.lambda = props.lambda;
   }
 }

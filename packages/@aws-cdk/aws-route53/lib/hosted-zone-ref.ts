@@ -1,61 +1,48 @@
-import { Construct, Output } from "@aws-cdk/cdk";
+import { IResource } from '@aws-cdk/cdk';
 
 /**
  * Imported or created hosted zone
  */
-export abstract class HostedZoneRef extends Construct {
-  public static import(parent: Construct, name: string, props: HostedZoneRefProps): HostedZoneRef {
-    return new ImportedHostedZone(parent, name, props);
-  }
-
+export interface IHostedZone extends IResource {
   /**
-   * ID of this hosted zone
+   * ID of this hosted zone, such as "Z23ABC4XYZL05B"
+   *
+   * @attribute
    */
-  public abstract readonly hostedZoneId: string;
+  readonly hostedZoneId: string;
 
   /**
    * FQDN of this hosted zone
    */
-  public abstract readonly zoneName: string;
+  readonly zoneName: string;
+
+  /**
+   * Returns the set of name servers for the specific hosted zone. For example:
+   * ns1.example.com.
+   *
+   * This attribute will be undefined for private hosted zones or hosted zones imported from another stack.
+   *
+   * @attribute
+   */
+  readonly hostedZoneNameServers?: string[];
 
   /**
    * Export the hosted zone
    */
-  public export(): HostedZoneRefProps {
-    return {
-      hostedZoneId: new Output(this, 'HostedZoneId', { value: this.hostedZoneId }).makeImportValue().toString(),
-      zoneName: this.zoneName,
-    };
-  }
+  export(): HostedZoneAttributes;
 }
 
 /**
  * Reference to a hosted zone
  */
-export interface HostedZoneRefProps {
+export interface HostedZoneAttributes {
   /**
    * Identifier of the hosted zone
    */
-  hostedZoneId: string;
+  readonly hostedZoneId: string;
 
   /**
    * Name of the hosted zone
    */
-  zoneName: string;
-}
-
-/**
- * Imported hosted zone
- */
-export class ImportedHostedZone extends HostedZoneRef {
-  public readonly hostedZoneId: string;
-
-  public readonly zoneName: string;
-
-  constructor(parent: Construct, name: string, props: HostedZoneRefProps) {
-    super(parent, name);
-
-    this.hostedZoneId = props.hostedZoneId;
-    this.zoneName = props.zoneName;
-  }
+  readonly zoneName: string;
 }

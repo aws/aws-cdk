@@ -1,15 +1,14 @@
 import { expect, haveResource } from '@aws-cdk/assert';
-import { Stack } from '@aws-cdk/cdk';
+import { App, Stack } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
 
 import {
   Connections,
   IConnectable,
   SecurityGroup,
-  SecurityGroupRef,
   TcpAllPorts,
   TcpPort,
-  VpcNetwork
+  VpcNetwork,
 } from "../lib";
 
 export = {
@@ -38,7 +37,7 @@ export = {
     const sg1 = new SecurityGroup(stack, 'SomeSecurityGroup', { vpc, allowAllOutbound: false });
     const somethingConnectable = new SomethingConnectable(new Connections({ securityGroups: [sg1] }));
 
-    const securityGroup = SecurityGroupRef.import(stack, 'ImportedSG', { securityGroupId: 'sg-12345' });
+    const securityGroup = SecurityGroup.fromSecurityGroupId(stack, 'ImportedSG', 'sg-12345');
 
     // WHEN
     somethingConnectable.connections.allowTo(securityGroup, new TcpAllPorts(), 'Connect there');
@@ -83,9 +82,11 @@ export = {
       GroupDescription: "SecurityGroup1",
       SecurityGroupIngress: [
         {
+          Description: "from 0.0.0.0/0:88",
           CidrIp: "0.0.0.0/0",
           FromPort: 88,
-          ToPort: 88
+          ToPort: 88,
+          IpProtocol: 'tcp'
         }
       ]
     }));
@@ -94,9 +95,11 @@ export = {
       GroupDescription: "SecurityGroup2",
       SecurityGroupIngress: [
         {
+          Description: "from 0.0.0.0/0:88",
           CidrIp: "0.0.0.0/0",
           FromPort: 88,
-          ToPort: 88
+          ToPort: 88,
+          IpProtocol: 'tcp'
         }
       ]
     }));
@@ -159,6 +162,101 @@ export = {
 
     test.done();
   },
+
+  'can establish cross stack Security Group connections - allowFrom'(test: Test) {
+    // GIVEN
+    const app = new App();
+
+    const stack1 = new Stack(app, 'Stack1');
+    const vpc1 = new VpcNetwork(stack1, 'VPC');
+    const sg1 = new SecurityGroup(stack1, 'SecurityGroup', { vpc: vpc1, allowAllOutbound: false });
+
+    const stack2 = new Stack(app, 'Stack2');
+    const vpc2 = new VpcNetwork(stack2, 'VPC');
+    const sg2 = new SecurityGroup(stack2, 'SecurityGroup', { vpc: vpc2, allowAllOutbound: false });
+
+    // WHEN
+    sg2.connections.allowFrom(sg1, new TcpPort(100));
+
+    // THEN -- both rules are in Stack2
+    app.node.prepareTree();
+
+    expect(stack2).to(haveResource('AWS::EC2::SecurityGroupIngress', {
+      GroupId: { "Fn::GetAtt": [ "SecurityGroupDD263621", "GroupId" ] },
+      SourceSecurityGroupId: { "Fn::ImportValue": "Stack1:ExportsOutputFnGetAttSecurityGroupDD263621GroupIdDF6F8B09" },
+    }));
+
+    expect(stack2).to(haveResource('AWS::EC2::SecurityGroupEgress', {
+      GroupId: { "Fn::ImportValue": "Stack1:ExportsOutputFnGetAttSecurityGroupDD263621GroupIdDF6F8B09" },
+      DestinationSecurityGroupId: { "Fn::GetAtt": [ "SecurityGroupDD263621", "GroupId" ] },
+    }));
+
+    test.done();
+  },
+
+  'can establish cross stack Security Group connections - allowTo'(test: Test) {
+    // GIVEN
+    const app = new App();
+
+    const stack1 = new Stack(app, 'Stack1');
+    const vpc1 = new VpcNetwork(stack1, 'VPC');
+    const sg1 = new SecurityGroup(stack1, 'SecurityGroup', { vpc: vpc1, allowAllOutbound: false });
+
+    const stack2 = new Stack(app, 'Stack2');
+    const vpc2 = new VpcNetwork(stack2, 'VPC');
+    const sg2 = new SecurityGroup(stack2, 'SecurityGroup', { vpc: vpc2, allowAllOutbound: false });
+
+    // WHEN
+    sg2.connections.allowTo(sg1, new TcpPort(100));
+
+    // THEN -- both rules are in Stack2
+    app.node.prepareTree();
+
+    expect(stack2).to(haveResource('AWS::EC2::SecurityGroupIngress', {
+      GroupId: { "Fn::ImportValue": "Stack1:ExportsOutputFnGetAttSecurityGroupDD263621GroupIdDF6F8B09" },
+      SourceSecurityGroupId: { "Fn::GetAtt": [ "SecurityGroupDD263621", "GroupId" ] },
+    }));
+
+    expect(stack2).to(haveResource('AWS::EC2::SecurityGroupEgress', {
+      GroupId: { "Fn::GetAtt": [ "SecurityGroupDD263621", "GroupId" ] },
+      DestinationSecurityGroupId: { "Fn::ImportValue": "Stack1:ExportsOutputFnGetAttSecurityGroupDD263621GroupIdDF6F8B09" },
+    }));
+
+    test.done();
+  },
+
+  'can establish multiple cross-stack SGs'(test: Test) {
+    // GIVEN
+    const app = new App();
+
+    const stack1 = new Stack(app, 'Stack1');
+    const vpc1 = new VpcNetwork(stack1, 'VPC');
+    const sg1a = new SecurityGroup(stack1, 'SecurityGroupA', { vpc: vpc1, allowAllOutbound: false });
+    const sg1b = new SecurityGroup(stack1, 'SecurityGroupB', { vpc: vpc1, allowAllOutbound: false });
+
+    const stack2 = new Stack(app, 'Stack2');
+    const vpc2 = new VpcNetwork(stack2, 'VPC');
+    const sg2 = new SecurityGroup(stack2, 'SecurityGroup', { vpc: vpc2, allowAllOutbound: false });
+
+    // WHEN
+    sg2.connections.allowFrom(sg1a, new TcpPort(100));
+    sg2.connections.allowFrom(sg1b, new TcpPort(100));
+
+    // THEN -- both egress rules are in Stack2
+    app.node.prepareTree();
+
+    expect(stack2).to(haveResource('AWS::EC2::SecurityGroupEgress', {
+      GroupId: { "Fn::ImportValue": "Stack1:ExportsOutputFnGetAttSecurityGroupAED40ADC5GroupId1D10C76A" },
+      DestinationSecurityGroupId: { "Fn::GetAtt": [ "SecurityGroupDD263621", "GroupId" ] },
+    }));
+
+    expect(stack2).to(haveResource('AWS::EC2::SecurityGroupEgress', {
+      GroupId: { "Fn::ImportValue": "Stack1:ExportsOutputFnGetAttSecurityGroupB04591F90GroupIdFA7208D5" },
+      DestinationSecurityGroupId: { "Fn::GetAtt": [ "SecurityGroupDD263621", "GroupId" ] },
+    }));
+
+    test.done();
+  }
 };
 
 class SomethingConnectable implements IConnectable {

@@ -13,7 +13,7 @@ export interface ParallelProps {
      *
      * @default No comment
      */
-    comment?: string;
+    readonly comment?: string;
 
     /**
      * JSONPath expression to select part of the state to be the input to this state.
@@ -23,7 +23,7 @@ export interface ParallelProps {
      *
      * @default $
      */
-    inputPath?: string;
+    readonly inputPath?: string;
 
     /**
      * JSONPath expression to select part of the state to be the output to this state.
@@ -33,7 +33,7 @@ export interface ParallelProps {
      *
      * @default $
      */
-    outputPath?: string;
+    readonly outputPath?: string;
 
     /**
      * JSONPath expression to indicate where to inject the state's output
@@ -43,7 +43,7 @@ export interface ParallelProps {
      *
      * @default $
      */
-    resultPath?: string;
+    readonly resultPath?: string;
 }
 
 /**
@@ -57,8 +57,8 @@ export interface ParallelProps {
 export class Parallel extends State implements INextable {
     public readonly endStates: INextable[];
 
-    constructor(parent: cdk.Construct, id: string, props: ParallelProps = {}) {
-        super(parent, id, props);
+    constructor(scope: cdk.Construct, id: string, props: ParallelProps = {}) {
+        super(scope, id, props);
 
         this.endStates = [this];
     }
@@ -105,16 +105,6 @@ export class Parallel extends State implements INextable {
     }
 
     /**
-     * Validate this state
-     */
-    public validate(): string[] {
-        if (this.branches.length === 0) {
-            return ['Parallel must have at least one branch'];
-        }
-        return [];
-    }
-
-    /**
      * Return the Amazon States Language object for this state
      */
     public toStateJson(): object {
@@ -127,5 +117,15 @@ export class Parallel extends State implements INextable {
             ...this.renderRetryCatch(),
             ...this.renderBranches(),
         };
+    }
+
+    /**
+     * Validate this state
+     */
+    protected validate(): string[] {
+        if (this.branches.length === 0) {
+            return ['Parallel must have at least one branch'];
+        }
+        return [];
     }
 }

@@ -7,12 +7,12 @@ export interface SourceProps {
   /**
    * The source bucket to deploy from.
    */
-  bucket: s3.BucketRef;
+  readonly bucket: s3.IBucket;
 
   /**
    * An S3 object key in the source bucket that points to a zip file.
    */
-  zipObjectKey: string;
+  readonly zipObjectKey: string;
 }
 
 /**
@@ -42,7 +42,7 @@ export class Source {
    * @param bucket The S3 Bucket
    * @param zipObjectKey The S3 object key of the zip file with contents
    */
-  public static bucket(bucket: s3.BucketRef, zipObjectKey: string): ISource {
+  public static bucket(bucket: s3.IBucket, zipObjectKey: string): ISource {
     return {
       bind: () => ({ bucket, zipObjectKey })
     };

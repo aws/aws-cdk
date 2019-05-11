@@ -1,8 +1,10 @@
 import colors = require('colors/safe');
-import table = require('table');
 import yargs = require('yargs');
-import { print } from '../../lib/logging';
-import { Configuration, DEFAULTS } from '../settings';
+import version = require('../../lib/version');
+import { CommandOptions } from '../command-api';
+import { print } from '../logging';
+import { Context, PROJECT_CONFIG } from '../settings';
+import { renderTable } from '../util';
 
 export const command = 'context';
 export const describe = 'Manage cached context values';
@@ -11,7 +13,7 @@ export const builder = {
     alias: 'e',
     desc: 'The context key (or its index) to reset',
     type: 'string',
-    requiresArg: 'KEY'
+    requiresArg: true
   },
   clear: {
     desc: 'Clear all context',
@@ -19,34 +21,47 @@ export const builder = {
   },
 };
 
-export async function handler(args: yargs.Arguments): Promise<number> {
-  const configuration = new Configuration();
-  await configuration.load();
+export function handler(args: yargs.Arguments) {
+  args.commandHandler = realHandler;
+}
 
-  const context = configuration.projectConfig.get(['context']) || {};
+export async function realHandler(options: CommandOptions): Promise<number> {
+  const { configuration, args } = options;
+
+  const contextValues = configuration.context.all;
 
   if (args.clear) {
-    configuration.projectConfig.set(['context'], {});
-    await configuration.saveProjectConfig();
+    configuration.context.clear();
+    await configuration.saveContext();
     print('All context values cleared.');
   } else if (args.reset) {
-    invalidateContext(context, args.reset);
-    configuration.projectConfig.set(['context'], context);
-    await configuration.saveProjectConfig();
+    invalidateContext(configuration.context, args.reset as string);
+    await configuration.saveContext();
   } else {
     // List -- support '--json' flag
     if (args.json) {
-      process.stdout.write(JSON.stringify(context, undefined, 2));
+      process.stdout.write(JSON.stringify(contextValues, undefined, 2));
     } else {
-      listContext(context);
+      listContext(contextValues);
     }
   }
+  await version.displayVersionMessage();
 
   return 0;
 }
 
 function listContext(context: any) {
   const keys = contextKeys(context);
+
+  if (keys.length === 0) {
+    print(`This CDK application does not have any saved context values yet.`);
+    print('');
+    print(`Context will automatically be saved when you synthesize CDK apps`);
+    print(`that use environment context information like AZ information, VPCs,`);
+    print(`SSM parameters, and so on.`);
+
+    return;
+  }
 
   // Print config by default
   const data: any[] = [[colors.green('#'), colors.green('Key'), colors.green('Value')]];
@@ -55,21 +70,15 @@ function listContext(context: any) {
     data.push([i, key, jsonWithoutNewlines]);
   }
 
-  print(`Context found in ${colors.blue(DEFAULTS)}:\n`);
+  print(`Context found in ${colors.blue(PROJECT_CONFIG)}:\n`);
 
-  print(table.table(data, {
-      border: table.getBorderCharacters('norc'),
-      columns: {
-        1: { width: 50, wrapWord: true } as any,
-        2: { width: 50, wrapWord: true } as any
-      }
-  }));
+  print(renderTable(data, process.stdout.columns));
 
   // tslint:disable-next-line:max-line-length
   print(`Run ${colors.blue('cdk context --reset KEY_OR_NUMBER')} to remove a context key. It will be refreshed on the next CDK synthesis run.`);
 }
 
-function invalidateContext(context: any, key: string) {
+function invalidateContext(context: Context, key: string) {
   const i = parseInt(key, 10);
   if (`${i}` === key) {
     // Twas a number and we fully parsed it.
@@ -77,8 +86,8 @@ function invalidateContext(context: any, key: string) {
   }
 
   // Unset!
-  if (key in context) {
-    delete context[key];
+  if (context.has(key)) {
+    context.unset(key);
     print(`Context value ${colors.blue(key)} reset. It will be refreshed on the next SDK synthesis run.`);
   } else {
     print(`No context value with key ${colors.blue(key)}`);

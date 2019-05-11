@@ -1,37 +1,47 @@
 import lambda = require('@aws-cdk/aws-lambda');
 import sns = require('@aws-cdk/aws-sns');
-import cdk = require('@aws-cdk/cdk');
-import { cloudformation } from './cloudformation.generated';
+import { CfnResource, Construct, Resource } from '@aws-cdk/cdk';
+import { CfnCustomResource } from './cloudformation.generated';
 
 /**
  * Collection of arbitrary properties
  */
 export type Properties = {[key: string]: any};
 
+export class CustomResourceProvider {
+  /**
+   * The Lambda provider that implements this custom resource.
+   *
+   * We recommend using a lambda.SingletonFunction for this.
+   */
+  public static lambda(handler: lambda.IFunction) { return new CustomResourceProvider(handler.functionArn); }
+
+  /**
+   * The SNS Topic for the provider that implements this custom resource.
+   */
+  public static topic(topic: sns.ITopic) { return new CustomResourceProvider(topic.topicArn); }
+
+  private constructor(public readonly serviceToken: string) {
+
+  }
+}
+
 /**
  * Properties to provide a Lambda-backed custom resource
  */
 export interface CustomResourceProps {
   /**
-   * The Lambda provider that implements this custom resource.
+   * The provider which implements the custom resource
    *
-   * We recommend using a lambda.SingletonFunction for this.
-   *
-   * Optional, exactly one of lamdaProvider or topicProvider must be set.
+   * @example CustomResourceProvider.lambda(myFunction)
+   * @example CustomResourceProvider.topic(myTopic)
    */
-  lambdaProvider?: lambda.FunctionRef;
-
-  /**
-   * The SNS Topic for the provider that implements this custom resource.
-   *
-   * Optional, exactly one of lamdaProvider or topicProvider must be set.
-   */
-  topicProvider?: sns.TopicRef;
+  readonly provider: CustomResourceProvider;
 
   /**
    * Properties to pass to the Lambda
    */
-  properties?: Properties;
+  readonly properties?: Properties;
 
   /**
    * For custom resources, you can specify AWS::CloudFormation::CustomResource
@@ -52,7 +62,7 @@ export interface CustomResourceProps {
    * @see
    * https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cfn-customresource.html#aws-cfn-resource-type-name
    */
-  resourceType?: string;
+  readonly resourceType?: string;
 }
 
 /**
@@ -62,53 +72,26 @@ export interface CustomResourceProps {
  * that hides the choice of provider, and accepts a strongly-typed properties
  * object with the properties your provider accepts.
  */
-export class CustomResource extends cloudformation.CustomResource {
-  // Needs to be implemented using inheritance because we must override the `renderProperties`
-  // The generated props classes will never render properties that they don't know about.
+export class CustomResource extends Resource {
+  private readonly resource: CfnResource;
 
-  private readonly userProperties?: Properties;
+  constructor(scope: Construct, id: string, props: CustomResourceProps) {
+    super(scope, id);
 
-  constructor(parent: cdk.Construct, name: string, props: CustomResourceProps) {
-    if (!!props.lambdaProvider === !!props.topicProvider) {
-      throw new Error('Exactly one of "lambdaProvider" or "topicProvider" must be set.');
-    }
+    const type = renderResourceType(props.resourceType);
 
-    super(parent, name, {
-      serviceToken: props.lambdaProvider ? props.lambdaProvider.functionArn : props.topicProvider!.topicArn
+    this.resource = new CfnResource(this, 'Default', {
+      type,
+      properties: {
+        ServiceToken: props.provider.serviceToken,
+        ...uppercaseProperties(props.properties || {})
+      }
     });
-
-    this.userProperties = props.properties;
-
-    if (props.resourceType) {
-      this.useCustomResourceType(props.resourceType);
-    }
   }
 
-  /**
-   * Override renderProperties to mix in the user-defined properties
-   */
-  protected renderProperties(properties: any): {[key: string]: any}  {
-    const props = super.renderProperties(properties);
-    return Object.assign(props, uppercaseProperties(this.userProperties || {}));
+  public getAtt(attributeName: string) {
+    return this.resource.getAtt(attributeName);
   }
-
-  private useCustomResourceType(resourceType: string) {
-    if (!resourceType.startsWith('Custom::')) {
-      throw new Error(`Custom resource type must begin with "Custom::" (${resourceType})`);
-    }
-
-    const typeName = resourceType.substr(resourceType.indexOf('::') + 2);
-    if (typeName.length > 60) {
-      throw new Error(`Custom resource type length > 60 (${resourceType})`);
-    }
-
-    if (!/^[a-z0-9_@-]+$/i.test(typeName)) {
-      throw new Error(`Custom resource type name can only include alphanumeric characters and _@- (${typeName})`);
-    }
-
-    this.addOverride('Type', resourceType);
-  }
-
 }
 
 /**
@@ -125,4 +108,25 @@ function uppercaseProperties(props: Properties): Properties {
     ret[upper] = props[key];
   });
   return ret;
+}
+
+function renderResourceType(resourceType?: string) {
+  if (!resourceType) {
+    return CfnCustomResource.resourceTypeName;
+  }
+
+  if (!resourceType.startsWith('Custom::')) {
+    throw new Error(`Custom resource type must begin with "Custom::" (${resourceType})`);
+  }
+
+  const typeName = resourceType.substr(resourceType.indexOf('::') + 2);
+  if (typeName.length > 60) {
+    throw new Error(`Custom resource type length > 60 (${resourceType})`);
+  }
+
+  if (!/^[a-z0-9_@-]+$/i.test(typeName)) {
+    throw new Error(`Custom resource type name can only include alphanumeric characters and _@- (${typeName})`);
+  }
+
+  return resourceType;
 }

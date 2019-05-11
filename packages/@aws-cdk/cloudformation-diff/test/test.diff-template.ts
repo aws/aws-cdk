@@ -30,7 +30,7 @@ exports.diffTemplate = {
     const newTemplate = JSON.parse(JSON.stringify(currentTemplate));
 
     const differences = diffTemplate(currentTemplate, newTemplate);
-    test.deepEqual(differences.count, 0, 'returns an empty diff');
+    test.deepEqual(differences.differenceCount, 0, 'returns an empty diff');
     test.done();
   },
 
@@ -40,8 +40,8 @@ exports.diffTemplate = {
     const newTemplate = { Resources: { BucketResource: { Type: 'AWS::S3::Bucket' } } };
 
     const differences = diffTemplate(currentTemplate, newTemplate);
-    test.equal(differences.count, 1, 'returns a single difference');
-    test.equal(differences.resources.count, 1, 'the difference is in the Resources section');
+    test.equal(differences.differenceCount, 1, 'returns a single difference');
+    test.equal(differences.resources.differenceCount, 1, 'the difference is in the Resources section');
     const difference = differences.resources.changes.BucketResource;
     test.notStrictEqual(difference, undefined, 'the difference is on the BucketResource logical ID');
     test.ok(difference && difference.isAddition, 'the difference reflects there was no such resource before');
@@ -65,8 +65,8 @@ exports.diffTemplate = {
     };
 
     const differences = diffTemplate(currentTemplate, newTemplate);
-    test.equal(differences.count, 1, 'returns a single difference');
-    test.equal(differences.resources.count, 1, 'the difference is in the Resources section');
+    test.equal(differences.differenceCount, 1, 'returns a single difference');
+    test.equal(differences.resources.differenceCount, 1, 'the difference is in the Resources section');
     const difference = differences.resources.changes.BucketPolicyResource;
     test.notStrictEqual(difference, undefined, 'the difference is on the BucketPolicyResource logical ID');
     test.ok(difference && difference.isRemoval, 'the difference reflects there is no such resource after');
@@ -95,8 +95,8 @@ exports.diffTemplate = {
     };
 
     const differences = diffTemplate(currentTemplate, newTemplate);
-    test.equal(differences.count, 1, 'returns a single difference');
-    test.equal(differences.resources.count, 1, 'the difference is in the Resources section');
+    test.equal(differences.differenceCount, 1, 'returns a single difference');
+    test.equal(differences.resources.differenceCount, 1, 'the difference is in the Resources section');
     const difference = differences.resources.changes.BucketPolicyResource;
     test.notStrictEqual(difference, undefined, 'the difference is on the BucketPolicyResource logical ID');
     test.ok(difference && difference.isRemoval, 'the difference reflects there is no such resource after');
@@ -137,13 +137,13 @@ exports.diffTemplate = {
     };
 
     const differences = diffTemplate(currentTemplate, newTemplate);
-    test.equal(differences.count, 1, 'returns a single difference');
-    test.equal(differences.resources.count, 1, 'the difference is in the Resources section');
+    test.equal(differences.differenceCount, 1, 'returns a single difference');
+    test.equal(differences.resources.differenceCount, 1, 'the difference is in the Resources section');
     const difference = differences.resources.changes.BucketResource;
     test.notStrictEqual(difference, undefined, 'the difference is on the BucketResource logical ID');
     test.equal(difference && difference.oldResourceType, 'AWS::S3::Bucket', 'the difference reports the resource type');
-    test.deepEqual(difference && difference.propertyChanges,
-             { BucketName: { oldValue: bucketName, newValue: newBucketName, changeImpact: ResourceImpact.WILL_REPLACE } },
+    test.deepEqual(difference && difference.propertyUpdates,
+             { BucketName: { oldValue: bucketName, newValue: newBucketName, changeImpact: ResourceImpact.WILL_REPLACE, isDifferent: true } },
              'the difference reports property-level changes');
     test.done();
   },
@@ -171,7 +171,7 @@ exports.diffTemplate = {
     const differences = diffTemplate(currentTemplate, newTemplate);
 
     // THEN
-    test.equal(differences.count, 1, 'no change');
+    test.equal(differences.differenceCount, 1, 'no change');
     const difference = differences.resources.changes.BucketResource;
     test.equal(difference && difference.changeImpact, ResourceImpact.WILL_UPDATE, 'the difference reflects that the resource will be replaced');
     test.done();
@@ -205,13 +205,13 @@ exports.diffTemplate = {
     };
 
     const differences = diffTemplate(currentTemplate, newTemplate);
-    test.equal(differences.count, 1, 'returns a single difference');
-    test.equal(differences.resources.count, 1, 'the difference is in the Resources section');
+    test.equal(differences.differenceCount, 1, 'returns a single difference');
+    test.equal(differences.resources.differenceCount, 1, 'the difference is in the Resources section');
     const difference = differences.resources.changes.BucketResource;
     test.notStrictEqual(difference, undefined, 'the difference is on the BucketResource logical ID');
     test.equal(difference && difference.oldResourceType, 'AWS::S3::Bucket', 'the difference reports the resource type');
-    test.deepEqual(difference && difference.propertyChanges,
-             { BucketName: { oldValue: bucketName, newValue: undefined, changeImpact: ResourceImpact.WILL_REPLACE } },
+    test.deepEqual(difference && difference.propertyUpdates,
+             { BucketName: { oldValue: bucketName, newValue: undefined, changeImpact: ResourceImpact.WILL_REPLACE, isDifferent: true } },
              'the difference reports property-level changes');
     test.done();
   },
@@ -244,13 +244,13 @@ exports.diffTemplate = {
     };
 
     const differences = diffTemplate(currentTemplate, newTemplate);
-    test.equal(differences.count, 1, 'returns a single difference');
-    test.equal(differences.resources.count, 1, 'the difference is in the Resources section');
+    test.equal(differences.differenceCount, 1, 'returns a single difference');
+    test.equal(differences.resources.differenceCount, 1, 'the difference is in the Resources section');
     const difference = differences.resources.changes.BucketResource;
     test.notStrictEqual(difference, undefined, 'the difference is on the BucketResource logical ID');
     test.equal(difference && difference.oldResourceType, 'AWS::S3::Bucket', 'the difference reports the resource type');
-    test.deepEqual(difference && difference.propertyChanges,
-             { BucketName: { oldValue: undefined, newValue: bucketName, changeImpact: ResourceImpact.WILL_REPLACE } },
+    test.deepEqual(difference && difference.propertyUpdates,
+             { BucketName: { oldValue: undefined, newValue: bucketName, changeImpact: ResourceImpact.WILL_REPLACE, isDifferent: true } },
              'the difference reports property-level changes');
     test.done();
   },
@@ -279,8 +279,8 @@ exports.diffTemplate = {
     };
 
     const differences = diffTemplate(currentTemplate, newTemplate);
-    test.equal(differences.count, 1, 'returns a single difference');
-    test.equal(differences.resources.count, 1, 'the difference is in the Resources section');
+    test.equal(differences.differenceCount, 1, 'returns a single difference');
+    test.equal(differences.resources.differenceCount, 1, 'the difference is in the Resources section');
     const difference = differences.resources.changes.BucketResource;
     test.notStrictEqual(difference, undefined, 'the difference is on the BucketResource logical ID');
     test.deepEqual(difference && difference.oldResourceType, 'AWS::IAM::Policy');
@@ -332,7 +332,7 @@ exports.diffTemplate = {
     const differences = diffTemplate(currentTemplate, newTemplate);
 
     // THEN
-    test.equal(differences.resources.count, 3, 'all resources are replaced');
+    test.equal(differences.resources.differenceCount, 3, 'all resources are replaced');
     test.done();
   },
 };

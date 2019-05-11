@@ -4,9 +4,9 @@ import elb = require('@aws-cdk/aws-elasticloadbalancing');
 import elbv2 = require('@aws-cdk/aws-elasticloadbalancingv2');
 import iam = require('@aws-cdk/aws-iam');
 import sns = require('@aws-cdk/aws-sns');
-import cdk = require('@aws-cdk/cdk');
 
-import { cloudformation } from './autoscaling.generated';
+import { AutoScalingRollingUpdate, Construct, Fn, IResource, Resource, Tag, Token } from '@aws-cdk/cdk';
+import { CfnAutoScalingGroup, CfnAutoScalingGroupProps, CfnLaunchConfiguration } from './autoscaling.generated';
 import { BasicLifecycleHookProps, LifecycleHook } from './lifecycle-hook';
 import { BasicScheduledActionProps, ScheduledAction } from './scheduled-action';
 import { BasicStepScalingPolicyProps, StepScalingPolicy } from './step-scaling-policy';
@@ -18,67 +18,55 @@ import { BaseTargetTrackingProps, PredefinedMetric, TargetTrackingScalingPolicy 
 const NAME_TAG: string = 'Name';
 
 /**
- * Properties of a Fleet
+ * Basic properties of an AutoScalingGroup, except the exact machines to run and where they should run
+ *
+ * Constructs that want to create AutoScalingGroups can inherit
+ * this interface and specialize the essential parts in various ways.
  */
-export interface AutoScalingGroupProps {
-  /**
-   * Type of instance to launch
-   */
-  instanceType: ec2.InstanceType;
-
+export interface CommonAutoScalingGroupProps {
   /**
    * Minimum number of instances in the fleet
    *
    * @default 1
    */
-  minSize?: number;
+  readonly minCapacity?: number;
 
   /**
    * Maximum number of instances in the fleet
    *
    * @default desiredCapacity
    */
-  maxSize?: number;
+  readonly maxCapacity?: number;
 
   /**
    * Initial amount of instances in the fleet
    * @default 1
    */
-  desiredCapacity?: number;
+  readonly desiredCapacity?: number;
 
   /**
    * Name of SSH keypair to grant access to instances
    * @default No SSH access will be possible
    */
-  keyName?: string;
-
-  /**
-   * AMI to launch
-   */
-  machineImage: ec2.IMachineImageSource;
-
-  /**
-   * VPC to launch these instances in.
-   */
-  vpc: ec2.VpcNetworkRef;
+  readonly keyName?: string;
 
   /**
    * Where to place instances within the VPC
    */
-  vpcPlacement?: ec2.VpcPlacementStrategy;
+  readonly vpcSubnets?: ec2.SubnetSelection;
 
   /**
    * SNS topic to send notifications about fleet changes
    * @default No fleet change notifications will be sent.
    */
-  notificationsTopic?: sns.TopicRef;
+  readonly notificationsTopic?: sns.ITopic;
 
   /**
    * Whether the instances can initiate connections to anywhere by default
    *
    * @default true
    */
-  allowAllOutbound?: boolean;
+  readonly allowAllOutbound?: boolean;
 
   /**
    * What to do when an AutoScalingGroup's instance configuration is changed
@@ -91,14 +79,14 @@ export interface AutoScalingGroupProps {
    *
    * @default UpdateType.None
    */
-  updateType?: UpdateType;
+  readonly updateType?: UpdateType;
 
   /**
    * Configuration for rolling updates
    *
    * Only used if updateType == UpdateType.RollingUpdate.
    */
-  rollingUpdateConfiguration?: RollingUpdateConfiguration;
+  readonly rollingUpdateConfiguration?: RollingUpdateConfiguration;
 
   /**
    * Configuration for replacing updates.
@@ -106,7 +94,7 @@ export interface AutoScalingGroupProps {
    * Only used if updateType == UpdateType.ReplacingUpdate. Specifies how
    * many instances must signal success for the update to succeed.
    */
-  replacingUpdateMinSuccessfulInstancesPercent?: number;
+  readonly replacingUpdateMinSuccessfulInstancesPercent?: number;
 
   /**
    * If the ASG has scheduled actions, don't reset unchanged group sizes
@@ -119,14 +107,14 @@ export interface AutoScalingGroupProps {
    *
    * @default true
    */
-  ignoreUnmodifiedSizeProperties?: boolean;
+  readonly ignoreUnmodifiedSizeProperties?: boolean;
 
   /**
    * How many ResourceSignal calls CloudFormation expects before the resource is considered created
    *
    * @default 1
    */
-  resourceSignalCount?: number;
+  readonly resourceSignalCount?: number;
 
   /**
    * The length of time to wait for the resourceSignalCount
@@ -135,193 +123,72 @@ export interface AutoScalingGroupProps {
    *
    * @default 300 (5 minutes)
    */
-  resourceSignalTimeoutSec?: number;
-
-  /**
-   * The AWS resource tags to associate with the ASG.
-   */
-  tags?: cdk.Tags;
+  readonly resourceSignalTimeoutSec?: number;
 
   /**
    * Default scaling cooldown for this AutoScalingGroup
    *
    * @default 300 (5 minutes)
    */
-  cooldownSeconds?: number;
+  readonly cooldownSeconds?: number;
+
+  /**
+   * Whether instances in the Auto Scaling Group should have public
+   * IP addresses associated with them.
+   *
+   * @default Use subnet setting
+   */
+  readonly associatePublicIpAddress?: boolean;
 }
 
 /**
- * A Fleet represents a managed set of EC2 instances
- *
- * The Fleet models a number of AutoScalingGroups, a launch configuration, a
- * security group and an instance role.
- *
- * It allows adding arbitrary commands to the startup scripts of the instances
- * in the fleet.
- *
- * The ASG spans all availability zones.
+ * Properties of a Fleet
  */
-export class AutoScalingGroup extends cdk.Construct implements IAutoScalingGroup, cdk.ITaggable, elb.ILoadBalancerTarget, ec2.IConnectable,
-  elbv2.IApplicationLoadBalancerTarget, elbv2.INetworkLoadBalancerTarget {
+export interface AutoScalingGroupProps extends CommonAutoScalingGroupProps {
   /**
-   * The type of OS instances of this fleet are running.
+   * VPC to launch these instances in.
    */
-  public readonly osType: ec2.OperatingSystemType;
+  readonly vpc: ec2.IVpcNetwork;
 
   /**
-   * Allows specify security group connections for instances of this fleet.
+   * Type of instance to launch
    */
-  public readonly connections: ec2.Connections;
+  readonly instanceType: ec2.InstanceType;
 
   /**
-   * The IAM role assumed by instances of this fleet.
+   * AMI to launch
    */
-  public readonly role: iam.Role;
+  readonly machineImage: ec2.IMachineImageSource;
 
   /**
-   * Manage tags for this construct and children
-   */
-  public readonly tags: cdk.TagManager;
-
-  /**
-   * Name of the AutoScalingGroup
-   */
-  public readonly autoScalingGroupName: string;
-
-  private readonly userDataLines = new Array<string>();
-  private readonly autoScalingGroup: cloudformation.AutoScalingGroupResource;
-  private readonly securityGroup: ec2.SecurityGroupRef;
-  private readonly securityGroups: ec2.SecurityGroupRef[] = [];
-  private readonly loadBalancerNames: string[] = [];
-  private readonly targetGroupArns: string[] = [];
-  private albTargetGroup?: elbv2.ApplicationTargetGroup;
-
-  constructor(parent: cdk.Construct, name: string, props: AutoScalingGroupProps) {
-    super(parent, name);
-
-    if (props.cooldownSeconds !== undefined && props.cooldownSeconds < 0) {
-      throw new RangeError(`cooldownSeconds cannot be negative, got: ${props.cooldownSeconds}`);
-    }
-
-    this.securityGroup = new ec2.SecurityGroup(this, 'InstanceSecurityGroup', {
-      vpc: props.vpc,
-      allowAllOutbound: props.allowAllOutbound !== false
-    });
-    this.connections = new ec2.Connections({ securityGroups: [this.securityGroup] });
-    this.securityGroups.push(this.securityGroup);
-    this.tags = new TagManager(this, {initialTags: props.tags});
-    this.tags.setTag(NAME_TAG, this.path, { overwrite: false });
-
-    this.role = new iam.Role(this, 'InstanceRole', {
-      assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com')
-    });
-
-    const iamProfile = new iam.cloudformation.InstanceProfileResource(this, 'InstanceProfile', {
-      roles: [ this.role.roleName ]
-    });
-
-    // use delayed evaluation
-    const machineImage = props.machineImage.getImage(this);
-    const userDataToken = new cdk.Token(() => new cdk.FnBase64((machineImage.os.createUserData(this.userDataLines))));
-    const securityGroupsToken = new cdk.Token(() => this.securityGroups.map(sg => sg.securityGroupId));
-
-    const launchConfig = new cloudformation.LaunchConfigurationResource(this, 'LaunchConfig', {
-      imageId: machineImage.imageId,
-      keyName: props.keyName,
-      instanceType: props.instanceType.toString(),
-      securityGroups: securityGroupsToken,
-      iamInstanceProfile: iamProfile.ref,
-      userData: userDataToken
-    });
-
-    launchConfig.addDependency(this.role);
-
-    const desiredCapacity =
-        (props.desiredCapacity !== undefined ? props.desiredCapacity :
-        (props.minSize !== undefined ? props.minSize :
-        (props.maxSize !== undefined ? props.maxSize : 1)));
-    const minSize = props.minSize !== undefined ? props.minSize : 1;
-    const maxSize = props.maxSize !== undefined ? props.maxSize : desiredCapacity;
-
-    if (desiredCapacity < minSize || desiredCapacity > maxSize) {
-      throw new Error(`Should have minSize (${minSize}) <= desiredCapacity (${desiredCapacity}) <= maxSize (${maxSize})`);
-    }
-
-    const asgProps: cloudformation.AutoScalingGroupResourceProps = {
-      cooldown: props.cooldownSeconds !== undefined ? `${props.cooldownSeconds}` : undefined,
-      minSize: minSize.toString(),
-      maxSize: maxSize.toString(),
-      desiredCapacity: desiredCapacity.toString(),
-      launchConfigurationName: launchConfig.ref,
-      loadBalancerNames: new cdk.Token(() => this.loadBalancerNames.length > 0 ? this.loadBalancerNames : undefined),
-      targetGroupArns: new cdk.Token(() => this.targetGroupArns.length > 0 ? this.targetGroupArns : undefined),
-      tags: this.tags,
-    };
-
-    if (props.notificationsTopic) {
-      asgProps.notificationConfigurations = [];
-      asgProps.notificationConfigurations.push({
-        topicArn: props.notificationsTopic.topicArn,
-        notificationTypes: [
-          "autoscaling:EC2_INSTANCE_LAUNCH",
-          "autoscaling:EC2_INSTANCE_LAUNCH_ERROR",
-          "autoscaling:EC2_INSTANCE_TERMINATE",
-          "autoscaling:EC2_INSTANCE_TERMINATE_ERROR"
-        ],
-      });
-    }
-
-    const subnets = props.vpc.subnets(props.vpcPlacement);
-    asgProps.vpcZoneIdentifier = subnets.map(n => n.subnetId);
-
-    this.autoScalingGroup = new cloudformation.AutoScalingGroupResource(this, 'ASG', asgProps);
-    this.osType = machineImage.os.type;
-    this.autoScalingGroupName = this.autoScalingGroup.autoScalingGroupName;
-
-    this.applyUpdatePolicies(props);
-  }
-
-  /**
-   * Add the security group to all instances via the launch configuration
-   * security groups array.
+   * An IAM role to associate with the instance profile assigned to this Auto Scaling Group.
    *
-   * @param securityGroup: The SecurityGroupRef to add
+   * The role must be assumable by the service principal `ec2.amazonaws.com`:
+   *
+   * @example
+   *
+   *    const role = new iam.Role(this, 'MyRole', {
+   *      assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com')
+   *    });
+   *
+   * @default A role will automatically be created, it can be accessed via the `role` property
    */
-  public addSecurityGroup(securityGroup: ec2.SecurityGroupRef): void {
-    this.securityGroups.push(securityGroup);
-  }
+  readonly role?: iam.IRole;
+}
+
+abstract class AutoScalingGroupBase extends Resource implements IAutoScalingGroup {
+
+  public abstract autoScalingGroupName: string;
+  protected albTargetGroup?: elbv2.ApplicationTargetGroup;
 
   /**
-   * Attach to a classic load balancer
+   * Send a message to either an SQS queue or SNS topic when instances launch or terminate
    */
-  public attachToClassicLB(loadBalancer: elb.LoadBalancer): void {
-    this.loadBalancerNames.push(loadBalancer.loadBalancerName);
-  }
-
-  /**
-   * Attach to ELBv2 Application Target Group
-   */
-  public attachToApplicationTargetGroup(targetGroup: elbv2.ApplicationTargetGroup): elbv2.LoadBalancerTargetProps {
-    this.targetGroupArns.push(targetGroup.targetGroupArn);
-    this.albTargetGroup = targetGroup;
-    targetGroup.registerConnectable(this);
-    return { targetType: elbv2.TargetType.Instance };
-  }
-
-  /**
-   * Attach to ELBv2 Application Target Group
-   */
-  public attachToNetworkTargetGroup(targetGroup: elbv2.NetworkTargetGroup): elbv2.LoadBalancerTargetProps {
-    this.targetGroupArns.push(targetGroup.targetGroupArn);
-    return { targetType: elbv2.TargetType.Instance };
-  }
-
-  /**
-   * Add command to the startup script of fleet instances.
-   * The command must be in the scripting language supported by the fleet's OS (i.e. Linux/Windows).
-   */
-  public addUserData(...scriptLines: string[]) {
-    scriptLines.forEach(scriptLine => this.userDataLines.push(scriptLine));
+  public onLifecycleTransition(id: string, props: BasicLifecycleHookProps): LifecycleHook {
+    return new LifecycleHook(this, `LifecycleHook${id}`, {
+      autoScalingGroup: this,
+      ...props
+    });
   }
 
   /**
@@ -391,9 +258,7 @@ export class AutoScalingGroup extends cdk.Construct implements IAutoScalingGroup
       ...props
     });
 
-    // Target tracking policy can only be created after the load balancer has been
-    // attached to the targetgroup (because we need its ARN).
-    policy.addDependency(this.albTargetGroup.loadBalancerDependency());
+    policy.node.addDependency(this.albTargetGroup.loadBalancerAttached);
     return policy;
   }
 
@@ -414,6 +279,187 @@ export class AutoScalingGroup extends cdk.Construct implements IAutoScalingGroup
   public scaleOnMetric(id: string, props: BasicStepScalingPolicyProps): StepScalingPolicy {
     return new StepScalingPolicy(this, id, { ...props, autoScalingGroup: this });
   }
+}
+
+/**
+ * A Fleet represents a managed set of EC2 instances
+ *
+ * The Fleet models a number of AutoScalingGroups, a launch configuration, a
+ * security group and an instance role.
+ *
+ * It allows adding arbitrary commands to the startup scripts of the instances
+ * in the fleet.
+ *
+ * The ASG spans all availability zones.
+ */
+export class AutoScalingGroup extends AutoScalingGroupBase implements
+  elb.ILoadBalancerTarget,
+  ec2.IConnectable,
+  elbv2.IApplicationLoadBalancerTarget,
+  elbv2.INetworkLoadBalancerTarget {
+
+  public static fromAutoScalingGroupName(scope: Construct, id: string, autoScalingGroupName: string): IAutoScalingGroup {
+    class Import extends AutoScalingGroupBase {
+      public autoScalingGroupName = autoScalingGroupName;
+    }
+
+    return new Import(scope, id);
+  }
+
+  /**
+   * The type of OS instances of this fleet are running.
+   */
+  public readonly osType: ec2.OperatingSystemType;
+
+  /**
+   * Allows specify security group connections for instances of this fleet.
+   */
+  public readonly connections: ec2.Connections;
+
+  /**
+   * The IAM role assumed by instances of this fleet.
+   */
+  public readonly role: iam.IRole;
+
+  /**
+   * Name of the AutoScalingGroup
+   */
+  public readonly autoScalingGroupName: string;
+
+  private readonly userDataLines = new Array<string>();
+  private readonly autoScalingGroup: CfnAutoScalingGroup;
+  private readonly securityGroup: ec2.ISecurityGroup;
+  private readonly securityGroups: ec2.ISecurityGroup[] = [];
+  private readonly loadBalancerNames: string[] = [];
+  private readonly targetGroupArns: string[] = [];
+
+  constructor(scope: Construct, id: string, props: AutoScalingGroupProps) {
+    super(scope, id);
+
+    if (props.cooldownSeconds !== undefined && props.cooldownSeconds < 0) {
+      throw new RangeError(`cooldownSeconds cannot be negative, got: ${props.cooldownSeconds}`);
+    }
+
+    this.securityGroup = new ec2.SecurityGroup(this, 'InstanceSecurityGroup', {
+      vpc: props.vpc,
+      allowAllOutbound: props.allowAllOutbound !== false
+    });
+    this.connections = new ec2.Connections({ securityGroups: [this.securityGroup] });
+    this.securityGroups.push(this.securityGroup);
+    this.node.apply(new Tag(NAME_TAG, this.node.path));
+
+    this.role = props.role || new iam.Role(this, 'InstanceRole', {
+      assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com')
+    });
+
+    const iamProfile = new iam.CfnInstanceProfile(this, 'InstanceProfile', {
+      roles: [ this.role.roleName ]
+    });
+
+    // use delayed evaluation
+    const machineImage = props.machineImage.getImage(this);
+    const userDataToken = new Token(() => Fn.base64((machineImage.os.createUserData(this.userDataLines)))).toString();
+    const securityGroupsToken = new Token(() => this.securityGroups.map(sg => sg.securityGroupId));
+
+    const launchConfig = new CfnLaunchConfiguration(this, 'LaunchConfig', {
+      imageId: machineImage.imageId,
+      keyName: props.keyName,
+      instanceType: props.instanceType.toString(),
+      securityGroups: securityGroupsToken.toList(),
+      iamInstanceProfile: iamProfile.ref,
+      userData: userDataToken,
+      associatePublicIpAddress: props.associatePublicIpAddress,
+    });
+
+    launchConfig.node.addDependency(this.role);
+
+    const desiredCapacity =
+        (props.desiredCapacity !== undefined ? props.desiredCapacity :
+        (props.minCapacity !== undefined ? props.minCapacity :
+        (props.maxCapacity !== undefined ? props.maxCapacity : 1)));
+    const minCapacity = props.minCapacity !== undefined ? props.minCapacity : 1;
+    const maxCapacity = props.maxCapacity !== undefined ? props.maxCapacity : desiredCapacity;
+
+    if (desiredCapacity < minCapacity || desiredCapacity > maxCapacity) {
+      throw new Error(`Should have minCapacity (${minCapacity}) <= desiredCapacity (${desiredCapacity}) <= maxCapacity (${maxCapacity})`);
+    }
+
+    const { subnetIds } = props.vpc.selectSubnets(props.vpcSubnets);
+    const asgProps: CfnAutoScalingGroupProps = {
+      cooldown: props.cooldownSeconds !== undefined ? `${props.cooldownSeconds}` : undefined,
+      minSize: minCapacity.toString(),
+      maxSize: maxCapacity.toString(),
+      desiredCapacity: desiredCapacity.toString(),
+      launchConfigurationName: launchConfig.ref,
+      loadBalancerNames: new Token(() => this.loadBalancerNames.length > 0 ? this.loadBalancerNames : undefined).toList(),
+      targetGroupArns: new Token(() => this.targetGroupArns.length > 0 ? this.targetGroupArns : undefined).toList(),
+      notificationConfigurations: !props.notificationsTopic ? undefined : [
+        {
+          topicArn: props.notificationsTopic.topicArn,
+          notificationTypes: [
+            "autoscaling:EC2_INSTANCE_LAUNCH",
+            "autoscaling:EC2_INSTANCE_LAUNCH_ERROR",
+            "autoscaling:EC2_INSTANCE_TERMINATE",
+            "autoscaling:EC2_INSTANCE_TERMINATE_ERROR"
+          ],
+        }
+      ],
+      vpcZoneIdentifier: subnetIds
+    };
+
+    if (!props.vpc.isPublicSubnets(subnetIds) && props.associatePublicIpAddress) {
+      throw new Error("To set 'associatePublicIpAddress: true' you must select Public subnets (vpcSubnets: { subnetType: SubnetType.Public })");
+    }
+
+    this.autoScalingGroup = new CfnAutoScalingGroup(this, 'ASG', asgProps);
+    this.osType = machineImage.os.type;
+    this.autoScalingGroupName = this.autoScalingGroup.autoScalingGroupName;
+
+    this.applyUpdatePolicies(props);
+  }
+
+  /**
+   * Add the security group to all instances via the launch configuration
+   * security groups array.
+   *
+   * @param securityGroup: The security group to add
+   */
+  public addSecurityGroup(securityGroup: ec2.ISecurityGroup): void {
+    this.securityGroups.push(securityGroup);
+  }
+
+  /**
+   * Attach to a classic load balancer
+   */
+  public attachToClassicLB(loadBalancer: elb.LoadBalancer): void {
+    this.loadBalancerNames.push(loadBalancer.loadBalancerName);
+  }
+
+  /**
+   * Attach to ELBv2 Application Target Group
+   */
+  public attachToApplicationTargetGroup(targetGroup: elbv2.ApplicationTargetGroup): elbv2.LoadBalancerTargetProps {
+    this.targetGroupArns.push(targetGroup.targetGroupArn);
+    this.albTargetGroup = targetGroup;
+    targetGroup.registerConnectable(this);
+    return { targetType: elbv2.TargetType.Instance };
+  }
+
+  /**
+   * Attach to ELBv2 Application Target Group
+   */
+  public attachToNetworkTargetGroup(targetGroup: elbv2.NetworkTargetGroup): elbv2.LoadBalancerTargetProps {
+    this.targetGroupArns.push(targetGroup.targetGroupArn);
+    return { targetType: elbv2.TargetType.Instance };
+  }
+
+  /**
+   * Add command to the startup script of fleet instances.
+   * The command must be in the scripting language supported by the fleet's OS (i.e. Linux/Windows).
+   */
+  public addUserData(...scriptLines: string[]) {
+    scriptLines.forEach(scriptLine => this.userDataLines.push(scriptLine));
+  }
 
   /**
    * Adds a statement to the IAM role assumed by instances of this fleet.
@@ -423,21 +469,16 @@ export class AutoScalingGroup extends cdk.Construct implements IAutoScalingGroup
   }
 
   /**
-   * Send a message to either an SQS queue or SNS topic when instances launch or terminate
-   */
-  public onLifecycleTransition(id: string, props: BasicLifecycleHookProps): LifecycleHook {
-    return new LifecycleHook(this, `LifecycleHook${id}`, {
-      autoScalingGroup: this,
-      ...props
-    });
-  }
-
-  /**
    * Apply CloudFormation update policies for the AutoScalingGroup
    */
   private applyUpdatePolicies(props: AutoScalingGroupProps) {
     if (props.updateType === UpdateType.ReplacingUpdate) {
-      this.asgUpdatePolicy.autoScalingReplacingUpdate = { willReplace: true };
+      this.autoScalingGroup.options.updatePolicy = {
+        ...this.autoScalingGroup.options.updatePolicy,
+        autoScalingReplacingUpdate: {
+          willReplace: true
+        }
+      };
 
       if (props.replacingUpdateMinSuccessfulInstancesPercent !== undefined) {
         // Yes, this goes on CreationPolicy, not as a process parameter to ReplacingUpdate.
@@ -445,45 +486,37 @@ export class AutoScalingGroup extends cdk.Construct implements IAutoScalingGroup
         // during the update?
         //
         // https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-attribute-creationpolicy.html
-        this.asgCreationPolicy.autoScalingCreationPolicy = {
-          minSuccessfulInstancesPercent: validatePercentage(props.replacingUpdateMinSuccessfulInstancesPercent)
+        this.autoScalingGroup.options.creationPolicy = {
+          ...this.autoScalingGroup.options.creationPolicy,
+          autoScalingCreationPolicy: {
+            minSuccessfulInstancesPercent: validatePercentage(props.replacingUpdateMinSuccessfulInstancesPercent)
+          }
         };
       }
     } else if (props.updateType === UpdateType.RollingUpdate) {
-      this.asgUpdatePolicy.autoScalingRollingUpdate = renderRollingUpdateConfig(props.rollingUpdateConfiguration);
+      this.autoScalingGroup.options.updatePolicy = {
+        ...this.autoScalingGroup.options.updatePolicy,
+        autoScalingRollingUpdate: renderRollingUpdateConfig(props.rollingUpdateConfiguration)
+      };
     }
 
     // undefined is treated as 'true'
     if (props.ignoreUnmodifiedSizeProperties !== false) {
-      this.asgUpdatePolicy.autoScalingScheduledAction = { ignoreUnmodifiedGroupSizeProperties: true };
+      this.autoScalingGroup.options.updatePolicy = {
+        ...this.autoScalingGroup.options.updatePolicy,
+        autoScalingScheduledAction: { ignoreUnmodifiedGroupSizeProperties: true }
+      };
     }
 
     if (props.resourceSignalCount !== undefined || props.resourceSignalTimeoutSec !== undefined) {
-      this.asgCreationPolicy.resourceSignal = {
-        count: props.resourceSignalCount,
-        timeout: props.resourceSignalTimeoutSec !== undefined ? renderIsoDuration(props.resourceSignalTimeoutSec) : undefined,
+      this.autoScalingGroup.options.creationPolicy = {
+        ...this.autoScalingGroup.options.creationPolicy,
+        resourceSignal: {
+          count: props.resourceSignalCount,
+          timeout: props.resourceSignalTimeoutSec !== undefined ? renderIsoDuration(props.resourceSignalTimeoutSec) : undefined,
+        }
       };
     }
-  }
-
-  /**
-   * Create and return the ASG update policy
-   */
-  private get asgUpdatePolicy() {
-    if (this.autoScalingGroup.options.updatePolicy === undefined) {
-      this.autoScalingGroup.options.updatePolicy = {};
-    }
-    return this.autoScalingGroup.options.updatePolicy;
-  }
-
-  /**
-   * Create and return the ASG creation policy
-   */
-  private get asgCreationPolicy() {
-    if (this.autoScalingGroup.options.creationPolicy === undefined) {
-      this.autoScalingGroup.options.creationPolicy = {};
-    }
-    return this.autoScalingGroup.options.creationPolicy;
   }
 }
 
@@ -518,7 +551,7 @@ export interface RollingUpdateConfiguration {
    *
    * @default 1
    */
-  maxBatchSize?: number;
+  readonly maxBatchSize?: number;
 
   /**
    * The minimum number of instances that must be in service before more instances are replaced.
@@ -527,7 +560,7 @@ export interface RollingUpdateConfiguration {
    *
    * @default 0
    */
-  minInstancesInService?: number;
+  readonly minInstancesInService?: number;
 
   /**
    * The percentage of instances that must signal success for an update to succeed.
@@ -543,7 +576,7 @@ export interface RollingUpdateConfiguration {
    *
    * @default 100
    */
-  minSuccessfulInstancesPercent?: number;
+  readonly minSuccessfulInstancesPercent?: number;
 
   /**
    * The pause time after making a change to a batch of instances.
@@ -556,7 +589,7 @@ export interface RollingUpdateConfiguration {
    *
    * @default 300 if the waitOnResourceSignals property is true, otherwise 0
    */
-  pauseTimeSec?: number;
+  readonly pauseTimeSec?: number;
 
   /**
    * Specifies whether the Auto Scaling group waits on signals from new instances during an update.
@@ -571,7 +604,7 @@ export interface RollingUpdateConfiguration {
    *
    * @default true if you specified the minSuccessfulInstancesPercent property, false otherwise
    */
-  waitOnResourceSignals?: boolean;
+  readonly waitOnResourceSignals?: boolean;
 
   /**
    * Specifies the Auto Scaling processes to suspend during a stack update.
@@ -581,7 +614,7 @@ export interface RollingUpdateConfiguration {
    *
    * @default HealthCheck, ReplaceUnhealthy, AZRebalance, AlarmNotification, ScheduledActions.
    */
-  suspendProcesses?: ScalingProcess[];
+  readonly suspendProcesses?: ScalingProcess[];
 }
 
 export enum ScalingProcess {
@@ -598,7 +631,7 @@ export enum ScalingProcess {
 /**
  * Render the rolling update configuration into the appropriate object
  */
-function renderRollingUpdateConfig(config: RollingUpdateConfiguration = {}): cdk.AutoScalingRollingUpdate {
+function renderRollingUpdateConfig(config: RollingUpdateConfiguration = {}): AutoScalingRollingUpdate {
   const waitOnResourceSignals = config.minSuccessfulInstancesPercent !== undefined ? true : false;
   const pauseTimeSec = config.pauseTimeSec !== undefined ? config.pauseTimeSec : (waitOnResourceSignals ? 300 : 0);
 
@@ -614,16 +647,6 @@ function renderRollingUpdateConfig(config: RollingUpdateConfiguration = {}): cdk
       [ScalingProcess.HealthCheck, ScalingProcess.ReplaceUnhealthy, ScalingProcess.AZRebalance,
         ScalingProcess.AlarmNotification, ScalingProcess.ScheduledActions],
   };
-}
-
-class TagManager extends cdk.TagManager {
-  protected tagFormatResolve(tagGroups: cdk.TagGroups): any {
-    const tags = {...tagGroups.nonStickyTags, ...tagGroups.ancestorTags, ...tagGroups.stickyTags};
-    return Object.keys(tags).map( (key) => {
-      const propagateAtLaunch = !!tagGroups.propagateTags[key] || !!tagGroups.ancestorTags[key];
-      return {key, value: tags[key], propagateAtLaunch};
-    });
-  }
 }
 
 /**
@@ -659,9 +682,10 @@ function validatePercentage(x?: number): number | undefined {
 /**
  * An AutoScalingGroup
  */
-export interface IAutoScalingGroup {
+export interface IAutoScalingGroup extends IResource {
   /**
    * The name of the AutoScalingGroup
+   * @attribute
    */
   readonly autoScalingGroupName: string;
 
@@ -708,7 +732,7 @@ export interface CpuUtilizationScalingProps extends BaseTargetTrackingProps {
   /**
    * Target average CPU utilization across the task
    */
-  targetUtilizationPercent: number;
+  readonly targetUtilizationPercent: number;
 }
 
 /**
@@ -718,7 +742,7 @@ export interface NetworkUtilizationScalingProps extends BaseTargetTrackingProps 
   /**
    * Target average bytes/seconds on each instance
    */
-  targetBytesPerSecond: number;
+  readonly targetBytesPerSecond: number;
 }
 
 /**
@@ -728,7 +752,7 @@ export interface RequestCountScalingProps extends BaseTargetTrackingProps {
   /**
    * Target average requests/seconds on each instance
    */
-  targetRequestsPerSecond: number;
+  readonly targetRequestsPerSecond: number;
 }
 
 /**
@@ -742,10 +766,10 @@ export interface MetricTargetTrackingProps extends BaseTargetTrackingProps {
    * target value, your ASG should scale out, and if it's lower it should
    * scale in.
    */
-  metric: cloudwatch.Metric;
+  readonly metric: cloudwatch.Metric;
 
   /**
    * Value to keep the metric around
    */
-  targetValue: number;
+  readonly targetValue: number;
 }

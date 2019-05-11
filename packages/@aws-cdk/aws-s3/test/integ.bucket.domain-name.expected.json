@@ -7,18 +7,24 @@
   "Outputs": {
     "RealBucketDomain": {
       "Value": {
-        "Fn::GetAtt":["MyBucketF68F3FF0","DomainName"]
-      },
-      "Export": {
-        "Name": "aws-cdk-s3-urls:RealBucketDomain"
+        "Fn::GetAtt": [
+          "MyBucketF68F3FF0",
+          "DomainName"
+        ]
       }
     },
     "ImportedBucketDomain": {
-      "Value": "my-bucket-test.s3.amazonaws.com",
-      "Export": {
-        "Name": "aws-cdk-s3-urls:ImportedBucketDomain"
+      "Value": {
+        "Fn::Join": [
+          "",
+          [
+            "my-bucket-test.s3.",
+            {
+              "Ref": "AWS::URLSuffix"
+            }
+          ]
+        ]
       }
     }
   }
 }
-

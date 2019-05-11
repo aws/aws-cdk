@@ -1,6 +1,7 @@
 import logs = require('@aws-cdk/aws-logs');
 import cdk = require('@aws-cdk/cdk');
-import { cloudformation } from '../ecs.generated';
+import { ContainerDefinition } from '../container-definition';
+import { CfnTaskDefinition } from '../ecs.generated';
 import { LogDriver } from "./log-driver";
 
 /**
@@ -17,14 +18,22 @@ export interface AwsLogDriverProps {
    *
    *     prefix-name/container-name/ecs-task-id
    */
-  streamPrefix: string;
+  readonly streamPrefix: string;
 
   /**
    * The log group to log to
    *
    * @default A log group is automatically created
    */
-  logGroup?: logs.LogGroupRef;
+  readonly logGroup?: logs.ILogGroup;
+
+  /**
+   * The number of days log events are kept in CloudWatch Logs when the log
+   * group is automatically created by this construct.
+   *
+   * @default logs never expire
+   */
+  readonly logRetentionDays?: logs.RetentionDays;
 
   /**
    * This option defines a multiline start pattern in Python strftime format.
@@ -33,7 +42,7 @@ export interface AwsLogDriverProps {
    * following lines that don’t match the pattern. Thus the matched line is
    * the delimiter between log messages.
    */
-  datetimeFormat?: string;
+  readonly datetimeFormat?: string;
 
   /**
    * This option defines a multiline start pattern using a regular expression.
@@ -42,7 +51,7 @@ export interface AwsLogDriverProps {
    * following lines that don’t match the pattern. Thus the matched line is
    * the delimiter between log messages.
    */
-  multilinePattern?: string;
+  readonly multilinePattern?: string;
 }
 
 /**
@@ -52,25 +61,37 @@ export class AwsLogDriver extends LogDriver {
   /**
    * The log group that the logs will be sent to
    */
-  public readonly logGroup: logs.LogGroupRef;
+  public readonly logGroup: logs.ILogGroup;
 
-  constructor(parent: cdk.Construct, id: string, private readonly props: AwsLogDriverProps) {
-    super(parent, id);
+  constructor(scope: cdk.Construct, id: string, private readonly props: AwsLogDriverProps) {
+    super(scope, id);
+
+    if (props.logGroup && props.logRetentionDays) {
+      throw new Error('Cannot specify both `logGroup` and `logRetentionDays`.');
+    }
+
     this.logGroup = props.logGroup || new logs.LogGroup(this, 'LogGroup', {
-        retentionDays: 365,
+        retentionDays: props.logRetentionDays || Infinity,
     });
+  }
+
+  /**
+   * Called when the log driver is configured on a container
+   */
+  public bind(containerDefinition: ContainerDefinition): void {
+    this.logGroup.grantWrite(containerDefinition.taskDefinition.obtainExecutionRole());
   }
 
   /**
    * Return the log driver CloudFormation JSON
    */
-  public renderLogDriver(): cloudformation.TaskDefinitionResource.LogConfigurationProperty {
+  public renderLogDriver(): CfnTaskDefinition.LogConfigurationProperty {
     return {
       logDriver: 'awslogs',
       options: removeEmpty({
         'awslogs-group': this.logGroup.logGroupName,
         'awslogs-stream-prefix': this.props.streamPrefix,
-        'awslogs-region': `${new cdk.AwsRegion()}`,
+        'awslogs-region': this.node.stack.region,
         'awslogs-datetime-format': this.props.datetimeFormat,
         'awslogs-multiline-pattern': this.props.multilinePattern,
       }),

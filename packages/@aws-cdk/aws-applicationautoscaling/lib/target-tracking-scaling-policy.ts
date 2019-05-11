@@ -1,7 +1,7 @@
 import cloudwatch = require('@aws-cdk/aws-cloudwatch');
 import cdk = require('@aws-cdk/cdk');
-import { cloudformation } from './applicationautoscaling.generated';
-import { ScalableTarget } from './scalable-target';
+import { CfnScalingPolicy } from './applicationautoscaling.generated';
+import { IScalableTarget } from './scalable-target';
 
 /**
  * Base interface for target tracking props
@@ -18,7 +18,7 @@ export interface BaseTargetTrackingProps {
    *
    * @default Automatically generated name
    */
-  policyName?: string;
+  readonly policyName?: string;
 
   /**
    * Indicates whether scale in by the target tracking policy is disabled.
@@ -30,21 +30,21 @@ export interface BaseTargetTrackingProps {
    *
    * @default false
    */
-  disableScaleIn?: boolean;
+  readonly disableScaleIn?: boolean;
 
   /**
    * Period after a scale in activity completes before another scale in activity can start.
    *
    * @default No scale in cooldown
    */
-  scaleInCooldownSec?: number;
+  readonly scaleInCooldownSec?: number;
 
   /**
    * Period after a scale out activity completes before another scale out activity can start.
    *
    * @default No scale out cooldown
    */
-  scaleOutCooldownSec?: number;
+  readonly scaleOutCooldownSec?: number;
 }
 
 /**
@@ -54,7 +54,7 @@ export interface BasicTargetTrackingScalingPolicyProps extends BaseTargetTrackin
   /**
    * The target value for the metric.
    */
-  targetValue: number;
+  readonly targetValue: number;
 
   /**
    * A predefined metric for application autoscaling
@@ -64,7 +64,7 @@ export interface BasicTargetTrackingScalingPolicyProps extends BaseTargetTrackin
    *
    * Exactly one of customMetric or predefinedMetric must be specified.
    */
-  predefinedMetric?: PredefinedMetric;
+  readonly predefinedMetric?: PredefinedMetric;
 
   /**
    * Identify the resource associated with the metric type.
@@ -73,7 +73,7 @@ export interface BasicTargetTrackingScalingPolicyProps extends BaseTargetTrackin
    *
    * @example app/<load-balancer-name>/<load-balancer-id>/targetgroup/<target-group-name>/<target-group-id>
    */
-  resourceLabel?: string;
+  readonly resourceLabel?: string;
 
   /**
    * A custom metric for application autoscaling
@@ -83,7 +83,7 @@ export interface BasicTargetTrackingScalingPolicyProps extends BaseTargetTrackin
    *
    * Exactly one of customMetric or predefinedMetric must be specified.
    */
-  customMetric?: cloudwatch.Metric;
+  readonly customMetric?: cloudwatch.Metric;
 }
 
 /**
@@ -95,7 +95,7 @@ export interface TargetTrackingScalingPolicyProps extends BasicTargetTrackingSca
   /*
    * The scalable target
    */
-  scalingTarget: ScalableTarget;
+  readonly scalingTarget: IScalableTarget;
 }
 
 export class TargetTrackingScalingPolicy extends cdk.Construct {
@@ -104,7 +104,7 @@ export class TargetTrackingScalingPolicy extends cdk.Construct {
    */
   public readonly scalingPolicyArn: string;
 
-  constructor(parent: cdk.Construct, id: string, props: TargetTrackingScalingPolicyProps) {
+  constructor(scope: cdk.Construct, id: string, props: TargetTrackingScalingPolicyProps) {
     if ((props.customMetric === undefined) === (props.predefinedMetric === undefined)) {
       throw new Error(`Exactly one of 'customMetric' or 'predefinedMetric' must be specified.`);
     }
@@ -116,10 +116,10 @@ export class TargetTrackingScalingPolicy extends cdk.Construct {
       throw new RangeError(`scaleOutCooldown cannot be negative, got: ${props.scaleOutCooldownSec}`);
     }
 
-    super(parent, id);
+    super(scope, id);
 
-    const resource = new cloudformation.ScalingPolicyResource(this, 'Resource', {
-      policyName: props.policyName || this.uniqueId,
+    const resource = new CfnScalingPolicy(this, 'Resource', {
+      policyName: props.policyName || this.node.uniqueId,
       policyType: 'TargetTrackingScaling',
       scalingTargetId: props.scalingTarget.scalableTargetId,
       targetTrackingScalingPolicyConfiguration: {
@@ -139,7 +139,7 @@ export class TargetTrackingScalingPolicy extends cdk.Construct {
   }
 }
 
-function renderCustomMetric(metric?: cloudwatch.Metric): cloudformation.ScalingPolicyResource.CustomizedMetricSpecificationProperty | undefined {
+function renderCustomMetric(metric?: cloudwatch.Metric): CfnScalingPolicy.CustomizedMetricSpecificationProperty | undefined {
   if (!metric) { return undefined; }
   return {
     dimensions: metric.dimensionsAsList(),

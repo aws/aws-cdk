@@ -1,4 +1,5 @@
-import { expect, haveResource } from '@aws-cdk/assert';
+import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
+import secretsmanager = require('@aws-cdk/aws-secretsmanager');
 import cdk = require('@aws-cdk/cdk');
 import { Test } from 'nodeunit';
 import ecs = require('../lib');
@@ -15,7 +16,7 @@ export = {
         });
 
         const container = taskDefinition.addContainer("Container", {
-          image: ecs.ContainerImage.fromDockerHub("/aws/aws-example-app"),
+          image: ecs.ContainerImage.fromRegistry("/aws/aws-example-app"),
           memoryLimitMiB: 2048,
         });
 
@@ -38,7 +39,7 @@ export = {
         });
 
         const container = taskDefinition.addContainer("Container", {
-          image: ecs.ContainerImage.fromDockerHub("/aws/aws-example-app"),
+          image: ecs.ContainerImage.fromRegistry("/aws/aws-example-app"),
           memoryLimitMiB: 2048,
         });
 
@@ -61,7 +62,7 @@ export = {
         });
 
         const container = taskDefinition.addContainer("Container", {
-          image: ecs.ContainerImage.fromDockerHub("/aws/aws-example-app"),
+          image: ecs.ContainerImage.fromRegistry("/aws/aws-example-app"),
           memoryLimitMiB: 2048,
         });
 
@@ -84,7 +85,7 @@ export = {
         });
 
         const container = taskDefinition.addContainer("Container", {
-          image: ecs.ContainerImage.fromDockerHub("/aws/aws-example-app"),
+          image: ecs.ContainerImage.fromRegistry("/aws/aws-example-app"),
           memoryLimitMiB: 2048,
         });
 
@@ -105,12 +106,12 @@ export = {
         });
 
         const container = taskDefinition.addContainer("Container", {
-          image: ecs.ContainerImage.fromDockerHub("/aws/aws-example-app"),
+          image: ecs.ContainerImage.fromRegistry("/aws/aws-example-app"),
           memoryLimitMiB: 2048,
         });
 
         const logger = taskDefinition.addContainer("LoggingContainer", {
-          image: ecs.ContainerImage.fromDockerHub("myLogger"),
+          image: ecs.ContainerImage.fromRegistry("myLogger"),
           memoryLimitMiB: 1024,
         });
 
@@ -132,12 +133,12 @@ export = {
         });
 
         const container = taskDefinition.addContainer("Container", {
-          image: ecs.ContainerImage.fromDockerHub("/aws/aws-example-app"),
+          image: ecs.ContainerImage.fromRegistry("/aws/aws-example-app"),
           memoryLimitMiB: 2048,
         });
 
         const logger = taskDefinition.addContainer("LoggingContainer", {
-          image: ecs.ContainerImage.fromDockerHub("myLogger"),
+          image: ecs.ContainerImage.fromRegistry("myLogger"),
           memoryLimitMiB: 1024,
         });
 
@@ -147,8 +148,8 @@ export = {
         test.done();
       },
     }
-
   },
+
   "Ingress Port": {
     "With network mode AwsVpc": {
       "Ingress port should be the same as container port"(test: Test) {
@@ -159,7 +160,7 @@ export = {
         });
 
         const container = taskDefinition.addContainer("Container", {
-          image: ecs.ContainerImage.fromDockerHub("/aws/aws-example-app"),
+          image: ecs.ContainerImage.fromRegistry("/aws/aws-example-app"),
           memoryLimitMiB: 2048,
         });
 
@@ -175,6 +176,7 @@ export = {
         test.done();
       },
     },
+
     "With network mode Host ": {
       "Ingress port should be the same as container port"(test: Test) {
         // GIVEN
@@ -184,7 +186,7 @@ export = {
         });
 
         const container = taskDefinition.addContainer("Container", {
-          image: ecs.ContainerImage.fromDockerHub("/aws/aws-example-app"),
+          image: ecs.ContainerImage.fromRegistry("/aws/aws-example-app"),
           memoryLimitMiB: 2048,
         });
 
@@ -210,7 +212,7 @@ export = {
         });
 
         const container = taskDefinition.addContainer("Container", {
-          image: ecs.ContainerImage.fromDockerHub("/aws/aws-example-app"),
+          image: ecs.ContainerImage.fromRegistry("/aws/aws-example-app"),
           memoryLimitMiB: 2048,
         });
 
@@ -235,7 +237,7 @@ export = {
         });
 
         const container = taskDefinition.addContainer("Container", {
-          image: ecs.ContainerImage.fromDockerHub("/aws/aws-example-app"),
+          image: ecs.ContainerImage.fromRegistry("/aws/aws-example-app"),
           memoryLimitMiB: 2048,
         });
 
@@ -253,6 +255,36 @@ export = {
     },
   },
 
+  'can add environment variables to the container definition'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
+
+    // WHEN
+    taskDefinition.addContainer('cont', {
+      image: ecs.ContainerImage.fromRegistry('test'),
+      memoryLimitMiB: 1024,
+      environment: {
+        TEST_ENVIRONMENT_VARIABLE: "test environment variable value"
+      }
+    });
+
+    // THEN
+    expect(stack).to(haveResourceLike('AWS::ECS::TaskDefinition', {
+      ContainerDefinitions: [
+        {
+          Environment: [{
+            Name: "TEST_ENVIRONMENT_VARIABLE",
+            Value: "test environment variable value"
+          }]
+        }
+      ]
+    }));
+
+    test.done();
+
+  },
+
   'can add AWS logging to container definition'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
@@ -260,13 +292,13 @@ export = {
 
     // WHEN
     taskDefinition.addContainer('cont', {
-      image: ecs.ContainerImage.fromDockerHub('test'),
+      image: ecs.ContainerImage.fromRegistry('test'),
       memoryLimitMiB: 1024,
       logging: new ecs.AwsLogDriver(stack, 'Logging', { streamPrefix: 'prefix' })
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::ECS::TaskDefinition', {
+    expect(stack).to(haveResourceLike('AWS::ECS::TaskDefinition', {
       ContainerDefinitions: [
         {
           LogConfiguration: {
@@ -281,6 +313,19 @@ export = {
       ]
     }));
 
+    expect(stack).to(haveResource('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: ["logs:CreateLogStream", "logs:PutLogEvents"],
+            Effect: "Allow",
+            Resource: { "Fn::GetAtt": ["LoggingLogGroupC6B8E20B", "Arn"] }
+          }
+        ],
+        Version: "2012-10-17"
+      }
+    }));
+
     test.done();
   },
   'can set Health Check with defaults'(test: Test) {
@@ -291,7 +336,7 @@ export = {
 
     // WHEN
     taskDefinition.addContainer('cont', {
-      image: ecs.ContainerImage.fromDockerHub('test'),
+      image: ecs.ContainerImage.fromRegistry('test'),
       memoryLimitMiB: 1024,
       healthCheck: {
         command: [hcCommand]
@@ -299,7 +344,7 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::ECS::TaskDefinition', {
+    expect(stack).to(haveResourceLike('AWS::ECS::TaskDefinition', {
       ContainerDefinitions: [
         {
           HealthCheck: {
@@ -315,7 +360,7 @@ export = {
     test.done();
   },
 
-  'can specify Health Check values'(test: Test) {
+  'can specify Health Check values in shell form'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
     const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
@@ -323,7 +368,7 @@ export = {
 
     // WHEN
     taskDefinition.addContainer('cont', {
-      image: ecs.ContainerImage.fromDockerHub('test'),
+      image: ecs.ContainerImage.fromRegistry('test'),
       memoryLimitMiB: 1024,
       healthCheck: {
         command: [hcCommand],
@@ -334,7 +379,7 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::ECS::TaskDefinition', {
+    expect(stack).to(haveResourceLike('AWS::ECS::TaskDefinition', {
       ContainerDefinitions: [
         {
           HealthCheck: {
@@ -349,6 +394,209 @@ export = {
     }));
 
     test.done();
+  },
+
+  'can specify Health Check values in array form starting with CMD-SHELL'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
+    const hcCommand = "curl localhost:8000";
+
+    // WHEN
+    taskDefinition.addContainer('cont', {
+      image: ecs.ContainerImage.fromRegistry('test'),
+      memoryLimitMiB: 1024,
+      healthCheck: {
+        command: ["CMD-SHELL", hcCommand],
+        intervalSeconds: 20,
+        retries: 5,
+        startPeriod: 10
+      }
+    });
+
+    // THEN
+    expect(stack).to(haveResourceLike('AWS::ECS::TaskDefinition', {
+      ContainerDefinitions: [
+        {
+          HealthCheck: {
+            Command: ["CMD-SHELL", hcCommand],
+            Interval: 20,
+            Retries: 5,
+            Timeout: 5,
+            StartPeriod: 10
+          },
+        }
+      ]
+    }));
+
+    test.done();
+  },
+
+  'can specify Health Check values in array form starting with CMD'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
+    const hcCommand = "curl localhost:8000";
+
+    // WHEN
+    taskDefinition.addContainer('cont', {
+      image: ecs.ContainerImage.fromRegistry('test'),
+      memoryLimitMiB: 1024,
+      healthCheck: {
+        command: ["CMD", hcCommand],
+        intervalSeconds: 20,
+        retries: 5,
+        startPeriod: 10
+      }
+    });
+
+    // THEN
+    expect(stack).to(haveResourceLike('AWS::ECS::TaskDefinition', {
+      ContainerDefinitions: [
+        {
+          HealthCheck: {
+            Command: ["CMD", hcCommand],
+            Interval: 20,
+            Retries: 5,
+            Timeout: 5,
+            StartPeriod: 10
+          },
+        }
+      ]
+    }));
+
+    test.done();
+  },
+
+  'can specify private registry credentials'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
+    const mySecretArn = 'arn:aws:secretsmanager:region:1234567890:secret:MyRepoSecret-6f8hj3';
+
+    const repoCreds = secretsmanager.Secret.fromSecretArn(stack, 'MyRepoSecret', mySecretArn);
+
+    // WHEN
+    taskDefinition.addContainer('Container', {
+      image: ecs.ContainerImage.fromRegistry('user-x/my-app', {
+        credentials: repoCreds
+      }),
+      memoryLimitMiB: 2048,
+    });
+
+    // THEN
+    expect(stack).to(haveResourceLike('AWS::ECS::TaskDefinition', {
+      ContainerDefinitions: [
+        {
+          Image: 'user-x/my-app',
+          RepositoryCredentials: {
+            CredentialsParameter: mySecretArn
+          },
+        }
+      ]
+    }));
+
+    expect(stack).to(haveResourceLike('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: "secretsmanager:GetSecretValue",
+            Effect: "Allow",
+            Resource: mySecretArn
+          }
+        ]
+      }
+    }));
+
+    test.done();
+  },
+
+  'Can specify linux parameters': {
+    'before calling addContainer'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
+
+      const linuxParameters = new ecs.LinuxParameters(stack, 'LinuxParameters', {
+        initProcessEnabled: true,
+        sharedMemorySize: 1024,
+      });
+
+      linuxParameters.addCapabilities(ecs.Capability.All);
+      linuxParameters.dropCapabilities(ecs.Capability.Kill);
+
+      // WHEN
+      taskDefinition.addContainer('cont', {
+        image: ecs.ContainerImage.fromRegistry('test'),
+        memoryLimitMiB: 1024,
+        linuxParameters,
+      });
+
+      // THEN
+      expect(stack).to(haveResourceLike('AWS::ECS::TaskDefinition', {
+        ContainerDefinitions: [
+          {
+            Image: 'test',
+            LinuxParameters: {
+              Capabilities: {
+                Add: ["ALL"],
+                Drop: ["KILL"]
+              },
+              Devices: [],
+              Tmpfs: [],
+              InitProcessEnabled: true,
+              SharedMemorySize: 1024,
+            },
+          }
+        ]
+      }));
+
+      test.done();
+    },
+
+    'after calling addContainer'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
+
+      const linuxParameters = new ecs.LinuxParameters(stack, 'LinuxParameters', {
+        initProcessEnabled: true,
+        sharedMemorySize: 1024,
+      });
+
+      linuxParameters.addCapabilities(ecs.Capability.All);
+
+      // WHEN
+      taskDefinition.addContainer('cont', {
+        image: ecs.ContainerImage.fromRegistry('test'),
+        memoryLimitMiB: 1024,
+        linuxParameters,
+      });
+
+      // Mutate linuxParameter after added to a container
+      linuxParameters.dropCapabilities(ecs.Capability.Setuid);
+
+      // THEN
+      expect(stack).to(haveResourceLike('AWS::ECS::TaskDefinition', {
+        ContainerDefinitions: [
+          {
+            Image: 'test',
+            LinuxParameters: {
+              Capabilities: {
+                Add: ["ALL"],
+                Drop: ["SETUID"]
+              },
+              Devices: [],
+              Tmpfs: [],
+              InitProcessEnabled: true,
+              SharedMemorySize: 1024,
+            },
+          }
+        ]
+      }));
+
+      test.done();
+    },
   },
 
   // render extra hosts test

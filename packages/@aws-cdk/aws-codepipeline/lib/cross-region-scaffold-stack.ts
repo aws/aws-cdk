@@ -1,6 +1,7 @@
 import s3 = require('@aws-cdk/aws-s3');
 import cdk = require('@aws-cdk/cdk');
 import crypto = require('crypto');
+import { CrossRegionScaffolding } from './pipeline';
 
 /**
  * Construction properties for {@link CrossRegionScaffoldStack}.
@@ -9,27 +10,28 @@ export interface CrossRegionScaffoldStackProps {
   /**
    * The AWS region this Stack resides in.
    */
-  region: string;
+  readonly region: string;
 
   /**
    * The AWS account ID this Stack belongs to.
    *
    * @example '012345678901'
    */
-  account: string;
+  readonly account: string;
 }
 
 /**
  * A Stack containing resources required for the cross-region CodePipeline functionality to work.
  */
-export class CrossRegionScaffoldStack extends cdk.Stack {
+export class CrossRegionScaffoldStack extends CrossRegionScaffolding {
   /**
    * The name of the S3 Bucket used for replicating the Pipeline's artifacts into the region.
    */
   public readonly replicationBucketName: string;
 
-  constructor(parent?: cdk.App, props: CrossRegionScaffoldStackProps = defaultCrossRegionScaffoldStackProps()) {
-    super(parent, generateStackName(props), {
+  constructor(scope: cdk.Construct, id: string, props: CrossRegionScaffoldStackProps) {
+    super(scope, id, {
+      stackName: generateStackName(props),
       env: {
         region: props.region,
         account: props.account,
@@ -60,9 +62,4 @@ function generateUniqueName(baseName: string, region: string, account: string,
   const hash = sha256.digest('hex').slice(0, hashPartLen);
 
   return baseName + (toUpperCase ? hash.toUpperCase() : hash.toLowerCase());
-}
-
-// purely to defeat the limitation that a required argument cannot follow an optional one
-function defaultCrossRegionScaffoldStackProps(): CrossRegionScaffoldStackProps {
-  throw new Error('The props argument when creating a CrossRegionScaffoldStack is required');
 }

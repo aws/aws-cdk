@@ -1,73 +1,32 @@
-import { Construct, Token } from '@aws-cdk/cdk';
-import { cloudformation } from './cloudwatch.generated';
+import { Construct, IResource, Resource, Token } from '@aws-cdk/cdk';
+import { CfnAlarm } from './cloudwatch.generated';
 import { HorizontalAnnotation } from './graph';
-import { Dimension, Metric, Statistic, Unit } from './metric';
+import { Dimension, Metric, MetricAlarmProps, Statistic, Unit } from './metric';
 import { parseStatistic } from './util.statistic';
+
+export interface IAlarm extends IResource {
+  /**
+   * @attribute
+   */
+  readonly alarmArn: string;
+
+  /**
+   * @attribute
+   */
+  readonly alarmName: string;
+}
 
 /**
  * Properties for Alarms
  */
-export interface AlarmProps {
+export interface AlarmProps extends MetricAlarmProps {
   /**
    * The metric to add the alarm on
    *
    * Metric objects can be obtained from most resources, or you can construct
    * custom Metric objects by instantiating one.
    */
-  metric: Metric;
-
-  /**
-   * Name of the alarm
-   *
-   * @default Automatically generated name
-   */
-  alarmName?: string;
-
-  /**
-   * Description for the alarm
-   *
-   * @default No description
-   */
-  alarmDescription?: string;
-
-  /**
-   * Comparison to use to check if metric is breaching
-   *
-   * @default GreaterThanOrEqualToThreshold
-   */
-  comparisonOperator?: ComparisonOperator;
-
-  /**
-   * The value against which the specified statistic is compared.
-   */
-  threshold: number;
-
-  /**
-   * The number of periods over which data is compared to the specified threshold.
-   */
-  evaluationPeriods: number;
-
-  /**
-   * Specifies whether to evaluate the data and potentially change the alarm
-   * state if there are too few data points to be statistically significant.
-   *
-   * Used only for alarms that are based on percentiles.
-   */
-  evaluateLowSampleCountPercentile?: string;
-
-  /**
-   * Sets how this alarm is to handle missing data points.
-   *
-   * @default TreatMissingData.Missing
-   */
-  treatMissingData?: TreatMissingData;
-
-  /**
-   * Whether the actions for this alarm are enabled
-   *
-   * @default true
-   */
-  actionsEnabled?: boolean;
+  readonly metric: Metric;
 }
 
 /**
@@ -115,14 +74,27 @@ export enum TreatMissingData {
 /**
  * An alarm on a CloudWatch metric
  */
-export class Alarm extends Construct {
+export class Alarm extends Resource implements IAlarm {
+
+  public static fromAlarmArn(scope: Construct, id: string, alarmArn: string): IAlarm {
+    class Import extends Resource implements IAlarm {
+      public readonly alarmArn = alarmArn;
+      public readonly alarmName = scope.node.stack.parseArn(alarmArn, ':').resourceName!;
+    }
+    return new Import(scope, id);
+  }
+
   /**
    * ARN of this alarm
+   *
+   * @attribute
    */
   public readonly alarmArn: string;
 
   /**
    * Name of this alarm.
+   *
+   * @attribute
    */
   public readonly alarmName: string;
 
@@ -140,12 +112,12 @@ export class Alarm extends Construct {
    */
   private readonly annotation: HorizontalAnnotation;
 
-  constructor(parent: Construct, name: string, props: AlarmProps) {
-    super(parent, name);
+  constructor(scope: Construct, id: string, props: AlarmProps) {
+    super(scope, id);
 
     const comparisonOperator = props.comparisonOperator || ComparisonOperator.GreaterThanOrEqualToThreshold;
 
-    const alarm = new cloudformation.AlarmResource(this, 'Resource', {
+    const alarm = new CfnAlarm(this, 'Resource', {
       // Meta
       alarmDescription: props.alarmDescription,
       alarmName: props.alarmName,
@@ -153,15 +125,16 @@ export class Alarm extends Construct {
       // Evaluation
       comparisonOperator,
       threshold: props.threshold,
+      datapointsToAlarm: props.datapointsToAlarm,
       evaluateLowSampleCountPercentile: props.evaluateLowSampleCountPercentile,
       evaluationPeriods: props.evaluationPeriods,
       treatMissingData: props.treatMissingData,
 
       // Actions
       actionsEnabled: props.actionsEnabled,
-      alarmActions: new Token(() => this.alarmActionArns),
-      insufficientDataActions: new Token(() => this.insufficientDataActionArns),
-      okActions: new Token(() => this.okActionArns),
+      alarmActions: new Token(() => this.alarmActionArns).toList(),
+      insufficientDataActions: new Token(() => this.insufficientDataActionArns).toList(),
+      okActions: new Token(() => this.okActionArns).toList(),
 
       // Metric
       ...metricJson(props.metric)
@@ -285,35 +258,35 @@ export interface AlarmMetricJson {
   /**
    * The dimensions to apply to the alarm
    */
-  dimensions?: Dimension[];
+  readonly dimensions?: Dimension[];
 
   /**
    * Namespace of the metric
    */
-  namespace: string;
+  readonly namespace: string;
 
   /**
    * Name of the metric
    */
-  metricName: string;
+  readonly metricName: string;
 
   /**
    * How many seconds to aggregate over
    */
-  period: number;
+  readonly period: number;
 
   /**
    * Simple aggregation function to use
    */
-  statistic?: Statistic;
+  readonly statistic?: Statistic;
 
   /**
    * Percentile aggregation function to use
    */
-  extendedStatistic?: string;
+  readonly extendedStatistic?: string;
 
   /**
    * The unit of the alarm
    */
-  unit?: Unit;
+  readonly unit?: Unit;
 }

@@ -1,4 +1,4 @@
-import { expect, haveResource } from '@aws-cdk/assert';
+import { expect, haveResource, ResourcePart } from '@aws-cdk/assert';
 import autoscaling_api = require('@aws-cdk/aws-autoscaling-api');
 import ec2 = require('@aws-cdk/aws-ec2');
 import iam = require('@aws-cdk/aws-iam');
@@ -31,13 +31,22 @@ export = {
       NotificationTargetARN: "target:arn",
     }));
 
+    // Lifecycle Hook has a dependency on the policy object
+    expect(stack).to(haveResource('AWS::AutoScaling::LifecycleHook', {
+      DependsOn: [
+        "ASGLifecycleHookTransitionRoleDefaultPolicy2E50C7DB",
+        "ASGLifecycleHookTransitionRole3AAA6BB7",
+      ]
+    }, ResourcePart.CompleteDefinition));
+
     expect(stack).to(haveResource('AWS::IAM::Role', {
       AssumeRolePolicyDocument: {
+        Version: '2012-10-17',
         Statement: [
           {
             Action: "sts:AssumeRole",
             Effect: "Allow",
-            Principal: { Service: "autoscaling.amazonaws.com" }
+            Principal: { Service: { "Fn::Join": ["", ["autoscaling.", { Ref: "AWS::URLSuffix" }]] } }
           }
         ],
       }
@@ -45,6 +54,7 @@ export = {
 
     expect(stack).to(haveResource('AWS::IAM::Policy', {
       PolicyDocument: {
+        Version: '2012-10-17',
         Statement: [
           {
             Action: "action:Work",

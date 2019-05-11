@@ -81,12 +81,12 @@ export = {
       const somethingConnectable = new SomethingConnectable(new ec2.Connections({ securityGroups: [securityGroup] }));
 
       // WHEN
-      const importedLambda = lambda.FunctionRef.import(stack2, 'Lambda', this.lambda.export());
+      const importedLambda = lambda.Function.fromFunctionAttributes(stack2, 'Lambda', this.lambda.export());
       importedLambda.connections.allowTo(somethingConnectable, new ec2.TcpAllPorts(), 'Lambda can call connectable');
 
       // THEN: SomeSecurityGroup accepts connections from Lambda
       expect(stack2).to(haveResource("AWS::EC2::SecurityGroupEgress", {
-        GroupId: { "Fn::ImportValue": "LambdaSecurityGroupId9A2717B3" },
+        GroupId: { "Fn::ImportValue": "Stack:LambdaSecurityGroupId9A2717B3" },
         IpProtocol: "tcp",
         Description: "Lambda can call connectable",
         DestinationSecurityGroupId: { "Fn::GetAtt": [ "SomeSecurityGroupEF219AD6", "GroupId" ] },
@@ -100,7 +100,7 @@ export = {
         Description: "Lambda can call connectable",
         FromPort: 0,
         GroupId: { "Fn::GetAtt": [ "SomeSecurityGroupEF219AD6", "GroupId" ] },
-        SourceSecurityGroupId: { "Fn::ImportValue": "LambdaSecurityGroupId9A2717B3" },
+        SourceSecurityGroupId: { "Fn::ImportValue": "Stack:LambdaSecurityGroupId9A2717B3" },
         ToPort: 65535
       }));
 
@@ -137,7 +137,7 @@ export = {
         handler: 'index.handler',
         runtime: lambda.Runtime.NodeJS610,
         vpc,
-        vpcPlacement: { subnetsToUse: ec2.SubnetType.Public }
+        vpcSubnets: { subnetType: ec2.SubnetType.Public }
       });
     });
 

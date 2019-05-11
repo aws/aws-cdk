@@ -33,17 +33,34 @@ When deploying a stack that contains this code, the directory will be zip
 archived and then uploaded to an S3 bucket, then the exact location of the S3
 objects will be passed when the stack is deployed.
 
+### Layers
+
+The `lambda.LayerVersion` class can be used to define Lambda layers and manage
+granting permissions to other AWS accounts or organizations.
+
+[Example of Lambda Layer usage](test/integ.layer-version.lit.ts)
+
+## Event Rule Target
+
+You can use an AWS Lambda function as a target for an Amazon CloudWatch event
+rule:
+
+```ts
+import targets = require('@aws-cdk/aws-events-targets');
+rule.addTarget(new targets.LambdaFunction(myFunction));
+```
+
 ### Event Sources
 
 AWS Lambda supports a [variety of event sources](https://docs.aws.amazon.com/lambda/latest/dg/invoking-lambda-function.html).
 
-In most cases, it is possible to trigger a function as a result of an event by 
-using one of the `onXxx` methods on the source construct. For example, the `s3.Bucket` 
-construct has an `onEvent` method which can be used to trigger a Lambda when an event, 
+In most cases, it is possible to trigger a function as a result of an event by
+using one of the `onXxx` methods on the source construct. For example, the `s3.Bucket`
+construct has an `onEvent` method which can be used to trigger a Lambda when an event,
 such as PutObject occurs on an S3 bucket.
 
-An alternative way to add event sources to a function is to use `function.addEventSource(source)`. 
-This method accepts an `IEventSource` object. The module __@aws-cdk/aws-lambda-event-sources__ 
+An alternative way to add event sources to a function is to use `function.addEventSource(source)`.
+This method accepts an `IEventSource` object. The module __@aws-cdk/aws-lambda-event-sources__
 includes classes for the various event sources supported by AWS Lambda.
 
 For example, the following code adds an SQS queue as an event source for a function:
@@ -65,32 +82,7 @@ fn.addEventSource(new S3EventSource(bucket, {
 
 See the documentation for the __@aws-cdk/aws-lambda-event-sources__ module for more details.
 
-### Lambda in CodePipeline
-
-This module also contains an Action that allows you to invoke a Lambda function from CodePipeline:
-
-```ts
-import codepipeline = require('@aws-cdk/aws-codepipeline');
-
-const pipeline = new codepipeline.Pipeline(this, 'MyPipeline');
-const lambdaStage = pipeline.addStage('Lambda');
-new lambda.PipelineInvokeAction(this, 'Lambda', {
-    stage: lambdaStage,
-    lambda: fn,
-});
-```
-
-You can also add the Lambda to the Pipeline directly:
-
-```ts
-// equivalent to the code above:
-fn.addToPipeline(lambdaStage, 'Lambda');
-```
-
-See [the AWS documentation](https://docs.aws.amazon.com/codepipeline/latest/userguide/actions-invoke-lambda-function.html)
-on how to write a Lambda function invoked from CodePipeline.
-
-### Lambda with DLQ 
+### Lambda with DLQ
 
 ```ts
 import lambda = require('@aws-cdk/aws-lambda');
@@ -105,7 +97,7 @@ const fn = new lambda.Function(this, 'MyFunction', {
 See [the AWS documentation](https://docs.aws.amazon.com/lambda/latest/dg/dlq.html)
 to learn more about AWS Lambdas and DLQs.
 
-### Lambda with X-Ray Tracing 
+### Lambda with X-Ray Tracing
 
 ```ts
 import lambda = require('@aws-cdk/aws-lambda');
@@ -119,3 +111,18 @@ const fn = new lambda.Function(this, 'MyFunction', {
 ```
 See [the AWS documentation](https://docs.aws.amazon.com/lambda/latest/dg/lambda-x-ray.html)
 to learn more about AWS Lambda's X-Ray support.
+
+### Lambda with Reserved Concurrent Executions
+
+```ts
+import lambda = require('@aws-cdk/aws-lambda');
+
+const fn = new lambda.Function(this, 'MyFunction', {
+    runtime: lambda.Runtime.NodeJS810,
+    handler: 'index.handler',
+    code: lambda.Code.inline('exports.handler = function(event, ctx, cb) { return cb(null, "hi"); }'),
+    reservedConcurrentExecutions: 100
+});
+```
+See [the AWS documentation](https://docs.aws.amazon.com/lambda/latest/dg/concurrent-executions.html)
+managing concurrency.

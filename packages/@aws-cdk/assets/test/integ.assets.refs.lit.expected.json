@@ -13,9 +13,6 @@
     "S3BucketName": {
       "Value": {
         "Ref": "SampleAssetS3BucketE6B2908E"
-      },
-      "Export": {
-        "Name": "aws-cdk-asset-refs:S3BucketName"
       }
     },
     "S3ObjectKey": {
@@ -51,9 +48,6 @@
             }
           ]
         ]
-      },
-      "Export": {
-        "Name": "aws-cdk-asset-refs:S3ObjectKey"
       }
     },
     "S3URL": {
@@ -102,9 +96,6 @@
             }
           ]
         ]
-      },
-      "Export": {
-        "Name": "aws-cdk-asset-refs:S3URL"
       }
     }
   },

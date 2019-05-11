@@ -7,7 +7,7 @@ import codemaker = require('codemaker');
 import { itemTypeNames, PropertyAttributeName, scalarTypeNames, SpecName } from './spec-utils';
 import util = require('./util');
 
-const RESOURCE_CLASS_POSTFIX = 'Resource';
+const RESOURCE_CLASS_PREFIX = 'Cfn';
 
 export const CORE_NAMESPACE = 'cdk';
 
@@ -19,18 +19,8 @@ export const CORE_NAMESPACE = 'cdk';
  * This refers to TypeScript constructs (typically a class)
  */
 export class CodeName {
-  public static forResource(specName: SpecName): CodeName {
-    let className = specName.resourceName;
-
-    // add a "Resource" postfix to the class name (unless there is already a resource postfix).
-    if (!className.endsWith(RESOURCE_CLASS_POSTFIX)) {
-      className += RESOURCE_CLASS_POSTFIX;
-    } else {
-      // tslint:disable:no-console
-      console.error('INFO: Resource class %s already had a %s postfix, so we didn\'t add one', className, RESOURCE_CLASS_POSTFIX);
-      // tslint:enable:no-console
-    }
-
+  public static forCfnResource(specName: SpecName, affix: string): CodeName {
+    const className = RESOURCE_CLASS_PREFIX + specName.resourceName + affix;
     return new CodeName(packageName(specName), '', className, specName);
   }
 
@@ -38,18 +28,14 @@ export class CodeName {
     return new CodeName(resourceName.packageName, resourceName.namespace, `${resourceName.className}Props`, resourceName.specName);
   }
 
-  public static forPropertyType(specName: PropertyAttributeName): CodeName {
+  public static forPropertyType(specName: PropertyAttributeName, resourceClass: CodeName): CodeName {
     // Exception for an intrinsic type
     if (specName.propAttrName === 'Tag' && specName.resourceName === '') {
       return TAG_NAME;
     }
 
     // These are in a namespace named after the resource
-    let resourceClassName = specName.resourceName;
-    if (!resourceClassName.endsWith(RESOURCE_CLASS_POSTFIX)) {
-      resourceClassName += RESOURCE_CLASS_POSTFIX;
-    }
-    return new CodeName(packageName(specName), `${resourceClassName}`, `${specName.propAttrName}Property`, specName);
+    return new CodeName(packageName(specName), resourceClass.className, `${specName.propAttrName}Property`, specName);
   }
 
   public static forPrimitive(primitiveName: string): CodeName {
@@ -101,23 +87,7 @@ export class CodeName {
   }
 }
 
-/**
- * Class declaration
- */
-export class AttributeTypeDeclaration {
-  constructor(
-      readonly typeName: CodeName,
-      readonly baseClassName?: CodeName,
-      readonly docLink?: string
-    ) {
-  }
-
-  public get isPrimitive() {
-    return !this.baseClassName;
-  }
-}
-
-export const TAG_NAME = new CodeName('', CORE_NAMESPACE, 'Tag');
+export const TAG_NAME = new CodeName('', CORE_NAMESPACE, 'CfnTag');
 export const TOKEN_NAME = new CodeName('', CORE_NAMESPACE, 'Token');
 
 /**
@@ -126,7 +96,7 @@ export const TOKEN_NAME = new CodeName('', CORE_NAMESPACE, 'Token');
 export class Attribute {
   constructor(
     readonly propertyName: string,
-    readonly attributeType: AttributeTypeDeclaration,
+    readonly attributeType: string,
     readonly constructorArguments: string) {
   }
 }
@@ -145,11 +115,21 @@ export function packageName(module: SpecName | string): string {
 
   const parts = module.split('::');
 
-  if (parts[0] !== 'AWS' || parts.length !== 2) {
-    throw new Error(`Module component name must be "AWS::Xxx" (module: ${module})`);
+  if (['AWS', 'Alexa'].indexOf(parts[0]) === -1 || parts.length !== 2) {
+    throw new Error(`Module component name must be "AWS::Xxx" or "Alexa::Xxx" (module: ${module})`);
   }
 
-  return parts[parts.length - 1].toLowerCase();
+  return overridePackageName(parts[parts.length - 1].toLowerCase());
+}
+
+/**
+ * Overrides special-case namespaces like serverless=>sam
+ */
+function overridePackageName(name: string) {
+  if (name === 'serverless') {
+    return 'sam';
+  }
+  return name;
 }
 
 /**
@@ -191,13 +171,15 @@ export function attributeDefinition(resourceName: CodeName, attributeName: strin
   const descriptiveName = descriptiveAttributeName(resourceName, attributeName);  // "BucketArn"
   const propertyName = cloudFormationToScriptName(descriptiveName);      // "bucketArn"
 
-  let attrType;
+  let attrType: string;
   if ('PrimitiveType' in spec && spec.PrimitiveType === 'String') {
-    attrType = new AttributeTypeDeclaration(CodeName.forPrimitive('string'));
+    attrType = 'string';
+  } else if ('Type' in spec && 'PrimitiveItemType' in spec && spec.Type === 'List' && spec.PrimitiveItemType === 'String') {
+    attrType = 'string[]';
   } else {
-    // Not in a namespace, base the name on the descriptive name
-    const typeName = new CodeName(resourceName.packageName, '', descriptiveName); // "BucketArn"
-    attrType = new AttributeTypeDeclaration(typeName, TOKEN_NAME, undefined);
+    // tslint:disable-next-line:no-console
+    console.error(`WARNING: Unable to represent attribute type ${JSON.stringify(spec)} as a native type`);
+    attrType = TOKEN_NAME.fqn;
   }
 
   const constructorArguments = `this.getAtt('${attributeName}')`;
@@ -212,8 +194,7 @@ export function refAttributeDefinition(resourceName: CodeName, refKind: string):
 
   const constructorArguments = 'this.ref';
 
-  const refType = new AttributeTypeDeclaration(CodeName.forPrimitive('string'));
-  return new Attribute(propertyName, refType, constructorArguments);
+  return new Attribute(propertyName, 'string', constructorArguments);
 }
 
 /**
@@ -287,7 +268,7 @@ export function isPrimitive(type: CodeName): boolean {
     || type.className === 'Date';
 }
 
-export function specTypeToCodeType(contextResource: SpecName, type: string): CodeName {
+function specTypeToCodeType(resourceContext: CodeName, type: string): CodeName {
   if (schema.isPrimitiveType(type)) {
     return specPrimitiveToCodePrimitive(type);
   } else if (type === 'Tag') {
@@ -296,21 +277,15 @@ export function specTypeToCodeType(contextResource: SpecName, type: string): Cod
     return TAG_NAME;
   }
 
-  const typeName = contextResource!.relativeName(type);
-  return CodeName.forPropertyType(typeName);
+  const typeName = resourceContext.specName!.relativeName(type);
+  return CodeName.forPropertyType(typeName, resourceContext);
 }
 
 /**
  * Translate a list of type references in a resource context to a list of code names
  */
-export function specTypesToCodeTypes(contextResource: SpecName, types: string[]): CodeName[] {
-  const ret = [];
-
-  for (const type of types) {
-    ret.push(specTypeToCodeType(contextResource, type));
-  }
-
-  return ret;
+export function specTypesToCodeTypes(resourceContext: CodeName, types: string[]): CodeName[] {
+  return types.map(type => specTypeToCodeType(resourceContext, type));
 }
 
 export interface PropertyVisitor<T> {
@@ -323,9 +298,9 @@ export interface PropertyVisitor<T> {
   visitListOrScalar(scalarTypes: CodeName[], itemTypes: CodeName[]): any;
 }
 
-export function typeDispatch<T>(resource: SpecName, spec: schema.Property, visitor: PropertyVisitor<T>): T {
-  const scalarTypes = specTypesToCodeTypes(resource, scalarTypeNames(spec));
-  const itemTypes = specTypesToCodeTypes(resource, itemTypeNames(spec));
+export function typeDispatch<T>(resourceContext: CodeName, spec: schema.Property, visitor: PropertyVisitor<T>): T {
+  const scalarTypes = specTypesToCodeTypes(resourceContext, scalarTypeNames(spec));
+  const itemTypes = specTypesToCodeTypes(resourceContext, itemTypeNames(spec));
 
   if (scalarTypes.length && itemTypes.length) {
     // Can accept both a list and a scalar

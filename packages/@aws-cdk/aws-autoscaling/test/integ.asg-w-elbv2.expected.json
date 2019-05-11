@@ -396,7 +396,17 @@
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": {
-                "Service": "ec2.amazonaws.com"
+                "Service": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "ec2.",
+                      {
+                        "Ref": "AWS::URLSuffix"
+                      }
+                    ]
+                  ]
+                }
               }
             }
           ],
@@ -495,15 +505,7 @@
                         "Fn::Split": [
                           "/",
                           {
-                            "Fn::Select": [
-                              0,
-                              {
-                                "Fn::GetAtt": [
-                                  "LBListenerTargetGroupF04FCF6D",
-                                  "LoadBalancerArns"
-                                ]
-                              }
-                            ]
+                            "Ref": "LBListener49E825B4"
                           }
                         ]
                       }
@@ -517,15 +519,7 @@
                         "Fn::Split": [
                           "/",
                           {
-                            "Fn::Select": [
-                              0,
-                              {
-                                "Fn::GetAtt": [
-                                  "LBListenerTargetGroupF04FCF6D",
-                                  "LoadBalancerArns"
-                                ]
-                              }
-                            ]
+                            "Ref": "LBListener49E825B4"
                           }
                         ]
                       }
@@ -539,15 +533,7 @@
                         "Fn::Split": [
                           "/",
                           {
-                            "Fn::Select": [
-                              0,
-                              {
-                                "Fn::GetAtt": [
-                                  "LBListenerTargetGroupF04FCF6D",
-                                  "LoadBalancerArns"
-                                ]
-                              }
-                            ]
+                            "Ref": "LBListener49E825B4"
                           }
                         ]
                       }
@@ -568,7 +554,8 @@
         }
       },
       "DependsOn": [
-        "LBListener49E825B4"
+        "LBListener49E825B4",
+        "LBListenerTargetGroupF04FCF6D"
       ]
     },
     "LB8A12904C": {
@@ -593,7 +580,11 @@
           }
         ],
         "Type": "application"
-      }
+      },
+      "DependsOn": [
+        "VPCPublicSubnet1DefaultRoute91CEF279",
+        "VPCPublicSubnet2DefaultRouteB7481BBA"
+      ]
     },
     "LBSecurityGroup8A41EA2B": {
       "Type": "AWS::EC2::SecurityGroup",
@@ -659,12 +650,12 @@
       "Properties": {
         "Port": 80,
         "Protocol": "HTTP",
-        "VpcId": {
-          "Ref": "VPCB9E5F0B4"
-        },
         "TargetGroupAttributes": [],
         "Targets": [],
-        "TargetType": "instance"
+        "TargetType": "instance",
+        "VpcId": {
+          "Ref": "VPCB9E5F0B4"
+        }
       }
     }
   }

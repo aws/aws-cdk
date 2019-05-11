@@ -1,7 +1,30 @@
-import { Construct } from '@aws-cdk/cdk';
-import { CertificateRef } from './certificate-ref';
-import { cloudformation } from './certificatemanager.generated';
+import { CfnOutput, Construct, IResource, Resource } from '@aws-cdk/cdk';
+import { CfnCertificate } from './certificatemanager.generated';
 import { apexDomain } from './util';
+
+export interface ICertificate extends IResource {
+  /**
+   * The certificate's ARN
+   *
+   * @attribute
+   */
+  readonly certificateArn: string;
+
+  /**
+   * Export this certificate from the stack
+   */
+  export(): CertificateAttributes;
+}
+
+/**
+ * Reference to an existing Certificate
+ */
+export interface CertificateAttributes {
+  /**
+   * The certificate's ARN
+   */
+  readonly certificateArn: string;
+}
 
 /**
  * Properties for your certificate
@@ -12,14 +35,14 @@ export interface CertificateProps {
    *
    * May contain wildcards, such as ``*.domain.com``.
    */
-  domainName: string;
+  readonly domainName: string;
 
   /**
    * Alternative domain names on your certificate.
    *
    * Use this to register alternative domain names that represent the same site.
    */
-  subjectAlternativeNames?: string[];
+  readonly subjectAlternativeNames?: string[];
 
   /**
    * What validation domain to use for every requested domain.
@@ -28,11 +51,11 @@ export interface CertificateProps {
    *
    * @default Apex domain is used for every domain that's not overridden.
    */
-  validationDomains?: {[domainName: string]: string};
+  readonly validationDomains?: {[domainName: string]: string};
 }
 
 /**
- * A certificate managed by Amazon Certificate Manager
+ * A certificate managed by AWS Certificate Manager
  *
  * IMPORTANT: if you are creating a certificate as part of your stack, the stack
  * will not complete creating until you read and follow the instructions in the
@@ -48,18 +71,33 @@ export interface CertificateProps {
  *
  * For every domain that you register.
  */
-export class Certificate extends CertificateRef {
+export class Certificate extends Resource implements ICertificate {
+
+  /**
+   * Import a certificate
+   */
+  public static fromCertificateArn(scope: Construct, id: string, certificateArn: string): ICertificate {
+    class Import extends Resource implements ICertificate {
+      public certificateArn = certificateArn;
+      public export(): CertificateAttributes {
+        return { certificateArn };
+      }
+    }
+
+    return new Import(scope, id);
+  }
+
   /**
    * The certificate's ARN
    */
   public readonly certificateArn: string;
 
-  constructor(parent: Construct, name: string, props: CertificateProps) {
-    super(parent, name);
+  constructor(scope: Construct, id: string, props: CertificateProps) {
+    super(scope, id);
 
     const allDomainNames = [props.domainName].concat(props.subjectAlternativeNames || []);
 
-    const cert = new cloudformation.CertificateResource(this, 'Resource', {
+    const cert = new CfnCertificate(this, 'Resource', {
       domainName: props.domainName,
       subjectAlternativeNames: props.subjectAlternativeNames,
       domainValidationOptions: allDomainNames.map(domainValidationOption),
@@ -72,7 +110,7 @@ export class Certificate extends CertificateRef {
      *
      * Closes over props.
      */
-    function domainValidationOption(domainName: string): cloudformation.CertificateResource.DomainValidationOptionProperty {
+    function domainValidationOption(domainName: string): CfnCertificate.DomainValidationOptionProperty {
       const overrideDomain = props.validationDomains && props.validationDomains[domainName];
       return {
         domainName,
@@ -81,4 +119,12 @@ export class Certificate extends CertificateRef {
     }
   }
 
+  /**
+   * Export this certificate from the stack
+   */
+  public export(): CertificateAttributes {
+    return {
+      certificateArn: new CfnOutput(this, 'Arn', { value: this.certificateArn }).makeImportValue().toString()
+    };
+  }
 }

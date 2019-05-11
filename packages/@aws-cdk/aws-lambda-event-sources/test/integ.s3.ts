@@ -4,11 +4,13 @@ import { S3EventSource } from '../lib';
 import { TestFunction } from './test-function';
 
 class S3EventSourceTest extends cdk.Stack {
-  constructor(parent: cdk.App, id: string) {
-    super(parent, id);
+  constructor(scope: cdk.App, id: string) {
+    super(scope, id);
 
     const fn = new TestFunction(this, 'F');
-    const bucket = new s3.Bucket(this, 'B');
+    const bucket = new s3.Bucket(this, 'B', {
+      removalPolicy: cdk.RemovalPolicy.Destroy
+    });
 
     fn.addEventSource(new S3EventSource(bucket, {
       events: [ s3.EventType.ObjectCreated ],

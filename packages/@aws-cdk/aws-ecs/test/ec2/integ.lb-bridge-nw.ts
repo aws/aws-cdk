@@ -10,7 +10,7 @@ const stack = new cdk.Stack(app, 'aws-ecs-integ-ecs');
 const vpc = new ec2.VpcNetwork(stack, 'Vpc', { maxAZs: 2 });
 
 const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
-cluster.addDefaultAutoScalingGroupCapacity({
+cluster.addCapacity('DefaultAutoScalingGroup', {
   instanceType: new ec2.InstanceType('t2.micro')
 });
 
@@ -21,7 +21,7 @@ const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef', {
 });
 
 const container = taskDefinition.addContainer('web', {
-  image: ecs.ContainerImage.fromDockerHub("amazon/amazon-ecs-sample"),
+  image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
   memoryLimitMiB: 256,
 });
 container.addPortMappings({
@@ -42,6 +42,6 @@ listener.addTargets('ECS', {
   targets: [service]
 });
 
-new cdk.Output(stack, 'LoadBalancerDNS', { value: lb.dnsName, });
+new cdk.CfnOutput(stack, 'LoadBalancerDNS', { value: lb.dnsName, });
 
 app.run();

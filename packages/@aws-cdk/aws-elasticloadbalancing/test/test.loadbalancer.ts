@@ -7,7 +7,7 @@ import { ILoadBalancerTarget, LoadBalancer, LoadBalancingProtocol } from '../lib
 export = {
   'test specifying nonstandard port works'(test: Test) {
     const stack = new Stack(undefined, undefined, { env: { account: '1234', region: 'test' }});
-    stack.setContext('availability-zones:1234:test', ['test-1a', 'test-1b']);
+    stack.node.setContext('availability-zones:1234:test', ['test-1a', 'test-1b']);
     const vpc = new VpcNetwork(stack, 'VCP');
 
     const lb = new LoadBalancer(stack, 'LB', { vpc });
@@ -83,6 +83,7 @@ export = {
     expect(stack).to(haveResource('AWS::EC2::SecurityGroup', {
       SecurityGroupEgress: [
         {
+          Description: 'Port 8080 LB to fleet',
           CidrIp: "666.666.666.666/666",
           FromPort: 8080,
           IpProtocol: "tcp",

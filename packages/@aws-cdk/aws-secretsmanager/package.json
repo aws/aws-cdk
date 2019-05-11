@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/aws-secretsmanager",
-  "version": "0.18.0",
+  "version": "0.31.0",
   "description": "The CDK Construct Library for AWS::SecretsManager",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -20,12 +20,16 @@
           "artifactId": "secretsmanager"
         }
       },
-      "sphinx": {}
+      "python": {
+        "distName": "aws-cdk.aws-secretsmanager",
+        "module": "aws_cdk.aws_secretsmanager"
+      }
     }
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/awslabs/aws-cdk.git"
+    "url": "https://github.com/awslabs/aws-cdk.git",
+    "directory": "packages/@aws-cdk/aws-secretsmanager"
   },
   "homepage": "https://github.com/awslabs/aws-cdk",
   "scripts": {
@@ -35,7 +39,9 @@
     "package": "cdk-package",
     "pkglint": "pkglint -f",
     "test": "cdk-test",
-    "watch": "cdk-watch"
+    "watch": "cdk-watch",
+    "awslint": "cdk-awslint",
+    "cfn2ts": "cfn2ts"
   },
   "cdk-build": {
     "cloudformation": "AWS::SecretsManager"
@@ -53,15 +59,33 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "^0.18.0",
-    "cdk-build-tools": "^0.18.0",
-    "cfn2ts": "^0.18.0",
-    "pkglint": "^0.18.0"
+    "@aws-cdk/assert": "^0.31.0",
+    "cdk-build-tools": "^0.31.0",
+    "cdk-integ-tools": "^0.31.0",
+    "cfn2ts": "^0.31.0",
+    "pkglint": "^0.31.0"
   },
   "dependencies": {
-    "@aws-cdk/cdk": "^0.18.0"
+    "@aws-cdk/aws-ec2": "^0.31.0",
+    "@aws-cdk/aws-iam": "^0.31.0",
+    "@aws-cdk/aws-kms": "^0.31.0",
+    "@aws-cdk/aws-lambda": "^0.31.0",
+    "@aws-cdk/cdk": "^0.31.0"
   },
   "peerDependencies": {
-    "@aws-cdk/cdk": "^0.18.0"
+    "@aws-cdk/aws-ec2": "^0.31.0",
+    "@aws-cdk/aws-iam": "^0.31.0",
+    "@aws-cdk/aws-kms": "^0.31.0",
+    "@aws-cdk/aws-lambda": "^0.31.0",
+    "@aws-cdk/cdk": "^0.31.0"
+  },
+  "engines": {
+    "node": ">= 8.10.0"
+  },
+  "awslint": {
+    "exclude": [
+      "from-signature:@aws-cdk/aws-secretsmanager.SecretTargetAttachment.fromSecretTargetAttachmentSecretArn",
+      "from-attributes:fromSecretTargetAttachmentAttributes"
+    ]
   }
 }

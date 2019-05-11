@@ -1,10 +1,11 @@
 import cloudwatch = require('@aws-cdk/aws-cloudwatch');
 import ec2 = require('@aws-cdk/aws-ec2');
 import cdk = require('@aws-cdk/cdk');
-import { BaseTargetGroup, BaseTargetGroupProps, ITargetGroup, LoadBalancerTargetProps, TargetGroupRefProps } from '../shared/base-target-group';
+import { BaseTargetGroupProps, ITargetGroup, loadBalancerNameFromListenerArn, LoadBalancerTargetProps,
+         TargetGroupBase, TargetGroupImportProps } from '../shared/base-target-group';
 import { ApplicationProtocol } from '../shared/enums';
-import { BaseImportedTargetGroup } from '../shared/imported';
-import { determineProtocolAndPort, LazyDependable } from '../shared/util';
+import { ImportedTargetGroupBase } from '../shared/imported';
+import { determineProtocolAndPort } from '../shared/util';
 import { IApplicationListener } from './application-listener';
 import { HttpCodeTarget } from './application-load-balancer';
 
@@ -17,14 +18,14 @@ export interface ApplicationTargetGroupProps extends BaseTargetGroupProps {
    *
    * @default Determined from port if known
    */
-  protocol?: ApplicationProtocol;
+  readonly protocol?: ApplicationProtocol;
 
   /**
    * The port on which the listener listens for requests.
    *
    * @default Determined from protocol if known
    */
-  port?: number;
+  readonly port?: number;
 
   /**
    * The time period during which the load balancer sends a newly registered
@@ -34,7 +35,7 @@ export interface ApplicationTargetGroupProps extends BaseTargetGroupProps {
    *
    * @default 0
    */
-  slowStartSec?: number;
+  readonly slowStartSec?: number;
 
   /**
    * The stickiness cookie expiration period.
@@ -46,7 +47,7 @@ export interface ApplicationTargetGroupProps extends BaseTargetGroupProps {
    *
    * @default 86400 (1 day)
    */
-  stickinessCookieDurationSec?: number;
+  readonly stickinessCookieDurationSec?: number;
 
   /**
    * The targets to add to this target group.
@@ -55,27 +56,27 @@ export interface ApplicationTargetGroupProps extends BaseTargetGroupProps {
    * target. If you use either `Instance` or `IPAddress` as targets, all
    * target must be of the same type.
    */
-  targets?: IApplicationLoadBalancerTarget[];
+  readonly targets?: IApplicationLoadBalancerTarget[];
 }
 
 /**
  * Define an Application Target Group
  */
-export class ApplicationTargetGroup extends BaseTargetGroup {
+export class ApplicationTargetGroup extends TargetGroupBase implements IApplicationTargetGroup {
   /**
    * Import an existing target group
    */
-  public static import(parent: cdk.Construct, id: string, props: TargetGroupRefProps): IApplicationTargetGroup {
-    return new ImportedApplicationTargetGroup(parent, id, props);
+  public static import(scope: cdk.Construct, id: string, props: TargetGroupImportProps): IApplicationTargetGroup {
+    return new ImportedApplicationTargetGroup(scope, id, props);
   }
 
   private readonly connectableMembers: ConnectableMember[];
   private readonly listeners: IApplicationListener[];
 
-  constructor(parent: cdk.Construct, id: string, props: ApplicationTargetGroupProps) {
+  constructor(scope: cdk.Construct, id: string, props: ApplicationTargetGroupProps) {
     const [protocol, port] = determineProtocolAndPort(props.protocol, props.port);
 
-    super(parent, id, props, {
+    super(scope, id, props, {
       protocol,
       port,
     });
@@ -119,7 +120,7 @@ export class ApplicationTargetGroup extends BaseTargetGroup {
    */
   public registerConnectable(connectable: ec2.IConnectable, portRange?: ec2.IPortRange) {
     if (portRange === undefined) {
-      if (cdk.unresolved(this.defaultPort)) {
+      if (cdk.Token.isToken(this.defaultPort)) {
         portRange = new ec2.TcpPortFromAttribute(this.defaultPort);
       } else {
         portRange = new ec2.TcpPort(parseInt(this.defaultPort, 10));
@@ -139,14 +140,24 @@ export class ApplicationTargetGroup extends BaseTargetGroup {
    *
    * Don't call this directly. It will be called by listeners.
    */
-  public registerListener(listener: IApplicationListener, dependable?: cdk.IDependable) {
+  public registerListener(listener: IApplicationListener, associatingConstruct?: cdk.IConstruct) {
     // Notify this listener of all connectables that we know about.
     // Then remember for new connectables that might get added later.
     for (const member of this.connectableMembers) {
       listener.registerConnectable(member.connectable, member.portRange);
     }
     this.listeners.push(listener);
-    this.loadBalancerAssociationDependencies.push(dependable || listener);
+    this.loadBalancerAttachedDependencies.add(associatingConstruct || listener);
+  }
+
+  /**
+   * Full name of first load balancer
+   */
+  public get firstLoadBalancerFullName(): string {
+    if (this.listeners.length === 0) {
+      throw new Error('The TargetGroup needs to be attached to a LoadBalancer before you can call this method');
+    }
+    return loadBalancerNameFromListenerArn(this.listeners[0].listenerArn);
   }
 
   /**
@@ -159,7 +170,7 @@ export class ApplicationTargetGroup extends BaseTargetGroup {
    *
    * @default Average over 5 minutes
    */
-  public metric(metricName: string, props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
+  public metric(metricName: string, props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return new cloudwatch.Metric({
       namespace: 'AWS/ApplicationELB',
       metricName,
@@ -176,7 +187,7 @@ export class ApplicationTargetGroup extends BaseTargetGroup {
    *
    * @default Sum over 5 minutes
    */
-  public metricIPv6RequestCount(props?: cloudwatch.MetricCustomization) {
+  public metricIPv6RequestCount(props?: cloudwatch.MetricOptions) {
     return this.metric('IPv6RequestCount', {
       statistic: 'Sum',
       ...props
@@ -190,7 +201,7 @@ export class ApplicationTargetGroup extends BaseTargetGroup {
    *
    * @default Sum over 5 minutes
    */
-  public metricRequestCount(props?: cloudwatch.MetricCustomization) {
+  public metricRequestCount(props?: cloudwatch.MetricOptions) {
     return this.metric('RequestCount', {
       statistic: 'Sum',
       ...props
@@ -202,7 +213,7 @@ export class ApplicationTargetGroup extends BaseTargetGroup {
    *
    * @default Average over 5 minutes
    */
-  public metricHealthyHostCount(props?: cloudwatch.MetricCustomization) {
+  public metricHealthyHostCount(props?: cloudwatch.MetricOptions) {
     return this.metric('HealthyHostCount', {
       statistic: 'Average',
       ...props
@@ -214,7 +225,7 @@ export class ApplicationTargetGroup extends BaseTargetGroup {
    *
    * @default Average over 5 minutes
    */
-  public metricUnhealthyHostCount(props?: cloudwatch.MetricCustomization) {
+  public metricUnhealthyHostCount(props?: cloudwatch.MetricOptions) {
     return this.metric('UnhealthyHostCount', {
       statistic: 'Average',
       ...props
@@ -228,7 +239,7 @@ export class ApplicationTargetGroup extends BaseTargetGroup {
    *
    * @default Sum over 5 minutes
    */
-  public metricHttpCodeTarget(code: HttpCodeTarget, props?: cloudwatch.MetricCustomization) {
+  public metricHttpCodeTarget(code: HttpCodeTarget, props?: cloudwatch.MetricOptions) {
     return this.metric(code, {
       statistic: 'Sum',
       ...props
@@ -242,7 +253,7 @@ export class ApplicationTargetGroup extends BaseTargetGroup {
    *
    * @default Sum over 5 minutes
    */
-  public metricRequestCountPerTarget(props?: cloudwatch.MetricCustomization) {
+  public metricRequestCountPerTarget(props?: cloudwatch.MetricOptions) {
     return this.metric('RequestCountPerTarget', {
       statistic: 'Sum',
       ...props
@@ -254,7 +265,7 @@ export class ApplicationTargetGroup extends BaseTargetGroup {
    *
    * @default Sum over 5 minutes
    */
-  public metricTargetConnectionErrorCount(props?: cloudwatch.MetricCustomization) {
+  public metricTargetConnectionErrorCount(props?: cloudwatch.MetricOptions) {
     return this.metric('TargetConnectionErrorCount', {
       statistic: 'Sum',
       ...props
@@ -266,7 +277,7 @@ export class ApplicationTargetGroup extends BaseTargetGroup {
    *
    * @default Average over 5 minutes
    */
-  public metricTargetResponseTime(props?: cloudwatch.MetricCustomization) {
+  public metricTargetResponseTime(props?: cloudwatch.MetricOptions) {
     return this.metric('TargetResponseTime', {
       statistic: 'Average',
       ...props
@@ -280,7 +291,7 @@ export class ApplicationTargetGroup extends BaseTargetGroup {
    *
    * @default Sum over 5 minutes
    */
-  public metricTargetTLSNegotiationErrorCount(props?: cloudwatch.MetricCustomization) {
+  public metricTargetTLSNegotiationErrorCount(props?: cloudwatch.MetricOptions) {
     return this.metric('TargetTLSNegotiationErrorCount', {
       statistic: 'Sum',
       ...props
@@ -313,19 +324,15 @@ export interface IApplicationTargetGroup extends ITargetGroup {
    *
    * Don't call this directly. It will be called by listeners.
    */
-  registerListener(listener: IApplicationListener, dependable?: cdk.IDependable): void;
+  registerListener(listener: IApplicationListener, associatingConstruct?: cdk.IConstruct): void;
 }
 
 /**
  * An imported application target group
  */
-class ImportedApplicationTargetGroup extends BaseImportedTargetGroup implements IApplicationTargetGroup {
-  public registerListener(_listener: IApplicationListener, _dependable?: cdk.IDependable) {
+class ImportedApplicationTargetGroup extends ImportedTargetGroupBase implements IApplicationTargetGroup {
+  public registerListener(_listener: IApplicationListener, _associatingConstruct?: cdk.IConstruct) {
     // Nothing to do, we know nothing of our members
-  }
-
-  public loadBalancerDependency(): cdk.IDependable {
-    return new LazyDependable([]);
   }
 }
 

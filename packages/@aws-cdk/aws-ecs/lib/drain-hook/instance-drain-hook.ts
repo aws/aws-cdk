@@ -39,8 +39,8 @@ export interface InstanceDrainHookProps {
  * A hook to drain instances from ECS traffic before they're terminated
  */
 export class InstanceDrainHook extends cdk.Construct {
-  constructor(parent: cdk.Construct, id: string, props: InstanceDrainHookProps) {
-    super(parent, id);
+  constructor(scope: cdk.Construct, id: string, props: InstanceDrainHookProps) {
+    super(scope, id);
 
     const drainTimeSeconds = props.drainTimeSec !== undefined ? props.drainTimeSec : 300;
 

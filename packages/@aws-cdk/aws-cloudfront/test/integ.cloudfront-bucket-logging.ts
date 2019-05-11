@@ -6,7 +6,9 @@ const app = new cdk.App();
 
 const stack = new cdk.Stack(app, 'aws-cdk-cloudfront-custom');
 
-const loggingBucket = new s3.Bucket(stack, 'Bucket');
+const loggingBucket = new s3.Bucket(stack, 'Bucket', {
+  removalPolicy: cdk.RemovalPolicy.Destroy
+});
 
 new cloudfront.CloudFrontWebDistribution(stack, 'AnAmazingWebsiteProbably', {
   originConfigs: [

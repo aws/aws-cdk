@@ -11,7 +11,7 @@ export interface SucceedProps {
      *
      * @default No comment
      */
-    comment?: string;
+    readonly comment?: string;
 
     /**
      * JSONPath expression to select part of the state to be the input to this state.
@@ -21,7 +21,7 @@ export interface SucceedProps {
      *
      * @default $
      */
-    inputPath?: string;
+    readonly inputPath?: string;
 
     /**
      * JSONPath expression to select part of the state to be the output to this state.
@@ -31,7 +31,7 @@ export interface SucceedProps {
      *
      * @default $
      */
-    outputPath?: string;
+    readonly outputPath?: string;
 
 }
 
@@ -43,8 +43,8 @@ export interface SucceedProps {
 export class Succeed extends State {
     public readonly endStates: INextable[] = [];
 
-    constructor(parent: cdk.Construct, id: string, props: SucceedProps = {}) {
-        super(parent, id, props);
+    constructor(scope: cdk.Construct, id: string, props: SucceedProps = {}) {
+        super(scope, id, props);
     }
 
     /**

@@ -1,4 +1,4 @@
-import { expect, haveResource, MatchStyle } from '@aws-cdk/assert';
+import { expect, haveResource, MatchStyle, } from '@aws-cdk/assert';
 import ec2 = require('@aws-cdk/aws-ec2');
 import cdk = require('@aws-cdk/cdk');
 import { Test } from 'nodeunit';
@@ -103,9 +103,9 @@ export = {
   },
 };
 
-function makeAutoScalingGroup(parent: cdk.Construct) {
-  const vpc = new ec2.VpcNetwork(parent, 'VPC');
-  return new autoscaling.AutoScalingGroup(parent, 'ASG', {
+function makeAutoScalingGroup(scope: cdk.Construct) {
+  const vpc = new ec2.VpcNetwork(scope, 'VPC');
+  return new autoscaling.AutoScalingGroup(scope, 'ASG', {
     vpc,
     instanceType: new ec2.InstanceType('t2.micro'),
     machineImage: new ec2.AmazonLinuxImage(),

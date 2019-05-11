@@ -1,8 +1,11 @@
-import { expect, haveResource, ResourcePart } from '@aws-cdk/assert';
+import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
+import ec2 = require('@aws-cdk/aws-ec2');
+import elbv2 = require('@aws-cdk/aws-elasticloadbalancingv2');
 import iam = require('@aws-cdk/aws-iam');
 import cdk = require('@aws-cdk/cdk');
 import { Test } from 'nodeunit';
 import apigateway = require('../lib');
+import { ConnectionType, EmptyModel, ErrorModel } from '../lib';
 
 export = {
   'default setup'(test: Test) {
@@ -45,12 +48,9 @@ export = {
 
     // THEN
     expect(stack).to(haveResource('AWS::ApiGateway::Method', {
-      Type: "AWS::ApiGateway::Method",
-      Properties: {
-        ApiKeyRequired: true,
-        OperationName: "MyOperation"
-      }
-    }, ResourcePart.CompleteDefinition));
+      ApiKeyRequired: true,
+      OperationName: "MyOperation"
+    }));
 
     test.done();
   },
@@ -69,23 +69,42 @@ export = {
 
     // THEN
     expect(stack).to(haveResource('AWS::ApiGateway::Method', {
-      Type: "AWS::ApiGateway::Method",
-      Properties: {
-        Integration: {
-          IntegrationHttpMethod: "POST",
-          Type: "AWS",
-          Uri: {
-            "Fn::Join": [
-            "",
-            [
-              "arn:", { Ref: "AWS::Partition" }, ":apigateway:",
-              { Ref: "AWS::Region" }, ":s3:path/bucket/key"
-            ]
-            ]
-          }
+      Integration: {
+        IntegrationHttpMethod: "POST",
+        Type: "AWS",
+        Uri: {
+          "Fn::Join": [
+          "",
+          [
+            "arn:", { Ref: "AWS::Partition" }, ":apigateway:",
+            { Ref: "AWS::Region" }, ":s3:path/bucket/key"
+          ]
+          ]
         }
       }
-    }, ResourcePart.CompleteDefinition));
+    }));
+
+    test.done();
+  },
+
+  'integration with a custom http method can be set via a property'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const api = new apigateway.RestApi(stack, 'test-api', { cloudWatchRole: false, deploy: false });
+
+    // WHEN
+    new apigateway.Method(stack, 'my-method', {
+      httpMethod: 'POST',
+      resource: api.root,
+      integration: new apigateway.AwsIntegration({ service: 's3', path: 'bucket/key', integrationHttpMethod: 'GET' })
+    });
+
+    // THEN
+    expect(stack).to(haveResourceLike('AWS::ApiGateway::Method', {
+      Integration: {
+        IntegrationHttpMethod: "GET"
+      }
+    }));
 
     test.done();
   },
@@ -129,7 +148,7 @@ export = {
     });
 
     // THEN
-    test.deepEqual(cdk.resolve(method.methodArn), {
+    test.deepEqual(method.node.resolve(method.methodArn), {
       "Fn::Join": [
         "",
         [
@@ -163,7 +182,7 @@ export = {
     });
 
     // THEN
-    test.deepEqual(cdk.resolve(method.testMethodArn), {
+    test.deepEqual(method.node.resolve(method.testMethodArn), {
       "Fn::Join": [
         "",
         [
@@ -211,7 +230,7 @@ export = {
     }));
 
     // THEN
-    expect(stack).to(haveResource('AWS::ApiGateway::Method', {
+    expect(stack).to(haveResourceLike('AWS::ApiGateway::Method', {
       Integration: {
         Credentials: { "Fn::GetAtt": [ "MyRoleF48FFE04", "Arn" ] }
       }
@@ -233,7 +252,7 @@ export = {
     }));
 
     // THEN
-    expect(stack).to(haveResource('AWS::ApiGateway::Method', {
+    expect(stack).to(haveResourceLike('AWS::ApiGateway::Method', {
       Integration: {
         Credentials: { "Fn::Join": [ "", [ "arn:", { Ref: "AWS::Partition" }, ":iam::*:user/*" ] ] }
       }
@@ -260,4 +279,170 @@ export = {
     test.throws(() => api.root.addMethod('GET', integration), /'credentialsPassthrough' and 'credentialsRole' are mutually exclusive/);
     test.done();
   },
+
+  'integration connectionType VpcLink requires vpcLink to be set'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const api = new apigateway.RestApi(stack, 'test-api', { deploy: false });
+
+    // WHEN
+    const integration = new apigateway.Integration({
+      type: apigateway.IntegrationType.HttpProxy,
+      integrationHttpMethod: 'ANY',
+      options: {
+        connectionType: ConnectionType.VpcLink,
+      }
+    });
+
+    // THEN
+    test.throws(() => api.root.addMethod('GET', integration), /'connectionType' of VPC_LINK requires 'vpcLink' prop to be set/);
+    test.done();
+  },
+
+  'connectionType of INTERNET and vpcLink are mutually exclusive'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const api = new apigateway.RestApi(stack, 'test-api', { deploy: false });
+    const vpc = new ec2.VpcNetwork(stack, 'VPC');
+    const nlb = new elbv2.NetworkLoadBalancer(stack, 'NLB', {
+      vpc
+    });
+    const link = new apigateway.VpcLink(stack, 'link', {
+      targets: [nlb]
+    });
+
+    // WHEN
+    const integration = new apigateway.Integration({
+      type: apigateway.IntegrationType.HttpProxy,
+      integrationHttpMethod: 'ANY',
+      options: {
+        connectionType: ConnectionType.Internet,
+        vpcLink: link
+      }
+    });
+
+    // THEN
+    test.throws(() => api.root.addMethod('GET', integration), /cannot set 'vpcLink' where 'connectionType' is INTERNET/);
+    test.done();
+  },
+
+  'methodResponse set one or more method responses via options'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const api = new apigateway.RestApi(stack, 'test-api', { deploy: false });
+
+    // WHEN
+    new apigateway.Method(stack, 'method-man', {
+      httpMethod: 'GET',
+      resource: api.root,
+      options: {
+        methodResponses: [{
+            statusCode: '200'
+          }, {
+            statusCode: "400",
+            responseParameters: {
+              'method.response.header.killerbees': false
+            }
+          }, {
+            statusCode: "500",
+            responseParameters: {
+              'method.response.header.errthing': true
+            },
+            responseModels: {
+              'application/json': new EmptyModel(),
+              'text/plain': new ErrorModel()
+            }
+          }
+        ]
+      }
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::ApiGateway::Method', {
+      HttpMethod: 'GET',
+      MethodResponses: [{
+          StatusCode: "200"
+        }, {
+          StatusCode: "400",
+          ResponseParameters: {
+            'method.response.header.killerbees': false
+          }
+        }, {
+          StatusCode: "500",
+          ResponseParameters: {
+            'method.response.header.errthing': true
+          },
+          ResponseModels: {
+            'application/json': 'Empty',
+            'text/plain': 'Error'
+          }
+        }
+      ]
+    }));
+
+    test.done();
+  },
+
+  'multiple integration responses can be used'(test: Test) { // @see https://github.com/awslabs/aws-cdk/issues/1608
+    // GIVEN
+    const stack = new cdk.Stack();
+    const api = new apigateway.RestApi(stack, 'test-api', { deploy: false });
+
+    // WHEN
+    api.root.addMethod('GET', new apigateway.AwsIntegration({
+      service: 'foo-service',
+      action: 'BarAction',
+      options: {
+        integrationResponses: [
+          {
+            statusCode: '200',
+            responseTemplates: { 'application/json': JSON.stringify({ success: true }) },
+          },
+          {
+            selectionPattern: 'Invalid',
+            statusCode: '503',
+            responseTemplates: { 'application/json': JSON.stringify({ success: false, message: 'Invalid Request' }) },
+          }
+        ],
+      }
+    }));
+
+    // THEN
+    expect(stack).to(haveResource('AWS::ApiGateway::Method', {
+      Integration: {
+        IntegrationHttpMethod: 'POST',
+        IntegrationResponses: [
+          {
+            ResponseTemplates: { 'application/json': '{"success":true}' },
+            StatusCode: '200',
+          },
+          {
+            ResponseTemplates: { 'application/json': '{"success":false,"message":"Invalid Request"}' },
+            SelectionPattern: 'Invalid',
+            StatusCode: '503',
+          }
+        ],
+        Type: 'AWS',
+        Uri: { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':apigateway:', { Ref: 'AWS::Region' }, ':foo-service:action/BarAction']]}
+      }
+    }));
+    test.done();
+  },
+
+  'method is always set as uppercase'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const api = new apigateway.RestApi(stack, 'api');
+
+    // WHEN
+    api.root.addMethod('get');
+    api.root.addMethod('PoSt');
+    api.root.addMethod('PUT');
+
+    // THEN
+    expect(stack).to(haveResource('AWS::ApiGateway::Method', { HttpMethod: "POST" }));
+    expect(stack).to(haveResource('AWS::ApiGateway::Method', { HttpMethod: "GET" }));
+    expect(stack).to(haveResource('AWS::ApiGateway::Method', { HttpMethod: "PUT" }));
+    test.done();
+  }
 };

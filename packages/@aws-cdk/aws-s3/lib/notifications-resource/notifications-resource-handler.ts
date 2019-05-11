@@ -26,11 +26,11 @@ export class NotificationsResourceHandler extends cdk.Construct {
    * @returns The ARN of the custom resource lambda function.
    */
   public static singleton(context: cdk.Construct) {
-    const root = cdk.Stack.find(context);
+    const root = context.node.stack;
 
     // well-known logical id to ensure stack singletonity
     const logicalId = 'BucketNotificationsHandler050a0587b7544547bf325f094a3db834';
-    let lambda = root.tryFindChild(logicalId) as NotificationsResourceHandler;
+    let lambda = root.node.tryFindChild(logicalId) as NotificationsResourceHandler;
     if (!lambda) {
       lambda = new NotificationsResourceHandler(root, logicalId);
     }
@@ -44,13 +44,13 @@ export class NotificationsResourceHandler extends cdk.Construct {
    */
   public readonly functionArn: string;
 
-  constructor(parent: cdk.Construct, id: string) {
-    super(parent, id);
+  constructor(scope: cdk.Construct, id: string) {
+    super(scope, id);
 
     const role = new iam.Role(this, 'Role', {
       assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
       managedPolicyArns: [
-        cdk.ArnUtils.fromComponents({
+        this.node.stack.formatArn({
           service: 'iam',
           region: '', // no region for managed policy
           account: 'aws', // the account for a managed policy is 'aws'
@@ -65,8 +65,19 @@ export class NotificationsResourceHandler extends cdk.Construct {
       .addAction('s3:PutBucketNotification')
       .addAllResources());
 
-    const resource = new cdk.Resource(this, 'Resource', {
-      type: 'AWS::Lambda::Function',
+    const resourceType = 'AWS::Lambda::Function';
+    class InLineLambda extends cdk.CfnResource {
+      public readonly tags: cdk.TagManager = new cdk.TagManager(cdk.TagType.Standard, resourceType);
+
+      protected renderProperties(properties: any): { [key: string]: any } {
+        properties.Tags = cdk.listMapper(
+          cdk.cfnTagToCloudFormation)(this.tags.renderTags());
+        delete properties.tags;
+        return properties;
+      }
+    }
+    const resource = new InLineLambda(this, 'Resource', {
+      type: resourceType,
       properties: {
         Description: 'AWS CloudFormation handler for "Custom::S3BucketNotifications" resources (@aws-cdk/aws-s3)',
         Code: { ZipFile: `exports.handler = ${handler.toString()};` },

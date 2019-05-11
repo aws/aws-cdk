@@ -1,4 +1,4 @@
-## AWS Route53 Constuct Library
+## AWS Route53 Construct Library
 
 To add a public hosted zone:
 
@@ -34,7 +34,7 @@ To add a TXT record to your zone:
 ```ts
 import route53 = require('@aws-cdk/aws-route53');
 
-new route53.TXTRecord(zone, 'TXTRecord', {
+new route53.TxtRecord(zone, 'TXTRecord', {
     recordName: '_foo',  // If the name ends with a ".", it will be used as-is;
                          // if it ends with a "." followed by the zone name, a trailing "." will be added automatically;
                          // otherwise, a ".", the zone name, and a trailing "." will be added automatically.
@@ -49,7 +49,7 @@ new route53.TXTRecord(zone, 'TXTRecord', {
 If you know the ID and Name of a Hosted Zone, you can import it directly:
 
 ```ts
-const zone = HostedZoneRef.import(this, 'MyZone', {
+const zone = HostedZone.import(this, 'MyZone', {
     zoneName: 'example.com',
     hostedZoneId: 'ZOJJZC49E0EPZ',
 });

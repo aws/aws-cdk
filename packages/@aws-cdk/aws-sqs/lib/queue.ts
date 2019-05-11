@@ -1,7 +1,7 @@
 import kms = require('@aws-cdk/aws-kms');
-import cdk = require('@aws-cdk/cdk');
-import { QueueRef } from './queue-ref';
-import { cloudformation } from './sqs.generated';
+import { CfnOutput, Construct } from '@aws-cdk/cdk';
+import { IQueue, QueueAttributes, QueueBase } from './queue-base';
+import { CfnQueue } from './sqs.generated';
 import { validateProps } from './validate-props';
 
 /**
@@ -15,7 +15,7 @@ export interface QueueProps {
    *
    * @default CloudFormation-generated name
    */
-  queueName?: string;
+  readonly queueName?: string;
 
   /**
    * The number of seconds that Amazon SQS retains a message.
@@ -25,7 +25,7 @@ export interface QueueProps {
    *
    * @default 345600 seconds (4 days)
    */
-  retentionPeriodSec?: number;
+  readonly retentionPeriodSec?: number;
 
   /**
    * The time in seconds that the delivery of all messages in the queue is delayed.
@@ -35,7 +35,7 @@ export interface QueueProps {
    *
    * @default 0
    */
-  deliveryDelaySec?: number;
+  readonly deliveryDelaySec?: number;
 
   /**
    * The limit of how many bytes that a message can contain before Amazon SQS rejects it.
@@ -45,7 +45,7 @@ export interface QueueProps {
    *
    * @default 256KiB
    */
-  maxMessageSizeBytes?: number;
+  readonly maxMessageSizeBytes?: number;
 
   /**
    * Default wait time for ReceiveMessage calls.
@@ -57,7 +57,7 @@ export interface QueueProps {
    *
    *  @default 0
    */
-  receiveMessageWaitTimeSec?: number;
+  readonly receiveMessageWaitTimeSec?: number;
 
   /**
    * Timeout of processing a single message.
@@ -71,14 +71,14 @@ export interface QueueProps {
    *
    * @default 30
    */
-  visibilityTimeoutSec?: number;
+  readonly visibilityTimeoutSec?: number;
 
   /**
    * Send messages to this queue if they were unsuccessfully dequeued a number of times.
    *
    * @default no dead-letter queue
    */
-  deadLetterQueue?: DeadLetterQueue;
+  readonly deadLetterQueue?: DeadLetterQueue;
 
   /**
    * Whether the contents of the queue are encrypted, and by what type of key.
@@ -88,7 +88,7 @@ export interface QueueProps {
    *
    * @default Unencrypted
    */
-  encryption?: QueueEncryption;
+  readonly encryption?: QueueEncryption;
 
   /**
    * External KMS master key to use for queue encryption.
@@ -103,7 +103,7 @@ export interface QueueProps {
    *
    * @default If encryption is set to KMS and not specified, a key will be created.
    */
-  encryptionMasterKey?: kms.EncryptionKeyRef;
+  readonly encryptionMasterKey?: kms.IEncryptionKey;
 
   /**
    * The length of time that Amazon SQS reuses a data key before calling KMS again.
@@ -113,14 +113,14 @@ export interface QueueProps {
    *
    * @default 300 (5 minutes)
    */
-  dataKeyReuseSec?: number;
+  readonly dataKeyReuseSec?: number;
 
   /**
    * Whether this a first-in-first-out (FIFO) queue.
    *
    * @default false, unless queueName ends in '.fifo' or 'contentBasedDeduplication' is true.
    */
-  fifo?: boolean;
+  readonly fifo?: boolean;
 
   /**
    * Specifies whether to enable content-based deduplication.
@@ -136,7 +136,7 @@ export interface QueueProps {
    *
    * @default false
    */
-  contentBasedDeduplication?: boolean;
+  readonly contentBasedDeduplication?: boolean;
 }
 
 /**
@@ -146,12 +146,12 @@ export interface DeadLetterQueue {
   /**
    * The dead-letter queue to which Amazon SQS moves messages after the value of maxReceiveCount is exceeded.
    */
-  queue: QueueRef;
+  readonly queue: IQueue;
 
   /**
    * The number of times a message can be unsuccesfully dequeued before being moved to the dead-letter queue.
    */
-  maxReceiveCount: number;
+  readonly maxReceiveCount: number;
 }
 
 /**
@@ -179,7 +179,41 @@ export enum QueueEncryption {
 /**
  * A new Amazon SQS queue
  */
-export class Queue extends QueueRef {
+export class Queue extends QueueBase {
+
+  public static fromQueueArn(scope: Construct, id: string, queueArn: string): IQueue {
+    return Queue.fromQueueAttributes(scope, id, { queueArn });
+  }
+
+  /**
+   * Import an existing queue
+   */
+  public static fromQueueAttributes(scope: Construct, id: string, attrs: QueueAttributes): IQueue {
+    const stack = scope.node.stack;
+    const queueName = attrs.queueName || stack.parseArn(attrs.queueArn).resource;
+    const queueUrl = attrs.queueUrl || `https://sqs.${stack.region}.${stack.urlSuffix}/${stack.accountId}/${queueName}`;
+
+    class Import extends QueueBase {
+      public readonly queueArn = attrs.queueArn; // arn:aws:sqs:us-east-1:123456789012:queue1
+      public readonly queueUrl = queueUrl;
+      public readonly queueName = queueName;
+      public readonly encryptionMasterKey = attrs.keyArn
+        ? kms.EncryptionKey.import(this, 'Key', { keyArn: attrs.keyArn })
+        : undefined;
+
+      protected readonly autoCreatePolicy = false;
+
+      /**
+       * Export a queue
+       */
+      public export() {
+        return attrs;
+      }
+    }
+
+    return new Import(scope, id);
+  }
+
   /**
    * The ARN of this queue
    */
@@ -198,12 +232,12 @@ export class Queue extends QueueRef {
   /**
    * If this queue is encrypted, this is the KMS key.
    */
-  public readonly encryptionMasterKey?: kms.EncryptionKeyRef;
+  public readonly encryptionMasterKey?: kms.IEncryptionKey;
 
   protected readonly autoCreatePolicy = true;
 
-  constructor(parent: cdk.Construct, name: string, props: QueueProps = {}) {
-    super(parent, name);
+  constructor(scope: Construct, id: string, props: QueueProps = {}) {
+    super(scope, id);
 
     validateProps(props);
 
@@ -216,7 +250,7 @@ export class Queue extends QueueRef {
 
     const { encryptionMasterKey, encryptionProps } = _determineEncryptionProps.call(this);
 
-    const queue = new cloudformation.QueueResource(this, 'Resource', {
+    const queue = new CfnQueue(this, 'Resource', {
       queueName: props.queueName,
       ...this.determineFifoProps(props),
       ...encryptionProps,
@@ -232,7 +266,7 @@ export class Queue extends QueueRef {
     this.queueName = queue.queueName;
     this.queueUrl = queue.ref;
 
-    function _determineEncryptionProps(this: Queue): { encryptionProps: EncryptionProps, encryptionMasterKey?: kms.EncryptionKeyRef } {
+    function _determineEncryptionProps(this: Queue): { encryptionProps: EncryptionProps, encryptionMasterKey?: kms.IEncryptionKey } {
       let encryption = props.encryption || QueueEncryption.Unencrypted;
 
       if (encryption !== QueueEncryption.Kms && props.encryptionMasterKey) {
@@ -259,7 +293,7 @@ export class Queue extends QueueRef {
 
       if (encryption === QueueEncryption.Kms) {
         const masterKey = props.encryptionMasterKey || new kms.EncryptionKey(this, 'Key', {
-          description: `Created by ${this.path}`
+          description: `Created by ${this.node.path}`
         });
 
         return {
@@ -273,6 +307,19 @@ export class Queue extends QueueRef {
 
       throw new Error(`Unexpected 'encryptionType': ${encryption}`);
     }
+  }
+
+  /**
+   * Export a queue
+   */
+  public export(): QueueAttributes {
+    return {
+      queueArn: new CfnOutput(this, 'QueueArn', { value: this.queueArn }).makeImportValue().toString(),
+      queueUrl: new CfnOutput(this, 'QueueUrl', { value: this.queueUrl }).makeImportValue().toString(),
+      keyArn: this.encryptionMasterKey
+        ? new CfnOutput(this, 'KeyArn', { value: this.encryptionMasterKey.keyArn }).makeImportValue().toString()
+        : undefined
+    };
   }
 
   /**

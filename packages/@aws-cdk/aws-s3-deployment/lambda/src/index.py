@@ -5,6 +5,7 @@ import json
 import json
 import traceback
 import logging
+import shutil
 from uuid import uuid4
 
 from botocore.vendored import requests
@@ -111,6 +112,7 @@ def s3_deploy(s3_source_zip, s3_dest):
 
     # sync from "contents" to destination
     aws_command("s3", "sync", "--delete", contents_dir, s3_dest)
+    shutil.rmtree(workdir)
 
 #---------------------------------------------------------------------------------------------------
 # executes an "aws" cli command

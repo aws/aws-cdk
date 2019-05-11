@@ -1,20 +1,20 @@
-import { cloudformation } from '@aws-cdk/aws-cloudformation';
+import { CfnStack } from '@aws-cdk/aws-cloudformation';
 import ec2 = require('@aws-cdk/aws-ec2');
 import cdk = require('@aws-cdk/cdk');
 
 export interface RemoteDesktopGatewayProps {
-  rdgwCIDR: string;
-  vpc: ec2.VpcNetworkRef;
-  keyPairName: string;
+  readonly rdgwCIDR: string;
+  readonly vpc: ec2.IVpcNetwork;
+  readonly keyPairName: string;
 
-  adminPassword: string;
-  adminUser?: string;
+  readonly adminPassword: string;
+  readonly adminUser?: string;
 
-  domainDNSName?: string;
-  numberOfRDGWHosts?: number;
-  qss3BucketName?: string;
-  qss3KeyPrefix?: string;
-  rdgwInstanceType?: string;
+  readonly domainDNSName?: string;
+  readonly numberOfRDGWHosts?: number;
+  readonly qss3BucketName?: string;
+  readonly qss3KeyPrefix?: string;
+  readonly rdgwInstanceType?: string;
 }
 
 /**
@@ -24,8 +24,8 @@ export class RemoteDesktopGateway extends cdk.Construct implements ec2.IConnecta
   private static readonly PORT = 3389;
   public readonly connections: ec2.Connections;
 
-  constructor(parent: cdk.Construct, name: string, props: RemoteDesktopGatewayProps) {
-    super(parent, name);
+  constructor(scope: cdk.Construct, id: string, props: RemoteDesktopGatewayProps) {
+    super(scope, id);
 
     const params: any = {
       RDGWCIDR: props.rdgwCIDR,
@@ -42,14 +42,13 @@ export class RemoteDesktopGateway extends cdk.Construct implements ec2.IConnecta
       RDGWInstanceType: props.rdgwInstanceType,
     };
 
-    const nestedStack = new cloudformation.StackResource(this, 'Resource', {
+    const nestedStack = new CfnStack(this, 'Resource', {
       templateUrl: 'https://s3.amazonaws.com/quickstart-reference/microsoft/rdgateway/latest/templates/rdgw-standalone.template',
       parameters: params
     });
 
-    const securityGroup = ec2.SecurityGroupRef.import(this, 'SecurityGroup', {
-      securityGroupId: nestedStack.getAtt('Outputs.RemoteDesktopGatewaySGID').toString()
-    });
+    const securityGroup = ec2.SecurityGroup.fromSecurityGroupId(this, 'SecurityGroup',
+      nestedStack.getAtt('Outputs.RemoteDesktopGatewaySGID').toString());
 
     const defaultPortRange = new ec2.TcpPort(RemoteDesktopGateway.PORT);
     this.connections = new ec2.Connections({ securityGroups: [securityGroup], defaultPortRange });

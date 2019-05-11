@@ -18,6 +18,10 @@ export abstract class StateMachineFragment extends cdk.Construct implements ICha
      */
     public abstract readonly endStates: INextable[];
 
+    public get id() {
+        return this.node.id;
+    }
+
     /**
      * Prefix the IDs of all states in this state machine fragment
      *
@@ -66,12 +70,12 @@ export interface SingleStateOptions extends ParallelProps {
      *
      * @default Construct ID of the StateMachineFragment
      */
-    stateId?: string;
+    readonly stateId?: string;
 
     /**
      * String to prefix all stateIds in the state machine with
      *
      * @default stateId
      */
-    prefixStates?: string;
+    readonly prefixStates?: string;
 }

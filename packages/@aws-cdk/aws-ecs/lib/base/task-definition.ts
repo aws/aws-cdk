@@ -1,8 +1,36 @@
 import iam = require('@aws-cdk/aws-iam');
-import cdk = require('@aws-cdk/cdk');
-import { ContainerDefinition, ContainerDefinitionProps } from '../container-definition';
-import { cloudformation } from '../ecs.generated';
-import { isEc2Compatible, isFargateCompatible } from '../util';
+import { Construct, IResource, Resource, Token } from '@aws-cdk/cdk';
+import { ContainerDefinition, ContainerDefinitionOptions } from '../container-definition';
+import { CfnTaskDefinition } from '../ecs.generated';
+import { PlacementConstraint } from '../placement';
+
+export interface ITaskDefinition extends IResource {
+  /**
+   * ARN of this task definition
+   * @attribute
+   */
+  readonly taskDefinitionArn: string;
+
+  /**
+   * Execution role for this task definition
+   */
+  readonly executionRole?: iam.IRole;
+
+  /**
+   * What launch types this task definition should be compatible with.
+   */
+  readonly compatibility: Compatibility;
+
+  /**
+   * Return true if the task definition can be run on an EC2 cluster
+   */
+  readonly isEc2Compatible: boolean;
+
+  /**
+   * Return true if the task definition can be run on a Fargate cluster
+   */
+  readonly isFargateCompatible: boolean;
+}
 
 /**
  * Properties common to all Task definitions
@@ -13,7 +41,7 @@ export interface CommonTaskDefinitionProps {
    *
    * @default Automatically generated name
    */
-  family?: string;
+  readonly family?: string;
 
   /**
    * The IAM role assumed by the ECS agent.
@@ -23,19 +51,19 @@ export interface CommonTaskDefinitionProps {
    *
    * @default An execution role will be automatically created if you use ECR images in your task definition
    */
-  executionRole?: iam.Role;
+  readonly executionRole?: iam.IRole;
 
   /**
    * The IAM role assumable by your application code running inside the container
    *
    * @default A task role is automatically created for you
    */
-  taskRole?: iam.Role;
+  readonly taskRole?: iam.IRole;
 
   /**
    * See: https://docs.aws.amazon.com/AmazonECS/latest/developerguide//task_definition_parameters.html#volumes
    */
-  volumes?: Volume[];
+  readonly volumes?: Volume[];
 }
 
 /**
@@ -49,7 +77,7 @@ export interface TaskDefinitionProps extends CommonTaskDefinitionProps {
    *
    * @default NetworkMode.Bridge for EC2 tasks, AwsVpc for Fargate tasks.
    */
-  networkMode?: NetworkMode;
+  readonly networkMode?: NetworkMode;
 
   /**
    * An array of placement constraint objects to use for the task. You can
@@ -58,12 +86,12 @@ export interface TaskDefinitionProps extends CommonTaskDefinitionProps {
    *
    * Not supported in Fargate.
    */
-  placementConstraints?: PlacementConstraint[];
+  readonly placementConstraints?: PlacementConstraint[];
 
   /**
    * What launch types this task definition should be compatible with.
    */
-  compatibility: Compatibility;
+  readonly compatibility: Compatibility;
 
   /**
    * The number of cpu units used by the task.
@@ -74,7 +102,7 @@ export interface TaskDefinitionProps extends CommonTaskDefinitionProps {
    * 2048 (2 vCPU) - Available memory values: Between 4GB and 16GB in 1GB increments
    * 4096 (4 vCPU) - Available memory values: Between 8GB and 30GB in 1GB increments
    */
-  cpu?: string;
+  readonly cpu?: string;
 
   /**
    * The amount (in MiB) of memory used by the task.
@@ -92,13 +120,50 @@ export interface TaskDefinitionProps extends CommonTaskDefinitionProps {
    *
    * Between 8GB and 30GB in 1GB increments - Available cpu values: 4096 (4 vCPU)
    */
-  memoryMiB?: string;
+  readonly memoryMiB?: string;
+}
+
+abstract class TaskDefinitionBase extends Resource implements ITaskDefinition {
+
+  public abstract readonly compatibility: Compatibility;
+  public abstract readonly taskDefinitionArn: string;
+  public abstract readonly executionRole?: iam.IRole;
+
+  /**
+   * Return true if the task definition can be run on an EC2 cluster
+   */
+  public get isEc2Compatible(): boolean {
+    return isEc2Compatible(this.compatibility);
+  }
+
+  /**
+   * Return true if the task definition can be run on a Fargate cluster
+   */
+  public get isFargateCompatible(): boolean {
+    return isFargateCompatible(this.compatibility);
+  }
 }
 
 /**
  * Base class for Ecs and Fargate task definitions
  */
-export class TaskDefinition extends cdk.Construct {
+export class TaskDefinition extends TaskDefinitionBase {
+
+  /**
+   * Imports a task definition by ARN.
+   *
+   * The task will have a compatibility of EC2+Fargate.
+   */
+  public static fromTaskDefinitionArn(scope: Construct, id: string, taskDefinitionArn: string): ITaskDefinition {
+    class Import extends TaskDefinitionBase {
+      public readonly taskDefinitionArn = taskDefinitionArn;
+      public readonly compatibility = Compatibility.Ec2AndFargate;
+      public readonly executionRole?: iam.IRole = undefined;
+    }
+
+    return new Import(scope, id);
+  }
+
   /**
    * The family name of this task definition
    */
@@ -106,13 +171,14 @@ export class TaskDefinition extends cdk.Construct {
 
   /**
    * ARN of this task definition
+   * @attribute
    */
   public readonly taskDefinitionArn: string;
 
   /**
    * Task role used by this task definition
    */
-  public readonly taskRole: iam.Role;
+  public readonly taskRole: iam.IRole;
 
   /**
    * Network mode used by this task definition
@@ -131,7 +197,7 @@ export class TaskDefinition extends cdk.Construct {
   /**
    * What launching modes this task is compatible with
    */
-  public compatibility: Compatibility;
+  public readonly compatibility: Compatibility;
 
   /**
    * All containers
@@ -141,24 +207,19 @@ export class TaskDefinition extends cdk.Construct {
   /**
    * All volumes
    */
-  private readonly volumes: cloudformation.TaskDefinitionResource.VolumeProperty[] = [];
-
-  /**
-   * Execution role for this task definition
-   *
-   * Will be created as needed.
-   */
-  private executionRole?: iam.Role;
+  private readonly volumes: Volume[] = [];
 
   /**
    * Placement constraints for task instances
    */
-  private readonly placementConstraints = new Array<cloudformation.TaskDefinitionResource.TaskDefinitionPlacementConstraintProperty>();
+  private readonly placementConstraints = new Array<CfnTaskDefinition.TaskDefinitionPlacementConstraintProperty>();
 
-  constructor(parent: cdk.Construct, name: string, props: TaskDefinitionProps) {
-    super(parent, name);
+  private _executionRole?: iam.IRole;
 
-    this.family = props.family || this.uniqueId;
+  constructor(scope: Construct, id: string, props: TaskDefinitionProps) {
+    super(scope, id);
+
+    this.family = props.family || this.node.uniqueId;
     this.compatibility = props.compatibility;
 
     if (props.volumes) {
@@ -166,29 +227,29 @@ export class TaskDefinition extends cdk.Construct {
     }
 
     this.networkMode = props.networkMode !== undefined ? props.networkMode :
-                       isFargateCompatible(this.compatibility) ? NetworkMode.AwsVpc : NetworkMode.Bridge;
-    if (isFargateCompatible(this.compatibility) && this.networkMode !== NetworkMode.AwsVpc) {
+                       this.isFargateCompatible ? NetworkMode.AwsVpc : NetworkMode.Bridge;
+    if (this.isFargateCompatible && this.networkMode !== NetworkMode.AwsVpc) {
       throw new Error(`Fargate tasks can only have AwsVpc network mode, got: ${this.networkMode}`);
     }
 
-    if (props.placementConstraints && props.placementConstraints.length > 0 && isFargateCompatible(this.compatibility)) {
+    if (props.placementConstraints && props.placementConstraints.length > 0 && this.isFargateCompatible) {
       throw new Error('Cannot set placement constraints on tasks that run on Fargate');
     }
 
-    if (isFargateCompatible(this.compatibility) && (!props.cpu || !props.memoryMiB)) {
+    if (this.isFargateCompatible && (!props.cpu || !props.memoryMiB)) {
       throw new Error(`Fargate-compatible tasks require both CPU (${props.cpu}) and memory (${props.memoryMiB}) specifications`);
     }
 
-    this.executionRole = props.executionRole;
+    this._executionRole = props.executionRole;
 
     this.taskRole = props.taskRole || new iam.Role(this, 'TaskRole', {
         assumedBy: new iam.ServicePrincipal('ecs-tasks.amazonaws.com'),
     });
 
-    const taskDef = new cloudformation.TaskDefinitionResource(this, 'Resource', {
-      containerDefinitions: new cdk.Token(() => this.containers.map(x => x.renderContainerDefinition())),
-      volumes: new cdk.Token(() => this.volumes),
-      executionRoleArn: new cdk.Token(() => this.executionRole && this.executionRole.roleArn),
+    const taskDef = new CfnTaskDefinition(this, 'Resource', {
+      containerDefinitions: new Token(() => this.containers.map(x => x.renderContainerDefinition())),
+      volumes: new Token(() => this.volumes),
+      executionRoleArn: new Token(() => this.executionRole && this.executionRole.roleArn).toString(),
       family: this.family,
       taskRoleArn: this.taskRole.roleArn,
       requiresCompatibilities: [
@@ -196,7 +257,8 @@ export class TaskDefinition extends cdk.Construct {
         ...(isFargateCompatible(props.compatibility) ? ["FARGATE"] : []),
       ],
       networkMode: this.networkMode,
-      placementConstraints: !isFargateCompatible(this.compatibility) ? new cdk.Token(this.placementConstraints) : undefined,
+      placementConstraints: new Token(
+        () => !isFargateCompatible(this.compatibility) && this.placementConstraints.length > 0 ? this.placementConstraints : undefined),
       cpu: props.cpu,
       memory: props.memoryMiB,
     });
@@ -206,6 +268,10 @@ export class TaskDefinition extends cdk.Construct {
     }
 
     this.taskDefinitionArn = taskDef.taskDefinitionArn;
+  }
+
+  public get executionRole(): iam.IRole | undefined {
+    return this._executionRole;
   }
 
   /**
@@ -225,14 +291,19 @@ export class TaskDefinition extends cdk.Construct {
   /**
    * Create a new container to this task definition
    */
-  public addContainer(id: string, props: ContainerDefinitionProps) {
-    const container = new ContainerDefinition(this, id, this, props);
+  public addContainer(id: string, props: ContainerDefinitionOptions) {
+    return new ContainerDefinition(this, id, { taskDefinition: this, ...props });
+  }
+
+  /**
+   * Links a container to this task definition.
+   * @internal
+   */
+  public _linkContainer(container: ContainerDefinition) {
     this.containers.push(container);
     if (this.defaultContainer === undefined && container.essential) {
       this.defaultContainer = container;
     }
-
-    return container;
   }
 
   /**
@@ -243,33 +314,13 @@ export class TaskDefinition extends cdk.Construct {
   }
 
   /**
-   * Validate this task definition
-   */
-  public validate(): string[] {
-    const ret = super.validate();
-
-    if (isEc2Compatible(this.compatibility)) {
-      // EC2 mode validations
-
-      // Container sizes
-      for (const container of this.containers) {
-        if (!container.memoryLimitSpecified) {
-          ret.push(`ECS Container ${container.id} must have at least one of 'memoryLimitMiB' or 'memoryReservationMiB' specified`);
-        }
-      }
-    }
-    return ret;
-  }
-
-  /**
    * Constrain where tasks can be placed
    */
   public addPlacementConstraint(constraint: PlacementConstraint) {
     if (isFargateCompatible(this.compatibility)) {
       throw new Error('Cannot set placement constraints on tasks that run on Fargate');
     }
-    const pc = this.renderPlacementConstraint(constraint);
-    this.placementConstraints.push(pc);
+    this.placementConstraints.push(...constraint.toJson());
   }
 
   /**
@@ -286,22 +337,31 @@ export class TaskDefinition extends cdk.Construct {
    * Create the execution role if it doesn't exist
    */
   public obtainExecutionRole(): iam.IRole {
-    if (!this.executionRole) {
-      this.executionRole = new iam.Role(this, 'ExecutionRole', {
+    if (!this._executionRole) {
+      this._executionRole = new iam.Role(this, 'ExecutionRole', {
         assumedBy: new iam.ServicePrincipal('ecs-tasks.amazonaws.com'),
       });
     }
-    return this.executionRole;
+    return this._executionRole;
   }
 
   /**
-   * Render the placement constraints
+   * Validate this task definition
    */
-  private renderPlacementConstraint(pc: PlacementConstraint): cloudformation.TaskDefinitionResource.TaskDefinitionPlacementConstraintProperty {
-    return {
-      type: pc.type,
-      expression: pc.expression
-    };
+  protected validate(): string[] {
+    const ret = super.validate();
+
+    if (isEc2Compatible(this.compatibility)) {
+      // EC2 mode validations
+
+      // Container sizes
+      for (const container of this.containers) {
+        if (!container.memoryLimitSpecified) {
+          ret.push(`ECS Container ${container.node.id} must have at least one of 'memoryLimitMiB' or 'memoryReservationMiB' specified`);
+        }
+      }
+    }
+    return ret;
   }
 }
 
@@ -340,13 +400,17 @@ export interface Volume {
   /**
    * Path on the host
    */
-  host?: Host;
+  readonly host?: Host;
 
   /**
    * A name for the volume
    */
-  name?: string;
-  // FIXME add dockerVolumeConfiguration
+  readonly name: string;
+
+  /**
+   * Specifies this configuration when using Docker volumes
+   */
+  readonly dockerVolumeConfiguration?: DockerVolumeConfiguration;
 }
 
 /**
@@ -356,37 +420,51 @@ export interface Host {
   /**
    * Source path on the host
    */
-  sourcePath?: string;
+  readonly sourcePath?: string;
 }
 
 /**
- * A constraint on how instances should be placed
+ * A configuration of a Docker volume
  */
-export interface PlacementConstraint {
+export interface DockerVolumeConfiguration {
   /**
-   * The type of constraint
+   * If true, the Docker volume is created if it does not already exist
+   *
+   * @default false
    */
-  type: PlacementConstraintType;
-
+  readonly autoprovision?: boolean;
   /**
-   * Additional information for the constraint
+   * The Docker volume driver to use
    */
-  expression?: string;
+  readonly driver: string;
+  /**
+   * A map of Docker driver specific options passed through
+   *
+   * @default No options
+   */
+  readonly driverOpts?: string[];
+  /**
+   * Custom metadata to add to your Docker volume
+   *
+   * @default No labels
+   */
+  readonly labels?: string[];
+  /**
+   * The scope for the Docker volume which determines it's lifecycle
+   */
+  readonly scope: Scope;
 }
 
-/**
- * A placement constraint type
- */
-export enum PlacementConstraintType {
+export enum Scope {
   /**
-   * Place each task on a different instance
+   * Docker volumes are automatically provisioned when the task starts and destroyed when the task stops
    */
-  DistinctInstance = "distinctInstance",
+  Task = "task",
 
   /**
-   * Place tasks only on instances matching the expression in 'expression'
+   * Docker volumes are persist after the task stops
    */
-  MemberOf = "memberOf"
+  Shared = "shared"
 }
 
 /**
@@ -421,6 +499,22 @@ export enum Compatibility {
 export interface ITaskDefinitionExtension {
   /**
    * Apply the extension to the given TaskDefinition
+   *
+   * @param taskDefinition [disable-awslint:ref-via-interface]
    */
   extend(taskDefinition: TaskDefinition): void;
+}
+
+/**
+ * Return true if the given task definition can be run on an EC2 cluster
+ */
+function isEc2Compatible(compatibility: Compatibility): boolean {
+  return [Compatibility.Ec2, Compatibility.Ec2AndFargate].includes(compatibility);
+}
+
+/**
+ * Return true if the given task definition can be run on a Fargate cluster
+ */
+function isFargateCompatible(compatibility: Compatibility): boolean {
+  return [Compatibility.Fargate, Compatibility.Ec2AndFargate].includes(compatibility);
 }

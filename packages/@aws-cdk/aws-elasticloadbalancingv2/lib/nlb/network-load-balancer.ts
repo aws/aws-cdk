@@ -13,19 +13,19 @@ export interface NetworkLoadBalancerProps extends BaseLoadBalancerProps {
    *
    * @default false
    */
-  crossZoneEnabled?: boolean;
+  readonly crossZoneEnabled?: boolean;
 }
 
 /**
  * Define a new network load balancer
  */
 export class NetworkLoadBalancer extends BaseLoadBalancer implements INetworkLoadBalancer {
-  public static import(parent: cdk.Construct, id: string, props: NetworkLoadBalancerRefProps): INetworkLoadBalancer {
-    return new ImportedNetworkLoadBalancer(parent, id, props);
+  public static import(scope: cdk.Construct, id: string, props: NetworkLoadBalancerImportProps): INetworkLoadBalancer {
+    return new ImportedNetworkLoadBalancer(scope, id, props);
   }
 
-  constructor(parent: cdk.Construct, id: string, props: NetworkLoadBalancerProps) {
-    super(parent, id, props, {
+  constructor(scope: cdk.Construct, id: string, props: NetworkLoadBalancerProps) {
+    super(scope, id, props, {
       type: "network",
     });
 
@@ -47,9 +47,9 @@ export class NetworkLoadBalancer extends BaseLoadBalancer implements INetworkLoa
   /**
    * Export this load balancer
    */
-  public export(): NetworkLoadBalancerRefProps {
+  public export(): NetworkLoadBalancerImportProps {
     return {
-      loadBalancerArn: new cdk.Output(this, 'LoadBalancerArn', { value: this.loadBalancerArn }).makeImportValue().toString()
+      loadBalancerArn: new cdk.CfnOutput(this, 'LoadBalancerArn', { value: this.loadBalancerArn }).makeImportValue().toString()
     };
   }
 
@@ -58,7 +58,7 @@ export class NetworkLoadBalancer extends BaseLoadBalancer implements INetworkLoa
    *
    * @default Average over 5 minutes
    */
-  public metric(metricName: string, props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
+  public metric(metricName: string, props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return new cloudwatch.Metric({
       namespace: 'AWS/NetworkELB',
       metricName,
@@ -76,7 +76,7 @@ export class NetworkLoadBalancer extends BaseLoadBalancer implements INetworkLoa
    *
    * @default Average over 5 minutes
    */
-  public metricActiveFlowCount(props?: cloudwatch.MetricCustomization) {
+  public metricActiveFlowCount(props?: cloudwatch.MetricOptions) {
     return this.metric('ActiveFlowCount', {
       statistic: 'Average',
       ...props
@@ -88,7 +88,7 @@ export class NetworkLoadBalancer extends BaseLoadBalancer implements INetworkLoa
    *
    * @default Sum over 5 minutes
    */
-  public metricConsumedLCUs(props?: cloudwatch.MetricCustomization) {
+  public metricConsumedLCUs(props?: cloudwatch.MetricOptions) {
     return this.metric('ConsumedLCUs', {
       statistic: 'Sum',
       ...props
@@ -100,7 +100,7 @@ export class NetworkLoadBalancer extends BaseLoadBalancer implements INetworkLoa
    *
    * @default Average over 5 minutes
    */
-  public metricHealthyHostCount(props?: cloudwatch.MetricCustomization) {
+  public metricHealthyHostCount(props?: cloudwatch.MetricOptions) {
     return this.metric('HealthyHostCount', {
       statistic: 'Average',
       ...props
@@ -112,7 +112,7 @@ export class NetworkLoadBalancer extends BaseLoadBalancer implements INetworkLoa
    *
    * @default Average over 5 minutes
    */
-  public metricUnHealthyHostCount(props?: cloudwatch.MetricCustomization) {
+  public metricUnHealthyHostCount(props?: cloudwatch.MetricOptions) {
     return this.metric('UnHealthyHostCount', {
       statistic: 'Average',
       ...props
@@ -124,7 +124,7 @@ export class NetworkLoadBalancer extends BaseLoadBalancer implements INetworkLoa
    *
    * @default Sum over 5 minutes
    */
-  public metricNewFlowCount(props?: cloudwatch.MetricCustomization) {
+  public metricNewFlowCount(props?: cloudwatch.MetricOptions) {
     return this.metric('NewFlowCount', {
       statistic: 'Sum',
       ...props
@@ -136,7 +136,7 @@ export class NetworkLoadBalancer extends BaseLoadBalancer implements INetworkLoa
    *
    * @default Sum over 5 minutes
    */
-  public metricProcessedBytes(props?: cloudwatch.MetricCustomization) {
+  public metricProcessedBytes(props?: cloudwatch.MetricOptions) {
     return this.metric('ProcessedBytes', {
       statistic: 'Sum',
       ...props
@@ -150,7 +150,7 @@ export class NetworkLoadBalancer extends BaseLoadBalancer implements INetworkLoa
    *
    * @default Sum over 5 minutes
    */
-  public metricTcpClientResetCount(props?: cloudwatch.MetricCustomization) {
+  public metricTcpClientResetCount(props?: cloudwatch.MetricOptions) {
     return this.metric('TCP_Client_Reset_Count', {
       statistic: 'Sum',
       ...props
@@ -162,7 +162,7 @@ export class NetworkLoadBalancer extends BaseLoadBalancer implements INetworkLoa
    *
    * @default Sum over 5 minutes
    */
-  public metricTcpElbResetCount(props?: cloudwatch.MetricCustomization) {
+  public metricTcpElbResetCount(props?: cloudwatch.MetricOptions) {
     return this.metric('TCP_ELB_Reset_Count', {
       statistic: 'Sum',
       ...props
@@ -176,7 +176,7 @@ export class NetworkLoadBalancer extends BaseLoadBalancer implements INetworkLoa
    *
    * @default Sum over 5 minutes
    */
-  public metricTcpTargetResetCount(props?: cloudwatch.MetricCustomization) {
+  public metricTcpTargetResetCount(props?: cloudwatch.MetricOptions) {
     return this.metric('TCP_Target_Reset_Count', {
       statistic: 'Sum',
       ...props
@@ -187,7 +187,7 @@ export class NetworkLoadBalancer extends BaseLoadBalancer implements INetworkLoa
 /**
  * A network load balancer
  */
-export interface INetworkLoadBalancer {
+export interface INetworkLoadBalancer extends cdk.IConstruct {
   /**
    * The ARN of this load balancer
    */
@@ -196,7 +196,7 @@ export interface INetworkLoadBalancer {
   /**
    * The VPC this load balancer has been created in (if available)
    */
-  readonly vpc?: ec2.VpcNetworkRef;
+  readonly vpc?: ec2.IVpcNetwork;
 
   /**
    * Add a listener to this load balancer
@@ -204,16 +204,21 @@ export interface INetworkLoadBalancer {
    * @returns The newly created listener
    */
   addListener(id: string, props: BaseNetworkListenerProps): NetworkListener;
+
+  /**
+   * Export this load balancer
+   */
+  export(): NetworkLoadBalancerImportProps;
 }
 
 /**
  * Properties to reference an existing load balancer
  */
-export interface NetworkLoadBalancerRefProps {
+export interface NetworkLoadBalancerImportProps {
   /**
    * ARN of the load balancer
    */
-  loadBalancerArn: string;
+  readonly loadBalancerArn: string;
 }
 
 /**
@@ -230,12 +235,16 @@ class ImportedNetworkLoadBalancer extends cdk.Construct implements INetworkLoadB
    *
    * Always undefined.
    */
-  public readonly vpc?: ec2.VpcNetworkRef;
+  public readonly vpc?: ec2.IVpcNetwork;
 
-  constructor(parent: cdk.Construct, id: string, props: NetworkLoadBalancerRefProps) {
-    super(parent, id);
+  constructor(scope: cdk.Construct, id: string, private readonly props: NetworkLoadBalancerImportProps) {
+    super(scope, id);
 
     this.loadBalancerArn = props.loadBalancerArn;
+  }
+
+  public export() {
+    return this.props;
   }
 
   /**

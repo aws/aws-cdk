@@ -19,34 +19,6 @@ export = {
         test.done();
     },
 
-    'Activity can be used in a Task'(test: Test) {
-        // GIVEN
-        const stack = new cdk.Stack();
-
-        // WHEN
-        const activity = new stepfunctions.Activity(stack, 'Activity');
-        const task = new stepfunctions.Task(stack, 'Task', {
-            resource: activity
-        });
-        new stepfunctions.StateMachine(stack, 'SM', {
-            definition: task
-        });
-
-        // THEN
-        expect(stack).to(haveResource('AWS::StepFunctions::StateMachine', {
-            DefinitionString: {
-                "Fn::Join": ["", [
-                    "{\"StartAt\":\"Task\",\"States\":{\"Task\":{\"End\":true,\"Type\":\"Task\",\"Resource\":\"",
-                    { Ref: "Activity04690B0A" },
-                    "\"}}}"
-
-                ]]
-            },
-        }));
-
-        test.done();
-    },
-
     'Activity exposes metrics'(test: Test) {
         // GIVEN
         const stack = new cdk.Stack();
@@ -60,13 +32,13 @@ export = {
             namespace: 'AWS/States',
             dimensions: { ActivityArn: { Ref: 'Activity04690B0A' }},
         };
-        test.deepEqual(cdk.resolve(activity.metricRunTime()), {
+        test.deepEqual(stack.node.resolve(activity.metricRunTime()), {
             ...sharedMetric,
             metricName: 'ActivityRunTime',
             statistic: 'Average'
         });
 
-        test.deepEqual(cdk.resolve(activity.metricFailed()), {
+        test.deepEqual(stack.node.resolve(activity.metricFailed()), {
             ...sharedMetric,
             metricName: 'ActivitiesFailed',
             statistic: 'Sum'

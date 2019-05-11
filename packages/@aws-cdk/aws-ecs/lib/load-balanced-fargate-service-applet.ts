@@ -1,4 +1,4 @@
-import { CertificateRef } from '@aws-cdk/aws-certificatemanager';
+import { Certificate } from '@aws-cdk/aws-certificatemanager';
 import { VpcNetwork } from '@aws-cdk/aws-ec2';
 import { HostedZoneProvider } from '@aws-cdk/aws-route53';
 import cdk = require('@aws-cdk/cdk');
@@ -13,7 +13,7 @@ export interface LoadBalancedFargateServiceAppletProps extends cdk.StackProps {
   /**
    * The image to start (from DockerHub)
    */
-  image: string;
+  readonly image: string;
 
   /**
    * The number of cpu units used by the task.
@@ -28,7 +28,7 @@ export interface LoadBalancedFargateServiceAppletProps extends cdk.StackProps {
    *
    * @default 256
    */
-  cpu?: string;
+  readonly cpu?: string;
 
   /**
    * The amount (in MiB) of memory used by the task.
@@ -50,51 +50,58 @@ export interface LoadBalancedFargateServiceAppletProps extends cdk.StackProps {
    *
    * @default 512
    */
-  memoryMiB?: string;
+  readonly memoryMiB?: string;
 
   /**
    * The container port of the application load balancer attached to your Fargate service. Corresponds to container port mapping.
    *
    * @default 80
    */
-  containerPort?: number;
+  readonly containerPort?: number;
 
   /**
    * Determines whether the Application Load Balancer will be internet-facing
    *
    * @default true
    */
-  publicLoadBalancer?: boolean;
+  readonly publicLoadBalancer?: boolean;
 
   /**
    * Determines whether your Fargate Service will be assigned a public IP address.
    *
    * @default false
    */
-  publicTasks?: boolean;
+  readonly publicTasks?: boolean;
 
   /**
    * Number of desired copies of running tasks
    *
    * @default 1
    */
-  desiredCount?: number;
+  readonly desiredCount?: number;
 
   /*
    * Domain name for the service, e.g. api.example.com
    */
-  domainName?: string;
+  readonly domainName?: string;
 
   /**
    * Route53 hosted zone for the domain, e.g. "example.com."
    */
-  domainZone?: string;
+  readonly domainZone?: string;
 
   /**
    * Certificate Manager certificate to associate with the load balancer.
    * Setting this option will set the load balancer port to 443.
    */
-  certificate?: string;
+  readonly certificate?: string;
+
+  /**
+   * Environment variables to pass to the container
+   *
+   * @default No environment variables
+   */
+  readonly environment?: { [key: string]: string };
 }
 
 /**
@@ -102,8 +109,8 @@ export interface LoadBalancedFargateServiceAppletProps extends cdk.StackProps {
  * load balancer, ECS cluster, VPC, and (optionally) Route53 alias record.
  */
 export class LoadBalancedFargateServiceApplet extends cdk.Stack {
-  constructor(parent: cdk.App, id: string, props: LoadBalancedFargateServiceAppletProps) {
-    super(parent, id, props);
+  constructor(scope: cdk.Construct, id: string, props: LoadBalancedFargateServiceAppletProps) {
+    super(scope, id, props);
 
     const vpc = new VpcNetwork(this, 'MyVpc', { maxAZs: 2 });
     const cluster = new Cluster(this, 'Cluster', { vpc });
@@ -114,7 +121,7 @@ export class LoadBalancedFargateServiceApplet extends cdk.Stack {
     }
     let certificate;
     if (props.certificate) {
-      certificate = CertificateRef.import(this, 'Cert', { certificateArn: props.certificate });
+      certificate = Certificate.fromCertificateArn(this, 'Cert', props.certificate);
     }
 
     // Instantiate Fargate Service with just cluster and image
@@ -125,8 +132,9 @@ export class LoadBalancedFargateServiceApplet extends cdk.Stack {
       memoryMiB: props.memoryMiB,
       publicLoadBalancer: props.publicLoadBalancer,
       publicTasks: props.publicTasks,
-      image: ContainerImage.fromDockerHub(props.image),
+      image: ContainerImage.fromRegistry(props.image),
       desiredCount: props.desiredCount,
+      environment: props.environment,
       certificate,
       domainName: props.domainName,
       domainZone

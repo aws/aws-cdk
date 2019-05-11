@@ -43,8 +43,8 @@
         }
       },
       "DependsOn": [
-        "MyQueuePolicy6BBEDDAC",
-        "EncryptedQueuePolicy8AEB1708"
+        "EncryptedQueuePolicy8AEB1708",
+        "MyQueuePolicy6BBEDDAC"
       ]
     },
     "MyQueueE6CA6235": {
@@ -69,7 +69,17 @@
               },
               "Effect": "Allow",
               "Principal": {
-                "Service": "s3.amazonaws.com"
+                "Service": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "s3.",
+                      {
+                        "Ref": "AWS::URLSuffix"
+                      }
+                    ]
+                  ]
+                }
               },
               "Resource": {
                 "Fn::GetAtt": [
@@ -92,7 +102,17 @@
               },
               "Effect": "Allow",
               "Principal": {
-                "Service": "s3.amazonaws.com"
+                "Service": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "s3.",
+                      {
+                        "Ref": "AWS::URLSuffix"
+                      }
+                    ]
+                  ]
+                }
               },
               "Resource": {
                 "Fn::GetAtt": [
@@ -120,7 +140,17 @@
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": {
-                "Service": "lambda.amazonaws.com"
+                "Service": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "lambda.",
+                      {
+                        "Ref": "AWS::URLSuffix"
+                      }
+                    ]
+                  ]
+                }
               }
             }
           ],
@@ -274,7 +304,17 @@
               ],
               "Effect": "Allow",
               "Principal": {
-                "Service": "s3.amazonaws.com"
+                "Service": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "s3.",
+                      {
+                        "Ref": "AWS::URLSuffix"
+                      }
+                    ]
+                  ]
+                }
               },
               "Resource": "*"
             }
@@ -315,7 +355,17 @@
               },
               "Effect": "Allow",
               "Principal": {
-                "Service": "s3.amazonaws.com"
+                "Service": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "s3.",
+                      {
+                        "Ref": "AWS::URLSuffix"
+                      }
+                    ]
+                  ]
+                }
               },
               "Resource": {
                 "Fn::GetAtt": [

@@ -4,33 +4,49 @@ import { StackInspector } from "../inspector";
 /**
  * An assertion to check whether a resource of a given type and with the given properties exists, disregarding properties
  *
- * Properties can be:
- *
- * - An object, in which case its properties will be compared to those of the actual resource found
- * - A callable, in which case it will be treated as a predicate that is applied to the Properties of the found resources.
+ * @param resourceType the type of the resource that is expected to be present.
+ * @param properties   the properties that the resource is expected to have. A function may be provided, in which case
+ *                     it will be called with the properties of candidate resources and an ``InspectionFailure``
+ *                     instance on which errors should be appended, and should return a truthy value to denote a match.
+ * @param comparison   the entity that is being asserted against.
+ * @param allowValueExtension if properties is an object, tells whether values must match exactly, or if they are
+ *                     allowed to be supersets of the reference values. Meaningless if properties is a function.
  */
-export function haveResource(resourceType: string, properties?: any, comparison?: ResourcePart): Assertion<StackInspector> {
-  return new HaveResourceAssertion(resourceType, properties, comparison);
+export function haveResource(resourceType: string,
+                             properties?: any,
+                             comparison?: ResourcePart,
+                             allowValueExtension: boolean = false): Assertion<StackInspector> {
+  return new HaveResourceAssertion(resourceType, properties, comparison, allowValueExtension);
+}
+
+/**
+ * Sugar for calling ``haveResources`` with ``allowValueExtension`` set to ``true``.
+ */
+export function haveResourceLike(resourceType: string,
+                                 properties?: any,
+                                 comparison?: ResourcePart) {
+  return haveResource(resourceType, properties, comparison, true);
 }
 
 type PropertyPredicate = (props: any, inspection: InspectionFailure) => boolean;
 
-class HaveResourceAssertion extends Assertion<StackInspector> {
+export class HaveResourceAssertion extends Assertion<StackInspector> {
   private inspected: InspectionFailure[] = [];
   private readonly part: ResourcePart;
   private readonly predicate: PropertyPredicate;
 
   constructor(private readonly resourceType: string,
               private readonly properties?: any,
-              part?: ResourcePart) {
+              part?: ResourcePart,
+              allowValueExtension: boolean = false) {
     super();
 
-    this.predicate = typeof properties === 'function' ? properties : makeSuperObjectPredicate(properties);
+    this.predicate = typeof properties === 'function' ? properties : makeSuperObjectPredicate(properties, allowValueExtension);
     this.part = part !== undefined ? part : ResourcePart.Properties;
   }
 
   public assertUsing(inspector: StackInspector): boolean {
-    for (const logicalId of Object.keys(inspector.value.Resources)) {
+    for (const logicalId of Object.keys(inspector.value.Resources || {})) {
       const resource = inspector.value.Resources[logicalId];
       if (resource.Type === this.resourceType) {
         const propsToCheck = this.part === ResourcePart.Properties ? resource.Properties : resource;
@@ -50,17 +66,21 @@ class HaveResourceAssertion extends Assertion<StackInspector> {
     return false;
   }
 
+  public generateErrorMessage() {
+    const lines: string[] = [];
+    lines.push(`None of ${this.inspected.length} resources matches ${this.description}.`);
+
+    for (const inspected of this.inspected) {
+      lines.push(`- ${inspected.failureReason} in:`);
+      lines.push(indent(4, JSON.stringify(inspected.resource, null, 2)));
+    }
+
+    return lines.join('\n');
+  }
+
   public assertOrThrow(inspector: StackInspector) {
     if (!this.assertUsing(inspector)) {
-      const lines: string[] = [];
-      lines.push(`None of ${this.inspected.length} resources matches ${this.description}.`);
-
-      for (const inspected of this.inspected) {
-        lines.push(`- ${inspected.failureReason} in:`);
-        lines.push(indent(4, JSON.stringify(inspected.resource, null, 2)));
-      }
-
-      throw new Error(lines.join('\n'));
+      throw new Error(this.generateErrorMessage());
     }
   }
 
@@ -78,16 +98,16 @@ function indent(n: number, s: string) {
 /**
  * Make a predicate that checks property superset
  */
-function makeSuperObjectPredicate(obj: any) {
+function makeSuperObjectPredicate(obj: any, allowValueExtension: boolean) {
   return (resourceProps: any, inspection: InspectionFailure) => {
     const errors: string[] = [];
-    const ret = isSuperObject(resourceProps, obj, errors);
+    const ret = isSuperObject(resourceProps, obj, errors, allowValueExtension);
     inspection.failureReason = errors.join(',');
     return ret;
   };
 }
 
-interface InspectionFailure {
+export interface InspectionFailure {
   resource: any;
   failureReason: string;
 }
@@ -95,9 +115,9 @@ interface InspectionFailure {
 /**
  * Return whether `superObj` is a super-object of `obj`.
  *
- * A super-object has the same or more property values, recursing into nested objects.
+ * A super-object has the same or more property values, recursing into sub properties if ``allowValueExtension`` is true.
  */
-export function isSuperObject(superObj: any, obj: any, errors: string[] = []): boolean {
+export function isSuperObject(superObj: any, obj: any, errors: string[] = [], allowValueExtension: boolean = false): boolean {
   if (obj == null) { return true; }
   if (Array.isArray(superObj) !== Array.isArray(obj)) {
     errors.push('Array type mismatch');
@@ -111,7 +131,7 @@ export function isSuperObject(superObj: any, obj: any, errors: string[] = []): b
 
     // Do isSuperObject comparison for individual objects
     for (let i = 0; i < obj.length; i++) {
-      if (!isSuperObject(superObj[i], obj[i], [])) {
+      if (!isSuperObject(superObj[i], obj[i], [], allowValueExtension)) {
         errors.push(`Array element ${i} mismatch`);
       }
     }
@@ -128,7 +148,10 @@ export function isSuperObject(superObj: any, obj: any, errors: string[] = []): b
         continue;
       }
 
-      if (!isSuperObject(superObj[key], obj[key], [])) {
+      const valueMatches = allowValueExtension
+                         ? isSuperObject(superObj[key], obj[key], [], allowValueExtension)
+                         : isStrictlyEqual(superObj[key], obj[key]);
+      if (!valueMatches) {
         errors.push(`Field ${key} mismatch`);
       }
     }
@@ -139,6 +162,22 @@ export function isSuperObject(superObj: any, obj: any, errors: string[] = []): b
     errors.push('Different values');
   }
   return errors.length === 0;
+
+  function isStrictlyEqual(left: any, right: any): boolean {
+    if (left === right) { return true; }
+    if (typeof left !== typeof right) { return false; }
+    if (typeof left === 'object' && typeof right === 'object') {
+      if (Array.isArray(left) !== Array.isArray(right)) { return false; }
+      const allKeys = new Set<string>([...Object.keys(left), ...Object.keys(right)]);
+      for (const key of allKeys) {
+        if (!isStrictlyEqual(left[key], right[key])) {
+          return false;
+        }
+      }
+      return true;
+    }
+    return false;
+  }
 }
 
 /**

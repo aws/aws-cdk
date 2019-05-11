@@ -17,7 +17,7 @@ const tests: any = {
   }
 };
 
-for (const name of resourceTypes.sort()) {
+for (const name of resourceTypes().sort()) {
   tests[`filteredSpecification(${JSON.stringify(name)})`] = (test: Test) => {
     const filteredSpec = filteredSpecification(name);
     test.notDeepEqual(filteredSpec, specification, `The filteredSpecification result is not the whole specification`);

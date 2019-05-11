@@ -7,12 +7,12 @@ export interface VpcContextQuery {
   /**
    * Query account
    */
-  account?: string;
+  readonly account?: string;
 
   /**
    * Query region
    */
-  region?: string;
+  readonly region?: string;
 
   /**
    * Filters to apply to the VPC
@@ -21,7 +21,7 @@ export interface VpcContextQuery {
    *
    * @see https://docs.aws.amazon.com/AWSEC2/latest/APIReference/API_DescribeVpcs.html
    */
-  filter: {[key: string]: string};
+  readonly filter: {[key: string]: string};
 }
 
 /**
@@ -32,52 +32,57 @@ export interface VpcContextResponse {
   /**
    * VPC id
    */
-  vpcId: string;
+  readonly vpcId: string;
 
   /**
    * AZs
    */
-  availabilityZones: string[];
+  readonly availabilityZones: string[];
 
   /**
    * IDs of all public subnets
    *
    * Element count: #(availabilityZones) · #(publicGroups)
    */
-  publicSubnetIds?: string[];
+  readonly publicSubnetIds?: string[];
 
   /**
    * Name of public subnet groups
    *
    * Element count: #(publicGroups)
    */
-  publicSubnetNames?: string[];
+  readonly publicSubnetNames?: string[];
 
   /**
    * IDs of all private subnets
    *
    * Element count: #(availabilityZones) · #(privateGroups)
    */
-  privateSubnetIds?: string[];
+  readonly privateSubnetIds?: string[];
 
   /**
    * Name of private subnet groups
    *
    * Element count: #(privateGroups)
    */
-  privateSubnetNames?: string[];
+  readonly privateSubnetNames?: string[];
 
   /**
    * IDs of all isolated subnets
    *
    * Element count: #(availabilityZones) · #(isolatedGroups)
    */
-  isolatedSubnetIds?: string[];
+  readonly isolatedSubnetIds?: string[];
 
   /**
    * Name of isolated subnet groups
    *
    * Element count: #(isolatedGroups)
    */
-  isolatedSubnetNames?: string[];
+  readonly isolatedSubnetNames?: string[];
+
+  /**
+   * The VPN gateway ID
+   */
+  readonly vpnGatewayId?: string;
 }

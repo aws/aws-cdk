@@ -1,38 +1,61 @@
-import { cloudformation } from './ecs.generated';
+import cdk = require('@aws-cdk/cdk');
+import { CfnTaskDefinition } from './ecs.generated';
 
 /**
- * Linux parameter setup in a container
+ * Properties for defining Linux Parameters
  */
-export class LinuxParameters {
+export interface LinuxParametersProps {
   /**
    * Whether the init process is enabled
    */
-  public initProcessEnabled?: boolean;
+  readonly initProcessEnabled?: boolean;
 
   /**
    * The shared memory size
    */
-  public sharedMemorySize?: number;
+  readonly sharedMemorySize?: number;
+}
+
+/**
+ * Linux Parameters for an ECS container
+ */
+export class LinuxParameters extends cdk.Construct {
+  /**
+   * Whether the init process is enabled
+   */
+  private readonly initProcessEnabled?: boolean;
+
+  /**
+   * The shared memory size. Not valid for Fargate launch type
+   */
+  private readonly sharedMemorySize?: number;
 
   /**
    * Capabilities to be added
    */
-  private readonly capAdd: Capability[] = [];
+  private readonly capAdd = new Array<Capability>();
 
   /**
    * Capabilities to be dropped
    */
-  private readonly capDrop: Capability[] = [];
+  private readonly capDrop = new Array<Capability>();
 
   /**
    * Device mounts
    */
-  private readonly devices: Device[] = [];
+  private readonly devices = new Array<Device>();
 
   /**
-   * TMPFS mounts
+   * TmpFs mounts
    */
-  private readonly tmpfs: Tmpfs[] = [];
+  private readonly tmpfs = new Array<Tmpfs>();
+
+  constructor(scope: cdk.Construct, id: string, props: LinuxParametersProps = {}) {
+    super(scope, id);
+
+    this.sharedMemorySize = props.sharedMemorySize;
+    this.initProcessEnabled = props.initProcessEnabled;
+  }
 
   /**
    * Add one or more capabilities
@@ -61,6 +84,8 @@ export class LinuxParameters {
 
   /**
    * Add one or more tmpfs mounts
+   *
+   * Only works with EC2 launch type.
    */
   public addTmpfs(...tmpfs: Tmpfs[]) {
     this.tmpfs.push(...tmpfs);
@@ -69,7 +94,7 @@ export class LinuxParameters {
   /**
    * Render the Linux parameters to a CloudFormation object
    */
-  public renderLinuxParameters(): cloudformation.TaskDefinitionResource.LinuxParametersProperty {
+  public renderLinuxParameters(): CfnTaskDefinition.LinuxParametersProperty {
     return {
       initProcessEnabled: this.initProcessEnabled,
       sharedMemorySize: this.sharedMemorySize,
@@ -92,22 +117,22 @@ export interface Device {
    *
    * @default Same path as the host
    */
-  containerPath?: string,
+  readonly containerPath?: string,
 
   /**
    * Path on the host
    */
-  hostPath: string,
+  readonly hostPath: string,
 
   /**
    * Permissions
    *
    * @default Readonly
    */
-  permissions?: DevicePermission[]
+  readonly permissions?: DevicePermission[]
 }
 
-function renderDevice(device: Device): cloudformation.TaskDefinitionResource.DeviceProperty {
+function renderDevice(device: Device): CfnTaskDefinition.DeviceProperty {
   return {
     containerPath: device.containerPath,
     hostPath: device.hostPath,
@@ -122,20 +147,20 @@ export interface Tmpfs {
   /**
    * Path in the container to mount
    */
-  containerPath: string,
+  readonly containerPath: string,
 
   /**
    * Size of the volume
    */
-  size: number,
+  readonly size: number,
 
   /**
    * Mount options
    */
-  mountOptions?: TmpfsMountOption[],
+  readonly mountOptions?: TmpfsMountOption[],
 }
 
-function renderTmpfs(tmpfs: Tmpfs): cloudformation.TaskDefinitionResource.TmpfsProperty {
+function renderTmpfs(tmpfs: Tmpfs): CfnTaskDefinition.TmpfsProperty {
   return {
     containerPath: tmpfs.containerPath,
     size: tmpfs.size,

@@ -1,6 +1,5 @@
 import cxapi = require('@aws-cdk/cx-api');
-import { Stack } from './cloudformation/stack';
-import { Construct } from './core/construct';
+import { Construct } from './construct';
 
 type ContextProviderProps = {[key: string]: any};
 /**
@@ -14,17 +13,14 @@ type ContextProviderProps = {[key: string]: any};
  */
 export class ContextProvider {
 
-  private readonly stack: Stack;
   private readonly props: ContextProviderProps;
 
-  constructor(
-    private readonly context: Construct,
-    private readonly provider: string,
-    props: ContextProviderProps = {}) {
-    this.stack = Stack.find(context);
+  constructor(private readonly context: Construct,
+              private readonly provider: string,
+              props: ContextProviderProps = {}) {
     this.props = {
-      account: this.stack.env.account,
-      region: this.stack.env.region,
+      account: context.node.stack.env.account,
+      region: context.node.stack.env.region,
       ...props,
     };
   }
@@ -41,17 +37,17 @@ export class ContextProvider {
     // if account or region is not defined this is probably a test mode, so we just
     // return the default value
     if (!this.props.account || !this.props.region) {
-      this.context.addError(formatMissingScopeError(this.provider, this.props));
+      this.context.node.addError(formatMissingScopeError(this.provider, this.props));
       return defaultValue;
     }
 
-    const value = this.context.getContext(this.key);
+    const value = this.context.node.getContext(this.key);
 
     if (value != null) {
       return value;
     }
 
-    this.stack.reportMissingContext(this.key, {
+    this.context.node.stack.reportMissingContext(this.key, {
       provider: this.provider,
       props: this.props,
     });
@@ -65,11 +61,11 @@ export class ContextProvider {
     // if scope is undefined, this is probably a test mode, so we just
     // return the default value
     if (!this.props.account || !this.props.region) {
-      this.context.addError(formatMissingScopeError(this.provider, this.props));
+      this.context.node.addError(formatMissingScopeError(this.provider, this.props));
       return defaultValue;
     }
 
-    const value = this.context.getContext(this.key);
+    const value = this.context.node.getContext(this.key);
 
     if (value != null) {
       if (typeof value !== 'string') {
@@ -78,7 +74,7 @@ export class ContextProvider {
       return value;
     }
 
-    this.stack.reportMissingContext(this.key, {
+    this.context.node.stack.reportMissingContext(this.key, {
       provider: this.provider,
       props: this.props,
     });
@@ -95,11 +91,11 @@ export class ContextProvider {
       // return the default value and report an error so this in not accidentally used
       // in the toolkit
       if (!this.props.account || !this.props.region) {
-        this.context.addError(formatMissingScopeError(this.provider, this.props));
+        this.context.node.addError(formatMissingScopeError(this.provider, this.props));
         return defaultValue;
       }
 
-      const value = this.context.getContext(this.key);
+      const value = this.context.node.getContext(this.key);
 
       if (value != null) {
         if (!value.map) {
@@ -108,7 +104,7 @@ export class ContextProvider {
         return value;
       }
 
-      this.stack.reportMissingContext(this.key, {
+      this.context.node.stack.reportMissingContext(this.key, {
         provider: this.provider,
         props: this.props,
       });
@@ -150,7 +146,7 @@ export interface SSMParameterProviderProps {
   /**
    * The name of the parameter to lookup
    */
-  parameterName: string;
+  readonly parameterName: string;
 }
 /**
  * Context provider that will read values from the SSM parameter store in the indicated account and region

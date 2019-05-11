@@ -1,9 +1,7 @@
 {
   "name": "simple-resource-bundler",
-  "version": "0.18.0",
+  "version": "0.31.0",
   "description": "Command-line tool to embed resources into JS libraries",
-  "main": "bundler.js",
-  "types": "bundler.d.ts",
   "bin": {
     "simple-resource-bundler": "bin/simple-resource-bundler"
   },
@@ -22,23 +20,27 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@types/fs-extra": "^5.0.4",
-    "@types/yargs": "^8.0.3",
-    "cdk-build-tools": "^0.18.0",
-    "pkglint": "^0.18.0"
+    "@types/fs-extra": "^5.0.5",
+    "@types/yargs": "^13.0.0",
+    "cdk-build-tools": "^0.31.0",
+    "pkglint": "^0.31.0"
   },
   "dependencies": {
-    "fs-extra": "^7.0.0",
-    "source-map-support": "^0.5.6",
-    "yargs": "^9.0.1"
+    "fs-extra": "^7.0.1",
+    "source-map-support": "^0.5.12",
+    "yargs": "^13.2.2"
   },
   "repository": {
     "url": "https://github.com/awslabs/aws-cdk.git",
-    "type": "git"
+    "type": "git",
+    "directory": "packages/simple-resource-bundler"
   },
   "keywords": [
     "aws",
     "cdk"
   ],
-  "homepage": "https://github.com/awslabs/aws-cdk"
+  "homepage": "https://github.com/awslabs/aws-cdk",
+  "engines": {
+    "node": ">= 8.10.0"
+  }
 }

@@ -1,8 +1,12 @@
+import { expect, haveResource, haveResourceLike, ResourcePart } from '@aws-cdk/assert';
 import assets = require('@aws-cdk/assets');
 import cdk = require('@aws-cdk/cdk');
+import cxapi = require('@aws-cdk/cx-api');
 import { Test } from 'nodeunit';
 import path = require('path');
 import lambda = require('../lib');
+
+// tslint:disable:no-string-literal
 
 export = {
   'lambda.Code.inline': {
@@ -66,8 +70,136 @@ export = {
       test.deepEqual(synthesized.metadata['/MyStack/Func2/Code'], undefined);
 
       test.done();
+    },
+
+    'adds code asset metadata'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      stack.node.setContext(cxapi.ASSET_RESOURCE_METADATA_ENABLED_CONTEXT, true);
+
+      const location = path.join(__dirname, 'my-lambda-handler');
+
+      // WHEN
+      new lambda.Function(stack, 'Func1', {
+        code: lambda.Code.asset(location),
+        runtime: lambda.Runtime.NodeJS810,
+        handler: 'foom',
+      });
+
+      // THEN
+      expect(stack).to(haveResource('AWS::Lambda::Function', {
+        Metadata: {
+          [cxapi.ASSET_RESOURCE_METADATA_PATH_KEY]: location,
+          [cxapi.ASSET_RESOURCE_METADATA_PROPERTY_KEY]: 'Code'
+        }
+      }, ResourcePart.CompleteDefinition));
+      test.done();
     }
-  }
+  },
+
+  'lambda.Code.cfnParameters': {
+    "automatically creates the Bucket and Key parameters when it's used in a Function"(test: Test) {
+      const stack = new cdk.Stack();
+      const code = new lambda.CfnParametersCode();
+      new lambda.Function(stack, 'Function', {
+        code,
+        runtime: lambda.Runtime.NodeJS810,
+        handler: 'index.handler',
+      });
+
+      expect(stack).to(haveResourceLike('AWS::Lambda::Function', {
+        Code: {
+          S3Bucket: {
+            Ref: "FunctionLambdaSourceBucketNameParameter9E9E108F",
+          },
+          S3Key: {
+            Ref: "FunctionLambdaSourceObjectKeyParameter1C7AED11",
+          },
+        },
+      }));
+
+      test.equal(stack.node.resolve(code.bucketNameParam), 'FunctionLambdaSourceBucketNameParameter9E9E108F');
+      test.equal(stack.node.resolve(code.objectKeyParam), 'FunctionLambdaSourceObjectKeyParameter1C7AED11');
+
+      test.done();
+    },
+
+    'does not allow accessing the Parameter properties before being used in a Function'(test: Test) {
+      const code = new lambda.CfnParametersCode();
+
+      test.throws(() => {
+        test.notEqual(code.bucketNameParam, undefined);
+      }, /bucketNameParam/);
+
+      test.throws(() => {
+        test.notEqual(code.objectKeyParam, undefined);
+      }, /objectKeyParam/);
+
+      test.done();
+    },
+
+    'allows passing custom Parameters when creating it'(test: Test) {
+      const stack = new cdk.Stack();
+      const bucketNameParam = new cdk.CfnParameter(stack, 'BucketNameParam', {
+        type: 'String',
+      });
+      const bucketKeyParam = new cdk.CfnParameter(stack, 'ObjectKeyParam', {
+        type: 'String',
+      });
+
+      const code = lambda.Code.cfnParameters({
+        bucketNameParam,
+        objectKeyParam: bucketKeyParam,
+      });
+
+      test.equal(stack.node.resolve(code.bucketNameParam), 'BucketNameParam');
+      test.equal(stack.node.resolve(code.objectKeyParam), 'ObjectKeyParam');
+
+      new lambda.Function(stack, 'Function', {
+        code,
+        runtime: lambda.Runtime.NodeJS810,
+        handler: 'index.handler',
+      });
+
+      expect(stack).to(haveResourceLike('AWS::Lambda::Function', {
+        Code: {
+          S3Bucket: {
+            Ref: "BucketNameParam",
+          },
+          S3Key: {
+            Ref: "ObjectKeyParam",
+          },
+        },
+      }));
+
+      test.done();
+    },
+
+    'can assign parameters'(test: Test) {
+      // given
+      const stack = new cdk.Stack();
+      const code = new lambda.CfnParametersCode({
+        bucketNameParam: new cdk.CfnParameter(stack, 'BucketNameParam', {
+          type: 'String',
+        }),
+        objectKeyParam: new cdk.CfnParameter(stack, 'ObjectKeyParam', {
+          type: 'String',
+        }),
+      });
+
+      // when
+      const overrides = stack.node.resolve(code.assign({
+        bucketName: 'SomeBucketName',
+        objectKey: 'SomeObjectKey',
+      }));
+
+      // then
+      test.equal(overrides['BucketNameParam'], 'SomeBucketName');
+      test.equal(overrides['ObjectKeyParam'], 'SomeObjectKey');
+
+      test.done();
+    },
+  },
 };
 
 function defineFunction(code: lambda.Code, runtime: lambda.Runtime = lambda.Runtime.NodeJS810) {

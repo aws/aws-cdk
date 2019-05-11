@@ -17,7 +17,6 @@
     "inlineSources": true
   },
   "exclude": [
-    "test/enrichments/**",
-    "module-template/**"
+    "test/enrichments/**"
   ]
 }

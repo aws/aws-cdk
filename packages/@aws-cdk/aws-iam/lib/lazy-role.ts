@@ -1,7 +1,14 @@
 import cdk = require('@aws-cdk/cdk');
+import { Grant } from './grant';
 import { Policy } from './policy';
-import { PolicyPrincipal, PolicyStatement } from './policy-document';
-import { IRole, Role, RoleProps } from './role';
+import { PolicyStatement, PrincipalPolicyFragment } from './policy-document';
+import { IPrincipal } from './principals';
+import { IRole, Role, RoleAttributes, RoleProps } from './role';
+
+// tslint:disable-next-line:no-empty-interface
+export interface LazyRoleProps extends RoleProps {
+
+}
 
 /**
  * An IAM role that only gets attached to the construct tree once it gets used, not before
@@ -13,25 +20,32 @@ import { IRole, Role, RoleProps } from './role';
  * not be synthesized or deployed.
  */
 export class LazyRole extends cdk.Construct implements IRole {
+  public readonly grantPrincipal: IPrincipal = this;
+  public readonly assumeRoleAction: string = 'sts:AssumeRole';
   private role?: Role;
   private readonly statements = new Array<PolicyStatement>();
   private readonly policies = new Array<Policy>();
   private readonly managedPolicies = new Array<string>();
 
-  constructor(parent: cdk.Construct, id: string, private readonly props: RoleProps) {
-    super(parent, id);
+  constructor(scope: cdk.Construct, id: string, private readonly props: LazyRoleProps) {
+    super(scope, id);
+  }
+
+  public export(): RoleAttributes {
+    return this.instantiate().export();
   }
 
   /**
    * Adds a permission to the role's default policy document.
    * If there is no default policy attached to this role, it will be created.
-   * @param permission The permission statement to add to the policy document
+   * @param statement The permission statement to add to the policy document
    */
-  public addToPolicy(statement: PolicyStatement): void {
+  public addToPolicy(statement: PolicyStatement): boolean {
     if (this.role) {
-      this.role.addToPolicy(statement);
+      return this.role.addToPolicy(statement);
     } else {
       this.statements.push(statement);
+      return true;
     }
   }
 
@@ -60,24 +74,36 @@ export class LazyRole extends cdk.Construct implements IRole {
   }
 
   /**
-   * Returns the role.
-   */
-  public get dependencyElements(): cdk.IDependable[] {
-    return this.instantiate().dependencyElements;
-  }
-
-  /**
    * Returns the ARN of this role.
    */
   public get roleArn(): string {
     return this.instantiate().roleArn;
   }
 
+  public get roleId(): string {
+    return this.instantiate().roleId;
+  }
+
+  public get roleName(): string {
+    return this.instantiate().roleName;
+  }
+
+  public get policyFragment(): PrincipalPolicyFragment {
+    return this.instantiate().policyFragment;
+  }
+
   /**
-   * Returns a Principal object representing the ARN of this role.
+   * Grant the actions defined in actions to the identity Principal on this resource.
    */
-  public get principal(): PolicyPrincipal {
-    return this.instantiate().principal;
+  public grant(identity: IPrincipal, ...actions: string[]): Grant {
+    return this.instantiate().grant(identity, ...actions);
+  }
+
+  /**
+   * Grant permissions to the given principal to pass this role.
+   */
+  public grantPassRole(identity: IPrincipal): Grant {
+    return this.instantiate().grantPassRole(identity);
   }
 
   private instantiate(): Role {

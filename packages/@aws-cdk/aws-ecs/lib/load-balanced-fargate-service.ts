@@ -1,27 +1,14 @@
-import { CertificateRef } from '@aws-cdk/aws-certificatemanager';
-import elbv2 = require('@aws-cdk/aws-elasticloadbalancingv2');
-import { AliasRecord, HostedZoneRef } from '@aws-cdk/aws-route53';
+import { AliasRecord, IHostedZone } from '@aws-cdk/aws-route53';
 import cdk = require('@aws-cdk/cdk');
-import { ICluster } from './cluster';
-import { IContainerImage } from './container-image';
 import { FargateService } from './fargate/fargate-service';
 import { FargateTaskDefinition } from './fargate/fargate-task-definition';
+import { LoadBalancedServiceBase, LoadBalancedServiceBaseProps } from './load-balanced-service-base';
 import { AwsLogDriver } from './log-drivers/aws-log-driver';
 
 /**
  * Properties for a LoadBalancedEcsService
  */
-export interface LoadBalancedFargateServiceProps {
-  /**
-   * The cluster where your Fargate service will be deployed
-   */
-  cluster: ICluster;
-
-  /**
-   * The image to start
-   */
-  image: IContainerImage;
-
+export interface LoadBalancedFargateServiceProps extends LoadBalancedServiceBaseProps {
   /**
    * The number of cpu units used by the task.
    * Valid values, which determines your range of valid values for the memory parameter:
@@ -35,7 +22,7 @@ export interface LoadBalancedFargateServiceProps {
    *
    * @default 256
    */
-  cpu?: string;
+  readonly cpu?: string;
 
   /**
    * The amount (in MiB) of memory used by the task.
@@ -57,71 +44,45 @@ export interface LoadBalancedFargateServiceProps {
    *
    * @default 512
    */
-  memoryMiB?: string;
-
-  /**
-   * The container port of the application load balancer attached to your Fargate service. Corresponds to container port mapping.
-   *
-   * @default 80
-   */
-  containerPort?: number;
-
-  /**
-   * Determines whether the Application Load Balancer will be internet-facing
-   *
-   * @default true
-   */
-  publicLoadBalancer?: boolean;
+  readonly memoryMiB?: string;
 
   /**
    * Determines whether your Fargate Service will be assigned a public IP address.
    *
    * @default false
    */
-  publicTasks?: boolean;
-
-  /**
-   * Number of desired copies of running tasks
-   *
-   * @default 1
-   */
-  desiredCount?: number;
+  readonly publicTasks?: boolean;
 
   /*
    * Domain name for the service, e.g. api.example.com
    */
-  domainName?: string;
+  readonly domainName?: string;
 
   /**
    * Route53 hosted zone for the domain, e.g. "example.com."
    */
-  domainZone?: HostedZoneRef;
+  readonly domainZone?: IHostedZone;
 
-  /**
-   * Certificate Manager certificate to associate with the load balancer.
-   * Setting this option will set the load balancer port to 443.
-   */
-  certificate?: CertificateRef;
   /**
    * Whether to create an AWS log driver
    *
    * @default true
    */
-  createLogs?: boolean;
+  readonly createLogs?: boolean;
 }
 
 /**
  * A Fargate service running on an ECS cluster fronted by a load balancer
  */
-export class LoadBalancedFargateService extends cdk.Construct {
-  public readonly loadBalancer: elbv2.ApplicationLoadBalancer;
+export class LoadBalancedFargateService extends LoadBalancedServiceBase {
 
-  public readonly targetGroup: elbv2.ApplicationTargetGroup;
-
+  /**
+   * The Fargate service in this construct
+   */
   public readonly service: FargateService;
 
-  constructor(parent: cdk.Construct, id: string, props: LoadBalancedFargateServiceProps) {
-    super(parent, id);
+  constructor(scope: cdk.Construct, id: string, props: LoadBalancedFargateServiceProps) {
+    super(scope, id, props);
 
     const taskDefinition = new FargateTaskDefinition(this, 'TaskDef', {
       memoryMiB: props.memoryMiB,
@@ -132,7 +93,8 @@ export class LoadBalancedFargateService extends cdk.Construct {
 
     const container = taskDefinition.addContainer('web', {
       image: props.image,
-      logging: optIn ? this.createAWSLogDriver(this.id) : undefined
+      logging: optIn ? this.createAWSLogDriver(this.node.id) : undefined,
+      environment: props.environment
     });
 
     container.addPortMappings({
@@ -148,40 +110,17 @@ export class LoadBalancedFargateService extends cdk.Construct {
     });
     this.service = service;
 
-    const internetFacing = props.publicLoadBalancer !== undefined ? props.publicLoadBalancer : true;
-    const lb = new elbv2.ApplicationLoadBalancer(this, 'LB', {
-      vpc: props.cluster.vpc,
-      internetFacing
-    });
-
-    this.loadBalancer = lb;
-
-    let listener;
-    if (typeof props.certificate !== 'undefined') {
-      listener = lb.addListener('PublicListener', {
-        port: 443,
-        open: true,
-        certificateArns: [props.certificate.certificateArn]
-      });
-    } else {
-      listener = lb.addListener('PublicListener', { port: 80, open: true });
-    }
-
-    this.targetGroup = listener.addTargets('ECS', {
-      port: 80,
-      targets: [service]
-    });
-
-    new cdk.Output(this, 'LoadBalancerDNS', { value: lb.dnsName });
+    this.addServiceAsTarget(service);
 
     if (typeof props.domainName !== 'undefined') {
       if (typeof props.domainZone === 'undefined') {
         throw new Error('A Route53 hosted domain zone name is required to configure the specified domain name');
       }
 
-      new AliasRecord(props.domainZone, "DNS", {
+      new AliasRecord(this, "DNS", {
+        zone: props.domainZone,
         recordName: props.domainName,
-        target: lb
+        target: this.loadBalancer
       });
     }
   }

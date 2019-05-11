@@ -3,21 +3,6 @@
     "MyTopic86869434": {
       "Type": "AWS::SNS::Topic"
     },
-    "MyTopicEchoSubscription021036AD": {
-      "Type": "AWS::SNS::Subscription",
-      "Properties": {
-        "Endpoint": {
-          "Fn::GetAtt": [
-            "Echo11F3FB29",
-            "Arn"
-          ]
-        },
-        "Protocol": "lambda",
-        "TopicArn": {
-          "Ref": "MyTopic86869434"
-        }
-      }
-    },
     "EchoServiceRoleBE28060B": {
       "Type": "AWS::IAM::Role",
       "Properties": {
@@ -27,14 +12,35 @@
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": {
-                "Service": "lambda.amazonaws.com"
+                "Service": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "lambda.",
+                      {
+                        "Ref": "AWS::URLSuffix"
+                      }
+                    ]
+                  ]
+                }
               }
             }
           ],
           "Version": "2012-10-17"
         },
         "ManagedPolicyArns": [
-          {"Fn::Join":["",["arn:",{"Ref":"AWS::Partition"},":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"]]}
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+              ]
+            ]
+          }
         ]
       }
     },
@@ -57,12 +63,30 @@
         "EchoServiceRoleBE28060B"
       ]
     },
+    "EchoMyTopicSubscriptionA634C6D7": {
+      "Type": "AWS::SNS::Subscription",
+      "Properties": {
+        "Protocol": "lambda",
+        "TopicArn": {
+          "Ref": "MyTopic86869434"
+        },
+        "Endpoint": {
+          "Fn::GetAtt": [
+            "Echo11F3FB29",
+            "Arn"
+          ]
+        }
+      }
+    },
     "EchoMyTopicF6EBB45F": {
       "Type": "AWS::Lambda::Permission",
       "Properties": {
         "Action": "lambda:InvokeFunction",
         "FunctionName": {
-          "Ref": "Echo11F3FB29"
+          "Fn::GetAtt": [
+            "Echo11F3FB29",
+            "Arn"
+          ]
         },
         "Principal": "sns.amazonaws.com",
         "SourceArn": {

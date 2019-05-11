@@ -11,7 +11,7 @@ export class StateTransitionMetric {
      *
      * @default average over 5 minutes
      */
-    public static metric(metricName: string, props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
+    public static metric(metricName: string, props?: cloudwatch.MetricOptions): cloudwatch.Metric {
         return new cloudwatch.Metric({
             namespace: 'AWS/States',
             metricName,
@@ -25,7 +25,7 @@ export class StateTransitionMetric {
      *
      * @default average over 5 minutes
      */
-    public static metricProvisionedBucketSize(props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
+    public static metricProvisionedBucketSize(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
         return StateTransitionMetric.metric("ProvisionedBucketSize", props);
     }
 
@@ -34,7 +34,7 @@ export class StateTransitionMetric {
      *
      * @default average over 5 minutes
      */
-    public static metricProvisionedRefillRate(props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
+    public static metricProvisionedRefillRate(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
         return StateTransitionMetric.metric("ProvisionedRefillRate", props);
     }
 
@@ -43,7 +43,7 @@ export class StateTransitionMetric {
      *
      * @default average over 5 minutes
      */
-    public static metricConsumedCapacity(props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
+    public static metricConsumedCapacity(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
         return StateTransitionMetric.metric("ConsumedCapacity", props);
     }
 
@@ -52,7 +52,7 @@ export class StateTransitionMetric {
      *
      * @default sum over 5 minutes
      */
-    public static metricThrottledEvents(props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
+    public static metricThrottledEvents(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
         return StateTransitionMetric.metric("ThrottledEvents", { statistic: 'sum', ...props });
     }
 }

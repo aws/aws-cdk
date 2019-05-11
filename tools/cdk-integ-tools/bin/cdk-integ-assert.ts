@@ -17,7 +17,13 @@ async function main() {
     }
 
     const expected = await test.readExpected();
-    const actual = await test.invoke(['--json', '--no-path-metadata', 'synth'], { json: true, context: STATIC_TEST_CONTEXT });
+
+    const args = new Array<string>();
+    args.push('--no-path-metadata');
+    args.push('--no-asset-metadata');
+    args.push('--no-staging');
+
+    const actual = await test.invoke(['--json', ...args, 'synth'], { json: true, context: STATIC_TEST_CONTEXT });
 
     const diff = diffTemplate(expected, actual);
 

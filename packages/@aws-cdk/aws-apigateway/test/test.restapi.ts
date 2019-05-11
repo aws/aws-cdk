@@ -1,4 +1,4 @@
-import { expect, haveResource, ResourcePart } from '@aws-cdk/assert';
+import { expect, haveResource, haveResourceLike, ResourcePart, SynthUtils } from '@aws-cdk/assert';
 import cdk = require('@aws-cdk/cdk');
 import { App, Stack } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
@@ -19,123 +19,80 @@ export = {
     expect(stack).toMatch({
       Resources: {
         myapi4C7BF186: {
-        Type: "AWS::ApiGateway::RestApi",
-        Properties: {
-          Name: "my-api"
-        }
+          Type: "AWS::ApiGateway::RestApi",
+          Properties: {
+            Name: "my-api"
+          }
         },
         myapiGETF990CE3C: {
-        Type: "AWS::ApiGateway::Method",
-        Properties: {
-          HttpMethod: "GET",
-          ResourceId: {
-          "Fn::GetAtt": [
-            "myapi4C7BF186",
-            "RootResourceId"
-          ]
-          },
-          RestApiId: {
-          Ref: "myapi4C7BF186"
-          },
-          AuthorizationType: "NONE",
-          Integration: {
-          Type: "MOCK"
+          Type: "AWS::ApiGateway::Method",
+          Properties: {
+            HttpMethod: "GET",
+            ResourceId: { "Fn::GetAtt": [ "myapi4C7BF186", "RootResourceId" ] },
+            RestApiId: { Ref: "myapi4C7BF186" },
+            AuthorizationType: "NONE",
+            Integration: {
+              Type: "MOCK"
+            }
           }
-        }
         },
         myapiDeployment92F2CB49916eaecf87f818f1e175215b8d086029: {
-        Type: "AWS::ApiGateway::Deployment",
-        Properties: {
-          RestApiId: {
-          Ref: "myapi4C7BF186"
+          Type: "AWS::ApiGateway::Deployment",
+          Properties: {
+            RestApiId: { Ref: "myapi4C7BF186" },
+            Description: "Automatically created by the RestApi construct"
           },
-          Description: "Automatically created by the RestApi construct"
-        },
-        DependsOn: [ "myapiGETF990CE3C" ]
+          DependsOn: ["myapiGETF990CE3C"]
         },
         myapiDeploymentStageprod298F01AF: {
-        Type: "AWS::ApiGateway::Stage",
-        Properties: {
-          RestApiId: {
-          Ref: "myapi4C7BF186"
-          },
-          DeploymentId: {
-          Ref: "myapiDeployment92F2CB49916eaecf87f818f1e175215b8d086029"
-          },
-          StageName: "prod"
-        }
+          Type: "AWS::ApiGateway::Stage",
+          Properties: {
+            RestApiId: { Ref: "myapi4C7BF186" },
+            DeploymentId: { Ref: "myapiDeployment92F2CB49916eaecf87f818f1e175215b8d086029" },
+            StageName: "prod"
+          }
         },
         myapiCloudWatchRole095452E5: {
-        Type: "AWS::IAM::Role",
-        Properties: {
-          AssumeRolePolicyDocument: {
-          Statement: [
-            {
-            Action: "sts:AssumeRole",
-            Effect: "Allow",
-            Principal: {
-              Service: "apigateway.amazonaws.com"
-            }
-            }
-          ],
-          Version: "2012-10-17"
-          },
-          ManagedPolicyArns: [
-          {
-            "Fn::Join": [
-            "",
-            [
-              "arn:",
-              {
-              Ref: "AWS::Partition"
-              },
-              ":iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs"
-            ]
+          Type: "AWS::IAM::Role",
+          Properties: {
+            AssumeRolePolicyDocument: {
+              Statement: [
+                {
+                  Action: "sts:AssumeRole",
+                  Effect: "Allow",
+                  Principal: { Service: { "Fn::Join": ["", ["apigateway.", { Ref: "AWS::URLSuffix" }]] } }
+                }
+              ],
+              Version: "2012-10-17"
+            },
+            ManagedPolicyArns: [
+              { "Fn::Join": [ "", [ "arn:", { Ref: "AWS::Partition" }, ":iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs" ] ] }
             ]
           }
-          ]
-        }
         },
         myapiAccountEC421A0A: {
-        Type: "AWS::ApiGateway::Account",
-        Properties: {
-          CloudWatchRoleArn: {
-          "Fn::GetAtt": [
-            "myapiCloudWatchRole095452E5",
-            "Arn"
-          ]
-          }
-        },
-        DependsOn: [
-          "myapi4C7BF186"
-        ]
+          Type: "AWS::ApiGateway::Account",
+          Properties: {
+            CloudWatchRoleArn: { "Fn::GetAtt": [ "myapiCloudWatchRole095452E5", "Arn" ] }
+          },
+          DependsOn: [ "myapi4C7BF186" ]
         }
       },
       Outputs: {
         myapiEndpoint3628AFE3: {
-        Value: {
-          "Fn::Join": [
-          "",
-          [
-            "https://",
-            {
-            Ref: "myapi4C7BF186"
-            },
-            ".execute-api.",
-            {
-            Ref: "AWS::Region"
-            },
-            ".amazonaws.com/",
-            {
-            Ref: "myapiDeploymentStageprod298F01AF"
-            },
-            "/"
-          ]
-          ]
-        },
-        Export: {
-          Name: "myapiEndpoint3628AFE3"
-        }
+          Value: {
+            "Fn::Join": [ "", [
+              "https://",
+              { Ref: "myapi4C7BF186" },
+              ".execute-api.",
+              { Ref: "AWS::Region" },
+              ".",
+              { Ref: "AWS::URLSuffix" },
+              "/",
+              { Ref: "myapiDeploymentStageprod298F01AF" },
+              "/"
+            ]]
+          }
         }
       }
     });
@@ -323,12 +280,12 @@ export = {
     const r2 = api.root.addResource('r2');
 
     // THEN
-    test.deepEqual(api.root.resourcePath, '/');
-    test.deepEqual(r1.resourcePath, '/r1');
-    test.deepEqual(r11.resourcePath, '/r1/r1_1');
-    test.deepEqual(r12.resourcePath, '/r1/r1_2');
-    test.deepEqual(r121.resourcePath, '/r1/r1_2/r1_2_1');
-    test.deepEqual(r2.resourcePath, '/r2');
+    test.deepEqual(api.root.path, '/');
+    test.deepEqual(r1.path, '/r1');
+    test.deepEqual(r11.path, '/r1/r1_1');
+    test.deepEqual(r12.path, '/r1/r1_2');
+    test.deepEqual(r121.path, '/r1/r1_2/r1_2_1');
+    test.deepEqual(r2.path, '/r2');
     test.done();
   },
 
@@ -376,23 +333,20 @@ export = {
     const stack = new cdk.Stack();
 
     // WHEN
-    const imported = apigateway.RestApi.import(stack, 'imported-api', {
-      restApiId: 'api-rxt4498f'
-    });
-    const exported = imported.export();
+    const imported = apigateway.RestApi.fromRestApiId(stack, 'imported-api', 'api-rxt4498f');
+    const api = new apigateway.RestApi(stack, 'MyRestApi');
+    api.root.addMethod('GET');
+
+    const exported = api.export();
 
     // THEN
-    expect(stack).toMatch({
-      Outputs: {
-      importedapiRestApiIdC00F155A: {
-        Value: "api-rxt4498f",
-        Export: {
-        Name: "importedapiRestApiIdC00F155A"
-        }
-      }
-      }
+    stack.node.prepareTree();
+    test.deepEqual(SynthUtils.toCloudFormation(stack).Outputs.MyRestApiRestApiIdB93C5C2D, {
+      Value: { Ref: 'MyRestApi2D1F47A9' },
+      Export: { Name: 'Stack:MyRestApiRestApiIdB93C5C2D' }
     });
-    test.deepEqual(cdk.resolve(exported), { restApiId: { 'Fn::ImportValue': 'importedapiRestApiIdC00F155A' } });
+    test.deepEqual(imported.node.resolve(imported.restApiId), 'api-rxt4498f');
+    test.deepEqual(imported.node.resolve(exported), { restApiId: { 'Fn::ImportValue': 'Stack:MyRestApiRestApiIdB93C5C2D' } });
     test.done();
   },
 
@@ -403,22 +357,26 @@ export = {
     api.root.addMethod('GET');
 
     // THEN
-    test.deepEqual(cdk.resolve(api.url), { 'Fn::Join':
+    test.deepEqual(api.node.resolve(api.url), { 'Fn::Join':
     [ '',
       [ 'https://',
       { Ref: 'apiC8550315' },
       '.execute-api.',
       { Ref: 'AWS::Region' },
-      '.amazonaws.com/',
+      ".",
+      { Ref: "AWS::URLSuffix" },
+      "/",
       { Ref: 'apiDeploymentStageprod896C8101' },
       '/' ] ] });
-    test.deepEqual(cdk.resolve(api.urlForPath('/foo/bar')), { 'Fn::Join':
+    test.deepEqual(api.node.resolve(api.urlForPath('/foo/bar')), { 'Fn::Join':
     [ '',
       [ 'https://',
       { Ref: 'apiC8550315' },
       '.execute-api.',
       { Ref: 'AWS::Region' },
-      '.amazonaws.com/',
+      ".",
+      { Ref: "AWS::URLSuffix" },
+      "/",
       { Ref: 'apiDeploymentStageprod896C8101' },
       '/foo/bar' ] ] });
     test.done();
@@ -457,7 +415,7 @@ export = {
     const arn = api.executeApiArn('method', '/path', 'stage');
 
     // THEN
-    test.deepEqual(cdk.resolve(arn), { 'Fn::Join':
+    test.deepEqual(api.node.resolve(arn), { 'Fn::Join':
     [ '',
       [ 'arn:',
       { Ref: 'AWS::Partition' },
@@ -490,7 +448,7 @@ export = {
     const method = api.root.addMethod('ANY');
 
     // THEN
-    test.deepEqual(cdk.resolve(method.methodArn), { 'Fn::Join':
+    test.deepEqual(api.node.resolve(method.methodArn), { 'Fn::Join':
     [ '',
       [ 'arn:',
       { Ref: 'AWS::Partition' },
@@ -532,9 +490,7 @@ export = {
   '"cloneFrom" can be used to clone an existing API'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
-    const cloneFrom = apigateway.RestApi.import(stack, 'RestApi', {
-      restApiId: 'foobar'
-    });
+    const cloneFrom = apigateway.RestApi.fromRestApiId(stack, 'RestApi', 'foobar');
 
     // WHEN
     const api = new apigateway.RestApi(stack, 'api', {
@@ -556,17 +512,20 @@ export = {
     const stack = new cdk.Stack();
     const api = new apigateway.RestApi(stack, 'myapi');
     api.root.addMethod('GET');
-    const resource = new cdk.Resource(stack, 'DependsOnRestApi', { type: 'My::Resource' });
+    const resource = new cdk.CfnResource(stack, 'DependsOnRestApi', { type: 'My::Resource' });
 
     // WHEN
-    resource.addDependency(api);
+    resource.node.addDependency(api);
 
     // THEN
     expect(stack).to(haveResource('My::Resource', {
       DependsOn: [
-        'myapi162F20B8', // api
-        'myapiDeploymentB7EF8EB75c091a668064a3f3a1f6d68a3fb22cf9', // deployment
-        'myapiDeploymentStageprod329F21FF' // stage
+        "myapiAccountC3A4750C",
+        "myapiCloudWatchRoleEB425128",
+        "myapiGET9B7CD29E",
+        "myapiDeploymentB7EF8EB75c091a668064a3f3a1f6d68a3fb22cf9",
+        "myapiDeploymentStageprod329F21FF",
+        "myapi162F20B8"
       ]
     }, ResourcePart.CompleteDefinition));
 
@@ -617,7 +576,7 @@ export = {
     // THEN
 
     // CASE #1
-    expect(stack).to(haveResource('AWS::ApiGateway::Method', {
+    expect(stack).to(haveResourceLike('AWS::ApiGateway::Method', {
       HttpMethod: 'GET',
       ResourceId: { "Fn::GetAtt": [ "myapi162F20B8", "RootResourceId" ] },
       Integration: { Type: 'AWS' },
@@ -626,7 +585,7 @@ export = {
     }));
 
     // CASE #2
-    expect(stack).to(haveResource('AWS::ApiGateway::Method', {
+    expect(stack).to(haveResourceLike('AWS::ApiGateway::Method', {
       HttpMethod: 'POST',
       ResourceId: { Ref: "myapichildA0A65412" },
       Integration: { Type: 'AWS' },
@@ -635,7 +594,7 @@ export = {
     }));
 
     // CASE #3
-    expect(stack).to(haveResource('AWS::ApiGateway::Method', {
+    expect(stack).to(haveResourceLike('AWS::ApiGateway::Method', {
       HttpMethod: 'DELETE',
       Integration: { Type: 'MOCK' },
       AuthorizerId: 'AUTHID2',
@@ -643,7 +602,7 @@ export = {
     }));
 
     // CASE #4
-    expect(stack).to(haveResource('AWS::ApiGateway::Method', {
+    expect(stack).to(haveResourceLike('AWS::ApiGateway::Method', {
       HttpMethod: 'PUT',
       Integration: { Type: 'AWS' },
       AuthorizerId: 'AUTHID2',

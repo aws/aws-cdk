@@ -1,4 +1,4 @@
-import { SecurityGroupRef } from "./security-group";
+import { ISecurityGroup } from "./security-group";
 import { AnyIPv4, IPortRange, ISecurityGroupRule } from "./security-group-rule";
 
 /**
@@ -33,21 +33,21 @@ export interface ConnectionsProps {
    *
    * @default Derived from securityGroup if set.
    */
-  securityGroupRule?: ISecurityGroupRule;
+  readonly securityGroupRule?: ISecurityGroupRule;
 
   /**
    * What securityGroup(s) this object is managing connections for
    *
    * @default No security groups
    */
-  securityGroups?: SecurityGroupRef[];
+  readonly securityGroups?: ISecurityGroup[];
 
   /**
    * Default port range for initiating connections to and from this object
    *
    * @default No default port range
    */
-  defaultPortRange?: IPortRange;
+  readonly defaultPortRange?: IPortRange;
 }
 
 /**
@@ -75,14 +75,22 @@ export class Connections implements IConnectable {
    * May be empty if this Connections object is not managing a SecurityGroup,
    * but simply representing a Connectable peer.
    */
-  private readonly _securityGroups = new ReactiveList<SecurityGroupRef>();
+  private readonly _securityGroups = new ReactiveList<ISecurityGroup>();
 
   /**
    * The rule that defines how to represent this peer in a security group
    */
   private readonly _securityGroupRules = new ReactiveList<ISecurityGroupRule>();
 
+  /**
+   * When doing bidirectional grants between Connections, make sure we don't recursive infinitely
+   */
   private skip: boolean = false;
+
+  /**
+   * When doing bidirectional grants between Security Groups in different stacks, put the rule on the other SG
+   */
+  private remoteRule: boolean = false;
 
   constructor(props: ConnectionsProps = {}) {
     this.connections = this;
@@ -96,14 +104,14 @@ export class Connections implements IConnectable {
     this.defaultPortRange = props.defaultPortRange;
   }
 
-  public get securityGroups(): SecurityGroupRef[] {
+  public get securityGroups(): ISecurityGroup[] {
     return this._securityGroups.asArray();
   }
 
   /**
    * Add a security group to the list of security groups managed by this object
    */
-  public addSecurityGroup(...securityGroups: SecurityGroupRef[]) {
+  public addSecurityGroup(...securityGroups: ISecurityGroup[]) {
     for (const securityGroup of securityGroups) {
       this._securityGroups.push(securityGroup);
       this._securityGroupRules.push(securityGroup);
@@ -116,15 +124,21 @@ export class Connections implements IConnectable {
   public allowTo(other: IConnectable, portRange: IPortRange, description?: string) {
     if (this.skip) { return; }
 
+    const remoteRule = this.remoteRule; // Capture current value into local for callback to close over
     this._securityGroups.forEachAndForever(securityGroup => {
       other.connections._securityGroupRules.forEachAndForever(rule => {
-        securityGroup.addEgressRule(rule, portRange, description);
+        securityGroup.addEgressRule(rule, portRange, description, remoteRule);
       });
     });
 
     this.skip = true;
-    other.connections.allowFrom(this, portRange, description);
-    this.skip = false;
+    other.connections.remoteRule = true;
+    try {
+      other.connections.allowFrom(this, portRange, description);
+    } finally {
+      this.skip = false;
+      other.connections.remoteRule = false;
+    }
   }
 
   /**
@@ -133,15 +147,21 @@ export class Connections implements IConnectable {
   public allowFrom(other: IConnectable, portRange: IPortRange, description?: string) {
     if (this.skip) { return; }
 
+    const remoteRule = this.remoteRule; // Capture current value into local for callback to close over
     this._securityGroups.forEachAndForever(securityGroup => {
       other.connections._securityGroupRules.forEachAndForever(rule => {
-        securityGroup.addIngressRule(rule, portRange, description);
+        securityGroup.addIngressRule(rule, portRange, description, remoteRule);
       });
     });
 
     this.skip = true;
-    other.connections.allowTo(this, portRange, description);
-    this.skip = false;
+    other.connections.remoteRule = true;
+    try {
+      other.connections.allowTo(this, portRange, description);
+    } finally {
+      this.skip = false;
+      other.connections.remoteRule = false;
+    }
   }
 
   /**

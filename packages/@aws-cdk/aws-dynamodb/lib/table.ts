@@ -1,13 +1,15 @@
 import appscaling = require('@aws-cdk/aws-applicationautoscaling');
 import iam = require('@aws-cdk/aws-iam');
-import cdk = require('@aws-cdk/cdk');
-import { Construct, TagManager, Tags, Token } from '@aws-cdk/cdk';
-import { cloudformation as dynamodb } from './dynamodb.generated';
+import { Aws, Construct, Resource, Token } from '@aws-cdk/cdk';
+import { CfnTable } from './dynamodb.generated';
 import { EnableScalingProps, IScalableTableAttribute } from './scalable-attribute-api';
 import { ScalableTableAttribute } from './scalable-table-attribute';
 
 const HASH_KEY_TYPE = 'HASH';
 const RANGE_KEY_TYPE = 'RANGE';
+
+// https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Limits.html#limits-secondary-indexes
+const MAX_LOCAL_SECONDARY_INDEX_COUNT = 5;
 
 const READ_DATA_ACTIONS = [
   'dynamodb:BatchGetItem',
@@ -16,6 +18,12 @@ const READ_DATA_ACTIONS = [
   'dynamodb:Query',
   'dynamodb:GetItem',
   'dynamodb:Scan'
+];
+
+const READ_STREAM_DATA_ACTIONS = [
+  "dynamodb:DescribeStream",
+  "dynamodb:GetRecords",
+  "dynamodb:GetShardIterator",
 ];
 
 const WRITE_DATA_ACTIONS = [
@@ -29,172 +37,216 @@ export interface Attribute {
   /**
    * The name of an attribute.
    */
-  name: string;
+  readonly name: string;
 
   /**
    * The data type of an attribute.
    */
-  type: AttributeType;
+  readonly type: AttributeType;
 }
 
-export interface TableProps {
+export interface TableOptions {
+  /**
+   * Partition key attribute definition.
+   */
+  readonly partitionKey: Attribute;
+
+  /**
+   * Table sort key attribute definition.
+   *
+   * @default no sort key
+   */
+  readonly sortKey?: Attribute;
+
   /**
    * The read capacity for the table. Careful if you add Global Secondary Indexes, as
    * those will share the table's provisioned throughput.
+   *
+   * Can only be provided if billingMode is Provisioned.
+   *
    * @default 5
    */
-  readCapacity?: number;
+  readonly readCapacity?: number;
   /**
    * The write capacity for the table. Careful if you add Global Secondary Indexes, as
    * those will share the table's provisioned throughput.
+   *
+   * Can only be provided if billingMode is Provisioned.
+   *
    * @default 5
    */
-  writeCapacity?: number;
+  readonly writeCapacity?: number;
 
   /**
-   * Enforces a particular physical table name.
-   * @default <generated>
+   * Specify how you are charged for read and write throughput and how you manage capacity.
+   * @default Provisioned
    */
-  tableName?: string;
+  readonly billingMode?: BillingMode;
 
   /**
    * Whether point-in-time recovery is enabled.
    * @default undefined, point-in-time recovery is disabled
    */
-  pitrEnabled?: boolean;
+  readonly pitrEnabled?: boolean;
 
   /**
-   * Whether server-side encryption is enabled.
-   * @default undefined, server-side encryption is disabled
+   * Whether server-side encryption with an AWS managed customer master key is enabled.
+   * @default undefined, server-side encryption is enabled with an AWS owned customer master key
    */
-  sseEnabled?: boolean;
+  readonly sseEnabled?: boolean;
+
+  /**
+   * The name of TTL attribute.
+   * @default undefined, TTL is disabled
+   */
+  readonly ttlAttributeName?: string;
 
   /**
    * When an item in the table is modified, StreamViewType determines what information
    * is written to the stream for this table. Valid values for StreamViewType are:
    * @default undefined, streams are disabled
    */
-  streamSpecification?: StreamViewType;
+  readonly streamSpecification?: StreamViewType;
+}
 
+export interface TableProps extends TableOptions {
   /**
-   * The AWS resource tags to associate with the table.
-   * @default undefined
+   * Enforces a particular physical table name.
+   * @default <generated>
    */
-  tags?: Tags;
-
-  /**
-   * The name of TTL attribute.
-   * @default undefined, TTL is disabled
-   */
-  ttlAttributeName?: string;
-
-  /**
-   * Partition key attribute definition. This is eventually required, but you
-   * can also use `addPartitionKey` to specify the partition key at a later stage.
-   */
-  partitionKey?: Attribute;
-
-  /**
-   * Table sort key attribute definition. You can also use `addSortKey` to set
-   * this up later.
-   */
-  sortKey?: Attribute;
+  readonly tableName?: string;
 }
 
 export interface SecondaryIndexProps {
   /**
    * The name of the secondary index.
    */
-  indexName: string;
+  readonly indexName: string;
 
   /**
    * The set of attributes that are projected into the secondary index.
    * @default ALL
    */
-  projectionType?: ProjectionType;
+  readonly projectionType?: ProjectionType;
 
   /**
    * The non-key attributes that are projected into the secondary index.
    * @default undefined
    */
-  nonKeyAttributes?: string[];
+  readonly nonKeyAttributes?: string[];
 }
 
 export interface GlobalSecondaryIndexProps extends SecondaryIndexProps {
   /**
    * The attribute of a partition key for the global secondary index.
    */
-  partitionKey: Attribute;
+  readonly partitionKey: Attribute;
 
   /**
    * The attribute of a sort key for the global secondary index.
    * @default undefined
    */
-  sortKey?: Attribute;
+  readonly sortKey?: Attribute;
 
   /**
    * The read capacity for the global secondary index.
+   *
+   * Can only be provided if table billingMode is Provisioned or undefined.
+   *
    * @default 5
    */
-  readCapacity?: number;
+  readonly readCapacity?: number;
 
   /**
    * The write capacity for the global secondary index.
+   *
+   * Can only be provided if table billingMode is Provisioned or undefined.
+   *
    * @default 5
    */
-  writeCapacity?: number;
+  readonly writeCapacity?: number;
 }
 
 export interface LocalSecondaryIndexProps extends SecondaryIndexProps {
   /**
    * The attribute of a sort key for the local secondary index.
    */
-  sortKey: Attribute;
+  readonly sortKey: Attribute;
 }
 
 /**
  * Provides a DynamoDB table.
  */
-export class Table extends Construct {
+export class Table extends Resource {
+  /**
+   * Permits an IAM Principal to list all DynamoDB Streams.
+   * @param grantee The principal (no-op if undefined)
+   */
+  public static grantListStreams(grantee: iam.IGrantable): iam.Grant {
+    return iam.Grant.addToPrincipal({
+      grantee,
+      actions: ['dynamodb:ListStreams'],
+      resourceArns: ['*'],
+    });
+ }
+
+ /**
+  * @attribute
+  */
   public readonly tableArn: string;
+
+  /**
+   * @attribute
+   */
   public readonly tableName: string;
+
+  /**
+   * @attribute
+   */
   public readonly tableStreamArn: string;
 
-  private readonly table: dynamodb.TableResource;
+  private readonly table: CfnTable;
 
-  private readonly keySchema = new Array<dynamodb.TableResource.KeySchemaProperty>();
-  private readonly attributeDefinitions = new Array<dynamodb.TableResource.AttributeDefinitionProperty>();
-  private readonly globalSecondaryIndexes = new Array<dynamodb.TableResource.GlobalSecondaryIndexProperty>();
-  private readonly localSecondaryIndexes = new Array<dynamodb.TableResource.LocalSecondaryIndexProperty>();
+  private readonly keySchema = new Array<CfnTable.KeySchemaProperty>();
+  private readonly attributeDefinitions = new Array<CfnTable.AttributeDefinitionProperty>();
+  private readonly globalSecondaryIndexes = new Array<CfnTable.GlobalSecondaryIndexProperty>();
+  private readonly localSecondaryIndexes = new Array<CfnTable.LocalSecondaryIndexProperty>();
 
   private readonly secondaryIndexNames: string[] = [];
   private readonly nonKeyAttributes: string[] = [];
 
-  private tablePartitionKey?: Attribute;
-  private tableSortKey?: Attribute;
+  private readonly tablePartitionKey: Attribute;
+  private readonly tableSortKey?: Attribute;
 
+  private readonly billingMode: BillingMode;
   private readonly tableScaling: ScalableAttributePair = {};
   private readonly indexScaling = new Map<string, ScalableAttributePair>();
   private readonly scalingRole: iam.IRole;
 
-  constructor(parent: Construct, name: string, props: TableProps = {}) {
-    super(parent, name);
+  constructor(scope: Construct, id: string, props: TableProps) {
+    super(scope, id);
 
-    this.table = new dynamodb.TableResource(this, 'Resource', {
+    this.billingMode = props.billingMode || BillingMode.Provisioned;
+    this.validateProvisioning(props);
+
+    this.table = new CfnTable(this, 'Resource', {
       tableName: props.tableName,
       keySchema: this.keySchema,
       attributeDefinitions: this.attributeDefinitions,
       globalSecondaryIndexes: new Token(() => this.globalSecondaryIndexes.length > 0 ? this.globalSecondaryIndexes : undefined),
       localSecondaryIndexes: new Token(() => this.localSecondaryIndexes.length > 0 ? this.localSecondaryIndexes : undefined),
       pointInTimeRecoverySpecification: props.pitrEnabled ? { pointInTimeRecoveryEnabled: props.pitrEnabled } : undefined,
-      provisionedThroughput: { readCapacityUnits: props.readCapacity || 5, writeCapacityUnits: props.writeCapacity || 5 },
+      billingMode: this.billingMode === BillingMode.PayPerRequest ? this.billingMode : undefined,
+      provisionedThroughput: props.billingMode === BillingMode.PayPerRequest ? undefined : {
+        readCapacityUnits: props.readCapacity || 5,
+        writeCapacityUnits: props.writeCapacity || 5
+      },
       sseSpecification: props.sseEnabled ? { sseEnabled: props.sseEnabled } : undefined,
       streamSpecification: props.streamSpecification ? { streamViewType: props.streamSpecification } : undefined,
-      tags: new TagManager(this, { initialTags: props.tags }),
       timeToLiveSpecification: props.ttlAttributeName ? { attributeName: props.ttlAttributeName, enabled: true } : undefined
     });
 
-    if (props.tableName) { this.addMetadata('aws:cdk:hasPhysicalName', props.tableName); }
+    if (props.tableName) { this.node.addMetadata('aws:cdk:hasPhysicalName', props.tableName); }
 
     this.tableArn = this.table.tableArn;
     this.tableName = this.table.tableName;
@@ -202,37 +254,13 @@ export class Table extends Construct {
 
     this.scalingRole = this.makeScalingRole();
 
-    if (props.partitionKey) {
-      this.addPartitionKey(props.partitionKey);
-    }
+    this.addKey(props.partitionKey, HASH_KEY_TYPE);
+    this.tablePartitionKey = props.partitionKey;
 
     if (props.sortKey) {
-      this.addSortKey(props.sortKey);
+      this.addKey(props.sortKey, RANGE_KEY_TYPE);
+      this.tableSortKey = props.sortKey;
     }
-  }
-
-  /**
-   * Add a partition key of table.
-   *
-   * @param attribute the partition key attribute of table
-   * @returns a reference to this object so that method calls can be chained together
-   */
-  public addPartitionKey(attribute: Attribute): this {
-    this.addKey(attribute, HASH_KEY_TYPE);
-    this.tablePartitionKey = attribute;
-    return this;
-  }
-
-  /**
-   * Add a sort key of table.
-   *
-   * @param attribute the sort key of table
-   * @returns a reference to this object so that method calls can be chained together
-   */
-  public addSortKey(attribute: Attribute): this {
-    this.addKey(attribute, RANGE_KEY_TYPE);
-    this.tableSortKey = attribute;
-    return this;
   }
 
   /**
@@ -241,11 +269,7 @@ export class Table extends Construct {
    * @param props the property of global secondary index
    */
   public addGlobalSecondaryIndex(props: GlobalSecondaryIndexProps) {
-    if (this.globalSecondaryIndexes.length === 5) {
-      // https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Limits.html#limits-secondary-indexes
-      throw new RangeError('a maximum number of global secondary index per table is 5');
-    }
-
+    this.validateProvisioning(props);
     this.validateIndexName(props.indexName);
 
     // build key schema and projection for index
@@ -257,7 +281,10 @@ export class Table extends Construct {
       indexName: props.indexName,
       keySchema: gsiKeySchema,
       projection: gsiProjection,
-      provisionedThroughput: { readCapacityUnits: props.readCapacity || 5, writeCapacityUnits: props.writeCapacity || 5 }
+      provisionedThroughput: this.billingMode === BillingMode.PayPerRequest ? undefined : {
+        readCapacityUnits: props.readCapacity || 5,
+        writeCapacityUnits: props.writeCapacity || 5
+      }
     });
 
     this.indexScaling.set(props.indexName, {});
@@ -269,13 +296,9 @@ export class Table extends Construct {
    * @param props the property of local secondary index
    */
   public addLocalSecondaryIndex(props: LocalSecondaryIndexProps) {
-    if (this.localSecondaryIndexes.length === 5) {
-      // https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Limits.html#limits-secondary-indexes
-      throw new RangeError('a maximum number of local secondary index per table is 5');
-    }
-
-    if (!this.tablePartitionKey) {
-      throw new Error('a partition key of the table must be specified first through addPartitionKey()');
+    // https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Limits.html#limits-secondary-indexes
+    if (this.localSecondaryIndexes.length >= MAX_LOCAL_SECONDARY_INDEX_COUNT) {
+      throw new RangeError(`a maximum number of local secondary index per table is ${MAX_LOCAL_SECONDARY_INDEX_COUNT}`);
     }
 
     this.validateIndexName(props.indexName);
@@ -301,6 +324,9 @@ export class Table extends Construct {
     if (this.tableScaling.scalableReadAttribute) {
       throw new Error('Read AutoScaling already enabled for this table');
     }
+    if (this.billingMode === BillingMode.PayPerRequest) {
+      throw new Error('AutoScaling is not available for tables with PAY_PER_REQUEST billing mode');
+    }
 
     return this.tableScaling.scalableReadAttribute = new ScalableTableAttribute(this, 'ReadScaling', {
       serviceNamespace: appscaling.ServiceNamespace.DynamoDb,
@@ -320,6 +346,9 @@ export class Table extends Construct {
     if (this.tableScaling.scalableWriteAttribute) {
       throw new Error('Write AutoScaling already enabled for this table');
     }
+    if (this.billingMode === BillingMode.PayPerRequest) {
+      throw new Error('AutoScaling is not available for tables with PAY_PER_REQUEST billing mode');
+    }
 
     return this.tableScaling.scalableWriteAttribute = new ScalableTableAttribute(this, 'WriteScaling', {
       serviceNamespace: appscaling.ServiceNamespace.DynamoDb,
@@ -336,6 +365,9 @@ export class Table extends Construct {
    * @returns An object to configure additional AutoScaling settings for this attribute
    */
   public autoScaleGlobalSecondaryIndexReadCapacity(indexName: string, props: EnableScalingProps): IScalableTableAttribute {
+    if (this.billingMode === BillingMode.PayPerRequest) {
+      throw new Error('AutoScaling is not available for tables with PAY_PER_REQUEST billing mode');
+    }
     const attributePair = this.indexScaling.get(indexName);
     if (!attributePair) {
       throw new Error(`No global secondary index with name ${indexName}`);
@@ -359,6 +391,9 @@ export class Table extends Construct {
    * @returns An object to configure additional AutoScaling settings for this attribute
    */
   public autoScaleGlobalSecondaryIndexWriteCapacity(indexName: string, props: EnableScalingProps): IScalableTableAttribute {
+    if (this.billingMode === BillingMode.PayPerRequest) {
+      throw new Error('AutoScaling is not available for tables with PAY_PER_REQUEST billing mode');
+    }
     const attributePair = this.indexScaling.get(indexName);
     if (!attributePair) {
       throw new Error(`No global secondary index with name ${indexName}`);
@@ -379,52 +414,80 @@ export class Table extends Construct {
   /**
    * Adds an IAM policy statement associated with this table to an IAM
    * principal's policy.
-   * @param principal The principal (no-op if undefined)
+   * @param grantee The principal (no-op if undefined)
    * @param actions The set of actions to allow (i.e. "dynamodb:PutItem", "dynamodb:GetItem", ...)
    */
-  public grant(principal?: iam.IPrincipal, ...actions: string[]) {
-    if (!principal) {
-      return;
-    }
-    principal.addToPolicy(new iam.PolicyStatement()
-      .addResource(this.tableArn)
-      .addActions(...actions));
+  public grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant {
+    return iam.Grant.addToPrincipal({
+      grantee,
+      actions,
+      resourceArns: [
+        this.tableArn,
+        new Token(() => this.hasIndex ? `${this.tableArn}/index/*` : Aws.noValue).toString()
+      ],
+      scope: this,
+    });
+  }
+
+  /**
+   * Adds an IAM policy statement associated with this table's stream to an
+   * IAM principal's policy.
+   * @param grantee The principal (no-op if undefined)
+   * @param actions The set of actions to allow (i.e. "dynamodb:DescribeStream", "dynamodb:GetRecords", ...)
+   */
+  public grantStream(grantee: iam.IGrantable, ...actions: string[]) {
+    return iam.Grant.addToPrincipal({
+      grantee,
+      actions,
+      resourceArns: [this.tableStreamArn],
+      scope: this,
+    });
   }
 
   /**
    * Permits an IAM principal all data read operations from this table:
    * BatchGetItem, GetRecords, GetShardIterator, Query, GetItem, Scan.
-   * @param principal The principal to grant access to
+   * @param grantee The principal to grant access to
    */
-  public grantReadData(principal?: iam.IPrincipal) {
-    this.grant(principal, ...READ_DATA_ACTIONS);
+  public grantReadData(grantee: iam.IGrantable) {
+    return this.grant(grantee, ...READ_DATA_ACTIONS);
+  }
+
+  /**
+   * Permis an IAM principal all stream data read operations for this
+   * table's stream:
+   * DescribeStream, GetRecords, GetShardIterator, ListStreams.
+   * @param grantee The principal to grant access to
+   */
+  public grantStreamRead(grantee: iam.IGrantable) {
+    return this.grantStream(grantee, ...READ_STREAM_DATA_ACTIONS);
   }
 
   /**
    * Permits an IAM principal all data write operations to this table:
    * BatchWriteItem, PutItem, UpdateItem, DeleteItem.
-   * @param principal The principal to grant access to
+   * @param grantee The principal to grant access to
    */
-  public grantWriteData(principal?: iam.IPrincipal) {
-    this.grant(principal, ...WRITE_DATA_ACTIONS);
+  public grantWriteData(grantee: iam.IGrantable) {
+    return this.grant(grantee, ...WRITE_DATA_ACTIONS);
   }
 
   /**
    * Permits an IAM principal to all data read/write operations to this table.
    * BatchGetItem, GetRecords, GetShardIterator, Query, GetItem, Scan,
    * BatchWriteItem, PutItem, UpdateItem, DeleteItem
-   * @param principal The principal to grant access to
+   * @param grantee The principal to grant access to
    */
-  public grantReadWriteData(principal?: iam.IPrincipal) {
-    this.grant(principal, ...READ_DATA_ACTIONS, ...WRITE_DATA_ACTIONS);
+  public grantReadWriteData(grantee: iam.IGrantable) {
+    return this.grant(grantee, ...READ_DATA_ACTIONS, ...WRITE_DATA_ACTIONS);
   }
 
   /**
    * Permits all DynamoDB operations ("dynamodb:*") to an IAM principal.
-   * @param principal The principal to grant access to
+   * @param grantee The principal to grant access to
    */
-  public grantFullAccess(principal?: iam.IPrincipal) {
-    this.grant(principal, 'dynamodb:*');
+  public grantFullAccess(grantee: iam.IGrantable) {
+    return this.grant(grantee, 'dynamodb:*');
   }
 
   /**
@@ -432,7 +495,7 @@ export class Table extends Construct {
    *
    * @returns an array of validation error message
    */
-  public validate(): string[] {
+  protected validate(): string[] {
     const errors = new Array<string>();
 
     if (!this.tablePartitionKey) {
@@ -443,6 +506,19 @@ export class Table extends Construct {
     }
 
     return errors;
+  }
+
+  /**
+   * Validate read and write capacity are not specified for on-demand tables (billing mode PAY_PER_REQUEST).
+   *
+   * @param props read and write capacity properties
+   */
+  private validateProvisioning(props: { readCapacity?: number, writeCapacity?: number}): void {
+    if (this.billingMode === BillingMode.PayPerRequest) {
+      if (props.readCapacity !== undefined || props.writeCapacity !== undefined) {
+        throw new Error('you cannot provision read and write capacity for a table with PAY_PER_REQUEST billing mode');
+      }
+    }
   }
 
   /**
@@ -481,9 +557,9 @@ export class Table extends Construct {
     });
   }
 
-  private buildIndexKeySchema(partitionKey: Attribute, sortKey?: Attribute): dynamodb.TableResource.KeySchemaProperty[] {
+  private buildIndexKeySchema(partitionKey: Attribute, sortKey?: Attribute): CfnTable.KeySchemaProperty[] {
     this.registerAttribute(partitionKey);
-    const indexKeySchema: dynamodb.TableResource.KeySchemaProperty[] = [
+    const indexKeySchema: CfnTable.KeySchemaProperty[] = [
       { attributeName: partitionKey.name, keyType: HASH_KEY_TYPE }
     ];
 
@@ -495,7 +571,7 @@ export class Table extends Construct {
     return indexKeySchema;
   }
 
-  private buildIndexProjection(props: SecondaryIndexProps): dynamodb.TableResource.ProjectionProperty {
+  private buildIndexProjection(props: SecondaryIndexProps): CfnTable.ProjectionProperty {
     if (props.projectionType === ProjectionType.Include && !props.nonKeyAttributes) {
       // https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dynamodb-projectionobject.html
       throw new Error(`non-key attributes should be specified when using ${ProjectionType.Include} projection type`);
@@ -558,14 +634,19 @@ export class Table extends Construct {
    */
   private makeScalingRole(): iam.IRole {
     // Use a Service Linked Role.
-    return iam.Role.import(this, 'ScalingRole', {
-      roleArn: cdk.ArnUtils.fromComponents({
-        // https://docs.aws.amazon.com/autoscaling/application/userguide/application-auto-scaling-service-linked-roles.html
-        service: 'iam',
-        resource: 'role/aws-service-role/dynamodb.application-autoscaling.amazonaws.com',
-        resourceName: 'AWSServiceRoleForApplicationAutoScaling_DynamoDBTable'
-      })
-    });
+    // https://docs.aws.amazon.com/autoscaling/application/userguide/application-auto-scaling-service-linked-roles.html
+    return iam.Role.fromRoleArn(this, 'ScalingRole', this.node.stack.formatArn({
+      service: 'iam',
+      resource: 'role/aws-service-role/dynamodb.application-autoscaling.amazonaws.com',
+      resourceName: 'AWSServiceRoleForApplicationAutoScaling_DynamoDBTable'
+    }));
+  }
+
+  /**
+   * Whether this table has indexes
+   */
+  private get hasIndex(): boolean {
+    return this.globalSecondaryIndexes.length + this.localSecondaryIndexes.length > 0;
   }
 }
 
@@ -573,6 +654,20 @@ export enum AttributeType {
   Binary = 'B',
   Number = 'N',
   String = 'S',
+}
+
+/**
+ * DyanmoDB's Read/Write capacity modes.
+ */
+export enum BillingMode {
+  /**
+   * Pay only for what you use. You don't configure Read/Write capacity units.
+   */
+  PayPerRequest = 'PAY_PER_REQUEST',
+  /**
+   * Explicitly specified Read/Write capacity units.
+   */
+  Provisioned = 'PROVISIONED',
 }
 
 export enum ProjectionType {

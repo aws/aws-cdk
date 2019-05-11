@@ -1,8 +1,8 @@
 import cdk = require('@aws-cdk/cdk');
-import { BaseTargetGroup, BaseTargetGroupProps, ITargetGroup, LoadBalancerTargetProps, TargetGroupRefProps } from '../shared/base-target-group';
+import { BaseTargetGroupProps, ITargetGroup, loadBalancerNameFromListenerArn, LoadBalancerTargetProps,
+         TargetGroupBase, TargetGroupImportProps } from '../shared/base-target-group';
 import { Protocol } from '../shared/enums';
-import { BaseImportedTargetGroup } from '../shared/imported';
-import { LazyDependable } from '../shared/util';
+import { ImportedTargetGroupBase } from '../shared/imported';
 import { INetworkListener } from './network-listener';
 
 /**
@@ -12,14 +12,14 @@ export interface NetworkTargetGroupProps extends BaseTargetGroupProps {
   /**
    * The port on which the listener listens for requests.
    */
-  port: number;
+  readonly port: number;
 
   /**
    * Indicates whether Proxy Protocol version 2 is enabled.
    *
    * @default false
    */
-  proxyProtocolV2?: boolean;
+  readonly proxyProtocolV2?: boolean;
 
   /**
    * The targets to add to this target group.
@@ -28,25 +28,29 @@ export interface NetworkTargetGroupProps extends BaseTargetGroupProps {
    * target. If you use either `Instance` or `IPAddress` as targets, all
    * target must be of the same type.
    */
-  targets?: INetworkLoadBalancerTarget[];
+  readonly targets?: INetworkLoadBalancerTarget[];
 }
 
 /**
  * Define a Network Target Group
  */
-export class NetworkTargetGroup extends BaseTargetGroup {
+export class NetworkTargetGroup extends TargetGroupBase implements INetworkTargetGroup {
   /**
    * Import an existing listener
    */
-  public static import(parent: cdk.Construct, id: string, props: TargetGroupRefProps): INetworkTargetGroup {
-    return new ImportedNetworkTargetGroup(parent, id, props);
+  public static import(scope: cdk.Construct, id: string, props: TargetGroupImportProps): INetworkTargetGroup {
+    return new ImportedNetworkTargetGroup(scope, id, props);
   }
 
-  constructor(parent: cdk.Construct, id: string, props: NetworkTargetGroupProps) {
-    super(parent, id, props, {
+  private readonly listeners: INetworkListener[];
+
+  constructor(scope: cdk.Construct, id: string, props: NetworkTargetGroupProps) {
+    super(scope, id, props, {
       protocol: Protocol.Tcp,
       port: props.port,
     });
+
+    this.listeners = [];
 
     if (props.proxyProtocolV2) {
       this.setAttribute('proxy_protocol_v2.enabled', 'true');
@@ -71,7 +75,18 @@ export class NetworkTargetGroup extends BaseTargetGroup {
    * Don't call this directly. It will be called by listeners.
    */
   public registerListener(listener: INetworkListener) {
-    this.loadBalancerAssociationDependencies.push(listener);
+    this.loadBalancerAttachedDependencies.add(listener);
+    this.listeners.push(listener);
+  }
+
+  /**
+   * Full name of first load balancer
+   */
+  public get firstLoadBalancerFullName(): string {
+    if (this.listeners.length === 0) {
+      throw new Error('The TargetGroup needs to be attached to a LoadBalancer before you can call this method');
+    }
+    return loadBalancerNameFromListenerArn(this.listeners[0].listenerArn);
   }
 }
 
@@ -91,13 +106,9 @@ export interface INetworkTargetGroup extends ITargetGroup {
 /**
  * An imported network target group
  */
-class ImportedNetworkTargetGroup extends BaseImportedTargetGroup implements INetworkTargetGroup {
+class ImportedNetworkTargetGroup extends ImportedTargetGroupBase implements INetworkTargetGroup {
   public registerListener(_listener: INetworkListener) {
     // Nothing to do, we know nothing of our members
-  }
-
-  public loadBalancerDependency(): cdk.IDependable {
-    return new LazyDependable([]);
   }
 }
 

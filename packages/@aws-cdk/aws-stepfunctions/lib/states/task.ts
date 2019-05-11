@@ -1,28 +1,26 @@
 import cloudwatch = require('@aws-cdk/aws-cloudwatch');
-import iam = require('@aws-cdk/aws-iam');
 import cdk = require('@aws-cdk/cdk');
 import { Chain } from '../chain';
 import { StateGraph } from '../state-graph';
+import { IStepFunctionsTask, StepFunctionsTaskProperties } from '../step-functions-task';
 import { CatchProps, IChainable, INextable, RetryProps } from '../types';
 import { renderJsonPath, State, StateType } from './state';
 
 /**
- * Properties for defining a Task state
+ * Props that are common to all tasks
  */
 export interface TaskProps {
     /**
-     * The resource that represents the work to be executed
-     *
-     * Can be either a Lambda Function or an Activity.
+     * Actual task to be invoked in this workflow
      */
-    resource: IStepFunctionsTaskResource;
+    readonly task: IStepFunctionsTask;
 
     /**
      * An optional description for this state
      *
      * @default No comment
      */
-    comment?: string;
+    readonly comment?: string;
 
     /**
      * JSONPath expression to select part of the state to be the input to this state.
@@ -32,7 +30,7 @@ export interface TaskProps {
      *
      * @default $
      */
-    inputPath?: string;
+    readonly inputPath?: string;
 
     /**
      * JSONPath expression to select part of the state to be the output to this state.
@@ -42,7 +40,7 @@ export interface TaskProps {
      *
      * @default $
      */
-    outputPath?: string;
+    readonly outputPath?: string;
 
     /**
      * JSONPath expression to indicate where to inject the state's output
@@ -52,7 +50,7 @@ export interface TaskProps {
      *
      * @default $
      */
-    resultPath?: string;
+    readonly resultPath?: string;
 
     /**
      * Maximum run time of this state
@@ -61,38 +59,29 @@ export interface TaskProps {
      *
      * @default 60
      */
-    timeoutSeconds?: number;
-
-    /**
-     * Maximum time between heart beats
-     *
-     * If the time between heart beats takes longer than this, a 'Timeout' error is raised.
-     *
-     * This is only relevant when using an Activity type as resource.
-     *
-     * @default No heart beat timeout
-     */
-    heartbeatSeconds?: number;
+    readonly timeoutSeconds?: number;
 }
 
 /**
  * Define a Task state in the state machine
  *
- * Reaching a Task state causes some work to be executed, represented
- * by the Task's resource property.
+ * Reaching a Task state causes some work to be executed, represented by the
+ * Task's resource property. Task constructs represent a generic Amazon
+ * States Language Task.
+ *
+ * For some resource types, more specific subclasses of Task may be available
+ * which are more convenient to use.
  */
 export class Task extends State implements INextable {
     public readonly endStates: INextable[];
-    private readonly resourceProps: StepFunctionsTaskResourceProps;
     private readonly timeoutSeconds?: number;
-    private readonly heartbeatSeconds?: number;
+    private readonly taskProps: StepFunctionsTaskProperties;
 
-    constructor(parent: cdk.Construct, id: string, props: TaskProps) {
-        super(parent, id, props);
+    constructor(scope: cdk.Construct, id: string, props: TaskProps) {
+        super(scope, id, props);
 
         this.timeoutSeconds = props.timeoutSeconds;
-        this.heartbeatSeconds = props.heartbeatSeconds;
-        this.resourceProps = props.resource.asStepFunctionsTaskResource(this);
+        this.taskProps = props.task.bind(this);
         this.endStates = [this];
     }
 
@@ -136,10 +125,11 @@ export class Task extends State implements INextable {
             ...this.renderInputOutput(),
             Type: StateType.Task,
             Comment: this.comment,
-            Resource: this.resourceProps.resourceArn,
+            Resource: this.taskProps.resourceArn,
+            Parameters: this.taskProps.parameters,
             ResultPath: renderJsonPath(this.resultPath),
             TimeoutSeconds: this.timeoutSeconds,
-            HeartbeatSeconds: this.heartbeatSeconds,
+            HeartbeatSeconds: this.taskProps.heartbeatSeconds,
         };
     }
 
@@ -148,11 +138,11 @@ export class Task extends State implements INextable {
      *
      * @default sum over 5 minutes
      */
-    public metric(metricName: string, props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
+    public metric(metricName: string, props?: cloudwatch.MetricOptions): cloudwatch.Metric {
         return new cloudwatch.Metric({
             namespace: 'AWS/States',
             metricName,
-            dimensions: this.resourceProps.metricDimensions,
+            dimensions: this.taskProps.metricDimensions,
             statistic: 'sum',
             ...props
         });
@@ -163,8 +153,8 @@ export class Task extends State implements INextable {
      *
      * @default average over 5 minutes
      */
-    public metricRunTime(props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
-        return this.taskMetric(this.resourceProps.metricPrefixSingular, 'RunTime', { statistic: 'avg', ...props });
+    public metricRunTime(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+        return this.taskMetric(this.taskProps.metricPrefixSingular, 'RunTime', { statistic: 'avg', ...props });
     }
 
     /**
@@ -172,8 +162,8 @@ export class Task extends State implements INextable {
      *
      * @default average over 5 minutes
      */
-    public metricScheduleTime(props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
-        return this.taskMetric(this.resourceProps.metricPrefixSingular, 'ScheduleTime', { statistic: 'avg', ...props });
+    public metricScheduleTime(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+        return this.taskMetric(this.taskProps.metricPrefixSingular, 'ScheduleTime', { statistic: 'avg', ...props });
     }
 
     /**
@@ -181,8 +171,8 @@ export class Task extends State implements INextable {
      *
      * @default average over 5 minutes
      */
-    public metricTime(props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
-        return this.taskMetric(this.resourceProps.metricPrefixSingular, 'Time', { statistic: 'avg', ...props });
+    public metricTime(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+        return this.taskMetric(this.taskProps.metricPrefixSingular, 'Time', { statistic: 'avg', ...props });
     }
 
     /**
@@ -190,8 +180,8 @@ export class Task extends State implements INextable {
      *
      * @default sum over 5 minutes
      */
-    public metricScheduled(props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
-        return this.taskMetric(this.resourceProps.metricPrefixPlural, 'Scheduled', props);
+    public metricScheduled(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+        return this.taskMetric(this.taskProps.metricPrefixPlural, 'Scheduled', props);
     }
 
     /**
@@ -199,8 +189,8 @@ export class Task extends State implements INextable {
      *
      * @default sum over 5 minutes
      */
-    public metricTimedOut(props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
-        return this.taskMetric(this.resourceProps.metricPrefixPlural, 'TimedOut', props);
+    public metricTimedOut(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+        return this.taskMetric(this.taskProps.metricPrefixPlural, 'TimedOut', props);
     }
 
     /**
@@ -208,8 +198,8 @@ export class Task extends State implements INextable {
      *
      * @default sum over 5 minutes
      */
-    public metricStarted(props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
-        return this.taskMetric(this.resourceProps.metricPrefixPlural, 'Started', props);
+    public metricStarted(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+        return this.taskMetric(this.taskProps.metricPrefixPlural, 'Started', props);
     }
 
     /**
@@ -217,8 +207,8 @@ export class Task extends State implements INextable {
      *
      * @default sum over 5 minutes
      */
-    public metricSucceeded(props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
-        return this.taskMetric(this.resourceProps.metricPrefixPlural, 'Succeeded', props);
+    public metricSucceeded(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+        return this.taskMetric(this.taskProps.metricPrefixPlural, 'Succeeded', props);
     }
 
     /**
@@ -226,8 +216,8 @@ export class Task extends State implements INextable {
      *
      * @default sum over 5 minutes
      */
-    public metricFailed(props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
-        return this.taskMetric(this.resourceProps.metricPrefixPlural, 'Failed', props);
+    public metricFailed(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+        return this.taskMetric(this.taskProps.metricPrefixPlural, 'Failed', props);
     }
 
     /**
@@ -235,69 +225,21 @@ export class Task extends State implements INextable {
      *
      * @default sum over 5 minutes
      */
-    public metricHeartbeatTimedOut(props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
-        return this.taskMetric(this.resourceProps.metricPrefixPlural, 'HeartbeatTimedOut', props);
+    public metricHeartbeatTimedOut(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+        return this.taskMetric(this.taskProps.metricPrefixPlural, 'HeartbeatTimedOut', props);
     }
 
     protected onBindToGraph(graph: StateGraph) {
         super.onBindToGraph(graph);
-        for (const policyStatement of this.resourceProps.policyStatements || []) {
+        for (const policyStatement of this.taskProps.policyStatements || []) {
             graph.registerPolicyStatement(policyStatement);
         }
     }
 
-    private taskMetric(prefix: string | undefined, suffix: string, props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
+    private taskMetric(prefix: string | undefined, suffix: string, props?: cloudwatch.MetricOptions): cloudwatch.Metric {
         if (prefix === undefined) {
             throw new Error('This Task Resource does not expose metrics');
         }
         return this.metric(prefix + suffix, props);
     }
-}
-
-/**
- * Interface for objects that can be invoked in a Task state
- */
-export interface IStepFunctionsTaskResource {
-    /**
-     * Return the properties required for using this object as a Task resource
-     */
-    asStepFunctionsTaskResource(callingTask: Task): StepFunctionsTaskResourceProps;
-}
-
-/**
- * Properties that define how to refer to a TaskResource
- */
-export interface StepFunctionsTaskResourceProps {
-    /**
-     * The ARN of the resource
-     */
-    resourceArn: string;
-
-    /**
-     * Additional policy statements to add to the execution role
-     *
-     * @default No policy roles
-     */
-    policyStatements?: iam.PolicyStatement[];
-
-    /**
-     * Prefix for singular metric names of activity actions
-     *
-     * @default No such metrics
-     */
-    metricPrefixSingular?: string;
-
-    /**
-     * Prefix for plural metric names of activity actions
-     *
-     * @default No such metrics
-     */
-    metricPrefixPlural?: string;
-
-    /**
-     * The dimensions to attach to metrics
-     *
-     * @default No metrics
-     */
-    metricDimensions?: cloudwatch.DimensionHash;
 }

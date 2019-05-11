@@ -1,3 +1,620 @@
+# CloudFormation Resource Specification v3.0.0
+
+## New Resource Types
+
+* AWS::ApiGatewayV2::ApiMapping
+* AWS::ApiGatewayV2::DomainName
+
+## Attribute Changes
+
+
+## Property Changes
+
+* AWS::FSx::FileSystem Tags.ItemType (__changed__)
+  * Old: TagEntry
+  * New: Tag
+
+## Property Type Changes
+
+* Tag Key.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dms-endpoint-tag.html#cfn-dms-endpoint-tag-key
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iotanalytics-datastore-tag.html#cfn-iotanalytics-datastore-tag-key
+* Tag Key.Required (__changed__)
+  * Old: false
+  * New: true
+* Tag Value.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dms-endpoint-tag.html#cfn-dms-endpoint-tag-value
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iotanalytics-datastore-tag.html#cfn-iotanalytics-datastore-tag-value
+* Tag Value.Required (__changed__)
+  * Old: false
+  * New: true
+
+
+# CloudFormation Resource Specification v2.32.0
+
+## New Resource Types
+
+* AWS::Greengrass::ResourceDefinition
+
+## Attribute Changes
+
+
+## Property Changes
+
+* AWS::SSM::Parameter Tags (__added__)
+* AWS::ServiceCatalog::CloudFormationProvisionedProduct Tags.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+
+## Property Type Changes
+
+* AWS::Cognito::UserPool.EmailConfiguration EmailSendingAccount (__added__)
+* AWS::Greengrass::FunctionDefinition.FunctionConfiguration MemorySize.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::Greengrass::FunctionDefinition.FunctionConfiguration Timeout.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::Greengrass::FunctionDefinitionVersion.FunctionConfiguration MemorySize.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::Greengrass::FunctionDefinitionVersion.FunctionConfiguration Timeout.Required (__changed__)
+  * Old: true
+  * New: false
+
+
+# CloudFormation Resource Specification v2.30.0
+
+## New Resource Types
+
+
+## Attribute Changes
+
+
+## Property Changes
+
+
+## Property Type Changes
+
+* AWS::Batch::JobDefinition.ResourceRequirement (__added__)
+* AWS::Batch::JobDefinition.ContainerProperties ResourceRequirements (__added__)
+* Tag Key.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iotanalytics-datastore-tag.html#cfn-iotanalytics-datastore-tag-key
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dms-endpoint-tag.html#cfn-dms-endpoint-tag-key
+* Tag Key.Required (__changed__)
+  * Old: true
+  * New: false
+* Tag Value.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iotanalytics-datastore-tag.html#cfn-iotanalytics-datastore-tag-value
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dms-endpoint-tag.html#cfn-dms-endpoint-tag-value
+* Tag Value.Required (__changed__)
+  * Old: true
+  * New: false
+
+
+# CloudFormation Resource Specification v2.29.0
+
+## New Resource Types
+
+* AWS::AppMesh::Mesh
+* AWS::AppMesh::Route
+* AWS::AppMesh::VirtualNode
+* AWS::AppMesh::VirtualRouter
+* AWS::AppMesh::VirtualService
+
+## Attribute Changes
+
+
+## Property Changes
+
+* AWS::EKS::Cluster Version.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+
+## Property Type Changes
+
+* AWS::ServiceDiscovery::Service.DnsRecord TTL.PrimitiveType (__changed__)
+  * Old: String
+  * New: Double
+* Tag Key.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dms-endpoint-tag.html#cfn-dms-endpoint-tag-key
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iotanalytics-datastore-tag.html#cfn-iotanalytics-datastore-tag-key
+* Tag Key.Required (__changed__)
+  * Old: false
+  * New: true
+* Tag Value.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dms-endpoint-tag.html#cfn-dms-endpoint-tag-value
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iotanalytics-datastore-tag.html#cfn-iotanalytics-datastore-tag-value
+* Tag Value.Required (__changed__)
+  * Old: false
+  * New: true
+
+
+
+
+
+
+# Serverless Application Model (SAM) Resource Specification v2016-10-31
+
+## New Resource Types
+
+
+## Attribute Changes
+
+
+## Property Changes
+
+* AWS::Serverless::Api TracingEnabled (__added__)
+* AWS::Serverless::Function PermissionsBoundary (__added__)
+
+## Property Type Changes
+
+* AWS::Serverless::Function.DynamoDBEvent Enabled (__added__)
+* AWS::Serverless::Function.DynamoDBEvent BatchSize.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::Serverless::Function.KinesisEvent Enabled (__added__)
+* AWS::Serverless::Function.SQSEvent Enabled (__added__)
+
+
+
+
+
+
+
+
+
+# CloudFormation Resource Specification v2.28.0
+
+## New Resource Types
+
+* AWS::Greengrass::ConnectorDefinition
+* AWS::Greengrass::ConnectorDefinitionVersion
+* AWS::Greengrass::CoreDefinition
+* AWS::Greengrass::CoreDefinitionVersion
+* AWS::Greengrass::DeviceDefinition
+* AWS::Greengrass::DeviceDefinitionVersion
+* AWS::Greengrass::FunctionDefinition
+* AWS::Greengrass::FunctionDefinitionVersion
+* AWS::Greengrass::Group
+* AWS::Greengrass::GroupVersion
+* AWS::Greengrass::LoggerDefinition
+* AWS::Greengrass::LoggerDefinitionVersion
+* AWS::Greengrass::ResourceDefinitionVersion
+* AWS::Greengrass::SubscriptionDefinition
+* AWS::Greengrass::SubscriptionDefinitionVersion
+
+## Attribute Changes
+
+
+## Property Changes
+
+* AWS::AppStream::Fleet Tags (__added__)
+* AWS::AppStream::ImageBuilder Tags (__added__)
+* AWS::AppStream::Stack Tags (__added__)
+* AWS::SageMaker::NotebookInstance RootAccess (__added__)
+
+## Property Type Changes
+
+* AWS::CodeBuild::Project.GitSubmodulesConfig (__added__)
+* AWS::CodeBuild::Project.S3LogsConfig EncryptionDisabled (__added__)
+* AWS::CodeBuild::Project.Source GitSubmodulesConfig (__added__)
+
+# Serverless Application Model (SAM) Resource Specification v2016-10-31
+
+## New Resource Types
+
+
+## Attribute Changes
+
+
+## Property Changes
+
+* AWS::Serverless::Application Location.PrimitiveType (__deleted__)
+* AWS::Serverless::Application Location.PrimitiveTypes (__added__)
+
+## Property Type Changes
+
+* AWS::Serverless::Api.Auth Authorizers.Type (__deleted__)
+* AWS::Serverless::Api.Auth Authorizers.PrimitiveType (__added__)
+
+# CloudFormation Resource Specification v2.26.0
+
+## New Resource Types
+
+
+## Attribute Changes
+
+
+## Property Changes
+
+* AWS::SSM::PatchBaseline Tags (__added__)
+* AWS::StepFunctions::Activity Tags (__added__)
+* AWS::StepFunctions::StateMachine Tags (__added__)
+
+## Property Type Changes
+
+* AWS::StepFunctions::Activity.TagsEntry (__added__)
+* AWS::StepFunctions::StateMachine.TagsEntry (__added__)
+* Tag Key.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resource-tags.html#cfn-resource-tags-key
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dms-endpoint-tag.html#cfn-dms-endpoint-tag-key
+* Tag Key.Required (__changed__)
+  * Old: true
+  * New: false
+* Tag Value.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resource-tags.html#cfn-resource-tags-value
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dms-endpoint-tag.html#cfn-dms-endpoint-tag-value
+* Tag Value.Required (__changed__)
+  * Old: true
+  * New: false
+
+
+# CloudFormation Resource Specification v2.25.0
+
+## New Resource Types
+
+
+## Attribute Changes
+
+
+## Property Changes
+
+* AWS::ApiGateway::Authorizer Type.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::CloudWatch::Alarm Metrics (__added__)
+* AWS::EC2::VPCEndpoint VPCEndpointType (__deleted__)
+* AWS::EC2::VPCEndpoint VpcEndpointType (__added__)
+* AWS::ECS::Cluster Tags (__deleted__)
+* AWS::ECS::Service Tags (__deleted__)
+* AWS::ECS::TaskDefinition Tags (__deleted__)
+* AWS::ElasticLoadBalancingV2::TargetGroup HealthCheckEnabled (__added__)
+* AWS::ElasticLoadBalancingV2::TargetGroup Port.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::ElasticLoadBalancingV2::TargetGroup Protocol.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::ElasticLoadBalancingV2::TargetGroup VpcId.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::SNS::Subscription Protocol.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::SNS::Subscription TopicArn.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::SSM::MaintenanceWindow Tags (__added__)
+
+## Property Type Changes
+
+* AWS::CloudWatch::Alarm.Metric (__added__)
+* AWS::CloudWatch::Alarm.MetricDataQuery (__added__)
+* AWS::CloudWatch::Alarm.MetricStat (__added__)
+* Tag Key.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iotanalytics-datastore-tag.html#cfn-iotanalytics-datastore-tag-key
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resource-tags.html#cfn-resource-tags-key
+* Tag Value.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iotanalytics-datastore-tag.html#cfn-iotanalytics-datastore-tag-value
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resource-tags.html#cfn-resource-tags-value
+
+
+# CloudFormation Resource Specification v2.24.0
+
+## New Resource Types
+
+* AWS::ApiGatewayV2::Api
+* AWS::ApiGatewayV2::Authorizer
+* AWS::ApiGatewayV2::Deployment
+* AWS::ApiGatewayV2::Integration
+* AWS::ApiGatewayV2::IntegrationResponse
+* AWS::ApiGatewayV2::Model
+* AWS::ApiGatewayV2::Route
+* AWS::ApiGatewayV2::RouteResponse
+* AWS::ApiGatewayV2::Stage
+* AWS::FSx::FileSystem
+* AWS::KinesisAnalyticsV2::Application
+* AWS::KinesisAnalyticsV2::ApplicationCloudWatchLoggingOption
+* AWS::KinesisAnalyticsV2::ApplicationOutput
+* AWS::KinesisAnalyticsV2::ApplicationReferenceDataSource
+* AWS::RAM::ResourceShare
+* AWS::RoboMaker::Fleet
+* AWS::RoboMaker::Robot
+* AWS::RoboMaker::RobotApplication
+* AWS::RoboMaker::RobotApplicationVersion
+* AWS::RoboMaker::SimulationApplication
+* AWS::RoboMaker::SimulationApplicationVersion
+
+## Attribute Changes
+
+
+## Property Changes
+
+* AWS::OpsWorksCM::Server AssociatePublicIpAddress (__added__)
+
+## Property Type Changes
+
+* AWS::CodeBuild::Project.FilterGroup (__added__)
+* AWS::CodeBuild::Project.WebhookFilter (__added__)
+* AWS::EC2::LaunchTemplate.CapacityReservationPreference (__added__)
+* AWS::EC2::LaunchTemplate.CapacityReservationSpecification (__added__)
+* AWS::EC2::LaunchTemplate.CapacityReservationTarget (__added__)
+* AWS::EC2::LaunchTemplate.CpuOptions (__added__)
+* AWS::EC2::LaunchTemplate.HibernationOptions (__added__)
+* AWS::EC2::LaunchTemplate.LaunchTemplateElasticInferenceAccelerator (__added__)
+* AWS::EC2::LaunchTemplate.LicenseSpecification (__added__)
+* AWS::CodeBuild::Project.ProjectCache Modes (__added__)
+* AWS::CodeBuild::Project.ProjectTriggers FilterGroups (__added__)
+* AWS::EC2::LaunchTemplate.LaunchTemplateData CapacityReservationSpecification (__added__)
+* AWS::EC2::LaunchTemplate.LaunchTemplateData CpuOptions (__added__)
+* AWS::EC2::LaunchTemplate.LaunchTemplateData ElasticInferenceAccelerators (__added__)
+* AWS::EC2::LaunchTemplate.LaunchTemplateData HibernationOptions (__added__)
+* AWS::EC2::LaunchTemplate.LaunchTemplateData LicenseSpecifications (__added__)
+* Tag Key.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dms-endpoint-tag.html#cfn-dms-endpoint-tag-key
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iotanalytics-datastore-tag.html#cfn-iotanalytics-datastore-tag-key
+* Tag Key.Required (__changed__)
+  * Old: false
+  * New: true
+* Tag Value.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dms-endpoint-tag.html#cfn-dms-endpoint-tag-value
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iotanalytics-datastore-tag.html#cfn-iotanalytics-datastore-tag-value
+* Tag Value.Required (__changed__)
+  * Old: false
+  * New: true
+
+# Serverless Application Model (SAM) Resource Specification v2016-10-31
+
+## New Resource Types
+
+* AWS::Serverless::Application
+* AWS::Serverless::LayerVersion
+
+## Attribute Changes
+
+
+## Property Changes
+
+* AWS::Serverless::Api Auth (__added__)
+* AWS::Serverless::Api BinaryMediaTypes (__added__)
+* AWS::Serverless::Api Cors (__added__)
+* AWS::Serverless::Api EndpointConfiguration (__added__)
+* AWS::Serverless::Function AutoPublishAlias (__added__)
+* AWS::Serverless::Function DeploymentPreference (__added__)
+* AWS::Serverless::Function Layers (__added__)
+* AWS::Serverless::Function ReservedConcurrentExecutions (__added__)
+* AWS::Serverless::SimpleTable SSESpecification (__added__)
+* AWS::Serverless::SimpleTable TableName (__added__)
+* AWS::Serverless::SimpleTable Tags (__added__)
+
+## Property Type Changes
+
+* AWS::Serverless::Api.Auth (__added__)
+* AWS::Serverless::Function.DeploymentPreference (__added__)
+* AWS::Serverless::SimpleTable.SSESpecification (__added__)
+
+
+
+# CloudFormation Resource Specification v2.21.0
+
+## New Resource Types
+
+* AWS::DocDB::DBCluster
+* AWS::DocDB::DBClusterParameterGroup
+* AWS::DocDB::DBInstance
+* AWS::DocDB::DBSubnetGroup
+* AWS::Lambda::LayerVersion
+* AWS::Lambda::LayerVersionPermission
+* AWS::OpsWorksCM::Server
+* AWS::Route53Resolver::ResolverRuleAssociation
+
+## Attribute Changes
+
+* AWS::Route53Resolver::ResolverRule Name (__added__)
+
+## Property Changes
+
+* AWS::AmazonMQ::Broker Tags (__added__)
+* AWS::AmazonMQ::Configuration Tags (__added__)
+* AWS::ApiGateway::ApiKey Value (__added__)
+* AWS::DMS::Endpoint ElasticsearchSettings (__added__)
+* AWS::DMS::Endpoint KinesisSettings (__added__)
+* AWS::EC2::EC2Fleet ValidFrom.PrimitiveType (__changed__)
+  * Old: Integer
+  * New: String
+* AWS::EC2::EC2Fleet ValidUntil.PrimitiveType (__changed__)
+  * Old: Integer
+  * New: String
+* AWS::ECS::Cluster Tags (__added__)
+* AWS::ECS::Service Tags (__added__)
+* AWS::ECS::TaskDefinition Tags (__added__)
+* AWS::Elasticsearch::Domain NodeToNodeEncryptionOptions (__added__)
+* AWS::Inspector::AssessmentTarget ResourceGroupArn.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::RDS::DBCluster SourceRegion (__added__)
+* AWS::RDS::DBInstance UseDefaultProcessorFeatures (__added__)
+* AWS::ServiceCatalog::CloudFormationProvisionedProduct ProductId.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::ServiceCatalog::CloudFormationProvisionedProduct ProductName.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::ServiceDiscovery::Service HealthCheckCustomConfig.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+
+## Property Type Changes
+
+* AWS::AmazonMQ::Broker.TagsEntry (__added__)
+* AWS::AmazonMQ::Configuration.TagsEntry (__added__)
+* AWS::CodeBuild::Project.RegistryCredential (__added__)
+* AWS::DMS::Endpoint.ElasticsearchSettings (__added__)
+* AWS::DMS::Endpoint.KinesisSettings (__added__)
+* AWS::Elasticsearch::Domain.NodeToNodeEncryptionOptions (__added__)
+* AWS::CodeBuild::Project.Environment ImagePullCredentialsType (__added__)
+* AWS::CodeBuild::Project.Environment RegistryCredential (__added__)
+* Tag Key.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resource-tags.html#cfn-resource-tags-key
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dms-endpoint-tag.html#cfn-dms-endpoint-tag-key
+* Tag Key.Required (__changed__)
+  * Old: true
+  * New: false
+* Tag Value.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resource-tags.html#cfn-resource-tags-value
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dms-endpoint-tag.html#cfn-dms-endpoint-tag-value
+* Tag Value.Required (__changed__)
+  * Old: true
+  * New: false
+
+
+# CloudFormation Resource Specification v2.18.0
+
+## New Resource Types
+
+* AWS::AmazonMQ::ConfigurationAssociation
+* AWS::IoTAnalytics::Channel
+* AWS::IoTAnalytics::Dataset
+* AWS::IoTAnalytics::Datastore
+* AWS::IoTAnalytics::Pipeline
+
+## Attribute Changes
+
+* AWS::AmazonMQ::Broker BrokerId (__deleted__)
+* AWS::AmazonMQ::Broker AmqpEndpoints (__added__)
+* AWS::AmazonMQ::Broker Arn (__added__)
+* AWS::AmazonMQ::Broker ConfigurationId (__added__)
+* AWS::AmazonMQ::Broker ConfigurationRevision (__added__)
+* AWS::AmazonMQ::Broker IpAddresses (__added__)
+* AWS::AmazonMQ::Broker MqttEndpoints (__added__)
+* AWS::AmazonMQ::Broker OpenWireEndpoints (__added__)
+* AWS::AmazonMQ::Broker StompEndpoints (__added__)
+* AWS::AmazonMQ::Broker WssEndpoints (__added__)
+
+## Property Changes
+
+* AWS::SageMaker::Model Containers (__added__)
+* AWS::SageMaker::Model PrimaryContainer.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::ServiceDiscovery::Instance InstanceAttributes.PrimitiveType (__changed__)
+  * Old: Json
+  * New: Map
+
+## Property Type Changes
+
+* AWS::SageMaker::EndpointConfig.ProductionVariant AcceleratorType (__added__)
+
+
+# CloudFormation Resource Specification v2.16.0
+
+## New Resource Types
+
+* AWS::AppSync::FunctionConfiguration
+* AWS::CloudFormation::Macro
+* AWS::EC2::EC2Fleet
+* AWS::EC2::TransitGateway
+* AWS::EC2::TransitGatewayAttachment
+* AWS::EC2::TransitGatewayRoute
+* AWS::EC2::TransitGatewayRouteTable
+* AWS::EC2::TransitGatewayRouteTableAssociation
+* AWS::EC2::TransitGatewayRouteTablePropagation
+* AWS::Kinesis::StreamConsumer
+* AWS::Route53Resolver::ResolverEndpoint
+* AWS::Route53Resolver::ResolverRule
+* AWS::ServiceDiscovery::HttpNamespace
+* Alexa::ASK::Skill
+
+## Attribute Changes
+
+
+## Property Changes
+
+* AWS::ApiGateway::Stage Tags (__added__)
+* AWS::AutoScaling::AutoScalingGroup MixedInstancesPolicy (__added__)
+* AWS::Batch::JobDefinition NodeProperties (__added__)
+* AWS::Batch::JobDefinition ContainerProperties.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::CloudWatch::Alarm MetricName.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::CloudWatch::Alarm Namespace.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::CloudWatch::Alarm Period.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::DynamoDB::Table BillingMode (__added__)
+* AWS::DynamoDB::Table ProvisionedThroughput.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::EC2::EIP PublicIpv4Pool (__added__)
+* AWS::EC2::Instance ElasticInferenceAccelerators (__added__)
+* AWS::EC2::Instance LicenseSpecifications (__added__)
+* AWS::EMR::Cluster Steps (__added__)
+* AWS::IoT1Click::Placement PlacementName.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::IoT1Click::Project ProjectName.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::Lambda::Function Layers (__added__)
+* AWS::RDS::DBCluster DeletionProtection (__added__)
+* AWS::RDS::DBInstance DeleteAutomatedBackups (__added__)
+* AWS::RDS::DBInstance DeletionProtection (__added__)
+* AWS::S3::Bucket PublicAccessBlockConfiguration (__added__)
+* AWS::SNS::Topic KmsMasterKeyId (__added__)
+
+## Property Type Changes
+
+* AWS::AutoScaling::AutoScalingGroup.InstancesDistribution (__added__)
+* AWS::AutoScaling::AutoScalingGroup.LaunchTemplate (__added__)
+* AWS::AutoScaling::AutoScalingGroup.LaunchTemplateOverrides (__added__)
+* AWS::AutoScaling::AutoScalingGroup.MixedInstancesPolicy (__added__)
+* AWS::Batch::ComputeEnvironment.LaunchTemplateSpecification (__added__)
+* AWS::Batch::JobDefinition.NodeProperties (__added__)
+* AWS::Batch::JobDefinition.NodeRangeProperty (__added__)
+* AWS::EC2::Instance.ElasticInferenceAccelerator (__added__)
+* AWS::EC2::Instance.LicenseSpecification (__added__)
+* AWS::EMR::Cluster.HadoopJarStepConfig (__added__)
+* AWS::EMR::Cluster.KeyValue (__added__)
+* AWS::EMR::Cluster.StepConfig (__added__)
+* AWS::ElasticLoadBalancingV2::Listener.AuthenticateCognitoConfig (__added__)
+* AWS::ElasticLoadBalancingV2::Listener.AuthenticateOidcConfig (__added__)
+* AWS::ElasticLoadBalancingV2::Listener.FixedResponseConfig (__added__)
+* AWS::ElasticLoadBalancingV2::Listener.RedirectConfig (__added__)
+* AWS::ElasticLoadBalancingV2::ListenerRule.AuthenticateCognitoConfig (__added__)
+* AWS::ElasticLoadBalancingV2::ListenerRule.AuthenticateOidcConfig (__added__)
+* AWS::ElasticLoadBalancingV2::ListenerRule.FixedResponseConfig (__added__)
+* AWS::ElasticLoadBalancingV2::ListenerRule.RedirectConfig (__added__)
+* AWS::S3::Bucket.PublicAccessBlockConfiguration (__added__)
+* AWS::ApiGateway::Deployment.StageDescription Tags (__added__)
+* AWS::Batch::ComputeEnvironment.ComputeResources LaunchTemplate (__added__)
+* AWS::Batch::ComputeEnvironment.ComputeResources PlacementGroup (__added__)
+* AWS::Batch::JobDefinition.ContainerProperties InstanceType (__added__)
+* AWS::DynamoDB::Table.GlobalSecondaryIndex ProvisionedThroughput.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::EMR::Cluster.JobFlowInstancesConfig KeepJobFlowAliveWhenNoSteps (__added__)
+* AWS::ElasticLoadBalancingV2::Listener.Action AuthenticateCognitoConfig (__added__)
+* AWS::ElasticLoadBalancingV2::Listener.Action AuthenticateOidcConfig (__added__)
+* AWS::ElasticLoadBalancingV2::Listener.Action FixedResponseConfig (__added__)
+* AWS::ElasticLoadBalancingV2::Listener.Action Order (__added__)
+* AWS::ElasticLoadBalancingV2::Listener.Action RedirectConfig (__added__)
+* AWS::ElasticLoadBalancingV2::Listener.Action TargetGroupArn.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::ElasticLoadBalancingV2::ListenerRule.Action AuthenticateCognitoConfig (__added__)
+* AWS::ElasticLoadBalancingV2::ListenerRule.Action AuthenticateOidcConfig (__added__)
+* AWS::ElasticLoadBalancingV2::ListenerRule.Action FixedResponseConfig (__added__)
+* AWS::ElasticLoadBalancingV2::ListenerRule.Action Order (__added__)
+* AWS::ElasticLoadBalancingV2::ListenerRule.Action RedirectConfig (__added__)
+* AWS::ElasticLoadBalancingV2::ListenerRule.Action TargetGroupArn.Required (__changed__)
+  * Old: true
+  * New: false
+
 
 
 

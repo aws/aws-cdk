@@ -7,28 +7,35 @@ import { Test } from 'nodeunit';
 import { Stack } from '@aws-cdk/cdk';
 import { countResources, exist, expect, haveType, MatchStyle, matchTemplate } from '../lib/index';
 
-passingExample('expect <stack> at <some path> to have <some type>', () => {
+passingExample('expect <synthStack> at <some path> to have <some type>', () => {
   const resourceType = 'Test::Resource';
   const synthStack = synthesizedStack(stack => {
     new TestResource(stack, 'TestResource', { type: resourceType });
   });
   expect(synthStack).at('/TestResource').to(haveType(resourceType));
 });
-passingExample('expect <stack> at <some path> *not* to have <some type>', () => {
+passingExample('expect non-synthesized stack at <some path> to have <some type>', () => {
+  const resourceType = 'Test::Resource';
+  const stack = new cdk.Stack();
+  new TestResource(stack, 'TestResource', { type: resourceType });
+  // '//' because the stack has no name, which leads to an empty path entry here.
+  expect(stack).at('//TestResource').to(haveType(resourceType));
+});
+passingExample('expect <synthStack> at <some path> *not* to have <some type>', () => {
   const resourceType = 'Test::Resource';
   const synthStack = synthesizedStack(stack => {
     new TestResource(stack, 'TestResource', { type: resourceType });
   });
   expect(synthStack).at('/TestResource').notTo(haveType('Foo::Bar'));
 });
-passingExample('expect <stack> at <some path> to exist', () => {
+passingExample('expect <synthStack> at <some path> to exist', () => {
   const resourceType = 'Test::Resource';
   const synthStack = synthesizedStack(stack => {
     new TestResource(stack, 'TestResource', { type: resourceType });
   });
   expect(synthStack).at('/TestResource').to(exist());
 });
-passingExample('expect <stack> to match (exactly) <template>', () => {
+passingExample('expect <synthStack> to match (exactly) <template>', () => {
   const resourceType = 'Test::Resource';
   const synthStack = synthesizedStack(stack => {
     new TestResource(stack, 'TestResource', { type: resourceType });
@@ -40,13 +47,30 @@ passingExample('expect <stack> to match (exactly) <template>', () => {
   };
   expect(synthStack).to(matchTemplate(expected, MatchStyle.EXACT));
 });
-passingExample('expect <stack> to match (no replaces) <template>', () => {
+passingExample('expect <synthStack> to match (no replaces) <template>', () => {
   const resourceType = 'Test::Resource';
   const synthStack = synthesizedStack(stack => {
     new TestResource(stack, 'TestResource', { type: resourceType });
   });
   const expected = {};
   expect(synthStack).to(matchTemplate(expected, MatchStyle.NO_REPLACES));
+});
+passingExample('expect <synthStack> to be a superset of <template>', () => {
+  const resourceType = 'Test::Resource';
+  const synthStack = synthesizedStack(stack => {
+    // Added
+    new TestResource(stack, 'NewResource', { type: 'AWS::S3::Bucket' });
+    // Expected
+    new TestResource(stack, 'TestResourceA', { type: resourceType });
+    new TestResource(stack, 'TestResourceB', { type: resourceType, properties: { Foo: 'Bar' } });
+  });
+  const expected = {
+    Resources: {
+      TestResourceA: { Type: 'Test::Resource' },
+      TestResourceB: { Type: 'Test::Resource', Properties: { Foo: 'Bar' } }
+    }
+  };
+  expect(synthStack).to(matchTemplate(expected, MatchStyle.SUPERSET));
 });
 passingExample('sugar for matching stack to a template', () => {
   const stack = new Stack();
@@ -60,28 +84,28 @@ passingExample('sugar for matching stack to a template', () => {
   });
 });
 
-failingExample('expect <stack> at <some path> *not* to have <some type>', () => {
+failingExample('expect <synthStack> at <some path> *not* to have <some type>', () => {
   const resourceType = 'Test::Resource';
   const synthStack = synthesizedStack(stack => {
     new TestResource(stack, 'TestResource', { type: resourceType });
   });
   expect(synthStack).at('/TestResource').notTo(haveType(resourceType));
 });
-failingExample('expect <stack> at <some path> to have <some type>', () => {
+failingExample('expect <synthStack> at <some path> to have <some type>', () => {
   const resourceType = 'Test::Resource';
   const synthStack = synthesizedStack(stack => {
     new TestResource(stack, 'TestResource', { type: resourceType });
   });
   expect(synthStack).at('/TestResource').to(haveType('Foo::Bar'));
 });
-failingExample('expect <stack> at <some path> to exist', () => {
+failingExample('expect <synthStack> at <some path> to exist', () => {
   const resourceType = 'Test::Resource';
   const synthStack = synthesizedStack(stack => {
     new TestResource(stack, 'TestResource', { type: resourceType });
   });
   expect(synthStack).at('/Foo/Bar').to(exist());
 });
-failingExample('expect <stack> to match (exactly) <template>', () => {
+failingExample('expect <synthStack> to match (exactly) <template>', () => {
   const resourceType = 'Test::Resource';
   const synthStack = synthesizedStack(stack => {
     new TestResource(stack, 'TestResource', { type: resourceType });
@@ -93,7 +117,7 @@ failingExample('expect <stack> to match (exactly) <template>', () => {
   };
   expect(synthStack).to(matchTemplate(expected, MatchStyle.EXACT));
 });
-failingExample('expect <stack> to match (no replaces) <template>', () => {
+failingExample('expect <synthStack> to match (no replaces) <template>', () => {
   const resourceType = 'Test::Resource';
   const synthStack = synthesizedStack(stack => {
     new TestResource(stack, 'TestResource', { type: resourceType });
@@ -105,10 +129,28 @@ failingExample('expect <stack> to match (no replaces) <template>', () => {
   };
   expect(synthStack).to(matchTemplate(expected, MatchStyle.NO_REPLACES));
 });
+failingExample('expect <synthStack> to be a superset of <template>', () => {
+  const resourceType = 'Test::Resource';
+  const synthStack = synthesizedStack(stack => {
+    // Added
+    new TestResource(stack, 'NewResource', { type: 'AWS::S3::Bucket' });
+    // Expected
+    new TestResource(stack, 'TestResourceA', { type: resourceType });
+    // Expected, but has different properties - will break
+    new TestResource(stack, 'TestResourceB', { type: resourceType, properties: { Foo: 'Bar' } });
+  });
+  const expected = {
+    Resources: {
+      TestResourceA: { Type: 'Test::Resource' },
+      TestResourceB: { Type: 'Test::Resource', Properties: { Foo: 'Baz' } }
+    }
+  };
+  expect(synthStack).to(matchTemplate(expected, MatchStyle.SUPERSET));
+});
 
 // countResources
 
-passingExample('expect <stack> to count resources - as expected', () => {
+passingExample('expect <synthStack> to count resources - as expected', () => {
   const synthStack = synthesizedStack(stack => {
     new TestResource(stack, 'R1', { type: 'Bar' });
     new TestResource(stack, 'R2', { type: 'Bar' });
@@ -125,7 +167,7 @@ passingExample('expect <stack> to count resources - expected no resources', () =
   expect(stack).to(countResources(resourceType, 0));
 });
 
-failingExample('expect <stack> to count resources - more than expected', () => {
+failingExample('expect <synthStack> to count resources - more than expected', () => {
   const resourceType = 'Test::Resource';
   const synthStack = synthesizedStack(stack => {
     new TestResource(stack, 'R1', { type: resourceType });
@@ -135,7 +177,7 @@ failingExample('expect <stack> to count resources - more than expected', () => {
   expect(synthStack).to(countResources(resourceType, 1));
 });
 
-failingExample('expect <stack> to count resources - less than expected', () => {
+failingExample('expect <synthStack> to count resources - less than expected', () => {
   const resourceType = 'Test::Resource';
   const synthStack = synthesizedStack(stack => {
     new TestResource(stack, 'R1', { type: resourceType });
@@ -170,12 +212,12 @@ function synthesizedStack(fn: (stack: cdk.Stack) => void): cx.SynthesizedStack {
   return app.synthesizeStack(stack.name);
 }
 
-interface TestResourceProps extends cdk.ResourceProps {
+interface TestResourceProps extends cdk.CfnResourceProps {
   type: string;
 }
 
-class TestResource extends cdk.Resource {
-  constructor(parent: cdk.Construct, name: string, props: TestResourceProps) {
-    super(parent, name, props);
+class TestResource extends cdk.CfnResource {
+  constructor(scope: cdk.Construct, id: string, props: TestResourceProps) {
+    super(scope, id, props);
   }
 }

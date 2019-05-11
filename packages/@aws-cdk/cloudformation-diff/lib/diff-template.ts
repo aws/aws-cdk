@@ -32,47 +32,82 @@ const DIFF_HANDLERS: HandlerRegistry = {
  * Compare two CloudFormation templates and return semantic differences between them.
  *
  * @param currentTemplate the current state of the stack.
- * @param newTemplate   the target state of the stack.
+ * @param newTemplate     the target state of the stack.
  *
  * @returns a +types.TemplateDiff+ object that represents the changes that will happen if
  *      a stack which current state is described by +currentTemplate+ is updated with
  *      the template +newTemplate+.
  */
 export function diffTemplate(currentTemplate: { [key: string]: any }, newTemplate: { [key: string]: any }): types.TemplateDiff {
+  // Base diff
+  const theDiff = calculateTemplateDiff(currentTemplate, newTemplate);
+
   // We're going to modify this in-place
-  newTemplate = deepCopy(newTemplate);
+  const newTemplateCopy = deepCopy(newTemplate);
 
-  while (true) {
-    const differences: types.ITemplateDiff = {};
-    const unknown: { [key: string]: types.Difference<any> } = {};
-    for (const key of unionOf(Object.keys(currentTemplate), Object.keys(newTemplate)).sort()) {
-      const oldValue = currentTemplate[key];
-      const newValue = newTemplate[key];
-      if (deepEqual(oldValue, newValue)) { continue; }
-      const handler: DiffHandler = DIFF_HANDLERS[key]
-                    || ((_diff, oldV, newV) => unknown[key] = impl.diffUnknown(oldV, newV));
-      handler(differences, oldValue, newValue);
-
-    }
-    if (Object.keys(unknown).length > 0) { differences.unknown = new types.DifferenceCollection(unknown); }
+  let didPropagateReferenceChanges;
+  let diffWithReplacements;
+  do {
+    diffWithReplacements = calculateTemplateDiff(currentTemplate, newTemplateCopy);
 
     // Propagate replacements for replaced resources
-    let didPropagateReferenceChanges = false;
-    if (differences.resources) {
-      differences.resources.forEach((logicalId, change) => {
+    didPropagateReferenceChanges = false;
+    if (diffWithReplacements.resources) {
+      diffWithReplacements.resources.forEachDifference((logicalId, change) => {
         if (change.changeImpact === types.ResourceImpact.WILL_REPLACE) {
-          if (propagateReplacedReferences(newTemplate, logicalId)) {
+          if (propagateReplacedReferences(newTemplateCopy, logicalId)) {
             didPropagateReferenceChanges = true;
           }
         }
       });
     }
+  } while (didPropagateReferenceChanges);
 
-    // We're done only if we didn't have to propagate any more replacements.
-    if (!didPropagateReferenceChanges) {
-      return new types.TemplateDiff(differences);
+  // Copy "replaced" states from `diffWithReplacements` to `theDiff`.
+  diffWithReplacements.resources
+      .filter(r => isReplacement(r!.changeImpact))
+      .forEachDifference((logicalId, downstreamReplacement) => {
+    const resource = theDiff.resources.get(logicalId);
+
+    if (resource.changeImpact !== downstreamReplacement.changeImpact) {
+      propagatePropertyReplacement(downstreamReplacement, resource);
+    }
+  });
+
+  return theDiff;
+}
+
+function isReplacement(impact: types.ResourceImpact) {
+  return impact === types.ResourceImpact.MAY_REPLACE || impact === types.ResourceImpact.WILL_REPLACE;
+}
+
+/**
+ * For all properties in 'source' that have a "replacement" impact, propagate that impact to "dest"
+ */
+function propagatePropertyReplacement(source: types.ResourceDifference, dest: types.ResourceDifference) {
+  for (const [propertyName, diff] of Object.entries(source.propertyUpdates)) {
+    if (diff.changeImpact && isReplacement(diff.changeImpact)) {
+      // Use the propertydiff of source in target. The result of this happens to be clear enough.
+      dest.setPropertyChange(propertyName, diff);
     }
   }
+}
+
+function calculateTemplateDiff(currentTemplate: { [key: string]: any }, newTemplate: { [key: string]: any }): types.TemplateDiff {
+  const differences: types.ITemplateDiff = {};
+  const unknown: { [key: string]: types.Difference<any> } = {};
+  for (const key of unionOf(Object.keys(currentTemplate), Object.keys(newTemplate)).sort()) {
+    const oldValue = currentTemplate[key];
+    const newValue = newTemplate[key];
+    if (deepEqual(oldValue, newValue)) { continue; }
+    const handler: DiffHandler = DIFF_HANDLERS[key]
+                  || ((_diff, oldV, newV) => unknown[key] = impl.diffUnknown(oldV, newV));
+    handler(differences, oldValue, newValue);
+
+  }
+  if (Object.keys(unknown).length > 0) { differences.unknown = new types.DifferenceCollection(unknown); }
+
+  return new types.TemplateDiff(differences);
 }
 
 /**
@@ -109,7 +144,7 @@ function propagateReplacedReferences(template: object, logicalId: string): boole
 
     if (key === 'Ref') {
       if (obj.Ref === logicalId) {
-        obj.Ref = logicalId + '(replaced)';
+        obj.Ref = logicalId + ' (replaced)';
         ret = true;
       }
       return true;

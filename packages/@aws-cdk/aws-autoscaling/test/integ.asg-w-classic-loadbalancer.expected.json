@@ -549,7 +549,17 @@
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": {
-                "Service": "ec2.amazonaws.com"
+                "Service": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "ec2.",
+                      {
+                        "Ref": "AWS::URLSuffix"
+                      }
+                    ]
+                  ]
+                }
               }
             }
           ],
@@ -708,7 +718,12 @@
             "Ref": "VPCPublicSubnet3Subnet631C5E25"
           }
         ]
-      }
+      },
+      "DependsOn": [
+        "VPCPublicSubnet1DefaultRoute91CEF279",
+        "VPCPublicSubnet2DefaultRouteB7481BBA",
+        "VPCPublicSubnet3DefaultRouteA0D29D46"
+      ]
     }
   }
 }

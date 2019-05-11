@@ -3,14 +3,14 @@ import rds = require('@aws-cdk/aws-rds');
 import cdk = require('@aws-cdk/cdk');
 
 export interface SqlServerProps {
-  instanceClass?: string;
-  engine?: string;
-  engineVersion?: string;
-  licenseModel?: string;
-  masterUsername: string;
-  masterPassword: string;
-  allocatedStorage?: number;
-  vpc: ec2.VpcNetworkRef;
+  readonly instanceClass?: string;
+  readonly engine?: string;
+  readonly engineVersion?: string;
+  readonly licenseModel?: string;
+  readonly masterUsername: string;
+  readonly masterPassword: string;
+  readonly allocatedStorage?: number;
+  readonly vpc: ec2.IVpcNetwork;
 }
 
 /**
@@ -20,22 +20,22 @@ export class SqlServer extends cdk.Construct implements ec2.IConnectable {
   private static readonly PORT = 1433;
   public readonly connections: ec2.Connections;
 
-  constructor(parent: cdk.Construct, name: string, props: SqlServerProps) {
-    super(parent, name);
+  constructor(scope: cdk.Construct, id: string, props: SqlServerProps) {
+    super(scope, id);
 
     const securityGroup = new ec2.SecurityGroup(this, 'SecurityGroup', {
       vpc: props.vpc,
       description: 'Database security group',
     });
 
-    const subnetGroup = new rds.cloudformation.DBSubnetGroupResource(this, 'Subnet', {
+    const subnetGroup = new rds.CfnDBSubnetGroup(this, 'Subnet', {
       subnetIds: props.vpc.privateSubnets.map(privateSubnet => privateSubnet.subnetId),
       dbSubnetGroupDescription: 'Database subnet group',
     });
 
     const allocatedStorage = props.allocatedStorage !== undefined ? props.allocatedStorage : 200;
 
-    new rds.cloudformation.DBInstanceResource(this, 'Resource', {
+    new rds.CfnDBInstance(this, 'Resource', {
       allocatedStorage: allocatedStorage.toString(),
       dbInstanceClass: props.instanceClass || 'db.m4.large',
       engine: props.engine || 'sqlserver-se',

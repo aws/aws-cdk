@@ -1,6 +1,6 @@
-import { expect, haveResource } from '@aws-cdk/assert';
+import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
 import { Protocol } from '@aws-cdk/aws-ec2';
-// import iam = require('@aws-cdk/aws-iam'); // importing this is throwing a really weird error in line 11?
+import iam = require('@aws-cdk/aws-iam');
 import cdk = require('@aws-cdk/cdk');
 import { Test } from 'nodeunit';
 import ecs = require('../../lib');
@@ -16,7 +16,6 @@ export = {
       expect(stack).to(haveResource("AWS::ECS::TaskDefinition", {
         Family: "Ec2TaskDef",
         ContainerDefinitions: [],
-        PlacementConstraints: [],
         Volumes: [],
         NetworkMode: ecs.NetworkMode.Bridge,
         RequiresCompatibilities: ["EC2"]
@@ -48,7 +47,7 @@ export = {
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
 
       const container = taskDefinition.addContainer("web", {
-        image: ecs.ContainerImage.fromDockerHub("amazon/amazon-ecs-sample"),
+        image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
         memoryLimitMiB: 512 // add validation?
       });
 
@@ -71,14 +70,6 @@ export = {
           Memory: 512,
           Image: "amazon/amazon-ecs-sample",
           Links: [],
-          LinuxParameters: {
-            Capabilities: {
-              Add: [],
-              Drop: []
-            },
-            Devices: [],
-            Tmpfs: []
-          },
           MountPoints: [],
           Name: "web",
           PortMappings: [{
@@ -104,7 +95,7 @@ export = {
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
 
       const container = taskDefinition.addContainer("web", {
-        image: ecs.ContainerImage.fromDockerHub("amazon/amazon-ecs-sample"),
+        image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
         memoryLimitMiB: 512
       });
 
@@ -116,7 +107,7 @@ export = {
       });
 
       // THEN
-      expect(stack).to(haveResource("AWS::ECS::TaskDefinition", {
+      expect(stack).to(haveResourceLike("AWS::ECS::TaskDefinition", {
         Family: "Ec2TaskDef",
         ContainerDefinitions: [{
           MountPoints: [
@@ -154,7 +145,7 @@ export = {
       });
 
       const container = taskDefinition.addContainer("web", {
-        image: ecs.ContainerImage.fromDockerHub("amazon/amazon-ecs-sample"),
+        image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
         memoryLimitMiB: 512
       });
 
@@ -166,7 +157,7 @@ export = {
       });
 
       // THEN
-      expect(stack).to(haveResource("AWS::ECS::TaskDefinition", {
+      expect(stack).to(haveResourceLike("AWS::ECS::TaskDefinition", {
         Family: "Ec2TaskDef",
         ContainerDefinitions: [{
           MountPoints: [
@@ -192,15 +183,14 @@ export = {
       // GIVEN
       const stack = new cdk.Stack();
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', {
-        placementConstraints: [{
-          expression: "attribute:ecs.instance-type =~ t2.*",
-          type: ecs.PlacementConstraintType.MemberOf
-        }]
+        placementConstraints: [
+          ecs.PlacementConstraint.memberOf("attribute:ecs.instance-type =~ t2.*"),
+        ]
       });
 
       taskDefinition.addContainer("web", {
         memoryLimitMiB: 1024,
-        image: ecs.ContainerImage.fromDockerHub("amazon/amazon-ecs-sample")
+        image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample")
       });
 
       // THEN
@@ -216,45 +206,62 @@ export = {
       test.done();
     },
 
-    // "correctly sets taskRole"(test: Test) {
-    //   // GIVEN
-    //   const stack = new cdk.Stack();
-    //   const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', {
-    //     taskRole: new iam.Role(this, 'TaskRole', {
-    //       assumedBy: new iam.ServicePrincipal('ecs-tasks.amazonaws.com'),
-    //     })
-    //   });
+    "correctly sets taskRole"(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', {
+        taskRole: new iam.Role(stack, 'TaskRole', {
+          assumedBy: new iam.ServicePrincipal('ecs-tasks.amazonaws.com'),
+        })
+      });
 
-    //   taskDefinition.addContainer("web", {
-    //     image: ecs.ContainerImage.fromDockerHub("amazon/amazon-ecs-sample"),
-    //     memoryLimitMiB: 512
-    //   });
+      taskDefinition.addContainer("web", {
+        image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
+        memoryLimitMiB: 512
+      });
 
-    //   // THEN
-    //   expect(stack).to(haveResource("AWS::ECS::TaskDefinition", {
-    //     TaskRole: "roleArn"
-    //   }));
+      // THEN
+      expect(stack).to(haveResourceLike("AWS::ECS::TaskDefinition", {
+        TaskRoleArn: stack.node.resolve(taskDefinition.taskRole.roleArn)
+      }));
 
-    //   test.done();
-    // },
+      test.done();
+    },
 
-    // "correctly sets taskExecutionRole if containerDef uses ECR"(test: Test) {
-    //   // GIVEN
-    //   const stack = new cdk.Stack();
-    //   const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', {});
-    //   const container = taskDefinition.addContainer("web", {
-    //     image: ecs.ContainerImage.fromDockerHub("amazon/amazon-ecs-sample"),
-    //     memoryLimitMiB: 512 // add validation?
-    //   });
+    "correctly sets dockerVolumeConfiguration"(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const volume = {
+        name: "scratch",
+        dockerVolumeConfiguration: {
+          driver: "local",
+          scope: ecs.Scope.Task
+        }
+      };
 
-    //   container.useEcrImage();
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', {
+        volumes: [volume]
+      });
 
-    //   // THEN
-    //   expect(stack).to(haveResource("AWS::ECS::TaskDefinition", {
-    //     TaskExecutionRole: "roleArn"
-    //   }));
+      taskDefinition.addContainer("web", {
+        image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
+        memoryLimitMiB: 512
+      });
 
-    //   test.done();
-    // },
+      // THEN
+      expect(stack).to(haveResourceLike("AWS::ECS::TaskDefinition", {
+        Family: "Ec2TaskDef",
+        Volumes: [{
+          Name: "scratch",
+          DockerVolumeConfiguration: {
+            Driver: "local",
+            Scope: 'task'
+          }
+        }]
+      }));
+
+      test.done();
+    },
+
   }
 };

@@ -55,7 +55,7 @@ class StackMatchesTemplateAssertion extends Assertion<StackInspector> {
   private isDiffAcceptable(diff: cfnDiff.TemplateDiff): boolean {
     switch (this.matchStyle) {
     case MatchStyle.EXACT:
-      return diff.count === 0;
+      return diff.differenceCount === 0;
     case MatchStyle.NO_REPLACES:
       for (const key of Object.keys(diff.resources.changes)) {
         const change = diff.resources.changes[key]!;
@@ -66,8 +66,9 @@ class StackMatchesTemplateAssertion extends Assertion<StackInspector> {
     case MatchStyle.SUPERSET:
       for (const key of Object.keys(diff.resources.changes)) {
         const change = diff.resources.changes[key]!;
-        return change.changeImpact === cfnDiff.ResourceImpact.WILL_CREATE;
+        if (change.changeImpact !== cfnDiff.ResourceImpact.WILL_CREATE) { return false; }
       }
+      return true;
     }
     throw new Error(`Unsupported match style: ${this.matchStyle}`);
   }

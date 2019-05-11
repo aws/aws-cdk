@@ -1,10 +1,10 @@
 import cdk = require('@aws-cdk/cdk');
-import { TargetGroupRefProps } from './base-target-group';
+import { ITargetGroup, TargetGroupImportProps } from './base-target-group';
 
 /**
- * Base class for existing target groups
+ * Base internal class for existing target groups
  */
-export class BaseImportedTargetGroup extends cdk.Construct {
+export abstract class ImportedTargetGroupBase extends cdk.Construct implements ITargetGroup {
   /**
    * ARN of the target group
    */
@@ -15,10 +15,19 @@ export class BaseImportedTargetGroup extends cdk.Construct {
    */
   public readonly loadBalancerArns: string;
 
-  constructor(parent: cdk.Construct, id: string, props: TargetGroupRefProps) {
-    super(parent, id);
+  /**
+   * Return an object to depend on the listeners added to this target group
+   */
+  public readonly loadBalancerAttached: cdk.IDependable = new cdk.ConcreteDependable();
+
+  constructor(scope: cdk.Construct, id: string, private readonly props: TargetGroupImportProps) {
+    super(scope, id);
 
     this.targetGroupArn = props.targetGroupArn;
-    this.loadBalancerArns = props.loadBalancerArns || new cdk.AwsNoValue().toString();
+    this.loadBalancerArns = props.loadBalancerArns || cdk.Aws.noValue;
+  }
+
+  public export() {
+    return this.props;
   }
 }

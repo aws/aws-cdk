@@ -14,9 +14,5 @@
     "noFallthroughCasesInSwitch": true,
     "inlineSourceMap": true,
     "inlineSources": true
-  },
-  "exclude": [
-    "test/enrichments/**",
-    "module-template/**"
-  ]
+  }
 }

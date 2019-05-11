@@ -1,6 +1,7 @@
 import cdk = require('@aws-cdk/cdk');
 import cxapi = require('@aws-cdk/cx-api');
-import { HostedZoneRef, HostedZoneRefProps } from './hosted-zone-ref';
+import { HostedZone } from './hosted-zone';
+import { HostedZoneAttributes, IHostedZone } from './hosted-zone-ref';
 
 /**
  * Zone properties for looking up the Hosted Zone
@@ -9,17 +10,17 @@ export interface HostedZoneProviderProps {
   /**
    * The zone domain e.g. example.com
    */
-  domainName: string;
+  readonly domainName: string;
 
   /**
    * Is this a private zone
    */
-  privateZone?: boolean;
+  readonly privateZone?: boolean;
 
   /**
    * If this is a private zone which VPC is assocaitated
    */
-  vpcId?: string;
+  readonly vpcId?: string;
 }
 
 const DEFAULT_HOSTED_ZONE: HostedZoneContextResponse = {
@@ -37,15 +38,15 @@ export class HostedZoneProvider {
   }
 
   /**
-   * This method calls `findHostedZone` and returns the imported `HostedZoneRef`
+   * This method calls `findHostedZone` and returns the imported hosted zone
    */
-  public findAndImport(parent: cdk.Construct, id: string): HostedZoneRef {
-    return HostedZoneRef.import(parent, id, this.findHostedZone());
+  public findAndImport(scope: cdk.Construct, id: string): IHostedZone {
+    return HostedZone.fromHostedZoneAttributes(scope, id, this.findHostedZone());
   }
   /**
    * Return the hosted zone meeting the filter
    */
-  public findHostedZone(): HostedZoneRefProps {
+  public findHostedZone(): HostedZoneAttributes {
     const zone = this.provider.getValue(DEFAULT_HOSTED_ZONE) as HostedZoneContextResponse;
     // CDK handles the '.' at the end, so remove it here
     if (zone.Name.endsWith('.')) {

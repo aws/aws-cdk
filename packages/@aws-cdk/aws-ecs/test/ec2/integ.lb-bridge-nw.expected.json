@@ -399,7 +399,17 @@
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": {
-                "Service": "ec2.amazonaws.com"
+                "Service": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "ec2.",
+                      {
+                        "Ref": "AWS::URLSuffix"
+                      }
+                    ]
+                  ]
+                }
               }
             }
           ],
@@ -481,8 +491,8 @@
         }
       },
       "DependsOn": [
-        "EcsClusterDefaultAutoScalingGroupInstanceRole3C026863",
-        "EcsClusterDefaultAutoScalingGroupInstanceRoleDefaultPolicy04DC6C80"
+        "EcsClusterDefaultAutoScalingGroupInstanceRoleDefaultPolicy04DC6C80",
+        "EcsClusterDefaultAutoScalingGroupInstanceRole3C026863"
       ]
     },
     "EcsClusterDefaultAutoScalingGroupASGC1A785DB": {
@@ -522,21 +532,6 @@
     "EcsClusterDefaultAutoScalingGroupDrainECSHookTopicC705BD25": {
       "Type": "AWS::SNS::Topic"
     },
-    "EcsClusterDefaultAutoScalingGroupDrainECSHookTopicFunctionSubscription4313BD38": {
-      "Type": "AWS::SNS::Subscription",
-      "Properties": {
-        "Endpoint": {
-          "Fn::GetAtt": [
-            "EcsClusterDefaultAutoScalingGroupDrainECSHookFunctionE17A5F5E",
-            "Arn"
-          ]
-        },
-        "Protocol": "lambda",
-        "TopicArn": {
-          "Ref": "EcsClusterDefaultAutoScalingGroupDrainECSHookTopicC705BD25"
-        }
-      }
-    },
     "EcsClusterDefaultAutoScalingGroupDrainECSHookFunctionServiceRole94543EDA": {
       "Type": "AWS::IAM::Role",
       "Properties": {
@@ -546,7 +541,17 @@
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": {
-                "Service": "lambda.amazonaws.com"
+                "Service": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "lambda.",
+                      {
+                        "Ref": "AWS::URLSuffix"
+                      }
+                    ]
+                  ]
+                }
               }
             }
           ],
@@ -629,19 +634,43 @@
             }
           }
         },
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-ecs-integ-ecs/EcsCluster/DefaultAutoScalingGroup"
+          }
+        ],
         "Timeout": 310
       },
       "DependsOn": [
-        "EcsClusterDefaultAutoScalingGroupDrainECSHookFunctionServiceRole94543EDA",
-        "EcsClusterDefaultAutoScalingGroupDrainECSHookFunctionServiceRoleDefaultPolicyA45BF396"
+        "EcsClusterDefaultAutoScalingGroupDrainECSHookFunctionServiceRoleDefaultPolicyA45BF396",
+        "EcsClusterDefaultAutoScalingGroupDrainECSHookFunctionServiceRole94543EDA"
       ]
+    },
+    "EcsClusterDefaultAutoScalingGroupDrainECSHookFunctionTopicSubscriptionDA5F8A10": {
+      "Type": "AWS::SNS::Subscription",
+      "Properties": {
+        "Protocol": "lambda",
+        "TopicArn": {
+          "Ref": "EcsClusterDefaultAutoScalingGroupDrainECSHookTopicC705BD25"
+        },
+        "Endpoint": {
+          "Fn::GetAtt": [
+            "EcsClusterDefaultAutoScalingGroupDrainECSHookFunctionE17A5F5E",
+            "Arn"
+          ]
+        }
+      }
     },
     "EcsClusterDefaultAutoScalingGroupDrainECSHookFunctionTopicE6B1EBA6": {
       "Type": "AWS::Lambda::Permission",
       "Properties": {
         "Action": "lambda:InvokeFunction",
         "FunctionName": {
-          "Ref": "EcsClusterDefaultAutoScalingGroupDrainECSHookFunctionE17A5F5E"
+          "Fn::GetAtt": [
+            "EcsClusterDefaultAutoScalingGroupDrainECSHookFunctionE17A5F5E",
+            "Arn"
+          ]
         },
         "Principal": "sns.amazonaws.com",
         "SourceArn": {
@@ -658,7 +687,17 @@
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": {
-                "Service": "autoscaling.amazonaws.com"
+                "Service": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "autoscaling.",
+                      {
+                        "Ref": "AWS::URLSuffix"
+                      }
+                    ]
+                  ]
+                }
               }
             }
           ],
@@ -707,7 +746,11 @@
             "Arn"
           ]
         }
-      }
+      },
+      "DependsOn": [
+        "EcsClusterDefaultAutoScalingGroupLifecycleHookDrainHookRoleDefaultPolicy75002F88",
+        "EcsClusterDefaultAutoScalingGroupLifecycleHookDrainHookRoleA38EC83B"
+      ]
     },
     "TaskDefTaskRole1EDB4A67": {
       "Type": "AWS::IAM::Role",
@@ -718,7 +761,17 @@
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": {
-                "Service": "ecs-tasks.amazonaws.com"
+                "Service": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "ecs-tasks.",
+                      {
+                        "Ref": "AWS::URLSuffix"
+                      }
+                    ]
+                  ]
+                }
               }
             }
           ],
@@ -734,14 +787,6 @@
             "Essential": true,
             "Image": "amazon/amazon-ecs-sample",
             "Links": [],
-            "LinuxParameters": {
-              "Capabilities": {
-                "Add": [],
-                "Drop": []
-              },
-              "Devices": [],
-              "Tmpfs": []
-            },
             "Memory": 256,
             "MountPoints": [],
             "Name": "web",
@@ -758,7 +803,6 @@
         ],
         "Family": "awsecsintegecsTaskDef8DD0C801",
         "NetworkMode": "bridge",
-        "PlacementConstraints": [],
         "RequiresCompatibilities": [
           "EC2"
         ],
@@ -795,11 +839,11 @@
             }
           }
         ],
-        "PlacementConstraints": [],
-        "PlacementStrategies": [],
-        "SchedulingStrategy": "REPLICA"
+        "SchedulingStrategy": "REPLICA",
+        "ServiceRegistries": []
       },
       "DependsOn": [
+        "LBPublicListenerECSGroupD6A32205",
         "LBPublicListener6E1F3D94"
       ]
     },
@@ -825,7 +869,11 @@
           }
         ],
         "Type": "application"
-      }
+      },
+      "DependsOn": [
+        "VpcPublicSubnet1DefaultRoute3DA9E72A",
+        "VpcPublicSubnet2DefaultRoute97F91067"
+      ]
     },
     "LBSecurityGroup8A41EA2B": {
       "Type": "AWS::EC2::SecurityGroup",
@@ -891,12 +939,12 @@
       "Properties": {
         "Port": 80,
         "Protocol": "HTTP",
-        "VpcId": {
-          "Ref": "Vpc8378EB38"
-        },
         "TargetGroupAttributes": [],
         "Targets": [],
-        "TargetType": "instance"
+        "TargetType": "instance",
+        "VpcId": {
+          "Ref": "Vpc8378EB38"
+        }
       }
     }
   },
@@ -907,9 +955,6 @@
           "LB8A12904C",
           "DNSName"
         ]
-      },
-      "Export": {
-        "Name": "aws-ecs-integ-ecs:LoadBalancerDNS"
       }
     }
   }

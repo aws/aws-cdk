@@ -1,7 +1,7 @@
 import { expect, haveResource } from '@aws-cdk/assert';
 import { Stack } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
-import { Certificate, CertificateRef } from '../lib';
+import { Certificate } from '../lib';
 
 export = {
   'apex domain selection by default'(test: Test) {
@@ -49,7 +49,7 @@ export = {
       domainName: 'hello.com',
     }).export();
 
-    CertificateRef.import(stack, 'Imported', refProps);
+    Certificate.fromCertificateArn(stack, 'Imported', refProps.certificateArn);
 
     test.done();
   }

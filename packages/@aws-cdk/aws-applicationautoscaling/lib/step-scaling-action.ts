@@ -1,7 +1,7 @@
 import cloudwatch = require('@aws-cdk/aws-cloudwatch');
 import cdk = require('@aws-cdk/cdk');
-import { cloudformation } from './applicationautoscaling.generated';
-import { ScalableTarget } from './scalable-target';
+import { CfnScalingPolicy } from './applicationautoscaling.generated';
+import { IScalableTarget } from './scalable-target';
 
 /**
  * Properties for a scaling policy
@@ -10,21 +10,21 @@ export interface StepScalingActionProps {
   /**
    * The scalable target
    */
-  scalingTarget: ScalableTarget;
+  readonly scalingTarget: IScalableTarget;
 
   /**
    * A name for the scaling policy
    *
    * @default Automatically generated name
    */
-  policyName?: string;
+  readonly policyName?: string;
 
   /**
    * How the adjustment numbers are interpreted
    *
    * @default ChangeInCapacity
    */
-  adjustmentType?: AdjustmentType;
+  readonly adjustmentType?: AdjustmentType;
 
   /**
    * Grace period after scaling activity.
@@ -38,7 +38,7 @@ export interface StepScalingActionProps {
    * @see https://docs.aws.amazon.com/autoscaling/application/APIReference/API_StepScalingPolicyConfiguration.html
    * @default No cooldown period
    */
-  cooldownSec?: number;
+  readonly cooldownSec?: number;
 
   /**
    * Minimum absolute number to adjust capacity with as result of percentage scaling.
@@ -48,14 +48,14 @@ export interface StepScalingActionProps {
    *
    * @default No minimum scaling effect
    */
-  minAdjustmentMagnitude?: number;
+  readonly minAdjustmentMagnitude?: number;
 
   /**
    * The aggregation type for the CloudWatch metrics.
    *
    * @default Average
    */
-  metricAggregationType?: MetricAggregationType;
+  readonly metricAggregationType?: MetricAggregationType;
 }
 
 /**
@@ -78,13 +78,13 @@ export class StepScalingAction extends cdk.Construct implements cloudwatch.IAlar
    */
   public readonly alarmActionArn: string;
 
-  private readonly adjustments = new Array<cloudformation.ScalingPolicyResource.StepAdjustmentProperty>();
+  private readonly adjustments = new Array<CfnScalingPolicy.StepAdjustmentProperty>();
 
-  constructor(parent: cdk.Construct, id: string, props: StepScalingActionProps) {
-    super(parent, id);
+  constructor(scope: cdk.Construct, id: string, props: StepScalingActionProps) {
+    super(scope, id);
 
-    const resource = new cloudformation.ScalingPolicyResource(this, 'Resource', {
-      policyName: props.policyName || this.uniqueId,
+    const resource = new CfnScalingPolicy(this, 'Resource', {
+      policyName: props.policyName || this.node.uniqueId,
       policyType: 'StepScaling',
       stepScalingPolicyConfiguration: {
         adjustmentType: props.adjustmentType,
@@ -92,7 +92,7 @@ export class StepScalingAction extends cdk.Construct implements cloudwatch.IAlar
         minAdjustmentMagnitude: props.minAdjustmentMagnitude,
         metricAggregationType: props.metricAggregationType,
         stepAdjustments: new cdk.Token(() => this.adjustments),
-      } as cloudformation.ScalingPolicyResource.StepScalingPolicyConfigurationProperty
+      } as CfnScalingPolicy.StepScalingPolicyConfigurationProperty
     });
 
     this.scalingPolicyArn = resource.scalingPolicyArn;
@@ -172,7 +172,7 @@ export interface AdjustmentTier {
    *
    * Can be positive or negative.
    */
-  adjustment: number;
+  readonly adjustment: number;
 
   /**
    * Lower bound where this scaling tier applies.
@@ -182,7 +182,7 @@ export interface AdjustmentTier {
    *
    * @default -Infinity if this is the first tier, otherwise the upperBound of the previous tier
    */
-  lowerBound?: number;
+  readonly lowerBound?: number;
 
   /**
    * Upper bound where this scaling tier applies
@@ -192,5 +192,5 @@ export interface AdjustmentTier {
    *
    * @default +Infinity
    */
-  upperBound?: number;
+  readonly upperBound?: number;
 }
