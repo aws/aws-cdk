@@ -392,16 +392,22 @@ export interface CommonProjectProps {
   readonly role?: iam.IRole;
 
   /**
-   * Encryption key to use to read and write artifacts
+   * Encryption key to use to read and write artifacts.
    * If not specified, a role will be created.
    */
   readonly encryptionKey?: kms.IEncryptionKey;
 
   /**
-   * Bucket to store cached source artifacts
-   * If not specified, source artifacts will not be cached.
+   * Bucket to store cached source artifacts.
+   * If cacheBucket is specified, cacheModes must not be specified
    */
   readonly cacheBucket?: s3.IBucket;
+
+  /**
+   * Local cache(s) to use.
+   * If cacheModes is specified, cacheBucket must not be specified
+   */
+  readonly cacheModes?: ProjectCacheModes[];
 
   /**
    * Subdirectory to store cached artifacts
@@ -613,6 +619,10 @@ export class Project extends ProjectBase {
       throw new Error('To use buildScriptAssetEntrypoint, supply buildScriptAsset as well.');
     }
 
+    if (props.cacheBucket && props.cacheModes) {
+      throw new Error('At most one of props.cacheBucket or props.cacheMode is allowed.');
+    }
+
     this.role = props.role || new iam.Role(this, 'Role', {
       assumedBy: new iam.ServicePrincipal('codebuild.amazonaws.com')
     });
@@ -627,6 +637,13 @@ export class Project extends ProjectBase {
       };
 
       props.cacheBucket.grantReadWrite(this.role);
+    }
+
+    if (props.cacheModes) {
+      cache = {
+        type: 'LOCAL',
+        modes: props.cacheModes,
+      };
     }
 
     this.buildImage = (props.environment && props.environment.buildImage) || LinuxBuildImage.STANDARD_1_0;

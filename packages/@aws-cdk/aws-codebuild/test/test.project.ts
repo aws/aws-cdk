@@ -1,8 +1,10 @@
 import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
 import assets = require('@aws-cdk/assets');
+import { Bucket } from '@aws-cdk/aws-s3';
 import cdk = require('@aws-cdk/cdk');
 import { Test } from 'nodeunit';
 import codebuild = require('../lib');
+import { ProjectCacheModes } from '../lib';
 
 // tslint:disable:object-literal-key-quotes
 
@@ -158,6 +160,73 @@ export = {
         Type: "NO_SOURCE"
       }
     }));
+
+    test.done();
+  },
+
+  'project with s3 cache bucket'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new codebuild.Project(stack, 'Project', {
+      source: new codebuild.CodePipelineSource(),
+      cacheBucket: new Bucket(stack, 'Bucket')
+    });
+
+    // THEN
+    expect(stack).to(haveResourceLike('AWS::CodeBuild::Project', {
+      Cache: {
+        Type: "S3"
+      }
+    }));
+
+    test.done();
+  },
+
+  'project with local cache modes'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new codebuild.Project(stack, 'Project', {
+      source: new codebuild.CodePipelineSource(),
+      cacheModes: [
+        ProjectCacheModes.LocalCustomCache,
+        ProjectCacheModes.LocalDockerLayerCache,
+        ProjectCacheModes.LocalSourceCache,
+      ]
+    });
+
+    // THEN
+    expect(stack).to(haveResourceLike('AWS::CodeBuild::Project', {
+      Cache: {
+        Modes: [
+          "LOCAL_CUSTOM_CACHE",
+          "LOCAL_DOCKER_LAYER_CACHE",
+          "LOCAL_SOURCE_CACHE"
+        ]
+      },
+    }));
+
+    test.done();
+  },
+
+  'project with both s3 cache mode and local cache mode is not allowed'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN / THEN
+    test.throws(() => {
+      new codebuild.Project(stack, 'Project', {
+        source: new codebuild.CodePipelineSource(),
+        cacheBucket: new Bucket(stack, 'Bucket'),
+        cacheModes: [
+          ProjectCacheModes.LocalCustomCache,
+        ]
+      });
+
+    }, /At most one of props.cacheBucket or props.cacheMode is allowed\./);
 
     test.done();
   },
