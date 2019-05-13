@@ -391,11 +391,15 @@ export = {
   },
 
   'number encoding': {
+    'basic integer encoding works'(test: Test) {
+      test.equal(16, extractTokenDouble(createTokenDouble(16)));
+      test.done();
+    },
+
     'arbitrary integers can be encoded, stringified, and recovered'(test: Test) {
       for (let i = 0; i < 100; i++) {
-
-        // We can encode all numbers up to 2^50-1
-        const x = Math.floor(Math.random() * (Math.pow(2, 50) - 1));
+        // We can encode all numbers up to 2^48-1
+        const x = Math.floor(Math.random() * (Math.pow(2, 48) - 1));
 
         const encoded = createTokenDouble(x);
         // Roundtrip through JSONification
