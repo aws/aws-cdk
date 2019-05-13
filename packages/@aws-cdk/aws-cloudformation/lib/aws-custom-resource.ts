@@ -3,7 +3,7 @@ import lambda = require('@aws-cdk/aws-lambda');
 import cdk = require('@aws-cdk/cdk');
 import metadata = require('aws-sdk/apis/metadata.json');
 import path = require('path');
-import { CustomResource } from './custom-resource';
+import { CustomResource, CustomResourceProvider } from './custom-resource';
 
 /**
  * AWS SDK service metadata.
@@ -137,7 +137,7 @@ export class AwsCustomResource extends cdk.Construct {
 
     this.customResource = new CustomResource(this, 'Resource', {
       resourceType: 'Custom::AWS',
-      lambdaProvider: provider,
+      provider: CustomResourceProvider.lambda(provider),
       properties: {
         create: props.onCreate || props.onUpdate,
         update: props.onUpdate,
