@@ -236,11 +236,21 @@ export function unresolved(obj: any): boolean {
 const DOUBLE_TOKEN_MARKER_BITS = 0xFBFF << 16;
 
 /**
- * Return a special Double value that encodes the given integer
+ * Highest encodable number
+ */
+const MAX_ENCODABLE_INTEGER = Math.pow(2, 50) - 1;
+
+/**
+ * Return a special Double value that encodes the given nonnegative integer
+ *
+ * We use this to encode Token ordinals.
  */
 export function createTokenDouble(x: number) {
   if (Math.floor(x) !== x || x < 0) {
     throw new Error('Can only encode positive integers');
+  }
+  if (x > MAX_ENCODABLE_INTEGER) {
+    throw new Error(`Got an index too large to encode: ${x}`);
   }
 
   const buf = new ArrayBuffer(8);

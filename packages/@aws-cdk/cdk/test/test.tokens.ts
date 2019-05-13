@@ -1,5 +1,5 @@
 import { Test } from 'nodeunit';
-import { App as Root, Fn, Token, Stack } from '../lib';
+import { App as Root, Fn, Stack, Token } from '../lib';
 import { createTokenDouble, extractTokenDouble } from '../lib/encoding';
 import { TokenMap } from '../lib/token-map';
 import { evaluateCFN } from './evaluate-cfn';
