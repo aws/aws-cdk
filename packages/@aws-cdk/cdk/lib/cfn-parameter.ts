@@ -86,6 +86,11 @@ export class CfnParameter extends CfnRefElement {
    */
   public stringListValue: string[];
 
+  /**
+   * Indicates if this parameter has "NoEcho" set.
+   */
+  public readonly noEcho: boolean;
+
   private properties: CfnParameterProps;
 
   /**
@@ -93,7 +98,7 @@ export class CfnParameter extends CfnRefElement {
    * Note that the name (logical ID) of the parameter will derive from it's `coname` and location
    * within the stack. Therefore, it is recommended that parameters are defined at the stack level.
    *
-   * @param parent The parent construct.
+   * @param scope The parent construct.
    * @param props The parameter properties.
    */
   constructor(scope: Construct, id: string, props: CfnParameterProps) {
@@ -102,6 +107,7 @@ export class CfnParameter extends CfnRefElement {
     this.value = this.referenceToken;
     this.stringValue = this.value.toString();
     this.stringListValue = this.value.toList();
+    this.noEcho = props.noEcho || false;
   }
 
   /**

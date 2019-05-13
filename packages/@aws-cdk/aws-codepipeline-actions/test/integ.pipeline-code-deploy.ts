@@ -13,7 +13,7 @@ const application = new codedeploy.ServerApplication(stack, 'CodeDeployApplicati
 });
 
 const deploymentConfig = new codedeploy.ServerDeploymentConfig(stack, 'CustomDeployConfig', {
-  minHealthyHostCount: 0,
+  minimumHealthyHosts: codedeploy.MinimumHealthyHosts.count(0),
 });
 
 const deploymentGroup = new codedeploy.ServerDeploymentGroup(stack, 'CodeDeployGroup', {
@@ -32,10 +32,11 @@ const pipeline = new codepipeline.Pipeline(stack, 'Pipeline', {
 });
 
 const sourceStage = pipeline.addStage({ name: 'Source' });
+const sourceOutput = new codepipeline.Artifact('SourceOutput');
 const sourceAction = new cpactions.S3SourceAction({
   actionName: 'S3Source',
   bucketKey: 'application.zip',
-  outputArtifactName: 'SourceOutput',
+  output: sourceOutput,
   bucket,
 });
 sourceStage.addAction(sourceAction);
@@ -44,7 +45,7 @@ const deployStage = pipeline.addStage({ name: 'Deploy' });
 deployStage.addAction(new cpactions.CodeDeployServerDeployAction({
   actionName: 'CodeDeploy',
   deploymentGroup,
-  inputArtifact: sourceAction.outputArtifact,
+  input: sourceOutput,
 }));
 
 app.run();

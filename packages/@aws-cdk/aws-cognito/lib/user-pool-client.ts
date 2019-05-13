@@ -1,4 +1,4 @@
-import cdk = require('@aws-cdk/cdk');
+import { Construct, Resource } from '@aws-cdk/cdk';
 import { CfnUserPoolClient } from './cognito.generated';
 import { IUserPool } from './user-pool';
 
@@ -50,18 +50,34 @@ export interface UserPoolClientProps {
 /**
  * Define a UserPool App Client
  */
-export class UserPoolClient extends cdk.Construct {
-  public readonly clientId: string;
+export class UserPoolClient extends Resource {
+  /**
+   * @attribute
+   */
+  public readonly userPoolClientId: string;
 
-  constructor(scope: cdk.Construct, id: string, props: UserPoolClientProps) {
+  /**
+   * @attribute
+   */
+  public readonly userPoolClientName: string;
+
+  /**
+   * @attribute
+   */
+  public readonly userPoolClientClientSecret: string;
+
+  constructor(scope: Construct, id: string, props: UserPoolClientProps) {
     super(scope, id);
 
-    const userPoolClient = new CfnUserPoolClient(this, 'Resource', {
+    const resource = new CfnUserPoolClient(this, 'Resource', {
       clientName: props.clientName,
       generateSecret: props.generateSecret,
       userPoolId: props.userPool.userPoolId,
       explicitAuthFlows: props.enabledAuthFlows
     });
-    this.clientId = userPoolClient.userPoolClientId;
+
+    this.userPoolClientId = resource.userPoolClientId;
+    this.userPoolClientClientSecret = resource.userPoolClientClientSecret;
+    this.userPoolClientName = resource.userPoolClientName;
   }
 }

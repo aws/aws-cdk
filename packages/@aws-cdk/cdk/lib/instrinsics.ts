@@ -18,7 +18,7 @@ export function minimalCloudFormationJoin(delimiter: string, values: any[]): any
   return values;
 
   function isPlainString(obj: any): boolean {
-    return typeof obj === 'string' && !unresolved(obj);
+    return typeof obj === 'string' && !require('./token').Token.isToken(obj);
   }
 
   function isSplicableFnJoinInstrinsic(obj: any): boolean {
@@ -54,5 +54,3 @@ export function isNameOfCloudFormationIntrinsic(name: string): boolean {
 export function canEvaluateToList(x: any) {
   return isIntrinsic(x) && ['Ref', 'Fn::GetAtt', 'Fn::GetAZs', 'Fn::Split', 'Fn::FindInMap', 'Fn::ImportValue'].includes(Object.keys(x)[0]);
 }
-
-import { unresolved } from "./unresolved";

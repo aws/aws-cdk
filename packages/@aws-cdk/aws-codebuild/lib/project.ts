@@ -7,7 +7,7 @@ import events = require('@aws-cdk/aws-events');
 import iam = require('@aws-cdk/aws-iam');
 import kms = require('@aws-cdk/aws-kms');
 import s3 = require('@aws-cdk/aws-s3');
-import cdk = require('@aws-cdk/cdk');
+import { Aws, CfnOutput, Construct, Fn, IResource, Resource, Token } from '@aws-cdk/cdk';
 import { BuildArtifacts, CodePipelineBuildArtifacts, NoBuildArtifacts } from './artifacts';
 import { CfnProject } from './codebuild.generated';
 import { BuildSource, NoSource, SourceType } from './source';
@@ -16,11 +16,17 @@ const CODEPIPELINE_TYPE = 'CODEPIPELINE';
 const S3_BUCKET_ENV = 'SCRIPT_S3_BUCKET';
 const S3_KEY_ENV = 'SCRIPT_S3_KEY';
 
-export interface IProject extends cdk.IConstruct, events.IEventRuleTarget {
-  /** The ARN of this Project. */
+export interface IProject extends IResource, iam.IGrantable {
+  /**
+   * The ARN of this Project.
+   * @attribute
+   */
   readonly projectArn: string;
 
-  /** The human-visible name of this Project. */
+  /**
+   * The human-visible name of this Project.
+   * @attribute
+   */
   readonly projectName: string;
 
   /** The IAM service Role of this Project. Undefined for imported Projects. */
@@ -78,7 +84,7 @@ export interface IProject extends cdk.IConstruct, events.IEventRuleTarget {
    * @param metricName The name of the metric
    * @param props Customization properties
    */
-  metric(metricName: string, props: cloudwatch.MetricCustomization): cloudwatch.Metric;
+  metric(metricName: string, props: cloudwatch.MetricOptions): cloudwatch.Metric;
 
   /**
    * Measures the number of builds triggered.
@@ -89,7 +95,7 @@ export interface IProject extends cdk.IConstruct, events.IEventRuleTarget {
    *
    * @default sum over 5 minutes
    */
-  metricBuilds(props?: cloudwatch.MetricCustomization): cloudwatch.Metric;
+  metricBuilds(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
 
   /**
    * Measures the duration of all builds over time.
@@ -100,7 +106,7 @@ export interface IProject extends cdk.IConstruct, events.IEventRuleTarget {
    *
    * @default average over 5 minutes
    */
-  metricDuration(props?: cloudwatch.MetricCustomization): cloudwatch.Metric;
+  metricDuration(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
 
   /**
    * Measures the number of successful builds.
@@ -111,7 +117,7 @@ export interface IProject extends cdk.IConstruct, events.IEventRuleTarget {
    *
    * @default sum over 5 minutes
    */
-  metricSucceededBuilds(props?: cloudwatch.MetricCustomization): cloudwatch.Metric;
+  metricSucceededBuilds(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
 
   /**
    * Measures the number of builds that failed because of client error or
@@ -123,12 +129,12 @@ export interface IProject extends cdk.IConstruct, events.IEventRuleTarget {
    *
    * @default sum over 5 minutes
    */
-  metricFailedBuilds(props?: cloudwatch.MetricCustomization): cloudwatch.Metric;
+  metricFailedBuilds(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
 
   /**
    * Export this Project. Allows referencing this Project in a different CDK Stack.
    */
-  export(): ProjectImportProps;
+  export(): ProjectAttributes;
 }
 
 /**
@@ -137,7 +143,7 @@ export interface IProject extends cdk.IConstruct, events.IEventRuleTarget {
  * @see Project.import
  * @see Project.export
  */
-export interface ProjectImportProps {
+export interface ProjectAttributes {
   /**
    * The human-readable name of the CodeBuild Project we're referencing.
    * The Project must be in the same account and region as the root Stack.
@@ -155,20 +161,19 @@ export interface ProjectImportProps {
  * (or one defined in a different CDK Stack),
  * use the {@link import} method.
  */
-export abstract class ProjectBase extends cdk.Construct implements IProject {
+abstract class ProjectBase extends Resource implements IProject {
+  public abstract readonly grantPrincipal: iam.IPrincipal;
+
   /** The ARN of this Project. */
   public abstract readonly projectArn: string;
 
   /** The human-visible name of this Project. */
   public abstract readonly projectName: string;
 
-  /** The IAM service Role of this Project. Undefined for imported Projects. */
+  /** The IAM service Role of this Project. */
   public abstract readonly role?: iam.IRole;
 
-  /** A role used by CloudWatch events to trigger a build */
-  private eventsRole?: iam.Role;
-
-  public abstract export(): ProjectImportProps;
+  public abstract export(): ProjectAttributes;
 
   /**
    * Defines a CloudWatch event rule triggered when the build project state
@@ -272,7 +277,7 @@ export abstract class ProjectBase extends cdk.Construct implements IProject {
    * @param metricName The name of the metric
    * @param props Customization properties
    */
-  public metric(metricName: string, props: cloudwatch.MetricCustomization) {
+  public metric(metricName: string, props: cloudwatch.MetricOptions) {
     return new cloudwatch.Metric({
       namespace: 'AWS/CodeBuild',
       metricName,
@@ -290,7 +295,7 @@ export abstract class ProjectBase extends cdk.Construct implements IProject {
    *
    * @default sum over 5 minutes
    */
-  public metricBuilds(props?: cloudwatch.MetricCustomization) {
+  public metricBuilds(props?: cloudwatch.MetricOptions) {
     return this.metric('Builds', {
       statistic: 'sum',
       ...props,
@@ -306,7 +311,7 @@ export abstract class ProjectBase extends cdk.Construct implements IProject {
    *
    * @default average over 5 minutes
    */
-  public metricDuration(props?: cloudwatch.MetricCustomization) {
+  public metricDuration(props?: cloudwatch.MetricOptions) {
     return this.metric('Duration', {
       statistic: 'avg',
       ...props
@@ -322,7 +327,7 @@ export abstract class ProjectBase extends cdk.Construct implements IProject {
    *
    * @default sum over 5 minutes
    */
-  public metricSucceededBuilds(props?: cloudwatch.MetricCustomization) {
+  public metricSucceededBuilds(props?: cloudwatch.MetricOptions) {
     return this.metric('SucceededBuilds', {
       statistic: 'sum',
       ...props,
@@ -339,54 +344,11 @@ export abstract class ProjectBase extends cdk.Construct implements IProject {
    *
    * @default sum over 5 minutes
    */
-  public metricFailedBuilds(props?: cloudwatch.MetricCustomization) {
+  public metricFailedBuilds(props?: cloudwatch.MetricOptions) {
     return this.metric('FailedBuilds', {
       statistic: 'sum',
       ...props,
     });
-  }
-
-  /**
-   * Allows using build projects as event rule targets.
-   */
-  public asEventRuleTarget(_ruleArn: string, _ruleId: string): events.EventRuleTargetProps {
-    if (!this.eventsRole) {
-      this.eventsRole = new iam.Role(this, 'EventsRole', {
-        assumedBy: new iam.ServicePrincipal('events.amazonaws.com')
-      });
-
-      this.eventsRole.addToPolicy(new iam.PolicyStatement()
-        .addAction('codebuild:StartBuild')
-        .addResource(this.projectArn));
-    }
-
-    return {
-      id: this.node.id,
-      arn: this.projectArn,
-      roleArn: this.eventsRole.roleArn,
-    };
-  }
-}
-
-class ImportedProject extends ProjectBase {
-  public readonly projectArn: string;
-  public readonly projectName: string;
-  public readonly role?: iam.Role = undefined;
-
-  constructor(scope: cdk.Construct, id: string, private readonly props: ProjectImportProps) {
-    super(scope, id);
-
-    this.projectArn = this.node.stack.formatArn({
-      service: 'codebuild',
-      resource: 'project',
-      resourceName: props.projectName,
-    });
-
-    this.projectName = props.projectName;
-  }
-
-  public export() {
-    return this.props;
   }
 }
 
@@ -553,6 +515,29 @@ export interface ProjectProps extends CommonProjectProps {
  * A representation of a CodeBuild Project.
  */
 export class Project extends ProjectBase {
+
+  public static fromProjectArn(scope: Construct, id: string, projectArn: string): IProject {
+    class Import extends ProjectBase {
+      public readonly grantPrincipal: iam.IPrincipal;
+      public readonly projectArn = projectArn;
+      public readonly projectName = scope.node.stack.parseArn(projectArn).resourceName!;
+      public readonly role?: iam.Role = undefined;
+
+      constructor(s: Construct, i: string) {
+        super(s, i);
+        this.grantPrincipal = new iam.ImportedResourcePrincipal({ resource: this });
+      }
+
+      public export(): ProjectAttributes {
+        return {
+          projectName: this.projectName
+        };
+      }
+    }
+
+    return new Import(scope, id);
+  }
+
   /**
    * Import a Project defined either outside the CDK,
    * or in a different CDK Stack
@@ -563,14 +548,42 @@ export class Project extends ProjectBase {
    *   has permissions to access the S3 Bucket of that Pipeline -
    *   otherwise, builds in that Pipeline will always fail.
    *
-   * @param parent the parent Construct for this Construct
-   * @param name the logical name of this Construct
-   * @param props the properties of the referenced Project
+   * @param scope the parent Construct for this Construct
+   * @param id the logical name of this Construct
+   * @param projectName the name of the project to import
    * @returns a reference to the existing Project
    */
-  public static import(scope: cdk.Construct, id: string, props: ProjectImportProps): IProject {
-    return new ImportedProject(scope, id, props);
+  public static fromProjectName(scope: Construct, id: string, projectName: string): IProject {
+    class Import extends ProjectBase {
+      public readonly grantPrincipal: iam.IPrincipal;
+      public readonly projectArn: string;
+      public readonly projectName: string;
+      public readonly role?: iam.Role = undefined;
+
+      constructor(s: Construct, i: string) {
+        super(s, i);
+
+        this.projectArn = this.node.stack.formatArn({
+          service: 'codebuild',
+          resource: 'project',
+          resourceName: projectName,
+        });
+
+        this.grantPrincipal = new iam.ImportedResourcePrincipal({ resource: this });
+        this.projectName = projectName;
+      }
+
+      public export(): ProjectAttributes {
+        return {
+          projectName
+        };
+      }
+    }
+
+    return new Import(scope, id);
   }
+
+  public readonly grantPrincipal: iam.IPrincipal;
 
   /**
    * The IAM role for this project.
@@ -593,7 +606,7 @@ export class Project extends ProjectBase {
   private readonly _secondaryArtifacts: BuildArtifacts[];
   private _securityGroups: ec2.ISecurityGroup[] = [];
 
-  constructor(scope: cdk.Construct, id: string, props: ProjectProps) {
+  constructor(scope: Construct, id: string, props: ProjectProps) {
     super(scope, id);
 
     if (props.buildScriptAssetEntrypoint && !props.buildScriptAsset) {
@@ -603,19 +616,20 @@ export class Project extends ProjectBase {
     this.role = props.role || new iam.Role(this, 'Role', {
       assumedBy: new iam.ServicePrincipal('codebuild.amazonaws.com')
     });
+    this.grantPrincipal = this.role;
 
     let cache: CfnProject.ProjectCacheProperty | undefined;
     if (props.cacheBucket) {
-      const cacheDir = props.cacheDir != null ? props.cacheDir : cdk.Aws.noValue;
+      const cacheDir = props.cacheDir != null ? props.cacheDir : Aws.noValue;
       cache = {
         type: 'S3',
-        location: cdk.Fn.join('/', [props.cacheBucket.bucketName, cacheDir]),
+        location: Fn.join('/', [props.cacheBucket.bucketName, cacheDir]),
       };
 
       props.cacheBucket.grantReadWrite(this.role);
     }
 
-    this.buildImage = (props.environment && props.environment.buildImage) || LinuxBuildImage.UBUNTU_14_04_BASE;
+    this.buildImage = (props.environment && props.environment.buildImage) || LinuxBuildImage.UBUNTU_18_04_STANDARD_1_0;
 
     // let source "bind" to the project. this usually involves granting permissions
     // for the code build role to interact with the source.
@@ -637,9 +651,12 @@ export class Project extends ProjectBase {
     }
 
     // Render the source and add in the buildspec
-
     const renderSource = () => {
-      const sourceJson = this.source.toSourceJSON();
+      if (props.badge && !this.source.badgeSupported) {
+        throw new Error(`Badge is not supported for source type ${this.source.type}`);
+      }
+
+      const sourceJson = this.source._toSourceJSON();
       if (typeof buildSpec === 'string') {
         return {
           ...sourceJson,
@@ -682,9 +699,9 @@ export class Project extends ProjectBase {
       cache,
       name: props.projectName,
       timeoutInMinutes: props.timeout,
-      secondarySources: new cdk.Token(() => this.renderSecondarySources()),
-      secondaryArtifacts: new cdk.Token(() => this.renderSecondaryArtifacts()),
-      triggers: this.source.buildTriggers(),
+      secondarySources: new Token(() => this.renderSecondarySources()),
+      secondaryArtifacts: new Token(() => this.renderSecondaryArtifacts()),
+      triggers: this.source._buildTriggers(),
       vpcConfig: this.configureVpc(props),
     });
 
@@ -701,9 +718,9 @@ export class Project extends ProjectBase {
   /**
    * Export this Project. Allows referencing this Project in a different CDK Stack.
    */
-  public export(): ProjectImportProps {
+  public export(): ProjectAttributes {
     return {
-      projectName: new cdk.CfnOutput(this, 'ProjectName', { value: this.projectName }).makeImportValue().toString(),
+      projectName: new CfnOutput(this, 'ProjectName', { value: this.projectName }).makeImportValue().toString(),
     };
   }
 
@@ -767,11 +784,11 @@ export class Project extends ProjectBase {
     if (this.source.type === SourceType.CodePipeline) {
       if (this._secondarySources.length > 0) {
         ret.push('A Project with a CodePipeline Source cannot have secondary sources. ' +
-          "Use the CodeBuild Pipeline Actions' `additionalInputArtifacts` property instead");
+          "Use the CodeBuild Pipeline Actions' `extraInputs` property instead");
       }
       if (this._secondaryArtifacts.length > 0) {
         ret.push('A Project with a CodePipeline Source cannot have secondary artifacts. ' +
-          "Use the CodeBuild Pipeline Actions' `additionalOutputArtifactNames` property instead");
+          "Use the CodeBuild Pipeline Actions' `extraOutputs` property instead");
       }
     }
     return ret;
@@ -836,7 +853,7 @@ export class Project extends ProjectBase {
   private renderSecondarySources(): CfnProject.SourceProperty[] | undefined {
     return this._secondarySources.length === 0
       ? undefined
-      : this._secondarySources.map((secondarySource) => secondarySource.toSourceJSON());
+      : this._secondarySources.map((secondarySource) => secondarySource._toSourceJSON());
   }
 
   private renderSecondaryArtifacts(): CfnProject.ArtifactsProperty[] | undefined {
@@ -872,9 +889,6 @@ export class Project extends ProjectBase {
       });
       this._securityGroups = [securityGroup];
     }
-    const subnetSelection: ec2.SubnetSelection = props.subnetSelection ? props.subnetSelection : {
-      subnetType: ec2.SubnetType.Private
-    };
     this.addToRoleInlinePolicy(new iam.PolicyStatement()
       .addAllResources()
       .addActions(
@@ -887,17 +901,17 @@ export class Project extends ProjectBase {
         'ec2:DescribeVpcs'
       ));
     this.addToRolePolicy(new iam.PolicyStatement()
-      .addResource(`arn:aws:ec2:${cdk.Aws.region}:${cdk.Aws.accountId}:network-interface/*`)
+      .addResource(`arn:aws:ec2:${Aws.region}:${Aws.accountId}:network-interface/*`)
       .addCondition('StringEquals', {
-        "ec2:Subnet": [
-          `arn:aws:ec2:${cdk.Aws.region}:${cdk.Aws.accountId}:subnet/[[subnets]]`
-        ],
+        "ec2:Subnet": props.vpc
+          .selectSubnets(props.subnetSelection).subnetIds
+          .map(si => `arn:aws:ec2:${Aws.region}:${Aws.accountId}:subnet/${si}`),
         "ec2:AuthorizedService": "codebuild.amazonaws.com"
       })
       .addAction('ec2:CreateNetworkInterfacePermission'));
     return {
       vpcId: props.vpc.vpcId,
-      subnets: props.vpc.subnetIds(subnetSelection).map(s => s),
+      subnets: props.vpc.selectSubnets(props.subnetSelection).subnetIds,
       securityGroupIds: this._securityGroups.map(s => s.securityGroupId)
     };
   }
@@ -906,7 +920,7 @@ export class Project extends ProjectBase {
     if (props.artifacts) {
       return props.artifacts;
     }
-    if (this.source.toSourceJSON().type === CODEPIPELINE_TYPE) {
+    if (this.source._toSourceJSON().type === CODEPIPELINE_TYPE) {
       return new CodePipelineBuildArtifacts();
     } else {
       return new NoBuildArtifacts();
@@ -914,7 +928,7 @@ export class Project extends ProjectBase {
   }
 
   private validateCodePipelineSettings(artifacts: BuildArtifacts) {
-    const sourceType = this.source.toSourceJSON().type;
+    const sourceType = this.source._toSourceJSON().type;
     const artifactsType = artifacts.toArtifactsJSON().type;
 
     if ((sourceType === CODEPIPELINE_TYPE || artifactsType === CODEPIPELINE_TYPE) &&
@@ -937,7 +951,7 @@ export interface BuildEnvironment {
   /**
    * The image used for the builds.
    *
-   * @default LinuxBuildImage.UBUNTU_14_04_BASE
+   * @default LinuxBuildImage.UBUNTU_18_04_STANDARD_1_0
    */
   readonly buildImage?: IBuildImage;
 
@@ -1019,23 +1033,31 @@ export interface IBuildImage {
  * @see https://docs.aws.amazon.com/codebuild/latest/userguide/build-env-ref-available.html
  */
 export class LinuxBuildImage implements IBuildImage {
+  public static readonly UBUNTU_18_04_STANDARD_1_0 = new LinuxBuildImage('aws/codebuild/standard:1.0');
   public static readonly UBUNTU_14_04_BASE = new LinuxBuildImage('aws/codebuild/ubuntu-base:14.04');
   public static readonly UBUNTU_14_04_ANDROID_JAVA8_24_4_1 = new LinuxBuildImage('aws/codebuild/android-java-8:24.4.1');
   public static readonly UBUNTU_14_04_ANDROID_JAVA8_26_1_1 = new LinuxBuildImage('aws/codebuild/android-java-8:26.1.1');
   public static readonly UBUNTU_14_04_DOCKER_17_09_0 = new LinuxBuildImage('aws/codebuild/docker:17.09.0');
+  public static readonly UBUNTU_14_04_DOCKER_18_09_0 = new LinuxBuildImage('aws/codebuild/docker:18.09.0');
   public static readonly UBUNTU_14_04_GOLANG_1_10 = new LinuxBuildImage('aws/codebuild/golang:1.10');
+  public static readonly UBUNTU_14_04_GOLANG_1_11 = new LinuxBuildImage('aws/codebuild/golang:1.11');
   public static readonly UBUNTU_14_04_OPEN_JDK_8 = new LinuxBuildImage('aws/codebuild/java:openjdk-8');
   public static readonly UBUNTU_14_04_OPEN_JDK_9 = new LinuxBuildImage('aws/codebuild/java:openjdk-9');
+  public static readonly UBUNTU_14_04_OPEN_JDK_11 = new LinuxBuildImage('aws/codebuild/java:openjdk-11');
+  public static readonly UBUNTU_14_04_NODEJS_10_14_1 = new LinuxBuildImage('aws/codebuild/nodejs:10.14.1');
   public static readonly UBUNTU_14_04_NODEJS_10_1_0 = new LinuxBuildImage('aws/codebuild/nodejs:10.1.0');
   public static readonly UBUNTU_14_04_NODEJS_8_11_0 = new LinuxBuildImage('aws/codebuild/nodejs:8.11.0');
   public static readonly UBUNTU_14_04_NODEJS_6_3_1 = new LinuxBuildImage('aws/codebuild/nodejs:6.3.1');
   public static readonly UBUNTU_14_04_PHP_5_6 = new LinuxBuildImage('aws/codebuild/php:5.6');
   public static readonly UBUNTU_14_04_PHP_7_0 = new LinuxBuildImage('aws/codebuild/php:7.0');
+  public static readonly UBUNTU_14_04_PHP_7_1 = new LinuxBuildImage('aws/codebuild/php:7.1');
+  public static readonly UBUNTU_14_04_PYTHON_3_7_1 = new LinuxBuildImage('aws/codebuild/python:3.7.1');
   public static readonly UBUNTU_14_04_PYTHON_3_6_5 = new LinuxBuildImage('aws/codebuild/python:3.6.5');
   public static readonly UBUNTU_14_04_PYTHON_3_5_2 = new LinuxBuildImage('aws/codebuild/python:3.5.2');
   public static readonly UBUNTU_14_04_PYTHON_3_4_5 = new LinuxBuildImage('aws/codebuild/python:3.4.5');
   public static readonly UBUNTU_14_04_PYTHON_3_3_6 = new LinuxBuildImage('aws/codebuild/python:3.3.6');
   public static readonly UBUNTU_14_04_PYTHON_2_7_12 = new LinuxBuildImage('aws/codebuild/python:2.7.12');
+  public static readonly UBUNTU_14_04_RUBY_2_5_3 = new LinuxBuildImage('aws/codebuild/ruby:2.5.3');
   public static readonly UBUNTU_14_04_RUBY_2_5_1 = new LinuxBuildImage('aws/codebuild/ruby:2.5.1');
   public static readonly UBUNTU_14_04_RUBY_2_3_1 = new LinuxBuildImage('aws/codebuild/ruby:2.3.1');
   public static readonly UBUNTU_14_04_RUBY_2_2_5 = new LinuxBuildImage('aws/codebuild/ruby:2.2.5');
@@ -1070,7 +1092,7 @@ export class LinuxBuildImage implements IBuildImage {
   /**
    * Uses an Docker image asset as a Linux build image.
    */
-  public static fromAsset(scope: cdk.Construct, id: string, props: DockerImageAssetProps): LinuxBuildImage {
+  public static fromAsset(scope: Construct, id: string, props: DockerImageAssetProps): LinuxBuildImage {
     const asset = new DockerImageAsset(scope, id, props);
     const image = new LinuxBuildImage(asset.imageUri);
 
@@ -1163,7 +1185,7 @@ export class WindowsBuildImage implements IBuildImage {
   /**
    * Uses an Docker image asset as a Windows build image.
    */
-  public static fromAsset(scope: cdk.Construct, id: string, props: DockerImageAssetProps): WindowsBuildImage {
+  public static fromAsset(scope: Construct, id: string, props: DockerImageAssetProps): WindowsBuildImage {
     const asset = new DockerImageAsset(scope, id, props);
     const image = new WindowsBuildImage(asset.imageUri);
 

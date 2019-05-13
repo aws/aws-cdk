@@ -1,8 +1,8 @@
 import s3 = require('@aws-cdk/aws-s3');
-import cdk = require('@aws-cdk/cdk');
+import { CfnOutput, Construct, IResource, Resource } from '@aws-cdk/cdk';
 import { CfnDatabase } from './glue.generated';
 
-export interface IDatabase extends cdk.IConstruct {
+export interface IDatabase extends IResource {
   /**
    * The ARN of the catalog.
    */
@@ -15,11 +15,15 @@ export interface IDatabase extends cdk.IConstruct {
 
   /**
    * The ARN of the database.
+   *
+   * @attribute
    */
   readonly databaseArn: string;
 
   /**
    * The name of the database.
+   *
+   * @attribute
    */
   readonly databaseName: string;
 
@@ -28,10 +32,10 @@ export interface IDatabase extends cdk.IConstruct {
    */
   readonly locationUri: string;
 
-  export(): DatabaseImportProps;
+  export(): DatabaseAttributes;
 }
 
-export interface DatabaseImportProps {
+export interface DatabaseAttributes {
   readonly catalogArn: string;
   readonly catalogId: string;
   readonly databaseArn: string;
@@ -56,16 +60,54 @@ export interface DatabaseProps {
 /**
  * A Glue database.
  */
-export class Database extends cdk.Construct {
+export class Database extends Resource implements IDatabase {
+
+  public static fromDatabaseArn(scope: Construct, id: string, databaseArn: string): IDatabase {
+    class Import extends Construct implements IDatabase {
+      public databaseArn = databaseArn;
+      public databaseName = scope.node.stack.parseArn(databaseArn).resourceName!;
+      public catalogArn = scope.node.stack.formatArn({ service: 'glue', resource: 'catalog' });
+      public catalogId = scope.node.stack.accountId;
+
+      public get locationUri(): string {
+        throw new Error(`glue.Database.fromDatabaseArn: no "locationUri"`);
+      }
+
+      public export(): DatabaseAttributes {
+        return {
+          catalogArn: this.catalogArn,
+          catalogId: this.catalogId,
+          databaseName: this.databaseName,
+          databaseArn: this.databaseArn,
+          locationUri: this.locationUri,
+        };
+      }
+    }
+
+    return new Import(scope, id);
+  }
+
   /**
    * Creates a Database construct that represents an external database.
    *
    * @param scope The scope creating construct (usually `this`).
    * @param id The construct's id.
-   * @param props A `DatabaseImportProps` object. Can be obtained from a call to `database.export()` or manually created.
+   * @param attrs A `DatabaseAttributes` object. Can be obtained from a call to `database.export()` or manually created.
    */
-  public static import(scope: cdk.Construct, id: string, props: DatabaseImportProps): IDatabase {
-    return new ImportedDatabase(scope, id, props);
+  public static fromDatabaseAttributes(scope: Construct, id: string, attrs: DatabaseAttributes): IDatabase {
+
+    class Import extends Construct implements IDatabase {
+      public readonly catalogArn = attrs.catalogArn;
+      public readonly catalogId = attrs.catalogId;
+      public readonly databaseArn = attrs.databaseArn;
+      public readonly databaseName = attrs.databaseName;
+      public readonly locationUri = attrs.locationUri;
+      public export() {
+        return attrs;
+      }
+    }
+
+    return new Import(scope, id);
   }
 
   /**
@@ -93,7 +135,7 @@ export class Database extends cdk.Construct {
    */
   public readonly locationUri: string;
 
-  constructor(scope: cdk.Construct, id: string, props: DatabaseProps) {
+  constructor(scope: Construct, id: string, props: DatabaseProps) {
     super(scope, id);
 
     if (props.locationUri) {
@@ -129,34 +171,13 @@ export class Database extends cdk.Construct {
   /**
    * Exports this database from the stack.
    */
-  public export(): DatabaseImportProps {
+  public export(): DatabaseAttributes {
     return {
-      catalogArn: new cdk.CfnOutput(this, 'CatalogArn', { value: this.catalogArn }).makeImportValue().toString(),
-      catalogId: new cdk.CfnOutput(this, 'CatalogId', { value: this.catalogId }).makeImportValue().toString(),
-      databaseArn: new cdk.CfnOutput(this, 'DatabaseArn', { value: this.databaseArn }).makeImportValue().toString(),
-      databaseName: new cdk.CfnOutput(this, 'DatabaseName', { value: this.databaseName }).makeImportValue().toString(),
-      locationUri: new cdk.CfnOutput(this, 'LocationURI', { value: this.locationUri }).makeImportValue().toString()
+      catalogArn: new CfnOutput(this, 'CatalogArn', { value: this.catalogArn }).makeImportValue().toString(),
+      catalogId: new CfnOutput(this, 'CatalogId', { value: this.catalogId }).makeImportValue().toString(),
+      databaseArn: new CfnOutput(this, 'DatabaseArn', { value: this.databaseArn }).makeImportValue().toString(),
+      databaseName: new CfnOutput(this, 'DatabaseName', { value: this.databaseName }).makeImportValue().toString(),
+      locationUri: new CfnOutput(this, 'LocationURI', { value: this.locationUri }).makeImportValue().toString()
     };
-  }
-}
-
-class ImportedDatabase extends cdk.Construct implements IDatabase {
-  public readonly catalogArn: string;
-  public readonly catalogId: string;
-  public readonly databaseArn: string;
-  public readonly databaseName: string;
-  public readonly locationUri: string;
-
-  constructor(parent: cdk.Construct, name: string, private readonly props: DatabaseImportProps) {
-    super(parent, name);
-    this.catalogArn = props.catalogArn;
-    this.catalogId = props.catalogId;
-    this.databaseArn = props.databaseArn;
-    this.databaseName = props.databaseName;
-    this.locationUri = props.locationUri;
-  }
-
-  public export() {
-    return this.props;
   }
 }

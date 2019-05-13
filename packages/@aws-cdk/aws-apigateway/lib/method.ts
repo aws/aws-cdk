@@ -1,9 +1,9 @@
-import cdk = require('@aws-cdk/cdk');
+import { Construct, Resource } from '@aws-cdk/cdk';
 import { CfnMethod, CfnMethodProps } from './apigateway.generated';
 import { ConnectionType, Integration } from './integration';
 import { MockIntegration } from './integrations/mock';
 import { MethodResponse } from './methodresponse';
-import { IRestApiResource } from './resource';
+import { IResource } from './resource';
 import { RestApi } from './restapi';
 import { validateHttpMethod } from './util';
 
@@ -66,7 +66,7 @@ export interface MethodProps {
    * The resource this method is associated with. For root resource methods,
    * specify the `RestApi` object.
    */
-  readonly resource: IRestApiResource;
+  readonly resource: IResource;
 
   /**
    * The HTTP method ("GET", "POST", "PUT", ...) that clients use to call this method.
@@ -84,17 +84,19 @@ export interface MethodProps {
   readonly options?: MethodOptions;
 }
 
-export class Method extends cdk.Construct {
+export class Method extends Resource {
+  /** @attribute */
   public readonly methodId: string;
+
   public readonly httpMethod: string;
-  public readonly resource: IRestApiResource;
+  public readonly resource: IResource;
   public readonly restApi: RestApi;
 
-  constructor(scope: cdk.Construct, id: string, props: MethodProps) {
+  constructor(scope: Construct, id: string, props: MethodProps) {
     super(scope, id);
 
     this.resource = props.resource;
-    this.restApi = props.resource.resourceApi;
+    this.restApi = props.resource.restApi;
     this.httpMethod = props.httpMethod.toUpperCase();
 
     validateHttpMethod(this.httpMethod);
@@ -120,9 +122,9 @@ export class Method extends cdk.Construct {
 
     this.methodId = resource.ref;
 
-    props.resource.resourceApi._attachMethod(this);
+    props.resource.restApi._attachMethod(this);
 
-    const deployment = props.resource.resourceApi.latestDeployment;
+    const deployment = props.resource.restApi.latestDeployment;
     if (deployment) {
       deployment.node.addDependency(resource);
       deployment.addToLogicalId({ method: methodProps });
@@ -136,6 +138,8 @@ export class Method extends cdk.Construct {
    *
    * NOTE: {stage} will refer to the `restApi.deploymentStage`, which will
    * automatically set if auto-deploy is enabled.
+   *
+   * @attribute
    */
   public get methodArn(): string {
     if (!this.restApi.deploymentStage) {
@@ -145,7 +149,7 @@ export class Method extends cdk.Construct {
     }
 
     const stage = this.restApi.deploymentStage.stageName.toString();
-    return this.restApi.executeApiArn(this.httpMethod, this.resource.resourcePath, stage);
+    return this.restApi.executeApiArn(this.httpMethod, this.resource.path, stage);
   }
 
   /**
@@ -153,7 +157,7 @@ export class Method extends cdk.Construct {
    * This stage is used by the AWS Console UI when testing the method.
    */
   public get testMethodArn(): string {
-    return this.restApi.executeApiArn(this.httpMethod, this.resource.resourcePath, 'test-invoke-stage');
+    return this.restApi.executeApiArn(this.httpMethod, this.resource.path, 'test-invoke-stage');
   }
 
   private renderIntegration(integration?: Integration): CfnMethod.IntegrationProperty {

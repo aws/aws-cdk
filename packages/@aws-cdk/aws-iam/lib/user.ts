@@ -1,16 +1,24 @@
-import { Construct } from '@aws-cdk/cdk';
-import { Group } from './group';
+import { Construct, Resource, SecretValue } from '@aws-cdk/cdk';
+import { IGroup } from './group';
 import { CfnUser } from './iam.generated';
-import { IPrincipal, Policy } from './policy';
-import { ArnPrincipal, PolicyPrincipal, PolicyStatement } from './policy-document';
+import { IIdentity } from './identity-base';
+import { Policy } from './policy';
+import { PolicyStatement } from './policy-document';
+import { ArnPrincipal, PrincipalPolicyFragment } from './policy-document';
+import { IPrincipal } from './principals';
 import { AttachedPolicies, undefinedIfEmpty } from './util';
+
+export interface IUser extends IIdentity {
+  readonly userName: string;
+  addToGroup(group: IGroup): void;
+}
 
 export interface UserProps {
   /**
    * Groups to add this user to. You can also use `addToGroup` to add this
    * user to a group.
    */
-  readonly groups?: Group[];
+  readonly groups?: IGroup[];
 
   /**
    * A list of ARNs for managed policies attacherd to this user.
@@ -47,9 +55,12 @@ export interface UserProps {
    * The password for the user. This is required so the user can access the
    * AWS Management Console.
    *
+   * You can use `SecretValue.plainText` to specify a password in plain text or
+   * use `secretsmanager.Secret.import` to reference a secret in Secrets Manager.
+   *
    * @default User won't be able to access the management console without a password.
    */
-  readonly password?: string;
+  readonly password?: SecretValue;
 
   /**
    * Specifies whether the user is required to set a new password the next
@@ -62,22 +73,23 @@ export interface UserProps {
   readonly passwordResetRequired?: boolean;
 }
 
-export class User extends Construct implements IPrincipal {
+export class User extends Resource implements IIdentity {
+  public readonly grantPrincipal: IPrincipal = this;
+  public readonly assumeRoleAction: string = 'sts:AssumeRole';
 
   /**
    * An attribute that represents the user name.
+   * @attribute
    */
   public readonly userName: string;
 
   /**
    * An attribute that represents the user's ARN.
+   * @attribute
    */
   public readonly userArn: string;
 
-  /**
-   * Returns the ARN of this user.
-   */
-  public readonly principal: PolicyPrincipal;
+  public readonly policyFragment: PrincipalPolicyFragment;
 
   private readonly groups = new Array<any>();
   private readonly managedPolicyArns = new Array<string>();
@@ -97,7 +109,7 @@ export class User extends Construct implements IPrincipal {
 
     this.userName = user.userName;
     this.userArn = user.userArn;
-    this.principal = new ArnPrincipal(this.userArn);
+    this.policyFragment = new ArnPrincipal(this.userArn).policyFragment;
 
     if (props.groups) {
       props.groups.forEach(g => this.addToGroup(g));
@@ -107,7 +119,7 @@ export class User extends Construct implements IPrincipal {
   /**
    * Adds this user to a group.
    */
-  public addToGroup(group: Group) {
+  public addToGroup(group: IGroup) {
     this.groups.push(group.groupName);
   }
 
@@ -129,20 +141,23 @@ export class User extends Construct implements IPrincipal {
 
   /**
    * Adds an IAM statement to the default policy.
+   *
+   * @returns true
    */
-  public addToPolicy(statement: PolicyStatement) {
+  public addToPolicy(statement: PolicyStatement): boolean {
     if (!this.defaultPolicy) {
       this.defaultPolicy = new Policy(this, 'DefaultPolicy');
       this.defaultPolicy.attachToUser(this);
     }
 
     this.defaultPolicy.addStatement(statement);
+    return true;
   }
 
   private parseLoginProfile(props: UserProps): CfnUser.LoginProfileProperty | undefined {
     if (props.password) {
       return {
-        password: props.password,
+        password: props.password.toString(),
         passwordResetRequired: props.passwordResetRequired
       };
     }

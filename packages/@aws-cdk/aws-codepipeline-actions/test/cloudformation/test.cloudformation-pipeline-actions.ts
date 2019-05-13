@@ -23,9 +23,10 @@ export = {
   /** Source! */
   const repo = new Repository(stack, 'MyVeryImportantRepo', { repositoryName: 'my-very-important-repo' });
 
+  const sourceOutput = new codepipeline.Artifact('SourceArtifact');
   const source = new cpactions.CodeCommitSourceAction({
     actionName: 'source',
-    outputArtifactName: 'SourceArtifact',
+    output: sourceOutput,
     repository: repo,
     pollForSourceChanges: true,
   });
@@ -42,11 +43,12 @@ export = {
     artifacts: buildArtifacts,
   });
 
-  const buildAction = new cpactions.CodeBuildBuildAction({
+  const buildOutput = new codepipeline.Artifact('OutputYo');
+  const buildAction = new cpactions.CodeBuildAction({
     actionName: 'build',
     project,
-    inputArtifact: source.outputArtifact,
-    outputArtifactName: "OutputYo"
+    input: sourceOutput,
+    output: buildOutput,
   });
   pipeline.addStage({
     name: 'build',
@@ -68,8 +70,8 @@ export = {
         stackName,
         changeSetName,
         deploymentRole: changeSetExecRole,
-        templatePath: new codepipeline.ArtifactPath(buildAction.outputArtifact, 'template.yaml'),
-        templateConfiguration: new codepipeline.ArtifactPath(buildAction.outputArtifact, 'templateConfig.json'),
+        templatePath: new codepipeline.ArtifactPath(buildOutput, 'template.yaml'),
+        templateConfiguration: new codepipeline.ArtifactPath(buildOutput, 'templateConfig.json'),
         adminPermissions: false,
       }),
       new cpactions.CloudFormationExecuteChangeSetAction({
@@ -211,7 +213,7 @@ export = {
   stack.deployStage.addAction(new cpactions.CloudFormationCreateUpdateStackAction({
     actionName: 'CreateUpdate',
     stackName: 'MyStack',
-    templatePath: stack.source.outputArtifact.atPath('template.yaml'),
+    templatePath: stack.sourceOutput.atPath('template.yaml'),
     adminPermissions: true,
   }));
 
@@ -266,7 +268,7 @@ export = {
   stack.deployStage.addAction(new cpactions.CloudFormationCreateUpdateStackAction({
     actionName: 'CreateUpdate',
     stackName: 'MyStack',
-    templatePath: stack.source.outputArtifact.atPath('template.yaml'),
+    templatePath: stack.sourceOutput.atPath('template.yaml'),
     outputFileName: 'CreateResponse.json',
     adminPermissions: false,
   }));
@@ -298,7 +300,7 @@ export = {
   stack.deployStage.addAction(new cpactions.CloudFormationCreateUpdateStackAction({
     actionName: 'CreateUpdate',
     stackName: 'MyStack',
-    templatePath: stack.source.outputArtifact.atPath('template.yaml'),
+    templatePath: stack.sourceOutput.atPath('template.yaml'),
     replaceOnFailure: true,
     adminPermissions: false,
   }));
@@ -332,7 +334,7 @@ export = {
   stack.deployStage.addAction(new cpactions.CloudFormationCreateUpdateStackAction({
     actionName: 'CreateUpdate',
     stackName: 'MyStack',
-    templatePath: stack.source.outputArtifact.atPath('template.yaml'),
+    templatePath: stack.sourceOutput.atPath('template.yaml'),
     adminPermissions: false,
     parameterOverrides: {
     RepoName: stack.repo.repositoryName
@@ -367,9 +369,7 @@ export = {
   'Action service role is passed to template'(test: Test) {
     const stack = new TestFixture();
 
-    const importedRole = Role.import(stack, 'ImportedRole', {
-      roleArn: 'arn:aws:iam::000000000000:role/action-role'
-    });
+    const importedRole = Role.fromRoleArn(stack, 'ImportedRole', 'arn:aws:iam::000000000000:role/action-role');
     const freshRole = new Role(stack, 'FreshRole', {
       assumedBy: new ServicePrincipal('magicservice')
     });
@@ -426,7 +426,7 @@ class TestFixture extends cdk.Stack {
   public readonly sourceStage: codepipeline.IStage;
   public readonly deployStage: codepipeline.IStage;
   public readonly repo: Repository;
-  public readonly source: cpactions.CodeCommitSourceAction;
+  public readonly sourceOutput: codepipeline.Artifact;
 
   constructor() {
     super();
@@ -435,17 +435,12 @@ class TestFixture extends cdk.Stack {
     this.sourceStage = this.pipeline.addStage({ name: 'Source' });
     this.deployStage = this.pipeline.addStage({ name: 'Deploy' });
     this.repo = new Repository(this, 'MyVeryImportantRepo', { repositoryName: 'my-very-important-repo' });
-    this.source = new cpactions.CodeCommitSourceAction({
+    this.sourceOutput = new codepipeline.Artifact('SourceArtifact');
+    const source = new cpactions.CodeCommitSourceAction({
       actionName: 'Source',
-      outputArtifactName: 'SourceArtifact',
+      output: this.sourceOutput,
       repository: this.repo,
     });
-    this.sourceStage.addAction(this.source);
-    // this.pipeline = new Pipeline(this, 'Pipeline', {
-    //   stages: [
-    //       this.sourceStage.addAction(this.source),
-    //       this.deployStage,
-    //   ],
-    // });
+    this.sourceStage.addAction(source);
   }
 }

@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/aws-opsworks",
-  "version": "0.27.0",
+  "version": "0.31.0",
   "description": "The CDK Construct Library for AWS::OpsWorks",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -20,7 +20,6 @@
         "signAssembly": true,
         "assemblyOriginatorKeyFile": "../../key.snk"
       },
-      "sphinx": {},
       "python": {
         "distName": "aws-cdk.aws-opsworks",
         "module": "aws_cdk.aws_opsworks"
@@ -29,7 +28,8 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/awslabs/aws-cdk.git"
+    "url": "https://github.com/awslabs/aws-cdk.git",
+    "directory": "packages/@aws-cdk/aws-opsworks"
   },
   "scripts": {
     "build": "cdk-build",
@@ -58,17 +58,17 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "^0.27.0",
-    "cdk-build-tools": "^0.27.0",
-    "cfn2ts": "^0.27.0",
-    "pkglint": "^0.27.0"
+    "@aws-cdk/assert": "^0.31.0",
+    "cdk-build-tools": "^0.31.0",
+    "cfn2ts": "^0.31.0",
+    "pkglint": "^0.31.0"
   },
   "dependencies": {
-    "@aws-cdk/cdk": "^0.27.0"
+    "@aws-cdk/cdk": "^0.31.0"
   },
   "homepage": "https://github.com/awslabs/aws-cdk",
   "peerDependencies": {
-    "@aws-cdk/cdk": "^0.27.0"
+    "@aws-cdk/cdk": "^0.31.0"
   },
   "engines": {
     "node": ">= 8.10.0"

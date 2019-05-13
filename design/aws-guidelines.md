@@ -143,7 +143,7 @@ into an `{ "Fn::Join" }` expression which includes the relevant intrinsic
 functions.
 
 If needed, you can query whether an object includes unresolved tokens by using
-the `cdk.unresolved(x)` function.
+the `cdk.isToken(x)` function.
 
 Resource attributes should use a type that corresponds to the __resolved__ AWS
 CloudFormation type (e.g. `string`, `string[]`).
@@ -326,9 +326,9 @@ export interface IFoo extends cdk.IConstruct, ISomething {
   readonly connections: ec2.Connections;
 
   // permission grants (adds statements to the principal's policy)
-  grant(principal?: iam.IPrincipal, ...actions: string[]): void;
-  grantFoo(principal?: iam.IPrincipal): void;
-  grantBar(principal?: iam.IPrincipal): void;
+  grant(grantee?: iam.IGrantable, ...actions: string[]): void;
+  grantFoo(grantee?: iam.IGrantable): void;
+  grantBar(grantee?: iam.IGrantable): void;
 
   // resource policy (if applicable)
   addToResourcePolicy(statement: iam.PolicyStatement): void;
@@ -340,9 +340,9 @@ export interface IFoo extends cdk.IConstruct, ISomething {
   addToPipeline(stage: pipelineapi.IStage, name: string, props?: FooActionProps): FooAction;
 
   // metrics
-  metric(metricName: string, props?: cloudwatch.MetricCustomization): cloudwatch.Metric;
-  metricFoo(props?: cloudwatch.MetricCustomization): cloudwatch.Metric;
-  metricBar(props?: cloudwatch.MetricCustomization): cloudwatch.Metric;
+  metric(metricName: string, props?: cloudwatch.MetricOptions): cloudwatch.Metric;
+  metricFoo(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
+  metricBar(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
 
   // export
   export(): FooImportProps;
@@ -364,7 +364,7 @@ export abstract class FooBase extends cdk.Construct implements IFoo {
   public abstract export(): FooAttributes;
 
   // grants can usually be shared
-  public grantYyy(principal?: iam.IPrincipal) {
+  public grantYyy(grantee?: iam.IGrantable) {
     // ...
   }
 

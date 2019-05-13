@@ -1,45 +1,17 @@
-import { Construct, Token } from '@aws-cdk/cdk';
-import { Group } from './group';
+import { Construct, IResource, Resource, Token } from '@aws-cdk/cdk';
+import { IGroup } from './group';
 import { CfnPolicy } from './iam.generated';
-import { PolicyDocument, PolicyPrincipal, PolicyStatement } from './policy-document';
+import { PolicyDocument, PolicyStatement } from './policy-document';
 import { IRole } from './role';
-import { User } from './user';
+import { IUser } from './user';
 import { generatePolicyName, undefinedIfEmpty } from './util';
 
-/**
- * A construct that represents an IAM principal, such as a user, group or role.
- */
-export interface IPrincipal {
+export interface IPolicy extends IResource {
   /**
-   * The IAM principal of this identity (i.e. AWS principal, service principal, etc).
+   * @attribute
    */
-  readonly principal: PolicyPrincipal;
-
-  /**
-   * Adds an IAM statement to the default inline policy associated with this
-   * principal. If a policy doesn't exist, it is created.
-   */
-  addToPolicy(statement: PolicyStatement): void;
-
-  /**
-   * Attaches an inline policy to this principal.
-   * This is the same as calling `policy.addToXxx(principal)`.
-   * @param policy The policy resource to attach to this principal.
-   */
-  attachInlinePolicy(policy: Policy): void;
-
-  /**
-   * Attaches a managed policy to this principal.
-   * @param arn The ARN of the managed policy
-   */
-  attachManagedPolicy(arn: string): void;
+  readonly policyName: string;
 }
-
-/**
- * @deprecated Use IPrincipal
- */
-// tslint:disable-next-line:no-empty-interface
-export type IIdentityResource = IPrincipal;
 
 export interface PolicyProps {
   /**
@@ -56,7 +28,7 @@ export interface PolicyProps {
    * Users to attach this policy to.
    * You can also use `attachToUser(user)` to attach this policy to a user.
    */
-  readonly users?: User[];
+  readonly users?: IUser[];
 
   /**
    * Roles to attach this policy to.
@@ -68,7 +40,7 @@ export interface PolicyProps {
    * Groups to attach this policy to.
    * You can also use `attachToGroup(group)` to attach this policy to a group.
    */
-  readonly groups?: Group[];
+  readonly groups?: IGroup[];
 
   /**
    * Initial set of permissions to add to this policy document.
@@ -83,7 +55,16 @@ export interface PolicyProps {
  * Policies](http://docs.aws.amazon.com/IAM/latest/UserGuide/policies_overview.html)
  * in the IAM User Guide guide.
  */
-export class Policy extends Construct {
+export class Policy extends Resource implements IPolicy {
+
+  public static fromPolicyName(scope: Construct, id: string, policyName: string): IPolicy {
+    class Import extends Resource implements IPolicy {
+      public readonly policyName = policyName;
+    }
+
+    return new Import(scope, id);
+  }
+
   /**
    * The policy document.
    */
@@ -91,12 +72,14 @@ export class Policy extends Construct {
 
   /**
    * The name of this policy.
+   *
+   * @attribute
    */
   public readonly policyName: string;
 
   private readonly roles = new Array<IRole>();
-  private readonly users = new Array<User>();
-  private readonly groups = new Array<Group>();
+  private readonly users = new Array<IUser>();
+  private readonly groups = new Array<IGroup>();
 
   constructor(scope: Construct, id: string, props: PolicyProps = {}) {
     super(scope, id);
@@ -141,7 +124,7 @@ export class Policy extends Construct {
   /**
    * Attaches this policy to a user.
    */
-  public attachToUser(user: User) {
+  public attachToUser(user: IUser) {
     if (this.users.find(u => u === user)) { return; }
     this.users.push(user);
     user.attachInlinePolicy(this);
@@ -159,7 +142,7 @@ export class Policy extends Construct {
   /**
    * Attaches this policy to a group.
    */
-  public attachToGroup(group: Group) {
+  public attachToGroup(group: IGroup) {
     if (this.groups.find(g => g === group)) { return; }
     this.groups.push(group);
     group.attachInlinePolicy(this);

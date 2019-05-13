@@ -312,7 +312,10 @@
                           {
                             "Ref": "AWS::AccountId"
                           },
-                          ":subnet/[[subnets]]"
+                          ":subnet/",
+                          {
+                            "Ref": "MyVPCPrivateSubnet1Subnet641543F4"
+                          }
                         ]
                       ]
                     }
@@ -489,7 +492,7 @@
               }
             }
           ],
-          "Image": "aws/codebuild/ubuntu-base:14.04",
+          "Image": "aws/codebuild/standard:1.0",
           "PrivilegedMode": false,
           "Type": "LINUX_CONTAINER"
         },

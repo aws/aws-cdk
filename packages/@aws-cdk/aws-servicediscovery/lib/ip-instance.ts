@@ -45,6 +45,8 @@ export interface IpInstanceProps extends IpInstanceBaseProps {
 
 /*
  * Instance that is accessible using an IP address.
+ *
+ * @resource AWS::ServiceDiscovery::Instance
  */
 export class IpInstance extends InstanceBase {
   /**

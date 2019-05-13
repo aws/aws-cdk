@@ -54,11 +54,11 @@ export class BucketDeployment extends cdk.Construct {
 
     const source = props.source.bind(this);
 
-    source.bucket.grantRead(handler.role);
-    props.destinationBucket.grantReadWrite(handler.role);
+    source.bucket.grantRead(handler);
+    props.destinationBucket.grantReadWrite(handler);
 
     new cloudformation.CustomResource(this, 'CustomResource', {
-      lambdaProvider: handler,
+      provider: cloudformation.CustomResourceProvider.lambda(handler),
       resourceType: 'Custom::CDKBucketDeployment',
       properties: {
         SourceBucketName: source.bucket.bucketName,

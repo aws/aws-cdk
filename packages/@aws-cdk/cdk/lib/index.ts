@@ -3,7 +3,7 @@ export * from './tag-aspect';
 
 export * from './construct';
 export * from './token';
-export * from './unresolved';
+export * from './token-map';
 export * from './tag-manager';
 export * from './dependency';
 
@@ -23,7 +23,7 @@ export * from './resource-policy';
 export * from './cfn-rule';
 export * from './stack';
 export * from './cfn-element';
-export * from './dynamic-reference';
+export * from './cfn-dynamic-reference';
 export * from './tag';
 export * from './removal-policy';
 export * from './arn';
@@ -33,5 +33,7 @@ export * from './context';
 export * from './environment';
 
 export * from './runtime';
-export * from './secret';
+export * from './secret-value';
 export * from './synthesis';
+
+export * from './resource';

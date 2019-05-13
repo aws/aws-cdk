@@ -3,10 +3,10 @@ import ec2 = require('@aws-cdk/aws-ec2');
 import iam = require('@aws-cdk/aws-iam');
 import logs = require('@aws-cdk/aws-logs');
 import sqs = require('@aws-cdk/aws-sqs');
-import cdk = require('@aws-cdk/cdk');
+import { CfnOutput, Construct, Fn, Token } from '@aws-cdk/cdk';
 import { Code } from './code';
 import { IEventSource } from './event-source';
-import { FunctionBase, FunctionImportProps, IFunction } from './function-base';
+import { FunctionAttributes, FunctionBase, IFunction } from './function-base';
 import { Version } from './lambda-version';
 import { CfnFunction } from './lambda.generated';
 import { ILayerVersion } from './layers';
@@ -223,25 +223,61 @@ export interface FunctionProps {
  * library.
  */
 export class Function extends FunctionBase {
+
+  public static fromFunctionArn(scope: Construct, id: string, functionArn: string): IFunction {
+    return Function.fromFunctionAttributes(scope, id, { functionArn });
+  }
+
   /**
    * Creates a Lambda function object which represents a function not defined
    * within this stack.
    *
    *    Lambda.import(this, 'MyImportedFunction', { lambdaArn: new LambdaArn('arn:aws:...') });
    *
-   * @param parent The parent construct
+   * @param scope The parent construct
    * @param id The name of the lambda construct
-   * @param props A reference to a Lambda function. Can be created manually (see
+   * @param attrs A reference to a Lambda function. Can be created manually (see
    * example above) or obtained through a call to `lambda.export()`.
    */
-  public static import(scope: cdk.Construct, id: string, props: FunctionImportProps): IFunction {
-    return new ImportedFunction(scope, id, props);
+  public static fromFunctionAttributes(scope: Construct, id: string, attrs: FunctionAttributes): IFunction {
+    const functionArn = attrs.functionArn;
+    const functionName = extractNameFromArn(attrs.functionArn);
+    const role = attrs.role;
+
+    class Import extends FunctionBase {
+      public readonly functionName = functionName;
+      public readonly functionArn = functionArn;
+      public readonly role = role;
+      public readonly grantPrincipal: iam.IPrincipal;
+
+      protected readonly canCreatePermissions = false;
+
+      constructor(s: Construct, i: string) {
+        super(s, i);
+
+        this.grantPrincipal = role || new iam.ImportedResourcePrincipal({ resource: this } );
+
+        if (attrs.securityGroupId) {
+          this._connections = new ec2.Connections({
+            securityGroups: [
+              ec2.SecurityGroup.fromSecurityGroupId(this, 'SecurityGroup', attrs.securityGroupId)
+            ]
+          });
+        }
+      }
+
+      public export() {
+        return attrs;
+      }
+    }
+
+    return new Import(scope, id);
   }
 
   /**
    * Return the given named metric for this Lambda
    */
-  public static metricAll(metricName: string, props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
+  public static metricAll(metricName: string, props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return new cloudwatch.Metric({
       namespace: 'AWS/Lambda',
       metricName,
@@ -253,7 +289,7 @@ export class Function extends FunctionBase {
    *
    * @default sum over 5 minutes
    */
-  public static metricAllErrors(props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
+  public static metricAllErrors(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return this.metricAll('Errors', { statistic: 'sum', ...props });
   }
 
@@ -262,7 +298,7 @@ export class Function extends FunctionBase {
    *
    * @default average over 5 minutes
    */
-  public static metricAllDuration(props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
+  public static metricAllDuration(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return this.metricAll('Duration', props);
   }
 
@@ -271,7 +307,7 @@ export class Function extends FunctionBase {
    *
    * @default sum over 5 minutes
    */
-  public static metricAllInvocations(props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
+  public static metricAllInvocations(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return this.metricAll('Invocations', { statistic: 'sum', ...props });
   }
 
@@ -280,7 +316,7 @@ export class Function extends FunctionBase {
    *
    * @default sum over 5 minutes
    */
-  public static metricAllThrottles(props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
+  public static metricAllThrottles(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return this.metricAll('Throttles', { statistic: 'sum', ...props });
   }
 
@@ -289,7 +325,7 @@ export class Function extends FunctionBase {
    *
    * @default max over 5 minutes
    */
-  public static metricAllConcurrentExecutions(props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
+  public static metricAllConcurrentExecutions(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     // Mini-FAQ: why max? This metric is a gauge that is emitted every
     // minute, so either max or avg or a percentile make sense (but sum
     // doesn't). Max is more sensitive to spiky load changes which is
@@ -304,7 +340,7 @@ export class Function extends FunctionBase {
    *
    * @default max over 5 minutes
    */
-  public static metricAllUnreservedConcurrentExecutions(props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
+  public static metricAllUnreservedConcurrentExecutions(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return this.metricAll('UnreservedConcurrentExecutions', { statistic: 'max', ...props });
   }
 
@@ -333,6 +369,11 @@ export class Function extends FunctionBase {
    */
   public readonly handler: string;
 
+  /**
+   * The principal this Lambda Function is running as
+   */
+  public readonly grantPrincipal: iam.IPrincipal;
+
   protected readonly canCreatePermissions = true;
 
   private readonly layers: ILayerVersion[] = [];
@@ -342,7 +383,7 @@ export class Function extends FunctionBase {
    */
   private readonly environment?: { [key: string]: any };
 
-  constructor(scope: cdk.Construct, id: string, props: FunctionProps) {
+  constructor(scope: Construct, id: string, props: FunctionProps) {
     super(scope, id);
 
     this.environment = props.environment || { };
@@ -361,6 +402,7 @@ export class Function extends FunctionBase {
       assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
       managedPolicyArns,
     });
+    this.grantPrincipal = this.role;
 
     for (const statement of (props.initialPolicy || [])) {
       this.role.addToPolicy(statement);
@@ -375,13 +417,13 @@ export class Function extends FunctionBase {
     const resource = new CfnFunction(this, 'Resource', {
       functionName: props.functionName,
       description: props.description,
-      code: new cdk.Token(() => props.code._toJSON(resource)),
-      layers: new cdk.Token(() => this.layers.length > 0 ? this.layers.map(layer => layer.layerVersionArn) : undefined).toList(),
+      code: new Token(() => props.code._toJSON(resource)),
+      layers: new Token(() => this.layers.length > 0 ? this.layers.map(layer => layer.layerVersionArn) : undefined).toList(),
       handler: props.handler,
       timeout: props.timeout,
       runtime: props.runtime.name,
       role: this.role.roleArn,
-      environment: new cdk.Token(() => this.renderEnvironment()),
+      environment: new Token(() => this.renderEnvironment()),
       memorySize: props.memorySize,
       vpcConfig: this.configureVpc(props),
       deadLetterConfig: this.buildDeadLetterConfig(props),
@@ -419,11 +461,11 @@ export class Function extends FunctionBase {
   /**
    * Export this Function (without the role)
    */
-  public export(): FunctionImportProps {
+  public export(): FunctionAttributes {
     return {
-      functionArn: new cdk.CfnOutput(this, 'FunctionArn', { value: this.functionArn }).makeImportValue().toString(),
+      functionArn: new CfnOutput(this, 'FunctionArn', { value: this.functionArn }).makeImportValue().toString(),
       securityGroupId: this._connections && this._connections.securityGroups[0]
-          ? new cdk.CfnOutput(this, 'SecurityGroupId', { value: this._connections.securityGroups[0].securityGroupId }).makeImportValue().toString()
+          ? new CfnOutput(this, 'SecurityGroupId', { value: this._connections.securityGroups[0].securityGroupId }).makeImportValue().toString()
           : undefined
     };
   }
@@ -544,7 +586,7 @@ export class Function extends FunctionBase {
     // won't work because the ENIs don't get a Public IP.
     // Why are we not simply forcing vpcSubnets? Because you might still be choosing
     // Isolated networks or selecting among 2 sets of Private subnets by name.
-    const subnetIds = props.vpc.subnetIds(props.vpcSubnets);
+    const { subnetIds } = props.vpc.selectSubnets(props.vpcSubnets);
     const publicSubnetIds = new Set(props.vpc.publicSubnets.map(s => s.subnetId));
     for (const subnetId of subnetIds) {
       if (publicSubnetIds.has(subnetId)) {
@@ -599,34 +641,6 @@ export class Function extends FunctionBase {
   }
 }
 
-export class ImportedFunction extends FunctionBase {
-  public readonly functionName: string;
-  public readonly functionArn: string;
-  public readonly role?: iam.IRole;
-
-  protected readonly canCreatePermissions = false;
-
-  constructor(scope: cdk.Construct, id: string, private readonly props: FunctionImportProps) {
-    super(scope, id);
-
-    this.functionArn = props.functionArn;
-    this.functionName = extractNameFromArn(props.functionArn);
-    this.role = props.role;
-
-    if (props.securityGroupId) {
-      this._connections = new ec2.Connections({
-        securityGroups: [
-          ec2.SecurityGroup.import(this, 'SecurityGroup', { securityGroupId: props.securityGroupId })
-        ]
-      });
-    }
-  }
-
-  public export() {
-    return this.props;
-  }
-}
-
 /**
  * Given an opaque (token) ARN, returns a CloudFormation expression that extracts the function
  * name from the ARN.
@@ -641,5 +655,5 @@ export class ImportedFunction extends FunctionBase {
  * @returns `FnSelect(6, FnSplit(':', arn))`
  */
 function extractNameFromArn(arn: string) {
-  return cdk.Fn.select(6, cdk.Fn.split(':', arn));
+  return Fn.select(6, Fn.split(':', arn));
 }

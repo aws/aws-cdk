@@ -139,7 +139,7 @@ export class RotationSingleUser extends cdk.Construct {
       vpc: props.vpc
     });
 
-    const vpcSubnetIds = props.vpc.subnetIds(props.vpcSubnets);
+    const { subnetIds } = props.vpc.selectSubnets(props.vpcSubnets);
 
     props.target.connections.allowDefaultPortFrom(securityGroup);
 
@@ -149,19 +149,17 @@ export class RotationSingleUser extends cdk.Construct {
         endpoint: `https://secretsmanager.${this.node.stack.region}.${this.node.stack.urlSuffix}`,
         functionName: rotationFunctionName,
         vpcSecurityGroupIds: securityGroup.securityGroupId,
-        vpcSubnetIds: vpcSubnetIds.join(',')
+        vpcSubnetIds: subnetIds.join(',')
       }
     });
 
     // Dummy import to reference this function in the rotation schedule
-    const rotationLambda = lambda.Function.import(this, 'RotationLambda', {
-      functionArn: this.node.stack.formatArn({
-        service: 'lambda',
-        resource: 'function',
-        sep: ':',
-        resourceName: rotationFunctionName
-      }),
-    });
+    const rotationLambda = lambda.Function.fromFunctionArn(this, 'RotationLambda', this.node.stack.formatArn({
+      service: 'lambda',
+      resource: 'function',
+      sep: ':',
+      resourceName: rotationFunctionName
+    }));
 
     // Cannot use rotationLambda.addPermission because it currently does not
     // return a cdk.Construct and we need to add a dependency.

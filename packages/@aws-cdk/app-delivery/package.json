@@ -1,7 +1,7 @@
 {
   "name": "@aws-cdk/app-delivery",
   "description": "Continuous Integration / Continuous Delivery for CDK Applications",
-  "version": "0.27.0",
+  "version": "0.31.0",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "jsii": {
@@ -13,7 +13,6 @@
         },
         "package": "software.amazon.awscdk.appdelivery"
       },
-      "sphinx": {},
       "dotnet": {
         "namespace": "Amazon.CDK.AppDelivery",
         "packageId": "Amazon.CDK.AppDelivery",
@@ -37,25 +36,26 @@
     "awslint": "cdk-awslint"
   },
   "dependencies": {
-    "@aws-cdk/aws-cloudformation": "^0.27.0",
-    "@aws-cdk/aws-codebuild": "^0.27.0",
-    "@aws-cdk/aws-codepipeline": "^0.27.0",
-    "@aws-cdk/aws-codepipeline-actions": "^0.27.0",
-    "@aws-cdk/aws-iam": "^0.27.0",
-    "@aws-cdk/cdk": "^0.27.0",
-    "@aws-cdk/cx-api": "^0.27.0"
+    "@aws-cdk/aws-cloudformation": "^0.31.0",
+    "@aws-cdk/aws-codebuild": "^0.31.0",
+    "@aws-cdk/aws-codepipeline": "^0.31.0",
+    "@aws-cdk/aws-codepipeline-actions": "^0.31.0",
+    "@aws-cdk/aws-iam": "^0.31.0",
+    "@aws-cdk/cdk": "^0.31.0",
+    "@aws-cdk/cx-api": "^0.31.0"
   },
   "devDependencies": {
-    "@aws-cdk/assert": "^0.27.0",
-    "@aws-cdk/aws-s3": "^0.27.0",
-    "cdk-build-tools": "^0.27.0",
-    "cdk-integ-tools": "^0.27.0",
-    "fast-check": "^1.7.0",
-    "pkglint": "^0.27.0"
+    "@aws-cdk/assert": "^0.31.0",
+    "@aws-cdk/aws-s3": "^0.31.0",
+    "cdk-build-tools": "^0.31.0",
+    "cdk-integ-tools": "^0.31.0",
+    "fast-check": "^1.14.0",
+    "pkglint": "^0.31.0"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/awslabs/aws-cdk.git"
+    "url": "https://github.com/awslabs/aws-cdk.git",
+    "directory": "packages/@aws-cdk/app-delivery"
   },
   "homepage": "https://github.com/awslabs/aws-cdk",
   "license": "Apache-2.0",
@@ -69,11 +69,13 @@
     "cdk"
   ],
   "peerDependencies": {
-    "@aws-cdk/aws-cloudformation": "^0.27.0",
-    "@aws-cdk/aws-codepipeline": "^0.27.0",
-    "@aws-cdk/aws-codepipeline-actions": "^0.27.0",
-    "@aws-cdk/aws-iam": "^0.27.0",
-    "@aws-cdk/cdk": "^0.27.0"
+    "@aws-cdk/aws-cloudformation": "^0.31.0",
+    "@aws-cdk/aws-codebuild": "^0.31.0",
+    "@aws-cdk/aws-codepipeline": "^0.31.0",
+    "@aws-cdk/aws-codepipeline-actions": "^0.31.0",
+    "@aws-cdk/aws-iam": "^0.31.0",
+    "@aws-cdk/cdk": "^0.31.0",
+    "@aws-cdk/cx-api": "^0.31.0"
   },
   "engines": {
     "node": ">= 8.10.0"

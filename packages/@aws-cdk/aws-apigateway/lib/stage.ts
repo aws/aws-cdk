@@ -1,4 +1,4 @@
-import cdk = require('@aws-cdk/cdk');
+import { Construct, Resource } from '@aws-cdk/cdk';
 import { CfnStage } from './apigateway.generated';
 import { Deployment } from './deployment';
 import { IRestApi } from './restapi';
@@ -69,7 +69,7 @@ export interface StageOptions extends MethodDeploymentOptions {
 
 export interface StageProps extends StageOptions {
   /**
-   * The deployment that this stage points to.
+   * The deployment that this stage points to [disable-awslint:ref-via-interface].
    */
   readonly deployment: Deployment;
 }
@@ -132,13 +132,16 @@ export interface MethodDeploymentOptions {
   readonly cacheDataEncrypted?: boolean;
 }
 
-export class Stage extends cdk.Construct {
+export class Stage extends Resource {
+  /**
+   * @attribute
+   */
   public readonly stageName: string;
 
   private readonly restApi: IRestApi;
   private enableCacheCluster?: boolean;
 
-  constructor(scope: cdk.Construct, id: string, props: StageProps) {
+  constructor(scope: Construct, id: string, props: StageProps) {
     super(scope, id);
 
     this.enableCacheCluster = props.cacheClusterEnabled;

@@ -12,3 +12,5 @@ coverage
 
 # Include .jsii
 !.jsii
+
+*.tsbuildinfo

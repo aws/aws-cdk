@@ -2,7 +2,6 @@ import { ICfnConditionExpression } from './cfn-condition';
 import { minimalCloudFormationJoin } from './instrinsics';
 import { resolve } from './resolve';
 import { ResolveContext, Token } from './token';
-import { unresolved } from './unresolved';
 
 // tslint:disable:max-line-length
 
@@ -11,7 +10,6 @@ import { unresolved } from './unresolved';
  * http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference.html
  */
 export class Fn {
-
   /**
    * The ``Fn::GetAtt`` intrinsic function returns the value of an attribute
    * from a resource in the template.
@@ -37,6 +35,10 @@ export class Fn {
    * @returns a token represented as a string
    */
   public static join(delimiter: string, listOfValues: string[]): string {
+    if (listOfValues.length === 0) {
+      throw new Error(`FnJoin requires at least one value to be provided`);
+    }
+
     return new FnJoin(delimiter, listOfValues).toString();
   }
 
@@ -50,6 +52,12 @@ export class Fn {
    * @returns a token represented as a string array
    */
   public static split(delimiter: string, source: string): string[] {
+
+    // short-circut if source is not a token
+    if (!Token.isToken(source)) {
+      return source.split(delimiter);
+    }
+
     return new FnSplit(delimiter, source).toList();
   }
 
@@ -60,6 +68,10 @@ export class Fn {
    * @returns a token represented as a string
    */
   public static select(index: number, array: string[]): string {
+    if (!Token.isToken(array)) {
+      return array[index];
+    }
+
     return new FnSelect(index, array).toString();
   }
 
@@ -173,7 +185,7 @@ export class Fn {
    * attribute, update policy attribute, and property values in the Resources
    * section and Outputs sections of a template. You can use the AWS::NoValue
    * pseudo parameter as a return value to remove the corresponding property.
-   * @param condition A reference to a condition in the Conditions section. Use
+   * @param conditionId A reference to a condition in the Conditions section. Use
    * the condition's name to reference it.
    * @param valueIfTrue A value to be returned if the specified condition
    * evaluates to true.
@@ -639,7 +651,7 @@ class FnJoin extends Token {
   }
 
   public resolve(context: ResolveContext): any {
-    if (unresolved(this.listOfValues)) {
+    if (Token.isToken(this.listOfValues)) {
       // This is a list token, don't try to do smart things with it.
       return { 'Fn::Join': [ this.delimiter, this.listOfValues ] };
     }

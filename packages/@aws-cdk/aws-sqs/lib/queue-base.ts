@@ -2,22 +2,25 @@ import autoscaling_api = require('@aws-cdk/aws-autoscaling-api');
 import iam = require('@aws-cdk/aws-iam');
 import kms = require('@aws-cdk/aws-kms');
 import s3n = require('@aws-cdk/aws-s3-notifications');
-import cdk = require('@aws-cdk/cdk');
+import { IResource, Resource } from '@aws-cdk/cdk';
 import { QueuePolicy } from './policy';
 
-export interface IQueue extends cdk.IConstruct, s3n.IBucketNotificationDestination, autoscaling_api.ILifecycleHookTarget {
+export interface IQueue extends IResource, s3n.IBucketNotificationDestination, autoscaling_api.ILifecycleHookTarget {
   /**
    * The ARN of this queue
+   * @attribute
    */
   readonly queueArn: string;
 
   /**
    * The URL of this queue
+   * @attribute
    */
   readonly queueUrl: string;
 
   /**
    * The name of this queue
+   * @attribute
    */
   readonly queueName: string;
 
@@ -29,7 +32,7 @@ export interface IQueue extends cdk.IConstruct, s3n.IBucketNotificationDestinati
   /**
    * Export a queue
    */
-  export(): QueueImportProps;
+  export(): QueueAttributes;
 
   /**
    * Adds a statement to the IAM resource policy associated with this queue.
@@ -53,9 +56,9 @@ export interface IQueue extends cdk.IConstruct, s3n.IBucketNotificationDestinati
    *   - sqs:GetQueueAttributes
    *   - sqs:GetQueueUrl
    *
-   * @param identity Principal to grant consume rights to
+   * @param grantee Principal to grant consume rights to
    */
-  grantConsumeMessages(identity?: iam.IPrincipal): void;
+  grantConsumeMessages(grantee: iam.IGrantable): iam.Grant;
 
   /**
    * Grant access to send messages to a queue to the given identity.
@@ -67,9 +70,9 @@ export interface IQueue extends cdk.IConstruct, s3n.IBucketNotificationDestinati
    *  - sqs:GetQueueAttributes
    *  - sqs:GetQueueUrl
    *
-   * @param identity Principal to grant send rights to
+   * @param grantee Principal to grant send rights to
    */
-  grantSendMessages(identity?: iam.IPrincipal): void;
+  grantSendMessages(grantee: iam.IGrantable): iam.Grant;
 
   /**
    * Grant an IAM principal permissions to purge all messages from the queue.
@@ -80,25 +83,24 @@ export interface IQueue extends cdk.IConstruct, s3n.IBucketNotificationDestinati
    *  - sqs:GetQueueAttributes
    *  - sqs:GetQueueUrl
    *
-   * @param identity Principal to grant send rights to
-   * @param queueActions additional queue actions to allow
+   * @param grantee Principal to grant send rights to
    */
-  grantPurge(identity?: iam.IPrincipal): void;
+  grantPurge(grantee: iam.IGrantable): iam.Grant;
 
   /**
    * Grant the actions defined in queueActions to the identity Principal given
    * on this SQS queue resource.
    *
-   * @param identity Principal to grant right to
+   * @param grantee Principal to grant right to
    * @param queueActions The actions to grant
    */
-  grant(identity?: iam.IPrincipal, ...queueActions: string[]): void;
+  grant(grantee: iam.IGrantable, ...queueActions: string[]): iam.Grant;
 }
 
 /**
  * Reference to a new or existing Amazon SQS queue
  */
-export abstract class QueueBase extends cdk.Construct implements IQueue {
+export abstract class QueueBase extends Resource implements IQueue {
 
   /**
    * The ARN of this queue
@@ -137,7 +139,7 @@ export abstract class QueueBase extends cdk.Construct implements IQueue {
   /**
    * Export a queue
    */
-  public abstract export(): QueueImportProps;
+  public abstract export(): QueueAttributes;
 
   /**
    * Adds a statement to the IAM resource policy associated with this queue.
@@ -214,10 +216,10 @@ export abstract class QueueBase extends cdk.Construct implements IQueue {
    *   - sqs:GetQueueAttributes
    *   - sqs:GetQueueUrl
    *
-   * @param identity Principal to grant consume rights to
+   * @param grantee Principal to grant consume rights to
    */
-  public grantConsumeMessages(identity?: iam.IPrincipal) {
-    this.grant(identity,
+  public grantConsumeMessages(grantee: iam.IGrantable) {
+    return this.grant(grantee,
       'sqs:ReceiveMessage',
       'sqs:ChangeMessageVisibility',
       'sqs:ChangeMessageVisibilityBatch',
@@ -237,10 +239,10 @@ export abstract class QueueBase extends cdk.Construct implements IQueue {
    *  - sqs:GetQueueAttributes
    *  - sqs:GetQueueUrl
    *
-   * @param identity Principal to grant send rights to
+   * @param grantee Principal to grant send rights to
    */
-  public grantSendMessages(identity?: iam.IPrincipal) {
-    this.grant(identity,
+  public grantSendMessages(grantee: iam.IGrantable) {
+    return this.grant(grantee,
       'sqs:SendMessage',
       'sqs:SendMessageBatch',
       'sqs:GetQueueAttributes',
@@ -256,11 +258,10 @@ export abstract class QueueBase extends cdk.Construct implements IQueue {
    *  - sqs:GetQueueAttributes
    *  - sqs:GetQueueUrl
    *
-   * @param identity Principal to grant send rights to
-   * @param queueActions additional queue actions to allow
+   * @param grantee Principal to grant send rights to
    */
-  public grantPurge(identity?: iam.IPrincipal) {
-    this.grant(identity,
+  public grantPurge(grantee: iam.IGrantable) {
+    return this.grant(grantee,
       'sqs:PurgeQueue',
       'sqs:GetQueueAttributes',
       'sqs:GetQueueUrl');
@@ -270,24 +271,23 @@ export abstract class QueueBase extends cdk.Construct implements IQueue {
    * Grant the actions defined in queueActions to the identity Principal given
    * on this SQS queue resource.
    *
-   * @param identity Principal to grant right to
-   * @param queueActions The actions to grant
+   * @param grantee Principal to grant right to
+   * @param actions The actions to grant
    */
-  public grant(identity?: iam.IPrincipal, ...queueActions: string[]) {
-      if (!identity) {
-        return;
-      }
-
-      identity.addToPolicy(new iam.PolicyStatement()
-        .addResource(this.queueArn)
-        .addActions(...queueActions));
+  public grant(grantee: iam.IGrantable, ...actions: string[]) {
+    return iam.Grant.addToPrincipalOrResource({
+      grantee,
+      actions,
+      resourceArns: [this.queueArn],
+      resource: this,
+    });
   }
 }
 
 /**
  * Reference to a queue
  */
-export interface QueueImportProps {
+export interface QueueAttributes {
   /**
    * The ARN of the queue.
    */
@@ -296,7 +296,7 @@ export interface QueueImportProps {
   /**
    * The URL of the queue.
    */
-  readonly queueUrl: string;
+  readonly queueUrl?: string;
 
   /**
    * The name of the queue.

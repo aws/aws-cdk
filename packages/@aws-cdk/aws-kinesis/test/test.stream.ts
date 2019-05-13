@@ -305,6 +305,19 @@ export = {
                         }
                       },
                       "Resource": "*"
+                    },
+                    {
+                      "Action": "kms:Decrypt",
+                      "Effect": "Allow",
+                      "Principal": {
+                        "AWS": {
+                          "Fn::GetAtt": [
+                            "MyUserDC45028B",
+                            "Arn"
+                          ]
+                        }
+                      },
+                      "Resource": "*"
                     }
                   ],
                   "Version": "2012-10-17"
@@ -428,6 +441,23 @@ export = {
                         }
                       },
                       "Resource": "*"
+                    },
+                    {
+                      "Action": [
+                        "kms:Encrypt",
+                        "kms:ReEncrypt*",
+                        "kms:GenerateDataKey*"
+                      ],
+                      "Effect": "Allow",
+                      "Principal": {
+                        "AWS": {
+                          "Fn::GetAtt": [
+                            "MyUserDC45028B",
+                            "Arn"
+                          ]
+                        }
+                      },
+                      "Resource": "*"
                     }
                   ],
                   "Version": "2012-10-17"
@@ -475,8 +505,9 @@ export = {
                     },
                     {
                       "Action": [
-                        "kms:GenerateDataKey",
-                        "kms:Encrypt"
+                        "kms:Encrypt",
+                        "kms:ReEncrypt*",
+                        "kms:GenerateDataKey*",
                       ],
                       "Effect": "Allow",
                       "Resource": {
@@ -554,6 +585,24 @@ export = {
                         }
                       },
                       "Resource": "*"
+                    },
+                    {
+                      "Action": [
+                        "kms:Decrypt",
+                        "kms:Encrypt",
+                        "kms:ReEncrypt*",
+                        "kms:GenerateDataKey*"
+                      ],
+                      "Effect": "Allow",
+                      "Principal": {
+                        "AWS": {
+                          "Fn::GetAtt": [
+                            "MyUserDC45028B",
+                            "Arn"
+                          ]
+                        }
+                      },
+                      "Resource": "*"
                     }
                   ],
                   "Version": "2012-10-17"
@@ -604,8 +653,9 @@ export = {
                     {
                       "Action": [
                         "kms:Decrypt",
-                        "kms:GenerateDataKey",
-                        "kms:Encrypt"
+                        "kms:Encrypt",
+                        "kms:ReEncrypt*",
+                        "kms:GenerateDataKey*"
                       ],
                       "Effect": "Allow",
                       "Resource": {
@@ -807,7 +857,7 @@ export = {
 
       const stackB = new cdk.Stack();
       const user = new iam.User(stackB, 'UserWhoNeedsAccess');
-      const theStreamFromStackAAsARefInStackB = Stream.import(stackB, 'RefToStreamFromStackA', refToStreamFromStackA);
+      const theStreamFromStackAAsARefInStackB = Stream.fromStreamAttributes(stackB, 'RefToStreamFromStackA', refToStreamFromStackA);
       theStreamFromStackAAsARefInStackB.grantRead(user);
 
       expect(stackA).toMatch({
@@ -881,7 +931,7 @@ export = {
 
       const stackB = new cdk.Stack();
       const user = new iam.User(stackB, 'UserWhoNeedsAccess');
-      const theStreamFromStackAAsARefInStackB = Stream.import(stackB, 'RefToStreamFromStackA', refToStreamFromStackA);
+      const theStreamFromStackAAsARefInStackB = Stream.fromStreamAttributes(stackB, 'RefToStreamFromStackA', refToStreamFromStackA);
       theStreamFromStackAAsARefInStackB.grantRead(user);
 
       expect(stackA).toMatch({

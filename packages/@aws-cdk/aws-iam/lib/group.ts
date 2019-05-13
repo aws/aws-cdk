@@ -1,9 +1,23 @@
-import { Construct } from '@aws-cdk/cdk';
+import { Construct, Resource } from '@aws-cdk/cdk';
 import { CfnGroup } from './iam.generated';
-import { IPrincipal, Policy } from './policy';
-import { ArnPrincipal, PolicyPrincipal, PolicyStatement } from './policy-document';
-import { User } from './user';
+import { IIdentity } from './identity-base';
+import { Policy } from './policy';
+import { ArnPrincipal, PolicyStatement, PrincipalPolicyFragment } from './policy-document';
+import { IPrincipal } from './principals';
+import { IUser } from './user';
 import { AttachedPolicies, undefinedIfEmpty } from './util';
+
+export interface IGroup extends IIdentity {
+  /**
+   * @attribute
+   */
+  readonly groupName: string;
+
+  /**
+   * @attribute
+   */
+  readonly groupArn: string;
+}
 
 export interface GroupProps {
   /**
@@ -34,25 +48,74 @@ export interface GroupProps {
   readonly path?: string;
 }
 
-export class Group extends Construct implements IPrincipal {
-  /**
-   * The runtime name of this group.
-   */
-  public readonly groupName: string;
+abstract class GroupBase extends Resource implements IGroup {
+  public abstract readonly groupName: string;
+  public abstract readonly groupArn: string;
 
-  /**
-   * The ARN of this group.
-   */
-  public readonly groupArn: string;
+  public readonly grantPrincipal: IPrincipal = this;
+  public readonly assumeRoleAction: string = 'sts:AssumeRole';
 
-  /**
-   * An "AWS" policy principal that represents this group.
-   */
-  public readonly principal: PolicyPrincipal;
-
-  private readonly managedPolicies: string[];
   private readonly attachedPolicies = new AttachedPolicies();
   private defaultPolicy?: Policy;
+
+  public get policyFragment(): PrincipalPolicyFragment {
+    return new ArnPrincipal(this.groupArn).policyFragment;
+  }
+
+  /**
+   * Attaches a policy to this group.
+   * @param policy The policy to attach.
+   */
+  public attachInlinePolicy(policy: Policy) {
+    this.attachedPolicies.attach(policy);
+    policy.attachToGroup(this);
+  }
+
+  public attachManagedPolicy(_arn: string) {
+    // drop
+  }
+
+  /**
+   * Adds a user to this group.
+   */
+  public addUser(user: IUser) {
+    user.addToGroup(this);
+  }
+
+  /**
+   * Adds an IAM statement to the default policy.
+   */
+  public addToPolicy(statement: PolicyStatement): boolean {
+    if (!this.defaultPolicy) {
+      this.defaultPolicy = new Policy(this, 'DefaultPolicy');
+      this.defaultPolicy.attachToGroup(this);
+    }
+
+    this.defaultPolicy.addStatement(statement);
+    return true;
+  }
+}
+
+export class Group extends GroupBase {
+
+  /**
+   * Imports a group from ARN
+   * @param groupArn (e.g. `arn:aws:iam::account-id:group/group-name`)
+   */
+  public static fromGroupArn(scope: Construct, id: string, groupArn: string): IGroup {
+    const groupName = scope.node.stack.parseArn(groupArn).resourceName!;
+    class Import extends GroupBase {
+      public groupName = groupName;
+      public groupArn = groupArn;
+    }
+
+    return new Import(scope, id);
+  }
+
+  public readonly groupName: string;
+  public readonly groupArn: string;
+
+  private readonly managedPolicies: string[];
 
   constructor(scope: Construct, id: string, props: GroupProps = {}) {
     super(scope, id);
@@ -67,7 +130,6 @@ export class Group extends Construct implements IPrincipal {
 
     this.groupName = group.groupName;
     this.groupArn = group.groupArn;
-    this.principal = new ArnPrincipal(this.groupArn);
   }
 
   /**
@@ -76,33 +138,5 @@ export class Group extends Construct implements IPrincipal {
    */
   public attachManagedPolicy(arn: string) {
     this.managedPolicies.push(arn);
-  }
-
-  /**
-   * Attaches a policy to this group.
-   * @param policy The policy to attach.
-   */
-  public attachInlinePolicy(policy: Policy) {
-    this.attachedPolicies.attach(policy);
-    policy.attachToGroup(this);
-  }
-
-  /**
-   * Adds a user to this group.
-   */
-  public addUser(user: User) {
-    user.addToGroup(this);
-  }
-
-  /**
-   * Adds an IAM statement to the default policy.
-   */
-  public addToPolicy(statement: PolicyStatement) {
-    if (!this.defaultPolicy) {
-      this.defaultPolicy = new Policy(this, 'DefaultPolicy');
-      this.defaultPolicy.attachToGroup(this);
-    }
-
-    this.defaultPolicy.addStatement(statement);
   }
 }

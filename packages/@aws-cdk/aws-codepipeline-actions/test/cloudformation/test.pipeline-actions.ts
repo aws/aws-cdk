@@ -34,8 +34,8 @@ export = nodeunit.testCase({
       _assertPermissionGranted(test, pipelineRole.statements, 'cloudformation:DeleteChangeSet', stackArn, changeSetCondition);
 
       // TODO: revert "as any" once we move all actions into a single package.
-      test.deepEqual((action as any).actionInputArtifacts, [artifact],
-                     'The inputArtifact was correctly registered');
+      test.deepEqual(action.inputs, [artifact],
+                     'The input was correctly registered');
 
       _assertActionMatches(test, stage.actions, 'AWS', 'CloudFormation', 'Deploy', {
         ActionMode: 'CHANGE_SET_CREATE_REPLACE',
@@ -317,11 +317,11 @@ class PipelineDouble extends cdk.Construct implements codepipeline.IPipeline {
     throw new Error('asEventRuleTarget() is unsupported in PipelineDouble');
   }
 
-  public grantBucketRead(_identity?: iam.IPrincipal): void {
+  public grantBucketRead(_identity?: iam.IGrantable): iam.Grant {
     throw new Error('grantBucketRead() is unsupported in PipelineDouble');
   }
 
-  public grantBucketReadWrite(_identity?: iam.IPrincipal): void {
+  public grantBucketReadWrite(_identity?: iam.IGrantable): iam.Grant {
     throw new Error('grantBucketReadWrite() is unsupported in PipelineDouble');
   }
 }
@@ -369,9 +369,10 @@ class RoleDouble extends iam.Role {
     super(scope, id, props);
   }
 
-  public addToPolicy(statement: iam.PolicyStatement) {
+  public addToPolicy(statement: iam.PolicyStatement): boolean {
     super.addToPolicy(statement);
     this.statements.push(statement);
+    return true;
   }
 }
 

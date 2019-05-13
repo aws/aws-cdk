@@ -42,7 +42,7 @@ export interface StackProps {
   readonly autoDeploy?: boolean;
 }
 
-const STACK_SYMBOL = Symbol('@aws-cdk/cdk.CfnReference');
+const STACK_SYMBOL = Symbol.for('@aws-cdk/cdk.Stack');
 
 /**
  * A root construct which represents a single CloudFormation stack.
@@ -66,8 +66,8 @@ export class Stack extends Construct {
    *
    * We do attribute detection since we can't reliably use 'instanceof'.
    */
-  public static isStack(x: any): x is Stack {
-    return x[STACK_SYMBOL] === true;
+  public static isStack(obj: any): obj is Stack {
+    return obj[STACK_SYMBOL] === true;
   }
 
   private static readonly VALID_STACK_NAME_REGEX = /^[A-Za-z][A-Za-z0-9-]*$/;
@@ -143,16 +143,16 @@ export class Stack extends Construct {
 
     Object.defineProperty(this, STACK_SYMBOL, { value: true });
 
-    if (name && !Stack.VALID_STACK_NAME_REGEX.test(name)) {
-      throw new Error(`Stack name must match the regular expression: ${Stack.VALID_STACK_NAME_REGEX.toString()}, got '${name}'`);
-    }
-
     this.configuredEnv = props.env || {};
     this.env = this.parseEnvironment(props.env);
 
     this.logicalIds = new LogicalIDs(props && props.namingScheme ? props.namingScheme : new HashedAddressingScheme());
     this.name = props.stackName !== undefined ? props.stackName : this.calculateStackName();
     this.autoDeploy = props && props.autoDeploy === false ? false : true;
+
+    if (!Stack.VALID_STACK_NAME_REGEX.test(this.name)) {
+      throw new Error(`Stack name must match the regular expression: ${Stack.VALID_STACK_NAME_REGEX.toString()}, got '${name}'`);
+    }
   }
 
   /**
@@ -422,7 +422,8 @@ export class Stack extends Construct {
    * 'path/to/exampleobject.png' but simply 'path'. This is a limitation
    * because there is no slicing functionality in CloudFormation templates.
    *
-   * @param sep The separator used to separate resource from resourceName
+   * @param arn The ARN string to parse
+   * @param sepIfToken The separator used to separate resource from resourceName
    * @param hasName Whether there is a name component in the ARN at all. For
    * example, SNS Topics ARNs have the 'resource' component contain the topic
    * name, and no 'resourceName' component.

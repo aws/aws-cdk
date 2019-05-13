@@ -9,7 +9,13 @@ async function main() {
   const args = yargs
     .env('CDK_TEST')
     .usage('Usage: cdk-test')
-    .option('force', { type: 'boolean', alias: 'f', desc: 'Force a rebuild' })
+    .option('quick', { type: 'boolean', alias: 'q', desc: `Skip slow tests`, default: false })
+    .option('jsii-diff', {
+      type: 'string',
+      desc: 'Specify a different jsii-diff executable',
+      default: require.resolve('jsii-diff/bin/jsii-diff'),
+      defaultDescription: 'jsii-diff provided by node dependencies'
+    })
     .option('jest', {
       type: 'string',
       desc: 'Specify a different jest executable',
@@ -33,7 +39,7 @@ async function main() {
   const options = cdkBuildOptions();
 
   if (options.test) {
-    await shell(options.test, timers);
+    await shell(options.test, { timers });
   }
 
   const testFiles = await unitTestFiles();
@@ -43,7 +49,7 @@ async function main() {
     if (testFiles.length > 0) {
       throw new Error(`Jest is enabled, but ${testFiles.length} nodeunit tests were found!`);
     }
-    await shell([args.jest, '--testEnvironment=node', '--coverage'], timers);
+    await shell([args.jest, '--testEnvironment=node', '--coverage', '--coverageReporters', 'html', 'lcov', 'text-summary'], { timers });
   } else if (testFiles.length > 0) {
     const testCommand: string[] = [];
 
@@ -67,12 +73,24 @@ async function main() {
     testCommand.push(args.nodeunit);
     testCommand.push(...testFiles.map(f => f.path));
 
-    await shell(testCommand, timers);
+    await shell(testCommand, { timers });
   }
 
   // Run integration test if the package has integ test files
   if (await hasIntegTests()) {
-    await shell(['cdk-integ-assert'], timers);
+    await shell(['cdk-integ-assert'], { timers });
+  }
+
+  // Run compatibility check if not disabled (against the latest
+  // published version)
+  if (!args.quick) {
+    try {
+      await shell([args["jsii-diff"], 'npm:'], { timers });
+    } catch (e) {
+      // If there was an exception running jsii-diff, swallow it
+      process.stderr.write(`The package seems to have undergone breaking API changes. Please revise and try to avoid.\n`);
+      process.stderr.write(`(This is just a warning for now but will soon become a build failure.)\n`);
+    }
   }
 }
 

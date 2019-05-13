@@ -1,5 +1,6 @@
 import { Test } from 'nodeunit';
-import { Fn, Root, Token, unresolved } from '../lib';
+import { App as Root, Fn, Token } from '../lib';
+import { TokenMap } from '../lib/token-map';
 import { evaluateCFN } from './evaluate-cfn';
 
 export = {
@@ -123,9 +124,9 @@ export = {
   },
 
   'isToken(obj) can be used to determine if an object is a token'(test: Test) {
-    test.ok(unresolved({ resolve: () => 123 }));
-    test.ok(unresolved({ a: 1, b: 2, resolve: () => 'hello' }));
-    test.ok(!unresolved({ a: 1, b: 2, resolve: 3 }));
+    test.ok(Token.isToken({ resolve: () => 123 }));
+    test.ok(Token.isToken({ a: 1, b: 2, resolve: () => 'hello' }));
+    test.ok(!Token.isToken({ a: 1, b: 2, resolve: 3 }));
     test.done();
   },
 
@@ -154,6 +155,27 @@ export = {
 
     // THEN
     test.deepEqual(evaluateCFN(resolved), 'The dog says: woof woof');
+    test.done();
+  },
+
+  'tokens stringification can be reversed'(test: Test) {
+    // GIVEN
+    const token = new Token(() => 'woof woof');
+
+    // THEN
+    test.equal(token, TokenMap.instance().lookupString(`${token}`));
+    test.done();
+  },
+
+  'concatenated tokens are undefined'(test: Test) {
+    // GIVEN
+    const token = new Token(() => 'woof woof');
+
+    // WHEN
+    test.equal(undefined, TokenMap.instance().lookupString(`${token}bla`));
+    test.equal(undefined, TokenMap.instance().lookupString(`bla${token}`));
+    test.equal(undefined, TokenMap.instance().lookupString(`bla`));
+
     test.done();
   },
 

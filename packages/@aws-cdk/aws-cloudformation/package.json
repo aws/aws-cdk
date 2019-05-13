@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/aws-cloudformation",
-  "version": "0.27.0",
+  "version": "0.31.0",
   "description": "CDK Constructs for AWS CloudFormation",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -20,7 +20,6 @@
         "signAssembly": true,
         "assemblyOriginatorKeyFile": "../../key.snk"
       },
-      "sphinx": {},
       "python": {
         "distName": "aws-cdk.aws-cloudformation",
         "module": "aws_cdk.aws_cloudformation"
@@ -29,7 +28,8 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/awslabs/aws-cdk.git"
+    "url": "https://github.com/awslabs/aws-cdk.git",
+    "directory": "packages/@aws-cdk/aws-cloudformation"
   },
   "scripts": {
     "build": "cdk-build",
@@ -58,24 +58,24 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "^0.27.0",
-    "@aws-cdk/aws-events": "^0.27.0",
+    "@aws-cdk/assert": "^0.31.0",
+    "@aws-cdk/aws-events": "^0.31.0",
     "@types/aws-lambda": "^8.10.23",
     "@types/nock": "^9.3.1",
     "@types/sinon": "^7.0.10",
     "aws-sdk-mock": "^4.3.1",
-    "cdk-build-tools": "^0.27.0",
-    "cdk-integ-tools": "^0.27.0",
-    "cfn2ts": "^0.27.0",
+    "cdk-build-tools": "^0.31.0",
+    "cdk-integ-tools": "^0.31.0",
+    "cfn2ts": "^0.31.0",
     "nock": "^10.0.6",
-    "pkglint": "^0.27.0",
+    "pkglint": "^0.31.0",
     "sinon": "^7.3.1"
   },
   "dependencies": {
-    "@aws-cdk/aws-iam": "^0.27.0",
-    "@aws-cdk/aws-lambda": "^0.27.0",
-    "@aws-cdk/aws-sns": "^0.27.0",
-    "@aws-cdk/cdk": "^0.27.0",
+    "@aws-cdk/aws-iam": "^0.31.0",
+    "@aws-cdk/aws-lambda": "^0.31.0",
+    "@aws-cdk/aws-sns": "^0.31.0",
+    "@aws-cdk/cdk": "^0.31.0",
     "aws-sdk": "^2.409.0"
   },
   "bundledDependencies": [
@@ -83,10 +83,10 @@
   ],
   "homepage": "https://github.com/awslabs/aws-cdk",
   "peerDependencies": {
-    "@aws-cdk/aws-iam": "^0.27.0",
-    "@aws-cdk/aws-lambda": "^0.27.0",
-    "@aws-cdk/aws-sns": "^0.27.0",
-    "@aws-cdk/cdk": "^0.27.0"
+    "@aws-cdk/aws-iam": "^0.31.0",
+    "@aws-cdk/aws-lambda": "^0.31.0",
+    "@aws-cdk/aws-sns": "^0.31.0",
+    "@aws-cdk/cdk": "^0.31.0"
   },
   "engines": {
     "node": ">= 8.10.0"

@@ -761,14 +761,6 @@
               ]
             },
             "Links": [],
-            "LinuxParameters": {
-              "Capabilities": {
-                "Add": [],
-                "Drop": []
-              },
-              "Devices": [],
-              "Tmpfs": []
-            },
             "LogConfiguration": {
               "LogDriver": "awslogs",
               "Options": {
@@ -882,11 +874,7 @@
               }
             },
             {
-              "Action": [
-                "ecr:GetAuthorizationToken",
-                "logs:CreateLogStream",
-                "logs:PutLogEvents"
-              ],
+              "Action": "ecr:GetAuthorizationToken",
               "Effect": "Allow",
               "Resource": "*"
             },
@@ -916,9 +904,6 @@
     },
     "FargateServiceLoggingLogGroup9B16742A": {
       "Type": "AWS::Logs::LogGroup",
-      "Properties": {
-        "RetentionInDays": 365
-      },
       "DeletionPolicy": "Retain"
     },
     "FargateServiceECC8084D": {
@@ -965,7 +950,8 @@
               }
             ]
           }
-        }
+        },
+        "ServiceRegistries": []
       },
       "DependsOn": [
         "FargateServiceLBPublicListenerECSGroupBE57E081",

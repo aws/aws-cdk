@@ -481,14 +481,6 @@
             "Essential": true,
             "Image": "amazon/amazon-ecs-sample",
             "Links": [],
-            "LinuxParameters": {
-              "Capabilities": {
-                "Add": [],
-                "Drop": []
-              },
-              "Devices": [],
-              "Tmpfs": []
-            },
             "LogConfiguration": {
               "LogDriver": "awslogs",
               "Options": {
@@ -593,9 +585,6 @@
     },
     "L3LoggingLogGroupBD1F02DD": {
       "Type": "AWS::Logs::LogGroup",
-      "Properties": {
-        "RetentionInDays": 365
-      },
       "DeletionPolicy": "Retain"
     },
     "L3Service616D5A93": {
@@ -642,7 +631,8 @@
               }
             ]
           }
-        }
+        },
+        "ServiceRegistries": []
       },
       "DependsOn": [
         "L3LBPublicListenerECSGroup648EEA11",

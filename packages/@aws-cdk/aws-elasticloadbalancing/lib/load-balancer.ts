@@ -2,7 +2,7 @@ import codedeploy = require('@aws-cdk/aws-codedeploy-api');
 import {
   AnyIPv4, Connections, IConnectable, IPortRange, ISecurityGroup,
   IVpcNetwork, IVpcSubnet, SecurityGroup, TcpPort  } from '@aws-cdk/aws-ec2';
-import cdk = require('@aws-cdk/cdk');
+import { Construct, Resource, Token } from '@aws-cdk/cdk';
 import { CfnLoadBalancer } from './elasticloadbalancing.generated';
 
 /**
@@ -109,6 +109,7 @@ export interface HealthCheck {
 export interface ILoadBalancerTarget extends IConnectable {
   /**
    * Attach load-balanced target to a classic ELB
+   * @param loadBalancer [disable-awslint:ref-via-interface] The load balancer to attach the target to
    */
   attachToClassicLB(loadBalancer: LoadBalancer): void;
 }
@@ -187,7 +188,7 @@ export enum LoadBalancingProtocol {
  *
  * Routes to a fleet of of instances in a VPC.
  */
-export class LoadBalancer extends cdk.Construct implements IConnectable, codedeploy.ILoadBalancer {
+export class LoadBalancer extends Resource implements IConnectable, codedeploy.ILoadBalancer {
   /**
    * Control all connections from and to this load balancer
    */
@@ -205,7 +206,7 @@ export class LoadBalancer extends cdk.Construct implements IConnectable, codedep
   private readonly instancePorts: number[] = [];
   private readonly targets: ILoadBalancerTarget[] = [];
 
-  constructor(scope: cdk.Construct, id: string, props: LoadBalancerProps) {
+  constructor(scope: Construct, id: string, props: LoadBalancerProps) {
     super(scope, id);
 
     this.securityGroup = new SecurityGroup(this, 'SecurityGroup', { vpc: props.vpc, allowAllOutbound: false });
@@ -217,7 +218,7 @@ export class LoadBalancer extends cdk.Construct implements IConnectable, codedep
     this.elb = new CfnLoadBalancer(this, 'Resource', {
       securityGroups: [ this.securityGroup.securityGroupId ],
       subnets: subnets.map(s => s.subnetId),
-      listeners: new cdk.Token(() => this.listeners),
+      listeners: new Token(() => this.listeners),
       scheme: props.internetFacing ? 'internet-facing' : 'internal',
       healthCheck: props.healthCheck && healthCheckToJSON(props.healthCheck),
     });
@@ -271,22 +272,44 @@ export class LoadBalancer extends cdk.Construct implements IConnectable, codedep
     this.newTarget(target);
   }
 
+  /**
+   * @attribute
+   */
   public get loadBalancerName() {
     return this.elb.ref;
   }
 
+  /**
+   * @attribute
+   */
+  public get loadBalancerCanonicalHostedZoneNameId() {
+    return this.elb.loadBalancerCanonicalHostedZoneNameId;
+  }
+
+  /**
+   * @attribute
+   */
   public get loadBalancerCanonicalHostedZoneName() {
     return this.elb.loadBalancerCanonicalHostedZoneName;
   }
 
+  /**
+   * @attribute
+   */
   public get loadBalancerDnsName() {
     return this.elb.loadBalancerDnsName;
   }
 
+  /**
+   * @attribute
+   */
   public get loadBalancerSourceSecurityGroupGroupName() {
     return this.elb.loadBalancerSourceSecurityGroupGroupName;
   }
 
+  /**
+   * @attribute
+   */
   public get loadBalancerSourceSecurityGroupOwnerAlias() {
     return this.elb.loadBalancerSourceSecurityGroupOwnerAlias;
   }

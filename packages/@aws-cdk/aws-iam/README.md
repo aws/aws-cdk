@@ -22,6 +22,14 @@ an `ExternalId` works like this:
 
 [supplying an external ID](test/example.external-id.lit.ts)
 
+### Principals vs Identities
+
+When we say *Principal*, we mean an entity you grant permissions to. This
+entity can be an AWS Service, a Role, or something more abstract such as "all
+users in this account" or even "all users in this organization". An
+*Identity* is an IAM representing a single IAM entity that can have
+a policy attached, one of `Role`, `User`, or `Group`.
+
 ### IAM Principals
 
 When defining policy statements as part of an AssumeRole policy or as part of a
@@ -70,7 +78,7 @@ The `CompositePrincipal` class can also be used to define complex principals, fo
 ```ts
 const role = new iam.Role(this, 'MyRole', {
   assumedBy: new iam.CompositePrincipal(
-    new iam.ServicePrincipal('ec2.amazonawas.com'),
+    new iam.ServicePrincipal('ec2.amazonaws.com'),
     new iam.AccountPrincipal('1818188181818187272')
   )
 });

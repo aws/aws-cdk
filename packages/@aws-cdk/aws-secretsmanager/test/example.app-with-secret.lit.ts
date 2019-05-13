@@ -7,14 +7,14 @@ class ExampleStack extends cdk.Stack {
     super(scope, id);
 
     /// !show
-    const loginSecret = new secretsmanager.SecretString(this, 'Secret', {
-      secretId: 'SomeLogin'
+    const loginSecret = secretsmanager.Secret.fromSecretAttributes(this, 'Secret', {
+      secretArn: 'SomeLogin'
     });
 
     new iam.User(this, 'User', {
       // Get the 'password' field from the secret that looks like
       // { "username": "XXXX", "password": "YYYY" }
-      password: loginSecret.jsonFieldValue('password')
+      password: loginSecret.secretJsonValue('password')
     });
     /// !hide
 

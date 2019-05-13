@@ -1,17 +1,24 @@
 import iam = require('@aws-cdk/aws-iam');
 import kms = require('@aws-cdk/aws-kms');
 import s3 = require('@aws-cdk/aws-s3');
-import cdk = require('@aws-cdk/cdk');
+import { CfnOutput, Construct, Fn, IResource, Resource } from '@aws-cdk/cdk';
 import { DataFormat } from './data-format';
 import { IDatabase } from './database';
 import { CfnTable } from './glue.generated';
 import { Column } from './schema';
 
-export interface ITable extends cdk.IConstruct {
+export interface ITable extends IResource {
+  /**
+   * @attribute
+   */
   readonly tableArn: string;
+
+  /**
+   * @attribute
+   */
   readonly tableName: string;
 
-  export(): TableImportProps;
+  export(): TableAttributes;
 }
 
 /**
@@ -49,7 +56,7 @@ export enum TableEncryption {
   ClientSideKms = 'CSE-KMS'
 }
 
-export interface TableImportProps {
+export interface TableAttributes {
   readonly tableArn: string;
   readonly tableName: string;
 }
@@ -142,16 +149,34 @@ export interface TableProps {
 /**
  * A Glue table.
  */
-export class Table extends cdk.Construct implements ITable {
+export class Table extends Resource implements ITable {
+
+  public static fromTableArn(scope: Construct, id: string, tableArn: string): ITable {
+    const tableName = Fn.select(1, Fn.split('/', scope.node.stack.parseArn(tableArn).resourceName!));
+
+    return Table.fromTableAttributes(scope, id, {
+      tableArn,
+      tableName
+    });
+  }
+
   /**
    * Creates a Table construct that represents an external table.
    *
    * @param scope The scope creating construct (usually `this`).
    * @param id The construct's id.
-   * @param props A `TableImportProps` object. Can be obtained from a call to `table.export()` or manually created.
+   * @param attrs A `TableImportProps` object. Can be obtained from a call to `table.export()` or manually created.
    */
-  public static import(scope: cdk.Construct, id: string, props: TableImportProps): ITable {
-    return new ImportedTable(scope, id, props);
+  public static fromTableAttributes(scope: Construct, id: string, attrs: TableAttributes): ITable {
+    class Import extends Construct implements ITable {
+      public readonly tableArn = attrs.tableArn;
+      public readonly tableName = attrs.tableName;
+      public export(): TableAttributes {
+        return attrs;
+      }
+    }
+
+    return new Import(scope, id);
   }
 
   /**
@@ -204,7 +229,7 @@ export class Table extends cdk.Construct implements ITable {
    */
   public readonly partitionKeys?: Column[];
 
-  constructor(scope: cdk.Construct, id: string, props: TableProps) {
+  constructor(scope: Construct, id: string, props: TableProps) {
     super(scope, id);
 
     this.database = props.database;
@@ -254,66 +279,55 @@ export class Table extends cdk.Construct implements ITable {
     this.tableArn = `${this.database.databaseArn}/${this.tableName}`;
   }
 
-  public export(): TableImportProps {
+  public export(): TableAttributes {
     return {
-      tableName: new cdk.CfnOutput(this, 'TableName', { value: this.tableName }).makeImportValue().toString(),
-      tableArn: new cdk.CfnOutput(this, 'TableArn', { value: this.tableArn }).makeImportValue().toString(),
+      tableName: new CfnOutput(this, 'TableName', { value: this.tableName }).makeImportValue().toString(),
+      tableArn: new CfnOutput(this, 'TableArn', { value: this.tableArn }).makeImportValue().toString(),
     };
   }
 
   /**
    * Grant read permissions to the table and the underlying data stored in S3 to an IAM principal.
    *
-   * @param identity the principal
+   * @param grantee the principal
    */
-  public grantRead(identity: iam.IPrincipal): void {
-    this.grant(identity, {
-      permissions: readPermissions,
-      kmsActions: ['kms:Decrypt']
-    });
-    this.bucket.grantRead(identity, this.s3Prefix);
+  public grantRead(grantee: iam.IGrantable): iam.Grant {
+    const ret = this.grant(grantee, readPermissions);
+    if (this.encryptionKey && this.encryption === TableEncryption.ClientSideKms) { this.encryptionKey.grantDecrypt(grantee); }
+    this.bucket.grantRead(grantee, this.s3Prefix);
+    return ret;
   }
 
   /**
    * Grant write permissions to the table and the underlying data stored in S3 to an IAM principal.
    *
-   * @param identity the principal
+   * @param grantee the principal
    */
-  public grantWrite(identity: iam.IPrincipal): void {
-    this.grant(identity, {
-      permissions: writePermissions,
-      kmsActions: ['kms:Encrypt', 'kms:GenerateDataKey']
-    });
-    this.bucket.grantWrite(identity, this.s3Prefix);
+  public grantWrite(grantee: iam.IGrantable): iam.Grant {
+    const ret = this.grant(grantee, writePermissions);
+    if (this.encryptionKey && this.encryption === TableEncryption.ClientSideKms) { this.encryptionKey.grantEncrypt(grantee); }
+    this.bucket.grantWrite(grantee, this.s3Prefix);
+    return ret;
   }
 
   /**
    * Grant read and write permissions to the table and the underlying data stored in S3 to an IAM principal.
    *
-   * @param identity the principal
+   * @param grantee the principal
    */
-  public grantReadWrite(identity: iam.IPrincipal): void {
-    this.grant(identity, {
-      permissions: readPermissions.concat(writePermissions),
-      kmsActions: ['kms:Decrypt', 'kms:Encrypt', 'kms:GenerateDataKey']
-    });
-    this.bucket.grantReadWrite(identity, this.s3Prefix);
+  public grantReadWrite(grantee: iam.IGrantable): iam.Grant {
+    const ret = this.grant(grantee, [...readPermissions, ...writePermissions]);
+    if (this.encryptionKey && this.encryption === TableEncryption.ClientSideKms) { this.encryptionKey.grantEncryptDecrypt(grantee); }
+    this.bucket.grantReadWrite(grantee, this.s3Prefix);
+    return ret;
   }
 
-  private grant(identity: iam.IPrincipal, props: {
-    permissions: string[];
-    // CSE-KMS needs to grant its own KMS policies because the bucket is unaware of the key.
-    // TODO: we wouldn't need this if kms.EncryptionKey exposed grant methods.
-    kmsActions?: string[];
-  }) {
-    identity.addToPolicy(new iam.PolicyStatement()
-      .addResource(this.tableArn)
-      .addActions(...props.permissions));
-    if (this.encryption === TableEncryption.ClientSideKms) {
-      identity.addToPolicy(new iam.PolicyStatement()
-        .addResource(this.encryptionKey!.keyArn)
-        .addActions(...props.kmsActions!));
-    }
+  private grant(grantee: iam.IGrantable, actions: string[]) {
+    return iam.Grant.addToPrincipal({
+      grantee,
+      resourceArns: [this.tableArn],
+      actions,
+    });
   }
 }
 
@@ -407,19 +421,4 @@ function renderColumns(columns?: Array<Column | Column>) {
       comment: column.comment
     };
   });
-}
-
-class ImportedTable extends cdk.Construct implements ITable {
-  public readonly tableArn: string;
-  public readonly tableName: string;
-
-  constructor(scope: cdk.Construct, id: string, private readonly props: TableImportProps) {
-    super(scope, id);
-    this.tableArn = props.tableArn;
-    this.tableName = props.tableName;
-  }
-
-  public export(): TableImportProps {
-    return this.props;
-  }
 }

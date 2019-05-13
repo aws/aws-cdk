@@ -29,15 +29,14 @@ export class DynamoEventSource implements lambda.IEventSource {
     }
   }
 
-  public bind(target: lambda.FunctionBase) {
-    new lambda.EventSourceMapping(target, `DynamoDBEventSource:${this.table.node.uniqueId}`, {
-      target,
+  public bind(target: lambda.IFunction) {
+    target.addEventSourceMapping(`DynamoDBEventSource:${this.table.node.uniqueId}`, {
       batchSize: this.props.batchSize || 100,
       eventSourceArn: this.table.tableStreamArn,
       startingPosition: this.props.startingPosition
     });
 
-    this.table.grantStreamRead(target.role);
-    dynamodb.Table.grantListStreams(target.role);
+    this.table.grantStreamRead(target);
+    dynamodb.Table.grantListStreams(target);
   }
 }

@@ -1524,18 +1524,6 @@
         "description": "Set RefKind of AWS::EC2::TransitGatewayRouteTablePropagation to Id"
       }
     },
-    "AWS::EC2::TrunkInterfaceAssociation": {
-      "patch": {
-        "operations": [
-          {
-            "op": "add",
-            "path": "/RefKind",
-            "value": "Id"
-          }
-        ],
-        "description": "Set RefKind of AWS::EC2::TrunkInterfaceAssociation to Id"
-      }
-    },
     "AWS::EC2::VPC": {
       "patch": {
         "operations": [
@@ -4606,6 +4594,102 @@
           }
         ],
         "description": "Set RefKind of AWS::Greengrass::SubscriptionDefinitionVersion to Arn"
+      }
+    },
+    "AWS::AppMesh::Mesh": {
+      "patch": {
+        "operations": [
+          {
+            "op": "add",
+            "path": "/RefKind",
+            "value": "Arn"
+          }
+        ],
+        "description": "Set RefKind of AWS::AppMesh::Mesh to Arn"
+      }
+    },
+    "AWS::AppMesh::Route": {
+      "patch": {
+        "operations": [
+          {
+            "op": "add",
+            "path": "/RefKind",
+            "value": "Arn"
+          }
+        ],
+        "description": "Set RefKind of AWS::AppMesh::Route to Arn"
+      }
+    },
+    "AWS::AppMesh::VirtualNode": {
+      "patch": {
+        "operations": [
+          {
+            "op": "add",
+            "path": "/RefKind",
+            "value": "Arn"
+          }
+        ],
+        "description": "Set RefKind of AWS::AppMesh::VirtualNode to Arn"
+      }
+    },
+    "AWS::AppMesh::VirtualRouter": {
+      "patch": {
+        "operations": [
+          {
+            "op": "add",
+            "path": "/RefKind",
+            "value": "Arn"
+          }
+        ],
+        "description": "Set RefKind of AWS::AppMesh::VirtualRouter to Arn"
+      }
+    },
+    "AWS::AppMesh::VirtualService": {
+      "patch": {
+        "operations": [
+          {
+            "op": "add",
+            "path": "/RefKind",
+            "value": "Arn"
+          }
+        ],
+        "description": "Set RefKind of AWS::AppMesh::VirtualService to Arn"
+      }
+    },
+    "AWS::Greengrass::ResourceDefinition": {
+      "patch": {
+        "operations": [
+          {
+            "op": "add",
+            "path": "/RefKind",
+            "value": "Id"
+          }
+        ],
+        "description": "Set RefKind of AWS::Greengrass::ResourceDefinition to Id"
+      }
+    },
+    "AWS::ApiGatewayV2::ApiMapping": {
+      "patch": {
+        "operations": [
+          {
+            "op": "add",
+            "path": "/RefKind",
+            "value": "Id"
+          }
+        ],
+        "description": "Set RefKind of AWS::ApiGatewayV2::ApiMapping to Id"
+      }
+    },
+    "AWS::ApiGatewayV2::DomainName": {
+      "patch": {
+        "operations": [
+          {
+            "op": "add",
+            "path": "/RefKind",
+            "value": "Name"
+          }
+        ],
+        "description": "Set RefKind of AWS::ApiGatewayV2::DomainName to Name"
       }
     }
   }

@@ -4,7 +4,13 @@ import path = require('path');
 import semver = require('semver');
 import { LICENSE, NOTICE } from './licensing';
 import { PackageJson, ValidationRule } from './packagejson';
-import { deepGet, deepSet, expectDevDependency, expectJSON, fileShouldBe, fileShouldContain, monoRepoVersion } from './util';
+import {
+  deepGet, deepSet,
+  expectDevDependency, expectJSON,
+  fileShouldBe, fileShouldContain,
+  findInnerPackages,
+  monoRepoRoot, monoRepoVersion
+} from './util';
 
 /**
  * Verify that the package name matches the directory name
@@ -45,6 +51,8 @@ export class RepositoryCorrect extends ValidationRule {
   public validate(pkg: PackageJson): void {
     expectJSON(this.name, pkg, 'repository.type', 'git');
     expectJSON(this.name, pkg, 'repository.url', 'https://github.com/awslabs/aws-cdk.git');
+    const pkgDir = path.relative(monoRepoRoot(), pkg.packageRoot);
+    expectJSON(this.name, pkg, 'repository.directory', pkgDir);
   }
 }
 
@@ -204,15 +212,6 @@ export class JSIIPythonTarget extends ValidationRule {
   }
 }
 
-export class JSIISphinxTarget extends ValidationRule {
-  public readonly name = 'jsii/sphinx';
-
-  public validate(pkg: PackageJson): void {
-    if (!isJSII(pkg)) { return; }
-    expectJSON(this.name, pkg, 'jsii.targets.sphinx', { });
-  }
-}
-
 export class CDKPackage extends ValidationRule {
   public readonly name = 'package-info/scripts/package';
 
@@ -235,6 +234,21 @@ export class CDKPackage extends ValidationRule {
     fileShouldContain(this.name, pkg, '.gitignore', outdir);
     fileShouldContain(this.name, pkg, '.npmignore', merkleMarker);
     fileShouldContain(this.name, pkg, '.gitignore', merkleMarker);
+  }
+}
+
+export class NoTsBuildInfo extends ValidationRule {
+  public readonly name = 'no-tsc-build-info';
+
+  public validate(pkg: PackageJson): void {
+    // skip private packages
+    if (pkg.json.private) { return; }
+
+    // Stop 'tsconfig.tsbuildinfo' and regular '.tsbuildinfo' files from being
+    // published to NPM.
+    // We might at some point also want to strip tsconfig.json but for now,
+    // the TypeScript DOCS BUILD needs to it to load the typescript source.
+    fileShouldContain(this.name, pkg, '.npmignore', '*.tsbuildinfo');
   }
 }
 
@@ -746,6 +760,36 @@ export class JestCoverageTarget extends ValidationRule {
           });
         }
       }
+    }
+  }
+}
+
+/**
+ * Packages inside JSII packages (typically used for embedding Lambda handles)
+ * must only have dev dependencies and their node_modules must have been
+ * blacklisted for publishing
+ *
+ * We might loosen this at some point but we'll have to bundle all runtime dependencies
+ * and we don't have good transitive license checks.
+ */
+export class PackageInJsiiPackageNoRuntimeDeps extends ValidationRule {
+  public name = 'lambda-packages-no-runtime-deps';
+
+  public validate(pkg: PackageJson) {
+    if (!isJSII(pkg)) { return; }
+
+    for (const inner of findInnerPackages(pkg.packageRoot)) {
+      const innerPkg = PackageJson.fromDirectory(inner);
+
+      if (Object.keys(innerPkg.dependencies).length > 0) {
+        pkg.report({
+          ruleName: `${this.name}:1`,
+          message: `NPM Package '${innerPkg.packageName}' inside jsii package can only have devDepencencies`
+        });
+      }
+
+      const nodeModulesRelPath = path.relative(pkg.packageRoot, innerPkg.packageRoot) + '/node_modules';
+      fileShouldContain(`${this.name}:2`, pkg, '.npmignore', nodeModulesRelPath);
     }
   }
 }

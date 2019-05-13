@@ -130,7 +130,7 @@ export class S3BucketBuildArtifacts extends BuildArtifacts {
    * @internal
    */
   public _bind(project: Project) {
-    this.props.bucket.grantReadWrite(project.role);
+    this.props.bucket.grantReadWrite(project);
   }
 
   protected toArtifactsProperty(): any {

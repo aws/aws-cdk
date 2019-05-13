@@ -10,8 +10,9 @@
 * [ ] Docs
   - __jsdocs__: All public APIs documented
   - __README__: README and/or documentation topic updated
+  - __Design__: For significant features, design document added to `design` folder
 * [ ] Title and Description
-  - __Change type__: title prefixed with **fix**, **feat** will appear in changelog
+  - __Change type__: title prefixed with **fix**, **feat** and module name in parens, which will appear in changelog
   - __Title__: use lower-case and doesn't end with a period
   - __Breaking?__: last paragraph: "BREAKING CHANGE: <describe what changed + link for details>"
   - __Issues__: Indicate issues fixed via: "**Fixes #xxx**" or "**Closes #xxx**"

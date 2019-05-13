@@ -1,5 +1,5 @@
 import { Test } from 'nodeunit';
-import { CfnMapping, CfnResource, Stack } from '../lib';
+import { Aws, CfnMapping, CfnResource, Fn, Stack } from '../lib';
 
 export = {
   'mappings can be added as another type of entity, and mapping.findInMap can be used to get a token'(test: Test) {
@@ -41,6 +41,67 @@ export = {
           { RefToValueInMap:
            { 'Fn::FindInMap': [ 'MyMapping', 'TopLevelKey1', 'SecondLevelKey1' ] } } } } });
 
+    test.done();
+  },
+
+  'allow using unresolved tokens in find-in-map'(test: Test) {
+    const stack = new Stack();
+
+    const mapping = new CfnMapping(stack, 'mapping', {
+      mapping: {
+        instanceCount: {
+          'us-east-1': 12
+        }
+      }
+    });
+
+    const v1 = mapping.findInMap('instanceCount', Aws.region);
+    const v2 = Fn.findInMap(mapping.logicalId, 'instanceCount', Aws.region);
+
+    const expected = { 'Fn::FindInMap': [ 'mapping', 'instanceCount', { Ref: 'AWS::Region' } ] };
+    test.deepEqual(stack.node.resolve(v1), expected);
+    test.deepEqual(stack.node.resolve(v2), expected);
+    test.done();
+  },
+
+  'no validation if first key is token and second is a static string'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+    const mapping = new CfnMapping(stack, 'mapping', {
+      mapping: {
+        'us-east-1': {
+          size: 12
+        }
+      }
+    });
+
+    // WHEN
+    const v = mapping.findInMap(Aws.region, 'size');
+
+    // THEN
+    test.deepEqual(stack.node.resolve(v), {
+      "Fn::FindInMap": [ 'mapping', { Ref: "AWS::Region" }, "size" ]
+    });
+    test.done();
+  },
+
+  'validate first key if it is a string and second is a token'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+    const mapping = new CfnMapping(stack, 'mapping', {
+      mapping: {
+        size: {
+          'us-east-1': 12
+        }
+      }
+    });
+
+    // WHEN
+    const v = mapping.findInMap('size', Aws.region);
+
+    // THEN
+    test.throws(() => mapping.findInMap('not-found', Aws.region), /Mapping doesn't contain top-level key 'not-found'/);
+    test.deepEqual(stack.node.resolve(v), { 'Fn::FindInMap': [ 'mapping', 'size', { Ref: 'AWS::Region' } ] });
     test.done();
   },
 };

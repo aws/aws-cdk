@@ -1,5 +1,5 @@
 import codepipeline = require('@aws-cdk/aws-codepipeline');
-import cdk = require('@aws-cdk/cdk');
+import { SecretValue } from '@aws-cdk/cdk';
 
 /**
  * Construction properties of the {@link AlexaSkillDeployAction Alexa deploy Action}.
@@ -13,12 +13,12 @@ export interface AlexaSkillDeployActionProps extends codepipeline.CommonActionPr
   /**
    * The client secret of the developer console token
    */
-  readonly clientSecret: string;
+  readonly clientSecret: SecretValue;
 
   /**
    * The refresh token of the developer console token
    */
-  readonly refreshToken: string;
+  readonly refreshToken: SecretValue;
 
   /**
    * The Alexa skill id
@@ -28,7 +28,7 @@ export interface AlexaSkillDeployActionProps extends codepipeline.CommonActionPr
   /**
    * The source artifact containing the voice model and skill manifest
    */
-  readonly inputArtifact: codepipeline.Artifact;
+  readonly input: codepipeline.Artifact;
 
   /**
    * An optional artifact containing overrides for the skill manifest
@@ -39,21 +39,20 @@ export interface AlexaSkillDeployActionProps extends codepipeline.CommonActionPr
 /**
  * Deploys the skill to Alexa
  */
-export class AlexaSkillDeployAction extends codepipeline.DeployAction {
+export class AlexaSkillDeployAction extends codepipeline.Action {
   constructor(props: AlexaSkillDeployActionProps) {
-    cdk.Secret.assertSafeSecret(props.clientSecret, 'clientSecret');
-    cdk.Secret.assertSafeSecret(props.refreshToken, 'refreshToken');
-
     super({
       ...props,
+      category: codepipeline.ActionCategory.Deploy,
+      owner: 'ThirdParty',
+      provider: 'AlexaSkillsKit',
       artifactBounds: {
         minInputs: 1,
         maxInputs: 2,
         minOutputs: 0,
         maxOutputs: 0,
       },
-      owner: 'ThirdParty',
-      provider: 'AlexaSkillsKit',
+      inputs: getInputs(props),
       configuration: {
         ClientId: props.clientId,
         ClientSecret: props.clientSecret,
@@ -61,13 +60,17 @@ export class AlexaSkillDeployAction extends codepipeline.DeployAction {
         SkillId: props.skillId,
       },
     });
-
-    if (props.parameterOverridesArtifact) {
-      this.addInputArtifact(props.parameterOverridesArtifact);
-    }
   }
 
   protected bind(_info: codepipeline.ActionBind): void {
     // nothing to do
   }
+}
+
+function getInputs(props: AlexaSkillDeployActionProps): codepipeline.Artifact[] {
+  const ret = [props.input];
+  if (props.parameterOverridesArtifact) {
+    ret.push(props.parameterOverridesArtifact);
+  }
+  return ret;
 }

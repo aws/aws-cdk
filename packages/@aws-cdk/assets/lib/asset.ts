@@ -4,6 +4,7 @@ import cdk = require('@aws-cdk/cdk');
 import cxapi = require('@aws-cdk/cx-api');
 import fs = require('fs');
 import path = require('path');
+import { Staging } from './staging';
 
 /**
  * Defines the way an asset is packaged before it is uploaded to S3.
@@ -21,7 +22,7 @@ export enum AssetPackaging {
   File = 'file',
 }
 
-export interface GenericAssetProps {
+export interface AssetProps {
   /**
    * The disk location of the asset.
    */
@@ -36,7 +37,7 @@ export interface GenericAssetProps {
    * A list of principals that should be able to read this asset from S3.
    * You can use `asset.grantRead(principal)` to grant read permissions later.
    */
-  readonly readers?: iam.IPrincipal[];
+  readonly readers?: iam.IGrantable[];
 }
 
 /**
@@ -61,7 +62,10 @@ export class Asset extends cdk.Construct {
   public readonly s3Url: string;
 
   /**
-   * Resolved full-path location of this asset.
+   * The path to the asset (stringinfied token).
+   *
+   * If asset staging is disabled, this will just be the original path.
+   * If asset staging is enabled it will be the staged path.
    */
   public readonly assetPath: string;
 
@@ -81,19 +85,23 @@ export class Asset extends cdk.Construct {
    */
   private readonly s3Prefix: string;
 
-  constructor(scope: cdk.Construct, id: string, props: GenericAssetProps) {
+  constructor(scope: cdk.Construct, id: string, props: AssetProps) {
     super(scope, id);
 
-    // resolve full path
-    this.assetPath = path.resolve(props.path);
+    // stage the asset source (conditionally).
+    const staging = new Staging(this, 'Stage', {
+      sourcePath: path.resolve(props.path)
+    });
+
+    this.assetPath = staging.stagedPath;
 
     // sets isZipArchive based on the type of packaging and file extension
     const allowedExtensions: string[] = ['.jar', '.zip'];
     this.isZipArchive = props.packaging === AssetPackaging.ZipDirectory
       ? true
-      : allowedExtensions.some(ext => this.assetPath.toLowerCase().endsWith(ext));
+      : allowedExtensions.some(ext => staging.sourcePath.toLowerCase().endsWith(ext));
 
-    validateAssetOnDisk(this.assetPath, props.packaging);
+    validateAssetOnDisk(staging.sourcePath, props.packaging);
 
     // add parameters for s3 bucket and s3 key. those will be set by
     // the toolkit or by CI/CD when the stack is deployed and will include
@@ -114,9 +122,7 @@ export class Asset extends cdk.Construct {
     const s3Filename = cdk.Fn.select(1, cdk.Fn.split(cxapi.ASSET_PREFIX_SEPARATOR, keyParam.stringValue)).toString();
     this.s3ObjectKey = `${this.s3Prefix}${s3Filename}`;
 
-    this.bucket = s3.Bucket.import(this, 'AssetBucket', {
-      bucketName: this.s3BucketName
-    });
+    this.bucket = s3.Bucket.fromBucketName(this, 'AssetBucket', this.s3BucketName);
 
     // form the s3 URL of the object key
     this.s3Url = this.bucket.urlForObject(this.s3ObjectKey);
@@ -152,7 +158,7 @@ export class Asset extends cdk.Construct {
    *
    * @see https://github.com/awslabs/aws-cdk/issues/1432
    *
-   * @param resource The CloudFormation resource which is using this asset.
+   * @param resource The CloudFormation resource which is using this asset [disable-awslint:ref-via-interface]
    * @param resourceProperty The property name where this asset is referenced
    * (e.g. "Code" for AWS::Lambda::Function)
    */
@@ -171,12 +177,12 @@ export class Asset extends cdk.Construct {
   /**
    * Grants read permissions to the principal on the asset's S3 object.
    */
-  public grantRead(principal?: iam.IPrincipal) {
+  public grantRead(grantee: iam.IGrantable) {
     // We give permissions on all files with the same prefix. Presumably
     // different versions of the same file will have the same prefix
     // and we don't want to accidentally revoke permission on old versions
     // when deploying a new version.
-    this.bucket.grantRead(principal, `${this.s3Prefix}*`);
+    this.bucket.grantRead(grantee, `${this.s3Prefix}*`);
   }
 }
 
@@ -190,7 +196,7 @@ export interface FileAssetProps {
    * A list of principals that should be able to read this file asset from S3.
    * You can use `asset.grantRead(principal)` to grant read permissions later.
    */
-  readonly readers?: iam.IPrincipal[];
+  readonly readers?: iam.IGrantable[];
 }
 
 /**
@@ -212,7 +218,7 @@ export interface ZipDirectoryAssetProps {
    * A list of principals that should be able to read this ZIP file from S3.
    * You can use `asset.grantRead(principal)` to grant read permissions later.
    */
-  readonly readers?: iam.IPrincipal[];
+  readonly readers?: iam.IGrantable[];
 }
 
 /**

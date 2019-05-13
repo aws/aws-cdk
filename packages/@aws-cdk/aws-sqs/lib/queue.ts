@@ -1,6 +1,6 @@
 import kms = require('@aws-cdk/aws-kms');
-import cdk = require('@aws-cdk/cdk');
-import { IQueue, QueueBase, QueueImportProps } from './queue-base';
+import { CfnOutput, Construct } from '@aws-cdk/cdk';
+import { IQueue, QueueAttributes, QueueBase } from './queue-base';
 import { CfnQueue } from './sqs.generated';
 import { validateProps } from './validate-props';
 
@@ -180,11 +180,38 @@ export enum QueueEncryption {
  * A new Amazon SQS queue
  */
 export class Queue extends QueueBase {
+
+  public static fromQueueArn(scope: Construct, id: string, queueArn: string): IQueue {
+    return Queue.fromQueueAttributes(scope, id, { queueArn });
+  }
+
   /**
    * Import an existing queue
    */
-  public static import(scope: cdk.Construct, id: string, props: QueueImportProps): IQueue {
-    return new ImportedQueue(scope, id, props);
+  public static fromQueueAttributes(scope: Construct, id: string, attrs: QueueAttributes): IQueue {
+    const stack = scope.node.stack;
+    const queueName = attrs.queueName || stack.parseArn(attrs.queueArn).resource;
+    const queueUrl = attrs.queueUrl || `https://sqs.${stack.region}.${stack.urlSuffix}/${stack.accountId}/${queueName}`;
+
+    class Import extends QueueBase {
+      public readonly queueArn = attrs.queueArn; // arn:aws:sqs:us-east-1:123456789012:queue1
+      public readonly queueUrl = queueUrl;
+      public readonly queueName = queueName;
+      public readonly encryptionMasterKey = attrs.keyArn
+        ? kms.EncryptionKey.import(this, 'Key', { keyArn: attrs.keyArn })
+        : undefined;
+
+      protected readonly autoCreatePolicy = false;
+
+      /**
+       * Export a queue
+       */
+      public export() {
+        return attrs;
+      }
+    }
+
+    return new Import(scope, id);
   }
 
   /**
@@ -209,7 +236,7 @@ export class Queue extends QueueBase {
 
   protected readonly autoCreatePolicy = true;
 
-  constructor(scope: cdk.Construct, id: string, props: QueueProps = {}) {
+  constructor(scope: Construct, id: string, props: QueueProps = {}) {
     super(scope, id);
 
     validateProps(props);
@@ -285,12 +312,12 @@ export class Queue extends QueueBase {
   /**
    * Export a queue
    */
-  public export(): QueueImportProps {
+  public export(): QueueAttributes {
     return {
-      queueArn: new cdk.CfnOutput(this, 'QueueArn', { value: this.queueArn }).makeImportValue().toString(),
-      queueUrl: new cdk.CfnOutput(this, 'QueueUrl', { value: this.queueUrl }).makeImportValue().toString(),
+      queueArn: new CfnOutput(this, 'QueueArn', { value: this.queueArn }).makeImportValue().toString(),
+      queueUrl: new CfnOutput(this, 'QueueUrl', { value: this.queueUrl }).makeImportValue().toString(),
       keyArn: this.encryptionMasterKey
-        ? new cdk.CfnOutput(this, 'KeyArn', { value: this.encryptionMasterKey.keyArn }).makeImportValue().toString()
+        ? new CfnOutput(this, 'KeyArn', { value: this.encryptionMasterKey.keyArn }).makeImportValue().toString()
         : undefined
     };
   }
@@ -333,36 +360,4 @@ interface FifoProps {
 interface EncryptionProps {
   readonly kmsMasterKeyId?: string;
   readonly kmsDataKeyReusePeriodSeconds?: number;
-}
-
-/**
- * A queue that has been imported
- */
-class ImportedQueue extends QueueBase {
-  public readonly queueArn: string;
-  public readonly queueUrl: string;
-  public readonly queueName: string;
-  public readonly encryptionMasterKey?: kms.IEncryptionKey;
-
-  protected readonly autoCreatePolicy = false;
-
-  constructor(scope: cdk.Construct, id: string, private readonly props: QueueImportProps) {
-    super(scope, id);
-    this.queueArn = props.queueArn;
-    this.queueUrl = props.queueUrl;
-    this.queueName = this.node.stack.parseArn(props.queueArn).resource;
-
-    if (props.keyArn) {
-      this.encryptionMasterKey = kms.EncryptionKey.import(this, 'Key', {
-        keyArn: props.keyArn
-      });
-    }
-  }
-
-  /**
-   * Export a queue
-   */
-  public export() {
-    return this.props;
-  }
 }

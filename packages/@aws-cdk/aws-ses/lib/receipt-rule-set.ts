@@ -1,15 +1,16 @@
-import cdk = require('@aws-cdk/cdk');
+import { CfnOutput, Construct, IResource, Resource } from '@aws-cdk/cdk';
 import { DropSpamReceiptRule, ReceiptRule, ReceiptRuleOptions } from './receipt-rule';
 import { CfnReceiptRuleSet } from './ses.generated';
 
 /**
  * A receipt rule set.
  */
-export interface IReceiptRuleSet extends cdk.IConstruct {
+export interface IReceiptRuleSet extends IResource {
   /**
    * The receipt rule set name.
+   * @attribute
    */
-  readonly name: string;
+  readonly receiptRuleSetName: string;
 
   /**
    * Adds a new receipt rule in this rule set. The new rule is added after
@@ -20,7 +21,7 @@ export interface IReceiptRuleSet extends cdk.IConstruct {
   /**
    * Exports this receipt rule set from the stack.
    */
-  export(): ReceiptRuleSetImportProps;
+  export(): ReceiptRuleSetAttributes;
 }
 
 /**
@@ -52,8 +53,8 @@ export interface ReceiptRuleSetProps {
 /**
  * A new or imported receipt rule set.
  */
-export abstract class ReceiptRuleSetBase extends cdk.Construct implements IReceiptRuleSet {
-  public abstract readonly name: string;
+abstract class ReceiptRuleSetBase extends Resource implements IReceiptRuleSet {
+  public abstract readonly receiptRuleSetName: string;
 
   private lastAddedRule?: ReceiptRule;
 
@@ -71,7 +72,7 @@ export abstract class ReceiptRuleSetBase extends cdk.Construct implements IRecei
     return this.lastAddedRule;
   }
 
-  public abstract export(): ReceiptRuleSetImportProps;
+  public abstract export(): ReceiptRuleSetAttributes;
 
   /**
    * Adds a drop spam rule
@@ -87,24 +88,30 @@ export abstract class ReceiptRuleSetBase extends cdk.Construct implements IRecei
 /**
  * A new receipt rule set.
  */
-export class ReceiptRuleSet extends ReceiptRuleSetBase implements IReceiptRuleSet {
+export class ReceiptRuleSet extends ReceiptRuleSetBase {
   /**
    * Import an exported receipt rule set.
    */
-  public static import(scope: cdk.Construct, id: string, props: ReceiptRuleSetImportProps): IReceiptRuleSet {
-    return new ImportedReceiptRuleSet(scope, id, props);
+  public static fromReceiptRuleSetName(scope: Construct, id: string, receiptRuleSetName: string): IReceiptRuleSet {
+    class Import extends ReceiptRuleSetBase implements IReceiptRuleSet {
+      public readonly receiptRuleSetName = receiptRuleSetName;
+      public export(): ReceiptRuleSetAttributes {
+        return { receiptRuleSetName };
+      }
+    }
+    return new Import(scope, id);
   }
 
-  public readonly name: string;
+  public readonly receiptRuleSetName: string;
 
-  constructor(scope: cdk.Construct, id: string, props?: ReceiptRuleSetProps) {
+  constructor(scope: Construct, id: string, props?: ReceiptRuleSetProps) {
     super(scope, id);
 
     const resource = new CfnReceiptRuleSet(this, 'Resource', {
       ruleSetName: props ? props.name : undefined
     });
 
-    this.name = resource.receiptRuleSetName;
+    this.receiptRuleSetName = resource.receiptRuleSetName;
 
     if (props) {
       const rules = props.rules || [];
@@ -119,9 +126,9 @@ export class ReceiptRuleSet extends ReceiptRuleSetBase implements IReceiptRuleSe
   /**
    * Exports this receipt rule set from the stack.
    */
-  public export(): ReceiptRuleSetImportProps {
+  public export(): ReceiptRuleSetAttributes {
     return {
-      name: new cdk.CfnOutput(this, 'ReceiptRuleSetName', { value: this.name }).makeImportValue().toString()
+      receiptRuleSetName: new CfnOutput(this, 'ReceiptRuleSetName', { value: this.receiptRuleSetName }).makeImportValue().toString()
     };
   }
 }
@@ -129,29 +136,9 @@ export class ReceiptRuleSet extends ReceiptRuleSetBase implements IReceiptRuleSe
 /**
  * Construction properties for an ImportedReceiptRuleSet.
  */
-export interface ReceiptRuleSetImportProps {
+export interface ReceiptRuleSetAttributes {
   /**
    * The receipt rule set name.
    */
-  readonly name: string;
-}
-
-/**
- * An imported receipt rule set.
- */
-class ImportedReceiptRuleSet extends ReceiptRuleSetBase implements IReceiptRuleSet {
-  public readonly name: string;
-
-  constructor(scope: cdk.Construct, id: string, private readonly props: ReceiptRuleSetImportProps) {
-    super(scope, id);
-
-    this.name = props.name;
-  }
-
-  /**
-   * Exports this receipt rule set from the stack.
-   */
-  public export() {
-    return this.props;
-  }
+  readonly receiptRuleSetName: string;
 }

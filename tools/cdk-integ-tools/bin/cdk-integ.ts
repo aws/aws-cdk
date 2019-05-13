@@ -28,6 +28,7 @@ async function main() {
     // don't inject cloudformation metadata into template
     args.push('--no-path-metadata');
     args.push('--no-asset-metadata');
+    args.push('--no-staging');
 
     // inject "--verbose" to the command line of "cdk" if we are in verbose mode
     if (argv.verbose) {

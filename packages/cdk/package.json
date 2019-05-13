@@ -1,13 +1,12 @@
 {
   "name": "cdk",
-  "version": "0.27.0",
+  "version": "0.31.0",
   "description": "AWS CDK Toolkit",
-  "main": " bin/cdk",
   "bin": {
     "cdk": "bin/cdk"
   },
   "dependencies": {
-    "aws-cdk": "^0.27.0"
+    "aws-cdk": "^0.31.0"
   },
   "repository": {
     "type": "git",
@@ -29,6 +28,7 @@
   },
   "homepage": "https://github.com/awslabs/aws-cdk",
   "scripts": {
+    "build": "echo Nothing to build",
     "package": "mkdir -p dist/js && cd dist/js && npm pack ../../"
   },
   "engines": {

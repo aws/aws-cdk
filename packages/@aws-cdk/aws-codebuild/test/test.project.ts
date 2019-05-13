@@ -58,7 +58,6 @@ export = {
           owner: 'testowner',
           repo: 'testrepo',
           cloneDepth: 3,
-          oauthToken: cdk.Secret.plainText("test_oauth_token"),
         })
       });
 
@@ -66,10 +65,6 @@ export = {
       expect(stack).to(haveResource('AWS::CodeBuild::Project', {
         Source: {
           Type: "GITHUB",
-          Auth: {
-            Type: 'OAUTH',
-            Resource: 'test_oauth_token'
-          },
           Location: 'https://github.com/testowner/testrepo.git',
           ReportBuildStatus: true,
           GitCloneDepth: 3,
@@ -88,7 +83,6 @@ export = {
         source: new codebuild.GitHubSource({
           owner: 'testowner',
           repo: 'testrepo',
-          oauthToken: cdk.Secret.plainText("test_oauth_token"),
           reportBuildStatus: false,
         })
       });
@@ -112,7 +106,6 @@ export = {
         source: new codebuild.GitHubSource({
           owner: 'testowner',
           repo: 'testrepo',
-          oauthToken: cdk.Secret.plainText("test_oauth_token"),
           webhook: true,
         })
       });
@@ -126,62 +119,6 @@ export = {
 
       test.done();
     },
-  },
-
-  'github enterprise auth test'(test: Test) {
-    // GIVEN
-    const stack = new cdk.Stack();
-
-    // WHEN
-    new codebuild.Project(stack, 'Project', {
-      source: new codebuild.GitHubEnterpriseSource({
-        httpsCloneUrl: 'https://github.testcompany.com/testowner/testrepo',
-        ignoreSslErrors: true,
-        cloneDepth: 4,
-        oauthToken: cdk.Secret.plainText("test_oauth_token"),
-      })
-    });
-
-    // THEN
-    expect(stack).to(haveResource('AWS::CodeBuild::Project', {
-      Source: {
-        Type: "GITHUB_ENTERPRISE",
-        Auth: {
-          Type: 'OAUTH',
-          Resource: 'test_oauth_token'
-        },
-        InsecureSsl: true,
-        GitCloneDepth: 4,
-        Location: 'https://github.testcompany.com/testowner/testrepo'
-      }
-    }));
-
-    test.done();
-  },
-
-  'bitbucket auth test'(test: Test) {
-    // GIVEN
-    const stack = new cdk.Stack();
-
-    // WHEN
-    new codebuild.Project(stack, 'Project', {
-      source: new codebuild.BitBucketSource({
-        owner: 'testowner',
-        repo: 'testrepo',
-        cloneDepth: 5,
-      })
-    });
-
-    // THEN
-    expect(stack).to(haveResource('AWS::CodeBuild::Project', {
-      Source: {
-        Type: 'BITBUCKET',
-        Location: 'https://bitbucket.org/testowner/testrepo.git',
-        GitCloneDepth: 5,
-      },
-    }));
-
-    test.done();
   },
 
   'construct from asset'(test: Test) {

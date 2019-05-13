@@ -1,5 +1,5 @@
 import route53 = require('@aws-cdk/aws-route53');
-import cdk = require('@aws-cdk/cdk');
+import { Construct, IResource, Resource } from '@aws-cdk/cdk';
 import { AliasTargetInstance } from './alias-target-instance';
 import { CnameInstance, CnameInstanceBaseProps  } from './cname-instance';
 import { IInstance } from './instance';
@@ -8,9 +8,10 @@ import { INamespace, NamespaceType } from './namespace';
 import { NonIpInstance, NonIpInstanceBaseProps } from './non-ip-instance';
 import { CfnService } from './servicediscovery.generated';
 
-export interface IService extends cdk.IConstruct {
+export interface IService extends IResource {
   /**
    * A name for the Cloudmap Service.
+   * @attribute
    */
   readonly serviceName: string;
 
@@ -21,11 +22,13 @@ export interface IService extends cdk.IConstruct {
 
   /**
    * The ID of the namespace that you want to use for DNS configuration.
+   * @attribute
    */
   readonly serviceId: string;
 
   /**
    * The Arn of the namespace that you want to use for DNS configuration.
+   * @attribute
    */
   readonly serviceArn: string;
 
@@ -125,10 +128,41 @@ export interface ServiceProps extends DnsServiceProps {
   readonly namespace: INamespace;
 }
 
+abstract class ServiceBase extends Resource implements IService {
+  public abstract namespace: INamespace;
+  public abstract serviceId: string;
+  public abstract serviceArn: string;
+  public abstract dnsRecordType: DnsRecordType;
+  public abstract routingPolicy: RoutingPolicy;
+  public abstract readonly serviceName: string;
+}
+
+export interface ServiceAttributes {
+  readonly serviceName: string;
+  readonly serviceId: string;
+  readonly serviceArn: string;
+  readonly dnsRecordType: DnsRecordType;
+  readonly routingPolicy: RoutingPolicy;
+}
+
 /**
  * Define a CloudMap Service
  */
-export class Service extends cdk.Construct implements IService {
+export class Service extends ServiceBase {
+
+  public static fromServiceAttributes(scope: Construct, id: string, attrs: ServiceAttributes): IService {
+    class Import extends ServiceBase {
+      public namespace: INamespace;
+      public serviceId = attrs.serviceId;
+      public serviceArn = attrs.serviceArn;
+      public dnsRecordType = attrs.dnsRecordType;
+      public routingPolicy = attrs.routingPolicy;
+      public serviceName = attrs.serviceName;
+    }
+
+    return new Import(scope, id);
+  }
+
   /**
    * A name for the Cloudmap Service.
    */
@@ -159,7 +193,7 @@ export class Service extends cdk.Construct implements IService {
    */
   public readonly routingPolicy: RoutingPolicy;
 
-  constructor(scope: cdk.Construct, id: string, props: ServiceProps) {
+  constructor(scope: Construct, id: string, props: ServiceProps) {
     super(scope, id);
 
     const namespaceType = props.namespace.type;
@@ -262,43 +296,36 @@ export class Service extends cdk.Construct implements IService {
   /**
    * Registers a resource that is accessible using values other than an IP address or a domain name (CNAME).
    */
-  public registerNonIpInstance(props: NonIpInstanceBaseProps): IInstance {
-    return new NonIpInstance(this, "NonIpInstance", {
+  public registerNonIpInstance(id: string, props: NonIpInstanceBaseProps): IInstance {
+    return new NonIpInstance(this, id, {
       service: this,
-      instanceId: props.instanceId,
-      customAttributes: props.customAttributes
+      ...props
     });
   }
 
   /**
    * Registers a resource that is accessible using an IP address.
    */
-  public registerIpInstance(props: IpInstanceBaseProps): IInstance {
-    return new IpInstance(this, "IpInstance", {
+  public registerIpInstance(id: string, props: IpInstanceBaseProps): IInstance {
+    return new IpInstance(this, id, {
       service: this,
-      instanceId: props.instanceId,
-      ipv4: props.ipv4,
-      ipv6: props.ipv6,
-      port: props.port,
-      customAttributes: props.customAttributes
+      ...props
     });
   }
 
   /**
    * Registers a resource that is accessible using a CNAME.
    */
-  public registerCnameInstance(props: CnameInstanceBaseProps): IInstance {
-    return new CnameInstance(this, "CnameInstance", {
+  public registerCnameInstance(id: string, props: CnameInstanceBaseProps): IInstance {
+    return new CnameInstance(this, id, {
       service: this,
-      instanceId: props.instanceId,
-      instanceCname: props.instanceCname,
-      customAttributes: props.customAttributes
+      ...props
     });
   }
 }
 
 function renderDnsRecords(dnsRecordType: DnsRecordType, dnsTtlSec?: number): CfnService.DnsRecordProperty[] {
-  const ttl = dnsTtlSec !== undefined ? dnsTtlSec.toString() : '60';
+  const ttl = dnsTtlSec !== undefined ? dnsTtlSec : 60;
 
   if (dnsRecordType === DnsRecordType.A_AAAA) {
     return [{

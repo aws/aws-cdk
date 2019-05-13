@@ -1,6 +1,6 @@
 import ec2 = require('@aws-cdk/aws-ec2');
-import cdk = require('@aws-cdk/cdk');
-import { HostedZoneImportProps, IHostedZone } from './hosted-zone-ref';
+import { CfnOutput, Construct, Resource, Token } from '@aws-cdk/cdk';
+import { HostedZoneAttributes, IHostedZone } from './hosted-zone-ref';
 import { ZoneDelegationRecord } from './records';
 import { CfnHostedZone } from './route53.generated';
 import { validateZoneName } from './util';
@@ -42,12 +42,38 @@ export interface HostedZoneProps extends CommonHostedZoneProps {
   readonly vpcs?: ec2.IVpcNetwork[];
 }
 
-export class HostedZone extends cdk.Construct implements IHostedZone {
+export class HostedZone extends Resource implements IHostedZone {
+
+  public static fromHostedZoneId(scope: Construct, id: string, hostedZoneId: string): IHostedZone {
+    class Import extends Construct implements IHostedZone {
+      public readonly hostedZoneId = hostedZoneId;
+      public get zoneName(): string {
+        throw new Error(`HostedZone.fromHostedZoneId doesn't support "zoneName"`);
+      }
+      public export(): HostedZoneAttributes {
+        return {
+          hostedZoneId: this.hostedZoneId,
+          zoneName: this.zoneName
+        };
+      }
+    }
+
+    return new Import(scope, id);
+  }
+
   /**
    * Imports a hosted zone from another stack.
    */
-  public static import(scope: cdk.Construct, id: string, props: HostedZoneImportProps): IHostedZone {
-    return new ImportedHostedZone(scope, id, props);
+  public static fromHostedZoneAttributes(scope: Construct, id: string, attrs: HostedZoneAttributes): IHostedZone {
+    class Import extends Construct implements IHostedZone {
+      public readonly hostedZoneId = attrs.hostedZoneId;
+      public readonly zoneName = attrs.zoneName;
+      public export() {
+        return attrs;
+      }
+    }
+
+    return new Import(scope, id);
   }
 
   public readonly hostedZoneId: string;
@@ -59,20 +85,20 @@ export class HostedZone extends cdk.Construct implements IHostedZone {
    */
   protected readonly vpcs = new Array<CfnHostedZone.VPCProperty>();
 
-  constructor(scope: cdk.Construct, id: string, props: HostedZoneProps) {
+  constructor(scope: Construct, id: string, props: HostedZoneProps) {
     super(scope, id);
 
     validateZoneName(props.zoneName);
 
-    const hostedZone = new CfnHostedZone(this, 'Resource', {
+    const resource = new CfnHostedZone(this, 'Resource', {
       name: props.zoneName + '.',
       hostedZoneConfig: props.comment ? { comment: props.comment } : undefined,
       queryLoggingConfig: props.queryLogsLogGroupArn ? { cloudWatchLogsLogGroupArn: props.queryLogsLogGroupArn } : undefined,
-      vpcs: new cdk.Token(() => this.vpcs.length === 0 ? undefined : this.vpcs)
+      vpcs: new Token(() => this.vpcs.length === 0 ? undefined : this.vpcs)
     });
 
-    this.hostedZoneId = hostedZone.ref;
-    this.hostedZoneNameServers = hostedZone.hostedZoneNameServers;
+    this.hostedZoneId = resource.ref;
+    this.hostedZoneNameServers = resource.hostedZoneNameServers;
     this.zoneName = props.zoneName;
 
     for (const vpc of props.vpcs || []) {
@@ -80,9 +106,9 @@ export class HostedZone extends cdk.Construct implements IHostedZone {
     }
   }
 
-  public export(): HostedZoneImportProps {
+  public export(): HostedZoneAttributes {
     return {
-      hostedZoneId: new cdk.CfnOutput(this, 'HostedZoneId', { value: this.hostedZoneId }).makeImportValue(),
+      hostedZoneId: new CfnOutput(this, 'HostedZoneId', { value: this.hostedZoneId }).makeImportValue(),
       zoneName: this.zoneName,
     };
   }
@@ -97,16 +123,31 @@ export class HostedZone extends cdk.Construct implements IHostedZone {
   }
 }
 
-// tslint:disable-next-line:no-empty-interface
-export interface PublicHostedZoneProps extends CommonHostedZoneProps {
-
-}
+export interface PublicHostedZoneProps extends CommonHostedZoneProps { }
+export interface IPublicHostedZone extends IHostedZone { }
 
 /**
  * Create a Route53 public hosted zone.
+ *
+ * @resource AWS::Route53::HostedZone
  */
-export class PublicHostedZone extends HostedZone {
-  constructor(scope: cdk.Construct, id: string, props: PublicHostedZoneProps) {
+export class PublicHostedZone extends HostedZone implements IPublicHostedZone {
+
+  public static fromPublicHostedZoneId(scope: Construct, id: string, publicHostedZoneId: string): IPublicHostedZone {
+    class Import extends Resource implements IPublicHostedZone {
+      public readonly hostedZoneId = publicHostedZoneId;
+      public get zoneName(): string { throw new Error(`cannot retrieve "zoneName" from an an imported hosted zone`); }
+      public export(): HostedZoneAttributes {
+        return {
+          hostedZoneId: this.hostedZoneId,
+          zoneName: this.zoneName
+        };
+      }
+    }
+    return new Import(scope, id);
+  }
+
+  constructor(scope: Construct, id: string, props: PublicHostedZoneProps) {
     super(scope, id, props);
   }
 
@@ -120,7 +161,7 @@ export class PublicHostedZone extends HostedZone {
    * @param delegate the zone being delegated to.
    * @param opts     options for creating the DNS record, if any.
    */
-  public addDelegation(delegate: PublicHostedZone, opts: ZoneDelegationOptions = {}): void {
+  public addDelegation(delegate: IPublicHostedZone, opts: ZoneDelegationOptions = {}): void {
     new ZoneDelegationRecord(this, `${this.zoneName} -> ${delegate.zoneName}`, {
       zone: this,
       delegatedZoneName: delegate.zoneName,
@@ -160,35 +201,35 @@ export interface PrivateHostedZoneProps extends CommonHostedZoneProps {
   readonly vpc: ec2.IVpcNetwork;
 }
 
+export interface IPrivateHostedZone extends IHostedZone {}
+
 /**
  * Create a Route53 private hosted zone for use in one or more VPCs.
  *
  * Note that `enableDnsHostnames` and `enableDnsSupport` must have been enabled
  * for the VPC you're configuring for private hosted zones.
+ *
+ * @resource AWS::Route53::HostedZone
  */
-export class PrivateHostedZone extends HostedZone {
-  constructor(scope: cdk.Construct, id: string, props: PrivateHostedZoneProps) {
+export class PrivateHostedZone extends HostedZone implements IPrivateHostedZone {
+
+  public static fromPrivateHostedZoneId(scope: Construct, id: string, privateHostedZoneId: string): IPrivateHostedZone {
+    class Import extends Resource implements IPrivateHostedZone {
+      public readonly hostedZoneId = privateHostedZoneId;
+      public get zoneName(): string { throw new Error(`cannot retrieve "zoneName" from an an imported hosted zone`); }
+      public export(): HostedZoneAttributes {
+        return {
+          hostedZoneId: this.hostedZoneId,
+          zoneName: this.zoneName
+        };
+      }
+    }
+    return new Import(scope, id);
+  }
+
+  constructor(scope: Construct, id: string, props: PrivateHostedZoneProps) {
     super(scope, id, props);
 
     this.addVpc(props.vpc);
-  }
-}
-
-/**
- * Imported hosted zone
- */
-class ImportedHostedZone extends cdk.Construct implements IHostedZone {
-  public readonly hostedZoneId: string;
-  public readonly zoneName: string;
-
-  constructor(scope: cdk.Construct, name: string, private readonly props: HostedZoneImportProps) {
-    super(scope, name);
-
-    this.hostedZoneId = props.hostedZoneId;
-    this.zoneName = props.zoneName;
-  }
-
-  public export() {
-    return this.props;
   }
 }

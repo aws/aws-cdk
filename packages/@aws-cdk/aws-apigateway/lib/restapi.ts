@@ -1,22 +1,28 @@
 import iam = require('@aws-cdk/aws-iam');
-import cdk = require('@aws-cdk/cdk');
+import { CfnOutput, Construct, IResource as IResourceBase, Resource } from '@aws-cdk/cdk';
 import { CfnAccount, CfnRestApi } from './apigateway.generated';
 import { Deployment } from './deployment';
 import { Integration } from './integration';
 import { Method, MethodOptions } from './method';
-import { IRestApiResource, ResourceBase, ResourceOptions } from './resource';
+import { IResource, ResourceBase, ResourceOptions } from './resource';
 import { Stage, StageOptions } from './stage';
 
-export interface RestApiImportProps {
+export interface RestApiAttributes {
   /**
    * The REST API ID of an existing REST API resource.
    */
   readonly restApiId: string;
+
+  /**
+   * The resource ID of the root resource.
+   */
+  readonly restApiRootResourceId?: string;
 }
 
-export interface IRestApi extends cdk.IConstruct {
+export interface IRestApi extends IResourceBase {
   /**
    * The ID of this API Gateway RestApi.
+   * @attribute
    */
   readonly restApiId: string;
 
@@ -24,7 +30,7 @@ export interface IRestApi extends cdk.IConstruct {
    * Exports a REST API resource from this stack.
    * @returns REST API props that can be imported to another stack.
    */
-  export(): RestApiImportProps;
+  export(): RestApiAttributes;
 }
 
 export interface RestApiProps extends ResourceOptions {
@@ -154,21 +160,28 @@ export interface RestApiProps extends ResourceOptions {
  * By default, the API will automatically be deployed and accessible from a
  * public endpoint.
  */
-export class RestApi extends cdk.Construct implements IRestApi {
-  /**
-   * Imports an existing REST API resource.
-   * @param parent Parent construct
-   * @param id Construct ID
-   * @param props Imported rest API properties
-   */
-  public static import(scope: cdk.Construct, id: string, props: RestApiImportProps): IRestApi {
-    return new ImportedRestApi(scope, id, props);
+export class RestApi extends Resource implements IRestApi {
+
+  public static fromRestApiId(scope: Construct, id: string, restApiId: string): IRestApi {
+    class Import extends Resource implements IRestApi {
+      public readonly restApiId = restApiId;
+      public export(): RestApiAttributes { return { restApiId }; }
+    }
+
+    return new Import(scope, id);
   }
 
   /**
    * The ID of this API Gateway RestApi.
    */
   public readonly restApiId: string;
+
+  /**
+   * The resource ID of the root resource.
+   *
+   * @attribute
+   */
+  public readonly restApiRootResourceId: string;
 
   /**
    * API Gateway deployment that represents the latest changes of the API.
@@ -192,11 +205,11 @@ export class RestApi extends cdk.Construct implements IRestApi {
    *    api.root.addResource('friends').addMethod('GET', getFriendsHandler); // "GET /friends"
    *
    */
-  public readonly root: IRestApiResource;
+  public readonly root: IResource;
 
   private readonly methods = new Array<Method>();
 
-  constructor(scope: cdk.Construct, id: string, props: RestApiProps = { }) {
+  constructor(scope: Construct, id: string, props: RestApiProps = { }) {
     super(scope, id);
 
     const resource = new CfnRestApi(this, 'Resource', {
@@ -228,9 +241,9 @@ export class RestApi extends cdk.Construct implements IRestApi {
    * Exports a REST API resource from this stack.
    * @returns REST API props that can be imported to another stack.
    */
-  public export(): RestApiImportProps {
+  public export(): RestApiAttributes {
     return {
-      restApiId: new cdk.CfnOutput(this, 'RestApiId', { value: this.restApiId }).makeImportValue().toString()
+      restApiId: new CfnOutput(this, 'RestApiId', { value: this.restApiId }).makeImportValue().toString()
     };
   }
 
@@ -319,7 +332,7 @@ export class RestApi extends cdk.Construct implements IRestApi {
         ...props.deployOptions
       });
 
-      new cdk.CfnOutput(this, 'Endpoint', { value: this.urlForPath() });
+      new CfnOutput(this, 'Endpoint', { value: this.urlForPath() });
     } else {
       if (props.deployOptions) {
         throw new Error(`Cannot set 'deployOptions' if 'deploy' is disabled`);
@@ -377,25 +390,11 @@ export enum EndpointType {
   Private = 'PRIVATE'
 }
 
-class ImportedRestApi extends cdk.Construct implements IRestApi {
-  public restApiId: string;
-
-  constructor(scope: cdk.Construct, id: string, private readonly props: RestApiImportProps) {
-    super(scope, id);
-
-    this.restApiId = props.restApiId;
-  }
-
-  public export() {
-    return this.props;
-  }
-}
-
 class RootResource extends ResourceBase {
-  public readonly parentResource?: IRestApiResource;
-  public readonly resourceApi: RestApi;
+  public readonly parentResource?: IResource;
+  public readonly restApi: RestApi;
   public readonly resourceId: string;
-  public readonly resourcePath: string;
+  public readonly path: string;
   public readonly defaultIntegration?: Integration | undefined;
   public readonly defaultMethodOptions?: MethodOptions | undefined;
 
@@ -405,8 +404,8 @@ class RootResource extends ResourceBase {
     this.parentResource = undefined;
     this.defaultIntegration = props.defaultIntegration;
     this.defaultMethodOptions = props.defaultMethodOptions;
-    this.resourceApi = api;
+    this.restApi = api;
     this.resourceId = resourceId;
-    this.resourcePath = '/';
+    this.path = '/';
   }
 }

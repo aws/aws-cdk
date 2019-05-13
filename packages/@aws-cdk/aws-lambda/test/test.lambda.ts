@@ -1,5 +1,4 @@
-import { countResources, expect, haveResource, MatchStyle, ResourcePart } from '@aws-cdk/assert';
-import events = require('@aws-cdk/aws-events');
+import { expect, haveResource, MatchStyle, ResourcePart } from '@aws-cdk/assert';
 import iam = require('@aws-cdk/aws-iam');
 import logs = require('@aws-cdk/aws-logs');
 import sqs = require('@aws-cdk/aws-sqs');
@@ -246,7 +245,7 @@ export = {
 
       // WHEN
       const props = fn.export();
-      const imported = lambda.Function.import(stack2, 'Imported', props);
+      const imported = lambda.Function.fromFunctionAttributes(stack2, 'Imported', props);
 
       // Can call addPermission() but it won't do anything
       imported.addPermission('Hello', {
@@ -255,57 +254,6 @@ export = {
 
       test.done();
     },
-  },
-
-  'Lambda can serve as EventRule target, permission gets added'(test: Test) {
-    // GIVEN
-    const stack = new cdk.Stack();
-    const fn = newTestLambda(stack);
-    const rule1 = new events.EventRule(stack, 'Rule', { scheduleExpression: 'rate(1 minute)' });
-    const rule2 = new events.EventRule(stack, 'Rule2', { scheduleExpression: 'rate(5 minutes)' });
-
-    // WHEN
-    rule1.addTarget(fn);
-    rule2.addTarget(fn);
-
-    // THEN
-    const lambdaId = "MyLambdaCCE802FB";
-
-    expect(stack).to(haveResource('AWS::Lambda::Permission', {
-      "Action": "lambda:InvokeFunction",
-      "FunctionName": {
-        "Fn::GetAtt": [
-          lambdaId,
-          "Arn"
-        ]
-      },
-      "Principal": "events.amazonaws.com",
-      "SourceArn": { "Fn::GetAtt": [ "Rule4C995B7F", "Arn" ] }
-    }));
-
-    expect(stack).to(haveResource('AWS::Lambda::Permission', {
-      "Action": "lambda:InvokeFunction",
-      "FunctionName": {
-        "Fn::GetAtt": [
-          lambdaId,
-          "Arn"
-        ]
-      },
-      "Principal": "events.amazonaws.com",
-      "SourceArn": { "Fn::GetAtt": [ "Rule270732244", "Arn" ] }
-    }));
-
-    expect(stack).to(countResources('AWS::Events::Rule', 2));
-    expect(stack).to(haveResource('AWS::Events::Rule', {
-      "Targets": [
-        {
-        "Arn": { "Fn::GetAtt": [ lambdaId, "Arn" ] },
-        "Id": "MyLambda"
-        }
-      ]
-    }));
-
-    test.done();
   },
 
   'Lambda code can be read from a local directory via an asset'(test: Test) {
@@ -1072,6 +1020,62 @@ export = {
     test.done();
   },
 
+  'grantInvoke with a service principal'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fn = new lambda.Function(stack, 'Function', {
+      code: lambda.Code.inline('xxx'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NodeJS810,
+    });
+    const service = new iam.ServicePrincipal('apigateway.amazonaws.com');
+
+    // WHEN
+    fn.grantInvoke(service);
+
+    // THEN
+    expect(stack).to(haveResource('AWS::Lambda::Permission', {
+      Action: 'lambda:InvokeFunction',
+      FunctionName: {
+        'Fn::GetAtt': [
+          'Function76856677',
+          'Arn'
+        ]
+      },
+      Principal: 'apigateway.amazonaws.com'
+    }));
+
+    test.done();
+  },
+
+  'grantInvoke with an account principal'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fn = new lambda.Function(stack, 'Function', {
+      code: lambda.Code.inline('xxx'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NodeJS810,
+    });
+    const account = new iam.AccountPrincipal('123456789012');
+
+    // WHEN
+    fn.grantInvoke(account);
+
+    // THEN
+    expect(stack).to(haveResource('AWS::Lambda::Permission', {
+      Action: 'lambda:InvokeFunction',
+      FunctionName: {
+        'Fn::GetAtt': [
+          'Function76856677',
+          'Arn'
+        ]
+      },
+      Principal: '123456789012'
+    }));
+
+    test.done();
+  },
+
   'Can use metricErrors on a lambda Function'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
@@ -1155,7 +1159,7 @@ export = {
   'using an incompatible layer'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack(undefined, 'TestStack');
-    const layer = lambda.LayerVersion.import(stack, 'TestLayer', {
+    const layer = lambda.LayerVersion.fromLayerVersionAttributes(stack, 'TestLayer', {
       layerVersionArn: 'arn:aws:...',
       compatibleRuntimes: [lambda.Runtime.NodeJS810],
     });
@@ -1175,7 +1179,7 @@ export = {
   'using more than 5 layers'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack(undefined, 'TestStack');
-    const layers = new Array(6).fill(lambda.LayerVersion.import(stack, 'TestLayer', {
+    const layers = new Array(6).fill(lambda.LayerVersion.fromLayerVersionAttributes(stack, 'TestLayer', {
       layerVersionArn: 'arn:aws:...',
       compatibleRuntimes: [lambda.Runtime.NodeJS810],
     }));

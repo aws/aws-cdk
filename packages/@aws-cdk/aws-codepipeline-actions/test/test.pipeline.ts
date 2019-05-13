@@ -1,11 +1,12 @@
-import { expect, haveResource, haveResourceLike, SynthUtils } from '@aws-cdk/assert';
+import { expect, haveResource, haveResourceLike, not, SynthUtils } from '@aws-cdk/assert';
 import codebuild = require('@aws-cdk/aws-codebuild');
 import codecommit = require('@aws-cdk/aws-codecommit');
 import codepipeline = require('@aws-cdk/aws-codepipeline');
+import targets = require('@aws-cdk/aws-events-targets');
 import lambda = require('@aws-cdk/aws-lambda');
 import s3 = require('@aws-cdk/aws-s3');
 import sns = require('@aws-cdk/aws-sns');
-import cdk = require('@aws-cdk/cdk');
+import { App, CfnParameter, SecretValue, Stack } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
 import cpactions = require('../lib');
 
@@ -13,16 +14,17 @@ import cpactions = require('../lib');
 
 export = {
   'basic pipeline'(test: Test) {
-    const stack = new cdk.Stack();
+    const stack = new Stack();
 
     const repository = new codecommit.Repository(stack, 'MyRepo', {
        repositoryName: 'my-repo',
     });
 
     const pipeline = new codepipeline.Pipeline(stack, 'Pipeline');
+    const sourceOutput = new codepipeline.Artifact('SourceArtifact');
     const source = new cpactions.CodeCommitSourceAction({
       actionName: 'source',
-      outputArtifactName: 'SourceArtifact',
+      output: sourceOutput,
       repository,
     });
     pipeline.addStage({
@@ -36,9 +38,9 @@ export = {
     pipeline.addStage({
       name: 'build',
       actions: [
-        new cpactions.CodeBuildBuildAction({
+        new cpactions.CodeBuildAction({
           actionName: 'build',
-          inputArtifact: source.outputArtifact,
+          input: sourceOutput,
           project,
         }),
       ],
@@ -50,7 +52,7 @@ export = {
   },
 
   'Tokens can be used as physical names of the Pipeline'(test: Test) {
-    const stack = new cdk.Stack(undefined, 'StackName');
+    const stack = new Stack(undefined, 'StackName');
 
     new codepipeline.Pipeline(stack, 'Pipeline', {
       pipelineName: stack.stackName,
@@ -65,10 +67,10 @@ export = {
     test.done();
   },
 
-  'github action uses ThirdParty owner'(test: Test) {
-    const stack = new cdk.Stack();
+  'pipeline with GitHub source with poll trigger'(test: Test) {
+    const stack = new Stack();
 
-    const secret = new cdk.CfnParameter(stack, 'GitHubToken', { type: 'String', default: 'my-token' });
+    const secret = new CfnParameter(stack, 'GitHubToken', { type: 'String', default: 'my-token' });
 
     const p = new codepipeline.Pipeline(stack, 'P');
 
@@ -78,9 +80,127 @@ export = {
         new cpactions.GitHubSourceAction({
           actionName: 'GH',
           runOrder: 8,
-          outputArtifactName: 'A',
+          output: new codepipeline.Artifact('A'),
           branch: 'branch',
-          oauthToken: secret.stringValue,
+          oauthToken: SecretValue.plainText(secret.stringValue),
+          owner: 'foo',
+          repo: 'bar',
+          trigger: cpactions.GitHubTrigger.Poll
+        }),
+      ],
+    });
+
+    p.addStage({
+      name: 'Two',
+      actions: [
+        new cpactions.ManualApprovalAction({ actionName: 'Boo' }),
+      ],
+    });
+
+    expect(stack).to(not(haveResourceLike('AWS::CodePipeline::Webhook')));
+
+    expect(stack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
+      "Stages": [
+      {
+        "Actions": [
+          {
+            "Configuration": {
+              "PollForSourceChanges": true
+            },
+            "Name": "GH"
+          }
+        ],
+        "Name": "Source"
+      },
+      {
+        "Actions": [
+          {
+            "Name": "Boo",
+          }
+        ],
+        "Name": "Two"
+      }
+      ]
+    }));
+
+    test.done();
+  },
+
+  'pipeline with GitHub source without triggers'(test: Test) {
+    const stack = new Stack();
+
+    const secret = new CfnParameter(stack, 'GitHubToken', { type: 'String', default: 'my-token' });
+
+    const p = new codepipeline.Pipeline(stack, 'P');
+
+    p.addStage({
+      name: 'Source',
+      actions: [
+        new cpactions.GitHubSourceAction({
+          actionName: 'GH',
+          runOrder: 8,
+          output: new codepipeline.Artifact('A'),
+          branch: 'branch',
+          oauthToken: SecretValue.plainText(secret.stringValue),
+          owner: 'foo',
+          repo: 'bar',
+          trigger: cpactions.GitHubTrigger.None
+        }),
+      ],
+    });
+
+    p.addStage({
+      name: 'Two',
+      actions: [
+        new cpactions.ManualApprovalAction({ actionName: 'Boo' }),
+      ],
+    });
+
+    expect(stack).to(not(haveResourceLike('AWS::CodePipeline::Webhook')));
+
+    expect(stack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
+      "Stages": [
+      {
+        "Actions": [
+          {
+            "Configuration": {
+              "PollForSourceChanges": false
+            },
+            "Name": "GH"
+          }
+        ],
+        "Name": "Source"
+      },
+      {
+        "Actions": [
+          {
+            "Name": "Boo",
+          }
+        ],
+        "Name": "Two"
+      }
+      ]
+    }));
+
+    test.done();
+  },
+
+  'github action uses ThirdParty owner'(test: Test) {
+    const stack = new Stack();
+
+    const secret = new CfnParameter(stack, 'GitHubToken', { type: 'String', default: 'my-token' });
+
+    const p = new codepipeline.Pipeline(stack, 'P');
+
+    p.addStage({
+      name: 'Source',
+      actions: [
+        new cpactions.GitHubSourceAction({
+          actionName: 'GH',
+          runOrder: 8,
+          output: new codepipeline.Artifact('A'),
+          branch: 'branch',
+          oauthToken: SecretValue.plainText(secret.stringValue),
           owner: 'foo',
           repo: 'bar'
         }),
@@ -93,6 +213,8 @@ export = {
         new cpactions.ManualApprovalAction({ actionName: 'Boo' }),
       ],
     });
+
+    expect(stack).to(haveResourceLike('AWS::CodePipeline::Webhook'));
 
     expect(stack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
       "ArtifactStore": {
@@ -163,7 +285,7 @@ export = {
   },
 
   'onStateChange'(test: Test) {
-    const stack = new cdk.Stack();
+    const stack = new Stack();
 
     const topic = new sns.Topic(stack, 'Topic');
 
@@ -174,7 +296,7 @@ export = {
       actions: [
         new cpactions.S3SourceAction({
           actionName: 'A1',
-          outputArtifactName: 'Artifact',
+          output: new codepipeline.Artifact('Artifact'),
           bucket: new s3.Bucket(stack, 'Bucket'),
           bucketKey: 'Key'
         }),
@@ -188,7 +310,7 @@ export = {
       ],
     });
 
-    pipeline.onStateChange('OnStateChange', topic, {
+    pipeline.onStateChange('OnStateChange', new targets.SnsTopic(topic), {
       description: 'desc',
       scheduleExpression: 'now',
       eventPattern: {
@@ -256,7 +378,7 @@ export = {
 
   'manual approval Action': {
     'allows passing an SNS Topic when constructing it'(test: Test) {
-      const stack = new cdk.Stack();
+      const stack = new Stack();
       const topic = new sns.Topic(stack, 'Topic');
       const manualApprovalAction = new cpactions.ManualApprovalAction({
         actionName: 'Approve',
@@ -273,7 +395,7 @@ export = {
   'PipelineProject': {
     'with a custom Project Name': {
       'sets the source and artifacts to CodePipeline'(test: Test) {
-        const stack = new cdk.Stack();
+        const stack = new Stack();
 
         new codebuild.PipelineProject(stack, 'MyProject', {
           projectName: 'MyProject',
@@ -296,7 +418,7 @@ export = {
           "Environment": {
           "Type": "LINUX_CONTAINER",
           "PrivilegedMode": false,
-          "Image": "aws/codebuild/ubuntu-base:14.04",
+          "Image": "aws/codebuild/standard:1.0",
           "ComputeType": "BUILD_GENERAL1_SMALL"
           }
         }));
@@ -307,7 +429,7 @@ export = {
   },
 
   'Lambda PipelineInvokeAction can be used to invoke Lambda functions from a CodePipeline'(test: Test) {
-    const stack = new cdk.Stack();
+    const stack = new Stack();
 
     const lambdaFun = new lambda.Function(stack, 'Function', {
       code: new lambda.InlineCode('bla'),
@@ -318,16 +440,18 @@ export = {
     const pipeline = new codepipeline.Pipeline(stack, 'Pipeline');
 
     const bucket = new s3.Bucket(stack, 'Bucket');
+    const source1Output = new codepipeline.Artifact('sourceArtifact1');
     const source1 = new cpactions.S3SourceAction({
       actionName: 'SourceAction1',
       bucketKey: 'some/key',
-      outputArtifactName: 'sourceArtifact1',
+      output: source1Output,
       bucket,
     });
+    const source2Output = new codepipeline.Artifact('sourceArtifact2');
     const source2 = new cpactions.S3SourceAction({
       actionName: 'SourceAction2',
       bucketKey: 'another/key',
-      outputArtifactName: 'sourceArtifact2',
+      output: source2Output,
       bucket,
     });
     pipeline.addStage({
@@ -342,14 +466,14 @@ export = {
       actionName: 'InvokeAction',
       lambda: lambdaFun,
       userParameters: 'foo-bar/42',
-      inputArtifacts: [
-          source2.outputArtifact,
-          source1.outputArtifact,
+      inputs: [
+          source2Output,
+          source1Output,
       ],
-      outputArtifactNames: [
-          'lambdaOutput1',
-          'lambdaOutput2',
-          'lambdaOutput3',
+      outputs: [
+          new codepipeline.Artifact('lambdaOutput1'),
+          new codepipeline.Artifact('lambdaOutput2'),
+          new codepipeline.Artifact('lambdaOutput3'),
       ],
     });
     pipeline.addStage({
@@ -407,8 +531,7 @@ export = {
       ]
     }));
 
-    test.equal(lambdaAction.outputArtifacts().length, 3);
-    test.notEqual(lambdaAction.outputArtifact('lambdaOutput2'), undefined);
+    test.equal(lambdaAction.outputs.length, 3);
 
     expect(stack, /* skip validation */ true).to(haveResource('AWS::IAM::Policy', {
       "PolicyDocument": {
@@ -437,10 +560,10 @@ export = {
 
   'CodeCommit Action': {
     'does not poll for changes by default'(test: Test) {
-      const stack = new cdk.Stack();
+      const stack = new Stack();
       const sourceAction = new cpactions.CodeCommitSourceAction({
         actionName: 'stage',
-        outputArtifactName: 'SomeArtifact',
+        output: new codepipeline.Artifact('SomeArtifact'),
         repository: repositoryForTesting(stack),
       });
 
@@ -450,10 +573,10 @@ export = {
     },
 
     'does not poll for source changes when explicitly set to false'(test: Test) {
-      const stack = new cdk.Stack();
+      const stack = new Stack();
       const sourceAction = new cpactions.CodeCommitSourceAction({
         actionName: 'stage',
-        outputArtifactName: 'SomeArtifact',
+        output: new codepipeline.Artifact('SomeArtifact'),
         repository: repositoryForTesting(stack),
         pollForSourceChanges: false,
       });
@@ -469,9 +592,9 @@ export = {
       const pipelineRegion = 'us-west-2';
       const pipelineAccount = '123';
 
-      const app = new cdk.App();
+      const app = new App();
 
-      const stack = new cdk.Stack(app, 'TestStack', {
+      const stack = new Stack(app, 'TestStack', {
         env: {
           region: pipelineRegion,
           account: pipelineAccount,
@@ -484,9 +607,11 @@ export = {
         },
       });
 
+      const sourceOutput = new codepipeline.Artifact('SourceOutput');
       const sourceAction = new cpactions.S3SourceAction({
         actionName: 'BucketSource',
         bucketKey: '/some/key',
+        output: sourceOutput,
         bucket,
       });
       pipeline.addStage({
@@ -500,14 +625,14 @@ export = {
           new cpactions.CloudFormationCreateReplaceChangeSetAction({
             actionName: 'Action1',
             changeSetName: 'ChangeSet',
-            templatePath: sourceAction.outputArtifact.atPath('template.yaml'),
+            templatePath: sourceOutput.atPath('template.yaml'),
             stackName: 'SomeStack',
             region: pipelineRegion,
             adminPermissions: false,
           }),
           new cpactions.CloudFormationCreateUpdateStackAction({
             actionName: 'Action2',
-            templatePath: sourceAction.outputArtifact.atPath('template.yaml'),
+            templatePath: sourceOutput.atPath('template.yaml'),
             stackName: 'OtherStack',
             region: 'us-east-1',
             adminPermissions: false,
@@ -567,10 +692,10 @@ export = {
         ]
       }));
 
-      test.equal(pipeline.crossRegionScaffoldStacks[pipelineRegion], undefined);
-      test.equal(pipeline.crossRegionScaffoldStacks['us-west-1'], undefined);
+      test.equal(pipeline.crossRegionScaffolding[pipelineRegion], undefined);
+      test.equal(pipeline.crossRegionScaffolding['us-west-1'], undefined);
 
-      const usEast1ScaffoldStack = pipeline.crossRegionScaffoldStacks['us-east-1'];
+      const usEast1ScaffoldStack = pipeline.crossRegionScaffolding['us-east-1'];
       test.notEqual(usEast1ScaffoldStack, undefined);
       test.equal(usEast1ScaffoldStack.env.region, 'us-east-1');
       test.equal(usEast1ScaffoldStack.env.account, pipelineAccount);
@@ -580,14 +705,27 @@ export = {
       test.done();
     },
   },
+
+  'Pipeline.fromPipelineArn'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    const pl = codepipeline.Pipeline.fromPipelineArn(stack, 'imported', 'arn:aws:codepipeline:us-east-1:123456789012:MyDemoPipeline');
+
+    // THEN
+    test.deepEqual(pl.pipelineArn, 'arn:aws:codepipeline:us-east-1:123456789012:MyDemoPipeline');
+    test.deepEqual(pl.pipelineName, 'MyDemoPipeline');
+    test.done();
+  }
 };
 
-function stageForTesting(stack: cdk.Stack): codepipeline.IStage {
+function stageForTesting(stack: Stack): codepipeline.IStage {
   const pipeline = new codepipeline.Pipeline(stack, 'pipeline');
   return pipeline.addStage({ name: 'stage' });
 }
 
-function repositoryForTesting(stack: cdk.Stack): codecommit.Repository {
+function repositoryForTesting(stack: Stack): codecommit.Repository {
   return new codecommit.Repository(stack, 'Repository', {
     repositoryName: 'Repository'
   });

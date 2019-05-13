@@ -1,11 +1,111 @@
 import autoscaling = require('@aws-cdk/aws-autoscaling');
 import ec2 = require('@aws-cdk/aws-ec2');
+import { VpcSubnet } from '@aws-cdk/aws-ec2';
 import iam = require('@aws-cdk/aws-iam');
-import cdk = require('@aws-cdk/cdk');
+import { CfnOutput, Construct, IResource, Resource, Tag } from '@aws-cdk/cdk';
 import { EksOptimizedAmi, nodeTypeForInstanceType } from './ami';
-import { ClusterBase, ClusterImportProps, ICluster } from './cluster-base';
 import { CfnCluster } from './eks.generated';
 import { maxPodsForInstanceType } from './instance-data';
+
+/**
+ * An EKS cluster
+ */
+export interface ICluster extends IResource, ec2.IConnectable {
+  /**
+   * The VPC in which this Cluster was created
+   */
+  readonly vpc: ec2.IVpcNetwork;
+
+  /**
+   * The physical name of the Cluster
+   * @attribute
+   */
+  readonly clusterName: string;
+
+  /**
+   * The unique ARN assigned to the service by AWS
+   * in the form of arn:aws:eks:
+   * @attribute
+   */
+  readonly clusterArn: string;
+
+  /**
+   * The API Server endpoint URL
+   * @attribute
+   */
+  readonly clusterEndpoint: string;
+
+  /**
+   * The certificate-authority-data for your cluster.
+   * @attribute
+   */
+  readonly clusterCertificateAuthorityData: string;
+
+  /**
+   * Export cluster references to use in other stacks
+   */
+  export(): ClusterAttributes;
+}
+
+/**
+ * A SecurityGroup Reference, object not created with this template.
+ */
+abstract class ClusterBase extends Resource implements ICluster {
+  public abstract readonly connections: ec2.Connections;
+  public abstract readonly vpc: ec2.IVpcNetwork;
+  public abstract readonly clusterName: string;
+  public abstract readonly clusterArn: string;
+  public abstract readonly clusterEndpoint: string;
+  public abstract readonly clusterCertificateAuthorityData: string;
+
+  /**
+   * Export cluster references to use in other stacks
+   */
+  public export(): ClusterAttributes {
+    return {
+      vpc: this.vpc.export(),
+      clusterName: this.makeOutput('ClusterNameExport', this.clusterName),
+      clusterArn: this.makeOutput('ClusterArn', this.clusterArn),
+      clusterEndpoint: this.makeOutput('ClusterEndpoint', this.clusterEndpoint),
+      clusterCertificateAuthorityData: this.makeOutput('ClusterCAData', this.clusterCertificateAuthorityData),
+      securityGroups: this.connections.securityGroups.map(sg => sg.export()),
+    };
+  }
+
+  private makeOutput(name: string, value: any): string {
+    return new CfnOutput(this, name, { value }).makeImportValue().toString();
+  }
+}
+
+export interface ClusterAttributes {
+  /**
+   * The VPC in which this Cluster was created
+   */
+  readonly vpc: ec2.VpcNetworkImportProps;
+
+  /**
+   * The physical name of the Cluster
+   */
+  readonly clusterName: string;
+
+  /**
+   * The unique ARN assigned to the service by AWS
+   * in the form of arn:aws:eks:
+   */
+  readonly clusterArn: string;
+
+  /**
+   * The API Server endpoint URL
+   */
+  readonly clusterEndpoint: string;
+
+  /**
+   * The certificate-authority-data for your cluster.
+   */
+  readonly clusterCertificateAuthorityData: string;
+
+  readonly securityGroups: ec2.SecurityGroupAttributes[];
+}
 
 /**
  * Properties to instantiate the Cluster
@@ -20,8 +120,6 @@ export interface ClusterProps {
    * Where to place EKS Control Plane ENIs
    *
    * If you want to create public load balancers, this must include public subnets.
-   *
-   * @example
    *
    * For example, to only select private subnets, supply the following:
    *
@@ -76,10 +174,10 @@ export class Cluster extends ClusterBase {
    *
    * @param scope the construct scope, in most cases 'this'
    * @param id the id or name to import as
-   * @param props the cluster properties to use for importing information
+   * @param attrs the cluster properties to use for importing information
    */
-  public static import(scope: cdk.Construct, id: string, props: ClusterImportProps): ICluster {
-    return new ImportedCluster(scope, id, props);
+  public static fromClusterAttributes(scope: Construct, id: string, attrs: ClusterAttributes): ICluster {
+    return new ImportedCluster(scope, id, attrs);
   }
 
   /**
@@ -135,7 +233,7 @@ export class Cluster extends ClusterBase {
    * @param name the name of the Construct to create
    * @param props properties in the IClusterProps interface
    */
-  constructor(scope: cdk.Construct, id: string, props: ClusterProps) {
+  constructor(scope: Construct, id: string, props: ClusterProps) {
     super(scope, id);
 
     this.vpc = props.vpc;
@@ -163,7 +261,7 @@ export class Cluster extends ClusterBase {
 
     // Get subnetIds for all selected subnets
     const placements = props.vpcSubnets || [{ subnetType: ec2.SubnetType.Public }, { subnetType: ec2.SubnetType.Private }];
-    const subnetIds = flatMap(placements, p => this.vpc.subnetIds(p));
+    const subnetIds = [...new Set(Array().concat(...placements.map(s => props.vpc.selectSubnets(s).subnetIds)))];
 
     const resource = new CfnCluster(this, 'Resource', {
       name: props.clusterName,
@@ -180,7 +278,7 @@ export class Cluster extends ClusterBase {
     this.clusterEndpoint = resource.clusterEndpoint;
     this.clusterCertificateAuthorityData = resource.clusterCertificateAuthorityData;
 
-    new cdk.CfnOutput(this, 'ClusterName', { value: this.clusterName, disableExport: true });
+    new CfnOutput(this, 'ClusterName', { value: this.clusterName, disableExport: true });
   }
 
   /**
@@ -220,6 +318,7 @@ export class Cluster extends ClusterBase {
    * the right AMI and the `maxPods` number based on your instance type.
    *
    * @see https://docs.aws.amazon.com/eks/latest/userguide/launch-workers.html
+   * @param autoScalingGroup [disable-awslint:ref-via-interface]
    */
   public addAutoScalingGroup(autoScalingGroup: autoscaling.AutoScalingGroup, options: AddAutoScalingGroupOptions) {
     // self rules
@@ -249,10 +348,10 @@ export class Cluster extends ClusterBase {
     autoScalingGroup.role.attachManagedPolicy(new iam.AwsManagedPolicy('AmazonEC2ContainerRegistryReadOnly', this).policyArn);
 
     // EKS Required Tags
-    autoScalingGroup.node.apply(new cdk.Tag(`kubernetes.io/cluster/${this.clusterName}`, 'owned', { applyToLaunchedInstances: true }));
+    autoScalingGroup.node.apply(new Tag(`kubernetes.io/cluster/${this.clusterName}`, 'owned', { applyToLaunchedInstances: true }));
 
     // Create an CfnOutput for the Instance Role ARN (need to paste it into aws-auth-cm.yaml)
-    new cdk.CfnOutput(autoScalingGroup, 'InstanceRoleARN', {
+    new CfnOutput(autoScalingGroup, 'InstanceRoleARN', {
       disableExport: true,
       value: autoScalingGroup.role.roleArn
     });
@@ -267,19 +366,15 @@ export class Cluster extends ClusterBase {
    */
   private tagSubnets() {
     for (const subnet of this.vpc.privateSubnets) {
-      if (!isRealSubnetConstruct(subnet)) {
+      if (!VpcSubnet.isVpcSubnet(subnet)) {
         // Just give up, all of them will be the same.
         this.node.addWarning('Could not auto-tag private subnets with "kubernetes.io/role/internal-elb=1", please remember to do this manually');
         return;
       }
 
-      subnet.node.apply(new cdk.Tag("kubernetes.io/role/internal-elb", "1"));
+      subnet.node.apply(new Tag("kubernetes.io/role/internal-elb", "1"));
     }
   }
-}
-
-function isRealSubnetConstruct(subnet: ec2.IVpcSubnet): subnet is ec2.VpcSubnet {
-  return (subnet as any).addDefaultRouteToIGW !== undefined;
 }
 
 /**
@@ -316,7 +411,7 @@ class ImportedCluster extends ClusterBase {
   public readonly clusterEndpoint: string;
   public readonly connections = new ec2.Connections();
 
-  constructor(scope: cdk.Construct, id: string, props: ClusterImportProps) {
+  constructor(scope: Construct, id: string, props: ClusterAttributes) {
     super(scope, id);
 
     this.vpc = ec2.VpcNetwork.import(this, "VPC", props.vpc);
@@ -327,16 +422,8 @@ class ImportedCluster extends ClusterBase {
 
     let i = 1;
     for (const sgProps of props.securityGroups) {
-      this.connections.addSecurityGroup(ec2.SecurityGroup.import(this, `SecurityGroup${i}`, sgProps));
+      this.connections.addSecurityGroup(ec2.SecurityGroup.fromSecurityGroupId(this, `SecurityGroup${i}`, sgProps.securityGroupId));
       i++;
     }
   }
-}
-
-function flatMap<T, U>(xs: T[], f: (x: T) => U[]): U[] {
-  const ret = new Array<U>();
-  for (const x of xs) {
-    ret.push(...f(x));
-  }
-  return ret;
 }

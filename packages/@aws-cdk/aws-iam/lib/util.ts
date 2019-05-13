@@ -1,5 +1,5 @@
 import { Token } from '@aws-cdk/cdk';
-import { Policy } from './policy';
+import { IPolicy } from './policy';
 
 const MAX_POLICY_NAME_LEN = 128;
 
@@ -24,7 +24,7 @@ export function generatePolicyName(logicalId: string) {
  * Helper class that maintains the set of attached policies for a principal.
  */
 export class AttachedPolicies {
-  private policies = new Array<Policy>();
+  private policies = new Array<IPolicy>();
 
   /**
    * Adds a policy to the list of attached policies.
@@ -32,7 +32,7 @@ export class AttachedPolicies {
    * If this policy is already, attached, returns false.
    * If there is another policy attached with the same name, throws an exception.
    */
-  public attach(policy: Policy) {
+  public attach(policy: IPolicy) {
     if (this.policies.find(p => p === policy)) {
       return; // already attached
     }
@@ -43,4 +43,22 @@ export class AttachedPolicies {
 
     this.policies.push(policy);
   }
+}
+
+/**
+ * Merge two dictionaries that represent IAM principals
+ */
+export function mergePrincipal(target: { [key: string]: string[] }, source: { [key: string]: string[] }) {
+  for (const key of Object.keys(source)) {
+    target[key] = target[key] || [];
+
+    const value = source[key];
+    if (!Array.isArray(value)) {
+      throw new Error(`Principal value must be an array (it will be normalized later): ${value}`);
+    }
+
+    target[key].push(...value);
+  }
+
+  return target;
 }

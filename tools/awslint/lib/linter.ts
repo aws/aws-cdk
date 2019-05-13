@@ -1,4 +1,6 @@
 import reflect = require('jsii-reflect');
+import { PrimitiveType } from 'jsii-spec';
+import util = require('util');
 
 export interface LinterOptions {
   /**
@@ -14,14 +16,44 @@ export interface LinterOptions {
   exclude?: string[];
 }
 
+export abstract class LinterBase {
+  public abstract rules: Rule[];
+  public abstract eval(assembly: reflect.Assembly, options: LinterOptions | undefined): Diagnostic[];
+}
+
+export class AggregateLinter extends LinterBase {
+  private linters: LinterBase[];
+
+  constructor(...linters: LinterBase[]) {
+    super();
+    this.linters = linters;
+  }
+
+  public get rules(): Rule[] {
+    const ret = new Array<Rule>();
+    for (const linter of this.linters) {
+      ret.push(...linter.rules);
+    }
+    return ret;
+  }
+
+  public eval(assembly: reflect.Assembly, options: LinterOptions | undefined): Diagnostic[] {
+    const diags = new Array<Diagnostic>();
+    for (const linter of this.linters) {
+      diags.push(...linter.eval(assembly, options));
+    }
+    return diags;
+  }
+}
+
 /**
  * Evaluates a bunch of rules against some context.
  */
-export class Linter<T> {
-  private readonly _rules: { [name: string]: Rule<T> } = { };
+export class Linter<T> extends LinterBase {
+  private readonly _rules: { [name: string]: ConcreteRule<T> } = { };
 
   constructor(private readonly init: (assembly: reflect.Assembly) => T | T[] | undefined) {
-    return;
+    super();
   }
 
   public get rules() {
@@ -31,7 +63,7 @@ export class Linter<T> {
   /**
    * Install another rule.
    */
-  public add(rule: Rule<T>) {
+  public add(rule: ConcreteRule<T>) {
     if (rule.code in this._rules) {
       throw new Error(`rule "${rule.code}" already exists`);
     }
@@ -42,7 +74,7 @@ export class Linter<T> {
   /**
    * Evaluate all rules against the context.
    */
-  public eval(assembly: reflect.Assembly, options: LinterOptions | undefined): Array<Diagnostic<T>> {
+  public eval(assembly: reflect.Assembly, options: LinterOptions | undefined): Diagnostic[] {
     options = options || { };
 
     let ctxs = this.init(assembly);
@@ -54,17 +86,16 @@ export class Linter<T> {
       ctxs = [ ctxs ];
     }
 
-    const results = new Array<Diagnostic<T>>();
+    const diag = new Array<Diagnostic>();
 
     for (const ctx of ctxs) {
       for (const rule of Object.values(this._rules)) {
-        const evaluation = new Evaluation(ctx, rule, options);
+        const evaluation = new Evaluation(ctx, rule, diag, options);
         rule.eval(evaluation);
-        results.push(...evaluation.diagnostics);
       }
     }
 
-    return results;
+    return diag;
   }
 }
 
@@ -74,18 +105,26 @@ export class Linter<T> {
 export class Evaluation<T> {
   public readonly ctx: T;
   public readonly options: LinterOptions;
-  public diagnostics = new Array<Diagnostic<T>>();
-  private readonly curr: Rule<T>;
 
-  constructor(ctx: T, rule: Rule<T>, options: LinterOptions) {
+  private readonly curr: ConcreteRule<T>;
+  private readonly diagnostics: Diagnostic[];
+
+  constructor(ctx: T, rule: ConcreteRule<T>, diagnostics: Diagnostic[], options: LinterOptions) {
     this.ctx = ctx;
     this.options = options;
     this.curr = rule;
+    this.diagnostics = diagnostics;
   }
 
   public assert(condition: any, scope: string, extra?: string): condition is true {
+
+    // deduplicate: skip if this specific assertion ("rule:scope") was already examined
+    if (this.diagnostics.find(d => d.rule.code === this.curr.code && d.scope === scope)) {
+      return condition;
+    }
+
     const include = this.shouldEvaluate(this.curr.code, scope);
-    const message = this.curr.message + (extra || '');
+    const message = util.format(this.curr.message, extra || '');
 
     let level: DiagnosticLevel;
     if (!include) {
@@ -98,9 +137,8 @@ export class Evaluation<T> {
       level = DiagnosticLevel.Error;
     }
 
-    const diag: Diagnostic<T> = {
+    const diag: Diagnostic = {
       level,
-      ctx: this.ctx,
       rule: this.curr,
       scope,
       message,
@@ -115,10 +153,16 @@ export class Evaluation<T> {
     return this.assert(actual === expected, scope, ` (expected="${expected}",actual="${actual}")`);
   }
 
-  public assertSignature(method: reflect.Method, expectations: MethodSignatureExpectations) {
+  public assertTypesEqual(ts: reflect.TypeSystem, actual: TypeSpecifier, expected: TypeSpecifier, scope: string) {
+    const a = typeReferenceFrom(ts, actual);
+    const e = typeReferenceFrom(ts, expected);
+    return this.assert(a.toString() === e.toString(), scope, ` (expected="${e}",actual="${a}")`);
+  }
+
+  public assertSignature(method: reflect.Callable, expectations: MethodSignatureExpectations) {
     const scope = method.parentType.fqn + '.' + method.name;
-    if (expectations.returns) {
-      this.assertEquals(expectations.returns.toString(), expectations.returns, scope);
+    if (expectations.returns && reflect.Method.isMethod(method)) {
+      this.assertTypesEqual(method.system, method.returns.type, expectations.returns, scope);
     }
 
     if (expectations.parameters) {
@@ -135,18 +179,7 @@ export class Evaluation<T> {
             this.assertEquals(actualName, expectedName, pscope);
           }
           if (expect.type) {
-            const expectedType = expect.type;
-            const actualType = (() => {
-              if (actual.type.fqn) {
-                return actual.type.fqn.fqn;
-              }
-              if (actual.type.primitive) {
-                return actual.type.primitive;
-              }
-              return actual.type.toString();
-            })();
-
-            this.assertEquals(actualType, expectedType, pscope);
+            this.assertTypesEqual(method.system, actual.type, expect.type, pscope);
           }
         }
       }
@@ -198,16 +231,29 @@ export class Evaluation<T> {
 
 }
 
-export interface Rule<T> {
+export interface Rule {
   code: string,
   message: string;
   warning?: boolean;
+}
+
+export interface ConcreteRule<T> extends Rule {
   eval(linter: Evaluation<T>): void;
 }
 
+/**
+ * A type constraint
+ *
+ * Be super flexible about how types can be represented. Ultimately, we will
+ * compare what you give to a TypeReference, because that's what's in the JSII
+ * Reflect model. However, if you already have a real Type, or just a string to
+ * a user-defined type, that's fine too. We'll Do The Right Thing.
+ */
+export type TypeSpecifier = reflect.TypeReference | reflect.Type | string;
+
 export interface MethodSignatureParameterExpectation {
   name?: string;
-  type?: string;
+  type?: TypeSpecifier;
 
   /** should this param be optional? */
   optional?: boolean;
@@ -215,7 +261,7 @@ export interface MethodSignatureParameterExpectation {
 
 export interface MethodSignatureExpectations {
   parameters?: MethodSignatureParameterExpectation[];
-  returns?: string;
+  returns?: TypeSpecifier;
 }
 
 export enum DiagnosticLevel {
@@ -225,10 +271,30 @@ export enum DiagnosticLevel {
   Error,
 }
 
-export interface Diagnostic<T> {
-  ctx: T;
+export interface Diagnostic {
   level: DiagnosticLevel;
-  rule: Rule<T>
+  rule: Rule;
   scope: string;
   message: string;
+}
+
+/**
+ * Convert a type specifier to a TypeReference
+ */
+function typeReferenceFrom(ts: reflect.TypeSystem, x: TypeSpecifier): reflect.TypeReference {
+  if (isTypeReference(x)) { return x; }
+
+  if (typeof x === 'string') {
+    if (x.indexOf('.') === -1) {
+      return new reflect.TypeReference(ts, { primitive: x as PrimitiveType });
+    } else {
+      return new reflect.TypeReference(ts, { fqn: x });
+    }
+  }
+
+  return new reflect.TypeReference(ts, x);
+}
+
+function isTypeReference(x: any): x is reflect.TypeReference {
+  return x instanceof reflect.TypeReference;
 }

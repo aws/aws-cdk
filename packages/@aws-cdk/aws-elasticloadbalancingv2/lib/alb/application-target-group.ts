@@ -120,7 +120,7 @@ export class ApplicationTargetGroup extends TargetGroupBase implements IApplicat
    */
   public registerConnectable(connectable: ec2.IConnectable, portRange?: ec2.IPortRange) {
     if (portRange === undefined) {
-      if (cdk.unresolved(this.defaultPort)) {
+      if (cdk.Token.isToken(this.defaultPort)) {
         portRange = new ec2.TcpPortFromAttribute(this.defaultPort);
       } else {
         portRange = new ec2.TcpPort(parseInt(this.defaultPort, 10));
@@ -170,7 +170,7 @@ export class ApplicationTargetGroup extends TargetGroupBase implements IApplicat
    *
    * @default Average over 5 minutes
    */
-  public metric(metricName: string, props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
+  public metric(metricName: string, props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return new cloudwatch.Metric({
       namespace: 'AWS/ApplicationELB',
       metricName,
@@ -187,7 +187,7 @@ export class ApplicationTargetGroup extends TargetGroupBase implements IApplicat
    *
    * @default Sum over 5 minutes
    */
-  public metricIPv6RequestCount(props?: cloudwatch.MetricCustomization) {
+  public metricIPv6RequestCount(props?: cloudwatch.MetricOptions) {
     return this.metric('IPv6RequestCount', {
       statistic: 'Sum',
       ...props
@@ -201,7 +201,7 @@ export class ApplicationTargetGroup extends TargetGroupBase implements IApplicat
    *
    * @default Sum over 5 minutes
    */
-  public metricRequestCount(props?: cloudwatch.MetricCustomization) {
+  public metricRequestCount(props?: cloudwatch.MetricOptions) {
     return this.metric('RequestCount', {
       statistic: 'Sum',
       ...props
@@ -213,7 +213,7 @@ export class ApplicationTargetGroup extends TargetGroupBase implements IApplicat
    *
    * @default Average over 5 minutes
    */
-  public metricHealthyHostCount(props?: cloudwatch.MetricCustomization) {
+  public metricHealthyHostCount(props?: cloudwatch.MetricOptions) {
     return this.metric('HealthyHostCount', {
       statistic: 'Average',
       ...props
@@ -225,7 +225,7 @@ export class ApplicationTargetGroup extends TargetGroupBase implements IApplicat
    *
    * @default Average over 5 minutes
    */
-  public metricUnhealthyHostCount(props?: cloudwatch.MetricCustomization) {
+  public metricUnhealthyHostCount(props?: cloudwatch.MetricOptions) {
     return this.metric('UnhealthyHostCount', {
       statistic: 'Average',
       ...props
@@ -239,7 +239,7 @@ export class ApplicationTargetGroup extends TargetGroupBase implements IApplicat
    *
    * @default Sum over 5 minutes
    */
-  public metricHttpCodeTarget(code: HttpCodeTarget, props?: cloudwatch.MetricCustomization) {
+  public metricHttpCodeTarget(code: HttpCodeTarget, props?: cloudwatch.MetricOptions) {
     return this.metric(code, {
       statistic: 'Sum',
       ...props
@@ -253,7 +253,7 @@ export class ApplicationTargetGroup extends TargetGroupBase implements IApplicat
    *
    * @default Sum over 5 minutes
    */
-  public metricRequestCountPerTarget(props?: cloudwatch.MetricCustomization) {
+  public metricRequestCountPerTarget(props?: cloudwatch.MetricOptions) {
     return this.metric('RequestCountPerTarget', {
       statistic: 'Sum',
       ...props
@@ -265,7 +265,7 @@ export class ApplicationTargetGroup extends TargetGroupBase implements IApplicat
    *
    * @default Sum over 5 minutes
    */
-  public metricTargetConnectionErrorCount(props?: cloudwatch.MetricCustomization) {
+  public metricTargetConnectionErrorCount(props?: cloudwatch.MetricOptions) {
     return this.metric('TargetConnectionErrorCount', {
       statistic: 'Sum',
       ...props
@@ -277,7 +277,7 @@ export class ApplicationTargetGroup extends TargetGroupBase implements IApplicat
    *
    * @default Average over 5 minutes
    */
-  public metricTargetResponseTime(props?: cloudwatch.MetricCustomization) {
+  public metricTargetResponseTime(props?: cloudwatch.MetricOptions) {
     return this.metric('TargetResponseTime', {
       statistic: 'Average',
       ...props
@@ -291,7 +291,7 @@ export class ApplicationTargetGroup extends TargetGroupBase implements IApplicat
    *
    * @default Sum over 5 minutes
    */
-  public metricTargetTLSNegotiationErrorCount(props?: cloudwatch.MetricCustomization) {
+  public metricTargetTLSNegotiationErrorCount(props?: cloudwatch.MetricOptions) {
     return this.metric('TargetTLSNegotiationErrorCount', {
       statistic: 'Sum',
       ...props

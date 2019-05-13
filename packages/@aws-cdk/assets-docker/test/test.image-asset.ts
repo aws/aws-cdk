@@ -1,7 +1,10 @@
 import { expect, haveResource, SynthUtils } from '@aws-cdk/assert';
 import iam = require('@aws-cdk/aws-iam');
 import cdk = require('@aws-cdk/cdk');
+import cxapi = require('@aws-cdk/cx-api');
+import fs = require('fs');
 import { Test } from 'nodeunit';
+import os = require('os');
 import path = require('path');
 import { DockerImageAsset } from '../lib';
 
@@ -61,22 +64,13 @@ export = {
                   ":",
                   { "Ref": "AWS::AccountId" },
                   ":repository/",
-                  {
-                      "Fn::GetAtt": [
-                        "ImageAdoptRepositoryE1E84E35",
-                        "RepositoryName"
-                      ]
-                  }
+                  { "Fn::GetAtt": [ "ImageAdoptRepositoryE1E84E35", "RepositoryName" ] }
                 ]
               ]
             }
           },
           {
-            "Action": [
-              "ecr:GetAuthorizationToken",
-              "logs:CreateLogStream",
-              "logs:PutLogEvents"
-            ],
+            "Action": "ecr:GetAuthorizationToken",
             "Effect": "Allow",
             "Resource": "*"
           }
@@ -152,5 +146,30 @@ export = {
       });
     }, /No 'Dockerfile' found in/);
     test.done();
+  },
+
+  'docker directory is staged if asset staging is enabled'(test: Test) {
+    const workdir = mkdtempSync();
+    process.chdir(workdir);
+
+    const app = new cdk.App({
+      context: { [cxapi.ASSET_STAGING_DIR_CONTEXT]: '.stage-me' }
+    });
+
+    const stack = new cdk.Stack(app, 'stack');
+
+    new DockerImageAsset(stack, 'MyAsset', {
+      directory: path.join(__dirname, 'demo-image')
+    });
+
+    app.run();
+
+    test.ok(fs.existsSync('.stage-me/96e3ffe92a19cbaa6c558942f7a60246/Dockerfile'));
+    test.ok(fs.existsSync('.stage-me/96e3ffe92a19cbaa6c558942f7a60246/index.py'));
+    test.done();
   }
 };
+
+function mkdtempSync() {
+  return fs.mkdtempSync(path.join(os.tmpdir(), 'test.assets'));
+}

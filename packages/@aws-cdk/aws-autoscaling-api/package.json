@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/aws-autoscaling-api",
-  "version": "0.27.0",
+  "version": "0.31.0",
   "description": "API package for @aws-cdk/aws-autoscaling",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -20,7 +20,6 @@
         "signAssembly": true,
         "assemblyOriginatorKeyFile": "../../key.snk"
       },
-      "sphinx": {},
       "python": {
         "distName": "aws-cdk.aws-autoscaling-api",
         "module": "aws_cdk.aws_autoscaling_api"
@@ -29,7 +28,8 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/awslabs/aws-cdk.git"
+    "url": "https://github.com/awslabs/aws-cdk.git",
+    "directory": "packages/@aws-cdk/aws-autoscaling-api"
   },
   "scripts": {
     "build": "cdk-build",
@@ -64,19 +64,19 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "^0.27.0",
-    "cdk-build-tools": "^0.27.0",
-    "cdk-integ-tools": "^0.27.0",
-    "pkglint": "^0.27.0"
+    "@aws-cdk/assert": "^0.31.0",
+    "cdk-build-tools": "^0.31.0",
+    "cdk-integ-tools": "^0.31.0",
+    "pkglint": "^0.31.0"
   },
   "dependencies": {
-    "@aws-cdk/aws-iam": "^0.27.0",
-    "@aws-cdk/cdk": "^0.27.0"
+    "@aws-cdk/aws-iam": "^0.31.0",
+    "@aws-cdk/cdk": "^0.31.0"
   },
   "homepage": "https://github.com/awslabs/aws-cdk",
   "peerDependencies": {
-    "@aws-cdk/aws-iam": "^0.27.0",
-    "@aws-cdk/cdk": "^0.27.0"
+    "@aws-cdk/aws-iam": "^0.31.0",
+    "@aws-cdk/cdk": "^0.31.0"
   },
   "engines": {
     "node": ">= 8.10.0"

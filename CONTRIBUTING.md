@@ -7,39 +7,65 @@ and let us know if it's not up-to-date (even better, submit a PR with your  corr
 
 ## Pull Requests
 
-1. If there isn't one already, open an issue describing what you intend to contribute. It's useful to communicate in
-   advance, because sometimes, someone is already working in this space, so maybe it's worth collaborating with them
-   instead of duplicating the efforts.
-1. Work your magic. Here are some guidelines:
-    * Every change requires a unit test
-    * If you change APIs, make sure to update the module's README file
-    * Try to maintain a single feature/bugfix per pull request. It's okay to introduce a little bit of housekeeping
-      changes along the way, but try to avoid conflating multiple features. Eventually all these are going to go into a
-      single commit, so you can use that to frame your scope.
-1. Create a commit with the proposed change changes:
-    * Commit title and message (and PR title and description) must adhere to [conventionalcommits].
-    * The title must begin with `feat(module): title`, `fix(module): title`, `refactor(module): title` or
-      `chore(module): title`.
-    * Title should be lowercase.
-    * No period at the end of the title.
-    * Commit message should describe _motivation_. Think about your code reviewers and what information they need in
-      order to understand what you did. If it's a big commit (hopefully not), try to provide some good entry points so
-      it will be easier to follow.
-    * Commit message should indicate which issues are fixed: `fixes #<issue>` or `closes #<issue>`.
-    * Shout out to collaborators.
-    * If not obvious (i.e. from unit tests), describe how you verified that your change works.
-    * If this commit includes a breaking change, the commit message must end with a single paragraph
-      `BREAKING CHANGE: description of what broke and how to achieve this behavior now`.
-2. Push to a fork or to a branch (naming convention: `<user>/<feature-bug-name>`)
-3. Submit a Pull Requests on GitHub and assign the PR for a review to the "awslabs/aws-cdk" team.
-5. Discuss review comments and iterate until you get at least one “Approve”. When iterating, push new commits to the
-   same branch. Usually all these are going to be squashed when you merge to master. The commit messages should be hints
-   for you when you finalize your merge commit message.
-7. Make sure to update the PR title/description if things change. The PR title/description are going to be used as the
-   commit title/message and will appear in the CHANGELOG, so maintain them all the way throughout the process.
-6. Make sure your PR builds successfully (we have CodeBuild setup to automatically build all PRs)
-7. Once approved and tested, a maintainer will squash-merge to master and will use your PR title/description as the
-   commit message.
+### Step 1: Open Issue
+
+If there isn't one already, open an issue describing what you intend to contribute. It's useful to communicate in
+advance, because sometimes, someone is already working in this space, so maybe it's worth collaborating with them
+instead of duplicating the efforts.
+
+### Step 2: Work your Magic
+
+Work your magic. Here are some guidelines:
+
+* Every change requires a unit test
+* If you change APIs, make sure to update the module's README file
+* Try to maintain a single feature/bugfix per pull request. It's okay to introduce a little bit of housekeeping
+   changes along the way, but try to avoid conflating multiple features. Eventually all these are going to go into a
+   single commit, so you can use that to frame your scope.
+
+### Step 3: Commit
+   
+Create a commit with the proposed change changes:
+
+* Commit title and message (and PR title and description) must adhere to [conventionalcommits].
+  * The title must begin with `feat(module): title`, `fix(module): title`, `refactor(module): title` or
+    `chore(module): title`.
+  * Title should be lowercase.
+  * No period at the end of the title.
+  
+* Commit message should describe _motivation_. Think about your code reviewers and what information they need in
+  order to understand what you did. If it's a big commit (hopefully not), try to provide some good entry points so
+  it will be easier to follow.
+
+* Commit message should indicate which issues are fixed: `fixes #<issue>` or `closes #<issue>`.
+
+* Shout out to collaborators.
+
+* If not obvious (i.e. from unit tests), describe how you verified that your change works.
+
+* If this commit includes breaking changes, they must be listed at the end in the following format (notice how multiple breaking changes should be formatted):
+
+```
+BREAKING CHANGE: Description of what broke and how to achieve this behavior now
+* Another breaking change
+* Yet another breaking change
+```
+
+### Pull Request
+
+* Push to a GitHub fork or to a branch (naming convention: `<user>/<feature-bug-name>`)
+* Submit a Pull Requests on GitHub and assign the PR for a review to the "awslabs/aws-cdk" team.
+* Discuss review comments and iterate until you get at least one “Approve”. When iterating, push new commits to the
+  same branch. Usually all these are going to be squashed when you merge to master. The commit messages should be hints
+  for you when you finalize your merge commit message.
+* Make sure to update the PR title/description if things change. The PR title/description are going to be used as the
+  commit title/message and will appear in the CHANGELOG, so maintain them all the way throughout the process.
+
+### Merge
+
+* Make sure your PR builds successfully (we have CodeBuild setup to automatically build all PRs)
+* Once approved and tested, a maintainer will squash-merge to master and will use your PR title/description as the
+  commit message.
 
 ## Design Process
 
@@ -151,7 +177,8 @@ Here are a few useful commands:
 
  * `npm run awslint` in every module will run __awslint__ for that module.
  * `npm run awslint list` prints all rules (details and rationale in the guidelines doc)
- * `lerna run awslint` will run __awslint__ in all modules.
+ * `scripts/foreach.sh npm run awslint` will start linting the entire repo, progressively. Rerun `scripts/foreach.sh` after fixing to continue.
+ * `lerna run awslint --no-bail --stream 2> awslint.txt` will run __awslint__ in all modules and collect all results into awslint.txt
  * `lerna run awslint -- -i <RULE>` will run awslint throughout the repo and
    evaluate only the rule specified [awslint README](./tools/awslint/README.md)
    for details on include/exclude rule patterns.
@@ -355,18 +382,12 @@ Cycle: @aws-cdk/aws-sns => @aws-cdk/aws-lambda => @aws-cdk/aws-codecommit => @aw
 
 ### Updating all Dependencies
 
-We use `npm update` to
+To update all dependencies (without bumping major versions):
 
-1. Obtain a fresh clone from “master”
-2. Run `./install.sh` and `./build.sh` to make sure the current HEAD is not broken (should never be...).
-3. Once build succeeded, run:
-    ```shell
-    $ npm update # to update the root deps
-    $ lerna exec npm update # to update deps in all modules
-    ```
-4. This will probably install some new versions and update `package.json` and `package-lock.json` files.
-5. Now, run `./build.sh` again to verify all tests pass.
-6. Submit a Pull Request.
+1. Obtain a fresh clone from "master".
+2. Run `./install.sh`
+2. Run `./scripts/update-dependencies.sh --mode full` (use `--mode semver` to avoid bumping major versions)
+3. Submit a Pull Request.
 
 ### Troubleshooting common issues
 

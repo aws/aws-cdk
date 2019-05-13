@@ -1,5 +1,5 @@
 import cxapi = require('@aws-cdk/cx-api');
-import { Root } from './construct';
+import { Construct } from './construct';
 import { FileSystemStore, InMemoryStore, ISynthesisSession, Synthesizer } from './synthesis';
 
 /**
@@ -26,7 +26,7 @@ export interface AppProps {
 /**
  * Represents a CDK program.
  */
-export class App extends Root {
+export class App extends Construct {
   private _session?: ISynthesisSession;
   private readonly legacyManifest: boolean;
   private readonly runtimeInformation: boolean;
@@ -36,7 +36,8 @@ export class App extends Root {
    * @param request Optional toolkit request (e.g. for tests)
    */
   constructor(props: AppProps = {}) {
-    super();
+    super(undefined as any, '');
+
     this.loadContext(props.context);
 
     // both are reverse logic

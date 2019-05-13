@@ -115,7 +115,7 @@ export interface DatabaseClusterProps {
 /**
  * A new or imported clustered database.
  */
-export abstract class DatabaseClusterBase extends cdk.Construct implements IDatabaseCluster {
+abstract class DatabaseClusterBase extends cdk.Construct implements IDatabaseCluster {
   /**
    * Import an existing DatabaseCluster from properties
    */
@@ -173,7 +173,7 @@ export abstract class DatabaseClusterBase extends cdk.Construct implements IData
 /**
  * Create a clustered database with a given number of instances.
  */
-export class DatabaseCluster extends DatabaseClusterBase implements IDatabaseCluster {
+export class DatabaseCluster extends DatabaseClusterBase {
   /**
    * Identifier of the cluster
    */
@@ -235,7 +235,7 @@ export class DatabaseCluster extends DatabaseClusterBase implements IDatabaseClu
     this.vpc = props.instanceProps.vpc;
     this.vpcSubnets = props.instanceProps.vpcSubnets;
 
-    const subnetIds = props.instanceProps.vpc.subnetIds(props.instanceProps.vpcSubnets);
+    const { subnetIds } = props.instanceProps.vpc.selectSubnets(props.instanceProps.vpcSubnets);
 
     // Cannot test whether the subnets are in different AZs, but at least we can test the amount.
     if (subnetIds.length < 2) {
@@ -273,8 +273,12 @@ export class DatabaseCluster extends DatabaseClusterBase implements IDatabaseClu
       port: props.port,
       dbClusterParameterGroupName: props.parameterGroup && props.parameterGroup.parameterGroupName,
       // Admin
-      masterUsername: secret ? secret.jsonFieldValue('username') : props.masterUser.username,
-      masterUserPassword: secret ? secret.jsonFieldValue('password') : props.masterUser.password,
+      masterUsername: secret ? secret.secretJsonValue('username').toString() : props.masterUser.username,
+      masterUserPassword: secret
+        ? secret.secretJsonValue('password').toString()
+        : (props.masterUser.password
+            ? props.masterUser.password.toString()
+            : undefined),
       backupRetentionPeriod: props.backup && props.backup.retentionDays,
       preferredBackupWindow: props.backup && props.backup.preferredWindow,
       preferredMaintenanceWindow: props.preferredMaintenanceWindow,
@@ -304,7 +308,7 @@ export class DatabaseCluster extends DatabaseClusterBase implements IDatabaseClu
     }
 
     // Get the actual subnet objects so we can depend on internet connectivity.
-    const internetConnected = props.instanceProps.vpc.subnetInternetDependencies(props.instanceProps.vpcSubnets);
+    const internetConnected = props.instanceProps.vpc.selectSubnets(props.instanceProps.vpcSubnets).internetConnectedDependency;
     for (let i = 0; i < instanceCount; i++) {
       const instanceIndex = i + 1;
 
@@ -433,7 +437,7 @@ class ImportedDatabaseCluster extends DatabaseClusterBase implements IDatabaseCl
     this.securityGroupId = props.securityGroupId;
     this.defaultPortRange = new ec2.TcpPortFromAttribute(props.port);
     this.connections = new ec2.Connections({
-      securityGroups: [ec2.SecurityGroup.import(this, 'SecurityGroup', props)],
+      securityGroups: [ec2.SecurityGroup.fromSecurityGroupId(this, 'SecurityGroup', props.securityGroupId)],
       defaultPortRange: this.defaultPortRange
     });
     this.clusterIdentifier = props.clusterIdentifier;
