@@ -192,9 +192,9 @@ export = {
     new codebuild.Project(stack, 'Project', {
       source: new codebuild.CodePipelineSource(),
       cacheModes: [
-        ProjectCacheModes.LocalCustomCache,
-        ProjectCacheModes.LocalDockerLayerCache,
-        ProjectCacheModes.LocalSourceCache,
+        ProjectCacheModes.CustomCache,
+        ProjectCacheModes.DockerLayerCache,
+        ProjectCacheModes.SourceCache,
       ]
     });
 
@@ -222,7 +222,7 @@ export = {
         source: new codebuild.CodePipelineSource(),
         cacheBucket: new Bucket(stack, 'Bucket'),
         cacheModes: [
-          ProjectCacheModes.LocalCustomCache,
+          ProjectCacheModes.CustomCache,
         ]
       });
 
