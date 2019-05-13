@@ -120,17 +120,13 @@ export class AwsCustomResource extends cdk.Construct {
         provider.addToRolePolicy(statement);
       }
     } else { // Derive statements from AWS SDK calls
-      const statementActions: string[] = [];
-
       for (const call of [props.onCreate, props.onUpdate, props.onDelete]) {
-        if (call && !statementActions.includes(`${call.service}-${call.action}`)) { // Avoid duplicate statements
+        if (call) {
           provider.addToRolePolicy(
             new iam.PolicyStatement()
-            .addAction(awsSdkToIamAction(call.service, call.action))
-            .addAllResources()
+              .addAction(awsSdkToIamAction(call.service, call.action))
+              .addAllResources()
           );
-
-          statementActions.push(`${call.service}-${call.action}`);
         }
       }
     }
