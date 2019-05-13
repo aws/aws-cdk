@@ -18,16 +18,22 @@ const awsSdkMetadata: AwsSdkMetadata = metadata;
 export interface AwsSdkCall {
   /**
    * The service to call
+   *
+   * @see https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/index.html
    */
   readonly service: string;
 
   /**
    * The service action to call
+   *
+   * @see https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/index.html
    */
   readonly action: string;
 
   /**
    * The parameters for the service action
+   *
+   * @see https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/index.html
    */
   readonly parameters?: any;
 
