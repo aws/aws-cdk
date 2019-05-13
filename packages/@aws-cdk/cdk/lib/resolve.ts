@@ -55,6 +55,13 @@ export function resolve(obj: any, context: ResolveContext): any {
   }
 
   //
+  // number - potentially decode Tokenized number
+  //
+  if (typeof(obj) === 'number') {
+    return resolveNumberToken(obj, context);
+  }
+
+  //
   // primitives - as-is
   //
 
@@ -183,4 +190,10 @@ function resolveListTokens(xs: string[], context: ResolveContext): any {
     throw new Error(`Cannot concatenate strings in a tokenized string array, got: ${xs[0]}`);
   }
   return fragments.mapUnresolved(x => resolve(x, context)).values[0];
+}
+
+function resolveNumberToken(x: number, context: ResolveContext): any {
+  const token = TokenMap.instance().lookupNumberToken(x);
+  if (token === undefined) { return x; }
+  return resolve(token, context);
 }
