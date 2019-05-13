@@ -62,5 +62,46 @@ export = {
     test.deepEqual(stack.node.resolve(v1), expected);
     test.deepEqual(stack.node.resolve(v2), expected);
     test.done();
-  }
+  },
+
+  'no validation if first key is token and second is a static string'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+    const mapping = new CfnMapping(stack, 'mapping', {
+      mapping: {
+        'us-east-1': {
+          size: 12
+        }
+      }
+    });
+
+    // WHEN
+    const v = mapping.findInMap(Aws.region, 'size');
+
+    // THEN
+    test.deepEqual(stack.node.resolve(v), {
+      "Fn::FindInMap": [ 'mapping', { Ref: "AWS::Region" }, "size" ]
+    });
+    test.done();
+  },
+
+  'validate first key if it is a string and second is a token'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+    const mapping = new CfnMapping(stack, 'mapping', {
+      mapping: {
+        size: {
+          'us-east-1': 12
+        }
+      }
+    });
+
+    // WHEN
+    const v = mapping.findInMap('size', Aws.region);
+
+    // THEN
+    test.throws(() => mapping.findInMap('not-found', Aws.region), /Mapping doesn't contain top-level key 'not-found'/);
+    test.deepEqual(stack.node.resolve(v), { 'Fn::FindInMap': [ 'mapping', 'size', { Ref: 'AWS::Region' } ] });
+    test.done();
+  },
 };
