@@ -109,6 +109,7 @@ export interface HealthCheck {
 export interface ILoadBalancerTarget extends IConnectable {
   /**
    * Attach load-balanced target to a classic ELB
+   * @param loadBalancer [disable-awslint:ref-via-interface] The load balancer to attach the target to
    */
   attachToClassicLB(loadBalancer: LoadBalancer): void;
 }
@@ -271,22 +272,44 @@ export class LoadBalancer extends Resource implements IConnectable, codedeploy.I
     this.newTarget(target);
   }
 
+  /**
+   * @attribute
+   */
   public get loadBalancerName() {
     return this.elb.ref;
   }
 
+  /**
+   * @attribute
+   */
+  public get loadBalancerCanonicalHostedZoneNameId() {
+    return this.elb.loadBalancerCanonicalHostedZoneNameId;
+  }
+
+  /**
+   * @attribute
+   */
   public get loadBalancerCanonicalHostedZoneName() {
     return this.elb.loadBalancerCanonicalHostedZoneName;
   }
 
+  /**
+   * @attribute
+   */
   public get loadBalancerDnsName() {
     return this.elb.loadBalancerDnsName;
   }
 
+  /**
+   * @attribute
+   */
   public get loadBalancerSourceSecurityGroupGroupName() {
     return this.elb.loadBalancerSourceSecurityGroupGroupName;
   }
 
+  /**
+   * @attribute
+   */
   public get loadBalancerSourceSecurityGroupOwnerAlias() {
     return this.elb.loadBalancerSourceSecurityGroupOwnerAlias;
   }

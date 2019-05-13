@@ -61,11 +61,15 @@ export interface ActionBind {
 export interface IPipeline extends IResource, events.IEventRuleTarget {
   /**
    * The name of the Pipeline.
+   *
+   * @attribute
    */
   readonly pipelineName: string;
 
   /**
    * The ARN of the Pipeline.
+   *
+   * @attribute
    */
   readonly pipelineArn: string;
 

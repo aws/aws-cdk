@@ -8,7 +8,7 @@ export class SnsEventSource implements lambda.IEventSource {
   constructor(readonly topic: sns.ITopic) {
   }
 
-  public bind(target: lambda.FunctionBase) {
+  public bind(target: lambda.IFunction) {
     this.topic.subscribeLambda(target);
   }
 }

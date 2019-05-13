@@ -3,7 +3,7 @@ import { ConcreteDependable, Construct, IConstruct, IDependable } from '@aws-cdk
 import { CfnEIP, CfnInternetGateway, CfnNatGateway, CfnRoute, CfnVPNGateway, CfnVPNGatewayRoutePropagation } from './ec2.generated';
 import { CfnRouteTable, CfnSubnet, CfnSubnetRouteTableAssociation, CfnVPC, CfnVPCGatewayAttachment } from './ec2.generated';
 import { NetworkBuilder } from './network-util';
-import { DEFAULT_SUBNET_NAME, ExportSubnetGroup, ImportSubnetGroup, subnetId, subnetName  } from './util';
+import { defaultSubnetName, ExportSubnetGroup, ImportSubnetGroup, subnetId, subnetName  } from './util';
 import { GatewayVpcEndpoint, GatewayVpcEndpointAwsService, GatewayVpcEndpointOptions } from './vpc-endpoint';
 import { InterfaceVpcEndpoint, InterfaceVpcEndpointOptions } from './vpc-endpoint';
 import { VpcNetworkProvider, VpcNetworkProviderProps } from './vpc-network-provider';
@@ -121,7 +121,7 @@ export enum SubnetType {
    * This can be good for subnets with RDS or
    * Elasticache endpoints
    */
-  Isolated = 1,
+  Isolated = 'Isolated',
 
   /**
    * Subnet that routes to the internet, but not vice versa.
@@ -135,7 +135,7 @@ export enum SubnetType {
    * experimental cost conscious accounts or accounts where HA outbound
    * traffic is not needed.
    */
-  Private = 2,
+  Private = 'Private',
 
   /**
    * Subnet connected to the Internet
@@ -147,7 +147,7 @@ export enum SubnetType {
    *
    * Public subnets route outbound traffic via an Internet Gateway.
    */
-  Public = 3
+  Public = 'Public'
 }
 
 /**
@@ -661,11 +661,11 @@ export class VpcNetwork extends VpcNetworkBase {
   public static readonly DEFAULT_SUBNETS: SubnetConfiguration[] = [
     {
       subnetType: SubnetType.Public,
-      name: DEFAULT_SUBNET_NAME[SubnetType.Public],
+      name: defaultSubnetName(SubnetType.Public),
     },
     {
       subnetType: SubnetType.Private,
-      name: DEFAULT_SUBNET_NAME[SubnetType.Private],
+      name: defaultSubnetName(SubnetType.Private),
     }
   ];
 
@@ -790,7 +790,7 @@ export class VpcNetwork extends VpcNetworkBase {
       });
 
       (this.publicSubnets as VpcPublicSubnet[]).forEach(publicSubnet => {
-        publicSubnet.addDefaultIGWRouteEntry(igw, att);
+        publicSubnet.addDefaultInternetRoute(igw.ref, att);
       });
 
       // if gateways are needed create them
@@ -803,7 +803,7 @@ export class VpcNetwork extends VpcNetworkBase {
           // round robin the available NatGW since one is not in your AZ
           ngwId = ngwArray[i % ngwArray.length];
         }
-        privateSubnet.addDefaultNatRouteEntry(ngwId);
+        privateSubnet.addDefaultNatRoute(ngwId);
       });
     }
 
@@ -1049,10 +1049,17 @@ export interface VpcSubnetProps {
   readonly mapPublicIpOnLaunch?: boolean;
 }
 
+const IS_VPC_SUBNET = Symbol.for('@aws-cdk/aws-ec2.VpcSubnet');
+
 /**
  * Represents a new VPC subnet resource
  */
 export class VpcSubnet extends cdk.Construct implements IVpcSubnet {
+
+  public static isVpcSubnet(o: any): o is VpcSubnet {
+    return IS_VPC_SUBNET in o;
+  }
+
   public static import(scope: cdk.Construct, id: string, props: VpcSubnetImportProps): IVpcSubnet {
     return new ImportedVpcSubnet(scope, id, props);
   }
@@ -1081,6 +1088,9 @@ export class VpcSubnet extends cdk.Construct implements IVpcSubnet {
 
   constructor(scope: cdk.Construct, id: string, props: VpcSubnetProps) {
     super(scope, id);
+
+    Object.defineProperty(this, IS_VPC_SUBNET, { value: true });
+
     this.node.apply(new cdk.Tag(NAME_TAG, this.node.path));
 
     this.availabilityZone = props.availabilityZone;
@@ -1114,31 +1124,36 @@ export class VpcSubnet extends cdk.Construct implements IVpcSubnet {
     return this.internetDependencies;
   }
 
-  protected addDefaultRouteToNAT(natGatewayId: string) {
-    const route = new CfnRoute(this, `DefaultRoute`, {
-      routeTableId: this.routeTableId!,
-      destinationCidrBlock: '0.0.0.0/0',
-      natGatewayId
-    });
-    this.internetDependencies.add(route);
-  }
-
   /**
    * Create a default route that points to a passed IGW, with a dependency
    * on the IGW's attachment to the VPC.
+   *
+   * @param gatewayId the logical ID (ref) of the gateway attached to your VPC
+   * @param gatewayAttachment the gateway attachment construct to be added as a dependency
    */
-  protected addDefaultRouteToIGW(
-    gateway: CfnInternetGateway,
-    gatewayAttachment: CfnVPCGatewayAttachment) {
+  public addDefaultInternetRoute(gatewayId: string, gatewayAttachment: cdk.IDependable) {
     const route = new CfnRoute(this, `DefaultRoute`, {
       routeTableId: this.routeTableId!,
       destinationCidrBlock: '0.0.0.0/0',
-      gatewayId: gateway.ref
+      gatewayId
     });
     route.node.addDependency(gatewayAttachment);
 
     // Since the 'route' depends on the gateway attachment, just
     // depending on the route is enough.
+    this.internetDependencies.add(route);
+  }
+
+  /**
+   * Adds an entry to this subnets route table that points to the passed NATGatwayId
+   * @param natGatewayId The ID of the NAT gateway
+   */
+  public addDefaultNatRoute(natGatewayId: string) {
+    const route = new CfnRoute(this, `DefaultRoute`, {
+      routeTableId: this.routeTableId!,
+      destinationCidrBlock: '0.0.0.0/0',
+      natGatewayId
+    });
     this.internetDependencies.add(route);
   }
 }
@@ -1155,16 +1170,6 @@ export class VpcPublicSubnet extends VpcSubnet {
 
   constructor(scope: cdk.Construct, id: string, props: VpcPublicSubnetProps) {
     super(scope, id, props);
-  }
-
-  /**
-   * Create a default route that points to a passed IGW, with a dependency
-   * on the IGW's attachment to the VPC.
-   */
-  public addDefaultIGWRouteEntry(
-    gateway: CfnInternetGateway,
-    gatewayAttachment: CfnVPCGatewayAttachment) {
-    this.addDefaultRouteToIGW(gateway, gatewayAttachment);
   }
 
   /**
@@ -1195,13 +1200,6 @@ export interface VpcPrivateSubnetProps extends VpcSubnetProps {
 export class VpcPrivateSubnet extends VpcSubnet {
   constructor(scope: cdk.Construct, id: string, props: VpcPrivateSubnetProps) {
     super(scope, id, props);
-  }
-
-  /**
-   * Adds an entry to this subnets route table that points to the passed NATGatwayId
-   */
-  public addDefaultNatRouteEntry(natGatewayId: string) {
-    this.addDefaultRouteToNAT(natGatewayId);
   }
 }
 
@@ -1281,7 +1279,7 @@ function reifySelectionDefaults(placement: SubnetSelection): SubnetSelection {
  */
 function describeSelection(placement: SubnetSelection): string {
   if (placement.subnetType !== undefined) {
-    return `'${DEFAULT_SUBNET_NAME[placement.subnetType]}' subnets`;
+    return `'${defaultSubnetName(placement.subnetType)}' subnets`;
   }
   if (placement.subnetName !== undefined) {
     return `subnets named '${placement.subnetName}'`;

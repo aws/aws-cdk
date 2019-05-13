@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/aws-codedeploy",
-  "version": "0.30.0",
+  "version": "0.31.0",
   "description": "The CDK Construct Library for AWS::CodeDeploy",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -61,40 +61,41 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "^0.30.0",
-    "@aws-cdk/aws-ec2": "^0.30.0",
-    "@aws-cdk/aws-elasticloadbalancing": "^0.30.0",
-    "@aws-cdk/aws-elasticloadbalancingv2": "^0.30.0",
-    "cdk-build-tools": "^0.30.0",
-    "cdk-integ-tools": "^0.30.0",
-    "cfn2ts": "^0.30.0",
-    "pkglint": "^0.30.0"
+    "@aws-cdk/assert": "^0.31.0",
+    "@aws-cdk/aws-ec2": "^0.31.0",
+    "@aws-cdk/aws-elasticloadbalancing": "^0.31.0",
+    "@aws-cdk/aws-elasticloadbalancingv2": "^0.31.0",
+    "cdk-build-tools": "^0.31.0",
+    "cdk-integ-tools": "^0.31.0",
+    "cfn2ts": "^0.31.0",
+    "pkglint": "^0.31.0"
   },
   "dependencies": {
-    "@aws-cdk/aws-autoscaling": "^0.30.0",
-    "@aws-cdk/aws-cloudwatch": "^0.30.0",
-    "@aws-cdk/aws-codedeploy-api": "^0.30.0",
-    "@aws-cdk/aws-iam": "^0.30.0",
-    "@aws-cdk/aws-lambda": "^0.30.0",
-    "@aws-cdk/aws-s3": "^0.30.0",
-    "@aws-cdk/cdk": "^0.30.0"
+    "@aws-cdk/aws-autoscaling": "^0.31.0",
+    "@aws-cdk/aws-cloudwatch": "^0.31.0",
+    "@aws-cdk/aws-codedeploy-api": "^0.31.0",
+    "@aws-cdk/aws-iam": "^0.31.0",
+    "@aws-cdk/aws-lambda": "^0.31.0",
+    "@aws-cdk/aws-s3": "^0.31.0",
+    "@aws-cdk/cdk": "^0.31.0"
   },
   "homepage": "https://github.com/awslabs/aws-cdk",
   "peerDependencies": {
-    "@aws-cdk/aws-autoscaling": "^0.30.0",
-    "@aws-cdk/aws-cloudwatch": "^0.30.0",
-    "@aws-cdk/aws-codedeploy-api": "^0.30.0",
-    "@aws-cdk/aws-iam": "^0.30.0",
-    "@aws-cdk/aws-lambda": "^0.30.0",
-    "@aws-cdk/aws-s3": "^0.30.0",
-    "@aws-cdk/cdk": "^0.30.0"
+    "@aws-cdk/aws-autoscaling": "^0.31.0",
+    "@aws-cdk/aws-cloudwatch": "^0.31.0",
+    "@aws-cdk/aws-codedeploy-api": "^0.31.0",
+    "@aws-cdk/aws-iam": "^0.31.0",
+    "@aws-cdk/aws-lambda": "^0.31.0",
+    "@aws-cdk/aws-s3": "^0.31.0",
+    "@aws-cdk/cdk": "^0.31.0"
   },
   "engines": {
     "node": ">= 8.10.0"
   },
   "awslint": {
     "exclude": [
-      "construct-interface-extends-iconstruct:@aws-cdk/aws-codedeploy.IServerDeploymentConfig"
+      "construct-interface-extends-iconstruct:@aws-cdk/aws-codedeploy.IServerDeploymentConfig",
+      "resource-interface-extends-resource:@aws-cdk/aws-codedeploy.IServerDeploymentConfig"
     ]
   }
 }

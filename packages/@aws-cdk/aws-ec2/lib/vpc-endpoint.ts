@@ -4,7 +4,7 @@ import { Connections, IConnectable } from './connections';
 import { CfnVPCEndpoint } from './ec2.generated';
 import { SecurityGroup } from './security-group';
 import { TcpPort, TcpPortFromAttribute } from './security-group-rule';
-import { IVpcNetwork, SubnetSelection, SubnetType } from './vpc-ref';
+import { IVpcNetwork, SubnetSelection, SubnetType } from './vpc';
 
 /**
  * A VPC endpoint.
@@ -470,7 +470,7 @@ class ImportedInterfaceVpcEndpoint extends cdk.Construct implements IInterfaceVp
 
     this.connections = new Connections({
       defaultPortRange: new TcpPortFromAttribute(props.port),
-      securityGroups: [SecurityGroup.import(this, 'SecurityGroup', props)],
+      securityGroups: [SecurityGroup.fromSecurityGroupId(this, 'SecurityGroup', props.securityGroupId)],
     });
   }
 

@@ -366,7 +366,7 @@ class ImportedApplicationListener extends cdk.Construct implements IApplicationL
     const defaultPortRange = props.defaultPort !== undefined ? new ec2.TcpPortFromAttribute(props.defaultPort) : undefined;
 
     this.connections = new ec2.Connections({
-      securityGroups: [ec2.SecurityGroup.import(this, 'SecurityGroup', { securityGroupId: props.securityGroupId })],
+      securityGroups: [ec2.SecurityGroup.fromSecurityGroupId(this, 'SecurityGroup', props.securityGroupId)],
       defaultPortRange,
     });
   }

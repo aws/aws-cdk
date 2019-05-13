@@ -31,7 +31,7 @@ export = {
         Type: "AWS::Lambda::Alias",
         Properties: {
           FunctionName: { Ref: "MyLambdaCCE802FB" },
-          FunctionVersion: stack.node.resolve(version.functionVersion),
+          FunctionVersion: stack.node.resolve(version.version),
           Name: "prod"
         }
         }
@@ -86,11 +86,11 @@ export = {
     });
 
     expect(stack).to(haveResource('AWS::Lambda::Alias', {
-      FunctionVersion: stack.node.resolve(version1.functionVersion),
+      FunctionVersion: stack.node.resolve(version1.version),
       RoutingConfig: {
         AdditionalVersionWeights: [
           {
-          FunctionVersion: stack.node.resolve(version2.functionVersion),
+          FunctionVersion: stack.node.resolve(version2.version),
           FunctionWeight: 0.1
           }
         ]

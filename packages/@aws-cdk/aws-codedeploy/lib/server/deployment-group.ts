@@ -11,14 +11,21 @@ import { arnForDeploymentGroup, renderAlarmConfiguration, renderAutoRollbackConf
 import { IServerApplication, ServerApplication } from './application';
 import { IServerDeploymentConfig, ServerDeploymentConfig } from './deployment-config';
 
-export interface IServerDeploymentGroup extends cdk.IConstruct {
+export interface IServerDeploymentGroup extends cdk.IResource {
   readonly application: IServerApplication;
-  readonly role?: iam.Role;
+  readonly role?: iam.IRole;
+  /**
+   * @attribute
+   */
   readonly deploymentGroupName: string;
+
+  /**
+   * @attribute
+   */
   readonly deploymentGroupArn: string;
   readonly deploymentConfig: IServerDeploymentConfig;
   readonly autoScalingGroups?: autoscaling.AutoScalingGroup[];
-  export(): ServerDeploymentGroupImportProps;
+  export(): ServerDeploymentGroupAttributes;
 }
 
 /**
@@ -27,7 +34,7 @@ export interface IServerDeploymentGroup extends cdk.IConstruct {
  * @see ServerDeploymentGroup#import
  * @see IServerDeploymentGroup#export
  */
-export interface ServerDeploymentGroupImportProps {
+export interface ServerDeploymentGroupAttributes {
   /**
    * The reference to the CodeDeploy EC2/on-premise Application
    * that this Deployment Group belongs to.
@@ -58,9 +65,9 @@ export interface ServerDeploymentGroupImportProps {
  * or one defined in a different CDK Stack,
  * use the {@link #import} method.
  */
-abstract class ServerDeploymentGroupBase extends cdk.Construct implements IServerDeploymentGroup {
+abstract class ServerDeploymentGroupBase extends cdk.Resource implements IServerDeploymentGroup {
   public abstract readonly application: IServerApplication;
-  public abstract readonly role?: iam.Role;
+  public abstract readonly role?: iam.IRole;
   public abstract readonly deploymentGroupName: string;
   public abstract readonly deploymentGroupArn: string;
   public readonly deploymentConfig: IServerDeploymentConfig;
@@ -71,7 +78,7 @@ abstract class ServerDeploymentGroupBase extends cdk.Construct implements IServe
     this.deploymentConfig = deploymentConfig || ServerDeploymentConfig.OneAtATime;
   }
 
-  public abstract export(): ServerDeploymentGroupImportProps;
+  public abstract export(): ServerDeploymentGroupAttributes;
 }
 
 class ImportedServerDeploymentGroup extends ServerDeploymentGroupBase {
@@ -81,7 +88,7 @@ class ImportedServerDeploymentGroup extends ServerDeploymentGroupBase {
   public readonly deploymentGroupArn: string;
   public readonly autoScalingGroups?: autoscaling.AutoScalingGroup[] = undefined;
 
-  constructor(scope: cdk.Construct, id: string, private readonly props: ServerDeploymentGroupImportProps) {
+  constructor(scope: cdk.Construct, id: string, private readonly props: ServerDeploymentGroupAttributes) {
     super(scope, id, props.deploymentConfig);
 
     this.application = props.application;
@@ -143,7 +150,7 @@ export interface ServerDeploymentGroupProps {
    * The service Role of this Deployment Group.
    * If you don't provide one, a new Role will be created.
    */
-  readonly role?: iam.Role;
+  readonly role?: iam.IRole;
 
   /**
    * The physical, human-readable name of the CodeDeploy Deployment Group.
@@ -162,7 +169,11 @@ export interface ServerDeploymentGroupProps {
   /**
    * The auto-scaling groups belonging to this Deployment Group.
    *
-   * Auto-scaling groups can also be added after the Deployment Group is created using the {@link #addAutoScalingGroup} method.
+   * Auto-scaling groups can also be added after the Deployment Group is created
+   * using the {@link #addAutoScalingGroup} method.
+   *
+   * [disable-awslint:ref-via-interface] is needed because we update userdata
+   * for ASGs to install the codedeploy agent.
    *
    * @default []
    */
@@ -210,7 +221,7 @@ export interface ServerDeploymentGroupProps {
    * @default []
    * @see https://docs.aws.amazon.com/codedeploy/latest/userguide/monitoring-create-alarms.html
    */
-  readonly alarms?: cloudwatch.Alarm[];
+  readonly alarms?: cloudwatch.IAlarm[];
 
   /**
    * Whether to continue a deployment even if fetching the alarm status from CloudWatch failed.
@@ -227,6 +238,7 @@ export interface ServerDeploymentGroupProps {
 
 /**
  * A CodeDeploy Deployment Group that deploys to EC2/on-premise instances.
+ * @resource AWS::CodeDeploy::DeploymentGroup
  */
 export class ServerDeploymentGroup extends ServerDeploymentGroupBase {
   /**
@@ -235,22 +247,25 @@ export class ServerDeploymentGroup extends ServerDeploymentGroupBase {
    *
    * @param scope the parent Construct for this new Construct
    * @param id the logical ID of this new Construct
-   * @param props the properties of the referenced Deployment Group
+   * @param attrs the properties of the referenced Deployment Group
    * @returns a Construct representing a reference to an existing Deployment Group
    */
-  public static import(scope: cdk.Construct, id: string, props: ServerDeploymentGroupImportProps): IServerDeploymentGroup {
-    return new ImportedServerDeploymentGroup(scope, id, props);
+  public static fromServerDeploymentGroupAttributes(
+      scope: cdk.Construct,
+      id: string,
+      attrs: ServerDeploymentGroupAttributes): IServerDeploymentGroup {
+    return new ImportedServerDeploymentGroup(scope, id, attrs);
   }
 
   public readonly application: IServerApplication;
-  public readonly role?: iam.Role;
+  public readonly role?: iam.IRole;
   public readonly deploymentGroupArn: string;
   public readonly deploymentGroupName: string;
 
   private readonly _autoScalingGroups: autoscaling.AutoScalingGroup[];
   private readonly installAgent: boolean;
   private readonly codeDeployBucket: s3.IBucket;
-  private readonly alarms: cloudwatch.Alarm[];
+  private readonly alarms: cloudwatch.IAlarm[];
 
   constructor(scope: cdk.Construct, id: string, props: ServerDeploymentGroupProps = {}) {
     super(scope, id, props.deploymentConfig);
@@ -264,9 +279,7 @@ export class ServerDeploymentGroup extends ServerDeploymentGroupBase {
 
     this._autoScalingGroups = props.autoScalingGroups || [];
     this.installAgent = props.installAgent === undefined ? true : props.installAgent;
-    this.codeDeployBucket = s3.Bucket.import(this, 'CodeDeployBucket', {
-      bucketName: `aws-codedeploy-${this.node.stack.region}`,
-    });
+    this.codeDeployBucket = s3.Bucket.fromBucketName(this, 'Bucket', `aws-codedeploy-${this.node.stack.region}`);
     for (const asg of this._autoScalingGroups) {
       this.addCodeDeployAgentInstallUserData(asg);
     }
@@ -299,7 +312,7 @@ export class ServerDeploymentGroup extends ServerDeploymentGroupBase {
     this.deploymentGroupArn = arnForDeploymentGroup(this.application.applicationName, this.deploymentGroupName);
   }
 
-  public export(): ServerDeploymentGroupImportProps {
+  public export(): ServerDeploymentGroupAttributes {
     return {
       application: this.application,
       deploymentGroupName: new cdk.CfnOutput(this, 'DeploymentGroupName', {
@@ -312,7 +325,9 @@ export class ServerDeploymentGroup extends ServerDeploymentGroupBase {
   /**
    * Adds an additional auto-scaling group to this Deployment Group.
    *
-   * @param asg the auto-scaling group to add to this Deployment Group
+   * @param asg the auto-scaling group to add to this Deployment Group.
+   * [disable-awslint:ref-via-interface] is needed in order to install the code
+   * deploy agent by updating the ASGs user data.
    */
   public addAutoScalingGroup(asg: autoscaling.AutoScalingGroup): void {
     this._autoScalingGroups.push(asg);
@@ -324,7 +339,7 @@ export class ServerDeploymentGroup extends ServerDeploymentGroupBase {
    *
    * @param alarm the alarm to associate with this Deployment Group
    */
-  public addAlarm(alarm: cloudwatch.Alarm): void {
+  public addAlarm(alarm: cloudwatch.IAlarm): void {
     this.alarms.push(alarm);
   }
 

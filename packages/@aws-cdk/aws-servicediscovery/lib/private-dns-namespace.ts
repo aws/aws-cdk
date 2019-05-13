@@ -1,6 +1,6 @@
 import ec2 = require('@aws-cdk/aws-ec2');
 import { Construct } from '@aws-cdk/cdk';
-import { BaseNamespaceProps, NamespaceBase, NamespaceType } from './namespace';
+import { BaseNamespaceProps, INamespace, NamespaceBase, NamespaceType } from './namespace';
 import { DnsServiceProps, Service } from './service';
 import { CfnPrivateDnsNamespace} from './servicediscovery.generated';
 
@@ -11,10 +11,24 @@ export interface PrivateDnsNamespaceProps extends BaseNamespaceProps {
   readonly vpc: ec2.IVpcNetwork;
 }
 
+export interface IPrivateDnsNamespace extends INamespace {
+  /**
+   * The ID of the private namespace.
+   * @attribute
+   */
+  readonly privateDnsNamespaceId: string;
+
+  /**
+   * The Amazon Resource Name (ARN) of the private namespace.
+   * @attribute
+   */
+  readonly privateDnsNamespaceArn: string;
+}
+
 /**
  * Define a Service Discovery HTTP Namespace
  */
-export class PrivateDnsNamespace extends NamespaceBase {
+export class PrivateDnsNamespace extends NamespaceBase implements IPrivateDnsNamespace {
   /**
    * The name of the PrivateDnsNamespace.
    */
@@ -52,6 +66,9 @@ export class PrivateDnsNamespace extends NamespaceBase {
     this.namespaceArn = ns.privateDnsNamespaceArn;
     this.type = NamespaceType.DnsPrivate;
   }
+
+  public get privateDnsNamespaceArn() { return this.namespaceArn; }
+  public get privateDnsNamespaceId() { return this.namespaceId; }
 
   /**
    * Creates a service within the namespace
