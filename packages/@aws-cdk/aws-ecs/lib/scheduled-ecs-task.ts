@@ -1,8 +1,8 @@
 import events = require('@aws-cdk/aws-events');
+import eventsTargets = require('@aws-cdk/aws-events-targets');
 import cdk = require('@aws-cdk/cdk');
 import { ICluster } from './cluster';
 import { ContainerImage } from './container-image';
-import { Ec2EventRuleTarget } from './ec2/ec2-event-rule-target';
 import { Ec2TaskDefinition } from './ec2/ec2-task-definition';
 import { AwsLogDriver } from './log-drivers/aws-log-driver';
 
@@ -31,7 +31,7 @@ export interface ScheduledEc2TaskProps {
    *
    * @default none
    */
-  readonly command?: string;
+  readonly command?: string[];
 
   /**
    * The minimum number of CPU units to reserve for the container.
@@ -91,7 +91,7 @@ export class ScheduledEc2Task extends cdk.Construct {
       memoryLimitMiB: props.memoryLimitMiB,
       memoryReservationMiB: props.memoryReservationMiB,
       cpu: props.cpu,
-      command: props.command !== undefined ? cdk.Fn.split(",", props.command) : undefined,
+      command: props.command,
       environment: props.environment,
       logging: new AwsLogDriver(this, 'ScheduledTaskLogging', { streamPrefix: this.node.id })
     });
@@ -100,7 +100,7 @@ export class ScheduledEc2Task extends cdk.Construct {
     const eventRuleTarget = new Ec2EventRuleTarget(this, 'ScheduledEventRuleTarget', {
       cluster: props.cluster,
       taskDefinition,
-      taskCount: props.desiredTaskCount !== undefined ? props.desiredTaskCount : 1
+      taskCount: props.desiredTaskCount
     });
 
     // An EventRule that describes the event trigger (in this case a scheduled run)

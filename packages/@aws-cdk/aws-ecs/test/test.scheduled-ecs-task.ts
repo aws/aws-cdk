@@ -9,7 +9,7 @@ export = {
   "Can create a scheduled Ec2 Task - with only required props"(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
-    const vpc = new ec2.VpcNetwork(stack, 'Vpc', { maxAZs: 1 });
+    const vpc = new ec2.Vpc(stack, 'Vpc', { maxAZs: 1 });
     const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
     cluster.addCapacity('DefaultAutoScalingGroup', {
       instanceType: new ec2.InstanceType('t2.micro')
@@ -32,7 +32,7 @@ export = {
             TaskDefinitionArn: { Ref: "ScheduledEc2TaskScheduledTaskDef56328BA4" }
           },
           Id: "ScheduledEventRuleTarget",
-          RoleArn: { "Fn::GetAtt": ["ScheduledEc2TaskScheduledTaskDefEventsRole64113C5F", "Arn"] }
+          RoleArn: { "Fn::GetAtt": ["ScheduledEc2TaskScheduledTaskDef1EA607E3EventsRole9262E416", "Arn"] }
         }
       ]
     }));
@@ -43,14 +43,6 @@ export = {
           Essential: true,
           Image: "henk",
           Links: [],
-          LinuxParameters: {
-            Capabilities: {
-              Add: [],
-              Drop: []
-            },
-            Devices: [],
-            Tmpfs: []
-          },
           LogConfiguration: {
             LogDriver: "awslogs",
             Options: {
@@ -79,7 +71,7 @@ export = {
   "Can create a scheduled Ec2 Task - with optional props"(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
-    const vpc = new ec2.VpcNetwork(stack, 'Vpc', { maxAZs: 1 });
+    const vpc = new ec2.Vpc(stack, 'Vpc', { maxAZs: 1 });
     const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
     cluster.addCapacity('DefaultAutoScalingGroup', {
       instanceType: new ec2.InstanceType('t2.micro')
@@ -105,7 +97,7 @@ export = {
             TaskDefinitionArn: { Ref: "ScheduledEc2TaskScheduledTaskDef56328BA4" }
           },
           Id: "ScheduledEventRuleTarget",
-          RoleArn: { "Fn::GetAtt": ["ScheduledEc2TaskScheduledTaskDefEventsRole64113C5F", "Arn"] }
+          RoleArn: { "Fn::GetAtt": ["ScheduledEc2TaskScheduledTaskDef1EA607E3EventsRole9262E416", "Arn"] }
         }
       ]
     }));
@@ -127,14 +119,6 @@ export = {
           Essential: true,
           Image: "henk",
           Links: [],
-          LinuxParameters: {
-            Capabilities: {
-              Add: [],
-              Drop: []
-            },
-            Devices: [],
-            Tmpfs: []
-          },
           LogConfiguration: {
             LogDriver: "awslogs",
             Options: {
@@ -183,14 +167,6 @@ export = {
           Essential: true,
           Image: "henk",
           Links: [],
-          LinuxParameters: {
-            Capabilities: {
-              Add: [],
-              Drop: []
-            },
-            Devices: [],
-            Tmpfs: []
-          },
           LogConfiguration: {
             LogDriver: "awslogs",
             Options: {
@@ -219,7 +195,7 @@ export = {
   "Scheduled Ec2 Task - with Command defined"(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
-    const vpc = new ec2.VpcNetwork(stack, 'Vpc', { maxAZs: 1 });
+    const vpc = new ec2.Vpc(stack, 'Vpc', { maxAZs: 1 });
     const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
     cluster.addCapacity('DefaultAutoScalingGroup', {
       instanceType: new ec2.InstanceType('t2.micro')
@@ -229,7 +205,7 @@ export = {
       cluster,
       image: ecs.ContainerImage.fromRegistry('henk'),
       memoryReservationMiB: 512,
-      command: "-c, 4, amazon.com",
+      command: ["-c". "4". "amazon.com"],
       scheduleExpression: 'rate(1 minute)'
     });
 
@@ -237,23 +213,14 @@ export = {
     expect(stack).to(haveResource('AWS::ECS::TaskDefinition', {
       ContainerDefinitions: [
         {
-          Command: {
-            "Fn::Split": [
-              ",",
-              "-c, 4, amazon.com"
-            ]
-          },
+          Command: [
+            "-c",
+            "4",
+            "amazon.com"
+          ],
           Essential: true,
           Image: "henk",
           Links: [],
-          LinuxParameters: {
-            Capabilities: {
-              Add: [],
-              Drop: []
-            },
-            Devices: [],
-            Tmpfs: []
-          },
           LogConfiguration: {
             LogDriver: "awslogs",
             Options: {
