@@ -38,8 +38,8 @@ export class CfnMapping extends CfnRefElement {
       throw new Error(`Mapping doesn't contain top-level key '${key1}'`);
     }
 
-    // opportunistically check that the key exists (if the key does not contain tokens)
-    if (!Token.isToken(key2) && !(key2 in this.mapping[key1])) {
+    // opportunistically check that the second key exists (if the key does not contain tokens)
+    if (!Token.isToken(key1) && !Token.isToken(key2) && !(key2 in this.mapping[key1])) {
       throw new Error(`Mapping doesn't contain second-level key '${key2}'`);
     }
 
