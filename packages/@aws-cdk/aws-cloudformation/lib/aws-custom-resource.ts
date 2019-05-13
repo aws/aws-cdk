@@ -57,6 +57,14 @@ export interface AwsSdkCall {
    * @default do not catch errors
    */
   readonly catchErrorPattern?: string;
+
+  /**
+   * API version to use for the service
+   *
+   * @see https://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/locking-api-versions.html
+   * @default use latest available API version
+   */
+  readonly apiVersion?: string;
 }
 
 export interface AwsCustomResourceProps {

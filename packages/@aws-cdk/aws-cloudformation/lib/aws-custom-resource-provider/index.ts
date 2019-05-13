@@ -32,7 +32,7 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
     const call: AwsSdkCall | undefined = event.ResourceProperties[event.RequestType];
 
     if (call) {
-      const awsService = new (AWS as any)[call.service]();
+      const awsService = new (AWS as any)[call.service](call.apiVersion && { apiVersion: call.apiVersion });
 
       try {
         const response = await awsService[call.action](call.parameters).promise();
