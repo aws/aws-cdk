@@ -200,9 +200,79 @@ export function containsListTokenElement(xs: any[]) {
 export function unresolved(obj: any): boolean {
   if (typeof(obj) === 'string') {
     return TokenString.forStringToken(obj).test();
+  } else if (typeof obj === 'number') {
+    return extractTokenDouble(obj) !== undefined;
   } else if (Array.isArray(obj) && obj.length === 1) {
     return typeof(obj[0]) === 'string' && TokenString.forListToken(obj[0]).test();
   } else {
     return obj && typeof(obj[RESOLVE_METHOD]) === 'function';
   }
+}
+
+/**
+ * Bit pattern in the top 16 bits of a double to indicate a Token
+ *
+ * An IEEE double in LE memory order looks like this (grouped
+ * into octets, then grouped into 32-bit words):
+ *
+ * mmmmmmm.mmmmmmm.mmmmmmm.mmmmmmm | mmmmmmm.mmmmmmm.EEEEEmm.sEEEEEE
+ *
+ * - m: mantissa (52 bits)
+ * - E: exponent (11 bits)
+ * - s: sign (1 bit)
+ *
+ * We put the following marker into the top 16 bits (exponent and sign), and
+ * use the mantissa part to encode the token index. To save some bit twiddling
+ * we use all top 16 bits for the tag. That loses us 2 mantissa bits to store
+ * information in but we still have 50, which is going to be plenty for any
+ * number of tokens to be created during the lifetime of any CDK application.
+ *
+ * Can't have all bits set because that makes a NaN, so unset the least
+ * significant exponent bit.
+ *
+ * Currently not supporting BE architectures.
+ */
+// tslint:disable-next-line:no-bitwise
+const DOUBLE_TOKEN_MARKER_BITS = 0xFBFF << 16;
+
+/**
+ * Return a special Double value that encodes the given integer
+ */
+export function createTokenDouble(x: number) {
+  if (Math.floor(x) !== x || x < 0) {
+    throw new Error('Can only encode positive integers');
+  }
+
+  const buf = new ArrayBuffer(8);
+  const ints = new Uint32Array(buf);
+
+  // tslint:disable:no-bitwise
+  ints[0] = x & 0x0000FFFFFFFF; // Bottom 32 bits of number
+  ints[1] = (x & 0xFFFF00000000) >> 32 | DOUBLE_TOKEN_MARKER_BITS; // Top 16 bits of number and the mask
+  // tslint:enable:no-bitwise
+
+  return (new Float64Array(buf))[0];
+
+}
+
+/**
+ * Extract the encoded integer out of the special Double value
+ *
+ * Returns undefined if the float is a not an encoded token.
+ */
+export function extractTokenDouble(encoded: number): number | undefined {
+  const buf = new ArrayBuffer(8);
+  (new Float64Array(buf))[0] = encoded;
+
+  const ints = new Uint32Array(buf);
+
+  // tslint:disable:no-bitwise
+  if ((ints[1] & 0xFFFF0000) !== DOUBLE_TOKEN_MARKER_BITS) {
+    return undefined;
+  }
+
+  // Must use + instead of | here (bitwise operations
+  // will force 32-bits integer arithmetic, + will not).
+  return ints[0] + (ints[1] & 0xFFFF0000) << 16;
+  // tslint:enable:no-bitwise
 }
