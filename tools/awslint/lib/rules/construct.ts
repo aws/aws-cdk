@@ -228,3 +228,28 @@ constructLinter.add({
     }
   }
 });
+
+constructLinter.add({
+  code: 'props-no-tokens',
+  message: 'props should not use the "Token" type',
+  eval: e => {
+    if (!e.ctx.propsType) { return; }
+    if (!e.ctx.hasPropsArgument) { return; }
+
+    // this rule only applies to L2 constructs
+    if (e.ctx.classType.name.startsWith('Cfn')) { return; }
+
+    for (const property of e.ctx.propsType.ownProperties) {
+      const typeRef = property.type;
+      let fqn = typeRef.fqn;
+
+      if (typeRef.arrayOfType) {
+        fqn = typeRef.arrayOfType.fqn;
+      } else if (typeRef.mapOfType) {
+        fqn = typeRef.mapOfType.fqn;
+      }
+
+      e.assert(!(fqn === '@aws-cdk/cdk.Token'), `${e.ctx.propsFqn}.${property.name}`);
+    }
+  }
+});
