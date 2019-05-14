@@ -6,12 +6,11 @@ import ecr = require('@aws-cdk/aws-ecr');
 import events = require('@aws-cdk/aws-events');
 import iam = require('@aws-cdk/aws-iam');
 import kms = require('@aws-cdk/aws-kms');
-import s3 = require('@aws-cdk/aws-s3');
-import { Aws, CfnOutput, Construct, Fn, IResource, Resource, Token } from '@aws-cdk/cdk';
+import { Aws, CfnOutput, Construct, IResource, Resource, Token } from '@aws-cdk/cdk';
 import { BuildArtifacts, CodePipelineBuildArtifacts, NoBuildArtifacts } from './artifacts';
+import { Cache } from './cache';
 import { CfnProject } from './codebuild.generated';
 import { BuildSource, NoSource, SourceType } from './source';
-import { Cache } from './cache';
 
 const CODEPIPELINE_TYPE = 'CODEPIPELINE';
 const S3_BUCKET_ENV = 'SCRIPT_S3_BUCKET';
@@ -629,6 +628,8 @@ export class Project extends ProjectBase {
       props.cache._bind(this);
     }
 
+    const cache = props.cache || Cache.none();
+
     // Inject download commands for asset if requested
     const environmentVariables = props.environmentVariables || {};
     const buildSpec = props.buildSpec || {};
@@ -686,7 +687,7 @@ export class Project extends ProjectBase {
       environment: this.renderEnvironment(props.environment, environmentVariables),
       encryptionKey: props.encryptionKey && props.encryptionKey.keyArn,
       badgeEnabled: props.badge,
-      cache: props.cache && props.cache._toCloudFormation() || Cache.none()._toCloudFormation(),
+      cache: cache._toCloudFormation(),
       name: props.projectName,
       timeoutInMinutes: props.timeout,
       secondarySources: new Token(() => this.renderSecondarySources()),
