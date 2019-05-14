@@ -692,10 +692,10 @@ export = {
         ]
       }));
 
-      test.equal(pipeline.crossRegionScaffoldStacks[pipelineRegion], undefined);
-      test.equal(pipeline.crossRegionScaffoldStacks['us-west-1'], undefined);
+      test.equal(pipeline.crossRegionScaffolding[pipelineRegion], undefined);
+      test.equal(pipeline.crossRegionScaffolding['us-west-1'], undefined);
 
-      const usEast1ScaffoldStack = pipeline.crossRegionScaffoldStacks['us-east-1'];
+      const usEast1ScaffoldStack = pipeline.crossRegionScaffolding['us-east-1'];
       test.notEqual(usEast1ScaffoldStack, undefined);
       test.equal(usEast1ScaffoldStack.env.region, 'us-east-1');
       test.equal(usEast1ScaffoldStack.env.account, pipelineAccount);
@@ -705,6 +705,19 @@ export = {
       test.done();
     },
   },
+
+  'Pipeline.fromPipelineArn'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    const pl = codepipeline.Pipeline.fromPipelineArn(stack, 'imported', 'arn:aws:codepipeline:us-east-1:123456789012:MyDemoPipeline');
+
+    // THEN
+    test.deepEqual(pl.pipelineArn, 'arn:aws:codepipeline:us-east-1:123456789012:MyDemoPipeline');
+    test.deepEqual(pl.pipelineName, 'MyDemoPipeline');
+    test.done();
+  }
 };
 
 function stageForTesting(stack: Stack): codepipeline.IStage {

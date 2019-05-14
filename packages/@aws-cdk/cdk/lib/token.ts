@@ -1,6 +1,6 @@
 import { IConstruct } from "./construct";
-import { TOKEN_MAP } from "./encoding";
-import { unresolved } from './unresolved';
+import { unresolved } from "./encoding";
+import { TokenMap } from "./token-map";
 
 /**
  * If objects has a function property by this name, they will be considered tokens, and this
@@ -20,17 +20,25 @@ export const RESOLVE_METHOD = 'resolve';
  */
 export class Token {
   /**
-   * Returns true if obj is a token (i.e. has the resolve() method or is a string
-   * that includes token markers), or it's a listifictaion of a Token string.
-   *
-   * @param obj The object to test.
+   * @deprecated use `Token.isToken`
    */
   public static unresolved(obj: any): boolean {
     return unresolved(obj);
   }
 
+  /**
+   * Returns true if obj is a token (i.e. has the resolve() method or is a
+   * string or array which includes token markers).
+   *
+   * @param obj The object to test.
+   */
+  public static isToken(obj: any): boolean {
+    return unresolved(obj);
+  }
+
   private tokenStringification?: string;
   private tokenListification?: string[];
+  private tokenNumberification?: number;
 
   /**
    * Creates a token that resolves to `value`.
@@ -86,7 +94,7 @@ export class Token {
     }
 
     if (this.tokenStringification === undefined) {
-      this.tokenStringification = TOKEN_MAP.registerString(this, this.displayName);
+      this.tokenStringification = TokenMap.instance().registerString(this, this.displayName);
     }
     return this.tokenStringification;
   }
@@ -121,9 +129,33 @@ export class Token {
     }
 
     if (this.tokenListification === undefined) {
-      this.tokenListification = TOKEN_MAP.registerList(this, this.displayName);
+      this.tokenListification = TokenMap.instance().registerList(this, this.displayName);
     }
     return this.tokenListification;
+  }
+
+  /**
+   * Return a floating point representation of this Token
+   *
+   * Call this if the Token intrinsically resolves to something that represents
+   * a number, and you need to pass it into an API that expects a number.
+   *
+   * You may not do any operations on the returned value; any arithmetic or
+   * other operations can and probably will destroy the token-ness of the value.
+   */
+  public toNumber(): number {
+    if (this.tokenNumberification === undefined) {
+      const valueType = typeof this.valueOrFunction;
+      // Optimization: if we can immediately resolve this, don't bother
+      // registering a Token.
+      if (valueType === 'number') { return this.valueOrFunction; }
+      if (valueType !== 'function') {
+        throw new Error(`Token value is not number or lazy, can't represent as number: ${this.valueOrFunction}`);
+      }
+      this.tokenNumberification = TokenMap.instance().registerNumber(this);
+    }
+
+    return this.tokenNumberification;
   }
 }
 

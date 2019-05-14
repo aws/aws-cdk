@@ -49,7 +49,7 @@ export = {
       domainName: 'hello.com',
     }).export();
 
-    Certificate.import(stack, 'Imported', refProps);
+    Certificate.fromCertificateArn(stack, 'Imported', refProps.certificateArn);
 
     test.done();
   }

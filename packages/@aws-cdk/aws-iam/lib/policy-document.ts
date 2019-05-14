@@ -287,11 +287,13 @@ export class CompositePrincipal extends PrincipalBase {
   public readonly assumeRoleAction: string;
   private readonly principals = new Array<PrincipalBase>();
 
-  constructor(principal: PrincipalBase, ...additionalPrincipals: PrincipalBase[]) {
+  constructor(...principals: PrincipalBase[]) {
     super();
-    this.assumeRoleAction = principal.assumeRoleAction;
-    this.addPrincipals(principal);
-    this.addPrincipals(...additionalPrincipals);
+    if (principals.length === 0) {
+      throw new Error('CompositePrincipals must be constructed with at least 1 Principal but none were passed.');
+    }
+    this.assumeRoleAction = principals[0].assumeRoleAction;
+    this.addPrincipals(...principals);
   }
 
   public addPrincipals(...principals: PrincipalBase[]): this {
@@ -531,6 +533,10 @@ export class PolicyStatement extends cdk.Token {
 
       if (typeof(values) === 'undefined') {
         return undefined;
+      }
+
+      if (cdk.Token.isToken(values)) {
+        return values;
       }
 
       if (Array.isArray(values)) {

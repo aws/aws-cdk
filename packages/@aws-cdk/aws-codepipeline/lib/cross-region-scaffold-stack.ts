@@ -1,6 +1,7 @@
 import s3 = require('@aws-cdk/aws-s3');
 import cdk = require('@aws-cdk/cdk');
 import crypto = require('crypto');
+import { CrossRegionScaffolding } from './pipeline';
 
 /**
  * Construction properties for {@link CrossRegionScaffoldStack}.
@@ -22,14 +23,15 @@ export interface CrossRegionScaffoldStackProps {
 /**
  * A Stack containing resources required for the cross-region CodePipeline functionality to work.
  */
-export class CrossRegionScaffoldStack extends cdk.Stack {
+export class CrossRegionScaffoldStack extends CrossRegionScaffolding {
   /**
    * The name of the S3 Bucket used for replicating the Pipeline's artifacts into the region.
    */
   public readonly replicationBucketName: string;
 
-  constructor(scope: cdk.App, props: CrossRegionScaffoldStackProps) {
-    super(scope, generateStackName(props), {
+  constructor(scope: cdk.Construct, id: string, props: CrossRegionScaffoldStackProps) {
+    super(scope, id, {
+      stackName: generateStackName(props),
       env: {
         region: props.region,
         account: props.account,

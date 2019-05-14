@@ -30,7 +30,7 @@ export function haveResourceLike(resourceType: string,
 
 type PropertyPredicate = (props: any, inspection: InspectionFailure) => boolean;
 
-class HaveResourceAssertion extends Assertion<StackInspector> {
+export class HaveResourceAssertion extends Assertion<StackInspector> {
   private inspected: InspectionFailure[] = [];
   private readonly part: ResourcePart;
   private readonly predicate: PropertyPredicate;
@@ -66,17 +66,21 @@ class HaveResourceAssertion extends Assertion<StackInspector> {
     return false;
   }
 
+  public generateErrorMessage() {
+    const lines: string[] = [];
+    lines.push(`None of ${this.inspected.length} resources matches ${this.description}.`);
+
+    for (const inspected of this.inspected) {
+      lines.push(`- ${inspected.failureReason} in:`);
+      lines.push(indent(4, JSON.stringify(inspected.resource, null, 2)));
+    }
+
+    return lines.join('\n');
+  }
+
   public assertOrThrow(inspector: StackInspector) {
     if (!this.assertUsing(inspector)) {
-      const lines: string[] = [];
-      lines.push(`None of ${this.inspected.length} resources matches ${this.description}.`);
-
-      for (const inspected of this.inspected) {
-        lines.push(`- ${inspected.failureReason} in:`);
-        lines.push(indent(4, JSON.stringify(inspected.resource, null, 2)));
-      }
-
-      throw new Error(lines.join('\n'));
+      throw new Error(this.generateErrorMessage());
     }
   }
 

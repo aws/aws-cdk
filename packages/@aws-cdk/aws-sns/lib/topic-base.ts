@@ -15,14 +15,20 @@ export interface ITopic extends
   s3n.IBucketNotificationDestination,
   autoscaling_api.ILifecycleHookTarget {
 
+  /**
+   * @attribute
+   */
   readonly topicArn: string;
 
+  /**
+   * @attribute
+   */
   readonly topicName: string;
 
   /**
    * Export this Topic
    */
-  export(): TopicImportProps;
+  export(): TopicAttributes;
 
   /**
    * Subscribe some endpoint to this topic
@@ -106,7 +112,7 @@ export abstract class TopicBase extends Resource implements ITopic {
   /**
    * Export this Topic
    */
-  public abstract export(): TopicImportProps;
+  public abstract export(): TopicAttributes;
 
   /**
    * Subscribe some endpoint to this topic
@@ -306,7 +312,7 @@ export abstract class TopicBase extends Resource implements ITopic {
 /**
  * Reference to an external topic.
  */
-export interface TopicImportProps {
+export interface TopicAttributes {
   readonly topicArn: string;
   readonly topicName: string;
 }

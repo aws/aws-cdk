@@ -1,6 +1,6 @@
 import cdk = require('@aws-cdk/cdk');
 import cxapi = require('@aws-cdk/cx-api');
-import { VpcNetworkImportProps } from './vpc-ref';
+import { VpcNetworkImportProps } from './vpc';
 
 /**
  * Properties for looking up an existing VPC.

@@ -1524,18 +1524,6 @@
         "description": "Set RefKind of AWS::EC2::TransitGatewayRouteTablePropagation to Id"
       }
     },
-    "AWS::EC2::TrunkInterfaceAssociation": {
-      "patch": {
-        "operations": [
-          {
-            "op": "add",
-            "path": "/RefKind",
-            "value": "Id"
-          }
-        ],
-        "description": "Set RefKind of AWS::EC2::TrunkInterfaceAssociation to Id"
-      }
-    },
     "AWS::EC2::VPC": {
       "patch": {
         "operations": [
@@ -4666,6 +4654,42 @@
           }
         ],
         "description": "Set RefKind of AWS::AppMesh::VirtualService to Arn"
+      }
+    },
+    "AWS::Greengrass::ResourceDefinition": {
+      "patch": {
+        "operations": [
+          {
+            "op": "add",
+            "path": "/RefKind",
+            "value": "Id"
+          }
+        ],
+        "description": "Set RefKind of AWS::Greengrass::ResourceDefinition to Id"
+      }
+    },
+    "AWS::ApiGatewayV2::ApiMapping": {
+      "patch": {
+        "operations": [
+          {
+            "op": "add",
+            "path": "/RefKind",
+            "value": "Id"
+          }
+        ],
+        "description": "Set RefKind of AWS::ApiGatewayV2::ApiMapping to Id"
+      }
+    },
+    "AWS::ApiGatewayV2::DomainName": {
+      "patch": {
+        "operations": [
+          {
+            "op": "add",
+            "path": "/RefKind",
+            "value": "Name"
+          }
+        ],
+        "description": "Set RefKind of AWS::ApiGatewayV2::DomainName to Name"
       }
     }
   }

@@ -1,7 +1,7 @@
 import cloudwatch = require('@aws-cdk/aws-cloudwatch');
 import events = require('@aws-cdk/aws-events');
 import iam = require('@aws-cdk/aws-iam');
-import { CfnOutput, Construct, IResource, Resource } from '@aws-cdk/cdk';
+import { Construct, IResource, Resource } from '@aws-cdk/cdk';
 import { StateGraph } from './state-graph';
 import { CfnStateMachine } from './stepfunctions.generated';
 import { IChainable } from './types';
@@ -27,7 +27,7 @@ export interface StateMachineProps {
      *
      * @default A role is automatically created
      */
-    readonly role?: iam.Role;
+    readonly role?: iam.IRole;
 
     /**
      * Maximum run time for this state machine
@@ -44,17 +44,22 @@ export class StateMachine extends Resource implements IStateMachine, events.IEve
     /**
      * Import a state machine
      */
-    public static import(scope: Construct, id: string, props: StateMachineImportProps): IStateMachine {
-        return new ImportedStateMachine(scope, id, props);
+    public static fromStateMachineArn(scope: Construct, id: string, stateMachineArn: string): IStateMachine {
+        class Import extends Resource implements IStateMachine {
+            public readonly stateMachineArn = stateMachineArn;
+        }
+
+        return new Import(scope, id);
     }
 
     /**
      * Execution role of this state machine
      */
-    public readonly role: iam.Role;
+    public readonly role: iam.IRole;
 
     /**
      * The name of the state machine
+     * @attribute
      */
     public readonly stateMachineName: string;
 
@@ -190,12 +195,12 @@ export class StateMachine extends Resource implements IStateMachine, events.IEve
     }
 
     /**
-     * Export this state machine
+     * Metric for the interval, in milliseconds, between the time the execution starts and the time it closes
+     *
+     * @default sum over 5 minutes
      */
-    public export(): StateMachineImportProps {
-        return {
-            stateMachineArn: new CfnOutput(this, 'StateMachineArn', { value: this.stateMachineArn }).makeImportValue().toString(),
-        };
+    public metricTime(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+        return this.metric('ExecutionTime', props);
     }
 }
 
@@ -205,33 +210,7 @@ export class StateMachine extends Resource implements IStateMachine, events.IEve
 export interface IStateMachine extends IResource {
     /**
      * The ARN of the state machine
+     * @attribute
      */
     readonly stateMachineArn: string;
-
-    /**
-     * Export this state machine
-     */
-    export(): StateMachineImportProps;
-}
-
-/**
- * Properties for an imported state machine
- */
-export interface StateMachineImportProps {
-    /**
-     * The ARN of the state machine
-     */
-    readonly stateMachineArn: string;
-}
-
-class ImportedStateMachine extends Resource implements IStateMachine {
-    public readonly stateMachineArn: string;
-    constructor(scope: Construct, id: string, private readonly props: StateMachineImportProps) {
-        super(scope, id);
-        this.stateMachineArn = props.stateMachineArn;
-    }
-
-    public export() {
-        return this.props;
-    }
 }
