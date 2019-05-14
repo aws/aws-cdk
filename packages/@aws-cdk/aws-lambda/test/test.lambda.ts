@@ -16,7 +16,7 @@ export = {
     new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NodeJS610,
+      runtime: lambda.Runtime.NodeJS810,
     });
 
     expect(stack).toMatch({ Resources:
@@ -40,7 +40,7 @@ export = {
           { Code: { ZipFile: 'foo' },
           Handler: 'index.handler',
           Role: { 'Fn::GetAtt': [ 'MyLambdaServiceRole4539ECB6', 'Arn' ] },
-          Runtime: 'nodejs6.10' },
+          Runtime: 'nodejs8.10' },
          DependsOn: [ 'MyLambdaServiceRole4539ECB6' ] } } });
     test.done();
   },
@@ -50,7 +50,7 @@ export = {
     new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NodeJS610,
+      runtime: lambda.Runtime.NodeJS810,
       initialPolicy: [new iam.PolicyStatement().addAction("*").addAllResources()]
     });
     expect(stack).toMatch({ Resources:
@@ -94,7 +94,7 @@ export = {
           { Code: { ZipFile: 'foo' },
           Handler: 'index.handler',
           Role: { 'Fn::GetAtt': [ 'MyLambdaServiceRole4539ECB6', 'Arn' ] },
-          Runtime: 'nodejs6.10' },
+          Runtime: 'nodejs8.10' },
          DependsOn: [ 'MyLambdaServiceRoleDefaultPolicy5BBC6F68', 'MyLambdaServiceRole4539ECB6' ] } } } );
     test.done();
 
@@ -295,7 +295,7 @@ export = {
     new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NodeJS610,
+      runtime: lambda.Runtime.NodeJS810,
       functionName: 'OneFunctionToRuleThemAll',
       deadLetterQueueEnabled: true
     });
@@ -379,7 +379,7 @@ export = {
               "Arn"
             ]
             },
-            "Runtime": "nodejs6.10",
+            "Runtime": "nodejs8.10",
             "DeadLetterConfig": {
             "TargetArn": {
               "Fn::GetAtt": [
@@ -407,7 +407,7 @@ export = {
     new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NodeJS610,
+      runtime: lambda.Runtime.NodeJS810,
       deadLetterQueueEnabled: true,
     });
 
@@ -490,7 +490,7 @@ export = {
               "Arn"
             ]
             },
-            "Runtime": "nodejs6.10",
+            "Runtime": "nodejs8.10",
             "DeadLetterConfig": {
             "TargetArn": {
               "Fn::GetAtt": [
@@ -517,7 +517,7 @@ export = {
     new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NodeJS610,
+      runtime: lambda.Runtime.NodeJS810,
       deadLetterQueueEnabled: false,
     });
 
@@ -568,7 +568,7 @@ export = {
             "Arn"
             ]
           },
-          "Runtime": "nodejs6.10"
+          "Runtime": "nodejs8.10"
           },
           "DependsOn": [
           "MyLambdaServiceRole4539ECB6"
@@ -591,7 +591,7 @@ export = {
     new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NodeJS610,
+      runtime: lambda.Runtime.NodeJS810,
       deadLetterQueue: dlQueue,
     });
 
@@ -668,7 +668,7 @@ export = {
               "Arn"
             ]
             },
-            "Runtime": "nodejs6.10",
+            "Runtime": "nodejs8.10",
             "DeadLetterConfig": {
             "TargetArn": {
               "Fn::GetAtt": [
@@ -700,7 +700,7 @@ export = {
     new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NodeJS610,
+      runtime: lambda.Runtime.NodeJS810,
       deadLetterQueueEnabled: true,
       deadLetterQueue: dlQueue,
     });
@@ -778,7 +778,7 @@ export = {
             "Arn"
             ]
           },
-          "Runtime": "nodejs6.10",
+          "Runtime": "nodejs8.10",
           "DeadLetterConfig": {
             "TargetArn": {
             "Fn::GetAtt": [
@@ -810,7 +810,7 @@ export = {
     test.throws(() => new lambda.Function(stack, 'MyLambda', {
     code: new lambda.InlineCode('foo'),
     handler: 'index.handler',
-    runtime: lambda.Runtime.NodeJS610,
+    runtime: lambda.Runtime.NodeJS810,
     deadLetterQueueEnabled: false,
     deadLetterQueue: dlQueue,
     }), /deadLetterQueue defined but deadLetterQueueEnabled explicitly set to false/);
@@ -824,7 +824,7 @@ export = {
     new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NodeJS610,
+      runtime: lambda.Runtime.NodeJS810,
       tracing: lambda.Tracing.Active
     });
 
@@ -862,7 +862,7 @@ export = {
         "Arn"
       ]
       },
-      "Runtime": "nodejs6.10",
+      "Runtime": "nodejs8.10",
       "TracingConfig": {
       "Mode": "Active"
       }
@@ -882,7 +882,7 @@ export = {
     new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NodeJS610,
+      runtime: lambda.Runtime.NodeJS810,
       tracing: lambda.Tracing.PassThrough
     });
 
@@ -920,7 +920,7 @@ export = {
         "Arn"
       ]
       },
-      "Runtime": "nodejs6.10",
+      "Runtime": "nodejs8.10",
       "TracingConfig": {
       "Mode": "PassThrough"
       }
@@ -940,7 +940,7 @@ export = {
     new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NodeJS610,
+      runtime: lambda.Runtime.NodeJS810,
       tracing: lambda.Tracing.Disabled
     });
 
@@ -978,7 +978,7 @@ export = {
         "Arn"
       ]
       },
-      "Runtime": "nodejs6.10"
+      "Runtime": "nodejs8.10"
     },
     "DependsOn": [
       "MyLambdaServiceRole4539ECB6"
@@ -1167,11 +1167,11 @@ export = {
     // THEN
     test.throws(() => new lambda.Function(stack, 'Function', {
                   layers: [layer],
-                  runtime: lambda.Runtime.NodeJS610,
+                  runtime: lambda.Runtime.NodeJS10x,
                   code: lambda.Code.inline('exports.main = function() { console.log("DONE"); }'),
                   handler: 'index.main'
                 }),
-                /nodejs6.10 is not in \[nodejs8.10\]/);
+                /nodejs10.x is not in \[nodejs8.10\]/);
 
     test.done();
   },
