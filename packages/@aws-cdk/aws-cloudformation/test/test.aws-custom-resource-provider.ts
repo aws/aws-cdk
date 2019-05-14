@@ -185,5 +185,43 @@ export = {
     test.equal(request.isDone(), true);
 
     test.done();
+  },
+
+  async 'fixes booleans'(test: Test) {
+    const getParameterFake = sinon.fake.resolves({});
+
+    AWS.mock('SSM', 'getParameter', getParameterFake);
+
+    const event: AWSLambda.CloudFormationCustomResourceCreateEvent = {
+      ...eventCommon,
+      RequestType: 'Create',
+      ResourceProperties: {
+        ServiceToken: 'token',
+        Create: {
+          service: 'SSM',
+          action: 'getParameter',
+          parameters: {
+            Name: 'my-parameter',
+            WithDecryption: 'true'
+          },
+          physicalResourceId: 'my-parameter'
+        } as AwsSdkCall
+      }
+    };
+
+    const request = createRequest(body =>
+      body.Status === 'SUCCESS'
+    );
+
+    await handler(event, {} as AWSLambda.Context);
+
+    sinon.assert.calledWith(getParameterFake, {
+      Name: 'my-parameter',
+      WithDecryption: true // boolean
+    });
+
+    test.equal(request.isDone(), true);
+
+    test.done();
   }
 };

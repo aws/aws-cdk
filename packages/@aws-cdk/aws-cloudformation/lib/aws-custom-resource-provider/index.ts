@@ -22,6 +22,17 @@ function flatten(object: object): { [key: string]: string } {
   );
 }
 
+/**
+ * Converts true/false strings to booleans in an object
+ */
+function fixBooleans(object: object) {
+  return JSON.parse(JSON.stringify(object), (_k, v) => v === 'true'
+    ? true
+    : v === 'false'
+      ? false
+      : v);
+}
+
 export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent, context: AWSLambda.Context) {
   try {
     console.log(JSON.stringify(event));
@@ -35,7 +46,7 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
       const awsService = new (AWS as any)[call.service](call.apiVersion && { apiVersion: call.apiVersion });
 
       try {
-        const response = await awsService[call.action](call.parameters).promise();
+        const response = await awsService[call.action](call.parameters && fixBooleans(call.parameters)).promise();
         data = flatten(response);
       } catch (e) {
         if (!call.catchErrorPattern || !new RegExp(call.catchErrorPattern).test(e.code)) {
