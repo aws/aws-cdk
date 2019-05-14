@@ -120,7 +120,7 @@ With S3 caching, the cache is stored in an S3 bucket which is available from mul
 ```typescript
 new codebuild.Project(stack, 'Project', {
   source: new codebuild.CodePipelineSource(),
-  cacheBucket: new Bucket(stack, 'Bucket')
+  cache: Cache.bucket(new Bucket(stack, 'Bucket'))
 });
 ```
 
@@ -128,16 +128,14 @@ new codebuild.Project(stack, 'Project', {
 
 With local caching, the cache is stored on the codebuild instance itself. CodeBuild cannot guarantee a reuse of instance. For example, when a build starts and caches files locally, if two subsequent builds start at the same time afterwards only one of those builds would get the cache. Three different cache modes are supported:
 
-* `ProjectCacheModes.SourceCache` caches Git metadata for primary and secondary sources.
-* `ProjectCacheModes.DockerLayerCache` caches existing Docker layers.
-* `ProjectCacheModes.CustomCache` caches directories you specify in the buildspec file.
+* `LocalCacheMode.SourceCache` caches Git metadata for primary and secondary sources.
+* `LocalCacheMode.DockerLayerCache` caches existing Docker layers.
+* `LocalCacheMode.CustomCache` caches directories you specify in the buildspec file.
 
 ```typescript
 new codebuild.Project(stack, 'Project', {
   source: new codebuild.CodePipelineSource(),
-  cacheModes: [
-    ProjectCacheModes.DockerLayerCache,
-  ]
+  cache: Cache.local(LocalCacheMode.DockerLayerCache)
 });
 ```
 

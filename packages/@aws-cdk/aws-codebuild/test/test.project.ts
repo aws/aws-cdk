@@ -5,6 +5,7 @@ import cdk = require('@aws-cdk/cdk');
 import { Test } from 'nodeunit';
 import codebuild = require('../lib');
 import { ProjectCacheModes } from '../lib';
+import { Cache, LocalCacheMode } from '../lib/cache';
 
 // tslint:disable:object-literal-key-quotes
 
@@ -171,7 +172,7 @@ export = {
     // WHEN
     new codebuild.Project(stack, 'Project', {
       source: new codebuild.CodePipelineSource(),
-      cacheBucket: new Bucket(stack, 'Bucket')
+      cache: Cache.bucket(new Bucket(stack, 'Bucket'))
     });
 
     // THEN
@@ -191,11 +192,7 @@ export = {
     // WHEN
     new codebuild.Project(stack, 'Project', {
       source: new codebuild.CodePipelineSource(),
-      cacheModes: [
-        ProjectCacheModes.CustomCache,
-        ProjectCacheModes.DockerLayerCache,
-        ProjectCacheModes.SourceCache,
-      ]
+      cache: Cache.local(LocalCacheMode.CustomCache, LocalCacheMode.DockerLayerCache, LocalCacheMode.SourceCache)
     });
 
     // THEN
@@ -208,25 +205,6 @@ export = {
         ]
       },
     }));
-
-    test.done();
-  },
-
-  'project with both s3 cache mode and local cache mode is not allowed'(test: Test) {
-    // GIVEN
-    const stack = new cdk.Stack();
-
-    // WHEN / THEN
-    test.throws(() => {
-      new codebuild.Project(stack, 'Project', {
-        source: new codebuild.CodePipelineSource(),
-        cacheBucket: new Bucket(stack, 'Bucket'),
-        cacheModes: [
-          ProjectCacheModes.CustomCache,
-        ]
-      });
-
-    }, /At most one of props.cacheBucket or props.cacheMode is allowed\./);
 
     test.done();
   },

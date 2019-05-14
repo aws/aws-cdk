@@ -11,6 +11,7 @@ import { Aws, CfnOutput, Construct, Fn, IResource, Resource, Token } from '@aws-
 import { BuildArtifacts, CodePipelineBuildArtifacts, NoBuildArtifacts } from './artifacts';
 import { CfnProject } from './codebuild.generated';
 import { BuildSource, NoSource, SourceType } from './source';
+import { Cache } from './cache';
 
 const CODEPIPELINE_TYPE = 'CODEPIPELINE';
 const S3_BUCKET_ENV = 'SCRIPT_S3_BUCKET';
@@ -398,21 +399,10 @@ export interface CommonProjectProps {
   readonly encryptionKey?: kms.IEncryptionKey;
 
   /**
-   * Bucket to store cached source artifacts.
-   * If cacheBucket is specified, cacheModes must not be specified
+   * Caching strategy to use.
+   * @default Cache.none
    */
-  readonly cacheBucket?: s3.IBucket;
-
-  /**
-   * Local cache(s) to use.
-   * If cacheModes is specified, cacheBucket must not be specified
-   */
-  readonly cacheModes?: ProjectCacheModes[];
-
-  /**
-   * Subdirectory to store cached artifacts
-   */
-  readonly cacheDir?: string;
+  readonly cache?: Cache;
 
   /**
    * Build environment to use for the build.
@@ -619,32 +609,10 @@ export class Project extends ProjectBase {
       throw new Error('To use buildScriptAssetEntrypoint, supply buildScriptAsset as well.');
     }
 
-    if (props.cacheBucket && props.cacheModes) {
-      throw new Error('At most one of props.cacheBucket or props.cacheMode is allowed.');
-    }
-
     this.role = props.role || new iam.Role(this, 'Role', {
       assumedBy: new iam.ServicePrincipal('codebuild.amazonaws.com')
     });
     this.grantPrincipal = this.role;
-
-    let cache: CfnProject.ProjectCacheProperty | undefined;
-    if (props.cacheBucket) {
-      const cacheDir = props.cacheDir != null ? props.cacheDir : Aws.noValue;
-      cache = {
-        type: 'S3',
-        location: Fn.join('/', [props.cacheBucket.bucketName, cacheDir]),
-      };
-
-      props.cacheBucket.grantReadWrite(this.role);
-    }
-
-    if (props.cacheModes) {
-      cache = {
-        type: 'LOCAL',
-        modes: props.cacheModes,
-      };
-    }
 
     this.buildImage = (props.environment && props.environment.buildImage) || LinuxBuildImage.STANDARD_1_0;
 
@@ -655,6 +623,11 @@ export class Project extends ProjectBase {
 
     const artifacts = this.parseArtifacts(props);
     artifacts._bind(this);
+
+    // give the caching strategy the option to grant permissions to any required resources
+    if (props.cache) {
+      props.cache._bind(this);
+    }
 
     // Inject download commands for asset if requested
     const environmentVariables = props.environmentVariables || {};
@@ -713,7 +686,7 @@ export class Project extends ProjectBase {
       environment: this.renderEnvironment(props.environment, environmentVariables),
       encryptionKey: props.encryptionKey && props.encryptionKey.keyArn,
       badgeEnabled: props.badge,
-      cache,
+      cache: props.cache && props.cache._toCloudFormation() || Cache.none()._toCloudFormation(),
       name: props.projectName,
       timeoutInMinutes: props.timeout,
       secondarySources: new Token(() => this.renderSecondarySources()),
