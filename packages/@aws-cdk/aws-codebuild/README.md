@@ -126,7 +126,7 @@ new codebuild.Project(stack, 'Project', {
 
 ### Local Caching
 
-With local caching, the cache is stored on the codebuild instance itself. Three different cache modes are supported:
+With local caching, the cache is stored on the codebuild instance itself. CodeBuild cannot guarantee a reuse of instance. For example, when a build starts and caches files locally, if two subsequent builds start at the same time afterwards only one of those builds would get the cache. Three different cache modes are supported:
 
 * `ProjectCacheModes.SourceCache` caches Git metadata for primary and secondary sources.
 * `ProjectCacheModes.DockerLayerCache` caches existing Docker layers.
