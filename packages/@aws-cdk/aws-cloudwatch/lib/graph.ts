@@ -3,7 +3,6 @@ import { Alarm } from "./alarm";
 import { Metric } from "./metric";
 import { parseStatistic } from './util.statistic';
 import { ConcreteWidget } from "./widget";
-import { YAxis } from "./yaxis";
 
 /**
  * Basic properties for widgets that display metrics
@@ -37,6 +36,39 @@ export interface MetricWidgetProps {
 }
 
 /**
+ * Properties for a Y-Axis
+ */
+export interface YAxisProps {
+  /**
+   * The min value
+   *
+   * @default 0
+   */
+  readonly min?: number;
+
+  /**
+   * The max value
+   *
+   * @default No maximum value
+   */
+  readonly max?: number;
+
+  /**
+   * The label
+   *
+   * @default No label
+   */
+  readonly label?: string;
+
+  /**
+   * Whether to show units
+   *
+   * @default true
+   */
+  readonly showUnits?: boolean;
+}
+
+/**
  * Properties for an AlarmWidget
  */
 export interface AlarmWidgetProps extends MetricWidgetProps {
@@ -48,7 +80,7 @@ export interface AlarmWidgetProps extends MetricWidgetProps {
   /**
    * Left Y axis
    */
-  readonly leftYAxis?: YAxis;
+  readonly leftYAxis?: YAxisProps;
 }
 
 /**
@@ -77,7 +109,7 @@ export class AlarmWidget extends ConcreteWidget {
           alarms: [this.props.alarm.alarmArn]
         },
         yAxis: {
-          left: this.props.leftYAxis !== undefined ? this.props.leftYAxis : { min: 0 }
+          left: this.props.leftYAxis !== undefined ? this.props.leftYAxis : undefined
         }
       }
     }];
@@ -116,12 +148,12 @@ export interface GraphWidgetProps extends MetricWidgetProps {
   /**
    * Left Y axis
    */
-  readonly leftYAxis?: YAxis;
+  readonly leftYAxis?: YAxisProps;
 
   /**
    * Right Y axis
    */
-  readonly rightYAxis?: YAxis;
+  readonly rightYAxis?: YAxisProps;
 }
 
 /**
@@ -153,8 +185,8 @@ export class GraphWidget extends ConcreteWidget {
                 (this.props.rightAnnotations || []).map(mapAnnotation('right')))
         },
         yAxis: {
-          left: this.props.leftYAxis !== undefined ? this.props.leftYAxis : { min: 0 },
-          right: this.props.rightYAxis !== undefined ? this.props.rightYAxis : { min: 0 },
+          left: this.props.leftYAxis !== undefined ? this.props.leftYAxis : undefined,
+          right: this.props.rightYAxis !== undefined ? this.props.rightYAxis : undefined,
         }
       }
     }];
