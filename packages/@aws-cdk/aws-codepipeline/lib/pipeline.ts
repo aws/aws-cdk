@@ -101,41 +101,9 @@ export interface PipelineProps {
 abstract class PipelineBase extends Resource implements IPipeline {
   public abstract pipelineName: string;
   public abstract pipelineArn: string;
-  private eventsRole?: iam.Role;
   public abstract grantBucketRead(identity: iam.IGrantable): iam.Grant;
   public abstract grantBucketReadWrite(identity: iam.IGrantable): iam.Grant;
 
-  /**
-   * Allows the pipeline to be used as a CloudWatch event rule target.
-   *
-   * Usage:
-   *
-   *    const pipeline = new Pipeline(this, 'MyPipeline');
-   *    const rule = new EventRule(this, 'MyRule', { schedule: 'rate(1 minute)' });
-   *    rule.addTarget(pipeline);
-   *
-   */
-  public asEventRuleTarget(_ruleArn: string, _ruleId: string): events.EventRuleTargetProps {
-    // the first time the event rule target is retrieved, we define an IAM
-    // role assumable by the CloudWatch events service which is allowed to
-    // start the execution of this pipeline. no need to define more than one
-    // role per pipeline.
-    if (!this.eventsRole) {
-      this.eventsRole = new iam.Role(this, 'EventsRole', {
-        assumedBy: new iam.ServicePrincipal('events.amazonaws.com')
-      });
-
-      this.eventsRole.addToPolicy(new iam.PolicyStatement()
-        .addResource(this.pipelineArn)
-        .addAction('codepipeline:StartPipelineExecution'));
-    }
-
-    return {
-      id: this.node.id,
-      arn: this.pipelineArn,
-      roleArn: this.eventsRole.roleArn,
-    };
-  }
 }
 
 /**

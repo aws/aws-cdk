@@ -58,7 +58,7 @@ export interface ActionBind {
  * It extends {@link events.IEventRuleTarget},
  * so this interface can be used as a Target for CloudWatch Events.
  */
-export interface IPipeline extends IResource, events.IEventRuleTarget {
+export interface IPipeline extends IResource {
   /**
    * The name of the Pipeline.
    *

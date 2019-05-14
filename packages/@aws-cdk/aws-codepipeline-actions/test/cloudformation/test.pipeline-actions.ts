@@ -313,7 +313,7 @@ class PipelineDouble extends cdk.Construct implements codepipeline.IPipeline {
     this.role = role;
   }
 
-  public asEventRuleTarget(_ruleArn: string, _ruleUniqueId: string): events.EventRuleTargetProps {
+  public bind(_rule: events.IEventRule): events.EventRuleTargetProperties {
     throw new Error('asEventRuleTarget() is unsupported in PipelineDouble');
   }
 

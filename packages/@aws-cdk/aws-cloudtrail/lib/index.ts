@@ -1,3 +1,4 @@
+import events = require('@aws-cdk/aws-events');
 import iam = require('@aws-cdk/aws-iam');
 import kms = require('@aws-cdk/aws-kms');
 import logs = require('@aws-cdk/aws-logs');
@@ -181,7 +182,7 @@ export class CloudTrail extends cdk.Construct {
    * @param prefixes the list of object ARN prefixes to include in logging (maximum 250 entries).
    * @param options the options to configure logging of management and data events.
    */
-  public addS3EventSelector(prefixes: string[], options: AddS3EventSelectorOptions = {}) {
+  public addS3EventSelector(prefixes: string[] = [], options: AddS3EventSelectorOptions = {}) {
     if (prefixes.length > 250) {
       throw new Error("A maximum of 250 data elements can be in one event selector");
     }
@@ -190,12 +191,37 @@ export class CloudTrail extends cdk.Construct {
     }
     this.eventSelectors.push({
       includeManagementEvents: options.includeManagementEvents,
-      readWriteType: options.readWriteType,
+      readWriteType: options.readWriteType || ReadWriteType.WriteOnly,
       dataResources: [{
         type: "AWS::S3::Object",
         values: prefixes
       }]
     });
+  }
+
+  /**
+   * Create an event rule for when an event is added to this trail
+   */
+  public onEvent(name: string, target?: events.IEventRuleTarget, options?: events.EventRuleProps) {
+    const rule = new events.EventRule(this, name, options);
+    rule.addTarget(target);
+    rule.addEventPattern({
+      detailType: ['AWS API Call via CloudTrail']
+    });
+    return rule;
+  }
+
+  /**
+   * Create an event rule for when an S3 event is added to this trail
+   */
+  public onS3Event(name: string, target?: events.IEventRuleTarget, options?: events.EventRuleProps) {
+    const rule = new events.EventRule(this, name, options);
+    rule.addTarget(target);
+    rule.addEventPattern({
+      source: ['aws.s3'],
+      detailType: ['AWS API Call via CloudTrail']
+    });
+    return rule;
   }
 }
 
@@ -206,7 +232,7 @@ export interface AddS3EventSelectorOptions {
   /**
    * Specifies whether to log read-only events, write-only events, or all events.
    *
-   * @default ReadWriteType.All
+   * @default ReadWriteType.Write
    */
   readonly readWriteType?: ReadWriteType;
 
