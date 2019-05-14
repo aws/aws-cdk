@@ -1,7 +1,8 @@
 import ec2 = require('@aws-cdk/aws-ec2');
+import ecs = require('@aws-cdk/aws-ecs');
 import events = require('@aws-cdk/aws-events');
 import cdk = require('@aws-cdk/cdk');
-import ecs = require('../../lib');
+import targets = require('../../lib');
 
 import path = require('path');
 
@@ -23,7 +24,7 @@ class EventStack extends cdk.Stack {
     const taskDefinition = new ecs.Ec2TaskDefinition(this, 'TaskDef');
     taskDefinition.addContainer('TheContainer', {
       image: ecs.ContainerImage.fromAsset(this, 'EventImage', {
-        directory: path.resolve(__dirname, '..', 'eventhandler-image')
+        directory: path.resolve(__dirname, 'eventhandler-image')
       }),
       memoryLimitMiB: 256,
       logging: new ecs.AwsLogDriver(this, 'TaskLogging', { streamPrefix: 'EventDemo' })
@@ -35,21 +36,17 @@ class EventStack extends cdk.Stack {
     });
 
     // Use Ec2TaskEventRuleTarget as the target of the EventRule
-    const target = new ecs.Ec2EventRuleTarget(this, 'EventTarget', {
+    rule.addTarget(new targets.EcsEc2Task({
       cluster,
       taskDefinition,
-      taskCount: 1
-    });
-
-    // Pass an environment variable to the container 'TheContainer' in the task
-    rule.addTarget(target, {
-      jsonTemplate: JSON.stringify({
-        containerOverrides: [{
-          name: 'TheContainer',
-          environment: [{ name: 'I_WAS_TRIGGERED', value: 'From CloudWatch Events' }]
-        }]
-      })
-    });
+      taskCount: 1,
+      containerOverrides: [{
+        containerName: 'TheContainer',
+        environment: [
+          { name: 'I_WAS_TRIGGERED', value: 'From CloudWatch Events' }
+        ]
+      }]
+    }));
     /// !hide
   }
 }

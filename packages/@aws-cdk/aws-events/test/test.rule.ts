@@ -1,4 +1,5 @@
-import { expect, haveResource } from '@aws-cdk/assert';
+import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
+import iam = require('@aws-cdk/aws-iam');
 import cdk = require('@aws-cdk/cdk');
 import { Stack } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
@@ -166,7 +167,6 @@ export = {
       bind: () => ({
         id: 'T2',
         arn: 'ARN2',
-        roleArn: 'IAM-ROLE-ARN',
         input: EventTargetInput.fromText(`This is ${EventField.fromPath('$.detail.bla', 'bla')}`),
       })
     };
@@ -202,7 +202,6 @@ export = {
             },
             "InputTemplate": "\"This is <bla>\""
             },
-            "RoleArn": "IAM-ROLE-ARN"
           }
           ]
         }
@@ -220,7 +219,7 @@ export = {
     // a plain string should just be stringified (i.e. double quotes added and escaped)
     rule.addTarget({
       bind: () => ({
-        id: 'T2', arn: 'ARN2', roleArn: 'IAM-ROLE-ARN', input: EventTargetInput.fromText('Hello, "world"')
+        id: 'T2', arn: 'ARN2', input: EventTargetInput.fromText('Hello, "world"')
       })
     });
 
@@ -261,7 +260,6 @@ export = {
               "Arn": "ARN2",
               "Id": "T2",
               "Input": '"Hello, \\"world\\""',
-              "RoleArn": "IAM-ROLE-ARN"
             },
             {
               "Arn": "ARN1",
@@ -291,6 +289,50 @@ export = {
         }
       }
     });
+
+    test.done();
+  },
+
+  'target can declare policy statements which will be added to role'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    const rule = new EventRule(stack, 'EventRule', { scheduleExpression: 'rate(1 minute)' });
+
+    // a plain string should just be stringified (i.e. double quotes added and escaped)
+    rule.addTarget({
+      bind: () => ({
+        id: 'T2',
+        arn: 'ARN2',
+        policyStatements: [new iam.PolicyStatement()
+            .addAction('some:action')
+            .addResource('ARN2')]
+      })
+    });
+
+    // THEN
+    expect(stack).to(haveResourceLike('AWS::Events::Rule', {
+      "Targets": [
+        {
+          "Arn": "ARN2",
+          "Id": "T2",
+          "RoleArn": {"Fn::GetAtt": ["EventRuleRoleT2D4DAD5B9", "Arn"]}
+        }
+      ]
+    }));
+
+    expect(stack).to(haveResource('AWS::IAM::Policy', {
+      "PolicyDocument": {
+        "Statement": [
+          {
+            "Action": "some:action",
+            "Effect": "Allow",
+            "Resource": "ARN2"
+          }
+        ],
+        "Version": "2012-10-17"
+      },
+    }));
 
     test.done();
   },

@@ -1,3 +1,4 @@
+import iam = require('@aws-cdk/aws-iam');
 import { CfnRule } from './events.generated';
 import { EventTargetInput } from './input';
 import { IEventRule } from './rule-ref';
@@ -32,12 +33,9 @@ export interface EventRuleTargetProperties {
   readonly arn: string;
 
   /**
-   * The Amazon Resource Name (ARN) of the AWS Identity and Access Management
-   * (IAM) role to use for this target when the rule is triggered. If one rule
-   * triggers multiple targets, you can use a different IAM role for each
-   * target.
+   * Policy statements to add to the event's role
    */
-  readonly roleArn?: string;
+  readonly policyStatements?: iam.PolicyStatement[];
 
   /**
    * The Amazon ECS task definition and task count to use, if the event target

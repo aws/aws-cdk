@@ -1,3 +1,4 @@
+import iam = require('@aws-cdk/aws-iam');
 import { CfnOutput, Construct, Resource, Token } from '@aws-cdk/cdk';
 import { EventPattern } from './event-pattern';
 import { CfnRule } from './events.generated';
@@ -123,15 +124,31 @@ export class EventRule extends Resource implements IEventRule {
     if (!target) { return; }
 
     const targetProps = target.bind(this);
+    const id = sanitizeId(targetProps.id);
     const inputProps = targetProps.input && targetProps.input.bind(this);
 
     // check if a target with this ID already exists
-    if (this.targets.find(t => t.id === targetProps.id)) {
-      throw new Error('Duplicate event rule target with ID: ' + targetProps.id);
+    if (this.targets.find(t => t.id === id)) {
+      throw new Error('Duplicate event rule target with ID: ' + id);
+    }
+
+    let roleArn;
+    if ((targetProps.policyStatements || []).length > 0) {
+      const role = new iam.Role(this, `Role${targetProps.id}`, {
+        assumedBy: new iam.ServicePrincipal('events.amazonaws.com'),
+      });
+
+      for (const statement of targetProps.policyStatements || []) {
+        role.addToPolicy(statement);
+      }
+
+      roleArn = role.roleArn;
     }
 
     this.targets.push({
       ...targetProps,
+      id,
+      roleArn,
       input: inputProps && inputProps.input,
       inputPath: inputProps && inputProps.inputPath,
       inputTransformer: inputProps && inputProps.inputTemplate !== undefined ? {
@@ -216,4 +233,13 @@ export class EventRule extends Resource implements IEventRule {
 
     return out;
   }
+}
+
+/**
+ * Sanitize whatever is returned to make a valid ID
+ *
+ * Result must match regex [\.\-_A-Za-z0-9]+
+ */
+function sanitizeId(id: string) {
+  return id.replace(/[^\.\-_A-Za-z0-9]/g, '-');
 }

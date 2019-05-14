@@ -26,7 +26,7 @@ test('use codebuild project as an eventrule target', () => {
         Id: "MyProject",
         RoleArn: {
           "Fn::GetAtt": [
-            "awscdkawseventstargetsCodeBuildProjectRoleMyProject02D63D81",
+            "ruleRoleMyProject4A80A7E9",
             "Arn"
           ]
         }

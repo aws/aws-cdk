@@ -1,8 +1,9 @@
 import { expect, haveResourceLike } from '@aws-cdk/assert';
-import { EventRule, IEventRuleTarget } from '@aws-cdk/aws-events';
 import cdk = require('@aws-cdk/cdk');
 import { Stack } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
+import { EventTargetInput, IEventRuleTarget } from '../lib';
+import { EventRule } from '../lib/rule';
 
 export = {
   'json template': {
@@ -14,17 +15,13 @@ export = {
       });
 
       // WHEN
-      rule.addTarget(new SomeTarget(), {
-        jsonTemplate: { SomeObject: 'withAValue' },
-      });
+      rule.addTarget(new SomeTarget(EventTargetInput.fromObject({ SomeObject: 'withAValue' })));
 
       // THEN
       expect(stack).to(haveResourceLike('AWS::Events::Rule', {
         Targets: [
           {
-            InputTransformer: {
-              InputTemplate: "{\"SomeObject\":\"withAValue\"}"
-            },
+            Input: "{\"SomeObject\":\"withAValue\"}"
           }
         ]
       }));
@@ -41,17 +38,13 @@ export = {
       });
 
       // WHEN
-      rule.addTarget(new SomeTarget(), {
-        textTemplate: 'I have\nmultiple lines',
-      });
+      rule.addTarget(new SomeTarget(EventTargetInput.fromMultilineText('I have\nmultiple lines')));
 
       // THEN
       expect(stack).to(haveResourceLike('AWS::Events::Rule', {
         Targets: [
           {
-            InputTransformer: {
-              InputTemplate: "\"I have\"\n\"multiple lines\""
-            },
+            Input: "\"I have\"\n\"multiple lines\""
           }
         ]
       }));
@@ -67,17 +60,13 @@ export = {
       });
 
       // WHEN
-      rule.addTarget(new SomeTarget(), {
-        textTemplate: 'this is not\\na real newline',
-      });
+      rule.addTarget(new SomeTarget(EventTargetInput.fromMultilineText('this is not\\na real newline'))),
 
       // THEN
       expect(stack).to(haveResourceLike('AWS::Events::Rule', {
         Targets: [
           {
-            InputTransformer: {
-              InputTemplate: "\"this is not\\\\na real newline\""
-            },
+            Input: "\"this is not\\\\na real newline\""
           }
         ]
       }));
@@ -95,17 +84,13 @@ export = {
       const world = new cdk.Token(() => 'world');
 
       // WHEN
-      rule.addTarget(new SomeTarget(), {
-        textTemplate: `hello ${world}`,
-      });
+      rule.addTarget(new SomeTarget(EventTargetInput.fromText(`hello ${world}`)));
 
       // THEN
       expect(stack).to(haveResourceLike('AWS::Events::Rule', {
         Targets: [
           {
-            InputTransformer: {
-              InputTemplate: "\"hello world\""
-            },
+            Input: "\"hello world\""
           }
         ]
       }));
@@ -116,9 +101,10 @@ export = {
 };
 
 class SomeTarget implements IEventRuleTarget {
+  public constructor(private readonly input: EventTargetInput) {
+  }
+
   public bind() {
-    return {
-      id: 'T1', arn: 'ARN1', kinesisParameters: { partitionKeyPath: 'partitionKeyPath' }
-    };
+    return { id: 'T1', arn: 'ARN1', input: this.input };
   }
 }

@@ -52,6 +52,9 @@ export interface IProject extends IResource, iam.IGrantable {
    * You can also use the methods `onBuildFailed` and `onBuildSucceeded` to define rules for
    * these specific state changes.
    *
+   * To access fields from the event in the event target input,
+   * use the static fields on the `StateChangeEvent` class.
+   *
    * @see https://docs.aws.amazon.com/codebuild/latest/userguide/sample-build-notifications.html
    */
   onStateChange(name: string, target?: events.IEventRuleTarget, options?: events.EventRuleProps): events.EventRule;
@@ -195,6 +198,9 @@ abstract class ProjectBase extends Resource implements IProject {
    * You can also use the methods `onBuildFailed` and `onBuildSucceeded` to define rules for
    * these specific state changes.
    *
+   * To access fields from the event in the event target input,
+   * use the static fields on the `StateChangeEvent` class.
+   *
    * @see https://docs.aws.amazon.com/codebuild/latest/userguide/sample-build-notifications.html
    */
   public onStateChange(name: string, target?: events.IEventRuleTarget, options?: events.EventRuleProps) {
@@ -235,6 +241,9 @@ abstract class ProjectBase extends Resource implements IProject {
 
   /**
    * Defines an event rule which triggers when a build starts.
+   *
+   * To access fields from the event in the event target input,
+   * use the static fields on the `StateChangeEvent` class.
    */
   public onBuildStarted(name: string, target?: events.IEventRuleTarget, options?: events.EventRuleProps) {
     const rule = this.onStateChange(name, target, options);
@@ -248,6 +257,9 @@ abstract class ProjectBase extends Resource implements IProject {
 
   /**
    * Defines an event rule which triggers when a build fails.
+   *
+   * To access fields from the event in the event target input,
+   * use the static fields on the `StateChangeEvent` class.
    */
   public onBuildFailed(name: string, target?: events.IEventRuleTarget, options?: events.EventRuleProps) {
     const rule = this.onStateChange(name, target, options);
@@ -261,6 +273,9 @@ abstract class ProjectBase extends Resource implements IProject {
 
   /**
    * Defines an event rule which triggers when a build completes successfully.
+   *
+   * To access fields from the event in the event target input,
+   * use the static fields on the `StateChangeEvent` class.
    */
   public onBuildSucceeded(name: string, target?: events.IEventRuleTarget, options?: events.EventRuleProps) {
     const rule = this.onStateChange(name, target, options);

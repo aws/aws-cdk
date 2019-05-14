@@ -3,14 +3,24 @@ import iam = require('@aws-cdk/aws-iam');
 import lambda = require('@aws-cdk/aws-lambda');
 
 /**
+ * Customize the SNS Topic Event Target
+ */
+export interface LambdaFunctionProps {
+  /**
+   * The event to send to the Lambda
+   *
+   * This will be the payload sent to the Lambda Function.
+   *
+   * @default the entire CloudWatch event
+   */
+  event?: events.EventTargetInput;
+}
+
+/**
  * Use an AWS Lambda function as an event rule target.
  */
 export class LambdaFunction implements events.IEventRuleTarget {
-
-  /**
-   * @param handler The lambda function
-   */
-  constructor(private readonly handler: lambda.IFunction) {
+  constructor(private readonly handler: lambda.IFunction, private readonly props: LambdaFunctionProps = {}) {
 
   }
 
@@ -31,6 +41,7 @@ export class LambdaFunction implements events.IEventRuleTarget {
     return {
       id: this.handler.node.id,
       arn: this.handler.functionArn,
+      input: this.props.event,
     };
   }
 }

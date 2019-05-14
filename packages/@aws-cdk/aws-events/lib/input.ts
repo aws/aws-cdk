@@ -12,7 +12,20 @@ export abstract class EventTargetInput {
    * matched event.
    */
   public static fromText(text: string): EventTargetInput {
-    return new FieldAwareEventInput(text, false);
+    return new FieldAwareEventInput(text, InputType.Text);
+  }
+
+  /**
+   * Pass text to the event target, splitting on newlines.
+   *
+   * This is only useful when passing to a target that does not
+   * take a single argument.
+   *
+   * May contain strings returned by EventField.from() to substitute in parts
+   * of the matched event.
+   */
+  public static fromMultilineText(text: string): EventTargetInput {
+    return new FieldAwareEventInput(text, InputType.Multiline);
   }
 
   /**
@@ -22,7 +35,7 @@ export abstract class EventTargetInput {
    * matched event.
    */
   public static fromObject(obj: any): EventTargetInput {
-    return new FieldAwareEventInput(obj, true);
+    return new FieldAwareEventInput(obj, InputType.Object);
   }
 
   /**
@@ -107,12 +120,11 @@ class LiteralEventInput extends EventTargetInput {
  * quotes by using a string replace.
  */
 class FieldAwareEventInput extends EventTargetInput {
-  constructor(private readonly input: any, private readonly objectScope: boolean) {
+  constructor(private readonly input: any, private readonly inputType: InputType) {
     super();
   }
 
   public bind(rule: IEventRule): EventRuleTargetInputProperties {
-    Array.isArray(this.objectScope);
     let fieldCounter = 0;
     const pathToKey = new Map<string, string>();
     const inputPathsMap: {[key: string]: string} = {};
@@ -147,10 +159,20 @@ class FieldAwareEventInput extends EventTargetInput {
       }
     }
 
-    const resolved = CloudFormationLang.toJSON(resolve(this.input, {
-      scope: rule,
-      resolver: new EventFieldReplacer()
-    }));
+    let resolved: string;
+    if (this.inputType === InputType.Multiline) {
+      // JSONify individual lines
+      resolved = resolve(this.input, {
+        scope: rule,
+        resolver: new EventFieldReplacer()
+      });
+      resolved = resolved.split('\n').map(CloudFormationLang.toJSON).join('\n');
+    } else {
+      resolved = CloudFormationLang.toJSON(resolve(this.input, {
+        scope: rule,
+        resolver: new EventFieldReplacer()
+      }));
+    }
 
     if (Object.keys(inputPathsMap).length === 0) {
       // Nothing special, just return 'input'
@@ -170,7 +192,7 @@ class FieldAwareEventInput extends EventTargetInput {
    * return a bracing that's unlikely to occur naturally (like tokens).
    */
   private keyPlaceholder(key: string) {
-    if (!this.objectScope) { return `<${key}>`; }
+    if (this.inputType !== InputType.Object) { return `<${key}>`; }
     return UNLIKELY_OPENING_STRING + key + UNLIKELY_CLOSING_STRING;
   }
 
@@ -181,7 +203,7 @@ class FieldAwareEventInput extends EventTargetInput {
    * remove them.
    */
   private unquoteKeyPlaceholders(sub: string) {
-    if (!this.objectScope) { return sub; }
+    if (this.inputType !== InputType.Object) { return sub; }
 
     return new Token((ctx: IResolveContext) =>
       ctx.resolve(sub).replace(OPENING_STRING_REGEX, '<').replace(CLOSING_STRING_REGEX, '>')
@@ -253,6 +275,12 @@ export class EventField extends Token {
 
     Object.defineProperty(this, EVENT_FIELD_SYMBOL, { value: true });
   }
+}
+
+enum InputType {
+  Object,
+  Text,
+  Multiline,
 }
 
 function isEventField(x: any): x is EventField {
