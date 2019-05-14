@@ -95,6 +95,11 @@
               "Action": "sns:ListTopics",
               "Effect": "Allow",
               "Resource": "*"
+            },
+            {
+              "Action": "ssm:GetParameter",
+              "Effect": "Allow",
+              "Resource": "*"
             }
           ],
           "Version": "2012-10-17"
@@ -182,6 +187,35 @@
           "physicalResourceIdPath": "Topics.0.TopicArn"
         }
       }
+    },
+    "GetParameter42B0A00E": {
+      "Type": "Custom::AWS",
+      "Properties": {
+        "ServiceToken": {
+          "Fn::GetAtt": [
+            "AWS679f53fac002430cb0da5b7982bd22872D164C4C",
+            "Arn"
+          ]
+        },
+        "Create": {
+          "service": "SSM",
+          "action": "getParameter",
+          "parameters": {
+            "Name": "my-parameter",
+            "WithDecryption": true
+          },
+          "physicalResourceIdPath": "Parameter.ARN"
+        },
+        "Update": {
+          "service": "SSM",
+          "action": "getParameter",
+          "parameters": {
+            "Name": "my-parameter",
+            "WithDecryption": true
+          },
+          "physicalResourceIdPath": "Parameter.ARN"
+        }
+      }
     }
   },
   "Parameters": {
@@ -208,6 +242,14 @@
         "Fn::GetAtt": [
           "ListTopicsCE1E0341",
           "Topics.0.TopicArn"
+        ]
+      }
+    },
+    "ParameterValue": {
+      "Value": {
+        "Fn::GetAtt": [
+          "GetParameter42B0A00E",
+          "Parameter.Value"
         ]
       }
     }

@@ -29,7 +29,20 @@ const listTopics = new AwsCustomResource(stack, 'ListTopics', {
   }
 });
 
+const getParameter = new AwsCustomResource(stack, 'GetParameter', {
+  onUpdate: {
+    service: 'SSM',
+    action: 'getParameter',
+    parameters: {
+      Name: 'my-parameter',
+      WithDecryption: true
+    },
+    physicalResourceIdPath: 'Parameter.ARN'
+  }
+});
+
 new cdk.CfnOutput(stack, 'MessageId', { value: snsPublish.getData('MessageId') });
 new cdk.CfnOutput(stack, 'TopicArn', { value: listTopics.getData('Topics.0.TopicArn') });
+new cdk.CfnOutput(stack, 'ParameterValue', { value: getParameter.getData('Parameter.Value') });
 
 app.run();
