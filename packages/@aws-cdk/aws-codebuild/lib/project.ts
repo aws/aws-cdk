@@ -623,12 +623,10 @@ export class Project extends ProjectBase {
     const artifacts = this.parseArtifacts(props);
     artifacts._bind(this);
 
-    // give the caching strategy the option to grant permissions to any required resources
-    if (props.cache) {
-      props.cache._bind(this);
-    }
-
     const cache = props.cache || Cache.none();
+
+    // give the caching strategy the option to grant permissions to any required resources
+    cache._bind(this);
 
     // Inject download commands for asset if requested
     const environmentVariables = props.environmentVariables || {};
