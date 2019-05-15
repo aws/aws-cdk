@@ -1,9 +1,8 @@
+import s3 = require('@aws-cdk/aws-s3');
+import cdk = require('@aws-cdk/cdk');
+import _ = require('lodash');
 import {Test, testCase} from 'nodeunit';
 import lambda = require('../lib');
-import cdk = require('@aws-cdk/cdk');
-import s3 = require('@aws-cdk/aws-s3');
-import _ = require('lodash');
-
 
 export = testCase({
   'add incompatible layer'(test: Test) {
@@ -15,10 +14,10 @@ export = testCase({
     const func = new lambda.Function(stack, 'myFunc', {
       runtime: lambda.Runtime.Python37,
       handler: 'index.handler',
-      code: code,
+      code,
     });
     const layer = new lambda.LayerVersion(stack, 'myLayer', {
-      code: code,
+      code,
       compatibleRuntimes: [lambda.Runtime.NodeJS]
     });
 
@@ -37,10 +36,10 @@ export = testCase({
     const func = new lambda.Function(stack, 'myFunc', {
       runtime: lambda.Runtime.Python37,
       handler: 'index.handler',
-      code: code,
+      code,
     });
     const layer = new lambda.LayerVersion(stack, 'myLayer', {
-      code: code,
+      code,
       compatibleRuntimes: [lambda.Runtime.Python37]
     });
 
@@ -58,13 +57,13 @@ export = testCase({
 
     const runtime = lambda.Runtime.Python37;
     const func = new lambda.Function(stack, 'myFunc', {
-      runtime: runtime,
+      runtime,
       handler: 'index.handler',
-      code: code,
+      code,
     });
     const clone = _.cloneDeep(runtime);
     const layer = new lambda.LayerVersion(stack, 'myLayer', {
-      code: code,
+      code,
       compatibleRuntimes: [clone]
     });
 
