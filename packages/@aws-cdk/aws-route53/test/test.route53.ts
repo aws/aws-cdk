@@ -70,40 +70,21 @@ export = {
   },
 
   'exporting and importing works'(test: Test) {
-    const stack1 = new cdk.Stack();
     const stack2 = new cdk.Stack();
 
-    const zone = new PublicHostedZone(stack1, 'Zone', {
-      zoneName: 'cdk.local',
+    const importedZone = HostedZone.fromHostedZoneAttributes(stack2, 'Imported', {
+      hostedZoneId: 'hosted-zone-id',
+      zoneName: 'cdk.local'
     });
 
-    const zoneRef = zone.export();
-    const importedZone = HostedZone.fromHostedZoneAttributes(stack2, 'Imported', zoneRef);
     new TxtRecord(importedZone as any, 'Record', {
       zone: importedZone,
       recordName: 'lookHere',
       recordValue: 'SeeThere'
     });
 
-    expect(stack1).to(exactlyMatchTemplate({
-      Resources: {
-        ZoneA5DE4B68: {
-          Type: "AWS::Route53::HostedZone",
-          Properties: {
-            Name: "cdk.local."
-          }
-        }
-      },
-      Outputs: {
-        ZoneHostedZoneId413B8768: {
-          Value: { Ref: "ZoneA5DE4B68" },
-          Export: { Name: "Stack:ZoneHostedZoneId413B8768" }
-        }
-      }
-    }));
-
     expect(stack2).to(haveResource("AWS::Route53::RecordSet", {
-      HostedZoneId: { "Fn::ImportValue": "Stack:ZoneHostedZoneId413B8768" },
+      HostedZoneId: "hosted-zone-id",
       Name: "lookHere.cdk.local.",
       ResourceRecords: [ "\"SeeThere\"" ],
       Type: "TXT"

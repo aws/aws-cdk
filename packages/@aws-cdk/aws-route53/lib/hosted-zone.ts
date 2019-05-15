@@ -1,5 +1,5 @@
 import ec2 = require('@aws-cdk/aws-ec2');
-import { CfnOutput, Construct, Resource, Token } from '@aws-cdk/cdk';
+import { Construct, Resource, Token } from '@aws-cdk/cdk';
 import { HostedZoneAttributes, IHostedZone } from './hosted-zone-ref';
 import { ZoneDelegationRecord } from './records';
 import { CfnHostedZone } from './route53.generated';
@@ -50,12 +50,6 @@ export class HostedZone extends Resource implements IHostedZone {
       public get zoneName(): string {
         throw new Error(`HostedZone.fromHostedZoneId doesn't support "zoneName"`);
       }
-      public export(): HostedZoneAttributes {
-        return {
-          hostedZoneId: this.hostedZoneId,
-          zoneName: this.zoneName
-        };
-      }
     }
 
     return new Import(scope, id);
@@ -68,9 +62,6 @@ export class HostedZone extends Resource implements IHostedZone {
     class Import extends Construct implements IHostedZone {
       public readonly hostedZoneId = attrs.hostedZoneId;
       public readonly zoneName = attrs.zoneName;
-      public export() {
-        return attrs;
-      }
     }
 
     return new Import(scope, id);
@@ -106,13 +97,6 @@ export class HostedZone extends Resource implements IHostedZone {
     }
   }
 
-  public export(): HostedZoneAttributes {
-    return {
-      hostedZoneId: new CfnOutput(this, 'HostedZoneId', { value: this.hostedZoneId }).makeImportValue(),
-      zoneName: this.zoneName,
-    };
-  }
-
   /**
    * Add another VPC to this private hosted zone.
    *
@@ -137,12 +121,6 @@ export class PublicHostedZone extends HostedZone implements IPublicHostedZone {
     class Import extends Resource implements IPublicHostedZone {
       public readonly hostedZoneId = publicHostedZoneId;
       public get zoneName(): string { throw new Error(`cannot retrieve "zoneName" from an an imported hosted zone`); }
-      public export(): HostedZoneAttributes {
-        return {
-          hostedZoneId: this.hostedZoneId,
-          zoneName: this.zoneName
-        };
-      }
     }
     return new Import(scope, id);
   }
@@ -217,12 +195,6 @@ export class PrivateHostedZone extends HostedZone implements IPrivateHostedZone 
     class Import extends Resource implements IPrivateHostedZone {
       public readonly hostedZoneId = privateHostedZoneId;
       public get zoneName(): string { throw new Error(`cannot retrieve "zoneName" from an an imported hosted zone`); }
-      public export(): HostedZoneAttributes {
-        return {
-          hostedZoneId: this.hostedZoneId,
-          zoneName: this.zoneName
-        };
-      }
     }
     return new Import(scope, id);
   }
