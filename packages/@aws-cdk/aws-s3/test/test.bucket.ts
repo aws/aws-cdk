@@ -507,7 +507,7 @@ export = {
       const user = new iam.User(stack, 'MyUser');
       const team = new iam.Group(stack, 'MyTeam');
 
-      const resource = bucket.arnForObjects('home/', team.groupName, '/', user.userName, '/*');
+      const resource = bucket.arnForObjects(`home/${team.groupName}/${user.userName}/*`);
       const p = new iam.PolicyStatement().addResource(resource).addAction('s3:GetObject');
 
       test.deepEqual(bucket.node.resolve(p), {
@@ -587,7 +587,7 @@ export = {
       // you can even use the bucket name, which will be extracted from the arn provided.
       const user = new iam.User(stack, 'MyUser');
       user.addToPolicy(new iam.PolicyStatement()
-        .addResource(bucket.arnForObjects('my/folder/', bucket.bucketName))
+        .addResource(bucket.arnForObjects(`my/folder/${bucket.bucketName}`))
         .addAction('s3:*'));
 
       expect(stack).toMatch({

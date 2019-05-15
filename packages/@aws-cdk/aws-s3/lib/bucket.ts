@@ -83,13 +83,8 @@ export interface IBucket extends IResource {
   /**
    * Returns an ARN that represents all objects within the bucket that match
    * the key pattern specified. To represent all keys, specify ``"*"``.
-   *
-   * If you specify multiple components for keyPattern, they will be concatenated::
-   *
-   *   arnForObjects('home/', team, '/', user, '/*')
-   *
    */
-  arnForObjects(...keyPattern: string[]): string;
+  arnForObjects(keyPattern: string): string;
 
   /**
    * Grant read permissions for this bucket and it's contents to an IAM
@@ -359,8 +354,8 @@ abstract class BucketBase extends Resource implements IBucket {
    *   arnForObjects('home/', team, '/', user, '/*')
    *
    */
-  public arnForObjects(...keyPattern: string[]): string {
-    return `${this.bucketArn}/${keyPattern.join('')}`;
+  public arnForObjects(keyPattern: string): string {
+    return `${this.bucketArn}/${keyPattern}`;
   }
 
   /**
