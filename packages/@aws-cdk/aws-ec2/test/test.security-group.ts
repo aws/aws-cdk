@@ -1,5 +1,5 @@
 import { expect, haveResource } from '@aws-cdk/assert';
-import { Stack } from '@aws-cdk/cdk';
+import { Stack, Token } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
 
 import {
@@ -14,20 +14,18 @@ import {
   SecurityGroup,
   TcpAllPorts,
   TcpPort,
-  TcpPortFromAttribute,
   TcpPortRange,
   UdpAllPorts,
   UdpPort,
-  UdpPortFromAttribute,
   UdpPortRange,
-  VpcNetwork
+  Vpc
 } from "../lib";
 
 export = {
   'security group can allows all outbound traffic by default'(test: Test) {
     // GIVEN
     const stack = new Stack();
-    const vpc = new VpcNetwork(stack, 'VPC');
+    const vpc = new Vpc(stack, 'VPC');
 
     // WHEN
     new SecurityGroup(stack, 'SG1', { vpc, allowAllOutbound: true });
@@ -49,7 +47,7 @@ export = {
   'no new outbound rule is added if we are allowing all traffic anyway'(test: Test) {
     // GIVEN
     const stack = new Stack();
-    const vpc = new VpcNetwork(stack, 'VPC');
+    const vpc = new Vpc(stack, 'VPC');
 
     // WHEN
     const sg = new SecurityGroup(stack, 'SG1', { vpc, allowAllOutbound: true });
@@ -72,7 +70,7 @@ export = {
   'security group disallow outbound traffic by default'(test: Test) {
     // GIVEN
     const stack = new Stack();
-    const vpc = new VpcNetwork(stack, 'VPC');
+    const vpc = new Vpc(stack, 'VPC');
 
     // WHEN
     new SecurityGroup(stack, 'SG1', { vpc, allowAllOutbound: false });
@@ -96,7 +94,7 @@ export = {
   'bogus outbound rule disappears if another rule is added'(test: Test) {
     // GIVEN
     const stack = new Stack();
-    const vpc = new VpcNetwork(stack, 'VPC');
+    const vpc = new Vpc(stack, 'VPC');
 
     // WHEN
     const sg = new SecurityGroup(stack, 'SG1', { vpc, allowAllOutbound: false });
@@ -121,7 +119,7 @@ export = {
   'all outbound rule cannot be added after creation'(test: Test) {
     // GIVEN
     const stack = new Stack();
-    const vpc = new VpcNetwork(stack, 'VPC');
+    const vpc = new Vpc(stack, 'VPC');
 
     // WHEN
     const sg = new SecurityGroup(stack, 'SG1', { vpc, allowAllOutbound: false });
@@ -135,7 +133,7 @@ export = {
   'peer between all types of peers and port range types'(test: Test) {
     // GIVEN
     const stack = new Stack(undefined, 'TestStack', { env: { account: '12345678', region: 'dummy' }});
-    const vpc = new VpcNetwork(stack, 'VPC');
+    const vpc = new Vpc(stack, 'VPC');
     const sg = new SecurityGroup(stack, 'SG', { vpc });
 
     const peers = [
@@ -147,11 +145,11 @@ export = {
 
     const ports = [
       new TcpPort(1234),
-      new TcpPortFromAttribute("tcp-test-port!"),
+      new TcpPort(new Token(5000).toNumber()),
       new TcpAllPorts(),
       new TcpPortRange(80, 90),
       new UdpPort(2345),
-      new UdpPortFromAttribute("udp-test-port!"),
+      new UdpPort(new Token(777).toNumber()),
       new UdpAllPorts(),
       new UdpPortRange(85, 95),
       new IcmpTypeAndCode(5, 1),

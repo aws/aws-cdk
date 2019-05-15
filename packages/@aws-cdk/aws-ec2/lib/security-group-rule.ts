@@ -171,28 +171,6 @@ export class TcpPort implements IPortRange {
 }
 
 /**
- * A single TCP port that is provided by a resource attribute
- */
-export class TcpPortFromAttribute implements IPortRange {
-  public readonly canInlineRule = false;
-
-  constructor(private readonly port: string) {
-  }
-
-  public toRuleJSON(): any {
-    return {
-      ipProtocol: Protocol.Tcp,
-      fromPort: this.port,
-      toPort: this.port
-    };
-  }
-
-  public toString() {
-    return '{IndirectPort}';
-  }
-}
-
-/**
  * A TCP port range
  */
 export class TcpPortRange implements IPortRange {
@@ -252,28 +230,6 @@ export class UdpPort implements IPortRange {
 
   public toString() {
     return `UDP ${this.port}`;
-  }
-}
-
-/**
- * A single UDP port that is provided by a resource attribute
- */
-export class UdpPortFromAttribute implements IPortRange {
-  public readonly canInlineRule = false;
-
-  constructor(private readonly port: string) {
-  }
-
-  public toRuleJSON(): any {
-    return {
-      ipProtocol: Protocol.Udp,
-      fromPort: this.port,
-      toPort: this.port
-    };
-  }
-
-  public toString() {
-    return 'UDP {IndirectPort}';
   }
 }
 
