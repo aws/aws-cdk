@@ -1,6 +1,6 @@
 import reflect = require('jsii-reflect');
 import { Linter, MethodSignatureParameterExpectation } from '../linter';
-import { CORE_MODULE, TypeFqn } from './common';
+import { CORE_MODULE, TypeSystemFQN } from './common';
 
 export const constructLinter = new Linter<ConstructReflection>(assembly => assembly.classes
   .filter(t => ConstructReflection.isConstructClass(t))
@@ -251,7 +251,7 @@ constructLinter.add({
 
       const found = (fqn && e.ctx.sys.tryFindFqn(fqn));
       if(found) {
-        e.assert(!(fqn === TypeFqn.Token), `${e.ctx.propsFqn}.${property.name}`);
+        e.assert(!(fqn === TypeSystemFQN.Token), `${e.ctx.propsFqn}.${property.name}`);
       }
     }
   }
