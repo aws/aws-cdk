@@ -35,7 +35,7 @@
               "DomainName": {
                 "Fn::GetAtt": [
                   "Bucket83908E77",
-                  "DomainName"
+                  "RegionalDomainName"
                 ]
               },
               "Id": "origin1",

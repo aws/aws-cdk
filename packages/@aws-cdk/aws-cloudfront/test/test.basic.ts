@@ -130,7 +130,7 @@ export = {
                   "DomainName": {
                     "Fn::GetAtt": [
                       "Bucket83908E77",
-                      "DomainName"
+                      "RegionalDomainName"
                     ]
                   },
                   "Id": "origin1",
@@ -205,7 +205,7 @@ export = {
                   "DomainName": {
                     "Fn::GetAtt": [
                       "Bucket83908E77",
-                      "DomainName"
+                      "RegionalDomainName"
                     ]
                   },
                   "Id": "origin1",
@@ -283,7 +283,7 @@ export = {
                   "DomainName": {
                     "Fn::GetAtt": [
                       "Bucket83908E77",
-                      "DomainName"
+                      "RegionalDomainName"
                     ]
                   },
                   "Id": "origin1",
