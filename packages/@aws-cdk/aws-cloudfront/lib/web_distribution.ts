@@ -566,7 +566,7 @@ export class CloudFrontWebDistribution extends cdk.Construct implements route53.
       const originProperty: CfnDistribution.OriginProperty = {
         id: originId,
         domainName: originConfig.s3OriginSource
-          ? originConfig.s3OriginSource.s3BucketSource.bucketDomainName
+          ? originConfig.s3OriginSource.s3BucketSource.bucketRegionalDomainName
           : originConfig.customOriginSource!.domainName,
         originPath: originConfig.originPath,
         originCustomHeaders: originHeaders.length > 0 ? originHeaders : undefined,
@@ -660,7 +660,7 @@ export class CloudFrontWebDistribution extends cdk.Construct implements route53.
       distributionConfig = {
         ...distributionConfig,
         logging: {
-          bucket: this.loggingBucket.bucketDomainName,
+          bucket: this.loggingBucket.bucketRegionalDomainName,
           includeCookies: props.loggingConfig.includeCookies || false,
           prefix: props.loggingConfig.prefix
         }
