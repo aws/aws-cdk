@@ -110,8 +110,12 @@ export class Token {
     // case, string or number), and we can't know that without an
     // IResolveContext to actually do the resolution, which we don't have.
 
-    // tslint:disable-next-line:max-line-length
-    throw new Error('JSON.stringify() cannot be applied to structure with a Token in it. Use this.node.stringifyJson() instead.');
+    // We used to throw an error, but since JSON.stringify() is often used in
+    // error messages to produce a readable representation of an object, if we
+    // throw here we'll obfuscate that descriptive error with something worse.
+    // So return a string representation that indicates this thing is a token
+    // and needs resolving.
+    return JSON.stringify(`<unresolved-token:${this.displayName || 'TOKEN'}>`);
   }
 
   /**

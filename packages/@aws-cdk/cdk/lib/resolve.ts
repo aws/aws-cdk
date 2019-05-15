@@ -30,6 +30,8 @@ export interface IResolveOptions {
  * @param prefix Prefix key path components for diagnostics.
  */
 export function resolve(obj: any, options: IResolveOptions): any {
+  // console.log('Resolving', obj, 'resolver', options.resolver);
+  // console.log(new Error().stack);
   const prefix = options.prefix || [];
   const pathName = '/' + prefix.join('/');
 
@@ -114,6 +116,7 @@ export function resolve(obj: any, options: IResolveOptions): any {
   //
 
   if (unresolved(obj)) {
+    // console.log('Its a Token', options.resolver);
     return options.resolver.resolveToken(obj, makeContext());
   }
 
@@ -237,8 +240,17 @@ export class DefaultTokenResolver implements ITokenResolver {
  */
 export function findTokens(scope: IConstruct, fn: () => any): Token[] {
   const resolver = new RememberingTokenResolver(new NullConcat());
+  // console.log('=========== FINDTOKENS ============');
 
-  resolve(fn(), { scope, prefix: [], resolver });
+  // console.log('Going into it with the resolver', resolver);
+
+  const start = fn();
+
+  // console.log('Doing the thing', resolver);
+
+  resolve(start, { scope, prefix: [], resolver });
+
+  // console.log('=========== /FINDTOKENS ============');
 
   return resolver.tokens;
 }
@@ -250,6 +262,7 @@ export class RememberingTokenResolver extends DefaultTokenResolver {
   private readonly tokensSeen = new Set<Token>();
 
   public resolveToken(t: Token, context: IResolveContext) {
+    // console.log('Seeing', t);
     this.tokensSeen.add(t);
     return super.resolveToken(t, context);
   }
