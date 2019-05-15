@@ -68,8 +68,7 @@ export class TokenMap {
     const str = TokenString.forStringToken(s);
     const fragments = str.split(this.lookupToken.bind(this));
     if (fragments.length === 1) {
-      const first = fragments.firstFragment;
-      if (first.type === 'token') { return first.token; }
+      return fragments.firstToken;
     }
     return undefined;
   }
@@ -82,8 +81,7 @@ export class TokenMap {
     const str = TokenString.forListToken(xs[0]);
     const fragments = str.split(this.lookupToken.bind(this));
     if (fragments.length === 1) {
-      const first = fragments.firstFragment;
-      if (first.type === 'token') { return first.token; }
+      return fragments.firstToken;
     }
     return undefined;
   }

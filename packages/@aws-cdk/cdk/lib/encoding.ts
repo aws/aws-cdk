@@ -1,4 +1,5 @@
 import { IFragmentConcatenator } from "./resolve";
+import { TokenizedStringFragments } from "./string-fragments";
 import { RESOLVE_METHOD, Token } from "./token";
 
 // Details for encoding and decoding Tokens into native types; should not be exported
@@ -74,104 +75,6 @@ export class TokenString {
 }
 
 /**
- * Result of the split of a string with Tokens
- *
- * Either a literal part of the string, or an unresolved Token.
- */
-type LiteralFragment = { type: 'literal'; lit: any; };
-type TokenFragment = { type: 'token'; token: Token; };
-type IntrinsicFragment = { type: 'intrinsic'; value: any; };
-type Fragment =  LiteralFragment | TokenFragment | IntrinsicFragment;
-
-/**
- * Fragments of a string with markers
- */
-export class TokenizedStringFragments {
-  public readonly fragments = new Array<Fragment>();
-
-  public get firstFragment(): Fragment {
-    return this.fragments[0];
-  }
-
-  public get firstValue(): any {
-    return fragmentValue(this.fragments[0]);
-  }
-
-  public get length() {
-    return this.fragments.length;
-  }
-
-  public addLiteral(lit: any) {
-    this.fragments.push({ type: 'literal', lit });
-  }
-
-  public addToken(token: Token) {
-    this.fragments.push({ type: 'token', token });
-  }
-
-  public addIntrinsic(value: any) {
-    this.fragments.push({ type: 'intrinsic', value });
-  }
-
-  public mapTokens(fn: (t: any) => any): TokenizedStringFragments {
-    const ret = new TokenizedStringFragments();
-
-    for (const f of this.fragments) {
-      switch (f.type) {
-        case 'literal':
-          ret.addLiteral(f.lit);
-          break;
-        case 'token':
-          const mapped = fn(f.token);
-          if (isTokenObject(mapped)) {
-            ret.addToken(mapped);
-          } else {
-            ret.addIntrinsic(mapped);
-          }
-          break;
-        case 'intrinsic':
-          ret.addIntrinsic(f.value);
-          break;
-      }
-    }
-
-    return ret;
-  }
-
-  /**
-   * Combine the string fragments using the given joiner.
-   *
-   * If there are any
-   */
-  public join(concat: IFragmentConcatenator): any {
-    if (this.fragments.length === 0) { return concat.join(undefined, undefined); }
-    if (this.fragments.length === 1) { return this.firstValue; }
-
-    const values = this.fragments.map(fragmentValue);
-
-    while (values.length > 1) {
-      const prefix = values.splice(0, 2);
-      values.splice(0, 0, concat.join(prefix[0], prefix[1]));
-    }
-
-    return values[0];
-  }
-}
-
-/**
- * Resolve the value from a single fragment
- *
- * If the fragment is a Token, return the string encoding of the Token.
- */
-function fragmentValue(fragment: Fragment): any {
-  switch (fragment.type) {
-    case 'literal': return fragment.lit;
-    case 'token': return fragment.token.toString();
-    case 'intrinsic': return fragment.value;
-  }
-}
-
-/**
  * Quote a string for use in a regex
  */
 function regexQuote(s: string) {
@@ -209,14 +112,4 @@ export function unresolved(obj: any): boolean {
   } else {
     return obj && typeof(obj[RESOLVE_METHOD]) === 'function';
   }
-}
-
-/**
- * Whether x is literally a Token object
- *
- * Can't use Token.isToken() because that has been co-opted
- * to mean something else.
- */
-function isTokenObject(x: any): x is Token {
-  return typeof(x) === 'object' && x !== null && Token.isToken(x);
 }

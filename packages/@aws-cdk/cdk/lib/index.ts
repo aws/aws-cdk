@@ -7,6 +7,7 @@ export * from './token-map';
 export * from './tag-manager';
 export * from './dependency';
 export * from './resolve';
+export * from './string-fragments';
 
 export * from './cloudformation-lang';
 export * from './reference';

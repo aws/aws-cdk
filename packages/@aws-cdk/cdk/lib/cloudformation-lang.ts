@@ -1,6 +1,6 @@
-import { TokenString } from "./encoding";
 import { isIntrinsic, minimalCloudFormationJoin } from "./instrinsics";
 import { DefaultTokenResolver, IFragmentConcatenator, resolve } from "./resolve";
+import { TokenizedStringFragments } from "./string-fragments";
 import { IResolveContext, Token } from "./token";
 
 /**
@@ -46,8 +46,8 @@ export class CloudFormationLang {
       public resolveToken(t: Token, context: IResolveContext) {
         return wrap(super.resolveToken(t, context));
       }
-      public resolveString(s: TokenString, context: IResolveContext) {
-        return wrap(super.resolveString(s, context));
+      public resolveString(fragments: TokenizedStringFragments, context: IResolveContext) {
+        return wrap(super.resolveString(fragments, context));
       }
       public resolveList(l: string[], context: IResolveContext) {
         return wrap(super.resolveList(l, context));

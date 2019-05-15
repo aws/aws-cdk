@@ -1,5 +1,6 @@
 import { IConstruct } from './construct';
 import { containsListTokenElement, NullConcat, TokenString, unresolved } from "./encoding";
+import { TokenizedStringFragments } from './string-fragments';
 import { IResolveContext, isResolvedValuePostProcessor, RESOLVE_METHOD, Token } from "./token";
 import { TokenMap } from './token-map';
 
@@ -78,7 +79,8 @@ export function resolve(obj: any, options: IResolveOptions): any {
   if (typeof(obj) === 'string') {
     const str = TokenString.forStringToken(obj);
     if (str.test()) {
-      return options.resolver.resolveString(str, makeContext());
+      const fragments = str.split(tokenMap.lookupToken.bind(tokenMap));
+      return options.resolver.resolveString(fragments, makeContext());
     }
     return obj;
   }
@@ -160,7 +162,7 @@ export interface ITokenResolver {
    *
    * (May use concatenation)
    */
-  resolveString(s: TokenString, context: IResolveContext): any;
+  resolveString(s: TokenizedStringFragments, context: IResolveContext): any;
 
   /**
    * Resolve a tokenized list
@@ -209,9 +211,8 @@ export class DefaultTokenResolver implements ITokenResolver {
   /**
    * Resolve string fragments to Tokens
    */
-  public resolveString(s: TokenString, context: IResolveContext) {
-    const fragments = s.split(tokenMap.lookupToken.bind(tokenMap));
-    return fragments.mapTokens(context.resolve).join(this.concat);
+  public resolveString(fragments: TokenizedStringFragments, context: IResolveContext) {
+    return fragments.mapTokens({ mapToken: context.resolve }).join(this.concat);
   }
 
   public resolveList(xs: string[], context: IResolveContext) {
@@ -226,7 +227,7 @@ export class DefaultTokenResolver implements ITokenResolver {
       throw new Error(`Cannot concatenate strings in a tokenized string array, got: ${xs[0]}`);
     }
 
-    return fragments.mapTokens(context.resolve).firstValue;
+    return fragments.mapTokens({ mapToken: context.resolve }).firstValue;
   }
 
 }
