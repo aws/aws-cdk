@@ -23,7 +23,7 @@ export = {
     },
     'private hosted zone'(test: Test) {
       const app = new TestApp();
-      const vpcNetwork = new ec2.VpcNetwork(app.stack, 'VPC');
+      const vpcNetwork = new ec2.Vpc(app.stack, 'VPC');
       new PrivateHostedZone(app.stack, 'HostedZone', { zoneName: 'test.private', vpc: vpcNetwork });
       expect(app.synthesizeTemplate()).to(beASupersetOfTemplate({
         Resources: {
@@ -43,8 +43,8 @@ export = {
     },
     'when specifying multiple VPCs'(test: Test) {
       const app = new TestApp();
-      const vpcNetworkA = new ec2.VpcNetwork(app.stack, 'VPC1');
-      const vpcNetworkB = new ec2.VpcNetwork(app.stack, 'VPC2');
+      const vpcNetworkA = new ec2.Vpc(app.stack, 'VPC1');
+      const vpcNetworkB = new ec2.Vpc(app.stack, 'VPC2');
       new PrivateHostedZone(app.stack, 'HostedZone', { zoneName: 'test.private', vpc: vpcNetworkA })
         .addVpc(vpcNetworkB);
       expect(app.synthesizeTemplate()).to(beASupersetOfTemplate({
@@ -140,9 +140,9 @@ export = {
   'a hosted zone can be assiciated with a VPC either upon creation or using "addVpc"'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
-    const vpc1 = new ec2.VpcNetwork(stack, 'VPC1');
-    const vpc2 = new ec2.VpcNetwork(stack, 'VPC2');
-    const vpc3 = new ec2.VpcNetwork(stack, 'VPC3');
+    const vpc1 = new ec2.Vpc(stack, 'VPC1');
+    const vpc2 = new ec2.Vpc(stack, 'VPC2');
+    const vpc3 = new ec2.Vpc(stack, 'VPC3');
 
     // WHEN
     const zone = new HostedZone(stack, 'MyHostedZone', {
@@ -187,7 +187,7 @@ export = {
     // GIVEN
     const stack = new cdk.Stack();
     const zone = new PublicHostedZone(stack, 'MyHostedZone', { zoneName: 'zonename' });
-    const vpc = new ec2.VpcNetwork(stack, 'VPC');
+    const vpc = new ec2.Vpc(stack, 'VPC');
 
     // THEN
     test.throws(() => zone.addVpc(vpc), /Cannot associate public hosted zones with a VPC/);

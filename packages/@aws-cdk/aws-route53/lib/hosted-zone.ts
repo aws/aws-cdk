@@ -39,7 +39,7 @@ export interface HostedZoneProps extends CommonHostedZoneProps {
    *
    * @default public (no VPCs associated)
    */
-  readonly vpcs?: ec2.IVpcNetwork[];
+  readonly vpcs?: ec2.IVpc[];
 }
 
 export class HostedZone extends Resource implements IHostedZone {
@@ -118,8 +118,8 @@ export class HostedZone extends Resource implements IHostedZone {
    *
    * @param vpc the other VPC to add.
    */
-  public addVpc(vpc: ec2.IVpcNetwork) {
-    this.vpcs.push({ vpcId: vpc.vpcId, vpcRegion: vpc.vpcRegion });
+  public addVpc(vpc: ec2.IVpc) {
+    this.vpcs.push({ vpcId: vpc.vpcId, vpcRegion: vpc.region });
   }
 }
 
@@ -151,7 +151,7 @@ export class PublicHostedZone extends HostedZone implements IPublicHostedZone {
     super(scope, id, props);
   }
 
-  public addVpc(_vpc: ec2.IVpcNetwork) {
+  public addVpc(_vpc: ec2.IVpc) {
     throw new Error('Cannot associate public hosted zones with a VPC');
   }
 
@@ -198,7 +198,7 @@ export interface PrivateHostedZoneProps extends CommonHostedZoneProps {
    * Private hosted zones must be associated with at least one VPC. You can
    * associated additional VPCs using `addVpc(vpc)`.
    */
-  readonly vpc: ec2.IVpcNetwork;
+  readonly vpc: ec2.IVpc;
 }
 
 export interface IPrivateHostedZone extends IHostedZone {}
