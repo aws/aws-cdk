@@ -13,7 +13,7 @@ export interface LambdaFunctionProps {
    *
    * @default the entire CloudWatch event
    */
-  event?: events.EventTargetInput;
+  readonly event?: events.EventTargetInput;
 }
 
 /**

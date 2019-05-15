@@ -1,5 +1,4 @@
 import cloudwatch = require('@aws-cdk/aws-cloudwatch');
-import events = require('@aws-cdk/aws-events');
 import iam = require('@aws-cdk/aws-iam');
 import { Construct, IResource, Resource } from '@aws-cdk/cdk';
 import { StateGraph } from './state-graph';
@@ -40,7 +39,7 @@ export interface StateMachineProps {
 /**
  * Define a StepFunctions State Machine
  */
-export class StateMachine extends Resource implements IStateMachine, events.IEventRuleTarget {
+export class StateMachine extends Resource implements IStateMachine {
     /**
      * Import a state machine
      */
@@ -67,11 +66,6 @@ export class StateMachine extends Resource implements IStateMachine, events.IEve
      * The ARN of the state machine
      */
     public readonly stateMachineArn: string;
-
-    /**
-     * A role used by CloudWatch events to start the State Machine
-     */
-    private eventsRole?: iam.Role;
 
     constructor(scope: Construct, id: string, props: StateMachineProps) {
         super(scope, id);
@@ -102,27 +96,6 @@ export class StateMachine extends Resource implements IStateMachine, events.IEve
      */
     public addToRolePolicy(statement: iam.PolicyStatement) {
         this.role.addToPolicy(statement);
-    }
-
-    /**
-     * Allows using state machines as event rule targets.
-     */
-    public asEventRuleTarget(_ruleArn: string, _ruleId: string): events.EventRuleTargetProps {
-        if (!this.eventsRole) {
-            this.eventsRole = new iam.Role(this, 'EventsRole', {
-                assumedBy: new iam.ServicePrincipal('events.amazonaws.com')
-            });
-
-            this.eventsRole.addToPolicy(new iam.PolicyStatement()
-                .addAction('states:StartExecution')
-                .addResource(this.stateMachineArn));
-        }
-
-        return {
-            id: this.node.id,
-            arn: this.stateMachineArn,
-            roleArn: this.eventsRole.roleArn,
-        };
     }
 
     /**

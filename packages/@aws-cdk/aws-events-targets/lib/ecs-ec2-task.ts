@@ -1,6 +1,8 @@
+import ec2 = require('@aws-cdk/aws-ec2');
 import ecs = require('@aws-cdk/aws-ecs');
 import events = require ('@aws-cdk/aws-events');
 import iam = require('@aws-cdk/aws-iam');
+import { Construct, Token } from '@aws-cdk/cdk';
 import { ContainerOverride } from './ecs-task-properties';
 
 /**
@@ -32,7 +34,23 @@ export interface EcsEc2TaskProps {
    */
   readonly containerOverrides?: ContainerOverride[];
 
-  // AWS VPC configuration
+  /**
+   * In what subnets to place the task's ENIs
+   *
+   * (Only applicable in case the TaskDefinition is configured for AwsVpc networking)
+   *
+   * @default Private subnets
+   */
+  readonly subnetSelection?: ec2.SubnetSelection;
+
+  /**
+   * Existing security group to use for the task's ENIs
+   *
+   * (Only applicable in case the TaskDefinition is configured for AwsVpc networking)
+   *
+   * @default A new security group is created
+   */
+  readonly securityGroup?: ec2.ISecurityGroup;
 }
 
 /**
@@ -56,7 +74,7 @@ export class EcsEc2Task implements events.IEventRuleTarget {
   /**
    * Allows using containers as target of CloudWatch events
    */
-  public bind(_rule: events.IEventRule): events.EventRuleTargetProperties {
+  public bind(rule: events.IEventRule): events.EventRuleTargetProperties {
     const policyStatements = [new iam.PolicyStatement()
       .addAction('ecs:RunTask')
       .addResource(this.taskDefinition.taskDefinitionArn)
@@ -82,8 +100,25 @@ export class EcsEc2Task implements events.IEventRuleTarget {
         taskDefinitionArn: this.taskDefinition.taskDefinitionArn
       },
       input: events.EventTargetInput.fromObject({
-        containerOverrides: this.props.containerOverrides
+        containerOverrides: this.props.containerOverrides,
+        networkConfiguration: this.renderNetworkConfiguration(rule as events.EventRule),
       })
+    };
+  }
+
+  private renderNetworkConfiguration(scope: Construct) {
+    if (this.props.taskDefinition.networkMode !== ecs.NetworkMode.AwsVpc) {
+      return undefined;
+    }
+
+    const subnetSelection = this.props.subnetSelection || { subnetType: ec2.SubnetType.Private };
+    const securityGroup = this.props.securityGroup || new ec2.SecurityGroup(scope, 'SecurityGroup', { vpc: this.props.cluster.vpc });
+
+    return {
+      awsvpcConfiguration: {
+        subnets: this.props.cluster.vpc.selectSubnets(subnetSelection).subnetIds,
+        securityGroups: new Token(() => [securityGroup.securityGroupId]),
+      }
     };
   }
 }

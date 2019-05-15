@@ -11,7 +11,7 @@ export interface SnsTopicProps {
    *
    * @default the entire CloudWatch event
    */
-  message?: events.EventTargetInput;
+  readonly message?: events.EventTargetInput;
 }
 
 /**

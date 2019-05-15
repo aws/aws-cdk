@@ -1,5 +1,4 @@
-import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
-import events = require('@aws-cdk/aws-events');
+import { expect, haveResource } from '@aws-cdk/assert';
 import iam = require('@aws-cdk/aws-iam');
 import cdk = require('@aws-cdk/cdk');
 import { Test } from 'nodeunit';
@@ -130,32 +129,4 @@ export = {
         test.done();
     },
 
-    'State machine can be used as Event Rule target'(test: Test) {
-        // GIVEN
-        const stack = new cdk.Stack();
-        const rule = new events.EventRule(stack, 'Rule', {
-                scheduleExpression: 'rate(1 minute)'
-        });
-        const stateMachine = new stepfunctions.StateMachine(stack, 'SM', {
-                definition: new stepfunctions.Wait(stack, 'Hello', { duration: stepfunctions.WaitDuration.seconds(10)  })
-            });
-
-        // WHEN
-        rule.addTarget(stateMachine, {
-            jsonTemplate: { SomeParam: 'SomeValue' },
-        });
-
-        // THEN
-        expect(stack).to(haveResourceLike('AWS::Events::Rule', {
-            Targets: [
-                {
-                    InputTransformer: {
-                        InputTemplate: "{\"SomeParam\":\"SomeValue\"}"
-                    },
-                }
-            ]
-        }));
-
-        test.done();
-    },
 };
