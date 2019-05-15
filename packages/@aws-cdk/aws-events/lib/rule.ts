@@ -92,7 +92,7 @@ export class EventRule extends Resource implements IEventRule {
       state: props.enabled == null ? 'ENABLED' : (props.enabled ? 'ENABLED' : 'DISABLED'),
       scheduleExpression: new Token(() => this.scheduleExpression).toString(),
       eventPattern: new Token(() => this.renderEventPattern()),
-      targets: new Token(() => this.renderTargets())
+      targets: new Token(() => this.renderTargets()),
     });
 
     this.ruleArn = resource.ruleArn;

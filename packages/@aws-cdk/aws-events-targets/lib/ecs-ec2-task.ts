@@ -31,6 +31,8 @@ export interface EcsEc2TaskProps {
    * values you want to override.
    */
   readonly containerOverrides?: ContainerOverride[];
+
+  // AWS VPC configuration
 }
 
 /**

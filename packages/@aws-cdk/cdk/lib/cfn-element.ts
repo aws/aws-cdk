@@ -147,8 +147,8 @@ export abstract class CfnRefElement extends CfnElement {
   /**
    * Return a token that will CloudFormation { Ref } this stack element
    */
-  protected get referenceToken(): Token {
-    return new CfnReference({ Ref: this.logicalId }, 'Ref', this);
+  public get referenceToken(): Token {
+    return CfnReference.for(this, 'Ref');
   }
 }
 

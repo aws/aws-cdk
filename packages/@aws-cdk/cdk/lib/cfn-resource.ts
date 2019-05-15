@@ -133,7 +133,7 @@ export class CfnResource extends CfnRefElement {
    * @param attributeName The name of the attribute.
    */
   public getAtt(attributeName: string) {
-    return new CfnReference({ 'Fn::GetAtt': [this.logicalId, attributeName] }, attributeName, this);
+    return CfnReference.for(this, attributeName);
   }
 
   /**
@@ -217,7 +217,7 @@ export class CfnResource extends CfnRefElement {
         this.untypedPropertyOverrides
       ));
 
-      return {
+      const ret = {
         Resources: {
           // Post-Resolve operation since otherwise deepMerge is going to mix values into
           // the Token objects returned by ignoreEmpty.
@@ -234,6 +234,7 @@ export class CfnResource extends CfnRefElement {
           }, props => deepMerge(props, this.rawOverrides))
         }
       };
+      return ret;
     } catch (e) {
       // Change message
       e.message = `While synthesizing ${this.node.path}: ${e.message}`;

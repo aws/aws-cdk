@@ -237,11 +237,7 @@ export class DefaultTokenResolver implements ITokenResolver {
 export function findTokens(scope: IConstruct, fn: () => any): Token[] {
   const resolver = new RememberingTokenResolver(new NullConcat());
 
-  try {
-    resolve(fn(), { scope, prefix: [], resolver });
-  } finally {
-    // Swallow potential errors that might occur because we might not have validate()d.
-  }
+  resolve(fn(), { scope, prefix: [], resolver });
 
   return resolver.tokens;
 }
