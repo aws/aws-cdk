@@ -71,7 +71,7 @@ const encryptedTable = new glue.Table(stack, 'MyEncryptedTable', {
   }],
   dataFormat: glue.DataFormat.Json,
   encryption: glue.TableEncryption.Kms,
-  encryptionKey: new kms.EncryptionKey(stack, 'MyKey')
+  encryptionKey: new kms.Key(stack, 'MyKey')
 });
 
 const user = new iam.User(stack, 'MyUser');
