@@ -120,7 +120,7 @@ With S3 caching, the cache is stored in an S3 bucket which is available from mul
 ```typescript
 new codebuild.Project(this, 'Project', {
   source: new codebuild.CodePipelineSource(),
-  cache: Cache.bucket(new Bucket(this, 'Bucket'))
+  cache: codebuild.Cache.bucket(new Bucket(this, 'Bucket'))
 });
 ```
 
@@ -135,7 +135,7 @@ With local caching, the cache is stored on the codebuild instance itself. CodeBu
 ```typescript
 new codebuild.Project(this, 'Project', {
   source: new codebuild.CodePipelineSource(),
-  cache: Cache.local(LocalCacheMode.DockerLayer)
+  cache: codebuild.Cache.local(LocalCacheMode.DockerLayer, LocalCacheMode.Custom)
 });
 ```
 
