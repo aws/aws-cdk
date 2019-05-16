@@ -1,14 +1,14 @@
-import cdk = require('@aws-cdk/cdk');
-import { cloudformation } from './apigateway.generated';
-import { IRestApiResource } from "./resource";
+import { Construct, Resource } from '@aws-cdk/cdk';
+import { CfnApiKey } from './apigateway.generated';
+import { ResourceOptions } from "./resource";
 import { RestApi } from './restapi';
 
-export interface ApiKeyProps {
+export interface ApiKeyProps extends ResourceOptions {
   /**
    * A list of resources this api key is associated with.
    * @default none
    */
-  readonly resources?: IRestApiResource[];
+  readonly resources?: RestApi[];
 
   /**
    * An AWS Marketplace customer identifier to use when integrating with the AWS SaaS Marketplace.
@@ -36,12 +36,12 @@ export interface ApiKeyProps {
    * @link http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-apigateway-apikey.html#cfn-apigateway-apikey-generatedistinctid
    * @default false
    */
-  readonly generateDistinctIdgenerateDistinctId?: boolean;
+  readonly generateDistinctId?: boolean;
 
   /**
-   * A name for the API key.
+   * A name for the API key. If you don't specify a name, AWS CloudFormation generates a unique physical ID and uses that ID for the API key name.
    * @link http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-apigateway-apikey.html#cfn-apigateway-apikey-name
-   * @default none
+   * @default automically generated name
    */
   readonly name?: string;
 }
@@ -52,38 +52,31 @@ export interface ApiKeyProps {
  * An ApiKey can be distributed to API clients that are executing requests
  * for Method resources that require an Api Key.
  */
-export class ApiKey extends cdk.Construct {
+export class ApiKey extends Resource {
   public readonly keyId: string;
 
-  constructor(parent: cdk.Construct, id: string, props: ApiKeyProps = {}) {
-    super(parent, id);
+  constructor(scope: Construct, id: string, props: ApiKeyProps = { }) {
+    super(scope, id);
 
-    const customerId = props && props.customerId;
-    const description = props && props.description;
-    const enabled = props && props.enabled;
-    const generateDistinctId = props && props.generateDistinctId;
-    const name = props && props.name;
-    const stageKeys = this.renderStageKeys(props && props.resources);
-
-    const resource = new cloudformation.ApiKeyResource(this, 'Resource', {
-      customerId,
-      description,
-      enabled,
-      generateDistinctId,
-      name,
-      stageKeys
+    const resource = new CfnApiKey(this, 'Resource', {
+      customerId: props.customerId,
+      description: props.description,
+      enabled: props.enabled || true,
+      generateDistinctId: props.generateDistinctId,
+      name: props.name,
+      stageKeys: this.renderStageKeys(props.resources)
     });
 
     this.keyId = resource.ref;
   }
 
-  private renderStageKeys(resources: IRestApiResource[] | undefined): cloudformation.ApiKeyResource.StageKeyProperty[] | undefined {
+  private renderStageKeys(resources: RestApi[] | undefined): CfnApiKey.StageKeyProperty[] | undefined {
     if (!resources) {
       return undefined;
     }
 
-    return resources.map((resource: IRestApiResource) => {
-      const restApi: RestApi = resource.resourceApi;
+    return resources.map((resource: RestApi) => {
+      const restApi = resource;
       const restApiId = restApi.restApiId;
       const stageName = restApi.deploymentStage!.stageName.toString();
       return { restApiId, stageName };

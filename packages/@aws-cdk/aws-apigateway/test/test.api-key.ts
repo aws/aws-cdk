@@ -27,7 +27,7 @@ export = {
     // WHEN
     new apigateway.ApiKey(stack, 'test-api-key', {
       customerId: 'test-customer',
-      resources: [api.root]
+      resources: [api]
     });
 
     // THEN

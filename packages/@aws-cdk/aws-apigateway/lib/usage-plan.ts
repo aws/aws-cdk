@@ -1,9 +1,11 @@
-import cdk = require('@aws-cdk/cdk');
+import { Token } from '@aws-cdk/cdk';
+import { Construct, Resource } from '@aws-cdk/cdk';
 import { ApiKey } from './api-key';
-import { cloudformation } from './apigateway.generated';
+import { CfnUsagePlan, CfnUsagePlanKey } from './apigateway.generated';
 import { Method } from './method';
-import { IRestApiResource } from './resource';
+import { RestApi } from './restapi';
 import { Stage } from './stage';
+import { validateInteger } from './util'
 
 /**
  * Container for defining throttling parameters to API stages or methods.
@@ -12,11 +14,15 @@ import { Stage } from './stage';
 export interface ThrottleSettings {
   /**
    * The API request steady-state rate limit (average requests per second over an extended period of time)
+   * 
+   * Type: Integer
    */
   readonly rateLimit?: number;
 
   /**
    * The maximum API request rate limit over a time ranging from one to a few seconds.
+   * 
+   * Type: Integer
    */
   readonly burstLimit?: number;
 }
@@ -36,11 +42,15 @@ export enum Period {
 export interface QuotaSettings {
   /**
    * The maximum number of requests that users can make within the specified time period.
+   * 
+   * Type: Integer
    */
   readonly limit?: number;
 
   /**
    * For the initial time period, the number of requests to subtract from the specified limit.
+   * 
+   * Type: Integer
    */
   readonly offset?: number;
 
@@ -69,7 +79,7 @@ export enum UsagePlanKeyType {
  * Represents the API stages that a usage plan applies to.
  */
 export interface UsagePlanPerApiStage {
-  readonly api?: IRestApiResource,
+  readonly api?: RestApi,
   readonly stage?: Stage,
   readonly throttle?: ThrottlingPerMethod[]
 }
@@ -85,7 +95,7 @@ export interface UsagePlanProps {
    */
   readonly description?: string,
 
-  /**
+    /**
    * Number of requests clients can make in a given time period.
    */
   readonly quota?: QuotaSettings
@@ -101,46 +111,45 @@ export interface UsagePlanProps {
   readonly name?: string,
 }
 
-export class UsagePlan extends cdk.Construct {
+export class UsagePlan extends Resource {
   public readonly usagePlanId: string;
 
-  constructor(parent: cdk.Construct, name: string, props?: UsagePlanProps) {
-    super(parent, name);
-    let resource: cloudformation.UsagePlanResource;
-    if (props !== undefined) {
-      const overallThrottle = this.renderThrottle(props.throttle);
-      const quota = this.renderQuota(props);
-      const apiStages = this.renderApiStages(props);
+  constructor(scope: Construct, name: string, props: UsagePlanProps = { }) {
+    super(scope, name);
+    let resource: CfnUsagePlan;
 
-      resource = new cloudformation.UsagePlanResource(this, 'Resource', {
-        apiStages,
+    if (props !== undefined) {
+      resource = new CfnUsagePlan(this, 'Resource', {
+        apiStages: this.renderApiStages(props),
         description: props.description,
-        quota,
-        throttle: overallThrottle,
+        quota: this.renderQuota(props),
+        throttle: this.renderThrottle(props.throttle),
         usagePlanName: props.name,
       });
     } else {
-      resource = new cloudformation.UsagePlanResource(this, 'Resource');
+      resource = new CfnUsagePlan(this, 'Resource');
     }
 
     this.usagePlanId = resource.ref;
   }
 
   public addApiKey(apiKey: ApiKey): void {
-    new cloudformation.UsagePlanKeyResource(this, 'UsagePlanKeyResource', {
+    new CfnUsagePlanKey(this, 'UsagePlanKeyResource', {
       keyId: apiKey.keyId,
       keyType: UsagePlanKeyType.ApiKey,
       usagePlanId: this.usagePlanId
     });
   }
 
-  private renderApiStages(props: UsagePlanProps): cloudformation.UsagePlanResource.ApiStageProperty[] | undefined {
+  private renderApiStages(props: UsagePlanProps): CfnUsagePlan.ApiStageProperty[] | undefined {
     if (props.apiStages && props.apiStages.length > 0) {
-      const apiStages: cloudformation.UsagePlanResource.ApiStageProperty[] = [];
-      props.apiStages.forEach((value: UsagePlanPerApiStage) => {
-        const apiId = value.api ? value.api.resourceApi.restApiId : undefined;
-        const stage = value.stage ? value.stage.stageName.toString() : undefined;
-        const throttle = this.renderThrottlePerMethod(value.throttle);
+
+      const apiStages: CfnUsagePlan.ApiStageProperty[] = [];
+      props.apiStages.forEach((apiStage: UsagePlanPerApiStage) => {
+
+        const apiId = apiStage.api ? apiStage.api.restApiId : undefined;
+        const stage = apiStage.stage ? apiStage.stage.stageName.toString() : undefined;
+        const throttle = this.renderThrottlePerMethod(apiStage.throttle);
         apiStages.push({
           apiId,
           stage,
@@ -153,46 +162,50 @@ export class UsagePlan extends cdk.Construct {
     return undefined;
   }
 
+  private renderQuota(props: UsagePlanProps): CfnUsagePlan.QuotaSettingsProperty | undefined {
+    if (props.quota === undefined) {
+      return undefined;
+    } else {
+      const limit = props.quota ? props.quota.limit : undefined; 
+      validateInteger(limit, 'Throttle quota limit')
+      return {
+        limit: limit,
+        offset: props.quota ? props.quota.offset : undefined,
+        period: props.quota ? props.quota.period : undefined
+      };  
+    }
+  }
+
+  private renderThrottle(props: ThrottleSettings | undefined): CfnUsagePlan.ThrottleSettingsProperty | Token {
+    let ret: (CfnUsagePlan.ThrottleSettingsProperty | Token) = { };
+    if (props !== undefined) {
+      const burstLimit = props.burstLimit
+      validateInteger(burstLimit, 'Throttle burst limit')
+      const rateLimit = props.rateLimit
+      validateInteger(rateLimit, 'Throttle rate limit')
+      
+      ret = {
+        burstLimit: burstLimit,
+        rateLimit: rateLimit
+      }
+    }
+    return ret;
+  }
+
   private renderThrottlePerMethod(throttlePerMethod?: ThrottlingPerMethod[]): {
-    [key: string]: (cloudformation.UsagePlanResource.ThrottleSettingsProperty | cdk.Token)
+    [key: string]: (CfnUsagePlan.ThrottleSettingsProperty | Token)
   } {
-    const ret: { [key: string]: (cloudformation.UsagePlanResource.ThrottleSettingsProperty | cdk.Token) } = {};
+    let ret: { [key: string]: (CfnUsagePlan.ThrottleSettingsProperty | Token) } = {};
 
     if (throttlePerMethod && throttlePerMethod.length > 0) {
       throttlePerMethod.forEach((value: ThrottlingPerMethod) => {
         const method: Method = value.method;
         // this methodId is resource path and method for example /GET or /pets/GET
-        const methodId = `${method.resource.resourcePath}/${method.httpMethod}`;
+        const methodId = `${method.resource.path}/${method.httpMethod}`;
         ret[methodId] = this.renderThrottle(value.throttle);
       });
     }
 
     return ret;
-  }
-
-  private renderQuota(props: UsagePlanProps): cloudformation.UsagePlanResource.QuotaSettingsProperty | undefined {
-    if (props.quota === undefined) {
-      return undefined;
-    }
-    return {
-      limit: props.quota ? props.quota.limit : undefined,
-      offset: props.quota ? props.quota.offset : undefined,
-      period: props.quota ? props.quota.period : undefined
-    };
-  }
-
-  private renderThrottle(throttleSettings?: ThrottleSettings): cloudformation.UsagePlanResource.ThrottleSettingsProperty {
-    const throttle: cloudformation.UsagePlanResource.ThrottleSettingsProperty = {};
-    if (throttleSettings !== undefined) {
-      const burstLimit: number|undefined = throttleSettings.burstLimit;
-      if (burstLimit) {
-        if (!Number.isInteger(burstLimit)) {
-          throw new Error('Throttle burst limit should be an integer');
-        }
-        throttle.burstLimit = Number.isInteger(burstLimit) ? burstLimit : undefined;
-      }
-      throttle.rateLimit = throttleSettings.rateLimit;
-    }
-    return throttle;
   }
 }

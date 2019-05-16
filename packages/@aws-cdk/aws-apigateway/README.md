@@ -104,6 +104,57 @@ book.addMethod('GET', getBookIntegration, {
 });
 ```
 
+The following example shows how to use an API Key with a usage plan:
+
+```ts
+const hello = new lambda.Function(this, 'hello', {
+  runtime: lambda.Runtime.NodeJS810,
+  handler: 'hello.handler',
+  code: lambda.Code.asset('lambda')
+});
+
+const api = new apigateway.RestApi(this, 'hello-api', { });
+const integration = new apigateway.LambdaIntegration(hello);
+
+const v1 = api.root.addResource('v1');
+const echo = v1.addResource('echo');
+const echoMethod: apigateway.Method = echo.addMethod('GET', integration, { apiKeyRequired: true });
+
+const usagePlan = new apigateway.UsagePlan(this, 'UsagePlan', {
+  name: 'Basic',
+  description: 'Free tier monthly usage plan',
+  quota: {
+    limit: 10000,
+    period: apigateway.Period.Month
+  },
+  throttle: {
+    rateLimit: 50,
+    burstLimit: 5
+  },
+  apiStages: [
+    {
+      api: api,
+      stage: api.deploymentStage,
+      throttle: [
+        {
+          method: echoMethod,
+          throttle: {
+            rateLimit: 10,
+            burstLimit: 2
+          }
+        }
+      ]
+    }
+  ]
+});
+
+const key = new apigateway.ApiKey(this, 'ApiKey', {
+  resources: [api]
+});
+
+usagePlan.addApiKey(key);
+```
+
 #### Default Integration and Method Options
 
 The `defaultIntegration` and `defaultMethodOptions` properties can be used to

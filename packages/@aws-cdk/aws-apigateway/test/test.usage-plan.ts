@@ -42,7 +42,7 @@ export = {
       description: usagePlanDescription,
       apiStages: [
         {
-          api: api.root,
+          api: api,
           stage: api.deploymentStage,
           throttle: [
             {
@@ -56,8 +56,8 @@ export = {
         }
       ]
     });
-    // THEN
 
+    // THEN
     expect(stack).to(haveResource(RESOURCE_TYPE, {
       UsagePlanName: usagePlanName,
       Description: usagePlanDescription,

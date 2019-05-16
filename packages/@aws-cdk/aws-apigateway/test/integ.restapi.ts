@@ -33,7 +33,7 @@ class Test extends cdk.Stack {
     const integration = new apigateway.LambdaIntegration(handler);
 
     const toys = v1.addResource('toys');
-    const getToysMethod: apigateway.Method = toys.addMethod('GET', integration);
+    const getToysMethod: apigateway.Method = toys.addMethod('GET', integration, { apiKeyRequired: true });
     toys.addMethod('POST');
     toys.addMethod('PUT');
 
@@ -66,7 +66,7 @@ class Test extends cdk.Stack {
       },
       apiStages: [
         {
-          api: api.root,
+          api: api,
           stage: api.deploymentStage,
           throttle: [
             {
@@ -82,7 +82,7 @@ class Test extends cdk.Stack {
     });
 
     const apiKey: apigateway.ApiKey = new apigateway.ApiKey(this, 'ApiKey', {
-      resources: [api.root]
+      resources: [api]
     });
 
     usagePlan.addApiKey(apiKey);

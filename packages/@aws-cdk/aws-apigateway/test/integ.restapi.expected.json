@@ -6,7 +6,7 @@
         "Name": "my-api"
       }
     },
-    "myapiDeployment92F2CB498cbe233ce6b744150b3f2d80a9c3dd24": {
+    "myapiDeployment92F2CB4919460d935da8177bcfbc418506e514ff": {
       "Type": "AWS::ApiGateway::Deployment",
       "Properties": {
         "RestApiId": {
@@ -37,7 +37,7 @@
         "CacheClusterEnabled": true,
         "CacheClusterSize": "0.5",
         "DeploymentId": {
-          "Ref": "myapiDeployment92F2CB498cbe233ce6b744150b3f2d80a9c3dd24"
+          "Ref": "myapiDeployment92F2CB4919460d935da8177bcfbc418506e514ff"
         },
         "Description": "beta stage",
         "MethodSettings": [
@@ -148,6 +148,7 @@
         "RestApiId": {
           "Ref": "myapi4C7BF186"
         },
+        "ApiKeyRequired": true,
         "AuthorizationType": "NONE",
         "Integration": {
           "IntegrationHttpMethod": "POST",
@@ -670,6 +671,7 @@
     "ApiKeyF9DDEE66": {
       "Type": "AWS::ApiGateway::ApiKey",
       "Properties": {
+        "Enabled": true,
         "StageKeys": [
           {
             "RestApiId": {
