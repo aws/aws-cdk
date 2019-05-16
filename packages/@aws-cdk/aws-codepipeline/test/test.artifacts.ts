@@ -1,4 +1,4 @@
-// import { expect, haveResourceLike } from '@aws-cdk/assert';
+import { expect, haveResourceLike } from '@aws-cdk/assert';
 import cdk = require('@aws-cdk/cdk');
 import { Test } from 'nodeunit';
 import codepipeline = require('../lib');
@@ -120,6 +120,55 @@ export = {
       const error = errors[0];
       test.same(error.source, pipeline);
       test.equal(error.message, "Artifact 'Artifact_Source_Source' has been used as an output more than once");
+
+      test.done();
+    },
+
+    "an Action's output can be used as input for an Action in the same Stage with a higher runOrder"(test: Test) {
+      const stack = new cdk.Stack();
+
+      const sourceOutput1 = new codepipeline.Artifact('sourceOutput1');
+      const buildOutput1 = new codepipeline.Artifact('buildOutput1');
+      const sourceOutput2 = new codepipeline.Artifact('sourceOutput2');
+
+      new codepipeline.Pipeline(stack, 'Pipeline', {
+        stages: [
+          {
+            name: 'Source',
+            actions: [
+              new FakeSourceAction({
+                actionName: 'source1',
+                output: sourceOutput1,
+              }),
+              new FakeSourceAction({
+                actionName: 'source2',
+                output: sourceOutput2,
+              }),
+            ],
+          },
+          {
+            name: 'Build',
+            actions: [
+              new FakeBuildAction({
+                actionName: 'build1',
+                input: sourceOutput1,
+                output: buildOutput1,
+              }),
+              new FakeBuildAction({
+                actionName: 'build2',
+                input: sourceOutput2,
+                extraInputs: [buildOutput1],
+                output: new codepipeline.Artifact('buildOutput2'),
+                runOrder: 2,
+              }),
+            ],
+          },
+        ],
+      });
+
+      expect(stack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
+        //
+      }));
 
       test.done();
     },

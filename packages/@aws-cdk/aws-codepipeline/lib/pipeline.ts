@@ -498,8 +498,8 @@ export class Pipeline extends PipelineBase {
     for (const stage of this.stages) {
       const sortedActions = stage.actions.sort((a1, a2) => a1.runOrder - a2.runOrder);
 
-      // start with inputs
       for (const action of sortedActions) {
+        // start with inputs
         const inputArtifacts = action.inputs;
         for (const inputArtifact of inputArtifacts) {
           if (!inputArtifact.artifactName) {
@@ -508,10 +508,8 @@ export class Pipeline extends PipelineBase {
             ret.push(`Artifact '${inputArtifact.artifactName}' was used as input before being used as output`);
           }
         }
-      }
 
-      // then process outputs by adding them to the Set
-      for (const action of sortedActions) {
+        // then process outputs by adding them to the Set
         const outputArtifacts = action.outputs;
         for (const outputArtifact of outputArtifacts) {
           // output Artifacts always have a name set
