@@ -256,11 +256,11 @@ export class EcsOptimizedAmi implements ec2.IMachineImageSource {
   constructor(props?: EcsOptimizedAmiProps) {
     this.generation = (props && props.generation) || ec2.AmazonLinuxGeneration.AmazonLinux;
     this.amiType = (props && props.amiType) || EcsOptimizedAmiType.AmazonLinux;
-    if (this.generation === ec2.AmazonLinuxGeneration.AmazonLinux2 || this.amiType == EcsOptimizedAmiType.AmazonLinux2) {
+    if (this.generation === ec2.AmazonLinuxGeneration.AmazonLinux2 || this.amiType === EcsOptimizedAmiType.AmazonLinux2) {
       this.amiParameterName = "/aws/service/ecs/optimized-ami/amazon-linux-2/recommended";
-    } else if (this.amiType == EcsOptimizedAmiType.Gpu) {
+    } else if (this.amiType === EcsOptimizedAmiType.Gpu) {
       this.amiParameterName = '/aws/service/ecs/optimized-ami/amazon-linux-2/gpu/recommended';
-    } else if (this.amiType == EcsOptimizedAmiType.Arm) {
+    } else if (this.amiType === EcsOptimizedAmiType.Arm) {
       this.amiParameterName = '/aws/service/ecs/optimized-ami/amazon-linux-2/arm64/recommended';
     } else {
       this.amiParameterName = "/aws/service/ecs/optimized-ami/amazon-linux/recommended";
