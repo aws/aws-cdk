@@ -232,9 +232,16 @@ export interface EcsOptimizedAmiProps {
   /**
    * What generation of Amazon Linux to use
    *
-   * @default AmazonLinux
+   * @deprecated Use amiType instead.
    */
   readonly generation?: ec2.AmazonLinuxGeneration;
+
+  /**
+   * What ECS Optimized AMI type to use
+   *
+   * @default is Amazon Linux
+   */
+  readonly amiType?: EcsOptimizedAmiType;
 }
 
 /**
@@ -242,58 +249,23 @@ export interface EcsOptimizedAmiProps {
  */
 export class EcsOptimizedAmi implements ec2.IMachineImageSource {
   private readonly generation: ec2.AmazonLinuxGeneration;
+  private readonly amiType: EcsOptimizedAmiType;
+
   private readonly amiParameterName: string;
 
   constructor(props?: EcsOptimizedAmiProps) {
     this.generation = (props && props.generation) || ec2.AmazonLinuxGeneration.AmazonLinux;
-    if (this.generation === ec2.AmazonLinuxGeneration.AmazonLinux2) {
+    this.amiType = (props && props.amiType) || EcsOptimizedAmiType.AmazonLinux;
+    if (this.generation === ec2.AmazonLinuxGeneration.AmazonLinux2 || this.amiType == EcsOptimizedAmiType.AmazonLinux2) {
       this.amiParameterName = "/aws/service/ecs/optimized-ami/amazon-linux-2/recommended";
+    } else if (this.amiType == EcsOptimizedAmiType.Gpu) {
+      this.amiParameterName = '/aws/service/ecs/optimized-ami/amazon-linux-2/gpu/recommended';
+    } else if (this.amiType == EcsOptimizedAmiType.Arm) {
+      this.amiParameterName = '/aws/service/ecs/optimized-ami/amazon-linux-2/arm64/recommended';
     } else {
       this.amiParameterName = "/aws/service/ecs/optimized-ami/amazon-linux/recommended";
     }
   }
-
-  /**
-   * Return the correct image
-   */
-  public getImage(scope: Construct): ec2.MachineImage {
-    const ssmProvider = new SSMParameterProvider(scope, {
-      parameterName: this.amiParameterName
-    });
-
-    const json = ssmProvider.parameterValue("{\"image_id\": \"\"}");
-    const ami = JSON.parse(json).image_id;
-
-    return new ec2.MachineImage(ami, new ec2.LinuxOS());
-  }
-}
-
-/**
- * Construct a GPU-based Linux machine image from the latest ECS Optimized AMI published in SSM
- */
-export class EcsGpuOptimizedAmi implements ec2.IMachineImageSource {
-  private readonly amiParameterName: string = '/aws/service/ecs/optimized-ami/amazon-linux-2/gpu/recommended';
-
-  /**
-   * Return the correct image
-   */
-  public getImage(scope: Construct): ec2.MachineImage {
-    const ssmProvider = new SSMParameterProvider(scope, {
-      parameterName: this.amiParameterName
-    });
-
-    const json = ssmProvider.parameterValue("{\"image_id\": \"\"}");
-    const ami = JSON.parse(json).image_id;
-
-    return new ec2.MachineImage(ami, new ec2.LinuxOS());
-  }
-}
-
-/**
- * Construct a ARM-based Linux machine image from the latest ECS Optimized AMI published in SSM
- */
-export class EcsArmOptimizedAmi implements ec2.IMachineImageSource {
-  private readonly amiParameterName: string = '/aws/service/ecs/optimized-ami/amazon-linux-2/arm64/recommended';
 
   /**
    * Return the correct image
@@ -538,4 +510,30 @@ export enum NamespaceType {
    * Create a public DNS namespace
    */
   PublicDns = 'PublicDns',
+}
+
+/**
+ * The type of ECS OptimizedAMI to create
+ */
+export enum EcsOptimizedAmiType {
+
+  /**
+   * Create an Amazon Linux optimized AMI
+   */
+  AmazonLinux = 'AmazonLinux',
+
+  /**
+   * Create an Amazon Linux 2 optimized AMI
+   */
+  AmazonLinux2 = 'AmazonLinux2',
+
+  /**
+   * Create a GPU optimized AMI
+   */
+  Gpu = 'Gpu',
+
+  /**
+   * Create a ARM64 optimized AMI
+   */
+  Arm = 'Arm',
 }
