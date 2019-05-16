@@ -23,9 +23,7 @@ test('State machine can be used as Event Rule target', () => {
   expect(stack).toHaveResourceLike('AWS::Events::Rule', {
     Targets: [
       {
-        InputTransformer: {
-          InputTemplate: "{\"SomeParam\":\"SomeValue\"}"
-        },
+        Input: "{\"SomeParam\":\"SomeValue\"}"
       }
     ]
   });

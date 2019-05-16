@@ -46,7 +46,7 @@ export abstract class CfnElement extends Construct {
     this.node.addMetadata(LOGICAL_ID_MD, new (require("./token").Token)(() => this.logicalId), this.constructor);
 
     this._logicalId = this.node.stack.logicalIds.getLogicalId(this);
-    this.logicalId = new Token(() => this._logicalId, `${this.node.path}.LogicalID`).toString();
+    this.logicalId = new Token(() => this._logicalId, `${notTooLong(this.node.path)}.LogicalID`).toString();
   }
 
   /**
@@ -150,6 +150,11 @@ export abstract class CfnRefElement extends CfnElement {
   public get referenceToken(): Token {
     return CfnReference.for(this, 'Ref');
   }
+}
+
+function notTooLong(x: string) {
+  if (x.length < 100) { return x; }
+  return x.substr(0, 47) + '...' + x.substr(x.length - 47);
 }
 
 import { CfnReference } from "./cfn-reference";
