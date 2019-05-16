@@ -1,7 +1,5 @@
 ## AWS CodeDeploy Load Balancing API
 
-This package contains the abstract API of Load Balancers
-as required by the AWS CodeDeploy Construct Library.
-
-You should never need to depend on it directly -
-instead, depend on the `aws-codedeploy` package.
+This package has been deprecated,
+and will be removed in a future release of the Cloud Development Kit.
+Please remove if from your dependencies.
