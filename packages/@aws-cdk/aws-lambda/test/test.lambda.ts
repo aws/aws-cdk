@@ -1167,11 +1167,11 @@ export = {
     // THEN
     test.throws(() => new lambda.Function(stack, 'Function', {
                   layers: [layer],
-                  runtime: lambda.Runtime.NodeJS10x,
+                  runtime: lambda.Runtime.NodeJS610,
                   code: lambda.Code.inline('exports.main = function() { console.log("DONE"); }'),
                   handler: 'index.main'
                 }),
-                /nodejs10.x is not in \[nodejs8.10\]/);
+                /nodejs6.10 is not in \[nodejs8.10\]/);
 
     test.done();
   },
