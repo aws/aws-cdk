@@ -1,5 +1,5 @@
 import { IConstruct } from './construct';
-import { containsListTokenElement, NullConcat, TokenString, unresolved } from "./encoding";
+import { containsListTokenElement, TokenString, unresolved } from "./encoding";
 import { TokenizedStringFragments } from './string-fragments';
 import { IResolveContext, isResolvedValuePostProcessor, RESOLVE_METHOD, Token } from "./token";
 import { TokenMap } from './token-map';
@@ -30,8 +30,6 @@ export interface IResolveOptions {
  * @param prefix Prefix key path components for diagnostics.
  */
 export function resolve(obj: any, options: IResolveOptions): any {
-  // console.log('Resolving', obj, 'resolver', options.resolver);
-  // console.log(new Error().stack);
   const prefix = options.prefix || [];
   const pathName = '/' + prefix.join('/');
 
@@ -116,7 +114,6 @@ export function resolve(obj: any, options: IResolveOptions): any {
   //
 
   if (unresolved(obj)) {
-    // console.log('Its a Token', options.resolver);
     return options.resolver.resolveToken(obj, makeContext());
   }
 
@@ -186,6 +183,19 @@ export interface IFragmentConcatenator {
 }
 
 /**
+ * Converts all fragments to strings and concats those
+ *
+ * Drops 'undefined's.
+ */
+export class StringConcat implements IFragmentConcatenator {
+  public join(left: any | undefined, right: any | undefined): any {
+    if (left === undefined) { return right !== undefined ? `${right}` : undefined; }
+    if (right === undefined) { return `${left}`; }
+    return `${left}${right}`;
+  }
+}
+
+/**
  * Default resolver implementation
  */
 export class DefaultTokenResolver implements ITokenResolver {
@@ -239,18 +249,9 @@ export class DefaultTokenResolver implements ITokenResolver {
  * Find all Tokens that are used in the given structure
  */
 export function findTokens(scope: IConstruct, fn: () => any): Token[] {
-  const resolver = new RememberingTokenResolver(new NullConcat());
-  // console.log('=========== FINDTOKENS ============');
+  const resolver = new RememberingTokenResolver(new StringConcat());
 
-  // console.log('Going into it with the resolver', resolver);
-
-  const start = fn();
-
-  // console.log('Doing the thing', resolver);
-
-  resolve(start, { scope, prefix: [], resolver });
-
-  // console.log('=========== /FINDTOKENS ============');
+  resolve(fn(), { scope, prefix: [], resolver });
 
   return resolver.tokens;
 }
@@ -262,9 +263,13 @@ export class RememberingTokenResolver extends DefaultTokenResolver {
   private readonly tokensSeen = new Set<Token>();
 
   public resolveToken(t: Token, context: IResolveContext) {
-    // console.log('Seeing', t);
     this.tokensSeen.add(t);
     return super.resolveToken(t, context);
+  }
+
+  public resolveString(s: TokenizedStringFragments, context: IResolveContext) {
+    const ret = super.resolveString(s, context);
+    return ret;
   }
 
   public get tokens(): Token[] {

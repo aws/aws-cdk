@@ -1,5 +1,5 @@
 import { Test } from 'nodeunit';
-import { App as Root, Fn, Token } from '../lib';
+import { App as Root, findTokens, Fn, Stack, Token } from '../lib';
 import { TokenMap } from '../lib/token-map';
 import { evaluateCFN } from './evaluate-cfn';
 
@@ -276,6 +276,52 @@ export = {
 
     // THEN
     test.deepEqual(resolve(s), { 'I am a string': 'boom I am a string' });
+    test.done();
+  },
+
+  'tokens can be nested in hash keys'(test: Test) {
+    // GIVEN
+    const token = new Token(() => new Token(() => new Token(() => 'I am a string')));
+
+    // WHEN
+    const s = {
+      [token.toString()]: `boom ${token}`
+    };
+
+    // THEN
+    test.deepEqual(resolve(s), { 'I am a string': 'boom I am a string' });
+    test.done();
+  },
+
+  'tokens can be nested and concatenated in hash keys'(test: Test) {
+    // GIVEN
+    const innerToken = new Token(() => 'toot');
+    const token = new Token(() => `${innerToken} the woot`);
+
+    // WHEN
+    const s = {
+      [token.toString()]: `boom chicago`
+    };
+
+    // THEN
+    test.deepEqual(resolve(s), { 'toot the woot': 'boom chicago' });
+    test.done();
+  },
+
+  'can find nested tokens in hash keys'(test: Test) {
+    // GIVEN
+    const innerToken = new Token(() => 'toot');
+    const token = new Token(() => `${innerToken} the woot`);
+
+    // WHEN
+    const s = {
+      [token.toString()]: `boom chicago`
+    };
+
+    // THEN
+    const tokens = findTokens(new Stack(), () => s);
+    test.ok(tokens.some(t => t === innerToken), 'Cannot find innerToken');
+    test.ok(tokens.some(t => t === token), 'Cannot find token');
     test.done();
   },
 

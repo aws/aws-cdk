@@ -66,9 +66,7 @@ export class CfnReference extends Reference {
       CfnReference.referenceTable.set(target, attribs);
     }
     let ref = attribs.get(attribKey);
-    // console.log('Getting', attribKey, 'from', target.node.path);
     if (!ref) {
-      // console.log('Making a new one');
       ref = fresh();
       attribs.set(attribKey, ref);
     }

@@ -191,7 +191,7 @@ export class CloudTrail extends cdk.Construct {
     }
     this.eventSelectors.push({
       includeManagementEvents: options.includeManagementEvents,
-      readWriteType: options.readWriteType || ReadWriteType.WriteOnly,
+      readWriteType: options.readWriteType,
       dataResources: [{
         type: "AWS::S3::Object",
         values: prefixes
@@ -200,25 +200,15 @@ export class CloudTrail extends cdk.Construct {
   }
 
   /**
-   * Create an event rule for when an event is added to this trail
+   * Create an event rule for when an event is recorded by any trail.
+   *
+   * Note that the event doesn't necessarily have to come from this
+   * trail. Be sure to filter the event properly using an event pattern.
    */
   public onEvent(name: string, target?: events.IEventRuleTarget, options?: events.EventRuleProps) {
     const rule = new events.EventRule(this, name, options);
     rule.addTarget(target);
     rule.addEventPattern({
-      detailType: ['AWS API Call via CloudTrail']
-    });
-    return rule;
-  }
-
-  /**
-   * Create an event rule for when an S3 event is added to this trail
-   */
-  public onS3Event(name: string, target?: events.IEventRuleTarget, options?: events.EventRuleProps) {
-    const rule = new events.EventRule(this, name, options);
-    rule.addTarget(target);
-    rule.addEventPattern({
-      source: ['aws.s3'],
       detailType: ['AWS API Call via CloudTrail']
     });
     return rule;

@@ -46,7 +46,7 @@ export abstract class CfnElement extends Construct {
     this.node.addMetadata(LOGICAL_ID_MD, new (require("./token").Token)(() => this.logicalId), this.constructor);
 
     this._logicalId = this.node.stack.logicalIds.getLogicalId(this);
-    this.logicalId = new Token(() => this._logicalId).toString();
+    this.logicalId = new Token(() => this._logicalId, `${this.node.path}.LogicalID`).toString();
   }
 
   /**
