@@ -182,7 +182,7 @@ export class CloudTrail extends cdk.Construct {
    * @param prefixes the list of object ARN prefixes to include in logging (maximum 250 entries).
    * @param options the options to configure logging of management and data events.
    */
-  public addS3EventSelector(prefixes: string[] = [], options: AddS3EventSelectorOptions = {}) {
+  public addS3EventSelector(prefixes: string[], options: AddS3EventSelectorOptions = {}) {
     if (prefixes.length > 250) {
       throw new Error("A maximum of 250 data elements can be in one event selector");
     }
