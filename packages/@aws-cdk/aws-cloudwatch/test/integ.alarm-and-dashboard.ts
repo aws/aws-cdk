@@ -17,7 +17,7 @@ const queue = new cdk.CfnResource(stack, 'queue', { type: 'AWS::SQS::Queue' });
 const metric = new cloudwatch.Metric({
   namespace: 'AWS/SQS',
   metricName: 'ApproximateNumberOfMessagesVisible',
-  dimensions: { QueueName: queue.getAtt('QueueName').toString() }
+  dimensions: { QueueName: queue.getAtt('QueueName') }
 });
 
 const alarm = metric.newAlarm(stack, 'Alarm', {
