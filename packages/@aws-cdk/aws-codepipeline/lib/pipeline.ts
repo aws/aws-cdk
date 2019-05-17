@@ -69,6 +69,12 @@ export interface PipelineProps {
   readonly artifactBucket?: s3.IBucket;
 
   /**
+   * The IAM role to be assumed by this Pipeline.
+   * If not specified, a new IAM role will be created.
+   */
+  readonly role?: iam.Role;
+
+  /**
    * Indicates whether to rerun the AWS CodePipeline pipeline after you update it.
    */
   readonly restartExecutionOnUpdate?: boolean;
@@ -233,9 +239,14 @@ export class Pipeline extends PipelineBase {
     }
     this.artifactBucket = propsBucket;
 
-    this.role = new iam.Role(this, 'Role', {
-      assumedBy: new iam.ServicePrincipal('codepipeline.amazonaws.com')
-    });
+    // If a role has been provided, use it - otherwise, create a role.
+    let propsRole = props.role;
+    if (!propsRole) {
+      propsRole = new iam.Role(this, 'Role', {
+        assumedBy: new iam.ServicePrincipal('codepipeline.amazonaws.com')
+      });
+    }
+    this.role = propsRole;
 
     const codePipeline = new CfnPipeline(this, 'Resource', {
       artifactStore: new Token(() => this.renderArtifactStore()) as any,
