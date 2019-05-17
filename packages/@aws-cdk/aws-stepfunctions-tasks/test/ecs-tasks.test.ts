@@ -57,7 +57,6 @@ test('Running a Fargate Task', () => {
       LaunchType: "FARGATE",
       NetworkConfiguration: {
         AwsvpcConfiguration: {
-          AssignPublicIp: "DISABLED",
           SecurityGroups: [{"Fn::GetAtt": ["RunFargateSecurityGroup709740F2", "GroupId"]}],
           Subnets: [
             {Ref: "VpcPrivateSubnet1Subnet536B997A"},
