@@ -170,5 +170,35 @@ export = {
     // THEN -- no crash
 
     test.done();
+  },
+
+  'if tokens are used in ports, `canInlineRule` should be false to avoid cycles'(test: Test) {
+    // GIVEN
+    const p1 = new Token(() => 80).toNumber();
+    const p2 = new Token(() => 5000).toNumber();
+
+    // WHEN
+    const ports = [
+      new TcpPort(p1),
+      new TcpPort(p2),
+      new TcpPortRange(p1, 90),
+      new TcpPortRange(80, p2),
+      new TcpPortRange(p1, p2),
+      new UdpPort(p1),
+      new UdpPortRange(p1, 95),
+      new UdpPortRange(85, p2),
+      new UdpPortRange(p1, p2),
+      new IcmpTypeAndCode(p1, 1),
+      new IcmpTypeAndCode(5, p1),
+      new IcmpTypeAndCode(p1, p2),
+      new IcmpAllTypeCodes(p1),
+    ];
+
+    // THEN
+    for (const range of ports) {
+      test.equal(range.canInlineRule, false, range.toString());
+    }
+
+    test.done();
   }
 };

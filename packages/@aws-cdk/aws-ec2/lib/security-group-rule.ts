@@ -1,3 +1,4 @@
+import { Token } from '@aws-cdk/cdk';
 import { Connections, IConnectable } from "./connections";
 
 /**
@@ -152,7 +153,7 @@ export enum Protocol {
  * A single TCP port
  */
 export class TcpPort implements IPortRange {
-  public readonly canInlineRule = true;
+  public readonly canInlineRule = !Token.isToken(this.port);
 
   constructor(private readonly port: number) {
   }
@@ -166,7 +167,7 @@ export class TcpPort implements IPortRange {
   }
 
   public toString() {
-    return `${this.port}`;
+    return Token.isToken(this.port) ? `{IndirectPort}` : this.port.toString();
   }
 }
 
@@ -174,7 +175,7 @@ export class TcpPort implements IPortRange {
  * A TCP port range
  */
 export class TcpPortRange implements IPortRange {
-  public readonly canInlineRule = true;
+  public readonly canInlineRule = !Token.isToken(this.startPort) && !Token.isToken(this.endPort);
 
   constructor(private readonly startPort: number, private readonly endPort: number) {
   }
@@ -215,7 +216,7 @@ export class TcpAllPorts implements IPortRange {
  * A single UDP port
  */
 export class UdpPort implements IPortRange {
-  public readonly canInlineRule = true;
+  public readonly canInlineRule = !Token.isToken(this.port);
 
   constructor(private readonly port: number) {
   }
@@ -229,7 +230,8 @@ export class UdpPort implements IPortRange {
   }
 
   public toString() {
-    return `UDP ${this.port}`;
+    const port = Token.isToken(this.port) ? '{IndirectPort}' : this.port;
+    return `UDP ${port}`;
   }
 }
 
@@ -237,7 +239,7 @@ export class UdpPort implements IPortRange {
  * A UDP port range
  */
 export class UdpPortRange implements IPortRange {
-  public readonly canInlineRule = true;
+  public readonly canInlineRule = !Token.isToken(this.startPort) && !Token.isToken(this.endPort);
 
   constructor(private readonly startPort: number, private readonly endPort: number) {
   }
@@ -278,7 +280,7 @@ export class UdpAllPorts implements IPortRange {
  * A set of matching ICMP Type & Code
  */
 export class IcmpTypeAndCode implements IPortRange {
-  public readonly canInlineRule = true;
+  public readonly canInlineRule = !Token.isToken(this.type) && !Token.isToken(this.code);
 
   constructor(private readonly type: number, private readonly code: number) {
   }
@@ -319,7 +321,7 @@ export class IcmpPing implements IPortRange {
  * All ICMP Codes for a given ICMP Type
  */
 export class IcmpAllTypeCodes implements IPortRange {
-  public readonly canInlineRule = true;
+  public readonly canInlineRule = !Token.isToken(this.type);
 
   constructor(private readonly type: number) {
   }
