@@ -234,7 +234,7 @@ export abstract class BaseService extends Resource
    * Set up AWSVPC networking for this construct
    */
   // tslint:disable-next-line:max-line-length
-  protected configureAwsVpcNetworking(vpc: ec2.IVpcNetwork, assignPublicIp?: boolean, vpcSubnets?: ec2.SubnetSelection, securityGroup?: ec2.ISecurityGroup) {
+  protected configureAwsVpcNetworking(vpc: ec2.IVpc, assignPublicIp?: boolean, vpcSubnets?: ec2.SubnetSelection, securityGroup?: ec2.ISecurityGroup) {
     if (vpcSubnets === undefined) {
       vpcSubnets = { subnetType: assignPublicIp ? ec2.SubnetType.Public : ec2.SubnetType.Private };
     }
