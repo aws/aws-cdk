@@ -50,7 +50,7 @@ test("Can use EC2 taskdef as EventRule target", () => {
           },
           InputTemplate: "{\"containerOverrides\":[{\"containerName\":\"TheContainer\",\"command\":[\"echo\",<f1>]}]}"
         },
-        RoleArn: { "Fn::GetAtt": ["TaskDefEventRole0B9B1C61", "Arn"] }
+        RoleArn: { "Fn::GetAtt": ["TaskDefEventsRoleFB3B67B8", "Arn"] }
       }
     ]
   });

@@ -47,7 +47,7 @@
             "Id": "MyProject",
             "RoleArn": {
               "Fn::GetAtt": [
-                "MyProjectEventRole0D0257FA",
+                "MyProjectEventsRole5B7D93F5",
                 "Arn"
               ]
             }
@@ -68,7 +68,7 @@
         ]
       }
     },
-    "MyProjectEventRole0D0257FA": {
+    "MyProjectEventsRole5B7D93F5": {
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
@@ -95,7 +95,7 @@
         }
       }
     },
-    "MyProjectEventRoleDefaultPolicyC8F95DF7": {
+    "MyProjectEventsRoleDefaultPolicy397DCBF8": {
       "Type": "AWS::IAM::Policy",
       "Properties": {
         "PolicyDocument": {
@@ -113,10 +113,10 @@
           ],
           "Version": "2012-10-17"
         },
-        "PolicyName": "MyProjectEventRoleDefaultPolicyC8F95DF7",
+        "PolicyName": "MyProjectEventsRoleDefaultPolicy397DCBF8",
         "Roles": [
           {
-            "Ref": "MyProjectEventRole0D0257FA"
+            "Ref": "MyProjectEventsRole5B7D93F5"
           }
         ]
       }

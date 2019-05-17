@@ -8,7 +8,7 @@ import { Construct, IConstruct } from "@aws-cdk/cdk";
  * events have the same target, they will share a role.
  */
 export function singletonEventRole(scope: IConstruct, policyStatements: iam.PolicyStatement[]): iam.IRole {
-  const id = 'EventRole';
+  const id = 'EventsRole';
   const existing = scope.node.tryFindChild(id) as iam.IRole;
   if (existing) { return existing; }
 
