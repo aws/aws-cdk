@@ -222,7 +222,7 @@ export interface AddS3EventSelectorOptions {
   /**
    * Specifies whether to log read-only events, write-only events, or all events.
    *
-   * @default ReadWriteType.Write
+   * @default ReadWriteType.All
    */
   readonly readWriteType?: ReadWriteType;
 
