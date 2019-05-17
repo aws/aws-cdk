@@ -42,7 +42,6 @@ export = {
       description: usagePlanDescription,
       apiStages: [
         {
-          api: api,
           stage: api.deploymentStage,
           throttle: [
             {

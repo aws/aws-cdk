@@ -138,7 +138,7 @@ export class Stage extends Resource {
    */
   public readonly stageName: string;
 
-  private readonly restApi: IRestApi;
+  public readonly restApi: IRestApi;
   private enableCacheCluster?: boolean;
 
   constructor(scope: Construct, id: string, props: StageProps) {

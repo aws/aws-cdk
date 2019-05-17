@@ -6,6 +6,8 @@ import { Integration } from './integration';
 import { Method, MethodOptions } from './method';
 import { IResource, ResourceBase, ResourceOptions } from './resource';
 import { Stage, StageOptions } from './stage';
+import { UsagePlan, UsagePlanProps } from './usage-plan';
+import { ApiKey } from './api-key';
 
 export interface RestApiAttributes {
   /**
@@ -265,6 +267,26 @@ export class RestApi extends Resource implements IRestApi {
     }
 
     return this.deploymentStage.urlForPath(path);
+  }
+
+  /**
+   * Adds a usage plan.
+   * 
+   * @param id 
+   * @param props 
+   */
+  public addUsagePlan(id: string, props: UsagePlanProps): UsagePlan {
+    return new UsagePlan(this, id, props)
+  }
+
+  /**
+   * Add an ApiKey
+   * @param id 
+   */
+  public addApiKey(id: string): ApiKey {
+    return new ApiKey(this, id, {
+      resources: [this]
+    });
   }
 
   /**
