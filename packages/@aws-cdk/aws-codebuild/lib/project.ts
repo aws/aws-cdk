@@ -395,7 +395,7 @@ export interface CommonProjectProps {
    * Encryption key to use to read and write artifacts
    * If not specified, a role will be created.
    */
-  readonly encryptionKey?: kms.IEncryptionKey;
+  readonly encryptionKey?: kms.IKey;
 
   /**
    * Bucket to store cached source artifacts
@@ -442,7 +442,7 @@ export interface CommonProjectProps {
    *
    * Specify this if the codebuild project needs to access resources in a VPC.
    */
-  readonly vpc?: ec2.IVpcNetwork;
+  readonly vpc?: ec2.IVpc;
 
   /**
    * Where to place the network interfaces within the VPC.
