@@ -1,11 +1,26 @@
 import { Construct, Resource } from '@aws-cdk/cdk';
-import { BaseNamespaceProps, INamespace, NamespaceAttributes, NamespaceType } from './namespace';
+import { BaseNamespaceProps, INamespace, NamespaceType } from './namespace';
 import { DnsServiceProps, Service } from './service';
 import { CfnPublicDnsNamespace} from './servicediscovery.generated';
 
 export interface PublicDnsNamespaceProps extends BaseNamespaceProps {}
 export interface IPublicDnsNamespace extends INamespace { }
-export interface PublicDnsNamespaceAttributes extends NamespaceAttributes { }
+export interface PublicDnsNamespaceAttributes {
+  /**
+   * A name for the Namespace.
+   */
+  readonly namespaceName: string;
+
+  /**
+   * Namespace Id for the Namespace.
+   */
+  readonly namespaceId: string;
+
+  /**
+   * Namespace ARN for the Namespace.
+   */
+  readonly namespaceArn: string;
+ }
 
 /**
  * Define a Public DNS Namespace

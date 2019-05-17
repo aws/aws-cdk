@@ -1,11 +1,26 @@
 import { Construct, Resource } from '@aws-cdk/cdk';
-import { BaseNamespaceProps, INamespace, NamespaceAttributes, NamespaceType } from './namespace';
+import { BaseNamespaceProps, INamespace, NamespaceType } from './namespace';
 import { BaseServiceProps, Service } from './service';
 import { CfnHttpNamespace } from './servicediscovery.generated';
 
 export interface HttpNamespaceProps extends BaseNamespaceProps {}
 export interface IHttpNamespace extends INamespace { }
-export interface HttpNamespaceAttributes extends NamespaceAttributes { }
+export interface HttpNamespaceAttributes {
+  /**
+   * A name for the Namespace.
+   */
+  readonly namespaceName: string;
+
+  /**
+   * Namespace Id for the Namespace.
+   */
+  readonly namespaceId: string;
+
+  /**
+   * Namespace ARN for the Namespace.
+   */
+  readonly namespaceArn: string;
+}
 
 /**
  * Define an HTTP Namespace

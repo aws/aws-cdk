@@ -1,6 +1,6 @@
 import ec2 = require('@aws-cdk/aws-ec2');
 import { Construct, Resource } from '@aws-cdk/cdk';
-import { BaseNamespaceProps, INamespace, NamespaceAttributes, NamespaceType } from './namespace';
+import { BaseNamespaceProps, INamespace, NamespaceType } from './namespace';
 import { DnsServiceProps, Service } from './service';
 import { CfnPrivateDnsNamespace} from './servicediscovery.generated';
 
@@ -12,7 +12,23 @@ export interface PrivateDnsNamespaceProps extends BaseNamespaceProps {
 }
 
 export interface IPrivateDnsNamespace extends INamespace { }
-export interface PrivateDnsNamespaceAttributes extends NamespaceAttributes { }
+
+export interface PrivateDnsNamespaceAttributes {
+  /**
+   * A name for the Namespace.
+   */
+  readonly namespaceName: string;
+
+  /**
+   * Namespace Id for the Namespace.
+   */
+  readonly namespaceId: string;
+
+  /**
+   * Namespace ARN for the Namespace.
+   */
+  readonly namespaceArn: string;
+}
 
 /**
  * Define a Service Discovery HTTP Namespace
