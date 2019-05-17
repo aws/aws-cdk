@@ -1,6 +1,7 @@
 import codebuild = require('@aws-cdk/aws-codebuild');
 import events = require('@aws-cdk/aws-events');
 import iam = require('@aws-cdk/aws-iam');
+import { singletonEventRole } from './util';
 
 /**
  * Start a CodeBuild build when an AWS CloudWatch events rule is triggered.
@@ -16,10 +17,10 @@ export class CodeBuildProject implements events.IEventRuleTarget {
     return {
       id: this.project.node.id,
       arn: this.project.projectArn,
-      policyStatements: [new iam.PolicyStatement()
+      role: singletonEventRole(this.project, [new iam.PolicyStatement()
         .addAction('codebuild:StartBuild')
         .addResource(this.project.projectArn)
-      ],
+      ]),
     };
   }
 }

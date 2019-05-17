@@ -1,6 +1,7 @@
 import codepipeline = require('@aws-cdk/aws-codepipeline');
 import events = require('@aws-cdk/aws-events');
 import iam = require('@aws-cdk/aws-iam');
+import { singletonEventRole } from './util';
 
   /**
    * Allows the pipeline to be used as a CloudWatch event rule target.
@@ -13,9 +14,9 @@ export class CodePipeline implements events.IEventRuleTarget {
     return {
       id: this.pipeline.node.id,
       arn: this.pipeline.pipelineArn,
-      policyStatements: [new iam.PolicyStatement()
+      role: singletonEventRole(this.pipeline, [new iam.PolicyStatement()
         .addResource(this.pipeline.pipelineArn)
-        .addAction('codepipeline:StartPipelineExecution')]
+        .addAction('codepipeline:StartPipelineExecution')])
     };
   }
 }

@@ -1,5 +1,6 @@
 import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
 import iam = require('@aws-cdk/aws-iam');
+import { ServicePrincipal } from '@aws-cdk/aws-iam';
 import cdk = require('@aws-cdk/cdk');
 import { Stack } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
@@ -293,20 +294,22 @@ export = {
     test.done();
   },
 
-  'target can declare policy statements which will be added to role'(test: Test) {
+  'target can declare role which will be used'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
 
     const rule = new EventRule(stack, 'EventRule', { scheduleExpression: 'rate(1 minute)' });
+
+    const role = new iam.Role(stack, 'SomeRole', {
+      assumedBy: new ServicePrincipal('nobody')
+    });
 
     // a plain string should just be stringified (i.e. double quotes added and escaped)
     rule.addTarget({
       bind: () => ({
         id: 'T2',
         arn: 'ARN2',
-        policyStatements: [new iam.PolicyStatement()
-            .addAction('some:action')
-            .addResource('ARN2')]
+        role,
       })
     });
 
@@ -316,22 +319,9 @@ export = {
         {
           "Arn": "ARN2",
           "Id": "T2",
-          "RoleArn": {"Fn::GetAtt": ["EventRuleRoleT2D4DAD5B9", "Arn"]}
+          "RoleArn": {"Fn::GetAtt": ["SomeRole6DDC54DD", "Arn"]}
         }
       ]
-    }));
-
-    expect(stack).to(haveResource('AWS::IAM::Policy', {
-      "PolicyDocument": {
-        "Statement": [
-          {
-            "Action": "some:action",
-            "Effect": "Allow",
-            "Resource": "ARN2"
-          }
-        ],
-        "Version": "2012-10-17"
-      },
     }));
 
     test.done();

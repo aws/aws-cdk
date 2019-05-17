@@ -47,7 +47,7 @@
             "Id": "MyProject",
             "RoleArn": {
               "Fn::GetAtt": [
-                "MyRepoOnCommitRoleMyProject127015C1",
+                "MyProjectEventRole0D0257FA",
                 "Arn"
               ]
             }
@@ -68,7 +68,7 @@
         ]
       }
     },
-    "MyRepoOnCommitRoleMyProject127015C1": {
+    "MyProjectEventRole0D0257FA": {
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
@@ -95,7 +95,7 @@
         }
       }
     },
-    "MyRepoOnCommitRoleMyProjectDefaultPolicy033A0114": {
+    "MyProjectEventRoleDefaultPolicyC8F95DF7": {
       "Type": "AWS::IAM::Policy",
       "Properties": {
         "PolicyDocument": {
@@ -113,10 +113,10 @@
           ],
           "Version": "2012-10-17"
         },
-        "PolicyName": "MyRepoOnCommitRoleMyProjectDefaultPolicy033A0114",
+        "PolicyName": "MyProjectEventRoleDefaultPolicyC8F95DF7",
         "Roles": [
           {
-            "Ref": "MyRepoOnCommitRoleMyProject127015C1"
+            "Ref": "MyProjectEventRole0D0257FA"
           }
         ]
       }

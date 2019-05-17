@@ -1,6 +1,7 @@
 import events = require('@aws-cdk/aws-events');
 import iam = require('@aws-cdk/aws-iam');
 import sfn = require('@aws-cdk/aws-stepfunctions');
+import { singletonEventRole } from './util';
 
 /**
  * Customize the Step Functions State Machine target
@@ -30,10 +31,10 @@ export class SfnStateMachine implements events.IEventRuleTarget {
     return {
         id: this.machine.node.id,
         arn: this.machine.stateMachineArn,
-        policyStatements: [new iam.PolicyStatement()
+        role: singletonEventRole(this.machine, [new iam.PolicyStatement()
             .addAction('states:StartExecution')
             .addResource(this.machine.stateMachineArn)
-        ],
+        ]),
         input: this.props.input
     };
   }

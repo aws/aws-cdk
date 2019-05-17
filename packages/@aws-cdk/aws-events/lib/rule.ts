@@ -1,4 +1,3 @@
-import iam = require('@aws-cdk/aws-iam');
 import { CfnOutput, Construct, Resource, Token } from '@aws-cdk/cdk';
 import { EventPattern } from './event-pattern';
 import { CfnRule } from './events.generated';
@@ -132,23 +131,15 @@ export class EventRule extends Resource implements IEventRule {
       throw new Error('Duplicate event rule target with ID: ' + id);
     }
 
-    let roleArn;
-    if ((targetProps.policyStatements || []).length > 0) {
-      const role = new iam.Role(this, `Role${targetProps.id}`, {
-        assumedBy: new iam.ServicePrincipal('events.amazonaws.com'),
-      });
-
-      for (const statement of targetProps.policyStatements || []) {
-        role.addToPolicy(statement);
-      }
-
-      roleArn = role.roleArn;
-    }
+    const roleArn = targetProps.role ? targetProps.role.roleArn : undefined;
 
     this.targets.push({
-      ...targetProps,
       id,
+      arn: targetProps.arn,
       roleArn,
+      ecsParameters: targetProps.ecsParameters,
+      kinesisParameters: targetProps.kinesisParameters,
+      runCommandParameters: targetProps.runCommandParameters,
       input: inputProps && inputProps.input,
       inputPath: inputProps && inputProps.inputPath,
       inputTransformer: inputProps && inputProps.inputTemplate !== undefined ? {

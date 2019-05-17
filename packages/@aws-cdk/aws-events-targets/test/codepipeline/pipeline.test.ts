@@ -55,7 +55,7 @@ test('use codebuild project as an eventrule target', () => {
       {
         Arn: pipelineArn,
         Id: "Pipeline",
-        RoleArn: { "Fn::GetAtt": [ "ruleRolePipelineFB6AC329", "Arn" ] }
+        RoleArn: { "Fn::GetAtt": [ "PipelineEventRoleCF28672B", "Arn" ] }
       }
     ]
   }));

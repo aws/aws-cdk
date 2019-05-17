@@ -64,7 +64,7 @@
             "Id": "Pipeline",
             "RoleArn": {
               "Fn::GetAtt": [
-                "PipelineEventsRole46BEEA7C",
+                "PipelineEventRoleCF28672B",
                 "Arn"
               ]
             }
@@ -358,7 +358,7 @@
         "PipelineRoleD68726F7"
       ]
     },
-    "PipelineEventsRole46BEEA7C": {
+    "PipelineEventRoleCF28672B": {
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
@@ -385,7 +385,7 @@
         }
       }
     },
-    "PipelineEventsRoleDefaultPolicyFF4FCCE0": {
+    "PipelineEventRoleDefaultPolicy5F1B5670": {
       "Type": "AWS::IAM::Policy",
       "Properties": {
         "PolicyDocument": {
@@ -420,10 +420,10 @@
           ],
           "Version": "2012-10-17"
         },
-        "PolicyName": "PipelineEventsRoleDefaultPolicyFF4FCCE0",
+        "PolicyName": "PipelineEventRoleDefaultPolicy5F1B5670",
         "Roles": [
           {
-            "Ref": "PipelineEventsRole46BEEA7C"
+            "Ref": "PipelineEventRoleCF28672B"
           }
         ]
       }

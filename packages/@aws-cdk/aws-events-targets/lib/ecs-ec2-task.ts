@@ -4,6 +4,7 @@ import events = require ('@aws-cdk/aws-events');
 import iam = require('@aws-cdk/aws-iam');
 import { Construct, Token } from '@aws-cdk/cdk';
 import { ContainerOverride } from './ecs-task-properties';
+import { singletonEventRole } from './util';
 
 /**
  * Properties to define an EC2 Event Task
@@ -94,7 +95,7 @@ export class EcsEc2Task implements events.IEventRuleTarget {
     return {
       id: this.taskDefinition.node.id + ' on ' + this.cluster.node.id,
       arn: this.cluster.clusterArn,
-      policyStatements,
+      role: singletonEventRole(this.taskDefinition, policyStatements),
       ecsParameters: {
         taskCount: this.taskCount,
         taskDefinitionArn: this.taskDefinition.taskDefinitionArn

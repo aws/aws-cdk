@@ -2,7 +2,6 @@
   "Resources": {
     "PipelineArtifactsBucketEncryptionKey01D58D69": {
       "Type": "AWS::KMS::Key",
-      "DeletionPolicy": "Retain",
       "Properties": {
         "KeyPolicy": {
           "Statement": [
@@ -102,11 +101,11 @@
           ],
           "Version": "2012-10-17"
         }
-      }
+      },
+      "DeletionPolicy": "Retain"
     },
     "PipelineArtifactsBucket22248F97": {
       "Type": "AWS::S3::Bucket",
-      "DeletionPolicy": "Retain",
       "Properties": {
         "BucketEncryption": {
           "ServerSideEncryptionConfiguration": [
@@ -123,7 +122,8 @@
             }
           ]
         }
-      }
+      },
+      "DeletionPolicy": "Retain"
     },
     "PipelineRoleD68726F7": {
       "Type": "AWS::IAM::Role",
@@ -480,10 +480,6 @@
           }
         ],
         "ArtifactStore": {
-          "Location": {
-            "Ref": "PipelineArtifactsBucket22248F97"
-          },
-          "Type": "S3",
           "EncryptionKey": {
             "Id": {
               "Fn::GetAtt": [
@@ -492,7 +488,11 @@
               ]
             },
             "Type": "KMS"
-          }
+          },
+          "Location": {
+            "Ref": "PipelineArtifactsBucket22248F97"
+          },
+          "Type": "S3"
         }
       },
       "DependsOn": [
@@ -500,7 +500,7 @@
         "PipelineRoleD68726F7"
       ]
     },
-    "PipelineEventsRole46BEEA7C": {
+    "PipelineEventRoleCF28672B": {
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
@@ -527,7 +527,7 @@
         }
       }
     },
-    "PipelineEventsRoleDefaultPolicyFF4FCCE0": {
+    "PipelineEventRoleDefaultPolicy5F1B5670": {
       "Type": "AWS::IAM::Policy",
       "Properties": {
         "PolicyDocument": {
@@ -562,10 +562,10 @@
           ],
           "Version": "2012-10-17"
         },
-        "PolicyName": "PipelineEventsRoleDefaultPolicyFF4FCCE0",
+        "PolicyName": "PipelineEventRoleDefaultPolicy5F1B5670",
         "Roles": [
           {
-            "Ref": "PipelineEventsRole46BEEA7C"
+            "Ref": "PipelineEventRoleCF28672B"
           }
         ]
       }
@@ -682,7 +682,7 @@
             "Id": "Pipeline",
             "RoleArn": {
               "Fn::GetAtt": [
-                "PipelineEventsRole46BEEA7C",
+                "PipelineEventRoleCF28672B",
                 "Arn"
               ]
             }
@@ -754,7 +754,7 @@
             "Id": "Pipeline",
             "RoleArn": {
               "Fn::GetAtt": [
-                "PipelineEventsRole46BEEA7C",
+                "PipelineEventRoleCF28672B",
                 "Arn"
               ]
             }

@@ -1055,7 +1055,7 @@
             "Input": "{\"containerOverrides\":[{\"containerName\":\"TheContainer\",\"environment\":[{\"name\":\"I_WAS_TRIGGERED\",\"value\":\"From CloudWatch Events\"}]}]}",
             "RoleArn": {
               "Fn::GetAtt": [
-                "RuleRoleTaskDefonEcsClusterE14C6DF4",
+                "TaskDefEventRole0B9B1C61",
                 "Arn"
               ]
             }
@@ -1063,7 +1063,7 @@
         ]
       }
     },
-    "RuleRoleTaskDefonEcsClusterE14C6DF4": {
+    "TaskDefEventRole0B9B1C61": {
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
@@ -1090,7 +1090,7 @@
         }
       }
     },
-    "RuleRoleTaskDefonEcsClusterDefaultPolicy8B2DC915": {
+    "TaskDefEventRoleDefaultPolicy97768884": {
       "Type": "AWS::IAM::Policy",
       "Properties": {
         "PolicyDocument": {
@@ -1125,10 +1125,10 @@
           ],
           "Version": "2012-10-17"
         },
-        "PolicyName": "RuleRoleTaskDefonEcsClusterDefaultPolicy8B2DC915",
+        "PolicyName": "TaskDefEventRoleDefaultPolicy97768884",
         "Roles": [
           {
-            "Ref": "RuleRoleTaskDefonEcsClusterE14C6DF4"
+            "Ref": "TaskDefEventRole0B9B1C61"
           }
         ]
       }

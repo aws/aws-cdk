@@ -33,9 +33,9 @@ export interface EventRuleTargetProperties {
   readonly arn: string;
 
   /**
-   * Policy statements to add to the event's role
+   * Role to use to invoke this event target
    */
-  readonly policyStatements?: iam.PolicyStatement[];
+  readonly role?: iam.IRole;
 
   /**
    * The Amazon ECS task definition and task count to use, if the event target
