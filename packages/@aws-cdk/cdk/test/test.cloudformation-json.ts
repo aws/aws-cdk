@@ -3,18 +3,6 @@ import { CloudFormationLang, Fn, Stack, Token } from '../lib';
 import { evaluateCFN } from './evaluate-cfn';
 
 export = {
-  'plain JSON.stringify() on a Token fails'(test: Test) {
-    // GIVEN
-    const token = new Token(() => 'value');
-
-    // WHEN
-    test.throws(() => {
-      JSON.stringify({ token });
-    });
-
-    test.done();
-  },
-
   'string tokens can be JSONified and JSONification can be reversed'(test: Test) {
     const stack = new Stack();
 
