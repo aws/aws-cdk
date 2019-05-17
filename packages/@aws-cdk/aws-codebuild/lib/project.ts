@@ -7,7 +7,7 @@ import events = require('@aws-cdk/aws-events');
 import iam = require('@aws-cdk/aws-iam');
 import kms = require('@aws-cdk/aws-kms');
 import s3 = require('@aws-cdk/aws-s3');
-import { Aws, CfnOutput, Construct, Fn, IResource, Resource, Token } from '@aws-cdk/cdk';
+import { Aws, Construct, Fn, IResource, Resource, Token } from '@aws-cdk/cdk';
 import { BuildArtifacts, CodePipelineBuildArtifacts, NoBuildArtifacts } from './artifacts';
 import { CfnProject } from './codebuild.generated';
 import { BuildSource, NoSource, SourceType } from './source';
@@ -130,25 +130,6 @@ export interface IProject extends IResource, iam.IGrantable {
    * @default sum over 5 minutes
    */
   metricFailedBuilds(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
-
-  /**
-   * Export this Project. Allows referencing this Project in a different CDK Stack.
-   */
-  export(): ProjectAttributes;
-}
-
-/**
- * Properties of a reference to a CodeBuild Project.
- *
- * @see Project.import
- * @see Project.export
- */
-export interface ProjectAttributes {
-  /**
-   * The human-readable name of the CodeBuild Project we're referencing.
-   * The Project must be in the same account and region as the root Stack.
-   */
-  readonly projectName: string;
 }
 
 /**
@@ -172,8 +153,6 @@ abstract class ProjectBase extends Resource implements IProject {
 
   /** The IAM service Role of this Project. */
   public abstract readonly role?: iam.IRole;
-
-  public abstract export(): ProjectAttributes;
 
   /**
    * Defines a CloudWatch event rule triggered when the build project state
@@ -527,12 +506,6 @@ export class Project extends ProjectBase {
         super(s, i);
         this.grantPrincipal = new iam.ImportedResourcePrincipal({ resource: this });
       }
-
-      public export(): ProjectAttributes {
-        return {
-          projectName: this.projectName
-        };
-      }
     }
 
     return new Import(scope, id);
@@ -571,12 +544,6 @@ export class Project extends ProjectBase {
 
         this.grantPrincipal = new iam.ImportedResourcePrincipal({ resource: this });
         this.projectName = projectName;
-      }
-
-      public export(): ProjectAttributes {
-        return {
-          projectName
-        };
       }
     }
 
@@ -713,15 +680,6 @@ export class Project extends ProjectBase {
 
   public get securityGroups(): ec2.ISecurityGroup[] {
     return this._securityGroups.slice();
-  }
-
-  /**
-   * Export this Project. Allows referencing this Project in a different CDK Stack.
-   */
-  public export(): ProjectAttributes {
-    return {
-      projectName: new CfnOutput(this, 'ProjectName', { value: this.projectName }).makeImportValue().toString(),
-    };
   }
 
   /**
