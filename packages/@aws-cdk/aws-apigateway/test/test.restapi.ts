@@ -337,8 +337,6 @@ export = {
     const api = new apigateway.RestApi(stack, 'MyRestApi');
     api.root.addMethod('GET');
 
-    const exported = api.export();
-
     // THEN
     stack.node.prepareTree();
     test.deepEqual(SynthUtils.toCloudFormation(stack).Outputs.MyRestApiRestApiIdB93C5C2D, {
@@ -346,7 +344,6 @@ export = {
       Export: { Name: 'Stack:MyRestApiRestApiIdB93C5C2D' }
     });
     test.deepEqual(imported.node.resolve(imported.restApiId), 'api-rxt4498f');
-    test.deepEqual(imported.node.resolve(exported), { restApiId: { 'Fn::ImportValue': 'Stack:MyRestApiRestApiIdB93C5C2D' } });
     test.done();
   },
 
