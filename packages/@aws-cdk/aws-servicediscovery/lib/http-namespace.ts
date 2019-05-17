@@ -1,29 +1,27 @@
-import { Construct } from '@aws-cdk/cdk';
-import { BaseNamespaceProps, INamespace, NamespaceBase, NamespaceType } from './namespace';
+import { Construct, Resource } from '@aws-cdk/cdk';
+import { BaseNamespaceProps, INamespace, NamespaceAttributes, NamespaceType } from './namespace';
 import { BaseServiceProps, Service } from './service';
 import { CfnHttpNamespace } from './servicediscovery.generated';
 
 export interface HttpNamespaceProps extends BaseNamespaceProps {}
-
-export interface IHttpNamespace extends INamespace {
-  /**
-   * The Amazon Resource Name (ARN) of the namespace, such as
-   * arn:aws:service-discovery:us-east-1:123456789012:http-namespace/http-namespace-a1bzhi.
-   * @attribute
-   */
-  readonly httpNamespaceArn: string;
-
-  /**
-   * The ID of the namespace.
-   * @attribute
-   */
-  readonly httpNamespaceId: string;
-}
+export interface IHttpNamespace extends INamespace { }
+export interface HttpNamespaceAttributes extends NamespaceAttributes { }
 
 /**
  * Define an HTTP Namespace
  */
-export class HttpNamespace extends NamespaceBase implements IHttpNamespace {
+export class HttpNamespace extends Resource implements IHttpNamespace {
+
+  public static fromHttpNamespaceAttributes(scope: Construct, id: string, attrs: HttpNamespaceAttributes): IHttpNamespace {
+    class Import extends Resource implements IHttpNamespace {
+      public namespaceName = attrs.namespaceName;
+      public namespaceId = attrs.namespaceId;
+      public namespaceArn = attrs.namespaceArn;
+      public type = NamespaceType.Http;
+    }
+    return new Import(scope, id);
+  }
+
   /**
    * A name for the namespace.
    */
@@ -58,7 +56,13 @@ export class HttpNamespace extends NamespaceBase implements IHttpNamespace {
     this.type = NamespaceType.Http;
   }
 
+  /** @attribute */
   public get httpNamespaceArn() { return this.namespaceArn; }
+
+  /** @attribute */
+  public get httpNamespaceName() { return this.namespaceName; }
+
+  /** @attribute */
   public get httpNamespaceId() { return this.namespaceId; }
 
   /**
