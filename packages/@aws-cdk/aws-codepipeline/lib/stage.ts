@@ -135,7 +135,8 @@ export class Stage implements IStage {
       },
       configuration: action.configuration,
       runOrder: action.runOrder,
-      roleArn: action.role ? action.role.roleArn : undefined
+      roleArn: action.role ? action.role.roleArn : undefined,
+      region: action.region,
     };
   }
 

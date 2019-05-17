@@ -179,9 +179,8 @@ export class Pipeline extends PipelineBase {
   public readonly artifactBucket: s3.IBucket;
 
   private readonly stages = new Array<Stage>();
-  private readonly pipelineResource: CfnPipeline;
   private readonly crossRegionReplicationBuckets: { [region: string]: string };
-  private readonly artifactStores: { [region: string]: any };
+  private readonly artifactStores: { [region: string]: CfnPipeline.ArtifactStoreProperty };
   private readonly _crossRegionScaffoldStacks: { [region: string]: CrossRegionScaffoldStack } = {};
 
   constructor(scope: Construct, id: string, props?: PipelineProps) {
@@ -207,8 +206,9 @@ export class Pipeline extends PipelineBase {
     });
 
     const codePipeline = new CfnPipeline(this, 'Resource', {
-      artifactStore: new Token(() => this.renderArtifactStore()) as any,
-      stages: new Token(() => this.renderStages()) as any,
+      artifactStore: new Token(() => this.renderArtifactStore()),
+      artifactStores: new Token(() => this.renderArtifactStores()),
+      stages: new Token(() => this.renderStages()),
       roleArn: this.role.roleArn,
       restartExecutionOnUpdate: props && props.restartExecutionOnUpdate,
       name: props && props.pipelineName,
@@ -221,7 +221,6 @@ export class Pipeline extends PipelineBase {
 
     this.pipelineName = codePipeline.ref;
     this.pipelineVersion = codePipeline.pipelineVersion;
-    this.pipelineResource = codePipeline;
     this.crossRegionReplicationBuckets = props.crossRegionReplicationBuckets || {};
     this.artifactStores = {};
 
@@ -382,8 +381,8 @@ export class Pipeline extends PipelineBase {
     replicationBucket.grantReadWrite(this.role);
 
     this.artifactStores[region] = {
-      Location: replicationBucket.bucketName,
-      Type: 'S3',
+      location: replicationBucket.bucketName,
+      type: 'S3',
     };
   }
 
@@ -496,7 +495,28 @@ export class Pipeline extends PipelineBase {
     return ret;
   }
 
-  private renderArtifactStore(): CfnPipeline.ArtifactStoreProperty {
+  private renderArtifactStores(): CfnPipeline.ArtifactStoreMapProperty[] | undefined {
+    if (!this.crossRegion) { return undefined; }
+
+    // add the Pipeline's artifact store
+    const primaryStore = this.renderPrimaryArtifactStore();
+    this.artifactStores[this.node.stack.requireRegion()] = {
+      location: primaryStore.location,
+      type: primaryStore.type,
+      encryptionKey: primaryStore.encryptionKey,
+    };
+
+    return Object.entries(this.artifactStores).map(([region, artifactStore]) => ({
+      region, artifactStore
+    }));
+  }
+
+  private renderArtifactStore(): CfnPipeline.ArtifactStoreProperty | undefined {
+    if (this.crossRegion) { return undefined; }
+    return this.renderPrimaryArtifactStore();
+  }
+
+  private renderPrimaryArtifactStore(): CfnPipeline.ArtifactStoreProperty {
     let encryptionKey: CfnPipeline.EncryptionKeyProperty | undefined;
     const bucketKey = this.artifactBucket.encryptionKey;
     if (bucketKey) {
@@ -518,41 +538,12 @@ export class Pipeline extends PipelineBase {
     };
   }
 
+  private get crossRegion(): boolean {
+    return this.stages.some(stage => stage.actions.some(action => action.region !== undefined));
+    // this.pipelineResource.addPropertyOverride(`Stages.${i}.Actions.${j}.Region`, action.region);
+  }
+
   private renderStages(): CfnPipeline.StageDeclarationProperty[] {
-    // handle cross-region CodePipeline overrides here
-    let crossRegion = false;
-    this.stages.forEach((stage, i) => {
-      stage.actions.forEach((action, j) => {
-        if (action.region) {
-          crossRegion = true;
-          this.pipelineResource.addPropertyOverride(`Stages.${i}.Actions.${j}.Region`, action.region);
-        }
-      });
-    });
-
-    if (crossRegion) {
-      // we don't need ArtifactStore in this case
-      this.pipelineResource.addPropertyDeletionOverride('ArtifactStore');
-
-      // add the Pipeline's artifact store
-      const artifactStore = this.renderArtifactStore();
-      this.artifactStores[this.node.stack.requireRegion()] = {
-        Location: artifactStore.location,
-        Type: artifactStore.type,
-        EncryptionKey: artifactStore.encryptionKey,
-      };
-
-      const artifactStoresProp: any[] = [];
-      // tslint:disable-next-line:forin
-      for (const region in this.artifactStores) {
-        artifactStoresProp.push({
-          Region: region,
-          ArtifactStore: this.artifactStores[region],
-        });
-      }
-      this.pipelineResource.addPropertyOverride('ArtifactStores', artifactStoresProp);
-    }
-
     return this.stages.map(stage => stage.render());
   }
 }
