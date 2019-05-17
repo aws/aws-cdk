@@ -6,7 +6,7 @@ import elbv2 = require('../lib');
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-cdk-elbv2-integ');
 
-const vpc = new ec2.VpcNetwork(stack, 'VPC', {
+const vpc = new ec2.Vpc(stack, 'VPC', {
   maxAZs: 2
 });
 

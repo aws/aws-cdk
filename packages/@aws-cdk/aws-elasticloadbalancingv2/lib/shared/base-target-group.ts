@@ -23,12 +23,12 @@ export interface BaseTargetGroupProps {
   /**
    * The virtual private cloud (VPC).
    */
-  readonly vpc: ec2.IVpcNetwork;
+  readonly vpc: ec2.IVpc;
 
   /**
    * The amount of time for Elastic Load Balancing to wait before deregistering a target.
    *
-   * The range is 0–3600 seconds.
+   * The range is 0-3600 seconds.
    *
    * @default 300
    */
@@ -175,7 +175,7 @@ export abstract class TargetGroupBase extends cdk.Construct implements ITargetGr
   /**
    * Default port configured for members of this target group
    */
-  protected readonly defaultPort: string;
+  protected readonly defaultPort: number;
 
   /**
    * Configurable dependable with all resources that lead to load balancer attachment
@@ -239,7 +239,7 @@ export abstract class TargetGroupBase extends cdk.Construct implements ITargetGr
     this.targetGroupFullName = this.resource.targetGroupFullName;
     this.loadBalancerArns = this.resource.targetGroupLoadBalancerArns.toString();
     this.targetGroupName = this.resource.targetGroupName;
-    this.defaultPort = `${additionalProps.port}`;
+    this.defaultPort = additionalProps.port;
   }
 
   /**
@@ -263,16 +263,6 @@ export abstract class TargetGroupBase extends cdk.Construct implements ITargetGr
    */
   public setAttribute(key: string, value: string | undefined) {
     this.attributes[key] = value;
-  }
-
-  /**
-   * Export this target group
-   */
-  public export(): TargetGroupImportProps {
-    return {
-      targetGroupArn: new cdk.CfnOutput(this, 'TargetGroupArn', { value: this.targetGroupArn }).makeImportValue().toString(),
-      defaultPort: new cdk.CfnOutput(this, 'Port', { value: this.defaultPort }).makeImportValue().toString(),
-    };
   }
 
   public asCodeDeployLoadBalancer(): codedeploy.ILoadBalancerProps {
@@ -335,12 +325,6 @@ export interface ITargetGroup extends cdk.IConstruct {
    * Return an object to depend on the listeners added to this target group
    */
   readonly loadBalancerAttached: cdk.IDependable;
-
-  /**
-   * Export this target group
-   */
-  export(): TargetGroupImportProps;
-
 }
 
 /**
