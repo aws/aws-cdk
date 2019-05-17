@@ -1,5 +1,6 @@
 import { Test } from 'nodeunit';
-import { App as Root, Fn, Token } from '../lib';
+import { App as Root, Fn, Stack, Token } from '../lib';
+import { createTokenDouble, extractTokenDouble } from '../lib/encoding';
 import { TokenMap } from '../lib/token-map';
 import { evaluateCFN } from './evaluate-cfn';
 
@@ -387,7 +388,53 @@ export = {
 
       test.done();
     },
-  }
+  },
+
+  'number encoding': {
+    'basic integer encoding works'(test: Test) {
+      test.equal(16, extractTokenDouble(createTokenDouble(16)));
+      test.done();
+    },
+
+    'arbitrary integers can be encoded, stringified, and recovered'(test: Test) {
+      for (let i = 0; i < 100; i++) {
+        // We can encode all numbers up to 2^48-1
+        const x = Math.floor(Math.random() * (Math.pow(2, 48) - 1));
+
+        const encoded = createTokenDouble(x);
+        // Roundtrip through JSONification
+        const roundtripped = JSON.parse(JSON.stringify({ theNumber: encoded })).theNumber;
+        const decoded = extractTokenDouble(roundtripped);
+        test.equal(decoded, x, `Fail roundtrip encoding of ${x}`);
+      }
+
+      test.done();
+    },
+
+    'arbitrary numbers are correctly detected as not being tokens'(test: Test) {
+      test.equal(undefined, extractTokenDouble(0));
+      test.equal(undefined, extractTokenDouble(1243));
+      test.equal(undefined, extractTokenDouble(4835e+532));
+
+      test.done();
+    },
+
+    'can number-encode and resolve Token objects'(test: Test) {
+      // GIVEN
+      const stack = new Stack();
+      const x = new Token(() => 123);
+
+      // THEN
+      const encoded = x.toNumber();
+      test.equal(true, Token.isToken(encoded), 'encoded number does not test as token');
+
+      // THEN
+      const resolved = stack.node.resolve({ value: encoded });
+      test.deepEqual(resolved, { value: 123 });
+
+      test.done();
+    },
+  },
 };
 
 class Promise2 extends Token {

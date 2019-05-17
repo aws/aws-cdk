@@ -25,7 +25,7 @@ elb.addListener({
 new codedeploy.ServerDeploymentGroup(stack, 'CodeDeployGroup', {
   deploymentConfig: codedeploy.ServerDeploymentConfig.AllAtOnce,
   autoScalingGroups: [asg],
-  loadBalancer: elb,
+  loadBalancer: codedeploy.LoadBalancer.classic(elb),
   alarms: [
     new cloudwatch.Alarm(stack, 'Alarm1', {
       metric: new cloudwatch.Metric({

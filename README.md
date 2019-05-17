@@ -15,12 +15,11 @@ CDK improves the end-to-end development experience because you get to use the po
 of modern programming languages to define your AWS infrastructure in a predictable
 and efficient manner.
 
- ![](docs/src/_images/java_40.png) ![](docs/src/_images/js_40.png) ![](docs/src/_images/ts_40.png) ![](docs/src/_images/DotNetLogo_40.jpg)
-
 The following languages are currently supported:
 
-* Java
 * JavaScript, TypeScript
+* Python
+* Java
 * .NET
 
 The CDK is currently in developer preview and we look forward to community feedback and collaboration!
@@ -30,8 +29,6 @@ The CDK is currently in developer preview and we look forward to community feedb
 [API Reference](https://docs.aws.amazon.com/cdk/api/latest/docs/aws-construct-library.html) |
 [Examples](https://github.com/aws-samples/aws-cdk-examples) |
 [Getting Help](#getting-help)
-
-![Example usage of CDK](docs/src/_images/screencast.gif)
 
 Developers can use one of the supported programming languages to define reusable
 cloud components called [constructs], which are composed together into
@@ -80,12 +77,6 @@ Use the `cdk` command-line toolkit to interact with your project:
  * `cdk deploy`: deploys your app into an AWS account
  * `cdk synth`: synthesizes an AWS CloudFormation template for your app
  * `cdk diff`: compares your app with the deployed stack
-
-Read the [docs](https://awslabs.github.io/aws-cdk/):
-
-```bash
-$ cdk docs
-```
 
 For a detailed walkthrough, see [Tutorial] in the AWS CDK [Developer Guide].
 

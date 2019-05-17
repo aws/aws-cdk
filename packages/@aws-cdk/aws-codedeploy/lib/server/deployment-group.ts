@@ -1,6 +1,5 @@
 import autoscaling = require('@aws-cdk/aws-autoscaling');
 import cloudwatch = require('@aws-cdk/aws-cloudwatch');
-import codedeploylb = require('@aws-cdk/aws-codedeploy-api');
 import ec2 = require('@aws-cdk/aws-ec2');
 import iam = require('@aws-cdk/aws-iam');
 import s3 = require('@aws-cdk/aws-s3');
@@ -10,6 +9,7 @@ import { AutoRollbackConfig } from '../rollback-config';
 import { arnForDeploymentGroup, renderAlarmConfiguration, renderAutoRollbackConfiguration } from '../utils';
 import { IServerApplication, ServerApplication } from './application';
 import { IServerDeploymentConfig, ServerDeploymentConfig } from './deployment-config';
+import { LoadBalancer, LoadBalancerGeneration } from './load-balancer';
 
 export interface IServerDeploymentGroup extends cdk.IResource {
   readonly application: IServerApplication;
@@ -190,12 +190,12 @@ export interface ServerDeploymentGroupProps {
 
   /**
    * The load balancer to place in front of this Deployment Group.
-   * Can be either a classic Elastic Load Balancer,
+   * Can be created from either a classic Elastic Load Balancer,
    * or an Application Load Balancer / Network Load Balancer Target Group.
    *
    * @default the Deployment Group will not have a load balancer defined
    */
-  readonly loadBalancer?: codedeploylb.ILoadBalancer;
+  readonly loadBalancer?: LoadBalancer;
 
   /**
    * All EC2 instances matching the given set of tags when a deployment occurs will be added to this Deployment Group.
@@ -387,25 +387,23 @@ export class ServerDeploymentGroup extends ServerDeploymentGroupBase {
     }
   }
 
-  private loadBalancerInfo(lbProvider?: codedeploylb.ILoadBalancer):
+  private loadBalancerInfo(loadBalancer?: LoadBalancer):
       CfnDeploymentGroup.LoadBalancerInfoProperty | undefined {
-    if (!lbProvider) {
+    if (!loadBalancer) {
       return undefined;
     }
 
-    const lb = lbProvider.asCodeDeployLoadBalancer();
-
-    switch (lb.generation) {
-      case codedeploylb.LoadBalancerGeneration.First:
+    switch (loadBalancer.generation) {
+      case LoadBalancerGeneration.FIRST:
         return {
           elbInfoList: [
-            { name: lb.name },
+            { name: loadBalancer.name },
           ],
         };
-      case codedeploylb.LoadBalancerGeneration.Second:
+      case LoadBalancerGeneration.SECOND:
         return {
           targetGroupInfoList: [
-            { name: lb.name },
+            { name: loadBalancer.name },
           ]
         };
     }

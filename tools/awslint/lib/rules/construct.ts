@@ -80,7 +80,7 @@ export class ConstructReflection {
     }
 
     if (!found.isInterfaceType()) {
-      throw new Error(`Expecrting props struct ${this.propsFqn} to be an interface`);
+      throw new Error(`Expecting props struct ${this.propsFqn} to be an interface`);
     }
 
     return found;
@@ -194,5 +194,37 @@ constructLinter.add({
     if (!e.ctx.interfaceType) { return; }
     const baseFqn = `${e.ctx.classType.fqn}Base`;
     e.assert(!e.ctx.sys.tryFindFqn(baseFqn), baseFqn);
+  }
+});
+
+constructLinter.add({
+  code: 'props-no-unions',
+  message: 'props should not use TypeScript unions',
+  eval: e => {
+    if (!e.ctx.propsType) { return; }
+    if (!e.ctx.hasPropsArgument) { return; }
+
+    // this rule only applies to L2 constructs
+    if (e.ctx.classType.name.startsWith('Cfn')) { return; }
+
+    for (const property of e.ctx.propsType.ownProperties) {
+      e.assert(!property.type.unionOfTypes, `${e.ctx.propsFqn}.${property.name}`);
+    }
+  }
+});
+
+constructLinter.add({
+  code: 'props-no-arn-refs',
+  message: 'props should use strong types instead of attributes. props should not have "arn" suffix',
+  eval: e => {
+    if (!e.ctx.propsType) { return; }
+    if (!e.ctx.hasPropsArgument) { return; }
+
+    // this rule only applies to L2 constructs
+    if (e.ctx.classType.name.startsWith('Cfn')) { return; }
+
+    for (const property of e.ctx.propsType.ownProperties) {
+      e.assert(!property.name.toLowerCase().endsWith('arn'), `${e.ctx.propsFqn}.${property.name}`);
+    }
   }
 });
