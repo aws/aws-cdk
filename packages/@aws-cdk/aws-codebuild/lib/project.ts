@@ -6,9 +6,9 @@ import ecr = require('@aws-cdk/aws-ecr');
 import events = require('@aws-cdk/aws-events');
 import iam = require('@aws-cdk/aws-iam');
 import kms = require('@aws-cdk/aws-kms');
-import s3 = require('@aws-cdk/aws-s3');
-import { Aws, CfnOutput, Construct, Fn, IResource, Resource, Token } from '@aws-cdk/cdk';
+import { Aws, CfnOutput, Construct, IResource, Resource, Token } from '@aws-cdk/cdk';
 import { BuildArtifacts, CodePipelineBuildArtifacts, NoBuildArtifacts } from './artifacts';
+import { Cache } from './cache';
 import { CfnProject } from './codebuild.generated';
 import { BuildSource, NoSource, SourceType } from './source';
 
@@ -392,21 +392,16 @@ export interface CommonProjectProps {
   readonly role?: iam.IRole;
 
   /**
-   * Encryption key to use to read and write artifacts
+   * Encryption key to use to read and write artifacts.
    * If not specified, a role will be created.
    */
   readonly encryptionKey?: kms.IEncryptionKey;
 
   /**
-   * Bucket to store cached source artifacts
-   * If not specified, source artifacts will not be cached.
+   * Caching strategy to use.
+   * @default Cache.none
    */
-  readonly cacheBucket?: s3.IBucket;
-
-  /**
-   * Subdirectory to store cached artifacts
-   */
-  readonly cacheDir?: string;
+  readonly cache?: Cache;
 
   /**
    * Build environment to use for the build.
@@ -618,17 +613,6 @@ export class Project extends ProjectBase {
     });
     this.grantPrincipal = this.role;
 
-    let cache: CfnProject.ProjectCacheProperty | undefined;
-    if (props.cacheBucket) {
-      const cacheDir = props.cacheDir != null ? props.cacheDir : Aws.noValue;
-      cache = {
-        type: 'S3',
-        location: Fn.join('/', [props.cacheBucket.bucketName, cacheDir]),
-      };
-
-      props.cacheBucket.grantReadWrite(this.role);
-    }
-
     this.buildImage = (props.environment && props.environment.buildImage) || LinuxBuildImage.STANDARD_1_0;
 
     // let source "bind" to the project. this usually involves granting permissions
@@ -638,6 +622,11 @@ export class Project extends ProjectBase {
 
     const artifacts = this.parseArtifacts(props);
     artifacts._bind(this);
+
+    const cache = props.cache || Cache.none();
+
+    // give the caching strategy the option to grant permissions to any required resources
+    cache._bind(this);
 
     // Inject download commands for asset if requested
     const environmentVariables = props.environmentVariables || {};
@@ -696,7 +685,7 @@ export class Project extends ProjectBase {
       environment: this.renderEnvironment(props.environment, environmentVariables),
       encryptionKey: props.encryptionKey && props.encryptionKey.keyArn,
       badgeEnabled: props.badge,
-      cache,
+      cache: cache._toCloudFormation(),
       name: props.projectName,
       timeoutInMinutes: props.timeout,
       secondarySources: new Token(() => this.renderSecondarySources()),

@@ -109,6 +109,36 @@ aws codebuild import-source-credentials --server-type GITHUB --auth-type PERSONA
 
 This source type can be used to build code from a BitBucket repository.
 
+## Caching
+
+You can save time when your project builds by using a cache. A cache can store reusable pieces of your build environment and use them across multiple builds. Your build project can use one of two types of caching: Amazon S3 or local. In general, S3 caching is a good option for small and intermediate build artifacts that are more expensive to build than to download. Local caching is a good option for large intermediate build artifacts because the cache is immediately available on the build host.
+
+### S3 Caching
+
+With S3 caching, the cache is stored in an S3 bucket which is available from multiple hosts.
+
+```typescript
+new codebuild.Project(this, 'Project', {
+  source: new codebuild.CodePipelineSource(),
+  cache: codebuild.Cache.bucket(new Bucket(this, 'Bucket'))
+});
+```
+
+### Local Caching
+
+With local caching, the cache is stored on the codebuild instance itself. CodeBuild cannot guarantee a reuse of instance. For example, when a build starts and caches files locally, if two subsequent builds start at the same time afterwards only one of those builds would get the cache. Three different cache modes are supported:
+
+* `LocalCacheMode.Source` caches Git metadata for primary and secondary sources.
+* `LocalCacheMode.DockerLayer` caches existing Docker layers.
+* `LocalCacheMode.Custom` caches directories you specify in the buildspec file.
+
+```typescript
+new codebuild.Project(this, 'Project', {
+  source: new codebuild.CodePipelineSource(),
+  cache: codebuild.Cache.local(LocalCacheMode.DockerLayer, LocalCacheMode.Custom)
+});
+```
+
 ## Environment
 
 By default, projects use a small instance with an Ubuntu 18.04 image. You
