@@ -108,7 +108,12 @@ export interface UsagePlanProps {
   /**
    * Name for this usage plan.
    */
-  readonly name?: string,
+  readonly name?: string
+
+  /**
+   * ApiKey to be associated with the usage plan. 
+   */
+  readonly apiKey?: ApiKey
 }
 
 export class UsagePlan extends Resource {
@@ -131,6 +136,11 @@ export class UsagePlan extends Resource {
     }
 
     this.usagePlanId = resource.ref;
+
+    // Add ApiKey when 
+    if (props.apiKey) {
+      this.addApiKey(props.apiKey)
+    }
   }
 
   public addApiKey(apiKey: ApiKey): void {
@@ -147,8 +157,8 @@ export class UsagePlan extends Resource {
       const apiStages: CfnUsagePlan.ApiStageProperty[] = [];
       props.apiStages.forEach((apiStage: UsagePlanPerApiStage) => {
 
-        const apiId = apiStage.api ? apiStage.api.restApiId : undefined;
         const stage = apiStage.stage ? apiStage.stage.stageName.toString() : undefined;
+        const apiId = apiStage.stage ? apiStage.stage.restApi.restApiId : undefined;
         const throttle = this.renderThrottlePerMethod(apiStage.throttle);
         apiStages.push({
           apiId,
