@@ -182,7 +182,7 @@ export class UsagePlan extends Resource {
     };
   }
 
-  private renderQuota(props: UsagePlanProps): CfnUsagePlan.QuotaSettingsProperty | undefined {
+  private renderQuota(props: UsagePlanProps) {
     if (props.quota === undefined) {
       return undefined;
     } else {
@@ -196,8 +196,8 @@ export class UsagePlan extends Resource {
     }
   }
 
-  private renderThrottle(props: ThrottleSettings | undefined): CfnUsagePlan.ThrottleSettingsProperty | Token | undefined {
-    let ret: (CfnUsagePlan.ThrottleSettingsProperty | Token | undefined);
+  private renderThrottle(props: ThrottleSettings | undefined): (CfnUsagePlan.ThrottleSettingsProperty | Token) {
+    let ret: CfnUsagePlan.ThrottleSettingsProperty | Token = {};
     if (props !== undefined) {
       const burstLimit = props.burstLimit
       validateInteger(burstLimit, 'Throttle burst limit')
@@ -212,11 +212,8 @@ export class UsagePlan extends Resource {
     return ret;
   }
 
-  private renderThrottlePerMethod(throttlePerMethod?: ThrottlingPerMethod[]): {
-    [key: string]: (CfnUsagePlan.ThrottleSettingsProperty | Token | undefined)
-  } {
-    let ret: { [key: string]: (CfnUsagePlan.ThrottleSettingsProperty | Token | undefined ) } = {};
-
+  private renderThrottlePerMethod(throttlePerMethod?: ThrottlingPerMethod[]) {
+    let ret: { [key: string]: (CfnUsagePlan.ThrottleSettingsProperty | Token) } = {};
     if (throttlePerMethod && throttlePerMethod.length > 0) {
       throttlePerMethod.forEach((value: ThrottlingPerMethod) => {
         const method: Method = value.method;
@@ -225,7 +222,6 @@ export class UsagePlan extends Resource {
         ret[methodId] = this.renderThrottle(value.throttle);
       });
     }
-
     return ret;
   }
 }
