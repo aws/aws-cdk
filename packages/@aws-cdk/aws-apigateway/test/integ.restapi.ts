@@ -53,20 +53,17 @@ class Test extends cdk.Stack {
       });
     }
 
-    const usagePlan: apigateway.UsagePlan = new apigateway.UsagePlan(this, 'UsagePlan', {
+    const key = api.addApiKey('ApiKey');
+    api.addUsagePlan('UsagePlan', {
       name: 'Basic',
+      apiKey: key,
       description: 'Free tier monthly usage plan',
       quota: {
         limit: 10000,
         period: apigateway.Period.Month
       },
-      throttle: {
-        rateLimit: 50,
-        burstLimit: 5
-      },
       apiStages: [
         {
-          api: api,
           stage: api.deploymentStage,
           throttle: [
             {
@@ -80,12 +77,6 @@ class Test extends cdk.Stack {
         }
       ]
     });
-
-    const apiKey: apigateway.ApiKey = new apigateway.ApiKey(this, 'ApiKey', {
-      resources: [api]
-    });
-
-    usagePlan.addApiKey(apiKey);
   }
 }
 

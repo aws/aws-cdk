@@ -625,7 +625,7 @@
         }
       }
     },
-    "UsagePlanC18B28F1": {
+    "myapiUsagePlan56F9C4F2": {
       "Type": "AWS::ApiGateway::UsagePlan",
       "Properties": {
         "ApiStages": [
@@ -649,26 +649,22 @@
           "Limit": 10000,
           "Period": "MONTH"
         },
-        "Throttle": {
-          "BurstLimit": 5,
-          "RateLimit": 50
-        },
         "UsagePlanName": "Basic"
       }
     },
-    "UsagePlanUsagePlanKeyResourceFB108041": {
+    "myapiUsagePlanUsagePlanKeyResource050D133F": {
       "Type": "AWS::ApiGateway::UsagePlanKey",
       "Properties": {
         "KeyId": {
-          "Ref": "ApiKeyF9DDEE66"
+          "Ref": "myapiApiKey43446CCF"
         },
         "KeyType": "API_KEY",
         "UsagePlanId": {
-          "Ref": "UsagePlanC18B28F1"
+          "Ref": "myapiUsagePlan56F9C4F2"
         }
       }
     },
-    "ApiKeyF9DDEE66": {
+    "myapiApiKey43446CCF": {
       "Type": "AWS::ApiGateway::ApiKey",
       "Properties": {
         "Enabled": true,

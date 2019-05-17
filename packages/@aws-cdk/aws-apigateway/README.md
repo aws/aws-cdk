@@ -118,41 +118,26 @@ const integration = new apigateway.LambdaIntegration(hello);
 
 const v1 = api.root.addResource('v1');
 const echo = v1.addResource('echo');
-const echoMethod: apigateway.Method = echo.addMethod('GET', integration, { apiKeyRequired: true });
+const echoMethod = echo.addMethod('GET', integration, { apiKeyRequired: true });
+const key = api.addApiKey('ApiKey');
 
-const usagePlan = new apigateway.UsagePlan(this, 'UsagePlan', {
-  name: 'Basic',
-  description: 'Free tier monthly usage plan',
-  quota: {
-    limit: 10000,
-    period: apigateway.Period.Month
-  },
-  throttle: {
-    rateLimit: 50,
-    burstLimit: 5
-  },
-  apiStages: [
-    {
-      api: api,
-      stage: api.deploymentStage,
-      throttle: [
-        {
-          method: echoMethod,
-          throttle: {
-            rateLimit: 10,
-            burstLimit: 2
-          }
+api.addUsagePlan('UsagePlan', {
+  name: 'Easy',
+  apiKey: key,
+  apiStages: [{
+    stage: api.deploymentStage,
+    throttle: [
+      {
+        method: echoMethod,
+        throttle: {
+          rateLimit: 10,
+          burstLimit: 2
         }
-      ]
-    }
-  ]
+      }
+    ]
+  }]
 });
 
-const key = new apigateway.ApiKey(this, 'ApiKey', {
-  resources: [api]
-});
-
-usagePlan.addApiKey(key);
 ```
 
 #### Default Integration and Method Options

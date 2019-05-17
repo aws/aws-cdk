@@ -125,7 +125,7 @@ export class UsagePlan extends Resource {
 
     if (props !== undefined) {
       resource = new CfnUsagePlan(this, 'Resource', {
-        apiStages: this.renderApiStages(props),
+        apiStages: this.renderApiStages(props.apiStages),
         description: props.description,
         quota: this.renderQuota(props),
         throttle: this.renderThrottle(props.throttle),
@@ -143,6 +143,11 @@ export class UsagePlan extends Resource {
     }
   }
 
+  /**
+   * Adds and ApiKey.
+   * 
+   * @param apiKey 
+   */
   public addApiKey(apiKey: ApiKey): void {
     new CfnUsagePlanKey(this, 'UsagePlanKeyResource', {
       keyId: apiKey.keyId,
@@ -150,26 +155,31 @@ export class UsagePlan extends Resource {
       usagePlanId: this.usagePlanId
     });
   }
-
-  private renderApiStages(props: UsagePlanProps): CfnUsagePlan.ApiStageProperty[] | undefined {
-    if (props.apiStages && props.apiStages.length > 0) {
-
-      const apiStages: CfnUsagePlan.ApiStageProperty[] = [];
-      props.apiStages.forEach((apiStage: UsagePlanPerApiStage) => {
-
-        const stage = apiStage.stage ? apiStage.stage.stageName.toString() : undefined;
-        const apiId = apiStage.stage ? apiStage.stage.restApi.restApiId : undefined;
-        const throttle = this.renderThrottlePerMethod(apiStage.throttle);
-        apiStages.push({
-          apiId,
-          stage,
-          throttle
-        });
+  
+  /**
+   * 
+   * @param props 
+   */
+  private renderApiStages(apiStages: UsagePlanPerApiStage[] | undefined): CfnUsagePlan.ApiStageProperty[] | undefined {
+    if (apiStages && apiStages.length > 0) {
+      const stages: CfnUsagePlan.ApiStageProperty[] = [];
+      apiStages.forEach((apiStage: UsagePlanPerApiStage) => {
+        stages.push(this.createStage(apiStage));
       });
-      return apiStages;
+      return stages;
     }
-
     return undefined;
+  }
+
+  private createStage(apiStage: UsagePlanPerApiStage): CfnUsagePlan.ApiStageProperty {
+    const stage = apiStage.stage ? apiStage.stage.stageName.toString() : undefined;
+    const apiId = apiStage.stage ? apiStage.stage.restApi.restApiId : undefined;
+    const throttle = this.renderThrottlePerMethod(apiStage.throttle);
+    return {
+      apiId,
+      stage,
+      throttle
+    };
   }
 
   private renderQuota(props: UsagePlanProps): CfnUsagePlan.QuotaSettingsProperty | undefined {
@@ -186,8 +196,8 @@ export class UsagePlan extends Resource {
     }
   }
 
-  private renderThrottle(props: ThrottleSettings | undefined): CfnUsagePlan.ThrottleSettingsProperty | Token {
-    let ret: (CfnUsagePlan.ThrottleSettingsProperty | Token) = { };
+  private renderThrottle(props: ThrottleSettings | undefined): CfnUsagePlan.ThrottleSettingsProperty | Token | undefined {
+    let ret: (CfnUsagePlan.ThrottleSettingsProperty | Token | undefined);
     if (props !== undefined) {
       const burstLimit = props.burstLimit
       validateInteger(burstLimit, 'Throttle burst limit')
@@ -203,9 +213,9 @@ export class UsagePlan extends Resource {
   }
 
   private renderThrottlePerMethod(throttlePerMethod?: ThrottlingPerMethod[]): {
-    [key: string]: (CfnUsagePlan.ThrottleSettingsProperty | Token)
+    [key: string]: (CfnUsagePlan.ThrottleSettingsProperty | Token | undefined)
   } {
-    let ret: { [key: string]: (CfnUsagePlan.ThrottleSettingsProperty | Token) } = {};
+    let ret: { [key: string]: (CfnUsagePlan.ThrottleSettingsProperty | Token | undefined ) } = {};
 
     if (throttlePerMethod && throttlePerMethod.length > 0) {
       throttlePerMethod.forEach((value: ThrottlingPerMethod) => {
