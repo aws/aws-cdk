@@ -462,6 +462,14 @@ export interface AddCapacityOptions extends AddAutoScalingGroupCapacityOptions, 
    * @default - Amazon Linux 1
    */
   readonly machineImage?: ec2.IMachineImageSource;
+
+  /**
+   * The maximum hourly price to be paid for any Spot Instance launched to fulfill the request. Spot Instances are
+   * launched when the price you specify exceeds the current Spot market price.
+   *
+   * @default none
+   */
+  readonly spotPrice?: string;
 }
 
 export interface NamespaceOptions {

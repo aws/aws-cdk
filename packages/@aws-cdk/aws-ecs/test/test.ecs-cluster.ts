@@ -262,6 +262,25 @@ export = {
     test.done();
   },
 
+  "allows specifying spot fleet"(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.VpcNetwork(stack, 'MyVpc', {});
+
+    const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+    cluster.addCapacity('DefaultAutoScalingGroup', {
+      instanceType: new ec2.InstanceType('t2.micro'),
+      spotPrice: "0.31"
+    });
+
+    // THEN
+    expect(stack).to(haveResource("AWS::AutoScaling::LaunchConfiguration", {
+      SpotPrice: "0.31"
+    }));
+
+    test.done();
+  },
+
   "allows adding default service discovery namespace"(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();

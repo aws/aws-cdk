@@ -339,6 +339,7 @@ export = {
 
     test.done();
   },
+
   'can add Security Group to Fleet'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack(undefined, 'MyStack', { env: { region: 'us-east-1', account: '1234' }});
@@ -363,6 +364,7 @@ export = {
     }));
     test.done();
   },
+
   'can set tags'(test: Test) {
     // GIVEN
     const stack = getTestStack();
@@ -405,6 +407,29 @@ export = {
     }));
     test.done();
   },
+
+  'allows setting spot price'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = mockVpc(stack);
+
+    // WHEN
+    new autoscaling.AutoScalingGroup(stack, 'MyStack', {
+      instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.M4, ec2.InstanceSize.Micro),
+      machineImage: new ec2.AmazonLinuxImage(),
+      vpc,
+
+      spotPrice: "0.05",
+    });
+
+    // THEN
+    expect(stack).to(haveResource("AWS::AutoScaling::LaunchConfiguration", {
+      SpotPrice: "0.05",
+    }));
+
+    test.done();
+  },
+
   'allows association of public IP address'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
@@ -430,6 +455,7 @@ export = {
     ));
     test.done();
   },
+
   'association of public IP address requires public subnet'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
@@ -449,6 +475,7 @@ export = {
     });
     test.done();
   },
+
   'allows disassociation of public IP address'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
@@ -472,6 +499,7 @@ export = {
     ));
     test.done();
   },
+
   'does not specify public IP address association by default'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
