@@ -27,12 +27,7 @@ export interface IQueue extends IResource, s3n.IBucketNotificationDestination, a
   /**
    * If this queue is server-side encrypted, this is the KMS encryption key.
    */
-  readonly encryptionMasterKey?: kms.IEncryptionKey;
-
-  /**
-   * Export a queue
-   */
-  export(): QueueAttributes;
+  readonly encryptionMasterKey?: kms.IKey;
 
   /**
    * Adds a statement to the IAM resource policy associated with this queue.
@@ -120,7 +115,7 @@ export abstract class QueueBase extends Resource implements IQueue {
   /**
    * If this queue is server-side encrypted, this is the KMS encryption key.
    */
-  public abstract readonly encryptionMasterKey?: kms.IEncryptionKey;
+  public abstract readonly encryptionMasterKey?: kms.IKey;
 
   /**
    * Controls automatic creation of policy objects.
@@ -135,11 +130,6 @@ export abstract class QueueBase extends Resource implements IQueue {
    * The set of S3 bucket IDs that are allowed to send notifications to this queue.
    */
   private readonly notifyingBuckets = new Set<string>();
-
-  /**
-   * Export a queue
-   */
-  public abstract export(): QueueAttributes;
 
   /**
    * Adds a statement to the IAM resource policy associated with this queue.

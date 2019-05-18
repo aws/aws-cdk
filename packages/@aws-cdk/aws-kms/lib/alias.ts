@@ -1,5 +1,5 @@
 import { Construct } from '@aws-cdk/cdk';
-import { IEncryptionKey } from './key';
+import { IKey } from './key';
 import { CfnAlias } from './kms.generated';
 
 const REQUIRED_ALIAS_PREFIX = 'alias/';
@@ -18,7 +18,7 @@ export interface EncryptionKeyAliasProps {
    * globally unique identifier or Amazon Resource Name (ARN). You can't
    * specify another alias.
    */
-  readonly key: IEncryptionKey;
+  readonly key: IKey;
 }
 
 /**

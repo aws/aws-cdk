@@ -1,6 +1,6 @@
 import {
   AnyIPv4, Connections, IConnectable, IPortRange, ISecurityGroup,
-  IVpcNetwork, IVpcSubnet, SecurityGroup, TcpPort  } from '@aws-cdk/aws-ec2';
+  ISubnet, IVpc, SecurityGroup, TcpPort  } from '@aws-cdk/aws-ec2';
 import { Construct, Resource, Token } from '@aws-cdk/cdk';
 import { CfnLoadBalancer } from './elasticloadbalancing.generated';
 
@@ -11,7 +11,7 @@ export interface LoadBalancerProps {
   /**
    * VPC network of the fleet instances
    */
-  readonly vpc: IVpcNetwork;
+  readonly vpc: IVpc;
 
   /**
    * Whether this is an internet-facing Load Balancer
@@ -212,7 +212,7 @@ export class LoadBalancer extends Resource implements IConnectable {
     this.connections = new Connections({ securityGroups: [this.securityGroup] });
 
     // Depending on whether the ELB has public or internal IPs, pick the right backend subnets
-    const subnets: IVpcSubnet[] = props.internetFacing ? props.vpc.publicSubnets : props.vpc.privateSubnets;
+    const subnets: ISubnet[] = props.internetFacing ? props.vpc.publicSubnets : props.vpc.privateSubnets;
 
     this.elb = new CfnLoadBalancer(this, 'Resource', {
       securityGroups: [ this.securityGroup.securityGroupId ],

@@ -80,22 +80,6 @@ export = {
     test.done();
   },
 
-  'export and import'(test: Test) {
-    const stack = new Stack();
-
-    const helloDotComZone = new PublicHostedZone(stack, 'HelloDotCom', {
-      zoneName: 'hello.com'
-    });
-
-    const refProps = new DnsValidatedCertificate(stack, 'Cert', {
-      domainName: 'hello.com',
-      hostedZone: helloDotComZone,
-    }).export();
-
-    test.ok('certificateArn' in refProps);
-    test.done();
-  },
-
   'adds validation error on domain mismatch'(test: Test) {
     const stack = new Stack();
 

@@ -18,7 +18,7 @@ export interface NonIpInstanceProps extends NonIpInstanceBaseProps {
   readonly service: IService;
 }
 
-/*
+/**
  * Instance accessible using values other than an IP address or a domain name (CNAME).
  * Specify the other values in Custom attributes.
  *

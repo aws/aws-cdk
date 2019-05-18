@@ -1,5 +1,5 @@
 import lambda = require('@aws-cdk/aws-lambda');
-import { CfnOutput, Construct, IResource, Resource, Token } from '@aws-cdk/cdk';
+import { Construct, IResource, Resource, Token } from '@aws-cdk/cdk';
 import { IReceiptRuleAction, LambdaInvocationType, ReceiptRuleActionProps, ReceiptRuleLambdaAction } from './receipt-rule-action';
 import { IReceiptRuleSet } from './receipt-rule-set';
 import { CfnReceiptRule } from './ses.generated';
@@ -13,11 +13,6 @@ export interface IReceiptRule extends IResource {
    * @attribute
    */
   readonly receiptRuleName: string;
-
-  /**
-   * Exports this receipt rule from the stack.
-   */
-  export(): ReceiptRuleAttributes;
 }
 
 /**
@@ -107,9 +102,6 @@ export class ReceiptRule extends Resource implements IReceiptRule {
   public static fromReceiptRuleName(scope: Construct, id: string, receiptRuleName: string): IReceiptRule {
     class Import extends Construct implements IReceiptRule {
       public readonly receiptRuleName = receiptRuleName;
-      public export(): ReceiptRuleAttributes {
-        return { receiptRuleName };
-      }
     }
     return new Import(scope, id);
   }
@@ -149,15 +141,6 @@ export class ReceiptRule extends Resource implements IReceiptRule {
     this.renderedActions.push(renderedAction);
   }
 
-  /**
-   * Exports this receipt rule from the stack.
-   */
-  public export(): ReceiptRuleAttributes {
-    return {
-      receiptRuleName: new CfnOutput(this, 'ReceiptRuleName', { value: this.receiptRuleName }).makeImportValue().toString()
-    };
-  }
-
   private getRenderedActions() {
     if (this.renderedActions.length === 0) {
       return undefined;
@@ -165,13 +148,6 @@ export class ReceiptRule extends Resource implements IReceiptRule {
 
     return this.renderedActions;
   }
-}
-
-export interface ReceiptRuleAttributes {
-  /**
-   * The name of the receipt rule.
-   */
-  readonly receiptRuleName: string;
 }
 
 // tslint:disable-next-line:no-empty-interface
