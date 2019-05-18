@@ -3,7 +3,7 @@ import cloudwatch = require ('@aws-cdk/aws-cloudwatch');
 import ec2 = require('@aws-cdk/aws-ec2');
 import iam = require('@aws-cdk/aws-iam');
 import cloudmap = require('@aws-cdk/aws-servicediscovery');
-import { CfnOutput, Construct, IResource, Resource, SSMParameterProvider } from '@aws-cdk/cdk';
+import { Construct, IResource, Resource, SSMParameterProvider } from '@aws-cdk/cdk';
 import { InstanceDrainHook } from './drain-hook/instance-drain-hook';
 import { CfnCluster } from './ecs.generated';
 
@@ -21,7 +21,7 @@ export interface ClusterProps {
   /**
    * The VPC where your ECS instances will be running or your ENIs will be deployed
    */
-  readonly vpc: ec2.IVpcNetwork;
+  readonly vpc: ec2.IVpc;
 }
 
 /**
@@ -43,7 +43,7 @@ export class Cluster extends Resource implements ICluster {
   /**
    * The VPC this cluster was created in.
    */
-  public readonly vpc: ec2.IVpcNetwork;
+  public readonly vpc: ec2.IVpc;
 
   /**
    * The ARN of this cluster
@@ -184,20 +184,6 @@ export class Cluster extends Resource implements ICluster {
   }
 
   /**
-   * Export the Cluster
-   */
-  public export(): ClusterAttributes {
-    return {
-      clusterName: new CfnOutput(this, 'ClusterName', { value: this.clusterName }).makeImportValue().toString(),
-      clusterArn: this.clusterArn,
-      vpc: this.vpc.export(),
-      securityGroups: this.connections.securityGroups.map(sg => sg.export()),
-      hasEc2Capacity: this.hasEc2Capacity,
-      defaultNamespace: this._defaultNamespace && this._defaultNamespace.export(),
-    };
-  }
-
-  /**
    * Metric for cluster CPU reservation
    *
    * @default average over 5 minutes
@@ -287,7 +273,7 @@ export interface ICluster extends IResource {
   /**
    * VPC that the cluster instances are running in
    */
-  readonly vpc: ec2.IVpcNetwork;
+  readonly vpc: ec2.IVpc;
 
   /**
    * Connections manager of the cluster instances
@@ -303,11 +289,6 @@ export interface ICluster extends IResource {
    * Getter for Cloudmap namespace created in the cluster
    */
   readonly defaultNamespace?: cloudmap.INamespace;
-
-  /**
-   * Export the Cluster
-   */
-  export(): ClusterAttributes;
 }
 
 /**
@@ -329,12 +310,12 @@ export interface ClusterAttributes {
   /**
    * VPC that the cluster instances are running in
    */
-  readonly vpc: ec2.VpcNetworkImportProps;
+  readonly vpc: ec2.IVpc;
 
   /**
    * Security group of the cluster instances
    */
-  readonly securityGroups: ec2.SecurityGroupAttributes[];
+  readonly securityGroups: ec2.ISecurityGroup[];
 
   /**
    * Whether the given cluster has EC2 capacity
@@ -348,7 +329,7 @@ export interface ClusterAttributes {
    *
    * @default - No default namespace
    */
-  readonly defaultNamespace?: cloudmap.NamespaceImportProps;
+  readonly defaultNamespace?: cloudmap.INamespace;
 }
 
 /**
@@ -368,7 +349,7 @@ class ImportedCluster extends Construct implements ICluster {
   /**
    * VPC that the cluster instances are running in
    */
-  public readonly vpc: ec2.IVpcNetwork;
+  public readonly vpc: ec2.IVpc;
 
   /**
    * Security group of the cluster instances
@@ -385,12 +366,12 @@ class ImportedCluster extends Construct implements ICluster {
    */
   private _defaultNamespace?: cloudmap.INamespace;
 
-  constructor(scope: Construct, id: string, private readonly props: ClusterAttributes) {
+  constructor(scope: Construct, id: string, props: ClusterAttributes) {
     super(scope, id);
     this.clusterName = props.clusterName;
-    this.vpc = ec2.VpcNetwork.import(this, "vpc", props.vpc);
+    this.vpc = ec2.Vpc.fromVpcAttributes(this, "vpc", props.vpc);
     this.hasEc2Capacity = props.hasEc2Capacity !== false;
-    this._defaultNamespace = props.defaultNamespace && cloudmap.Namespace.import(this, 'Namespace', props.defaultNamespace);
+    this._defaultNamespace = props.defaultNamespace;
 
     this.clusterArn = props.clusterArn !== undefined ? props.clusterArn : this.node.stack.formatArn({
       service: 'ecs',
@@ -413,10 +394,6 @@ class ImportedCluster extends Construct implements ICluster {
 
   public get defaultNamespace(): cloudmap.INamespace | undefined {
     return this._defaultNamespace;
-  }
-
-  public export() {
-    return this.props;
   }
 }
 
@@ -473,7 +450,7 @@ export interface NamespaceOptions {
    *
    * @default VPC of the cluster for Private DNS Namespace, otherwise none
    */
-  readonly vpc?: ec2.IVpcNetwork;
+  readonly vpc?: ec2.IVpc;
 }
 
 /**

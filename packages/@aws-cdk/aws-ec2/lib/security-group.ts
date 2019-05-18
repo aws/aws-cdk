@@ -1,8 +1,8 @@
-import { CfnOutput, Construct, IResource, Resource, Token } from '@aws-cdk/cdk';
+import { Construct, IResource, Resource, Token } from '@aws-cdk/cdk';
 import { Connections, IConnectable } from './connections';
 import { CfnSecurityGroup, CfnSecurityGroupEgress, CfnSecurityGroupIngress } from './ec2.generated';
 import { IPortRange, ISecurityGroupRule } from './security-group-rule';
-import { IVpcNetwork } from './vpc';
+import { IVpc } from './vpc';
 
 const isSecurityGroupSymbol = Symbol.for('aws-cdk:isSecurityGroup');
 
@@ -34,18 +34,6 @@ export interface ISecurityGroup extends IResource, ISecurityGroupRule, IConnecta
    * SecurityGroup object.
    */
   addEgressRule(peer: ISecurityGroupRule, connection: IPortRange, description?: string, remoteRule?: boolean): void;
-
-  /**
-   * Export the security group
-   */
-  export(): SecurityGroupAttributes;
-}
-
-export interface SecurityGroupAttributes {
-  /**
-   * ID of security group
-   */
-  readonly securityGroupId: string;
 }
 
 /**
@@ -122,11 +110,6 @@ abstract class SecurityGroupBase extends Resource implements ISecurityGroup {
   public toEgressRuleJSON(): any {
     return { destinationSecurityGroupId: this.securityGroupId };
   }
-
-  /**
-   * Export this SecurityGroup for use in a different Stack
-   */
-  public abstract export(): SecurityGroupAttributes;
 }
 
 /**
@@ -221,7 +204,7 @@ export interface SecurityGroupProps {
   /**
    * The VPC in which to create the security group.
    */
-  readonly vpc: IVpcNetwork;
+  readonly vpc: IVpc;
 
   /**
    * Whether to allow all outbound traffic by default.
@@ -250,9 +233,6 @@ export class SecurityGroup extends SecurityGroupBase {
   public static fromSecurityGroupId(scope: Construct, id: string, securityGroupId: string): ISecurityGroup {
     class Import extends SecurityGroupBase {
       public securityGroupId = securityGroupId;
-      public export(): SecurityGroupAttributes {
-        return { securityGroupId };
-      }
     }
 
     return new Import(scope, id);
@@ -305,15 +285,6 @@ export class SecurityGroup extends SecurityGroupBase {
     this.securityGroupName = this.securityGroup.securityGroupName;
 
     this.addDefaultEgressRule();
-  }
-
-  /**
-   * Export this SecurityGroup for use in a different Stack
-   */
-  public export(): SecurityGroupAttributes {
-    return {
-      securityGroupId: new CfnOutput(this, 'SecurityGroupId', { value: this.securityGroupId }).makeImportValue().toString()
-    };
   }
 
   public addIngressRule(peer: ISecurityGroupRule, connection: IPortRange, description?: string, remoteRule?: boolean) {

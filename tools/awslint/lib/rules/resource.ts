@@ -14,7 +14,7 @@ export const resourceLinter = new Linter(a => ResourceReflection.findAll(a));
 export interface Attribute {
   site: AttributeSite;
   property: reflect.Property;
-  name: string; // bucketArn
+  names: string[]; // bucketArn
 }
 
 export enum AttributeSite {
@@ -91,7 +91,8 @@ export class ResourceReflection {
 
       // if there's an `@attribute` doc tag with a value other than "true"
       // it should be used as the attribute name instead of the property name
-      const propertyName = (tag && tag !== 'true') ? tag : p.name;
+      // multiple attribute names can be listed as a comma-delimited list
+      const propertyNames = (tag && tag !== 'true') ? tag.split(',') : [ p.name ];
 
       // check if this attribute is defined on an interface or on a class
       const property = findDeclarationSite(p);
@@ -99,7 +100,7 @@ export class ResourceReflection {
 
       result.push({
         site,
-        name: propertyName,
+        names: propertyNames,
         property
       });
     }
@@ -158,7 +159,7 @@ resourceLinter.add({
   message: 'resources must represent all cloudformation attributes as attribute properties. missing property: ',
   eval: e => {
     for (const name of e.ctx.cfn.attributeNames) {
-      const found = e.ctx.attributes.find(a => a.name === name);
+      const found = e.ctx.attributes.find(a => a.names.includes(name));
       e.assert(found, `${e.ctx.fqn}.${name}`, name);
     }
   }

@@ -103,7 +103,7 @@ export interface RotationSingleUserProps extends RotationSingleUserOptions {
   /**
    * The VPC where the Lambda rotation function will run.
    */
-  readonly vpc: ec2.IVpcNetwork;
+  readonly vpc: ec2.IVpc;
 
   /**
    * The type of subnets in the VPC where the Lambda rotation function will run.

@@ -26,7 +26,7 @@ export interface InstanceProps {
    *
    * Must be at least 2 subnets in two different AZs.
    */
-  readonly vpc: ec2.IVpcNetwork;
+  readonly vpc: ec2.IVpc;
 
   /**
    * Where to place the instances within the VPC
@@ -82,7 +82,7 @@ export interface Login {
    *
    * @default default master key
    */
-  readonly kmsKey?: kms.IEncryptionKey;
+  readonly kmsKey?: kms.IKey;
 }
 
 /**
