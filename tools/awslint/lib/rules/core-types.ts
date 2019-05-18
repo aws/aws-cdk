@@ -65,7 +65,7 @@ export class CoreTypes {
       return false;
     }
 
-    return c.extends(c.system.findFqn(CoreTypesFqn.Construct)); // TODO I changed this
+    return c.extends(c.system.findFqn(CoreTypesFqn.Construct));
   }
 
   /**
