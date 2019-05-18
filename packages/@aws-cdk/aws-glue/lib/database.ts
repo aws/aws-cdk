@@ -1,5 +1,5 @@
 import s3 = require('@aws-cdk/aws-s3');
-import { CfnOutput, Construct, IResource, Resource } from '@aws-cdk/cdk';
+import { Construct, IResource, Resource } from '@aws-cdk/cdk';
 import { CfnDatabase } from './glue.generated';
 
 export interface IDatabase extends IResource {
@@ -26,21 +26,6 @@ export interface IDatabase extends IResource {
    * @attribute
    */
   readonly databaseName: string;
-
-  /**
-   * The location of the database (for example, an HDFS path).
-   */
-  readonly locationUri: string;
-
-  export(): DatabaseAttributes;
-}
-
-export interface DatabaseAttributes {
-  readonly catalogArn: string;
-  readonly catalogId: string;
-  readonly databaseArn: string;
-  readonly databaseName: string;
-  readonly locationUri: string;
 }
 
 export interface DatabaseProps {
@@ -68,43 +53,6 @@ export class Database extends Resource implements IDatabase {
       public databaseName = scope.node.stack.parseArn(databaseArn).resourceName!;
       public catalogArn = scope.node.stack.formatArn({ service: 'glue', resource: 'catalog' });
       public catalogId = scope.node.stack.accountId;
-
-      public get locationUri(): string {
-        throw new Error(`glue.Database.fromDatabaseArn: no "locationUri"`);
-      }
-
-      public export(): DatabaseAttributes {
-        return {
-          catalogArn: this.catalogArn,
-          catalogId: this.catalogId,
-          databaseName: this.databaseName,
-          databaseArn: this.databaseArn,
-          locationUri: this.locationUri,
-        };
-      }
-    }
-
-    return new Import(scope, id);
-  }
-
-  /**
-   * Creates a Database construct that represents an external database.
-   *
-   * @param scope The scope creating construct (usually `this`).
-   * @param id The construct's id.
-   * @param attrs A `DatabaseAttributes` object. Can be obtained from a call to `database.export()` or manually created.
-   */
-  public static fromDatabaseAttributes(scope: Construct, id: string, attrs: DatabaseAttributes): IDatabase {
-
-    class Import extends Construct implements IDatabase {
-      public readonly catalogArn = attrs.catalogArn;
-      public readonly catalogId = attrs.catalogId;
-      public readonly databaseArn = attrs.databaseArn;
-      public readonly databaseName = attrs.databaseName;
-      public readonly locationUri = attrs.locationUri;
-      public export() {
-        return attrs;
-      }
     }
 
     return new Import(scope, id);
@@ -166,18 +114,5 @@ export class Database extends Resource implements IDatabase {
       service: 'glue',
       resource: 'catalog'
     });
-  }
-
-  /**
-   * Exports this database from the stack.
-   */
-  public export(): DatabaseAttributes {
-    return {
-      catalogArn: new CfnOutput(this, 'CatalogArn', { value: this.catalogArn }).makeImportValue().toString(),
-      catalogId: new CfnOutput(this, 'CatalogId', { value: this.catalogId }).makeImportValue().toString(),
-      databaseArn: new CfnOutput(this, 'DatabaseArn', { value: this.databaseArn }).makeImportValue().toString(),
-      databaseName: new CfnOutput(this, 'DatabaseName', { value: this.databaseName }).makeImportValue().toString(),
-      locationUri: new CfnOutput(this, 'LocationURI', { value: this.locationUri }).makeImportValue().toString()
-    };
   }
 }

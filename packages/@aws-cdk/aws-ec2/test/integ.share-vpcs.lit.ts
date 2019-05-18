@@ -4,7 +4,7 @@ import ec2 = require("../lib");
 const app = new cdk.App();
 
 interface ConstructThatTakesAVpcProps {
-  vpc: ec2.IVpcNetwork;
+  vpc: ec2.IVpc;
 }
 
 class ConstructThatTakesAVpc extends cdk.Construct {
@@ -18,17 +18,17 @@ class ConstructThatTakesAVpc extends cdk.Construct {
  * Stack1 creates the VPC
  */
 class Stack1 extends cdk.Stack {
-  public readonly vpc: ec2.VpcNetwork;
+  public readonly vpc: ec2.Vpc;
 
   constructor(scope: cdk.App, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
-    this.vpc = new ec2.VpcNetwork(this, 'VPC');
+    this.vpc = new ec2.Vpc(this, 'VPC');
   }
 }
 
 interface Stack2Props extends cdk.StackProps {
-  vpc: ec2.IVpcNetwork;
+  vpc: ec2.IVpc;
 }
 
 /**
