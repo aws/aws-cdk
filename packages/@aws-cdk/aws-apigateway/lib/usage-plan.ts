@@ -197,7 +197,7 @@ export class UsagePlan extends Resource {
   }
 
   private renderThrottle(props: ThrottleSettings | undefined): (CfnUsagePlan.ThrottleSettingsProperty | Token) {
-    let ret: CfnUsagePlan.ThrottleSettingsProperty | Token = {};
+    let ret: CfnUsagePlan.ThrottleSettingsProperty | Token;
     if (props !== undefined) {
       const burstLimit = props.burstLimit
       validateInteger(burstLimit, 'Throttle burst limit')
@@ -209,7 +209,7 @@ export class UsagePlan extends Resource {
         rateLimit: rateLimit
       }
     }
-    return ret;
+    return ret!;
   }
 
   private renderThrottlePerMethod(throttlePerMethod?: ThrottlingPerMethod[]) {
