@@ -99,7 +99,7 @@ export = {
       const targetGroup = listener.addTargets('Fleet', { protocol: lbv2.ApplicationProtocol.Http });
 
       new codedeploy.ServerDeploymentGroup(stack, 'DeploymentGroup', {
-        loadBalancer: targetGroup,
+        loadBalancer: codedeploy.LoadBalancer.application(targetGroup),
       });
 
       expect(stack).to(haveResource('AWS::CodeDeploy::DeploymentGroup', {
@@ -133,7 +133,7 @@ export = {
       const targetGroup = listener.addTargets('Fleet', { port: 80 });
 
       new codedeploy.ServerDeploymentGroup(stack, 'DeploymentGroup', {
-        loadBalancer: targetGroup,
+        loadBalancer: codedeploy.LoadBalancer.network(targetGroup),
       });
 
       expect(stack).to(haveResource('AWS::CodeDeploy::DeploymentGroup', {
