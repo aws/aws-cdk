@@ -1,4 +1,4 @@
-import { expect, haveResource, haveResourceLike, ResourcePart, SynthUtils } from '@aws-cdk/assert';
+import { expect, haveResource, haveResourceLike, ResourcePart } from '@aws-cdk/assert';
 import cdk = require('@aws-cdk/cdk');
 import { App, Stack } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
@@ -328,21 +328,14 @@ export = {
     test.done();
   },
 
-  'import/export'(test: Test) {
+  'fromRestApiId'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
 
     // WHEN
     const imported = apigateway.RestApi.fromRestApiId(stack, 'imported-api', 'api-rxt4498f');
-    const api = new apigateway.RestApi(stack, 'MyRestApi');
-    api.root.addMethod('GET');
 
     // THEN
-    stack.node.prepareTree();
-    test.deepEqual(SynthUtils.toCloudFormation(stack).Outputs.MyRestApiRestApiIdB93C5C2D, {
-      Value: { Ref: 'MyRestApi2D1F47A9' },
-      Export: { Name: 'Stack:MyRestApiRestApiIdB93C5C2D' }
-    });
     test.deepEqual(imported.node.resolve(imported.restApiId), 'api-rxt4498f');
     test.done();
   },
