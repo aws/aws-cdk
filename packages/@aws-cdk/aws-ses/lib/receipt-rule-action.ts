@@ -309,7 +309,7 @@ export interface ReceiptRuleS3ActionProps {
    *
    * @default no encryption
    */
-  readonly kmsKey?: kms.IEncryptionKey;
+  readonly kmsKey?: kms.IKey;
 
   /**
    * The key prefix of the S3 bucket.

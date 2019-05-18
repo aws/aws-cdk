@@ -224,7 +224,7 @@ export class Pipeline extends PipelineBase {
     // If a bucket has been provided, use it - otherwise, create a bucket.
     let propsBucket = props.artifactBucket;
     if (!propsBucket) {
-      const encryptionKey = new kms.EncryptionKey(this, 'ArtifactsBucketEncryptionKey');
+      const encryptionKey = new kms.Key(this, 'ArtifactsBucketEncryptionKey');
       propsBucket = new s3.Bucket(this, 'ArtifactsBucket', {
         encryptionKey,
         encryption: s3.BucketEncryption.Kms,

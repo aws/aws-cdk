@@ -94,7 +94,13 @@ export class CfnResourceReflection {
     this.fullname = fullname;
 
     this.namespace = fullname.split('::').slice(0, 2).join('::');
-    this.attributePrefix = this.basename[0].toLowerCase() + this.basename.slice(1);
+
+    // special-case
+    const basename = this.basename
+      .replace(/VPC/g, 'Vpc')
+      .replace(/DB/g, 'Db');
+
+    this.attributePrefix = basename[0].toLowerCase() + basename.slice(1);
 
     this.attributeNames = cls.ownProperties
       .filter(p => (p.docs.docs.custom || {}).cloudformationAttribute)

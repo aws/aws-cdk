@@ -6,7 +6,7 @@ import autoscaling = require('../lib');
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-cdk-autoscaling-integ');
 
-const vpc = new ec2.VpcNetwork(stack, 'VPC', {
+const vpc = new ec2.Vpc(stack, 'VPC', {
   maxAZs: 2
 });
 

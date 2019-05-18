@@ -8,7 +8,7 @@
       }
     },
     "Key": {
-      "Type": "@aws-cdk/aws-kms.EncryptionKey"
+      "Type": "@aws-cdk/aws-kms.Key"
     },
     "BuildProject": {
       "Type": "@aws-cdk/aws-codebuild.PipelineProject",

@@ -10,7 +10,7 @@ export = {
   'Trivial add listener'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
-    const vpc = new ec2.VpcNetwork(stack, 'Stack');
+    const vpc = new ec2.Vpc(stack, 'Stack');
     const lb = new elbv2.NetworkLoadBalancer(stack, 'LB', { vpc });
 
     // WHEN
@@ -31,7 +31,7 @@ export = {
   'Can add target groups'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
-    const vpc = new ec2.VpcNetwork(stack, 'Stack');
+    const vpc = new ec2.Vpc(stack, 'Stack');
     const lb = new elbv2.NetworkLoadBalancer(stack, 'LB', { vpc });
     const listener = lb.addListener('Listener', { port: 443 });
     const group = new elbv2.NetworkTargetGroup(stack, 'TargetGroup', { vpc, port: 80 });
@@ -55,7 +55,7 @@ export = {
   'Can implicitly create target groups'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
-    const vpc = new ec2.VpcNetwork(stack, 'Stack');
+    const vpc = new ec2.Vpc(stack, 'Stack');
     const lb = new elbv2.NetworkLoadBalancer(stack, 'LB', { vpc });
     const listener = lb.addListener('Listener', { port: 443 });
 
@@ -89,7 +89,7 @@ export = {
   'Enable health check for targets'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
-    const vpc = new ec2.VpcNetwork(stack, 'Stack');
+    const vpc = new ec2.Vpc(stack, 'Stack');
     const lb = new elbv2.NetworkLoadBalancer(stack, 'LB', { vpc });
     const listener = lb.addListener('Listener', { port: 443 });
 
@@ -117,7 +117,7 @@ export = {
   'Enable taking a dependency on an NLB target group\'s load balancer'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
-    const vpc = new ec2.VpcNetwork(stack, 'Stack');
+    const vpc = new ec2.Vpc(stack, 'Stack');
     const lb = new elbv2.NetworkLoadBalancer(stack, 'LB', { vpc });
     const listener = lb.addListener('Listener', { port: 443 });
     const group = listener.addTargets('Group', {
@@ -149,7 +149,7 @@ export = {
   'Trivial add TLS listener'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
-    const vpc = new ec2.VpcNetwork(stack, 'Stack');
+    const vpc = new ec2.Vpc(stack, 'Stack');
     const lb = new elbv2.NetworkLoadBalancer(stack, 'LB', { vpc });
     const cert = new acm.Certificate(stack, 'Certificate', {
       domainName: 'example.com'
@@ -179,7 +179,7 @@ export = {
 
   'Invalid Protocol listener'(test: Test) {
     const stack = new cdk.Stack();
-    const vpc = new ec2.VpcNetwork(stack, 'Stack');
+    const vpc = new ec2.Vpc(stack, 'Stack');
     const lb = new elbv2.NetworkLoadBalancer(stack, 'LB', { vpc });
 
     test.throws(() => lb.addListener('Listener', {
@@ -193,7 +193,7 @@ export = {
 
   'Protocol & certs TLS listener'(test: Test) {
     const stack = new cdk.Stack();
-    const vpc = new ec2.VpcNetwork(stack, 'Stack');
+    const vpc = new ec2.Vpc(stack, 'Stack');
     const lb = new elbv2.NetworkLoadBalancer(stack, 'LB', { vpc });
 
     test.throws(() => lb.addListener('Listener', {
@@ -207,7 +207,7 @@ export = {
 
   'TLS and certs specified listener'(test: Test) {
     const stack = new cdk.Stack();
-    const vpc = new ec2.VpcNetwork(stack, 'Stack');
+    const vpc = new ec2.Vpc(stack, 'Stack');
     const lb = new elbv2.NetworkLoadBalancer(stack, 'LB', { vpc });
     const cert = new acm.Certificate(stack, 'Certificate', {
       domainName: 'example.com'

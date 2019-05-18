@@ -303,7 +303,7 @@ export = {
     // GIVEN
     const stack = new cdk.Stack();
     const api = new apigateway.RestApi(stack, 'test-api', { deploy: false });
-    const vpc = new ec2.VpcNetwork(stack, 'VPC');
+    const vpc = new ec2.Vpc(stack, 'VPC');
     const nlb = new elbv2.NetworkLoadBalancer(stack, 'NLB', {
       vpc
     });

@@ -626,7 +626,7 @@ export = {
       const stack = new cdk.Stack();
 
       const bucket = new s3.Bucket(stack, 'MyBucket');
-      const vpc = new ec2.VpcNetwork(stack, 'MyVPC');
+      const vpc = new ec2.Vpc(stack, 'MyVPC');
       const securityGroup = new ec2.SecurityGroup(stack, 'SecurityGroup1', {
           groupName: 'Bob',
           vpc,
@@ -673,7 +673,7 @@ export = {
       const stack = new cdk.Stack();
 
       const bucket = new s3.Bucket(stack, 'MyBucket');
-      const vpc = new ec2.VpcNetwork(stack, 'MyVPC');
+      const vpc = new ec2.Vpc(stack, 'MyVPC');
       const securityGroup = new ec2.SecurityGroup(stack, 'SecurityGroup1', {
           groupName: 'Bob',
           vpc,
@@ -695,7 +695,7 @@ export = {
     'with VPC configuration but allowAllOutbound identified'(test: Test) {
       const stack = new cdk.Stack();
       const bucket = new s3.Bucket(stack, 'MyBucket');
-      const vpc = new ec2.VpcNetwork(stack, 'MyVPC');
+      const vpc = new ec2.Vpc(stack, 'MyVPC');
       const securityGroup = new ec2.SecurityGroup(stack, 'SecurityGroup1', {
           groupName: 'Bob',
           vpc,

@@ -19,9 +19,11 @@ export interface AliasTargetInstanceProps extends BaseInstanceProps {
   readonly service: IService;
 }
 
-/*
+/**
  * Instance that uses Route 53 Alias record type. Currently, the only resource types supported are Elastic Load
  * Balancers.
+ *
+ * @resource AWS::ServiceDiscovery::Instance
  */
 export class AliasTargetInstance extends InstanceBase {
   /**

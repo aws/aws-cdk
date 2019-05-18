@@ -10,7 +10,7 @@ export = {
   'we can add a lifecycle hook to an ASG'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
-    const vpc = new ec2.VpcNetwork(stack, 'VPC');
+    const vpc = new ec2.Vpc(stack, 'VPC');
     const asg = new autoscaling.AutoScalingGroup(stack, 'ASG', {
       vpc,
       instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.M4, ec2.InstanceSize.Micro),

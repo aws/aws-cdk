@@ -1,4 +1,4 @@
-import { CfnOutput, Construct, Resource } from '@aws-cdk/cdk';
+import { Construct, Resource } from '@aws-cdk/cdk';
 import { Grant } from './grant';
 import { CfnRole } from './iam.generated';
 import { IIdentity } from './identity-base';
@@ -102,38 +102,13 @@ export class Role extends Resource implements IRole {
    * @param roleArn the ARN of the role to import
    */
   public static fromRoleArn(scope: Construct, id: string, roleArn: string): IRole {
-    return Role.fromRoleAttributes(scope, id, { roleArn });
-  }
 
-  /**
-   * Import a role that already exists
-   */
-  public static fromRoleAttributes(scope: Construct, id: string, attrs: RoleAttributes): IRole {
-
-    /**
-     * A role that already exists
-     */
     class Import extends Construct implements IRole {
       public readonly grantPrincipal: IPrincipal = this;
       public readonly assumeRoleAction: string = 'sts:AssumeRole';
-      public readonly policyFragment = new ArnPrincipal(attrs.roleArn).policyFragment;
-      public readonly roleArn = attrs.roleArn;
-      public readonly roleName = scope.node.stack.parseArn(attrs.roleArn).resourceName!;
-      private readonly _roleId = attrs.roleId;
-
-      public get roleId() {
-        if (!this._roleId) {
-          throw new Error(`No roleId specified for imported role`);
-        }
-        return this._roleId;
-      }
-
-      public export(): RoleAttributes {
-        return {
-          roleArn: this.roleArn,
-          roleId: this._roleId
-        };
-      }
+      public readonly policyFragment = new ArnPrincipal(roleArn).policyFragment;
+      public readonly roleArn = roleArn;
+      public readonly roleName = scope.node.stack.parseArn(roleArn).resourceName!;
 
       public addToPolicy(_statement: PolicyStatement): boolean {
         // Statement will be added to resource instead
@@ -169,6 +144,7 @@ export class Role extends Resource implements IRole {
     }
 
     return new Import(scope, id);
+
   }
 
   public readonly grantPrincipal: IPrincipal = this;
@@ -188,6 +164,8 @@ export class Role extends Resource implements IRole {
   /**
    * Returns the stable and unique string identifying the role. For example,
    * AIDAJQABLZS4A3QDU576Q.
+   *
+   * @attribute
    */
   public readonly roleId: string;
 
@@ -238,13 +216,6 @@ export class Role extends Resource implements IRole {
       }
       return result;
     }
-  }
-
-  public export(): RoleAttributes {
-    return {
-      roleArn: new CfnOutput(this, 'RoleArn', { value: this.roleArn }).makeImportValue(),
-      roleId: new CfnOutput(this, 'RoleId', { value: this.roleId }).makeImportValue()
-    };
   }
 
   /**
@@ -310,24 +281,11 @@ export interface IRole extends IIdentity {
   readonly roleArn: string;
 
   /**
-   * Returns the stable and unique string identifying the role. For example,
-   * AIDAJQABLZS4A3QDU576Q.
-   *
-   * @attribute
-   */
-  readonly roleId: string;
-
-  /**
    * Returns the name of this role.
    *
    * @attribute
    */
   readonly roleName: string;
-
-  /**
-   * Export this role to another stack.
-   */
-  export(): RoleAttributes;
 
   /**
    * Grant the actions defined in actions to the identity Principal on this resource.
@@ -361,23 +319,4 @@ function validateMaxSessionDuration(duration?: number) {
   if (duration < 3600 || duration > 43200) {
     throw new Error(`maxSessionDuration is set to ${duration}, but must be >= 3600sec (1hr) and <= 43200sec (12hrs)`);
   }
-}
-
-/**
- * Properties to import a Role
- */
-export interface RoleAttributes {
-  /**
-   * The role's ARN
-   */
-  readonly roleArn: string;
-
-  /**
-   * The stable and unique string identifying the role. For example,
-   * AIDAJQABLZS4A3QDU576Q.
-   *
-   * @default If "roleId" is not specified for an imported role, then
-   * `role.roleId` will throw an exception. In most cases, role ID is not really needed.
-   */
-  readonly roleId?: string;
 }

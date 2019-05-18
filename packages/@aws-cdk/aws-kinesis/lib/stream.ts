@@ -1,7 +1,7 @@
 import iam = require('@aws-cdk/aws-iam');
 import kms = require('@aws-cdk/aws-kms');
 import logs = require('@aws-cdk/aws-logs');
-import { CfnOutput, Construct, HashedAddressingScheme, IResource, Resource } from '@aws-cdk/cdk';
+import { Construct, HashedAddressingScheme, IResource, Resource } from '@aws-cdk/cdk';
 import { CfnStream } from './kinesis.generated';
 
 export interface IStream extends IResource, logs.ILogSubscriptionDestination {
@@ -22,12 +22,7 @@ export interface IStream extends IResource, logs.ILogSubscriptionDestination {
   /**
    * Optional KMS encryption key associated with this stream.
    */
-  readonly encryptionKey?: kms.IEncryptionKey;
-
-  /**
-   * Exports this stream from the stack.
-   */
-  export(): StreamAttributes;
+  readonly encryptionKey?: kms.IKey;
 
   /**
    * Grant read permissions for this stream and its contents to an IAM
@@ -71,7 +66,7 @@ export interface StreamAttributes {
   /**
    * The KMS key securing the contents of the stream if encryption is enabled.
    */
-  readonly encryptionKey?: kms.EncryptionKeyImportProps;
+  readonly encryptionKey?: kms.IKey;
 }
 
 /**
@@ -105,14 +100,12 @@ abstract class StreamBase extends Resource implements IStream {
   /**
    * Optional KMS encryption key associated with this stream.
    */
-  public abstract readonly encryptionKey?: kms.IEncryptionKey;
+  public abstract readonly encryptionKey?: kms.IKey;
 
   /**
    * The role that can be used by CloudWatch logs to write to this stream
    */
   private cloudWatchLogsRole?: iam.Role;
-
-  public abstract export(): StreamAttributes;
 
   /**
    * Grant write permissions for this stream and its contents to an IAM
@@ -278,7 +271,7 @@ export interface StreamProps {
    * @default If encryption is set to "Kms" and this property is undefined, a
    * new KMS key will be created and associated with this stream.
    */
-  readonly encryptionKey?: kms.IEncryptionKey;
+  readonly encryptionKey?: kms.IKey;
 }
 
 /**
@@ -298,17 +291,10 @@ export class Stream extends StreamBase {
    * @param attrs Stream import properties
    */
   public static fromStreamAttributes(scope: Construct, id: string, attrs: StreamAttributes): IStream {
-    const encryptionKey = attrs.encryptionKey
-      ? kms.EncryptionKey.import(scope, 'Key', attrs.encryptionKey)
-      : undefined;
-
     class Import extends StreamBase {
       public readonly streamArn = attrs.streamArn;
       public readonly streamName = scope.node.stack.parseArn(attrs.streamArn).resourceName!;
-      public readonly encryptionKey = encryptionKey;
-      public export() {
-        return attrs;
-      }
+      public readonly encryptionKey = attrs.encryptionKey;
     }
 
     return new Import(scope, id);
@@ -316,7 +302,7 @@ export class Stream extends StreamBase {
 
   public readonly streamArn: string;
   public readonly streamName: string;
-  public readonly encryptionKey?: kms.IEncryptionKey;
+  public readonly encryptionKey?: kms.IKey;
 
   private readonly stream: CfnStream;
 
@@ -345,22 +331,12 @@ export class Stream extends StreamBase {
   }
 
   /**
-   * Exports this stream from the stack.
-   */
-  public export(): StreamAttributes {
-    return {
-      streamArn: new CfnOutput(this, 'StreamArn', { value: this.streamArn }).makeImportValue().toString(),
-      encryptionKey: this.encryptionKey ? this.encryptionKey.export() : undefined,
-    };
-  }
-
-  /**
    * Set up key properties and return the Stream encryption property from the
    * user's configuration.
    */
   private parseEncryption(props: StreamProps): {
     streamEncryption?: CfnStream.StreamEncryptionProperty,
-    encryptionKey?: kms.IEncryptionKey
+    encryptionKey?: kms.IKey
   } {
 
     // default to unencrypted.
@@ -376,7 +352,7 @@ export class Stream extends StreamBase {
     }
 
     if (encryptionType === StreamEncryption.Kms) {
-      const encryptionKey = props.encryptionKey || new kms.EncryptionKey(this, 'Key', {
+      const encryptionKey = props.encryptionKey || new kms.Key(this, 'Key', {
         description: `Created by ${this.node.path}`
       });
 

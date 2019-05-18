@@ -1,5 +1,5 @@
 import { expect, haveResource } from '@aws-cdk/assert';
-import { CidrIPv4, Connections, VpcNetwork } from '@aws-cdk/aws-ec2';
+import { CidrIPv4, Connections, Vpc } from '@aws-cdk/aws-ec2';
 import { Stack } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
 import { ILoadBalancerTarget, LoadBalancer, LoadBalancingProtocol } from '../lib';
@@ -8,7 +8,7 @@ export = {
   'test specifying nonstandard port works'(test: Test) {
     const stack = new Stack(undefined, undefined, { env: { account: '1234', region: 'test' }});
     stack.node.setContext('availability-zones:1234:test', ['test-1a', 'test-1b']);
-    const vpc = new VpcNetwork(stack, 'VCP');
+    const vpc = new Vpc(stack, 'VCP');
 
     const lb = new LoadBalancer(stack, 'LB', { vpc });
 
@@ -34,7 +34,7 @@ export = {
   'add a health check'(test: Test) {
     // GIVEN
     const stack = new Stack();
-    const vpc = new VpcNetwork(stack, 'VCP');
+    const vpc = new Vpc(stack, 'VCP');
 
     // WHEN
     new LoadBalancer(stack, 'LB', {
@@ -64,7 +64,7 @@ export = {
   'add a listener and load balancing target'(test: Test) {
     // GIVEN
     const stack = new Stack();
-    const vpc = new VpcNetwork(stack, 'VCP');
+    const vpc = new Vpc(stack, 'VCP');
     const elb = new LoadBalancer(stack, 'LB', {
       vpc,
       healthCheck: {

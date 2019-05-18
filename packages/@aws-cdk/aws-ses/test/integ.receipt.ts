@@ -19,7 +19,7 @@ const fn = new lambda.Function(stack, 'Function', {
 
 const bucket = new s3.Bucket(stack, 'Bucket');
 
-const kmsKey = new kms.EncryptionKey(stack, 'Key');
+const kmsKey = new kms.Key(stack, 'Key');
 
 const ruleSet = new ses.ReceiptRuleSet(stack, 'RuleSet', {
   dropSpam: true

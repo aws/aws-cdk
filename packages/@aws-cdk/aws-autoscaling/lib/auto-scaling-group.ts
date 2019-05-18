@@ -148,7 +148,7 @@ export interface AutoScalingGroupProps extends CommonAutoScalingGroupProps {
   /**
    * VPC to launch these instances in.
    */
-  readonly vpc: ec2.IVpcNetwork;
+  readonly vpc: ec2.IVpc;
 
   /**
    * Type of instance to launch

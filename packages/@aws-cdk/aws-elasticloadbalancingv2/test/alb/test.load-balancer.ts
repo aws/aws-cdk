@@ -10,7 +10,7 @@ export = {
   'Trivial construction: internet facing'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
-    const vpc = new ec2.VpcNetwork(stack, 'Stack');
+    const vpc = new ec2.Vpc(stack, 'Stack');
 
     // WHEN
     new elbv2.ApplicationLoadBalancer(stack, 'LB', {
@@ -35,7 +35,7 @@ export = {
   'internet facing load balancer has dependency on IGW'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
-    const vpc = new ec2.VpcNetwork(stack, 'Stack');
+    const vpc = new ec2.Vpc(stack, 'Stack');
 
     // WHEN
     new elbv2.ApplicationLoadBalancer(stack, 'LB', {
@@ -58,7 +58,7 @@ export = {
   'Trivial construction: internal'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
-    const vpc = new ec2.VpcNetwork(stack, 'Stack');
+    const vpc = new ec2.Vpc(stack, 'Stack');
 
     // WHEN
     new elbv2.ApplicationLoadBalancer(stack, 'LB', { vpc });
@@ -80,7 +80,7 @@ export = {
   'Attributes'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
-    const vpc = new ec2.VpcNetwork(stack, 'Stack');
+    const vpc = new ec2.Vpc(stack, 'Stack');
 
     // WHEN
     new elbv2.ApplicationLoadBalancer(stack, 'LB', {
@@ -114,7 +114,7 @@ export = {
   'Access logging'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack(undefined, undefined, { env: { region: 'us-east-1' }});
-    const vpc = new ec2.VpcNetwork(stack, 'Stack');
+    const vpc = new ec2.Vpc(stack, 'Stack');
     const bucket = new s3.Bucket(stack, 'AccessLoggingBucket');
     const lb = new elbv2.ApplicationLoadBalancer(stack, 'LB', { vpc });
 
@@ -163,7 +163,7 @@ export = {
   'access logging with prefix'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack(undefined, undefined, { env: { region: 'us-east-1' }});
-    const vpc = new ec2.VpcNetwork(stack, 'Stack');
+    const vpc = new ec2.Vpc(stack, 'Stack');
     const bucket = new s3.Bucket(stack, 'AccessLoggingBucket');
     const lb = new elbv2.ApplicationLoadBalancer(stack, 'LB', { vpc });
 
@@ -210,7 +210,7 @@ export = {
   'Exercise metrics'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
-    const vpc = new ec2.VpcNetwork(stack, 'Stack');
+    const vpc = new ec2.Vpc(stack, 'Stack');
     const lb = new elbv2.ApplicationLoadBalancer(stack, 'LB', { vpc });
 
     // WHEN
@@ -251,7 +251,7 @@ export = {
   'loadBalancerName'(test: Test) {
     // GIVEN
     const stack = new Stack();
-    const vpc = new ec2.VpcNetwork(stack, 'Stack');
+    const vpc = new ec2.Vpc(stack, 'Stack');
 
     // WHEN
     new elbv2.ApplicationLoadBalancer(stack, 'ALB', {

@@ -25,11 +25,6 @@ export interface IHostedZone extends IResource {
    * @attribute
    */
   readonly hostedZoneNameServers?: string[];
-
-  /**
-   * Export the hosted zone
-   */
-  export(): HostedZoneAttributes;
 }
 
 /**

@@ -12,7 +12,7 @@ export = {
   'add a rds rotation single user to a cluster'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
-    const vpc = new ec2.VpcNetwork(stack, 'VPC');
+    const vpc = new ec2.Vpc(stack, 'VPC');
     const cluster = new rds.DatabaseCluster(stack, 'Database', {
       engine: rds.DatabaseClusterEngine.AuroraMysql,
       masterUser: {
@@ -161,7 +161,7 @@ export = {
   'throws when trying to add rotation to a cluster without secret'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
-    const vpc = new ec2.VpcNetwork(stack, 'VPC');
+    const vpc = new ec2.Vpc(stack, 'VPC');
 
     // WHEN
     const cluster = new rds.DatabaseCluster(stack, 'Database', {
@@ -185,7 +185,7 @@ export = {
   'throws when both application location and engine are not specified'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
-    const vpc = new ec2.VpcNetwork(stack, 'VPC');
+    const vpc = new ec2.Vpc(stack, 'VPC');
     const securityGroup = new ec2.SecurityGroup(stack, 'SecurityGroup', {
       vpc,
     });
@@ -208,7 +208,7 @@ export = {
   'throws when connections object has no default port range'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
-    const vpc = new ec2.VpcNetwork(stack, 'VPC');
+    const vpc = new ec2.Vpc(stack, 'VPC');
     const secret = new secretsmanager.Secret(stack, 'Secret');
     const securityGroup = new ec2.SecurityGroup(stack, 'SecurityGroup', {
       vpc,

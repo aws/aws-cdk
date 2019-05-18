@@ -1,4 +1,4 @@
-import { CfnOutput, Construct, IResource, Resource } from '@aws-cdk/cdk';
+import { Construct, IResource, Resource } from '@aws-cdk/cdk';
 import { CfnCertificate } from './certificatemanager.generated';
 import { apexDomain } from './util';
 
@@ -7,21 +7,6 @@ export interface ICertificate extends IResource {
    * The certificate's ARN
    *
    * @attribute
-   */
-  readonly certificateArn: string;
-
-  /**
-   * Export this certificate from the stack
-   */
-  export(): CertificateAttributes;
-}
-
-/**
- * Reference to an existing Certificate
- */
-export interface CertificateAttributes {
-  /**
-   * The certificate's ARN
    */
   readonly certificateArn: string;
 }
@@ -79,9 +64,6 @@ export class Certificate extends Resource implements ICertificate {
   public static fromCertificateArn(scope: Construct, id: string, certificateArn: string): ICertificate {
     class Import extends Resource implements ICertificate {
       public certificateArn = certificateArn;
-      public export(): CertificateAttributes {
-        return { certificateArn };
-      }
     }
 
     return new Import(scope, id);
@@ -117,14 +99,5 @@ export class Certificate extends Resource implements ICertificate {
         validationDomain: overrideDomain || apexDomain(domainName)
       };
     }
-  }
-
-  /**
-   * Export this certificate from the stack
-   */
-  public export(): CertificateAttributes {
-    return {
-      certificateArn: new CfnOutput(this, 'Arn', { value: this.certificateArn }).makeImportValue().toString()
-    };
   }
 }

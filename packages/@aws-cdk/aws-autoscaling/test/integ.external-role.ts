@@ -7,7 +7,7 @@ class TestStack extends cdk.Stack {
   constructor(scope: cdk.App, id: string) {
     super(scope, id);
 
-    const vpc = new ec2.VpcNetwork(this, 'VPC');
+    const vpc = new ec2.Vpc(this, 'VPC');
     const role = new iam.Role(this, 'Role', {
       assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com')
     });

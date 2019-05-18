@@ -70,48 +70,6 @@ export = {
     test.done();
   },
 
-  'export receipt rule'(test: Test) {
-    // GIVEN
-    const stack = new Stack();
-    const receiptRuleSet = new ReceiptRuleSet(stack, 'RuleSet');
-    const receiptRule = receiptRuleSet.addRule('Rule');
-
-    // WHEN
-    receiptRule.export();
-
-    // THEN
-    expect(stack).toMatch({
-      "Resources": {
-        "RuleSetE30C6C48": {
-          "Type": "AWS::SES::ReceiptRuleSet"
-        },
-        "RuleSetRule0B1D6BCA": {
-          "Type": "AWS::SES::ReceiptRule",
-          "Properties": {
-            "Rule": {
-              "Enabled": true
-            },
-            "RuleSetName": {
-              "Ref": "RuleSetE30C6C48"
-            }
-          }
-        }
-      },
-      "Outputs": {
-        "RuleSetRuleReceiptRuleName5620D98F": {
-          "Value": {
-            "Ref": "RuleSetRule0B1D6BCA"
-          },
-          "Export": {
-            "Name": "Stack:RuleSetRuleReceiptRuleName5620D98F"
-          }
-        }
-      }
-    });
-
-    test.done();
-  },
-
   'import receipt rule'(test: Test) {
     // GIVEN
     const stack = new Stack();

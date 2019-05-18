@@ -1,5 +1,5 @@
 import { Certificate } from '@aws-cdk/aws-certificatemanager';
-import { VpcNetwork } from '@aws-cdk/aws-ec2';
+import { Vpc } from '@aws-cdk/aws-ec2';
 import { HostedZoneProvider } from '@aws-cdk/aws-route53';
 import cdk = require('@aws-cdk/cdk');
 import { Cluster } from './cluster';
@@ -112,7 +112,7 @@ export class LoadBalancedFargateServiceApplet extends cdk.Stack {
   constructor(scope: cdk.Construct, id: string, props: LoadBalancedFargateServiceAppletProps) {
     super(scope, id, props);
 
-    const vpc = new VpcNetwork(this, 'MyVpc', { maxAZs: 2 });
+    const vpc = new Vpc(this, 'MyVpc', { maxAZs: 2 });
     const cluster = new Cluster(this, 'Cluster', { vpc });
 
     let domainZone;

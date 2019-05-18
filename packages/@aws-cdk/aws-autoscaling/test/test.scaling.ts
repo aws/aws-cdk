@@ -224,13 +224,13 @@ export = {
 };
 
 class ASGFixture extends cdk.Construct {
-  public readonly vpc: ec2.VpcNetwork;
+  public readonly vpc: ec2.Vpc;
   public readonly asg: autoscaling.AutoScalingGroup;
 
   constructor(scope: cdk.Construct, id: string) {
     super(scope, id);
 
-    this.vpc = new ec2.VpcNetwork(this, 'VPC');
+    this.vpc = new ec2.Vpc(this, 'VPC');
     this.asg = new autoscaling.AutoScalingGroup(this, 'ASG', {
       vpc: this.vpc,
       instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.M4, ec2.InstanceSize.Micro),

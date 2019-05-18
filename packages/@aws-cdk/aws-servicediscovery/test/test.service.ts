@@ -299,7 +299,7 @@ export = {
 
   'Throws when specifying healthCheckConfig on PrivateDnsNamespace'(test: Test) {
     const stack = new cdk.Stack();
-    const vpc = new ec2.VpcNetwork(stack, 'MyVpc');
+    const vpc = new ec2.Vpc(stack, 'MyVpc');
 
     const namespace = new servicediscovery.PrivateDnsNamespace(stack, 'MyNamespace', {
       name: 'name',
@@ -405,7 +405,7 @@ export = {
   'Service for Private DNS namespace'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
-    const vpc = new ec2.VpcNetwork(stack, 'MyVpc');
+    const vpc = new ec2.Vpc(stack, 'MyVpc');
 
     const namespace = new servicediscovery.PrivateDnsNamespace(stack, 'MyNamespace', {
       name: 'private',

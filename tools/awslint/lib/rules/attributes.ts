@@ -15,7 +15,7 @@ class AttributeReflection {
   public readonly fqn: string;
 
   constructor(public readonly resource: ResourceReflection, public readonly attr: Attribute) {
-    this.fqn = resource.fqn + '.' + attr.name;
+    this.fqn = resource.fqn + '.' + attr.property.name;
   }
 }
 
@@ -32,6 +32,6 @@ attributesLinter.add({
   message: 'attribute properties must have an "@attribute" doctag on: ',
   eval: e => {
     const tag = e.ctx.attr.property.docs.customTag('attribute');
-    e.assert(tag, e.ctx.fqn, `${e.ctx.attr.property.parentType.fqn}.${e.ctx.attr.name}`);
+    e.assert(tag, e.ctx.fqn, `${e.ctx.attr.property.parentType.fqn}.${e.ctx.attr.property.name}`);
   }
 });

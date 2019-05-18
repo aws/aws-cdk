@@ -236,24 +236,22 @@ export = {
     }
   },
 
-  'import/export': {
-    'lambda.export() can be used to add Outputs to the stack and returns an IFunction object'(test: Test) {
-      // GIVEN
-      const stack1 = new cdk.Stack();
-      const stack2 = new cdk.Stack();
-      const fn = newTestLambda(stack1);
+  'fromFunctionArn'(test: Test) {
+    // GIVEN
+    const stack2 = new cdk.Stack();
 
-      // WHEN
-      const props = fn.export();
-      const imported = lambda.Function.fromFunctionAttributes(stack2, 'Imported', props);
+    // WHEN
+    const imported = lambda.Function.fromFunctionArn(stack2, 'Imported', 'arn:aws:lambda:us-east-1:123456789012:function:ProcessKinesisRecords');
 
-      // Can call addPermission() but it won't do anything
-      imported.addPermission('Hello', {
-        principal: new iam.ServicePrincipal('harry')
-      });
+    // Can call addPermission() but it won't do anything
+    imported.addPermission('Hello', {
+      principal: new iam.ServicePrincipal('harry')
+    });
 
-      test.done();
-    },
+    // THEN
+    test.deepEqual(imported.functionArn, 'arn:aws:lambda:us-east-1:123456789012:function:ProcessKinesisRecords');
+    test.deepEqual(imported.functionName, 'ProcessKinesisRecords');
+    test.done();
   },
 
   'Lambda code can be read from a local directory via an asset'(test: Test) {

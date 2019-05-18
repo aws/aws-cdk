@@ -439,6 +439,7 @@ export function isDataType(t: jsiiReflect.Type | undefined): t is jsiiReflect.In
 // Must only have properties, all of which are scalars,
 // lists or isSerializableInterface types.
 export function isSerializableTypeReference(type: jsiiReflect.TypeReference, errorPrefix?: string): boolean {
+
   if (type.primitive) {
     return true;
   }
@@ -463,6 +464,10 @@ export function isSerializableTypeReference(type: jsiiReflect.TypeReference, err
 }
 
 function isSerializableType(type: jsiiReflect.Type, errorPrefix?: string): boolean {
+  // if this is a cosntruct class, we can represent it as a "Ref"
+  if (isConstruct(type)) {
+    return true;
+  }
 
   if (isEnum(type)) {
     return true;
@@ -474,11 +479,6 @@ function isSerializableType(type: jsiiReflect.Type, errorPrefix?: string): boole
 
   // if this is a class that looks like an enum, we can represent it
   if (isEnumLikeClass(type)) {
-    return true;
-  }
-
-  // if this is a cosntruct class, we can represent it as a "Ref"
-  if (isConstruct(type)) {
     return true;
   }
 

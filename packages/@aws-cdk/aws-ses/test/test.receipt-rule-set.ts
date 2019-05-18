@@ -58,36 +58,6 @@ export = {
     test.done();
   },
 
-  'export receipt rule set'(test: Test) {
-    // GIVEN
-    const stack = new Stack();
-    const receiptRuleSet = new ReceiptRuleSet(stack, 'RuleSet');
-
-    // WHEN
-    receiptRuleSet.export();
-
-    // THEN
-    expect(stack).toMatch({
-      "Resources": {
-        "RuleSetE30C6C48": {
-          "Type": "AWS::SES::ReceiptRuleSet"
-        }
-      },
-      "Outputs": {
-        "RuleSetReceiptRuleSetNameBA4266DD": {
-          "Value": {
-            "Ref": "RuleSetE30C6C48"
-          },
-          "Export": {
-            "Name": "Stack:RuleSetReceiptRuleSetNameBA4266DD"
-          }
-        }
-      }
-    });
-
-    test.done();
-  },
-
   'import receipt rule set'(test: Test) {
     // GIVEN
     const stack = new Stack();

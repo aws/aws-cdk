@@ -1,5 +1,5 @@
 import ec2 = require('@aws-cdk/aws-ec2');
-import cdk = require('@aws-cdk/cdk');
+import { Construct, IResource, Resource, Token } from '@aws-cdk/cdk';
 import { BaseListener } from '../shared/base-listener';
 import { HealthCheck } from '../shared/base-target-group';
 import { ApplicationProtocol, SslPolicy } from '../shared/enums';
@@ -74,13 +74,15 @@ export interface ApplicationListenerProps extends BaseApplicationListenerProps {
 
 /**
  * Define an ApplicationListener
+ *
+ * @resource AWS::ElasticLoadBalancingV2::Listener
  */
 export class ApplicationListener extends BaseListener implements IApplicationListener {
   /**
    * Import an existing listener
    */
-  public static import(scope: cdk.Construct, id: string, props: ApplicationListenerImportProps): IApplicationListener {
-    return new ImportedApplicationListener(scope, id, props);
+  public static fromApplicationListenerAttributes(scope: Construct, id: string, attrs: ApplicationListenerAttributes): IApplicationListener {
+    return new ImportedApplicationListener(scope, id, attrs);
   }
 
   /**
@@ -103,17 +105,12 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
    */
   private readonly protocol: ApplicationProtocol;
 
-  /**
-   * The default port on which this listener is listening
-   */
-  private readonly defaultPort: number;
-
-  constructor(scope: cdk.Construct, id: string, props: ApplicationListenerProps) {
+  constructor(scope: Construct, id: string, props: ApplicationListenerProps) {
     const [protocol, port] = determineProtocolAndPort(props.protocol, props.port);
 
     super(scope, id, {
       loadBalancerArn: props.loadBalancer.loadBalancerArn,
-      certificates: new cdk.Token(() => this.certificateArns.map(certificateArn => ({ certificateArn }))),
+      certificates: new Token(() => this.certificateArns.map(certificateArn => ({ certificateArn }))),
       protocol,
       port,
       sslPolicy: props.sslPolicy,
@@ -123,7 +120,6 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
     this.protocol = protocol;
     this.certificateArns = [];
     this.certificateArns.push(...(props.certificateArns || []));
-    this.defaultPort = port;
 
     // This listener edits the securitygroup of the load balancer,
     // but adds its own default port.
@@ -252,17 +248,6 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
   }
 
   /**
-   * Export this listener
-   */
-  public export(): ApplicationListenerImportProps {
-    return {
-      listenerArn: new cdk.CfnOutput(this, 'ListenerArn', { value: this.listenerArn }).makeImportValue().toString(),
-      securityGroupId: this.connections.securityGroups[0]!.export().securityGroupId,
-      defaultPort: new cdk.CfnOutput(this, 'Port', { value: this.defaultPort }).makeImportValue().toString(),
-    };
-  }
-
-  /**
    * Validate this listener.
    */
   protected validate(): string[] {
@@ -285,9 +270,10 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
 /**
  * Properties to reference an existing listener
  */
-export interface IApplicationListener extends cdk.IConstruct, ec2.IConnectable {
+export interface IApplicationListener extends IResource, ec2.IConnectable {
   /**
    * ARN of the listener
+   * @attribute
    */
   readonly listenerArn: string;
 
@@ -323,17 +309,12 @@ export interface IApplicationListener extends cdk.IConstruct, ec2.IConnectable {
    * Don't call this directly. It is called by ApplicationTargetGroup.
    */
   registerConnectable(connectable: ec2.IConnectable, portRange: ec2.IPortRange): void;
-
-  /**
-   * Export this listener
-   */
-  export(): ApplicationListenerImportProps;
 }
 
 /**
  * Properties to reference an existing listener
  */
-export interface ApplicationListenerImportProps {
+export interface ApplicationListenerAttributes {
   /**
    * ARN of the listener
    */
@@ -347,10 +328,10 @@ export interface ApplicationListenerImportProps {
   /**
    * The default port on which this listener is listening
    */
-  readonly defaultPort?: string;
+  readonly defaultPort?: number;
 }
 
-class ImportedApplicationListener extends cdk.Construct implements IApplicationListener {
+class ImportedApplicationListener extends Resource implements IApplicationListener {
   public readonly connections: ec2.Connections;
 
   /**
@@ -358,21 +339,17 @@ class ImportedApplicationListener extends cdk.Construct implements IApplicationL
    */
   public readonly listenerArn: string;
 
-  constructor(scope: cdk.Construct, id: string, private readonly props: ApplicationListenerImportProps) {
+  constructor(scope: Construct, id: string, props: ApplicationListenerAttributes) {
     super(scope, id);
 
     this.listenerArn = props.listenerArn;
 
-    const defaultPortRange = props.defaultPort !== undefined ? new ec2.TcpPortFromAttribute(props.defaultPort) : undefined;
+    const defaultPortRange = props.defaultPort !== undefined ? new ec2.TcpPort(props.defaultPort) : undefined;
 
     this.connections = new ec2.Connections({
       securityGroups: [ec2.SecurityGroup.fromSecurityGroupId(this, 'SecurityGroup', props.securityGroupId)],
       defaultPortRange,
     });
-  }
-
-  public export() {
-    return this.props;
   }
 
   /**

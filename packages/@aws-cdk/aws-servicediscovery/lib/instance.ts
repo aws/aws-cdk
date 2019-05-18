@@ -1,9 +1,10 @@
-import cdk = require('@aws-cdk/cdk');
+import { IResource, Resource } from '@aws-cdk/cdk';
 import { IService } from './service';
 
-export interface IInstance extends cdk.IConstruct {
+export interface IInstance extends IResource {
   /**
    * The id of the instance resource
+   * @attribute
    */
   readonly instanceId: string;
 
@@ -33,7 +34,7 @@ export interface BaseInstanceProps {
   readonly customAttributes?: { [key: string]: string };
 }
 
-export abstract class InstanceBase extends cdk.Construct implements IInstance {
+export abstract class InstanceBase extends Resource implements IInstance {
   /**
    * The Id of the instance
    */

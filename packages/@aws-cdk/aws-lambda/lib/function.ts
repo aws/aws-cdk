@@ -3,7 +3,7 @@ import ec2 = require('@aws-cdk/aws-ec2');
 import iam = require('@aws-cdk/aws-iam');
 import logs = require('@aws-cdk/aws-logs');
 import sqs = require('@aws-cdk/aws-sqs');
-import { CfnOutput, Construct, Fn, Token } from '@aws-cdk/cdk';
+import { Construct, Fn, Token } from '@aws-cdk/cdk';
 import { Code } from './code';
 import { IEventSource } from './event-source';
 import { FunctionAttributes, FunctionBase, IFunction } from './function-base';
@@ -122,7 +122,7 @@ export interface FunctionProps {
    *
    * Specify this if the Lambda function needs to access resources in a VPC.
    */
-  readonly vpc?: ec2.IVpcNetwork;
+  readonly vpc?: ec2.IVpc;
 
   /**
    * Where to place the network interfaces within the VPC.
@@ -236,8 +236,7 @@ export class Function extends FunctionBase {
    *
    * @param scope The parent construct
    * @param id The name of the lambda construct
-   * @param attrs A reference to a Lambda function. Can be created manually (see
-   * example above) or obtained through a call to `lambda.export()`.
+   * @param attrs the attributes of the function to import
    */
   public static fromFunctionAttributes(scope: Construct, id: string, attrs: FunctionAttributes): IFunction {
     const functionArn = attrs.functionArn;
@@ -264,10 +263,6 @@ export class Function extends FunctionBase {
             ]
           });
         }
-      }
-
-      public export() {
-        return attrs;
       }
     }
 
@@ -456,18 +451,6 @@ export class Function extends FunctionBase {
         retentionDays: props.logRetentionDays
       });
     }
-  }
-
-  /**
-   * Export this Function (without the role)
-   */
-  public export(): FunctionAttributes {
-    return {
-      functionArn: new CfnOutput(this, 'FunctionArn', { value: this.functionArn }).makeImportValue().toString(),
-      securityGroupId: this._connections && this._connections.securityGroups[0]
-          ? new CfnOutput(this, 'SecurityGroupId', { value: this._connections.securityGroups[0].securityGroupId }).makeImportValue().toString()
-          : undefined
-    };
   }
 
   /**

@@ -1,5 +1,5 @@
 import kms = require('@aws-cdk/aws-kms');
-import { CfnOutput, Construct } from '@aws-cdk/cdk';
+import { Construct } from '@aws-cdk/cdk';
 import { IQueue, QueueAttributes, QueueBase } from './queue-base';
 import { CfnQueue } from './sqs.generated';
 import { validateProps } from './validate-props';
@@ -103,7 +103,7 @@ export interface QueueProps {
    *
    * @default If encryption is set to KMS and not specified, a key will be created.
    */
-  readonly encryptionMasterKey?: kms.IEncryptionKey;
+  readonly encryptionMasterKey?: kms.IKey;
 
   /**
    * The length of time that Amazon SQS reuses a data key before calling KMS again.
@@ -198,17 +198,10 @@ export class Queue extends QueueBase {
       public readonly queueUrl = queueUrl;
       public readonly queueName = queueName;
       public readonly encryptionMasterKey = attrs.keyArn
-        ? kms.EncryptionKey.import(this, 'Key', { keyArn: attrs.keyArn })
+        ? kms.Key.fromKeyArn(this, 'Key', attrs.keyArn)
         : undefined;
 
       protected readonly autoCreatePolicy = false;
-
-      /**
-       * Export a queue
-       */
-      public export() {
-        return attrs;
-      }
     }
 
     return new Import(scope, id);
@@ -232,7 +225,7 @@ export class Queue extends QueueBase {
   /**
    * If this queue is encrypted, this is the KMS key.
    */
-  public readonly encryptionMasterKey?: kms.IEncryptionKey;
+  public readonly encryptionMasterKey?: kms.IKey;
 
   protected readonly autoCreatePolicy = true;
 
@@ -266,7 +259,7 @@ export class Queue extends QueueBase {
     this.queueName = queue.queueName;
     this.queueUrl = queue.ref;
 
-    function _determineEncryptionProps(this: Queue): { encryptionProps: EncryptionProps, encryptionMasterKey?: kms.IEncryptionKey } {
+    function _determineEncryptionProps(this: Queue): { encryptionProps: EncryptionProps, encryptionMasterKey?: kms.IKey } {
       let encryption = props.encryption || QueueEncryption.Unencrypted;
 
       if (encryption !== QueueEncryption.Kms && props.encryptionMasterKey) {
@@ -278,9 +271,7 @@ export class Queue extends QueueBase {
       }
 
       if (encryption === QueueEncryption.KmsManaged) {
-        const masterKey = kms.EncryptionKey.import(this, 'Key', {
-          keyArn: 'alias/aws/sqs'
-        });
+        const masterKey = kms.Key.fromKeyArn(this, 'Key', 'alias/aws/sqs');
 
         return {
           encryptionMasterKey: masterKey,
@@ -292,7 +283,7 @@ export class Queue extends QueueBase {
       }
 
       if (encryption === QueueEncryption.Kms) {
-        const masterKey = props.encryptionMasterKey || new kms.EncryptionKey(this, 'Key', {
+        const masterKey = props.encryptionMasterKey || new kms.Key(this, 'Key', {
           description: `Created by ${this.node.path}`
         });
 
@@ -307,19 +298,6 @@ export class Queue extends QueueBase {
 
       throw new Error(`Unexpected 'encryptionType': ${encryption}`);
     }
-  }
-
-  /**
-   * Export a queue
-   */
-  public export(): QueueAttributes {
-    return {
-      queueArn: new CfnOutput(this, 'QueueArn', { value: this.queueArn }).makeImportValue().toString(),
-      queueUrl: new CfnOutput(this, 'QueueUrl', { value: this.queueUrl }).makeImportValue().toString(),
-      keyArn: this.encryptionMasterKey
-        ? new CfnOutput(this, 'KeyArn', { value: this.encryptionMasterKey.keyArn }).makeImportValue().toString()
-        : undefined
-    };
   }
 
   /**

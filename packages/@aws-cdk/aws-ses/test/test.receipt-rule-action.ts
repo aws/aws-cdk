@@ -201,7 +201,7 @@ export = {
 
     const bucket = new s3.Bucket(stack, 'Bucket');
 
-    const kmsKey = new kms.EncryptionKey(stack, 'Key');
+    const kmsKey = new kms.Key(stack, 'Key');
 
     // WHEN
     new ReceiptRuleSet(stack, 'RuleSet', {

@@ -1,6 +1,6 @@
 import cloudwatch = require('@aws-cdk/aws-cloudwatch');
 import ec2 = require('@aws-cdk/aws-ec2');
-import cdk = require('@aws-cdk/cdk');
+import { Construct, IConstruct } from '@aws-cdk/cdk';
 import { BaseTargetGroupProps, ITargetGroup, loadBalancerNameFromListenerArn, LoadBalancerTargetProps,
          TargetGroupBase, TargetGroupImportProps } from '../shared/base-target-group';
 import { ApplicationProtocol } from '../shared/enums';
@@ -66,14 +66,14 @@ export class ApplicationTargetGroup extends TargetGroupBase implements IApplicat
   /**
    * Import an existing target group
    */
-  public static import(scope: cdk.Construct, id: string, props: TargetGroupImportProps): IApplicationTargetGroup {
+  public static import(scope: Construct, id: string, props: TargetGroupImportProps): IApplicationTargetGroup {
     return new ImportedApplicationTargetGroup(scope, id, props);
   }
 
   private readonly connectableMembers: ConnectableMember[];
   private readonly listeners: IApplicationListener[];
 
-  constructor(scope: cdk.Construct, id: string, props: ApplicationTargetGroupProps) {
+  constructor(scope: Construct, id: string, props: ApplicationTargetGroupProps) {
     const [protocol, port] = determineProtocolAndPort(props.protocol, props.port);
 
     super(scope, id, props, {
@@ -119,13 +119,7 @@ export class ApplicationTargetGroup extends TargetGroupBase implements IApplicat
    * Don't call this directly. It will be called by load balancing targets.
    */
   public registerConnectable(connectable: ec2.IConnectable, portRange?: ec2.IPortRange) {
-    if (portRange === undefined) {
-      if (cdk.Token.isToken(this.defaultPort)) {
-        portRange = new ec2.TcpPortFromAttribute(this.defaultPort);
-      } else {
-        portRange = new ec2.TcpPort(parseInt(this.defaultPort, 10));
-      }
-    }
+    portRange = portRange || new ec2.TcpPort(this.defaultPort);
 
     // Notify all listeners that we already know about of this new connectable.
     // Then remember for new listeners that might get added later.
@@ -140,7 +134,7 @@ export class ApplicationTargetGroup extends TargetGroupBase implements IApplicat
    *
    * Don't call this directly. It will be called by listeners.
    */
-  public registerListener(listener: IApplicationListener, associatingConstruct?: cdk.IConstruct) {
+  public registerListener(listener: IApplicationListener, associatingConstruct?: IConstruct) {
     // Notify this listener of all connectables that we know about.
     // Then remember for new connectables that might get added later.
     for (const member of this.connectableMembers) {
@@ -324,14 +318,14 @@ export interface IApplicationTargetGroup extends ITargetGroup {
    *
    * Don't call this directly. It will be called by listeners.
    */
-  registerListener(listener: IApplicationListener, associatingConstruct?: cdk.IConstruct): void;
+  registerListener(listener: IApplicationListener, associatingConstruct?: IConstruct): void;
 }
 
 /**
  * An imported application target group
  */
 class ImportedApplicationTargetGroup extends ImportedTargetGroupBase implements IApplicationTargetGroup {
-  public registerListener(_listener: IApplicationListener, _associatingConstruct?: cdk.IConstruct) {
+  public registerListener(_listener: IApplicationListener, _associatingConstruct?: IConstruct) {
     // Nothing to do, we know nothing of our members
   }
 }

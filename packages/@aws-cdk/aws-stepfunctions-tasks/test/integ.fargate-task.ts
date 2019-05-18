@@ -8,7 +8,7 @@ import tasks = require('../lib');
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-ecs-integ2');
 
-const vpc = ec2.VpcNetwork.importFromContext(stack, 'Vpc', {
+const vpc = ec2.Vpc.fromLookup(stack, 'Vpc', {
   isDefault: true
 });
 

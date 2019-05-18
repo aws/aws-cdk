@@ -1,4 +1,4 @@
-import { CfnOutput, Construct, IResource, Resource, Token } from '@aws-cdk/cdk';
+import { Construct, IResource, Resource, Token } from '@aws-cdk/cdk';
 import { Code } from './code';
 import { CfnLayerVersion, CfnLayerVersionPermission } from './lambda.generated';
 import { Runtime } from './runtime';
@@ -48,12 +48,6 @@ export interface ILayerVersion extends IResource {
   readonly compatibleRuntimes?: Runtime[];
 
   /**
-   * Exports this layer for use in another Stack. The resulting object can be passed to the ``LayerVersion.import``
-   * function to obtain an ``ILayerVersion`` in the user stack.
-   */
-  export(): LayerVersionAttributes;
-
-  /**
    * Add permission for this layer version to specific entities. Usage within
    * the same account where the layer is defined is always allowed and does not
    * require calling this method. Note that the principal that creates the
@@ -85,13 +79,6 @@ abstract class LayerVersionBase extends Resource implements ILayerVersion {
       principal: permission.accountId,
       organizationId: permission.organizationId,
     });
-  }
-
-  public export(): LayerVersionAttributes {
-    return {
-      layerVersionArn: new CfnOutput(this, 'LayerVersionArn', { value: this.layerVersionArn }).makeImportValue().toString(),
-      compatibleRuntimes: this.compatibleRuntimes,
-    };
   }
 }
 
@@ -223,13 +210,6 @@ export class SingletonLayerVersion extends Construct implements ILayerVersion {
 
   public get compatibleRuntimes(): Runtime[] | undefined {
     return this.layerVersion.compatibleRuntimes;
-  }
-
-  public export(): LayerVersionAttributes {
-    return {
-      layerVersionArn: this.layerVersionArn,
-      compatibleRuntimes: this.compatibleRuntimes,
-    };
   }
 
   public addPermission(id: string, grantee: LayerVersionPermission) {

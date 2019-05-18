@@ -16,7 +16,7 @@ export interface DatabaseSecretProps {
    *
    * @default default master key
    */
-  readonly encryptionKey?: kms.IEncryptionKey;
+  readonly encryptionKey?: kms.IKey;
 }
 
 /**

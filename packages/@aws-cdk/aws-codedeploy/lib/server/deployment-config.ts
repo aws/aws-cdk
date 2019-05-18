@@ -19,22 +19,6 @@ export interface IServerDeploymentConfig {
    * @attribute
    */
   readonly deploymentConfigArn: string;
-
-  export(): ServerDeploymentConfigAttributes;
-}
-
-/**
- * Properties of a reference to a CodeDeploy EC2/on-premise Deployment Configuration.
- *
- * @see ServerDeploymentConfig#import
- * @see ServerDeploymentConfig#export
- */
-export interface ServerDeploymentConfigAttributes {
-  /**
-   * The physical, human-readable name of the custom CodeDeploy EC2/on-premise Deployment Configuration
-   * that we are referencing.
-   */
-  readonly deploymentConfigName: string;
 }
 
 /**
@@ -132,21 +116,12 @@ export class ServerDeploymentConfig extends cdk.Resource implements IServerDeplo
     this.deploymentConfigName = resource.ref.toString();
     this.deploymentConfigArn = arnForDeploymentConfig(this.deploymentConfigName);
   }
-
-  public export(): ServerDeploymentConfigAttributes {
-    return {
-      deploymentConfigName: new cdk.CfnOutput(this, 'DeploymentConfigName', {
-        value: this.deploymentConfigName,
-      }).makeImportValue().toString(),
-    };
-  }
 }
 
 function deploymentConfig(name: string): IServerDeploymentConfig {
   return {
     deploymentConfigName: name,
     deploymentConfigArn: arnForDeploymentConfig(name),
-    export() { return { deploymentConfigName: name }; }
   };
 }
 

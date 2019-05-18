@@ -2,13 +2,13 @@ import iam = require('@aws-cdk/aws-iam');
 import kms = require('@aws-cdk/aws-kms');
 import logs = require('@aws-cdk/aws-logs');
 import s3 = require('@aws-cdk/aws-s3');
-import cdk = require('@aws-cdk/cdk');
+import { Construct, Resource } from '@aws-cdk/cdk';
 import { CfnTrail } from './cloudtrail.generated';
 
 // AWS::CloudTrail CloudFormation Resources:
 export * from './cloudtrail.generated';
 
-export interface CloudTrailProps {
+export interface TrailProps {
   /**
    * For most services, events are recorded in the region where the action occurred.
    * For global services such as AWS Identity and Access Management (IAM), AWS STS, Amazon CloudFront, and Route 53,
@@ -65,7 +65,7 @@ export interface CloudTrailProps {
   /** The AWS Key Management Service (AWS KMS) key ID that you want to use to encrypt CloudTrail logs.
    * @default none
    */
-  readonly kmsKey?: kms.IEncryptionKey;
+  readonly kmsKey?: kms.IKey;
 
   /** The name of an Amazon SNS topic that is notified when new log files are published.
    * @default none
@@ -99,12 +99,21 @@ export enum ReadWriteType {
  * const cloudTrail = new CloudTrail(this, 'MyTrail');
  *
  */
-export class CloudTrail extends cdk.Construct {
+export class Trail extends Resource {
 
-  public readonly cloudTrailArn: string;
+  /**
+   * @attribute
+   */
+  public readonly trailArn: string;
+
+  /**
+   * @attribute
+   */
+  public readonly trailSnsTopicArn: string;
+
   private eventSelectors: EventSelector[] = [];
 
-  constructor(scope: cdk.Construct, id: string, props: CloudTrailProps = {}) {
+  constructor(scope: Construct, id: string, props: TrailProps = {}) {
     super(scope, id);
 
     const s3bucket = new s3.Bucket(this, 'S3', {encryption: s3.BucketEncryption.Unencrypted});
@@ -157,7 +166,10 @@ export class CloudTrail extends cdk.Construct {
       snsTopicName: props.snsTopic,
       eventSelectors: this.eventSelectors
     });
-    this.cloudTrailArn = trail.trailArn;
+
+    this.trailArn = trail.trailArn;
+    this.trailSnsTopicArn = trail.trailSnsTopicArn;
+
     const s3BucketPolicy = s3bucket.node.findChild("Policy").node.findChild("Resource") as s3.CfnBucketPolicy;
     trail.node.addDependency(s3BucketPolicy);
 

@@ -4,7 +4,7 @@ import cdk = require('@aws-cdk/cdk');
 
 export interface RemoteDesktopGatewayProps {
   readonly rdgwCIDR: string;
-  readonly vpc: ec2.IVpcNetwork;
+  readonly vpc: ec2.IVpc;
   readonly keyPairName: string;
 
   readonly adminPassword: string;

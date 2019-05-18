@@ -1,5 +1,5 @@
 import { expect, haveResource } from '@aws-cdk/assert';
-import { Stack } from '@aws-cdk/cdk';
+import { Stack, Token } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
 
 import {
@@ -14,20 +14,18 @@ import {
   SecurityGroup,
   TcpAllPorts,
   TcpPort,
-  TcpPortFromAttribute,
   TcpPortRange,
   UdpAllPorts,
   UdpPort,
-  UdpPortFromAttribute,
   UdpPortRange,
-  VpcNetwork
+  Vpc
 } from "../lib";
 
 export = {
   'security group can allows all outbound traffic by default'(test: Test) {
     // GIVEN
     const stack = new Stack();
-    const vpc = new VpcNetwork(stack, 'VPC');
+    const vpc = new Vpc(stack, 'VPC');
 
     // WHEN
     new SecurityGroup(stack, 'SG1', { vpc, allowAllOutbound: true });
@@ -49,7 +47,7 @@ export = {
   'no new outbound rule is added if we are allowing all traffic anyway'(test: Test) {
     // GIVEN
     const stack = new Stack();
-    const vpc = new VpcNetwork(stack, 'VPC');
+    const vpc = new Vpc(stack, 'VPC');
 
     // WHEN
     const sg = new SecurityGroup(stack, 'SG1', { vpc, allowAllOutbound: true });
@@ -72,7 +70,7 @@ export = {
   'security group disallow outbound traffic by default'(test: Test) {
     // GIVEN
     const stack = new Stack();
-    const vpc = new VpcNetwork(stack, 'VPC');
+    const vpc = new Vpc(stack, 'VPC');
 
     // WHEN
     new SecurityGroup(stack, 'SG1', { vpc, allowAllOutbound: false });
@@ -96,7 +94,7 @@ export = {
   'bogus outbound rule disappears if another rule is added'(test: Test) {
     // GIVEN
     const stack = new Stack();
-    const vpc = new VpcNetwork(stack, 'VPC');
+    const vpc = new Vpc(stack, 'VPC');
 
     // WHEN
     const sg = new SecurityGroup(stack, 'SG1', { vpc, allowAllOutbound: false });
@@ -121,7 +119,7 @@ export = {
   'all outbound rule cannot be added after creation'(test: Test) {
     // GIVEN
     const stack = new Stack();
-    const vpc = new VpcNetwork(stack, 'VPC');
+    const vpc = new Vpc(stack, 'VPC');
 
     // WHEN
     const sg = new SecurityGroup(stack, 'SG1', { vpc, allowAllOutbound: false });
@@ -135,7 +133,7 @@ export = {
   'peer between all types of peers and port range types'(test: Test) {
     // GIVEN
     const stack = new Stack(undefined, 'TestStack', { env: { account: '12345678', region: 'dummy' }});
-    const vpc = new VpcNetwork(stack, 'VPC');
+    const vpc = new Vpc(stack, 'VPC');
     const sg = new SecurityGroup(stack, 'SG', { vpc });
 
     const peers = [
@@ -147,11 +145,11 @@ export = {
 
     const ports = [
       new TcpPort(1234),
-      new TcpPortFromAttribute("tcp-test-port!"),
+      new TcpPort(new Token(5000).toNumber()),
       new TcpAllPorts(),
       new TcpPortRange(80, 90),
       new UdpPort(2345),
-      new UdpPortFromAttribute("udp-test-port!"),
+      new UdpPort(new Token(777).toNumber()),
       new UdpAllPorts(),
       new UdpPortRange(85, 95),
       new IcmpTypeAndCode(5, 1),
@@ -170,6 +168,36 @@ export = {
     }
 
     // THEN -- no crash
+
+    test.done();
+  },
+
+  'if tokens are used in ports, `canInlineRule` should be false to avoid cycles'(test: Test) {
+    // GIVEN
+    const p1 = new Token(() => 80).toNumber();
+    const p2 = new Token(() => 5000).toNumber();
+
+    // WHEN
+    const ports = [
+      new TcpPort(p1),
+      new TcpPort(p2),
+      new TcpPortRange(p1, 90),
+      new TcpPortRange(80, p2),
+      new TcpPortRange(p1, p2),
+      new UdpPort(p1),
+      new UdpPortRange(p1, 95),
+      new UdpPortRange(85, p2),
+      new UdpPortRange(p1, p2),
+      new IcmpTypeAndCode(p1, 1),
+      new IcmpTypeAndCode(5, p1),
+      new IcmpTypeAndCode(p1, p2),
+      new IcmpAllTypeCodes(p1),
+    ];
+
+    // THEN
+    for (const range of ports) {
+      test.equal(range.canInlineRule, false, range.toString());
+    }
 
     test.done();
   }

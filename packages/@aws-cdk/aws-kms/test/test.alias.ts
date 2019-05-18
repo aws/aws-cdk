@@ -1,13 +1,13 @@
 import { App, Stack } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
-import { EncryptionKey } from '../lib';
+import { Key } from '../lib';
 import { EncryptionKeyAlias } from '../lib/alias';
 
 export = {
   'default alias'(test: Test) {
     const app = new App();
     const stack = new Stack(app, 'Test');
-    const key = new EncryptionKey(stack, 'Key');
+    const key = new Key(stack, 'Key');
 
     new EncryptionKeyAlias(stack, 'Alias', { key, alias: 'alias/foo' });
 
@@ -26,7 +26,7 @@ export = {
     const app = new App();
     const stack = new Stack(app, 'Test');
 
-    const key = new EncryptionKey(stack, 'MyKey', {
+    const key = new Key(stack, 'MyKey', {
       enableKeyRotation: true,
       enabled: false
     });
@@ -43,7 +43,7 @@ export = {
     const app = new App();
     const stack = new Stack(app, 'Test');
 
-    const key = new EncryptionKey(stack, 'MyKey', {
+    const key = new Key(stack, 'MyKey', {
       enableKeyRotation: true,
       enabled: false
     });
@@ -60,7 +60,7 @@ export = {
     const app = new App();
     const stack = new Stack(app, 'Test');
 
-    const key = new EncryptionKey(stack, 'MyKey', {
+    const key = new Key(stack, 'MyKey', {
       enableKeyRotation: true,
       enabled: false
     });

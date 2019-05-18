@@ -25,7 +25,6 @@ export interface IServerDeploymentGroup extends cdk.IResource {
   readonly deploymentGroupArn: string;
   readonly deploymentConfig: IServerDeploymentConfig;
   readonly autoScalingGroups?: autoscaling.AutoScalingGroup[];
-  export(): ServerDeploymentGroupAttributes;
 }
 
 /**
@@ -77,8 +76,6 @@ abstract class ServerDeploymentGroupBase extends cdk.Resource implements IServer
     super(scope, id);
     this.deploymentConfig = deploymentConfig || ServerDeploymentConfig.OneAtATime;
   }
-
-  public abstract export(): ServerDeploymentGroupAttributes;
 }
 
 class ImportedServerDeploymentGroup extends ServerDeploymentGroupBase {
@@ -88,16 +85,12 @@ class ImportedServerDeploymentGroup extends ServerDeploymentGroupBase {
   public readonly deploymentGroupArn: string;
   public readonly autoScalingGroups?: autoscaling.AutoScalingGroup[] = undefined;
 
-  constructor(scope: cdk.Construct, id: string, private readonly props: ServerDeploymentGroupAttributes) {
+  constructor(scope: cdk.Construct, id: string, props: ServerDeploymentGroupAttributes) {
     super(scope, id, props.deploymentConfig);
 
     this.application = props.application;
     this.deploymentGroupName = props.deploymentGroupName;
     this.deploymentGroupArn = arnForDeploymentGroup(props.application.applicationName, props.deploymentGroupName);
-  }
-
-  public export() {
-    return this.props;
   }
 }
 
@@ -310,16 +303,6 @@ export class ServerDeploymentGroup extends ServerDeploymentGroupBase {
 
     this.deploymentGroupName = resource.deploymentGroupName;
     this.deploymentGroupArn = arnForDeploymentGroup(this.application.applicationName, this.deploymentGroupName);
-  }
-
-  public export(): ServerDeploymentGroupAttributes {
-    return {
-      application: this.application,
-      deploymentGroupName: new cdk.CfnOutput(this, 'DeploymentGroupName', {
-        value: this.deploymentGroupName
-      }).makeImportValue().toString(),
-      deploymentConfig: this.deploymentConfig,
-    };
   }
 
   /**

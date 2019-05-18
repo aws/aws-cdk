@@ -37,38 +37,6 @@ new ses.ReceiptRuleSet(this, 'RuleSet', {
 
 This will add a rule at the top of the rule set with a Lambda action that stops processing messages that have at least one spam indicator. See [Lambda Function Examples](https://docs.aws.amazon.com/ses/latest/DeveloperGuide/receiving-email-action-lambda-example-functions.html).
 
-### Import and export receipt rule set and receipt rules
-Receipt rule sets and receipt rules can be exported:
-
-```ts
-const ruleSet = new ReceiptRuleSet(this, 'RuleSet');
-const rule = ruleSet.addRule(this, 'Rule', {
-  recipients: ['hello@mydomain.com']
-});
-
-const ruleSetRef = ruleSet.export();
-const ruleRef = rule.export();
-```
-
-And imported:
-```ts
-const importedRuleSet = ses.ReceiptRuleSet.import(this, 'ImportedRuleSet', ruleSetRef);
-
-const importedRule = ses.ReceiptRule.import(this, 'ImportedRule', ruleRef);
-
-const otherRule = ses.ReceiptRule.import(this, 'OtherRule', {
-  name: 'other-rule'
-});
-
-importedRuleSet.addRule('New', { // This rule is added after the imported rule
-  after: importedRule,
-  recipients: ['mydomain.com']
-});
-
-importedRuleSet.addRule('Extra', { // Added after the 'New' rule
-  recipients: ['extra.com']
-});
-```
 
 ### Receipt filter
 Create a receipt filter:

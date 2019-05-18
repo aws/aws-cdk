@@ -29,7 +29,7 @@ const bucket = new Bucket(this, 'MyUnencryptedBucket', {
 });
 
 // you can access the encryption key:
-assert(bucket.encryptionKey instanceof kms.EncryptionKey);
+assert(bucket.encryptionKey instanceof kms.Key);
 ```
 
 You can also supply your own key:

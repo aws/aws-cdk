@@ -84,7 +84,7 @@ export = {
   'IpInstance for service in PrivateDnsNamespace'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
-    const vpc = new ec2.VpcNetwork(stack, 'MyVpc');
+    const vpc = new ec2.Vpc(stack, 'MyVpc');
 
     const namespace = new servicediscovery.PrivateDnsNamespace(stack, 'MyNamespace', {
       name: 'public',
@@ -240,7 +240,7 @@ export = {
     // GIVEN
     const stack = new cdk.Stack();
 
-    const vpc = new ec2.VpcNetwork(stack, 'MyVPC');
+    const vpc = new ec2.Vpc(stack, 'MyVPC');
     const alb = new elbv2.ApplicationLoadBalancer(stack, 'MyALB', { vpc });
 
     const namespace = new servicediscovery.PrivateDnsNamespace(stack, 'MyNamespace', {
@@ -291,7 +291,7 @@ export = {
       namespace,
     });
 
-    const vpc = new ec2.VpcNetwork(stack, 'MyVPC');
+    const vpc = new ec2.Vpc(stack, 'MyVPC');
     const alb = new elbv2.ApplicationLoadBalancer(stack, 'MyALB', { vpc });
 
     // THEN
@@ -315,7 +315,7 @@ export = {
       routingPolicy: servicediscovery.RoutingPolicy.Multivalue
     });
 
-    const vpc = new ec2.VpcNetwork(stack, 'MyVPC');
+    const vpc = new ec2.Vpc(stack, 'MyVPC');
     const alb = new elbv2.ApplicationLoadBalancer(stack, 'MyALB', { vpc });
 
     // THEN

@@ -1,28 +1,42 @@
-import { Construct } from '@aws-cdk/cdk';
-import { BaseNamespaceProps, INamespace, NamespaceBase, NamespaceType } from './namespace';
+import { Construct, Resource } from '@aws-cdk/cdk';
+import { BaseNamespaceProps, INamespace, NamespaceType } from './namespace';
 import { DnsServiceProps, Service } from './service';
 import { CfnPublicDnsNamespace} from './servicediscovery.generated';
 
-// tslint:disable:no-empty-interface
 export interface PublicDnsNamespaceProps extends BaseNamespaceProps {}
-
-export interface IPublicDnsNamespace extends INamespace {
+export interface IPublicDnsNamespace extends INamespace { }
+export interface PublicDnsNamespaceAttributes {
   /**
-   * The ID of the public namespace.
-   * @attribute
+   * A name for the Namespace.
    */
-  readonly publicDnsNamespaceId: string;
+  readonly namespaceName: string;
 
   /**
-   * The Amazon Resource Name (ARN) of the public namespace.
-   * @attribute
+   * Namespace Id for the Namespace.
    */
-  readonly publicDnsNamespaceArn: string;
-}
+  readonly namespaceId: string;
+
+  /**
+   * Namespace ARN for the Namespace.
+   */
+  readonly namespaceArn: string;
+ }
+
 /**
  * Define a Public DNS Namespace
  */
-export class PublicDnsNamespace extends NamespaceBase implements IPublicDnsNamespace {
+export class PublicDnsNamespace extends Resource implements IPublicDnsNamespace {
+
+  public static fromPublicDnsNamespaceAttributes(scope: Construct, id: string, attrs: PublicDnsNamespaceAttributes): IPublicDnsNamespace {
+    class Import extends Resource implements IPublicDnsNamespace {
+      public namespaceName = attrs.namespaceName;
+      public namespaceId = attrs.namespaceId;
+      public namespaceArn = attrs.namespaceArn;
+      public type = NamespaceType.DnsPublic;
+    }
+    return new Import(scope, id);
+  }
+
   /**
    * A name for the namespace.
    */
@@ -57,7 +71,13 @@ export class PublicDnsNamespace extends NamespaceBase implements IPublicDnsNames
     this.type = NamespaceType.DnsPublic;
   }
 
+  /** @attribute */
   public get publicDnsNamespaceArn() { return this.namespaceArn; }
+
+  /** @attribute */
+  public get publicDnsNamespaceName() { return this.namespaceName; }
+
+  /** @attribute */
   public get publicDnsNamespaceId() { return this.namespaceId; }
 
   /**
