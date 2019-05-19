@@ -3,7 +3,7 @@ import { Construct, Resource } from '@aws-cdk/cdk';
 import { ApiKey } from './api-key';
 import { CfnUsagePlan, CfnUsagePlanKey } from './apigateway.generated';
 import { Method } from './method';
-import { RestApi } from './restapi';
+import { IRestApi } from './restapi';
 import { Stage } from './stage';
 import { validateInteger } from './util';
 
@@ -64,6 +64,10 @@ export interface QuotaSettings {
  * Represents per-method throttling for a resource.
  */
 export interface ThrottlingPerMethod {
+  /**
+   *
+   * [disable-awslint:ref-via-interface]
+   */
   readonly method: Method,
   readonly throttle: ThrottleSettings
 }
@@ -79,7 +83,13 @@ export enum UsagePlanKeyType {
  * Represents the API stages that a usage plan applies to.
  */
 export interface UsagePlanPerApiStage {
-  readonly api?: RestApi,
+
+  readonly api?: IRestApi,
+
+  /**
+   *
+   * [disable-awslint:ref-via-interface]
+   */
   readonly stage?: Stage,
   readonly throttle?: ThrottlingPerMethod[]
 }
@@ -117,10 +127,13 @@ export interface UsagePlanProps {
 }
 
 export class UsagePlan extends Resource {
+  /**
+   * @attribute
+   */
   public readonly usagePlanId: string;
 
-  constructor(scope: Construct, name: string, props: UsagePlanProps = { }) {
-    super(scope, name);
+  constructor(scope: Construct, id: string, props: UsagePlanProps = { }) {
+    super(scope, id);
     let resource: CfnUsagePlan;
 
     if (props !== undefined) {
