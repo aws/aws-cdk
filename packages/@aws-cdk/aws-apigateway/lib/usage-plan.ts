@@ -5,7 +5,7 @@ import { CfnUsagePlan, CfnUsagePlanKey } from './apigateway.generated';
 import { Method } from './method';
 import { RestApi } from './restapi';
 import { Stage } from './stage';
-import { validateInteger } from './util'
+import { validateInteger } from './util';
 
 /**
  * Container for defining throttling parameters to API stages or methods.
@@ -14,14 +14,14 @@ import { validateInteger } from './util'
 export interface ThrottleSettings {
   /**
    * The API request steady-state rate limit (average requests per second over an extended period of time)
-   * 
+   *
    * Type: Integer
    */
   readonly rateLimit?: number;
 
   /**
    * The maximum API request rate limit over a time ranging from one to a few seconds.
-   * 
+   *
    * Type: Integer
    */
   readonly burstLimit?: number;
@@ -42,14 +42,14 @@ export enum Period {
 export interface QuotaSettings {
   /**
    * The maximum number of requests that users can make within the specified time period.
-   * 
+   *
    * Type: Integer
    */
   readonly limit?: number;
 
   /**
    * For the initial time period, the number of requests to subtract from the specified limit.
-   * 
+   *
    * Type: Integer
    */
   readonly offset?: number;
@@ -95,7 +95,7 @@ export interface UsagePlanProps {
    */
   readonly description?: string,
 
-    /**
+  /**
    * Number of requests clients can make in a given time period.
    */
   readonly quota?: QuotaSettings
@@ -111,7 +111,7 @@ export interface UsagePlanProps {
   readonly name?: string
 
   /**
-   * ApiKey to be associated with the usage plan. 
+   * ApiKey to be associated with the usage plan.
    */
   readonly apiKey?: ApiKey
 }
@@ -137,16 +137,16 @@ export class UsagePlan extends Resource {
 
     this.usagePlanId = resource.ref;
 
-    // Add ApiKey when 
+    // Add ApiKey when
     if (props.apiKey) {
-      this.addApiKey(props.apiKey)
+      this.addApiKey(props.apiKey);
     }
   }
 
   /**
    * Adds and ApiKey.
-   * 
-   * @param apiKey 
+   *
+   * @param apiKey
    */
   public addApiKey(apiKey: ApiKey): void {
     new CfnUsagePlanKey(this, 'UsagePlanKeyResource', {
@@ -155,10 +155,10 @@ export class UsagePlan extends Resource {
       usagePlanId: this.usagePlanId
     });
   }
-  
+
   /**
-   * 
-   * @param props 
+   *
+   * @param props
    */
   private renderApiStages(apiStages: UsagePlanPerApiStage[] | undefined): CfnUsagePlan.ApiStageProperty[] | undefined {
     if (apiStages && apiStages.length > 0) {
@@ -186,34 +186,35 @@ export class UsagePlan extends Resource {
     if (props.quota === undefined) {
       return undefined;
     } else {
-      const limit = props.quota ? props.quota.limit : undefined; 
-      validateInteger(limit, 'Throttle quota limit')
-      return {
-        limit: limit,
+      const limit = props.quota ? props.quota.limit : undefined;
+      validateInteger(limit, 'Throttle quota limit');
+      const ret = {
+        limit: limit ? limit : undefined,
         offset: props.quota ? props.quota.offset : undefined,
         period: props.quota ? props.quota.period : undefined
-      };  
+      };
+      return ret;
     }
   }
 
   private renderThrottle(props: ThrottleSettings | undefined): (CfnUsagePlan.ThrottleSettingsProperty | Token) {
     let ret: CfnUsagePlan.ThrottleSettingsProperty | Token;
     if (props !== undefined) {
-      const burstLimit = props.burstLimit
-      validateInteger(burstLimit, 'Throttle burst limit')
-      const rateLimit = props.rateLimit
-      validateInteger(rateLimit, 'Throttle rate limit')
-      
+      const burstLimit = props.burstLimit;
+      validateInteger(burstLimit, 'Throttle burst limit');
+      const rateLimit = props.rateLimit;
+      validateInteger(rateLimit, 'Throttle rate limit');
+
       ret = {
-        burstLimit: burstLimit,
-        rateLimit: rateLimit
-      }
+        burstLimit: burstLimit ? burstLimit : undefined,
+        rateLimit: rateLimit ? rateLimit : undefined
+      };
     }
     return ret!;
   }
 
   private renderThrottlePerMethod(throttlePerMethod?: ThrottlingPerMethod[]) {
-    let ret: { [key: string]: (CfnUsagePlan.ThrottleSettingsProperty | Token) } = {};
+    const ret: { [key: string]: (CfnUsagePlan.ThrottleSettingsProperty | Token) } = {};
     if (throttlePerMethod && throttlePerMethod.length > 0) {
       throttlePerMethod.forEach((value: ThrottlingPerMethod) => {
         const method: Method = value.method;

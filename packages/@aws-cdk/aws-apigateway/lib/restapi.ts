@@ -1,5 +1,6 @@
 import iam = require('@aws-cdk/aws-iam');
 import { CfnOutput, Construct, IResource as IResourceBase, Resource } from '@aws-cdk/cdk';
+import { ApiKey } from './api-key';
 import { CfnAccount, CfnRestApi } from './apigateway.generated';
 import { Deployment } from './deployment';
 import { Integration } from './integration';
@@ -7,7 +8,6 @@ import { Method, MethodOptions } from './method';
 import { IResource, ResourceBase, ResourceOptions } from './resource';
 import { Stage, StageOptions } from './stage';
 import { UsagePlan, UsagePlanProps } from './usage-plan';
-import { ApiKey } from './api-key';
 
 export interface RestApiAttributes {
   /**
@@ -271,17 +271,17 @@ export class RestApi extends Resource implements IRestApi {
 
   /**
    * Adds a usage plan.
-   * 
-   * @param id 
-   * @param props 
+   *
+   * @param id
+   * @param props
    */
   public addUsagePlan(id: string, props: UsagePlanProps): UsagePlan {
-    return new UsagePlan(this, id, props)
+    return new UsagePlan(this, id, props);
   }
 
   /**
    * Add an ApiKey
-   * @param id 
+   * @param id
    */
   public addApiKey(id: string): ApiKey {
     return new ApiKey(this, id, {
