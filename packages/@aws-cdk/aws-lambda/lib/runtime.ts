@@ -23,7 +23,7 @@ export enum RuntimeFamily {
  * can instantiate a `Runtime` object, e.g: `new Runtime('nodejs99.99')`.
  */
 export class Runtime {
-  /** A list of all the know ``Runtime``s. */
+  /** A list of all known `Runtime`'s. */
   public static readonly All = new Array<Runtime>();
 
   /** @deprecated Use `NodeJS810` or `NodeJS10x` */
