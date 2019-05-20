@@ -305,26 +305,19 @@ const rule = new events.EventRule(this, 'Rule', {
   scheduleExpression: 'rate(1 minute)',
 });
 
-// Use as the target of the EventRule
-const target = new targets.Ec2EventRuleTarget(this, 'EventTarget', {
+// Pass an environment variable to the container 'TheContainer' in the task
+rule.addTarget(new targets.EcsEc2Task({
   cluster,
   taskDefinition,
-  taskCount: 1
-});
-
-// Pass an environment variable to the container 'TheContainer' in the task
-rule.addTarget(target, {
-  jsonTemplate: JSON.stringify({
-    containerOverrides: [{
-      name: 'TheContainer',
-      environment: [{ name: 'I_WAS_TRIGGERED', value: 'From CloudWatch Events' }]
+  taskCount: 1,
+  containerOverrides: [{
+    containerName: 'TheContainer',
+    environment: [{
+      name: 'I_WAS_TRIGGERED',
+      value: 'From CloudWatch Events'
     }]
-  })
-});
+  }]
+}));
 ```
 
 > Note: it is currently not possible to start AWS Fargate tasks in this way.
-
-## Roadmap
-
-- [ ] Service Discovery Integration
