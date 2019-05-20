@@ -14,7 +14,7 @@ export = {
     const handler = new lambda.Function(stack, 'handler', {
       handler: 'index.handler',
       code: lambda.Code.inline('boom'),
-      runtime: lambda.Runtime.NodeJS610,
+      runtime: lambda.Runtime.NodeJS810,
     });
 
     // WHEN
@@ -78,7 +78,7 @@ export = {
     const handler = new lambda.Function(stack, 'handler', {
       handler: 'index.handler',
       code: lambda.Code.inline('boom'),
-      runtime: lambda.Runtime.NodeJS610,
+      runtime: lambda.Runtime.NodeJS810,
     });
     const alias = new lambda.Alias(stack, 'alias', {
       aliasName: 'my-alias',
@@ -145,7 +145,7 @@ export = {
     const handler = new lambda.Function(stack, 'handler', {
       handler: 'index.handler',
       code: lambda.Code.inline('boom'),
-      runtime: lambda.Runtime.NodeJS610,
+      runtime: lambda.Runtime.NodeJS810,
     });
 
     // WHEN
@@ -184,7 +184,7 @@ export = {
     const handler = new lambda.Function(stack, 'handler', {
       handler: 'index.handler',
       code: lambda.Code.inline('boom'),
-      runtime: lambda.Runtime.NodeJS610,
+      runtime: lambda.Runtime.NodeJS810,
     });
 
     test.throws(() => new apigw.LambdaRestApi(stack, 'lambda-rest-api', {

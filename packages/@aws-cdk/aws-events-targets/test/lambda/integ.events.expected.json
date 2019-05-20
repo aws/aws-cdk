@@ -54,7 +54,7 @@
             "Arn"
           ]
         },
-        "Runtime": "nodejs6.10"
+        "Runtime": "nodejs8.10"
       },
       "DependsOn": [
         "MyFuncServiceRole54065130"

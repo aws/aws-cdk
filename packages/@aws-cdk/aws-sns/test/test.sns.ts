@@ -279,7 +279,7 @@ export = {
       });
 
       const fction = new lambda.Function(stack, 'MyFunc', {
-        runtime: lambda.Runtime.NodeJS610,
+        runtime: lambda.Runtime.NodeJS810,
         handler: 'index.handler',
         code: lambda.Code.inline('exports.handler = function(e, c, cb) { return cb() }')
       });
@@ -343,7 +343,7 @@ export = {
             "Arn"
             ]
           },
-          "Runtime": "nodejs6.10"
+          "Runtime": "nodejs8.10"
           },
           "DependsOn": [
           "MyFuncServiceRole54065130"
@@ -416,7 +416,7 @@ export = {
 
       const queue = new sqs.Queue(stack, 'MyQueue');
       const func = new lambda.Function(stack, 'MyFunc', {
-        runtime: lambda.Runtime.NodeJS610,
+        runtime: lambda.Runtime.NodeJS810,
         handler: 'index.handler',
         code: lambda.Code.inline('exports.handler = function(e, c, cb) { return cb() }')
       });
@@ -545,7 +545,7 @@ export = {
                   "Arn"
                 ]
               },
-              "Runtime": "nodejs6.10"
+              "Runtime": "nodejs8.10"
             },
             "DependsOn": [
               "MyFuncServiceRole54065130"
