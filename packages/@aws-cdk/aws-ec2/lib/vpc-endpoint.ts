@@ -205,7 +205,7 @@ export interface IInterfaceVpcEndpointService {
  * An AWS service for an interface VPC endpoint.
  */
 export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointService {
-  public static readonly SageMakerNotebook = new InterfaceVpcEndpointAwsService('sagemaker', 'aws.sagemaker');
+  public static readonly SageMakerNotebook = new InterfaceVpcEndpointAwsService('notebook', 'aws.sagemaker');
   public static readonly CloudFormation = new InterfaceVpcEndpointAwsService('cloudformation');
   public static readonly CloudTrail = new InterfaceVpcEndpointAwsService('cloudtrail');
   public static readonly CodeBuild = new InterfaceVpcEndpointAwsService('codebuild');
