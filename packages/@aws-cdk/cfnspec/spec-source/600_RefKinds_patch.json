@@ -4691,6 +4691,54 @@
         ],
         "description": "Set RefKind of AWS::ApiGatewayV2::DomainName to Name"
       }
+    },
+    "AWS::Glue::DataCatalogEncryptionSettings": {
+      "patch": {
+        "operations": [
+          {
+            "op": "add",
+            "path": "/RefKind",
+            "value": "None"
+          }
+        ],
+        "description": "Set RefKind of AWS::Glue::DataCatalogEncryptionSettings to None"
+      }
+    },
+    "AWS::Glue::SecurityConfiguration": {
+      "patch": {
+        "operations": [
+          {
+            "op": "add",
+            "path": "/RefKind",
+            "value": "None"
+          }
+        ],
+        "description": "Set RefKind of AWS::Glue::SecurityConfiguration to None"
+      }
+    },
+    "AWS::MediaStore::Container": {
+      "patch": {
+        "operations": [
+          {
+            "op": "add",
+            "path": "/RefKind",
+            "value": "Name"
+          }
+        ],
+        "description": "Set RefKind of AWS::MediaStore::Container to Name"
+      }
+    },
+    "AWS::ServiceCatalog::ResourceUpdateConstraint": {
+      "patch": {
+        "operations": [
+          {
+            "op": "add",
+            "path": "/RefKind",
+            "value": "None"
+          }
+        ],
+        "description": "Set RefKind of AWS::ServiceCatalog::ResourceUpdateConstraint to None"
+      }
     }
   }
 }
