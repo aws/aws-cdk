@@ -70,7 +70,8 @@ export interface PipelineProps {
 
   /**
    * The IAM role to be assumed by this Pipeline.
-   * If not specified, a new IAM role will be created.
+   *
+   * @default a new IAM role will be created.
    */
   readonly role?: iam.IRole;
 
