@@ -72,7 +72,7 @@ export interface PipelineProps {
    * The IAM role to be assumed by this Pipeline.
    * If not specified, a new IAM role will be created.
    */
-  readonly role?: iam.Role;
+  readonly role?: iam.IRole;
 
   /**
    * Indicates whether to rerun the AWS CodePipeline pipeline after you update it.
@@ -191,7 +191,7 @@ export class Pipeline extends PipelineBase {
    * The IAM role AWS CodePipeline will use to perform actions or assume roles for actions with
    * a more specific IAM role.
    */
-  public readonly role: iam.Role;
+  public readonly role: iam.IRole;
 
   /**
    * ARN of this pipeline
