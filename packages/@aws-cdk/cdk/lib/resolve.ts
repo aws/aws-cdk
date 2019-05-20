@@ -89,7 +89,7 @@ export function resolve(obj: any, options: IResolveOptions): any {
   // number - potentially decode Tokenized number
   //
   if (typeof(obj) === 'number') {
-    return resolveNumberToken(obj, context);
+    return resolveNumberToken(obj, makeContext());
   }
 
   //

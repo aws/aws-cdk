@@ -1,7 +1,7 @@
 import { Construct, Resource, Token } from '@aws-cdk/cdk';
 import { EventPattern } from './event-pattern';
 import { CfnRule } from './events.generated';
-import { EventRuleAttributes, IEventRule } from './rule-ref';
+import { IEventRule } from './rule-ref';
 import { IEventRuleTarget } from './target';
 import { mergeEventPattern } from './util';
 

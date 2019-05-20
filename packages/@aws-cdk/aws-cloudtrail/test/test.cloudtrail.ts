@@ -194,7 +194,7 @@ export = {
   'add an event rule'(test: Test) {
     // GIVEN
     const stack = getTestStack();
-    const trail = new CloudTrail(stack, 'MyAmazingCloudTrail', { managementEvents: ReadWriteType.WriteOnly });
+    const trail = new Trail(stack, 'MyAmazingCloudTrail', { managementEvents: ReadWriteType.WriteOnly });
 
     // WHEN
     trail.onEvent('DoEvents', {
