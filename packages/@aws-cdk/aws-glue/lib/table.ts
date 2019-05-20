@@ -274,7 +274,7 @@ export class Table extends Resource implements ITable {
     this.tableArn = this.node.stack.formatArn({
       service: 'glue',
       resource: 'table',
-      resourceName: Fn.join('', [this.database.databaseName, '/', this.tableName])
+      resourceName: `${this.database.databaseName}/${this.tableName}`
     });
   }
 
