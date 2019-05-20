@@ -69,8 +69,8 @@ export interface PipelineProps {
   readonly artifactBucket?: s3.IBucket;
 
   /**
-   * The IAM role to be assumed by this Pipeline.
-   * If not specified, a new IAM role will be created.
+   * The IAM role used for executing this Pipeline. If not specified, a new IAM
+   * role, trusting the CodePipeline service principal, will be created.
    */
   readonly role?: iam.Role;
 
