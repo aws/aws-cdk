@@ -240,13 +240,9 @@ export class Pipeline extends PipelineBase {
     this.artifactBucket = propsBucket;
 
     // If a role has been provided, use it - otherwise, create a role.
-    let propsRole = props.role;
-    if (!propsRole) {
-      propsRole = new iam.Role(this, 'Role', {
-        assumedBy: new iam.ServicePrincipal('codepipeline.amazonaws.com')
-      });
-    }
-    this.role = propsRole;
+    this.role = props.role || new iam.Role(this, 'Role', {
+      assumedBy: new iam.ServicePrincipal('codepipeline.amazonaws.com')
+    });
 
     const codePipeline = new CfnPipeline(this, 'Resource', {
       artifactStore: new Token(() => this.renderArtifactStore()) as any,
