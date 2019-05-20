@@ -93,7 +93,7 @@ export interface CloudFormationStackNotificationCheckProps extends RuleProps {
   /**
    * A list of allowed topics. At most 5 topics.
    */
-  readonly topics?: sns.Topic[];
+  readonly topics?: sns.ITopic[];
 }
 
 /**
