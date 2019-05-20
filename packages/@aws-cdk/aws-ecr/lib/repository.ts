@@ -62,10 +62,10 @@ export interface IRepository extends IResource {
    * Defines an AWS CloudWatch event rule that can trigger a target when an image is pushed to this
    * repository.
    * @param name The name of the rule
-   * @param target An IEventRuleTarget to invoke when this event happens (you can add more targets using `addTarget`)
+   * @param target An IRuleTarget to invoke when this event happens (you can add more targets using `addTarget`)
    * @param imageTag Only trigger on the specific image tag
    */
-  onImagePushed(name: string, target?: events.IEventRuleTarget, imageTag?: string): events.EventRule;
+  onImagePushed(name: string, target?: events.IRuleTarget, imageTag?: string): events.Rule;
 }
 
 /**
@@ -114,11 +114,11 @@ export abstract class RepositoryBase extends Resource implements IRepository {
    * Defines an AWS CloudWatch event rule that can trigger a target when an image is pushed to this
    * repository.
    * @param name The name of the rule
-   * @param target An IEventRuleTarget to invoke when this event happens (you can add more targets using `addTarget`)
+   * @param target An IRuleTarget to invoke when this event happens (you can add more targets using `addTarget`)
    * @param imageTag Only trigger on the specific image tag
    */
-  public onImagePushed(name: string, target?: events.IEventRuleTarget, imageTag?: string): events.EventRule {
-    return new events.EventRule(this, name, {
+  public onImagePushed(name: string, target?: events.IRuleTarget, imageTag?: string): events.Rule {
+    return new events.Rule(this, name, {
       targets: target ? [target] : undefined,
       eventPattern: {
         source: ['aws.ecr'],
