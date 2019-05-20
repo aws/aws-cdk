@@ -1,4 +1,5 @@
 import codepipeline = require('@aws-cdk/aws-codepipeline');
+import targets = require('@aws-cdk/aws-events-targets');
 import s3 = require('@aws-cdk/aws-s3');
 import { sourceArtifactBounds } from '../common';
 
@@ -61,7 +62,7 @@ export class S3SourceAction extends codepipeline.Action {
   protected bind(info: codepipeline.ActionBind): void {
     if (this.props.pollForSourceChanges === false) {
       this.props.bucket.onPutObject(info.pipeline.node.uniqueId + 'SourceEventRule',
-          info.pipeline, this.props.bucketKey);
+          new targets.CodePipeline(info.pipeline), this.props.bucketKey);
     }
 
     // pipeline needs permissions to read from the S3 bucket

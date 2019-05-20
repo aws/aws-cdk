@@ -313,8 +313,8 @@ class PipelineDouble extends cdk.Construct implements codepipeline.IPipeline {
     this.role = role;
   }
 
-  public asEventRuleTarget(_ruleArn: string, _ruleUniqueId: string): events.EventRuleTargetProps {
-    throw new Error('asEventRuleTarget() is unsupported in PipelineDouble');
+  public bind(_rule: events.IRule): events.RuleTargetProperties {
+    throw new Error('asRuleTarget() is unsupported in PipelineDouble');
   }
 
   public grantBucketRead(_identity?: iam.IGrantable): iam.Grant {
@@ -356,8 +356,8 @@ class StageDouble implements codepipeline.IStage {
     throw new Error('addAction() is not supported on StageDouble');
   }
 
-  public onStateChange(_name: string, _target?: events.IEventRuleTarget, _options?: events.EventRuleProps):
-      events.EventRule {
+  public onStateChange(_name: string, _target?: events.IRuleTarget, _options?: events.RuleProps):
+      events.Rule {
     throw new Error('onStateChange() is not supported on StageDouble');
   }
 }
