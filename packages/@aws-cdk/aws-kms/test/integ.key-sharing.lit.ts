@@ -9,16 +9,16 @@ const app = new cdk.App();
  * Stack that defines the key
  */
 class KeyStack extends cdk.Stack {
-  public readonly key: kms.EncryptionKey;
+  public readonly key: kms.Key;
 
   constructor(scope: cdk.App, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
-    this.key = new kms.EncryptionKey(this, 'MyKey', { retain: false });
+    this.key = new kms.Key(this, 'MyKey', { retain: false });
   }
 }
 
 interface UseStackProps extends cdk.StackProps {
-  key: kms.IEncryptionKey; // Use IEncryptionKey here
+  key: kms.IKey; // Use IEncryptionKey here
 }
 
 /**

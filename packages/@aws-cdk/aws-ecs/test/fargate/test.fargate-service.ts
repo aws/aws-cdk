@@ -12,7 +12,7 @@ export = {
     "with only required properties set, it correctly sets default properties"(test: Test) {
       // GIVEN
       const stack = new cdk.Stack();
-      const vpc = new ec2.VpcNetwork(stack, 'MyVpc', {});
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
       const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
       const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
 
@@ -87,7 +87,7 @@ export = {
     "errors when no container specified on task definition"(test: Test) {
       // GIVEN
       const stack = new cdk.Stack();
-      const vpc = new ec2.VpcNetwork(stack, 'MyVpc', {});
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
       const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
       const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
 
@@ -105,7 +105,7 @@ export = {
     "allows specifying assignPublicIP as enabled"(test: Test) {
       // GIVEN
       const stack = new cdk.Stack();
-      const vpc = new ec2.VpcNetwork(stack, 'MyVpc', {});
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
       const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
       const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
 
@@ -134,7 +134,7 @@ export = {
     "allows specifying 0 for minimumHealthyPercent"(test: Test) {
       // GIVEN
       const stack = new cdk.Stack();
-      const vpc = new ec2.VpcNetwork(stack, 'MyVpc', {});
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
       const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
       const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
 
@@ -163,7 +163,7 @@ export = {
     'grace period is respected'(test: Test) {
       // GIVEN
       const stack = new cdk.Stack();
-      const vpc = new ec2.VpcNetwork(stack, 'MyVpc', {});
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
       const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
       const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
       taskDefinition.addContainer('MainContainer', {
@@ -190,7 +190,7 @@ export = {
     'allows auto scaling by ALB request per target'(test: Test) {
       // GIVEN
       const stack = new cdk.Stack();
-      const vpc = new ec2.VpcNetwork(stack, 'MyVpc', {});
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
       const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
       const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
       const container = taskDefinition.addContainer('MainContainer', {
@@ -260,7 +260,7 @@ export = {
     'allows auto scaling by ALB with new service arn format'(test: Test) {
       // GIVEN
       const stack = new cdk.Stack();
-      const vpc = new ec2.VpcNetwork(stack, 'MyVpc', {});
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
       const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
       const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
       const container = taskDefinition.addContainer('MainContainer', {
@@ -327,7 +327,7 @@ export = {
     'throws if namespace has not been added to cluster'(test: Test) {
       // GIVEN
       const stack = new cdk.Stack();
-      const vpc = new ec2.VpcNetwork(stack, 'MyVpc', {});
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
       const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
       const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
       const container = taskDefinition.addContainer('MainContainer', {
@@ -353,7 +353,7 @@ export = {
     'creates cloud map service for Private DNS namespace'(test: Test) {
       // GIVEN
       const stack = new cdk.Stack();
-      const vpc = new ec2.VpcNetwork(stack, 'MyVpc', {});
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
       const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
       const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
       const container = taskDefinition.addContainer('MainContainer', {
@@ -410,7 +410,7 @@ export = {
     'creates AWS Cloud Map service for Private DNS namespace with SRV records'(test: Test) {
       // GIVEN
       const stack = new cdk.Stack();
-      const vpc = new ec2.VpcNetwork(stack, 'MyVpc', {});
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
       const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
       cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
 

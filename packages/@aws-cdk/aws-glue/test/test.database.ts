@@ -1,12 +1,11 @@
 import { expect } from '@aws-cdk/assert';
-import cdk = require('@aws-cdk/cdk');
+import { Stack } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
-
 import glue = require('../lib');
 
 export = {
   'default database creates a bucket to store the datbase'(test: Test) {
-    const stack = new cdk.Stack();
+    const stack = new Stack();
 
     new glue.Database(stack, 'Database', {
       databaseName: 'test_database'
@@ -48,7 +47,7 @@ export = {
   },
 
   'explicit locationURI'(test: Test) {
-    const stack = new cdk.Stack();
+    const stack = new Stack();
 
     new glue.Database(stack, 'Database', {
       databaseName: 'test_database',
@@ -75,135 +74,19 @@ export = {
     test.done();
   },
 
-  'export creates Outputs for catalog ARN/Id, database ARN/Name/LocationURI'(test: Test) {
-    const stack = new cdk.Stack();
+  'fromDatabase'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
 
-    const db = new glue.Database(stack, 'Database', {
-      databaseName: 'test_database'
-    });
+    // WHEN
+    const database = glue.Database.fromDatabaseArn(stack, 'import', 'arn:aws:glue:us-east-1:123456789012:database/db1');
 
-    glue.Database.fromDatabaseAttributes(new cdk.Stack(), 'Database', db.export());
-
-    expect(stack).toMatch({
-      Resources: {
-        DatabaseBucket318AF64F: {
-          Type: 'AWS::S3::Bucket',
-          DeletionPolicy: "Retain"
-        },
-        DatabaseB269D8BB: {
-          Type: 'AWS::Glue::Database',
-          Properties: {
-            CatalogId: {
-              Ref: "AWS::AccountId"
-            },
-            DatabaseInput: {
-              LocationUri: {
-                "Fn::Join": [
-                  "",
-                  [
-                    "s3://",
-                    {
-                      Ref: "DatabaseBucket318AF64F"
-                    },
-                    "/test_database"
-                  ]
-                ]
-              },
-              Name: "test_database"
-            }
-          }
-        }
-      },
-      Outputs: {
-        DatabaseCatalogArnE5C8063F: {
-          Value: {
-            "Fn::Join": [
-              "",
-              [
-                "arn:",
-                {
-                  Ref: "AWS::Partition"
-                },
-                ":glue:",
-                {
-                  Ref: "AWS::Region"
-                },
-                ":",
-                {
-                  Ref: "AWS::AccountId"
-                },
-                ":catalog"
-              ]
-            ]
-          },
-          Export: {
-            Name: "Stack:DatabaseCatalogArnE5C8063F"
-          }
-        },
-        DatabaseCatalogId509C6547: {
-          Value: {
-            Ref: "AWS::AccountId"
-          },
-          Export: {
-            Name: "Stack:DatabaseCatalogId509C6547"
-          }
-        },
-        DatabaseDatabaseArn157B38E0: {
-          Value: {
-            "Fn::Join": [
-              "",
-              [
-                "arn:",
-                {
-                  Ref: "AWS::Partition"
-                },
-                ":glue:",
-                {
-                  Ref: "AWS::Region"
-                },
-                ":",
-                {
-                  Ref: "AWS::AccountId"
-                },
-                ":database/",
-                {
-                  Ref: "DatabaseB269D8BB"
-                }
-              ]
-            ]
-          },
-          Export: {
-            Name: "Stack:DatabaseDatabaseArn157B38E0"
-          }
-        },
-        DatabaseDatabaseName925B74A8: {
-          Value: {
-            Ref: "DatabaseB269D8BB"
-          },
-          Export: {
-            Name: "Stack:DatabaseDatabaseName925B74A8"
-          }
-        },
-        DatabaseLocationURIF74653AF: {
-          Value: {
-            "Fn::Join": [
-              "",
-              [
-                "s3://",
-                {
-                  Ref: "DatabaseBucket318AF64F"
-                },
-                "/test_database"
-              ]
-            ]
-          },
-          Export: {
-            Name: "Stack:DatabaseLocationURIF74653AF"
-          }
-        }
-      }
-    });
-
+    // THEN
+    test.deepEqual(database.databaseArn, 'arn:aws:glue:us-east-1:123456789012:database/db1');
+    test.deepEqual(database.databaseName, 'db1');
+    test.deepEqual(stack.node.resolve(database.catalogArn), { 'Fn::Join': [ '',
+      [ 'arn:', { Ref: 'AWS::Partition' }, ':glue:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':catalog' ] ] });
+    test.deepEqual(stack.node.resolve(database.catalogId), { Ref: 'AWS::AccountId' });
     test.done();
   }
 };

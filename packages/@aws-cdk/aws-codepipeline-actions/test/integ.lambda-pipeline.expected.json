@@ -658,7 +658,7 @@
             "Arn"
           ]
         },
-        "Runtime": "nodejs6.10"
+        "Runtime": "nodejs8.10"
       },
       "DependsOn": [
         "LambdaFunServiceRoleDefaultPolicy217FED83",

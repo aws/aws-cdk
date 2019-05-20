@@ -104,7 +104,7 @@ export = {
 };
 
 function makeAutoScalingGroup(scope: cdk.Construct) {
-  const vpc = new ec2.VpcNetwork(scope, 'VPC');
+  const vpc = new ec2.Vpc(scope, 'VPC');
   return new autoscaling.AutoScalingGroup(scope, 'ASG', {
     vpc,
     instanceType: new ec2.InstanceType('t2.micro'),

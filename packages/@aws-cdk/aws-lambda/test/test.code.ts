@@ -17,7 +17,7 @@ export = {
     },
     'fails if larger than 4096 bytes'(test: Test) {
       test.throws(
-        () => defineFunction(lambda.Code.inline(generateRandomString(4097)), lambda.Runtime.NodeJS610),
+        () => defineFunction(lambda.Code.inline(generateRandomString(4097)), lambda.Runtime.NodeJS810),
         /Lambda source is too large, must be <= 4096 but is 4097/);
       test.done();
     }

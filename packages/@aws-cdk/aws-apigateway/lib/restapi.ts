@@ -9,30 +9,12 @@ import { IResource, ResourceBase, ResourceOptions } from './resource';
 import { Stage, StageOptions } from './stage';
 import { UsagePlan, UsagePlanProps } from './usage-plan';
 
-export interface RestApiAttributes {
-  /**
-   * The REST API ID of an existing REST API resource.
-   */
-  readonly restApiId: string;
-
-  /**
-   * The resource ID of the root resource.
-   */
-  readonly restApiRootResourceId?: string;
-}
-
 export interface IRestApi extends IResourceBase {
   /**
    * The ID of this API Gateway RestApi.
    * @attribute
    */
   readonly restApiId: string;
-
-  /**
-   * Exports a REST API resource from this stack.
-   * @returns REST API props that can be imported to another stack.
-   */
-  export(): RestApiAttributes;
 }
 
 export interface RestApiProps extends ResourceOptions {
@@ -167,7 +149,6 @@ export class RestApi extends Resource implements IRestApi {
   public static fromRestApiId(scope: Construct, id: string, restApiId: string): IRestApi {
     class Import extends Resource implements IRestApi {
       public readonly restApiId = restApiId;
-      public export(): RestApiAttributes { return { restApiId }; }
     }
 
     return new Import(scope, id);
@@ -237,16 +218,6 @@ export class RestApi extends Resource implements IRestApi {
     }
 
     this.root = new RootResource(this, props, resource.restApiRootResourceId);
-  }
-
-  /**
-   * Exports a REST API resource from this stack.
-   * @returns REST API props that can be imported to another stack.
-   */
-  public export(): RestApiAttributes {
-    return {
-      restApiId: new CfnOutput(this, 'RestApiId', { value: this.restApiId }).makeImportValue().toString()
-    };
   }
 
   /**
