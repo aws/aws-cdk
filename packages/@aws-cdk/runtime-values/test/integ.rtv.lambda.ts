@@ -14,7 +14,7 @@ class TestStack extends cdk.Stack {
     const queue = new sqs.Queue(this, 'MyQueue');
     const fn = new lambda.Function(this, 'MyFunction', {
       code: lambda.Code.inline(`exports.handler = ${runtimeCode.toString()}`),
-      runtime: lambda.Runtime.NodeJS610,
+      runtime: lambda.Runtime.NodeJS810,
       handler: 'index.handler'
     });
 
