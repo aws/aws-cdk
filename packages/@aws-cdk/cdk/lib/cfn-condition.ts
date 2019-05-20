@@ -1,6 +1,6 @@
 import { CfnRefElement } from './cfn-element';
 import { Construct } from './construct';
-import { ResolveContext } from './token';
+import { IResolveContext } from './token';
 
 export interface CfnConditionProps {
   readonly expression?: ICfnConditionExpression;
@@ -43,7 +43,7 @@ export class CfnCondition extends CfnRefElement implements ICfnConditionExpressi
   /**
    * Synthesizes the condition.
    */
-  public resolve(_context: ResolveContext): any {
+  public resolve(_context: IResolveContext): any {
     return { Condition: this.logicalId };
   }
 }
@@ -76,7 +76,7 @@ export interface ICfnConditionExpression {
   /**
    * Returns a JSON node that represents this condition expression
    */
-  resolve(context: ResolveContext): any;
+  resolve(context: IResolveContext): any;
 
   /**
    * Returns a string token representation of this condition expression, which

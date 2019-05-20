@@ -100,41 +100,9 @@ export interface PipelineProps {
 abstract class PipelineBase extends Resource implements IPipeline {
   public abstract pipelineName: string;
   public abstract pipelineArn: string;
-  private eventsRole?: iam.Role;
   public abstract grantBucketRead(identity: iam.IGrantable): iam.Grant;
   public abstract grantBucketReadWrite(identity: iam.IGrantable): iam.Grant;
 
-  /**
-   * Allows the pipeline to be used as a CloudWatch event rule target.
-   *
-   * Usage:
-   *
-   *    const pipeline = new Pipeline(this, 'MyPipeline');
-   *    const rule = new EventRule(this, 'MyRule', { schedule: 'rate(1 minute)' });
-   *    rule.addTarget(pipeline);
-   *
-   */
-  public asEventRuleTarget(_ruleArn: string, _ruleId: string): events.EventRuleTargetProps {
-    // the first time the event rule target is retrieved, we define an IAM
-    // role assumable by the CloudWatch events service which is allowed to
-    // start the execution of this pipeline. no need to define more than one
-    // role per pipeline.
-    if (!this.eventsRole) {
-      this.eventsRole = new iam.Role(this, 'EventsRole', {
-        assumedBy: new iam.ServicePrincipal('events.amazonaws.com')
-      });
-
-      this.eventsRole.addToPolicy(new iam.PolicyStatement()
-        .addResource(this.pipelineArn)
-        .addAction('codepipeline:StartPipelineExecution'));
-    }
-
-    return {
-      id: this.node.id,
-      arn: this.pipelineArn,
-      roleArn: this.eventsRole.roleArn,
-    };
-  }
 }
 
 /**
@@ -210,9 +178,8 @@ export class Pipeline extends PipelineBase {
   public readonly artifactBucket: s3.IBucket;
 
   private readonly stages = new Array<Stage>();
-  private readonly pipelineResource: CfnPipeline;
   private readonly crossRegionReplicationBuckets: { [region: string]: string };
-  private readonly artifactStores: { [region: string]: any };
+  private readonly artifactStores: { [region: string]: CfnPipeline.ArtifactStoreProperty };
   private readonly _crossRegionScaffoldStacks: { [region: string]: CrossRegionScaffoldStack } = {};
 
   constructor(scope: Construct, id: string, props?: PipelineProps) {
@@ -238,8 +205,9 @@ export class Pipeline extends PipelineBase {
     });
 
     const codePipeline = new CfnPipeline(this, 'Resource', {
-      artifactStore: new Token(() => this.renderArtifactStore()) as any,
-      stages: new Token(() => this.renderStages()) as any,
+      artifactStore: new Token(() => this.renderArtifactStore()),
+      artifactStores: new Token(() => this.renderArtifactStores()),
+      stages: new Token(() => this.renderStages()),
       roleArn: this.role.roleArn,
       restartExecutionOnUpdate: props && props.restartExecutionOnUpdate,
       name: props && props.pipelineName,
@@ -252,7 +220,6 @@ export class Pipeline extends PipelineBase {
 
     this.pipelineName = codePipeline.ref;
     this.pipelineVersion = codePipeline.pipelineVersion;
-    this.pipelineResource = codePipeline;
     this.crossRegionReplicationBuckets = props.crossRegionReplicationBuckets || {};
     this.artifactStores = {};
 
@@ -311,8 +278,8 @@ export class Pipeline extends PipelineBase {
    * more than a single onStateChange event, you will need to explicitly
    * specify a name.
    */
-  public onStateChange(name: string, target?: events.IEventRuleTarget, options?: events.EventRuleProps): events.EventRule {
-    const rule = new events.EventRule(this, name, options);
+  public onStateChange(name: string, target?: events.IRuleTarget, options?: events.RuleProps): events.Rule {
+    const rule = new events.Rule(this, name, options);
     rule.addTarget(target);
     rule.addEventPattern({
       detailType: [ 'CodePipeline Pipeline Execution State Change' ],
@@ -413,8 +380,8 @@ export class Pipeline extends PipelineBase {
     replicationBucket.grantReadWrite(this.role);
 
     this.artifactStores[region] = {
-      Location: replicationBucket.bucketName,
-      Type: 'S3',
+      location: replicationBucket.bucketName,
+      type: 'S3',
     };
   }
 
@@ -525,7 +492,28 @@ export class Pipeline extends PipelineBase {
     return ret;
   }
 
-  private renderArtifactStore(): CfnPipeline.ArtifactStoreProperty {
+  private renderArtifactStores(): CfnPipeline.ArtifactStoreMapProperty[] | undefined {
+    if (!this.crossRegion) { return undefined; }
+
+    // add the Pipeline's artifact store
+    const primaryStore = this.renderPrimaryArtifactStore();
+    this.artifactStores[this.node.stack.requireRegion()] = {
+      location: primaryStore.location,
+      type: primaryStore.type,
+      encryptionKey: primaryStore.encryptionKey,
+    };
+
+    return Object.entries(this.artifactStores).map(([region, artifactStore]) => ({
+      region, artifactStore
+    }));
+  }
+
+  private renderArtifactStore(): CfnPipeline.ArtifactStoreProperty | undefined {
+    if (this.crossRegion) { return undefined; }
+    return this.renderPrimaryArtifactStore();
+  }
+
+  private renderPrimaryArtifactStore(): CfnPipeline.ArtifactStoreProperty {
     let encryptionKey: CfnPipeline.EncryptionKeyProperty | undefined;
     const bucketKey = this.artifactBucket.encryptionKey;
     if (bucketKey) {
@@ -547,41 +535,12 @@ export class Pipeline extends PipelineBase {
     };
   }
 
+  private get crossRegion(): boolean {
+    return this.stages.some(stage => stage.actions.some(action => action.region !== undefined));
+    // this.pipelineResource.addPropertyOverride(`Stages.${i}.Actions.${j}.Region`, action.region);
+  }
+
   private renderStages(): CfnPipeline.StageDeclarationProperty[] {
-    // handle cross-region CodePipeline overrides here
-    let crossRegion = false;
-    this.stages.forEach((stage, i) => {
-      stage.actions.forEach((action, j) => {
-        if (action.region) {
-          crossRegion = true;
-          this.pipelineResource.addPropertyOverride(`Stages.${i}.Actions.${j}.Region`, action.region);
-        }
-      });
-    });
-
-    if (crossRegion) {
-      // we don't need ArtifactStore in this case
-      this.pipelineResource.addPropertyDeletionOverride('ArtifactStore');
-
-      // add the Pipeline's artifact store
-      const artifactStore = this.renderArtifactStore();
-      this.artifactStores[this.node.stack.requireRegion()] = {
-        Location: artifactStore.location,
-        Type: artifactStore.type,
-        EncryptionKey: artifactStore.encryptionKey,
-      };
-
-      const artifactStoresProp: any[] = [];
-      // tslint:disable-next-line:forin
-      for (const region in this.artifactStores) {
-        artifactStoresProp.push({
-          Region: region,
-          ArtifactStore: this.artifactStores[region],
-        });
-      }
-      this.pipelineResource.addPropertyOverride('ArtifactStores', artifactStoresProp);
-    }
-
     return this.stages.map(stage => stage.render());
   }
 }

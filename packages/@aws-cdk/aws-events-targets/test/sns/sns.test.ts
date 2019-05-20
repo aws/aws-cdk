@@ -8,7 +8,7 @@ test('sns topic as an event rule target', () => {
   // GIVEN
   const stack = new Stack();
   const topic = new sns.Topic(stack, 'MyTopic');
-  const rule = new events.EventRule(stack, 'MyRule', {
+  const rule = new events.Rule(stack, 'MyRule', {
     scheduleExpression: 'rate(1 hour)',
   });
 
@@ -51,7 +51,7 @@ test('multiple uses of a topic as a target results in a single policy statement'
 
   // WHEN
   for (let i = 0; i < 5; ++i) {
-    const rule = new events.EventRule(stack, `Rule${i}`, { scheduleExpression: 'rate(1 hour)' });
+    const rule = new events.Rule(stack, `Rule${i}`, { scheduleExpression: 'rate(1 hour)' });
     rule.addTarget(new targets.SnsTopic(topic));
   }
 

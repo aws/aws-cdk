@@ -66,42 +66,36 @@ export class ScopedAws {
   }
 
   public get accountId(): string {
-    return new ScopedPseudo(AWS_ACCOUNTID, this.scope).toString();
+    return CfnReference.forPseudo(AWS_ACCOUNTID, this.scope).toString();
   }
 
   public get urlSuffix(): string {
-    return new ScopedPseudo(AWS_URLSUFFIX, this.scope).toString();
+    return CfnReference.forPseudo(AWS_URLSUFFIX, this.scope).toString();
   }
 
   public get notificationArns(): string[] {
-    return new ScopedPseudo(AWS_NOTIFICATIONARNS, this.scope).toList();
+    return CfnReference.forPseudo(AWS_NOTIFICATIONARNS, this.scope).toList();
   }
 
   public get partition(): string {
-    return new ScopedPseudo(AWS_PARTITION, this.scope).toString();
+    return CfnReference.forPseudo(AWS_PARTITION, this.scope).toString();
   }
 
   public get region(): string {
-    return new ScopedPseudo(AWS_REGION, this.scope).toString();
+    return CfnReference.forPseudo(AWS_REGION, this.scope).toString();
   }
 
   public get stackId(): string {
-    return new ScopedPseudo(AWS_STACKID, this.scope).toString();
+    return CfnReference.forPseudo(AWS_STACKID, this.scope).toString();
   }
 
   public get stackName(): string {
-    return new ScopedPseudo(AWS_STACKNAME, this.scope).toString();
-  }
-}
-
-class ScopedPseudo extends CfnReference {
-  constructor(name: string, scope: Construct) {
-      super({ Ref: name }, name, scope);
+    return CfnReference.forPseudo(AWS_STACKNAME, this.scope).toString();
   }
 }
 
 class UnscopedPseudo extends Token {
   constructor(name: string) {
-      super({ Ref: name }, name);
+    super({ Ref: name }, name);
   }
 }

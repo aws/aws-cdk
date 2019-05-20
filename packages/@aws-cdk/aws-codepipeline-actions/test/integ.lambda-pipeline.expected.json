@@ -1,8 +1,7 @@
 {
   "Resources": {
-    "PipelineArtifactsBucketEncryptionKey01D58D69" : {
+    "PipelineArtifactsBucketEncryptionKey01D58D69": {
       "Type": "AWS::KMS::Key",
-      "DeletionPolicy": "Retain",
       "Properties": {
         "KeyPolicy": {
           "Statement": [
@@ -64,11 +63,11 @@
           ],
           "Version": "2012-10-17"
         }
-      }
+      },
+      "DeletionPolicy": "Retain"
     },
     "PipelineArtifactsBucket22248F97": {
       "Type": "AWS::S3::Bucket",
-      "DeletionPolicy": "Retain",
       "Properties": {
         "BucketEncryption": {
           "ServerSideEncryptionConfiguration": [
@@ -85,7 +84,8 @@
             }
           ]
         }
-      }
+      },
+      "DeletionPolicy": "Retain"
     },
     "PipelineRoleD68726F7": {
       "Type": "AWS::IAM::Role",
@@ -286,10 +286,6 @@
           }
         ],
         "ArtifactStore": {
-          "Location": {
-            "Ref": "PipelineArtifactsBucket22248F97"
-          },
-          "Type": "S3",
           "EncryptionKey": {
             "Id": {
               "Fn::GetAtt": [
@@ -298,7 +294,11 @@
               ]
             },
             "Type": "KMS"
-          }
+          },
+          "Location": {
+            "Ref": "PipelineArtifactsBucket22248F97"
+          },
+          "Type": "S3"
         }
       },
       "DependsOn": [

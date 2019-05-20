@@ -1,7 +1,6 @@
 import { ICfnConditionExpression } from './cfn-condition';
 import { minimalCloudFormationJoin } from './instrinsics';
-import { resolve } from './resolve';
-import { ResolveContext, Token } from './token';
+import { IResolveContext, Token } from './token';
 
 // tslint:disable:max-line-length
 
@@ -650,7 +649,7 @@ class FnJoin extends Token {
     this.listOfValues = listOfValues;
   }
 
-  public resolve(context: ResolveContext): any {
+  public resolve(context: IResolveContext): any {
     if (Token.isToken(this.listOfValues)) {
       // This is a list token, don't try to do smart things with it.
       return { 'Fn::Join': [ this.delimiter, this.listOfValues ] };
@@ -667,10 +666,10 @@ class FnJoin extends Token {
    * if two concatenated elements are literal strings (not tokens), then pre-concatenate them with the delimiter, to
    * generate shorter output.
    */
-  private resolveValues(context: ResolveContext) {
+  private resolveValues(context: IResolveContext) {
     if (this._resolvedValues) { return this._resolvedValues; }
 
-    const resolvedValues = this.listOfValues.map(e => resolve(e, context));
+    const resolvedValues = this.listOfValues.map(context.resolve);
     return this._resolvedValues = minimalCloudFormationJoin(this.delimiter, resolvedValues);
   }
 }

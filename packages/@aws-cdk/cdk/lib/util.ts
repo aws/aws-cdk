@@ -1,5 +1,5 @@
 import { IConstruct } from "./construct";
-import { IResolvedValuePostProcessor, ResolveContext, Token } from "./token";
+import { IResolveContext, IResolvedValuePostProcessor, Token } from "./token";
 
 /**
  * Given an object, converts all keys to PascalCase given they are currently in camel case.
@@ -80,7 +80,7 @@ export class PostResolveToken extends Token implements IResolvedValuePostProcess
     super(value);
   }
 
-  public postProcess(o: any, _context: ResolveContext): any {
+  public postProcess(o: any, _context: IResolveContext): any {
     return this.processor(o);
   }
 }

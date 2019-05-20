@@ -176,9 +176,9 @@ export interface IBucket extends IResource {
    * @param name the logical ID of the newly created Event Rule
    * @param target the optional target of the Event Rule
    * @param path the optional path inside the Bucket that will be watched for changes
-   * @returns a new {@link events.EventRule} instance
+   * @returns a new {@link events.Rule} instance
    */
-  onPutObject(name: string, target?: events.IEventRuleTarget, path?: string): events.EventRule;
+  onPutObject(name: string, target?: events.IRuleTarget, path?: string): events.Rule;
 }
 
 /**
@@ -283,8 +283,8 @@ abstract class BucketBase extends Resource implements IBucket {
    */
   protected abstract disallowPublicAccess?: boolean;
 
-  public onPutObject(name: string, target?: events.IEventRuleTarget, path?: string): events.EventRule {
-    const eventRule = new events.EventRule(this, name, {
+  public onPutObject(name: string, target?: events.IRuleTarget, path?: string): events.Rule {
+    const eventRule = new events.Rule(this, name, {
       eventPattern: {
         source: [
           'aws.s3',

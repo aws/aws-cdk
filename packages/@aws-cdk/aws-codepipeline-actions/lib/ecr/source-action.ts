@@ -1,5 +1,6 @@
 import codepipeline = require('@aws-cdk/aws-codepipeline');
 import ecr = require('@aws-cdk/aws-ecr');
+import targets = require('@aws-cdk/aws-events-targets');
 import iam = require('@aws-cdk/aws-iam');
 import { sourceArtifactBounds } from '../common';
 
@@ -55,6 +56,6 @@ export class EcrSourceAction extends codepipeline.Action {
       .addResource(this.props.repository.repositoryArn));
 
     this.props.repository.onImagePushed(info.pipeline.node.uniqueId + 'SourceEventRule',
-        info.pipeline, this.props.imageTag);
+        new targets.CodePipeline(info.pipeline), this.props.imageTag);
   }
 }

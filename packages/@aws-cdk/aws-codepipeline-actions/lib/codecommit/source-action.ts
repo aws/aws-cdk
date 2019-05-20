@@ -1,5 +1,6 @@
 import codecommit = require('@aws-cdk/aws-codecommit');
 import codepipeline = require('@aws-cdk/aws-codepipeline');
+import targets = require('@aws-cdk/aws-events-targets');
 import iam = require('@aws-cdk/aws-iam');
 import { sourceArtifactBounds } from '../common';
 
@@ -57,7 +58,7 @@ export class CodeCommitSourceAction extends codepipeline.Action {
   protected bind(info: codepipeline.ActionBind): void {
     if (!this.props.pollForSourceChanges) {
       this.props.repository.onCommit(info.pipeline.node.uniqueId + 'EventRule',
-          info.pipeline, this.props.branch || 'master');
+          new targets.CodePipeline(info.pipeline), this.props.branch || 'master');
     }
 
     // https://docs.aws.amazon.com/codecommit/latest/userguide/auth-and-access-control-permissions-reference.html#aa-acp

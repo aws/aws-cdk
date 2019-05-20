@@ -188,6 +188,36 @@ export = {
     test.done();
   },
 
+  'Cross-stack references are detected in resource properties'(test: Test) {
+    // GIVEN
+    const app = new App();
+    const stack1 = new Stack(app, 'Stack1');
+    const resource1 = new CfnResource(stack1, 'Resource', { type: 'BLA' });
+    const stack2 = new Stack(app, 'Stack2');
+
+    // WHEN - used in another resource
+    new CfnResource(stack2, 'SomeResource', { type: 'AWS::Some::Resource', properties: {
+      someProperty: new Token(() => resource1.ref),
+    }});
+
+    // THEN
+    // Need to do this manually now, since we're in testing mode. In a normal CDK app,
+    // this happens as part of app.run().
+    app.node.prepareTree();
+
+    test.deepEqual(stack2._toCloudFormation(), {
+      Resources: {
+        SomeResource: {
+          Type: 'AWS::Some::Resource',
+          Properties: {
+            someProperty: { 'Fn::ImportValue': 'Stack1:ExportsOutputRefResource1D5D905A' }
+          }
+        }
+      }
+    });
+    test.done();
+  },
+
   'cross-stack references in lazy tokens work'(test: Test) {
     // GIVEN
     const app = new App();

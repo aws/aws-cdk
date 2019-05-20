@@ -47,7 +47,7 @@
             "Id": "MyProject",
             "RoleArn": {
               "Fn::GetAtt": [
-                "awscdkawseventstargetsCodeBuildProjectRoleawscdkcodebuildeventsMyProjectEF919B0E11E20F6B",
+                "MyProjectEventsRole5B7D93F5",
                 "Arn"
               ]
             }
@@ -59,11 +59,64 @@
             "Id": "MyTopic",
             "InputTransformer": {
               "InputPathsMap": {
-                "branch": "$.detail.referenceName",
-                "repo": "$.detail.repositoryName"
+                "f1": "$.detail.repositoryName",
+                "f2": "$.detail.referenceName"
               },
-              "InputTemplate": "\"A commit was pushed to the repository <repo> on branch <branch>\""
+              "InputTemplate": "\"A commit was pushed to the repository <f1> on branch <f2>\""
             }
+          }
+        ]
+      }
+    },
+    "MyProjectEventsRole5B7D93F5": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "events.",
+                      {
+                        "Ref": "AWS::URLSuffix"
+                      }
+                    ]
+                  ]
+                }
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      }
+    },
+    "MyProjectEventsRoleDefaultPolicy397DCBF8": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "codebuild:StartBuild",
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "MyProject39F7B0AE",
+                  "Arn"
+                ]
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "MyProjectEventsRoleDefaultPolicy397DCBF8",
+        "Roles": [
+          {
+            "Ref": "MyProjectEventsRole5B7D93F5"
           }
         ]
       }
@@ -263,9 +316,9 @@
             "Id": "MyTopic",
             "InputTransformer": {
               "InputPathsMap": {
-                "phase": "$.detail.completed-phase"
+                "f1": "$.detail.completed-phase"
               },
-              "InputTemplate": "\"Build phase changed to <phase>\""
+              "InputTemplate": "\"Build phase changed to <f1>\""
             }
           }
         ]
@@ -359,59 +412,6 @@
         "Topics": [
           {
             "Ref": "MyTopic86869434"
-          }
-        ]
-      }
-    },
-    "awscdkawseventstargetsCodeBuildProjectRoleawscdkcodebuildeventsMyProjectEF919B0E11E20F6B": {
-      "Type": "AWS::IAM::Role",
-      "Properties": {
-        "AssumeRolePolicyDocument": {
-          "Statement": [
-            {
-              "Action": "sts:AssumeRole",
-              "Effect": "Allow",
-              "Principal": {
-                "Service": {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "events.",
-                      {
-                        "Ref": "AWS::URLSuffix"
-                      }
-                    ]
-                  ]
-                }
-              }
-            }
-          ],
-          "Version": "2012-10-17"
-        }
-      }
-    },
-    "awscdkawseventstargetsCodeBuildProjectRoleawscdkcodebuildeventsMyProjectEF919B0EDefaultPolicy03C827BE": {
-      "Type": "AWS::IAM::Policy",
-      "Properties": {
-        "PolicyDocument": {
-          "Statement": [
-            {
-              "Action": "codebuild:StartBuild",
-              "Effect": "Allow",
-              "Resource": {
-                "Fn::GetAtt": [
-                  "MyProject39F7B0AE",
-                  "Arn"
-                ]
-              }
-            }
-          ],
-          "Version": "2012-10-17"
-        },
-        "PolicyName": "awscdkawseventstargetsCodeBuildProjectRoleawscdkcodebuildeventsMyProjectEF919B0EDefaultPolicy03C827BE",
-        "Roles": [
-          {
-            "Ref": "awscdkawseventstargetsCodeBuildProjectRoleawscdkcodebuildeventsMyProjectEF919B0E11E20F6B"
           }
         ]
       }

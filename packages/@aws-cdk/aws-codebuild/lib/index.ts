@@ -1,3 +1,4 @@
+export * from './events';
 export * from './pipeline-project';
 export * from './project';
 export * from './source';

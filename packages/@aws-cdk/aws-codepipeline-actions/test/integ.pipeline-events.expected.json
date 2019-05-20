@@ -1,8 +1,7 @@
 {
   "Resources": {
-    "MyPipelineArtifactsBucketEncryptionKey8BF0A7F3" : {
+    "MyPipelineArtifactsBucketEncryptionKey8BF0A7F3": {
       "Type": "AWS::KMS::Key",
-      "DeletionPolicy": "Retain",
       "Properties": {
         "KeyPolicy": {
           "Statement": [
@@ -83,11 +82,11 @@
           ],
           "Version": "2012-10-17"
         }
-      }
+      },
+      "DeletionPolicy": "Retain"
     },
     "MyPipelineArtifactsBucket727923DD": {
       "Type": "AWS::S3::Bucket",
-      "DeletionPolicy": "Retain",
       "Properties": {
         "BucketEncryption": {
           "ServerSideEncryptionConfiguration": [
@@ -104,7 +103,8 @@
             }
           ]
         }
-      }
+      },
+      "DeletionPolicy": "Retain"
     },
     "MyPipelineRoleC0D47CA4": {
       "Type": "AWS::IAM::Role",
@@ -301,10 +301,6 @@
           }
         ],
         "ArtifactStore": {
-          "Location": {
-            "Ref": "MyPipelineArtifactsBucket727923DD"
-          },
-          "Type": "S3",
           "EncryptionKey": {
             "Id": {
               "Fn::GetAtt": [
@@ -313,7 +309,11 @@
               ]
             },
             "Type": "KMS"
-          }
+          },
+          "Location": {
+            "Ref": "MyPipelineArtifactsBucket727923DD"
+          },
+          "Type": "S3"
         }
       },
       "DependsOn": [
@@ -476,10 +476,10 @@
             "Id": "MyTopic",
             "InputTransformer": {
               "InputPathsMap": {
-                "pipeline": "$.detail.pipeline",
-                "state": "$.detail.state"
+                "f1": "$.detail.pipeline",
+                "f2": "$.detail.state"
               },
-              "InputTemplate": "\"Pipeline <pipeline> changed state to <state>\""
+              "InputTemplate": "\"Pipeline <f1> changed state to <f2>\""
             }
           }
         ]

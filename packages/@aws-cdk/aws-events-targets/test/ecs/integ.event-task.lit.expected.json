@@ -1048,13 +1048,11 @@
                 "Ref": "TaskDef54694570"
               }
             },
-            "Id": "EventTarget",
-            "InputTransformer": {
-              "InputTemplate": "{\"containerOverrides\":[{\"name\":\"TheContainer\",\"environment\":[{\"name\":\"I_WAS_TRIGGERED\",\"value\":\"From CloudWatch Events\"}]}]}"
-            },
+            "Id": "TaskDef-on-EcsCluster",
+            "Input": "{\"containerOverrides\":[{\"containerName\":\"TheContainer\",\"environment\":[{\"name\":\"I_WAS_TRIGGERED\",\"value\":\"From CloudWatch Events\"}]}]}",
             "RoleArn": {
               "Fn::GetAtt": [
-                "awsecsintegecsTaskDef8DD0C801EventsRoleC617AC5B",
+                "TaskDefEventsRoleFB3B67B8",
                 "Arn"
               ]
             }
@@ -1062,7 +1060,7 @@
         ]
       }
     },
-    "awsecsintegecsTaskDef8DD0C801EventsRoleC617AC5B": {
+    "TaskDefEventsRoleFB3B67B8": {
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
@@ -1089,7 +1087,7 @@
         }
       }
     },
-    "awsecsintegecsTaskDef8DD0C801EventsRoleDefaultPolicy2DFC09DA": {
+    "TaskDefEventsRoleDefaultPolicyA124E85B": {
       "Type": "AWS::IAM::Policy",
       "Properties": {
         "PolicyDocument": {
@@ -1124,10 +1122,10 @@
           ],
           "Version": "2012-10-17"
         },
-        "PolicyName": "awsecsintegecsTaskDef8DD0C801EventsRoleDefaultPolicy2DFC09DA",
+        "PolicyName": "TaskDefEventsRoleDefaultPolicyA124E85B",
         "Roles": [
           {
-            "Ref": "awsecsintegecsTaskDef8DD0C801EventsRoleC617AC5B"
+            "Ref": "TaskDefEventsRoleFB3B67B8"
           }
         ]
       }

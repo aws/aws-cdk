@@ -29,6 +29,19 @@ export = {
     test.done();
   },
 
+  'CFN properties are type-validated during resolution'(test: Test) {
+    const stack = new cdk.Stack();
+    new s3.Bucket(stack, 'MyBucket', {
+      bucketName: new cdk.Token(() => 5).toString()  // Oh no
+    });
+
+    test.throws(() => {
+      SynthUtils.toCloudFormation(stack);
+    }, /bucketName: 5 should be a string/);
+
+    test.done();
+  },
+
   'bucket without encryption'(test: Test) {
     const stack = new cdk.Stack();
     new s3.Bucket(stack, 'MyBucket', {

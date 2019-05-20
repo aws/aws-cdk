@@ -1,3 +1,4 @@
+import events = require('@aws-cdk/aws-events');
 import iam = require('@aws-cdk/aws-iam');
 import kms = require('@aws-cdk/aws-kms');
 import logs = require('@aws-cdk/aws-logs');
@@ -208,6 +209,21 @@ export class Trail extends Resource {
         values: prefixes
       }]
     });
+  }
+
+  /**
+   * Create an event rule for when an event is recorded by any trail.
+   *
+   * Note that the event doesn't necessarily have to come from this
+   * trail. Be sure to filter the event properly using an event pattern.
+   */
+  public onEvent(name: string, target?: events.IRuleTarget, options?: events.RuleProps) {
+    const rule = new events.Rule(this, name, options);
+    rule.addTarget(target);
+    rule.addEventPattern({
+      detailType: ['AWS API Call via CloudTrail']
+    });
+    return rule;
   }
 }
 

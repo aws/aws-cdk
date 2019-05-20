@@ -11,7 +11,7 @@ const topic = new sns.Topic(stack, 'MyTopic');
 // we can't use @aws-cdk/aws-events-targets.SnsTopic here because it will
 // create a cyclic dependency with codebuild, so we just fake it
 repo.onReferenceCreated('OnReferenceCreated', {
-  asEventRuleTarget: () => ({
+  bind: () => ({
     arn: topic.topicArn,
     id: 'MyTopic'
   })
