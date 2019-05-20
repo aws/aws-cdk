@@ -4,11 +4,21 @@ import ec2 = require('@aws-cdk/aws-ec2');
 import elbv2 = require('@aws-cdk/aws-elasticloadbalancingv2');
 import iam = require('@aws-cdk/aws-iam');
 import cloudmap = require('@aws-cdk/aws-servicediscovery');
+import { IResource, Resource } from '@aws-cdk/cdk';
 import cdk = require('@aws-cdk/cdk');
 import { NetworkMode, TaskDefinition } from '../base/task-definition';
 import { ICluster } from '../cluster';
 import { CfnService } from '../ecs.generated';
 import { ScalableTaskCount } from './scalable-task-count';
+
+export interface IService extends IResource {
+  /**
+   * ARN of this service
+   *
+   * @attribute
+   */
+  readonly serviceArn: string;
+}
 
 /**
  * Basic service properties
@@ -82,8 +92,8 @@ export interface BaseServiceProps {
 /**
  * Base class for Ecs and Fargate services
  */
-export abstract class BaseService extends cdk.Construct
-  implements elbv2.IApplicationLoadBalancerTarget, elbv2.INetworkLoadBalancerTarget {
+export abstract class BaseService extends Resource
+  implements IService, elbv2.IApplicationLoadBalancerTarget, elbv2.INetworkLoadBalancerTarget {
 
   /**
    * Manage allowed network traffic for this service
@@ -97,6 +107,8 @@ export abstract class BaseService extends cdk.Construct
 
   /**
    * Name of this service
+   *
+   * @attribute
    */
   public readonly serviceName: string;
 
@@ -222,7 +234,7 @@ export abstract class BaseService extends cdk.Construct
    * Set up AWSVPC networking for this construct
    */
   // tslint:disable-next-line:max-line-length
-  protected configureAwsVpcNetworking(vpc: ec2.IVpcNetwork, assignPublicIp?: boolean, vpcSubnets?: ec2.SubnetSelection, securityGroup?: ec2.ISecurityGroup) {
+  protected configureAwsVpcNetworking(vpc: ec2.IVpc, assignPublicIp?: boolean, vpcSubnets?: ec2.SubnetSelection, securityGroup?: ec2.ISecurityGroup) {
     if (vpcSubnets === undefined) {
       vpcSubnets = { subnetType: assignPublicIp ? ec2.SubnetType.Public : ec2.SubnetType.Private };
     }

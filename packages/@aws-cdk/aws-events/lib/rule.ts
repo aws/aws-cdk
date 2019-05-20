@@ -1,4 +1,4 @@
-import { CfnOutput, Construct, Resource, Token } from '@aws-cdk/cdk';
+import { Construct, Resource, Token } from '@aws-cdk/cdk';
 import { EventPattern } from './event-pattern';
 import { CfnRule } from './events.generated';
 import { EventRuleAttributes, IEventRule } from './rule-ref';
@@ -69,9 +69,6 @@ export class EventRule extends Resource implements IEventRule {
   public static fromEventRuleArn(scope: Construct, id: string, eventRuleArn: string): IEventRule {
     class Import extends Resource implements IEventRule {
       public ruleArn = eventRuleArn;
-      public export(): EventRuleAttributes {
-        return { eventRuleArn };
-      }
     }
     return new Import(scope, id);
   }
@@ -102,15 +99,6 @@ export class EventRule extends Resource implements IEventRule {
     for (const target of props.targets || []) {
       this.addTarget(target);
     }
-  }
-
-  /**
-   * Exports this rule resource from this stack and returns an import token.
-   */
-  public export(): EventRuleAttributes {
-    return {
-      eventRuleArn: new CfnOutput(this, 'RuleArn', { value: this.ruleArn }).makeImportValue().toString()
-    };
   }
 
   /**

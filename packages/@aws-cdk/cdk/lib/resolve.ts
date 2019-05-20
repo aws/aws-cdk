@@ -86,6 +86,13 @@ export function resolve(obj: any, options: IResolveOptions): any {
   }
 
   //
+  // number - potentially decode Tokenized number
+  //
+  if (typeof(obj) === 'number') {
+    return resolveNumberToken(obj, context);
+  }
+
+  //
   // primitives - as-is
   //
 
@@ -285,4 +292,10 @@ export class RememberingTokenResolver extends DefaultTokenResolver {
  */
 function isConstruct(x: any): boolean {
   return x._children !== undefined && x._metadata !== undefined;
+}
+
+function resolveNumberToken(x: number, context: IResolveContext): any {
+  const token = TokenMap.instance().lookupNumberToken(x);
+  if (token === undefined) { return x; }
+  return context.resolve(token);
 }

@@ -1,4 +1,4 @@
-import cdk = require('@aws-cdk/cdk');
+import { Construct, IResource, Resource } from '@aws-cdk/cdk';
 import { BaseListener } from '../shared/base-listener';
 import { HealthCheck } from '../shared/base-target-group';
 import { Protocol, SslPolicy } from '../shared/enums';
@@ -59,13 +59,19 @@ export interface NetworkListenerProps extends BaseNetworkListenerProps {
 
 /**
  * Define a Network Listener
+ *
+ * @resource AWS::ElasticLoadBalancingV2::Listener
  */
 export class NetworkListener extends BaseListener implements INetworkListener {
   /**
    * Import an existing listener
    */
-  public static import(scope: cdk.Construct, id: string, props: NetworkListenerImportProps): INetworkListener {
-    return new ImportedNetworkListener(scope, id, props);
+  public static fromNetworkListenerArn(scope: Construct, id: string, networkListenerArn: string): INetworkListener {
+    class Import extends Resource implements INetworkListener {
+      public listenerArn = networkListenerArn;
+    }
+
+    return new Import(scope, id);
   }
 
   /**
@@ -73,7 +79,7 @@ export class NetworkListener extends BaseListener implements INetworkListener {
    */
   private readonly loadBalancer: INetworkLoadBalancer;
 
-  constructor(scope: cdk.Construct, id: string, props: NetworkListenerProps) {
+  constructor(scope: Construct, id: string, props: NetworkListenerProps) {
     const certs = props.certificates || [];
     const proto = props.protocol || (certs.length > 0 ? Protocol.Tls : Protocol.Tcp);
 
@@ -141,60 +147,17 @@ export class NetworkListener extends BaseListener implements INetworkListener {
 
     return group;
   }
-
-  /**
-   * Export this listener
-   */
-  public export(): NetworkListenerImportProps {
-    return {
-      listenerArn: new cdk.CfnOutput(this, 'ListenerArn', { value: this.listenerArn }).makeImportValue().toString()
-    };
-  }
 }
 
 /**
  * Properties to reference an existing listener
  */
-export interface INetworkListener extends cdk.IConstruct {
+export interface INetworkListener extends IResource {
   /**
    * ARN of the listener
+   * @attribute
    */
   readonly listenerArn: string;
-
-  /**
-   * Export this listener
-   */
-  export(): NetworkListenerImportProps;
-}
-
-/**
- * Properties to reference an existing listener
- */
-export interface NetworkListenerImportProps {
-  /**
-   * ARN of the listener
-   */
-  readonly listenerArn: string;
-}
-
-/**
- * An imported Network Listener
- */
-class ImportedNetworkListener extends cdk.Construct implements INetworkListener {
-  /**
-   * ARN of the listener
-   */
-  public readonly listenerArn: string;
-
-  constructor(scope: cdk.Construct, id: string, private readonly props: NetworkListenerImportProps) {
-    super(scope, id);
-
-    this.listenerArn = props.listenerArn;
-  }
-
-  public export() {
-    return this.props;
-  }
 }
 
 /**

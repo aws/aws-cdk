@@ -111,12 +111,5 @@
   },
   "engines": {
     "node": ">= 8.10.0"
-  },
-  "awslint": {
-    "exclude": [
-      "resource-attribute:@aws-cdk/aws-ecs.ICluster.clusterArn",
-      "construct-ctor:@aws-cdk/aws-ecs.BaseService.<initializer>",
-      "construct-ctor:@aws-cdk/aws-ecs.LoadBalancedFargateServiceApplet.<initializer>.params[0]"
-    ]
   }
 }

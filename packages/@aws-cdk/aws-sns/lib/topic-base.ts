@@ -26,11 +26,6 @@ export interface ITopic extends
   readonly topicName: string;
 
   /**
-   * Export this Topic
-   */
-  export(): TopicAttributes;
-
-  /**
    * Subscribe some endpoint to this topic
    */
   subscribe(name: string, endpoint: string, protocol: SubscriptionProtocol, rawMessageDelivery?: boolean): Subscription;
@@ -108,11 +103,6 @@ export abstract class TopicBase extends Resource implements ITopic {
 
   /** Buckets permitted to send notifications to this topic */
   private readonly notifyingBuckets = new Set<string>();
-
-  /**
-   * Export this Topic
-   */
-  public abstract export(): TopicAttributes;
 
   /**
    * Subscribe some endpoint to this topic
@@ -307,14 +297,6 @@ export abstract class TopicBase extends Resource implements ITopic {
       dependencies: [ this.policy! ] // make sure the topic policy resource is created before the notification config
     };
   }
-}
-
-/**
- * Reference to an external topic.
- */
-export interface TopicAttributes {
-  readonly topicArn: string;
-  readonly topicName: string;
 }
 
 /**

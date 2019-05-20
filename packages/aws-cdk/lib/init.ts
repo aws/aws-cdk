@@ -239,6 +239,8 @@ async function initializeGitRepository() {
 
 async function postInstall(language: string, canUseNetwork: boolean) {
   switch (language) {
+  case 'javascript':
+    return await postInstallJavascript(canUseNetwork);
   case 'typescript':
     return await postInstallTypescript(canUseNetwork);
   case 'java':
@@ -246,6 +248,10 @@ async function postInstall(language: string, canUseNetwork: boolean) {
   case 'python':
     return await postInstallPython();
   }
+}
+
+async function postInstallJavascript(canUseNetwork: boolean) {
+  return postInstallTypescript(canUseNetwork);
 }
 
 async function postInstallTypescript(canUseNetwork: boolean) {

@@ -9,7 +9,7 @@ const app = new cdk.App();
 
 const stack = new cdk.Stack(app, 'aws-cdk-codedeploy-server-dg');
 
-const vpc = new ec2.VpcNetwork(stack, 'VPC');
+const vpc = new ec2.Vpc(stack, 'VPC');
 
 const asg = new autoscaling.AutoScalingGroup(stack, 'ASG', {
   instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.M5, ec2.InstanceSize.Large),
@@ -25,7 +25,7 @@ elb.addListener({
 new codedeploy.ServerDeploymentGroup(stack, 'CodeDeployGroup', {
   deploymentConfig: codedeploy.ServerDeploymentConfig.AllAtOnce,
   autoScalingGroups: [asg],
-  loadBalancer: elb,
+  loadBalancer: codedeploy.LoadBalancer.classic(elb),
   alarms: [
     new cloudwatch.Alarm(stack, 'Alarm1', {
       metric: new cloudwatch.Metric({

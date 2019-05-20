@@ -1,4 +1,5 @@
-import { BEGIN_LIST_TOKEN_MARKER, BEGIN_STRING_TOKEN_MARKER, END_TOKEN_MARKER, TokenString, VALID_KEY_CHARS } from "./encoding";
+import { BEGIN_LIST_TOKEN_MARKER, BEGIN_STRING_TOKEN_MARKER, createTokenDouble,
+  END_TOKEN_MARKER, extractTokenDouble, TokenString, VALID_KEY_CHARS } from "./encoding";
 import { Token } from "./token";
 
 const glob = global as any;
@@ -23,7 +24,9 @@ export class TokenMap {
     return glob.__cdkTokenMap;
   }
 
-  private readonly tokenMap = new Map<string, Token>();
+  private readonly stringTokenMap = new Map<string, Token>();
+  private readonly numberTokenMap = new Map<number, Token>();
+  private tokenCounter = 0;
 
   /**
    * Generate a unique string for this Token, returning a key
@@ -62,6 +65,15 @@ export class TokenMap {
   }
 
   /**
+   * Create a unique number representation for this Token and return it
+   */
+  public registerNumber(token: Token): number {
+    const tokenIndex = this.tokenCounter++;
+    this.numberTokenMap.set(tokenIndex, token);
+    return createTokenDouble(tokenIndex);
+  }
+
+  /**
    * Reverse a string representation into a Token object
    */
   public lookupString(s: string): Token | undefined {
@@ -87,12 +99,23 @@ export class TokenMap {
   }
 
   /**
+   * Reverse a number encoding into a Token, or undefined if the number wasn't a Token
+   */
+  public lookupNumberToken(x: number): Token | undefined {
+    const tokenIndex = extractTokenDouble(x);
+    if (tokenIndex === undefined) { return undefined; }
+    const t = this.numberTokenMap.get(tokenIndex);
+    if (t === undefined) { throw new Error('Encoded representation of unknown number Token found'); }
+    return t;
+  }
+
+  /**
    * Find a Token by key.
    *
    * This excludes the token markers.
    */
   public lookupToken(key: string): Token {
-    const token = this.tokenMap.get(key);
+    const token = this.stringTokenMap.get(key);
     if (!token) {
       throw new Error(`Unrecognized token key: ${key}`);
     }
@@ -100,10 +123,10 @@ export class TokenMap {
   }
 
   private register(token: Token, representationHint?: string): string {
-    const counter = this.tokenMap.size;
+    const counter = this.tokenCounter++;
     const representation = (representationHint || `TOKEN`).replace(new RegExp(`[^${VALID_KEY_CHARS}]`, 'g'), '.');
     const key = `${representation}.${counter}`;
-    this.tokenMap.set(key, token);
+    this.stringTokenMap.set(key, token);
     return key;
   }
 }

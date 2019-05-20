@@ -226,7 +226,7 @@ export = {
 
   'fails if encryption key is used with managed encryption'(test: Test) {
     const stack = new cdk.Stack();
-    const myKey = new kms.EncryptionKey(stack, 'MyKey');
+    const myKey = new kms.Key(stack, 'MyKey');
 
     test.throws(() => new s3.Bucket(stack, 'MyBucket', {
       encryption: s3.BucketEncryption.KmsManaged,
@@ -238,7 +238,7 @@ export = {
 
   'fails if encryption key is used with encryption set to unencrypted'(test: Test) {
     const stack = new cdk.Stack();
-    const myKey = new kms.EncryptionKey(stack, 'MyKey');
+    const myKey = new kms.Key(stack, 'MyKey');
 
     test.throws(() => new s3.Bucket(stack, 'MyBucket', {
       encryption: s3.BucketEncryption.Unencrypted,
@@ -251,7 +251,7 @@ export = {
   'encryptionKey can specify kms key'(test: Test) {
     const stack = new cdk.Stack();
 
-    const encryptionKey = new kms.EncryptionKey(stack, 'MyKey', { description: 'hello, world' });
+    const encryptionKey = new kms.Key(stack, 'MyKey', { description: 'hello, world' });
 
     new s3.Bucket(stack, 'MyBucket', { encryptionKey, encryption: s3.BucketEncryption.Kms });
 
@@ -549,31 +549,6 @@ export = {
   },
 
   'import/export': {
-    'export creates outputs for the bucket attributes and returns a ref object'(test: Test) {
-      const stack = new cdk.Stack(undefined, 'MyStack');
-      const bucket = new s3.Bucket(stack, 'MyBucket');
-      const bucketRef = bucket.export();
-      test.deepEqual(bucket.node.resolve(bucketRef), {
-        bucketArn: { 'Fn::ImportValue': 'MyStack:MyBucketBucketArnE260558C' },
-        bucketName: { 'Fn::ImportValue': 'MyStack:MyBucketBucketName8A027014' },
-        bucketDomainName: { 'Fn::ImportValue': 'MyStack:MyBucketDomainNameF76B9A7A' },
-        bucketWebsiteUrl: { 'Fn::ImportValue': 'MyStack:MyBucketWebsiteURL9C222788' }
-      });
-      test.done();
-    },
-
-    'refs will include the bucket\'s encryption key if defined'(test: Test) {
-      const stack = new cdk.Stack(undefined, 'MyStack');
-      const bucket = new s3.Bucket(stack, 'MyBucket', { encryption: s3.BucketEncryption.Kms });
-      const bucketRef = bucket.export();
-      test.deepEqual(bucket.node.resolve(bucketRef), {
-        bucketArn: { 'Fn::ImportValue': 'MyStack:MyBucketBucketArnE260558C' },
-        bucketName: { 'Fn::ImportValue': 'MyStack:MyBucketBucketName8A027014' },
-        bucketDomainName: { 'Fn::ImportValue': 'MyStack:MyBucketDomainNameF76B9A7A' },
-        bucketWebsiteUrl: { 'Fn::ImportValue': 'MyStack:MyBucketWebsiteURL9C222788' }
-      });
-      test.done();
-    },
 
     'static import(ref) allows importing an external/existing bucket'(test: Test) {
       const stack = new cdk.Stack();
@@ -646,117 +621,6 @@ export = {
 
       test.done();
     },
-
-    'this is how export/import work together'(test: Test) {
-      const stack1 = new cdk.Stack(undefined, 'S1');
-      const bucket = new s3.Bucket(stack1, 'MyBucket');
-      const bucketRef = bucket.export();
-
-      expect(stack1).toMatch({
-        "Resources": {
-          "MyBucketF68F3FF0": {
-            "Type": "AWS::S3::Bucket",
-            "DeletionPolicy": "Retain",
-          }
-        },
-        "Outputs": {
-          "MyBucketBucketArnE260558C": {
-            "Value": {
-              "Fn::GetAtt": [
-                "MyBucketF68F3FF0",
-                "Arn"
-              ]
-            },
-            "Export": {
-              "Name": "S1:MyBucketBucketArnE260558C"
-            }
-          },
-          "MyBucketBucketName8A027014": {
-            "Value": {
-              "Ref": "MyBucketF68F3FF0"
-            },
-            "Export": {
-              "Name": "S1:MyBucketBucketName8A027014"
-            }
-          },
-          "MyBucketDomainNameF76B9A7A": {
-            "Value": {
-              "Fn::GetAtt": [
-                "MyBucketF68F3FF0",
-                "DomainName"
-              ]
-            },
-            "Export": {
-              "Name": "S1:MyBucketDomainNameF76B9A7A"
-            }
-          },
-          "MyBucketWebsiteURL9C222788": {
-            "Value": {
-              "Fn::GetAtt": [
-                "MyBucketF68F3FF0",
-                "WebsiteURL"
-              ]
-            },
-            "Export": {
-              "Name": "S1:MyBucketWebsiteURL9C222788"
-            }
-          }
-        }
-      });
-
-      const stack2 = new cdk.Stack(undefined, 'S2');
-      const importedBucket = s3.Bucket.fromBucketAttributes(stack2, 'ImportedBucket', bucketRef);
-      const user = new iam.User(stack2, 'MyUser');
-      importedBucket.grantRead(user);
-
-      expect(stack2).toMatch({
-        "Resources": {
-          "MyUserDC45028B": {
-            "Type": "AWS::IAM::User"
-          },
-          "MyUserDefaultPolicy7B897426": {
-            "Type": "AWS::IAM::Policy",
-            "Properties": {
-              "PolicyDocument": {
-                "Statement": [
-                  {
-                    "Action": [
-                      "s3:GetObject*",
-                      "s3:GetBucket*",
-                      "s3:List*"
-                    ],
-                    "Effect": "Allow",
-                    "Resource": [
-                      {
-                        "Fn::ImportValue": "S1:MyBucketBucketArnE260558C"
-                      },
-                      {
-                        "Fn::Join": [
-                          "",
-                          [
-                            { "Fn::ImportValue": "S1:MyBucketBucketArnE260558C" },
-                            "/*"
-                          ]
-                        ]
-                      }
-                    ]
-                  }
-                ],
-                "Version": "2012-10-17"
-              },
-              "PolicyName": "MyUserDefaultPolicy7B897426",
-              "Users": [
-                {
-                  "Ref": "MyUserDC45028B"
-                }
-              ]
-            }
-          }
-        }
-      });
-
-      test.done();
-    }
   },
 
   'grantRead'(test: Test) {
@@ -1148,59 +1012,16 @@ export = {
   'cross-stack permissions'(test: Test) {
     const stackA = new cdk.Stack();
     const bucketFromStackA = new s3.Bucket(stackA, 'MyBucket');
-    const refToBucketFromStackA = bucketFromStackA.export();
 
     const stackB = new cdk.Stack();
     const user = new iam.User(stackB, 'UserWhoNeedsAccess');
-    const theBucketFromStackAAsARefInStackB = s3.Bucket.fromBucketAttributes(stackB, 'RefToBucketFromStackA', refToBucketFromStackA);
-    theBucketFromStackAAsARefInStackB.grantRead(user);
+    bucketFromStackA.grantRead(user);
 
     expect(stackA).toMatch({
       "Resources": {
         "MyBucketF68F3FF0": {
           "Type": "AWS::S3::Bucket",
           "DeletionPolicy": "Retain",
-        }
-      },
-      "Outputs": {
-        "MyBucketBucketArnE260558C": {
-          "Value": {
-            "Fn::GetAtt": [
-              "MyBucketF68F3FF0",
-              "Arn"
-            ]
-          },
-          "Export": {
-            "Name": "Stack:MyBucketBucketArnE260558C"
-          }
-        },
-        "MyBucketBucketName8A027014": {
-          "Value": {
-            "Ref": "MyBucketF68F3FF0"
-          },
-          "Export": {
-            "Name": "Stack:MyBucketBucketName8A027014"
-          }
-        },
-        "MyBucketDomainNameF76B9A7A": {
-          "Value": {
-            "Fn::GetAtt": [
-              "MyBucketF68F3FF0",
-              "DomainName"
-            ]
-          },
-          "Export": {
-            "Name": "Stack:MyBucketDomainNameF76B9A7A"
-          }
-        },
-        "MyBucketWebsiteURL9C222788": {
-          "Value": {
-            "Fn::GetAtt": [
-              "MyBucketF68F3FF0",
-              "WebsiteURL"
-            ]
-          },
-          "Export": { "Name": "Stack:MyBucketWebsiteURL9C222788" }
         }
       }
     });
@@ -1224,14 +1045,14 @@ export = {
                   "Effect": "Allow",
                   "Resource": [
                     {
-                      "Fn::ImportValue": "Stack:MyBucketBucketArnE260558C"
+                      "Fn::ImportValue": "Stack:ExportsOutputFnGetAttMyBucketF68F3FF0Arn0F7E8E58"
                     },
                     {
                       "Fn::Join": [
                         "",
                         [
                           {
-                            "Fn::ImportValue": "Stack:MyBucketBucketArnE260558C"
+                            "Fn::ImportValue": "Stack:ExportsOutputFnGetAttMyBucketF68F3FF0Arn0F7E8E58"
                           },
                           "/*"
                         ]

@@ -2,10 +2,9 @@ import events = require('@aws-cdk/aws-events');
 import iam = require('@aws-cdk/aws-iam');
 import kms = require('@aws-cdk/aws-kms');
 import s3 = require('@aws-cdk/aws-s3');
-import { Construct, RemovalPolicy, Resource, Token } from '@aws-cdk/cdk';
+import { Construct, RemovalPolicy, Resource, Stack, Token } from '@aws-cdk/cdk';
 import { Action, IPipeline, IStage } from "./action";
 import { CfnPipeline } from './codepipeline.generated';
-import { CrossRegionScaffoldStack } from './cross-region-scaffold-stack';
 import { Stage } from './stage';
 import { validateName, validateSourceAction } from "./validation";
 
@@ -192,7 +191,7 @@ export class Pipeline extends PipelineBase {
     // If a bucket has been provided, use it - otherwise, create a bucket.
     let propsBucket = props.artifactBucket;
     if (!propsBucket) {
-      const encryptionKey = new kms.EncryptionKey(this, 'ArtifactsBucketEncryptionKey');
+      const encryptionKey = new kms.Key(this, 'ArtifactsBucketEncryptionKey');
       propsBucket = new s3.Bucket(this, 'ArtifactsBucket', {
         encryptionKey,
         encryption: s3.BucketEncryption.Kms,
@@ -309,7 +308,7 @@ export class Pipeline extends PipelineBase {
    * Returns all of the {@link CrossRegionScaffoldStack}s that were generated automatically
    * when dealing with Actions that reside in a different region than the Pipeline itself.
    */
-  public get crossRegionScaffoldStacks(): { [region: string]: CrossRegionScaffoldStack } {
+  public get crossRegionScaffolding(): { [region: string]: CrossRegionScaffolding } {
     const ret: { [region: string]: CrossRegionScaffoldStack }  = {};
     Object.keys(this._crossRegionScaffoldStacks).forEach((key) => {
       ret[key] = this._crossRegionScaffoldStacks[key];
@@ -367,7 +366,7 @@ export class Pipeline extends PipelineBase {
       if (!app) {
         throw new Error(`Pipeline stack which uses cross region actions must be part of an application`);
       }
-      const crossRegionScaffoldStack = new CrossRegionScaffoldStack(app, {
+      const crossRegionScaffoldStack = new CrossRegionScaffoldStack(this, `cross-region-stack-${pipelineAccount}:${region}`, {
         region,
         account: pipelineAccount,
       });
@@ -466,8 +465,8 @@ export class Pipeline extends PipelineBase {
     for (const stage of this.stages) {
       const sortedActions = stage.actions.sort((a1, a2) => a1.runOrder - a2.runOrder);
 
-      // start with inputs
       for (const action of sortedActions) {
+        // start with inputs
         const inputArtifacts = action.inputs;
         for (const inputArtifact of inputArtifacts) {
           if (!inputArtifact.artifactName) {
@@ -476,10 +475,8 @@ export class Pipeline extends PipelineBase {
             ret.push(`Artifact '${inputArtifact.artifactName}' was used as input before being used as output`);
           }
         }
-      }
 
-      // then process outputs by adding them to the Set
-      for (const action of sortedActions) {
+        // then process outputs by adding them to the Set
         const outputArtifacts = action.outputs;
         for (const outputArtifact of outputArtifacts) {
           // output Artifacts always have a name set
@@ -547,3 +544,16 @@ export class Pipeline extends PipelineBase {
     return this.stages.map(stage => stage.render());
   }
 }
+
+/**
+ * A Stack containing resources required for the cross-region CodePipeline functionality to work.
+ */
+export abstract class CrossRegionScaffolding extends Stack {
+  /**
+   * The name of the S3 Bucket used for replicating the Pipeline's artifacts into the region.
+   */
+  public abstract readonly replicationBucketName: string;
+}
+
+// cyclic dependency
+import { CrossRegionScaffoldStack } from './cross-region-scaffold-stack';

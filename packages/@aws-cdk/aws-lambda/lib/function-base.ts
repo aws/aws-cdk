@@ -6,6 +6,7 @@ import s3n = require('@aws-cdk/aws-s3-notifications');
 import cdk = require('@aws-cdk/cdk');
 import { IResource, Resource } from '@aws-cdk/cdk';
 import { IEventSource } from './event-source';
+import { EventSourceMapping, EventSourceMappingOptions } from './event-source-mapping';
 import { CfnPermission } from './lambda.generated';
 import { Permission } from './permission';
 
@@ -42,6 +43,13 @@ export interface IFunction extends IResource, logs.ILogSubscriptionDestination,
    * If this is is `false`, trying to access the `connections` object will fail.
    */
   readonly isBoundToVpc: boolean;
+
+  /**
+   * Adds an event source that maps to this AWS Lambda function.
+   * @param id construct ID
+   * @param options mapping options
+   */
+  addEventSourceMapping(id: string, options: EventSourceMappingOptions): EventSourceMapping;
 
   /**
    * Adds a permission to the Lambda resource policy.
@@ -81,11 +89,6 @@ export interface IFunction extends IResource, logs.ILogSubscriptionDestination,
    * @default sum over 5 minutes
    */
   metricThrottles(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
-
-  /**
-   * Export this Function (without the role)
-   */
-  export(): FunctionAttributes;
 
   addEventSource(source: IEventSource): void;
 }
@@ -217,6 +220,13 @@ export abstract class FunctionBase extends Resource implements IFunction  {
     return !!this._connections;
   }
 
+  public addEventSourceMapping(id: string, options: EventSourceMappingOptions): EventSourceMapping {
+    return new EventSourceMapping(this, id, {
+      target: this,
+      ...options
+    });
+  }
+
   /**
    * Grant the given identity permissions to invoke this Lambda
    */
@@ -259,11 +269,6 @@ export abstract class FunctionBase extends Resource implements IFunction  {
     }
     return { arn: this.functionArn };
   }
-
-  /**
-   * Export this Function (without the role)
-   */
-  public abstract export(): FunctionAttributes;
 
   /**
    * Allows this Lambda to be used as a destination for bucket notifications.

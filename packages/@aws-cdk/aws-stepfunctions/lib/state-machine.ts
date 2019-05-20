@@ -26,7 +26,7 @@ export interface StateMachineProps {
      *
      * @default A role is automatically created
      */
-    readonly role?: iam.Role;
+    readonly role?: iam.IRole;
 
     /**
      * Maximum run time for this state machine
@@ -54,7 +54,7 @@ export class StateMachine extends Resource implements IStateMachine {
     /**
      * Execution role of this state machine
      */
-    public readonly role: iam.Role;
+    public readonly role: iam.IRole;
 
     /**
      * The name of the state machine

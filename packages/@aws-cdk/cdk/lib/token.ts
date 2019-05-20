@@ -38,6 +38,7 @@ export class Token {
 
   private tokenStringification?: string;
   private tokenListification?: string[];
+  private tokenNumberification?: number;
 
   /**
    * Creates a token that resolves to `value`.
@@ -140,6 +141,30 @@ export class Token {
       this.tokenListification = TokenMap.instance().registerList(this, this.displayName);
     }
     return this.tokenListification;
+  }
+
+  /**
+   * Return a floating point representation of this Token
+   *
+   * Call this if the Token intrinsically resolves to something that represents
+   * a number, and you need to pass it into an API that expects a number.
+   *
+   * You may not do any operations on the returned value; any arithmetic or
+   * other operations can and probably will destroy the token-ness of the value.
+   */
+  public toNumber(): number {
+    if (this.tokenNumberification === undefined) {
+      const valueType = typeof this.valueOrFunction;
+      // Optimization: if we can immediately resolve this, don't bother
+      // registering a Token.
+      if (valueType === 'number') { return this.valueOrFunction; }
+      if (valueType !== 'function') {
+        throw new Error(`Token value is not number or lazy, can't represent as number: ${this.valueOrFunction}`);
+      }
+      this.tokenNumberification = TokenMap.instance().registerNumber(this);
+    }
+
+    return this.tokenNumberification;
   }
 }
 

@@ -426,6 +426,33 @@ export = {
 
     test.done();
   },
+
+  'stack construct id does not go through stack name validation if there is an explicit stack name'(test: Test) {
+    // GIVEN
+    const app = new App();
+
+    // WHEN
+    const stack = new Stack(app, 'invalid as : stack name, but thats fine', {
+      stackName: 'valid-stack-name'
+    });
+
+    // THEN
+    const session = app.run();
+    test.deepEqual(stack.name, 'valid-stack-name');
+    test.ok('valid-stack-name' in (session.manifest.artifacts || {}));
+    test.done();
+  },
+
+  'stack validation is performed on explicit stack name'(test: Test) {
+    // GIVEN
+    const app = new App();
+
+    // THEN
+    test.throws(() => new Stack(app, 'boom', { stackName: 'invalid:stack:name' }),
+      /Stack name must match the regular expression/);
+
+    test.done();
+  }
 };
 
 class StackWithPostProcessor extends Stack {

@@ -1027,9 +1027,6 @@
     },
     "TaskLoggingLogGroupC7E938D4": {
       "Type": "AWS::Logs::LogGroup",
-      "Properties": {
-        "RetentionInDays": 365
-      },
       "DeletionPolicy": "Retain"
     },
     "Rule4C995B7F": {
@@ -1055,7 +1052,7 @@
             "Input": "{\"containerOverrides\":[{\"containerName\":\"TheContainer\",\"environment\":[{\"name\":\"I_WAS_TRIGGERED\",\"value\":\"From CloudWatch Events\"}]}]}",
             "RoleArn": {
               "Fn::GetAtt": [
-                "TaskDefEventsRoleFB3B67B8",
+                "awsecsintegecsTaskDef8DD0C801EventsRoleC617AC5B",
                 "Arn"
               ]
             }

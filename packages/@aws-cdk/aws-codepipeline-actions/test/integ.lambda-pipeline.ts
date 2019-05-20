@@ -17,7 +17,7 @@ const bucket = new s3.Bucket(stack, 'PipelineBucket', {
   removalPolicy: cdk.RemovalPolicy.Destroy,
 });
 const key = 'key';
-const trail = new cloudtrail.CloudTrail(stack, 'CloudTrail');
+const trail = new cloudtrail.Trail(stack, 'CloudTrail');
 trail.addS3EventSelector([bucket.arnForObjects(key)], { readWriteType: cloudtrail.ReadWriteType.WriteOnly, includeManagementEvents: false });
 sourceStage.addAction(new cpactions.S3SourceAction({
   actionName: 'Source',
