@@ -72,7 +72,7 @@ export = {
   'grantRead'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
-    const key = new kms.EncryptionKey(stack, 'KMS');
+    const key = new kms.Key(stack, 'KMS');
     const secret = new secretsmanager.Secret(stack, 'Secret', { encryptionKey: key });
     const role = new iam.Role(stack, 'Role', { assumedBy: new iam.AccountRootPrincipal() });
 
@@ -166,7 +166,7 @@ export = {
   'grantRead with version label constraint'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
-    const key = new kms.EncryptionKey(stack, 'KMS');
+    const key = new kms.Key(stack, 'KMS');
     const secret = new secretsmanager.Secret(stack, 'Secret', { encryptionKey: key });
     const role = new iam.Role(stack, 'Role', { assumedBy: new iam.AccountRootPrincipal() });
 
@@ -265,7 +265,7 @@ export = {
   'secretValue'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
-    const key = new kms.EncryptionKey(stack, 'KMS');
+    const key = new kms.Key(stack, 'KMS');
     const secret = new secretsmanager.Secret(stack, 'Secret', { encryptionKey: key });
 
     // WHEN
@@ -292,7 +292,7 @@ export = {
   'import'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
-    const encryptionKey = new kms.EncryptionKey(stack, 'KMS');
+    const encryptionKey = new kms.Key(stack, 'KMS');
     const secretArn = 'arn::of::a::secret';
 
     // WHEN

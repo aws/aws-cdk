@@ -27,7 +27,7 @@ export interface StateMachineProps {
      *
      * @default A role is automatically created
      */
-    readonly role?: iam.Role;
+    readonly role?: iam.IRole;
 
     /**
      * Maximum run time for this state machine
@@ -55,7 +55,7 @@ export class StateMachine extends Resource implements IStateMachine, events.IEve
     /**
      * Execution role of this state machine
      */
-    public readonly role: iam.Role;
+    public readonly role: iam.IRole;
 
     /**
      * The name of the state machine
@@ -192,6 +192,15 @@ export class StateMachine extends Resource implements IStateMachine, events.IEve
      */
     public metricStarted(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
         return this.metric('ExecutionsStarted', props);
+    }
+
+    /**
+     * Metric for the interval, in milliseconds, between the time the execution starts and the time it closes
+     *
+     * @default sum over 5 minutes
+     */
+    public metricTime(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+        return this.metric('ExecutionTime', props);
     }
 }
 

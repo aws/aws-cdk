@@ -14,7 +14,7 @@ export const resourceLinter = new Linter(a => ResourceReflection.findAll(a));
 export interface Attribute {
   site: AttributeSite;
   property: reflect.Property;
-  name: string; // bucketArn
+  names: string[]; // bucketArn
 }
 
 export enum AttributeSite {
@@ -23,6 +23,15 @@ export enum AttributeSite {
 }
 
 export class ResourceReflection {
+
+  /**
+   * @returns true if `classType` represents an AWS resource (i.e. extends `cdk.Resource`).
+   */
+  public static isResourceClass(classType: reflect.ClassType) {
+    const baseResource = classType.system.findClass(RESOURCE_BASE_CLASS_FQN);
+    return classType.extends(baseResource) || getDocTag(classType, 'resource');
+  }
+
   /**
    * @returns all resource constructs (everything that extends `cdk.Resource`)
    */
@@ -31,11 +40,9 @@ export class ResourceReflection {
       return []; // not part of the dep stack
     }
 
-    const baseResource = assembly.system.findClass(RESOURCE_BASE_CLASS_FQN);
-
     return ConstructReflection
       .findAllConstructs(assembly)
-      .filter(c => c.classType.extends(baseResource) || getDocTag(c.classType, 'resource'))
+      .filter(c => ResourceReflection.isResourceClass(c.classType))
       .map(c => new ResourceReflection(c));
   }
 
@@ -71,6 +78,10 @@ export class ResourceReflection {
     const result = new Array<Attribute>();
 
     for (const p of this.construct.classType.allProperties) {
+      if (p.protected) {
+        continue; // skip any protected properties
+      }
+
       // an attribute property is a property which starts with the type name
       // (e.g. "bucketXxx") and/or has an @attribute doc tag.
       const tag = getDocTag(p, 'attribute');
@@ -80,7 +91,8 @@ export class ResourceReflection {
 
       // if there's an `@attribute` doc tag with a value other than "true"
       // it should be used as the attribute name instead of the property name
-      const propertyName = (tag && tag !== 'true') ? tag : p.name;
+      // multiple attribute names can be listed as a comma-delimited list
+      const propertyNames = (tag && tag !== 'true') ? tag.split(',') : [ p.name ];
 
       // check if this attribute is defined on an interface or on a class
       const property = findDeclarationSite(p);
@@ -88,7 +100,7 @@ export class ResourceReflection {
 
       result.push({
         site,
-        name: propertyName,
+        names: propertyNames,
         property
       });
     }
@@ -147,7 +159,7 @@ resourceLinter.add({
   message: 'resources must represent all cloudformation attributes as attribute properties. missing property: ',
   eval: e => {
     for (const name of e.ctx.cfn.attributeNames) {
-      const found = e.ctx.attributes.find(a => a.name === name);
+      const found = e.ctx.attributes.find(a => a.names.includes(name));
       e.assert(found, `${e.ctx.fqn}.${name}`, name);
     }
   }

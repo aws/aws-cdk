@@ -2,14 +2,15 @@ import reflect = require('jsii-reflect');
 import { Linter, MethodSignatureParameterExpectation } from '../linter';
 import { CORE_MODULE } from './common';
 
-const CONSTRUCT_FQN = `${CORE_MODULE}.Construct`;
-const CONSTRUCT_INTERFACE_FQN = `${CORE_MODULE}.IConstruct`;
-
 export const constructLinter = new Linter<ConstructReflection>(assembly => assembly.classes
   .filter(t => ConstructReflection.isConstructClass(t))
   .map(construct => new ConstructReflection(construct)));
 
 export class ConstructReflection {
+
+  public static readonly CONSTRUCT_FQN = `${CORE_MODULE}.Construct`;
+  public static readonly CONSTRUCT_INTERFACE_FQN = `${CORE_MODULE}.IConstruct`;
+
   /**
    * Determines if a class is a construct.
    */
@@ -26,7 +27,7 @@ export class ConstructReflection {
       return false;
     }
 
-    return c.extends(c.system.findFqn(CONSTRUCT_FQN));
+    return c.extends(c.system.findFqn(this.CONSTRUCT_FQN));
   }
 
   public static findAllConstructs(assembly: reflect.Assembly) {
@@ -49,7 +50,7 @@ export class ConstructReflection {
   constructor(public readonly classType: reflect.ClassType) {
     this.fqn = classType.fqn;
     this.sys = classType.system;
-    this.ROOT_CLASS = this.sys.findClass(CONSTRUCT_FQN);
+    this.ROOT_CLASS = this.sys.findClass(ConstructReflection.CONSTRUCT_FQN);
     this.interfaceFqn = `${classType.assembly.name}.I${classType.name}`;
     this.propsFqn = `${classType.assembly.name}.${classType.name}Props`;
     this.interfaceType = this.tryFindInterface();
@@ -79,7 +80,7 @@ export class ConstructReflection {
     }
 
     if (!found.isInterfaceType()) {
-      throw new Error(`Expecrting props struct ${this.propsFqn} to be an interface`);
+      throw new Error(`Expecting props struct ${this.propsFqn} to be an interface`);
     }
 
     return found;
@@ -104,7 +105,7 @@ constructLinter.add({
 
     expectedParams.push({
       name: 'scope',
-      type: CONSTRUCT_FQN
+      type: ConstructReflection.CONSTRUCT_FQN
     });
 
     expectedParams.push({
@@ -180,7 +181,7 @@ constructLinter.add({
   message: 'construct interface must extend core.IConstruct',
   eval: e => {
     if (!e.ctx.interfaceType) { return; }
-    const interfaceBase = e.ctx.sys.findInterface(CONSTRUCT_INTERFACE_FQN);
+    const interfaceBase = e.ctx.sys.findInterface(ConstructReflection.CONSTRUCT_INTERFACE_FQN);
     e.assert(e.ctx.interfaceType.extends(interfaceBase), e.ctx.interfaceType.fqn);
   }
 });
@@ -188,9 +189,42 @@ constructLinter.add({
 constructLinter.add({
   code: 'construct-base-is-private',
   message: 'prefer that the construct base class is private',
+  warning: true,
   eval: e => {
     if (!e.ctx.interfaceType) { return; }
     const baseFqn = `${e.ctx.classType.fqn}Base`;
     e.assert(!e.ctx.sys.tryFindFqn(baseFqn), baseFqn);
+  }
+});
+
+constructLinter.add({
+  code: 'props-no-unions',
+  message: 'props should not use TypeScript unions',
+  eval: e => {
+    if (!e.ctx.propsType) { return; }
+    if (!e.ctx.hasPropsArgument) { return; }
+
+    // this rule only applies to L2 constructs
+    if (e.ctx.classType.name.startsWith('Cfn')) { return; }
+
+    for (const property of e.ctx.propsType.ownProperties) {
+      e.assert(!property.type.unionOfTypes, `${e.ctx.propsFqn}.${property.name}`);
+    }
+  }
+});
+
+constructLinter.add({
+  code: 'props-no-arn-refs',
+  message: 'props should use strong types instead of attributes. props should not have "arn" suffix',
+  eval: e => {
+    if (!e.ctx.propsType) { return; }
+    if (!e.ctx.hasPropsArgument) { return; }
+
+    // this rule only applies to L2 constructs
+    if (e.ctx.classType.name.startsWith('Cfn')) { return; }
+
+    for (const property of e.ctx.propsType.ownProperties) {
+      e.assert(!property.name.toLowerCase().endsWith('arn'), `${e.ctx.propsFqn}.${property.name}`);
+    }
   }
 });

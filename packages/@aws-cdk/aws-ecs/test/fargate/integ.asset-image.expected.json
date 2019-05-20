@@ -761,14 +761,6 @@
               ]
             },
             "Links": [],
-            "LinuxParameters": {
-              "Capabilities": {
-                "Add": [],
-                "Drop": []
-              },
-              "Devices": [],
-              "Tmpfs": []
-            },
             "LogConfiguration": {
               "LogDriver": "awslogs",
               "Options": {
@@ -912,9 +904,6 @@
     },
     "FargateServiceLoggingLogGroup9B16742A": {
       "Type": "AWS::Logs::LogGroup",
-      "Properties": {
-        "RetentionInDays": 365
-      },
       "DeletionPolicy": "Retain"
     },
     "FargateServiceECC8084D": {

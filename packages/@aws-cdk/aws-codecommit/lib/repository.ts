@@ -1,5 +1,5 @@
 import events = require('@aws-cdk/aws-events');
-import { CfnOutput, Construct, IResource, Resource } from '@aws-cdk/cdk';
+import { Construct, IConstruct, IResource, Resource, Stack } from '@aws-cdk/cdk';
 import { CfnRepository } from './codecommit.generated';
 
 export interface IRepository extends IResource {
@@ -78,24 +78,6 @@ export interface IRepository extends IResource {
    * @param branch The branch to monitor. Defaults to all branches.
    */
   onCommit(name: string, target?: events.IEventRuleTarget, branch?: string): events.EventRule;
-
-  /**
-   * Exports this Repository. Allows the same Repository to be used in 2 different Stacks.
-   *
-   * @see import
-   */
-  export(): RepositoryAttributes;
-}
-
-/**
- * Properties for the {@link Repository.import} method.
- */
-export interface RepositoryAttributes {
-  /**
-   * The name of an existing CodeCommit Repository that we are referencing.
-   * Must be in the same account and region as the root Stack.
-   */
-  readonly repositoryName: string;
 }
 
 /**
@@ -119,8 +101,6 @@ abstract class RepositoryBase extends Resource implements IRepository {
 
   /** The SSH clone URL */
   public abstract readonly repositoryCloneUrlSsh: string;
-
-  public abstract export(): RepositoryAttributes;
 
   /**
    * Defines a CloudWatch event rule which triggers for repository events. Use
@@ -244,23 +224,39 @@ export class Repository extends RepositoryBase {
   public static fromRepositoryArn(scope: Construct, id: string, repositoryArn: string): IRepository {
     const stack = scope.node.stack;
     const repositoryName = stack.parseArn(repositoryArn).resource;
-    const makeCloneUrl = (protocol: 'https' | 'ssh') =>
-      `${protocol}://git-codecommit.${stack.region}.${stack.urlSuffix}/v1/repos/${repositoryName}`;
 
     class Import extends RepositoryBase {
       public readonly repositoryArn = repositoryArn;
       public readonly repositoryName = repositoryName;
-      public readonly repositoryCloneUrlHttp = makeCloneUrl('https');
-      public readonly repositoryCloneUrlSsh = makeCloneUrl('ssh');
-      public export() {
-        return {
-          repositoryArn: this.repositoryArn,
-          repositoryName: this.repositoryName
-        };
-      }
+      public readonly repositoryCloneUrlHttp = Repository.makeCloneUrl(stack, repositoryName, 'https');
+      public readonly repositoryCloneUrlSsh = Repository.makeCloneUrl(stack, repositoryName, 'ssh');
     }
 
     return new Import(scope, id);
+  }
+
+  public static fromRepositoryName(scope: Construct, id: string, repositoryName: string): IRepository {
+    const stack = scope.node.stack;
+
+    class Import extends RepositoryBase {
+      public repositoryName = repositoryName;
+      public repositoryArn = Repository.arnForLocalRepository(repositoryName, scope);
+      public readonly repositoryCloneUrlHttp = Repository.makeCloneUrl(stack, repositoryName, 'https');
+      public readonly repositoryCloneUrlSsh = Repository.makeCloneUrl(stack, repositoryName, 'ssh');
+    }
+
+    return new Import(scope, id);
+  }
+
+  private static makeCloneUrl(stack: Stack, repositoryName: string, protocol: 'https' | 'ssh') {
+    return `${protocol}://git-codecommit.${stack.region}.${stack.urlSuffix}/v1/repos/${repositoryName}`;
+  }
+
+  private static arnForLocalRepository(repositoryName: string, scope: IConstruct): string {
+    return scope.node.stack.formatArn({
+      service: 'codecommit',
+      resource: repositoryName,
+    });
   }
 
   private readonly repository: CfnRepository;
@@ -290,17 +286,6 @@ export class Repository extends RepositoryBase {
 
   public get repositoryName() {
     return this.repository.repositoryName;
-  }
-
-  /**
-   * Exports this Repository. Allows the same Repository to be used in 2 different Stacks.
-   *
-   * @see import
-   */
-  public export(): RepositoryAttributes {
-    return {
-      repositoryName: new CfnOutput(this, 'RepositoryName', { value: this.repositoryName }).makeImportValue().toString()
-    };
   }
 
   /**

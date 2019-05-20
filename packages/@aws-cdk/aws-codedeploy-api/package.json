@@ -2,6 +2,7 @@
   "name": "@aws-cdk/aws-codedeploy-api",
   "version": "0.31.0",
   "description": "Load Balancer API for AWS CodeDeploy",
+  "deprecated": "This package is now obsololete, please remove it from your dependencies",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "jsii": {

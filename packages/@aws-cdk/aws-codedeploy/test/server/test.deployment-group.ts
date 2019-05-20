@@ -31,9 +31,7 @@ export = {
     'can be imported'(test: Test) {
       const stack = new cdk.Stack();
 
-      const application = codedeploy.ServerApplication.import(stack, 'MyApp', {
-        applicationName: 'MyApp',
-      });
+      const application = codedeploy.ServerApplication.fromServerApplicationName(stack, 'MyApp', 'MyApp');
       const deploymentGroup = codedeploy.ServerDeploymentGroup.fromServerDeploymentGroupAttributes(stack, 'MyDG', {
         application,
         deploymentGroupName: 'MyDG',
@@ -50,7 +48,7 @@ export = {
       const asg = new autoscaling.AutoScalingGroup(stack, 'ASG', {
         instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.Standard3, ec2.InstanceSize.Small),
         machineImage: new ec2.AmazonLinuxImage(),
-        vpc: new ec2.VpcNetwork(stack, 'VPC'),
+        vpc: new ec2.Vpc(stack, 'VPC'),
       });
 
       new codedeploy.ServerDeploymentGroup(stack, 'DeploymentGroup', {
@@ -74,7 +72,7 @@ export = {
       const asg = new autoscaling.AutoScalingGroup(stack, 'ASG', {
         instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.Standard3, ec2.InstanceSize.Small),
         machineImage: new ec2.AmazonLinuxImage(),
-        vpc: new ec2.VpcNetwork(stack, 'VPC'),
+        vpc: new ec2.Vpc(stack, 'VPC'),
       });
 
       const deploymentGroup = new codedeploy.ServerDeploymentGroup(stack, 'DeploymentGroup');
@@ -95,13 +93,13 @@ export = {
       const stack = new cdk.Stack();
 
       const alb = new lbv2.ApplicationLoadBalancer(stack, 'ALB', {
-        vpc: new ec2.VpcNetwork(stack, 'VPC'),
+        vpc: new ec2.Vpc(stack, 'VPC'),
       });
       const listener = alb.addListener('Listener', { protocol: lbv2.ApplicationProtocol.Http });
       const targetGroup = listener.addTargets('Fleet', { protocol: lbv2.ApplicationProtocol.Http });
 
       new codedeploy.ServerDeploymentGroup(stack, 'DeploymentGroup', {
-        loadBalancer: targetGroup,
+        loadBalancer: codedeploy.LoadBalancer.application(targetGroup),
       });
 
       expect(stack).to(haveResource('AWS::CodeDeploy::DeploymentGroup', {
@@ -129,13 +127,13 @@ export = {
       const stack = new cdk.Stack();
 
       const nlb = new lbv2.NetworkLoadBalancer(stack, 'NLB', {
-        vpc: new ec2.VpcNetwork(stack, 'VPC'),
+        vpc: new ec2.Vpc(stack, 'VPC'),
       });
       const listener = nlb.addListener('Listener', { port: 80 });
       const targetGroup = listener.addTargets('Fleet', { port: 80 });
 
       new codedeploy.ServerDeploymentGroup(stack, 'DeploymentGroup', {
-        loadBalancer: targetGroup,
+        loadBalancer: codedeploy.LoadBalancer.network(targetGroup),
       });
 
       expect(stack).to(haveResource('AWS::CodeDeploy::DeploymentGroup', {

@@ -1,4 +1,4 @@
-import { CfnOutput, Construct, IResource, Resource, Token } from '@aws-cdk/cdk';
+import { Construct, IResource, Resource, Token } from '@aws-cdk/cdk';
 import { Code } from './code';
 import { CfnLayerVersion, CfnLayerVersionPermission } from './lambda.generated';
 import { Runtime } from './runtime';
@@ -48,21 +48,17 @@ export interface ILayerVersion extends IResource {
   readonly compatibleRuntimes?: Runtime[];
 
   /**
-   * Exports this layer for use in another Stack. The resulting object can be passed to the ``LayerVersion.import``
-   * function to obtain an ``ILayerVersion`` in the user stack.
-   */
-  export(): LayerVersionAttributes;
-
-  /**
-   * Grants usage of this layer to specific entities. Usage within the same account where the layer is defined is always
-   * allowed and does not require calling this method. Note that the principal that creates the Lambda function using
-   * the layer (for example, a CloudFormation changeset execution role) also needs to have the
-   * ``lambda:GetLayerVersion`` permission on the layer version.
+   * Add permission for this layer version to specific entities. Usage within
+   * the same account where the layer is defined is always allowed and does not
+   * require calling this method. Note that the principal that creates the
+   * Lambda function using the layer (for example, a CloudFormation changeset
+   * execution role) also needs to have the ``lambda:GetLayerVersion``
+   * permission on the layer version.
    *
    * @param id the ID of the grant in the construct tree.
-   * @param grantee the identification of the grantee.
+   * @param permission the identification of the grantee.
    */
-  grantUsage(id: string, grantee: LayerVersionUsageGrantee): ILayerVersion
+  addPermission(id: string, permission: LayerVersionPermission): void;
 }
 
 /**
@@ -72,32 +68,24 @@ abstract class LayerVersionBase extends Resource implements ILayerVersion {
   public abstract readonly layerVersionArn: string;
   public abstract readonly compatibleRuntimes?: Runtime[];
 
-  public grantUsage(id: string, grantee: LayerVersionUsageGrantee): ILayerVersion {
-    if (grantee.organizationId != null && grantee.accountId !== '*') {
-      throw new Error(`OrganizationId can only be specified if AwsAccountId is '*', but it is ${grantee.accountId}`);
+  public addPermission(id: string, permission: LayerVersionPermission) {
+    if (permission.organizationId != null && permission.accountId !== '*') {
+      throw new Error(`OrganizationId can only be specified if AwsAccountId is '*', but it is ${permission.accountId}`);
     }
 
     new CfnLayerVersionPermission(this, id, {
       action: 'lambda:GetLayerVersion',
       layerVersionArn: this.layerVersionArn,
-      principal: grantee.accountId,
-      organizationId: grantee.organizationId,
+      principal: permission.accountId,
+      organizationId: permission.organizationId,
     });
-    return this;
-  }
-
-  public export(): LayerVersionAttributes {
-    return {
-      layerVersionArn: new CfnOutput(this, 'LayerVersionArn', { value: this.layerVersionArn }).makeImportValue().toString(),
-      compatibleRuntimes: this.compatibleRuntimes,
-    };
   }
 }
 
 /**
  * Identification of an account (or organization) that is allowed to access a Lambda Layer Version.
  */
-export interface LayerVersionUsageGrantee {
+export interface LayerVersionPermission {
   /**
    * The AWS Account id of the account that is authorized to use a Lambda Layer Version. The wild-card ``'*'`` can be
    * used to grant access to "any" account (or any account in an organization when ``organizationId`` is specified).
@@ -224,16 +212,8 @@ export class SingletonLayerVersion extends Construct implements ILayerVersion {
     return this.layerVersion.compatibleRuntimes;
   }
 
-  public export(): LayerVersionAttributes {
-    return {
-      layerVersionArn: this.layerVersionArn,
-      compatibleRuntimes: this.compatibleRuntimes,
-    };
-  }
-
-  public grantUsage(id: string, grantee: LayerVersionUsageGrantee): ILayerVersion {
-    this.layerVersion.grantUsage(id, grantee);
-    return this;
+  public addPermission(id: string, grantee: LayerVersionPermission) {
+    this.layerVersion.addPermission(id, grantee);
   }
 
   private ensureLayerVersion(props: SingletonLayerVersionProps): ILayerVersion {

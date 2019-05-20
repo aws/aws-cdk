@@ -3,15 +3,15 @@ import ec2 = require('@aws-cdk/aws-ec2');
 import iam = require('@aws-cdk/aws-iam');
 import logs = require('@aws-cdk/aws-logs');
 import s3n = require('@aws-cdk/aws-s3-notifications');
-import stepfunctions = require('@aws-cdk/aws-stepfunctions');
 import cdk = require('@aws-cdk/cdk');
 import { IResource, Resource } from '@aws-cdk/cdk';
 import { IEventSource } from './event-source';
+import { EventSourceMapping, EventSourceMappingOptions } from './event-source-mapping';
 import { CfnPermission } from './lambda.generated';
 import { Permission } from './permission';
 
 export interface IFunction extends IResource, logs.ILogSubscriptionDestination,
-  s3n.IBucketNotificationDestination, ec2.IConnectable, stepfunctions.IStepFunctionsTaskResource, iam.IGrantable {
+  s3n.IBucketNotificationDestination, ec2.IConnectable, iam.IGrantable {
 
   /**
    * Logical ID of this Function.
@@ -43,6 +43,13 @@ export interface IFunction extends IResource, logs.ILogSubscriptionDestination,
    * If this is is `false`, trying to access the `connections` object will fail.
    */
   readonly isBoundToVpc: boolean;
+
+  /**
+   * Adds an event source that maps to this AWS Lambda function.
+   * @param id construct ID
+   * @param options mapping options
+   */
+  addEventSourceMapping(id: string, options: EventSourceMappingOptions): EventSourceMapping;
 
   /**
    * Adds a permission to the Lambda resource policy.
@@ -82,11 +89,6 @@ export interface IFunction extends IResource, logs.ILogSubscriptionDestination,
    * @default sum over 5 minutes
    */
   metricThrottles(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
-
-  /**
-   * Export this Function (without the role)
-   */
-  export(): FunctionAttributes;
 
   addEventSource(source: IEventSource): void;
 }
@@ -218,6 +220,13 @@ export abstract class FunctionBase extends Resource implements IFunction  {
     return !!this._connections;
   }
 
+  public addEventSourceMapping(id: string, options: EventSourceMappingOptions): EventSourceMapping {
+    return new EventSourceMapping(this, id, {
+      target: this,
+      ...options
+    });
+  }
+
   /**
    * Grant the given identity permissions to invoke this Lambda
    */
@@ -262,11 +271,6 @@ export abstract class FunctionBase extends Resource implements IFunction  {
   }
 
   /**
-   * Export this Function (without the role)
-   */
-  public abstract export(): FunctionAttributes;
-
-  /**
    * Allows this Lambda to be used as a destination for bucket notifications.
    * Use `bucket.onEvent(lambda)` to subscribe.
    */
@@ -288,19 +292,6 @@ export abstract class FunctionBase extends Resource implements IFunction  {
       type: s3n.BucketNotificationDestinationType.Lambda,
       arn: this.functionArn,
       dependencies: permission ? [ permission ] : undefined
-    };
-  }
-
-  public asStepFunctionsTaskResource(_callingTask: stepfunctions.Task): stepfunctions.StepFunctionsTaskResourceProps {
-    return {
-      resourceArn: this.functionArn,
-      metricPrefixSingular: 'LambdaFunction',
-      metricPrefixPlural: 'LambdaFunctions',
-      metricDimensions: { LambdaFunctionArn: this.functionArn },
-      policyStatements: [new iam.PolicyStatement()
-        .addResource(this.functionArn)
-        .addActions("lambda:InvokeFunction")
-      ]
     };
   }
 

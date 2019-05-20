@@ -29,11 +29,6 @@ export interface ILambdaDeploymentGroup extends cdk.IResource {
    * @attribute
    */
   readonly deploymentGroupArn: string;
-
-  /**
-   * Export this Deployment Group for use in another stack or application.
-   */
-  export(): LambdaDeploymentGroupAttributes;
 }
 
 /**
@@ -71,7 +66,7 @@ export interface LambdaDeploymentGroupProps {
    * @default []
    * @see https://docs.aws.amazon.com/codedeploy/latest/userguide/monitoring-create-alarms.html
    */
-  readonly alarms?: cloudwatch.Alarm[];
+  readonly alarms?: cloudwatch.IAlarm[];
 
   /**
    * The service Role of this Deployment Group.
@@ -83,6 +78,8 @@ export interface LambdaDeploymentGroupProps {
   /**
    * Lambda Alias to shift traffic. Updating the version
    * of the alias will trigger a CodeDeploy deployment.
+   *
+   * [disable-awslint:ref-via-interface] since we need to modify the alias CFN resource update policy
    */
   readonly alias: lambda.Alias;
 
@@ -134,7 +131,7 @@ export class LambdaDeploymentGroup extends cdk.Resource implements ILambdaDeploy
   public readonly deploymentGroupArn: string;
   public readonly role: iam.IRole;
 
-  private readonly alarms: cloudwatch.Alarm[];
+  private readonly alarms: cloudwatch.IAlarm[];
   private preHook?: lambda.IFunction;
   private postHook?: lambda.IFunction;
 
@@ -188,7 +185,7 @@ export class LambdaDeploymentGroup extends cdk.Resource implements ILambdaDeploy
    *
    * @param alarm the alarm to associate with this Deployment Group
    */
-  public addAlarm(alarm: cloudwatch.Alarm): void {
+  public addAlarm(alarm: cloudwatch.IAlarm): void {
     this.alarms.push(alarm);
   }
 
@@ -232,15 +229,6 @@ export class LambdaDeploymentGroup extends cdk.Resource implements ILambdaDeploy
       actions: ['codedeploy:PutLifecycleEventHookExecutionStatus'],
     });
   }
-
-  public export(): LambdaDeploymentGroupAttributes {
-    return {
-      application: this.application,
-      deploymentGroupName: new cdk.CfnOutput(this, 'DeploymentGroupName', {
-        value: this.deploymentGroupName
-      }).makeImportValue().toString()
-    };
-  }
 }
 
 /**
@@ -268,14 +256,10 @@ class ImportedLambdaDeploymentGroup extends cdk.Construct implements ILambdaDepl
   public readonly deploymentGroupName: string;
   public readonly deploymentGroupArn: string;
 
-  constructor(scope: cdk.Construct, id: string, private readonly props: LambdaDeploymentGroupAttributes) {
+  constructor(scope: cdk.Construct, id: string, props: LambdaDeploymentGroupAttributes) {
     super(scope, id);
     this.application = props.application;
     this.deploymentGroupName = props.deploymentGroupName;
     this.deploymentGroupArn = arnForDeploymentGroup(props.application.applicationName, props.deploymentGroupName);
-  }
-
-  public export() {
-    return this.props;
   }
 }

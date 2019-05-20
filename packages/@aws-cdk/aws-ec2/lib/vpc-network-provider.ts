@@ -1,6 +1,6 @@
 import cdk = require('@aws-cdk/cdk');
 import cxapi = require('@aws-cdk/cx-api');
-import { VpcNetworkImportProps } from './vpc-ref';
+import { VpcAttributes } from './vpc';
 
 /**
  * Properties for looking up an existing VPC.
@@ -8,7 +8,7 @@ import { VpcNetworkImportProps } from './vpc-ref';
  * The combination of properties must specify filter down to exactly one
  * non-default VPC, otherwise an error is raised.
  */
-export interface VpcNetworkProviderProps {
+export interface VpcLookupOptions {
   /**
    * The ID of the VPC
    *
@@ -50,14 +50,14 @@ export interface VpcNetworkProviderProps {
 export class VpcNetworkProvider {
   private provider: cdk.ContextProvider;
 
-  constructor(context: cdk.Construct, props: VpcNetworkProviderProps) {
-    const filter: {[key: string]: string} = props.tags || {};
+  constructor(context: cdk.Construct, options: VpcLookupOptions) {
+    const filter: {[key: string]: string} = options.tags || {};
 
     // We give special treatment to some tags
-    if (props.vpcId) { filter['vpc-id'] = props.vpcId; }
-    if (props.vpcName) { filter['tag:Name'] = props.vpcName; }
-    if (props.isDefault !== undefined) {
-      filter.isDefault = props.isDefault ? 'true' : 'false';
+    if (options.vpcId) { filter['vpc-id'] = options.vpcId; }
+    if (options.vpcName) { filter['tag:Name'] = options.vpcName; }
+    if (options.isDefault !== undefined) {
+      filter.isDefault = options.isDefault ? 'true' : 'false';
     }
 
     this.provider = new cdk.ContextProvider(context, cxapi.VPC_PROVIDER, { filter } as cxapi.VpcContextQuery);
@@ -66,7 +66,7 @@ export class VpcNetworkProvider {
   /**
    * Return the VPC import props matching the filter
    */
-  public get vpcProps(): VpcNetworkImportProps {
+  public get vpcProps(): VpcAttributes {
     const ret: cxapi.VpcContextResponse = this.provider.getValue(DUMMY_VPC_PROPS);
     return ret;
   }

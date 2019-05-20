@@ -2,7 +2,7 @@ import events = require('@aws-cdk/aws-events');
 import iam = require('@aws-cdk/aws-iam');
 import kms = require('@aws-cdk/aws-kms');
 import { IBucketNotificationDestination } from '@aws-cdk/aws-s3-notifications';
-import { applyRemovalPolicy, CfnOutput, Construct, IResource, RemovalPolicy, Resource, Token } from '@aws-cdk/cdk';
+import { applyRemovalPolicy, Construct, IResource, RemovalPolicy, Resource, Token } from '@aws-cdk/cdk';
 import { EOL } from 'os';
 import { BucketPolicy } from './bucket-policy';
 import { BucketNotifications } from './notifications-resource';
@@ -51,7 +51,7 @@ export interface IBucket extends IResource {
   /**
    * Optional KMS encryption key associated with this bucket.
    */
-  readonly encryptionKey?: kms.IEncryptionKey;
+  readonly encryptionKey?: kms.IKey;
 
   /**
    * The resource policy assoicated with this bucket.
@@ -60,11 +60,6 @@ export interface IBucket extends IResource {
    * first call to addToResourcePolicy(s).
    */
   policy?: BucketPolicy;
-
-  /**
-   * Exports this bucket from the stack.
-   */
-  export(): BucketAttributes;
 
   /**
    * Adds a statement to the resource policy for a principal (i.e.
@@ -267,7 +262,7 @@ abstract class BucketBase extends Resource implements IBucket {
   /**
    * Optional KMS encryption key associated with this bucket.
    */
-  public abstract readonly encryptionKey?: kms.IEncryptionKey;
+  public abstract readonly encryptionKey?: kms.IKey;
 
   /**
    * The resource policy assoicated with this bucket.
@@ -287,11 +282,6 @@ abstract class BucketBase extends Resource implements IBucket {
    * Whether to disallow public access
    */
   protected abstract disallowPublicAccess?: boolean;
-
-  /**
-   * Exports this bucket from the stack.
-   */
-  public abstract export(): BucketAttributes;
 
   public onPutObject(name: string, target?: events.IEventRuleTarget, path?: string): events.EventRule {
     const eventRule = new events.EventRule(this, name, {
@@ -564,6 +554,25 @@ export class BlockPublicAccess {
   }
 }
 
+/**
+ * Specifies a metrics configuration for the CloudWatch request metrics from an Amazon S3 bucket.
+ */
+export interface BucketMetrics {
+  /**
+   * The ID used to identify the metrics configuration.
+   */
+  readonly id: string;
+  /**
+   * The prefix that an object must have to be included in the metrics results.
+   */
+  readonly prefix?: string;
+  /**
+   * Specifies a list of tag filters to use as a metrics configuration filter.
+   * The metrics configuration includes only objects that meet the filter's criteria.
+   */
+  readonly tagFilters?: {[tag: string]: any};
+}
+
 export interface BucketProps {
   /**
    * The kind of server-side encryption to apply to this bucket.
@@ -585,7 +594,7 @@ export interface BucketProps {
    * @default If encryption is set to "Kms" and this property is undefined, a
    * new KMS key will be created and associated with this bucket.
    */
-  readonly encryptionKey?: kms.IEncryptionKey;
+  readonly encryptionKey?: kms.IKey;
 
   /**
    * Physical name of this bucket.
@@ -639,6 +648,13 @@ export interface BucketProps {
    * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/access-control-block-public-access.html
    */
   readonly blockPublicAccess?: BlockPublicAccess;
+
+  /**
+   * The metrics configuration of this bucket.
+   *
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-s3-bucket-metricsconfiguration.html
+   */
+  readonly metrics?: BucketMetrics[];
 }
 
 /**
@@ -690,7 +706,7 @@ export class Bucket extends BucketBase {
       public readonly bucketRegionalDomainName = attrs.bucketRegionalDomainName || `${bucketName}.s3.${region}.${urlSuffix}`;
       public readonly bucketDualStackDomainName = attrs.bucketDualStackDomainName || `${bucketName}.s3.dualstack.${region}.${urlSuffix}`;
       public readonly bucketWebsiteNewUrlFormat = newUrlFormat;
-      public readonly encryptionKey?: kms.EncryptionKey;
+      public readonly encryptionKey?: kms.IKey;
       public policy?: BucketPolicy = undefined;
       protected autoCreatePolicy = false;
       protected disallowPublicAccess = false;
@@ -713,19 +729,20 @@ export class Bucket extends BucketBase {
   public readonly bucketDualStackDomainName: string;
   public readonly bucketRegionalDomainName: string;
 
-  public readonly encryptionKey?: kms.IEncryptionKey;
+  public readonly encryptionKey?: kms.IKey;
   public policy?: BucketPolicy;
   protected autoCreatePolicy = true;
   protected disallowPublicAccess?: boolean;
   private readonly lifecycleRules: LifecycleRule[] = [];
   private readonly versioned?: boolean;
   private readonly notifications: BucketNotifications;
+  private readonly metrics: BucketMetrics[] = [];
 
   constructor(scope: Construct, id: string, props: BucketProps = {}) {
     super(scope, id);
 
     const { bucketEncryption, encryptionKey } = this.parseEncryption(props);
-    if (props.bucketName && !Token.unresolved(props.bucketName)) {
+    if (props.bucketName && !Token.isToken(props.bucketName)) {
       this.validateBucketName(props.bucketName);
     }
 
@@ -735,7 +752,8 @@ export class Bucket extends BucketBase {
       versioningConfiguration: props.versioned ? { status: 'Enabled' } : undefined,
       lifecycleConfiguration: new Token(() => this.parseLifecycleConfiguration()),
       websiteConfiguration: this.renderWebsiteConfiguration(props),
-      publicAccessBlockConfiguration: props.blockPublicAccess
+      publicAccessBlockConfiguration: props.blockPublicAccess,
+      metricsConfigurations: new Token(() => this.parseMetricConfiguration())
     });
 
     applyRemovalPolicy(resource, props.removalPolicy !== undefined ? props.removalPolicy : RemovalPolicy.Orphan);
@@ -752,6 +770,9 @@ export class Bucket extends BucketBase {
 
     this.disallowPublicAccess = props.blockPublicAccess && props.blockPublicAccess.blockPublicPolicy;
 
+    // Add all bucket metric configurations rules
+    (props.metrics || []).forEach(this.addMetric.bind(this));
+
     // Add all lifecycle rules
     (props.lifecycleRules || []).forEach(this.addLifecycleRule.bind(this));
 
@@ -762,18 +783,6 @@ export class Bucket extends BucketBase {
     if (props.publicReadAccess) {
       this.grantPublicAccess();
     }
-  }
-
-  /**
-   * Exports this bucket from the stack.
-   */
-  public export(): BucketAttributes {
-    return {
-      bucketArn: new CfnOutput(this, 'BucketArn', { value: this.bucketArn }).makeImportValue().toString(),
-      bucketName: new CfnOutput(this, 'BucketName', { value: this.bucketName }).makeImportValue().toString(),
-      bucketDomainName: new CfnOutput(this, 'DomainName', { value: this.bucketDomainName }).makeImportValue().toString(),
-      bucketWebsiteUrl: new CfnOutput(this, 'WebsiteURL', { value: this.bucketWebsiteUrl }).makeImportValue().toString()
-    };
   }
 
   /**
@@ -789,6 +798,15 @@ export class Bucket extends BucketBase {
     }
 
     this.lifecycleRules.push(rule);
+  }
+
+  /**
+   * Adds a metrics configuration for the CloudWatch request metrics from the bucket.
+   *
+   * @param metric The metric configuration to add
+   */
+  public addMetric(metric: BucketMetrics) {
+    this.metrics.push(metric);
   }
 
   /**
@@ -878,7 +896,7 @@ export class Bucket extends BucketBase {
    */
   private parseEncryption(props: BucketProps): {
     bucketEncryption?: CfnBucket.BucketEncryptionProperty,
-    encryptionKey?: kms.IEncryptionKey
+    encryptionKey?: kms.IKey
   } {
 
     // default to unencrypted.
@@ -894,7 +912,7 @@ export class Bucket extends BucketBase {
     }
 
     if (encryptionType === BucketEncryption.Kms) {
-      const encryptionKey = props.encryptionKey || new kms.EncryptionKey(this, 'Key', {
+      const encryptionKey = props.encryptionKey || new kms.Key(this, 'Key', {
         description: `Created by ${this.node.path}`
       });
 
@@ -942,6 +960,8 @@ export class Bucket extends BucketBase {
       return undefined;
     }
 
+    const self = this;
+
     return { rules: this.lifecycleRules.map(parseLifecycleRule) };
 
     function parseLifecycleRule(rule: LifecycleRule): CfnBucket.RuleProperty {
@@ -958,22 +978,40 @@ export class Bucket extends BucketBase {
         prefix: rule.prefix,
         status: enabled ? 'Enabled' : 'Disabled',
         transitions: rule.transitions,
-        tagFilters: parseTagFilters(rule.tagFilters)
+        tagFilters: self.parseTagFilters(rule.tagFilters)
       };
 
       return x;
     }
+  }
 
-    function parseTagFilters(tagFilters?: {[tag: string]: any}) {
-      if (!tagFilters || tagFilters.length === 0) {
-        return undefined;
-      }
-
-      return Object.keys(tagFilters).map(tag => ({
-        key: tag,
-        value: tagFilters[tag]
-      }));
+  private parseMetricConfiguration(): CfnBucket.MetricsConfigurationProperty[] | undefined {
+    if (!this.metrics || this.metrics.length === 0) {
+      return undefined;
     }
+
+    const self = this;
+
+    return this.metrics.map(parseMetric);
+
+    function parseMetric(metric: BucketMetrics): CfnBucket.MetricsConfigurationProperty {
+      return {
+        id: metric.id,
+        prefix: metric.prefix,
+        tagFilters: self.parseTagFilters(metric.tagFilters)
+      };
+    }
+  }
+
+  private parseTagFilters(tagFilters?: {[tag: string]: any}) {
+    if (!tagFilters || tagFilters.length === 0) {
+      return undefined;
+    }
+
+    return Object.keys(tagFilters).map(tag => ({
+      key: tag,
+      value: tagFilters[tag]
+    }));
   }
 
   private renderWebsiteConfiguration(props: BucketProps): CfnBucket.WebsiteConfigurationProperty | undefined {

@@ -1,8 +1,10 @@
-import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
+import { expect, haveResource, haveResourceLike, not } from '@aws-cdk/assert';
 import assets = require('@aws-cdk/assets');
+import { Bucket } from '@aws-cdk/aws-s3';
 import cdk = require('@aws-cdk/cdk');
 import { Test } from 'nodeunit';
 import codebuild = require('../lib');
+import { Cache, LocalCacheMode } from '../lib/cache';
 
 // tslint:disable:object-literal-key-quotes
 
@@ -158,6 +160,81 @@ export = {
         Type: "NO_SOURCE"
       }
     }));
+
+    test.done();
+  },
+
+  'project with s3 cache bucket'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new codebuild.Project(stack, 'Project', {
+      source: new codebuild.CodePipelineSource(),
+      cache: Cache.bucket(new Bucket(stack, 'Bucket'), {
+        prefix: "cache-prefix"
+      })
+    });
+
+    // THEN
+    expect(stack).to(haveResourceLike('AWS::CodeBuild::Project', {
+      Cache: {
+        Type: "S3",
+        Location: {
+          "Fn::Join": [
+            "/",
+            [
+              {
+                "Ref": "Bucket83908E77"
+              },
+              "cache-prefix"
+            ]
+          ]
+        }
+      },
+    }));
+
+    test.done();
+  },
+
+  'project with local cache modes'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new codebuild.Project(stack, 'Project', {
+      source: new codebuild.CodePipelineSource(),
+      cache: Cache.local(LocalCacheMode.Custom, LocalCacheMode.DockerLayer, LocalCacheMode.Source)
+    });
+
+    // THEN
+    expect(stack).to(haveResourceLike('AWS::CodeBuild::Project', {
+      Cache: {
+        Type: "LOCAL",
+        Modes: [
+          "LOCAL_CUSTOM_CACHE",
+          "LOCAL_DOCKER_LAYER_CACHE",
+          "LOCAL_SOURCE_CACHE"
+        ]
+      },
+    }));
+
+    test.done();
+  },
+
+  'project by default has no cache modes'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new codebuild.Project(stack, 'Project', {
+      source: new codebuild.CodePipelineSource()
+    });
+
+    // THEN
+    expect(stack).to(not(haveResourceLike('AWS::CodeBuild::Project', {
+      Cache: {}
+    })));
 
     test.done();
   },

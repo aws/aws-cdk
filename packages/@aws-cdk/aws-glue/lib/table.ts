@@ -1,7 +1,7 @@
 import iam = require('@aws-cdk/aws-iam');
 import kms = require('@aws-cdk/aws-kms');
 import s3 = require('@aws-cdk/aws-s3');
-import { CfnOutput, Construct, Fn, IResource, Resource } from '@aws-cdk/cdk';
+import { Construct, Fn, IResource, Resource } from '@aws-cdk/cdk';
 import { DataFormat } from './data-format';
 import { IDatabase } from './database';
 import { CfnTable } from './glue.generated';
@@ -17,8 +17,6 @@ export interface ITable extends IResource {
    * @attribute
    */
   readonly tableName: string;
-
-  export(): TableAttributes;
 }
 
 /**
@@ -136,7 +134,7 @@ export interface TableProps {
    *
    * @default key is managed by KMS.
    */
-  readonly encryptionKey?: kms.IEncryptionKey;
+  readonly encryptionKey?: kms.IKey;
 
   /**
    * Indicates whether the table data is stored in subdirectories.
@@ -165,15 +163,12 @@ export class Table extends Resource implements ITable {
    *
    * @param scope The scope creating construct (usually `this`).
    * @param id The construct's id.
-   * @param attrs A `TableImportProps` object. Can be obtained from a call to `table.export()` or manually created.
+   * @param attrs Import attributes
    */
   public static fromTableAttributes(scope: Construct, id: string, attrs: TableAttributes): ITable {
     class Import extends Construct implements ITable {
       public readonly tableArn = attrs.tableArn;
       public readonly tableName = attrs.tableName;
-      public export(): TableAttributes {
-        return attrs;
-      }
     }
 
     return new Import(scope, id);
@@ -192,7 +187,7 @@ export class Table extends Resource implements ITable {
   /**
    * The KMS key used to secure the data if `encryption` is set to `CSE-KMS` or `SSE-KMS`. Otherwise, `undefined`.
    */
-  public readonly encryptionKey?: kms.IEncryptionKey;
+  public readonly encryptionKey?: kms.IKey;
 
   /**
    * S3 bucket in which the table's data resides.
@@ -279,13 +274,6 @@ export class Table extends Resource implements ITable {
     this.tableArn = `${this.database.databaseArn}/${this.tableName}`;
   }
 
-  public export(): TableAttributes {
-    return {
-      tableName: new CfnOutput(this, 'TableName', { value: this.tableName }).makeImportValue().toString(),
-      tableArn: new CfnOutput(this, 'TableArn', { value: this.tableArn }).makeImportValue().toString(),
-    };
-  }
-
   /**
    * Grant read permissions to the table and the underlying data stored in S3 to an IAM principal.
    *
@@ -363,11 +351,11 @@ function createBucket(table: Table, props: TableProps) {
     throw new Error('you can not specify encryption settings if you also provide a bucket');
   }
 
-  let encryptionKey: kms.IEncryptionKey | undefined;
+  let encryptionKey: kms.IKey | undefined;
   if (encryption === TableEncryption.ClientSideKms && props.encryptionKey === undefined) {
     // CSE-KMS should behave the same as SSE-KMS - use the provided key or create one automatically
     // Since Bucket only knows about SSE, we repeat the logic for CSE-KMS at the Table level.
-    encryptionKey = new kms.EncryptionKey(table, 'Key');
+    encryptionKey = new kms.Key(table, 'Key');
   } else {
     encryptionKey = props.encryptionKey;
   }
