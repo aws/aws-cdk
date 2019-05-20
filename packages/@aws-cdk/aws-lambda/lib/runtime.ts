@@ -69,4 +69,10 @@ export class Runtime {
   public toString(): string {
     return this.name;
   }
+
+  public equals(other: Runtime): boolean {
+    return other.name === this.name &&
+           other.family === this.family &&
+           other.supportsInlineCode === this.supportsInlineCode;
+  }
 }
