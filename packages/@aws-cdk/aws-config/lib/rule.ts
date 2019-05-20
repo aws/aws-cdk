@@ -1,7 +1,7 @@
 import events = require('@aws-cdk/aws-events');
 import iam = require('@aws-cdk/aws-iam');
 import lambda = require('@aws-cdk/aws-lambda');
-import { CfnOutput, Construct, IResource, Resource, Token } from '@aws-cdk/cdk';
+import { Construct, IResource, Resource, Token } from '@aws-cdk/cdk';
 import { CfnConfigRule } from './config.generated';
 
 /**
@@ -31,11 +31,6 @@ export interface IRule extends IResource {
    * @attribute
    */
   readonly configRuleComplianceType?: string;
-
-  /**
-   * Exports this rule from stack.
-   */
-  export(): RuleAttributes;
 
   /**
    * Defines a CloudWatch event rule which triggers for rule events. Use
@@ -87,8 +82,6 @@ abstract class RuleBase extends Resource implements IRule {
 
   public abstract readonly configRuleName: string;
 
-  public abstract export(): RuleAttributes;
-
   /**
    * Defines a CloudWatch event rule which triggers for rule events. Use
    * `rule.addEventPattern(pattern)` to specify a filter.
@@ -139,15 +132,6 @@ abstract class RuleNew extends RuleBase {
   protected scope?: CfnConfigRule.ScopeProperty;
   protected isManaged?: boolean;
   protected isCustomWithChanges?: boolean;
-
-  /**
-   * Exports this rule from the stack.
-   */
-  public export(): RuleAttributes {
-    return {
-      configRuleName: new CfnOutput(this, 'RuleName', { value: this.configRuleName }).makeImportValue().toString()
-    };
-  }
 
   /**
    * Restrict scope of changes to a specific resource.

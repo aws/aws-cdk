@@ -242,27 +242,6 @@ export = {
     test.done();
   },
 
-  'import/export'(test: Test) {
-    // GIVEN
-    const stack = new cdk.Stack();
-    const rule = new config.ManagedRule(stack, 'Rule', {
-      identifier: 'RULE'
-    });
-
-    // WHEN
-    const exportedRule = rule.export();
-
-    const importedRule = config.ManagedRule.fromConfigRuleName(stack, 'ImportedRule', 'name');
-
-    // THEN
-    test.deepEqual(stack.node.resolve(exportedRule), {
-      configRuleName: { 'Fn::ImportValue': 'Stack:RuleRuleName1741A255' }
-    });
-    test.deepEqual(importedRule.configRuleName, 'name');
-
-    test.done();
-  },
-
   'on compliance change event'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
