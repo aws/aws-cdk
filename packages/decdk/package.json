@@ -51,7 +51,6 @@
     "@aws-cdk/aws-codebuild": "^0.31.0",
     "@aws-cdk/aws-codecommit": "^0.31.0",
     "@aws-cdk/aws-codedeploy": "^0.31.0",
-    "@aws-cdk/aws-codedeploy-api": "^0.31.0",
     "@aws-cdk/aws-codepipeline": "^0.31.0",
     "@aws-cdk/aws-codepipeline-actions": "^0.31.0",
     "@aws-cdk/aws-cognito": "^0.31.0",

@@ -7,7 +7,7 @@ import { NetworkMode } from '../../lib';
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-ecs-integ');
 
-const vpc = new ec2.VpcNetwork(stack, 'Vpc', { maxAZs: 2 });
+const vpc = new ec2.Vpc(stack, 'Vpc', { maxAZs: 2 });
 
 const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
 cluster.addCapacity('DefaultAutoScalingGroup', {
@@ -40,6 +40,6 @@ listener.addTargets('ECS', {
   targets: [service]
 });
 
-new cdk.CfnOutput(stack, 'LoadBalancerDNS', { value: lb.dnsName, });
+new cdk.CfnOutput(stack, 'LoadBalancerDNS', { value: lb.loadBalancerDnsName, });
 
 app.run();

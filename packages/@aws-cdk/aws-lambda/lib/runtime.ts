@@ -30,6 +30,7 @@ export class Runtime {
   public static readonly NodeJS43 =     new Runtime('nodejs4.3',      RuntimeFamily.NodeJS, { supportsInlineCode: true });
   public static readonly NodeJS610 =    new Runtime('nodejs6.10',     RuntimeFamily.NodeJS, { supportsInlineCode: true });
   public static readonly NodeJS810 =    new Runtime('nodejs8.10',     RuntimeFamily.NodeJS, { supportsInlineCode: true });
+  public static readonly NodeJS10x =    new Runtime('nodejs10.x',     RuntimeFamily.NodeJS, { supportsInlineCode: false });
   public static readonly Python27 =     new Runtime('python2.7',      RuntimeFamily.Python, { supportsInlineCode: true });
   public static readonly Python36 =     new Runtime('python3.6',      RuntimeFamily.Python, { supportsInlineCode: true });
   public static readonly Python37 =     new Runtime('python3.7',      RuntimeFamily.Python, { supportsInlineCode: true });
@@ -67,5 +68,11 @@ export class Runtime {
 
   public toString(): string {
     return this.name;
+  }
+
+  public equals(other: Runtime): boolean {
+    return other.name === this.name &&
+           other.family === this.family &&
+           other.supportsInlineCode === this.supportsInlineCode;
   }
 }

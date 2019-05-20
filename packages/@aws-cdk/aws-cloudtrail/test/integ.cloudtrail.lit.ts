@@ -7,7 +7,7 @@ const stack = new cdk.Stack(app, 'integ-cloudtrail');
 
 const bucket = new s3.Bucket(stack, 'Bucket', { removalPolicy: cdk.RemovalPolicy.Destroy });
 
-const trail = new cloudtrail.CloudTrail(stack, 'Trail');
+const trail = new cloudtrail.Trail(stack, 'Trail');
 trail.addS3EventSelector([bucket.arnForObjects('')]);
 
 app.run();

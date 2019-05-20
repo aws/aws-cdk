@@ -43,7 +43,7 @@ export interface IpInstanceProps extends IpInstanceBaseProps {
   readonly service: IService;
 }
 
-/*
+/**
  * Instance that is accessible using an IP address.
  *
  * @resource AWS::ServiceDiscovery::Instance

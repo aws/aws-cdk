@@ -29,11 +29,6 @@ export interface ILambdaDeploymentGroup extends cdk.IResource {
    * @attribute
    */
   readonly deploymentGroupArn: string;
-
-  /**
-   * Export this Deployment Group for use in another stack or application.
-   */
-  export(): LambdaDeploymentGroupAttributes;
 }
 
 /**
@@ -234,15 +229,6 @@ export class LambdaDeploymentGroup extends cdk.Resource implements ILambdaDeploy
       actions: ['codedeploy:PutLifecycleEventHookExecutionStatus'],
     });
   }
-
-  public export(): LambdaDeploymentGroupAttributes {
-    return {
-      application: this.application,
-      deploymentGroupName: new cdk.CfnOutput(this, 'DeploymentGroupName', {
-        value: this.deploymentGroupName
-      }).makeImportValue().toString()
-    };
-  }
 }
 
 /**
@@ -270,14 +256,10 @@ class ImportedLambdaDeploymentGroup extends cdk.Construct implements ILambdaDepl
   public readonly deploymentGroupName: string;
   public readonly deploymentGroupArn: string;
 
-  constructor(scope: cdk.Construct, id: string, private readonly props: LambdaDeploymentGroupAttributes) {
+  constructor(scope: cdk.Construct, id: string, props: LambdaDeploymentGroupAttributes) {
     super(scope, id);
     this.application = props.application;
     this.deploymentGroupName = props.deploymentGroupName;
     this.deploymentGroupArn = arnForDeploymentGroup(props.application.applicationName, props.deploymentGroupName);
-  }
-
-  public export() {
-    return this.props;
   }
 }

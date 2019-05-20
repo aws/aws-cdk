@@ -8,7 +8,7 @@ test('use codebuild project as an eventrule target', () => {
   // GIVEN
   const stack = new Stack();
   const project = new codebuild.Project(stack, 'MyProject', { source: new codebuild.CodePipelineSource() });
-  const rule = new events.EventRule(stack, 'rule', { scheduleExpression: 'rate(1 min)' });
+  const rule = new events.Rule(stack, 'Rule', { scheduleExpression: 'rate(1 min)' });
 
   // WHEN
   rule.addTarget(new targets.CodeBuildProject(project));
@@ -26,7 +26,7 @@ test('use codebuild project as an eventrule target', () => {
         Id: "MyProject",
         RoleArn: {
           "Fn::GetAtt": [
-            "awscdkawseventstargetsCodeBuildProjectRoleMyProject02D63D81",
+            "MyProjectEventsRole5B7D93F5",
             "Arn"
           ]
         }

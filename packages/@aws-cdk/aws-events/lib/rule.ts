@@ -1,12 +1,11 @@
-import { CfnOutput, Construct, Resource, Token } from '@aws-cdk/cdk';
+import { Construct, Resource, Token } from '@aws-cdk/cdk';
 import { EventPattern } from './event-pattern';
 import { CfnRule } from './events.generated';
-import { TargetInputTemplate } from './input-options';
-import { EventRuleAttributes, IEventRule } from './rule-ref';
-import { IEventRuleTarget } from './target';
+import { IRule } from './rule-ref';
+import { IRuleTarget } from './target';
 import { mergeEventPattern } from './util';
 
-export interface EventRuleProps {
+export interface RuleProps {
   /**
    * A description of the rule's purpose.
    */
@@ -57,7 +56,7 @@ export interface EventRuleProps {
    * Input will be the full matched event. If you wish to specify custom
    * target input, use `addTarget(target[, inputOptions])`.
    */
-  readonly targets?: IEventRuleTarget[];
+  readonly targets?: IRuleTarget[];
 }
 
 /**
@@ -65,14 +64,11 @@ export interface EventRuleProps {
  *
  * @resource AWS::Events::Rule
  */
-export class EventRule extends Resource implements IEventRule {
+export class Rule extends Resource implements IRule {
 
-  public static fromEventRuleArn(scope: Construct, id: string, eventRuleArn: string): IEventRule {
-    class Import extends Resource implements IEventRule {
+  public static fromEventRuleArn(scope: Construct, id: string, eventRuleArn: string): IRule {
+    class Import extends Resource implements IRule {
       public ruleArn = eventRuleArn;
-      public export(): EventRuleAttributes {
-        return { eventRuleArn };
-      }
     }
     return new Import(scope, id);
   }
@@ -83,7 +79,7 @@ export class EventRule extends Resource implements IEventRule {
   private readonly eventPattern: EventPattern = { };
   private scheduleExpression?: string;
 
-  constructor(scope: Construct, id: string, props: EventRuleProps = { }) {
+  constructor(scope: Construct, id: string, props: RuleProps = { }) {
     super(scope, id);
 
     const resource = new CfnRule(this, 'Resource', {
@@ -92,7 +88,7 @@ export class EventRule extends Resource implements IEventRule {
       state: props.enabled == null ? 'ENABLED' : (props.enabled ? 'ENABLED' : 'DISABLED'),
       scheduleExpression: new Token(() => this.scheduleExpression).toString(),
       eventPattern: new Token(() => this.renderEventPattern()),
-      targets: new Token(() => this.renderTargets())
+      targets: new Token(() => this.renderTargets()),
     });
 
     this.ruleArn = resource.ruleArn;
@@ -106,68 +102,39 @@ export class EventRule extends Resource implements IEventRule {
   }
 
   /**
-   * Exports this rule resource from this stack and returns an import token.
-   */
-  public export(): EventRuleAttributes {
-    return {
-      eventRuleArn: new CfnOutput(this, 'RuleArn', { value: this.ruleArn }).makeImportValue().toString()
-    };
-  }
-
-  /**
    * Adds a target to the rule. The abstract class RuleTarget can be extended to define new
    * targets.
    *
    * No-op if target is undefined.
    */
-  public addTarget(target?: IEventRuleTarget, inputOptions?: TargetInputTemplate) {
+  public addTarget(target?: IRuleTarget) {
     if (!target) { return; }
-    const self = this;
 
-    const targetProps = target.asEventRuleTarget(this.ruleArn, this.node.uniqueId);
+    const targetProps = target.bind(this);
+    const id = sanitizeId(targetProps.id);
+    const inputProps = targetProps.input && targetProps.input.bind(this);
 
     // check if a target with this ID already exists
-    if (this.targets.find(t => t.id === targetProps.id)) {
-      throw new Error('Duplicate event rule target with ID: ' + targetProps.id);
+    if (this.targets.find(t => t.id === id)) {
+      throw new Error('Duplicate event rule target with ID: ' + id);
     }
+
+    const roleArn = targetProps.role ? targetProps.role.roleArn : undefined;
 
     this.targets.push({
-      ...targetProps,
-      inputTransformer: renderTransformer(),
+      id,
+      arn: targetProps.arn,
+      roleArn,
+      ecsParameters: targetProps.ecsParameters,
+      kinesisParameters: targetProps.kinesisParameters,
+      runCommandParameters: targetProps.runCommandParameters,
+      input: inputProps && inputProps.input,
+      inputPath: inputProps && inputProps.inputPath,
+      inputTransformer: inputProps && inputProps.inputTemplate !== undefined ? {
+        inputTemplate: inputProps.inputTemplate,
+        inputPathsMap: inputProps.inputPathsMap,
+      } : undefined,
     });
-
-    function renderTransformer(): CfnRule.InputTransformerProperty | undefined {
-      if (!inputOptions) {
-        return undefined;
-      }
-
-      if (inputOptions.jsonTemplate && inputOptions.textTemplate) {
-        throw new Error('"jsonTemplate" and "textTemplate" are mutually exclusive');
-      }
-
-      if (!inputOptions.jsonTemplate && !inputOptions.textTemplate) {
-        throw new Error('One of "jsonTemplate" or "textTemplate" are required');
-      }
-
-      let inputTemplate: any;
-
-      if (inputOptions.jsonTemplate) {
-        inputTemplate = typeof inputOptions.jsonTemplate === 'string'
-            ? inputOptions.jsonTemplate
-            : self.node.stringifyJson(inputOptions.jsonTemplate);
-      } else {
-        inputTemplate = typeof(inputOptions.textTemplate) === 'string'
-            // Newline separated list of JSON-encoded strings
-            ? inputOptions.textTemplate.split('\n').map(x => self.node.stringifyJson(x)).join('\n')
-            // Some object, stringify it, then stringify the string for proper escaping
-            : self.node.stringifyJson(self.node.stringifyJson(inputOptions.textTemplate));
-      }
-
-      return {
-        inputPathsMap: inputOptions.pathsMap,
-        inputTemplate
-      };
-    }
   }
 
   /**
@@ -245,4 +212,13 @@ export class EventRule extends Resource implements IEventRule {
 
     return out;
   }
+}
+
+/**
+ * Sanitize whatever is returned to make a valid ID
+ *
+ * Result must match regex [\.\-_A-Za-z0-9]+
+ */
+function sanitizeId(id: string) {
+  return id.replace(/[^\.\-_A-Za-z0-9]/g, '-');
 }

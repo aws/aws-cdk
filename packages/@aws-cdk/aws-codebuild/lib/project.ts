@@ -6,9 +6,9 @@ import ecr = require('@aws-cdk/aws-ecr');
 import events = require('@aws-cdk/aws-events');
 import iam = require('@aws-cdk/aws-iam');
 import kms = require('@aws-cdk/aws-kms');
-import s3 = require('@aws-cdk/aws-s3');
-import { Aws, CfnOutput, Construct, Fn, IResource, Resource, Token } from '@aws-cdk/cdk';
+import { Aws, Construct, IResource, Resource, Token } from '@aws-cdk/cdk';
 import { BuildArtifacts, CodePipelineBuildArtifacts, NoBuildArtifacts } from './artifacts';
+import { Cache } from './cache';
 import { CfnProject } from './codebuild.generated';
 import { BuildSource, NoSource, SourceType } from './source';
 
@@ -52,9 +52,12 @@ export interface IProject extends IResource, iam.IGrantable {
    * You can also use the methods `onBuildFailed` and `onBuildSucceeded` to define rules for
    * these specific state changes.
    *
+   * To access fields from the event in the event target input,
+   * use the static fields on the `StateChangeEvent` class.
+   *
    * @see https://docs.aws.amazon.com/codebuild/latest/userguide/sample-build-notifications.html
    */
-  onStateChange(name: string, target?: events.IEventRuleTarget, options?: events.EventRuleProps): events.EventRule;
+  onStateChange(name: string, target?: events.IRuleTarget, options?: events.RuleProps): events.Rule;
 
   /**
    * Defines a CloudWatch event rule that triggers upon phase change of this
@@ -62,22 +65,22 @@ export interface IProject extends IResource, iam.IGrantable {
    *
    * @see https://docs.aws.amazon.com/codebuild/latest/userguide/sample-build-notifications.html
    */
-  onPhaseChange(name: string, target?: events.IEventRuleTarget, options?: events.EventRuleProps): events.EventRule;
+  onPhaseChange(name: string, target?: events.IRuleTarget, options?: events.RuleProps): events.Rule;
 
   /**
    * Defines an event rule which triggers when a build starts.
    */
-  onBuildStarted(name: string, target?: events.IEventRuleTarget, options?: events.EventRuleProps): events.EventRule;
+  onBuildStarted(name: string, target?: events.IRuleTarget, options?: events.RuleProps): events.Rule;
 
   /**
    * Defines an event rule which triggers when a build fails.
    */
-  onBuildFailed(name: string, target?: events.IEventRuleTarget, options?: events.EventRuleProps): events.EventRule;
+  onBuildFailed(name: string, target?: events.IRuleTarget, options?: events.RuleProps): events.Rule;
 
   /**
    * Defines an event rule which triggers when a build completes successfully.
    */
-  onBuildSucceeded(name: string, target?: events.IEventRuleTarget, options?: events.EventRuleProps): events.EventRule;
+  onBuildSucceeded(name: string, target?: events.IRuleTarget, options?: events.RuleProps): events.Rule;
 
   /**
    * @returns a CloudWatch metric associated with this build project.
@@ -130,25 +133,6 @@ export interface IProject extends IResource, iam.IGrantable {
    * @default sum over 5 minutes
    */
   metricFailedBuilds(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
-
-  /**
-   * Export this Project. Allows referencing this Project in a different CDK Stack.
-   */
-  export(): ProjectAttributes;
-}
-
-/**
- * Properties of a reference to a CodeBuild Project.
- *
- * @see Project.import
- * @see Project.export
- */
-export interface ProjectAttributes {
-  /**
-   * The human-readable name of the CodeBuild Project we're referencing.
-   * The Project must be in the same account and region as the root Stack.
-   */
-  readonly projectName: string;
 }
 
 /**
@@ -173,8 +157,6 @@ abstract class ProjectBase extends Resource implements IProject {
   /** The IAM service Role of this Project. */
   public abstract readonly role?: iam.IRole;
 
-  public abstract export(): ProjectAttributes;
-
   /**
    * Defines a CloudWatch event rule triggered when the build project state
    * changes. You can filter specific build status events using an event
@@ -195,10 +177,13 @@ abstract class ProjectBase extends Resource implements IProject {
    * You can also use the methods `onBuildFailed` and `onBuildSucceeded` to define rules for
    * these specific state changes.
    *
+   * To access fields from the event in the event target input,
+   * use the static fields on the `StateChangeEvent` class.
+   *
    * @see https://docs.aws.amazon.com/codebuild/latest/userguide/sample-build-notifications.html
    */
-  public onStateChange(name: string, target?: events.IEventRuleTarget, options?: events.EventRuleProps) {
-    const rule = new events.EventRule(this, name, options);
+  public onStateChange(name: string, target?: events.IRuleTarget, options?: events.RuleProps) {
+    const rule = new events.Rule(this, name, options);
     rule.addTarget(target);
     rule.addEventPattern({
       source: ['aws.codebuild'],
@@ -218,8 +203,8 @@ abstract class ProjectBase extends Resource implements IProject {
    *
    * @see https://docs.aws.amazon.com/codebuild/latest/userguide/sample-build-notifications.html
    */
-  public onPhaseChange(name: string, target?: events.IEventRuleTarget, options?: events.EventRuleProps) {
-    const rule = new events.EventRule(this, name, options);
+  public onPhaseChange(name: string, target?: events.IRuleTarget, options?: events.RuleProps) {
+    const rule = new events.Rule(this, name, options);
     rule.addTarget(target);
     rule.addEventPattern({
       source: ['aws.codebuild'],
@@ -235,8 +220,11 @@ abstract class ProjectBase extends Resource implements IProject {
 
   /**
    * Defines an event rule which triggers when a build starts.
+   *
+   * To access fields from the event in the event target input,
+   * use the static fields on the `StateChangeEvent` class.
    */
-  public onBuildStarted(name: string, target?: events.IEventRuleTarget, options?: events.EventRuleProps) {
+  public onBuildStarted(name: string, target?: events.IRuleTarget, options?: events.RuleProps) {
     const rule = this.onStateChange(name, target, options);
     rule.addEventPattern({
       detail: {
@@ -248,8 +236,11 @@ abstract class ProjectBase extends Resource implements IProject {
 
   /**
    * Defines an event rule which triggers when a build fails.
+   *
+   * To access fields from the event in the event target input,
+   * use the static fields on the `StateChangeEvent` class.
    */
-  public onBuildFailed(name: string, target?: events.IEventRuleTarget, options?: events.EventRuleProps) {
+  public onBuildFailed(name: string, target?: events.IRuleTarget, options?: events.RuleProps) {
     const rule = this.onStateChange(name, target, options);
     rule.addEventPattern({
       detail: {
@@ -261,8 +252,11 @@ abstract class ProjectBase extends Resource implements IProject {
 
   /**
    * Defines an event rule which triggers when a build completes successfully.
+   *
+   * To access fields from the event in the event target input,
+   * use the static fields on the `StateChangeEvent` class.
    */
-  public onBuildSucceeded(name: string, target?: events.IEventRuleTarget, options?: events.EventRuleProps) {
+  public onBuildSucceeded(name: string, target?: events.IRuleTarget, options?: events.RuleProps) {
     const rule = this.onStateChange(name, target, options);
     rule.addEventPattern({
       detail: {
@@ -392,21 +386,16 @@ export interface CommonProjectProps {
   readonly role?: iam.IRole;
 
   /**
-   * Encryption key to use to read and write artifacts
+   * Encryption key to use to read and write artifacts.
    * If not specified, a role will be created.
    */
-  readonly encryptionKey?: kms.IEncryptionKey;
+  readonly encryptionKey?: kms.IKey;
 
   /**
-   * Bucket to store cached source artifacts
-   * If not specified, source artifacts will not be cached.
+   * Caching strategy to use.
+   * @default Cache.none
    */
-  readonly cacheBucket?: s3.IBucket;
-
-  /**
-   * Subdirectory to store cached artifacts
-   */
-  readonly cacheDir?: string;
+  readonly cache?: Cache;
 
   /**
    * Build environment to use for the build.
@@ -442,7 +431,7 @@ export interface CommonProjectProps {
    *
    * Specify this if the codebuild project needs to access resources in a VPC.
    */
-  readonly vpc?: ec2.IVpcNetwork;
+  readonly vpc?: ec2.IVpc;
 
   /**
    * Where to place the network interfaces within the VPC.
@@ -527,12 +516,6 @@ export class Project extends ProjectBase {
         super(s, i);
         this.grantPrincipal = new iam.ImportedResourcePrincipal({ resource: this });
       }
-
-      public export(): ProjectAttributes {
-        return {
-          projectName: this.projectName
-        };
-      }
     }
 
     return new Import(scope, id);
@@ -571,12 +554,6 @@ export class Project extends ProjectBase {
 
         this.grantPrincipal = new iam.ImportedResourcePrincipal({ resource: this });
         this.projectName = projectName;
-      }
-
-      public export(): ProjectAttributes {
-        return {
-          projectName
-        };
       }
     }
 
@@ -618,17 +595,6 @@ export class Project extends ProjectBase {
     });
     this.grantPrincipal = this.role;
 
-    let cache: CfnProject.ProjectCacheProperty | undefined;
-    if (props.cacheBucket) {
-      const cacheDir = props.cacheDir != null ? props.cacheDir : Aws.noValue;
-      cache = {
-        type: 'S3',
-        location: Fn.join('/', [props.cacheBucket.bucketName, cacheDir]),
-      };
-
-      props.cacheBucket.grantReadWrite(this.role);
-    }
-
     this.buildImage = (props.environment && props.environment.buildImage) || LinuxBuildImage.STANDARD_1_0;
 
     // let source "bind" to the project. this usually involves granting permissions
@@ -638,6 +604,11 @@ export class Project extends ProjectBase {
 
     const artifacts = this.parseArtifacts(props);
     artifacts._bind(this);
+
+    const cache = props.cache || Cache.none();
+
+    // give the caching strategy the option to grant permissions to any required resources
+    cache._bind(this);
 
     // Inject download commands for asset if requested
     const environmentVariables = props.environmentVariables || {};
@@ -696,7 +667,7 @@ export class Project extends ProjectBase {
       environment: this.renderEnvironment(props.environment, environmentVariables),
       encryptionKey: props.encryptionKey && props.encryptionKey.keyArn,
       badgeEnabled: props.badge,
-      cache,
+      cache: cache._toCloudFormation(),
       name: props.projectName,
       timeoutInMinutes: props.timeout,
       secondarySources: new Token(() => this.renderSecondarySources()),
@@ -713,15 +684,6 @@ export class Project extends ProjectBase {
 
   public get securityGroups(): ec2.ISecurityGroup[] {
     return this._securityGroups.slice();
-  }
-
-  /**
-   * Export this Project. Allows referencing this Project in a different CDK Stack.
-   */
-  public export(): ProjectAttributes {
-    return {
-      projectName: new CfnOutput(this, 'ProjectName', { value: this.projectName }).makeImportValue().toString(),
-    };
   }
 
   /**

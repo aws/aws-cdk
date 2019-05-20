@@ -2,7 +2,7 @@ import events = require('@aws-cdk/aws-events');
 import iam = require('@aws-cdk/aws-iam');
 import kms = require('@aws-cdk/aws-kms');
 import { IBucketNotificationDestination } from '@aws-cdk/aws-s3-notifications';
-import { applyRemovalPolicy, CfnOutput, Construct, IResource, RemovalPolicy, Resource, Token } from '@aws-cdk/cdk';
+import { applyRemovalPolicy, Construct, IResource, RemovalPolicy, Resource, Token } from '@aws-cdk/cdk';
 import { EOL } from 'os';
 import { BucketPolicy } from './bucket-policy';
 import { BucketNotifications } from './notifications-resource';
@@ -51,7 +51,7 @@ export interface IBucket extends IResource {
   /**
    * Optional KMS encryption key associated with this bucket.
    */
-  readonly encryptionKey?: kms.IEncryptionKey;
+  readonly encryptionKey?: kms.IKey;
 
   /**
    * The resource policy assoicated with this bucket.
@@ -60,11 +60,6 @@ export interface IBucket extends IResource {
    * first call to addToResourcePolicy(s).
    */
   policy?: BucketPolicy;
-
-  /**
-   * Exports this bucket from the stack.
-   */
-  export(): BucketAttributes;
 
   /**
    * Adds a statement to the resource policy for a principal (i.e.
@@ -181,9 +176,9 @@ export interface IBucket extends IResource {
    * @param name the logical ID of the newly created Event Rule
    * @param target the optional target of the Event Rule
    * @param path the optional path inside the Bucket that will be watched for changes
-   * @returns a new {@link events.EventRule} instance
+   * @returns a new {@link events.Rule} instance
    */
-  onPutObject(name: string, target?: events.IEventRuleTarget, path?: string): events.EventRule;
+  onPutObject(name: string, target?: events.IRuleTarget, path?: string): events.Rule;
 }
 
 /**
@@ -267,7 +262,7 @@ abstract class BucketBase extends Resource implements IBucket {
   /**
    * Optional KMS encryption key associated with this bucket.
    */
-  public abstract readonly encryptionKey?: kms.IEncryptionKey;
+  public abstract readonly encryptionKey?: kms.IKey;
 
   /**
    * The resource policy assoicated with this bucket.
@@ -288,13 +283,8 @@ abstract class BucketBase extends Resource implements IBucket {
    */
   protected abstract disallowPublicAccess?: boolean;
 
-  /**
-   * Exports this bucket from the stack.
-   */
-  public abstract export(): BucketAttributes;
-
-  public onPutObject(name: string, target?: events.IEventRuleTarget, path?: string): events.EventRule {
-    const eventRule = new events.EventRule(this, name, {
+  public onPutObject(name: string, target?: events.IRuleTarget, path?: string): events.Rule {
+    const eventRule = new events.Rule(this, name, {
       eventPattern: {
         source: [
           'aws.s3',
@@ -604,7 +594,7 @@ export interface BucketProps {
    * @default If encryption is set to "Kms" and this property is undefined, a
    * new KMS key will be created and associated with this bucket.
    */
-  readonly encryptionKey?: kms.IEncryptionKey;
+  readonly encryptionKey?: kms.IKey;
 
   /**
    * Physical name of this bucket.
@@ -716,7 +706,7 @@ export class Bucket extends BucketBase {
       public readonly bucketRegionalDomainName = attrs.bucketRegionalDomainName || `${bucketName}.s3.${region}.${urlSuffix}`;
       public readonly bucketDualStackDomainName = attrs.bucketDualStackDomainName || `${bucketName}.s3.dualstack.${region}.${urlSuffix}`;
       public readonly bucketWebsiteNewUrlFormat = newUrlFormat;
-      public readonly encryptionKey?: kms.EncryptionKey;
+      public readonly encryptionKey?: kms.IKey;
       public policy?: BucketPolicy = undefined;
       protected autoCreatePolicy = false;
       protected disallowPublicAccess = false;
@@ -739,7 +729,7 @@ export class Bucket extends BucketBase {
   public readonly bucketDualStackDomainName: string;
   public readonly bucketRegionalDomainName: string;
 
-  public readonly encryptionKey?: kms.IEncryptionKey;
+  public readonly encryptionKey?: kms.IKey;
   public policy?: BucketPolicy;
   protected autoCreatePolicy = true;
   protected disallowPublicAccess?: boolean;
@@ -793,18 +783,6 @@ export class Bucket extends BucketBase {
     if (props.publicReadAccess) {
       this.grantPublicAccess();
     }
-  }
-
-  /**
-   * Exports this bucket from the stack.
-   */
-  public export(): BucketAttributes {
-    return {
-      bucketArn: new CfnOutput(this, 'BucketArn', { value: this.bucketArn }).makeImportValue().toString(),
-      bucketName: new CfnOutput(this, 'BucketName', { value: this.bucketName }).makeImportValue().toString(),
-      bucketDomainName: new CfnOutput(this, 'DomainName', { value: this.bucketDomainName }).makeImportValue().toString(),
-      bucketWebsiteUrl: new CfnOutput(this, 'WebsiteURL', { value: this.bucketWebsiteUrl }).makeImportValue().toString()
-    };
   }
 
   /**
@@ -918,7 +896,7 @@ export class Bucket extends BucketBase {
    */
   private parseEncryption(props: BucketProps): {
     bucketEncryption?: CfnBucket.BucketEncryptionProperty,
-    encryptionKey?: kms.IEncryptionKey
+    encryptionKey?: kms.IKey
   } {
 
     // default to unencrypted.
@@ -934,7 +912,7 @@ export class Bucket extends BucketBase {
     }
 
     if (encryptionType === BucketEncryption.Kms) {
-      const encryptionKey = props.encryptionKey || new kms.EncryptionKey(this, 'Key', {
+      const encryptionKey = props.encryptionKey || new kms.Key(this, 'Key', {
         description: `Created by ${this.node.path}`
       });
 

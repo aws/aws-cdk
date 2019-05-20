@@ -1,6 +1,6 @@
 import iam = require('@aws-cdk/aws-iam');
 import lambda = require('@aws-cdk/aws-lambda');
-import { CfnOutput, Construct, IResource, Resource, Token } from '@aws-cdk/cdk';
+import { Construct, IResource, Resource, Token } from '@aws-cdk/cdk';
 import { CfnUserPool } from './cognito.generated';
 
 /**
@@ -280,12 +280,6 @@ export interface IUserPool extends IResource {
    * @attribute
    */
   readonly userPoolProviderUrl: string;
-
-  /**
-   * Exports a User Pool from this stack
-   * @returns user pool props that can be imported into another stack
-   */
-  export(): UserPoolAttributes;
 }
 
 /**
@@ -307,10 +301,6 @@ export class UserPool extends Resource implements IUserPool {
       public readonly userPoolArn = attrs.userPoolArn;
       public readonly userPoolProviderName = attrs.userPoolProviderName;
       public readonly userPoolProviderUrl = attrs.userPoolProviderUrl;
-
-      public export(): UserPoolAttributes {
-        return attrs;
-      }
     }
 
     return new Import(scope, id);
@@ -491,15 +481,6 @@ export class UserPool extends Resource implements IUserPool {
   public onVerifyAuthChallengeResponse(fn: lambda.IFunction): void {
     this.addLambdaPermission(fn, 'VerifyAuthChallengeResponse');
     this.triggers = { ...this.triggers, verifyAuthChallengeResponse: fn.functionArn };
-  }
-
-  public export(): UserPoolAttributes {
-    return {
-      userPoolId: new CfnOutput(this, 'UserPoolId', { value: this.userPoolId }).makeImportValue().toString(),
-      userPoolArn: new CfnOutput(this, 'UserPoolArn', { value: this.userPoolArn }).makeImportValue().toString(),
-      userPoolProviderName: new CfnOutput(this, 'UserPoolProviderName', { value: this.userPoolProviderName }).makeImportValue().toString(),
-      userPoolProviderUrl: new CfnOutput(this, 'UserPoolProviderUrl', { value: this.userPoolProviderUrl }).makeImportValue().toString()
-    };
   }
 
   private addLambdaPermission(fn: lambda.IFunction, name: string): void {
