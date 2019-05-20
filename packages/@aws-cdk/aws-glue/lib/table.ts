@@ -271,7 +271,11 @@ export class Table extends Resource implements ITable {
     });
 
     this.tableName = tableResource.tableName;
-    this.tableArn = `${this.database.databaseArn}/${this.tableName}`;
+    this.tableArn = this.node.stack.formatArn({
+      service: 'glue',
+      resource: 'table',
+      resourceName: Fn.join('', [this.database.databaseName, '/', this.tableName])
+    });
   }
 
   /**
