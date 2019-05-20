@@ -6,11 +6,11 @@ import { singletonEventRole } from './util';
   /**
    * Allows the pipeline to be used as a CloudWatch event rule target.
    */
-export class CodePipeline implements events.IEventRuleTarget {
+export class CodePipeline implements events.IRuleTarget {
   constructor(private readonly pipeline: codepipeline.IPipeline) {
   }
 
-  public bind(_rule: events.IEventRule): events.EventRuleTargetProperties {
+  public bind(_rule: events.IRule): events.RuleTargetProperties {
     return {
       id: this.pipeline.node.id,
       arn: this.pipeline.pipelineArn,

@@ -30,12 +30,12 @@ class EventStack extends cdk.Stack {
       logging: new ecs.AwsLogDriver(this, 'TaskLogging', { streamPrefix: 'EventDemo' })
     });
 
-    // An EventRule that describes the event trigger (in this case a scheduled run)
-    const rule = new events.EventRule(this, 'Rule', {
+    // An Rule that describes the event trigger (in this case a scheduled run)
+    const rule = new events.Rule(this, 'Rule', {
       scheduleExpression: 'rate(1 minute)',
     });
 
-    // Use Ec2TaskEventRuleTarget as the target of the EventRule
+    // Use EcsEc2Task as the target of the Rule
     rule.addTarget(new targets.EcsEc2Task({
       cluster,
       taskDefinition,

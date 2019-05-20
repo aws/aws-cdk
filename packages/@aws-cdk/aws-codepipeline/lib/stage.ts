@@ -78,8 +78,8 @@ export class Stage implements IStage {
     this.attachActionToPipeline(action);
   }
 
-  public onStateChange(name: string, target?: events.IEventRuleTarget, options?: events.EventRuleProps): events.EventRule {
-    const rule = new events.EventRule(this.scope, name, options);
+  public onStateChange(name: string, target?: events.IRuleTarget, options?: events.RuleProps): events.Rule {
+    const rule = new events.Rule(this.scope, name, options);
     rule.addTarget(target);
     rule.addEventPattern({
       detailType: [ 'CodePipeline Stage Execution State Change' ],

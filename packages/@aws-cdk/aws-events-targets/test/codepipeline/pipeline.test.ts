@@ -31,7 +31,7 @@ test('use codebuild project as an eventrule target', () => {
       artifactBounds: { minInputs: 1, maxInputs: 1 , minOutputs: 1, maxOutputs: 1, }})]
   });
 
-  const rule = new events.EventRule(stack, 'rule', { scheduleExpression: 'rate(1 min)' });
+  const rule = new events.Rule(stack, 'rule', { scheduleExpression: 'rate(1 min)' });
 
   // WHEN
   rule.addTarget(new targets.CodePipeline(pipeline));

@@ -1,11 +1,11 @@
 import { Construct, Resource, Token } from '@aws-cdk/cdk';
 import { EventPattern } from './event-pattern';
 import { CfnRule } from './events.generated';
-import { IEventRule } from './rule-ref';
-import { IEventRuleTarget } from './target';
+import { IRule } from './rule-ref';
+import { IRuleTarget } from './target';
 import { mergeEventPattern } from './util';
 
-export interface EventRuleProps {
+export interface RuleProps {
   /**
    * A description of the rule's purpose.
    */
@@ -56,7 +56,7 @@ export interface EventRuleProps {
    * Input will be the full matched event. If you wish to specify custom
    * target input, use `addTarget(target[, inputOptions])`.
    */
-  readonly targets?: IEventRuleTarget[];
+  readonly targets?: IRuleTarget[];
 }
 
 /**
@@ -64,10 +64,10 @@ export interface EventRuleProps {
  *
  * @resource AWS::Events::Rule
  */
-export class EventRule extends Resource implements IEventRule {
+export class Rule extends Resource implements IRule {
 
-  public static fromEventRuleArn(scope: Construct, id: string, eventRuleArn: string): IEventRule {
-    class Import extends Resource implements IEventRule {
+  public static fromEventRuleArn(scope: Construct, id: string, eventRuleArn: string): IRule {
+    class Import extends Resource implements IRule {
       public ruleArn = eventRuleArn;
     }
     return new Import(scope, id);
@@ -79,7 +79,7 @@ export class EventRule extends Resource implements IEventRule {
   private readonly eventPattern: EventPattern = { };
   private scheduleExpression?: string;
 
-  constructor(scope: Construct, id: string, props: EventRuleProps = { }) {
+  constructor(scope: Construct, id: string, props: RuleProps = { }) {
     super(scope, id);
 
     const resource = new CfnRule(this, 'Resource', {
@@ -107,7 +107,7 @@ export class EventRule extends Resource implements IEventRule {
    *
    * No-op if target is undefined.
    */
-  public addTarget(target?: IEventRuleTarget) {
+  public addTarget(target?: IRuleTarget) {
     if (!target) { return; }
 
     const targetProps = target.bind(this);

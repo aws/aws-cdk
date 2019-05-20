@@ -4,8 +4,8 @@ import { ServicePrincipal } from '@aws-cdk/aws-iam';
 import cdk = require('@aws-cdk/cdk');
 import { Stack } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
-import { EventField, EventTargetInput, IEventRule, IEventRuleTarget } from '../lib';
-import { EventRule } from '../lib/rule';
+import { EventField, IRule, IRuleTarget, RuleTargetInput } from '../lib';
+import { Rule } from '../lib/rule';
 
 // tslint:disable:object-literal-key-quotes
 
@@ -13,7 +13,7 @@ export = {
   'default rule'(test: Test) {
     const stack = new cdk.Stack();
 
-    new EventRule(stack, 'MyRule', {
+    new Rule(stack, 'MyRule', {
       scheduleExpression: 'rate(10 minutes)'
     });
 
@@ -36,7 +36,7 @@ export = {
     const stack = new cdk.Stack();
 
     // WHEN
-    new EventRule(stack, 'MyRule', {
+    new Rule(stack, 'MyRule', {
     ruleName: 'PhysicalName',
     scheduleExpression: 'rate(10 minutes)'
     });
@@ -52,7 +52,7 @@ export = {
   'eventPattern is rendered properly'(test: Test) {
     const stack = new cdk.Stack();
 
-    new EventRule(stack, 'MyRule', {
+    new Rule(stack, 'MyRule', {
       eventPattern: {
         account: [ 'account1', 'account2' ],
         detail: {
@@ -96,7 +96,7 @@ export = {
   'fails synthesis if neither eventPattern nor scheudleExpression are specified'(test: Test) {
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'MyStack');
-    new EventRule(stack, 'Rule');
+    new Rule(stack, 'Rule');
     test.throws(() => app.synthesizeStack(stack.name), /Either 'eventPattern' or 'scheduleExpression' must be defined/);
     test.done();
   },
@@ -104,7 +104,7 @@ export = {
   'addEventPattern can be used to add filters'(test: Test) {
     const stack = new cdk.Stack();
 
-    const rule = new EventRule(stack, 'MyRule');
+    const rule = new Rule(stack, 'MyRule');
     rule.addEventPattern({
       account: [ '12345' ],
       detail: {
@@ -156,7 +156,7 @@ export = {
 
   'targets can be added via props or addTarget with input transformer'(test: Test) {
     const stack = new cdk.Stack();
-    const t1: IEventRuleTarget = {
+    const t1: IRuleTarget = {
       bind: () => ({
         id: 'T1',
         arn: 'ARN1',
@@ -164,15 +164,15 @@ export = {
       })
     };
 
-    const t2: IEventRuleTarget = {
+    const t2: IRuleTarget = {
       bind: () => ({
         id: 'T2',
         arn: 'ARN2',
-        input: EventTargetInput.fromText(`This is ${EventField.fromPath('$.detail.bla', 'bla')}`),
+        input: RuleTargetInput.fromText(`This is ${EventField.fromPath('$.detail.bla', 'bla')}`),
       })
     };
 
-    const rule = new EventRule(stack, 'EventRule', {
+    const rule = new Rule(stack, 'EventRule', {
       targets: [ t1 ],
       scheduleExpression: 'rate(5 minutes)'
     });
@@ -215,12 +215,12 @@ export = {
   'input template can contain tokens'(test: Test) {
     const stack = new cdk.Stack();
 
-    const rule = new EventRule(stack, 'EventRule', { scheduleExpression: 'rate(1 minute)' });
+    const rule = new Rule(stack, 'EventRule', { scheduleExpression: 'rate(1 minute)' });
 
     // a plain string should just be stringified (i.e. double quotes added and escaped)
     rule.addTarget({
       bind: () => ({
-        id: 'T2', arn: 'ARN2', input: EventTargetInput.fromText('Hello, "world"')
+        id: 'T2', arn: 'ARN2', input: RuleTargetInput.fromText('Hello, "world"')
       })
     });
 
@@ -229,7 +229,7 @@ export = {
     rule.addTarget({
       bind: () => ({
         id: 'T1', arn: 'ARN1', kinesisParameters: { partitionKeyPath: 'partitionKeyPath' },
-        input: EventTargetInput.fromText(cdk.Fn.join('', [ 'a', 'b' ]).toString()),
+        input: RuleTargetInput.fromText(cdk.Fn.join('', [ 'a', 'b' ]).toString()),
       })
     });
 
@@ -237,7 +237,7 @@ export = {
     rule.addTarget({
       bind: () => ({
         id: 'T3', arn: 'ARN3',
-        input: EventTargetInput.fromObject({ foo: EventField.fromPath('$.detail.bar') }),
+        input: RuleTargetInput.fromObject({ foo: EventField.fromPath('$.detail.bar') }),
       })
     });
 
@@ -245,7 +245,7 @@ export = {
     rule.addTarget({
       bind: () => ({
         id: 'T4', arn: 'ARN4',
-        input: EventTargetInput.fromText(cdk.Fn.join(' ', ['hello', '"world"']).toString()),
+        input: RuleTargetInput.fromText(cdk.Fn.join(' ', ['hello', '"world"']).toString()),
       })
     });
 
@@ -298,7 +298,7 @@ export = {
     // GIVEN
     const stack = new cdk.Stack();
 
-    const rule = new EventRule(stack, 'EventRule', { scheduleExpression: 'rate(1 minute)' });
+    const rule = new Rule(stack, 'EventRule', { scheduleExpression: 'rate(1 minute)' });
 
     const role = new iam.Role(stack, 'SomeRole', {
       assumedBy: new ServicePrincipal('nobody')
@@ -333,8 +333,8 @@ export = {
     let receivedRuleArn = 'FAIL';
     let receivedRuleId = 'FAIL';
 
-    const t1: IEventRuleTarget = {
-      bind: (eventRule: IEventRule) => {
+    const t1: IRuleTarget = {
+      bind: (eventRule: IRule) => {
         receivedRuleArn = eventRule.ruleArn;
         receivedRuleId = eventRule.node.uniqueId;
 
@@ -346,7 +346,7 @@ export = {
       }
     };
 
-    const rule = new EventRule(stack, 'EventRule');
+    const rule = new Rule(stack, 'EventRule');
     rule.addTarget(t1);
 
     test.deepEqual(stack.node.resolve(receivedRuleArn), stack.node.resolve(rule.ruleArn));
@@ -359,7 +359,7 @@ export = {
     const stack = new Stack();
 
     // WHEN
-    const importedRule = EventRule.fromEventRuleArn(stack, 'ImportedRule', 'arn:of:rule');
+    const importedRule = Rule.fromEventRuleArn(stack, 'ImportedRule', 'arn:of:rule');
 
     // THEN
     test.deepEqual(importedRule.ruleArn, 'arn:of:rule');
@@ -371,7 +371,7 @@ export = {
     const stack = new cdk.Stack();
 
     // WHEN
-    new EventRule(stack, 'Rule', {
+    new Rule(stack, 'Rule', {
       scheduleExpression: 'foom',
       enabled: false
     });
@@ -387,7 +387,7 @@ export = {
   'fails if multiple targets with the same id are added'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
-    const rule = new EventRule(stack, 'Rule', {
+    const rule = new Rule(stack, 'Rule', {
       scheduleExpression: 'foom',
       enabled: false
     });
@@ -399,7 +399,7 @@ export = {
   }
 };
 
-class SomeTarget implements IEventRuleTarget {
+class SomeTarget implements IRuleTarget {
   public bind() {
     return {
       id: 'T1', arn: 'ARN1', kinesisParameters: { partitionKeyPath: 'partitionKeyPath' }

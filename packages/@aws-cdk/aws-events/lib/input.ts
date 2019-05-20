@@ -1,17 +1,17 @@
 import { CloudFormationLang, DefaultTokenResolver, IResolveContext, resolve, StringConcat, Token } from '@aws-cdk/cdk';
-import { IEventRule } from './rule-ref';
+import { IRule } from './rule-ref';
 
 /**
  * The input to send to the event target
  */
-export abstract class EventTargetInput {
+export abstract class RuleTargetInput {
   /**
    * Pass text to the event target
    *
    * May contain strings returned by EventField.from() to substitute in parts of the
    * matched event.
    */
-  public static fromText(text: string): EventTargetInput {
+  public static fromText(text: string): RuleTargetInput {
     return new FieldAwareEventInput(text, InputType.Text);
   }
 
@@ -24,7 +24,7 @@ export abstract class EventTargetInput {
    * May contain strings returned by EventField.from() to substitute in parts
    * of the matched event.
    */
-  public static fromMultilineText(text: string): EventTargetInput {
+  public static fromMultilineText(text: string): RuleTargetInput {
     return new FieldAwareEventInput(text, InputType.Multiline);
   }
 
@@ -34,14 +34,14 @@ export abstract class EventTargetInput {
    * May contain strings returned by EventField.from() to substitute in parts of the
    * matched event.
    */
-  public static fromObject(obj: any): EventTargetInput {
+  public static fromObject(obj: any): RuleTargetInput {
     return new FieldAwareEventInput(obj, InputType.Object);
   }
 
   /**
    * Take the event target input from a path in the event JSON
    */
-  public static fromEventPath(path: string): EventTargetInput {
+  public static fromEventPath(path: string): RuleTargetInput {
     return new LiteralEventInput({ inputPath: path });
   }
 
@@ -51,13 +51,13 @@ export abstract class EventTargetInput {
   /**
    * Return the input properties for this input object
    */
-  public abstract bind(rule: IEventRule): EventRuleTargetInputProperties;
+  public abstract bind(rule: IRule): RuleTargetInputProperties;
 }
 
 /**
  * The input properties for an event target
  */
-export interface EventRuleTargetInputProperties {
+export interface RuleTargetInputProperties {
   /**
    * Literal input to the target service (must be valid JSON)
    */
@@ -82,15 +82,15 @@ export interface EventRuleTargetInputProperties {
 /**
  * Event Input that is directly derived from the construct
  */
-class LiteralEventInput extends EventTargetInput {
-  constructor(private readonly props: EventRuleTargetInputProperties) {
+class LiteralEventInput extends RuleTargetInput {
+  constructor(private readonly props: RuleTargetInputProperties) {
     super();
   }
 
   /**
    * Return the input properties for this input object
    */
-  public bind(_rule: IEventRule): EventRuleTargetInputProperties {
+  public bind(_rule: IRule): RuleTargetInputProperties {
     return this.props;
   }
 }
@@ -119,12 +119,12 @@ class LiteralEventInput extends EventTargetInput {
  * To achieve the latter, we postprocess the JSON string to remove the surrounding
  * quotes by using a string replace.
  */
-class FieldAwareEventInput extends EventTargetInput {
+class FieldAwareEventInput extends RuleTargetInput {
   constructor(private readonly input: any, private readonly inputType: InputType) {
     super();
   }
 
-  public bind(rule: IEventRule): EventRuleTargetInputProperties {
+  public bind(rule: IRule): RuleTargetInputProperties {
     let fieldCounter = 0;
     const pathToKey = new Map<string, string>();
     const inputPathsMap: {[key: string]: string} = {};

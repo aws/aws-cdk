@@ -217,8 +217,8 @@ export class Trail extends Resource {
    * Note that the event doesn't necessarily have to come from this
    * trail. Be sure to filter the event properly using an event pattern.
    */
-  public onEvent(name: string, target?: events.IEventRuleTarget, options?: events.EventRuleProps) {
-    const rule = new events.EventRule(this, name, options);
+  public onEvent(name: string, target?: events.IRuleTarget, options?: events.RuleProps) {
+    const rule = new events.Rule(this, name, options);
     rule.addTarget(target);
     rule.addEventPattern({
       detailType: ['AWS API Call via CloudTrail']

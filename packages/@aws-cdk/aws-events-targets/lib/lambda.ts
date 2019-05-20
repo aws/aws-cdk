@@ -13,13 +13,13 @@ export interface LambdaFunctionProps {
    *
    * @default the entire CloudWatch event
    */
-  readonly event?: events.EventTargetInput;
+  readonly event?: events.RuleTargetInput;
 }
 
 /**
  * Use an AWS Lambda function as an event rule target.
  */
-export class LambdaFunction implements events.IEventRuleTarget {
+export class LambdaFunction implements events.IRuleTarget {
   constructor(private readonly handler: lambda.IFunction, private readonly props: LambdaFunctionProps = {}) {
 
   }
@@ -28,7 +28,7 @@ export class LambdaFunction implements events.IEventRuleTarget {
    * Returns a RuleTarget that can be used to trigger this Lambda as a
    * result from a CloudWatch event.
    */
-  public bind(rule: events.IEventRule): events.EventRuleTargetProperties {
+  public bind(rule: events.IRule): events.RuleTargetProperties {
     const permissionId = `AllowEventRule${rule.node.uniqueId}`;
     if (!this.handler.node.tryFindChild(permissionId)) {
       this.handler.addPermission(permissionId, {

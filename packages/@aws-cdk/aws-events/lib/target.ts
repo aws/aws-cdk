@@ -1,25 +1,25 @@
 import iam = require('@aws-cdk/aws-iam');
 import { CfnRule } from './events.generated';
-import { EventTargetInput } from './input';
-import { IEventRule } from './rule-ref';
+import { RuleTargetInput } from './input';
+import { IRule } from './rule-ref';
 
 /**
  * An abstract target for EventRules.
  */
-export interface IEventRuleTarget {
+export interface IRuleTarget {
   /**
    * Returns the rule target specification.
    * NOTE: Do not use the various `inputXxx` options. They can be set in a call to `addTarget`.
    *
    * @param rule The CloudWatch Event Rule that would trigger this target.
    */
-  bind(rule: IEventRule): EventRuleTargetProperties;
+  bind(rule: IRule): RuleTargetProperties;
 }
 
 /**
  * Properties for an event rule target
  */
-export interface EventRuleTargetProperties {
+export interface RuleTargetProperties {
   /**
    * A unique, user-defined identifier for the target. Acceptable values
    * include alphanumeric characters, periods (.), hyphens (-), and
@@ -61,5 +61,5 @@ export interface EventRuleTargetProperties {
    *
    * @default the entire event
    */
-  readonly input?: EventTargetInput;
+  readonly input?: RuleTargetInput;
 }

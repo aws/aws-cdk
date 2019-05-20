@@ -2,20 +2,20 @@ import { expect, haveResourceLike } from '@aws-cdk/assert';
 import cdk = require('@aws-cdk/cdk');
 import { Stack } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
-import { EventTargetInput, IEventRuleTarget } from '../lib';
-import { EventRule } from '../lib/rule';
+import { IRuleTarget, RuleTargetInput } from '../lib';
+import { Rule } from '../lib/rule';
 
 export = {
   'json template': {
     'can just be a JSON object'(test: Test) {
       // GIVEN
       const stack = new Stack();
-      const rule = new EventRule(stack, 'Rule', {
+      const rule = new Rule(stack, 'Rule', {
         scheduleExpression: 'rate(1 minute)'
       });
 
       // WHEN
-      rule.addTarget(new SomeTarget(EventTargetInput.fromObject({ SomeObject: 'withAValue' })));
+      rule.addTarget(new SomeTarget(RuleTargetInput.fromObject({ SomeObject: 'withAValue' })));
 
       // THEN
       expect(stack).to(haveResourceLike('AWS::Events::Rule', {
@@ -33,12 +33,12 @@ export = {
     'strings with newlines are serialized to a newline-delimited list of JSON strings'(test: Test) {
       // GIVEN
       const stack = new Stack();
-      const rule = new EventRule(stack, 'Rule', {
+      const rule = new Rule(stack, 'Rule', {
         scheduleExpression: 'rate(1 minute)'
       });
 
       // WHEN
-      rule.addTarget(new SomeTarget(EventTargetInput.fromMultilineText('I have\nmultiple lines')));
+      rule.addTarget(new SomeTarget(RuleTargetInput.fromMultilineText('I have\nmultiple lines')));
 
       // THEN
       expect(stack).to(haveResourceLike('AWS::Events::Rule', {
@@ -55,12 +55,12 @@ export = {
     'escaped newlines are not interpreted as newlines'(test: Test) {
       // GIVEN
       const stack = new Stack();
-      const rule = new EventRule(stack, 'Rule', {
+      const rule = new Rule(stack, 'Rule', {
         scheduleExpression: 'rate(1 minute)'
       });
 
       // WHEN
-      rule.addTarget(new SomeTarget(EventTargetInput.fromMultilineText('this is not\\na real newline'))),
+      rule.addTarget(new SomeTarget(RuleTargetInput.fromMultilineText('this is not\\na real newline'))),
 
       // THEN
       expect(stack).to(haveResourceLike('AWS::Events::Rule', {
@@ -77,14 +77,14 @@ export = {
     'can use Tokens in text templates'(test: Test) {
       // GIVEN
       const stack = new Stack();
-      const rule = new EventRule(stack, 'Rule', {
+      const rule = new Rule(stack, 'Rule', {
         scheduleExpression: 'rate(1 minute)'
       });
 
       const world = new cdk.Token(() => 'world');
 
       // WHEN
-      rule.addTarget(new SomeTarget(EventTargetInput.fromText(`hello ${world}`)));
+      rule.addTarget(new SomeTarget(RuleTargetInput.fromText(`hello ${world}`)));
 
       // THEN
       expect(stack).to(haveResourceLike('AWS::Events::Rule', {
@@ -100,8 +100,8 @@ export = {
   },
 };
 
-class SomeTarget implements IEventRuleTarget {
-  public constructor(private readonly input: EventTargetInput) {
+class SomeTarget implements IRuleTarget {
+  public constructor(private readonly input: RuleTargetInput) {
   }
 
   public bind() {

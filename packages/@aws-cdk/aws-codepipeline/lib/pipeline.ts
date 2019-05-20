@@ -278,8 +278,8 @@ export class Pipeline extends PipelineBase {
    * more than a single onStateChange event, you will need to explicitly
    * specify a name.
    */
-  public onStateChange(name: string, target?: events.IEventRuleTarget, options?: events.EventRuleProps): events.EventRule {
-    const rule = new events.EventRule(this, name, options);
+  public onStateChange(name: string, target?: events.IRuleTarget, options?: events.RuleProps): events.Rule {
+    const rule = new events.Rule(this, name, options);
     rule.addTarget(target);
     rule.addEventPattern({
       detailType: [ 'CodePipeline Pipeline Execution State Change' ],

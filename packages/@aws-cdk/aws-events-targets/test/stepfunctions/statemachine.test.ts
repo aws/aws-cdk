@@ -7,7 +7,7 @@ import targets = require('../../lib');
 test('State machine can be used as Event Rule target', () => {
   // GIVEN
   const stack = new cdk.Stack();
-  const rule = new events.EventRule(stack, 'Rule', {
+  const rule = new events.Rule(stack, 'Rule', {
     scheduleExpression: 'rate(1 minute)'
   });
   const stateMachine = new sfn.StateMachine(stack, 'SM', {
@@ -16,7 +16,7 @@ test('State machine can be used as Event Rule target', () => {
 
   // WHEN
   rule.addTarget(new targets.SfnStateMachine(stateMachine, {
-    input: events.EventTargetInput.fromObject({ SomeParam: 'SomeValue' }),
+    input: events.RuleTargetInput.fromObject({ SomeParam: 'SomeValue' }),
   }));
 
   // THEN

@@ -20,7 +20,7 @@ test("Can use EC2 taskdef as EventRule target", () => {
     memoryLimitMiB: 256
   });
 
-  const rule = new events.EventRule(stack, 'Rule', {
+  const rule = new events.Rule(stack, 'Rule', {
     scheduleExpression: 'rate(1 minute)',
   });
 

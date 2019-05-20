@@ -57,7 +57,7 @@ export interface EcsEc2TaskProps {
 /**
  * Start a service on an EC2 cluster
  */
-export class EcsEc2Task implements events.IEventRuleTarget {
+export class EcsEc2Task implements events.IRuleTarget {
   private readonly cluster: ecs.ICluster;
   private readonly taskDefinition: ecs.TaskDefinition;
   private readonly taskCount: number;
@@ -75,7 +75,7 @@ export class EcsEc2Task implements events.IEventRuleTarget {
   /**
    * Allows using containers as target of CloudWatch events
    */
-  public bind(rule: events.IEventRule): events.EventRuleTargetProperties {
+  public bind(rule: events.IRule): events.RuleTargetProperties {
     const policyStatements = [new iam.PolicyStatement()
       .addAction('ecs:RunTask')
       .addResource(this.taskDefinition.taskDefinitionArn)
@@ -100,9 +100,9 @@ export class EcsEc2Task implements events.IEventRuleTarget {
         taskCount: this.taskCount,
         taskDefinitionArn: this.taskDefinition.taskDefinitionArn
       },
-      input: events.EventTargetInput.fromObject({
+      input: events.RuleTargetInput.fromObject({
         containerOverrides: this.props.containerOverrides,
-        networkConfiguration: this.renderNetworkConfiguration(rule as events.EventRule),
+        networkConfiguration: this.renderNetworkConfiguration(rule as events.Rule),
       })
     };
   }

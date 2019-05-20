@@ -75,5 +75,11 @@
   },
   "engines": {
     "node": ">= 8.10.0"
+  },
+  "awslint": {
+    "exclude": [
+      "from-method:@aws-cdk/aws-events.Rule"
+    ]
   }
+
 }

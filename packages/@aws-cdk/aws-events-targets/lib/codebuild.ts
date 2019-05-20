@@ -6,14 +6,14 @@ import { singletonEventRole } from './util';
 /**
  * Start a CodeBuild build when an AWS CloudWatch events rule is triggered.
  */
-export class CodeBuildProject implements events.IEventRuleTarget {
+export class CodeBuildProject implements events.IRuleTarget {
   constructor(private readonly project: codebuild.IProject) {
   }
 
   /**
    * Allows using build projects as event rule targets.
    */
-  public bind(_rule: events.IEventRule): events.EventRuleTargetProperties {
+  public bind(_rule: events.IRule): events.RuleTargetProperties {
     return {
       id: this.project.node.id,
       arn: this.project.projectArn,

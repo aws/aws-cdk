@@ -11,7 +11,7 @@ export interface SnsTopicProps {
    *
    * @default the entire CloudWatch event
    */
-  readonly message?: events.EventTargetInput;
+  readonly message?: events.RuleTargetInput;
 }
 
 /**
@@ -24,7 +24,7 @@ export interface SnsTopicProps {
  *    repository.onCommit(new targets.SnsTopic(topic));
  *
  */
-export class SnsTopic implements events.IEventRuleTarget {
+export class SnsTopic implements events.IRuleTarget {
   constructor(public readonly topic: sns.ITopic, private readonly props: SnsTopicProps = {}) {
   }
 
@@ -34,7 +34,7 @@ export class SnsTopic implements events.IEventRuleTarget {
    *
    * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/events/resource-based-policies-cwe.html#sns-permissions
    */
-  public bind(_rule: events.IEventRule): events.EventRuleTargetProperties {
+  public bind(_rule: events.IRule): events.RuleTargetProperties {
     // deduplicated automatically
     this.topic.grantPublish(new iam.ServicePrincipal('events.amazonaws.com'));
 

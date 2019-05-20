@@ -285,7 +285,7 @@ you can configure on your instances.
 ## Integration with CloudWatch Events
 
 To start an Amazon ECS task on an Amazon EC2-backed Cluster, instantiate an
-`Ec2TaskEventRuleTarget` instead of an `Ec2Service`:
+`@aws-cdk/aws-events-targets.EcsEc2Task` instead of an `Ec2Service`:
 
 ```ts
 import targets = require('@aws-cdk/aws-events-targets');
@@ -300,8 +300,8 @@ taskDefinition.addContainer('TheContainer', {
   logging: new ecs.AwsLogDriver(this, 'TaskLogging', { streamPrefix: 'EventDemo' })
 });
 
-// An EventRule that describes the event trigger (in this case a scheduled run)
-const rule = new events.EventRule(this, 'Rule', {
+// An Rule that describes the event trigger (in this case a scheduled run)
+const rule = new events.Rule(this, 'Rule', {
   scheduleExpression: 'rate(1 minute)',
 });
 

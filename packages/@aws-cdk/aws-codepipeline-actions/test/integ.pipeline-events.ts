@@ -49,7 +49,7 @@ const topic = new sns.Topic(stack, 'MyTopic');
 const eventPipeline = events.EventField.fromPath('$.detail.pipeline');
 const eventState = events.EventField.fromPath('$.detail.state');
 pipeline.onStateChange('OnPipelineStateChange').addTarget(new targets.SnsTopic(topic, {
-  message: events.EventTargetInput.fromText(`Pipeline ${eventPipeline} changed state to ${eventState}`),
+  message: events.RuleTargetInput.fromText(`Pipeline ${eventPipeline} changed state to ${eventState}`),
 }));
 
 sourceStage.onStateChange('OnSourceStateChange', new targets.SnsTopic(topic));
