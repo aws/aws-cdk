@@ -1052,7 +1052,7 @@
             "Input": "{\"containerOverrides\":[{\"containerName\":\"TheContainer\",\"environment\":[{\"name\":\"I_WAS_TRIGGERED\",\"value\":\"From CloudWatch Events\"}]}]}",
             "RoleArn": {
               "Fn::GetAtt": [
-                "awsecsintegecsTaskDef8DD0C801EventsRoleC617AC5B",
+                "TaskDefEventsRoleFB3B67B8",
                 "Arn"
               ]
             }
