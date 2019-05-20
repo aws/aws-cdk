@@ -96,7 +96,7 @@ export class EcsRunTaskBase implements ec2.IConnectable, sfn.IStepFunctionsTask 
   }
 
   protected configureAwsVpcNetworking(
-      vpc: ec2.IVpcNetwork,
+      vpc: ec2.IVpc,
       assignPublicIp?: boolean,
       subnetSelection?: ec2.SubnetSelection,
       securityGroup?: ec2.ISecurityGroup) {

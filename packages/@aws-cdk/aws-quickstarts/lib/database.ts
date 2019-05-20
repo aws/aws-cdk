@@ -10,7 +10,7 @@ export interface SqlServerProps {
   readonly masterUsername: string;
   readonly masterPassword: string;
   readonly allocatedStorage?: number;
-  readonly vpc: ec2.IVpcNetwork;
+  readonly vpc: ec2.IVpc;
 }
 
 /**

@@ -1,12 +1,14 @@
 import iam = require('@aws-cdk/aws-iam');
 import { PolicyDocument, PolicyStatement } from '@aws-cdk/aws-iam';
-import { CfnOutput, Construct, DeletionPolicy, IConstruct } from '@aws-cdk/cdk';
+import { Construct, DeletionPolicy, IResource } from '@aws-cdk/cdk';
 import { EncryptionKeyAlias } from './alias';
 import { CfnKey } from './kms.generated';
 
-export interface IEncryptionKey extends IConstruct {
+export interface IKey extends IResource {
   /**
    * The ARN of the key.
+   *
+   * @attribute
    */
   readonly keyArn: string;
 
@@ -23,12 +25,6 @@ export interface IEncryptionKey extends IConstruct {
    * no-op.
    */
   addToResourcePolicy(statement: PolicyStatement, allowNoOp?: boolean): void;
-
-  /**
-   * Exports this key from the current stack.
-   * @returns a key ref which can be used in a call to `EncryptionKey.import(ref)`.
-   */
-  export(): EncryptionKeyImportProps;
 
   /**
    * Grant the indicated permissions on this key to the given principal
@@ -51,14 +47,7 @@ export interface IEncryptionKey extends IConstruct {
   grantEncryptDecrypt(grantee: iam.IGrantable): iam.Grant;
 }
 
-export interface EncryptionKeyImportProps {
-  /**
-   * The ARN of the external KMS key.
-   */
-  readonly keyArn: string;
-}
-
-abstract class EncryptionKeyBase extends Construct implements IEncryptionKey {
+abstract class KeyBase extends Construct implements IKey {
   /**
    * The ARN of the key.
    */
@@ -94,8 +83,6 @@ abstract class EncryptionKeyBase extends Construct implements IEncryptionKey {
 
     this.policy.addStatement(statement);
   }
-
-  public abstract export(): EncryptionKeyImportProps;
 
   /**
    * Grant the indicated permissions on this key to the given principal
@@ -150,7 +137,7 @@ abstract class EncryptionKeyBase extends Construct implements IEncryptionKey {
 /**
  * Construction properties for a KMS Key object
  */
-export interface EncryptionKeyProps {
+export interface KeyProps {
   /**
    * A description of the key. Use a description that helps your users decide
    * whether the key is appropriate for a particular task.
@@ -189,33 +176,21 @@ export interface EncryptionKeyProps {
 /**
  * Defines a KMS key.
  */
-export class EncryptionKey extends EncryptionKeyBase {
-  /**
-   * Defines an imported encryption key.
-   *
-   * `ref` can be obtained either via a call to `key.export()` or using
-   * literals.
-   *
-   * For example:
-   *
-   *   const keyAttr = key.export();
-   *   const keyRef1 = EncryptionKey.import(this, 'MyImportedKey1', keyAttr);
-   *   const keyRef2 = EncryptionKey.import(this, 'MyImportedKey2', {
-   *     keyArn: new KeyArn('arn:aws:kms:...')
-   *   });
-   *
-   * @param scope The parent construct.
-   * @param id The name of the construct.
-   * @param props The key reference.
-   */
-  public static import(scope: Construct, id: string, props: EncryptionKeyImportProps): IEncryptionKey {
-    return new ImportedEncryptionKey(scope, id, props);
+export class Key extends KeyBase {
+
+  public static fromKeyArn(scope: Construct, id: string, keyArn: string): IKey {
+    class Import extends KeyBase {
+      public keyArn = keyArn;
+      protected policy?: iam.PolicyDocument | undefined = undefined;
+    }
+
+    return new Import(scope, id);
   }
 
   public readonly keyArn: string;
   protected readonly policy?: PolicyDocument;
 
-  constructor(scope: Construct, id: string, props: EncryptionKeyProps = {}) {
+  constructor(scope: Construct, id: string, props: KeyProps = {}) {
     super(scope, id);
 
     if (props.policy) {
@@ -236,16 +211,6 @@ export class EncryptionKey extends EncryptionKeyBase {
     resource.options.deletionPolicy = props.retain === false
                                     ? DeletionPolicy.Delete
                                     : DeletionPolicy.Retain;
-  }
-
-  /**
-   * Exports this key from the current stack.
-   * @returns a key ref which can be used in a call to `EncryptionKey.import(ref)`.
-   */
-  public export(): EncryptionKeyImportProps {
-    return {
-      keyArn: new CfnOutput(this, 'KeyArn', { value: this.keyArn }).makeImportValue().toString()
-    };
   }
 
   /**
@@ -272,20 +237,5 @@ export class EncryptionKey extends EncryptionKeyBase {
       .addAllResources()
       .addActions(...actions)
       .addAccountRootPrincipal());
-  }
-}
-
-class ImportedEncryptionKey extends EncryptionKeyBase {
-  public readonly keyArn: string;
-  protected readonly policy = undefined; // no policy associated with an imported key
-
-  constructor(scope: Construct, id: string, private readonly props: EncryptionKeyImportProps) {
-    super(scope, id);
-
-    this.keyArn = props.keyArn;
-  }
-
-  public export() {
-    return this.props;
   }
 }

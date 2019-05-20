@@ -43,14 +43,14 @@ export = {
   },
 
   'export and import'(test: Test) {
+    // GIVEN
     const stack = new Stack();
 
-    const refProps = new Certificate(stack, 'Cert', {
-      domainName: 'hello.com',
-    }).export();
+    // WHEN
+    const c = Certificate.fromCertificateArn(stack, 'Imported', 'cert-arn');
 
-    Certificate.fromCertificateArn(stack, 'Imported', refProps.certificateArn);
-
+    // THEN
+    test.deepEqual(c.certificateArn, 'cert-arn');
     test.done();
   }
 };
