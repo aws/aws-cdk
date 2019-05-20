@@ -85,7 +85,7 @@ export class StepScalingPolicy extends cdk.Construct {
       const threshold = intervals[alarms.lowerAlarmIntervalIndex].upper;
 
       this.lowerAction = new StepScalingAction(this, 'LowerPolicy', {
-        adjustmentType: props.adjustmentType,
+        adjustmentType,
         cooldownSec: props.cooldownSec,
         metricAggregationType: aggregationTypeFromMetric(props.metric),
         minAdjustmentMagnitude: props.minAdjustmentMagnitude,
@@ -115,7 +115,7 @@ export class StepScalingPolicy extends cdk.Construct {
       const threshold = intervals[alarms.upperAlarmIntervalIndex].lower;
 
       this.upperAction = new StepScalingAction(this, 'UpperPolicy', {
-        adjustmentType: props.adjustmentType,
+        adjustmentType,
         cooldownSec: props.cooldownSec,
         metricAggregationType: aggregationTypeFromMetric(props.metric),
         minAdjustmentMagnitude: props.minAdjustmentMagnitude,
