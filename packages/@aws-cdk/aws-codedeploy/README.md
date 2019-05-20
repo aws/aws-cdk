@@ -1,6 +1,10 @@
 ## The CDK Construct Library for AWS CodeDeploy
 
-### Applications
+AWS CodeDeploy is a deployment service that automates application deployments to Amazon EC2 instances, on-premises instances, serverless Lambda functions, or Amazon ECS services.
+
+The CDK currently supports Amazon EC2, on-premise and AWS Lambda applications.
+
+### EC2/on-premise Applications
 
 To create a new CodeDeploy Application that deploys to EC2/on-premise instances:
 
@@ -15,12 +19,12 @@ const application = new codedeploy.ServerApplication(this, 'CodeDeployApplicatio
 To import an already existing Application:
 
 ```ts
-const application = codedeploy.ServerApplicationRef.import(this, 'ExistingCodeDeployApplication', {
+const application = codedeploy.ServerApplication.import(this, 'ExistingCodeDeployApplication', {
     applicationName: 'MyExistingApplication',
 });
 ```
 
-### Deployment Groups
+### EC2/on-premise Deployment Groups
 
 To create a new CodeDeploy Deployment Group that deploys to EC2/on-premise instances:
 
@@ -75,7 +79,7 @@ one will be automatically created.
 To import an already existing Deployment Group:
 
 ```ts
-const deploymentGroup = codedeploy.ServerDeploymentGroupRef.import(this, 'ExistingCodeDeployDeploymentGroup', {
+const deploymentGroup = codedeploy.ServerDeploymentGroup.import(this, 'ExistingCodeDeployDeploymentGroup', {
     application,
     deploymentGroupName: 'MyExistingDeploymentGroup',
 });
@@ -86,21 +90,23 @@ const deploymentGroup = codedeploy.ServerDeploymentGroupRef.import(this, 'Existi
 You can [specify a load balancer](https://docs.aws.amazon.com/codedeploy/latest/userguide/integrations-aws-elastic-load-balancing.html)
 with the `loadBalancer` property when creating a Deployment Group.
 
+`LoadBalancer` is an abstract class with static factory methods that allow you to create instances of it from various sources.
+
 With Classic Elastic Load Balancer, you provide it directly:
 
 ```ts
 import lb = require('@aws-cdk/aws-elasticloadbalancing');
 
 const elb = new lb.LoadBalancer(this, 'ELB', {
-    // ...
+  // ...
 });
 elb.addTarget(/* ... */);
 elb.addListener({
-    // ...
+  // ...
 });
 
 const deploymentGroup = new codedeploy.ServerDeploymentGroup(this, 'DeploymentGroup', {
-    loadBalancer: elb,
+  loadBalancer: codedeploy.LoadBalancer.classic(elb),
 });
 ```
 
@@ -111,17 +117,17 @@ you provide a Target Group as the load balancer:
 import lbv2 = require('@aws-cdk/aws-elasticloadbalancingv2');
 
 const alb = new lbv2.ApplicationLoadBalancer(this, 'ALB', {
-    // ...
+  // ...
 });
 const listener = alb.addListener('Listener', {
-    // ...
+  // ...
 });
 const targetGroup = listener.addTargets('Fleet', {
-    // ...
+  // ...
 });
 
 const deploymentGroup = new codedeploy.ServerDeploymentGroup(this, 'DeploymentGroup', {
-    loadBalancer: targetGroup,
+  loadBalancer: codedeploy.LoadBalancer.application(targetGroup),
 });
 ```
 
@@ -151,30 +157,119 @@ const deploymentConfig = new codedeploy.ServerDeploymentConfig(this, 'Deployment
 Or import an existing one:
 
 ```ts
-const deploymentConfig = codedeploy.ServerDeploymentConfigRef.import(this, 'ExistingDeploymentConfiguration', {
+const deploymentConfig = codedeploy.ServerDeploymentConfig.import(this, 'ExistingDeploymentConfiguration', {
     deploymentConfigName: 'MyExistingDeploymentConfiguration',
 });
 ```
 
-### Use in CodePipeline
+### Lambda Applications
 
-This module also contains an Action that allows you to use CodeDeploy with AWS CodePipeline.
-
-Example:
+To create a new CodeDeploy Application that deploys to a Lambda function:
 
 ```ts
-import codepipeline = require('@aws-cdk/aws-codepipeline');
+import codedeploy = require('@aws-cdk/aws-codedeploy');
 
-const pipeline = new codepipeline.Pipeline(this, 'MyPipeline', {
-    pipelineName: 'MyPipeline',
+const application = new codedeploy.LambdaApplication(this, 'CodeDeployApplication', {
+    applicationName: 'MyApplication', // optional property
+});
+```
+
+To import an already existing Application:
+
+```ts
+const application = codedeploy.LambdaApplication.import(this, 'ExistingCodeDeployApplication', {
+    applicationName: 'MyExistingApplication',
+});
+```
+
+### Lambda Deployment Groups
+
+To enable traffic shifting deployments for Lambda functions, CodeDeploy uses Lambda Aliases, which can balance incoming traffic between two different versions of your function.
+Before deployment, the alias sends 100% of invokes to the version used in production.
+When you publish a new version of the function to your stack, CodeDeploy will send a small percentage of traffic to the new version, monitor, and validate before shifting 100% of traffic to the new version.
+
+To create a new CodeDeploy Deployment Group that deploys to a Lambda function:
+
+```ts
+import codedeploy = require('@aws-cdk/aws-codedeploy');
+import lambda = require('@aws-cdk/aws-lambda');
+
+const myApplication = new codedeploy.LambdaApplication(..);
+const func = new lambda.Function(..);
+const version = func.addVersion('1');
+const version1Alias = new lambda.Alias(this, 'alias', {
+  aliasName: 'prod',
+  version
 });
 
-// add the source and build Stages to the Pipeline...
+const deploymentGroup = new codedeploy.LambdaDeploymentGroup(stack, 'BlueGreenDeployment', {
+  application: myApplication, // optional property: one will be created for you if not provided
+  alias: version1Alias,
+  deploymentConfig: codedeploy.LambdaDeploymentConfig.Linear10PercentEvery1Minute,
+});
+```
 
-const deployStage = pipeline.addStage('Deploy');
-new codedeploy.PipelineDeployAction(this, 'CodeDeploy', {
-    stage: deployStage,
-    applicationName: 'YourCodeDeployApplicationName',
-    deploymentGroupName: 'YourCodeDeployDeploymentGroupName',
+In order to deploy a new version of this function:
+1. Increment the version, e.g. `const version = func.addVersion('2')`.
+2. Re-deploy the stack (this will trigger a deployment).
+3. Monitor the CodeDeploy deployment as traffic shifts between the versions.
+
+#### Rollbacks and Alarms
+
+CodeDeploy will roll back if the deployment fails. You can optionally trigger a rollback when one or more alarms are in a failed state:
+
+```ts
+const deploymentGroup = new codedeploy.LambdaDeploymentGroup(stack, 'BlueGreenDeployment', {
+  alias,
+  deploymentConfig: codedeploy.LambdaDeploymentConfig.Linear10PercentEvery1Minute,
+  alarms: [
+    // pass some alarms when constructing the deployment group
+    new cloudwatch.Alarm(stack, 'Errors', {
+      comparisonOperator: cloudwatch.ComparisonOperator.GreaterThanThreshold,
+      threshold: 1,
+      evaluationPeriods: 1,
+      metric: alias.metricErrors()
+    })
+  ]
+});
+
+// or add alarms to an existing group
+deploymentGroup.addAlarm(new cloudwatch.Alarm(stack, 'BlueGreenErrors', {
+  comparisonOperator: cloudwatch.ComparisonOperator.GreaterThanThreshold,
+  threshold: 1,
+  evaluationPeriods: 1,
+  metric: blueGreenAlias.metricErrors()
+}));
+```
+
+#### Pre and Post Hooks
+
+CodeDeploy allows you to run an arbitrary Lambda function before traffic shifting actually starts (PreTraffic Hook) and after it completes (PostTraffic Hook).
+With either hook, you have the opportunity to run logic that determines whether the deployment must succeed or fail.
+For example, with PreTraffic hook you could run integration tests against the newly created Lambda version (but not serving traffic). With PostTraffic hook, you could run end-to-end validation checks.
+
+```ts
+const warmUpUserCache = new lambda.Function(..);
+const endToEndValidation = new lambda.Function(..);
+
+// pass a hook whe creating the deployment group
+const deploymentGroup = new codedeploy.LambdaDeploymentGroup(stack, 'BlueGreenDeployment', {
+  alias: alias,
+  deploymentConfig: codedeploy.LambdaDeploymentConfig.Linear10PercentEvery1Minute,
+  preHook: warmUpUserCache,
+});
+
+// or configure one on an existing deployment group
+deploymentGroup.onPostHook(endToEndValidation);
+```
+
+#### Import an existing Deployment Group
+
+To import an already existing Deployment Group:
+
+```ts
+const deploymentGroup = codedeploy.LambdaDeploymentGroup.import(this, 'ExistingCodeDeployDeploymentGroup', {
+    application,
+    deploymentGroupName: 'MyExistingDeploymentGroup',
 });
 ```

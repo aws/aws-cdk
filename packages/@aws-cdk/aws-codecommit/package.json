@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/aws-codecommit",
-  "version": "0.13.0",
+  "version": "0.31.0",
   "description": "CDK Constructs for AWS CodeCommit",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -20,12 +20,16 @@
         "signAssembly": true,
         "assemblyOriginatorKeyFile": "../../key.snk"
       },
-      "sphinx": {}
+      "python": {
+        "distName": "aws-cdk.aws-codecommit",
+        "module": "aws_cdk.aws_codecommit"
+      }
     }
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/awslabs/aws-cdk.git"
+    "url": "https://github.com/awslabs/aws-cdk.git",
+    "directory": "packages/@aws-cdk/aws-codecommit"
   },
   "scripts": {
     "build": "cdk-build",
@@ -34,14 +38,17 @@
     "test": "cdk-test",
     "integ": "cdk-integ",
     "pkglint": "pkglint -f",
-    "package": "cdk-package"
+    "package": "cdk-package",
+    "awslint": "cdk-awslint",
+    "cfn2ts": "cfn2ts"
   },
   "cdk-build": {
     "cloudformation": "AWS::CodeCommit"
   },
   "nyc": {
+    "statements": 30,
     "lines": 30,
-    "branches": 40
+    "branches": 36
   },
   "keywords": [
     "aws",
@@ -56,19 +63,26 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "^0.13.0",
-    "@aws-cdk/aws-sns": "^0.13.0",
-    "aws-sdk": "^2.259.1",
-    "cdk-build-tools": "^0.13.0",
-    "cdk-integ-tools": "^0.13.0",
-    "cfn2ts": "^0.13.0",
-    "pkglint": "^0.13.0"
+    "@aws-cdk/assert": "^0.31.0",
+    "@aws-cdk/aws-sns": "^0.31.0",
+    "aws-sdk": "^2.438.0",
+    "cdk-build-tools": "^0.31.0",
+    "cdk-integ-tools": "^0.31.0",
+    "cfn2ts": "^0.31.0",
+    "pkglint": "^0.31.0"
   },
   "dependencies": {
-    "@aws-cdk/aws-codepipeline-api": "^0.13.0",
-    "@aws-cdk/aws-events": "^0.13.0",
-    "@aws-cdk/aws-iam": "^0.13.0",
-    "@aws-cdk/cdk": "^0.13.0"
+    "@aws-cdk/aws-events": "^0.31.0",
+    "@aws-cdk/aws-iam": "^0.31.0",
+    "@aws-cdk/cdk": "^0.31.0"
   },
-  "homepage": "https://github.com/awslabs/aws-cdk"
+  "homepage": "https://github.com/awslabs/aws-cdk",
+  "peerDependencies": {
+    "@aws-cdk/aws-events": "^0.31.0",
+    "@aws-cdk/aws-iam": "^0.31.0",
+    "@aws-cdk/cdk": "^0.31.0"
+  },
+  "engines": {
+    "node": ">= 8.10.0"
+  }
 }

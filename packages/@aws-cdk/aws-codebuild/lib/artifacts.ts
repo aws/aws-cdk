@@ -1,46 +1,103 @@
 import s3 = require('@aws-cdk/aws-s3');
-import { cloudformation } from './codebuild.generated';
+import { CfnProject } from './codebuild.generated';
 import { Project } from './project';
 
+/**
+ * Properties common to all Artifacts classes.
+ */
+export interface BuildArtifactsProps {
+  /**
+   * The artifact identifier.
+   * This property is required on secondary artifacts.
+   */
+  readonly identifier?: string;
+}
+
+/**
+ * Artifacts definition for a CodeBuild Project.
+ */
 export abstract class BuildArtifacts {
-  public abstract toArtifactsJSON(): cloudformation.ProjectResource.ArtifactsProperty;
-  public bind(_project: Project) {
+  public readonly identifier?: string;
+  protected abstract readonly type: string;
+
+  constructor(props: BuildArtifactsProps) {
+    this.identifier = props.identifier;
+  }
+
+  /**
+   * @internal
+   */
+  public _bind(_project: Project) {
     return;
   }
+
+  public toArtifactsJSON(): CfnProject.ArtifactsProperty {
+    const artifactsProp = this.toArtifactsProperty();
+    return {
+      artifactIdentifier: this.identifier,
+      type: this.type,
+      ...artifactsProp,
+    };
+  }
+
+  protected toArtifactsProperty(): any {
+    return {
+    };
+  }
 }
 
+/**
+ * A `NO_ARTIFACTS` CodeBuild Project Artifact definition.
+ * This is the default artifact type,
+ * if none was specified when creating the Project
+ * (and the source was not specified to be CodePipeline).
+ * *Note*: the `NO_ARTIFACTS` type cannot be used as a secondary artifact,
+ * and because of that, you're not allowed to specify an identifier for it.
+ */
 export class NoBuildArtifacts  extends BuildArtifacts {
-  public toArtifactsJSON(): cloudformation.ProjectResource.ArtifactsProperty {
-    return { type: 'NO_ARTIFACTS' };
+  protected readonly type = 'NO_ARTIFACTS';
+
+  constructor() {
+    super({});
   }
 }
 
+/**
+ * CodePipeline Artifact definition for a CodeBuild Project.
+ * *Note*: this type cannot be used as a secondary artifact,
+ * and because of that, you're not allowed to specify an identifier for it.
+ */
 export class CodePipelineBuildArtifacts extends BuildArtifacts {
-  public toArtifactsJSON(): cloudformation.ProjectResource.ArtifactsProperty {
-    return { type: 'CODEPIPELINE' };
+  protected readonly type = 'CODEPIPELINE';
+
+  constructor() {
+    super({});
   }
 }
 
-export interface S3BucketBuildArtifactsProps {
+/**
+ * Construction properties for {@link S3BucketBuildArtifacts}.
+ */
+export interface S3BucketBuildArtifactsProps extends BuildArtifactsProps {
   /**
    * The name of the output bucket.
    */
-  bucket: s3.BucketRef;
+  readonly bucket: s3.IBucket;
 
   /**
    * The path inside of the bucket for the build output .zip file or folder.
    * If a value is not specified, then build output will be stored at the root of the
    * bucket (or under the <build-id> directory if `includeBuildId` is set to true).
    */
-  path?: string;
+  readonly path?: string;
 
   /**
    * The name of the build output ZIP file or folder inside the bucket.
    *
-   * The full S3 object key will be "<path>/build-ID/<name>" or
-   * "<path>/<artifactsName>" depending on whether `includeBuildId` is set to true.
+   * The full S3 object key will be "<path>/<build-id>/<name>" or
+   * "<path>/<name>" depending on whether `includeBuildId` is set to true.
    */
-  name: string;
+  readonly name: string;
 
   /**
    * Indicates if the build ID should be included in the path. If this is set to true,
@@ -48,7 +105,7 @@ export interface S3BucketBuildArtifactsProps {
    *
    * @default true
    */
-  includeBuildID?: boolean;
+  readonly includeBuildId?: boolean;
 
   /**
    * If this is true, all build output will be packaged into a single .zip file.
@@ -56,42 +113,33 @@ export interface S3BucketBuildArtifactsProps {
    *
    * @default true - files will be archived
    */
-  packageZip?: boolean;
+  readonly packageZip?: boolean;
 }
 
+/**
+ * S3 Artifact definition for a CodeBuild Project.
+ */
 export class S3BucketBuildArtifacts extends BuildArtifacts {
+  protected readonly type = 'S3';
+
   constructor(private readonly props: S3BucketBuildArtifactsProps) {
-    super();
+    super(props);
   }
 
-  public bind(project: Project) {
-    this.props.bucket.grantReadWrite(project.role);
+  /**
+   * @internal
+   */
+  public _bind(project: Project) {
+    this.props.bucket.grantReadWrite(project);
   }
 
-  public toArtifactsJSON(): cloudformation.ProjectResource.ArtifactsProperty {
+  protected toArtifactsProperty(): any {
     return {
-      type: 'S3',
       location: this.props.bucket.bucketName,
-      path: this.props.bucket.path,
-      namespaceType: this.parseNamespaceType(this.props.includeBuildID),
+      path: this.props.path,
+      namespaceType: this.props.includeBuildId === false ? 'NONE' : 'BUILD_ID',
       name: this.props.name,
-      packaging: this.parsePackaging(this.props.packageZip),
+      packaging: this.props.packageZip === false ? 'NONE' : 'ZIP',
     };
-  }
-
-  private parseNamespaceType(includeBuildID?: boolean) {
-    if (includeBuildID != null) {
-      return includeBuildID ? 'BUILD_ID' : 'NONE';
-    } else {
-      return 'BUILD_ID';
-    }
-  }
-
-  private parsePackaging(packageZip?: boolean) {
-    if (packageZip != null) {
-      return packageZip ? 'ZIP' : 'NONE';
-    } else {
-      return 'ZIP';
-    }
   }
 }

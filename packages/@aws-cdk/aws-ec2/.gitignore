@@ -13,3 +13,4 @@ test/cdk.json
 coverage
 .nycrc
 .LAST_PACKAGE
+*.snk

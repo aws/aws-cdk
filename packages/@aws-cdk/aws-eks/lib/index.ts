@@ -1,2 +1,5 @@
+export * from "./cluster";
+export * from "./ami";
+
 // AWS::EKS CloudFormation Resources:
-export * from './eks.generated';
+export * from "./eks.generated";

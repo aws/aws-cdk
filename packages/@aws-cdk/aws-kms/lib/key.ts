@@ -1,38 +1,53 @@
+import iam = require('@aws-cdk/aws-iam');
 import { PolicyDocument, PolicyStatement } from '@aws-cdk/aws-iam';
-import { Construct, DeletionPolicy, Output, resolve } from '@aws-cdk/cdk';
+import { Construct, DeletionPolicy, IResource } from '@aws-cdk/cdk';
 import { EncryptionKeyAlias } from './alias';
-import { cloudformation } from './kms.generated';
+import { CfnKey } from './kms.generated';
 
-export interface EncryptionKeyRefProps {
+export interface IKey extends IResource {
   /**
-   * The ARN of the external KMS key.
+   * The ARN of the key.
+   *
+   * @attribute
    */
-  keyArn: string;
+  readonly keyArn: string;
+
+  /**
+   * Defines a new alias for the key.
+   */
+  addAlias(alias: string): EncryptionKeyAlias;
+
+  /**
+   * Adds a statement to the KMS key resource policy.
+   * @param statement The policy statement to add
+   * @param allowNoOp If this is set to `false` and there is no policy
+   * defined (i.e. external key), the operation will fail. Otherwise, it will
+   * no-op.
+   */
+  addToResourcePolicy(statement: PolicyStatement, allowNoOp?: boolean): void;
+
+  /**
+   * Grant the indicated permissions on this key to the given principal
+   */
+  grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant;
+
+  /**
+   * Grant decryption permisisons using this key to the given principal
+   */
+  grantDecrypt(grantee: iam.IGrantable): iam.Grant;
+
+  /**
+   * Grant encryption permisisons using this key to the given principal
+   */
+  grantEncrypt(grantee: iam.IGrantable): iam.Grant;
+
+  /**
+   * Grant encryption and decryption permisisons using this key to the given principal
+   */
+  grantEncryptDecrypt(grantee: iam.IGrantable): iam.Grant;
 }
 
-export abstract class EncryptionKeyRef extends Construct {
-  /**
-   * Defines an imported encryption key.
-   *
-   * `ref` can be obtained either via a call to `key.export()` or using
-   * literals.
-   *
-   * For example:
-   *
-   *   const keyRefProps = key.export();
-   *   const keyRef1 = EncryptionKeyRef.import(this, 'MyImportedKey1', keyRefProps);
-   *   const keyRef2 = EncryptionKeyRef.import(this, 'MyImportedKey2', {
-   *     keyArn: new KeyArn('arn:aws:kms:...')
-   *   });
-   *
-   * @param parent The parent construct.
-   * @param name The name of the construct.
-   * @param props The key reference.
-   */
-  public static import(parent: Construct, name: string, props: EncryptionKeyRefProps): EncryptionKeyRef {
-    return new EncryptionKeyRefImport(parent, name, props);
-  }
-
+abstract class KeyBase extends Construct implements IKey {
   /**
    * The ARN of the key.
    */
@@ -63,44 +78,83 @@ export abstract class EncryptionKeyRef extends Construct {
   public addToResourcePolicy(statement: PolicyStatement, allowNoOp = true) {
     if (!this.policy) {
       if (allowNoOp) { return; }
-      throw new Error(`Unable to add statement to IAM resource policy for KMS key: ${JSON.stringify(resolve(this.keyArn))}`);
+      throw new Error(`Unable to add statement to IAM resource policy for KMS key: ${JSON.stringify(this.node.resolve(this.keyArn))}`);
     }
 
     this.policy.addStatement(statement);
   }
 
   /**
-   * Exports this key from the current stack.
-   * @returns a key ref which can be used in a call to `EncryptionKey.import(ref)`.
+   * Grant the indicated permissions on this key to the given principal
+   *
+   * This modifies both the principal's policy as well as the resource policy,
+   * since the default CloudFormation setup for KMS keys is that the policy
+   * must not be empty and so default grants won't work.
    */
-  public export(): EncryptionKeyRefProps {
-    return {
-      keyArn: new Output(this, 'KeyArn').makeImportValue().toString()
-    };
+  public grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant {
+    return iam.Grant.addToPrincipalAndResource({
+      grantee,
+      actions,
+      resourceArns: [this.keyArn],
+      resource: this,
+      resourceSelfArns: ['*']
+    });
+  }
+
+  /**
+   * Grant decryption permisisons using this key to the given principal
+   */
+  public grantDecrypt(grantee: iam.IGrantable): iam.Grant {
+    return this.grant(grantee,
+      'kms:Decrypt',
+    );
+  }
+
+  /**
+   * Grant encryption permisisons using this key to the given principal
+   */
+  public grantEncrypt(grantee: iam.IGrantable): iam.Grant {
+    return this.grant(grantee,
+      'kms:Encrypt',
+      'kms:ReEncrypt*',
+      'kms:GenerateDataKey*'
+    );
+  }
+
+  /**
+   * Grant encryption and decryption permisisons using this key to the given principal
+   */
+  public grantEncryptDecrypt(grantee: iam.IGrantable): iam.Grant {
+    return this.grant(grantee,
+      'kms:Decrypt',
+      'kms:Encrypt',
+      'kms:ReEncrypt*',
+      'kms:GenerateDataKey*'
+    );
   }
 }
 
 /**
  * Construction properties for a KMS Key object
  */
-export interface EncryptionKeyProps {
+export interface KeyProps {
   /**
    * A description of the key. Use a description that helps your users decide
    * whether the key is appropriate for a particular task.
    */
-  description?: string;
+  readonly description?: string;
 
   /**
    * Indicates whether AWS KMS rotates the key.
    * @default false
    */
-  enableKeyRotation?: boolean;
+  readonly enableKeyRotation?: boolean;
 
   /**
    * Indicates whether the key is available for use.
    * @default Key is enabled
    */
-  enabled?: boolean;
+  readonly enabled?: boolean;
 
   /**
    * Custom policy document to attach to the KMS key.
@@ -108,18 +162,36 @@ export interface EncryptionKeyProps {
    * @default A policy document with permissions for the account root to
    * administer the key will be created.
    */
-  policy?: PolicyDocument;
+  readonly policy?: PolicyDocument;
+
+  /**
+   * Whether the encryption key should be retained when it is removed from the Stack. This is useful when one wants to
+   * retain access to data that was encrypted with a key that is being retired.
+   *
+   * @default true
+   */
+  readonly retain?: boolean;
 }
 
 /**
  * Defines a KMS key.
  */
-export class EncryptionKey extends EncryptionKeyRef {
+export class Key extends KeyBase {
+
+  public static fromKeyArn(scope: Construct, id: string, keyArn: string): IKey {
+    class Import extends KeyBase {
+      public keyArn = keyArn;
+      protected policy?: iam.PolicyDocument | undefined = undefined;
+    }
+
+    return new Import(scope, id);
+  }
+
   public readonly keyArn: string;
   protected readonly policy?: PolicyDocument;
 
-  constructor(parent: Construct, name: string, props: EncryptionKeyProps = {}) {
-    super(parent, name);
+  constructor(scope: Construct, id: string, props: KeyProps = {}) {
+    super(scope, id);
 
     if (props.policy) {
       this.policy = props.policy;
@@ -128,15 +200,17 @@ export class EncryptionKey extends EncryptionKeyRef {
       this.allowAccountToAdmin();
     }
 
-    const resource = new cloudformation.KeyResource(this, 'Resource', {
+    const resource = new CfnKey(this, 'Resource', {
       description: props.description,
       enableKeyRotation: props.enableKeyRotation,
       enabled: props.enabled,
-      keyPolicy: this.policy
+      keyPolicy: this.policy,
     });
 
     this.keyArn = resource.keyArn;
-    resource.options.deletionPolicy = DeletionPolicy.Retain;
+    resource.options.deletionPolicy = props.retain === false
+                                    ? DeletionPolicy.Delete
+                                    : DeletionPolicy.Retain;
   }
 
   /**
@@ -163,16 +237,5 @@ export class EncryptionKey extends EncryptionKeyRef {
       .addAllResources()
       .addActions(...actions)
       .addAccountRootPrincipal());
-  }
-}
-
-class EncryptionKeyRefImport extends EncryptionKeyRef {
-  public readonly keyArn: string;
-  protected readonly policy = undefined; // no policy associated with an imported key
-
-  constructor(parent: Construct, name: string, props: EncryptionKeyRefProps) {
-    super(parent, name);
-
-    this.keyArn = props.keyArn;
   }
 }

@@ -1,38 +1,13 @@
-import cdk = require('@aws-cdk/cdk');
-import { LogGroupRef } from './log-group';
-import { cloudformation } from './logs.generated';
+import { Construct, DeletionPolicy, IResource, Resource } from '@aws-cdk/cdk';
+import { ILogGroup } from './log-group';
+import { CfnLogStream } from './logs.generated';
 
-/**
- * Properties for importing a LogStream
- */
-export interface LogStreamRefProps {
-  logStreamName: string;
-}
-
-/**
- * A Log Stream in a Log Group
- */
-export abstract class LogStreamRef extends cdk.Construct {
-  /**
-   * Import an existing LogGroup
-   */
-  public static import(parent: cdk.Construct, id: string, props: LogStreamRefProps): LogStreamRef {
-    return new ImportedLogStream(parent, id, props);
-  }
-
+export interface ILogStream extends IResource {
   /**
    * The name of this log stream
+   * @attribute
    */
-  public abstract readonly logStreamName: string;
-
-  /**
-   * Export this LogStream
-   */
-  public export(): LogStreamRefProps {
-    return {
-      logStreamName: new cdk.Output(this, 'LogStreamName', { value: this.logStreamName }).makeImportValue().toString()
-    };
-  }
+  readonly logStreamName: string;
 }
 
 /**
@@ -42,7 +17,7 @@ export interface LogStreamProps {
   /**
    * The log group to create a log stream for.
    */
-  logGroup: LogGroupRef;
+  readonly logGroup: ILogGroup;
 
   /**
    * The name of the log stream to create.
@@ -51,7 +26,7 @@ export interface LogStreamProps {
    *
    * @default Automatically generated
    */
-  logStreamName?: string;
+  readonly logStreamName?: string;
 
   /**
    * Retain the log stream if the stack or containing construct ceases to exist
@@ -64,46 +39,41 @@ export interface LogStreamProps {
    *
    * @default true
    */
-  retainLogStream?: boolean;
+  readonly retainLogStream?: boolean;
 }
 
 /**
  * Define a Log Stream in a Log Group
  */
-export class LogStream extends LogStreamRef {
+export class LogStream extends Resource implements ILogStream {
+  /**
+   * Import an existing LogGroup
+   */
+  public static fromLogStreamName(scope: Construct, id: string, logStreamName: string): ILogStream {
+    class Import extends Construct implements ILogStream {
+      public readonly logStreamName = logStreamName;
+    }
+
+    return new Import(scope, id);
+  }
+
   /**
    * The name of this log stream
    */
   public readonly logStreamName: string;
 
-  constructor(parent: cdk.Construct, id: string, props: LogStreamProps) {
-    super(parent, id);
+  constructor(scope: Construct, id: string, props: LogStreamProps) {
+    super(scope, id);
 
-    const resource = new cloudformation.LogStreamResource(this, 'Resource', {
+    const resource = new CfnLogStream(this, 'Resource', {
       logGroupName: props.logGroup.logGroupName,
       logStreamName: props.logStreamName
     });
 
     if (props.retainLogStream !== false) {
-      resource.options.deletionPolicy = cdk.DeletionPolicy.Retain;
+      resource.options.deletionPolicy = DeletionPolicy.Retain;
     }
 
     this.logStreamName = resource.logStreamName;
-  }
-}
-
-/**
- * An imported LogStream
- */
-class ImportedLogStream extends LogStreamRef {
-  /**
-   * The name of this log stream
-   */
-  public readonly logStreamName: string;
-
-  constructor(parent: cdk.Construct, id: string, props: LogStreamRefProps) {
-    super(parent, id);
-
-    this.logStreamName = props.logStreamName;
   }
 }

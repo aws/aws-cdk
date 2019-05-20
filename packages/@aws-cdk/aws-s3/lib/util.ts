@@ -1,7 +1,7 @@
 import cdk = require('@aws-cdk/cdk');
-import { BucketRefProps } from './bucket';
+import { BucketAttributes } from './bucket';
 
-export function parseBucketArn(props: BucketRefProps): string {
+export function parseBucketArn(construct: cdk.IConstruct, props: BucketAttributes): string {
 
   // if we have an explicit bucket ARN, use it.
   if (props.bucketArn) {
@@ -9,7 +9,7 @@ export function parseBucketArn(props: BucketRefProps): string {
   }
 
   if (props.bucketName) {
-    return cdk.ArnUtils.fromComponents({
+    return construct.node.stack.formatArn({
       // S3 Bucket names are globally unique in a partition,
       // and so their ARNs have empty region and account components
       region: '',
@@ -22,7 +22,7 @@ export function parseBucketArn(props: BucketRefProps): string {
   throw new Error('Cannot determine bucket ARN. At least `bucketArn` or `bucketName` is needed');
 }
 
-export function parseBucketName(props: BucketRefProps): string | undefined {
+export function parseBucketName(construct: cdk.IConstruct, props: BucketAttributes): string | undefined {
 
   // if we have an explicit bucket name, use it.
   if (props.bucketName) {
@@ -32,9 +32,9 @@ export function parseBucketName(props: BucketRefProps): string | undefined {
   // if we have a string arn, we can extract the bucket name from it.
   if (props.bucketArn) {
 
-    const resolved = cdk.resolve(props.bucketArn);
+    const resolved = construct.node.resolve(props.bucketArn);
     if (typeof(resolved) === 'string') {
-      const components = cdk.ArnUtils.parse(resolved);
+      const components = construct.node.stack.parseArn(resolved);
       if (components.service !== 's3') {
         throw new Error('Invalid ARN. Expecting "s3" service:' + resolved);
       }

@@ -3,7 +3,7 @@ import util = require('util');
 
 // tslint:disable:no-console the whole point of those methods is precisely to output to the console...
 
-let isVerbose = false;
+export let isVerbose = false;
 
 export function setVerbose(enabled = true) {
   isVerbose = enabled;

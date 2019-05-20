@@ -252,6 +252,90 @@
         "description": "Set RefKind of AWS::ApiGateway::VpcLink to Id"
       }
     },
+    "AWS::AppStream::DirectoryConfig": {
+      "patch": {
+        "operations": [
+          {
+            "op": "add",
+            "path": "/RefKind",
+            "value": "None"
+          }
+        ],
+        "description": "Set RefKind of AWS::AppStream::DirectoryConfig to None"
+      }
+    },
+    "AWS::AppStream::Fleet": {
+      "patch": {
+        "operations": [
+          {
+            "op": "add",
+            "path": "/RefKind",
+            "value": "None"
+          }
+        ],
+        "description": "Set RefKind of AWS::AppStream::Fleet to None"
+      }
+    },
+    "AWS::AppStream::ImageBuilder": {
+      "patch": {
+        "operations": [
+          {
+            "op": "add",
+            "path": "/RefKind",
+            "value": "None"
+          }
+        ],
+        "description": "Set RefKind of AWS::AppStream::ImageBuilder to None"
+      }
+    },
+    "AWS::AppStream::Stack": {
+      "patch": {
+        "operations": [
+          {
+            "op": "add",
+            "path": "/RefKind",
+            "value": "None"
+          }
+        ],
+        "description": "Set RefKind of AWS::AppStream::Stack to None"
+      }
+    },
+    "AWS::AppStream::StackFleetAssociation": {
+      "patch": {
+        "operations": [
+          {
+            "op": "add",
+            "path": "/RefKind",
+            "value": "None"
+          }
+        ],
+        "description": "Set RefKind of AWS::AppStream::StackFleetAssociation to None"
+      }
+    },
+    "AWS::AppStream::StackUserAssociation": {
+      "patch": {
+        "operations": [
+          {
+            "op": "add",
+            "path": "/RefKind",
+            "value": "None"
+          }
+        ],
+        "description": "Set RefKind of AWS::AppStream::StackUserAssociation to None"
+      }
+    },
+    "AWS::AppStream::User": {
+      "patch": {
+        "operations": [
+          {
+            "op": "add",
+            "path": "/RefKind",
+            "value": "None"
+          }
+        ],
+        "description": "Set RefKind of AWS::AppStream::User to None"
+      }
+    },
     "AWS::AppSync::ApiKey": {
       "patch": {
         "operations": [
@@ -262,6 +346,18 @@
           }
         ],
         "description": "Set RefKind of AWS::AppSync::ApiKey to Arn"
+      }
+    },
+    "AWS::AppSync::FunctionConfiguration": {
+      "patch": {
+        "operations": [
+          {
+            "op": "add",
+            "path": "/RefKind",
+            "value": "Arn"
+          }
+        ],
+        "description": "Set RefKind of AWS::AppSync::FunctionConfiguration to Arn"
       }
     },
     "AWS::AppSync::DataSource": {
@@ -502,6 +598,18 @@
           }
         ],
         "description": "Set RefKind of AWS::CloudFormation::CustomResource to None"
+      }
+    },
+    "AWS::CloudFormation::Macro": {
+      "patch": {
+        "operations": [
+          {
+            "op": "add",
+            "path": "/RefKind",
+            "value": "Name"
+          }
+        ],
+        "description": "Set RefKind of AWS::CloudFormation::Macro to Name"
       }
     },
     "AWS::CloudFormation::Stack": {
@@ -1032,6 +1140,18 @@
         "description": "Set RefKind of AWS::EC2::DHCPOptions to Name"
       }
     },
+    "AWS::EC2::EC2Fleet": {
+      "patch": {
+        "operations": [
+          {
+            "op": "add",
+            "path": "/RefKind",
+            "value": "Id"
+          }
+        ],
+        "description": "Set RefKind of AWS::EC2::EC2Fleet to Id"
+      }
+    },
     "AWS::EC2::EIP": {
       "patch": {
         "operations": [
@@ -1332,7 +1452,7 @@
         "description": "Set RefKind of AWS::EC2::SubnetRouteTableAssociation to Name"
       }
     },
-    "AWS::EC2::TrunkInterfaceAssociation": {
+    "AWS::EC2::TransitGateway": {
       "patch": {
         "operations": [
           {
@@ -1341,7 +1461,67 @@
             "value": "Id"
           }
         ],
-        "description": "Set RefKind of AWS::EC2::TrunkInterfaceAssociation to Id"
+        "description": "Set RefKind of AWS::EC2::TransitGateway to Id"
+      }
+    },
+    "AWS::EC2::TransitGatewayAttachment": {
+      "patch": {
+        "operations": [
+          {
+            "op": "add",
+            "path": "/RefKind",
+            "value": "Id"
+          }
+        ],
+        "description": "Set RefKind of AWS::EC2::TransitGatewayAttachment to Id"
+      }
+    },
+    "AWS::EC2::TransitGatewayRoute": {
+      "patch": {
+        "operations": [
+          {
+            "op": "add",
+            "path": "/RefKind",
+            "value": "Id"
+          }
+        ],
+        "description": "Set RefKind of AWS::EC2::TransitGatewayRoute to Id"
+      }
+    },
+    "AWS::EC2::TransitGatewayRouteTable": {
+      "patch": {
+        "operations": [
+          {
+            "op": "add",
+            "path": "/RefKind",
+            "value": "Id"
+          }
+        ],
+        "description": "Set RefKind of AWS::EC2::TransitGatewayRouteTable to Id"
+      }
+    },
+    "AWS::EC2::TransitGatewayRouteTableAssociation": {
+      "patch": {
+        "operations": [
+          {
+            "op": "add",
+            "path": "/RefKind",
+            "value": "Id"
+          }
+        ],
+        "description": "Set RefKind of AWS::EC2::TransitGatewayRouteTableAssociation to Id"
+      }
+    },
+    "AWS::EC2::TransitGatewayRouteTablePropagation": {
+      "patch": {
+        "operations": [
+          {
+            "op": "add",
+            "path": "/RefKind",
+            "value": "Id"
+          }
+        ],
+        "description": "Set RefKind of AWS::EC2::TransitGatewayRouteTablePropagation to Id"
       }
     },
     "AWS::EC2::VPC": {
@@ -1402,6 +1582,18 @@
           }
         ],
         "description": "Set RefKind of AWS::EC2::VPCEndpointConnectionNotification to None"
+      }
+    },
+    "AWS::EC2::VPCEndpointService": {
+      "patch": {
+        "operations": [
+          {
+            "op": "add",
+            "path": "/RefKind",
+            "value": "Id"
+          }
+        ],
+        "description": "Set RefKind of AWS::EC2::VPCEndpointService to Id"
       }
     },
     "AWS::EC2::VPCEndpointServicePermissions": {
@@ -1860,6 +2052,18 @@
         "description": "Set RefKind of AWS::Elasticsearch::Domain to Name"
       }
     },
+    "AWS::Events::EventBusPolicy": {
+      "patch": {
+        "operations": [
+          {
+            "op": "add",
+            "path": "/RefKind",
+            "value": "Id"
+          }
+        ],
+        "description": "Set RefKind of AWS::Events::EventBusPolicy to Id"
+      }
+    },
     "AWS::Events::Rule": {
       "patch": {
         "operations": [
@@ -1870,6 +2074,18 @@
           }
         ],
         "description": "Set RefKind of AWS::Events::Rule to Id"
+      }
+    },
+    "AWS::FSx::FileSystem": {
+      "patch": {
+        "operations": [
+          {
+            "op": "add",
+            "path": "/RefKind",
+            "value": "Id"
+          }
+        ],
+        "description": "Set RefKind of AWS::FSx::FileSystem to Id"
       }
     },
     "AWS::GameLift::Alias": {
@@ -2376,6 +2592,18 @@
         "description": "Set RefKind of AWS::Kinesis::Stream to Id"
       }
     },
+    "AWS::Kinesis::StreamConsumer": {
+      "patch": {
+        "operations": [
+          {
+            "op": "add",
+            "path": "/RefKind",
+            "value": "Arn"
+          }
+        ],
+        "description": "Set RefKind of AWS::Kinesis::StreamConsumer to Arn"
+      }
+    },
     "AWS::KinesisAnalytics::Application": {
       "patch": {
         "operations": [
@@ -2458,6 +2686,30 @@
           }
         ],
         "description": "Set RefKind of AWS::Lambda::Function to Name"
+      }
+    },
+    "AWS::Lambda::LayerVersion": {
+      "patch": {
+        "operations": [
+          {
+            "op": "add",
+            "path": "/RefKind",
+            "value": "Arn"
+          }
+        ],
+        "description": "Set RefKind of AWS::Lambda::LayerVersion to Arn"
+      }
+    },
+    "AWS::Lambda::LayerVersionPermission": {
+      "patch": {
+        "operations": [
+          {
+            "op": "add",
+            "path": "/RefKind",
+            "value": "Arn"
+          }
+        ],
+        "description": "Set RefKind of AWS::Lambda::LayerVersionPermission to Arn"
       }
     },
     "AWS::Lambda::Permission": {
@@ -2688,6 +2940,18 @@
         "description": "Set RefKind of AWS::OpsWorks::Volume to Id"
       }
     },
+    "AWS::OpsWorksCM::Server": {
+      "patch": {
+        "operations": [
+          {
+            "op": "add",
+            "path": "/RefKind",
+            "value": "Arn"
+          }
+        ],
+        "description": "Set RefKind of AWS::OpsWorksCM::Server to Arn"
+      }
+    },
     "AWS::RDS::DBCluster": {
       "patch": {
         "operations": [
@@ -2904,6 +3168,42 @@
         "description": "Set RefKind of AWS::Route53::RecordSetGroup to Name"
       }
     },
+    "AWS::Route53Resolver::ResolverEndpoint": {
+      "patch": {
+        "operations": [
+          {
+            "op": "add",
+            "path": "/RefKind",
+            "value": "Object"
+          }
+        ],
+        "description": "Set RefKind of AWS::Route53Resolver::ResolverEndpoint to Object"
+      }
+    },
+    "AWS::Route53Resolver::ResolverRule": {
+      "patch": {
+        "operations": [
+          {
+            "op": "add",
+            "path": "/RefKind",
+            "value": "Object"
+          }
+        ],
+        "description": "Set RefKind of AWS::Route53Resolver::ResolverRule to Object"
+      }
+    },
+    "AWS::Route53Resolver::ResolverRuleAssociation": {
+      "patch": {
+        "operations": [
+          {
+            "op": "add",
+            "path": "/RefKind",
+            "value": "Id"
+          }
+        ],
+        "description": "Set RefKind of AWS::Route53Resolver::ResolverRuleAssociation to Id"
+      }
+    },
     "AWS::S3::Bucket": {
       "patch": {
         "operations": [
@@ -3096,6 +3396,18 @@
         "description": "Set RefKind of AWS::SSM::Document to Name"
       }
     },
+    "AWS::SSM::MaintenanceWindow": {
+      "patch": {
+        "operations": [
+          {
+            "op": "add",
+            "path": "/RefKind",
+            "value": "Id"
+          }
+        ],
+        "description": "Set RefKind of AWS::SSM::MaintenanceWindow to Id"
+      }
+    },
     "AWS::SSM::MaintenanceWindowTask": {
       "patch": {
         "operations": [
@@ -3204,6 +3516,18 @@
         "description": "Set RefKind of AWS::SageMaker::NotebookInstanceLifecycleConfig to Arn"
       }
     },
+    "AWS::Serverless::Application": {
+      "patch": {
+        "operations": [
+          {
+            "op": "add",
+            "path": "/RefKind",
+            "value": "Name"
+          }
+        ],
+        "description": "Set RefKind of AWS::Serverless::Application to Name"
+      }
+    },
     "AWS::Serverless::Api": {
       "patch": {
         "operations": [
@@ -3226,6 +3550,18 @@
           }
         ],
         "description": "Set RefKind of AWS::Serverless::Function to Name"
+      }
+    },
+    "AWS::Serverless::LayerVersion": {
+      "patch": {
+        "operations": [
+          {
+            "op": "add",
+            "path": "/RefKind",
+            "value": "Arn"
+          }
+        ],
+        "description": "Set RefKind of AWS::Serverless::LayerVersion to Arn"
       }
     },
     "AWS::Serverless::SimpleTable": {
@@ -3382,6 +3718,18 @@
           }
         ],
         "description": "Set RefKind of AWS::ServiceCatalog::TagOptionAssociation to Id"
+      }
+    },
+    "AWS::ServiceDiscovery::HttpNamespace": {
+      "patch": {
+        "operations": [
+          {
+            "op": "add",
+            "path": "/RefKind",
+            "value": "Id"
+          }
+        ],
+        "description": "Set RefKind of AWS::ServiceDiscovery::HttpNamespace to Id"
       }
     },
     "AWS::ServiceDiscovery::Instance": {
@@ -3646,6 +3994,702 @@
           }
         ],
         "description": "Set RefKind of AWS::WorkSpaces::Workspace to Name"
+      }
+    },
+    "AWS::DLM::LifecyclePolicy": {
+      "patch": {
+        "operations": [
+          {
+            "op": "add",
+            "path": "/RefKind",
+            "value": "Id"
+          }
+        ],
+        "description": "Set RefKind of AWS::DLM::LifecyclePolicy to Id"
+      }
+    },
+    "AWS::DocDB::DBCluster": {
+      "patch": {
+        "operations": [
+          {
+            "op": "add",
+            "path": "/RefKind",
+            "value": "Name"
+          }
+        ],
+        "description": "Set RefKind of AWS::DocDB::DBCluster to Name"
+      }
+    },
+    "AWS::DocDB::DBClusterParameterGroup": {
+      "patch": {
+        "operations": [
+          {
+            "op": "add",
+            "path": "/RefKind",
+            "value": "Name"
+          }
+        ],
+        "description": "Set RefKind of AWS::DocDB::DBClusterParameterGroup to Name"
+      }
+    },
+    "AWS::DocDB::DBInstance": {
+      "patch": {
+        "operations": [
+          {
+            "op": "add",
+            "path": "/RefKind",
+            "value": "Id"
+          }
+        ],
+        "description": "Set RefKind of AWS::DocDB::DBInstance to Id"
+      }
+    },
+    "AWS::DocDB::DBSubnetGroup": {
+      "patch": {
+        "operations": [
+          {
+            "op": "add",
+            "path": "/RefKind",
+            "value": "Name"
+          }
+        ],
+        "description": "Set RefKind of AWS::DocDB::DBSubnetGroup to Name"
+      }
+    },
+    "AWS::SecretsManager::ResourcePolicy": {
+      "patch": {
+        "operations": [
+          {
+            "op": "add",
+            "path": "/RefKind",
+            "value": "SecretArn"
+          }
+        ],
+        "description": "Set RefKind of AWS::SecretsManager::ResourcePolicy to SecretArn"
+      }
+    },
+    "AWS::SecretsManager::RotationSchedule": {
+      "patch": {
+        "operations": [
+          {
+            "op": "add",
+            "path": "/RefKind",
+            "value": "SecretArn"
+          }
+        ],
+        "description": "Set RefKind of AWS::SecretsManager::RotationSchedule to SecretArn"
+      }
+    },
+    "AWS::SecretsManager::Secret": {
+      "patch": {
+        "operations": [
+          {
+            "op": "add",
+            "path": "/RefKind",
+            "value": "Arn"
+          }
+        ],
+        "description": "Set RefKind of AWS::SecretsManager::Secret to Arn"
+      }
+    },
+    "AWS::SecretsManager::SecretTargetAttachment": {
+      "patch": {
+        "operations": [
+          {
+            "op": "add",
+            "path": "/RefKind",
+            "value": "SecretArn"
+          }
+        ],
+        "description": "Set RefKind of AWS::SecretsManager::SecretTargetAttachment to SecretArn"
+      }
+    },
+    "Alexa::ASK::Skill": {
+      "patch": {
+        "operations": [
+          {
+            "op": "add",
+            "path": "/RefKind",
+            "value": "Id"
+          }
+        ],
+        "description": "Set RefKind of Alexa::ASK::Skill to Id"
+      }
+    },
+    "AWS::IoTAnalytics::Channel": {
+      "patch": {
+        "operations": [
+          {
+            "op": "add",
+            "path": "/RefKind",
+            "value": "Id"
+          }
+        ],
+        "description": "Set RefKind of AWS::IoTAnalytics::Channel to Id"
+      }
+    },
+    "AWS::IoTAnalytics::Dataset": {
+      "patch": {
+        "operations": [
+          {
+            "op": "add",
+            "path": "/RefKind",
+            "value": "Id"
+          }
+        ],
+        "description": "Set RefKind of AWS::IoTAnalytics::Dataset to Id"
+      }
+    },
+    "AWS::IoTAnalytics::Datastore": {
+      "patch": {
+        "operations": [
+          {
+            "op": "add",
+            "path": "/RefKind",
+            "value": "Id"
+          }
+        ],
+        "description": "Set RefKind of AWS::IoTAnalytics::Datastore to Id"
+      }
+    },
+    "AWS::IoTAnalytics::Pipeline": {
+      "patch": {
+        "operations": [
+          {
+            "op": "add",
+            "path": "/RefKind",
+            "value": "Id"
+          }
+        ],
+        "description": "Set RefKind of AWS::IoTAnalytics::Pipeline to Id"
+      }
+    },
+    "AWS::AmazonMQ::ConfigurationAssociation": {
+      "patch": {
+        "operations": [
+          {
+            "op": "add",
+            "path": "/RefKind",
+            "value": "Id"
+          }
+        ],
+        "description": "Set RefKind of AWS::AmazonMQ::ConfigurationAssociation to Id"
+      }
+    },
+    "AWS::ApiGatewayV2::Api": {
+      "patch": {
+        "operations": [
+          {
+            "op": "add",
+            "path": "/RefKind",
+            "value": "Id"
+          }
+        ],
+        "description": "Set RefKind of AWS::ApiGatewayV2::Api to Id"
+      }
+    },
+    "AWS::ApiGatewayV2::Authorizer": {
+      "patch": {
+        "operations": [
+          {
+            "op": "add",
+            "path": "/RefKind",
+            "value": "Id"
+          }
+        ],
+        "description": "Set RefKind of AWS::ApiGatewayV2::Authorizer to Id"
+      }
+    },
+    "AWS::ApiGatewayV2::Deployment": {
+      "patch": {
+        "operations": [
+          {
+            "op": "add",
+            "path": "/RefKind",
+            "value": "Id"
+          }
+        ],
+        "description": "Set RefKind of AWS::ApiGatewayV2::Deployment to Id"
+      }
+    },
+    "AWS::ApiGatewayV2::Integration": {
+      "patch": {
+        "operations": [
+          {
+            "op": "add",
+            "path": "/RefKind",
+            "value": "Id"
+          }
+        ],
+        "description": "Set RefKind of AWS::ApiGatewayV2::Integration to Id"
+      }
+    },
+    "AWS::ApiGatewayV2::IntegrationResponse": {
+      "patch": {
+        "operations": [
+          {
+            "op": "add",
+            "path": "/RefKind",
+            "value": "Id"
+          }
+        ],
+        "description": "Set RefKind of AWS::ApiGatewayV2::IntegrationResponse to Id"
+      }
+    },
+    "AWS::ApiGatewayV2::Model": {
+      "patch": {
+        "operations": [
+          {
+            "op": "add",
+            "path": "/RefKind",
+            "value": "Id"
+          }
+        ],
+        "description": "Set RefKind of AWS::ApiGatewayV2::Model to Id"
+      }
+    },
+    "AWS::ApiGatewayV2::Route": {
+      "patch": {
+        "operations": [
+          {
+            "op": "add",
+            "path": "/RefKind",
+            "value": "Id"
+          }
+        ],
+        "description": "Set RefKind of AWS::ApiGatewayV2::Route to Id"
+      }
+    },
+    "AWS::ApiGatewayV2::RouteResponse": {
+      "patch": {
+        "operations": [
+          {
+            "op": "add",
+            "path": "/RefKind",
+            "value": "Id"
+          }
+        ],
+        "description": "Set RefKind of AWS::ApiGatewayV2::RouteResponse to Id"
+      }
+    },
+    "AWS::ApiGatewayV2::Stage": {
+      "patch": {
+        "operations": [
+          {
+            "op": "add",
+            "path": "/RefKind",
+            "value": "Name"
+          }
+        ],
+        "description": "Set RefKind of AWS::ApiGatewayV2::Stage to Name"
+      }
+    },
+    "AWS::KinesisAnalyticsV2::Application": {
+      "patch": {
+        "operations": [
+          {
+            "op": "add",
+            "path": "/RefKind",
+            "value": "None"
+          }
+        ],
+        "description": "Set RefKind of AWS::KinesisAnalyticsV2::Application to None"
+      }
+    },
+    "AWS::KinesisAnalyticsV2::ApplicationCloudWatchLoggingOption": {
+      "patch": {
+        "operations": [
+          {
+            "op": "add",
+            "path": "/RefKind",
+            "value": "None"
+          }
+        ],
+        "description": "Set RefKind of AWS::KinesisAnalyticsV2::ApplicationCloudWatchLoggingOption to None"
+      }
+    },
+    "AWS::KinesisAnalyticsV2::ApplicationOutput": {
+      "patch": {
+        "operations": [
+          {
+            "op": "add",
+            "path": "/RefKind",
+            "value": "None"
+          }
+        ],
+        "description": "Set RefKind of AWS::KinesisAnalyticsV2::ApplicationOutput to None"
+      }
+    },
+    "AWS::KinesisAnalyticsV2::ApplicationReferenceDataSource": {
+      "patch": {
+        "operations": [
+          {
+            "op": "add",
+            "path": "/RefKind",
+            "value": "None"
+          }
+        ],
+        "description": "Set RefKind of AWS::KinesisAnalyticsV2::ApplicationReferenceDataSource to None"
+      }
+    },
+    "AWS::RAM::ResourceShare": {
+      "patch": {
+        "operations": [
+          {
+            "op": "add",
+            "path": "/RefKind",
+            "value": "Arn"
+          }
+        ],
+        "description": "Set RefKind of AWS::RAM::ResourceShare to Arn"
+      }
+    },
+    "AWS::RoboMaker::Fleet": {
+      "patch": {
+        "operations": [
+          {
+            "op": "add",
+            "path": "/RefKind",
+            "value": "Arn"
+          }
+        ],
+        "description": "Set RefKind of AWS::RoboMaker::Fleet to Arn"
+      }
+    },
+    "AWS::RoboMaker::Robot": {
+      "patch": {
+        "operations": [
+          {
+            "op": "add",
+            "path": "/RefKind",
+            "value": "Arn"
+          }
+        ],
+        "description": "Set RefKind of AWS::RoboMaker::Robot to Arn"
+      }
+    },
+    "AWS::RoboMaker::RobotApplication": {
+      "patch": {
+        "operations": [
+          {
+            "op": "add",
+            "path": "/RefKind",
+            "value": "Arn"
+          }
+        ],
+        "description": "Set RefKind of AWS::RoboMaker::RobotApplication to Arn"
+      }
+    },
+    "AWS::RoboMaker::RobotApplicationVersion": {
+      "patch": {
+        "operations": [
+          {
+            "op": "add",
+            "path": "/RefKind",
+            "value": "Arn"
+          }
+        ],
+        "description": "Set RefKind of AWS::RoboMaker::RobotApplicationVersion to Arn"
+      }
+    },
+    "AWS::RoboMaker::SimulationApplication": {
+      "patch": {
+        "operations": [
+          {
+            "op": "add",
+            "path": "/RefKind",
+            "value": "Arn"
+          }
+        ],
+        "description": "Set RefKind of AWS::RoboMaker::SimulationApplication to Arn"
+      }
+    },
+    "AWS::RoboMaker::SimulationApplicationVersion": {
+      "patch": {
+        "operations": [
+          {
+            "op": "add",
+            "path": "/RefKind",
+            "value": "Arn"
+          }
+        ],
+        "description": "Set RefKind of AWS::RoboMaker::SimulationApplicationVersion to Arn"
+      }
+    },
+    "AWS::Greengrass::ConnectorDefinition": {
+      "patch": {
+        "operations": [
+          {
+            "op": "add",
+            "path": "/RefKind",
+            "value": "Id"
+          }
+        ],
+        "description": "Set RefKind of AWS::Greengrass::ConnectorDefinition to Id"
+      }
+    },
+    "AWS::Greengrass::ConnectorDefinitionVersion": {
+      "patch": {
+        "operations": [
+          {
+            "op": "add",
+            "path": "/RefKind",
+            "value": "Arn"
+          }
+        ],
+        "description": "Set RefKind of AWS::Greengrass::ConnectorDefinitionVersion to Arn"
+      }
+    },
+    "AWS::Greengrass::CoreDefinition": {
+      "patch": {
+        "operations": [
+          {
+            "op": "add",
+            "path": "/RefKind",
+            "value": "Id"
+          }
+        ],
+        "description": "Set RefKind of AWS::Greengrass::CoreDefinition to Id"
+      }
+    },
+    "AWS::Greengrass::CoreDefinitionVersion": {
+      "patch": {
+        "operations": [
+          {
+            "op": "add",
+            "path": "/RefKind",
+            "value": "Arn"
+          }
+        ],
+        "description": "Set RefKind of AWS::Greengrass::CoreDefinitionVersion to Arn"
+      }
+    },
+    "AWS::Greengrass::DeviceDefinition": {
+      "patch": {
+        "operations": [
+          {
+            "op": "add",
+            "path": "/RefKind",
+            "value": "Id"
+          }
+        ],
+        "description": "Set RefKind of AWS::Greengrass::DeviceDefinition to Id"
+      }
+    },
+    "AWS::Greengrass::DeviceDefinitionVersion": {
+      "patch": {
+        "operations": [
+          {
+            "op": "add",
+            "path": "/RefKind",
+            "value": "Arn"
+          }
+        ],
+        "description": "Set RefKind of AWS::Greengrass::DeviceDefinitionVersion to Arn"
+      }
+    },
+    "AWS::Greengrass::FunctionDefinition": {
+      "patch": {
+        "operations": [
+          {
+            "op": "add",
+            "path": "/RefKind",
+            "value": "Id"
+          }
+        ],
+        "description": "Set RefKind of AWS::Greengrass::FunctionDefinition to Id"
+      }
+    },
+    "AWS::Greengrass::FunctionDefinitionVersion": {
+      "patch": {
+        "operations": [
+          {
+            "op": "add",
+            "path": "/RefKind",
+            "value": "Arn"
+          }
+        ],
+        "description": "Set RefKind of AWS::Greengrass::FunctionDefinitionVersion to Arn"
+      }
+    },
+    "AWS::Greengrass::Group": {
+      "patch": {
+        "operations": [
+          {
+            "op": "add",
+            "path": "/RefKind",
+            "value": "Id"
+          }
+        ],
+        "description": "Set RefKind of AWS::Greengrass::Group to Id"
+      }
+    },
+    "AWS::Greengrass::GroupVersion": {
+      "patch": {
+        "operations": [
+          {
+            "op": "add",
+            "path": "/RefKind",
+            "value": "Arn"
+          }
+        ],
+        "description": "Set RefKind of AWS::Greengrass::GroupVersion to Arn"
+      }
+    },
+    "AWS::Greengrass::LoggerDefinition": {
+      "patch": {
+        "operations": [
+          {
+            "op": "add",
+            "path": "/RefKind",
+            "value": "Id"
+          }
+        ],
+        "description": "Set RefKind of AWS::Greengrass::LoggerDefinition to Id"
+      }
+    },
+    "AWS::Greengrass::LoggerDefinitionVersion": {
+      "patch": {
+        "operations": [
+          {
+            "op": "add",
+            "path": "/RefKind",
+            "value": "Arn"
+          }
+        ],
+        "description": "Set RefKind of AWS::Greengrass::LoggerDefinitionVersion to Arn"
+      }
+    },
+    "AWS::Greengrass::ResourceDefinitionVersion": {
+      "patch": {
+        "operations": [
+          {
+            "op": "add",
+            "path": "/RefKind",
+            "value": "Arn"
+          }
+        ],
+        "description": "Set RefKind of AWS::Greengrass::ResourceDefinitionVersion to Arn"
+      }
+    },
+    "AWS::Greengrass::SubscriptionDefinition": {
+      "patch": {
+        "operations": [
+          {
+            "op": "add",
+            "path": "/RefKind",
+            "value": "Id"
+          }
+        ],
+        "description": "Set RefKind of AWS::Greengrass::SubscriptionDefinition to Id"
+      }
+    },
+    "AWS::Greengrass::SubscriptionDefinitionVersion": {
+      "patch": {
+        "operations": [
+          {
+            "op": "add",
+            "path": "/RefKind",
+            "value": "Arn"
+          }
+        ],
+        "description": "Set RefKind of AWS::Greengrass::SubscriptionDefinitionVersion to Arn"
+      }
+    },
+    "AWS::AppMesh::Mesh": {
+      "patch": {
+        "operations": [
+          {
+            "op": "add",
+            "path": "/RefKind",
+            "value": "Arn"
+          }
+        ],
+        "description": "Set RefKind of AWS::AppMesh::Mesh to Arn"
+      }
+    },
+    "AWS::AppMesh::Route": {
+      "patch": {
+        "operations": [
+          {
+            "op": "add",
+            "path": "/RefKind",
+            "value": "Arn"
+          }
+        ],
+        "description": "Set RefKind of AWS::AppMesh::Route to Arn"
+      }
+    },
+    "AWS::AppMesh::VirtualNode": {
+      "patch": {
+        "operations": [
+          {
+            "op": "add",
+            "path": "/RefKind",
+            "value": "Arn"
+          }
+        ],
+        "description": "Set RefKind of AWS::AppMesh::VirtualNode to Arn"
+      }
+    },
+    "AWS::AppMesh::VirtualRouter": {
+      "patch": {
+        "operations": [
+          {
+            "op": "add",
+            "path": "/RefKind",
+            "value": "Arn"
+          }
+        ],
+        "description": "Set RefKind of AWS::AppMesh::VirtualRouter to Arn"
+      }
+    },
+    "AWS::AppMesh::VirtualService": {
+      "patch": {
+        "operations": [
+          {
+            "op": "add",
+            "path": "/RefKind",
+            "value": "Arn"
+          }
+        ],
+        "description": "Set RefKind of AWS::AppMesh::VirtualService to Arn"
+      }
+    },
+    "AWS::Greengrass::ResourceDefinition": {
+      "patch": {
+        "operations": [
+          {
+            "op": "add",
+            "path": "/RefKind",
+            "value": "Id"
+          }
+        ],
+        "description": "Set RefKind of AWS::Greengrass::ResourceDefinition to Id"
+      }
+    },
+    "AWS::ApiGatewayV2::ApiMapping": {
+      "patch": {
+        "operations": [
+          {
+            "op": "add",
+            "path": "/RefKind",
+            "value": "Id"
+          }
+        ],
+        "description": "Set RefKind of AWS::ApiGatewayV2::ApiMapping to Id"
+      }
+    },
+    "AWS::ApiGatewayV2::DomainName": {
+      "patch": {
+        "operations": [
+          {
+            "op": "add",
+            "path": "/RefKind",
+            "value": "Name"
+          }
+        ],
+        "description": "Set RefKind of AWS::ApiGatewayV2::DomainName to Name"
       }
     }
   }

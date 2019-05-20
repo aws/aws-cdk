@@ -1,8 +1,8 @@
-import { Construct, FnConcat, Token } from '@aws-cdk/cdk';
+import { Construct, Resource, Token } from '@aws-cdk/cdk';
 import { EventPattern } from './event-pattern';
-import { cloudformation } from './events.generated';
+import { CfnRule } from './events.generated';
 import { TargetInputTemplate } from './input-options';
-import { EventRuleRef } from './rule-ref';
+import { IEventRule } from './rule-ref';
 import { IEventRuleTarget } from './target';
 import { mergeEventPattern } from './util';
 
@@ -10,20 +10,20 @@ export interface EventRuleProps {
   /**
    * A description of the rule's purpose.
    */
-  description?: string;
+  readonly description?: string;
 
   /**
    * A name for the rule. If you don't specify a name, AWS CloudFormation
    * generates a unique physical ID and uses that ID for the rule name. For
    * more information, see Name Type.
    */
-  ruleName?: string;
+  readonly ruleName?: string;
 
   /**
    * Indicates whether the rule is enabled.
    * @default Rule is enabled
    */
-  enabled?: boolean;
+  readonly enabled?: boolean;
 
   /**
    * The schedule or rate (frequency) that determines when CloudWatch Events
@@ -34,7 +34,7 @@ export interface EventRuleProps {
    *
    * You must specify this property, the `eventPattern` property, or both.
    */
-  scheduleExpression?: string;
+  readonly scheduleExpression?: string;
 
   /**
    * Describes which events CloudWatch Events routes to the specified target.
@@ -49,7 +49,7 @@ export interface EventRuleProps {
    * method `addEventPattern` can be used to add filter values to the event
    * pattern.
    */
-  eventPattern?: EventPattern;
+  readonly eventPattern?: EventPattern;
 
   /**
    * Targets to invoke when this rule matches an event.
@@ -57,27 +57,37 @@ export interface EventRuleProps {
    * Input will be the full matched event. If you wish to specify custom
    * target input, use `addTarget(target[, inputOptions])`.
    */
-  targets?: IEventRuleTarget[];
+  readonly targets?: IEventRuleTarget[];
 }
 
 /**
  * Defines a CloudWatch Event Rule in this stack.
+ *
+ * @resource AWS::Events::Rule
  */
-export class EventRule extends EventRuleRef {
+export class EventRule extends Resource implements IEventRule {
+
+  public static fromEventRuleArn(scope: Construct, id: string, eventRuleArn: string): IEventRule {
+    class Import extends Resource implements IEventRule {
+      public ruleArn = eventRuleArn;
+    }
+    return new Import(scope, id);
+  }
+
   public readonly ruleArn: string;
 
-  private readonly targets = new Array<cloudformation.RuleResource.TargetProperty>();
+  private readonly targets = new Array<CfnRule.TargetProperty>();
   private readonly eventPattern: EventPattern = { };
   private scheduleExpression?: string;
 
-  constructor(parent: Construct, name: string, props: EventRuleProps = { }) {
-    super(parent, name);
+  constructor(scope: Construct, id: string, props: EventRuleProps = { }) {
+    super(scope, id);
 
-    const resource = new cloudformation.RuleResource(this, 'Resource', {
+    const resource = new CfnRule(this, 'Resource', {
       name: props.ruleName,
       description: props.description,
       state: props.enabled == null ? 'ENABLED' : (props.enabled ? 'ENABLED' : 'DISABLED'),
-      scheduleExpression: new Token(() => this.scheduleExpression),
+      scheduleExpression: new Token(() => this.scheduleExpression).toString(),
       eventPattern: new Token(() => this.renderEventPattern()),
       targets: new Token(() => this.renderTargets())
     });
@@ -100,8 +110,9 @@ export class EventRule extends EventRuleRef {
    */
   public addTarget(target?: IEventRuleTarget, inputOptions?: TargetInputTemplate) {
     if (!target) { return; }
+    const self = this;
 
-    const targetProps = target.asEventRuleTarget(this.ruleArn, this.uniqueId);
+    const targetProps = target.asEventRuleTarget(this.ruleArn, this.node.uniqueId);
 
     // check if a target with this ID already exists
     if (this.targets.find(t => t.id === targetProps.id)) {
@@ -113,7 +124,7 @@ export class EventRule extends EventRuleRef {
       inputTransformer: renderTransformer(),
     });
 
-    function renderTransformer(): cloudformation.RuleResource.InputTransformerProperty | undefined {
+    function renderTransformer(): CfnRule.InputTransformerProperty | undefined {
       if (!inputOptions) {
         return undefined;
       }
@@ -129,11 +140,15 @@ export class EventRule extends EventRuleRef {
       let inputTemplate: any;
 
       if (inputOptions.jsonTemplate) {
-        inputTemplate = inputOptions.jsonTemplate;
-      } else if (typeof(inputOptions.textTemplate) === 'string') {
-        inputTemplate = JSON.stringify(inputOptions.textTemplate);
+        inputTemplate = typeof inputOptions.jsonTemplate === 'string'
+            ? inputOptions.jsonTemplate
+            : self.node.stringifyJson(inputOptions.jsonTemplate);
       } else {
-        inputTemplate = new FnConcat('"', inputOptions.textTemplate, '"');
+        inputTemplate = typeof(inputOptions.textTemplate) === 'string'
+            // Newline separated list of JSON-encoded strings
+            ? inputOptions.textTemplate.split('\n').map(x => self.node.stringifyJson(x)).join('\n')
+            // Some object, stringify it, then stringify the string for proper escaping
+            : self.node.stringifyJson(self.node.stringifyJson(inputOptions.textTemplate));
       }
 
       return {
@@ -183,7 +198,7 @@ export class EventRule extends EventRuleRef {
     mergeEventPattern(this.eventPattern, eventPattern);
   }
 
-  public validate() {
+  protected validate() {
     if (Object.keys(this.eventPattern).length === 0 && !this.scheduleExpression) {
       return [ `Either 'eventPattern' or 'scheduleExpression' must be defined` ];
     }

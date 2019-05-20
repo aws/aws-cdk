@@ -1,5 +1,6 @@
 import cdk = require('@aws-cdk/cdk');
 import { Integration, IntegrationOptions, IntegrationType } from '../integration';
+import { Method } from '../method';
 import { parseAwsApiCall } from '../util';
 
 export interface AwsIntegrationProps {
@@ -8,18 +9,18 @@ export interface AwsIntegrationProps {
    *
    * @default false
    */
-  proxy?: boolean;
+  readonly proxy?: boolean;
 
   /**
    * The name of the integrated AWS service (e.g. `s3`)
    */
-  service: string;
+  readonly service: string;
 
   /**
    * A designated subdomain supported by certain AWS service for fast
    * host-name lookup.
    */
-  subdomain?: string;
+  readonly subdomain?: string;
 
   /**
    * The path to use for path-base APIs.
@@ -29,7 +30,7 @@ export interface AwsIntegrationProps {
    *
    * Mutually exclusive with the `action` options.
    */
-  path?: string;
+  readonly path?: string;
 
   /**
    * The AWS action to perform in the integration.
@@ -38,7 +39,7 @@ export interface AwsIntegrationProps {
    *
    * Mutually exclusive with `path`.
    */
-  action?: string;
+  readonly action?: string;
 
   /**
    * Parameters for the action.
@@ -46,12 +47,19 @@ export interface AwsIntegrationProps {
    * `action` must be set, and `path` must be undefined.
    * The action params will be URL encoded.
    */
-  actionParameters?: { [key: string]: string };
+  readonly actionParameters?: { [key: string]: string };
+
+  /**
+   * The integration's HTTP method type.
+   *
+   * @default POST
+   */
+  readonly integrationHttpMethod?: string;
 
   /**
    * Integration options, such as content handling, request/response mapping, etc.
    */
-  options?: IntegrationOptions
+  readonly options?: IntegrationOptions
 }
 
 /**
@@ -61,21 +69,30 @@ export interface AwsIntegrationProps {
  * technology.
  */
 export class AwsIntegration extends Integration {
+  private scope?: cdk.IConstruct;
+
   constructor(props: AwsIntegrationProps) {
     const backend = props.subdomain ? `${props.subdomain}.${props.service}` : props.service;
     const type = props.proxy ? IntegrationType.AwsProxy : IntegrationType.Aws;
     const { apiType, apiValue } = parseAwsApiCall(props.path, props.action, props.actionParameters);
     super({
       type,
-      integrationHttpMethod: 'POST',
-      uri: cdk.ArnUtils.fromComponents({
-        service: 'apigateway',
-        account: backend,
-        resource: apiType,
-        sep: '/',
-        resourceName: apiValue,
+      integrationHttpMethod: props.integrationHttpMethod || 'POST',
+      uri: new cdk.Token(() => {
+        if (!this.scope) { throw new Error('AwsIntegration must be used in API'); }
+        return this.scope.node.stack.formatArn({
+          service: 'apigateway',
+          account: backend,
+          resource: apiType,
+          sep: '/',
+          resourceName: apiValue,
+        });
       }),
       options: props.options,
     });
+  }
+
+  public bind(method: Method) {
+    this.scope = method;
   }
 }

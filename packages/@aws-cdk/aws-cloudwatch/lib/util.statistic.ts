@@ -47,3 +47,14 @@ export function parseStatistic(stat: string): SimpleStatistic | PercentileStatis
 
   throw new Error(`Not a valid statistic: '${stat}', must be one of Average | Minimum | Maximum | SampleCount | Sum | pNN.NN`);
 }
+
+export function normalizeStatistic(stat: string): string {
+  const parsed = parseStatistic(stat);
+  if (parsed.type === 'simple') {
+    return parsed.statistic;
+  } else {
+    // Already percentile. Avoid parsing because we might get into
+    // floating point rounding issues, return as-is but lowercase the p.
+    return stat.toLowerCase();
+  }
+}

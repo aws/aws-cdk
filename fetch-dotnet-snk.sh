@@ -11,7 +11,7 @@ function echo_usage() {
     echo -e "\tDOTNET_STRONG_NAME_SECRET_ID=<The name (i.e. production/my/key) or ARN of the secret containing the .snk file.>"
 }
 
-if [ -z ${DOTNET_STRONG_NAME_ENABLED:-} ]; then
+if [ -z "${DOTNET_STRONG_NAME_ENABLED:-}" ]; then
     echo "Environment variable DOTNET_STRONG_NAME_ENABLED is not set. Skipping strong-name signing."
     exit 0
 fi
@@ -21,19 +21,19 @@ echo "Retrieving SNK..."
 apt update -y
 apt install jq -y
 
-if [ -z ${DOTNET_STRONG_NAME_ROLE_ARN:-} ]; then
+if [ -z "${DOTNET_STRONG_NAME_ROLE_ARN:-}" ]; then
     echo "Strong name signing is enabled, but DOTNET_STRONG_NAME_ROLE_ARN is not set."
     echo_usage
     exit 1
 fi
 
-if [ -z ${DOTNET_STRONG_NAME_SECRET_REGION:-}]; then
+if [ -z "${DOTNET_STRONG_NAME_SECRET_REGION:-}" ]; then
     echo "Strong name signing is enabled, but DOTNET_STRONG_NAME_SECRET_REGION is not set."
     echo_usage
     exit 1
 fi
 
-if [ -z ${DOTNET_STRONG_NAME_SECRET_ID:-} ]; then
+if [ -z "${DOTNET_STRONG_NAME_SECRET_ID:-}" ]; then
     echo "Strong name signing is enabled, but DOTNET_STRONG_NAME_SECRET_ID is not set."
     echo_usage
     exit 1
@@ -51,7 +51,7 @@ echo $SNK_SECRET | jq -r .SecretBinary | base64 --decode > $TMP_KEY
 
 for PACKAGE_PATH in packages/@aws-cdk/*; do
     JSII_PROPERTY=$(cat "$PACKAGE_PATH/package.json" | jq -r .jsii)
-    if [ -z $JSII_PROPERTY ]; then
+    if [ -z "${JSII_PROPERTY}" ]; then
         continue
     fi
 

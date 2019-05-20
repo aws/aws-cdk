@@ -4,17 +4,19 @@ import path = require('path');
 import s3deploy = require('../lib');
 
 class TestBucketDeployment extends cdk.Stack {
-  constructor(parent: cdk.App, id: string) {
-    super(parent, id);
+  constructor(scope: cdk.App, id: string) {
+    super(scope, id);
 
     const destinationBucket = new s3.Bucket(this, 'Destination', {
       websiteIndexDocument: 'index.html',
       publicReadAccess: true,
+      removalPolicy: cdk.RemovalPolicy.Destroy
     });
 
     new s3deploy.BucketDeployment(this, 'DeployMe', {
       source: s3deploy.Source.asset(path.join(__dirname, 'my-website')),
       destinationBucket,
+      retainOnDelete: false, // default is true, which will block the integration test cleanup
     });
 
     const bucket2 = new s3.Bucket(this, 'Destination2');
@@ -23,7 +25,7 @@ class TestBucketDeployment extends cdk.Stack {
       source: s3deploy.Source.asset(path.join(__dirname, 'my-website')),
       destinationBucket: bucket2,
       destinationKeyPrefix: 'deploy/here/',
-      retainOnDelete: false, // this is the default
+      retainOnDelete: false, // default is true, which will block the integration test cleanup
     });
   }
 }

@@ -7,26 +7,10 @@
   "Outputs": {
     "BucketURL": {
       "Value": {
-        "Fn::Join": [
-          "",
-          [
-            "https://s3.",
-            {
-              "Ref": "AWS::Region"
-            },
-            ".",
-            {
-              "Ref": "AWS::URLSuffix"
-            },
-            "/",
-            {
-              "Ref": "MyBucketF68F3FF0"
-            }
-          ]
+        "Fn::GetAtt": [
+          "MyBucketF68F3FF0",
+          "WebsiteURL"
         ]
-      },
-      "Export": {
-        "Name": "aws-cdk-s3-urls:BucketURL"
       }
     },
     "ObjectURL": {
@@ -49,9 +33,6 @@
             "/myfolder/myfile.txt"
           ]
         ]
-      },
-      "Export": {
-        "Name": "aws-cdk-s3-urls:ObjectURL"
       }
     }
   }

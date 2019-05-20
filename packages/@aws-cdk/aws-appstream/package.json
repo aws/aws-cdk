@@ -1,0 +1,76 @@
+{
+  "name": "@aws-cdk/aws-appstream",
+  "version": "0.31.0",
+  "description": "The CDK Construct Library for AWS::AppStream",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "jsii": {
+    "outdir": "dist",
+    "targets": {
+      "dotnet": {
+        "namespace": "Amazon.CDK.AWS.AppStream",
+        "packageId": "Amazon.CDK.AWS.AppStream",
+        "signAssembly": true,
+        "assemblyOriginatorKeyFile": "../../key.snk"
+      },
+      "java": {
+        "package": "software.amazon.awscdk.services.appstream",
+        "maven": {
+          "groupId": "software.amazon.awscdk",
+          "artifactId": "appstream"
+        }
+      },
+      "python": {
+        "distName": "aws-cdk.aws-appstream",
+        "module": "aws_cdk.aws_appstream"
+      }
+    }
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/awslabs/aws-cdk.git",
+    "directory": "packages/@aws-cdk/aws-appstream"
+  },
+  "homepage": "https://github.com/awslabs/aws-cdk",
+  "scripts": {
+    "build": "cdk-build",
+    "integ": "cdk-integ",
+    "lint": "cdk-lint",
+    "package": "cdk-package",
+    "pkglint": "pkglint -f",
+    "test": "cdk-test",
+    "watch": "cdk-watch",
+    "awslint": "cdk-awslint",
+    "cfn2ts": "cfn2ts"
+  },
+  "cdk-build": {
+    "cloudformation": "AWS::AppStream"
+  },
+  "keywords": [
+    "aws",
+    "cdk",
+    "constructs",
+    "aws-appstream"
+  ],
+  "author": {
+    "name": "Amazon Web Services",
+    "url": "https://aws.amazon.com",
+    "organization": true
+  },
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "@aws-cdk/assert": "^0.31.0",
+    "cdk-build-tools": "^0.31.0",
+    "cfn2ts": "^0.31.0",
+    "pkglint": "^0.31.0"
+  },
+  "dependencies": {
+    "@aws-cdk/cdk": "^0.31.0"
+  },
+  "peerDependencies": {
+    "@aws-cdk/cdk": "^0.31.0"
+  },
+  "engines": {
+    "node": ">= 8.10.0"
+  }
+}

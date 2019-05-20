@@ -10,7 +10,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "aws-cdk-ec2-integ/VPC"
+            "Value": "aws-cdk-asg-integ/VPC"
           }
         ]
       }
@@ -27,7 +27,15 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "aws-cdk-ec2-integ/VPC/PublicSubnet1"
+            "Value": "aws-cdk-asg-integ/VPC/PublicSubnet1"
+          },
+          {
+            "Key": "aws-cdk:subnet-name",
+            "Value": "Public"
+          },
+          {
+            "Key": "aws-cdk:subnet-type",
+            "Value": "Public"
           }
         ]
       }
@@ -41,7 +49,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "aws-cdk-ec2-integ/VPC/PublicSubnet1"
+            "Value": "aws-cdk-asg-integ/VPC/PublicSubnet1"
           }
         ]
       }
@@ -56,6 +64,21 @@
           "Ref": "VPCPublicSubnet1SubnetB4246D30"
         }
       }
+    },
+    "VPCPublicSubnet1DefaultRoute91CEF279": {
+      "Type": "AWS::EC2::Route",
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "VPCPublicSubnet1RouteTableFEE4B781"
+        },
+        "DestinationCidrBlock": "0.0.0.0/0",
+        "GatewayId": {
+          "Ref": "VPCIGWB7E252D3"
+        }
+      },
+      "DependsOn": [
+        "VPCVPCGW99B986DC"
+      ]
     },
     "VPCPublicSubnet1EIP6AD938E8": {
       "Type": "AWS::EC2::EIP",
@@ -78,21 +101,9 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "aws-cdk-ec2-integ/VPC/PublicSubnet1"
+            "Value": "aws-cdk-asg-integ/VPC/PublicSubnet1"
           }
         ]
-      }
-    },
-    "VPCPublicSubnet1DefaultRoute91CEF279": {
-      "Type": "AWS::EC2::Route",
-      "Properties": {
-        "RouteTableId": {
-          "Ref": "VPCPublicSubnet1RouteTableFEE4B781"
-        },
-        "DestinationCidrBlock": "0.0.0.0/0",
-        "GatewayId": {
-          "Ref": "VPCIGWB7E252D3"
-        }
       }
     },
     "VPCPublicSubnet2Subnet74179F39": {
@@ -107,7 +118,15 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "aws-cdk-ec2-integ/VPC/PublicSubnet2"
+            "Value": "aws-cdk-asg-integ/VPC/PublicSubnet2"
+          },
+          {
+            "Key": "aws-cdk:subnet-name",
+            "Value": "Public"
+          },
+          {
+            "Key": "aws-cdk:subnet-type",
+            "Value": "Public"
           }
         ]
       }
@@ -121,7 +140,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "aws-cdk-ec2-integ/VPC/PublicSubnet2"
+            "Value": "aws-cdk-asg-integ/VPC/PublicSubnet2"
           }
         ]
       }
@@ -136,6 +155,21 @@
           "Ref": "VPCPublicSubnet2Subnet74179F39"
         }
       }
+    },
+    "VPCPublicSubnet2DefaultRouteB7481BBA": {
+      "Type": "AWS::EC2::Route",
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "VPCPublicSubnet2RouteTable6F1A15F1"
+        },
+        "DestinationCidrBlock": "0.0.0.0/0",
+        "GatewayId": {
+          "Ref": "VPCIGWB7E252D3"
+        }
+      },
+      "DependsOn": [
+        "VPCVPCGW99B986DC"
+      ]
     },
     "VPCPublicSubnet2EIP4947BC00": {
       "Type": "AWS::EC2::EIP",
@@ -158,21 +192,9 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "aws-cdk-ec2-integ/VPC/PublicSubnet2"
+            "Value": "aws-cdk-asg-integ/VPC/PublicSubnet2"
           }
         ]
-      }
-    },
-    "VPCPublicSubnet2DefaultRouteB7481BBA": {
-      "Type": "AWS::EC2::Route",
-      "Properties": {
-        "RouteTableId": {
-          "Ref": "VPCPublicSubnet2RouteTable6F1A15F1"
-        },
-        "DestinationCidrBlock": "0.0.0.0/0",
-        "GatewayId": {
-          "Ref": "VPCIGWB7E252D3"
-        }
       }
     },
     "VPCPublicSubnet3Subnet631C5E25": {
@@ -187,7 +209,15 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "aws-cdk-ec2-integ/VPC/PublicSubnet3"
+            "Value": "aws-cdk-asg-integ/VPC/PublicSubnet3"
+          },
+          {
+            "Key": "aws-cdk:subnet-name",
+            "Value": "Public"
+          },
+          {
+            "Key": "aws-cdk:subnet-type",
+            "Value": "Public"
           }
         ]
       }
@@ -201,7 +231,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "aws-cdk-ec2-integ/VPC/PublicSubnet3"
+            "Value": "aws-cdk-asg-integ/VPC/PublicSubnet3"
           }
         ]
       }
@@ -216,6 +246,21 @@
           "Ref": "VPCPublicSubnet3Subnet631C5E25"
         }
       }
+    },
+    "VPCPublicSubnet3DefaultRouteA0D29D46": {
+      "Type": "AWS::EC2::Route",
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "VPCPublicSubnet3RouteTable98AE0E14"
+        },
+        "DestinationCidrBlock": "0.0.0.0/0",
+        "GatewayId": {
+          "Ref": "VPCIGWB7E252D3"
+        }
+      },
+      "DependsOn": [
+        "VPCVPCGW99B986DC"
+      ]
     },
     "VPCPublicSubnet3EIPAD4BC883": {
       "Type": "AWS::EC2::EIP",
@@ -238,21 +283,9 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "aws-cdk-ec2-integ/VPC/PublicSubnet3"
+            "Value": "aws-cdk-asg-integ/VPC/PublicSubnet3"
           }
         ]
-      }
-    },
-    "VPCPublicSubnet3DefaultRouteA0D29D46": {
-      "Type": "AWS::EC2::Route",
-      "Properties": {
-        "RouteTableId": {
-          "Ref": "VPCPublicSubnet3RouteTable98AE0E14"
-        },
-        "DestinationCidrBlock": "0.0.0.0/0",
-        "GatewayId": {
-          "Ref": "VPCIGWB7E252D3"
-        }
       }
     },
     "VPCPrivateSubnet1Subnet8BCA10E0": {
@@ -267,7 +300,15 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "aws-cdk-ec2-integ/VPC/PrivateSubnet1"
+            "Value": "aws-cdk-asg-integ/VPC/PrivateSubnet1"
+          },
+          {
+            "Key": "aws-cdk:subnet-name",
+            "Value": "Private"
+          },
+          {
+            "Key": "aws-cdk:subnet-type",
+            "Value": "Private"
           }
         ]
       }
@@ -281,7 +322,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "aws-cdk-ec2-integ/VPC/PrivateSubnet1"
+            "Value": "aws-cdk-asg-integ/VPC/PrivateSubnet1"
           }
         ]
       }
@@ -321,7 +362,15 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "aws-cdk-ec2-integ/VPC/PrivateSubnet2"
+            "Value": "aws-cdk-asg-integ/VPC/PrivateSubnet2"
+          },
+          {
+            "Key": "aws-cdk:subnet-name",
+            "Value": "Private"
+          },
+          {
+            "Key": "aws-cdk:subnet-type",
+            "Value": "Private"
           }
         ]
       }
@@ -335,7 +384,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "aws-cdk-ec2-integ/VPC/PrivateSubnet2"
+            "Value": "aws-cdk-asg-integ/VPC/PrivateSubnet2"
           }
         ]
       }
@@ -375,7 +424,15 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "aws-cdk-ec2-integ/VPC/PrivateSubnet3"
+            "Value": "aws-cdk-asg-integ/VPC/PrivateSubnet3"
+          },
+          {
+            "Key": "aws-cdk:subnet-name",
+            "Value": "Private"
+          },
+          {
+            "Key": "aws-cdk:subnet-type",
+            "Value": "Private"
           }
         ]
       }
@@ -389,7 +446,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "aws-cdk-ec2-integ/VPC/PrivateSubnet3"
+            "Value": "aws-cdk-asg-integ/VPC/PrivateSubnet3"
           }
         ]
       }
@@ -423,7 +480,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "aws-cdk-ec2-integ/VPC"
+            "Value": "aws-cdk-asg-integ/VPC"
           }
         ]
       }
@@ -442,21 +499,19 @@
     "FleetInstanceSecurityGroupA8C3D7AD": {
       "Type": "AWS::EC2::SecurityGroup",
       "Properties": {
-        "GroupDescription": "aws-cdk-ec2-integ/Fleet/InstanceSecurityGroup",
+        "GroupDescription": "aws-cdk-asg-integ/Fleet/InstanceSecurityGroup",
         "SecurityGroupEgress": [
           {
             "CidrIp": "0.0.0.0/0",
-            "Description": "Outbound traffic allowed by default",
-            "FromPort": -1,
-            "IpProtocol": "-1",
-            "ToPort": -1
+            "Description": "Allow all outbound traffic by default",
+            "IpProtocol": "-1"
           }
         ],
         "SecurityGroupIngress": [],
         "Tags": [
           {
             "Key": "Name",
-            "Value": "aws-cdk-ec2-integ/Fleet"
+            "Value": "aws-cdk-asg-integ/Fleet"
           }
         ],
         "VpcId": {
@@ -464,7 +519,7 @@
         }
       }
     },
-    "FleetInstanceSecurityGroupfromawscdkec2integLBSecurityGroupDEF4F99A8025E910CB": {
+    "FleetInstanceSecurityGroupfromawscdkasgintegLBSecurityGroup33FBF9CC8076F0C574": {
       "Type": "AWS::EC2::SecurityGroupIngress",
       "Properties": {
         "IpProtocol": "tcp",
@@ -494,7 +549,17 @@
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": {
-                "Service": "ec2.amazonaws.com"
+                "Service": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "ec2.",
+                      {
+                        "Ref": "AWS::URLSuffix"
+                      }
+                    ]
+                  ]
+                }
               }
             }
           ],
@@ -554,7 +619,7 @@
           {
             "Key": "Name",
             "PropagateAtLaunch": true,
-            "Value": "aws-cdk-ec2-integ/Fleet"
+            "Value": "aws-cdk-asg-integ/Fleet"
           }
         ],
         "VPCZoneIdentifier": [
@@ -578,7 +643,7 @@
     "LBSecurityGroup8A41EA2B": {
       "Type": "AWS::EC2::SecurityGroup",
       "Properties": {
-        "GroupDescription": "aws-cdk-ec2-integ/LB/SecurityGroup",
+        "GroupDescription": "aws-cdk-asg-integ/LB/SecurityGroup",
         "SecurityGroupEgress": [],
         "SecurityGroupIngress": [
           {
@@ -594,7 +659,7 @@
         }
       }
     },
-    "LBSecurityGrouptoawscdkec2integFleetInstanceSecurityGroupB03BE84D80B371C596": {
+    "LBSecurityGrouptoawscdkasgintegFleetInstanceSecurityGroup3CA66C0C808D3B5C07": {
       "Type": "AWS::EC2::SecurityGroupEgress",
       "Properties": {
         "GroupId": {
@@ -653,7 +718,12 @@
             "Ref": "VPCPublicSubnet3Subnet631C5E25"
           }
         ]
-      }
+      },
+      "DependsOn": [
+        "VPCPublicSubnet1DefaultRoute91CEF279",
+        "VPCPublicSubnet2DefaultRouteB7481BBA",
+        "VPCPublicSubnet3DefaultRouteA0D29D46"
+      ]
     }
   }
 }

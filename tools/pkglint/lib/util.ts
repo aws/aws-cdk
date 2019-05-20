@@ -5,11 +5,12 @@ import { PackageJson } from "./packagejson";
 /**
  * Expect a particular JSON key to be a given value
  */
-export function expectJSON(pkg: PackageJson, jsonPath: string, expected: any, ignore?: RegExp, caseInsensitive: boolean = false) {
+export function expectJSON(ruleName: string, pkg: PackageJson, jsonPath: string, expected: any, ignore?: RegExp, caseInsensitive: boolean = false) {
   const parts = jsonPath.split('.');
   const actual = deepGet(pkg.json, parts);
   if (applyCaseInsensitive(applyIgnore(actual)) !== applyCaseInsensitive(applyIgnore(expected))) {
     pkg.report({
+      ruleName,
       message: `${jsonPath} should be ${JSON.stringify(expected)}${ignore ? ` (ignoring ${ignore})` : ''}, is ${JSON.stringify(actual)}`,
       fix: () => { deepSet(pkg.json, parts, expected); }
     });
@@ -31,11 +32,12 @@ export function expectJSON(pkg: PackageJson, jsonPath: string, expected: any, ig
 /**
  * Export a package-level file to contain a given line
  */
-export function fileShouldContain(pkg: PackageJson, fileName: string, ...lines: string[]) {
+export function fileShouldContain(ruleName: string, pkg: PackageJson, fileName: string, ...lines: string[]) {
   for (const line of lines) {
     const doesContain = pkg.fileContainsSync(fileName, line);
     if (!doesContain) {
       pkg.report({
+        ruleName,
         message: `${fileName} should contain '${line}'`,
         fix: () => pkg.addToFileSync(fileName, line)
       });
@@ -46,10 +48,11 @@ export function fileShouldContain(pkg: PackageJson, fileName: string, ...lines: 
 /**
  * Export a package-level file to contain specific content
  */
-export function fileShouldBe(pkg: PackageJson, fileName: string, content: string) {
+export function fileShouldBe(ruleName: string, pkg: PackageJson, fileName: string, content: string) {
   const isContent = pkg.fileIsSync(fileName, content);
   if (!isContent) {
     pkg.report({
+      ruleName,
       message: `${fileName} should contain exactly '${content}'`,
       fix: () => pkg.writeFileSync(fileName, content)
     });
@@ -59,10 +62,11 @@ export function fileShouldBe(pkg: PackageJson, fileName: string, content: string
 /**
  * Enforce a dev dependency
  */
-export function expectDevDependency(pkg: PackageJson, packageName: string, version: string) {
+export function expectDevDependency(ruleName: string, pkg: PackageJson, packageName: string, version: string) {
   const actualVersion = pkg.getDevDependency(packageName);
   if (version !== actualVersion) {
     pkg.report({
+      ruleName,
       message: `Missing devDependency: ${packageName} @ ${version}`,
       fix: () => pkg.addDevDependency(packageName, version)
     });
@@ -129,19 +133,41 @@ export function monoRepoVersion() {
   return lernaJson.version;
 }
 
-function findLernaJSON() {
-  let dir = process.cwd();
+export function findUpward(dir: string, pred: (x: string) => boolean): string | undefined {
   while (true) {
-    const fullPath = path.join(dir, 'lerna.json');
-    if (fs.existsSync(fullPath)) {
-      return fullPath;
-    }
+    if (pred(dir)) { return dir; }
 
     const parent = path.dirname(dir);
     if (parent === dir) {
-      throw new Error('Could not find lerna.json');
+      return undefined;
     }
 
     dir = parent;
+  }
+}
+
+export function monoRepoRoot() {
+  const ret = findUpward(process.cwd(), d => fs.existsSync(path.join(d, 'lerna.json')));
+  if (!ret) {
+    throw new Error('Could not find lerna.json');
+  }
+  return ret;
+}
+
+function findLernaJSON() {
+  return path.join(monoRepoRoot(), 'lerna.json');
+}
+
+export function* findInnerPackages(dir: string): IterableIterator<string> {
+  for (const fname of fs.readdirSync(dir, { encoding: 'utf8' })) {
+    const stat = fs.statSync(path.join(dir, fname));
+    if (!stat.isDirectory()) { continue; }
+    if (fname === 'node_modules') { continue; }
+
+    if (fs.existsSync(path.join(dir, fname, 'package.json'))) {
+      yield path.join(dir, fname);
+    }
+
+    yield* findInnerPackages(path.join(dir, fname));
   }
 }

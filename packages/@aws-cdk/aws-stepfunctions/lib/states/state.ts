@@ -12,7 +12,7 @@ export interface StateProps {
      *
      * @default No comment
      */
-    comment?: string;
+    readonly comment?: string;
 
     /**
      * JSONPath expression to select part of the state to be the input to this state.
@@ -22,7 +22,17 @@ export interface StateProps {
      *
      * @default $
      */
-    inputPath?: string;
+    readonly inputPath?: string;
+
+    /**
+     * Parameters pass a collection of key-value pairs, either static values or JSONPath expressions that select from the input.
+     *
+     * @see
+     * https://docs.aws.amazon.com/step-functions/latest/dg/input-output-inputpath-params.html#input-output-parameters
+     *
+     * @default No parameters
+     */
+    readonly parameters?: { [name: string]: any };
 
     /**
      * JSONPath expression to select part of the state to be the output to this state.
@@ -32,7 +42,7 @@ export interface StateProps {
      *
      * @default $
      */
-    outputPath?: string;
+    readonly outputPath?: string;
 
     /**
      * JSONPath expression to indicate where to inject the state's output
@@ -42,7 +52,7 @@ export interface StateProps {
      *
      * @default $
      */
-    resultPath?: string;
+    readonly resultPath?: string;
 }
 
 /**
@@ -52,14 +62,14 @@ export abstract class State extends cdk.Construct implements IChainable {
     /**
      * Add a prefix to the stateId of all States found in a construct tree
      */
-    public static prefixStates(root: cdk.Construct, prefix: string) {
+    public static prefixStates(root: cdk.IConstruct, prefix: string) {
         const queue = [root];
         while (queue.length > 0) {
             const el = queue.splice(0, 1)[0]!;
             if (isPrefixable(el)) {
                 el.addPrefix(prefix);
             }
-            queue.push(...el.children);
+            queue.push(...el.node.children);
         }
     }
 
@@ -112,10 +122,15 @@ export abstract class State extends cdk.Construct implements IChainable {
     // pragmatic!
     protected readonly comment?: string;
     protected readonly inputPath?: string;
+    protected readonly parameters?: object;
     protected readonly outputPath?: string;
     protected readonly resultPath?: string;
     protected readonly branches: StateGraph[] = [];
     protected defaultChoice?: State;
+
+    /**
+     * @internal
+     */
     protected _next?: State;
 
     private readonly retries: RetryProps[] = [];
@@ -137,15 +152,20 @@ export abstract class State extends cdk.Construct implements IChainable {
      */
     private readonly incomingStates: State[] = [];
 
-    constructor(parent: cdk.Construct, id: string, props: StateProps) {
-        super(parent, id);
+    constructor(scope: cdk.Construct, id: string, props: StateProps) {
+        super(scope, id);
 
         this.startState = this;
 
         this.comment = props.comment;
         this.inputPath = props.inputPath;
+        this.parameters = props.parameters;
         this.outputPath = props.outputPath;
         this.resultPath = props.resultPath;
+    }
+
+    public get id() {
+        return this.node.id;
     }
 
     /**
@@ -199,6 +219,7 @@ export abstract class State extends cdk.Construct implements IChainable {
 
     /**
      * Add a retrier to the retry list of this state
+     * @internal
      */
     protected _addRetry(props: RetryProps = {}) {
         this.retries.push({
@@ -209,6 +230,7 @@ export abstract class State extends cdk.Construct implements IChainable {
 
     /**
      * Add an error handler to the catch list of this state
+     * @internal
      */
     protected _addCatch(handler: State, props: CatchProps = {}) {
         this.catches.push({
@@ -293,11 +315,12 @@ export abstract class State extends cdk.Construct implements IChainable {
     }
 
     /**
-     * Render InputPath/OutputPath in ASL JSON format
+     * Render InputPath/Parameters/OutputPath in ASL JSON format
      */
     protected renderInputOutput(): any {
         return {
             InputPath: renderJsonPath(this.inputPath),
+            Parameters: this.parameters,
             OutputPath: renderJsonPath(this.outputPath),
         };
     }
@@ -365,7 +388,7 @@ export interface FindStateOptions {
      *
      * @default false
      */
-    includeErrorHandlers?: boolean;
+    readonly includeErrorHandlers?: boolean;
 }
 
 /**

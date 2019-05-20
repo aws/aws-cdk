@@ -1,9 +1,13 @@
 import ec2 = require('@aws-cdk/aws-ec2');
-import cdk = require('@aws-cdk/cdk');
-import { ClusterParameterGroupRef } from './cluster-parameter-group-ref';
-import { DatabaseClusterRef, Endpoint } from './cluster-ref';
+import kms = require('@aws-cdk/aws-kms');
+import secretsmanager = require('@aws-cdk/aws-secretsmanager');
+import { Construct, DeletionPolicy, Resource, Token } from '@aws-cdk/cdk';
+import { IClusterParameterGroup } from './cluster-parameter-group';
+import { DatabaseClusterAttributes, Endpoint, IDatabaseCluster } from './cluster-ref';
+import { DatabaseSecret } from './database-secret';
 import { BackupProps, DatabaseClusterEngine, InstanceProps, Login } from './props';
-import { cloudformation } from './rds.generated';
+import { CfnDBCluster, CfnDBInstance, CfnDBSubnetGroup } from './rds.generated';
+import { DatabaseEngine, RotationSingleUser, RotationSingleUserOptions } from './rotation-single-user';
 
 /**
  * Properties for a new database cluster
@@ -12,7 +16,7 @@ export interface DatabaseClusterProps {
   /**
    * What kind of database to start
    */
-  engine: DatabaseClusterEngine;
+  readonly engine: DatabaseClusterEngine;
 
   /**
    * How many replicas/instances to create
@@ -21,36 +25,36 @@ export interface DatabaseClusterProps {
    *
    * @default 2
    */
-  instances?: number;
+  readonly instances?: number;
 
   /**
    * Settings for the individual instances that are launched
    */
-  instanceProps: InstanceProps;
+  readonly instanceProps: InstanceProps;
 
   /**
    * Username and password for the administrative user
    */
-  masterUser: Login;
+  readonly masterUser: Login;
 
   /**
    * Backup settings
    */
-  backup?: BackupProps;
+  readonly backup?: BackupProps;
 
   /**
    * What port to listen on
    *
    * If not supplied, the default for the engine is used.
    */
-  port?: number;
+  readonly port?: number;
 
   /**
    * An optional identifier for the cluster
    *
    * If not supplied, a name is automatically generated.
    */
-  clusterIdentifier?: string;
+  readonly clusterIdentifier?: string;
 
   /**
    * Base identifier for instances
@@ -61,17 +65,27 @@ export interface DatabaseClusterProps {
    *
    * If clusterIdentifier is also not given, the identifier is automatically generated.
    */
-  instanceIdentifierBase?: string;
+  readonly instanceIdentifierBase?: string;
 
   /**
    * Name of a database which is automatically created inside the cluster
    */
-  defaultDatabaseName?: string;
+  readonly defaultDatabaseName?: string;
 
   /**
-   * ARN of KMS key if you want to enable storage encryption
+   * Whether to enable storage encryption
+   *
+   * @default false
    */
-  kmsKeyArn?: string;
+  readonly storageEncrypted?: boolean
+
+  /**
+   * The KMS key for storage encryption. If specified `storageEncrypted`
+   * will be set to `true`.
+   *
+   * @default default master key
+   */
+  readonly kmsKey?: kms.IKey;
 
   /**
    * A daily time range in 24-hours UTC format in which backups preferably execute.
@@ -80,20 +94,100 @@ export interface DatabaseClusterProps {
    *
    * Example: '01:00-02:00'
    */
-  preferredMaintenanceWindow?: string;
+  readonly preferredMaintenanceWindow?: string;
 
   /**
    * Additional parameters to pass to the database engine
    *
    * @default No parameter group
    */
-  parameterGroup?: ClusterParameterGroupRef;
+  readonly parameterGroup?: IClusterParameterGroup;
+
+  /**
+   * The CloudFormation policy to apply when the cluster and its instances
+   * are removed from the stack or replaced during an update.
+   *
+   * @default Retain
+   */
+  readonly deleteReplacePolicy?: DeletionPolicy
+}
+
+/**
+ * A new or imported clustered database.
+ */
+abstract class DatabaseClusterBase extends Resource implements IDatabaseCluster {
+  /**
+   * Identifier of the cluster
+   */
+  public abstract readonly clusterIdentifier: string;
+  /**
+   * Identifiers of the replicas
+   */
+  public abstract readonly instanceIdentifiers: string[];
+
+  /**
+   * The endpoint to use for read/write operations
+   */
+  public abstract readonly clusterEndpoint: Endpoint;
+
+  /**
+   * Endpoint to use for load-balanced read-only operations.
+   */
+  public abstract readonly clusterReadEndpoint: Endpoint;
+
+  /**
+   * Endpoints which address each individual replica.
+   */
+  public abstract readonly instanceEndpoints: Endpoint[];
+
+  /**
+   * Access to the network connections
+   */
+  public abstract readonly connections: ec2.Connections;
+
+  /**
+   * Security group identifier of this database
+   */
+  public abstract readonly securityGroupId: string;
+
+  /**
+   * Renders the secret attachment target specifications.
+   */
+  public asSecretAttachmentTarget(): secretsmanager.SecretAttachmentTargetProps {
+    return {
+      targetId: this.clusterIdentifier,
+      targetType: secretsmanager.AttachmentTargetType.Cluster
+    };
+  }
 }
 
 /**
  * Create a clustered database with a given number of instances.
+ *
+ * @resource AWS::RDS::DBCluster
  */
-export class DatabaseCluster extends DatabaseClusterRef {
+export class DatabaseCluster extends DatabaseClusterBase {
+  /**
+   * Import an existing DatabaseCluster from properties
+   */
+  public static fromDatabaseClusterAttributes(scope: Construct, id: string, attrs: DatabaseClusterAttributes): IDatabaseCluster {
+    class Import extends DatabaseClusterBase implements IDatabaseCluster {
+      public readonly defaultPortRange = new ec2.TcpPort(attrs.port);
+      public readonly connections = new ec2.Connections({
+        securityGroups: [ec2.SecurityGroup.fromSecurityGroupId(this, 'SecurityGroup', attrs.securityGroupId)],
+        defaultPortRange: this.defaultPortRange
+      });
+      public readonly clusterIdentifier = attrs.clusterIdentifier;
+      public readonly instanceIdentifiers: string[] = [];
+      public readonly clusterEndpoint = new Endpoint(attrs.clusterEndpointAddress, attrs.port);
+      public readonly clusterReadEndpoint = new Endpoint(attrs.readerEndpointAddress, attrs.port);
+      public readonly instanceEndpoints = attrs.instanceEndpointAddresses.map(a => new Endpoint(a, attrs.port));
+      public readonly securityGroupId = attrs.securityGroupId;
+    }
+
+    return new Import(scope, id);
+  }
+
   /**
    * Identifier of the cluster
    */
@@ -112,7 +206,7 @@ export class DatabaseCluster extends DatabaseClusterRef {
   /**
    * Endpoint to use for load-balanced read-only operations.
    */
-  public readonly readerEndpoint: Endpoint;
+  public readonly clusterReadEndpoint: Endpoint;
 
   /**
    * Endpoints which address each individual replica.
@@ -127,58 +221,111 @@ export class DatabaseCluster extends DatabaseClusterRef {
   /**
    * Security group identifier of this database
    */
-  protected readonly securityGroupId: string;
+  public readonly securityGroupId: string;
 
-  constructor(parent: cdk.Construct, name: string, props: DatabaseClusterProps) {
-    super(parent, name);
+  /**
+   * The secret attached to this cluster
+   */
+  public readonly secret?: secretsmanager.ISecret;
 
-    const subnets = props.instanceProps.vpc.subnets(props.instanceProps.vpcPlacement);
+  /**
+   * The database engine of this cluster
+   */
+  public readonly engine: DatabaseClusterEngine;
+
+  /**
+   * The VPC where the DB subnet group is created.
+   */
+  private readonly vpc: ec2.IVpc;
+
+  /**
+   * The subnets used by the DB subnet group.
+   */
+  private readonly vpcSubnets?: ec2.SubnetSelection;
+
+  constructor(scope: Construct, id: string, props: DatabaseClusterProps) {
+    super(scope, id);
+
+    this.vpc = props.instanceProps.vpc;
+    this.vpcSubnets = props.instanceProps.vpcSubnets;
+
+    const { subnetIds } = props.instanceProps.vpc.selectSubnets(props.instanceProps.vpcSubnets);
 
     // Cannot test whether the subnets are in different AZs, but at least we can test the amount.
-    if (subnets.length < 2) {
-      throw new Error(`Cluster requires at least 2 subnets, got ${subnets.length}`);
+    if (subnetIds.length < 2) {
+      throw new Error(`Cluster requires at least 2 subnets, got ${subnetIds.length}`);
     }
 
-    const subnetGroup = new cloudformation.DBSubnetGroupResource(this, 'Subnets', {
-      dbSubnetGroupDescription: `Subnets for ${name} database`,
-      subnetIds: subnets.map(s => s.subnetId)
+    const subnetGroup = new CfnDBSubnetGroup(this, 'Subnets', {
+      dbSubnetGroupDescription: `Subnets for ${id} database`,
+      subnetIds,
     });
 
-    const securityGroup = new ec2.SecurityGroup(this, 'SecurityGroup', {
+    const securityGroup = props.instanceProps.securityGroup !== undefined ?
+    props.instanceProps.securityGroup : new ec2.SecurityGroup(this, 'SecurityGroup', {
       description: 'RDS security group',
       vpc: props.instanceProps.vpc
     });
     this.securityGroupId = securityGroup.securityGroupId;
 
-    const cluster = new cloudformation.DBClusterResource(this, 'Resource', {
+    let secret;
+    if (!props.masterUser.password) {
+      secret = new DatabaseSecret(this, 'Secret', {
+        username: props.masterUser.username,
+        encryptionKey: props.masterUser.kmsKey
+      });
+    }
+
+    this.engine = props.engine;
+
+    const cluster = new CfnDBCluster(this, 'Resource', {
       // Basic
-      engine: props.engine,
+      engine: this.engine,
       dbClusterIdentifier: props.clusterIdentifier,
       dbSubnetGroupName: subnetGroup.ref,
       vpcSecurityGroupIds: [this.securityGroupId],
       port: props.port,
       dbClusterParameterGroupName: props.parameterGroup && props.parameterGroup.parameterGroupName,
       // Admin
-      masterUsername: props.masterUser.username,
-      masterUserPassword: props.masterUser.password,
+      masterUsername: secret ? secret.secretJsonValue('username').toString() : props.masterUser.username,
+      masterUserPassword: secret
+        ? secret.secretJsonValue('password').toString()
+        : (props.masterUser.password
+            ? props.masterUser.password.toString()
+            : undefined),
       backupRetentionPeriod: props.backup && props.backup.retentionDays,
       preferredBackupWindow: props.backup && props.backup.preferredWindow,
       preferredMaintenanceWindow: props.preferredMaintenanceWindow,
       databaseName: props.defaultDatabaseName,
       // Encryption
-      kmsKeyId: props.kmsKeyArn,
-      storageEncrypted: props.kmsKeyArn ? true : false,
+      kmsKeyId: props.kmsKey && props.kmsKey.keyArn,
+      storageEncrypted: props.kmsKey ? true : props.storageEncrypted
     });
 
+    const deleteReplacePolicy = props.deleteReplacePolicy || DeletionPolicy.Retain;
+    cluster.options.deletionPolicy = deleteReplacePolicy;
+    cluster.options.updateReplacePolicy = deleteReplacePolicy;
+
     this.clusterIdentifier = cluster.ref;
-    this.clusterEndpoint = new Endpoint(cluster.dbClusterEndpointAddress, cluster.dbClusterEndpointPort);
-    this.readerEndpoint = new Endpoint(cluster.dbClusterReadEndpointAddress, cluster.dbClusterEndpointPort);
+
+    // create a number token that represents the port of the cluster
+    const portAttribute = new Token(() => cluster.dbClusterEndpointPort).toNumber();
+    this.clusterEndpoint = new Endpoint(cluster.dbClusterEndpointAddress, portAttribute);
+    this.clusterReadEndpoint = new Endpoint(cluster.dbClusterReadEndpointAddress, portAttribute);
+
+    if (secret) {
+      this.secret = secret.addTargetAttachment('AttachedSecret', {
+        target: this
+      });
+    }
 
     const instanceCount = props.instances != null ? props.instances : 2;
     if (instanceCount < 1) {
       throw new Error('At least one instance is required');
     }
 
+    // Get the actual subnet objects so we can depend on internet connectivity.
+    const internetConnected = props.instanceProps.vpc.selectSubnets(props.instanceProps.vpcSubnets).internetConnectedDependency;
     for (let i = 0; i < instanceCount; i++) {
       const instanceIndex = i + 1;
 
@@ -186,9 +333,9 @@ export class DatabaseCluster extends DatabaseClusterRef {
                      props.clusterIdentifier != null ? `${props.clusterIdentifier}instance${instanceIndex}` :
                      undefined;
 
-      const publiclyAccessible = props.instanceProps.vpcPlacement && props.instanceProps.vpcPlacement.subnetsToUse === ec2.SubnetType.Public;
+      const publiclyAccessible = props.instanceProps.vpcSubnets && props.instanceProps.vpcSubnets.subnetType === ec2.SubnetType.Public;
 
-      const instance = new cloudformation.DBInstanceResource(this, `Instance${instanceIndex}`, {
+      const instance = new CfnDBInstance(this, `Instance${instanceIndex}`, {
         // Link to cluster
         engine: props.engine,
         dbClusterIdentifier: cluster.ref,
@@ -200,20 +347,36 @@ export class DatabaseCluster extends DatabaseClusterRef {
         dbSubnetGroupName: subnetGroup.ref,
       });
 
-      if (publiclyAccessible) {
-        // We must have a dependency on the NAT gateway provider here to
-        // create things in the right order. To be safe (and because we
-        // cannot express it differently), take a dependency on the
-        // whole VPC.
-        instance.addDependency(props.instanceProps.vpc);
-      }
+      instance.options.deletionPolicy = deleteReplacePolicy;
+      instance.options.updateReplacePolicy = deleteReplacePolicy;
+
+      // We must have a dependency on the NAT gateway provider here to create
+      // things in the right order.
+      instance.node.addDependency(internetConnected);
 
       this.instanceIdentifiers.push(instance.ref);
-      this.instanceEndpoints.push(new Endpoint(instance.dbInstanceEndpointAddress, instance.dbInstanceEndpointPort));
+      this.instanceEndpoints.push(new Endpoint(instance.dbInstanceEndpointAddress, portAttribute));
     }
 
-    const defaultPortRange = new ec2.TcpPortFromAttribute(this.clusterEndpoint.port);
-    this.connections = new ec2.Connections({ securityGroup, defaultPortRange });
+    const defaultPortRange = new ec2.TcpPort(this.clusterEndpoint.port);
+    this.connections = new ec2.Connections({ securityGroups: [securityGroup], defaultPortRange });
+  }
+
+  /**
+   * Adds the single user rotation of the master password to this cluster.
+   */
+  public addRotationSingleUser(id: string, options: RotationSingleUserOptions = {}): RotationSingleUser {
+    if (!this.secret) {
+      throw new Error('Cannot add single user rotation for a cluster without secret.');
+    }
+    return new RotationSingleUser(this, id, {
+      secret: this.secret,
+      engine: toDatabaseEngine(this.engine),
+      vpc: this.vpc,
+      vpcSubnets: this.vpcSubnets,
+      target: this,
+      ...options
+    });
   }
 }
 
@@ -222,4 +385,21 @@ export class DatabaseCluster extends DatabaseClusterRef {
  */
 function databaseInstanceType(instanceType: ec2.InstanceType) {
   return 'db.' + instanceType.toString();
+}
+
+/**
+ * Transforms a DatbaseClusterEngine to a DatabaseEngine.
+ *
+ * @param engine the engine to transform
+ */
+function toDatabaseEngine(engine: DatabaseClusterEngine): DatabaseEngine {
+  switch (engine) {
+    case DatabaseClusterEngine.Aurora:
+    case DatabaseClusterEngine.AuroraMysql:
+      return DatabaseEngine.Mysql;
+    case DatabaseClusterEngine.AuroraPostgresql:
+      return DatabaseEngine.Postgres;
+    default:
+      throw new Error('Unknown engine');
+  }
 }

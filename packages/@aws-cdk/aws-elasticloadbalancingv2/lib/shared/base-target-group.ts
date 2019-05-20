@@ -1,9 +1,8 @@
-import codedeploy = require('@aws-cdk/aws-codedeploy-api');
 import ec2 = require('@aws-cdk/aws-ec2');
 import cdk = require('@aws-cdk/cdk');
-import { cloudformation } from '../elasticloadbalancingv2.generated';
+import { CfnTargetGroup } from '../elasticloadbalancingv2.generated';
 import { Protocol, TargetType } from './enums';
-import { Attributes, LazyDependable, renderAttributes } from './util';
+import { Attributes, renderAttributes } from './util';
 
 /**
  * Basic properties of both Application and Network Target Groups
@@ -18,28 +17,39 @@ export interface BaseTargetGroupProps {
    *
    * @default Automatically generated
    */
-  targetGroupName?: string;
+  readonly targetGroupName?: string;
 
   /**
    * The virtual private cloud (VPC).
    */
-  vpc: ec2.VpcNetworkRef;
+  readonly vpc: ec2.IVpc;
 
   /**
    * The amount of time for Elastic Load Balancing to wait before deregistering a target.
    *
-   * The range is 0–3600 seconds.
+   * The range is 0-3600 seconds.
    *
    * @default 300
    */
-  deregistrationDelaySec?: number;
+  readonly deregistrationDelaySec?: number;
 
   /**
    * Health check configuration
    *
    * @default No health check
    */
-  healthCheck?: HealthCheck;
+  readonly healthCheck?: HealthCheck;
+
+  /**
+   * The type of targets registered to this TargetGroup, either IP or Instance.
+   *
+   * All targets registered into the group must be of this type. If you
+   * register targets to the TargetGroup in the CDK app, the TargetType is
+   * determined automatically.
+   *
+   * @default Determined automatically
+   */
+  readonly targetType?: TargetType;
 }
 
 /**
@@ -51,21 +61,21 @@ export interface HealthCheck {
    *
    * @default 30
    */
-  intervalSecs?: number;
+  readonly intervalSecs?: number;
 
   /**
    * The ping path destination where Elastic Load Balancing sends health check requests.
    *
    * @default /
    */
-  path?: string;
+  readonly path?: string;
 
   /**
    * The port that the load balancer uses when performing health checks on the targets.
    *
    * @default 'traffic-port'
    */
-  port?: string;
+  readonly port?: string;
 
   /**
    * The protocol the load balancer uses when performing health checks on targets.
@@ -75,7 +85,7 @@ export interface HealthCheck {
    *
    * @default HTTP for ALBs, TCP for NLBs
    */
-  protocol?: Protocol;
+  readonly protocol?: Protocol;
 
   /**
    * The amount of time, in seconds, during which no response from a target means a failed health check.
@@ -86,7 +96,7 @@ export interface HealthCheck {
    *
    * @default 5 for ALBs, 10 or 6 for NLBs
    */
-  timeoutSeconds?: number;
+  readonly timeoutSeconds?: number;
 
   /**
    * The number of consecutive health checks successes required before considering an unhealthy target healthy.
@@ -95,7 +105,7 @@ export interface HealthCheck {
    *
    * @default 5 for ALBs, 3 for NLBs
    */
-  healthyThresholdCount?: number;
+  readonly healthyThresholdCount?: number;
 
   /**
    * The number of consecutive health check failures required before considering a target unhealthy.
@@ -105,7 +115,7 @@ export interface HealthCheck {
    *
    * @default 2
    */
-  unhealthyThresholdCount?: number;
+  readonly unhealthyThresholdCount?: number;
 
   /**
    * HTTP code to use when checking for a successful response from a target.
@@ -114,13 +124,13 @@ export interface HealthCheck {
    * 499, and the default value is 200. You can specify multiple values (for
    * example, "200,202") or a range of values (for example, "200-299").
    */
-  healthyHttpCodes?: string;
+  readonly healthyHttpCodes?: string;
 }
 
 /**
  * Define the target of a load balancer
  */
-export abstract class BaseTargetGroup extends cdk.Construct implements ITargetGroup, codedeploy.ILoadBalancer {
+export abstract class TargetGroupBase extends cdk.Construct implements ITargetGroup {
   /**
    * The ARN of the target group
    */
@@ -137,19 +147,39 @@ export abstract class BaseTargetGroup extends cdk.Construct implements ITargetGr
   public readonly targetGroupName: string;
 
   /**
+   * ARNs of load balancers load balancing to this TargetGroup
+   */
+  public readonly targetGroupLoadBalancerArns: string[];
+
+  /**
+   * Full name of first load balancer
+   *
+   * This identifier is emitted as a dimensions of the metrics of this target
+   * group.
+   *
+   * @example app/my-load-balancer/123456789
+   */
+  public abstract readonly firstLoadBalancerFullName: string;
+
+  /**
    * Health check for the members of this target group
    */
+  /**
+   * A token representing a list of ARNs of the load balancers that route traffic to this target group
+   */
+  public readonly loadBalancerArns: string;
+
   public healthCheck: HealthCheck;
 
   /**
    * Default port configured for members of this target group
    */
-  protected readonly defaultPort: string;
+  protected readonly defaultPort: number;
 
   /**
-   * List of listeners routing to this target group
+   * Configurable dependable with all resources that lead to load balancer attachment
    */
-  protected readonly dependableListeners = new Array<cdk.IDependable>();
+  protected readonly loadBalancerAttachedDependencies = new cdk.ConcreteDependable();
 
   /**
    * Attributes of this target group
@@ -169,19 +199,20 @@ export abstract class BaseTargetGroup extends cdk.Construct implements ITargetGr
   /**
    * The target group resource
    */
-  private readonly resource: cloudformation.TargetGroupResource;
+  private readonly resource: CfnTargetGroup;
 
-  constructor(parent: cdk.Construct, id: string, baseProps: BaseTargetGroupProps, additionalProps: any) {
-    super(parent, id);
+  constructor(scope: cdk.Construct, id: string, baseProps: BaseTargetGroupProps, additionalProps: any) {
+    super(scope, id);
 
     if (baseProps.deregistrationDelaySec !== undefined) {
       this.setAttribute('deregistration_delay.timeout_seconds', baseProps.deregistrationDelaySec.toString());
     }
 
     this.healthCheck = baseProps.healthCheck || {};
+    this.targetType = baseProps.targetType;
 
-    this.resource = new cloudformation.TargetGroupResource(this, 'Resource', {
-      targetGroupName: baseProps.targetGroupName,
+    this.resource = new CfnTargetGroup(this, 'Resource', {
+      name: baseProps.targetGroupName,
       targetGroupAttributes: new cdk.Token(() => renderAttributes(this.attributes)),
       targetType: new cdk.Token(() => this.targetType),
       targets: new cdk.Token(() => this.targetsJson),
@@ -194,6 +225,7 @@ export abstract class BaseTargetGroup extends cdk.Construct implements ITargetGr
       healthCheckProtocol: new cdk.Token(() => this.healthCheck && this.healthCheck.protocol),
       healthCheckTimeoutSeconds: new cdk.Token(() => this.healthCheck && this.healthCheck.timeoutSeconds),
       healthyThresholdCount: new cdk.Token(() => this.healthCheck && this.healthCheck.healthyThresholdCount),
+      unhealthyThresholdCount: new cdk.Token(() => this.healthCheck && this.healthCheck.unhealthyThresholdCount),
       matcher: new cdk.Token(() => this.healthCheck && this.healthCheck.healthyHttpCodes !== undefined ? {
         httpCode: this.healthCheck.healthyHttpCodes
       } : undefined),
@@ -201,10 +233,19 @@ export abstract class BaseTargetGroup extends cdk.Construct implements ITargetGr
       ...additionalProps
     });
 
+    this.targetGroupLoadBalancerArns = this.resource.targetGroupLoadBalancerArns;
     this.targetGroupArn = this.resource.ref;
     this.targetGroupFullName = this.resource.targetGroupFullName;
+    this.loadBalancerArns = this.resource.targetGroupLoadBalancerArns.toString();
     this.targetGroupName = this.resource.targetGroupName;
-    this.defaultPort = `${additionalProps.port}`;
+    this.defaultPort = additionalProps.port;
+  }
+
+  /**
+   * List of constructs that need to be depended on to ensure the TargetGroup is associated to a load balancer
+   */
+  public get loadBalancerAttached(): cdk.IDependable {
+    return this.loadBalancerAttachedDependencies;
   }
 
   /**
@@ -221,37 +262,6 @@ export abstract class BaseTargetGroup extends cdk.Construct implements ITargetGr
    */
   public setAttribute(key: string, value: string | undefined) {
     this.attributes[key] = value;
-  }
-
-  /**
-   * Export this target group
-   */
-  public export(): TargetGroupRefProps {
-    return {
-      targetGroupArn: new cdk.Output(this, 'TargetGroupArn', { value: this.targetGroupArn }).makeImportValue().toString(),
-      defaultPort: new cdk.Output(this, 'Port', { value: this.defaultPort }).makeImportValue().toString(),
-    };
-  }
-
-  /**
-   * Add a dependency between this target group and the indicated resources
-   */
-  public addDependency(...other: cdk.IDependable[]) {
-    this.resource.addDependency(...other);
-  }
-
-  public asCodeDeployLoadBalancer(): codedeploy.ILoadBalancerProps {
-    return {
-      generation: codedeploy.LoadBalancerGeneration.Second,
-      name: this.targetGroupName,
-    };
-  }
-
-  /**
-   * Return an object to depend on the listeners added to this target group
-   */
-  public listenerDependency(): cdk.IDependable {
-    return new LazyDependable(this.dependableListeners);
   }
 
   /**
@@ -272,31 +282,41 @@ export abstract class BaseTargetGroup extends cdk.Construct implements ITargetGr
 /**
  * Properties to reference an existing target group
  */
-export interface TargetGroupRefProps {
-  /**
-   * ARN of the target group
-   */
-  targetGroupArn: string;
-
-  /**
-   * Port target group is listening on
-   */
-  defaultPort: string;
-}
-
-/**
- * A target group
- */
-export interface ITargetGroup {
+export interface TargetGroupImportProps {
   /**
    * ARN of the target group
    */
   readonly targetGroupArn: string;
 
   /**
+   * Port target group is listening on
+   */
+  readonly defaultPort: string;
+
+  /**
+   * A Token representing the list of ARNs for the load balancer routing to this target group
+   */
+  readonly loadBalancerArns?: string;
+}
+
+/**
+ * A target group
+ */
+export interface ITargetGroup extends cdk.IConstruct {
+  /**
+   * ARN of the target group
+   */
+  readonly targetGroupArn: string;
+
+  /**
+   * A token representing a list of ARNs of the load balancers that route traffic to this target group
+   */
+  readonly loadBalancerArns: string;
+
+  /**
    * Return an object to depend on the listeners added to this target group
    */
-  listenerDependency(): cdk.IDependable;
+  readonly loadBalancerAttached: cdk.IDependable;
 }
 
 /**
@@ -306,12 +326,28 @@ export interface LoadBalancerTargetProps {
   /**
    * What kind of target this is
    */
-  targetType: TargetType;
+  readonly targetType: TargetType;
 
   /**
    * JSON representing the target's direct addition to the TargetGroup list
    *
    * May be omitted if the target is going to register itself later.
    */
-  targetJson?: any;
+  readonly targetJson?: any;
+}
+
+/**
+ * Extract the full load balancer name (used for metrics) from the listener ARN:
+ *
+ * Turns
+ *
+ *     arn:aws:elasticloadbalancing:us-west-2:123456789012:listener/app/my-load-balancer/50dc6c495c0c9188/f2f7dc8efc522ab2
+ *
+ * Into
+ *
+ *     app/my-load-balancer/50dc6c495c0c9188
+ */
+export function loadBalancerNameFromListenerArn(listenerArn: string) {
+    const arnParts = cdk.Fn.split('/', listenerArn);
+    return `${cdk.Fn.select(1, arnParts)}/${cdk.Fn.select(2, arnParts)}/${cdk.Fn.select(3, arnParts)}`;
 }

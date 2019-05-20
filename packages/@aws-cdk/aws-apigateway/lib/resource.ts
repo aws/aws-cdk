@@ -1,10 +1,15 @@
-import cdk = require('@aws-cdk/cdk');
-import { cloudformation } from './apigateway.generated';
+import { Construct, IResource as IResourceBase, Resource as ResourceConstruct } from '@aws-cdk/cdk';
+import { CfnResource, CfnResourceProps } from './apigateway.generated';
 import { Integration } from './integration';
 import { Method, MethodOptions } from './method';
 import { RestApi } from './restapi';
 
-export interface IRestApiResource {
+export interface IResource extends IResourceBase {
+  /**
+   * The parent of this resource or undefined for the root resource.
+   */
+  readonly parentResource?: IResource;
+
   /**
    * The rest API that this resource is part of.
    *
@@ -13,17 +18,18 @@ export interface IRestApiResource {
    * hash to determine the ID of the deployment. This allows us to automatically update
    * the deployment when the model of the REST API changes.
    */
-  readonly resourceApi: RestApi;
+  readonly restApi: RestApi;
 
   /**
    * The ID of the resource.
+   * @attribute
    */
   readonly resourceId: string;
 
   /**
    * The full path of this resuorce.
    */
-  readonly resourcePath: string;
+  readonly path: string;
 
   /**
    * An integration to use as a default for all methods created within this
@@ -38,12 +44,31 @@ export interface IRestApiResource {
   readonly defaultMethodOptions?: MethodOptions;
 
   /**
+   * Gets or create all resources leading up to the specified path.
+   *
+   * - Path may only start with "/" if this method is called on the root resource.
+   * - All resources are created using default options.
+   *
+   * @param path The relative path
+   * @returns a new or existing resource.
+   */
+  resourceForPath(path: string): Resource;
+
+  /**
    * Defines a new child resource where this resource is the parent.
    * @param pathPart The path part for the child resource
    * @param options Resource options
    * @returns A Resource object
    */
   addResource(pathPart: string, options?: ResourceOptions): Resource;
+
+  /**
+   * Retrieves a child resource by path part.
+   *
+   * @param pathPart The path part of the child resource
+   * @returns the child resource or undefined if not found
+   */
+  getResource(pathPart: string): IResource | undefined;
 
   /**
    * Adds a greedy proxy resource ("{proxy+}") and an ANY method to this route.
@@ -81,54 +106,26 @@ export interface ResourceProps extends ResourceOptions {
    * The parent resource of this resource. You can either pass another
    * `Resource` object or a `RestApi` object here.
    */
-  parent: IRestApiResource;
+  readonly parent: IResource;
 
   /**
    * A path name for the resource.
    */
-  pathPart: string;
+  readonly pathPart: string;
 }
 
-export class Resource extends cdk.Construct implements IRestApiResource {
-  public readonly resourceApi: RestApi;
-  public readonly resourceId: string;
-  public readonly resourcePath: string;
-  public readonly defaultIntegration?: Integration;
-  public readonly defaultMethodOptions?: MethodOptions;
+export abstract class ResourceBase extends ResourceConstruct implements IResource {
+  public abstract readonly parentResource?: IResource;
+  public abstract readonly restApi: RestApi;
+  public abstract readonly resourceId: string;
+  public abstract readonly path: string;
+  public abstract readonly defaultIntegration?: Integration;
+  public abstract readonly defaultMethodOptions?: MethodOptions;
 
-  constructor(parent: cdk.Construct, id: string, props: ResourceProps) {
-    super(parent, id);
+  private readonly children: { [pathPart: string]: Resource } = { };
 
-    validateResourcePathPart(props.pathPart);
-
-    const resourceProps: cloudformation.ResourceProps = {
-      restApiId: props.parent.resourceApi.restApiId,
-      parentId: props.parent.resourceId,
-      pathPart: props.pathPart
-    };
-    const resource = new cloudformation.Resource(this, 'Resource', resourceProps);
-
-    this.resourceId = resource.resourceId;
-    this.resourceApi = props.parent.resourceApi;
-
-    // render resource path (special case for root)
-    this.resourcePath = props.parent.resourcePath;
-    if (!this.resourcePath.endsWith('/')) { this.resourcePath += '/'; }
-    this.resourcePath += props.pathPart;
-
-    const deployment = props.parent.resourceApi.latestDeployment;
-    if (deployment) {
-      deployment.addDependency(resource);
-      deployment.addToLogicalId({ resource: resourceProps });
-    }
-
-    // setup defaults based on properties and inherit from parent. method defaults
-    // are inherited per property, so children can override piecemeal.
-    this.defaultIntegration = props.defaultIntegration || props.parent.defaultIntegration;
-    this.defaultMethodOptions = {
-      ...props.parent.defaultMethodOptions,
-      ...props.defaultMethodOptions
-    };
+  constructor(scope: Construct, id: string) {
+    super(scope, id);
   }
 
   public addResource(pathPart: string, options?: ResourceOptions): Resource {
@@ -142,6 +139,96 @@ export class Resource extends cdk.Construct implements IRestApiResource {
   public addProxy(options?: ResourceOptions): ProxyResource {
     return new ProxyResource(this, '{proxy+}', { parent: this, ...options });
   }
+
+  public getResource(pathPart: string): IResource | undefined {
+    return this.children[pathPart];
+  }
+
+  /**
+   * @internal
+   */
+  public _trackChild(pathPart: string, resource: Resource) {
+    this.children[pathPart] = resource;
+  }
+
+  public resourceForPath(path: string): Resource {
+    if (!path) {
+      return this;
+    }
+
+    if (path.startsWith('/')) {
+      if (this.path !== '/') {
+        throw new Error(`Path may start with "/" only for the resource, but we are at: ${this.path}`);
+      }
+
+      // trim trailing "/"
+      return this.resourceForPath(path.substr(1));
+    }
+
+    const parts = path.split('/');
+    const next = parts.shift();
+    if (!next || next === '') {
+      throw new Error(`resourceForPath cannot be called with an empty path`);
+    }
+
+    let resource = this.getResource(next);
+    if (!resource) {
+      resource = this.addResource(next);
+    }
+
+    return resource.resourceForPath(parts.join('/'));
+  }
+}
+
+export class Resource extends ResourceBase {
+  public readonly parentResource?: IResource;
+  public readonly restApi: RestApi;
+  public readonly resourceId: string;
+  public readonly path: string;
+
+  public readonly defaultIntegration?: Integration;
+  public readonly defaultMethodOptions?: MethodOptions;
+
+  constructor(scope: Construct, id: string, props: ResourceProps) {
+    super(scope, id);
+
+    validateResourcePathPart(props.pathPart);
+
+    this.parentResource = props.parent;
+
+    if (props.parent instanceof ResourceBase) {
+      props.parent._trackChild(props.pathPart, this);
+    }
+
+    const resourceProps: CfnResourceProps = {
+      restApiId: props.parent.restApi.restApiId,
+      parentId: props.parent.resourceId,
+      pathPart: props.pathPart
+    };
+    const resource = new CfnResource(this, 'Resource', resourceProps);
+
+    this.resourceId = resource.resourceId;
+    this.restApi = props.parent.restApi;
+
+    // render resource path (special case for root)
+    this.path = props.parent.path;
+    if (!this.path.endsWith('/')) { this.path += '/'; }
+    this.path += props.pathPart;
+
+    const deployment = props.parent.restApi.latestDeployment;
+    if (deployment) {
+      deployment.node.addDependency(resource);
+      deployment.addToLogicalId({ resource: resourceProps });
+    }
+
+    // setup defaults based on properties and inherit from parent. method defaults
+    // are inherited per property, so children can override piecemeal.
+    this.defaultIntegration = props.defaultIntegration || props.parent.defaultIntegration;
+    this.defaultMethodOptions = {
+      ...props.parent.defaultMethodOptions,
+      ...props.defaultMethodOptions
+    };
+  }
 }
 
 export interface ProxyResourceProps extends ResourceOptions {
@@ -149,7 +236,7 @@ export interface ProxyResourceProps extends ResourceOptions {
    * The parent resource of this resource. You can either pass another
    * `Resource` object or a `RestApi` object here.
    */
-  parent: IRestApiResource;
+  readonly parent: IResource;
 
   /**
    * Adds an "ANY" method to this resource. If set to `false`, you will have to explicitly
@@ -157,7 +244,7 @@ export interface ProxyResourceProps extends ResourceOptions {
    *
    * @default true
    */
-  anyMethod?: boolean;
+  readonly anyMethod?: boolean;
 }
 
 /**
@@ -171,17 +258,13 @@ export class ProxyResource extends Resource {
    */
   public readonly anyMethod?: Method;
 
-  private readonly parentResource: IRestApiResource;
-
-  constructor(parent: cdk.Construct, id: string, props: ProxyResourceProps) {
-    super(parent, id, {
+  constructor(scope: Construct, id: string, props: ProxyResourceProps) {
+    super(scope, id, {
       parent: props.parent,
       pathPart: '{proxy+}',
       defaultIntegration: props.defaultIntegration,
       defaultMethodOptions: props.defaultMethodOptions,
     });
-
-    this.parentResource = props.parent;
 
     const anyMethod = props.anyMethod !== undefined ? props.anyMethod : true;
     if (anyMethod) {
@@ -192,7 +275,7 @@ export class ProxyResource extends Resource {
   public addMethod(httpMethod: string, integration?: Integration, options?: MethodOptions): Method {
     // In case this proxy is mounted under the root, also add this method to
     // the root so that empty paths are proxied as well.
-    if (this.parentResource.resourcePath === '/') {
+    if (this.parentResource && this.parentResource.path === '/') {
       this.parentResource.addMethod(httpMethod);
     }
     return super.addMethod(httpMethod, integration, options);

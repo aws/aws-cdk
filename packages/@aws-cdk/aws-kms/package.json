@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/aws-kms",
-  "version": "0.13.0",
+  "version": "0.31.0",
   "description": "CDK Constructs for AWS KMS",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -20,12 +20,16 @@
         "signAssembly": true,
         "assemblyOriginatorKeyFile": "../../key.snk"
       },
-      "sphinx": {}
+      "python": {
+        "distName": "aws-cdk.aws-kms",
+        "module": "aws_cdk.aws_kms"
+      }
     }
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/awslabs/aws-cdk.git"
+    "url": "https://github.com/awslabs/aws-cdk.git",
+    "directory": "packages/@aws-cdk/aws-kms"
   },
   "scripts": {
     "build": "cdk-build",
@@ -34,7 +38,9 @@
     "test": "cdk-test",
     "pkglint": "pkglint -f",
     "integ": "cdk-integ",
-    "package": "cdk-package"
+    "package": "cdk-package",
+    "awslint": "cdk-awslint",
+    "cfn2ts": "cfn2ts"
   },
   "cdk-build": {
     "cloudformation": "AWS::KMS"
@@ -52,15 +58,22 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "^0.13.0",
-    "cdk-build-tools": "^0.13.0",
-    "cdk-integ-tools": "^0.13.0",
-    "cfn2ts": "^0.13.0",
-    "pkglint": "^0.13.0"
+    "@aws-cdk/assert": "^0.31.0",
+    "cdk-build-tools": "^0.31.0",
+    "cdk-integ-tools": "^0.31.0",
+    "cfn2ts": "^0.31.0",
+    "pkglint": "^0.31.0"
   },
   "dependencies": {
-    "@aws-cdk/aws-iam": "^0.13.0",
-    "@aws-cdk/cdk": "^0.13.0"
+    "@aws-cdk/aws-iam": "^0.31.0",
+    "@aws-cdk/cdk": "^0.31.0"
   },
-  "homepage": "https://github.com/awslabs/aws-cdk"
+  "homepage": "https://github.com/awslabs/aws-cdk",
+  "peerDependencies": {
+    "@aws-cdk/aws-iam": "^0.31.0",
+    "@aws-cdk/cdk": "^0.31.0"
+  },
+  "engines": {
+    "node": ">= 8.10.0"
+  }
 }

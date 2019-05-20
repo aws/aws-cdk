@@ -4,17 +4,10 @@ import { shell } from '../lib/os';
 import { cdkBuildOptions } from '../lib/package-info';
 import { Timers } from '../lib/timer';
 
-interface Arguments extends yargs.Arguments {
-  force?: boolean;
-  jsii?: string;
-  tsc?: string;
-}
-
 async function main() {
-  const args: Arguments = yargs
+  const args = yargs
     .env('CDK_BUILD')
     .usage('Usage: cdk-build')
-    .option('force', { type: 'boolean', alias: 'f', desc: 'Force a rebuild' })
     .option('jsii', {
       type: 'string',
       desc: 'Specify a different jsii executable',
@@ -25,20 +18,29 @@ async function main() {
       desc: 'Specify a different tsc executable',
       defaultDescription: 'tsc provided by node dependencies'
     })
-    .argv as any;
+    .option('tslint', {
+      type: 'string',
+      desc: 'Specify a different tslint executable',
+      defeaultDescription: 'tslint provided by node dependencies'
+    })
+    .argv;
 
   const options = cdkBuildOptions();
 
   if (options.pre) {
-    await shell(options.pre, timers);
+    await shell(options.pre, { timers });
   }
 
   // See if we need to call cfn2ts
   if (options.cloudformation) {
-    await shell(['cfn2ts', `--scope=${options.cloudformation}`], timers);
+    if (typeof options.cloudformation === 'string') {
+      // There can be multiple scopes, ensuring it's always an array.
+      options.cloudformation = [options.cloudformation];
+    }
+    await shell(['cfn2ts', ...options.cloudformation.map(scope => `--scope=${scope}`)], { timers });
   }
 
-  await compileCurrentPackage(timers, { jsii: args.jsii, tsc: args.tsc }, args.force);
+  await compileCurrentPackage(timers, { jsii: args.jsii, tsc: args.tsc, tslint: args.tslint });
 }
 
 const timers = new Timers();

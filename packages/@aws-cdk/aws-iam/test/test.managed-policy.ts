@@ -4,9 +4,10 @@ import { AwsManagedPolicy } from '../lib';
 
 export = {
   'simple managed policy'(test: Test) {
-    const mp = new AwsManagedPolicy("service-role/SomePolicy");
+    const stack = new cdk.Stack();
+    const mp = new AwsManagedPolicy("service-role/SomePolicy", stack);
 
-    test.deepEqual(cdk.resolve(mp.policyArn), {
+    test.deepEqual(stack.node.resolve(mp.policyArn), {
       "Fn::Join": ['', [
         'arn:',
         { Ref: 'AWS::Partition' },

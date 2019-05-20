@@ -1,4 +1,4 @@
-import { App, Parameter, Stack, StackProps } from '@aws-cdk/cdk';
+import { App, CfnParameter, Construct, Stack, StackProps } from '@aws-cdk/cdk';
 
 export interface TestAppletProps extends StackProps {
   prop1: string
@@ -7,14 +7,14 @@ export interface TestAppletProps extends StackProps {
 }
 
 export class TestApplet extends Stack {
-  constructor(parent: App, name: string, props: TestAppletProps) {
-    super(parent, name, props);
+  constructor(scope: App, id: string, props: TestAppletProps) {
+    super(scope, id, props);
 
-    new Parameter(this, 'P1', { default: this.required(props, 'prop1'), type: 'String' });
-    new Parameter(this, 'P2', { default: this.required(props, 'prop2'), type: 'Number' });
+    new CfnParameter(this, 'P1', { default: this.node.required(props, 'prop1'), type: 'String' });
+    new CfnParameter(this, 'P2', { default: this.node.required(props, 'prop2'), type: 'Number' });
 
     if (props.prop3) {
-      new Parameter(this, 'P3', { default: props.prop3.join(','), type: 'StringList' });
+      new CfnParameter(this, 'P3', { default: props.prop3.join(','), type: 'StringList' });
     }
   }
 }
@@ -24,9 +24,21 @@ export interface AppletProps extends StackProps {
 }
 
 export class Applet extends Stack {
-  constructor(parent: App, name: string, props: AppletProps) {
-    super(parent, name);
+  constructor(scope: App, id: string, props: AppletProps) {
+    super(scope, id);
 
     this.templateOptions.description = props.desc;
+  }
+}
+
+interface NoStackAppletProps {
+  argument: string;
+}
+
+export class NoStackApplet extends Construct {
+  constructor(scope: Construct, id: string, props: NoStackAppletProps) {
+    super(scope, id);
+
+    new CfnParameter(this, 'P1', { default: props.argument, type: 'String' });
   }
 }

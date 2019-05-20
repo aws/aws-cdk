@@ -1,6 +1,6 @@
-import { countResources, expect, haveResource, ResourcePart } from '@aws-cdk/assert';
-import events = require('@aws-cdk/aws-events');
+import { expect, haveResource, MatchStyle, ResourcePart } from '@aws-cdk/assert';
 import iam = require('@aws-cdk/aws-iam');
+import logs = require('@aws-cdk/aws-logs');
 import sqs = require('@aws-cdk/aws-sqs');
 import cdk = require('@aws-cdk/cdk');
 import { Test } from 'nodeunit';
@@ -27,7 +27,7 @@ export = {
            { Statement:
             [ { Action: 'sts:AssumeRole',
               Effect: 'Allow',
-              Principal: { Service: 'lambda.amazonaws.com' } } ],
+              Principal: { Service: { "Fn::Join": ["", ['lambda.', { Ref: "AWS::URLSuffix" }]] } } } ],
              Version: '2012-10-17' },
           ManagedPolicyArns:
           // arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
@@ -61,7 +61,7 @@ export = {
            { Statement:
             [ { Action: 'sts:AssumeRole',
               Effect: 'Allow',
-              Principal: { Service: 'lambda.amazonaws.com' } } ],
+              Principal: { Service: { "Fn::Join": ["", ['lambda.', { Ref: "AWS::URLSuffix" }]] } } } ],
              Version: '2012-10-17' },
           ManagedPolicyArns:
           // tslint:disable-next-line:max-line-length
@@ -95,7 +95,7 @@ export = {
           Handler: 'index.handler',
           Role: { 'Fn::GetAtt': [ 'MyLambdaServiceRole4539ECB6', 'Arn' ] },
           Runtime: 'nodejs6.10' },
-         DependsOn: [ 'MyLambdaServiceRole4539ECB6', 'MyLambdaServiceRoleDefaultPolicy5BBC6F68' ] } } } );
+         DependsOn: [ 'MyLambdaServiceRoleDefaultPolicy5BBC6F68', 'MyLambdaServiceRole4539ECB6' ] } } } );
     test.done();
 
   },
@@ -118,7 +118,7 @@ export = {
       fn.addPermission('S3Permission', {
         action: 'lambda:*',
         principal: new iam.ServicePrincipal('s3.amazonaws.com'),
-        sourceAccount: new cdk.AwsAccountId().toString(),
+        sourceAccount: stack.accountId,
         sourceArn: 'arn:aws:s3:::my_bucket'
       });
 
@@ -133,7 +133,7 @@ export = {
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": {
-              "Service": "lambda.amazonaws.com"
+              "Service": { "Fn::Join": ["", ["lambda.", { Ref: "AWS::URLSuffix" }]] }
               }
             }
             ],
@@ -153,8 +153,8 @@ export = {
           "Handler": "bar",
           "Role": {
             "Fn::GetAtt": [
-            "MyLambdaServiceRole4539ECB6",
-            "Arn"
+              "MyLambdaServiceRole4539ECB6",
+              "Arn"
             ]
           },
           "Runtime": "python2.7"
@@ -168,7 +168,10 @@ export = {
           "Properties": {
           "Action": "lambda:*",
           "FunctionName": {
-            "Ref": "MyLambdaCCE802FB"
+            "Fn::GetAtt": [
+              "MyLambdaCCE802FB",
+              "Arn"
+            ]
           },
           "Principal": "s3.amazonaws.com",
           "SourceAccount": {
@@ -220,11 +223,12 @@ export = {
       // THEN
       expect(stack).to(haveResource('AWS::IAM::Policy', {
         "PolicyDocument": {
-        "Statement": [
-          { "Action": "confirm:itsthesame", "Effect": "Allow" },
-          { "Action": "inline:inline", "Effect": "Allow" },
-          { "Action": "explicit:explicit", "Effect": "Allow" }
-        ],
+          "Version": "2012-10-17",
+          "Statement": [
+            { "Action": "confirm:itsthesame", "Effect": "Allow" },
+            { "Action": "inline:inline", "Effect": "Allow" },
+            { "Action": "explicit:explicit", "Effect": "Allow" }
+          ],
         },
       }));
 
@@ -232,64 +236,21 @@ export = {
     }
   },
 
-  'import/export': {
-    'lambda.export() can be used to add Outputs to the stack and returns a LambdaRef object'(test: Test) {
-      // GIVEN
-      const stack1 = new cdk.Stack();
-      const stack2 = new cdk.Stack();
-      const fn = newTestLambda(stack1);
-
-      // WHEN
-      const props = fn.export();
-      const imported = lambda.FunctionRef.import(stack2, 'Imported', props);
-
-      // Can call addPermission() but it won't do anything
-      imported.addPermission('Hello', {
-        principal: new iam.ServicePrincipal('harry')
-      });
-
-      test.done();
-    },
-  },
-
-  'Lambda can serve as EventRule target, permission gets added'(test: Test) {
+  'fromFunctionArn'(test: Test) {
     // GIVEN
-    const stack = new cdk.Stack();
-    const fn = newTestLambda(stack);
-    const rule1 = new events.EventRule(stack, 'Rule', { scheduleExpression: 'rate(1 minute)' });
-    const rule2 = new events.EventRule(stack, 'Rule2', { scheduleExpression: 'rate(5 minutes)' });
+    const stack2 = new cdk.Stack();
 
     // WHEN
-    rule1.addTarget(fn);
-    rule2.addTarget(fn);
+    const imported = lambda.Function.fromFunctionArn(stack2, 'Imported', 'arn:aws:lambda:us-east-1:123456789012:function:ProcessKinesisRecords');
+
+    // Can call addPermission() but it won't do anything
+    imported.addPermission('Hello', {
+      principal: new iam.ServicePrincipal('harry')
+    });
 
     // THEN
-    const lambdaId = "MyLambdaCCE802FB";
-
-    expect(stack).to(haveResource('AWS::Lambda::Permission', {
-      "Action": "lambda:InvokeFunction",
-      "FunctionName": { "Ref": lambdaId },
-      "Principal": "events.amazonaws.com",
-      "SourceArn": { "Fn::GetAtt": [ "Rule4C995B7F", "Arn" ] }
-    }));
-
-    expect(stack).to(haveResource('AWS::Lambda::Permission', {
-      "Action": "lambda:InvokeFunction",
-      "FunctionName": { "Ref": "MyLambdaCCE802FB" },
-      "Principal": "events.amazonaws.com",
-      "SourceArn": { "Fn::GetAtt": [ "Rule270732244", "Arn" ] }
-    }));
-
-    expect(stack).to(countResources('AWS::Events::Rule', 2));
-    expect(stack).to(haveResource('AWS::Events::Rule', {
-      "Targets": [
-        {
-        "Arn": { "Fn::GetAtt": [ lambdaId, "Arn" ] },
-        "Id": "MyLambda"
-        }
-      ]
-    }));
-
+    test.deepEqual(imported.functionArn, 'arn:aws:lambda:us-east-1:123456789012:function:ProcessKinesisRecords');
+    test.deepEqual(imported.functionName, 'ProcessKinesisRecords');
     test.done();
   },
 
@@ -349,7 +310,7 @@ export = {
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": {
-                "Service": "lambda.amazonaws.com"
+                "Service": { "Fn::Join": ["", ["lambda.", { Ref: "AWS::URLSuffix" }]] }
               }
               }
             ],
@@ -428,8 +389,8 @@ export = {
             "FunctionName": "OneFunctionToRuleThemAll"
           },
           "DependsOn": [
-            "MyLambdaServiceRole4539ECB6",
-            "MyLambdaServiceRoleDefaultPolicy5BBC6F68"
+            "MyLambdaServiceRoleDefaultPolicy5BBC6F68",
+            "MyLambdaServiceRole4539ECB6"
           ]
           }
         }
@@ -460,7 +421,7 @@ export = {
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": {
-                "Service": "lambda.amazonaws.com"
+                "Service": { "Fn::Join": ["", ["lambda.", { Ref: "AWS::URLSuffix" }]] }
               }
               }
             ],
@@ -538,8 +499,8 @@ export = {
             }
           },
           "DependsOn": [
-            "MyLambdaServiceRole4539ECB6",
-            "MyLambdaServiceRoleDefaultPolicy5BBC6F68"
+            "MyLambdaServiceRoleDefaultPolicy5BBC6F68",
+            "MyLambdaServiceRole4539ECB6"
           ]
           }
         }
@@ -570,7 +531,7 @@ export = {
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": {
-              "Service": "lambda.amazonaws.com"
+              "Service": { "Fn::Join": ["", ["lambda.", { Ref: "AWS::URLSuffix" }]] }
               }
             }
             ],
@@ -620,9 +581,7 @@ export = {
   'default function with SQS DLQ when client provides Queue to be used as DLQ'(test: Test) {
     const stack = new cdk.Stack();
 
-    const dlqStack = new cdk.Stack();
-
-    const dlQueue = new sqs.Queue(dlqStack, 'DeadLetterQueue', {
+    const dlQueue = new sqs.Queue(stack, 'DeadLetterQueue', {
       queueName: 'MyLambda_DLQ',
       retentionPeriodSec: 1209600
     });
@@ -646,7 +605,7 @@ export = {
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": {
-                "Service": "lambda.amazonaws.com"
+                "Service": { "Fn::Join": ["", ["lambda.", { Ref: "AWS::URLSuffix" }]] }
               }
               }
             ],
@@ -718,22 +677,20 @@ export = {
             }
           },
           "DependsOn": [
-            "MyLambdaServiceRole4539ECB6",
-            "MyLambdaServiceRoleDefaultPolicy5BBC6F68"
+            "MyLambdaServiceRoleDefaultPolicy5BBC6F68",
+            "MyLambdaServiceRole4539ECB6"
           ]
           }
         }
         }
-    );
+    , MatchStyle.SUPERSET);
     test.done();
   },
 
   'default function with SQS DLQ when client provides Queue to be used as DLQ and deadLetterQueueEnabled set to true'(test: Test) {
     const stack = new cdk.Stack();
 
-    const dlqStack = new cdk.Stack();
-
-    const dlQueue = new sqs.Queue(dlqStack, 'DeadLetterQueue', {
+    const dlQueue = new sqs.Queue(stack, 'DeadLetterQueue', {
       queueName: 'MyLambda_DLQ',
       retentionPeriodSec: 1209600
     });
@@ -758,7 +715,7 @@ export = {
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": {
-              "Service": "lambda.amazonaws.com"
+              "Service": { "Fn::Join": ["", ["lambda.", { Ref: "AWS::URLSuffix" }]] }
               }
             }
             ],
@@ -830,22 +787,20 @@ export = {
           }
           },
           "DependsOn": [
-          "MyLambdaServiceRole4539ECB6",
-          "MyLambdaServiceRoleDefaultPolicy5BBC6F68"
+            "MyLambdaServiceRoleDefaultPolicy5BBC6F68",
+            "MyLambdaServiceRole4539ECB6",
           ]
         }
         }
       }
-    );
+    , MatchStyle.SUPERSET);
     test.done();
   },
 
   'error when default function with SQS DLQ when client provides Queue to be used as DLQ and deadLetterQueueEnabled set to false'(test: Test) {
     const stack = new cdk.Stack();
 
-    const dlqStack = new cdk.Stack();
-
-    const dlQueue = new sqs.Queue(dlqStack, 'DeadLetterQueue', {
+    const dlQueue = new sqs.Queue(stack, 'DeadLetterQueue', {
       queueName: 'MyLambda_DLQ',
       retentionPeriodSec: 1209600
     });
@@ -911,8 +866,8 @@ export = {
       }
     },
     "DependsOn": [
+      "MyLambdaServiceRoleDefaultPolicy5BBC6F68",
       "MyLambdaServiceRole4539ECB6",
-      "MyLambdaServiceRoleDefaultPolicy5BBC6F68"
     ]
     }, ResourcePart.CompleteDefinition));
 
@@ -969,8 +924,8 @@ export = {
       }
     },
     "DependsOn": [
+      "MyLambdaServiceRoleDefaultPolicy5BBC6F68",
       "MyLambdaServiceRole4539ECB6",
-      "MyLambdaServiceRoleDefaultPolicy5BBC6F68"
     ]
     }, ResourcePart.CompleteDefinition));
 
@@ -1049,9 +1004,11 @@ export = {
     // THEN
     expect(stack).to(haveResource('AWS::IAM::Policy', {
       PolicyDocument: {
+        Version: '2012-10-17',
         Statement: [
           {
             Action: 'lambda:InvokeFunction',
+            Effect: 'Allow',
             Resource: { "Fn::GetAtt": [ "Function76856677", "Arn" ] }
           }
         ]
@@ -1060,10 +1017,337 @@ export = {
 
     test.done();
   },
+
+  'grantInvoke with a service principal'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fn = new lambda.Function(stack, 'Function', {
+      code: lambda.Code.inline('xxx'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NodeJS810,
+    });
+    const service = new iam.ServicePrincipal('apigateway.amazonaws.com');
+
+    // WHEN
+    fn.grantInvoke(service);
+
+    // THEN
+    expect(stack).to(haveResource('AWS::Lambda::Permission', {
+      Action: 'lambda:InvokeFunction',
+      FunctionName: {
+        'Fn::GetAtt': [
+          'Function76856677',
+          'Arn'
+        ]
+      },
+      Principal: 'apigateway.amazonaws.com'
+    }));
+
+    test.done();
+  },
+
+  'grantInvoke with an account principal'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fn = new lambda.Function(stack, 'Function', {
+      code: lambda.Code.inline('xxx'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NodeJS810,
+    });
+    const account = new iam.AccountPrincipal('123456789012');
+
+    // WHEN
+    fn.grantInvoke(account);
+
+    // THEN
+    expect(stack).to(haveResource('AWS::Lambda::Permission', {
+      Action: 'lambda:InvokeFunction',
+      FunctionName: {
+        'Fn::GetAtt': [
+          'Function76856677',
+          'Arn'
+        ]
+      },
+      Principal: '123456789012'
+    }));
+
+    test.done();
+  },
+
+  'Can use metricErrors on a lambda Function'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fn = new lambda.Function(stack, 'Function', {
+      code: lambda.Code.inline('xxx'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NodeJS810,
+    });
+
+    // THEN
+    test.deepEqual(stack.node.resolve(fn.metricErrors()), {
+      dimensions: { FunctionName: { Ref: 'Function76856677' }},
+      namespace: 'AWS/Lambda',
+      metricName: 'Errors',
+      periodSec: 300,
+      statistic: 'Sum',
+    });
+
+    test.done();
+  },
+
+  'addEventSource calls bind'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fn = new lambda.Function(stack, 'Function', {
+      code: lambda.Code.inline('xxx'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NodeJS810,
+    });
+
+    let bindTarget;
+
+    class EventSourceMock implements lambda.IEventSource {
+      public bind(target: lambda.IFunction) {
+        bindTarget = target;
+      }
+    }
+
+    // WHEN
+    fn.addEventSource(new EventSourceMock());
+
+    // THEN
+    test.same(bindTarget, fn);
+    test.done();
+  },
+  'support inline code for Ruby runtime'(test: Test) {
+    const stack = new cdk.Stack();
+
+    new lambda.Function(stack, 'MyLambda', {
+      code: new lambda.InlineCode('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.Ruby25,
+    });
+
+    expect(stack).toMatch({ Resources:
+      { MyLambdaServiceRole4539ECB6:
+          { Type: 'AWS::IAM::Role',
+          Properties:
+          { AssumeRolePolicyDocument:
+            { Statement:
+            [ { Action: 'sts:AssumeRole',
+              Effect: 'Allow',
+              Principal: { Service: { "Fn::Join": ["", ['lambda.', { Ref: "AWS::URLSuffix" }]] } } } ],
+              Version: '2012-10-17' },
+          ManagedPolicyArns:
+          // arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+            // tslint:disable-next-line:max-line-length
+            [{'Fn::Join': ['', ['arn:', {Ref: 'AWS::Partition'}, ':iam::aws:policy/service-role/AWSLambdaBasicExecutionRole']]}],
+          }},
+        MyLambdaCCE802FB:
+          { Type: 'AWS::Lambda::Function',
+          Properties:
+          { Code: { ZipFile: 'foo' },
+          Handler: 'index.handler',
+          Role: { 'Fn::GetAtt': [ 'MyLambdaServiceRole4539ECB6', 'Arn' ] },
+          Runtime: 'ruby2.5' },
+          DependsOn: [ 'MyLambdaServiceRole4539ECB6' ] } } });
+    test.done();
+  },
+
+  'using an incompatible layer'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack(undefined, 'TestStack');
+    const layer = lambda.LayerVersion.fromLayerVersionAttributes(stack, 'TestLayer', {
+      layerVersionArn: 'arn:aws:...',
+      compatibleRuntimes: [lambda.Runtime.NodeJS810],
+    });
+
+    // THEN
+    test.throws(() => new lambda.Function(stack, 'Function', {
+                  layers: [layer],
+                  runtime: lambda.Runtime.NodeJS610,
+                  code: lambda.Code.inline('exports.main = function() { console.log("DONE"); }'),
+                  handler: 'index.main'
+                }),
+                /nodejs6.10 is not in \[nodejs8.10\]/);
+
+    test.done();
+  },
+
+  'using more than 5 layers'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack(undefined, 'TestStack');
+    const layers = new Array(6).fill(lambda.LayerVersion.fromLayerVersionAttributes(stack, 'TestLayer', {
+      layerVersionArn: 'arn:aws:...',
+      compatibleRuntimes: [lambda.Runtime.NodeJS810],
+    }));
+
+    // THEN
+    test.throws(() => new lambda.Function(stack, 'Function', {
+                  layers,
+                  runtime: lambda.Runtime.NodeJS810,
+                  code: lambda.Code.inline('exports.main = function() { console.log("DONE"); }'),
+                  handler: 'index.main'
+                }),
+                /Unable to add layer:/);
+
+    test.done();
+  },
+
+  'environment variables are prohibited in China'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack(undefined, undefined, { env: { region: 'cn-north-1' }});
+
+    // WHEN
+    test.throws(() => {
+      new lambda.Function(stack, 'MyLambda', {
+        code: new lambda.InlineCode('foo'),
+        handler: 'index.handler',
+        runtime: lambda.Runtime.NodeJS,
+        environment: {
+          SOME: 'Variable'
+        }
+      });
+    }, /Environment variables are not supported/);
+
+    test.done();
+  },
+
+  'environment variables work in an unspecified region'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new lambda.Function(stack, 'MyLambda', {
+      code: new lambda.InlineCode('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NodeJS,
+      environment: {
+        SOME: 'Variable'
+      }
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::Lambda::Function', {
+      Environment: {
+        Variables: {
+          SOME: "Variable"
+        }
+      }
+    }));
+
+    test.done();
+
+  },
+
+  'support reserved concurrent executions'(test: Test) {
+    const stack = new cdk.Stack();
+
+    new lambda.Function(stack, 'MyLambda', {
+      code: new lambda.InlineCode('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NodeJS,
+      reservedConcurrentExecutions: 10
+    });
+
+    expect(stack).toMatch({ Resources:
+      { MyLambdaServiceRole4539ECB6:
+          { Type: 'AWS::IAM::Role',
+          Properties:
+          { AssumeRolePolicyDocument:
+            { Statement:
+            [ { Action: 'sts:AssumeRole',
+              Effect: 'Allow',
+              Principal: { Service: { "Fn::Join": ["", ['lambda.', { Ref: "AWS::URLSuffix" }]] } } } ],
+              Version: '2012-10-17' },
+          ManagedPolicyArns:
+          // arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+            // tslint:disable-next-line:max-line-length
+            [{'Fn::Join': ['', ['arn:', {Ref: 'AWS::Partition'}, ':iam::aws:policy/service-role/AWSLambdaBasicExecutionRole']]}],
+          }},
+        MyLambdaCCE802FB:
+          { Type: 'AWS::Lambda::Function',
+          Properties:
+          { Code: { ZipFile: 'foo' },
+          Handler: 'index.handler',
+          ReservedConcurrentExecutions: 10,
+          Role: { 'Fn::GetAtt': [ 'MyLambdaServiceRole4539ECB6', 'Arn' ] },
+          Runtime: 'nodejs' },
+          DependsOn: [ 'MyLambdaServiceRole4539ECB6' ] } } });
+    test.done();
+  },
+
+  'its possible to specify event sources upon creation'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    let bindCount = 0;
+
+    class EventSource implements lambda.IEventSource {
+      public bind(_: lambda.FunctionBase): void {
+        bindCount++;
+      }
+    }
+
+    // WHEN
+    new lambda.Function(stack, 'fn', {
+      code: lambda.Code.inline('boom'),
+      runtime: lambda.Runtime.NodeJS810,
+      handler: 'index.bam',
+      events: [
+        new EventSource(),
+        new EventSource(),
+      ]
+    });
+
+    // THEN
+    test.deepEqual(bindCount, 2);
+    test.done();
+  },
+
+  'Provided Runtime returns the right values'(test: Test) {
+    const rt = lambda.Runtime.Provided;
+
+    test.equal(rt.name, 'provided');
+    test.equal(rt.supportsInlineCode, false);
+
+    test.done();
+  },
+
+  'specify log retention'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new lambda.Function(stack, 'MyLambda', {
+      code: new lambda.InlineCode('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NodeJS,
+      logRetentionDays: logs.RetentionDays.OneMonth
+    });
+
+    // THEN
+    expect(stack).to(haveResource('Custom::LogRetention', {
+      'LogGroupName': {
+        'Fn::Join': [
+          '',
+          [
+            '/aws/lambda/',
+            {
+              Ref: 'MyLambdaCCE802FB'
+            }
+          ]
+        ]
+      },
+      'RetentionInDays': 30
+    }));
+
+    test.done();
+   }
 };
 
-function newTestLambda(parent: cdk.Construct) {
-  return new lambda.Function(parent, 'MyLambda', {
+function newTestLambda(scope: cdk.Construct) {
+  return new lambda.Function(scope, 'MyLambda', {
     code: new lambda.InlineCode('foo'),
     handler: 'bar',
     runtime: lambda.Runtime.Python27

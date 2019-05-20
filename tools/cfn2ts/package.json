@@ -1,13 +1,14 @@
 {
   "name": "cfn2ts",
   "private": true,
-  "version": "0.13.0",
+  "version": "0.31.0",
   "description": "Generates typescript types from CloudFormation spec, with support for enrichments",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "repository": {
     "type": "git",
-    "url": "https://github.com/awslabs/aws-cdk.git"
+    "url": "https://github.com/awslabs/aws-cdk.git",
+    "directory": "tools/cfn2ts"
   },
   "bin": {
     "cfn2ts": "bin/cfn2ts"
@@ -20,6 +21,7 @@
     "pkglint": "pkglint -f"
   },
   "nyc": {
+    "statements": 0,
     "lines": 0,
     "branches": 0
   },
@@ -30,23 +32,24 @@
   },
   "license": "Apache-2.0",
   "dependencies": {
-    "@aws-cdk/cfnspec": "^0.13.0",
-    "codemaker": "^0.6.4",
-    "colors": "^1.2.1",
-    "fast-json-patch": "^2.0.6",
-    "fs-extra": "^4.0.2",
-    "source-map-support": "^0.5.6",
-    "yargs": "^9.0.1"
+    "@aws-cdk/cfnspec": "^0.31.0",
+    "codemaker": "^0.10.0",
+    "fast-json-patch": "^2.1.0",
+    "fs-extra": "^7.0.1",
+    "yargs": "^13.2.2"
   },
   "devDependencies": {
-    "@types/fs-extra": "^4.0.8",
-    "@types/yargs": "^8.0.3",
-    "cdk-build-tools": "^0.13.0",
-    "pkglint": "^0.13.0"
+    "@types/fs-extra": "^5.0.5",
+    "@types/yargs": "^13.0.0",
+    "cdk-build-tools": "^0.31.0",
+    "pkglint": "^0.31.0"
   },
   "keywords": [
     "aws",
     "cdk"
   ],
-  "homepage": "https://github.com/awslabs/aws-cdk"
+  "homepage": "https://github.com/awslabs/aws-cdk",
+  "engines": {
+    "node": ">= 8.10.0"
+  }
 }

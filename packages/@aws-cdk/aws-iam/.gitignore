@@ -12,3 +12,4 @@ dist
 coverage
 .nycrc
 .LAST_PACKAGE
+*.snk

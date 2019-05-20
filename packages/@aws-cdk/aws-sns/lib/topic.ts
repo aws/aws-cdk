@@ -1,6 +1,6 @@
-import { Construct,  } from '@aws-cdk/cdk';
-import { cloudformation } from './sns.generated';
-import { TopicRef } from './topic-ref';
+import { Construct } from '@aws-cdk/cdk';
+import { CfnTopic } from './sns.generated';
+import { ITopic, TopicBase } from './topic-base';
 
 /**
  * Properties for a new SNS topic
@@ -11,7 +11,7 @@ export interface TopicProps {
    *
    * @default None
    */
-  displayName?: string;
+  readonly displayName?: string;
 
   /**
    * A name for the topic.
@@ -22,22 +22,33 @@ export interface TopicProps {
    *
    * @default Generated name
    */
-  topicName?: string;
+  readonly topicName?: string;
 }
 
 /**
  * A new SNS topic
  */
-export class Topic extends TopicRef {
+export class Topic extends TopicBase {
+
+  public static fromTopicArn(scope: Construct, id: string, topicArn: string): ITopic {
+    class Import extends TopicBase {
+      public readonly topicArn = topicArn;
+      public readonly topicName = scope.node.stack.parseArn(topicArn).resource;
+      protected autoCreatePolicy: boolean = false;
+    }
+
+    return new Import(scope, id);
+  }
+
   public readonly topicArn: string;
   public readonly topicName: string;
 
   protected readonly autoCreatePolicy: boolean = true;
 
-  constructor(parent: Construct, name: string, props: TopicProps = {}) {
-    super(parent, name);
+  constructor(scope: Construct, id: string, props: TopicProps = {}) {
+    super(scope, id);
 
-    const resource = new cloudformation.TopicResource(this, 'Resource', {
+    const resource = new CfnTopic(this, 'Resource', {
       displayName: props.displayName,
       topicName: props.topicName
     });

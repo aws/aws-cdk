@@ -1,30 +1,41 @@
 import child_process = require("child_process");
+import colors = require('colors/safe');
 import fs = require('fs');
 import util = require('util');
 import { Timers } from "./timer";
+
+interface ShellOptions {
+  timers?: Timers;
+}
 
 /**
  * A shell command that does what you want
  *
  * Is platform-aware, handles errors nicely.
  */
-export async function shell(command: string[], timers?: Timers): Promise<string> {
-  const timer = (timers || new Timers()).start(command[0]);
+export async function shell(command: string[], options: ShellOptions = {}): Promise<string> {
+  const timer = (options.timers || new Timers()).start(command[0]);
 
   await makeShellScriptExecutable(command[0]);
 
   const child = child_process.spawn(command[0], command.slice(1), {
     // Need this for Windows where we want .cmd and .bat to be found as well.
     shell: true,
-    stdio: [ 'ignore', 'pipe', 'inherit' ]
+    stdio: [ 'ignore', 'pipe', 'pipe' ]
   });
+
+  const makeRed = process.stderr.isTTY ? colors.red : (x: string) => x;
 
   return new Promise<string>((resolve, reject) => {
     const stdout = new Array<any>();
 
-    child.stdout.on('data', chunk => {
+    child.stdout!.on('data', chunk => {
       process.stdout.write(chunk);
       stdout.push(chunk);
+    });
+
+    child.stderr!.on('data', chunk => {
+      process.stderr.write(makeRed(chunk.toString()));
     });
 
     child.once('error', reject);

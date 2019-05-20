@@ -7,7 +7,7 @@ interface NotificationsProps {
   /**
    * The bucket to manage notifications for.
    *
-   * This cannot be a `BucketRef` because the bucket maintains the 1:1
+   * This cannot be an `IBucket` because the bucket maintains the 1:1
    * relationship with this resource.
    */
   bucket: Bucket;
@@ -32,11 +32,11 @@ export class BucketNotifications extends cdk.Construct {
   private readonly lambdaNotifications = new Array<LambdaFunctionConfiguration>();
   private readonly queueNotifications = new Array<QueueConfiguration>();
   private readonly topicNotifications = new Array<TopicConfiguration>();
-  private resource?: cdk.Resource;
+  private resource?: cdk.CfnResource;
   private readonly bucket: Bucket;
 
-  constructor(parent: cdk.Construct, id: string, props: NotificationsProps) {
-    super(parent, id);
+  constructor(scope: cdk.Construct, id: string, props: NotificationsProps) {
+    super(scope, id);
     this.bucket = props.bucket;
   }
 
@@ -53,7 +53,7 @@ export class BucketNotifications extends cdk.Construct {
 
     // resolve target. this also provides an opportunity for the target to e.g. update
     // policies to allow this notification to happen.
-    const targetProps = target.asBucketNotificationDestination(this.bucket.bucketArn, this.bucket.uniqueId);
+    const targetProps = target.asBucketNotificationDestination(this.bucket.bucketArn, this.bucket.node.uniqueId);
     const commonConfig: CommonConfiguration = {
       Events: [ event ],
       Filter: renderFilters(filters),
@@ -63,7 +63,7 @@ export class BucketNotifications extends cdk.Construct {
     // for example, the SNS topic policy must be created /before/ the notification resource.
     // otherwise, S3 won't be able to confirm the subscription.
     if (targetProps.dependencies) {
-      resource.addDependency(...targetProps.dependencies);
+      resource.node.addDependency(...targetProps.dependencies);
     }
 
     // based on the target type, add the the correct configurations array
@@ -102,7 +102,7 @@ export class BucketNotifications extends cdk.Construct {
     if (!this.resource) {
       const handlerArn = NotificationsResourceHandler.singleton(this);
 
-      this.resource = new cdk.Resource(this, 'Resource', {
+      this.resource = new cdk.CfnResource(this, 'Resource', {
         type: 'Custom::S3BucketNotifications',
         properties: {
           ServiceToken: handlerArn,

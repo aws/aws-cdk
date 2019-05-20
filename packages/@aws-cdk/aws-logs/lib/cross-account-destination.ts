@@ -1,7 +1,7 @@
 import iam = require('@aws-cdk/aws-iam');
 import cdk = require('@aws-cdk/cdk');
-import { LogGroupRef } from './log-group';
-import { cloudformation } from './logs.generated';
+import { ILogGroup } from './log-group';
+import { CfnDestination } from './logs.generated';
 import { ILogSubscriptionDestination, LogSubscriptionDestination } from './subscription-filter';
 
 export interface CrossAccountDestinationProps {
@@ -10,19 +10,19 @@ export interface CrossAccountDestinationProps {
    *
    * @default Automatically generated
    */
-  destinationName?: string;
+  readonly destinationName?: string;
 
   /**
    * The role to assume that grants permissions to write to 'target'.
    *
    * The role must be assumable by 'logs.{REGION}.amazonaws.com'.
    */
-  role: iam.Role;
+  readonly role: iam.IRole;
 
   /**
    * The log destination target's ARN
    */
-  targetArn: string;
+  readonly targetArn: string;
 }
 
 /**
@@ -54,18 +54,18 @@ export class CrossAccountDestination extends cdk.Construct implements ILogSubscr
   /**
    * The inner resource
    */
-  private readonly resource: cloudformation.DestinationResource;
+  private readonly resource: CfnDestination;
 
-  constructor(parent: cdk.Construct, id: string, props: CrossAccountDestinationProps) {
-    super(parent, id);
+  constructor(scope: cdk.Construct, id: string, props: CrossAccountDestinationProps) {
+    super(scope, id);
 
     // In the underlying model, the name is not optional, but we make it so anyway.
-    const destinationName = props.destinationName || new cdk.Token(() => this.generateUniqueName());
+    const destinationName = props.destinationName || new cdk.Token(() => this.generateUniqueName()).toString();
 
-    this.resource = new cloudformation.DestinationResource(this, 'Resource', {
+    this.resource = new CfnDestination(this, 'Resource', {
       destinationName,
       // Must be stringified policy
-      destinationPolicy: new cdk.Token(() => this.stringifiedPolicyDocument()),
+      destinationPolicy: this.lazyStringifiedPolicyDocument(),
       roleArn: props.role.roleArn,
       targetArn: props.targetArn
     });
@@ -78,7 +78,7 @@ export class CrossAccountDestination extends cdk.Construct implements ILogSubscr
     this.policyDocument.addStatement(statement);
   }
 
-  public logSubscriptionDestination(_sourceLogGroup: LogGroupRef): LogSubscriptionDestination {
+  public logSubscriptionDestination(_sourceLogGroup: ILogGroup): LogSubscriptionDestination {
     return { arn: this.destinationArn };
   }
 
@@ -87,14 +87,13 @@ export class CrossAccountDestination extends cdk.Construct implements ILogSubscr
    */
   private generateUniqueName(): string {
     // Combination of stack name and LogicalID, which are guaranteed to be unique.
-    const stack = cdk.Stack.find(this);
-    return stack.name + '-' + this.resource.logicalId;
+    return this.node.stack.name + '-' + this.resource.logicalId;
   }
 
   /**
    * Return a stringified JSON version of the PolicyDocument
    */
-  private stringifiedPolicyDocument() {
-    return this.policyDocument.isEmpty ? '' : cdk.CloudFormationJSON.stringify(cdk.resolve(this.policyDocument));
+  private lazyStringifiedPolicyDocument(): string {
+    return new cdk.Token(() => this.policyDocument.isEmpty ? '' : this.node.stringifyJson(this.policyDocument)).toString();
   }
 }

@@ -1,4 +1,7 @@
 # applet is loaded from the local ./test-applet.js file
-applet: ./test-applet:TestApplet
-prop1: hello
-prop2: 123
+applets:
+  TestApplet:
+    type: ./test-applet:TestApplet
+    properties:
+      prop1: hello
+      prop2: 123

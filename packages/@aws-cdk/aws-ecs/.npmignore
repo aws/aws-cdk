@@ -12,3 +12,7 @@ dist
 
 # Include .jsii
 !.jsii
+!lib/adopt-repository/*
+*.snk
+
+*.tsbuildinfo

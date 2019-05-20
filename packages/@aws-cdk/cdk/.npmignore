@@ -12,3 +12,10 @@ dist
 
 # Include .jsii
 !.jsii
+
+*.snk
+
+# Work around npm@6.8.0 ignoring 'core' by default -- https://github.com/npm/npm-packlist/issues/24
+!core
+
+*.tsbuildinfo

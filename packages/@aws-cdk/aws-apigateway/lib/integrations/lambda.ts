@@ -9,7 +9,7 @@ export interface LambdaIntegrationOptions extends IntegrationOptions {
    * Use proxy integration or normal (request/response mapping) integration.
    * @default true
    */
-  proxy?: boolean;
+  readonly proxy?: boolean;
 
   /**
    * Allow invoking method from AWS Console UI (for testing purposes).
@@ -21,7 +21,7 @@ export interface LambdaIntegrationOptions extends IntegrationOptions {
    *
    * @default true
    */
-  allowTestInvoke?: boolean;
+  readonly allowTestInvoke?: boolean;
 }
 
 /**
@@ -34,10 +34,10 @@ export interface LambdaIntegrationOptions extends IntegrationOptions {
  *
  */
 export class LambdaIntegration extends AwsIntegration {
-  private readonly handler: lambda.FunctionRef;
+  private readonly handler: lambda.IFunction;
   private readonly enableTest: boolean;
 
-  constructor(handler: lambda.FunctionRef, options: LambdaIntegrationOptions = { }) {
+  constructor(handler: lambda.IFunction, options: LambdaIntegrationOptions = { }) {
     const proxy = options.proxy === undefined ? true : options.proxy;
 
     super({
@@ -52,9 +52,10 @@ export class LambdaIntegration extends AwsIntegration {
   }
 
   public bind(method: Method) {
+    super.bind(method);
     const principal = new iam.ServicePrincipal('apigateway.amazonaws.com');
 
-    const desc = `${method.httpMethod}.${method.resource.resourcePath.replace(/\//g, '.')}`;
+    const desc = `${method.httpMethod}.${method.resource.path.replace(/\//g, '.')}`;
 
     this.handler.addPermission(`ApiPermission.${desc}`, {
       principal,

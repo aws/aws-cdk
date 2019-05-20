@@ -1,6 +1,6 @@
 import { Construct } from '@aws-cdk/cdk';
-import { EncryptionKeyRef } from './key';
-import { cloudformation } from './kms.generated';
+import { IKey } from './key';
+import { CfnAlias } from './kms.generated';
 
 const REQUIRED_ALIAS_PREFIX = 'alias/';
 const DISALLOWED_PREFIX = REQUIRED_ALIAS_PREFIX + 'AWS';
@@ -11,14 +11,14 @@ export interface EncryptionKeyAliasProps {
    * forward slash, such as alias/. You can't specify aliases that begin with
    * alias/AWS. These aliases are reserved.
    */
-  alias: string;
+  readonly alias: string;
 
   /**
    * The ID of the key for which you are creating the alias. Specify the key's
    * globally unique identifier or Amazon Resource Name (ARN). You can't
    * specify another alias.
    */
-  key: EncryptionKeyRef;
+  readonly key: IKey;
 }
 
 /**
@@ -36,8 +36,8 @@ export class EncryptionKeyAlias extends Construct {
    */
   public aliasName: string;
 
-  constructor(parent: Construct, name: string, props: EncryptionKeyAliasProps) {
-    super(parent, name);
+  constructor(scope: Construct, id: string, props: EncryptionKeyAliasProps) {
+    super(scope, id);
 
     if (!props.alias.startsWith(REQUIRED_ALIAS_PREFIX)) {
       throw new Error(`Alias must start with the prefix "${REQUIRED_ALIAS_PREFIX}": ${props.alias}`);
@@ -51,7 +51,7 @@ export class EncryptionKeyAlias extends Construct {
       throw new Error(`Alias cannot start with ${DISALLOWED_PREFIX}: ${props.alias}`);
     }
 
-    const resource = new cloudformation.AliasResource(this, 'Resource', {
+    const resource = new CfnAlias(this, 'Resource', {
       aliasName: props.alias,
       targetKeyId: props.key.keyArn
     });

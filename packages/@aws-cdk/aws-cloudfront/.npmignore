@@ -13,3 +13,7 @@ coverage
 
 # Include .jsii
 !.jsii
+
+*.snk
+
+*.tsbuildinfo

@@ -1,5 +1,6 @@
 import { expect, haveResource } from '@aws-cdk/assert';
 import cdk = require('@aws-cdk/cdk');
+import { Stack } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
 import apigw = require('../lib');
 
@@ -134,5 +135,155 @@ export = {
     });
 
     test.done();
+  },
+
+  'getResource': {
+
+    'root resource': {
+      'returns undefined if not found'(test: Test) {
+        // GIVEN
+        const stack = new Stack();
+        const api = new apigw.RestApi(stack, 'MyRestApi');
+
+        // THEN
+        test.deepEqual(api.root.getResource('boom'), undefined);
+        test.done();
+      },
+
+      'returns the resource if found'(test: Test) {
+        // GIVEN
+        const stack = new Stack();
+        const api = new apigw.RestApi(stack, 'MyRestApi');
+
+        // WHEN
+        const r1 = api.root.addResource('hello');
+        const r2 = api.root.addResource('world');
+
+        // THEN
+        test.deepEqual(api.root.getResource('hello'), r1);
+        test.deepEqual(api.root.getResource('world'), r2);
+        test.done();
+      },
+
+      'returns the resource even if it was created using "new"'(test: Test) {
+        // GIVEN
+        const stack = new Stack();
+        const api = new apigw.RestApi(stack, 'MyRestApi');
+
+        // WHEN
+        const r1 = new apigw.Resource(stack, 'child', {
+          parent: api.root,
+          pathPart: 'yello'
+        });
+
+        // THEN
+        test.deepEqual(api.root.getResource('yello'), r1);
+        test.done();
+      }
+
+    },
+
+    'non-root': {
+
+      'returns undefined if not found'(test: Test) {
+        // GIVEN
+        const stack = new Stack();
+        const api = new apigw.RestApi(stack, 'MyRestApi');
+        const res = api.root.addResource('boom');
+
+        // THEN
+        test.deepEqual(res.getResource('child-of-boom'), undefined);
+        test.done();
+      },
+
+      'returns the resource if found'(test: Test) {
+        // GIVEN
+        const stack = new Stack();
+        const api = new apigw.RestApi(stack, 'MyRestApi');
+        const child = api.root.addResource('boom');
+
+        // WHEN
+        const r1 = child.addResource('hello');
+        const r2 = child.addResource('world');
+
+        // THEN
+        test.deepEqual(child.getResource('hello'), r1);
+        test.deepEqual(child.getResource('world'), r2);
+        test.done();
+      },
+
+      'returns the resource even if created with "new"'(test: Test) {
+        // GIVEN
+        const stack = new Stack();
+        const api = new apigw.RestApi(stack, 'MyRestApi');
+        const child = api.root.addResource('boom');
+
+        // WHEN
+        const r1 = child.addResource('hello');
+
+        const r2 = new apigw.Resource(stack, 'world', {
+          parent: child,
+          pathPart: 'outside-world'
+        });
+
+        // THEN
+        test.deepEqual(child.getResource('hello'), r1);
+        test.deepEqual(child.getResource('outside-world'), r2);
+        test.done();
+
+      }
+    },
+
+    'resourceForPath': {
+
+      'empty path or "/" (on root) returns this'(test: Test) {
+        // GIVEN
+        const stack = new Stack();
+        const api = new apigw.RestApi(stack, 'MyRestApi');
+
+        // THEN
+        test.deepEqual(api.root.resourceForPath(''), api.root);
+        test.deepEqual(api.root.resourceForPath('/'), api.root);
+        test.deepEqual(api.root.resourceForPath('///'), api.root);
+        test.done();
+      },
+
+      'returns a resource for that path'(test: Test) {
+        // GIVEN
+        const stack = new Stack();
+        const api = new apigw.RestApi(stack, 'MyRestApi');
+
+        // WHEN
+        const resource = api.root.resourceForPath('/boom/trach');
+
+        // THEN
+        test.deepEqual(resource.path, '/boom/trach');
+        test.done();
+      },
+
+      'resources not created if not needed'(test: Test) {
+        // GIVEN
+        const stack = new Stack();
+        const api = new apigw.RestApi(stack, 'MyRestApi');
+
+        // WHEN
+        const trach = api.root.resourceForPath('/boom/trach');
+        const bam1 = api.root.resourceForPath('/boom/bam');
+
+        // THEN
+        const parent = api.root.getResource('boom');
+        test.ok(parent);
+        test.deepEqual(parent!.path, '/boom');
+
+        test.same(trach.parentResource, parent);
+        test.deepEqual(trach.parentResource!.path, '/boom');
+
+        const bam2 = api.root.resourceForPath('/boom/bam');
+        test.same(bam1, bam2);
+        test.deepEqual(bam1.parentResource!.path, '/boom');
+        test.done();
+      }
+
+    }
   }
 };

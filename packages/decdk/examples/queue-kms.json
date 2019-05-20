@@ -1,0 +1,11 @@
+{
+  "$schema": "../cdk.schema.json",
+  "Resources": {
+    "MyQueue": {
+      "Type": "@aws-cdk/aws-sqs.Queue",
+      "Properties": {
+        "encryption": "Kms"
+      }
+    }
+  }
+}

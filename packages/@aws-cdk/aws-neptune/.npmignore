@@ -14,3 +14,10 @@ dist
 .LAST_BUILD
 .LAST_PACKAGE
 .jsii
+
+*.snk
+
+# Include .jsii
+!.jsii
+
+*.tsbuildinfo

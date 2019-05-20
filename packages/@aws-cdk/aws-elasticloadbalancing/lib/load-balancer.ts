@@ -1,8 +1,8 @@
-import codedeploy = require('@aws-cdk/aws-codedeploy-api');
-import { AnyIPv4, Connections, IConnectable, IPortRange, SecurityGroup, SecurityGroupRef,
-  TcpPort, VpcNetworkRef, VpcSubnetRef  } from '@aws-cdk/aws-ec2';
-import cdk = require('@aws-cdk/cdk');
-import { cloudformation } from './elasticloadbalancing.generated';
+import {
+  AnyIPv4, Connections, IConnectable, IPortRange, ISecurityGroup,
+  ISubnet, IVpc, SecurityGroup, TcpPort  } from '@aws-cdk/aws-ec2';
+import { Construct, Resource, Token } from '@aws-cdk/cdk';
+import { CfnLoadBalancer } from './elasticloadbalancing.generated';
 
 /**
  * Construction properties for a LoadBalancer
@@ -11,7 +11,7 @@ export interface LoadBalancerProps {
   /**
    * VPC network of the fleet instances
    */
-  vpc: VpcNetworkRef;
+  readonly vpc: IVpc;
 
   /**
    * Whether this is an internet-facing Load Balancer
@@ -21,28 +21,28 @@ export interface LoadBalancerProps {
    *
    * @default false
    */
-  internetFacing?: boolean;
+  readonly internetFacing?: boolean;
 
   /**
    * What listeners to set up for the load balancer.
    *
    * Can also be added by .addListener()
    */
-  listeners?: LoadBalancerListener[];
+  readonly listeners?: LoadBalancerListener[];
 
   /**
    * What targets to load balance to.
    *
    * Can also be added by .addTarget()
    */
-  targets?: ILoadBalancerTarget[];
+  readonly targets?: ILoadBalancerTarget[];
 
   /**
    * Health check settings for the load balancing targets.
    *
    * Not required but recommended.
    */
-  healthCheck?: HealthCheck;
+  readonly healthCheck?: HealthCheck;
 }
 
 /**
@@ -52,7 +52,7 @@ export interface HealthCheck {
   /**
    * What port number to health check on
    */
-  port: number;
+  readonly port: number;
 
   /**
    * What protocol to use for health checking
@@ -61,7 +61,7 @@ export interface HealthCheck {
    *
    * @default Automatic
    */
-  protocol?: LoadBalancingProtocol;
+  readonly protocol?: LoadBalancingProtocol;
 
   /**
    * What path to use for HTTP or HTTPS health check (must return 200)
@@ -71,35 +71,35 @@ export interface HealthCheck {
    *
    * @default "/"
    */
-  path?: string;
+  readonly path?: string;
 
   /**
    * After how many successful checks is an instance considered healthy
    *
    * @default 2
    */
-  healthyThreshold?: number;
+  readonly healthyThreshold?: number;
 
   /**
    * After how many unsuccessful checks is an instance considered unhealthy
    *
    * @default 5
    */
-  unhealthyThreshold?: number;
+  readonly unhealthyThreshold?: number;
 
   /**
    * Number of seconds between health checks
    *
    * @default 30
    */
-  interval?: number;
+  readonly interval?: number;
 
   /**
    * Health check timeout
    *
    * @default 5
    */
-  timeout?: number;
+  readonly timeout?: number;
 }
 
 /**
@@ -108,6 +108,7 @@ export interface HealthCheck {
 export interface ILoadBalancerTarget extends IConnectable {
   /**
    * Attach load-balanced target to a classic ELB
+   * @param loadBalancer [disable-awslint:ref-via-interface] The load balancer to attach the target to
    */
   attachToClassicLB(loadBalancer: LoadBalancer): void;
 }
@@ -119,7 +120,7 @@ export interface LoadBalancerListener {
   /**
    * External listening port
    */
-  externalPort: number;
+  readonly externalPort: number;
 
   /**
    * What public protocol to use for load balancing
@@ -128,7 +129,7 @@ export interface LoadBalancerListener {
    *
    * May be omitted if the external port is either 80 or 443.
    */
-  externalProtocol?: LoadBalancingProtocol;
+  readonly externalProtocol?: LoadBalancingProtocol;
 
   /**
    * Instance listening port
@@ -137,7 +138,7 @@ export interface LoadBalancerListener {
    *
    * @default externalPort
    */
-  internalPort?: number;
+  readonly internalPort?: number;
 
   /**
    * What public protocol to use for load balancing
@@ -150,17 +151,17 @@ export interface LoadBalancerListener {
    * is 'tcp' or 'ssl', the instance protocol is 'http' if the
    * front-end protocol is 'https'.
    */
-  internalProtocol?: LoadBalancingProtocol;
+  readonly internalProtocol?: LoadBalancingProtocol;
 
   /**
    * SSL policy names
    */
-  policyNames?: string[];
+  readonly policyNames?: string[];
 
   /**
    * ID of SSL certificate
    */
-  sslCertificateId?: string;
+  readonly sslCertificateId?: string;
 
   /**
    * Allow connections to the load balancer from the given set of connection peers
@@ -171,7 +172,7 @@ export interface LoadBalancerListener {
    *
    * @default Anywhere
    */
-  allowConnectionsFrom?: IConnectable[];
+  readonly allowConnectionsFrom?: IConnectable[];
 }
 
 export enum LoadBalancingProtocol {
@@ -186,7 +187,7 @@ export enum LoadBalancingProtocol {
  *
  * Routes to a fleet of of instances in a VPC.
  */
-export class LoadBalancer extends cdk.Construct implements IConnectable, codedeploy.ILoadBalancer {
+export class LoadBalancer extends Resource implements IConnectable {
   /**
    * Control all connections from and to this load balancer
    */
@@ -197,29 +198,32 @@ export class LoadBalancer extends cdk.Construct implements IConnectable, codedep
    */
   public readonly listenerPorts: ListenerPort[] = [];
 
-  private readonly elb: cloudformation.LoadBalancerResource;
+  private readonly elb: CfnLoadBalancer;
   private readonly securityGroup: SecurityGroup;
-  private readonly listeners: cloudformation.LoadBalancerResource.ListenersProperty[] = [];
+  private readonly listeners: CfnLoadBalancer.ListenersProperty[] = [];
 
   private readonly instancePorts: number[] = [];
   private readonly targets: ILoadBalancerTarget[] = [];
 
-  constructor(parent: cdk.Construct, name: string, props: LoadBalancerProps) {
-    super(parent, name);
+  constructor(scope: Construct, id: string, props: LoadBalancerProps) {
+    super(scope, id);
 
-    this.securityGroup = new SecurityGroup(this, 'SecurityGroup', { vpc: props.vpc });
-    this.connections = new Connections({ securityGroup: this.securityGroup });
+    this.securityGroup = new SecurityGroup(this, 'SecurityGroup', { vpc: props.vpc, allowAllOutbound: false });
+    this.connections = new Connections({ securityGroups: [this.securityGroup] });
 
     // Depending on whether the ELB has public or internal IPs, pick the right backend subnets
-    const subnets: VpcSubnetRef[] = props.internetFacing ? props.vpc.publicSubnets : props.vpc.privateSubnets;
+    const subnets: ISubnet[] = props.internetFacing ? props.vpc.publicSubnets : props.vpc.privateSubnets;
 
-    this.elb = new cloudformation.LoadBalancerResource(this, 'Resource', {
+    this.elb = new CfnLoadBalancer(this, 'Resource', {
       securityGroups: [ this.securityGroup.securityGroupId ],
       subnets: subnets.map(s => s.subnetId),
-      listeners: new cdk.Token(() => this.listeners),
+      listeners: new Token(() => this.listeners),
       scheme: props.internetFacing ? 'internet-facing' : 'internal',
       healthCheck: props.healthCheck && healthCheckToJSON(props.healthCheck),
     });
+    if (props.internetFacing) {
+      this.elb.node.addDependency(...subnets.map(s => s.internetConnectivityEstablished));
+    }
 
     ifUndefined(props.listeners, []).forEach(b => this.addListener(b));
     ifUndefined(props.targets, []).forEach(t => this.addTarget(t));
@@ -267,31 +271,46 @@ export class LoadBalancer extends cdk.Construct implements IConnectable, codedep
     this.newTarget(target);
   }
 
+  /**
+   * @attribute
+   */
   public get loadBalancerName() {
     return this.elb.ref;
   }
 
+  /**
+   * @attribute
+   */
+  public get loadBalancerCanonicalHostedZoneNameId() {
+    return this.elb.loadBalancerCanonicalHostedZoneNameId;
+  }
+
+  /**
+   * @attribute
+   */
   public get loadBalancerCanonicalHostedZoneName() {
     return this.elb.loadBalancerCanonicalHostedZoneName;
   }
 
+  /**
+   * @attribute
+   */
   public get loadBalancerDnsName() {
     return this.elb.loadBalancerDnsName;
   }
 
+  /**
+   * @attribute
+   */
   public get loadBalancerSourceSecurityGroupGroupName() {
     return this.elb.loadBalancerSourceSecurityGroupGroupName;
   }
 
+  /**
+   * @attribute
+   */
   public get loadBalancerSourceSecurityGroupOwnerAlias() {
     return this.elb.loadBalancerSourceSecurityGroupOwnerAlias;
-  }
-
-  public asCodeDeployLoadBalancer(): codedeploy.ILoadBalancerProps {
-    return {
-      generation: codedeploy.LoadBalancerGeneration.First,
-      name: this.loadBalancerName,
-    };
   }
 
   /**
@@ -341,8 +360,8 @@ export class LoadBalancer extends cdk.Construct implements IConnectable, codedep
 export class ListenerPort implements IConnectable {
   public readonly connections: Connections;
 
-  constructor(securityGroup: SecurityGroupRef, defaultPortRange: IPortRange) {
-    this.connections = new Connections({ securityGroup, defaultPortRange });
+  constructor(securityGroup: ISecurityGroup, defaultPortRange: IPortRange) {
+    this.connections = new Connections({ securityGroups: [securityGroup] , defaultPortRange });
   }
 }
 
@@ -375,7 +394,7 @@ function ifUndefinedLazy<T>(x: T | undefined, def: () => T): T {
 /**
  * Turn health check parameters into a parameter blob for the LB
  */
-function healthCheckToJSON(healthCheck: HealthCheck): cloudformation.LoadBalancerResource.HealthCheckProperty {
+function healthCheckToJSON(healthCheck: HealthCheck): CfnLoadBalancer.HealthCheckProperty {
   const protocol = ifUndefined(healthCheck.protocol,
            ifUndefined(tryWellKnownProtocol(healthCheck.port),
            LoadBalancingProtocol.Tcp));

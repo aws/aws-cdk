@@ -1,5 +1,5 @@
 export * from './certificate';
-export * from './certificate-ref';
+export * from './dns-validated-certificate';
 
 // AWS::CertificateManager CloudFormation Resources:
 export * from './certificatemanager.generated';

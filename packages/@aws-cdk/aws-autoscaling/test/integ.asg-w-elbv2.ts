@@ -5,9 +5,9 @@ import cdk = require('@aws-cdk/cdk');
 import autoscaling = require('../lib');
 
 const app = new cdk.App();
-const stack = new cdk.Stack(app, 'aws-cdk-ec2-integ');
+const stack = new cdk.Stack(app, 'aws-cdk-asg-integ');
 
-const vpc = new ec2.VpcNetwork(stack, 'VPC', {
+const vpc = new ec2.Vpc(stack, 'VPC', {
   maxAZs: 2
 });
 
@@ -32,5 +32,9 @@ listener.addTargets('Target', {
 });
 
 listener.connections.allowDefaultPortFromAnyIpv4('Open to the world');
+
+asg.scaleOnRequestCount('AModestLoad', {
+  targetRequestsPerSecond: 1
+});
 
 app.run();

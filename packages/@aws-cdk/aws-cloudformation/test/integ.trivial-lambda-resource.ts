@@ -1,7 +1,7 @@
 import lambda = require('@aws-cdk/aws-lambda');
 import cdk = require('@aws-cdk/cdk');
 import fs = require('fs');
-import cloudformation = require('../lib');
+import { CustomResource, CustomResourceProvider } from '../lib';
 
 interface DemoResourceProps {
   /**
@@ -18,18 +18,18 @@ interface DemoResourceProps {
 class DemoResource extends cdk.Construct {
   public readonly response: string;
 
-  constructor(parent: cdk.Construct, name: string, props: DemoResourceProps) {
-    super(parent, name);
+  constructor(scope: cdk.Construct, id: string, props: DemoResourceProps) {
+    super(scope, id);
 
-    const resource = new cloudformation.CustomResource(this, 'Resource', {
-      lambdaProvider: new lambda.SingletonFunction(this, 'Singleton', {
+    const resource = new CustomResource(this, 'Resource', {
+      provider: CustomResourceProvider.lambda(new lambda.SingletonFunction(this, 'Singleton', {
         uuid: 'f7d4f730-4ee1-11e8-9c2d-fa7ae01bbebc',
         // This makes the demo only work as top-level TypeScript program, but that's fine for now
         code: new lambda.InlineCode(fs.readFileSync('integ.trivial-lambda-provider.py', { encoding: 'utf-8' })),
         handler: 'index.main',
         timeout: 300,
         runtime: lambda.Runtime.Python27,
-      }),
+      })),
       properties: props
     });
 
@@ -41,15 +41,15 @@ class DemoResource extends cdk.Construct {
  * A stack that only sets up the CustomResource and shows how to get an attribute from it
  */
 class SucceedingStack extends cdk.Stack {
-  constructor(parent: cdk.App, name: string, props?: cdk.StackProps) {
-    super(parent, name, props);
+  constructor(scope: cdk.App, id: string, props?: cdk.StackProps) {
+    super(scope, id, props);
 
     const resource = new DemoResource(this, 'DemoResource', {
       message: 'CustomResource says hello',
     });
 
     // Publish the custom resource output
-    new cdk.Output(this, 'ResponseMessage', {
+    new cdk.CfnOutput(this, 'ResponseMessage', {
       description: 'The message that came back from the Custom Resource',
       value: resource.response
     });

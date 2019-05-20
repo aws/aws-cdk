@@ -10,6 +10,7 @@ import fs = require('fs-extra');
 import md5 = require('md5');
 import path = require('path');
 import { schema } from '../lib';
+import { detectScrutinyTypes } from './scrutiny';
 
 async function main() {
   const inputDir = path.join(process.cwd(), 'spec-source');
@@ -24,6 +25,8 @@ async function main() {
       forEachSection(spec, data, patch);
     }
   }
+
+  detectScrutinyTypes(spec);
 
   spec.Fingerprint = md5(JSON.stringify(normalize(spec)));
 

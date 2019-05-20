@@ -1,5 +1,20 @@
 {
     "Resources": {
+        "MyFirstQueueMyFirstTopicSubscription774591B6": {
+            "Type": "AWS::SNS::Subscription",
+            "Properties": {
+                "Endpoint": {
+                    "Fn::GetAtt": [
+                        "MyFirstQueueFF09316A",
+                        "Arn"
+                    ]
+                },
+                "TopicArn": {
+                    "Ref": "MyFirstTopic0ED1F8A4"
+                },
+                "Protocol": "sqs"
+            }
+        },
         "MyFirstTopic0ED1F8A4": {
             "Type": "AWS::SNS::Topic",
             "Properties": {
@@ -42,7 +57,8 @@
             }
         },
         "BucketsBucket1B98A5B53": {
-            "Type": "AWS::S3::Bucket"
+            "Type": "AWS::S3::Bucket",
+            "DeletionPolicy": "Retain"
         },
         "MyFirstQueueFF09316A": {
             "Type": "AWS::SQS::Queue",
@@ -50,29 +66,17 @@
                 "VisibilityTimeout": 300
             }
         },
-        "MyFirstTopicMyFirstQueueSubscription04CBE05C": {
-            "Type": "AWS::SNS::Subscription",
-            "Properties": {
-                "Endpoint": {
-                    "Fn::GetAtt": [
-                        "MyFirstQueueFF09316A",
-                        "Arn"
-                    ]
-                },
-                "TopicArn": {
-                    "Ref": "MyFirstTopic0ED1F8A4"
-                },
-                "Protocol": "sqs"
-            }
-        },
         "BucketsBucket351AD8978": {
-            "Type": "AWS::S3::Bucket"
+            "Type": "AWS::S3::Bucket",
+            "DeletionPolicy": "Retain"
         },
         "BucketsBucket237F4E9C5": {
-            "Type": "AWS::S3::Bucket"
+            "Type": "AWS::S3::Bucket",
+            "DeletionPolicy": "Retain"
         },
         "BucketsBucket4AEE1AAD9": {
-            "Type": "AWS::S3::Bucket"
+            "Type": "AWS::S3::Bucket",
+            "DeletionPolicy": "Retain"
         },
         "MyUserDC45028B": {
             "Type": "AWS::IAM::User"
@@ -107,8 +111,7 @@
                                                     "Arn"
                                                 ]
                                             },
-                                            "/",
-                                            "*"
+                                            "/*"
                                         ]
                                     ]
                                 }
@@ -138,8 +141,7 @@
                                                     "Arn"
                                                 ]
                                             },
-                                            "/",
-                                            "*"
+                                            "/*"
                                         ]
                                     ]
                                 }
@@ -169,8 +171,7 @@
                                                     "Arn"
                                                 ]
                                             },
-                                            "/",
-                                            "*"
+                                            "/*"
                                         ]
                                     ]
                                 }
@@ -200,8 +201,7 @@
                                                     "Arn"
                                                 ]
                                             },
-                                            "/",
-                                            "*"
+                                            "/*"
                                         ]
                                     ]
                                 }
@@ -231,8 +231,7 @@
                                                     "Arn"
                                                 ]
                                             },
-                                            "/",
-                                            "*"
+                                            "/*"
                                         ]
                                     ]
                                 }
@@ -249,7 +248,8 @@
             }
         },
         "BucketsBucket04F23AD6D": {
-            "Type": "AWS::S3::Bucket"
+            "Type": "AWS::S3::Bucket",
+            "DeletionPolicy": "Retain"
         }
     }
 }

@@ -1,8 +1,10 @@
-import { expect, haveResource } from '@aws-cdk/assert';
+import { expect, haveResource, haveResourceLike, not } from '@aws-cdk/assert';
 import assets = require('@aws-cdk/assets');
+import { Bucket } from '@aws-cdk/aws-s3';
 import cdk = require('@aws-cdk/cdk');
 import { Test } from 'nodeunit';
 import codebuild = require('../lib');
+import { Cache, LocalCacheMode } from '../lib/cache';
 
 // tslint:disable:object-literal-key-quotes
 
@@ -18,7 +20,7 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::CodeBuild::Project', {
+    expect(stack).to(haveResourceLike('AWS::CodeBuild::Project', {
       Source: {
         BuildSpec: 'hello.yml'
       }
@@ -38,7 +40,7 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::CodeBuild::Project', {
+    expect(stack).to(haveResourceLike('AWS::CodeBuild::Project', {
       Source: {
         BuildSpec: "{\n  \"phases\": [\n    \"say hi\"\n  ]\n}",
       }
@@ -47,58 +49,78 @@ export = {
     test.done();
   },
 
-  'github auth test'(test: Test) {
-    // GIVEN
-    const stack = new cdk.Stack();
+  'GitHub source': {
+    'has reportBuildStatus on by default'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
 
-    // WHEN
-    new codebuild.Project(stack, 'Project', {
-      source: new codebuild.GitHubSource({
-        cloneUrl: "https://github.com/testowner/testrepo",
-        oauthToken: new cdk.Secret("test_oauth_token")
-      })
-    });
+      // WHEN
+      new codebuild.Project(stack, 'Project', {
+        source: new codebuild.GitHubSource({
+          owner: 'testowner',
+          repo: 'testrepo',
+          cloneDepth: 3,
+        })
+      });
 
-    // THEN
-    expect(stack).to(haveResource('AWS::CodeBuild::Project', {
-      Source: {
-        Type: "GITHUB",
-        Auth: {
-          Type: 'OAUTH',
-          Resource: 'test_oauth_token'
+      // THEN
+      expect(stack).to(haveResource('AWS::CodeBuild::Project', {
+        Source: {
+          Type: "GITHUB",
+          Location: 'https://github.com/testowner/testrepo.git',
+          ReportBuildStatus: true,
+          GitCloneDepth: 3,
+        }
+      }));
+
+      test.done();
+    },
+
+    'can explicitly set reportBuildStatus to false'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+
+      // WHEN
+      new codebuild.Project(stack, 'Project', {
+        source: new codebuild.GitHubSource({
+          owner: 'testowner',
+          repo: 'testrepo',
+          reportBuildStatus: false,
+        })
+      });
+
+      // THEN
+      expect(stack).to(haveResourceLike('AWS::CodeBuild::Project', {
+        Source: {
+          ReportBuildStatus: false,
         },
-        Location: 'https://github.com/testowner/testrepo'
-      }
-    }));
+      }));
 
-    test.done();
-  },
+      test.done();
+    },
 
-  'github enterprise auth test'(test: Test) {
-    // GIVEN
-    const stack = new cdk.Stack();
+    'can explicitly set webhook to true'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
 
-    // WHEN
-    new codebuild.Project(stack, 'Project', {
-      source: new codebuild.GitHubEnterpriseSource({
-        cloneUrl: "https://github.testcompany.com/testowner/testrepo",
-        oauthToken: new cdk.Secret("test_oauth_token")
-      })
-    });
+      // WHEN
+      new codebuild.Project(stack, 'Project', {
+        source: new codebuild.GitHubSource({
+          owner: 'testowner',
+          repo: 'testrepo',
+          webhook: true,
+        })
+      });
 
-    // THEN
-    expect(stack).to(haveResource('AWS::CodeBuild::Project', {
-      Source: {
-        Type: "GITHUB_ENTERPRISE",
-        Auth: {
-          Type: 'OAUTH',
-          Resource: 'test_oauth_token'
+      // THEN
+      expect(stack).to(haveResourceLike('AWS::CodeBuild::Project', {
+        Triggers: {
+          Webhook: true,
         },
-        Location: 'https://github.testcompany.com/testowner/testrepo'
-      }
-    }));
+      }));
 
-    test.done();
+      test.done();
+    },
   },
 
   'construct from asset'(test: Test) {
@@ -112,7 +134,7 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::CodeBuild::Project', {
+    expect(stack).to(haveResourceLike('AWS::CodeBuild::Project', {
       Environment: {
         ComputeType: "BUILD_GENERAL1_SMALL",
         EnvironmentVariables: [
@@ -138,6 +160,81 @@ export = {
         Type: "NO_SOURCE"
       }
     }));
+
+    test.done();
+  },
+
+  'project with s3 cache bucket'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new codebuild.Project(stack, 'Project', {
+      source: new codebuild.CodePipelineSource(),
+      cache: Cache.bucket(new Bucket(stack, 'Bucket'), {
+        prefix: "cache-prefix"
+      })
+    });
+
+    // THEN
+    expect(stack).to(haveResourceLike('AWS::CodeBuild::Project', {
+      Cache: {
+        Type: "S3",
+        Location: {
+          "Fn::Join": [
+            "/",
+            [
+              {
+                "Ref": "Bucket83908E77"
+              },
+              "cache-prefix"
+            ]
+          ]
+        }
+      },
+    }));
+
+    test.done();
+  },
+
+  'project with local cache modes'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new codebuild.Project(stack, 'Project', {
+      source: new codebuild.CodePipelineSource(),
+      cache: Cache.local(LocalCacheMode.Custom, LocalCacheMode.DockerLayer, LocalCacheMode.Source)
+    });
+
+    // THEN
+    expect(stack).to(haveResourceLike('AWS::CodeBuild::Project', {
+      Cache: {
+        Type: "LOCAL",
+        Modes: [
+          "LOCAL_CUSTOM_CACHE",
+          "LOCAL_DOCKER_LAYER_CACHE",
+          "LOCAL_SOURCE_CACHE"
+        ]
+      },
+    }));
+
+    test.done();
+  },
+
+  'project by default has no cache modes'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new codebuild.Project(stack, 'Project', {
+      source: new codebuild.CodePipelineSource()
+    });
+
+    // THEN
+    expect(stack).to(not(haveResourceLike('AWS::CodeBuild::Project', {
+      Cache: {}
+    })));
 
     test.done();
   },

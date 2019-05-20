@@ -12,3 +12,10 @@ dist
 
 # Include .jsii
 !.jsii
+
+*.snk
+
+# Don't pack node_modules directories of the lambdas in there. They should only be dev dependencies.
+lambda-packages/dns_validated_certificate_handler/node_modules
+
+*.tsbuildinfo

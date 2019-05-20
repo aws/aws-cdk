@@ -21,12 +21,21 @@ export interface Uploaded {
 }
 
 export class ToolkitInfo {
+  public readonly sdk: SDK;
+
+  /**
+   * A cache of previous uploads done in this session
+   */
+  private readonly previousUploads: {[key: string]: Uploaded} = {};
+
   constructor(private readonly props: {
     sdk: SDK,
     bucketName: string,
     bucketEndpoint: string,
     environment: cxapi.Environment
-  }) { }
+  }) {
+    this.sdk = props.sdk;
+  }
 
   public get bucketUrl() {
     return `https://${this.props.bucketEndpoint}`;
@@ -60,19 +69,130 @@ export class ToolkitInfo {
       return { filename, key, changed: false };
     }
 
-    debug(`${url}: uploading`);
-    await s3.putObject({
-      Bucket: bucket,
-      Key: key,
-      Body: data,
-      ContentType: props.contentType
-    }).promise();
+    const uploaded = { filename, key, changed: true };
 
-    debug(`${url}: upload complete`);
+    // Upload if it's new or server-side copy if it was already uploaded previously
+    const previous = this.previousUploads[hash];
+    if (previous) {
+      debug(`${url}: copying`);
+      await s3.copyObject({
+        Bucket: bucket,
+        Key: key,
+        CopySource: `${bucket}/${previous.key}`
+      }).promise();
+      debug(`${url}: copy complete`);
+    } else {
+      debug(`${url}: uploading`);
+      await s3.putObject({
+        Bucket: bucket,
+        Key: key,
+        Body: data,
+        ContentType: props.contentType
+      }).promise();
+      debug(`${url}: upload complete`);
+      this.previousUploads[hash] = uploaded;
+    }
 
-    return { filename, key, changed: true };
+    return uploaded;
   }
 
+  /**
+   * Prepare an ECR repository for uploading to using Docker
+   */
+  public async prepareEcrRepository(asset: cxapi.ContainerImageAssetMetadataEntry): Promise<EcrRepositoryInfo> {
+    const ecr = await this.props.sdk.ecr(this.props.environment, Mode.ForWriting);
+    let repositoryName;
+    if ( asset.repositoryName ) {
+      // Repository name provided by user
+      repositoryName = asset.repositoryName;
+    } else {
+      // Repository name based on asset id
+      const assetId = asset.id;
+      repositoryName = 'cdk/' + assetId.replace(/[:/]/g, '-').toLowerCase();
+    }
+
+    let repository;
+    try {
+      debug(`${repositoryName}: checking for repository.`);
+      const describeResponse = await ecr.describeRepositories({ repositoryNames: [repositoryName] }).promise();
+      repository = describeResponse.repositories![0];
+    } catch (e) {
+      if (e.code !== 'RepositoryNotFoundException') { throw e; }
+    }
+
+    if (repository) {
+      return {
+        repositoryUri: repository.repositoryUri!,
+        repositoryName
+      };
+    }
+
+    debug(`${repositoryName}: creating`);
+    const response = await ecr.createRepository({ repositoryName }).promise();
+    repository = response.repository!;
+
+    // Better put a lifecycle policy on this so as to not cost too much money
+    await ecr.putLifecyclePolicy({
+      repositoryName,
+      lifecyclePolicyText: JSON.stringify(DEFAULT_REPO_LIFECYCLE)
+    }).promise();
+
+    return {
+      repositoryUri: repository.repositoryUri!,
+      repositoryName
+    };
+  }
+
+  /**
+   * Get ECR credentials
+   */
+  public async getEcrCredentials(): Promise<EcrCredentials> {
+    const ecr = await this.props.sdk.ecr(this.props.environment, Mode.ForReading);
+
+    debug(`Fetching ECR authorization token`);
+    const authData =  (await ecr.getAuthorizationToken({ }).promise()).authorizationData || [];
+    if (authData.length === 0) {
+      throw new Error('No authorization data received from ECR');
+    }
+    const token = Buffer.from(authData[0].authorizationToken!, 'base64').toString('ascii');
+    const [username, password] = token.split(':');
+
+    return {
+      username,
+      password,
+      endpoint: authData[0].proxyEndpoint!,
+    };
+  }
+
+  /**
+   * Check if image already exists in ECR repository
+   */
+  public async checkEcrImage(repositoryName: string, imageTag: string): Promise<boolean> {
+    const ecr = await this.props.sdk.ecr(this.props.environment, Mode.ForReading);
+
+    try {
+      debug(`${repositoryName}: checking for image ${imageTag}`);
+      await ecr.describeImages({ repositoryName, imageIds: [{ imageTag }] }).promise();
+
+      // If we got here, the image already exists. Nothing else needs to be done.
+      return true;
+    } catch (e) {
+      if (e.code !== 'ImageNotFoundException') { throw e; }
+    }
+
+    return false;
+  }
+}
+
+export interface EcrRepositoryInfo {
+  repositoryUri: string;
+  repositoryName: string;
+}
+
+export interface EcrCredentials {
+  username: string;
+  password: string;
+  endpoint: string;
 }
 
 async function objectExists(s3: aws.S3, bucket: string, key: string) {
@@ -114,3 +234,18 @@ function getOutputValue(stack: aws.CloudFormation.Stack, output: string): string
   }
   return result;
 }
+
+const DEFAULT_REPO_LIFECYCLE = {
+  rules: [
+    {
+      rulePriority: 100,
+      description: 'Retain only 5 images',
+      selection: {
+        tagStatus: 'any',
+        countType: 'imageCountMoreThan',
+        countNumber: 5,
+      },
+      action: { type: 'expire' }
+    }
+  ]
+};

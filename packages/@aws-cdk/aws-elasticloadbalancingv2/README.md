@@ -50,6 +50,17 @@ listener.addTargets('ApplicationFleet', {
 The security groups of the load balancer and the target are automatically
 updated to allow the network traffic.
 
+Use the `addFixedResponse()` method to add fixed response rules on the listener:
+
+```ts
+listener.addFixedResponse('Fixed', {
+    pathPattern: '/ok',
+    contentType: elbv2.ContentType.TEXT_PLAIN,
+    messageBody: 'OK',
+    statusCode: '200'
+});
+```
+
 #### Conditions
 
 It's possible to route traffic to targets based on conditions in the incoming
@@ -83,7 +94,7 @@ import autoscaling = require('@aws-cdk/aws-autoscaling');
 
 // Create the load balancer in a VPC. 'internetFacing' is 'false'
 // by default, which creates an internal load balancer.
-const lb = new elbv2.NetworkLoadBalancer(stack, 'LB', {
+const lb = new elbv2.NetworkLoadBalancer(this, 'LB', {
     vpc,
     internetFacing: true
 });
@@ -196,10 +207,10 @@ group rules.
 If your load balancer target requires that the TargetGroup has been
 associated with a LoadBalancer before registration can happen (such as is the
 case for ECS Services for example), take a resource dependency on
-`targetGroup.listenerDependency()` as follows:
+`targetGroup.loadBalancerDependency()` as follows:
 
 ```ts
 // Make sure that the listener has been created, and so the TargetGroup
 // has been associated with the LoadBalancer, before 'resource' is created.
-resourced.addDependency(targetGroup.listenerDependency());
+resourced.addDependency(targetGroup.loadBalancerDependency());
 ```

@@ -1,5 +1,5 @@
 import cdk = require('@aws-cdk/cdk');
-import { SubnetType, VpcSubnetRef } from "./vpc-ref";
+import { ISubnet, Subnet, SubnetType } from './vpc';
 
 /**
  * Turn an arbitrary string into one that can be used as a CloudFormation identifier by stripping special characters
@@ -13,19 +13,21 @@ export function slugify(x: string): string {
 /**
  * The default names for every subnet type
  */
-export const DEFAULT_SUBNET_NAME = {
-  [SubnetType.Public]: 'Public',
-  [SubnetType.Private]: 'Private',
-  [SubnetType.Isolated]: 'Isolated',
-};
+export function defaultSubnetName(type: SubnetType) {
+  switch (type) {
+    case SubnetType.Public: return 'Public';
+    case SubnetType.Private: return 'Private';
+    case SubnetType.Isolated: return  'Isolated';
+  }
+}
 
 /**
  * Return a subnet name from its construct ID
  *
  * All subnet names look like NAME <> "Subnet" <> INDEX
  */
-export function subnetName(subnet: VpcSubnetRef) {
-  return subnet.id.replace(/Subnet\d+$/, '');
+export function subnetName(subnet: ISubnet) {
+  return subnet.node.id.replace(/Subnet\d+$/, '');
 }
 
 /**
@@ -33,63 +35,6 @@ export function subnetName(subnet: VpcSubnetRef) {
  */
 export function subnetId(name: string, i: number) {
   return `${name}Subnet${i + 1}`;
-}
-
-/**
- * Helper class to export/import groups of subnets
- */
-export class ExportSubnetGroup {
-  public readonly ids?: string[];
-  public readonly names?: string[];
-
-  private readonly groups: number;
-
-  constructor(
-      parent: cdk.Construct,
-      exportName: string,
-      private readonly subnets: VpcSubnetRef[],
-      private readonly type: SubnetType,
-      private readonly azs: number) {
-
-    this.groups = subnets.length / azs;
-
-    // ASSERTION
-    if (Math.floor(this.groups) !== this.groups) {
-      throw new Error(`Number of subnets (${subnets.length}) must be a multiple of number of availability zones (${azs})`);
-    }
-
-    this.ids = this.exportIds(parent, exportName);
-    this.names = this.exportNames();
-  }
-
-  private exportIds(parent: cdk.Construct, name: string): string[] | undefined {
-    if (this.subnets.length === 0) { return undefined; }
-    return new cdk.StringListOutput(parent, name, { values: this.subnets.map(s => s.subnetId) }).makeImportValues().map(x => x.toString());
-  }
-
-  /**
-   * Return the list of subnet names if they're not equal to the default
-   */
-  private exportNames(): string[] | undefined {
-    if (this.subnets.length === 0) { return undefined; }
-    const netNames = this.subnets.map(subnetName);
-
-    // Do some assertion that the 'netNames' array is laid out like this:
-    //
-    // [ INGRESS, INGRESS, INGRESS, EGRESS, EGRESS, EGRESS, ... ]
-    for (let i = 0; i < netNames.length; i++) {
-      const k = Math.floor(i / this.azs);
-      if (netNames[i] !== netNames[k * this.azs]) {
-        throw new Error(`Subnets must be grouped by name, got: ${JSON.stringify(netNames)}`);
-      }
-    }
-
-    // Splat down to [ INGRESS, EGRESS, ... ]
-    const groupNames = range(this.groups).map(i => netNames[i * this.azs]);
-    if (groupNames.length === 1 && groupNames[0] === DEFAULT_SUBNET_NAME[this.type]) { return undefined; }
-
-    return groupNames;
-  }
 }
 
 export class ImportSubnetGroup {
@@ -113,13 +58,13 @@ export class ImportSubnetGroup {
       throw new Error(`Amount of ${idField} (${this.subnetIds.length}) must be a multiple of availability zones (${this.availabilityZones.length}).`);
     }
 
-    this.names = this.normalizeNames(names, DEFAULT_SUBNET_NAME[type], nameField);
+    this.names = this.normalizeNames(names, defaultSubnetName(type), nameField);
   }
 
-  public import(parent: cdk.Construct): VpcSubnetRef[] {
+  public import(scope: cdk.Construct): ISubnet[] {
     return range(this.subnetIds.length).map(i => {
       const k = Math.floor(i / this.availabilityZones.length);
-      return VpcSubnetRef.import(parent, subnetId(this.names[k], i), {
+      return Subnet.fromSubnetAttributes(scope, subnetId(this.names[k], i), {
         availabilityZone: this.pickAZ(i),
         subnetId: this.subnetIds[i]
       });

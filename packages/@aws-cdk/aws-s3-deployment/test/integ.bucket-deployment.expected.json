@@ -87,7 +87,8 @@
         },
         "DestinationBucketName": {
           "Ref": "Destination920A3C57"
-        }
+        },
+        "RetainOnDelete": false
       }
     },
     "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRole89A01265": {
@@ -99,7 +100,17 @@
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": {
-                "Service": "lambda.amazonaws.com"
+                "Service": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "lambda.",
+                      {
+                        "Ref": "AWS::URLSuffix"
+                      }
+                    ]
+                  ]
+                }
               }
             }
           ],
@@ -337,12 +348,13 @@
         "Timeout": 900
       },
       "DependsOn": [
-        "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRole89A01265",
-        "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRoleDefaultPolicy88902FDF"
+        "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRoleDefaultPolicy88902FDF",
+        "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRole89A01265"
       ]
     },
     "Destination281A09BDF": {
-      "Type": "AWS::S3::Bucket"
+      "Type": "AWS::S3::Bucket",
+      "DeletionPolicy": "Retain"
     },
     "DeployWithPrefixCustomResource9CF7C694": {
       "Type": "Custom::CDKBucketDeployment",

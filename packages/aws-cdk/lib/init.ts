@@ -18,8 +18,15 @@ const CDK_HOME = process.env.CDK_HOME ? path.resolve(process.env.CDK_HOME) : pat
 /**
  * Initialize a CDK package in the current directory
  */
-export async function cliInit(type: string, language: string | undefined, canUseNetwork?: boolean) {
-  const template = (await availableInitTemplates).find(t => t.hasName(type));
+export async function cliInit(type?: string, language?: string, canUseNetwork?: boolean) {
+  if (!type && !language) {
+    await printAvailableTemplates();
+    return;
+  }
+
+  type = type || 'default'; // "default" is the default type (and maps to "app")
+
+  const template = (await availableInitTemplates).find(t => t.hasName(type!));
   if (!template) {
     await printAvailableTemplates(language);
     throw new Error(`Unknown init template: ${type}`);
@@ -35,6 +42,16 @@ export async function cliInit(type: string, language: string | undefined, canUse
   await initializeProject(template, language, canUseNetwork !== undefined ? canUseNetwork : true);
 }
 
+/**
+ * Returns the name of the Python executable for this OS
+ */
+function pythonExecutable() {
+  let python = 'python3';
+  if (process.platform === 'win32') {
+    python = 'python';
+  }
+  return python;
+}
 const INFO_DOT_JSON = 'info.json';
 
 export class InitTemplate {
@@ -135,7 +152,9 @@ export class InitTemplate {
              .replace(/%name\.camelCased%/g, camelCase(project.name))
              .replace(/%name\.PascalCased%/g, camelCase(project.name, { pascalCase: true }))
              .replace(/%cdk-version%/g, cdkVersion)
-             .replace(/%cdk-home%/g, CDK_HOME);
+             .replace(/%cdk-home%/g, CDK_HOME)
+             .replace(/%name\.PythonModule%/g, project.name.replace(/-/g, '_'))
+             .replace(/%python-executable%/g, pythonExecutable());
   }
 }
 
@@ -201,7 +220,7 @@ async function initializeProject(template: InitTemplate, language: string, canUs
 
 async function assertIsEmptyDirectory() {
   const files = await fs.readdir(process.cwd());
-  if (files.length !== 0) {
+  if (files.filter(f => !f.startsWith('.')).length !== 0) {
     throw new Error('`cdk init` cannot be run in a non-empty directory!');
   }
 }
@@ -220,11 +239,19 @@ async function initializeGitRepository() {
 
 async function postInstall(language: string, canUseNetwork: boolean) {
   switch (language) {
+  case 'javascript':
+    return await postInstallJavascript(canUseNetwork);
   case 'typescript':
     return await postInstallTypescript(canUseNetwork);
   case 'java':
     return await postInstallJava(canUseNetwork);
+  case 'python':
+    return await postInstallPython();
   }
+}
+
+async function postInstallJavascript(canUseNetwork: boolean) {
+  return postInstallTypescript(canUseNetwork);
 }
 
 async function postInstallTypescript(canUseNetwork: boolean) {
@@ -251,6 +278,17 @@ async function postInstallJava(canUseNetwork: boolean) {
 
   print(`Executing ${colors.green('mvn package')}...`);
   await execute('mvn', 'package');
+}
+
+async function postInstallPython() {
+  const python = pythonExecutable();
+  print(`Executing ${colors.green('Creating virtualenv...')}`);
+  try {
+    await execute(python, '-m venv', '.env');
+  } catch (e) {
+    print('Unable to create virtualenv automatically');
+    print(`Please run ${colors.green(python + ' -m venv .env')}!`);
+  }
 }
 
 /**

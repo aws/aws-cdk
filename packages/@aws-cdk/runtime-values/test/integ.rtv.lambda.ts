@@ -8,8 +8,8 @@ function runtimeCode(_event: any, _context: any, callback: any) {
 }
 
 class TestStack extends cdk.Stack {
-  constructor(parent: cdk.App, name: string) {
-    super(parent, name);
+  constructor(scope: cdk.App, id: string) {
+    super(scope, id);
 
     const queue = new sqs.Queue(this, 'MyQueue');
     const fn = new lambda.Function(this, 'MyFunction', {
@@ -27,11 +27,11 @@ class TestStack extends cdk.Stack {
 
     // this line adds read permissions for this SSM parameter to the policies associated with
     // the IAM roles of the Lambda function and the EC2 fleet
-    queueUrlRtv.grantRead(fn.role);
+    queueUrlRtv.grantRead(fn);
 
     // adds the `RTV_STACK_NAME` to the environment of the lambda function
     // and the fleet (via user-data)
-    fn.addEnvironment(RuntimeValue.ENV_NAME, RuntimeValue.ENV_VALUE);
+    fn.addEnvironment(RuntimeValue.ENV_NAME, queueUrlRtv.envValue);
   }
 }
 

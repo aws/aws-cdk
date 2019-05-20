@@ -14,8 +14,8 @@ rm -f ${bundle_out}
 
 # prepare staging
 staging="$(mktemp -d)"
-rm -fr ${staging}
-mkdir -p ${staging}
+piptemp="$(mktemp -d)"
+trap "rm -rf ${staging} ${piptemp}" EXIT
 
 echo "staging lambda bundle at ${staging}..."
 
@@ -25,7 +25,10 @@ rsync -av src/ "${staging}"
 cd ${staging}
 
 # install python requirements
-pip3 install -r requirements.txt -t .
+# Must use --prefix to because --target cannot be used on
+# platforms that have a default --prefix set.
+pip3 install --ignore-installed --prefix ${piptemp} -r ${staging}/requirements.txt
+mv ${piptemp}/lib/python*/*-packages/* .
 
 # create archive
 zip -qr ${bundle_out} .

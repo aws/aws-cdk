@@ -7,20 +7,21 @@ import lambda = require('../lib');
 export = {
   'lambda in a VPC': classFixture(class Henk {
     private readonly stack: cdk.Stack;
-    private readonly vpc: ec2.VpcNetwork;
+    private readonly vpc: ec2.Vpc;
     private readonly lambda: lambda.Function;
 
     constructor() {
       // GIVEN
       this.stack = new cdk.Stack();
-      this.vpc = new ec2.VpcNetwork(this.stack, 'VPC');
+      this.vpc = new ec2.Vpc(this.stack, 'VPC');
 
       // WHEN
       this.lambda = new lambda.Function(this.stack, 'Lambda', {
         code: new lambda.InlineCode('foo'),
         handler: 'index.handler',
         runtime: lambda.Runtime.NodeJS610,
-        vpc: this.vpc
+        vpc: this.vpc,
+        allowAllOutbound: false
       });
     }
 
@@ -45,12 +46,12 @@ export = {
     public 'participates in Connections objects'(test: Test) {
       // GIVEN
       const securityGroup = new ec2.SecurityGroup(this.stack, 'SomeSecurityGroup', { vpc: this.vpc });
-      const somethingConnectable = new SomethingConnectable(new ec2.Connections({ securityGroup }));
+      const somethingConnectable = new SomethingConnectable(new ec2.Connections({ securityGroups: [securityGroup] }));
 
       // WHEN
       this.lambda.connections.allowTo(somethingConnectable, new ec2.TcpAllPorts(), 'Lambda can call connectable');
 
-      // THEN: SomeSecurityGroup accepts connections from Lambda
+      // THEN: Lambda can connect to SomeSecurityGroup
       expect(this.stack).to(haveResource("AWS::EC2::SecurityGroupEgress", {
         GroupId: {"Fn::GetAtt": ["LambdaSecurityGroupE74659A1", "GroupId"]},
         IpProtocol: "tcp",
@@ -60,7 +61,7 @@ export = {
         ToPort: 65535
       }));
 
-      // THEN: Lambda can connect to SomeSecurityGroup
+      // THEN: SomeSecurityGroup accepts connections from Lambda
       expect(this.stack).to(haveResource("AWS::EC2::SecurityGroupIngress", {
         IpProtocol: "tcp",
         Description: "Lambda can call connectable",
@@ -77,29 +78,42 @@ export = {
       // GIVEN
       const stack2 = new cdk.Stack();
       const securityGroup = new ec2.SecurityGroup(stack2, 'SomeSecurityGroup', { vpc: this.vpc });
-      const somethingConnectable = new SomethingConnectable(new ec2.Connections({ securityGroup }));
+      const somethingConnectable = new SomethingConnectable(new ec2.Connections({ securityGroups: [securityGroup] }));
 
       // WHEN
-      const importedLambda = lambda.FunctionRef.import(stack2, 'Lambda', this.lambda.export());
-      importedLambda.connections.allowTo(somethingConnectable, new ec2.TcpAllPorts(), 'Lambda can call connectable');
+      this.lambda.connections.allowTo(somethingConnectable, new ec2.TcpAllPorts(), 'Lambda can call connectable');
 
       // THEN: SomeSecurityGroup accepts connections from Lambda
-      expect(stack2).to(haveResource("AWS::EC2::SecurityGroupEgress", {
-        GroupId: { "Fn::ImportValue": "LambdaSecurityGroupId9A2717B3" },
+      expect(this.stack).to(haveResource("AWS::EC2::SecurityGroupEgress", {
+        GroupId: {
+          "Fn::GetAtt": [
+            "LambdaSecurityGroupE74659A1",
+            "GroupId"
+          ]
+        },
         IpProtocol: "tcp",
         Description: "Lambda can call connectable",
-        DestinationSecurityGroupId: { "Fn::GetAtt": [ "SomeSecurityGroupEF219AD6", "GroupId" ] },
+        DestinationSecurityGroupId: {
+          "Fn::ImportValue": "Stack:ExportsOutputFnGetAttSomeSecurityGroupEF219AD6GroupId09FCF7BE"
+        },
         FromPort: 0,
         ToPort: 65535
       }));
 
       // THEN: Lambda can connect to SomeSecurityGroup
-      expect(stack2).to(haveResource("AWS::EC2::SecurityGroupIngress", {
+      expect(this.stack).to(haveResource("AWS::EC2::SecurityGroupIngress", {
         IpProtocol: "tcp",
         Description: "Lambda can call connectable",
         FromPort: 0,
-        GroupId: { "Fn::GetAtt": [ "SomeSecurityGroupEF219AD6", "GroupId" ] },
-        SourceSecurityGroupId: { "Fn::ImportValue": "LambdaSecurityGroupId9A2717B3" },
+        GroupId: {
+          "Fn::ImportValue": "Stack:ExportsOutputFnGetAttSomeSecurityGroupEF219AD6GroupId09FCF7BE"
+        },
+        SourceSecurityGroupId: {
+          "Fn::GetAtt": [
+            "LambdaSecurityGroupE74659A1",
+            "GroupId"
+          ]
+        },
         ToPort: 65535
       }));
 
@@ -127,7 +141,7 @@ export = {
   'picking public subnets is not allowed'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
-    const vpc = new ec2.VpcNetwork(stack, 'VPC');
+    const vpc = new ec2.Vpc(stack, 'VPC');
 
     // WHEN
     test.throws(() => {
@@ -136,7 +150,7 @@ export = {
         handler: 'index.handler',
         runtime: lambda.Runtime.NodeJS610,
         vpc,
-        vpcPlacement: { subnetsToUse: ec2.SubnetType.Public }
+        vpcSubnets: { subnetType: ec2.SubnetType.Public }
       });
     });
 

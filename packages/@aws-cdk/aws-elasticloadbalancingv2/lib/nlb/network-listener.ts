@@ -1,7 +1,7 @@
-import cdk = require('@aws-cdk/cdk');
+import { Construct, IResource, Resource } from '@aws-cdk/cdk';
 import { BaseListener } from '../shared/base-listener';
 import { HealthCheck } from '../shared/base-target-group';
-import { Protocol } from '../shared/enums';
+import { Protocol, SslPolicy } from '../shared/enums';
 import { INetworkLoadBalancer } from './network-load-balancer';
 import { INetworkLoadBalancerTarget, INetworkTargetGroup, NetworkTargetGroup } from './network-target-group';
 
@@ -12,14 +12,39 @@ export interface BaseNetworkListenerProps {
   /**
    * The port on which the listener listens for requests.
    */
-  port: number;
+  readonly port: number;
 
   /**
    * Default target groups to load balance to
    *
    * @default None
    */
-  defaultTargetGroups?: INetworkTargetGroup[];
+  readonly defaultTargetGroups?: INetworkTargetGroup[];
+
+  /**
+   * Protocol for listener, expects TCP or TLS
+   */
+  readonly protocol?: Protocol;
+
+  /**
+   * Certificate list of ACM cert ARNs
+   */
+  readonly certificates?: INetworkListenerCertificateProps[];
+
+  /**
+   * SSL Policy
+   */
+  readonly sslPolicy?: SslPolicy;
+}
+
+/**
+ * Properties for adding a certificate to a listener
+ */
+export interface INetworkListenerCertificateProps {
+  /**
+   * Certificate ARN from ACM
+   */
+  readonly certificateArn: string
 }
 
 /**
@@ -29,18 +54,24 @@ export interface NetworkListenerProps extends BaseNetworkListenerProps {
   /**
    * The load balancer to attach this listener to
    */
-  loadBalancer: INetworkLoadBalancer;
+  readonly loadBalancer: INetworkLoadBalancer;
 }
 
 /**
  * Define a Network Listener
+ *
+ * @resource AWS::ElasticLoadBalancingV2::Listener
  */
 export class NetworkListener extends BaseListener implements INetworkListener {
   /**
    * Import an existing listener
    */
-  public static import(parent: cdk.Construct, id: string, props: NetworkListenerRefProps): INetworkListener {
-    return new ImportedNetworkListener(parent, id, props);
+  public static fromNetworkListenerArn(scope: Construct, id: string, networkListenerArn: string): INetworkListener {
+    class Import extends Resource implements INetworkListener {
+      public listenerArn = networkListenerArn;
+    }
+
+    return new Import(scope, id);
   }
 
   /**
@@ -48,11 +79,28 @@ export class NetworkListener extends BaseListener implements INetworkListener {
    */
   private readonly loadBalancer: INetworkLoadBalancer;
 
-  constructor(parent: cdk.Construct, id: string, props: NetworkListenerProps) {
-    super(parent, id, {
+  constructor(scope: Construct, id: string, props: NetworkListenerProps) {
+    const certs = props.certificates || [];
+    const proto = props.protocol || (certs.length > 0 ? Protocol.Tls : Protocol.Tcp);
+
+    if ([Protocol.Tcp, Protocol.Tls].indexOf(proto) === -1) {
+      throw new Error(`The protocol must be either ${Protocol.Tcp} or ${Protocol.Tls}. Found ${props.protocol}`);
+    }
+
+    if (proto === Protocol.Tls && certs.filter(v => v != null).length === 0) {
+      throw new Error(`When the protocol is set to TLS, you must specify certificates`);
+    }
+
+    if (proto !== Protocol.Tls && certs.length > 0) {
+      throw new Error(`Protocol must be TLS when certificates have been specified`);
+    }
+
+    super(scope, id, {
       loadBalancerArn: props.loadBalancer.loadBalancerArn,
-      protocol: Protocol.Tcp,
+      protocol: proto,
       port: props.port,
+      sslPolicy: props.sslPolicy,
+      certificates: props.certificates
     });
 
     this.loadBalancer = props.loadBalancer;
@@ -67,6 +115,7 @@ export class NetworkListener extends BaseListener implements INetworkListener {
     // New default target(s)
     for (const targetGroup of targetGroups) {
       this._addDefaultTargetGroup(targetGroup);
+      targetGroup.registerListener(this);
     }
   }
 
@@ -98,54 +147,17 @@ export class NetworkListener extends BaseListener implements INetworkListener {
 
     return group;
   }
-
-  /**
-   * Export this listener
-   */
-  public export(): NetworkListenerRefProps {
-    return {
-      listenerArn: new cdk.Output(this, 'ListenerArn', { value: this.listenerArn }).makeImportValue().toString()
-    };
-  }
-
 }
 
 /**
  * Properties to reference an existing listener
  */
-export interface INetworkListener extends cdk.IDependable {
+export interface INetworkListener extends IResource {
   /**
    * ARN of the listener
+   * @attribute
    */
   readonly listenerArn: string;
-}
-
-/**
- * Properties to reference an existing listener
- */
-export interface NetworkListenerRefProps {
-  /**
-   * ARN of the listener
-   */
-  listenerArn: string;
-}
-
-/**
- * An imported Network Listener
- */
-class ImportedNetworkListener extends cdk.Construct implements INetworkListener {
-  public readonly dependencyElements: cdk.IDependable[] = [];
-
-  /**
-   * ARN of the listener
-   */
-  public readonly listenerArn: string;
-
-  constructor(parent: cdk.Construct, id: string, props: NetworkListenerRefProps) {
-    super(parent, id);
-
-    this.listenerArn = props.listenerArn;
-  }
 }
 
 /**
@@ -157,7 +169,7 @@ export interface AddNetworkTargetsProps {
    *
    * @default Determined from protocol if known
    */
-  port: number;
+  readonly port: number;
 
   /**
    * The targets to add to this target group.
@@ -166,7 +178,7 @@ export interface AddNetworkTargetsProps {
    * target. If you use either `Instance` or `IPAddress` as targets, all
    * target must be of the same type.
    */
-  targets?: INetworkLoadBalancerTarget[];
+  readonly targets?: INetworkLoadBalancerTarget[];
 
   /**
    * The name of the target group.
@@ -177,28 +189,28 @@ export interface AddNetworkTargetsProps {
    *
    * @default Automatically generated
    */
-  targetGroupName?: string;
+  readonly targetGroupName?: string;
 
   /**
    * The amount of time for Elastic Load Balancing to wait before deregistering a target.
    *
-   * The range is 0–3600 seconds.
+   * The range is 0-3600 seconds.
    *
    * @default 300
    */
-  deregistrationDelaySec?: number;
+  readonly deregistrationDelaySec?: number;
 
   /**
    * Indicates whether Proxy Protocol version 2 is enabled.
    *
    * @default false
    */
-  proxyProtocolV2?: boolean;
+  readonly proxyProtocolV2?: boolean;
 
   /**
    * Health check configuration
    *
    * @default No health check
    */
-  healthCheck?: HealthCheck;
+  readonly healthCheck?: HealthCheck;
 }

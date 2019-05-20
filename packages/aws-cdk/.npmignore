@@ -9,3 +9,8 @@ coverage
 dist
 .LAST_PACKAGE
 .LAST_BUILD
+*.snk
+
+!lib/init-templates/*/*/tsconfig.json
+
+*.tsbuildinfo

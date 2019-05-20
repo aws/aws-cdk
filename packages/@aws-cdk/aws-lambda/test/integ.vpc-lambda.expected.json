@@ -28,6 +28,14 @@
           {
             "Key": "Name",
             "Value": "aws-cdk-vpc-lambda/VPC/PublicSubnet1"
+          },
+          {
+            "Key": "aws-cdk:subnet-name",
+            "Value": "Public"
+          },
+          {
+            "Key": "aws-cdk:subnet-type",
+            "Value": "Public"
           }
         ]
       }
@@ -67,7 +75,10 @@
         "GatewayId": {
           "Ref": "VPCIGWB7E252D3"
         }
-      }
+      },
+      "DependsOn": [
+        "VPCVPCGW99B986DC"
+      ]
     },
     "VPCPublicSubnet1EIP6AD938E8": {
       "Type": "AWS::EC2::EIP",
@@ -108,6 +119,14 @@
           {
             "Key": "Name",
             "Value": "aws-cdk-vpc-lambda/VPC/PublicSubnet2"
+          },
+          {
+            "Key": "aws-cdk:subnet-name",
+            "Value": "Public"
+          },
+          {
+            "Key": "aws-cdk:subnet-type",
+            "Value": "Public"
           }
         ]
       }
@@ -147,7 +166,10 @@
         "GatewayId": {
           "Ref": "VPCIGWB7E252D3"
         }
-      }
+      },
+      "DependsOn": [
+        "VPCVPCGW99B986DC"
+      ]
     },
     "VPCPublicSubnet2EIP4947BC00": {
       "Type": "AWS::EC2::EIP",
@@ -188,6 +210,14 @@
           {
             "Key": "Name",
             "Value": "aws-cdk-vpc-lambda/VPC/PrivateSubnet1"
+          },
+          {
+            "Key": "aws-cdk:subnet-name",
+            "Value": "Private"
+          },
+          {
+            "Key": "aws-cdk:subnet-type",
+            "Value": "Private"
           }
         ]
       }
@@ -242,6 +272,14 @@
           {
             "Key": "Name",
             "Value": "aws-cdk-vpc-lambda/VPC/PrivateSubnet2"
+          },
+          {
+            "Key": "aws-cdk:subnet-name",
+            "Value": "Private"
+          },
+          {
+            "Key": "aws-cdk:subnet-type",
+            "Value": "Private"
           }
         ]
       }
@@ -314,7 +352,17 @@
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": {
-                "Service": "lambda.amazonaws.com"
+                "Service": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "lambda.",
+                      {
+                        "Ref": "AWS::URLSuffix"
+                      }
+                    ]
+                  ]
+                }
               }
             }
           ],
@@ -355,10 +403,8 @@
         "SecurityGroupEgress": [
           {
             "CidrIp": "0.0.0.0/0",
-            "Description": "Talk to everyone",
-            "FromPort": 0,
-            "IpProtocol": "tcp",
-            "ToPort": 65535
+            "Description": "Allow all outbound traffic by default",
+            "IpProtocol": "-1"
           }
         ],
         "SecurityGroupIngress": [],

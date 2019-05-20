@@ -1,5 +1,7 @@
 import cdk = require('@aws-cdk/cdk');
-import { HostedZoneRef, HostedZoneRefProps } from './hosted-zone-ref';
+import cxapi = require('@aws-cdk/cx-api');
+import { HostedZone } from './hosted-zone';
+import { HostedZoneAttributes, IHostedZone } from './hosted-zone-ref';
 
 /**
  * Zone properties for looking up the Hosted Zone
@@ -8,30 +10,23 @@ export interface HostedZoneProviderProps {
   /**
    * The zone domain e.g. example.com
    */
-  domainName: string;
+  readonly domainName: string;
 
   /**
    * Is this a private zone
    */
-  privateZone?: boolean;
+  readonly privateZone?: boolean;
 
   /**
    * If this is a private zone which VPC is assocaitated
    */
-  vpcId?: string;
+  readonly vpcId?: string;
 }
 
-const HOSTED_ZONE_PROVIDER = 'hosted-zone';
-
-const DEFAULT_HOSTED_ZONE: HostedZoneRefProps = {
-  hostedZoneId: '/hostedzone/DUMMY',
-  zoneName: 'example.com',
+const DEFAULT_HOSTED_ZONE: HostedZoneContextResponse = {
+  Id: '/hostedzone/DUMMY',
+  Name: 'example.com',
 };
-
-interface AwsHostedZone {
-  Id: string;
-  Name: string;
-}
 
 /**
  * Context provider that will lookup the Hosted Zone ID for the given arguments
@@ -39,40 +34,36 @@ interface AwsHostedZone {
 export class HostedZoneProvider {
   private provider: cdk.ContextProvider;
   constructor(context: cdk.Construct, props: HostedZoneProviderProps) {
-    this.provider = new cdk.ContextProvider(context, HOSTED_ZONE_PROVIDER, props);
+    this.provider = new cdk.ContextProvider(context, cxapi.HOSTED_ZONE_PROVIDER, props);
   }
 
   /**
-   * This method calls `findHostedZone` and returns the imported `HostedZoneRef`
+   * This method calls `findHostedZone` and returns the imported hosted zone
    */
-  public findAndImport(parent: cdk.Construct, id: string): HostedZoneRef {
-    return HostedZoneRef.import(parent, id, this.findHostedZone());
+  public findAndImport(scope: cdk.Construct, id: string): IHostedZone {
+    return HostedZone.fromHostedZoneAttributes(scope, id, this.findHostedZone());
   }
   /**
    * Return the hosted zone meeting the filter
    */
-  public findHostedZone(): HostedZoneRefProps {
-    const zone =  this.provider.getValue(DEFAULT_HOSTED_ZONE);
-    if (zone === DEFAULT_HOSTED_ZONE) {
-      return zone;
+  public findHostedZone(): HostedZoneAttributes {
+    const zone = this.provider.getValue(DEFAULT_HOSTED_ZONE) as HostedZoneContextResponse;
+    // CDK handles the '.' at the end, so remove it here
+    if (zone.Name.endsWith('.')) {
+      zone.Name = zone.Name.substring(0, zone.Name.length - 1);
     }
-    if (!this.isAwsHostedZone(zone)) {
-      throw new Error(`Expected an AWS Hosted Zone received ${JSON.stringify(zone)}`);
-    } else {
-      const actualZone = zone as AwsHostedZone;
-      // CDK handles the '.' at the end, so remove it here
-      if (actualZone.Name.endsWith('.')) {
-        actualZone.Name = actualZone.Name.substring(0, actualZone.Name.length - 1);
-      }
-      return {
-        hostedZoneId: actualZone.Id,
-        zoneName: actualZone.Name,
-      };
-    }
+    return {
+      hostedZoneId: zone.Id,
+      zoneName: zone.Name,
+    };
   }
+}
 
-  private isAwsHostedZone(zone: AwsHostedZone | any): zone is AwsHostedZone {
-    const candidateZone = zone as AwsHostedZone;
-    return candidateZone.Name !== undefined && candidateZone.Id !== undefined;
-  }
+/**
+ * A mirror of the definition in cxapi, but can use the capital letters
+ * since it doesn't need to be published via JSII.
+ */
+interface HostedZoneContextResponse {
+  Id: string;
+  Name: string;
 }

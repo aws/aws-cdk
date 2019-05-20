@@ -1,0 +1,284 @@
+{
+  "Resources": {
+    "ArtifactBucket7410C9EF": {
+      "Type": "AWS::S3::Bucket"
+    },
+    "CodePipelineRoleB3A660B4": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "codepipeline.",
+                      {
+                        "Ref": "AWS::URLSuffix"
+                      }
+                    ]
+                  ]
+                }
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      }
+    },
+    "CodePipelineRoleDefaultPolicy8D520A8D": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "s3:GetObject*",
+                "s3:GetBucket*",
+                "s3:List*",
+                "s3:DeleteObject*",
+                "s3:PutObject*",
+                "s3:Abort*"
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "ArtifactBucket7410C9EF",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "ArtifactBucket7410C9EF",
+                          "Arn"
+                        ]
+                      },
+                      "/*"
+                    ]
+                  ]
+                }
+              ]
+            },
+            {
+              "Action": "iam:PassRole",
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "CodePipelineDeployChangeSetRoleF9F2B343",
+                  "Arn"
+                ]
+              }
+            },
+            {
+              "Action": [
+                "cloudformation:CreateChangeSet",
+                "cloudformation:DeleteChangeSet",
+                "cloudformation:DescribeChangeSet",
+                "cloudformation:DescribeStacks"
+              ],
+              "Condition": {
+                "StringEqualsIfExists": {
+                  "cloudformation:ChangeSetName": "CICD-ChangeSet"
+                }
+              },
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":cloudformation:",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ":",
+                    {
+                      "Ref": "AWS::AccountId"
+                    },
+                    ":stack/CICD/*"
+                  ]
+                ]
+              }
+            },
+            {
+              "Action": "cloudformation:ExecuteChangeSet",
+              "Condition": {
+                "StringEquals": {
+                  "cloudformation:ChangeSetName": "CICD-ChangeSet"
+                }
+              },
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":cloudformation:",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ":",
+                    {
+                      "Ref": "AWS::AccountId"
+                    },
+                    ":stack/CICD/*"
+                  ]
+                ]
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "CodePipelineRoleDefaultPolicy8D520A8D",
+        "Roles": [
+          {
+            "Ref": "CodePipelineRoleB3A660B4"
+          }
+        ]
+      }
+    },
+    "CodePipelineB74E5936": {
+      "Type": "AWS::CodePipeline::Pipeline",
+      "Properties": {
+        "RoleArn": {
+          "Fn::GetAtt": [
+            "CodePipelineRoleB3A660B4",
+            "Arn"
+          ]
+        },
+        "Stages": [
+          {
+            "Actions": [
+              {
+                "ActionTypeId": {
+                  "Category": "Source",
+                  "Owner": "ThirdParty",
+                  "Provider": "GitHub",
+                  "Version": "1"
+                },
+                "Configuration": {
+                  "Owner": "awslabs",
+                  "Repo": "aws-cdk",
+                  "Branch": "master",
+                  "OAuthToken": "DummyToken",
+                  "PollForSourceChanges": true
+                },
+                "InputArtifacts": [],
+                "Name": "GitHub",
+                "OutputArtifacts": [
+                  {
+                    "Name": "Artifact_CICDGitHubF8BA7ADD"
+                  }
+                ],
+                "RunOrder": 1
+              }
+            ],
+            "Name": "Source"
+          },
+          {
+            "Actions": [
+              {
+                "ActionTypeId": {
+                  "Category": "Deploy",
+                  "Owner": "AWS",
+                  "Provider": "CloudFormation",
+                  "Version": "1"
+                },
+                "Configuration": {
+                  "StackName": "CICD",
+                  "ActionMode": "CHANGE_SET_REPLACE",
+                  "ChangeSetName": "CICD-ChangeSet",
+                  "TemplatePath": "Artifact_CICDGitHubF8BA7ADD::CICD.template.yaml",
+                  "RoleArn": {
+                    "Fn::GetAtt": [
+                      "CodePipelineDeployChangeSetRoleF9F2B343",
+                      "Arn"
+                    ]
+                  }
+                },
+                "InputArtifacts": [
+                  {
+                    "Name": "Artifact_CICDGitHubF8BA7ADD"
+                  }
+                ],
+                "Name": "ChangeSet",
+                "OutputArtifacts": [],
+                "RunOrder": 10
+              },
+              {
+                "ActionTypeId": {
+                  "Category": "Deploy",
+                  "Owner": "AWS",
+                  "Provider": "CloudFormation",
+                  "Version": "1"
+                },
+                "Configuration": {
+                  "StackName": "CICD",
+                  "ActionMode": "CHANGE_SET_EXECUTE",
+                  "ChangeSetName": "CICD-ChangeSet"
+                },
+                "InputArtifacts": [],
+                "Name": "Execute",
+                "OutputArtifacts": [],
+                "RunOrder": 999
+              }
+            ],
+            "Name": "Deploy"
+          }
+        ],
+        "ArtifactStore": {
+          "Location": {
+            "Ref": "ArtifactBucket7410C9EF"
+          },
+          "Type": "S3"
+        }
+      },
+      "DependsOn": [
+        "CodePipelineRoleDefaultPolicy8D520A8D",
+        "CodePipelineRoleB3A660B4"
+      ]
+    },
+    "CodePipelineDeployChangeSetRoleF9F2B343": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "cloudformation.",
+                      {
+                        "Ref": "AWS::URLSuffix"
+                      }
+                    ]
+                  ]
+                }
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      }
+    }
+  }
+}

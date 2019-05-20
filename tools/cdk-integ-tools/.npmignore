@@ -6,3 +6,4 @@ coverage
 *.tgz
 
 .LAST_BUILD
+*.snk

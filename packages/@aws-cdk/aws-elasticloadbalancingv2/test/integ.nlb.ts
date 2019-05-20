@@ -6,7 +6,7 @@ import elbv2 = require('../lib');
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-cdk-elbv2-integ');
 
-const vpc = new ec2.VpcNetwork(stack, 'VPC', {
+const vpc = new ec2.Vpc(stack, 'VPC', {
   maxAZs: 2
 });
 
@@ -24,7 +24,7 @@ const group = listener.addTargets('Target', {
   targets: [new elbv2.IpTarget('10.0.1.1')]
 });
 
-group.addDependency(vpc);
+group.node.addDependency(...vpc.internetDependencies);
 
 // The target's security group must allow being routed by the LB and the clients.
 

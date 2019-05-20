@@ -1,6 +1,6 @@
 import cfnspec = require('@aws-cdk/cfnspec');
 import types = require('./types');
-import { diffKeyedEntities } from './util';
+import { deepEqual, diffKeyedEntities } from './util';
 
 export function diffAttribute(oldValue: any, newValue: any): types.Difference<string> {
   return new types.Difference<string>(_asString(oldValue), _asString(newValue));
@@ -26,46 +26,48 @@ export function diffParameter(oldValue: types.Parameter, newValue: types.Paramet
   return new types.ParameterDifference(oldValue, newValue);
 }
 
-export function diffResource(oldValue: types.Resource, newValue: types.Resource): types.ResourceDifference {
-  let resourceType: string | { oldType: string, newType: string } =
-    ((oldValue && oldValue.Type) || (newValue && newValue.Type)) as string;
-  let propertyChanges: { [key: string]: types.PropertyDifference<any> } = {};
-  let otherChanges: { [key: string]: types.Difference<any> } = {};
+export function diffResource(oldValue?: types.Resource, newValue?: types.Resource): types.ResourceDifference {
+  const resourceType =  {
+    oldType: oldValue && oldValue.Type,
+    newType: newValue && newValue.Type
+  };
+  let propertyDiffs: { [key: string]: types.PropertyDifference<any> } = {};
+  let otherDiffs: { [key: string]: types.Difference<any> } = {};
 
-  if (oldValue && newValue) {
-    const oldType = oldValue.Type as string;
-    const newType = newValue.Type as string;
-    if (oldType !== newType) {
-      resourceType = { oldType, newType };
-    } else {
-      const typeSpec = cfnspec.filteredSpecification(oldType);
-      const impl = typeSpec.ResourceTypes[oldType];
-      propertyChanges = diffKeyedEntities(oldValue.Properties,
-                        newValue.Properties,
-                        (oldVal, newVal, key) => _diffProperty(oldVal, newVal, key, impl));
-      otherChanges = diffKeyedEntities(oldValue, newValue, _diffOther);
-      delete otherChanges.Properties;
-    }
+  if (resourceType.oldType !== undefined && resourceType.oldType === resourceType.newType) {
+    // Only makes sense to inspect deeper if the types stayed the same
+    const typeSpec = cfnspec.filteredSpecification(resourceType.oldType);
+    const impl = typeSpec.ResourceTypes[resourceType.oldType];
+    propertyDiffs = diffKeyedEntities(oldValue!.Properties,
+                      newValue!.Properties,
+                      (oldVal, newVal, key) => _diffProperty(oldVal, newVal, key, impl));
+
+    otherDiffs = diffKeyedEntities(oldValue, newValue, _diffOther);
+    delete otherDiffs.Properties;
   }
 
-  return new types.ResourceDifference(oldValue, newValue, { resourceType, propertyChanges, otherChanges });
+  return new types.ResourceDifference(oldValue, newValue, {
+    resourceType, propertyDiffs, otherDiffs,
+  });
 
   function _diffProperty(oldV: any, newV: any, key: string, resourceSpec?: cfnspec.schema.ResourceType) {
-    let changeImpact: types.ResourceImpact | undefined;
+    let changeImpact = types.ResourceImpact.NO_CHANGE;
+
     const spec = resourceSpec && resourceSpec.Properties && resourceSpec.Properties[key];
-    if (spec) {
+    if (spec && !deepEqual(oldV, newV)) {
       switch (spec.UpdateType) {
-      case 'Immutable':
-        changeImpact = types.ResourceImpact.WILL_REPLACE;
-        break;
-      case 'Conditional':
-        changeImpact = types.ResourceImpact.MAY_REPLACE;
-        break;
-      default:
-        // In those cases, whatever is the current value is what we should keep
-        changeImpact = types.ResourceImpact.WILL_UPDATE;
+        case cfnspec.schema.UpdateType.Immutable:
+          changeImpact = types.ResourceImpact.WILL_REPLACE;
+          break;
+        case cfnspec.schema.UpdateType.Conditional:
+          changeImpact = types.ResourceImpact.MAY_REPLACE;
+          break;
+        default:
+          // In those cases, whatever is the current value is what we should keep
+          changeImpact = types.ResourceImpact.WILL_UPDATE;
       }
     }
+
     return new types.PropertyDifference(oldV, newV, { changeImpact });
   }
 

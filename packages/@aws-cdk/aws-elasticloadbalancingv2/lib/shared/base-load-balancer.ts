@@ -1,6 +1,7 @@
 import ec2 = require('@aws-cdk/aws-ec2');
-import cdk = require('@aws-cdk/cdk');
-import { cloudformation } from '../elasticloadbalancingv2.generated';
+import route53 = require('@aws-cdk/aws-route53');
+import { Construct, Resource, Token } from '@aws-cdk/cdk';
+import { CfnLoadBalancer } from '../elasticloadbalancingv2.generated';
 import { Attributes, ifUndefined, renderAttributes } from './util';
 
 /**
@@ -12,64 +13,68 @@ export interface BaseLoadBalancerProps {
    *
    * @default Automatically generated name
    */
-  loadBalancerName?: string;
+  readonly loadBalancerName?: string;
 
   /**
    * The VPC network to place the load balancer in
    */
-  vpc: ec2.VpcNetworkRef;
+  readonly vpc: ec2.IVpc;
 
   /**
    * Whether the load balancer has an internet-routable address
    *
    * @default false
    */
-  internetFacing?: boolean;
+  readonly internetFacing?: boolean;
 
   /**
    * Where in the VPC to place the load balancer
    *
    * @default Public subnets if internetFacing, otherwise private subnets
    */
-  vpcPlacement?: ec2.VpcPlacementStrategy;
+  readonly vpcSubnets?: ec2.SubnetSelection;
 
   /**
    * Indicates whether deletion protection is enabled.
    *
    * @default false
    */
-  deletionProtection?: boolean;
+  readonly deletionProtection?: boolean;
 }
 
 /**
  * Base class for both Application and Network Load Balancers
  */
-export abstract class BaseLoadBalancer extends cdk.Construct {
+export abstract class BaseLoadBalancer extends Resource implements route53.IAliasRecordTarget {
   /**
    * The canonical hosted zone ID of this load balancer
    *
-   * @example  Z2P70J7EXAMPLE
+   * @example Z2P70J7EXAMPLE
+   * @attribute
    */
-  public readonly canonicalHostedZoneId: string;
+  public readonly loadBalancerCanonicalHostedZoneId: string;
 
   /**
    * The DNS name of this load balancer
    *
    * @example my-load-balancer-424835706.us-west-2.elb.amazonaws.com
+   * @attribute
    */
-  public readonly dnsName: string;
+  public readonly loadBalancerDnsName: string;
 
   /**
    * The full name of this load balancer
    *
    * @example app/my-load-balancer/50dc6c495c0c9188
+   * @attribute
    */
-  public readonly fullName: string;
+  public readonly loadBalancerFullName: string;
 
   /**
    * The name of this load balancer
    *
    * @example my-load-balancer
+   * @attribute
    */
   public readonly loadBalancerName: string;
 
@@ -77,46 +82,58 @@ export abstract class BaseLoadBalancer extends cdk.Construct {
    * The ARN of this load balancer
    *
    * @example arn:aws:elasticloadbalancing:us-west-2:123456789012:loadbalancer/app/my-internal-load-balancer/50dc6c495c0c9188
+   * @attribute
    */
   public readonly loadBalancerArn: string;
+
+  /**
+   * @attribute
+   */
+  public readonly loadBalancerSecurityGroups: string[];
 
   /**
    * The VPC this load balancer has been created in, if available
    *
    * If the Load Balancer was imported, the VPC is not available.
    */
-  public readonly vpc?: ec2.VpcNetworkRef;
+  public readonly vpc?: ec2.IVpc;
 
   /**
    * Attributes set on this load balancer
    */
   private readonly attributes: Attributes = {};
 
-  constructor(parent: cdk.Construct, id: string, baseProps: BaseLoadBalancerProps, additionalProps: any) {
-    super(parent, id);
+  constructor(scope: Construct, id: string, baseProps: BaseLoadBalancerProps, additionalProps: any) {
+    super(scope, id);
 
     const internetFacing = ifUndefined(baseProps.internetFacing, false);
 
-    const subnets = baseProps.vpc.subnets(ifUndefined(baseProps.vpcPlacement,
-      { subnetsToUse: internetFacing ? ec2.SubnetType.Public : ec2.SubnetType.Private }));
+    const vpcSubnets = ifUndefined(baseProps.vpcSubnets,
+      { subnetType: internetFacing ? ec2.SubnetType.Public : ec2.SubnetType.Private });
+
+    const { subnetIds, internetConnectedDependency } = baseProps.vpc.selectSubnets(vpcSubnets);
 
     this.vpc = baseProps.vpc;
 
-    const resource = new cloudformation.LoadBalancerResource(this, 'Resource', {
-      loadBalancerName: baseProps.loadBalancerName,
-      subnets: subnets.map(s => s.subnetId),
+    const resource = new CfnLoadBalancer(this, 'Resource', {
+      name: baseProps.loadBalancerName,
+      subnets: subnetIds,
       scheme: internetFacing ? 'internet-facing' : 'internal',
-      loadBalancerAttributes: new cdk.Token(() => renderAttributes(this.attributes)),
+      loadBalancerAttributes: new Token(() => renderAttributes(this.attributes)),
       ...additionalProps
     });
+    if (internetFacing) {
+      resource.node.addDependency(internetConnectedDependency);
+    }
 
     if (baseProps.deletionProtection) { this.setAttribute('deletion_protection.enabled', 'true'); }
 
-    this.canonicalHostedZoneId = resource.loadBalancerCanonicalHostedZoneId;
-    this.dnsName = resource.loadBalancerDnsName;
-    this.fullName = resource.loadBalancerFullName;
+    this.loadBalancerCanonicalHostedZoneId = resource.loadBalancerCanonicalHostedZoneId;
+    this.loadBalancerDnsName = resource.loadBalancerDnsName;
+    this.loadBalancerFullName = resource.loadBalancerFullName;
     this.loadBalancerName = resource.loadBalancerName;
     this.loadBalancerArn = resource.ref;
+    this.loadBalancerSecurityGroups = resource.loadBalancerSecurityGroups;
   }
 
   /**
@@ -135,4 +152,10 @@ export abstract class BaseLoadBalancer extends cdk.Construct {
     this.setAttribute(key, undefined);
   }
 
+  public asAliasRecordTarget(): route53.AliasRecordTargetProps {
+    return {
+      hostedZoneId: this.loadBalancerCanonicalHostedZoneId,
+      dnsName: this.loadBalancerDnsName
+    };
+  }
 }

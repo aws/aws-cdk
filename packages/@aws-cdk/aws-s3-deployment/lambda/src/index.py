@@ -5,6 +5,9 @@ import json
 import json
 import traceback
 import logging
+import shutil
+from uuid import uuid4
+
 from botocore.vendored import requests
 from zipfile import ZipFile
 
@@ -17,7 +20,7 @@ CFN_FAILED = "FAILED"
 def handler(event, context):
 
     def cfn_error(message=None):
-        logger.info("| cfn_error: %s" % message)
+        logger.error("| cfn_error: %s" % message)
         cfn_send(event, context, CFN_FAILED, reason=message)
 
     try:
@@ -29,23 +32,42 @@ def handler(event, context):
         # extract resource properties
         props = event['ResourceProperties']
         old_props = event.get('OldResourceProperties', {})
+        physical_id = event.get('PhysicalResourceId', None)
 
         try:
             source_bucket_name = props['SourceBucketName']
             source_object_key  = props['SourceObjectKey']
             dest_bucket_name   = props['DestinationBucketName']
             dest_bucket_prefix = props.get('DestinationBucketKeyPrefix', '')
-            retain_on_delete   = props.get('RetainOnDelete', "false") == "true"
+            retain_on_delete   = props.get('RetainOnDelete', "true") == "true"
         except KeyError as e:
-            cfn_error("missing request resource property %s" % str(e))
+            cfn_error("missing request resource property %s. props: %s" % (str(e), props))
             return
+
+        # treat "/" as if no prefix was specified
+        if dest_bucket_prefix == "/":
+            dest_bucket_prefix = ""
 
         s3_source_zip = "s3://%s/%s" % (source_bucket_name, source_object_key)
         s3_dest = "s3://%s/%s" % (dest_bucket_name, dest_bucket_prefix)
 
         old_s3_dest = "s3://%s/%s" % (old_props.get("DestinationBucketName", ""), old_props.get("DestinationBucketKeyPrefix", ""))
+
+        # obviously this is not
+        if old_s3_dest == "s3:///":
+            old_s3_dest = None
+
         logger.info("| s3_dest: %s" % s3_dest)
         logger.info("| old_s3_dest: %s" % old_s3_dest)
+
+        # if we are creating a new resource, allocate a physical id for it
+        # otherwise, we expect physical id to be relayed by cloudformation
+        if request_type == "Create":
+            physical_id = "aws.cdk.s3deployment.%s" % str(uuid4())
+        else:
+            if not physical_id:
+                cfn_error("invalid request: request type is '%s' but 'PhysicalResourceId' is not defined" % request_type)
+                return
 
         # delete or create/update (only if "retain_on_delete" is false)
         if request_type == "Delete" and not retain_on_delete:
@@ -53,17 +75,21 @@ def handler(event, context):
 
         # if we are updating without retention and the destination changed, delete first
         if request_type == "Update" and not retain_on_delete and old_s3_dest != s3_dest:
+            if not old_s3_dest:
+                logger.warn("cannot delete old resource without old resource properties")
+                return
+
             aws_command("s3", "rm", old_s3_dest, "--recursive")
 
         if request_type == "Update" or request_type == "Create":
             s3_deploy(s3_source_zip, s3_dest)
 
-        cfn_send(event, context, CFN_SUCCESS)
+        cfn_send(event, context, CFN_SUCCESS, physicalResourceId=physical_id)
     except KeyError as e:
         cfn_error("invalid request. Missing key %s" % str(e))
     except Exception as e:
         logger.exception(e)
-        cfn_error()
+        cfn_error(str(e))
 
 #---------------------------------------------------------------------------------------------------
 # populate all files from s3_source_zip to a destination bucket
@@ -86,6 +112,7 @@ def s3_deploy(s3_source_zip, s3_dest):
 
     # sync from "contents" to destination
     aws_command("s3", "sync", "--delete", contents_dir, s3_dest)
+    shutil.rmtree(workdir)
 
 #---------------------------------------------------------------------------------------------------
 # executes an "aws" cli command

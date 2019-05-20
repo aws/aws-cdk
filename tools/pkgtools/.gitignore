@@ -4,3 +4,4 @@
 dist
 
 .LAST_BUILD
+*.snk

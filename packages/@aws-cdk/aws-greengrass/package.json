@@ -1,0 +1,77 @@
+{
+  "name": "@aws-cdk/aws-greengrass",
+  "version": "0.31.0",
+  "description": "The CDK Construct Library for AWS::Greengrass",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "jsii": {
+    "outdir": "dist",
+    "targets": {
+      "dotnet": {
+        "namespace": "Amazon.CDK.AWS.Greengrass",
+        "packageId": "Amazon.CDK.AWS.Greengrass",
+        "signAssembly": true,
+        "assemblyOriginatorKeyFile": "../../key.snk"
+      },
+      "java": {
+        "package": "software.amazon.awscdk.services.greengrass",
+        "maven": {
+          "groupId": "software.amazon.awscdk",
+          "artifactId": "greengrass"
+        }
+      },
+      "python": {
+        "distName": "aws-cdk.aws-greengrass",
+        "module": "aws_cdk.aws_greengrass"
+      }
+    }
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/awslabs/aws-cdk.git",
+    "directory": "packages/@aws-cdk/aws-greengrass"
+  },
+  "homepage": "https://github.com/awslabs/aws-cdk",
+  "scripts": {
+    "build": "cdk-build",
+    "integ": "cdk-integ",
+    "lint": "cdk-lint",
+    "package": "cdk-package",
+    "awslint": "cdk-awslint",
+    "pkglint": "pkglint -f",
+    "test": "cdk-test",
+    "watch": "cdk-watch",
+    "cfn2ts": "cfn2ts"
+  },
+  "cdk-build": {
+    "cloudformation": "AWS::Greengrass"
+  },
+  "keywords": [
+    "aws",
+    "cdk",
+    "constructs",
+    "AWS::Greengrass",
+    "aws-greengrass"
+  ],
+  "author": {
+    "name": "Amazon Web Services",
+    "url": "https://aws.amazon.com",
+    "organization": true
+  },
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "@aws-cdk/assert": "^0.31.0",
+    "cdk-build-tools": "^0.31.0",
+    "cfn2ts": "^0.31.0",
+    "pkglint": "^0.31.0"
+  },
+  "dependencies": {
+    "@aws-cdk/cdk": "^0.31.0"
+  },
+  "peerDependencies": {
+    "@aws-cdk/cdk": "^0.31.0"
+  },
+  "engines": {
+    "node": ">= 8.10.0"
+  }
+}

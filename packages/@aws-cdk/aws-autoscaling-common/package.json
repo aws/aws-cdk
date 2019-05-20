@@ -1,0 +1,75 @@
+{
+  "name": "@aws-cdk/aws-autoscaling-common",
+  "version": "0.31.0",
+  "description": "Common implementation package for @aws-cdk/aws-autoscaling and @aws-cdk/aws-applicationautoscaling",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "jsii": {
+    "outdir": "dist",
+    "targets": {
+      "java": {
+        "package": "software.amazon.awscdk.services.autoscaling.common",
+        "maven": {
+          "groupId": "software.amazon.awscdk",
+          "artifactId": "autoscaling-common"
+        }
+      },
+      "dotnet": {
+        "namespace": "Amazon.CDK.AWS.AutoScaling.Common",
+        "packageId": "Amazon.CDK.AWS.AutoScaling.Common",
+        "signAssembly": true,
+        "assemblyOriginatorKeyFile": "../../key.snk"
+      },
+      "python": {
+        "distName": "aws-cdk.aws-autoscaling-common",
+        "module": "aws_cdk.aws_autoscaling_common"
+      }
+    }
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/awslabs/aws-cdk.git",
+    "directory": "packages/@aws-cdk/aws-autoscaling-common"
+  },
+  "scripts": {
+    "build": "cdk-build",
+    "watch": "cdk-watch",
+    "lint": "cdk-lint",
+    "test": "cdk-test",
+    "integ": "cdk-integ",
+    "pkglint": "pkglint -f",
+    "package": "cdk-package",
+    "awslint": "cdk-awslint"
+  },
+  "keywords": [
+    "aws",
+    "cdk",
+    "constructs",
+    "s3"
+  ],
+  "author": {
+    "name": "Amazon Web Services",
+    "url": "https://aws.amazon.com",
+    "organization": true
+  },
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "@aws-cdk/assert": "^0.31.0",
+    "cdk-build-tools": "^0.31.0",
+    "cdk-integ-tools": "^0.31.0",
+    "fast-check": "^1.14.0",
+    "pkglint": "^0.31.0"
+  },
+  "dependencies": {
+    "@aws-cdk/aws-iam": "^0.31.0",
+    "@aws-cdk/cdk": "^0.31.0"
+  },
+  "homepage": "https://github.com/awslabs/aws-cdk",
+  "peerDependencies": {
+    "@aws-cdk/aws-iam": "^0.31.0",
+    "@aws-cdk/cdk": "^0.31.0"
+  },
+  "engines": {
+    "node": ">= 8.10.0"
+  }
+}

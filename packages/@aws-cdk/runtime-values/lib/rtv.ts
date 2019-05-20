@@ -7,12 +7,12 @@ export interface RuntimeValueProps {
    * A namespace for the runtime value.
    * It is recommended to use the name of the library/package that advertises this value.
    */
-  package: string;
+  readonly package: string;
 
   /**
    * The value to advertise. Can be either a primitive value or a token.
    */
-  value: any;
+  readonly value: any;
 }
 
 /**
@@ -28,11 +28,6 @@ export class RuntimeValue extends cdk.Construct {
   public static readonly ENV_NAME = 'RTV_STACK_NAME';
 
   /**
-   * The value to assign to the `RTV_STACK_NAME` environment variable.
-   */
-  public static readonly ENV_VALUE = new cdk.AwsStackName();
-
-  /**
    * IAM actions needed to read a value from an SSM parameter.
    */
   private static readonly SSM_READ_ACTIONS = [
@@ -40,6 +35,11 @@ export class RuntimeValue extends cdk.Construct {
     'ssm:GetParameters',
     'ssm:GetParameter'
   ];
+
+  /**
+   * The value to assign to the `RTV_STACK_NAME` environment variable.
+   */
+  public readonly envValue: string;
 
   /**
    * The name of the runtime parameter.
@@ -51,18 +51,19 @@ export class RuntimeValue extends cdk.Construct {
    */
   public readonly parameterArn: string;
 
-  constructor(parent: cdk.Construct, name: string, props: RuntimeValueProps) {
-    super(parent, name);
+  constructor(scope: cdk.Construct, id: string, props: RuntimeValueProps) {
+    super(scope, id);
 
-    this.parameterName = `/rtv/${new cdk.AwsStackName()}/${props.package}/${name}`;
+    this.parameterName = `/rtv/${this.node.stack.stackName}/${props.package}/${id}`;
+    this.envValue = this.node.stack.stackName;
 
-    new ssm.cloudformation.ParameterResource(this, 'Parameter', {
+    new ssm.CfnParameter(this, 'Parameter', {
       name: this.parameterName,
       type: 'String',
       value: props.value,
     });
 
-    this.parameterArn = cdk.ArnUtils.fromComponents({
+    this.parameterArn = this.node.stack.formatArn({
       service: 'ssm',
       resource: 'parameter',
       resourceName: this.parameterName
@@ -71,17 +72,14 @@ export class RuntimeValue extends cdk.Construct {
 
   /**
    * Grants a principal read permissions on this runtime value.
-   * @param principal The principal (e.g. Role, User, Group)
+   * @param grantee The principal (e.g. Role, User, Group)
    */
-  public grantRead(principal?: iam.IIdentityResource) {
+  public grantRead(grantee: iam.IGrantable) {
+    return iam.Grant.addToPrincipal({
+      grantee,
+      resourceArns: [this.parameterArn],
+      actions: RuntimeValue.SSM_READ_ACTIONS
 
-    // sometimes "role" is optional, so we want `rtv.grantRead(role)` to be a no-op
-    if (!principal) {
-      return;
-    }
-
-    principal.addToPolicy(new iam.PolicyStatement()
-      .addResource(this.parameterArn)
-      .addActions(...RuntimeValue.SSM_READ_ACTIONS));
+    });
   }
 }

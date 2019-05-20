@@ -1,7 +1,8 @@
 {
   "name": "@aws-cdk/aws-codedeploy-api",
-  "version": "0.13.0",
+  "version": "0.31.0",
   "description": "Load Balancer API for AWS CodeDeploy",
+  "deprecated": "This package is now obsololete, please remove it from your dependencies",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "jsii": {
@@ -20,12 +21,16 @@
         "signAssembly": true,
         "assemblyOriginatorKeyFile": "../../key.snk"
       },
-      "sphinx": {}
+      "python": {
+        "distName": "aws-cdk.aws-codedeploy-api",
+        "module": "aws_cdk.aws_codedeploy_api"
+      }
     }
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/awslabs/aws-cdk.git"
+    "url": "https://github.com/awslabs/aws-cdk.git",
+    "directory": "packages/@aws-cdk/aws-codedeploy-api"
   },
   "scripts": {
     "build": "cdk-build",
@@ -34,7 +39,8 @@
     "test": "cdk-test",
     "integ": "cdk-integ",
     "pkglint": "pkglint -f",
-    "package": "cdk-package"
+    "package": "cdk-package",
+    "awslint": "cdk-awslint"
   },
   "keywords": [
     "aws",
@@ -49,13 +55,19 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "^0.13.0",
-    "cdk-build-tools": "^0.13.0",
-    "cfn2ts": "^0.13.0",
-    "pkglint": "^0.13.0"
+    "@aws-cdk/assert": "^0.31.0",
+    "cdk-build-tools": "^0.31.0",
+    "cfn2ts": "^0.31.0",
+    "pkglint": "^0.31.0"
   },
   "dependencies": {
-    "@aws-cdk/cdk": "^0.13.0"
+    "@aws-cdk/cdk": "^0.31.0"
   },
-  "homepage": "https://github.com/awslabs/aws-cdk"
+  "homepage": "https://github.com/awslabs/aws-cdk",
+  "engines": {
+    "node": ">= 8.10.0"
+  },
+  "peerDependencies": {
+    "@aws-cdk/cdk": "^0.31.0"
+  }
 }

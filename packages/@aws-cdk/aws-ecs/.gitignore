@@ -13,3 +13,5 @@ dist
 coverage
 .nycrc
 .LAST_PACKAGE
+!lib/images/adopt-repository/*
+*.snk

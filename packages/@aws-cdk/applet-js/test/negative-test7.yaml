@@ -1,2 +1,4 @@
 # no module
-applet: :TestApplet
+applets:
+  Applet:
+    type: :TestApplet

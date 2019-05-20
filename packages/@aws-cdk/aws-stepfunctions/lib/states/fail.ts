@@ -11,19 +11,21 @@ export interface FailProps {
      *
      * @default No comment
      */
-    comment?: string;
+    readonly comment?: string;
 
     /**
      * Error code used to represent this failure
+     *
+     * @default No error code
      */
-    error: string;
+    readonly error?: string;
 
     /**
      * A description for the cause of the failure
      *
      * @default No description
      */
-    cause?: string;
+    readonly cause?: string;
 }
 
 /**
@@ -34,11 +36,11 @@ export interface FailProps {
 export class Fail extends State {
     public readonly endStates: INextable[] = [];
 
-    private readonly error: string;
+    private readonly error?: string;
     private readonly cause?: string;
 
-    constructor(parent: cdk.Construct, id: string, props: FailProps) {
-        super(parent, id, props);
+    constructor(scope: cdk.Construct, id: string, props: FailProps = {}) {
+        super(scope, id, props);
 
         this.error = props.error;
         this.cause = props.cause;

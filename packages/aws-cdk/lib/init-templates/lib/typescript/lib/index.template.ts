@@ -13,10 +13,10 @@ export interface %name.PascalCased%Props {
 
 export class %name.PascalCased% extends cdk.Construct {
   /** @returns the ARN of the SQS queue */
-  public readonly queueArn: sqs.QueueArn;
+  public readonly queueArn: string;
 
-  constructor(parent: cdk.Construct, name: string, props: %name.PascalCased%Props = {}) {
-    super(parent, name);
+  constructor(scope: cdk.Construct, id: string, props: %name.PascalCased%Props = {}) {
+    super(scope, id);
 
     const queue = new sqs.Queue(this, '%name.PascalCased%Queue', {
       visibilityTimeoutSec: props.visibilityTimeout || 300

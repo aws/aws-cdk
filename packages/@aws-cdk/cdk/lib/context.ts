@@ -1,8 +1,5 @@
-import { Stack } from './cloudformation/stack';
-import { Construct } from './core/construct';
-
-const AVAILABILITY_ZONES_PROVIDER = 'availability-zones';
-const SSM_PARAMETER_PROVIDER = 'ssm';
+import cxapi = require('@aws-cdk/cx-api');
+import { Construct } from './construct';
 
 type ContextProviderProps = {[key: string]: any};
 /**
@@ -16,17 +13,14 @@ type ContextProviderProps = {[key: string]: any};
  */
 export class ContextProvider {
 
-  private readonly stack: Stack;
   private readonly props: ContextProviderProps;
 
-  constructor(
-    private readonly context: Construct,
-    private readonly provider: string,
-    props: ContextProviderProps = {}) {
-    this.stack = Stack.find(context);
+  constructor(private readonly context: Construct,
+              private readonly provider: string,
+              props: ContextProviderProps = {}) {
     this.props = {
-      account: this.stack.env.account,
-      region: this.stack.env.region,
+      account: context.node.stack.env.account,
+      region: context.node.stack.env.region,
       ...props,
     };
   }
@@ -43,17 +37,17 @@ export class ContextProvider {
     // if account or region is not defined this is probably a test mode, so we just
     // return the default value
     if (!this.props.account || !this.props.region) {
-      this.context.addError(formatMissingScopeError(this.provider, this.props));
+      this.context.node.addError(formatMissingScopeError(this.provider, this.props));
       return defaultValue;
     }
 
-    const value = this.context.getContext(this.key);
+    const value = this.context.node.getContext(this.key);
 
     if (value != null) {
       return value;
     }
 
-    this.stack.reportMissingContext(this.key, {
+    this.context.node.stack.reportMissingContext(this.key, {
       provider: this.provider,
       props: this.props,
     });
@@ -67,11 +61,11 @@ export class ContextProvider {
     // if scope is undefined, this is probably a test mode, so we just
     // return the default value
     if (!this.props.account || !this.props.region) {
-      this.context.addError(formatMissingScopeError(this.provider, this.props));
+      this.context.node.addError(formatMissingScopeError(this.provider, this.props));
       return defaultValue;
     }
 
-    const value = this.context.getContext(this.key);
+    const value = this.context.node.getContext(this.key);
 
     if (value != null) {
       if (typeof value !== 'string') {
@@ -80,7 +74,7 @@ export class ContextProvider {
       return value;
     }
 
-    this.stack.reportMissingContext(this.key, {
+    this.context.node.stack.reportMissingContext(this.key, {
       provider: this.provider,
       props: this.props,
     });
@@ -97,11 +91,11 @@ export class ContextProvider {
       // return the default value and report an error so this in not accidentally used
       // in the toolkit
       if (!this.props.account || !this.props.region) {
-        this.context.addError(formatMissingScopeError(this.provider, this.props));
+        this.context.node.addError(formatMissingScopeError(this.provider, this.props));
         return defaultValue;
       }
 
-      const value = this.context.getContext(this.key);
+      const value = this.context.node.getContext(this.key);
 
       if (value != null) {
         if (!value.map) {
@@ -110,7 +104,7 @@ export class ContextProvider {
         return value;
       }
 
-      this.stack.reportMissingContext(this.key, {
+      this.context.node.stack.reportMissingContext(this.key, {
         provider: this.provider,
         props: this.props,
       });
@@ -136,7 +130,7 @@ export class AvailabilityZoneProvider {
   private provider: ContextProvider;
 
   constructor(context: Construct) {
-    this.provider = new ContextProvider(context, AVAILABILITY_ZONES_PROVIDER);
+    this.provider = new ContextProvider(context, cxapi.AVAILABILITY_ZONE_PROVIDER);
   }
 
   /**
@@ -152,7 +146,7 @@ export interface SSMParameterProviderProps {
   /**
    * The name of the parameter to lookup
    */
-  parameterName: string;
+  readonly parameterName: string;
 }
 /**
  * Context provider that will read values from the SSM parameter store in the indicated account and region
@@ -161,14 +155,14 @@ export class SSMParameterProvider {
   private provider: ContextProvider;
 
   constructor(context: Construct, props: SSMParameterProviderProps) {
-    this.provider = new ContextProvider(context, SSM_PARAMETER_PROVIDER, props);
+    this.provider = new ContextProvider(context, cxapi.SSM_PARAMETER_PROVIDER, props);
   }
 
   /**
    * Return the SSM parameter string with the indicated key
    */
-  public parameterValue(): any {
-    return this.provider.getStringValue('dummy');
+  public parameterValue(defaultValue = 'dummy'): any {
+    return this.provider.getStringValue(defaultValue);
   }
 }
 
@@ -181,27 +175,26 @@ function formatMissingScopeError(provider: string, props: {[key: string]: string
   return s;
 }
 
-function propsToArray(props: {[key: string]: any}): string[] {
-  const propArray: string[] = [];
-  const keys = Object.keys(props);
-  keys.sort();
-  for (const key of keys) {
+function propsToArray(props: {[key: string]: any}, keyPrefix = ''): string[] {
+  const ret: string[] = [];
+
+  for (const key of Object.keys(props)) {
     switch (typeof props[key]) {
       case 'object': {
-        const childObjStrs = propsToArray(props[key]);
-        const qualifiedChildStr = childObjStrs.map( child => (`${key}.${child}`)).join(':');
-        propArray.push(qualifiedChildStr);
+        ret.push(...propsToArray(props[key], `${keyPrefix}${key}.`));
         break;
       }
       case 'string': {
-        propArray.push(`${key}=${colonQuote(props[key])}`);
+        ret.push(`${keyPrefix}${key}=${colonQuote(props[key])}`);
         break;
       }
       default: {
-        propArray.push(`${key}=${JSON.stringify(props[key])}`);
+        ret.push(`${keyPrefix}${key}=${JSON.stringify(props[key])}`);
         break;
       }
     }
   }
-  return propArray;
+
+  ret.sort();
+  return ret;
 }

@@ -1,7 +1,23 @@
-import cdk = require('@aws-cdk/cdk');
-import { ClusterParameterGroupRef } from './cluster-parameter-group-ref';
+import { Construct, IResource, Resource, Token } from '@aws-cdk/cdk';
 import { Parameters } from './props';
-import { cloudformation } from './rds.generated';
+import { CfnDBClusterParameterGroup } from './rds.generated';
+
+/**
+ * A cluster parameter group
+ */
+export interface IClusterParameterGroup extends IResource {
+  /**
+   * Name of this parameter group
+   */
+  readonly parameterGroupName: string;
+}
+
+/**
+ * Properties to reference a cluster parameter group
+ */
+export interface ClusterParameterGroupImportProps {
+  readonly parameterGroupName: string;
+}
 
 /**
  * Properties for a cluster parameter group
@@ -10,33 +26,45 @@ export interface ClusterParameterGroupProps {
   /**
    * Database family of this parameter group
    */
-  family: string;
+  readonly family: string;
 
   /**
    * Description for this parameter group
    */
-  description: string;
+  readonly description: string;
 
   /**
    * The parameters in this parameter group
    */
-  parameters?: Parameters;
+  readonly parameters?: Parameters;
 }
 
 /**
  * Defina a cluster parameter group
+ *
+ * @resource AWS::RDS::DBClusterParameterGroup
  */
-export class ClusterParameterGroup extends ClusterParameterGroupRef {
+export class ClusterParameterGroup extends Resource implements IClusterParameterGroup {
+  /**
+   * Import a parameter group
+   */
+  public static fromParameterGroupName(scope: Construct, id: string, parameterGroupName: string): IClusterParameterGroup {
+    class Import extends Resource implements IClusterParameterGroup {
+      public parameterGroupName = parameterGroupName;
+    }
+    return new Import(scope, id);
+  }
+
   public readonly parameterGroupName: string;
   private readonly parameters: Parameters = {};
 
-  constructor(parent: cdk.Construct, id: string, props: ClusterParameterGroupProps) {
-    super(parent, id);
+  constructor(scope: Construct, id: string, props: ClusterParameterGroupProps) {
+    super(scope, id);
 
-    const resource = new cloudformation.DBClusterParameterGroupResource(this, 'Resource', {
+    const resource = new CfnDBClusterParameterGroup(this, 'Resource', {
       description: props.description,
       family: props.family,
-      parameters: new cdk.Token(() => this.parameters),
+      parameters: new Token(() => this.parameters),
     });
 
     for (const [key, value] of Object.entries(props.parameters || {})) {
@@ -68,7 +96,7 @@ export class ClusterParameterGroup extends ClusterParameterGroupRef {
   /**
    * Validate this construct
    */
-  public validate(): string[] {
+  protected validate(): string[] {
     if (Object.keys(this.parameters).length === 0) {
       return ['At least one parameter required, call setParameter().'];
     }

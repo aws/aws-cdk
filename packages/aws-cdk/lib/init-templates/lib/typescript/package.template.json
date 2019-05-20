@@ -1,21 +1,24 @@
 {
-    "name": "%name%",
-    "version": "0.1.0",
-    "main": "lib/index.js",
-    "types": "lib/index.d.ts",
-    "scripts": {
-        "prepare": "tsc",
-        "watch": "tsc -w",
-        "test": "nodeunit test/test.*.js"
-    },
-    "devDependencies": {
-        "@types/nodeunit": "^0.0.30",
-        "nodeunit": "^0.11.2",
-        "typescript": "^3.1.2"
-    },
-    "dependencies": {
-        "@aws-cdk/aws-sns": "^%cdk-version%",
-        "@aws-cdk/aws-sqs": "^%cdk-version%",
-        "@aws-cdk/cdk": "^%cdk-version%"
-    }
+  "name": "%name%",
+  "version": "0.1.0",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc -w",
+    "test": "nodeunit test/test.*.js"
+  },
+  "devDependencies": {
+    "@types/nodeunit": "^0.0.30",
+    "nodeunit": "^0.11.2",
+    "typescript": "^3.3.3333"
+  },
+  "peerDependencies": {
+    "@aws-cdk/cdk": "^%cdk-version%"
+  },
+  "dependencies": {
+    "@aws-cdk/aws-sns": "^%cdk-version%",
+    "@aws-cdk/aws-sqs": "^%cdk-version%",
+    "@aws-cdk/cdk": "^%cdk-version%"
+  }
 }

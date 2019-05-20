@@ -4,6 +4,7 @@
         "module": "commonjs",
         "lib": ["es2016", "es2017.object", "es2017.string"],
         "declaration": true,
+        "composite": true,
         "strict": true,
         "noImplicitAny": true,
         "strictNullChecks": true,
@@ -18,8 +19,10 @@
         "inlineSources": true,
         "experimentalDecorators": true
     },
-    "exclude": [
-        "lib/init-templates/**/*.ts"
+    "include": ["**/*.ts" ],
+    "exclude": ["node_modules"],
+    "references": [
+        { "path": "../cfnspec" },
+        { "path": "../cx-api" }
     ]
 }
-

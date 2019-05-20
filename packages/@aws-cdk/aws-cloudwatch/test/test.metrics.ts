@@ -18,11 +18,12 @@ export = {
     // THEN
     expect(stack).to(haveResource('AWS::IAM::Policy', {
       PolicyDocument: {
+        Version: "2012-10-17",
         Statement: [
           {
-          Action: "cloudwatch:PutMetricData",
-          Effect: "Allow",
-          Resource: "*"
+            Action: "cloudwatch:PutMetricData",
+            Effect: "Allow",
+            Resource: "*"
           }
         ],
         },

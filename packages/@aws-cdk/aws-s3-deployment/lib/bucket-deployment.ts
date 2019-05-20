@@ -11,31 +11,37 @@ export interface BucketDeploymentProps {
   /**
    * The source from which to deploy the contents of this bucket.
    */
-  source: ISource;
+  readonly source: ISource;
 
   /**
    * The S3 bucket to sync the contents of the zip file to.
    */
-  destinationBucket: s3.BucketRef;
+  readonly destinationBucket: s3.IBucket;
 
   /**
-   * Key prefix in desination.
-   * @default No prefix (source == dest)
-   */
-  destinationKeyPrefix?: string;
-
-  /**
-   * If this is enabled, files in destination bucket/prefix will not be deleted
-   * when the resource is deleted or removed from the stack.
+   * Key prefix in the destination bucket.
    *
-   * @default false (when resource is deleted, files are deleted)
+   * @default "/" (unzip to root of the destination bucket)
    */
-  retainOnDelete?: boolean;
+  readonly destinationKeyPrefix?: string;
+
+  /**
+   * If this is set to "false", the destination files will be deleted when the
+   * resource is deleted or the destination is updated.
+   *
+   * NOTICE: if this is set to "false" and destination bucket/prefix is updated,
+   * all files in the previous destination will first be deleted and then
+   * uploaded to the new destination location. This could have availablity
+   * implications on your users.
+   *
+   * @default true - when resource is deleted/updated, files are retained
+   */
+  readonly retainOnDelete?: boolean;
 }
 
 export class BucketDeployment extends cdk.Construct {
-  constructor(parent: cdk.Construct, id: string, props: BucketDeploymentProps) {
-    super(parent, id);
+  constructor(scope: cdk.Construct, id: string, props: BucketDeploymentProps) {
+    super(scope, id);
 
     const handler = new lambda.SingletonFunction(this, 'CustomResourceHandler', {
       uuid: '8693BB64-9689-44B6-9AAF-B0CC9EB8756C',
@@ -48,11 +54,11 @@ export class BucketDeployment extends cdk.Construct {
 
     const source = props.source.bind(this);
 
-    source.bucket.grantRead(handler.role);
-    props.destinationBucket.grantReadWrite(handler.role);
+    source.bucket.grantRead(handler);
+    props.destinationBucket.grantReadWrite(handler);
 
     new cloudformation.CustomResource(this, 'CustomResource', {
-      lambdaProvider: handler,
+      provider: cloudformation.CustomResourceProvider.lambda(handler),
       resourceType: 'Custom::CDKBucketDeployment',
       properties: {
         SourceBucketName: source.bucket.bucketName,

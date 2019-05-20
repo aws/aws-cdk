@@ -1,6 +1,7 @@
 #!/usr/bin/env node
+import path = require('path');
 import yargs = require('yargs');
-import { findPackageJsons, PackageJson, ValidationRule } from '../lib';
+import { findPackageJsons, ValidationRule } from '../lib';
 
 // tslint:disable:no-shadowed-variable
 const argv = yargs
@@ -9,26 +10,24 @@ const argv = yargs
   .argv;
 
 // Our version of yargs doesn't support positional arguments yet
-argv.directory = argv._[0];
+const directory = argv._[0] || '.';
 
-if (argv.directory == null) {
-  argv.directory = ".";
-}
+argv.directory = path.resolve(directory, process.cwd());
 
 async function main(): Promise<void> {
   const ruleClasses = require('../lib/rules');
   const rules: ValidationRule[] = Object.keys(ruleClasses).map(key => new ruleClasses[key]()).filter(obj => obj instanceof ValidationRule);
 
-  const pkgs = findPackageJsons(argv.directory).filter(shouldIncludePackage);
+  const pkgs = findPackageJsons(directory);
 
-  rules.forEach(rule => pkgs.forEach(pkg => rule.prepare(pkg)));
-  rules.forEach(rule => pkgs.forEach(pkg => rule.validate(pkg)));
+  rules.forEach(rule => pkgs.filter(pkg => pkg.shouldApply(rule)).forEach(pkg => rule.prepare(pkg)));
+  rules.forEach(rule => pkgs.filter(pkg => pkg.shouldApply(rule)).forEach(pkg => rule.validate(pkg)));
 
   if (argv.fix) {
     pkgs.forEach(pkg => pkg.applyFixes());
   }
 
-  pkgs.forEach(pkg => pkg.displayReports());
+  pkgs.forEach(pkg => pkg.displayReports(directory));
 
   if (pkgs.some(p => p.hasReports)) {
     throw new Error('Some package.json files had errors');
@@ -40,7 +39,3 @@ main().catch((e) => {
   console.error(e);
   process.exit(1);
 });
-
-function shouldIncludePackage(pkg: PackageJson) {
-  return !(pkg.json.pkglint && pkg.json.pkglint.ignore);
-}

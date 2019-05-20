@@ -1,9 +1,9 @@
 import cloudwatch = require('@aws-cdk/aws-cloudwatch');
 import events = require('@aws-cdk/aws-events');
 import iam = require('@aws-cdk/aws-iam');
-import cdk = require('@aws-cdk/cdk');
+import { Construct, IResource, Resource } from '@aws-cdk/cdk';
 import { StateGraph } from './state-graph';
-import { cloudformation } from './stepfunctions.generated';
+import { CfnStateMachine } from './stepfunctions.generated';
 import { IChainable } from './types';
 
 /**
@@ -15,46 +15,51 @@ export interface StateMachineProps {
      *
      * @default A name is automatically generated
      */
-    stateMachineName?: string;
+    readonly stateMachineName?: string;
 
     /**
      * Definition for this state machine
      */
-    definition: IChainable;
+    readonly definition: IChainable;
 
     /**
      * The execution role for the state machine service
      *
      * @default A role is automatically created
      */
-    role?: iam.Role;
+    readonly role?: iam.IRole;
 
     /**
      * Maximum run time for this state machine
      *
      * @default No timeout
      */
-    timeoutSec?: number;
+    readonly timeoutSec?: number;
 }
 
 /**
  * Define a StepFunctions State Machine
  */
-export class StateMachine extends cdk.Construct implements IStateMachine {
+export class StateMachine extends Resource implements IStateMachine, events.IEventRuleTarget {
     /**
      * Import a state machine
      */
-    public static import(parent: cdk.Construct, id: string, props: ImportedStateMachineProps): IStateMachine {
-        return new ImportedStateMachine(parent, id, props);
+    public static fromStateMachineArn(scope: Construct, id: string, stateMachineArn: string): IStateMachine {
+        class Import extends Resource implements IStateMachine {
+            public readonly stateMachineArn = stateMachineArn;
+        }
+
+        return new Import(scope, id);
     }
 
     /**
      * Execution role of this state machine
      */
-    public readonly role: iam.Role;
+    public readonly role: iam.IRole;
 
     /**
      * The name of the state machine
+     * @attribute
      */
     public readonly stateMachineName: string;
 
@@ -68,20 +73,20 @@ export class StateMachine extends cdk.Construct implements IStateMachine {
      */
     private eventsRole?: iam.Role;
 
-    constructor(parent: cdk.Construct, id: string, props: StateMachineProps) {
-        super(parent, id);
+    constructor(scope: Construct, id: string, props: StateMachineProps) {
+        super(scope, id);
 
         this.role = props.role || new iam.Role(this, 'Role', {
-            assumedBy: new iam.ServicePrincipal(`states.${new cdk.AwsRegion()}.amazonaws.com`),
+            assumedBy: new iam.ServicePrincipal(`states.${this.node.stack.region}.amazonaws.com`),
         });
 
         const graph = new StateGraph(props.definition.startState, `State Machine ${id} definition`);
         graph.timeoutSeconds = props.timeoutSec;
 
-        const resource = new cloudformation.StateMachineResource(this, 'Resource', {
+        const resource = new CfnStateMachine(this, 'Resource', {
             stateMachineName: props.stateMachineName,
             roleArn: this.role.roleArn,
-            definitionString: cdk.CloudFormationJSON.stringify(graph.toGraphJson()),
+            definitionString: this.node.stringifyJson(graph.toGraphJson()),
         });
 
         for (const statement of graph.policyStatements) {
@@ -114,7 +119,7 @@ export class StateMachine extends cdk.Construct implements IStateMachine {
         }
 
         return {
-            id: this.id,
+            id: this.node.id,
             arn: this.stateMachineArn,
             roleArn: this.eventsRole.roleArn,
         };
@@ -125,7 +130,7 @@ export class StateMachine extends cdk.Construct implements IStateMachine {
      *
      * @default sum over 5 minutes
      */
-    public metric(metricName: string, props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
+    public metric(metricName: string, props?: cloudwatch.MetricOptions): cloudwatch.Metric {
         return new cloudwatch.Metric({
             namespace: 'AWS/States',
             metricName,
@@ -140,7 +145,7 @@ export class StateMachine extends cdk.Construct implements IStateMachine {
      *
      * @default sum over 5 minutes
      */
-    public metricFailed(props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
+    public metricFailed(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
         return this.metric('ExecutionsFailed', props);
     }
 
@@ -149,7 +154,7 @@ export class StateMachine extends cdk.Construct implements IStateMachine {
      *
      * @default sum over 5 minutes
      */
-    public metricThrottled(props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
+    public metricThrottled(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
         return this.metric('ExecutionThrottled', props);
     }
 
@@ -158,7 +163,7 @@ export class StateMachine extends cdk.Construct implements IStateMachine {
      *
      * @default sum over 5 minutes
      */
-    public metricAborted(props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
+    public metricAborted(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
         return this.metric('ExecutionsAborted', props);
     }
 
@@ -167,7 +172,7 @@ export class StateMachine extends cdk.Construct implements IStateMachine {
      *
      * @default sum over 5 minutes
      */
-    public metricSucceeded(props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
+    public metricSucceeded(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
         return this.metric('ExecutionsSucceeded', props);
     }
 
@@ -176,7 +181,7 @@ export class StateMachine extends cdk.Construct implements IStateMachine {
      *
      * @default sum over 5 minutes
      */
-    public metricTimedOut(props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
+    public metricTimedOut(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
         return this.metric('ExecutionsTimedOut', props);
     }
 
@@ -185,44 +190,27 @@ export class StateMachine extends cdk.Construct implements IStateMachine {
      *
      * @default sum over 5 minutes
      */
-    public metricStarted(props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
+    public metricStarted(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
         return this.metric('ExecutionsStarted', props);
     }
 
     /**
-     * Export this state machine
+     * Metric for the interval, in milliseconds, between the time the execution starts and the time it closes
+     *
+     * @default sum over 5 minutes
      */
-    public export(): ImportedStateMachineProps {
-        return {
-            stateMachineArn: new cdk.Output(this, 'StateMachineArn', { value: this.stateMachineArn }).makeImportValue().toString(),
-        };
+    public metricTime(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+        return this.metric('ExecutionTime', props);
     }
 }
 
 /**
  * A State Machine
  */
-export interface IStateMachine {
+export interface IStateMachine extends IResource {
     /**
      * The ARN of the state machine
+     * @attribute
      */
     readonly stateMachineArn: string;
-}
-
-/**
- * Properties for an imported state machine
- */
-export interface ImportedStateMachineProps {
-    /**
-     * The ARN of the state machine
-     */
-    stateMachineArn: string;
-}
-
-class ImportedStateMachine extends cdk.Construct implements IStateMachine {
-    public readonly stateMachineArn: string;
-    constructor(parent: cdk.Construct, id: string, props: ImportedStateMachineProps) {
-        super(parent, id);
-        this.stateMachineArn = props.stateMachineArn;
-    }
 }

@@ -28,6 +28,14 @@
           {
             "Key": "Name",
             "Value": "aws-cdk-elb-integ/VPC/PublicSubnet1"
+          },
+          {
+            "Key": "aws-cdk:subnet-name",
+            "Value": "Public"
+          },
+          {
+            "Key": "aws-cdk:subnet-type",
+            "Value": "Public"
           }
         ]
       }
@@ -57,6 +65,21 @@
         }
       }
     },
+    "VPCPublicSubnet1DefaultRoute91CEF279": {
+      "Type": "AWS::EC2::Route",
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "VPCPublicSubnet1RouteTableFEE4B781"
+        },
+        "DestinationCidrBlock": "0.0.0.0/0",
+        "GatewayId": {
+          "Ref": "VPCIGWB7E252D3"
+        }
+      },
+      "DependsOn": [
+        "VPCVPCGW99B986DC"
+      ]
+    },
     "VPCPublicSubnet1EIP6AD938E8": {
       "Type": "AWS::EC2::EIP",
       "Properties": {
@@ -83,18 +106,6 @@
         ]
       }
     },
-    "VPCPublicSubnet1DefaultRoute91CEF279": {
-      "Type": "AWS::EC2::Route",
-      "Properties": {
-        "RouteTableId": {
-          "Ref": "VPCPublicSubnet1RouteTableFEE4B781"
-        },
-        "DestinationCidrBlock": "0.0.0.0/0",
-        "GatewayId": {
-          "Ref": "VPCIGWB7E252D3"
-        }
-      }
-    },
     "VPCPrivateSubnet1Subnet8BCA10E0": {
       "Type": "AWS::EC2::Subnet",
       "Properties": {
@@ -108,6 +119,14 @@
           {
             "Key": "Name",
             "Value": "aws-cdk-elb-integ/VPC/PrivateSubnet1"
+          },
+          {
+            "Key": "aws-cdk:subnet-name",
+            "Value": "Private"
+          },
+          {
+            "Key": "aws-cdk:subnet-type",
+            "Value": "Private"
           }
         ]
       }
@@ -175,7 +194,15 @@
       "Type": "AWS::EC2::SecurityGroup",
       "Properties": {
         "GroupDescription": "aws-cdk-elb-integ/LB/SecurityGroup",
-        "SecurityGroupEgress": [],
+        "SecurityGroupEgress": [
+          {
+            "CidrIp": "255.255.255.255/32",
+            "Description": "Disallow all traffic",
+            "FromPort": 252,
+            "IpProtocol": "icmp",
+            "ToPort": 86
+          }
+        ],
         "SecurityGroupIngress": [
           {
             "CidrIp": "0.0.0.0/0",
@@ -222,7 +249,10 @@
             "Ref": "VPCPublicSubnet1SubnetB4246D30"
           }
         ]
-      }
+      },
+      "DependsOn": [
+        "VPCPublicSubnet1DefaultRoute91CEF279"
+      ]
     }
   }
 }

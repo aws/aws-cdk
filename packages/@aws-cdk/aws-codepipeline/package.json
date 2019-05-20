@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/aws-codepipeline",
-  "version": "0.13.0",
+  "version": "0.31.0",
   "description": "Better interface to AWS Code Pipeline",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -20,12 +20,16 @@
         "signAssembly": true,
         "assemblyOriginatorKeyFile": "../../key.snk"
       },
-      "sphinx": {}
+      "python": {
+        "distName": "aws-cdk.aws-codepipeline",
+        "module": "aws_cdk.aws_codepipeline"
+      }
     }
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/awslabs/aws-cdk.git"
+    "url": "https://github.com/awslabs/aws-cdk.git",
+    "directory": "packages/@aws-cdk/aws-codepipeline"
   },
   "scripts": {
     "build": "cdk-build",
@@ -34,13 +38,16 @@
     "test": "cdk-test",
     "integ": "cdk-integ",
     "pkglint": "pkglint -f",
-    "package": "cdk-package"
+    "package": "cdk-package",
+    "awslint": "cdk-awslint",
+    "cfn2ts": "cfn2ts"
   },
   "cdk-build": {
     "cloudformation": "AWS::CodePipeline"
   },
   "nyc": {
-    "lines": 66
+    "statements": 50,
+    "lines": 50
   },
   "keywords": [
     "aws",
@@ -58,24 +65,37 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "^0.13.0",
-    "@aws-cdk/aws-cloudformation": "^0.13.0",
-    "@aws-cdk/aws-codebuild": "^0.13.0",
-    "@aws-cdk/aws-codecommit": "^0.13.0",
-    "@aws-cdk/aws-codedeploy": "^0.13.0",
-    "@aws-cdk/aws-lambda": "^0.13.0",
-    "@aws-cdk/aws-sns": "^0.13.0",
-    "cdk-build-tools": "^0.13.0",
-    "cdk-integ-tools": "^0.13.0",
-    "cfn2ts": "^0.13.0",
-    "pkglint": "^0.13.0"
+    "@aws-cdk/assert": "^0.31.0",
+    "cdk-build-tools": "^0.31.0",
+    "cdk-integ-tools": "^0.31.0",
+    "cfn2ts": "^0.31.0",
+    "pkglint": "^0.31.0"
   },
   "dependencies": {
-    "@aws-cdk/aws-codepipeline-api": "^0.13.0",
-    "@aws-cdk/aws-events": "^0.13.0",
-    "@aws-cdk/aws-iam": "^0.13.0",
-    "@aws-cdk/aws-s3": "^0.13.0",
-    "@aws-cdk/cdk": "^0.13.0"
+    "@aws-cdk/aws-events": "^0.31.0",
+    "@aws-cdk/aws-iam": "^0.31.0",
+    "@aws-cdk/aws-kms": "^0.31.0",
+    "@aws-cdk/aws-s3": "^0.31.0",
+    "@aws-cdk/cdk": "^0.31.0"
   },
-  "homepage": "https://github.com/awslabs/aws-cdk"
+  "homepage": "https://github.com/awslabs/aws-cdk",
+  "peerDependencies": {
+    "@aws-cdk/aws-events": "^0.31.0",
+    "@aws-cdk/aws-iam": "^0.31.0",
+    "@aws-cdk/aws-kms": "^0.31.0",
+    "@aws-cdk/aws-s3": "^0.31.0",
+    "@aws-cdk/cdk": "^0.31.0"
+  },
+  "engines": {
+    "node": ">= 8.10.0"
+  },
+  "awslint": {
+    "exclude": [
+      "construct-ctor:@aws-cdk/aws-codepipeline.CrossRegionScaffoldStack.<initializer>.params[0]",
+      "construct-ctor:@aws-cdk/aws-codepipeline.CrossRegionScaffoldStack.<initializer>.params[1]",
+      "export:@aws-cdk/aws-codepipeline.IPipeline",
+      "import-props-interface:@aws-cdk/aws-codepipeline.PipelineImportProps",
+      "resource-attribute:@aws-cdk/aws-codepipeline.IPipeline.pipelineVersion"
+    ]
+  }
 }

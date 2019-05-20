@@ -12,7 +12,7 @@ export interface LambdaRestApiProps {
    * This handler will be used as a the default integration for all methods in
    * this API, unless specified otherwise in `addMethod`.
    */
-  handler: lambda.Function;
+  readonly handler: lambda.IFunction;
 
   /**
    * If true, route all requests to the Lambda Function
@@ -22,14 +22,14 @@ export interface LambdaRestApiProps {
    *
    * @default true
    */
-  proxy?: boolean;
+  readonly proxy?: boolean;
 
   /**
    * Further customization of the REST API.
    *
    * @default defaults
    */
-  options?: RestApiProps;
+  readonly options?: RestApiProps;
 }
 
 /**
@@ -40,12 +40,12 @@ export interface LambdaRestApiProps {
  * add resources and methods to the API.
  */
 export class LambdaRestApi extends RestApi {
-  constructor(parent: cdk.Construct, id: string, props: LambdaRestApiProps) {
+  constructor(scope: cdk.Construct, id: string, props: LambdaRestApiProps) {
     if (props.options && props.options.defaultIntegration) {
       throw new Error(`Cannot specify "options.defaultIntegration" since Lambda integration is automatically defined`);
     }
 
-    super(parent, id, {
+    super(scope, id, {
       defaultIntegration: new LambdaIntegration(props.handler),
       ...props.options
     });

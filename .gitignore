@@ -1,4 +1,9 @@
+*.tsbuildinfo
+.cdk.staging
+
 .vscode
+# VSCode extension
+/.favorites.json
 .DS_Store
 node_modules
 lerna-debug.log
@@ -10,3 +15,10 @@ pack
 coverage
 .nyc_output
 .LAST_BUILD
+*.sw[a-z]
+*~
+
+# we don't want tsconfig at the root
+/tsconfig.json
+cdk.context.json
+tsconfig.tsbuildinfo

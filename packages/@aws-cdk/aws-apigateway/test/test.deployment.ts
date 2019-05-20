@@ -1,4 +1,4 @@
-import { expect, haveResource, ResourcePart } from '@aws-cdk/assert';
+import { expect, haveResource, ResourcePart, SynthUtils } from '@aws-cdk/assert';
 import cdk = require('@aws-cdk/cdk');
 import { Test } from 'nodeunit';
 import apigateway = require('../lib');
@@ -152,8 +152,8 @@ export = {
     test.done();
 
     function synthesize() {
-      stack.validateTree();
-      return stack.toCloudFormation();
+      stack.node.prepareTree();
+      return SynthUtils.toCloudFormation(stack);
     }
   },
 
@@ -164,10 +164,10 @@ export = {
     const deployment = new apigateway.Deployment(stack, 'deployment', { api });
     api.root.addMethod('GET');
 
-    const dep = new cdk.Resource(stack, 'MyResource', { type: 'foo' });
+    const dep = new cdk.CfnResource(stack, 'MyResource', { type: 'foo' });
 
     // WHEN
-    deployment.addDependency(dep);
+    deployment.node.addDependency(dep);
 
     expect(stack).to(haveResource('AWS::ApiGateway::Deployment', {
       DependsOn: [ "MyResource" ],
