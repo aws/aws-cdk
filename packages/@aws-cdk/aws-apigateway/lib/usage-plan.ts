@@ -1,6 +1,6 @@
 import { Token } from '@aws-cdk/cdk';
 import { Construct, Resource } from '@aws-cdk/cdk';
-import { ApiKey } from './api-key';
+import { IApiKey } from './api-key';
 import { CfnUsagePlan, CfnUsagePlanKey } from './apigateway.generated';
 import { Method } from './method';
 import { IRestApi } from './restapi';
@@ -123,7 +123,7 @@ export interface UsagePlanProps {
   /**
    * ApiKey to be associated with the usage plan.
    */
-  readonly apiKey?: ApiKey
+  readonly apiKey?: IApiKey
 }
 
 export class UsagePlan extends Resource {
@@ -161,7 +161,7 @@ export class UsagePlan extends Resource {
    *
    * @param apiKey
    */
-  public addApiKey(apiKey: ApiKey): void {
+  public addApiKey(apiKey: IApiKey): void {
     new CfnUsagePlanKey(this, 'UsagePlanKeyResource', {
       keyId: apiKey.keyId,
       keyType: UsagePlanKeyType.ApiKey,

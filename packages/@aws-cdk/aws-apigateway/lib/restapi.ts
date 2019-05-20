@@ -1,6 +1,6 @@
 import iam = require('@aws-cdk/aws-iam');
 import { CfnOutput, Construct, IResource as IResourceBase, Resource } from '@aws-cdk/cdk';
-import { ApiKey } from './api-key';
+import { ApiKey, IApiKey } from './api-key';
 import { CfnAccount, CfnRestApi } from './apigateway.generated';
 import { Deployment } from './deployment';
 import { Integration } from './integration';
@@ -283,7 +283,7 @@ export class RestApi extends Resource implements IRestApi {
    * Add an ApiKey
    * @param id
    */
-  public addApiKey(id: string): ApiKey {
+  public addApiKey(id: string): IApiKey {
     return new ApiKey(this, id, {
       resources: [this]
     });

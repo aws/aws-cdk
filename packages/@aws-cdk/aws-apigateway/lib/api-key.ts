@@ -1,7 +1,29 @@
-import { Construct, Resource } from '@aws-cdk/cdk';
+import { CfnOutput, Construct, IResource as IResourceBase, Resource } from '@aws-cdk/cdk';
 import { CfnApiKey } from './apigateway.generated';
 import { ResourceOptions } from "./resource";
 import { RestApi } from './restapi';
+
+export interface ApiKeyAttributes {
+  /**
+   * The API key ID.
+   * @attribute
+   */
+  readonly keyId: string;
+}
+
+export interface IApiKey extends IResourceBase {
+  /**
+   * The API key ID.
+   * @attribute
+   */
+  readonly keyId: string;
+
+  /**
+   * Exports a API key resource from this stack.
+   * @returns API key props that can be imported to another stack.
+   */
+  export(): ApiKeyAttributes;
+}
 
 export interface ApiKeyProps extends ResourceOptions {
   /**
@@ -52,7 +74,7 @@ export interface ApiKeyProps extends ResourceOptions {
  * An ApiKey can be distributed to API clients that are executing requests
  * for Method resources that require an Api Key.
  */
-export class ApiKey extends Resource {
+export class ApiKey extends Resource implements IApiKey {
   public readonly keyId: string;
 
   constructor(scope: Construct, id: string, props: ApiKeyProps = { }) {
@@ -68,6 +90,16 @@ export class ApiKey extends Resource {
     });
 
     this.keyId = resource.ref;
+  }
+
+  /**
+   * Exports a API key resource from this stack.
+   * @returns API key props that can be imported to another stack.
+   */
+  public export(): ApiKeyAttributes {
+    return {
+      keyId: new CfnOutput(this, 'KeyId', { value: this.keyId }).makeImportValue().toString()
+    };
   }
 
   private renderStageKeys(resources: RestApi[] | undefined): CfnApiKey.StageKeyProperty[] | undefined {
