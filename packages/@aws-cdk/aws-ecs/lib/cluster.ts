@@ -250,8 +250,7 @@ export class EcsOptimizedAmi implements ec2.IMachineImageSource {
     } else {                              // generation not defined in props object
       if (this.hwType === AmiHardwareType.Standard) {    // default to Amazon Linux v1 if no HW is standard
         this.generation = ec2.AmazonLinuxGeneration.AmazonLinux;
-      }
-      else {                                         // default to Amazon Linux v2 if special HW
+      } else {                                         // default to Amazon Linux v2 if special HW
         this.generation = ec2.AmazonLinuxGeneration.AmazonLinux2;
       }
     }
@@ -260,8 +259,8 @@ export class EcsOptimizedAmi implements ec2.IMachineImageSource {
     this.amiParameterName = "/aws/service/ecs/optimized-ami/"
                           + ( this.generation === ec2.AmazonLinuxGeneration.AmazonLinux ? "amazon-linux/" : "" )
                           + ( this.generation === ec2.AmazonLinuxGeneration.AmazonLinux2 ? "amazon-linux-2/" : "" )
-                          + ( this.hwType === AmiHardwareType.Gpu ? "gpu/": "" )
-                          + ( this.hwType === AmiHardwareType.Arm ? "arm64/": "" )
+                          + ( this.hwType === AmiHardwareType.Gpu ? "gpu/" : "" )
+                          + ( this.hwType === AmiHardwareType.Arm ? "arm64/" : "" )
                           + "recommended";
   }
 
