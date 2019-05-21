@@ -42,7 +42,9 @@
     "pkglint": "pkglint -f",
     "test": "cdk-test",
     "watch": "cdk-watch",
-    "cfn2ts": "cfn2ts"
+    "cfn2ts": "cfn2ts",
+    "build+test": "npm run build && npm test",
+    "build+test+package": "npm run build+test && npm run package"
   },
   "cdk-build": {
     "cloudformation": "AWS::MediaStore"

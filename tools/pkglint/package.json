@@ -17,6 +17,8 @@
   },
   "scripts": {
     "build": "tsc && tslint -p . && chmod +x bin/pkglint",
+    "build+test": "npm run build",
+    "build+test+package": "npm run build",
     "watch": "tsc -w",
     "lint": "tsc && tslint -p . --force"
   },
