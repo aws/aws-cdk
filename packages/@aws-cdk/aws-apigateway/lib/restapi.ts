@@ -242,9 +242,6 @@ export class RestApi extends Resource implements IRestApi {
 
   /**
    * Adds a usage plan.
-   *
-   * @param id
-   * @param props
    */
   public addUsagePlan(id: string, props: UsagePlanProps): UsagePlan {
     return new UsagePlan(this, id, props);
@@ -252,7 +249,6 @@ export class RestApi extends Resource implements IRestApi {
 
   /**
    * Add an ApiKey
-   * @param id
    */
   public addApiKey(id: string): IApiKey {
     return new ApiKey(this, id, {
