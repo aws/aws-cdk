@@ -201,7 +201,7 @@ export interface RuleProps {
   /**
    * A name for the AWS Config rule.
    *
-   * @default a CloudFormation genereated named
+   * @default a CloudFormation generated name
    */
   readonly name?: string;
 
