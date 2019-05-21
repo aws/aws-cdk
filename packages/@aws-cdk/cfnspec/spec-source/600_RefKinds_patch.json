@@ -4710,7 +4710,7 @@
           {
             "op": "add",
             "path": "/RefKind",
-            "value": "None"
+            "value": "Name"
           }
         ],
         "description": "Set RefKind of AWS::Glue::SecurityConfiguration to None"
@@ -4734,7 +4734,7 @@
           {
             "op": "add",
             "path": "/RefKind",
-            "value": "None"
+            "value": "Id"
           }
         ],
         "description": "Set RefKind of AWS::ServiceCatalog::ResourceUpdateConstraint to None"
