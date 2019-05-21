@@ -58,30 +58,17 @@ export = {
             Action: 'sts:AssumeRole',
             Effect: 'Allow',
             Principal: {
-              Service: [
-                {
-                  'Fn::Join': [
-                    '',
-                    [
-                      'config.',
-                      {
-                        Ref: 'AWS::URLSuffix'
-                      }
-                    ]
+              Service: {
+                'Fn::Join': [
+                  '',
+                  [
+                    'config.',
+                    {
+                      Ref: 'AWS::URLSuffix'
+                    }
                   ]
-                },
-                {
-                  'Fn::Join': [
-                    '',
-                    [
-                      'cloudformation.',
-                      {
-                        Ref: 'AWS::URLSuffix'
-                      }
-                    ]
-                  ]
-                }
-              ]
+                ]
+              }
             }
           }
         ],
@@ -97,18 +84,6 @@ export = {
                 Ref: 'AWS::Partition'
               },
               ':iam::aws:policy/ReadOnlyAccess'
-            ]
-          ]
-        },
-        {
-          'Fn::Join': [
-            '',
-            [
-              'arn:',
-              {
-                Ref: 'AWS::Partition'
-              },
-              ':iam::aws:policy/AWSCloudFormationReadOnlyAccess'
             ]
           ]
         }

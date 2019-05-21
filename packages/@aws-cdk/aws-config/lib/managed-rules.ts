@@ -49,6 +49,16 @@ export interface CloudFormationStackDriftDetectionCheckProps extends RuleProps {
    * @default false
    */
   readonly ownStackOnly?: boolean;
+
+  /**
+   * The IAM role to use for this rule. It must have permissions to detect drift
+   * for AWS CloudFormation stacks. Ensure to attach `config.amazonaws.com` trusted
+   * permissions and `ReadOnlyAccess` policy permissions. For specific policy permissions,
+   * refer to https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-stack-drift.html.
+   *
+   * @default a role will be created
+   */
+  readonly role?: iam.IRole;
 }
 
 /**
@@ -67,20 +77,16 @@ export class CloudFormationStackDriftDetectionCheck extends ManagedRule {
       ...props,
       identifier: 'CLOUDFORMATION_STACK_DRIFT_DETECTION_CHECK',
       inputParameters: {
-        cloudformationRoleArn: new Token(() => this.role.roleArn)
+        cloudformationRoleArn: (props.role && props.role.roleArn) || new Token(() => this.role.roleArn)
       }
     });
 
     this.addResourceScope('AWS::CloudFormation::Stack', props.ownStackOnly ? this.node.stack.stackId : undefined);
 
     this.role = new iam.Role(this, 'Role', {
-      assumedBy: new iam.CompositePrincipal(
-        new iam.ServicePrincipal('config.amazonaws.com'),
-        new iam.ServicePrincipal('cloudformation.amazonaws.com')
-      ),
+      assumedBy: new iam.ServicePrincipal('config.amazonaws.com'),
       managedPolicyArns: [
         new iam.AwsManagedPolicy('ReadOnlyAccess', this).policyArn,
-        new iam.AwsManagedPolicy('AWSCloudFormationReadOnlyAccess', this).policyArn
       ]
     });
   }
