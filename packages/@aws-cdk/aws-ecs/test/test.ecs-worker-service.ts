@@ -9,7 +9,7 @@ export = {
   'test ECS queue worker service construct - with only required props'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
-    const vpc = new ec2.VpcNetwork(stack, 'VPC');
+    const vpc = new ec2.Vpc(stack, 'VPC');
     const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
     cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
 
@@ -66,7 +66,7 @@ export = {
   'test ECS queue worker service construct - with optional props'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
-    const vpc = new ec2.VpcNetwork(stack, 'VPC');
+    const vpc = new ec2.Vpc(stack, 'VPC');
     const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
     cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
     const queue = new sqs.Queue(stack, 'ecs-test-queue', { queueName: 'ecs-test-sqs-queue'});
@@ -102,8 +102,8 @@ export = {
         {
           Command: [
             "-c",
-            " 4",
-            " amazon.com"
+            "4",
+            "amazon.com"
           ],
           Environment: [
             {
