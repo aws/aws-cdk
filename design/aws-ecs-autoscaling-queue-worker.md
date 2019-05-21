@@ -44,11 +44,11 @@ export interface QueueWorkerServiceBaseProps {
   readonly image: ContainerImage;
 
   /**
-   * The CMD value to pass to the container. A string with commands delimited by commas.
+   * The CMD value to pass to the container as a string array.
    *
    * @default none
    */
-  readonly command?: string;
+  readonly command?: string[];
 
   /**
    * Number of desired copies of running tasks

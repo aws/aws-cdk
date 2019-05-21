@@ -27,7 +27,7 @@ export interface QueueWorkerServiceBaseProps {
    *
    * @default none
    */
-  readonly command?: string;
+  readonly command?: string[];
 
   /**
    * Number of desired copies of running tasks

@@ -59,7 +59,7 @@ export class FargateQueueWorkerService extends QueueWorkerServiceBase {
     });
     taskDefinition.addContainer('QueueWorkerContainer', {
       image: props.image,
-      command: props.command !== undefined ? cdk.Fn.split(",", props.command) : undefined,
+      command: props.command,
       environment: this.environment,
       logging: this.logDriver
     });

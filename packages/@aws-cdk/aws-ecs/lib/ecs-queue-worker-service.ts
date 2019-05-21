@@ -51,7 +51,7 @@ export class Ec2QueueWorkerService extends QueueWorkerServiceBase {
       memoryLimitMiB: props.memoryLimitMiB,
       memoryReservationMiB: props.memoryReservationMiB,
       cpu: props.cpu,
-      command: props.command !== undefined ? cdk.Fn.split(",", props.command) : undefined,
+      command: props.command,
       environment: this.environment,
       logging: this.logDriver
     });

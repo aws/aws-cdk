@@ -75,7 +75,7 @@ export = {
       cluster,
       memoryMiB: '512',
       image: ecs.ContainerImage.fromRegistry('test'),
-      command: "-c, 4, amazon.com",
+      command: ["-c", "4", "amazon.com"],
       enableLogging: false,
       desiredTaskCount: 2,
       environment: {
