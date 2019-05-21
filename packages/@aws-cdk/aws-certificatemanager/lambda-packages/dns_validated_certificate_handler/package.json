@@ -11,8 +11,8 @@
     "build": "echo No build",
     "test": "jest",
     "lint": "eslint lib",
-    "build:test:package": "npm run build:test",
-    "build:test": "npm run build && npm test"
+    "build+test+package": "npm run build+test",
+    "build+test": "npm run build && npm test"
   },
   "keywords": [
     "aws",

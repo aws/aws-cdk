@@ -34,8 +34,8 @@
     "watch": "cdk-watch",
     "integ": "cdk-integ",
     "awslint": "cdk-awslint",
-    "build:test:package": "npm run build:test && npm run package",
-    "build:test": "npm run build && npm test"
+    "build+test+package": "npm run build+test && npm run package",
+    "build+test": "npm run build && npm test"
   },
   "dependencies": {
     "@aws-cdk/aws-cloudformation": "^0.31.0",

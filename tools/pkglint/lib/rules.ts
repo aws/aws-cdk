@@ -796,7 +796,7 @@ export class PackageInJsiiPackageNoRuntimeDeps extends ValidationRule {
 
 /**
  * Requires packages to have fast-fail build scripts, allowing to combine build, test and package in a single command.
- * This involves two targets: `build:test:pack` and `build:test` (to skip the pack).
+ * This involves two targets: `build+test:pack` and `build+test` (to skip the pack).
  */
 export class FastFailingBuildScripts extends ValidationRule {
   public readonly name = 'fast-failing-build-scripts';
@@ -808,10 +808,10 @@ export class FastFailingBuildScripts extends ValidationRule {
     const hasPack = 'package' in scripts;
 
     const cmdBuild = 'npm run build';
-    expectJSON(this.name, pkg, 'scripts.build:test', hasTest ? [cmdBuild, 'npm test'].join(' && ') : cmdBuild);
+    expectJSON(this.name, pkg, 'scripts.build+test', hasTest ? [cmdBuild, 'npm test'].join(' && ') : cmdBuild);
 
-    const cmdBuildTest = 'npm run build:test';
-    expectJSON(this.name, pkg, 'scripts.build:test:package', hasPack ? [cmdBuildTest, 'npm run package'].join(' && ') : cmdBuildTest);
+    const cmdBuildTest = 'npm run build+test';
+    expectJSON(this.name, pkg, 'scripts.build+test+package', hasPack ? [cmdBuildTest, 'npm run package'].join(' && ') : cmdBuildTest);
   }
 }
 

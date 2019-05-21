@@ -16,8 +16,8 @@
     "watch": "tsc -w",
     "test": "jest",
     "package": "mkdir -p dist/js && cd dist/js && npm pack ../../",
-    "build:test:package": "npm run build:test && npm run package",
-    "build:test": "npm run build && npm test"
+    "build+test+package": "npm run build+test && npm run package",
+    "build+test": "npm run build && npm test"
   },
   "author": {
     "name": "Amazon Web Services",
