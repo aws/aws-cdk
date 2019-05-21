@@ -372,7 +372,7 @@ export class InterfaceVpcEndpoint extends VpcEndpoint implements IInterfaceVpcEn
     const subnetIds = subnets.subnetIds;
 
     const endpoint = new CfnVPCEndpoint(this, 'Resource', {
-      privateDnsEnabled: props.privateDnsEnabled || true,
+      privateDnsEnabled: props.privateDnsEnabled !== undefined ? props.privateDnsEnabled : true,
       policyDocument: new Token(() => this.policyDocument),
       securityGroupIds: [this.securityGroupId],
       serviceName: props.service.name,
