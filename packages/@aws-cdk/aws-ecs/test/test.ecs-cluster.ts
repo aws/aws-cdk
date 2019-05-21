@@ -220,6 +220,58 @@ export = {
     test.done();
   },
 
+  "allows specifying special HW AMI Type"(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.VpcNetwork(stack, 'MyVpc', {});
+
+    const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+    cluster.addCapacity('GpuAutoScalingGroup', {
+      instanceType: new ec2.InstanceType('t2.micro'),
+      machineImage: new ecs.EcsOptimizedAmi({
+        hwType: ecs.AmiHardwareType.Gpu
+      }),
+    });
+
+    // THEN
+    expect(stack).to(haveResource("AWS::AutoScaling::LaunchConfiguration", {
+      ImageId: ""
+    }));
+
+    test.done();
+  },
+
+  "throws if amazon linux given with special HW type"(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+
+    const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+
+    // WHEN
+    cluster.addCapacity('GpuAutoScalingGroup', {
+      instanceType: new ec2.InstanceType('t2.micro'),
+      machineImage: new ecs.EcsOptimizedAmi({
+        generation: ec2.AmazonLinuxGeneration.AmazonLinux,
+        hwType: ecs.AmiHardwareType.Gpu,
+      }),
+    });
+
+    // THEN
+    test.throws(() => {
+      cluster.addCapacity('GpuAutoScalingGroup', {
+        instanceType: new ec2.InstanceType('t2.micro'),
+        machineImage: new ecs.EcsOptimizedAmi({
+          generation: ec2.AmazonLinuxGeneration.AmazonLinux,
+          hwType: ecs.AmiHardwareType.Gpu,
+        }),
+      });
+    }, /Amazon Linux does not support special hardware type. Use Amazon Linux 2 instead./);
+
+    test.done();
+  },
+
+
   "allows adding default service discovery namespace"(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
