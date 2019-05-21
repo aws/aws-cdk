@@ -53,12 +53,6 @@ trap "rm -rf $MERKLE_BUILD_CACHE" EXIT
 
 echo "============================================================================================="
 echo "building..."
-time lerna run $bail --stream build || fail
-
-if $run_tests; then
-  echo "============================================================================================="
-  echo "testing..."
-  lerna run $bail --stream test || fail
-fi
+time lerna run $bail --stream build:test || fail
 
 touch $BUILD_INDICATOR

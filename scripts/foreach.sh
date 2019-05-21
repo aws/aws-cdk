@@ -82,9 +82,9 @@ heading "${next}: ${command} (${remaining} remaining)"
 
   # special-case "npm run" - skip any modules that simply don't have
   # that script (similar to how "lerna run" behaves)
-  if [[ "${command}" == "npm run"* ]]; then
+  if [[ "${command}" == "npm run "* ]]; then
     script="$(echo ${command} | cut -d" " -f3)"
-    exists=$(node -pe "require('./package.json').scripts.${script} || ''")
+    exists=$(node -pe "require('./package.json').scripts['${script}'] || ''")
     if [ -z "${exists}" ]; then
       echo "skipping (no "${script}" script in package.json)"
       exit 0

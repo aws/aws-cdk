@@ -10,7 +10,9 @@
     "lint": "cdk-lint",
     "test": "cdk-test",
     "pkglint": "pkglint -f",
-    "package": "cdk-package"
+    "package": "cdk-package",
+    "build:test:package": "npm run build:test && npm run package",
+    "build:test": "npm run build && npm test"
   },
   "nyc": {
     "statements": 40,

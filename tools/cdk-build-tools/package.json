@@ -19,7 +19,9 @@
   "scripts": {
     "build": "tsc && tslint -p . && chmod +x bin/cdk-build && chmod +x bin/cdk-test && chmod +x bin/cdk-watch && chmod +x bin/cdk-awslint && pkglint",
     "watch": "tsc -w",
-    "pkglint": "pkglint -f"
+    "pkglint": "pkglint -f",
+    "build:test:package": "npm run build:test",
+    "build:test": "npm run build"
   },
   "author": {
     "name": "Amazon Web Services",
