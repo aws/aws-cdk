@@ -38,6 +38,7 @@ async function main(): Promise<void> {
     'us-west-1',
     'us-west-2',
     'ap-south-1',
+    // 'ap-east-1',
     // 'ap-northeast-3',
     'ap-northeast-2',
     'ap-southeast-1',

@@ -18,7 +18,9 @@
     "watch": "cdk-watch",
     "lint": "cdk-lint",
     "pkglint": "pkglint -f",
-    "test": "cdk-test"
+    "test": "cdk-test",
+    "build+test+package": "npm run build+test",
+    "build+test": "npm run build && npm test"
   },
   "author": {
     "name": "Amazon Web Services",
