@@ -74,7 +74,7 @@ export class Runtime {
     return this.name;
   }
 
-  public equals(other: Runtime): boolean {
+  public runtimeEquals(other: Runtime): boolean {
     return other.name === this.name &&
            other.family === this.family &&
            other.supportsInlineCode === this.supportsInlineCode;
