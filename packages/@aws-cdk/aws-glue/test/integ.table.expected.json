@@ -296,7 +296,7 @@
                     {
                       "Ref": "AWS::AccountId"
                     },
-                    ":database/",
+                    ":table/",
                     {
                       "Ref": "MyDatabase1E2517DB"
                     },
@@ -373,7 +373,7 @@
                     {
                       "Ref": "AWS::AccountId"
                     },
-                    ":database/",
+                    ":table/",
                     {
                       "Ref": "MyDatabase1E2517DB"
                     },
