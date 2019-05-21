@@ -9,7 +9,7 @@ export = testCase({
     const runtime2 = new lambda.Runtime('python3.7', RuntimeFamily.Python, {supportsInlineCode: true});
 
     // WHEN
-    const result = runtime1.equals(runtime2);
+    const result = runtime1.runtimeEquals(runtime2);
 
     // THEN
     test.strictEqual(result, true, 'Runtimes should be equal');
@@ -21,7 +21,7 @@ export = testCase({
     const runtime = new lambda.Runtime('python3.7', RuntimeFamily.Python, {supportsInlineCode: true});
 
     // WHEN
-    const result = runtime.equals(runtime);
+    const result = runtime.runtimeEquals(runtime);
 
     // THEN
     test.strictEqual(result, true, 'Runtimes should be equal');
@@ -34,7 +34,7 @@ export = testCase({
     const runtime2 = new lambda.Runtime('python3.6', RuntimeFamily.Python, {supportsInlineCode: true});
 
     // WHEN
-    const result = runtime1.equals(runtime2);
+    const result = runtime1.runtimeEquals(runtime2);
 
     // THEN
     test.strictEqual(result, false, 'Runtimes should be unequal when name changes');
@@ -47,7 +47,7 @@ export = testCase({
     const runtime2 = new lambda.Runtime('python3.7', RuntimeFamily.Java, {supportsInlineCode: true});
 
     // WHEN
-    const result = runtime1.equals(runtime2);
+    const result = runtime1.runtimeEquals(runtime2);
 
     // THEN
     test.strictEqual(result, false, 'Runtimes should be unequal when family changes');
@@ -60,7 +60,7 @@ export = testCase({
     const runtime2 = new lambda.Runtime('python3.7', RuntimeFamily.Python, {supportsInlineCode: false});
 
     // WHEN
-    const result = runtime1.equals(runtime2);
+    const result = runtime1.runtimeEquals(runtime2);
 
     // THEN
     test.strictEqual(result, false, 'Runtimes should be unequal when supportsInlineCode changes');
