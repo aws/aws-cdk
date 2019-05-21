@@ -14,15 +14,13 @@ import { validateInteger } from './util';
 export interface ThrottleSettings {
   /**
    * The API request steady-state rate limit (average requests per second over an extended period of time)
-   *
-   * Type: Integer
+   * @default none
    */
   readonly rateLimit?: number;
 
   /**
    * The maximum API request rate limit over a time ranging from one to a few seconds.
-   *
-   * Type: Integer
+   * @default none
    */
   readonly burstLimit?: number;
 }
@@ -42,20 +40,19 @@ export enum Period {
 export interface QuotaSettings {
   /**
    * The maximum number of requests that users can make within the specified time period.
-   *
-   * Type: Integer
+   * @default none
    */
   readonly limit?: number;
 
   /**
    * For the initial time period, the number of requests to subtract from the specified limit.
-   *
-   * Type: Integer
+   * @default none
    */
   readonly offset?: number;
 
   /**
    * The time period for which the maximum limit of requests applies.
+   * @default none
    */
   readonly period?: Period;
 }
@@ -65,10 +62,16 @@ export interface QuotaSettings {
  */
 export interface ThrottlingPerMethod {
   /**
-   *
    * [disable-awslint:ref-via-interface]
+   * The method for which you specify the throttling settings.
+   * @default none
    */
   readonly method: Method,
+
+  /**
+   * Specifies the overall request rate (average requests per second) and burst capacity.
+   * @default none
+   */
   readonly throttle: ThrottleSettings
 }
 
@@ -84,44 +87,58 @@ export enum UsagePlanKeyType {
  */
 export interface UsagePlanPerApiStage {
 
+  /**
+   * @default none
+   */
   readonly api?: IRestApi,
 
   /**
    *
    * [disable-awslint:ref-via-interface]
+   * @default none
    */
   readonly stage?: Stage,
+
+  /**
+   * @default none
+   */
   readonly throttle?: ThrottlingPerMethod[]
 }
 
 export interface UsagePlanProps {
   /**
    * API Stages to be associated which the usage plan.
+   * @default none
    */
   readonly apiStages?: UsagePlanPerApiStage[],
 
   /**
    * Represents usage plan purpose.
+   * @default none
    */
   readonly description?: string,
 
   /**
    * Number of requests clients can make in a given time period.
+   * @default none
    */
   readonly quota?: QuotaSettings
 
   /**
    * Overall throttle settings for the API.
+   * @default none
    */
   readonly throttle?: ThrottleSettings,
 
   /**
    * Name for this usage plan.
+   * @default none
    */
   readonly name?: string
 
   /**
    * ApiKey to be associated with the usage plan.
+   * @default none
    */
   readonly apiKey?: IApiKey
 }
@@ -132,21 +149,21 @@ export class UsagePlan extends Resource {
    */
   public readonly usagePlanId: string;
 
+  private readonly apiStages = new Array<UsagePlanPerApiStage>();
+
   constructor(scope: Construct, id: string, props: UsagePlanProps = { }) {
     super(scope, id);
     let resource: CfnUsagePlan;
 
-    if (props !== undefined) {
-      resource = new CfnUsagePlan(this, 'Resource', {
-        apiStages: this.renderApiStages(props.apiStages),
-        description: props.description,
-        quota: this.renderQuota(props),
-        throttle: this.renderThrottle(props.throttle),
-        usagePlanName: props.name,
-      });
-    } else {
-      resource = new CfnUsagePlan(this, 'Resource');
-    }
+    resource = new CfnUsagePlan(this, 'Resource', {
+      apiStages: new Token(() => this.renderApiStages(this.apiStages)),
+      description: props.description,
+      quota: this.renderQuota(props),
+      throttle: this.renderThrottle(props.throttle),
+      usagePlanName: props.name,
+    });
+
+    this.apiStages.push(...(props.apiStages || []));
 
     this.usagePlanId = resource.ref;
 
@@ -157,7 +174,7 @@ export class UsagePlan extends Resource {
   }
 
   /**
-   * Adds and ApiKey.
+   * Adds an ApiKey.
    *
    * @param apiKey
    */
@@ -167,6 +184,14 @@ export class UsagePlan extends Resource {
       keyType: UsagePlanKeyType.ApiKey,
       usagePlanId: this.usagePlanId
     });
+  }
+
+  /**
+   * Adds an apiStage.
+   * @param apiStage
+   */
+  public addApiStage(apiStage: UsagePlanPerApiStage) {
+    this.apiStages.push(apiStage);
   }
 
   /**

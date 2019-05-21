@@ -54,26 +54,24 @@ class Test extends cdk.Stack {
     }
 
     const key = api.addApiKey('ApiKey');
-    api.addUsagePlan('UsagePlan', {
+    const plan = api.addUsagePlan('UsagePlan', {
       name: 'Basic',
       apiKey: key,
       description: 'Free tier monthly usage plan',
       quota: {
         limit: 10000,
         period: apigateway.Period.Month
-      },
-      apiStages: [
+      }
+    });
+    plan.addApiStage({
+      stage: api.deploymentStage,
+      throttle: [
         {
-          stage: api.deploymentStage,
-          throttle: [
-            {
-              method: getToysMethod,
-              throttle: {
-                rateLimit: 10,
-                burstLimit: 2
-              }
-            }
-          ]
+          method: getToysMethod,
+          throttle: {
+            rateLimit: 10,
+            burstLimit: 2
+          }
         }
       ]
     });
