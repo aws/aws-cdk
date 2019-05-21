@@ -23,7 +23,7 @@ new ManagedRule(this, 'AccessKeysRotated', {
 Available identifiers and parameters are listed in the [List of AWS Config Managed Rules](https://docs.aws.amazon.com/config/latest/developerguide/managed-rules-by-aws-config.html).
 
 
-Higher level constructs for managed rules are available, see [Managed Rules](lib/managed-rules.ts). Prefer to use those constructs when available (PRs welcome to add more of those).
+Higher level constructs for managed rules are available, see [Managed Rules](https://github.com/awslabs/aws-cdk/blob/master/packages/%40aws-cdk/aws-config/lib/managed-rules.ts). Prefer to use those constructs when available (PRs welcome to add more of those).
 
 #### Custom rules
 To set up a custom rule, define a `CustomRule` and specify the Lambda Function to run and the trigger types:
