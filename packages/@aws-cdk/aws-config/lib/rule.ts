@@ -71,10 +71,6 @@ abstract class RuleBase extends Resource implements IRule {
   public static fromConfigRuleName(scope: Construct, id: string, configRuleName: string): IRule {
     class Import extends RuleBase {
       public readonly configRuleName = configRuleName;
-
-      public export(): RuleAttributes {
-        return { configRuleName };
-      }
     }
 
     return new Import(scope, id);
