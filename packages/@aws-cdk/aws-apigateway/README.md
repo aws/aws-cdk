@@ -121,23 +121,23 @@ const echo = v1.addResource('echo');
 const echoMethod = echo.addMethod('GET', integration, { apiKeyRequired: true });
 const key = api.addApiKey('ApiKey');
 
-api.addUsagePlan('UsagePlan', {
+const plan = api.addUsagePlan('UsagePlan', {
   name: 'Easy',
-  apiKey: key,
-  apiStages: [{
-    stage: api.deploymentStage,
-    throttle: [
-      {
-        method: echoMethod,
-        throttle: {
-          rateLimit: 10,
-          burstLimit: 2
-        }
-      }
-    ]
-  }]
+  apiKey: key
 });
 
+plan.addApiStage({
+  stage: api.deploymentStage,
+  throttle: [
+    {
+      method: echoMethod,
+      throttle: {
+        rateLimit: 10,
+        burstLimit: 2
+      }
+    }
+  ]
+});
 ```
 
 #### Default Integration and Method Options
