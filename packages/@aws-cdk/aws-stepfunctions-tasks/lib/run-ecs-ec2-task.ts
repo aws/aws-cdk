@@ -66,7 +66,7 @@ export class RunEcsEc2Task extends EcsRunTaskBase {
     });
 
     if (props.taskDefinition.networkMode === ecs.NetworkMode.AwsVpc) {
-      this.configureAwsVpcNetworking(props.cluster.vpc, false, props.subnets, props.securityGroup);
+      this.configureAwsVpcNetworking(props.cluster.vpc, undefined, props.subnets, props.securityGroup);
     } else {
       // Either None, Bridge or Host networking. Copy SecurityGroup from ASG.
       validateNoNetworkingProps(props);

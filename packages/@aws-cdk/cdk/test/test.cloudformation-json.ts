@@ -1,20 +1,8 @@
 import { Test } from 'nodeunit';
-import { CloudFormationJSON, Fn, Stack, Token } from '../lib';
+import { CloudFormationLang, Fn, Stack, Token } from '../lib';
 import { evaluateCFN } from './evaluate-cfn';
 
 export = {
-  'plain JSON.stringify() on a Token fails'(test: Test) {
-    // GIVEN
-    const token = new Token(() => 'value');
-
-    // WHEN
-    test.throws(() => {
-      JSON.stringify({ token });
-    });
-
-    test.done();
-  },
-
   'string tokens can be JSONified and JSONification can be reversed'(test: Test) {
     const stack = new Stack();
 
@@ -23,7 +11,7 @@ export = {
       const fido = { name: 'Fido', speaks: token };
 
       // WHEN
-      const resolved = stack.node.resolve(CloudFormationJSON.stringify(fido, stack));
+      const resolved = stack.node.resolve(CloudFormationLang.toJSON(fido));
 
       // THEN
       test.deepEqual(evaluateCFN(resolved), '{"name":"Fido","speaks":"woof woof"}');
@@ -40,11 +28,25 @@ export = {
       const fido = { name: 'Fido', speaks: `deep ${token}` };
 
       // WHEN
-      const resolved = stack.node.resolve(CloudFormationJSON.stringify(fido, stack));
+      const resolved = stack.node.resolve(CloudFormationLang.toJSON(fido));
 
       // THEN
       test.deepEqual(evaluateCFN(resolved), '{"name":"Fido","speaks":"deep woof woof"}');
     }
+
+    test.done();
+  },
+
+  'constant string has correct amount of quotes applied'(test: Test) {
+    const stack = new Stack();
+
+    const inputString = 'Hello, "world"';
+
+    // WHEN
+    const resolved = stack.node.resolve(CloudFormationLang.toJSON(inputString));
+
+    // THEN
+    test.deepEqual(evaluateCFN(resolved), JSON.stringify(inputString));
 
     test.done();
   },
@@ -57,8 +59,8 @@ export = {
 
     // WHEN
     test.equal(evaluateCFN(stack.node.resolve(embedded)), "the number is 1");
-    test.equal(evaluateCFN(stack.node.resolve(CloudFormationJSON.stringify({ embedded }, stack))), "{\"embedded\":\"the number is 1\"}");
-    test.equal(evaluateCFN(stack.node.resolve(CloudFormationJSON.stringify({ num }, stack))), "{\"num\":1}");
+    test.equal(evaluateCFN(stack.node.resolve(CloudFormationLang.toJSON({ embedded }))), "{\"embedded\":\"the number is 1\"}");
+    test.equal(evaluateCFN(stack.node.resolve(CloudFormationLang.toJSON({ num }))), "{\"num\":1}");
 
     test.done();
   },
@@ -68,7 +70,7 @@ export = {
     const stack = new Stack();
     for (const token of tokensThatResolveTo('pong!')) {
       // WHEN
-      const stringified = CloudFormationJSON.stringify(`ping? ${token}`, stack);
+      const stringified = CloudFormationLang.toJSON(`ping? ${token}`);
 
       // THEN
       test.equal(evaluateCFN(stack.node.resolve(stringified)), '"ping? pong!"');
@@ -83,7 +85,7 @@ export = {
     const bucketName = new Token({ Ref: 'MyBucket' });
 
     // WHEN
-    const resolved = stack.node.resolve(CloudFormationJSON.stringify({ theBucket: bucketName }, stack));
+    const resolved = stack.node.resolve(CloudFormationLang.toJSON({ theBucket: bucketName }));
 
     // THEN
     const context = {MyBucket: 'TheName'};
@@ -108,7 +110,7 @@ export = {
       },
     }));
 
-    const stringified = CloudFormationJSON.stringify(fakeIntrinsics, stack);
+    const stringified = CloudFormationLang.toJSON(fakeIntrinsics);
     test.equal(evaluateCFN(stack.node.resolve(stringified)),
         '{"a":{"Fn::GetArtifactAtt":{"key":"val"}},"b":{"Fn::GetParam":["val1","val2"]}}');
 
@@ -121,10 +123,10 @@ export = {
     const token = Fn.join('', [ 'Hello', 'This\nIs', 'Very "cool"' ]);
 
     // WHEN
-    const resolved = stack.node.resolve(CloudFormationJSON.stringify({
+    const resolved = stack.node.resolve(CloudFormationLang.toJSON({
       literal: 'I can also "contain" quotes',
       token
-    }, stack));
+    }));
 
     // THEN
     const expected = '{"literal":"I can also \\"contain\\" quotes","token":"HelloThis\\nIsVery \\"cool\\""}';
@@ -140,7 +142,7 @@ export = {
     const combinedName = Fn.join('', [ 'The bucket name is ', bucketName.toString() ]);
 
     // WHEN
-    const resolved = stack.node.resolve(CloudFormationJSON.stringify({ theBucket: combinedName }, stack));
+    const resolved = stack.node.resolve(CloudFormationLang.toJSON({ theBucket: combinedName }));
 
     // THEN
     const context = {MyBucket: 'TheName'};
@@ -155,9 +157,9 @@ export = {
     const fidoSays = new Token(() => 'woof');
 
     // WHEN
-    const resolved = stack.node.resolve(CloudFormationJSON.stringify({
+    const resolved = stack.node.resolve(CloudFormationLang.toJSON({
       information: `Did you know that Fido says: ${fidoSays}`
-    }, stack));
+    }));
 
     // THEN
     test.deepEqual(evaluateCFN(resolved), '{"information":"Did you know that Fido says: woof"}');
@@ -171,9 +173,9 @@ export = {
     const fidoSays = new Token(() => ({ Ref: 'Something' }));
 
     // WHEN
-    const resolved = stack.node.resolve(CloudFormationJSON.stringify({
+    const resolved = stack.node.resolve(CloudFormationLang.toJSON({
       information: `Did you know that Fido says: ${fidoSays}`
-    }, stack));
+    }));
 
     // THEN
     const context = {Something: 'woof woof'};
@@ -188,9 +190,9 @@ export = {
     const fidoSays = new Token(() => '"woof"');
 
     // WHEN
-    const resolved = stack.node.resolve(CloudFormationJSON.stringify({
+    const resolved = stack.node.resolve(CloudFormationLang.toJSON({
       information: `Did you know that Fido says: ${fidoSays}`
-    }, stack));
+    }));
 
     // THEN
     test.deepEqual(evaluateCFN(resolved), '{"information":"Did you know that Fido says: \\"woof\\""}');

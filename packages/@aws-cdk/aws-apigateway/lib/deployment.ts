@@ -91,51 +91,13 @@ export class Deployment extends Resource {
 }
 
 class LatestDeploymentResource extends CfnDeployment {
-  private originalLogicalId?: string;
-  private lazyLogicalIdRequired: boolean;
-  private lazyLogicalId?: string;
-  private logicalIdToken: Token;
   private hashComponents = new Array<any>();
+  private originalLogicalId: string;
 
   constructor(scope: Construct, id: string, props: CfnDeploymentProps) {
     super(scope, id, props);
 
-    // from this point, don't allow accessing logical ID before synthesis
-    this.lazyLogicalIdRequired = true;
-
-    this.logicalIdToken = new Token(() => this.lazyLogicalId);
-  }
-
-  /**
-   * Returns either the original or the custom logical ID of this resource.
-   */
-  public get logicalId() {
-    if (!this.lazyLogicalIdRequired) {
-      return this.originalLogicalId!;
-    }
-
-    return this.logicalIdToken.toString();
-  }
-
-  /**
-   * Sets the logical ID of this resource.
-   */
-  public set logicalId(v: string) {
-    this.originalLogicalId = v;
-  }
-
-  /**
-   * Returns a lazy reference to this resource (evaluated only upon synthesis).
-   */
-  public get ref() {
-    return new Token(() => ({ Ref: this.lazyLogicalId })).toString();
-  }
-
-  /**
-   * Does nothing.
-   */
-  public set ref(_v: string) {
-    return;
+    this.originalLogicalId = this.node.stack.logicalIds.getLogicalId(this);
   }
 
   /**
@@ -159,15 +121,13 @@ class LatestDeploymentResource extends CfnDeployment {
   protected prepare() {
     // if hash components were added to the deployment, we use them to calculate
     // a logical ID for the deployment resource.
-    if (this.hashComponents.length === 0) {
-      this.lazyLogicalId = this.originalLogicalId;
-    } else {
+    if (this.hashComponents.length > 0) {
       const md5 = crypto.createHash('md5');
       this.hashComponents
         .map(c => this.node.resolve(c))
         .forEach(c => md5.update(JSON.stringify(c)));
 
-      this.lazyLogicalId = this.originalLogicalId + md5.digest("hex");
+      this.overrideLogicalId(this.originalLogicalId + md5.digest("hex"));
     }
 
     super.prepare();

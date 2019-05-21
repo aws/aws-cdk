@@ -65,10 +65,10 @@ export class Token {
   /**
    * @returns The resolved value for this token.
    */
-  public resolve(_context: ResolveContext): any {
+  public resolve(context: IResolveContext): any {
     let value = this.valueOrFunction;
     if (typeof(value) === 'function') {
-      value = value();
+      value = value(context);
     }
 
     return value;
@@ -106,8 +106,17 @@ export class Token {
    * it's not possible to do this properly, so we just throw an error here.
    */
   public toJSON(): any {
-    // tslint:disable-next-line:max-line-length
-    throw new Error('JSON.stringify() cannot be applied to structure with a Token in it. Use this.node.stringifyJson() instead.');
+    // We can't do the right work here because in case we contain a function, we
+    // won't know the type of value that function represents (in the simplest
+    // case, string or number), and we can't know that without an
+    // IResolveContext to actually do the resolution, which we don't have.
+
+    // We used to throw an error, but since JSON.stringify() is often used in
+    // error messages to produce a readable representation of an object, if we
+    // throw here we'll obfuscate that descriptive error with something worse.
+    // So return a string representation that indicates this thing is a token
+    // and needs resolving.
+    return JSON.stringify(`<unresolved-token:${this.displayName || 'TOKEN'}>`);
   }
 
   /**
@@ -162,9 +171,16 @@ export class Token {
 /**
  * Current resolution context for tokens
  */
-export interface ResolveContext {
+export interface IResolveContext {
+  /**
+   * The scope from which resolution has been initiated
+   */
   readonly scope: IConstruct;
-  readonly prefix: string[];
+
+  /**
+   * Resolve an inner object
+   */
+  resolve(x: any): any;
 }
 
 /**
@@ -174,7 +190,7 @@ export interface IResolvedValuePostProcessor {
   /**
    * Process the completely resolved value, after full recursion/resolution has happened
    */
-  postProcess(input: any, context: ResolveContext): any;
+  postProcess(input: any, context: IResolveContext): any;
 }
 
 /**

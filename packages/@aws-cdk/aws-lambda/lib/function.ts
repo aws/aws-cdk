@@ -479,7 +479,7 @@ export class Function extends FunctionBase {
     if (this.layers.length === 5) {
       throw new Error('Unable to add layer: this lambda function already uses 5 layers.');
     }
-    if (layer.compatibleRuntimes && layer.compatibleRuntimes.indexOf(this.runtime) === -1) {
+    if (layer.compatibleRuntimes && !layer.compatibleRuntimes.find(runtime => runtime.runtimeEquals(this.runtime))) {
       const runtimes = layer.compatibleRuntimes.map(runtime => runtime.name).join(', ');
       throw new Error(`This lambda function uses a runtime that is incompatible with this layer (${this.runtime.name} is not in [${runtimes}])`);
     }
