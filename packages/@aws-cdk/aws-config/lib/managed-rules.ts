@@ -70,20 +70,20 @@ export interface CloudFormationStackDriftDetectionCheckProps extends RuleProps {
  * @resource AWS::Config::ConfigRule
  */
 export class CloudFormationStackDriftDetectionCheck extends ManagedRule {
-  private role: iam.Role;
+  private readonly role: iam.IRole;
 
   constructor(scope: Construct, id: string, props: CloudFormationStackDriftDetectionCheckProps = {}) {
     super(scope, id, {
       ...props,
       identifier: 'CLOUDFORMATION_STACK_DRIFT_DETECTION_CHECK',
       inputParameters: {
-        cloudformationRoleArn: (props.role && props.role.roleArn) || new Token(() => this.role.roleArn)
+        cloudformationRoleArn: new Token(() => this.role.roleArn)
       }
     });
 
     this.addResourceScope('AWS::CloudFormation::Stack', props.ownStackOnly ? this.node.stack.stackId : undefined);
 
-    this.role = new iam.Role(this, 'Role', {
+    this.role = props.role || new iam.Role(this, 'Role', {
       assumedBy: new iam.ServicePrincipal('config.amazonaws.com'),
       managedPolicyArns: [
         new iam.AwsManagedPolicy('ReadOnlyAccess', this).policyArn,
