@@ -1097,7 +1097,7 @@ export = {
                     {
                       Ref: "AWS::AccountId"
                     },
-                    ":database/",
+                    ":table/",
                     {
                       Ref: "DatabaseB269D8BB"
                     },
@@ -1201,7 +1201,7 @@ export = {
                     {
                       Ref: "AWS::AccountId"
                     },
-                    ":database/",
+                    ":table/",
                     {
                       Ref: "DatabaseB269D8BB"
                     },
@@ -1312,7 +1312,7 @@ export = {
                     {
                       Ref: "AWS::AccountId"
                     },
-                    ":database/",
+                    ":table/",
                     {
                       Ref: "DatabaseB269D8BB"
                     },

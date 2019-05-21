@@ -180,6 +180,11 @@ export class Table extends Resource implements ITable {
   public readonly database: IDatabase;
 
   /**
+   * Indicates whether the table's data is compressed or not.
+   */
+  public readonly compressed: boolean;
+
+  /**
    * The type of encryption enabled for the table.
    */
   public readonly encryption: TableEncryption;
@@ -235,6 +240,7 @@ export class Table extends Resource implements ITable {
     this.columns = props.columns;
     this.partitionKeys = props.partitionKeys;
 
+    this.compressed = props.compressed === undefined ? false : props.compressed;
     const {bucket, encryption, encryptionKey} = createBucket(this, props);
     this.bucket = bucket;
     this.encryption = encryption;
@@ -256,7 +262,7 @@ export class Table extends Resource implements ITable {
         },
         storageDescriptor: {
           location: `s3://${this.bucket.bucketName}/${this.s3Prefix}`,
-          compressed: props.compressed === undefined ? false : props.compressed,
+          compressed: this.compressed,
           storedAsSubDirectories: props.storedAsSubDirectories === undefined ? false : props.storedAsSubDirectories,
           columns: renderColumns(props.columns),
           inputFormat: props.dataFormat.inputFormat.className,
@@ -271,7 +277,11 @@ export class Table extends Resource implements ITable {
     });
 
     this.tableName = tableResource.tableName;
-    this.tableArn = `${this.database.databaseArn}/${this.tableName}`;
+    this.tableArn = this.node.stack.formatArn({
+      service: 'glue',
+      resource: 'table',
+      resourceName: `${this.database.databaseName}/${this.tableName}`
+    });
   }
 
   /**

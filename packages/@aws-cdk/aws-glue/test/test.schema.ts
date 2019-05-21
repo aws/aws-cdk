@@ -34,7 +34,7 @@ export = {
   },
 
   'integer type'(test: Test) {
-    test.equals(Schema.integer.inputString, 'integer');
+    test.equals(Schema.integer.inputString, 'int');
     test.equals(Schema.integer.isPrimitive, true);
     test.done();
   },
@@ -167,12 +167,12 @@ export = {
     test.done();
   },
 
-  'map<integer,string>'(test: Test) {
+  'map<int,string>'(test: Test) {
     const type = Schema.map(
       Schema.integer,
       Schema.string
     );
-    test.equals(type.inputString, 'map<integer,string>');
+    test.equals(type.inputString, 'map<int,string>');
     test.equals(type.isPrimitive, false);
     test.done();
   },
