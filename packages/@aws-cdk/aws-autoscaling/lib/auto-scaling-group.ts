@@ -184,7 +184,7 @@ abstract class AutoScalingGroupBase extends Resource implements IAutoScalingGrou
   /**
    * Send a message to either an SQS queue or SNS topic when instances launch or terminate
    */
-  public onLifecycleTransition(id: string, props: BasicLifecycleHookProps): LifecycleHook {
+  public addLifecycleHook(id: string, props: BasicLifecycleHookProps): LifecycleHook {
     return new LifecycleHook(this, `LifecycleHook${id}`, {
       autoScalingGroup: this,
       ...props
@@ -692,7 +692,7 @@ export interface IAutoScalingGroup extends IResource {
   /**
    * Send a message to either an SQS queue or SNS topic when instances launch or terminate
    */
-  onLifecycleTransition(id: string, props: BasicLifecycleHookProps): LifecycleHook;
+  addLifecycleHook(id: string, props: BasicLifecycleHookProps): LifecycleHook;
 
   /**
    * Scale out or in based on time

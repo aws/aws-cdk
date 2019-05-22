@@ -285,11 +285,15 @@ export = {
   },
 
   'events': {
-    'onImagePushed without target or imageTag creates the correct event'(test: Test) {
+    'onImagePushed without imageTag creates the correct event'(test: Test) {
       const stack = new cdk.Stack();
       const repo = new ecr.Repository(stack, 'Repo');
 
-      repo.onImagePushed('EventRule');
+      repo.onCloudTrailImagePushed('EventRule', {
+        target: {
+          bind: () => ({ arn: 'ARN', id: 'ID' })
+        }
+      });
 
       expect(stack).to(haveResourceLike('AWS::Events::Rule', {
         "EventPattern": {
@@ -303,7 +307,8 @@ export = {
             "requestParameters": {
               "repositoryName": [
                 {
-                },
+                  "Ref": "Repo02AC86CF"
+                }
               ],
             },
           },
