@@ -35,7 +35,9 @@
     "exclude": [
       "construct-ctor:@aws-cdk/cdk.App.<initializer>",
       "construct-ctor:@aws-cdk/cdk.Root.<initializer>",
-      "construct-ctor:@aws-cdk/cdk.Stack.<initializer>.params*"
+      "construct-ctor:@aws-cdk/cdk.Stack.<initializer>.params*",
+      "props-no-cfn-types:@aws-cdk/cdk.CfnOutputProps*",
+      "props-no-cfn-types:@aws-cdk/cdk.StringListCfnOutputProps*"
     ]
   },
   "scripts": {
