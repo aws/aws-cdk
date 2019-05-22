@@ -64,8 +64,10 @@ export async function prepareContainerAsset(asset: ContainerImageAssetMetadataEn
 
     const baseCommand = ['docker',
       'build',
+      ...Object.entries(asset.buildArgs || {}).map(([k, v]) => `--build-arg ${k}=${v}`), // Pass build args if any
       '--quiet',
       asset.path];
+
     const command = ci
       ? [...baseCommand, '--cache-from', latest] // This does not fail if latest is not available
       : baseCommand;
