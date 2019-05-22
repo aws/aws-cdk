@@ -1,21 +1,18 @@
+import ecs = require('@aws-cdk/aws-ecs');
 import events = require('@aws-cdk/aws-events');
 import eventsTargets = require('@aws-cdk/aws-events-targets');
 import cdk = require('@aws-cdk/cdk');
-import { ICluster } from './cluster';
-import { ContainerImage } from './container-image';
-import { Ec2TaskDefinition } from './ec2/ec2-task-definition';
-import { AwsLogDriver } from './log-drivers/aws-log-driver';
 
 export interface ScheduledEc2TaskProps {
   /**
    * The cluster where your service will be deployed.
    */
-  readonly cluster: ICluster;
+  readonly cluster: ecs.ICluster;
 
   /**
    * The image to start.
    */
-  readonly image: ContainerImage;
+  readonly image: ecs.ContainerImage;
 
   /**
    * The schedule or rate (frequency) that determines when CloudWatch Events
@@ -85,7 +82,7 @@ export class ScheduledEc2Task extends cdk.Construct {
     super(scope, id);
 
     // Create a Task Definition for the container to start, also creates a log driver
-    const taskDefinition = new Ec2TaskDefinition(this, 'ScheduledTaskDef');
+    const taskDefinition = new ecs.Ec2TaskDefinition(this, 'ScheduledTaskDef');
     taskDefinition.addContainer('ScheduledContainer', {
       image: props.image,
       memoryLimitMiB: props.memoryLimitMiB,
@@ -93,18 +90,18 @@ export class ScheduledEc2Task extends cdk.Construct {
       cpu: props.cpu,
       command: props.command,
       environment: props.environment,
-      logging: new AwsLogDriver(this, 'ScheduledTaskLogging', { streamPrefix: this.node.id })
+      logging: new ecs.AwsLogDriver(this, 'ScheduledTaskLogging', { streamPrefix: this.node.id })
     });
 
     // Use Ec2TaskEventRuleTarget as the target of the EventRule
-    const eventRuleTarget = new Ec2EventRuleTarget(this, 'ScheduledEventRuleTarget', {
+    const eventRuleTarget = new eventsTargets.EcsEc2Task( {
       cluster: props.cluster,
       taskDefinition,
       taskCount: props.desiredTaskCount
     });
 
     // An EventRule that describes the event trigger (in this case a scheduled run)
-    const eventRule = new events.EventRule(this, 'ScheduledEventRule', {
+    const eventRule = new events.Rule(this, 'ScheduledEventRule', {
       scheduleExpression: props.scheduleExpression,
     });
     eventRule.addTarget(eventRuleTarget);

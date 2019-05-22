@@ -2,7 +2,7 @@ import { expect, haveResource } from '@aws-cdk/assert';
 import ec2 = require('@aws-cdk/aws-ec2');
 import cdk = require('@aws-cdk/cdk');
 import { Test } from 'nodeunit';
-import ecs = require('../lib');
+import ecs = require('../../aws-ecs/lib');
 import { ScheduledEc2Task } from '../lib';
 
 export = {
@@ -147,7 +147,7 @@ export = {
   "Scheduled Ec2 Task - with MemoryReservation defined"(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
-    const vpc = new ec2.VpcNetwork(stack, 'Vpc', { maxAZs: 1 });
+    const vpc = new ec2.Vpc(stack, 'Vpc', { maxAZs: 1 });
     const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
     cluster.addCapacity('DefaultAutoScalingGroup', {
       instanceType: new ec2.InstanceType('t2.micro')
@@ -205,7 +205,7 @@ export = {
       cluster,
       image: ecs.ContainerImage.fromRegistry('henk'),
       memoryReservationMiB: 512,
-      command: ["-c". "4". "amazon.com"],
+      command: ["-c", "4", "amazon.com"],
       scheduleExpression: 'rate(1 minute)'
     });
 
