@@ -10,27 +10,10 @@ import { CfnConfigRule } from './config.generated';
 export interface IRule extends IResource {
   /**
    * The name of the rule.
+   *
    * @attribute
    */
   readonly configRuleName: string;
-
-  /**
-   * The arn of the rule.
-   * @attribute
-   */
-  readonly configRuleArn?: string;
-
-  /**
-   * The id of the rule.
-   * @attribute
-   */
-  readonly configRuleId?: string;
-
-  /**
-   * The compliance status of the rule.
-   * @attribute
-   */
-  readonly configRuleComplianceType?: string;
 
   /**
    * Defines a CloudWatch event rule which triggers for rule events. Use
@@ -121,8 +104,19 @@ abstract class RuleBase extends Resource implements IRule {
  * A new managed or custom rule.
  */
 abstract class RuleNew extends RuleBase {
+  /**
+   * The arn of the rule.
+   */
   public abstract readonly configRuleArn: string;
+
+  /**
+   * The id of the rule.
+   */
   public abstract readonly configRuleId: string;
+
+  /**
+   * The compliance status of the rule.
+   */
   public abstract readonly configRuleComplianceType: string;
 
   protected scope?: CfnConfigRule.ScopeProperty;
@@ -241,9 +235,16 @@ export interface ManagedRuleProps extends RuleProps {
  * @resource AWS::Config::ConfigRule
  */
 export class ManagedRule extends RuleNew {
+  /** @attribute */
   public readonly configRuleName: string;
+
+  /** @attribute */
   public readonly configRuleArn: string;
+
+  /** @attribute */
   public readonly configRuleId: string;
+
+  /** @attribute */
   public readonly configRuleComplianceType: string;
 
   constructor(scope: Construct, id: string, props: ManagedRuleProps) {
@@ -299,9 +300,16 @@ export interface CustomRuleProps extends RuleProps {
  * @resource AWS::Config::ConfigRule
  */
 export class CustomRule extends RuleNew {
+  /** @attribute */
   public readonly configRuleName: string;
+
+  /** @attribute */
   public readonly configRuleArn: string;
+
+  /** @attribute */
   public readonly configRuleId: string;
+
+  /** @attribute */
   public readonly configRuleComplianceType: string;
 
   constructor(scope: Construct, id: string, props: CustomRuleProps) {
