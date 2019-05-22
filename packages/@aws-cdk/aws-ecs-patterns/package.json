@@ -56,17 +56,6 @@
     "url": "https://aws.amazon.com",
     "organization": true
   },
-  "jest": {
-    "moduleFileExtensions": [
-      "js"
-    ],
-    "coverageThreshold": {
-      "global": {
-        "branches": 70,
-        "statements": 80
-      }
-    }
-  },
   "license": "Apache-2.0",
   "devDependencies": {
     "@aws-cdk/assert": "^0.31.0",

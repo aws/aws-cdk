@@ -31,8 +31,9 @@ export = {
             TaskCount: 1,
             TaskDefinitionArn: { Ref: "ScheduledEc2TaskScheduledTaskDef56328BA4" }
           },
-          Id: "ScheduledEventRuleTarget",
-          RoleArn: { "Fn::GetAtt": ["ScheduledEc2TaskScheduledTaskDef1EA607E3EventsRole9262E416", "Arn"] }
+          Id: "ScheduledTaskDef-on-EcsCluster",
+          Input: "{}",
+          RoleArn: { "Fn::GetAtt": ["ScheduledEc2TaskScheduledTaskDefEventsRole64113C5F", "Arn"] }
         }
       ]
     }));
@@ -96,8 +97,9 @@ export = {
             TaskCount: 2,
             TaskDefinitionArn: { Ref: "ScheduledEc2TaskScheduledTaskDef56328BA4" }
           },
-          Id: "ScheduledEventRuleTarget",
-          RoleArn: { "Fn::GetAtt": ["ScheduledEc2TaskScheduledTaskDef1EA607E3EventsRole9262E416", "Arn"] }
+          Id: "ScheduledTaskDef-on-EcsCluster",
+          Input: "{}",
+          RoleArn: { "Fn::GetAtt": ["ScheduledEc2TaskScheduledTaskDefEventsRole64113C5F", "Arn"] }
         }
       ]
     }));
