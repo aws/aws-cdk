@@ -185,7 +185,7 @@ constructLinter.add({
     if (!e.ctx.hasPropsArgument) { return; }
 
     // this rule only applies to L2 constructs
-    if (e.ctx.classType.name.startsWith('Cfn')) { return; }
+    if (CoreTypes.isCfnResource(e.ctx.classType)) { return; }
 
     for (const property of e.ctx.propsType.ownProperties) {
       e.assert(!property.type.unionOfTypes, `${e.ctx.propsFqn}.${property.name}`);
@@ -201,7 +201,7 @@ constructLinter.add({
     if (!e.ctx.hasPropsArgument) { return; }
 
     // this rule only applies to L2 constructs
-    if (e.ctx.classType.name.startsWith('Cfn')) { return; }
+    if (CoreTypes.isCfnResource(e.ctx.classType)) { return; }
 
     for (const property of e.ctx.propsType.ownProperties) {
       e.assert(!property.name.toLowerCase().endsWith('arn'), `${e.ctx.propsFqn}.${property.name}`);
@@ -217,7 +217,7 @@ constructLinter.add({
     if (!e.ctx.hasPropsArgument) { return; }
 
     // this rule only applies to L2 constructs
-    if (e.ctx.classType.name.startsWith('Cfn')) { return; }
+    if (CoreTypes.isCfnResource(e.ctx.classType)) { return; }
 
     for (const property of e.ctx.propsType.allProperties) {
       const typeRef = property.type;
@@ -230,7 +230,7 @@ constructLinter.add({
       }
 
       const found = (fqn && e.ctx.sys.tryFindFqn(fqn));
-      if(found) {
+      if (found) {
         e.assert(!(fqn === e.ctx.core.tokenClass.fqn), `${e.ctx.propsFqn}.${property.name}`);
       }
     }
