@@ -1,10 +1,8 @@
 import camelcase = require('camelcase');
 import reflect = require('jsii-reflect');
 import { Linter } from '../linter';
-import { CORE_MODULE } from './common';
-import { ConstructReflection } from './construct';
+import { CoreTypes } from './core-types';
 import { ResourceReflection } from './resource';
-const CFN_RESOURCE_BASE_CLASS_FQN = `${CORE_MODULE}.CfnResource`;
 
 // this linter verifies that we have L2 coverage. it finds all "Cfn" classes and verifies
 // that we have a corresponding L1 class for it that's identified as a resource.
@@ -40,34 +38,8 @@ export class CfnResourceReflection {
    */
   public static findAll(assembly: reflect.Assembly) {
     return assembly.classes
-      .filter(c => this.isCfnResource(c))
+      .filter(c => CoreTypes.isCfnResource(c))
       .map(c => new CfnResourceReflection(c));
-  }
-
-  public static isCfnResource(c: reflect.ClassType) {
-    if (!c.system.includesAssembly(CORE_MODULE)) {
-      return false;
-    }
-
-    // skip CfnResource itself
-    if (c.fqn === CFN_RESOURCE_BASE_CLASS_FQN) {
-      return false;
-    }
-
-    if (!ConstructReflection.isConstructClass(c)) {
-      return false;
-    }
-
-    const cfnResourceClass = c.system.findFqn(CFN_RESOURCE_BASE_CLASS_FQN);
-    if (!c.extends(cfnResourceClass)) {
-      return false;
-    }
-
-    if (!c.name.startsWith('Cfn')) {
-      return false;
-    }
-
-    return true;
   }
 
   public readonly classType: reflect.ClassType;
