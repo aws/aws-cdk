@@ -9,6 +9,13 @@ export interface AssetImageProps {
    * The directory where the Dockerfile is stored
    */
   readonly directory: string;
+
+  /**
+   * Build args to pass to the `docker build` command
+   *
+   * @default no build args are passed
+   */
+  readonly buildArgs?: { [key: string]: string };
 }
 
 /**
@@ -19,7 +26,10 @@ export class AssetImage extends ContainerImage {
 
   constructor(scope: cdk.Construct, id: string, props: AssetImageProps) {
     super();
-    this.asset = new DockerImageAsset(scope, id, { directory: props.directory });
+    this.asset = new DockerImageAsset(scope, id, {
+      directory: props.directory,
+      buildArgs: props.buildArgs,
+    });
   }
 
   public bind(containerDefinition: ContainerDefinition): void {

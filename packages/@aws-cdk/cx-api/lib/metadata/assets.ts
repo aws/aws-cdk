@@ -81,9 +81,16 @@ export interface ContainerImageAssetMetadataEntry {
    * Note, this is only the repository name, without the registry and
    * the tag parts.
    *
-   * * @default automatically derived from the asset's ID.
+   * @default automatically derived from the asset's ID.
    */
   readonly repositoryName?: string;
+
+  /**
+   * Build args to pass to the `docker build` command
+   *
+   * @default no build args are passed
+   */
+  readonly buildArgs?: { [key: string]: string };
 }
 
 export type AssetMetadataEntry = FileAssetMetadataEntry | ContainerImageAssetMetadataEntry;
