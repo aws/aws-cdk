@@ -1,12 +1,10 @@
 import reflect = require('jsii-reflect');
 import { Linter } from '../linter';
 import { CfnResourceReflection } from './cfn-resource';
-import { CORE_MODULE } from './common';
 import { ConstructReflection } from './construct';
+import { CoreTypes } from './core-types';
 import { getDocTag } from './util';
 
-const RESOURCE_BASE_CLASS_FQN = `${CORE_MODULE}.Resource`;
-const RESOURCE_BASE_INTERFACE_FQN = `${CORE_MODULE}.IResource`;
 const GRANT_RESULT_FQN = '@aws-cdk/aws-iam.Grant';
 
 export const resourceLinter = new Linter(a => ResourceReflection.findAll(a));
@@ -25,24 +23,16 @@ export enum AttributeSite {
 export class ResourceReflection {
 
   /**
-   * @returns true if `classType` represents an AWS resource (i.e. extends `cdk.Resource`).
-   */
-  public static isResourceClass(classType: reflect.ClassType) {
-    const baseResource = classType.system.findClass(RESOURCE_BASE_CLASS_FQN);
-    return classType.extends(baseResource) || getDocTag(classType, 'resource');
-  }
-
-  /**
    * @returns all resource constructs (everything that extends `cdk.Resource`)
    */
   public static findAll(assembly: reflect.Assembly) {
-    if (!assembly.system.assemblies.find(a => a.name === CORE_MODULE)) {
+    if (CoreTypes.hasCoreModule(assembly)) {
       return []; // not part of the dep stack
     }
 
     return ConstructReflection
       .findAllConstructs(assembly)
-      .filter(c => ResourceReflection.isResourceClass(c.classType))
+      .filter(c => CoreTypes.isResourceClass(c.classType))
       .map(c => new ResourceReflection(c));
   }
 
@@ -53,6 +43,7 @@ export class ResourceReflection {
   public readonly sys: reflect.TypeSystem;
   public readonly cfn: CfnResourceReflection;
   public readonly basename: string; // i.e. Bucket
+  public readonly core: CoreTypes;
 
   constructor(public readonly construct: ConstructReflection) {
     this.assembly = construct.classType.assembly;
@@ -69,6 +60,7 @@ export class ResourceReflection {
     this.basename = construct.classType.name;
     this.fqn = construct.fqn;
     this.attributes = this.findAttributeProperties();
+    this.core = new CoreTypes(this.sys);
   }
 
   /**
@@ -128,7 +120,7 @@ resourceLinter.add({
   code: 'resource-class-extends-resource',
   message: `resource classes must extend "cdk.Resource" directly or indirectly`,
   eval: e => {
-    const resourceBase = e.ctx.sys.findClass(RESOURCE_BASE_CLASS_FQN);
+    const resourceBase = e.ctx.sys.findClass(e.ctx.core.resourceClass.fqn);
     e.assert(e.ctx.construct.classType.extends(resourceBase), e.ctx.construct.fqn);
   }
 });
@@ -149,7 +141,8 @@ resourceLinter.add({
     const resourceInterface = e.ctx.construct.interfaceType;
     if (!resourceInterface) { return; }
 
-    const interfaceBase = e.ctx.sys.findInterface(RESOURCE_BASE_INTERFACE_FQN);
+    const resourceInterfaceFqn = e.ctx.core.resourceInterface.fqn;
+    const interfaceBase = e.ctx.sys.findInterface(resourceInterfaceFqn);
     e.assert(resourceInterface.extends(interfaceBase), resourceInterface.fqn);
   }
 });
