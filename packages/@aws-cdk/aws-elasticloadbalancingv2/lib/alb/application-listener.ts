@@ -16,33 +16,35 @@ export interface BaseApplicationListenerProps {
   /**
    * The protocol to use
    *
-   * @default Determined from port if known
+   * @default - Determined from port if known.
    */
   readonly protocol?: ApplicationProtocol;
 
   /**
    * The port on which the listener listens for requests.
    *
-   * @default Determined from protocol if known
+   * @default - Determined from protocol if known.
    */
   readonly port?: number;
 
   /**
    * The certificates to use on this listener
+   *
+   * @default - No certificates.
    */
   readonly certificateArns?: string[];
 
   /**
    * The security policy that defines which ciphers and protocols are supported.
    *
-   * @default the current predefined security policy.
+   * @default - The current predefined security policy.
    */
   readonly sslPolicy?: SslPolicy;
 
   /**
    * Default target groups to load balance to
    *
-   * @default None
+   * @default - None.
    */
   readonly defaultTargetGroups?: IApplicationTargetGroup[];
 
