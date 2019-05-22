@@ -137,7 +137,7 @@ export = {
     test.done();
   },
 
-  'add resource scope'(test: Test) {
+  'scope to resource'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
     const rule = new config.ManagedRule(stack, 'Rule', {
@@ -145,7 +145,7 @@ export = {
     });
 
     // WHEN
-    rule.addResourceScope('AWS::EC2::Instance', 'i-1234');
+    rule.scopeToResource('AWS::EC2::Instance', 'i-1234');
 
     // THEN
     expect(stack).to(haveResource('AWS::Config::ConfigRule', {
@@ -160,7 +160,7 @@ export = {
     test.done();
   },
 
-  'add resources scope'(test: Test) {
+  'scope to resources'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
     const rule = new config.ManagedRule(stack, 'Rule', {
@@ -168,7 +168,7 @@ export = {
     });
 
     // WHEN
-    rule.addResourcesScope('AWS::S3::Bucket', 'AWS::CloudFormation::Stack');
+    rule.scopeToResources('AWS::S3::Bucket', 'AWS::CloudFormation::Stack');
 
     // THEN
     expect(stack).to(haveResource('AWS::Config::ConfigRule', {
@@ -183,7 +183,7 @@ export = {
     test.done();
   },
 
-  'add tag scope'(test: Test) {
+  'scope to tag'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
     const rule = new config.ManagedRule(stack, 'Rule', {
@@ -191,7 +191,7 @@ export = {
     });
 
     // WHEN
-    rule.addTagScope('key', 'value');
+    rule.scopeToTag('key', 'value');
 
     // THEN
     expect(stack).to(haveResource('AWS::Config::ConfigRule', {
@@ -204,7 +204,7 @@ export = {
     test.done();
   },
 
-  'throws when adding scope to custom rule without configuration changes'(test: Test) {
+  'throws when scoping a custom rule without configuration changes'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
     const fn = new lambda.Function(stack, 'Function', {
@@ -220,7 +220,7 @@ export = {
     });
 
     // THEN
-    test.throws(() => rule.addResourceScope('resource'), /`configurationChanges`/);
+    test.throws(() => rule.scopeToResource('resource'), /`configurationChanges`/);
 
     test.done();
   },

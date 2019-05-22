@@ -131,8 +131,8 @@ abstract class RuleNew extends RuleBase {
    * @param type the resource type
    * @param identifier the resource identifier
    */
-  public addResourceScope(type: string, identifier?: string) {
-    this.addScope({
+  public scopeToResource(type: string, identifier?: string) {
+    this.scopeTo({
       complianceResourceId: identifier,
       complianceResourceTypes: [type],
     });
@@ -145,8 +145,8 @@ abstract class RuleNew extends RuleBase {
    *
    * @param types resource types
    */
-  public addResourcesScope(...types: string[]) {
-    this.addScope({
+  public scopeToResources(...types: string[]) {
+    this.scopeTo({
       complianceResourceTypes: types
     });
   }
@@ -157,16 +157,16 @@ abstract class RuleNew extends RuleBase {
    * @param key the tag key
    * @param value the tag value
    */
-  public addTagScope(key: string, value?: string) {
-    this.addScope({
+  public scopeToTag(key: string, value?: string) {
+    this.scopeTo({
       tagKey: key,
       tagValue: value
     });
   }
 
-  private addScope(scope: CfnConfigRule.ScopeProperty) {
+  private scopeTo(scope: CfnConfigRule.ScopeProperty) {
     if (!this.isManaged && !this.isCustomWithChanges) {
-      throw new Error('Cannot set scope when `configurationChanges` is set to false.');
+      throw new Error('Cannot scope rule when `configurationChanges` is set to false.');
     }
 
     this.scope = scope;

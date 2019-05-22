@@ -23,7 +23,7 @@ class ConfigStack extends cdk.Stack {
       lambdaFunction: fn
     });
 
-    customRule.addResourceScope('AWS::EC2::Instance');
+    customRule.scopeToResource('AWS::EC2::Instance');
 
     // A rule to detect stacks drifts
     const driftRule = new config.CloudFormationStackDriftDetectionCheck(this, 'Drift');

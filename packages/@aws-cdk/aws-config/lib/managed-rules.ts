@@ -81,7 +81,7 @@ export class CloudFormationStackDriftDetectionCheck extends ManagedRule {
       }
     });
 
-    this.addResourceScope('AWS::CloudFormation::Stack', props.ownStackOnly ? this.node.stack.stackId : undefined);
+    this.scopeToResource('AWS::CloudFormation::Stack', props.ownStackOnly ? this.node.stack.stackId : undefined);
 
     this.role = props.role || new iam.Role(this, 'Role', {
       assumedBy: new iam.ServicePrincipal('config.amazonaws.com'),
@@ -125,6 +125,6 @@ export class CloudFormationStackNotificationCheck extends ManagedRule {
       )
     });
 
-    this.addResourceScope('AWS::CloudFormation::Stack');
+    this.scopeToResource('AWS::CloudFormation::Stack');
   }
 }

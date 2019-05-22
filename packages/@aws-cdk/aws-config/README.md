@@ -37,7 +37,7 @@ new CustomRule(this, 'CustomRule', {
 ```
 
 #### Restricting the scope
-By default rules are triggered by changes to all [resources](https://docs.aws.amazon.com/config/latest/developerguide/resource-config-reference.html#supported-resources). Use the `addResourceScope()`, `addResourcesScope()` or `addTagScope()` methods to restrict the scope of both managed and custom rules:
+By default rules are triggered by changes to all [resources](https://docs.aws.amazon.com/config/latest/developerguide/resource-config-reference.html#supported-resources). Use the `scopeToResource()`, `scopeToResources()` or `scopeToTag()` methods to restrict the scope of both managed and custom rules:
 
 ```ts
 const sshRule = new ManagedRule(this, 'SSH', {
@@ -45,7 +45,7 @@ const sshRule = new ManagedRule(this, 'SSH', {
 });
 
 // Restrict to a specific security group
-rule.addResourceScope('AWS::EC2::SecurityGroup', 'sg-1234567890abcdefgh');
+rule.scopeToResource('AWS::EC2::SecurityGroup', 'sg-1234567890abcdefgh');
 
 const customRule = new CustomRule(this, 'CustomRule', {
   lambdaFunction: myFn,
@@ -53,10 +53,10 @@ const customRule = new CustomRule(this, 'CustomRule', {
 });
 
 // Restrict to a specific tag
-customRule.addTagScope('Cost Center', 'MyApp');
+customRule.scopeToTag('Cost Center', 'MyApp');
 ```
 
-Only one type of scope restriction can be added to a rule (the last call to `addXxx()` sets the scope).
+Only one type of scope restriction can be added to a rule (the last call to `scopeToXxx()` sets the scope).
 
 #### Events
 To define Amazon CloudWatch event rules, use the `onComplianceChange()` or `onReEvaluationStatus()` methods:
