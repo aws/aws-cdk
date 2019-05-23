@@ -218,14 +218,14 @@ export interface EcsOptimizedAmiProps {
   /**
    * What generation of Amazon Linux to use
    *
-   * @default is Amazon Linux
+   * @default AmazonLinuxGeneration.AmazonLinux if hwType equal to AmiHardwareType.Standard else AmazonLinuxGeneration.AmazonLinux2
    */
   readonly generation?: ec2.AmazonLinuxGeneration;
 
   /**
    * What ECS Optimized AMI type to use
    *
-   * @default is Standard
+   * @default AmiHardwareType.Standard
    */
   readonly hwType?: AmiHardwareType;
 }
