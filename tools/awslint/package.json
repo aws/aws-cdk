@@ -5,10 +5,10 @@
   "description": "Enforces the AWS Construct Library guidelines",
   "main": "index.js",
   "scripts": {
-    "build": "tsc && chmod +x bin/awslint",
+    "build": "tsc -b && chmod +x bin/awslint",
     "lint": "tslint && pkglint",
     "test": "echo ok",
-    "watch": "tsc -w",
+    "watch": "tsc -b -w",
     "build+test+package": "npm run build+test",
     "build+test": "npm run build && npm test"
   },

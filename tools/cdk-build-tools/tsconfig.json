@@ -13,6 +13,8 @@
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
     "inlineSourceMap": true,
-    "inlineSources": true
-  }
+    "inlineSources": true,
+    "composite": true
+  },
+  "include": ["**/*.ts"]
 }

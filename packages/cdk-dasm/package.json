@@ -12,8 +12,8 @@
     "cdk-dasm": "bin/cdk-dasm"
   },
   "scripts": {
-    "build": "tsc && chmod +x bin/cdk-dasm",
-    "watch": "tsc -w",
+    "build": "tsc -b && chmod +x bin/cdk-dasm",
+    "watch": "tsc -b -w",
     "test": "jest",
     "package": "mkdir -p dist/js && cd dist/js && npm pack ../../",
     "build+test+package": "npm run build+test && npm run package",

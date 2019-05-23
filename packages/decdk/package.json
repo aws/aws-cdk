@@ -13,8 +13,8 @@
     "decdk-schema": "bin/decdk-schema"
   },
   "scripts": {
-    "build": "node ./deps.js && tsc && chmod +x bin/decdk && chmod +x bin/decdk-schema && bin/decdk-schema > cdk.schema.json",
-    "watch": "tsc -w",
+    "build": "node ./deps.js && tsc -b && chmod +x bin/decdk && chmod +x bin/decdk-schema && bin/decdk-schema > cdk.schema.json",
+    "watch": "tsc -b -w",
     "test": "jest",
     "package": "mkdir -p dist/js && cd dist/js && npm pack ../../",
     "build+test": "npm run build && npm test",
