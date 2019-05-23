@@ -17,6 +17,8 @@ export interface CfnResourceProps {
 
   /**
    * CloudFormation properties.
+   *
+   * @default - No resource properties.
    */
   readonly properties?: any;
 }

@@ -20,6 +20,7 @@ export class CoreTypes {
   public static hasCoreModule(assembly: reflect.Assembly) {
     return (!assembly.system.assemblies.find(a => a.name === CORE_MODULE));
   }
+
   /**
    * @returns true if `classType` represents an L1 Cfn Resource
    */

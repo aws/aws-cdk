@@ -14,6 +14,16 @@ export class ConstructReflection {
       .map(c => new ConstructReflection(c));
   }
 
+  public static getFqnFromTypeRef(typeRef: reflect.TypeReference) {
+    if (typeRef.arrayOfType) {
+      return typeRef.arrayOfType.fqn;
+    } else if (typeRef.mapOfType) {
+      return typeRef.mapOfType.fqn;
+    }
+
+    return typeRef.fqn;
+  }
+
   public readonly ROOT_CLASS: reflect.ClassType; // cdk.Construct
 
   public readonly fqn: string;
@@ -220,14 +230,7 @@ constructLinter.add({
     if (CoreTypes.isCfnResource(e.ctx.classType)) { return; }
 
     for (const property of e.ctx.propsType.allProperties) {
-      const typeRef = property.type;
-      let fqn = typeRef.fqn;
-
-      if (typeRef.arrayOfType) {
-        fqn = typeRef.arrayOfType.fqn;
-      } else if (typeRef.mapOfType) {
-        fqn = typeRef.mapOfType.fqn;
-      }
+      const fqn = ConstructReflection.getFqnFromTypeRef(property.type);
 
       const found = (fqn && e.ctx.sys.tryFindFqn(fqn));
       if (found) {
@@ -236,3 +239,41 @@ constructLinter.add({
     }
   }
 });
+
+constructLinter.add({
+  code: 'props-no-cfn-types',
+  message: 'props should not expose L1 types (types which start with "Cfn")',
+  eval: e => {
+    if (!e.ctx.propsType) { return; }
+    if (!e.ctx.hasPropsArgument) { return; }
+
+    // this rule only applies to L2 constructs
+    if (CoreTypes.isCfnResource(e.ctx.classType)) { return; }
+
+    for (const property of e.ctx.propsType.ownProperties) {
+      const fqn = ConstructReflection.getFqnFromTypeRef(property.type);
+
+      const found = (fqn && e.ctx.sys.tryFindFqn(fqn));
+      if (found) {
+        e.assert(!found.name.toLowerCase().startsWith('cfn'), `${e.ctx.propsFqn}.${property.name}`);
+      }
+    }
+  }
+});
+
+constructLinter.add({
+  code: 'props-default-doc',
+  message: 'All optional props should have @default documentation',
+  eval: e => {
+    if (!e.ctx.propsType) { return; }
+    if (!e.ctx.hasPropsArgument) { return; }
+
+    // this rule only applies to L2 constructs
+    if (CoreTypes.isCfnResource(e.ctx.classType)) { return; }
+
+    for (const property of e.ctx.propsType.allProperties) {
+      if (!property.optional) { continue; }
+      e.assert(property.docs.docs.default !== undefined, `${e.ctx.propsFqn}.${property.name}`);
+    }
+  }
+  });

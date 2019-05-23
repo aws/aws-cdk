@@ -27,6 +27,8 @@ export interface LoadBalancerProps {
    * What listeners to set up for the load balancer.
    *
    * Can also be added by .addListener()
+   *
+   * @default -
    */
   readonly listeners?: LoadBalancerListener[];
 
@@ -34,6 +36,8 @@ export interface LoadBalancerProps {
    * What targets to load balance to.
    *
    * Can also be added by .addTarget()
+   *
+   * @default - None.
    */
   readonly targets?: ILoadBalancerTarget[];
 
@@ -41,6 +45,8 @@ export interface LoadBalancerProps {
    * Health check settings for the load balancing targets.
    *
    * Not required but recommended.
+   *
+   * @default - None.
    */
   readonly healthCheck?: HealthCheck;
 }

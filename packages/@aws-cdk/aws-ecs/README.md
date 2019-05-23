@@ -34,6 +34,8 @@ const ecsService = new ecs.LoadBalancedEc2Service(this, 'Service', {
 });
 ```
 
+For a set of constructs defining common ECS architectural patterns, see the `@aws-cdk/aws-ecs-patterns` package.
+
 ## AWS Fargate vs Amazon ECS
 
 There are two sets of constructs in this library; one to run tasks on Amazon ECS and
