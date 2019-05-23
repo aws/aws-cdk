@@ -15,8 +15,8 @@
         }
       },
       "dotnet": {
-        "namespace": "Amazon.CDK.AWS.ECS.PATTERNS",
-        "packageId": "Amazon.CDK.AWS.ECS.PATTERNS",
+        "namespace": "Amazon.CDK.AWS.ECS.Patterns",
+        "packageId": "Amazon.CDK.AWS.ECS.Patterns",
         "signAssembly": true,
         "assemblyOriginatorKeyFile": "../../key.snk"
       },
