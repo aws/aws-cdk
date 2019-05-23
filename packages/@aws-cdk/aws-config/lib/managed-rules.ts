@@ -98,6 +98,8 @@ export class CloudFormationStackDriftDetectionCheck extends ManagedRule {
 export interface CloudFormationStackNotificationCheckProps extends RuleProps {
   /**
    * A list of allowed topics. At most 5 topics.
+   *
+   * @default - No topics.
    */
   readonly topics?: sns.ITopic[];
 }
