@@ -1,9 +1,10 @@
 import reflect = require('jsii-reflect');
 import { Linter } from '../linter';
 import { ConstructReflection } from './construct';
+import { CoreTypes } from './core-types';
 
 export const eventsLinter = new Linter<EventsReflection>(assembly => assembly.classes
-  .filter(t => ConstructReflection.isConstructClass(t))
+  .filter(t => CoreTypes.isConstructClass(t))
   .map(construct => new EventsReflection(construct)));
 
 export class EventsReflection extends ConstructReflection {
