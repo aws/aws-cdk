@@ -119,7 +119,7 @@ export class Cluster extends Resource implements ICluster {
     const autoScalingGroup = new autoscaling.AutoScalingGroup(this, id, {
       ...options,
       vpc: this.vpc,
-      machineImage: new EcsOptimizedAmi(),
+      machineImage: options.machineImage || new EcsOptimizedAmi(),
       updateType: options.updateType || autoscaling.UpdateType.ReplacingUpdate,
       instanceType: options.instanceType,
     });
@@ -218,9 +218,16 @@ export interface EcsOptimizedAmiProps {
   /**
    * What generation of Amazon Linux to use
    *
-   * @default AmazonLinux
+   * @default AmazonLinuxGeneration.AmazonLinux if hwType equal to AmiHardwareType.Standard else AmazonLinuxGeneration.AmazonLinux2
    */
   readonly generation?: ec2.AmazonLinuxGeneration;
+
+  /**
+   * What ECS Optimized AMI type to use
+   *
+   * @default AmiHardwareType.Standard
+   */
+  readonly hwType?: AmiHardwareType;
 }
 
 /**
@@ -228,15 +235,33 @@ export interface EcsOptimizedAmiProps {
  */
 export class EcsOptimizedAmi implements ec2.IMachineImageSource {
   private readonly generation: ec2.AmazonLinuxGeneration;
+  private readonly hwType: AmiHardwareType;
+
   private readonly amiParameterName: string;
 
   constructor(props?: EcsOptimizedAmiProps) {
-    this.generation = (props && props.generation) || ec2.AmazonLinuxGeneration.AmazonLinux;
-    if (this.generation === ec2.AmazonLinuxGeneration.AmazonLinux2) {
-      this.amiParameterName = "/aws/service/ecs/optimized-ami/amazon-linux-2/recommended";
-    } else {
-      this.amiParameterName = "/aws/service/ecs/optimized-ami/amazon-linux/recommended";
+    this.hwType = (props && props.hwType) || AmiHardwareType.Standard;
+    if (props && props.generation) {      // generation defined in the props object
+      if (props.generation === ec2.AmazonLinuxGeneration.AmazonLinux && this.hwType !== AmiHardwareType.Standard) {
+        throw new Error(`Amazon Linux does not support special hardware type. Use Amazon Linux 2 instead`);
+      } else {
+        this.generation = props.generation;
+      }
+    } else {                              // generation not defined in props object
+      if (this.hwType === AmiHardwareType.Standard) {    // default to Amazon Linux v1 if no HW is standard
+        this.generation = ec2.AmazonLinuxGeneration.AmazonLinux;
+      } else {                                         // default to Amazon Linux v2 if special HW
+        this.generation = ec2.AmazonLinuxGeneration.AmazonLinux2;
+      }
     }
+
+    // set the SSM parameter name
+    this.amiParameterName = "/aws/service/ecs/optimized-ami/"
+                          + ( this.generation === ec2.AmazonLinuxGeneration.AmazonLinux ? "amazon-linux/" : "" )
+                          + ( this.generation === ec2.AmazonLinuxGeneration.AmazonLinux2 ? "amazon-linux-2/" : "" )
+                          + ( this.hwType === AmiHardwareType.Gpu ? "gpu/" : "" )
+                          + ( this.hwType === AmiHardwareType.Arm ? "arm64/" : "" )
+                          + "recommended";
   }
 
   /**
@@ -430,6 +455,13 @@ export interface AddCapacityOptions extends AddAutoScalingGroupCapacityOptions, 
    * The type of EC2 instance to launch into your Autoscaling Group
    */
   readonly instanceType: ec2.InstanceType;
+
+  /**
+   * The machine image for the ECS instances
+   *
+   * @default - Amazon Linux 1
+   */
+  readonly machineImage?: ec2.IMachineImageSource;
 }
 
 export interface NamespaceOptions {
@@ -466,4 +498,25 @@ export enum NamespaceType {
    * Create a public DNS namespace
    */
   PublicDns = 'PublicDns',
+}
+
+/**
+ * The type of HW for the ECS Optimized AMI
+ */
+export enum AmiHardwareType {
+
+  /**
+   * Create a standard AMI
+   */
+  Standard = 'Standard',
+
+  /**
+   * Create a GPU optimized AMI
+   */
+  Gpu = 'GPU',
+
+  /**
+   * Create a ARM64 optimized AMI
+   */
+  Arm = 'ARM64',
 }
