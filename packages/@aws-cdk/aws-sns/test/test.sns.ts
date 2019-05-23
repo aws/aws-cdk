@@ -279,7 +279,7 @@ export = {
       });
 
       const fction = new lambda.Function(stack, 'MyFunc', {
-        runtime: lambda.Runtime.NodeJS610,
+        runtime: lambda.Runtime.NodeJS810,
         handler: 'index.handler',
         code: lambda.Code.inline('exports.handler = function(e, c, cb) { return cb() }')
       });
@@ -343,7 +343,7 @@ export = {
             "Arn"
             ]
           },
-          "Runtime": "nodejs6.10"
+          "Runtime": "nodejs8.10"
           },
           "DependsOn": [
           "MyFuncServiceRole54065130"
@@ -416,7 +416,7 @@ export = {
 
       const queue = new sqs.Queue(stack, 'MyQueue');
       const func = new lambda.Function(stack, 'MyFunc', {
-        runtime: lambda.Runtime.NodeJS610,
+        runtime: lambda.Runtime.NodeJS810,
         handler: 'index.handler',
         code: lambda.Code.inline('exports.handler = function(e, c, cb) { return cb() }')
       });
@@ -545,7 +545,7 @@ export = {
                   "Arn"
                 ]
               },
-              "Runtime": "nodejs6.10"
+              "Runtime": "nodejs8.10"
             },
             "DependsOn": [
               "MyFuncServiceRole54065130"
@@ -683,42 +683,18 @@ export = {
     test.done();
   },
 
-  'export/import'(test: Test) {
+  'fromTopicArn'(test: Test) {
     // GIVEN
-    const stack1 = new cdk.Stack();
-    const topic = new sns.Topic(stack1, 'Topic');
-
     const stack2 = new cdk.Stack();
     const queue = new sqs.Queue(stack2, 'Queue');
 
     // WHEN
-    const ref = topic.export();
-    const imported = sns.Topic.import(stack2, 'Imported', ref);
+    const imported = sns.Topic.fromTopicArn(stack2, 'Imported', 'arn:aws:sns:*:123456789012:my_corporate_topic');
     imported.subscribeQueue(queue);
 
     // THEN
-    expect(stack2).to(haveResource('AWS::SNS::Subscription', {
-    "TopicArn": { "Fn::ImportValue": "Stack:TopicTopicArnB66B79C2" },
-    }));
-    expect(stack2).to(haveResource('AWS::SQS::QueuePolicy', {
-      PolicyDocument: {
-        Version: '2012-10-17',
-        Statement: [
-          {
-            "Action": "sqs:SendMessage",
-            "Condition": {
-              "ArnEquals": {
-                "aws:SourceArn": stack2.node.resolve(imported.topicArn)
-              }
-            },
-            "Principal": { "Service": "sns.amazonaws.com" },
-            "Resource": stack2.node.resolve(queue.queueArn),
-            "Effect": "Allow",
-          }
-        ],
-      },
-    }));
-
+    test.deepEqual(imported.topicName, 'my_corporate_topic');
+    test.deepEqual(imported.topicArn, 'arn:aws:sns:*:123456789012:my_corporate_topic');
     test.done();
   },
 

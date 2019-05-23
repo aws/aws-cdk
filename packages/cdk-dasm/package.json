@@ -1,6 +1,6 @@
 {
   "name": "cdk-dasm",
-  "version": "0.28.0",
+  "version": "0.31.0",
   "description": "AWS CDK disassembler: convert CloudFormation to code",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -9,13 +9,15 @@
     "url": "https://github.com/awslabs/aws-cdk.git"
   },
   "bin": {
-    "decdk": "bin/cdk-dasm"
+    "cdk-dasm": "bin/cdk-dasm"
   },
   "scripts": {
-    "build": "tsc && chmod +x bin/cdk-dasm",
-    "watch": "tsc -w",
+    "build": "tsc -b && chmod +x bin/cdk-dasm",
+    "watch": "tsc -b -w",
     "test": "jest",
-    "package": "mkdir -p dist/js && cd dist/js && npm pack ../../"
+    "package": "mkdir -p dist/js && cd dist/js && npm pack ../../",
+    "build+test+package": "npm run build+test && npm run package",
+    "build+test": "npm run build && npm test"
   },
   "author": {
     "name": "Amazon Web Services",
@@ -24,8 +26,8 @@
   },
   "license": "Apache-2.0",
   "dependencies": {
-    "yaml": "1.5.0",
-    "codemaker": "^0.10.0"
+    "codemaker": "^0.10.0",
+    "yaml": "1.5.0"
   },
   "devDependencies": {
     "@types/jest": "^24.0.11",

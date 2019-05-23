@@ -3,10 +3,10 @@ import ec2 = require('@aws-cdk/aws-ec2');
 import iam = require('@aws-cdk/aws-iam');
 import logs = require('@aws-cdk/aws-logs');
 import sqs = require('@aws-cdk/aws-sqs');
-import { CfnOutput, Construct, Fn, Token } from '@aws-cdk/cdk';
+import { Construct, Fn, Token } from '@aws-cdk/cdk';
 import { Code } from './code';
 import { IEventSource } from './event-source';
-import { FunctionBase, FunctionImportProps, IFunction } from './function-base';
+import { FunctionAttributes, FunctionBase, IFunction } from './function-base';
 import { Version } from './lambda-version';
 import { CfnFunction } from './lambda.generated';
 import { ILayerVersion } from './layers';
@@ -122,7 +122,7 @@ export interface FunctionProps {
    *
    * Specify this if the Lambda function needs to access resources in a VPC.
    */
-  readonly vpc?: ec2.IVpcNetwork;
+  readonly vpc?: ec2.IVpc;
 
   /**
    * Where to place the network interfaces within the VPC.
@@ -223,6 +223,11 @@ export interface FunctionProps {
  * library.
  */
 export class Function extends FunctionBase {
+
+  public static fromFunctionArn(scope: Construct, id: string, functionArn: string): IFunction {
+    return Function.fromFunctionAttributes(scope, id, { functionArn });
+  }
+
   /**
    * Creates a Lambda function object which represents a function not defined
    * within this stack.
@@ -231,17 +236,43 @@ export class Function extends FunctionBase {
    *
    * @param scope The parent construct
    * @param id The name of the lambda construct
-   * @param props A reference to a Lambda function. Can be created manually (see
-   * example above) or obtained through a call to `lambda.export()`.
+   * @param attrs the attributes of the function to import
    */
-  public static import(scope: Construct, id: string, props: FunctionImportProps): IFunction {
-    return new ImportedFunction(scope, id, props);
+  public static fromFunctionAttributes(scope: Construct, id: string, attrs: FunctionAttributes): IFunction {
+    const functionArn = attrs.functionArn;
+    const functionName = extractNameFromArn(attrs.functionArn);
+    const role = attrs.role;
+
+    class Import extends FunctionBase {
+      public readonly functionName = functionName;
+      public readonly functionArn = functionArn;
+      public readonly role = role;
+      public readonly grantPrincipal: iam.IPrincipal;
+
+      protected readonly canCreatePermissions = false;
+
+      constructor(s: Construct, i: string) {
+        super(s, i);
+
+        this.grantPrincipal = role || new iam.ImportedResourcePrincipal({ resource: this } );
+
+        if (attrs.securityGroupId) {
+          this._connections = new ec2.Connections({
+            securityGroups: [
+              ec2.SecurityGroup.fromSecurityGroupId(this, 'SecurityGroup', attrs.securityGroupId)
+            ]
+          });
+        }
+      }
+    }
+
+    return new Import(scope, id);
   }
 
   /**
    * Return the given named metric for this Lambda
    */
-  public static metricAll(metricName: string, props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
+  public static metricAll(metricName: string, props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return new cloudwatch.Metric({
       namespace: 'AWS/Lambda',
       metricName,
@@ -253,7 +284,7 @@ export class Function extends FunctionBase {
    *
    * @default sum over 5 minutes
    */
-  public static metricAllErrors(props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
+  public static metricAllErrors(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return this.metricAll('Errors', { statistic: 'sum', ...props });
   }
 
@@ -262,7 +293,7 @@ export class Function extends FunctionBase {
    *
    * @default average over 5 minutes
    */
-  public static metricAllDuration(props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
+  public static metricAllDuration(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return this.metricAll('Duration', props);
   }
 
@@ -271,7 +302,7 @@ export class Function extends FunctionBase {
    *
    * @default sum over 5 minutes
    */
-  public static metricAllInvocations(props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
+  public static metricAllInvocations(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return this.metricAll('Invocations', { statistic: 'sum', ...props });
   }
 
@@ -280,7 +311,7 @@ export class Function extends FunctionBase {
    *
    * @default sum over 5 minutes
    */
-  public static metricAllThrottles(props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
+  public static metricAllThrottles(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return this.metricAll('Throttles', { statistic: 'sum', ...props });
   }
 
@@ -289,7 +320,7 @@ export class Function extends FunctionBase {
    *
    * @default max over 5 minutes
    */
-  public static metricAllConcurrentExecutions(props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
+  public static metricAllConcurrentExecutions(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     // Mini-FAQ: why max? This metric is a gauge that is emitted every
     // minute, so either max or avg or a percentile make sense (but sum
     // doesn't). Max is more sensitive to spiky load changes which is
@@ -304,7 +335,7 @@ export class Function extends FunctionBase {
    *
    * @default max over 5 minutes
    */
-  public static metricAllUnreservedConcurrentExecutions(props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
+  public static metricAllUnreservedConcurrentExecutions(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return this.metricAll('UnreservedConcurrentExecutions', { statistic: 'max', ...props });
   }
 
@@ -423,18 +454,6 @@ export class Function extends FunctionBase {
   }
 
   /**
-   * Export this Function (without the role)
-   */
-  public export(): FunctionImportProps {
-    return {
-      functionArn: new CfnOutput(this, 'FunctionArn', { value: this.functionArn }).makeImportValue().toString(),
-      securityGroupId: this._connections && this._connections.securityGroups[0]
-          ? new CfnOutput(this, 'SecurityGroupId', { value: this._connections.securityGroups[0].securityGroupId }).makeImportValue().toString()
-          : undefined
-    };
-  }
-
-  /**
    * Adds an environment variable to this Lambda function.
    * If this is a ref to a Lambda function, this operation results in a no-op.
    * @param key The environment variable key.
@@ -460,7 +479,7 @@ export class Function extends FunctionBase {
     if (this.layers.length === 5) {
       throw new Error('Unable to add layer: this lambda function already uses 5 layers.');
     }
-    if (layer.compatibleRuntimes && layer.compatibleRuntimes.indexOf(this.runtime) === -1) {
+    if (layer.compatibleRuntimes && !layer.compatibleRuntimes.find(runtime => runtime.runtimeEquals(this.runtime))) {
       const runtimes = layer.compatibleRuntimes.map(runtime => runtime.name).join(', ');
       throw new Error(`This lambda function uses a runtime that is incompatible with this layer (${this.runtime.name} is not in [${runtimes}])`);
     }
@@ -602,36 +621,6 @@ export class Function extends FunctionBase {
     return {
       mode: Tracing[props.tracing]
     };
-  }
-}
-
-class ImportedFunction extends FunctionBase {
-  public readonly grantPrincipal: iam.IPrincipal;
-  public readonly functionName: string;
-  public readonly functionArn: string;
-  public readonly role?: iam.IRole;
-
-  protected readonly canCreatePermissions = false;
-
-  constructor(scope: Construct, id: string, private readonly props: FunctionImportProps) {
-    super(scope, id);
-
-    this.functionArn = props.functionArn;
-    this.functionName = extractNameFromArn(props.functionArn);
-    this.role = props.role;
-    this.grantPrincipal = this.role || new iam.ImportedResourcePrincipal({ resource: this } );
-
-    if (props.securityGroupId) {
-      this._connections = new ec2.Connections({
-        securityGroups: [
-          ec2.SecurityGroup.import(this, 'SecurityGroup', { securityGroupId: props.securityGroupId })
-        ]
-      });
-    }
-  }
-
-  public export() {
-    return this.props;
   }
 }
 

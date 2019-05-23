@@ -20,8 +20,20 @@ This will instruct the toolkit to build a Docker image from `my-image`, push it
 to an AWS ECR repository and wire the name of the repository as CloudFormation
 parameters to your stack.
 
-Use `asset.imageUri` can be used to reference the image (it includes both the
-ECR image URL and tag.
+Use `asset.imageUri` to reference the image (it includes both the ECR image URL
+and tag.
+
+You can optionally pass build args to the `docker build` command by specifying
+the `buildArgs` property:
+
+```typescript
+const asset = new DockerImageAsset(this, 'MyBuildImage', {
+  directory: path.join(__dirname, 'my-image'),
+  buildArgs: {
+    HTTP_PROXY: 'http://10.20.30.2:1234'
+  }
+});
+```
 
 ### Pull Permissions
 

@@ -10,7 +10,7 @@ class TestStack extends cdk.Stack {
       removalPolicy: cdk.RemovalPolicy.Destroy
     });
 
-    new cdk.CfnOutput(this, 'BucketURL', { value: bucket.bucketUrl });
+    new cdk.CfnOutput(this, 'BucketURL', { value: bucket.bucketWebsiteUrl });
     new cdk.CfnOutput(this, 'ObjectURL', { value: bucket.urlForObject('myfolder/myfile.txt') });
     /// !hide
   }

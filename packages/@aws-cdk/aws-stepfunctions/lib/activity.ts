@@ -1,6 +1,5 @@
 import cloudwatch = require('@aws-cdk/aws-cloudwatch');
-import { Construct, Resource } from '@aws-cdk/cdk';
-import { IStepFunctionsTaskResource, StepFunctionsTaskResourceProps, Task } from './states/task';
+import { Construct, IResource, Resource } from '@aws-cdk/cdk';
 import { CfnActivity } from './stepfunctions.generated';
 
 export interface ActivityProps {
@@ -15,8 +14,41 @@ export interface ActivityProps {
 /**
  * Define a new StepFunctions activity
  */
-export class Activity extends Resource implements IStepFunctionsTaskResource {
+export class Activity extends Resource implements IActivity {
+    /**
+     * Construct an Activity from an existing Activity ARN
+     */
+    public static fromActivityArn(scope: Construct, id: string, activityArn: string): IActivity {
+        class Imported extends Construct implements IActivity {
+            public get activityArn() { return activityArn; }
+            public get activityName() {
+                return this.node.stack.parseArn(activityArn, ':').resourceName || '';
+            }
+        }
+
+        return new Imported(scope, id);
+    }
+
+    /**
+     * Construct an Activity from an existing Activity Name
+     */
+    public static fromActivityName(scope: Construct, id: string, activityName: string): IActivity {
+        return Activity.fromActivityArn(scope, id, scope.node.stack.formatArn({
+            service: 'states',
+            resource: 'activity',
+            resourceName: activityName,
+            sep: ':',
+        }));
+    }
+
+    /**
+     * @attribute
+     */
     public readonly activityArn: string;
+
+    /**
+     * @attribute
+     */
     public readonly activityName: string;
 
     constructor(scope: Construct, id: string, props: ActivityProps = {}) {
@@ -30,22 +62,12 @@ export class Activity extends Resource implements IStepFunctionsTaskResource {
         this.activityName = resource.activityName;
     }
 
-    public asStepFunctionsTaskResource(_callingTask: Task): StepFunctionsTaskResourceProps {
-        // No IAM permissions necessary, execution role implicitly has Activity permissions.
-        return {
-            resourceArn: this.activityArn,
-            metricPrefixSingular: 'Activity',
-            metricPrefixPlural: 'Activities',
-            metricDimensions: { ActivityArn: this.activityArn },
-        };
-    }
-
     /**
      * Return the given named metric for this Activity
      *
      * @default sum over 5 minutes
      */
-    public metric(metricName: string, props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
+    public metric(metricName: string, props?: cloudwatch.MetricOptions): cloudwatch.Metric {
         return new cloudwatch.Metric({
             namespace: 'AWS/States',
             metricName,
@@ -60,7 +82,7 @@ export class Activity extends Resource implements IStepFunctionsTaskResource {
      *
      * @default average over 5 minutes
      */
-    public metricRunTime(props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
+    public metricRunTime(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
         return this.metric('ActivityRunTime', { statistic: 'avg', ...props });
     }
 
@@ -69,7 +91,7 @@ export class Activity extends Resource implements IStepFunctionsTaskResource {
      *
      * @default average over 5 minutes
      */
-    public metricScheduleTime(props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
+    public metricScheduleTime(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
         return this.metric('ActivityScheduleTime', { statistic: 'avg', ...props });
     }
 
@@ -78,7 +100,7 @@ export class Activity extends Resource implements IStepFunctionsTaskResource {
      *
      * @default average over 5 minutes
      */
-    public metricTime(props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
+    public metricTime(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
         return this.metric('ActivityTime', { statistic: 'avg', ...props });
     }
 
@@ -87,7 +109,7 @@ export class Activity extends Resource implements IStepFunctionsTaskResource {
      *
      * @default sum over 5 minutes
      */
-    public metricScheduled(props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
+    public metricScheduled(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
         return this.metric('ActivitiesScheduled', props);
     }
 
@@ -96,7 +118,7 @@ export class Activity extends Resource implements IStepFunctionsTaskResource {
      *
      * @default sum over 5 minutes
      */
-    public metricTimedOut(props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
+    public metricTimedOut(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
         return this.metric('ActivitiesTimedOut', props);
     }
 
@@ -105,7 +127,7 @@ export class Activity extends Resource implements IStepFunctionsTaskResource {
      *
      * @default sum over 5 minutes
      */
-    public metricStarted(props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
+    public metricStarted(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
         return this.metric('ActivitiesStarted', props);
     }
 
@@ -114,7 +136,7 @@ export class Activity extends Resource implements IStepFunctionsTaskResource {
      *
      * @default sum over 5 minutes
      */
-    public metricSucceeded(props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
+    public metricSucceeded(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
         return this.metric('ActivitiesSucceeded', props);
     }
 
@@ -123,7 +145,7 @@ export class Activity extends Resource implements IStepFunctionsTaskResource {
      *
      * @default sum over 5 minutes
      */
-    public metricFailed(props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
+    public metricFailed(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
         return this.metric('ActivitiesFailed', props);
     }
 
@@ -132,7 +154,7 @@ export class Activity extends Resource implements IStepFunctionsTaskResource {
      *
      * @default sum over 5 minutes
      */
-    public metricHeartbeatTimedOut(props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
+    public metricHeartbeatTimedOut(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
         return this.metric('ActivitiesHeartbeatTimedOut', props);
     }
 
@@ -143,4 +165,20 @@ export class Activity extends Resource implements IStepFunctionsTaskResource {
         }
         return name;
     }
+}
+
+export interface IActivity extends IResource {
+    /**
+     * The ARN of the activity
+     *
+     * @attribute
+     */
+    readonly activityArn: string;
+
+    /**
+     * The name of the activity
+     *
+     * @attribute
+     */
+    readonly activityName: string;
 }

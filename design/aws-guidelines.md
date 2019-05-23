@@ -143,7 +143,7 @@ into an `{ "Fn::Join" }` expression which includes the relevant intrinsic
 functions.
 
 If needed, you can query whether an object includes unresolved tokens by using
-the `cdk.unresolved(x)` function.
+the `cdk.isToken(x)` function.
 
 Resource attributes should use a type that corresponds to the __resolved__ AWS
 CloudFormation type (e.g. `string`, `string[]`).
@@ -340,9 +340,9 @@ export interface IFoo extends cdk.IConstruct, ISomething {
   addToPipeline(stage: pipelineapi.IStage, name: string, props?: FooActionProps): FooAction;
 
   // metrics
-  metric(metricName: string, props?: cloudwatch.MetricCustomization): cloudwatch.Metric;
-  metricFoo(props?: cloudwatch.MetricCustomization): cloudwatch.Metric;
-  metricBar(props?: cloudwatch.MetricCustomization): cloudwatch.Metric;
+  metric(metricName: string, props?: cloudwatch.MetricOptions): cloudwatch.Metric;
+  metricFoo(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
+  metricBar(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
 
   // export
   export(): FooImportProps;

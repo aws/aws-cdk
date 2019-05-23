@@ -1,5 +1,5 @@
 import s3 = require('@aws-cdk/aws-s3');
-import { CfnOutput, Construct, IResource, Resource } from '@aws-cdk/cdk';
+import { Construct, IResource, Resource } from '@aws-cdk/cdk';
 import { CfnDatabase } from './glue.generated';
 
 export interface IDatabase extends IResource {
@@ -15,28 +15,17 @@ export interface IDatabase extends IResource {
 
   /**
    * The ARN of the database.
+   *
+   * @attribute
    */
   readonly databaseArn: string;
 
   /**
    * The name of the database.
+   *
+   * @attribute
    */
   readonly databaseName: string;
-
-  /**
-   * The location of the database (for example, an HDFS path).
-   */
-  readonly locationUri: string;
-
-  export(): DatabaseImportProps;
-}
-
-export interface DatabaseImportProps {
-  readonly catalogArn: string;
-  readonly catalogId: string;
-  readonly databaseArn: string;
-  readonly databaseName: string;
-  readonly locationUri: string;
 }
 
 export interface DatabaseProps {
@@ -56,16 +45,17 @@ export interface DatabaseProps {
 /**
  * A Glue database.
  */
-export class Database extends Resource {
-  /**
-   * Creates a Database construct that represents an external database.
-   *
-   * @param scope The scope creating construct (usually `this`).
-   * @param id The construct's id.
-   * @param props A `DatabaseImportProps` object. Can be obtained from a call to `database.export()` or manually created.
-   */
-  public static import(scope: Construct, id: string, props: DatabaseImportProps): IDatabase {
-    return new ImportedDatabase(scope, id, props);
+export class Database extends Resource implements IDatabase {
+
+  public static fromDatabaseArn(scope: Construct, id: string, databaseArn: string): IDatabase {
+    class Import extends Construct implements IDatabase {
+      public databaseArn = databaseArn;
+      public databaseName = scope.node.stack.parseArn(databaseArn).resourceName!;
+      public catalogArn = scope.node.stack.formatArn({ service: 'glue', resource: 'catalog' });
+      public catalogId = scope.node.stack.accountId;
+    }
+
+    return new Import(scope, id);
   }
 
   /**
@@ -124,39 +114,5 @@ export class Database extends Resource {
       service: 'glue',
       resource: 'catalog'
     });
-  }
-
-  /**
-   * Exports this database from the stack.
-   */
-  public export(): DatabaseImportProps {
-    return {
-      catalogArn: new CfnOutput(this, 'CatalogArn', { value: this.catalogArn }).makeImportValue().toString(),
-      catalogId: new CfnOutput(this, 'CatalogId', { value: this.catalogId }).makeImportValue().toString(),
-      databaseArn: new CfnOutput(this, 'DatabaseArn', { value: this.databaseArn }).makeImportValue().toString(),
-      databaseName: new CfnOutput(this, 'DatabaseName', { value: this.databaseName }).makeImportValue().toString(),
-      locationUri: new CfnOutput(this, 'LocationURI', { value: this.locationUri }).makeImportValue().toString()
-    };
-  }
-}
-
-class ImportedDatabase extends Construct implements IDatabase {
-  public readonly catalogArn: string;
-  public readonly catalogId: string;
-  public readonly databaseArn: string;
-  public readonly databaseName: string;
-  public readonly locationUri: string;
-
-  constructor(parent: Construct, name: string, private readonly props: DatabaseImportProps) {
-    super(parent, name);
-    this.catalogArn = props.catalogArn;
-    this.catalogId = props.catalogId;
-    this.databaseArn = props.databaseArn;
-    this.databaseName = props.databaseName;
-    this.locationUri = props.locationUri;
-  }
-
-  public export() {
-    return this.props;
   }
 }

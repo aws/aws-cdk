@@ -1,7 +1,6 @@
-import codedeploy = require('@aws-cdk/aws-codedeploy-api');
 import {
   AnyIPv4, Connections, IConnectable, IPortRange, ISecurityGroup,
-  IVpcNetwork, IVpcSubnet, SecurityGroup, TcpPort  } from '@aws-cdk/aws-ec2';
+  ISubnet, IVpc, SecurityGroup, TcpPort  } from '@aws-cdk/aws-ec2';
 import { Construct, Resource, Token } from '@aws-cdk/cdk';
 import { CfnLoadBalancer } from './elasticloadbalancing.generated';
 
@@ -12,7 +11,7 @@ export interface LoadBalancerProps {
   /**
    * VPC network of the fleet instances
    */
-  readonly vpc: IVpcNetwork;
+  readonly vpc: IVpc;
 
   /**
    * Whether this is an internet-facing Load Balancer
@@ -109,6 +108,7 @@ export interface HealthCheck {
 export interface ILoadBalancerTarget extends IConnectable {
   /**
    * Attach load-balanced target to a classic ELB
+   * @param loadBalancer [disable-awslint:ref-via-interface] The load balancer to attach the target to
    */
   attachToClassicLB(loadBalancer: LoadBalancer): void;
 }
@@ -187,7 +187,7 @@ export enum LoadBalancingProtocol {
  *
  * Routes to a fleet of of instances in a VPC.
  */
-export class LoadBalancer extends Resource implements IConnectable, codedeploy.ILoadBalancer {
+export class LoadBalancer extends Resource implements IConnectable {
   /**
    * Control all connections from and to this load balancer
    */
@@ -212,7 +212,7 @@ export class LoadBalancer extends Resource implements IConnectable, codedeploy.I
     this.connections = new Connections({ securityGroups: [this.securityGroup] });
 
     // Depending on whether the ELB has public or internal IPs, pick the right backend subnets
-    const subnets: IVpcSubnet[] = props.internetFacing ? props.vpc.publicSubnets : props.vpc.privateSubnets;
+    const subnets: ISubnet[] = props.internetFacing ? props.vpc.publicSubnets : props.vpc.privateSubnets;
 
     this.elb = new CfnLoadBalancer(this, 'Resource', {
       securityGroups: [ this.securityGroup.securityGroupId ],
@@ -271,31 +271,46 @@ export class LoadBalancer extends Resource implements IConnectable, codedeploy.I
     this.newTarget(target);
   }
 
+  /**
+   * @attribute
+   */
   public get loadBalancerName() {
     return this.elb.ref;
   }
 
+  /**
+   * @attribute
+   */
+  public get loadBalancerCanonicalHostedZoneNameId() {
+    return this.elb.loadBalancerCanonicalHostedZoneNameId;
+  }
+
+  /**
+   * @attribute
+   */
   public get loadBalancerCanonicalHostedZoneName() {
     return this.elb.loadBalancerCanonicalHostedZoneName;
   }
 
+  /**
+   * @attribute
+   */
   public get loadBalancerDnsName() {
     return this.elb.loadBalancerDnsName;
   }
 
+  /**
+   * @attribute
+   */
   public get loadBalancerSourceSecurityGroupGroupName() {
     return this.elb.loadBalancerSourceSecurityGroupGroupName;
   }
 
+  /**
+   * @attribute
+   */
   public get loadBalancerSourceSecurityGroupOwnerAlias() {
     return this.elb.loadBalancerSourceSecurityGroupOwnerAlias;
-  }
-
-  public asCodeDeployLoadBalancer(): codedeploy.ILoadBalancerProps {
-    return {
-      generation: codedeploy.LoadBalancerGeneration.First,
-      name: this.loadBalancerName,
-    };
   }
 
   /**

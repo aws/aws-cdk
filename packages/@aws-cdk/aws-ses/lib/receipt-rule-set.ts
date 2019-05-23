@@ -1,4 +1,4 @@
-import { CfnOutput, Construct, IResource, Resource } from '@aws-cdk/cdk';
+import { Construct, IResource, Resource } from '@aws-cdk/cdk';
 import { DropSpamReceiptRule, ReceiptRule, ReceiptRuleOptions } from './receipt-rule';
 import { CfnReceiptRuleSet } from './ses.generated';
 
@@ -8,19 +8,15 @@ import { CfnReceiptRuleSet } from './ses.generated';
 export interface IReceiptRuleSet extends IResource {
   /**
    * The receipt rule set name.
+   * @attribute
    */
-  readonly name: string;
+  readonly receiptRuleSetName: string;
 
   /**
    * Adds a new receipt rule in this rule set. The new rule is added after
    * the last added rule unless `after` is specified.
    */
   addRule(id: string, options?: ReceiptRuleOptions): ReceiptRule;
-
-  /**
-   * Exports this receipt rule set from the stack.
-   */
-  export(): ReceiptRuleSetImportProps;
 }
 
 /**
@@ -52,8 +48,8 @@ export interface ReceiptRuleSetProps {
 /**
  * A new or imported receipt rule set.
  */
-export abstract class ReceiptRuleSetBase extends Resource implements IReceiptRuleSet {
-  public abstract readonly name: string;
+abstract class ReceiptRuleSetBase extends Resource implements IReceiptRuleSet {
+  public abstract readonly receiptRuleSetName: string;
 
   private lastAddedRule?: ReceiptRule;
 
@@ -71,8 +67,6 @@ export abstract class ReceiptRuleSetBase extends Resource implements IReceiptRul
     return this.lastAddedRule;
   }
 
-  public abstract export(): ReceiptRuleSetImportProps;
-
   /**
    * Adds a drop spam rule
    */
@@ -87,15 +81,18 @@ export abstract class ReceiptRuleSetBase extends Resource implements IReceiptRul
 /**
  * A new receipt rule set.
  */
-export class ReceiptRuleSet extends ReceiptRuleSetBase implements IReceiptRuleSet {
+export class ReceiptRuleSet extends ReceiptRuleSetBase {
   /**
    * Import an exported receipt rule set.
    */
-  public static import(scope: Construct, id: string, props: ReceiptRuleSetImportProps): IReceiptRuleSet {
-    return new ImportedReceiptRuleSet(scope, id, props);
+  public static fromReceiptRuleSetName(scope: Construct, id: string, receiptRuleSetName: string): IReceiptRuleSet {
+    class Import extends ReceiptRuleSetBase implements IReceiptRuleSet {
+      public readonly receiptRuleSetName = receiptRuleSetName;
+    }
+    return new Import(scope, id);
   }
 
-  public readonly name: string;
+  public readonly receiptRuleSetName: string;
 
   constructor(scope: Construct, id: string, props?: ReceiptRuleSetProps) {
     super(scope, id);
@@ -104,7 +101,7 @@ export class ReceiptRuleSet extends ReceiptRuleSetBase implements IReceiptRuleSe
       ruleSetName: props ? props.name : undefined
     });
 
-    this.name = resource.receiptRuleSetName;
+    this.receiptRuleSetName = resource.receiptRuleSetName;
 
     if (props) {
       const rules = props.rules || [];
@@ -114,44 +111,5 @@ export class ReceiptRuleSet extends ReceiptRuleSetBase implements IReceiptRuleSe
         this.addDropSpamRule();
       }
     }
-  }
-
-  /**
-   * Exports this receipt rule set from the stack.
-   */
-  public export(): ReceiptRuleSetImportProps {
-    return {
-      name: new CfnOutput(this, 'ReceiptRuleSetName', { value: this.name }).makeImportValue().toString()
-    };
-  }
-}
-
-/**
- * Construction properties for an ImportedReceiptRuleSet.
- */
-export interface ReceiptRuleSetImportProps {
-  /**
-   * The receipt rule set name.
-   */
-  readonly name: string;
-}
-
-/**
- * An imported receipt rule set.
- */
-class ImportedReceiptRuleSet extends ReceiptRuleSetBase implements IReceiptRuleSet {
-  public readonly name: string;
-
-  constructor(scope: Construct, id: string, private readonly props: ReceiptRuleSetImportProps) {
-    super(scope, id);
-
-    this.name = props.name;
-  }
-
-  /**
-   * Exports this receipt rule set from the stack.
-   */
-  public export() {
-    return this.props;
   }
 }

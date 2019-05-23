@@ -55,17 +55,21 @@ export interface ActionBind {
 
 /**
  * The abstract view of an AWS CodePipeline as required and used by Actions.
- * It extends {@link events.IEventRuleTarget},
+ * It extends {@link events.IRuleTarget},
  * so this interface can be used as a Target for CloudWatch Events.
  */
-export interface IPipeline extends IResource, events.IEventRuleTarget {
+export interface IPipeline extends IResource {
   /**
    * The name of the Pipeline.
+   *
+   * @attribute
    */
   readonly pipelineName: string;
 
   /**
    * The ARN of the Pipeline.
+   *
+   * @attribute
    */
   readonly pipelineArn: string;
 
@@ -95,7 +99,7 @@ export interface IStage {
 
   addAction(action: Action): void;
 
-  onStateChange(name: string, target?: events.IEventRuleTarget, options?: events.EventRuleProps): events.EventRule;
+  onStateChange(name: string, target?: events.IRuleTarget, options?: events.RuleProps): events.Rule;
 }
 
 /**
@@ -236,8 +240,8 @@ export abstract class Action {
     }
   }
 
-  public onStateChange(name: string, target?: events.IEventRuleTarget, options?: events.EventRuleProps) {
-    const rule = new events.EventRule(this.scope, name, options);
+  public onStateChange(name: string, target?: events.IRuleTarget, options?: events.RuleProps) {
+    const rule = new events.Rule(this.scope, name, options);
     rule.addTarget(target);
     rule.addEventPattern({
       detailType: [ 'CodePipeline Stage Execution State Change' ],

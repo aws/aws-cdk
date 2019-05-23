@@ -23,7 +23,7 @@ export class PolicyDocument extends cdk.Token implements cdk.IResolvedValuePostP
     this._autoAssignSids = true;
   }
 
-  public resolve(_context: cdk.ResolveContext): any {
+  public resolve(_context: cdk.IResolveContext): any {
     if (this.isEmpty) {
       return undefined;
     }
@@ -40,7 +40,7 @@ export class PolicyDocument extends cdk.Token implements cdk.IResolvedValuePostP
   /**
    * Removes duplicate statements
    */
-  public postProcess(input: any, _context: cdk.ResolveContext): any {
+  public postProcess(input: any, _context: cdk.IResolveContext): any {
     if (!input || !input.Statement) {
       return input;
     }
@@ -287,11 +287,13 @@ export class CompositePrincipal extends PrincipalBase {
   public readonly assumeRoleAction: string;
   private readonly principals = new Array<PrincipalBase>();
 
-  constructor(principal: PrincipalBase, ...additionalPrincipals: PrincipalBase[]) {
+  constructor(...principals: PrincipalBase[]) {
     super();
-    this.assumeRoleAction = principal.assumeRoleAction;
-    this.addPrincipals(principal);
-    this.addPrincipals(...additionalPrincipals);
+    if (principals.length === 0) {
+      throw new Error('CompositePrincipals must be constructed with at least 1 Principal but none were passed.');
+    }
+    this.assumeRoleAction = principals[0].assumeRoleAction;
+    this.addPrincipals(...principals);
   }
 
   public addPrincipals(...principals: PrincipalBase[]): this {
@@ -513,7 +515,7 @@ export class PolicyStatement extends cdk.Token {
   //
   // Serialization
   //
-  public resolve(_context: cdk.ResolveContext): any {
+  public resolve(_context: cdk.IResolveContext): any {
     return this.toJson();
   }
 
@@ -531,6 +533,10 @@ export class PolicyStatement extends cdk.Token {
 
       if (typeof(values) === 'undefined') {
         return undefined;
+      }
+
+      if (cdk.Token.isToken(values)) {
+        return values;
       }
 
       if (Array.isArray(values)) {
@@ -585,7 +591,7 @@ class StackDependentToken extends cdk.Token {
     super();
   }
 
-  public resolve(context: cdk.ResolveContext) {
+  public resolve(context: cdk.IResolveContext) {
     return this.fn(context.scope.node.stack);
   }
 }
@@ -596,7 +602,7 @@ class ServicePrincipalToken extends cdk.Token {
     super();
   }
 
-  public resolve(ctx: cdk.ResolveContext) {
+  public resolve(ctx: cdk.IResolveContext) {
     const region = this.opts.region || ctx.scope.node.stack.region;
     const fact = RegionInfo.get(region).servicePrincipal(this.service);
     return fact || Default.servicePrincipal(this.service, region, ctx.scope.node.stack.urlSuffix);

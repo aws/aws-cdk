@@ -5,6 +5,11 @@ import { State } from './states/state';
  * Interface for states that can have 'next' states
  */
 export interface INextable {
+    /**
+     * Go to the indicated state after this state
+     *
+     * @returns The chain of states built up
+     */
     next(state: IChainable): Chain;
 }
 

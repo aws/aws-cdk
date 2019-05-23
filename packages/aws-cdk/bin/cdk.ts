@@ -20,7 +20,7 @@ import { PluginHost } from '../lib/plugin';
 import { parseRenames } from '../lib/renames';
 import { serializeStructure } from '../lib/serialize';
 import { Configuration, Settings } from '../lib/settings';
-import { VERSION } from '../lib/version';
+import version = require('../lib/version');
 
 // tslint:disable-next-line:no-var-requires
 const promptly = require('promptly');
@@ -56,7 +56,8 @@ async function parseCommandLineArguments() {
       .option('interactive', { type: 'boolean', alias: 'i', desc: 'interactively watch and show template updates' })
       .option('output', { type: 'string', alias: 'o', desc: 'write CloudFormation template for requested stacks to the given directory', requiresArg: true })
       .option('numbered', { type: 'boolean', alias: 'n', desc: 'prefix filenames with numbers to indicate deployment ordering' }))
-    .command('bootstrap [ENVIRONMENTS..]', 'Deploys the CDK toolkit stack into an AWS environment')
+    .command('bootstrap [ENVIRONMENTS..]', 'Deploys the CDK toolkit stack into an AWS environment', yargs => yargs
+      .option('toolkit-bucket-name', { type: 'string', alias: 'b', desc: 'The name of the CDK toolkit bucket', default: undefined }))
     .command('deploy [STACKS..]', 'Deploys the stack(s) named STACKS into your AWS account', yargs => yargs
       .option('build-exclude', { type: 'array', alias: 'E', nargs: 1, desc: 'do not rebuild asset with the given ID. Can be specified multiple times.', default: [] })
       .option('exclusively', { type: 'boolean', alias: 'e', desc: 'only deploy requested stacks, don\'t include dependencies' })
@@ -75,7 +76,7 @@ async function parseCommandLineArguments() {
       .option('language', { type: 'string', alias: 'l', desc: 'the language to be used for the new project (default can be configured in ~/.cdk.json)', choices: initTemplateLanuages })
       .option('list', { type: 'boolean', desc: 'list the available templates' }))
     .commandDir('../lib/commands', { exclude: /^_.*/ })
-    .version(VERSION)
+    .version(version.DISPLAY_VERSION)
     .demandCommand(1, '') // just print help
     .help()
     .alias('h', 'help')
@@ -95,8 +96,7 @@ async function initCommandLine() {
   if (argv.verbose) {
     setVerbose();
   }
-
-  debug('CDK toolkit version:', VERSION);
+  debug('CDK toolkit version:', version.DISPLAY_VERSION);
   debug('Command line arguments:', argv);
 
   const aws = new SDK({
@@ -151,15 +151,19 @@ async function initCommandLine() {
   // Bundle up global objects so the commands have access to them
   const commandOptions = { args: argv, appStacks, configuration, aws };
 
-  const returnValue = argv.commandHandler
-    ? await (argv.commandHandler as (opts: typeof commandOptions) => any)(commandOptions)
-    : await main(cmd, argv);
-  if (typeof returnValue === 'object') {
-    return toJsonOrYaml(returnValue);
-  } else if (typeof returnValue === 'string') {
-    return returnValue;
-  } else {
-    return returnValue;
+  try {
+    const returnValue = argv.commandHandler
+      ? await (argv.commandHandler as (opts: typeof commandOptions) => any)(commandOptions)
+      : await main(cmd, argv);
+    if (typeof returnValue === 'object') {
+      return toJsonOrYaml(returnValue);
+    } else if (typeof returnValue === 'string') {
+      return returnValue;
+    } else {
+      return returnValue;
+    }
+  } finally {
+    await version.displayVersionMessage();
   }
 
   async function main(command: string, args: any): Promise<number | string | {} | void> {
@@ -189,7 +193,7 @@ async function initCommandLine() {
         });
 
       case 'bootstrap':
-        return await cliBootstrap(args.ENVIRONMENTS, toolkitStackName, args.roleArn);
+        return await cliBootstrap(args.ENVIRONMENTS, toolkitStackName, args.roleArn, args.toolkitBucketName);
 
       case 'deploy':
         return await cli.deploy({
@@ -238,7 +242,7 @@ async function initCommandLine() {
    *             all stacks are implicitly selected.
    * @param toolkitStackName the name to be used for the CDK Toolkit stack.
    */
-  async function cliBootstrap(environmentGlobs: string[], toolkitStackName: string, roleArn: string | undefined): Promise<void> {
+  async function cliBootstrap(environmentGlobs: string[], toolkitStackName: string, roleArn: string | undefined, toolkitBucketName: string | undefined): Promise<void> {
     // Two modes of operation.
     //
     // If there is an '--app' argument, we select the environments from the app. Otherwise we just take the user
@@ -248,10 +252,13 @@ async function initCommandLine() {
 
     const environments = app ? await globEnvironmentsFromStacks(appStacks, environmentGlobs) : environmentsFromDescriptors(environmentGlobs);
 
+    // Bucket name can be passed using --toolkit-bucket-name or set in cdk.json
+    const bucketName = configuration.settings.get(['toolkitBucketName']) || toolkitBucketName;
+
     await Promise.all(environments.map(async (environment) => {
       success(' ⏳  Bootstrapping environment %s...', colors.blue(environment.name));
       try {
-        const result = await bootstrapEnvironment(environment, aws, toolkitStackName, roleArn);
+        const result = await bootstrapEnvironment(environment, aws, toolkitStackName, roleArn, bucketName);
         const message = result.noOp ? ' ✅  Environment %s bootstrapped (no changes).'
                       : ' ✅  Environment %s bootstrapped.';
         success(message, colors.blue(environment.name));

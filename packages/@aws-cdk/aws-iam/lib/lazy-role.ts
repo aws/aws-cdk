@@ -3,7 +3,7 @@ import { Grant } from './grant';
 import { Policy } from './policy';
 import { PolicyStatement, PrincipalPolicyFragment } from './policy-document';
 import { IPrincipal } from './principals';
-import { IRole, Role, RoleImportProps, RoleProps } from './role';
+import { IRole, Role, RoleProps } from './role';
 
 // tslint:disable-next-line:no-empty-interface
 export interface LazyRoleProps extends RoleProps {
@@ -29,10 +29,6 @@ export class LazyRole extends cdk.Construct implements IRole {
 
   constructor(scope: cdk.Construct, id: string, private readonly props: LazyRoleProps) {
     super(scope, id);
-  }
-
-  public export(): RoleImportProps {
-    return this.instantiate().export();
   }
 
   /**

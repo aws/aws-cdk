@@ -1,9 +1,7 @@
 {
   "name": "simple-resource-bundler",
-  "version": "0.28.0",
+  "version": "0.31.0",
   "description": "Command-line tool to embed resources into JS libraries",
-  "main": "bundler.js",
-  "types": "bundler.d.ts",
   "bin": {
     "simple-resource-bundler": "bin/simple-resource-bundler"
   },
@@ -13,7 +11,9 @@
     "watch": "cdk-watch",
     "pkglint": "pkglint -f",
     "test": "cdk-test",
-    "package": "cdk-package"
+    "package": "cdk-package",
+    "build+test+package": "npm run build+test && npm run package",
+    "build+test": "npm run build && npm test"
   },
   "author": {
     "name": "Amazon Web Services",
@@ -24,8 +24,8 @@
   "devDependencies": {
     "@types/fs-extra": "^5.0.5",
     "@types/yargs": "^13.0.0",
-    "cdk-build-tools": "^0.28.0",
-    "pkglint": "^0.28.0"
+    "cdk-build-tools": "^0.31.0",
+    "pkglint": "^0.31.0"
   },
   "dependencies": {
     "fs-extra": "^7.0.1",

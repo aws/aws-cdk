@@ -8,7 +8,7 @@ import {
   SecurityGroup,
   TcpAllPorts,
   TcpPort,
-  VpcNetwork,
+  Vpc,
 } from "../lib";
 
 export = {
@@ -16,7 +16,7 @@ export = {
     // GIVEN
     const stack = new Stack(undefined, 'TestStack', { env: { account: '12345678', region: 'dummy' }});
 
-    const vpc = new VpcNetwork(stack, 'VPC');
+    const vpc = new Vpc(stack, 'VPC');
     const sg1 = new SecurityGroup(stack, 'SG1', { vpc });
     const sg2 = new SecurityGroup(stack, 'SG2', { vpc });
 
@@ -33,11 +33,11 @@ export = {
   '(imported) SecurityGroup can be used as target of .allowTo()'(test: Test) {
     // GIVEN
     const stack = new Stack();
-    const vpc = new VpcNetwork(stack, 'VPC');
+    const vpc = new Vpc(stack, 'VPC');
     const sg1 = new SecurityGroup(stack, 'SomeSecurityGroup', { vpc, allowAllOutbound: false });
     const somethingConnectable = new SomethingConnectable(new Connections({ securityGroups: [sg1] }));
 
-    const securityGroup = SecurityGroup.import(stack, 'ImportedSG', { securityGroupId: 'sg-12345' });
+    const securityGroup = SecurityGroup.fromSecurityGroupId(stack, 'ImportedSG', 'sg-12345');
 
     // WHEN
     somethingConnectable.connections.allowTo(securityGroup, new TcpAllPorts(), 'Connect there');
@@ -68,7 +68,7 @@ export = {
   'security groups added to connections after rule still gets rule'(test: Test) {
     // GIVEN
     const stack = new Stack();
-    const vpc = new VpcNetwork(stack, 'VPC');
+    const vpc = new Vpc(stack, 'VPC');
     const sg1 = new SecurityGroup(stack, 'SecurityGroup1', { vpc, allowAllOutbound: false });
     const sg2 = new SecurityGroup(stack, 'SecurityGroup2', { vpc, allowAllOutbound: false });
     const connections = new Connections({ securityGroups: [sg1] });
@@ -110,7 +110,7 @@ export = {
   'when security groups are added to target they also get the rule'(test: Test) {
     // GIVEN
     const stack = new Stack();
-    const vpc = new VpcNetwork(stack, 'VPC');
+    const vpc = new Vpc(stack, 'VPC');
     const sg1 = new SecurityGroup(stack, 'SecurityGroup1', { vpc, allowAllOutbound: false });
     const sg2 = new SecurityGroup(stack, 'SecurityGroup2', { vpc, allowAllOutbound: false });
     const sg3 = new SecurityGroup(stack, 'SecurityGroup3', { vpc, allowAllOutbound: false });
@@ -143,7 +143,7 @@ export = {
   'multiple security groups allows internally between them'(test: Test) {
     // GIVEN
     const stack = new Stack();
-    const vpc = new VpcNetwork(stack, 'VPC');
+    const vpc = new Vpc(stack, 'VPC');
     const sg1 = new SecurityGroup(stack, 'SecurityGroup1', { vpc, allowAllOutbound: false });
     const sg2 = new SecurityGroup(stack, 'SecurityGroup2', { vpc, allowAllOutbound: false });
     const connections = new Connections({ securityGroups: [sg1] });
@@ -168,11 +168,11 @@ export = {
     const app = new App();
 
     const stack1 = new Stack(app, 'Stack1');
-    const vpc1 = new VpcNetwork(stack1, 'VPC');
+    const vpc1 = new Vpc(stack1, 'VPC');
     const sg1 = new SecurityGroup(stack1, 'SecurityGroup', { vpc: vpc1, allowAllOutbound: false });
 
     const stack2 = new Stack(app, 'Stack2');
-    const vpc2 = new VpcNetwork(stack2, 'VPC');
+    const vpc2 = new Vpc(stack2, 'VPC');
     const sg2 = new SecurityGroup(stack2, 'SecurityGroup', { vpc: vpc2, allowAllOutbound: false });
 
     // WHEN
@@ -199,11 +199,11 @@ export = {
     const app = new App();
 
     const stack1 = new Stack(app, 'Stack1');
-    const vpc1 = new VpcNetwork(stack1, 'VPC');
+    const vpc1 = new Vpc(stack1, 'VPC');
     const sg1 = new SecurityGroup(stack1, 'SecurityGroup', { vpc: vpc1, allowAllOutbound: false });
 
     const stack2 = new Stack(app, 'Stack2');
-    const vpc2 = new VpcNetwork(stack2, 'VPC');
+    const vpc2 = new Vpc(stack2, 'VPC');
     const sg2 = new SecurityGroup(stack2, 'SecurityGroup', { vpc: vpc2, allowAllOutbound: false });
 
     // WHEN
@@ -230,12 +230,12 @@ export = {
     const app = new App();
 
     const stack1 = new Stack(app, 'Stack1');
-    const vpc1 = new VpcNetwork(stack1, 'VPC');
+    const vpc1 = new Vpc(stack1, 'VPC');
     const sg1a = new SecurityGroup(stack1, 'SecurityGroupA', { vpc: vpc1, allowAllOutbound: false });
     const sg1b = new SecurityGroup(stack1, 'SecurityGroupB', { vpc: vpc1, allowAllOutbound: false });
 
     const stack2 = new Stack(app, 'Stack2');
-    const vpc2 = new VpcNetwork(stack2, 'VPC');
+    const vpc2 = new Vpc(stack2, 'VPC');
     const sg2 = new SecurityGroup(stack2, 'SecurityGroup', { vpc: vpc2, allowAllOutbound: false });
 
     // WHEN

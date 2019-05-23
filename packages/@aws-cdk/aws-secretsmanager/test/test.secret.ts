@@ -72,7 +72,7 @@ export = {
   'grantRead'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
-    const key = new kms.EncryptionKey(stack, 'KMS');
+    const key = new kms.Key(stack, 'KMS');
     const secret = new secretsmanager.Secret(stack, 'Secret', { encryptionKey: key });
     const role = new iam.Role(stack, 'Role', { assumedBy: new iam.AccountRootPrincipal() });
 
@@ -166,7 +166,7 @@ export = {
   'grantRead with version label constraint'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
-    const key = new kms.EncryptionKey(stack, 'KMS');
+    const key = new kms.Key(stack, 'KMS');
     const secret = new secretsmanager.Secret(stack, 'Secret', { encryptionKey: key });
     const role = new iam.Role(stack, 'Role', { assumedBy: new iam.AccountRootPrincipal() });
 
@@ -265,7 +265,7 @@ export = {
   'secretValue'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
-    const key = new kms.EncryptionKey(stack, 'KMS');
+    const key = new kms.Key(stack, 'KMS');
     const secret = new secretsmanager.Secret(stack, 'Secret', { encryptionKey: key });
 
     // WHEN
@@ -292,11 +292,11 @@ export = {
   'import'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
-    const encryptionKey = new kms.EncryptionKey(stack, 'KMS');
+    const encryptionKey = new kms.Key(stack, 'KMS');
     const secretArn = 'arn::of::a::secret';
 
     // WHEN
-    const secret = secretsmanager.Secret.import(stack, 'Secret', {
+    const secret = secretsmanager.Secret.fromSecretAttributes(stack, 'Secret', {
       secretArn, encryptionKey
     });
 
@@ -399,7 +399,7 @@ export = {
     const stack = new Stack();
 
     // WHEN
-    const imported = secretsmanager.Secret.import(stack, 'Imported', { secretArn: 'my-secret-arn' }).secretJsonValue('password');
+    const imported = secretsmanager.Secret.fromSecretAttributes(stack, 'Imported', { secretArn: 'my-secret-arn' }).secretJsonValue('password');
     const value = SecretValue.secretsManager('my-secret-arn', { jsonField: 'password' });
 
     // THEN

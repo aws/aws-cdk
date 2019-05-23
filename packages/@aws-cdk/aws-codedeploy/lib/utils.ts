@@ -1,36 +1,21 @@
 import cloudwatch = require('@aws-cdk/aws-cloudwatch');
-import cdk = require('@aws-cdk/cdk');
+import { Aws } from '@aws-cdk/cdk';
 import { CfnDeploymentGroup } from './codedeploy.generated';
 import { AutoRollbackConfig } from './rollback-config';
 
-export function applicationNameToArn(applicationName: string, scope: cdk.IConstruct): string {
-  return scope.node.stack.formatArn({
-    service: 'codedeploy',
-    resource: 'application',
-    resourceName: applicationName,
-    sep: ':',
-  });
+export function arnForApplication(applicationName: string): string {
+  return `arn:${Aws.partition}:codedeploy:${Aws.region}:${Aws.accountId}:application:${applicationName}`;
 }
 
-export function deploymentGroupNameToArn(applicationName: string, deploymentGroupName: string, scope: cdk.IConstruct): string {
-  return scope.node.stack.formatArn({
-    service: 'codedeploy',
-    resource: 'deploymentgroup',
-    resourceName: `${applicationName}/${deploymentGroupName}`,
-    sep: ':',
-  });
+export function arnForDeploymentGroup(applicationName: string, deploymentGroupName: string): string {
+  return `arn:${Aws.partition}:codedeploy:${Aws.region}:${Aws.accountId}:deploymentgroup:${applicationName}/${deploymentGroupName}`;
 }
 
-export function arnForDeploymentConfigName(name: string, scope: cdk.IConstruct): string {
-  return scope.node.stack.formatArn({
-    service: 'codedeploy',
-    resource: 'deploymentconfig',
-    resourceName: name,
-    sep: ':',
-  });
+export function arnForDeploymentConfig(name: string): string {
+  return `arn:${Aws.partition}:codedeploy:${Aws.region}:${Aws.accountId}:deploymentconfig:${name}`;
 }
 
-export function renderAlarmConfiguration(alarms: cloudwatch.Alarm[], ignorePollAlarmFailure?: boolean):
+export function renderAlarmConfiguration(alarms: cloudwatch.IAlarm[], ignorePollAlarmFailure?: boolean):
       CfnDeploymentGroup.AlarmConfigurationProperty | undefined {
   return alarms.length === 0
     ? undefined
@@ -47,7 +32,7 @@ enum AutoRollbackEvent {
   DeploymentStopOnRequest = 'DEPLOYMENT_STOP_ON_REQUEST'
 }
 
-export function renderAutoRollbackConfiguration(alarms: cloudwatch.Alarm[], autoRollbackConfig: AutoRollbackConfig = {}):
+export function renderAutoRollbackConfiguration(alarms: cloudwatch.IAlarm[], autoRollbackConfig: AutoRollbackConfig = {}):
     CfnDeploymentGroup.AutoRollbackConfigurationProperty | undefined {
   const events = new Array<string>();
 

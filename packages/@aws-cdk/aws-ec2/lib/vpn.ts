@@ -2,7 +2,7 @@ import cloudwatch = require('@aws-cdk/aws-cloudwatch');
 import cdk = require('@aws-cdk/cdk');
 import net = require('net');
 import { CfnCustomerGateway, CfnVPNConnection, CfnVPNConnectionRoute } from './ec2.generated';
-import { IVpcNetwork } from './vpc-ref';
+import { IVpc } from './vpc';
 
 export interface IVpnConnection extends cdk.IConstruct {
   /**
@@ -79,7 +79,7 @@ export interface VpnConnectionProps extends VpnConnectionOptions {
   /**
    * The VPC to connect to.
    */
-  readonly vpc: IVpcNetwork;
+  readonly vpc: IVpc;
 }
 
 /**
@@ -102,7 +102,7 @@ export class VpnConnection extends cdk.Construct implements IVpnConnection {
   /**
    * Return the given named metric for all VPN connections in the account/region.
    */
-  public static metricAll(metricName: string, props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
+  public static metricAll(metricName: string, props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return new cloudwatch.Metric({
       namespace: 'AWS/VPN',
       metricName,
@@ -115,7 +115,7 @@ export class VpnConnection extends cdk.Construct implements IVpnConnection {
    *
    * @default average over 5 minutes
    */
-  public static metricAllTunnelState(props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
+  public static metricAllTunnelState(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return this.metricAll('TunnelSate', { statistic: 'avg', ...props });
   }
 
@@ -124,7 +124,7 @@ export class VpnConnection extends cdk.Construct implements IVpnConnection {
    *
    * @default sum over 5 minutes
    */
-  public static metricAllTunnelDataIn(props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
+  public static metricAllTunnelDataIn(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return this.metricAll('TunnelDataIn', { statistic: 'sum', ...props });
   }
 
@@ -133,7 +133,7 @@ export class VpnConnection extends cdk.Construct implements IVpnConnection {
    *
    * @default sum over 5 minutes
    */
-  public static metricAllTunnelDataOut(props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
+  public static metricAllTunnelDataOut(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return this.metricAll('TunnelDataOut', { statistic: 'sum', ...props });
   }
 

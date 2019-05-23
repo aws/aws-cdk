@@ -15,14 +15,15 @@ export interface ITopic extends
   s3n.IBucketNotificationDestination,
   autoscaling_api.ILifecycleHookTarget {
 
+  /**
+   * @attribute
+   */
   readonly topicArn: string;
 
-  readonly topicName: string;
-
   /**
-   * Export this Topic
+   * @attribute
    */
-  export(): TopicImportProps;
+  readonly topicName: string;
 
   /**
    * Subscribe some endpoint to this topic
@@ -102,11 +103,6 @@ export abstract class TopicBase extends Resource implements ITopic {
 
   /** Buckets permitted to send notifications to this topic */
   private readonly notifyingBuckets = new Set<string>();
-
-  /**
-   * Export this Topic
-   */
-  public abstract export(): TopicImportProps;
 
   /**
    * Subscribe some endpoint to this topic
@@ -301,14 +297,6 @@ export abstract class TopicBase extends Resource implements ITopic {
       dependencies: [ this.policy! ] // make sure the topic policy resource is created before the notification config
     };
   }
-}
-
-/**
- * Reference to an external topic.
- */
-export interface TopicImportProps {
-  readonly topicArn: string;
-  readonly topicName: string;
 }
 
 /**

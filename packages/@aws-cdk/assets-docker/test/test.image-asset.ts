@@ -31,6 +31,24 @@ export = {
     test.done();
   },
 
+  'with build args'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const asset = new DockerImageAsset(stack, 'Image', {
+      directory: path.join(__dirname, 'demo-image'),
+      buildArgs: {
+        a: 'b'
+      }
+    });
+
+    // THEN
+    const assetMetadata = asset.node.metadata.find(({ type }) => type === 'aws:cdk:asset');
+    test.deepEqual(assetMetadata && assetMetadata.data.buildArgs, { a: 'b' });
+    test.done();
+  },
+
   'asset.repository.grantPull can be used to grant a principal permissions to use the image'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();

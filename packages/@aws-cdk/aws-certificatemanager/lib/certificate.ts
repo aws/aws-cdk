@@ -1,25 +1,12 @@
-import { CfnOutput, Construct, IResource, Resource } from '@aws-cdk/cdk';
+import { Construct, IResource, Resource } from '@aws-cdk/cdk';
 import { CfnCertificate } from './certificatemanager.generated';
 import { apexDomain } from './util';
 
 export interface ICertificate extends IResource {
   /**
    * The certificate's ARN
-   */
-  readonly certificateArn: string;
-
-  /**
-   * Export this certificate from the stack
-   */
-  export(): CertificateImportProps;
-}
-
-/**
- * Reference to an existing Certificate
- */
-export interface CertificateImportProps {
-  /**
-   * The certificate's ARN
+   *
+   * @attribute
    */
   readonly certificateArn: string;
 }
@@ -70,11 +57,16 @@ export interface CertificateProps {
  * For every domain that you register.
  */
 export class Certificate extends Resource implements ICertificate {
+
   /**
    * Import a certificate
    */
-  public static import(scope: Construct, id: string, props: CertificateImportProps): ICertificate {
-    return new ImportedCertificate(scope, id, props);
+  public static fromCertificateArn(scope: Construct, id: string, certificateArn: string): ICertificate {
+    class Import extends Resource implements ICertificate {
+      public certificateArn = certificateArn;
+    }
+
+    return new Import(scope, id);
   }
 
   /**
@@ -107,31 +99,5 @@ export class Certificate extends Resource implements ICertificate {
         validationDomain: overrideDomain || apexDomain(domainName)
       };
     }
-  }
-
-  /**
-   * Export this certificate from the stack
-   */
-  public export(): CertificateImportProps {
-    return {
-      certificateArn: new CfnOutput(this, 'Arn', { value: this.certificateArn }).makeImportValue().toString()
-    };
-  }
-}
-
-/**
- * A Certificate that has been imported from another stack
- */
-class ImportedCertificate extends Construct implements ICertificate {
-  public readonly certificateArn: string;
-
-  constructor(scope: Construct, id: string, private readonly props: CertificateImportProps) {
-    super(scope, id);
-
-    this.certificateArn = props.certificateArn;
-  }
-
-  public export() {
-    return this.props;
   }
 }

@@ -1,9 +1,11 @@
 import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
+import iam = require('@aws-cdk/aws-iam');
+import { ServicePrincipal } from '@aws-cdk/aws-iam';
 import cdk = require('@aws-cdk/cdk');
 import { Stack } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
-import { IEventRuleTarget } from '../lib';
-import { EventRule } from '../lib/rule';
+import { EventField, IRule, IRuleTarget, RuleTargetInput } from '../lib';
+import { Rule } from '../lib/rule';
 
 // tslint:disable:object-literal-key-quotes
 
@@ -11,7 +13,7 @@ export = {
   'default rule'(test: Test) {
     const stack = new cdk.Stack();
 
-    new EventRule(stack, 'MyRule', {
+    new Rule(stack, 'MyRule', {
       scheduleExpression: 'rate(10 minutes)'
     });
 
@@ -34,7 +36,7 @@ export = {
     const stack = new cdk.Stack();
 
     // WHEN
-    new EventRule(stack, 'MyRule', {
+    new Rule(stack, 'MyRule', {
     ruleName: 'PhysicalName',
     scheduleExpression: 'rate(10 minutes)'
     });
@@ -50,7 +52,7 @@ export = {
   'eventPattern is rendered properly'(test: Test) {
     const stack = new cdk.Stack();
 
-    new EventRule(stack, 'MyRule', {
+    new Rule(stack, 'MyRule', {
       eventPattern: {
         account: [ 'account1', 'account2' ],
         detail: {
@@ -94,7 +96,7 @@ export = {
   'fails synthesis if neither eventPattern nor scheudleExpression are specified'(test: Test) {
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'MyStack');
-    new EventRule(stack, 'Rule');
+    new Rule(stack, 'Rule');
     test.throws(() => app.synthesizeStack(stack.name), /Either 'eventPattern' or 'scheduleExpression' must be defined/);
     test.done();
   },
@@ -102,7 +104,7 @@ export = {
   'addEventPattern can be used to add filters'(test: Test) {
     const stack = new cdk.Stack();
 
-    const rule = new EventRule(stack, 'MyRule');
+    const rule = new Rule(stack, 'MyRule');
     rule.addEventPattern({
       account: [ '12345' ],
       detail: {
@@ -154,33 +156,28 @@ export = {
 
   'targets can be added via props or addTarget with input transformer'(test: Test) {
     const stack = new cdk.Stack();
-    const t1: IEventRuleTarget = {
-      asEventRuleTarget: () => ({
+    const t1: IRuleTarget = {
+      bind: () => ({
         id: 'T1',
         arn: 'ARN1',
         kinesisParameters: { partitionKeyPath: 'partitionKeyPath' }
       })
     };
 
-    const t2: IEventRuleTarget = {
-      asEventRuleTarget: () => ({
+    const t2: IRuleTarget = {
+      bind: () => ({
         id: 'T2',
         arn: 'ARN2',
-        roleArn: 'IAM-ROLE-ARN'
+        input: RuleTargetInput.fromText(`This is ${EventField.fromPath('$.detail.bla', 'bla')}`),
       })
     };
 
-    const rule = new EventRule(stack, 'EventRule', {
+    const rule = new Rule(stack, 'EventRule', {
       targets: [ t1 ],
       scheduleExpression: 'rate(5 minutes)'
     });
 
-    rule.addTarget(t2, {
-      textTemplate: 'This is <bla>',
-      pathsMap: {
-        bla: '$.detail.bla'
-      }
-    });
+    rule.addTarget(t2);
 
     expect(stack).toMatch({
       "Resources": {
@@ -206,7 +203,6 @@ export = {
             },
             "InputTemplate": "\"This is <bla>\""
             },
-            "RoleArn": "IAM-ROLE-ARN"
           }
           ]
         }
@@ -218,41 +214,39 @@ export = {
 
   'input template can contain tokens'(test: Test) {
     const stack = new cdk.Stack();
-    const t1: IEventRuleTarget = {
-      asEventRuleTarget: () => ({
-        id: 'T1', arn: 'ARN1', kinesisParameters: { partitionKeyPath: 'partitionKeyPath' }
-      })
-    };
 
-    const t2: IEventRuleTarget = { asEventRuleTarget: () => ({ id: 'T2', arn: 'ARN2', roleArn: 'IAM-ROLE-ARN' }) };
-    const t3: IEventRuleTarget = { asEventRuleTarget: () => ({ id: 'T3', arn: 'ARN3' }) };
-    const t4: IEventRuleTarget = { asEventRuleTarget: () => ({ id: 'T4', arn: 'ARN4' }) };
-
-    const rule = new EventRule(stack, 'EventRule', { scheduleExpression: 'rate(1 minute)' });
+    const rule = new Rule(stack, 'EventRule', { scheduleExpression: 'rate(1 minute)' });
 
     // a plain string should just be stringified (i.e. double quotes added and escaped)
-    rule.addTarget(t2, {
-      textTemplate: 'Hello, "world"'
+    rule.addTarget({
+      bind: () => ({
+        id: 'T2', arn: 'ARN2', input: RuleTargetInput.fromText('Hello, "world"')
+      })
     });
 
     // tokens are used here (FnConcat), but this is a text template so we
     // expect it to be wrapped in double quotes automatically for us.
-    rule.addTarget(t1, {
-      textTemplate: cdk.Fn.join('', [ 'a', 'b' ]).toString()
+    rule.addTarget({
+      bind: () => ({
+        id: 'T1', arn: 'ARN1', kinesisParameters: { partitionKeyPath: 'partitionKeyPath' },
+        input: RuleTargetInput.fromText(cdk.Fn.join('', [ 'a', 'b' ]).toString()),
+      })
     });
 
     // jsonTemplate can be used to format JSON documents with replacements
-    rule.addTarget(t3, {
-      jsonTemplate: '{ "foo": <bar> }',
-      pathsMap: {
-        bar: '$.detail.bar'
-      }
+    rule.addTarget({
+      bind: () => ({
+        id: 'T3', arn: 'ARN3',
+        input: RuleTargetInput.fromObject({ foo: EventField.fromPath('$.detail.bar') }),
+      })
     });
 
-    // tokens can also used for JSON templates, but that means escaping is
-    // the responsibility of the user.
-    rule.addTarget(t4, {
-      jsonTemplate: cdk.Fn.join(' ', ['"', 'hello', '\"world\"', '"']),
+    // tokens can also used for JSON templates.
+    rule.addTarget({
+      bind: () => ({
+        id: 'T4', arn: 'ARN4',
+        input: RuleTargetInput.fromText(cdk.Fn.join(' ', ['hello', '"world"']).toString()),
+      })
     });
 
     expect(stack).toMatch({
@@ -264,39 +258,32 @@ export = {
           "ScheduleExpression": "rate(1 minute)",
           "Targets": [
             {
-            "Arn": "ARN2",
-            "Id": "T2",
-            "InputTransformer": {
-              "InputTemplate": "\"Hello, \\\"world\\\"\""
-            },
-            "RoleArn": "IAM-ROLE-ARN"
+              "Arn": "ARN2",
+              "Id": "T2",
+              "Input": '"Hello, \\"world\\""',
             },
             {
-            "Arn": "ARN1",
-            "Id": "T1",
-            "InputTransformer": {
-              "InputTemplate": "\"ab\""
-            },
-            "KinesisParameters": {
-              "PartitionKeyPath": "partitionKeyPath"
-            }
+              "Arn": "ARN1",
+              "Id": "T1",
+              "Input": "\"ab\"",
+              "KinesisParameters": {
+                "PartitionKeyPath": "partitionKeyPath"
+              }
             },
             {
-            "Arn": "ARN3",
-            "Id": "T3",
-            "InputTransformer": {
-              "InputPathsMap": {
-              "bar": "$.detail.bar"
-              },
-              "InputTemplate": "{ \"foo\": <bar> }"
-            }
+              "Arn": "ARN3",
+              "Id": "T3",
+              "InputTransformer": {
+                "InputPathsMap": {
+                  "f1": "$.detail.bar"
+                },
+                "InputTemplate": "{\"foo\":<f1>}"
+              }
             },
             {
-            "Arn": "ARN4",
-            "Id": "T4",
-            "InputTransformer": {
-              "InputTemplate": "\" hello \"world\" \""
-            }
+              "Arn": "ARN4",
+              "Id": "T4",
+              "Input": '"hello \\"world\\""'
             }
           ]
         }
@@ -307,16 +294,49 @@ export = {
     test.done();
   },
 
+  'target can declare role which will be used'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    const rule = new Rule(stack, 'EventRule', { scheduleExpression: 'rate(1 minute)' });
+
+    const role = new iam.Role(stack, 'SomeRole', {
+      assumedBy: new ServicePrincipal('nobody')
+    });
+
+    // a plain string should just be stringified (i.e. double quotes added and escaped)
+    rule.addTarget({
+      bind: () => ({
+        id: 'T2',
+        arn: 'ARN2',
+        role,
+      })
+    });
+
+    // THEN
+    expect(stack).to(haveResourceLike('AWS::Events::Rule', {
+      "Targets": [
+        {
+          "Arn": "ARN2",
+          "Id": "T2",
+          "RoleArn": {"Fn::GetAtt": ["SomeRole6DDC54DD", "Arn"]}
+        }
+      ]
+    }));
+
+    test.done();
+  },
+
   'asEventRuleTarget can use the ruleArn and a uniqueId of the rule'(test: Test) {
     const stack = new cdk.Stack();
 
     let receivedRuleArn = 'FAIL';
     let receivedRuleId = 'FAIL';
 
-    const t1: IEventRuleTarget = {
-      asEventRuleTarget: (ruleArn: string, ruleId: string) => {
-        receivedRuleArn = ruleArn;
-        receivedRuleId = ruleId;
+    const t1: IRuleTarget = {
+      bind: (eventRule: IRule) => {
+        receivedRuleArn = eventRule.ruleArn;
+        receivedRuleId = eventRule.node.uniqueId;
 
         return {
           id: 'T1',
@@ -326,7 +346,7 @@ export = {
       }
     };
 
-    const rule = new EventRule(stack, 'EventRule');
+    const rule = new Rule(stack, 'EventRule');
     rule.addTarget(t1);
 
     test.deepEqual(stack.node.resolve(receivedRuleArn), stack.node.resolve(rule.ruleArn));
@@ -334,132 +354,16 @@ export = {
     test.done();
   },
 
-  'import/export rule'(test: Test) {
+  'fromEventRuleArn'(test: Test) {
     // GIVEN
     const stack = new Stack();
-    const myRule = new EventRule(stack, 'MyRule');
 
     // WHEN
-    const exportedRule = myRule.export();
-
-    const importedRule = EventRule.import(stack, 'ImportedRule', {
-      eventRuleArn: 'arn:of:rule'
-    });
+    const importedRule = Rule.fromEventRuleArn(stack, 'ImportedRule', 'arn:of:rule');
 
     // THEN
-    test.deepEqual(stack.node.resolve(exportedRule), { eventRuleArn: { 'Fn::ImportValue': 'Stack:MyRuleRuleArnDB13ADB1' } });
     test.deepEqual(importedRule.ruleArn, 'arn:of:rule');
-
     test.done();
-  },
-
-  'json template': {
-    'can just be a JSON object'(test: Test) {
-      // GIVEN
-      const stack = new Stack();
-      const rule = new EventRule(stack, 'Rule', {
-        scheduleExpression: 'rate(1 minute)'
-      });
-
-      // WHEN
-      rule.addTarget(new SomeTarget(), {
-        jsonTemplate: { SomeObject: 'withAValue' },
-      });
-
-      // THEN
-      expect(stack).to(haveResourceLike('AWS::Events::Rule', {
-        Targets: [
-          {
-            InputTransformer: {
-              InputTemplate: "{\"SomeObject\":\"withAValue\"}"
-            },
-          }
-        ]
-      }));
-      test.done();
-    },
-  },
-
-  'text templates': {
-    'strings with newlines are serialized to a newline-delimited list of JSON strings'(test: Test) {
-      // GIVEN
-      const stack = new Stack();
-      const rule = new EventRule(stack, 'Rule', {
-        scheduleExpression: 'rate(1 minute)'
-      });
-
-      // WHEN
-      rule.addTarget(new SomeTarget(), {
-        textTemplate: 'I have\nmultiple lines',
-      });
-
-      // THEN
-      expect(stack).to(haveResourceLike('AWS::Events::Rule', {
-        Targets: [
-          {
-            InputTransformer: {
-              InputTemplate: "\"I have\"\n\"multiple lines\""
-            },
-          }
-        ]
-      }));
-
-      test.done();
-    },
-
-    'escaped newlines are not interpreted as newlines'(test: Test) {
-      // GIVEN
-      const stack = new Stack();
-      const rule = new EventRule(stack, 'Rule', {
-        scheduleExpression: 'rate(1 minute)'
-      });
-
-      // WHEN
-      rule.addTarget(new SomeTarget(), {
-        textTemplate: 'this is not\\na real newline',
-      });
-
-      // THEN
-      expect(stack).to(haveResourceLike('AWS::Events::Rule', {
-        Targets: [
-          {
-            InputTransformer: {
-              InputTemplate: "\"this is not\\\\na real newline\""
-            },
-          }
-        ]
-      }));
-
-      test.done();
-    },
-
-    'can use Tokens in text templates'(test: Test) {
-      // GIVEN
-      const stack = new Stack();
-      const rule = new EventRule(stack, 'Rule', {
-        scheduleExpression: 'rate(1 minute)'
-      });
-
-      const world = new cdk.Token(() => 'world');
-
-      // WHEN
-      rule.addTarget(new SomeTarget(), {
-        textTemplate: `hello ${world}`,
-      });
-
-      // THEN
-      expect(stack).to(haveResourceLike('AWS::Events::Rule', {
-        Targets: [
-          {
-            InputTransformer: {
-              InputTemplate: "\"hello world\""
-            },
-          }
-        ]
-      }));
-
-      test.done();
-    }
   },
 
   'rule can be disabled'(test: Test) {
@@ -467,7 +371,7 @@ export = {
     const stack = new cdk.Stack();
 
     // WHEN
-    new EventRule(stack, 'Rule', {
+    new Rule(stack, 'Rule', {
       scheduleExpression: 'foom',
       enabled: false
     });
@@ -483,7 +387,7 @@ export = {
   'fails if multiple targets with the same id are added'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
-    const rule = new EventRule(stack, 'Rule', {
+    const rule = new Rule(stack, 'Rule', {
       scheduleExpression: 'foom',
       enabled: false
     });
@@ -495,8 +399,8 @@ export = {
   }
 };
 
-class SomeTarget implements IEventRuleTarget {
-  public asEventRuleTarget() {
+class SomeTarget implements IRuleTarget {
+  public bind() {
     return {
       id: 'T1', arn: 'ARN1', kinesisParameters: { partitionKeyPath: 'partitionKeyPath' }
     };

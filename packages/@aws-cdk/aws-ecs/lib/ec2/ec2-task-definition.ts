@@ -1,5 +1,6 @@
-import cdk = require('@aws-cdk/cdk');
-import { CommonTaskDefinitionProps, Compatibility, NetworkMode, PlacementConstraint, TaskDefinition } from '../base/task-definition';
+import { Construct, Resource } from '@aws-cdk/cdk';
+import { CommonTaskDefinitionProps, Compatibility, ITaskDefinition, NetworkMode, TaskDefinition } from '../base/task-definition';
+import { PlacementConstraint } from '../placement';
 
 /**
  * Properties to define an ECS task definition
@@ -24,11 +25,28 @@ export interface Ec2TaskDefinitionProps extends CommonTaskDefinitionProps {
   readonly placementConstraints?: PlacementConstraint[];
 }
 
+export interface IEc2TaskDefinition extends ITaskDefinition {
+
+}
+
 /**
  * Define Tasks to run on an ECS cluster
+ *
+ * @resource AWS::ECS::TaskDefinition
  */
-export class Ec2TaskDefinition extends TaskDefinition {
-  constructor(scope: cdk.Construct, id: string, props: Ec2TaskDefinitionProps = {}) {
+export class Ec2TaskDefinition extends TaskDefinition implements IEc2TaskDefinition {
+
+  public static fromEc2TaskDefinitionArn(scope: Construct, id: string, ec2TaskDefinitionArn: string): IEc2TaskDefinition {
+    class Import extends Resource implements IEc2TaskDefinition {
+      public readonly taskDefinitionArn = ec2TaskDefinitionArn;
+      public readonly compatibility = Compatibility.Ec2;
+      public readonly isEc2Compatible = true;
+      public readonly isFargateCompatible = false;
+    }
+    return new Import(scope, id);
+  }
+
+  constructor(scope: Construct, id: string, props: Ec2TaskDefinitionProps = {}) {
     super(scope, id, {
       ...props,
       compatibility: Compatibility.Ec2,

@@ -103,7 +103,7 @@ export interface RotationSingleUserProps extends RotationSingleUserOptions {
   /**
    * The VPC where the Lambda rotation function will run.
    */
-  readonly vpc: ec2.IVpcNetwork;
+  readonly vpc: ec2.IVpc;
 
   /**
    * The type of subnets in the VPC where the Lambda rotation function will run.
@@ -154,14 +154,12 @@ export class RotationSingleUser extends cdk.Construct {
     });
 
     // Dummy import to reference this function in the rotation schedule
-    const rotationLambda = lambda.Function.import(this, 'RotationLambda', {
-      functionArn: this.node.stack.formatArn({
-        service: 'lambda',
-        resource: 'function',
-        sep: ':',
-        resourceName: rotationFunctionName
-      }),
-    });
+    const rotationLambda = lambda.Function.fromFunctionArn(this, 'RotationLambda', this.node.stack.formatArn({
+      service: 'lambda',
+      resource: 'function',
+      sep: ':',
+      resourceName: rotationFunctionName
+    }));
 
     // Cannot use rotationLambda.addPermission because it currently does not
     // return a cdk.Construct and we need to add a dependency.
