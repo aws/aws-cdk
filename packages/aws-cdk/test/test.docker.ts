@@ -40,6 +40,7 @@ export = {
       packaging: 'container-image',
       path: '/foo',
       repositoryName: 'some-name',
+      sourceHash: '0123456789abcdef',
     };
 
     try {
@@ -76,6 +77,7 @@ export = {
       imageNameParameter: 'MyParameter',
       packaging: 'container-image',
       path: '/foo',
+      sourceHash: '1234567890abcdef',
       repositoryName: 'some-name',
       buildArgs: {
         a: 'b',
@@ -90,7 +92,7 @@ export = {
     }
 
     // THEN
-    const command = ['docker', 'build', '--build-arg a=b', '--build-arg c=d', '--quiet', '/foo'];
+    const command = ['docker', 'build', '--build-arg a=b', '--build-arg c=d', '--tag', `uri:latest`, '/foo'];
     test.ok(shellStub.calledWith(command));
 
     prepareEcrRepositoryStub.restore();
