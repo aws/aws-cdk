@@ -25,6 +25,6 @@ export function zipDirectory(directory: string, outputFile: string): Promise<voi
   });
 }
 
-export function md5hash(data: any) {
+export function contentHash(data: string | Buffer | DataView) {
   return crypto.createHash('sha256').update(data).digest('hex');
 }

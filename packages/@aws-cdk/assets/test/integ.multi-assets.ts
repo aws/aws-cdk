@@ -1,3 +1,4 @@
+import iam = require('@aws-cdk/aws-iam');
 import cdk = require('@aws-cdk/cdk');
 import path = require('path');
 import assets = require('../lib');
@@ -5,6 +6,9 @@ import assets = require('../lib');
 class TestStack extends cdk.Stack {
   constructor(scope: cdk.App, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
+
+    // The template must contain at least one resource, so there is this...
+    new iam.User(this, 'DummyResource');
 
     // Check that the same asset added multiple times is
     // uploaded and copied.

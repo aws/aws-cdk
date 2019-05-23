@@ -80,7 +80,7 @@ export class CdkToolkit {
       options.exclusively ? ExtendedStackSelection.None : ExtendedStackSelection.Upstream);
 
     for (const stack of stacks) {
-      if (stacks.length !== 1) { highlight(stack.name); }
+      if (stacks.length !== 1) { highlight(stack.name); }
       if (!stack.environment) {
         // tslint:disable-next-line:max-line-length
         throw new Error(`Stack ${stack.name} does not define an environment, and AWS credentials could not be obtained from standard locations or no region was configured.`);

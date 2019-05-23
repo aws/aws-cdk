@@ -59,6 +59,10 @@ export class AdoptedRepository extends ecr.RepositoryBase {
         PolicyDocument: this.policyDocument
       }
     });
+    if (fn.role) {
+      // Need to explicitly depend on the role's policies, so they are applied before we try to use them
+      adopter.node.addDependency(fn.role);
+    }
 
     // we use the Fn::GetAtt with the RepositoryName returned by the custom
     // resource in order to implicitly create a dependency between consumers

@@ -30,8 +30,10 @@ export = {
       path: SAMPLE_ASSET_DIR,
       id: 'MyAsset',
       packaging: 'zip',
+      sourceHash: '6b84b87243a4a01c592d78e1fd3855c4bfef39328cd0a450cc97e81717fea2a2',
       s3BucketParameter: 'MyAssetS3Bucket68C9B344',
       s3KeyParameter: 'MyAssetS3VersionKey68E1A45D',
+      artifactHashParameter: 'MyAssetArtifactHashF518BDDE',
     });
 
     test.equal(template.Parameters.MyAssetS3Bucket68C9B344.Type, 'String');
@@ -55,8 +57,10 @@ export = {
       path: dirPath,
       id: "mystackMyAssetD6B1B593",
       packaging: "zip",
+      sourceHash: '6b84b87243a4a01c592d78e1fd3855c4bfef39328cd0a450cc97e81717fea2a2',
       s3BucketParameter: "MyAssetS3Bucket68C9B344",
-      s3KeyParameter: "MyAssetS3VersionKey68E1A45D"
+      s3KeyParameter: "MyAssetS3VersionKey68E1A45D",
+      artifactHashParameter: 'MyAssetArtifactHashF518BDDE',
     });
 
     test.done();
@@ -76,8 +80,10 @@ export = {
       path: filePath,
       packaging: 'file',
       id: 'MyAsset',
+      sourceHash: '78add9eaf468dfa2191da44a7da92a21baba4c686cf6053d772556768ef21197',
       s3BucketParameter: 'MyAssetS3Bucket68C9B344',
       s3KeyParameter: 'MyAssetS3VersionKey68E1A45D',
+      artifactHashParameter: 'MyAssetArtifactHashF518BDDE',
     });
 
     // verify that now the template contains parameters for this asset
@@ -137,8 +143,8 @@ export = {
     const stack = new cdk.Stack();
 
     // WHEN
-    new ZipDirectoryAsset(stack, 'MyDirectory1', { path: '.' });
-    new ZipDirectoryAsset(stack, 'MyDirectory2', { path: '.' });
+    new ZipDirectoryAsset(stack, 'MyDirectory1', { path: path.join(__dirname, 'sample-asset-directory') });
+    new ZipDirectoryAsset(stack, 'MyDirectory2', { path: path.join(__dirname, 'sample-asset-directory') });
 
     // THEN: no error
 
@@ -219,7 +225,7 @@ export = {
 
   'staging': {
 
-    'copy file assets under .assets/fingerprint.ext'(test: Test) {
+    'copy file assets under .assets/${fingerprint}.ext'(test: Test) {
       const tempdir = mkdtempSync();
       process.chdir(tempdir); // change current directory to somewhere in /tmp
 
@@ -241,7 +247,7 @@ export = {
       // THEN
       app.run();
       test.ok(fs.existsSync(path.join(tempdir, '.assets')));
-      test.ok(fs.existsSync(path.join(tempdir, '.assets', 'fdb4701ff6c99e676018ee2c24a3119b.zip')));
+      test.ok(fs.existsSync(path.join(tempdir, '.assets', 'a7a79cdf84b802ea8b198059ff899cffc095a1b9606e919f98e05bf80779756b.zip')));
       fs.readdirSync(path.join(tempdir, '.assets'));
       test.done();
     },
@@ -264,8 +270,9 @@ export = {
       // THEN
       app.run();
       test.ok(fs.existsSync(path.join(tempdir, '.assets')));
-      test.ok(fs.existsSync(path.join(tempdir, '.assets', 'b550524e103eb4cf257c594fba5b9fe8', 'sample-asset-file.txt')));
-      test.ok(fs.existsSync(path.join(tempdir, '.assets', 'b550524e103eb4cf257c594fba5b9fe8', 'sample-jar-asset.jar')));
+      const hash = '6b84b87243a4a01c592d78e1fd3855c4bfef39328cd0a450cc97e81717fea2a2';
+      test.ok(fs.existsSync(path.join(tempdir, '.assets', hash, 'sample-asset-file.txt')));
+      test.ok(fs.existsSync(path.join(tempdir, '.assets', hash, 'sample-jar-asset.jar')));
       fs.readdirSync(path.join(tempdir, '.assets'));
       test.done();
     },
@@ -295,7 +302,7 @@ export = {
       const template = SynthUtils.templateForStackName(session, stack.name);
 
       test.deepEqual(template.Resources.MyResource.Metadata, {
-        "aws:asset:path": `.my-awesome-staging-directory/b550524e103eb4cf257c594fba5b9fe8`,
+        "aws:asset:path": `.my-awesome-staging-directory/6b84b87243a4a01c592d78e1fd3855c4bfef39328cd0a450cc97e81717fea2a2`,
         "aws:asset:property": "PropName"
       });
       test.done();
@@ -323,7 +330,7 @@ export = {
       const template = SynthUtils.templateForStackName(session, stack.name);
 
       test.deepEqual(template.Resources.MyResource.Metadata, {
-        "aws:asset:path": `${staging}/b550524e103eb4cf257c594fba5b9fe8`,
+        "aws:asset:path": `${staging}/6b84b87243a4a01c592d78e1fd3855c4bfef39328cd0a450cc97e81717fea2a2`,
         "aws:asset:property": "PropName"
       });
       test.done();
@@ -351,7 +358,7 @@ export = {
       const artifact = session.getArtifact(stack.name);
 
       const md = Object.values(artifact.metadata || {})[0][0].data;
-      test.deepEqual(md.path, '.stageme/b550524e103eb4cf257c594fba5b9fe8');
+      test.deepEqual(md.path, '.stageme/6b84b87243a4a01c592d78e1fd3855c4bfef39328cd0a450cc97e81717fea2a2');
       test.done();
     }
 

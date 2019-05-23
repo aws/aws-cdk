@@ -7,6 +7,10 @@
     "MyLayerCodeS3VersionKeyA45254EC": {
       "Type": "String",
       "Description": "S3 key for asset version \"aws-cdk-layer-version-1/MyLayer/Code\""
+    },
+    "MyLayerCodeArtifactHashCCFB62E9": {
+      "Type": "String",
+      "Description": "Artifact hash for asset \"aws-cdk-layer-version-1/MyLayer/Code\""
     }
   },
   "Resources": {

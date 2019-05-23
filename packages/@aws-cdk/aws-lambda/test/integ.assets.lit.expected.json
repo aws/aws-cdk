@@ -104,6 +104,10 @@
     "MyLambdaCodeS3VersionKey47762537": {
       "Type": "String",
       "Description": "S3 key for asset version \"lambda-test-assets/MyLambda/Code\""
+    },
+    "MyLambdaCodeArtifactHashF5E94E30": {
+      "Type": "String",
+      "Description": "Artifact hash for asset \"lambda-test-assets/MyLambda/Code\""
     }
   }
 }

@@ -7,6 +7,7 @@ import { isConstruct, isDataType, isEnumLikeClass, isSerializableInterface, Sche
 export interface DeclarativeStackProps extends cdk.StackProps {
   typeSystem: reflect.TypeSystem;
   template: any;
+  workingDirectory?: string;
 }
 
 export class DeclarativeStack extends cdk.Stack {
@@ -37,7 +38,12 @@ export class DeclarativeStack extends cdk.Stack {
       const typeInfo = typeSystem.findFqn(rprops.Type + 'Props');
       const typeRef = new reflect.TypeReference(typeSystem, typeInfo);
       const Ctor = resolveType(rprops.Type);
-      new Ctor(this, logicalId, deserializeValue(this, typeRef, true, 'Properties', rprops.Properties));
+
+      // Changing working directory if needed, such that relative paths in the template are resolved relative to the
+      // template's location, and not to the current process' CWD.
+      _cwd(props.workingDirectory, () =>
+        new Ctor(this, logicalId, deserializeValue(this, typeRef, true, 'Properties', rprops.Properties)));
+
       delete template.Resources[logicalId];
     }
 
@@ -438,3 +444,14 @@ function isCfnResourceType(resourceType: string) {
 }
 
 class ValidationError extends Error { }
+
+function _cwd<T>(workDir: string | undefined, cb: () => T): T {
+  if (!workDir) { return cb(); }
+  const prevWd = process.cwd();
+  try {
+    process.chdir(workDir);
+    return cb();
+  } finally {
+    process.chdir(prevWd);
+  }
+}

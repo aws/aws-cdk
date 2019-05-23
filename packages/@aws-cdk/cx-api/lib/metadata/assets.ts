@@ -26,21 +26,34 @@ export const ASSET_RESOURCE_METADATA_PROPERTY_KEY = 'aws:asset:property';
  */
 export const ASSET_PREFIX_SEPARATOR = '||';
 
-export interface FileAssetMetadataEntry {
+interface BaseAssetMetadataEntry {
   /**
    * Requested packaging style
    */
-  readonly packaging: 'zip' | 'file';
+  readonly packaging: string;
+
+  /**
+   * Logical identifier for the asset
+   */
+  readonly id: string;
+
+  /**
+   * The hash of the source directory used to build the asset.
+   */
+  readonly sourceHash: string;
 
   /**
    * Path on disk to the asset
    */
   readonly path: string;
 
+}
+
+export interface FileAssetMetadataEntry extends BaseAssetMetadataEntry {
   /**
-   * Logical identifier for the asset
+   * Requested packaging style
    */
-  readonly id: string;
+  readonly packaging: 'zip' | 'file';
 
   /**
    * Name of parameter where S3 bucket should be passed in
@@ -51,26 +64,21 @@ export interface FileAssetMetadataEntry {
    * Name of parameter where S3 key should be passed in
    */
   readonly s3KeyParameter: string;
+
+  /**
+   * The name of the parameter where the hash of the bundled asset should be passed in.
+   */
+  readonly artifactHashParameter: string;
 }
 
-export interface ContainerImageAssetMetadataEntry {
+export interface ContainerImageAssetMetadataEntry extends BaseAssetMetadataEntry {
   /**
    * Type of asset
    */
   readonly packaging: 'container-image';
 
   /**
-   * Path on disk to the asset
-   */
-  readonly path: string;
-
-  /**
-   * Logical identifier for the asset
-   */
-  readonly id: string;
-
-  /**
-   * ECR Repository name and tag (separated by ":") where this asset is stored.
+   * ECR Repository name and repo digest (separated by "@sha256:") where this image is stored.
    */
   readonly imageNameParameter: string;
 
