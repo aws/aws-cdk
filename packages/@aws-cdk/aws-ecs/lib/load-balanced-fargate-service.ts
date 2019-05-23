@@ -1,4 +1,5 @@
 import { AliasRecord, IHostedZone } from '@aws-cdk/aws-route53';
+import targets = require('@aws-cdk/aws-route53-targets');
 import cdk = require('@aws-cdk/cdk');
 import { FargateService } from './fargate/fargate-service';
 import { FargateTaskDefinition } from './fargate/fargate-task-definition';
@@ -120,7 +121,7 @@ export class LoadBalancedFargateService extends LoadBalancedServiceBase {
       new AliasRecord(this, "DNS", {
         zone: props.domainZone,
         recordName: props.domainName,
-        target: this.loadBalancer
+        target: new targets.LoadBalancerTarget(this.loadBalancer),
       });
     }
   }

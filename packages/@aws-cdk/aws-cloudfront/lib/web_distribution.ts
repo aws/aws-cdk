@@ -1,7 +1,7 @@
-import route53 = require('@aws-cdk/aws-route53');
 import s3 = require('@aws-cdk/aws-s3');
 import cdk = require('@aws-cdk/cdk');
 import { CfnDistribution } from './cloudfront.generated';
+import { IDistribution } from './distribution';
 
 export enum HttpVersion {
   HTTP1_1 = "http1.1",
@@ -477,14 +477,7 @@ interface BehaviorWithOrigin extends Behavior {
  *
  *
  */
-export class CloudFrontWebDistribution extends cdk.Construct implements route53.IAliasRecordTarget {
-
-  /**
-   * The hosted zone Id if using an alias record in Route53.
-   * This value never changes.
-   */
-  public readonly aliasHostedZoneId: string = "Z2FDTNDATAQYW2";
-
+export class CloudFrontWebDistribution extends cdk.Construct implements IDistribution {
   /**
    * The logging bucket for this CloudFront distribution.
    * If logging is not enabled for this distribution - this property will be undefined.
@@ -670,13 +663,6 @@ export class CloudFrontWebDistribution extends cdk.Construct implements route53.
     const distribution = new CfnDistribution(this, 'CFDistribution', { distributionConfig });
     this.domainName = distribution.distributionDomainName;
     this.distributionId = distribution.distributionId;
-  }
-
-  public asAliasRecordTarget(): route53.AliasRecordTargetProps {
-    return {
-      hostedZoneId: this.aliasHostedZoneId,
-      dnsName: this.domainName
-    };
   }
 
   private toBehavior(input: BehaviorWithOrigin, protoPolicy?: ViewerProtocolPolicy) {
