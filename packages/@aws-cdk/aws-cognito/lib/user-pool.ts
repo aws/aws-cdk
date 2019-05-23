@@ -407,7 +407,7 @@ export class UserPool extends Resource implements IUserPool {
    * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-create-auth-challenge.html
    * @param fn the lambda function to attach
    */
-  public onCreateAuthChallenge(fn: lambda.IFunction): void {
+  public addCreateAuthChallengeTrigger(fn: lambda.IFunction): void {
     this.addLambdaPermission(fn, 'CreateAuthChallenge');
     this.triggers = { ...this.triggers, createAuthChallenge: fn.functionArn };
   }
@@ -418,7 +418,7 @@ export class UserPool extends Resource implements IUserPool {
    * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-custom-message.html
    * @param fn the lambda function to attach
    */
-  public onCustomMessage(fn: lambda.IFunction): void {
+  public addCustomMessageTrigger(fn: lambda.IFunction): void {
     this.addLambdaPermission(fn, 'CustomMessage');
     this.triggers = { ...this.triggers, customMessage: fn.functionArn };
   }
@@ -429,7 +429,7 @@ export class UserPool extends Resource implements IUserPool {
    * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-define-auth-challenge.html
    * @param fn the lambda function to attach
    */
-  public onDefineAuthChallenge(fn: lambda.IFunction): void {
+  public addDefineAuthChallengeTrigger(fn: lambda.IFunction): void {
     this.addLambdaPermission(fn, 'DefineAuthChallenge');
     this.triggers = { ...this.triggers, defineAuthChallenge: fn.functionArn };
   }
@@ -440,7 +440,7 @@ export class UserPool extends Resource implements IUserPool {
    * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-post-authentication.html
    * @param fn the lambda function to attach
    */
-  public onPostAuthentication(fn: lambda.IFunction): void {
+  public addPostAuthenticationTrigger(fn: lambda.IFunction): void {
     this.addLambdaPermission(fn, 'PostAuthentication');
     this.triggers = { ...this.triggers, postAuthentication: fn.functionArn };
   }
@@ -451,7 +451,7 @@ export class UserPool extends Resource implements IUserPool {
    * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-post-confirmation.html
    * @param fn the lambda function to attach
    */
-  public onPostConfirmation(fn: lambda.IFunction): void {
+  public addPostConfirmationTrigger(fn: lambda.IFunction): void {
     this.addLambdaPermission(fn, 'PostConfirmation');
     this.triggers = { ...this.triggers, postConfirmation: fn.functionArn };
   }
@@ -462,7 +462,7 @@ export class UserPool extends Resource implements IUserPool {
    * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-pre-authentication.html
    * @param fn the lambda function to attach
    */
-  public onPreAuthentication(fn: lambda.IFunction): void {
+  public addPreAuthenticationTrigger(fn: lambda.IFunction): void {
     this.addLambdaPermission(fn, 'PreAuthentication');
     this.triggers = { ...this.triggers, preAuthentication: fn.functionArn };
   }
@@ -473,7 +473,7 @@ export class UserPool extends Resource implements IUserPool {
    * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-pre-sign-up.html
    * @param fn the lambda function to attach
    */
-  public onPreSignUp(fn: lambda.IFunction): void {
+  public addPreSignUpTrigger(fn: lambda.IFunction): void {
     this.addLambdaPermission(fn, 'PreSignUp');
     this.triggers = { ...this.triggers, preSignUp: fn.functionArn };
   }
@@ -484,7 +484,7 @@ export class UserPool extends Resource implements IUserPool {
    * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-verify-auth-challenge-response.html
    * @param fn the lambda function to attach
    */
-  public onVerifyAuthChallengeResponse(fn: lambda.IFunction): void {
+  public addVerifyAuthChallengeResponseTrigger(fn: lambda.IFunction): void {
     this.addLambdaPermission(fn, 'VerifyAuthChallengeResponse');
     this.triggers = { ...this.triggers, verifyAuthChallengeResponse: fn.functionArn };
   }

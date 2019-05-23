@@ -20,8 +20,8 @@ const bucketB = new s3.Bucket(stack, 'YourBucket', {
   removalPolicy: cdk.RemovalPolicy.Destroy
 });
 
-bucketA.onObjectCreated(fn, { suffix: '.png' });
-bucketB.onEvent(s3.EventType.ObjectRemoved, fn);
+bucketA.addObjectCreatedNotification(fn, { suffix: '.png' });
+bucketB.addEventNotification(s3.EventType.ObjectRemoved, fn);
 
 app.run();
 
