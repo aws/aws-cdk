@@ -20,6 +20,10 @@ export * from './load-balanced-fargate-service';
 export * from './load-balanced-ecs-service';
 export * from './load-balanced-fargate-service-applet';
 
+export * from './queue-worker-service-base';
+export * from './ecs-queue-worker-service';
+export * from './fargate-queue-worker-service';
+
 export * from './images/asset-image';
 export * from './images/repository';
 export * from './images/ecr';
