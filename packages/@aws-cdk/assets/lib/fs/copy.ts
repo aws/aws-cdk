@@ -1,19 +1,8 @@
 import fs = require('fs');
 import path = require('path');
+import { CopyOptions } from './copy-options';
 import { FollowMode } from './follow-mode';
 import { shouldExclude, shouldFollow } from './utils';
-
-export interface CopyOptions {
-  /**
-   * @default External only follows symlinks that are external to the source directory
-   */
-  readonly follow?: FollowMode;
-
-  /**
-   * glob patterns to exclude from the copy.
-   */
-  readonly exclude?: string[];
-}
 
 export function copyDirectory(srcDir: string, destDir: string, options: CopyOptions = { }, rootDir?: string) {
   const follow = options.follow !== undefined ? options.follow : FollowMode.External;

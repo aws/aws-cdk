@@ -4,7 +4,7 @@ import cdk = require('@aws-cdk/cdk');
 import cxapi = require('@aws-cdk/cx-api');
 import fs = require('fs');
 import path = require('path');
-import { CopyOptions } from './fs';
+import { CopyOptions } from './fs/copy-options';
 import { Staging } from './staging';
 
 /**

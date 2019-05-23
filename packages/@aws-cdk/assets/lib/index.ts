@@ -1,3 +1,4 @@
 export * from './asset';
-export { CopyOptions } from './fs/copy';
+export * from './fs/copy-options';
+export * from './fs/follow-mode';
 export * from './staging';

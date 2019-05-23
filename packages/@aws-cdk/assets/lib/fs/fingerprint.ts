@@ -1,7 +1,7 @@
 import crypto = require('crypto');
 import fs = require('fs');
 import path = require('path');
-import { CopyOptions } from './copy';
+import { CopyOptions } from './copy-options';
 import { FollowMode } from './follow-mode';
 import { shouldExclude, shouldFollow } from './utils';
 
