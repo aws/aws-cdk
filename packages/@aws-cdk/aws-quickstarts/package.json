@@ -75,5 +75,10 @@
   },
   "engines": {
     "node": ">= 8.10.0"
+  },
+  "awslint": {
+    "exclude": [
+      "props-default-doc"
+    ]
   }
 }

@@ -54,13 +54,17 @@ export interface LoadBalancedFargateServiceProps extends LoadBalancedServiceBase
    */
   readonly publicTasks?: boolean;
 
-  /*
+  /**
    * Domain name for the service, e.g. api.example.com
+   *
+   * @default - No domain name.
    */
   readonly domainName?: string;
 
   /**
    * Route53 hosted zone for the domain, e.g. "example.com."
+   *
+   * @default - No Route53 hosted domain zone.
    */
   readonly domainZone?: IHostedZone;
 

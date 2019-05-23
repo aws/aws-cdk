@@ -10,7 +10,7 @@ export interface BaseLoadBalancerProps {
   /**
    * Name of the load balancer
    *
-   * @default Automatically generated name
+   * @default - Automatically generated name.
    */
   readonly loadBalancerName?: string;
 
@@ -29,7 +29,7 @@ export interface BaseLoadBalancerProps {
   /**
    * Where in the VPC to place the load balancer
    *
-   * @default Public subnets if internetFacing, otherwise private subnets
+   * @default - Public subnets if internetFacing, otherwise private subnets.
    */
   readonly vpcSubnets?: ec2.SubnetSelection;
 
