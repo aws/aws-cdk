@@ -445,13 +445,6 @@ export interface AddAutoScalingGroupCapacityOptions {
    * @default 300
    */
   readonly taskDrainTimeSeconds?: number;
-
-  /**
-   * The machine image for the ECS instances
-   *
-   * @default - No default machine image
-   */
-  readonly machineImage?: ec2.IMachineImageSource;
 }
 
 /**
@@ -462,6 +455,13 @@ export interface AddCapacityOptions extends AddAutoScalingGroupCapacityOptions, 
    * The type of EC2 instance to launch into your Autoscaling Group
    */
   readonly instanceType: ec2.InstanceType;
+
+  /**
+   * The machine image for the ECS instances
+   *
+   * @default - Amazon Linux 1
+   */
+  readonly machineImage?: ec2.IMachineImageSource;
 }
 
 export interface NamespaceOptions {
