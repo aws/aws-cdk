@@ -34,7 +34,7 @@ export = {
 
     const topic = new Topic(stack, 'MyTopic');
 
-    bucket.onEvent(s3.EventType.ObjectCreated, topic);
+    bucket.addEventNotification(s3.EventType.ObjectCreated, topic);
 
     expect(stack).to(haveResource('AWS::S3::Bucket'));
     expect(stack).to(haveResource('AWS::Lambda::Function', { Description: 'AWS CloudFormation handler for "Custom::S3BucketNotifications" resources (@aws-cdk/aws-s3)' }));
@@ -50,7 +50,7 @@ export = {
 
     const topic = new Topic(stack, 'MyTopic');
 
-    bucket.onEvent(s3.EventType.ObjectCreated, topic);
+    bucket.addEventNotification(s3.EventType.ObjectCreated, topic);
 
     expect(stack).to(haveResource('AWS::S3::Bucket'));
     expect(stack).to(haveResource('AWS::Lambda::Function', {
@@ -70,7 +70,7 @@ export = {
     const topic = new Topic(stack, 'Topic');
     const bucket = new s3.Bucket(stack, 'MyBucket');
 
-    bucket.onObjectCreated(topic);
+    bucket.addObjectCreatedNotification(topic);
 
     expect(stack).to(haveResource('AWS::SNS::TopicPolicy', {
       "Topics": [
@@ -135,9 +135,9 @@ export = {
       })
     };
 
-    bucket.onEvent(s3.EventType.ObjectCreated, queueTarget);
-    bucket.onEvent(s3.EventType.ObjectCreated, lambdaTarget);
-    bucket.onObjectRemoved(topicTarget, { prefix: 'prefix' });
+    bucket.addEventNotification(s3.EventType.ObjectCreated, queueTarget);
+    bucket.addEventNotification(s3.EventType.ObjectCreated, lambdaTarget);
+    bucket.addObjectRemovedNotification(topicTarget, { prefix: 'prefix' });
 
     expect(stack).to(haveResource('Custom::S3BucketNotifications', {
       "ServiceToken": {
@@ -195,14 +195,14 @@ export = {
 
     const bucket = new s3.Bucket(stack, 'TestBucket');
 
-    bucket.onEvent(s3.EventType.ObjectRemovedDelete, {
+    bucket.addEventNotification(s3.EventType.ObjectRemovedDelete, {
       asBucketNotificationDestination: _ => ({
         type: s3n.BucketNotificationDestinationType.Queue,
         arn: 'arn:aws:sqs:...:queue1'
       })
     });
 
-    bucket.onEvent(s3.EventType.ObjectRemovedDelete, {
+    bucket.addEventNotification(s3.EventType.ObjectRemovedDelete, {
       asBucketNotificationDestination: _ => ({
         type: s3n.BucketNotificationDestinationType.Queue,
         arn: 'arn:aws:sqs:...:queue2'
@@ -250,7 +250,7 @@ export = {
       arn: 'arn:aws:sqs:...'
     };
 
-    bucket.onEvent(s3.EventType.ObjectRemovedDelete, { asBucketNotificationDestination: _ => bucketNotificationTarget }, { prefix: 'images/', suffix: '.jpg' });
+    bucket.addEventNotification(s3.EventType.ObjectRemovedDelete, { asBucketNotificationDestination: _ => bucketNotificationTarget }, { prefix: 'images/', suffix: '.jpg' });
 
     expect(stack).to(haveResource('Custom::S3BucketNotifications', {
       "ServiceToken": {
@@ -304,7 +304,7 @@ export = {
       })
     };
 
-    bucket.onObjectCreated(dest);
+    bucket.addObjectCreatedNotification(dest);
 
     stack.node.prepareTree();
     test.deepEqual(SynthUtils.toCloudFormation(stack).Resources.BucketNotifications8F2E257D, {
@@ -326,7 +326,11 @@ export = {
       const bucket = s3.Bucket.fromBucketAttributes(stack, 'Bucket', {
         bucketName: 'MyBucket',
       });
-      bucket.onPutObject('PutRule');
+      bucket.onCloudTrailPutObject('PutRule', {
+        target: {
+          bind: () => ({ arn: 'ARN', id: 'ID' })
+        }
+      });
 
       expect(stack).to(haveResourceLike('AWS::Events::Rule', {
         "EventPattern": {
@@ -334,9 +338,6 @@ export = {
             "aws.s3",
           ],
           "detail": {
-            "eventSource": [
-              "s3.amazonaws.com",
-            ],
             "eventName": [
               "PutObject",
             ],
@@ -369,7 +370,12 @@ export = {
       const bucket = s3.Bucket.fromBucketAttributes(stack, 'Bucket', {
         bucketName: 'MyBucket',
       });
-      bucket.onPutObject('PutRule', undefined, 'my/path.zip');
+      bucket.onCloudTrailPutObject('PutRule', {
+        target: {
+          bind: () => ({ arn: 'ARN', id: 'ID' })
+        },
+        paths: ['my/path.zip']
+      });
 
       expect(stack).to(haveResourceLike('AWS::Events::Rule', {
         "EventPattern": {
@@ -377,9 +383,6 @@ export = {
             "aws.s3",
           ],
           "detail": {
-            "eventSource": [
-              "s3.amazonaws.com",
-            ],
             "eventName": [
               "PutObject",
             ],

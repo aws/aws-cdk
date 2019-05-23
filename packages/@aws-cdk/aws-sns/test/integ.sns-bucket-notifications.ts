@@ -12,8 +12,8 @@ class MyStack extends cdk.Stack {
         removalPolicy: cdk.RemovalPolicy.Destroy
     });
 
-    bucket.onObjectCreated(objectCreateTopic);
-    bucket.onObjectRemoved(objectRemovedTopic, { prefix: 'foo/', suffix: '.txt' });
+    bucket.addObjectCreatedNotification(objectCreateTopic);
+    bucket.addObjectRemovedNotification(objectRemovedTopic, { prefix: 'foo/', suffix: '.txt' });
 
   }
 }

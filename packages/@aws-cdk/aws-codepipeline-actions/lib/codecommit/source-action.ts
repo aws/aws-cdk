@@ -57,8 +57,10 @@ export class CodeCommitSourceAction extends codepipeline.Action {
 
   protected bind(info: codepipeline.ActionBind): void {
     if (!this.props.pollForSourceChanges) {
-      this.props.repository.onCommit(info.pipeline.node.uniqueId + 'EventRule',
-          new targets.CodePipeline(info.pipeline), this.props.branch || 'master');
+      this.props.repository.onCommit(info.pipeline.node.uniqueId + 'EventRule', {
+        target: new targets.CodePipeline(info.pipeline),
+        branches: [this.props.branch || 'master']
+      });
     }
 
     // https://docs.aws.amazon.com/codecommit/latest/userguide/auth-and-access-control-permissions-reference.html#aa-acp

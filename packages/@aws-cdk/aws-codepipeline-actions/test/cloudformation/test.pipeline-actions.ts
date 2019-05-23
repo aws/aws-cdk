@@ -324,6 +324,13 @@ class PipelineDouble extends cdk.Construct implements codepipeline.IPipeline {
   public grantBucketReadWrite(_identity?: iam.IGrantable): iam.Grant {
     throw new Error('grantBucketReadWrite() is unsupported in PipelineDouble');
   }
+
+  public onEvent(_id: string, _options: events.OnEventOptions): events.Rule {
+    throw new Error("Method not implemented.");
+  }
+  public onStateChange(_id: string, _options: events.OnEventOptions): events.Rule {
+    throw new Error("Method not implemented.");
+  }
 }
 
 class StageDouble implements codepipeline.IStage {

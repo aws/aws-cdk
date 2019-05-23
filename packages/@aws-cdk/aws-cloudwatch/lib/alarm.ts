@@ -155,7 +155,7 @@ export class Alarm extends Resource implements IAlarm {
    *
    * Typically the ARN of an SNS topic or ARN of an AutoScaling policy.
    */
-  public onAlarm(...actions: IAlarmAction[]) {
+  public addAlarmAction(...actions: IAlarmAction[]) {
     if (this.alarmActionArns === undefined) {
       this.alarmActionArns = [];
     }
@@ -168,7 +168,7 @@ export class Alarm extends Resource implements IAlarm {
    *
    * Typically the ARN of an SNS topic or ARN of an AutoScaling policy.
    */
-  public onInsufficientData(...actions: IAlarmAction[]) {
+  public addInsufficientDataAction(...actions: IAlarmAction[]) {
     if (this.insufficientDataActionArns === undefined) {
       this.insufficientDataActionArns = [];
     }
@@ -181,7 +181,7 @@ export class Alarm extends Resource implements IAlarm {
    *
    * Typically the ARN of an SNS topic or ARN of an AutoScaling policy.
    */
-  public onOk(...actions: IAlarmAction[]) {
+  public addOkAction(...actions: IAlarmAction[]) {
     if (this.okActionArns === undefined) {
       this.okActionArns = [];
     }

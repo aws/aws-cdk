@@ -256,7 +256,9 @@ export = {
     });
 
     // WHEN
-    rule.onComplianceChange('ComplianceChange', new targets.LambdaFunction(fn));
+    rule.onComplianceChange('ComplianceChange', {
+      target: new targets.LambdaFunction(fn)
+    });
 
     expect(stack).to(haveResource('AWS::Events::Rule', {
       EventPattern: {
