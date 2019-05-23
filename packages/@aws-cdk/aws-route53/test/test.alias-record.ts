@@ -10,7 +10,7 @@ export = {
     const zone = new PublicHostedZone(stack, 'HostedZone', { zoneName: 'test.public' });
 
     const target: IAliasRecordTarget = {
-      asAliasRecordTarget: () => {
+      bind: () => {
         return {
           hostedZoneId: 'Z2P70J7EXAMPLE',
           dnsName: 'foo.example.com'

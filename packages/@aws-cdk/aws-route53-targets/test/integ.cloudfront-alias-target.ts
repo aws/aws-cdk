@@ -1,7 +1,8 @@
+import cloudfront = require('@aws-cdk/aws-cloudfront');
 import route53 = require('@aws-cdk/aws-route53');
 import s3 = require('@aws-cdk/aws-s3');
 import cdk = require('@aws-cdk/cdk');
-import cloudfront = require('../lib');
+import targets = require('../lib');
 
 const app = new cdk.App();
 
@@ -27,7 +28,7 @@ const distribution = new cloudfront.CloudFrontWebDistribution(stack, 'MyDistribu
 new route53.AliasRecord(zone, 'Alias', {
   zone,
   recordName: '_foo',
-  target: distribution
+  target: new targets.CloudFrontTarget(distribution)
 });
 
 app.run();

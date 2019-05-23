@@ -1,8 +1,9 @@
 #!/usr/bin/env node
 import ec2 = require('@aws-cdk/aws-ec2');
+import elbv2 = require('@aws-cdk/aws-elasticloadbalancingv2');
 import route53 = require('@aws-cdk/aws-route53');
 import cdk = require('@aws-cdk/cdk');
-import elbv2 = require('../lib');
+import targets = require('../lib');
 
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-cdk-elbv2-integ');
@@ -21,7 +22,7 @@ const zone = new route53.PublicHostedZone(stack, 'HostedZone', { zoneName: 'test
 new route53.AliasRecord(zone, 'Alias', {
   zone,
   recordName: '_foo',
-  target: lb
+  target: new targets.LoadBalancerTarget(lb)
 });
 
 app.run();

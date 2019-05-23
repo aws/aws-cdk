@@ -1,4 +1,4 @@
-import route53 = require('@aws-cdk/aws-route53');
+import elbv2 = require('@aws-cdk/aws-elasticloadbalancingv2');
 import { Construct, IResource, Resource } from '@aws-cdk/cdk';
 import { AliasTargetInstance } from './alias-target-instance';
 import { CnameInstance, CnameInstanceBaseProps  } from './cname-instance';
@@ -285,10 +285,10 @@ export class Service extends ServiceBase {
   /**
    * Registers an ELB as a new instance with unique name instanceId in this service.
    */
-  public registerLoadBalancer(id: string, loadBalancer: route53.IAliasRecordTarget, customAttributes?: {[key: string]: string}): IInstance {
+  public registerLoadBalancer(id: string, loadBalancer: elbv2.ILoadBalancerV2, customAttributes?: {[key: string]: string}): IInstance {
     return new AliasTargetInstance(this, id, {
       service: this,
-      dnsName: loadBalancer.asAliasRecordTarget().dnsName,
+      dnsName: loadBalancer.loadBalancerDnsName,
       customAttributes
     });
   }

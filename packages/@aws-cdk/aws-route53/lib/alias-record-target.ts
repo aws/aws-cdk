@@ -1,0 +1,27 @@
+import { IAliasRecord } from "./records/alias";
+
+/**
+ * Classes that are valid alias record targets, like CloudFront distributions and load
+ * balancers, should implement this interface.
+ */
+export interface IAliasRecordTarget {
+  /**
+   * Return hosted zone ID and DNS name, usable for Route53 alias targets
+   */
+  bind(record: IAliasRecord): AliasRecordTargetProps;
+}
+
+/**
+ * Represents the properties of an alias target destination.
+ */
+export interface AliasRecordTargetProps {
+  /**
+   * Hosted zone ID of the target
+   */
+  readonly hostedZoneId: string;
+
+  /**
+   * DNS name of the target
+   */
+  readonly dnsName: string;
+}

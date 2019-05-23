@@ -2,8 +2,8 @@ import cloudwatch = require('@aws-cdk/aws-cloudwatch');
 import ec2 = require('@aws-cdk/aws-ec2');
 import iam = require('@aws-cdk/aws-iam');
 import s3 = require('@aws-cdk/aws-s3');
-import { Construct, IResource, Token } from '@aws-cdk/cdk';
-import { BaseLoadBalancer, BaseLoadBalancerProps } from '../shared/base-load-balancer';
+import { Construct, Token } from '@aws-cdk/cdk';
+import { BaseLoadBalancer, BaseLoadBalancerProps, ILoadBalancerV2 } from '../shared/base-load-balancer';
 import { IpAddressType } from '../shared/enums';
 import { ApplicationListener, BaseApplicationListenerProps } from './application-listener';
 
@@ -468,7 +468,7 @@ export enum HttpCodeTarget {
 /**
  * An application load balancer
  */
-export interface IApplicationLoadBalancer extends IResource, ec2.IConnectable {
+export interface IApplicationLoadBalancer extends ILoadBalancerV2, ec2.IConnectable {
   /**
    * The ARN of this load balancer
    */
@@ -498,6 +498,20 @@ export interface ApplicationLoadBalancerAttributes {
    * ID of the load balancer's security group
    */
   readonly securityGroupId: string;
+
+  /**
+   * The canonical hosted zone ID of this load balancer
+   *
+   * @default - When not provided, LB cannot be used as Route53 Alias target.
+   */
+  readonly loadBalancerCanonicalHostedZoneId?: string;
+
+  /**
+   * The DNS name of this load balancer
+   *
+   * @default - When not provided, LB cannot be used as Route53 Alias target.
+   */
+  readonly loadBalancerDnsName?: string;
 }
 
 // https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-access-logs.html#access-logging-bucket-permissions
@@ -544,7 +558,7 @@ class ImportedApplicationLoadBalancer extends Construct implements IApplicationL
    */
   public readonly vpc?: ec2.IVpc;
 
-  constructor(scope: Construct, id: string, props: ApplicationLoadBalancerAttributes) {
+  constructor(scope: Construct, id: string, private readonly props: ApplicationLoadBalancerAttributes) {
     super(scope, id);
 
     this.loadBalancerArn = props.loadBalancerArn;
@@ -558,5 +572,17 @@ class ImportedApplicationLoadBalancer extends Construct implements IApplicationL
       loadBalancer: this,
       ...props
     });
+  }
+
+  public get loadBalancerCanonicalHostedZoneId(): string {
+    if (this.props.loadBalancerCanonicalHostedZoneId) { return this.props.loadBalancerCanonicalHostedZoneId; }
+    // tslint:disable-next-line:max-line-length
+    throw new Error(`'loadBalancerCanonicalHostedZoneId' was not provided when constructing Application Load Balancer ${this.node.path} from attributes`);
+  }
+
+  public get loadBalancerDnsName(): string {
+    if (this.props.loadBalancerDnsName) { return this.props.loadBalancerDnsName; }
+    // tslint:disable-next-line:max-line-length
+    throw new Error(`'loadBalancerDnsName' was not provided when constructing Application Load Balancer ${this.node.path} from attributes`);
   }
 }
