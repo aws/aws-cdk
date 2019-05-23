@@ -8,7 +8,6 @@ import { Construct, Duration, IResolvable, IResource, Lazy, Resource, Stack } fr
 import { NetworkMode, TaskDefinition } from '../base/task-definition';
 import { ICluster } from '../cluster';
 import { CfnService } from '../ecs.generated';
-import { AwsLogDriver } from '../log-drivers/aws-log-driver';
 import { ScalableTaskCount } from './scalable-task-count';
 
 /**
@@ -291,13 +290,6 @@ export abstract class BaseService extends Resource
         securityGroups: Lazy.listValue({ produce: () => [securityGroup!.securityGroupId] }),
       }
     };
-  }
-
-  /**
-   * Set up AWS logging for this construct
-   */
-  protected createAWSLogDriver(prefix: string): AwsLogDriver {
-    return new AwsLogDriver(this, 'Logging', { streamPrefix: prefix });
   }
 
   private renderServiceRegistry(registry: ServiceRegistry): CfnService.ServiceRegistryProperty {

@@ -1,4 +1,4 @@
-import { expect, haveResource } from '@aws-cdk/assert';
+import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
 import ec2 = require('@aws-cdk/aws-ec2');
 import elb = require('@aws-cdk/aws-elasticloadbalancing');
 import cloudmap = require('@aws-cdk/aws-servicediscovery');
@@ -1020,7 +1020,7 @@ export = {
     const vpc = new ec2.Vpc(stack, 'MyVpc', {});
     const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
     cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
-    const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'FargateTaskDef');
+    const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
     taskDefinition.addContainer('Container', {
       image: ecs.ContainerImage.fromRegistry('hello')
     });
@@ -1044,5 +1044,135 @@ export = {
     });
 
     test.done();
-  }
+  },
+
+  'Allows adding tracing with AWS X-ray with defaults'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+    const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+    cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
+    const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
+
+    taskDefinition.addContainer('web', {
+      image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+      memoryLimitMiB: 512
+    });
+
+    const service = new ecs.Ec2Service(stack, 'Ec2Service', {
+      cluster,
+      taskDefinition
+    });
+
+    // WHEN
+    service.addTracing();
+
+    // THEN
+    expect(stack).to(haveResourceLike('AWS::ECS::TaskDefinition', {
+      Family: 'Ec2TaskDef',
+      NetworkMode: ecs.NetworkMode.BRIDGE,
+      RequiresCompatibilities: ['EC2'],
+      ContainerDefinitions: [
+        {
+          Environment: [
+            {
+              Name: "AWS_XRAY_DAEMON_ADDRESS",
+              Value: "xray-daemon:2000"
+            }
+          ],
+          Essential: true,
+          Image: 'amazon/amazon-ecs-sample',
+          Name: 'web',
+          Links: ['xray-daemon'],
+          Memory: 512,
+        },
+        {
+          Essential: false,
+          Image: 'amazon/aws-xray-daemon',
+          Name: 'xray-daemon',
+          PortMappings: [
+            {
+              ContainerPort: 2000,
+              Protocol: 'udp'
+            }
+          ],
+          LogConfiguration: {
+            LogDriver: "awslogs",
+            Options: {
+              "awslogs-group": {
+                Ref: "Ec2TaskDefxraydaemonLogGroup4AA26E13"
+              },
+              "awslogs-stream-prefix": "Ec2Service",
+              "awslogs-region": { Ref: "AWS::Region" }
+            }
+          },
+        }
+      ]
+    }));
+
+    test.done();
+  },
+
+  'Allows adding tracing with AWS X-ray with options'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+    const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+    cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
+    const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
+
+    taskDefinition.addContainer('web', {
+      image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+      memoryLimitMiB: 512
+    });
+
+    const service = new ecs.Ec2Service(stack, 'Ec2Service', {
+      cluster,
+      taskDefinition
+    });
+
+    // WHEN
+    service.addTracing({
+      cpu: 32,
+      memoryReservationMiB: 512,
+      essential: true
+    });
+
+    // THEN
+    expect(stack).to(haveResourceLike('AWS::ECS::TaskDefinition', {
+      Family: 'Ec2TaskDef',
+      NetworkMode: ecs.NetworkMode.BRIDGE,
+      RequiresCompatibilities: ['EC2'],
+      ContainerDefinitions: [
+        {
+          Environment: [
+            {
+              Name: "AWS_XRAY_DAEMON_ADDRESS",
+              Value: "xray-daemon:2000"
+            }
+          ],
+          Essential: true,
+          Image: 'amazon/amazon-ecs-sample',
+          Name: 'web',
+          Links: ['xray-daemon'],
+          Memory: 512,
+        },
+        {
+          Cpu: 32,
+          Essential: true,
+          Image: 'amazon/aws-xray-daemon',
+          MemoryReservation: 512,
+          Name: 'xray-daemon',
+          PortMappings: [
+            {
+              ContainerPort: 2000,
+              Protocol: 'udp'
+            }
+          ],
+        }
+      ]
+    }));
+
+    test.done();
+  },
 };

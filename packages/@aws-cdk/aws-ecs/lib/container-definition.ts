@@ -299,6 +299,7 @@ export class ContainerDefinition extends cdk.Construct {
    */
   public readonly taskDefinition: TaskDefinition;
 
+  private environment?: { [key: string]: string };
   /**
    * The configured container links
    */
@@ -317,6 +318,7 @@ export class ContainerDefinition extends cdk.Construct {
     this.taskDefinition = props.taskDefinition;
     this.memoryLimitSpecified = props.memoryLimitMiB !== undefined || props.memoryReservationMiB !== undefined;
     this.linuxParameters = props.linuxParameters;
+    this.environment = props.environment;
 
     this.imageConfig = props.image.bind(this, this);
     if (props.logging) {
@@ -350,8 +352,15 @@ export class ContainerDefinition extends cdk.Construct {
   }
 
   /**
+   * This method adds environment variables to the container.
+   */
+  public addEnvironment(key: string, value: string) {
+    this.environment = this.environment || {};
+    this.environment[key] = value;
+  }
+
+  /**
    * This method mounts temporary disk space to the container.
-   *
    * This adds the correct container mountPoint and task definition volume.
    */
   public addScratch(scratch: ScratchSpace) {
@@ -480,7 +489,7 @@ export class ContainerDefinition extends cdk.Construct {
       volumesFrom: this.volumesFrom.map(renderVolumeFrom),
       workingDirectory: this.props.workingDirectory,
       logConfiguration: this.logDriverConfig,
-      environment:  this.props.environment && renderKV(this.props.environment, 'name', 'value'),
+      environment: this.environment && renderKV(this.environment, 'name', 'value'),
       secrets: this.props.secrets && Object.entries(this.props.secrets)
         .map(([k, v]) => {
           if (taskDefinition) {

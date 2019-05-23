@@ -5,6 +5,7 @@ import { BaseService, BaseServiceOptions, IService, LaunchType, TracingOptions }
 import { TaskDefinition } from '../base/task-definition';
 import { Protocol } from '../container-definition';
 import { ContainerImage } from '../container-image';
+import { AwsLogDriver } from '../log-drivers/aws-log-driver';
 
 /**
  * The properties for defining a service using the Fargate launch type.
@@ -79,7 +80,7 @@ export class FargateService extends BaseService implements IFargateService {
   /**
    * Constructs a new instance of the FargateService class.
    */
-  constructor(scope: cdk.Construct, id: string, props: FargateServiceProps) {
+  constructor(scope: Construct, id: string, props: FargateServiceProps) {
     if (!props.taskDefinition.isFargateCompatible) {
       throw new Error('Supplied TaskDefinition is not configured for compatibility with Fargate');
     }
@@ -106,21 +107,20 @@ export class FargateService extends BaseService implements IFargateService {
    */
   public addTracing(props: TracingOptions = {}) {
     // TODO: adjust task size based on container-level resources (cpu/memory)?
-    const optIn = props.createLogs !== undefined ? props.createLogs : true;
-    const xray = this.taskDefinition.addContainer("xray", {
+    const optIn = props.enableLogging !== undefined ? props.enableLogging : true;
+    const xray = this.taskDefinition.addContainer("xray-daemon", {
       image: ContainerImage.fromRegistry("amazon/aws-xray-daemon"),
       cpu: props.cpu,
       memoryReservationMiB: props.memoryReservationMiB,
       essential: props.essential || false,
-      logging: optIn ? this.createAWSLogDriver(this.node.id) : undefined,
+      logging: optIn ? new AwsLogDriver({ streamPrefix: this.node.id}) : undefined
     });
 
     xray.addPortMappings({
       containerPort: 2000,
-      protocol: Protocol.Udp
+      protocol: Protocol.UDP
     });
   }
-
 }
 
 /**

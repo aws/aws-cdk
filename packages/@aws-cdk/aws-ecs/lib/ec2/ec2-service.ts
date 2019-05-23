@@ -1,9 +1,12 @@
 import ec2 = require('@aws-cdk/aws-ec2');
 import elb = require('@aws-cdk/aws-elasticloadbalancing');
 import { Construct, Lazy, Resource } from '@aws-cdk/core';
-import { BaseService, BaseServiceOptions, IService, LaunchType } from '../base/base-service';
+import { BaseService, BaseServiceOptions, IService, LaunchType, TracingOptions } from '../base/base-service';
 import { NetworkMode, TaskDefinition } from '../base/task-definition';
+import { Protocol } from '../container-definition';
+import { ContainerImage } from '../container-image';
 import { CfnService } from '../ecs.generated';
+import { AwsLogDriver } from '../log-drivers/aws-log-driver';
 import { PlacementConstraint, PlacementStrategy } from '../placement';
 
 /**
@@ -159,6 +162,37 @@ export class Ec2Service extends BaseService implements IEc2Service, elb.ILoadBal
   /**
    * Adds one or more placement strategies to use for tasks in the service. For more information, see
    * [Amazon ECS Task Placement Strategies](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task-placement-strategies.html).
+   */
+  public addTracing(props: TracingOptions = {}) {
+    // TODO: adjust task size based on container-level resources (cpu/memory)?
+    const optIn = props.enableLogging !== undefined ? props.enableLogging : true;
+    const xray = this.taskDefinition.addContainer("xray-daemon", {
+      image: ContainerImage.fromRegistry("amazon/aws-xray-daemon"),
+      cpu: props.cpu,
+      memoryLimitMiB: props.memoryLimitMiB,
+      memoryReservationMiB: props.memoryReservationMiB !== undefined ? props.memoryReservationMiB : 256,
+      essential: props.essential !== undefined ? props.enableLogging : false,
+      logging: optIn ? new AwsLogDriver({ streamPrefix: this.node.id}) : undefined
+    });
+
+    xray.addPortMappings({
+      containerPort: 2000,
+      protocol: Protocol.UDP
+    });
+
+    // If the task definition is using bridge network mode, then add links and environment variables to the xray
+    // container in the default container.
+    if (this.taskDefinition.defaultContainer && this.taskDefinition.networkMode === NetworkMode.BRIDGE) {
+      // Add the xray container as a link to the default task def container.
+      this.taskDefinition.defaultContainer.addLink(xray);
+      // Add the xray daemon address to environment variables
+      this.taskDefinition.defaultContainer.addEnvironment('AWS_XRAY_DAEMON_ADDRESS', 'xray-daemon:2000');
+    }
+  }
+
+  /**
+   * Adds one or more placement strategies to use for tasks in the service. For more information, see Amazon ECS Task Placement Strategies:
+   * [https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task-placement-strategies.html]
    */
   public addPlacementStrategies(...strategies: PlacementStrategy[]) {
     if (strategies.length > 0 && this.daemon) {

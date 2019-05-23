@@ -517,7 +517,7 @@ export = {
     // THEN
     expect(stack).to(haveResourceLike('AWS::ECS::TaskDefinition', {
       Family: 'FargateTaskDef',
-      NetworkMode: ecs.NetworkMode.AwsVpc,
+      NetworkMode: ecs.NetworkMode.AWS_VPC,
       RequiresCompatibilities: ['FARGATE'],
       Cpu: '256',
       Memory: '512',
@@ -530,7 +530,7 @@ export = {
         {
           Essential: false,
           Image: 'amazon/aws-xray-daemon',
-          Name: 'xray',
+          Name: 'xray-daemon',
           PortMappings: [
             {
               ContainerPort: 2000,
@@ -541,7 +541,7 @@ export = {
             LogDriver: "awslogs",
             Options: {
               "awslogs-group": {
-                Ref: "FargateServiceLoggingLogGroup9B16742A"
+                Ref: "FargateTaskDefxraydaemonLogGroupF1B6922F"
               },
               "awslogs-stream-prefix": "FargateService",
               "awslogs-region": { Ref: "AWS::Region" }
@@ -580,7 +580,7 @@ export = {
     // THEN
     expect(stack).to(haveResourceLike('AWS::ECS::TaskDefinition', {
       Family: 'FargateTaskDef',
-      NetworkMode: ecs.NetworkMode.AwsVpc,
+      NetworkMode: ecs.NetworkMode.AWS_VPC,
       RequiresCompatibilities: ['FARGATE'],
       Cpu: '256',
       Memory: '512',
@@ -595,7 +595,7 @@ export = {
           Essential: true,
           Image: 'amazon/aws-xray-daemon',
           MemoryReservation: 512,
-          Name: 'xray',
+          Name: 'xray-daemon',
           PortMappings: [
             {
               ContainerPort: 2000,
