@@ -16,14 +16,14 @@ export interface ApplicationTargetGroupProps extends BaseTargetGroupProps {
   /**
    * The protocol to use
    *
-   * @default Determined from port if known
+   * @default - Determined from port if known.
    */
   readonly protocol?: ApplicationProtocol;
 
   /**
    * The port on which the listener listens for requests.
    *
-   * @default Determined from protocol if known
+   * @default - Determined from protocol if known.
    */
   readonly port?: number;
 
@@ -55,6 +55,8 @@ export interface ApplicationTargetGroupProps extends BaseTargetGroupProps {
    * Can be `Instance`, `IPAddress`, or any self-registering load balancing
    * target. If you use either `Instance` or `IPAddress` as targets, all
    * target must be of the same type.
+   *
+   * @default - No targets.
    */
   readonly targets?: IApplicationLoadBalancerTarget[];
 }

@@ -40,6 +40,8 @@ export interface CustomResourceProps {
 
   /**
    * Properties to pass to the Lambda
+   *
+   * @default - No properties.
    */
   readonly properties?: Properties;
 
@@ -61,6 +63,8 @@ export interface CustomResourceProps {
    *
    * @see
    * https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cfn-customresource.html#aws-cfn-resource-type-name
+   *
+   * @default - AWS::CloudFormation::CustomResource
    */
   readonly resourceType?: string;
 }
