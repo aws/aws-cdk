@@ -55,7 +55,7 @@ function findNpmPackage(fileName: string): { name: string, version: string, priv
   const paths = mod.paths.map(stripNodeModules);
 
   try {
-    const packagePath = require.resolve('package.json', { paths });
+    const packagePath = require.resolve('./package.json', { paths });
     return require(packagePath);
   } catch (e) {
     return undefined;
