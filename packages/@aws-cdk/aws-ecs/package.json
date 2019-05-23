@@ -40,7 +40,9 @@
     "pkglint": "pkglint -f",
     "package": "cdk-package",
     "awslint": "cdk-awslint",
-    "cfn2ts": "cfn2ts"
+    "cfn2ts": "cfn2ts",
+    "build+test+package": "npm run build+test && npm run package",
+    "build+test": "npm run build && npm test"
   },
   "cdk-build": {
     "cloudformation": "AWS::ECS"
@@ -84,6 +86,7 @@
     "@aws-cdk/aws-secretsmanager": "^0.31.0",
     "@aws-cdk/aws-servicediscovery": "^0.31.0",
     "@aws-cdk/aws-sns": "^0.31.0",
+    "@aws-cdk/aws-sqs": "^0.31.0",
     "@aws-cdk/cdk": "^0.31.0",
     "@aws-cdk/cx-api": "^0.31.0"
   },
@@ -106,6 +109,7 @@
     "@aws-cdk/aws-secretsmanager": "^0.31.0",
     "@aws-cdk/aws-servicediscovery": "^0.31.0",
     "@aws-cdk/aws-sns": "^0.31.0",
+    "@aws-cdk/aws-sqs": "^0.31.0",
     "@aws-cdk/cdk": "^0.31.0",
     "@aws-cdk/cx-api": "^0.31.0"
   },

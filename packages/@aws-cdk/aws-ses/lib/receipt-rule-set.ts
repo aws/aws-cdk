@@ -26,13 +26,15 @@ export interface ReceiptRuleSetProps {
   /**
    * The name for the receipt rule set.
    *
-   * @default a CloudFormation generated name
+   * @default - A CloudFormation generated name.
    */
   readonly name?: string;
 
   /**
    * The list of rules to add to this rule set. Rules are added in the same
    * order as they appear in the list.
+   *
+   * @default - No rules are added to the rule set.
    */
   readonly rules?: ReceiptRuleOptions[]
 

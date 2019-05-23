@@ -13,10 +13,12 @@
     "decdk-schema": "bin/decdk-schema"
   },
   "scripts": {
-    "build": "node ./deps.js && tsc && chmod +x bin/decdk && chmod +x bin/decdk-schema && bin/decdk-schema > cdk.schema.json",
-    "watch": "tsc -w",
+    "build": "node ./deps.js && tsc -b && chmod +x bin/decdk && chmod +x bin/decdk-schema && bin/decdk-schema > cdk.schema.json",
+    "watch": "tsc -b -w",
     "test": "jest",
-    "package": "mkdir -p dist/js && cd dist/js && npm pack ../../"
+    "package": "mkdir -p dist/js && cd dist/js && npm pack ../../",
+    "build+test": "npm run build && npm test",
+    "build+test+package": "npm run build+test && npm run package"
   },
   "author": {
     "name": "Amazon Web Services",
@@ -66,6 +68,7 @@
     "@aws-cdk/aws-ec2": "^0.31.0",
     "@aws-cdk/aws-ecr": "^0.31.0",
     "@aws-cdk/aws-ecs": "^0.31.0",
+    "@aws-cdk/aws-ecs-patterns": "^0.31.0",
     "@aws-cdk/aws-efs": "^0.31.0",
     "@aws-cdk/aws-eks": "^0.31.0",
     "@aws-cdk/aws-elasticache": "^0.31.0",

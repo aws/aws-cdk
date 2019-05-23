@@ -40,7 +40,9 @@
     "pkglint": "pkglint -f",
     "package": "cdk-package",
     "awslint": "cdk-awslint",
-    "cfn2ts": "cfn2ts"
+    "cfn2ts": "cfn2ts",
+    "build+test+package": "npm run build+test && npm run package",
+    "build+test": "npm run build && npm test"
   },
   "cdk-build": {
     "cloudformation": "AWS::DMS"

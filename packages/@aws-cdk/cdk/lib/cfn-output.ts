@@ -5,6 +5,8 @@ export interface CfnOutputProps {
   /**
    * A String type that describes the output value.
    * The description can be a maximum of 4 K in length.
+   *
+   * @default - No description.
    */
   readonly description?: string;
 
@@ -21,7 +23,7 @@ export interface CfnOutputProps {
    * To import the value from another stack, use `FnImportValue(export)`. You
    * can create an import value token by calling `output.makeImportValue()`.
    *
-   * @default Automatically allocate a name when `makeImportValue()`  is
+   * @default - Automatically allocate a name when `makeImportValue()` is
    * called.
    */
   readonly export?: string;
@@ -40,6 +42,8 @@ export interface CfnOutputProps {
    * A condition from the "Conditions" section to associate with this output
    * value. If the condition evaluates to `false`, this output value will not
    * be included in the stack.
+   *
+   * @default - No condition is associated with the output.
    */
   readonly condition?: CfnCondition;
 }
@@ -169,6 +173,8 @@ export interface StringListCfnOutputProps {
   /**
    * A String type that describes the output value.
    * The description can be a maximum of 4 K in length.
+   *
+   * @default - No description.
    */
   readonly description?: string;
 
@@ -207,6 +213,8 @@ export interface StringListCfnOutputProps {
    * A condition from the "Conditions" section to associate with this output
    * value. If the condition evaluates to `false`, this output value will not
    * be included in the stack.
+   *
+   * @default - None.
    */
   readonly condition?: CfnCondition;
 }

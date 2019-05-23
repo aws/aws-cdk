@@ -18,21 +18,21 @@ export interface FargateServiceProps extends BaseServiceProps {
   /**
    * Assign public IP addresses to each task
    *
-   * @default Use subnet default
+   * @default - Use subnet default.
    */
   readonly assignPublicIp?: boolean;
 
   /**
    * In what subnets to place the task's ENIs
    *
-   * @default Private subnets
+   * @default - Private subnets.
    */
   readonly vpcSubnets?: ec2.SubnetSelection;
 
   /**
    * Existing security group to use for the tasks
    *
-   * @default A new security group is created
+   * @default - A new security group is created.
    */
   readonly securityGroup?: ec2.ISecurityGroup;
 
