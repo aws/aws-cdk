@@ -109,7 +109,7 @@ export class StepScalingPolicy extends cdk.Construct {
         evaluationPeriods: 1,
         threshold,
       });
-      this.lowerAlarm.addAlarmAction(this.lowerAction);
+      this.lowerAlarm.onAlarm(this.lowerAction);
     }
 
     if (alarms.upperAlarmIntervalIndex !== undefined) {
@@ -139,7 +139,7 @@ export class StepScalingPolicy extends cdk.Construct {
         evaluationPeriods: 1,
         threshold,
       });
-      this.upperAlarm.addAlarmAction(this.upperAction);
+      this.upperAlarm.onAlarm(this.upperAction);
     }
   }
 }

@@ -28,10 +28,6 @@ export interface EcrSourceActionProps extends codepipeline.CommonActionProps {
 
 /**
  * The ECR Repository source CodePipeline Action.
- *
- * Will trigger the pipeline as soon as the target tag in the repository
- * changes, but only if there is a CloudTrail Trail in the account that
- * captures the ECR event.
  */
 export class EcrSourceAction extends codepipeline.Action {
   private readonly props: EcrSourceActionProps;
@@ -59,9 +55,7 @@ export class EcrSourceAction extends codepipeline.Action {
       )
       .addResource(this.props.repository.repositoryArn));
 
-    this.props.repository.onCloudTrailImagePushed(info.pipeline.node.uniqueId + 'SourceEventRule', {
-        target: new targets.CodePipeline(info.pipeline),
-        imageTag: this.props.imageTag
-    });
+    this.props.repository.onImagePushed(info.pipeline.node.uniqueId + 'SourceEventRule',
+        new targets.CodePipeline(info.pipeline), this.props.imageTag);
   }
 }

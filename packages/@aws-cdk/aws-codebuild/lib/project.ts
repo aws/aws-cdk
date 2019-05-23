@@ -33,13 +33,6 @@ export interface IProject extends IResource, iam.IGrantable {
   readonly role?: iam.IRole;
 
   /**
-   * Defines a CloudWatch event rule triggered when something happens with this project.
-   *
-   * @see https://docs.aws.amazon.com/codebuild/latest/userguide/sample-build-notifications.html
-   */
-  onEvent(id: string, options: events.OnEventOptions): events.Rule;
-
-  /**
    * Defines a CloudWatch event rule triggered when the build project state
    * changes. You can filter specific build status events using an event
    * pattern filter on the `build-status` detail field:
@@ -64,7 +57,7 @@ export interface IProject extends IResource, iam.IGrantable {
    *
    * @see https://docs.aws.amazon.com/codebuild/latest/userguide/sample-build-notifications.html
    */
-  onStateChange(id: string, options: events.OnEventOptions): events.Rule;
+  onStateChange(name: string, target?: events.IRuleTarget, options?: events.RuleProps): events.Rule;
 
   /**
    * Defines a CloudWatch event rule that triggers upon phase change of this
@@ -72,22 +65,22 @@ export interface IProject extends IResource, iam.IGrantable {
    *
    * @see https://docs.aws.amazon.com/codebuild/latest/userguide/sample-build-notifications.html
    */
-  onPhaseChange(id: string, options: events.OnEventOptions): events.Rule;
+  onPhaseChange(name: string, target?: events.IRuleTarget, options?: events.RuleProps): events.Rule;
 
   /**
    * Defines an event rule which triggers when a build starts.
    */
-  onBuildStarted(id: string, options: events.OnEventOptions): events.Rule;
+  onBuildStarted(name: string, target?: events.IRuleTarget, options?: events.RuleProps): events.Rule;
 
   /**
    * Defines an event rule which triggers when a build fails.
    */
-  onBuildFailed(id: string, options: events.OnEventOptions): events.Rule;
+  onBuildFailed(name: string, target?: events.IRuleTarget, options?: events.RuleProps): events.Rule;
 
   /**
    * Defines an event rule which triggers when a build completes successfully.
    */
-  onBuildSucceeded(id: string, options: events.OnEventOptions): events.Rule;
+  onBuildSucceeded(name: string, target?: events.IRuleTarget, options?: events.RuleProps): events.Rule;
 
   /**
    * @returns a CloudWatch metric associated with this build project.
@@ -165,23 +158,6 @@ abstract class ProjectBase extends Resource implements IProject {
   public abstract readonly role?: iam.IRole;
 
   /**
-   * Defines a CloudWatch event rule triggered when something happens with this project.
-   *
-   * @see https://docs.aws.amazon.com/codebuild/latest/userguide/sample-build-notifications.html
-   */
-  public onEvent(id: string, options: events.OnEventOptions): events.Rule {
-    const rule = new events.Rule(this, id, options);
-    rule.addTarget(options.target);
-    rule.addEventPattern({
-      source: ['aws.codebuild'],
-      detail: {
-        'project-name': [this.projectName]
-      }
-    });
-    return rule;
-  }
-
-  /**
    * Defines a CloudWatch event rule triggered when the build project state
    * changes. You can filter specific build status events using an event
    * pattern filter on the `build-status` detail field:
@@ -206,10 +182,17 @@ abstract class ProjectBase extends Resource implements IProject {
    *
    * @see https://docs.aws.amazon.com/codebuild/latest/userguide/sample-build-notifications.html
    */
-  public onStateChange(id: string, options: events.OnEventOptions) {
-    const rule = this.onEvent(id, options);
+  public onStateChange(name: string, target?: events.IRuleTarget, options?: events.RuleProps) {
+    const rule = new events.Rule(this, name, options);
+    rule.addTarget(target);
     rule.addEventPattern({
+      source: ['aws.codebuild'],
       detailType: ['CodeBuild Build State Change'],
+      detail: {
+        'project-name': [
+          this.projectName
+        ]
+      }
     });
     return rule;
   }
@@ -220,10 +203,17 @@ abstract class ProjectBase extends Resource implements IProject {
    *
    * @see https://docs.aws.amazon.com/codebuild/latest/userguide/sample-build-notifications.html
    */
-  public onPhaseChange(id: string, options: events.OnEventOptions) {
-    const rule = this.onEvent(id, options);
+  public onPhaseChange(name: string, target?: events.IRuleTarget, options?: events.RuleProps) {
+    const rule = new events.Rule(this, name, options);
+    rule.addTarget(target);
     rule.addEventPattern({
+      source: ['aws.codebuild'],
       detailType: ['CodeBuild Build Phase Change'],
+      detail: {
+        'project-name': [
+          this.projectName
+        ]
+      }
     });
     return rule;
   }
@@ -234,8 +224,8 @@ abstract class ProjectBase extends Resource implements IProject {
    * To access fields from the event in the event target input,
    * use the static fields on the `StateChangeEvent` class.
    */
-  public onBuildStarted(id: string, options: events.OnEventOptions) {
-    const rule = this.onStateChange(id, options);
+  public onBuildStarted(name: string, target?: events.IRuleTarget, options?: events.RuleProps) {
+    const rule = this.onStateChange(name, target, options);
     rule.addEventPattern({
       detail: {
         'build-status': ['IN_PROGRESS']
@@ -250,8 +240,8 @@ abstract class ProjectBase extends Resource implements IProject {
    * To access fields from the event in the event target input,
    * use the static fields on the `StateChangeEvent` class.
    */
-  public onBuildFailed(id: string, options: events.OnEventOptions) {
-    const rule = this.onStateChange(id, options);
+  public onBuildFailed(name: string, target?: events.IRuleTarget, options?: events.RuleProps) {
+    const rule = this.onStateChange(name, target, options);
     rule.addEventPattern({
       detail: {
         'build-status': ['FAILED']
@@ -266,8 +256,8 @@ abstract class ProjectBase extends Resource implements IProject {
    * To access fields from the event in the event target input,
    * use the static fields on the `StateChangeEvent` class.
    */
-  public onBuildSucceeded(id: string, options: events.OnEventOptions) {
-    const rule = this.onStateChange(id, options);
+  public onBuildSucceeded(name: string, target?: events.IRuleTarget, options?: events.RuleProps) {
+    const rule = this.onStateChange(name, target, options);
     rule.addEventPattern({
       detail: {
         'build-status': ['SUCCEEDED']

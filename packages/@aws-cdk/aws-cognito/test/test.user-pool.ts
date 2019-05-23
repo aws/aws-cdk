@@ -37,7 +37,7 @@ export = {
         preSignUp: fn
       }
     });
-    pool.addCustomMessageTrigger(fn);
+    pool.onCustomMessage(fn);
 
     // THEN
     expect(stack).to(haveResourceLike('AWS::Cognito::UserPool', {
@@ -61,14 +61,14 @@ export = {
 
     // WHEN
     const pool = new cognito.UserPool(stack, 'Pool', { });
-    pool.addCreateAuthChallengeTrigger(fn);
-    pool.addCustomMessageTrigger(fn);
-    pool.addDefineAuthChallengeTrigger(fn);
-    pool.addPostAuthenticationTrigger(fn);
-    pool.addPostConfirmationTrigger(fn);
-    pool.addPreAuthenticationTrigger(fn);
-    pool.addPreSignUpTrigger(fn);
-    pool.addVerifyAuthChallengeResponseTrigger(fn);
+    pool.onCreateAuthChallenge(fn);
+    pool.onCustomMessage(fn);
+    pool.onDefineAuthChallenge(fn);
+    pool.onPostAuthentication(fn);
+    pool.onPostConfirmation(fn);
+    pool.onPreAuthentication(fn);
+    pool.onPreSignUp(fn);
+    pool.onVerifyAuthChallengeResponse(fn);
 
     // THEN
     expect(stack).to(haveResourceLike('AWS::Cognito::UserPool', {

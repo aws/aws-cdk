@@ -166,27 +166,14 @@ export interface IBucket extends IResource {
   grantPublicAccess(keyPrefix?: string, ...allowedActions: string[]): iam.Grant;
 
   /**
-   * Define a CloudWatch event that triggers when something happens to this repository
+   * Defines a CloudWatch Event Rule that triggers upon putting an object into the Bucket.
    *
-   * Requires that there exists at least one CloudTrail Trail in your account
-   * that captures the event. This method will not create the Trail.
-   *
-   * @param id The id of the rule
-   * @param options Options for adding the rule
+   * @param name the logical ID of the newly created Event Rule
+   * @param target the optional target of the Event Rule
+   * @param path the optional path inside the Bucket that will be watched for changes
+   * @returns a new {@link events.Rule} instance
    */
-  onCloudTrailEvent(id: string, options: OnCloudTrailBucketEventOptions): events.Rule;
-
-  /**
-   * Defines an AWS CloudWatch event rule that can trigger a target when an image is pushed to this
-   * repository.
-   *
-   * Requires that there exists at least one CloudTrail Trail in your account
-   * that captures the event. This method will not create the Trail.
-   *
-   * @param id The id of the rule
-   * @param options Options for adding the rule
-   */
-  onCloudTrailPutObject(id: string, options: OnCloudTrailBucketEventOptions): events.Rule;
+  onPutObject(name: string, target?: events.IRuleTarget, path?: string): events.Rule;
 }
 
 /**
@@ -291,48 +278,32 @@ abstract class BucketBase extends Resource implements IBucket {
    */
   protected abstract disallowPublicAccess?: boolean;
 
-  /**
-   * Define a CloudWatch event that triggers when something happens to this repository
-   *
-   * Requires that there exists at least one CloudTrail Trail in your account
-   * that captures the event. This method will not create the Trail.
-   *
-   * @param id The id of the rule
-   * @param options Options for adding the rule
-   */
-  public onCloudTrailEvent(id: string, options: OnCloudTrailBucketEventOptions): events.Rule {
-    const rule = new events.Rule(this, id, options);
-    rule.addTarget(options.target);
-    rule.addEventPattern({
-      source: ['aws.s3'],
-      detailType: ['AWS API Call via CloudTrail'],
-      detail: {
-        resources: {
-          ARN: options.paths ? options.paths.map(p => this.arnForObjects(p)) : [this.bucketArn],
+  public onPutObject(name: string, target?: events.IRuleTarget, path?: string): events.Rule {
+    const eventRule = new events.Rule(this, name, {
+      eventPattern: {
+        source: [
+          'aws.s3',
+        ],
+        detailType: [
+          'AWS API Call via CloudTrail',
+        ],
+        detail: {
+          eventSource: [
+            's3.amazonaws.com',
+          ],
+          eventName: [
+            'PutObject',
+          ],
+          resources: {
+            ARN: [
+              path ? this.arnForObjects(path) : this.bucketArn,
+            ],
+          },
         },
-      }
-    });
-    return rule;
-  }
-
-  /**
-   * Defines an AWS CloudWatch event rule that can trigger a target when an image is pushed to this
-   * repository.
-   *
-   * Requires that there exists at least one CloudTrail Trail in your account
-   * that captures the event. This method will not create the Trail.
-   *
-   * @param id The id of the rule
-   * @param options Options for adding the rule
-   */
-  public onCloudTrailPutObject(id: string, options: OnCloudTrailBucketEventOptions): events.Rule {
-    const rule = this.onCloudTrailEvent(id, options);
-    rule.addEventPattern({
-      detail: {
-        eventName: ['PutObject'],
       },
     });
-    return rule;
+    eventRule.addTarget(target);
+    return eventRule;
   }
 
   /**
@@ -858,12 +829,12 @@ export class Bucket extends BucketBase {
    *
    * @example
    *
-   *    bucket.addEventNotification(EventType.OnObjectCreated, myLambda, 'home/myusername/*')
+   *    bucket.onEvent(EventType.OnObjectCreated, myLambda, 'home/myusername/*')
    *
    * @see
    * https://docs.aws.amazon.com/AmazonS3/latest/dev/NotificationHowTo.html
    */
-  public addEventNotification(event: EventType, dest: IBucketNotificationDestination, ...filters: NotificationKeyFilter[]) {
+  public onEvent(event: EventType, dest: IBucketNotificationDestination, ...filters: NotificationKeyFilter[]) {
     this.notifications.addNotification(event, dest, ...filters);
   }
 
@@ -875,8 +846,8 @@ export class Bucket extends BucketBase {
    * @param dest The notification destination (see onEvent)
    * @param filters Filters (see onEvent)
    */
-  public addObjectCreatedNotification(dest: IBucketNotificationDestination, ...filters: NotificationKeyFilter[]) {
-    return this.addEventNotification(EventType.ObjectCreated, dest, ...filters);
+  public onObjectCreated(dest: IBucketNotificationDestination, ...filters: NotificationKeyFilter[]) {
+    return this.onEvent(EventType.ObjectCreated, dest, ...filters);
   }
 
   /**
@@ -887,8 +858,8 @@ export class Bucket extends BucketBase {
    * @param dest The notification destination (see onEvent)
    * @param filters Filters (see onEvent)
    */
-  public addObjectRemovedNotification(dest: IBucketNotificationDestination, ...filters: NotificationKeyFilter[]) {
-    return this.addEventNotification(EventType.ObjectRemoved, dest, ...filters);
+  public onObjectRemoved(dest: IBucketNotificationDestination, ...filters: NotificationKeyFilter[]) {
+    return this.onEvent(EventType.ObjectRemoved, dest, ...filters);
   }
 
   private validateBucketName(bucketName: string) {
@@ -1209,16 +1180,4 @@ export interface NotificationKeyFilter {
    * S3 keys must have the specified suffix.
    */
   readonly suffix?: string;
-}
-
-/**
- * Options for the onCloudTrailPutObject method
- */
-export interface OnCloudTrailBucketEventOptions extends events.OnEventOptions {
-  /**
-   * Only watch changes to these object paths
-   *
-   * @default - Watch changes to all objects
-   */
-  readonly paths?: string[];
 }

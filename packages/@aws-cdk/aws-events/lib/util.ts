@@ -21,14 +21,12 @@ export function mergeEventPattern(dest: any, src: any) {
       const srcValue = srcObj[field];
       const destValue = destObj[field];
 
-      if (srcValue === undefined) { continue; }
-
       if (typeof(srcValue) !== 'object') {
         throw new Error(`Invalid event pattern field { ${field}: ${JSON.stringify(srcValue)} }. All fields must be arrays`);
       }
 
       // dest doesn't have this field
-      if (destObj[field] === undefined) {
+      if (!(field in destObj)) {
         destObj[field] = srcValue;
         continue;
       }

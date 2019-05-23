@@ -38,9 +38,6 @@ export interface S3SourceActionProps extends codepipeline.CommonActionProps {
 
 /**
  * Source that is provided by a specific Amazon S3 object.
- *
- * Will trigger the pipeline as soon as the S3 object changes, but only if there is
- * a CloudTrail Trail in the account that captures the S3 event.
  */
 export class S3SourceAction extends codepipeline.Action {
   private readonly props: S3SourceActionProps;
@@ -64,10 +61,8 @@ export class S3SourceAction extends codepipeline.Action {
 
   protected bind(info: codepipeline.ActionBind): void {
     if (this.props.pollForSourceChanges === false) {
-      this.props.bucket.onCloudTrailPutObject(info.pipeline.node.uniqueId + 'SourceEventRule', {
-        target: new targets.CodePipeline(info.pipeline),
-        paths: [this.props.bucketKey]
-      });
+      this.props.bucket.onPutObject(info.pipeline.node.uniqueId + 'SourceEventRule',
+          new targets.CodePipeline(info.pipeline), this.props.bucketKey);
     }
 
     // pipeline needs permissions to read from the S3 bucket

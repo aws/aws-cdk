@@ -72,9 +72,9 @@ export = {
       evaluationPeriods: 2
     });
 
-    alarm.addAlarmAction(new TestAlarmAction('A'));
-    alarm.addInsufficientDataAction(new TestAlarmAction('B'));
-    alarm.addOkAction(new TestAlarmAction('C'));
+    alarm.onAlarm(new TestAlarmAction('A'));
+    alarm.onInsufficientData(new TestAlarmAction('B'));
+    alarm.onOk(new TestAlarmAction('C'));
 
     // THEN
     expect(stack).to(haveResource('AWS::CloudWatch::Alarm', {

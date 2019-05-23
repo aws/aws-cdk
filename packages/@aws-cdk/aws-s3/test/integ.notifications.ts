@@ -13,12 +13,12 @@ const bucket = new s3.Bucket(stack, 'Bucket', {
 const topic = new Topic(stack, 'Topic');
 const topic3 = new Topic(stack, 'Topic3');
 
-bucket.addEventNotification(s3.EventType.ObjectCreatedPut, topic);
-bucket.addEventNotification(s3.EventType.ObjectRemoved, topic3, { prefix: 'home/myusername/' });
+bucket.onEvent(s3.EventType.ObjectCreatedPut, topic);
+bucket.onEvent(s3.EventType.ObjectRemoved, topic3, { prefix: 'home/myusername/' });
 
 const bucket2 = new s3.Bucket(stack, 'Bucket2', {
   removalPolicy: cdk.RemovalPolicy.Destroy
 });
-bucket2.addObjectRemovedNotification(topic3, { prefix: 'foo' }, { suffix: 'foo/bar' });
+bucket2.onObjectRemoved(topic3, { prefix: 'foo' }, { suffix: 'foo/bar' });
 
 app.run();

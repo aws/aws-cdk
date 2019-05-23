@@ -32,9 +32,7 @@ class ConfigStack extends cdk.Stack {
     const complianceTopic = new sns.Topic(this, 'ComplianceTopic');
 
     // Send notification on compliance change
-    driftRule.onComplianceChange('ComplianceChange', {
-      target: new targets.SnsTopic(complianceTopic)
-    });
+    driftRule.onComplianceChange('ComplianceChange', new targets.SnsTopic(complianceTopic));
     /// !hide
   }
 }

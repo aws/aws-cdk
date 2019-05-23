@@ -63,9 +63,7 @@ To define Amazon CloudWatch event rules, use the `onComplianceChange()` or `onRe
 
 ```ts
 const rule = new CloudFormationStackDriftDetectionCheck(this, 'Drift');
-rule.onComplianceChange('TopicEvent', {
-  target: new targets.SnsTopic(topic))
-});
+rule.onComplianceChange(topic);
 ```
 
 #### Example

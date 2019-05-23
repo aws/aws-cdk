@@ -227,7 +227,7 @@ export = {
         preHook: mockFunction(stack, 'PreHook'),
         deploymentConfig: LambdaDeploymentConfig.AllAtOnce
       });
-      test.throws(() => group.addPreHook(mockFunction(stack, 'PreHook2')));
+      test.throws(() => group.onPreHook(mockFunction(stack, 'PreHook2')));
       test.done();
     },
     "onPostHook throws error if post-hook already defined"(test: Test) {
@@ -238,7 +238,7 @@ export = {
         postHook: mockFunction(stack, 'PostHook'),
         deploymentConfig: LambdaDeploymentConfig.AllAtOnce
       });
-      test.throws(() => group.addPostHook(mockFunction(stack, 'PostHook2')));
+      test.throws(() => group.onPostHook(mockFunction(stack, 'PostHook2')));
       test.done();
     },
     "can run pre hook lambda function before deployment"(test: Test) {
@@ -299,7 +299,7 @@ export = {
         alias,
         deploymentConfig: LambdaDeploymentConfig.AllAtOnce
       });
-      group.addPreHook(mockFunction(stack, 'PreHook'));
+      group.onPreHook(mockFunction(stack, 'PreHook'));
 
       expect(stack).to(haveResourceLike('AWS::Lambda::Alias', {
         UpdatePolicy: {
@@ -397,7 +397,7 @@ export = {
         alias,
         deploymentConfig: LambdaDeploymentConfig.AllAtOnce
       });
-      group.addPostHook(mockFunction(stack, 'PostHook'));
+      group.onPostHook(mockFunction(stack, 'PostHook'));
 
       expect(stack).to(haveResourceLike('AWS::Lambda::Alias', {
         UpdatePolicy: {

@@ -117,6 +117,7 @@ export class Evaluation<T> {
   }
 
   public assert(condition: any, scope: string, extra?: string): condition is true {
+
     // deduplicate: skip if this specific assertion ("rule:scope") was already examined
     if (this.diagnostics.find(d => d.rule.code === this.curr.code && d.scope === scope)) {
       return condition;
@@ -125,19 +126,11 @@ export class Evaluation<T> {
     const include = this.shouldEvaluate(this.curr.code, scope);
     const message = util.format(this.curr.message, extra || '');
 
-    // Don't add a "Success" diagnostic. It will break if we run a compound
-    // linter rule which consists of 3 checks with the same scope (such
-    // as for example `assertSignature()`). If the first check fails, we would
-    // add a "Success" diagnostic and all other diagnostics would be skipped because
-    // of the deduplication check above. Changing the scope makes it worse, since
-    // the scope is also the ignore pattern and they're all conceptually the same rule.
-    //
-    // Simplest solution is to not record successes -- why do we even need them?
-    if (include && condition) { return condition; }
-
     let level: DiagnosticLevel;
     if (!include) {
       level = DiagnosticLevel.Skipped;
+    } else if (condition) {
+      level = DiagnosticLevel.Success;
     } else if (this.curr.warning) {
       level = DiagnosticLevel.Warning;
     } else {
@@ -166,12 +159,6 @@ export class Evaluation<T> {
     return this.assert(a.toString() === e.toString(), scope, ` (expected="${e}",actual="${a}")`);
   }
 
-  public assertTypesAssignable(ts: reflect.TypeSystem, actual: TypeSpecifier, expected: TypeSpecifier, scope: string) {
-    const a = typeReferenceFrom(ts, actual);
-    const e = typeReferenceFrom(ts, expected);
-    return this.assert(a.toString() === e.toString() || (a.fqn && e.fqn && a.type!.extends(e.type!)), scope, ` ("${a}" not assignable to "${e}")`);
-  }
-
   public assertSignature(method: reflect.Callable, expectations: MethodSignatureExpectations) {
     const scope = method.parentType.fqn + '.' + method.name;
     if (expectations.returns && reflect.Method.isMethod(method)) {
@@ -192,11 +179,7 @@ export class Evaluation<T> {
             this.assertEquals(actualName, expectedName, pscope);
           }
           if (expect.type) {
-            if (expect.subtypeAllowed) {
-              this.assertTypesAssignable(method.system, actual.type, expect.type, pscope);
-            } else {
-              this.assertTypesEqual(method.system, actual.type, expect.type, pscope);
-            }
+            this.assertTypesEqual(method.system, actual.type, expect.type, pscope);
           }
         }
       }
@@ -271,7 +254,6 @@ export type TypeSpecifier = reflect.TypeReference | reflect.Type | string;
 export interface MethodSignatureParameterExpectation {
   name?: string;
   type?: TypeSpecifier;
-  subtypeAllowed?: boolean;
 
   /** should this param be optional? */
   optional?: boolean;

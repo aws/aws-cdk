@@ -240,7 +240,7 @@ export = {
       const queue = new sqs.Queue(stack, 'Queue');
       const bucket = new s3.Bucket(stack, 'Bucket');
 
-      bucket.addObjectRemovedNotification(queue);
+      bucket.onObjectRemoved(queue);
 
       expect(stack).to(haveResource('AWS::SQS::QueuePolicy', {
         "PolicyDocument": {
@@ -314,7 +314,7 @@ export = {
       const bucket = new s3.Bucket(stack, 'Bucket');
       const queue = new sqs.Queue(stack, 'Queue', { encryption: sqs.QueueEncryption.Kms });
 
-      bucket.addObjectCreatedNotification(queue);
+      bucket.onObjectCreated(queue);
 
       expect(stack).to(haveResource('AWS::KMS::Key', {
         "KeyPolicy": {
@@ -381,7 +381,7 @@ export = {
       const stack = new Stack();
       const queue = new sqs.Queue(stack, 'Queue', { encryption: sqs.QueueEncryption.KmsManaged });
       const bucket = new s3.Bucket(stack, 'Bucket');
-      test.throws(() => bucket.addObjectRemovedNotification(queue), 'Unable to add statement to IAM resource policy for KMS key: "alias/aws/sqs"');
+      test.throws(() => bucket.onObjectRemoved(queue), 'Unable to add statement to IAM resource policy for KMS key: "alias/aws/sqs"');
       test.done();
     }
 

@@ -188,7 +188,7 @@ export abstract class State extends cdk.Construct implements IChainable {
      * Register this state as part of the given graph
      *
      * Don't call this. It will be called automatically when you work
-     * with states normally.
+     * states normally.
      */
     public bindToGraph(graph: StateGraph) {
         if (this.containingGraph === graph) { return; }
@@ -199,7 +199,7 @@ export abstract class State extends cdk.Construct implements IChainable {
         }
 
         this.containingGraph = graph;
-        this.whenBoundToGraph(graph);
+        this.onBindToGraph(graph);
 
         for (const incoming of this.incomingStates) {
             incoming.bindToGraph(graph);
@@ -349,7 +349,7 @@ export abstract class State extends cdk.Construct implements IChainable {
      *
      * Can be overridden by subclasses.
      */
-    protected whenBoundToGraph(graph: StateGraph) {
+    protected onBindToGraph(graph: StateGraph) {
         graph.registerState(this);
     }
 

@@ -59,27 +59,13 @@ export interface IRepository extends IResource {
   grantPullPush(grantee: iam.IGrantable): iam.Grant;
 
   /**
-   * Define a CloudWatch event that triggers when something happens to this repository
-   *
-   * Requires that there exists at least one CloudTrail Trail in your account
-   * that captures the event. This method will not create the Trail.
-   *
-   * @param id The id of the rule
-   * @param options Options for adding the rule
-   */
-  onCloudTrailEvent(id: string, options: events.OnEventOptions): events.Rule;
-
-  /**
    * Defines an AWS CloudWatch event rule that can trigger a target when an image is pushed to this
    * repository.
-   *
-   * Requires that there exists at least one CloudTrail Trail in your account
-   * that captures the event. This method will not create the Trail.
-   *
-   * @param id The id of the rule
-   * @param options Options for adding the rule
+   * @param name The name of the rule
+   * @param target An IRuleTarget to invoke when this event happens (you can add more targets using `addTarget`)
+   * @param imageTag Only trigger on the specific image tag
    */
-  onCloudTrailImagePushed(id: string, options: OnCloudTrailImagePushedOptions): events.Rule;
+  onImagePushed(name: string, target?: events.IRuleTarget, imageTag?: string): events.Rule;
 }
 
 /**
@@ -125,50 +111,30 @@ export abstract class RepositoryBase extends Resource implements IRepository {
   }
 
   /**
-   * Define a CloudWatch event that triggers when something happens to this repository
-   *
-   * Requires that there exists at least one CloudTrail Trail in your account
-   * that captures the event. This method will not create the Trail.
-   *
-   * @param id The id of the rule
-   * @param options Options for adding the rule
-   */
-  public onCloudTrailEvent(id: string, options: events.OnEventOptions): events.Rule {
-    const rule = new events.Rule(this, id, options);
-    rule.addTarget(options.target);
-    rule.addEventPattern({
-      source: ['aws.ecr'],
-      detailType: ['AWS API Call via CloudTrail'],
-      detail: {
-        requestParameters: {
-          repositoryName: [this.repositoryName],
-        }
-      }
-    });
-    return rule;
-  }
-
-  /**
    * Defines an AWS CloudWatch event rule that can trigger a target when an image is pushed to this
    * repository.
-   *
-   * Requires that there exists at least one CloudTrail Trail in your account
-   * that captures the event. This method will not create the Trail.
-   *
-   * @param id The id of the rule
-   * @param options Options for adding the rule
+   * @param name The name of the rule
+   * @param target An IRuleTarget to invoke when this event happens (you can add more targets using `addTarget`)
+   * @param imageTag Only trigger on the specific image tag
    */
-  public onCloudTrailImagePushed(id: string, options: OnCloudTrailImagePushedOptions): events.Rule {
-    const rule = this.onCloudTrailEvent(id, options);
-    rule.addEventPattern({
-      detail: {
-        eventName: ['PutImage'],
-        requestParameters: {
-          imageTag: options.imageTag ? [options.imageTag] : undefined,
+  public onImagePushed(name: string, target?: events.IRuleTarget, imageTag?: string): events.Rule {
+    return new events.Rule(this, name, {
+      targets: target ? [target] : undefined,
+      eventPattern: {
+        source: ['aws.ecr'],
+        detail: {
+          eventName: [
+            'PutImage',
+          ],
+          requestParameters: {
+            repositoryName: [
+              this.repositoryName,
+            ],
+            imageTag: imageTag ? [imageTag] : undefined,
+          },
         },
       },
     });
-    return rule;
   }
 
   /**
@@ -210,18 +176,6 @@ export abstract class RepositoryBase extends Resource implements IRepository {
       "ecr:UploadLayerPart",
       "ecr:CompleteLayerUpload");
   }
-}
-
-/**
- * Options for the onCloudTrailImagePushed method
- */
-export interface OnCloudTrailImagePushedOptions extends events.OnEventOptions {
-  /**
-   * Only watch changes to this image tag
-   *
-   * @default - Watch changes to all tags
-   */
-  readonly imageTag?: string;
 }
 
 export interface RepositoryProps {

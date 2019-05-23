@@ -197,13 +197,11 @@ export = {
     const trail = new Trail(stack, 'MyAmazingCloudTrail', { managementEvents: ReadWriteType.WriteOnly });
 
     // WHEN
-    trail.onCloudTrailEvent('DoEvents', {
-      target: {
-        bind: () => ({
-          arn: 'arn',
-          id: 'myid'
-        })
-      }
+    trail.onEvent('DoEvents', {
+      bind: () => ({
+        arn: 'arn',
+        id: 'myid'
+      })
     });
 
     // THEN

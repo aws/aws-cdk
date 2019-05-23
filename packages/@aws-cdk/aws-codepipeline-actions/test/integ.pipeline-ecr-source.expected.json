@@ -235,9 +235,6 @@
           "source": [
             "aws.ecr"
           ],
-          "detail-type": [
-            "AWS API Call via CloudTrail"
-          ],
           "detail": {
             "eventName": [
               "PutImage"

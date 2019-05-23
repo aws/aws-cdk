@@ -86,23 +86,6 @@ export interface IPipeline extends IResource {
    * @param identity the IAM Identity to grant the permissions to
    */
   grantBucketReadWrite(identity: iam.IGrantable): iam.Grant;
-
-  /**
-   * Define an event rule triggered by this CodePipeline.
-   *
-   * @param id Identifier for this event handler.
-   * @param options Additional options to pass to the event rule.
-   */
-  onEvent(id: string, options: events.OnEventOptions): events.Rule;
-
-  /**
-   * Define an event rule triggered by the "CodePipeline Pipeline Execution
-   * State Change" event emitted from this pipeline.
-   *
-   * @param id Identifier for this event handler.
-   * @param options Additional options to pass to the event rule.
-   */
-  onStateChange(id: string, options: events.OnEventOptions): events.Rule;
 }
 
 /**
