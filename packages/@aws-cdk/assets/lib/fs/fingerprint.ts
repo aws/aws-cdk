@@ -32,7 +32,7 @@ export interface FingerprintOptions extends CopyOptions {
 export function fingerprint(fileOrDirectory: string, options: FingerprintOptions = { }) {
   const hash = crypto.createHash('sha256');
   _hashField(hash, 'options.extra', options.extra || '');
-  const follow = options.follow || FollowMode.Never;
+  const follow = options.follow || FollowMode.External;
   _hashField(hash, 'options.follow', follow);
 
   const rootDirectory = fs.statSync(fileOrDirectory).isDirectory()

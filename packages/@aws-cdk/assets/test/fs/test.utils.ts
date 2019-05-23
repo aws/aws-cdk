@@ -1,5 +1,7 @@
+import fs = require('fs');
 import { Test } from 'nodeunit';
 import path = require('path');
+import { ImportMock } from 'ts-mock-imports';
 import { FollowMode } from '../../lib/fs';
 import util = require('../../lib/fs/utils');
 
@@ -29,15 +31,54 @@ export = {
       'follows internal'(test: Test) {
         const sourceRoot = path.join('source', 'root');
         const linkTarget = path.join(sourceRoot, 'referent');
-        test.ok(util.shouldFollow(FollowMode.Always, sourceRoot, linkTarget));
-        test.done();
+
+        const mockFsExists = ImportMock.mockFunction(fs, 'existsSync', true);
+        try {
+          test.ok(util.shouldFollow(FollowMode.Always, sourceRoot, linkTarget));
+          test.ok(mockFsExists.calledOnceWith(linkTarget));
+          test.done();
+        } finally {
+          mockFsExists.restore();
+        }
       },
 
       'follows external'(test: Test) {
         const sourceRoot = path.join('source', 'root');
         const linkTarget = path.join('alternate', 'referent');
-        test.ok(util.shouldFollow(FollowMode.Always, sourceRoot, linkTarget));
-        test.done();
+        const mockFsExists = ImportMock.mockFunction(fs, 'existsSync', true);
+        try {
+          test.ok(util.shouldFollow(FollowMode.Always, sourceRoot, linkTarget));
+          test.ok(mockFsExists.calledOnceWith(linkTarget));
+          test.done();
+        } finally {
+          mockFsExists.restore();
+        }
+      },
+
+      'does not follow internal when the referent does not exist'(test: Test) {
+        const sourceRoot = path.join('source', 'root');
+        const linkTarget = path.join(sourceRoot, 'referent');
+        const mockFsExists = ImportMock.mockFunction(fs, 'existsSync', false);
+        try {
+          test.ok(!util.shouldFollow(FollowMode.Always, sourceRoot, linkTarget));
+          test.ok(mockFsExists.calledOnceWith(linkTarget));
+          test.done();
+        } finally {
+          mockFsExists.restore();
+        }
+      },
+
+      'does not follow external when the referent does not exist'(test: Test) {
+        const sourceRoot = path.join('source', 'root');
+        const linkTarget = path.join('alternate', 'referent');
+        const mockFsExists = ImportMock.mockFunction(fs, 'existsSync', false);
+        try {
+          test.ok(!util.shouldFollow(FollowMode.Always, sourceRoot, linkTarget));
+          test.ok(mockFsExists.calledOnceWith(linkTarget));
+          test.done();
+        } finally {
+          mockFsExists.restore();
+        }
       },
     },
 
@@ -45,15 +86,40 @@ export = {
       'does not follow internal'(test: Test) {
         const sourceRoot = path.join('source', 'root');
         const linkTarget = path.join(sourceRoot, 'referent');
-        test.ok(!util.shouldFollow(FollowMode.External, sourceRoot, linkTarget));
-        test.done();
+        const mockFsExists = ImportMock.mockFunction(fs, 'existsSync');
+        try {
+          test.ok(!util.shouldFollow(FollowMode.External, sourceRoot, linkTarget));
+          test.ok(mockFsExists.notCalled);
+          test.done();
+        } finally {
+          mockFsExists.restore();
+        }
       },
 
       'follows external'(test: Test) {
         const sourceRoot = path.join('source', 'root');
         const linkTarget = path.join('alternate', 'referent');
-        test.ok(util.shouldFollow(FollowMode.External, sourceRoot, linkTarget));
-        test.done();
+        const mockFsExists = ImportMock.mockFunction(fs, 'existsSync', true);
+        try {
+          test.ok(util.shouldFollow(FollowMode.External, sourceRoot, linkTarget));
+          test.ok(mockFsExists.calledOnceWith(linkTarget));
+          test.done();
+        } finally {
+          mockFsExists.restore();
+        }
+      },
+
+      'does not follow external when referent does not exist'(test: Test) {
+        const sourceRoot = path.join('source', 'root');
+        const linkTarget = path.join('alternate', 'referent');
+        const mockFsExists = ImportMock.mockFunction(fs, 'existsSync', false);
+        try {
+          test.ok(!util.shouldFollow(FollowMode.External, sourceRoot, linkTarget));
+          test.ok(mockFsExists.calledOnceWith(linkTarget));
+          test.done();
+        } finally {
+          mockFsExists.restore();
+        }
       },
     },
 
@@ -61,15 +127,40 @@ export = {
       'follows internal'(test: Test) {
         const sourceRoot = path.join('source', 'root');
         const linkTarget = path.join(sourceRoot, 'referent');
-        test.ok(!util.shouldFollow(FollowMode.Never, sourceRoot, linkTarget));
-        test.done();
+        const mockFsExists = ImportMock.mockFunction(fs, 'existsSync', true);
+        try {
+          test.ok(util.shouldFollow(FollowMode.BlockExternal, sourceRoot, linkTarget));
+          test.ok(mockFsExists.calledOnceWith(linkTarget));
+          test.done();
+        } finally {
+          mockFsExists.restore();
+        }
+      },
+
+      'does not follow internal when referent does not exist'(test: Test) {
+        const sourceRoot = path.join('source', 'root');
+        const linkTarget = path.join(sourceRoot, 'referent');
+        const mockFsExists = ImportMock.mockFunction(fs, 'existsSync', false);
+        try {
+          test.ok(!util.shouldFollow(FollowMode.BlockExternal, sourceRoot, linkTarget));
+          test.ok(mockFsExists.calledOnceWith(linkTarget));
+          test.done();
+        } finally {
+          mockFsExists.restore();
+        }
       },
 
       'does not follow external'(test: Test) {
         const sourceRoot = path.join('source', 'root');
         const linkTarget = path.join('alternate', 'referent');
-        test.ok(!util.shouldFollow(FollowMode.BlockExternal, sourceRoot, linkTarget));
-        test.done();
+        const mockFsExists = ImportMock.mockFunction(fs, 'existsSync');
+        try {
+          test.ok(!util.shouldFollow(FollowMode.BlockExternal, sourceRoot, linkTarget));
+          test.ok(mockFsExists.notCalled);
+          test.done();
+        } finally {
+          mockFsExists.restore();
+        }
       },
     },
 
@@ -77,15 +168,27 @@ export = {
       'does not follow internal'(test: Test) {
         const sourceRoot = path.join('source', 'root');
         const linkTarget = path.join(sourceRoot, 'referent');
-        test.ok(!util.shouldFollow(FollowMode.Never, sourceRoot, linkTarget));
-        test.done();
+        const mockFsExists = ImportMock.mockFunction(fs, 'existsSync');
+        try {
+          test.ok(!util.shouldFollow(FollowMode.Never, sourceRoot, linkTarget));
+          test.ok(mockFsExists.notCalled);
+          test.done();
+        } finally {
+          mockFsExists.restore();
+        }
       },
 
       'does not follow external'(test: Test) {
         const sourceRoot = path.join('source', 'root');
         const linkTarget = path.join('alternate', 'referent');
-        test.ok(!util.shouldFollow(FollowMode.Never, sourceRoot, linkTarget));
-        test.done();
+        const mockFsExists = ImportMock.mockFunction(fs, 'existsSync');
+        try {
+          test.ok(!util.shouldFollow(FollowMode.Never, sourceRoot, linkTarget));
+          test.ok(mockFsExists.notCalled);
+          test.done();
+        } finally {
+          mockFsExists.restore();
+        }
       },
     }
   },
