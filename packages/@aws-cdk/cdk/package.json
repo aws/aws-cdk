@@ -68,6 +68,7 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "@types/lodash": "^4.14.123",
+    "@types/semver": "^6.0.0",
     "cdk-build-tools": "^0.31.0",
     "cfn2ts": "^0.31.0",
     "fast-check": "^1.14.0",
@@ -75,7 +76,8 @@
     "pkglint": "^0.31.0"
   },
   "dependencies": {
-    "@aws-cdk/cx-api": "^0.31.0"
+    "@aws-cdk/cx-api": "^0.31.0",
+    "semver": "^6.1.0"
   },
   "homepage": "https://github.com/awslabs/aws-cdk",
   "peerDependencies": {
