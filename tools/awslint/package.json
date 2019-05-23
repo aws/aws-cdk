@@ -28,7 +28,7 @@
     "@types/fs-extra": "^5.0.5",
     "@types/yargs": "^13.0.0",
     "tslint": "^5.16.0",
-    "typescript": "^3.4.3"
+    "typescript": "^3.4.5"
   },
   "repository": {
     "type": "git",
