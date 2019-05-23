@@ -92,7 +92,8 @@ export class DockerImageAsset extends cdk.Construct implements assets.IAsset {
 
     this.node.addMetadata(cxapi.ASSET_METADATA, asset);
 
-    // parse repository name and tag from the parameter (<REPO_NAME>@sha256:<TAG>)
+    // Parse repository name and tag from the parameter (<REPO_NAME>@sha256:<TAG>)
+    // Example: cdk/cdkexampleimageb2d7f504@sha256:72c4f956379a43b5623d529ddd969f6826dde944d6221f445ff3e7add9875500
     const components = cdk.Fn.split('@sha256:', imageNameParameter.stringValue);
     const repositoryName = cdk.Fn.select(0, components).toString();
     const imageSha = cdk.Fn.select(1, components).toString();
