@@ -1,13 +1,20 @@
 import { FollowMode } from './follow-mode';
 
+/**
+ * Obtains applied when copying directories into the staging location.
+ */
 export interface CopyOptions {
   /**
-   * @default External only follows symlinks that are external to the source directory
+   * A strategy for how to handle symlinks.
+   *
+   * @default Never
    */
   readonly follow?: FollowMode;
 
   /**
-   * glob patterns to exclude from the copy.
+   * Glob patterns to exclude from the copy.
+   *
+   * @default nothing is excluded
    */
   readonly exclude?: string[];
 }

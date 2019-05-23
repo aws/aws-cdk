@@ -1,3 +1,4 @@
+import fs = require('fs');
 import minimatch = require('minimatch');
 import path = require('path');
 import { FollowMode } from './follow-mode';
@@ -42,11 +43,11 @@ export function shouldExclude(exclude: string[], filePath: string): boolean {
 export function shouldFollow(mode: FollowMode, sourceRoot: string, realPath: string): boolean {
   switch (mode) {
     case FollowMode.Always:
-      return true;
+      return fs.existsSync(realPath);
     case FollowMode.External:
-      return !_isInternal();
+      return !_isInternal() && fs.existsSync(realPath);
     case FollowMode.BlockExternal:
-      return _isInternal();
+      return _isInternal() && fs.existsSync(realPath);
     case FollowMode.Never:
       return false;
     default:
