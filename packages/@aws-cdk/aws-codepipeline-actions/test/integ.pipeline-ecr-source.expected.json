@@ -117,7 +117,7 @@
                 "Name": "ECR_Source",
                 "OutputArtifacts": [
                   {
-                    "Name": "Artifact_ECR_Source_awscdkcodepipelineecrsourceMyEcrRepo7074CE15"
+                    "Name": "Artifact_Source_ECR_Source"
                   }
                 ],
                 "RunOrder": 1

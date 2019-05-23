@@ -1,4 +1,5 @@
 import { AliasRecord, IHostedZone } from '@aws-cdk/aws-route53';
+import targets = require('@aws-cdk/aws-route53-targets');
 import cdk = require('@aws-cdk/cdk');
 import { FargateService } from './fargate/fargate-service';
 import { FargateTaskDefinition } from './fargate/fargate-task-definition';
@@ -53,13 +54,17 @@ export interface LoadBalancedFargateServiceProps extends LoadBalancedServiceBase
    */
   readonly publicTasks?: boolean;
 
-  /*
+  /**
    * Domain name for the service, e.g. api.example.com
+   *
+   * @default - No domain name.
    */
   readonly domainName?: string;
 
   /**
    * Route53 hosted zone for the domain, e.g. "example.com."
+   *
+   * @default - No Route53 hosted domain zone.
    */
   readonly domainZone?: IHostedZone;
 
@@ -76,6 +81,9 @@ export interface LoadBalancedFargateServiceProps extends LoadBalancedServiceBase
  */
 export class LoadBalancedFargateService extends LoadBalancedServiceBase {
 
+  /**
+   * The Fargate service in this construct
+   */
   public readonly service: FargateService;
 
   constructor(scope: cdk.Construct, id: string, props: LoadBalancedFargateServiceProps) {
@@ -117,7 +125,7 @@ export class LoadBalancedFargateService extends LoadBalancedServiceBase {
       new AliasRecord(this, "DNS", {
         zone: props.domainZone,
         recordName: props.domainName,
-        target: this.loadBalancer
+        target: new targets.LoadBalancerTarget(this.loadBalancer),
       });
     }
   }

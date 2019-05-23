@@ -1,3 +1,97 @@
+# CloudFormation Resource Specification v3.0.0
+
+## New Resource Types
+
+* AWS::ApiGatewayV2::ApiMapping
+* AWS::ApiGatewayV2::DomainName
+
+## Attribute Changes
+
+
+## Property Changes
+
+* AWS::FSx::FileSystem Tags.ItemType (__changed__)
+  * Old: TagEntry
+  * New: Tag
+
+## Property Type Changes
+
+* Tag Key.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dms-endpoint-tag.html#cfn-dms-endpoint-tag-key
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iotanalytics-datastore-tag.html#cfn-iotanalytics-datastore-tag-key
+* Tag Key.Required (__changed__)
+  * Old: false
+  * New: true
+* Tag Value.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dms-endpoint-tag.html#cfn-dms-endpoint-tag-value
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iotanalytics-datastore-tag.html#cfn-iotanalytics-datastore-tag-value
+* Tag Value.Required (__changed__)
+  * Old: false
+  * New: true
+
+
+# CloudFormation Resource Specification v2.32.0
+
+## New Resource Types
+
+* AWS::Greengrass::ResourceDefinition
+
+## Attribute Changes
+
+
+## Property Changes
+
+* AWS::SSM::Parameter Tags (__added__)
+* AWS::ServiceCatalog::CloudFormationProvisionedProduct Tags.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+
+## Property Type Changes
+
+* AWS::Cognito::UserPool.EmailConfiguration EmailSendingAccount (__added__)
+* AWS::Greengrass::FunctionDefinition.FunctionConfiguration MemorySize.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::Greengrass::FunctionDefinition.FunctionConfiguration Timeout.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::Greengrass::FunctionDefinitionVersion.FunctionConfiguration MemorySize.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::Greengrass::FunctionDefinitionVersion.FunctionConfiguration Timeout.Required (__changed__)
+  * Old: true
+  * New: false
+
+
+# CloudFormation Resource Specification v2.30.0
+
+## New Resource Types
+
+
+## Attribute Changes
+
+
+## Property Changes
+
+
+## Property Type Changes
+
+* AWS::Batch::JobDefinition.ResourceRequirement (__added__)
+* AWS::Batch::JobDefinition.ContainerProperties ResourceRequirements (__added__)
+* Tag Key.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iotanalytics-datastore-tag.html#cfn-iotanalytics-datastore-tag-key
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dms-endpoint-tag.html#cfn-dms-endpoint-tag-key
+* Tag Key.Required (__changed__)
+  * Old: true
+  * New: false
+* Tag Value.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iotanalytics-datastore-tag.html#cfn-iotanalytics-datastore-tag-value
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dms-endpoint-tag.html#cfn-dms-endpoint-tag-value
+* Tag Value.Required (__changed__)
+  * Old: true
+  * New: false
+
+
 # CloudFormation Resource Specification v2.29.0
 
 ## New Resource Types

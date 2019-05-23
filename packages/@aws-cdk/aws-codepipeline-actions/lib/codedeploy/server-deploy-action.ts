@@ -1,6 +1,7 @@
 import codedeploy = require('@aws-cdk/aws-codedeploy');
 import codepipeline = require('@aws-cdk/aws-codepipeline');
 import iam = require('@aws-cdk/aws-iam');
+import { deployArtifactBounds } from '../common';
 
 /**
  * Construction properties of the {@link CodeDeployServerDeployAction CodeDeploy server deploy CodePipeline Action}.
@@ -9,7 +10,7 @@ export interface CodeDeployServerDeployActionProps extends codepipeline.CommonAc
   /**
    * The source to use as input for deployment.
    */
-  readonly inputArtifact: codepipeline.Artifact;
+  readonly input: codepipeline.Artifact;
 
   /**
    * The CodeDeploy server Deployment Group to deploy to.
@@ -17,15 +18,16 @@ export interface CodeDeployServerDeployActionProps extends codepipeline.CommonAc
   readonly deploymentGroup: codedeploy.IServerDeploymentGroup;
 }
 
-export class CodeDeployServerDeployAction extends codepipeline.DeployAction {
+export class CodeDeployServerDeployAction extends codepipeline.Action {
   private readonly deploymentGroup: codedeploy.IServerDeploymentGroup;
 
   constructor(props: CodeDeployServerDeployActionProps) {
     super({
       ...props,
-      artifactBounds: { minInputs: 1, maxInputs: 1, minOutputs: 0, maxOutputs: 0 },
+      category: codepipeline.ActionCategory.Deploy,
       provider: 'CodeDeploy',
-      inputArtifact: props.inputArtifact,
+      artifactBounds: deployArtifactBounds(),
+      inputs: [props.input],
       configuration: {
         ApplicationName: props.deploymentGroup.application.applicationName,
         DeploymentGroupName: props.deploymentGroup.deploymentGroupName,
@@ -54,7 +56,7 @@ export class CodeDeployServerDeployAction extends codepipeline.DeployAction {
       ));
 
     info.role.addToPolicy(new iam.PolicyStatement()
-      .addResource(this.deploymentGroup.deploymentConfig.deploymentConfigArn(info.scope))
+      .addResource(this.deploymentGroup.deploymentConfig.deploymentConfigArn)
       .addActions(
         'codedeploy:GetDeploymentConfig',
       ));

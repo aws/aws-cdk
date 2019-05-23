@@ -1,17 +1,16 @@
 import codepipeline = require('@aws-cdk/aws-codepipeline');
+import targets = require('@aws-cdk/aws-events-targets');
 import s3 = require('@aws-cdk/aws-s3');
+import { sourceArtifactBounds } from '../common';
 
 /**
  * Construction properties of the {@link S3SourceAction S3 source Action}.
  */
 export interface S3SourceActionProps extends codepipeline.CommonActionProps {
   /**
-   * The name of the source's output artifact. Output artifacts are used by CodePipeline as
-   * inputs into other actions.
    *
-   * @default a name will be auto-generated
    */
-  readonly outputArtifactName?: string;
+  readonly output: codepipeline.Artifact;
 
   /**
    * The key within the S3 bucket that stores the source code.
@@ -40,14 +39,16 @@ export interface S3SourceActionProps extends codepipeline.CommonActionProps {
 /**
  * Source that is provided by a specific Amazon S3 object.
  */
-export class S3SourceAction extends codepipeline.SourceAction {
+export class S3SourceAction extends codepipeline.Action {
   private readonly props: S3SourceActionProps;
 
   constructor(props: S3SourceActionProps) {
     super({
       ...props,
+      category: codepipeline.ActionCategory.Source,
       provider: 'S3',
-      outputArtifactName: props.outputArtifactName || `Artifact_${props.actionName}_${props.bucket.node.uniqueId}`,
+      artifactBounds: sourceArtifactBounds(),
+      outputs: [props.output],
       configuration: {
         S3Bucket: props.bucket.bucketName,
         S3ObjectKey: props.bucketKey,
@@ -61,7 +62,7 @@ export class S3SourceAction extends codepipeline.SourceAction {
   protected bind(info: codepipeline.ActionBind): void {
     if (this.props.pollForSourceChanges === false) {
       this.props.bucket.onPutObject(info.pipeline.node.uniqueId + 'SourceEventRule',
-          info.pipeline, this.props.bucketKey);
+          new targets.CodePipeline(info.pipeline), this.props.bucketKey);
     }
 
     // pipeline needs permissions to read from the S3 bucket

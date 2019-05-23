@@ -34,8 +34,8 @@ export = nodeunit.testCase({
       _assertPermissionGranted(test, pipelineRole.statements, 'cloudformation:DeleteChangeSet', stackArn, changeSetCondition);
 
       // TODO: revert "as any" once we move all actions into a single package.
-      test.deepEqual((action as any).actionInputArtifacts, [artifact],
-                     'The inputArtifact was correctly registered');
+      test.deepEqual(action.inputs, [artifact],
+                     'The input was correctly registered');
 
       _assertActionMatches(test, stage.actions, 'AWS', 'CloudFormation', 'Deploy', {
         ActionMode: 'CHANGE_SET_CREATE_REPLACE',
@@ -313,8 +313,8 @@ class PipelineDouble extends cdk.Construct implements codepipeline.IPipeline {
     this.role = role;
   }
 
-  public asEventRuleTarget(_ruleArn: string, _ruleUniqueId: string): events.EventRuleTargetProps {
-    throw new Error('asEventRuleTarget() is unsupported in PipelineDouble');
+  public bind(_rule: events.IRule): events.RuleTargetProperties {
+    throw new Error('asRuleTarget() is unsupported in PipelineDouble');
   }
 
   public grantBucketRead(_identity?: iam.IGrantable): iam.Grant {
@@ -356,8 +356,8 @@ class StageDouble implements codepipeline.IStage {
     throw new Error('addAction() is not supported on StageDouble');
   }
 
-  public onStateChange(_name: string, _target?: events.IEventRuleTarget, _options?: events.EventRuleProps):
-      events.EventRule {
+  public onStateChange(_name: string, _target?: events.IRuleTarget, _options?: events.RuleProps):
+      events.Rule {
     throw new Error('onStateChange() is not supported on StageDouble');
   }
 }

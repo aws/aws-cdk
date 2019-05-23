@@ -1,6 +1,6 @@
 import { Reference } from "./reference";
 
-const CFN_REFERENCE_SYMBOL = Symbol('@aws-cdk/cdk.CfnReference');
+const CFN_REFERENCE_SYMBOL = Symbol.for('@aws-cdk/cdk.CfnReference');
 
 /**
  * A Token that represents a CloudFormation reference to another resource
@@ -25,6 +25,55 @@ export class CfnReference extends Reference {
   }
 
   /**
+   * Return the CfnReference for the indicated target
+   *
+   * Will make sure that multiple invocations for the same target and intrinsic
+   * return the same CfnReference. Because CfnReferences accumulate state in
+   * the prepare() phase (for the purpose of cross-stack references), it's
+   * important that the state isn't lost if it's lazily created, like so:
+   *
+   *     new Token(() => new CfnReference(...))
+   */
+  public static for(target: CfnRefElement, attribute: string) {
+    return CfnReference.singletonReference(target, attribute, () => {
+      const cfnInstrinsic = attribute === 'Ref' ? { Ref: target.logicalId } : { 'Fn::GetAtt': [ target.logicalId, attribute ]};
+      return new CfnReference(cfnInstrinsic, attribute, target);
+    });
+  }
+
+  /**
+   * Return a CfnReference that references a pseudo referencd
+   */
+  public static forPseudo(pseudoName: string, scope: Construct) {
+    return CfnReference.singletonReference(scope, `Pseudo:${pseudoName}`, () => {
+      const cfnInstrinsic = { Ref: pseudoName };
+      return new CfnReference(cfnInstrinsic, pseudoName, scope);
+    });
+  }
+
+  /**
+   * Static table where we keep singleton CfnReference instances
+   */
+  private static referenceTable = new Map<Construct, Map<string, CfnReference>>();
+
+  /**
+   * Get or create the table
+   */
+  private static singletonReference(target: Construct, attribKey: string, fresh: () => CfnReference) {
+    let attribs = CfnReference.referenceTable.get(target);
+    if (!attribs) {
+      attribs = new Map();
+      CfnReference.referenceTable.set(target, attribs);
+    }
+    let ref = attribs.get(attribKey);
+    if (!ref) {
+      ref = fresh();
+      attribs.set(attribKey, ref);
+    }
+    return ref;
+  }
+
+  /**
    * What stack this Token is pointing to
    */
   private readonly producingStack?: Stack;
@@ -36,9 +85,9 @@ export class CfnReference extends Reference {
 
   private readonly originalDisplayName: string;
 
-  constructor(value: any, displayName: string, target: Construct) {
+  private constructor(value: any, displayName: string, target: Construct) {
     if (typeof(value) === 'function') {
-        throw new Error('Reference can only hold CloudFormation intrinsics (not a function)');
+      throw new Error('Reference can only hold CloudFormation intrinsics (not a function)');
     }
     // prepend scope path to display name
     super(value, `${target.node.id}.${displayName}`, target);
@@ -49,7 +98,7 @@ export class CfnReference extends Reference {
     Object.defineProperty(this, CFN_REFERENCE_SYMBOL, { value: true });
   }
 
-  public resolve(context: ResolveContext): any {
+  public resolve(context: IResolveContext): any {
     // If we have a special token for this consuming stack, resolve that. Otherwise resolve as if
     // we are in the same stack.
     const token = this.replacementTokens.get(context.scope.node.stack);
@@ -64,6 +113,7 @@ export class CfnReference extends Reference {
    * Register a stack this references is being consumed from.
    */
   public consumeFromStack(consumingStack: Stack, consumingConstruct: IConstruct) {
+    // tslint:disable-next-line:max-line-length
     if (this.producingStack && this.producingStack !== consumingStack && !this.replacementTokens.has(consumingStack)) {
       // We're trying to resolve a cross-stack reference
       consumingStack.addDependency(this.producingStack, `${consumingConstruct.node.path} -> ${this.target.node.path}.${this.originalDisplayName}`);
@@ -106,10 +156,10 @@ export class CfnReference extends Reference {
     // so construct one in-place.
     return new Token({ 'Fn::ImportValue': output.obtainExportName() });
   }
-
 }
 
+import { CfnRefElement } from "./cfn-element";
 import { CfnOutput } from "./cfn-output";
 import { Construct, IConstruct } from "./construct";
 import { Stack } from "./stack";
-import { ResolveContext, Token } from "./token";
+import { IResolveContext, Token } from "./token";

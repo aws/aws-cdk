@@ -15,7 +15,7 @@ export = {
           actionName: 'ECS',
           service,
         });
-      }, /one of 'inputArtifact' or 'imageFile' is required/);
+      }, /one of 'input' or 'imageFile' is required/);
 
       test.done();
     },
@@ -27,7 +27,7 @@ export = {
       const action = new cpactions.EcsDeployAction({
         actionName: 'ECS',
         service,
-        inputArtifact: artifact,
+        input: artifact,
       });
 
       test.equal(action.configuration.FileName, undefined);
@@ -58,10 +58,10 @@ export = {
         new cpactions.EcsDeployAction({
           actionName: 'ECS',
           service,
-          inputArtifact: artifact,
+          input: artifact,
           imageFile: artifact.atPath('file.json'),
         });
-      }, /one of 'inputArtifact' or 'imageFile' can be provided/);
+      }, /one of 'input' or 'imageFile' can be provided/);
 
       test.done();
     },
@@ -74,7 +74,7 @@ function anyEcsService(): ecs.FargateService {
   taskDefinition.addContainer('MainContainer', {
     image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
   });
-  const vpc = new ec2.VpcNetwork(stack, 'VPC');
+  const vpc = new ec2.Vpc(stack, 'VPC');
   const cluster = new ecs.Cluster(stack, 'Cluster', {
     vpc,
   });

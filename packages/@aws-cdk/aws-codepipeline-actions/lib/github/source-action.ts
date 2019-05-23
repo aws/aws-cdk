@@ -1,15 +1,24 @@
 import codepipeline = require('@aws-cdk/aws-codepipeline');
 import { SecretValue } from '@aws-cdk/cdk';
+import { sourceArtifactBounds } from '../common';
+
+/**
+ * If and how the GitHub source action should be triggered
+ */
+export enum GitHubTrigger {
+  None = 'None',
+  Poll = 'Poll',
+  WebHook = 'WebHook',
+}
 
 /**
  * Construction properties of the {@link GitHubSourceAction GitHub source action}.
  */
 export interface GitHubSourceActionProps extends codepipeline.CommonActionProps {
   /**
-   * The name of the source's output artifact. CfnOutput artifacts are used by CodePipeline as
-   * inputs into other actions.
+   *
    */
-  readonly outputArtifactName: string;
+  readonly output: codepipeline.Artifact;
 
   /**
    * The GitHub account/user that owns the repo.
@@ -39,40 +48,45 @@ export interface GitHubSourceActionProps extends codepipeline.CommonActionProps 
   readonly oauthToken: SecretValue;
 
   /**
-   * Whether AWS CodePipeline should poll for source changes.
-   * If this is `false`, the Pipeline will use a webhook to detect source changes instead.
+   * How AWS CodePipeline should be triggered
    *
-   * @default false
+   * With the default value "WebHook", a webhook is created in GitHub that triggers the action
+   * With "Poll", CodePipeline periodically checks the source for changes
+   * With "None", the action is not triggered through changes in the source
+   *
+   * @default GitHubTrigger.WebHook
    */
-  readonly pollForSourceChanges?: boolean;
+  readonly trigger?: GitHubTrigger;
 }
 
 /**
  * Source that is provided by a GitHub repository.
  */
-export class GitHubSourceAction extends codepipeline.SourceAction {
+export class GitHubSourceAction extends codepipeline.Action {
   private readonly props: GitHubSourceActionProps;
 
   constructor(props: GitHubSourceActionProps) {
     super({
       ...props,
+      category: codepipeline.ActionCategory.Source,
       owner: 'ThirdParty',
       provider: 'GitHub',
+      artifactBounds: sourceArtifactBounds(),
+      outputs: [props.output],
       configuration: {
         Owner: props.owner,
         Repo: props.repo,
         Branch: props.branch || "master",
         OAuthToken: props.oauthToken.toString(),
-        PollForSourceChanges: props.pollForSourceChanges || false,
+        PollForSourceChanges: props.trigger === GitHubTrigger.Poll,
       },
-      outputArtifactName: props.outputArtifactName
     });
 
     this.props = props;
   }
 
   protected bind(info: codepipeline.ActionBind): void {
-    if (!this.props.pollForSourceChanges) {
+    if (!this.props.trigger || this.props.trigger === GitHubTrigger.WebHook) {
       new codepipeline.CfnWebhook(info.scope, 'WebhookResource', {
         authentication: 'GITHUB_HMAC',
         authenticationConfiguration: {

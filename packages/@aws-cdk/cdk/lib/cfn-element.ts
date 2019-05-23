@@ -37,7 +37,7 @@ export abstract class CfnElement extends Construct {
    * Creates an entity and binds it to a tree.
    * Note that the root of the tree must be a Stack object (not just any Root).
    *
-   * @param parent The parent construct
+   * @param scope The parent construct
    * @param props Construct properties
    */
   constructor(scope: Construct, id: string) {
@@ -46,7 +46,7 @@ export abstract class CfnElement extends Construct {
     this.node.addMetadata(LOGICAL_ID_MD, new (require("./token").Token)(() => this.logicalId), this.constructor);
 
     this._logicalId = this.node.stack.logicalIds.getLogicalId(this);
-    this.logicalId = new Token(() => this._logicalId).toString();
+    this.logicalId = new Token(() => this._logicalId, `${notTooLong(this.node.path)}.LogicalID`).toString();
   }
 
   /**
@@ -147,9 +147,14 @@ export abstract class CfnRefElement extends CfnElement {
   /**
    * Return a token that will CloudFormation { Ref } this stack element
    */
-  protected get referenceToken(): Token {
-    return new CfnReference({ Ref: this.logicalId }, 'Ref', this);
+  public get referenceToken(): Token {
+    return CfnReference.for(this, 'Ref');
   }
+}
+
+function notTooLong(x: string) {
+  if (x.length < 100) { return x; }
+  return x.substr(0, 47) + '...' + x.substr(x.length - 47);
 }
 
 import { CfnReference } from "./cfn-reference";

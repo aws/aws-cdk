@@ -1,13 +1,15 @@
 import appscaling = require('@aws-cdk/aws-applicationautoscaling');
 import iam = require('@aws-cdk/aws-iam');
-import cdk = require('@aws-cdk/cdk');
-import { Construct, Token } from '@aws-cdk/cdk';
+import { Aws, Construct, Resource, Token } from '@aws-cdk/cdk';
 import { CfnTable } from './dynamodb.generated';
 import { EnableScalingProps, IScalableTableAttribute } from './scalable-attribute-api';
 import { ScalableTableAttribute } from './scalable-table-attribute';
 
 const HASH_KEY_TYPE = 'HASH';
 const RANGE_KEY_TYPE = 'RANGE';
+
+// https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Limits.html#limits-secondary-indexes
+const MAX_LOCAL_SECONDARY_INDEX_COUNT = 5;
 
 const READ_DATA_ACTIONS = [
   'dynamodb:BatchGetItem',
@@ -43,7 +45,7 @@ export interface Attribute {
   readonly type: AttributeType;
 }
 
-export interface TableProps {
+export interface TableOptions {
   /**
    * Partition key attribute definition.
    */
@@ -82,12 +84,6 @@ export interface TableProps {
   readonly billingMode?: BillingMode;
 
   /**
-   * Enforces a particular physical table name.
-   * @default <generated>
-   */
-  readonly tableName?: string;
-
-  /**
    * Whether point-in-time recovery is enabled.
    * @default undefined, point-in-time recovery is disabled
    */
@@ -100,17 +96,25 @@ export interface TableProps {
   readonly sseEnabled?: boolean;
 
   /**
+   * The name of TTL attribute.
+   * @default undefined, TTL is disabled
+   */
+  readonly ttlAttributeName?: string;
+
+  /**
    * When an item in the table is modified, StreamViewType determines what information
    * is written to the stream for this table. Valid values for StreamViewType are:
    * @default undefined, streams are disabled
    */
   readonly streamSpecification?: StreamViewType;
+}
 
+export interface TableProps extends TableOptions {
   /**
-   * The name of TTL attribute.
-   * @default undefined, TTL is disabled
+   * Enforces a particular physical table name.
+   * @default <generated>
    */
-  readonly ttlAttributeName?: string;
+  readonly tableName?: string;
 }
 
 export interface SecondaryIndexProps {
@@ -173,7 +177,7 @@ export interface LocalSecondaryIndexProps extends SecondaryIndexProps {
 /**
  * Provides a DynamoDB table.
  */
-export class Table extends Construct {
+export class Table extends Resource {
   /**
    * Permits an IAM Principal to list all DynamoDB Streams.
    * @param grantee The principal (no-op if undefined)
@@ -186,8 +190,19 @@ export class Table extends Construct {
     });
  }
 
+ /**
+  * @attribute
+  */
   public readonly tableArn: string;
+
+  /**
+   * @attribute
+   */
   public readonly tableName: string;
+
+  /**
+   * @attribute
+   */
   public readonly tableStreamArn: string;
 
   private readonly table: CfnTable;
@@ -254,11 +269,6 @@ export class Table extends Construct {
    * @param props the property of global secondary index
    */
   public addGlobalSecondaryIndex(props: GlobalSecondaryIndexProps) {
-    if (this.globalSecondaryIndexes.length === 5) {
-      // https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Limits.html#limits-secondary-indexes
-      throw new RangeError('a maximum number of global secondary index per table is 5');
-    }
-
     this.validateProvisioning(props);
     this.validateIndexName(props.indexName);
 
@@ -286,9 +296,9 @@ export class Table extends Construct {
    * @param props the property of local secondary index
    */
   public addLocalSecondaryIndex(props: LocalSecondaryIndexProps) {
-    if (this.localSecondaryIndexes.length === 5) {
-      // https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Limits.html#limits-secondary-indexes
-      throw new RangeError('a maximum number of local secondary index per table is 5');
+    // https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Limits.html#limits-secondary-indexes
+    if (this.localSecondaryIndexes.length >= MAX_LOCAL_SECONDARY_INDEX_COUNT) {
+      throw new RangeError(`a maximum number of local secondary index per table is ${MAX_LOCAL_SECONDARY_INDEX_COUNT}`);
     }
 
     this.validateIndexName(props.indexName);
@@ -413,7 +423,7 @@ export class Table extends Construct {
       actions,
       resourceArns: [
         this.tableArn,
-        new cdk.Token(() => this.hasIndex ? `${this.tableArn}/index/*` : cdk.Aws.noValue).toString()
+        new Token(() => this.hasIndex ? `${this.tableArn}/index/*` : Aws.noValue).toString()
       ],
       scope: this,
     });
@@ -437,7 +447,7 @@ export class Table extends Construct {
   /**
    * Permits an IAM principal all data read operations from this table:
    * BatchGetItem, GetRecords, GetShardIterator, Query, GetItem, Scan.
-   * @param principal The principal to grant access to
+   * @param grantee The principal to grant access to
    */
   public grantReadData(grantee: iam.IGrantable) {
     return this.grant(grantee, ...READ_DATA_ACTIONS);
@@ -456,7 +466,7 @@ export class Table extends Construct {
   /**
    * Permits an IAM principal all data write operations to this table:
    * BatchWriteItem, PutItem, UpdateItem, DeleteItem.
-   * @param principal The principal to grant access to
+   * @param grantee The principal to grant access to
    */
   public grantWriteData(grantee: iam.IGrantable) {
     return this.grant(grantee, ...WRITE_DATA_ACTIONS);
@@ -624,14 +634,12 @@ export class Table extends Construct {
    */
   private makeScalingRole(): iam.IRole {
     // Use a Service Linked Role.
-    return iam.Role.import(this, 'ScalingRole', {
-      roleArn: this.node.stack.formatArn({
-        // https://docs.aws.amazon.com/autoscaling/application/userguide/application-auto-scaling-service-linked-roles.html
-        service: 'iam',
-        resource: 'role/aws-service-role/dynamodb.application-autoscaling.amazonaws.com',
-        resourceName: 'AWSServiceRoleForApplicationAutoScaling_DynamoDBTable'
-      })
-    });
+    // https://docs.aws.amazon.com/autoscaling/application/userguide/application-auto-scaling-service-linked-roles.html
+    return iam.Role.fromRoleArn(this, 'ScalingRole', this.node.stack.formatArn({
+      service: 'iam',
+      resource: 'role/aws-service-role/dynamodb.application-autoscaling.amazonaws.com',
+      resourceName: 'AWSServiceRoleForApplicationAutoScaling_DynamoDBTable'
+    }));
   }
 
   /**

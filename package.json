@@ -4,21 +4,21 @@
     "include": "dependencies/node-version"
   },
   "scripts": {
-    "pkglint": "tools/pkglint/bin/pkglint -f .",
+    "pkglint": "lerna --scope pkglint run build && lerna run pkglint",
     "build-all": "tsc -b"
   },
   "devDependencies": {
-    "@types/node": "8.10.40",
+    "@types/jest": "^24.0.12",
+    "@types/node": "8.10.45",
     "@types/nodeunit": "^0.0.30",
-    "conventional-changelog-cli": "^2.0.12",
-    "lerna": "^3.13.1",
-    "nodeunit": "^0.11.2",
-    "nyc": "^13.3.0",
-    "tslint": "^5.13.1",
-    "@types/jest": "^24.0.11",
-    "jest": "^24.4.0",
-    "ts-jest": "^24.0.0",
-    "typescript": "^3.3.3333"
+    "conventional-changelog-cli": "^2.0.21",
+    "jest": "^24.8.0",
+    "lerna": "^3.14.1",
+    "nodeunit": "^0.11.3",
+    "nyc": "^14.1.1",
+    "ts-jest": "^24.0.2",
+    "tslint": "^5.16.0",
+    "typescript": "^3.4.5"
   },
   "repository": {
     "type": "git",

@@ -22,7 +22,7 @@ export enum AssetPackaging {
   File = 'file',
 }
 
-export interface GenericAssetProps {
+export interface AssetProps {
   /**
    * The disk location of the asset.
    */
@@ -36,6 +36,8 @@ export interface GenericAssetProps {
   /**
    * A list of principals that should be able to read this asset from S3.
    * You can use `asset.grantRead(principal)` to grant read permissions later.
+   *
+   * @default - No principals that can read file asset.
    */
   readonly readers?: iam.IGrantable[];
 }
@@ -85,7 +87,7 @@ export class Asset extends cdk.Construct {
    */
   private readonly s3Prefix: string;
 
-  constructor(scope: cdk.Construct, id: string, props: GenericAssetProps) {
+  constructor(scope: cdk.Construct, id: string, props: AssetProps) {
     super(scope, id);
 
     // stage the asset source (conditionally).
@@ -122,9 +124,7 @@ export class Asset extends cdk.Construct {
     const s3Filename = cdk.Fn.select(1, cdk.Fn.split(cxapi.ASSET_PREFIX_SEPARATOR, keyParam.stringValue)).toString();
     this.s3ObjectKey = `${this.s3Prefix}${s3Filename}`;
 
-    this.bucket = s3.Bucket.import(this, 'AssetBucket', {
-      bucketName: this.s3BucketName
-    });
+    this.bucket = s3.Bucket.fromBucketName(this, 'AssetBucket', this.s3BucketName);
 
     // form the s3 URL of the object key
     this.s3Url = this.bucket.urlForObject(this.s3ObjectKey);
@@ -160,7 +160,7 @@ export class Asset extends cdk.Construct {
    *
    * @see https://github.com/awslabs/aws-cdk/issues/1432
    *
-   * @param resource The CloudFormation resource which is using this asset.
+   * @param resource The CloudFormation resource which is using this asset [disable-awslint:ref-via-interface]
    * @param resourceProperty The property name where this asset is referenced
    * (e.g. "Code" for AWS::Lambda::Function)
    */
@@ -197,6 +197,8 @@ export interface FileAssetProps {
   /**
    * A list of principals that should be able to read this file asset from S3.
    * You can use `asset.grantRead(principal)` to grant read permissions later.
+   *
+   * @default - No principals that can read file asset.
    */
   readonly readers?: iam.IGrantable[];
 }
@@ -219,6 +221,8 @@ export interface ZipDirectoryAssetProps {
   /**
    * A list of principals that should be able to read this ZIP file from S3.
    * You can use `asset.grantRead(principal)` to grant read permissions later.
+   *
+   * @default - No principals that can read file asset.
    */
   readonly readers?: iam.IGrantable[];
 }

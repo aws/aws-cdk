@@ -12,7 +12,7 @@ export = {
     "with only required properties set, it correctly sets default properties"(test: Test) {
       // GIVEN
       const stack = new cdk.Stack();
-      const vpc = new ec2.VpcNetwork(stack, 'MyVpc', {});
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
       const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
       cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
@@ -42,8 +42,6 @@ export = {
         DesiredCount: 1,
         LaunchType: "EC2",
         LoadBalancers: [],
-        PlacementConstraints: [],
-        PlacementStrategies: [],
         SchedulingStrategy: "REPLICA"
       }));
 
@@ -53,7 +51,7 @@ export = {
     "errors if daemon and desiredCount both specified"(test: Test) {
       // GIVEN
       const stack = new cdk.Stack();
-      const vpc = new ec2.VpcNetwork(stack, 'MyVpc', {});
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
       const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
       cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
@@ -75,10 +73,60 @@ export = {
       test.done();
     },
 
+    "errors if daemon and maximumPercent not 100"(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+      cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
+      taskDefinition.addContainer('BaseContainer', {
+        image: ecs.ContainerImage.fromRegistry('test'),
+        memoryReservationMiB: 10,
+      });
+
+      // THEN
+      test.throws(() => {
+        new ecs.Ec2Service(stack, "Ec2Service", {
+          cluster,
+          taskDefinition,
+          daemon: true,
+          maximumPercent: 300
+        });
+      }, /Maximum percent must be 100 for daemon mode./);
+
+      test.done();
+    },
+
+    "errors if daemon and minimum not 0"(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+      cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
+      taskDefinition.addContainer('BaseContainer', {
+        image: ecs.ContainerImage.fromRegistry('test'),
+        memoryReservationMiB: 10,
+      });
+
+      // THEN
+      test.throws(() => {
+        new ecs.Ec2Service(stack, "Ec2Service", {
+          cluster,
+          taskDefinition,
+          daemon: true,
+          minimumHealthyPercent: 50
+        });
+      }, /Minimum healthy percent must be 0 for daemon mode./);
+
+      test.done();
+    },
+
     'Output does not contain DesiredCount if daemon mode is set'(test: Test) {
       // GIVEN
       const stack = new cdk.Stack();
-      const vpc = new ec2.VpcNetwork(stack, 'MyVpc', {});
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
       const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
       cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
@@ -105,7 +153,7 @@ export = {
     "errors if no container definitions"(test: Test) {
       // GIVEN
       const stack = new cdk.Stack();
-      const vpc = new ec2.VpcNetwork(stack, 'MyVpc', {});
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
       const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
 
@@ -123,7 +171,7 @@ export = {
     "sets daemon scheduling strategy"(test: Test) {
       // GIVEN
       const stack = new cdk.Stack();
-      const vpc = new ec2.VpcNetwork(stack, 'MyVpc', {});
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
       const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
       cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
@@ -141,7 +189,11 @@ export = {
 
       // THEN
       expect(stack).to(haveResource("AWS::ECS::Service", {
-        SchedulingStrategy: "DAEMON"
+        SchedulingStrategy: "DAEMON",
+        DeploymentConfiguration: {
+          MaximumPercent: 100,
+          MinimumHealthyPercent: 0
+        },
       }));
 
       test.done();
@@ -151,7 +203,7 @@ export = {
       "it errors if vpcSubnets is specified"(test: Test) {
         // GIVEN
         const stack = new cdk.Stack();
-        const vpc = new ec2.VpcNetwork(stack, 'MyVpc', {});
+        const vpc = new ec2.Vpc(stack, 'MyVpc', {});
         const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
         cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
         const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', {
@@ -183,7 +235,7 @@ export = {
       "it creates a security group for the service"(test: Test) {
         // GIVEN
         const stack = new cdk.Stack();
-        const vpc = new ec2.VpcNetwork(stack, 'MyVpc', {});
+        const vpc = new ec2.Vpc(stack, 'MyVpc', {});
         const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
         cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
         const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', {
@@ -234,7 +286,7 @@ export = {
       "it allows vpcSubnets"(test: Test) {
         // GIVEN
         const stack = new cdk.Stack();
-        const vpc = new ec2.VpcNetwork(stack, 'MyVpc', {});
+        const vpc = new ec2.Vpc(stack, 'MyVpc', {});
         const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
         cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
         const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', {
@@ -262,7 +314,7 @@ export = {
     "with distinctInstance placement constraint"(test: Test) {
       // GIVEN
       const stack = new cdk.Stack();
-      const vpc = new ec2.VpcNetwork(stack, 'MyVpc', {});
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
       const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
       cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
@@ -275,7 +327,7 @@ export = {
       new ecs.Ec2Service(stack, "Ec2Service", {
         cluster,
         taskDefinition,
-        placeOnDistinctInstances: true
+        placementConstraints: [ecs.PlacementConstraint.distinctInstances()]
       });
 
       // THEN
@@ -291,7 +343,7 @@ export = {
     "with memberOf placement constraints"(test: Test) {
       // GIVEN
       const stack = new cdk.Stack();
-      const vpc = new ec2.VpcNetwork(stack, 'MyVpc', {});
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
       const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
       cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
@@ -322,7 +374,7 @@ export = {
     "with placeSpreadAcross placement strategy"(test: Test) {
       // GIVEN
       const stack = new cdk.Stack();
-      const vpc = new ec2.VpcNetwork(stack, 'MyVpc', {});
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
       const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
       cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
@@ -353,7 +405,7 @@ export = {
     "errors with placeSpreadAcross placement strategy if daemon specified"(test: Test) {
       // GIVEN
       const stack = new cdk.Stack();
-      const vpc = new ec2.VpcNetwork(stack, 'MyVpc', {});
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
       const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
       cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
@@ -380,7 +432,7 @@ export = {
     "with placeRandomly placement strategy"(test: Test) {
       // GIVEN
       const stack = new cdk.Stack();
-      const vpc = new ec2.VpcNetwork(stack, 'MyVpc');
+      const vpc = new ec2.Vpc(stack, 'MyVpc');
       const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
       cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
@@ -410,7 +462,7 @@ export = {
     "errors with placeRandomly placement strategy if daemon specified"(test: Test) {
       // GIVEN
       const stack = new cdk.Stack();
-      const vpc = new ec2.VpcNetwork(stack, 'MyVpc');
+      const vpc = new ec2.Vpc(stack, 'MyVpc');
       const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
       cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
@@ -437,7 +489,7 @@ export = {
     "with placePackedBy placement strategy"(test: Test) {
       // GIVEN
       const stack = new cdk.Stack();
-      const vpc = new ec2.VpcNetwork(stack, 'MyVpc', {});
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
       const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
       cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
@@ -468,7 +520,7 @@ export = {
     "errors with placePackedBy placement strategy if daemon specified"(test: Test) {
       // GIVEN
       const stack = new cdk.Stack();
-      const vpc = new ec2.VpcNetwork(stack, 'MyVpc', {});
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
       const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
       cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
@@ -497,7 +549,7 @@ export = {
     'can attach to classic ELB'(test: Test) {
       // GIVEN
       const stack = new cdk.Stack();
-      const vpc = new ec2.VpcNetwork(stack, 'VPC');
+      const vpc = new ec2.Vpc(stack, 'VPC');
       const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
       cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TD', { networkMode: ecs.NetworkMode.Host });
@@ -531,7 +583,7 @@ export = {
     'throws if namespace has not been added to cluster'(test: Test) {
       // GIVEN
       const stack = new cdk.Stack();
-      const vpc = new ec2.VpcNetwork(stack, 'MyVpc', {});
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
       const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
       cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
 
@@ -560,7 +612,7 @@ export = {
     'throws if network mode is none'(test: Test) {
       // GIVEN
       const stack = new cdk.Stack();
-      const vpc = new ec2.VpcNetwork(stack, 'MyVpc', {});
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
       const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
       cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', {
@@ -591,7 +643,7 @@ export = {
     'creates AWS Cloud Map service for Private DNS namespace with bridge network mode'(test: Test) {
       // GIVEN
       const stack = new cdk.Stack();
-      const vpc = new ec2.VpcNetwork(stack, 'MyVpc', {});
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
       const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
       cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
 
@@ -667,7 +719,7 @@ export = {
     'creates AWS Cloud Map service for Private DNS namespace with host network mode'(test: Test) {
       // GIVEN
       const stack = new cdk.Stack();
-      const vpc = new ec2.VpcNetwork(stack, 'MyVpc', {});
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
       const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
       cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
 
@@ -744,7 +796,7 @@ export = {
     'throws if wrong DNS record type specified with bridge network mode'(test: Test) {
       // GIVEN
       const stack = new cdk.Stack();
-      const vpc = new ec2.VpcNetwork(stack, 'MyVpc', {});
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
       const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
       cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
 
@@ -778,7 +830,7 @@ export = {
     'creates AWS Cloud Map service for Private DNS namespace with AwsVpc network mode'(test: Test) {
       // GIVEN
       const stack = new cdk.Stack();
-      const vpc = new ec2.VpcNetwork(stack, 'MyVpc', {});
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
       const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
       cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
 
@@ -853,7 +905,7 @@ export = {
     'creates AWS Cloud Map service for Private DNS namespace with AwsVpc network mode with SRV records'(test: Test) {
       // GIVEN
       const stack = new cdk.Stack();
-      const vpc = new ec2.VpcNetwork(stack, 'MyVpc', {});
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
       const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
       cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
 

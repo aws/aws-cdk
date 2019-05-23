@@ -21,12 +21,14 @@ export interface ContainerDefinitionOptions {
    *
    * If you provide a shell command as a single string, you have to quote command-line arguments.
    *
-   * @default CMD value built into container image
+   * @default - CMD value built into container image.
    */
   readonly command?: string[];
 
   /**
    * The minimum number of CPU units to reserve for the container.
+   *
+   * @default - No minimum CPU units reserved.
    */
   readonly cpu?: number;
 
@@ -40,28 +42,28 @@ export interface ContainerDefinitionOptions {
   /**
    * A list of DNS search domains that are provided to the container.
    *
-   * @default No search domains
+   * @default - No search domains.
    */
   readonly dnsSearchDomains?: string[];
 
   /**
    * A list of DNS servers that Amazon ECS provides to the container.
    *
-   * @default Default DNS servers
+   * @default - Default DNS servers.
    */
   readonly dnsServers?: string[];
 
   /**
    * A key-value map of labels for the container.
    *
-   * @default No labels
+   * @default - No labels.
    */
   readonly dockerLabels?: { [key: string]: string };
 
   /**
    * A list of custom labels for SELinux and AppArmor multi-level security systems.
    *
-   * @default No security labels
+   * @default - No security labels.
    */
   readonly dockerSecurityOptions?: string[];
 
@@ -69,14 +71,15 @@ export interface ContainerDefinitionOptions {
    * The ENTRYPOINT value to pass to the container.
    *
    * @see https://docs.docker.com/engine/reference/builder/#entrypoint
-   * @default Entry point configured in container
+   *
+   * @default - Entry point configured in container.
    */
   readonly entryPoint?: string[];
 
   /**
    * The environment variables to pass to the container.
    *
-   * @default No environment variables
+   * @default - No environment variables.
    */
   readonly environment?: { [key: string]: string };
 
@@ -96,21 +99,21 @@ export interface ContainerDefinitionOptions {
   /**
    * A list of hostnames and IP address mappings to append to the /etc/hosts file on the container.
    *
-   * @default No extra hosts
+   * @default - No extra hosts.
    */
   readonly extraHosts?: { [name: string]: string };
 
   /**
    * Container health check.
    *
-   * @default Health check configuration from container
+   * @default - Health check configuration from container.
    */
   readonly healthCheck?: HealthCheck;
 
   /**
    * The name that Docker uses for the container hostname.
    *
-   * @default Automatic hostname
+   * @default - Automatic hostname.
    */
   readonly hostname?: string;
 
@@ -121,6 +124,8 @@ export interface ContainerDefinitionOptions {
    * is terminated.
    *
    * At least one of memoryLimitMiB and memoryReservationMiB is required for non-Fargate services.
+   *
+   * @default - No memory limit.
    */
   readonly memoryLimitMiB?: number;
 
@@ -133,6 +138,8 @@ export interface ContainerDefinitionOptions {
    * the available memory on the container instance—whichever comes first.
    *
    * At least one of memoryLimitMiB and memoryReservationMiB is required for non-Fargate services.
+   *
+   * @default - No memory reserved.
    */
   readonly memoryReservationMiB?: number;
 
@@ -166,8 +173,17 @@ export interface ContainerDefinitionOptions {
 
   /**
    * Configures a custom log driver for the container.
+   *
+   * @default - Containers use the same logging driver that the Docker daemon uses.
    */
   readonly logging?: LogDriver;
+
+  /**
+   * Configures Linux Parameters
+   *
+   * @default - No Linux paramters.
+   */
+  readonly linuxParameters?: LinuxParameters;
 }
 
 /**
@@ -176,6 +192,8 @@ export interface ContainerDefinitionOptions {
 export interface ContainerDefinitionProps extends ContainerDefinitionOptions {
   /**
    * The task this container definition belongs to.
+   *
+   * [disable-awslint:ref-via-interface]
    */
   readonly taskDefinition: TaskDefinition;
 }
@@ -187,7 +205,7 @@ export class ContainerDefinition extends cdk.Construct {
   /**
    * Access Linux Parameters
    */
-  public readonly linuxParameters = new LinuxParameters();
+  public readonly linuxParameters?: LinuxParameters;
 
   /**
    * The configured mount points
@@ -234,6 +252,7 @@ export class ContainerDefinition extends cdk.Construct {
     this.essential = props.essential !== undefined ? props.essential : true;
     this.taskDefinition = props.taskDefinition;
     this.memoryLimitSpecified = props.memoryLimitMiB !== undefined || props.memoryReservationMiB !== undefined;
+    this.linuxParameters = props.linuxParameters;
 
     props.image.bind(this);
     if (props.logging) { props.logging.bind(this); }
@@ -394,7 +413,7 @@ export class ContainerDefinition extends cdk.Construct {
       extraHosts: this.props.extraHosts && renderKV(this.props.extraHosts, 'hostname', 'ipAddress'),
       healthCheck: this.props.healthCheck && renderHealthCheck(this.props.healthCheck),
       links: this.links,
-      linuxParameters: this.linuxParameters.renderLinuxParameters(),
+      linuxParameters: this.linuxParameters && this.linuxParameters.renderLinuxParameters(),
     };
   }
 }
@@ -478,7 +497,7 @@ function getHealthCheckCommand(hc: HealthCheck): string[] {
     return hcCommand;
   }
 
-  if (cmd[0] !== "CMD" || cmd[0] !== 'CMD-SHELL') {
+  if (cmd[0] !== "CMD" && cmd[0] !== 'CMD-SHELL') {
     hcCommand.push('CMD');
   }
 

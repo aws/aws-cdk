@@ -1,6 +1,6 @@
 import colors = require('colors/safe');
 import jsiiReflect = require('jsii-reflect');
-import { extendsType, SchemaContext, schemaForTypeReference } from '../lib/jsii2schema';
+import { SchemaContext, schemaForTypeReference } from '../lib/jsii2schema';
 
 // tslint:disable:no-console
 
@@ -23,7 +23,7 @@ export function renderFullSchema(typeSystem: jsiiReflect.TypeSystem, options: Re
   // (transitively) only consists of JSON primitives or interfaces
   // that consist of JSON primitives
   const constructType = typeSystem.findClass('@aws-cdk/cdk.Construct');
-  const constructs = typeSystem.classes.filter(c => extendsType(c, constructType));
+  const constructs = typeSystem.classes.filter(c => c.extends(constructType));
 
   const deconstructs = constructs
     .map(unpackConstruct)
@@ -101,7 +101,7 @@ export function schemaForResource(construct: ConstructAndProps, ctx: SchemaConte
 
 function isCfnResource(klass: jsiiReflect.ClassType) {
   const resource = klass.system.findClass('@aws-cdk/cdk.CfnResource');
-  return extendsType(klass, resource);
+  return klass.extends(resource);
 }
 
 function unpackConstruct(klass: jsiiReflect.ClassType): ConstructAndProps | undefined {

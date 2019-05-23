@@ -1,15 +1,42 @@
-import cdk = require('@aws-cdk/cdk');
-import { BaseNamespaceProps, NamespaceBase, NamespaceType } from './namespace';
+import { Construct, Resource } from '@aws-cdk/cdk';
+import { BaseNamespaceProps, INamespace, NamespaceType } from './namespace';
 import { DnsServiceProps, Service } from './service';
 import { CfnPublicDnsNamespace} from './servicediscovery.generated';
 
-// tslint:disable:no-empty-interface
 export interface PublicDnsNamespaceProps extends BaseNamespaceProps {}
+export interface IPublicDnsNamespace extends INamespace { }
+export interface PublicDnsNamespaceAttributes {
+  /**
+   * A name for the Namespace.
+   */
+  readonly namespaceName: string;
+
+  /**
+   * Namespace Id for the Namespace.
+   */
+  readonly namespaceId: string;
+
+  /**
+   * Namespace ARN for the Namespace.
+   */
+  readonly namespaceArn: string;
+ }
 
 /**
  * Define a Public DNS Namespace
  */
-export class PublicDnsNamespace extends NamespaceBase {
+export class PublicDnsNamespace extends Resource implements IPublicDnsNamespace {
+
+  public static fromPublicDnsNamespaceAttributes(scope: Construct, id: string, attrs: PublicDnsNamespaceAttributes): IPublicDnsNamespace {
+    class Import extends Resource implements IPublicDnsNamespace {
+      public namespaceName = attrs.namespaceName;
+      public namespaceId = attrs.namespaceId;
+      public namespaceArn = attrs.namespaceArn;
+      public type = NamespaceType.DnsPublic;
+    }
+    return new Import(scope, id);
+  }
+
   /**
    * A name for the namespace.
    */
@@ -30,7 +57,7 @@ export class PublicDnsNamespace extends NamespaceBase {
    */
   public readonly type: NamespaceType;
 
-  constructor(scope: cdk.Construct, id: string, props: PublicDnsNamespaceProps) {
+  constructor(scope: Construct, id: string, props: PublicDnsNamespaceProps) {
     super(scope, id);
 
     const ns = new CfnPublicDnsNamespace(this, 'Resource', {
@@ -43,6 +70,15 @@ export class PublicDnsNamespace extends NamespaceBase {
     this.namespaceArn = ns.publicDnsNamespaceArn;
     this.type = NamespaceType.DnsPublic;
   }
+
+  /** @attribute */
+  public get publicDnsNamespaceArn() { return this.namespaceArn; }
+
+  /** @attribute */
+  public get publicDnsNamespaceName() { return this.namespaceName; }
+
+  /** @attribute */
+  public get publicDnsNamespaceId() { return this.namespaceId; }
 
   /**
    * Creates a service within the namespace

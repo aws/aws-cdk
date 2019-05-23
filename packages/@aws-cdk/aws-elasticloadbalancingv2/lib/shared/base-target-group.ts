@@ -1,4 +1,3 @@
-import codedeploy = require('@aws-cdk/aws-codedeploy-api');
 import ec2 = require('@aws-cdk/aws-ec2');
 import cdk = require('@aws-cdk/cdk');
 import { CfnTargetGroup } from '../elasticloadbalancingv2.generated';
@@ -16,19 +15,19 @@ export interface BaseTargetGroupProps {
    * 32 characters, must contain only alphanumeric characters or hyphens, and
    * must not begin or end with a hyphen.
    *
-   * @default Automatically generated
+   * @default - Automatically generated.
    */
   readonly targetGroupName?: string;
 
   /**
    * The virtual private cloud (VPC).
    */
-  readonly vpc: ec2.IVpcNetwork;
+  readonly vpc: ec2.IVpc;
 
   /**
    * The amount of time for Elastic Load Balancing to wait before deregistering a target.
    *
-   * The range is 0–3600 seconds.
+   * The range is 0-3600 seconds.
    *
    * @default 300
    */
@@ -37,7 +36,7 @@ export interface BaseTargetGroupProps {
   /**
    * Health check configuration
    *
-   * @default No health check
+   * @default - None.
    */
   readonly healthCheck?: HealthCheck;
 
@@ -48,7 +47,7 @@ export interface BaseTargetGroupProps {
    * register targets to the TargetGroup in the CDK app, the TargetType is
    * determined automatically.
    *
-   * @default Determined automatically
+   * @default - Determined automatically.
    */
   readonly targetType?: TargetType;
 }
@@ -131,7 +130,7 @@ export interface HealthCheck {
 /**
  * Define the target of a load balancer
  */
-export abstract class TargetGroupBase extends cdk.Construct implements ITargetGroup, codedeploy.ILoadBalancer {
+export abstract class TargetGroupBase extends cdk.Construct implements ITargetGroup {
   /**
    * The ARN of the target group
    */
@@ -175,7 +174,7 @@ export abstract class TargetGroupBase extends cdk.Construct implements ITargetGr
   /**
    * Default port configured for members of this target group
    */
-  protected readonly defaultPort: string;
+  protected readonly defaultPort: number;
 
   /**
    * Configurable dependable with all resources that lead to load balancer attachment
@@ -239,7 +238,7 @@ export abstract class TargetGroupBase extends cdk.Construct implements ITargetGr
     this.targetGroupFullName = this.resource.targetGroupFullName;
     this.loadBalancerArns = this.resource.targetGroupLoadBalancerArns.toString();
     this.targetGroupName = this.resource.targetGroupName;
-    this.defaultPort = `${additionalProps.port}`;
+    this.defaultPort = additionalProps.port;
   }
 
   /**
@@ -263,23 +262,6 @@ export abstract class TargetGroupBase extends cdk.Construct implements ITargetGr
    */
   public setAttribute(key: string, value: string | undefined) {
     this.attributes[key] = value;
-  }
-
-  /**
-   * Export this target group
-   */
-  public export(): TargetGroupImportProps {
-    return {
-      targetGroupArn: new cdk.CfnOutput(this, 'TargetGroupArn', { value: this.targetGroupArn }).makeImportValue().toString(),
-      defaultPort: new cdk.CfnOutput(this, 'Port', { value: this.defaultPort }).makeImportValue().toString(),
-    };
-  }
-
-  public asCodeDeployLoadBalancer(): codedeploy.ILoadBalancerProps {
-    return {
-      generation: codedeploy.LoadBalancerGeneration.Second,
-      name: this.targetGroupName,
-    };
   }
 
   /**
@@ -335,12 +317,6 @@ export interface ITargetGroup extends cdk.IConstruct {
    * Return an object to depend on the listeners added to this target group
    */
   readonly loadBalancerAttached: cdk.IDependable;
-
-  /**
-   * Export this target group
-   */
-  export(): TargetGroupImportProps;
-
 }
 
 /**

@@ -1,5 +1,5 @@
-import { Construct, SecretValue } from '@aws-cdk/cdk';
-import { Group } from './group';
+import { Construct, Resource, SecretValue } from '@aws-cdk/cdk';
+import { IGroup } from './group';
 import { CfnUser } from './iam.generated';
 import { IIdentity } from './identity-base';
 import { Policy } from './policy';
@@ -8,23 +8,33 @@ import { ArnPrincipal, PrincipalPolicyFragment } from './policy-document';
 import { IPrincipal } from './principals';
 import { AttachedPolicies, undefinedIfEmpty } from './util';
 
+export interface IUser extends IIdentity {
+  readonly userName: string;
+  addToGroup(group: IGroup): void;
+}
+
 export interface UserProps {
   /**
    * Groups to add this user to. You can also use `addToGroup` to add this
    * user to a group.
+   *
+   * @default - No groups.
    */
-  readonly groups?: Group[];
+  readonly groups?: IGroup[];
 
   /**
    * A list of ARNs for managed policies attacherd to this user.
    * You can use `addManagedPolicy(arn)` to attach a managed policy to this user.
-   * @default No managed policies.
+   *
+   * @default - No managed policies.
    */
   readonly managedPolicyArns?: any[];
 
   /**
    * The path for the user name. For more information about paths, see IAM
    * Identifiers in the IAM User Guide.
+   *
+   * @default /
    */
   readonly path?: string;
 
@@ -68,17 +78,19 @@ export interface UserProps {
   readonly passwordResetRequired?: boolean;
 }
 
-export class User extends Construct implements IIdentity {
+export class User extends Resource implements IIdentity {
   public readonly grantPrincipal: IPrincipal = this;
   public readonly assumeRoleAction: string = 'sts:AssumeRole';
 
   /**
    * An attribute that represents the user name.
+   * @attribute
    */
   public readonly userName: string;
 
   /**
    * An attribute that represents the user's ARN.
+   * @attribute
    */
   public readonly userArn: string;
 
@@ -112,7 +124,7 @@ export class User extends Construct implements IIdentity {
   /**
    * Adds this user to a group.
    */
-  public addToGroup(group: Group) {
+  public addToGroup(group: IGroup) {
     this.groups.push(group.groupName);
   }
 

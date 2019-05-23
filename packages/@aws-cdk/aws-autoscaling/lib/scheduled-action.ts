@@ -1,6 +1,5 @@
-import cdk = require('@aws-cdk/cdk');
+import { Construct, Resource } from '@aws-cdk/cdk';
 import { IAutoScalingGroup } from './auto-scaling-group';
-
 import { CfnScheduledAction } from './autoscaling.generated';
 
 /**
@@ -21,14 +20,14 @@ export interface BasicScheduledActionProps {
   /**
    * When this scheduled action becomes active.
    *
-   * @default The rule is activate immediately
+   * @default - The rule is activate immediately.
    */
   readonly startTime?: Date
 
   /**
    * When this scheduled action expires.
    *
-   * @default The rule never expires.
+   * @default - The rule never expires.
    */
   readonly endTime?: Date;
 
@@ -39,7 +38,7 @@ export interface BasicScheduledActionProps {
    *
    * At least one of maxCapacity, minCapacity, or desiredCapacity must be supplied.
    *
-   * @default No new minimum capacity
+   * @default - No new minimum capacity.
    */
   readonly minCapacity?: number;
 
@@ -50,7 +49,7 @@ export interface BasicScheduledActionProps {
    *
    * At least one of maxCapacity, minCapacity, or desiredCapacity must be supplied.
    *
-   * @default No new maximum capacity
+   * @default - No new maximum capacity.
    */
   readonly maxCapacity?: number;
 
@@ -60,6 +59,8 @@ export interface BasicScheduledActionProps {
    * At the scheduled time, set the desired capacity to the given capacity.
    *
    * At least one of maxCapacity, minCapacity, or desiredCapacity must be supplied.
+   *
+   * @default - No new desired capacity.
    */
   readonly desiredCapacity?: number;
 }
@@ -81,8 +82,8 @@ const CRON_EXPRESSION = new RegExp('^' + [CRON_PART, CRON_PART, CRON_PART, CRON_
 /**
  * Define a scheduled scaling action
  */
-export class ScheduledAction extends cdk.Construct {
-  constructor(scope: cdk.Construct, id: string, props: ScheduledActionProps) {
+export class ScheduledAction extends Resource {
+  constructor(scope: Construct, id: string, props: ScheduledActionProps) {
     super(scope, id);
 
     if (!CRON_EXPRESSION.exec(props.schedule)) {

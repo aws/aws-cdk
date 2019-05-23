@@ -3,7 +3,12 @@ import { Grant } from './grant';
 import { Policy } from './policy';
 import { PolicyStatement, PrincipalPolicyFragment } from './policy-document';
 import { IPrincipal } from './principals';
-import { IRole, Role, RoleImportProps, RoleProps } from './role';
+import { IRole, Role, RoleProps } from './role';
+
+// tslint:disable-next-line:no-empty-interface
+export interface LazyRoleProps extends RoleProps {
+
+}
 
 /**
  * An IAM role that only gets attached to the construct tree once it gets used, not before
@@ -22,18 +27,14 @@ export class LazyRole extends cdk.Construct implements IRole {
   private readonly policies = new Array<Policy>();
   private readonly managedPolicies = new Array<string>();
 
-  constructor(scope: cdk.Construct, id: string, private readonly props: RoleProps) {
+  constructor(scope: cdk.Construct, id: string, private readonly props: LazyRoleProps) {
     super(scope, id);
-  }
-
-  public export(): RoleImportProps {
-    return this.instantiate().export();
   }
 
   /**
    * Adds a permission to the role's default policy document.
    * If there is no default policy attached to this role, it will be created.
-   * @param permission The permission statement to add to the policy document
+   * @param statement The permission statement to add to the policy document
    */
   public addToPolicy(statement: PolicyStatement): boolean {
     if (this.role) {

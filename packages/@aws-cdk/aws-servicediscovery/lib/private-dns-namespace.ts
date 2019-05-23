@@ -1,6 +1,6 @@
 import ec2 = require('@aws-cdk/aws-ec2');
-import cdk = require('@aws-cdk/cdk');
-import { BaseNamespaceProps, NamespaceBase, NamespaceType } from './namespace';
+import { Construct, Resource } from '@aws-cdk/cdk';
+import { BaseNamespaceProps, INamespace, NamespaceType } from './namespace';
 import { DnsServiceProps, Service } from './service';
 import { CfnPrivateDnsNamespace} from './servicediscovery.generated';
 
@@ -8,13 +8,43 @@ export interface PrivateDnsNamespaceProps extends BaseNamespaceProps {
   /**
    * The Amazon VPC that you want to associate the namespace with.
    */
-  readonly vpc: ec2.IVpcNetwork;
+  readonly vpc: ec2.IVpc;
+}
+
+export interface IPrivateDnsNamespace extends INamespace { }
+
+export interface PrivateDnsNamespaceAttributes {
+  /**
+   * A name for the Namespace.
+   */
+  readonly namespaceName: string;
+
+  /**
+   * Namespace Id for the Namespace.
+   */
+  readonly namespaceId: string;
+
+  /**
+   * Namespace ARN for the Namespace.
+   */
+  readonly namespaceArn: string;
 }
 
 /**
  * Define a Service Discovery HTTP Namespace
  */
-export class PrivateDnsNamespace extends NamespaceBase {
+export class PrivateDnsNamespace extends Resource implements IPrivateDnsNamespace {
+
+  public static fromPrivateDnsNamespaceAttributes(scope: Construct, id: string, attrs: PrivateDnsNamespaceAttributes): IPrivateDnsNamespace {
+    class Import extends Resource implements IPrivateDnsNamespace {
+      public namespaceName = attrs.namespaceName;
+      public namespaceId = attrs.namespaceId;
+      public namespaceArn = attrs.namespaceArn;
+      public type = NamespaceType.DnsPrivate;
+    }
+    return new Import(scope, id);
+  }
+
   /**
    * The name of the PrivateDnsNamespace.
    */
@@ -35,7 +65,7 @@ export class PrivateDnsNamespace extends NamespaceBase {
    */
   public readonly type: NamespaceType;
 
-  constructor(scope: cdk.Construct, id: string, props: PrivateDnsNamespaceProps) {
+  constructor(scope: Construct, id: string, props: PrivateDnsNamespaceProps) {
     super(scope, id);
     if (props.vpc === undefined) {
       throw new Error(`VPC must be specified for PrivateDNSNamespaces`);
@@ -52,6 +82,15 @@ export class PrivateDnsNamespace extends NamespaceBase {
     this.namespaceArn = ns.privateDnsNamespaceArn;
     this.type = NamespaceType.DnsPrivate;
   }
+
+  /** @attribute */
+  public get privateDnsNamespaceArn() { return this.namespaceArn; }
+
+  /** @attribute */
+  public get privateDnsNamespaceName() { return this.namespaceName; }
+
+  /** @attribute */
+  public get privateDnsNamespaceId() { return this.namespaceId; }
 
   /**
    * Creates a service within the namespace

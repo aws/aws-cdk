@@ -1,9 +1,0 @@
-*.ts
-!*.d.ts
-
-
-# Exclude jsii outdir
-dist
-
-# Include .jsii
-!.jsii

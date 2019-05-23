@@ -11,7 +11,7 @@ export = {
     "with only required properties set, it correctly sets default properties"(test: Test) {
       // GIVEN
       const stack =  new cdk.Stack();
-      const vpc = new ec2.VpcNetwork(stack, 'MyVpc', {});
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
       const cluster = new ecs.Cluster(stack, 'EcsCluster', {
         vpc,
       });
@@ -159,7 +159,7 @@ export = {
     'lifecycle hook is automatically added'(test: Test) {
       // GIVEN
       const stack =  new cdk.Stack();
-      const vpc = new ec2.VpcNetwork(stack, 'MyVpc', {});
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
       const cluster = new ecs.Cluster(stack, 'EcsCluster', {
         vpc,
       });
@@ -186,7 +186,7 @@ export = {
   "allows specifying instance type"(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
-    const vpc = new ec2.VpcNetwork(stack, 'MyVpc', {});
+    const vpc = new ec2.Vpc(stack, 'MyVpc', {});
 
     const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
     cluster.addCapacity('DefaultAutoScalingGroup', {
@@ -204,7 +204,7 @@ export = {
   "allows specifying cluster size"(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
-    const vpc = new ec2.VpcNetwork(stack, 'MyVpc', {});
+    const vpc = new ec2.Vpc(stack, 'MyVpc', {});
 
     const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
     cluster.addCapacity('DefaultAutoScalingGroup', {
@@ -220,10 +220,52 @@ export = {
     test.done();
   },
 
+  "allows specifying special HW AMI Type"(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+
+    const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+    cluster.addCapacity('GpuAutoScalingGroup', {
+      instanceType: new ec2.InstanceType('t2.micro'),
+      machineImage: new ecs.EcsOptimizedAmi({
+        hwType: ecs.AmiHardwareType.Gpu
+      }),
+    });
+
+    // THEN
+    expect(stack).to(haveResource("AWS::AutoScaling::LaunchConfiguration", {
+      ImageId: ""
+    }));
+
+    test.done();
+  },
+
+  "errors if amazon linux given with special HW type"(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+
+    const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+
+    // THEN
+    test.throws(() => {
+      cluster.addCapacity('GpuAutoScalingGroup', {
+        instanceType: new ec2.InstanceType('t2.micro'),
+        machineImage: new ecs.EcsOptimizedAmi({
+          generation: ec2.AmazonLinuxGeneration.AmazonLinux,
+          hwType: ecs.AmiHardwareType.Gpu,
+        }),
+      });
+    });
+
+    test.done();
+  },
+
   "allows adding default service discovery namespace"(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
-    const vpc = new ec2.VpcNetwork(stack, 'MyVpc', {});
+    const vpc = new ec2.Vpc(stack, 'MyVpc', {});
 
     const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
     cluster.addCapacity('DefaultAutoScalingGroup', {
@@ -249,7 +291,7 @@ export = {
   "allows adding public service discovery namespace"(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
-    const vpc = new ec2.VpcNetwork(stack, 'MyVpc', {});
+    const vpc = new ec2.Vpc(stack, 'MyVpc', {});
 
     const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
     cluster.addCapacity('DefaultAutoScalingGroup', {
@@ -273,7 +315,7 @@ export = {
   "throws if default service discovery namespace added more than once"(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
-    const vpc = new ec2.VpcNetwork(stack, 'MyVpc', {});
+    const vpc = new ec2.Vpc(stack, 'MyVpc', {});
 
     const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
     cluster.addCapacity('DefaultAutoScalingGroup', {
@@ -298,7 +340,7 @@ export = {
   'export/import of a cluster with a namespace'(test: Test) {
     // GIVEN
     const stack1 = new cdk.Stack();
-    const vpc1 = new ec2.VpcNetwork(stack1, 'Vpc');
+    const vpc1 = new ec2.Vpc(stack1, 'Vpc');
     const cluster1 = new ecs.Cluster(stack1, 'Cluster', { vpc: vpc1 });
     cluster1.addDefaultCloudMapNamespace({
       name: 'hello.com',
@@ -307,13 +349,20 @@ export = {
     const stack2 = new cdk.Stack();
 
     // WHEN
-    const cluster2 = ecs.Cluster.import(stack2, 'Cluster', cluster1.export());
+    const cluster2 = ecs.Cluster.fromClusterAttributes(stack2, 'Cluster', {
+      vpc: vpc1,
+      securityGroups: cluster1.connections.securityGroups,
+      defaultNamespace: cloudmap.PrivateDnsNamespace.fromPrivateDnsNamespaceAttributes(stack2, 'ns', {
+        namespaceId: 'import-namespace-id',
+        namespaceArn: 'import-namespace-arn',
+        namespaceName: 'import-namespace-name',
+      }),
+      clusterName: 'cluster-name',
+    });
 
     // THEN
     test.equal(cluster2.defaultNamespace!.type, cloudmap.NamespaceType.DnsPrivate);
-    test.deepEqual(stack2.node.resolve(cluster2.defaultNamespace!.namespaceId), {
-      'Fn::ImportValue': 'Stack:ClusterDefaultServiceDiscoveryNamespaceNamespaceId516C01B9',
-    });
+    test.deepEqual(stack2.node.resolve(cluster2.defaultNamespace!.namespaceId), 'import-namespace-id');
 
     test.done();
   }

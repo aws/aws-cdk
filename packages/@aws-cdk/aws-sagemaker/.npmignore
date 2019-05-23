@@ -15,8 +15,9 @@ dist
 .LAST_PACKAGE
 .jsii
 
-
 # Include .jsii
 !.jsii
 
 *.snk
+
+*.tsbuildinfo

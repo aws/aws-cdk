@@ -1,17 +1,17 @@
 import cloudwatch = require('@aws-cdk/aws-cloudwatch');
 import ec2 = require('@aws-cdk/aws-ec2');
-import events = require('@aws-cdk/aws-events');
 import iam = require('@aws-cdk/aws-iam');
 import logs = require('@aws-cdk/aws-logs');
 import s3n = require('@aws-cdk/aws-s3-notifications');
-import stepfunctions = require('@aws-cdk/aws-stepfunctions');
 import cdk = require('@aws-cdk/cdk');
+import { IResource, Resource } from '@aws-cdk/cdk';
 import { IEventSource } from './event-source';
+import { EventSourceMapping, EventSourceMappingOptions } from './event-source-mapping';
 import { CfnPermission } from './lambda.generated';
 import { Permission } from './permission';
 
-export interface IFunction extends cdk.IConstruct, events.IEventRuleTarget, logs.ILogSubscriptionDestination,
-  s3n.IBucketNotificationDestination, ec2.IConnectable, stepfunctions.IStepFunctionsTaskResource, iam.IGrantable {
+export interface IFunction extends IResource, logs.ILogSubscriptionDestination,
+  s3n.IBucketNotificationDestination, ec2.IConnectable, iam.IGrantable {
 
   /**
    * Logical ID of this Function.
@@ -20,11 +20,15 @@ export interface IFunction extends cdk.IConstruct, events.IEventRuleTarget, logs
 
   /**
    * The name of the function.
+   *
+   * @attribute
    */
   readonly functionName: string;
 
   /**
    * The ARN fo the function.
+   *
+   * @attribute
    */
   readonly functionArn: string;
 
@@ -39,6 +43,13 @@ export interface IFunction extends cdk.IConstruct, events.IEventRuleTarget, logs
    * If this is is `false`, trying to access the `connections` object will fail.
    */
   readonly isBoundToVpc: boolean;
+
+  /**
+   * Adds an event source that maps to this AWS Lambda function.
+   * @param id construct ID
+   * @param options mapping options
+   */
+  addEventSourceMapping(id: string, options: EventSourceMappingOptions): EventSourceMapping;
 
   /**
    * Adds a permission to the Lambda resource policy.
@@ -56,33 +67,28 @@ export interface IFunction extends cdk.IConstruct, events.IEventRuleTarget, logs
   /**
    * Return the given named metric for this Lambda
    */
-  metric(metricName: string, props?: cloudwatch.MetricCustomization): cloudwatch.Metric;
+  metric(metricName: string, props?: cloudwatch.MetricOptions): cloudwatch.Metric;
 
   /**
    * Metric for the Duration of this Lambda
    *
    * @default average over 5 minutes
    */
-  metricDuration(props?: cloudwatch.MetricCustomization): cloudwatch.Metric;
+  metricDuration(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
 
   /**
    * Metric for the number of invocations of this Lambda
    *
    * @default sum over 5 minutes
    */
-  metricInvocations(props?: cloudwatch.MetricCustomization): cloudwatch.Metric;
+  metricInvocations(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
 
   /**
    * Metric for the number of throttled invocations of this Lambda
    *
    * @default sum over 5 minutes
    */
-  metricThrottles(props?: cloudwatch.MetricCustomization): cloudwatch.Metric;
-
-  /**
-   * Export this Function (without the role)
-   */
-  export(): FunctionImportProps;
+  metricThrottles(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
 
   addEventSource(source: IEventSource): void;
 }
@@ -90,7 +96,7 @@ export interface IFunction extends cdk.IConstruct, events.IEventRuleTarget, logs
 /**
  * Represents a Lambda function defined outside of this stack.
  */
-export interface FunctionImportProps {
+export interface FunctionAttributes {
   /**
    * The ARN of the Lambda function.
    *
@@ -114,7 +120,7 @@ export interface FunctionImportProps {
   readonly securityGroupId?: string;
 }
 
-export abstract class FunctionBase extends cdk.Construct implements IFunction  {
+export abstract class FunctionBase extends Resource implements IFunction  {
   /**
    * The principal this Lambda Function is running as
    */
@@ -214,24 +220,11 @@ export abstract class FunctionBase extends cdk.Construct implements IFunction  {
     return !!this._connections;
   }
 
-  /**
-   * Returns a RuleTarget that can be used to trigger this Lambda as a
-   * result from a CloudWatch event.
-   */
-  public asEventRuleTarget(ruleArn: string, ruleId: string): events.EventRuleTargetProps {
-    const permissionId = `AllowEventRule${ruleId}`;
-    if (!this.node.tryFindChild(permissionId)) {
-      this.addPermission(permissionId, {
-        action: 'lambda:InvokeFunction',
-        principal: new iam.ServicePrincipal('events.amazonaws.com'),
-        sourceArn: ruleArn
-      });
-    }
-
-    return {
-      id: this.node.id,
-      arn: this.functionArn,
-    };
+  public addEventSourceMapping(id: string, options: EventSourceMappingOptions): EventSourceMapping {
+    return new EventSourceMapping(this, id, {
+      target: this,
+      ...options
+    });
   }
 
   /**
@@ -248,7 +241,7 @@ export abstract class FunctionBase extends cdk.Construct implements IFunction  {
       resource: {
         addToResourcePolicy: (_statement) => {
           // Couldn't add permissions to the principal, so add them locally.
-          const identifier = 'Invoke' + JSON.stringify(grantee!.grantPrincipal.policyFragment.principalJson);
+          const identifier = `Invoke${grantee.grantPrincipal}`; // calls the .toString() of the princpal
           this.addPermission(identifier, {
             principal: grantee.grantPrincipal!,
             action: 'lambda:InvokeFunction',
@@ -278,11 +271,6 @@ export abstract class FunctionBase extends cdk.Construct implements IFunction  {
   }
 
   /**
-   * Export this Function (without the role)
-   */
-  public abstract export(): FunctionImportProps;
-
-  /**
    * Allows this Lambda to be used as a destination for bucket notifications.
    * Use `bucket.onEvent(lambda)` to subscribe.
    */
@@ -304,19 +292,6 @@ export abstract class FunctionBase extends cdk.Construct implements IFunction  {
       type: s3n.BucketNotificationDestinationType.Lambda,
       arn: this.functionArn,
       dependencies: permission ? [ permission ] : undefined
-    };
-  }
-
-  public asStepFunctionsTaskResource(_callingTask: stepfunctions.Task): stepfunctions.StepFunctionsTaskResourceProps {
-    return {
-      resourceArn: this.functionArn,
-      metricPrefixSingular: 'LambdaFunction',
-      metricPrefixPlural: 'LambdaFunctions',
-      metricDimensions: { LambdaFunctionArn: this.functionArn },
-      policyStatements: [new iam.PolicyStatement()
-        .addResource(this.functionArn)
-        .addActions("lambda:InvokeFunction")
-      ]
     };
   }
 

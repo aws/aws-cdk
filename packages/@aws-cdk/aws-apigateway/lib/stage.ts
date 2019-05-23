@@ -1,4 +1,4 @@
-import cdk = require('@aws-cdk/cdk');
+import { Construct, Resource } from '@aws-cdk/cdk';
 import { CfnStage } from './apigateway.generated';
 import { Deployment } from './deployment';
 import { IRestApi } from './restapi';
@@ -9,18 +9,21 @@ export interface StageOptions extends MethodDeploymentOptions {
    * The name of the stage, which API Gateway uses as the first path segment
    * in the invoked Uniform Resource Identifier (URI).
    *
-   * @default "prod"
+   * @default - "prod"
    */
   readonly stageName?: string;
 
   /**
    * Specifies whether Amazon X-Ray tracing is enabled for this method.
+   *
    * @default false
    */
   readonly tracingEnabled?: boolean;
 
   /**
    * Indicates whether cache clustering is enabled for the stage.
+   *
+   * @default - Disabled for the stage.
    */
   readonly cacheClusterEnabled?: boolean;
 
@@ -34,17 +37,21 @@ export interface StageOptions extends MethodDeploymentOptions {
    * The identifier of the client certificate that API Gateway uses to call
    * your integration endpoints in the stage.
    *
-   * @default None
+   * @default - None.
    */
   readonly clientCertificateId?: string;
 
   /**
    * A description of the purpose of the stage.
+   *
+   * @default - No description.
    */
   readonly description?: string;
 
   /**
    * The version identifier of the API documentation snapshot.
+   *
+   * @default - No documentation version.
    */
   readonly documentationVersion?: string;
 
@@ -52,6 +59,8 @@ export interface StageOptions extends MethodDeploymentOptions {
    * A map that defines the stage variables. Variable names must consist of
    * alphanumeric characters, and the values must match the following regular
    * expression: [A-Za-z0-9-._~:/?#&amp;=,]+.
+   *
+   * @default - No stage variables.
    */
   readonly variables?: { [key: string]: string };
 
@@ -62,14 +71,15 @@ export interface StageOptions extends MethodDeploymentOptions {
    * @param path is {resource_path}/{http_method} (i.e. /api/toys/GET) for an
    * individual method override. You can use `*` for both {resource_path} and {http_method}
    * to define options for all methods/resources.
+   *
+   * @default - Common options will be used.
    */
-
   readonly methodOptions?: { [path: string]: MethodDeploymentOptions };
 }
 
 export interface StageProps extends StageOptions {
   /**
-   * The deployment that this stage points to.
+   * The deployment that this stage points to [disable-awslint:ref-via-interface].
    */
   readonly deployment: Deployment;
 }
@@ -83,6 +93,7 @@ export enum MethodLoggingLevel {
 export interface MethodDeploymentOptions {
   /**
    * Specifies whether Amazon CloudWatch metrics are enabled for this method.
+   *
    * @default false
    */
   readonly metricsEnabled?: boolean;
@@ -90,55 +101,72 @@ export interface MethodDeploymentOptions {
   /**
    * Specifies the logging level for this method, which effects the log
    * entries pushed to Amazon CloudWatch Logs.
-   * @default Off
+   *
+   * @default - Off
    */
   readonly loggingLevel?: MethodLoggingLevel;
 
   /**
    * Specifies whether data trace logging is enabled for this method, which
    * effects the log entries pushed to Amazon CloudWatch Logs.
+   *
    * @default false
    */
   readonly dataTraceEnabled?: boolean;
 
   /**
    * Specifies the throttling burst limit.
+   * The total rate of all requests in your AWS account is limited to 5,000 requests.
    * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-request-throttling.html
+   *
+   * @default - No additional restriction.
    */
   readonly throttlingBurstLimit?: number;
 
   /**
    * Specifies the throttling rate limit.
+   * The total rate of all requests in your AWS account is limited to 10,000 requests per second (rps).
    * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-request-throttling.html
+   *
+   * @default - No additional restriction.
    */
   readonly throttlingRateLimit?: number;
 
   /**
    * Specifies whether responses should be cached and returned for requests. A
    * cache cluster must be enabled on the stage for responses to be cached.
+   *
+   * @default - Caching is Disabled.
    */
   readonly cachingEnabled?: boolean;
 
   /**
    * Specifies the time to live (TTL), in seconds, for cached responses. The
    * higher the TTL, the longer the response will be cached.
+   * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-caching.html
+   *
+   * @default 300
    */
   readonly cacheTtlSeconds?: number;
 
   /**
    * Indicates whether the cached responses are encrypted.
+   *
    * @default false
    */
   readonly cacheDataEncrypted?: boolean;
 }
 
-export class Stage extends cdk.Construct {
+export class Stage extends Resource {
+  /**
+   * @attribute
+   */
   public readonly stageName: string;
 
   private readonly restApi: IRestApi;
   private enableCacheCluster?: boolean;
 
-  constructor(scope: cdk.Construct, id: string, props: StageProps) {
+  constructor(scope: Construct, id: string, props: StageProps) {
     super(scope, id);
 
     this.enableCacheCluster = props.cacheClusterEnabled;

@@ -1,6 +1,7 @@
 import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
 import ec2 = require('@aws-cdk/aws-ec2');
 import cdk = require('@aws-cdk/cdk');
+import { CfnOutput } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
 import eks = require('../lib');
 
@@ -110,24 +111,39 @@ export = {
   'exercise export/import'(test: Test) {
     // GIVEN
     const [stack1, vpc] = testFixture();
-    const stack2 = new cdk.Stack();
+    const stack2 = new cdk.Stack(undefined, 'stack2', { env: { region: 'us-east-1' } });
     const cluster = new eks.Cluster(stack1, 'Cluster', { vpc });
 
     // WHEN
-    const imported = eks.Cluster.import(stack2, 'Imported', cluster.export());
-
-    // THEN
-    test.deepEqual(stack2.node.resolve(imported.clusterArn), {
-      'Fn::ImportValue': 'Stack:ClusterClusterArn00DCA0E0'
+    const imported = eks.Cluster.fromClusterAttributes(stack2, 'Imported', {
+      clusterArn: cluster.clusterArn,
+      vpc: cluster.vpc,
+      clusterEndpoint: cluster.clusterEndpoint,
+      clusterName: cluster.clusterName,
+      securityGroups: cluster.connections.securityGroups,
+      clusterCertificateAuthorityData: cluster.clusterCertificateAuthorityData
     });
 
+    // this should cause an export/import
+    new CfnOutput(stack2, 'ClusterARN', { value: imported.clusterArn });
+
+    // THEN
+    expect(stack2).toMatch({
+      Outputs: {
+        ClusterARN: {
+          Value: {
+            "Fn::ImportValue": "Stack:ExportsOutputFnGetAttClusterEB0386A7Arn2F2E3C3F"
+          }
+        }
+      }
+    });
     test.done();
   },
 };
 
-function testFixture(): [cdk.Stack, ec2.VpcNetwork] {
+function testFixture(): [cdk.Stack, ec2.Vpc] {
   const stack = new cdk.Stack(undefined, 'Stack', { env: { region: 'us-east-1' }});
-  const vpc = new ec2.VpcNetwork(stack, 'VPC');
+  const vpc = new ec2.Vpc(stack, 'VPC');
 
   return [stack, vpc];
 }

@@ -10,7 +10,7 @@ export = {
   'test ECS loadbalanced construct'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
-    const vpc = new ec2.VpcNetwork(stack, 'VPC');
+    const vpc = new ec2.Vpc(stack, 'VPC');
     const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
     cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
 
@@ -26,7 +26,7 @@ export = {
       }
     });
 
-    // THEN - stack containers a load balancer and a service
+    // THEN - stack contains a load balancer and a service
     expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::LoadBalancer'));
 
     expect(stack).to(haveResource("AWS::ECS::Service", {
@@ -47,6 +47,35 @@ export = {
               Value: "test environment variable 2 value"
             }
           ],
+          Memory: 1024
+        }
+      ]
+    }));
+
+    test.done();
+  },
+
+  'test ECS loadbalanced construct with memoryReservationMiB'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+    cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
+
+    // WHEN
+    new ecs.LoadBalancedEc2Service(stack, 'Service', {
+      cluster,
+      memoryReservationMiB: 1024,
+      image: ecs.ContainerImage.fromRegistry('test')
+    });
+
+    // THEN - stack contains a load balancer and a service
+    expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::LoadBalancer'));
+
+    expect(stack).to(haveResourceLike('AWS::ECS::TaskDefinition', {
+      ContainerDefinitions: [
+        {
+          MemoryReservation: 1024
         }
       ]
     }));
@@ -57,7 +86,7 @@ export = {
   'test Fargate loadbalanced construct'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
-    const vpc = new ec2.VpcNetwork(stack, 'VPC');
+    const vpc = new ec2.Vpc(stack, 'VPC');
     const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
 
     // WHEN
@@ -113,7 +142,7 @@ export = {
   'test Fargate loadbalanced construct opting out of log driver creation'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
-    const vpc = new ec2.VpcNetwork(stack, 'VPC');
+    const vpc = new ec2.Vpc(stack, 'VPC');
     const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
 
     // WHEN
@@ -159,7 +188,7 @@ export = {
   'test Fargateloadbalanced construct with TLS'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
-    const vpc = new ec2.VpcNetwork(stack, 'VPC');
+    const vpc = new ec2.Vpc(stack, 'VPC');
     const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
     const zone = new PublicHostedZone(stack, 'HostedZone', { zoneName: 'example.com' });
 
@@ -169,7 +198,7 @@ export = {
       image: ecs.ContainerImage.fromRegistry('test'),
       domainName: 'api.example.com',
       domainZone: zone,
-      certificate: Certificate.import(stack, 'Cert', { certificateArn: 'helloworld' })
+      certificate: Certificate.fromCertificateArn(stack, 'Cert', 'helloworld')
     });
 
     // THEN - stack contains a load balancer and a service
@@ -205,7 +234,7 @@ export = {
   "errors when setting domainName but not domainZone"(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
-    const vpc = new ec2.VpcNetwork(stack, 'VPC');
+    const vpc = new ec2.Vpc(stack, 'VPC');
     const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
 
     // THEN

@@ -1,89 +1,83 @@
 import events = require('@aws-cdk/aws-events');
-import cdk = require('@aws-cdk/cdk');
+import { Construct, IConstruct, IResource, Resource, Stack } from '@aws-cdk/cdk';
 import { CfnRepository } from './codecommit.generated';
 
-export interface IRepository extends cdk.IConstruct {
-  /** The ARN of this Repository. */
+export interface IRepository extends IResource {
+  /**
+   * The ARN of this Repository.
+   * @attribute
+   */
   readonly repositoryArn: string;
 
-  /** The human-visible name of this Repository. */
+  /**
+   * The human-visible name of this Repository.
+   * @attribute
+   */
   readonly repositoryName: string;
 
-  /** The HTTP clone URL */
+  /**
+   * The HTTP clone URL
+   * @attribute
+   */
   readonly repositoryCloneUrlHttp: string;
 
-  /** The SSH clone URL */
+  /**
+   * The SSH clone URL
+   * @attribute
+   */
   readonly repositoryCloneUrlSsh: string;
 
   /**
    * Defines a CloudWatch event rule which triggers for repository events. Use
    * `rule.addEventPattern(pattern)` to specify a filter.
    */
-  onEvent(name: string, target?: events.IEventRuleTarget, options?: events.EventRuleProps): events.EventRule;
+  onEvent(name: string, target?: events.IRuleTarget, options?: events.RuleProps): events.Rule;
 
   /**
    * Defines a CloudWatch event rule which triggers when a "CodeCommit
    * Repository State Change" event occurs.
    */
-  onStateChange(name: string, target?: events.IEventRuleTarget, options?: events.EventRuleProps): events.EventRule;
+  onStateChange(name: string, target?: events.IRuleTarget, options?: events.RuleProps): events.Rule;
 
   /**
    * Defines a CloudWatch event rule which triggers when a reference is
    * created (i.e. a new branch/tag is created) to the repository.
    */
-  onReferenceCreated(name: string, target?: events.IEventRuleTarget, options?: events.EventRuleProps): events.EventRule;
+  onReferenceCreated(name: string, target?: events.IRuleTarget, options?: events.RuleProps): events.Rule;
 
   /**
    * Defines a CloudWatch event rule which triggers when a reference is
    * updated (i.e. a commit is pushed to an existing or new branch) from the repository.
    */
-  onReferenceUpdated(name: string, target?: events.IEventRuleTarget, options?: events.EventRuleProps): events.EventRule;
+  onReferenceUpdated(name: string, target?: events.IRuleTarget, options?: events.RuleProps): events.Rule;
 
   /**
    * Defines a CloudWatch event rule which triggers when a reference is
    * delete (i.e. a branch/tag is deleted) from the repository.
    */
-  onReferenceDeleted(name: string, target?: events.IEventRuleTarget, options?: events.EventRuleProps): events.EventRule;
+  onReferenceDeleted(name: string, target?: events.IRuleTarget, options?: events.RuleProps): events.Rule;
 
   /**
    * Defines a CloudWatch event rule which triggers when a pull request state is changed.
    */
-  onPullRequestStateChange(name: string, target?: events.IEventRuleTarget, options?: events.EventRuleProps): events.EventRule;
+  onPullRequestStateChange(name: string, target?: events.IRuleTarget, options?: events.RuleProps): events.Rule;
 
   /**
    * Defines a CloudWatch event rule which triggers when a comment is made on a pull request.
    */
-  onCommentOnPullRequest(name: string, target?: events.IEventRuleTarget, options?: events.EventRuleProps): events.EventRule;
+  onCommentOnPullRequest(name: string, target?: events.IRuleTarget, options?: events.RuleProps): events.Rule;
 
   /**
    * Defines a CloudWatch event rule which triggers when a comment is made on a commit.
    */
-  onCommentOnCommit(name: string, target?: events.IEventRuleTarget, options?: events.EventRuleProps): events.EventRule;
+  onCommentOnCommit(name: string, target?: events.IRuleTarget, options?: events.RuleProps): events.Rule;
 
   /**
    * Defines a CloudWatch event rule which triggers when a commit is pushed to a branch.
    * @param target The target of the event
    * @param branch The branch to monitor. Defaults to all branches.
    */
-  onCommit(name: string, target?: events.IEventRuleTarget, branch?: string): events.EventRule;
-
-  /**
-   * Exports this Repository. Allows the same Repository to be used in 2 different Stacks.
-   *
-   * @see import
-   */
-  export(): RepositoryImportProps;
-}
-
-/**
- * Properties for the {@link Repository.import} method.
- */
-export interface RepositoryImportProps {
-  /**
-   * The name of an existing CodeCommit Repository that we are referencing.
-   * Must be in the same account and region as the root Stack.
-   */
-  readonly repositoryName: string;
+  onCommit(name: string, target?: events.IRuleTarget, branch?: string): events.Rule;
 }
 
 /**
@@ -95,7 +89,7 @@ export interface RepositoryImportProps {
  * If you want to reference an already existing Repository,
  * use the {@link Repository.import} method.
  */
-export abstract class RepositoryBase extends cdk.Construct implements IRepository {
+abstract class RepositoryBase extends Resource implements IRepository {
   /** The ARN of this Repository. */
   public abstract readonly repositoryArn: string;
 
@@ -108,14 +102,12 @@ export abstract class RepositoryBase extends cdk.Construct implements IRepositor
   /** The SSH clone URL */
   public abstract readonly repositoryCloneUrlSsh: string;
 
-  public abstract export(): RepositoryImportProps;
-
   /**
    * Defines a CloudWatch event rule which triggers for repository events. Use
    * `rule.addEventPattern(pattern)` to specify a filter.
    */
-  public onEvent(name: string, target?: events.IEventRuleTarget, options?: events.EventRuleProps) {
-    const rule = new events.EventRule(this, name, options);
+  public onEvent(name: string, target?: events.IRuleTarget, options?: events.RuleProps) {
+    const rule = new events.Rule(this, name, options);
     rule.addEventPattern({
       source: [ 'aws.codecommit' ],
       resources: [ this.repositoryArn ]
@@ -128,7 +120,7 @@ export abstract class RepositoryBase extends cdk.Construct implements IRepositor
    * Defines a CloudWatch event rule which triggers when a "CodeCommit
    * Repository State Change" event occurs.
    */
-  public onStateChange(name: string, target?: events.IEventRuleTarget, options?: events.EventRuleProps) {
+  public onStateChange(name: string, target?: events.IRuleTarget, options?: events.RuleProps) {
     const rule = this.onEvent(name, target, options);
     rule.addEventPattern({
       detailType: [ 'CodeCommit Repository State Change' ],
@@ -140,7 +132,7 @@ export abstract class RepositoryBase extends cdk.Construct implements IRepositor
    * Defines a CloudWatch event rule which triggers when a reference is
    * created (i.e. a new branch/tag is created) to the repository.
    */
-  public onReferenceCreated(name: string, target?: events.IEventRuleTarget, options?: events.EventRuleProps) {
+  public onReferenceCreated(name: string, target?: events.IRuleTarget, options?: events.RuleProps) {
     const rule = this.onStateChange(name, target, options);
     rule.addEventPattern({ detail: { event: [ 'referenceCreated' ] } });
     return rule;
@@ -150,7 +142,7 @@ export abstract class RepositoryBase extends cdk.Construct implements IRepositor
    * Defines a CloudWatch event rule which triggers when a reference is
    * updated (i.e. a commit is pushed to an existing or new branch) from the repository.
    */
-  public onReferenceUpdated(name: string, target?: events.IEventRuleTarget, options?: events.EventRuleProps) {
+  public onReferenceUpdated(name: string, target?: events.IRuleTarget, options?: events.RuleProps) {
     const rule = this.onStateChange(name, target, options);
     rule.addEventPattern({ detail: { event: [ 'referenceCreated', 'referenceUpdated' ] } });
     return rule;
@@ -160,7 +152,7 @@ export abstract class RepositoryBase extends cdk.Construct implements IRepositor
    * Defines a CloudWatch event rule which triggers when a reference is
    * delete (i.e. a branch/tag is deleted) from the repository.
    */
-  public onReferenceDeleted(name: string, target?: events.IEventRuleTarget, options?: events.EventRuleProps) {
+  public onReferenceDeleted(name: string, target?: events.IRuleTarget, options?: events.RuleProps) {
     const rule = this.onStateChange(name, target, options);
     rule.addEventPattern({ detail: { event: [ 'referenceDeleted' ] } });
     return rule;
@@ -169,7 +161,7 @@ export abstract class RepositoryBase extends cdk.Construct implements IRepositor
   /**
    * Defines a CloudWatch event rule which triggers when a pull request state is changed.
    */
-  public onPullRequestStateChange(name: string, target?: events.IEventRuleTarget, options?: events.EventRuleProps) {
+  public onPullRequestStateChange(name: string, target?: events.IRuleTarget, options?: events.RuleProps) {
     const rule = this.onEvent(name, target, options);
     rule.addEventPattern({ detailType: [ 'CodeCommit Pull Request State Change' ] });
     return rule;
@@ -178,7 +170,7 @@ export abstract class RepositoryBase extends cdk.Construct implements IRepositor
   /**
    * Defines a CloudWatch event rule which triggers when a comment is made on a pull request.
    */
-  public onCommentOnPullRequest(name: string, target?: events.IEventRuleTarget, options?: events.EventRuleProps) {
+  public onCommentOnPullRequest(name: string, target?: events.IRuleTarget, options?: events.RuleProps) {
     const rule = this.onEvent(name, target, options);
     rule.addEventPattern({ detailType: [ 'CodeCommit Comment on Pull Request' ] });
     return rule;
@@ -187,7 +179,7 @@ export abstract class RepositoryBase extends cdk.Construct implements IRepositor
   /**
    * Defines a CloudWatch event rule which triggers when a comment is made on a commit.
    */
-  public onCommentOnCommit(name: string, target?: events.IEventRuleTarget, options?: events.EventRuleProps) {
+  public onCommentOnCommit(name: string, target?: events.IRuleTarget, options?: events.RuleProps) {
     const rule = this.onEvent(name, target, options);
     rule.addEventPattern({ detailType: [ 'CodeCommit Comment on Commit' ] });
     return rule;
@@ -198,43 +190,12 @@ export abstract class RepositoryBase extends cdk.Construct implements IRepositor
    * @param target The target of the event
    * @param branch The branch to monitor. Defaults to all branches.
    */
-  public onCommit(name: string, target?: events.IEventRuleTarget, branch?: string) {
+  public onCommit(name: string, target?: events.IRuleTarget, branch?: string) {
     const rule = this.onReferenceUpdated(name, target);
     if (branch) {
       rule.addEventPattern({ detail: { referenceName: [ branch ] }});
     }
     return rule;
-  }
-}
-
-class ImportedRepository extends RepositoryBase {
-  public readonly repositoryArn: string;
-  public readonly repositoryName: string;
-
-  constructor(scope: cdk.Construct, id: string, private readonly props: RepositoryImportProps) {
-    super(scope, id);
-
-    this.repositoryArn = this.node.stack.formatArn({
-      service: 'codecommit',
-      resource: props.repositoryName,
-    });
-    this.repositoryName = props.repositoryName;
-  }
-
-  public export() {
-    return this.props;
-  }
-
-  public get repositoryCloneUrlHttp() {
-    return this.repositoryCloneUrl('https');
-  }
-
-  public get repositoryCloneUrlSsh() {
-    return this.repositoryCloneUrl('ssh');
-  }
-
-  private repositoryCloneUrl(protocol: 'https' | 'ssh'): string {
-    return `${protocol}://git-codecommit.${this.node.stack.region}.${this.node.stack.urlSuffix}/v1/repos/${this.repositoryName}`;
   }
 }
 
@@ -247,6 +208,8 @@ export interface RepositoryProps {
   /**
    * A description of the repository. Use the description to identify the
    * purpose of the repository.
+   *
+   * @default - No description.
    */
   readonly description?: string;
 }
@@ -255,23 +218,53 @@ export interface RepositoryProps {
  * Provides a CodeCommit Repository
  */
 export class Repository extends RepositoryBase {
+
   /**
-   * Import a Repository defined either outside the CDK, or in a different Stack
-   * (exported with the {@link export} method).
-   *
-   * @param scope the parent Construct for the Repository
-   * @param id the name of the Repository Construct
-   * @param props the properties used to identify the existing Repository
-   * @returns a reference to the existing Repository
+   * Imports a codecommit repository.
+   * @param repositoryArn (e.g. `arn:aws:codecommit:us-east-1:123456789012:MyDemoRepo`)
    */
-  public static import(scope: cdk.Construct, id: string, props: RepositoryImportProps): IRepository {
-    return new ImportedRepository(scope, id, props);
+  public static fromRepositoryArn(scope: Construct, id: string, repositoryArn: string): IRepository {
+    const stack = scope.node.stack;
+    const repositoryName = stack.parseArn(repositoryArn).resource;
+
+    class Import extends RepositoryBase {
+      public readonly repositoryArn = repositoryArn;
+      public readonly repositoryName = repositoryName;
+      public readonly repositoryCloneUrlHttp = Repository.makeCloneUrl(stack, repositoryName, 'https');
+      public readonly repositoryCloneUrlSsh = Repository.makeCloneUrl(stack, repositoryName, 'ssh');
+    }
+
+    return new Import(scope, id);
+  }
+
+  public static fromRepositoryName(scope: Construct, id: string, repositoryName: string): IRepository {
+    const stack = scope.node.stack;
+
+    class Import extends RepositoryBase {
+      public repositoryName = repositoryName;
+      public repositoryArn = Repository.arnForLocalRepository(repositoryName, scope);
+      public readonly repositoryCloneUrlHttp = Repository.makeCloneUrl(stack, repositoryName, 'https');
+      public readonly repositoryCloneUrlSsh = Repository.makeCloneUrl(stack, repositoryName, 'ssh');
+    }
+
+    return new Import(scope, id);
+  }
+
+  private static makeCloneUrl(stack: Stack, repositoryName: string, protocol: 'https' | 'ssh') {
+    return `${protocol}://git-codecommit.${stack.region}.${stack.urlSuffix}/v1/repos/${repositoryName}`;
+  }
+
+  private static arnForLocalRepository(repositoryName: string, scope: IConstruct): string {
+    return scope.node.stack.formatArn({
+      service: 'codecommit',
+      resource: repositoryName,
+    });
   }
 
   private readonly repository: CfnRepository;
   private readonly triggers = new Array<CfnRepository.RepositoryTriggerProperty>();
 
-  constructor(scope: cdk.Construct, id: string, props: RepositoryProps) {
+  constructor(scope: Construct, id: string, props: RepositoryProps) {
     super(scope, id);
 
     this.repository = new CfnRepository(this, 'Resource', {
@@ -295,17 +288,6 @@ export class Repository extends RepositoryBase {
 
   public get repositoryName() {
     return this.repository.repositoryName;
-  }
-
-  /**
-   * Exports this Repository. Allows the same Repository to be used in 2 different Stacks.
-   *
-   * @see import
-   */
-  public export(): RepositoryImportProps {
-    return {
-      repositoryName: new cdk.CfnOutput(this, 'RepositoryName', { value: this.repositoryName }).makeImportValue().toString()
-    };
   }
 
   /**

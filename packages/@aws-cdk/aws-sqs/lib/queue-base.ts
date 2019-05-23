@@ -2,34 +2,32 @@ import autoscaling_api = require('@aws-cdk/aws-autoscaling-api');
 import iam = require('@aws-cdk/aws-iam');
 import kms = require('@aws-cdk/aws-kms');
 import s3n = require('@aws-cdk/aws-s3-notifications');
-import cdk = require('@aws-cdk/cdk');
+import { IResource, Resource } from '@aws-cdk/cdk';
 import { QueuePolicy } from './policy';
 
-export interface IQueue extends cdk.IConstruct, s3n.IBucketNotificationDestination, autoscaling_api.ILifecycleHookTarget {
+export interface IQueue extends IResource, s3n.IBucketNotificationDestination, autoscaling_api.ILifecycleHookTarget {
   /**
    * The ARN of this queue
+   * @attribute
    */
   readonly queueArn: string;
 
   /**
    * The URL of this queue
+   * @attribute
    */
   readonly queueUrl: string;
 
   /**
    * The name of this queue
+   * @attribute
    */
   readonly queueName: string;
 
   /**
    * If this queue is server-side encrypted, this is the KMS encryption key.
    */
-  readonly encryptionMasterKey?: kms.IEncryptionKey;
-
-  /**
-   * Export a queue
-   */
-  export(): QueueImportProps;
+  readonly encryptionMasterKey?: kms.IKey;
 
   /**
    * Adds a statement to the IAM resource policy associated with this queue.
@@ -81,7 +79,6 @@ export interface IQueue extends cdk.IConstruct, s3n.IBucketNotificationDestinati
    *  - sqs:GetQueueUrl
    *
    * @param grantee Principal to grant send rights to
-   * @param queueActions additional queue actions to allow
    */
   grantPurge(grantee: iam.IGrantable): iam.Grant;
 
@@ -98,7 +95,7 @@ export interface IQueue extends cdk.IConstruct, s3n.IBucketNotificationDestinati
 /**
  * Reference to a new or existing Amazon SQS queue
  */
-export abstract class QueueBase extends cdk.Construct implements IQueue {
+export abstract class QueueBase extends Resource implements IQueue {
 
   /**
    * The ARN of this queue
@@ -118,7 +115,7 @@ export abstract class QueueBase extends cdk.Construct implements IQueue {
   /**
    * If this queue is server-side encrypted, this is the KMS encryption key.
    */
-  public abstract readonly encryptionMasterKey?: kms.IEncryptionKey;
+  public abstract readonly encryptionMasterKey?: kms.IKey;
 
   /**
    * Controls automatic creation of policy objects.
@@ -133,11 +130,6 @@ export abstract class QueueBase extends cdk.Construct implements IQueue {
    * The set of S3 bucket IDs that are allowed to send notifications to this queue.
    */
   private readonly notifyingBuckets = new Set<string>();
-
-  /**
-   * Export a queue
-   */
-  public abstract export(): QueueImportProps;
 
   /**
    * Adds a statement to the IAM resource policy associated with this queue.
@@ -257,7 +249,6 @@ export abstract class QueueBase extends cdk.Construct implements IQueue {
    *  - sqs:GetQueueUrl
    *
    * @param grantee Principal to grant send rights to
-   * @param queueActions additional queue actions to allow
    */
   public grantPurge(grantee: iam.IGrantable) {
     return this.grant(grantee,
@@ -286,7 +277,7 @@ export abstract class QueueBase extends cdk.Construct implements IQueue {
 /**
  * Reference to a queue
  */
-export interface QueueImportProps {
+export interface QueueAttributes {
   /**
    * The ARN of the queue.
    */
@@ -295,7 +286,7 @@ export interface QueueImportProps {
   /**
    * The URL of the queue.
    */
-  readonly queueUrl: string;
+  readonly queueUrl?: string;
 
   /**
    * The name of the queue.

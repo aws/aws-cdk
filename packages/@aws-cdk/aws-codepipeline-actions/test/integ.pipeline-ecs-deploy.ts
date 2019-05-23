@@ -13,7 +13,7 @@ const app = new cdk.App();
 
 const stack = new cdk.Stack(app, 'aws-cdk-codepipeline-ecs-deploy');
 
-const vpc = new ec2.VpcNetwork(stack, 'VPC', {
+const vpc = new ec2.Vpc(stack, 'VPC', {
   maxAZs: 1,
 });
 const cluster = new ecs.Cluster(stack, "EcsCluster", {
@@ -34,9 +34,10 @@ const bucket = new s3.Bucket(stack, 'MyBucket', {
   versioned: true,
   removalPolicy: cdk.RemovalPolicy.Destroy,
 });
+const sourceOutput = new codepipeline.Artifact('SourceArtifact');
 const sourceAction = new cpactions.S3SourceAction({
   actionName: 'Source',
-  outputArtifactName: 'SourceArtifact',
+  output: sourceOutput,
   bucket,
   bucketKey: 'path/to/Dockerfile',
 });
@@ -74,10 +75,12 @@ const project = new codebuild.PipelineProject(stack, 'EcsProject', {
 });
 // needed for `docker push`
 repository.grantPullPush(project);
-const buildAction = new cpactions.CodeBuildBuildAction({
+const buildOutput = new codepipeline.Artifact();
+const buildAction = new cpactions.CodeBuildAction({
   actionName: 'CodeBuild',
   project,
-  inputArtifact: sourceAction.outputArtifact,
+  input: sourceOutput,
+  output: buildOutput,
 });
 
 new codepipeline.Pipeline(stack, 'MyPipeline', {
@@ -96,7 +99,7 @@ new codepipeline.Pipeline(stack, 'MyPipeline', {
       actions: [
         new cpactions.EcsDeployAction({
           actionName: 'DeployAction',
-          inputArtifact: buildAction.outputArtifact,
+          input: buildOutput,
           service,
         }),
       ],

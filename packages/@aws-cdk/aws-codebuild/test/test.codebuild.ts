@@ -128,7 +128,7 @@ export = {
           "Environment": {
             "Type": "LINUX_CONTAINER",
             "PrivilegedMode": false,
-            "Image": "aws/codebuild/ubuntu-base:14.04",
+            "Image": "aws/codebuild/standard:1.0",
             "ComputeType": "BUILD_GENERAL1_SMALL"
           }
           }
@@ -266,7 +266,7 @@ export = {
           },
           "Environment": {
             "ComputeType": "BUILD_GENERAL1_SMALL",
-            "Image": "aws/codebuild/ubuntu-base:14.04",
+            "Image": "aws/codebuild/standard:1.0",
             "PrivilegedMode": false,
             "Type": "LINUX_CONTAINER"
           },
@@ -470,6 +470,148 @@ export = {
       });
       test.done();
     },
+    'with GitHub source'(test: Test) {
+      const stack = new cdk.Stack();
+
+      new codebuild.Project(stack, 'Project', {
+        source: new codebuild.GitHubSource({
+          owner: 'testowner',
+          repo: 'testrepo',
+          cloneDepth: 3,
+          webhook: true,
+          reportBuildStatus: false,
+          webhookFilters: [
+            codebuild.FilterGroup.inEventOf(codebuild.EventAction.PUSH).andTagIsNot('stable'),
+            codebuild.FilterGroup.inEventOf(codebuild.EventAction.PULL_REQUEST_REOPENED).andBaseBranchIs('master'),
+          ],
+        })
+      });
+
+      expect(stack).to(haveResource('AWS::CodeBuild::Project', {
+        Source: {
+          Type: "GITHUB",
+          Location: 'https://github.com/testowner/testrepo.git',
+          ReportBuildStatus: false,
+          GitCloneDepth: 3,
+        }
+      }));
+
+      expect(stack).to(haveResourceLike('AWS::CodeBuild::Project', {
+        Triggers: {
+          Webhook: true,
+          FilterGroups: [
+            [
+              { Type: 'EVENT', Pattern: 'PUSH' },
+              { Type: 'HEAD_REF', Pattern: 'refs/tags/stable', ExcludeMatchedPattern: true },
+            ],
+            [
+              { Type: 'EVENT', Pattern: 'PULL_REQUEST_REOPENED' },
+              { Type: 'BASE_REF', Pattern: 'refs/heads/master' },
+            ],
+          ],
+        },
+      }));
+
+      test.done();
+    },
+    'with GitHubEnterprise source'(test: Test) {
+      const stack = new cdk.Stack();
+
+      const pushFilterGroup = codebuild.FilterGroup.inEventOf(codebuild.EventAction.PUSH);
+      new codebuild.Project(stack, 'MyProject', {
+        source: new codebuild.GitHubEnterpriseSource({
+          httpsCloneUrl: 'https://github.testcompany.com/testowner/testrepo',
+          ignoreSslErrors: true,
+          cloneDepth: 4,
+          webhook: true,
+          reportBuildStatus: false,
+          webhookFilters: [
+            pushFilterGroup.andBranchIs('master'),
+            pushFilterGroup.andBranchIs('develop'),
+            pushFilterGroup.andFilePathIs('ReadMe.md'),
+          ],
+        })
+      });
+
+      expect(stack).to(haveResource('AWS::CodeBuild::Project', {
+        Source: {
+          Type: "GITHUB_ENTERPRISE",
+          InsecureSsl: true,
+          GitCloneDepth: 4,
+          ReportBuildStatus: false,
+          Location: 'https://github.testcompany.com/testowner/testrepo'
+        }
+      }));
+
+      expect(stack).to(haveResourceLike('AWS::CodeBuild::Project', {
+        Triggers: {
+          Webhook: true,
+          FilterGroups: [
+            [
+              { Type: 'EVENT', Pattern: 'PUSH' },
+              { Type: 'HEAD_REF', Pattern: 'refs/heads/master' },
+            ],
+            [
+              { Type: 'EVENT', Pattern: 'PUSH' },
+              { Type: 'HEAD_REF', Pattern: 'refs/heads/develop' },
+            ],
+            [
+              { Type: 'EVENT', Pattern: 'PUSH' },
+              { Type: 'FILE_PATH', Pattern: 'ReadMe.md' },
+            ],
+          ],
+        },
+      }));
+
+      test.done();
+    },
+    'with Bitbucket source'(test: Test) {
+      const stack = new cdk.Stack();
+
+      new codebuild.Project(stack, 'Project', {
+        source: new codebuild.BitBucketSource({
+          owner: 'testowner',
+          repo: 'testrepo',
+          cloneDepth: 5,
+          reportBuildStatus: false,
+          webhookFilters: [
+            codebuild.FilterGroup.inEventOf(
+              codebuild.EventAction.PULL_REQUEST_CREATED,
+              codebuild.EventAction.PULL_REQUEST_UPDATED,
+            ).andTagIs('v.*'),
+            // duplicate event actions are fine
+            codebuild.FilterGroup.inEventOf(codebuild.EventAction.PUSH, codebuild.EventAction.PUSH).andActorAccountIsNot('aws-cdk-dev'),
+          ],
+        })
+      });
+
+      expect(stack).to(haveResource('AWS::CodeBuild::Project', {
+        Source: {
+          Type: 'BITBUCKET',
+          Location: 'https://bitbucket.org/testowner/testrepo.git',
+          GitCloneDepth: 5,
+          ReportBuildStatus: false,
+        },
+      }));
+
+      expect(stack).to(haveResourceLike('AWS::CodeBuild::Project', {
+        Triggers: {
+          Webhook: true,
+          FilterGroups: [
+            [
+              { Type: 'EVENT', Pattern: 'PULL_REQUEST_CREATED, PULL_REQUEST_UPDATED' },
+              { Type: 'HEAD_REF', Pattern: 'refs/tags/v.*' },
+            ],
+            [
+              { Type: 'EVENT', Pattern: 'PUSH' },
+              { Type: 'ACTOR_ACCOUNT_ID', Pattern: 'aws-cdk-dev', ExcludeMatchedPattern: true },
+            ],
+          ],
+        },
+      }));
+
+      test.done();
+    },
     'fail creating a Project when no build spec is given'(test: Test) {
       const stack = new cdk.Stack();
 
@@ -484,7 +626,7 @@ export = {
       const stack = new cdk.Stack();
 
       const bucket = new s3.Bucket(stack, 'MyBucket');
-      const vpc = new ec2.VpcNetwork(stack, 'MyVPC');
+      const vpc = new ec2.Vpc(stack, 'MyVPC');
       const securityGroup = new ec2.SecurityGroup(stack, 'SecurityGroup1', {
           groupName: 'Bob',
           vpc,
@@ -531,7 +673,7 @@ export = {
       const stack = new cdk.Stack();
 
       const bucket = new s3.Bucket(stack, 'MyBucket');
-      const vpc = new ec2.VpcNetwork(stack, 'MyVPC');
+      const vpc = new ec2.Vpc(stack, 'MyVPC');
       const securityGroup = new ec2.SecurityGroup(stack, 'SecurityGroup1', {
           groupName: 'Bob',
           vpc,
@@ -553,7 +695,7 @@ export = {
     'with VPC configuration but allowAllOutbound identified'(test: Test) {
       const stack = new cdk.Stack();
       const bucket = new s3.Bucket(stack, 'MyBucket');
-      const vpc = new ec2.VpcNetwork(stack, 'MyVPC');
+      const vpc = new ec2.Vpc(stack, 'MyVPC');
       const securityGroup = new ec2.SecurityGroup(stack, 'SecurityGroup1', {
           groupName: 'Bob',
           vpc,
@@ -766,7 +908,7 @@ export = {
           "Environment": {
           "Type": "LINUX_CONTAINER",
           "PrivilegedMode": false,
-          "Image": "aws/codebuild/ubuntu-base:14.04",
+          "Image": "aws/codebuild/standard:1.0",
           "ComputeType": "BUILD_GENERAL1_SMALL"
           }
         }));
@@ -797,7 +939,7 @@ export = {
           "Environment": {
           "Type": "LINUX_CONTAINER",
           "PrivilegedMode": false,
-          "Image": "aws/codebuild/ubuntu-base:14.04",
+          "Image": "aws/codebuild/standard:1.0",
           "ComputeType": "BUILD_GENERAL1_SMALL"
           }
         }));
@@ -1002,7 +1144,7 @@ export = {
         }
       ],
       "PrivilegedMode": false,
-      "Image": "aws/codebuild/ubuntu-base:14.04",
+      "Image": "aws/codebuild/standard:1.0",
       "ComputeType": "BUILD_GENERAL1_SMALL"
       }
     }));
@@ -1047,5 +1189,106 @@ export = {
     }, /Windows images do not support the Small ComputeType/);
 
     test.done();
-  }
+  },
+
+  'badge support test'(test: Test) {
+    const stack = new cdk.Stack();
+
+    interface BadgeValidationTestCase {
+      source: codebuild.BuildSource,
+      shouldPassValidation: boolean
+    }
+
+    const repo = new codecommit.Repository(stack, 'MyRepo', { repositoryName: 'hello-cdk' });
+    const bucket = new s3.Bucket(stack, 'MyBucket');
+
+    const cases: BadgeValidationTestCase[] = [
+      { source: new codebuild.NoSource(), shouldPassValidation: false },
+      { source: new codebuild.CodePipelineSource(), shouldPassValidation: false },
+      { source: new codebuild.CodeCommitSource({ repository: repo }), shouldPassValidation: false },
+      { source: new codebuild.S3BucketSource({ bucket, path: 'path/to/source.zip' }), shouldPassValidation: false },
+      { source: new codebuild.GitHubSource({ owner: 'awslabs', repo: 'aws-cdk' }), shouldPassValidation: true },
+      { source: new codebuild.GitHubEnterpriseSource({ httpsCloneUrl: 'url' }), shouldPassValidation: true },
+      { source: new codebuild.BitBucketSource({ owner: 'awslabs', repo: 'aws-cdk' }), shouldPassValidation: true }
+    ];
+
+    cases.forEach(testCase => {
+      const source = testCase.source;
+      const validationBlock = () => { new codebuild.Project(stack, `MyProject-${source.type}`, { source, badge: true }); };
+      if (testCase.shouldPassValidation) {
+        test.doesNotThrow(validationBlock, Error, `Badge is not supported for source type ${source.type}`);
+      } else {
+        test.throws(validationBlock, Error, `Badge is not supported for source type ${source.type}`);
+      }
+    });
+
+    test.done();
+  },
+
+  'webhook Filters': {
+    'a Group cannot be created with an empty set of event actions'(test: Test) {
+      test.throws(() => {
+        codebuild.FilterGroup.inEventOf();
+      }, /A filter group must contain at least one event action/);
+
+      test.done();
+    },
+
+    'cannot have base ref conditions if the Group contains the PUSH action'(test: Test) {
+      const filterGroup = codebuild.FilterGroup.inEventOf(codebuild.EventAction.PULL_REQUEST_CREATED,
+        codebuild.EventAction.PUSH);
+
+      test.throws(() => {
+        filterGroup.andBaseRefIs('.*');
+      }, /A base reference condition cannot be added if a Group contains a PUSH event action/);
+
+      test.done();
+    },
+
+    'cannot have file path conditions if the Group contains any action other than PUSH'(test: Test) {
+      const filterGroup = codebuild.FilterGroup.inEventOf(codebuild.EventAction.PULL_REQUEST_CREATED,
+        codebuild.EventAction.PUSH);
+
+      test.throws(() => {
+        filterGroup.andFilePathIsNot('.*\\.java');
+      }, /A file path condition cannot be added if a Group contains any event action other than PUSH/);
+
+      test.done();
+    },
+
+    'BitBucket sources do not support the PULL_REQUEST_REOPENED event action'(test: Test) {
+      const stack = new cdk.Stack();
+
+      test.throws(() => {
+        new codebuild.Project(stack, 'Project', {
+          source: new codebuild.BitBucketSource({
+            owner: 'owner',
+            repo: 'repo',
+            webhookFilters: [
+              codebuild.FilterGroup.inEventOf(codebuild.EventAction.PULL_REQUEST_REOPENED),
+            ],
+          }),
+        });
+      }, /BitBucket sources do not support the PULL_REQUEST_REOPENED webhook event action/);
+
+      test.done();
+    },
+
+    'BitBucket sources do not support file path conditions'(test: Test) {
+      const stack = new cdk.Stack();
+      const filterGroup = codebuild.FilterGroup.inEventOf(codebuild.EventAction.PUSH).andFilePathIs('.*');
+
+      test.throws(() => {
+        new codebuild.Project(stack, 'Project', {
+          source: new codebuild.BitBucketSource({
+            owner: 'owner',
+            repo: 'repo',
+            webhookFilters: [filterGroup],
+          }),
+        });
+      }, /BitBucket sources do not support file path conditions for webhook filters/);
+
+      test.done();
+    },
+  },
 };

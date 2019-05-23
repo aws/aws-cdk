@@ -1,7 +1,7 @@
 import cloudwatch = require('@aws-cdk/aws-cloudwatch');
 import cdk = require('@aws-cdk/cdk');
 import { CfnScalingPolicy } from './applicationautoscaling.generated';
-import { ScalableTarget } from './scalable-target';
+import { IScalableTarget } from './scalable-target';
 
 /**
  * Properties for a scaling policy
@@ -10,7 +10,7 @@ export interface StepScalingActionProps {
   /**
    * The scalable target
    */
-  readonly scalingTarget: ScalableTarget;
+  readonly scalingTarget: IScalableTarget;
 
   /**
    * A name for the scaling policy
@@ -83,9 +83,13 @@ export class StepScalingAction extends cdk.Construct implements cloudwatch.IAlar
   constructor(scope: cdk.Construct, id: string, props: StepScalingActionProps) {
     super(scope, id);
 
+    // Cloudformation requires either the ResourceId, ScalableDimension, and ServiceNamespace
+    // properties, or the ScalingTargetId property, but not both.
+    // https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-applicationautoscaling-scalingpolicy.html
     const resource = new CfnScalingPolicy(this, 'Resource', {
       policyName: props.policyName || this.node.uniqueId,
       policyType: 'StepScaling',
+      scalingTargetId: props.scalingTarget.scalableTargetId,
       stepScalingPolicyConfiguration: {
         adjustmentType: props.adjustmentType,
         cooldown: props.cooldownSec,

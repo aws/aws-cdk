@@ -181,7 +181,7 @@
                 "Name": "S3",
                 "OutputArtifacts": [
                   {
-                    "Name": "Artifact_S3_awscdkcodepipelinecloudformationcrossregionMyBucket99D95A28"
+                    "Name": "Artifact_Source_S3"
                   }
                 ],
                 "RunOrder": 1
@@ -201,7 +201,7 @@
                 "Configuration": {
                   "StackName": "aws-cdk-codepipeline-cross-region-deploy-stack",
                   "ActionMode": "CREATE_UPDATE",
-                  "TemplatePath": "Artifact_S3_awscdkcodepipelinecloudformationcrossregionMyBucket99D95A28::template.yml",
+                  "TemplatePath": "Artifact_Source_S3::template.yml",
                   "RoleArn": {
                     "Fn::GetAtt": [
                       "MyPipelineCFNCFNDeployRole9CC99B3F",
@@ -211,7 +211,7 @@
                 },
                 "InputArtifacts": [
                   {
-                    "Name": "Artifact_S3_awscdkcodepipelinecloudformationcrossregionMyBucket99D95A28"
+                    "Name": "Artifact_Source_S3"
                   }
                 ],
                 "Name": "CFN_Deploy",

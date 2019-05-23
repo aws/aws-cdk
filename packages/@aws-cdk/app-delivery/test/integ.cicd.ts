@@ -13,13 +13,14 @@ const pipeline = new codepipeline.Pipeline(stack, 'CodePipeline', {
     removalPolicy: cdk.RemovalPolicy.Destroy
   })
 });
+const sourceOutput = new codepipeline.Artifact('Artifact_CICDGitHubF8BA7ADD');
 const source = new cpactions.GitHubSourceAction({
   actionName: 'GitHub',
   owner: 'awslabs',
   repo: 'aws-cdk',
   oauthToken: cdk.SecretValue.plainText('DummyToken'),
-  pollForSourceChanges: true,
-  outputArtifactName: 'Artifact_CICDGitHubF8BA7ADD',
+  trigger: cpactions.GitHubTrigger.Poll,
+  output: sourceOutput,
 });
 pipeline.addStage({
   name: 'Source',
@@ -32,7 +33,7 @@ new cicd.PipelineDeployStackAction(stack, 'DeployStack', {
   changeSetName: 'CICD-ChangeSet',
   createChangeSetRunOrder: 10,
   executeChangeSetRunOrder: 999,
-  inputArtifact: source.outputArtifact,
+  input: sourceOutput,
   adminPermissions: false,
   capabilities: cfn.CloudFormationCapabilities.None,
 });

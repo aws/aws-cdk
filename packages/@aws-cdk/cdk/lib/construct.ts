@@ -1,11 +1,10 @@
 import cxapi = require('@aws-cdk/cx-api');
 import { IAspect } from './aspect';
-import { CloudFormationJSON } from './cloudformation-json';
+import { CLOUDFORMATION_TOKEN_RESOLVER, CloudFormationLang } from './cloudformation-lang';
 import { IDependable } from './dependency';
 import { resolve } from './resolve';
 import { Token } from './token';
 import { makeUniqueId } from './uniqueid';
-import { unresolved } from './unresolved';
 
 export const PATH_SEP = '/';
 
@@ -83,7 +82,7 @@ export class ConstructNode {
     // escape any path separators so they don't wreck havoc
     this.id = this._escapePathSeparator(this.id);
 
-    if (unresolved(id)) {
+    if (Token.isToken(id)) {
       throw new Error(`Cannot use tokens in construct ID: ${id}`);
     }
   }
@@ -148,7 +147,7 @@ export class ConstructNode {
    * Note that if the original ID of the construct you are looking for contained
    * a '/', then it would have been replaced by '--'.
    *
-   * @param name Relative name of a direct or indirect child
+   * @param path Relative path of a direct or indirect child
    * @returns a child by path or undefined if not found.
    */
   public tryFindChild(path: string): IConstruct | undefined {
@@ -172,7 +171,7 @@ export class ConstructNode {
    * Note that if the original ID of the construct you are looking for contained
    * a '/', then it would have been replaced by '--'.
    *
-   * @param name Relative name of a direct or indirect child
+   * @param path Relative path of a direct or indirect child
    * @returns Child with the given path.
    */
   public findChild(path: string): IConstruct {
@@ -354,7 +353,7 @@ export class ConstructNode {
   /**
    * Return the ancestors (including self) of this Construct up until and excluding the indicated component
    *
-   * @param to The construct to return the path components relative to, or
+   * @param upTo The construct to return the path components relative to, or
    * the entire list of ancestors (including root) if omitted.
    */
   public ancestors(upTo?: Construct): IConstruct[] {
@@ -398,7 +397,7 @@ export class ConstructNode {
    * Adds a child construct to this node.
    *
    * @param child The child construct
-   * @param name The type name of the child construct.
+   * @param childName The type name of the child construct.
    * @returns The resolved path part name of the child
    */
   public addChild(child: IConstruct, childName: string) {
@@ -457,7 +456,8 @@ export class ConstructNode {
   public resolve(obj: any): any {
     return resolve(obj, {
       scope: this.host,
-      prefix: []
+      prefix: [],
+      resolver: CLOUDFORMATION_TOKEN_RESOLVER,
     });
   }
 
@@ -465,7 +465,7 @@ export class ConstructNode {
    * Convert an object, potentially containing tokens, to a JSON string
    */
   public stringifyJson(obj: any): string {
-    return CloudFormationJSON.stringify(obj, this.host).toString();
+    return CloudFormationLang.toJSON(obj).toString();
   }
 
   /**
@@ -630,17 +630,6 @@ export class Construct implements IConstruct {
    */
   protected prepare(): void {
     return;
-  }
-}
-
-/**
- * Represents the root of a construct tree.
- * No scope and no name.
- */
-export class Root extends Construct {
-  constructor() {
-    // Bypass type checks
-    super(undefined as any, '');
   }
 }
 

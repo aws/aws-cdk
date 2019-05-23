@@ -209,6 +209,10 @@ export class Settings {
       plugin: argv.plugin,
       requireApproval: argv.requireApproval,
       toolkitStackName: argv.toolkitStackName,
+      toolkitBucket: {
+        bucketName: argv.toolkitBucketName,
+        kmsKeyId: argv.toolkitBucketEncryptionKeyId,
+      },
       versionReporting: argv.versionReporting,
       staging: argv.staging
     });

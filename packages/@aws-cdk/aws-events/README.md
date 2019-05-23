@@ -28,14 +28,14 @@ event when the pipeline changes it's state.
   that are of interest to them. A rule can customize the JSON sent to the
   target, by passing only certain parts or by overwriting it with a constant.
 
-The `EventRule` construct defines a CloudWatch events rule which monitors an
+The `Rule` construct defines a CloudWatch events rule which monitors an
 event based on an [event
 pattern](https://docs.aws.amazon.com/AmazonCloudWatch/latest/events/CloudWatchEventsandEventPatterns.html)
 and invoke __event targets__ when the pattern is matched against a triggered
 event. Event targets are objects that implement the `IEventTarget` interface.
 
 Normally, you will use one of the `source.onXxx(name[, target[, options]]) ->
-EventRule` methods on the event source to define an event rule associated with
+Rule` methods on the event source to define an event rule associated with
 the specific activity. You can targets either via props, or add targets using
 `rule.addTarget`.
 
@@ -62,3 +62,15 @@ onCommitRule.addTarget(topic, {
     }
 });
 ```
+
+## Event Targets
+
+The `@aws-cdk/aws-events-targets` module includes classes that implement the `IRuleTarget`
+interface for various AWS services.
+
+The following targets are supported:
+
+* `targets.SnsTopic`: publish into an SNS topic when an event rule is triggered.
+* `targets.CodeBuildProject`: start a CodeBuild project when an event rule is triggered.
+* `targets.LambdaFunction`: invoke an AWS Lambda function when an event rule is triggered.
+

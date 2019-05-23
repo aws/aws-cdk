@@ -1,5 +1,5 @@
 import { Certificate } from '@aws-cdk/aws-certificatemanager';
-import { VpcNetwork } from '@aws-cdk/aws-ec2';
+import { Vpc } from '@aws-cdk/aws-ec2';
 import { HostedZoneProvider } from '@aws-cdk/aws-route53';
 import cdk = require('@aws-cdk/cdk');
 import { Cluster } from './cluster';
@@ -80,26 +80,32 @@ export interface LoadBalancedFargateServiceAppletProps extends cdk.StackProps {
    */
   readonly desiredCount?: number;
 
-  /*
+  /**
    * Domain name for the service, e.g. api.example.com
+   *
+   * @default - No domain name.
    */
   readonly domainName?: string;
 
   /**
    * Route53 hosted zone for the domain, e.g. "example.com."
+   *
+   * @default - No Route53 hosted domain zone.
    */
   readonly domainZone?: string;
 
   /**
    * Certificate Manager certificate to associate with the load balancer.
    * Setting this option will set the load balancer port to 443.
+   *
+   * @default - No certificate associated with the load balancer.
    */
   readonly certificate?: string;
 
   /**
    * Environment variables to pass to the container
    *
-   * @default No environment variables
+   * @default - No environment variables.
    */
   readonly environment?: { [key: string]: string };
 }
@@ -109,10 +115,10 @@ export interface LoadBalancedFargateServiceAppletProps extends cdk.StackProps {
  * load balancer, ECS cluster, VPC, and (optionally) Route53 alias record.
  */
 export class LoadBalancedFargateServiceApplet extends cdk.Stack {
-  constructor(scope: cdk.App, id: string, props: LoadBalancedFargateServiceAppletProps) {
+  constructor(scope: cdk.Construct, id: string, props: LoadBalancedFargateServiceAppletProps) {
     super(scope, id, props);
 
-    const vpc = new VpcNetwork(this, 'MyVpc', { maxAZs: 2 });
+    const vpc = new Vpc(this, 'MyVpc', { maxAZs: 2 });
     const cluster = new Cluster(this, 'Cluster', { vpc });
 
     let domainZone;
@@ -121,7 +127,7 @@ export class LoadBalancedFargateServiceApplet extends cdk.Stack {
     }
     let certificate;
     if (props.certificate) {
-      certificate = Certificate.import(this, 'Cert', { certificateArn: props.certificate });
+      certificate = Certificate.fromCertificateArn(this, 'Cert', props.certificate);
     }
 
     // Instantiate Fargate Service with just cluster and image

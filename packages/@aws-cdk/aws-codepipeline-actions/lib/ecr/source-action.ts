@@ -1,6 +1,8 @@
 import codepipeline = require('@aws-cdk/aws-codepipeline');
 import ecr = require('@aws-cdk/aws-ecr');
+import targets = require('@aws-cdk/aws-events-targets');
 import iam = require('@aws-cdk/aws-iam');
+import { sourceArtifactBounds } from '../common';
 
 /**
  * Construction properties of {@link EcrSourceAction}.
@@ -14,12 +16,9 @@ export interface EcrSourceActionProps extends codepipeline.CommonActionProps {
   readonly imageTag?: string;
 
   /**
-   * The name of the source's output artifact.
-   * CfnOutput artifacts are used by CodePipeline as inputs into other actions.
    *
-   * @default a name will be auto-generated
    */
-  readonly outputArtifactName?: string;
+  readonly output: codepipeline.Artifact;
 
   /**
    * The repository that will be watched for changes.
@@ -30,18 +29,20 @@ export interface EcrSourceActionProps extends codepipeline.CommonActionProps {
 /**
  * The ECR Repository source CodePipeline Action.
  */
-export class EcrSourceAction extends codepipeline.SourceAction {
+export class EcrSourceAction extends codepipeline.Action {
   private readonly props: EcrSourceActionProps;
 
   constructor(props: EcrSourceActionProps) {
     super({
       ...props,
+      category: codepipeline.ActionCategory.Source,
       provider: 'ECR',
+      artifactBounds: sourceArtifactBounds(),
+      outputs: [props.output],
       configuration: {
         RepositoryName: props.repository.repositoryName,
         ImageTag: props.imageTag,
       },
-      outputArtifactName: props.outputArtifactName || `Artifact_${props.actionName}_${props.repository.node.uniqueId}`,
     });
 
     this.props = props;
@@ -55,6 +56,6 @@ export class EcrSourceAction extends codepipeline.SourceAction {
       .addResource(this.props.repository.repositoryArn));
 
     this.props.repository.onImagePushed(info.pipeline.node.uniqueId + 'SourceEventRule',
-        info.pipeline, this.props.imageTag);
+        new targets.CodePipeline(info.pipeline), this.props.imageTag);
   }
 }

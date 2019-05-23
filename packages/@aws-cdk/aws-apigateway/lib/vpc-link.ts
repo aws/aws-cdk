@@ -1,5 +1,5 @@
 import elbv2 = require('@aws-cdk/aws-elasticloadbalancingv2');
-import cdk = require('@aws-cdk/cdk');
+import { Construct, Resource } from '@aws-cdk/cdk';
 import { CfnVpcLink } from './apigateway.generated';
 
 /**
@@ -29,13 +29,14 @@ export interface VpcLinkProps {
  * Define a new VPC Link
  * Specifies an API Gateway VPC link for a RestApi to access resources in an Amazon Virtual Private Cloud (VPC).
  */
-export class VpcLink extends cdk.Construct {
+export class VpcLink extends Resource {
   /**
    * Physical ID of the VpcLink resource
+   * @attribute
    */
   public readonly vpcLinkId: string;
 
-  constructor(scope: cdk.Construct, id: string, props: VpcLinkProps) {
+  constructor(scope: Construct, id: string, props: VpcLinkProps) {
     super(scope, id);
 
     const cfnResource = new CfnVpcLink(this, 'Resource', {

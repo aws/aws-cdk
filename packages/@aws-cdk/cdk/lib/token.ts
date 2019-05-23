@@ -1,6 +1,6 @@
 import { IConstruct } from "./construct";
-import { TOKEN_MAP } from "./encoding";
-import { unresolved } from './unresolved';
+import { unresolved } from "./encoding";
+import { TokenMap } from "./token-map";
 
 /**
  * If objects has a function property by this name, they will be considered tokens, and this
@@ -20,17 +20,25 @@ export const RESOLVE_METHOD = 'resolve';
  */
 export class Token {
   /**
-   * Returns true if obj is a token (i.e. has the resolve() method or is a string
-   * that includes token markers), or it's a listifictaion of a Token string.
-   *
-   * @param obj The object to test.
+   * @deprecated use `Token.isToken`
    */
   public static unresolved(obj: any): boolean {
     return unresolved(obj);
   }
 
+  /**
+   * Returns true if obj is a token (i.e. has the resolve() method or is a
+   * string or array which includes token markers).
+   *
+   * @param obj The object to test.
+   */
+  public static isToken(obj: any): boolean {
+    return unresolved(obj);
+  }
+
   private tokenStringification?: string;
   private tokenListification?: string[];
+  private tokenNumberification?: number;
 
   /**
    * Creates a token that resolves to `value`.
@@ -57,10 +65,10 @@ export class Token {
   /**
    * @returns The resolved value for this token.
    */
-  public resolve(_context: ResolveContext): any {
+  public resolve(context: IResolveContext): any {
     let value = this.valueOrFunction;
     if (typeof(value) === 'function') {
-      value = value();
+      value = value(context);
     }
 
     return value;
@@ -86,7 +94,7 @@ export class Token {
     }
 
     if (this.tokenStringification === undefined) {
-      this.tokenStringification = TOKEN_MAP.registerString(this, this.displayName);
+      this.tokenStringification = TokenMap.instance().registerString(this, this.displayName);
     }
     return this.tokenStringification;
   }
@@ -98,8 +106,17 @@ export class Token {
    * it's not possible to do this properly, so we just throw an error here.
    */
   public toJSON(): any {
-    // tslint:disable-next-line:max-line-length
-    throw new Error('JSON.stringify() cannot be applied to structure with a Token in it. Use this.node.stringifyJson() instead.');
+    // We can't do the right work here because in case we contain a function, we
+    // won't know the type of value that function represents (in the simplest
+    // case, string or number), and we can't know that without an
+    // IResolveContext to actually do the resolution, which we don't have.
+
+    // We used to throw an error, but since JSON.stringify() is often used in
+    // error messages to produce a readable representation of an object, if we
+    // throw here we'll obfuscate that descriptive error with something worse.
+    // So return a string representation that indicates this thing is a token
+    // and needs resolving.
+    return JSON.stringify(`<unresolved-token:${this.displayName || 'TOKEN'}>`);
   }
 
   /**
@@ -121,18 +138,49 @@ export class Token {
     }
 
     if (this.tokenListification === undefined) {
-      this.tokenListification = TOKEN_MAP.registerList(this, this.displayName);
+      this.tokenListification = TokenMap.instance().registerList(this, this.displayName);
     }
     return this.tokenListification;
+  }
+
+  /**
+   * Return a floating point representation of this Token
+   *
+   * Call this if the Token intrinsically resolves to something that represents
+   * a number, and you need to pass it into an API that expects a number.
+   *
+   * You may not do any operations on the returned value; any arithmetic or
+   * other operations can and probably will destroy the token-ness of the value.
+   */
+  public toNumber(): number {
+    if (this.tokenNumberification === undefined) {
+      const valueType = typeof this.valueOrFunction;
+      // Optimization: if we can immediately resolve this, don't bother
+      // registering a Token.
+      if (valueType === 'number') { return this.valueOrFunction; }
+      if (valueType !== 'function') {
+        throw new Error(`Token value is not number or lazy, can't represent as number: ${this.valueOrFunction}`);
+      }
+      this.tokenNumberification = TokenMap.instance().registerNumber(this);
+    }
+
+    return this.tokenNumberification;
   }
 }
 
 /**
  * Current resolution context for tokens
  */
-export interface ResolveContext {
+export interface IResolveContext {
+  /**
+   * The scope from which resolution has been initiated
+   */
   readonly scope: IConstruct;
-  readonly prefix: string[];
+
+  /**
+   * Resolve an inner object
+   */
+  resolve(x: any): any;
 }
 
 /**
@@ -142,7 +190,7 @@ export interface IResolvedValuePostProcessor {
   /**
    * Process the completely resolved value, after full recursion/resolution has happened
    */
-  postProcess(input: any, context: ResolveContext): any;
+  postProcess(input: any, context: IResolveContext): any;
 }
 
 /**

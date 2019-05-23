@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/aws-codepipeline",
-  "version": "0.28.0",
+  "version": "0.31.0",
   "description": "Better interface to AWS Code Pipeline",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -20,7 +20,6 @@
         "signAssembly": true,
         "assemblyOriginatorKeyFile": "../../key.snk"
       },
-      "sphinx": {},
       "python": {
         "distName": "aws-cdk.aws-codepipeline",
         "module": "aws_cdk.aws_codepipeline"
@@ -41,7 +40,9 @@
     "pkglint": "pkglint -f",
     "package": "cdk-package",
     "awslint": "cdk-awslint",
-    "cfn2ts": "cfn2ts"
+    "cfn2ts": "cfn2ts",
+    "build+test+package": "npm run build+test && npm run package",
+    "build+test": "npm run build && npm test"
   },
   "cdk-build": {
     "cloudformation": "AWS::CodePipeline"
@@ -66,24 +67,26 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "^0.28.0",
-    "cdk-build-tools": "^0.28.0",
-    "cdk-integ-tools": "^0.28.0",
-    "cfn2ts": "^0.28.0",
-    "pkglint": "^0.28.0"
+    "@aws-cdk/assert": "^0.31.0",
+    "cdk-build-tools": "^0.31.0",
+    "cdk-integ-tools": "^0.31.0",
+    "cfn2ts": "^0.31.0",
+    "pkglint": "^0.31.0"
   },
   "dependencies": {
-    "@aws-cdk/aws-events": "^0.28.0",
-    "@aws-cdk/aws-iam": "^0.28.0",
-    "@aws-cdk/aws-s3": "^0.28.0",
-    "@aws-cdk/cdk": "^0.28.0"
+    "@aws-cdk/aws-events": "^0.31.0",
+    "@aws-cdk/aws-iam": "^0.31.0",
+    "@aws-cdk/aws-kms": "^0.31.0",
+    "@aws-cdk/aws-s3": "^0.31.0",
+    "@aws-cdk/cdk": "^0.31.0"
   },
   "homepage": "https://github.com/awslabs/aws-cdk",
   "peerDependencies": {
-    "@aws-cdk/aws-events": "^0.28.0",
-    "@aws-cdk/aws-iam": "^0.28.0",
-    "@aws-cdk/aws-s3": "^0.28.0",
-    "@aws-cdk/cdk": "^0.28.0"
+    "@aws-cdk/aws-events": "^0.31.0",
+    "@aws-cdk/aws-iam": "^0.31.0",
+    "@aws-cdk/aws-kms": "^0.31.0",
+    "@aws-cdk/aws-s3": "^0.31.0",
+    "@aws-cdk/cdk": "^0.31.0"
   },
   "engines": {
     "node": ">= 8.10.0"
@@ -93,7 +96,8 @@
       "construct-ctor:@aws-cdk/aws-codepipeline.CrossRegionScaffoldStack.<initializer>.params[0]",
       "construct-ctor:@aws-cdk/aws-codepipeline.CrossRegionScaffoldStack.<initializer>.params[1]",
       "export:@aws-cdk/aws-codepipeline.IPipeline",
-      "import-props-interface:@aws-cdk/aws-codepipeline.PipelineImportProps"
+      "import-props-interface:@aws-cdk/aws-codepipeline.PipelineImportProps",
+      "resource-attribute:@aws-cdk/aws-codepipeline.IPipeline.pipelineVersion"
     ]
   }
 }

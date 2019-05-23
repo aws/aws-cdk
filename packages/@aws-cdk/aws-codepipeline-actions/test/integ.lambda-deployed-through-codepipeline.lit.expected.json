@@ -1,7 +1,128 @@
 {
   "Resources": {
+    "PipelineArtifactsBucketEncryptionKey01D58D69": {
+      "Type": "AWS::KMS::Key",
+      "Properties": {
+        "KeyPolicy": {
+          "Statement": [
+            {
+              "Action": [
+                "kms:Create*",
+                "kms:Describe*",
+                "kms:Enable*",
+                "kms:List*",
+                "kms:Put*",
+                "kms:Update*",
+                "kms:Revoke*",
+                "kms:Disable*",
+                "kms:Get*",
+                "kms:Delete*",
+                "kms:ScheduleKeyDeletion",
+                "kms:CancelKeyDeletion"
+              ],
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":iam::",
+                      {
+                        "Ref": "AWS::AccountId"
+                      },
+                      ":root"
+                    ]
+                  ]
+                }
+              },
+              "Resource": "*"
+            },
+            {
+              "Action": [
+                "kms:Decrypt",
+                "kms:DescribeKey",
+                "kms:Encrypt",
+                "kms:ReEncrypt*",
+                "kms:GenerateDataKey*"
+              ],
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": {
+                  "Fn::GetAtt": [
+                    "PipelineRoleD68726F7",
+                    "Arn"
+                  ]
+                }
+              },
+              "Resource": "*"
+            },
+            {
+              "Action": [
+                "kms:Decrypt",
+                "kms:DescribeKey",
+                "kms:Encrypt",
+                "kms:ReEncrypt*",
+                "kms:GenerateDataKey*"
+              ],
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": {
+                  "Fn::GetAtt": [
+                    "CdkBuildProjectRoleE0B6FEB0",
+                    "Arn"
+                  ]
+                }
+              },
+              "Resource": "*"
+            },
+            {
+              "Action": [
+                "kms:Decrypt",
+                "kms:DescribeKey",
+                "kms:Encrypt",
+                "kms:ReEncrypt*",
+                "kms:GenerateDataKey*"
+              ],
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": {
+                  "Fn::GetAtt": [
+                    "LambdaBuildProjectRoleD0C4F982",
+                    "Arn"
+                  ]
+                }
+              },
+              "Resource": "*"
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      },
+      "DeletionPolicy": "Retain"
+    },
     "PipelineArtifactsBucket22248F97": {
       "Type": "AWS::S3::Bucket",
+      "Properties": {
+        "BucketEncryption": {
+          "ServerSideEncryptionConfiguration": [
+            {
+              "ServerSideEncryptionByDefault": {
+                "KMSMasterKeyID": {
+                  "Fn::GetAtt": [
+                    "PipelineArtifactsBucketEncryptionKey01D58D69",
+                    "Arn"
+                  ]
+                },
+                "SSEAlgorithm": "aws:kms"
+              }
+            }
+          ]
+        }
+      },
       "DeletionPolicy": "Retain"
     },
     "PipelineRoleD68726F7": {
@@ -68,6 +189,22 @@
                   ]
                 }
               ]
+            },
+            {
+              "Action": [
+                "kms:Decrypt",
+                "kms:DescribeKey",
+                "kms:Encrypt",
+                "kms:ReEncrypt*",
+                "kms:GenerateDataKey*"
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "PipelineArtifactsBucketEncryptionKey01D58D69",
+                  "Arn"
+                ]
+              }
             },
             {
               "Action": [
@@ -215,7 +352,7 @@
                 "Name": "CdkCode_Source",
                 "OutputArtifacts": [
                   {
-                    "Name": "Artifact_CdkCode_Source_PipelineStackCdkCodeRepo766C119A"
+                    "Name": "Artifact_Source_CdkCode_Source"
                   }
                 ],
                 "RunOrder": 1
@@ -241,7 +378,7 @@
                 "Name": "LambdaCode_Source",
                 "OutputArtifacts": [
                   {
-                    "Name": "Artifact_LambdaCode_Source_PipelineStackLambdaCodeRepo0F311735"
+                    "Name": "Artifact_Source_LambdaCode_Source"
                   }
                 ],
                 "RunOrder": 1
@@ -265,13 +402,13 @@
                 },
                 "InputArtifacts": [
                   {
-                    "Name": "Artifact_CdkCode_Source_PipelineStackCdkCodeRepo766C119A"
+                    "Name": "Artifact_Source_CdkCode_Source"
                   }
                 ],
                 "Name": "CDK_Build",
                 "OutputArtifacts": [
                   {
-                    "Name": "Artifact_CDK_Build_PipelineStackCdkBuildProject3F998A60"
+                    "Name": "Artifact_Build_CDK_Build"
                   }
                 ],
                 "RunOrder": 1
@@ -290,13 +427,13 @@
                 },
                 "InputArtifacts": [
                   {
-                    "Name": "Artifact_LambdaCode_Source_PipelineStackLambdaCodeRepo0F311735"
+                    "Name": "Artifact_Source_LambdaCode_Source"
                   }
                 ],
                 "Name": "Lambda_Build",
                 "OutputArtifacts": [
                   {
-                    "Name": "Artifact_Lambda_Build_PipelineStackLambdaBuildProjectC90BA2C4"
+                    "Name": "Artifact_Build_Lambda_Build"
                   }
                 ],
                 "RunOrder": 1
@@ -316,7 +453,7 @@
                 "Configuration": {
                   "StackName": "LambdaStackDeployedName",
                   "ActionMode": "CREATE_UPDATE",
-                  "TemplatePath": "Artifact_CDK_Build_PipelineStackCdkBuildProject3F998A60::LambdaStack.template.yaml",
+                  "TemplatePath": "Artifact_Build_CDK_Build::LambdaStack.template.yaml",
                   "Capabilities": "CAPABILITY_NAMED_IAM",
                   "RoleArn": {
                     "Fn::GetAtt": [
@@ -324,14 +461,14 @@
                       "Arn"
                     ]
                   },
-                  "ParameterOverrides": "{\"LambdaLambdaSourceBucketNameParameter159473FC\":{\"Fn::GetArtifactAtt\":[\"Artifact_Lambda_Build_PipelineStackLambdaBuildProjectC90BA2C4\",\"BucketName\"]},\"LambdaLambdaSourceObjectKeyParameter06573F1D\":{\"Fn::GetArtifactAtt\":[\"Artifact_Lambda_Build_PipelineStackLambdaBuildProjectC90BA2C4\",\"ObjectKey\"]}}"
+                  "ParameterOverrides": "{\"LambdaLambdaSourceBucketNameParameter159473FC\":{\"Fn::GetArtifactAtt\":[\"Artifact_Build_Lambda_Build\",\"BucketName\"]},\"LambdaLambdaSourceObjectKeyParameter06573F1D\":{\"Fn::GetArtifactAtt\":[\"Artifact_Build_Lambda_Build\",\"ObjectKey\"]}}"
                 },
                 "InputArtifacts": [
                   {
-                    "Name": "Artifact_Lambda_Build_PipelineStackLambdaBuildProjectC90BA2C4"
+                    "Name": "Artifact_Build_Lambda_Build"
                   },
                   {
-                    "Name": "Artifact_CDK_Build_PipelineStackCdkBuildProject3F998A60"
+                    "Name": "Artifact_Build_CDK_Build"
                   }
                 ],
                 "Name": "Lambda_CFN_Deploy",
@@ -343,6 +480,15 @@
           }
         ],
         "ArtifactStore": {
+          "EncryptionKey": {
+            "Id": {
+              "Fn::GetAtt": [
+                "PipelineArtifactsBucketEncryptionKey01D58D69",
+                "Arn"
+              ]
+            },
+            "Type": "KMS"
+          },
           "Location": {
             "Ref": "PipelineArtifactsBucket22248F97"
           },
@@ -737,6 +883,22 @@
                   ]
                 }
               ]
+            },
+            {
+              "Action": [
+                "kms:Decrypt",
+                "kms:DescribeKey",
+                "kms:Encrypt",
+                "kms:ReEncrypt*",
+                "kms:GenerateDataKey*"
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "PipelineArtifactsBucketEncryptionKey01D58D69",
+                  "Arn"
+                ]
+              }
             }
           ],
           "Version": "2012-10-17"
@@ -894,6 +1056,22 @@
                   ]
                 }
               ]
+            },
+            {
+              "Action": [
+                "kms:Decrypt",
+                "kms:DescribeKey",
+                "kms:Encrypt",
+                "kms:ReEncrypt*",
+                "kms:GenerateDataKey*"
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "PipelineArtifactsBucketEncryptionKey01D58D69",
+                  "Arn"
+                ]
+              }
             }
           ],
           "Version": "2012-10-17"

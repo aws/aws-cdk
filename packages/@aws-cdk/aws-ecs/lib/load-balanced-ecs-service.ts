@@ -14,6 +14,8 @@ export interface LoadBalancedEc2ServiceProps extends LoadBalancedServiceBaseProp
    * is terminated.
    *
    * At least one of memoryLimitMiB and memoryReservationMiB is required.
+   *
+   * @default - No memory limit.
    */
   readonly memoryLimitMiB?: number;
 
@@ -26,6 +28,8 @@ export interface LoadBalancedEc2ServiceProps extends LoadBalancedServiceBaseProp
    * the available memory on the container instance—whichever comes first.
    *
    * At least one of memoryLimitMiB and memoryReservationMiB is required.
+   *
+   * @default - No memory reserved.
    */
   readonly memoryReservationMiB?: number;
 }
@@ -34,6 +38,12 @@ export interface LoadBalancedEc2ServiceProps extends LoadBalancedServiceBaseProp
  * A single task running on an ECS cluster fronted by a load balancer
  */
 export class LoadBalancedEc2Service extends LoadBalancedServiceBase {
+
+  /**
+   * The ECS service in this construct
+   */
+  public readonly service: Ec2Service;
+
   constructor(scope: cdk.Construct, id: string, props: LoadBalancedEc2ServiceProps) {
     super(scope, id, props);
 
@@ -42,19 +52,21 @@ export class LoadBalancedEc2Service extends LoadBalancedServiceBase {
     const container = taskDefinition.addContainer('web', {
       image: props.image,
       memoryLimitMiB: props.memoryLimitMiB,
-      environment: props.environment,
+      memoryReservationMiB: props.memoryReservationMiB,
+      environment: props.environment
     });
 
     container.addPortMappings({
-      containerPort: props.containerPort || 80,
+      containerPort: props.containerPort || 80
     });
 
     const service = new Ec2Service(this, "Service", {
       cluster: props.cluster,
       desiredCount: props.desiredCount || 1,
-      taskDefinition,
+      taskDefinition
     });
 
+    this.service = service;
     this.addServiceAsTarget(service);
   }
 }

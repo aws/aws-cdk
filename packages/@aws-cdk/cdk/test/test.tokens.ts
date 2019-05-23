@@ -1,5 +1,7 @@
 import { Test } from 'nodeunit';
-import { Fn, Root, Token, unresolved } from '../lib';
+import { App as Root, findTokens, Fn, Stack, Token } from '../lib';
+import { createTokenDouble, extractTokenDouble } from '../lib/encoding';
+import { TokenMap } from '../lib/token-map';
 import { evaluateCFN } from './evaluate-cfn';
 
 export = {
@@ -123,9 +125,9 @@ export = {
   },
 
   'isToken(obj) can be used to determine if an object is a token'(test: Test) {
-    test.ok(unresolved({ resolve: () => 123 }));
-    test.ok(unresolved({ a: 1, b: 2, resolve: () => 'hello' }));
-    test.ok(!unresolved({ a: 1, b: 2, resolve: 3 }));
+    test.ok(Token.isToken({ resolve: () => 123 }));
+    test.ok(Token.isToken({ a: 1, b: 2, resolve: () => 'hello' }));
+    test.ok(!Token.isToken({ a: 1, b: 2, resolve: 3 }));
     test.done();
   },
 
@@ -154,6 +156,27 @@ export = {
 
     // THEN
     test.deepEqual(evaluateCFN(resolved), 'The dog says: woof woof');
+    test.done();
+  },
+
+  'tokens stringification can be reversed'(test: Test) {
+    // GIVEN
+    const token = new Token(() => 'woof woof');
+
+    // THEN
+    test.equal(token, TokenMap.instance().lookupString(`${token}`));
+    test.done();
+  },
+
+  'concatenated tokens are undefined'(test: Test) {
+    // GIVEN
+    const token = new Token(() => 'woof woof');
+
+    // WHEN
+    test.equal(undefined, TokenMap.instance().lookupString(`${token}bla`));
+    test.equal(undefined, TokenMap.instance().lookupString(`bla${token}`));
+    test.equal(undefined, TokenMap.instance().lookupString(`bla`));
+
     test.done();
   },
 
@@ -254,6 +277,52 @@ export = {
 
     // THEN
     test.deepEqual(resolve(s), { 'I am a string': 'boom I am a string' });
+    test.done();
+  },
+
+  'tokens can be nested in hash keys'(test: Test) {
+    // GIVEN
+    const token = new Token(() => new Token(() => new Token(() => 'I am a string')));
+
+    // WHEN
+    const s = {
+      [token.toString()]: `boom ${token}`
+    };
+
+    // THEN
+    test.deepEqual(resolve(s), { 'I am a string': 'boom I am a string' });
+    test.done();
+  },
+
+  'tokens can be nested and concatenated in hash keys'(test: Test) {
+    // GIVEN
+    const innerToken = new Token(() => 'toot');
+    const token = new Token(() => `${innerToken} the woot`);
+
+    // WHEN
+    const s = {
+      [token.toString()]: `boom chicago`
+    };
+
+    // THEN
+    test.deepEqual(resolve(s), { 'toot the woot': 'boom chicago' });
+    test.done();
+  },
+
+  'can find nested tokens in hash keys'(test: Test) {
+    // GIVEN
+    const innerToken = new Token(() => 'toot');
+    const token = new Token(() => `${innerToken} the woot`);
+
+    // WHEN
+    const s = {
+      [token.toString()]: `boom chicago`
+    };
+
+    // THEN
+    const tokens = findTokens(new Stack(), () => s);
+    test.ok(tokens.some(t => t === innerToken), 'Cannot find innerToken');
+    test.ok(tokens.some(t => t === token), 'Cannot find token');
     test.done();
   },
 
@@ -365,7 +434,53 @@ export = {
 
       test.done();
     },
-  }
+  },
+
+  'number encoding': {
+    'basic integer encoding works'(test: Test) {
+      test.equal(16, extractTokenDouble(createTokenDouble(16)));
+      test.done();
+    },
+
+    'arbitrary integers can be encoded, stringified, and recovered'(test: Test) {
+      for (let i = 0; i < 100; i++) {
+        // We can encode all numbers up to 2^48-1
+        const x = Math.floor(Math.random() * (Math.pow(2, 48) - 1));
+
+        const encoded = createTokenDouble(x);
+        // Roundtrip through JSONification
+        const roundtripped = JSON.parse(JSON.stringify({ theNumber: encoded })).theNumber;
+        const decoded = extractTokenDouble(roundtripped);
+        test.equal(decoded, x, `Fail roundtrip encoding of ${x}`);
+      }
+
+      test.done();
+    },
+
+    'arbitrary numbers are correctly detected as not being tokens'(test: Test) {
+      test.equal(undefined, extractTokenDouble(0));
+      test.equal(undefined, extractTokenDouble(1243));
+      test.equal(undefined, extractTokenDouble(4835e+532));
+
+      test.done();
+    },
+
+    'can number-encode and resolve Token objects'(test: Test) {
+      // GIVEN
+      const stack = new Stack();
+      const x = new Token(() => 123);
+
+      // THEN
+      const encoded = x.toNumber();
+      test.equal(true, Token.isToken(encoded), 'encoded number does not test as token');
+
+      // THEN
+      const resolved = stack.node.resolve({ value: encoded });
+      test.deepEqual(resolved, { value: 123 });
+
+      test.done();
+    },
+  },
 };
 
 class Promise2 extends Token {

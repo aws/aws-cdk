@@ -13,7 +13,7 @@ const argv = yargs
     alias: 'k',
     type: 'string',
     desc: 'Return only packages that have a truthy value in package.json for the given (dot-recursive) key.',
-    requiresArg: 'KEY'
+    requiresArg: true
   })
   .epilogue([
     'Outputs the JSII directories for all JSII packages that are found.'
