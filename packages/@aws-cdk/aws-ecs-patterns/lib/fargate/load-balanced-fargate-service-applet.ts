@@ -1,9 +1,8 @@
 import { Certificate } from '@aws-cdk/aws-certificatemanager';
 import { Vpc } from '@aws-cdk/aws-ec2';
+import { Cluster, ContainerImage } from '@aws-cdk/aws-ecs';
 import { HostedZoneProvider } from '@aws-cdk/aws-route53';
 import cdk = require('@aws-cdk/cdk');
-import { Cluster } from './cluster';
-import { ContainerImage } from './container-image';
 import { LoadBalancedFargateService } from './load-balanced-fargate-service';
 
 /**

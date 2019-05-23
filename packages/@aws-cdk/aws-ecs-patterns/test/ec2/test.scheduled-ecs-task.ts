@@ -1,9 +1,9 @@
 import { expect, haveResource } from '@aws-cdk/assert';
 import ec2 = require('@aws-cdk/aws-ec2');
+import ecs = require('@aws-cdk/aws-ecs');
 import cdk = require('@aws-cdk/cdk');
 import { Test } from 'nodeunit';
-import ecs = require('../../aws-ecs/lib');
-import { ScheduledEc2Task } from '../lib';
+import { ScheduledEc2Task } from '../../lib';
 
 export = {
   "Can create a scheduled Ec2 Task - with only required props"(test: Test) {
