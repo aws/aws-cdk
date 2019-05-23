@@ -35,6 +35,8 @@ export interface ClusterParameterGroupProps {
 
   /**
    * The parameters in this parameter group
+   *
+   * @default - No parameters.
    */
   readonly parameters?: Parameters;
 }

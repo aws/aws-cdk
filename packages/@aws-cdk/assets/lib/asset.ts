@@ -36,6 +36,8 @@ export interface AssetProps {
   /**
    * A list of principals that should be able to read this asset from S3.
    * You can use `asset.grantRead(principal)` to grant read permissions later.
+   *
+   * @default - No principals that can read file asset.
    */
   readonly readers?: iam.IGrantable[];
 }
@@ -195,6 +197,8 @@ export interface FileAssetProps {
   /**
    * A list of principals that should be able to read this file asset from S3.
    * You can use `asset.grantRead(principal)` to grant read permissions later.
+   *
+   * @default - No principals that can read file asset.
    */
   readonly readers?: iam.IGrantable[];
 }
@@ -217,6 +221,8 @@ export interface ZipDirectoryAssetProps {
   /**
    * A list of principals that should be able to read this ZIP file from S3.
    * You can use `asset.grantRead(principal)` to grant read permissions later.
+   *
+   * @default - No principals that can read file asset.
    */
   readonly readers?: iam.IGrantable[];
 }

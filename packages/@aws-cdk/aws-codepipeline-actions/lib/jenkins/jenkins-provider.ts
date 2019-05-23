@@ -88,12 +88,16 @@ export interface JenkinsProviderProps {
   /**
    * Whether to immediately register a Jenkins Provider for the build category.
    * The Provider will always be registered if you create a {@link JenkinsAction}.
+   *
+   * @default false
    */
   readonly forBuild?: boolean;
 
   /**
    * Whether to immediately register a Jenkins Provider for the test category.
    * The Provider will always be registered if you create a {@link JenkinsTestAction}.
+   *
+   * @default false
    */
   readonly forTest?: boolean;
 }

@@ -420,6 +420,8 @@ export interface VpcProps {
   /**
    * The CIDR range to use for the VPC (e.g. '10.0.0.0/16'). Should be a minimum of /28 and maximum size of /16.
    * The range will be split evenly into two subnets per Availability Zone (one public, one private).
+   *
+   * @default Vpc.DEFAULT_CIDR_RANGE
    */
   readonly cidr?: string;
 
@@ -427,6 +429,8 @@ export interface VpcProps {
    * Indicates whether the instances launched in the VPC get public DNS hostnames.
    * If this attribute is true, instances in the VPC get public DNS hostnames,
    * but only if the enableDnsSupport attribute is also set to true.
+   *
+   * @default true
    */
   readonly enableDnsHostnames?: boolean;
 
@@ -436,15 +440,18 @@ export interface VpcProps {
    * to IP addresses is not enabled. If this attribute is true, queries to the Amazon
    * provided DNS server at the 169.254.169.253 IP address, or the reserved IP address
    * at the base of the VPC IPv4 network range plus two will succeed.
+   *
+   * @default true
    */
   readonly enableDnsSupport?: boolean;
 
   /**
    * The default tenancy of instances launched into the VPC.
-   * By default, instances will be launched with default (shared) tenancy.
    * By setting this to dedicated tenancy, instances will be launched on hardware dedicated
    * to a single AWS customer, unless specifically specified at instance launch time.
    * Please note, not all instance types are usable with Dedicated tenancy.
+   *
+   * @default DefaultInstanceTenancy.Default (shared) tenancy
    */
   readonly defaultInstanceTenancy?: DefaultInstanceTenancy;
 
@@ -467,6 +474,7 @@ export interface VpcProps {
    *
    * For example, if set this to 1 and your subnet configuration is for 3 Public subnets then only
    * one of the Public subnets will have a gateway and all Private subnets will route to this NAT Gateway.
+   *
    * @default maxAZs
    */
   readonly natGateways?: number;
@@ -477,7 +485,7 @@ export interface VpcProps {
    * You can pick a specific group of subnets by specifying the group name;
    * the picked subnets must be public subnets.
    *
-   * @default All public subnets
+   * @default - All public subnets.
    */
   readonly natGatewaySubnets?: SubnetSelection;
 
@@ -511,41 +519,43 @@ export interface VpcProps {
    * `cidrMask` is optional and if not provided the IP space in the VPC will be
    * evenly divided between the requested subnets.
    *
-   * @default the VPC CIDR will be evenly divided between 1 public and 1
-   * private subnet per AZ
+   * @default - The VPC CIDR will be evenly divided between 1 public and 1
+   * private subnet per AZ.
    */
   readonly subnetConfiguration?: SubnetConfiguration[];
 
   /**
    * Indicates whether a VPN gateway should be created and attached to this VPC.
    *
-   * @default true when vpnGatewayAsn or vpnConnections is specified.
+   * @default - true when vpnGatewayAsn or vpnConnections is specified.
    */
   readonly vpnGateway?: boolean;
 
   /**
    * The private Autonomous System Number (ASN) for the VPN gateway.
    *
-   * @default Amazon default ASN
+   * @default - Amazon default ASN.
    */
   readonly vpnGatewayAsn?: number;
 
   /**
    * VPN connections to this VPC.
    *
-   * @default no connections
+   * @default - No connections.
    */
   readonly vpnConnections?: { [id: string]: VpnConnectionOptions }
 
   /**
    * Where to propagate VPN routes.
    *
-   * @default on the route tables associated with private subnets
+   * @default - On the route tables associated with private subnets.
    */
   readonly vpnRoutePropagation?: SubnetSelection[]
 
   /**
    * Gateway endpoints to add to this VPC.
+   *
+   * @default - None.
    */
   readonly gatewayEndpoints?: { [id: string]: GatewayVpcEndpointOptions }
 }
@@ -1032,7 +1042,7 @@ export interface SubnetProps {
   /**
    * Controls if a public IP is associated to an instance at launch
    *
-   * Defaults to true in Subnet.Public, false in Subnet.Private or Subnet.Isolated.
+   * @default true in Subnet.Public, false in Subnet.Private or Subnet.Isolated.
    */
   readonly mapPublicIpOnLaunch?: boolean;
 }

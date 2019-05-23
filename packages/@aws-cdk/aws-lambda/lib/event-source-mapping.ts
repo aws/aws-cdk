@@ -17,7 +17,7 @@ export interface EventSourceMappingOptions {
    *
    * Valid Range: Minimum value of 1. Maximum value of 10000.
    *
-   * @default The default for Amazon Kinesis and Amazon DynamoDB is 100 records.
+   * @default - Amazon Kinesis and Amazon DynamoDB is 100 records.
    * Both the default and maximum for Amazon SQS are 10 messages.
    */
   readonly batchSize?: number;
@@ -34,6 +34,8 @@ export interface EventSourceMappingOptions {
    * start reading.
    *
    * @see https://docs.aws.amazon.com/kinesis/latest/APIReference/API_GetShardIterator.html#Kinesis-GetShardIterator-request-ShardIteratorType
+   *
+   * @default - Required for Amazon Kinesis and Amazon DynamoDB Streams sources.
    */
   readonly startingPosition?: StartingPosition
 }
