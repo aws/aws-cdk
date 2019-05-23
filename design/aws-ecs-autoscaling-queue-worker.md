@@ -112,7 +112,7 @@ export interface Ec2QueueWorkerServiceProps {
   /**
    * The minimum number of CPU units to reserve for the container.
    *
-   * @default none
+   * @default - No minimum CPU units reserved.
    */
   readonly cpu?: number;
 
@@ -123,6 +123,8 @@ export interface Ec2QueueWorkerServiceProps {
    * is terminated.
    *
    * At least one of memoryLimitMiB and memoryReservationMiB is required for non-Fargate services.
+   *
+   * @default - No memory limit.
    */
   readonly memoryLimitMiB?: number;
 
@@ -135,6 +137,8 @@ export interface Ec2QueueWorkerServiceProps {
    * the available memory on the container instance—whichever comes first.
    *
    * At least one of memoryLimitMiB and memoryReservationMiB is required for non-Fargate services.
+   *
+   * @default - No memory reserved.
    */
   readonly memoryReservationMiB?: number;
 }
