@@ -68,6 +68,7 @@
     "@aws-cdk/aws-ec2": "^0.31.0",
     "@aws-cdk/aws-ecr": "^0.31.0",
     "@aws-cdk/aws-ecs": "^0.31.0",
+    "@aws-cdk/aws-ecs-patterns": "^0.31.0",
     "@aws-cdk/aws-efs": "^0.31.0",
     "@aws-cdk/aws-eks": "^0.31.0",
     "@aws-cdk/aws-elasticache": "^0.31.0",

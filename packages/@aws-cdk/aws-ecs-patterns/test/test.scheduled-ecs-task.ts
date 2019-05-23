@@ -1,0 +1,250 @@
+import { expect, haveResource } from '@aws-cdk/assert';
+import ec2 = require('@aws-cdk/aws-ec2');
+import cdk = require('@aws-cdk/cdk');
+import { Test } from 'nodeunit';
+import ecs = require('../../aws-ecs/lib');
+import { ScheduledEc2Task } from '../lib';
+
+export = {
+  "Can create a scheduled Ec2 Task - with only required props"(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Vpc', { maxAZs: 1 });
+    const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+    cluster.addCapacity('DefaultAutoScalingGroup', {
+      instanceType: new ec2.InstanceType('t2.micro')
+    });
+
+    new ScheduledEc2Task(stack, 'ScheduledEc2Task', {
+      cluster,
+      image: ecs.ContainerImage.fromRegistry('henk'),
+      memoryLimitMiB: 512,
+      scheduleExpression: 'rate(1 minute)'
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::Events::Rule', {
+      Targets: [
+        {
+          Arn: { "Fn::GetAtt": ["EcsCluster97242B84", "Arn"] },
+          EcsParameters: {
+            TaskCount: 1,
+            TaskDefinitionArn: { Ref: "ScheduledEc2TaskScheduledTaskDef56328BA4" }
+          },
+          Id: "ScheduledTaskDef-on-EcsCluster",
+          Input: "{}",
+          RoleArn: { "Fn::GetAtt": ["ScheduledEc2TaskScheduledTaskDefEventsRole64113C5F", "Arn"] }
+        }
+      ]
+    }));
+
+    expect(stack).to(haveResource('AWS::ECS::TaskDefinition', {
+      ContainerDefinitions: [
+        {
+          Essential: true,
+          Image: "henk",
+          Links: [],
+          LogConfiguration: {
+            LogDriver: "awslogs",
+            Options: {
+              "awslogs-group": {
+                Ref: "ScheduledEc2TaskScheduledTaskLoggingLogGroupDBEF2BF3"
+              },
+              "awslogs-stream-prefix": "ScheduledEc2Task",
+              "awslogs-region": {
+                Ref: "AWS::Region"
+              }
+            }
+          },
+          Memory: 512,
+          MountPoints: [],
+          Name: "ScheduledContainer",
+          PortMappings: [],
+          Ulimits: [],
+          VolumesFrom: []
+        }
+      ]
+    }));
+
+    test.done();
+  },
+
+  "Can create a scheduled Ec2 Task - with optional props"(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Vpc', { maxAZs: 1 });
+    const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+    cluster.addCapacity('DefaultAutoScalingGroup', {
+      instanceType: new ec2.InstanceType('t2.micro')
+    });
+
+    new ScheduledEc2Task(stack, 'ScheduledEc2Task', {
+      cluster,
+      image: ecs.ContainerImage.fromRegistry('henk'),
+      desiredTaskCount: 2,
+      memoryLimitMiB: 512,
+      cpu: 2,
+      environment: { name: 'TRIGGER', value: 'CloudWatch Events' },
+      scheduleExpression: 'rate(1 minute)'
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::Events::Rule', {
+      Targets: [
+        {
+          Arn: { "Fn::GetAtt": ["EcsCluster97242B84", "Arn"] },
+          EcsParameters: {
+            TaskCount: 2,
+            TaskDefinitionArn: { Ref: "ScheduledEc2TaskScheduledTaskDef56328BA4" }
+          },
+          Id: "ScheduledTaskDef-on-EcsCluster",
+          Input: "{}",
+          RoleArn: { "Fn::GetAtt": ["ScheduledEc2TaskScheduledTaskDefEventsRole64113C5F", "Arn"] }
+        }
+      ]
+    }));
+
+    expect(stack).to(haveResource('AWS::ECS::TaskDefinition', {
+      ContainerDefinitions: [
+        {
+          Cpu: 2,
+          Environment: [
+            {
+              Name: "name",
+              Value: "TRIGGER"
+            },
+            {
+              Name: "value",
+              Value: "CloudWatch Events"
+            }
+          ],
+          Essential: true,
+          Image: "henk",
+          Links: [],
+          LogConfiguration: {
+            LogDriver: "awslogs",
+            Options: {
+              "awslogs-group": {
+                Ref: "ScheduledEc2TaskScheduledTaskLoggingLogGroupDBEF2BF3"
+              },
+              "awslogs-stream-prefix": "ScheduledEc2Task",
+              "awslogs-region": {
+                Ref: "AWS::Region"
+              }
+            }
+          },
+          Memory: 512,
+          MountPoints: [],
+          Name: "ScheduledContainer",
+          PortMappings: [],
+          Ulimits: [],
+          VolumesFrom: []
+        }
+      ]
+    }));
+
+    test.done();
+  },
+
+  "Scheduled Ec2 Task - with MemoryReservation defined"(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Vpc', { maxAZs: 1 });
+    const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+    cluster.addCapacity('DefaultAutoScalingGroup', {
+      instanceType: new ec2.InstanceType('t2.micro')
+    });
+
+    new ScheduledEc2Task(stack, 'ScheduledEc2Task', {
+      cluster,
+      image: ecs.ContainerImage.fromRegistry('henk'),
+      memoryReservationMiB: 512,
+      scheduleExpression: 'rate(1 minute)'
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::ECS::TaskDefinition', {
+      ContainerDefinitions: [
+        {
+          Essential: true,
+          Image: "henk",
+          Links: [],
+          LogConfiguration: {
+            LogDriver: "awslogs",
+            Options: {
+              "awslogs-group": {
+                Ref: "ScheduledEc2TaskScheduledTaskLoggingLogGroupDBEF2BF3"
+              },
+              "awslogs-stream-prefix": "ScheduledEc2Task",
+              "awslogs-region": {
+                Ref: "AWS::Region"
+              }
+            }
+          },
+          MemoryReservation: 512,
+          MountPoints: [],
+          Name: "ScheduledContainer",
+          PortMappings: [],
+          Ulimits: [],
+          VolumesFrom: []
+        }
+      ]
+    }));
+
+    test.done();
+  },
+
+  "Scheduled Ec2 Task - with Command defined"(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Vpc', { maxAZs: 1 });
+    const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+    cluster.addCapacity('DefaultAutoScalingGroup', {
+      instanceType: new ec2.InstanceType('t2.micro')
+    });
+
+    new ScheduledEc2Task(stack, 'ScheduledEc2Task', {
+      cluster,
+      image: ecs.ContainerImage.fromRegistry('henk'),
+      memoryReservationMiB: 512,
+      command: ["-c", "4", "amazon.com"],
+      scheduleExpression: 'rate(1 minute)'
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::ECS::TaskDefinition', {
+      ContainerDefinitions: [
+        {
+          Command: [
+            "-c",
+            "4",
+            "amazon.com"
+          ],
+          Essential: true,
+          Image: "henk",
+          Links: [],
+          LogConfiguration: {
+            LogDriver: "awslogs",
+            Options: {
+              "awslogs-group": {
+                Ref: "ScheduledEc2TaskScheduledTaskLoggingLogGroupDBEF2BF3"
+              },
+              "awslogs-stream-prefix": "ScheduledEc2Task",
+              "awslogs-region": {
+                Ref: "AWS::Region"
+              }
+            }
+          },
+          MemoryReservation: 512,
+          MountPoints: [],
+          Name: "ScheduledContainer",
+          PortMappings: [],
+          Ulimits: [],
+          VolumesFrom: []
+        }
+      ]
+    }));
+
+    test.done();
+  },
+};
