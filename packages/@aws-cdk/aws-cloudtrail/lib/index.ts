@@ -222,14 +222,16 @@ export class Trail extends Resource {
   }
 
   /**
-   * Create an event rule for when an event is recorded by any trail.
+   * Create an event rule for when an event is recorded by any Trail in the account.
    *
-   * Note that the event doesn't necessarily have to come from this
-   * trail. Be sure to filter the event properly using an event pattern.
+   * Note that the event doesn't necessarily have to come from this Trail, it can
+   * be captured from any one.
+   *
+   * Be sure to filter the event further down using an event pattern.
    */
-  public onEvent(name: string, target?: events.IRuleTarget, options?: events.RuleProps) {
-    const rule = new events.Rule(this, name, options);
-    rule.addTarget(target);
+  public onCloudTrailEvent(id: string, options: events.OnEventOptions): events.Rule {
+    const rule = new events.Rule(this, id, options);
+    rule.addTarget(options.target);
     rule.addEventPattern({
       detailType: ['AWS API Call via CloudTrail']
     });
