@@ -6,7 +6,7 @@ import fs = require('fs');
 import path = require('path');
 import { AdoptedRepository } from './adopted-repository';
 
-export interface DockerImageAssetProps {
+export interface DockerImageAssetProps extends assets.CopyOptions {
   /**
    * The directory where the Dockerfile is stored
    */
@@ -69,6 +69,7 @@ export class DockerImageAsset extends cdk.Construct implements assets.IAsset {
     }
 
     const staging = new assets.Staging(this, 'Staging', {
+      ...props,
       sourcePath: dir
     });
 

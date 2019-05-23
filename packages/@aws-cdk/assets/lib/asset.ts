@@ -4,6 +4,7 @@ import cdk = require('@aws-cdk/cdk');
 import cxapi = require('@aws-cdk/cx-api');
 import fs = require('fs');
 import path = require('path');
+import { CopyOptions } from './fs';
 import { Staging } from './staging';
 
 /**
@@ -22,7 +23,7 @@ export enum AssetPackaging {
   File = 'file',
 }
 
-export interface AssetProps {
+export interface AssetProps extends CopyOptions {
   /**
    * The disk location of the asset.
    */
@@ -111,7 +112,8 @@ export class Asset extends cdk.Construct implements IAsset {
 
     // stage the asset source (conditionally).
     const staging = new Staging(this, 'Stage', {
-      sourcePath: path.resolve(props.path)
+      ...props,
+      sourcePath: path.resolve(props.path),
     });
     this.sourceHash = staging.sourceHash;
 

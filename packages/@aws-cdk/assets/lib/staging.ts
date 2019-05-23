@@ -2,9 +2,9 @@ import { Construct, Token } from '@aws-cdk/cdk';
 import cxapi = require('@aws-cdk/cx-api');
 import fs = require('fs');
 import path = require('path');
-import { copyDirectory, fingerprint } from './fs';
+import { copyDirectory, CopyOptions, fingerprint } from './fs';
 
-export interface StagingProps {
+export interface StagingProps extends CopyOptions {
   readonly sourcePath: string;
 }
 
@@ -46,6 +46,8 @@ export class Staging extends Construct {
    */
   public readonly sourceHash: string;
 
+  private readonly copyOptions: CopyOptions;
+
   /**
    * The asset path after "prepare" is called.
    *
@@ -58,7 +60,8 @@ export class Staging extends Construct {
     super(scope, id);
 
     this.sourcePath = props.sourcePath;
-    this.sourceHash = fingerprint(this.sourcePath);
+    this.copyOptions = props;
+    this.sourceHash = fingerprint(this.sourcePath, props);
     this.stagedPath = new Token(() => this._preparedAssetPath).toString();
   }
 
@@ -88,7 +91,7 @@ export class Staging extends Construct {
       fs.copyFileSync(this.sourcePath, targetPath);
     } else if (stat.isDirectory()) {
       fs.mkdirSync(targetPath);
-      copyDirectory(this.sourcePath, targetPath);
+      copyDirectory(this.sourcePath, targetPath, this.copyOptions);
     } else {
       throw new Error(`Unknown file type: ${this.sourcePath}`);
     }

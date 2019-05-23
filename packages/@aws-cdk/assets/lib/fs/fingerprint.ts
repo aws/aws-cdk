@@ -1,6 +1,7 @@
 import crypto = require('crypto');
 import fs = require('fs');
 import path = require('path');
+import { CopyOptions } from './copy';
 import { FollowMode } from './follow-mode';
 import { shouldExclude, shouldFollow } from './utils';
 
@@ -9,25 +10,12 @@ const CTRL_SOH = '\x01';
 const CTRL_SOT = '\x02';
 const CTRL_ETX = '\x03';
 
-export interface FingerprintOptions {
+export interface FingerprintOptions extends CopyOptions {
   /**
    * Extra information to encode into the fingerprint (e.g. build instructions
    * and other inputs)
    */
   extra?: string;
-
-  /**
-   * List of exclude patterns (see `CopyOptions`)
-   * @default include all files
-   */
-  exclude?: string[];
-
-  /**
-   * What to do when we encounter symlinks.
-   * @default External only follows symlinks that are external to the source
-   * directory
-   */
-  follow?: FollowMode;
 }
 
 /**

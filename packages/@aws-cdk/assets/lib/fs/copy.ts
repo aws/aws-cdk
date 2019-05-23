@@ -7,12 +7,12 @@ export interface CopyOptions {
   /**
    * @default External only follows symlinks that are external to the source directory
    */
-  follow?: FollowMode;
+  readonly follow?: FollowMode;
 
   /**
    * glob patterns to exclude from the copy.
    */
-  exclude?: string[];
+  readonly exclude?: string[];
 }
 
 export function copyDirectory(srcDir: string, destDir: string, options: CopyOptions = { }, rootDir?: string) {
