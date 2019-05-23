@@ -11,6 +11,8 @@ export interface DeploymentProps  {
 
   /**
    * A description of the purpose of the API Gateway deployment.
+   *
+   * @default - No description.
    */
   readonly description?: string;
 

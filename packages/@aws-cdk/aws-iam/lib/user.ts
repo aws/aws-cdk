@@ -17,19 +17,24 @@ export interface UserProps {
   /**
    * Groups to add this user to. You can also use `addToGroup` to add this
    * user to a group.
+   *
+   * @default - No groups.
    */
   readonly groups?: IGroup[];
 
   /**
    * A list of ARNs for managed policies attacherd to this user.
    * You can use `addManagedPolicy(arn)` to attach a managed policy to this user.
-   * @default No managed policies.
+   *
+   * @default - No managed policies.
    */
   readonly managedPolicyArns?: any[];
 
   /**
    * The path for the user name. For more information about paths, see IAM
    * Identifiers in the IAM User Guide.
+   *
+   * @default /
    */
   readonly path?: string;
 

@@ -41,6 +41,11 @@ export interface InstanceProps {
 
 /**
  * Backup configuration for RDS databases
+ *
+ * @default - The retention period for automated backups is 1 day.
+ * The preferred backup window will be a 30-minute window selected at random
+ * from an 8-hour block of time for each AWS Region.
+ * @see https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/USER_UpgradeDBInstance.Maintenance.html#AdjustingTheMaintenanceWindow.Aurora
  */
 export interface BackupProps {
 

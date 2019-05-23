@@ -27,14 +27,14 @@ export interface BaseTargetTrackingProps {
   /**
    * Period after a scaling completes before another scaling activity can start.
    *
-   * @default The default cooldown configured on the AutoScalingGroup
+   * @default - The default cooldown configured on the AutoScalingGroup.
    */
   readonly cooldownSeconds?: number;
 
   /**
    * Estimated time until a newly launched instance can send metrics to CloudWatch.
    *
-   * @default Same as the cooldown
+   * @default - Same as the cooldown.
    */
   readonly estimatedInstanceWarmupSeconds?: number;
 }
@@ -55,6 +55,8 @@ export interface BasicTargetTrackingScalingPolicyProps extends BaseTargetTrackin
    * the target value, scaling in will happen in the metric is lower than the target value.
    *
    * Exactly one of customMetric or predefinedMetric must be specified.
+   *
+   * @default - No predefined metric.
    */
   readonly predefinedMetric?: PredefinedMetric;
 
@@ -65,6 +67,8 @@ export interface BasicTargetTrackingScalingPolicyProps extends BaseTargetTrackin
    * the target value, scaling in will happen in the metric is lower than the target value.
    *
    * Exactly one of customMetric or predefinedMetric must be specified.
+   *
+   * @default - No custom metric.
    */
   readonly customMetric?: cloudwatch.Metric;
 
@@ -76,7 +80,7 @@ export interface BasicTargetTrackingScalingPolicyProps extends BaseTargetTrackin
    *
    * app/<load-balancer-name>/<load-balancer-id>/targetgroup/<target-group-name>/<target-group-id>
    *
-   * @default No resource label
+   * @default - No resource label.
    */
   readonly resourceLabel?: string;
 }

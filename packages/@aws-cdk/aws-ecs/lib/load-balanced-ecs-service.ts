@@ -14,6 +14,8 @@ export interface LoadBalancedEc2ServiceProps extends LoadBalancedServiceBaseProp
    * is terminated.
    *
    * At least one of memoryLimitMiB and memoryReservationMiB is required.
+   *
+   * @default - No memory limit.
    */
   readonly memoryLimitMiB?: number;
 
@@ -26,6 +28,8 @@ export interface LoadBalancedEc2ServiceProps extends LoadBalancedServiceBaseProp
    * the available memory on the container instance—whichever comes first.
    *
    * At least one of memoryLimitMiB and memoryReservationMiB is required.
+   *
+   * @default - No memory reserved.
    */
   readonly memoryReservationMiB?: number;
 }

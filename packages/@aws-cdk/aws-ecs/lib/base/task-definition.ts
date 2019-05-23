@@ -39,7 +39,7 @@ export interface CommonTaskDefinitionProps {
   /**
    * Namespace for task definition versions
    *
-   * @default Automatically generated name
+   * @default - Automatically generated name.
    */
   readonly family?: string;
 
@@ -49,19 +49,21 @@ export interface CommonTaskDefinitionProps {
    * The role will be used to retrieve container images from ECR and
    * create CloudWatch log groups.
    *
-   * @default An execution role will be automatically created if you use ECR images in your task definition
+   * @default - An execution role will be automatically created if you use ECR images in your task definition.
    */
   readonly executionRole?: iam.IRole;
 
   /**
    * The IAM role assumable by your application code running inside the container
    *
-   * @default A task role is automatically created for you
+   * @default - A task role is automatically created for you.
    */
   readonly taskRole?: iam.IRole;
 
   /**
    * See: https://docs.aws.amazon.com/AmazonECS/latest/developerguide//task_definition_parameters.html#volumes
+   *
+   * @default - No volumes are passed to the Docker daemon on a container instance.
    */
   readonly volumes?: Volume[];
 }
@@ -75,7 +77,7 @@ export interface TaskDefinitionProps extends CommonTaskDefinitionProps {
    *
    * On Fargate, the only supported networking mode is AwsVpc.
    *
-   * @default NetworkMode.Bridge for EC2 tasks, AwsVpc for Fargate tasks.
+   * @default - NetworkMode.Bridge for EC2 tasks, AwsVpc for Fargate tasks.
    */
   readonly networkMode?: NetworkMode;
 
@@ -85,6 +87,8 @@ export interface TaskDefinitionProps extends CommonTaskDefinitionProps {
    * constraints in the task definition and those specified at run time).
    *
    * Not supported in Fargate.
+   *
+   * @default - No placement constraints.
    */
   readonly placementConstraints?: PlacementConstraint[];
 
@@ -95,18 +99,27 @@ export interface TaskDefinitionProps extends CommonTaskDefinitionProps {
 
   /**
    * The number of cpu units used by the task.
+   *
+   * Optional for EC2 tasks and any value can be used.
+   *
+   * Required for Fargate tasks
    * Valid values, which determines your range of valid values for the memory parameter:
    * 256 (.25 vCPU) - Available memory values: 0.5GB, 1GB, 2GB
    * 512 (.5 vCPU) - Available memory values: 1GB, 2GB, 3GB, 4GB
    * 1024 (1 vCPU) - Available memory values: 2GB, 3GB, 4GB, 5GB, 6GB, 7GB, 8GB
    * 2048 (2 vCPU) - Available memory values: Between 4GB and 16GB in 1GB increments
    * 4096 (4 vCPU) - Available memory values: Between 8GB and 30GB in 1GB increments
+   *
+   * @default - CPU units are not specified.
    */
   readonly cpu?: string;
 
   /**
    * The amount (in MiB) of memory used by the task.
    *
+   * Optional for EC2 tasks and any value can be used.
+   *
+   * Required for Fargate tasks
    * This field is required and you must use one of the following values, which determines your range of valid values
    * for the cpu parameter:
    *
@@ -119,6 +132,8 @@ export interface TaskDefinitionProps extends CommonTaskDefinitionProps {
    * Between 4GB and 16GB in 1GB increments - Available cpu values: 2048 (2 vCPU)
    *
    * Between 8GB and 30GB in 1GB increments - Available cpu values: 4096 (4 vCPU)
+   *
+   * @default - Memory used by task is not specified.
    */
   readonly memoryMiB?: string;
 }

@@ -575,7 +575,7 @@ export interface BucketProps {
    * If you choose KMS, you can specify a KMS key via `encryptionKey`. If
    * encryption key is not specified, a key will automatically be created.
    *
-   * @default Unencrypted
+   * @default BucketEncryption.Unencrypted
    */
   readonly encryption?: BucketEncryption;
 
@@ -586,22 +586,22 @@ export interface BucketProps {
    * An error will be emitted if encryption is set to "Unencrypted" or
    * "Managed".
    *
-   * @default If encryption is set to "Kms" and this property is undefined, a
-   * new KMS key will be created and associated with this bucket.
+   * @default - If encryption is set to "Kms" and this property is undefined,
+   * a new KMS key will be created and associated with this bucket.
    */
   readonly encryptionKey?: kms.IKey;
 
   /**
    * Physical name of this bucket.
    *
-   * @default Assigned by CloudFormation (recommended)
+   * @default - Assigned by CloudFormation (recommended).
    */
   readonly bucketName?: string;
 
   /**
    * Policy to apply when the bucket is removed from this stack.
    *
-   * @default The bucket will be orphaned
+   * @default - The bucket will be orphaned.
    */
   readonly removalPolicy?: RemovalPolicy;
 
@@ -615,25 +615,31 @@ export interface BucketProps {
   /**
    * Rules that define how Amazon S3 manages objects during their lifetime.
    *
-   * @default No lifecycle rules
+   * @default - No lifecycle rules.
    */
   readonly lifecycleRules?: LifecycleRule[];
 
   /**
    * The name of the index document (e.g. "index.html") for the website. Enables static website
    * hosting for this bucket.
+   *
+   * @default - No index document.
    */
   readonly websiteIndexDocument?: string;
 
   /**
    * The name of the error document (e.g. "404.html") for the website.
    * `websiteIndexDocument` must also be set if this is set.
+   *
+   * @default - No error document.
    */
   readonly websiteErrorDocument?: string;
 
   /**
    * Grants public read access to all objects in the bucket.
    * Similar to calling `bucket.grantPublicAccess()`
+   *
+   * @default false
    */
   readonly publicReadAccess?: boolean;
 
@@ -641,6 +647,9 @@ export interface BucketProps {
    * The block public access configuration of this bucket.
    *
    * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/access-control-block-public-access.html
+   *
+   * @default false New buckets and objects don't allow public access, but users can modify bucket
+   * policies or object permissions to allow public access.
    */
   readonly blockPublicAccess?: BlockPublicAccess;
 
@@ -648,6 +657,8 @@ export interface BucketProps {
    * The metrics configuration of this bucket.
    *
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-s3-bucket-metricsconfiguration.html
+   *
+   * @default - No metrics configuration.
    */
   readonly metrics?: BucketMetrics[];
 }

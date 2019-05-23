@@ -80,26 +80,32 @@ export interface LoadBalancedFargateServiceAppletProps extends cdk.StackProps {
    */
   readonly desiredCount?: number;
 
-  /*
+  /**
    * Domain name for the service, e.g. api.example.com
+   *
+   * @default - No domain name.
    */
   readonly domainName?: string;
 
   /**
    * Route53 hosted zone for the domain, e.g. "example.com."
+   *
+   * @default - No Route53 hosted domain zone.
    */
   readonly domainZone?: string;
 
   /**
    * Certificate Manager certificate to associate with the load balancer.
    * Setting this option will set the load balancer port to 443.
+   *
+   * @default - No certificate associated with the load balancer.
    */
   readonly certificate?: string;
 
   /**
    * Environment variables to pass to the container
    *
-   * @default No environment variables
+   * @default - No environment variables.
    */
   readonly environment?: { [key: string]: string };
 }

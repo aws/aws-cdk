@@ -12,7 +12,7 @@ export interface MetricProps {
   /**
    * Dimensions of the metric
    *
-   * @default No dimensions
+   * @default - No dimensions.
    */
   readonly dimensions?: DimensionHash;
 
@@ -248,7 +248,7 @@ export interface MetricOptions {
   /**
    * Dimensions of the metric
    *
-   * @default No dimensions
+   * @default - No dimensions.
    */
   readonly dimensions?: DimensionHash;
 
@@ -357,6 +357,8 @@ export interface MetricAlarmProps {
    * Specifies whether to evaluate the data and potentially change the alarm state if there are too few data points to be statistically significant.
    *
    * Used only for alarms that are based on percentiles.
+   *
+   * @default - Not configured.
    */
   readonly evaluateLowSampleCountPercentile?: string;
 

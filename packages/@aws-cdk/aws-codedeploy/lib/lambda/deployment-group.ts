@@ -38,14 +38,14 @@ export interface LambdaDeploymentGroupProps {
   /**
    * The reference to the CodeDeploy Lambda Application that this Deployment Group belongs to.
    *
-   * @default one will be created for you
+   * @default - One will be created for you.
    */
   readonly application?: ILambdaApplication;
 
   /**
    * The physical, human-readable name of the CodeDeploy Deployment Group.
    *
-   * @default an auto-generated name will be used
+   * @default - An auto-generated name will be used.
    */
   readonly deploymentGroupName?: string;
 
@@ -71,7 +71,7 @@ export interface LambdaDeploymentGroupProps {
   /**
    * The service Role of this Deployment Group.
    *
-   * @default a new Role will be created.
+   * @default - A new Role will be created.
    */
   readonly role?: iam.IRole;
 
@@ -85,11 +85,15 @@ export interface LambdaDeploymentGroupProps {
 
   /**
    * The Lambda function to run before traffic routing starts.
+   *
+   * @default - None.
    */
   readonly preHook?: lambda.IFunction;
 
   /**
    * The Lambda function to run after traffic routing starts.
+   *
+   * @default - None.
    */
   readonly postHook?: lambda.IFunction;
 
@@ -102,6 +106,8 @@ export interface LambdaDeploymentGroupProps {
 
   /**
    * The auto-rollback configuration for this Deployment Group.
+   *
+   * @default - default AutoRollbackConfig.
    */
   readonly autoRollback?: AutoRollbackConfig;
 }

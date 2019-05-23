@@ -15,7 +15,7 @@ export interface BaseTargetGroupProps {
    * 32 characters, must contain only alphanumeric characters or hyphens, and
    * must not begin or end with a hyphen.
    *
-   * @default Automatically generated
+   * @default - Automatically generated.
    */
   readonly targetGroupName?: string;
 
@@ -36,7 +36,7 @@ export interface BaseTargetGroupProps {
   /**
    * Health check configuration
    *
-   * @default No health check
+   * @default - None.
    */
   readonly healthCheck?: HealthCheck;
 
@@ -47,7 +47,7 @@ export interface BaseTargetGroupProps {
    * register targets to the TargetGroup in the CDK app, the TargetType is
    * determined automatically.
    *
-   * @default Determined automatically
+   * @default - Determined automatically.
    */
   readonly targetType?: TargetType;
 }

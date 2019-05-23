@@ -64,7 +64,8 @@ export interface StageAddToPipelineProps extends StageProps {
 export interface PipelineProps {
   /**
    * The S3 bucket used by this Pipeline to store artifacts.
-   * If not specified, a new S3 bucket will be created.
+   *
+   * @default - A new S3 bucket will be created.
    */
   readonly artifactBucket?: s3.IBucket;
 
@@ -77,12 +78,15 @@ export interface PipelineProps {
 
   /**
    * Indicates whether to rerun the AWS CodePipeline pipeline after you update it.
+   *
+   * @default false
    */
   readonly restartExecutionOnUpdate?: boolean;
 
   /**
-   * Name of the pipeline. If you don't specify a name,  AWS CloudFormation generates an ID
-   * and uses that for the pipeline name.
+   * Name of the pipeline.
+   *
+   * @default - AWS CloudFormation generates an ID and uses that for the pipeline name.
    */
   readonly pipelineName?: string;
 
@@ -93,6 +97,8 @@ export interface PipelineProps {
    * the construct will automatically create a scaffold Stack containing an S3 Bucket in that region.
    * Note that you will have to `cdk deploy` that Stack before you can deploy your Pipeline-containing Stack.
    * You can query the generated Stacks using the {@link Pipeline#crossRegionScaffoldStacks} property.
+   *
+   * @default - None.
    */
   readonly crossRegionReplicationBuckets?: { [region: string]: string };
 
@@ -100,6 +106,8 @@ export interface PipelineProps {
    * The list of Stages, in order,
    * to create this Pipeline with.
    * You can always add more Stages later by calling {@link Pipeline#addStage}.
+   *
+   * @default - None.
    */
   readonly stages?: StageProps[];
 }

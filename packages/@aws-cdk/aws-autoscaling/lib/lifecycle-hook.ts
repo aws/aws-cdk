@@ -11,7 +11,7 @@ export interface BasicLifecycleHookProps {
   /**
    * Name of the lifecycle hook
    *
-   * @default Automatically generated name
+   * @default - Automatically generated name.
    */
   readonly lifecycleHookName?: string;
 
@@ -26,6 +26,8 @@ export interface BasicLifecycleHookProps {
    * Maximum time between calls to RecordLifecycleActionHeartbeat for the hook
    *
    * If the lifecycle hook times out, perform the action in DefaultResult.
+   *
+   * @default - No heartbeat timeout.
    */
   readonly heartbeatTimeoutSec?: number;
 
@@ -37,7 +39,7 @@ export interface BasicLifecycleHookProps {
   /**
    * Additional data to pass to the lifecycle hook target
    *
-   * @default No metadata
+   * @default - No metadata.
    */
   readonly notificationMetadata?: string;
 
@@ -49,7 +51,7 @@ export interface BasicLifecycleHookProps {
   /**
    * The role that allows publishing to the notification target
    *
-   * @default A role is automatically created
+   * @default - A role is automatically created.
    */
   readonly role?: iam.IRole;
 }

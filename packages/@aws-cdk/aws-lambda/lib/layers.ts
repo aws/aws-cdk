@@ -5,9 +5,9 @@ import { Runtime } from './runtime';
 
 export interface LayerVersionProps {
   /**
-   * The runtimes that this layer is compatible with.
+   * The runtimes compatible with this Layer.
    *
-   * @default All runtimes are supported
+   * @default - All runtimes are supported.
    */
   readonly compatibleRuntimes?: Runtime[];
 
@@ -18,19 +18,22 @@ export interface LayerVersionProps {
 
   /**
    * The description the this Lambda Layer.
+   *
+   * @default - No description.
    */
   readonly description?: string;
 
   /**
    * The SPDX licence identifier or URL to the license file for this layer.
    *
-   * @default no license information will be recorded.
+   * @default - No license information will be recorded.
    */
   readonly license?: string;
 
   /**
    * The name of the layer.
-   * @default a name will be generated.
+   *
+   * @default - A name will be generated.
    */
   readonly name?: string;
 }
@@ -44,6 +47,8 @@ export interface ILayerVersion extends IResource {
 
   /**
    * The runtimes compatible with this Layer.
+   *
+   * @default Runtime.All
    */
   readonly compatibleRuntimes?: Runtime[];
 

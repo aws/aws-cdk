@@ -135,20 +135,22 @@ export class InstanceTagSet {
 export interface ServerDeploymentGroupProps {
   /**
    * The CodeDeploy EC2/on-premise Application this Deployment Group belongs to.
-   * If you don't provide one, a new Application will be created.
+   *
+   * @default - A new Application will be created.
    */
   readonly application?: IServerApplication;
 
   /**
    * The service Role of this Deployment Group.
-   * If you don't provide one, a new Role will be created.
+   *
+   * @default - A new Role will be created.
    */
   readonly role?: iam.IRole;
 
   /**
    * The physical, human-readable name of the CodeDeploy Deployment Group.
    *
-   * @default an auto-generated name will be used
+   * @default - An auto-generated name will be used.
    */
   readonly deploymentGroupName?: string;
 
@@ -186,21 +188,21 @@ export interface ServerDeploymentGroupProps {
    * Can be created from either a classic Elastic Load Balancer,
    * or an Application Load Balancer / Network Load Balancer Target Group.
    *
-   * @default the Deployment Group will not have a load balancer defined
+   * @default - Deployment Group will not have a load balancer defined.
    */
   readonly loadBalancer?: LoadBalancer;
 
   /**
    * All EC2 instances matching the given set of tags when a deployment occurs will be added to this Deployment Group.
    *
-   * @default no additional EC2 instances will be added to the Deployment Group
+   * @default - No additional EC2 instances will be added to the Deployment Group.
    */
   readonly ec2InstanceTags?: InstanceTagSet;
 
   /**
    * All on-premise instances matching the given set of tags when a deployment occurs will be added to this Deployment Group.
    *
-   * @default no additional on-premise instances will be added to the Deployment Group
+   * @default - No additional on-premise instances will be added to the Deployment Group.
    */
   readonly onPremiseInstanceTags?: InstanceTagSet;
 
@@ -225,6 +227,8 @@ export interface ServerDeploymentGroupProps {
 
   /**
    * The auto-rollback configuration for this Deployment Group.
+   *
+   * @default - default AutoRollbackConfig.
    */
   readonly autoRollback?: AutoRollbackConfig;
 }

@@ -7,11 +7,15 @@ import { CfnTaskDefinition } from './ecs.generated';
 export interface LinuxParametersProps {
   /**
    * Whether the init process is enabled
+   *
+   * @default false
    */
   readonly initProcessEnabled?: boolean;
 
   /**
    * The shared memory size
+   *
+   * @default No shared memory.
    */
   readonly sharedMemorySize?: number;
 }

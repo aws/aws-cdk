@@ -96,7 +96,7 @@ export interface RotationSingleUserProps extends RotationSingleUserOptions {
   /**
    * The database engine. Either `serverlessApplicationLocation` or `engine` must be specified.
    *
-   * @default no engine specified
+   * @default - No engine specified.
    */
   readonly engine?: DatabaseEngine;
 
@@ -108,7 +108,7 @@ export interface RotationSingleUserProps extends RotationSingleUserOptions {
   /**
    * The type of subnets in the VPC where the Lambda rotation function will run.
    *
-   * @default private subnets
+   * @default - Private subnets.
    */
   readonly vpcSubnets?: ec2.SubnetSelection;
 

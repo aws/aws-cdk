@@ -208,6 +208,8 @@ export interface RepositoryProps {
   /**
    * A description of the repository. Use the description to identify the
    * purpose of the repository.
+   *
+   * @default - No description.
    */
   readonly description?: string;
 }

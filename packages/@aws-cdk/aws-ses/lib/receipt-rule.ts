@@ -38,13 +38,15 @@ export interface ReceiptRuleOptions {
    * An ordered list of actions to perform on messages that match at least
    * one of the recipient email addresses or domains specified in the
    * receipt rule.
+   *
+   * @default - No actions.
    */
   readonly actions?: IReceiptRuleAction[];
 
   /**
    * An existing rule after which the new rule will be placed.
    *
-   * @default the new rule is inserted at the beginning of the rule list
+   * @default - The new rule is inserted at the beginning of the rule list.
    */
   readonly after?: IReceiptRule;
 
@@ -58,28 +60,29 @@ export interface ReceiptRuleOptions {
   /**
    * The name for the rule
    *
-   * @default a CloudFormation generated name
+   * @default - A CloudFormation generated name.
    */
   readonly name?: string;
 
   /**
    * The recipient domains and email addresses that the receipt rule applies to.
    *
-   * @default match all recipients under all verified domains.
+   * @default - Match all recipients under all verified domains.
    */
   readonly recipients?: string[];
 
   /**
-   * Wheter to scan for spam and viruses.
+   * Whether to scan for spam and viruses.
    *
    * @default false
    */
   readonly scanEnabled?: boolean;
 
   /**
-   * The TLS policy
+   * Whether Amazon SES should require that incoming email is delivered over a
+   * connection encrypted with Transport Layer Security (TLS).
    *
-   * @default Optional
+   * @default - Optional which will not check for TLS.
    */
   readonly tlsPolicy?: TlsPolicy;
 }

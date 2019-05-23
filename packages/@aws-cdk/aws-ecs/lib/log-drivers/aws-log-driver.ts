@@ -23,7 +23,7 @@ export interface AwsLogDriverProps {
   /**
    * The log group to log to
    *
-   * @default A log group is automatically created
+   * @default - A log group is automatically created.
    */
   readonly logGroup?: logs.ILogGroup;
 
@@ -31,7 +31,7 @@ export interface AwsLogDriverProps {
    * The number of days log events are kept in CloudWatch Logs when the log
    * group is automatically created by this construct.
    *
-   * @default logs never expire
+   * @default - Logs never expire.
    */
   readonly logRetentionDays?: logs.RetentionDays;
 
@@ -41,6 +41,8 @@ export interface AwsLogDriverProps {
    * A log message consists of a line that matches the pattern and any
    * following lines that don’t match the pattern. Thus the matched line is
    * the delimiter between log messages.
+   *
+   * @default - No multiline matching.
    */
   readonly datetimeFormat?: string;
 
@@ -50,6 +52,10 @@ export interface AwsLogDriverProps {
    * A log message consists of a line that matches the pattern and any
    * following lines that don’t match the pattern. Thus the matched line is
    * the delimiter between log messages.
+   *
+   * This option is ignored if datetimeFormat is also configured.
+   *
+   * @default - No multiline matching.
    */
   readonly multilinePattern?: string;
 }

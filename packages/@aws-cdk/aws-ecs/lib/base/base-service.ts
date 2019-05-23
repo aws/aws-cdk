@@ -39,7 +39,7 @@ export interface BaseServiceProps {
   /**
    * A name for the service.
    *
-   * @default CloudFormation-generated name
+   * @default - CloudFormation-generated name.
    */
   readonly serviceName?: string;
 
@@ -48,7 +48,7 @@ export interface BaseServiceProps {
    * service's DesiredCount value, that can run in a service during a
    * deployment.
    *
-   * @default 100 if daemon, otherwise 200
+   * @default - 100 if daemon, otherwise 200
    */
   readonly maximumPercent?: number;
 
@@ -57,7 +57,7 @@ export interface BaseServiceProps {
    * the Amazon ECS service's DesiredCount value, that must
    * continue to run and remain healthy during a deployment.
    *
-   * @default 0 if daemon, otherwise 50
+   * @default - 0 if daemon, otherwise 50
    */
   readonly minimumHealthyPercent?: number;
 
@@ -70,6 +70,8 @@ export interface BaseServiceProps {
 
   /**
    * Options for enabling AWS Cloud Map service discovery for the service
+   *
+   * @default - AWS Cloud Map service discovery is not enabled.
    */
   readonly serviceDiscoveryOptions?: ServiceDiscoveryOptions;
 

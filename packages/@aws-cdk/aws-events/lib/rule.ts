@@ -8,19 +8,23 @@ import { mergeEventPattern } from './util';
 export interface RuleProps {
   /**
    * A description of the rule's purpose.
+   *
+   * @default - No description.
    */
   readonly description?: string;
 
   /**
-   * A name for the rule. If you don't specify a name, AWS CloudFormation
-   * generates a unique physical ID and uses that ID for the rule name. For
-   * more information, see Name Type.
+   * A name for the rule.
+   *
+   * @default - AWS CloudFormation generates a unique physical ID and uses that ID
+   * for the rule name. For more information, see Name Type.
    */
   readonly ruleName?: string;
 
   /**
    * Indicates whether the rule is enabled.
-   * @default Rule is enabled
+   *
+   * @default true
    */
   readonly enabled?: boolean;
 
@@ -32,6 +36,8 @@ export interface RuleProps {
    * @see http://docs.aws.amazon.com/AmazonCloudWatch/latest/events/ScheduledEvents.html
    *
    * You must specify this property, the `eventPattern` property, or both.
+   *
+   * @default - None.
    */
   readonly scheduleExpression?: string;
 
@@ -47,6 +53,8 @@ export interface RuleProps {
    * `addEventPattern`), the `scheduleExpression` property, or both. The
    * method `addEventPattern` can be used to add filter values to the event
    * pattern.
+   *
+   * @default - None.
    */
   readonly eventPattern?: EventPattern;
 
@@ -55,6 +63,8 @@ export interface RuleProps {
    *
    * Input will be the full matched event. If you wish to specify custom
    * target input, use `addTarget(target[, inputOptions])`.
+   *
+   * @default - No targets.
    */
   readonly targets?: IRuleTarget[];
 }
