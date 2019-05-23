@@ -88,6 +88,8 @@ export interface ScheduledEc2TaskProps {
    * is terminated.
    *
    * At least one of memoryLimitMiB and memoryReservationMiB is required for non-Fargate services.
+   *
+   * @default - No memory limit.
    */
   readonly memoryLimitMiB?: number;
 
@@ -100,6 +102,8 @@ export interface ScheduledEc2TaskProps {
    * the available memory on the container instance—whichever comes first.
    *
    * At least one of memoryLimitMiB and memoryReservationMiB is required for non-Fargate services.
+   *
+   * @default - No memory reserved.
    */
   readonly memoryReservationMiB?: number;
 }
