@@ -12,16 +12,22 @@ export interface CfnParameterProps {
    * A value of the appropriate type for the template to use if no value is specified
    * when a stack is created. If you define constraints for the parameter, you must specify
    * a value that adheres to those constraints.
+   *
+   * @default - No default value for parameter.
    */
   readonly default?: any;
 
   /**
    * A regular expression that represents the patterns to allow for String types.
+   *
+   * @default - No constraints on patterns allowed for parameter.
    */
   readonly allowedPattern?: string;
 
   /**
    * An array containing the list of values allowed for the parameter.
+   *
+   * @default - No constraints on values allowed for parameter.
    */
   readonly allowedValues?: string[];
 
@@ -30,37 +36,51 @@ export interface CfnParameterProps {
    * For example, without a constraint description, a parameter that has an allowed
    * pattern of [A-Za-z0-9]+ displays the following error message when the user specifies
    * an invalid value:
+   *
+   * @default - No description with customized error message when user specifies invalid values.
    */
   readonly constraintDescription?: string;
 
   /**
    * A string of up to 4000 characters that describes the parameter.
+   *
+   * @default - No description for the parameter.
    */
   readonly description?: string;
 
   /**
    * An integer value that determines the largest number of characters you want to allow for String types.
+   *
+   * @default - None.
    */
   readonly maxLength?: number;
 
   /**
    * A numeric value that determines the largest numeric value you want to allow for Number types.
+   *
+   * @default - None.
    */
   readonly maxValue?: number;
 
   /**
    * An integer value that determines the smallest number of characters you want to allow for String types.
+   *
+   * @default - None.
    */
   readonly minLength?: number;
 
   /**
    * A numeric value that determines the smallest numeric value you want to allow for Number types.
+   *
+   * @default - None.
    */
   readonly minValue?: number;
 
   /**
    * Whether to mask the parameter value when anyone makes a call that describes the stack.
    * If you set the value to ``true``, the parameter value is masked with asterisks (``*****``).
+   *
+   * @default - Parameter values are not masked.
    */
   readonly noEcho?: boolean;
 }

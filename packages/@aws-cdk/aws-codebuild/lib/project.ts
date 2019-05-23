@@ -360,12 +360,16 @@ export interface CommonProjectProps {
   /**
    * A description of the project. Use the description to identify the purpose
    * of the project.
+   *
+   * @default - No description.
    */
   readonly description?: string;
 
   /**
    * Filename or contents of buildspec in JSON format.
    * @see https://docs.aws.amazon.com/codebuild/latest/userguide/build-spec-ref.html#build-spec-ref-example
+   *
+   * @default - Empty buildspec.
    */
   readonly buildSpec?: any;
 
@@ -378,7 +382,7 @@ export interface CommonProjectProps {
    * This feature can also be used without a source, to simply run an
    * arbitrary script in a serverless way.
    *
-   * @default No asset build script
+   * @default - No asset build script.
    */
   readonly buildScriptAsset?: assets.Asset;
 
@@ -391,24 +395,29 @@ export interface CommonProjectProps {
 
   /**
    * Service Role to assume while running the build.
-   * If not specified, a role will be created.
+   *
+   * @default - A role will be created.
    */
   readonly role?: iam.IRole;
 
   /**
    * Encryption key to use to read and write artifacts.
-   * If not specified, a role will be created.
+   *
+   * @default - The AWS-managed CMK for Amazon Simple Storage Service (Amazon S3) is used.
    */
   readonly encryptionKey?: kms.IKey;
 
   /**
    * Caching strategy to use.
+   *
    * @default Cache.none
    */
   readonly cache?: Cache;
 
   /**
    * Build environment to use for the build.
+   *
+   * @default BuildEnvironment.LinuxBuildImage.STANDARD_1_0
    */
   readonly environment?: BuildEnvironment;
 
@@ -416,6 +425,8 @@ export interface CommonProjectProps {
    * Indicates whether AWS CodeBuild generates a publicly accessible URL for
    * your project's build badge. For more information, see Build Badges Sample
    * in the AWS CodeBuild User Guide.
+   *
+   * @default false
    */
   readonly badge?: boolean;
 
@@ -423,16 +434,22 @@ export interface CommonProjectProps {
    * The number of minutes after which AWS CodeBuild stops the build if it's
    * not complete. For valid values, see the timeoutInMinutes field in the AWS
    * CodeBuild User Guide.
+   *
+   * @default 60
    */
   readonly timeout?: number;
 
   /**
    * Additional environment variables to add to the build environment.
+   *
+   * @default - No additional environment variables are specified.
    */
   readonly environmentVariables?: { [name: string]: BuildEnvironmentVariable };
 
   /**
    * The physical, human-readable name of the CodeBuild Project.
+   *
+   * @default - Name is automatically generated.
    */
   readonly projectName?: string;
 
@@ -440,6 +457,8 @@ export interface CommonProjectProps {
    * VPC network to place codebuild network interfaces
    *
    * Specify this if the codebuild project needs to access resources in a VPC.
+   *
+   * @default - No VPC is specified.
    */
   readonly vpc?: ec2.IVpc;
 
@@ -448,7 +467,7 @@ export interface CommonProjectProps {
    *
    * Only used if 'vpc' is supplied.
    *
-   * @default All private subnets
+   * @default - All private subnets.
    */
   readonly subnetSelection?: ec2.SubnetSelection;
 
@@ -457,6 +476,8 @@ export interface CommonProjectProps {
    * If no security group is identified, one will be created automatically.
    *
    * Only used if 'vpc' is supplied.
+   *
+   * @default - Security group will be automatically created.
    *
    */
   readonly securityGroups?: ec2.ISecurityGroup[];
@@ -479,7 +500,7 @@ export interface ProjectProps extends CommonProjectProps {
    * *Note*: if {@link NoSource} is given as the source,
    * then you need to provide an explicit `buildSpec`.
    *
-   * @default NoSource
+   * @default - NoSource
    */
   readonly source?: BuildSource;
 
@@ -495,7 +516,7 @@ export interface ProjectProps extends CommonProjectProps {
    * The secondary sources for the Project.
    * Can be also added after the Project has been created by using the {@link Project#addSecondarySource} method.
    *
-   * @default []
+   * @default - No secondary sources.
    * @see https://docs.aws.amazon.com/codebuild/latest/userguide/sample-multi-in-out.html
    */
   readonly secondarySources?: BuildSource[];
@@ -504,7 +525,7 @@ export interface ProjectProps extends CommonProjectProps {
    * The secondary artifacts for the Project.
    * Can also be added after the Project has been created by using the {@link Project#addSecondaryArtifact} method.
    *
-   * @default []
+   * @default - No secondary artifacts.
    * @see https://docs.aws.amazon.com/codebuild/latest/userguide/sample-multi-in-out.html
    */
   readonly secondaryArtifacts?: BuildArtifacts[];

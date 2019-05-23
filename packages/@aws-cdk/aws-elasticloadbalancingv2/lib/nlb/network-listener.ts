@@ -17,22 +17,28 @@ export interface BaseNetworkListenerProps {
   /**
    * Default target groups to load balance to
    *
-   * @default None
+   * @default - None.
    */
   readonly defaultTargetGroups?: INetworkTargetGroup[];
 
   /**
    * Protocol for listener, expects TCP or TLS
+   *
+   * @default - TLS if certificates are provided. TCP otherwise.
    */
   readonly protocol?: Protocol;
 
   /**
    * Certificate list of ACM cert ARNs
+   *
+   * @default - No certificates.
    */
   readonly certificates?: INetworkListenerCertificateProps[];
 
   /**
    * SSL Policy
+   *
+   * @default - Current predefined security policy.
    */
   readonly sslPolicy?: SslPolicy;
 }

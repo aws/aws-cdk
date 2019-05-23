@@ -91,12 +91,16 @@ export interface ResourceOptions {
   /**
    * An integration to use as a default for all methods created within this
    * API unless an integration is specified.
+   *
+   * @default - Inherited from parent.
    */
   readonly defaultIntegration?: Integration;
 
   /**
    * Method options to use as a default for all methods created within this
    * API unless custom options are specified.
+   *
+   * @default - Inherited from parent.
    */
   readonly defaultMethodOptions?: MethodOptions;
 }

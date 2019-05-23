@@ -203,33 +203,39 @@ export interface UserPoolTriggers {
 export interface UserPoolProps {
   /**
    * Name of the user pool
-   * @default unique ID
+   *
+   * @default - Unique ID.
    */
   readonly poolName?: string;
 
   /**
    * Method used for user registration & sign in.
    * Allows either username with aliases OR sign in with email, phone, or both.
-   * @default SignInType.USERNAME
+   *
+   * @default SignInType.Username
    */
   readonly signInType?: SignInType;
 
   /**
    * Attributes to allow as username alias.
    * Only valid if signInType is USERNAME
-   * @default no alias
+   *
+   * @default - No alias.
    */
   readonly usernameAliasAttributes?: UserPoolAttribute[];
 
   /**
    * Attributes which Cognito will automatically send a verification message to.
    * Must be either EMAIL, PHONE, or both.
-   * @default no auto verification
+   *
+   * @default - No auto verification.
    */
   readonly autoVerifiedAttributes?: UserPoolAttribute[];
 
   /**
    * Lambda functions to use for supported Cognito triggers.
+   *
+   * @default - No Lambda triggers.
    */
   readonly lambdaTriggers?: UserPoolTriggers;
 }

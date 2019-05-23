@@ -35,7 +35,9 @@
     "exclude": [
       "construct-ctor:@aws-cdk/cdk.App.<initializer>",
       "construct-ctor:@aws-cdk/cdk.Root.<initializer>",
-      "construct-ctor:@aws-cdk/cdk.Stack.<initializer>.params*"
+      "construct-ctor:@aws-cdk/cdk.Stack.<initializer>.params*",
+      "props-no-cfn-types:@aws-cdk/cdk.CfnOutputProps*",
+      "props-no-cfn-types:@aws-cdk/cdk.StringListCfnOutputProps*"
     ]
   },
   "scripts": {
@@ -67,7 +69,7 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@types/lodash": "^4.14.123",
+    "@types/lodash": "^4.14.130",
     "cdk-build-tools": "^0.31.0",
     "cfn2ts": "^0.31.0",
     "fast-check": "^1.14.0",

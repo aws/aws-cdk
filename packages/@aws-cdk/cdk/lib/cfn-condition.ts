@@ -3,6 +3,11 @@ import { Construct } from './construct';
 import { IResolveContext } from './token';
 
 export interface CfnConditionProps {
+  /**
+   * The expression that the condition will evaluate.
+   *
+   * @default - None.
+   */
   readonly expression?: ICfnConditionExpression;
 }
 
