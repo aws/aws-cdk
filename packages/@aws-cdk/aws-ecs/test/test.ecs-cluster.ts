@@ -265,7 +265,7 @@ export = {
   "allows specifying spot fleet"(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
-    const vpc = new ec2.VpcNetwork(stack, 'MyVpc', {});
+    const vpc = new ec2.Vpc(stack, 'MyVpc', {});
 
     const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
     cluster.addCapacity('DefaultAutoScalingGroup', {

@@ -148,6 +148,14 @@ export interface CommonAutoScalingGroupProps {
    * @default - Use subnet setting.
    */
   readonly associatePublicIpAddress?: boolean;
+
+  /**
+   * The maximum hourly price (in USD) to be paid for any Spot Instance launched to fulfill the request. Spot Instances are
+   * launched when the price you specify exceeds the current Spot market price.
+   *
+   * @default none
+   */
+  readonly spotPrice?: string;
 }
 
 /**
@@ -183,14 +191,6 @@ export interface AutoScalingGroupProps extends CommonAutoScalingGroupProps {
    * @default A role will automatically be created, it can be accessed via the `role` property
    */
   readonly role?: iam.IRole;
-
-  /**
-   * The maximum hourly price to be paid for any Spot Instance launched to fulfill the request. Spot Instances are
-   * launched when the price you specify exceeds the current Spot market price.
-   *
-   * @default none
-   */
-  readonly spotPrice?: string;
 }
 
 abstract class AutoScalingGroupBase extends Resource implements IAutoScalingGroup {
