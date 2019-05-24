@@ -1,9 +1,7 @@
 import { ICertificate } from '@aws-cdk/aws-certificatemanager';
+import ecs = require('@aws-cdk/aws-ecs');
 import elbv2 = require('@aws-cdk/aws-elasticloadbalancingv2');
 import cdk = require('@aws-cdk/cdk');
-import { BaseService } from './base/base-service';
-import { ICluster } from './cluster';
-import { ContainerImage } from './container-image';
 
 export enum LoadBalancerType {
   Application,
@@ -14,12 +12,12 @@ export interface LoadBalancedServiceBaseProps {
   /**
    * The cluster where your service will be deployed
    */
-  readonly cluster: ICluster;
+  readonly cluster: ecs.ICluster;
 
   /**
    * The image to start.
    */
-  readonly image: ContainerImage;
+  readonly image: ecs.ContainerImage;
 
   /**
    * The container port of the application load balancer attached to your Fargate service. Corresponds to container port mapping.
@@ -127,7 +125,7 @@ export abstract class LoadBalancedServiceBase extends cdk.Construct {
     new cdk.CfnOutput(this, 'LoadBalancerDNS', { value: this.loadBalancer.loadBalancerDnsName });
   }
 
-  protected addServiceAsTarget(service: BaseService) {
+  protected addServiceAsTarget(service: ecs.BaseService) {
     if (this.loadBalancerType === LoadBalancerType.Application) {
       (this.targetGroup as elbv2.ApplicationTargetGroup).addTarget(service);
     } else {
