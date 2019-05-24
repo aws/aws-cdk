@@ -9,7 +9,7 @@ export = {
     'public hosted zone'(test: Test) {
       const app = new TestApp();
       new PublicHostedZone(app.stack, 'HostedZone', { zoneName: 'test.public' });
-      expect(app.synthesizeTemplate()).to(exactlyMatchTemplate({
+      expect(app.stack).to(exactlyMatchTemplate({
         Resources: {
           HostedZoneDB99F866: {
             Type: "AWS::Route53::HostedZone",
@@ -25,7 +25,7 @@ export = {
       const app = new TestApp();
       const vpcNetwork = new ec2.Vpc(app.stack, 'VPC');
       new PrivateHostedZone(app.stack, 'HostedZone', { zoneName: 'test.private', vpc: vpcNetwork });
-      expect(app.synthesizeTemplate()).to(beASupersetOfTemplate({
+      expect(app.stack).to(beASupersetOfTemplate({
         Resources: {
           HostedZoneDB99F866: {
             Type: "AWS::Route53::HostedZone",
@@ -47,7 +47,7 @@ export = {
       const vpcNetworkB = new ec2.Vpc(app.stack, 'VPC2');
       new PrivateHostedZone(app.stack, 'HostedZone', { zoneName: 'test.private', vpc: vpcNetworkA })
         .addVpc(vpcNetworkB);
-      expect(app.synthesizeTemplate()).to(beASupersetOfTemplate({
+      expect(app.stack).to(beASupersetOfTemplate({
         Resources: {
           HostedZoneDB99F866: {
             Type: "AWS::Route53::HostedZone",
@@ -206,9 +206,5 @@ class TestApp {
     this.app.node.setContext(`availability-zones:${account}:${region}`,
       [`${region}-1a`]);
     this.stack = new cdk.Stack(this.app, 'MyStack', { env: { account, region } });
-  }
-
-  public synthesizeTemplate() {
-    return this.app.synthesizeStack(this.stack.name);
   }
 }
