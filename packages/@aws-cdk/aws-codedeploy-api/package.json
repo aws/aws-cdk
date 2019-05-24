@@ -2,6 +2,7 @@
   "name": "@aws-cdk/aws-codedeploy-api",
   "version": "0.31.0",
   "description": "Load Balancer API for AWS CodeDeploy",
+  "deprecated": "This package is now obsololete, please remove it from your dependencies",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "jsii": {
@@ -39,7 +40,9 @@
     "integ": "cdk-integ",
     "pkglint": "pkglint -f",
     "package": "cdk-package",
-    "awslint": "cdk-awslint"
+    "awslint": "cdk-awslint",
+    "build+test+package": "npm run build+test && npm run package",
+    "build+test": "npm run build && npm test"
   },
   "keywords": [
     "aws",

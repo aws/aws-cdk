@@ -40,7 +40,9 @@
     "pkglint": "pkglint -f",
     "package": "cdk-package",
     "awslint": "cdk-awslint",
-    "cfn2ts": "cfn2ts"
+    "cfn2ts": "cfn2ts",
+    "build+test+package": "npm run build+test && npm run package",
+    "build+test": "npm run build && npm test"
   },
   "cdk-build": {
     "cloudformation": "AWS::CloudFront"
@@ -69,7 +71,6 @@
     "@aws-cdk/aws-certificatemanager": "^0.31.0",
     "@aws-cdk/aws-iam": "^0.31.0",
     "@aws-cdk/aws-kms": "^0.31.0",
-    "@aws-cdk/aws-route53": "^0.31.0",
     "@aws-cdk/aws-s3": "^0.31.0",
     "@aws-cdk/cdk": "^0.31.0"
   },
@@ -78,7 +79,6 @@
     "@aws-cdk/aws-certificatemanager": "^0.31.0",
     "@aws-cdk/aws-iam": "^0.31.0",
     "@aws-cdk/aws-kms": "^0.31.0",
-    "@aws-cdk/aws-route53": "^0.31.0",
     "@aws-cdk/aws-s3": "^0.31.0",
     "@aws-cdk/cdk": "^0.31.0"
   },

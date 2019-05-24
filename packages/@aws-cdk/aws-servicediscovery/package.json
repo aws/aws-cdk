@@ -40,7 +40,9 @@
     "pkglint": "pkglint -f",
     "package": "cdk-package",
     "awslint": "cdk-awslint",
-    "cfn2ts": "cfn2ts"
+    "cfn2ts": "cfn2ts",
+    "build+test+package": "npm run build+test && npm run package",
+    "build+test": "npm run build && npm test"
   },
   "cdk-build": {
     "cloudformation": "AWS::ServiceDiscovery"
@@ -79,23 +81,5 @@
   },
   "engines": {
     "node": ">= 8.10.0"
-  },
-  "awslint": {
-    "exclude": [
-      "from-attributes:fromPrivateDnsNamespaceAttributes",
-      "from-arn:Service.fromServiceArn",
-      "from-arn:HttpNamespace.fromHttpNamespaceArn",
-      "from-attributes:fromHttpNamespaceAttributes",
-      "from-method:@aws-cdk/aws-servicediscovery.PrivateDnsNamespace",
-      "from-arn:PrivateDnsNamespace.fromPrivateDnsNamespaceArn",
-      "from-method:@aws-cdk/aws-servicediscovery.HttpNamespace",
-      "from-method:@aws-cdk/aws-servicediscovery.PublicDnsNamespace",
-      "from-arn:PublicDnsNamespace.fromPublicDnsNamespaceArn",
-      "from-attributes:fromPublicDnsNamespaceAttributes",
-      "from-method:@aws-cdk/aws-servicediscovery.Service",
-      "from-attributes:@aws-cdk/aws-servicediscovery.HttpNamespace.fromHttpNamespaceAttributes",
-      "from-attributes:@aws-cdk/aws-servicediscovery.PrivateDnsNamespace.fromPrivateDnsNamespaceAttributes",
-      "from-attributes:@aws-cdk/aws-servicediscovery.PublicDnsNamespace.fromPublicDnsNamespaceAttributes"
-    ]
   }
 }

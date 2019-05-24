@@ -434,7 +434,7 @@ export = {
       const database = new glue.Database(stack, 'Database', {
         databaseName: 'database'
       });
-      const encryptionKey = new kms.EncryptionKey(stack, 'MyKey');
+      const encryptionKey = new kms.Key(stack, 'MyKey');
 
       const table = new glue.Table(stack, 'Table', {
         database,
@@ -755,7 +755,7 @@ export = {
       const database = new glue.Database(stack, 'Database', {
         databaseName: 'database'
       });
-      const encryptionKey = new kms.EncryptionKey(stack, 'MyKey');
+      const encryptionKey = new kms.Key(stack, 'MyKey');
 
       const table = new glue.Table(stack, 'Table', {
         database,
@@ -869,7 +869,7 @@ export = {
         databaseName: 'database'
       });
       const bucket = new s3.Bucket(stack, 'Bucket');
-      const encryptionKey = new kms.EncryptionKey(stack, 'MyKey');
+      const encryptionKey = new kms.Key(stack, 'MyKey');
 
       const table = new glue.Table(stack, 'Table', {
         database,
@@ -1097,7 +1097,7 @@ export = {
                     {
                       Ref: "AWS::AccountId"
                     },
-                    ":database/",
+                    ":table/",
                     {
                       Ref: "DatabaseB269D8BB"
                     },
@@ -1201,7 +1201,7 @@ export = {
                     {
                       Ref: "AWS::AccountId"
                     },
-                    ":database/",
+                    ":table/",
                     {
                       Ref: "DatabaseB269D8BB"
                     },
@@ -1312,7 +1312,7 @@ export = {
                     {
                       Ref: "AWS::AccountId"
                     },
-                    ":database/",
+                    ":table/",
                     {
                       Ref: "DatabaseB269D8BB"
                     },

@@ -1,6 +1,6 @@
 import iam = require('@aws-cdk/aws-iam');
 import lambda = require('@aws-cdk/aws-lambda');
-import { CfnOutput, Construct, IResource, Resource, Token } from '@aws-cdk/cdk';
+import { Construct, IResource, Resource, Token } from '@aws-cdk/cdk';
 import { CfnUserPool } from './cognito.generated';
 
 /**
@@ -203,33 +203,39 @@ export interface UserPoolTriggers {
 export interface UserPoolProps {
   /**
    * Name of the user pool
-   * @default unique ID
+   *
+   * @default - Unique ID.
    */
   readonly poolName?: string;
 
   /**
    * Method used for user registration & sign in.
    * Allows either username with aliases OR sign in with email, phone, or both.
-   * @default SignInType.USERNAME
+   *
+   * @default SignInType.Username
    */
   readonly signInType?: SignInType;
 
   /**
    * Attributes to allow as username alias.
    * Only valid if signInType is USERNAME
-   * @default no alias
+   *
+   * @default - No alias.
    */
   readonly usernameAliasAttributes?: UserPoolAttribute[];
 
   /**
    * Attributes which Cognito will automatically send a verification message to.
    * Must be either EMAIL, PHONE, or both.
-   * @default no auto verification
+   *
+   * @default - No auto verification.
    */
   readonly autoVerifiedAttributes?: UserPoolAttribute[];
 
   /**
    * Lambda functions to use for supported Cognito triggers.
+   *
+   * @default - No Lambda triggers.
    */
   readonly lambdaTriggers?: UserPoolTriggers;
 }
@@ -280,12 +286,6 @@ export interface IUserPool extends IResource {
    * @attribute
    */
   readonly userPoolProviderUrl: string;
-
-  /**
-   * Exports a User Pool from this stack
-   * @returns user pool props that can be imported into another stack
-   */
-  export(): UserPoolAttributes;
 }
 
 /**
@@ -307,10 +307,6 @@ export class UserPool extends Resource implements IUserPool {
       public readonly userPoolArn = attrs.userPoolArn;
       public readonly userPoolProviderName = attrs.userPoolProviderName;
       public readonly userPoolProviderUrl = attrs.userPoolProviderUrl;
-
-      public export(): UserPoolAttributes {
-        return attrs;
-      }
     }
 
     return new Import(scope, id);
@@ -411,7 +407,7 @@ export class UserPool extends Resource implements IUserPool {
    * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-create-auth-challenge.html
    * @param fn the lambda function to attach
    */
-  public onCreateAuthChallenge(fn: lambda.IFunction): void {
+  public addCreateAuthChallengeTrigger(fn: lambda.IFunction): void {
     this.addLambdaPermission(fn, 'CreateAuthChallenge');
     this.triggers = { ...this.triggers, createAuthChallenge: fn.functionArn };
   }
@@ -422,7 +418,7 @@ export class UserPool extends Resource implements IUserPool {
    * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-custom-message.html
    * @param fn the lambda function to attach
    */
-  public onCustomMessage(fn: lambda.IFunction): void {
+  public addCustomMessageTrigger(fn: lambda.IFunction): void {
     this.addLambdaPermission(fn, 'CustomMessage');
     this.triggers = { ...this.triggers, customMessage: fn.functionArn };
   }
@@ -433,7 +429,7 @@ export class UserPool extends Resource implements IUserPool {
    * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-define-auth-challenge.html
    * @param fn the lambda function to attach
    */
-  public onDefineAuthChallenge(fn: lambda.IFunction): void {
+  public addDefineAuthChallengeTrigger(fn: lambda.IFunction): void {
     this.addLambdaPermission(fn, 'DefineAuthChallenge');
     this.triggers = { ...this.triggers, defineAuthChallenge: fn.functionArn };
   }
@@ -444,7 +440,7 @@ export class UserPool extends Resource implements IUserPool {
    * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-post-authentication.html
    * @param fn the lambda function to attach
    */
-  public onPostAuthentication(fn: lambda.IFunction): void {
+  public addPostAuthenticationTrigger(fn: lambda.IFunction): void {
     this.addLambdaPermission(fn, 'PostAuthentication');
     this.triggers = { ...this.triggers, postAuthentication: fn.functionArn };
   }
@@ -455,7 +451,7 @@ export class UserPool extends Resource implements IUserPool {
    * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-post-confirmation.html
    * @param fn the lambda function to attach
    */
-  public onPostConfirmation(fn: lambda.IFunction): void {
+  public addPostConfirmationTrigger(fn: lambda.IFunction): void {
     this.addLambdaPermission(fn, 'PostConfirmation');
     this.triggers = { ...this.triggers, postConfirmation: fn.functionArn };
   }
@@ -466,7 +462,7 @@ export class UserPool extends Resource implements IUserPool {
    * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-pre-authentication.html
    * @param fn the lambda function to attach
    */
-  public onPreAuthentication(fn: lambda.IFunction): void {
+  public addPreAuthenticationTrigger(fn: lambda.IFunction): void {
     this.addLambdaPermission(fn, 'PreAuthentication');
     this.triggers = { ...this.triggers, preAuthentication: fn.functionArn };
   }
@@ -477,7 +473,7 @@ export class UserPool extends Resource implements IUserPool {
    * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-pre-sign-up.html
    * @param fn the lambda function to attach
    */
-  public onPreSignUp(fn: lambda.IFunction): void {
+  public addPreSignUpTrigger(fn: lambda.IFunction): void {
     this.addLambdaPermission(fn, 'PreSignUp');
     this.triggers = { ...this.triggers, preSignUp: fn.functionArn };
   }
@@ -488,18 +484,9 @@ export class UserPool extends Resource implements IUserPool {
    * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-verify-auth-challenge-response.html
    * @param fn the lambda function to attach
    */
-  public onVerifyAuthChallengeResponse(fn: lambda.IFunction): void {
+  public addVerifyAuthChallengeResponseTrigger(fn: lambda.IFunction): void {
     this.addLambdaPermission(fn, 'VerifyAuthChallengeResponse');
     this.triggers = { ...this.triggers, verifyAuthChallengeResponse: fn.functionArn };
-  }
-
-  public export(): UserPoolAttributes {
-    return {
-      userPoolId: new CfnOutput(this, 'UserPoolId', { value: this.userPoolId }).makeImportValue().toString(),
-      userPoolArn: new CfnOutput(this, 'UserPoolArn', { value: this.userPoolArn }).makeImportValue().toString(),
-      userPoolProviderName: new CfnOutput(this, 'UserPoolProviderName', { value: this.userPoolProviderName }).makeImportValue().toString(),
-      userPoolProviderUrl: new CfnOutput(this, 'UserPoolProviderUrl', { value: this.userPoolProviderUrl }).makeImportValue().toString()
-    };
   }
 
   private addLambdaPermission(fn: lambda.IFunction, name: string): void {

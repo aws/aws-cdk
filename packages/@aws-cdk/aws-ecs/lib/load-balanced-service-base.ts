@@ -44,6 +44,7 @@ export interface LoadBalancedServiceBaseProps {
 
   /**
    * Whether to create an application load balancer or a network load balancer
+   *
    * @default application
    */
   readonly loadBalancerType?: LoadBalancerType
@@ -51,13 +52,15 @@ export interface LoadBalancedServiceBaseProps {
   /**
    * Certificate Manager certificate to associate with the load balancer.
    * Setting this option will set the load balancer port to 443.
+   *
+   * @default - No certificate associated with the load balancer.
    */
   readonly certificate?: ICertificate;
 
   /**
    * Environment variables to pass to the container
    *
-   * @default No environment variables
+   * @default - No environment variables.
    */
   readonly environment?: { [key: string]: string };
 }
@@ -121,7 +124,7 @@ export abstract class LoadBalancedServiceBase extends cdk.Construct {
       this.targetGroup = this.listener.addTargets('ECS', targetProps);
     }
 
-    new cdk.CfnOutput(this, 'LoadBalancerDNS', { value: this.loadBalancer.dnsName });
+    new cdk.CfnOutput(this, 'LoadBalancerDNS', { value: this.loadBalancer.loadBalancerDnsName });
   }
 
   protected addServiceAsTarget(service: BaseService) {

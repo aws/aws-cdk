@@ -10,7 +10,7 @@ class VpcEndpointStack extends cdk.Stack {
 
     /// !show
     // Add gateway endpoints when creating the VPC
-    const vpc = new ec2.VpcNetwork(this, 'MyVpc', {
+    const vpc = new ec2.Vpc(this, 'MyVpc', {
       gatewayEndpoints: {
         S3: {
           service: ec2.GatewayVpcEndpointAwsService.S3

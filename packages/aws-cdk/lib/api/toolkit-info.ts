@@ -1,7 +1,7 @@
 import cxapi = require('@aws-cdk/cx-api');
 import aws = require('aws-sdk');
 import colors = require('colors/safe');
-import { md5hash } from '../archive';
+import { contentHash } from '../archive';
 import { debug } from '../logging';
 import { Mode } from './aws-auth/credentials';
 import { BUCKET_DOMAIN_NAME_OUTPUT, BUCKET_NAME_OUTPUT  } from './bootstrap-environment';
@@ -17,6 +17,7 @@ export interface UploadProps {
 export interface Uploaded {
   filename: string;
   key: string;
+  hash: string;
   changed: boolean;
 }
 
@@ -47,10 +48,10 @@ export class ToolkitInfo {
 
   /**
    * Uploads a data blob to S3 under the specified key prefix.
-   * Uses md5 hash to render the full key and skips upload if an object
+   * Uses a hash to render the full key and skips upload if an object
    * already exists by this key.
    */
-  public async uploadIfChanged(data: any, props: UploadProps): Promise<Uploaded> {
+  public async uploadIfChanged(data: string | Buffer | DataView, props: UploadProps): Promise<Uploaded> {
     const s3 = await this.props.sdk.s3(this.props.environment, Mode.ForWriting);
 
     const s3KeyPrefix = props.s3KeyPrefix || '';
@@ -58,7 +59,7 @@ export class ToolkitInfo {
 
     const bucket = this.props.bucketName;
 
-    const hash = md5hash(data);
+    const hash = contentHash(data);
     const filename = `${hash}${s3KeySuffix}`;
     const key = `${s3KeyPrefix}${filename}`;
     const url = `s3://${bucket}/${key}`;
@@ -66,10 +67,10 @@ export class ToolkitInfo {
     debug(`${url}: checking if already exists`);
     if (await objectExists(s3, bucket, key)) {
       debug(`${url}: found (skipping upload)`);
-      return { filename, key, changed: false };
+      return { filename, key, hash, changed: false };
     }
 
-    const uploaded = { filename, key, changed: true };
+    const uploaded = { filename, key, hash, changed: true };
 
     // Upload if it's new or server-side copy if it was already uploaded previously
     const previous = this.previousUploads[hash];

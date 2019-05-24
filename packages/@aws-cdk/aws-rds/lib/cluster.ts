@@ -1,9 +1,9 @@
 import ec2 = require('@aws-cdk/aws-ec2');
 import kms = require('@aws-cdk/aws-kms');
 import secretsmanager = require('@aws-cdk/aws-secretsmanager');
-import cdk = require('@aws-cdk/cdk');
+import { Construct, DeletionPolicy, Resource, Token } from '@aws-cdk/cdk';
 import { IClusterParameterGroup } from './cluster-parameter-group';
-import { DatabaseClusterImportProps, Endpoint, IDatabaseCluster } from './cluster-ref';
+import { DatabaseClusterAttributes, Endpoint, IDatabaseCluster } from './cluster-ref';
 import { DatabaseSecret } from './database-secret';
 import { BackupProps, DatabaseClusterEngine, InstanceProps, Login } from './props';
 import { CfnDBCluster, CfnDBInstance, CfnDBSubnetGroup } from './rds.generated';
@@ -39,20 +39,25 @@ export interface DatabaseClusterProps {
 
   /**
    * Backup settings
+   *
+   * @default - Backup retention period for automated backups is 1 day.
+   * Backup preferred window is set to a 30-minute window selected at random from an
+   * 8-hour block of time for each AWS Region, occurring on a random day of the week.
+   * @see https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/USER_UpgradeDBInstance.Maintenance.html#AdjustingTheMaintenanceWindow.Aurora
    */
   readonly backup?: BackupProps;
 
   /**
    * What port to listen on
    *
-   * If not supplied, the default for the engine is used.
+   * @default - The default for the engine is used.
    */
   readonly port?: number;
 
   /**
    * An optional identifier for the cluster
    *
-   * If not supplied, a name is automatically generated.
+   * @default - A name is automatically generated.
    */
   readonly clusterIdentifier?: string;
 
@@ -61,14 +66,15 @@ export interface DatabaseClusterProps {
    *
    * Every replica is named by appending the replica number to this string, 1-based.
    *
-   * If not given, the clusterIdentifier is used with the word "Instance" appended.
-   *
-   * If clusterIdentifier is also not given, the identifier is automatically generated.
+   * @default - clusterIdentifier is used with the word "Instance" appended.
+   * If clusterIdentifier is not provided, the identifier is automatically generated.
    */
   readonly instanceIdentifierBase?: string;
 
   /**
    * Name of a database which is automatically created inside the cluster
+   *
+   * @default - Database is not created in cluster.
    */
   readonly defaultDatabaseName?: string;
 
@@ -83,9 +89,9 @@ export interface DatabaseClusterProps {
    * The KMS key for storage encryption. If specified `storageEncrypted`
    * will be set to `true`.
    *
-   * @default default master key
+   * @default - default master key.
    */
-  readonly kmsKey?: kms.IEncryptionKey;
+  readonly kmsKey?: kms.IKey;
 
   /**
    * A daily time range in 24-hours UTC format in which backups preferably execute.
@@ -93,13 +99,17 @@ export interface DatabaseClusterProps {
    * Must be at least 30 minutes long.
    *
    * Example: '01:00-02:00'
+   *
+   * @default - 30-minute window selected at random from an 8-hour block of time for
+   * each AWS Region, occurring on a random day of the week.
+   * @see https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/USER_UpgradeDBInstance.Maintenance.html#AdjustingTheMaintenanceWindow.Aurora
    */
   readonly preferredMaintenanceWindow?: string;
 
   /**
    * Additional parameters to pass to the database engine
    *
-   * @default No parameter group
+   * @default - No parameter group.
    */
   readonly parameterGroup?: IClusterParameterGroup;
 
@@ -107,22 +117,15 @@ export interface DatabaseClusterProps {
    * The CloudFormation policy to apply when the cluster and its instances
    * are removed from the stack or replaced during an update.
    *
-   * @default Retain
+   * @default - Retain cluster.
    */
-  readonly deleteReplacePolicy?: cdk.DeletionPolicy
+  readonly deleteReplacePolicy?: DeletionPolicy
 }
 
 /**
  * A new or imported clustered database.
  */
-abstract class DatabaseClusterBase extends cdk.Construct implements IDatabaseCluster {
-  /**
-   * Import an existing DatabaseCluster from properties
-   */
-  public static import(scope: cdk.Construct, id: string, props: DatabaseClusterImportProps): IDatabaseCluster {
-    return new ImportedDatabaseCluster(scope, id, props);
-  }
-
+abstract class DatabaseClusterBase extends Resource implements IDatabaseCluster {
   /**
    * Identifier of the cluster
    */
@@ -140,7 +143,7 @@ abstract class DatabaseClusterBase extends cdk.Construct implements IDatabaseClu
   /**
    * Endpoint to use for load-balanced read-only operations.
    */
-  public abstract readonly readerEndpoint: Endpoint;
+  public abstract readonly clusterReadEndpoint: Endpoint;
 
   /**
    * Endpoints which address each individual replica.
@@ -157,8 +160,6 @@ abstract class DatabaseClusterBase extends cdk.Construct implements IDatabaseClu
    */
   public abstract readonly securityGroupId: string;
 
-  public abstract export(): DatabaseClusterImportProps;
-
   /**
    * Renders the secret attachment target specifications.
    */
@@ -172,8 +173,31 @@ abstract class DatabaseClusterBase extends cdk.Construct implements IDatabaseClu
 
 /**
  * Create a clustered database with a given number of instances.
+ *
+ * @resource AWS::RDS::DBCluster
  */
 export class DatabaseCluster extends DatabaseClusterBase {
+  /**
+   * Import an existing DatabaseCluster from properties
+   */
+  public static fromDatabaseClusterAttributes(scope: Construct, id: string, attrs: DatabaseClusterAttributes): IDatabaseCluster {
+    class Import extends DatabaseClusterBase implements IDatabaseCluster {
+      public readonly defaultPortRange = new ec2.TcpPort(attrs.port);
+      public readonly connections = new ec2.Connections({
+        securityGroups: [ec2.SecurityGroup.fromSecurityGroupId(this, 'SecurityGroup', attrs.securityGroupId)],
+        defaultPortRange: this.defaultPortRange
+      });
+      public readonly clusterIdentifier = attrs.clusterIdentifier;
+      public readonly instanceIdentifiers: string[] = [];
+      public readonly clusterEndpoint = new Endpoint(attrs.clusterEndpointAddress, attrs.port);
+      public readonly clusterReadEndpoint = new Endpoint(attrs.readerEndpointAddress, attrs.port);
+      public readonly instanceEndpoints = attrs.instanceEndpointAddresses.map(a => new Endpoint(a, attrs.port));
+      public readonly securityGroupId = attrs.securityGroupId;
+    }
+
+    return new Import(scope, id);
+  }
+
   /**
    * Identifier of the cluster
    */
@@ -192,7 +216,7 @@ export class DatabaseCluster extends DatabaseClusterBase {
   /**
    * Endpoint to use for load-balanced read-only operations.
    */
-  public readonly readerEndpoint: Endpoint;
+  public readonly clusterReadEndpoint: Endpoint;
 
   /**
    * Endpoints which address each individual replica.
@@ -222,14 +246,14 @@ export class DatabaseCluster extends DatabaseClusterBase {
   /**
    * The VPC where the DB subnet group is created.
    */
-  private readonly vpc: ec2.IVpcNetwork;
+  private readonly vpc: ec2.IVpc;
 
   /**
    * The subnets used by the DB subnet group.
    */
   private readonly vpcSubnets?: ec2.SubnetSelection;
 
-  constructor(scope: cdk.Construct, id: string, props: DatabaseClusterProps) {
+  constructor(scope: Construct, id: string, props: DatabaseClusterProps) {
     super(scope, id);
 
     this.vpc = props.instanceProps.vpc;
@@ -288,13 +312,16 @@ export class DatabaseCluster extends DatabaseClusterBase {
       storageEncrypted: props.kmsKey ? true : props.storageEncrypted
     });
 
-    const deleteReplacePolicy = props.deleteReplacePolicy || cdk.DeletionPolicy.Retain;
+    const deleteReplacePolicy = props.deleteReplacePolicy || DeletionPolicy.Retain;
     cluster.options.deletionPolicy = deleteReplacePolicy;
     cluster.options.updateReplacePolicy = deleteReplacePolicy;
 
     this.clusterIdentifier = cluster.ref;
-    this.clusterEndpoint = new Endpoint(cluster.dbClusterEndpointAddress, cluster.dbClusterEndpointPort);
-    this.readerEndpoint = new Endpoint(cluster.dbClusterReadEndpointAddress, cluster.dbClusterEndpointPort);
+
+    // create a number token that represents the port of the cluster
+    const portAttribute = new Token(() => cluster.dbClusterEndpointPort).toNumber();
+    this.clusterEndpoint = new Endpoint(cluster.dbClusterEndpointAddress, portAttribute);
+    this.clusterReadEndpoint = new Endpoint(cluster.dbClusterReadEndpointAddress, portAttribute);
 
     if (secret) {
       this.secret = secret.addTargetAttachment('AttachedSecret', {
@@ -338,10 +365,10 @@ export class DatabaseCluster extends DatabaseClusterBase {
       instance.node.addDependency(internetConnected);
 
       this.instanceIdentifiers.push(instance.ref);
-      this.instanceEndpoints.push(new Endpoint(instance.dbInstanceEndpointAddress, instance.dbInstanceEndpointPort));
+      this.instanceEndpoints.push(new Endpoint(instance.dbInstanceEndpointAddress, portAttribute));
     }
 
-    const defaultPortRange = new ec2.TcpPortFromAttribute(this.clusterEndpoint.port);
+    const defaultPortRange = new ec2.TcpPort(this.clusterEndpoint.port);
     this.connections = new ec2.Connections({ securityGroups: [securityGroup], defaultPortRange });
   }
 
@@ -361,23 +388,6 @@ export class DatabaseCluster extends DatabaseClusterBase {
       ...options
     });
   }
-
-  /**
-   * Export a Database Cluster for importing in another stack
-   */
-  public export(): DatabaseClusterImportProps {
-    // tslint:disable:max-line-length
-    return {
-      port: new cdk.CfnOutput(this, 'Port', { value: this.clusterEndpoint.port, }).makeImportValue().toString(),
-      securityGroupId: new cdk.CfnOutput(this, 'SecurityGroupId', { value: this.securityGroupId, }).makeImportValue().toString(),
-      clusterIdentifier: new cdk.CfnOutput(this, 'ClusterIdentifier', { value: this.clusterIdentifier, }).makeImportValue().toString(),
-      instanceIdentifiers: new cdk.StringListCfnOutput(this, 'InstanceIdentifiers', { values: this.instanceIdentifiers }).makeImportValues().map(x => x.toString()),
-      clusterEndpointAddress: new cdk.CfnOutput(this, 'ClusterEndpointAddress', { value: this.clusterEndpoint.hostname, }).makeImportValue().toString(),
-      readerEndpointAddress: new cdk.CfnOutput(this, 'ReaderEndpointAddress', { value: this.readerEndpoint.hostname, }).makeImportValue().toString(),
-      instanceEndpointAddresses: new cdk.StringListCfnOutput(this, 'InstanceEndpointAddresses', { values: this.instanceEndpoints.map(e => e.hostname) }).makeImportValues().map(x => x.toString()),
-    };
-    // tslint:enable:max-line-length
-  }
 }
 
 /**
@@ -385,70 +395,6 @@ export class DatabaseCluster extends DatabaseClusterBase {
  */
 function databaseInstanceType(instanceType: ec2.InstanceType) {
   return 'db.' + instanceType.toString();
-}
-
-/**
- * An imported Database Cluster
- */
-class ImportedDatabaseCluster extends DatabaseClusterBase implements IDatabaseCluster {
-  /**
-   * Default port to connect to this database
-   */
-  public readonly defaultPortRange: ec2.IPortRange;
-
-  /**
-   * Access to the network connections
-   */
-  public readonly connections: ec2.Connections;
-
-  /**
-   * Identifier of the cluster
-   */
-  public readonly clusterIdentifier: string;
-
-  /**
-   * Identifiers of the replicas
-   */
-  public readonly instanceIdentifiers: string[] = [];
-
-  /**
-   * The endpoint to use for read/write operations
-   */
-  public readonly clusterEndpoint: Endpoint;
-
-  /**
-   * Endpoint to use for load-balanced read-only operations.
-   */
-  public readonly readerEndpoint: Endpoint;
-
-  /**
-   * Endpoints which address each individual replica.
-   */
-  public readonly instanceEndpoints: Endpoint[] = [];
-
-  /**
-   * Security group identifier of this database
-   */
-  public readonly securityGroupId: string;
-
-  constructor(scope: cdk.Construct, name: string, private readonly props: DatabaseClusterImportProps) {
-    super(scope, name);
-
-    this.securityGroupId = props.securityGroupId;
-    this.defaultPortRange = new ec2.TcpPortFromAttribute(props.port);
-    this.connections = new ec2.Connections({
-      securityGroups: [ec2.SecurityGroup.fromSecurityGroupId(this, 'SecurityGroup', props.securityGroupId)],
-      defaultPortRange: this.defaultPortRange
-    });
-    this.clusterIdentifier = props.clusterIdentifier;
-    this.clusterEndpoint = new Endpoint(props.clusterEndpointAddress, props.port);
-    this.readerEndpoint = new Endpoint(props.readerEndpointAddress, props.port);
-    this.instanceEndpoints = props.instanceEndpointAddresses.map(a => new Endpoint(a, props.port));
-  }
-
-  public export() {
-    return this.props;
-  }
 }
 
 /**

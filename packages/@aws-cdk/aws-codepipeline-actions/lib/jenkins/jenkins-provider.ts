@@ -9,7 +9,7 @@ import { CustomActionRegistration } from "../custom-action-registration";
  * instantiate the {@link JenkinsProvider} class directly.
  *
  * If you want to reference an already registered provider,
- * use the {@link JenkinsProvider#import} method.
+ * use the {@link JenkinsProvider#fromJenkinsProviderAttributes} method.
  */
 export interface IJenkinsProvider extends cdk.IConstruct {
   readonly providerName: string;
@@ -40,7 +40,7 @@ export interface IJenkinsProvider extends cdk.IConstruct {
 /**
  * Properties for importing an existing Jenkins provider.
  */
-export interface JenkinsProviderImportProps {
+export interface JenkinsProviderAttributes {
   /**
    * The name of the Jenkins provider that you set in the AWS CodePipeline plugin configuration of your Jenkins project.
    *
@@ -88,12 +88,16 @@ export interface JenkinsProviderProps {
   /**
    * Whether to immediately register a Jenkins Provider for the build category.
    * The Provider will always be registered if you create a {@link JenkinsAction}.
+   *
+   * @default false
    */
   readonly forBuild?: boolean;
 
   /**
    * Whether to immediately register a Jenkins Provider for the test category.
    * The Provider will always be registered if you create a {@link JenkinsTestAction}.
+   *
+   * @default false
    */
   readonly forTest?: boolean;
 }
@@ -107,20 +111,6 @@ export abstract class BaseJenkinsProvider extends cdk.Construct implements IJenk
     super(scope, id);
 
     this.version = version || '1';
-  }
-
-  public export(): JenkinsProviderImportProps {
-    return {
-      providerName: new cdk.CfnOutput(this, 'JenkinsProviderName', {
-        value: this.providerName,
-      }).makeImportValue().toString(),
-      serverUrl: new cdk.CfnOutput(this, 'JenkinsServerUrl', {
-        value: this.serverUrl,
-      }).makeImportValue().toString(),
-      version: new cdk.CfnOutput(this, 'JenkinsProviderVersion', {
-        value: this.version,
-      }).makeImportValue().toString(),
-    };
   }
 
   /**
@@ -146,11 +136,11 @@ export class JenkinsProvider extends BaseJenkinsProvider {
    *
    * @param scope the parent Construct for the new provider
    * @param id the identifier of the new provider Construct
-   * @param props the properties used to identify the existing provider
+   * @param attrs the properties used to identify the existing provider
    * @returns a new Construct representing a reference to an existing Jenkins provider
    */
-  public static import(scope: cdk.Construct, id: string, props: JenkinsProviderImportProps): IJenkinsProvider {
-    return new ImportedJenkinsProvider(scope, id, props);
+  public static fromJenkinsProviderAttributes(scope: cdk.Construct, id: string, attrs: JenkinsProviderAttributes): IJenkinsProvider {
+    return new ImportedJenkinsProvider(scope, id, attrs);
   }
 
   public readonly providerName: string;
@@ -218,7 +208,7 @@ class ImportedJenkinsProvider extends BaseJenkinsProvider {
   public readonly providerName: string;
   public readonly serverUrl: string;
 
-  constructor(scope: cdk.Construct, id: string, props: JenkinsProviderImportProps) {
+  constructor(scope: cdk.Construct, id: string, props: JenkinsProviderAttributes) {
     super(scope, id, props.version);
 
     this.providerName = props.providerName;

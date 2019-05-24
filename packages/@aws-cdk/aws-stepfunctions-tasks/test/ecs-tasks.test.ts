@@ -7,13 +7,13 @@ import tasks = require('../lib');
 import { JsonPath, NumberValue } from '../lib';
 
 let stack: Stack;
-let vpc: ec2.VpcNetwork;
+let vpc: ec2.Vpc;
 let cluster: ecs.Cluster;
 
 beforeEach(() => {
   // GIVEN
   stack = new Stack();
-  vpc = new ec2.VpcNetwork(stack, 'Vpc');
+  vpc = new ec2.Vpc(stack, 'Vpc');
   cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
   cluster.addCapacity('Capacity', {
     instanceType: new ec2.InstanceType('t3.medium')
@@ -57,7 +57,6 @@ test('Running a Fargate Task', () => {
       LaunchType: "FARGATE",
       NetworkConfiguration: {
         AwsvpcConfiguration: {
-          AssignPublicIp: "DISABLED",
           SecurityGroups: [{"Fn::GetAtt": ["RunFargateSecurityGroup709740F2", "GroupId"]}],
           Subnets: [
             {Ref: "VpcPrivateSubnet1Subnet536B997A"},

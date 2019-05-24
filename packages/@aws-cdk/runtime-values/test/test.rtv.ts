@@ -29,7 +29,7 @@ class RuntimeValueTest extends cdk.Construct {
     });
 
     new lambda.CfnFunction(this, 'Function', {
-      runtime: 'nodejs6.10',
+      runtime: 'nodejs8.10',
       handler: 'index.handler',
       code: {
         zipFile: `

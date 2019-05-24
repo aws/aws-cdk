@@ -11,6 +11,10 @@
     "AdoptEcrRepositorydbc60defc59544bcaa5c28c95d68f62cCodeS3VersionKey393B7276": {
       "Type": "String",
       "Description": "S3 key for asset version \"test-codebuild-docker-asset/AdoptEcrRepositorydbc60defc59544bcaa5c28c95d68f62c/Code\""
+    },
+    "AdoptEcrRepositorydbc60defc59544bcaa5c28c95d68f62cCodeArtifactHash8BCBAA49": {
+      "Type": "String",
+      "Description": "Artifact hash for asset \"test-codebuild-docker-asset/AdoptEcrRepositorydbc60defc59544bcaa5c28c95d68f62c/Code\""
     }
   },
   "Resources": {
@@ -28,7 +32,7 @@
             0,
             {
               "Fn::Split": [
-                ":",
+                "@sha256:",
                 {
                   "Ref": "MyImageImageName953AD232"
                 }
@@ -63,7 +67,11 @@
           ],
           "Version": "2012-10-17"
         }
-      }
+      },
+      "DependsOn": [
+        "AdoptEcrRepositorydbc60defc59544bcaa5c28c95d68f62cServiceRoleDefaultPolicy6BC8737C",
+        "AdoptEcrRepositorydbc60defc59544bcaa5c28c95d68f62cServiceRoleD788AA17"
+      ]
     },
     "AdoptEcrRepositorydbc60defc59544bcaa5c28c95d68f62cServiceRoleD788AA17": {
       "Type": "AWS::IAM::Role",
@@ -142,7 +150,7 @@
                         0,
                         {
                           "Fn::Split": [
-                            ":",
+                            "@sha256:",
                             {
                               "Ref": "MyImageImageName953AD232"
                             }
@@ -413,13 +421,13 @@
                     "RepositoryName"
                   ]
                 },
-                ":",
+                "@sha256:",
                 {
                   "Fn::Select": [
                     1,
                     {
                       "Fn::Split": [
-                        ":",
+                        "@sha256:",
                         {
                           "Ref": "MyImageImageName953AD232"
                         }

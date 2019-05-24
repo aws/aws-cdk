@@ -21,7 +21,8 @@ export = {
             id: 'SomeStackSomeResource4567',
             packaging: 'file',
             s3BucketParameter: 'BucketParameter',
-            s3KeyParameter: 'KeyParameter'
+            s3KeyParameter: 'KeyParameter',
+            artifactHashParameter: 'ArtifactHashParameter',
           } as AssetMetadataEntry,
           trace: []
         }]
@@ -43,6 +44,7 @@ export = {
     test.deepEqual(params, [
       { ParameterKey: 'BucketParameter', ParameterValue: 'bucket' },
       { ParameterKey: 'KeyParameter', ParameterValue: 'assets/SomeStackSomeResource4567/||12345.js' },
+      { ParameterKey: 'ArtifactHashParameter', ParameterValue: '12345' },
     ]);
 
     test.done();
@@ -65,7 +67,8 @@ export = {
             id: 'SomeStackSomeResource4567',
             packaging: 'file',
             s3BucketParameter: 'BucketParameter',
-            s3KeyParameter: 'KeyParameter'
+            s3KeyParameter: 'KeyParameter',
+            artifactHashParameter: 'ArtifactHashParameter',
           } as AssetMetadataEntry,
           trace: []
         }]
@@ -87,6 +90,7 @@ export = {
     test.deepEqual(params, [
       { ParameterKey: 'BucketParameter', UsePreviousValue: true },
       { ParameterKey: 'KeyParameter', UsePreviousValue: true },
+      { ParameterKey: 'ArtifactHashParameter', UsePreviousValue: true },
     ]);
 
     test.done();
@@ -139,8 +143,9 @@ class FakeToolkit {
     const filename = `12345${props.s3KeySuffix}`;
     return {
       filename,
+      key: `${props.s3KeyPrefix}${filename}`,
+      hash: '12345',
       changed: true,
-      key: `${props.s3KeyPrefix}${filename}`
     };
   }
 }

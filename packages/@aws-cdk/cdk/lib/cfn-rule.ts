@@ -28,11 +28,15 @@ export interface CfnRuleProps {
   /**
    * If the rule condition evaluates to false, the rule doesn't take effect.
    * If the function in the rule condition evaluates to true, expressions in each assert are evaluated and applied.
+   *
+   * @default - Rule's assertions will always take effect.
    */
   readonly ruleCondition?: ICfnConditionExpression;
 
   /**
    * Assertions which define the rule.
+   *
+   * @default - No assertions for the rule.
    */
   readonly assertions?: RuleAssertion[];
 }

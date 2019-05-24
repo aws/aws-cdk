@@ -39,7 +39,9 @@
     "integ": "cdk-integ",
     "pkglint": "pkglint -f",
     "package": "cdk-package",
-    "awslint": "cdk-awslint"
+    "awslint": "cdk-awslint",
+    "build+test+package": "npm run build+test && npm run package",
+    "build+test": "npm run build && npm test"
   },
   "nyc": {
     "statements": 70
@@ -62,7 +64,6 @@
   "devDependencies": {
     "@aws-cdk/assert": "^0.31.0",
     "@aws-cdk/aws-cloudtrail": "^0.31.0",
-    "@aws-cdk/aws-events-targets": "^0.31.0",
     "@types/lodash": "^4.14.123",
     "cdk-build-tools": "^0.31.0",
     "cdk-integ-tools": "^0.31.0",
@@ -79,6 +80,7 @@
     "@aws-cdk/aws-ecr": "^0.31.0",
     "@aws-cdk/aws-ecs": "^0.31.0",
     "@aws-cdk/aws-events": "^0.31.0",
+    "@aws-cdk/aws-events-targets": "^0.31.0",
     "@aws-cdk/aws-iam": "^0.31.0",
     "@aws-cdk/aws-lambda": "^0.31.0",
     "@aws-cdk/aws-s3": "^0.31.0",
@@ -96,6 +98,7 @@
     "@aws-cdk/aws-ecr": "^0.31.0",
     "@aws-cdk/aws-ecs": "^0.31.0",
     "@aws-cdk/aws-events": "^0.31.0",
+    "@aws-cdk/aws-events-targets": "^0.31.0",
     "@aws-cdk/aws-iam": "^0.31.0",
     "@aws-cdk/aws-lambda": "^0.31.0",
     "@aws-cdk/aws-s3": "^0.31.0",

@@ -3,7 +3,7 @@ import ec2 = require('@aws-cdk/aws-ec2');
 import iam = require('@aws-cdk/aws-iam');
 import logs = require('@aws-cdk/aws-logs');
 import sqs = require('@aws-cdk/aws-sqs');
-import { CfnOutput, Construct, Fn, Token } from '@aws-cdk/cdk';
+import { Construct, Fn, Token } from '@aws-cdk/cdk';
 import { Code } from './code';
 import { IEventSource } from './event-source';
 import { FunctionAttributes, FunctionBase, IFunction } from './function-base';
@@ -43,6 +43,8 @@ export interface FunctionProps {
 
   /**
    * A description of the function.
+   *
+   * @default - No description.
    */
   readonly description?: string;
 
@@ -62,7 +64,7 @@ export interface FunctionProps {
    * the function. Because the execution time affects cost, set this value
    * based on the function's expected execution time.
    *
-   * @default 3 seconds.
+   * @default 3
    */
   readonly timeout?: number;
 
@@ -71,6 +73,8 @@ export interface FunctionProps {
    * functions. Use environment variables to apply configuration changes, such
    * as test and production environment configurations, without changing your
    * Lambda function source code.
+   *
+   * @default - No environment variables.
    */
   readonly environment?: { [key: string]: any };
 
@@ -82,9 +86,10 @@ export interface FunctionProps {
   readonly runtime: Runtime;
 
   /**
-   * A name for the function. If you don't specify a name, AWS CloudFormation
-   * generates a unique physical ID and uses that ID for the function's name.
-   * For more information, see Name Type.
+   * A name for the function.
+   *
+   * @default - AWS CloudFormation generates a unique physical ID and uses that
+   * ID for the function's name. For more information, see Name Type.
    */
   readonly functionName?: string;
 
@@ -94,7 +99,7 @@ export interface FunctionProps {
    * power. For more information, see Resource Model in the AWS Lambda
    * Developer Guide.
    *
-   * @default The default value is 128 MB
+   * @default 128
    */
   readonly memorySize?: number;
 
@@ -102,6 +107,8 @@ export interface FunctionProps {
    * Initial policy statements to add to the created Lambda Role.
    *
    * You can call `addToRolePolicy` to the created lambda to add statements post creation.
+   *
+   * @default - No policy statements are added to the created Lambda role.
    */
   readonly initialPolicy?: iam.PolicyStatement[];
 
@@ -112,7 +119,7 @@ export interface FunctionProps {
    * It controls the permissions that the function will have. The Role must
    * be assumable by the 'lambda.amazonaws.com' service principal.
    *
-   * @default a unique role will be generated for this lambda function.
+   * @default - A unique role will be generated for this lambda function.
    * Both supplied and generated roles can always be changed by calling `addToRolePolicy`.
    */
   readonly role?: iam.IRole;
@@ -121,8 +128,10 @@ export interface FunctionProps {
    * VPC network to place Lambda network interfaces
    *
    * Specify this if the Lambda function needs to access resources in a VPC.
+   *
+   * @default - Function is not placed within a VPC.
    */
-  readonly vpc?: ec2.IVpcNetwork;
+  readonly vpc?: ec2.IVpc;
 
   /**
    * Where to place the network interfaces within the VPC.
@@ -130,7 +139,7 @@ export interface FunctionProps {
    * Only used if 'vpc' is supplied. Note: internet access for Lambdas
    * requires a NAT gateway, so picking Public subnets is not allowed.
    *
-   * @default All private subnets
+   * @default - Private subnets.
    */
   readonly vpcSubnets?: ec2.SubnetSelection;
 
@@ -139,7 +148,7 @@ export interface FunctionProps {
    *
    * Only used if 'vpc' is supplied.
    *
-   * @default If the function is placed within a VPC and a security group is
+   * @default - If the function is placed within a VPC and a security group is
    * not specified, a dedicated security group will be created for this
    * function.
    */
@@ -159,21 +168,21 @@ export interface FunctionProps {
    * Enabled DLQ. If `deadLetterQueue` is undefined,
    * an SQS queue with default options will be defined for your Function.
    *
-   * @default false unless `deadLetterQueue` is set, which implies DLQ is enabled
+   * @default - false unless `deadLetterQueue` is set, which implies DLQ is enabled.
    */
   readonly deadLetterQueueEnabled?: boolean;
 
   /**
    * The SQS queue to use if DLQ is enabled.
    *
-   * @default SQS queue with 14 day retention period if `deadLetterQueueEnabled` is `true`
+   * @default - SQS queue with 14 day retention period if `deadLetterQueueEnabled` is `true`
    */
   readonly deadLetterQueue?: sqs.IQueue;
 
   /**
    * Enable AWS X-Ray Tracing for Lambda Function.
    *
-   * @default undefined X-Ray tracing disabled
+   * @default Tracing.Disabled
    */
   readonly tracing?: Tracing;
 
@@ -182,14 +191,14 @@ export interface FunctionProps {
    * additional code during initialization in the form of layers. Layers are packages of libraries or other dependencies
    * that can be used by mulitple functions.
    *
-   * @default no layers
+   * @default - No layers.
    */
   readonly layers?: ILayerVersion[];
 
   /**
    * The maximum of concurrent executions you want to reserve for the function.
    *
-   * @default no specific limit - account limit
+   * @default - No specific limit - account limit.
    * @see https://docs.aws.amazon.com/lambda/latest/dg/concurrent-executions.html
    */
   readonly reservedConcurrentExecutions?: number;
@@ -198,6 +207,8 @@ export interface FunctionProps {
    * Event sources for this function.
    *
    * You can also add event sources using `addEventSource`.
+   *
+   * @default - No event sources.
    */
   readonly events?: IEventSource[];
 
@@ -206,7 +217,7 @@ export interface FunctionProps {
    * this property, unsetting it doesn't remove the log retention policy. To
    * remove the retention policy, set the value to `Infinity`.
    *
-   * @default logs never expire
+   * @default - Logs never expire.
    */
   readonly logRetentionDays?: logs.RetentionDays;
 }
@@ -236,8 +247,7 @@ export class Function extends FunctionBase {
    *
    * @param scope The parent construct
    * @param id The name of the lambda construct
-   * @param attrs A reference to a Lambda function. Can be created manually (see
-   * example above) or obtained through a call to `lambda.export()`.
+   * @param attrs the attributes of the function to import
    */
   public static fromFunctionAttributes(scope: Construct, id: string, attrs: FunctionAttributes): IFunction {
     const functionArn = attrs.functionArn;
@@ -264,10 +274,6 @@ export class Function extends FunctionBase {
             ]
           });
         }
-      }
-
-      public export() {
-        return attrs;
       }
     }
 
@@ -459,18 +465,6 @@ export class Function extends FunctionBase {
   }
 
   /**
-   * Export this Function (without the role)
-   */
-  public export(): FunctionAttributes {
-    return {
-      functionArn: new CfnOutput(this, 'FunctionArn', { value: this.functionArn }).makeImportValue().toString(),
-      securityGroupId: this._connections && this._connections.securityGroups[0]
-          ? new CfnOutput(this, 'SecurityGroupId', { value: this._connections.securityGroups[0].securityGroupId }).makeImportValue().toString()
-          : undefined
-    };
-  }
-
-  /**
    * Adds an environment variable to this Lambda function.
    * If this is a ref to a Lambda function, this operation results in a no-op.
    * @param key The environment variable key.
@@ -496,7 +490,7 @@ export class Function extends FunctionBase {
     if (this.layers.length === 5) {
       throw new Error('Unable to add layer: this lambda function already uses 5 layers.');
     }
-    if (layer.compatibleRuntimes && layer.compatibleRuntimes.indexOf(this.runtime) === -1) {
+    if (layer.compatibleRuntimes && !layer.compatibleRuntimes.find(runtime => runtime.runtimeEquals(this.runtime))) {
       const runtimes = layer.compatibleRuntimes.map(runtime => runtime.name).join(', ');
       throw new Error(`This lambda function uses a runtime that is incompatible with this layer (${this.runtime.name} is not in [${runtimes}])`);
     }

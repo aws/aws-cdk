@@ -19,32 +19,40 @@ export interface PolicyProps {
    * specify unique names. For example, if you specify a list of policies for
    * an IAM role, each policy must have a unique name.
    *
-   * @default Uses the logical ID of the policy resource, which is ensured to
-   *      be unique within the stack.
+   * @default - Uses the logical ID of the policy resource, which is ensured
+   * to be unique within the stack.
    */
   readonly policyName?: string;
 
   /**
    * Users to attach this policy to.
    * You can also use `attachToUser(user)` to attach this policy to a user.
+   *
+   * @default - No users.
    */
   readonly users?: IUser[];
 
   /**
    * Roles to attach this policy to.
    * You can also use `attachToRole(role)` to attach this policy to a role.
+   *
+   * @default - No roles.
    */
   readonly roles?: IRole[];
 
   /**
    * Groups to attach this policy to.
    * You can also use `attachToGroup(group)` to attach this policy to a group.
+   *
+   * @default - No groups.
    */
   readonly groups?: IGroup[];
 
   /**
    * Initial set of permissions to add to this policy document.
    * You can also use `addPermission(statement)` to add permissions later.
+   *
+   * @default - No statements.
    */
   readonly statements?: PolicyStatement[];
 }

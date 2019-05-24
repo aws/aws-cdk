@@ -40,7 +40,9 @@
     "pkglint": "pkglint -f",
     "package": "cdk-package",
     "awslint": "cdk-awslint",
-    "cfn2ts": "cfn2ts"
+    "cfn2ts": "cfn2ts",
+    "build+test+package": "npm run build+test && npm run package",
+    "build+test": "npm run build && npm test"
   },
   "jest": {
     "moduleFileExtensions": [
@@ -48,7 +50,7 @@
     ],
     "coverageThreshold": {
       "global": {
-        "branches": 80,
+        "branches": 30,
         "statements": 80
       }
     }
@@ -80,6 +82,7 @@
   "dependencies": {
     "@aws-cdk/aws-codebuild": "^0.31.0",
     "@aws-cdk/aws-codepipeline": "^0.31.0",
+    "@aws-cdk/aws-ec2": "^0.31.0",
     "@aws-cdk/aws-ecs": "^0.31.0",
     "@aws-cdk/aws-events": "^0.31.0",
     "@aws-cdk/aws-iam": "^0.31.0",
@@ -92,6 +95,7 @@
   "peerDependencies": {
     "@aws-cdk/aws-codebuild": "^0.31.0",
     "@aws-cdk/aws-codepipeline": "^0.31.0",
+    "@aws-cdk/aws-ec2": "^0.31.0",
     "@aws-cdk/aws-ecs": "^0.31.0",
     "@aws-cdk/aws-events": "^0.31.0",
     "@aws-cdk/aws-iam": "^0.31.0",

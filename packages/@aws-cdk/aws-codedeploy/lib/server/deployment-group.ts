@@ -1,6 +1,5 @@
 import autoscaling = require('@aws-cdk/aws-autoscaling');
 import cloudwatch = require('@aws-cdk/aws-cloudwatch');
-import codedeploylb = require('@aws-cdk/aws-codedeploy-api');
 import ec2 = require('@aws-cdk/aws-ec2');
 import iam = require('@aws-cdk/aws-iam');
 import s3 = require('@aws-cdk/aws-s3');
@@ -10,6 +9,7 @@ import { AutoRollbackConfig } from '../rollback-config';
 import { arnForDeploymentGroup, renderAlarmConfiguration, renderAutoRollbackConfiguration } from '../utils';
 import { IServerApplication, ServerApplication } from './application';
 import { IServerDeploymentConfig, ServerDeploymentConfig } from './deployment-config';
+import { LoadBalancer, LoadBalancerGeneration } from './load-balancer';
 
 export interface IServerDeploymentGroup extends cdk.IResource {
   readonly application: IServerApplication;
@@ -25,7 +25,6 @@ export interface IServerDeploymentGroup extends cdk.IResource {
   readonly deploymentGroupArn: string;
   readonly deploymentConfig: IServerDeploymentConfig;
   readonly autoScalingGroups?: autoscaling.AutoScalingGroup[];
-  export(): ServerDeploymentGroupAttributes;
 }
 
 /**
@@ -77,8 +76,6 @@ abstract class ServerDeploymentGroupBase extends cdk.Resource implements IServer
     super(scope, id);
     this.deploymentConfig = deploymentConfig || ServerDeploymentConfig.OneAtATime;
   }
-
-  public abstract export(): ServerDeploymentGroupAttributes;
 }
 
 class ImportedServerDeploymentGroup extends ServerDeploymentGroupBase {
@@ -88,16 +85,12 @@ class ImportedServerDeploymentGroup extends ServerDeploymentGroupBase {
   public readonly deploymentGroupArn: string;
   public readonly autoScalingGroups?: autoscaling.AutoScalingGroup[] = undefined;
 
-  constructor(scope: cdk.Construct, id: string, private readonly props: ServerDeploymentGroupAttributes) {
+  constructor(scope: cdk.Construct, id: string, props: ServerDeploymentGroupAttributes) {
     super(scope, id, props.deploymentConfig);
 
     this.application = props.application;
     this.deploymentGroupName = props.deploymentGroupName;
     this.deploymentGroupArn = arnForDeploymentGroup(props.application.applicationName, props.deploymentGroupName);
-  }
-
-  public export() {
-    return this.props;
   }
 }
 
@@ -142,20 +135,22 @@ export class InstanceTagSet {
 export interface ServerDeploymentGroupProps {
   /**
    * The CodeDeploy EC2/on-premise Application this Deployment Group belongs to.
-   * If you don't provide one, a new Application will be created.
+   *
+   * @default - A new Application will be created.
    */
   readonly application?: IServerApplication;
 
   /**
    * The service Role of this Deployment Group.
-   * If you don't provide one, a new Role will be created.
+   *
+   * @default - A new Role will be created.
    */
   readonly role?: iam.IRole;
 
   /**
    * The physical, human-readable name of the CodeDeploy Deployment Group.
    *
-   * @default an auto-generated name will be used
+   * @default - An auto-generated name will be used.
    */
   readonly deploymentGroupName?: string;
 
@@ -190,24 +185,24 @@ export interface ServerDeploymentGroupProps {
 
   /**
    * The load balancer to place in front of this Deployment Group.
-   * Can be either a classic Elastic Load Balancer,
+   * Can be created from either a classic Elastic Load Balancer,
    * or an Application Load Balancer / Network Load Balancer Target Group.
    *
-   * @default the Deployment Group will not have a load balancer defined
+   * @default - Deployment Group will not have a load balancer defined.
    */
-  readonly loadBalancer?: codedeploylb.ILoadBalancer;
+  readonly loadBalancer?: LoadBalancer;
 
   /**
    * All EC2 instances matching the given set of tags when a deployment occurs will be added to this Deployment Group.
    *
-   * @default no additional EC2 instances will be added to the Deployment Group
+   * @default - No additional EC2 instances will be added to the Deployment Group.
    */
   readonly ec2InstanceTags?: InstanceTagSet;
 
   /**
    * All on-premise instances matching the given set of tags when a deployment occurs will be added to this Deployment Group.
    *
-   * @default no additional on-premise instances will be added to the Deployment Group
+   * @default - No additional on-premise instances will be added to the Deployment Group.
    */
   readonly onPremiseInstanceTags?: InstanceTagSet;
 
@@ -232,6 +227,8 @@ export interface ServerDeploymentGroupProps {
 
   /**
    * The auto-rollback configuration for this Deployment Group.
+   *
+   * @default - default AutoRollbackConfig.
    */
   readonly autoRollback?: AutoRollbackConfig;
 }
@@ -312,16 +309,6 @@ export class ServerDeploymentGroup extends ServerDeploymentGroupBase {
     this.deploymentGroupArn = arnForDeploymentGroup(this.application.applicationName, this.deploymentGroupName);
   }
 
-  public export(): ServerDeploymentGroupAttributes {
-    return {
-      application: this.application,
-      deploymentGroupName: new cdk.CfnOutput(this, 'DeploymentGroupName', {
-        value: this.deploymentGroupName
-      }).makeImportValue().toString(),
-      deploymentConfig: this.deploymentConfig,
-    };
-  }
-
   /**
    * Adds an additional auto-scaling group to this Deployment Group.
    *
@@ -387,25 +374,23 @@ export class ServerDeploymentGroup extends ServerDeploymentGroupBase {
     }
   }
 
-  private loadBalancerInfo(lbProvider?: codedeploylb.ILoadBalancer):
+  private loadBalancerInfo(loadBalancer?: LoadBalancer):
       CfnDeploymentGroup.LoadBalancerInfoProperty | undefined {
-    if (!lbProvider) {
+    if (!loadBalancer) {
       return undefined;
     }
 
-    const lb = lbProvider.asCodeDeployLoadBalancer();
-
-    switch (lb.generation) {
-      case codedeploylb.LoadBalancerGeneration.First:
+    switch (loadBalancer.generation) {
+      case LoadBalancerGeneration.FIRST:
         return {
           elbInfoList: [
-            { name: lb.name },
+            { name: loadBalancer.name },
           ],
         };
-      case codedeploylb.LoadBalancerGeneration.Second:
+      case LoadBalancerGeneration.SECOND:
         return {
           targetGroupInfoList: [
-            { name: lb.name },
+            { name: loadBalancer.name },
           ]
         };
     }

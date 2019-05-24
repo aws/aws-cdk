@@ -1,13 +1,13 @@
-import { CfnOutput, Construct, IResource, Resource, Token } from '@aws-cdk/cdk';
+import { Construct, IResource, Resource, Token } from '@aws-cdk/cdk';
 import { Code } from './code';
 import { CfnLayerVersion, CfnLayerVersionPermission } from './lambda.generated';
 import { Runtime } from './runtime';
 
 export interface LayerVersionProps {
   /**
-   * The runtimes that this layer is compatible with.
+   * The runtimes compatible with this Layer.
    *
-   * @default All runtimes are supported
+   * @default - All runtimes are supported.
    */
   readonly compatibleRuntimes?: Runtime[];
 
@@ -18,19 +18,22 @@ export interface LayerVersionProps {
 
   /**
    * The description the this Lambda Layer.
+   *
+   * @default - No description.
    */
   readonly description?: string;
 
   /**
    * The SPDX licence identifier or URL to the license file for this layer.
    *
-   * @default no license information will be recorded.
+   * @default - No license information will be recorded.
    */
   readonly license?: string;
 
   /**
    * The name of the layer.
-   * @default a name will be generated.
+   *
+   * @default - A name will be generated.
    */
   readonly name?: string;
 }
@@ -44,14 +47,10 @@ export interface ILayerVersion extends IResource {
 
   /**
    * The runtimes compatible with this Layer.
+   *
+   * @default Runtime.All
    */
   readonly compatibleRuntimes?: Runtime[];
-
-  /**
-   * Exports this layer for use in another Stack. The resulting object can be passed to the ``LayerVersion.import``
-   * function to obtain an ``ILayerVersion`` in the user stack.
-   */
-  export(): LayerVersionAttributes;
 
   /**
    * Add permission for this layer version to specific entities. Usage within
@@ -85,13 +84,6 @@ abstract class LayerVersionBase extends Resource implements ILayerVersion {
       principal: permission.accountId,
       organizationId: permission.organizationId,
     });
-  }
-
-  public export(): LayerVersionAttributes {
-    return {
-      layerVersionArn: new CfnOutput(this, 'LayerVersionArn', { value: this.layerVersionArn }).makeImportValue().toString(),
-      compatibleRuntimes: this.compatibleRuntimes,
-    };
   }
 }
 
@@ -223,13 +215,6 @@ export class SingletonLayerVersion extends Construct implements ILayerVersion {
 
   public get compatibleRuntimes(): Runtime[] | undefined {
     return this.layerVersion.compatibleRuntimes;
-  }
-
-  public export(): LayerVersionAttributes {
-    return {
-      layerVersionArn: this.layerVersionArn,
-      compatibleRuntimes: this.compatibleRuntimes,
-    };
   }
 
   public addPermission(id: string, grantee: LayerVersionPermission) {
