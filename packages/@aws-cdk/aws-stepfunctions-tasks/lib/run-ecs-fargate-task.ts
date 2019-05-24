@@ -44,7 +44,7 @@ export interface RunEcsFargateTaskProps extends CommonEcsRunTaskProps {
 export class RunEcsFargateTask extends EcsRunTaskBase {
   constructor(props: RunEcsFargateTaskProps) {
     if (!props.taskDefinition.isFargateCompatible) {
-      throw new Error('Supplied TaskDefinition is not configured for compatibility with EC2');
+      throw new Error('Supplied TaskDefinition is not configured for compatibility with Fargate');
     }
 
     if (!props.taskDefinition.defaultContainer) {

@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/aws-mediastore",
-  "version": "0.31.0",
+  "version": "0.32.0",
   "description": "The CDK Construct Library for AWS::MediaStore",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -63,16 +63,16 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "^0.31.0",
-    "cdk-build-tools": "^0.31.0",
-    "cfn2ts": "^0.31.0",
-    "pkglint": "^0.31.0"
+    "@aws-cdk/assert": "^0.32.0",
+    "cdk-build-tools": "^0.32.0",
+    "cfn2ts": "^0.32.0",
+    "pkglint": "^0.32.0"
   },
   "dependencies": {
-    "@aws-cdk/cdk": "^0.31.0"
+    "@aws-cdk/cdk": "^0.32.0"
   },
   "peerDependencies": {
-    "@aws-cdk/cdk": "^0.31.0"
+    "@aws-cdk/cdk": "^0.32.0"
   },
   "engines": {
     "node": ">= 8.10.0"
