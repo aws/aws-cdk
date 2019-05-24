@@ -27,7 +27,7 @@ describe('given an AutoScalingGroup', () => {
     const queue = new sqs.Queue(stack, 'Queue');
 
     // WHEN
-    asg.onLifecycleTransition('Trans', {
+    asg.addLifecycleHook('Trans', {
       lifecycleTransition: autoscaling.LifecycleTransition.InstanceLaunching,
       notificationTarget: new hooks.QueueHook(queue),
     });
@@ -42,7 +42,7 @@ describe('given an AutoScalingGroup', () => {
     const topic = new sns.Topic(stack, 'Topic');
 
     // WHEN
-    asg.onLifecycleTransition('Trans', {
+    asg.addLifecycleHook('Trans', {
       lifecycleTransition: autoscaling.LifecycleTransition.InstanceLaunching,
       notificationTarget: new hooks.TopicHook(topic),
     });
@@ -62,7 +62,7 @@ describe('given an AutoScalingGroup', () => {
     });
 
     // WHEN
-    asg.onLifecycleTransition('Trans', {
+    asg.addLifecycleHook('Trans', {
       lifecycleTransition: autoscaling.LifecycleTransition.InstanceLaunching,
       notificationTarget: new hooks.FunctionHook(fn),
     });
