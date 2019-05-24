@@ -2,7 +2,7 @@ import ec2 = require('@aws-cdk/aws-ec2');
 import ecs = require('@aws-cdk/aws-ecs');
 import cdk = require('@aws-cdk/cdk');
 
-import { ScheduledEc2Task } from '../lib';
+import { ScheduledEc2Task } from '../../lib';
 
 const app = new cdk.App();
 

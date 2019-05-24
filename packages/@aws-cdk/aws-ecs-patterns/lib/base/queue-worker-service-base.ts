@@ -1,12 +1,7 @@
 import autoscaling = require('@aws-cdk/aws-applicationautoscaling');
+import ecs = require('@aws-cdk/aws-ecs');
 import sqs = require('@aws-cdk/aws-sqs');
-import { IQueue } from '@aws-cdk/aws-sqs';
 import cdk = require('@aws-cdk/cdk');
-import { BaseService } from './base/base-service';
-import { ICluster } from './cluster';
-import { ContainerImage } from './container-image';
-import { AwsLogDriver } from './log-drivers/aws-log-driver';
-import { LogDriver } from './log-drivers/log-driver';
 
 /**
  * Properties to define a Query Worker service
@@ -15,12 +10,12 @@ export interface QueueWorkerServiceBaseProps {
   /**
    * Cluster where service will be deployed
    */
-  readonly cluster: ICluster;
+  readonly cluster: ecs.ICluster;
 
   /**
    * The image to start.
    */
-  readonly image: ContainerImage;
+  readonly image: ecs.ContainerImage;
 
   /**
    * The CMD value to pass to the container. A string with commands delimited by commas.
@@ -58,7 +53,7 @@ export interface QueueWorkerServiceBaseProps {
    *
    * @default 'SQSQueue with CloudFormation-generated name'
    */
-  readonly queue?: IQueue;
+  readonly queue?: sqs.IQueue;
 
   /**
    * Maximum capacity to scale to.
@@ -85,7 +80,7 @@ export abstract class QueueWorkerServiceBase extends cdk.Construct {
   /**
    * The SQS queue that the worker service will process from
    */
-  public readonly sqsQueue: IQueue;
+  public readonly sqsQueue: sqs.IQueue;
 
   // Properties that have defaults defined. The Queue Worker will handle assigning undefined properties with default
   // values so that derived classes do not need to maintain the same logic.
@@ -109,7 +104,7 @@ export abstract class QueueWorkerServiceBase extends cdk.Construct {
   /**
    * The AwsLogDriver to use for logging if logging is enabled.
    */
-  public readonly logDriver?: LogDriver;
+  public readonly logDriver?: ecs.LogDriver;
 
   constructor(scope: cdk.Construct, id: string, props: QueueWorkerServiceBaseProps) {
     super(scope, id);
@@ -141,7 +136,7 @@ export abstract class QueueWorkerServiceBase extends cdk.Construct {
    *
    * @param service the ECS/Fargate service for which to apply the autoscaling rules to
    */
-  protected configureAutoscalingForService(service: BaseService) {
+  protected configureAutoscalingForService(service: ecs.BaseService) {
     const scalingTarget = service.autoScaleTaskCount({ maxCapacity: this.maxCapacity, minCapacity: this.desiredCount });
     scalingTarget.scaleOnCpuUtilization('CpuScaling', {
       targetUtilizationPercent: 50,
@@ -157,7 +152,7 @@ export abstract class QueueWorkerServiceBase extends cdk.Construct {
    *
    * @param prefix the Cloudwatch logging prefix
    */
-  private createAwsLogDriver(prefix: string): AwsLogDriver {
-    return new AwsLogDriver(this, 'QueueWorkerLogging', { streamPrefix: prefix });
+  private createAwsLogDriver(prefix: string): ecs.AwsLogDriver {
+    return new ecs.AwsLogDriver(this, 'QueueWorkerLogging', { streamPrefix: prefix });
   }
 }
