@@ -1,11 +1,12 @@
-import { App, Stack } from '@aws-cdk/cdk';
+import { expect } from '@aws-cdk/assert';
+import { Stack } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
 import { Repository, RepositoryProps } from '../lib';
 
 export = {
   'CodeCommit Repositories': {
     'add an SNS trigger to repository'(test: Test) {
-      const app = new TestApp();
+      const stack = new Stack();
 
       const props: RepositoryProps = {
         repositoryName:  'MyRepository'
@@ -13,10 +14,9 @@ export = {
 
       const snsArn = 'arn:aws:sns:*:123456789012:my_topic';
 
-      new Repository(app.stack, 'MyRepository', props).notify(snsArn);
-      const template = app.synthesizeTemplate();
+      new Repository(stack, 'MyRepository', props).notify(snsArn);
 
-      test.deepEqual(template, {
+      expect(stack).toMatch({
         Resources: {
           MyRepository4C4BD5FC: {
             Type: "AWS::CodeCommit::Repository",
@@ -40,11 +40,10 @@ export = {
     },
 
     'fails when triggers have duplicate names'(test: Test) {
-      const app = new TestApp();
+      const stack = new Stack();
 
       const props = { repositoryName: 'MyRepository' };
-      const myRepository = new Repository(app.stack, 'MyRepository', props)
-      .notify('myTrigger');
+      const myRepository = new Repository(stack, 'MyRepository', props).notify('myTrigger');
 
       test.throws(() => myRepository.notify('myTrigger'));
 
@@ -91,13 +90,3 @@ export = {
     },
   },
 };
-
-class TestApp {
-  private readonly app = new App();
-  // tslint:disable-next-line:member-ordering
-  public readonly stack: Stack = new Stack(this.app, 'MyStack');
-
-  public synthesizeTemplate() {
-    return this.app.synthesizeStack(this.stack.name).template;
-  }
-}
