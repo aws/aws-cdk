@@ -853,23 +853,6 @@
         ]
       }
     },
-    "FrontendServiceSecurityGroup85470DEC": {
-      "Type": "AWS::EC2::SecurityGroup",
-      "Properties": {
-        "GroupDescription": "aws-ecs-integ-ecs/FrontendService/SecurityGroup",
-        "SecurityGroupEgress": [
-          {
-            "CidrIp": "0.0.0.0/0",
-            "Description": "Allow all outbound traffic by default",
-            "IpProtocol": "-1"
-          }
-        ],
-        "SecurityGroupIngress": [],
-        "VpcId": {
-          "Ref": "Vpc8378EB38"
-        }
-      }
-    },
     "FrontendServiceCloudmapService6FE76C06": {
       "Type": "AWS::ServiceDiscovery::Service",
       "Properties": {
@@ -897,6 +880,23 @@
             "EcsClusterDefaultServiceDiscoveryNamespaceB0971B2F",
             "Id"
           ]
+        }
+      }
+    },
+    "FrontendServiceSecurityGroup85470DEC": {
+      "Type": "AWS::EC2::SecurityGroup",
+      "Properties": {
+        "GroupDescription": "aws-ecs-integ-ecs/FrontendService/SecurityGroup",
+        "SecurityGroupEgress": [
+          {
+            "CidrIp": "0.0.0.0/0",
+            "Description": "Allow all outbound traffic by default",
+            "IpProtocol": "-1"
+          }
+        ],
+        "SecurityGroupIngress": [],
+        "VpcId": {
+          "Ref": "Vpc8378EB38"
         }
       }
     }

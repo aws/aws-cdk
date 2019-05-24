@@ -62,7 +62,7 @@ export class InstanceDrainHook extends cdk.Construct {
     });
 
     // Hook everything up: ASG -> Topic, Topic -> Lambda
-    props.autoScalingGroup.onLifecycleTransition('DrainHook', {
+    props.autoScalingGroup.addLifecycleHook('DrainHook', {
       lifecycleTransition: autoscaling.LifecycleTransition.InstanceTerminating,
       defaultResult: autoscaling.DefaultResult.Continue,
       notificationTarget: new hooks.FunctionHook(fn),

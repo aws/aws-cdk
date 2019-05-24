@@ -692,13 +692,13 @@
                       "RepositoryName"
                     ]
                   },
-                  ":",
+                  "@sha256:",
                   {
                     "Fn::Select": [
                       1,
                       {
                         "Fn::Split": [
-                          ":",
+                          "@sha256:",
                           {
                             "Ref": "EventImageImageNameE972A8B1"
                           }
@@ -859,7 +859,7 @@
             0,
             {
               "Fn::Split": [
-                ":",
+                "@sha256:",
                 {
                   "Ref": "EventImageImageNameE972A8B1"
                 }
@@ -867,7 +867,11 @@
             }
           ]
         }
-      }
+      },
+      "DependsOn": [
+        "AdoptEcrRepositorydbc60defc59544bcaa5c28c95d68f62cServiceRoleDefaultPolicy6BC8737C",
+        "AdoptEcrRepositorydbc60defc59544bcaa5c28c95d68f62cServiceRoleD788AA17"
+      ]
     },
     "AdoptEcrRepositorydbc60defc59544bcaa5c28c95d68f62cServiceRoleD788AA17": {
       "Type": "AWS::IAM::Role",
@@ -946,7 +950,7 @@
                         0,
                         {
                           "Fn::Split": [
-                            ":",
+                            "@sha256:",
                             {
                               "Ref": "EventImageImageNameE972A8B1"
                             }
@@ -1143,6 +1147,10 @@
     "AdoptEcrRepositorydbc60defc59544bcaa5c28c95d68f62cCodeS3VersionKey393B7276": {
       "Type": "String",
       "Description": "S3 key for asset version \"aws-ecs-integ-ecs/AdoptEcrRepositorydbc60defc59544bcaa5c28c95d68f62c/Code\""
+    },
+    "AdoptEcrRepositorydbc60defc59544bcaa5c28c95d68f62cCodeArtifactHash8BCBAA49": {
+      "Type": "String",
+      "Description": "Artifact hash for asset \"aws-ecs-integ-ecs/AdoptEcrRepositorydbc60defc59544bcaa5c28c95d68f62c/Code\""
     }
   }
 }

@@ -310,9 +310,9 @@ export = {
       ],
     });
 
-    pipeline.onStateChange('OnStateChange', new targets.SnsTopic(topic), {
+    pipeline.onStateChange('OnStateChange', {
+      target: new targets.SnsTopic(topic),
       description: 'desc',
-      scheduleExpression: 'now',
       eventPattern: {
         detail: {
           state: [ 'FAILED' ]
@@ -360,7 +360,6 @@ export = {
         }
         ]
       },
-      "ScheduleExpression": "now",
       "State": "ENABLED",
       "Targets": [
         {

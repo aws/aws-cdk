@@ -1,6 +1,5 @@
 import ec2 = require('@aws-cdk/aws-ec2');
-import route53 = require('@aws-cdk/aws-route53');
-import { Construct, Resource, Token } from '@aws-cdk/cdk';
+import { Construct, IResource, Resource, Token } from '@aws-cdk/cdk';
 import { CfnLoadBalancer } from '../elasticloadbalancingv2.generated';
 import { Attributes, ifUndefined, renderAttributes } from './util';
 
@@ -42,10 +41,28 @@ export interface BaseLoadBalancerProps {
   readonly deletionProtection?: boolean;
 }
 
+export interface ILoadBalancerV2 extends IResource {
+  /**
+   * The canonical hosted zone ID of this load balancer
+   *
+   * @example Z2P70J7EXAMPLE
+   * @attribute
+   */
+  readonly loadBalancerCanonicalHostedZoneId: string;
+
+  /**
+   * The DNS name of this load balancer
+   *
+   * @example my-load-balancer-424835706.us-west-2.elb.amazonaws.com
+   * @attribute
+   */
+  readonly loadBalancerDnsName: string;
+}
+
 /**
  * Base class for both Application and Network Load Balancers
  */
-export abstract class BaseLoadBalancer extends Resource implements route53.IAliasRecordTarget {
+export abstract class BaseLoadBalancer extends Resource {
   /**
    * The canonical hosted zone ID of this load balancer
    *
@@ -150,12 +167,5 @@ export abstract class BaseLoadBalancer extends Resource implements route53.IAlia
    */
   public removeAttribute(key: string) {
     this.setAttribute(key, undefined);
-  }
-
-  public asAliasRecordTarget(): route53.AliasRecordTargetProps {
-    return {
-      hostedZoneId: this.loadBalancerCanonicalHostedZoneId,
-      dnsName: this.loadBalancerDnsName
-    };
   }
 }

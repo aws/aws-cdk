@@ -17,7 +17,7 @@ export = {
     });
 
     // WHEN
-    asg.onLifecycleTransition('Transition', {
+    asg.addLifecycleHook('Transition', {
       notificationTarget: new FakeNotificationTarget(),
       lifecycleTransition: autoscaling.LifecycleTransition.InstanceLaunching,
       defaultResult: autoscaling.DefaultResult.Abandon,
