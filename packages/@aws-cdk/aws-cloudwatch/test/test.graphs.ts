@@ -1,6 +1,6 @@
 import { Stack } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
-import { AlarmWidget, GraphWidget, Metric, Shading, SingleValueWidget, YAxis } from '../lib';
+import { AlarmWidget, GraphWidget, Metric, Shading, SingleValueWidget } from '../lib';
 
 export = {
   'add metrics to graphs on either axis'(test: Test) {
