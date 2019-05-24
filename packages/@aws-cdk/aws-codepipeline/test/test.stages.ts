@@ -7,28 +7,6 @@ import codepipeline = require('../lib');
 
 export = {
   'Pipeline Stages': {
-    'can be inserted at index 0'(test: Test) {
-      const stack = new cdk.Stack();
-      const pipeline = new codepipeline.Pipeline(stack, 'Pipeline');
-
-      pipeline.addStage({ name: 'SecondStage' });
-      pipeline.addStage({
-        name: 'FirstStage',
-        placement: {
-          atIndex: 0,
-        },
-      });
-
-      expect(stack, true).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
-        "Stages": [
-          { "Name": "FirstStage" },
-          { "Name": "SecondStage" },
-        ],
-      }));
-
-      test.done();
-    },
-
     'can be inserted before another Stage'(test: Test) {
       const stack = new cdk.Stack();
       const pipeline = new codepipeline.Pipeline(stack, 'Pipeline');
@@ -71,38 +49,6 @@ export = {
           { "Name": "ThirdStage" },
         ],
       }));
-
-      test.done();
-    },
-
-    'attempting to insert a Stage at a negative index results in an error'(test: Test) {
-      const stack = new cdk.Stack();
-      const pipeline = new codepipeline.Pipeline(stack, 'Pipeline');
-
-      test.throws(() => {
-        pipeline.addStage({
-          name: 'Stage',
-          placement: {
-            atIndex: -1,
-          },
-        });
-      }, /atIndex/);
-
-      test.done();
-    },
-
-    'attempting to insert a Stage at an index larger than the current number of Stages results in an error'(test: Test) {
-      const stack = new cdk.Stack();
-      const pipeline = new codepipeline.Pipeline(stack, 'Pipeline');
-
-      test.throws(() => {
-        pipeline.addStage({
-          name: 'Stage',
-          placement: {
-            atIndex: 1,
-          },
-        });
-      }, /atIndex/);
 
       test.done();
     },
