@@ -36,6 +36,39 @@ export interface MetricWidgetProps {
 }
 
 /**
+ * Properties for a Y-Axis
+ */
+export interface YAxisProps {
+  /**
+   * The min value
+   *
+   * @default 0
+   */
+  readonly min?: number;
+
+  /**
+   * The max value
+   *
+   * @default No maximum value
+   */
+  readonly max?: number;
+
+  /**
+   * The label
+   *
+   * @default No label
+   */
+  readonly label?: string;
+
+  /**
+   * Whether to show units
+   *
+   * @default true
+   */
+  readonly showUnits?: boolean;
+}
+
+/**
  * Properties for an AlarmWidget
  */
 export interface AlarmWidgetProps extends MetricWidgetProps {
@@ -45,11 +78,9 @@ export interface AlarmWidgetProps extends MetricWidgetProps {
   readonly alarm: Alarm;
 
   /**
-   * Range of left Y axis
-   *
-   * @default 0..automatic
+   * Left Y axis
    */
-  readonly leftAxisRange?: YAxisRange;
+  readonly leftYAxis?: YAxisProps;
 }
 
 /**
@@ -78,7 +109,7 @@ export class AlarmWidget extends ConcreteWidget {
           alarms: [this.props.alarm.alarmArn]
         },
         yAxis: {
-          left: this.props.leftAxisRange !== undefined ? this.props.leftAxisRange : { min: 0 }
+          left: this.props.leftYAxis !== undefined ? this.props.leftYAxis : undefined
         }
       }
     }];
@@ -115,18 +146,14 @@ export interface GraphWidgetProps extends MetricWidgetProps {
   readonly stacked?: boolean;
 
   /**
-   * Range of left Y axis
-   *
-   * @default 0..automatic
+   * Left Y axis
    */
-  readonly leftAxisRange?: YAxisRange;
+  readonly leftYAxis?: YAxisProps;
 
   /**
-   * Range of right Y axis
-   *
-   * @default 0..automatic
+   * Right Y axis
    */
-  readonly rightAxisRange?: YAxisRange;
+  readonly rightYAxis?: YAxisProps;
 }
 
 /**
@@ -158,8 +185,8 @@ export class GraphWidget extends ConcreteWidget {
                 (this.props.rightAnnotations || []).map(mapAnnotation('right')))
         },
         yAxis: {
-          left: this.props.leftAxisRange !== undefined ? this.props.leftAxisRange : { min: 0 },
-          right: this.props.rightAxisRange !== undefined ? this.props.rightAxisRange : { min: 0 },
+          left: this.props.leftYAxis !== undefined ? this.props.leftYAxis : undefined,
+          right: this.props.rightYAxis !== undefined ? this.props.rightYAxis : undefined,
         }
       }
     }];
@@ -202,25 +229,6 @@ export class SingleValueWidget extends ConcreteWidget {
       }
     }];
   }
-}
-
-/**
- * A minimum and maximum value for either the left or right Y axis
- */
-export interface YAxisRange {
-  /**
-   * The minimum value
-   *
-   * @default Automatic
-   */
-  readonly min?: number;
-
-  /**
-   * The maximum value
-   *
-   * @default Automatic
-   */
-  readonly max?: number;
 }
 
 /**
