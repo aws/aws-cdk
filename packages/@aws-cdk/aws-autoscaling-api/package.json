@@ -1,0 +1,71 @@
+{
+  "name": "@aws-cdk/aws-autoscaling-api",
+  "version": "0.32.0",
+  "description": "API package for @aws-cdk/aws-autoscaling",
+  "deprecated": true,
+  "jsii": {
+    "outdir": "dist",
+    "targets": {
+      "java": {
+        "package": "software.amazon.awscdk.services.autoscaling.api",
+        "maven": {
+          "groupId": "software.amazon.awscdk",
+          "artifactId": "autoscaling-api"
+        }
+      },
+      "dotnet": {
+        "namespace": "Amazon.CDK.AWS.AutoScaling.Api",
+        "packageId": "Amazon.CDK.AWS.AutoScaling.Api",
+        "signAssembly": true,
+        "assemblyOriginatorKeyFile": "../../key.snk"
+      },
+      "python": {
+        "distName": "aws-cdk.aws-autoscaling-api",
+        "module": "aws_cdk.aws_autoscaling_api"
+      }
+    }
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/awslabs/aws-cdk.git",
+    "directory": "packages/@aws-cdk/aws-autoscaling-api"
+  },
+  "scripts": {
+    "build": "echo OK",
+    "watch": "echo OK",
+    "lint": "echo OK",
+    "test": "echo OK",
+    "integ": "echo OK",
+    "pkglint": "echo OK",
+    "package": "echo OK",
+    "awslint": "echo OK",
+    "build+test+package": "echo OK",
+    "build+test": "echo OK"
+  },
+  "keywords": [
+    "aws",
+    "cdk",
+    "constructs",
+    "s3"
+  ],
+  "nyc": {
+    "exclude": [
+      "coverage/**",
+      "test/**",
+      "examples/**",
+      "lib/*.generated.js",
+      "build-tools/**",
+      "lambda/**"
+    ]
+  },
+  "author": {
+    "name": "Amazon Web Services",
+    "url": "https://aws.amazon.com",
+    "organization": true
+  },
+  "license": "Apache-2.0",
+  "homepage": "https://github.com/awslabs/aws-cdk",
+  "engines": {
+    "node": ">= 8.10.0"
+  }
+}
