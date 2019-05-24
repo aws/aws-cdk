@@ -1,7 +1,6 @@
+import ecs = require('@aws-cdk/aws-ecs');
 import cdk = require('@aws-cdk/cdk');
-import { FargateService } from './fargate/fargate-service';
-import { FargateTaskDefinition } from './fargate/fargate-task-definition';
-import { QueueWorkerServiceBase, QueueWorkerServiceBaseProps } from './queue-worker-service-base';
+import { QueueWorkerServiceBase, QueueWorkerServiceBaseProps } from '../base/queue-worker-service-base';
 
 /**
  * Properties to define a Fargate queue worker service
@@ -53,7 +52,7 @@ export class FargateQueueWorkerService extends QueueWorkerServiceBase {
     super(scope, id, props);
 
     // Create a Task Definition for the container to start
-    const taskDefinition = new FargateTaskDefinition(this, 'QueueWorkerTaskDef', {
+    const taskDefinition = new ecs.FargateTaskDefinition(this, 'QueueWorkerTaskDef', {
       memoryMiB: props.memoryMiB !== undefined ? props.memoryMiB : '512',
       cpu: props.cpu !== undefined ? props.cpu : '256',
     });
@@ -66,7 +65,7 @@ export class FargateQueueWorkerService extends QueueWorkerServiceBase {
 
     // Create a Fargate service with the previously defined Task Definition and configure
     // autoscaling based on cpu utilization and number of messages visible in the SQS queue.
-    const fargateService = new FargateService(this, 'FargateQueueWorkerService', {
+    const fargateService = new ecs.FargateService(this, 'FargateQueueWorkerService', {
       cluster: props.cluster,
       desiredCount: this.desiredCount,
       taskDefinition
