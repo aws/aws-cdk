@@ -57,7 +57,8 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "cdk-build-tools": "^0.32.0",
-    "pkglint": "^0.32.0"
+    "pkglint": "^0.32.0",
+    "cdk-integ-tools": "^0.32.0"
   },
   "dependencies": {
     "@aws-cdk/cdk": "^0.32.0"

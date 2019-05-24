@@ -28,7 +28,7 @@ export = {
 };
 
 class FakeDestination implements ILogSubscriptionDestination {
-  public logSubscriptionDestination(_sourceLogGroup: ILogGroup) {
+  public bind(_sourceLogGroup: ILogGroup) {
     return {
       arn: 'arn:bogus',
     };

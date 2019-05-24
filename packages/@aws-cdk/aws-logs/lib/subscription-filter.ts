@@ -18,7 +18,7 @@ export interface ILogSubscriptionDestination {
    * The destination may reconfigure its own permissions in response to this
    * function call.
    */
-  logSubscriptionDestination(sourceLogGroup: ILogGroup): LogSubscriptionDestination;
+  bind(sourceLogGroup: ILogGroup): LogSubscriptionDestination;
 }
 
 /**
@@ -67,7 +67,7 @@ export class SubscriptionFilter extends Resource {
   constructor(scope: Construct, id: string, props: SubscriptionFilterProps) {
     super(scope, id);
 
-    const destProps = props.destination.logSubscriptionDestination(props.logGroup);
+    const destProps = props.destination.bind(props.logGroup);
 
     new CfnSubscriptionFilter(this, 'Resource', {
       logGroupName: props.logGroup.logGroupName,

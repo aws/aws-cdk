@@ -78,7 +78,7 @@ export class CrossAccountDestination extends cdk.Construct implements ILogSubscr
     this.policyDocument.addStatement(statement);
   }
 
-  public logSubscriptionDestination(_sourceLogGroup: ILogGroup): LogSubscriptionDestination {
+  public bind(_sourceLogGroup: ILogGroup): LogSubscriptionDestination {
     return { arn: this.destinationArn };
   }
 
