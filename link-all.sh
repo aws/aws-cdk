@@ -25,8 +25,10 @@ for module in ${modules}; do
   # Symlink executable scripts into place as well. This is not completely
   # according to spec (we look in the bin/ directory instead of the { "scripts"
   # } entry in package.json but it's quite a bit easier.
-  [[ -d $module/bin ]] && for script in $(find $module/bin -perm +111); do
-    echo "${script} => node_modules/.bin/$(basename $script)"
-    ln -fs ${script} node_modules/.bin
-  done
+  if [[ -d $module/bin ]]; then
+    for script in $(find $module/bin -perm /111); do
+      echo "${script} => node_modules/.bin/$(basename $script)"
+      ln -fs ${script} node_modules/.bin
+    done
+  fi
 done
