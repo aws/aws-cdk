@@ -9,7 +9,7 @@ export = {
       const stack = new Stack();
 
       const props: RepositoryProps = {
-        repositoryName:  'MyRepository'
+        repositoryName: 'MyRepository'
       };
 
       const snsArn = 'arn:aws:sns:*:123456789012:my_topic';
@@ -21,19 +21,19 @@ export = {
           MyRepository4C4BD5FC: {
             Type: "AWS::CodeCommit::Repository",
             Properties: {
-            RepositoryName: "MyRepository",
-            Triggers: [
-              {
-              Events: [
-                "all"
-              ],
-              DestinationArn: "arn:aws:sns:*:123456789012:my_topic",
-              Name: "MyStack/MyRepository/arn:aws:sns:*:123456789012:my_topic"
-              }
-            ]
+              RepositoryName: "MyRepository",
+              Triggers: [
+                {
+                  Events: [
+                    "all"
+                  ],
+                  DestinationArn: "arn:aws:sns:*:123456789012:my_topic",
+                  Name: "MyRepository/arn:aws:sns:*:123456789012:my_topic"
+                }
+              ]
             }
           }
-          }
+        }
       });
 
       test.done();
@@ -74,7 +74,7 @@ export = {
 
       // THEN
       test.deepEqual(repo.node.resolve(repo.repositoryArn), {
-        'Fn::Join': [ '', [
+        'Fn::Join': ['', [
           'arn:',
           { Ref: 'AWS::Partition' },
           ':codecommit:',
