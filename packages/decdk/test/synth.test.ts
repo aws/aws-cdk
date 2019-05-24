@@ -1,4 +1,5 @@
 import cdk = require('@aws-cdk/cdk');
+import { CloudAssembly } from '@aws-cdk/cx-api';
 import fs = require('fs');
 import reflect = require('jsii-reflect');
 import path = require('path');
@@ -40,6 +41,12 @@ for (const templateFile of fs.readdirSync(dir)) {
       typeSystem
     });
 
-    expect(app.synthesizeStack(stackName).template).toMatchSnapshot(stackName);
+    const assembly = new CloudAssembly(app.run().outdir);
+    const output = assembly.stacks.find(x => x.name === stackName);
+    if (!output) {
+      throw new Error(`Unable to find stack ${stackName}`);
+    }
+
+    expect(output.template).toMatchSnapshot(stackName);
   });
 }
