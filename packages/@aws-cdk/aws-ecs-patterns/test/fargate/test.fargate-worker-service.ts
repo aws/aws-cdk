@@ -4,7 +4,7 @@ import ecs = require('@aws-cdk/aws-ecs');
 import sqs = require('@aws-cdk/aws-sqs');
 import cdk = require('@aws-cdk/cdk');
 import { Test } from 'nodeunit';
-import ecsPatterns = require('../lib');
+import ecsPatterns = require('../../lib');
 
 export = {
   'test fargate queue worker service construct - with only required props'(test: Test) {

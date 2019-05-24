@@ -4,7 +4,7 @@ import ec2 = require('@aws-cdk/aws-ec2');
 import ecs = require('@aws-cdk/aws-ecs');
 import cdk = require('@aws-cdk/cdk');
 import { Test } from 'nodeunit';
-import ecsPatterns = require('../lib');
+import ecsPatterns = require('../../lib');
 
 export = {
   'certificate requires an application load balancer'(test: Test) {
