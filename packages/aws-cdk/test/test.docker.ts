@@ -90,7 +90,7 @@ export = {
     }
 
     // THEN
-    const command = ['docker', 'build', '--build-arg a=b', '--build-arg c=d', '--quiet', '/foo'];
+    const command = ['docker', 'build', '--build-arg', 'a=b', '--build-arg', 'c=d', '--quiet', '/foo'];
     test.ok(shellStub.calledWith(command));
 
     prepareEcrRepositoryStub.restore();

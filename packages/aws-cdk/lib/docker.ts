@@ -62,9 +62,10 @@ export async function prepareContainerAsset(asset: ContainerImageAssetMetadataEn
 
     buildHold.start();
 
+    const buildArgs = ([] as string[]).concat(...Object.entries(asset.buildArgs || {}).map(([k, v]) => ['--build-arg', `${k}=${v}`]));
     const baseCommand = ['docker',
       'build',
-      ...Object.entries(asset.buildArgs || {}).map(([k, v]) => `--build-arg ${k}=${v}`), // Pass build args if any
+      ...buildArgs, // Pass build args if any
       '--quiet',
       asset.path];
 
