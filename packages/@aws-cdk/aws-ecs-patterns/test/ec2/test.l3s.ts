@@ -1,10 +1,11 @@
 import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
 import { Certificate } from '@aws-cdk/aws-certificatemanager';
 import ec2 = require('@aws-cdk/aws-ec2');
+import ecs = require('@aws-cdk/aws-ecs');
 import { PublicHostedZone } from '@aws-cdk/aws-route53';
 import cdk = require('@aws-cdk/cdk');
 import { Test } from 'nodeunit';
-import ecs = require('../lib');
+import ecsPatterns = require('../../lib');
 
 export = {
   'test ECS loadbalanced construct'(test: Test) {
@@ -15,7 +16,7 @@ export = {
     cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
 
     // WHEN
-    new ecs.LoadBalancedEc2Service(stack, 'Service', {
+    new ecsPatterns.LoadBalancedEc2Service(stack, 'Service', {
       cluster,
       memoryLimitMiB: 1024,
       image: ecs.ContainerImage.fromRegistry('test'),
@@ -63,7 +64,7 @@ export = {
     cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
 
     // WHEN
-    new ecs.LoadBalancedEc2Service(stack, 'Service', {
+    new ecsPatterns.LoadBalancedEc2Service(stack, 'Service', {
       cluster,
       memoryReservationMiB: 1024,
       image: ecs.ContainerImage.fromRegistry('test')
@@ -90,7 +91,7 @@ export = {
     const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
 
     // WHEN
-    new ecs.LoadBalancedFargateService(stack, 'Service', {
+    new ecsPatterns.LoadBalancedFargateService(stack, 'Service', {
       cluster,
       image: ecs.ContainerImage.fromRegistry('test'),
       desiredCount: 2,
@@ -146,7 +147,7 @@ export = {
     const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
 
     // WHEN
-    new ecs.LoadBalancedFargateService(stack, 'Service', {
+    new ecsPatterns.LoadBalancedFargateService(stack, 'Service', {
       cluster,
       image: ecs.ContainerImage.fromRegistry('test'),
       desiredCount: 2,
@@ -193,7 +194,7 @@ export = {
     const zone = new PublicHostedZone(stack, 'HostedZone', { zoneName: 'example.com' });
 
     // WHEN
-    new ecs.LoadBalancedFargateService(stack, 'Service', {
+    new ecsPatterns.LoadBalancedFargateService(stack, 'Service', {
       cluster,
       image: ecs.ContainerImage.fromRegistry('test'),
       domainName: 'api.example.com',
@@ -239,7 +240,7 @@ export = {
 
     // THEN
     test.throws(() => {
-      new ecs.LoadBalancedFargateService(stack, 'Service', {
+      new ecsPatterns.LoadBalancedFargateService(stack, 'Service', {
         cluster,
         image: ecs.ContainerImage.fromRegistry('test'),
         domainName: 'api.example.com'
@@ -252,7 +253,7 @@ export = {
   'test Fargateloadbalanced applet'(test: Test) {
     // WHEN
     const app = new cdk.App();
-    const stack = new ecs.LoadBalancedFargateServiceApplet(app, 'Service', {
+    const stack = new ecsPatterns.LoadBalancedFargateServiceApplet(app, 'Service', {
       image: 'test',
       desiredCount: 2,
       environment: {
@@ -292,7 +293,7 @@ export = {
   'test Fargateloadbalanced applet with TLS'(test: Test) {
     // WHEN
     const app = new cdk.App();
-    const stack = new ecs.LoadBalancedFargateServiceApplet(app, 'Service', {
+    const stack = new ecsPatterns.LoadBalancedFargateServiceApplet(app, 'Service', {
       image: 'test',
       desiredCount: 2,
       domainName: 'api.example.com',
@@ -331,7 +332,7 @@ export = {
   "errors when setting domainName but not domainZone on applet"(test: Test) {
     // THEN
     test.throws(() => {
-      new ecs.LoadBalancedFargateServiceApplet(new cdk.App(), 'Service', {
+      new ecsPatterns.LoadBalancedFargateServiceApplet(new cdk.App(), 'Service', {
         image: 'test',
         domainName: 'api.example.com'
       });

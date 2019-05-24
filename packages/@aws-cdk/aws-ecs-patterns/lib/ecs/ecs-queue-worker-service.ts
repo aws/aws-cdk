@@ -1,7 +1,6 @@
+import ecs = require('@aws-cdk/aws-ecs');
 import cdk = require('@aws-cdk/cdk');
-import { Ec2Service } from './ec2/ec2-service';
-import { Ec2TaskDefinition } from './ec2/ec2-task-definition';
-import { QueueWorkerServiceBase, QueueWorkerServiceBaseProps } from './queue-worker-service-base';
+import { QueueWorkerServiceBase, QueueWorkerServiceBaseProps } from '../base/queue-worker-service-base';
 
 /**
  * Properties to define an Ec2 query worker service
@@ -49,7 +48,7 @@ export class Ec2QueueWorkerService extends QueueWorkerServiceBase {
     super(scope, id, props);
 
     // Create a Task Definition for the container to start
-    const taskDefinition = new Ec2TaskDefinition(this, 'QueueWorkerTaskDef');
+    const taskDefinition = new ecs.Ec2TaskDefinition(this, 'QueueWorkerTaskDef');
     taskDefinition.addContainer('QueueWorkerContainer', {
       image: props.image,
       memoryLimitMiB: props.memoryLimitMiB,
@@ -62,7 +61,7 @@ export class Ec2QueueWorkerService extends QueueWorkerServiceBase {
 
     // Create an ECS service with the previously defined Task Definition and configure
     // autoscaling based on cpu utilization and number of messages visible in the SQS queue.
-    const ecsService = new Ec2Service(this, 'QueueWorkerService', {
+    const ecsService = new ecs.Ec2Service(this, 'QueueWorkerService', {
       cluster: props.cluster,
       desiredCount: this.desiredCount,
       taskDefinition

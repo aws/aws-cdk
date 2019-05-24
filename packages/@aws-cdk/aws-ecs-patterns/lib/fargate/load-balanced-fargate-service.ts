@@ -1,10 +1,8 @@
+import ecs = require('@aws-cdk/aws-ecs');
 import { AliasRecord, IHostedZone } from '@aws-cdk/aws-route53';
 import targets = require('@aws-cdk/aws-route53-targets');
 import cdk = require('@aws-cdk/cdk');
-import { FargateService } from './fargate/fargate-service';
-import { FargateTaskDefinition } from './fargate/fargate-task-definition';
-import { LoadBalancedServiceBase, LoadBalancedServiceBaseProps } from './load-balanced-service-base';
-import { AwsLogDriver } from './log-drivers/aws-log-driver';
+import { LoadBalancedServiceBase, LoadBalancedServiceBaseProps } from '../base/load-balanced-service-base';
 
 /**
  * Properties for a LoadBalancedEcsService
@@ -84,12 +82,12 @@ export class LoadBalancedFargateService extends LoadBalancedServiceBase {
   /**
    * The Fargate service in this construct
    */
-  public readonly service: FargateService;
+  public readonly service: ecs.FargateService;
 
   constructor(scope: cdk.Construct, id: string, props: LoadBalancedFargateServiceProps) {
     super(scope, id, props);
 
-    const taskDefinition = new FargateTaskDefinition(this, 'TaskDef', {
+    const taskDefinition = new ecs.FargateTaskDefinition(this, 'TaskDef', {
       memoryMiB: props.memoryMiB,
       cpu: props.cpu
     });
@@ -107,7 +105,7 @@ export class LoadBalancedFargateService extends LoadBalancedServiceBase {
     });
 
     const assignPublicIp = props.publicTasks !== undefined ? props.publicTasks : false;
-    const service = new FargateService(this, "Service", {
+    const service = new ecs.FargateService(this, "Service", {
       cluster: props.cluster,
       desiredCount: props.desiredCount || 1,
       taskDefinition,
@@ -130,7 +128,7 @@ export class LoadBalancedFargateService extends LoadBalancedServiceBase {
     }
   }
 
-  private createAWSLogDriver(prefix: string): AwsLogDriver {
-    return new AwsLogDriver(this, 'Logging', { streamPrefix: prefix });
+  private createAWSLogDriver(prefix: string): ecs.AwsLogDriver {
+    return new ecs.AwsLogDriver(this, 'Logging', { streamPrefix: prefix });
   }
 }
