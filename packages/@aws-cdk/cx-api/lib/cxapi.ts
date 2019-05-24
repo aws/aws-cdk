@@ -33,6 +33,9 @@ export const MANIFEST_FILE = 'manifest.json';
  */
 export const BUILD_FILE = 'build.json';
 
+// output directory into which to emit synthesis outputs. CDK doesn't allow outdir
+// to be specified both through the CDK_OUTDIR environment variable and the through
+// aws:cdk:outdir context.
 export const OUTDIR_ENV = 'CDK_OUTDIR';
 export const CONTEXT_ENV = 'CDK_CONTEXT_JSON';
 
@@ -179,7 +182,7 @@ export const OUTFILE_NAME = 'cdk.out';
 export const DISABLE_VERSION_REPORTING = 'aws:cdk:disable-version-reporting';
 
 /**
- * If this context key is set, the CDK will stage assets under the specified
- * directory. Otherwise, assets will not be staged.
+ * If this is set, asset staging is disabled. This means that assets will not be copied to
+ * the output directory and will be referenced with absolute source paths.
  */
-export const ASSET_STAGING_DIR_CONTEXT = 'aws:cdk:asset-staging-dir';
+export const DISABLE_ASSET_STAGING_CONTEXT = 'aws:cdk:disable-asset-staging';

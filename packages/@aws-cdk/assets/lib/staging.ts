@@ -1,4 +1,4 @@
-import { Construct, Token } from '@aws-cdk/cdk';
+import { Construct, ISynthesisSession } from '@aws-cdk/cdk';
 import cxapi = require('@aws-cdk/cx-api');
 import fs = require('fs');
 import path = require('path');
@@ -48,13 +48,7 @@ export class Staging extends Construct {
 
   private readonly copyOptions: CopyOptions;
 
-  /**
-   * The asset path after "prepare" is called.
-   *
-   * If staging is disabled, this will just be the original path.
-   * If staging is enabled it will be the staged path.
-   */
-  private _preparedAssetPath?: string;
+  private readonly relativePath?: string;
 
   constructor(scope: Construct, id: string, props: StagingProps) {
     super(scope, id);
@@ -62,23 +56,22 @@ export class Staging extends Construct {
     this.sourcePath = props.sourcePath;
     this.copyOptions = props;
     this.sourceHash = fingerprint(this.sourcePath, props);
-    this.stagedPath = new Token(() => this._preparedAssetPath).toString();
+
+    const stagingDisabled = this.node.getContext(cxapi.DISABLE_ASSET_STAGING_CONTEXT);
+    if (stagingDisabled) {
+      this.stagedPath = this.sourcePath;
+    } else {
+      this.relativePath = `asset.` + this.sourceHash + path.extname(this.sourcePath);
+      this.stagedPath = this.relativePath; // always relative to outdir
+    }
   }
 
-  protected prepare() {
-    const stagingDir = this.node.getContext(cxapi.ASSET_STAGING_DIR_CONTEXT);
-    if (!stagingDir) {
-      this._preparedAssetPath = this.sourcePath;
+  protected synthesize(session: ISynthesisSession) {
+    if (!this.relativePath) {
       return;
     }
 
-    if (!fs.existsSync(stagingDir)) {
-      fs.mkdirSync(stagingDir);
-    }
-
-    const targetPath = path.join(stagingDir, this.sourceHash + path.extname(this.sourcePath));
-
-    this._preparedAssetPath = targetPath;
+    const targetPath = path.join(session.outdir, this.relativePath);
 
     // asset already staged
     if (fs.existsSync(targetPath)) {

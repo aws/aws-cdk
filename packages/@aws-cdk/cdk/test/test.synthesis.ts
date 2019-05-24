@@ -4,7 +4,7 @@ import { Test } from 'nodeunit';
 import os = require('os');
 import path = require('path');
 import cdk = require('../lib');
-import { Construct, FileSystemStore, InMemoryStore, ISynthesisSession, SynthesisSession, Synthesizer } from '../lib';
+import { Construct, ISynthesisSession, SynthesisSession, Synthesizer } from '../lib';
 
 const storeTestMatrix: any = {};
 
@@ -27,8 +27,8 @@ export = {
 
     // THEN
     test.same(app.run(), session); // same session if we run() again
-    test.deepEqual(session.store.list(), [ 'manifest.json' ]);
-    test.deepEqual(session.store.readJson('manifest.json').artifacts, {});
+    test.deepEqual(list(session.outdir), [ 'manifest.json' ]);
+    test.deepEqual(readJson(session.outdir, 'manifest.json').artifacts, {});
     test.done();
   },
 
@@ -41,7 +41,7 @@ export = {
     const session = app.run();
 
     // THEN
-    test.deepEqual(session.store.list(), [
+    test.deepEqual(list(session.outdir), [
       'manifest.json',
       'one-stack.template.json'
     ]);
@@ -55,7 +55,7 @@ export = {
 
     class MyConstruct extends cdk.Construct implements cdk.ISynthesizable {
       public synthesize(s: cdk.ISynthesisSession) {
-        s.store.writeJson('foo.json', { bar: 123 });
+        writeJson(s.outdir, 'foo.json', { bar: 123 });
         s.addArtifact('my-random-construct', {
           type: cxapi.ArtifactType.AwsCloudFormationStack,
           environment: 'aws://12345/bar',
@@ -72,12 +72,12 @@ export = {
     const session = app.run();
 
     // THEN
-    test.deepEqual(session.store.list(), [
+    test.deepEqual(list(session.outdir), [
       'foo.json',
       'manifest.json',
       'one-stack.template.json'
     ]);
-    test.deepEqual(session.store.readJson('foo.json'), { bar: 123 });
+    test.deepEqual(readJson(session.outdir, 'foo.json'), { bar: 123 });
     test.deepEqual(session.manifest, {
       version: '0.19.0',
       artifacts: {
@@ -107,7 +107,7 @@ export = {
 
     // WHEN
     const session = app.run();
-    const legacy: cxapi.SynthesizeResponse = session.store.readJson(cxapi.OUTFILE_NAME);
+    const legacy: cxapi.SynthesizeResponse = readJson(session.outdir, cxapi.OUTFILE_NAME);
 
     // THEN
     const t1 = legacy.stacks.find(s => s.name === 'stack1')!.template;
@@ -152,17 +152,17 @@ export = {
           environment: 'aws://unknown-account/us-east-1'
         });
 
-        session.store.writeJson('hey.json', { hello: 123 });
+        writeJson(session.outdir, 'hey.json', { hello: 123 });
       }
     }
 
     const root = new SynthesizeMe();
 
     const synth = new Synthesizer();
-    const result = synth.synthesize(root);
+    const result = synth.synthesize(root, { outdir: fs.mkdtempSync(path.join(os.tmpdir(), 'outdir')) });
 
     test.deepEqual(calls, [ 'prepare', 'validate', 'synthesize' ]);
-    test.deepEqual(result.store.readJson('hey.json'), { hello: 123 });
+    test.deepEqual(readJson(result.outdir, 'hey.json'), { hello: 123 });
     test.deepEqual(result.manifest.artifacts!.art, {
       type: 'aws:ecr:image',
       environment: 'aws://unknown-account/us-east-1'
@@ -177,63 +177,9 @@ export = {
 // all these tests will be executed for each type of store
 //
 const storeTests = {
-  'writeFile()/readFile()'(test: Test, store: cdk.ISessionStore) {
-    // WHEN
-    store.writeFile('bla.txt', 'hello');
-    store.writeFile('hey.txt', '1234');
-
-    // THEN
-    test.deepEqual(store.readFile('bla.txt').toString(), 'hello');
-    test.deepEqual(store.readFile('hey.txt').toString(), '1234');
-    test.throws(() => store.writeFile('bla.txt', 'override is forbidden'));
-
-    // WHEN
-    store.lock();
-
-    // THEN
-    test.throws(() => store.writeFile('another.txt', 'locked!'));
-    test.done();
-  },
-
-  'exists() for files'(test: Test, store: cdk.ISessionStore) {
-    // WHEN
-    store.writeFile('A.txt', 'aaa');
-
-    // THEN
-    test.ok(store.exists('A.txt'));
-    test.ok(!store.exists('B.txt'));
-    test.done();
-  },
-
-  'mkdir'(test: Test, store: cdk.ISessionStore) {
-    // WHEN
-    const dir1 = store.mkdir('dir1');
-    const dir2 = store.mkdir('dir2');
-
-    // THEN
-    test.ok(fs.statSync(dir1).isDirectory());
-    test.ok(fs.statSync(dir2).isDirectory());
-    test.throws(() => store.mkdir('dir1'));
-
-    // WHEN
-    store.lock();
-    test.throws(() => store.mkdir('dir3'));
-    test.done();
-  },
-
-  'list'(test: Test, store: cdk.ISessionStore) {
-    // WHEN
-    store.mkdir('dir1');
-    store.writeFile('file1.txt', 'boom1');
-
-    // THEN
-    test.deepEqual(store.list(), ['dir1', 'file1.txt']);
-    test.done();
-  },
-
-  'SynthesisSession'(test: Test, store: cdk.ISessionStore) {
+  'SynthesisSession'(test: Test, outdir: string) {
     // GIVEN
-    const session = new SynthesisSession({ store });
+    const session = new SynthesisSession({ outdir });
     const templateFile = 'foo.template.json';
 
     // WHEN
@@ -270,7 +216,7 @@ const storeTests = {
       }
     });
 
-    session.store.writeJson(templateFile, {
+    writeJson(session.outdir, templateFile, {
       Resources: {
         MyTopic: {
           Type: 'AWS::S3::Topic'
@@ -280,7 +226,7 @@ const storeTests = {
 
     session.close();
 
-    const manifest = session.store.readJson(cxapi.MANIFEST_FILE);
+    const manifest = readJson(session.outdir, cxapi.MANIFEST_FILE);
 
     // THEN
     delete manifest.runtime; // deterministic tests
@@ -314,7 +260,7 @@ const storeTests = {
     });
 
     // verify we have a template file
-    test.deepEqual(session.store.readJson(templateFile), {
+    test.deepEqual(readJson(session.outdir, templateFile), {
       Resources: {
         MyTopic: {
           Type: 'AWS::S3::Topic'
@@ -363,8 +309,8 @@ const storeTests = {
 
     // THEN
     const session  = app.run();
-    test.deepEqual(session.store.list(), [ 'build.json', 'manifest.json' ]);
-    test.deepEqual(session.store.readJson('build.json'), {
+    test.deepEqual(list(session.outdir), [ 'build.json', 'manifest.json' ]);
+    test.deepEqual(readJson(session.outdir, 'build.json'), {
       steps: {
         step_id: { type: 'build-step-type', parameters: { boom: 123 } }
       }
@@ -375,8 +321,17 @@ const storeTests = {
 
 for (const [name, fn] of Object.entries(storeTests)) {
   const outdir = fs.mkdtempSync(path.join(os.tmpdir(), 'synthesis-tests'));
-  const fsStore = new FileSystemStore({ outdir });
-  const memoryStore = new InMemoryStore();
-  storeTestMatrix[`FileSystemStore - ${name}`] = (test: Test) => fn(test, fsStore);
-  storeTestMatrix[`InMemoryStore - ${name}`] = (test: Test) => fn(test, memoryStore);
+  storeTestMatrix[name] = (test: Test) => fn(test, outdir);
+}
+
+function list(outdir: string) {
+  return fs.readdirSync(outdir).sort();
+}
+
+function readJson(outdir: string, file: string) {
+  return JSON.parse(fs.readFileSync(path.join(outdir, file), 'utf-8'));
+}
+
+function writeJson(outdir: string, file: string, data: any) {
+  fs.writeFileSync(path.join(outdir, file), JSON.stringify(data, undefined, 2));
 }

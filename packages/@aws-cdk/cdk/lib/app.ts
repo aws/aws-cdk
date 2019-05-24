@@ -1,6 +1,8 @@
 import cxapi = require('@aws-cdk/cx-api');
+import fs = require('fs');
+import path = require('path');
 import { Construct } from './construct';
-import { FileSystemStore, InMemoryStore, ISynthesisSession, Synthesizer } from './synthesis';
+import { ISynthesisSession, Synthesizer } from './synthesis';
 
 /**
  * Custom construction properties for a CDK program
@@ -14,6 +16,14 @@ export interface AppProps {
    * @default true if running via CDK toolkit (CDK_OUTDIR is set), false otherwise
    */
   readonly autoRun?: boolean;
+
+  /**
+   * The output directory into which to emit synthesized artifacts.
+   *
+   * @default - If this value is _not_ set, considers the environment variable `CDK_OUTDIR`.
+   *            If `CDK_OUTDIR` is not defined, uses a temp directory.
+   */
+  readonly outdir?: string;
 
   /**
    * Additional context values for the application
@@ -30,6 +40,7 @@ export class App extends Construct {
   private _session?: ISynthesisSession;
   private readonly legacyManifest: boolean;
   private readonly runtimeInformation: boolean;
+  private readonly outdir?: string;
 
   /**
    * Initializes a CDK application.
@@ -43,6 +54,7 @@ export class App extends Construct {
     // both are reverse logic
     this.legacyManifest = this.node.getContext(cxapi.DISABLE_LEGACY_MANIFEST_CONTEXT) ? false : true;
     this.runtimeInformation = this.node.getContext(cxapi.DISABLE_VERSION_REPORTING) ? false : true;
+    this.outdir = props.outdir || process.env[cxapi.OUTDIR_ENV];
 
     const autoRun = props.autoRun !== undefined ? props.autoRun : cxapi.OUTDIR_ENV in process.env;
 
@@ -62,18 +74,10 @@ export class App extends Construct {
       return this._session;
     }
 
-    const outdir = process.env[cxapi.OUTDIR_ENV];
-    let store;
-    if (outdir) {
-      store = new FileSystemStore({ outdir });
-    } else {
-      store = new InMemoryStore();
-    }
-
     const synth = new Synthesizer();
 
     this._session = synth.synthesize(this, {
-      store,
+      outdir: this.outdir,
       legacyManifest: this.legacyManifest,
       runtimeInformation: this.runtimeInformation
     });
@@ -92,7 +96,8 @@ export class App extends Construct {
     }
 
     const session = this.run();
-    const legacy: cxapi.SynthesizeResponse = session.store.readJson(cxapi.OUTFILE_NAME);
+    const legacyManifestFile = path.join(session.outdir, cxapi.OUTFILE_NAME);
+    const legacy: cxapi.SynthesizeResponse = JSON.parse(fs.readFileSync(legacyManifestFile, 'utf-8'));
 
     const res = legacy.stacks.find(s => s.name === stackName);
     if (!res) {

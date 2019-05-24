@@ -1,7 +1,6 @@
 import cxapi = require('@aws-cdk/cx-api');
 import childProcess = require('child_process');
 import fs = require('fs-extra');
-import os = require('os');
 import path = require('path');
 import semver = require('semver');
 import { debug } from '../../logging';
@@ -42,8 +41,13 @@ export async function execProgram(aws: SDK, config: Configuration): Promise<cxap
     context[cxapi.DISABLE_VERSION_REPORTING] = true;
   }
 
-  const stagingDir = config.settings.get(['staging']);
-  context[cxapi.ASSET_STAGING_DIR_CONTEXT] = stagingDir;
+  let stagingEnabled = config.settings.get(['staging']);
+  if (stagingEnabled === undefined) {
+    stagingEnabled = true;
+  }
+  if (!stagingEnabled) {
+    context[cxapi.DISABLE_ASSET_STAGING_CONTEXT] = true;
+  }
 
   debug('context:', context);
 
@@ -56,24 +60,24 @@ export async function execProgram(aws: SDK, config: Configuration): Promise<cxap
 
   const commandLine = await guessExecutable(appToArray(app));
 
-  const outdir = await fs.mkdtemp(path.join(os.tmpdir(), 'cdk'));
+  const outdir = config.settings.get([ 'output' ]);
+  if (!outdir) {
+    throw new Error('output directory undefined');
+  }
+  await fs.mkdirp(outdir);
+
   debug('outdir:', outdir);
   env[cxapi.OUTDIR_ENV] = outdir;
 
-  try {
-    const outfile = await exec();
-    debug('outfile:', outfile);
-    if (!(await fs.pathExists(outfile))) {
-      throw new Error(`Unable to find output file ${outfile}; are you calling app.run()?`);
-    }
-
-    const response = await fs.readJson(outfile);
-    debug(response);
-    return versionCheckResponse(response);
-  } finally {
-    debug('Removing outdir', outdir);
-    await fs.remove(outdir);
+  const outfile = await exec();
+  debug('outfile:', outfile);
+  if (!(await fs.pathExists(outfile))) {
+    throw new Error(`Unable to find output file ${outfile}; are you calling app.run()?`);
   }
+
+  const response = await fs.readJson(outfile);
+  debug(response);
+  return versionCheckResponse(response);
 
   async function exec() {
     return new Promise<string>((ok, fail) => {

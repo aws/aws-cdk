@@ -1,4 +1,6 @@
 import cxapi = require('@aws-cdk/cx-api');
+import fs = require('fs');
+import path = require('path');
 import { App } from './app';
 import { CfnParameter } from './cfn-parameter';
 import { Construct, IConstruct, PATH_SEP } from './construct';
@@ -169,13 +171,13 @@ export class Stack extends Construct {
    *
    * @returns The Resource or undefined if not found
    */
-  public findResource(path: string): CfnResource | undefined {
-    const r = this.node.findChild(path);
+  public findResource(constructPath: string): CfnResource | undefined {
+    const r = this.node.findChild(constructPath);
     if (!r) { return undefined; }
 
     // found an element, check if it's a resource (duck-type)
     if (!('resourceType' in r)) {
-      throw new Error(`Found a stack element for ${path} but it is not a resource: ${r.toString()}`);
+      throw new Error(`Found a stack element for ${constructPath} but it is not a resource: ${r.toString()}`);
     }
 
     return r as CfnResource;
@@ -495,7 +497,8 @@ export class Stack extends Construct {
     const template = `${this.name}.template.json`;
 
     // write the CloudFormation template as a JSON file
-    session.store.writeJson(template, this._toCloudFormation());
+    const outPath = path.join(session.outdir, template);
+    fs.writeFileSync(outPath, JSON.stringify(this._toCloudFormation(), undefined, 2));
 
     const deps = this.dependencies().map(s => s.name);
     const meta = this.collectMetadata();

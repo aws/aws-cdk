@@ -20,7 +20,12 @@ export class Configuration {
   public settings = new Settings();
   public context = new Context();
 
-  private readonly defaultConfig = new Settings({ versionReporting: true, pathMetadata: true });
+  public readonly defaultConfig = new Settings({
+    versionReporting: true,
+    pathMetadata: true,
+    output: 'cdk.out'
+  });
+
   private readonly commandLineArguments: Settings;
   private readonly commandLineContext: Settings;
   private projectConfig: Settings;
@@ -55,6 +60,8 @@ export class Configuration {
       .merge(this.projectConfig)
       .merge(this.commandLineArguments)
       .makeReadOnly();
+
+    debug('merged settings:', this.settings.all);
 
     this.loaded = true;
 
@@ -210,7 +217,8 @@ export class Settings {
       requireApproval: argv.requireApproval,
       toolkitStackName: argv.toolkitStackName,
       versionReporting: argv.versionReporting,
-      staging: argv.staging
+      staging: argv.staging,
+      output: argv.output,
     });
   }
 
@@ -255,6 +263,7 @@ export class Settings {
   }
 
   public merge(other: Settings): Settings {
+    debug('merging settings:', other.all);
     return new Settings(util.deepMerge(this.settings, other.settings));
   }
 

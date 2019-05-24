@@ -11,7 +11,7 @@ export interface ISynthesizable {
 }
 
 export interface ISynthesisSession {
-  readonly store: ISessionStore;
+  readonly outdir: string;
   readonly manifest: cxapi.AssemblyManifest;
   addArtifact(id: string, droplet: cxapi.Artifact): void;
   addBuildStep(id: string, step: cxapi.BuildStep): void;
@@ -22,9 +22,9 @@ export interface ISynthesisSession {
 export interface SynthesisOptions extends ManifestOptions {
   /**
    * The file store used for this session.
-   * @default InMemoryStore
+   * @default - creates a temporary directory
    */
-  readonly store?: ISessionStore;
+  readonly outdir?: string;
 
   /**
    * Whether synthesis should skip the validation phase.
@@ -74,14 +74,17 @@ export class SynthesisSession implements ISynthesisSession {
     return 'synthesize' in obj;
   }
 
-  public readonly store: ISessionStore;
+  public readonly outdir: string;
 
   private readonly artifacts: { [id: string]: cxapi.Artifact } = { };
   private readonly buildSteps: { [id: string]: cxapi.BuildStep } = { };
   private _manifest?: cxapi.AssemblyManifest;
 
-  constructor(options: SynthesisOptions) {
-    this.store = options.store || new InMemoryStore();
+  constructor(options: SynthesisOptions = { }) {
+    this.outdir = options.outdir || fs.mkdtempSync(path.join(os.tmpdir(), 'cdk.out'));
+    if (!fs.existsSync(this.outdir)) {
+      fs.mkdirSync(this.outdir);
+    }
   }
 
   public get manifest() {
@@ -126,7 +129,8 @@ export class SynthesisSession implements ISynthesisSession {
       runtime: runtimeInfo ? collectRuntimeInformation() : undefined
     });
 
-    this.store.writeFile(cxapi.MANIFEST_FILE, JSON.stringify(manifest, undefined, 2));
+    const manifestFilePath = path.join(this.outdir, cxapi.MANIFEST_FILE);
+    fs.writeFileSync(manifestFilePath, JSON.stringify(manifest, undefined, 2));
 
     // write build manifest if we have build steps
     if (Object.keys(this.buildSteps).length > 0) {
@@ -134,20 +138,20 @@ export class SynthesisSession implements ISynthesisSession {
         steps: this.buildSteps
       };
 
-      this.store.writeFile(cxapi.BUILD_FILE, JSON.stringify(buildManifest, undefined, 2));
+      const buildFilePath = path.join(this.outdir, cxapi.BUILD_FILE);
+      fs.writeFileSync(buildFilePath, JSON.stringify(buildManifest, undefined, 2));
     }
 
     if (legacyManifest) {
       const legacy: cxapi.SynthesizeResponse = {
         ...manifest,
-        stacks: renderLegacyStacks(manifest, this.store)
+        stacks: renderLegacyStacks(manifest, this.outdir)
       };
 
       // render the legacy manifest (cdk.out) which also contains a "stacks" attribute with all the rendered stacks.
-      this.store.writeFile(cxapi.OUTFILE_NAME, JSON.stringify(legacy, undefined, 2));
+      const legacyManifestPath = path.join(this.outdir, cxapi.OUTFILE_NAME);
+      fs.writeFileSync(legacyManifestPath, JSON.stringify(legacy, undefined, 2));
     }
-
-    this.store.lock();
 
     return manifest;
   }
@@ -167,216 +171,7 @@ export interface ManifestOptions {
   readonly runtimeInformation?: boolean;
 }
 
-export interface ISessionStore {
-  /**
-   * Creates a directory and returns it's full path.
-   * @param directoryName The name of the directory to create.
-   * @throws if a directory by that name already exists in the session or if the session has already been finalized.
-   */
-  mkdir(directoryName: string): string;
-
-  /**
-   * Returns the list of files in a directory.
-   * @param directoryName The name of the artifact
-   * @throws if there is no directory artifact under this name
-   */
-  readdir(directoryName: string): string[];
-
-  /**
-   * Writes a file into the store.
-   * @param artifactName The name of the file.
-   * @param data The contents of the file.
-   */
-  writeFile(artifactName: string, data: any): void;
-
-  /**
-   * Writes a formatted JSON output file to the store
-   * @param artifactName the name of the artifact
-   * @param json the JSON object
-   */
-  writeJson(artifactName: string, json: any): void;
-
-  /**
-   * Reads a file from the store.
-   * @param fileName The name of the file.
-   * @throws if the file is not found
-   */
-  readFile(fileName: string): any;
-
-  /**
-   * Reads a JSON object from the store.
-   */
-  readJson(fileName: string): any;
-
-  /**
-   * @returns true if the file `fileName` exists in the store.
-   * @param name The name of the file or directory to look up.
-   */
-  exists(name: string): boolean;
-
-  /**
-   * List all top-level files that were emitted to the store.
-   */
-  list(): string[];
-
-  /**
-   * Do not allow further writes into the store.
-   */
-  lock(): void;
-}
-
-export interface FileSystemStoreOptions {
-  /**
-   * The output directory for synthesis artifacts
-   */
-  readonly outdir: string;
-}
-
-/**
- * Can be used to prepare and emit synthesis artifacts into an output directory.
- */
-export class FileSystemStore implements ISessionStore {
-  private readonly outdir: string;
-  private locked = false;
-
-  constructor(options: FileSystemStoreOptions) {
-    this.outdir = options.outdir;
-    return;
-  }
-
-  public writeFile(fileName: string, data: any) {
-    this.canWrite(fileName);
-
-    const p = this.pathForArtifact(fileName);
-    fs.writeFileSync(p, data);
-  }
-
-  public writeJson(fileName: string, json: any) {
-    this.writeFile(fileName, JSON.stringify(json, undefined, 2));
-  }
-
-  public readFile(fileName: string): any {
-    const p = this.pathForArtifact(fileName);
-    if (!fs.existsSync(p)) {
-      throw new Error(`File not found: ${p}`);
-    }
-
-    return fs.readFileSync(p);
-  }
-
-  public readJson(fileName: string): any {
-    return JSON.parse(this.readFile(fileName).toString());
-  }
-
-  public exists(name: string): boolean {
-    const p = this.pathForArtifact(name);
-    return fs.existsSync(p);
-  }
-
-  public mkdir(directoryName: string): string {
-    this.canWrite(directoryName);
-    const p = this.pathForArtifact(directoryName);
-    fs.mkdirSync(p);
-    return p;
-  }
-
-  public readdir(directoryName: string): string[] {
-    if (!this.exists(directoryName)) {
-      throw new Error(`${directoryName} not found`);
-    }
-
-    const p = this.pathForArtifact(directoryName);
-    return fs.readdirSync(p);
-  }
-
-  public list(): string[] {
-    return fs.readdirSync(this.outdir).sort();
-  }
-
-  public lock() {
-    this.locked = true;
-  }
-
-  private pathForArtifact(id: string) {
-    return path.join(this.outdir, id);
-  }
-
-  private canWrite(artifactName: string) {
-    if (this.exists(artifactName)) {
-      throw new Error(`An artifact named ${artifactName} was already written to this session`);
-    }
-    if (this.locked) {
-      throw new Error('Session has already been finalized');
-    }
-  }
-}
-
-export class InMemoryStore implements ISessionStore {
-  private files: { [fileName: string]: any } = { };
-  private dirs: { [dirName: string]: string } = { }; // value is path to a temporary directory
-
-  private locked = false;
-
-  public writeFile(fileName: string, data: any): void {
-    this.canWrite(fileName);
-    this.files[fileName] = data;
-  }
-
-  public writeJson(fileName: string, json: any): void {
-    this.writeFile(fileName, JSON.stringify(json, undefined, 2));
-  }
-
-  public readFile(fileName: string) {
-    if (!(fileName in this.files)) {
-      throw new Error(`${fileName} not found`);
-    }
-    return this.files[fileName];
-  }
-
-  public readJson(fileName: string): any {
-    return JSON.parse(this.readFile(fileName).toString());
-  }
-
-  public exists(name: string) {
-    return name in this.files || name in this.dirs;
-  }
-
-  public mkdir(directoryName: string): string {
-    this.canWrite(directoryName);
-
-    const p = fs.mkdtempSync(path.join(os.tmpdir(), directoryName));
-    this.dirs[directoryName] = p;
-    return p;
-  }
-
-  public readdir(directoryName: string): string[] {
-    if (!this.exists(directoryName)) {
-      throw new Error(`${directoryName} not found`);
-    }
-
-    const p = this.dirs[directoryName];
-    return fs.readdirSync(p);
-  }
-
-  public list(): string[] {
-    return [ ...Object.keys(this.files), ...Object.keys(this.dirs) ].sort();
-  }
-
-  public lock() {
-    this.locked = true;
-  }
-
-  private canWrite(artifactName: string) {
-    if (this.exists(artifactName)) {
-      throw new Error(`An artifact named ${artifactName} was already written to this session`);
-    }
-    if (this.locked) {
-      throw new Error('Session has already been finalized');
-    }
-  }
-}
-
-export function renderLegacyStacks(manifest: cxapi.AssemblyManifest, store: ISessionStore) {
+export function renderLegacyStacks(manifest: cxapi.AssemblyManifest, outdir: string) {
   // special case for backwards compat. build a list of stacks for the manifest
   const stacks = new Array<cxapi.SynthesizedStack>();
   const artifacts = manifest.artifacts || { };
@@ -387,7 +182,8 @@ export function renderLegacyStacks(manifest: cxapi.AssemblyManifest, store: ISes
       if (!templateFile) {
         throw new Error(`Invalid cloudformation artifact. Missing "template" property`);
       }
-      const template = store.readJson(templateFile);
+      const templateFilePath = path.join(outdir, templateFile);
+      const template = JSON.parse(fs.readFileSync(templateFilePath, 'utf-8'));
 
       const match = cxapi.AWS_ENV_REGEX.exec(artifact.environment);
       if (!match) {

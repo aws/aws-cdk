@@ -1,5 +1,7 @@
 import cxapi = require('@aws-cdk/cx-api');
+import fs = require('fs');
 import { Test } from 'nodeunit';
+import path = require('path');
 import { CfnResource, Construct, Stack, StackProps } from '../lib';
 import { App } from '../lib/app';
 
@@ -11,7 +13,7 @@ function withApp(context: { [key: string]: any } | undefined, block: (app: App) 
   const session = app.run();
 
   // return the legacy manifest
-  return session.store.readJson(cxapi.OUTFILE_NAME);
+  return JSON.parse(fs.readFileSync(path.join(session.outdir, cxapi.OUTFILE_NAME), 'utf-8'));
 }
 
 function synth(context?: { [key: string]: any }): cxapi.SynthesizeResponse {
