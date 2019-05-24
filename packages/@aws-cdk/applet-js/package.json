@@ -25,15 +25,8 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "@types/fs-extra": "^5.0.5",
-    "@types/yaml": "^1.0.2",
     "cdk-build-tools": "^0.32.0",
     "pkglint": "^0.32.0"
-  },
-  "dependencies": {
-    "@aws-cdk/cdk": "^0.32.0",
-    "fs-extra": "^7.0.1",
-    "source-map-support": "^0.5.12",
-    "yaml": "^1.5.0"
   },
   "repository": {
     "url": "https://github.com/awslabs/aws-cdk.git",
