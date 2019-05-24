@@ -9,21 +9,47 @@ import { SDK } from '../lib/api/util/sdk';
 import { CdkToolkit } from '../lib/cdk-toolkit';
 import { Configuration } from '../lib/settings';
 
-const FIXED_RESULT: cxapi.SynthesizeResponse = {
+const FIXED_RESULT: cxapi.ICloudAssembly = {
+  directory: 'cdk.out',
   version: '1',
+  runtime: { libraries: { } },
+  artifacts: [],
   stacks: [
     {
+      id: 'A',
       name: 'A',
+      originalName: 'A',
+      assets: [],
+      logicalIdToPathMap: { },
+      missing: { },
+      autoDeploy: true,
+      depends: [],
+      messages: [],
       template: { resource: 'A' },
       environment: { name: 'dev', account: '12345', region: 'here' },
       metadata: {},
     },
     {
+      id: 'B',
       name: 'B',
+      originalName: 'B',
+      assets: [],
+      logicalIdToPathMap: { },
+      missing: { },
+      autoDeploy: true,
+      depends: [ {
+        id: 'A',
+        environment: { region: 'x', account: 'a', name: 'x' },
+        messages: [],
+        depends: [],
+        autoDeploy: true,
+        metadata: {},
+        missing: {}
+      } ],
+      messages: [],
       template: { resource: 'B' },
       environment: { name: 'dev', account: '12345', region: 'here' },
       metadata: {},
-      dependsOn: ['A'],
     }
   ]
 };
@@ -38,7 +64,7 @@ export = {
   async 'diff can diff multiple stacks'(test: Test) {
     // GIVEN
     const provisioner: IDeploymentTarget = {
-      async readCurrentTemplate(_stack: cxapi.SynthesizedStack): Promise<Template> {
+      async readCurrentTemplate(_stack: cxapi.ICloudFormationStackArtifact): Promise<Template> {
         return {};
       },
       async deployStack(_options: DeployStackOptions): Promise<DeployStackResult> {

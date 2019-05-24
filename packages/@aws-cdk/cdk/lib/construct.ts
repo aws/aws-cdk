@@ -279,7 +279,11 @@ export class ConstructNode {
     if (data == null) {
       return;
     }
-    const trace = createStackTrace(from || this.addMetadata);
+
+    const trace = this.getContext(cxapi.DISABLE_METADATA_STACK_TRACE)
+      ? []
+      : createStackTrace(from || this.addMetadata);
+
     this._metadata.push({ type, data, trace });
   }
 

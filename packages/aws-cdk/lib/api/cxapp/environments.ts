@@ -1,15 +1,15 @@
-import cxapi = require('@aws-cdk/cx-api');
+import { Environment } from '@aws-cdk/cx-api';
 import minimatch = require('minimatch');
 import { AppStacks, ExtendedStackSelection } from './stacks';
 
-export async function globEnvironmentsFromStacks(appStacks: AppStacks, environmentGlobs: string[]): Promise<cxapi.Environment[]> {
+export async function globEnvironmentsFromStacks(appStacks: AppStacks, environmentGlobs: string[]): Promise<Environment[]> {
   if (environmentGlobs.length === 0) {
     environmentGlobs = [ '**' ]; // default to ALL
   }
   const stacks = await appStacks.selectStacks([], ExtendedStackSelection.None);
 
   const availableEnvironments = distinct(stacks.map(stack => stack.environment)
-                            .filter(env => env !== undefined) as cxapi.Environment[]);
+                            .filter(env => env !== undefined) as Environment[]);
   const environments = availableEnvironments.filter(env => environmentGlobs.find(glob => minimatch(env!.name, glob)));
   if (environments.length === 0) {
     const globs = JSON.stringify(environmentGlobs);
@@ -23,12 +23,12 @@ export async function globEnvironmentsFromStacks(appStacks: AppStacks, environme
 /**
  * Given a set of "<account>/<region>" strings, construct environments for them
  */
-export function environmentsFromDescriptors(envSpecs: string[]): cxapi.Environment[] {
+export function environmentsFromDescriptors(envSpecs: string[]): Environment[] {
   if (envSpecs.length === 0) {
     throw new Error(`Either specify an app with '--app', or specify an environment name like '123456789012/us-east-1'`);
   }
 
-  const ret = new Array<cxapi.Environment>();
+  const ret = new Array<Environment>();
   for (const spec of envSpecs) {
     const parts = spec.split('/');
     if (parts.length !== 2) {
@@ -53,8 +53,8 @@ export function environmentsFromDescriptors(envSpecs: string[]): cxapi.Environme
  *
  * @return a de-duplicated list of environments.
  */
-function distinct(envs: cxapi.Environment[]): cxapi.Environment[] {
-  const unique: { [id: string]: cxapi.Environment } = {};
+function distinct(envs: Environment[]): Environment[] {
+  const unique: { [id: string]: Environment } = {};
   for (const env of envs) {
     const id = `${env.account || 'default'}/${env.region || 'default'}`;
     if (id in unique) { continue; }

@@ -1,4 +1,4 @@
-import { Environment} from '@aws-cdk/cx-api';
+import cxapi = require('@aws-cdk/cx-api');
 import AWS = require('aws-sdk');
 import child_process = require('child_process');
 import fs = require('fs-extra');
@@ -88,7 +88,7 @@ export class SDK {
     this.credentialsCache = new CredentialsCache(this.defaultAwsAccount, defaultCredentialProvider);
   }
 
-  public async cloudFormation(environment: Environment, mode: Mode): Promise<AWS.CloudFormation> {
+  public async cloudFormation(environment: cxapi.Environment, mode: Mode): Promise<AWS.CloudFormation> {
     return new AWS.CloudFormation({
       ...this.retryOptions,
       region: environment.region,
@@ -112,7 +112,7 @@ export class SDK {
     });
   }
 
-  public async s3(environment: Environment, mode: Mode): Promise<AWS.S3> {
+  public async s3(environment: cxapi.Environment, mode: Mode): Promise<AWS.S3> {
     return new AWS.S3({
       ...this.retryOptions,
       region: environment.region,
@@ -128,7 +128,7 @@ export class SDK {
     });
   }
 
-  public async ecr(environment: Environment, mode: Mode): Promise<AWS.ECR> {
+  public async ecr(environment: cxapi.Environment, mode: Mode): Promise<AWS.ECR> {
     return new AWS.ECR({
       ...this.retryOptions,
       region: environment.region,

@@ -1,4 +1,4 @@
-import { AssetMetadataEntry, ContainerImageAssetMetadataEntry, SynthesizedStack } from '@aws-cdk/cx-api';
+import cxapi = require('@aws-cdk/cx-api');
 import { Test } from 'nodeunit';
 import { Uploaded, UploadProps } from '../lib';
 import { prepareAssets } from '../lib/assets';
@@ -6,27 +6,32 @@ import { prepareAssets } from '../lib/assets';
 export = {
   async 'prepare assets'(test: Test) {
     // GIVEN
-    const stack: SynthesizedStack = {
+    const stack: cxapi.ICloudFormationStackArtifact = {
+      id: 'SomeStack',
+      originalName: 'SomeStack',
+      assets: [
+        {
+          sourceHash: 'source-hash',
+          path: __filename,
+          id: 'SomeStackSomeResource4567',
+          packaging: 'file',
+          s3BucketParameter: 'BucketParameter',
+          s3KeyParameter: 'KeyParameter',
+          artifactHashParameter: 'ArtifactHashParameter',
+        }
+      ],
+      logicalIdToPathMap: { },
+      missing: { },
+      autoDeploy: true,
+      depends: [],
+      messages: [],
       name: 'SomeStack',
       environment: {
         name: 'myenv',
         account: 'myaccount',
         region: 'myregion'
       },
-      metadata: {
-        '/SomeStack/SomeResource': [{
-          type: 'aws:cdk:asset',
-          data: {
-            path: __filename,
-            id: 'SomeStackSomeResource4567',
-            packaging: 'file',
-            s3BucketParameter: 'BucketParameter',
-            s3KeyParameter: 'KeyParameter',
-            artifactHashParameter: 'ArtifactHashParameter',
-          } as AssetMetadataEntry,
-          trace: []
-        }]
-      },
+      metadata: { },
       template: {
         Resources: {
           SomeResource: {
@@ -52,27 +57,32 @@ export = {
 
   async 'prepare assets with reuse'(test: Test) {
     // GIVEN
-    const stack: SynthesizedStack = {
+    const stack: cxapi.ICloudFormationStackArtifact = {
+      id: 'SomeStack',
       name: 'SomeStack',
+      originalName: 'SomeStack',
+      assets: [
+        {
+          path: __filename,
+          id: 'SomeStackSomeResource4567',
+          packaging: 'file',
+          s3BucketParameter: 'BucketParameter',
+          s3KeyParameter: 'KeyParameter',
+          artifactHashParameter: 'ArtifactHashParameter',
+          sourceHash: 'boom'
+        }
+      ],
+      logicalIdToPathMap: { },
+      missing: { },
+      autoDeploy: true,
+      depends: [],
+      messages: [],
       environment: {
         name: 'myenv',
         account: 'myaccount',
         region: 'myregion'
       },
-      metadata: {
-        '/SomeStack/SomeResource': [{
-          type: 'aws:cdk:asset',
-          data: {
-            path: __filename,
-            id: 'SomeStackSomeResource4567',
-            packaging: 'file',
-            s3BucketParameter: 'BucketParameter',
-            s3KeyParameter: 'KeyParameter',
-            artifactHashParameter: 'ArtifactHashParameter',
-          } as AssetMetadataEntry,
-          trace: []
-        }]
-      },
+      metadata: { },
       template: {
         Resources: {
           SomeResource: {
@@ -98,21 +108,26 @@ export = {
 
   async 'prepare container asset with reuse'(test: Test) {
     // GIVEN
-    const stack: SynthesizedStack = {
+    const stack: cxapi.ICloudFormationStackArtifact = {
+      id: 'SomeStack',
       name: 'SomeStack',
+      originalName: 'SomeStack',
+      assets: [
+        {
+          path: __dirname,
+          id: 'SomeStackSomeResource4567',
+          packaging: 'container-image',
+          imageNameParameter: 'asdf',
+          sourceHash: 'source-hash'
+        }
+      ],
+      logicalIdToPathMap: { },
+      missing: { },
+      autoDeploy: true,
+      depends: [],
+      messages: [],
       environment: { name: 'myenv', account: 'myaccount', region: 'myregion' },
-      metadata: {
-        '/SomeStack/SomeResource': [{
-          type: 'aws:cdk:asset',
-          data: {
-            path: __dirname,
-            id: 'SomeStackSomeResource4567',
-            packaging: 'container-image',
-            imageNameParameter: 'asdf'
-          } as ContainerImageAssetMetadataEntry,
-          trace: []
-        }]
-      },
+      metadata: { },
       template: {
         Resources: {
           SomeResource: {

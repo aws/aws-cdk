@@ -14,7 +14,6 @@ export interface ISynthesisSession {
   readonly outdir: string;
   readonly manifest: cxapi.AssemblyManifest;
   addArtifact(id: string, droplet: cxapi.Artifact): void;
-  addBuildStep(id: string, step: cxapi.BuildStep): void;
   tryGetArtifact(id: string): cxapi.Artifact | undefined;
   getArtifact(id: string): cxapi.Artifact;
 }
@@ -77,7 +76,6 @@ export class SynthesisSession implements ISynthesisSession {
   public readonly outdir: string;
 
   private readonly artifacts: { [id: string]: cxapi.Artifact } = { };
-  private readonly buildSteps: { [id: string]: cxapi.BuildStep } = { };
   private _manifest?: cxapi.AssemblyManifest;
 
   constructor(options: SynthesisOptions = { }) {
@@ -112,15 +110,7 @@ export class SynthesisSession implements ISynthesisSession {
     return artifact;
   }
 
-  public addBuildStep(id: string, step: cxapi.BuildStep) {
-    if (id in this.buildSteps) {
-      throw new Error(`Build step ${id} already exists`);
-    }
-    this.buildSteps[id] = filterUndefined(step);
-  }
-
   public close(options: ManifestOptions = { }): cxapi.AssemblyManifest {
-    const legacyManifest = options.legacyManifest !== undefined ? options.legacyManifest : false;
     const runtimeInfo = options.runtimeInformation !== undefined ? options.runtimeInformation : true;
 
     const manifest: cxapi.AssemblyManifest = this._manifest = filterUndefined({
@@ -132,75 +122,14 @@ export class SynthesisSession implements ISynthesisSession {
     const manifestFilePath = path.join(this.outdir, cxapi.MANIFEST_FILE);
     fs.writeFileSync(manifestFilePath, JSON.stringify(manifest, undefined, 2));
 
-    // write build manifest if we have build steps
-    if (Object.keys(this.buildSteps).length > 0) {
-      const buildManifest: cxapi.BuildManifest = {
-        steps: this.buildSteps
-      };
-
-      const buildFilePath = path.join(this.outdir, cxapi.BUILD_FILE);
-      fs.writeFileSync(buildFilePath, JSON.stringify(buildManifest, undefined, 2));
-    }
-
-    if (legacyManifest) {
-      const legacy: cxapi.SynthesizeResponse = {
-        ...manifest,
-        stacks: renderLegacyStacks(manifest, this.outdir)
-      };
-
-      // render the legacy manifest (cdk.out) which also contains a "stacks" attribute with all the rendered stacks.
-      const legacyManifestPath = path.join(this.outdir, cxapi.OUTFILE_NAME);
-      fs.writeFileSync(legacyManifestPath, JSON.stringify(legacy, undefined, 2));
-    }
-
     return manifest;
   }
 }
 
 export interface ManifestOptions {
   /**
-   * Emit the legacy manifest (`cdk.out`) when the session is closed (alongside `manifest.json`).
-   * @default false
-   */
-  readonly legacyManifest?: boolean;
-
-  /**
    * Include runtime information (module versions) in manifest.
    * @default true
    */
   readonly runtimeInformation?: boolean;
-}
-
-export function renderLegacyStacks(manifest: cxapi.AssemblyManifest, outdir: string) {
-  // special case for backwards compat. build a list of stacks for the manifest
-  const stacks = new Array<cxapi.SynthesizedStack>();
-  const artifacts = manifest.artifacts || { };
-
-  for (const [ id, artifact ] of Object.entries(artifacts)) {
-    if (artifact.type === cxapi.ArtifactType.AwsCloudFormationStack) {
-      const templateFile = artifact.properties && artifact.properties.templateFile;
-      if (!templateFile) {
-        throw new Error(`Invalid cloudformation artifact. Missing "template" property`);
-      }
-      const templateFilePath = path.join(outdir, templateFile);
-      const template = JSON.parse(fs.readFileSync(templateFilePath, 'utf-8'));
-
-      const match = cxapi.AWS_ENV_REGEX.exec(artifact.environment);
-      if (!match) {
-        throw new Error(`"environment" must match regex: ${cxapi.AWS_ENV_REGEX}`);
-      }
-
-      stacks.push(filterUndefined({
-        name: id,
-        environment: { name: artifact.environment.substr('aws://'.length), account: match[1], region: match[2] },
-        template,
-        metadata: artifact.metadata || {},
-        autoDeploy: artifact.autoDeploy,
-        dependsOn: artifact.dependencies && artifact.dependencies.length > 0 ? artifact.dependencies : undefined,
-        missing: artifact.missing
-      }));
-    }
-  }
-
-  return stacks;
 }

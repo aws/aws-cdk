@@ -5,28 +5,41 @@ import { AppStacks, ExtendedStackSelection } from '../../lib/api/cxapp/stacks';
 import { Renames } from '../../lib/renames';
 import { Configuration } from '../../lib/settings';
 
-const FIXED_RESULT: cxapi.SynthesizeResponse = {
+const FIXED_RESULT: cxapi.ICloudAssembly = {
+  directory: 'cdk.out',
   version: '1',
+  runtime: { libraries: { } },
+  artifacts: [],
   stacks: [
     {
+      id: 'withouterrors',
       name: 'withouterrors',
+      originalName: 'withouterrors',
+      depends: [],
+      messages: [],
+      logicalIdToPathMap: {},
+      autoDeploy: true,
+      missing: { },
+      assets: [],
       template: { resource: 'noerrorresource' },
       environment: { name: 'dev', account: '12345', region: 'here' },
       metadata: {},
     },
     {
+      id: 'witherrors',
       name: 'witherrors',
+      originalName: 'witherrors',
+      depends: [],
+      messages: [
+        { level: cxapi.SynthesisMessageLevel.ERROR, id: '/resource', entry: { data: 'this is an error', trace: [], type: cxapi.ERROR_METADATA_KEY } }
+      ],
+      logicalIdToPathMap: {},
+      autoDeploy: true,
+      missing: { },
+      assets: [],
       template: { resource: 'errorresource' },
       environment: { name: 'dev', account: '12345', region: 'here' },
-      metadata: {
-        '/resource': [
-          {
-            type: cxapi.ERROR_METADATA_KEY,
-            data: 'this is an error',
-            trace: []
-          }
-        ]
-      }
+      metadata: { },
     }
   ]
 };
@@ -91,7 +104,14 @@ export = {
     // GIVEN
     const stacks = appStacksWith([
       {
+        id: 'NotAutoDeployedStack',
         name: 'NotAutoDeployedStack',
+        originalName: 'NotAutoDeployedStack',
+        assets: [],
+        logicalIdToPathMap: {},
+        missing: {},
+        depends: [],
+        messages: [],
         template: { resource: 'Resource' },
         environment: { name: 'dev', account: '12345', region: 'here' },
         metadata: {},
@@ -112,7 +132,14 @@ export = {
     // GIVEN
     const stacks = appStacksWith([
       {
+        id: 'NotAutoDeployedStack',
         name: 'NotAutoDeployedStack',
+        originalName: 'NotAutoDeployedStack',
+        assets: [],
+        logicalIdToPathMap: {},
+        missing: {},
+        depends: [],
+        messages: [],
         template: { resource: 'Resource' },
         environment: { name: 'dev', account: '12345', region: 'here' },
         metadata: {},
@@ -133,18 +160,42 @@ export = {
     // GIVEN
     const stacks = appStacksWith([
       {
+        id: 'NotAutoDeployedStack',
         name: 'NotAutoDeployedStack',
+        originalName: 'NotAutoDeployedStack',
+        assets: [],
+        logicalIdToPathMap: {},
+        missing: {},
+        depends: [],
+        messages: [],
         template: { resource: 'Resource' },
         environment: { name: 'dev', account: '12345', region: 'here' },
         metadata: {},
         autoDeploy: false,
       },
       {
+        id: 'AutoDeployedStack',
         name: 'AutoDeployedStack',
+        originalName: 'AutoDeployedStack',
+        autoDeploy: true,
+        assets: [],
+        logicalIdToPathMap: {},
+        missing: {},
+        depends: [
+          {
+            id: 'NotAutoDeployedStack',
+            environment: { region: 'r', account: '1', name: 'x' },
+            metadata: {},
+            missing: {},
+            autoDeploy: true,
+            depends: [],
+            messages: [],
+          }
+        ],
+        messages: [],
         template: { resource: 'Resource' },
         environment: { name: 'dev', account: '12345', region: 'here' },
         metadata: {},
-        dependsOn: ['NotAutoDeployedStack'],
       },
     ]);
 
@@ -158,9 +209,12 @@ export = {
   },
 };
 
-function appStacksWith(stacks: cxapi.SynthesizedStack[]): AppStacks {
-  const response: cxapi.SynthesizeResponse = {
+function appStacksWith(stacks: cxapi.ICloudFormationStackArtifact[]): AppStacks {
+  const response: cxapi.ICloudAssembly = {
+    directory: 'cdk.out',
     version: '1',
+    artifacts: [],
+    runtime: { libraries: { } },
     stacks,
   };
   return new AppStacks({

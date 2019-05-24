@@ -4,10 +4,10 @@ import api = require('@aws-cdk/cx-api');
 import { StackInspector } from './inspector';
 import { SynthUtils } from './synth-utils';
 
-export function expect(stack: api.SynthesizedStack | cdk.Stack, skipValidation = false): StackInspector {
+export function expect(stack: api.ICloudFormationStackArtifact | cdk.Stack, skipValidation = false): StackInspector {
   // Can't use 'instanceof' here, that breaks if we have multiple copies
   // of this library.
-  let sstack: api.SynthesizedStack;
+  let sstack: api.ICloudFormationStackArtifact;
 
   if (cdk.Stack.isStack(stack)) {
     const session = SynthUtils.synthesize(stack, {
@@ -16,6 +16,14 @@ export function expect(stack: api.SynthesizedStack | cdk.Stack, skipValidation =
 
     sstack = {
       name: stack.name,
+      originalName: stack.name,
+      id: stack.name,
+      assets: [],
+      logicalIdToPathMap: { },
+      autoDeploy: true,
+      depends: [],
+      messages: [],
+      missing: { },
       template: SynthUtils.templateForStackName(session, stack.name),
       metadata: collectStackMetadata(stack.node),
       environment: {

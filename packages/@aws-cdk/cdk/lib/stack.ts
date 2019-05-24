@@ -503,14 +503,16 @@ export class Stack extends Construct {
     const deps = this.dependencies().map(s => s.name);
     const meta = this.collectMetadata();
 
+    const properties: cxapi.AwsCloudFormationStackProperties = {
+      templateFile: template,
+      parameters: Object.keys(this.parameterValues).length > 0 ? this.node.resolve(this.parameterValues) : undefined
+    };
+
     // add an artifact that represents this stack
     session.addArtifact(this.name, {
       type: cxapi.ArtifactType.AwsCloudFormationStack,
       environment: this.environment,
-      properties: {
-        templateFile: template,
-        parameters: Object.keys(this.parameterValues).length > 0 ? this.node.resolve(this.parameterValues) : undefined
-      },
+      properties,
       autoDeploy: this.autoDeploy ? undefined : false,
       dependencies: deps.length > 0 ? deps : undefined,
       metadata: Object.keys(meta).length > 0 ? meta : undefined,

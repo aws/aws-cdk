@@ -3,7 +3,6 @@
  */
 
 import { Artifact } from './artifacts';
-import { Environment } from './environment';
 
 /**
  * Bump this to the library version if and only if the CX protocol changes.
@@ -21,17 +20,12 @@ import { Environment } from './environment';
  *   updated (as the current verison in package.json has already been released!)
  * - The request does not have versioning yet, only the response.
  */
-export const PROTO_RESPONSE_VERSION = '0.19.0';
+export const PROTO_RESPONSE_VERSION = '0.31.0';
 
 /**
  * The name of the root manifest file of the assembly.
  */
 export const MANIFEST_FILE = 'manifest.json';
-
-/**
- * The name of the root file with build instructions.
- */
-export const BUILD_FILE = 'build.json';
 
 // output directory into which to emit synthesis outputs. CDK doesn't allow outdir
 // to be specified both through the CDK_OUTDIR environment variable and the through
@@ -66,30 +60,6 @@ export interface AssemblyManifest {
    * Runtime information.
    */
   readonly runtime?: AppRuntime;
-}
-
-/**
- * @deprecated use `AssemblyManifest`
- */
-export interface SynthesizeResponse extends AssemblyManifest {
-  readonly stacks: SynthesizedStack[];
-}
-
-/**
- * A complete synthesized stack
- */
-export interface SynthesizedStack {
-  readonly name: string;
-  readonly environment: Environment;
-  readonly missing?: { [key: string]: MissingContext };
-  readonly metadata: StackMetadata;
-  readonly template: any;
-  readonly autoDeploy?: boolean;
-
-  /**
-   * Other stacks this stack depends on
-   */
-  readonly dependsOn?: string[];
 }
 
 /**
@@ -164,19 +134,6 @@ export const PATH_METADATA_KEY = 'aws:cdk:path';
 export const PATH_METADATA_ENABLE_CONTEXT = 'aws:cdk:enable-path-metadata';
 
 /**
- * Disables the emission of `cdk.out`
- */
-export const DISABLE_LEGACY_MANIFEST_CONTEXT = 'aws:cdk:disable-legacy-manifest';
-
-/**
- * The name of the pre 0.25.0 manifest file. Will only be emitted if
- * aws:cdk:disable-legacy-manifest is not defined.
- *
- * @deprecated Use `MANIFEST_FILE`
- */
-export const OUTFILE_NAME = 'cdk.out';
-
-/**
  * Disable the collection and reporting of version information.
  */
 export const DISABLE_VERSION_REPORTING = 'aws:cdk:disable-version-reporting';
@@ -186,3 +143,8 @@ export const DISABLE_VERSION_REPORTING = 'aws:cdk:disable-version-reporting';
  * the output directory and will be referenced with absolute source paths.
  */
 export const DISABLE_ASSET_STAGING_CONTEXT = 'aws:cdk:disable-asset-staging';
+
+/**
+ * Omits stack traces from construct metadata entries.
+ */
+export const DISABLE_METADATA_STACK_TRACE = 'aws:cdk:disable-stack-trace';

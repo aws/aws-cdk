@@ -1,3 +1,5 @@
+import { MetadataEntry } from './cxapi';
+
 export const AWS_ENV_REGEX = /aws\:\/\/([0-9]+|unknown-account)\/([a-z\-0-9]+)/;
 
 export enum ArtifactType {
@@ -9,11 +11,16 @@ export enum ArtifactType {
 export interface Artifact {
   readonly type: ArtifactType;
   readonly environment: string; // format: aws://account/region
-  readonly metadata?: { [path: string]: any };
+  readonly metadata?: { [path: string]: MetadataEntry[] };
   readonly dependencies?: string[];
   readonly missing?: { [key: string]: any };
   readonly properties?: { [name: string]: any };
   readonly autoDeploy?: boolean;
+}
+
+export interface AwsCloudFormationStackProperties {
+  readonly templateFile: string;
+  readonly parameters?: { [id: string]: string };
 }
 
 export function validateArtifact(artifcat: Artifact) {

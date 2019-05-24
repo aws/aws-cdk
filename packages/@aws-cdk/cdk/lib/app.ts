@@ -1,6 +1,4 @@
 import cxapi = require('@aws-cdk/cx-api');
-import fs = require('fs');
-import path = require('path');
 import { Construct } from './construct';
 import { ISynthesisSession, Synthesizer } from './synthesis';
 
@@ -26,6 +24,18 @@ export interface AppProps {
   readonly outdir?: string;
 
   /**
+   * Include stack traces in construct metadata entries.
+   * @default true stack traces are included
+   */
+  readonly stackTraces?: boolean;
+
+  /**
+   * Include runtime versioning information in cloud assembly manifest
+   * @default true runtime info is included
+   */
+  readonly runtimeInfo?: boolean;
+
+  /**
    * Additional context values for the application
    *
    * @default No additional context
@@ -38,7 +48,6 @@ export interface AppProps {
  */
 export class App extends Construct {
   private _session?: ISynthesisSession;
-  private readonly legacyManifest: boolean;
   private readonly runtimeInformation: boolean;
   private readonly outdir?: string;
 
@@ -51,8 +60,15 @@ export class App extends Construct {
 
     this.loadContext(props.context);
 
+    if (props.stackTraces === false) {
+      this.node.setContext(cxapi.DISABLE_METADATA_STACK_TRACE, true);
+    }
+
+    if (props.runtimeInfo === false) {
+      this.node.setContext(cxapi.DISABLE_VERSION_REPORTING, true);
+    }
+
     // both are reverse logic
-    this.legacyManifest = this.node.getContext(cxapi.DISABLE_LEGACY_MANIFEST_CONTEXT) ? false : true;
     this.runtimeInformation = this.node.getContext(cxapi.DISABLE_VERSION_REPORTING) ? false : true;
     this.outdir = props.outdir || process.env[cxapi.OUTDIR_ENV];
 
@@ -78,45 +94,10 @@ export class App extends Construct {
 
     this._session = synth.synthesize(this, {
       outdir: this.outdir,
-      legacyManifest: this.legacyManifest,
       runtimeInformation: this.runtimeInformation
     });
 
     return this._session;
-  }
-
-  /**
-   * Synthesize and validate a single stack.
-   * @param stackName The name of the stack to synthesize
-   * @deprecated This method is going to be deprecated in a future version of the CDK
-   */
-  public synthesizeStack(stackName: string): cxapi.SynthesizedStack {
-    if (!this.legacyManifest) {
-      throw new Error('No legacy manifest available, return an old-style stack output');
-    }
-
-    const session = this.run();
-    const legacyManifestFile = path.join(session.outdir, cxapi.OUTFILE_NAME);
-    const legacy: cxapi.SynthesizeResponse = JSON.parse(fs.readFileSync(legacyManifestFile, 'utf-8'));
-
-    const res = legacy.stacks.find(s => s.name === stackName);
-    if (!res) {
-      throw new Error(`Stack "${stackName}" not found`);
-    }
-
-    return res;
-  }
-
-  /**
-   * Synthesizes multiple stacks
-   * @deprecated This method is going to be deprecated in a future version of the CDK
-   */
-  public synthesizeStacks(stackNames: string[]): cxapi.SynthesizedStack[] {
-    const ret: cxapi.SynthesizedStack[] = [];
-    for (const stackName of stackNames) {
-      ret.push(this.synthesizeStack(stackName));
-    }
-    return ret;
   }
 
   private loadContext(defaults: { [key: string]: string } = { }) {

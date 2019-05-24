@@ -1,5 +1,5 @@
 // tslint:disable-next-line:max-line-length
-import { ASSET_METADATA, ASSET_PREFIX_SEPARATOR, AssetMetadataEntry, FileAssetMetadataEntry, StackMetadata, SynthesizedStack } from '@aws-cdk/cx-api';
+import cxapi = require('@aws-cdk/cx-api');
 import { CloudFormation } from 'aws-sdk';
 import colors = require('colors');
 import fs = require('fs-extra');
@@ -11,9 +11,9 @@ import { prepareContainerAsset } from './docker';
 import { debug, success } from './logging';
 
 // tslint:disable-next-line:max-line-length
-export async function prepareAssets(stack: SynthesizedStack, toolkitInfo?: ToolkitInfo, ci?: boolean, reuse?: string[]): Promise<CloudFormation.Parameter[]> {
+export async function prepareAssets(stack: cxapi.ICloudFormationStackArtifact, toolkitInfo?: ToolkitInfo, ci?: boolean, reuse?: string[]): Promise<CloudFormation.Parameter[]> {
   reuse = reuse || [];
-  const assets = findAssets(stack.metadata);
+  const assets = stack.assets;
 
   if (assets.length === 0) {
     return [];
@@ -43,7 +43,7 @@ export async function prepareAssets(stack: SynthesizedStack, toolkitInfo?: Toolk
 }
 
 // tslint:disable-next-line:max-line-length
-async function prepareAsset(asset: AssetMetadataEntry, toolkitInfo: ToolkitInfo, reuse: boolean, ci?: boolean): Promise<CloudFormation.Parameter[]> {
+async function prepareAsset(asset: cxapi.AssetMetadataEntry, toolkitInfo: ToolkitInfo, reuse: boolean, ci?: boolean): Promise<CloudFormation.Parameter[]> {
   switch (asset.packaging) {
     case 'zip':
       return await prepareZipAsset(asset, toolkitInfo, reuse);
@@ -57,7 +57,7 @@ async function prepareAsset(asset: AssetMetadataEntry, toolkitInfo: ToolkitInfo,
   }
 }
 
-async function prepareZipAsset(asset: FileAssetMetadataEntry, toolkitInfo: ToolkitInfo, reuse: boolean): Promise<CloudFormation.Parameter[]> {
+async function prepareZipAsset(asset: cxapi.FileAssetMetadataEntry, toolkitInfo: ToolkitInfo, reuse: boolean): Promise<CloudFormation.Parameter[]> {
   if (reuse) {
     return await prepareFileAsset(asset, toolkitInfo, reuse);
   }
@@ -81,7 +81,7 @@ async function prepareZipAsset(asset: FileAssetMetadataEntry, toolkitInfo: Toolk
  * @param contentType Content-type to use when uploading to S3 (none will be specified by default)
  */
 async function prepareFileAsset(
-    asset: FileAssetMetadataEntry,
+    asset: cxapi.FileAssetMetadataEntry,
     toolkitInfo: ToolkitInfo,
     reuse: boolean,
     filePath?: string,
@@ -120,21 +120,7 @@ async function prepareFileAsset(
 
   return [
     { ParameterKey: asset.s3BucketParameter, ParameterValue: toolkitInfo.bucketName },
-    { ParameterKey: asset.s3KeyParameter, ParameterValue: `${s3KeyPrefix}${ASSET_PREFIX_SEPARATOR}${filename}` },
+    { ParameterKey: asset.s3KeyParameter, ParameterValue: `${s3KeyPrefix}${cxapi.ASSET_PREFIX_SEPARATOR}${filename}` },
     { ParameterKey: asset.artifactHashParameter, ParameterValue: hash },
   ];
-}
-
-function findAssets(metadata: StackMetadata): AssetMetadataEntry[] {
-  const assets = new Array<AssetMetadataEntry>();
-
-  for (const k of Object.keys(metadata)) {
-    for (const entry of metadata[k]) {
-      if (entry.type === ASSET_METADATA) {
-        assets.push(entry.data);
-      }
-    }
-  }
-
-  return assets;
 }

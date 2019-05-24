@@ -5,6 +5,7 @@ import cx = require('@aws-cdk/cx-api');
 import { Test } from 'nodeunit';
 
 import { Stack } from '@aws-cdk/cdk';
+import { CloudAssembly } from '@aws-cdk/cx-api';
 import { countResources, exist, expect, haveType, MatchStyle, matchTemplate } from '../lib/index';
 
 passingExample('expect <synthStack> at <some path> to have <some type>', () => {
@@ -205,11 +206,19 @@ function failingExample(title: string, cb: (test: Test) => void) {
   };
 }
 
-function synthesizedStack(fn: (stack: cdk.Stack) => void): cx.SynthesizedStack {
+function synthesizedStack(fn: (stack: cdk.Stack) => void): cx.ICloudFormationStackArtifact {
   const app = new cdk.App();
   const stack = new cdk.Stack(app, 'TestStack');
   fn(stack);
-  return app.synthesizeStack(stack.name);
+
+  const session = app.run();
+
+  const assembly = new CloudAssembly(session.outdir);
+  const s = assembly.stacks.find(x => x.name === stack.name);
+  if (!s) {
+    throw new Error(`Cannot find stack ${stack.name}`);
+  }
+  return s;
 }
 
 interface TestResourceProps extends cdk.CfnResourceProps {

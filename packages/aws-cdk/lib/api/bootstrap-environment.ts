@@ -1,4 +1,4 @@
-import { Environment, SynthesizedStack } from '@aws-cdk/cx-api';
+import { Environment, ICloudFormationStackArtifact } from '@aws-cdk/cx-api';
 import { deployStack, DeployStackResult } from './deploy-stack';
 import { SDK } from './util/sdk';
 
@@ -8,9 +8,15 @@ export const BUCKET_NAME_OUTPUT = 'BucketName';
 export const BUCKET_DOMAIN_NAME_OUTPUT = 'BucketDomainName';
 
 export async function bootstrapEnvironment(environment: Environment, aws: SDK, toolkitStackName: string, roleArn: string | undefined, toolkitBucketName: string | undefined): Promise<DeployStackResult> {
-  const synthesizedStack: SynthesizedStack = {
+  const synthesizedStack: ICloudFormationStackArtifact = {
+    logicalIdToPathMap: { },
+    messages: [],
+    depends: [],
+    autoDeploy: true,
+    metadata: { },
+    missing: { },
     environment,
-    metadata: {},
+    assets: [],
     template: {
       Description: "The CDK Toolkit Stack. It was created by `cdk bootstrap` and manages resources necessary for managing your Cloud Applications with AWS CDK.",
       Resources: {
@@ -33,7 +39,9 @@ export async function bootstrapEnvironment(environment: Environment, aws: SDK, t
         }
       }
     },
+    id: toolkitStackName,
     name: toolkitStackName,
+    originalName: toolkitStackName
   };
   if (toolkitBucketName) {
     synthesizedStack.template.Resources.StagingBucket.Properties.BucketName = toolkitBucketName;

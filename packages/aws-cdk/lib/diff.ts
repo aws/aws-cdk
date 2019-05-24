@@ -16,12 +16,12 @@ import { print, warning } from './logging';
  */
 export function printStackDiff(
       oldTemplate: any,
-      newTemplate: cxapi.SynthesizedStack,
+      newTemplate: cxapi.ICloudFormationStackArtifact,
       strict: boolean,
       context: number,
       stream?: FormatStream): number {
 
-  if (_hasAssets(newTemplate)) {
+  if (newTemplate.assets.length > 0) {
     const issue = 'https://github.com/awslabs/aws-cdk/issues/395';
     warning(`The ${newTemplate.name} stack uses assets, which are currently not accounted for in the diff output! See ${issue}`);
   }
@@ -39,7 +39,7 @@ export function printStackDiff(
   }
 
   if (!diff.isEmpty) {
-    cfnDiff.formatDifferences(stream || process.stderr, diff, buildLogicalToPathMap(newTemplate), context);
+    cfnDiff.formatDifferences(stream || process.stderr, diff, newTemplate.logicalIdToPathMap, context);
   } else {
     print(colors.green('There were no differences'));
   }
@@ -60,7 +60,7 @@ export enum RequireApproval {
  *
  * Returns true if the changes are prompt-worthy, false otherwise.
  */
-export function printSecurityDiff(oldTemplate: any, newTemplate: cxapi.SynthesizedStack, requireApproval: RequireApproval): boolean {
+export function printSecurityDiff(oldTemplate: any, newTemplate: cxapi.ICloudFormationStackArtifact, requireApproval: RequireApproval): boolean {
   const diff = cfnDiff.diffTemplate(oldTemplate, newTemplate.template);
 
   if (difRequiresApproval(diff, requireApproval)) {
@@ -68,7 +68,7 @@ export function printSecurityDiff(oldTemplate: any, newTemplate: cxapi.Synthesiz
     warning(`This deployment will make potentially sensitive changes according to your current security approval level (--require-approval ${requireApproval}).`);
     warning(`Please confirm you intend to make the following modifications:\n`);
 
-    cfnDiff.formatSecurityChanges(process.stdout, diff, buildLogicalToPathMap(newTemplate));
+    cfnDiff.formatSecurityChanges(process.stdout, diff, newTemplate.logicalIdToPathMap);
     return true;
   }
   return false;
@@ -87,22 +87,4 @@ function difRequiresApproval(diff: cfnDiff.TemplateDiff, requireApproval: Requir
     case RequireApproval.Broadening: return diff.permissionsBroadened;
     default: throw new Error(`Unrecognized approval level: ${requireApproval}`);
   }
-}
-
-function buildLogicalToPathMap(template: cxapi.SynthesizedStack) {
-  const map: { [id: string]: string } = {};
-  for (const path of Object.keys(template.metadata)) {
-    const md = template.metadata[path];
-    for (const e of md) {
-      if (e.type === 'aws:cdk:logicalId') {
-        const logical = e.data;
-        map[logical] = path;
-      }
-    }
-  }
-  return map;
-}
-
-function _hasAssets(stack: cxapi.SynthesizedStack) {
-  return Object.values(stack.metadata).find(entries => entries.find(entry => entry.type === cxapi.ASSET_METADATA) != null) != null;
 }

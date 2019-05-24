@@ -27,7 +27,7 @@ export abstract class Inspector {
 }
 
 export class StackInspector extends Inspector {
-  constructor(public readonly stack: api.SynthesizedStack) {
+  constructor(public readonly stack: api.ICloudFormationStackArtifact) {
     super();
   }
 
@@ -46,7 +46,7 @@ export class StackInspector extends Inspector {
 }
 
 export class StackPathInspector extends Inspector {
-  constructor(public readonly stack: api.SynthesizedStack, public readonly path: string) {
+  constructor(public readonly stack: api.ICloudFormationStackArtifact, public readonly path: string) {
     super();
   }
 

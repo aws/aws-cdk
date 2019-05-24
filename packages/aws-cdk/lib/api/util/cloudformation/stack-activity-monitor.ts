@@ -72,7 +72,7 @@ export class StackActivityMonitor {
 
   constructor(private readonly cfn: aws.CloudFormation,
               private readonly stackName: string,
-              private readonly stack: cxapi.SynthesizedStack,
+              private readonly stack: cxapi.ICloudFormationStackArtifact,
               private readonly resourcesTotal?: number) {
 
     if (this.resourcesTotal != null) {

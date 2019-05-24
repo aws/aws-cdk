@@ -1,5 +1,5 @@
 import { Stack } from "@aws-cdk/cdk";
-import { SynthesizedStack } from "@aws-cdk/cx-api";
+import { ICloudFormationStackArtifact } from "@aws-cdk/cx-api";
 import { HaveResourceAssertion, ResourcePart } from "./lib/assertions/have-resource";
 import { expect as ourExpect } from './lib/expect';
 
@@ -19,7 +19,7 @@ declare global {
 
 expect.extend({
   toHaveResource(
-      actual: SynthesizedStack | Stack,
+      actual: ICloudFormationStackArtifact | Stack,
       resourceType: string,
       properties?: any,
       comparison?: ResourcePart) {
@@ -28,7 +28,7 @@ expect.extend({
     return assertHaveResource(assertion, actual);
   },
   toHaveResourceLike(
-      actual: SynthesizedStack | Stack,
+      actual: ICloudFormationStackArtifact | Stack,
       resourceType: string,
       properties?: any,
       comparison?: ResourcePart) {
@@ -38,7 +38,7 @@ expect.extend({
   }
 });
 
-function assertHaveResource(assertion: HaveResourceAssertion, actual: SynthesizedStack | Stack) {
+function assertHaveResource(assertion: HaveResourceAssertion, actual: ICloudFormationStackArtifact | Stack) {
   const inspector = ourExpect(actual);
   const pass = assertion.assertUsing(inspector);
   if (pass) {
