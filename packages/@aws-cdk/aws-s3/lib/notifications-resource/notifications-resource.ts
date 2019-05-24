@@ -1,6 +1,6 @@
-import { BucketNotificationDestinationType, IBucketNotificationDestination } from '@aws-cdk/aws-s3-notifications';
 import cdk = require('@aws-cdk/cdk');
 import { Bucket, EventType, NotificationKeyFilter } from '../bucket';
+import { BucketNotificationDestinationType, IBucketNotificationDestination } from '../destination';
 import { NotificationsResourceHandler } from './notifications-resource-handler';
 
 interface NotificationsProps {
@@ -53,7 +53,7 @@ export class BucketNotifications extends cdk.Construct {
 
     // resolve target. this also provides an opportunity for the target to e.g. update
     // policies to allow this notification to happen.
-    const targetProps = target.asBucketNotificationDestination(this.bucket.bucketArn, this.bucket.node.uniqueId);
+    const targetProps = target.bind(this.bucket);
     const commonConfig: CommonConfiguration = {
       Events: [ event ],
       Filter: renderFilters(filters),
