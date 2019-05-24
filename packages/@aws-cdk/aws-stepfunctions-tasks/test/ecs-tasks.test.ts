@@ -20,6 +20,31 @@ beforeEach(() => {
   });
 });
 
+test('Canot create a Farkate task with a fargate-incompatible task definition', () => {
+  const taskDefinition = new ecs.TaskDefinition(stack, 'TD', {
+    memoryMiB: '512',
+    cpu: '256',
+    compatibility: ecs.Compatibility.Ec2,
+  });
+  taskDefinition.addContainer('TheContainer', {
+    image: ecs.ContainerImage.fromRegistry('foo/bar'),
+    memoryLimitMiB: 256,
+  });
+
+  expect(() => new tasks.RunEcsFargateTask({ cluster, taskDefinition }))
+    .toThrowError(/not configured for compatibility with Fargate/);
+});
+
+test('Canot create a Farkate task without a default container', () => {
+  const taskDefinition = new ecs.TaskDefinition(stack, 'TD', {
+    memoryMiB: '512',
+    cpu: '256',
+    compatibility: ecs.Compatibility.Fargate,
+  });
+  expect(() => new tasks.RunEcsFargateTask({ cluster, taskDefinition }))
+    .toThrowError(/must have at least one essential container/);
+});
+
 test('Running a Fargate Task', () => {
   const taskDefinition = new ecs.TaskDefinition(stack, 'TD', {
     memoryMiB: '512',

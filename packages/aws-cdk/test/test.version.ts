@@ -20,7 +20,7 @@ export = {
     const cache = new TimestampFile(tmpfile(), 1);
     await cache.update();
     test.strictEqual(await cache.hasExpired(), false);
-    await setTimeout(1000); // 1 sec in ms
+    await setTimeout(1001); // Just above 1 sec in ms
     test.strictEqual(await cache.hasExpired(), true);
     test.done();
   },
