@@ -6,3 +6,4 @@ export * from './cfn-resource';
 export * from './attributes';
 export * from './api';
 export * from './exports';
+export * from './cloudwatch-events';

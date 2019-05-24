@@ -83,13 +83,8 @@ export interface IBucket extends IResource {
   /**
    * Returns an ARN that represents all objects within the bucket that match
    * the key pattern specified. To represent all keys, specify ``"*"``.
-   *
-   * If you specify multiple components for keyPattern, they will be concatenated::
-   *
-   *   arnForObjects('home/', team, '/', user, '/*')
-   *
    */
-  arnForObjects(...keyPattern: string[]): string;
+  arnForObjects(keyPattern: string): string;
 
   /**
    * Grant read permissions for this bucket and it's contents to an IAM
@@ -171,14 +166,27 @@ export interface IBucket extends IResource {
   grantPublicAccess(keyPrefix?: string, ...allowedActions: string[]): iam.Grant;
 
   /**
-   * Defines a CloudWatch Event Rule that triggers upon putting an object into the Bucket.
+   * Define a CloudWatch event that triggers when something happens to this repository
    *
-   * @param name the logical ID of the newly created Event Rule
-   * @param target the optional target of the Event Rule
-   * @param path the optional path inside the Bucket that will be watched for changes
-   * @returns a new {@link events.EventRule} instance
+   * Requires that there exists at least one CloudTrail Trail in your account
+   * that captures the event. This method will not create the Trail.
+   *
+   * @param id The id of the rule
+   * @param options Options for adding the rule
    */
-  onPutObject(name: string, target?: events.IEventRuleTarget, path?: string): events.EventRule;
+  onCloudTrailEvent(id: string, options: OnCloudTrailBucketEventOptions): events.Rule;
+
+  /**
+   * Defines an AWS CloudWatch event rule that can trigger a target when an image is pushed to this
+   * repository.
+   *
+   * Requires that there exists at least one CloudTrail Trail in your account
+   * that captures the event. This method will not create the Trail.
+   *
+   * @param id The id of the rule
+   * @param options Options for adding the rule
+   */
+  onCloudTrailPutObject(id: string, options: OnCloudTrailBucketEventOptions): events.Rule;
 }
 
 /**
@@ -283,32 +291,48 @@ abstract class BucketBase extends Resource implements IBucket {
    */
   protected abstract disallowPublicAccess?: boolean;
 
-  public onPutObject(name: string, target?: events.IEventRuleTarget, path?: string): events.EventRule {
-    const eventRule = new events.EventRule(this, name, {
-      eventPattern: {
-        source: [
-          'aws.s3',
-        ],
-        detailType: [
-          'AWS API Call via CloudTrail',
-        ],
-        detail: {
-          eventSource: [
-            's3.amazonaws.com',
-          ],
-          eventName: [
-            'PutObject',
-          ],
-          resources: {
-            ARN: [
-              path ? this.arnForObjects(path) : this.bucketArn,
-            ],
-          },
+  /**
+   * Define a CloudWatch event that triggers when something happens to this repository
+   *
+   * Requires that there exists at least one CloudTrail Trail in your account
+   * that captures the event. This method will not create the Trail.
+   *
+   * @param id The id of the rule
+   * @param options Options for adding the rule
+   */
+  public onCloudTrailEvent(id: string, options: OnCloudTrailBucketEventOptions): events.Rule {
+    const rule = new events.Rule(this, id, options);
+    rule.addTarget(options.target);
+    rule.addEventPattern({
+      source: ['aws.s3'],
+      detailType: ['AWS API Call via CloudTrail'],
+      detail: {
+        resources: {
+          ARN: options.paths ? options.paths.map(p => this.arnForObjects(p)) : [this.bucketArn],
         },
+      }
+    });
+    return rule;
+  }
+
+  /**
+   * Defines an AWS CloudWatch event rule that can trigger a target when an image is pushed to this
+   * repository.
+   *
+   * Requires that there exists at least one CloudTrail Trail in your account
+   * that captures the event. This method will not create the Trail.
+   *
+   * @param id The id of the rule
+   * @param options Options for adding the rule
+   */
+  public onCloudTrailPutObject(id: string, options: OnCloudTrailBucketEventOptions): events.Rule {
+    const rule = this.onCloudTrailEvent(id, options);
+    rule.addEventPattern({
+      detail: {
+        eventName: ['PutObject'],
       },
     });
-    eventRule.addTarget(target);
-    return eventRule;
+    return rule;
   }
 
   /**
@@ -359,8 +383,8 @@ abstract class BucketBase extends Resource implements IBucket {
    *   arnForObjects('home/', team, '/', user, '/*')
    *
    */
-  public arnForObjects(...keyPattern: string[]): string {
-    return `${this.bucketArn}/${keyPattern.join('')}`;
+  public arnForObjects(keyPattern: string): string {
+    return `${this.bucketArn}/${keyPattern}`;
   }
 
   /**
@@ -580,7 +604,7 @@ export interface BucketProps {
    * If you choose KMS, you can specify a KMS key via `encryptionKey`. If
    * encryption key is not specified, a key will automatically be created.
    *
-   * @default Unencrypted
+   * @default BucketEncryption.Unencrypted
    */
   readonly encryption?: BucketEncryption;
 
@@ -591,22 +615,22 @@ export interface BucketProps {
    * An error will be emitted if encryption is set to "Unencrypted" or
    * "Managed".
    *
-   * @default If encryption is set to "Kms" and this property is undefined, a
-   * new KMS key will be created and associated with this bucket.
+   * @default - If encryption is set to "Kms" and this property is undefined,
+   * a new KMS key will be created and associated with this bucket.
    */
   readonly encryptionKey?: kms.IKey;
 
   /**
    * Physical name of this bucket.
    *
-   * @default Assigned by CloudFormation (recommended)
+   * @default - Assigned by CloudFormation (recommended).
    */
   readonly bucketName?: string;
 
   /**
    * Policy to apply when the bucket is removed from this stack.
    *
-   * @default The bucket will be orphaned
+   * @default - The bucket will be orphaned.
    */
   readonly removalPolicy?: RemovalPolicy;
 
@@ -620,25 +644,31 @@ export interface BucketProps {
   /**
    * Rules that define how Amazon S3 manages objects during their lifetime.
    *
-   * @default No lifecycle rules
+   * @default - No lifecycle rules.
    */
   readonly lifecycleRules?: LifecycleRule[];
 
   /**
    * The name of the index document (e.g. "index.html") for the website. Enables static website
    * hosting for this bucket.
+   *
+   * @default - No index document.
    */
   readonly websiteIndexDocument?: string;
 
   /**
    * The name of the error document (e.g. "404.html") for the website.
    * `websiteIndexDocument` must also be set if this is set.
+   *
+   * @default - No error document.
    */
   readonly websiteErrorDocument?: string;
 
   /**
    * Grants public read access to all objects in the bucket.
    * Similar to calling `bucket.grantPublicAccess()`
+   *
+   * @default false
    */
   readonly publicReadAccess?: boolean;
 
@@ -646,6 +676,9 @@ export interface BucketProps {
    * The block public access configuration of this bucket.
    *
    * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/access-control-block-public-access.html
+   *
+   * @default false New buckets and objects don't allow public access, but users can modify bucket
+   * policies or object permissions to allow public access.
    */
   readonly blockPublicAccess?: BlockPublicAccess;
 
@@ -653,6 +686,8 @@ export interface BucketProps {
    * The metrics configuration of this bucket.
    *
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-s3-bucket-metricsconfiguration.html
+   *
+   * @default - No metrics configuration.
    */
   readonly metrics?: BucketMetrics[];
 }
@@ -823,12 +858,12 @@ export class Bucket extends BucketBase {
    *
    * @example
    *
-   *    bucket.onEvent(EventType.OnObjectCreated, myLambda, 'home/myusername/*')
+   *    bucket.addEventNotification(EventType.OnObjectCreated, myLambda, 'home/myusername/*')
    *
    * @see
    * https://docs.aws.amazon.com/AmazonS3/latest/dev/NotificationHowTo.html
    */
-  public onEvent(event: EventType, dest: IBucketNotificationDestination, ...filters: NotificationKeyFilter[]) {
+  public addEventNotification(event: EventType, dest: IBucketNotificationDestination, ...filters: NotificationKeyFilter[]) {
     this.notifications.addNotification(event, dest, ...filters);
   }
 
@@ -840,8 +875,8 @@ export class Bucket extends BucketBase {
    * @param dest The notification destination (see onEvent)
    * @param filters Filters (see onEvent)
    */
-  public onObjectCreated(dest: IBucketNotificationDestination, ...filters: NotificationKeyFilter[]) {
-    return this.onEvent(EventType.ObjectCreated, dest, ...filters);
+  public addObjectCreatedNotification(dest: IBucketNotificationDestination, ...filters: NotificationKeyFilter[]) {
+    return this.addEventNotification(EventType.ObjectCreated, dest, ...filters);
   }
 
   /**
@@ -852,8 +887,8 @@ export class Bucket extends BucketBase {
    * @param dest The notification destination (see onEvent)
    * @param filters Filters (see onEvent)
    */
-  public onObjectRemoved(dest: IBucketNotificationDestination, ...filters: NotificationKeyFilter[]) {
-    return this.onEvent(EventType.ObjectRemoved, dest, ...filters);
+  public addObjectRemovedNotification(dest: IBucketNotificationDestination, ...filters: NotificationKeyFilter[]) {
+    return this.addEventNotification(EventType.ObjectRemoved, dest, ...filters);
   }
 
   private validateBucketName(bucketName: string) {
@@ -1174,4 +1209,16 @@ export interface NotificationKeyFilter {
    * S3 keys must have the specified suffix.
    */
   readonly suffix?: string;
+}
+
+/**
+ * Options for the onCloudTrailPutObject method
+ */
+export interface OnCloudTrailBucketEventOptions extends events.OnEventOptions {
+  /**
+   * Only watch changes to these object paths
+   *
+   * @default - Watch changes to all objects
+   */
+  readonly paths?: string[];
 }

@@ -46,7 +46,7 @@ export interface RestApiProps extends ResourceOptions {
    * deployment when `deploy` is enabled. If `deploy` is disabled,
    * this value cannot be set.
    *
-   * @default defaults based on defaults of `StageOptions`
+   * @default - Based on defaults of `StageOptions`.
    */
   readonly deployOptions?: StageOptions;
 
@@ -62,31 +62,37 @@ export interface RestApiProps extends ResourceOptions {
   /**
    * A name for the API Gateway RestApi resource.
    *
-   * @default construct-id defaults to the id of the RestApi construct
+   * @default - ID of the RestApi construct.
    */
   readonly restApiName?: string;
 
   /**
    * Custom header parameters for the request.
    * @see https://docs.aws.amazon.com/cli/latest/reference/apigateway/import-rest-api.html
+   *
+   * @default - No parameters.
    */
   readonly parameters?: { [key: string]: string };
 
   /**
    * A policy document that contains the permissions for this RestApi
+   *
+   * @default - No policy.
    */
   readonly policy?: iam.PolicyDocument;
 
   /**
    * A description of the purpose of this API Gateway RestApi resource.
-   * @default No description
+   *
+   * @default - No description.
    */
   readonly description?: string;
 
   /**
    * The source of the API key for metering requests according to a usage
    * plan.
-   * @default undefined metering is disabled
+   *
+   * @default - Metering is disabled.
    */
   readonly apiKeySourceType?: ApiKeySourceType;
 
@@ -94,13 +100,15 @@ export interface RestApiProps extends ResourceOptions {
    * The list of binary media mine-types that are supported by the RestApi
    * resource, such as "image/png" or "application/octet-stream"
    *
-   * @default By default, RestApi supports only UTF-8-encoded text payloads
+   * @default - RestApi supports only UTF-8-encoded text payloads.
    */
   readonly binaryMediaTypes?: string[];
 
   /**
    * A list of the endpoint types of the API. Use this property when creating
    * an API.
+   *
+   * @default - No endpoint types.
    */
   readonly endpointTypes?: EndpointType[];
 
@@ -120,17 +128,20 @@ export interface RestApiProps extends ResourceOptions {
    * smaller than this value. Setting it to zero allows compression for any
    * payload size.
    *
-   * @default undefined compression is disabled
+   * @default - Compression is disabled.
    */
   readonly minimumCompressionSize?: number;
 
   /**
    * The ID of the API Gateway RestApi resource that you want to clone.
+   *
+   * @default - None.
    */
   readonly cloneFrom?: IRestApi;
 
   /**
    * Automatically configure an AWS CloudWatch role for API Gateway.
+   *
    * @default true
    */
   readonly cloudWatchRole?: boolean;

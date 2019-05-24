@@ -39,20 +39,25 @@ export interface DatabaseClusterProps {
 
   /**
    * Backup settings
+   *
+   * @default - Backup retention period for automated backups is 1 day.
+   * Backup preferred window is set to a 30-minute window selected at random from an
+   * 8-hour block of time for each AWS Region, occurring on a random day of the week.
+   * @see https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/USER_UpgradeDBInstance.Maintenance.html#AdjustingTheMaintenanceWindow.Aurora
    */
   readonly backup?: BackupProps;
 
   /**
    * What port to listen on
    *
-   * If not supplied, the default for the engine is used.
+   * @default - The default for the engine is used.
    */
   readonly port?: number;
 
   /**
    * An optional identifier for the cluster
    *
-   * If not supplied, a name is automatically generated.
+   * @default - A name is automatically generated.
    */
   readonly clusterIdentifier?: string;
 
@@ -61,14 +66,15 @@ export interface DatabaseClusterProps {
    *
    * Every replica is named by appending the replica number to this string, 1-based.
    *
-   * If not given, the clusterIdentifier is used with the word "Instance" appended.
-   *
-   * If clusterIdentifier is also not given, the identifier is automatically generated.
+   * @default - clusterIdentifier is used with the word "Instance" appended.
+   * If clusterIdentifier is not provided, the identifier is automatically generated.
    */
   readonly instanceIdentifierBase?: string;
 
   /**
    * Name of a database which is automatically created inside the cluster
+   *
+   * @default - Database is not created in cluster.
    */
   readonly defaultDatabaseName?: string;
 
@@ -83,7 +89,7 @@ export interface DatabaseClusterProps {
    * The KMS key for storage encryption. If specified `storageEncrypted`
    * will be set to `true`.
    *
-   * @default default master key
+   * @default - default master key.
    */
   readonly kmsKey?: kms.IKey;
 
@@ -93,13 +99,17 @@ export interface DatabaseClusterProps {
    * Must be at least 30 minutes long.
    *
    * Example: '01:00-02:00'
+   *
+   * @default - 30-minute window selected at random from an 8-hour block of time for
+   * each AWS Region, occurring on a random day of the week.
+   * @see https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/USER_UpgradeDBInstance.Maintenance.html#AdjustingTheMaintenanceWindow.Aurora
    */
   readonly preferredMaintenanceWindow?: string;
 
   /**
    * Additional parameters to pass to the database engine
    *
-   * @default No parameter group
+   * @default - No parameter group.
    */
   readonly parameterGroup?: IClusterParameterGroup;
 
@@ -107,7 +117,7 @@ export interface DatabaseClusterProps {
    * The CloudFormation policy to apply when the cluster and its instances
    * are removed from the stack or replaced during an update.
    *
-   * @default Retain
+   * @default - Retain cluster.
    */
   readonly deleteReplacePolicy?: DeletionPolicy
 }

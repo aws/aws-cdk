@@ -38,14 +38,14 @@ export interface LambdaDeploymentGroupProps {
   /**
    * The reference to the CodeDeploy Lambda Application that this Deployment Group belongs to.
    *
-   * @default one will be created for you
+   * @default - One will be created for you.
    */
   readonly application?: ILambdaApplication;
 
   /**
    * The physical, human-readable name of the CodeDeploy Deployment Group.
    *
-   * @default an auto-generated name will be used
+   * @default - An auto-generated name will be used.
    */
   readonly deploymentGroupName?: string;
 
@@ -71,7 +71,7 @@ export interface LambdaDeploymentGroupProps {
   /**
    * The service Role of this Deployment Group.
    *
-   * @default a new Role will be created.
+   * @default - A new Role will be created.
    */
   readonly role?: iam.IRole;
 
@@ -85,11 +85,15 @@ export interface LambdaDeploymentGroupProps {
 
   /**
    * The Lambda function to run before traffic routing starts.
+   *
+   * @default - None.
    */
   readonly preHook?: lambda.IFunction;
 
   /**
    * The Lambda function to run after traffic routing starts.
+   *
+   * @default - None.
    */
   readonly postHook?: lambda.IFunction;
 
@@ -102,6 +106,8 @@ export interface LambdaDeploymentGroupProps {
 
   /**
    * The auto-rollback configuration for this Deployment Group.
+   *
+   * @default - default AutoRollbackConfig.
    */
   readonly autoRollback?: AutoRollbackConfig;
 }
@@ -164,10 +170,10 @@ export class LambdaDeploymentGroup extends cdk.Resource implements ILambdaDeploy
     this.deploymentGroupArn = arnForDeploymentGroup(this.application.applicationName, this.deploymentGroupName);
 
     if (props.preHook) {
-      this.onPreHook(props.preHook);
+      this.addPreHook(props.preHook);
     }
     if (props.postHook) {
-      this.onPostHook(props.postHook);
+      this.addPostHook(props.postHook);
     }
 
     (props.alias.node.findChild('Resource') as lambda.CfnAlias).options.updatePolicy = {
@@ -194,7 +200,7 @@ export class LambdaDeploymentGroup extends cdk.Resource implements ILambdaDeploy
    * @param preHook function to run before deployment beings
    * @throws an error if a pre-hook function is already configured
    */
-  public onPreHook(preHook: lambda.IFunction): void {
+  public addPreHook(preHook: lambda.IFunction): void {
     if (this.preHook !== undefined) {
       throw new Error('A pre-hook function is already defined for this deployment group');
     }
@@ -208,7 +214,7 @@ export class LambdaDeploymentGroup extends cdk.Resource implements ILambdaDeploy
    * @param postHook function to run after deployment completes
    * @throws an error if a post-hook function is already configured
    */
-  public onPostHook(postHook: lambda.IFunction): void {
+  public addPostHook(postHook: lambda.IFunction): void {
     if (this.postHook !== undefined) {
       throw new Error('A post-hook function is already defined for this deployment group');
     }

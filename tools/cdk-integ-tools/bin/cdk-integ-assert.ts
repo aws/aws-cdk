@@ -38,7 +38,7 @@ async function main() {
 
   if (failures.length > 0) {
     // tslint:disable-next-line:max-line-length
-    throw new Error(`The following integ stacks have changed: ${failures.join(', ')}. Run 'npm run integ' to verify that everything still deploys.`);
+    throw new Error(`Some stacks have changed. To verify that they still deploy successfully, run: 'npm run integ ${failures.join(' ')}'`);
   }
 }
 

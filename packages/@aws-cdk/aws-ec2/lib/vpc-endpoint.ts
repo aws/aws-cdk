@@ -205,7 +205,7 @@ export interface IInterfaceVpcEndpointService {
  * An AWS service for an interface VPC endpoint.
  */
 export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointService {
-  public static readonly SageMakerNotebook = new InterfaceVpcEndpointAwsService('sagemaker', 'aws.sagemaker');
+  public static readonly SageMakerNotebook = new InterfaceVpcEndpointAwsService('notebook', 'aws.sagemaker');
   public static readonly CloudFormation = new InterfaceVpcEndpointAwsService('cloudformation');
   public static readonly CloudTrail = new InterfaceVpcEndpointAwsService('cloudtrail');
   public static readonly CodeBuild = new InterfaceVpcEndpointAwsService('codebuild');
@@ -372,7 +372,7 @@ export class InterfaceVpcEndpoint extends VpcEndpoint implements IInterfaceVpcEn
     const subnetIds = subnets.subnetIds;
 
     const endpoint = new CfnVPCEndpoint(this, 'Resource', {
-      privateDnsEnabled: props.privateDnsEnabled || true,
+      privateDnsEnabled: props.privateDnsEnabled !== undefined ? props.privateDnsEnabled : true,
       policyDocument: new Token(() => this.policyDocument),
       securityGroupIds: [this.securityGroupId],
       serviceName: props.service.name,

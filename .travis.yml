@@ -10,6 +10,10 @@ env:
 before_install:
   - nvm install $NODE_VERSION
 
+cache:
+  - npm
+  - pip
+
 install: ./install.sh
 script: ./build.sh
 
