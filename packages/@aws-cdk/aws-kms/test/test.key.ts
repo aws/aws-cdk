@@ -70,7 +70,7 @@ export = {
 
     new Key(stack, 'MyKey', { retain: false });
 
-    expect(app.synthesizeStack(stack.name)).to(haveResource('AWS::KMS::Key', { DeletionPolicy: "Delete" }, ResourcePart.CompleteDefinition));
+    expect(stack).to(haveResource('AWS::KMS::Key', { DeletionPolicy: "Delete" }, ResourcePart.CompleteDefinition));
     test.done();
   },
 
@@ -83,7 +83,7 @@ export = {
     p.addAwsPrincipal('arn');
     key.addToResourcePolicy(p);
 
-    expect(app.synthesizeStack(stack.name)).to(exactlyMatchTemplate({
+    expect(stack).to(exactlyMatchTemplate({
       Resources: {
         MyKey6AB29FA6: {
         Type: "AWS::KMS::Key",
@@ -252,7 +252,7 @@ export = {
     const alias = key.addAlias('alias/xoo');
     test.ok(alias.aliasName);
 
-    test.deepEqual(app.synthesizeStack(stack.name).template, {
+    expect(stack).toMatch({
       Resources: {
         MyKey6AB29FA6: {
           Type: "AWS::KMS::Key",
