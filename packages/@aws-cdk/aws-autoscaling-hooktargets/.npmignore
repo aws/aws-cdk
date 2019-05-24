@@ -4,6 +4,7 @@
 coverage
 .nyc_output
 *.tgz
+
 dist
 .LAST_PACKAGE
 .LAST_BUILD
@@ -12,9 +13,6 @@ dist
 # Include .jsii
 !.jsii
 
-lambda/src
-lambda/test
-lambda/*.sh
 *.snk
 
 *.tsbuildinfo

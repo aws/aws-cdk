@@ -160,7 +160,7 @@
         }
       }
     },
-    "FargateClusterDefaultAutoScalingGroupDrainECSHookTopic92C2F1DA": {
+    "FargateClusterDefaultAutoScalingGroupLifecycleHookDrainHookTopic49146C10": {
       "Type": "AWS::SNS::Topic"
     },
     "FargateClusterDefaultAutoScalingGroupDrainECSHookFunctionServiceRole7FEDCD32": {
@@ -283,7 +283,7 @@
       "Properties": {
         "Protocol": "lambda",
         "TopicArn": {
-          "Ref": "FargateClusterDefaultAutoScalingGroupDrainECSHookTopic92C2F1DA"
+          "Ref": "FargateClusterDefaultAutoScalingGroupLifecycleHookDrainHookTopic49146C10"
         },
         "Endpoint": {
           "Fn::GetAtt": [
@@ -305,7 +305,7 @@
         },
         "Principal": "sns.amazonaws.com",
         "SourceArn": {
-          "Ref": "FargateClusterDefaultAutoScalingGroupDrainECSHookTopic92C2F1DA"
+          "Ref": "FargateClusterDefaultAutoScalingGroupLifecycleHookDrainHookTopic49146C10"
         }
       }
     },
@@ -345,7 +345,7 @@
               "Action": "sns:Publish",
               "Effect": "Allow",
               "Resource": {
-                "Ref": "FargateClusterDefaultAutoScalingGroupDrainECSHookTopic92C2F1DA"
+                "Ref": "FargateClusterDefaultAutoScalingGroupLifecycleHookDrainHookTopic49146C10"
               }
             }
           ],
@@ -369,7 +369,7 @@
         "DefaultResult": "CONTINUE",
         "HeartbeatTimeout": 300,
         "NotificationTargetARN": {
-          "Ref": "FargateClusterDefaultAutoScalingGroupDrainECSHookTopic92C2F1DA"
+          "Ref": "FargateClusterDefaultAutoScalingGroupLifecycleHookDrainHookTopic49146C10"
         },
         "RoleARN": {
           "Fn::GetAtt": [

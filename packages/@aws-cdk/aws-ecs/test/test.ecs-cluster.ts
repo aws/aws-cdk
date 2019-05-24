@@ -175,7 +175,7 @@ export = {
         LifecycleTransition: "autoscaling:EC2_INSTANCE_TERMINATING",
         DefaultResult: "CONTINUE",
         HeartbeatTimeout: 300,
-        NotificationTargetARN: { Ref: "EcsClusterDefaultAutoScalingGroupDrainECSHookTopicC705BD25" },
+        NotificationTargetARN: { Ref: "EcsClusterDefaultAutoScalingGroupLifecycleHookDrainHookTopicACD2D4A4" },
         RoleARN: { "Fn::GetAtt": [ "EcsClusterDefaultAutoScalingGroupLifecycleHookDrainHookRoleA38EC83B", "Arn" ] }
       }));
 

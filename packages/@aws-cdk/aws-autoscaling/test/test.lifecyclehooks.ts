@@ -1,5 +1,4 @@
 import { expect, haveResource, ResourcePart } from '@aws-cdk/assert';
-import autoscaling_api = require('@aws-cdk/aws-autoscaling-api');
 import ec2 = require('@aws-cdk/aws-ec2');
 import iam = require('@aws-cdk/aws-iam');
 import cdk = require('@aws-cdk/cdk');
@@ -69,8 +68,8 @@ export = {
   }
 };
 
-class FakeNotificationTarget implements autoscaling_api.ILifecycleHookTarget {
-  public asLifecycleHookTarget(lifecycleHook: autoscaling_api.ILifecycleHook): autoscaling_api.LifecycleHookTargetProps {
+class FakeNotificationTarget implements autoscaling.ILifecycleHookTarget {
+  public bind(lifecycleHook: autoscaling.ILifecycleHook): autoscaling.LifecycleHookTargetProps {
     lifecycleHook.role.addToPolicy(new iam.PolicyStatement()
       .addAction('action:Work')
       .addAllResources());

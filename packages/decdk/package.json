@@ -39,7 +39,7 @@
     "@aws-cdk/aws-appsync": "^0.31.0",
     "@aws-cdk/aws-athena": "^0.31.0",
     "@aws-cdk/aws-autoscaling": "^0.31.0",
-    "@aws-cdk/aws-autoscaling-api": "^0.31.0",
+    "@aws-cdk/aws-autoscaling-hooktargets": "^0.31.0",
     "@aws-cdk/aws-autoscaling-common": "^0.31.0",
     "@aws-cdk/aws-autoscalingplans": "^0.31.0",
     "@aws-cdk/aws-batch": "^0.31.0",

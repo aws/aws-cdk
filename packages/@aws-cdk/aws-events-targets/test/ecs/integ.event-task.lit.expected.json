@@ -352,7 +352,7 @@
         }
       }
     },
-    "EcsClusterDefaultAutoScalingGroupDrainECSHookTopicC705BD25": {
+    "EcsClusterDefaultAutoScalingGroupLifecycleHookDrainHookTopicACD2D4A4": {
       "Type": "AWS::SNS::Topic"
     },
     "EcsClusterDefaultAutoScalingGroupDrainECSHookFunctionServiceRole94543EDA": {
@@ -475,7 +475,7 @@
       "Properties": {
         "Protocol": "lambda",
         "TopicArn": {
-          "Ref": "EcsClusterDefaultAutoScalingGroupDrainECSHookTopicC705BD25"
+          "Ref": "EcsClusterDefaultAutoScalingGroupLifecycleHookDrainHookTopicACD2D4A4"
         },
         "Endpoint": {
           "Fn::GetAtt": [
@@ -497,7 +497,7 @@
         },
         "Principal": "sns.amazonaws.com",
         "SourceArn": {
-          "Ref": "EcsClusterDefaultAutoScalingGroupDrainECSHookTopicC705BD25"
+          "Ref": "EcsClusterDefaultAutoScalingGroupLifecycleHookDrainHookTopicACD2D4A4"
         }
       }
     },
@@ -537,7 +537,7 @@
               "Action": "sns:Publish",
               "Effect": "Allow",
               "Resource": {
-                "Ref": "EcsClusterDefaultAutoScalingGroupDrainECSHookTopicC705BD25"
+                "Ref": "EcsClusterDefaultAutoScalingGroupLifecycleHookDrainHookTopicACD2D4A4"
               }
             }
           ],
@@ -561,7 +561,7 @@
         "DefaultResult": "CONTINUE",
         "HeartbeatTimeout": 300,
         "NotificationTargetARN": {
-          "Ref": "EcsClusterDefaultAutoScalingGroupDrainECSHookTopicC705BD25"
+          "Ref": "EcsClusterDefaultAutoScalingGroupLifecycleHookDrainHookTopicACD2D4A4"
         },
         "RoleARN": {
           "Fn::GetAtt": [

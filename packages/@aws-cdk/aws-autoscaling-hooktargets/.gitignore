@@ -1,5 +1,3 @@
-lambda/bundle.zip
-
 *.js
 tsconfig.json
 tslint.json
@@ -9,12 +7,10 @@ tslint.json
 dist
 lib/generated/resources.ts
 .jsii
-lib/*.zip
 
 .LAST_BUILD
 .nyc_output
 coverage
 .nycrc
 .LAST_PACKAGE
-
 *.snk
