@@ -30,7 +30,8 @@ export interface RoleProps {
   /**
    * A list of ARNs for managed policies associated with this role.
    * You can add managed policies later using `attachManagedPolicy(arn)`.
-   * @default No managed policies.
+   *
+   * @default - No managed policies.
    */
   readonly managedPolicyArns?: string[];
 
@@ -39,21 +40,22 @@ export interface RoleProps {
    * created with the role, whereas those added by ``addToPolicy`` are added
    * using a separate CloudFormation resource (allowing a way around circular
    * dependencies that could otherwise be introduced).
-   * @default No policy is inlined in the Role resource.
+   *
+   * @default - No policy is inlined in the Role resource.
    */
   readonly inlinePolicies?: { [name: string]: PolicyDocument };
 
   /**
    * The path associated with this role. For information about IAM paths, see
    * Friendly Names and Paths in IAM User Guide.
+   *
+   * @default /
    */
   readonly path?: string;
 
   /**
    * A name for the IAM role. For valid values, see the RoleName parameter for
-   * the CreateRole action in the IAM API Reference. If you don't specify a
-   * name, AWS CloudFormation generates a unique physical ID and uses that ID
-   * for the group name.
+   * the CreateRole action in the IAM API Reference.
    *
    * IMPORTANT: If you specify a name, you cannot perform updates that require
    * replacement of this resource. You can perform updates that require no or
@@ -62,14 +64,16 @@ export interface RoleProps {
    * If you specify a name, you must specify the CAPABILITY_NAMED_IAM value to
    * acknowledge your template's capabilities. For more information, see
    * Acknowledging IAM Resources in AWS CloudFormation Templates.
+   *
+   * @default - AWS CloudFormation generates a unique physical ID and uses that ID
+   * for the group name.
    */
   readonly roleName?: string;
 
   /**
    * The maximum session duration (in seconds) that you want to set for the
-   * specified role. If you do not specify a value for this setting, the
-   * default maximum of one hour is applied. This setting can have a value
-   * from 1 hour (3600sec) to 12 (43200sec) hours.
+   * specified role. This setting can have a value from 1 hour (3600sec) to
+   * 12 (43200sec) hours.
    *
    * Anyone who assumes the role from the AWS CLI or API can use the
    * DurationSeconds API parameter or the duration-seconds CLI parameter to
@@ -83,6 +87,8 @@ export interface RoleProps {
    * but does not apply when you use those operations to create a console URL.
    *
    * @link https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_use.html
+   *
+   * @default 3600 (1 hour)
    */
   readonly maxSessionDurationSec?: number;
 }

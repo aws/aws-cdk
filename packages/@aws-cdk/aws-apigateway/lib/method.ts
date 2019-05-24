@@ -75,11 +75,15 @@ export interface MethodProps {
 
   /**
    * The backend system that the method calls when it receives a request.
+   *
+   * @default - a new `MockIntegration`.
    */
   readonly integration?: Integration;
 
   /**
    * Method options.
+   *
+   * @default - No options.
    */
   readonly options?: MethodOptions;
 }
@@ -101,7 +105,7 @@ export class Method extends Resource {
 
     validateHttpMethod(this.httpMethod);
 
-    const options = props.options || { };
+    const options = props.options || {};
 
     const defaultMethodOptions = props.resource.defaultMethodOptions || {};
 

@@ -64,7 +64,8 @@ export interface StageAddToPipelineProps extends StageProps {
 export interface PipelineProps {
   /**
    * The S3 bucket used by this Pipeline to store artifacts.
-   * If not specified, a new S3 bucket will be created.
+   *
+   * @default - A new S3 bucket will be created.
    */
   readonly artifactBucket?: s3.IBucket;
 
@@ -77,12 +78,15 @@ export interface PipelineProps {
 
   /**
    * Indicates whether to rerun the AWS CodePipeline pipeline after you update it.
+   *
+   * @default false
    */
   readonly restartExecutionOnUpdate?: boolean;
 
   /**
-   * Name of the pipeline. If you don't specify a name,  AWS CloudFormation generates an ID
-   * and uses that for the pipeline name.
+   * Name of the pipeline.
+   *
+   * @default - AWS CloudFormation generates an ID and uses that for the pipeline name.
    */
   readonly pipelineName?: string;
 
@@ -93,6 +97,8 @@ export interface PipelineProps {
    * the construct will automatically create a scaffold Stack containing an S3 Bucket in that region.
    * Note that you will have to `cdk deploy` that Stack before you can deploy your Pipeline-containing Stack.
    * You can query the generated Stacks using the {@link Pipeline#crossRegionScaffoldStacks} property.
+   *
+   * @default - None.
    */
   readonly crossRegionReplicationBuckets?: { [region: string]: string };
 
@@ -100,6 +106,8 @@ export interface PipelineProps {
    * The list of Stages, in order,
    * to create this Pipeline with.
    * You can always add more Stages later by calling {@link Pipeline#addStage}.
+   *
+   * @default - None.
    */
   readonly stages?: StageProps[];
 }
@@ -109,6 +117,37 @@ abstract class PipelineBase extends Resource implements IPipeline {
   public abstract pipelineArn: string;
   public abstract grantBucketRead(identity: iam.IGrantable): iam.Grant;
   public abstract grantBucketReadWrite(identity: iam.IGrantable): iam.Grant;
+
+  /**
+   * Defines an event rule triggered by this CodePipeline.
+   *
+   * @param id Identifier for this event handler.
+   * @param options Additional options to pass to the event rule.
+   */
+  public onEvent(id: string, options: events.OnEventOptions): events.Rule {
+    const rule = new events.Rule(this, id, options);
+    rule.addTarget(options.target);
+    rule.addEventPattern({
+      source: [ 'aws.codepipeline' ],
+      resources: [ this.pipelineArn ],
+    });
+    return rule;
+  }
+
+  /**
+   * Defines an event rule triggered by the "CodePipeline Pipeline Execution
+   * State Change" event emitted from this pipeline.
+   *
+   * @param id Identifier for this event handler.
+   * @param options Additional options to pass to the event rule.
+   */
+  public onStateChange(id: string, options: events.OnEventOptions): events.Rule {
+    const rule = this.onEvent(id, options);
+    rule.addEventPattern({
+      detailType: [ 'CodePipeline Pipeline Execution State Change' ],
+    });
+    return rule;
+  }
 
 }
 
@@ -270,31 +309,6 @@ export class Pipeline extends PipelineBase {
    */
   public addToRolePolicy(statement: iam.PolicyStatement) {
     this.role.addToPolicy(statement);
-  }
-
-  /**
-   * Defines an event rule triggered by the "CodePipeline Pipeline Execution
-   * State Change" event emitted from this pipeline.
-   *
-   * @param target Initial target to add to the event rule. You can also add
-   * targets and customize target inputs by calling `rule.addTarget(target[,
-   * options])` after the rule was created.
-   *
-   * @param options Additional options to pass to the event rule
-   *
-   * @param name The name of the event rule construct. If you wish to define
-   * more than a single onStateChange event, you will need to explicitly
-   * specify a name.
-   */
-  public onStateChange(name: string, target?: events.IRuleTarget, options?: events.RuleProps): events.Rule {
-    const rule = new events.Rule(this, name, options);
-    rule.addTarget(target);
-    rule.addEventPattern({
-      detailType: [ 'CodePipeline Pipeline Execution State Change' ],
-      source: [ 'aws.codepipeline' ],
-      resources: [ this.pipelineArn ],
-    });
-    return rule;
   }
 
   /**
