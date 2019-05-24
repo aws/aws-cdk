@@ -29,6 +29,19 @@ export = {
     test.done();
   },
 
+  'CFN properties are type-validated during resolution'(test: Test) {
+    const stack = new cdk.Stack();
+    new s3.Bucket(stack, 'MyBucket', {
+      bucketName: new cdk.Token(() => 5).toString()  // Oh no
+    });
+
+    test.throws(() => {
+      SynthUtils.toCloudFormation(stack);
+    }, /bucketName: 5 should be a string/);
+
+    test.done();
+  },
+
   'bucket without encryption'(test: Test) {
     const stack = new cdk.Stack();
     new s3.Bucket(stack, 'MyBucket', {
@@ -494,7 +507,7 @@ export = {
       const user = new iam.User(stack, 'MyUser');
       const team = new iam.Group(stack, 'MyTeam');
 
-      const resource = bucket.arnForObjects('home/', team.groupName, '/', user.userName, '/*');
+      const resource = bucket.arnForObjects(`home/${team.groupName}/${user.userName}/*`);
       const p = new iam.PolicyStatement().addResource(resource).addAction('s3:GetObject');
 
       test.deepEqual(bucket.node.resolve(p), {
@@ -574,7 +587,7 @@ export = {
       // you can even use the bucket name, which will be extracted from the arn provided.
       const user = new iam.User(stack, 'MyUser');
       user.addToPolicy(new iam.PolicyStatement()
-        .addResource(bucket.arnForObjects('my/folder/', bucket.bucketName))
+        .addResource(bucket.arnForObjects(`my/folder/${bucket.bucketName}`))
         .addAction('s3:*'));
 
       expect(stack).toMatch({

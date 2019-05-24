@@ -1,3 +1,4 @@
+import events = require('@aws-cdk/aws-events');
 import iam = require('@aws-cdk/aws-iam');
 import kms = require('@aws-cdk/aws-kms');
 import logs = require('@aws-cdk/aws-logs');
@@ -13,12 +14,14 @@ export interface TrailProps {
    * For most services, events are recorded in the region where the action occurred.
    * For global services such as AWS Identity and Access Management (IAM), AWS STS, Amazon CloudFront, and Route 53,
    * events are delivered to any trail that includes global services, and are logged as occurring in US East (N. Virginia) Region.
+   *
    * @default true
    */
   readonly includeGlobalServiceEvents?: boolean;
 
   /**
    * Whether or not this trail delivers log files from multiple regions to a single S3 bucket for a single account.
+   *
    * @default true
    */
   readonly isMultiRegionTrail?: boolean;
@@ -34,8 +37,9 @@ export interface TrailProps {
    * Management events can also include non-API events that occur in your account.
    * For example, when a user logs in to your account, CloudTrail logs the ConsoleLogin event.
    *
-   * If managementEvents is undefined, we'll not log management events by default.
    * @param managementEvents the management configuration type to log
+   *
+   * @default - Management events will not be logged.
    */
   readonly managementEvents?: ReadWriteType;
 
@@ -45,6 +49,7 @@ export interface TrailProps {
    * This feature is built using industry standard algorithms: SHA-256 for hashing and SHA-256 with RSA for digital signing.
    * This makes it computationally infeasible to modify, delete or forge CloudTrail log files without detection.
    * You can use the AWS CLI to validate the files in the location where CloudTrail delivered them.
+   *
    * @default true
    */
   readonly enableFileValidation?: boolean;
@@ -52,34 +57,40 @@ export interface TrailProps {
   /**
    * If CloudTrail pushes logs to CloudWatch Logs in addition to S3.
    * Disabled for cost out of the box.
+   *
    * @default false
    */
   readonly sendToCloudWatchLogs?: boolean;
 
   /**
    * How long to retain logs in CloudWatchLogs. Ignored if sendToCloudWatchLogs is false
+   *
    *  @default logs.RetentionDays.OneYear
    */
   readonly cloudWatchLogsRetentionTimeDays?: logs.RetentionDays;
 
   /** The AWS Key Management Service (AWS KMS) key ID that you want to use to encrypt CloudTrail logs.
-   * @default none
+   *
+   * @default - No encryption.
    */
   readonly kmsKey?: kms.IKey;
 
   /** The name of an Amazon SNS topic that is notified when new log files are published.
-   * @default none
+   *
+   * @default - No notifications.
    */
   readonly snsTopic?: string; // TODO: fix to use L2 SNS
 
   /**
    * The name of the trail. We recoomend customers do not set an explicit name.
-   * @default the CloudFormation generated neme
+   *
+   * @default - AWS CloudFormation generated name.
    */
   readonly trailName?: string;
 
   /** An Amazon S3 object key prefix that precedes the name of all log files.
-   * @default none
+   *
+   * @default - No prefix.
    */
   readonly s3KeyPrefix?: string;
 }
@@ -208,6 +219,23 @@ export class Trail extends Resource {
         values: prefixes
       }]
     });
+  }
+
+  /**
+   * Create an event rule for when an event is recorded by any Trail in the account.
+   *
+   * Note that the event doesn't necessarily have to come from this Trail, it can
+   * be captured from any one.
+   *
+   * Be sure to filter the event further down using an event pattern.
+   */
+  public onCloudTrailEvent(id: string, options: events.OnEventOptions): events.Rule {
+    const rule = new events.Rule(this, id, options);
+    rule.addTarget(options.target);
+    rule.addEventPattern({
+      detailType: ['AWS API Call via CloudTrail']
+    });
+    return rule;
   }
 }
 

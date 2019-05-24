@@ -19,12 +19,16 @@ export interface BaseApplicationListenerRuleProps {
   /**
    * Target groups to forward requests to. Only one of `targetGroups` or
    * `fixedResponse` can be specified.
+   *
+   * @default - No target groups.
    */
   readonly targetGroups?: IApplicationTargetGroup[];
 
   /**
    * Fixed response to return. Only one of `fixedResponse` or
    * `targetGroups` can be specified.
+   *
+   * @default - No fixed response.
    */
   readonly fixedResponse?: FixedResponse;
 
@@ -35,7 +39,7 @@ export interface BaseApplicationListenerRuleProps {
    *
    * @see https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-listeners.html#host-conditions
    *
-   * @default No host condition
+   * @default - No host condition.
    */
   readonly hostHeader?: string;
 
@@ -46,7 +50,7 @@ export interface BaseApplicationListenerRuleProps {
    *
    * @see https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-listeners.html#path-conditions
    *
-   * @default No path condition
+   * @default - No path condition.
    */
   readonly pathPattern?: string;
 }

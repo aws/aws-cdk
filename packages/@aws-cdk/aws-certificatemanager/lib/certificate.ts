@@ -26,6 +26,8 @@ export interface CertificateProps {
    * Alternative domain names on your certificate.
    *
    * Use this to register alternative domain names that represent the same site.
+   *
+   * @default - No additional FQDNs will be included as alternative domain names.
    */
   readonly subjectAlternativeNames?: string[];
 
@@ -34,7 +36,7 @@ export interface CertificateProps {
    *
    * Has to be a superdomain of the requested domain.
    *
-   * @default Apex domain is used for every domain that's not overridden.
+   * @default - Apex domain is used for every domain that's not overridden.
    */
   readonly validationDomains?: {[domainName: string]: string};
 }

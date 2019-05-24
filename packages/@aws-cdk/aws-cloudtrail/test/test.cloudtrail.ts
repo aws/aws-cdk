@@ -189,7 +189,41 @@ export = {
         test.done();
       },
     }
-  }
+  },
+
+  'add an event rule'(test: Test) {
+    // GIVEN
+    const stack = getTestStack();
+    const trail = new Trail(stack, 'MyAmazingCloudTrail', { managementEvents: ReadWriteType.WriteOnly });
+
+    // WHEN
+    trail.onCloudTrailEvent('DoEvents', {
+      target: {
+        bind: () => ({
+          arn: 'arn',
+          id: 'myid'
+        })
+      }
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::Events::Rule', {
+      EventPattern: {
+        "detail-type": [
+          "AWS API Call via CloudTrail"
+        ]
+      },
+      State: "ENABLED",
+      Targets: [
+        {
+          Arn: "arn",
+          Id: "myid"
+        }
+      ]
+    }));
+
+    test.done();
+  },
 };
 
 function getTestStack(): Stack {

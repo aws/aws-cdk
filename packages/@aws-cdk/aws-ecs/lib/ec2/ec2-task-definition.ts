@@ -11,7 +11,7 @@ export interface Ec2TaskDefinitionProps extends CommonTaskDefinitionProps {
    *
    * On Fargate, the only supported networking mode is AwsVpc.
    *
-   * @default NetworkMode.Bridge for EC2 tasks, AwsVpc for Fargate tasks.
+   * @default - NetworkMode.Bridge for EC2 tasks, AwsVpc for Fargate tasks.
    */
   readonly networkMode?: NetworkMode;
 
@@ -21,6 +21,8 @@ export interface Ec2TaskDefinitionProps extends CommonTaskDefinitionProps {
    * constraints in the task definition and those specified at run time).
    *
    * Not supported in Fargate.
+   *
+   * @default - No placement constraints.
    */
   readonly placementConstraints?: PlacementConstraint[];
 }

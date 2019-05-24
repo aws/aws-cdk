@@ -40,24 +40,29 @@ export interface CommonAutoScalingGroupProps {
 
   /**
    * Initial amount of instances in the fleet
+   *
    * @default 1
    */
   readonly desiredCapacity?: number;
 
   /**
    * Name of SSH keypair to grant access to instances
-   * @default No SSH access will be possible
+   *
+   * @default - No SSH access will be possible.
    */
   readonly keyName?: string;
 
   /**
    * Where to place instances within the VPC
+   *
+   * @default - All Private subnets.
    */
   readonly vpcSubnets?: ec2.SubnetSelection;
 
   /**
    * SNS topic to send notifications about fleet changes
-   * @default No fleet change notifications will be sent.
+   *
+   * @default - No fleet change notifications will be sent.
    */
   readonly notificationsTopic?: sns.ITopic;
 
@@ -85,6 +90,8 @@ export interface CommonAutoScalingGroupProps {
    * Configuration for rolling updates
    *
    * Only used if updateType == UpdateType.RollingUpdate.
+   *
+   * @default - RollingUpdateConfiguration with defaults.
    */
   readonly rollingUpdateConfiguration?: RollingUpdateConfiguration;
 
@@ -93,6 +100,8 @@ export interface CommonAutoScalingGroupProps {
    *
    * Only used if updateType == UpdateType.ReplacingUpdate. Specifies how
    * many instances must signal success for the update to succeed.
+   *
+   * @default minSuccessfulInstancesPercent
    */
   readonly replacingUpdateMinSuccessfulInstancesPercent?: number;
 
@@ -136,7 +145,7 @@ export interface CommonAutoScalingGroupProps {
    * Whether instances in the Auto Scaling Group should have public
    * IP addresses associated with them.
    *
-   * @default Use subnet setting
+   * @default - Use subnet setting.
    */
   readonly associatePublicIpAddress?: boolean;
 }
@@ -184,7 +193,7 @@ abstract class AutoScalingGroupBase extends Resource implements IAutoScalingGrou
   /**
    * Send a message to either an SQS queue or SNS topic when instances launch or terminate
    */
-  public onLifecycleTransition(id: string, props: BasicLifecycleHookProps): LifecycleHook {
+  public addLifecycleHook(id: string, props: BasicLifecycleHookProps): LifecycleHook {
     return new LifecycleHook(this, `LifecycleHook${id}`, {
       autoScalingGroup: this,
       ...props
@@ -692,7 +701,7 @@ export interface IAutoScalingGroup extends IResource {
   /**
    * Send a message to either an SQS queue or SNS topic when instances launch or terminate
    */
-  onLifecycleTransition(id: string, props: BasicLifecycleHookProps): LifecycleHook;
+  addLifecycleHook(id: string, props: BasicLifecycleHookProps): LifecycleHook;
 
   /**
    * Scale out or in based on time

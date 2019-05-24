@@ -23,7 +23,7 @@ export interface Ec2ServiceProps extends BaseServiceProps {
    *
    * (Only applicable in case the TaskDefinition is configured for AwsVpc networking)
    *
-   * @default Private subnets
+   * @default - Private subnets.
    */
   readonly vpcSubnets?: ec2.SubnetSelection;
 
@@ -32,21 +32,21 @@ export interface Ec2ServiceProps extends BaseServiceProps {
    *
    * (Only applicable in case the TaskDefinition is configured for AwsVpc networking)
    *
-   * @default A new security group is created
+   * @default - A new security group is created.
    */
   readonly securityGroup?: ec2.ISecurityGroup;
 
   /**
    * Placement constraints
    *
-   * @default No constraints
+   * @default - No constraints.
    */
   readonly placementConstraints?: PlacementConstraint[];
 
   /**
    * Placement strategies
    *
-   * @default No strategies
+   * @default - No strategies.
    */
   readonly placementStrategies?: PlacementStrategy[];
 

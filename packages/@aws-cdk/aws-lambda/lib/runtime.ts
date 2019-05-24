@@ -23,11 +23,14 @@ export enum RuntimeFamily {
  * can instantiate a `Runtime` object, e.g: `new Runtime('nodejs99.99')`.
  */
 export class Runtime {
-  /** A list of all the know ``Runtime``s. */
+  /** A list of all known `Runtime`'s. */
   public static readonly All = new Array<Runtime>();
 
+  /** @deprecated Use `NodeJS810` or `NodeJS10x` */
   public static readonly NodeJS =       new Runtime('nodejs',         RuntimeFamily.NodeJS, { supportsInlineCode: true });
+  /** @deprecated Use `NodeJS810` or `NodeJS10x` */
   public static readonly NodeJS43 =     new Runtime('nodejs4.3',      RuntimeFamily.NodeJS, { supportsInlineCode: true });
+  /** @deprecated Use `NodeJS810` or `NodeJS10x` */
   public static readonly NodeJS610 =    new Runtime('nodejs6.10',     RuntimeFamily.NodeJS, { supportsInlineCode: true });
   public static readonly NodeJS810 =    new Runtime('nodejs8.10',     RuntimeFamily.NodeJS, { supportsInlineCode: true });
   public static readonly NodeJS10x =    new Runtime('nodejs10.x',     RuntimeFamily.NodeJS, { supportsInlineCode: false });
@@ -36,6 +39,7 @@ export class Runtime {
   public static readonly Python37 =     new Runtime('python3.7',      RuntimeFamily.Python, { supportsInlineCode: true });
   public static readonly Java8 =        new Runtime('java8',          RuntimeFamily.Java);
   public static readonly DotNetCore1 =  new Runtime('dotnetcore1.0',  RuntimeFamily.DotNetCore);
+  /** @deprecated Use `DotNetCore21` */
   public static readonly DotNetCore2 =  new Runtime('dotnetcore2.0',  RuntimeFamily.DotNetCore);
   public static readonly DotNetCore21 = new Runtime('dotnetcore2.1',  RuntimeFamily.DotNetCore);
   public static readonly Go1x =         new Runtime('go1.x',          RuntimeFamily.Go);
@@ -68,5 +72,11 @@ export class Runtime {
 
   public toString(): string {
     return this.name;
+  }
+
+  public runtimeEquals(other: Runtime): boolean {
+    return other.name === this.name &&
+           other.family === this.family &&
+           other.supportsInlineCode === this.supportsInlineCode;
   }
 }
