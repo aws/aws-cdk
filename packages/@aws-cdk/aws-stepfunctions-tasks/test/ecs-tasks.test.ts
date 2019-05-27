@@ -7,17 +7,42 @@ import tasks = require('../lib');
 import { JsonPath, NumberValue } from '../lib';
 
 let stack: Stack;
-let vpc: ec2.VpcNetwork;
+let vpc: ec2.Vpc;
 let cluster: ecs.Cluster;
 
 beforeEach(() => {
   // GIVEN
   stack = new Stack();
-  vpc = new ec2.VpcNetwork(stack, 'Vpc');
+  vpc = new ec2.Vpc(stack, 'Vpc');
   cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
   cluster.addCapacity('Capacity', {
     instanceType: new ec2.InstanceType('t3.medium')
   });
+});
+
+test('Canot create a Farkate task with a fargate-incompatible task definition', () => {
+  const taskDefinition = new ecs.TaskDefinition(stack, 'TD', {
+    memoryMiB: '512',
+    cpu: '256',
+    compatibility: ecs.Compatibility.Ec2,
+  });
+  taskDefinition.addContainer('TheContainer', {
+    image: ecs.ContainerImage.fromRegistry('foo/bar'),
+    memoryLimitMiB: 256,
+  });
+
+  expect(() => new tasks.RunEcsFargateTask({ cluster, taskDefinition }))
+    .toThrowError(/not configured for compatibility with Fargate/);
+});
+
+test('Canot create a Farkate task without a default container', () => {
+  const taskDefinition = new ecs.TaskDefinition(stack, 'TD', {
+    memoryMiB: '512',
+    cpu: '256',
+    compatibility: ecs.Compatibility.Fargate,
+  });
+  expect(() => new tasks.RunEcsFargateTask({ cluster, taskDefinition }))
+    .toThrowError(/must have at least one essential container/);
 });
 
 test('Running a Fargate Task', () => {
@@ -57,7 +82,6 @@ test('Running a Fargate Task', () => {
       LaunchType: "FARGATE",
       NetworkConfiguration: {
         AwsvpcConfiguration: {
-          AssignPublicIp: "DISABLED",
           SecurityGroups: [{"Fn::GetAtt": ["RunFargateSecurityGroup709740F2", "GroupId"]}],
           Subnets: [
             {Ref: "VpcPrivateSubnet1Subnet536B997A"},

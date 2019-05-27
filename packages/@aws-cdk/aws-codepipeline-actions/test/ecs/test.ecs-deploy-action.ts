@@ -74,7 +74,7 @@ function anyEcsService(): ecs.FargateService {
   taskDefinition.addContainer('MainContainer', {
     image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
   });
-  const vpc = new ec2.VpcNetwork(stack, 'VPC');
+  const vpc = new ec2.Vpc(stack, 'VPC');
   const cluster = new ecs.Cluster(stack, 'Cluster', {
     vpc,
   });

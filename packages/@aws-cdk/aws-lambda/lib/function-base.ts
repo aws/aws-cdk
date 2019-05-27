@@ -90,11 +90,6 @@ export interface IFunction extends IResource, logs.ILogSubscriptionDestination,
    */
   metricThrottles(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
 
-  /**
-   * Export this Function (without the role)
-   */
-  export(): FunctionAttributes;
-
   addEventSource(source: IEventSource): void;
 }
 
@@ -274,11 +269,6 @@ export abstract class FunctionBase extends Resource implements IFunction  {
     }
     return { arn: this.functionArn };
   }
-
-  /**
-   * Export this Function (without the role)
-   */
-  public abstract export(): FunctionAttributes;
 
   /**
    * Allows this Lambda to be used as a destination for bucket notifications.

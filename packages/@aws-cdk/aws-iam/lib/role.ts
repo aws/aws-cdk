@@ -1,4 +1,4 @@
-import { CfnOutput, Construct, Resource } from '@aws-cdk/cdk';
+import { Construct, Resource } from '@aws-cdk/cdk';
 import { Grant } from './grant';
 import { CfnRole } from './iam.generated';
 import { IIdentity } from './identity-base';
@@ -30,7 +30,8 @@ export interface RoleProps {
   /**
    * A list of ARNs for managed policies associated with this role.
    * You can add managed policies later using `attachManagedPolicy(arn)`.
-   * @default No managed policies.
+   *
+   * @default - No managed policies.
    */
   readonly managedPolicyArns?: string[];
 
@@ -39,21 +40,22 @@ export interface RoleProps {
    * created with the role, whereas those added by ``addToPolicy`` are added
    * using a separate CloudFormation resource (allowing a way around circular
    * dependencies that could otherwise be introduced).
-   * @default No policy is inlined in the Role resource.
+   *
+   * @default - No policy is inlined in the Role resource.
    */
   readonly inlinePolicies?: { [name: string]: PolicyDocument };
 
   /**
    * The path associated with this role. For information about IAM paths, see
    * Friendly Names and Paths in IAM User Guide.
+   *
+   * @default /
    */
   readonly path?: string;
 
   /**
    * A name for the IAM role. For valid values, see the RoleName parameter for
-   * the CreateRole action in the IAM API Reference. If you don't specify a
-   * name, AWS CloudFormation generates a unique physical ID and uses that ID
-   * for the group name.
+   * the CreateRole action in the IAM API Reference.
    *
    * IMPORTANT: If you specify a name, you cannot perform updates that require
    * replacement of this resource. You can perform updates that require no or
@@ -62,14 +64,16 @@ export interface RoleProps {
    * If you specify a name, you must specify the CAPABILITY_NAMED_IAM value to
    * acknowledge your template's capabilities. For more information, see
    * Acknowledging IAM Resources in AWS CloudFormation Templates.
+   *
+   * @default - AWS CloudFormation generates a unique physical ID and uses that ID
+   * for the group name.
    */
   readonly roleName?: string;
 
   /**
    * The maximum session duration (in seconds) that you want to set for the
-   * specified role. If you do not specify a value for this setting, the
-   * default maximum of one hour is applied. This setting can have a value
-   * from 1 hour (3600sec) to 12 (43200sec) hours.
+   * specified role. This setting can have a value from 1 hour (3600sec) to
+   * 12 (43200sec) hours.
    *
    * Anyone who assumes the role from the AWS CLI or API can use the
    * DurationSeconds API parameter or the duration-seconds CLI parameter to
@@ -83,6 +87,8 @@ export interface RoleProps {
    * but does not apply when you use those operations to create a console URL.
    *
    * @link https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_use.html
+   *
+   * @default 3600 (1 hour)
    */
   readonly maxSessionDurationSec?: number;
 }
@@ -102,38 +108,13 @@ export class Role extends Resource implements IRole {
    * @param roleArn the ARN of the role to import
    */
   public static fromRoleArn(scope: Construct, id: string, roleArn: string): IRole {
-    return Role.fromRoleAttributes(scope, id, { roleArn });
-  }
 
-  /**
-   * Import a role that already exists
-   */
-  public static fromRoleAttributes(scope: Construct, id: string, attrs: RoleAttributes): IRole {
-
-    /**
-     * A role that already exists
-     */
     class Import extends Construct implements IRole {
       public readonly grantPrincipal: IPrincipal = this;
       public readonly assumeRoleAction: string = 'sts:AssumeRole';
-      public readonly policyFragment = new ArnPrincipal(attrs.roleArn).policyFragment;
-      public readonly roleArn = attrs.roleArn;
-      public readonly roleName = scope.node.stack.parseArn(attrs.roleArn).resourceName!;
-      private readonly _roleId = attrs.roleId;
-
-      public get roleId() {
-        if (!this._roleId) {
-          throw new Error(`No roleId specified for imported role`);
-        }
-        return this._roleId;
-      }
-
-      public export(): RoleAttributes {
-        return {
-          roleArn: this.roleArn,
-          roleId: this._roleId
-        };
-      }
+      public readonly policyFragment = new ArnPrincipal(roleArn).policyFragment;
+      public readonly roleArn = roleArn;
+      public readonly roleName = scope.node.stack.parseArn(roleArn).resourceName!;
 
       public addToPolicy(_statement: PolicyStatement): boolean {
         // Statement will be added to resource instead
@@ -169,6 +150,7 @@ export class Role extends Resource implements IRole {
     }
 
     return new Import(scope, id);
+
   }
 
   public readonly grantPrincipal: IPrincipal = this;
@@ -188,6 +170,8 @@ export class Role extends Resource implements IRole {
   /**
    * Returns the stable and unique string identifying the role. For example,
    * AIDAJQABLZS4A3QDU576Q.
+   *
+   * @attribute
    */
   public readonly roleId: string;
 
@@ -238,13 +222,6 @@ export class Role extends Resource implements IRole {
       }
       return result;
     }
-  }
-
-  public export(): RoleAttributes {
-    return {
-      roleArn: new CfnOutput(this, 'RoleArn', { value: this.roleArn }).makeImportValue(),
-      roleId: new CfnOutput(this, 'RoleId', { value: this.roleId }).makeImportValue()
-    };
   }
 
   /**
@@ -310,24 +287,11 @@ export interface IRole extends IIdentity {
   readonly roleArn: string;
 
   /**
-   * Returns the stable and unique string identifying the role. For example,
-   * AIDAJQABLZS4A3QDU576Q.
-   *
-   * @attribute
-   */
-  readonly roleId: string;
-
-  /**
    * Returns the name of this role.
    *
    * @attribute
    */
   readonly roleName: string;
-
-  /**
-   * Export this role to another stack.
-   */
-  export(): RoleAttributes;
 
   /**
    * Grant the actions defined in actions to the identity Principal on this resource.
@@ -361,23 +325,4 @@ function validateMaxSessionDuration(duration?: number) {
   if (duration < 3600 || duration > 43200) {
     throw new Error(`maxSessionDuration is set to ${duration}, but must be >= 3600sec (1hr) and <= 43200sec (12hrs)`);
   }
-}
-
-/**
- * Properties to import a Role
- */
-export interface RoleAttributes {
-  /**
-   * The role's ARN
-   */
-  readonly roleArn: string;
-
-  /**
-   * The stable and unique string identifying the role. For example,
-   * AIDAJQABLZS4A3QDU576Q.
-   *
-   * @default If "roleId" is not specified for an imported role, then
-   * `role.roleId` will throw an exception. In most cases, role ID is not really needed.
-   */
-  readonly roleId?: string;
 }

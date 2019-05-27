@@ -11,7 +11,7 @@ const bucketA = new s3.Bucket(stack, 'MyBucket', {
 });
 
 const fn = new lambda.Function(stack, 'MyFunction', {
-  runtime: lambda.Runtime.NodeJS610,
+  runtime: lambda.Runtime.NodeJS810,
   handler: 'index.handler',
   code: lambda.Code.inline(`exports.handler = ${handler.toString()}`)
 });
@@ -20,8 +20,8 @@ const bucketB = new s3.Bucket(stack, 'YourBucket', {
   removalPolicy: cdk.RemovalPolicy.Destroy
 });
 
-bucketA.onObjectCreated(fn, { suffix: '.png' });
-bucketB.onEvent(s3.EventType.ObjectRemoved, fn);
+bucketA.addObjectCreatedNotification(fn, { suffix: '.png' });
+bucketB.addEventNotification(s3.EventType.ObjectRemoved, fn);
 
 app.run();
 

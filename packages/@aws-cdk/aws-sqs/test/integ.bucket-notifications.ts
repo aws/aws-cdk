@@ -11,14 +11,14 @@ const bucket1 = new s3.Bucket(stack, 'Bucket1', {
 });
 const queue = new sqs.Queue(stack, 'MyQueue');
 
-bucket1.onObjectCreated(queue);
+bucket1.addObjectCreatedNotification(queue);
 
 const bucket2 = new s3.Bucket(stack, 'Bucket2', {
   removalPolicy: cdk.RemovalPolicy.Destroy
 });
-bucket2.onObjectCreated(queue, { suffix: '.png' });
+bucket2.addObjectCreatedNotification(queue, { suffix: '.png' });
 
 const encryptedQueue = new sqs.Queue(stack, 'EncryptedQueue', { encryption: sqs.QueueEncryption.Kms });
-bucket1.onObjectRemoved(encryptedQueue);
+bucket1.addObjectRemovedNotification(encryptedQueue);
 
 app.run();

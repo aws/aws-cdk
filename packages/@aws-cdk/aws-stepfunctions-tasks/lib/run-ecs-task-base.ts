@@ -96,7 +96,7 @@ export class EcsRunTaskBase implements ec2.IConnectable, sfn.IStepFunctionsTask 
   }
 
   protected configureAwsVpcNetworking(
-      vpc: ec2.IVpcNetwork,
+      vpc: ec2.IVpc,
       assignPublicIp?: boolean,
       subnetSelection?: ec2.SubnetSelection,
       securityGroup?: ec2.ISecurityGroup) {
@@ -110,7 +110,7 @@ export class EcsRunTaskBase implements ec2.IConnectable, sfn.IStepFunctionsTask 
 
     this.networkConfiguration = {
       AwsvpcConfiguration: {
-        AssignPublicIp: assignPublicIp ? 'ENABLED' : 'DISABLED',
+        AssignPublicIp: assignPublicIp !== undefined ? (assignPublicIp ? 'ENABLED' : 'DISABLED') : undefined,
         Subnets: vpc.selectSubnets(subnetSelection).subnetIds,
         SecurityGroups: new cdk.Token(() => [this.securityGroup!.securityGroupId]),
       }

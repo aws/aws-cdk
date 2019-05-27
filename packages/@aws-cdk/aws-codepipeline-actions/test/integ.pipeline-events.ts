@@ -3,6 +3,7 @@
 import codebuild = require('@aws-cdk/aws-codebuild');
 import codecommit = require('@aws-cdk/aws-codecommit');
 import codepipeline = require('@aws-cdk/aws-codepipeline');
+import events = require('@aws-cdk/aws-events');
 import targets = require('@aws-cdk/aws-events-targets');
 import sns = require('@aws-cdk/aws-sns');
 import cdk = require('@aws-cdk/cdk');
@@ -45,12 +46,12 @@ pipeline.addStage({
 
 const topic = new sns.Topic(stack, 'MyTopic');
 
-pipeline.onStateChange('OnPipelineStateChange').addTarget(new targets.SnsTopic(topic), {
-  textTemplate: 'Pipeline <pipeline> changed state to <state>',
-  pathsMap: {
-    pipeline: '$.detail.pipeline',
-    state: '$.detail.state'
-  }
+const eventPipeline = events.EventField.fromPath('$.detail.pipeline');
+const eventState = events.EventField.fromPath('$.detail.state');
+pipeline.onStateChange('OnPipelineStateChange', {
+  target: new targets.SnsTopic(topic, {
+    message: events.RuleTargetInput.fromText(`Pipeline ${eventPipeline} changed state to ${eventState}`),
+  })
 });
 
 sourceStage.onStateChange('OnSourceStateChange', new targets.SnsTopic(topic));

@@ -1,4 +1,4 @@
-import { CfnOutput, Construct, IResource, Resource } from '@aws-cdk/cdk';
+import { Construct, IResource, Resource } from '@aws-cdk/cdk';
 import { CfnCertificate } from './certificatemanager.generated';
 import { apexDomain } from './util';
 
@@ -7,21 +7,6 @@ export interface ICertificate extends IResource {
    * The certificate's ARN
    *
    * @attribute
-   */
-  readonly certificateArn: string;
-
-  /**
-   * Export this certificate from the stack
-   */
-  export(): CertificateAttributes;
-}
-
-/**
- * Reference to an existing Certificate
- */
-export interface CertificateAttributes {
-  /**
-   * The certificate's ARN
    */
   readonly certificateArn: string;
 }
@@ -41,6 +26,8 @@ export interface CertificateProps {
    * Alternative domain names on your certificate.
    *
    * Use this to register alternative domain names that represent the same site.
+   *
+   * @default - No additional FQDNs will be included as alternative domain names.
    */
   readonly subjectAlternativeNames?: string[];
 
@@ -49,7 +36,7 @@ export interface CertificateProps {
    *
    * Has to be a superdomain of the requested domain.
    *
-   * @default Apex domain is used for every domain that's not overridden.
+   * @default - Apex domain is used for every domain that's not overridden.
    */
   readonly validationDomains?: {[domainName: string]: string};
 }
@@ -79,9 +66,6 @@ export class Certificate extends Resource implements ICertificate {
   public static fromCertificateArn(scope: Construct, id: string, certificateArn: string): ICertificate {
     class Import extends Resource implements ICertificate {
       public certificateArn = certificateArn;
-      public export(): CertificateAttributes {
-        return { certificateArn };
-      }
     }
 
     return new Import(scope, id);
@@ -117,14 +101,5 @@ export class Certificate extends Resource implements ICertificate {
         validationDomain: overrideDomain || apexDomain(domainName)
       };
     }
-  }
-
-  /**
-   * Export this certificate from the stack
-   */
-  public export(): CertificateAttributes {
-    return {
-      certificateArn: new CfnOutput(this, 'Arn', { value: this.certificateArn }).makeImportValue().toString()
-    };
   }
 }

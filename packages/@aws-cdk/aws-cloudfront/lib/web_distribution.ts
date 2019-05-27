@@ -1,7 +1,7 @@
-import route53 = require('@aws-cdk/aws-route53');
 import s3 = require('@aws-cdk/aws-s3');
 import cdk = require('@aws-cdk/cdk');
 import { CfnDistribution } from './cloudfront.generated';
+import { IDistribution } from './distribution';
 
 export enum HttpVersion {
   HTTP1_1 = "http1.1",
@@ -52,7 +52,7 @@ export interface AliasConfiguration {
    *
    * See the notes on SSLMethod if you wish to use other SSL termination types.
    *
-   * @default SNI
+   * @default SSLMethod.SNI
    * @see https://docs.aws.amazon.com/cloudfront/latest/APIReference/API_ViewerCertificate.html
    */
   readonly sslMethod?: SSLMethod;
@@ -63,7 +63,7 @@ export interface AliasConfiguration {
    * CloudFront serves your objects only to browsers or devices that support at
    * least the SSL version that you specify.
    *
-   * @default securityPolicy: SSLv3 if sslMethod VIP, TLSv1 if sslMethod SNI
+   * @default - SSLv3 if sslMethod VIP, TLSv1 if sslMethod SNI
    */
   readonly securityPolicy?: SecurityPolicyProtocol;
 }
@@ -108,7 +108,7 @@ export interface LoggingConfiguration {
   /**
    * Bucket to log requests to
    *
-   * @default A logging bucket is automatically created
+   * @default - A logging bucket is automatically created.
    */
   readonly bucket?: s3.IBucket,
 
@@ -122,7 +122,7 @@ export interface LoggingConfiguration {
   /**
    * Where in the bucket to store logs
    *
-   * @default No prefix
+   * @default - No prefix.
    */
   readonly prefix?: string
 }
@@ -162,7 +162,7 @@ export interface SourceConfiguration {
   /**
    * Any additional headers to pass to the origin
    *
-   * @default no additional headers are passed
+   * @default - No additional headers are passed.
    */
   readonly originHeaders?: { [key: string]: string };
 }
@@ -193,28 +193,28 @@ export interface CustomOriginConfig {
   /**
    * The keep alive timeout when making calls in seconds.
    *
-   * @default: 5 seconds
+   * @default 5
    */
   readonly originKeepaliveTimeoutSeconds?: number,
 
   /**
    * The protocol (http or https) policy to use when interacting with the origin.
    *
-   * @default: HttpsOnly
+   * @default OriginProtocolPolicy.HttpsOnly
    */
   readonly originProtocolPolicy?: OriginProtocolPolicy,
 
   /**
    * The read timeout when calling the origin in seconds
    *
-   * @default 30 seconds
+   * @default 30
    */
   readonly originReadTimeoutSeconds?: number
 
   /**
    * The SSL versions to use when interacting with the origin.
    *
-   * @default [TLSv1_2]
+   * @default OriginSslPolicy.TLSv1_2
    */
   readonly allowedOriginSSLVersions?: OriginSslPolicy[];
 
@@ -370,19 +370,21 @@ export interface CloudFrontWebDistributionProps {
   /**
    * AliasConfiguration is used to configured CloudFront to respond to requests on custom domain names.
    *
-   * @default none
+   * @default - None.
    */
   readonly aliasConfiguration?: AliasConfiguration;
 
   /**
-   * A comment for this distribution in the cloud front console.
+   * A comment for this distribution in the CloudFront console.
+   *
+   * @default - No comment is added to distribution.
    */
   readonly comment?: string;
 
   /**
    * The default object to serve.
    *
-   * @default "index.html"
+   * @default - "index.html" is served.
    */
   readonly defaultRootObject?: string;
 
@@ -403,7 +405,7 @@ export interface CloudFrontWebDistributionProps {
   /**
    * The price class for the distribution (this impacts how many locations CloudFront uses for your distribution, and billing)
    *
-   * @default PriceClass_100: the cheapest option for CloudFront is picked by default.
+   * @default PriceClass.PriceClass100 the cheapest option for CloudFront is picked by default.
    */
   readonly priceClass?: PriceClass;
 
@@ -424,17 +426,25 @@ export interface CloudFrontWebDistributionProps {
    * You can pass an empty object ({}) to have us auto create a bucket for logging.
    * Omission of this property indicates no logging is to be enabled.
    *
-   * @default: no logging is enabled by default.
+   * @default - no logging is enabled by default.
    */
   readonly loggingConfig?: LoggingConfiguration;
 
   /**
-   * How CloudFront should handle requests that are no successful (eg PageNotFound)
+   * How CloudFront should handle requests that are not successful (eg PageNotFound)
+   *
+   * By default, CloudFront does not replace HTTP status codes in the 4xx and 5xx range
+   * with custom error messages. CloudFront does not cache HTTP status codes.
+   *
+   * @default - No custom error configuration.
    */
   readonly errorConfigurations?: CfnDistribution.CustomErrorResponseProperty[];
 
   /**
-   * Optional AWS WAF WebACL to associate with this CloudFront distribution
+   * Unique identifier that specifies the AWS WAF web ACL to associate with this CloudFront distribution.
+   * @see https://docs.aws.amazon.com/waf/latest/developerguide/what-is-aws-waf.html
+   *
+   * @default - No AWS Web Application Firewall web access control list (web ACL).
    */
   readonly webACLId?: string;
 
@@ -477,14 +487,7 @@ interface BehaviorWithOrigin extends Behavior {
  *
  *
  */
-export class CloudFrontWebDistribution extends cdk.Construct implements route53.IAliasRecordTarget {
-
-  /**
-   * The hosted zone Id if using an alias record in Route53.
-   * This value never changes.
-   */
-  public readonly aliasHostedZoneId: string = "Z2FDTNDATAQYW2";
-
+export class CloudFrontWebDistribution extends cdk.Construct implements IDistribution {
   /**
    * The logging bucket for this CloudFront distribution.
    * If logging is not enabled for this distribution - this property will be undefined.
@@ -566,7 +569,7 @@ export class CloudFrontWebDistribution extends cdk.Construct implements route53.
       const originProperty: CfnDistribution.OriginProperty = {
         id: originId,
         domainName: originConfig.s3OriginSource
-          ? originConfig.s3OriginSource.s3BucketSource.bucketDomainName
+          ? originConfig.s3OriginSource.s3BucketSource.bucketRegionalDomainName
           : originConfig.customOriginSource!.domainName,
         originPath: originConfig.originPath,
         originCustomHeaders: originHeaders.length > 0 ? originHeaders : undefined,
@@ -660,7 +663,7 @@ export class CloudFrontWebDistribution extends cdk.Construct implements route53.
       distributionConfig = {
         ...distributionConfig,
         logging: {
-          bucket: this.loggingBucket.bucketDomainName,
+          bucket: this.loggingBucket.bucketRegionalDomainName,
           includeCookies: props.loggingConfig.includeCookies || false,
           prefix: props.loggingConfig.prefix
         }
@@ -670,13 +673,6 @@ export class CloudFrontWebDistribution extends cdk.Construct implements route53.
     const distribution = new CfnDistribution(this, 'CFDistribution', { distributionConfig });
     this.domainName = distribution.distributionDomainName;
     this.distributionId = distribution.distributionId;
-  }
-
-  public asAliasRecordTarget(): route53.AliasRecordTargetProps {
-    return {
-      hostedZoneId: this.aliasHostedZoneId,
-      dnsName: this.domainName
-    };
   }
 
   private toBehavior(input: BehaviorWithOrigin, protoPolicy?: ViewerProtocolPolicy) {

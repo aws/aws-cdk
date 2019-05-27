@@ -34,7 +34,7 @@
             "Bucket": {
               "Fn::GetAtt": [
                 "Bucket83908E77",
-                "DomainName"
+                "RegionalDomainName"
               ]
             },
             "IncludeCookies": true,
@@ -104,7 +104,7 @@
             "Bucket": {
               "Fn::GetAtt": [
                 "AnAmazingWebsiteProbably2LoggingBucket222F7CE9",
-                "DomainName"
+                "RegionalDomainName"
               ]
             },
             "IncludeCookies": false

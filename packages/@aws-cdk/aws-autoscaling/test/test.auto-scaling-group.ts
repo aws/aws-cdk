@@ -524,7 +524,7 @@ export = {
 };
 
 function mockVpc(stack: cdk.Stack) {
-  return ec2.VpcNetwork.import(stack, 'MyVpc', {
+  return ec2.Vpc.fromVpcAttributes(stack, 'MyVpc', {
     vpcId: 'my-vpc',
     availabilityZones: [ 'az1' ],
     publicSubnetIds: [ 'pub1' ],

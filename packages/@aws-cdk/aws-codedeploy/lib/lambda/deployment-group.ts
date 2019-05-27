@@ -29,11 +29,6 @@ export interface ILambdaDeploymentGroup extends cdk.IResource {
    * @attribute
    */
   readonly deploymentGroupArn: string;
-
-  /**
-   * Export this Deployment Group for use in another stack or application.
-   */
-  export(): LambdaDeploymentGroupAttributes;
 }
 
 /**
@@ -43,14 +38,14 @@ export interface LambdaDeploymentGroupProps {
   /**
    * The reference to the CodeDeploy Lambda Application that this Deployment Group belongs to.
    *
-   * @default one will be created for you
+   * @default - One will be created for you.
    */
   readonly application?: ILambdaApplication;
 
   /**
    * The physical, human-readable name of the CodeDeploy Deployment Group.
    *
-   * @default an auto-generated name will be used
+   * @default - An auto-generated name will be used.
    */
   readonly deploymentGroupName?: string;
 
@@ -76,7 +71,7 @@ export interface LambdaDeploymentGroupProps {
   /**
    * The service Role of this Deployment Group.
    *
-   * @default a new Role will be created.
+   * @default - A new Role will be created.
    */
   readonly role?: iam.IRole;
 
@@ -90,11 +85,15 @@ export interface LambdaDeploymentGroupProps {
 
   /**
    * The Lambda function to run before traffic routing starts.
+   *
+   * @default - None.
    */
   readonly preHook?: lambda.IFunction;
 
   /**
    * The Lambda function to run after traffic routing starts.
+   *
+   * @default - None.
    */
   readonly postHook?: lambda.IFunction;
 
@@ -107,6 +106,8 @@ export interface LambdaDeploymentGroupProps {
 
   /**
    * The auto-rollback configuration for this Deployment Group.
+   *
+   * @default - default AutoRollbackConfig.
    */
   readonly autoRollback?: AutoRollbackConfig;
 }
@@ -169,10 +170,10 @@ export class LambdaDeploymentGroup extends cdk.Resource implements ILambdaDeploy
     this.deploymentGroupArn = arnForDeploymentGroup(this.application.applicationName, this.deploymentGroupName);
 
     if (props.preHook) {
-      this.onPreHook(props.preHook);
+      this.addPreHook(props.preHook);
     }
     if (props.postHook) {
-      this.onPostHook(props.postHook);
+      this.addPostHook(props.postHook);
     }
 
     (props.alias.node.findChild('Resource') as lambda.CfnAlias).options.updatePolicy = {
@@ -199,7 +200,7 @@ export class LambdaDeploymentGroup extends cdk.Resource implements ILambdaDeploy
    * @param preHook function to run before deployment beings
    * @throws an error if a pre-hook function is already configured
    */
-  public onPreHook(preHook: lambda.IFunction): void {
+  public addPreHook(preHook: lambda.IFunction): void {
     if (this.preHook !== undefined) {
       throw new Error('A pre-hook function is already defined for this deployment group');
     }
@@ -213,7 +214,7 @@ export class LambdaDeploymentGroup extends cdk.Resource implements ILambdaDeploy
    * @param postHook function to run after deployment completes
    * @throws an error if a post-hook function is already configured
    */
-  public onPostHook(postHook: lambda.IFunction): void {
+  public addPostHook(postHook: lambda.IFunction): void {
     if (this.postHook !== undefined) {
       throw new Error('A post-hook function is already defined for this deployment group');
     }
@@ -233,15 +234,6 @@ export class LambdaDeploymentGroup extends cdk.Resource implements ILambdaDeploy
       resourceArns: [this.deploymentGroupArn],
       actions: ['codedeploy:PutLifecycleEventHookExecutionStatus'],
     });
-  }
-
-  public export(): LambdaDeploymentGroupAttributes {
-    return {
-      application: this.application,
-      deploymentGroupName: new cdk.CfnOutput(this, 'DeploymentGroupName', {
-        value: this.deploymentGroupName
-      }).makeImportValue().toString()
-    };
   }
 }
 
@@ -270,14 +262,10 @@ class ImportedLambdaDeploymentGroup extends cdk.Construct implements ILambdaDepl
   public readonly deploymentGroupName: string;
   public readonly deploymentGroupArn: string;
 
-  constructor(scope: cdk.Construct, id: string, private readonly props: LambdaDeploymentGroupAttributes) {
+  constructor(scope: cdk.Construct, id: string, props: LambdaDeploymentGroupAttributes) {
     super(scope, id);
     this.application = props.application;
     this.deploymentGroupName = props.deploymentGroupName;
     this.deploymentGroupArn = arnForDeploymentGroup(props.application.applicationName, props.deploymentGroupName);
-  }
-
-  public export() {
-    return this.props;
   }
 }

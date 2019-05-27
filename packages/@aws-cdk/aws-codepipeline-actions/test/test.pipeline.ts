@@ -310,9 +310,9 @@ export = {
       ],
     });
 
-    pipeline.onStateChange('OnStateChange', new targets.SnsTopic(topic), {
+    pipeline.onStateChange('OnStateChange', {
+      target: new targets.SnsTopic(topic),
       description: 'desc',
-      scheduleExpression: 'now',
       eventPattern: {
         detail: {
           state: [ 'FAILED' ]
@@ -360,7 +360,6 @@ export = {
         }
         ]
       },
-      "ScheduleExpression": "now",
       "State": "ENABLED",
       "Targets": [
         {
@@ -434,7 +433,7 @@ export = {
     const lambdaFun = new lambda.Function(stack, 'Function', {
       code: new lambda.InlineCode('bla'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NodeJS43,
+      runtime: lambda.Runtime.NodeJS810,
     });
 
     const pipeline = new codepipeline.Pipeline(stack, 'Pipeline');

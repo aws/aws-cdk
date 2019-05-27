@@ -1,4 +1,4 @@
-import { CfnOutput, Construct, IResource, Resource } from '@aws-cdk/cdk';
+import { Construct, IResource, Resource } from '@aws-cdk/cdk';
 import { DropSpamReceiptRule, ReceiptRule, ReceiptRuleOptions } from './receipt-rule';
 import { CfnReceiptRuleSet } from './ses.generated';
 
@@ -17,11 +17,6 @@ export interface IReceiptRuleSet extends IResource {
    * the last added rule unless `after` is specified.
    */
   addRule(id: string, options?: ReceiptRuleOptions): ReceiptRule;
-
-  /**
-   * Exports this receipt rule set from the stack.
-   */
-  export(): ReceiptRuleSetAttributes;
 }
 
 /**
@@ -31,13 +26,15 @@ export interface ReceiptRuleSetProps {
   /**
    * The name for the receipt rule set.
    *
-   * @default a CloudFormation generated name
+   * @default - A CloudFormation generated name.
    */
   readonly name?: string;
 
   /**
    * The list of rules to add to this rule set. Rules are added in the same
    * order as they appear in the list.
+   *
+   * @default - No rules are added to the rule set.
    */
   readonly rules?: ReceiptRuleOptions[]
 
@@ -72,8 +69,6 @@ abstract class ReceiptRuleSetBase extends Resource implements IReceiptRuleSet {
     return this.lastAddedRule;
   }
 
-  public abstract export(): ReceiptRuleSetAttributes;
-
   /**
    * Adds a drop spam rule
    */
@@ -95,9 +90,6 @@ export class ReceiptRuleSet extends ReceiptRuleSetBase {
   public static fromReceiptRuleSetName(scope: Construct, id: string, receiptRuleSetName: string): IReceiptRuleSet {
     class Import extends ReceiptRuleSetBase implements IReceiptRuleSet {
       public readonly receiptRuleSetName = receiptRuleSetName;
-      public export(): ReceiptRuleSetAttributes {
-        return { receiptRuleSetName };
-      }
     }
     return new Import(scope, id);
   }
@@ -122,23 +114,4 @@ export class ReceiptRuleSet extends ReceiptRuleSetBase {
       }
     }
   }
-
-  /**
-   * Exports this receipt rule set from the stack.
-   */
-  public export(): ReceiptRuleSetAttributes {
-    return {
-      receiptRuleSetName: new CfnOutput(this, 'ReceiptRuleSetName', { value: this.receiptRuleSetName }).makeImportValue().toString()
-    };
-  }
-}
-
-/**
- * Construction properties for an ImportedReceiptRuleSet.
- */
-export interface ReceiptRuleSetAttributes {
-  /**
-   * The receipt rule set name.
-   */
-  readonly receiptRuleSetName: string;
 }

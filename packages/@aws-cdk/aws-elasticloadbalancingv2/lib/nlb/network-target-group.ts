@@ -27,6 +27,8 @@ export interface NetworkTargetGroupProps extends BaseTargetGroupProps {
    * Can be `Instance`, `IPAddress`, or any self-registering load balancing
    * target. If you use either `Instance` or `IPAddress` as targets, all
    * target must be of the same type.
+   *
+   * @default - No targets.
    */
   readonly targets?: INetworkLoadBalancerTarget[];
 }

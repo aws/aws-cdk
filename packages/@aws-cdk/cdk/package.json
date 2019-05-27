@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/cdk",
-  "version": "0.31.0",
+  "version": "0.32.0",
   "description": "AWS Cloud Development Kit Core Library",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -35,7 +35,9 @@
     "exclude": [
       "construct-ctor:@aws-cdk/cdk.App.<initializer>",
       "construct-ctor:@aws-cdk/cdk.Root.<initializer>",
-      "construct-ctor:@aws-cdk/cdk.Stack.<initializer>.params*"
+      "construct-ctor:@aws-cdk/cdk.Stack.<initializer>.params*",
+      "props-no-cfn-types:@aws-cdk/cdk.CfnOutputProps*",
+      "props-no-cfn-types:@aws-cdk/cdk.StringListCfnOutputProps*"
     ]
   },
   "scripts": {
@@ -45,7 +47,9 @@
     "test": "cdk-test",
     "pkglint": "pkglint -f",
     "package": "cdk-package",
-    "awslint": "cdk-awslint"
+    "awslint": "cdk-awslint",
+    "build+test+package": "npm run build+test && npm run package",
+    "build+test": "npm run build && npm test"
   },
   "nyc": {
     "statements": 55,
@@ -65,19 +69,19 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@types/lodash": "^4.14.123",
-    "cdk-build-tools": "^0.31.0",
-    "cfn2ts": "^0.31.0",
+    "@types/lodash": "^4.14.130",
+    "cdk-build-tools": "^0.32.0",
+    "cfn2ts": "^0.32.0",
     "fast-check": "^1.14.0",
     "lodash": "^4.17.11",
-    "pkglint": "^0.31.0"
+    "pkglint": "^0.32.0"
   },
   "dependencies": {
-    "@aws-cdk/cx-api": "^0.31.0"
+    "@aws-cdk/cx-api": "^0.32.0"
   },
   "homepage": "https://github.com/awslabs/aws-cdk",
   "peerDependencies": {
-    "@aws-cdk/cx-api": "^0.31.0"
+    "@aws-cdk/cx-api": "^0.32.0"
   },
   "engines": {
     "node": ">= 8.10.0"
