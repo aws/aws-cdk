@@ -1,0 +1,5 @@
+/**
+ * @license AWS CDK v0.0.0-PLACEHOLDER
+ * (c) 2010-2019 Amazon LLC. https://amazon.com/
+ * License: Apache-2.0
+ */

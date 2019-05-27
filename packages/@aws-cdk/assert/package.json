@@ -1,19 +1,9 @@
 {
   "name": "@aws-cdk/assert",
-  "version": "0.32.0",
+  "version": "0.0.0-PLACEHOLDER",
   "description": "An assertion library for use with CDK Apps",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
-  "scripts": {
-    "build": "cdk-build",
-    "watch": "cdk-watch",
-    "lint": "cdk-lint",
-    "test": "cdk-test",
-    "pkglint": "pkglint -f",
-    "package": "cdk-package",
-    "build+test+package": "npm run build+test && npm run package",
-    "build+test": "npm run build && npm test"
-  },
   "nyc": {
     "statements": 40,
     "lines": 40,
@@ -25,17 +15,10 @@
     "organization": true
   },
   "license": "Apache-2.0",
-  "devDependencies": {
-    "@types/jest": "^24.0.11",
-    "cdk-build-tools": "^0.32.0",
-    "pkglint": "^0.32.0"
-  },
   "dependencies": {
-    "@aws-cdk/cdk": "^0.32.0",
-    "@aws-cdk/cloudformation-diff": "^0.32.0",
-    "@aws-cdk/cx-api": "^0.32.0",
-    "jest": "^24.7.1",
-    "source-map-support": "^0.5.12"
+    "@aws-cdk/cdk": "0.0.0-PLACEHOLDER",
+    "@aws-cdk/cloudformation-diff": "0.0.0-PLACEHOLDER",
+    "@aws-cdk/cx-api": "0.0.0-PLACEHOLDER"
   },
   "repository": {
     "url": "https://github.com/awslabs/aws-cdk.git",

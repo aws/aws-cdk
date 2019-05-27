@@ -8,12 +8,18 @@
 import fastJsonPatch = require('fast-json-patch');
 import fs = require('fs-extra');
 import md5 = require('md5');
+import minimist = require('minimist');
 import path = require('path');
 import { schema } from '../lib';
 import { detectScrutinyTypes } from './scrutiny';
 
-async function main() {
-  const inputDir = path.join(process.cwd(), 'spec-source');
+interface Args {
+  output: string;
+}
+
+async function main(args: string[]) {
+  const parsedArgs: Args = minimist<Args>(args);
+  const inputDir = path.join(__dirname, '../', 'spec-source');
   const files = await fs.readdir(inputDir);
   const spec: schema.Specification = { PropertyTypes: {}, ResourceTypes: {}, Fingerprint: '' };
   for (const file of files.filter(n => n.endsWith('.json')).sort()) {
@@ -30,7 +36,7 @@ async function main() {
 
   spec.Fingerprint = md5(JSON.stringify(normalize(spec)));
 
-  const outDir = path.join(process.cwd(), 'spec');
+  const outDir = parsedArgs.output;
   await fs.mkdirp(outDir);
   await fs.writeJson(path.join(outDir, 'specification.json'), spec, { spaces: 2 });
 }
@@ -108,7 +114,7 @@ function normalize(spec: schema.Specification): schema.Specification {
   }
 }
 
-main()
+main(process.argv.slice(2))
   .catch(e => {
     // tslint:disable-next-line:no-console
     console.error(e.stack);

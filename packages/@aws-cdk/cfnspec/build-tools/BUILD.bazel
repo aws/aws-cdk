@@ -1,0 +1,31 @@
+package(default_visibility = ["//visibility:public"])
+
+load("//tools:defaults.bzl", "ts_library")
+load("@build_bazel_rules_nodejs//:defs.bzl", "nodejs_binary")
+
+
+ts_library(
+  name = "cfnspec_lib",
+  srcs = glob(["**/*.ts"]),
+  deps = [
+      "//packages/@aws-cdk/cfnspec:cfnspec_base",
+      "@npm//@types/md5",
+      "@npm//@types/minimist",
+      "@npm//@types/node",
+      "@npm//fast-json-patch",
+      "@npm//fs-extra",
+      "@npm//md5",
+      "@npm//minimist",
+      "@npm//readline",
+  ],
+)
+
+# Executable for the custom cfn2ts rule (see cfn2ts.bzl).
+nodejs_binary(
+  name = "cfnspec",
+  data = [
+    ":cfnspec_lib",
+    "//packages/@aws-cdk/cfnspec:spec_assets"
+  ],
+  entry_point = "aws_cdk/packages/@aws-cdk/cfnspec/build-tools/build.js",
+)

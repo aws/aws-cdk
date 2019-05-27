@@ -1,3 +1,5 @@
+/// <reference types="node" />
+
 export * from './connections';
 export * from './instance-types';
 export * from './machine-image';

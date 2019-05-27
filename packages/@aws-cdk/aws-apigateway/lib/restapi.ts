@@ -173,7 +173,7 @@ export class RestApi extends Resource implements IRestApi {
    *
    * @attribute
    */
-  public readonly restApiRootResourceId: string;
+  public readonly restApiRootResourceId !: string;
 
   /**
    * API Gateway deployment that represents the latest changes of the API.

@@ -1,3 +1,6 @@
+/// <reference types="node" />
+/// <reference types="aws-lambda" />
+
 export * from './alias';
 export * from './function-base';
 export * from './function';

@@ -1,0 +1,27 @@
+load("//tools:defaults.bzl", "cdk_library", "npm_package")
+
+package(default_visibility = ["//visibility:public"])
+
+cdk_library(
+    name = "alexa-ask",
+    scope = ["Alexa::ASK"],
+    outputs = ["lib/ask.generated.ts"],
+    srcs = glob(["*.ts", "lib/**/*.ts"]),
+    deps = [
+        "//packages/@aws-cdk/cdk",
+        "//packages/@aws-cdk/cx-api",
+    ],
+)
+
+npm_package(
+    name = "npm_package",
+    srcs = [
+      "package.json",
+    ],
+    tags = [
+        "release-with-framework",
+    ],
+    deps = [
+        ":alexa-ask",
+    ],
+)

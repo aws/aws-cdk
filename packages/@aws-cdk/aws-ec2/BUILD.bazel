@@ -1,0 +1,29 @@
+load("//tools:defaults.bzl", "cdk_library", "npm_package")
+
+package(default_visibility = ["//visibility:public"])
+
+cdk_library(
+    name = "aws-ec2",
+    scope = ["AWS::EC2"],
+    outputs = ["lib/ec2.generated.ts", "lib/ec2-augmentations.generated.ts"],
+    srcs = glob(["*.ts", "lib/**/*.ts"]),
+    deps = [
+        "//packages/@aws-cdk/aws-cloudwatch",
+        "//packages/@aws-cdk/aws-iam",
+        "//packages/@aws-cdk/cdk",
+        "//packages/@aws-cdk/cx-api",
+    ],
+)
+
+npm_package(
+    name = "npm_package",
+    srcs = [
+      "package.json",
+    ],
+    tags = [
+        "release-with-framework",
+    ],
+    deps = [
+        ":aws-ec2",
+    ],
+)

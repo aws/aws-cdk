@@ -1,0 +1,35 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "declaration": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "strictNullChecks": true,
+    "strictPropertyInitialization": true,
+    "outDir": "../dist/all/@aws-cdk",
+    "noImplicitAny": true,
+    "noFallthroughCasesInSwitch": true,
+    "paths": {
+      "@aws-cdk/*": [
+        "./@aws-cdk/*"
+      ],
+      "aws-cdk": [
+        "./aws-cdk"
+      ],
+      "cdk": [
+        "./cdk"
+      ]
+    },
+    "rootDir": ".",
+    "inlineSourceMap": true,
+    "lib": ["es5"],
+    "skipDefaultLibCheck": true,
+    "skipLibCheck": true,
+    "target": "es5"
+  },
+  "bazelOptions": {
+    "suppressTsconfigOverrideWarnings": true
+  }
+}

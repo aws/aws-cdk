@@ -1,0 +1,24 @@
+load("//tools:defaults.bzl", "jasmine_node_test", "ts_library")
+
+ts_library(
+    name = "test_lib",
+    testonly = True,
+    srcs = glob(
+        ["**/*.ts"],
+    ),
+    deps = [
+        "//packages/@aws-cdk/alexa-ask",
+        "//packages/@aws-cdk/assert",
+        "//packages/@aws-cdk/cdk"
+    ],
+)
+
+jasmine_node_test(
+    name = "test",
+    bootstrap = [],
+    deps = [
+        ":test_lib",
+    ],
+    data = [
+    ]
+)

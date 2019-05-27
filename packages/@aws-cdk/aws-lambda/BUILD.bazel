@@ -1,0 +1,35 @@
+load("//tools:defaults.bzl", "cdk_library", "npm_package")
+
+package(default_visibility = ["//visibility:public"])
+
+cdk_library(
+    name = "aws-lambda",
+    scope = ["AWS::Lambda"],
+    outputs = ["lib/lambda.generated.ts", "lib/lambda-augmentations.generated.ts"],
+    srcs = glob(["*.ts", "lib/**/*.ts"]),
+    deps = [
+        "//packages/@aws-cdk/assets",
+        "//packages/@aws-cdk/aws-cloudwatch",
+        "//packages/@aws-cdk/aws-ec2",
+        "//packages/@aws-cdk/aws-iam",
+        "//packages/@aws-cdk/aws-logs",
+        "//packages/@aws-cdk/aws-s3",
+        "//packages/@aws-cdk/aws-s3-notifications",
+        "//packages/@aws-cdk/aws-sqs",
+        "//packages/@aws-cdk/cdk",
+        "@npm//aws-sdk",
+    ],
+)
+
+npm_package(
+    name = "npm_package",
+    srcs = [
+      "package.json",
+    ],
+    tags = [
+        "release-with-framework",
+    ],
+    deps = [
+        ":aws-lambda",
+    ],
+)

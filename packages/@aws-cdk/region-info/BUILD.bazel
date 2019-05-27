@@ -1,0 +1,34 @@
+load("//tools:defaults.bzl", "ts_library", "npm_package")
+load("//packages/@aws-cdk/region-info/build-tools:region-info.bzl", "region_info")
+
+package(default_visibility = ["//visibility:public"])
+
+region_info(
+    name = "region-info-pre",
+    output_name = "lib/built-ins.generated.ts",
+)
+
+ts_library(
+    name = "region-info-base",
+    srcs = glob(["lib/**/*.ts"], exclude=["lib/index.ts"]),
+    module_name = None,
+)
+
+ts_library(
+    name = "region-info",
+    srcs = glob(["*.ts"]) + ["lib/index.ts"] + [":region-info-pre"],
+    deps = [":region-info-base"],
+)
+
+npm_package(
+    name = "npm_package",
+    srcs = [
+        "package.json",
+    ],
+    tags = [
+        "release-with-framework",
+    ],
+    deps = [
+        ":region-info",
+    ],
+)

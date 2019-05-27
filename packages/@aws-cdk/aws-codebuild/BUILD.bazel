@@ -1,0 +1,36 @@
+load("//tools:defaults.bzl", "cdk_library", "npm_package")
+
+package(default_visibility = ["//visibility:public"])
+
+cdk_library(
+    name = "aws-codebuild",
+    scope = ["AWS::CodeBuild"],
+    outputs = ["lib/codebuild.generated.ts"],
+    srcs = glob(["*.ts", "lib/**/*.ts"]),
+    deps = [
+        "//packages/@aws-cdk/assets",
+        "//packages/@aws-cdk/assets-docker",
+        "//packages/@aws-cdk/aws-codecommit",
+        "//packages/@aws-cdk/aws-cloudwatch",
+        "//packages/@aws-cdk/aws-ec2",
+        "//packages/@aws-cdk/aws-ecr",
+        "//packages/@aws-cdk/aws-events",
+        "//packages/@aws-cdk/aws-kms",
+        "//packages/@aws-cdk/aws-iam",
+        "//packages/@aws-cdk/aws-s3",
+        "//packages/@aws-cdk/cdk",
+    ],
+)
+
+npm_package(
+    name = "npm_package",
+    srcs = [
+      "package.json",
+    ],
+    tags = [
+        "release-with-framework",
+    ],
+    deps = [
+        ":aws-codebuild",
+    ],
+)

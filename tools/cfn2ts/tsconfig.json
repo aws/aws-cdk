@@ -18,5 +18,8 @@
   },
   "exclude": [
     "test/enrichments/**"
-  ]
+  ],
+  "bazelOptions": {
+    "suppressTsconfigOverrideWarnings": true
+  }
 }

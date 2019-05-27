@@ -1,0 +1,38 @@
+load("//tools:defaults.bzl", "ts_library", "npm_package")
+
+package(default_visibility = ["//visibility:public"])
+
+ts_library(
+    name = "cdk",
+    srcs = glob(["*.ts", "src/**/*.ts"]),
+    node_modules = "@npm//typescript:typescript__typings",
+    deps = [
+        "@npm//@types/node",
+        "//packages/@aws-cdk/aws-apigateway",
+        "//packages/@aws-cdk/aws-cloudfront",
+        "//packages/@aws-cdk/aws-cloudformation",
+        "//packages/@aws-cdk/aws-cloudtrail",
+        "//packages/@aws-cdk/aws-cognito",
+        "//packages/@aws-cdk/aws-ec2",
+        "//packages/@aws-cdk/aws-iam",
+        "//packages/@aws-cdk/aws-lambda",
+        "//packages/@aws-cdk/aws-route53",
+        "//packages/@aws-cdk/aws-s3",
+        "//packages/@aws-cdk/aws-s3-deployment",
+        "//packages/@aws-cdk/aws-sam",
+        "//packages/@aws-cdk/cdk",
+    ],
+)
+
+npm_package(
+    name = "npm_package",
+    srcs = [
+      "package.json",
+    ],
+    tags = [
+        "release-with-framework",
+    ],
+    deps = [
+        ":cdk",
+    ],
+)

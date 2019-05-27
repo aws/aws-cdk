@@ -1,0 +1,34 @@
+load("//tools:defaults.bzl", "ts_library", "npm_package")
+
+package(default_visibility = ["//visibility:public"])
+
+filegroup(
+    name = "lambda-packages",
+    srcs = glob(["lambda-packages/**/*"]),
+)
+
+ts_library(
+    name = "aws-dynamodb-global",
+    srcs = glob(["*.ts", "lib/**/*.ts"]),
+    deps = [
+        "//packages/@aws-cdk/aws-cloudformation",
+        "//packages/@aws-cdk/aws-dynamodb",
+        "//packages/@aws-cdk/aws-iam",
+        "//packages/@aws-cdk/aws-lambda",
+        "//packages/@aws-cdk/cdk",
+    ],
+)
+
+npm_package(
+    name = "npm_package",
+    srcs = [
+      "package.json",
+    ],
+    tags = [
+        "release-with-framework",
+    ],
+    deps = [
+        ":aws-dynamodb-global",
+        ":lambda-packages"
+    ],
+)

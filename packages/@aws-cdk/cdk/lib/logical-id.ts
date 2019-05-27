@@ -110,7 +110,7 @@ export class LogicalIDs {
     const keys = new Set<string>();
     Object.keys(this.renames).forEach(keys.add.bind(keys));
 
-    Object.keys(this.reverse).map(newId => {
+    Object.keys(this.reverse).forEach(newId => {
       keys.delete(this.reverse[newId]);
     });
 

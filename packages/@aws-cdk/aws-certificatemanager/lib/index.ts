@@ -1,3 +1,5 @@
+/// <reference types="node" />
+
 export * from './certificate';
 export * from './dns-validated-certificate';
 

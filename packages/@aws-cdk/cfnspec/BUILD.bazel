@@ -1,0 +1,48 @@
+load("//tools:defaults.bzl", "ts_library", "npm_package")
+load("//packages/@aws-cdk/cfnspec/build-tools:cfnspec.bzl", "cfnspec")
+
+package(default_visibility = ["//visibility:public"])
+
+cfnspec(
+    name = "spec_src",
+    output_name = "spec",
+)
+
+ts_library(
+    name = "cfnspec_base",
+    srcs = glob(["lib/**/*.ts"]),
+    deps = [
+        "@npm//@types/node",
+    ],
+)
+
+ts_library(
+    name = "cfnspec",
+    srcs = glob(["*.ts"]),
+    deps = [":cfnspec_base"],
+)
+
+filegroup(
+  name = "spec_assets",
+  srcs = glob(["spec-source/**/*.json"]),
+)
+
+filegroup(
+  name = "cfnspec_assets",
+  srcs = glob(["lib/**/*.json"]),
+)
+
+npm_package(
+    name = "npm_package",
+    srcs = [
+        "package.json",
+    ],
+    tags = [
+        "release-with-framework",
+    ],
+    deps = [
+        ":cfnspec",
+        ":cfnspec_assets",
+        ":spec_src"
+    ],
+)

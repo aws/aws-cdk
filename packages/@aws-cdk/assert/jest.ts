@@ -1,3 +1,5 @@
+/// <reference types="jest" />
+
 import { Stack } from "@aws-cdk/cdk";
 import { SynthesizedStack } from "@aws-cdk/cx-api";
 import { HaveResourceAssertion, ResourcePart } from "./lib/assertions/have-resource";

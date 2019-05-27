@@ -1,0 +1,14 @@
+package(default_visibility = ["//visibility:public"])
+
+load("@npm_bazel_typescript//:index.bzl", "ts_config")
+
+exports_files([
+    "tsconfig.json",
+    "jasmine-seed-generator.js",
+])
+
+ts_config(
+    name = "tsconfig-test",
+    src = "tsconfig-test.json",
+    deps = ["tsconfig.json"],
+)

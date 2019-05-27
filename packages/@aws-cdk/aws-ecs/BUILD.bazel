@@ -1,0 +1,46 @@
+load("//tools:defaults.bzl", "cdk_library", "npm_package")
+
+package(default_visibility = ["//visibility:public"])
+
+cdk_library(
+    name = "aws-ecs",
+    scope = ["AWS::ECS"],
+    outputs = ["lib/ecs.generated.ts"],
+    srcs = glob(["*.ts", "lib/**/*.ts"]),
+    deps = [
+        "//packages/@aws-cdk/assets-docker",
+        "//packages/@aws-cdk/aws-applicationautoscaling",
+        "//packages/@aws-cdk/aws-autoscaling",
+        "//packages/@aws-cdk/aws-certificatemanager",
+        "//packages/@aws-cdk/aws-cloudformation",
+        "//packages/@aws-cdk/aws-cloudwatch",
+        "//packages/@aws-cdk/aws-ec2",
+        "//packages/@aws-cdk/aws-ecr",
+        "//packages/@aws-cdk/aws-elasticloadbalancing",
+        "//packages/@aws-cdk/aws-elasticloadbalancingv2",
+        "//packages/@aws-cdk/aws-iam",
+        "//packages/@aws-cdk/aws-lambda",
+        "//packages/@aws-cdk/aws-logs",
+        "//packages/@aws-cdk/aws-route53",
+        "//packages/@aws-cdk/aws-route53-targets",
+        "//packages/@aws-cdk/aws-secretsmanager",
+        "//packages/@aws-cdk/aws-servicediscovery",
+        "//packages/@aws-cdk/aws-sns",
+        "//packages/@aws-cdk/aws-sqs",
+        "//packages/@aws-cdk/cdk",
+        "//packages/@aws-cdk/cx-api",
+    ],
+)
+
+npm_package(
+    name = "npm_package",
+    srcs = [
+      "package.json",
+    ],
+    tags = [
+        "release-with-framework",
+    ],
+    deps = [
+        ":aws-ecs",
+    ],
+)

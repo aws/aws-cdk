@@ -1,0 +1,33 @@
+load("//tools:defaults.bzl", "ts_library", "npm_package")
+
+package(default_visibility = ["//visibility:public"])
+
+ts_library(
+    name = "aws-lambda-event-sources",
+    srcs = glob(["*.ts", "lib/**/*.ts"]),
+    deps = [
+        "//packages/@aws-cdk/aws-apigateway",
+        "//packages/@aws-cdk/aws-dynamodb",
+        "//packages/@aws-cdk/aws-events",
+        "//packages/@aws-cdk/aws-iam",
+        "//packages/@aws-cdk/aws-kinesis",
+        "//packages/@aws-cdk/aws-lambda",
+        "//packages/@aws-cdk/aws-s3",
+        "//packages/@aws-cdk/aws-sns",
+        "//packages/@aws-cdk/aws-sqs",
+        "//packages/@aws-cdk/cdk",
+    ],
+)
+
+npm_package(
+    name = "npm_package",
+    srcs = [
+      "package.json",
+    ],
+    tags = [
+        "release-with-framework",
+    ],
+    deps = [
+        ":aws-lambda-event-sources",
+    ],
+)

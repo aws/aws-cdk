@@ -1,9 +1,14 @@
 import fs = require('fs-extra');
-import path = require('path');
+import minimist = require('minimist');
 import { Default } from '../lib/default';
 import { AWS_REGIONS, AWS_SERVICES } from './aws-entities';
 
-async function main(): Promise<void> {
+interface Args {
+  output: string;
+}
+
+async function main(args: string[]): Promise<void> {
+  const parsedArgs: Args = minimist<Args>(args);
   const lines = [
     "import { Fact, FactName } from './fact';",
     '',
@@ -74,10 +79,10 @@ async function main(): Promise<void> {
   }
   lines.push('  }');
   lines.push('');
-  lines.push('  private constructor() {}'),
+  lines.push('  private constructor() {}');
   lines.push('}');
 
-  await fs.writeFile(path.resolve(__dirname, '..', 'lib', 'built-ins.generated.ts'), lines.join('\n'));
+  await fs.writeFile(parsedArgs.output, lines.join('\n'));
 
   function registerFact(region: string, name: string | string[], value: string) {
     const factName = typeof name === 'string' ? name : `${name[0]}(${name.slice(1).map(s => JSON.stringify(s)).join(', ')})`;
@@ -85,7 +90,7 @@ async function main(): Promise<void> {
   }
 }
 
-main().catch(e => {
+main(process.argv.slice(2)).catch(e => {
   // tslint:disable-next-line: no-console
   console.error(e);
   process.exit(-1);

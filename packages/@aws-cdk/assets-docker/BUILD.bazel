@@ -1,0 +1,37 @@
+load("//tools:defaults.bzl", "ts_library", "npm_package")
+
+package(default_visibility = ["//visibility:public"])
+
+filegroup(
+    name = "handler",
+    srcs = glob(["lib/adopt-repository/**/*"]),
+)
+
+ts_library(
+    name = "assets-docker",
+    srcs = glob(["*.ts", "lib/**/*.ts"]),
+    deps = [
+        "//packages/@aws-cdk/assets",
+        "//packages/@aws-cdk/aws-cloudformation",
+        "//packages/@aws-cdk/aws-ecr",
+        "//packages/@aws-cdk/aws-iam",
+        "//packages/@aws-cdk/aws-lambda",
+        "//packages/@aws-cdk/aws-s3",
+        "//packages/@aws-cdk/cdk",
+        "//packages/@aws-cdk/cx-api",
+    ],
+)
+
+npm_package(
+    name = "npm_package",
+    srcs = [
+      "package.json",
+    ],
+    tags = [
+        "release-with-framework",
+    ],
+    deps = [
+        ":assets-docker",
+        ":handler",
+    ],
+)

@@ -1,0 +1,25 @@
+load("//tools:defaults.bzl", "ts_library", "npm_package")
+
+package(default_visibility = ["//visibility:public"])
+
+ts_library(
+    name = "cdk",
+    srcs = glob(["*.ts", "lib/**/*.ts"]),
+    node_modules = "@npm//typescript:typescript__typings",
+    deps = [
+        "//packages/@aws-cdk/cx-api",
+    ],
+)
+
+npm_package(
+    name = "npm_package",
+    srcs = [
+      "package.json",
+    ],
+    tags = [
+        "release-with-framework",
+    ],
+    deps = [
+        ":cdk",
+    ],
+)

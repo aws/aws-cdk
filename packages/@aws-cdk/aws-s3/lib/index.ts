@@ -1,3 +1,5 @@
+/// <reference types="node" />
+
 export * from './bucket';
 export * from './bucket-policy';
 export * from './coordinates';

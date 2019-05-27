@@ -1,0 +1,816 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="b5b1b871-abb2-4bc9-9671-12cc62236ec3" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.travis.yml" beforeDir="false" afterPath="$PROJECT_DIR$/.travis.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/@aws-cdk/alexa-ask/BUILD.bazel" beforeDir="false" afterPath="$PROJECT_DIR$/packages/@aws-cdk/alexa-ask/BUILD.bazel" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/@aws-cdk/app-delivery/BUILD.bazel" beforeDir="false" afterPath="$PROJECT_DIR$/packages/@aws-cdk/app-delivery/BUILD.bazel" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/@aws-cdk/applet-js/BUILD.bazel" beforeDir="false" afterPath="$PROJECT_DIR$/packages/@aws-cdk/applet-js/BUILD.bazel" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/@aws-cdk/assert/jest.ts" beforeDir="false" afterPath="$PROJECT_DIR$/packages/@aws-cdk/assert/jest.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/@aws-cdk/assert/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/packages/@aws-cdk/assert/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/@aws-cdk/assets-docker/lib/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/packages/@aws-cdk/assets-docker/lib/index.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/@aws-cdk/assets-docker/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/packages/@aws-cdk/assets-docker/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/@aws-cdk/assets/lib/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/packages/@aws-cdk/assets/lib/index.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/@aws-cdk/assets/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/packages/@aws-cdk/assets/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/@aws-cdk/aws-amazonmq/BUILD.bazel" beforeDir="false" afterPath="$PROJECT_DIR$/packages/@aws-cdk/aws-amazonmq/BUILD.bazel" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/@aws-cdk/aws-apigateway/BUILD.bazel" beforeDir="false" afterPath="$PROJECT_DIR$/packages/@aws-cdk/aws-apigateway/BUILD.bazel" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/@aws-cdk/aws-apigateway/lib/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/packages/@aws-cdk/aws-apigateway/lib/index.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/@aws-cdk/aws-apigateway/lib/restapi.ts" beforeDir="false" afterPath="$PROJECT_DIR$/packages/@aws-cdk/aws-apigateway/lib/restapi.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/@aws-cdk/aws-applicationautoscaling/BUILD.bazel" beforeDir="false" afterPath="$PROJECT_DIR$/packages/@aws-cdk/aws-applicationautoscaling/BUILD.bazel" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/@aws-cdk/aws-appmesh/BUILD.bazel" beforeDir="false" afterPath="$PROJECT_DIR$/packages/@aws-cdk/aws-appmesh/BUILD.bazel" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/@aws-cdk/aws-appstream/BUILD.bazel" beforeDir="false" afterPath="$PROJECT_DIR$/packages/@aws-cdk/aws-appstream/BUILD.bazel" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/@aws-cdk/aws-appsync/BUILD.bazel" beforeDir="false" afterPath="$PROJECT_DIR$/packages/@aws-cdk/aws-appsync/BUILD.bazel" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/@aws-cdk/aws-athena/BUILD.bazel" beforeDir="false" afterPath="$PROJECT_DIR$/packages/@aws-cdk/aws-athena/BUILD.bazel" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/@aws-cdk/aws-autoscaling-api/BUILD.bazel" beforeDir="false" afterPath="$PROJECT_DIR$/packages/@aws-cdk/aws-autoscaling-api/BUILD.bazel" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/@aws-cdk/aws-autoscaling-common/BUILD.bazel" beforeDir="false" afterPath="$PROJECT_DIR$/packages/@aws-cdk/aws-autoscaling-common/BUILD.bazel" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/@aws-cdk/aws-autoscaling/BUILD.bazel" beforeDir="false" afterPath="$PROJECT_DIR$/packages/@aws-cdk/aws-autoscaling/BUILD.bazel" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/@aws-cdk/aws-autoscalingplans/BUILD.bazel" beforeDir="false" afterPath="$PROJECT_DIR$/packages/@aws-cdk/aws-autoscalingplans/BUILD.bazel" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/@aws-cdk/aws-batch/BUILD.bazel" beforeDir="false" afterPath="$PROJECT_DIR$/packages/@aws-cdk/aws-batch/BUILD.bazel" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/@aws-cdk/aws-budgets/BUILD.bazel" beforeDir="false" afterPath="$PROJECT_DIR$/packages/@aws-cdk/aws-budgets/BUILD.bazel" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/@aws-cdk/aws-certificatemanager/BUILD.bazel" beforeDir="false" afterPath="$PROJECT_DIR$/packages/@aws-cdk/aws-certificatemanager/BUILD.bazel" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/@aws-cdk/aws-certificatemanager/lib/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/packages/@aws-cdk/aws-certificatemanager/lib/index.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/@aws-cdk/aws-cloud9/BUILD.bazel" beforeDir="false" afterPath="$PROJECT_DIR$/packages/@aws-cdk/aws-cloud9/BUILD.bazel" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/@aws-cdk/aws-cloudformation/BUILD.bazel" beforeDir="false" afterPath="$PROJECT_DIR$/packages/@aws-cdk/aws-cloudformation/BUILD.bazel" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/@aws-cdk/aws-cloudfront/BUILD.bazel" beforeDir="false" afterPath="$PROJECT_DIR$/packages/@aws-cdk/aws-cloudfront/BUILD.bazel" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/@aws-cdk/aws-cloudtrail/BUILD.bazel" beforeDir="false" afterPath="$PROJECT_DIR$/packages/@aws-cdk/aws-cloudtrail/BUILD.bazel" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/@aws-cdk/aws-cloudwatch/BUILD.bazel" beforeDir="false" afterPath="$PROJECT_DIR$/packages/@aws-cdk/aws-cloudwatch/BUILD.bazel" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/@aws-cdk/aws-codebuild/BUILD.bazel" beforeDir="false" afterPath="$PROJECT_DIR$/packages/@aws-cdk/aws-codebuild/BUILD.bazel" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/@aws-cdk/aws-codecommit/BUILD.bazel" beforeDir="false" afterPath="$PROJECT_DIR$/packages/@aws-cdk/aws-codecommit/BUILD.bazel" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/@aws-cdk/aws-codedeploy-api/BUILD.bazel" beforeDir="false" afterPath="$PROJECT_DIR$/packages/@aws-cdk/aws-codedeploy-api/BUILD.bazel" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/@aws-cdk/aws-codedeploy-api/lib/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/packages/@aws-cdk/aws-codedeploy-api/lib/index.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/@aws-cdk/aws-codedeploy/BUILD.bazel" beforeDir="false" afterPath="$PROJECT_DIR$/packages/@aws-cdk/aws-codedeploy/BUILD.bazel" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/@aws-cdk/aws-codepipeline-actions/BUILD.bazel" beforeDir="false" afterPath="$PROJECT_DIR$/packages/@aws-cdk/aws-codepipeline-actions/BUILD.bazel" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/@aws-cdk/aws-codepipeline/BUILD.bazel" beforeDir="false" afterPath="$PROJECT_DIR$/packages/@aws-cdk/aws-codepipeline/BUILD.bazel" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/@aws-cdk/aws-codepipeline/lib/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/packages/@aws-cdk/aws-codepipeline/lib/index.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/@aws-cdk/aws-cognito/BUILD.bazel" beforeDir="false" afterPath="$PROJECT_DIR$/packages/@aws-cdk/aws-cognito/BUILD.bazel" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/@aws-cdk/aws-config/BUILD.bazel" beforeDir="false" afterPath="$PROJECT_DIR$/packages/@aws-cdk/aws-config/BUILD.bazel" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/@aws-cdk/aws-datapipeline/BUILD.bazel" beforeDir="false" afterPath="$PROJECT_DIR$/packages/@aws-cdk/aws-datapipeline/BUILD.bazel" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/@aws-cdk/aws-dax/BUILD.bazel" beforeDir="false" afterPath="$PROJECT_DIR$/packages/@aws-cdk/aws-dax/BUILD.bazel" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/@aws-cdk/aws-directoryservice/BUILD.bazel" beforeDir="false" afterPath="$PROJECT_DIR$/packages/@aws-cdk/aws-directoryservice/BUILD.bazel" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/@aws-cdk/aws-dlm/BUILD.bazel" beforeDir="false" afterPath="$PROJECT_DIR$/packages/@aws-cdk/aws-dlm/BUILD.bazel" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/@aws-cdk/aws-dms/BUILD.bazel" beforeDir="false" afterPath="$PROJECT_DIR$/packages/@aws-cdk/aws-dms/BUILD.bazel" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/@aws-cdk/aws-docdb/BUILD.bazel" beforeDir="false" afterPath="$PROJECT_DIR$/packages/@aws-cdk/aws-docdb/BUILD.bazel" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/@aws-cdk/aws-dynamodb-global/BUILD.bazel" beforeDir="false" afterPath="$PROJECT_DIR$/packages/@aws-cdk/aws-dynamodb-global/BUILD.bazel" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/@aws-cdk/aws-dynamodb-global/lib/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/packages/@aws-cdk/aws-dynamodb-global/lib/index.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/@aws-cdk/aws-dynamodb/BUILD.bazel" beforeDir="false" afterPath="$PROJECT_DIR$/packages/@aws-cdk/aws-dynamodb/BUILD.bazel" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/@aws-cdk/aws-ec2/lib/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/packages/@aws-cdk/aws-ec2/lib/index.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/@aws-cdk/aws-ec2/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/packages/@aws-cdk/aws-ec2/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/@aws-cdk/aws-ecr/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/packages/@aws-cdk/aws-ecr/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/@aws-cdk/aws-ecs-patterns/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/packages/@aws-cdk/aws-ecs-patterns/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/@aws-cdk/aws-ecs/lib/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/packages/@aws-cdk/aws-ecs/lib/index.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/@aws-cdk/aws-ecs/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/packages/@aws-cdk/aws-ecs/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/@aws-cdk/aws-efs/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/packages/@aws-cdk/aws-efs/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/@aws-cdk/aws-eks/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/packages/@aws-cdk/aws-eks/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/@aws-cdk/aws-elasticache/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/packages/@aws-cdk/aws-elasticache/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/@aws-cdk/aws-elasticbeanstalk/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/packages/@aws-cdk/aws-elasticbeanstalk/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/@aws-cdk/aws-elasticloadbalancing/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/packages/@aws-cdk/aws-elasticloadbalancing/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/@aws-cdk/aws-elasticloadbalancingv2/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/packages/@aws-cdk/aws-elasticloadbalancingv2/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/@aws-cdk/aws-elasticsearch/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/packages/@aws-cdk/aws-elasticsearch/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/@aws-cdk/aws-emr/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/packages/@aws-cdk/aws-emr/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/@aws-cdk/aws-events-targets/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/packages/@aws-cdk/aws-events-targets/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/@aws-cdk/aws-events/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/packages/@aws-cdk/aws-events/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/@aws-cdk/aws-fsx/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/packages/@aws-cdk/aws-fsx/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/@aws-cdk/aws-gamelift/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/packages/@aws-cdk/aws-gamelift/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/@aws-cdk/aws-glue/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/packages/@aws-cdk/aws-glue/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/@aws-cdk/aws-greengrass/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/packages/@aws-cdk/aws-greengrass/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/@aws-cdk/aws-guardduty/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/packages/@aws-cdk/aws-guardduty/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/@aws-cdk/aws-iam/BUILD.bazel" beforeDir="false" afterPath="$PROJECT_DIR$/packages/@aws-cdk/aws-iam/BUILD.bazel" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/@aws-cdk/aws-inspector/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/packages/@aws-cdk/aws-inspector/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/@aws-cdk/aws-iot/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/packages/@aws-cdk/aws-iot/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/@aws-cdk/aws-iot1click/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/packages/@aws-cdk/aws-iot1click/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/@aws-cdk/aws-iotanalytics/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/packages/@aws-cdk/aws-iotanalytics/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/@aws-cdk/aws-kinesis/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/packages/@aws-cdk/aws-kinesis/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/@aws-cdk/aws-kinesisanalytics/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/packages/@aws-cdk/aws-kinesisanalytics/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/@aws-cdk/aws-kinesisfirehose/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/packages/@aws-cdk/aws-kinesisfirehose/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/@aws-cdk/aws-kms/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/packages/@aws-cdk/aws-kms/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/@aws-cdk/aws-lambda-event-sources/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/packages/@aws-cdk/aws-lambda-event-sources/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/@aws-cdk/aws-lambda/lib/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/packages/@aws-cdk/aws-lambda/lib/index.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/@aws-cdk/aws-lambda/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/packages/@aws-cdk/aws-lambda/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/@aws-cdk/aws-logs/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/packages/@aws-cdk/aws-logs/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/@aws-cdk/aws-mediastore/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/packages/@aws-cdk/aws-mediastore/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/@aws-cdk/aws-neptune/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/packages/@aws-cdk/aws-neptune/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/@aws-cdk/aws-opsworks/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/packages/@aws-cdk/aws-opsworks/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/@aws-cdk/aws-opsworkscm/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/packages/@aws-cdk/aws-opsworkscm/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/@aws-cdk/aws-quickstarts/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/packages/@aws-cdk/aws-quickstarts/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/@aws-cdk/aws-ram/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/packages/@aws-cdk/aws-ram/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/@aws-cdk/aws-rds/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/packages/@aws-cdk/aws-rds/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/@aws-cdk/aws-redshift/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/packages/@aws-cdk/aws-redshift/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/@aws-cdk/aws-robomaker/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/packages/@aws-cdk/aws-robomaker/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/@aws-cdk/aws-route53-targets/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/packages/@aws-cdk/aws-route53-targets/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/@aws-cdk/aws-route53/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/packages/@aws-cdk/aws-route53/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/@aws-cdk/aws-route53resolver/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/packages/@aws-cdk/aws-route53resolver/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/@aws-cdk/aws-s3-deployment/lib/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/packages/@aws-cdk/aws-s3-deployment/lib/index.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/@aws-cdk/aws-s3-deployment/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/packages/@aws-cdk/aws-s3-deployment/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/@aws-cdk/aws-s3-notifications/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/packages/@aws-cdk/aws-s3-notifications/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/@aws-cdk/aws-s3/lib/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/packages/@aws-cdk/aws-s3/lib/index.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/@aws-cdk/aws-s3/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/packages/@aws-cdk/aws-s3/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/@aws-cdk/aws-sagemaker/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/packages/@aws-cdk/aws-sagemaker/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/@aws-cdk/aws-sam/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/packages/@aws-cdk/aws-sam/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/@aws-cdk/aws-sdb/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/packages/@aws-cdk/aws-sdb/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/@aws-cdk/aws-secretsmanager/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/packages/@aws-cdk/aws-secretsmanager/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/@aws-cdk/aws-servicecatalog/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/packages/@aws-cdk/aws-servicecatalog/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/@aws-cdk/aws-servicediscovery/lib/service.ts" beforeDir="false" afterPath="$PROJECT_DIR$/packages/@aws-cdk/aws-servicediscovery/lib/service.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/@aws-cdk/aws-servicediscovery/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/packages/@aws-cdk/aws-servicediscovery/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/@aws-cdk/aws-ses/lib/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/packages/@aws-cdk/aws-ses/lib/index.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/@aws-cdk/aws-ses/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/packages/@aws-cdk/aws-ses/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/@aws-cdk/aws-sns/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/packages/@aws-cdk/aws-sns/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/@aws-cdk/aws-sqs/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/packages/@aws-cdk/aws-sqs/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/@aws-cdk/aws-ssm/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/packages/@aws-cdk/aws-ssm/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/@aws-cdk/aws-stepfunctions-tasks/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/packages/@aws-cdk/aws-stepfunctions-tasks/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/@aws-cdk/aws-stepfunctions/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/packages/@aws-cdk/aws-stepfunctions/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/@aws-cdk/aws-waf/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/packages/@aws-cdk/aws-waf/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/@aws-cdk/aws-wafregional/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/packages/@aws-cdk/aws-wafregional/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/@aws-cdk/aws-workspaces/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/packages/@aws-cdk/aws-workspaces/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/@aws-cdk/cloudformation-diff/BUILD.bazel" beforeDir="false" afterPath="$PROJECT_DIR$/packages/@aws-cdk/cloudformation-diff/BUILD.bazel" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/@aws-cdk/cx-api/BUILD.bazel" beforeDir="false" afterPath="$PROJECT_DIR$/packages/@aws-cdk/cx-api/BUILD.bazel" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/@aws-cdk/region-info/BUILD.bazel" beforeDir="false" afterPath="$PROJECT_DIR$/packages/@aws-cdk/region-info/BUILD.bazel" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/aws-cdk/BUILD.bazel" beforeDir="false" afterPath="$PROJECT_DIR$/packages/aws-cdk/BUILD.bazel" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/tsconfig.json" beforeDir="false" afterPath="$PROJECT_DIR$/packages/tsconfig.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tools/bazel_stamp_vars.js" beforeDir="false" afterPath="$PROJECT_DIR$/tools/bazel_stamp_vars.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tools/cfn2ts.bzl" beforeDir="false" afterPath="$PROJECT_DIR$/tools/cfn2ts.bzl" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tools/cfn2ts/BUILD.bazel" beforeDir="false" afterPath="$PROJECT_DIR$/tools/cfn2ts/BUILD.bazel" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tools/cfn2ts/bin/cfn2ts.ts" beforeDir="false" afterPath="$PROJECT_DIR$/tools/cfn2ts/bin/cfn2ts.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tools/defaults.bzl" beforeDir="false" afterPath="$PROJECT_DIR$/tools/defaults.bzl" afterDir="false" />
+    </list>
+    <ignored path="$PROJECT_DIR$/.tmp/" />
+    <ignored path="$PROJECT_DIR$/temp/" />
+    <ignored path="$PROJECT_DIR$/tmp/" />
+    <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileEditorManager">
+    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/packages/@aws-cdk/alexa-ask/test/test.ask.ts">
+          <provider selected="true" editor-type-id="text-editor">
+            <state>
+              <caret selection-start-column="3" selection-end-line="8" selection-end-column="6" />
+              <folding>
+                <element signature="n#!!doc" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+    </leaf>
+  </component>
+  <component name="FindInProjectRecents">
+    <findStrings>
+      <find>deleteCertificate</find>
+      <find>angular</find>
+      <find>create-react-context</find>
+      <find>@mdx-js/tag</find>
+      <find>@mdx-js/loader</find>
+      <find>yarbs</find>
+      <find>augmentations</find>
+      <find>cx-api</find>
+      <find>spec</find>
+      <find>@aws-cdk/cfnspec</find>
+      <find>json</find>
+      <find>specification.json</find>
+      <find>.json</find>
+      <find>cfnspec_base</find>
+      <find>build-tools</find>
+      <find>missing</find>
+      <find>outPath</find>
+      <find>built-ins</find>
+      <find>Object.keys</find>
+      <find>Default</find>
+      <find>region-info</find>
+      <find>require</find>
+      <find>tsconfig.json</find>
+      <find>AWSLambda</find>
+      <find>AugmentationGenerator</find>
+      <find>suffixes</find>
+      <find>namespace</find>
+      <find>CloudFormationCustomResourceEvent</find>
+      <find>@npm//</find>
+      <find>^0.32.0</find>
+    </findStrings>
+    <replaceStrings>
+      <replace>cloudformation-diff</replace>
+      <replace>PLACEHOLDER</replace>
+      <replace>//packages/</replace>
+      <replace>0.0.0-PLACEHOLDER</replace>
+    </replaceStrings>
+    <dirStrings>
+      <dir>$PROJECT_DIR$/packages/@aws-cdk/aws-certificatemanager/lambda-packages</dir>
+      <dir>$PROJECT_DIR$/packages/@aws-cdk/cfnspec/lib/schema</dir>
+      <dir>$PROJECT_DIR$/packages/@aws-cdk/cfnspec/build-tools</dir>
+      <dir>$PROJECT_DIR$/tools</dir>
+      <dir>$PROJECT_DIR$/dist/bin/packages/@aws-cdk/cfnspec/npm_package/lib/schema</dir>
+      <dir>$PROJECT_DIR$/packages/@aws-cdk/cfnspec</dir>
+      <dir>$PROJECT_DIR$/packages/@aws-cdk/aws-lambda</dir>
+      <dir>$PROJECT_DIR$/packages/@aws-cdk/aws-certificatemanager</dir>
+      <dir>$PROJECT_DIR$</dir>
+    </dirStrings>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="IdeDocumentHistory">
+    <option name="CHANGED_PATHS">
+      <list>
+        <option value="$PROJECT_DIR$/packages/@aws-cdk/aws-iot1click/BUILD.bazel" />
+        <option value="$PROJECT_DIR$/packages/@aws-cdk/aws-iot1click/package.json" />
+        <option value="$PROJECT_DIR$/packages/@aws-cdk/aws-iotanalytics/BUILD.bazel" />
+        <option value="$PROJECT_DIR$/packages/@aws-cdk/aws-iotanalytics/package.json" />
+        <option value="$PROJECT_DIR$/packages/@aws-cdk/aws-kinesis/package.json" />
+        <option value="$PROJECT_DIR$/packages/@aws-cdk/aws-kinesis/BUILD.bazel" />
+        <option value="$PROJECT_DIR$/packages/@aws-cdk/aws-kinesisanalytics/package.json" />
+        <option value="$PROJECT_DIR$/packages/@aws-cdk/aws-kinesisanalytics/BUILD.bazel" />
+        <option value="$PROJECT_DIR$/packages/@aws-cdk/aws-kinesisfirehose/package.json" />
+        <option value="$PROJECT_DIR$/packages/@aws-cdk/aws-kinesisfirehose/BUILD.bazel" />
+        <option value="$PROJECT_DIR$/packages/@aws-cdk/aws-lambda-event-sources/package.json" />
+        <option value="$PROJECT_DIR$/packages/@aws-cdk/aws-lambda-event-sources/BUILD.bazel" />
+        <option value="$PROJECT_DIR$/packages/@aws-cdk/aws-apigateway/lib/restapi.ts" />
+        <option value="$PROJECT_DIR$/packages/@aws-cdk/aws-apigateway/lib/index.ts" />
+        <option value="$PROJECT_DIR$/packages/@aws-cdk/aws-apigateway/BUILD.bazel" />
+        <option value="$PROJECT_DIR$/packages/@aws-cdk/aws-route53resolver/package.json" />
+        <option value="$PROJECT_DIR$/packages/@aws-cdk/aws-route53resolver/BUILD.bazel" />
+        <option value="$PROJECT_DIR$/packages/@aws-cdk/aws-sagemaker/package.json" />
+        <option value="$PROJECT_DIR$/packages/@aws-cdk/aws-sagemaker/BUILD.bazel" />
+        <option value="$PROJECT_DIR$/packages/@aws-cdk/aws-sam/BUILD.bazel" />
+        <option value="$PROJECT_DIR$/packages/@aws-cdk/aws-sam/package.json" />
+        <option value="$PROJECT_DIR$/packages/@aws-cdk/aws-sdb/BUILD.bazel" />
+        <option value="$PROJECT_DIR$/packages/@aws-cdk/aws-sdb/package.json" />
+        <option value="$PROJECT_DIR$/packages/@aws-cdk/aws-servicecatalog/BUILD.bazel" />
+        <option value="$PROJECT_DIR$/packages/@aws-cdk/aws-servicecatalog/package.json" />
+        <option value="$PROJECT_DIR$/packages/@aws-cdk/aws-ssm/package.json" />
+        <option value="$PROJECT_DIR$/packages/@aws-cdk/aws-ssm/BUILD.bazel" />
+        <option value="$PROJECT_DIR$/packages/@aws-cdk/aws-waf/package.json" />
+        <option value="$PROJECT_DIR$/packages/@aws-cdk/aws-waf/BUILD.bazel" />
+        <option value="$PROJECT_DIR$/packages/@aws-cdk/aws-wafregional/package.json" />
+        <option value="$PROJECT_DIR$/packages/@aws-cdk/aws-wafregional/BUILD.bazel" />
+        <option value="$PROJECT_DIR$/packages/@aws-cdk/aws-workspaces/package.json" />
+        <option value="$PROJECT_DIR$/packages/@aws-cdk/aws-workspaces/BUILD.bazel" />
+        <option value="$PROJECT_DIR$/packages/@aws-cdk/aws-s3-deployment/BUILD.bazel" />
+        <option value="$PROJECT_DIR$/packages/@aws-cdk/aws-s3-deployment/package.json" />
+        <option value="$PROJECT_DIR$/packages/@aws-cdk/aws-stepfunctions-tasks/package.json" />
+        <option value="$PROJECT_DIR$/packages/@aws-cdk/aws-stepfunctions-tasks/BUILD.bazel" />
+        <option value="$PROJECT_DIR$/packages/@aws-cdk/aws-codepipeline-actions/BUILD.bazel" />
+        <option value="$PROJECT_DIR$/packages/aws-cdk/BUILD.bazel" />
+        <option value="$PROJECT_DIR$/.travis.yml" />
+        <option value="$PROJECT_DIR$/packages/@aws-cdk/alexa-ask/test/BUILD.bazel" />
+        <option value="$PROJECT_DIR$/packages/@aws-cdk/aws-s3-deployment/lib/index.ts" />
+        <option value="$PROJECT_DIR$/packages/@aws-cdk/aws-dynamodb-global/lib/index.ts" />
+        <option value="$PROJECT_DIR$/packages/@aws-cdk/aws-codedeploy-api/BUILD.bazel" />
+        <option value="$PROJECT_DIR$/packages/@aws-cdk/aws-codedeploy-api/lib/index.ts" />
+        <option value="$PROJECT_DIR$/package.json" />
+        <option value="$PROJECT_DIR$/packages/@aws-cdk/assert/jest.ts" />
+        <option value="$PROJECT_DIR$/packages/@aws-cdk/assert/BUILD.bazel" />
+        <option value="$PROJECT_DIR$/packages/@aws-cdk/assert/package.json" />
+        <option value="$PROJECT_DIR$/packages/@aws-cdk/applet-js/public_api.ts" />
+        <option value="$PROJECT_DIR$/packages/@aws-cdk/alexa-ask/test/test.ask.ts" />
+      </list>
+    </option>
+  </component>
+  <component name="ProjectFrameBounds">
+    <option name="x" value="82" />
+    <option name="y" value="23" />
+    <option name="width" value="1358" />
+    <option name="height" value="811" />
+  </component>
+  <component name="ProjectView">
+    <navigator proportions="" version="1">
+      <foldersAlwaysOnTop value="true" />
+    </navigator>
+    <panes>
+      <pane id="ProjectPane">
+        <subPane>
+          <expand>
+            <path>
+              <item name="aws-cdk" type="b2602c69:ProjectViewProjectNode" />
+              <item name="aws-cdk" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="aws-cdk" type="b2602c69:ProjectViewProjectNode" />
+              <item name="aws-cdk" type="462c0819:PsiDirectoryNode" />
+              <item name="packages" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="aws-cdk" type="b2602c69:ProjectViewProjectNode" />
+              <item name="aws-cdk" type="462c0819:PsiDirectoryNode" />
+              <item name="packages" type="462c0819:PsiDirectoryNode" />
+              <item name="@aws-cdk" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="aws-cdk" type="b2602c69:ProjectViewProjectNode" />
+              <item name="aws-cdk" type="462c0819:PsiDirectoryNode" />
+              <item name="packages" type="462c0819:PsiDirectoryNode" />
+              <item name="@aws-cdk" type="462c0819:PsiDirectoryNode" />
+              <item name="alexa-ask" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="aws-cdk" type="b2602c69:ProjectViewProjectNode" />
+              <item name="aws-cdk" type="462c0819:PsiDirectoryNode" />
+              <item name="packages" type="462c0819:PsiDirectoryNode" />
+              <item name="@aws-cdk" type="462c0819:PsiDirectoryNode" />
+              <item name="alexa-ask" type="462c0819:PsiDirectoryNode" />
+              <item name="test" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="aws-cdk" type="b2602c69:ProjectViewProjectNode" />
+              <item name="aws-cdk" type="462c0819:PsiDirectoryNode" />
+              <item name="packages" type="462c0819:PsiDirectoryNode" />
+              <item name="@aws-cdk" type="462c0819:PsiDirectoryNode" />
+              <item name="applet-js" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="aws-cdk" type="b2602c69:ProjectViewProjectNode" />
+              <item name="aws-cdk" type="462c0819:PsiDirectoryNode" />
+              <item name="packages" type="462c0819:PsiDirectoryNode" />
+              <item name="@aws-cdk" type="462c0819:PsiDirectoryNode" />
+              <item name="applet-js" type="462c0819:PsiDirectoryNode" />
+              <item name="lib" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="aws-cdk" type="b2602c69:ProjectViewProjectNode" />
+              <item name="aws-cdk" type="462c0819:PsiDirectoryNode" />
+              <item name="packages" type="462c0819:PsiDirectoryNode" />
+              <item name="@aws-cdk" type="462c0819:PsiDirectoryNode" />
+              <item name="assert" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="aws-cdk" type="b2602c69:ProjectViewProjectNode" />
+              <item name="aws-cdk" type="462c0819:PsiDirectoryNode" />
+              <item name="packages" type="462c0819:PsiDirectoryNode" />
+              <item name="@aws-cdk" type="462c0819:PsiDirectoryNode" />
+              <item name="assert" type="462c0819:PsiDirectoryNode" />
+              <item name="lib" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="aws-cdk" type="b2602c69:ProjectViewProjectNode" />
+              <item name="aws-cdk" type="462c0819:PsiDirectoryNode" />
+              <item name="packages" type="462c0819:PsiDirectoryNode" />
+              <item name="aws-cdk" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="aws-cdk" type="b2602c69:ProjectViewProjectNode" />
+              <item name="aws-cdk" type="462c0819:PsiDirectoryNode" />
+              <item name="tools" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="aws-cdk" type="b2602c69:ProjectViewProjectNode" />
+              <item name="aws-cdk" type="462c0819:PsiDirectoryNode" />
+              <item name="tools" type="462c0819:PsiDirectoryNode" />
+              <item name="cfn2ts" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="aws-cdk" type="b2602c69:ProjectViewProjectNode" />
+              <item name="aws-cdk" type="462c0819:PsiDirectoryNode" />
+              <item name="tools" type="462c0819:PsiDirectoryNode" />
+              <item name="cfn2ts" type="462c0819:PsiDirectoryNode" />
+              <item name="bin" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="aws-cdk" type="b2602c69:ProjectViewProjectNode" />
+              <item name="aws-cdk" type="462c0819:PsiDirectoryNode" />
+              <item name="tools" type="462c0819:PsiDirectoryNode" />
+              <item name="cfn2ts" type="462c0819:PsiDirectoryNode" />
+              <item name="lib" type="462c0819:PsiDirectoryNode" />
+            </path>
+          </expand>
+          <select />
+        </subPane>
+      </pane>
+      <pane id="Scope" />
+    </panes>
+  </component>
+  <component name="PropertiesComponent">
+    <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/packages/@aws-cdk/assert" />
+    <property name="node.js.detected.package.eslint" value="true" />
+    <property name="node.js.detected.package.tslint" value="true" />
+    <property name="node.js.path.for.package.eslint" value="project" />
+    <property name="node.js.path.for.package.tslint" value="project" />
+    <property name="node.js.selected.package.eslint" value="(autodetect)" />
+    <property name="node.js.selected.package.tslint" value="(autodetect)" />
+    <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
+    <property name="nodejs_npm_path_reset_for_default_project" value="true" />
+    <property name="nodejs_package_manager_path" value="npm" />
+    <property name="settings.editor.selected.configurable" value="preferences.lookFeel" />
+    <property name="ts.external.directory.path" value="$PROJECT_DIR$/node_modules/typescript/lib" />
+  </component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/packages/@aws-cdk/assert" />
+      <recent name="$PROJECT_DIR$/packages/@aws-cdk/aws-stepfunctions-tasks" />
+      <recent name="$PROJECT_DIR$/packages/@aws-cdk/aws-s3-deployment" />
+      <recent name="$PROJECT_DIR$/packages/@aws-cdk/aws-workspaces" />
+      <recent name="$PROJECT_DIR$/packages/@aws-cdk/aws-wafregional" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/packages/@aws-cdk/aws-emr" />
+      <recent name="$PROJECT_DIR$/packages/@aws-cdk/aws-elasticsearch" />
+      <recent name="$PROJECT_DIR$/dist/bin/packages/@aws-cdk/cfnspec/npm_package" />
+      <recent name="$PROJECT_DIR$/tools" />
+      <recent name="$PROJECT_DIR$/tools/cfn2ts" />
+    </key>
+  </component>
+  <component name="RunDashboard">
+    <option name="ruleStates">
+      <list>
+        <RuleState>
+          <option name="name" value="ConfigurationTypeDashboardGroupingRule" />
+        </RuleState>
+        <RuleState>
+          <option name="name" value="StatusDashboardGroupingRule" />
+        </RuleState>
+      </list>
+    </option>
+  </component>
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="b5b1b871-abb2-4bc9-9671-12cc62236ec3" name="Default Changelist" comment="" />
+      <created>1558675368771</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1558675368771</updated>
+      <workItem from="1558675369982" duration="587000" />
+      <workItem from="1558706513842" duration="781000" />
+      <workItem from="1558842018564" duration="34261000" />
+      <workItem from="1558982294269" duration="385000" />
+      <workItem from="1558982704170" duration="19481000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TimeTrackingManager">
+    <option name="totallyTimeSpent" value="55495000" />
+  </component>
+  <component name="ToolWindowManager">
+    <frame x="82" y="23" width="1358" height="811" extended-state="0" />
+    <editor active="true" />
+    <layout>
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.2580404" />
+      <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
+      <window_info id="npm" order="2" side_tool="true" />
+      <window_info id="Favorites" order="3" side_tool="true" />
+      <window_info anchor="bottom" id="Message" order="0" />
+      <window_info anchor="bottom" id="Find" order="1" />
+      <window_info anchor="bottom" id="Run" order="2" />
+      <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
+      <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
+      <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
+      <window_info anchor="bottom" id="TODO" order="6" />
+      <window_info anchor="bottom" id="Docker" order="7" show_stripe_button="false" />
+      <window_info anchor="bottom" id="Version Control" order="8" />
+      <window_info anchor="bottom" id="TypeScript" order="9" />
+      <window_info anchor="bottom" id="Event Log" order="10" side_tool="true" />
+      <window_info active="true" anchor="bottom" id="Terminal" order="11" visible="true" weight="0.43115437" />
+      <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
+      <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
+      <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
+    </layout>
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="1" />
+  </component>
+  <component name="editorHistoryManager">
+    <entry file="file://$PROJECT_DIR$/packages/@aws-cdk/aws-servicecatalog/package.json">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="90">
+          <caret line="6" column="11" lean-forward="true" selection-start-line="6" selection-start-column="11" selection-end-line="6" selection-end-column="11" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/packages/@aws-cdk/aws-servicecatalog/BUILD.bazel">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-6">
+          <caret line="6" column="33" selection-start-line="6" selection-start-column="33" selection-end-line="6" selection-end-column="33" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/packages/@aws-cdk/aws-ssm/BUILD.bazel">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="165">
+          <caret line="11" column="17" selection-start-line="11" selection-start-column="17" selection-end-line="11" selection-end-column="17" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/packages/@aws-cdk/aws-ssm/package.json">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="293">
+          <caret line="53" column="14" lean-forward="true" selection-start-line="53" selection-start-column="14" selection-end-line="53" selection-end-column="14" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/packages/@aws-cdk/aws-waf/package.json">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="720">
+          <caret line="48" column="19" lean-forward="true" selection-start-line="48" selection-start-column="19" selection-end-line="48" selection-end-column="19" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/packages/@aws-cdk/aws-waf/BUILD.bazel">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="135">
+          <caret line="9" column="12" selection-start-line="9" selection-start-column="12" selection-end-line="9" selection-end-column="12" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/packages/@aws-cdk/aws-wafregional/package.json">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="660">
+          <caret line="44" column="36" lean-forward="true" selection-start-line="44" selection-start-column="36" selection-end-line="44" selection-end-column="36" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/packages/@aws-cdk/aws-wafregional/BUILD.bazel">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="39">
+          <caret line="9" column="12" selection-start-line="9" selection-start-column="12" selection-end-line="9" selection-end-column="12" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/packages/@aws-cdk/aws-workspaces/BUILD.bazel">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="135">
+          <caret line="9" column="12" selection-start-line="9" selection-start-column="12" selection-end-line="9" selection-end-column="12" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/packages/@aws-cdk/aws-workspaces/package.json">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="270">
+          <caret line="52" column="14" lean-forward="true" selection-start-line="52" selection-start-column="14" selection-end-line="52" selection-end-column="14" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/packages/@aws-cdk/aws-s3-deployment/BUILD.bazel">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="180">
+          <caret line="12" column="35" selection-start-line="12" selection-start-column="35" selection-end-line="12" selection-end-column="35" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/packages/@aws-cdk/aws-s3-deployment/lambda/src/index.py">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/packages/@aws-cdk/aws-s3-deployment/lambda/build.sh">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/packages/@aws-cdk/aws-s3-deployment/package.json">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="596">
+          <caret line="61" column="4" lean-forward="true" selection-start-line="61" selection-start-column="4" selection-end-line="61" selection-end-column="4" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/packages/@aws-cdk/aws-stepfunctions-tasks/BUILD.bazel">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="225">
+          <caret line="15" column="46" selection-start-line="15" selection-start-column="46" selection-end-line="15" selection-end-column="46" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/packages/@aws-cdk/aws-stepfunctions-tasks/package.json">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="960">
+          <caret line="64" column="43" selection-start-line="64" selection-start-column="43" selection-end-line="64" selection-end-column="43" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/packages/@aws-cdk/aws-cloudformation/BUILD.bazel">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/packages/aws-cdk/BUILD.bazel">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="86">
+          <caret line="28" column="12" lean-forward="true" selection-start-line="28" selection-start-column="12" selection-end-line="28" selection-end-column="12" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/packages/@aws-cdk/aws-codepipeline-actions/BUILD.bazel">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="249">
+          <caret line="33" column="22" selection-start-line="33" selection-start-column="22" selection-end-line="33" selection-end-column="22" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/install.sh">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/build.sh">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/.travis.yml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="255">
+          <caret line="17" column="1" selection-start-line="17" selection-start-column="1" selection-end-line="17" selection-end-column="1" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/packages/@aws-cdk/assert/lib/assertions/and-assertion.ts">
+      <provider selected="true" editor-type-id="text-editor">
+        <state>
+          <folding>
+            <element signature="e#0#41#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/packages/@aws-cdk/assert/lib/assertions/count-resources.ts">
+      <provider selected="true" editor-type-id="text-editor">
+        <state>
+          <folding>
+            <element signature="e#0#41#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/packages/@aws-cdk/assert/lib/assertions/exist.ts">
+      <provider selected="true" editor-type-id="text-editor">
+        <state>
+          <folding>
+            <element signature="e#0#41#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/packages/@aws-cdk/assert/lib/assertions/have-resource.ts">
+      <provider selected="true" editor-type-id="text-editor">
+        <state>
+          <folding>
+            <element signature="e#0#41#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/packages/@aws-cdk/assert/lib/assertions/have-type.ts">
+      <provider selected="true" editor-type-id="text-editor">
+        <state>
+          <folding>
+            <element signature="e#0#41#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/packages/@aws-cdk/assert/lib/assertions/match-template.ts">
+      <provider selected="true" editor-type-id="text-editor">
+        <state>
+          <folding>
+            <element signature="n#cfnDiff#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/packages/@aws-cdk/assert/lib/assertions/negated-assertion.ts">
+      <provider selected="true" editor-type-id="text-editor">
+        <state>
+          <folding>
+            <element signature="e#0#41#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/packages/@aws-cdk/assert/lib/assertion.ts">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/packages/@aws-cdk/assert/lib/inspector.ts">
+      <provider selected="true" editor-type-id="text-editor">
+        <state>
+          <folding>
+            <element signature="n#api#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/packages/@aws-cdk/assert/lib/synth-utils.ts">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/packages/@aws-cdk/app-delivery/BUILD.bazel">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="180">
+          <caret line="12" column="26" lean-forward="true" selection-start-line="12" selection-start-column="26" selection-end-line="12" selection-end-column="26" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/packages/@aws-cdk/assert/index.ts">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/packages/@aws-cdk/assert/lib/index.ts">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/packages/@aws-cdk/aws-s3-deployment/lib/index.ts">
+      <provider selected="true" editor-type-id="text-editor">
+        <state>
+          <caret column="30" selection-start-column="30" selection-end-column="30" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/packages/@aws-cdk/assert/public_api.ts">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="180">
+          <caret line="12" column="56" selection-start-line="12" selection-start-column="56" selection-end-line="12" selection-end-column="56" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/packages/@aws-cdk/aws-dynamodb-global/lib/index.ts">
+      <provider selected="true" editor-type-id="text-editor">
+        <state>
+          <caret column="30" selection-start-column="30" selection-end-column="30" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/packages/@aws-cdk/aws-codedeploy-api/BUILD.bazel">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="315">
+          <caret line="21" column="23" selection-start-line="21" selection-start-column="23" selection-end-line="21" selection-end-column="23" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/packages/@aws-cdk/aws-codedeploy-api/index.ts">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/packages/@aws-cdk/aws-codedeploy-api/lib/index.ts">
+      <provider selected="true" editor-type-id="text-editor">
+        <state>
+          <caret column="10" selection-start-column="10" selection-end-column="10" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/packages/@aws-cdk/alexa-ask/test/BUILD.bazel">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="105">
+          <caret line="7" column="6" selection-start-line="7" selection-start-column="6" selection-end-line="7" selection-end-column="6" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/packages/@aws-cdk/applet-js/BUILD.bazel">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/packages/@aws-cdk/assert/package.json">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="87">
+          <caret line="20" column="42" selection-start-line="20" selection-start-column="42" selection-end-line="20" selection-end-column="42" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/packages/@aws-cdk/assert/jest.ts">
+      <provider selected="true" editor-type-id="text-editor">
+        <state>
+          <caret column="26" selection-start-column="26" selection-end-column="26" />
+          <folding>
+            <element signature="e#0#37#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/packages/@aws-cdk/assert/lib/expect.ts">
+      <provider selected="true" editor-type-id="text-editor">
+        <state>
+          <folding>
+            <element signature="n#cdk#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/package.json">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="53">
+          <caret line="28" column="35" lean-forward="true" selection-start-line="28" selection-start-column="35" selection-end-line="28" selection-end-column="35" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/packages/@aws-cdk/assert/BUILD.bazel">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="150">
+          <caret line="10" column="37" selection-start-line="10" selection-start-column="37" selection-end-line="10" selection-end-column="37" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/packages/@aws-cdk/applet-js/lib/applet-helpers.ts">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-8" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/packages/@aws-cdk/applet-js/public_api.ts">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="150">
+          <caret line="10" column="35" selection-start-line="10" selection-start-column="35" selection-end-line="10" selection-end-column="35" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/packages/@aws-cdk/alexa-ask/test/test.ask.ts">
+      <provider selected="true" editor-type-id="text-editor">
+        <state>
+          <caret selection-start-column="3" selection-end-line="8" selection-end-column="6" />
+          <folding>
+            <element signature="n#!!doc" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+  </component>
+</project>

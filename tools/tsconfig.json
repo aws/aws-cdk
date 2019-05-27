@@ -1,0 +1,33 @@
+{
+
+  "compilerOptions": {
+    "baseUrl": ".",
+    "declaration": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "outDir": "../dist/tools/",
+    "noImplicitAny": true,
+    "noFallthroughCasesInSwitch": true,
+    "paths": {},
+    "rootDir": ".",
+    "sourceMap": true,
+    "inlineSources": true,
+    "lib": [
+      "es6",
+      "dom"
+    ],
+    "target": "es5",
+    "skipLibCheck": true,
+    "types": [
+      "node"
+    ]
+  },
+  "exclude": [
+    "node_modules"
+  ],
+  "bazelOptions": {
+    "suppressTsconfigOverrideWarnings": true
+  }
+}

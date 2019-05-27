@@ -1,3 +1,5 @@
+/// <reference types="node" />
+
 export * from './base/base-service';
 export * from './base/scalable-task-count';
 export * from './base/task-definition';

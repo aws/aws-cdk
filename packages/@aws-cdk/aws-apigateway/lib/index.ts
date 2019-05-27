@@ -1,3 +1,5 @@
+/// <reference types="node" />
+
 export * from './restapi';
 export * from './resource';
 export * from './method';

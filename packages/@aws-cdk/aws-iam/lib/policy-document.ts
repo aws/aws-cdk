@@ -491,7 +491,7 @@ export class PolicyStatement extends cdk.Token {
    * Add multiple conditions to the Policy
    */
   public addConditions(conditions: {[key: string]: any}): PolicyStatement {
-    Object.keys(conditions).map(key => {
+    Object.keys(conditions).forEach(key => {
       this.addCondition(key, conditions[key]);
     });
     return this;

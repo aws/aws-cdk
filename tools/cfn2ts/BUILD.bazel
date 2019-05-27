@@ -1,0 +1,29 @@
+package(default_visibility = ["//visibility:public"])
+
+load("//tools:defaults.bzl", "ts_library")
+load("@build_bazel_rules_nodejs//:defs.bzl", "nodejs_binary")
+
+
+ts_library(
+  name = "cfn2ts_lib",
+  srcs = glob(["**/*.ts"], exclude=["test/**/*"]),
+  deps = [
+      "//packages/@aws-cdk/cfnspec",
+      "@npm//@types/node",
+      "@npm//codemaker",
+      "@npm//fs-extra",
+      "@npm//yargs",
+  ],
+  tsconfig = "tsconfig.json",
+)
+
+# Executable for the custom cfn2ts rule (see cfn2ts.bzl).
+nodejs_binary(
+  name = "cfn2ts",
+  data = [
+    ":cfn2ts_lib",
+    "//packages/@aws-cdk/cfnspec:spec_src",
+    "//packages/@aws-cdk/cfnspec:cfnspec_assets"
+  ],
+  entry_point = "aws_cdk/tools/cfn2ts/bin/cfn2ts.js",
+)

@@ -1,0 +1,26 @@
+package(default_visibility = ["//visibility:public"])
+
+load("//tools:defaults.bzl", "ts_library")
+load("@build_bazel_rules_nodejs//:defs.bzl", "nodejs_binary")
+
+
+ts_library(
+  name = "region_info_lib",
+  srcs = glob(["*.ts"]),
+  deps = [
+      "//packages/@aws-cdk/region-info:region-info-base",
+      "@npm//@types/minimist",
+      "@npm//@types/node",
+      "@npm//fs-extra",
+      "@npm//minimist",
+  ],
+)
+
+# Executable for the custom cfn2ts rule (see cfn2ts.bzl).
+nodejs_binary(
+  name = "region-info-gen",
+  data = [
+    ":region_info_lib",
+  ],
+  entry_point = "aws_cdk/packages/@aws-cdk/region-info/build-tools/generate-static-data.js",
+)

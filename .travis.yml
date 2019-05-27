@@ -14,6 +14,6 @@ cache:
   - npm
   - pip
 
-install: ./install.sh
-script: ./build.sh
+#install: ./install.sh
+#script: ./build.sh
 

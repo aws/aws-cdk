@@ -1,0 +1,30 @@
+load("//tools:defaults.bzl", "ts_library", "npm_package")
+
+package(default_visibility = ["//visibility:public"])
+
+ts_library(
+    name = "cloudformation-diff",
+    srcs = glob(["*.ts", "lib/**/*.ts"]),
+    deps = [
+        "//packages/@aws-cdk/cfnspec",
+        "//packages/@aws-cdk/cx-api",
+        "@npm//@types/node",
+        "@npm//colors",
+        "@npm//fast-deep-equal",
+        "@npm//string-width",
+        "@npm//table",
+    ],
+)
+
+npm_package(
+    name = "npm_package",
+    srcs = [
+      "package.json",
+    ],
+    tags = [
+        "release-with-framework",
+    ],
+    deps = [
+        ":cloudformation-diff",
+    ],
+)

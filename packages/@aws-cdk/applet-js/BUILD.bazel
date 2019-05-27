@@ -1,0 +1,28 @@
+load("//tools:defaults.bzl", "ts_library", "npm_package")
+
+package(default_visibility = ["//visibility:public"])
+
+ts_library(
+    name = "applet-js",
+    srcs = glob(["*.ts", "lib/**/*.ts", "bin/**/*.ts"]),
+    deps = [
+        "//packages/@aws-cdk/cdk",
+        "@npm//@types/fs-extra",
+        "@npm//@types/yaml",
+        "@npm//fs-extra",
+        "@npm//yaml",
+    ],
+)
+
+npm_package(
+    name = "npm_package",
+    srcs = [
+      "package.json",
+    ],
+    tags = [
+        "release-with-framework",
+    ],
+    deps = [
+        ":applet-js",
+    ],
+)

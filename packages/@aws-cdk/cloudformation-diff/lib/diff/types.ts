@@ -453,7 +453,7 @@ export enum ResourceImpact {
  * of property-level impacts.
  * @param one the current worst impact so far.
  * @param two the new impact being considered (can be undefined, as we may not always be
- *      able to determine some peroperty's impact).
+ *      able to determine some property's impact).
  */
 function worstImpact(one: ResourceImpact, two?: ResourceImpact): ResourceImpact {
   if (!two) { return one; }
@@ -614,7 +614,8 @@ export class ResourceDifference implements IDifference<Resource> {
     const baseImpact = Object.keys(this.otherChanges).length > 0 ? ResourceImpact.WILL_UPDATE : ResourceImpact.NO_CHANGE;
 
     return Object.values(this.propertyDiffs)
-           .map(elt => elt.changeImpact)
+           .filter(elt => elt.changeImpact)
+           .map(elt => elt.changeImpact!)
            .reduce(worstImpact, baseImpact);
   }
 
