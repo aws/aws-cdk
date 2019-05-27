@@ -226,6 +226,10 @@
     "AWS679f53fac002430cb0da5b7982bd2287CodeS3VersionKey3C45B02F": {
       "Type": "String",
       "Description": "S3 key for asset version \"aws-cdk-sdk-js/AWS679f53fac002430cb0da5b7982bd2287/Code\""
+    },
+    "AWS679f53fac002430cb0da5b7982bd2287CodeArtifactHash49FACC2E": {
+      "Type": "String",
+      "Description": "Artifact hash for asset \"aws-cdk-sdk-js/AWS679f53fac002430cb0da5b7982bd2287/Code\""
     }
   },
   "Outputs": {
