@@ -352,6 +352,11 @@ async function getCLICompatibleDefaultRegion(profile: string | undefined): Promi
     region = section && section.region;
   }
 
+  if (!region) {
+    const usedProfile = !profile ? '' : ` (profile: "${profile}")`;
+    throw new Error(`Unable to determine AWS region from environment or AWS configuration${usedProfile}`);
+  }
+
   return region;
 }
 
