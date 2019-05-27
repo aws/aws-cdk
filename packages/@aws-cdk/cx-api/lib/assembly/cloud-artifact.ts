@@ -25,7 +25,7 @@ export class CloudArtifact implements ICloudArtifact {
 
   private _deps?: ICloudArtifact[]; // cache
 
-  constructor(protected readonly assembly: CloudAssembly, public readonly id: string, artifact: Artifact) {
+  constructor(public readonly assembly: CloudAssembly, public readonly id: string, artifact: Artifact) {
     this.missing = artifact.missing || { };
 
     this.environment = parseEnvironment(artifact.environment, id);

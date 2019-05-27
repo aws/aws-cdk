@@ -3,10 +3,19 @@ import { Test } from 'nodeunit';
 import { Uploaded, UploadProps } from '../lib';
 import { prepareAssets } from '../lib/assets';
 
+const MOCK_ASSEMBLY: cxapi.ICloudAssembly = {
+  directory: '/assembly/root',
+  version: '0.0.0',
+  runtime: { libraries: { }},
+  stacks: [],
+  artifacts: [],
+};
+
 export = {
   async 'prepare assets'(test: Test) {
     // GIVEN
     const stack: cxapi.ICloudFormationStackArtifact = {
+      assembly: MOCK_ASSEMBLY,
       id: 'SomeStack',
       originalName: 'SomeStack',
       assets: [
@@ -58,6 +67,7 @@ export = {
   async 'prepare assets with reuse'(test: Test) {
     // GIVEN
     const stack: cxapi.ICloudFormationStackArtifact = {
+      assembly: MOCK_ASSEMBLY,
       id: 'SomeStack',
       name: 'SomeStack',
       originalName: 'SomeStack',
@@ -109,6 +119,7 @@ export = {
   async 'prepare container asset with reuse'(test: Test) {
     // GIVEN
     const stack: cxapi.ICloudFormationStackArtifact = {
+      assembly: MOCK_ASSEMBLY,
       id: 'SomeStack',
       name: 'SomeStack',
       originalName: 'SomeStack',

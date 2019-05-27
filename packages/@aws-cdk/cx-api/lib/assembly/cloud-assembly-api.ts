@@ -11,6 +11,7 @@ export interface ICloudAssembly {
 }
 
 export interface ICloudArtifact {
+  readonly assembly?: ICloudAssembly;
   readonly id: string;
   readonly environment: Environment;
   readonly metadata: { [path: string]: MetadataEntry[] };

@@ -263,7 +263,6 @@ export class Settings {
   }
 
   public merge(other: Settings): Settings {
-    debug('merging settings:', other.all);
     return new Settings(util.deepMerge(this.settings, other.settings));
   }
 

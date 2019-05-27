@@ -36,39 +36,55 @@ export async function prepareAssets(stack: cxapi.ICloudFormationStackArtifact, t
       debug(`Preparing asset ${asset.id}: ${JSON.stringify(asset)}`);
     }
 
-    params = params.concat(await prepareAsset(asset, toolkitInfo, reuseAsset, ci));
+    if (!stack.assembly) {
+      throw new Error(`Unexpected: stack assembly is required in order to find assets in assemly directory`);
+    }
+
+    const assemblyDir = stack.assembly.directory;
+    params = params.concat(await prepareAsset(assemblyDir, asset, toolkitInfo, reuseAsset, ci));
   }
 
   return params;
 }
 
 // tslint:disable-next-line:max-line-length
-async function prepareAsset(asset: cxapi.AssetMetadataEntry, toolkitInfo: ToolkitInfo, reuse: boolean, ci?: boolean): Promise<CloudFormation.Parameter[]> {
+async function prepareAsset(assemblyDir: string, asset: cxapi.AssetMetadataEntry, toolkitInfo: ToolkitInfo, reuse: boolean, ci?: boolean): Promise<CloudFormation.Parameter[]> {
   switch (asset.packaging) {
     case 'zip':
-      return await prepareZipAsset(asset, toolkitInfo, reuse);
+      return await prepareZipAsset(assemblyDir, asset, toolkitInfo, reuse);
     case 'file':
-      return await prepareFileAsset(asset, toolkitInfo, reuse);
+      return await prepareFileAsset(assemblyDir, asset, toolkitInfo, reuse);
     case 'container-image':
-      return await prepareContainerAsset(asset, toolkitInfo, reuse, ci);
+      return await prepareContainerAsset(assemblyDir, asset, toolkitInfo, reuse, ci);
     default:
       // tslint:disable-next-line:max-line-length
       throw new Error(`Unsupported packaging type: ${(asset as any).packaging}. You might need to upgrade your aws-cdk toolkit to support this asset type.`);
   }
 }
 
-async function prepareZipAsset(asset: cxapi.FileAssetMetadataEntry, toolkitInfo: ToolkitInfo, reuse: boolean): Promise<CloudFormation.Parameter[]> {
+async function prepareZipAsset(
+    assemblyDir: string,
+    asset: cxapi.FileAssetMetadataEntry,
+    toolkitInfo: ToolkitInfo,
+    reuse: boolean): Promise<CloudFormation.Parameter[]> {
+
   if (reuse) {
-    return await prepareFileAsset(asset, toolkitInfo, reuse);
+    return await prepareFileAsset(assemblyDir, asset, toolkitInfo, reuse);
   }
 
-  debug('Preparing zip asset from directory:', asset.path);
+  const dirPath = path.isAbsolute(asset.path) ? asset.path : path.join(assemblyDir, asset.path);
+
+  if (!(await fs.pathExists(dirPath)) || !(await fs.stat(dirPath)).isDirectory()) {
+    throw new Error(`Unable to find directory: ${dirPath}`);
+  }
+
+  debug('Preparing zip asset from directory:', dirPath);
   const staging = await fs.mkdtemp(path.join(os.tmpdir(), 'cdk-assets'));
   try {
     const archiveFile = path.join(staging, 'archive.zip');
-    await zipDirectory(asset.path, archiveFile);
+    await zipDirectory(dirPath, archiveFile);
     debug('zip archive:', archiveFile);
-    return await prepareFileAsset(asset, toolkitInfo, reuse, archiveFile, 'application/zip');
+    return await prepareFileAsset(assemblyDir, asset, toolkitInfo, reuse, archiveFile, 'application/zip');
   } finally {
     await fs.remove(staging);
   }
@@ -81,6 +97,7 @@ async function prepareZipAsset(asset: cxapi.FileAssetMetadataEntry, toolkitInfo:
  * @param contentType Content-type to use when uploading to S3 (none will be specified by default)
  */
 async function prepareFileAsset(
+    assemblyDir: string,
     asset: cxapi.FileAssetMetadataEntry,
     toolkitInfo: ToolkitInfo,
     reuse: boolean,
@@ -96,6 +113,11 @@ async function prepareFileAsset(
   }
 
   filePath = filePath || asset.path;
+
+  if (!path.isAbsolute(filePath)) {
+    filePath = path.join(assemblyDir, filePath);
+  }
+
   debug('Preparing file asset:', filePath);
 
   const data = await fs.readFile(filePath);

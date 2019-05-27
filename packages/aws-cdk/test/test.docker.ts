@@ -44,7 +44,7 @@ export = {
     };
 
     try {
-      await prepareContainerAsset(asset, toolkit, false);
+      await prepareContainerAsset('.', asset, toolkit, false);
     } catch (e) {
       if (!/STOPTEST/.test(e.toString())) { throw e; }
     }
@@ -86,13 +86,58 @@ export = {
     };
 
     try {
-      await prepareContainerAsset(asset, toolkit, false);
+      await prepareContainerAsset('.', asset, toolkit, false);
     } catch (e) {
       if (!/STOPTEST/.test(e.toString())) { throw e; }
     }
 
     // THEN
     const command = ['docker', 'build', '--build-arg', 'a=b', '--build-arg', 'c=d', '--tag', `uri:latest`, '/foo'];
+    test.ok(shellStub.calledWith(command));
+
+    prepareEcrRepositoryStub.restore();
+    shellStub.restore();
+    test.done();
+  },
+
+  async 'relative path'(test: Test) {
+    // GIVEN
+    const toolkit = new ToolkitInfo({
+      sdk: new MockSDK(),
+      bucketName: 'BUCKET_NAME',
+      bucketEndpoint: 'BUCKET_ENDPOINT',
+      environment: { name: 'env', account: '1234', region: 'abc' }
+    });
+
+    const prepareEcrRepositoryStub = sinon.stub(toolkit, 'prepareEcrRepository').resolves({
+      repositoryUri: 'uri',
+      repositoryName: 'name'
+    });
+
+    const shellStub = sinon.stub(os, 'shell').rejects('STOPTEST');
+
+    // WHEN
+    const asset: cxapi.ContainerImageAssetMetadataEntry = {
+      id: 'assetId',
+      imageNameParameter: 'MyParameter',
+      packaging: 'container-image',
+      path: 'relative-to-assembly',
+      sourceHash: '1234567890abcdef',
+      repositoryName: 'some-name',
+      buildArgs: {
+        a: 'b',
+        c: 'd'
+      }
+    };
+
+    try {
+      await prepareContainerAsset('/assembly/dir/root', asset, toolkit, false);
+    } catch (e) {
+      if (!/STOPTEST/.test(e.toString())) { throw e; }
+    }
+
+    // THEN
+    const command = ['docker', 'build', '--build-arg', 'a=b', '--build-arg', 'c=d', '--tag', `uri:latest`, '/assembly/dir/root/relative-to-assembly'];
     test.ok(shellStub.calledWith(command));
 
     prepareEcrRepositoryStub.restore();
