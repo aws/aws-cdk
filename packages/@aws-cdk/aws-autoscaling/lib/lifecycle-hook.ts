@@ -98,7 +98,7 @@ export class LifecycleHook extends Resource implements ILifecycleHook {
       assumedBy: new iam.ServicePrincipal('autoscaling.amazonaws.com')
     });
 
-    const targetProps = props.notificationTarget.bind(this);
+    const targetProps = props.notificationTarget.bind(this, this);
 
     const resource = new CfnLifecycleHook(this, 'Resource', {
       autoScalingGroupName: props.autoScalingGroup.autoScalingGroupName,

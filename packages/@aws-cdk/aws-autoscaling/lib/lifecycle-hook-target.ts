@@ -1,3 +1,4 @@
+import { Construct } from '@aws-cdk/cdk/lib/construct';
 import { ILifecycleHook } from './lifecycle-hook';
 
 /**
@@ -7,7 +8,7 @@ export interface ILifecycleHookTarget {
   /**
    * Called when this object is used as the target of a lifecycle hook
    */
-  bind(lifecycleHook: ILifecycleHook): LifecycleHookTargetProps;
+  bind(scope: Construct, lifecycleHook: ILifecycleHook): LifecycleHookTargetProps;
 }
 
 /**

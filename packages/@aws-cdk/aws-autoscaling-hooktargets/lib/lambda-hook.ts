@@ -1,6 +1,7 @@
 import autoscaling = require('@aws-cdk/aws-autoscaling');
 import lambda = require('@aws-cdk/aws-lambda');
 import sns = require('@aws-cdk/aws-sns');
+import { Construct } from '@aws-cdk/cdk';
 import { TopicHook } from './topic-hook';
 
 /**
@@ -12,10 +13,9 @@ export class FunctionHook implements autoscaling.ILifecycleHookTarget {
   constructor(private readonly fn: lambda.IFunction) {
   }
 
-  public bind(lifecycleHook: autoscaling.ILifecycleHook): autoscaling.LifecycleHookTargetProps {
-    const scope = lifecycleHook as autoscaling.LifecycleHook;
+  public bind(scope: Construct, lifecycleHook: autoscaling.ILifecycleHook): autoscaling.LifecycleHookTargetProps {
     const topic = new sns.Topic(scope, 'Topic');
     topic.subscribeLambda(this.fn);
-    return new TopicHook(topic).bind(lifecycleHook);
+    return new TopicHook(topic).bind(scope, lifecycleHook);
   }
 }
