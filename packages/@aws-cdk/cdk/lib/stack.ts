@@ -6,7 +6,6 @@ import { CfnParameter } from './cfn-parameter';
 import { Construct, IConstruct, PATH_SEP } from './construct';
 import { Environment } from './environment';
 import { HashedAddressingScheme, IAddressingScheme, LogicalIDs } from './logical-id';
-import { ISynthesisSession } from './synthesis';
 import { makeUniqueId } from './uniqueid';
 
 export interface StackProps {
@@ -163,7 +162,7 @@ export class Stack extends Construct {
   public get environment() {
     const account = this.env.account || 'unknown-account';
     const region = this.env.region || 'unknown-region';
-    return `aws://${account}/${region}`;
+    return cxapi.EnvironmentUtils.format(account, region);
   }
 
   /**
@@ -493,11 +492,11 @@ export class Stack extends Construct {
     }
   }
 
-  protected synthesize(session: ISynthesisSession): void {
+  protected synthesize(builder: cxapi.CloudAssemblyBuilder): void {
     const template = `${this.name}.template.json`;
 
     // write the CloudFormation template as a JSON file
-    const outPath = path.join(session.outdir, template);
+    const outPath = path.join(builder.outdir, template);
     fs.writeFileSync(outPath, JSON.stringify(this._toCloudFormation(), undefined, 2));
 
     const deps = this.dependencies().map(s => s.name);
@@ -509,7 +508,7 @@ export class Stack extends Construct {
     };
 
     // add an artifact that represents this stack
-    session.addArtifact(this.name, {
+    builder.addArtifact(this.name, {
       type: cxapi.ArtifactType.AwsCloudFormationStack,
       environment: this.environment,
       properties,

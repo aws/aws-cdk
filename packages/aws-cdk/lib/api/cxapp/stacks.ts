@@ -11,7 +11,7 @@ import { SDK } from '../util/sdk';
 /**
  * @returns output directory
  */
-type Synthesizer = (aws: SDK, config: Configuration) => Promise<cxapi.ICloudAssembly>;
+type Synthesizer = (aws: SDK, config: Configuration) => Promise<cxapi.CloudAssembly>;
 
 export interface AppStacksProps {
   /**
@@ -66,7 +66,7 @@ export class AppStacks {
    * Since app execution basically always synthesizes all the stacks,
    * we can invoke it once and cache the response for subsequent calls.
    */
-  public assembly?: cxapi.ICloudAssembly;
+  public assembly?: cxapi.CloudAssembly;
 
   private readonly renames: Renames;
 
@@ -80,7 +80,7 @@ export class AppStacks {
    * It's an error if there are no stacks to select, or if one of the requested parameters
    * refers to a nonexistant stack.
    */
-  public async selectStacks(selectors: string[], extendedSelection: ExtendedStackSelection): Promise<cxapi.ICloudFormationStackArtifact[]> {
+  public async selectStacks(selectors: string[], extendedSelection: ExtendedStackSelection): Promise<cxapi.CloudFormationStackArtifact[]> {
     selectors = selectors.filter(s => s != null); // filter null/undefined
 
     const stacks = await this.listStacks();
@@ -96,13 +96,13 @@ export class AppStacks {
       return autoDeployedStacks;
     }
 
-    const allStacks = new Map<string, cxapi.ICloudFormationStackArtifact>();
+    const allStacks = new Map<string, cxapi.CloudFormationStackArtifact>();
     for (const stack of stacks) {
       allStacks.set(stack.name, stack);
     }
 
     // For every selector argument, pick stacks from the list.
-    const selectedStacks = new Map<string, cxapi.ICloudFormationStackArtifact>();
+    const selectedStacks = new Map<string, cxapi.CloudFormationStackArtifact>();
     for (const pattern of selectors) {
       let found = false;
 
@@ -147,7 +147,7 @@ export class AppStacks {
    *
    * Renames are *NOT* applied in list mode.
    */
-  public async listStacks(): Promise<cxapi.ICloudFormationStackArtifact[]> {
+  public async listStacks(): Promise<cxapi.CloudFormationStackArtifact[]> {
     const response = await this.synthesizeStacks();
     return response.stacks;
   }
@@ -155,7 +155,7 @@ export class AppStacks {
   /**
    * Synthesize a single stack
    */
-  public async synthesizeStack(stackName: string): Promise<cxapi.ICloudFormationStackArtifact> {
+  public async synthesizeStack(stackName: string): Promise<cxapi.CloudFormationStackArtifact> {
     const resp = await this.synthesizeStacks();
     const stack = resp.stacks.find(s => s.name === stackName);
     if (!stack) {
@@ -169,7 +169,7 @@ export class AppStacks {
   /**
    * Synthesize a set of stacks
    */
-  public async synthesizeStacks(): Promise<cxapi.ICloudAssembly> {
+  public async synthesizeStacks(): Promise<cxapi.CloudAssembly> {
     if (this.assembly) {
       return this.assembly;
     }
@@ -218,7 +218,7 @@ export class AppStacks {
       this.assembly = assembly;
       return assembly;
 
-      function formatModules(runtime: cxapi.AppRuntime): string {
+      function formatModules(runtime: cxapi.RuntimeInfo): string {
         const modules = new Array<string>();
 
         // inject toolkit version to list of modules
@@ -236,7 +236,7 @@ export class AppStacks {
   /**
    * Extracts 'aws:cdk:warning|info|error' metadata entries from the stack synthesis
    */
-  private processMessages(stacks: cxapi.ICloudFormationStackArtifact[]) {
+  private processMessages(stacks: cxapi.CloudFormationStackArtifact[]) {
     let warnings = false;
     let errors = false;
 
@@ -270,12 +270,12 @@ export class AppStacks {
   private printMessage(logFn: (s: string) => void, prefix: string, id: string, entry: cxapi.MetadataEntry) {
     logFn(`[${prefix} at ${id}] ${entry.data}`);
 
-    if (this.props.verbose) {
+    if (this.props.verbose && entry.trace) {
       logFn(`  ${entry.trace.join('\n  ')}`);
     }
   }
 
-  private applyRenames(stacks: cxapi.ICloudFormationStackArtifact[]) {
+  private applyRenames(stacks: cxapi.CloudFormationStackArtifact[]) {
     this.renames.validateSelectedStacks(stacks);
     for (const stack of stacks) {
       stack.name = this.renames.finalName(stack.name);
@@ -286,7 +286,7 @@ export class AppStacks {
 /**
  * Combine the names of a set of stacks using a comma
  */
-export function listStackNames(stacks: cxapi.ICloudFormationStackArtifact[]): string {
+export function listStackNames(stacks: cxapi.CloudFormationStackArtifact[]): string {
   return stacks.map(s => s.name).join(', ');
 }
 
@@ -316,8 +316,8 @@ export enum ExtendedStackSelection {
  * Modifies `selectedStacks` in-place.
  */
 function includeDownstreamStacks(
-    selectedStacks: Map<string, cxapi.ICloudFormationStackArtifact>,
-    allStacks: Map<string, cxapi.ICloudFormationStackArtifact>) {
+    selectedStacks: Map<string, cxapi.CloudFormationStackArtifact>,
+    allStacks: Map<string, cxapi.CloudFormationStackArtifact>) {
   const added = new Array<string>();
 
   let madeProgress = true;
@@ -345,8 +345,8 @@ function includeDownstreamStacks(
  * Modifies `selectedStacks` in-place.
  */
 function includeUpstreamStacks(
-    selectedStacks: Map<string, cxapi.ICloudFormationStackArtifact>,
-    allStacks: Map<string, cxapi.ICloudFormationStackArtifact>) {
+    selectedStacks: Map<string, cxapi.CloudFormationStackArtifact>,
+    allStacks: Map<string, cxapi.CloudFormationStackArtifact>) {
   const added = new Array<string>();
   let madeProgress = true;
   while (madeProgress) {

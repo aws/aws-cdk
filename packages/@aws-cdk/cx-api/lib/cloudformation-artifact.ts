@@ -1,10 +1,8 @@
-import { Artifact, AwsCloudFormationStackProperties } from '../artifacts';
-import { ASSET_METADATA, AssetMetadataEntry } from '../metadata/assets';
-import { CloudArtifact } from './cloud-artifact';
+import { ASSET_METADATA, AssetMetadataEntry } from './assets';
+import { Artifact, AwsCloudFormationStackProperties, CloudArtifact } from './cloud-artifact';
 import { CloudAssembly } from './cloud-assembly';
-import { ICloudFormationStackArtifact } from './cloud-assembly-api';
 
-export class CloudFormationStackArtifact extends CloudArtifact implements ICloudFormationStackArtifact {
+export class CloudFormationStackArtifact extends CloudArtifact {
   public readonly template: any;
   public readonly originalName: string;
   public readonly logicalIdToPathMap: { [logicalId: string]: string };
@@ -15,11 +13,11 @@ export class CloudFormationStackArtifact extends CloudArtifact implements ICloud
   constructor(assembly: CloudAssembly, name: string, artifact: Artifact) {
     super(assembly, name, artifact);
 
-    if (!artifact.properties) {
-      throw new Error(`Invalid CloudFormation stack artifact. Missing properties`);
+    if (!artifact.properties || !artifact.properties.templateFile) {
+      throw new Error(`Invalid CloudFormation stack artifact. Missing "templateFile" property in cloud assembly manifest`);
     }
 
-    const properties = artifact.properties as AwsCloudFormationStackProperties;
+    const properties = this.properties as AwsCloudFormationStackProperties;
     this.template = this.assembly.readJson(properties.templateFile);
     this.originalName = name;
     this.name = this.originalName;

@@ -1,24 +1,11 @@
-import cxapi = require('@aws-cdk/cx-api');
-import fs = require('fs');
-import os = require('os');
-import path = require('path');
+import { BuildOptions, CloudAssembly, CloudAssemblyBuilder } from '@aws-cdk/cx-api';
 import { ConstructOrder, IConstruct } from './construct';
-import { collectRuntimeInformation } from './runtime-info';
-import { filterUndefined } from './util';
 
 export interface ISynthesizable {
-  synthesize(session: ISynthesisSession): void;
+  synthesize(session: CloudAssemblyBuilder): void;
 }
 
-export interface ISynthesisSession {
-  readonly outdir: string;
-  readonly manifest: cxapi.AssemblyManifest;
-  addArtifact(id: string, droplet: cxapi.Artifact): void;
-  tryGetArtifact(id: string): cxapi.Artifact | undefined;
-  getArtifact(id: string): cxapi.Artifact;
-}
-
-export interface SynthesisOptions extends ManifestOptions {
+export interface SynthesisOptions extends BuildOptions {
   /**
    * The file store used for this session.
    * @default - creates a temporary directory
@@ -33,8 +20,8 @@ export interface SynthesisOptions extends ManifestOptions {
 }
 
 export class Synthesizer {
-  public synthesize(root: IConstruct, options: SynthesisOptions = { }): ISynthesisSession {
-    const session = new SynthesisSession(options);
+  public synthesize(root: IConstruct, options: SynthesisOptions = { }): CloudAssembly {
+    const session = new CloudAssemblyBuilder(options.outdir);
 
     // the three holy phases of synthesis: prepare, validate and synthesize
 
@@ -53,83 +40,19 @@ export class Synthesizer {
 
     // synthesize (leaves first)
     for (const c of root.node.findAll(ConstructOrder.PostOrder)) {
-      if (SynthesisSession.isSynthesizable(c)) {
+      if (isSynthesizable(c)) {
         c.synthesize(session);
       }
     }
 
     // write session manifest and lock store
-    session.close(options);
-
-    return session;
+    return session.build(options);
   }
 }
 
-export class SynthesisSession implements ISynthesisSession {
-  /**
-   * @returns true if `obj` implements `ISynthesizable`.
-   */
-  public static isSynthesizable(obj: any): obj is ISynthesizable {
-    return 'synthesize' in obj;
-  }
-
-  public readonly outdir: string;
-
-  private readonly artifacts: { [id: string]: cxapi.Artifact } = { };
-  private _manifest?: cxapi.AssemblyManifest;
-
-  constructor(options: SynthesisOptions = { }) {
-    this.outdir = options.outdir || fs.mkdtempSync(path.join(os.tmpdir(), 'cdk.out'));
-    if (!fs.existsSync(this.outdir)) {
-      fs.mkdirSync(this.outdir);
-    }
-  }
-
-  public get manifest() {
-    if (!this._manifest) {
-      throw new Error(`Cannot read assembly manifest before the session has been finalized`);
-    }
-
-    return this._manifest;
-  }
-
-  public addArtifact(id: string, artifact: cxapi.Artifact): void {
-    cxapi.validateArtifact(artifact);
-    this.artifacts[id] = filterUndefined(artifact);
-  }
-
-  public tryGetArtifact(id: string): cxapi.Artifact | undefined {
-    return this.artifacts[id];
-  }
-
-  public getArtifact(id: string): cxapi.Artifact {
-    const artifact = this.tryGetArtifact(id);
-    if (!artifact) {
-      throw new Error(`Cannot find artifact ${id}`);
-    }
-    return artifact;
-  }
-
-  public close(options: ManifestOptions = { }): cxapi.AssemblyManifest {
-    const runtimeInfo = options.runtimeInformation !== undefined ? options.runtimeInformation : true;
-
-    const manifest: cxapi.AssemblyManifest = this._manifest = filterUndefined({
-      version: cxapi.PROTO_RESPONSE_VERSION,
-      artifacts: this.artifacts,
-      runtime: runtimeInfo ? collectRuntimeInformation() : undefined
-    });
-
-    const manifestFilePath = path.join(this.outdir, cxapi.MANIFEST_FILE);
-    fs.writeFileSync(manifestFilePath, JSON.stringify(manifest, undefined, 2));
-
-    return manifest;
-  }
-}
-
-export interface ManifestOptions {
-  /**
-   * Include runtime information (module versions) in manifest.
-   * @default true
-   */
-  readonly runtimeInformation?: boolean;
+/**
+ * @returns true if `obj` implements `ISynthesizable`.
+ */
+function isSynthesizable(obj: any): obj is ISynthesizable {
+  return 'synthesize' in obj;
 }

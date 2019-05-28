@@ -1,4 +1,4 @@
-import { Construct, ISynthesisSession } from '@aws-cdk/cdk';
+import { Construct } from '@aws-cdk/cdk';
 import cxapi = require('@aws-cdk/cx-api');
 import fs = require('fs');
 import path = require('path');
@@ -66,7 +66,7 @@ export class Staging extends Construct {
     }
   }
 
-  protected synthesize(session: ISynthesisSession) {
+  protected synthesize(session: cxapi.CloudAssemblyBuilder) {
     if (!this.relativePath) {
       return;
     }

@@ -16,7 +16,7 @@ import { print, warning } from './logging';
  */
 export function printStackDiff(
       oldTemplate: any,
-      newTemplate: cxapi.ICloudFormationStackArtifact,
+      newTemplate: cxapi.CloudFormationStackArtifact,
       strict: boolean,
       context: number,
       stream?: FormatStream): number {
@@ -60,7 +60,7 @@ export enum RequireApproval {
  *
  * Returns true if the changes are prompt-worthy, false otherwise.
  */
-export function printSecurityDiff(oldTemplate: any, newTemplate: cxapi.ICloudFormationStackArtifact, requireApproval: RequireApproval): boolean {
+export function printSecurityDiff(oldTemplate: any, newTemplate: cxapi.CloudFormationStackArtifact, requireApproval: RequireApproval): boolean {
   const diff = cfnDiff.diffTemplate(oldTemplate, newTemplate.template);
 
   if (difRequiresApproval(diff, requireApproval)) {

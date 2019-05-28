@@ -11,7 +11,7 @@ import { prepareContainerAsset } from './docker';
 import { debug, success } from './logging';
 
 // tslint:disable-next-line:max-line-length
-export async function prepareAssets(stack: cxapi.ICloudFormationStackArtifact, toolkitInfo?: ToolkitInfo, ci?: boolean, reuse?: string[]): Promise<CloudFormation.Parameter[]> {
+export async function prepareAssets(stack: cxapi.CloudFormationStackArtifact, toolkitInfo?: ToolkitInfo, ci?: boolean, reuse?: string[]): Promise<CloudFormation.Parameter[]> {
   reuse = reuse || [];
   const assets = stack.assets;
 

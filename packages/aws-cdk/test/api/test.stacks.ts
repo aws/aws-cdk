@@ -4,45 +4,25 @@ import { SDK } from '../../lib';
 import { AppStacks, ExtendedStackSelection } from '../../lib/api/cxapp/stacks';
 import { Renames } from '../../lib/renames';
 import { Configuration } from '../../lib/settings';
+import { testAssembly, TestStackArtifact } from '../util';
 
-const FIXED_RESULT: cxapi.ICloudAssembly = {
-  directory: 'cdk.out',
-  version: '1',
-  runtime: { libraries: { } },
-  artifacts: [],
-  stacks: [
-    {
-      id: 'withouterrors',
-      name: 'withouterrors',
-      originalName: 'withouterrors',
-      depends: [],
-      messages: [],
-      logicalIdToPathMap: {},
-      autoDeploy: true,
-      missing: { },
-      assets: [],
-      template: { resource: 'noerrorresource' },
-      environment: { name: 'dev', account: '12345', region: 'here' },
-      metadata: {},
-    },
-    {
-      id: 'witherrors',
-      name: 'witherrors',
-      originalName: 'witherrors',
-      depends: [],
-      messages: [
-        { level: cxapi.SynthesisMessageLevel.ERROR, id: '/resource', entry: { data: 'this is an error', trace: [], type: cxapi.ERROR_METADATA_KEY } }
-      ],
-      logicalIdToPathMap: {},
-      autoDeploy: true,
-      missing: { },
-      assets: [],
-      template: { resource: 'errorresource' },
-      environment: { name: 'dev', account: '12345', region: 'here' },
-      metadata: { },
-    }
-  ]
-};
+const FIXED_RESULT = testAssembly({
+  stackName: 'withouterrors',
+  template: { resource: 'noerrorresource' },
+},
+{
+  stackName: 'witherrors',
+  autoDeploy: true,
+  template: { resource: 'errorresource' },
+  metadata: {
+    '/resource': [
+      {
+        type: cxapi.ERROR_METADATA_KEY,
+        data: 'this is an error'
+      }
+    ]
+  },
+});
 
 export = {
   async 'do not throw when selecting stack without errors'(test: Test) {
@@ -104,17 +84,8 @@ export = {
     // GIVEN
     const stacks = appStacksWith([
       {
-        id: 'NotAutoDeployedStack',
-        name: 'NotAutoDeployedStack',
-        originalName: 'NotAutoDeployedStack',
-        assets: [],
-        logicalIdToPathMap: {},
-        missing: {},
-        depends: [],
-        messages: [],
+        stackName: 'NotAutoDeployedStack',
         template: { resource: 'Resource' },
-        environment: { name: 'dev', account: '12345', region: 'here' },
-        metadata: {},
         autoDeploy: false,
       },
     ]);
@@ -132,17 +103,8 @@ export = {
     // GIVEN
     const stacks = appStacksWith([
       {
-        id: 'NotAutoDeployedStack',
-        name: 'NotAutoDeployedStack',
-        originalName: 'NotAutoDeployedStack',
-        assets: [],
-        logicalIdToPathMap: {},
-        missing: {},
-        depends: [],
-        messages: [],
+        stackName: 'NotAutoDeployedStack',
         template: { resource: 'Resource' },
-        environment: { name: 'dev', account: '12345', region: 'here' },
-        metadata: {},
         autoDeploy: false,
       },
     ]);
@@ -160,42 +122,15 @@ export = {
     // GIVEN
     const stacks = appStacksWith([
       {
-        id: 'NotAutoDeployedStack',
-        name: 'NotAutoDeployedStack',
-        originalName: 'NotAutoDeployedStack',
-        assets: [],
-        logicalIdToPathMap: {},
-        missing: {},
-        depends: [],
-        messages: [],
+        stackName: 'NotAutoDeployedStack',
         template: { resource: 'Resource' },
-        environment: { name: 'dev', account: '12345', region: 'here' },
-        metadata: {},
         autoDeploy: false,
       },
       {
-        id: 'AutoDeployedStack',
-        name: 'AutoDeployedStack',
-        originalName: 'AutoDeployedStack',
+        stackName: 'AutoDeployedStack',
         autoDeploy: true,
-        assets: [],
-        logicalIdToPathMap: {},
-        missing: {},
-        depends: [
-          {
-            id: 'NotAutoDeployedStack',
-            environment: { region: 'r', account: '1', name: 'x' },
-            metadata: {},
-            missing: {},
-            autoDeploy: true,
-            depends: [],
-            messages: [],
-          }
-        ],
-        messages: [],
+        depends: [ 'NotAutoDeployedStack' ],
         template: { resource: 'Resource' },
-        environment: { name: 'dev', account: '12345', region: 'here' },
-        metadata: {},
       },
     ]);
 
@@ -209,17 +144,11 @@ export = {
   },
 };
 
-function appStacksWith(stacks: cxapi.ICloudFormationStackArtifact[]): AppStacks {
-  const response: cxapi.ICloudAssembly = {
-    directory: 'cdk.out',
-    version: '1',
-    artifacts: [],
-    runtime: { libraries: { } },
-    stacks,
-  };
+function appStacksWith(stacks: TestStackArtifact[]): AppStacks {
+  const assembly = testAssembly(...stacks);
   return new AppStacks({
     configuration: new Configuration(),
     aws: new SDK(),
-    synthesizer: async () => response,
+    synthesizer: async () => assembly,
   });
 }

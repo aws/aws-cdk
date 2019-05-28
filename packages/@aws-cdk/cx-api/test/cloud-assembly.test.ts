@@ -1,5 +1,6 @@
 import path = require('path');
 import { CloudAssembly } from '../lib';
+import { CLOUD_ASSEMBLY_VERSION, verifyManifestVersion } from '../lib/versioning';
 
 const FIXTURES = path.join(__dirname, 'fixtures');
 
@@ -9,7 +10,7 @@ test('empty assembly', () => {
   expect(assembly.missing).toBeUndefined();
   expect(assembly.runtime).toEqual({ libraries: { } });
   expect(assembly.stacks).toEqual([]);
-  expect(assembly.version).toEqual('0.31.0');
+  expect(assembly.version).toEqual(CLOUD_ASSEMBLY_VERSION);
 });
 
 test('assembly a single cloudformation stack', () => {
@@ -18,7 +19,7 @@ test('assembly a single cloudformation stack', () => {
   expect(assembly.stacks).toHaveLength(1);
   expect(assembly.missing).toBeUndefined();
   expect(assembly.runtime).toEqual({ libraries: { } });
-  expect(assembly.version).toEqual('0.31.0');
+  expect(assembly.version).toEqual(CLOUD_ASSEMBLY_VERSION);
   expect(assembly.artifacts[0]).toEqual(assembly.stacks[0]);
 
   const stack = assembly.stacks[0];
@@ -58,7 +59,7 @@ test('fails for invalid environment format', () => {
 
 test('fails if stack artifact does not have properties', () => {
   expect(() => new CloudAssembly(path.join(FIXTURES, 'stack-without-params')))
-    .toThrow('Invalid CloudFormation stack artifact. Missing properties');
+    .toThrow('Invalid CloudFormation stack artifact. Missing \"templateFile\" property in cloud assembly manifest');
 });
 
 test('messages', () => {
@@ -90,4 +91,10 @@ test('dependencies', () => {
 
 test('fails for invalid dependencies', () => {
   expect(() => new CloudAssembly(path.join(FIXTURES, 'invalid-depends'))).toThrow('Artifact StackC depends on non-existing artifact StackX');
+});
+
+test('verifyManifestVersion', () => {
+  verifyManifestVersion('0.33.0');
+  expect(() => verifyManifestVersion('0.31.0')).toThrow('App used framework v0.31.0 but it must be >= v0.33.0 in order to interact with this CLI');
+  expect(() => verifyManifestVersion('0.34.0')).toThrow('CLI >= 0.34.0 is required to interact with this app');
 });

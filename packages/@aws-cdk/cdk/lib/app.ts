@@ -1,6 +1,8 @@
 import cxapi = require('@aws-cdk/cx-api');
+import { CloudAssembly } from '@aws-cdk/cx-api';
 import { Construct } from './construct';
-import { ISynthesisSession, Synthesizer } from './synthesis';
+import { collectRuntimeInformation } from './runtime-info';
+import { Synthesizer } from './synthesis';
 
 /**
  * Custom construction properties for a CDK program
@@ -47,8 +49,8 @@ export interface AppProps {
  * Represents a CDK program.
  */
 export class App extends Construct {
-  private _session?: ISynthesisSession;
-  private readonly runtimeInformation: boolean;
+  private _assembly?: CloudAssembly;
+  private readonly runtimeInfo: boolean;
   private readonly outdir?: string;
 
   /**
@@ -69,7 +71,7 @@ export class App extends Construct {
     }
 
     // both are reverse logic
-    this.runtimeInformation = this.node.getContext(cxapi.DISABLE_VERSION_REPORTING) ? false : true;
+    this.runtimeInfo = this.node.getContext(cxapi.DISABLE_VERSION_REPORTING) ? false : true;
     this.outdir = props.outdir || process.env[cxapi.OUTDIR_ENV];
 
     const autoRun = props.autoRun !== undefined ? props.autoRun : cxapi.OUTDIR_ENV in process.env;
@@ -82,22 +84,27 @@ export class App extends Construct {
   }
 
   /**
-   * Runs the program. Output is written to output directory as specified in the request.
+   * Runs the program. Output is written to output directory as specified in the
+   * request.
+   *
+   * @returns a `CloudAssembly` which includes all the synthesized artifacts
+   * such as CloudFormation templates and assets.
    */
-  public run(): ISynthesisSession {
+  public run(): CloudAssembly {
     // this app has already been executed, no-op for you
-    if (this._session) {
-      return this._session;
+    if (this._assembly) {
+      return this._assembly;
     }
 
     const synth = new Synthesizer();
 
-    this._session = synth.synthesize(this, {
+    const assembly = synth.synthesize(this, {
       outdir: this.outdir,
-      runtimeInformation: this.runtimeInformation
+      runtimeInfo: this.runtimeInfo ? collectRuntimeInformation() : undefined
     });
 
-    return this._session;
+    this._assembly = assembly;
+    return assembly;
   }
 
   private loadContext(defaults: { [key: string]: string } = { }) {

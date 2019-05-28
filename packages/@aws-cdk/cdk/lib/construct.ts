@@ -44,7 +44,7 @@ export class ConstructNode {
    */
   private readonly _children: { [name: string]: IConstruct } = { };
   private readonly context: { [key: string]: any } = { };
-  private readonly _metadata = new Array<MetadataEntry>();
+  private readonly _metadata = new Array<cxapi.MetadataEntry>();
   private readonly references = new Set<Reference>();
   private readonly dependencies = new Set<IDependable>();
 
@@ -280,10 +280,7 @@ export class ConstructNode {
       return;
     }
 
-    const trace = this.getContext(cxapi.DISABLE_METADATA_STACK_TRACE)
-      ? []
-      : createStackTrace(from || this.addMetadata);
-
+    const trace = this.getContext(cxapi.DISABLE_METADATA_STACK_TRACE) ? undefined : createStackTrace(from || this.addMetadata);
     this._metadata.push({ type, data, trace });
   }
 
@@ -635,26 +632,6 @@ export class Construct implements IConstruct {
   protected prepare(): void {
     return;
   }
-}
-
-/**
- * An metadata entry in the construct.
- */
-export interface MetadataEntry {
-  /**
-   * The type of the metadata entry.
-   */
-  readonly type: string;
-
-  /**
-   * The data.
-   */
-  readonly data?: any;
-
-  /**
-   * A stack trace for when the entry was created.
-   */
-  readonly trace: string[];
 }
 
 export class ValidationError {

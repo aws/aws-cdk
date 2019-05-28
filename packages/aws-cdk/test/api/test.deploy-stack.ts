@@ -1,22 +1,12 @@
-import cxapi = require('@aws-cdk/cx-api');
 import { Test } from 'nodeunit';
 import { deployStack } from '../../lib';
+import { testStack } from '../util';
 import { MockSDK } from '../util/mock-sdk';
 
-const FAKE_STACK: cxapi.ICloudFormationStackArtifact = {
-  logicalIdToPathMap: {},
-  autoDeploy: true,
-  depends: [],
-  messages: [],
-  assets: [],
-  missing: { },
-  id: 'withouterrors',
-  name: 'withouterrors',
-  originalName: 'withouterrors',
+const FAKE_STACK = testStack({
+  stackName: 'withouterrors',
   template: { resource: 'noerrorresource' },
-  environment: { name: 'dev', account: '12345', region: 'here' },
-  metadata: {},
-};
+});
 
 export = {
   async 'do deploy executable change set with 0 changes'(test: Test) {

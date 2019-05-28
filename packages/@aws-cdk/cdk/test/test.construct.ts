@@ -280,7 +280,7 @@ export = {
     test.deepEqual(con.node.metadata[0].data, 'value');
     test.deepEqual(con.node.metadata[1].data, 103);
     test.deepEqual(con.node.metadata[2].data, [ 123, 456 ]);
-    test.ok(con.node.metadata[0].trace[0].indexOf('FIND_ME') !== -1, 'First stack line should include this function\s name');
+    test.ok(con.node.metadata[0].trace && con.node.metadata[0].trace[0].indexOf('FIND_ME') !== -1, 'First stack line should include this function\s name');
     test.done();
   },
 
@@ -309,7 +309,7 @@ export = {
     con.node.addWarning('This construct is deprecated, use the other one instead');
     test.deepEqual(con.node.metadata[0].type, cxapi.WARNING_METADATA_KEY);
     test.deepEqual(con.node.metadata[0].data, 'This construct is deprecated, use the other one instead');
-    test.ok(con.node.metadata[0].trace.length > 0);
+    test.ok(con.node.metadata[0].trace && con.node.metadata[0].trace.length > 0);
     test.done();
   },
 
@@ -319,7 +319,7 @@ export = {
     con.node.addError('Stop!');
     test.deepEqual(con.node.metadata[0].type, cxapi.ERROR_METADATA_KEY);
     test.deepEqual(con.node.metadata[0].data, 'Stop!');
-    test.ok(con.node.metadata[0].trace.length > 0);
+    test.ok(con.node.metadata[0].trace && con.node.metadata[0].trace.length > 0);
     test.done();
   },
 
@@ -329,7 +329,7 @@ export = {
     con.node.addInfo('Hey there, how do you do?');
     test.deepEqual(con.node.metadata[0].type, cxapi.INFO_METADATA_KEY);
     test.deepEqual(con.node.metadata[0].data, 'Hey there, how do you do?');
-    test.ok(con.node.metadata[0].trace.length > 0);
+    test.ok(con.node.metadata[0].trace && con.node.metadata[0].trace.length > 0);
     test.done();
   },
 

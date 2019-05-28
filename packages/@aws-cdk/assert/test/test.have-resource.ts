@@ -1,5 +1,7 @@
-import { ICloudFormationStackArtifact } from '@aws-cdk/cx-api';
+import cxapi = require('@aws-cdk/cx-api');
+import { writeFileSync } from 'fs';
 import { Test } from 'nodeunit';
+import { join } from 'path';
 import { expect, haveResource } from '../lib/index';
 
 export = {
@@ -90,23 +92,16 @@ export = {
   },
 };
 
-function mkStack(template: any): ICloudFormationStackArtifact {
-  return {
-    name: 'test',
-    id: 'test',
-    originalName: 'test',
-    assets: [],
-    logicalIdToPathMap: { },
-    missing: { },
-    depends: [],
-    autoDeploy: true,
-    messages: [],
-    template,
-    metadata: {},
-    environment: {
-      name: 'test',
-      account: 'test',
-      region: 'test'
+function mkStack(template: any): cxapi.CloudFormationStackArtifact {
+  const assembly = new cxapi.CloudAssemblyBuilder();
+  assembly.addArtifact('test', {
+    type: cxapi.ArtifactType.AwsCloudFormationStack,
+    environment: cxapi.EnvironmentUtils.format('123456789', 'us-west-2'),
+    properties: {
+      templateFile: 'template.json'
     }
-  };
+  });
+
+  writeFileSync(join(assembly.outdir, 'template.json'), JSON.stringify(template));
+  return assembly.build().getStack('test');
 }

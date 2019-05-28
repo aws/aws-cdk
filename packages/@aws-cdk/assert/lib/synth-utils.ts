@@ -1,6 +1,5 @@
-import { ISynthesisSession, Stack, SynthesisOptions, Synthesizer } from '@aws-cdk/cdk';
-import fs = require('fs');
-import path = require('path');
+import { Stack, SynthesisOptions, Synthesizer } from '@aws-cdk/cdk';
+import { CloudAssembly } from '@aws-cdk/cx-api';
 
 export class SynthUtils {
   public static toCloudFormation(stack: Stack, options: SynthesisOptions = { }): any {
@@ -8,13 +7,11 @@ export class SynthUtils {
     return this.templateForStackName(session, stack.name);
   }
 
-  public static templateForStackName(session: ISynthesisSession, stackName: string): any {
-    const fileName = session.getArtifact(stackName).properties!.templateFile;
-    const filePath = path.join(session.outdir, fileName);
-    return JSON.parse(fs.readFileSync(filePath, 'utf-8'));
+  public static templateForStackName(assembly: CloudAssembly, stackName: string): any {
+    return assembly.getStack(stackName).template;
   }
 
-  public static synthesize(stack: Stack, options: SynthesisOptions): ISynthesisSession {
+  public static synthesize(stack: Stack, options: SynthesisOptions): CloudAssembly {
     const synth = new Synthesizer();
     return synth.synthesize(stack, options);
   }

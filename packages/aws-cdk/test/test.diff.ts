@@ -8,51 +8,17 @@ import { IDeploymentTarget, Template } from '../lib/api/deployment-target';
 import { SDK } from '../lib/api/util/sdk';
 import { CdkToolkit } from '../lib/cdk-toolkit';
 import { Configuration } from '../lib/settings';
+import { testAssembly } from './util';
 
-const FIXED_RESULT: cxapi.ICloudAssembly = {
-  directory: 'cdk.out',
-  version: '1',
-  runtime: { libraries: { } },
-  artifacts: [],
-  stacks: [
-    {
-      id: 'A',
-      name: 'A',
-      originalName: 'A',
-      assets: [],
-      logicalIdToPathMap: { },
-      missing: { },
-      autoDeploy: true,
-      depends: [],
-      messages: [],
-      template: { resource: 'A' },
-      environment: { name: 'dev', account: '12345', region: 'here' },
-      metadata: {},
-    },
-    {
-      id: 'B',
-      name: 'B',
-      originalName: 'B',
-      assets: [],
-      logicalIdToPathMap: { },
-      missing: { },
-      autoDeploy: true,
-      depends: [ {
-        id: 'A',
-        environment: { region: 'x', account: 'a', name: 'x' },
-        messages: [],
-        depends: [],
-        autoDeploy: true,
-        metadata: {},
-        missing: {}
-      } ],
-      messages: [],
-      template: { resource: 'B' },
-      environment: { name: 'dev', account: '12345', region: 'here' },
-      metadata: {},
-    }
-  ]
-};
+const FIXED_RESULT = testAssembly(    {
+  stackName: 'A',
+  template: { resource: 'A' },
+},
+{
+  stackName: 'B',
+  depends: [ 'A' ],
+  template: { resource: 'B' },
+});
 
 const appStacks = new AppStacks({
   configuration: new Configuration(),
@@ -64,7 +30,7 @@ export = {
   async 'diff can diff multiple stacks'(test: Test) {
     // GIVEN
     const provisioner: IDeploymentTarget = {
-      async readCurrentTemplate(_stack: cxapi.ICloudFormationStackArtifact): Promise<Template> {
+      async readCurrentTemplate(_stack: cxapi.CloudFormationStackArtifact): Promise<Template> {
         return {};
       },
       async deployStack(_options: DeployStackOptions): Promise<DeployStackResult> {

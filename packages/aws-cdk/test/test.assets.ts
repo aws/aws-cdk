@@ -1,23 +1,20 @@
-import cxapi = require('@aws-cdk/cx-api');
 import { Test } from 'nodeunit';
 import { Uploaded, UploadProps } from '../lib';
 import { prepareAssets } from '../lib/assets';
-
-const MOCK_ASSEMBLY: cxapi.ICloudAssembly = {
-  directory: '/assembly/root',
-  version: '0.0.0',
-  runtime: { libraries: { }},
-  stacks: [],
-  artifacts: [],
-};
+import { testAssembly, testStack } from './util';
 
 export = {
   async 'prepare assets'(test: Test) {
     // GIVEN
-    const stack: cxapi.ICloudFormationStackArtifact = {
-      assembly: MOCK_ASSEMBLY,
-      id: 'SomeStack',
-      originalName: 'SomeStack',
+    const assembly = testAssembly({
+      stackName: 'SomeStack',
+      template: {
+        Resources: {
+          SomeResource: {
+            Type: 'AWS::Something::Something'
+          }
+        }
+      },
       assets: [
         {
           sourceHash: 'source-hash',
@@ -28,31 +25,13 @@ export = {
           s3KeyParameter: 'KeyParameter',
           artifactHashParameter: 'ArtifactHashParameter',
         }
-      ],
-      logicalIdToPathMap: { },
-      missing: { },
-      autoDeploy: true,
-      depends: [],
-      messages: [],
-      name: 'SomeStack',
-      environment: {
-        name: 'myenv',
-        account: 'myaccount',
-        region: 'myregion'
-      },
-      metadata: { },
-      template: {
-        Resources: {
-          SomeResource: {
-            Type: 'AWS::Something::Something'
-          }
-        }
-      }
-    };
+      ]
+    });
+
     const toolkit = new FakeToolkit();
 
     // WHEN
-    const params = await prepareAssets(stack, toolkit as any);
+    const params = await prepareAssets(assembly.getStack('SomeStack'), toolkit as any);
 
     // THEN
     test.deepEqual(params, [
@@ -66,11 +45,8 @@ export = {
 
   async 'prepare assets with reuse'(test: Test) {
     // GIVEN
-    const stack: cxapi.ICloudFormationStackArtifact = {
-      assembly: MOCK_ASSEMBLY,
-      id: 'SomeStack',
-      name: 'SomeStack',
-      originalName: 'SomeStack',
+    const stack = testStack({
+      stackName: 'SomeStack',
       assets: [
         {
           path: __filename,
@@ -82,17 +58,6 @@ export = {
           sourceHash: 'boom'
         }
       ],
-      logicalIdToPathMap: { },
-      missing: { },
-      autoDeploy: true,
-      depends: [],
-      messages: [],
-      environment: {
-        name: 'myenv',
-        account: 'myaccount',
-        region: 'myregion'
-      },
-      metadata: { },
       template: {
         Resources: {
           SomeResource: {
@@ -100,7 +65,7 @@ export = {
           }
         }
       }
-    };
+    });
     const toolkit = new FakeToolkit();
 
     // WHEN
@@ -118,11 +83,8 @@ export = {
 
   async 'prepare container asset with reuse'(test: Test) {
     // GIVEN
-    const stack: cxapi.ICloudFormationStackArtifact = {
-      assembly: MOCK_ASSEMBLY,
-      id: 'SomeStack',
-      name: 'SomeStack',
-      originalName: 'SomeStack',
+    const stack = testStack({
+      stackName: 'SomeStack',
       assets: [
         {
           path: __dirname,
@@ -132,13 +94,6 @@ export = {
           sourceHash: 'source-hash'
         }
       ],
-      logicalIdToPathMap: { },
-      missing: { },
-      autoDeploy: true,
-      depends: [],
-      messages: [],
-      environment: { name: 'myenv', account: 'myaccount', region: 'myregion' },
-      metadata: { },
       template: {
         Resources: {
           SomeResource: {
@@ -146,7 +101,7 @@ export = {
           }
         }
       }
-    };
+    });
     const toolkit = new FakeToolkit();
 
     // WHEN

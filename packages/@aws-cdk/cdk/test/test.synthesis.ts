@@ -1,12 +1,11 @@
 import cxapi = require('@aws-cdk/cx-api');
+import { CloudAssemblyBuilder } from '@aws-cdk/cx-api';
 import fs = require('fs');
 import { Test } from 'nodeunit';
 import os = require('os');
 import path = require('path');
 import cdk = require('../lib');
-import { Construct, ISynthesisSession, SynthesisSession, Synthesizer } from '../lib';
-
-const storeTestMatrix: any = {};
+import { Construct, Synthesizer } from '../lib';
 
 function createModernApp() {
   return new cdk.App({
@@ -26,8 +25,8 @@ export = {
 
     // THEN
     test.same(app.run(), session); // same session if we run() again
-    test.deepEqual(list(session.outdir), [ 'manifest.json' ]);
-    test.deepEqual(readJson(session.outdir, 'manifest.json').artifacts, {});
+    test.deepEqual(list(session.directory), [ 'manifest.json' ]);
+    test.deepEqual(readJson(session.directory, 'manifest.json').artifacts, {});
     test.done();
   },
 
@@ -40,7 +39,7 @@ export = {
     const session = app.run();
 
     // THEN
-    test.deepEqual(list(session.outdir), [
+    test.deepEqual(list(session.directory), [
       'manifest.json',
       'one-stack.template.json'
     ]);
@@ -53,13 +52,13 @@ export = {
     const stack = new cdk.Stack(app, 'one-stack');
 
     class MyConstruct extends cdk.Construct implements cdk.ISynthesizable {
-      public synthesize(s: cdk.ISynthesisSession) {
+      public synthesize(s: cxapi.CloudAssemblyBuilder) {
         writeJson(s.outdir, 'foo.json', { bar: 123 });
         s.addArtifact('my-random-construct', {
           type: cxapi.ArtifactType.AwsCloudFormationStack,
           environment: 'aws://12345/bar',
           properties: {
-            templateFile: 'file://boom'
+            templateFile: 'foo.json'
           }
         });
       }
@@ -71,19 +70,19 @@ export = {
     const session = app.run();
 
     // THEN
-    test.deepEqual(list(session.outdir), [
+    test.deepEqual(list(session.directory), [
       'foo.json',
       'manifest.json',
       'one-stack.template.json'
     ]);
-    test.deepEqual(readJson(session.outdir, 'foo.json'), { bar: 123 });
+    test.deepEqual(readJson(session.directory, 'foo.json'), { bar: 123 });
     test.deepEqual(session.manifest, {
-      version: '0.31.0',
+      version: '0.33.0',
       artifacts: {
         'my-random-construct': {
           type: 'aws:cloudformation:stack',
           environment: 'aws://12345/bar',
-          properties: { templateFile: 'file://boom' }
+          properties: { templateFile: 'foo.json' }
         },
         'one-stack': {
           type: 'aws:cloudformation:stack',
@@ -112,11 +111,12 @@ export = {
         calls.push('prepare');
       }
 
-      protected synthesize(session: ISynthesisSession) {
+      protected synthesize(session: CloudAssemblyBuilder) {
         calls.push('synthesize');
 
         session.addArtifact('art', {
-          type: cxapi.ArtifactType.AwsEcrDockerImage,
+          type: cxapi.ArtifactType.AwsCloudFormationStack,
+          properties: { templateFile: 'hey.json' },
           environment: 'aws://unknown-account/us-east-1'
         });
 
@@ -127,115 +127,13 @@ export = {
     const root = new SynthesizeMe();
 
     const synth = new Synthesizer();
-    const result = synth.synthesize(root, { outdir: fs.mkdtempSync(path.join(os.tmpdir(), 'outdir')) });
+    const assembly = synth.synthesize(root, { outdir: fs.mkdtempSync(path.join(os.tmpdir(), 'outdir')) });
 
     test.deepEqual(calls, [ 'prepare', 'validate', 'synthesize' ]);
-    test.deepEqual(readJson(result.outdir, 'hey.json'), { hello: 123 });
-    test.deepEqual(result.manifest.artifacts!.art, {
-      type: 'aws:ecr:image',
-      environment: 'aws://unknown-account/us-east-1'
-    });
-    test.done();
-  },
-
-  'store': storeTestMatrix
-};
-
-//
-// all these tests will be executed for each type of store
-//
-const storeTests = {
-  'SynthesisSession'(test: Test, outdir: string) {
-    // GIVEN
-    const session = new SynthesisSession({ outdir });
-    const templateFile = 'foo.template.json';
-
-    // WHEN
-    session.addArtifact('my-first-artifact', {
-      type: cxapi.ArtifactType.AwsCloudFormationStack,
-      environment: 'aws://1222344/us-east-1',
-      dependencies: ['a', 'b'],
-      metadata: {
-        foo: [ { data: 123, type: 'foo', trace: [] } ]
-      },
-      properties: {
-        templateFile,
-        parameters: {
-          prop1: '1234',
-          prop2: '555'
-        }
-      },
-      missing: {
-        foo: {
-          provider: 'context-provider',
-          props: {
-            a: 'A',
-            b: 2
-          }
-        }
-      }
-    });
-
-    session.addArtifact('minimal-artifact', {
-      type: cxapi.ArtifactType.AwsCloudFormationStack,
-      environment: 'aws://111/helo-world',
-      properties: {
-        templateFile
-      }
-    });
-
-    writeJson(session.outdir, templateFile, {
-      Resources: {
-        MyTopic: {
-          Type: 'AWS::S3::Topic'
-        }
-      }
-    });
-
-    session.close();
-
-    const manifest = readJson(session.outdir, cxapi.MANIFEST_FILE);
-
-    // THEN
-    delete manifest.runtime; // deterministic tests
-
-    // verify the manifest looks right
-    test.deepEqual(manifest, {
-      version: cxapi.PROTO_RESPONSE_VERSION,
-      artifacts: {
-        'my-first-artifact': {
-          type: 'aws:cloudformation:stack',
-          environment: 'aws://1222344/us-east-1',
-          dependencies: ['a', 'b'],
-          metadata: { foo: [ { data: 123, type: 'foo', trace: [] } ] },
-          properties: {
-            templateFile: 'foo.template.json',
-            parameters: {
-              prop1: '1234',
-              prop2: '555'
-            },
-          },
-          missing: {
-            foo: { provider: 'context-provider', props: { a: 'A', b: 2 } }
-          }
-        },
-        'minimal-artifact': {
-          type: 'aws:cloudformation:stack',
-          environment: 'aws://111/helo-world',
-          properties: { templateFile: 'foo.template.json' }
-        }
-      }
-    });
-
-    // verify we have a template file
-    test.deepEqual(readJson(session.outdir, templateFile), {
-      Resources: {
-        MyTopic: {
-          Type: 'AWS::S3::Topic'
-        }
-      }
-    });
-
+    const stack = assembly.getStack('art');
+    test.deepEqual(stack.template, { hello: 123 });
+    test.deepEqual(stack.properties, { templateFile: 'hey.json' });
+    test.deepEqual(stack.environment, { region: 'us-east-1', account: 'unknown-account', name: 'aws://unknown-account/us-east-1' });
     test.done();
   },
 
@@ -250,18 +148,13 @@ const storeTests = {
 
     // THEN
     const session = app.run();
-    const props = (session.manifest.artifacts && session.manifest.artifacts['my-stack'].properties) || {};
+    const props = session.getStack('my-stack').properties;
     test.deepEqual(props.parameters, {
       MyParam: 'Foo'
     });
     test.done();
   },
 };
-
-for (const [name, fn] of Object.entries(storeTests)) {
-  const outdir = fs.mkdtempSync(path.join(os.tmpdir(), 'synthesis-tests'));
-  storeTestMatrix[name] = (test: Test) => fn(test, outdir);
-}
 
 function list(outdir: string) {
   return fs.readdirSync(outdir).sort();

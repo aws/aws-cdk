@@ -12,8 +12,7 @@ function withApp(props: AppProps, block: (app: App) => void): cxapi.CloudAssembl
 
   block(app);
 
-  const session = app.run();
-  return new cxapi.CloudAssembly(session.outdir);
+  return app.run();
 }
 
 function synth(context?: { [key: string]: any }): cxapi.CloudAssembly {
@@ -35,12 +34,9 @@ function synth(context?: { [key: string]: any }): cxapi.CloudAssembly {
   });
 }
 
-function synthStack(name: string, includeMetadata: boolean = false, context?: any): cxapi.ICloudFormationStackArtifact {
+function synthStack(name: string, includeMetadata: boolean = false, context?: any): cxapi.CloudFormationStackArtifact {
   const response = synth(context);
-  const stack = response.stacks.find(s => s.name === name);
-  if (!stack) {
-    throw new Error(`Stack ${name} not found`);
-  }
+  const stack = response.getStack(name);
 
   if (!includeMetadata) {
     delete (stack as any).metadata;
@@ -65,13 +61,13 @@ export = {
       { s1c1: { Type: 'DummyResource', Properties: { Prop1: 'Prop1' } },
         s1c2: { Type: 'DummyResource', Properties: { Foo: 123 } } } });
     test.deepEqual(stack1.metadata, {
-      '/stack1': [{ type: 'meta', data: 111, trace: [] }],
-      '/stack1/s1c1': [{ type: 'aws:cdk:logicalId', data: 's1c1', trace: [] }],
+      '/stack1': [{ type: 'meta', data: 111 }],
+      '/stack1/s1c1': [{ type: 'aws:cdk:logicalId', data: 's1c1' }],
       '/stack1/s1c2':
-        [{ type: 'aws:cdk:logicalId', data: 's1c2', trace: [] },
-        { type: 'aws:cdk:warning', data: 'warning1', trace: [] },
-        { type: 'aws:cdk:warning', data: 'warning2', trace: [] }],
-      '/': [{ type: 'applevel', data: 123, trace: [] }]
+        [{ type: 'aws:cdk:logicalId', data: 's1c2' },
+        { type: 'aws:cdk:warning', data: 'warning1' },
+        { type: 'aws:cdk:warning', data: 'warning2' }],
+      '/': [{ type: 'applevel', data: 123 }]
     });
 
     const stack2 = response.stacks[1];
@@ -82,13 +78,13 @@ export = {
         s1c2r1D1791C01: { Type: 'ResourceType1' },
         s1c2r25F685FFF: { Type: 'ResourceType2' } } });
     test.deepEqual(stack2.metadata, {
-      '/stack2/s2c1': [{ type: 'aws:cdk:logicalId', data: 's2c1', trace: [] }],
-      '/stack2/s1c2': [{ type: 'meta', data: { key: 'value' }, trace: [] }],
+      '/stack2/s2c1': [{ type: 'aws:cdk:logicalId', data: 's2c1' }],
+      '/stack2/s1c2': [{ type: 'meta', data: { key: 'value' } }],
       '/stack2/s1c2/r1':
-        [{ type: 'aws:cdk:logicalId', data: 's1c2r1D1791C01', trace: [] }],
+        [{ type: 'aws:cdk:logicalId', data: 's1c2r1D1791C01' }],
       '/stack2/s1c2/r2':
-        [{ type: 'aws:cdk:logicalId', data: 's1c2r25F685FFF', trace: [] }],
-      '/': [{ type: 'applevel', data: 123, trace: [] }]
+        [{ type: 'aws:cdk:logicalId', data: 's1c2r25F685FFF' }],
+      '/': [{ type: 'applevel', data: 123 }]
     });
 
     test.done();

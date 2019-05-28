@@ -3,7 +3,6 @@ import iam = require('@aws-cdk/aws-iam');
 import cdk = require('@aws-cdk/cdk');
 import { App, Stack } from '@aws-cdk/cdk';
 import cxapi = require('@aws-cdk/cx-api');
-import { CloudAssembly } from '@aws-cdk/cx-api';
 import fs = require('fs');
 import { Test } from 'nodeunit';
 import os = require('os');
@@ -42,7 +41,7 @@ export = {
       artifactHashParameter: 'MyAssetArtifactHashF518BDDE',
     });
 
-    const template = JSON.parse(fs.readFileSync(path.join(session.outdir, 'MyStack.template.json'), 'utf-8'));
+    const template = JSON.parse(fs.readFileSync(path.join(session.directory, 'MyStack.template.json'), 'utf-8'));
     test.equal(template.Parameters.MyAssetS3Bucket68C9B344.Type, 'String');
     test.equal(template.Parameters.MyAssetS3VersionKey68E1A45D.Type, 'String');
 
@@ -58,13 +57,7 @@ export = {
       path: dirPath
     });
 
-    const assembly = new CloudAssembly(app.run().outdir);
-    const synth = assembly.stacks.find(x => x.name === stack.name);
-
-    if (!synth) {
-      throw new Error(`cannot find stack`);
-    }
-
+    const synth = app.run().getStack(stack.name);
     test.deepEqual(synth.metadata['/my-stack/MyAsset'][0].data, {
       path: 'asset.6b84b87243a4a01c592d78e1fd3855c4bfef39328cd0a450cc97e81717fea2a2',
       id: "mystackMyAssetD6B1B593",
@@ -352,9 +345,9 @@ export = {
 
       // WHEN
       const session = app.run();
-      const artifact = session.getArtifact(stack.name);
+      const artifact = session.getStack(stack.name);
 
-      const md = Object.values(artifact.metadata || {})[0][0].data;
+      const md = Object.values(artifact.metadata)[0][0].data;
       test.deepEqual(md.path, 'asset.6b84b87243a4a01c592d78e1fd3855c4bfef39328cd0a450cc97e81717fea2a2');
       test.done();
     }

@@ -1,7 +1,6 @@
 import cxapi = require('@aws-cdk/cx-api');
 import { Test } from 'nodeunit';
-import { App, AvailabilityZoneProvider, Construct, ContextProvider,
-  MetadataEntry, SSMParameterProvider, Stack } from '../lib';
+import { App, AvailabilityZoneProvider, Construct, ContextProvider, SSMParameterProvider, Stack } from '../lib';
 
 export = {
   'AvailabilityZoneProvider returns a list with dummy values if the context is not available'(test: Test) {
@@ -101,11 +100,11 @@ export = {
     test.deepEqual(new AvailabilityZoneProvider(stack).availabilityZones, [ 'dummy1a', 'dummy1b', 'dummy1c' ]);
     test.deepEqual(new SSMParameterProvider(child, {parameterName: 'foo'}).parameterValue(), 'dummy');
 
-    const session = app.run();
-    const output = session.getArtifact('test-stack');
-    const metadata = output.metadata || { };
-    const azError: MetadataEntry | undefined = metadata['/test-stack'].find(x => x.type === cxapi.ERROR_METADATA_KEY);
-    const ssmError: MetadataEntry | undefined = metadata['/test-stack/ChildConstruct'].find(x => x.type === cxapi.ERROR_METADATA_KEY);
+    const assembly = app.run();
+    const output = assembly.getStack('test-stack');
+    const metadata = output.metadata;
+    const azError: cxapi.MetadataEntry | undefined = metadata['/test-stack'].find(x => x.type === cxapi.ERROR_METADATA_KEY);
+    const ssmError: cxapi.MetadataEntry | undefined = metadata['/test-stack/ChildConstruct'].find(x => x.type === cxapi.ERROR_METADATA_KEY);
 
     test.ok(azError && (azError.data as string).includes('Cannot determine scope for context provider availability-zones'));
     test.ok(ssmError && (ssmError.data as string).includes('Cannot determine scope for context provider ssm'));

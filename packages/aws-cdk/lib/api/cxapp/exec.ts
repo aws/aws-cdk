@@ -7,7 +7,7 @@ import { Configuration, PROJECT_CONFIG, USER_DEFAULTS } from '../../settings';
 import { SDK } from '../util/sdk';
 
 /** Invokes the cloud executable and returns JSON output */
-export async function execProgram(aws: SDK, config: Configuration): Promise<cxapi.ICloudAssembly> {
+export async function execProgram(aws: SDK, config: Configuration): Promise<cxapi.CloudAssembly> {
   const env: { [key: string]: string } = { };
 
   const context = config.context.all;
