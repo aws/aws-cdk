@@ -2,9 +2,9 @@ import { expect, haveResource, ResourcePart } from '@aws-cdk/assert';
 import ec2 = require('@aws-cdk/aws-ec2');
 import iam = require('@aws-cdk/aws-iam');
 import cdk = require('@aws-cdk/cdk');
+import { Construct } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
 import autoscaling = require('../lib');
-import { Construct } from '@aws-cdk/cdk';
 
 export = {
   'we can add a lifecycle hook to an ASG'(test: Test) {
