@@ -2,8 +2,8 @@ import { Construct, Resource } from '@aws-cdk/cdk';
 import { CfnGroup } from './iam.generated';
 import { IIdentity } from './identity-base';
 import { Policy } from './policy';
-import { ArnPrincipal, PolicyStatement, PrincipalPolicyFragment } from './policy-document';
-import { IPrincipal } from './principals';
+import { PolicyStatement } from './policy-document';
+import { ArnPrincipal, IPrincipal, PrincipalPolicyFragment } from './principals';
 import { IUser } from './user';
 import { AttachedPolicies, undefinedIfEmpty } from './util';
 
