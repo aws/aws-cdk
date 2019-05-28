@@ -12,6 +12,14 @@ export interface DnsValidatedCertificateProps extends CertificateProps {
      * must be authoritative for the domain name specified in the Certificate Request.
      */
     readonly hostedZone: route53.IHostedZone;
+    /**
+     * AWS region that will host the certificate. This is needed especially
+     * for certificates used for CloudFront distributions, which require the region
+     * to be us-east-1.
+     *
+     * @default the region the stack is deployed in.
+     */
+    readonly region?: string;
 }
 
 /**
@@ -64,7 +72,8 @@ export class DnsValidatedCertificate extends cdk.Construct implements ICertifica
             properties: {
                 DomainName: props.domainName,
                 SubjectAlternativeNames: props.subjectAlternativeNames,
-                HostedZoneId: this.hostedZoneId
+                HostedZoneId: this.hostedZoneId,
+                Region: props.region,
             }
         });
 

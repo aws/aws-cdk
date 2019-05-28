@@ -98,7 +98,8 @@ describe('DNS Validated Certificate Handler', () => {
         ResourceProperties: {
           DomainName: testDomainName,
           SubjectAlternativeNames: [],
-          HostedZoneId: testHostedZoneId
+          HostedZoneId: testHostedZoneId,
+          Region: 'us-east-1',
         }
       })
       .expectResolve(() => {
@@ -138,7 +139,10 @@ describe('DNS Validated Certificate Handler', () => {
       .event({
         RequestType: 'Delete',
         RequestId: testRequestId,
-        PhysicalResourceId: testCertificateArn
+        PhysicalResourceId: testCertificateArn,
+        ResourceProperties: {
+          Region: 'us-east-1',
+        }
       })
       .expectResolve(() => {
         sinon.assert.calledWith(deleteCertificateFake, sinon.match({
@@ -162,7 +166,10 @@ describe('DNS Validated Certificate Handler', () => {
       .event({
         RequestType: 'Delete',
         RequestId: testRequestId,
-        PhysicalResourceId: testCertificateArn
+        PhysicalResourceId: testCertificateArn,
+        ResourceProperties: {
+          Region: 'us-east-1',
+        }
       })
       .expectResolve(() => {
         sinon.assert.calledWith(deleteCertificateFake, sinon.match({
@@ -186,7 +193,10 @@ describe('DNS Validated Certificate Handler', () => {
       .event({
         RequestType: 'Delete',
         RequestId: testRequestId,
-        PhysicalResourceId: testCertificateArn
+        PhysicalResourceId: testCertificateArn,
+        ResourceProperties: {
+          Region: 'us-east-1',
+        }
       })
       .expectResolve(() => {
         sinon.assert.calledWith(deleteCertificateFake, sinon.match({
