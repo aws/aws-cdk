@@ -67,3 +67,9 @@ export function parseAwsApiCall(path?: string, action?: string, actionParams?: {
 
   throw new Error(`Either "path" or "action" are required`);
 }
+
+export function validateInteger(property: number | undefined, messagePrefix: string) {
+  if (property && !Number.isInteger(property)) {
+    throw new Error(`${messagePrefix} should be an integer`);
+  }
+}

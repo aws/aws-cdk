@@ -6,6 +6,8 @@ export * from './deployment';
 export * from './stage';
 export * from './integrations';
 export * from './lambda-api';
+export * from './api-key';
+export * from './usage-plan';
 export * from './vpc-link';
 export * from './methodresponse';
 export * from './model';
