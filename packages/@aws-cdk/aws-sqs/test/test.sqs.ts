@@ -229,6 +229,50 @@ export = {
       });
       test.done();
     },
+
+    'grant also affects key on encrypted queue'(test: Test) {
+      // GIVEN
+      const stack = new Stack();
+      const queue = new sqs.Queue(stack, 'Queue', {
+        encryption: sqs.QueueEncryption.Kms
+      });
+      const role = new iam.Role(stack, 'Role', {
+        assumedBy: new iam.ServicePrincipal('someone')
+      });
+
+      // WHEN
+      queue.grantSendMessages(role);
+
+      // THEN
+      expect(stack).to(haveResource('AWS::IAM::Policy', {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "sqs:SendMessage",
+                "sqs:SendMessageBatch",
+                "sqs:GetQueueAttributes",
+                "sqs:GetQueueUrl"
+              ],
+              "Effect": "Allow",
+              "Resource": { "Fn::GetAtt": [ "Queue4A7E3555", "Arn" ] }
+            },
+            {
+              "Action": [
+                "kms:Encrypt",
+                "kms:ReEncrypt*",
+                "kms:GenerateDataKey*"
+              ],
+              "Effect": "Allow",
+              "Resource": { "Fn::GetAtt": [ "QueueKey39FCBAE6", "Arn" ] }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+      }));
+
+      test.done();
+    },
   },
 
   'test metrics'(test: Test) {

@@ -166,7 +166,7 @@ export abstract class QueueBase extends Resource implements IQueue {
    * @param grantee Principal to grant consume rights to
    */
   public grantConsumeMessages(grantee: iam.IGrantable) {
-    return this.grant(grantee,
+    const ret = this.grant(grantee,
       'sqs:ReceiveMessage',
       'sqs:ChangeMessageVisibility',
       'sqs:ChangeMessageVisibilityBatch',
@@ -174,6 +174,12 @@ export abstract class QueueBase extends Resource implements IQueue {
       'sqs:DeleteMessage',
       'sqs:DeleteMessageBatch',
       'sqs:GetQueueAttributes');
+
+    if (this.encryptionMasterKey) {
+      this.encryptionMasterKey.grantDecrypt(grantee);
+    }
+
+    return ret;
   }
 
   /**
@@ -189,11 +195,17 @@ export abstract class QueueBase extends Resource implements IQueue {
    * @param grantee Principal to grant send rights to
    */
   public grantSendMessages(grantee: iam.IGrantable) {
-    return this.grant(grantee,
+    const ret = this.grant(grantee,
       'sqs:SendMessage',
       'sqs:SendMessageBatch',
       'sqs:GetQueueAttributes',
       'sqs:GetQueueUrl');
+
+    if (this.encryptionMasterKey) {
+      this.encryptionMasterKey.grantEncrypt(grantee);
+    }
+
+    return ret;
   }
 
   /**

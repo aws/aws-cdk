@@ -45,19 +45,20 @@
             }
           ]
         }
-      }
+      },
+      "DependsOn": [
+        "TopicPolicyA1747468",
+        "TopicBFC7AF6E",
+        "Topic3Policy49BDDFBD",
+        "Topic3DEAE47A7"
+      ]
     },
     "TopicBFC7AF6E": {
       "Type": "AWS::SNS::Topic"
     },
-    "TopicPolicy7C94FB28": {
+    "TopicPolicyA1747468": {
       "Type": "AWS::SNS::TopicPolicy",
       "Properties": {
-        "Topics": [
-          {
-            "Ref": "TopicBFC7AF6E"
-          }
-        ],
         "PolicyDocument": {
           "Statement": [
             {
@@ -75,30 +76,38 @@
               "Effect": "Allow",
               "Principal": {
                 "Service": {
-                  "Fn::Join": ["", ["s3.", { "Ref": "AWS::URLSuffix" }]]
+                  "Fn::Join": [
+                    "",
+                    [
+                      "s3.",
+                      {
+                        "Ref": "AWS::URLSuffix"
+                      }
+                    ]
+                  ]
                 }
               },
               "Resource": {
                 "Ref": "TopicBFC7AF6E"
               },
-              "Sid": "sid0"
+              "Sid": "0"
             }
           ],
           "Version": "2012-10-17"
-        }
+        },
+        "Topics": [
+          {
+            "Ref": "TopicBFC7AF6E"
+          }
+        ]
       }
     },
     "Topic3DEAE47A7": {
       "Type": "AWS::SNS::Topic"
     },
-    "Topic3Policy9C00F2FA": {
+    "Topic3Policy49BDDFBD": {
       "Type": "AWS::SNS::TopicPolicy",
       "Properties": {
-        "Topics": [
-          {
-            "Ref": "Topic3DEAE47A7"
-          }
-        ],
         "PolicyDocument": {
           "Statement": [
             {
@@ -116,13 +125,21 @@
               "Effect": "Allow",
               "Principal": {
                 "Service": {
-                  "Fn::Join": ["", ["s3.", { "Ref": "AWS::URLSuffix" }]]
+                  "Fn::Join": [
+                    "",
+                    [
+                      "s3.",
+                      {
+                        "Ref": "AWS::URLSuffix"
+                      }
+                    ]
+                  ]
                 }
               },
               "Resource": {
                 "Ref": "Topic3DEAE47A7"
               },
-              "Sid": "sid0"
+              "Sid": "0"
             },
             {
               "Action": "sns:Publish",
@@ -139,17 +156,30 @@
               "Effect": "Allow",
               "Principal": {
                 "Service": {
-                  "Fn::Join": ["", ["s3.", { "Ref": "AWS::URLSuffix" }]]
+                  "Fn::Join": [
+                    "",
+                    [
+                      "s3.",
+                      {
+                        "Ref": "AWS::URLSuffix"
+                      }
+                    ]
+                  ]
                 }
               },
               "Resource": {
                 "Ref": "Topic3DEAE47A7"
               },
-              "Sid": "sid1"
+              "Sid": "1"
             }
           ],
           "Version": "2012-10-17"
-        }
+        },
+        "Topics": [
+          {
+            "Ref": "Topic3DEAE47A7"
+          }
+        ]
       }
     },
     "BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleB6FB88EC": {
@@ -162,7 +192,15 @@
               "Effect": "Allow",
               "Principal": {
                 "Service": {
-                  "Fn::Join": ["", ["lambda.", { "Ref": "AWS::URLSuffix" }]]
+                  "Fn::Join": [
+                    "",
+                    [
+                      "lambda.",
+                      {
+                        "Ref": "AWS::URLSuffix"
+                      }
+                    ]
+                  ]
                 }
               }
             }
@@ -265,7 +303,11 @@
             }
           ]
         }
-      }
+      },
+      "DependsOn": [
+        "Topic3Policy49BDDFBD",
+        "Topic3DEAE47A7"
+      ]
     }
   }
 }

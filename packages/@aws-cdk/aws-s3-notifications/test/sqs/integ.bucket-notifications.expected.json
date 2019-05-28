@@ -43,8 +43,11 @@
         }
       },
       "DependsOn": [
+        "EncryptedQueueKey6F4FD304",
         "EncryptedQueuePolicy8AEB1708",
-        "MyQueuePolicy6BBEDDAC"
+        "EncryptedQueue0428C61A",
+        "MyQueuePolicy6BBEDDAC",
+        "MyQueueE6CA6235"
       ]
     },
     "MyQueueE6CA6235": {
@@ -56,7 +59,12 @@
         "PolicyDocument": {
           "Statement": [
             {
-              "Action": "sqs:SendMessage",
+              "Action": [
+                "sqs:SendMessage",
+                "sqs:SendMessageBatch",
+                "sqs:GetQueueAttributes",
+                "sqs:GetQueueUrl"
+              ],
               "Condition": {
                 "ArnLike": {
                   "aws:SourceArn": {
@@ -89,7 +97,12 @@
               }
             },
             {
-              "Action": "sqs:SendMessage",
+              "Action": [
+                "sqs:SendMessage",
+                "sqs:SendMessageBatch",
+                "sqs:GetQueueAttributes",
+                "sqs:GetQueueUrl"
+              ],
               "Condition": {
                 "ArnLike": {
                   "aws:SourceArn": {
@@ -253,7 +266,8 @@
         }
       },
       "DependsOn": [
-        "MyQueuePolicy6BBEDDAC"
+        "MyQueuePolicy6BBEDDAC",
+        "MyQueueE6CA6235"
       ]
     },
     "EncryptedQueueKey6F4FD304": {
@@ -299,7 +313,39 @@
             },
             {
               "Action": [
-                "kms:GenerateDataKey",
+                "kms:Encrypt",
+                "kms:ReEncrypt*",
+                "kms:GenerateDataKey*"
+              ],
+              "Condition": {
+                "ArnLike": {
+                  "aws:SourceArn": {
+                    "Fn::GetAtt": [
+                      "Bucket12520700A",
+                      "Arn"
+                    ]
+                  }
+                }
+              },
+              "Effect": "Allow",
+              "Principal": {
+                "Service": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "s3.",
+                      {
+                        "Ref": "AWS::URLSuffix"
+                      }
+                    ]
+                  ]
+                }
+              },
+              "Resource": "*"
+            },
+            {
+              "Action": [
+                "kms:GenerateDataKey*",
                 "kms:Decrypt"
               ],
               "Effect": "Allow",
@@ -342,7 +388,12 @@
         "PolicyDocument": {
           "Statement": [
             {
-              "Action": "sqs:SendMessage",
+              "Action": [
+                "sqs:SendMessage",
+                "sqs:SendMessageBatch",
+                "sqs:GetQueueAttributes",
+                "sqs:GetQueueUrl"
+              ],
               "Condition": {
                 "ArnLike": {
                   "aws:SourceArn": {

@@ -150,7 +150,9 @@
       },
       "DependsOn": [
         "ObjectCreatedTopicPolicyA938ECFC",
-        "ObjectDeletedTopicPolicy026B02E6"
+        "ObjectCreatedTopic92F47E19",
+        "ObjectDeletedTopicPolicy026B02E6",
+        "ObjectDeletedTopic2A914EC0"
       ]
     },
     "BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleB6FB88EC": {

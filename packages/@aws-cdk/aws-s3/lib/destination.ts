@@ -12,7 +12,7 @@ export interface IBucketNotificationDestination {
    * idempotency in each destination.
    * @param bucket The bucket object to bind to
    */
-  bind(bucket: IBucket): BucketNotificationDestinationProps;
+  bind(scope: cdk.Construct, bucket: IBucket): BucketNotificationDestinationProps;
 }
 
 /**

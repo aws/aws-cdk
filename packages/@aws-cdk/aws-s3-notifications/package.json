@@ -54,11 +54,24 @@
     "url": "https://aws.amazon.com",
     "organization": true
   },
+  "jest": {
+    "moduleFileExtensions": [
+      "js"
+    ],
+    "coverageThreshold": {
+      "global": {
+        "branches": 70,
+        "statements": 80
+      }
+    }
+  },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/aws-assert": "^0.32.0",
+    "@aws-cdk/assert": "^0.32.0",
     "cdk-build-tools": "^0.32.0",
-    "pkglint": "^0.32.0"
+    "cdk-integ-tools": "^0.32.0",
+    "pkglint": "^0.32.0",
+    "jest": "^24.7.1"
   },
   "dependencies": {
     "@aws-cdk/aws-iam": "^0.32.0",
