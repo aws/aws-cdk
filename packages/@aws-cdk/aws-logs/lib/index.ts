@@ -1,4 +1,3 @@
-export * from './cross-account-destination';
 export * from './log-group';
 export * from './log-stream';
 export * from './metric-filter';

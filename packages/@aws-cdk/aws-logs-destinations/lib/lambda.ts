@@ -1,6 +1,7 @@
 import iam = require('@aws-cdk/aws-iam');
 import lambda = require('@aws-cdk/aws-lambda');
 import logs = require('@aws-cdk/aws-logs');
+import { Construct } from '@aws-cdk/cdk';
 
 /**
  * Use a Lamda Function as the destination for a log subscription
@@ -9,7 +10,7 @@ export class LambdaDestination implements logs.ILogSubscriptionDestination {
   constructor(private readonly fn: lambda.IFunction) {
   }
 
-  public bind(logGroup: logs.ILogGroup): logs.LogSubscriptionDestination {
+  public bind(_scope: Construct, logGroup: logs.ILogGroup): logs.LogSubscriptionDestination {
     const arn = logGroup.logGroupArn;
 
     const logSubscriptionDestinationPolicyAddedFor: string[] = [];
