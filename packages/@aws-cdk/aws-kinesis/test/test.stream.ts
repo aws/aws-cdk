@@ -27,6 +27,19 @@ export = {
 
     test.done();
   },
+
+  'stream from attributes'(test: Test) {
+    const stack = new Stack();
+
+    const s = Stream.fromStreamAttributes(stack, 'MyStream', {
+      streamArn: 'arn:aws:kinesis:region:account-id:stream/stream-name'
+    });
+
+    test.equals(s.streamArn, 'arn:aws:kinesis:region:account-id:stream/stream-name');
+
+    test.done();
+  },
+
   "uses explicit shard count"(test: Test) {
     const stack = new Stack();
 

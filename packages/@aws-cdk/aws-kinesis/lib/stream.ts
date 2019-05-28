@@ -1,7 +1,6 @@
 import iam = require('@aws-cdk/aws-iam');
 import kms = require('@aws-cdk/aws-kms');
-import logs = require('@aws-cdk/aws-logs');
-import { Construct, HashedAddressingScheme, IResource, Resource } from '@aws-cdk/cdk';
+import { Construct, IResource, Resource } from '@aws-cdk/cdk';
 import { CfnStream } from './kinesis.generated';
 
 export interface IStream extends IResource {
@@ -101,11 +100,6 @@ abstract class StreamBase extends Resource implements IStream {
    * Optional KMS encryption key associated with this stream.
    */
   public abstract readonly encryptionKey?: kms.IKey;
-
-  /**
-   * The role that can be used by CloudWatch logs to write to this stream
-   */
-  private cloudWatchLogsRole?: iam.Role;
 
   /**
    * Grant write permissions for this stream and its contents to an IAM

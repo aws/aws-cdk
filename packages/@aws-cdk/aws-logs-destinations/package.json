@@ -44,14 +44,11 @@
     "build+test+package": "npm run build+test && npm run package",
     "build+test": "npm run build && npm test"
   },
-  "cdk-build": {
-    "cloudformation": "AWS::Xxx"
-  },
   "keywords": [
     "aws",
     "cdk",
     "constructs",
-    "xxx"
+    "logs"
   ],
   "author": {
     "name": "Amazon Web Services",
@@ -64,7 +61,7 @@
     ],
     "coverageThreshold": {
       "global": {
-        "branches": 70,
+        "branches": 50,
         "statements": 80
       }
     }
