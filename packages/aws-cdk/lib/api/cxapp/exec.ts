@@ -66,7 +66,7 @@ export async function execProgram(aws: SDK, config: Configuration): Promise<cxap
 
   const outdir = config.settings.get([ 'output' ]);
   if (!outdir) {
-    throw new Error('--output must be specified');
+    throw new Error('unexpected: --output is required');
   }
   await fs.mkdirp(outdir);
 
