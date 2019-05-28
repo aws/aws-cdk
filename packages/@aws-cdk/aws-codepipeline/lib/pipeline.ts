@@ -29,16 +29,6 @@ export interface StagePlacement {
    * (changing its current child Stage, if it had one).
    */
   readonly justAfter?: IStage;
-
-  /**
-   * Inserts the new Stage at the given index in the Pipeline,
-   * moving the Stage currently at that index,
-   * and any subsequent ones, one index down.
-   * Indexing starts at 0.
-   * The maximum allowed value is {@link Pipeline#stageCount},
-   * which will insert the new Stage at the end of the Pipeline.
-   */
-  readonly atIndex?: number;
 }
 
 /**
@@ -433,16 +423,6 @@ export class Pipeline extends PipelineBase {
           `the requested Stage to add it after, '${placement.justAfter.stageName}', was not found`);
       }
       return targetIndex + 1;
-    }
-
-    if (placement.atIndex !== undefined) {
-      const index = placement.atIndex;
-      if (index < 0 || index > this.stageCount) {
-        throw new Error("Error adding Stage to the Pipeline: " +
-          `{ placed: atIndex } should be between 0 and the number of stages in the Pipeline (${this.stageCount}), ` +
-          ` got: ${index}`);
-      }
-      return index;
     }
 
     return this.stageCount;
