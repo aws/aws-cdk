@@ -4,7 +4,7 @@ import { CfnRole } from './iam.generated';
 import { IIdentity } from './identity-base';
 import { Policy } from './policy';
 import { PolicyDocument, PolicyStatement } from './policy-document';
-import { IPrincipal, ArnPrincipal, PrincipalPolicyFragment } from './principals';
+import { ArnPrincipal, IPrincipal, PrincipalPolicyFragment } from './principals';
 import { AttachedPolicies, undefinedIfEmpty } from './util';
 
 export interface RoleProps {
