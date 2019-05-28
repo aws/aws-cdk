@@ -13,15 +13,17 @@ export class LambdaDestination implements s3.IBucketNotificationDestination {
   public bind(_scope: Construct, bucket: s3.IBucket): s3.BucketNotificationDestinationProps {
     const permissionId = `AllowBucketNotificationsFrom${bucket.node.uniqueId}`;
 
-    this.fn.addPermission(permissionId, {
-      sourceAccount: bucket.node.stack.accountId,
-      principal: new iam.ServicePrincipal('s3.amazonaws.com'),
-      sourceArn: bucket.bucketArn
-    });
+    if (this.fn.node.tryFindChild(permissionId) === undefined) {
+      this.fn.addPermission(permissionId, {
+        sourceAccount: bucket.node.stack.accountId,
+        principal: new iam.ServicePrincipal('s3.amazonaws.com'),
+        sourceArn: bucket.bucketArn
+      });
+    }
 
     // if we have a permission resource for this relationship, add it as a dependency
     // to the bucket notifications resource, so it will be created first.
-    const permission = this.fn.node.tryFindChild(permissionId) as CfnResource;
+    const permission = this.fn.node.findChild(permissionId) as CfnResource;
 
     return {
       type: s3.BucketNotificationDestinationType.Lambda,
