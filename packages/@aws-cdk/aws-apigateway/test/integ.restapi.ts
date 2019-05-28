@@ -33,7 +33,7 @@ class Test extends cdk.Stack {
     const integration = new apigateway.LambdaIntegration(handler);
 
     const toys = v1.addResource('toys');
-    toys.addMethod('GET', integration);
+    const getToysMethod: apigateway.Method = toys.addMethod('GET', integration, { apiKeyRequired: true });
     toys.addMethod('POST');
     toys.addMethod('PUT');
 
@@ -52,6 +52,29 @@ class Test extends cdk.Stack {
         body: JSON.stringify(event)
       });
     }
+
+    const key = api.addApiKey('ApiKey');
+    const plan = api.addUsagePlan('UsagePlan', {
+      name: 'Basic',
+      apiKey: key,
+      description: 'Free tier monthly usage plan',
+      quota: {
+        limit: 10000,
+        period: apigateway.Period.Month
+      }
+    });
+    plan.addApiStage({
+      stage: api.deploymentStage,
+      throttle: [
+        {
+          method: getToysMethod,
+          throttle: {
+            rateLimit: 10,
+            burstLimit: 2
+          }
+        }
+      ]
+    });
   }
 }
 
