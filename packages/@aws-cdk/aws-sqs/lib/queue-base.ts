@@ -1,11 +1,10 @@
-import autoscaling_api = require('@aws-cdk/aws-autoscaling-api');
 import iam = require('@aws-cdk/aws-iam');
 import kms = require('@aws-cdk/aws-kms');
 import s3n = require('@aws-cdk/aws-s3-notifications');
 import { IResource, Resource } from '@aws-cdk/cdk';
 import { QueuePolicy } from './policy';
 
-export interface IQueue extends IResource, s3n.IBucketNotificationDestination, autoscaling_api.ILifecycleHookTarget {
+export interface IQueue extends IResource, s3n.IBucketNotificationDestination {
   /**
    * The ARN of this queue
    * @attribute
@@ -183,14 +182,6 @@ export abstract class QueueBase extends Resource implements IQueue {
       type: s3n.BucketNotificationDestinationType.Queue,
       dependencies: [ this.policy! ]
     };
-  }
-
-  /**
-   * Allow using SQS queues as lifecycle hook targets
-   */
-  public asLifecycleHookTarget(lifecycleHook: autoscaling_api.ILifecycleHook): autoscaling_api.LifecycleHookTargetProps {
-    this.grantSendMessages(lifecycleHook.role);
-    return { notificationTargetArn: this.queueArn };
   }
 
   /**
