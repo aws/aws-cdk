@@ -57,9 +57,10 @@ export async function prepareContainerAsset(asset: ContainerImageAssetMetadataEn
       }
     }
 
+    const buildArgs = ([] as string[]).concat(...Object.entries(asset.buildArgs || {}).map(([k, v]) => ['--build-arg', `${k}=${v}`]));
     const baseCommand = [
       'docker', 'build',
-      ...Object.entries(asset.buildArgs || {}).map(([k, v]) => `--build-arg ${k}=${v}`),
+      ...buildArgs,
       '--tag', latest,
       asset.path
     ];
