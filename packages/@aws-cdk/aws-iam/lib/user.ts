@@ -4,7 +4,7 @@ import { CfnUser } from './iam.generated';
 import { IIdentity } from './identity-base';
 import { Policy } from './policy';
 import { PolicyStatement } from './policy-document';
-import { ArnPrincipal, PrincipalPolicyFragment } from './policy-document';
+import { ArnPrincipal, PrincipalPolicyFragment } from './principals';
 import { IPrincipal } from './principals';
 import { AttachedPolicies, undefinedIfEmpty } from './util';
 

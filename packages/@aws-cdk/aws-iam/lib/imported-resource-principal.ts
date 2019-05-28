@@ -1,6 +1,6 @@
 import cdk = require('@aws-cdk/cdk');
-import { PolicyStatement, PrincipalPolicyFragment } from './policy-document';
-import { IPrincipal } from './principals';
+import { PolicyStatement } from './policy-document';
+import { IPrincipal, PrincipalPolicyFragment } from './principals';
 
 /**
  * Properties for an ImportedResourcePrincipal
