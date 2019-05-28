@@ -16,5 +16,6 @@ npm ci --global-style
 export PATH=node_modules/.bin:$PATH
 
 echo "============================================================================================="
-echo "bootstrapping..."
+echo "cleanup and start bootstrapping..."
+lerna clean --yes
 lerna bootstrap --reject-cycles --ci
