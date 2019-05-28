@@ -1,6 +1,7 @@
 {
   "name": "@aws-cdk/applet-js",
   "version": "0.32.0",
+  "deprecated": "Applets have been deprecated in favor of 'decdk'",
   "description": "Javascript CDK applet host program",
   "main": "bin/cdk-applet-js.js",
   "types": "bin/cdk-applet-js.d.ts",
