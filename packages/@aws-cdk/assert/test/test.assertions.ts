@@ -214,11 +214,11 @@ function synthesizedStack(fn: (stack: cdk.Stack) => void): cx.ICloudFormationSta
   const session = app.run();
 
   const assembly = new CloudAssembly(session.outdir);
-  const s = assembly.stacks.find(x => x.name === stack.name);
-  if (!s) {
+  const artifact = assembly.stacks.find(x => x.name === stack.name);
+  if (!artifact) {
     throw new Error(`Cannot find stack ${stack.name}`);
   }
-  return s;
+  return artifact;
 }
 
 interface TestResourceProps extends cdk.CfnResourceProps {
