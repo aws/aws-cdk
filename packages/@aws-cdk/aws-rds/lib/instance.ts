@@ -5,7 +5,7 @@ import kms = require('@aws-cdk/aws-kms');
 import lambda = require('@aws-cdk/aws-lambda');
 import logs = require('@aws-cdk/aws-logs');
 import secretsmanager = require('@aws-cdk/aws-secretsmanager');
-import { CfnOutput, Construct, DeletionPolicy, IResource, Resource, SecretValue } from '@aws-cdk/cdk';
+import { Construct, DeletionPolicy, IResource, Resource, SecretValue, Token } from '@aws-cdk/cdk';
 import { DatabaseSecret } from './database-secret';
 import { Endpoint } from './endpoint';
 import { IOptionGroup} from './option-group';
@@ -26,6 +26,20 @@ export interface IDatabaseInstance extends IResource, ec2.IConnectable, secretsm
   readonly instanceArn: string;
 
   /**
+   * The instance endpoint address.
+   *
+   * @attribute
+   */
+  readonly dbInstanceEndpointAddress: string;
+
+  /**
+   * The instance endpoint port.
+   *
+   * @attribute
+   */
+  readonly dbInstanceEndpointPort: string;
+
+  /**
    * The instance endpoint.
    */
   readonly instanceEndpoint: Endpoint;
@@ -36,15 +50,35 @@ export interface IDatabaseInstance extends IResource, ec2.IConnectable, secretsm
   readonly securityGroupId: string;
 
   /**
-   * Exports this instance from the stack.
-   */
-  export(): DatabaseInstanceImportProps;
-
-  /**
    * Defines a CloudWatch event rule which triggers for instance events. Use
    * `rule.addEventPattern(pattern)` to specify a filter.
    */
-  onEvent(name: string, target?: events.IEventRuleTarget, options?: events.EventRuleProps): events.EventRule;
+  onEvent(id: string, options: events.OnEventOptions): events.Rule;
+}
+
+/**
+ * Properties that describe an existing instance
+ */
+export interface DatabaseInstanceAttributes {
+  /**
+   * The instance identifier.
+   */
+  readonly instanceIdentifier: string;
+
+  /**
+   * The endpoint address.
+   */
+  readonly instanceEndpointAddress: string;
+
+  /**
+   * The database port.
+   */
+  readonly port: number;
+
+  /**
+   * The security group identifier of the instance.
+   */
+  readonly securityGroupId: string;
 }
 
 /**
@@ -54,28 +88,41 @@ export abstract class DatabaseInstanceBase extends Resource implements IDatabase
   /**
    * Import an existing database instance.
    */
-  public static import(scope: Construct, id: string, props: DatabaseInstanceImportProps): IDatabaseInstance {
-    return new ImportedDatabaseInstance(scope, id, props);
+  public static fromDatabaseInstanceAttributes(scope: Construct, id: string, attrs: DatabaseInstanceAttributes): IDatabaseInstance {
+    class Import extends DatabaseInstanceBase implements IDatabaseInstance {
+      public readonly defaultPortRange = new ec2.TcpPort(attrs.port);
+      public readonly connections = new ec2.Connections({
+        securityGroups: [ec2.SecurityGroup.fromSecurityGroupId(this, 'SecurityGroup', attrs.securityGroupId)],
+        defaultPortRange: this.defaultPortRange
+      });
+      public readonly instanceIdentifier = attrs.instanceIdentifier;
+      public readonly dbInstanceEndpointAddress = attrs.instanceEndpointAddress;
+      public readonly dbInstanceEndpointPort = attrs.port.toString();
+      public readonly instanceEndpoint = new Endpoint(attrs.instanceEndpointAddress, attrs.port);
+      public readonly securityGroupId = attrs.securityGroupId;
+    }
+
+    return new Import(scope, id);
   }
 
   public abstract readonly instanceIdentifier: string;
+  public abstract readonly dbInstanceEndpointAddress: string;
+  public abstract readonly dbInstanceEndpointPort: string;
   public abstract readonly instanceEndpoint: Endpoint;
   public abstract readonly connections: ec2.Connections;
   public abstract readonly securityGroupId: string;
-
-  public abstract export(): DatabaseInstanceImportProps;
 
   /**
    * Defines a CloudWatch event rule which triggers for instance events. Use
    * `rule.addEventPattern(pattern)` to specify a filter.
    */
-  public onEvent(id: string, target?: events.IEventRuleTarget, options?: events.EventRuleProps) {
-    const rule = new events.EventRule(this, id, options);
+  public onEvent(id: string, options: events.OnEventOptions) {
+    const rule = new events.Rule(this, id, options);
     rule.addEventPattern({
       source: ['aws.rds'],
       resources: [this.instanceArn]
     });
-    rule.addTarget(target);
+    rule.addTarget(options.target);
     return rule;
   }
 
@@ -249,7 +296,7 @@ export interface DatabaseInstanceNewProps {
   /**
    * The VPC network where the DB subnet group should be created.
    */
-  readonly vpc: ec2.IVpcNetwork;
+  readonly vpc: ec2.IVpc;
 
   /**
    * The type of subnets to add to the created DB subnet group.
@@ -346,7 +393,7 @@ export interface DatabaseInstanceNewProps {
    *
    * @default default master key
    */
-  readonly performanceInsightKmsKey?: kms.IEncryptionKey;
+  readonly performanceInsightKmsKey?: kms.IKey;
 
   /**
    * The list of log types that need to be enabled for exporting to
@@ -408,7 +455,7 @@ export interface DatabaseInstanceNewProps {
  */
 abstract class DatabaseInstanceNew extends DatabaseInstanceBase implements IDatabaseInstance {
   public readonly securityGroupId: string;
-  public readonly vpc: ec2.IVpcNetwork;
+  public readonly vpc: ec2.IVpc;
 
   protected readonly vpcPlacement?: ec2.SubnetSelection;
   protected readonly newCfnProps: CfnDBInstanceProps;
@@ -491,15 +538,6 @@ abstract class DatabaseInstanceNew extends DatabaseInstanceBase implements IData
     };
   }
 
-  public export(): DatabaseInstanceImportProps {
-    return {
-      instanceIdentifier: new CfnOutput(this, 'InstanceId', { value: this.instanceIdentifier }).makeImportValue().toString(),
-      endpointAddress: new CfnOutput(this, 'EndpointAddress', { value: this.instanceEndpoint.hostname }).makeImportValue().toString(),
-      port: new CfnOutput(this, 'Port', { value: this.instanceEndpoint.port }).makeImportValue().toString(),
-      securityGroupId: new CfnOutput(this, 'SecurityGroupId', { value: this.securityGroupId, }).makeImportValue().toString()
-    };
-  }
-
   protected setLogRetention() {
     if (this.cloudwatchLogsExports && this.cloudwatchLogsRetention) {
       for (const log of this.cloudwatchLogsExports) {
@@ -569,7 +607,7 @@ export interface DatabaseInstanceSourceProps extends DatabaseInstanceNewProps {
    *
    * @default default master key
    */
-  readonly secretKmsKey?: kms.IEncryptionKey;
+  readonly secretKmsKey?: kms.IKey;
 
   /**
    * The name of the database.
@@ -661,14 +699,18 @@ export interface DatabaseInstanceProps extends DatabaseInstanceSourceProps {
    *
    * @default default master key
    */
-  readonly kmsKey?: kms.IEncryptionKey;
+  readonly kmsKey?: kms.IKey;
 }
 
 /**
  * A database instance
+ *
+ * @resource AWS::RDS::DBInstance
  */
 export class DatabaseInstance extends DatabaseInstanceSource implements IDatabaseInstance {
   public readonly instanceIdentifier: string;
+  public readonly dbInstanceEndpointAddress: string;
+  public readonly dbInstanceEndpointPort: string;
   public readonly instanceEndpoint: Endpoint;
   public readonly connections: ec2.Connections;
   public readonly secret?: secretsmanager.ISecret;
@@ -698,7 +740,12 @@ export class DatabaseInstance extends DatabaseInstanceSource implements IDatabas
     });
 
     this.instanceIdentifier = instance.dbInstanceId;
-    this.instanceEndpoint = new Endpoint(instance.dbInstanceEndpointAddress, instance.dbInstanceEndpointPort);
+    this.dbInstanceEndpointAddress = instance.dbInstanceEndpointAddress;
+    this.dbInstanceEndpointPort = instance.dbInstanceEndpointPort;
+
+    // create a number token that represents the port of the instance
+    const portAttribute = new Token(() => instance.dbInstanceEndpointPort).toNumber();
+    this.instanceEndpoint = new Endpoint(instance.dbInstanceEndpointAddress, portAttribute);
 
     const deleteReplacePolicy = props.deleteReplacePolicy || DeletionPolicy.Retain;
     instance.options.deletionPolicy = deleteReplacePolicy;
@@ -712,7 +759,7 @@ export class DatabaseInstance extends DatabaseInstanceSource implements IDatabas
 
     this.connections = new ec2.Connections({
       securityGroups: [this.securityGroup],
-      defaultPortRange: new ec2.TcpPortFromAttribute(instance.dbInstanceEndpointPort)
+      defaultPortRange: new ec2.TcpPort(this.instanceEndpoint.port)
     });
 
     this.setLogRetention();
@@ -749,9 +796,13 @@ export interface DatabaseInstanceFromSnapshotProps extends DatabaseInstanceSourc
 
 /**
  * A database instance restored from a snapshot.
+ *
+ * @resource AWS::RDS::DBInstance
  */
 export class DatabaseInstanceFromSnapshot extends DatabaseInstanceSource implements IDatabaseInstance {
   public readonly instanceIdentifier: string;
+  public readonly dbInstanceEndpointAddress: string;
+  public readonly dbInstanceEndpointPort: string;
   public readonly instanceEndpoint: Endpoint;
   public readonly connections: ec2.Connections;
   public readonly secret?: secretsmanager.ISecret;
@@ -783,7 +834,12 @@ export class DatabaseInstanceFromSnapshot extends DatabaseInstanceSource impleme
     });
 
     this.instanceIdentifier = instance.dbInstanceId;
-    this.instanceEndpoint = new Endpoint(instance.dbInstanceEndpointAddress, instance.dbInstanceEndpointPort);
+    this.dbInstanceEndpointAddress = instance.dbInstanceEndpointAddress;
+    this.dbInstanceEndpointPort = instance.dbInstanceEndpointPort;
+
+    // create a number token that represents the port of the instance
+    const portAttribute = new Token(() => instance.dbInstanceEndpointPort).toNumber();
+    this.instanceEndpoint = new Endpoint(instance.dbInstanceEndpointAddress, portAttribute);
 
     const deleteReplacePolicy = props.deleteReplacePolicy || DeletionPolicy.Retain;
     instance.options.deletionPolicy = deleteReplacePolicy;
@@ -797,7 +853,7 @@ export class DatabaseInstanceFromSnapshot extends DatabaseInstanceSource impleme
 
     this.connections = new ec2.Connections({
       securityGroups: [this.securityGroup],
-      defaultPortRange: new ec2.TcpPortFromAttribute(instance.dbInstanceEndpointPort)
+      defaultPortRange: new ec2.TcpPort(this.instanceEndpoint.port)
     });
 
     this.setLogRetention();
@@ -829,14 +885,18 @@ export interface DatabaseInstanceReadReplicaProps extends DatabaseInstanceSource
    *
    * @default default master key
    */
-  readonly kmsKey?: kms.IEncryptionKey;
+  readonly kmsKey?: kms.IKey;
 }
 
 /**
  * A read replica database instance.
+ *
+ * @resource AWS::RDS::DBInstance
  */
 export class DatabaseInstanceReadReplica extends DatabaseInstanceNew implements IDatabaseInstance {
   public readonly instanceIdentifier: string;
+  public readonly dbInstanceEndpointAddress: string;
+  public readonly dbInstanceEndpointPort: string;
   public readonly instanceEndpoint: Endpoint;
   public readonly connections: ec2.Connections;
 
@@ -851,7 +911,12 @@ export class DatabaseInstanceReadReplica extends DatabaseInstanceNew implements 
     });
 
     this.instanceIdentifier = instance.dbInstanceId;
-    this.instanceEndpoint = new Endpoint(instance.dbInstanceEndpointAddress, instance.dbInstanceEndpointPort);
+    this.dbInstanceEndpointAddress = instance.dbInstanceEndpointAddress;
+    this.dbInstanceEndpointPort = instance.dbInstanceEndpointPort;
+
+    // create a number token that represents the port of the instance
+    const portAttribute = new Token(() => instance.dbInstanceEndpointPort).toNumber();
+    this.instanceEndpoint = new Endpoint(instance.dbInstanceEndpointAddress, portAttribute);
 
     const deleteReplacePolicy = props.deleteReplacePolicy || DeletionPolicy.Retain;
     instance.options.deletionPolicy = deleteReplacePolicy;
@@ -859,61 +924,10 @@ export class DatabaseInstanceReadReplica extends DatabaseInstanceNew implements 
 
     this.connections = new ec2.Connections({
       securityGroups: [this.securityGroup],
-      defaultPortRange: new ec2.TcpPortFromAttribute(instance.dbInstanceEndpointPort)
+      defaultPortRange: new ec2.TcpPort(this.instanceEndpoint.port)
     });
 
     this.setLogRetention();
-  }
-}
-
-/**
- * Construction properties for an ImportedDatabaseInstance.
- */
-export interface DatabaseInstanceImportProps {
-  /**
-   * The instance identifier.
-   */
-  readonly instanceIdentifier: string;
-
-  /**
-   * The endpoint address.
-   */
-  readonly endpointAddress: string;
-
-  /**
-   * The database port.
-   */
-  readonly port: string;
-
-  /**
-   * The security group identifier of the instance.
-   */
-  readonly securityGroupId: string;
-}
-
-/**
- * An imported database instance.
- */
-class ImportedDatabaseInstance extends DatabaseInstanceBase implements IDatabaseInstance {
-  public readonly instanceIdentifier: string;
-  public readonly instanceEndpoint: Endpoint;
-  public readonly securityGroupId: string;
-  public readonly connections: ec2.Connections;
-
-  constructor(scope: Construct, id: string, private readonly props: DatabaseInstanceImportProps) {
-    super(scope, id);
-
-    this.instanceIdentifier = props.instanceIdentifier;
-    this.instanceEndpoint = new Endpoint(props.endpointAddress, props.port);
-    this.securityGroupId = props.securityGroupId;
-    this.connections = new ec2.Connections({
-      securityGroups: [ec2.SecurityGroup.import(this, 'SecurityGroup', { securityGroupId: props.securityGroupId })],
-      defaultPortRange: new ec2.TcpPortFromAttribute(props.port)
-    });
-  }
-
-  public export() {
-    return this.props;
   }
 }
 

@@ -252,36 +252,16 @@ export = {
     test.done();
   },
 
-  'import/export'(test: Test) {
+  'fromRoleArn'(test: Test) {
     // GIVEN
     const stack = new Stack();
-    const myRole = new Role(stack, 'MyRole', {
-      assumedBy: new ServicePrincipal('boom.boom.boom')
-    });
 
     // WHEN
-    const exportedRole = myRole.export();
-    const importedRole = Role.import(stack, 'ImportedRole', exportedRole);
+    const importedRole = Role.fromRoleArn(stack, 'ImportedRole', 'arn:aws:iam::123456789012:role/S3Access');
 
     // THEN
-    test.deepEqual(stack.node.resolve(exportedRole), {
-      roleArn: { 'Fn::ImportValue': 'Stack:MyRoleRoleArn3388B7E2' },
-      roleId: { 'Fn::ImportValue': 'Stack:MyRoleRoleIdF7B258D8' }
-    });
-
-    test.deepEqual(stack.node.resolve(importedRole.roleArn), { 'Fn::ImportValue': 'Stack:MyRoleRoleArn3388B7E2' });
-    test.deepEqual(stack.node.resolve(importedRole.roleId), { 'Fn::ImportValue': 'Stack:MyRoleRoleIdF7B258D8' });
-    test.deepEqual(stack.node.resolve(importedRole.roleName), {
-      'Fn::Select': [ 1, {
-        'Fn::Split': [ '/', {
-          'Fn::Select': [ 5, {
-            'Fn::Split': [ ':', {
-              'Fn::ImportValue': 'Stack:MyRoleRoleArn3388B7E2'
-            } ]
-          } ]
-        } ]
-      } ]
-    });
+    test.deepEqual(importedRole.roleArn, 'arn:aws:iam::123456789012:role/S3Access');
+    test.deepEqual(importedRole.roleName, 'S3Access');
     test.done();
   }
 };

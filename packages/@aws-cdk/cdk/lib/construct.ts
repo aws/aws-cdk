@@ -1,11 +1,10 @@
 import cxapi = require('@aws-cdk/cx-api');
 import { IAspect } from './aspect';
-import { CloudFormationJSON } from './cloudformation-json';
+import { CLOUDFORMATION_TOKEN_RESOLVER, CloudFormationLang } from './cloudformation-lang';
 import { IDependable } from './dependency';
 import { resolve } from './resolve';
 import { Token } from './token';
 import { makeUniqueId } from './uniqueid';
-import { unresolved } from './unresolved';
 
 export const PATH_SEP = '/';
 
@@ -83,7 +82,7 @@ export class ConstructNode {
     // escape any path separators so they don't wreck havoc
     this.id = this._escapePathSeparator(this.id);
 
-    if (unresolved(id)) {
+    if (Token.isToken(id)) {
       throw new Error(`Cannot use tokens in construct ID: ${id}`);
     }
   }
@@ -457,7 +456,8 @@ export class ConstructNode {
   public resolve(obj: any): any {
     return resolve(obj, {
       scope: this.host,
-      prefix: []
+      prefix: [],
+      resolver: CLOUDFORMATION_TOKEN_RESOLVER,
     });
   }
 
@@ -465,7 +465,7 @@ export class ConstructNode {
    * Convert an object, potentially containing tokens, to a JSON string
    */
   public stringifyJson(obj: any): string {
-    return CloudFormationJSON.stringify(obj, this.host).toString();
+    return CloudFormationLang.toJSON(obj).toString();
   }
 
   /**

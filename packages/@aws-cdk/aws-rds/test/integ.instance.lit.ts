@@ -12,7 +12,7 @@ class DatabaseInstanceStack extends cdk.Stack {
   constructor(scope: cdk.App, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
-    const vpc = new ec2.VpcNetwork(this, 'VPC', { maxAZs: 2 });
+    const vpc = new ec2.Vpc(this, 'VPC', { maxAZs: 2 });
 
     /// !show
     // Set open cursors with parameter group
@@ -82,7 +82,13 @@ class DatabaseInstanceStack extends cdk.Stack {
     });
 
     // Trigger Lambda function on instance availability events
-    const availabilityRule = instance.onEvent('Availability');
+    const fn = new lambda.Function(this, 'Function', {
+      code: lambda.Code.inline('exports.handler = (event) => console.log(event);'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NodeJS810
+    });
+
+    const availabilityRule = instance.onEvent('Availability', { target: new targets.LambdaFunction(fn) });
     availabilityRule.addEventPattern({
       detail: {
         EventCategories: [
@@ -90,14 +96,6 @@ class DatabaseInstanceStack extends cdk.Stack {
         ]
       }
     });
-
-    const fn = new lambda.Function(this, 'Function', {
-      code: lambda.Code.inline('exports.handler = (event) => console.log(event);'),
-      handler: 'index.handler',
-      runtime: lambda.Runtime.NodeJS810
-    });
-
-    availabilityRule.addTarget(new targets.LambdaFunction(fn));
     /// !hide
   }
 }

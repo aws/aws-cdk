@@ -1,5 +1,5 @@
 import ec2 = require('@aws-cdk/aws-ec2');
-import { CfnOutput, Construct, IResource, Resource } from '@aws-cdk/cdk';
+import { Construct, IResource, Resource } from '@aws-cdk/cdk';
 import { DatabaseInstanceEngine } from './instance';
 import { CfnOptionGroup } from './rds.generated';
 
@@ -9,13 +9,10 @@ import { CfnOptionGroup } from './rds.generated';
 export interface IOptionGroup extends IResource {
   /**
    * The name of the option group.
+   *
+   * @attribute
    */
   readonly optionGroupName: string;
-
-  /**
-   * Exports this option group from the stack.
-   */
-  export(): OptionGroupAttributes;
 }
 
 /**
@@ -63,7 +60,7 @@ export interface OptionConfiguration {
    * The VPC where a security group should be created for this option. If `vpc`
    * is specified then `port` must also be specified.
    */
-  readonly vpc?: ec2.IVpcNetwork;
+  readonly vpc?: ec2.IVpc;
 }
 
 /**
@@ -101,10 +98,6 @@ export class OptionGroup extends Resource implements IOptionGroup {
   public static fromOptionGroupName(scope: Construct, id: string, optionGroupName: string): IOptionGroup {
     class Import extends Construct {
       public readonly optionGroupName = optionGroupName;
-
-      public export(): OptionGroupAttributes {
-        return { optionGroupName };
-      }
     }
     return new Import(scope, id);
   }
@@ -130,12 +123,6 @@ export class OptionGroup extends Resource implements IOptionGroup {
     });
 
     this.optionGroupName = optionGroup.optionGroupName;
-  }
-
-  public export(): OptionGroupAttributes {
-    return {
-      optionGroupName: new CfnOutput(this, 'OptionGroupName', { value: this.optionGroupName }).makeImportValue().toString(),
-    };
   }
 
   /**

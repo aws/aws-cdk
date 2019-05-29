@@ -72,7 +72,7 @@ export class Schema {
    */
   public static readonly integer: Type = {
     isPrimitive: true,
-    inputString: 'integer'
+    inputString: 'int'
   };
 
   /**

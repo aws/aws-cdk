@@ -26,9 +26,13 @@ exports.handler = async function(event, context, _callback, respond) {
       }
     }
 
-    const repo = event.ResourceProperties.RepositoryName;
+    let repo = event.ResourceProperties.RepositoryName;
     if (!repo) {
       throw new Error('Missing required property "RepositoryName"');
+    }
+    const isRepoUri = repo.match(/^(\d+\.dkr\.ecr\.[^.]+\.[^/]+\/)(.+)$/i);
+    if (isRepoUri) {
+      repo = isRepoUri[2];
     }
 
     const adopter = await getAdopter(repo);

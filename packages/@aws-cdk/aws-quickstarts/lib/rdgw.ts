@@ -4,7 +4,7 @@ import cdk = require('@aws-cdk/cdk');
 
 export interface RemoteDesktopGatewayProps {
   readonly rdgwCIDR: string;
-  readonly vpc: ec2.IVpcNetwork;
+  readonly vpc: ec2.IVpc;
   readonly keyPairName: string;
 
   readonly adminPassword: string;
@@ -47,9 +47,8 @@ export class RemoteDesktopGateway extends cdk.Construct implements ec2.IConnecta
       parameters: params
     });
 
-    const securityGroup = ec2.SecurityGroup.import(this, 'SecurityGroup', {
-      securityGroupId: nestedStack.getAtt('Outputs.RemoteDesktopGatewaySGID').toString()
-    });
+    const securityGroup = ec2.SecurityGroup.fromSecurityGroupId(this, 'SecurityGroup',
+      nestedStack.getAtt('Outputs.RemoteDesktopGatewaySGID').toString());
 
     const defaultPortRange = new ec2.TcpPort(RemoteDesktopGateway.PORT);
     this.connections = new ec2.Connections({ securityGroups: [securityGroup], defaultPortRange });

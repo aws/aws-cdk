@@ -4,11 +4,21 @@ import ec2 = require('@aws-cdk/aws-ec2');
 import elbv2 = require('@aws-cdk/aws-elasticloadbalancingv2');
 import iam = require('@aws-cdk/aws-iam');
 import cloudmap = require('@aws-cdk/aws-servicediscovery');
+import { IResource, Resource } from '@aws-cdk/cdk';
 import cdk = require('@aws-cdk/cdk');
 import { NetworkMode, TaskDefinition } from '../base/task-definition';
 import { ICluster } from '../cluster';
 import { CfnService } from '../ecs.generated';
 import { ScalableTaskCount } from './scalable-task-count';
+
+export interface IService extends IResource {
+  /**
+   * ARN of this service
+   *
+   * @attribute
+   */
+  readonly serviceArn: string;
+}
 
 /**
  * Basic service properties
@@ -29,7 +39,7 @@ export interface BaseServiceProps {
   /**
    * A name for the service.
    *
-   * @default CloudFormation-generated name
+   * @default - CloudFormation-generated name.
    */
   readonly serviceName?: string;
 
@@ -38,7 +48,7 @@ export interface BaseServiceProps {
    * service's DesiredCount value, that can run in a service during a
    * deployment.
    *
-   * @default 100 if daemon, otherwise 200
+   * @default - 100 if daemon, otherwise 200
    */
   readonly maximumPercent?: number;
 
@@ -47,7 +57,7 @@ export interface BaseServiceProps {
    * the Amazon ECS service's DesiredCount value, that must
    * continue to run and remain healthy during a deployment.
    *
-   * @default 0 if daemon, otherwise 50
+   * @default - 0 if daemon, otherwise 50
    */
   readonly minimumHealthyPercent?: number;
 
@@ -60,6 +70,8 @@ export interface BaseServiceProps {
 
   /**
    * Options for enabling AWS Cloud Map service discovery for the service
+   *
+   * @default - AWS Cloud Map service discovery is not enabled.
    */
   readonly serviceDiscoveryOptions?: ServiceDiscoveryOptions;
 
@@ -82,8 +94,8 @@ export interface BaseServiceProps {
 /**
  * Base class for Ecs and Fargate services
  */
-export abstract class BaseService extends cdk.Construct
-  implements elbv2.IApplicationLoadBalancerTarget, elbv2.INetworkLoadBalancerTarget {
+export abstract class BaseService extends Resource
+  implements IService, elbv2.IApplicationLoadBalancerTarget, elbv2.INetworkLoadBalancerTarget {
 
   /**
    * Manage allowed network traffic for this service
@@ -97,6 +109,8 @@ export abstract class BaseService extends cdk.Construct
 
   /**
    * Name of this service
+   *
+   * @attribute
    */
   public readonly serviceName: string;
 
@@ -222,7 +236,7 @@ export abstract class BaseService extends cdk.Construct
    * Set up AWSVPC networking for this construct
    */
   // tslint:disable-next-line:max-line-length
-  protected configureAwsVpcNetworking(vpc: ec2.IVpcNetwork, assignPublicIp?: boolean, vpcSubnets?: ec2.SubnetSelection, securityGroup?: ec2.ISecurityGroup) {
+  protected configureAwsVpcNetworking(vpc: ec2.IVpc, assignPublicIp?: boolean, vpcSubnets?: ec2.SubnetSelection, securityGroup?: ec2.ISecurityGroup) {
     if (vpcSubnets === undefined) {
       vpcSubnets = { subnetType: assignPublicIp ? ec2.SubnetType.Public : ec2.SubnetType.Private };
     }
@@ -275,13 +289,11 @@ export abstract class BaseService extends cdk.Construct
    */
   private makeAutoScalingRole(): iam.IRole {
     // Use a Service Linked Role.
-    return iam.Role.import(this, 'ScalingRole', {
-      roleArn: this.node.stack.formatArn({
-        service: 'iam',
-        resource: 'role/aws-service-role/ecs.application-autoscaling.amazonaws.com',
-        resourceName: 'AWSServiceRoleForApplicationAutoScaling_ECSService',
-      })
-    });
+    return iam.Role.fromRoleArn(this, 'ScalingRole', this.node.stack.formatArn({
+      service: 'iam',
+      resource: 'role/aws-service-role/ecs.application-autoscaling.amazonaws.com',
+      resourceName: 'AWSServiceRoleForApplicationAutoScaling_ECSService',
+    }));
   }
 
   /**

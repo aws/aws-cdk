@@ -1,4 +1,4 @@
-import { CfnOutput, Construct, IResource, Resource } from '@aws-cdk/cdk';
+import { Construct, IResource, Resource } from '@aws-cdk/cdk';
 import { CfnDBClusterParameterGroup, CfnDBParameterGroup } from './rds.generated';
 
 /**
@@ -9,11 +9,6 @@ export interface IParameterGroup extends IResource {
    * The name of this parameter group
    */
   readonly parameterGroupName: string;
-
-  /**
-   * Exports this parameter group from the stack
-   */
-  export(): ParameterGroupAttributes;
 }
 
 /**
@@ -36,12 +31,7 @@ abstract class ParameterGroupBase extends Resource implements IParameterGroup {
   public static fromParameterGroupName(scope: Construct, id: string, parameterGroupName: string): IParameterGroup {
     class Import extends Construct implements IParameterGroup {
       public readonly parameterGroupName = parameterGroupName;
-
-      public export(): ParameterGroupAttributes {
-        return { parameterGroupName };
-      }
     }
-
     return new Import(scope, id);
   }
 
@@ -49,15 +39,6 @@ abstract class ParameterGroupBase extends Resource implements IParameterGroup {
    * The name of the parameter group
    */
   public abstract readonly parameterGroupName: string;
-
-  /**
-   * Exports this parameter group from the stack
-   */
-  public export(): ParameterGroupAttributes {
-    return {
-      parameterGroupName: new CfnOutput(this, 'ParameterGroupName', { value: this.parameterGroupName }).makeImportValue().toString()
-    };
-  }
 }
 
 /**
@@ -84,6 +65,8 @@ export interface ParameterGroupProps {
 
 /**
  * A parameter group
+ *
+ * @resource AWS::RDS::DBParameterGroup
  */
 export class ParameterGroup extends ParameterGroupBase {
   /**
@@ -113,6 +96,8 @@ export interface ClusterParameterGroupProps extends ParameterGroupProps {
 }
 /**
  * A cluster parameter group
+ *
+ * @resource AWS::RDS::DBClusterParameterGroup
  */
 export class ClusterParameterGroup extends ParameterGroupBase {
   /**

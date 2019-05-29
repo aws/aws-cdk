@@ -16,7 +16,7 @@ export = {
     new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NodeJS610,
+      runtime: lambda.Runtime.NodeJS810,
     });
 
     expect(stack).toMatch({ Resources:
@@ -40,7 +40,7 @@ export = {
           { Code: { ZipFile: 'foo' },
           Handler: 'index.handler',
           Role: { 'Fn::GetAtt': [ 'MyLambdaServiceRole4539ECB6', 'Arn' ] },
-          Runtime: 'nodejs6.10' },
+          Runtime: 'nodejs8.10' },
          DependsOn: [ 'MyLambdaServiceRole4539ECB6' ] } } });
     test.done();
   },
@@ -50,7 +50,7 @@ export = {
     new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NodeJS610,
+      runtime: lambda.Runtime.NodeJS810,
       initialPolicy: [new iam.PolicyStatement().addAction("*").addAllResources()]
     });
     expect(stack).toMatch({ Resources:
@@ -94,7 +94,7 @@ export = {
           { Code: { ZipFile: 'foo' },
           Handler: 'index.handler',
           Role: { 'Fn::GetAtt': [ 'MyLambdaServiceRole4539ECB6', 'Arn' ] },
-          Runtime: 'nodejs6.10' },
+          Runtime: 'nodejs8.10' },
          DependsOn: [ 'MyLambdaServiceRoleDefaultPolicy5BBC6F68', 'MyLambdaServiceRole4539ECB6' ] } } } );
     test.done();
 
@@ -236,24 +236,22 @@ export = {
     }
   },
 
-  'import/export': {
-    'lambda.export() can be used to add Outputs to the stack and returns an IFunction object'(test: Test) {
-      // GIVEN
-      const stack1 = new cdk.Stack();
-      const stack2 = new cdk.Stack();
-      const fn = newTestLambda(stack1);
+  'fromFunctionArn'(test: Test) {
+    // GIVEN
+    const stack2 = new cdk.Stack();
 
-      // WHEN
-      const props = fn.export();
-      const imported = lambda.Function.import(stack2, 'Imported', props);
+    // WHEN
+    const imported = lambda.Function.fromFunctionArn(stack2, 'Imported', 'arn:aws:lambda:us-east-1:123456789012:function:ProcessKinesisRecords');
 
-      // Can call addPermission() but it won't do anything
-      imported.addPermission('Hello', {
-        principal: new iam.ServicePrincipal('harry')
-      });
+    // Can call addPermission() but it won't do anything
+    imported.addPermission('Hello', {
+      principal: new iam.ServicePrincipal('harry')
+    });
 
-      test.done();
-    },
+    // THEN
+    test.deepEqual(imported.functionArn, 'arn:aws:lambda:us-east-1:123456789012:function:ProcessKinesisRecords');
+    test.deepEqual(imported.functionName, 'ProcessKinesisRecords');
+    test.done();
   },
 
   'Lambda code can be read from a local directory via an asset'(test: Test) {
@@ -295,7 +293,7 @@ export = {
     new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NodeJS610,
+      runtime: lambda.Runtime.NodeJS810,
       functionName: 'OneFunctionToRuleThemAll',
       deadLetterQueueEnabled: true
     });
@@ -379,7 +377,7 @@ export = {
               "Arn"
             ]
             },
-            "Runtime": "nodejs6.10",
+            "Runtime": "nodejs8.10",
             "DeadLetterConfig": {
             "TargetArn": {
               "Fn::GetAtt": [
@@ -407,7 +405,7 @@ export = {
     new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NodeJS610,
+      runtime: lambda.Runtime.NodeJS810,
       deadLetterQueueEnabled: true,
     });
 
@@ -490,7 +488,7 @@ export = {
               "Arn"
             ]
             },
-            "Runtime": "nodejs6.10",
+            "Runtime": "nodejs8.10",
             "DeadLetterConfig": {
             "TargetArn": {
               "Fn::GetAtt": [
@@ -517,7 +515,7 @@ export = {
     new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NodeJS610,
+      runtime: lambda.Runtime.NodeJS810,
       deadLetterQueueEnabled: false,
     });
 
@@ -568,7 +566,7 @@ export = {
             "Arn"
             ]
           },
-          "Runtime": "nodejs6.10"
+          "Runtime": "nodejs8.10"
           },
           "DependsOn": [
           "MyLambdaServiceRole4539ECB6"
@@ -591,7 +589,7 @@ export = {
     new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NodeJS610,
+      runtime: lambda.Runtime.NodeJS810,
       deadLetterQueue: dlQueue,
     });
 
@@ -668,7 +666,7 @@ export = {
               "Arn"
             ]
             },
-            "Runtime": "nodejs6.10",
+            "Runtime": "nodejs8.10",
             "DeadLetterConfig": {
             "TargetArn": {
               "Fn::GetAtt": [
@@ -700,7 +698,7 @@ export = {
     new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NodeJS610,
+      runtime: lambda.Runtime.NodeJS810,
       deadLetterQueueEnabled: true,
       deadLetterQueue: dlQueue,
     });
@@ -778,7 +776,7 @@ export = {
             "Arn"
             ]
           },
-          "Runtime": "nodejs6.10",
+          "Runtime": "nodejs8.10",
           "DeadLetterConfig": {
             "TargetArn": {
             "Fn::GetAtt": [
@@ -810,7 +808,7 @@ export = {
     test.throws(() => new lambda.Function(stack, 'MyLambda', {
     code: new lambda.InlineCode('foo'),
     handler: 'index.handler',
-    runtime: lambda.Runtime.NodeJS610,
+    runtime: lambda.Runtime.NodeJS810,
     deadLetterQueueEnabled: false,
     deadLetterQueue: dlQueue,
     }), /deadLetterQueue defined but deadLetterQueueEnabled explicitly set to false/);
@@ -824,7 +822,7 @@ export = {
     new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NodeJS610,
+      runtime: lambda.Runtime.NodeJS810,
       tracing: lambda.Tracing.Active
     });
 
@@ -862,7 +860,7 @@ export = {
         "Arn"
       ]
       },
-      "Runtime": "nodejs6.10",
+      "Runtime": "nodejs8.10",
       "TracingConfig": {
       "Mode": "Active"
       }
@@ -882,7 +880,7 @@ export = {
     new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NodeJS610,
+      runtime: lambda.Runtime.NodeJS810,
       tracing: lambda.Tracing.PassThrough
     });
 
@@ -920,7 +918,7 @@ export = {
         "Arn"
       ]
       },
-      "Runtime": "nodejs6.10",
+      "Runtime": "nodejs8.10",
       "TracingConfig": {
       "Mode": "PassThrough"
       }
@@ -940,7 +938,7 @@ export = {
     new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NodeJS610,
+      runtime: lambda.Runtime.NodeJS810,
       tracing: lambda.Tracing.Disabled
     });
 
@@ -978,7 +976,7 @@ export = {
         "Arn"
       ]
       },
-      "Runtime": "nodejs6.10"
+      "Runtime": "nodejs8.10"
     },
     "DependsOn": [
       "MyLambdaServiceRole4539ECB6"
@@ -1015,6 +1013,62 @@ export = {
           }
         ]
       }
+    }));
+
+    test.done();
+  },
+
+  'grantInvoke with a service principal'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fn = new lambda.Function(stack, 'Function', {
+      code: lambda.Code.inline('xxx'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NodeJS810,
+    });
+    const service = new iam.ServicePrincipal('apigateway.amazonaws.com');
+
+    // WHEN
+    fn.grantInvoke(service);
+
+    // THEN
+    expect(stack).to(haveResource('AWS::Lambda::Permission', {
+      Action: 'lambda:InvokeFunction',
+      FunctionName: {
+        'Fn::GetAtt': [
+          'Function76856677',
+          'Arn'
+        ]
+      },
+      Principal: 'apigateway.amazonaws.com'
+    }));
+
+    test.done();
+  },
+
+  'grantInvoke with an account principal'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fn = new lambda.Function(stack, 'Function', {
+      code: lambda.Code.inline('xxx'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NodeJS810,
+    });
+    const account = new iam.AccountPrincipal('123456789012');
+
+    // WHEN
+    fn.grantInvoke(account);
+
+    // THEN
+    expect(stack).to(haveResource('AWS::Lambda::Permission', {
+      Action: 'lambda:InvokeFunction',
+      FunctionName: {
+        'Fn::GetAtt': [
+          'Function76856677',
+          'Arn'
+        ]
+      },
+      Principal: '123456789012'
     }));
 
     test.done();
@@ -1103,7 +1157,7 @@ export = {
   'using an incompatible layer'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack(undefined, 'TestStack');
-    const layer = lambda.LayerVersion.import(stack, 'TestLayer', {
+    const layer = lambda.LayerVersion.fromLayerVersionAttributes(stack, 'TestLayer', {
       layerVersionArn: 'arn:aws:...',
       compatibleRuntimes: [lambda.Runtime.NodeJS810],
     });
@@ -1123,7 +1177,7 @@ export = {
   'using more than 5 layers'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack(undefined, 'TestStack');
-    const layers = new Array(6).fill(lambda.LayerVersion.import(stack, 'TestLayer', {
+    const layers = new Array(6).fill(lambda.LayerVersion.fromLayerVersionAttributes(stack, 'TestLayer', {
       layerVersionArn: 'arn:aws:...',
       compatibleRuntimes: [lambda.Runtime.NodeJS810],
     }));

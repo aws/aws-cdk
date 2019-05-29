@@ -1,6 +1,6 @@
 import events = require('@aws-cdk/aws-events');
 import iam = require('@aws-cdk/aws-iam');
-import { CfnOutput, Construct, DeletionPolicy, IConstruct, IResource, Resource, Token } from '@aws-cdk/cdk';
+import { Construct, DeletionPolicy, IConstruct, IResource, Resource, Token } from '@aws-cdk/cdk';
 import { CfnRepository } from './ecr.generated';
 import { CountType, LifecycleRule, TagStatus } from './lifecycle';
 
@@ -10,11 +10,13 @@ import { CountType, LifecycleRule, TagStatus } from './lifecycle';
 export interface IRepository extends IResource {
   /**
    * The name of the repository
+   * @attribute
    */
   readonly repositoryName: string;
 
   /**
    * The ARN of the repository
+   * @attribute
    */
   readonly repositoryArn: string;
 
@@ -23,6 +25,7 @@ export interface IRepository extends IResource {
    *
    *    ACCOUNT.dkr.ecr.REGION.amazonaws.com/REPOSITORY
    *
+   * @attribute
    */
   readonly repositoryUri: string;
 
@@ -56,68 +59,33 @@ export interface IRepository extends IResource {
   grantPullPush(grantee: iam.IGrantable): iam.Grant;
 
   /**
+   * Define a CloudWatch event that triggers when something happens to this repository
+   *
+   * Requires that there exists at least one CloudTrail Trail in your account
+   * that captures the event. This method will not create the Trail.
+   *
+   * @param id The id of the rule
+   * @param options Options for adding the rule
+   */
+  onCloudTrailEvent(id: string, options: events.OnEventOptions): events.Rule;
+
+  /**
    * Defines an AWS CloudWatch event rule that can trigger a target when an image is pushed to this
    * repository.
-   * @param name The name of the rule
-   * @param target An IEventRuleTarget to invoke when this event happens (you can add more targets using `addTarget`)
-   * @param imageTag Only trigger on the specific image tag
-   */
-  onImagePushed(name: string, target?: events.IEventRuleTarget, imageTag?: string): events.EventRule;
-
-  /**
-   * Export this repository from the stack
-   */
-  export(): RepositoryImportProps;
-}
-
-export interface RepositoryImportProps {
-  /**
-   * The ARN of the repository to import.
    *
-   * At least one of `repositoryArn` or `repositoryName` is required.
+   * Requires that there exists at least one CloudTrail Trail in your account
+   * that captures the event. This method will not create the Trail.
    *
-   * @default If you only have a repository name and the repository is in the same
-   * account/region as the current stack, you can set `repositoryName` instead
-   * and the ARN will be formatted with the current region and account.
+   * @param id The id of the rule
+   * @param options Options for adding the rule
    */
-  readonly repositoryArn?: string;
-
-  /**
-   * The full name of the repository to import.
-   *
-   * This is only needed if the repository ARN is not a concrete string, in which
-   * case it is impossible to safely parse the ARN and extract full repository
-   * names from it if it includes multiple components (e.g. `foo/bar/myrepo`).
-   *
-   * If the repository is in the same region/account as the stack, it is sufficient
-   * to only specify the repository name.
-   */
-  readonly repositoryName?: string;
+  onCloudTrailImagePushed(id: string, options: OnCloudTrailImagePushedOptions): events.Rule;
 }
 
 /**
  * Base class for ECR repository. Reused between imported repositories and owned repositories.
  */
 export abstract class RepositoryBase extends Resource implements IRepository {
-  /**
-   * Import a repository
-   */
-  public static import(scope: Construct, id: string, props: RepositoryImportProps): IRepository {
-    return new ImportedRepository(scope, id, props);
-  }
-
-  /**
-   * Returns an ECR ARN for a repository that resides in the same account/region
-   * as the current stack.
-   */
-  public static arnForLocalRepository(repositoryName: string, scope: IConstruct): string {
-    return scope.node.stack.formatArn({
-      service: 'ecr',
-      resource: 'repository',
-      resourceName: repositoryName
-    });
-  }
-
   /**
    * The name of the repository
    */
@@ -157,35 +125,50 @@ export abstract class RepositoryBase extends Resource implements IRepository {
   }
 
   /**
-   * Export this repository from the stack
+   * Define a CloudWatch event that triggers when something happens to this repository
+   *
+   * Requires that there exists at least one CloudTrail Trail in your account
+   * that captures the event. This method will not create the Trail.
+   *
+   * @param id The id of the rule
+   * @param options Options for adding the rule
    */
-  public abstract export(): RepositoryImportProps;
+  public onCloudTrailEvent(id: string, options: events.OnEventOptions): events.Rule {
+    const rule = new events.Rule(this, id, options);
+    rule.addTarget(options.target);
+    rule.addEventPattern({
+      source: ['aws.ecr'],
+      detailType: ['AWS API Call via CloudTrail'],
+      detail: {
+        requestParameters: {
+          repositoryName: [this.repositoryName],
+        }
+      }
+    });
+    return rule;
+  }
 
   /**
    * Defines an AWS CloudWatch event rule that can trigger a target when an image is pushed to this
    * repository.
-   * @param name The name of the rule
-   * @param target An IEventRuleTarget to invoke when this event happens (you can add more targets using `addTarget`)
-   * @param imageTag Only trigger on the specific image tag
+   *
+   * Requires that there exists at least one CloudTrail Trail in your account
+   * that captures the event. This method will not create the Trail.
+   *
+   * @param id The id of the rule
+   * @param options Options for adding the rule
    */
-  public onImagePushed(name: string, target?: events.IEventRuleTarget, imageTag?: string): events.EventRule {
-    return new events.EventRule(this, name, {
-      targets: target ? [target] : undefined,
-      eventPattern: {
-        source: ['aws.ecr'],
-        detail: {
-          eventName: [
-            'PutImage',
-          ],
-          requestParameters: {
-            repositoryName: [
-              this.repositoryName,
-            ],
-            imageTag: imageTag ? [imageTag] : undefined,
-          },
+  public onCloudTrailImagePushed(id: string, options: OnCloudTrailImagePushedOptions): events.Rule {
+    const rule = this.onCloudTrailEvent(id, options);
+    rule.addEventPattern({
+      detail: {
+        eventName: ['PutImage'],
+        requestParameters: {
+          imageTag: options.imageTag ? [options.imageTag] : undefined,
         },
       },
     });
+    return rule;
   }
 
   /**
@@ -230,47 +213,15 @@ export abstract class RepositoryBase extends Resource implements IRepository {
 }
 
 /**
- * An already existing repository
+ * Options for the onCloudTrailImagePushed method
  */
-class ImportedRepository extends RepositoryBase {
-  public readonly repositoryName: string;
-  public readonly repositoryArn: string;
-
-  constructor(scope: Construct, id: string, private readonly props: RepositoryImportProps) {
-    super(scope, id);
-
-    if (props.repositoryArn) {
-      this.repositoryArn = props.repositoryArn;
-    } else {
-      if (!props.repositoryName) {
-        throw new Error('If "repositoryArn" is not specified, you must specify "repositoryName", ' +
-          'which also implies that the repository resides in the same region/account as this stack');
-      }
-
-      this.repositoryArn = RepositoryBase.arnForLocalRepository(props.repositoryName, this);
-    }
-
-    if (props.repositoryName) {
-      this.repositoryName = props.repositoryName;
-    } else {
-      // if repositoryArn is a token, the repository name is also required. this is because
-      // repository names can include "/" (e.g. foo/bar/myrepo) and it is impossible to
-      // parse the name from an ARN using CloudFormation's split/select.
-      if (Token.unresolved(this.repositoryArn)) {
-        throw new Error('repositoryArn is a late-bound value, and therefore repositoryName is required');
-      }
-
-      this.repositoryName = this.repositoryArn.split('/').slice(1).join('/');
-    }
-  }
-
-  public export(): RepositoryImportProps {
-    return this.props;
-  }
-
-  public addToResourcePolicy(_statement: iam.PolicyStatement) {
-    // FIXME: Add annotation about policy we dropped on the floor
-  }
+export interface OnCloudTrailImagePushedOptions extends events.OnEventOptions {
+  /**
+   * Only watch changes to this image tag
+   *
+   * @default - Watch changes to all tags
+   */
+  readonly imageTag?: string;
 }
 
 export interface RepositoryProps {
@@ -307,10 +258,79 @@ export interface RepositoryProps {
   readonly retain?: boolean;
 }
 
+export interface RepositoryAttributes {
+  readonly repositoryName: string;
+  readonly repositoryArn: string;
+}
+
 /**
  * Define an ECR repository
  */
 export class Repository extends RepositoryBase {
+  /**
+   * Import a repository
+   */
+  public static fromRepositoryAttributes(scope: Construct, id: string, attrs: RepositoryAttributes): IRepository {
+    class Import extends RepositoryBase {
+      public readonly repositoryName = attrs.repositoryName;
+      public readonly repositoryArn = attrs.repositoryArn;
+
+      public addToResourcePolicy(_statement: iam.PolicyStatement) {
+        // dropped
+      }
+    }
+
+    return new Import(scope, id);
+  }
+
+  public static fromRepositoryArn(scope: Construct, id: string, repositoryArn: string): IRepository {
+
+    // if repositoryArn is a token, the repository name is also required. this is because
+    // repository names can include "/" (e.g. foo/bar/myrepo) and it is impossible to
+    // parse the name from an ARN using CloudFormation's split/select.
+    if (Token.isToken(repositoryArn)) {
+      throw new Error('"repositoryArn" is a late-bound value, and therefore "repositoryName" is required. Use `fromRepositoryAttributes` instead');
+    }
+
+    const repositoryName = repositoryArn.split('/').slice(1).join('/');
+
+    class Import extends RepositoryBase {
+      public repositoryName = repositoryName;
+      public repositoryArn = repositoryArn;
+
+      public addToResourcePolicy(_statement: iam.PolicyStatement): void {
+        // dropped
+      }
+    }
+
+    return new Import(scope, id);
+  }
+
+  public static fromRepositoryName(scope: Construct, id: string, repositoryName: string): IRepository {
+    class Import extends RepositoryBase {
+      public repositoryName = repositoryName;
+      public repositoryArn = Repository.arnForLocalRepository(repositoryName, scope);
+
+      public addToResourcePolicy(_statement: iam.PolicyStatement): void {
+        // dropped
+      }
+    }
+
+    return new Import(scope, id);
+  }
+
+  /**
+   * Returns an ECR ARN for a repository that resides in the same account/region
+   * as the current stack.
+   */
+  public static arnForLocalRepository(repositoryName: string, scope: IConstruct): string {
+    return scope.node.stack.formatArn({
+      service: 'ecr',
+      resource: 'repository',
+      resourceName: repositoryName
+    });
+  }
+
   public readonly repositoryName: string;
   public readonly repositoryArn: string;
   private readonly lifecycleRules = new Array<LifecycleRule>();
@@ -338,16 +358,6 @@ export class Repository extends RepositoryBase {
 
     this.repositoryName = resource.repositoryName;
     this.repositoryArn = resource.repositoryArn;
-  }
-
-  /**
-   * Export this repository from the stack
-   */
-  public export(): RepositoryImportProps {
-    return {
-      repositoryArn: new CfnOutput(this, 'RepositoryArn', { value: this.repositoryArn }).makeImportValue().toString(),
-      repositoryName: new CfnOutput(this, 'RepositoryName', { value: this.repositoryName }).makeImportValue().toString()
-    };
   }
 
   public addToResourcePolicy(statement: iam.PolicyStatement) {

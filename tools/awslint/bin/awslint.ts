@@ -5,9 +5,21 @@ import fs = require('fs-extra');
 import reflect = require('jsii-reflect');
 import path = require('path');
 import yargs = require('yargs');
-import { constructLinter, DiagnosticLevel, moduleLinter, resourceLinter } from '../lib';
+import { AggregateLinter, apiLinter, attributesLinter, cfnResourceLinter, constructLinter, DiagnosticLevel, eventsLinter, exportsLinter, importsLinter,
+  moduleLinter, resourceLinter } from '../lib';
 
-const LINTERS = [ moduleLinter, constructLinter, resourceLinter ];
+const linter = new AggregateLinter(
+  moduleLinter,
+  constructLinter,
+  cfnResourceLinter,
+  resourceLinter,
+  apiLinter,
+  importsLinter,
+  attributesLinter,
+  exportsLinter,
+  eventsLinter
+);
+
 let stackTrace = false;
 
 async function main() {
@@ -57,10 +69,8 @@ async function main() {
   const config = path.join(workdir, 'package.json');
 
   if (command === 'list') {
-    for (const linter of LINTERS) {
-      for (const rule of linter.rules) {
-        console.info(`${colors.cyan(rule.code)}: ${rule.message}`);
-      }
+    for (const rule of linter.rules) {
+      console.info(`${colors.cyan(rule.code)}: ${rule.message}`);
     }
     return;
   }
@@ -108,12 +118,10 @@ async function main() {
 
     const results = [];
 
-    for (const linter of LINTERS) {
-      results.push(...linter.eval(assembly, {
-        include: args.include,
-        exclude: args.exclude,
-      }));
-    }
+    results.push(...linter.eval(assembly, {
+      include: args.include,
+      exclude: args.exclude,
+    }));
 
     // Sort errors to the top (highest severity first)
     results.sort((a, b) => b.level - a.level);
@@ -150,7 +158,7 @@ async function main() {
       }
 
       if (color) {
-        console.error(color(`${DiagnosticLevel[diag.level].toLowerCase()}: ${diag.message} [${colors.bold(diag.rule.code)}:${colors.bold(diag.scope)}]`));
+        console.error(color(`${DiagnosticLevel[diag.level].toLowerCase()}: [${colors.bold(`awslint:${diag.rule.code}`)}:${colors.bold(diag.scope)}] ${diag.message}`));
       }
     }
 

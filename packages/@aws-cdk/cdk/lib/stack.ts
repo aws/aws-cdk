@@ -11,7 +11,7 @@ export interface StackProps {
   /**
    * The AWS environment (account/region) where this stack will be deployed.
    *
-   * If not supplied, the `default-account` and `default-region` context parameters will be
+   * @default - The `default-account` and `default-region` context parameters will be
    * used. If they are undefined, it will not be possible to deploy the stack.
    */
   readonly env?: Environment;
@@ -19,14 +19,14 @@ export interface StackProps {
   /**
    * Name to deploy the stack with
    *
-   * @default Derived from construct path
+   * @default - Derived from construct path.
    */
   readonly stackName?: string;
 
   /**
    * Strategy for logical ID generation
    *
-   * Optional. If not supplied, the HashedNamingScheme will be used.
+   * @default - The HashedNamingScheme will be used.
    */
   readonly namingScheme?: IAddressingScheme;
 
@@ -143,16 +143,16 @@ export class Stack extends Construct {
 
     Object.defineProperty(this, STACK_SYMBOL, { value: true });
 
-    if (name && !Stack.VALID_STACK_NAME_REGEX.test(name)) {
-      throw new Error(`Stack name must match the regular expression: ${Stack.VALID_STACK_NAME_REGEX.toString()}, got '${name}'`);
-    }
-
     this.configuredEnv = props.env || {};
     this.env = this.parseEnvironment(props.env);
 
     this.logicalIds = new LogicalIDs(props && props.namingScheme ? props.namingScheme : new HashedAddressingScheme());
     this.name = props.stackName !== undefined ? props.stackName : this.calculateStackName();
     this.autoDeploy = props && props.autoDeploy === false ? false : true;
+
+    if (!Stack.VALID_STACK_NAME_REGEX.test(this.name)) {
+      throw new Error(`Stack name must match the regular expression: ${Stack.VALID_STACK_NAME_REGEX.toString()}, got '${name}'`);
+    }
   }
 
   /**

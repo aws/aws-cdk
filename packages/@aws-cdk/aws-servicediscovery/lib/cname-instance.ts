@@ -26,8 +26,9 @@ export interface CnameInstanceProps extends CnameInstanceBaseProps {
   readonly service: IService;
 }
 
-/*
+/**
  * Instance that is accessible using a domain name (CNAME).
+ * @resource AWS::ServiceDiscovery::Instance
  */
 export class CnameInstance extends InstanceBase {
   /**
@@ -43,7 +44,7 @@ export class CnameInstance extends InstanceBase {
   /**
    * The domain name returned by DNS queries for the instance
    */
-  public readonly instanceCname: string;
+  public readonly cname: string;
 
   constructor(scope: cdk.Construct, id: string, props: CnameInstanceProps) {
     super(scope, id);
@@ -67,6 +68,6 @@ export class CnameInstance extends InstanceBase {
 
     this.service = props.service;
     this.instanceId = resource.instanceId;
-    this.instanceCname = props.instanceCname;
+    this.cname = props.instanceCname;
   }
 }

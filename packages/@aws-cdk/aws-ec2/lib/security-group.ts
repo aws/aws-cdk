@@ -1,21 +1,17 @@
-import { CfnOutput, Construct, IResource, Resource, Token } from '@aws-cdk/cdk';
+import { Construct, IResource, Resource, Token } from '@aws-cdk/cdk';
 import { Connections, IConnectable } from './connections';
 import { CfnSecurityGroup, CfnSecurityGroupEgress, CfnSecurityGroupIngress } from './ec2.generated';
 import { IPortRange, ISecurityGroupRule } from './security-group-rule';
-import { IVpcNetwork } from './vpc-ref';
+import { IVpc } from './vpc';
 
 const isSecurityGroupSymbol = Symbol.for('aws-cdk:isSecurityGroup');
 
 export interface ISecurityGroup extends IResource, ISecurityGroupRule, IConnectable {
   /**
    * ID for the current security group
+   * @attribute
    */
   readonly securityGroupId: string;
-
-  /**
-   * The ID of the VPC this security group is part of.
-   */
-  readonly securityGroupVpcId: string;
 
   /**
    * Add an ingress rule for the current security group
@@ -38,24 +34,6 @@ export interface ISecurityGroup extends IResource, ISecurityGroupRule, IConnecta
    * SecurityGroup object.
    */
   addEgressRule(peer: ISecurityGroupRule, connection: IPortRange, description?: string, remoteRule?: boolean): void;
-
-  /**
-   * Export the security group
-   */
-  export(): SecurityGroupImportProps;
-}
-
-export interface SecurityGroupImportProps {
-  /**
-   * ID of security group
-   */
-  readonly securityGroupId: string;
-
-  /**
-   * The VPC ID this security group is part of. If not provided, the `securityGroupVpcId` property
-   * will throw an exception.
-   */
-  readonly securityGroupVpcId?: string;
 }
 
 /**
@@ -70,7 +48,6 @@ abstract class SecurityGroupBase extends Resource implements ISecurityGroup {
   }
 
   public abstract readonly securityGroupId: string;
-  public abstract readonly securityGroupVpcId: string;
 
   public readonly canInlineRule = false;
   public readonly connections: Connections = new Connections({ securityGroups: [this] });
@@ -133,11 +110,6 @@ abstract class SecurityGroupBase extends Resource implements ISecurityGroup {
   public toEgressRuleJSON(): any {
     return { destinationSecurityGroupId: this.securityGroupId };
   }
-
-  /**
-   * Export this SecurityGroup for use in a different Stack
-   */
-  public abstract export(): SecurityGroupImportProps;
 }
 
 /**
@@ -232,7 +204,7 @@ export interface SecurityGroupProps {
   /**
    * The VPC in which to create the security group.
    */
-  readonly vpc: IVpcNetwork;
+  readonly vpc: IVpc;
 
   /**
    * Whether to allow all outbound traffic by default.
@@ -254,21 +226,13 @@ export interface SecurityGroupProps {
  * the template).
  */
 export class SecurityGroup extends SecurityGroupBase {
+
   /**
-   * Import an existing SecurityGroup
+   * Import an existing security group into this app.
    */
-  public static import(scope: Construct, id: string, props: SecurityGroupImportProps): ISecurityGroup {
+  public static fromSecurityGroupId(scope: Construct, id: string, securityGroupId: string): ISecurityGroup {
     class Import extends SecurityGroupBase {
-      public readonly securityGroupId = props.securityGroupId;
-
-      public get securityGroupVpcId() {
-        if (!props.securityGroupVpcId) { throw new Error(`Imported security group did not specify 'securityGroupVpcId'`); }
-        return props.securityGroupVpcId;
-      }
-
-      public export() {
-        return props;
-      }
+      public securityGroupId = securityGroupId;
     }
 
     return new Import(scope, id);
@@ -276,21 +240,22 @@ export class SecurityGroup extends SecurityGroupBase {
 
   /**
    * An attribute that represents the security group name.
+   *
+   * @attribute
    */
-  public readonly groupName: string;
-
-  /**
-   * An attribute that represents the physical VPC ID this security group is part of.
-   */
-  public readonly vpcId: string;
+  public readonly securityGroupName: string;
 
   /**
    * The ID of the security group
+   *
+   * @attribute
    */
   public readonly securityGroupId: string;
 
   /**
    * The VPC ID this security group is part of.
+   *
+   * @attribute
    */
   public readonly securityGroupVpcId: string;
 
@@ -317,19 +282,9 @@ export class SecurityGroup extends SecurityGroupBase {
 
     this.securityGroupId = this.securityGroup.securityGroupId;
     this.securityGroupVpcId = this.securityGroup.securityGroupVpcId;
-    this.groupName = this.securityGroup.securityGroupName;
-    this.vpcId = this.securityGroup.securityGroupVpcId;
+    this.securityGroupName = this.securityGroup.securityGroupName;
 
     this.addDefaultEgressRule();
-  }
-
-  /**
-   * Export this SecurityGroup for use in a different Stack
-   */
-  public export(): SecurityGroupImportProps {
-    return {
-      securityGroupId: new CfnOutput(this, 'SecurityGroupId', { value: this.securityGroupId }).makeImportValue().toString()
-    };
   }
 
   public addIngressRule(peer: ISecurityGroupRule, connection: IPortRange, description?: string, remoteRule?: boolean) {

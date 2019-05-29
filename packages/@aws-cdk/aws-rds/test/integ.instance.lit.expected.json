@@ -1117,6 +1117,10 @@
     "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aCodeS3VersionKey10C1B354": {
       "Type": "String",
       "Description": "S3 key for asset version \"aws-cdk-rds-instance/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/Code\""
+    },
+    "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aCodeArtifactHash327647CC": {
+      "Type": "String",
+      "Description":"Artifact hash for asset \"aws-cdk-rds-instance/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/Code\""
     }
   }
 }

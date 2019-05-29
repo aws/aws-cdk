@@ -6,7 +6,7 @@
         "Name": "my-api"
       }
     },
-    "myapiDeployment92F2CB498cbe233ce6b744150b3f2d80a9c3dd24": {
+    "myapiDeployment92F2CB4919460d935da8177bcfbc418506e514ff": {
       "Type": "AWS::ApiGateway::Deployment",
       "Properties": {
         "RestApiId": {
@@ -37,7 +37,7 @@
         "CacheClusterEnabled": true,
         "CacheClusterSize": "0.5",
         "DeploymentId": {
-          "Ref": "myapiDeployment92F2CB498cbe233ce6b744150b3f2d80a9c3dd24"
+          "Ref": "myapiDeployment92F2CB4919460d935da8177bcfbc418506e514ff"
         },
         "Description": "beta stage",
         "MethodSettings": [
@@ -148,6 +148,7 @@
         "RestApiId": {
           "Ref": "myapi4C7BF186"
         },
+        "ApiKeyRequired": true,
         "AuthorizationType": "NONE",
         "Integration": {
           "IntegrationHttpMethod": "POST",
@@ -384,7 +385,7 @@
             "Arn"
           ]
         },
-        "Runtime": "nodejs6.10"
+        "Runtime": "nodejs8.10"
       },
       "DependsOn": [
         "MyHandlerServiceRoleFFA06653"
@@ -622,6 +623,61 @@
             ]
           ]
         }
+      }
+    },
+    "myapiUsagePlan56F9C4F2": {
+      "Type": "AWS::ApiGateway::UsagePlan",
+      "Properties": {
+        "ApiStages": [
+          {
+            "ApiId": {
+              "Ref": "myapi4C7BF186"
+            },
+            "Stage": {
+              "Ref": "myapiDeploymentStagebeta96434BEB"
+            },
+            "Throttle": {
+              "/v1/toys/GET": {
+                "BurstLimit": 2,
+                "RateLimit": 10
+              }
+            }
+          }
+        ],
+        "Description": "Free tier monthly usage plan",
+        "Quota": {
+          "Limit": 10000,
+          "Period": "MONTH"
+        },
+        "UsagePlanName": "Basic"
+      }
+    },
+    "myapiUsagePlanUsagePlanKeyResource050D133F": {
+      "Type": "AWS::ApiGateway::UsagePlanKey",
+      "Properties": {
+        "KeyId": {
+          "Ref": "myapiApiKey43446CCF"
+        },
+        "KeyType": "API_KEY",
+        "UsagePlanId": {
+          "Ref": "myapiUsagePlan56F9C4F2"
+        }
+      }
+    },
+    "myapiApiKey43446CCF": {
+      "Type": "AWS::ApiGateway::ApiKey",
+      "Properties": {
+        "Enabled": true,
+        "StageKeys": [
+          {
+            "RestApiId": {
+              "Ref": "myapi4C7BF186"
+            },
+            "StageName": {
+              "Ref": "myapiDeploymentStagebeta96434BEB"
+            }
+          }
+        ]
       }
     }
   },

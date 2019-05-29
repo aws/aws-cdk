@@ -11,7 +11,7 @@ export = {
   'create a DB instance'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
-    const vpc = new ec2.VpcNetwork(stack, 'VPC');
+    const vpc = new ec2.Vpc(stack, 'VPC');
 
     // WHEN
     new rds.DatabaseInstance(stack, 'Instance', {
@@ -188,7 +188,7 @@ export = {
   'instance with option and parameter group'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
-    const vpc = new ec2.VpcNetwork(stack, 'VPC');
+    const vpc = new ec2.Vpc(stack, 'VPC');
 
     const optionGroup = new rds.OptionGroup(stack, 'OptionGroup', {
       engine: rds.DatabaseInstanceEngine.OracleSE1,
@@ -231,30 +231,10 @@ export = {
     test.done();
   },
 
-  'export/import'(test: Test) {
-    // GIVEN
-    const stack1 = new cdk.Stack();
-    const stack2 = new cdk.Stack();
-
-    const instance = new rds.DatabaseInstance(stack1, 'Instance', {
-      engine: rds.DatabaseInstanceEngine.Mysql,
-      instanceClass: new ec2.InstanceTypePair(ec2.InstanceClass.Burstable2, ec2.InstanceSize.Small),
-      masterUsername: 'admin',
-      vpc: new ec2.VpcNetwork(stack1, 'VPC'),
-    });
-
-    // WHEN
-    rds.DatabaseInstance.import(stack2, 'Instance', instance.export());
-
-    // THEN: No error
-
-    test.done();
-  },
-
   'create an instance from snapshot'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
-    const vpc = new ec2.VpcNetwork(stack, 'VPC');
+    const vpc = new ec2.Vpc(stack, 'VPC');
 
     // WHEN
     new rds.DatabaseInstanceFromSnapshot(stack, 'Instance', {
@@ -274,7 +254,7 @@ export = {
   'throws when trying to generate a new password from snapshot without username'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
-    const vpc = new ec2.VpcNetwork(stack, 'VPC');
+    const vpc = new ec2.Vpc(stack, 'VPC');
 
     // THEN
     test.throws(() => new rds.DatabaseInstanceFromSnapshot(stack, 'Instance', {
@@ -291,7 +271,7 @@ export = {
   'create a read replica'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
-    const vpc = new ec2.VpcNetwork(stack, 'VPC');
+    const vpc = new ec2.Vpc(stack, 'VPC');
     const sourceInstance = new rds.DatabaseInstance(stack, 'Instance', {
       engine: rds.DatabaseInstanceEngine.Mysql,
       instanceClass: new ec2.InstanceTypePair(ec2.InstanceClass.Burstable2, ec2.InstanceSize.Small),
@@ -320,7 +300,7 @@ export = {
   'on event'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
-    const vpc = new ec2.VpcNetwork(stack, 'VPC');
+    const vpc = new ec2.Vpc(stack, 'VPC');
     const instance = new rds.DatabaseInstance(stack, 'Instance', {
       engine: rds.DatabaseInstanceEngine.Mysql,
       instanceClass: new ec2.InstanceTypePair(ec2.InstanceClass.Burstable2, ec2.InstanceSize.Small),
@@ -334,7 +314,7 @@ export = {
     });
 
     // WHEN
-    instance.onEvent('InstanceEvent', new targets.LambdaFunction(fn));
+    instance.onEvent('InstanceEvent', { target: new targets.LambdaFunction(fn) });
 
     // THEN
     expect(stack).to(haveResource('AWS::Events::Rule', {
@@ -376,7 +356,7 @@ export = {
   'can use metricCPUUtilization'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
-    const vpc = new ec2.VpcNetwork(stack, 'VPC');
+    const vpc = new ec2.Vpc(stack, 'VPC');
 
     // WHEN
     const instance = new rds.DatabaseInstance(stack, 'Instance', {

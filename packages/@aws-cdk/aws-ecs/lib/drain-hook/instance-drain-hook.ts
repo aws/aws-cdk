@@ -1,7 +1,7 @@
 import autoscaling = require('@aws-cdk/aws-autoscaling');
+import hooks = require('@aws-cdk/aws-autoscaling-hooktargets');
 import iam = require('@aws-cdk/aws-iam');
 import lambda = require('@aws-cdk/aws-lambda');
-import sns = require('@aws-cdk/aws-sns');
 import cdk = require('@aws-cdk/cdk');
 import fs = require('fs');
 import path = require('path');
@@ -49,7 +49,6 @@ export class InstanceDrainHook extends cdk.Construct {
     }
 
     // Invoke Lambda via SNS Topic
-    const topic = new sns.Topic(this, 'Topic');
     const fn = new lambda.Function(this, 'Function', {
       code: lambda.Code.inline(fs.readFileSync(path.join(__dirname, 'lambda-source', 'index.py'), { encoding: 'utf-8' })),
       handler: 'index.lambda_handler',
@@ -63,13 +62,12 @@ export class InstanceDrainHook extends cdk.Construct {
     });
 
     // Hook everything up: ASG -> Topic, Topic -> Lambda
-    props.autoScalingGroup.onLifecycleTransition('DrainHook', {
+    props.autoScalingGroup.addLifecycleHook('DrainHook', {
       lifecycleTransition: autoscaling.LifecycleTransition.InstanceTerminating,
       defaultResult: autoscaling.DefaultResult.Continue,
-      notificationTarget: topic,
+      notificationTarget: new hooks.FunctionHook(fn),
       heartbeatTimeoutSec: drainTimeSeconds,
     });
-    topic.subscribeLambda(fn);
 
     // FIXME: These should probably be restricted usefully in some way, but I don't exactly
     // know how.

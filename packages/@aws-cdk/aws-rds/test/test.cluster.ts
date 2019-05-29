@@ -10,7 +10,7 @@ export = {
   'check that instantiation works'(test: Test) {
     // GIVEN
     const stack = testStack();
-    const vpc = new ec2.VpcNetwork(stack, 'VPC');
+    const vpc = new ec2.Vpc(stack, 'VPC');
 
     // WHEN
     new DatabaseCluster(stack, 'Database', {
@@ -45,34 +45,10 @@ export = {
 
     test.done();
   },
-  'check that exporting/importing works'(test: Test) {
-    // GIVEN
-    const stack1 = testStack();
-    const stack2 = testStack();
-
-    const cluster = new DatabaseCluster(stack1, 'Database', {
-      engine: DatabaseClusterEngine.Aurora,
-      masterUser: {
-        username: 'admin',
-        password: SecretValue.plainText('tooshort'),
-      },
-      instanceProps: {
-        instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.Burstable2, ec2.InstanceSize.Small),
-        vpc: new ec2.VpcNetwork(stack1, 'VPC')
-      }
-    });
-
-    // WHEN
-    DatabaseCluster.import(stack2, 'Database', cluster.export());
-
-    // THEN: No error
-
-    test.done();
-  },
   'can create a cluster with a single instance'(test: Test) {
     // GIVEN
     const stack = testStack();
-    const vpc = new ec2.VpcNetwork(stack, 'VPC');
+    const vpc = new ec2.Vpc(stack, 'VPC');
 
     // WHEN
     new DatabaseCluster(stack, 'Database', {
@@ -103,12 +79,10 @@ export = {
   'can create a cluster with imported vpc and security group'(test: Test) {
     // GIVEN
     const stack = testStack();
-    const vpc = ec2.VpcNetwork.importFromContext(stack, 'VPC', {
+    const vpc = ec2.Vpc.fromLookup(stack, 'VPC', {
       vpcId: "VPC12345"
     });
-    const sg = ec2.SecurityGroup.import(stack, 'SG', {
-      securityGroupId: "SecurityGroupId12345"
-    });
+    const sg = ec2.SecurityGroup.fromSecurityGroupId(stack, 'SG', "SecurityGroupId12345");
 
     // WHEN
     new DatabaseCluster(stack, 'Database', {
@@ -140,7 +114,7 @@ export = {
   'cluster with parameter group'(test: Test) {
     // GIVEN
     const stack = testStack();
-    const vpc = new ec2.VpcNetwork(stack, 'VPC');
+    const vpc = new ec2.Vpc(stack, 'VPC');
 
     // WHEN
     const group = new ClusterParameterGroup(stack, 'Params', {
@@ -174,7 +148,7 @@ export = {
   'creates a secret when master credentials are not specified'(test: Test) {
     // GIVEN
     const stack = testStack();
-    const vpc = new ec2.VpcNetwork(stack, 'VPC');
+    const vpc = new ec2.Vpc(stack, 'VPC');
 
     // WHEN
     new DatabaseCluster(stack, 'Database', {
@@ -231,7 +205,7 @@ export = {
   'create an encrypted cluster with custom KMS key'(test: Test) {
     // GIVEN
     const stack = testStack();
-    const vpc = new ec2.VpcNetwork(stack, 'VPC');
+    const vpc = new ec2.Vpc(stack, 'VPC');
 
     // WHEN
     new DatabaseCluster(stack, 'Database', {
@@ -243,7 +217,7 @@ export = {
         instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.Burstable2, ec2.InstanceSize.Small),
         vpc
       },
-      kmsKey: new kms.EncryptionKey(stack, 'Key')
+      kmsKey: new kms.Key(stack, 'Key')
     });
 
     // THEN

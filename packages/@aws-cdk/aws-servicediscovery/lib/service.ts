@@ -1,4 +1,4 @@
-import route53 = require('@aws-cdk/aws-route53');
+import elbv2 = require('@aws-cdk/aws-elasticloadbalancingv2');
 import { Construct, IResource, Resource } from '@aws-cdk/cdk';
 import { AliasTargetInstance } from './alias-target-instance';
 import { CnameInstance, CnameInstanceBaseProps  } from './cname-instance';
@@ -11,6 +11,7 @@ import { CfnService } from './servicediscovery.generated';
 export interface IService extends IResource {
   /**
    * A name for the Cloudmap Service.
+   * @attribute
    */
   readonly serviceName: string;
 
@@ -21,11 +22,13 @@ export interface IService extends IResource {
 
   /**
    * The ID of the namespace that you want to use for DNS configuration.
+   * @attribute
    */
   readonly serviceId: string;
 
   /**
    * The Arn of the namespace that you want to use for DNS configuration.
+   * @attribute
    */
   readonly serviceArn: string;
 
@@ -125,10 +128,41 @@ export interface ServiceProps extends DnsServiceProps {
   readonly namespace: INamespace;
 }
 
+abstract class ServiceBase extends Resource implements IService {
+  public abstract namespace: INamespace;
+  public abstract serviceId: string;
+  public abstract serviceArn: string;
+  public abstract dnsRecordType: DnsRecordType;
+  public abstract routingPolicy: RoutingPolicy;
+  public abstract readonly serviceName: string;
+}
+
+export interface ServiceAttributes {
+  readonly serviceName: string;
+  readonly serviceId: string;
+  readonly serviceArn: string;
+  readonly dnsRecordType: DnsRecordType;
+  readonly routingPolicy: RoutingPolicy;
+}
+
 /**
  * Define a CloudMap Service
  */
-export class Service extends Resource implements IService {
+export class Service extends ServiceBase {
+
+  public static fromServiceAttributes(scope: Construct, id: string, attrs: ServiceAttributes): IService {
+    class Import extends ServiceBase {
+      public namespace: INamespace;
+      public serviceId = attrs.serviceId;
+      public serviceArn = attrs.serviceArn;
+      public dnsRecordType = attrs.dnsRecordType;
+      public routingPolicy = attrs.routingPolicy;
+      public serviceName = attrs.serviceName;
+    }
+
+    return new Import(scope, id);
+  }
+
   /**
    * A name for the Cloudmap Service.
    */
@@ -251,10 +285,10 @@ export class Service extends Resource implements IService {
   /**
    * Registers an ELB as a new instance with unique name instanceId in this service.
    */
-  public registerLoadBalancer(id: string, loadBalancer: route53.IAliasRecordTarget, customAttributes?: {[key: string]: string}): IInstance {
+  public registerLoadBalancer(id: string, loadBalancer: elbv2.ILoadBalancerV2, customAttributes?: {[key: string]: string}): IInstance {
     return new AliasTargetInstance(this, id, {
       service: this,
-      dnsName: loadBalancer.asAliasRecordTarget().dnsName,
+      dnsName: loadBalancer.loadBalancerDnsName,
       customAttributes
     });
   }

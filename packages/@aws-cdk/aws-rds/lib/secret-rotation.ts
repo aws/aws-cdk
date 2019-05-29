@@ -74,12 +74,12 @@ export interface SecretRotationProps extends SecretRotationOptions {
   /**
    * The VPC where the Lambda rotation function will run.
    */
-  readonly vpc: ec2.IVpcNetwork;
+  readonly vpc: ec2.IVpc;
 
   /**
    * The type of subnets in the VPC where the Lambda rotation function will run.
    *
-   * @default private subnets
+   * @default - Private subnets.
    */
   readonly vpcSubnets?: ec2.SubnetSelection;
 
@@ -121,14 +121,12 @@ export class SecretRotation extends Construct {
     });
 
     // Dummy import to reference this function in the rotation schedule
-    const rotationLambda = lambda.Function.import(this, 'RotationLambda', {
-      functionArn: this.node.stack.formatArn({
-        service: 'lambda',
-        resource: 'function',
-        sep: ':',
-        resourceName: rotationFunctionName
-      }),
-    });
+    const rotationLambda = lambda.Function.fromFunctionArn(this, 'RotationLambda', this.node.stack.formatArn({
+      service: 'lambda',
+      resource: 'function',
+      sep: ':',
+      resourceName: rotationFunctionName
+    }));
 
     // Cannot use rotationLambda.addPermission because it's a no-op on imported
     // functions.

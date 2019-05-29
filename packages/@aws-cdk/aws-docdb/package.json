@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/aws-docdb",
-  "version": "0.30.0",
+  "version": "0.32.0",
   "description": "The CDK Construct Library for AWS::DocDB",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -20,7 +20,6 @@
           "artifactId": "docdb"
         }
       },
-      "sphinx": {},
       "python": {
         "distName": "aws-cdk.aws-docdb",
         "module": "aws_cdk.aws_docdb"
@@ -42,7 +41,9 @@
     "test": "cdk-test",
     "watch": "cdk-watch",
     "cfn2ts": "cfn2ts",
-    "awslint": "cdk-awslint"
+    "awslint": "cdk-awslint",
+    "build+test+package": "npm run build+test && npm run package",
+    "build+test": "npm run build && npm test"
   },
   "cdk-build": {
     "cloudformation": "AWS::DocDB"
@@ -61,16 +62,16 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "^0.30.0",
-    "cdk-build-tools": "^0.30.0",
-    "cfn2ts": "^0.30.0",
-    "pkglint": "^0.30.0"
+    "@aws-cdk/assert": "^0.32.0",
+    "cdk-build-tools": "^0.32.0",
+    "cfn2ts": "^0.32.0",
+    "pkglint": "^0.32.0"
   },
   "dependencies": {
-    "@aws-cdk/cdk": "^0.30.0"
+    "@aws-cdk/cdk": "^0.32.0"
   },
   "peerDependencies": {
-    "@aws-cdk/cdk": "^0.30.0"
+    "@aws-cdk/cdk": "^0.32.0"
   },
   "engines": {
     "node": ">= 8.10.0"

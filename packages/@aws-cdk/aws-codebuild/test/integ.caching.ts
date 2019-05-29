@@ -2,6 +2,7 @@
 import s3 = require('@aws-cdk/aws-s3');
 import cdk = require('@aws-cdk/cdk');
 import codebuild = require('../lib');
+import { Cache } from '../lib/cache';
 
 const app = new cdk.App();
 
@@ -12,7 +13,7 @@ const bucket = new s3.Bucket(stack, 'CacheBucket', {
 });
 
 new codebuild.Project(stack, 'MyProject', {
-  cacheBucket: bucket,
+  cache: Cache.bucket(bucket),
   buildSpec: {
     build: {
       commands: ['echo Hello']

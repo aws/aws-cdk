@@ -158,6 +158,21 @@ export class Grant {
   }
 
   /**
+   * Returns a "no-op" `Grant` object which represents a "dropped grant".
+   *
+   * This can be used for e.g. imported resources where you may not be able to modify
+   * the resource's policy or some underlying policy which you don't know about.
+   *
+   * @param grantee The intended grantee
+   * @param _intent The user's intent (will be ignored at the moment)
+   */
+  public static drop(grantee: IGrantable, _intent: string): Grant {
+    return new Grant({
+      options: { grantee, actions: [], resourceArns: [] }
+    });
+  }
+
+  /**
    * The statement that was added to the principal's policy
    *
    * Can be accessed to (e.g.) add additional conditions to the statement.

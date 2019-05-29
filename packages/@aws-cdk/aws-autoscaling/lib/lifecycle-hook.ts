@@ -1,8 +1,8 @@
-import api = require('@aws-cdk/aws-autoscaling-api');
 import iam = require('@aws-cdk/aws-iam');
-import { Construct, Resource } from '@aws-cdk/cdk';
+import { Construct, IResource, Resource } from '@aws-cdk/cdk';
 import { IAutoScalingGroup } from './auto-scaling-group';
 import { CfnLifecycleHook } from './autoscaling.generated';
+import { ILifecycleHookTarget } from './lifecycle-hook-target';
 
 /**
  * Basic properties for a lifecycle hook
@@ -11,7 +11,7 @@ export interface BasicLifecycleHookProps {
   /**
    * Name of the lifecycle hook
    *
-   * @default Automatically generated name
+   * @default - Automatically generated name.
    */
   readonly lifecycleHookName?: string;
 
@@ -26,6 +26,8 @@ export interface BasicLifecycleHookProps {
    * Maximum time between calls to RecordLifecycleActionHeartbeat for the hook
    *
    * If the lifecycle hook times out, perform the action in DefaultResult.
+   *
+   * @default - No heartbeat timeout.
    */
   readonly heartbeatTimeoutSec?: number;
 
@@ -37,19 +39,19 @@ export interface BasicLifecycleHookProps {
   /**
    * Additional data to pass to the lifecycle hook target
    *
-   * @default No metadata
+   * @default - No metadata.
    */
   readonly notificationMetadata?: string;
 
   /**
    * The target of the lifecycle hook
    */
-  readonly notificationTarget: api.ILifecycleHookTarget;
+  readonly notificationTarget: ILifecycleHookTarget;
 
   /**
    * The role that allows publishing to the notification target
    *
-   * @default A role is automatically created
+   * @default - A role is automatically created.
    */
   readonly role?: iam.IRole;
 }
@@ -64,7 +66,20 @@ export interface LifecycleHookProps extends BasicLifecycleHookProps {
   readonly autoScalingGroup: IAutoScalingGroup;
 }
 
-export class LifecycleHook extends Resource implements api.ILifecycleHook {
+/**
+ * A basic lifecycle hook object
+ */
+export interface ILifecycleHook extends IResource {
+  /**
+   * The role for the lifecycle hook to execute
+   */
+  readonly role: iam.IRole;
+}
+
+/**
+ * Define a life cycle hook
+ */
+export class LifecycleHook extends Resource implements ILifecycleHook {
   /**
    * The role that allows the ASG to publish to the notification target
    */
@@ -72,6 +87,7 @@ export class LifecycleHook extends Resource implements api.ILifecycleHook {
 
   /**
    * The name of this lifecycle hook
+   * @attribute
    */
   public readonly lifecycleHookName: string;
 
@@ -82,7 +98,7 @@ export class LifecycleHook extends Resource implements api.ILifecycleHook {
       assumedBy: new iam.ServicePrincipal('autoscaling.amazonaws.com')
     });
 
-    const targetProps = props.notificationTarget.asLifecycleHookTarget(this);
+    const targetProps = props.notificationTarget.bind(this, this);
 
     const resource = new CfnLifecycleHook(this, 'Resource', {
       autoScalingGroupName: props.autoScalingGroup.autoScalingGroupName,

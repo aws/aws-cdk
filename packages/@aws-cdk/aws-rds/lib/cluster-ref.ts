@@ -19,13 +19,15 @@ export interface IDatabaseCluster extends IResource, ec2.IConnectable, secretsma
 
   /**
    * The endpoint to use for read/write operations
+   * @attribute dbClusterEndpointAddress,dbClusterEndpointPort
    */
   readonly clusterEndpoint: Endpoint;
 
   /**
    * Endpoint to use for load-balanced read-only operations.
+   * @attribute dbClusterReadEndpointAddress
    */
-  readonly readerEndpoint: Endpoint;
+  readonly clusterReadEndpoint: Endpoint;
 
   /**
    * Endpoints which address each individual replica.
@@ -36,21 +38,16 @@ export interface IDatabaseCluster extends IResource, ec2.IConnectable, secretsma
    * The security group for this database cluster
    */
   readonly securityGroupId: string;
-
-  /**
-   * Export a Database Cluster for importing in another stack
-   */
-  export(): DatabaseClusterImportProps;
 }
 
 /**
  * Properties that describe an existing cluster instance
  */
-export interface DatabaseClusterImportProps {
+export interface DatabaseClusterAttributes {
   /**
    * The database port
    */
-  readonly port: string;
+  readonly port: number;
 
   /**
    * The security group for this database cluster

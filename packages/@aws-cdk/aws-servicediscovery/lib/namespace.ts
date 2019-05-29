@@ -1,18 +1,21 @@
-import { CfnOutput, Construct, IResource, Resource } from '@aws-cdk/cdk';
+import { IResource } from '@aws-cdk/cdk';
 
 export interface INamespace extends IResource {
   /**
    * A name for the Namespace.
+   * @attribute
    */
   readonly namespaceName: string;
 
   /**
    * Namespace Id for the Namespace.
+   * @attribute
    */
   readonly namespaceId: string;
 
   /**
    * Namespace ARN for the Namespace.
+   * @attribute
    */
   readonly namespaceArn: string;
 
@@ -20,11 +23,6 @@ export interface INamespace extends IResource {
    * Type of Namespace
    */
   readonly type: NamespaceType;
-
-  /**
-   * Export the namespace properties
-   */
-  export(): NamespaceImportProps;
 }
 
 export interface BaseNamespaceProps {
@@ -41,7 +39,7 @@ export interface BaseNamespaceProps {
   readonly description?: string;
 }
 
-export interface NamespaceImportProps {
+export interface NamespaceAttributes {
   /**
    * A name for the Namespace.
    */
@@ -80,55 +78,4 @@ export enum NamespaceType {
    * public DNS queries. You aren't required to use both methods.
    */
   DnsPublic = "DNS_PUBLIC",
-}
-
-export abstract class NamespaceBase extends Resource implements INamespace {
-  public abstract readonly namespaceId: string;
-  public abstract readonly namespaceArn: string;
-  public abstract readonly namespaceName: string;
-  public abstract readonly type: NamespaceType;
-
-  public export(): NamespaceImportProps {
-    return {
-      namespaceName: new CfnOutput(this, 'NamespaceName', { value: this.namespaceArn }).makeImportValue().toString(),
-      namespaceArn: new CfnOutput(this, 'NamespaceArn', { value: this.namespaceArn }).makeImportValue().toString(),
-      namespaceId: new CfnOutput(this, 'NamespaceId', { value: this.namespaceId }).makeImportValue().toString(),
-      type: this.type,
-    };
-  }
-}
-
-// The class below exists purely so that users can still type Namespace.import().
-// It does not make sense to have HttpNamespace.import({ ..., type: NamespaceType.PublicDns }),
-// but at the same time ecs.Cluster wants a type-generic export()/import(). Hence, we put
-// it in Namespace.
-
-/**
- * Static Namespace class
- */
-export class Namespace {
-  /**
-   * Import a namespace
-   */
-  public static import(scope: Construct, id: string, props: NamespaceImportProps): INamespace {
-    return new ImportedNamespace(scope, id, props);
-  }
-
-  private constructor() {
-  }
-}
-
-class ImportedNamespace extends NamespaceBase {
-  public namespaceId: string;
-  public namespaceArn: string;
-  public namespaceName: string;
-  public type: NamespaceType;
-
-  constructor(scope: Construct, id: string, props: NamespaceImportProps) {
-    super(scope, id);
-    this.namespaceId = props.namespaceId;
-    this.namespaceArn = props.namespaceArn;
-    this.namespaceName = props.namespaceName;
-    this.type = props.type;
-  }
 }

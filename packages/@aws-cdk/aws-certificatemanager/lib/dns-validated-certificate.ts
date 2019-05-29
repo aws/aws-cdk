@@ -4,7 +4,7 @@ import lambda = require('@aws-cdk/aws-lambda');
 import route53 = require('@aws-cdk/aws-route53');
 import cdk = require('@aws-cdk/cdk');
 import path = require('path');
-import { CertificateImportProps, CertificateProps, ICertificate } from './certificate';
+import { CertificateProps, ICertificate } from './certificate';
 
 export interface DnsValidatedCertificateProps extends CertificateProps {
     /**
@@ -12,6 +12,14 @@ export interface DnsValidatedCertificateProps extends CertificateProps {
      * must be authoritative for the domain name specified in the Certificate Request.
      */
     readonly hostedZone: route53.IHostedZone;
+    /**
+     * AWS region that will host the certificate. This is needed especially
+     * for certificates used for CloudFront distributions, which require the region
+     * to be us-east-1.
+     *
+     * @default the region the stack is deployed in.
+     */
+    readonly region?: string;
 }
 
 /**
@@ -64,20 +72,12 @@ export class DnsValidatedCertificate extends cdk.Construct implements ICertifica
             properties: {
                 DomainName: props.domainName,
                 SubjectAlternativeNames: props.subjectAlternativeNames,
-                HostedZoneId: this.hostedZoneId
+                HostedZoneId: this.hostedZoneId,
+                Region: props.region,
             }
         });
 
         this.certificateArn = certificate.getAtt('Arn').toString();
-    }
-
-    /**
-     * Export this certificate from the stack
-     */
-    public export(): CertificateImportProps {
-        return {
-            certificateArn: new cdk.CfnOutput(this, 'Arn', { value: this.certificateArn }).makeImportValue().toString()
-        };
     }
 
     protected validate(): string[] {

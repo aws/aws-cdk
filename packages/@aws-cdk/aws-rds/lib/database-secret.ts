@@ -16,11 +16,13 @@ export interface DatabaseSecretProps {
    *
    * @default default master key
    */
-  readonly encryptionKey?: kms.IEncryptionKey;
+  readonly encryptionKey?: kms.IKey;
 }
 
 /**
  * A database secret.
+ *
+ * @resource AWS::SecretsManager::Secret
  */
 export class DatabaseSecret extends secretsmanager.Secret {
   constructor(scope: Construct, id: string, props: DatabaseSecretProps) {

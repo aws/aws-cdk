@@ -9,7 +9,7 @@ class TestStack extends cdk.Stack {
     const bucket = new s3.Bucket(this, 'MyBucket', {
       removalPolicy: cdk.RemovalPolicy.Destroy
     });
-    const bucket2 = s3.Bucket.import(this, "MyBucket2", {
+    const bucket2 = s3.Bucket.fromBucketAttributes(this, "MyBucket2", {
       bucketArn: "arn:aws:s3:::my-bucket-test"
     });
 

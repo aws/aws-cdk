@@ -1,3 +1,5 @@
+import { Token } from '@aws-cdk/cdk';
+
 /**
  * Connection endpoint of a database cluster or instance
  *
@@ -12,16 +14,18 @@ export class Endpoint {
   /**
    * The port of the endpoint
    */
-  public readonly port: string;
+  public readonly port: number;
 
   /**
    * The combination of "HOSTNAME:PORT" for this endpoint
    */
   public readonly socketAddress: string;
 
-  constructor(address: string, port: string) {
+  constructor(address: string, port: number) {
     this.hostname = address;
     this.port = port;
-    this.socketAddress = `${address}:${port}`;
+
+    const portDesc = Token.isToken(port) ? '{IndirectPort}' : port;
+    this.socketAddress = `${address}:${portDesc}`;
   }
 }

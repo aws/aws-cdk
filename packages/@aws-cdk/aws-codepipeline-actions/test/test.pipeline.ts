@@ -310,9 +310,9 @@ export = {
       ],
     });
 
-    pipeline.onStateChange('OnStateChange', new targets.SnsTopic(topic), {
+    pipeline.onStateChange('OnStateChange', {
+      target: new targets.SnsTopic(topic),
       description: 'desc',
-      scheduleExpression: 'now',
       eventPattern: {
         detail: {
           state: [ 'FAILED' ]
@@ -360,7 +360,6 @@ export = {
         }
         ]
       },
-      "ScheduleExpression": "now",
       "State": "ENABLED",
       "Targets": [
         {
@@ -434,7 +433,7 @@ export = {
     const lambdaFun = new lambda.Function(stack, 'Function', {
       code: new lambda.InlineCode('bla'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NodeJS43,
+      runtime: lambda.Runtime.NodeJS810,
     });
 
     const pipeline = new codepipeline.Pipeline(stack, 'Pipeline');
@@ -692,10 +691,10 @@ export = {
         ]
       }));
 
-      test.equal(pipeline.crossRegionScaffoldStacks[pipelineRegion], undefined);
-      test.equal(pipeline.crossRegionScaffoldStacks['us-west-1'], undefined);
+      test.equal(pipeline.crossRegionScaffolding[pipelineRegion], undefined);
+      test.equal(pipeline.crossRegionScaffolding['us-west-1'], undefined);
 
-      const usEast1ScaffoldStack = pipeline.crossRegionScaffoldStacks['us-east-1'];
+      const usEast1ScaffoldStack = pipeline.crossRegionScaffolding['us-east-1'];
       test.notEqual(usEast1ScaffoldStack, undefined);
       test.equal(usEast1ScaffoldStack.env.region, 'us-east-1');
       test.equal(usEast1ScaffoldStack.env.account, pipelineAccount);
@@ -705,6 +704,19 @@ export = {
       test.done();
     },
   },
+
+  'Pipeline.fromPipelineArn'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    const pl = codepipeline.Pipeline.fromPipelineArn(stack, 'imported', 'arn:aws:codepipeline:us-east-1:123456789012:MyDemoPipeline');
+
+    // THEN
+    test.deepEqual(pl.pipelineArn, 'arn:aws:codepipeline:us-east-1:123456789012:MyDemoPipeline');
+    test.deepEqual(pl.pipelineName, 'MyDemoPipeline');
+    test.done();
+  }
 };
 
 function stageForTesting(stack: Stack): codepipeline.IStage {

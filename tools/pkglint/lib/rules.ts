@@ -212,15 +212,6 @@ export class JSIIPythonTarget extends ValidationRule {
   }
 }
 
-export class JSIISphinxTarget extends ValidationRule {
-  public readonly name = 'jsii/sphinx';
-
-  public validate(pkg: PackageJson): void {
-    if (!isJSII(pkg)) { return; }
-    expectJSON(this.name, pkg, 'jsii.targets.sphinx', { });
-  }
-}
-
 export class CDKPackage extends ValidationRule {
   public readonly name = 'package-info/scripts/package';
 
@@ -715,7 +706,7 @@ export class AllVersionsTheSame extends ValidationRule {
 }
 
 export class AwsLint extends ValidationRule {
-  public name = 'awslint';
+  public readonly name = 'awslint';
 
   public validate(pkg: PackageJson) {
     if (!isJSII(pkg)) {
@@ -731,7 +722,7 @@ export class AwsLint extends ValidationRule {
 }
 
 export class Cfn2Ts extends ValidationRule {
-  public name = 'cfn2ts';
+  public readonly name = 'cfn2ts';
 
   public validate(pkg: PackageJson) {
     if (!isJSII(pkg)) {
@@ -747,7 +738,7 @@ export class Cfn2Ts extends ValidationRule {
 }
 
 export class JestCoverageTarget extends ValidationRule {
-  public name = 'jest-coverage-target';
+  public readonly name = 'jest-coverage-target';
 
   public validate(pkg: PackageJson) {
     if (pkg.json.jest) {
@@ -782,7 +773,7 @@ export class JestCoverageTarget extends ValidationRule {
  * and we don't have good transitive license checks.
  */
 export class PackageInJsiiPackageNoRuntimeDeps extends ValidationRule {
-  public name = 'lambda-packages-no-runtime-deps';
+  public readonly name = 'lambda-packages-no-runtime-deps';
 
   public validate(pkg: PackageJson) {
     if (!isJSII(pkg)) { return; }
@@ -800,6 +791,27 @@ export class PackageInJsiiPackageNoRuntimeDeps extends ValidationRule {
       const nodeModulesRelPath = path.relative(pkg.packageRoot, innerPkg.packageRoot) + '/node_modules';
       fileShouldContain(`${this.name}:2`, pkg, '.npmignore', nodeModulesRelPath);
     }
+  }
+}
+
+/**
+ * Requires packages to have fast-fail build scripts, allowing to combine build, test and package in a single command.
+ * This involves two targets: `build+test:pack` and `build+test` (to skip the pack).
+ */
+export class FastFailingBuildScripts extends ValidationRule {
+  public readonly name = 'fast-failing-build-scripts';
+
+  public validate(pkg: PackageJson) {
+    const scripts = pkg.json.scripts || {};
+
+    const hasTest = 'test' in scripts;
+    const hasPack = 'package' in scripts;
+
+    const cmdBuild = 'npm run build';
+    expectJSON(this.name, pkg, 'scripts.build+test', hasTest ? [cmdBuild, 'npm test'].join(' && ') : cmdBuild);
+
+    const cmdBuildTest = 'npm run build+test';
+    expectJSON(this.name, pkg, 'scripts.build+test+package', hasPack ? [cmdBuildTest, 'npm run package'].join(' && ') : cmdBuildTest);
   }
 }
 

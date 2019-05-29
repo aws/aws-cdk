@@ -13,7 +13,7 @@ export = {
   'add a rds rotation single user to a cluster'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
-    const vpc = new ec2.VpcNetwork(stack, 'VPC');
+    const vpc = new ec2.Vpc(stack, 'VPC');
     const cluster = new rds.DatabaseCluster(stack, 'Database', {
       engine: rds.DatabaseClusterEngine.AuroraMysql,
       masterUser: {
@@ -162,7 +162,7 @@ export = {
   'throws when trying to add rotation to a cluster without secret'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
-    const vpc = new ec2.VpcNetwork(stack, 'VPC');
+    const vpc = new ec2.Vpc(stack, 'VPC');
 
     // WHEN
     const cluster = new rds.DatabaseCluster(stack, 'Database', {
@@ -186,7 +186,7 @@ export = {
   'throws when connections object has no default port range'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
-    const vpc = new ec2.VpcNetwork(stack, 'VPC');
+    const vpc = new ec2.Vpc(stack, 'VPC');
     const secret = new secretsmanager.Secret(stack, 'Secret');
     const securityGroup = new ec2.SecurityGroup(stack, 'SecurityGroup', {
       vpc,
@@ -211,8 +211,8 @@ export = {
   'add a rds rotation single user to an instance'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
-    const vpc = new ec2.VpcNetwork(stack, 'VPC');
-    const cluster = new rds.DatabaseInstance(stack, 'Database', {
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const instance = new rds.DatabaseInstance(stack, 'Database', {
       engine: rds.DatabaseInstanceEngine.MariaDb,
       instanceClass: new ec2.InstanceTypePair(ec2.InstanceClass.Burstable2, ec2.InstanceSize.Small),
       masterUsername: 'syscdk',
@@ -220,7 +220,7 @@ export = {
     });
 
     // WHEN
-    cluster.addRotationSingleUser('Rotation');
+    instance.addRotationSingleUser('Rotation');
 
     // THEN
     expect(stack).to(haveResource('AWS::EC2::SecurityGroupIngress', {
@@ -356,7 +356,7 @@ export = {
   'throws when trying to add rotation to an instance without secret'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
-    const vpc = new ec2.VpcNetwork(stack, 'VPC');
+    const vpc = new ec2.Vpc(stack, 'VPC');
 
     // WHEN
     const instance = new rds.DatabaseInstance(stack, 'Database', {

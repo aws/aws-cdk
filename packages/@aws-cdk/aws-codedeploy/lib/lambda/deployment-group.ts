@@ -12,7 +12,7 @@ import { ILambdaDeploymentConfig, LambdaDeploymentConfig } from './deployment-co
 /**
  * Interface for a Lambda deployment groups.
  */
-export interface ILambdaDeploymentGroup extends cdk.IConstruct {
+export interface ILambdaDeploymentGroup extends cdk.IResource {
   /**
    * The reference to the CodeDeploy Lambda Application that this Deployment Group belongs to.
    */
@@ -20,18 +20,15 @@ export interface ILambdaDeploymentGroup extends cdk.IConstruct {
 
   /**
    * The physical name of the CodeDeploy Deployment Group.
+   * @attribute
    */
   readonly deploymentGroupName: string;
 
   /**
    * The ARN of this Deployment Group.
+   * @attribute
    */
   readonly deploymentGroupArn: string;
-
-  /**
-   * Export this Deployment Group for use in another stack or application.
-   */
-  export(): LambdaDeploymentGroupImportProps;
 }
 
 /**
@@ -41,14 +38,14 @@ export interface LambdaDeploymentGroupProps {
   /**
    * The reference to the CodeDeploy Lambda Application that this Deployment Group belongs to.
    *
-   * @default one will be created for you
+   * @default - One will be created for you.
    */
   readonly application?: ILambdaApplication;
 
   /**
    * The physical, human-readable name of the CodeDeploy Deployment Group.
    *
-   * @default an auto-generated name will be used
+   * @default - An auto-generated name will be used.
    */
   readonly deploymentGroupName?: string;
 
@@ -69,28 +66,34 @@ export interface LambdaDeploymentGroupProps {
    * @default []
    * @see https://docs.aws.amazon.com/codedeploy/latest/userguide/monitoring-create-alarms.html
    */
-  readonly alarms?: cloudwatch.Alarm[];
+  readonly alarms?: cloudwatch.IAlarm[];
 
   /**
    * The service Role of this Deployment Group.
    *
-   * @default a new Role will be created.
+   * @default - A new Role will be created.
    */
   readonly role?: iam.IRole;
 
   /**
    * Lambda Alias to shift traffic. Updating the version
    * of the alias will trigger a CodeDeploy deployment.
+   *
+   * [disable-awslint:ref-via-interface] since we need to modify the alias CFN resource update policy
    */
   readonly alias: lambda.Alias;
 
   /**
    * The Lambda function to run before traffic routing starts.
+   *
+   * @default - None.
    */
   readonly preHook?: lambda.IFunction;
 
   /**
    * The Lambda function to run after traffic routing starts.
+   *
+   * @default - None.
    */
   readonly postHook?: lambda.IFunction;
 
@@ -103,22 +106,30 @@ export interface LambdaDeploymentGroupProps {
 
   /**
    * The auto-rollback configuration for this Deployment Group.
+   *
+   * @default - default AutoRollbackConfig.
    */
   readonly autoRollback?: AutoRollbackConfig;
 }
 
-export class LambdaDeploymentGroup extends cdk.Construct implements ILambdaDeploymentGroup {
+/**
+ * @resource AWS::CodeDeploy::DeploymentGroup
+ */
+export class LambdaDeploymentGroup extends cdk.Resource implements ILambdaDeploymentGroup {
   /**
    * Import an Lambda Deployment Group defined either outside the CDK,
    * or in a different CDK Stack and exported using the {@link #export} method.
    *
    * @param scope the parent Construct for this new Construct
    * @param id the logical ID of this new Construct
-   * @param props the properties of the referenced Deployment Group
+   * @param attrs the properties of the referenced Deployment Group
    * @returns a Construct representing a reference to an existing Deployment Group
    */
-  public static import(scope: cdk.Construct, id: string, props: LambdaDeploymentGroupImportProps): ILambdaDeploymentGroup {
-    return new ImportedLambdaDeploymentGroup(scope, id, props);
+  public static fromLambdaDeploymentGroupAttributes(
+      scope: cdk.Construct,
+      id: string,
+      attrs: LambdaDeploymentGroupAttributes): ILambdaDeploymentGroup {
+    return new ImportedLambdaDeploymentGroup(scope, id, attrs);
   }
 
   public readonly application: ILambdaApplication;
@@ -126,7 +137,7 @@ export class LambdaDeploymentGroup extends cdk.Construct implements ILambdaDeplo
   public readonly deploymentGroupArn: string;
   public readonly role: iam.IRole;
 
-  private readonly alarms: cloudwatch.Alarm[];
+  private readonly alarms: cloudwatch.IAlarm[];
   private preHook?: lambda.IFunction;
   private postHook?: lambda.IFunction;
 
@@ -159,10 +170,10 @@ export class LambdaDeploymentGroup extends cdk.Construct implements ILambdaDeplo
     this.deploymentGroupArn = arnForDeploymentGroup(this.application.applicationName, this.deploymentGroupName);
 
     if (props.preHook) {
-      this.onPreHook(props.preHook);
+      this.addPreHook(props.preHook);
     }
     if (props.postHook) {
-      this.onPostHook(props.postHook);
+      this.addPostHook(props.postHook);
     }
 
     (props.alias.node.findChild('Resource') as lambda.CfnAlias).options.updatePolicy = {
@@ -180,7 +191,7 @@ export class LambdaDeploymentGroup extends cdk.Construct implements ILambdaDeplo
    *
    * @param alarm the alarm to associate with this Deployment Group
    */
-  public addAlarm(alarm: cloudwatch.Alarm): void {
+  public addAlarm(alarm: cloudwatch.IAlarm): void {
     this.alarms.push(alarm);
   }
 
@@ -189,7 +200,7 @@ export class LambdaDeploymentGroup extends cdk.Construct implements ILambdaDeplo
    * @param preHook function to run before deployment beings
    * @throws an error if a pre-hook function is already configured
    */
-  public onPreHook(preHook: lambda.IFunction): void {
+  public addPreHook(preHook: lambda.IFunction): void {
     if (this.preHook !== undefined) {
       throw new Error('A pre-hook function is already defined for this deployment group');
     }
@@ -203,7 +214,7 @@ export class LambdaDeploymentGroup extends cdk.Construct implements ILambdaDeplo
    * @param postHook function to run after deployment completes
    * @throws an error if a post-hook function is already configured
    */
-  public onPostHook(postHook: lambda.IFunction): void {
+  public addPostHook(postHook: lambda.IFunction): void {
     if (this.postHook !== undefined) {
       throw new Error('A post-hook function is already defined for this deployment group');
     }
@@ -224,15 +235,6 @@ export class LambdaDeploymentGroup extends cdk.Construct implements ILambdaDeplo
       actions: ['codedeploy:PutLifecycleEventHookExecutionStatus'],
     });
   }
-
-  public export(): LambdaDeploymentGroupImportProps {
-    return {
-      application: this.application,
-      deploymentGroupName: new cdk.CfnOutput(this, 'DeploymentGroupName', {
-        value: this.deploymentGroupName
-      }).makeImportValue().toString()
-    };
-  }
 }
 
 /**
@@ -241,7 +243,7 @@ export class LambdaDeploymentGroup extends cdk.Construct implements ILambdaDeplo
  * @see LambdaDeploymentGroup#import
  * @see ILambdaDeploymentGroup#export
  */
-export interface LambdaDeploymentGroupImportProps {
+export interface LambdaDeploymentGroupAttributes {
   /**
    * The reference to the CodeDeploy Lambda Application
    * that this Deployment Group belongs to.
@@ -260,14 +262,10 @@ class ImportedLambdaDeploymentGroup extends cdk.Construct implements ILambdaDepl
   public readonly deploymentGroupName: string;
   public readonly deploymentGroupArn: string;
 
-  constructor(scope: cdk.Construct, id: string, private readonly props: LambdaDeploymentGroupImportProps) {
+  constructor(scope: cdk.Construct, id: string, props: LambdaDeploymentGroupAttributes) {
     super(scope, id);
     this.application = props.application;
     this.deploymentGroupName = props.deploymentGroupName;
     this.deploymentGroupArn = arnForDeploymentGroup(props.application.applicationName, props.deploymentGroupName);
-  }
-
-  public export() {
-    return this.props;
   }
 }

@@ -42,7 +42,7 @@ export interface InstanceProps {
    *
    * Must be at least 2 subnets in two different AZs.
    */
-  readonly vpc: ec2.IVpcNetwork;
+  readonly vpc: ec2.IVpc;
 
   /**
    * Where to place the instances within the VPC
@@ -57,6 +57,11 @@ export interface InstanceProps {
 
 /**
  * Backup configuration for RDS databases
+ *
+ * @default - The retention period for automated backups is 1 day.
+ * The preferred backup window will be a 30-minute window selected at random
+ * from an 8-hour block of time for each AWS Region.
+ * @see https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/USER_UpgradeDBInstance.Maintenance.html#AdjustingTheMaintenanceWindow.Aurora
  */
 export interface BackupProps {
 
@@ -98,5 +103,5 @@ export interface Login {
    *
    * @default default master key
    */
-  readonly kmsKey?: kms.IEncryptionKey;
+  readonly kmsKey?: kms.IKey;
 }

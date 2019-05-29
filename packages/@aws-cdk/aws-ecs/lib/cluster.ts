@@ -3,7 +3,7 @@ import cloudwatch = require ('@aws-cdk/aws-cloudwatch');
 import ec2 = require('@aws-cdk/aws-ec2');
 import iam = require('@aws-cdk/aws-iam');
 import cloudmap = require('@aws-cdk/aws-servicediscovery');
-import { CfnOutput, Construct, IResource, Resource, SSMParameterProvider } from '@aws-cdk/cdk';
+import { Construct, IResource, Resource, SSMParameterProvider } from '@aws-cdk/cdk';
 import { InstanceDrainHook } from './drain-hook/instance-drain-hook';
 import { CfnCluster } from './ecs.generated';
 
@@ -21,7 +21,7 @@ export interface ClusterProps {
   /**
    * The VPC where your ECS instances will be running or your ENIs will be deployed
    */
-  readonly vpc: ec2.IVpcNetwork;
+  readonly vpc: ec2.IVpc;
 }
 
 /**
@@ -31,8 +31,8 @@ export class Cluster extends Resource implements ICluster {
   /**
    * Import an existing cluster
    */
-  public static import(scope: Construct, id: string, props: ClusterImportProps): ICluster {
-    return new ImportedCluster(scope, id, props);
+  public static fromClusterAttributes(scope: Construct, id: string, attrs: ClusterAttributes): ICluster {
+    return new ImportedCluster(scope, id, attrs);
   }
 
   /**
@@ -43,7 +43,7 @@ export class Cluster extends Resource implements ICluster {
   /**
    * The VPC this cluster was created in.
    */
-  public readonly vpc: ec2.IVpcNetwork;
+  public readonly vpc: ec2.IVpc;
 
   /**
    * The ARN of this cluster
@@ -119,7 +119,7 @@ export class Cluster extends Resource implements ICluster {
     const autoScalingGroup = new autoscaling.AutoScalingGroup(this, id, {
       ...options,
       vpc: this.vpc,
-      machineImage: new EcsOptimizedAmi(),
+      machineImage: options.machineImage || new EcsOptimizedAmi(),
       updateType: options.updateType || autoscaling.UpdateType.ReplacingUpdate,
       instanceType: options.instanceType,
     });
@@ -131,6 +131,9 @@ export class Cluster extends Resource implements ICluster {
 
   /**
    * Add compute capacity to this ECS cluster in the form of an AutoScalingGroup
+   * @param autoScalingGroup the ASG to add to this cluster.
+   * [disable-awslint:ref-via-interface] is needed in order to install the ECS
+   * agent by updating the ASGs user data.
    */
   public addAutoScalingGroup(autoScalingGroup: autoscaling.AutoScalingGroup, options: AddAutoScalingGroupCapacityOptions = {}) {
     this._hasEc2Capacity = true;
@@ -181,20 +184,6 @@ export class Cluster extends Resource implements ICluster {
   }
 
   /**
-   * Export the Cluster
-   */
-  public export(): ClusterImportProps {
-    return {
-      clusterName: new CfnOutput(this, 'ClusterName', { value: this.clusterName }).makeImportValue().toString(),
-      clusterArn: this.clusterArn,
-      vpc: this.vpc.export(),
-      securityGroups: this.connections.securityGroups.map(sg => sg.export()),
-      hasEc2Capacity: this.hasEc2Capacity,
-      defaultNamespace: this._defaultNamespace && this._defaultNamespace.export(),
-    };
-  }
-
-  /**
    * Metric for cluster CPU reservation
    *
    * @default average over 5 minutes
@@ -229,9 +218,16 @@ export interface EcsOptimizedAmiProps {
   /**
    * What generation of Amazon Linux to use
    *
-   * @default AmazonLinux
+   * @default AmazonLinuxGeneration.AmazonLinux if hwType equal to AmiHardwareType.Standard else AmazonLinuxGeneration.AmazonLinux2
    */
   readonly generation?: ec2.AmazonLinuxGeneration;
+
+  /**
+   * What ECS Optimized AMI type to use
+   *
+   * @default AmiHardwareType.Standard
+   */
+  readonly hwType?: AmiHardwareType;
 }
 
 /**
@@ -239,15 +235,33 @@ export interface EcsOptimizedAmiProps {
  */
 export class EcsOptimizedAmi implements ec2.IMachineImageSource {
   private readonly generation: ec2.AmazonLinuxGeneration;
+  private readonly hwType: AmiHardwareType;
+
   private readonly amiParameterName: string;
 
   constructor(props?: EcsOptimizedAmiProps) {
-    this.generation = (props && props.generation) || ec2.AmazonLinuxGeneration.AmazonLinux;
-    if (this.generation === ec2.AmazonLinuxGeneration.AmazonLinux2) {
-      this.amiParameterName = "/aws/service/ecs/optimized-ami/amazon-linux-2/recommended";
-    } else {
-      this.amiParameterName = "/aws/service/ecs/optimized-ami/amazon-linux/recommended";
+    this.hwType = (props && props.hwType) || AmiHardwareType.Standard;
+    if (props && props.generation) {      // generation defined in the props object
+      if (props.generation === ec2.AmazonLinuxGeneration.AmazonLinux && this.hwType !== AmiHardwareType.Standard) {
+        throw new Error(`Amazon Linux does not support special hardware type. Use Amazon Linux 2 instead`);
+      } else {
+        this.generation = props.generation;
+      }
+    } else {                              // generation not defined in props object
+      if (this.hwType === AmiHardwareType.Standard) {    // default to Amazon Linux v1 if no HW is standard
+        this.generation = ec2.AmazonLinuxGeneration.AmazonLinux;
+      } else {                                         // default to Amazon Linux v2 if special HW
+        this.generation = ec2.AmazonLinuxGeneration.AmazonLinux2;
+      }
     }
+
+    // set the SSM parameter name
+    this.amiParameterName = "/aws/service/ecs/optimized-ami/"
+                          + ( this.generation === ec2.AmazonLinuxGeneration.AmazonLinux ? "amazon-linux/" : "" )
+                          + ( this.generation === ec2.AmazonLinuxGeneration.AmazonLinux2 ? "amazon-linux-2/" : "" )
+                          + ( this.hwType === AmiHardwareType.Gpu ? "gpu/" : "" )
+                          + ( this.hwType === AmiHardwareType.Arm ? "arm64/" : "" )
+                          + "recommended";
   }
 
   /**
@@ -271,18 +285,20 @@ export class EcsOptimizedAmi implements ec2.IMachineImageSource {
 export interface ICluster extends IResource {
   /**
    * Name of the cluster
+   * @attribute
    */
   readonly clusterName: string;
 
   /**
    * The ARN of this cluster
+   * @attribute
    */
   readonly clusterArn: string;
 
   /**
    * VPC that the cluster instances are running in
    */
-  readonly vpc: ec2.IVpcNetwork;
+  readonly vpc: ec2.IVpc;
 
   /**
    * Connections manager of the cluster instances
@@ -298,17 +314,12 @@ export interface ICluster extends IResource {
    * Getter for Cloudmap namespace created in the cluster
    */
   readonly defaultNamespace?: cloudmap.INamespace;
-
-  /**
-   * Export the Cluster
-   */
-  export(): ClusterImportProps;
 }
 
 /**
  * Properties to import an ECS cluster
  */
-export interface ClusterImportProps {
+export interface ClusterAttributes {
   /**
    * Name of the cluster
    */
@@ -324,12 +335,12 @@ export interface ClusterImportProps {
   /**
    * VPC that the cluster instances are running in
    */
-  readonly vpc: ec2.VpcNetworkImportProps;
+  readonly vpc: ec2.IVpc;
 
   /**
    * Security group of the cluster instances
    */
-  readonly securityGroups: ec2.SecurityGroupImportProps[];
+  readonly securityGroups: ec2.ISecurityGroup[];
 
   /**
    * Whether the given cluster has EC2 capacity
@@ -343,7 +354,7 @@ export interface ClusterImportProps {
    *
    * @default - No default namespace
    */
-  readonly defaultNamespace?: cloudmap.NamespaceImportProps;
+  readonly defaultNamespace?: cloudmap.INamespace;
 }
 
 /**
@@ -363,7 +374,7 @@ class ImportedCluster extends Construct implements ICluster {
   /**
    * VPC that the cluster instances are running in
    */
-  public readonly vpc: ec2.IVpcNetwork;
+  public readonly vpc: ec2.IVpc;
 
   /**
    * Security group of the cluster instances
@@ -380,12 +391,18 @@ class ImportedCluster extends Construct implements ICluster {
    */
   private _defaultNamespace?: cloudmap.INamespace;
 
-  constructor(scope: Construct, id: string, private readonly props: ClusterImportProps) {
+  constructor(scope: Construct, id: string, props: ClusterAttributes) {
     super(scope, id);
     this.clusterName = props.clusterName;
-    this.vpc = ec2.VpcNetwork.import(this, "vpc", props.vpc);
+    this.vpc = props.vpc;
     this.hasEc2Capacity = props.hasEc2Capacity !== false;
-    this._defaultNamespace = props.defaultNamespace && cloudmap.Namespace.import(this, 'Namespace', props.defaultNamespace);
+    this._defaultNamespace = props.defaultNamespace;
+
+    this.clusterArn = props.clusterArn !== undefined ? props.clusterArn : this.node.stack.formatArn({
+      service: 'ecs',
+      resource: 'cluster',
+      resourceName: props.clusterName,
+    });
 
     this.clusterArn = props.clusterArn !== undefined ? props.clusterArn : this.node.stack.formatArn({
       service: 'ecs',
@@ -395,17 +412,13 @@ class ImportedCluster extends Construct implements ICluster {
 
     let i = 1;
     for (const sgProps of props.securityGroups) {
-      this.connections.addSecurityGroup(ec2.SecurityGroup.import(this, `SecurityGroup${i}`, sgProps));
+      this.connections.addSecurityGroup(ec2.SecurityGroup.fromSecurityGroupId(this, `SecurityGroup${i}`, sgProps.securityGroupId));
       i++;
     }
   }
 
   public get defaultNamespace(): cloudmap.INamespace | undefined {
     return this._defaultNamespace;
-  }
-
-  public export() {
-    return this.props;
   }
 }
 
@@ -442,6 +455,13 @@ export interface AddCapacityOptions extends AddAutoScalingGroupCapacityOptions, 
    * The type of EC2 instance to launch into your Autoscaling Group
    */
   readonly instanceType: ec2.InstanceType;
+
+  /**
+   * The machine image for the ECS instances
+   *
+   * @default - Amazon Linux 1
+   */
+  readonly machineImage?: ec2.IMachineImageSource;
 }
 
 export interface NamespaceOptions {
@@ -462,7 +482,7 @@ export interface NamespaceOptions {
    *
    * @default VPC of the cluster for Private DNS Namespace, otherwise none
    */
-  readonly vpc?: ec2.IVpcNetwork;
+  readonly vpc?: ec2.IVpc;
 }
 
 /**
@@ -478,4 +498,25 @@ export enum NamespaceType {
    * Create a public DNS namespace
    */
   PublicDns = 'PublicDns',
+}
+
+/**
+ * The type of HW for the ECS Optimized AMI
+ */
+export enum AmiHardwareType {
+
+  /**
+   * Create a standard AMI
+   */
+  Standard = 'Standard',
+
+  /**
+   * Create a GPU optimized AMI
+   */
+  Gpu = 'GPU',
+
+  /**
+   * Create a ARM64 optimized AMI
+   */
+  Arm = 'ARM64',
 }

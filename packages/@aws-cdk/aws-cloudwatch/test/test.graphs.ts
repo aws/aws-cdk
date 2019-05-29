@@ -30,7 +30,7 @@ export = {
           ['CDK', 'Tast', { yAxis: 'right', period: 300, stat: 'Average' }]
         ],
         annotations: { horizontal: [] },
-        yAxis: { left: { min: 0 }, right: { min: 0 } }
+        yAxis: {}
       }
     }]);
 
@@ -56,7 +56,7 @@ export = {
           ['CDK', 'Test', { yAxis: 'left', period: 300, stat: 'Average', label: 'MyMetric', color: '000000' }],
         ],
         annotations: { horizontal: [] },
-        yAxis: { left: { min: 0 }, right: { min: 0 } }
+        yAxis: {}
       }
     }]);
 
@@ -83,7 +83,7 @@ export = {
         region: { Ref: 'AWS::Region' },
         metrics: [
           ['CDK', 'Test', { yAxis: 'left', period: 300, stat: 'Average' }],
-        ],
+        ]
       }
     }]);
 
@@ -115,7 +115,7 @@ export = {
         annotations: {
           alarms: [{ 'Fn::GetAtt': [ 'Alarm7103F465', 'Arn' ] }]
         },
-        yAxis: { left: { min: 0 } }
+        yAxis: {}
       }
     }]);
 
@@ -157,7 +157,7 @@ export = {
           fill: 'below',
           label: 'this is the annotation',
         }] },
-        yAxis: { left: { min: 0 }, right: { min: 0 } }
+        yAxis: {}
       }
     }]);
 
@@ -199,7 +199,52 @@ export = {
             label: 'Test >= 1000 for 2 datapoints within 10 minutes',
           }]
         },
-        yAxis: { left: { min: 0 }, right: { min: 0 } }
+        yAxis: {}
+      }
+    }]);
+
+    test.done();
+  },
+
+  'add yAxis to graph'(test: Test) {
+    // WHEN
+    const stack = new Stack();
+    const widget = new GraphWidget({
+      title: 'My fancy graph',
+      left: [
+        new Metric({ namespace: 'CDK', metricName: 'Test' })
+      ],
+      right: [
+        new Metric({ namespace: 'CDK', metricName: 'Tast' })
+      ],
+      leftYAxis: ({
+        label: "Left yAxis",
+        max: 100
+      }),
+      rightYAxis: ({
+        label: "Right yAxis",
+        min: 10,
+        showUnits: false
+      })
+    });
+
+    // THEN
+    test.deepEqual(stack.node.resolve(widget.toJson()), [{
+      type: 'metric',
+      width: 6,
+      height: 6,
+      properties: {
+        view: 'timeSeries',
+        title: 'My fancy graph',
+        region: { Ref: 'AWS::Region' },
+        metrics: [
+          ['CDK', 'Test', { yAxis: 'left', period: 300, stat: 'Average' }],
+          ['CDK', 'Tast', { yAxis: 'right', period: 300, stat: 'Average' }]
+        ],
+        annotations: { horizontal: [] },
+        yAxis: {
+          left: { label: "Left yAxis", max: 100 },
+          right: { label: "Right yAxis", min: 10, showUnits: false } }
       }
     }]);
 

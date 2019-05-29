@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/aws-quickstarts",
-  "version": "0.30.0",
+  "version": "0.32.0",
   "description": "AWS Quickstarts for the CDK",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -20,7 +20,6 @@
         "signAssembly": true,
         "assemblyOriginatorKeyFile": "../../key.snk"
       },
-      "sphinx": {},
       "python": {
         "distName": "aws-cdk.aws-quickstarts",
         "module": "aws_cdk.aws_quickstarts"
@@ -39,7 +38,9 @@
     "pkglint": "pkglint -f",
     "test": "cdk-test",
     "package": "cdk-package",
-    "awslint": "cdk-awslint"
+    "awslint": "cdk-awslint",
+    "build+test+package": "npm run build+test && npm run package",
+    "build+test": "npm run build && npm test"
   },
   "keywords": [
     "aws",
@@ -54,25 +55,30 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "cdk-build-tools": "^0.30.0",
-    "pkglint": "^0.30.0"
+    "cdk-build-tools": "^0.32.0",
+    "pkglint": "^0.32.0"
   },
   "dependencies": {
-    "@aws-cdk/aws-cloudformation": "^0.30.0",
-    "@aws-cdk/aws-ec2": "^0.30.0",
-    "@aws-cdk/aws-iam": "^0.30.0",
-    "@aws-cdk/aws-rds": "^0.30.0",
-    "@aws-cdk/cdk": "^0.30.0"
+    "@aws-cdk/aws-cloudformation": "^0.32.0",
+    "@aws-cdk/aws-ec2": "^0.32.0",
+    "@aws-cdk/aws-iam": "^0.32.0",
+    "@aws-cdk/aws-rds": "^0.32.0",
+    "@aws-cdk/cdk": "^0.32.0"
   },
   "homepage": "https://github.com/awslabs/aws-cdk",
   "peerDependencies": {
-    "@aws-cdk/aws-cloudformation": "^0.30.0",
-    "@aws-cdk/aws-ec2": "^0.30.0",
-    "@aws-cdk/aws-iam": "^0.30.0",
-    "@aws-cdk/aws-rds": "^0.30.0",
-    "@aws-cdk/cdk": "^0.30.0"
+    "@aws-cdk/aws-cloudformation": "^0.32.0",
+    "@aws-cdk/aws-ec2": "^0.32.0",
+    "@aws-cdk/aws-iam": "^0.32.0",
+    "@aws-cdk/aws-rds": "^0.32.0",
+    "@aws-cdk/cdk": "^0.32.0"
   },
   "engines": {
     "node": ">= 8.10.0"
+  },
+  "awslint": {
+    "exclude": [
+      "props-default-doc"
+    ]
   }
 }

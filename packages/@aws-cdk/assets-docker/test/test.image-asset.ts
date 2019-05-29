@@ -31,6 +31,24 @@ export = {
     test.done();
   },
 
+  'with build args'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const asset = new DockerImageAsset(stack, 'Image', {
+      directory: path.join(__dirname, 'demo-image'),
+      buildArgs: {
+        a: 'b'
+      }
+    });
+
+    // THEN
+    const assetMetadata = asset.node.metadata.find(({ type }) => type === 'aws:cdk:asset');
+    test.deepEqual(assetMetadata && assetMetadata.data.buildArgs, { a: 'b' });
+    test.done();
+  },
+
   'asset.repository.grantPull can be used to grant a principal permissions to use the image'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
@@ -103,7 +121,7 @@ export = {
     // THEN
     expect(stack).to(haveResource('Custom::ECRAdoptedRepository', {
       "RepositoryName": {
-        "Fn::Select": [ 0, { "Fn::Split": [ ":", { "Ref": "ImageImageName5E684353" } ] } ]
+        "Fn::Select": [ 0, { "Fn::Split": [ "@sha256:", { "Ref": "ImageImageName5E684353" } ] } ]
       },
       "PolicyDocument": {
         "Statement": [
@@ -164,8 +182,8 @@ export = {
 
     app.run();
 
-    test.ok(fs.existsSync('.stage-me/96e3ffe92a19cbaa6c558942f7a60246/Dockerfile'));
-    test.ok(fs.existsSync('.stage-me/96e3ffe92a19cbaa6c558942f7a60246/index.py'));
+    test.ok(fs.existsSync('.stage-me/1a17a141505ac69144931fe263d130f4612251caa4bbbdaf68a44ed0f405439c/Dockerfile'));
+    test.ok(fs.existsSync('.stage-me/1a17a141505ac69144931fe263d130f4612251caa4bbbdaf68a44ed0f405439c/index.py'));
     test.done();
   }
 };

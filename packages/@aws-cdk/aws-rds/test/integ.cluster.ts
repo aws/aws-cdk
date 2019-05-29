@@ -8,7 +8,7 @@ import { ClusterParameterGroup } from '../lib/parameter-group';
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-cdk-rds-integ');
 
-const vpc = new ec2.VpcNetwork(stack, 'VPC', { maxAZs: 2 });
+const vpc = new ec2.Vpc(stack, 'VPC', { maxAZs: 2 });
 
 const params = new ClusterParameterGroup(stack, 'Params', {
   family: 'aurora5.6',
@@ -18,7 +18,7 @@ const params = new ClusterParameterGroup(stack, 'Params', {
   }
 });
 
-const kmsKey = new kms.EncryptionKey(stack, 'DbSecurity');
+const kmsKey = new kms.Key(stack, 'DbSecurity');
 const cluster = new DatabaseCluster(stack, 'Database', {
   engine: DatabaseClusterEngine.Aurora,
   masterUser: {

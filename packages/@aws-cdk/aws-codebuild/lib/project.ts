@@ -6,9 +6,9 @@ import ecr = require('@aws-cdk/aws-ecr');
 import events = require('@aws-cdk/aws-events');
 import iam = require('@aws-cdk/aws-iam');
 import kms = require('@aws-cdk/aws-kms');
-import s3 = require('@aws-cdk/aws-s3');
-import { Aws, CfnOutput, Construct, Fn, IResource, Resource, Token } from '@aws-cdk/cdk';
+import { Aws, Construct, IResource, Resource, Token } from '@aws-cdk/cdk';
 import { BuildArtifacts, CodePipelineBuildArtifacts, NoBuildArtifacts } from './artifacts';
+import { Cache } from './cache';
 import { CfnProject } from './codebuild.generated';
 import { BuildSource, NoSource, SourceType } from './source';
 
@@ -17,14 +17,27 @@ const S3_BUCKET_ENV = 'SCRIPT_S3_BUCKET';
 const S3_KEY_ENV = 'SCRIPT_S3_KEY';
 
 export interface IProject extends IResource, iam.IGrantable {
-  /** The ARN of this Project. */
+  /**
+   * The ARN of this Project.
+   * @attribute
+   */
   readonly projectArn: string;
 
-  /** The human-visible name of this Project. */
+  /**
+   * The human-visible name of this Project.
+   * @attribute
+   */
   readonly projectName: string;
 
   /** The IAM service Role of this Project. Undefined for imported Projects. */
   readonly role?: iam.IRole;
+
+  /**
+   * Defines a CloudWatch event rule triggered when something happens with this project.
+   *
+   * @see https://docs.aws.amazon.com/codebuild/latest/userguide/sample-build-notifications.html
+   */
+  onEvent(id: string, options: events.OnEventOptions): events.Rule;
 
   /**
    * Defines a CloudWatch event rule triggered when the build project state
@@ -46,9 +59,12 @@ export interface IProject extends IResource, iam.IGrantable {
    * You can also use the methods `onBuildFailed` and `onBuildSucceeded` to define rules for
    * these specific state changes.
    *
+   * To access fields from the event in the event target input,
+   * use the static fields on the `StateChangeEvent` class.
+   *
    * @see https://docs.aws.amazon.com/codebuild/latest/userguide/sample-build-notifications.html
    */
-  onStateChange(name: string, target?: events.IEventRuleTarget, options?: events.EventRuleProps): events.EventRule;
+  onStateChange(id: string, options: events.OnEventOptions): events.Rule;
 
   /**
    * Defines a CloudWatch event rule that triggers upon phase change of this
@@ -56,22 +72,22 @@ export interface IProject extends IResource, iam.IGrantable {
    *
    * @see https://docs.aws.amazon.com/codebuild/latest/userguide/sample-build-notifications.html
    */
-  onPhaseChange(name: string, target?: events.IEventRuleTarget, options?: events.EventRuleProps): events.EventRule;
+  onPhaseChange(id: string, options: events.OnEventOptions): events.Rule;
 
   /**
    * Defines an event rule which triggers when a build starts.
    */
-  onBuildStarted(name: string, target?: events.IEventRuleTarget, options?: events.EventRuleProps): events.EventRule;
+  onBuildStarted(id: string, options: events.OnEventOptions): events.Rule;
 
   /**
    * Defines an event rule which triggers when a build fails.
    */
-  onBuildFailed(name: string, target?: events.IEventRuleTarget, options?: events.EventRuleProps): events.EventRule;
+  onBuildFailed(id: string, options: events.OnEventOptions): events.Rule;
 
   /**
    * Defines an event rule which triggers when a build completes successfully.
    */
-  onBuildSucceeded(name: string, target?: events.IEventRuleTarget, options?: events.EventRuleProps): events.EventRule;
+  onBuildSucceeded(id: string, options: events.OnEventOptions): events.Rule;
 
   /**
    * @returns a CloudWatch metric associated with this build project.
@@ -124,25 +140,6 @@ export interface IProject extends IResource, iam.IGrantable {
    * @default sum over 5 minutes
    */
   metricFailedBuilds(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
-
-  /**
-   * Export this Project. Allows referencing this Project in a different CDK Stack.
-   */
-  export(): ProjectImportProps;
-}
-
-/**
- * Properties of a reference to a CodeBuild Project.
- *
- * @see Project.import
- * @see Project.export
- */
-export interface ProjectImportProps {
-  /**
-   * The human-readable name of the CodeBuild Project we're referencing.
-   * The Project must be in the same account and region as the root Stack.
-   */
-  readonly projectName: string;
 }
 
 /**
@@ -167,7 +164,22 @@ abstract class ProjectBase extends Resource implements IProject {
   /** The IAM service Role of this Project. */
   public abstract readonly role?: iam.IRole;
 
-  public abstract export(): ProjectImportProps;
+  /**
+   * Defines a CloudWatch event rule triggered when something happens with this project.
+   *
+   * @see https://docs.aws.amazon.com/codebuild/latest/userguide/sample-build-notifications.html
+   */
+  public onEvent(id: string, options: events.OnEventOptions): events.Rule {
+    const rule = new events.Rule(this, id, options);
+    rule.addTarget(options.target);
+    rule.addEventPattern({
+      source: ['aws.codebuild'],
+      detail: {
+        'project-name': [this.projectName]
+      }
+    });
+    return rule;
+  }
 
   /**
    * Defines a CloudWatch event rule triggered when the build project state
@@ -189,19 +201,15 @@ abstract class ProjectBase extends Resource implements IProject {
    * You can also use the methods `onBuildFailed` and `onBuildSucceeded` to define rules for
    * these specific state changes.
    *
+   * To access fields from the event in the event target input,
+   * use the static fields on the `StateChangeEvent` class.
+   *
    * @see https://docs.aws.amazon.com/codebuild/latest/userguide/sample-build-notifications.html
    */
-  public onStateChange(name: string, target?: events.IEventRuleTarget, options?: events.EventRuleProps) {
-    const rule = new events.EventRule(this, name, options);
-    rule.addTarget(target);
+  public onStateChange(id: string, options: events.OnEventOptions) {
+    const rule = this.onEvent(id, options);
     rule.addEventPattern({
-      source: ['aws.codebuild'],
       detailType: ['CodeBuild Build State Change'],
-      detail: {
-        'project-name': [
-          this.projectName
-        ]
-      }
     });
     return rule;
   }
@@ -212,26 +220,22 @@ abstract class ProjectBase extends Resource implements IProject {
    *
    * @see https://docs.aws.amazon.com/codebuild/latest/userguide/sample-build-notifications.html
    */
-  public onPhaseChange(name: string, target?: events.IEventRuleTarget, options?: events.EventRuleProps) {
-    const rule = new events.EventRule(this, name, options);
-    rule.addTarget(target);
+  public onPhaseChange(id: string, options: events.OnEventOptions) {
+    const rule = this.onEvent(id, options);
     rule.addEventPattern({
-      source: ['aws.codebuild'],
       detailType: ['CodeBuild Build Phase Change'],
-      detail: {
-        'project-name': [
-          this.projectName
-        ]
-      }
     });
     return rule;
   }
 
   /**
    * Defines an event rule which triggers when a build starts.
+   *
+   * To access fields from the event in the event target input,
+   * use the static fields on the `StateChangeEvent` class.
    */
-  public onBuildStarted(name: string, target?: events.IEventRuleTarget, options?: events.EventRuleProps) {
-    const rule = this.onStateChange(name, target, options);
+  public onBuildStarted(id: string, options: events.OnEventOptions) {
+    const rule = this.onStateChange(id, options);
     rule.addEventPattern({
       detail: {
         'build-status': ['IN_PROGRESS']
@@ -242,9 +246,12 @@ abstract class ProjectBase extends Resource implements IProject {
 
   /**
    * Defines an event rule which triggers when a build fails.
+   *
+   * To access fields from the event in the event target input,
+   * use the static fields on the `StateChangeEvent` class.
    */
-  public onBuildFailed(name: string, target?: events.IEventRuleTarget, options?: events.EventRuleProps) {
-    const rule = this.onStateChange(name, target, options);
+  public onBuildFailed(id: string, options: events.OnEventOptions) {
+    const rule = this.onStateChange(id, options);
     rule.addEventPattern({
       detail: {
         'build-status': ['FAILED']
@@ -255,9 +262,12 @@ abstract class ProjectBase extends Resource implements IProject {
 
   /**
    * Defines an event rule which triggers when a build completes successfully.
+   *
+   * To access fields from the event in the event target input,
+   * use the static fields on the `StateChangeEvent` class.
    */
-  public onBuildSucceeded(name: string, target?: events.IEventRuleTarget, options?: events.EventRuleProps) {
-    const rule = this.onStateChange(name, target, options);
+  public onBuildSucceeded(id: string, options: events.OnEventOptions) {
+    const rule = this.onStateChange(id, options);
     rule.addEventPattern({
       detail: {
         'build-status': ['SUCCEEDED']
@@ -346,40 +356,20 @@ abstract class ProjectBase extends Resource implements IProject {
   }
 }
 
-class ImportedProject extends ProjectBase {
-  public readonly grantPrincipal: iam.IPrincipal;
-  public readonly projectArn: string;
-  public readonly projectName: string;
-  public readonly role?: iam.Role = undefined;
-
-  constructor(scope: Construct, id: string, private readonly props: ProjectImportProps) {
-    super(scope, id);
-
-    this.projectArn = this.node.stack.formatArn({
-      service: 'codebuild',
-      resource: 'project',
-      resourceName: props.projectName,
-    });
-    this.grantPrincipal = new iam.ImportedResourcePrincipal({ resource: this });
-
-    this.projectName = props.projectName;
-  }
-
-  public export() {
-    return this.props;
-  }
-}
-
 export interface CommonProjectProps {
   /**
    * A description of the project. Use the description to identify the purpose
    * of the project.
+   *
+   * @default - No description.
    */
   readonly description?: string;
 
   /**
    * Filename or contents of buildspec in JSON format.
    * @see https://docs.aws.amazon.com/codebuild/latest/userguide/build-spec-ref.html#build-spec-ref-example
+   *
+   * @default - Empty buildspec.
    */
   readonly buildSpec?: any;
 
@@ -392,7 +382,7 @@ export interface CommonProjectProps {
    * This feature can also be used without a source, to simply run an
    * arbitrary script in a serverless way.
    *
-   * @default No asset build script
+   * @default - No asset build script.
    */
   readonly buildScriptAsset?: assets.Asset;
 
@@ -405,29 +395,29 @@ export interface CommonProjectProps {
 
   /**
    * Service Role to assume while running the build.
-   * If not specified, a role will be created.
+   *
+   * @default - A role will be created.
    */
   readonly role?: iam.IRole;
 
   /**
-   * Encryption key to use to read and write artifacts
-   * If not specified, a role will be created.
+   * Encryption key to use to read and write artifacts.
+   *
+   * @default - The AWS-managed CMK for Amazon Simple Storage Service (Amazon S3) is used.
    */
-  readonly encryptionKey?: kms.IEncryptionKey;
+  readonly encryptionKey?: kms.IKey;
 
   /**
-   * Bucket to store cached source artifacts
-   * If not specified, source artifacts will not be cached.
+   * Caching strategy to use.
+   *
+   * @default Cache.none
    */
-  readonly cacheBucket?: s3.IBucket;
-
-  /**
-   * Subdirectory to store cached artifacts
-   */
-  readonly cacheDir?: string;
+  readonly cache?: Cache;
 
   /**
    * Build environment to use for the build.
+   *
+   * @default BuildEnvironment.LinuxBuildImage.STANDARD_1_0
    */
   readonly environment?: BuildEnvironment;
 
@@ -435,6 +425,8 @@ export interface CommonProjectProps {
    * Indicates whether AWS CodeBuild generates a publicly accessible URL for
    * your project's build badge. For more information, see Build Badges Sample
    * in the AWS CodeBuild User Guide.
+   *
+   * @default false
    */
   readonly badge?: boolean;
 
@@ -442,16 +434,22 @@ export interface CommonProjectProps {
    * The number of minutes after which AWS CodeBuild stops the build if it's
    * not complete. For valid values, see the timeoutInMinutes field in the AWS
    * CodeBuild User Guide.
+   *
+   * @default 60
    */
   readonly timeout?: number;
 
   /**
    * Additional environment variables to add to the build environment.
+   *
+   * @default - No additional environment variables are specified.
    */
   readonly environmentVariables?: { [name: string]: BuildEnvironmentVariable };
 
   /**
    * The physical, human-readable name of the CodeBuild Project.
+   *
+   * @default - Name is automatically generated.
    */
   readonly projectName?: string;
 
@@ -459,15 +457,17 @@ export interface CommonProjectProps {
    * VPC network to place codebuild network interfaces
    *
    * Specify this if the codebuild project needs to access resources in a VPC.
+   *
+   * @default - No VPC is specified.
    */
-  readonly vpc?: ec2.IVpcNetwork;
+  readonly vpc?: ec2.IVpc;
 
   /**
    * Where to place the network interfaces within the VPC.
    *
    * Only used if 'vpc' is supplied.
    *
-   * @default All private subnets
+   * @default - All private subnets.
    */
   readonly subnetSelection?: ec2.SubnetSelection;
 
@@ -476,6 +476,8 @@ export interface CommonProjectProps {
    * If no security group is identified, one will be created automatically.
    *
    * Only used if 'vpc' is supplied.
+   *
+   * @default - Security group will be automatically created.
    *
    */
   readonly securityGroups?: ec2.ISecurityGroup[];
@@ -498,7 +500,7 @@ export interface ProjectProps extends CommonProjectProps {
    * *Note*: if {@link NoSource} is given as the source,
    * then you need to provide an explicit `buildSpec`.
    *
-   * @default NoSource
+   * @default - NoSource
    */
   readonly source?: BuildSource;
 
@@ -514,7 +516,7 @@ export interface ProjectProps extends CommonProjectProps {
    * The secondary sources for the Project.
    * Can be also added after the Project has been created by using the {@link Project#addSecondarySource} method.
    *
-   * @default []
+   * @default - No secondary sources.
    * @see https://docs.aws.amazon.com/codebuild/latest/userguide/sample-multi-in-out.html
    */
   readonly secondarySources?: BuildSource[];
@@ -523,7 +525,7 @@ export interface ProjectProps extends CommonProjectProps {
    * The secondary artifacts for the Project.
    * Can also be added after the Project has been created by using the {@link Project#addSecondaryArtifact} method.
    *
-   * @default []
+   * @default - No secondary artifacts.
    * @see https://docs.aws.amazon.com/codebuild/latest/userguide/sample-multi-in-out.html
    */
   readonly secondaryArtifacts?: BuildArtifacts[];
@@ -533,6 +535,23 @@ export interface ProjectProps extends CommonProjectProps {
  * A representation of a CodeBuild Project.
  */
 export class Project extends ProjectBase {
+
+  public static fromProjectArn(scope: Construct, id: string, projectArn: string): IProject {
+    class Import extends ProjectBase {
+      public readonly grantPrincipal: iam.IPrincipal;
+      public readonly projectArn = projectArn;
+      public readonly projectName = scope.node.stack.parseArn(projectArn).resourceName!;
+      public readonly role?: iam.Role = undefined;
+
+      constructor(s: Construct, i: string) {
+        super(s, i);
+        this.grantPrincipal = new iam.ImportedResourcePrincipal({ resource: this });
+      }
+    }
+
+    return new Import(scope, id);
+  }
+
   /**
    * Import a Project defined either outside the CDK,
    * or in a different CDK Stack
@@ -545,11 +564,31 @@ export class Project extends ProjectBase {
    *
    * @param scope the parent Construct for this Construct
    * @param id the logical name of this Construct
-   * @param props the properties of the referenced Project
+   * @param projectName the name of the project to import
    * @returns a reference to the existing Project
    */
-  public static import(scope: Construct, id: string, props: ProjectImportProps): IProject {
-    return new ImportedProject(scope, id, props);
+  public static fromProjectName(scope: Construct, id: string, projectName: string): IProject {
+    class Import extends ProjectBase {
+      public readonly grantPrincipal: iam.IPrincipal;
+      public readonly projectArn: string;
+      public readonly projectName: string;
+      public readonly role?: iam.Role = undefined;
+
+      constructor(s: Construct, i: string) {
+        super(s, i);
+
+        this.projectArn = this.node.stack.formatArn({
+          service: 'codebuild',
+          resource: 'project',
+          resourceName: projectName,
+        });
+
+        this.grantPrincipal = new iam.ImportedResourcePrincipal({ resource: this });
+        this.projectName = projectName;
+      }
+    }
+
+    return new Import(scope, id);
   }
 
   public readonly grantPrincipal: iam.IPrincipal;
@@ -587,18 +626,7 @@ export class Project extends ProjectBase {
     });
     this.grantPrincipal = this.role;
 
-    let cache: CfnProject.ProjectCacheProperty | undefined;
-    if (props.cacheBucket) {
-      const cacheDir = props.cacheDir != null ? props.cacheDir : Aws.noValue;
-      cache = {
-        type: 'S3',
-        location: Fn.join('/', [props.cacheBucket.bucketName, cacheDir]),
-      };
-
-      props.cacheBucket.grantReadWrite(this.role);
-    }
-
-    this.buildImage = (props.environment && props.environment.buildImage) || LinuxBuildImage.UBUNTU_18_04_STANDARD_1_0;
+    this.buildImage = (props.environment && props.environment.buildImage) || LinuxBuildImage.STANDARD_1_0;
 
     // let source "bind" to the project. this usually involves granting permissions
     // for the code build role to interact with the source.
@@ -607,6 +635,11 @@ export class Project extends ProjectBase {
 
     const artifacts = this.parseArtifacts(props);
     artifacts._bind(this);
+
+    const cache = props.cache || Cache.none();
+
+    // give the caching strategy the option to grant permissions to any required resources
+    cache._bind(this);
 
     // Inject download commands for asset if requested
     const environmentVariables = props.environmentVariables || {};
@@ -625,7 +658,7 @@ export class Project extends ProjectBase {
         throw new Error(`Badge is not supported for source type ${this.source.type}`);
       }
 
-      const sourceJson = this.source.toSourceJSON();
+      const sourceJson = this.source._toSourceJSON();
       if (typeof buildSpec === 'string') {
         return {
           ...sourceJson,
@@ -665,12 +698,12 @@ export class Project extends ProjectBase {
       environment: this.renderEnvironment(props.environment, environmentVariables),
       encryptionKey: props.encryptionKey && props.encryptionKey.keyArn,
       badgeEnabled: props.badge,
-      cache,
+      cache: cache._toCloudFormation(),
       name: props.projectName,
       timeoutInMinutes: props.timeout,
       secondarySources: new Token(() => this.renderSecondarySources()),
       secondaryArtifacts: new Token(() => this.renderSecondaryArtifacts()),
-      triggers: this.source.buildTriggers(),
+      triggers: this.source._buildTriggers(),
       vpcConfig: this.configureVpc(props),
     });
 
@@ -682,15 +715,6 @@ export class Project extends ProjectBase {
 
   public get securityGroups(): ec2.ISecurityGroup[] {
     return this._securityGroups.slice();
-  }
-
-  /**
-   * Export this Project. Allows referencing this Project in a different CDK Stack.
-   */
-  public export(): ProjectImportProps {
-    return {
-      projectName: new CfnOutput(this, 'ProjectName', { value: this.projectName }).makeImportValue().toString(),
-    };
   }
 
   /**
@@ -822,7 +846,7 @@ export class Project extends ProjectBase {
   private renderSecondarySources(): CfnProject.SourceProperty[] | undefined {
     return this._secondarySources.length === 0
       ? undefined
-      : this._secondarySources.map((secondarySource) => secondarySource.toSourceJSON());
+      : this._secondarySources.map((secondarySource) => secondarySource._toSourceJSON());
   }
 
   private renderSecondaryArtifacts(): CfnProject.ArtifactsProperty[] | undefined {
@@ -872,9 +896,9 @@ export class Project extends ProjectBase {
     this.addToRolePolicy(new iam.PolicyStatement()
       .addResource(`arn:aws:ec2:${Aws.region}:${Aws.accountId}:network-interface/*`)
       .addCondition('StringEquals', {
-        "ec2:Subnet": [
-          `arn:aws:ec2:${Aws.region}:${Aws.accountId}:subnet/[[subnets]]`
-        ],
+        "ec2:Subnet": props.vpc
+          .selectSubnets(props.subnetSelection).subnetIds
+          .map(si => `arn:aws:ec2:${Aws.region}:${Aws.accountId}:subnet/${si}`),
         "ec2:AuthorizedService": "codebuild.amazonaws.com"
       })
       .addAction('ec2:CreateNetworkInterfacePermission'));
@@ -889,7 +913,7 @@ export class Project extends ProjectBase {
     if (props.artifacts) {
       return props.artifacts;
     }
-    if (this.source.toSourceJSON().type === CODEPIPELINE_TYPE) {
+    if (this.source._toSourceJSON().type === CODEPIPELINE_TYPE) {
       return new CodePipelineBuildArtifacts();
     } else {
       return new NoBuildArtifacts();
@@ -897,7 +921,7 @@ export class Project extends ProjectBase {
   }
 
   private validateCodePipelineSettings(artifacts: BuildArtifacts) {
-    const sourceType = this.source.toSourceJSON().type;
+    const sourceType = this.source._toSourceJSON().type;
     const artifactsType = artifacts.toArtifactsJSON().type;
 
     if ((sourceType === CODEPIPELINE_TYPE || artifactsType === CODEPIPELINE_TYPE) &&
@@ -920,7 +944,7 @@ export interface BuildEnvironment {
   /**
    * The image used for the builds.
    *
-   * @default LinuxBuildImage.UBUNTU_18_04_STANDARD_1_0
+   * @default LinuxBuildImage.STANDARD_1_0
    */
   readonly buildImage?: IBuildImage;
 
@@ -1002,7 +1026,8 @@ export interface IBuildImage {
  * @see https://docs.aws.amazon.com/codebuild/latest/userguide/build-env-ref-available.html
  */
 export class LinuxBuildImage implements IBuildImage {
-  public static readonly UBUNTU_18_04_STANDARD_1_0 = new LinuxBuildImage('aws/codebuild/standard:1.0');
+  public static readonly STANDARD_1_0 = new LinuxBuildImage('aws/codebuild/standard:1.0');
+  public static readonly STANDARD_2_0 = new LinuxBuildImage('aws/codebuild/standard:2.0');
   public static readonly UBUNTU_14_04_BASE = new LinuxBuildImage('aws/codebuild/ubuntu-base:14.04');
   public static readonly UBUNTU_14_04_ANDROID_JAVA8_24_4_1 = new LinuxBuildImage('aws/codebuild/android-java-8:24.4.1');
   public static readonly UBUNTU_14_04_ANDROID_JAVA8_26_1_1 = new LinuxBuildImage('aws/codebuild/android-java-8:26.1.1');

@@ -38,7 +38,7 @@ export = {
   'option group with security groups'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
-    const vpc = new ec2.VpcNetwork(stack, 'VPC');
+    const vpc = new ec2.Vpc(stack, 'VPC');
 
     // WHEN
     const optionGroup = new OptionGroup(stack, 'Options', {
@@ -110,29 +110,6 @@ export = {
       ]
     }), /`port`.*`vpc`/);
 
-    test.done();
-  },
-
-  'import/export option group'(test: Test) {
-    // GIVEN
-    const stack = new cdk.Stack();
-    const group = new OptionGroup(stack, 'Options', {
-      engine: DatabaseInstanceEngine.OracleSE1,
-      majorEngineVersion: '11.2',
-      configurations: [
-        {
-          name: 'XMLDB'
-        }
-      ]
-    });
-
-    // WHEN
-    const exported = group.export();
-    const imported = OptionGroup.fromOptionGroupName(stack, 'ImportOptions', exported.optionGroupName);
-
-    // THEN
-    test.deepEqual(stack.node.resolve(exported), { optionGroupName: { 'Fn::ImportValue': 'Stack:OptionsOptionGroupName16F3CF77' } });
-    test.deepEqual(stack.node.resolve(imported.optionGroupName), { 'Fn::ImportValue': 'Stack:OptionsOptionGroupName16F3CF77' });
     test.done();
   }
 };

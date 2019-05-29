@@ -2,10 +2,9 @@ import events = require('@aws-cdk/aws-events');
 import iam = require('@aws-cdk/aws-iam');
 import kms = require('@aws-cdk/aws-kms');
 import s3 = require('@aws-cdk/aws-s3');
-import { Construct, RemovalPolicy, Resource, Token } from '@aws-cdk/cdk';
+import { Construct, RemovalPolicy, Resource, Stack, Token } from '@aws-cdk/cdk';
 import { Action, IPipeline, IStage } from "./action";
 import { CfnPipeline } from './codepipeline.generated';
-import { CrossRegionScaffoldStack } from './cross-region-scaffold-stack';
 import { Stage } from './stage';
 import { validateName, validateSourceAction } from "./validation";
 
@@ -30,16 +29,6 @@ export interface StagePlacement {
    * (changing its current child Stage, if it had one).
    */
   readonly justAfter?: IStage;
-
-  /**
-   * Inserts the new Stage at the given index in the Pipeline,
-   * moving the Stage currently at that index,
-   * and any subsequent ones, one index down.
-   * Indexing starts at 0.
-   * The maximum allowed value is {@link Pipeline#stageCount},
-   * which will insert the new Stage at the end of the Pipeline.
-   */
-  readonly atIndex?: number;
 }
 
 /**
@@ -65,18 +54,29 @@ export interface StageAddToPipelineProps extends StageProps {
 export interface PipelineProps {
   /**
    * The S3 bucket used by this Pipeline to store artifacts.
-   * If not specified, a new S3 bucket will be created.
+   *
+   * @default - A new S3 bucket will be created.
    */
   readonly artifactBucket?: s3.IBucket;
 
   /**
+   * The IAM role to be assumed by this Pipeline.
+   *
+   * @default a new IAM role will be created.
+   */
+  readonly role?: iam.IRole;
+
+  /**
    * Indicates whether to rerun the AWS CodePipeline pipeline after you update it.
+   *
+   * @default false
    */
   readonly restartExecutionOnUpdate?: boolean;
 
   /**
-   * Name of the pipeline. If you don't specify a name,  AWS CloudFormation generates an ID
-   * and uses that for the pipeline name.
+   * Name of the pipeline.
+   *
+   * @default - AWS CloudFormation generates an ID and uses that for the pipeline name.
    */
   readonly pipelineName?: string;
 
@@ -87,6 +87,8 @@ export interface PipelineProps {
    * the construct will automatically create a scaffold Stack containing an S3 Bucket in that region.
    * Note that you will have to `cdk deploy` that Stack before you can deploy your Pipeline-containing Stack.
    * You can query the generated Stacks using the {@link Pipeline#crossRegionScaffoldStacks} property.
+   *
+   * @default - None.
    */
   readonly crossRegionReplicationBuckets?: { [region: string]: string };
 
@@ -94,8 +96,49 @@ export interface PipelineProps {
    * The list of Stages, in order,
    * to create this Pipeline with.
    * You can always add more Stages later by calling {@link Pipeline#addStage}.
+   *
+   * @default - None.
    */
   readonly stages?: StageProps[];
+}
+
+abstract class PipelineBase extends Resource implements IPipeline {
+  public abstract pipelineName: string;
+  public abstract pipelineArn: string;
+  public abstract grantBucketRead(identity: iam.IGrantable): iam.Grant;
+  public abstract grantBucketReadWrite(identity: iam.IGrantable): iam.Grant;
+
+  /**
+   * Defines an event rule triggered by this CodePipeline.
+   *
+   * @param id Identifier for this event handler.
+   * @param options Additional options to pass to the event rule.
+   */
+  public onEvent(id: string, options: events.OnEventOptions): events.Rule {
+    const rule = new events.Rule(this, id, options);
+    rule.addTarget(options.target);
+    rule.addEventPattern({
+      source: [ 'aws.codepipeline' ],
+      resources: [ this.pipelineArn ],
+    });
+    return rule;
+  }
+
+  /**
+   * Defines an event rule triggered by the "CodePipeline Pipeline Execution
+   * State Change" event emitted from this pipeline.
+   *
+   * @param id Identifier for this event handler.
+   * @param options Additional options to pass to the event rule.
+   */
+  public onStateChange(id: string, options: events.OnEventOptions): events.Rule {
+    const rule = this.onEvent(id, options);
+    rule.addEventPattern({
+      detailType: [ 'CodePipeline Pipeline Execution State Change' ],
+    });
+    return rule;
+  }
+
 }
 
 /**
@@ -117,12 +160,36 @@ export interface PipelineProps {
  *
  * // ... add more stages
  */
-export class Pipeline extends Resource implements IPipeline {
+export class Pipeline extends PipelineBase {
+
+  /**
+   * Import a pipeline into this app.
+   * @param scope the scope into which to import this pipeline
+   * @param pipelineArn The ARN of the pipeline (e.g. `arn:aws:codepipeline:us-east-1:123456789012:MyDemoPipeline`)
+   */
+  public static fromPipelineArn(scope: Construct, id: string, pipelineArn: string): IPipeline {
+
+    class Import extends PipelineBase {
+      public pipelineName = scope.node.stack.parseArn(pipelineArn).resource;
+      public pipelineArn = pipelineArn;
+
+      public grantBucketRead(identity: iam.IGrantable): iam.Grant {
+        return iam.Grant.drop(identity, `grant read permissions to the artifacts bucket of ${pipelineArn}`);
+      }
+
+      public grantBucketReadWrite(identity: iam.IGrantable): iam.Grant {
+        return iam.Grant.drop(identity, `grant read/write permissions to the artifacts bucket of ${pipelineArn}`);
+      }
+    }
+
+    return new Import(scope, id);
+  }
+
   /**
    * The IAM role AWS CodePipeline will use to perform actions or assume roles for actions with
    * a more specific IAM role.
    */
-  public readonly role: iam.Role;
+  public readonly role: iam.IRole;
 
   /**
    * ARN of this pipeline
@@ -136,6 +203,8 @@ export class Pipeline extends Resource implements IPipeline {
 
   /**
    * The version of the pipeline
+   *
+   * @attribute
    */
   public readonly pipelineVersion: string;
 
@@ -145,10 +214,8 @@ export class Pipeline extends Resource implements IPipeline {
   public readonly artifactBucket: s3.IBucket;
 
   private readonly stages = new Array<Stage>();
-  private eventsRole?: iam.Role;
-  private readonly pipelineResource: CfnPipeline;
   private readonly crossRegionReplicationBuckets: { [region: string]: string };
-  private readonly artifactStores: { [region: string]: any };
+  private readonly artifactStores: { [region: string]: CfnPipeline.ArtifactStoreProperty };
   private readonly _crossRegionScaffoldStacks: { [region: string]: CrossRegionScaffoldStack } = {};
 
   constructor(scope: Construct, id: string, props?: PipelineProps) {
@@ -160,7 +227,7 @@ export class Pipeline extends Resource implements IPipeline {
     // If a bucket has been provided, use it - otherwise, create a bucket.
     let propsBucket = props.artifactBucket;
     if (!propsBucket) {
-      const encryptionKey = new kms.EncryptionKey(this, 'ArtifactsBucketEncryptionKey');
+      const encryptionKey = new kms.Key(this, 'ArtifactsBucketEncryptionKey');
       propsBucket = new s3.Bucket(this, 'ArtifactsBucket', {
         encryptionKey,
         encryption: s3.BucketEncryption.Kms,
@@ -169,13 +236,15 @@ export class Pipeline extends Resource implements IPipeline {
     }
     this.artifactBucket = propsBucket;
 
-    this.role = new iam.Role(this, 'Role', {
+    // If a role has been provided, use it - otherwise, create a role.
+    this.role = props.role || new iam.Role(this, 'Role', {
       assumedBy: new iam.ServicePrincipal('codepipeline.amazonaws.com')
     });
 
     const codePipeline = new CfnPipeline(this, 'Resource', {
-      artifactStore: new Token(() => this.renderArtifactStore()) as any,
-      stages: new Token(() => this.renderStages()) as any,
+      artifactStore: new Token(() => this.renderArtifactStore()),
+      artifactStores: new Token(() => this.renderArtifactStores()),
+      stages: new Token(() => this.renderStages()),
       roleArn: this.role.roleArn,
       restartExecutionOnUpdate: props && props.restartExecutionOnUpdate,
       name: props && props.pipelineName,
@@ -188,7 +257,6 @@ export class Pipeline extends Resource implements IPipeline {
 
     this.pipelineName = codePipeline.ref;
     this.pipelineVersion = codePipeline.pipelineVersion;
-    this.pipelineResource = codePipeline;
     this.crossRegionReplicationBuckets = props.crossRegionReplicationBuckets || {};
     this.artifactStores = {};
 
@@ -234,63 +302,6 @@ export class Pipeline extends Resource implements IPipeline {
   }
 
   /**
-   * Allows the pipeline to be used as a CloudWatch event rule target.
-   *
-   * Usage:
-   *
-   *    const pipeline = new Pipeline(this, 'MyPipeline');
-   *    const rule = new EventRule(this, 'MyRule', { schedule: 'rate(1 minute)' });
-   *    rule.addTarget(pipeline);
-   *
-   */
-  public asEventRuleTarget(_ruleArn: string, _ruleId: string): events.EventRuleTargetProps {
-    // the first time the event rule target is retrieved, we define an IAM
-    // role assumable by the CloudWatch events service which is allowed to
-    // start the execution of this pipeline. no need to define more than one
-    // role per pipeline.
-    if (!this.eventsRole) {
-      this.eventsRole = new iam.Role(this, 'EventsRole', {
-        assumedBy: new iam.ServicePrincipal('events.amazonaws.com')
-      });
-
-      this.eventsRole.addToPolicy(new iam.PolicyStatement()
-        .addResource(this.pipelineArn)
-        .addAction('codepipeline:StartPipelineExecution'));
-    }
-
-    return {
-      id: this.node.id,
-      arn: this.pipelineArn,
-      roleArn: this.eventsRole.roleArn,
-    };
-  }
-
-  /**
-   * Defines an event rule triggered by the "CodePipeline Pipeline Execution
-   * State Change" event emitted from this pipeline.
-   *
-   * @param target Initial target to add to the event rule. You can also add
-   * targets and customize target inputs by calling `rule.addTarget(target[,
-   * options])` after the rule was created.
-   *
-   * @param options Additional options to pass to the event rule
-   *
-   * @param name The name of the event rule construct. If you wish to define
-   * more than a single onStateChange event, you will need to explicitly
-   * specify a name.
-   */
-  public onStateChange(name: string, target?: events.IEventRuleTarget, options?: events.EventRuleProps): events.EventRule {
-    const rule = new events.EventRule(this, name, options);
-    rule.addTarget(target);
-    rule.addEventPattern({
-      detailType: [ 'CodePipeline Pipeline Execution State Change' ],
-      source: [ 'aws.codepipeline' ],
-      resources: [ this.pipelineArn ],
-    });
-    return rule;
-  }
-
-  /**
    * Get the number of Stages in this Pipeline.
    */
   public get stageCount(): number {
@@ -309,7 +320,7 @@ export class Pipeline extends Resource implements IPipeline {
    * Returns all of the {@link CrossRegionScaffoldStack}s that were generated automatically
    * when dealing with Actions that reside in a different region than the Pipeline itself.
    */
-  public get crossRegionScaffoldStacks(): { [region: string]: CrossRegionScaffoldStack } {
+  public get crossRegionScaffolding(): { [region: string]: CrossRegionScaffolding } {
     const ret: { [region: string]: CrossRegionScaffoldStack }  = {};
     Object.keys(this._crossRegionScaffoldStacks).forEach((key) => {
       ret[key] = this._crossRegionScaffoldStacks[key];
@@ -367,7 +378,7 @@ export class Pipeline extends Resource implements IPipeline {
       if (!app) {
         throw new Error(`Pipeline stack which uses cross region actions must be part of an application`);
       }
-      const crossRegionScaffoldStack = new CrossRegionScaffoldStack(app, {
+      const crossRegionScaffoldStack = new CrossRegionScaffoldStack(this, `cross-region-stack-${pipelineAccount}:${region}`, {
         region,
         account: pipelineAccount,
       });
@@ -375,14 +386,14 @@ export class Pipeline extends Resource implements IPipeline {
       replicationBucketName = crossRegionScaffoldStack.replicationBucketName;
     }
 
-    const replicationBucket = s3.Bucket.import(this, 'CrossRegionCodePipelineReplicationBucket-' + region, {
+    const replicationBucket = s3.Bucket.fromBucketAttributes(this, 'CrossRegionCodePipelineReplicationBucket-' + region, {
       bucketName: replicationBucketName,
     });
     replicationBucket.grantReadWrite(this.role);
 
     this.artifactStores[region] = {
-      Location: replicationBucket.bucketName,
-      Type: 'S3',
+      location: replicationBucket.bucketName,
+      type: 'S3',
     };
   }
 
@@ -412,16 +423,6 @@ export class Pipeline extends Resource implements IPipeline {
           `the requested Stage to add it after, '${placement.justAfter.stageName}', was not found`);
       }
       return targetIndex + 1;
-    }
-
-    if (placement.atIndex !== undefined) {
-      const index = placement.atIndex;
-      if (index < 0 || index > this.stageCount) {
-        throw new Error("Error adding Stage to the Pipeline: " +
-          `{ placed: atIndex } should be between 0 and the number of stages in the Pipeline (${this.stageCount}), ` +
-          ` got: ${index}`);
-      }
-      return index;
     }
 
     return this.stageCount;
@@ -466,8 +467,8 @@ export class Pipeline extends Resource implements IPipeline {
     for (const stage of this.stages) {
       const sortedActions = stage.actions.sort((a1, a2) => a1.runOrder - a2.runOrder);
 
-      // start with inputs
       for (const action of sortedActions) {
+        // start with inputs
         const inputArtifacts = action.inputs;
         for (const inputArtifact of inputArtifacts) {
           if (!inputArtifact.artifactName) {
@@ -476,10 +477,8 @@ export class Pipeline extends Resource implements IPipeline {
             ret.push(`Artifact '${inputArtifact.artifactName}' was used as input before being used as output`);
           }
         }
-      }
 
-      // then process outputs by adding them to the Set
-      for (const action of sortedActions) {
+        // then process outputs by adding them to the Set
         const outputArtifacts = action.outputs;
         for (const outputArtifact of outputArtifacts) {
           // output Artifacts always have a name set
@@ -495,7 +494,28 @@ export class Pipeline extends Resource implements IPipeline {
     return ret;
   }
 
-  private renderArtifactStore(): CfnPipeline.ArtifactStoreProperty {
+  private renderArtifactStores(): CfnPipeline.ArtifactStoreMapProperty[] | undefined {
+    if (!this.crossRegion) { return undefined; }
+
+    // add the Pipeline's artifact store
+    const primaryStore = this.renderPrimaryArtifactStore();
+    this.artifactStores[this.node.stack.requireRegion()] = {
+      location: primaryStore.location,
+      type: primaryStore.type,
+      encryptionKey: primaryStore.encryptionKey,
+    };
+
+    return Object.entries(this.artifactStores).map(([region, artifactStore]) => ({
+      region, artifactStore
+    }));
+  }
+
+  private renderArtifactStore(): CfnPipeline.ArtifactStoreProperty | undefined {
+    if (this.crossRegion) { return undefined; }
+    return this.renderPrimaryArtifactStore();
+  }
+
+  private renderPrimaryArtifactStore(): CfnPipeline.ArtifactStoreProperty {
     let encryptionKey: CfnPipeline.EncryptionKeyProperty | undefined;
     const bucketKey = this.artifactBucket.encryptionKey;
     if (bucketKey) {
@@ -517,41 +537,25 @@ export class Pipeline extends Resource implements IPipeline {
     };
   }
 
+  private get crossRegion(): boolean {
+    return this.stages.some(stage => stage.actions.some(action => action.region !== undefined));
+    // this.pipelineResource.addPropertyOverride(`Stages.${i}.Actions.${j}.Region`, action.region);
+  }
+
   private renderStages(): CfnPipeline.StageDeclarationProperty[] {
-    // handle cross-region CodePipeline overrides here
-    let crossRegion = false;
-    this.stages.forEach((stage, i) => {
-      stage.actions.forEach((action, j) => {
-        if (action.region) {
-          crossRegion = true;
-          this.pipelineResource.addPropertyOverride(`Stages.${i}.Actions.${j}.Region`, action.region);
-        }
-      });
-    });
-
-    if (crossRegion) {
-      // we don't need ArtifactStore in this case
-      this.pipelineResource.addPropertyDeletionOverride('ArtifactStore');
-
-      // add the Pipeline's artifact store
-      const artifactStore = this.renderArtifactStore();
-      this.artifactStores[this.node.stack.requireRegion()] = {
-        Location: artifactStore.location,
-        Type: artifactStore.type,
-        EncryptionKey: artifactStore.encryptionKey,
-      };
-
-      const artifactStoresProp: any[] = [];
-      // tslint:disable-next-line:forin
-      for (const region in this.artifactStores) {
-        artifactStoresProp.push({
-          Region: region,
-          ArtifactStore: this.artifactStores[region],
-        });
-      }
-      this.pipelineResource.addPropertyOverride('ArtifactStores', artifactStoresProp);
-    }
-
     return this.stages.map(stage => stage.render());
   }
 }
+
+/**
+ * A Stack containing resources required for the cross-region CodePipeline functionality to work.
+ */
+export abstract class CrossRegionScaffolding extends Stack {
+  /**
+   * The name of the S3 Bucket used for replicating the Pipeline's artifacts into the region.
+   */
+  public abstract readonly replicationBucketName: string;
+}
+
+// cyclic dependency
+import { CrossRegionScaffoldStack } from './cross-region-scaffold-stack';

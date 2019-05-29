@@ -1,5 +1,5 @@
 import lambda = require('@aws-cdk/aws-lambda');
-import { CfnOutput, Construct, IResource, Resource, Token } from '@aws-cdk/cdk';
+import { Construct, IResource, Resource, Token } from '@aws-cdk/cdk';
 import { IReceiptRuleAction, LambdaInvocationType, ReceiptRuleActionProps, ReceiptRuleLambdaAction } from './receipt-rule-action';
 import { IReceiptRuleSet } from './receipt-rule-set';
 import { CfnReceiptRule } from './ses.generated';
@@ -10,13 +10,9 @@ import { CfnReceiptRule } from './ses.generated';
 export interface IReceiptRule extends IResource {
   /**
    * The name of the receipt rule.
+   * @attribute
    */
-  readonly name: string;
-
-  /**
-   * Exports this receipt rule from the stack.
-   */
-  export(): ReceiptRuleImportProps;
+  readonly receiptRuleName: string;
 }
 
 /**
@@ -42,13 +38,15 @@ export interface ReceiptRuleOptions {
    * An ordered list of actions to perform on messages that match at least
    * one of the recipient email addresses or domains specified in the
    * receipt rule.
+   *
+   * @default - No actions.
    */
   readonly actions?: IReceiptRuleAction[];
 
   /**
    * An existing rule after which the new rule will be placed.
    *
-   * @default the new rule is inserted at the beginning of the rule list
+   * @default - The new rule is inserted at the beginning of the rule list.
    */
   readonly after?: IReceiptRule;
 
@@ -62,28 +60,29 @@ export interface ReceiptRuleOptions {
   /**
    * The name for the rule
    *
-   * @default a CloudFormation generated name
+   * @default - A CloudFormation generated name.
    */
   readonly name?: string;
 
   /**
    * The recipient domains and email addresses that the receipt rule applies to.
    *
-   * @default match all recipients under all verified domains.
+   * @default - Match all recipients under all verified domains.
    */
   readonly recipients?: string[];
 
   /**
-   * Wheter to scan for spam and viruses.
+   * Whether to scan for spam and viruses.
    *
    * @default false
    */
   readonly scanEnabled?: boolean;
 
   /**
-   * The TLS policy
+   * Whether Amazon SES should require that incoming email is delivered over a
+   * connection encrypted with Transport Layer Security (TLS).
    *
-   * @default Optional
+   * @default - Optional which will not check for TLS.
    */
   readonly tlsPolicy?: TlsPolicy;
 }
@@ -102,21 +101,22 @@ export interface ReceiptRuleProps extends ReceiptRuleOptions {
  * A new receipt rule.
  */
 export class ReceiptRule extends Resource implements IReceiptRule {
-  /**
-   * Import an exported receipt rule.
-   */
-  public static import(scope: Construct, id: string, props: ReceiptRuleImportProps): IReceiptRule {
-    return new ImportedReceiptRule(scope, id, props);
+
+  public static fromReceiptRuleName(scope: Construct, id: string, receiptRuleName: string): IReceiptRule {
+    class Import extends Construct implements IReceiptRule {
+      public readonly receiptRuleName = receiptRuleName;
+    }
+    return new Import(scope, id);
   }
 
-  public readonly name: string;
+  public readonly receiptRuleName: string;
   private readonly renderedActions = new Array<ReceiptRuleActionProps>();
 
   constructor(scope: Construct, id: string, props: ReceiptRuleProps) {
     super(scope, id);
 
     const resource = new CfnReceiptRule(this, 'Resource', {
-      after: props.after ? props.after.name : undefined,
+      after: props.after ? props.after.receiptRuleName : undefined,
       rule: {
         actions: new Token(() => this.getRenderedActions()),
         enabled: props.enabled === undefined ? true : props.enabled,
@@ -125,10 +125,10 @@ export class ReceiptRule extends Resource implements IReceiptRule {
         scanEnabled: props.scanEnabled,
         tlsPolicy: props.tlsPolicy
       },
-      ruleSetName: props.ruleSet.name
+      ruleSetName: props.ruleSet.receiptRuleSetName
     });
 
-    this.name = resource.receiptRuleName;
+    this.receiptRuleName = resource.receiptRuleName;
 
     if (props.actions) {
       props.actions.forEach(action => this.addAction(action));
@@ -144,48 +144,12 @@ export class ReceiptRule extends Resource implements IReceiptRule {
     this.renderedActions.push(renderedAction);
   }
 
-  /**
-   * Exports this receipt rule from the stack.
-   */
-  public export(): ReceiptRuleImportProps {
-    return {
-      name: new CfnOutput(this, 'ReceiptRuleName', { value: this.name }).makeImportValue().toString()
-    };
-  }
-
   private getRenderedActions() {
     if (this.renderedActions.length === 0) {
       return undefined;
     }
 
     return this.renderedActions;
-  }
-}
-
-export interface ReceiptRuleImportProps {
-  /**
-   * The name of the receipt rule.
-   */
-  readonly name: string;
-}
-
-/**
- * An imported receipt rule.
- */
-class ImportedReceiptRule extends Construct implements IReceiptRule {
-  public readonly name: string;
-
-  constructor(scope: Construct, id: string, private readonly props: ReceiptRuleImportProps) {
-    super(scope, id);
-
-    this.name = props.name;
-  }
-
-  /**
-   * Exports this receipt rule from the stack.
-   */
-  public export() {
-    return this.props;
   }
 }
 
