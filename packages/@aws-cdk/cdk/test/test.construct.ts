@@ -462,6 +462,23 @@ export = {
     test.deepEqual(c1.node.findAll(ConstructOrder.PreOrder).map(x => x.node.id), [ '1', '2', '4', '5', '3' ]);
     test.deepEqual(c1.node.findAll(ConstructOrder.PostOrder).map(x => x.node.id), [ '4', '5', '2', '3', '1' ]);
     test.done();
+  },
+
+  'ancestors returns a list of parents up to root'(test: Test) {
+    const { child1, child1_1_1 } = createTree();
+
+    test.deepEqual(child1_1_1.node.ancestors().map(x => x.node.id), [ '', 'Child1', 'Child11', 'Child111' ]);
+    test.deepEqual(child1_1_1.node.ancestors(child1).map(x => x.node.id), [ 'Child11', 'Child111' ]);
+    test.deepEqual(child1_1_1.node.ancestors(child1_1_1), [ ]);
+    test.done();
+  },
+
+  '"root" returns the root construct'(test: Test) {
+    const { child1, child2, child1_1_1, root } = createTree();
+    test.ok(child1.node.root === root);
+    test.ok(child2.node.root === root);
+    test.ok(child1_1_1.node.root === root);
+    test.done();
   }
 };
 

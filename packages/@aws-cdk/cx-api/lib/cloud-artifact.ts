@@ -46,7 +46,6 @@ export class CloudArtifact {
 
   constructor(public readonly assembly: CloudAssembly, public readonly id: string, artifact: Artifact) {
     this.missing = artifact.missing || { };
-
     this.type = artifact.type;
     this.environment = EnvironmentUtils.parse(artifact.environment);
     this.autoDeploy = artifact.autoDeploy === undefined ? true : artifact.autoDeploy;

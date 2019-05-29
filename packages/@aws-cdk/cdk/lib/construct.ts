@@ -3,6 +3,7 @@ import { IAspect } from './aspect';
 import { CLOUDFORMATION_TOKEN_RESOLVER, CloudFormationLang } from './cloudformation-lang';
 import { IDependable } from './dependency';
 import { resolve } from './resolve';
+import { createStackTrace } from './stack-trace';
 import { Token } from './token';
 import { makeUniqueId } from './uniqueid';
 
@@ -351,11 +352,18 @@ export class ConstructNode {
     this.aspects.push(aspect);
     return;
   }
+
   /**
-   * Return the ancestors (including self) of this Construct up until and excluding the indicated component
+   * Return the ancestors (including self) of this Construct up until and
+   * excluding the indicated component
    *
-   * @param upTo The construct to return the path components relative to, or
-   * the entire list of ancestors (including root) if omitted.
+   * @param upTo The construct to return the path components relative to, or the
+   * entire list of ancestors (including root) if omitted. This construct will
+   * not be included in the returned list.
+   *
+   * @returns a list of parent scopes. The last element in the list will always
+   * be `this` and the first element is the oldest scope (if `upTo` is not set,
+   * it will be the root of the construct tree).
    */
   public ancestors(upTo?: Construct): IConstruct[] {
     const ret = new Array<IConstruct>();
@@ -367,6 +375,13 @@ export class ConstructNode {
     }
 
     return ret;
+  }
+
+  /**
+   * @returns The root of the construct tree.
+   */
+  public get root() {
+    return this.ancestors()[0];
   }
 
   /**
@@ -638,22 +653,6 @@ export class ValidationError {
   constructor(public readonly source: IConstruct, public readonly message: string) {
 
   }
-}
-
-// tslint:disable-next-line:ban-types
-function createStackTrace(below: Function): string[] {
-  const object = { stack: '' };
-  const previousLimit = Error.stackTraceLimit;
-  try {
-    Error.stackTraceLimit = Number.MAX_SAFE_INTEGER;
-    Error.captureStackTrace(object, below);
-  } finally {
-    Error.stackTraceLimit = previousLimit;
-  }
-  if (!object.stack) {
-    return [];
-  }
-  return object.stack.split('\n').slice(1).map(s => s.replace(/^\s*at\s+/, ''));
 }
 
 /**
