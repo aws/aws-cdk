@@ -72,7 +72,6 @@
     "@aws-cdk/aws-cloudwatch": "^0.32.0",
     "@aws-cdk/aws-iam": "^0.32.0",
     "@aws-cdk/aws-kms": "^0.32.0",
-    "@aws-cdk/aws-s3-notifications": "^0.32.0",
     "@aws-cdk/cdk": "^0.32.0"
   },
   "homepage": "https://github.com/awslabs/aws-cdk",
@@ -80,7 +79,6 @@
     "@aws-cdk/aws-cloudwatch": "^0.32.0",
     "@aws-cdk/aws-iam": "^0.32.0",
     "@aws-cdk/aws-kms": "^0.32.0",
-    "@aws-cdk/aws-s3-notifications": "^0.32.0",
     "@aws-cdk/cdk": "^0.32.0"
   },
   "engines": {

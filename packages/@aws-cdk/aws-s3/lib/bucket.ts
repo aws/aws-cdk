@@ -1,10 +1,10 @@
 import events = require('@aws-cdk/aws-events');
 import iam = require('@aws-cdk/aws-iam');
 import kms = require('@aws-cdk/aws-kms');
-import { IBucketNotificationDestination } from '@aws-cdk/aws-s3-notifications';
 import { applyRemovalPolicy, Construct, IResource, RemovalPolicy, Resource, Token } from '@aws-cdk/cdk';
 import { EOL } from 'os';
 import { BucketPolicy } from './bucket-policy';
+import { IBucketNotificationDestination } from './destination';
 import { BucketNotifications } from './notifications-resource';
 import perms = require('./perms');
 import { LifecycleRule } from './rule';
