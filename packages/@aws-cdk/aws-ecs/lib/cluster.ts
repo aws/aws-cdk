@@ -394,7 +394,7 @@ class ImportedCluster extends Construct implements ICluster {
   constructor(scope: Construct, id: string, props: ClusterAttributes) {
     super(scope, id);
     this.clusterName = props.clusterName;
-    this.vpc = ec2.Vpc.fromVpcAttributes(this, "vpc", props.vpc);
+    this.vpc = props.vpc;
     this.hasEc2Capacity = props.hasEc2Capacity !== false;
     this._defaultNamespace = props.defaultNamespace;
 

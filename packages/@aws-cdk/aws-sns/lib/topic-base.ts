@@ -1,4 +1,3 @@
-import autoscaling_api = require('@aws-cdk/aws-autoscaling-api');
 import cloudwatch = require('@aws-cdk/aws-cloudwatch');
 import iam = require('@aws-cdk/aws-iam');
 import lambda = require('@aws-cdk/aws-lambda');
@@ -10,8 +9,7 @@ import { Subscription, SubscriptionProtocol } from './subscription';
 
 export interface ITopic extends
   IResource,
-  cloudwatch.IAlarmAction,
-  autoscaling_api.ILifecycleHookTarget {
+  cloudwatch.IAlarmAction {
 
   /**
    * @attribute
@@ -252,14 +250,6 @@ export abstract class TopicBase extends Resource implements ITopic {
       resourceArns: [this.topicArn],
       resource: this,
     });
-  }
-
-  /**
-   * Allow using SNS topics as lifecycle hook targets
-   */
-  public asLifecycleHookTarget(lifecycleHook: autoscaling_api.ILifecycleHook): autoscaling_api.LifecycleHookTargetProps {
-    this.grantPublish(lifecycleHook.role);
-    return { notificationTargetArn: this.topicArn };
   }
 
   public get alarmActionArn(): string {

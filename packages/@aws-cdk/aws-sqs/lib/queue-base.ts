@@ -1,10 +1,9 @@
-import autoscaling_api = require('@aws-cdk/aws-autoscaling-api');
 import iam = require('@aws-cdk/aws-iam');
 import kms = require('@aws-cdk/aws-kms');
 import { IResource, Resource } from '@aws-cdk/cdk';
 import { QueuePolicy } from './policy';
 
-export interface IQueue extends IResource, autoscaling_api.ILifecycleHookTarget {
+export interface IQueue extends IResource {
   /**
    * The ARN of this queue
    * @attribute
@@ -140,14 +139,6 @@ export abstract class QueueBase extends Resource implements IQueue {
     if (this.policy) {
       this.policy.document.addStatement(statement);
     }
-  }
-
-  /**
-   * Allow using SQS queues as lifecycle hook targets
-   */
-  public asLifecycleHookTarget(lifecycleHook: autoscaling_api.ILifecycleHook): autoscaling_api.LifecycleHookTargetProps {
-    this.grantSendMessages(lifecycleHook.role);
-    return { notificationTargetArn: this.queueArn };
   }
 
   /**

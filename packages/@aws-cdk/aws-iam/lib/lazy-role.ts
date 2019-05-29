@@ -1,8 +1,8 @@
 import cdk = require('@aws-cdk/cdk');
 import { Grant } from './grant';
 import { Policy } from './policy';
-import { PolicyStatement, PrincipalPolicyFragment } from './policy-document';
-import { IPrincipal } from './principals';
+import { PolicyStatement } from './policy-document';
+import { IPrincipal, PrincipalPolicyFragment } from './principals';
 import { IRole, Role, RoleProps } from './role';
 
 // tslint:disable-next-line:no-empty-interface
