@@ -4,6 +4,8 @@ import { Construct } from './construct';
 import { collectRuntimeInformation } from './runtime-info';
 import { Synthesizer } from './synthesis';
 
+const APP_SYMBOL = Symbol.for('@aws-cdk/cdk.App');
+
 /**
  * Custom construction properties for a CDK program
  */
@@ -49,6 +51,11 @@ export interface AppProps {
  * Represents a CDK program.
  */
 export class App extends Construct {
+
+  public static isApp(obj: any): obj is App {
+    return APP_SYMBOL in obj;
+  }
+
   private _assembly?: CloudAssembly;
   private readonly runtimeInfo: boolean;
   private readonly outdir?: string;
@@ -59,6 +66,8 @@ export class App extends Construct {
    */
   constructor(props: AppProps = {}) {
     super(undefined as any, '');
+
+    Object.defineProperty(this, APP_SYMBOL, { value: true });
 
     this.loadContext(props.context);
 
