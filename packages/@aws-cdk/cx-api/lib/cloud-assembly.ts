@@ -117,7 +117,7 @@ export class CloudAssemblyBuilder {
 
     // we leverage the fact that outdir is long-lived to avoid staging assets into it
     // that were already staged (copying can be expensive). this is achieved by the fact
-    // that assets use a source hash as their name. other artifacts, and the manifest,
+    // that assets use a source hash as their name. other artifacts, and the manifest itself,
     // will overwrite existing files as needed.
 
     if (fs.existsSync(this.outdir)) {
