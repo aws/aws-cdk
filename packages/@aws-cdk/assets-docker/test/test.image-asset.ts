@@ -19,7 +19,7 @@ export = {
     });
 
     // THEN
-    const template = SynthUtils.toCloudFormation(stack);
+    const template = SynthUtils.synthesize(stack).template;
 
     test.deepEqual(template.Parameters.ImageImageName5E684353, {
       Type: 'String',

@@ -1,24 +1,27 @@
-import { App, Stack, SynthesisOptions, Synthesizer } from '@aws-cdk/cdk';
+import { Stack, SynthesisOptions, Synthesizer } from '@aws-cdk/cdk';
 import cxapi = require('@aws-cdk/cx-api');
 
 export class SynthUtils {
   /**
-   * @param stack
-   * @param options
+   * Synthesizes the stack and returns a `CloudFormationStackArtifact` which can be inspected.
    */
   public static synthesize(stack: Stack, options: SynthesisOptions = { }): cxapi.CloudFormationStackArtifact {
-    // if this stack has an App root, then use it for synthesis so that cross refereces would work
-    let assembly;
-    if (App.isApp(stack.node.root)) {
-      assembly = stack.node.root.run();
-    } else {
-      const synth = new Synthesizer();
-      assembly = synth.synthesize(stack, options);
-    }
-
+    // always synthesize against the root (be it an App or whatever) so all artifacts will be included
+    const synth = new Synthesizer();
+    const assembly = synth.synthesize(stack.node.root, options);
     return assembly.getStack(stack.name);
   }
 
+  /**
+   * Synthesizes the stack and returns the resulting CloudFormation template.
+   */
+  public static toCloudFormation(stack: Stack, options: SynthesisOptions = { }): any {
+    return this.synthesize(stack, options).template;
+  }
+
+  /**
+   * @returns Returns a subset of the synthesized CloudFormation template (only specific resource types).
+   */
   public static subset(stack: Stack, options: SubsetOptions): any {
     const template = SynthUtils.synthesize(stack).template;
     if (template.Resources) {

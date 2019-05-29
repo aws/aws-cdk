@@ -79,7 +79,7 @@ export = {
     test.ok(entry, 'found metadata entry');
 
     // synthesize first so "prepare" is called
-    const template = SynthUtils.toCloudFormation(stack);
+    const template = SynthUtils.synthesize(stack).template;
 
     test.deepEqual(stack.node.resolve(entry!.data), {
       path: 'asset.78add9eaf468dfa2191da44a7da92a21baba4c686cf6053d772556768ef21197.txt',
@@ -298,9 +298,7 @@ export = {
       // WHEN
       asset.addResourceMetadata(resource, 'PropName');
 
-      const session = app.run();
-      const template = SynthUtils.templateForStackName(session, stack.name);
-
+      const template = SynthUtils.synthesize(stack).template;
       test.deepEqual(template.Resources.MyResource.Metadata, {
         "aws:asset:path": `asset.6b84b87243a4a01c592d78e1fd3855c4bfef39328cd0a450cc97e81717fea2a2`,
         "aws:asset:property": "PropName"
@@ -327,9 +325,7 @@ export = {
       // WHEN
       asset.addResourceMetadata(resource, 'PropName');
 
-      const session = app.run();
-      const template = SynthUtils.templateForStackName(session, stack.name);
-
+      const template = SynthUtils.synthesize(stack).template;
       test.deepEqual(template.Resources.MyResource.Metadata, {
         "aws:asset:path": SAMPLE_ASSET_DIR,
         "aws:asset:property": "PropName"
