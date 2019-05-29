@@ -1,3 +1,41 @@
+# CloudFormation Resource Specification v3.3.0
+
+## New Resource Types
+
+* AWS::EC2::CapacityReservation
+* AWS::PinpointEmail::ConfigurationSet
+* AWS::PinpointEmail::ConfigurationSetEventDestination
+* AWS::PinpointEmail::DedicatedIpPool
+* AWS::PinpointEmail::Identity
+* AWS::Transfer::Server
+* AWS::Transfer::User
+* AWS::WAFRegional::GeoMatchSet
+* AWS::WAFRegional::RateBasedRule
+* AWS::WAFRegional::RegexPatternSet
+
+## Attribute Changes
+
+
+## Property Changes
+
+* AWS::CodeBuild::Project SecondarySourceVersions (__added__)
+* AWS::CodeBuild::Project SourceVersion (__added__)
+* AWS::CodeCommit::Repository Code (__added__)
+* AWS::ECS::TaskDefinition ProxyConfiguration (__added__)
+
+## Property Type Changes
+
+* AWS::CodeBuild::Project.ProjectSourceVersion (__added__)
+* AWS::CodeCommit::Repository.Code (__added__)
+* AWS::CodeCommit::Repository.S3 (__added__)
+* AWS::ECS::TaskDefinition.ContainerDependency (__added__)
+* AWS::ECS::TaskDefinition.ProxyConfiguration (__added__)
+* AWS::EC2::LaunchTemplate.NetworkInterface InterfaceType (__added__)
+* AWS::ECS::TaskDefinition.ContainerDefinition DependsOn (__added__)
+* AWS::ECS::TaskDefinition.ContainerDefinition StartTimeout (__added__)
+* AWS::ECS::TaskDefinition.ContainerDefinition StopTimeout (__added__)
+
+
 # CloudFormation Resource Specification v3.0.0
 
 ## New Resource Types

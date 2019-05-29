@@ -4739,6 +4739,30 @@
         ],
         "description": "Set RefKind of AWS::ServiceCatalog::ResourceUpdateConstraint to None"
       }
+    },
+    "AWS::PinpointEmail::ConfigurationSet": {
+      "patch": {
+        "operations": [
+          {
+            "op": "add",
+            "path": "/RefKind",
+            "value": "Name"
+          }
+        ],
+        "description": "Set RefKind of AWS::PinpointEmail::ConfigurationSet to Name"
+      }
+    },
+    "AWS::Transfer::Server": {
+      "patch": {
+        "operations": [
+          {
+            "op": "add",
+            "path": "/RefKind",
+            "value": "Arn"
+          }
+        ],
+        "description": "Set RefKind of AWS::Transfer::Server to Arn"
+      }
     }
   }
 }
