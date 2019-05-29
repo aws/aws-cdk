@@ -18,4 +18,24 @@ export class SynthUtils {
 
     return assembly.getStack(stack.name);
   }
+
+  public static subset(stack: Stack, options: SubsetOptions): any {
+    const template = SynthUtils.toCloudFormation(stack);
+    if (template.Resources) {
+      for (const [key, resource] of Object.entries(template.Resources)) {
+        if (options.resourceTypes && !options.resourceTypes.includes((resource as any).Type)) {
+          delete template.Resources[key];
+        }
+      }
+    }
+
+    return template;
+  }
+}
+
+export interface SubsetOptions {
+  /**
+   * Match all resources of the given type
+   */
+  resourceTypes?: string[];
 }

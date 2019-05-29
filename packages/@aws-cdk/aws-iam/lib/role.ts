@@ -3,8 +3,8 @@ import { Grant } from './grant';
 import { CfnRole } from './iam.generated';
 import { IIdentity } from './identity-base';
 import { Policy } from './policy';
-import { ArnPrincipal, PolicyDocument, PolicyStatement, PrincipalPolicyFragment } from './policy-document';
-import { IPrincipal } from './principals';
+import { PolicyDocument, PolicyStatement } from './policy-document';
+import { ArnPrincipal, IPrincipal, PrincipalPolicyFragment } from './principals';
 import { AttachedPolicies, undefinedIfEmpty } from './util';
 
 export interface RoleProps {

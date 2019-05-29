@@ -175,7 +175,7 @@ export = {
         LifecycleTransition: "autoscaling:EC2_INSTANCE_TERMINATING",
         DefaultResult: "CONTINUE",
         HeartbeatTimeout: 300,
-        NotificationTargetARN: { Ref: "EcsClusterDefaultAutoScalingGroupDrainECSHookTopicC705BD25" },
+        NotificationTargetARN: { Ref: "EcsClusterDefaultAutoScalingGroupLifecycleHookDrainHookTopicACD2D4A4" },
         RoleARN: { "Fn::GetAtt": [ "EcsClusterDefaultAutoScalingGroupLifecycleHookDrainHookRoleA38EC83B", "Arn" ] }
       }));
 
@@ -258,6 +258,25 @@ export = {
         }),
       });
     });
+
+    test.done();
+  },
+
+  "allows specifying spot fleet"(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+
+    const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+    cluster.addCapacity('DefaultAutoScalingGroup', {
+      instanceType: new ec2.InstanceType('t2.micro'),
+      spotPrice: "0.31"
+    });
+
+    // THEN
+    expect(stack).to(haveResource("AWS::AutoScaling::LaunchConfiguration", {
+      SpotPrice: "0.31"
+    }));
 
     test.done();
   },
@@ -363,6 +382,9 @@ export = {
     // THEN
     test.equal(cluster2.defaultNamespace!.type, cloudmap.NamespaceType.DnsPrivate);
     test.deepEqual(stack2.node.resolve(cluster2.defaultNamespace!.namespaceId), 'import-namespace-id');
+
+    // Can retrieve subnets from VPC - will throw 'There are no 'Private' subnets in this VPC. Use a different VPC subnet selection.' if broken.
+    cluster2.vpc.selectSubnets();
 
     test.done();
   }
