@@ -45,7 +45,7 @@
   },
   "cdk-build": {
     "pre": [
-      "cd test/fs && tar -xzvf fixtures.tar.gz"
+      "rm -rf test/fs/fixtures && cd test/fs && tar -xzvf fixtures.tar.gz"
     ]
   },
   "keywords": [
