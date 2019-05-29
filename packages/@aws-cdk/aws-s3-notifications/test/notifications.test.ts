@@ -291,7 +291,7 @@ test('a notification destination can specify a set of dependencies that must be 
   bucket.addObjectCreatedNotification(dest);
 
   stack.node.prepareTree();
-  expect(SynthUtils.toCloudFormation(stack).Resources.BucketNotifications8F2E257D).toEqual({
+  expect(SynthUtils.synthesize(stack).template.Resources.BucketNotifications8F2E257D).toEqual({
     Type: 'Custom::S3BucketNotifications',
     Properties: {
       ServiceToken: { 'Fn::GetAtt': [ 'BucketNotificationsHandler050a0587b7544547bf325f094a3db8347ECC3691', 'Arn' ] },

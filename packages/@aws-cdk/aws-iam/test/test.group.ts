@@ -1,3 +1,4 @@
+import { expect } from '@aws-cdk/assert';
 import { App, Stack } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
 import { Group, User } from '../lib';
@@ -7,9 +8,11 @@ export = {
     const app = new App();
     const stack = new Stack(app, 'MyStack');
     new Group(stack, 'MyGroup');
-    test.deepEqual(app.synthesizeStack(stack.name).template, {
+
+    expect(stack).toMatch({
       Resources: { MyGroupCBA54B1B: { Type: 'AWS::IAM::Group' } }
     });
+
     test.done();
   },
 
@@ -22,7 +25,7 @@ export = {
     user1.addToGroup(group);
     group.addUser(user2);
 
-    test.deepEqual(app.synthesizeStack(stack.name).template, { Resources:
+    expect(stack).toMatch({ Resources:
       { MyGroupCBA54B1B: { Type: 'AWS::IAM::Group' },
         User1E278A736:
          { Type: 'AWS::IAM::User',

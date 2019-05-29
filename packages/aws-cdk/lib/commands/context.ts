@@ -88,7 +88,7 @@ function invalidateContext(context: Context, key: string) {
   // Unset!
   if (context.has(key)) {
     context.unset(key);
-    print(`Context value ${colors.blue(key)} reset. It will be refreshed on the next SDK synthesis run.`);
+    print(`Context value ${colors.blue(key)} reset. It will be refreshed on next synthesis`);
   } else {
     print(`No context value with key ${colors.blue(key)}`);
   }

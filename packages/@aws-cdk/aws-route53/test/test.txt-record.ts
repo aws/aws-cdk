@@ -9,7 +9,7 @@ export = {
       const app = new TestApp();
       const zone = new PublicHostedZone(app.stack, 'HostedZone', { zoneName: 'test.public' });
       new TxtRecord(zone, 'TXT', { zone, recordName: '_foo', recordValue: 'Bar!' });
-      expect(app.synthesizeTemplate()).to(exactlyMatchTemplate({
+      expect(app.stack).to(exactlyMatchTemplate({
         Resources: {
           HostedZoneDB99F866: {
             Type: 'AWS::Route53::HostedZone',
@@ -46,9 +46,5 @@ class TestApp {
     this.app.node.setContext(`availability-zones:${account}:${region}`,
               [`${region}-1a`]);
     this.stack = new Stack(this.app, 'MyStack', { env: { account, region } });
-  }
-
-  public synthesizeTemplate() {
-    return this.app.synthesizeStack(this.stack.name);
   }
 }

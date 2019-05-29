@@ -72,7 +72,7 @@ export class StackActivityMonitor {
 
   constructor(private readonly cfn: aws.CloudFormation,
               private readonly stackName: string,
-              private readonly stack: cxapi.SynthesizedStack,
+              private readonly stack: cxapi.CloudFormationStackArtifact,
               private readonly resourcesTotal?: number) {
 
     if (this.resourcesTotal != null) {
@@ -175,7 +175,7 @@ export class StackActivityMonitor {
 
     let stackTrace = '';
     if (md && e.ResourceStatus && e.ResourceStatus.indexOf('FAILED') !== -1) {
-      stackTrace = `\n\t${md.entry.trace.join('\n\t\\_ ')}`;
+      stackTrace = md.entry.trace ? `\n\t${md.entry.trace.join('\n\t\\_ ')}` : '';
       reasonColor = colors.red;
     }
 

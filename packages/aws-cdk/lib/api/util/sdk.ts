@@ -1,4 +1,4 @@
-import { Environment} from '@aws-cdk/cx-api';
+import cxapi = require('@aws-cdk/cx-api');
 import AWS = require('aws-sdk');
 import child_process = require('child_process');
 import fs = require('fs-extra');
@@ -88,7 +88,7 @@ export class SDK {
     this.credentialsCache = new CredentialsCache(this.defaultAwsAccount, defaultCredentialProvider);
   }
 
-  public async cloudFormation(environment: Environment, mode: Mode): Promise<AWS.CloudFormation> {
+  public async cloudFormation(environment: cxapi.Environment, mode: Mode): Promise<AWS.CloudFormation> {
     return new AWS.CloudFormation({
       ...this.retryOptions,
       region: environment.region,
@@ -112,7 +112,7 @@ export class SDK {
     });
   }
 
-  public async s3(environment: Environment, mode: Mode): Promise<AWS.S3> {
+  public async s3(environment: cxapi.Environment, mode: Mode): Promise<AWS.S3> {
     return new AWS.S3({
       ...this.retryOptions,
       region: environment.region,
@@ -128,7 +128,7 @@ export class SDK {
     });
   }
 
-  public async ecr(environment: Environment, mode: Mode): Promise<AWS.ECR> {
+  public async ecr(environment: cxapi.Environment, mode: Mode): Promise<AWS.ECR> {
     return new AWS.ECR({
       ...this.retryOptions,
       region: environment.region,
@@ -350,6 +350,11 @@ async function getCLICompatibleDefaultRegion(profile: string | undefined): Promi
     const configFile = new SharedIniFile(toCheck.shift());
     const section = await configFile.getProfile(profile);
     region = section && section.region;
+  }
+
+  if (!region) {
+    const usedProfile = !profile ? '' : ` (profile: "${profile}")`;
+    throw new Error(`Unable to determine AWS region from environment or AWS configuration${usedProfile}`);
   }
 
   return region;

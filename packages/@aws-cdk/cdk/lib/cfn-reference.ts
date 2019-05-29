@@ -89,6 +89,7 @@ export class CfnReference extends Reference {
     if (typeof(value) === 'function') {
       throw new Error('Reference can only hold CloudFormation intrinsics (not a function)');
     }
+
     // prepend scope path to display name
     super(value, `${target.node.id}.${displayName}`, target);
     this.originalDisplayName = displayName;
@@ -113,6 +114,12 @@ export class CfnReference extends Reference {
    * Register a stack this references is being consumed from.
    */
   public consumeFromStack(consumingStack: Stack, consumingConstruct: IConstruct) {
+    if (this.producingStack && consumingStack.node.root !== this.producingStack.node.root) {
+      throw this.newError(
+        `Cannot reference across apps. ` +
+        `Consuming and producing stacks must be defined within the same CDK app.`);
+    }
+
     // tslint:disable-next-line:max-line-length
     if (this.producingStack && this.producingStack !== consumingStack && !this.replacementTokens.has(consumingStack)) {
       // We're trying to resolve a cross-stack reference
@@ -130,7 +137,7 @@ export class CfnReference extends Reference {
     const producingStack = this.producingStack!;
 
     if (producingStack.env.account !== consumingStack.env.account || producingStack.env.region !== consumingStack.env.region) {
-      throw new Error('Can only reference cross stacks in the same region and account.');
+      throw this.newError('Can only reference cross stacks in the same region and account.');
     }
 
     // Ensure a singleton "Exports" scoping Construct

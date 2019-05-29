@@ -18,8 +18,7 @@ passingExample('expect non-synthesized stack at <some path> to have <some type>'
   const resourceType = 'Test::Resource';
   const stack = new cdk.Stack();
   new TestResource(stack, 'TestResource', { type: resourceType });
-  // '//' because the stack has no name, which leads to an empty path entry here.
-  expect(stack).at('//TestResource').to(haveType(resourceType));
+  expect(stack).at('/TestResource').to(haveType(resourceType));
 });
 passingExample('expect <synthStack> at <some path> *not* to have <some type>', () => {
   const resourceType = 'Test::Resource';
@@ -205,11 +204,13 @@ function failingExample(title: string, cb: (test: Test) => void) {
   };
 }
 
-function synthesizedStack(fn: (stack: cdk.Stack) => void): cx.SynthesizedStack {
+function synthesizedStack(fn: (stack: cdk.Stack) => void): cx.CloudFormationStackArtifact {
   const app = new cdk.App();
   const stack = new cdk.Stack(app, 'TestStack');
   fn(stack);
-  return app.synthesizeStack(stack.name);
+
+  const assembly = app.run();
+  return assembly.getStack(stack.name);
 }
 
 interface TestResourceProps extends cdk.CfnResourceProps {

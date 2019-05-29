@@ -101,8 +101,8 @@ export = {
 
   'SG peering works on exported/imported load balancer'(test: Test) {
     // GIVEN
-    const fixture = new TestFixture();
-    const stack2 = new cdk.Stack();
+    const fixture = new TestFixture(false);
+    const stack2 = new cdk.Stack(fixture.app, 'stack2');
     const vpc2 = new ec2.Vpc(stack2, 'VPC');
     const group = new elbv2.ApplicationTargetGroup(stack2, 'TargetGroup', {
       // We're assuming the 2nd VPC is peered to the 1st, or something.
@@ -128,7 +128,7 @@ export = {
   'SG peering works on exported/imported listener'(test: Test) {
     // GIVEN
     const fixture = new TestFixture();
-    const stack2 = new cdk.Stack();
+    const stack2 = new cdk.Stack(fixture.app, 'stack2');
     const vpc2 = new ec2.Vpc(stack2, 'VPC');
     const group = new elbv2.ApplicationTargetGroup(stack2, 'TargetGroup', {
       // We're assuming the 2nd VPC is peered to the 1st, or something.
@@ -136,6 +136,7 @@ export = {
       port: 8008,
       targets: [new FakeSelfRegisteringTarget(stack2, 'Target', vpc2)],
     });
+    fixture.listener.addTargets('default', { port: 80 });
 
     // WHEN
     const listener2 = elbv2.ApplicationListener.fromApplicationListenerAttributes(stack2, 'YetAnotherListener', {
@@ -237,17 +238,23 @@ function expectSGRules(stack: cdk.Stack, lbGroup: any) {
 }
 
 class TestFixture {
+  public readonly app: cdk.App;
   public readonly stack: cdk.Stack;
   public readonly vpc: ec2.Vpc;
   public readonly lb: elbv2.ApplicationLoadBalancer;
   public readonly listener: elbv2.ApplicationListener;
 
-  constructor() {
-    this.stack = new cdk.Stack();
+  constructor(createListener?: boolean) {
+    this.app = new cdk.App();
+    this.stack = new cdk.Stack(this.app, 'Stack');
     this.vpc = new ec2.Vpc(this.stack, 'VPC', {
       maxAZs: 2
     });
     this.lb = new elbv2.ApplicationLoadBalancer(this.stack, 'LB', { vpc: this.vpc });
-    this.listener = this.lb.addListener('Listener', { port: 80, open: false });
+
+    createListener = createListener === undefined ? true : createListener;
+    if (createListener) {
+      this.listener = this.lb.addListener('Listener', { port: 80, open: false });
+    }
   }
 }

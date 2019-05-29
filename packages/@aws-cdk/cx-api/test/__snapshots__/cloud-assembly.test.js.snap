@@ -1,0 +1,61 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`assembly with missing context 1`] = `
+Object {
+  "missing:context:key": Object {
+    "foo": 123,
+  },
+  "missing:context:key2": Object {
+    "foo": 6688,
+  },
+}
+`;
+
+exports[`assets 1`] = `
+Array [
+  Object {
+    "id": "logical-id-of-the-asset",
+    "packaging": "zip",
+    "path": "asset-dir",
+    "sourceHash": "xoxoxox",
+  },
+  Object {
+    "id": "logical-id-of-the-asset-x1234",
+    "packaging": "docker",
+    "path": "docker-asset",
+    "sourceHash": "docker-asset-source",
+  },
+]
+`;
+
+exports[`messages 1`] = `
+Array [
+  Object {
+    "entry": Object {
+      "data": "boom",
+      "trace": "bam",
+      "type": "aws:cdk:warning",
+    },
+    "id": "foo",
+    "level": "warning",
+  },
+  Object {
+    "entry": Object {
+      "data": "error!!",
+      "trace": "bam!Error",
+      "type": "aws:cdk:error",
+    },
+    "id": "foo",
+    "level": "error",
+  },
+  Object {
+    "entry": Object {
+      "data": "info?",
+      "trace": "bam!Error",
+      "type": "aws:cdk:info",
+    },
+    "id": "bar",
+    "level": "info",
+  },
+]
+`;

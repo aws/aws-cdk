@@ -97,7 +97,7 @@ export = {
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'MyStack');
     new Rule(stack, 'Rule');
-    test.throws(() => app.synthesizeStack(stack.name), /Either 'eventPattern' or 'scheduleExpression' must be defined/);
+    test.throws(() => app.run(), /Either 'eventPattern' or 'scheduleExpression' must be defined/);
     test.done();
   },
 

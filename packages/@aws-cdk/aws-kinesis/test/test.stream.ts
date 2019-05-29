@@ -851,10 +851,11 @@ export = {
   },
   "cross-stack permissions": {
     "no encryption"(test: Test) {
-      const stackA = new Stack();
+      const app = new App();
+      const stackA = new Stack(app, 'stackA');
       const streamFromStackA = new Stream(stackA, 'MyStream');
 
-      const stackB = new Stack();
+      const stackB = new Stack(app, 'stackB');
       const user = new iam.User(stackB, 'UserWhoNeedsAccess');
       streamFromStackA.grantRead(user);
 
@@ -865,6 +866,19 @@ export = {
             "Properties": {
               "RetentionPeriodHours": 24,
               "ShardCount": 1
+            }
+          }
+        },
+        "Outputs": {
+          "ExportsOutputFnGetAttMyStream5C050E93Arn4ABF30CD": {
+            "Value": {
+              "Fn::GetAtt": [
+                "MyStream5C050E93",
+                "Arn"
+              ]
+            },
+            "Export": {
+              "Name": "stackA:ExportsOutputFnGetAttMyStream5C050E93Arn4ABF30CD"
             }
           }
         }
@@ -888,7 +902,7 @@ export = {
                     ],
                     "Effect": "Allow",
                     "Resource": {
-                      "Fn::ImportValue": "Stack:ExportsOutputFnGetAttMyStream5C050E93Arn4ABF30CD"
+                      "Fn::ImportValue": "stackA:ExportsOutputFnGetAttMyStream5C050E93Arn4ABF30CD"
                     }
                   }
                 ],

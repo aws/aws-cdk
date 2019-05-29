@@ -70,7 +70,7 @@ test('queues can be used as destinations', () => {
 
   // make sure the queue policy is added as a dependency to the bucket
   // notifications resource so it will be created first.
-  expect(SynthUtils.toCloudFormation(stack).Resources.BucketNotifications8F2E257D.DependsOn).toEqual(['QueuePolicy25439813', 'Queue4A7E3555']);
+  expect(SynthUtils.synthesize(stack).template.Resources.BucketNotifications8F2E257D.DependsOn).toEqual(['QueuePolicy25439813', 'Queue4A7E3555']);
 });
 
 test('if the queue is encrypted with a custom kms key, the key resource policy is updated to allow s3 to read messages', () => {

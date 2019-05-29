@@ -13,7 +13,12 @@ const SAMPLE_ASSET_DIR = path.join(__dirname, 'sample-asset-directory');
 
 export = {
   'simple use case'(test: Test)  {
-    const stack = new cdk.Stack();
+    const app = new cdk.App({
+      context: {
+        [cxapi.DISABLE_ASSET_STAGING_CONTEXT]: 'true'
+      }
+    });
+    const stack = new cdk.Stack(app, 'MyStack');
     const asset = new ZipDirectoryAsset(stack, 'MyAsset', {
       path: SAMPLE_ASSET_DIR
     });
@@ -24,11 +29,11 @@ export = {
     test.ok(entry, 'found metadata entry');
 
     // verify that now the template contains parameters for this asset
-    const template = SynthUtils.toCloudFormation(stack);
+    const session = app.run();
 
     test.deepEqual(stack.node.resolve(entry!.data), {
       path: SAMPLE_ASSET_DIR,
-      id: 'MyAsset',
+      id: 'MyStackMyAssetBDDF29E3',
       packaging: 'zip',
       sourceHash: '6b84b87243a4a01c592d78e1fd3855c4bfef39328cd0a450cc97e81717fea2a2',
       s3BucketParameter: 'MyAssetS3Bucket68C9B344',
@@ -36,6 +41,7 @@ export = {
       artifactHashParameter: 'MyAssetArtifactHashF518BDDE',
     });
 
+    const template = JSON.parse(fs.readFileSync(path.join(session.directory, 'MyStack.template.json'), 'utf-8'));
     test.equal(template.Parameters.MyAssetS3Bucket68C9B344.Type, 'String');
     test.equal(template.Parameters.MyAssetS3VersionKey68E1A45D.Type, 'String');
 
@@ -51,10 +57,9 @@ export = {
       path: dirPath
     });
 
-    const synth = app.synthesizeStack(stack.name);
-
+    const synth = app.run().getStack(stack.name);
     test.deepEqual(synth.metadata['/my-stack/MyAsset'][0].data, {
-      path: dirPath,
+      path: 'asset.6b84b87243a4a01c592d78e1fd3855c4bfef39328cd0a450cc97e81717fea2a2',
       id: "mystackMyAssetD6B1B593",
       packaging: "zip",
       sourceHash: '6b84b87243a4a01c592d78e1fd3855c4bfef39328cd0a450cc97e81717fea2a2',
@@ -74,10 +79,10 @@ export = {
     test.ok(entry, 'found metadata entry');
 
     // synthesize first so "prepare" is called
-    const template = SynthUtils.toCloudFormation(stack);
+    const template = SynthUtils.synthesize(stack).template;
 
     test.deepEqual(stack.node.resolve(entry!.data), {
-      path: filePath,
+      path: 'asset.78add9eaf468dfa2191da44a7da92a21baba4c686cf6053d772556768ef21197.txt',
       packaging: 'file',
       id: 'MyAsset',
       sourceHash: '78add9eaf468dfa2191da44a7da92a21baba4c686cf6053d772556768ef21197',
@@ -195,7 +200,7 @@ export = {
     // THEN
     expect(stack).to(haveResource('My::Resource::Type', {
       Metadata: {
-        "aws:asset:path": location,
+        "aws:asset:path": 'asset.6b84b87243a4a01c592d78e1fd3855c4bfef39328cd0a450cc97e81717fea2a2',
         "aws:asset:property": "PropName"
       }
     }, ResourcePart.CompleteDefinition));
@@ -225,14 +230,12 @@ export = {
 
   'staging': {
 
-    'copy file assets under .assets/${fingerprint}.ext'(test: Test) {
+    'copy file assets under <outdir>/${fingerprint}.ext'(test: Test) {
       const tempdir = mkdtempSync();
       process.chdir(tempdir); // change current directory to somewhere in /tmp
 
       // GIVEN
-      const app = new App({
-        context: { [cxapi.ASSET_STAGING_DIR_CONTEXT]: '.assets' }
-      });
+      const app = new App({ outdir: tempdir });
       const stack = new Stack(app, 'stack');
 
       // WHEN
@@ -246,9 +249,8 @@ export = {
 
       // THEN
       app.run();
-      test.ok(fs.existsSync(path.join(tempdir, '.assets')));
-      test.ok(fs.existsSync(path.join(tempdir, '.assets', 'a7a79cdf84b802ea8b198059ff899cffc095a1b9606e919f98e05bf80779756b.zip')));
-      fs.readdirSync(path.join(tempdir, '.assets'));
+      test.ok(fs.existsSync(tempdir));
+      test.ok(fs.existsSync(path.join(tempdir, 'asset.a7a79cdf84b802ea8b198059ff899cffc095a1b9606e919f98e05bf80779756b.zip')));
       test.done();
     },
 
@@ -257,9 +259,7 @@ export = {
       process.chdir(tempdir); // change current directory to somewhere in /tmp
 
       // GIVEN
-      const app = new App({
-        context: { [cxapi.ASSET_STAGING_DIR_CONTEXT]: '.assets' }
-      });
+      const app = new App({ outdir: tempdir });
       const stack = new Stack(app, 'stack');
 
       // WHEN
@@ -269,11 +269,11 @@ export = {
 
       // THEN
       app.run();
-      test.ok(fs.existsSync(path.join(tempdir, '.assets')));
-      const hash = '6b84b87243a4a01c592d78e1fd3855c4bfef39328cd0a450cc97e81717fea2a2';
-      test.ok(fs.existsSync(path.join(tempdir, '.assets', hash, 'sample-asset-file.txt')));
-      test.ok(fs.existsSync(path.join(tempdir, '.assets', hash, 'sample-jar-asset.jar')));
-      fs.readdirSync(path.join(tempdir, '.assets'));
+      test.ok(fs.existsSync(tempdir));
+      const hash = 'asset.6b84b87243a4a01c592d78e1fd3855c4bfef39328cd0a450cc97e81717fea2a2';
+      test.ok(fs.existsSync(path.join(tempdir, hash, 'sample-asset-file.txt')));
+      test.ok(fs.existsSync(path.join(tempdir, hash, 'sample-jar-asset.jar')));
+      fs.readdirSync(tempdir);
       test.done();
     },
 
@@ -284,8 +284,8 @@ export = {
 
       const staging = '.my-awesome-staging-directory';
       const app = new App({
+        outdir: staging,
         context: {
-          [cxapi.ASSET_STAGING_DIR_CONTEXT]: staging,
           [cxapi.ASSET_RESOURCE_METADATA_ENABLED_CONTEXT]: 'true',
         }
       });
@@ -298,22 +298,21 @@ export = {
       // WHEN
       asset.addResourceMetadata(resource, 'PropName');
 
-      const session = app.run();
-      const template = SynthUtils.templateForStackName(session, stack.name);
-
+      const template = SynthUtils.synthesize(stack).template;
       test.deepEqual(template.Resources.MyResource.Metadata, {
-        "aws:asset:path": `.my-awesome-staging-directory/6b84b87243a4a01c592d78e1fd3855c4bfef39328cd0a450cc97e81717fea2a2`,
+        "aws:asset:path": `asset.6b84b87243a4a01c592d78e1fd3855c4bfef39328cd0a450cc97e81717fea2a2`,
         "aws:asset:property": "PropName"
       });
       test.done();
     },
 
-    'if staging directory is absolute, asset path is absolute'(test: Test) {
+    'if staging is disabled, asset path is absolute'(test: Test) {
       // GIVEN
       const staging = path.resolve(mkdtempSync());
       const app = new App({
+        outdir: staging,
         context: {
-          [cxapi.ASSET_STAGING_DIR_CONTEXT]: staging,
+          [cxapi.DISABLE_ASSET_STAGING_CONTEXT]: 'true',
           [cxapi.ASSET_RESOURCE_METADATA_ENABLED_CONTEXT]: 'true',
         }
       });
@@ -326,11 +325,9 @@ export = {
       // WHEN
       asset.addResourceMetadata(resource, 'PropName');
 
-      const session = app.run();
-      const template = SynthUtils.templateForStackName(session, stack.name);
-
+      const template = SynthUtils.synthesize(stack).template;
       test.deepEqual(template.Resources.MyResource.Metadata, {
-        "aws:asset:path": `${staging}/6b84b87243a4a01c592d78e1fd3855c4bfef39328cd0a450cc97e81717fea2a2`,
+        "aws:asset:path": SAMPLE_ASSET_DIR,
         "aws:asset:property": "PropName"
       });
       test.done();
@@ -338,27 +335,16 @@ export = {
 
     'cdk metadata points to staged asset'(test: Test) {
       // GIVEN
-      const tempdir = mkdtempSync();
-      process.chdir(tempdir); // change current directory to somewhere in /tmp
-
-      const staging = '.stageme';
-
-      const app = new App({
-        context: {
-          [cxapi.ASSET_STAGING_DIR_CONTEXT]: staging,
-        }
-      });
-
+      const app = new App();
       const stack = new Stack(app, 'stack');
-
       new ZipDirectoryAsset(stack, 'MyAsset', { path: SAMPLE_ASSET_DIR });
 
       // WHEN
       const session = app.run();
-      const artifact = session.getArtifact(stack.name);
+      const artifact = session.getStack(stack.name);
 
-      const md = Object.values(artifact.metadata || {})[0][0].data;
-      test.deepEqual(md.path, '.stageme/6b84b87243a4a01c592d78e1fd3855c4bfef39328cd0a450cc97e81717fea2a2');
+      const md = Object.values(artifact.metadata)[0][0].data;
+      test.deepEqual(md.path, 'asset.6b84b87243a4a01c592d78e1fd3855c4bfef39328cd0a450cc97e81717fea2a2');
       test.done();
     }
 

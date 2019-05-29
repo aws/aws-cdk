@@ -1,3 +1,4 @@
+import { expect } from '@aws-cdk/assert';
 import { App, SecretValue, Stack } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
 import { User } from '../lib';
@@ -7,7 +8,7 @@ export = {
     const app = new App();
     const stack = new Stack(app, 'MyStack');
     new User(stack, 'MyUser');
-    test.deepEqual(app.synthesizeStack(stack.name).template, {
+    expect(stack).toMatch({
       Resources: { MyUserDC45028B: { Type: 'AWS::IAM::User' } }
     });
     test.done();
@@ -19,7 +20,8 @@ export = {
     new User(stack, 'MyUser', {
       password: SecretValue.plainText('1234')
     });
-    test.deepEqual(app.synthesizeStack(stack.name).template, { Resources:
+
+    expect(stack).toMatch({ Resources:
       { MyUserDC45028B:
          { Type: 'AWS::IAM::User',
          Properties: { LoginProfile: { Password: '1234' } } } } });

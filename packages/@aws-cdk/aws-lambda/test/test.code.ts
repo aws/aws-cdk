@@ -63,7 +63,8 @@ export = {
       });
 
       // THEN
-      const synthesized = app.synthesizeStack('MyStack');
+      const assembly = app.run();
+      const synthesized = assembly.stacks[0];
 
       // Func1 has an asset, Func2 does not
       test.deepEqual(synthesized.metadata['/MyStack/Func1/Code'][0].type, 'aws:cdk:asset');
@@ -89,7 +90,7 @@ export = {
       // THEN
       expect(stack).to(haveResource('AWS::Lambda::Function', {
         Metadata: {
-          [cxapi.ASSET_RESOURCE_METADATA_PATH_KEY]: location,
+          [cxapi.ASSET_RESOURCE_METADATA_PATH_KEY]: 'asset.9678c34eca93259d11f2d714177347afd66c50116e1e08996eff893d3ca81232',
           [cxapi.ASSET_RESOURCE_METADATA_PROPERTY_KEY]: 'Code'
         }
       }, ResourcePart.CompleteDefinition));

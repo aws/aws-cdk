@@ -4,32 +4,25 @@ import { SDK } from '../../lib';
 import { AppStacks, ExtendedStackSelection } from '../../lib/api/cxapp/stacks';
 import { Renames } from '../../lib/renames';
 import { Configuration } from '../../lib/settings';
+import { testAssembly, TestStackArtifact } from '../util';
 
-const FIXED_RESULT: cxapi.SynthesizeResponse = {
-  version: '1',
-  stacks: [
-    {
-      name: 'withouterrors',
-      template: { resource: 'noerrorresource' },
-      environment: { name: 'dev', account: '12345', region: 'here' },
-      metadata: {},
-    },
-    {
-      name: 'witherrors',
-      template: { resource: 'errorresource' },
-      environment: { name: 'dev', account: '12345', region: 'here' },
-      metadata: {
-        '/resource': [
-          {
-            type: cxapi.ERROR_METADATA_KEY,
-            data: 'this is an error',
-            trace: []
-          }
-        ]
+const FIXED_RESULT = testAssembly({
+  stackName: 'withouterrors',
+  template: { resource: 'noerrorresource' },
+},
+{
+  stackName: 'witherrors',
+  autoDeploy: true,
+  template: { resource: 'errorresource' },
+  metadata: {
+    '/resource': [
+      {
+        type: cxapi.ERROR_METADATA_KEY,
+        data: 'this is an error'
       }
-    }
-  ]
-};
+    ]
+  },
+});
 
 export = {
   async 'do not throw when selecting stack without errors'(test: Test) {
@@ -91,10 +84,8 @@ export = {
     // GIVEN
     const stacks = appStacksWith([
       {
-        name: 'NotAutoDeployedStack',
+        stackName: 'NotAutoDeployedStack',
         template: { resource: 'Resource' },
-        environment: { name: 'dev', account: '12345', region: 'here' },
-        metadata: {},
         autoDeploy: false,
       },
     ]);
@@ -112,10 +103,8 @@ export = {
     // GIVEN
     const stacks = appStacksWith([
       {
-        name: 'NotAutoDeployedStack',
+        stackName: 'NotAutoDeployedStack',
         template: { resource: 'Resource' },
-        environment: { name: 'dev', account: '12345', region: 'here' },
-        metadata: {},
         autoDeploy: false,
       },
     ]);
@@ -133,18 +122,15 @@ export = {
     // GIVEN
     const stacks = appStacksWith([
       {
-        name: 'NotAutoDeployedStack',
+        stackName: 'NotAutoDeployedStack',
         template: { resource: 'Resource' },
-        environment: { name: 'dev', account: '12345', region: 'here' },
-        metadata: {},
         autoDeploy: false,
       },
       {
-        name: 'AutoDeployedStack',
+        stackName: 'AutoDeployedStack',
+        autoDeploy: true,
+        depends: [ 'NotAutoDeployedStack' ],
         template: { resource: 'Resource' },
-        environment: { name: 'dev', account: '12345', region: 'here' },
-        metadata: {},
-        dependsOn: ['NotAutoDeployedStack'],
       },
     ]);
 
@@ -158,14 +144,11 @@ export = {
   },
 };
 
-function appStacksWith(stacks: cxapi.SynthesizedStack[]): AppStacks {
-  const response: cxapi.SynthesizeResponse = {
-    version: '1',
-    stacks,
-  };
+function appStacksWith(stacks: TestStackArtifact[]): AppStacks {
+  const assembly = testAssembly(...stacks);
   return new AppStacks({
     configuration: new Configuration(),
     aws: new SDK(),
-    synthesizer: async () => response,
+    synthesizer: async () => assembly,
   });
 }

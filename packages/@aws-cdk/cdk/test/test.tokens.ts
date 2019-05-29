@@ -481,6 +481,48 @@ export = {
       test.done();
     },
   },
+
+  'stack trace is captured at token creation'(test: Test) {
+    function fn1() {
+      function fn2() {
+        class ExposeTrace extends Token {
+          public get creationTrace() {
+            return this.trace;
+          }
+        }
+
+        return new ExposeTrace(() => 'hello');
+      }
+
+      return fn2();
+    }
+
+    const token = fn1();
+    test.ok(token.creationTrace.find(x => x.includes('fn1')));
+    test.ok(token.creationTrace.find(x => x.includes('fn2')));
+    test.done();
+  },
+
+  'newError returns an error with the creation stack trace'(test: Test) {
+    function fn1() {
+      function fn2() {
+        function fn3() {
+          class ThrowingToken extends Token {
+            public throwError(message: string) {
+              throw this.newError(message);
+            }
+          }
+          return new ThrowingToken('boom');
+        }
+
+        return fn3();
+      }
+      return fn2();
+    }
+    const token = fn1();
+    test.throws(() => token.throwError('message!'), /Token created:/);
+    test.done();
+  }
 };
 
 class Promise2 extends Token {

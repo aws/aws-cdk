@@ -1,3 +1,4 @@
+import { expect } from '@aws-cdk/assert';
 import { App, Stack } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
 import { Group, Policy, PolicyStatement, Role, ServicePrincipal, User } from '../lib';
@@ -9,7 +10,7 @@ export = {
     const stack = new Stack(app, 'MyStack');
     new Policy(stack, 'MyPolicy');
 
-    test.throws(() => app.synthesizeStack(stack.name), /Policy is empty/);
+    test.throws(() => app.run(), /Policy is empty/);
     test.done();
   },
 
@@ -24,7 +25,7 @@ export = {
     const group = new Group(stack, 'MyGroup');
     group.attachInlinePolicy(policy);
 
-    test.deepEqual(app.synthesizeStack(stack.name).template, { Resources:
+    expect(stack).toMatch({ Resources:
       { MyPolicy39D66CF6:
          { Type: 'AWS::IAM::Policy',
          Properties:
@@ -50,7 +51,7 @@ export = {
     const user = new User(stack, 'MyUser');
     user.attachInlinePolicy(policy);
 
-    test.deepEqual(app.synthesizeStack(stack.name).template, { Resources:
+    expect(stack).toMatch({ Resources:
       { MyPolicy39D66CF6:
          { Type: 'AWS::IAM::Policy',
          Properties:
@@ -84,7 +85,7 @@ export = {
       statements: [ new PolicyStatement().addResource('*').addAction('dynamodb:PutItem') ],
     });
 
-    test.deepEqual(app.synthesizeStack(stack.name).template, { Resources:
+    expect(stack).toMatch({ Resources:
       { User1E278A736: { Type: 'AWS::IAM::User' },
         Group1BEBD4686: { Type: 'AWS::IAM::Group' },
         Role13A5C70C1:
@@ -121,7 +122,7 @@ export = {
     p.attachToUser(user);
     p.attachToUser(user);
 
-    test.deepEqual(app.synthesizeStack(stack.name).template, { Resources:
+    expect(stack).toMatch({ Resources:
       { MyPolicy39D66CF6:
          { Type: 'AWS::IAM::Policy',
          Properties:
@@ -149,7 +150,7 @@ export = {
     p.attachToRole(new Role(stack, 'Role1', { assumedBy: new ServicePrincipal('test.service') }));
     p.addStatement(new PolicyStatement().addResource('*').addAction('dynamodb:GetItem'));
 
-    test.deepEqual(app.synthesizeStack(stack.name).template, { Resources:
+    expect(stack).toMatch({ Resources:
       { MyTestPolicy316BDB50:
          { Type: 'AWS::IAM::Policy',
          Properties:
@@ -191,7 +192,7 @@ export = {
 
     policy.addStatement(new PolicyStatement().addResource('*').addAction('*'));
 
-    test.deepEqual(app.synthesizeStack(stack.name).template, { Resources:
+    expect(stack).toMatch({ Resources:
       { MyPolicy39D66CF6:
          { Type: 'AWS::IAM::Policy',
          Properties:
@@ -249,7 +250,7 @@ export = {
     const app = new App();
     const stack = new Stack(app, 'MyStack');
     new Policy(stack, 'MyPolicy');
-    test.throws(() => app.synthesizeStack(stack.name), /Policy must be attached to at least one principal: user, group or role/);
+    test.throws(() => app.run(), /Policy must be attached to at least one principal: user, group or role/);
     test.done();
   },
 

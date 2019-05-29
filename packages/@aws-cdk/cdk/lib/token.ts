@@ -1,5 +1,6 @@
 import { IConstruct } from "./construct";
 import { unresolved } from "./encoding";
+import { createStackTrace } from './stack-trace';
 import { TokenMap } from "./token-map";
 
 /**
@@ -36,6 +37,11 @@ export class Token {
     return unresolved(obj);
   }
 
+  /**
+   * The captured stack trace which represents the location in which this token was created.
+   */
+  protected readonly trace: string[];
+
   private tokenStringification?: string;
   private tokenListification?: string[];
   private tokenNumberification?: number;
@@ -60,6 +66,7 @@ export class Token {
    * @param displayName A human-readable display hint for this Token
    */
   constructor(private readonly valueOrFunction?: any, private readonly displayName?: string) {
+    this.trace = createStackTrace();
   }
 
   /**
@@ -134,7 +141,7 @@ export class Token {
   public toList(): string[] {
     const valueType = typeof this.valueOrFunction;
     if (valueType === 'string' || valueType === 'number' || valueType === 'boolean') {
-      throw new Error('Got a literal Token value; only intrinsics can ever evaluate to lists.');
+      throw this.newError('Got a literal Token value; only intrinsics can ever evaluate to lists.');
     }
 
     if (this.tokenListification === undefined) {
@@ -159,12 +166,20 @@ export class Token {
       // registering a Token.
       if (valueType === 'number') { return this.valueOrFunction; }
       if (valueType !== 'function') {
-        throw new Error(`Token value is not number or lazy, can't represent as number: ${this.valueOrFunction}`);
+        throw this.newError(`Token value is not number or lazy, can't represent as number: ${this.valueOrFunction}`);
       }
       this.tokenNumberification = TokenMap.instance().registerNumber(this);
     }
 
     return this.tokenNumberification;
+  }
+
+  /**
+   * Creates a throwable Error object that contains the token creation stack trace.
+   * @param message Error message
+   */
+  protected newError(message: string): any {
+    return new Error(`${message}\nToken created:\n    at ${this.trace.join('\n    at ')}\nError thrown:`);
   }
 }
 

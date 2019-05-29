@@ -439,7 +439,7 @@ export = {
     // THEN
     const session = app.run();
     test.deepEqual(stack.name, 'valid-stack-name');
-    test.ok('valid-stack-name' in (session.manifest.artifacts || {}));
+    test.ok(session.tryGetArtifact('valid-stack-name'));
     test.done();
   },
 

@@ -1,44 +1,37 @@
-import { AssetMetadataEntry, ContainerImageAssetMetadataEntry, SynthesizedStack } from '@aws-cdk/cx-api';
 import { Test } from 'nodeunit';
 import { Uploaded, UploadProps } from '../lib';
 import { prepareAssets } from '../lib/assets';
+import { testAssembly, testStack } from './util';
 
 export = {
   async 'prepare assets'(test: Test) {
     // GIVEN
-    const stack: SynthesizedStack = {
-      name: 'SomeStack',
-      environment: {
-        name: 'myenv',
-        account: 'myaccount',
-        region: 'myregion'
-      },
-      metadata: {
-        '/SomeStack/SomeResource': [{
-          type: 'aws:cdk:asset',
-          data: {
-            path: __filename,
-            id: 'SomeStackSomeResource4567',
-            packaging: 'file',
-            s3BucketParameter: 'BucketParameter',
-            s3KeyParameter: 'KeyParameter',
-            artifactHashParameter: 'ArtifactHashParameter',
-          } as AssetMetadataEntry,
-          trace: []
-        }]
-      },
+    const assembly = testAssembly({
+      stackName: 'SomeStack',
       template: {
         Resources: {
           SomeResource: {
             Type: 'AWS::Something::Something'
           }
         }
-      }
-    };
+      },
+      assets: [
+        {
+          sourceHash: 'source-hash',
+          path: __filename,
+          id: 'SomeStackSomeResource4567',
+          packaging: 'file',
+          s3BucketParameter: 'BucketParameter',
+          s3KeyParameter: 'KeyParameter',
+          artifactHashParameter: 'ArtifactHashParameter',
+        }
+      ]
+    });
+
     const toolkit = new FakeToolkit();
 
     // WHEN
-    const params = await prepareAssets(stack, toolkit as any);
+    const params = await prepareAssets(assembly.getStack('SomeStack'), toolkit as any);
 
     // THEN
     test.deepEqual(params, [
@@ -52,27 +45,19 @@ export = {
 
   async 'prepare assets with reuse'(test: Test) {
     // GIVEN
-    const stack: SynthesizedStack = {
-      name: 'SomeStack',
-      environment: {
-        name: 'myenv',
-        account: 'myaccount',
-        region: 'myregion'
-      },
-      metadata: {
-        '/SomeStack/SomeResource': [{
-          type: 'aws:cdk:asset',
-          data: {
-            path: __filename,
-            id: 'SomeStackSomeResource4567',
-            packaging: 'file',
-            s3BucketParameter: 'BucketParameter',
-            s3KeyParameter: 'KeyParameter',
-            artifactHashParameter: 'ArtifactHashParameter',
-          } as AssetMetadataEntry,
-          trace: []
-        }]
-      },
+    const stack = testStack({
+      stackName: 'SomeStack',
+      assets: [
+        {
+          path: __filename,
+          id: 'SomeStackSomeResource4567',
+          packaging: 'file',
+          s3BucketParameter: 'BucketParameter',
+          s3KeyParameter: 'KeyParameter',
+          artifactHashParameter: 'ArtifactHashParameter',
+          sourceHash: 'boom'
+        }
+      ],
       template: {
         Resources: {
           SomeResource: {
@@ -80,7 +65,7 @@ export = {
           }
         }
       }
-    };
+    });
     const toolkit = new FakeToolkit();
 
     // WHEN
@@ -98,21 +83,17 @@ export = {
 
   async 'prepare container asset with reuse'(test: Test) {
     // GIVEN
-    const stack: SynthesizedStack = {
-      name: 'SomeStack',
-      environment: { name: 'myenv', account: 'myaccount', region: 'myregion' },
-      metadata: {
-        '/SomeStack/SomeResource': [{
-          type: 'aws:cdk:asset',
-          data: {
-            path: __dirname,
-            id: 'SomeStackSomeResource4567',
-            packaging: 'container-image',
-            imageNameParameter: 'asdf'
-          } as ContainerImageAssetMetadataEntry,
-          trace: []
-        }]
-      },
+    const stack = testStack({
+      stackName: 'SomeStack',
+      assets: [
+        {
+          path: __dirname,
+          id: 'SomeStackSomeResource4567',
+          packaging: 'container-image',
+          imageNameParameter: 'asdf',
+          sourceHash: 'source-hash'
+        }
+      ],
       template: {
         Resources: {
           SomeResource: {
@@ -120,7 +101,7 @@ export = {
           }
         }
       }
-    };
+    });
     const toolkit = new FakeToolkit();
 
     // WHEN

@@ -10,3 +10,6 @@ tslint.json
 .LAST_BUILD
 .LAST_PACKAGE
 *.snk
+.nyc_output
+coverage
+.nycrc
