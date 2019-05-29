@@ -1,16 +1,13 @@
 import cloudwatch = require('@aws-cdk/aws-cloudwatch');
 import ec2 = require('@aws-cdk/aws-ec2');
 import iam = require('@aws-cdk/aws-iam');
-import s3n = require('@aws-cdk/aws-s3-notifications');
-import cdk = require('@aws-cdk/cdk');
 import { IResource, Resource } from '@aws-cdk/cdk';
 import { IEventSource } from './event-source';
 import { EventSourceMapping, EventSourceMappingOptions } from './event-source-mapping';
 import { CfnPermission } from './lambda.generated';
 import { Permission } from './permission';
 
-export interface IFunction extends IResource,
-  s3n.IBucketNotificationDestination, ec2.IConnectable, iam.IGrantable {
+export interface IFunction extends IResource, ec2.IConnectable, iam.IGrantable {
 
   /**
    * Logical ID of this Function.
@@ -245,31 +242,6 @@ export abstract class FunctionBase extends Resource implements IFunction  {
         node: this.node,
       },
     });
-  }
-
-  /**
-   * Allows this Lambda to be used as a destination for bucket notifications.
-   * Use `bucket.onEvent(lambda)` to subscribe.
-   */
-  public asBucketNotificationDestination(bucketArn: string, bucketId: string): s3n.BucketNotificationDestinationProps {
-    const permissionId = `AllowBucketNotificationsFrom${bucketId}`;
-    if (!this.node.tryFindChild(permissionId)) {
-      this.addPermission(permissionId, {
-        sourceAccount: this.node.stack.accountId,
-        principal: new iam.ServicePrincipal('s3.amazonaws.com'),
-        sourceArn: bucketArn,
-      });
-    }
-
-    // if we have a permission resource for this relationship, add it as a dependency
-    // to the bucket notifications resource, so it will be created first.
-    const permission = this.node.tryFindChild(permissionId) as cdk.CfnResource;
-
-    return {
-      type: s3n.BucketNotificationDestinationType.Lambda,
-      arn: this.functionArn,
-      dependencies: permission ? [ permission ] : undefined
-    };
   }
 
   /**

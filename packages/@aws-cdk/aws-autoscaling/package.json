@@ -67,7 +67,6 @@
     "pkglint": "^0.32.0"
   },
   "dependencies": {
-    "@aws-cdk/aws-autoscaling-api": "^0.32.0",
     "@aws-cdk/aws-autoscaling-common": "^0.32.0",
     "@aws-cdk/aws-cloudwatch": "^0.32.0",
     "@aws-cdk/aws-ec2": "^0.32.0",
@@ -79,7 +78,6 @@
   },
   "homepage": "https://github.com/awslabs/aws-cdk",
   "peerDependencies": {
-    "@aws-cdk/aws-autoscaling-api": "^0.32.0",
     "@aws-cdk/aws-autoscaling-common": "^0.32.0",
     "@aws-cdk/aws-cloudwatch": "^0.32.0",
     "@aws-cdk/aws-ec2": "^0.32.0",
