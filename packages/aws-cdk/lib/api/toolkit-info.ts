@@ -209,7 +209,7 @@ async function objectExists(s3: aws.S3, bucket: string, key: string) {
   }
 }
 
-export async function loadToolkitInfo(environment: cxapi.Environment, sdk: SDK, stackName: string): Promise<ToolkitInfo | undefined> {
+export async function loadToolkitInfo(environment: cxapi.Environment, sdk: SDK, stackName: string): Promise<ToolkitInfo | undefined> {
   const cfn = await sdk.cloudFormation(environment, Mode.ForReading);
   const stack = await waitForStack(cfn, stackName);
   if (!stack) {

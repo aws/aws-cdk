@@ -1,4 +1,4 @@
-import { expect } from '@aws-cdk/assert';
+import { expect, SynthUtils } from '@aws-cdk/assert';
 import cdk = require('@aws-cdk/cdk');
 import { Test } from 'nodeunit';
 import iam = require('../lib');
@@ -6,8 +6,9 @@ import iam = require('../lib');
 export = {
   'automatic exports are created when attributes are referneced across stacks'(test: Test) {
     // GIVEN
-    const stackWithUser = new cdk.Stack();
-    const stackWithGroup = new cdk.Stack();
+    const app = new cdk.App();
+    const stackWithUser = new cdk.Stack(app, 'stack1');
+    const stackWithGroup = new cdk.Stack(app, 'stack2');
     const user = new iam.User(stackWithUser, 'User');
     const group = new iam.Group(stackWithGroup, 'Group');
 
@@ -29,7 +30,7 @@ export = {
         User00B015A1: {
           Type: "AWS::IAM::User",
           Properties: {
-            Groups: [ { "Fn::ImportValue": "Stack:ExportsOutputRefGroupC77FDACD8CF7DD5B" } ]
+            Groups: [ { "Fn::ImportValue": "stack2:ExportsOutputRefGroupC77FDACD8CF7DD5B" } ]
           }
         }
       }
@@ -38,7 +39,7 @@ export = {
       Outputs: {
         ExportsOutputRefGroupC77FDACD8CF7DD5B: {
           Value: { Ref: "GroupC77FDACD" },
-          Export: { Name: "Stack:ExportsOutputRefGroupC77FDACD8CF7DD5B" }
+          Export: { Name: "stack2:ExportsOutputRefGroupC77FDACD8CF7DD5B" }
         }
       },
       Resources: {
@@ -48,5 +49,18 @@ export = {
       }
     });
     test.done();
-  }
+  },
+
+  'cannot reference tokens across apps'(test: Test) {
+    // GIVEN
+    const stack1 = new cdk.Stack();
+    const stack2 = new cdk.Stack();
+    const user = new iam.User(stack1, 'User');
+    const group = new iam.Group(stack2, 'Group');
+    group.addUser(user);
+
+    // THEN
+    test.throws(() => SynthUtils.synthesize(stack1), /Cannot reference across apps/);
+    test.done();
+  },
 };

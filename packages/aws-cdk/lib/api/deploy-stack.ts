@@ -10,7 +10,7 @@ import { ToolkitInfo } from './toolkit-info';
 import { changeSetHasNoChanges, describeStack, stackExists, stackFailedCreating, waitForChangeSet, waitForStack  } from './util/cloudformation';
 import { StackActivityMonitor } from './util/cloudformation/stack-activity-monitor';
 import { StackStatus } from './util/cloudformation/stack-status';
-import { SDK } from './util/sdk';
+import { SDK } from './util/sdk';
 
 type TemplateBodyParameter = {
   TemplateBody?: string
@@ -24,7 +24,7 @@ export interface DeployStackResult {
 }
 
 export interface DeployStackOptions {
-  stack: cxapi.SynthesizedStack;
+  stack: cxapi.CloudFormationStackArtifact;
   sdk: SDK;
   toolkitInfo?: ToolkitInfo;
   roleArn?: string;
@@ -115,7 +115,7 @@ async function getStackOutputs(cfn: aws.CloudFormation, stackName: string): Prom
  * @param sdk     an AWS SDK to use when interacting with S3
  * @param toolkitInfo information about the toolkit stack
  */
-async function makeBodyParameter(stack: cxapi.SynthesizedStack, toolkitInfo?: ToolkitInfo): Promise<TemplateBodyParameter> {
+async function makeBodyParameter(stack: cxapi.CloudFormationStackArtifact, toolkitInfo?: ToolkitInfo): Promise<TemplateBodyParameter> {
   const templateJson = toYAML(stack.template);
   if (toolkitInfo) {
     const s3KeyPrefix = `cdk/${stack.name}/`;
@@ -140,7 +140,7 @@ async function makeBodyParameter(stack: cxapi.SynthesizedStack, toolkitInfo?: To
 }
 
 export interface DestroyStackOptions {
-  stack: cxapi.SynthesizedStack;
+  stack: cxapi.CloudFormationStackArtifact;
   sdk: SDK;
   roleArn?: string;
   deployName?: string;

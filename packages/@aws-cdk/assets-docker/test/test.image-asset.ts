@@ -1,10 +1,8 @@
 import { expect, haveResource, SynthUtils } from '@aws-cdk/assert';
 import iam = require('@aws-cdk/aws-iam');
 import cdk = require('@aws-cdk/cdk');
-import cxapi = require('@aws-cdk/cx-api');
 import fs = require('fs');
 import { Test } from 'nodeunit';
-import os = require('os');
 import path = require('path');
 import { DockerImageAsset } from '../lib';
 
@@ -21,7 +19,7 @@ export = {
     });
 
     // THEN
-    const template = SynthUtils.toCloudFormation(stack);
+    const template = SynthUtils.synthesize(stack).template;
 
     test.deepEqual(template.Parameters.ImageImageName5E684353, {
       Type: 'String',
@@ -167,27 +165,17 @@ export = {
   },
 
   'docker directory is staged if asset staging is enabled'(test: Test) {
-    const workdir = mkdtempSync();
-    process.chdir(workdir);
-
-    const app = new cdk.App({
-      context: { [cxapi.ASSET_STAGING_DIR_CONTEXT]: '.stage-me' }
-    });
-
+    const app = new cdk.App();
     const stack = new cdk.Stack(app, 'stack');
 
     new DockerImageAsset(stack, 'MyAsset', {
       directory: path.join(__dirname, 'demo-image')
     });
 
-    app.run();
+    const session = app.run();
 
-    test.ok(fs.existsSync('.stage-me/1a17a141505ac69144931fe263d130f4612251caa4bbbdaf68a44ed0f405439c/Dockerfile'));
-    test.ok(fs.existsSync('.stage-me/1a17a141505ac69144931fe263d130f4612251caa4bbbdaf68a44ed0f405439c/index.py'));
+    test.ok(fs.existsSync(path.join(session.directory, 'asset.1a17a141505ac69144931fe263d130f4612251caa4bbbdaf68a44ed0f405439c/Dockerfile')));
+    test.ok(fs.existsSync(path.join(session.directory, 'asset.1a17a141505ac69144931fe263d130f4612251caa4bbbdaf68a44ed0f405439c/index.py')));
     test.done();
   }
 };
-
-function mkdtempSync() {
-  return fs.mkdtempSync(path.join(os.tmpdir(), 'test.assets'));
-}

@@ -1,3 +1,4 @@
+import { expect, haveResource } from '@aws-cdk/assert';
 import { App, Stack } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
 import { Key } from '../lib';
@@ -11,13 +12,10 @@ export = {
 
     new EncryptionKeyAlias(stack, 'Alias', { key, alias: 'alias/foo' });
 
-    test.deepEqual(app.synthesizeStack(stack.name).template.Resources.Alias325C5727, {
-      Type: 'AWS::KMS::Alias',
-      Properties: {
-        AliasName: 'alias/foo',
-        TargetKeyId: { 'Fn::GetAtt': [ 'Key961B73FD', 'Arn' ] }
-      }
-    });
+    expect(stack).to(haveResource('AWS::KMS::Alias', {
+      AliasName: 'alias/foo',
+      TargetKeyId: { 'Fn::GetAtt': [ 'Key961B73FD', 'Arn' ] }
+    }));
 
     test.done();
   },
