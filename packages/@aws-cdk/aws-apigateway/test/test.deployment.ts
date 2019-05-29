@@ -153,7 +153,7 @@ export = {
 
     function synthesize() {
       stack.node.prepareTree();
-      return SynthUtils.toCloudFormation(stack);
+      return SynthUtils.synthesize(stack).template;
     }
   },
 

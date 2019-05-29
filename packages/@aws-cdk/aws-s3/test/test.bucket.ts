@@ -36,7 +36,7 @@ export = {
     });
 
     test.throws(() => {
-      SynthUtils.toCloudFormation(stack);
+      SynthUtils.synthesize(stack);
     }, /bucketName: 5 should be a string/);
 
     test.done();
@@ -571,7 +571,7 @@ export = {
       test.deepEqual(bucket.bucketArn, bucketArn);
       test.deepEqual(bucket.node.resolve(bucket.bucketName), 'my-bucket');
 
-      test.deepEqual(SynthUtils.toCloudFormation(stack), {}, 'the ref is not a real resource');
+      test.deepEqual(SynthUtils.synthesize(stack).template, {}, 'the ref is not a real resource');
       test.done();
     },
 
@@ -1000,7 +1000,7 @@ export = {
     bucket.grantWrite(writer);
     bucket.grantDelete(deleter);
 
-    const resources = SynthUtils.toCloudFormation(stack).Resources;
+    const resources = SynthUtils.synthesize(stack).template.Resources;
     const actions = (id: string) => resources[id].Properties.PolicyDocument.Statement[0].Action;
 
     test.deepEqual(actions('WriterDefaultPolicyDC585BCE'), ['s3:DeleteObject*', 's3:PutObject*', 's3:Abort*']);
@@ -1010,10 +1010,11 @@ export = {
   },
 
   'cross-stack permissions'(test: Test) {
-    const stackA = new cdk.Stack();
+    const app = new cdk.App();
+    const stackA = new cdk.Stack(app, 'stackA');
     const bucketFromStackA = new s3.Bucket(stackA, 'MyBucket');
 
-    const stackB = new cdk.Stack();
+    const stackB = new cdk.Stack(app, 'stackB');
     const user = new iam.User(stackB, 'UserWhoNeedsAccess');
     bucketFromStackA.grantRead(user);
 
@@ -1021,7 +1022,20 @@ export = {
       "Resources": {
         "MyBucketF68F3FF0": {
           "Type": "AWS::S3::Bucket",
-          "DeletionPolicy": "Retain",
+          "DeletionPolicy": "Retain"
+        }
+      },
+      "Outputs": {
+        "ExportsOutputFnGetAttMyBucketF68F3FF0Arn0F7E8E58": {
+          "Value": {
+            "Fn::GetAtt": [
+              "MyBucketF68F3FF0",
+              "Arn"
+            ]
+          },
+          "Export": {
+            "Name": "stackA:ExportsOutputFnGetAttMyBucketF68F3FF0Arn0F7E8E58"
+          }
         }
       }
     });
@@ -1045,14 +1059,14 @@ export = {
                   "Effect": "Allow",
                   "Resource": [
                     {
-                      "Fn::ImportValue": "Stack:ExportsOutputFnGetAttMyBucketF68F3FF0Arn0F7E8E58"
+                      "Fn::ImportValue": "stackA:ExportsOutputFnGetAttMyBucketF68F3FF0Arn0F7E8E58"
                     },
                     {
                       "Fn::Join": [
                         "",
                         [
                           {
-                            "Fn::ImportValue": "Stack:ExportsOutputFnGetAttMyBucketF68F3FF0Arn0F7E8E58"
+                            "Fn::ImportValue": "stackA:ExportsOutputFnGetAttMyBucketF68F3FF0Arn0F7E8E58"
                           },
                           "/*"
                         ]
