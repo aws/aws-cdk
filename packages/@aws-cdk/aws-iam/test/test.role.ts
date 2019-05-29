@@ -81,36 +81,33 @@ export = {
   },
 
   'policy is created automatically when permissions are added'(test: Test) {
-    const stack = new Stack();
+    // by default we don't expect a role policy
+    const before = new Stack();
+    new Role(before, 'MyRole', { assumedBy: new ServicePrincipal('sns.amazonaws.com') });
+    expect(before).notTo(haveResource('AWS::IAM::Policy'));
 
-    const role = new Role(stack, 'MyRole', {
-      assumedBy: new ServicePrincipal('sns.amazonaws.com')
-    });
-
-    test.ok(!('MyRoleDefaultPolicyA36BE1DD' in SynthUtils.toCloudFormation(stack).Resources), 'initially created without a policy');
-
-    role.addToPolicy(new PolicyStatement().addResource('myresource').addAction('myaction'));
-    test.ok(SynthUtils.toCloudFormation(stack).Resources.MyRoleDefaultPolicyA36BE1DD, 'policy resource created');
-
-    expect(stack).toMatch({ Resources:
-      { MyRoleF48FFE04:
-         { Type: 'AWS::IAM::Role',
-         Properties:
-          { AssumeRolePolicyDocument:
-           { Statement:
-            [ { Action: 'sts:AssumeRole',
-              Effect: 'Allow',
-              Principal: { Service: 'sns.amazonaws.com' } } ],
-             Version: '2012-10-17' } } },
-        MyRoleDefaultPolicyA36BE1DD:
-         { Type: 'AWS::IAM::Policy',
-         Properties:
-          { PolicyDocument:
-           { Statement:
-            [ { Action: 'myaction', Effect: 'Allow', Resource: 'myresource' } ],
-             Version: '2012-10-17' },
-          PolicyName: 'MyRoleDefaultPolicyA36BE1DD',
-          Roles: [ { Ref: 'MyRoleF48FFE04' } ] } } } });
+    // add a policy to the role
+    const after = new Stack();
+    const afterRole = new Role(after, 'MyRole', { assumedBy: new ServicePrincipal('sns.amazonaws.com') });
+    afterRole.addToPolicy(new PolicyStatement().addResource('myresource').addAction('myaction'));
+    expect(after).to(haveResource('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: "myaction",
+            Effect: "Allow",
+            Resource: "myresource"
+          }
+        ],
+        Version: "2012-10-17"
+      },
+      PolicyName: "MyRoleDefaultPolicyA36BE1DD",
+      Roles: [
+        {
+          Ref: "MyRoleF48FFE04"
+        }
+      ]
+    }));
     test.done();
   },
 

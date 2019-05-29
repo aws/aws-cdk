@@ -1,18 +1,21 @@
-import { Stack, SynthesisOptions, Synthesizer } from '@aws-cdk/cdk';
-import { CloudAssembly } from '@aws-cdk/cx-api';
+import { App, Stack, SynthesisOptions, Synthesizer } from '@aws-cdk/cdk';
+import cxapi = require('@aws-cdk/cx-api');
 
 export class SynthUtils {
-  public static toCloudFormation(stack: Stack, options: SynthesisOptions = { }): any {
-    const session = this.synthesize(stack, options);
-    return this.templateForStackName(session, stack.name);
-  }
+  /**
+   * @param stack
+   * @param options
+   */
+  public static synthesize(stack: Stack, options: SynthesisOptions = { }): cxapi.CloudFormationStackArtifact {
+    // if this stack has an App root, then use it for synthesis so that cross refereces would work
+    let assembly;
+    if (App.isApp(stack.node.root)) {
+      assembly = stack.node.root.run();
+    } else {
+      const synth = new Synthesizer();
+      assembly = synth.synthesize(stack, options);
+    }
 
-  public static templateForStackName(assembly: CloudAssembly, stackName: string): any {
-    return assembly.getStack(stackName).template;
-  }
-
-  public static synthesize(stack: Stack, options: SynthesisOptions): CloudAssembly {
-    const synth = new Synthesizer();
-    return synth.synthesize(stack, options);
+    return assembly.getStack(stack.name);
   }
 }
