@@ -1304,7 +1304,7 @@ class CompositeDependable implements IDependable {
 
   constructor() {
     const self = this;
-    cdk.DependendableTrait.implement(this, {
+    cdk.DependableTrait.implement(this, {
       get dependencyRoots() {
         const ret = [];
         for (const dep of self.dependables) {
