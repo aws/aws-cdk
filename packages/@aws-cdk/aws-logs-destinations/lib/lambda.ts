@@ -16,10 +16,6 @@ export class LambdaDestination implements logs.ILogSubscriptionDestination {
     const logSubscriptionDestinationPolicyAddedFor: string[] = [];
 
     if (logSubscriptionDestinationPolicyAddedFor.indexOf(arn) === -1) {
-      // NOTE: the use of {AWS::Region} limits this to the same region, which shouldn't really be an issue,
-      // since the Lambda must be in the same region as the SubscriptionFilter anyway.
-      //
-      // (Wildcards in principals are unfortunately not supported.
       this.fn.addPermission('InvokedByCloudWatchLogs', {
         principal: new iam.ServicePrincipal(`logs.amazonaws.com`),
         sourceArn: arn
