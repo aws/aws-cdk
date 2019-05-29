@@ -8,7 +8,7 @@ export interface TestStackArtifact {
   autoDeploy?: boolean;
   depends?: string[];
   metadata?: cxapi.StackMetadata;
-  assets?: any[];
+  assets?: cxapi.AssetMetadataEntry[];
 }
 
 export function testAssembly(...stacks: TestStackArtifact[]): cxapi.CloudAssembly {
@@ -16,14 +16,22 @@ export function testAssembly(...stacks: TestStackArtifact[]): cxapi.CloudAssembl
 
   for (const stack of stacks) {
     const templateFile = `${stack.stackName}.template.json`;
-    fs.writeFileSync(path.join(builder.outdir, templateFile), templateFile);
+    fs.writeFileSync(path.join(builder.outdir, templateFile), JSON.stringify(stack.template, undefined, 2));
+
+    const metadata: { [path: string]: cxapi.MetadataEntry[] } = { ...stack.metadata };
+
+    for (const asset of stack.assets || []) {
+      metadata[asset.id] = [
+        { type: cxapi.ASSET_METADATA, data: asset }
+      ];
+    }
 
     builder.addArtifact(stack.stackName, {
       type: cxapi.ArtifactType.AwsCloudFormationStack,
       environment: 'aws://12345/here',
       autoDeploy: stack.autoDeploy,
       dependencies: stack.depends,
-      metadata: stack.metadata,
+      metadata,
       properties: {
         templateFile
       }
