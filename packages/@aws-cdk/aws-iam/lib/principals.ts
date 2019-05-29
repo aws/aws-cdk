@@ -131,6 +131,13 @@ export interface ServicePrincipalOpts {
    * @default the current Stack's region.
    */
   readonly region?: string;
+
+  /**
+   * Additional conditions to add to the Service Principal
+   *
+   * @default - No conditions
+   */
+  readonly conditions?: { [key: string]: any };
 }
 
 /**
@@ -146,7 +153,7 @@ export class ServicePrincipal extends PrincipalBase {
       Service: [
         new ServicePrincipalToken(this.service, this.opts).toString()
       ]
-    });
+    }, this.opts.conditions);
   }
 
   public toString() {

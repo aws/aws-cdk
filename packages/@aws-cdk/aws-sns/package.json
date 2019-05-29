@@ -75,7 +75,6 @@
     "@aws-cdk/aws-events": "^0.32.0",
     "@aws-cdk/aws-iam": "^0.32.0",
     "@aws-cdk/aws-lambda": "^0.32.0",
-    "@aws-cdk/aws-s3-notifications": "^0.32.0",
     "@aws-cdk/aws-sqs": "^0.32.0",
     "@aws-cdk/cdk": "^0.32.0"
   },
@@ -85,7 +84,6 @@
     "@aws-cdk/aws-events": "^0.32.0",
     "@aws-cdk/aws-iam": "^0.32.0",
     "@aws-cdk/aws-lambda": "^0.32.0",
-    "@aws-cdk/aws-s3-notifications": "^0.32.0",
     "@aws-cdk/aws-sqs": "^0.32.0",
     "@aws-cdk/cdk": "^0.32.0"
   },

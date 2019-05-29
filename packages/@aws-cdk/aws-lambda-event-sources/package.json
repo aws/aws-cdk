@@ -69,6 +69,7 @@
     "@aws-cdk/aws-kinesis": "^0.32.0",
     "@aws-cdk/aws-lambda": "^0.32.0",
     "@aws-cdk/aws-s3": "^0.32.0",
+    "@aws-cdk/aws-s3-notifications": "^0.32.0",
     "@aws-cdk/aws-sns": "^0.32.0",
     "@aws-cdk/aws-sqs": "^0.32.0",
     "@aws-cdk/cdk": "^0.32.0"
@@ -82,6 +83,7 @@
     "@aws-cdk/aws-kinesis": "^0.32.0",
     "@aws-cdk/aws-lambda": "^0.32.0",
     "@aws-cdk/aws-s3": "^0.32.0",
+    "@aws-cdk/aws-s3-notifications": "^0.32.0",
     "@aws-cdk/aws-sns": "^0.32.0",
     "@aws-cdk/aws-sqs": "^0.32.0",
     "@aws-cdk/cdk": "^0.32.0"

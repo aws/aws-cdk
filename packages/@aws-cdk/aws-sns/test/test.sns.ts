@@ -1,7 +1,6 @@
 import { expect, haveResource } from '@aws-cdk/assert';
 import iam = require('@aws-cdk/aws-iam');
 import lambda = require('@aws-cdk/aws-lambda');
-import s3n = require('@aws-cdk/aws-s3-notifications');
 import sqs = require('@aws-cdk/aws-sqs');
 import cdk = require('@aws-cdk/cdk');
 import { Test } from 'nodeunit';
@@ -695,90 +694,6 @@ export = {
     // THEN
     test.deepEqual(imported.topicName, 'my_corporate_topic');
     test.deepEqual(imported.topicArn, 'arn:aws:sns:*:123456789012:my_corporate_topic');
-    test.done();
-  },
-
-  'asBucketNotificationDestination adds bucket permissions only once for each bucket'(test: Test) {
-    const stack = new cdk.Stack();
-
-    const topic = new sns.Topic(stack, 'MyTopic');
-
-    const bucketArn = 'arn:bucket';
-    const bucketId = 'bucketId';
-
-    const dest1 = topic.asBucketNotificationDestination(bucketArn, bucketId);
-    test.deepEqual(stack.node.resolve(dest1.arn), stack.node.resolve(topic.topicArn));
-    test.deepEqual(dest1.type, s3n.BucketNotificationDestinationType.Topic);
-
-    const dep: cdk.Construct = dest1.dependencies![0] as any;
-    test.deepEqual(stack.node.resolve((dep.node.children[0] as any).logicalId),
-      'MyTopicPolicy12A5EC17', 'verify topic policy is added as dependency');
-
-    // calling again on the same bucket yields is idempotent
-    const dest2 = topic.asBucketNotificationDestination(bucketArn, bucketId);
-    test.deepEqual(stack.node.resolve(dest2.arn), stack.node.resolve(topic.topicArn));
-    test.deepEqual(dest2.type, s3n.BucketNotificationDestinationType.Topic);
-
-    // another bucket will be added to the topic policy
-    const dest3 = topic.asBucketNotificationDestination('bucket2', 'bucket2');
-    test.deepEqual(stack.node.resolve(dest3.arn), stack.node.resolve(topic.topicArn));
-    test.deepEqual(dest3.type, s3n.BucketNotificationDestinationType.Topic);
-
-    expect(stack).toMatch({
-      "Resources": {
-      "MyTopic86869434": {
-        "Type": "AWS::SNS::Topic"
-      },
-      "MyTopicPolicy12A5EC17": {
-        "Type": "AWS::SNS::TopicPolicy",
-        "Properties": {
-        "PolicyDocument": {
-          "Statement": [
-          {
-            "Action": "sns:Publish",
-            "Condition": {
-            "ArnLike": {
-              "aws:SourceArn": "arn:bucket"
-            }
-            },
-            "Effect": "Allow",
-            "Principal": {
-            "Service": { "Fn::Join": ["", ["s3.", { Ref: "AWS::URLSuffix" }]] }
-            },
-            "Resource": {
-            "Ref": "MyTopic86869434"
-            },
-            "Sid": "0"
-          },
-          {
-            "Action": "sns:Publish",
-            "Condition": {
-            "ArnLike": {
-              "aws:SourceArn": "bucket2"
-            }
-            },
-            "Effect": "Allow",
-            "Principal": {
-            "Service": { "Fn::Join": ["", ["s3.", { Ref: "AWS::URLSuffix" }]] }
-            },
-            "Resource": {
-            "Ref": "MyTopic86869434"
-            },
-            "Sid": "1"
-          }
-          ],
-          "Version": "2012-10-17"
-        },
-        "Topics": [
-          {
-          "Ref": "MyTopic86869434"
-          }
-        ]
-        }
-      }
-      }
-    });
-
     test.done();
   },
 

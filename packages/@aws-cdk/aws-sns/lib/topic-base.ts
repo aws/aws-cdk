@@ -1,7 +1,6 @@
 import cloudwatch = require('@aws-cdk/aws-cloudwatch');
 import iam = require('@aws-cdk/aws-iam');
 import lambda = require('@aws-cdk/aws-lambda');
-import s3n = require('@aws-cdk/aws-s3-notifications');
 import sqs = require('@aws-cdk/aws-sqs');
 import cdk = require('@aws-cdk/cdk');
 import { IResource, Resource } from '@aws-cdk/cdk';
@@ -10,8 +9,7 @@ import { Subscription, SubscriptionProtocol } from './subscription';
 
 export interface ITopic extends
   IResource,
-  cloudwatch.IAlarmAction,
-  s3n.IBucketNotificationDestination {
+  cloudwatch.IAlarmAction {
 
   /**
    * @attribute
@@ -98,9 +96,6 @@ export abstract class TopicBase extends Resource implements ITopic {
   protected abstract readonly autoCreatePolicy: boolean;
 
   private policy?: TopicPolicy;
-
-  /** Buckets permitted to send notifications to this topic */
-  private readonly notifyingBuckets = new Set<string>();
 
   /**
    * Subscribe some endpoint to this topic
@@ -261,32 +256,6 @@ export abstract class TopicBase extends Resource implements ITopic {
     return this.topicArn;
   }
 
-  /**
-   * Implements the IBucketNotificationDestination interface, allowing topics to be used
-   * as bucket notification destinations.
-   *
-   * @param bucketArn The ARN of the bucket sending the notifications
-   * @param bucketId A unique ID of the bucket
-   */
-  public asBucketNotificationDestination(bucketArn: string, bucketId: string): s3n.BucketNotificationDestinationProps {
-    // allow this bucket to sns:publish to this topic (if it doesn't already have a permission)
-    if (!this.notifyingBuckets.has(bucketId)) {
-
-      this.addToResourcePolicy(new iam.PolicyStatement()
-        .addServicePrincipal('s3.amazonaws.com')
-        .addAction('sns:Publish')
-        .addResource(this.topicArn)
-        .addCondition('ArnLike', { "aws:SourceArn": bucketArn }));
-
-      this.notifyingBuckets.add(bucketId);
-    }
-
-    return {
-      arn: this.topicArn,
-      type: s3n.BucketNotificationDestinationType.Topic,
-      dependencies: [ this.policy! ] // make sure the topic policy resource is created before the notification config
-    };
-  }
 }
 
 /**

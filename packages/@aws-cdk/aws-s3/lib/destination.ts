@@ -1,4 +1,5 @@
 import cdk = require('@aws-cdk/cdk');
+import { IBucket } from './bucket';
 
 /**
  * Implemented by constructs that can be used as bucket notification destinations.
@@ -9,10 +10,9 @@ export interface IBucketNotificationDestination {
    * bucket. This method will only be called once for each destination/bucket
    * pair and the result will be cached, so there is no need to implement
    * idempotency in each destination.
-   * @param bucketArn The ARN of the bucket
-   * @param bucketId A unique ID of this bucket in the stack
+   * @param bucket The bucket object to bind to
    */
-  asBucketNotificationDestination(bucketArn: string, bucketId: string): BucketNotificationDestinationProps;
+  bind(scope: cdk.Construct, bucket: IBucket): BucketNotificationDestinationProps;
 }
 
 /**
