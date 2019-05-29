@@ -112,8 +112,8 @@ export class Fn {
    * @param sizeMask The digit covered in the subnet.
    * @returns a token represented as a string
    */
-  public static cidr(ipBlock: string, count: number, sizeMask?: string): string {
-    return new FnCidr(ipBlock, count, sizeMask).toString();
+  public static cidr(ipBlock: string, count: number, sizeMask?: string): string[] {
+    return new FnCidr(ipBlock, count, sizeMask).toList();
   }
 
   /**
