@@ -63,7 +63,7 @@ export = {
       });
 
       // THEN
-      const assembly = new cxapi.CloudAssembly(app.run().outdir);
+      const assembly = app.run();
       const synthesized = assembly.stacks[0];
 
       // Func1 has an asset, Func2 does not
