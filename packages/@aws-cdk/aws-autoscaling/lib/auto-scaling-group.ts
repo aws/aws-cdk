@@ -148,6 +148,14 @@ export interface CommonAutoScalingGroupProps {
    * @default - Use subnet setting.
    */
   readonly associatePublicIpAddress?: boolean;
+
+  /**
+   * The maximum hourly price (in USD) to be paid for any Spot Instance launched to fulfill the request. Spot Instances are
+   * launched when the price you specify exceeds the current Spot market price.
+   *
+   * @default none
+   */
+  readonly spotPrice?: string;
 }
 
 /**
@@ -378,6 +386,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
       iamInstanceProfile: iamProfile.ref,
       userData: userDataToken,
       associatePublicIpAddress: props.associatePublicIpAddress,
+      spotPrice: props.spotPrice,
     });
 
     launchConfig.node.addDependency(this.role);
