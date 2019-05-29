@@ -18,13 +18,13 @@ export interface ILogSubscriptionDestination {
    * The destination may reconfigure its own permissions in response to this
    * function call.
    */
-  bind(scope: Construct, sourceLogGroup: ILogGroup): LogSubscriptionDestination;
+  bind(scope: Construct, sourceLogGroup: ILogGroup): LogSubscriptionDestinationProperties;
 }
 
 /**
  * Properties returned by a Subscription destination
  */
-export interface LogSubscriptionDestination {
+export interface LogSubscriptionDestinationProperties {
   /**
    * The ARN of the subscription's destination
    */
@@ -35,7 +35,7 @@ export interface LogSubscriptionDestination {
    *
    * @default No role assumed
    */
-  readonly role?: iam.Role;
+  readonly role?: iam.IRole;
 }
 
 /**
