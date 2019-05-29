@@ -245,7 +245,6 @@ export abstract class FunctionBase extends Resource implements IFunction  {
             action: 'lambda:InvokeFunction',
           });
         },
-        dependencyRoots: [],
         node: this.node,
       },
     });

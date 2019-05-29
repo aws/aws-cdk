@@ -1302,22 +1302,24 @@ function describeSelection(placement: SubnetSelection): string {
 class CompositeDependable implements IDependable {
   private readonly dependables = new Array<IDependable>();
 
+  constructor() {
+    const self = this;
+    cdk.DependendableTrait.implement(this, {
+      get dependencyRoots() {
+        const ret = [];
+        for (const dep of self.dependables) {
+          ret.push(...cdk.DependableTrait.get(dep).dependencyRoots);
+        }
+        return ret;
+      }
+    });
+  }
+
   /**
    * Add a construct to the dependency roots
    */
   public add(dep: IDependable) {
     this.dependables.push(dep);
-  }
-
-  /**
-   * Retrieve the current set of dependency roots
-   */
-  public get dependencyRoots(): IConstruct[] {
-    const ret = [];
-    for (const dep of this.dependables) {
-      ret.push(...dep.dependencyRoots);
-    }
-    return ret;
   }
 }
 
