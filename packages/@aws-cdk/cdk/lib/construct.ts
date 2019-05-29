@@ -589,6 +589,7 @@ export class Construct implements IConstruct {
   constructor(scope: Construct, id: string) {
     this.node = new ConstructNode(this, scope, id);
 
+    // Implement IDependable privately
     const self = this;
     DependableTrait.implement(this, {
       get dependencyRoots() { return [self]; },

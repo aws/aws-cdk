@@ -47,6 +47,16 @@ export class ConcreteDependable implements IDependable {
  * explicitly. This is used to implement certain framework features that are
  * not intended to be used by Construct consumers, and so should be hidden
  * from accidental use.
+ *
+ * @example
+ *
+ * // Usage
+ * const roots = DependableTrait.get(construct).dependencyRoots;
+ *
+ * // Definition
+ * DependableTrait.implement(construct, {
+ *   get dependencyRoots() { return []; }
+ * });
  */
 export abstract class DependableTrait {
   /**
