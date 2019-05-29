@@ -6,11 +6,11 @@ import { Construct } from '@aws-cdk/cdk';
 /**
  * Use a Lamda Function as the destination for a log subscription
  */
-export class LambdaDestination implements logs.ILogSubscriptionDestination {
+export class LambdaDestination implements logs.ILogSubscriptionDestination{
   constructor(private readonly fn: lambda.IFunction) {
   }
 
-  public bind(_scope: Construct, logGroup: logs.ILogGroup): logs.LogSubscriptionDestination {
+  public bind(_scope: Construct, logGroup: logs.ILogGroup): logs.LogSubscriptionDestinationProperties {
     const arn = logGroup.logGroupArn;
 
     const logSubscriptionDestinationPolicyAddedFor: string[] = [];
