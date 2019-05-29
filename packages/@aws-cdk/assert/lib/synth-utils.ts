@@ -20,7 +20,7 @@ export class SynthUtils {
   }
 
   public static subset(stack: Stack, options: SubsetOptions): any {
-    const template = SynthUtils.toCloudFormation(stack);
+    const template = SynthUtils.synthesize(stack).template;
     if (template.Resources) {
       for (const [key, resource] of Object.entries(template.Resources)) {
         if (options.resourceTypes && !options.resourceTypes.includes((resource as any).Type)) {

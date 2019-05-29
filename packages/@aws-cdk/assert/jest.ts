@@ -1,5 +1,5 @@
 import { Stack } from "@aws-cdk/cdk";
-import { CloudFormationStackArtifact } from "@aws-cdk/cx-api";
+import cxapi = require("@aws-cdk/cx-api");
 import { HaveResourceAssertion, ResourcePart } from "./lib/assertions/have-resource";
 import { MatchStyle, matchTemplate } from "./lib/assertions/match-template";
 import { expect as ourExpect } from './lib/expect';
@@ -23,7 +23,7 @@ declare global {
 
 expect.extend({
   toMatchTemplate(
-    actual: SynthesizedStack | Stack,
+    actual: cxapi.CloudFormationStackArtifact | Stack,
     template: any,
     matchStyle?: MatchStyle) {
 
@@ -44,7 +44,7 @@ expect.extend({
   },
 
   toHaveResource(
-      actual: CloudFormationStackArtifact | Stack,
+      actual: cxapi.CloudFormationStackArtifact | Stack,
       resourceType: string,
       properties?: any,
       comparison?: ResourcePart) {
@@ -53,7 +53,7 @@ expect.extend({
     return assertHaveResource(assertion, actual);
   },
   toHaveResourceLike(
-      actual: CloudFormationStackArtifact | Stack,
+      actual: cxapi.CloudFormationStackArtifact | Stack,
       resourceType: string,
       properties?: any,
       comparison?: ResourcePart) {
@@ -63,7 +63,7 @@ expect.extend({
   }
 });
 
-function assertHaveResource(assertion: HaveResourceAssertion, actual: CloudFormationStackArtifact | Stack) {
+function assertHaveResource(assertion: HaveResourceAssertion, actual: cxapi.CloudFormationStackArtifact | Stack) {
   const inspector = ourExpect(actual);
   const pass = assertion.assertUsing(inspector);
   if (pass) {

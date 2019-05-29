@@ -3,7 +3,6 @@ import { App as Root, findTokens, Fn, Stack, Token } from '../lib';
 import { createTokenDouble, extractTokenDouble } from '../lib/encoding';
 import { TokenMap } from '../lib/token-map';
 import { evaluateCFN } from './evaluate-cfn';
-import { func } from 'fast-check/*';
 
 export = {
   'resolve a plain old object should just return the object'(test: Test) {
