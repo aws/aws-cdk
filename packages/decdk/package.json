@@ -131,7 +131,7 @@
     "@aws-cdk/region-info": "^0.32.0",
     "@aws-cdk/runtime-values": "^0.32.0",
     "fs-extra": "^7.0.1",
-    "jsii-reflect": "^0.10.5",
+    "jsii-reflect": "^0.11.0",
     "jsonschema": "^1.2.4",
     "yaml": "1.5.0",
     "yargs": "^13.2.2",
