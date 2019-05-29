@@ -1,6 +1,7 @@
 import s3 = require('@aws-cdk/aws-s3');
+import sns = require('@aws-cdk/aws-sns');
 import cdk = require('@aws-cdk/cdk');
-import sns = require('../lib');
+import s3n = require('../../lib');
 
 class MyStack extends cdk.Stack {
   constructor(scope: cdk.App, id: string) {
@@ -12,8 +13,8 @@ class MyStack extends cdk.Stack {
         removalPolicy: cdk.RemovalPolicy.Destroy
     });
 
-    bucket.addObjectCreatedNotification(objectCreateTopic);
-    bucket.addObjectRemovedNotification(objectRemovedTopic, { prefix: 'foo/', suffix: '.txt' });
+    bucket.addObjectCreatedNotification(new s3n.SnsDestination(objectCreateTopic));
+    bucket.addObjectRemovedNotification(new s3n.SnsDestination(objectRemovedTopic), { prefix: 'foo/', suffix: '.txt' });
 
   }
 }

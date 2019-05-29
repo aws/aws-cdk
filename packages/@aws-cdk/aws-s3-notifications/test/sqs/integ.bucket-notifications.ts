@@ -1,6 +1,7 @@
 import s3 = require('@aws-cdk/aws-s3');
+import sqs = require('@aws-cdk/aws-sqs');
 import cdk = require('@aws-cdk/cdk');
-import sqs = require('../lib');
+import s3n = require('../../lib');
 
 const app = new cdk.App();
 
@@ -11,14 +12,14 @@ const bucket1 = new s3.Bucket(stack, 'Bucket1', {
 });
 const queue = new sqs.Queue(stack, 'MyQueue');
 
-bucket1.addObjectCreatedNotification(queue);
+bucket1.addObjectCreatedNotification(new s3n.SqsDestination(queue));
 
 const bucket2 = new s3.Bucket(stack, 'Bucket2', {
   removalPolicy: cdk.RemovalPolicy.Destroy
 });
-bucket2.addObjectCreatedNotification(queue, { suffix: '.png' });
+bucket2.addObjectCreatedNotification(new s3n.SqsDestination(queue), { suffix: '.png' });
 
 const encryptedQueue = new sqs.Queue(stack, 'EncryptedQueue', { encryption: sqs.QueueEncryption.Kms });
-bucket1.addObjectRemovedNotification(encryptedQueue);
+bucket1.addObjectRemovedNotification(new s3n.SqsDestination(encryptedQueue));
 
 app.run();

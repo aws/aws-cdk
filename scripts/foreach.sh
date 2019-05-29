@@ -20,8 +20,9 @@
 # --------------------------------------------------------------------------------------------------
 set -euo pipefail
 scriptdir=$(cd $(dirname $0) && pwd)
-statefile="${HOME}/.foreach.state"
-commandfile="${HOME}/.foreach.command"
+statedir="${scriptdir}"
+statefile="${statedir}/.foreach.state"
+commandfile="${statedir}/.foreach.command"
 command_arg="${@:-}"
 base=$PWD
 
@@ -38,7 +39,7 @@ function success {
 }
 
 if [[ "${1:-}" == "--reset" ]]; then
-    rm -f ~/.foreach.*
+    rm -f "${statedir}/.foreach."*
     success "state cleared. you are free to start a new command."
     exit 0
 fi

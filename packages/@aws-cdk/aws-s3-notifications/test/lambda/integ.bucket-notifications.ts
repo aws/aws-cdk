@@ -1,6 +1,7 @@
+import lambda = require('@aws-cdk/aws-lambda');
 import s3 = require('@aws-cdk/aws-s3');
 import cdk = require('@aws-cdk/cdk');
-import lambda = require('../lib');
+import s3n = require('../../lib');
 
 const app = new cdk.App();
 
@@ -20,8 +21,8 @@ const bucketB = new s3.Bucket(stack, 'YourBucket', {
   removalPolicy: cdk.RemovalPolicy.Destroy
 });
 
-bucketA.addObjectCreatedNotification(fn, { suffix: '.png' });
-bucketB.addEventNotification(s3.EventType.ObjectRemoved, fn);
+bucketA.addObjectCreatedNotification(new s3n.LambdaDestination(fn), { suffix: '.png' });
+bucketB.addEventNotification(s3.EventType.ObjectRemoved, new s3n.LambdaDestination(fn));
 
 app.run();
 
