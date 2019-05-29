@@ -4739,6 +4739,126 @@
         ],
         "description": "Set RefKind of AWS::ServiceCatalog::ResourceUpdateConstraint to None"
       }
+    },
+    "AWS::PinpointEmail::ConfigurationSet": {
+      "patch": {
+        "operations": [
+          {
+            "op": "add",
+            "path": "/RefKind",
+            "value": "Name"
+          }
+        ],
+        "description": "Set RefKind of AWS::PinpointEmail::ConfigurationSet to Name"
+      }
+    },
+    "AWS::Transfer::Server": {
+      "patch": {
+        "operations": [
+          {
+            "op": "add",
+            "path": "/RefKind",
+            "value": "Arn"
+          }
+        ],
+        "description": "Set RefKind of AWS::Transfer::Server to Arn"
+      }
+    },
+    "AWS::EC2::CapacityReservation": {
+      "patch": {
+        "operations": [
+          {
+            "op": "add",
+            "path": "/RefKind",
+            "value": "Id"
+          }
+        ],
+        "description": "Set RefKind of AWS::EC2::CapacityReservation to Id"
+      }
+    },
+    "AWS::PinpointEmail::ConfigurationSetEventDestination": {
+      "patch": {
+        "operations": [
+          {
+            "op": "add",
+            "path": "/RefKind",
+            "value": "Name"
+          }
+        ],
+        "description": "Set RefKind of AWS::PinpointEmail::ConfigurationSetEventDestination to Name"
+      }
+    },
+    "AWS::PinpointEmail::DedicatedIpPool": {
+      "patch": {
+        "operations": [
+          {
+            "op": "add",
+            "path": "/RefKind",
+            "value": "Name"
+          }
+        ],
+        "description": "Set RefKind of AWS::PinpointEmail::DedicatedIpPool to Name"
+      }
+    },
+    "AWS::PinpointEmail::Identity": {
+      "patch": {
+        "operations": [
+          {
+            "op": "add",
+            "path": "/RefKind",
+            "value": "Name"
+          }
+        ],
+        "description": "Set RefKind of AWS::PinpointEmail::Identity to Name"
+      }
+    },
+    "AWS::Transfer::User": {
+      "patch": {
+        "operations": [
+          {
+            "op": "add",
+            "path": "/RefKind",
+            "value": "Name"
+          }
+        ],
+        "description": "Set RefKind of AWS::Transfer::User to Name"
+      }
+    },
+    "AWS::WAFRegional::GeoMatchSet": {
+      "patch": {
+        "operations": [
+          {
+            "op": "add",
+            "path": "/RefKind",
+            "value": "Id"
+          }
+        ],
+        "description": "Set RefKind of AWS::WAFRegional::GeoMatchSet to Id"
+      }
+    },
+    "AWS::WAFRegional::RateBasedRule": {
+      "patch": {
+        "operations": [
+          {
+            "op": "add",
+            "path": "/RefKind",
+            "value": "Id"
+          }
+        ],
+        "description": "Set RefKind of AWS::WAFRegional::RateBasedRule to Id"
+      }
+    },
+    "AWS::WAFRegional::RegexPatternSet": {
+      "patch": {
+        "operations": [
+          {
+            "op": "add",
+            "path": "/RefKind",
+            "value": "Id"
+          }
+        ],
+        "description": "Set RefKind of AWS::WAFRegional::RegexPatternSet to Id"
+      }
     }
   }
 }
