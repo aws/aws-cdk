@@ -168,7 +168,7 @@ function setupStepScaling(intervals: appscaling.ScalingInterval[]) {
     scalingSteps: intervals
   });
 
-  return new ScalingStackTemplate(SynthUtils.toCloudFormation(stack));
+  return new ScalingStackTemplate(SynthUtils.synthesize(stack).template);
 }
 
 class ScalingStackTemplate {
