@@ -43,7 +43,7 @@ fail() {
 BUILD_INDICATOR=".BUILD_COMPLETED"
 rm -rf $BUILD_INDICATOR
 
-export PATH=node_modules/.bin:$PATH
+export PATH=$(npm bin):$PATH
 export NODE_OPTIONS="--max-old-space-size=4096 ${NODE_OPTIONS:-}"
 
 # Speed up build by reusing calculated tree hashes
