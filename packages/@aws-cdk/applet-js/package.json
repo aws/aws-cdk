@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/applet-js",
-  "version": "0.32.0",
+  "version": "0.33.0",
   "deprecated": "Applets have been deprecated in favor of 'decdk'",
   "description": "Javascript CDK applet host program",
   "main": "bin/cdk-applet-js.js",
@@ -26,8 +26,8 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "@types/fs-extra": "^5.0.5",
-    "cdk-build-tools": "^0.32.0",
-    "pkglint": "^0.32.0"
+    "cdk-build-tools": "^0.33.0",
+    "pkglint": "^0.33.0"
   },
   "repository": {
     "url": "https://github.com/awslabs/aws-cdk.git",

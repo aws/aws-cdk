@@ -2,6 +2,54 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.33.0](https://github.com/awslabs/aws-cdk/compare/v0.32.0...v0.33.0) (2019-05-30)
+
+**IMPORTANT**: apps created with the CDK version 0.33.0 and above cannot be used with an older CLI version.
+
+### Bug Fixes
+
+* **core:** Fn.cidr should return a list and not a string ([#2678](https://github.com/awslabs/aws-cdk/issues/2678)) ([9d2ea2a](https://github.com/awslabs/aws-cdk/commit/9d2ea2a)), closes [#2671](https://github.com/awslabs/aws-cdk/issues/2671)
+* **cli:** fix ts-node usage on Windows ([#2660](https://github.com/awslabs/aws-cdk/issues/2660)) ([5fe0af5](https://github.com/awslabs/aws-cdk/commit/5fe0af5))
+* **cli:** make `cdk docs` open the new API reference ([#2633](https://github.com/awslabs/aws-cdk/issues/2633)) ([6450758](https://github.com/awslabs/aws-cdk/commit/6450758))
+* **cli:** correctly pass build args to docker build ([#2634](https://github.com/awslabs/aws-cdk/issues/2634)) ([9c58d6f](https://github.com/awslabs/aws-cdk/commit/9c58d6f))
+* **core:** hide `dependencyRoots` from public API ([#2668](https://github.com/awslabs/aws-cdk/issues/2668)) ([2ba5ad2](https://github.com/awslabs/aws-cdk/commit/2ba5ad2)), closes [#2348](https://github.com/awslabs/aws-cdk/issues/2348)
+* **autoscaling:** move lifecycle hook targets to their own module ([#2628](https://github.com/awslabs/aws-cdk/issues/2628)) ([b282132](https://github.com/awslabs/aws-cdk/commit/b282132)), closes [#2447](https://github.com/awslabs/aws-cdk/issues/2447)
+* **codepipeline:** no longer allow providing an index when adding a Stage to a Pipeline. ([#2624](https://github.com/awslabs/aws-cdk/issues/2624)) ([ce39b12](https://github.com/awslabs/aws-cdk/commit/ce39b12))
+* **codepipeline-actions:** correctly serialize the userParameters passed to the Lambda invoke Action. ([#2537](https://github.com/awslabs/aws-cdk/issues/2537)) ([ceaf54a](https://github.com/awslabs/aws-cdk/commit/ceaf54a))
+* **cx-api:** improve compatibility messages for cli <=> app ([#2676](https://github.com/awslabs/aws-cdk/issues/2676)) ([38a9894](https://github.com/awslabs/aws-cdk/commit/38a9894))
+* **ecs:** move high level ECS constructs into aws-ecs-patterns ([#2623](https://github.com/awslabs/aws-cdk/issues/2623)) ([f901313](https://github.com/awslabs/aws-cdk/commit/f901313))
+* **logs:** move log destinations into 'aws-logs-destinations' ([#2655](https://github.com/awslabs/aws-cdk/issues/2655)) ([01601c2](https://github.com/awslabs/aws-cdk/commit/01601c2)), closes [#2444](https://github.com/awslabs/aws-cdk/issues/2444)
+* **s3:** move notification destinations into their own module ([#2659](https://github.com/awslabs/aws-cdk/issues/2659)) ([185951c](https://github.com/awslabs/aws-cdk/commit/185951c)), closes [#2445](https://github.com/awslabs/aws-cdk/issues/2445)
+
+### Features
+
+* **cli:** decouple "synth" and "deploy" through cloud assemblies ([#2636](https://github.com/awslabs/aws-cdk/issues/2636)) ([c52bcfc](https://github.com/awslabs/aws-cdk/commit/c52bcfc)), closes [#1893](https://github.com/awslabs/aws-cdk/issues/1893) [#2093](https://github.com/awslabs/aws-cdk/issues/2093) [#1954](https://github.com/awslabs/aws-cdk/issues/1954) [#2310](https://github.com/awslabs/aws-cdk/issues/2310) [#2073](https://github.com/awslabs/aws-cdk/issues/2073) [#1245](https://github.com/awslabs/aws-cdk/issues/1245) [#341](https://github.com/awslabs/aws-cdk/issues/341) [#956](https://github.com/awslabs/aws-cdk/issues/956) [#233](https://github.com/awslabs/aws-cdk/issues/233) [#2016](https://github.com/awslabs/aws-cdk/issues/2016)
+* **acm:** allow specifying region for validated certificates ([#2626](https://github.com/awslabs/aws-cdk/issues/2626)) ([1a7d4db](https://github.com/awslabs/aws-cdk/commit/1a7d4db))
+* **apigateway:** support for UsagePlan, ApiKey, UsagePlanKey ([#2564](https://github.com/awslabs/aws-cdk/issues/2564)) ([203f114](https://github.com/awslabs/aws-cdk/commit/203f114)), closes [#723](https://github.com/awslabs/aws-cdk/issues/723)
+* **autoscaling:** allow setting spotPrice ([#2571](https://github.com/awslabs/aws-cdk/issues/2571)) ([d640055](https://github.com/awslabs/aws-cdk/commit/d640055)), closes [#2208](https://github.com/awslabs/aws-cdk/issues/2208)
+* **cfn:** update CloudFormation spec to v3.3.0 ([#2669](https://github.com/awslabs/aws-cdk/issues/2669)) ([0f553ee](https://github.com/awslabs/aws-cdk/commit/0f553ee))
+* **cli:** disable `noUnusedLocals` and `noUnusedParameters` from typescript templates ([#2654](https://github.com/awslabs/aws-cdk/issues/2654)) ([b061826](https://github.com/awslabs/aws-cdk/commit/b061826))
+* **cloudformation:** aws-api custom resource ([#1850](https://github.com/awslabs/aws-cdk/issues/1850)) ([9a48b66](https://github.com/awslabs/aws-cdk/commit/9a48b66))
+* **cloudwatch:** support all Y-Axis properties ([#2406](https://github.com/awslabs/aws-cdk/issues/2406)) ([8904c3e](https://github.com/awslabs/aws-cdk/commit/8904c3e)), closes [#2385](https://github.com/awslabs/aws-cdk/issues/2385)
+
+
+### BREAKING CHANGES
+
+* **logs:** using a Lambda or Kinesis Stream as CloudWatch log subscription destination now requires an integration object from the `@aws-cdk/aws-logs-destinations` package.
+* **codepipeline-actions:** removed the `addPutJobResultPolicy` property when creating LambdaInvokeAction.
+* **cli:** `--interactive` has been removed
+* **cli:** `--numbered` has been removed
+* **cli:** `--staging` is now a boolean flag that indicates whether assets should be copied to the `--output` directory or directly referenced (`--no-staging` is useful for e.g. local debugging with SAM CLI)
+* **assets:** Assets (e.g. Lambda code assets) are now referenced relative to the output directory.
+* **assert:** `SynthUtils.templateForStackName` has been removed (use `SynthUtils.synthesize(stack).template`).
+* **cx-api:** `cxapi.SynthesizedStack` renamed to `cxapi.CloudFormationStackArtifact` with multiple API changes.
+* **core:** `cdk.App.run()` now returns a `cxapi.CloudAssembly` instead of `cdk.ISynthesisSession`.
+* **s3:** using a Topic, Queue or Lambda as bucket notification destination now requires an integration object from the `@aws-cdk/aws-s3-notifications` package.
+* **autoscaling:** using a Topic, Queue or Lambda as Lifecycle Hook Target now requires an integration object from the `@aws-cdk/aws-autoscaling-hooktargets` package.
+* **codepipeline:** the property atIndex has been removed from the StagePlacement interface.
+* **aws-ecs:** These changes move all L3 and higher constructs out of the aws-ecs module into the aws-ecs-patterns module. The following constructs have been moved into the aws-ecs-patterns module: `EcsQueueWorkerService`, `FargateQueueWorkerService`, `LoadBalancedEcsService`, `LoadBalancedFargateService` and `LoadBalancedFargateServiceApplets`.
+* **cloudwatch:** rename `leftAxisRange` => `leftYAxis`, `rightAxisRange` => `rightYAxis`, rename `YAxisRange` => `YAxisProps`.
+
 
 ## [0.32.0](https://github.com/awslabs/aws-cdk/compare/v0.31.0...v0.32.0) (2019-05-24)
 

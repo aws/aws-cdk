@@ -1,6 +1,6 @@
 {
   "name": "pkglint",
-  "version": "0.32.0",
+  "version": "0.33.0",
   "private": true,
   "description": "Validate and fix package.json files",
   "main": "lib/index.js",

@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/aws-autoscaling-api",
-  "version": "0.32.0",
+  "version": "0.33.0",
   "description": "API package for @aws-cdk/aws-autoscaling",
   "deprecated": true,
   "jsii": {
