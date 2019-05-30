@@ -2,7 +2,7 @@ import { findAlarmThresholds, normalizeIntervals } from '@aws-cdk/aws-autoscalin
 import cloudwatch = require('@aws-cdk/aws-cloudwatch');
 import cdk = require('@aws-cdk/cdk');
 import { IScalableTarget } from './scalable-target';
-import { AdjustmentType, MetricAggregationType, StepScalingAction } from './step-scaling-action';
+import { AdjustmentType, MetricAggregationType, StepScalingAction, StepScalingAlarmAction } from './step-scaling-action';
 
 export interface BasicStepScalingPolicyProps {
   /**
@@ -108,7 +108,7 @@ export class StepScalingPolicy extends cdk.Construct {
         evaluationPeriods: 1,
         threshold,
       });
-      this.lowerAlarm.addAlarmAction(this.lowerAction);
+      this.lowerAlarm.addAlarmAction(new StepScalingAlarmAction(this.lowerAction));
     }
 
     if (alarms.upperAlarmIntervalIndex !== undefined) {
@@ -138,7 +138,7 @@ export class StepScalingPolicy extends cdk.Construct {
         evaluationPeriods: 1,
         threshold,
       });
-      this.upperAlarm.addAlarmAction(this.upperAction);
+      this.upperAlarm.addAlarmAction(new StepScalingAlarmAction(this.upperAction));
     }
   }
 }
