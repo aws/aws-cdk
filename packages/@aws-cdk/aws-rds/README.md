@@ -69,8 +69,7 @@ To define Amazon CloudWatch event rules for database instances, use the `onEvent
 method:
 
 ```ts
-const rule = instance.onEvent('InstanceEvent');
-rule.addTarget(lambdaFunction);
+const rule = instance.onEvent('InstanceEvent', { target: new targets.LambdaFunction(fn) });
 ```
 
 ### Connecting
