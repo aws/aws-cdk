@@ -25,7 +25,7 @@ export = {
 
     // THEN
     test.same(app.run(), session); // same session if we run() again
-    test.deepEqual(list(session.directory), [ 'manifest.json' ]);
+    test.deepEqual(list(session.directory), [ 'cdk.out', 'manifest.json' ]);
     test.deepEqual(readJson(session.directory, 'manifest.json').artifacts, {});
     test.done();
   },
@@ -40,6 +40,7 @@ export = {
 
     // THEN
     test.deepEqual(list(session.directory), [
+      'cdk.out',
       'manifest.json',
       'one-stack.template.json'
     ]);
@@ -71,6 +72,7 @@ export = {
 
     // THEN
     test.deepEqual(list(session.directory), [
+      'cdk.out',
       'foo.json',
       'manifest.json',
       'one-stack.template.json'

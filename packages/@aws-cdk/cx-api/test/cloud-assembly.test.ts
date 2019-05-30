@@ -95,6 +95,6 @@ test('fails for invalid dependencies', () => {
 
 test('verifyManifestVersion', () => {
   verifyManifestVersion('0.33.0');
-  expect(() => verifyManifestVersion('0.31.0')).toThrow('App used framework v0.31.0 but it must be >= v0.33.0 in order to interact with this CLI');
-  expect(() => verifyManifestVersion('0.34.0')).toThrow('CLI >= 0.34.0 is required to interact with this app');
+  expect(() => verifyManifestVersion('0.31.0')).toThrow('CDK CLI can only be used with apps created by CDK >= 0.33.0');
+  expect(() => verifyManifestVersion('0.34.0')).toThrow('CDK CLI >= 0.34.0 is required to interact with this app');
 });
