@@ -28,5 +28,8 @@
   "author": {
     "name": "Amazon Web Services",
     "url": "https://aws.amazon.com"
+  },
+  "dependencies": {
+    "@aws-cdk/aws-sqs": "^0.32.0"
   }
 }
