@@ -3,6 +3,7 @@ import { App as Root, findTokens, Fn, Stack, Token } from '../lib';
 import { createTokenDouble, extractTokenDouble } from '../lib/encoding';
 import { TokenMap } from '../lib/token-map';
 import { evaluateCFN } from './evaluate-cfn';
+import { func } from 'fast-check/*';
 
 export = {
   'resolve a plain old object should just return the object'(test: Test) {
@@ -467,7 +468,6 @@ export = {
 
     'can number-encode and resolve Token objects'(test: Test) {
       // GIVEN
-      const stack = new Stack();
       const x = new Token(() => 123);
 
       // THEN
@@ -475,7 +475,7 @@ export = {
       test.equal(true, Token.isToken(encoded), 'encoded number does not test as token');
 
       // THEN
-      const resolved = stack.node.resolve({ value: encoded });
+      const resolved = resolve({ value: encoded });
       test.deepEqual(resolved, { value: 123 });
 
       test.done();
@@ -522,6 +522,91 @@ export = {
     const token = fn1();
     test.throws(() => token.throwError('message!'), /Token created:/);
     test.done();
+  },
+
+  'type coercion': (() => {
+    const tests: any = { };
+
+    const inputs = [
+      () => 'lazy',
+      'a string',
+      1234,
+      { an_object: 1234 },
+      [ 1, 2, 3 ],
+      false
+    ];
+
+    for (const input of inputs) {
+      // GIVEN
+      const stringToken = new Token(input).toString();
+      const numberToken = new Token(input).toNumber();
+      const listToken = new Token(input).toList();
+
+      // THEN
+      const expected = typeof(input) === 'function' ? input() : input;
+
+      tests[`${input}<string>.toNumber()`] = (test: Test) => {
+        test.deepEqual(resolve(new Token(stringToken).toNumber()), expected);
+        test.done();
+      };
+
+      tests[`${input}<list>.toNumber()`] = (test: Test) => {
+        test.deepEqual(resolve(new Token(listToken).toNumber()), expected);
+        test.done();
+      };
+
+      tests[`${input}<number>.toNumber()`] = (test: Test) => {
+        test.deepEqual(resolve(new Token(numberToken).toNumber()), expected);
+        test.done();
+      };
+
+      tests[`${input}<string>.toString()`] = (test: Test) => {
+        test.deepEqual(resolve(new Token(stringToken).toString()), expected);
+        test.done();
+      };
+
+      tests[`${input}<list>.toString()`] = (test: Test) => {
+        test.deepEqual(resolve(new Token(listToken).toString()), expected);
+        test.done();
+      };
+
+      tests[`${input}<number>.toString()`] = (test: Test) => {
+        test.deepEqual(resolve(new Token(numberToken).toString()), expected);
+        test.done();
+      };
+
+      tests[`${input}<string>.toList()`] = (test: Test) => {
+        test.deepEqual(resolve(new Token(stringToken).toList()), expected);
+        test.done();
+      };
+
+      tests[`${input}<list>.toList()`] = (test: Test) => {
+        test.deepEqual(resolve(new Token(listToken).toList()), expected);
+        test.done();
+      };
+
+      tests[`${input}<number>.toList()`] = (test: Test) => {
+        test.deepEqual(resolve(new Token(numberToken).toList()), expected);
+        test.done();
+      };
+    }
+
+    return tests;
+  })(),
+
+  'toXxx short circuts if the input is of the same type': {
+    'toNumber(number)'(test: Test) {
+      test.deepEqual(new Token(123).toNumber(), 123);
+      test.done();
+    },
+    'toList(list)'(test: Test) {
+      test.deepEqual(new Token([1, 2, 3]).toList(), [1, 2, 3]);
+      test.done();
+    },
+    'toString(string)'(test: Test) {
+      test.deepEqual(new Token('string').toString(), 'string'),
+      test.done();
+    }
   }
 };
 
