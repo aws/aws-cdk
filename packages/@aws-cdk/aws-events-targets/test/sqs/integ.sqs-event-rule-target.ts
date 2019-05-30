@@ -6,8 +6,8 @@ import cdk = require('@aws-cdk/cdk');
 import targets = require('../../lib');
 
 // ---------------------------------
-// Define a rule that triggers an SNS topic every 1min.
-// Connect the topic with a queue. This means that the queue should have
+// Define a rule that triggers an event every 1min.
+// Connect the event with a queue. This means that the queue should have
 // a message sent to it every minute.
 
 const app = new cdk.App();
@@ -34,6 +34,6 @@ policy.addCondition("ArnEquals", {
 });
 policy.addPrincipal(new iam.ServicePrincipal("events"));
 queue.addToResourcePolicy(policy);
-event.addTarget(new targets.SqsQueue(queue));
+event.addTarget(new targets.SqsQueue(queue);
 
 app.run();
