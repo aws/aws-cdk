@@ -18,13 +18,13 @@ export interface ILogSubscriptionDestination {
    * The destination may reconfigure its own permissions in response to this
    * function call.
    */
-  logSubscriptionDestination(sourceLogGroup: ILogGroup): LogSubscriptionDestination;
+  bind(scope: Construct, sourceLogGroup: ILogGroup): LogSubscriptionDestinationProperties;
 }
 
 /**
  * Properties returned by a Subscription destination
  */
-export interface LogSubscriptionDestination {
+export interface LogSubscriptionDestinationProperties {
   /**
    * The ARN of the subscription's destination
    */
@@ -35,7 +35,7 @@ export interface LogSubscriptionDestination {
    *
    * @default No role assumed
    */
-  readonly role?: iam.Role;
+  readonly role?: iam.IRole;
 }
 
 /**
@@ -67,7 +67,7 @@ export class SubscriptionFilter extends Resource {
   constructor(scope: Construct, id: string, props: SubscriptionFilterProps) {
     super(scope, id);
 
-    const destProps = props.destination.logSubscriptionDestination(props.logGroup);
+    const destProps = props.destination.bind(this, props.logGroup);
 
     new CfnSubscriptionFilter(this, 'Resource', {
       logGroupName: props.logGroup.logGroupName,

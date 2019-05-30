@@ -1,0 +1,96 @@
+{
+  "name": "@aws-cdk/aws-logs-destinations",
+  "version": "0.33.0",
+  "description": "Log Destinations for AWS CloudWatch Logs",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "jsii": {
+    "outdir": "dist",
+    "targets": {
+      "java": {
+        "package": "software.amazon.awscdk.services.logs.destinations",
+        "maven": {
+          "groupId": "software.amazon.awscdk",
+          "artifactId": "logs-destinations"
+        }
+      },
+      "dotnet": {
+        "namespace": "Amazon.CDK.AWS.Logs.Destinations",
+        "packageId": "Amazon.CDK.AWS.Logs.Destinations",
+        "signAssembly": true,
+        "assemblyOriginatorKeyFile": "../../key.snk"
+      },
+      "python": {
+        "distName": "aws-cdk.aws-logs-destinations",
+        "module": "aws_cdk.aws_logs_destinations"
+      }
+    }
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/awslabs/aws-cdk.git",
+    "directory": "packages/@aws-cdk/aws-logs-destinations"
+  },
+  "scripts": {
+    "build": "cdk-build",
+    "watch": "cdk-watch",
+    "lint": "cdk-lint",
+    "test": "cdk-test",
+    "integ": "cdk-integ",
+    "pkglint": "pkglint -f",
+    "package": "cdk-package",
+    "awslint": "cdk-awslint",
+    "cfn2ts": "cfn2ts",
+    "build+test+package": "npm run build+test && npm run package",
+    "build+test": "npm run build && npm test"
+  },
+  "keywords": [
+    "aws",
+    "cdk",
+    "constructs",
+    "logs"
+  ],
+  "author": {
+    "name": "Amazon Web Services",
+    "url": "https://aws.amazon.com",
+    "organization": true
+  },
+  "jest": {
+    "moduleFileExtensions": [
+      "js"
+    ],
+    "coverageThreshold": {
+      "global": {
+        "branches": 50,
+        "statements": 80
+      }
+    }
+  },
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "@aws-cdk/assert": "^0.33.0",
+    "cdk-build-tools": "^0.33.0",
+    "cdk-integ-tools": "^0.33.0",
+    "cfn2ts": "^0.33.0",
+    "jest": "^24.7.1",
+    "pkglint": "^0.33.0"
+  },
+  "dependencies": {
+    "@aws-cdk/aws-iam": "^0.33.0",
+    "@aws-cdk/aws-kinesis": "^0.33.0",
+    "@aws-cdk/aws-lambda": "^0.33.0",
+    "@aws-cdk/aws-logs": "^0.33.0",
+    "@aws-cdk/cdk": "^0.33.0"
+  },
+  "homepage": "https://github.com/awslabs/aws-cdk",
+  "peerDependencies": {
+    "@aws-cdk/aws-iam": "^0.33.0",
+    "@aws-cdk/aws-kinesis": "^0.33.0",
+    "@aws-cdk/aws-lambda": "^0.33.0",
+    "@aws-cdk/aws-logs": "^0.33.0",
+    "@aws-cdk/cdk": "^0.33.0"
+  },
+  "engines": {
+    "node": ">= 8.10.0"
+  }
+}

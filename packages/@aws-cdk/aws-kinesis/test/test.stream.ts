@@ -27,6 +27,19 @@ export = {
 
     test.done();
   },
+
+  'stream from attributes'(test: Test) {
+    const stack = new Stack();
+
+    const s = Stream.fromStreamAttributes(stack, 'MyStream', {
+      streamArn: 'arn:aws:kinesis:region:account-id:stream/stream-name'
+    });
+
+    test.equals(s.streamArn, 'arn:aws:kinesis:region:account-id:stream/stream-name');
+
+    test.done();
+  },
+
   "uses explicit shard count"(test: Test) {
     const stack = new Stack();
 
@@ -851,10 +864,11 @@ export = {
   },
   "cross-stack permissions": {
     "no encryption"(test: Test) {
-      const stackA = new Stack();
+      const app = new App();
+      const stackA = new Stack(app, 'stackA');
       const streamFromStackA = new Stream(stackA, 'MyStream');
 
-      const stackB = new Stack();
+      const stackB = new Stack(app, 'stackB');
       const user = new iam.User(stackB, 'UserWhoNeedsAccess');
       streamFromStackA.grantRead(user);
 
@@ -865,6 +879,19 @@ export = {
             "Properties": {
               "RetentionPeriodHours": 24,
               "ShardCount": 1
+            }
+          }
+        },
+        "Outputs": {
+          "ExportsOutputFnGetAttMyStream5C050E93Arn4ABF30CD": {
+            "Value": {
+              "Fn::GetAtt": [
+                "MyStream5C050E93",
+                "Arn"
+              ]
+            },
+            "Export": {
+              "Name": "stackA:ExportsOutputFnGetAttMyStream5C050E93Arn4ABF30CD"
             }
           }
         }
@@ -888,7 +915,7 @@ export = {
                     ],
                     "Effect": "Allow",
                     "Resource": {
-                      "Fn::ImportValue": "Stack:ExportsOutputFnGetAttMyStream5C050E93Arn4ABF30CD"
+                      "Fn::ImportValue": "stackA:ExportsOutputFnGetAttMyStream5C050E93Arn4ABF30CD"
                     }
                   }
                 ],

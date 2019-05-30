@@ -1,4 +1,7 @@
-import { Environment, SynthesizedStack } from '@aws-cdk/cx-api';
+import cxapi = require('@aws-cdk/cx-api');
+import fs = require('fs-extra');
+import os = require('os');
+import path = require('path');
 import { deployStack, DeployStackResult } from './deploy-stack';
 import { SDK } from './util/sdk';
 
@@ -7,36 +10,46 @@ import { SDK } from './util/sdk';
 export const BUCKET_NAME_OUTPUT = 'BucketName';
 export const BUCKET_DOMAIN_NAME_OUTPUT = 'BucketDomainName';
 
-export async function bootstrapEnvironment(environment: Environment, aws: SDK, toolkitStackName: string, roleArn: string | undefined, toolkitBucketName: string | undefined): Promise<DeployStackResult> {
-  const synthesizedStack: SynthesizedStack = {
-    environment,
-    metadata: {},
-    template: {
-      Description: "The CDK Toolkit Stack. It was created by `cdk bootstrap` and manages resources necessary for managing your Cloud Applications with AWS CDK.",
-      Resources: {
-        StagingBucket: {
-          Type: "AWS::S3::Bucket",
-          Properties: {
-            AccessControl: "Private",
-            BucketEncryption: { ServerSideEncryptionConfiguration: [{ ServerSideEncryptionByDefault: { SSEAlgorithm: "aws:kms" } }] }
-          }
-        }
-      },
-      Outputs: {
-        [BUCKET_NAME_OUTPUT]: {
-          Description: "The name of the S3 bucket owned by the CDK toolkit stack",
-          Value: { Ref: "StagingBucket" }
-        },
-        [BUCKET_DOMAIN_NAME_OUTPUT]: {
-          Description: "The domain name of the S3 bucket owned by the CDK toolkit stack",
-          Value: { "Fn::GetAtt": ["StagingBucket", "DomainName"] }
+export async function bootstrapEnvironment(environment: cxapi.Environment, aws: SDK, toolkitStackName: string, roleArn: string | undefined, toolkitBucketName: string | undefined): Promise<DeployStackResult> {
+
+  const template = {
+    Description: "The CDK Toolkit Stack. It was created by `cdk bootstrap` and manages resources necessary for managing your Cloud Applications with AWS CDK.",
+    Resources: {
+      StagingBucket: {
+        Type: "AWS::S3::Bucket",
+        Properties: {
+          BucketName: toolkitBucketName,
+          AccessControl: "Private",
+          BucketEncryption: { ServerSideEncryptionConfiguration: [{ ServerSideEncryptionByDefault: { SSEAlgorithm: "aws:kms" } }] }
         }
       }
     },
-    name: toolkitStackName,
+    Outputs: {
+      [BUCKET_NAME_OUTPUT]: {
+        Description: "The name of the S3 bucket owned by the CDK toolkit stack",
+        Value: { Ref: "StagingBucket" }
+      },
+      [BUCKET_DOMAIN_NAME_OUTPUT]: {
+        Description: "The domain name of the S3 bucket owned by the CDK toolkit stack",
+        Value: { "Fn::GetAtt": ["StagingBucket", "DomainName"] }
+      }
+    }
   };
-  if (toolkitBucketName) {
-    synthesizedStack.template.Resources.StagingBucket.Properties.BucketName = toolkitBucketName;
-  }
-  return await deployStack({ stack: synthesizedStack, sdk: aws, roleArn });
+
+  const outdir = await fs.mkdtemp(path.join(os.tmpdir(), 'cdk-bootstrap'));
+  const builder = new cxapi.CloudAssemblyBuilder(outdir);
+  const templateFile = `${toolkitStackName}.template.json`;
+
+  await fs.writeJson(path.join(builder.outdir, templateFile), template, { spaces: 2 });
+
+  builder.addArtifact(toolkitStackName, {
+    type: cxapi.ArtifactType.AwsCloudFormationStack,
+    environment: cxapi.EnvironmentUtils.format(environment.account, environment.region),
+    properties: {
+      templateFile
+    },
+  });
+
+  const assembly = builder.build();
+  return await deployStack({ stack: assembly.getStack(toolkitStackName), sdk: aws, roleArn });
 }

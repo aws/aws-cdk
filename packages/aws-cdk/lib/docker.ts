@@ -1,5 +1,6 @@
 import { ContainerImageAssetMetadataEntry } from '@aws-cdk/cx-api';
 import { CloudFormation } from 'aws-sdk';
+import path = require('path');
 import { ToolkitInfo } from './api/toolkit-info';
 import { debug, print } from './logging';
 import { shell } from './os';
@@ -26,7 +27,8 @@ import { shell } from './os';
  * CI is detected by the presence of the `CI` environment variable or
  * the `--ci` command line option.
  */
-export async function prepareContainerAsset(asset: ContainerImageAssetMetadataEntry,
+export async function prepareContainerAsset(assemblyDir: string,
+                                            asset: ContainerImageAssetMetadataEntry,
                                             toolkitInfo: ToolkitInfo,
                                             reuse: boolean,
                                             ci?: boolean): Promise<[CloudFormation.Parameter]> {
@@ -37,7 +39,9 @@ export async function prepareContainerAsset(asset: ContainerImageAssetMetadataEn
     ];
   }
 
-  debug(' 👑  Preparing Docker image asset:', asset.path);
+  const contextPath = path.isAbsolute(asset.path) ? asset.path : path.join(assemblyDir, asset.path);
+
+  debug(' 👑  Preparing Docker image asset:', contextPath);
 
   try {
     const ecr = await toolkitInfo.prepareEcrRepository(asset);
@@ -62,7 +66,7 @@ export async function prepareContainerAsset(asset: ContainerImageAssetMetadataEn
       'docker', 'build',
       ...buildArgs,
       '--tag', latest,
-      asset.path
+      contextPath
     ];
 
     const command = ci
@@ -77,9 +81,9 @@ export async function prepareContainerAsset(asset: ContainerImageAssetMetadataEn
     }
 
     // There's no way to make this quiet, so we can't use a PleaseHold. Print a header message.
-    print(` ⌛ Pushing Docker image for ${asset.path}; this may take a while.`);
+    print(` ⌛ Pushing Docker image for ${contextPath}; this may take a while.`);
     await shell(['docker', 'push', latest]);
-    debug(` 👑  Docker image for ${asset.path} pushed.`);
+    debug(` 👑  Docker image for ${contextPath} pushed.`);
 
     // Get the (single) repo-digest for latest, which'll be <ecr.repositoryUrl>@sha256:<repoImageSha256>
     const repoDigests = (await shell(['docker', 'image', 'inspect', latest, '--format', '{{range .RepoDigests}}{{.}}|{{end}}'])).trim();

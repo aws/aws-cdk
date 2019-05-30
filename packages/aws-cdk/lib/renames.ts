@@ -20,7 +20,7 @@ export class Renames {
    * We DO check that if there's a default rename (simple syntax) they
    * only selected one stack.
    */
-  public validateSelectedStacks(stacks: cxapi.SynthesizedStack[]) {
+  public validateSelectedStacks(stacks: cxapi.CloudFormationStackArtifact[]) {
     if (this.hasDefaultRename && stacks.length > 1) {
       throw new Error("When selecting multiple stacks, you must use the 'ORIGINALNAME:RENAME' pattern for renames.");
     }

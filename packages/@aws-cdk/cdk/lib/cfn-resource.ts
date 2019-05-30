@@ -234,9 +234,11 @@ export class CfnResource extends CfnRefElement {
             Metadata: ignoreEmpty(this.options.metadata),
             Condition: this.options.condition && this.options.condition.logicalId
           }, props => {
-            const r = deepMerge(props, this.rawOverrides);
-            r.Properties = this.renderProperties(r.Properties);
-            return r;
+            // let derived classes to influence how properties are rendered (e.g. change capitalization)
+            props.Properties = this.renderProperties(props.Properties);
+
+            // merge overrides *after* rendering
+            return deepMerge(props, this.rawOverrides);
           })
         }
       };
@@ -245,9 +247,13 @@ export class CfnResource extends CfnRefElement {
       // Change message
       e.message = `While synthesizing ${this.node.path}: ${e.message}`;
       // Adjust stack trace (make it look like node built it, too...)
-      const creationStack = ['--- resource created at ---', ...this.creationStackTrace].join('\n  at ');
-      const problemTrace = e.stack.substr(e.stack.indexOf(e.message) + e.message.length);
-      e.stack = `${e.message}\n  ${creationStack}\n  --- problem discovered at ---${problemTrace}`;
+      const trace = this.creationStackTrace;
+      if (trace) {
+        const creationStack = ['--- resource created at ---', ...trace].join('\n  at ');
+        const problemTrace = e.stack.substr(e.stack.indexOf(e.message) + e.message.length);
+        e.stack = `${e.message}\n  ${creationStack}\n  --- problem discovered at ---${problemTrace}`;
+      }
+
       // Re-throw
       throw e;
     }

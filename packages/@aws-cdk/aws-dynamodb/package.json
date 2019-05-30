@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/aws-dynamodb",
-  "version": "0.32.0",
+  "version": "0.33.0",
   "description": "CDK Constructs for AWS DynamoDB",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -60,22 +60,22 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "^0.32.0",
-    "cdk-build-tools": "^0.32.0",
-    "cdk-integ-tools": "^0.32.0",
-    "cfn2ts": "^0.32.0",
-    "pkglint": "^0.32.0"
+    "@aws-cdk/assert": "^0.33.0",
+    "cdk-build-tools": "^0.33.0",
+    "cdk-integ-tools": "^0.33.0",
+    "cfn2ts": "^0.33.0",
+    "pkglint": "^0.33.0"
   },
   "dependencies": {
-    "@aws-cdk/aws-applicationautoscaling": "^0.32.0",
-    "@aws-cdk/aws-iam": "^0.32.0",
-    "@aws-cdk/cdk": "^0.32.0"
+    "@aws-cdk/aws-applicationautoscaling": "^0.33.0",
+    "@aws-cdk/aws-iam": "^0.33.0",
+    "@aws-cdk/cdk": "^0.33.0"
   },
   "homepage": "https://github.com/awslabs/aws-cdk",
   "peerDependencies": {
-    "@aws-cdk/aws-applicationautoscaling": "^0.32.0",
-    "@aws-cdk/aws-iam": "^0.32.0",
-    "@aws-cdk/cdk": "^0.32.0"
+    "@aws-cdk/aws-applicationautoscaling": "^0.33.0",
+    "@aws-cdk/aws-iam": "^0.33.0",
+    "@aws-cdk/cdk": "^0.33.0"
   },
   "engines": {
     "node": ">= 8.10.0"
