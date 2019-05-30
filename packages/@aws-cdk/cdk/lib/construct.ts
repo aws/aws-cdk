@@ -1,11 +1,11 @@
 import cxapi = require('@aws-cdk/cx-api');
 import { IAspect } from './aspect';
-import { CloudFormationJSON } from './cloudformation-json';
-import { IDependable } from './dependency';
+import { CLOUDFORMATION_TOKEN_RESOLVER, CloudFormationLang } from './cloudformation-lang';
+import { DependableTrait, IDependable } from './dependency';
 import { resolve } from './resolve';
+import { createStackTrace } from './stack-trace';
 import { Token } from './token';
 import { makeUniqueId } from './uniqueid';
-import { unresolved } from './unresolved';
 
 export const PATH_SEP = '/';
 
@@ -45,7 +45,7 @@ export class ConstructNode {
    */
   private readonly _children: { [name: string]: IConstruct } = { };
   private readonly context: { [key: string]: any } = { };
-  private readonly _metadata = new Array<MetadataEntry>();
+  private readonly _metadata = new Array<cxapi.MetadataEntry>();
   private readonly references = new Set<Reference>();
   private readonly dependencies = new Set<IDependable>();
 
@@ -83,7 +83,7 @@ export class ConstructNode {
     // escape any path separators so they don't wreck havoc
     this.id = this._escapePathSeparator(this.id);
 
-    if (unresolved(id)) {
+    if (Token.isToken(id)) {
       throw new Error(`Cannot use tokens in construct ID: ${id}`);
     }
   }
@@ -280,7 +280,8 @@ export class ConstructNode {
     if (data == null) {
       return;
     }
-    const trace = createStackTrace(from || this.addMetadata);
+
+    const trace = this.getContext(cxapi.DISABLE_METADATA_STACK_TRACE) ? undefined : createStackTrace(from || this.addMetadata);
     this._metadata.push({ type, data, trace });
   }
 
@@ -351,11 +352,18 @@ export class ConstructNode {
     this.aspects.push(aspect);
     return;
   }
+
   /**
-   * Return the ancestors (including self) of this Construct up until and excluding the indicated component
+   * Return the ancestors (including self) of this Construct up until and
+   * excluding the indicated component
    *
-   * @param upTo The construct to return the path components relative to, or
-   * the entire list of ancestors (including root) if omitted.
+   * @param upTo The construct to return the path components relative to, or the
+   * entire list of ancestors (including root) if omitted. This construct will
+   * not be included in the returned list.
+   *
+   * @returns a list of parent scopes. The last element in the list will always
+   * be `this` and the first element is the oldest scope (if `upTo` is not set,
+   * it will be the root of the construct tree).
    */
   public ancestors(upTo?: Construct): IConstruct[] {
     const ret = new Array<IConstruct>();
@@ -367,6 +375,13 @@ export class ConstructNode {
     }
 
     return ret;
+  }
+
+  /**
+   * @returns The root of the construct tree.
+   */
+  public get root() {
+    return this.ancestors()[0];
   }
 
   /**
@@ -457,7 +472,8 @@ export class ConstructNode {
   public resolve(obj: any): any {
     return resolve(obj, {
       scope: this.host,
-      prefix: []
+      prefix: [],
+      resolver: CLOUDFORMATION_TOKEN_RESOLVER,
     });
   }
 
@@ -465,7 +481,7 @@ export class ConstructNode {
    * Convert an object, potentially containing tokens, to a JSON string
    */
   public stringifyJson(obj: any): string {
-    return CloudFormationJSON.stringify(obj, this.host).toString();
+    return CloudFormationLang.toJSON(obj).toString();
   }
 
   /**
@@ -521,7 +537,7 @@ export class ConstructNode {
 
     for (const source of this.findAll()) {
       for (const dependable of source.node.dependencies) {
-        for (const target of dependable.dependencyRoots) {
+        for (const target of DependableTrait.get(dependable).dependencyRoots) {
           let foundTargets = found.get(source);
           if (!foundTargets) { found.set(source, foundTargets = new Set()); }
 
@@ -586,14 +602,6 @@ export class Construct implements IConstruct {
   public readonly node: ConstructNode;
 
   /**
-   * The set of constructs that form the root of this dependable
-   *
-   * All resources under all returned constructs are included in the ordering
-   * dependency.
-   */
-  public readonly dependencyRoots: IConstruct[] = [this];
-
-  /**
    * Creates a new construct node.
    *
    * @param scope The scope in which to define this construct
@@ -603,6 +611,12 @@ export class Construct implements IConstruct {
    */
   constructor(scope: Construct, id: string) {
     this.node = new ConstructNode(this, scope, id);
+
+    // Implement IDependable privately
+    const self = this;
+    DependableTrait.implement(this, {
+      get dependencyRoots() { return [self]; },
+    });
   }
 
   /**
@@ -640,46 +654,10 @@ export class Construct implements IConstruct {
   }
 }
 
-/**
- * An metadata entry in the construct.
- */
-export interface MetadataEntry {
-  /**
-   * The type of the metadata entry.
-   */
-  readonly type: string;
-
-  /**
-   * The data.
-   */
-  readonly data?: any;
-
-  /**
-   * A stack trace for when the entry was created.
-   */
-  readonly trace: string[];
-}
-
 export class ValidationError {
   constructor(public readonly source: IConstruct, public readonly message: string) {
 
   }
-}
-
-// tslint:disable-next-line:ban-types
-function createStackTrace(below: Function): string[] {
-  const object = { stack: '' };
-  const previousLimit = Error.stackTraceLimit;
-  try {
-    Error.stackTraceLimit = Number.MAX_SAFE_INTEGER;
-    Error.captureStackTrace(object, below);
-  } finally {
-    Error.stackTraceLimit = previousLimit;
-  }
-  if (!object.stack) {
-    return [];
-  }
-  return object.stack.split('\n').slice(1).map(s => s.replace(/^\s*at\s+/, ''));
 }
 
 /**
@@ -733,5 +711,5 @@ export interface OutgoingReference {
 }
 
 // Import this _after_ everything else to help node work the classes out in the correct order...
-import { Reference } from './reference';
+
 import { ITaggable } from './tag-manager';

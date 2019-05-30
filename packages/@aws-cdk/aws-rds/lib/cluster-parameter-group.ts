@@ -1,20 +1,15 @@
-import cdk = require('@aws-cdk/cdk');
+import { Construct, IResource, Resource, Token } from '@aws-cdk/cdk';
 import { Parameters } from './props';
 import { CfnDBClusterParameterGroup } from './rds.generated';
 
 /**
  * A cluster parameter group
  */
-export interface IClusterParameterGroup extends cdk.IConstruct {
+export interface IClusterParameterGroup extends IResource {
   /**
    * Name of this parameter group
    */
   readonly parameterGroupName: string;
-
-  /**
-   * Export this parameter group
-   */
-  export(): ClusterParameterGroupImportProps;
 }
 
 /**
@@ -40,31 +35,38 @@ export interface ClusterParameterGroupProps {
 
   /**
    * The parameters in this parameter group
+   *
+   * @default - No parameters.
    */
   readonly parameters?: Parameters;
 }
 
 /**
  * Defina a cluster parameter group
+ *
+ * @resource AWS::RDS::DBClusterParameterGroup
  */
-export class ClusterParameterGroup extends cdk.Construct implements IClusterParameterGroup {
+export class ClusterParameterGroup extends Resource implements IClusterParameterGroup {
   /**
    * Import a parameter group
    */
-  public static import(scope: cdk.Construct, id: string, props: ClusterParameterGroupImportProps): IClusterParameterGroup {
-    return new ImportedClusterParameterGroup(scope, id, props);
+  public static fromParameterGroupName(scope: Construct, id: string, parameterGroupName: string): IClusterParameterGroup {
+    class Import extends Resource implements IClusterParameterGroup {
+      public parameterGroupName = parameterGroupName;
+    }
+    return new Import(scope, id);
   }
 
   public readonly parameterGroupName: string;
   private readonly parameters: Parameters = {};
 
-  constructor(scope: cdk.Construct, id: string, props: ClusterParameterGroupProps) {
+  constructor(scope: Construct, id: string, props: ClusterParameterGroupProps) {
     super(scope, id);
 
     const resource = new CfnDBClusterParameterGroup(this, 'Resource', {
       description: props.description,
       family: props.family,
-      parameters: new cdk.Token(() => this.parameters),
+      parameters: new Token(() => this.parameters),
     });
 
     for (const [key, value] of Object.entries(props.parameters || {})) {
@@ -72,15 +74,6 @@ export class ClusterParameterGroup extends cdk.Construct implements IClusterPara
     }
 
     this.parameterGroupName = resource.ref;
-  }
-
-  /**
-   * Export this parameter group
-   */
-  public export(): ClusterParameterGroupImportProps {
-    return {
-      parameterGroupName: new cdk.CfnOutput(this, 'ParameterGroupName', { value: this.parameterGroupName }).makeImportValue().toString()
-    };
   }
 
   /**
@@ -110,21 +103,5 @@ export class ClusterParameterGroup extends cdk.Construct implements IClusterPara
       return ['At least one parameter required, call setParameter().'];
     }
     return [];
-  }
-}
-
-/**
- * An imported cluster parameter group
- */
-class ImportedClusterParameterGroup extends cdk.Construct implements IClusterParameterGroup {
-  public readonly parameterGroupName: string;
-
-  constructor(scope: cdk.Construct, id: string, private readonly props: ClusterParameterGroupImportProps) {
-    super(scope, id);
-    this.parameterGroupName = props.parameterGroupName;
-  }
-
-  public export() {
-    return this.props;
   }
 }

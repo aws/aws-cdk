@@ -312,7 +312,10 @@
                           {
                             "Ref": "AWS::AccountId"
                           },
-                          ":subnet/[[subnets]]"
+                          ":subnet/",
+                          {
+                            "Ref": "MyVPCPrivateSubnet1Subnet641543F4"
+                          }
                         ]
                       ]
                     }
@@ -532,6 +535,10 @@
     "BundleS3VersionKey720F2199": {
       "Type": "String",
       "Description": "S3 key for asset version \"aws-cdk-codebuild-project-vpc/Bundle\""
+    },
+    "BundleArtifactHashEA214C27": {
+      "Type": "String",
+      "Description": "Artifact hash for asset \"aws-cdk-codebuild-project-vpc/Bundle\""
     }
   }
 }

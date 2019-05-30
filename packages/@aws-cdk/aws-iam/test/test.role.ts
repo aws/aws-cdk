@@ -1,4 +1,4 @@
-import { expect, haveResource, haveResourceLike, SynthUtils } from '@aws-cdk/assert';
+import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
 import { Stack } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
 import { ArnPrincipal, CompositePrincipal, FederatedPrincipal, PolicyStatement, Role, ServicePrincipal, User } from '../lib';
@@ -81,36 +81,33 @@ export = {
   },
 
   'policy is created automatically when permissions are added'(test: Test) {
-    const stack = new Stack();
+    // by default we don't expect a role policy
+    const before = new Stack();
+    new Role(before, 'MyRole', { assumedBy: new ServicePrincipal('sns.amazonaws.com') });
+    expect(before).notTo(haveResource('AWS::IAM::Policy'));
 
-    const role = new Role(stack, 'MyRole', {
-      assumedBy: new ServicePrincipal('sns.amazonaws.com')
-    });
-
-    test.ok(!('MyRoleDefaultPolicyA36BE1DD' in SynthUtils.toCloudFormation(stack).Resources), 'initially created without a policy');
-
-    role.addToPolicy(new PolicyStatement().addResource('myresource').addAction('myaction'));
-    test.ok(SynthUtils.toCloudFormation(stack).Resources.MyRoleDefaultPolicyA36BE1DD, 'policy resource created');
-
-    expect(stack).toMatch({ Resources:
-      { MyRoleF48FFE04:
-         { Type: 'AWS::IAM::Role',
-         Properties:
-          { AssumeRolePolicyDocument:
-           { Statement:
-            [ { Action: 'sts:AssumeRole',
-              Effect: 'Allow',
-              Principal: { Service: 'sns.amazonaws.com' } } ],
-             Version: '2012-10-17' } } },
-        MyRoleDefaultPolicyA36BE1DD:
-         { Type: 'AWS::IAM::Policy',
-         Properties:
-          { PolicyDocument:
-           { Statement:
-            [ { Action: 'myaction', Effect: 'Allow', Resource: 'myresource' } ],
-             Version: '2012-10-17' },
-          PolicyName: 'MyRoleDefaultPolicyA36BE1DD',
-          Roles: [ { Ref: 'MyRoleF48FFE04' } ] } } } });
+    // add a policy to the role
+    const after = new Stack();
+    const afterRole = new Role(after, 'MyRole', { assumedBy: new ServicePrincipal('sns.amazonaws.com') });
+    afterRole.addToPolicy(new PolicyStatement().addResource('myresource').addAction('myaction'));
+    expect(after).to(haveResource('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: "myaction",
+            Effect: "Allow",
+            Resource: "myresource"
+          }
+        ],
+        Version: "2012-10-17"
+      },
+      PolicyName: "MyRoleDefaultPolicyA36BE1DD",
+      Roles: [
+        {
+          Ref: "MyRoleF48FFE04"
+        }
+      ]
+    }));
     test.done();
   },
 
@@ -252,36 +249,16 @@ export = {
     test.done();
   },
 
-  'import/export'(test: Test) {
+  'fromRoleArn'(test: Test) {
     // GIVEN
     const stack = new Stack();
-    const myRole = new Role(stack, 'MyRole', {
-      assumedBy: new ServicePrincipal('boom.boom.boom')
-    });
 
     // WHEN
-    const exportedRole = myRole.export();
-    const importedRole = Role.import(stack, 'ImportedRole', exportedRole);
+    const importedRole = Role.fromRoleArn(stack, 'ImportedRole', 'arn:aws:iam::123456789012:role/S3Access');
 
     // THEN
-    test.deepEqual(stack.node.resolve(exportedRole), {
-      roleArn: { 'Fn::ImportValue': 'Stack:MyRoleRoleArn3388B7E2' },
-      roleId: { 'Fn::ImportValue': 'Stack:MyRoleRoleIdF7B258D8' }
-    });
-
-    test.deepEqual(stack.node.resolve(importedRole.roleArn), { 'Fn::ImportValue': 'Stack:MyRoleRoleArn3388B7E2' });
-    test.deepEqual(stack.node.resolve(importedRole.roleId), { 'Fn::ImportValue': 'Stack:MyRoleRoleIdF7B258D8' });
-    test.deepEqual(stack.node.resolve(importedRole.roleName), {
-      'Fn::Select': [ 1, {
-        'Fn::Split': [ '/', {
-          'Fn::Select': [ 5, {
-            'Fn::Split': [ ':', {
-              'Fn::ImportValue': 'Stack:MyRoleRoleArn3388B7E2'
-            } ]
-          } ]
-        } ]
-      } ]
-    });
+    test.deepEqual(importedRole.roleArn, 'arn:aws:iam::123456789012:role/S3Access');
+    test.deepEqual(importedRole.roleName, 'S3Access');
     test.done();
   }
 };

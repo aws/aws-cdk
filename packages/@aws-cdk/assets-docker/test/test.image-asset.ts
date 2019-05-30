@@ -1,10 +1,8 @@
 import { expect, haveResource, SynthUtils } from '@aws-cdk/assert';
 import iam = require('@aws-cdk/aws-iam');
 import cdk = require('@aws-cdk/cdk');
-import cxapi = require('@aws-cdk/cx-api');
 import fs = require('fs');
 import { Test } from 'nodeunit';
-import os = require('os');
 import path = require('path');
 import { DockerImageAsset } from '../lib';
 
@@ -21,13 +19,31 @@ export = {
     });
 
     // THEN
-    const template = SynthUtils.toCloudFormation(stack);
+    const template = SynthUtils.synthesize(stack).template;
 
     test.deepEqual(template.Parameters.ImageImageName5E684353, {
       Type: 'String',
       Description: 'ECR repository name and tag asset "Image"'
     });
 
+    test.done();
+  },
+
+  'with build args'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const asset = new DockerImageAsset(stack, 'Image', {
+      directory: path.join(__dirname, 'demo-image'),
+      buildArgs: {
+        a: 'b'
+      }
+    });
+
+    // THEN
+    const assetMetadata = asset.node.metadata.find(({ type }) => type === 'aws:cdk:asset');
+    test.deepEqual(assetMetadata && assetMetadata.data.buildArgs, { a: 'b' });
     test.done();
   },
 
@@ -103,7 +119,7 @@ export = {
     // THEN
     expect(stack).to(haveResource('Custom::ECRAdoptedRepository', {
       "RepositoryName": {
-        "Fn::Select": [ 0, { "Fn::Split": [ ":", { "Ref": "ImageImageName5E684353" } ] } ]
+        "Fn::Select": [ 0, { "Fn::Split": [ "@sha256:", { "Ref": "ImageImageName5E684353" } ] } ]
       },
       "PolicyDocument": {
         "Statement": [
@@ -149,27 +165,17 @@ export = {
   },
 
   'docker directory is staged if asset staging is enabled'(test: Test) {
-    const workdir = mkdtempSync();
-    process.chdir(workdir);
-
-    const app = new cdk.App({
-      context: { [cxapi.ASSET_STAGING_DIR_CONTEXT]: '.stage-me' }
-    });
-
+    const app = new cdk.App();
     const stack = new cdk.Stack(app, 'stack');
 
     new DockerImageAsset(stack, 'MyAsset', {
       directory: path.join(__dirname, 'demo-image')
     });
 
-    app.run();
+    const session = app.run();
 
-    test.ok(fs.existsSync('.stage-me/96e3ffe92a19cbaa6c558942f7a60246/Dockerfile'));
-    test.ok(fs.existsSync('.stage-me/96e3ffe92a19cbaa6c558942f7a60246/index.py'));
+    test.ok(fs.existsSync(path.join(session.directory, 'asset.1a17a141505ac69144931fe263d130f4612251caa4bbbdaf68a44ed0f405439c/Dockerfile')));
+    test.ok(fs.existsSync(path.join(session.directory, 'asset.1a17a141505ac69144931fe263d130f4612251caa4bbbdaf68a44ed0f405439c/index.py')));
     test.done();
   }
 };
-
-function mkdtempSync() {
-  return fs.mkdtempSync(path.join(os.tmpdir(), 'test.assets'));
-}

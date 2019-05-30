@@ -1,3 +1,106 @@
+# CloudFormation Resource Specification v3.3.0
+
+## New Resource Types
+
+* AWS::EC2::CapacityReservation
+* AWS::PinpointEmail::ConfigurationSet
+* AWS::PinpointEmail::ConfigurationSetEventDestination
+* AWS::PinpointEmail::DedicatedIpPool
+* AWS::PinpointEmail::Identity
+* AWS::Transfer::Server
+* AWS::Transfer::User
+* AWS::WAFRegional::GeoMatchSet
+* AWS::WAFRegional::RateBasedRule
+* AWS::WAFRegional::RegexPatternSet
+
+## Attribute Changes
+
+
+## Property Changes
+
+* AWS::CodeBuild::Project SecondarySourceVersions (__added__)
+* AWS::CodeBuild::Project SourceVersion (__added__)
+* AWS::CodeCommit::Repository Code (__added__)
+* AWS::ECS::TaskDefinition ProxyConfiguration (__added__)
+
+## Property Type Changes
+
+* AWS::CodeBuild::Project.ProjectSourceVersion (__added__)
+* AWS::CodeCommit::Repository.Code (__added__)
+* AWS::CodeCommit::Repository.S3 (__added__)
+* AWS::ECS::TaskDefinition.ContainerDependency (__added__)
+* AWS::ECS::TaskDefinition.ProxyConfiguration (__added__)
+* AWS::EC2::LaunchTemplate.NetworkInterface InterfaceType (__added__)
+* AWS::ECS::TaskDefinition.ContainerDefinition DependsOn (__added__)
+* AWS::ECS::TaskDefinition.ContainerDefinition StartTimeout (__added__)
+* AWS::ECS::TaskDefinition.ContainerDefinition StopTimeout (__added__)
+
+
+# CloudFormation Resource Specification v3.0.0
+
+## New Resource Types
+
+* AWS::ApiGatewayV2::ApiMapping
+* AWS::ApiGatewayV2::DomainName
+
+## Attribute Changes
+
+
+## Property Changes
+
+* AWS::FSx::FileSystem Tags.ItemType (__changed__)
+  * Old: TagEntry
+  * New: Tag
+
+## Property Type Changes
+
+* Tag Key.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dms-endpoint-tag.html#cfn-dms-endpoint-tag-key
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iotanalytics-datastore-tag.html#cfn-iotanalytics-datastore-tag-key
+* Tag Key.Required (__changed__)
+  * Old: false
+  * New: true
+* Tag Value.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dms-endpoint-tag.html#cfn-dms-endpoint-tag-value
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iotanalytics-datastore-tag.html#cfn-iotanalytics-datastore-tag-value
+* Tag Value.Required (__changed__)
+  * Old: false
+  * New: true
+
+
+# CloudFormation Resource Specification v2.32.0
+
+## New Resource Types
+
+* AWS::Greengrass::ResourceDefinition
+
+## Attribute Changes
+
+
+## Property Changes
+
+* AWS::SSM::Parameter Tags (__added__)
+* AWS::ServiceCatalog::CloudFormationProvisionedProduct Tags.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+
+## Property Type Changes
+
+* AWS::Cognito::UserPool.EmailConfiguration EmailSendingAccount (__added__)
+* AWS::Greengrass::FunctionDefinition.FunctionConfiguration MemorySize.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::Greengrass::FunctionDefinition.FunctionConfiguration Timeout.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::Greengrass::FunctionDefinitionVersion.FunctionConfiguration MemorySize.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::Greengrass::FunctionDefinitionVersion.FunctionConfiguration Timeout.Required (__changed__)
+  * Old: true
+  * New: false
+
+
 # CloudFormation Resource Specification v2.30.0
 
 ## New Resource Types

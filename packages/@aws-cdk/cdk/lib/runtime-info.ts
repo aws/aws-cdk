@@ -1,9 +1,10 @@
 import cxapi = require('@aws-cdk/cx-api');
+import { major as nodeMajorVersion } from './node-version';
 
 /**
  * Returns a list of loaded modules and their versions.
  */
-export function collectRuntimeInformation(): cxapi.AppRuntime {
+export function collectRuntimeInformation(): cxapi.RuntimeInfo {
   const libraries: { [name: string]: string } = {};
 
   for (const fileName of Object.keys(require.cache)) {
@@ -55,7 +56,11 @@ function findNpmPackage(fileName: string): { name: string, version: string, priv
   const paths = mod.paths.map(stripNodeModules);
 
   try {
-    const packagePath = require.resolve('package.json', { paths });
+    const packagePath = require.resolve(
+      // Resolution behavior changed in node 12.0.0 - https://github.com/nodejs/node/issues/27583
+      nodeMajorVersion >= 12 ? './package.json' : 'package.json',
+      { paths }
+    );
     return require(packagePath);
   } catch (e) {
     return undefined;

@@ -1,23 +1,21 @@
+import { expect, haveResource } from '@aws-cdk/assert';
 import { App, Stack } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
-import { EncryptionKey } from '../lib';
+import { Key } from '../lib';
 import { EncryptionKeyAlias } from '../lib/alias';
 
 export = {
   'default alias'(test: Test) {
     const app = new App();
     const stack = new Stack(app, 'Test');
-    const key = new EncryptionKey(stack, 'Key');
+    const key = new Key(stack, 'Key');
 
     new EncryptionKeyAlias(stack, 'Alias', { key, alias: 'alias/foo' });
 
-    test.deepEqual(app.synthesizeStack(stack.name).template.Resources.Alias325C5727, {
-      Type: 'AWS::KMS::Alias',
-      Properties: {
-        AliasName: 'alias/foo',
-        TargetKeyId: { 'Fn::GetAtt': [ 'Key961B73FD', 'Arn' ] }
-      }
-    });
+    expect(stack).to(haveResource('AWS::KMS::Alias', {
+      AliasName: 'alias/foo',
+      TargetKeyId: { 'Fn::GetAtt': [ 'Key961B73FD', 'Arn' ] }
+    }));
 
     test.done();
   },
@@ -26,7 +24,7 @@ export = {
     const app = new App();
     const stack = new Stack(app, 'Test');
 
-    const key = new EncryptionKey(stack, 'MyKey', {
+    const key = new Key(stack, 'MyKey', {
       enableKeyRotation: true,
       enabled: false
     });
@@ -43,7 +41,7 @@ export = {
     const app = new App();
     const stack = new Stack(app, 'Test');
 
-    const key = new EncryptionKey(stack, 'MyKey', {
+    const key = new Key(stack, 'MyKey', {
       enableKeyRotation: true,
       enabled: false
     });
@@ -60,7 +58,7 @@ export = {
     const app = new App();
     const stack = new Stack(app, 'Test');
 
-    const key = new EncryptionKey(stack, 'MyKey', {
+    const key = new Key(stack, 'MyKey', {
       enableKeyRotation: true,
       enabled: false
     });

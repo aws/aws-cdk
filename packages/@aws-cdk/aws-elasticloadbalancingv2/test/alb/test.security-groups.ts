@@ -101,9 +101,9 @@ export = {
 
   'SG peering works on exported/imported load balancer'(test: Test) {
     // GIVEN
-    const fixture = new TestFixture();
-    const stack2 = new cdk.Stack();
-    const vpc2 = new ec2.VpcNetwork(stack2, 'VPC');
+    const fixture = new TestFixture(false);
+    const stack2 = new cdk.Stack(fixture.app, 'stack2');
+    const vpc2 = new ec2.Vpc(stack2, 'VPC');
     const group = new elbv2.ApplicationTargetGroup(stack2, 'TargetGroup', {
       // We're assuming the 2nd VPC is peered to the 1st, or something.
       vpc: vpc2,
@@ -112,7 +112,10 @@ export = {
     });
 
     // WHEN
-    const lb2 = elbv2.ApplicationLoadBalancer.import(stack2, 'LB', fixture.lb.export());
+    const lb2 = elbv2.ApplicationLoadBalancer.fromApplicationLoadBalancerAttributes(stack2, 'LB', {
+      loadBalancerArn: fixture.lb.loadBalancerArn,
+      securityGroupId: fixture.lb.connections.securityGroups[0].securityGroupId
+    });
     const listener2 = lb2.addListener('YetAnotherListener', { port: 80 });
     listener2.addTargetGroups('Default', { targetGroups: [group] });
 
@@ -125,17 +128,22 @@ export = {
   'SG peering works on exported/imported listener'(test: Test) {
     // GIVEN
     const fixture = new TestFixture();
-    const stack2 = new cdk.Stack();
-    const vpc2 = new ec2.VpcNetwork(stack2, 'VPC');
+    const stack2 = new cdk.Stack(fixture.app, 'stack2');
+    const vpc2 = new ec2.Vpc(stack2, 'VPC');
     const group = new elbv2.ApplicationTargetGroup(stack2, 'TargetGroup', {
       // We're assuming the 2nd VPC is peered to the 1st, or something.
       vpc: vpc2,
       port: 8008,
       targets: [new FakeSelfRegisteringTarget(stack2, 'Target', vpc2)],
     });
+    fixture.listener.addTargets('default', { port: 80 });
 
     // WHEN
-    const listener2 = elbv2.ApplicationListener.import(stack2, 'YetAnotherListener', fixture.listener.export());
+    const listener2 = elbv2.ApplicationListener.fromApplicationListenerAttributes(stack2, 'YetAnotherListener', {
+      defaultPort: 8008,
+      securityGroupId: fixture.listener.connections.securityGroups[0].securityGroupId,
+      listenerArn: fixture.listener.listenerArn
+    });
     listener2.addTargetGroups('Default', {
       // Must be a non-default target
       priority: 10,
@@ -175,12 +183,14 @@ export = {
 
   'default port peering works on imported listener'(test: Test) {
     // GIVEN
-    const fixture = new TestFixture();
-    fixture.listener.addTargets('Default', { port: 8080, targets: [new elbv2.InstanceTarget('i-12345')] });
     const stack2 = new cdk.Stack();
 
     // WHEN
-    const listener2 = elbv2.ApplicationListener.import(stack2, 'YetAnotherListener', fixture.listener.export());
+    const listener2 = elbv2.ApplicationListener.fromApplicationListenerAttributes(stack2, 'YetAnotherListener', {
+      listenerArn: 'listener-arn',
+      securityGroupId: 'imported-security-group-id',
+      defaultPort: 8080
+    });
     listener2.connections.allowDefaultPortFromAnyIpv4('Open to the world');
 
     // THEN
@@ -188,9 +198,9 @@ export = {
       CidrIp: "0.0.0.0/0",
       Description: "Open to the world",
       IpProtocol: "tcp",
-      FromPort: { "Fn::ImportValue": "Stack:LBListenerPort7A9266A6" },
-      ToPort:  { "Fn::ImportValue": "Stack:LBListenerPort7A9266A6" },
-      GroupId: IMPORTED_LB_SECURITY_GROUP
+      FromPort: 8080,
+      ToPort: 8080,
+      GroupId: 'imported-security-group-id'
     }));
 
     test.done();
@@ -198,7 +208,7 @@ export = {
 };
 
 const LB_SECURITY_GROUP = { "Fn::GetAtt": [ "LBSecurityGroup8A41EA2B", "GroupId" ] };
-const IMPORTED_LB_SECURITY_GROUP = { "Fn::ImportValue": "Stack:LBSecurityGroupSecurityGroupId0270B565" };
+const IMPORTED_LB_SECURITY_GROUP = { "Fn::ImportValue": "Stack:ExportsOutputFnGetAttLBSecurityGroup8A41EA2BGroupId851EE1F6" };
 
 function expectSameStackSGRules(stack: cdk.Stack) {
   expectSGRules(stack, LB_SECURITY_GROUP);
@@ -228,17 +238,23 @@ function expectSGRules(stack: cdk.Stack, lbGroup: any) {
 }
 
 class TestFixture {
+  public readonly app: cdk.App;
   public readonly stack: cdk.Stack;
-  public readonly vpc: ec2.VpcNetwork;
+  public readonly vpc: ec2.Vpc;
   public readonly lb: elbv2.ApplicationLoadBalancer;
   public readonly listener: elbv2.ApplicationListener;
 
-  constructor() {
-    this.stack = new cdk.Stack();
-    this.vpc = new ec2.VpcNetwork(this.stack, 'VPC', {
+  constructor(createListener?: boolean) {
+    this.app = new cdk.App();
+    this.stack = new cdk.Stack(this.app, 'Stack');
+    this.vpc = new ec2.Vpc(this.stack, 'VPC', {
       maxAZs: 2
     });
     this.lb = new elbv2.ApplicationLoadBalancer(this.stack, 'LB', { vpc: this.vpc });
-    this.listener = this.lb.addListener('Listener', { port: 80, open: false });
+
+    createListener = createListener === undefined ? true : createListener;
+    if (createListener) {
+      this.listener = this.lb.addListener('Listener', { port: 80, open: false });
+    }
   }
 }

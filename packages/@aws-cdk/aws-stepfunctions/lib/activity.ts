@@ -1,6 +1,5 @@
 import cloudwatch = require('@aws-cdk/aws-cloudwatch');
-import { Construct, Resource } from '@aws-cdk/cdk';
-import { IStepFunctionsTaskResource, StepFunctionsTaskResourceProps, Task } from './states/task';
+import { Construct, IResource, Resource } from '@aws-cdk/cdk';
 import { CfnActivity } from './stepfunctions.generated';
 
 export interface ActivityProps {
@@ -15,8 +14,41 @@ export interface ActivityProps {
 /**
  * Define a new StepFunctions activity
  */
-export class Activity extends Resource implements IStepFunctionsTaskResource {
+export class Activity extends Resource implements IActivity {
+    /**
+     * Construct an Activity from an existing Activity ARN
+     */
+    public static fromActivityArn(scope: Construct, id: string, activityArn: string): IActivity {
+        class Imported extends Construct implements IActivity {
+            public get activityArn() { return activityArn; }
+            public get activityName() {
+                return this.node.stack.parseArn(activityArn, ':').resourceName || '';
+            }
+        }
+
+        return new Imported(scope, id);
+    }
+
+    /**
+     * Construct an Activity from an existing Activity Name
+     */
+    public static fromActivityName(scope: Construct, id: string, activityName: string): IActivity {
+        return Activity.fromActivityArn(scope, id, scope.node.stack.formatArn({
+            service: 'states',
+            resource: 'activity',
+            resourceName: activityName,
+            sep: ':',
+        }));
+    }
+
+    /**
+     * @attribute
+     */
     public readonly activityArn: string;
+
+    /**
+     * @attribute
+     */
     public readonly activityName: string;
 
     constructor(scope: Construct, id: string, props: ActivityProps = {}) {
@@ -28,16 +60,6 @@ export class Activity extends Resource implements IStepFunctionsTaskResource {
 
         this.activityArn = resource.activityArn;
         this.activityName = resource.activityName;
-    }
-
-    public asStepFunctionsTaskResource(_callingTask: Task): StepFunctionsTaskResourceProps {
-        // No IAM permissions necessary, execution role implicitly has Activity permissions.
-        return {
-            resourceArn: this.activityArn,
-            metricPrefixSingular: 'Activity',
-            metricPrefixPlural: 'Activities',
-            metricDimensions: { ActivityArn: this.activityArn },
-        };
     }
 
     /**
@@ -143,4 +165,20 @@ export class Activity extends Resource implements IStepFunctionsTaskResource {
         }
         return name;
     }
+}
+
+export interface IActivity extends IResource {
+    /**
+     * The ARN of the activity
+     *
+     * @attribute
+     */
+    readonly activityArn: string;
+
+    /**
+     * The name of the activity
+     *
+     * @attribute
+     */
+    readonly activityName: string;
 }

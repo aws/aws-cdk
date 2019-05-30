@@ -1,17 +1,13 @@
 import cloudwatch = require('@aws-cdk/aws-cloudwatch');
 import ec2 = require('@aws-cdk/aws-ec2');
 import iam = require('@aws-cdk/aws-iam');
-import logs = require('@aws-cdk/aws-logs');
-import s3n = require('@aws-cdk/aws-s3-notifications');
-import stepfunctions = require('@aws-cdk/aws-stepfunctions');
-import cdk = require('@aws-cdk/cdk');
 import { IResource, Resource } from '@aws-cdk/cdk';
 import { IEventSource } from './event-source';
+import { EventSourceMapping, EventSourceMappingOptions } from './event-source-mapping';
 import { CfnPermission } from './lambda.generated';
 import { Permission } from './permission';
 
-export interface IFunction extends IResource, logs.ILogSubscriptionDestination,
-  s3n.IBucketNotificationDestination, ec2.IConnectable, stepfunctions.IStepFunctionsTaskResource, iam.IGrantable {
+export interface IFunction extends IResource, ec2.IConnectable, iam.IGrantable {
 
   /**
    * Logical ID of this Function.
@@ -20,11 +16,15 @@ export interface IFunction extends IResource, logs.ILogSubscriptionDestination,
 
   /**
    * The name of the function.
+   *
+   * @attribute
    */
   readonly functionName: string;
 
   /**
    * The ARN fo the function.
+   *
+   * @attribute
    */
   readonly functionArn: string;
 
@@ -39,6 +39,13 @@ export interface IFunction extends IResource, logs.ILogSubscriptionDestination,
    * If this is is `false`, trying to access the `connections` object will fail.
    */
   readonly isBoundToVpc: boolean;
+
+  /**
+   * Adds an event source that maps to this AWS Lambda function.
+   * @param id construct ID
+   * @param options mapping options
+   */
+  addEventSourceMapping(id: string, options: EventSourceMappingOptions): EventSourceMapping;
 
   /**
    * Adds a permission to the Lambda resource policy.
@@ -79,18 +86,13 @@ export interface IFunction extends IResource, logs.ILogSubscriptionDestination,
    */
   metricThrottles(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
 
-  /**
-   * Export this Function (without the role)
-   */
-  export(): FunctionImportProps;
-
   addEventSource(source: IEventSource): void;
 }
 
 /**
  * Represents a Lambda function defined outside of this stack.
  */
-export interface FunctionImportProps {
+export interface FunctionAttributes {
   /**
    * The ARN of the Lambda function.
    *
@@ -153,11 +155,6 @@ export abstract class FunctionBase extends Resource implements IFunction  {
   protected _connections?: ec2.Connections;
 
   /**
-   * Indicates if the policy that allows CloudWatch logs to publish to this lambda has been added.
-   */
-  private logSubscriptionDestinationPolicyAddedFor: string[] = [];
-
-  /**
    * Adds a permission to the Lambda resource policy.
    * @param id The id ƒor the permission construct
    */
@@ -214,6 +211,13 @@ export abstract class FunctionBase extends Resource implements IFunction  {
     return !!this._connections;
   }
 
+  public addEventSourceMapping(id: string, options: EventSourceMappingOptions): EventSourceMapping {
+    return new EventSourceMapping(this, id, {
+      target: this,
+      ...options
+    });
+  }
+
   /**
    * Grant the given identity permissions to invoke this Lambda
    */
@@ -228,76 +232,15 @@ export abstract class FunctionBase extends Resource implements IFunction  {
       resource: {
         addToResourcePolicy: (_statement) => {
           // Couldn't add permissions to the principal, so add them locally.
-          const identifier = 'Invoke' + JSON.stringify(grantee!.grantPrincipal.policyFragment.principalJson);
+          const identifier = `Invoke${grantee.grantPrincipal}`; // calls the .toString() of the princpal
           this.addPermission(identifier, {
             principal: grantee.grantPrincipal!,
             action: 'lambda:InvokeFunction',
           });
         },
-        dependencyRoots: [],
         node: this.node,
       },
     });
-  }
-
-  public logSubscriptionDestination(sourceLogGroup: logs.ILogGroup): logs.LogSubscriptionDestination {
-    const arn = sourceLogGroup.logGroupArn;
-
-    if (this.logSubscriptionDestinationPolicyAddedFor.indexOf(arn) === -1) {
-      // NOTE: the use of {AWS::Region} limits this to the same region, which shouldn't really be an issue,
-      // since the Lambda must be in the same region as the SubscriptionFilter anyway.
-      //
-      // (Wildcards in principals are unfortunately not supported.
-      this.addPermission('InvokedByCloudWatchLogs', {
-        principal: new iam.ServicePrincipal(`logs.${this.node.stack.region}.amazonaws.com`),
-        sourceArn: arn
-      });
-      this.logSubscriptionDestinationPolicyAddedFor.push(arn);
-    }
-    return { arn: this.functionArn };
-  }
-
-  /**
-   * Export this Function (without the role)
-   */
-  public abstract export(): FunctionImportProps;
-
-  /**
-   * Allows this Lambda to be used as a destination for bucket notifications.
-   * Use `bucket.onEvent(lambda)` to subscribe.
-   */
-  public asBucketNotificationDestination(bucketArn: string, bucketId: string): s3n.BucketNotificationDestinationProps {
-    const permissionId = `AllowBucketNotificationsFrom${bucketId}`;
-    if (!this.node.tryFindChild(permissionId)) {
-      this.addPermission(permissionId, {
-        sourceAccount: this.node.stack.accountId,
-        principal: new iam.ServicePrincipal('s3.amazonaws.com'),
-        sourceArn: bucketArn,
-      });
-    }
-
-    // if we have a permission resource for this relationship, add it as a dependency
-    // to the bucket notifications resource, so it will be created first.
-    const permission = this.node.tryFindChild(permissionId) as cdk.CfnResource;
-
-    return {
-      type: s3n.BucketNotificationDestinationType.Lambda,
-      arn: this.functionArn,
-      dependencies: permission ? [ permission ] : undefined
-    };
-  }
-
-  public asStepFunctionsTaskResource(_callingTask: stepfunctions.Task): stepfunctions.StepFunctionsTaskResourceProps {
-    return {
-      resourceArn: this.functionArn,
-      metricPrefixSingular: 'LambdaFunction',
-      metricPrefixPlural: 'LambdaFunctions',
-      metricDimensions: { LambdaFunctionArn: this.functionArn },
-      policyStatements: [new iam.PolicyStatement()
-        .addResource(this.functionArn)
-        .addActions("lambda:InvokeFunction")
-      ]
-    };
   }
 
   /**

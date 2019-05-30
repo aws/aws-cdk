@@ -2,7 +2,7 @@ import { expect, haveResource, not, SynthUtils } from '@aws-cdk/assert';
 import { RetentionDays } from '@aws-cdk/aws-logs';
 import { Stack } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
-import { CloudTrail, ReadWriteType } from '../lib';
+import { ReadWriteType, Trail } from '../lib';
 
 const ExpectedBucketPolicyProperties = {
   PolicyDocument: {
@@ -62,19 +62,19 @@ export = {
   'constructs the expected resources': {
     'with no properties'(test: Test) {
       const stack = getTestStack();
-      new CloudTrail(stack, 'MyAmazingCloudTrail');
+      new Trail(stack, 'MyAmazingCloudTrail');
       expect(stack).to(haveResource("AWS::CloudTrail::Trail"));
       expect(stack).to(haveResource("AWS::S3::Bucket"));
       expect(stack).to(haveResource("AWS::S3::BucketPolicy", ExpectedBucketPolicyProperties));
       expect(stack).to(not(haveResource("AWS::Logs::LogGroup")));
-      const trail: any = SynthUtils.toCloudFormation(stack).Resources.MyAmazingCloudTrail54516E8D;
+      const trail: any = SynthUtils.synthesize(stack).template.Resources.MyAmazingCloudTrail54516E8D;
       test.deepEqual(trail.DependsOn, ['MyAmazingCloudTrailS3Policy39C120B0']);
       test.done();
     },
     'with cloud watch logs': {
       'enabled'(test: Test) {
         const stack = getTestStack();
-        new CloudTrail(stack, 'MyAmazingCloudTrail', {
+        new Trail(stack, 'MyAmazingCloudTrail', {
           sendToCloudWatchLogs: true
         });
 
@@ -98,13 +98,13 @@ export = {
           PolicyName: logsRolePolicyName,
           Roles: [{ Ref: 'MyAmazingCloudTrailLogsRoleF2CCF977' }],
         }));
-        const trail: any = SynthUtils.toCloudFormation(stack).Resources.MyAmazingCloudTrail54516E8D;
+        const trail: any = SynthUtils.synthesize(stack).template.Resources.MyAmazingCloudTrail54516E8D;
         test.deepEqual(trail.DependsOn, [logsRolePolicyName, logsRoleName, 'MyAmazingCloudTrailS3Policy39C120B0']);
         test.done();
       },
       'enabled and custom retention'(test: Test) {
         const stack = getTestStack();
-        new CloudTrail(stack, 'MyAmazingCloudTrail', {
+        new Trail(stack, 'MyAmazingCloudTrail', {
           sendToCloudWatchLogs: true,
           cloudWatchLogsRetentionTimeDays: RetentionDays.OneWeek
         });
@@ -117,7 +117,7 @@ export = {
         expect(stack).to(haveResource("AWS::Logs::LogGroup", {
           RetentionInDays: 7
         }));
-        const trail: any = SynthUtils.toCloudFormation(stack).Resources.MyAmazingCloudTrail54516E8D;
+        const trail: any = SynthUtils.synthesize(stack).template.Resources.MyAmazingCloudTrail54516E8D;
         test.deepEqual(trail.DependsOn, [logsRolePolicyName, logsRoleName, 'MyAmazingCloudTrailS3Policy39C120B0']);
         test.done();
       },
@@ -126,7 +126,7 @@ export = {
       'with default props'(test: Test) {
         const stack = getTestStack();
 
-        const cloudTrail = new CloudTrail(stack, 'MyAmazingCloudTrail');
+        const cloudTrail = new Trail(stack, 'MyAmazingCloudTrail');
         cloudTrail.addS3EventSelector(["arn:aws:s3:::"]);
 
         expect(stack).to(haveResource("AWS::CloudTrail::Trail"));
@@ -135,7 +135,7 @@ export = {
         expect(stack).to(not(haveResource("AWS::Logs::LogGroup")));
         expect(stack).to(not(haveResource("AWS::IAM::Role")));
 
-        const trail: any = SynthUtils.toCloudFormation(stack).Resources.MyAmazingCloudTrail54516E8D;
+        const trail: any = SynthUtils.synthesize(stack).template.Resources.MyAmazingCloudTrail54516E8D;
         test.equals(trail.Properties.EventSelectors.length, 1);
         const selector = trail.Properties.EventSelectors[0];
         test.equals(selector.ReadWriteType, null, "Expected selector read write type to be undefined");
@@ -152,7 +152,7 @@ export = {
       'with hand-specified props'(test: Test) {
         const stack = getTestStack();
 
-        const cloudTrail = new CloudTrail(stack, 'MyAmazingCloudTrail');
+        const cloudTrail = new Trail(stack, 'MyAmazingCloudTrail');
         cloudTrail.addS3EventSelector(["arn:aws:s3:::"], { includeManagementEvents: false, readWriteType: ReadWriteType.ReadOnly });
 
         expect(stack).to(haveResource("AWS::CloudTrail::Trail"));
@@ -161,7 +161,7 @@ export = {
         expect(stack).to(not(haveResource("AWS::Logs::LogGroup")));
         expect(stack).to(not(haveResource("AWS::IAM::Role")));
 
-        const trail: any = SynthUtils.toCloudFormation(stack).Resources.MyAmazingCloudTrail54516E8D;
+        const trail: any = SynthUtils.synthesize(stack).template.Resources.MyAmazingCloudTrail54516E8D;
         test.equals(trail.Properties.EventSelectors.length, 1);
         const selector = trail.Properties.EventSelectors[0];
         test.equals(selector.ReadWriteType, "ReadOnly", "Expected selector read write type to be Read");
@@ -178,9 +178,9 @@ export = {
       'with management event'(test: Test) {
         const stack = getTestStack();
 
-        new CloudTrail(stack, 'MyAmazingCloudTrail', { managementEvents: ReadWriteType.WriteOnly });
+        new Trail(stack, 'MyAmazingCloudTrail', { managementEvents: ReadWriteType.WriteOnly });
 
-        const trail: any = SynthUtils.toCloudFormation(stack).Resources.MyAmazingCloudTrail54516E8D;
+        const trail: any = SynthUtils.synthesize(stack).template.Resources.MyAmazingCloudTrail54516E8D;
         test.equals(trail.Properties.EventSelectors.length, 1);
         const selector = trail.Properties.EventSelectors[0];
         test.equals(selector.ReadWriteType, "WriteOnly", "Expected selector read write type to be All");
@@ -189,7 +189,41 @@ export = {
         test.done();
       },
     }
-  }
+  },
+
+  'add an event rule'(test: Test) {
+    // GIVEN
+    const stack = getTestStack();
+    const trail = new Trail(stack, 'MyAmazingCloudTrail', { managementEvents: ReadWriteType.WriteOnly });
+
+    // WHEN
+    trail.onCloudTrailEvent('DoEvents', {
+      target: {
+        bind: () => ({
+          arn: 'arn',
+          id: 'myid'
+        })
+      }
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::Events::Rule', {
+      EventPattern: {
+        "detail-type": [
+          "AWS API Call via CloudTrail"
+        ]
+      },
+      State: "ENABLED",
+      Targets: [
+        {
+          Arn: "arn",
+          Id: "myid"
+        }
+      ]
+    }));
+
+    test.done();
+  },
 };
 
 function getTestStack(): Stack {

@@ -508,7 +508,7 @@
         }
       }
     },
-    "EcsClusterDefaultAutoScalingGroupDrainECSHookTopicC705BD25": {
+    "EcsClusterDefaultAutoScalingGroupLifecycleHookDrainHookTopicACD2D4A4": {
       "Type": "AWS::SNS::Topic"
     },
     "EcsClusterDefaultAutoScalingGroupDrainECSHookFunctionServiceRole94543EDA": {
@@ -631,7 +631,7 @@
       "Properties": {
         "Protocol": "lambda",
         "TopicArn": {
-          "Ref": "EcsClusterDefaultAutoScalingGroupDrainECSHookTopicC705BD25"
+          "Ref": "EcsClusterDefaultAutoScalingGroupLifecycleHookDrainHookTopicACD2D4A4"
         },
         "Endpoint": {
           "Fn::GetAtt": [
@@ -653,7 +653,7 @@
         },
         "Principal": "sns.amazonaws.com",
         "SourceArn": {
-          "Ref": "EcsClusterDefaultAutoScalingGroupDrainECSHookTopicC705BD25"
+          "Ref": "EcsClusterDefaultAutoScalingGroupLifecycleHookDrainHookTopicACD2D4A4"
         }
       }
     },
@@ -693,7 +693,7 @@
               "Action": "sns:Publish",
               "Effect": "Allow",
               "Resource": {
-                "Ref": "EcsClusterDefaultAutoScalingGroupDrainECSHookTopicC705BD25"
+                "Ref": "EcsClusterDefaultAutoScalingGroupLifecycleHookDrainHookTopicACD2D4A4"
               }
             }
           ],
@@ -717,7 +717,7 @@
         "DefaultResult": "CONTINUE",
         "HeartbeatTimeout": 300,
         "NotificationTargetARN": {
-          "Ref": "EcsClusterDefaultAutoScalingGroupDrainECSHookTopicC705BD25"
+          "Ref": "EcsClusterDefaultAutoScalingGroupLifecycleHookDrainHookTopicACD2D4A4"
         },
         "RoleARN": {
           "Fn::GetAtt": [
@@ -775,14 +775,6 @@
             "Essential": true,
             "Image": "amazon/amazon-ecs-sample",
             "Links": [],
-            "LinuxParameters": {
-              "Capabilities": {
-                "Add": [],
-                "Drop": []
-              },
-              "Devices": [],
-              "Tmpfs": []
-            },
             "Memory": 256,
             "MountPoints": [],
             "Name": "frontend",
@@ -799,7 +791,6 @@
         ],
         "Family": "awsecsintegecsTaskDef8DD0C801",
         "NetworkMode": "awsvpc",
-        "PlacementConstraints": [],
         "RequiresCompatibilities": [
           "EC2"
         ],
@@ -849,8 +840,6 @@
             ]
           }
         },
-        "PlacementConstraints": [],
-        "PlacementStrategies": [],
         "SchedulingStrategy": "REPLICA",
         "ServiceRegistries": [
           {
@@ -862,23 +851,6 @@
             }
           }
         ]
-      }
-    },
-    "FrontendServiceSecurityGroup85470DEC": {
-      "Type": "AWS::EC2::SecurityGroup",
-      "Properties": {
-        "GroupDescription": "aws-ecs-integ-ecs/FrontendService/SecurityGroup",
-        "SecurityGroupEgress": [
-          {
-            "CidrIp": "0.0.0.0/0",
-            "Description": "Allow all outbound traffic by default",
-            "IpProtocol": "-1"
-          }
-        ],
-        "SecurityGroupIngress": [],
-        "VpcId": {
-          "Ref": "Vpc8378EB38"
-        }
       }
     },
     "FrontendServiceCloudmapService6FE76C06": {
@@ -908,6 +880,23 @@
             "EcsClusterDefaultServiceDiscoveryNamespaceB0971B2F",
             "Id"
           ]
+        }
+      }
+    },
+    "FrontendServiceSecurityGroup85470DEC": {
+      "Type": "AWS::EC2::SecurityGroup",
+      "Properties": {
+        "GroupDescription": "aws-ecs-integ-ecs/FrontendService/SecurityGroup",
+        "SecurityGroupEgress": [
+          {
+            "CidrIp": "0.0.0.0/0",
+            "Description": "Allow all outbound traffic by default",
+            "IpProtocol": "-1"
+          }
+        ],
+        "SecurityGroupIngress": [],
+        "VpcId": {
+          "Ref": "Vpc8378EB38"
         }
       }
     }

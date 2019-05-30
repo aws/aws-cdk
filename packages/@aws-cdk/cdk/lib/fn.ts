@@ -1,8 +1,6 @@
 import { ICfnConditionExpression } from './cfn-condition';
 import { minimalCloudFormationJoin } from './instrinsics';
-import { resolve } from './resolve';
-import { ResolveContext, Token } from './token';
-import { unresolved } from './unresolved';
+import { IResolveContext, Token } from './token';
 
 // tslint:disable:max-line-length
 
@@ -11,7 +9,6 @@ import { unresolved } from './unresolved';
  * http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference.html
  */
 export class Fn {
-
   /**
    * The ``Fn::GetAtt`` intrinsic function returns the value of an attribute
    * from a resource in the template.
@@ -37,6 +34,10 @@ export class Fn {
    * @returns a token represented as a string
    */
   public static join(delimiter: string, listOfValues: string[]): string {
+    if (listOfValues.length === 0) {
+      throw new Error(`FnJoin requires at least one value to be provided`);
+    }
+
     return new FnJoin(delimiter, listOfValues).toString();
   }
 
@@ -50,6 +51,12 @@ export class Fn {
    * @returns a token represented as a string array
    */
   public static split(delimiter: string, source: string): string[] {
+
+    // short-circut if source is not a token
+    if (!Token.isToken(source)) {
+      return source.split(delimiter);
+    }
+
     return new FnSplit(delimiter, source).toList();
   }
 
@@ -60,6 +67,10 @@ export class Fn {
    * @returns a token represented as a string
    */
   public static select(index: number, array: string[]): string {
+    if (!Token.isToken(array)) {
+      return array[index];
+    }
+
     return new FnSelect(index, array).toString();
   }
 
@@ -101,8 +112,8 @@ export class Fn {
    * @param sizeMask The digit covered in the subnet.
    * @returns a token represented as a string
    */
-  public static cidr(ipBlock: string, count: number, sizeMask?: string): string {
-    return new FnCidr(ipBlock, count, sizeMask).toString();
+  public static cidr(ipBlock: string, count: number, sizeMask?: string): string[] {
+    return new FnCidr(ipBlock, count, sizeMask).toList();
   }
 
   /**
@@ -638,8 +649,8 @@ class FnJoin extends Token {
     this.listOfValues = listOfValues;
   }
 
-  public resolve(context: ResolveContext): any {
-    if (unresolved(this.listOfValues)) {
+  public resolve(context: IResolveContext): any {
+    if (Token.isToken(this.listOfValues)) {
       // This is a list token, don't try to do smart things with it.
       return { 'Fn::Join': [ this.delimiter, this.listOfValues ] };
     }
@@ -655,10 +666,10 @@ class FnJoin extends Token {
    * if two concatenated elements are literal strings (not tokens), then pre-concatenate them with the delimiter, to
    * generate shorter output.
    */
-  private resolveValues(context: ResolveContext) {
+  private resolveValues(context: IResolveContext) {
     if (this._resolvedValues) { return this._resolvedValues; }
 
-    const resolvedValues = this.listOfValues.map(e => resolve(e, context));
+    const resolvedValues = this.listOfValues.map(context.resolve);
     return this._resolvedValues = minimalCloudFormationJoin(this.delimiter, resolvedValues);
   }
 }

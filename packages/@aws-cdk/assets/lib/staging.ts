@@ -1,10 +1,10 @@
-import { Construct, Token } from '@aws-cdk/cdk';
+import { Construct } from '@aws-cdk/cdk';
 import cxapi = require('@aws-cdk/cx-api');
 import fs = require('fs');
 import path = require('path');
-import { copyDirectory, fingerprint } from './fs';
+import { copyDirectory, CopyOptions, fingerprint } from './fs';
 
-export interface StagingProps {
+export interface StagingProps extends CopyOptions {
   readonly sourcePath: string;
 }
 
@@ -42,35 +42,36 @@ export class Staging extends Construct {
   public readonly sourcePath: string;
 
   /**
-   * The asset path after "prepare" is called.
-   *
-   * If staging is disabled, this will just be the original path.
-   * If staging is enabled it will be the staged path.
+   * A cryptographic hash of the source document(s).
    */
-  private _preparedAssetPath?: string;
+  public readonly sourceHash: string;
+
+  private readonly copyOptions: CopyOptions;
+
+  private readonly relativePath?: string;
 
   constructor(scope: Construct, id: string, props: StagingProps) {
     super(scope, id);
 
     this.sourcePath = props.sourcePath;
-    this.stagedPath = new Token(() => this._preparedAssetPath).toString();
+    this.copyOptions = props;
+    this.sourceHash = fingerprint(this.sourcePath, props);
+
+    const stagingDisabled = this.node.getContext(cxapi.DISABLE_ASSET_STAGING_CONTEXT);
+    if (stagingDisabled) {
+      this.stagedPath = this.sourcePath;
+    } else {
+      this.relativePath = `asset.` + this.sourceHash + path.extname(this.sourcePath);
+      this.stagedPath = this.relativePath; // always relative to outdir
+    }
   }
 
-  protected prepare() {
-    const stagingDir = this.node.getContext(cxapi.ASSET_STAGING_DIR_CONTEXT);
-    if (!stagingDir) {
-      this._preparedAssetPath = this.sourcePath;
+  protected synthesize(session: cxapi.CloudAssemblyBuilder) {
+    if (!this.relativePath) {
       return;
     }
 
-    if (!fs.existsSync(stagingDir)) {
-      fs.mkdirSync(stagingDir);
-    }
-
-    const hash = fingerprint(this.sourcePath);
-    const targetPath = path.join(stagingDir, hash + path.extname(this.sourcePath));
-
-    this._preparedAssetPath = targetPath;
+    const targetPath = path.join(session.outdir, this.relativePath);
 
     // asset already staged
     if (fs.existsSync(targetPath)) {
@@ -83,7 +84,7 @@ export class Staging extends Construct {
       fs.copyFileSync(this.sourcePath, targetPath);
     } else if (stat.isDirectory()) {
       fs.mkdirSync(targetPath);
-      copyDirectory(this.sourcePath, targetPath);
+      copyDirectory(this.sourcePath, targetPath, this.copyOptions);
     } else {
       throw new Error(`Unknown file type: ${this.sourcePath}`);
     }

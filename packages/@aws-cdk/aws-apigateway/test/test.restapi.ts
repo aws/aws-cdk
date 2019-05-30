@@ -1,4 +1,4 @@
-import { expect, haveResource, haveResourceLike, ResourcePart, SynthUtils } from '@aws-cdk/assert';
+import { expect, haveResource, haveResourceLike, ResourcePart } from '@aws-cdk/assert';
 import cdk = require('@aws-cdk/cdk');
 import { App, Stack } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
@@ -131,7 +131,7 @@ export = {
     api.root.addResource('bar').addResource('goo');
 
     // THEN
-    test.throws(() => app.synthesizeStack(stack.name), /The REST API doesn't contain any methods/);
+    test.throws(() => app.run(), /The REST API doesn't contain any methods/);
     test.done();
   },
 
@@ -280,12 +280,12 @@ export = {
     const r2 = api.root.addResource('r2');
 
     // THEN
-    test.deepEqual(api.root.resourcePath, '/');
-    test.deepEqual(r1.resourcePath, '/r1');
-    test.deepEqual(r11.resourcePath, '/r1/r1_1');
-    test.deepEqual(r12.resourcePath, '/r1/r1_2');
-    test.deepEqual(r121.resourcePath, '/r1/r1_2/r1_2_1');
-    test.deepEqual(r2.resourcePath, '/r2');
+    test.deepEqual(api.root.path, '/');
+    test.deepEqual(r1.path, '/r1');
+    test.deepEqual(r11.path, '/r1/r1_1');
+    test.deepEqual(r12.path, '/r1/r1_2');
+    test.deepEqual(r121.path, '/r1/r1_2/r1_2_1');
+    test.deepEqual(r2.path, '/r2');
     test.done();
   },
 
@@ -328,28 +328,15 @@ export = {
     test.done();
   },
 
-  'import/export'(test: Test) {
+  'fromRestApiId'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
 
     // WHEN
-    const imported = apigateway.RestApi.import(stack, 'imported-api', {
-      restApiId: 'api-rxt4498f'
-    });
-
-    const api = new apigateway.RestApi(stack, 'MyRestApi');
-    api.root.addMethod('GET');
-
-    const exported = api.export();
+    const imported = apigateway.RestApi.fromRestApiId(stack, 'imported-api', 'api-rxt4498f');
 
     // THEN
-    stack.node.prepareTree();
-    test.deepEqual(SynthUtils.toCloudFormation(stack).Outputs.MyRestApiRestApiIdB93C5C2D, {
-      Value: { Ref: 'MyRestApi2D1F47A9' },
-      Export: { Name: 'Stack:MyRestApiRestApiIdB93C5C2D' }
-    });
     test.deepEqual(imported.node.resolve(imported.restApiId), 'api-rxt4498f');
-    test.deepEqual(imported.node.resolve(exported), { restApiId: { 'Fn::ImportValue': 'Stack:MyRestApiRestApiIdB93C5C2D' } });
     test.done();
   },
 
@@ -493,9 +480,7 @@ export = {
   '"cloneFrom" can be used to clone an existing API'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
-    const cloneFrom = apigateway.RestApi.import(stack, 'RestApi', {
-      restApiId: 'foobar'
-    });
+    const cloneFrom = apigateway.RestApi.fromRestApiId(stack, 'RestApi', 'foobar');
 
     // WHEN
     const api = new apigateway.RestApi(stack, 'api', {

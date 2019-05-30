@@ -9,7 +9,7 @@ export = {
     'public hosted zone'(test: Test) {
       const app = new TestApp();
       new PublicHostedZone(app.stack, 'HostedZone', { zoneName: 'test.public' });
-      expect(app.synthesizeTemplate()).to(exactlyMatchTemplate({
+      expect(app.stack).to(exactlyMatchTemplate({
         Resources: {
           HostedZoneDB99F866: {
             Type: "AWS::Route53::HostedZone",
@@ -23,9 +23,9 @@ export = {
     },
     'private hosted zone'(test: Test) {
       const app = new TestApp();
-      const vpcNetwork = new ec2.VpcNetwork(app.stack, 'VPC');
+      const vpcNetwork = new ec2.Vpc(app.stack, 'VPC');
       new PrivateHostedZone(app.stack, 'HostedZone', { zoneName: 'test.private', vpc: vpcNetwork });
-      expect(app.synthesizeTemplate()).to(beASupersetOfTemplate({
+      expect(app.stack).to(beASupersetOfTemplate({
         Resources: {
           HostedZoneDB99F866: {
             Type: "AWS::Route53::HostedZone",
@@ -43,11 +43,11 @@ export = {
     },
     'when specifying multiple VPCs'(test: Test) {
       const app = new TestApp();
-      const vpcNetworkA = new ec2.VpcNetwork(app.stack, 'VPC1');
-      const vpcNetworkB = new ec2.VpcNetwork(app.stack, 'VPC2');
+      const vpcNetworkA = new ec2.Vpc(app.stack, 'VPC1');
+      const vpcNetworkB = new ec2.Vpc(app.stack, 'VPC2');
       new PrivateHostedZone(app.stack, 'HostedZone', { zoneName: 'test.private', vpc: vpcNetworkA })
         .addVpc(vpcNetworkB);
-      expect(app.synthesizeTemplate()).to(beASupersetOfTemplate({
+      expect(app.stack).to(beASupersetOfTemplate({
         Resources: {
           HostedZoneDB99F866: {
             Type: "AWS::Route53::HostedZone",
@@ -70,40 +70,21 @@ export = {
   },
 
   'exporting and importing works'(test: Test) {
-    const stack1 = new cdk.Stack();
     const stack2 = new cdk.Stack();
 
-    const zone = new PublicHostedZone(stack1, 'Zone', {
-      zoneName: 'cdk.local',
+    const importedZone = HostedZone.fromHostedZoneAttributes(stack2, 'Imported', {
+      hostedZoneId: 'hosted-zone-id',
+      zoneName: 'cdk.local'
     });
 
-    const zoneRef = zone.export();
-    const importedZone = HostedZone.import(stack2, 'Imported', zoneRef);
     new TxtRecord(importedZone as any, 'Record', {
       zone: importedZone,
       recordName: 'lookHere',
       recordValue: 'SeeThere'
     });
 
-    expect(stack1).to(exactlyMatchTemplate({
-      Resources: {
-        ZoneA5DE4B68: {
-          Type: "AWS::Route53::HostedZone",
-          Properties: {
-            Name: "cdk.local."
-          }
-        }
-      },
-      Outputs: {
-        ZoneHostedZoneId413B8768: {
-          Value: { Ref: "ZoneA5DE4B68" },
-          Export: { Name: "Stack:ZoneHostedZoneId413B8768" }
-        }
-      }
-    }));
-
     expect(stack2).to(haveResource("AWS::Route53::RecordSet", {
-      HostedZoneId: { "Fn::ImportValue": "Stack:ZoneHostedZoneId413B8768" },
+      HostedZoneId: "hosted-zone-id",
       Name: "lookHere.cdk.local.",
       ResourceRecords: [ "\"SeeThere\"" ],
       Type: "TXT"
@@ -140,9 +121,9 @@ export = {
   'a hosted zone can be assiciated with a VPC either upon creation or using "addVpc"'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
-    const vpc1 = new ec2.VpcNetwork(stack, 'VPC1');
-    const vpc2 = new ec2.VpcNetwork(stack, 'VPC2');
-    const vpc3 = new ec2.VpcNetwork(stack, 'VPC3');
+    const vpc1 = new ec2.Vpc(stack, 'VPC1');
+    const vpc2 = new ec2.Vpc(stack, 'VPC2');
+    const vpc3 = new ec2.Vpc(stack, 'VPC3');
 
     // WHEN
     const zone = new HostedZone(stack, 'MyHostedZone', {
@@ -187,7 +168,7 @@ export = {
     // GIVEN
     const stack = new cdk.Stack();
     const zone = new PublicHostedZone(stack, 'MyHostedZone', { zoneName: 'zonename' });
-    const vpc = new ec2.VpcNetwork(stack, 'VPC');
+    const vpc = new ec2.Vpc(stack, 'VPC');
 
     // THEN
     test.throws(() => zone.addVpc(vpc), /Cannot associate public hosted zones with a VPC/);
@@ -225,9 +206,5 @@ class TestApp {
     this.app.node.setContext(`availability-zones:${account}:${region}`,
       [`${region}-1a`]);
     this.stack = new cdk.Stack(this.app, 'MyStack', { env: { account, region } });
-  }
-
-  public synthesizeTemplate() {
-    return this.app.synthesizeStack(this.stack.name);
   }
 }

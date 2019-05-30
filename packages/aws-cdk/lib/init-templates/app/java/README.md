@@ -7,9 +7,8 @@ and you should be able to build and run tests from your IDE.
 You should explore the contents of this template. It demonstrates a CDK app with two instances of
 a stack (`HelloStack`) which also uses a user-defined construct (`HelloConstruct`).
 
-The `cdk.json` file tells the CDK Toolkit how to execute your app. It uses a script called `app.sh`
-to do that. Note that this script expects a local file called `.classpath.txt` to exist. This file
-is automatically created by `mvn package`.
+The `cdk.json` file tells the CDK Toolkit how to execute your app. This example relies on maven
+to do that.
 
 # Useful commands
 
@@ -21,4 +20,3 @@ is automatically created by `mvn package`.
  * `cdk docs`        open CDK documentation
 
 Enjoy!
-

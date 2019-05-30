@@ -1,5 +1,5 @@
-import cxapi = require('@aws-cdk/cx-api');
 import { Tag } from "../api/cxapp/stacks";
+import { CloudFormationStackArtifact } from '@aws-cdk/cx-api';
 import { debug } from '../logging';
 import { deserializeStructure } from '../serialize';
 import { Mode } from './aws-auth/credentials';
@@ -17,12 +17,12 @@ export type Template = { [key: string]: any };
  * Provisioners apply templates to the cloud infrastructure.
  */
 export interface IDeploymentTarget {
-  readCurrentTemplate(stack: cxapi.SynthesizedStack): Promise<Template>;
+  readCurrentTemplate(stack: CloudFormationStackArtifact): Promise<Template>;
   deployStack(options: DeployStackOptions): Promise<DeployStackResult>;
 }
 
 export interface DeployStackOptions {
-  stack: cxapi.SynthesizedStack;
+  stack: CloudFormationStackArtifact;
   roleArn?: string;
   deployName?: string;
   quiet?: boolean;
@@ -46,7 +46,7 @@ export class CloudFormationDeploymentTarget implements IDeploymentTarget {
     this.aws = props.aws;
   }
 
-  public async readCurrentTemplate(stack: cxapi.SynthesizedStack): Promise<Template> {
+  public async readCurrentTemplate(stack: CloudFormationStackArtifact): Promise<Template> {
     debug(`Reading existing template for stack ${stack.name}.`);
 
     const cfn = await this.aws.cloudFormation(stack.environment, Mode.ForReading);

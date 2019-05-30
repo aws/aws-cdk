@@ -40,24 +40,29 @@ export interface CommonAutoScalingGroupProps {
 
   /**
    * Initial amount of instances in the fleet
+   *
    * @default 1
    */
   readonly desiredCapacity?: number;
 
   /**
    * Name of SSH keypair to grant access to instances
-   * @default No SSH access will be possible
+   *
+   * @default - No SSH access will be possible.
    */
   readonly keyName?: string;
 
   /**
    * Where to place instances within the VPC
+   *
+   * @default - All Private subnets.
    */
   readonly vpcSubnets?: ec2.SubnetSelection;
 
   /**
    * SNS topic to send notifications about fleet changes
-   * @default No fleet change notifications will be sent.
+   *
+   * @default - No fleet change notifications will be sent.
    */
   readonly notificationsTopic?: sns.ITopic;
 
@@ -85,6 +90,8 @@ export interface CommonAutoScalingGroupProps {
    * Configuration for rolling updates
    *
    * Only used if updateType == UpdateType.RollingUpdate.
+   *
+   * @default - RollingUpdateConfiguration with defaults.
    */
   readonly rollingUpdateConfiguration?: RollingUpdateConfiguration;
 
@@ -93,6 +100,8 @@ export interface CommonAutoScalingGroupProps {
    *
    * Only used if updateType == UpdateType.ReplacingUpdate. Specifies how
    * many instances must signal success for the update to succeed.
+   *
+   * @default minSuccessfulInstancesPercent
    */
   readonly replacingUpdateMinSuccessfulInstancesPercent?: number;
 
@@ -136,9 +145,17 @@ export interface CommonAutoScalingGroupProps {
    * Whether instances in the Auto Scaling Group should have public
    * IP addresses associated with them.
    *
-   * @default Use subnet setting
+   * @default - Use subnet setting.
    */
   readonly associatePublicIpAddress?: boolean;
+
+  /**
+   * The maximum hourly price (in USD) to be paid for any Spot Instance launched to fulfill the request. Spot Instances are
+   * launched when the price you specify exceeds the current Spot market price.
+   *
+   * @default none
+   */
+  readonly spotPrice?: string;
 }
 
 /**
@@ -148,7 +165,7 @@ export interface AutoScalingGroupProps extends CommonAutoScalingGroupProps {
   /**
    * VPC to launch these instances in.
    */
-  readonly vpc: ec2.IVpcNetwork;
+  readonly vpc: ec2.IVpc;
 
   /**
    * Type of instance to launch
@@ -176,6 +193,111 @@ export interface AutoScalingGroupProps extends CommonAutoScalingGroupProps {
   readonly role?: iam.IRole;
 }
 
+abstract class AutoScalingGroupBase extends Resource implements IAutoScalingGroup {
+
+  public abstract autoScalingGroupName: string;
+  protected albTargetGroup?: elbv2.ApplicationTargetGroup;
+
+  /**
+   * Send a message to either an SQS queue or SNS topic when instances launch or terminate
+   */
+  public addLifecycleHook(id: string, props: BasicLifecycleHookProps): LifecycleHook {
+    return new LifecycleHook(this, `LifecycleHook${id}`, {
+      autoScalingGroup: this,
+      ...props
+    });
+  }
+
+  /**
+   * Scale out or in based on time
+   */
+  public scaleOnSchedule(id: string, props: BasicScheduledActionProps): ScheduledAction {
+    return new ScheduledAction(this, `ScheduledAction${id}`, {
+      autoScalingGroup: this,
+      ...props,
+    });
+  }
+
+  /**
+   * Scale out or in to achieve a target CPU utilization
+   */
+  public scaleOnCpuUtilization(id: string, props: CpuUtilizationScalingProps): TargetTrackingScalingPolicy {
+    return new TargetTrackingScalingPolicy(this, `ScalingPolicy${id}`, {
+      autoScalingGroup: this,
+      predefinedMetric: PredefinedMetric.ASGAverageCPUUtilization,
+      targetValue: props.targetUtilizationPercent,
+      ...props
+    });
+  }
+
+  /**
+   * Scale out or in to achieve a target network ingress rate
+   */
+  public scaleOnIncomingBytes(id: string, props: NetworkUtilizationScalingProps): TargetTrackingScalingPolicy {
+    return new TargetTrackingScalingPolicy(this, `ScalingPolicy${id}`, {
+      autoScalingGroup: this,
+      predefinedMetric: PredefinedMetric.ASGAverageNetworkIn,
+      targetValue: props.targetBytesPerSecond,
+      ...props
+    });
+  }
+
+  /**
+   * Scale out or in to achieve a target network egress rate
+   */
+  public scaleOnOutgoingBytes(id: string, props: NetworkUtilizationScalingProps): TargetTrackingScalingPolicy {
+    return new TargetTrackingScalingPolicy(this, `ScalingPolicy${id}`, {
+      autoScalingGroup: this,
+      predefinedMetric: PredefinedMetric.ASGAverageNetworkOut,
+      targetValue: props.targetBytesPerSecond,
+      ...props
+    });
+  }
+
+  /**
+   * Scale out or in to achieve a target request handling rate
+   *
+   * The AutoScalingGroup must have been attached to an Application Load Balancer
+   * in order to be able to call this.
+   */
+  public scaleOnRequestCount(id: string, props: RequestCountScalingProps): TargetTrackingScalingPolicy {
+    if (this.albTargetGroup === undefined) {
+      throw new Error('Attach the AutoScalingGroup to an Application Load Balancer before calling scaleOnRequestCount()');
+    }
+
+    const resourceLabel = `${this.albTargetGroup.firstLoadBalancerFullName}/${this.albTargetGroup.targetGroupFullName}`;
+
+    const policy = new TargetTrackingScalingPolicy(this, `ScalingPolicy${id}`, {
+      autoScalingGroup: this,
+      predefinedMetric: PredefinedMetric.ALBRequestCountPerTarget,
+      targetValue: props.targetRequestsPerSecond,
+      resourceLabel,
+      ...props
+    });
+
+    policy.node.addDependency(this.albTargetGroup.loadBalancerAttached);
+    return policy;
+  }
+
+  /**
+   * Scale out or in in order to keep a metric around a target value
+   */
+  public scaleToTrackMetric(id: string, props: MetricTargetTrackingProps): TargetTrackingScalingPolicy {
+    return new TargetTrackingScalingPolicy(this, `ScalingPolicy${id}`, {
+      autoScalingGroup: this,
+      customMetric: props.metric,
+      ...props
+    });
+  }
+
+  /**
+   * Scale out or in, in response to a metric
+   */
+  public scaleOnMetric(id: string, props: BasicStepScalingPolicyProps): StepScalingPolicy {
+    return new StepScalingPolicy(this, id, { ...props, autoScalingGroup: this });
+  }
+}
+
 /**
  * A Fleet represents a managed set of EC2 instances
  *
@@ -187,8 +309,20 @@ export interface AutoScalingGroupProps extends CommonAutoScalingGroupProps {
  *
  * The ASG spans all availability zones.
  */
-export class AutoScalingGroup extends Resource implements IAutoScalingGroup, elb.ILoadBalancerTarget, ec2.IConnectable,
-  elbv2.IApplicationLoadBalancerTarget, elbv2.INetworkLoadBalancerTarget {
+export class AutoScalingGroup extends AutoScalingGroupBase implements
+  elb.ILoadBalancerTarget,
+  ec2.IConnectable,
+  elbv2.IApplicationLoadBalancerTarget,
+  elbv2.INetworkLoadBalancerTarget {
+
+  public static fromAutoScalingGroupName(scope: Construct, id: string, autoScalingGroupName: string): IAutoScalingGroup {
+    class Import extends AutoScalingGroupBase {
+      public autoScalingGroupName = autoScalingGroupName;
+    }
+
+    return new Import(scope, id);
+  }
+
   /**
    * The type of OS instances of this fleet are running.
    */
@@ -215,7 +349,6 @@ export class AutoScalingGroup extends Resource implements IAutoScalingGroup, elb
   private readonly securityGroups: ec2.ISecurityGroup[] = [];
   private readonly loadBalancerNames: string[] = [];
   private readonly targetGroupArns: string[] = [];
-  private albTargetGroup?: elbv2.ApplicationTargetGroup;
 
   constructor(scope: Construct, id: string, props: AutoScalingGroupProps) {
     super(scope, id);
@@ -253,6 +386,7 @@ export class AutoScalingGroup extends Resource implements IAutoScalingGroup, elb
       iamInstanceProfile: iamProfile.ref,
       userData: userDataToken,
       associatePublicIpAddress: props.associatePublicIpAddress,
+      spotPrice: props.spotPrice,
     });
 
     launchConfig.node.addDependency(this.role);
@@ -346,109 +480,10 @@ export class AutoScalingGroup extends Resource implements IAutoScalingGroup, elb
   }
 
   /**
-   * Scale out or in based on time
-   */
-  public scaleOnSchedule(id: string, props: BasicScheduledActionProps): ScheduledAction {
-    return new ScheduledAction(this, `ScheduledAction${id}`, {
-      autoScalingGroup: this,
-      ...props,
-    });
-  }
-
-  /**
-   * Scale out or in to achieve a target CPU utilization
-   */
-  public scaleOnCpuUtilization(id: string, props: CpuUtilizationScalingProps): TargetTrackingScalingPolicy {
-    return new TargetTrackingScalingPolicy(this, `ScalingPolicy${id}`, {
-      autoScalingGroup: this,
-      predefinedMetric: PredefinedMetric.ASGAverageCPUUtilization,
-      targetValue: props.targetUtilizationPercent,
-      ...props
-    });
-  }
-
-  /**
-   * Scale out or in to achieve a target network ingress rate
-   */
-  public scaleOnIncomingBytes(id: string, props: NetworkUtilizationScalingProps): TargetTrackingScalingPolicy {
-    return new TargetTrackingScalingPolicy(this, `ScalingPolicy${id}`, {
-      autoScalingGroup: this,
-      predefinedMetric: PredefinedMetric.ASGAverageNetworkIn,
-      targetValue: props.targetBytesPerSecond,
-      ...props
-    });
-  }
-
-  /**
-   * Scale out or in to achieve a target network egress rate
-   */
-  public scaleOnOutgoingBytes(id: string, props: NetworkUtilizationScalingProps): TargetTrackingScalingPolicy {
-    return new TargetTrackingScalingPolicy(this, `ScalingPolicy${id}`, {
-      autoScalingGroup: this,
-      predefinedMetric: PredefinedMetric.ASGAverageNetworkOut,
-      targetValue: props.targetBytesPerSecond,
-      ...props
-    });
-  }
-
-  /**
-   * Scale out or in to achieve a target request handling rate
-   *
-   * The AutoScalingGroup must have been attached to an Application Load Balancer
-   * in order to be able to call this.
-   */
-  public scaleOnRequestCount(id: string, props: RequestCountScalingProps): TargetTrackingScalingPolicy {
-    if (this.albTargetGroup === undefined) {
-      throw new Error('Attach the AutoScalingGroup to an Application Load Balancer before calling scaleOnRequestCount()');
-    }
-
-    const resourceLabel = `${this.albTargetGroup.firstLoadBalancerFullName}/${this.albTargetGroup.targetGroupFullName}`;
-
-    const policy = new TargetTrackingScalingPolicy(this, `ScalingPolicy${id}`, {
-      autoScalingGroup: this,
-      predefinedMetric: PredefinedMetric.ALBRequestCountPerTarget,
-      targetValue: props.targetRequestsPerSecond,
-      resourceLabel,
-      ...props
-    });
-
-    policy.node.addDependency(this.albTargetGroup.loadBalancerAttached);
-    return policy;
-  }
-
-  /**
-   * Scale out or in in order to keep a metric around a target value
-   */
-  public scaleToTrackMetric(id: string, props: MetricTargetTrackingProps): TargetTrackingScalingPolicy {
-    return new TargetTrackingScalingPolicy(this, `ScalingPolicy${id}`, {
-      autoScalingGroup: this,
-      customMetric: props.metric,
-      ...props
-    });
-  }
-
-  /**
-   * Scale out or in, in response to a metric
-   */
-  public scaleOnMetric(id: string, props: BasicStepScalingPolicyProps): StepScalingPolicy {
-    return new StepScalingPolicy(this, id, { ...props, autoScalingGroup: this });
-  }
-
-  /**
    * Adds a statement to the IAM role assumed by instances of this fleet.
    */
   public addToRolePolicy(statement: iam.PolicyStatement) {
     this.role.addToPolicy(statement);
-  }
-
-  /**
-   * Send a message to either an SQS queue or SNS topic when instances launch or terminate
-   */
-  public onLifecycleTransition(id: string, props: BasicLifecycleHookProps): LifecycleHook {
-    return new LifecycleHook(this, `LifecycleHook${id}`, {
-      autoScalingGroup: this,
-      ...props
-    });
   }
 
   /**
@@ -668,13 +703,14 @@ function validatePercentage(x?: number): number | undefined {
 export interface IAutoScalingGroup extends IResource {
   /**
    * The name of the AutoScalingGroup
+   * @attribute
    */
   readonly autoScalingGroupName: string;
 
   /**
    * Send a message to either an SQS queue or SNS topic when instances launch or terminate
    */
-  onLifecycleTransition(id: string, props: BasicLifecycleHookProps): LifecycleHook;
+  addLifecycleHook(id: string, props: BasicLifecycleHookProps): LifecycleHook;
 
   /**
    * Scale out or in based on time

@@ -1,7 +1,7 @@
 import cloudwatch = require('@aws-cdk/aws-cloudwatch');
 import cdk = require('@aws-cdk/cdk');
 import { CfnScalingPolicy } from './applicationautoscaling.generated';
-import { ScalableTarget } from './scalable-target';
+import { IScalableTarget } from './scalable-target';
 
 /**
  * Base interface for target tracking props
@@ -16,7 +16,7 @@ export interface BaseTargetTrackingProps {
   /**
    * A name for the scaling policy
    *
-   * @default Automatically generated name
+   * @default - Automatically generated name.
    */
   readonly policyName?: string;
 
@@ -35,14 +35,14 @@ export interface BaseTargetTrackingProps {
   /**
    * Period after a scale in activity completes before another scale in activity can start.
    *
-   * @default No scale in cooldown
+   * @default - No scale in cooldown.
    */
   readonly scaleInCooldownSec?: number;
 
   /**
    * Period after a scale out activity completes before another scale out activity can start.
    *
-   * @default No scale out cooldown
+   * @default - No scale out cooldown.
    */
   readonly scaleOutCooldownSec?: number;
 }
@@ -63,6 +63,8 @@ export interface BasicTargetTrackingScalingPolicyProps extends BaseTargetTrackin
    * the target value, scaling in will happen in the metric is lower than the target value.
    *
    * Exactly one of customMetric or predefinedMetric must be specified.
+   *
+   * @default - No predefined metrics.
    */
   readonly predefinedMetric?: PredefinedMetric;
 
@@ -72,6 +74,8 @@ export interface BasicTargetTrackingScalingPolicyProps extends BaseTargetTrackin
    * Only used for predefined metric ALBRequestCountPerTarget.
    *
    * @example app/<load-balancer-name>/<load-balancer-id>/targetgroup/<target-group-name>/<target-group-id>
+   *
+   * @default - No resource label.
    */
   readonly resourceLabel?: string;
 
@@ -82,6 +86,8 @@ export interface BasicTargetTrackingScalingPolicyProps extends BaseTargetTrackin
    * the target value, scaling in will happen in the metric is lower than the target value.
    *
    * Exactly one of customMetric or predefinedMetric must be specified.
+   *
+   * @default - No custom metric.
    */
   readonly customMetric?: cloudwatch.Metric;
 }
@@ -95,7 +101,7 @@ export interface TargetTrackingScalingPolicyProps extends BasicTargetTrackingSca
   /*
    * The scalable target
    */
-  readonly scalingTarget: ScalableTarget;
+  readonly scalingTarget: IScalableTarget;
 }
 
 export class TargetTrackingScalingPolicy extends cdk.Construct {

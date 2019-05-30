@@ -4,6 +4,7 @@ import cdk = require('@aws-cdk/cdk');
 import cxapi = require('@aws-cdk/cx-api');
 import fs = require('fs');
 import path = require('path');
+import { CopyOptions } from './fs/copy-options';
 import { Staging } from './staging';
 
 /**
@@ -22,7 +23,7 @@ export enum AssetPackaging {
   File = 'file',
 }
 
-export interface AssetProps {
+export interface AssetProps extends CopyOptions {
   /**
    * The disk location of the asset.
    */
@@ -36,15 +37,35 @@ export interface AssetProps {
   /**
    * A list of principals that should be able to read this asset from S3.
    * You can use `asset.grantRead(principal)` to grant read permissions later.
+   *
+   * @default - No principals that can read file asset.
    */
   readonly readers?: iam.IGrantable[];
+}
+
+export interface IAsset extends cdk.IConstruct {
+  /**
+   * A hash of the source of this asset, which is available at construction time. As this is a plain
+   * string, it can be used in construct IDs in order to enforce creation of a new resource when
+   * the content hash has changed.
+   */
+  readonly sourceHash: string;
+
+  /**
+   * A hash of the bundle for of this asset, which is only available at deployment time. As this is
+   * a late-bound token, it may not be used in construct IDs, but can be passed as a resource
+   * property in order to force a change on a resource when an asset is effectively updated. This is
+   * more reliable than `sourceHash` in particular for assets which bundling phase involve external
+   * resources that can change over time (such as Docker image builds).
+   */
+  readonly artifactHash: string;
 }
 
 /**
  * An asset represents a local file or directory, which is automatically uploaded to S3
  * and then can be referenced within a CDK application.
  */
-export class Asset extends cdk.Construct {
+export class Asset extends cdk.Construct implements IAsset {
   /**
    * Attribute that represents the name of the bucket this asset exists in.
    */
@@ -80,6 +101,9 @@ export class Asset extends cdk.Construct {
    */
   public readonly isZipArchive: boolean;
 
+  public readonly sourceHash: string;
+  public readonly artifactHash: string;
+
   /**
    * The S3 prefix where all different versions of this asset are stored
    */
@@ -90,8 +114,10 @@ export class Asset extends cdk.Construct {
 
     // stage the asset source (conditionally).
     const staging = new Staging(this, 'Stage', {
-      sourcePath: path.resolve(props.path)
+      ...props,
+      sourcePath: path.resolve(props.path),
     });
+    this.sourceHash = staging.sourceHash;
 
     this.assetPath = staging.stagedPath;
 
@@ -117,14 +143,18 @@ export class Asset extends cdk.Construct {
       description: `S3 key for asset version "${this.node.path}"`
     });
 
+    const hashParam = new cdk.CfnParameter(this, 'ArtifactHash', {
+      description: `Artifact hash for asset "${this.node.path}"`,
+      type: 'String',
+    });
+
     this.s3BucketName = bucketParam.stringValue;
     this.s3Prefix = cdk.Fn.select(0, cdk.Fn.split(cxapi.ASSET_PREFIX_SEPARATOR, keyParam.stringValue)).toString();
     const s3Filename = cdk.Fn.select(1, cdk.Fn.split(cxapi.ASSET_PREFIX_SEPARATOR, keyParam.stringValue)).toString();
     this.s3ObjectKey = `${this.s3Prefix}${s3Filename}`;
+    this.artifactHash = hashParam.stringValue;
 
-    this.bucket = s3.Bucket.import(this, 'AssetBucket', {
-      bucketName: this.s3BucketName
-    });
+    this.bucket = s3.Bucket.fromBucketName(this, 'AssetBucket', this.s3BucketName);
 
     // form the s3 URL of the object key
     this.s3Url = this.bucket.urlForObject(this.s3ObjectKey);
@@ -137,8 +167,11 @@ export class Asset extends cdk.Construct {
       path: this.assetPath,
       id: this.node.uniqueId,
       packaging: props.packaging,
+      sourceHash: this.sourceHash,
+
       s3BucketParameter: bucketParam.logicalId,
       s3KeyParameter: keyParam.logicalId,
+      artifactHashParameter: hashParam.logicalId,
     };
 
     this.node.addMetadata(cxapi.ASSET_METADATA, asset);
@@ -160,7 +193,7 @@ export class Asset extends cdk.Construct {
    *
    * @see https://github.com/awslabs/aws-cdk/issues/1432
    *
-   * @param resource The CloudFormation resource which is using this asset.
+   * @param resource The CloudFormation resource which is using this asset [disable-awslint:ref-via-interface]
    * @param resourceProperty The property name where this asset is referenced
    * (e.g. "Code" for AWS::Lambda::Function)
    */
@@ -197,6 +230,8 @@ export interface FileAssetProps {
   /**
    * A list of principals that should be able to read this file asset from S3.
    * You can use `asset.grantRead(principal)` to grant read permissions later.
+   *
+   * @default - No principals that can read file asset.
    */
   readonly readers?: iam.IGrantable[];
 }
@@ -219,6 +254,8 @@ export interface ZipDirectoryAssetProps {
   /**
    * A list of principals that should be able to read this ZIP file from S3.
    * You can use `asset.grantRead(principal)` to grant read permissions later.
+   *
+   * @default - No principals that can read file asset.
    */
   readonly readers?: iam.IGrantable[];
 }

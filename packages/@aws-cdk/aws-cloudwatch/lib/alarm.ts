@@ -1,8 +1,20 @@
-import { Construct, Resource, Token } from '@aws-cdk/cdk';
+import { Construct, IResource, Resource, Token } from '@aws-cdk/cdk';
 import { CfnAlarm } from './cloudwatch.generated';
 import { HorizontalAnnotation } from './graph';
 import { Dimension, Metric, MetricAlarmProps, Statistic, Unit } from './metric';
 import { parseStatistic } from './util.statistic';
+
+export interface IAlarm extends IResource {
+  /**
+   * @attribute
+   */
+  readonly alarmArn: string;
+
+  /**
+   * @attribute
+   */
+  readonly alarmName: string;
+}
 
 /**
  * Properties for Alarms
@@ -62,14 +74,27 @@ export enum TreatMissingData {
 /**
  * An alarm on a CloudWatch metric
  */
-export class Alarm extends Resource {
+export class Alarm extends Resource implements IAlarm {
+
+  public static fromAlarmArn(scope: Construct, id: string, alarmArn: string): IAlarm {
+    class Import extends Resource implements IAlarm {
+      public readonly alarmArn = alarmArn;
+      public readonly alarmName = scope.node.stack.parseArn(alarmArn, ':').resourceName!;
+    }
+    return new Import(scope, id);
+  }
+
   /**
    * ARN of this alarm
+   *
+   * @attribute
    */
   public readonly alarmArn: string;
 
   /**
    * Name of this alarm.
+   *
+   * @attribute
    */
   public readonly alarmName: string;
 
@@ -130,7 +155,7 @@ export class Alarm extends Resource {
    *
    * Typically the ARN of an SNS topic or ARN of an AutoScaling policy.
    */
-  public onAlarm(...actions: IAlarmAction[]) {
+  public addAlarmAction(...actions: IAlarmAction[]) {
     if (this.alarmActionArns === undefined) {
       this.alarmActionArns = [];
     }
@@ -143,7 +168,7 @@ export class Alarm extends Resource {
    *
    * Typically the ARN of an SNS topic or ARN of an AutoScaling policy.
    */
-  public onInsufficientData(...actions: IAlarmAction[]) {
+  public addInsufficientDataAction(...actions: IAlarmAction[]) {
     if (this.insufficientDataActionArns === undefined) {
       this.insufficientDataActionArns = [];
     }
@@ -156,7 +181,7 @@ export class Alarm extends Resource {
    *
    * Typically the ARN of an SNS topic or ARN of an AutoScaling policy.
    */
-  public onOk(...actions: IAlarmAction[]) {
+  public addOkAction(...actions: IAlarmAction[]) {
     if (this.okActionArns === undefined) {
       this.okActionArns = [];
     }

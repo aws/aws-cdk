@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/assets",
-  "version": "0.29.0",
+  "version": "0.32.0",
   "description": "Integration of CDK apps with local assets",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -20,7 +20,6 @@
         "signAssembly": true,
         "assemblyOriginatorKeyFile": "../../key.snk"
       },
-      "sphinx": {},
       "python": {
         "distName": "aws-cdk.assets",
         "module": "aws_cdk.assets"
@@ -40,11 +39,13 @@
     "integ": "cdk-integ",
     "pkglint": "pkglint -f",
     "package": "cdk-package",
-    "awslint": "cdk-awslint"
+    "awslint": "cdk-awslint",
+    "build+test+package": "npm run build+test && npm run package",
+    "build+test": "npm run build && npm test"
   },
   "cdk-build": {
     "pre": [
-      "cd test/fs && tar -xzvf fixtures.tar.gz"
+      "rm -rf test/fs/fixtures && cd test/fs && tar -xzvf fixtures.tar.gz"
     ]
   },
   "keywords": [
@@ -60,26 +61,29 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "^0.29.0",
+    "@aws-cdk/assert": "^0.32.0",
     "@types/minimatch": "^3.0.3",
-    "aws-cdk": "^0.29.0",
-    "cdk-build-tools": "^0.29.0",
-    "cdk-integ-tools": "^0.29.0",
-    "pkglint": "^0.29.0"
+    "@types/sinon": "^7.0.11",
+    "aws-cdk": "^0.32.0",
+    "cdk-build-tools": "^0.32.0",
+    "cdk-integ-tools": "^0.32.0",
+    "pkglint": "^0.32.0",
+    "sinon": "^7.3.2",
+    "ts-mock-imports": "^1.2.3"
   },
   "dependencies": {
-    "@aws-cdk/aws-iam": "^0.29.0",
-    "@aws-cdk/aws-s3": "^0.29.0",
-    "@aws-cdk/cdk": "^0.29.0",
-    "@aws-cdk/cx-api": "^0.29.0",
+    "@aws-cdk/aws-iam": "^0.32.0",
+    "@aws-cdk/aws-s3": "^0.32.0",
+    "@aws-cdk/cdk": "^0.32.0",
+    "@aws-cdk/cx-api": "^0.32.0",
     "minimatch": "^3.0.4"
   },
   "homepage": "https://github.com/awslabs/aws-cdk",
   "peerDependencies": {
-    "@aws-cdk/aws-iam": "^0.29.0",
-    "@aws-cdk/aws-s3": "^0.29.0",
-    "@aws-cdk/cdk": "^0.29.0",
-    "@aws-cdk/cx-api": "^0.29.0"
+    "@aws-cdk/aws-iam": "^0.32.0",
+    "@aws-cdk/aws-s3": "^0.32.0",
+    "@aws-cdk/cdk": "^0.32.0",
+    "@aws-cdk/cx-api": "^0.32.0"
   },
   "engines": {
     "node": ">= 8.10.0"

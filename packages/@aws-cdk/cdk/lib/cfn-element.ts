@@ -46,7 +46,7 @@ export abstract class CfnElement extends Construct {
     this.node.addMetadata(LOGICAL_ID_MD, new (require("./token").Token)(() => this.logicalId), this.constructor);
 
     this._logicalId = this.node.stack.logicalIds.getLogicalId(this);
-    this.logicalId = new Token(() => this._logicalId).toString();
+    this.logicalId = new Token(() => this._logicalId, `${notTooLong(this.node.path)}.LogicalID`).toString();
   }
 
   /**
@@ -62,8 +62,13 @@ export abstract class CfnElement extends Construct {
    *      from the +metadata+ entry typed +aws:cdk:logicalId+, and with the bottom-most
    *      node +internal+ entries filtered.
    */
-  public get creationStackTrace(): string[] {
-    return filterStackTrace(this.node.metadata.find(md => md.type === LOGICAL_ID_MD)!.trace);
+  public get creationStackTrace(): string[] | undefined {
+    const trace = this.node.metadata.find(md => md.type === LOGICAL_ID_MD)!.trace;
+    if (!trace) {
+      return undefined;
+    }
+
+    return filterStackTrace(trace);
 
     function filterStackTrace(stack: string[]): string[] {
       const result = Array.of(...stack);
@@ -147,9 +152,14 @@ export abstract class CfnRefElement extends CfnElement {
   /**
    * Return a token that will CloudFormation { Ref } this stack element
    */
-  protected get referenceToken(): Token {
-    return new CfnReference({ Ref: this.logicalId }, 'Ref', this);
+  public get referenceToken(): Token {
+    return CfnReference.for(this, 'Ref');
   }
+}
+
+function notTooLong(x: string) {
+  if (x.length < 100) { return x; }
+  return x.substr(0, 47) + '...' + x.substr(x.length - 47);
 }
 
 import { CfnReference } from "./cfn-reference";

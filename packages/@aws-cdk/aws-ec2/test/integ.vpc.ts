@@ -4,7 +4,7 @@ import ec2 = require('../lib');
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-cdk-ec2-vpc');
 
-const vpc = new ec2.VpcNetwork(stack, 'MyVpc');
+const vpc = new ec2.Vpc(stack, 'MyVpc');
 
 // Test Security Group Rules
 const sg = new ec2.SecurityGroup(stack, 'SG', { vpc });

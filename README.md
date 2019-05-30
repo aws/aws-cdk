@@ -15,23 +15,20 @@ CDK improves the end-to-end development experience because you get to use the po
 of modern programming languages to define your AWS infrastructure in a predictable
 and efficient manner.
 
- ![](docs/src/_images/java_40.png) ![](docs/src/_images/js_40.png) ![](docs/src/_images/ts_40.png) ![](docs/src/_images/DotNetLogo_40.jpg)
-
 The following languages are currently supported:
 
-* Java
 * JavaScript, TypeScript
+* Python
+* Java
 * .NET
 
 The CDK is currently in developer preview and we look forward to community feedback and collaboration!
 
-[User Guide] |
+[Developer Guide] |
 [Tutorial] |
-[API Reference](https://awslabs.github.io/aws-cdk/reference.html) |
+[API Reference](https://docs.aws.amazon.com/cdk/api/latest/docs/aws-construct-library.html) |
 [Examples](https://github.com/aws-samples/aws-cdk-examples) |
 [Getting Help](#getting-help)
-
-![Example usage of CDK](docs/src/_images/screencast.gif)
 
 Developers can use one of the supported programming languages to define reusable
 cloud components called [constructs], which are composed together into
@@ -48,13 +45,13 @@ how to use AWS. The AWS Construct Library aims to reduce the complexity and
 glue-logic required when integrating various AWS services to achieve your goals
 on AWS.
 
-[constructs]: https://docs.aws.amazon.com/CDK/latest/userguide/constructs.html
-[stacks]: https://docs.aws.amazon.com/CDK/latest/userguide/stacks.html
-[apps]: https://docs.aws.amazon.com/CDK/latest/userguide/apps.html
-[User Guide]: https://docs.aws.amazon.com/CDK/latest/userguide
-[Tutorial]: https://docs.aws.amazon.com/CDK/latest/userguide/tutorial.html
-[AWS CDK Toolkit]: https://docs.aws.amazon.com/CDK/latest/userguide/tools.html
-[AWS Construct Library]: https://docs.aws.amazon.com/CDK/latest/userguide/aws_construct_lib.html
+[constructs]: https://docs.aws.amazon.com/cdk/latest/guide/constructs.html
+[stacks]: https://docs.aws.amazon.com/cdk/latest/guide/apps_and_stacks.html#stacks
+[apps]: https://docs.aws.amazon.com/cdk/latest/guide/apps_and_stacks.html#apps
+[Developer Guide]: https://docs.aws.amazon.com/cdk/latest/guide
+[Tutorial]: https://docs.aws.amazon.com/cdk/latest/guide/getting_started.html#hello_world_tutorial
+[AWS CDK Toolkit]: https://docs.aws.amazon.com/cdk/latest/guide/tools.html
+[AWS Construct Library]: https://docs.aws.amazon.com/cdk/latest/guide/aws_construct_lib.html
 
 ## Getting Started
 
@@ -81,13 +78,7 @@ Use the `cdk` command-line toolkit to interact with your project:
  * `cdk synth`: synthesizes an AWS CloudFormation template for your app
  * `cdk diff`: compares your app with the deployed stack
 
-Read the [docs](https://awslabs.github.io/aws-cdk/):
-
-```bash
-$ cdk docs
-```
-
-For a detailed walkthrough, see [Tutorial] in the AWS CDK [User Guide].
+For a detailed walkthrough, see [Tutorial] in the AWS CDK [Developer Guide].
 
 ## Getting Help
 

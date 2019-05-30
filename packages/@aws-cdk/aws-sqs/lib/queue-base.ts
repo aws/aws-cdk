@@ -1,35 +1,31 @@
-import autoscaling_api = require('@aws-cdk/aws-autoscaling-api');
 import iam = require('@aws-cdk/aws-iam');
 import kms = require('@aws-cdk/aws-kms');
-import s3n = require('@aws-cdk/aws-s3-notifications');
 import { IResource, Resource } from '@aws-cdk/cdk';
 import { QueuePolicy } from './policy';
 
-export interface IQueue extends IResource, s3n.IBucketNotificationDestination, autoscaling_api.ILifecycleHookTarget {
+export interface IQueue extends IResource {
   /**
    * The ARN of this queue
+   * @attribute
    */
   readonly queueArn: string;
 
   /**
    * The URL of this queue
+   * @attribute
    */
   readonly queueUrl: string;
 
   /**
    * The name of this queue
+   * @attribute
    */
   readonly queueName: string;
 
   /**
    * If this queue is server-side encrypted, this is the KMS encryption key.
    */
-  readonly encryptionMasterKey?: kms.IEncryptionKey;
-
-  /**
-   * Export a queue
-   */
-  export(): QueueImportProps;
+  readonly encryptionMasterKey?: kms.IKey;
 
   /**
    * Adds a statement to the IAM resource policy associated with this queue.
@@ -117,7 +113,7 @@ export abstract class QueueBase extends Resource implements IQueue {
   /**
    * If this queue is server-side encrypted, this is the KMS encryption key.
    */
-  public abstract readonly encryptionMasterKey?: kms.IEncryptionKey;
+  public abstract readonly encryptionMasterKey?: kms.IKey;
 
   /**
    * Controls automatic creation of policy objects.
@@ -127,16 +123,6 @@ export abstract class QueueBase extends Resource implements IQueue {
   protected abstract readonly autoCreatePolicy: boolean;
 
   private policy?: QueuePolicy;
-
-  /**
-   * The set of S3 bucket IDs that are allowed to send notifications to this queue.
-   */
-  private readonly notifyingBuckets = new Set<string>();
-
-  /**
-   * Export a queue
-   */
-  public abstract export(): QueueImportProps;
 
   /**
    * Adds a statement to the IAM resource policy associated with this queue.
@@ -156,51 +142,6 @@ export abstract class QueueBase extends Resource implements IQueue {
   }
 
   /**
-   * Allows using SQS queues as destinations for bucket notifications.
-   * Use `bucket.onEvent(event, queue)` to subscribe.
-   * @param bucketArn The ARN of the notifying bucket.
-   * @param bucketId A unique ID for the notifying bucket.
-   */
-  public asBucketNotificationDestination(bucketArn: string, bucketId: string): s3n.BucketNotificationDestinationProps {
-    if (!this.notifyingBuckets.has(bucketId)) {
-      this.addToResourcePolicy(new iam.PolicyStatement()
-        .addServicePrincipal('s3.amazonaws.com')
-        .addAction('sqs:SendMessage')
-        .addResource(this.queueArn)
-        .addCondition('ArnLike', { 'aws:SourceArn': bucketArn }));
-
-      // if this queue is encrypted, we need to allow S3 to read messages since that's how
-      // it verifies that the notification destination configuration is valid.
-      // by setting allowNoOp to false, we ensure that only custom keys that we can actually
-      // control access to can be used here as described in:
-      // https://docs.aws.amazon.com/AmazonS3/latest/dev/ways-to-add-notification-config-to-bucket.html
-      if (this.encryptionMasterKey) {
-        this.encryptionMasterKey.addToResourcePolicy(new iam.PolicyStatement()
-          .addServicePrincipal('s3.amazonaws.com')
-          .addAction('kms:GenerateDataKey')
-          .addAction('kms:Decrypt')
-          .addAllResources(), /* allowNoOp */ false);
-      }
-
-      this.notifyingBuckets.add(bucketId);
-    }
-
-    return {
-      arn: this.queueArn,
-      type: s3n.BucketNotificationDestinationType.Queue,
-      dependencies: [ this.policy! ]
-    };
-  }
-
-  /**
-   * Allow using SQS queues as lifecycle hook targets
-   */
-  public asLifecycleHookTarget(lifecycleHook: autoscaling_api.ILifecycleHook): autoscaling_api.LifecycleHookTargetProps {
-    this.grantSendMessages(lifecycleHook.role);
-    return { notificationTargetArn: this.queueArn };
-  }
-
-  /**
    * Grant permissions to consume messages from a queue
    *
    * This will grant the following permissions:
@@ -216,7 +157,7 @@ export abstract class QueueBase extends Resource implements IQueue {
    * @param grantee Principal to grant consume rights to
    */
   public grantConsumeMessages(grantee: iam.IGrantable) {
-    return this.grant(grantee,
+    const ret = this.grant(grantee,
       'sqs:ReceiveMessage',
       'sqs:ChangeMessageVisibility',
       'sqs:ChangeMessageVisibilityBatch',
@@ -224,6 +165,12 @@ export abstract class QueueBase extends Resource implements IQueue {
       'sqs:DeleteMessage',
       'sqs:DeleteMessageBatch',
       'sqs:GetQueueAttributes');
+
+    if (this.encryptionMasterKey) {
+      this.encryptionMasterKey.grantDecrypt(grantee);
+    }
+
+    return ret;
   }
 
   /**
@@ -239,11 +186,17 @@ export abstract class QueueBase extends Resource implements IQueue {
    * @param grantee Principal to grant send rights to
    */
   public grantSendMessages(grantee: iam.IGrantable) {
-    return this.grant(grantee,
+    const ret = this.grant(grantee,
       'sqs:SendMessage',
       'sqs:SendMessageBatch',
       'sqs:GetQueueAttributes',
       'sqs:GetQueueUrl');
+
+    if (this.encryptionMasterKey) {
+      this.encryptionMasterKey.grantEncrypt(grantee);
+    }
+
+    return ret;
   }
 
   /**
@@ -284,7 +237,7 @@ export abstract class QueueBase extends Resource implements IQueue {
 /**
  * Reference to a queue
  */
-export interface QueueImportProps {
+export interface QueueAttributes {
   /**
    * The ARN of the queue.
    */
@@ -293,7 +246,7 @@ export interface QueueImportProps {
   /**
    * The URL of the queue.
    */
-  readonly queueUrl: string;
+  readonly queueUrl?: string;
 
   /**
    * The name of the queue.

@@ -16,6 +16,8 @@ export interface CfnResourceProps {
 
   /**
    * CloudFormation properties.
+   *
+   * @default - No resource properties.
    */
   readonly properties?: any;
 }
@@ -119,7 +121,7 @@ export class CfnResource extends CfnRefElement {
    * @param attributeName The name of the attribute.
    */
   public getAtt(attributeName: string) {
-    return new CfnReference({ 'Fn::GetAtt': [this.logicalId, attributeName] }, attributeName, this);
+    return CfnReference.for(this, attributeName);
   }
 
   /**
@@ -197,13 +199,13 @@ export class CfnResource extends CfnRefElement {
     try {
       // merge property overrides onto properties and then render (and validate).
       const tags = CfnResource.isTaggable(this) ? this.tags.renderTags() : undefined;
-      const properties = this.renderProperties(deepMerge(
+      const properties = deepMerge(
         this.properties || {},
         { tags },
         this.untypedPropertyOverrides
-      ));
+      );
 
-      return {
+      const ret = {
         Resources: {
           // Post-Resolve operation since otherwise deepMerge is going to mix values into
           // the Token objects returned by ignoreEmpty.
@@ -217,16 +219,25 @@ export class CfnResource extends CfnRefElement {
             DeletionPolicy: capitalizePropertyNames(this, this.options.deletionPolicy),
             Metadata: ignoreEmpty(this.options.metadata),
             Condition: this.options.condition && this.options.condition.logicalId
-          }, props => deepMerge(props, this.rawOverrides))
+          }, props => {
+            const r = deepMerge(props, this.rawOverrides);
+            r.Properties = this.renderProperties(r.Properties);
+            return r;
+          })
         }
       };
+      return ret;
     } catch (e) {
       // Change message
       e.message = `While synthesizing ${this.node.path}: ${e.message}`;
       // Adjust stack trace (make it look like node built it, too...)
-      const creationStack = ['--- resource created at ---', ...this.creationStackTrace].join('\n  at ');
-      const problemTrace = e.stack.substr(e.stack.indexOf(e.message) + e.message.length);
-      e.stack = `${e.message}\n  ${creationStack}\n  --- problem discovered at ---${problemTrace}`;
+      const trace = this.creationStackTrace;
+      if (trace) {
+        const creationStack = ['--- resource created at ---', ...trace].join('\n  at ');
+        const problemTrace = e.stack.substr(e.stack.indexOf(e.message) + e.message.length);
+        e.stack = `${e.message}\n  ${creationStack}\n  --- problem discovered at ---${problemTrace}`;
+      }
+
       // Re-throw
       throw e;
     }
@@ -243,6 +254,10 @@ export class CfnResource extends CfnRefElement {
 
   protected renderProperties(properties: any): { [key: string]: any } {
     return properties;
+  }
+
+  protected validateProperties(_properties: any) {
+    // Nothing
   }
 }
 

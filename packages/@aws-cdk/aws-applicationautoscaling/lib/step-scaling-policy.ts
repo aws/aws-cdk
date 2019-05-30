@@ -1,7 +1,7 @@
 import { findAlarmThresholds, normalizeIntervals } from '@aws-cdk/aws-autoscaling-common';
 import cloudwatch = require('@aws-cdk/aws-cloudwatch');
 import cdk = require('@aws-cdk/cdk');
-import { ScalableTarget } from './scalable-target';
+import { IScalableTarget } from './scalable-target';
 import { AdjustmentType, MetricAggregationType, StepScalingAction } from './step-scaling-action';
 
 export interface BasicStepScalingPolicyProps {
@@ -52,7 +52,7 @@ export interface StepScalingPolicyProps extends BasicStepScalingPolicyProps {
   /**
    * The scaling target
    */
-  readonly scalingTarget: ScalableTarget;
+  readonly scalingTarget: IScalableTarget;
 }
 
 /**
@@ -85,7 +85,7 @@ export class StepScalingPolicy extends cdk.Construct {
       const threshold = intervals[alarms.lowerAlarmIntervalIndex].upper;
 
       this.lowerAction = new StepScalingAction(this, 'LowerPolicy', {
-        adjustmentType: props.adjustmentType,
+        adjustmentType,
         cooldownSec: props.cooldownSec,
         metricAggregationType: aggregationTypeFromMetric(props.metric),
         minAdjustmentMagnitude: props.minAdjustmentMagnitude,
@@ -108,14 +108,14 @@ export class StepScalingPolicy extends cdk.Construct {
         evaluationPeriods: 1,
         threshold,
       });
-      this.lowerAlarm.onAlarm(this.lowerAction);
+      this.lowerAlarm.addAlarmAction(this.lowerAction);
     }
 
     if (alarms.upperAlarmIntervalIndex !== undefined) {
       const threshold = intervals[alarms.upperAlarmIntervalIndex].lower;
 
       this.upperAction = new StepScalingAction(this, 'UpperPolicy', {
-        adjustmentType: props.adjustmentType,
+        adjustmentType,
         cooldownSec: props.cooldownSec,
         metricAggregationType: aggregationTypeFromMetric(props.metric),
         minAdjustmentMagnitude: props.minAdjustmentMagnitude,
@@ -138,7 +138,7 @@ export class StepScalingPolicy extends cdk.Construct {
         evaluationPeriods: 1,
         threshold,
       });
-      this.upperAlarm.onAlarm(this.upperAction);
+      this.upperAlarm.addAlarmAction(this.upperAction);
     }
   }
 }
