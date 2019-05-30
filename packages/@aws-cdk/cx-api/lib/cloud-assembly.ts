@@ -117,7 +117,7 @@ export class CloudAssemblyBuilder {
 
     // we leverage the fact that outdir is long-lived to avoid staging assets into it
     // that were already staged (copying can be expensive). this is achieved by the fact
-    // that assets use a source hash as their name. other artifacts, and the manifest,
+    // that assets use a source hash as their name. other artifacts, and the manifest itself,
     // will overwrite existing files as needed.
 
     if (fs.existsSync(this.outdir)) {
@@ -142,6 +142,11 @@ export class CloudAssemblyBuilder {
 
     const manifestFilePath = path.join(this.outdir, MANIFEST_FILE);
     fs.writeFileSync(manifestFilePath, JSON.stringify(manifest, undefined, 2));
+
+    // "backwards compatibility": in order for the old CLI to tell the user they
+    // need a new version, we'll emit the legacy manifest with only "version".
+    // this will result in an error "CDK Toolkit >= 0.33.0 is required in order to interact with this program."
+    fs.writeFileSync(path.join(this.outdir, 'cdk.out'), JSON.stringify({ version: CLOUD_ASSEMBLY_VERSION }));
 
     return new CloudAssembly(this.outdir);
   }
