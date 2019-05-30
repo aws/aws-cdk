@@ -479,6 +479,47 @@ export = {
     test.ok(child2.node.root === root);
     test.ok(child1_1_1.node.root === root);
     test.done();
+  },
+
+  'defaultChild': {
+    'returns the child with id "Resource"'(test: Test) {
+      const root = new Root();
+      new Construct(root, 'child1');
+      const defaultChild = new Construct(root, 'Resource');
+      new Construct(root, 'child2');
+
+      test.same(root.node.defaultChild, defaultChild);
+      test.done();
+    },
+    'returns the child with id "Default"'(test: Test) {
+      const root = new Root();
+      new Construct(root, 'child1');
+      const defaultChild = new Construct(root, 'Default');
+      new Construct(root, 'child2');
+
+      test.same(root.node.defaultChild, defaultChild);
+      test.done();
+    },
+    'returns "undefined" if there is no default'(test: Test) {
+      const root = new Root();
+      new Construct(root, 'child1');
+      new Construct(root, 'child2');
+
+      test.equal(root.node.defaultChild, undefined);
+      test.done();
+    },
+    'fails if there are both "Resource" and "Default"'(test: Test) {
+      const root = new Root();
+      new Construct(root, 'child1');
+      new Construct(root, 'Default');
+      new Construct(root, 'child2');
+      new Construct(root, 'Resource');
+
+      test.throws(() => root.node.defaultChild,
+        /Cannot determine default child for . There is both a child with id "Resource" and id "Default"/);
+      test.done();
+
+    }
   }
 };
 
