@@ -356,6 +356,7 @@ export class DatabaseCluster extends DatabaseClusterBase {
         publiclyAccessible,
         // This is already set on the Cluster. Unclear to me whether it should be repeated or not. Better yes.
         dbSubnetGroupName: subnetGroup.ref,
+        dbParameterGroupName: props.instanceProps.parameterGroup && props.instanceProps.parameterGroup.parameterGroupName,
       });
 
       instance.options.deletionPolicy = deleteReplacePolicy;

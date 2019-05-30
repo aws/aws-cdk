@@ -4,7 +4,7 @@ import kms = require('@aws-cdk/aws-kms');
 import cdk = require('@aws-cdk/cdk');
 import { SecretValue } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
-import { ClusterParameterGroup, DatabaseCluster, DatabaseClusterEngine } from '../lib';
+import { ClusterParameterGroup, DatabaseCluster, DatabaseClusterEngine, ParameterGroup } from '../lib';
 
 export = {
   'check that instantiation works'(test: Test) {
@@ -231,7 +231,41 @@ export = {
     }));
 
     test.done();
-  }
+  },
+
+  'cluster with instance parameter group'(test: Test) {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const parameterGroup = new ParameterGroup(stack, 'ParameterGroup', {
+      family: 'hello',
+      parameters: {
+        key: 'value'
+      }
+    });
+
+    // WHEN
+    new DatabaseCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.Aurora,
+      masterUser: {
+        username: 'admin',
+      },
+      instanceProps: {
+        instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.Burstable2, ec2.InstanceSize.Small),
+        parameterGroup,
+        vpc
+      }
+    });
+
+    expect(stack).to(haveResource('AWS::RDS::DBInstance', {
+      DBParameterGroupName: {
+        Ref: 'ParameterGroup5E32DECB'
+      }
+    }));
+
+    test.done();
+
+  },
 };
 
 function testStack() {

@@ -1,6 +1,7 @@
 import ec2 = require('@aws-cdk/aws-ec2');
 import kms = require('@aws-cdk/aws-kms');
 import { SecretValue } from '@aws-cdk/cdk';
+import { IParameterGroup } from './parameter-group';
 import { SecretRotationApplication } from './secret-rotation';
 
 /**
@@ -46,13 +47,24 @@ export interface InstanceProps {
 
   /**
    * Where to place the instances within the VPC
+   *
+   * @default private subnets
    */
   readonly vpcSubnets?: ec2.SubnetSelection;
 
   /**
-   * Security group. If not specified a new one will be created.
+   * Security group.
+   *
+   * @default a new security group is created.
    */
   readonly securityGroup?: ec2.ISecurityGroup;
+
+  /**
+   * The DB parameter group to associate with the instance.
+   *
+   * @default no parameter group
+   */
+  readonly parameterGroup?: IParameterGroup;
 }
 
 /**
