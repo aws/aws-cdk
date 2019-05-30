@@ -184,6 +184,21 @@ export class ConstructNode {
   }
 
   /**
+   * Returns the child construct that has the id "Default" or "Resource".
+   * @throws if there is more than one child
+   * @returns a construct or undefined if there is no default child
+   */
+  public get defaultChild(): IConstruct | undefined {
+    const resourceChild = this.tryFindChild('Resource');
+    const defaultChild = this.tryFindChild('Default');
+    if (resourceChild && defaultChild) {
+      throw new Error(`Cannot determine default child for ${this.path}. There is both a child with id "Resource" and id "Default"`);
+    }
+
+    return defaultChild || resourceChild;
+  }
+
+  /**
    * All direct children of this construct.
    */
   public get children() {
