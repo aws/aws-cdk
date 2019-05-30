@@ -123,7 +123,7 @@ export class AwsCustomResource extends cdk.Construct {
 
     const provider = new lambda.SingletonFunction(this, 'Provider', {
       code: lambda.Code.asset(path.join(__dirname, 'aws-custom-resource-provider')),
-      runtime: lambda.Runtime.NodeJS810,
+      runtime: lambda.Runtime.NodeJS10x,
       handler: 'index.handler',
       uuid: '679f53fa-c002-430c-b0da-5b7982bd2287',
       lambdaPurpose: 'AWS'

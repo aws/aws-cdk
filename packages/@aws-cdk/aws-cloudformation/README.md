@@ -77,7 +77,7 @@ call can be extracted and used in other constructs/resources (creating a real
 CloudFormation dependency using `Fn::GetAtt` under the hood).
 
 The physical id of the custom resource can be specified or derived from the data
-return by the API call.
+returned by the API call.
 
 The `AwsCustomResource` uses the AWS SDK for JavaScript. Services, actions and
 parameters can be found in the [API documentation](https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/index.html).
