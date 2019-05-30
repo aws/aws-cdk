@@ -498,7 +498,7 @@ abstract class DatabaseInstanceNew extends DatabaseInstanceBase implements IData
     }
 
     const deletionProtection = props.deletionProtection !== undefined ? props.deletionProtection : true;
-    const storageType = props.storageType || StorageType.IO1;
+    const storageType = props.storageType || StorageType.GP2;
     const iops = storageType === StorageType.IO1 ? (props.iops || 1000) : undefined;
 
     this.cloudwatchLogsExports = props.cloudwatchLogsExports;
