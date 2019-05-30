@@ -38,6 +38,13 @@ export interface PublishToTopicProps {
    * Message subject
    */
   readonly subject?: string;
+
+  /**
+   * Whether to pause the workflow until a task token is returned
+   *
+   * @default false
+   */
+  readonly waitForTaskToken?: boolean;
 }
 
 /**
@@ -47,7 +54,12 @@ export interface PublishToTopicProps {
  * integration with other AWS services via a specific class instance.
  */
 export class PublishToTopic implements sfn.IStepFunctionsTask {
+
+  private readonly waitForTaskToken: boolean;
+
   constructor(private readonly topic: sns.ITopic, private readonly props: PublishToTopicProps) {
+    this.waitForTaskToken = props.waitForTaskToken === true;
+
     if ((props.message === undefined) === (props.messageObject === undefined)) {
       throw new Error(`Supply exactly one of 'message' or 'messageObject'`);
     }
@@ -55,7 +67,7 @@ export class PublishToTopic implements sfn.IStepFunctionsTask {
 
   public bind(task: sfn.Task): sfn.StepFunctionsTaskProperties {
     return {
-      resourceArn: 'arn:aws:states:::sns:publish',
+      resourceArn: 'arn:aws:states:::sns:publish' + (this.waitForTaskToken ? '.waitForTaskToken' : ''),
       policyStatements: [new iam.PolicyStatement()
         .addAction('sns:Publish')
         .addResource(this.topic.topicArn)
@@ -63,8 +75,8 @@ export class PublishToTopic implements sfn.IStepFunctionsTask {
       parameters: {
         TopicArn: this.topic.topicArn,
         ...(this.props.messageObject
-            ? { Message: new cdk.Token(() => task.node.stringifyJson(this.props.messageObject)) }
-            : renderString('Message', this.props.message)),
+          ? { Message: new cdk.Token(() => task.node.stringifyJson(this.props.messageObject)) }
+          : renderString('Message', this.props.message)),
         MessageStructure: this.props.messagePerSubscriptionType ? "json" : undefined,
         ...renderString('Subject', this.props.subject),
       }

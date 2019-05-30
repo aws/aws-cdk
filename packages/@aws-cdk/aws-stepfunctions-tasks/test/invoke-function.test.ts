@@ -14,7 +14,9 @@ test('Lambda function can be used in a Task', () => {
     handler: 'index.hello',
     runtime: lambda.Runtime.Python27,
   });
-  const task = new sfn.Task(stack, 'Task', { task: new tasks.InvokeFunction(fn) });
+  const task = new sfn.Task(stack, 'Task', {
+    task: new tasks.InvokeFunction(fn, { waitForTaskToken: false })
+  });
   new sfn.StateMachine(stack, 'SM', {
     definition: task
   });
@@ -22,11 +24,23 @@ test('Lambda function can be used in a Task', () => {
   // THEN
   expect(stack).toHaveResource('AWS::StepFunctions::StateMachine', {
     DefinitionString: {
-      "Fn::Join": ["", [
-        "{\"StartAt\":\"Task\",\"States\":{\"Task\":{\"End\":true,\"Type\":\"Task\",\"Resource\":\"",
-        { "Fn::GetAtt": ["Fn9270CBC0", "Arn"] },
-        "\"}}}"
-      ]]
+      "Fn::Join": [
+        "",
+        [
+          "{\"StartAt\":\"Task\",\"States\":{\"Task\":{\"End\":true,\"Parameters\":{\"FunctionName\":\"",
+          {
+            Ref: "Fn9270CBC0"
+          },
+          "\"},\"Type\":\"Task\",\"Resource\":\"",
+          {
+            "Fn::GetAtt": [
+              "Fn9270CBC0",
+              "Arn"
+            ]
+          },
+          "\"}}}"
+        ]
+      ]
     },
   });
 });
