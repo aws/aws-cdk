@@ -148,14 +148,6 @@ function appToArray(app: any) {
 type CommandGenerator = (file: string) => string[];
 
 /**
- * Direct execution of a YAML file, assume that we're deploying an Applet
- */
-function executeApplet(appletFile: string): string[] {
-    const appletBinary = path.resolve(require.resolve('@aws-cdk/applet-js'));
-    return [process.execPath, appletBinary, appletFile];
-}
-
-/**
  * Execute the given file with the same 'node' process as is running the current process
  */
 function executeNode(scriptFile: string): string[] {
@@ -166,8 +158,6 @@ function executeNode(scriptFile: string): string[] {
  * Mapping of extensions to command-line generators
  */
 const EXTENSION_MAP = new Map<string, CommandGenerator>([
-  ['.yml', executeApplet],
-  ['.yaml', executeApplet],
   ['.js', executeNode],
 ]);
 
