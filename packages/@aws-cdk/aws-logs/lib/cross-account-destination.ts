@@ -1,9 +1,13 @@
 import iam = require('@aws-cdk/aws-iam');
 import cdk = require('@aws-cdk/cdk');
+import { Construct } from '@aws-cdk/cdk';
 import { ILogGroup } from './log-group';
 import { CfnDestination } from './logs.generated';
-import { ILogSubscriptionDestination, LogSubscriptionDestination } from './subscription-filter';
+import { ILogSubscriptionDestination, LogSubscriptionDestinationProperties } from './subscription-filter';
 
+/**
+ * Properties for a CrossAccountDestination
+ */
 export interface CrossAccountDestinationProps {
   /**
    * The name of the log destination.
@@ -28,12 +32,13 @@ export interface CrossAccountDestinationProps {
 /**
  * A new CloudWatch Logs Destination for use in cross-account scenarios
  *
- * Log destinations can be used to subscribe a Kinesis stream in a different
- * account to a CloudWatch Subscription. A Kinesis stream in the same account
- * can be subscribed directly.
+ * CrossAccountDestinations are used to subscribe a Kinesis stream in a
+ * different account to a CloudWatch Subscription.
  *
- * The @aws-cdk/aws-kinesis library takes care of this automatically; you shouldn't
- * need to bother with this class.
+ * Consumers will hardly ever need to use this class. Instead, directly
+ * subscribe a Kinesis stream using the integration class in the
+ * `@aws-cdk/aws-logs-destinations` package; if necessary, a
+ * `CrossAccountDestination` will be created automatically.
  */
 export class CrossAccountDestination extends cdk.Construct implements ILogSubscriptionDestination {
   /**
@@ -78,7 +83,7 @@ export class CrossAccountDestination extends cdk.Construct implements ILogSubscr
     this.policyDocument.addStatement(statement);
   }
 
-  public logSubscriptionDestination(_sourceLogGroup: ILogGroup): LogSubscriptionDestination {
+  public bind(_scope: Construct, _sourceLogGroup: ILogGroup): LogSubscriptionDestinationProperties {
     return { arn: this.destinationArn };
   }
 
