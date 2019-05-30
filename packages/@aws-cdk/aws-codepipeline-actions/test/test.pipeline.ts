@@ -464,7 +464,6 @@ export = {
     const lambdaAction = new cpactions.LambdaInvokeAction({
       actionName: 'InvokeAction',
       lambda: lambdaFun,
-      userParameters: 'foo-bar/42',
       inputs: [
           source2Output,
           source1Output,
@@ -510,7 +509,6 @@ export = {
             "FunctionName": {
             "Ref": "Function76856677"
             },
-            "UserParameters": "foo-bar/42"
           },
           "InputArtifacts": [
             { "Name": "sourceArtifact2" },
