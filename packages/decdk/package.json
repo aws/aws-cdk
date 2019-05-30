@@ -39,8 +39,8 @@
     "@aws-cdk/aws-appsync": "^0.32.0",
     "@aws-cdk/aws-athena": "^0.32.0",
     "@aws-cdk/aws-autoscaling": "^0.32.0",
-    "@aws-cdk/aws-autoscaling-hooktargets": "^0.32.0",
     "@aws-cdk/aws-autoscaling-common": "^0.32.0",
+    "@aws-cdk/aws-autoscaling-hooktargets": "^0.32.0",
     "@aws-cdk/aws-autoscalingplans": "^0.32.0",
     "@aws-cdk/aws-batch": "^0.32.0",
     "@aws-cdk/aws-budgets": "^0.32.0",
@@ -98,6 +98,7 @@
     "@aws-cdk/aws-lambda": "^0.32.0",
     "@aws-cdk/aws-lambda-event-sources": "^0.32.0",
     "@aws-cdk/aws-logs": "^0.32.0",
+    "@aws-cdk/aws-logs-destinations": "^0.32.0",
     "@aws-cdk/aws-mediastore": "^0.32.0",
     "@aws-cdk/aws-neptune": "^0.32.0",
     "@aws-cdk/aws-opsworks": "^0.32.0",
@@ -108,6 +109,7 @@
     "@aws-cdk/aws-redshift": "^0.32.0",
     "@aws-cdk/aws-robomaker": "^0.32.0",
     "@aws-cdk/aws-route53": "^0.32.0",
+    "@aws-cdk/aws-route53-targets": "^0.32.0",
     "@aws-cdk/aws-route53resolver": "^0.32.0",
     "@aws-cdk/aws-s3": "^0.32.0",
     "@aws-cdk/aws-s3-deployment": "^0.32.0",
@@ -136,8 +138,7 @@
     "jsii-reflect": "^0.11.0",
     "jsonschema": "^1.2.4",
     "yaml": "1.5.0",
-    "yargs": "^13.2.2",
-    "@aws-cdk/aws-route53-targets": "^0.32.0"
+    "yargs": "^13.2.2"
   },
   "devDependencies": {
     "@types/fs-extra": "^5.0.5",
