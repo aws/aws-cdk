@@ -1,35 +1,35 @@
 {
-  "name": "@aws-cdk/aws-s3-notifications",
+  "name": "@aws-cdk/aws-logs-destinations",
   "version": "0.32.0",
-  "description": "Bucket Notifications API for AWS S3",
+  "description": "Log Destinations for AWS CloudWatch Logs",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "jsii": {
     "outdir": "dist",
     "targets": {
       "java": {
-        "package": "software.amazon.awscdk.services.s3.notifications",
+        "package": "software.amazon.awscdk.services.logs.destinations",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "s3-notifications"
+          "artifactId": "logs-destinations"
         }
       },
       "dotnet": {
-        "namespace": "Amazon.CDK.AWS.S3.Notifications",
-        "packageId": "Amazon.CDK.AWS.S3.Notifications",
+        "namespace": "Amazon.CDK.AWS.Logs.Destinations",
+        "packageId": "Amazon.CDK.AWS.Logs.Destinations",
         "signAssembly": true,
         "assemblyOriginatorKeyFile": "../../key.snk"
       },
       "python": {
-        "distName": "aws-cdk.aws-s3-notifications",
-        "module": "aws_cdk.aws_s3_notifications"
+        "distName": "aws-cdk.aws-logs-destinations",
+        "module": "aws_cdk.aws_logs_destinations"
       }
     }
   },
   "repository": {
     "type": "git",
     "url": "https://github.com/awslabs/aws-cdk.git",
-    "directory": "packages/@aws-cdk/aws-s3-notifications"
+    "directory": "packages/@aws-cdk/aws-logs-destinations"
   },
   "scripts": {
     "build": "cdk-build",
@@ -40,14 +40,15 @@
     "pkglint": "pkglint -f",
     "package": "cdk-package",
     "awslint": "cdk-awslint",
+    "cfn2ts": "cfn2ts",
     "build+test+package": "npm run build+test && npm run package",
     "build+test": "npm run build && npm test"
   },
   "keywords": [
     "aws",
     "cdk",
-    "s3",
-    "notifications"
+    "constructs",
+    "logs"
   ],
   "author": {
     "name": "Amazon Web Services",
@@ -60,7 +61,7 @@
     ],
     "coverageThreshold": {
       "global": {
-        "branches": 60,
+        "branches": 50,
         "statements": 80
       }
     }
@@ -69,25 +70,24 @@
   "devDependencies": {
     "@aws-cdk/assert": "^0.32.0",
     "cdk-build-tools": "^0.32.0",
-    "pkglint": "^0.32.0",
     "cdk-integ-tools": "^0.32.0",
+    "cfn2ts": "^0.32.0",
+    "pkglint": "^0.32.0",
     "jest": "^24.7.1"
   },
   "dependencies": {
     "@aws-cdk/aws-iam": "^0.32.0",
+    "@aws-cdk/aws-kinesis": "^0.32.0",
     "@aws-cdk/aws-lambda": "^0.32.0",
-    "@aws-cdk/aws-s3": "^0.32.0",
-    "@aws-cdk/aws-sns": "^0.32.0",
-    "@aws-cdk/aws-sqs": "^0.32.0",
+    "@aws-cdk/aws-logs": "^0.32.0",
     "@aws-cdk/cdk": "^0.32.0"
   },
   "homepage": "https://github.com/awslabs/aws-cdk",
   "peerDependencies": {
     "@aws-cdk/aws-iam": "^0.32.0",
+    "@aws-cdk/aws-kinesis": "^0.32.0",
     "@aws-cdk/aws-lambda": "^0.32.0",
-    "@aws-cdk/aws-s3": "^0.32.0",
-    "@aws-cdk/aws-sns": "^0.32.0",
-    "@aws-cdk/aws-sqs": "^0.32.0",
+    "@aws-cdk/aws-logs": "^0.32.0",
     "@aws-cdk/cdk": "^0.32.0"
   },
   "engines": {
