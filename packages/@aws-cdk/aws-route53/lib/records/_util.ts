@@ -11,7 +11,7 @@ import { IHostedZone } from '../hosted-zone-ref';
  *
  * @returns <ul>
  *        <li>If +providedName+ ends with a +.+, use it as-is</li>
- *        <li>If +providedName+ ends with +zoneName+, append a trailing +.+</li>
+ *        <li>If +providedName+ ends with or equals +zoneName+, append a trailing +.+</li>
  *        <li>Otherwise, append +.+, +zoneName+ and a trailing +.+</li>
  *      </ul>
  */
@@ -21,7 +21,7 @@ export function determineFullyQualifiedDomainName(providedName: string, hostedZo
   }
 
   const suffix = `.${hostedZone.zoneName}`;
-  if (providedName.endsWith(suffix)) {
+  if (providedName.endsWith(suffix) || providedName === hostedZone.zoneName) {
     return `${providedName}.`;
   }
 
