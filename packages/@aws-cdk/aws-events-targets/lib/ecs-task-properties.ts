@@ -2,7 +2,7 @@ export interface ContainerOverride {
   /**
    * Name of the container inside the task definition
    */
-  readonly containerName: string;
+  readonly name: string;
 
   /**
    * Command to run inside the container

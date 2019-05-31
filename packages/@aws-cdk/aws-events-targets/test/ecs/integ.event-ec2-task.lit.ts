@@ -35,13 +35,13 @@ class EventStack extends cdk.Stack {
       scheduleExpression: 'rate(1 minute)',
     });
 
-    // Use EcsEc2Task as the target of the Rule
-    rule.addTarget(new targets.EcsEc2Task({
+    // Use EcsTask as the target of the Rule
+    rule.addTarget(new targets.EcsTask({
       cluster,
       taskDefinition,
       taskCount: 1,
       containerOverrides: [{
-        containerName: 'TheContainer',
+        name: 'TheContainer',
         environment: [
           { name: 'I_WAS_TRIGGERED', value: 'From CloudWatch Events' }
         ]
