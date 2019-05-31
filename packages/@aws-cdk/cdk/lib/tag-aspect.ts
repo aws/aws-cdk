@@ -1,8 +1,6 @@
 // import cxapi = require('@aws-cdk/cx-api');
 import { IAspect } from './aspect';
-import { CfnResource} from './cfn-resource';
 import { Construct, IConstruct } from './construct';
-import { Stack } from './stack';
 import { ITaggable } from './tag-manager';
 
 /**
@@ -74,14 +72,8 @@ export abstract class TagBase implements IAspect {
   }
 
   public visit(construct: IConstruct): void {
-    const isCfnResource = CfnResource.isCfnResource(construct);
-    const isStack = Stack.isStack(construct);
-    if (!isCfnResource && !isStack) {
-      return;
-    }
-    const resource = isCfnResource ? construct as CfnResource : construct as Stack;
-    if (Construct.isTaggable(resource)) {
-        this.applyTag(resource);
+    if (Construct.isTaggable(construct)) {
+        this.applyTag(construct);
     }
   }
 

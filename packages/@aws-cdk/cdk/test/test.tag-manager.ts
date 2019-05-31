@@ -41,12 +41,12 @@ export = {
   'when there are no tags': {
     '#renderTags() returns undefined'(test: Test) {
       const mgr = new TagManager(TagType.Standard, 'AWS::Resource::Type');
-      test.deepEqual(mgr.renderTags(), undefined );
+      test.deepEqual(mgr.renderTags(), undefined);
       test.done();
     },
     '#hasTags() returns false'(test: Test) {
       const mgr = new TagManager(TagType.Standard, 'AWS::Resource::Type');
-      test.equal(mgr.hasTags(), false );
+      test.equal(mgr.hasTags(), false);
       test.done();
     }
   },

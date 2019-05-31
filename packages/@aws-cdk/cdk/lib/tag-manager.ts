@@ -146,6 +146,9 @@ class MapFormatter implements ITagFormatter {
   }
 }
 
+/**
+ * StackTags are of the format { Key: key, Value: value }
+ */
 class KeyValueFormatter implements ITagFormatter {
   public parseTags(keyValueTags: any, priority: number): Tag[] {
     const tags: Tag[] = [];
@@ -190,6 +193,9 @@ const TAG_FORMATTERS: {[key: string]: ITagFormatter} = {
   [TagType.NotTaggable]: new NoFormat(),
 };
 
+/**
+ * Interface to implement tags.
+ */
 export interface ITaggable {
   /**
    * TagManager to set, remove and format tags

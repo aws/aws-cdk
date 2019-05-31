@@ -33,7 +33,7 @@ export const DISABLE_ASSET_STAGING_CONTEXT = 'aws:cdk:disable-asset-staging';
 /**
  * Tag metadata key.
  */
-export const TAGS_METADATA_KEY = 'aws:cdk:tags';
+export const TAGS_METADATA_KEY = 'aws:cdk:stack-tags';
 
 /**
  * If this context key is set, the CDK will stage assets under the specified

@@ -713,3 +713,5 @@ export interface OutgoingReference {
 // Import this _after_ everything else to help node work the classes out in the correct order...
 
 import { ITaggable } from './tag-manager';
+
+import { Reference } from './reference';

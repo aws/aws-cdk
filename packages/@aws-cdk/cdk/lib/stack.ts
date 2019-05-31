@@ -41,6 +41,11 @@ export interface StackProps {
    */
   readonly autoDeploy?: boolean;
 
+  /**
+   * Stack tags that will be applied to all the taggable resources and the stack itself.
+   *
+   * @default {}
+   */
   readonly tags?: { [key: string]: string };
 }
 
@@ -49,7 +54,7 @@ const STACK_SYMBOL = Symbol.for('@aws-cdk/cdk.Stack');
 /**
  * A root construct which represents a single CloudFormation stack.
  */
-export class Stack extends Construct {
+export class Stack extends Construct implements ITaggable {
 
   /**
    * Adds a metadata annotation "aws:cdk:physical-name" to the construct if physicalName
@@ -74,8 +79,6 @@ export class Stack extends Construct {
   }
 
   private static readonly VALID_STACK_NAME_REGEX = /^[A-Za-z][A-Za-z0-9-]*$/;
-
-  public readonly tags: TagManager;
 
   /**
    * Lists all missing contextual information.
@@ -119,6 +122,11 @@ export class Stack extends Construct {
   public readonly autoDeploy: boolean;
 
   /**
+   * Stack tags
+   */
+  public readonly tags: TagManager;
+
+  /**
    * Other stacks this stack depends on
    */
   private readonly stackDependencies = new Set<StackDependency>();
@@ -154,8 +162,7 @@ export class Stack extends Construct {
     this.logicalIds = new LogicalIDs(props && props.namingScheme ? props.namingScheme : new HashedAddressingScheme());
     this.name = props.stackName !== undefined ? props.stackName : this.calculateStackName();
     this.autoDeploy = props && props.autoDeploy === false ? false : true;
-    const tags = props === undefined ? undefined : props.tags;
-    this.tags = new TagManager(TagType.KeyValue, "AWS:Cloudformation::Stack", tags);
+    this.tags = new TagManager(TagType.KeyValue, "aws:cdk:stack", props.tags);
 
     if (!Stack.VALID_STACK_NAME_REGEX.test(this.name)) {
       throw new Error(`Stack name must match the regular expression: ${Stack.VALID_STACK_NAME_REGEX.toString()}, got '${name}'`);
@@ -197,9 +204,6 @@ export class Stack extends Construct {
   public _toCloudFormation() {
     // before we begin synthesis, we shall lock this stack, so children cannot be added
     this.node.lock();
-    if (this.tags.hasTags()) {
-      this.node.addMetadata(cxapi.TAGS_METADATA_KEY, this.tags.renderTags());
-    }
 
     try {
       const template: any = {
@@ -499,6 +503,10 @@ export class Stack extends Construct {
         }
       }
     }
+
+    if (this.tags.hasTags()) {
+      this.node.addMetadata(cxapi.TAGS_METADATA_KEY, this.tags.renderTags());
+    }
   }
 
   protected synthesize(builder: cxapi.CloudAssemblyBuilder): void {
@@ -677,7 +685,7 @@ import { CfnElement } from './cfn-element';
 import { CfnReference } from './cfn-reference';
 import { CfnResource, TagType } from './cfn-resource';
 import { Aws, ScopedAws } from './pseudo';
-import { TagManager } from './tag-manager';
+import { ITaggable, TagManager } from './tag-manager';
 
 /**
  * Find all resources in a set of constructs

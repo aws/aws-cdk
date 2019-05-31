@@ -234,7 +234,7 @@ export class AppStacks {
     }
   }
 
-  public getTagsFromStackMetadata(stack: SelectedStack): Tag[] | undefined {
+  public getTagsFromStackMetadata(stack: cxapi.CloudFormationStackArtifact): Tag[] {
     for (const id of Object.keys(stack.metadata)) {
       const metadata = stack.metadata[id];
       for (const entry of metadata) {
@@ -243,7 +243,7 @@ export class AppStacks {
         }
       }
     }
-    return;
+    return [];
   }
 
   /**
@@ -382,7 +382,7 @@ function includeUpstreamStacks(
   }
 }
 
-export interface SelectedStack extends cxapi.SynthesizedStack {
+export interface SelectedStack extends cxapi.CloudFormationStackArtifact {
   /**
    * The original name of the stack before renaming
    */
