@@ -12,7 +12,7 @@ const app = new cdk.App();
 
 const stack = new cdk.Stack(app, 'aws-cdk-sqs-event-target');
 
-const event = new events.Rule(stack, 'EveryMinute', {
+const event = new events.Rule(stack, 'MyRule', {
   scheduleExpression: 'rate(1 minute)',
 });
 

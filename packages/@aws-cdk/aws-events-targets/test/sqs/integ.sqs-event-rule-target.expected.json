@@ -1,6 +1,6 @@
 {
   "Resources": {
-    "EveryMinute2BBCEA8F": {
+    "MyRuleA44AB831": {
       "Type": "AWS::Events::Rule",
       "Properties": {
         "ScheduleExpression": "rate(1 minute)",
@@ -33,6 +33,16 @@
                 "sqs:GetQueueAttributes",
                 "sqs:GetQueueUrl"
               ],
+              "Condition": {
+                "ArnEquals": {
+                  "aws:SourceArn": {
+                    "Fn::GetAtt": [
+                      "MyRuleA44AB831",
+                      "Arn"
+                    ]
+                  }
+                }
+              },
               "Effect": "Allow",
               "Principal": {
                 "Service": {

@@ -4,7 +4,7 @@ import sqs = require('@aws-cdk/aws-sqs');
 import { Stack } from '@aws-cdk/cdk';
 import targets = require('../../lib');
 
-test('sqs queue as an event rule target', () => {
+test('sns topic as an event rule target', () => {
   // GIVEN
   const stack = new Stack();
   const queue = new sqs.Queue(stack, 'MyQueue');
@@ -26,11 +26,24 @@ test('sqs queue as an event rule target', () => {
             "sqs:GetQueueAttributes",
             "sqs:GetQueueUrl"
           ],
-          Effect: "Allow",
-          Principal: {
-            Service: { "Fn::Join": ["", ["events.", { Ref: "AWS::URLSuffix" }]] },
+          Condition: {
+            ArnEquals: {
+              "aws:SourceArn": {
+                "Fn::GetAtt": [
+                  "MyRuleA44AB831",
+                  "Arn"
+                ]
+              }
+            }
           },
-          Resource: { "Fn::GetAtt": ["MyQueueE6CA6235", "Arn"] },
+          Effect: "Allow",
+          Principal: { Service: { "Fn::Join": ["", ["events.", { Ref: "AWS::URLSuffix" }]] } },
+          Resource: {
+            "Fn::GetAtt": [
+              "MyQueueE6CA6235",
+              "Arn"
+            ]
+          }
         }
       ],
       Version: "2012-10-17"
@@ -43,20 +56,25 @@ test('sqs queue as an event rule target', () => {
     State: "ENABLED",
     Targets: [
       {
-        Arn: { "Fn::GetAtt": ["MyQueueE6CA6235", "Arn"] },
+        Arn: {
+          "Fn::GetAtt": [
+            "MyQueueE6CA6235",
+            "Arn"
+          ]
+        },
         Id: "MyQueue"
       }
     ]
   }));
 });
 
-test('multiple uses of a queue as a target results in a single policy statement', () => {
+test('multiple uses of a queue as a target results in multi policy statement because of condition', () => {
   // GIVEN
   const stack = new Stack();
   const queue = new sqs.Queue(stack, 'MyQueue');
 
   // WHEN
-  for (let i = 0; i < 5; ++i) {
+  for (let i = 0; i < 2; ++i) {
     const rule = new events.Rule(stack, `Rule${i}`, { scheduleExpression: 'rate(1 hour)' });
     rule.addTarget(new targets.SqsQueue(queue));
   }
@@ -72,9 +90,50 @@ test('multiple uses of a queue as a target results in a single policy statement'
             "sqs:GetQueueAttributes",
             "sqs:GetQueueUrl"
           ],
+          Condition: {
+            ArnEquals: {
+              "aws:SourceArn": {
+                "Fn::GetAtt": [
+                  "Rule071281D88",
+                  "Arn"
+                ]
+              }
+            }
+          },
           Effect: "Allow",
           Principal: { Service: { "Fn::Join": ["", ["events.", { Ref: "AWS::URLSuffix" }]] } },
-          Resource: { "Fn::GetAtt": ["MyQueueE6CA6235", "Arn"] },
+          Resource: {
+            "Fn::GetAtt": [
+              "MyQueueE6CA6235",
+              "Arn"
+            ]
+          }
+        },
+        {
+          Action: [
+            "sqs:SendMessage",
+            "sqs:SendMessageBatch",
+            "sqs:GetQueueAttributes",
+            "sqs:GetQueueUrl"
+          ],
+          Condition: {
+            ArnEquals: {
+              "aws:SourceArn": {
+                "Fn::GetAtt": [
+                  "Rule136483A30",
+                  "Arn"
+                ]
+              }
+            }
+          },
+          Effect: "Allow",
+          Principal: { Service: { "Fn::Join": ["", ["events.", { Ref: "AWS::URLSuffix" }]] } },
+          Resource: {
+            "Fn::GetAtt": [
+              "MyQueueE6CA6235",
+              "Arn"
+            ]
+          }
         }
       ],
       Version: "2012-10-17"

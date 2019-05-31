@@ -2,16 +2,27 @@ import events = require('@aws-cdk/aws-events');
 import iam = require('@aws-cdk/aws-iam');
 import sqs = require('@aws-cdk/aws-sqs');
 
+const fifoQualifier = "fifo";
+
 /**
  * Customize the SQS Queue Event Target
  */
 export interface SqsQueueProps {
+
+  /**
+   * The messageGroupId for the queue
+   *
+   * @default empty string
+   */
+  readonly messageGroupId?: string;
+
   /**
    * The message to send to the queue
    *
    * @default the entire CloudWatch event
    */
   readonly message?: events.RuleTargetInput;
+
 }
 
 /**
@@ -25,6 +36,7 @@ export interface SqsQueueProps {
  *
  */
 export class SqsQueue implements events.IRuleTarget {
+
   constructor(public readonly queue: sqs.IQueue, private readonly props: SqsQueueProps = {}) {
   }
 
@@ -34,14 +46,26 @@ export class SqsQueue implements events.IRuleTarget {
    *
    * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/events/resource-based-policies-cwe.html#sqs-permissions
    */
-  public bind(_rule: events.IRule): events.RuleTargetProperties {
+  public bind(rule: events.IRule): events.RuleTargetProperties {
     // deduplicated automatically
-    this.queue.grantSendMessages(new iam.ServicePrincipal('events.amazonaws.com'));
+    this.queue.grantSendMessages(new iam.ServicePrincipal('events.amazonaws.com',
+      {
+        conditions: {
+          ArnEquals: { "aws:SourceArn": rule.ruleArn }
+        }
+      })
+    );
 
-    return {
+    const result = {
       id: this.queue.node.id,
       arn: this.queue.queueArn,
       input: this.props.message,
     };
+    if (this.queue.queueName.split('.').pop() === fifoQualifier && this.props.messageGroupId !== undefined) {
+      Object.assign(result, { sqsParameters: { messageGroupId: this.props.messageGroupId } });
+    }
+    return result;
+
   }
+
 }
