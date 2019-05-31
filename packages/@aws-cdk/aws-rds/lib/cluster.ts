@@ -247,13 +247,6 @@ export class DatabaseCluster extends DatabaseClusterBase {
   public readonly secret?: secretsmanager.ISecret;
 
   /**
-   * The database version of the engine of this cluster
-   *
-   * @default - The default for the engine is used.
-   */
-  public readonly engineVersion?: string;
-
-  /**
    * The database engine of this cluster
    */
   private readonly secretRotationApplication: SecretRotationApplication;
@@ -302,12 +295,11 @@ export class DatabaseCluster extends DatabaseClusterBase {
     }
 
     this.secretRotationApplication = props.engine.secretRotationApplication;
-    this.engineVersion = props.engineVersion;
 
     const cluster = new CfnDBCluster(this, 'Resource', {
       // Basic
       engine: props.engine.name,
-      engineVersion: this.engineVersion,
+      engineVersion: props.engineVersion,
       dbClusterIdentifier: props.clusterIdentifier,
       dbSubnetGroupName: subnetGroup.ref,
       vpcSecurityGroupIds: [this.securityGroupId],
