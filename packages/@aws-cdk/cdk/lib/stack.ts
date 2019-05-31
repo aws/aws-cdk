@@ -685,7 +685,7 @@ import { CfnElement } from './cfn-element';
 import { CfnReference } from './cfn-reference';
 import { CfnResource, TagType } from './cfn-resource';
 import { Aws, ScopedAws } from './pseudo';
-import { TagManager, ITaggable } from './tag-manager';
+import { ITaggable, TagManager } from './tag-manager';
 
 /**
  * Find all resources in a set of constructs
