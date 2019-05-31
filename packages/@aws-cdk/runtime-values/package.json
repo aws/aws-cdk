@@ -76,5 +76,10 @@
   },
   "engines": {
     "node": ">= 8.10.0"
+  },
+  "awslint": {
+    "exclude": [
+      "props-no-any:@aws-cdk/runtime-values.RuntimeValueProps.value"
+    ]
   }
 }

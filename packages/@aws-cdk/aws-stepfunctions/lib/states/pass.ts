@@ -51,7 +51,7 @@ export interface PassProps {
      *
      * @default No injected result
      */
-    readonly result?: any;
+    readonly result?: {[key: string]: any};
 }
 
 /**
