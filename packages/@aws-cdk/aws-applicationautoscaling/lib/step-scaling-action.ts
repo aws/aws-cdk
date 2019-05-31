@@ -1,4 +1,3 @@
-import cloudwatch = require('@aws-cdk/aws-cloudwatch');
 import cdk = require('@aws-cdk/cdk');
 import { CfnScalingPolicy } from './applicationautoscaling.generated';
 import { IScalableTarget } from './scalable-target';
@@ -109,24 +108,6 @@ export class StepScalingAction extends cdk.Construct {
       metricIntervalUpperBound: adjustment.upperBound,
       scalingAdjustment: adjustment.adjustment,
     });
-  }
-}
-
-/**
- * Use a StepScalingAction as an Alarm Action
- *
- * This class is here and not in aws-cloudwatch-actions because this library
- * needs to use the class, and otherwise we'd have a circular dependency:
- *
- * aws-autoscaling -> aws-cloudwatch-actions (for using the Action)
- * aws-cloudwatch-actions -> aws-autoscaling (for the definition of IStepScalingAction)
- */
-export class StepScalingAlarmAction implements cloudwatch.IAlarmAction {
-  constructor(private readonly stepScalingAction: StepScalingAction) {
-  }
-
-  public bind(_scope: cdk.Construct, _alarm: cloudwatch.IAlarm): cloudwatch.AlarmActionProperties {
-    return { alarmActionArn: this.stepScalingAction.scalingPolicyArn };
   }
 }
 

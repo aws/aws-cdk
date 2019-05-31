@@ -2,7 +2,7 @@ import { findAlarmThresholds, normalizeIntervals } from '@aws-cdk/aws-autoscalin
 import cloudwatch = require('@aws-cdk/aws-cloudwatch');
 import cdk = require('@aws-cdk/cdk');
 import { IScalableTarget } from './scalable-target';
-import { AdjustmentType, MetricAggregationType, StepScalingAction, StepScalingAlarmAction } from './step-scaling-action';
+import { AdjustmentType, MetricAggregationType, StepScalingAction } from './step-scaling-action';
 
 export interface BasicStepScalingPolicyProps {
   /**
@@ -190,5 +190,23 @@ function aggregationTypeFromMetric(metric: cloudwatch.Metric): MetricAggregation
       return MetricAggregationType.Maximum;
     default:
       throw new Error(`Cannot only scale on 'Minimum', 'Maximum', 'Average' metrics, got ${metric.statistic}`);
+  }
+}
+
+/**
+ * Use a StepScalingAction as an Alarm Action
+ *
+ * This class is here and not in aws-cloudwatch-actions because this library
+ * needs to use the class, and otherwise we'd have a circular dependency:
+ *
+ * aws-autoscaling -> aws-cloudwatch-actions (for using the Action)
+ * aws-cloudwatch-actions -> aws-autoscaling (for the definition of IStepScalingAction)
+ */
+class StepScalingAlarmAction implements cloudwatch.IAlarmAction {
+  constructor(private readonly stepScalingAction: StepScalingAction) {
+  }
+
+  public bind(_scope: cdk.Construct, _alarm: cloudwatch.IAlarm): cloudwatch.AlarmActionProperties {
+    return { alarmActionArn: this.stepScalingAction.scalingPolicyArn };
   }
 }
