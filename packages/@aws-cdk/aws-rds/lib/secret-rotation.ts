@@ -2,17 +2,26 @@ import ec2 = require('@aws-cdk/aws-ec2');
 import lambda = require('@aws-cdk/aws-lambda');
 import serverless = require('@aws-cdk/aws-sam');
 import secretsmanager = require('@aws-cdk/aws-secretsmanager');
-import cdk = require('@aws-cdk/cdk');
+import { Construct } from '@aws-cdk/cdk';
 
 /**
- * A serverless application location.
+ * A secret rotation serverless application.
  */
-export class ServerlessApplicationLocation {
-  public static readonly MariaDbRotationSingleUser = new ServerlessApplicationLocation('SecretsManagerRDSMariaDBRotationSingleUser', '1.0.46');
-  public static readonly MysqlRotationSingleUser = new ServerlessApplicationLocation('SecretsManagerRDSMySQLRotationSingleUser', '1.0.74');
-  public static readonly OracleRotationSingleUser = new ServerlessApplicationLocation('SecretsManagerRDSOracleRotationSingleUser', '1.0.45');
-  public static readonly PostgresRotationSingleUser = new ServerlessApplicationLocation('SecretsManagerRDSPostgreSQLRotationSingleUser', '1.0.75');
-  public static readonly SqlServerRotationSingleUser = new ServerlessApplicationLocation('SecretsManagerRDSSQLServerRotationSingleUser', '1.0.74');
+export class SecretRotationApplication {
+  public static readonly MariaDbRotationSingleUser = new SecretRotationApplication('SecretsManagerRDSMariaDBRotationSingleUser', '1.0.57');
+  public static readonly MariaDBRotationMultiUser = new SecretRotationApplication('SecretsManagerRDSMariaDBRotationMultiUser', '1.0.57');
+
+  public static readonly MysqlRotationSingleUser = new SecretRotationApplication('SecretsManagerRDSMySQLRotationSingleUser', '1.0.85');
+  public static readonly MysqlRotationMultiUser = new SecretRotationApplication('SecretsManagerRDSMySQLRotationMultiUser', '1.0.85');
+
+  public static readonly OracleRotationSingleUser = new SecretRotationApplication('SecretsManagerRDSOracleRotationSingleUser', '1.0.56');
+  public static readonly OracleRotationMultiUser = new SecretRotationApplication('SecretsManagerRDSOracleRotationMultiUser', '1.0.56');
+
+  public static readonly PostgresRotationSingleUser = new SecretRotationApplication('SecretsManagerRDSPostgreSQLRotationSingleUser', '1.0.86');
+  public static readonly PostgreSQLRotationMultiUser  = new SecretRotationApplication('SecretsManagerRDSPostgreSQLRotationMultiUser ', '1.0.86');
+
+  public static readonly SqlServerRotationSingleUser = new SecretRotationApplication('SecretsManagerRDSSQLServerRotationSingleUser', '1.0.57');
+  public static readonly SqlServerRotationMultiUser = new SecretRotationApplication('SecretsManagerRDSSQLServerRotationMultiUser', '1.0.57');
 
   public readonly applicationId: string;
   public readonly semanticVersion: string;
@@ -24,39 +33,9 @@ export class ServerlessApplicationLocation {
 }
 
 /**
- * The RDS database engine
+ * Options to add secret rotation to a database instance or cluster.
  */
-export enum DatabaseEngine {
-  /**
-   * MariaDB
-   */
-  MariaDb = 'mariadb',
-
-  /**
-   * MySQL
-   */
-  Mysql = 'mysql',
-
-  /**
-   * Oracle
-   */
-  Oracle = 'oracle',
-
-  /**
-   * PostgreSQL
-   */
-  Postgres = 'postgres',
-
-  /**
-   * SQL Server
-   */
-  SqlServer = 'sqlserver'
-}
-
-/**
- * Options to add single user rotation to a database instance or cluster.
- */
-export interface RotationSingleUserOptions {
+export interface SecretRotationOptions {
   /**
    * Specifies the number of days after the previous rotation before
    * Secrets Manager triggers the next automatic rotation.
@@ -64,19 +43,12 @@ export interface RotationSingleUserOptions {
    * @default 30 days
    */
   readonly automaticallyAfterDays?: number;
-
-  /**
-   * The location of the serverless application for the rotation.
-   *
-   * @default derived from the target's engine
-   */
-  readonly serverlessApplicationLocation?: ServerlessApplicationLocation
 }
 
 /**
- * Construction properties for a RotationSingleUser.
+ * Construction properties for a SecretRotation.
  */
-export interface RotationSingleUserProps extends RotationSingleUserOptions {
+export interface SecretRotationProps extends SecretRotationOptions {
   /**
    * The secret to rotate. It must be a JSON string with the following format:
    * {
@@ -85,7 +57,8 @@ export interface RotationSingleUserProps extends RotationSingleUserOptions {
    *   'username': <required: username>,
    *   'password': <required: password>,
    *   'dbname': <optional: database name>,
-   *   'port': <optional: if not specified, default port will be used>
+   *   'port': <optional: if not specified, default port will be used>,
+   *   'masterarn': <required for multi user rotation: the arn of the master secret which will be used to create users/change passwords>
    * }
    *
    * This is typically the case for a secret referenced from an AWS::SecretsManager::SecretTargetAttachment
@@ -94,11 +67,9 @@ export interface RotationSingleUserProps extends RotationSingleUserOptions {
   readonly secret: secretsmanager.ISecret;
 
   /**
-   * The database engine. Either `serverlessApplicationLocation` or `engine` must be specified.
-   *
-   * @default - No engine specified.
+   * The serverless application for the rotation.
    */
-  readonly engine?: DatabaseEngine;
+  readonly application: SecretRotationApplication;
 
   /**
    * The VPC where the Lambda rotation function will run.
@@ -119,15 +90,11 @@ export interface RotationSingleUserProps extends RotationSingleUserOptions {
 }
 
 /**
- * Single user secret rotation for a database instance or cluster.
+ * Secret rotation for a database instance or cluster.
  */
-export class RotationSingleUser extends cdk.Construct {
-  constructor(scope: cdk.Construct, id: string, props: RotationSingleUserProps) {
+export class SecretRotation extends Construct {
+  constructor(scope: Construct, id: string, props: SecretRotationProps) {
     super(scope, id);
-
-    if (!props.serverlessApplicationLocation && !props.engine) {
-      throw new Error('Either `serverlessApplicationLocation` or `engine` must be specified.');
-    }
 
     if (!props.target.connections.defaultPortRange) {
       throw new Error('The `target` connections must have a default port range.');
@@ -144,7 +111,7 @@ export class RotationSingleUser extends cdk.Construct {
     props.target.connections.allowDefaultPortFrom(securityGroup);
 
     const application = new serverless.CfnApplication(this, 'Resource', {
-      location: props.serverlessApplicationLocation || getApplicationLocation(props.engine),
+      location: props.application,
       parameters: {
         endpoint: `https://secretsmanager.${this.node.stack.region}.${this.node.stack.urlSuffix}`,
         functionName: rotationFunctionName,
@@ -161,8 +128,8 @@ export class RotationSingleUser extends cdk.Construct {
       resourceName: rotationFunctionName
     }));
 
-    // Cannot use rotationLambda.addPermission because it currently does not
-    // return a cdk.Construct and we need to add a dependency.
+    // Cannot use rotationLambda.addPermission because it's a no-op on imported
+    // functions.
     const permission = new lambda.CfnPermission(this, 'Permission', {
       action: 'lambda:InvokeFunction',
       functionName: rotationFunctionName,
@@ -175,28 +142,5 @@ export class RotationSingleUser extends cdk.Construct {
       automaticallyAfterDays: props.automaticallyAfterDays
     });
     rotationSchedule.node.addDependency(permission); // Cannot rotate without permission
-  }
-}
-
-/**
- * Returns the location for the rotation single user application.
- *
- * @param engine the database engine
- * @throws if the engine is not supported
- */
-function getApplicationLocation(engine: string = ''): ServerlessApplicationLocation {
-  switch (engine) {
-    case DatabaseEngine.MariaDb:
-      return ServerlessApplicationLocation.MariaDbRotationSingleUser;
-    case DatabaseEngine.Mysql:
-      return ServerlessApplicationLocation.MysqlRotationSingleUser;
-    case DatabaseEngine.Oracle:
-      return ServerlessApplicationLocation.OracleRotationSingleUser;
-    case DatabaseEngine.Postgres:
-      return ServerlessApplicationLocation.PostgresRotationSingleUser;
-    case DatabaseEngine.SqlServer:
-      return ServerlessApplicationLocation.SqlServerRotationSingleUser;
-    default:
-      throw new Error(`Engine ${engine} not supported for single user rotation.`);
   }
 }

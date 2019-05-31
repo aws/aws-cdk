@@ -2,12 +2,13 @@ import ec2 = require('@aws-cdk/aws-ec2');
 import kms = require('@aws-cdk/aws-kms');
 import secretsmanager = require('@aws-cdk/aws-secretsmanager');
 import { Construct, DeletionPolicy, Resource, Token } from '@aws-cdk/cdk';
-import { IClusterParameterGroup } from './cluster-parameter-group';
-import { DatabaseClusterAttributes, Endpoint, IDatabaseCluster } from './cluster-ref';
+import { DatabaseClusterAttributes, IDatabaseCluster } from './cluster-ref';
 import { DatabaseSecret } from './database-secret';
+import { Endpoint } from './endpoint';
+import { IParameterGroup } from './parameter-group';
 import { BackupProps, DatabaseClusterEngine, InstanceProps, Login } from './props';
 import { CfnDBCluster, CfnDBInstance, CfnDBSubnetGroup } from './rds.generated';
-import { DatabaseEngine, RotationSingleUser, RotationSingleUserOptions } from './rotation-single-user';
+import { SecretRotation, SecretRotationApplication, SecretRotationOptions } from './secret-rotation';
 
 /**
  * Properties for a new database cluster
@@ -111,7 +112,7 @@ export interface DatabaseClusterProps {
    *
    * @default - No parameter group.
    */
-  readonly parameterGroup?: IClusterParameterGroup;
+  readonly parameterGroup?: IParameterGroup;
 
   /**
    * The CloudFormation policy to apply when the cluster and its instances
@@ -241,7 +242,7 @@ export class DatabaseCluster extends DatabaseClusterBase {
   /**
    * The database engine of this cluster
    */
-  public readonly engine: DatabaseClusterEngine;
+  private readonly secretRotationApplication: SecretRotationApplication;
 
   /**
    * The VPC where the DB subnet group is created.
@@ -286,11 +287,11 @@ export class DatabaseCluster extends DatabaseClusterBase {
       });
     }
 
-    this.engine = props.engine;
+    this.secretRotationApplication = props.engine.secretRotationApplication;
 
     const cluster = new CfnDBCluster(this, 'Resource', {
       // Basic
-      engine: this.engine,
+      engine: props.engine.name,
       dbClusterIdentifier: props.clusterIdentifier,
       dbSubnetGroupName: subnetGroup.ref,
       vpcSecurityGroupIds: [this.securityGroupId],
@@ -347,7 +348,7 @@ export class DatabaseCluster extends DatabaseClusterBase {
 
       const instance = new CfnDBInstance(this, `Instance${instanceIndex}`, {
         // Link to cluster
-        engine: props.engine,
+        engine: props.engine.name,
         dbClusterIdentifier: cluster.ref,
         dbInstanceIdentifier: instanceIdentifier,
         // Instance properties
@@ -355,6 +356,7 @@ export class DatabaseCluster extends DatabaseClusterBase {
         publiclyAccessible,
         // This is already set on the Cluster. Unclear to me whether it should be repeated or not. Better yes.
         dbSubnetGroupName: subnetGroup.ref,
+        dbParameterGroupName: props.instanceProps.parameterGroup && props.instanceProps.parameterGroup.parameterGroupName,
       });
 
       instance.options.deletionPolicy = deleteReplacePolicy;
@@ -375,13 +377,13 @@ export class DatabaseCluster extends DatabaseClusterBase {
   /**
    * Adds the single user rotation of the master password to this cluster.
    */
-  public addRotationSingleUser(id: string, options: RotationSingleUserOptions = {}): RotationSingleUser {
+  public addRotationSingleUser(id: string, options: SecretRotationOptions = {}): SecretRotation {
     if (!this.secret) {
       throw new Error('Cannot add single user rotation for a cluster without secret.');
     }
-    return new RotationSingleUser(this, id, {
+    return new SecretRotation(this, id, {
       secret: this.secret,
-      engine: toDatabaseEngine(this.engine),
+      application: this.secretRotationApplication,
       vpc: this.vpc,
       vpcSubnets: this.vpcSubnets,
       target: this,
@@ -395,21 +397,4 @@ export class DatabaseCluster extends DatabaseClusterBase {
  */
 function databaseInstanceType(instanceType: ec2.InstanceType) {
   return 'db.' + instanceType.toString();
-}
-
-/**
- * Transforms a DatbaseClusterEngine to a DatabaseEngine.
- *
- * @param engine the engine to transform
- */
-function toDatabaseEngine(engine: DatabaseClusterEngine): DatabaseEngine {
-  switch (engine) {
-    case DatabaseClusterEngine.Aurora:
-    case DatabaseClusterEngine.AuroraMysql:
-      return DatabaseEngine.Mysql;
-    case DatabaseClusterEngine.AuroraPostgresql:
-      return DatabaseEngine.Postgres;
-    default:
-      throw new Error('Unknown engine');
-  }
 }
