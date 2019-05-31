@@ -20,7 +20,7 @@ beforeEach(() => {
   });
 });
 
-test('Canot create a Farkate task with a fargate-incompatible task definition', () => {
+test('Cannot create a Fargate task with a fargate-incompatible task definition', () => {
   const taskDefinition = new ecs.TaskDefinition(stack, 'TD', {
     memoryMiB: '512',
     cpu: '256',
@@ -35,7 +35,7 @@ test('Canot create a Farkate task with a fargate-incompatible task definition', 
     .toThrowError(/not configured for compatibility with Fargate/);
 });
 
-test('Canot create a Farkate task without a default container', () => {
+test('Cannot create a Fargate task without a default container', () => {
   const taskDefinition = new ecs.TaskDefinition(stack, 'TD', {
     memoryMiB: '512',
     cpu: '256',
