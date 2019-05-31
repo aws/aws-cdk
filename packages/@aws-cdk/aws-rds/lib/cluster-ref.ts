@@ -1,12 +1,12 @@
 import ec2 = require('@aws-cdk/aws-ec2');
 import secretsmanager = require('@aws-cdk/aws-secretsmanager');
-import cdk = require('@aws-cdk/cdk');
-import { Token } from '@aws-cdk/cdk';
+import { IResource } from '@aws-cdk/cdk';
+import { Endpoint } from './endpoint';
 
 /**
  * Create a clustered database with a given number of instances.
  */
-export interface IDatabaseCluster extends cdk.IResource, ec2.IConnectable, secretsmanager.ISecretAttachmentTarget {
+export interface IDatabaseCluster extends IResource, ec2.IConnectable, secretsmanager.ISecretAttachmentTarget {
   /**
    * Identifier of the cluster
    */
@@ -79,34 +79,4 @@ export interface DatabaseClusterAttributes {
    * Endpoint addresses of individual instances
    */
   readonly instanceEndpointAddresses: string[];
-}
-
-/**
- * Connection endpoint of a database cluster or instance
- *
- * Consists of a combination of hostname and port.
- */
-export class Endpoint {
-  /**
-   * The hostname of the endpoint
-   */
-  public readonly hostname: string;
-
-  /**
-   * The port of the endpoint
-   */
-  public readonly port: number;
-
-  /**
-   * The combination of "HOSTNAME:PORT" for this endpoint
-   */
-  public readonly socketAddress: string;
-
-  constructor(address: string, port: number) {
-    this.hostname = address;
-    this.port = port;
-
-    const portDesc = Token.isToken(port) ? '{IndirectPort}' : port;
-    this.socketAddress = `${address}:${portDesc}`;
-  }
 }

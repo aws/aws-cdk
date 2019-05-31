@@ -724,7 +724,7 @@
       "Properties": {
         "Location": {
           "ApplicationId": "arn:aws:serverlessrepo:us-east-1:297356227824:applications/SecretsManagerRDSMySQLRotationSingleUser",
-          "SemanticVersion": "1.0.74"
+          "SemanticVersion": "1.0.85"
         },
         "Parameters": {
           "endpoint": {

@@ -1,15 +1,32 @@
 import ec2 = require('@aws-cdk/aws-ec2');
 import kms = require('@aws-cdk/aws-kms');
 import { SecretValue } from '@aws-cdk/cdk';
+import { IParameterGroup } from './parameter-group';
+import { SecretRotationApplication } from './secret-rotation';
 
 /**
- * The engine for the database cluster
+ * A database cluster engine. Provides mapping to the serverless application
+ * used for secret rotation.
  */
-export enum DatabaseClusterEngine {
-  Aurora = 'aurora',
-  AuroraMysql = 'aurora-mysql',
-  AuroraPostgresql = 'aurora-postgresql',
-  Neptune = 'neptune'
+export class DatabaseClusterEngine {
+  public static readonly Aurora = new DatabaseClusterEngine('aurora', SecretRotationApplication.MysqlRotationSingleUser);
+  public static readonly AuroraMysql = new DatabaseClusterEngine('aurora-mysql', SecretRotationApplication.MysqlRotationSingleUser);
+  public static readonly AuroraPostgresql = new DatabaseClusterEngine('aurora-postgresql', SecretRotationApplication.PostgresRotationSingleUser);
+
+  /**
+   * The engine.
+   */
+  public readonly name: string;
+
+  /**
+   * The secret rotation application.
+   */
+  public readonly secretRotationApplication: SecretRotationApplication;
+
+  constructor(name: string, secretRotationApplication: SecretRotationApplication) {
+    this.name = name;
+    this.secretRotationApplication = secretRotationApplication;
+  }
 }
 
 /**
@@ -30,13 +47,24 @@ export interface InstanceProps {
 
   /**
    * Where to place the instances within the VPC
+   *
+   * @default private subnets
    */
   readonly vpcSubnets?: ec2.SubnetSelection;
 
   /**
-   * Security group. If not specified a new one will be created.
+   * Security group.
+   *
+   * @default a new security group is created.
    */
   readonly securityGroup?: ec2.ISecurityGroup;
+
+  /**
+   * The DB parameter group to associate with the instance.
+   *
+   * @default no parameter group
+   */
+  readonly parameterGroup?: IParameterGroup;
 }
 
 /**
@@ -89,8 +117,3 @@ export interface Login {
    */
   readonly kmsKey?: kms.IKey;
 }
-
-/**
- * Type for database parameters
- */
-export type Parameters = {[key: string]: any};
