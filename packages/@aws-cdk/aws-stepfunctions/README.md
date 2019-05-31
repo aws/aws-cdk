@@ -119,8 +119,8 @@ couple of the tasks available are:
 
 Many tasks take parameters. The values for those can either be supplied
 directly in the workflow definition (by specifying their values), or at
-runtime by passing a value obtained from the static functions on `JsonPath`,
-such as `JsonPath.stringFromPath()`.
+runtime by passing a value obtained from the static functions on `DataField`,
+such as `DataField.fromStringAt()`.
 
 If so, the value is taken from the indicated location in the state JSON,
 similar to (for example) `inputPath`.
@@ -157,7 +157,7 @@ import sns = require('@aws-cdk/aws-sns');
 const topic = new sns.Topic(this, 'Topic');
 const task = new sfn.Task(this, 'Publish', {
     task: new tasks.PublishToTopic(topic, {
-        message: JsonPath.stringFromPath('$.state.message'),
+        message: DataField.fromStringAt('$.state.message'),
     })
 });
 ```
@@ -172,9 +172,9 @@ import sqs = require('@aws-cdk/aws-sqs');
 const queue = new sns.Queue(this, 'Queue');
 const task = new sfn.Task(this, 'Send', {
     task: new tasks.SendToQueue(queue, {
-        messageBody: JsonPath.stringFromPath('$.message'),
+        messageBody: DataField.fromStringAt('$.message'),
         // Only for FIFO queues
-        messageGroupId: JsonPath.stringFromPath('$.messageGroupId'),
+        messageGroupId: DataField.fromStringAt('$.messageGroupId'),
     })
 });
 ```
@@ -195,7 +195,7 @@ const fargateTask = new ecs.RunEcsFargateTask({
       environment: [
         {
           name: 'CONTAINER_INPUT',
-          value: JsonPath.stringFromPath('$.valueFromStateData')
+          value: DataField.fromStringAt('$.valueFromStateData')
         }
       ]
     }

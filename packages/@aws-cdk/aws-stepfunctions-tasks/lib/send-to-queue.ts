@@ -1,17 +1,24 @@
 import iam = require('@aws-cdk/aws-iam');
 import sqs = require('@aws-cdk/aws-sqs');
 import sfn = require('@aws-cdk/aws-stepfunctions');
-import { renderNumber, renderString } from './json-path';
-import { NumberValue } from './number-value';
 
 /**
  * Properties for SendMessageTask
  */
 export interface SendToQueueProps {
   /**
-   * The message body to send to the queue.
+   * The text message to send to the topic.
+   *
+   * @default - Exactly one of `message` and `messageObject` is required.
    */
-  readonly messageBody: string;
+  readonly message?: string;
+
+  /**
+   * Object to be JSON-encoded and used as message
+   *
+   * @default - Exactly one of `message` and `messageObject` is required.
+   */
+  readonly messageObject?: {[key: string]: any};
 
   /**
    * The length of time, in seconds, for which to delay a specific message.
@@ -20,7 +27,7 @@ export interface SendToQueueProps {
    *
    * @default Default value of the queue is used
    */
-  readonly delaySeconds?: NumberValue;
+  readonly delaySeconds?: number;
 
   /**
    * The token used for deduplication of sent messages.
@@ -48,6 +55,9 @@ export interface SendToQueueProps {
  */
 export class SendToQueue implements sfn.IStepFunctionsTask {
   constructor(private readonly queue: sqs.IQueue, private readonly props: SendToQueueProps) {
+    if ((props.message === undefined) === (props.messageObject === undefined)) {
+      throw new Error(`Supply exactly one of 'message' or 'messageObject'`);
+    }
   }
 
   public bind(_task: sfn.Task): sfn.StepFunctionsTaskProperties {
@@ -59,10 +69,12 @@ export class SendToQueue implements sfn.IStepFunctionsTask {
       ],
       parameters: {
         QueueUrl: this.queue.queueUrl,
-        ...renderString('MessageBody', this.props.messageBody),
-        ...renderNumber('DelaySeconds', this.props.delaySeconds),
-        ...renderString('MessageDeduplicationId', this.props.messageDeduplicationId),
-        ...renderString('MessageGroupId', this.props.messageGroupId),
+        ...sfn.FieldUtils.renderObject({
+          MessageBody: this.props.message || this.props.messageObject,
+          DelaySeconds: this.props.delaySeconds,
+          MessageDeduplicationId: this.props.messageDeduplicationId,
+          MessageGroupId: this.props.messageGroupId,
+        })
       }
     };
   }

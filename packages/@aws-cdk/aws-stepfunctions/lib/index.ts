@@ -1,3 +1,4 @@
+export * from './fields';
 export * from './activity';
 export * from './types';
 export * from './condition';

@@ -4,7 +4,6 @@ import ecs = require('@aws-cdk/aws-ecs');
 import sfn = require('@aws-cdk/aws-stepfunctions');
 import { Stack } from '@aws-cdk/cdk';
 import tasks = require('../lib');
-import { JsonPath, NumberValue } from '../lib';
 
 let stack: Stack;
 let vpc: ec2.Vpc;
@@ -64,7 +63,7 @@ test('Running a Fargate Task', () => {
       {
         containerName: 'TheContainer',
         environment: [
-          {name: 'SOME_KEY', value: JsonPath.stringFromPath('$.SomeKey')}
+          {name: 'SOME_KEY', value: sfn.DataField.fromStringAt('$.SomeKey')}
         ]
       }
     ]
@@ -162,7 +161,7 @@ test('Running an EC2 Task with bridge network', () => {
       {
         containerName: 'TheContainer',
         environment: [
-          {name: 'SOME_KEY', value: JsonPath.stringFromPath('$.SomeKey')}
+          {name: 'SOME_KEY', value: sfn.DataField.fromStringAt('$.SomeKey')}
         ]
       }
     ]
@@ -296,9 +295,9 @@ test('Running an EC2 Task with overridden number values', () => {
     containerOverrides: [
       {
         containerName: 'TheContainer',
-        command: JsonPath.listFromPath('$.TheCommand'),
-        cpu: NumberValue.fromNumber(5),
-        memoryLimit: JsonPath.numberFromPath('$.MemoryLimit'),
+        command: sfn.DataField.fromListAt('$.TheCommand'),
+        cpu: 5,
+        memoryLimit: sfn.DataField.fromNumberAt('$.MemoryLimit'),
       }
     ]
   });
