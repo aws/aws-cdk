@@ -189,12 +189,12 @@ constructLinter.add({
 
 constructLinter.add({
   code: 'props-no-unions',
-  message: 'props should not use TypeScript unions',
+  message: 'props must not use TypeScript unions',
   eval: e => {
     if (!e.ctx.propsType) { return; }
     if (!e.ctx.hasPropsArgument) { return; }
 
-    // this rule only applies to L2 constructs
+    // this rule does not apply to L1 constructs
     if (CoreTypes.isCfnResource(e.ctx.classType)) { return; }
 
     for (const property of e.ctx.propsType.ownProperties) {
@@ -205,12 +205,12 @@ constructLinter.add({
 
 constructLinter.add({
   code: 'props-no-arn-refs',
-  message: 'props should use strong types instead of attributes. props should not have "arn" suffix',
+  message: 'props must use strong types instead of attributes. props should not have "arn" suffix',
   eval: e => {
     if (!e.ctx.propsType) { return; }
     if (!e.ctx.hasPropsArgument) { return; }
 
-    // this rule only applies to L2 constructs
+    // this rule does not apply to L1 constructs
     if (CoreTypes.isCfnResource(e.ctx.classType)) { return; }
 
     for (const property of e.ctx.propsType.ownProperties) {
@@ -221,12 +221,12 @@ constructLinter.add({
 
 constructLinter.add({
   code: 'props-no-tokens',
-  message: 'props should not use the "Token" type',
+  message: 'props must not use the "Token" type',
   eval: e => {
     if (!e.ctx.propsType) { return; }
     if (!e.ctx.hasPropsArgument) { return; }
 
-    // this rule only applies to L2 constructs
+    // this rule does not apply to L1 constructs
     if (CoreTypes.isCfnResource(e.ctx.classType)) { return; }
 
     for (const property of e.ctx.propsType.allProperties) {
@@ -242,12 +242,12 @@ constructLinter.add({
 
 constructLinter.add({
   code: 'props-no-cfn-types',
-  message: 'props should not expose L1 types (types which start with "Cfn")',
+  message: 'props must not expose L1 types (types which start with "Cfn")',
   eval: e => {
     if (!e.ctx.propsType) { return; }
     if (!e.ctx.hasPropsArgument) { return; }
 
-    // this rule only applies to L2 constructs
+    // this rule does not apply to L1 constructs
     if (CoreTypes.isCfnResource(e.ctx.classType)) { return; }
 
     for (const property of e.ctx.propsType.ownProperties) {
@@ -263,12 +263,12 @@ constructLinter.add({
 
 constructLinter.add({
   code: 'props-default-doc',
-  message: 'All optional props should have @default documentation',
+  message: 'All optional props must have @default documentation',
   eval: e => {
     if (!e.ctx.propsType) { return; }
     if (!e.ctx.hasPropsArgument) { return; }
 
-    // this rule only applies to L2 constructs
+    // this rule does not apply to L1 constructs
     if (CoreTypes.isCfnResource(e.ctx.classType)) { return; }
 
     for (const property of e.ctx.propsType.allProperties) {
@@ -277,3 +277,19 @@ constructLinter.add({
     }
   }
   });
+
+constructLinter.add({
+  code: 'props-no-any',
+  message: 'props must not use Typescript "any" type',
+  eval: e => {
+    if (!e.ctx.propsType) { return; }
+    if (!e.ctx.hasPropsArgument) { return; }
+
+    // this rule does not apply to L1 constructs
+    if (CoreTypes.isCfnResource(e.ctx.classType)) { return; }
+
+    for (const property of e.ctx.propsType.ownProperties) {
+    e.assert(!property.type.isAny, `${e.ctx.propsFqn}.${property.name}`);
+    }
+  }
+});
