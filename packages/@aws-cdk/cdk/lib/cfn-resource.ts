@@ -198,7 +198,7 @@ export class CfnResource extends CfnRefElement {
   public _toCloudFormation(): object {
     try {
       // merge property overrides onto properties and then render (and validate).
-      const tags = CfnResource.isTaggable(this) ? this.tags.renderTags() : undefined;
+      const tags = Construct.isTaggable(this) ? this.tags.renderTags() : undefined;
       const properties = deepMerge(
         this.properties || {},
         { tags },

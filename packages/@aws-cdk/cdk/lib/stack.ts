@@ -81,6 +81,11 @@ export class Stack extends Construct implements ITaggable {
   private static readonly VALID_STACK_NAME_REGEX = /^[A-Za-z][A-Za-z0-9-]*$/;
 
   /**
+   * Tags to be applied to the stack.
+   */
+  public readonly tags: TagManager;
+
+  /**
    * Lists all missing contextual information.
    * This is returned when the stack is synthesized under the 'missing' attribute
    * and allows tooling to obtain the context and re-synthesize.
@@ -120,11 +125,6 @@ export class Stack extends Construct implements ITaggable {
    * By default, this is `true`.
    */
   public readonly autoDeploy: boolean;
-
-  /**
-   * Stack tags
-   */
-  public readonly tags: TagManager;
 
   /**
    * Other stacks this stack depends on
@@ -685,7 +685,7 @@ import { CfnElement } from './cfn-element';
 import { CfnReference } from './cfn-reference';
 import { CfnResource, TagType } from './cfn-resource';
 import { Aws, ScopedAws } from './pseudo';
-import { ITaggable, TagManager } from './tag-manager';
+import { TagManager, ITaggable } from './tag-manager';
 
 /**
  * Find all resources in a set of constructs

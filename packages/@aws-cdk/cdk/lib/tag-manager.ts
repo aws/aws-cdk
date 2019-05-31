@@ -262,6 +262,9 @@ export class TagManager {
     return true;
   }
 
+  /**
+   * Returns true if there are any tags defined
+   */
   public hasTags(): boolean {
     return this.tags.size > 0;
   }

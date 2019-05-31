@@ -382,13 +382,6 @@ function includeUpstreamStacks(
   }
 }
 
-export interface SelectedStack extends cxapi.CloudFormationStackArtifact {
-  /**
-   * The original name of the stack before renaming
-   */
-  originalName: string;
-}
-
 export interface Tag {
   readonly Key: string;
   readonly Value: string;

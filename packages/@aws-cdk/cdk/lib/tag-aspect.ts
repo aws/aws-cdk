@@ -78,7 +78,6 @@ export abstract class TagBase implements IAspect {
   }
 
   protected abstract applyTag(resource: ITaggable): void;
-
 }
 
 /**
