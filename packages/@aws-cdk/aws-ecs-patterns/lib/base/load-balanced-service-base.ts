@@ -45,7 +45,7 @@ export interface LoadBalancedServiceBaseProps {
    *
    * @default application
    */
-  readonly loadBalancerType?: LoadBalancerType
+  readonly loadBalancerType?: LoadBalancerType;
 
   /**
    * Certificate Manager certificate to associate with the load balancer.
@@ -61,6 +61,23 @@ export interface LoadBalancedServiceBaseProps {
    * @default - No environment variables.
    */
   readonly environment?: { [key: string]: string };
+
+  /**
+   * Properties of the ELBv2 TargetGroup
+   *
+   * Can be used to override the default healthCheck, for example:
+   * ```ts
+   * targetProps: {
+   *   port: 80
+   *   healthCheck: {
+   *     path: "/health"
+   *   }
+   * }
+   * ```
+   *
+   * @default { port: 80 }
+   */
+  readonly targetProps?: elbv2.AddApplicationTargetsProps & elbv2.AddNetworkTargetsProps;
 }
 
 /**
@@ -98,9 +115,14 @@ export abstract class LoadBalancedServiceBase extends cdk.Construct {
       this.loadBalancer = new elbv2.NetworkLoadBalancer(this, 'LB', lbProps);
     }
 
-    const targetProps = {
-      port: 80
-    };
+    const targetProps = props.targetProps
+      ? {
+          ...props.targetProps,
+          port: props.targetProps.port || 80
+        }
+      : {
+          port: 80
+        };
 
     const hasCertificate = props.certificate !== undefined;
     if (hasCertificate && this.loadBalancerType !== LoadBalancerType.Application) {
