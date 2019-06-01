@@ -20,5 +20,6 @@
     "allowJs": true,
     "checkJs": true,
     "noEmit": true
-  }
+  },
+  "exclude": ["cdk.out"]
 }
