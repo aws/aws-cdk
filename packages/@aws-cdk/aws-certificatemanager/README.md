@@ -65,7 +65,7 @@ Import a certificate manually, if you know the ARN:
 
 ```ts
 const certificate = Certificate.import(this, 'Certificate', {
-    certificteArn: "arn:aws:..."
+    certificateArn: "arn:aws:..."
 });
 ```
 
