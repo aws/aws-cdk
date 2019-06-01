@@ -16,7 +16,7 @@ export interface SubscriptionProps {
    *
    * The meaning of this value depends on the value for 'protocol'.
    */
-  readonly endpoint: any;
+  readonly endpoint: string;
 
   /**
    * The topic to subscribe to.

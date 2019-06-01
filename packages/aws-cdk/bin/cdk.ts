@@ -45,7 +45,7 @@ async function parseCommandLineArguments() {
     .option('asset-metadata', { type: 'boolean', desc: 'Include "aws:asset:*" CloudFormation metadata for resources that user assets (enabled by default)', default: true })
     .option('role-arn', { type: 'string', alias: 'r', desc: 'ARN of Role to use when invoking CloudFormation', default: undefined, requiresArg: true })
     .option('toolkit-stack-name', { type: 'string', desc: 'The name of the CDK toolkit stack', requiresArg: true })
-    .option('staging', { type: 'boolean', desc: 'copy assets to the output directory (use --no-staging to disable)', default: true })
+    .option('staging', { type: 'boolean', desc: 'copy assets to the output directory (use --no-staging to disable, needed for local debugging the source files with SAM CLI)', default: true })
     .option('output', { type: 'string', alias: 'o', desc: 'emits the synthesized cloud assembly into a directory (default: cdk.out)', requiresArg: true })
     .command([ 'list', 'ls' ], 'Lists all stacks in the app', yargs => yargs
       .option('long', { type: 'boolean', default: false, alias: 'l', desc: 'display environment information for each stack' }))

@@ -1,15 +1,13 @@
 import cloudwatch = require('@aws-cdk/aws-cloudwatch');
 import ec2 = require('@aws-cdk/aws-ec2');
 import iam = require('@aws-cdk/aws-iam');
-import logs = require('@aws-cdk/aws-logs');
 import { IResource, Resource } from '@aws-cdk/cdk';
 import { IEventSource } from './event-source';
 import { EventSourceMapping, EventSourceMappingOptions } from './event-source-mapping';
 import { CfnPermission } from './lambda.generated';
 import { Permission } from './permission';
 
-export interface IFunction extends IResource, logs.ILogSubscriptionDestination,
-  ec2.IConnectable, iam.IGrantable {
+export interface IFunction extends IResource, ec2.IConnectable, iam.IGrantable {
 
   /**
    * Logical ID of this Function.
@@ -157,11 +155,6 @@ export abstract class FunctionBase extends Resource implements IFunction  {
   protected _connections?: ec2.Connections;
 
   /**
-   * Indicates if the policy that allows CloudWatch logs to publish to this lambda has been added.
-   */
-  private logSubscriptionDestinationPolicyAddedFor: string[] = [];
-
-  /**
    * Adds a permission to the Lambda resource policy.
    * @param id The id ƒor the permission construct
    */
@@ -245,27 +238,9 @@ export abstract class FunctionBase extends Resource implements IFunction  {
             action: 'lambda:InvokeFunction',
           });
         },
-        dependencyRoots: [],
         node: this.node,
       },
     });
-  }
-
-  public logSubscriptionDestination(sourceLogGroup: logs.ILogGroup): logs.LogSubscriptionDestination {
-    const arn = sourceLogGroup.logGroupArn;
-
-    if (this.logSubscriptionDestinationPolicyAddedFor.indexOf(arn) === -1) {
-      // NOTE: the use of {AWS::Region} limits this to the same region, which shouldn't really be an issue,
-      // since the Lambda must be in the same region as the SubscriptionFilter anyway.
-      //
-      // (Wildcards in principals are unfortunately not supported.
-      this.addPermission('InvokedByCloudWatchLogs', {
-        principal: new iam.ServicePrincipal(`logs.${this.node.stack.region}.amazonaws.com`),
-        sourceArn: arn
-      });
-      this.logSubscriptionDestinationPolicyAddedFor.push(arn);
-    }
-    return { arn: this.functionArn };
   }
 
   /**

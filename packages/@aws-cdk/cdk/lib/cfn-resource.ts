@@ -234,9 +234,11 @@ export class CfnResource extends CfnRefElement {
             Metadata: ignoreEmpty(this.options.metadata),
             Condition: this.options.condition && this.options.condition.logicalId
           }, props => {
-            const r = deepMerge(props, this.rawOverrides);
-            r.Properties = this.renderProperties(r.Properties);
-            return r;
+            // let derived classes to influence how properties are rendered (e.g. change capitalization)
+            props.Properties = this.renderProperties(props.Properties);
+
+            // merge overrides *after* rendering
+            return deepMerge(props, this.rawOverrides);
           })
         }
       };

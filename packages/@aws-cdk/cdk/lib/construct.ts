@@ -1,7 +1,7 @@
 import cxapi = require('@aws-cdk/cx-api');
 import { IAspect } from './aspect';
 import { CLOUDFORMATION_TOKEN_RESOLVER, CloudFormationLang } from './cloudformation-lang';
-import { IDependable } from './dependency';
+import { DependableTrait, IDependable } from './dependency';
 import { resolve } from './resolve';
 import { createStackTrace } from './stack-trace';
 import { Token } from './token';
@@ -181,6 +181,21 @@ export class ConstructNode {
       throw new Error(`No child with path: '${path}'`);
     }
     return ret;
+  }
+
+  /**
+   * Returns the child construct that has the id "Default" or "Resource".
+   * @throws if there is more than one child
+   * @returns a construct or undefined if there is no default child
+   */
+  public get defaultChild(): IConstruct | undefined {
+    const resourceChild = this.tryFindChild('Resource');
+    const defaultChild = this.tryFindChild('Default');
+    if (resourceChild && defaultChild) {
+      throw new Error(`Cannot determine default child for ${this.path}. There is both a child with id "Resource" and id "Default"`);
+    }
+
+    return defaultChild || resourceChild;
   }
 
   /**
@@ -537,7 +552,7 @@ export class ConstructNode {
 
     for (const source of this.findAll()) {
       for (const dependable of source.node.dependencies) {
-        for (const target of dependable.dependencyRoots) {
+        for (const target of DependableTrait.get(dependable).dependencyRoots) {
           let foundTargets = found.get(source);
           if (!foundTargets) { found.set(source, foundTargets = new Set()); }
 
@@ -595,14 +610,6 @@ export class Construct implements IConstruct {
   public readonly node: ConstructNode;
 
   /**
-   * The set of constructs that form the root of this dependable
-   *
-   * All resources under all returned constructs are included in the ordering
-   * dependency.
-   */
-  public readonly dependencyRoots: IConstruct[] = [this];
-
-  /**
    * Creates a new construct node.
    *
    * @param scope The scope in which to define this construct
@@ -612,6 +619,12 @@ export class Construct implements IConstruct {
    */
   constructor(scope: Construct, id: string) {
     this.node = new ConstructNode(this, scope, id);
+
+    // Implement IDependable privately
+    const self = this;
+    DependableTrait.implement(this, {
+      get dependencyRoots() { return [self]; },
+    });
   }
 
   /**
