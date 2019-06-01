@@ -17,6 +17,7 @@
     "inlineSources": true,
     "experimentalDecorators": true,
     "strictPropertyInitialization":false
-  }
+  },
+  "exclude": ["cdk.out"]
 }
 
