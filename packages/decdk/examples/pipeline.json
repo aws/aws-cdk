@@ -48,11 +48,13 @@
                       "name": "Source"
                     }
                   },
-                  "output": {
-                    "artifact": {
-                      "name": "Build"
+                  "outputs": [
+                    {
+                      "artifact": {
+                        "name": "Build"
+                      }
                     }
-                  }
+                  ]
                 }
               }
             ]

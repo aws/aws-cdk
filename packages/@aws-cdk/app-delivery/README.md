@@ -89,7 +89,7 @@ const buildAction = new codepipeline_actions.CodeBuildAction({
   actionName: 'CodeBuild',
   project,
   input: sourceOutput,
-  output: synthesizedApp,
+  outputs: [synthesizedApp],
 });
 pipeline.addStage({
   name: 'build',

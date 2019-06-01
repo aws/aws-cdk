@@ -751,7 +751,7 @@ export = {
                 actionName: 'CodeBuild',
                 project,
                 input: sourceOutput,
-                output: new codepipeline.Artifact(),
+                outputs: [new codepipeline.Artifact()],
               }),
             ],
           },

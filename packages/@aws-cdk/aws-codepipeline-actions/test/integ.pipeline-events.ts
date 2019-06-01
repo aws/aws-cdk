@@ -39,7 +39,7 @@ pipeline.addStage({
       actionName: 'CodeBuildAction',
       input: sourceOutput,
       project,
-      output: new codepipeline.Artifact(),
+      outputs: [new codepipeline.Artifact()],
     }),
   ],
 });
