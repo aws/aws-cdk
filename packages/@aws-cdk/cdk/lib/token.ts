@@ -93,16 +93,16 @@ export class Token {
    * on the string.
    */
   public toString(): string {
-    const valueType = typeof this.valueOrFunction;
     // Optimization: if we can immediately resolve this, don't bother
-    // registering a Token.
-    if (valueType === 'string' || valueType === 'number' || valueType === 'boolean') {
-      return this.valueOrFunction.toString();
+    // registering a Token (unless it's already a token).
+    if (typeof(this.valueOrFunction) === 'string') {
+      return this.valueOrFunction;
     }
 
     if (this.tokenStringification === undefined) {
       this.tokenStringification = TokenMap.instance().registerString(this, this.displayName);
     }
+
     return this.tokenStringification;
   }
 
@@ -139,9 +139,8 @@ export class Token {
    * is constructing a `FnJoin` or a `FnSelect` on it.
    */
   public toList(): string[] {
-    const valueType = typeof this.valueOrFunction;
-    if (valueType === 'string' || valueType === 'number' || valueType === 'boolean') {
-      throw this.newError('Got a literal Token value; only intrinsics can ever evaluate to lists.');
+    if (Array.isArray(this.valueOrFunction)) {
+      return this.valueOrFunction;
     }
 
     if (this.tokenListification === undefined) {
@@ -160,14 +159,13 @@ export class Token {
    * other operations can and probably will destroy the token-ness of the value.
    */
   public toNumber(): number {
+    // Optimization: if we can immediately resolve this, don't bother
+    // registering a Token.
+    if (typeof(this.valueOrFunction) === 'number') {
+      return this.valueOrFunction;
+    }
+
     if (this.tokenNumberification === undefined) {
-      const valueType = typeof this.valueOrFunction;
-      // Optimization: if we can immediately resolve this, don't bother
-      // registering a Token.
-      if (valueType === 'number') { return this.valueOrFunction; }
-      if (valueType !== 'function') {
-        throw this.newError(`Token value is not number or lazy, can't represent as number: ${this.valueOrFunction}`);
-      }
       this.tokenNumberification = TokenMap.instance().registerNumber(this);
     }
 
