@@ -132,7 +132,6 @@
     "@aws-cdk/cfnspec": "^0.33.0",
     "@aws-cdk/cx-api": "^0.33.0",
     "@aws-cdk/region-info": "^0.33.0",
-    "@aws-cdk/runtime-values": "^0.33.0",
     "fs-extra": "^7.0.1",
     "jsii-reflect": "^0.11.0",
     "jsonschema": "^1.2.4",
