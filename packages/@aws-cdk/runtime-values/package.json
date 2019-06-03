@@ -2,7 +2,7 @@
   "name": "@aws-cdk/runtime-values",
   "version": "0.33.0",
   "description": "Runtime values support for the AWS CDK",
-  "deprecated": "This package has been deprecated",
+  "deprecated": "This module has been deprecated. Use environment variables or SSM parameters to publish values to runtime code",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "jsii": {
