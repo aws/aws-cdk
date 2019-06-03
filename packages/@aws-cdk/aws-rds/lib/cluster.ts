@@ -20,6 +20,13 @@ export interface DatabaseClusterProps {
   readonly engine: DatabaseClusterEngine;
 
   /**
+   * What version of the database to start
+   *
+   * @default - The default for the engine is used.
+   */
+  readonly engineVersion?: string;
+
+  /**
    * How many replicas/instances to create
    *
    * Has to be at least 1.
@@ -292,6 +299,7 @@ export class DatabaseCluster extends DatabaseClusterBase {
     const cluster = new CfnDBCluster(this, 'Resource', {
       // Basic
       engine: props.engine.name,
+      engineVersion: props.engineVersion,
       dbClusterIdentifier: props.clusterIdentifier,
       dbSubnetGroupName: subnetGroup.ref,
       vpcSecurityGroupIds: [this.securityGroupId],
@@ -349,6 +357,7 @@ export class DatabaseCluster extends DatabaseClusterBase {
       const instance = new CfnDBInstance(this, `Instance${instanceIndex}`, {
         // Link to cluster
         engine: props.engine.name,
+        engineVersion: props.engineVersion,
         dbClusterIdentifier: cluster.ref,
         dbInstanceIdentifier: instanceIdentifier,
         // Instance properties

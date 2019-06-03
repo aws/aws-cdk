@@ -266,6 +266,60 @@ export = {
     test.done();
 
   },
+
+  'create a cluster using a specific version of MySQL'(test: Test) {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    new DatabaseCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.AuroraMysql,
+      engineVersion: "5.7.mysql_aurora.2.04.4",
+      masterUser: {
+        username: 'admin'
+      },
+      instanceProps: {
+        instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.Burstable2, ec2.InstanceSize.Small),
+        vpc
+      },
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::RDS::DBCluster', {
+      Engine: "aurora-mysql",
+      EngineVersion: "5.7.mysql_aurora.2.04.4",
+    }));
+
+    test.done();
+  },
+
+  'create a cluster using a specific version of Postgresql'(test: Test) {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    new DatabaseCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.AuroraPostgresql,
+      engineVersion: "10.7",
+      masterUser: {
+        username: 'admin'
+      },
+      instanceProps: {
+        instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.Burstable2, ec2.InstanceSize.Small),
+        vpc
+      },
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::RDS::DBCluster', {
+      Engine: "aurora-postgresql",
+      EngineVersion: "10.7",
+    }));
+
+    test.done();
+  }
 };
 
 function testStack() {
