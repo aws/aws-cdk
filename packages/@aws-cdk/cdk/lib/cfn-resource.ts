@@ -7,6 +7,7 @@ import { capitalizePropertyNames, ignoreEmpty, PostResolveToken } from './util';
 // tslint:disable-next-line:ordered-imports
 import { CfnRefElement } from './cfn-element';
 import { CfnReference } from './cfn-reference';
+import { TagManager } from './tag-manager';
 
 export interface CfnResourceProps {
   /**
@@ -198,7 +199,7 @@ export class CfnResource extends CfnRefElement {
   public _toCloudFormation(): object {
     try {
       // merge property overrides onto properties and then render (and validate).
-      const tags = Construct.isTaggable(this) ? this.tags.renderTags() : undefined;
+      const tags = TagManager.isTaggable(this) ? this.tags.renderTags() : undefined;
       const properties = deepMerge(
         this.properties || {},
         { tags },

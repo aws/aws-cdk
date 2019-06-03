@@ -207,6 +207,14 @@ export interface ITaggable {
  * TagManager facilitates a common implementation of tagging for Constructs.
  */
 export class TagManager {
+
+  /**
+   * Check whether the given construct is Taggable
+   */
+  public static isTaggable(construct: any): construct is ITaggable {
+    return (construct as any).tags !== undefined;
+  }
+  
   private readonly tags = new Map<string, Tag>();
   private readonly priorities = new Map<string, number>();
   private readonly tagFormatter: ITagFormatter;
