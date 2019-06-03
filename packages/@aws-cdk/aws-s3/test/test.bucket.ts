@@ -1370,4 +1370,14 @@ export = {
     });
     test.done();
   },
+
+  'if a kms key is specified, it implies bucket is encrypted with kms (dah)'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+    const key = new kms.Key(stack, 'k');
+
+    // THEN
+    new Bucket(stack, 'b', { encryptionKey: key });
+    test.done();
+  }
 };
