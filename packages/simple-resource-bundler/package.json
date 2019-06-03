@@ -2,7 +2,7 @@
   "name": "simple-resource-bundler",
   "version": "0.33.0",
   "description": "Command-line tool to embed resources into JS libraries",
-  "deprecated": "this module has been deprecated",
+  "deprecated": "This tool has been deprecated. Use @aws-cdk/assets instead",
   "bin": {
     "simple-resource-bundler": "bin/simple-resource-bundler"
   },
