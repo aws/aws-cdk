@@ -6,7 +6,9 @@ import { CfnParameter } from './cfn-parameter';
 import { Construct, IConstruct, PATH_SEP } from './construct';
 import { Environment } from './environment';
 import { HashedAddressingScheme, IAddressingScheme, LogicalIDs } from './logical-id';
+import { ISynthesisSession } from './synthesis';
 import { makeUniqueId } from './uniqueid';
+
 export interface StackProps {
   /**
    * The AWS environment (account/region) where this stack will be deployed.
@@ -31,15 +33,16 @@ export interface StackProps {
   readonly namingScheme?: IAddressingScheme;
 
   /**
-   * Should the Stack be deployed when running `cdk deploy` without arguments
-   * (and listed when running `cdk synth` without arguments).
-   * Setting this to `false` is useful when you have a Stack in your CDK app
-   * that you don't want to deploy using the CDK toolkit -
-   * for example, because you're planning on deploying it through CodePipeline.
+   * Indicates if this stack is hidden, which means that it won't be
+   * automatically deployed when running `cdk deploy` without arguments.
    *
-   * @default true
+   * Setting this to `true` is useful when you have a stack in your CDK app
+   * which you don't want to deploy using the CDK toolkit. For example, because
+   * you're planning on deploying it through a deployment pipeline.
+   *
+   * @default false
    */
-  readonly autoDeploy?: boolean;
+  readonly hidden?: boolean;
 
   /**
    * Stack tags that will be applied to all the taggable resources and the stack itself.
@@ -116,15 +119,16 @@ export class Stack extends Construct implements ITaggable {
   public readonly name: string;
 
   /**
-   * Should the Stack be deployed when running `cdk deploy` without arguments
-   * (and listed when running `cdk synth` without arguments).
-   * Setting this to `false` is useful when you have a Stack in your CDK app
-   * that you don't want to deploy using the CDK toolkit -
-   * for example, because you're planning on deploying it through CodePipeline.
+   * Indicates if this stack is hidden, which means that it won't be
+   * automatically deployed when running `cdk deploy` without arguments.
    *
-   * By default, this is `true`.
+   * Setting this to `true` is useful when you have a stack in your CDK app
+   * which you don't want to deploy using the CDK toolkit. For example, because
+   * you're planning on deploying it through a deployment pipeline.
+   *
+   * By default, all stacks are visible (this will be false).
    */
-  public readonly autoDeploy: boolean;
+  public readonly hidden: boolean;
 
   /**
    * Other stacks this stack depends on
@@ -159,9 +163,9 @@ export class Stack extends Construct implements ITaggable {
     this.configuredEnv = props.env || {};
     this.env = this.parseEnvironment(props.env);
 
-    this.logicalIds = new LogicalIDs(props && props.namingScheme ? props.namingScheme : new HashedAddressingScheme());
+    this.logicalIds = new LogicalIDs(props.namingScheme ? props.namingScheme : new HashedAddressingScheme());
     this.name = props.stackName !== undefined ? props.stackName : this.calculateStackName();
-    this.autoDeploy = props && props.autoDeploy === false ? false : true;
+    this.hidden = props.hidden === undefined ? false : true;
     this.tags = new TagManager(TagType.KeyValue, "aws:cdk:stack", props.tags);
 
     if (!Stack.VALID_STACK_NAME_REGEX.test(this.name)) {
@@ -509,7 +513,8 @@ export class Stack extends Construct implements ITaggable {
     }
   }
 
-  protected synthesize(builder: cxapi.CloudAssemblyBuilder): void {
+  protected synthesize(session: ISynthesisSession): void {
+    const builder = session.assembly;
     const template = `${this.name}.template.json`;
 
     // write the CloudFormation template as a JSON file
@@ -529,7 +534,7 @@ export class Stack extends Construct implements ITaggable {
       type: cxapi.ArtifactType.AwsCloudFormationStack,
       environment: this.environment,
       properties,
-      autoDeploy: this.autoDeploy ? undefined : false,
+      hidden: this.hidden ? true : undefined, // omit if stack is visible
       dependencies: deps.length > 0 ? deps : undefined,
       metadata: Object.keys(meta).length > 0 ? meta : undefined,
       missing: this.missingContext && Object.keys(this.missingContext).length > 0 ? this.missingContext : undefined

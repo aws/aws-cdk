@@ -5,7 +5,7 @@ import { Test } from 'nodeunit';
 import os = require('os');
 import path = require('path');
 import cdk = require('../lib');
-import { Construct, Synthesizer } from '../lib';
+import { Construct, ISynthesisSession, Synthesizer } from '../lib';
 
 function createModernApp() {
   return new cdk.App({
@@ -53,9 +53,9 @@ export = {
     const stack = new cdk.Stack(app, 'one-stack');
 
     class MyConstruct extends cdk.Construct implements cdk.ISynthesizable {
-      public synthesize(s: cxapi.CloudAssemblyBuilder) {
-        writeJson(s.outdir, 'foo.json', { bar: 123 });
-        s.addArtifact('my-random-construct', {
+      public synthesize(s: ISynthesisSession) {
+        writeJson(s.assembly.outdir, 'foo.json', { bar: 123 });
+        s.assembly.addArtifact('my-random-construct', {
           type: cxapi.ArtifactType.AwsCloudFormationStack,
           environment: 'aws://12345/bar',
           properties: {
@@ -118,7 +118,13 @@ export = {
 
         session.addArtifact('art', {
           type: cxapi.ArtifactType.AwsCloudFormationStack,
-          properties: { templateFile: 'hey.json' },
+          properties: {
+            templateFile: 'hey.json',
+            parameters: {
+              paramId: 'paramValue',
+              paramId2: 'paramValue2'
+            }
+          },
           environment: 'aws://unknown-account/us-east-1'
         });
 
@@ -134,7 +140,8 @@ export = {
     test.deepEqual(calls, [ 'prepare', 'validate', 'synthesize' ]);
     const stack = assembly.getStack('art');
     test.deepEqual(stack.template, { hello: 123 });
-    test.deepEqual(stack.properties, { templateFile: 'hey.json' });
+    test.deepEqual(stack.templateFile, 'hey.json');
+    test.deepEqual(stack.parameters, { paramId: 'paramValue', paramId2: 'paramValue2' });
     test.deepEqual(stack.environment, { region: 'us-east-1', account: 'unknown-account', name: 'aws://unknown-account/us-east-1' });
     test.done();
   },
@@ -150,8 +157,8 @@ export = {
 
     // THEN
     const session = app.run();
-    const props = session.getStack('my-stack').properties;
-    test.deepEqual(props.parameters, {
+    const artifact = session.getStack('my-stack');
+    test.deepEqual(artifact.parameters, {
       MyParam: 'Foo'
     });
     test.done();

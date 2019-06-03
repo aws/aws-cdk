@@ -24,16 +24,15 @@ test('assembly a single cloudformation stack', () => {
 
   const stack = assembly.stacks[0];
   expect(stack.assets).toHaveLength(0);
-  expect(stack.autoDeploy).toBeTruthy();
-  expect(stack.depends).toEqual([]);
+  expect(stack.manifest.hidden).toBeFalsy();
+  expect(stack.dependencies).toEqual([]);
   expect(stack.environment).toEqual({ account: '37736633', region: 'us-region-1', name: 'aws://37736633/us-region-1' });
   expect(stack.template).toEqual({ Resources: { MyBucket: { Type: "AWS::S3::Bucket" } } });
   expect(stack.messages).toEqual([]);
-  expect(stack.metadata).toEqual({});
-  expect(stack.missing).toEqual({});
+  expect(stack.manifest.metadata).toEqual(undefined);
+  expect(stack.manifest.missing).toEqual(undefined);
   expect(stack.originalName).toEqual('MyStackName');
   expect(stack.name).toEqual('MyStackName');
-  expect(stack.logicalIdToPathMap).toEqual({});
 });
 
 test('assembly with missing context', () => {
@@ -72,21 +71,16 @@ test('assets', () => {
   expect(assembly.stacks[0].assets).toMatchSnapshot();
 });
 
-test('logical id to path map', () => {
-  const assembly = new CloudAssembly(path.join(FIXTURES, 'logical-id-map'));
-  expect(assembly.stacks[0].logicalIdToPathMap).toEqual({ logicalIdOfFooBar: '/foo/bar' });
-});
-
 test('dependencies', () => {
   const assembly = new CloudAssembly(path.join(FIXTURES, 'depends'));
   expect(assembly.stacks).toHaveLength(4);
 
   // expect stacks to be listed in topological order
   expect(assembly.stacks.map(s => s.name)).toEqual([ 'StackA', 'StackD', 'StackC', 'StackB' ]);
-  expect(assembly.stacks[0].depends).toEqual([]);
-  expect(assembly.stacks[1].depends).toEqual([]);
-  expect(assembly.stacks[2].depends.map(x => x.id)).toEqual([ 'StackD' ]);
-  expect(assembly.stacks[3].depends.map(x => x.id)).toEqual([ 'StackC', 'StackD' ]);
+  expect(assembly.stacks[0].dependencies).toEqual([]);
+  expect(assembly.stacks[1].dependencies).toEqual([]);
+  expect(assembly.stacks[2].dependencies.map(x => x.id)).toEqual([ 'StackD' ]);
+  expect(assembly.stacks[3].dependencies.map(x => x.id)).toEqual([ 'StackC', 'StackD' ]);
 });
 
 test('fails for invalid dependencies', () => {

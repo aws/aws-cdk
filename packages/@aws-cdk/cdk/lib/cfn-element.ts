@@ -1,7 +1,6 @@
+import cxapi = require('@aws-cdk/cx-api');
 import { Construct, IConstruct, PATH_SEP } from "./construct";
 import { Token } from './token';
-
-const LOGICAL_ID_MD = 'aws:cdk:logicalId';
 
 /**
  * An element of a CloudFormation stack.
@@ -43,7 +42,7 @@ export abstract class CfnElement extends Construct {
   constructor(scope: Construct, id: string) {
     super(scope, id);
 
-    this.node.addMetadata(LOGICAL_ID_MD, new (require("./token").Token)(() => this.logicalId), this.constructor);
+    this.node.addMetadata(cxapi.LOGICAL_ID_METADATA_KEY, new (require("./token").Token)(() => this.logicalId), this.constructor);
 
     this._logicalId = this.node.stack.logicalIds.getLogicalId(this);
     this.logicalId = new Token(() => this._logicalId, `${notTooLong(this.node.path)}.LogicalID`).toString();
@@ -63,7 +62,7 @@ export abstract class CfnElement extends Construct {
    *      node +internal+ entries filtered.
    */
   public get creationStackTrace(): string[] | undefined {
-    const trace = this.node.metadata.find(md => md.type === LOGICAL_ID_MD)!.trace;
+    const trace = this.node.metadata.find(md => md.type === cxapi.LOGICAL_ID_METADATA_KEY)!.trace;
     if (!trace) {
       return undefined;
     }

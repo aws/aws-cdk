@@ -102,7 +102,7 @@ export = {
 
     const assembly = app.run();
     const output = assembly.getStack('test-stack');
-    const metadata = output.metadata;
+    const metadata = output.manifest.metadata || {};
     const azError: cxapi.MetadataEntry | undefined = metadata['/test-stack'].find(x => x.type === cxapi.ERROR_METADATA_KEY);
     const ssmError: cxapi.MetadataEntry | undefined = metadata['/test-stack/ChildConstruct'].find(x => x.type === cxapi.ERROR_METADATA_KEY);
 

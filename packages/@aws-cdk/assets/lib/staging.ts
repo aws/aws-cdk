@@ -1,4 +1,4 @@
-import { Construct } from '@aws-cdk/cdk';
+import { Construct, ISynthesisSession, ISynthesizable } from '@aws-cdk/cdk';
 import cxapi = require('@aws-cdk/cx-api');
 import fs = require('fs');
 import path = require('path');
@@ -26,7 +26,7 @@ export interface StagingProps extends CopyOptions {
  * The file/directory are staged based on their content hash (fingerprint). This
  * means that only if content was changed, copy will happen.
  */
-export class Staging extends Construct {
+export class Staging extends Construct implements ISynthesizable {
 
   /**
    * The path to the asset (stringinfied token).
@@ -66,12 +66,13 @@ export class Staging extends Construct {
     }
   }
 
-  protected synthesize(session: cxapi.CloudAssemblyBuilder) {
+  public synthesize(session: ISynthesisSession) {
+    const assembly = session.assembly;
     if (!this.relativePath) {
       return;
     }
 
-    const targetPath = path.join(session.outdir, this.relativePath);
+    const targetPath = path.join(assembly.outdir, this.relativePath);
 
     // asset already staged
     if (fs.existsSync(targetPath)) {

@@ -1,11 +1,14 @@
 import fs = require('fs');
 import os = require('os');
 import path = require('path');
-import { Artifact, CloudArtifact } from './cloud-artifact';
+import { ArtifactManifest, CloudArtifact } from './cloud-artifact';
 import { CloudFormationStackArtifact } from './cloudformation-artifact';
 import { topologicalSort } from './toposort';
 import { CLOUD_ASSEMBLY_VERSION, verifyManifestVersion } from './versioning';
 
+/**
+ * A manifest which describes the cloud assembly.
+ */
 export interface AssemblyManifest {
   /**
    * Protocol version
@@ -15,7 +18,7 @@ export interface AssemblyManifest {
   /**
    * The set of artifacts in this assembly.
    */
-  readonly artifacts?: { [id: string]: Artifact };
+  readonly artifacts?: { [id: string]: ArtifactManifest };
 
   /**
    * Runtime information.
@@ -28,15 +31,47 @@ export interface AssemblyManifest {
  */
 const MANIFEST_FILE = 'manifest.json';
 
+/**
+ * Represents a deployable cloud application.
+ */
 export class CloudAssembly {
-  public readonly artifacts: CloudArtifact[];
+  /**
+   * The root directory of the cloud assembly.
+   */
+  public readonly directory: string;
+
+  /**
+   * The schema version of the assembly manifest.
+   */
   public readonly version: string;
+
+  /**
+   * All artifacts included in this assembly.
+   */
+  public readonly artifacts: CloudArtifact[];
+
+  /**
+   * The set of missing context information (or `undefined` if there is no missing context).
+   */
   public readonly missing?: { [key: string]: MissingContext };
+
+  /**
+   * Runtime information such as module versions used to synthesize this assembly.
+   */
   public readonly runtime: RuntimeInfo;
+
+  /**
+   * The raw assembly manifest.
+   */
   public readonly manifest: AssemblyManifest;
 
-  constructor(public readonly directory: string) {
-    this.manifest = this.readJson(MANIFEST_FILE);
+  /**
+   * Reads a cloud assembly from the specified directory.
+   * @param directory The root directory of the assembly.
+   */
+  constructor(directory: string) {
+    this.directory = directory;
+    this.manifest = JSON.parse(fs.readFileSync(path.join(directory, MANIFEST_FILE), 'UTF-8'));
 
     this.version = this.manifest.version;
     verifyManifestVersion(this.version);
@@ -49,27 +84,37 @@ export class CloudAssembly {
     this.validateDeps();
   }
 
+  /**
+   * Attempts to find an artifact with a specific identity.
+   * @returns A `CloudArtifact` object or `undefined` if the artifact does not exist in this assembly.
+   * @param id The artifact ID
+   */
   public tryGetArtifact(id: string): CloudArtifact | undefined {
     return this.stacks.find(a => a.id === id);
   }
 
-  public getStack(id: string): CloudFormationStackArtifact {
-    const artifact = this.tryGetArtifact(id);
+  /**
+   * Returns a CloudFormation stack artifact from this assembly.
+   * @param stackName the name of the CloudFormation stack.
+   * @throws if there is no stack artifact by that name
+   * @returns a `CloudFormationStackArtifact` object.
+   */
+  public getStack(stackName: string): CloudFormationStackArtifact {
+    const artifact = this.tryGetArtifact(stackName);
     if (!artifact) {
-      throw new Error(`Unable to find artifact with id "${id}"`);
+      throw new Error(`Unable to find artifact with id "${stackName}"`);
     }
 
     if (!(artifact instanceof CloudFormationStackArtifact)) {
-      throw new Error(`Artifact ${id} is not a CloudFormation stack`);
+      throw new Error(`Artifact ${stackName} is not a CloudFormation stack`);
     }
 
     return artifact;
   }
 
-  public readJson(filePath: string) {
-    return JSON.parse(fs.readFileSync(path.join(this.directory, filePath), 'utf-8'));
-  }
-
+  /**
+   * @returns all the CloudFormation stack artifacts that are included in this assembly.
+   */
   public get stacks(): CloudFormationStackArtifact[] {
     const result = new Array<CloudFormationStackArtifact>();
     for (const a of this.artifacts) {
@@ -82,7 +127,7 @@ export class CloudAssembly {
 
   private validateDeps() {
     for (const artifact of this.artifacts) {
-      ignore(artifact.depends);
+      ignore(artifact.dependencies);
     }
   }
 
@@ -92,13 +137,13 @@ export class CloudAssembly {
       result.push(CloudArtifact.from(this, name, artifact));
     }
 
-    return topologicalSort(result, x => x.id, x => x.dependsIDs);
+    return topologicalSort(result, x => x.id, x => x._dependencyIDs);
   }
 
   private renderMissing() {
     const missing: { [key: string]: MissingContext } = { };
-    for (const artifact of this.artifacts) {
-      for (const [ key, m ] of Object.entries(artifact.missing)) {
+    for (const artifact of Object.values(this.manifest.artifacts || {})) {
+      for (const [ key, m ] of Object.entries(artifact.missing || {})) {
         missing[key] = m;
       }
     }
@@ -107,11 +152,21 @@ export class CloudAssembly {
   }
 }
 
+/**
+ * Can be used to build a cloud assembly.
+ */
 export class CloudAssemblyBuilder {
+  /**
+   * The root directory of the resulting cloud assembly.
+   */
   public readonly outdir: string;
 
-  private readonly artifacts: { [id: string]: Artifact } = { };
+  private readonly artifacts: { [id: string]: ArtifactManifest } = { };
 
+  /**
+   * Initializes a cloud assembly builder.
+   * @param outdir The output directory, uses temporary directory if undefined
+   */
   constructor(outdir?: string) {
     this.outdir = outdir || fs.mkdtempSync(path.join(os.tmpdir(), 'cdk.out'));
 
@@ -129,8 +184,13 @@ export class CloudAssemblyBuilder {
     }
   }
 
-  public addArtifact(name: string, artifact: Artifact) {
-    this.artifacts[name] = filterUndefined(artifact);
+  /**
+   * Adds an artifact into the cloud assembly.
+   * @param id The ID of the artifact.
+   * @param manifest The artifact manifest
+   */
+  public addArtifact(id: string, manifest: ArtifactManifest) {
+    this.artifacts[id] = filterUndefined(manifest);
   }
 
   public build(options: BuildOptions = { }): CloudAssembly {

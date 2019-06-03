@@ -1,8 +1,15 @@
 import { BuildOptions, CloudAssembly, CloudAssemblyBuilder } from '@aws-cdk/cx-api';
 import { ConstructOrder, IConstruct } from './construct';
 
+export interface ISynthesisSession {
+  /**
+   * The cloud assembly being synthesized.
+   */
+  assembly: CloudAssemblyBuilder;
+}
+
 export interface ISynthesizable {
-  synthesize(session: CloudAssemblyBuilder): void;
+  synthesize(session: ISynthesisSession): void;
 }
 
 export interface SynthesisOptions extends BuildOptions {
@@ -21,7 +28,7 @@ export interface SynthesisOptions extends BuildOptions {
 
 export class Synthesizer {
   public synthesize(root: IConstruct, options: SynthesisOptions = { }): CloudAssembly {
-    const session = new CloudAssemblyBuilder(options.outdir);
+    const builder = new CloudAssemblyBuilder(options.outdir);
 
     // the three holy phases of synthesis: prepare, validate and synthesize
 
@@ -41,12 +48,12 @@ export class Synthesizer {
     // synthesize (leaves first)
     for (const c of root.node.findAll(ConstructOrder.PostOrder)) {
       if (isSynthesizable(c)) {
-        c.synthesize(session);
+        c.synthesize({ assembly: builder });
       }
     }
 
     // write session manifest and lock store
-    return session.build(options);
+    return builder.build(options);
   }
 }
 
