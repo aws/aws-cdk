@@ -238,7 +238,7 @@ export class AppStacks {
     for (const id of Object.keys(stack.metadata)) {
       const metadata = stack.metadata[id];
       for (const entry of metadata) {
-        if (entry.type === cxapi.TAGS_METADATA_KEY) {
+        if (entry.type === cxapi.STACK_TAGS_METADATA_KEY) {
           return entry.data;
         }
       }
@@ -380,6 +380,13 @@ function includeUpstreamStacks(
   if (added.length > 0) {
     print('Including dependency stacks: %s', colors.bold(added.join(', ')));
   }
+}
+
+export interface SelectedStack extends cxapi.CloudFormationStackArtifact {
+  /**
+   * The original name of the stack before renaming
+   */
+  originalName: string;
 }
 
 export interface Tag {
