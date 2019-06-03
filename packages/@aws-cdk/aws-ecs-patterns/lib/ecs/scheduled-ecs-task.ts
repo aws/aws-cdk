@@ -98,7 +98,7 @@ export class ScheduledEc2Task extends cdk.Construct {
     });
 
     // Use Ec2TaskEventRuleTarget as the target of the EventRule
-    const eventRuleTarget = new eventsTargets.EcsEc2Task( {
+    const eventRuleTarget = new eventsTargets.EcsTask( {
       cluster: props.cluster,
       taskDefinition,
       taskCount: props.desiredTaskCount

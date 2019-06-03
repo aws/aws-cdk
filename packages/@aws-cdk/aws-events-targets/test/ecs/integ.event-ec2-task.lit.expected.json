@@ -1053,7 +1053,7 @@
               }
             },
             "Id": "TaskDef-on-EcsCluster",
-            "Input": "{\"containerOverrides\":[{\"containerName\":\"TheContainer\",\"environment\":[{\"name\":\"I_WAS_TRIGGERED\",\"value\":\"From CloudWatch Events\"}]}]}",
+            "Input": "{\"containerOverrides\":[{\"name\":\"TheContainer\",\"environment\":[{\"name\":\"I_WAS_TRIGGERED\",\"value\":\"From CloudWatch Events\"}]}]}",
             "RoleArn": {
               "Fn::GetAtt": [
                 "TaskDefEventsRoleFB3B67B8",

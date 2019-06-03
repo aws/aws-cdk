@@ -15,28 +15,24 @@ class EventStack extends cdk.Stack {
     const vpc = new ec2.Vpc(this, 'Vpc', { maxAZs: 1 });
 
     const cluster = new ecs.Cluster(this, 'EcsCluster', { vpc });
-    cluster.addCapacity('DefaultAutoScalingGroup', {
-      instanceType: new ec2.InstanceType('t2.micro')
-    });
 
     /// !show
     // Create a Task Definition for the container to start
-    const taskDefinition = new ecs.Ec2TaskDefinition(this, 'TaskDef');
+    const taskDefinition = new ecs.FargateTaskDefinition(this, 'TaskDef');
     taskDefinition.addContainer('TheContainer', {
       image: ecs.ContainerImage.fromAsset(this, 'EventImage', {
         directory: path.resolve(__dirname, 'eventhandler-image')
       }),
-      memoryLimitMiB: 256,
       logging: new ecs.AwsLogDriver(this, 'TaskLogging', { streamPrefix: 'EventDemo' })
     });
 
-    // An Rule that describes the event trigger (in this case a scheduled run)
+    // A rule that describes the event trigger (in this case a scheduled run)
     const rule = new events.Rule(this, 'Rule', {
       scheduleExpression: 'rate(1 minute)',
     });
 
-    // Use EcsEc2Task as the target of the Rule
-    rule.addTarget(new targets.EcsEc2Task({
+    // Use EcsTask as the target of the Rule
+    rule.addTarget(new targets.EcsTask({
       cluster,
       taskDefinition,
       taskCount: 1,
@@ -51,5 +47,5 @@ class EventStack extends cdk.Stack {
   }
 }
 
-new EventStack(app, 'aws-ecs-integ-ecs');
+new EventStack(app, 'aws-ecs-integ-fargate');
 app.run();
