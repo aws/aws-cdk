@@ -30,7 +30,7 @@ test("Can use EC2 taskdef as EventRule target", () => {
     taskDefinition,
     taskCount: 1,
     containerOverrides: [{
-      name: 'TheContainer',
+      containerName: 'TheContainer',
       command: ['echo', events.EventField.fromPath('$.detail.event')],
     }]
   }));
@@ -77,7 +77,7 @@ test("Can use Fargate taskdef as EventRule target", () => {
     taskDefinition,
     taskCount: 1,
     containerOverrides: [{
-      name: 'TheContainer',
+      containerName: 'TheContainer',
       command: ['echo', events.EventField.fromPath('$.detail.event')],
     }]
   }));

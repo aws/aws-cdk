@@ -37,7 +37,7 @@ class EventStack extends cdk.Stack {
       taskDefinition,
       taskCount: 1,
       containerOverrides: [{
-        name: 'TheContainer',
+        containerName: 'TheContainer',
         environment: [
           { name: 'I_WAS_TRIGGERED', value: 'From CloudWatch Events' }
         ]
