@@ -494,6 +494,7 @@ export interface CommonProjectProps {
    */
   readonly allowAllOutbound?: boolean;
 }
+
 export interface ProjectProps extends CommonProjectProps {
   /**
    * The source of the build.
@@ -711,6 +712,10 @@ export class Project extends ProjectBase {
     this.projectName = resource.projectName;
 
     this.addToRolePolicy(this.createLoggingPermission());
+
+    if (props.encryptionKey) {
+      props.encryptionKey.grantEncryptDecrypt(this);
+    }
   }
 
   public get securityGroups(): ec2.ISecurityGroup[] {
