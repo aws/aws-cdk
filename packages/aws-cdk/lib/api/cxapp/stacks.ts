@@ -234,6 +234,9 @@ export class AppStacks {
     }
   }
 
+  /**
+   * Returns and array with the tags available in the stack metadata.
+   */
   public getTagsFromStackMetadata(stack: cxapi.CloudFormationStackArtifact): Tag[] {
     for (const id of Object.keys(stack.metadata)) {
       const metadata = stack.metadata[id];
