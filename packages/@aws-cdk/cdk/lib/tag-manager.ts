@@ -152,9 +152,9 @@ class MapFormatter implements ITagFormatter {
 class KeyValueFormatter implements ITagFormatter {
   public parseTags(keyValueTags: any, priority: number): Tag[] {
     const tags: Tag[] = [];
-    for (const key in keyValueTags.tags) {
-      if (keyValueTags.tags.hasOwnProperty(key)) {
-        const value = keyValueTags.tags[key];
+    for (const key in keyValueTags) {
+      if (keyValueTags.hasOwnProperty(key)) {
+        const value = keyValueTags[key];
         tags.push({
           key,
           value,
