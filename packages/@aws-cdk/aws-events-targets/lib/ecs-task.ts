@@ -114,7 +114,9 @@ export class EcsTask implements events.IRuleTarget {
       const assignPublicIp = subnetSelection.subnetType === ec2.SubnetType.Private ? 'DISABLED' : 'ENABLED';
 
       new cloudformation.AwsCustomResource(this.taskDefinition, 'PutTargets', {
-        onUpdate: { // We don't need an onDelete here because the target will be owned by CF anyway
+        // `onCreate´ defaults to `onUpdate` and we don't need an `onDelete` here
+        // because the rule/target will be owned by CF anyway.
+        onUpdate: {
           service: 'CloudWatchEvents',
           apiVersion: '2015-10-07',
           action: 'putTargets',
