@@ -604,7 +604,7 @@ export interface BucketProps {
    * If you choose KMS, you can specify a KMS key via `encryptionKey`. If
    * encryption key is not specified, a key will automatically be created.
    *
-   * @default BucketEncryption.Unencrypted
+   * @default - `Kms` if `encryptionKey` is specified, or `Unencrypted` otherwise.
    */
   readonly encryption?: BucketEncryption;
 
@@ -934,8 +934,11 @@ export class Bucket extends BucketBase {
     encryptionKey?: kms.IKey
   } {
 
-    // default to unencrypted.
-    const encryptionType = props.encryption || BucketEncryption.Unencrypted;
+    // default based on whether encryptionKey is specified
+    let encryptionType = props.encryption;
+    if (encryptionType === undefined) {
+      encryptionType = props.encryptionKey ? BucketEncryption.Kms : BucketEncryption.Unencrypted;
+    }
 
     // if encryption key is set, encryption must be set to KMS.
     if (encryptionType !== BucketEncryption.Kms && props.encryptionKey) {
