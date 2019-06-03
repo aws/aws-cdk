@@ -119,8 +119,8 @@ couple of the tasks available are:
 
 Many tasks take parameters. The values for those can either be supplied
 directly in the workflow definition (by specifying their values), or at
-runtime by passing a value obtained from the static functions on `DataField`,
-such as `DataField.fromStringAt()`.
+runtime by passing a value obtained from the static functions on `Data`,
+such as `Data.stringAt()`.
 
 If so, the value is taken from the indicated location in the state JSON,
 similar to (for example) `inputPath`.
@@ -155,9 +155,22 @@ import sns = require('@aws-cdk/aws-sns');
 // ...
 
 const topic = new sns.Topic(this, 'Topic');
-const task = new sfn.Task(this, 'Publish', {
+
+// Use a field from the execution data as message.
+const task1 = new sfn.Task(this, 'Publish1', {
     task: new tasks.PublishToTopic(topic, {
-        message: DataField.fromStringAt('$.state.message'),
+        message: TaskInput.fromDataAt('$.state.message'),
+    })
+});
+
+// Combine a field from the execution data with
+// a literal object.
+const task2 = new sfn.Task(this, 'Publish2', {
+    task: new tasks.PublishToTopic(topic, {
+        message: TaskInput.fromObject({
+            field1: 'somedata',
+            field2: Data.stringAt('$.field2'),
+        })
     })
 });
 ```
@@ -170,11 +183,26 @@ import sqs = require('@aws-cdk/aws-sqs');
 // ...
 
 const queue = new sns.Queue(this, 'Queue');
-const task = new sfn.Task(this, 'Send', {
+
+// Use a field from the execution data as message.
+const task1 = new sfn.Task(this, 'Send1', {
     task: new tasks.SendToQueue(queue, {
-        messageBody: DataField.fromStringAt('$.message'),
+        messageBody: TaskInput.fromDataAt('$.message'),
         // Only for FIFO queues
-        messageGroupId: DataField.fromStringAt('$.messageGroupId'),
+        messageGroupId: '1234'
+    })
+});
+
+// Combine a field from the execution data with
+// a literal object.
+const task2 = new sfn.Task(this, 'Send2', {
+    task: new tasks.SendToQueue(queue, {
+        messageBody: TaskInput.fromObject({
+            field1: 'somedata',
+            field2: Data.stringAt('$.field2'),
+        }),
+        // Only for FIFO queues
+        messageGroupId: '1234'
     })
 });
 ```
@@ -195,7 +223,7 @@ const fargateTask = new ecs.RunEcsFargateTask({
       environment: [
         {
           name: 'CONTAINER_INPUT',
-          value: DataField.fromStringAt('$.valueFromStateData')
+          value: Data.stringAt('$.valueFromStateData')
         }
       ]
     }

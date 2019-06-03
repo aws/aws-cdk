@@ -10,7 +10,7 @@ test('publish to SNS', () => {
 
   // WHEN
   const pub = new sfn.Task(stack, 'Publish', { task: new tasks.PublishToTopic(topic, {
-    message: 'Send this message'
+    message: sfn.TaskInput.fromText('Send this message')
   }) });
 
   // THEN
@@ -32,9 +32,9 @@ test('publish JSON to SNS', () => {
 
   // WHEN
   const pub = new sfn.Task(stack, 'Publish', { task: new tasks.PublishToTopic(topic, {
-    messageObject: {
+    message: sfn.TaskInput.fromObject({
       Input: 'Send this message'
-    }
+    })
   }) });
 
   // THEN

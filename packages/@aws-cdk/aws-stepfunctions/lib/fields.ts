@@ -3,11 +3,11 @@ import { findReferencedPaths, JsonPathToken, renderObject } from "./json-path";
 /**
  * Extract a field from the State Machine data that gets passed around between states
  */
-export class DataField {
+export class Data {
   /**
    * Instead of using a literal string, get the value from a JSON path
    */
-  public static fromStringAt(path: string): string {
+  public static stringAt(path: string): string {
     validateDataPath(path);
     return new JsonPathToken(path).toString();
   }
@@ -15,7 +15,7 @@ export class DataField {
   /**
    * Instead of using a literal string list, get the value from a JSON path
    */
-  public static fromListAt(path: string): string[] {
+  public static listAt(path: string): string[] {
     validateDataPath(path);
     return new JsonPathToken(path).toList();
   }
@@ -23,7 +23,7 @@ export class DataField {
   /**
    * Instead of using a literal number, get the value from a JSON path
    */
-  public static fromNumberAt(path: string): number {
+  public static numberAt(path: string): number {
     validateDataPath(path);
     return new JsonPathToken(path).toNumber();
   }
@@ -47,11 +47,11 @@ export class DataField {
  *
  * @see https://docs.aws.amazon.com/step-functions/latest/dg/connect-to-resource.html#wait-token-contextobject
  */
-export class ContextField {
+export class Context {
   /**
    * Instead of using a literal string, get the value from a JSON path
    */
-  public static fromStringAt(path: string): string {
+  public static stringAt(path: string): string {
     validateContextPath(path);
     return new JsonPathToken(path).toString();
   }
@@ -59,7 +59,7 @@ export class ContextField {
   /**
    * Instead of using a literal number, get the value from a JSON path
    */
-  public static fromNumberAt(path: string): number {
+  public static numberAt(path: string): number {
     validateContextPath(path);
     return new JsonPathToken(path).toNumber();
   }
@@ -89,7 +89,7 @@ export class ContextField {
   }
 }
 
-/**gg
+/**
  * Helper functions to work with structures containing fields
  */
 export class FieldUtils {
@@ -125,12 +125,12 @@ export class FieldUtils {
 
 function validateDataPath(path: string) {
   if (!path.startsWith('$.')) {
-    throw new Error("DataField JSON path values must start with '$.'");
+    throw new Error("Data JSON path values must start with '$.'");
   }
 }
 
 function validateContextPath(path: string) {
   if (!path.startsWith('$$.')) {
-    throw new Error("ContextField JSON path values must start with '$$.'");
+    throw new Error("Context JSON path values must start with '$$.'");
   }
 }

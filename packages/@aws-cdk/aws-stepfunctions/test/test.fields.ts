@@ -1,16 +1,16 @@
 import { Test } from 'nodeunit';
-import { ContextField, DataField, FieldUtils } from "../lib";
+import { Context, Data, FieldUtils } from "../lib";
 
 export = {
   'deep replace correctly handles fields in arrays'(test: Test) {
     test.deepEqual(FieldUtils.renderObject({
       literal: 'literal',
-      field: DataField.fromStringAt('$.stringField'),
-      listField: DataField.fromListAt('$.listField'),
+      field: Data.stringAt('$.stringField'),
+      listField: Data.listAt('$.listField'),
       deep: [
         'literal',
         {
-          deepField: DataField.fromNumberAt('$.numField'),
+          deepField: Data.numberAt('$.numField'),
         }
       ]
     }), {
@@ -30,9 +30,9 @@ export = {
 
   'exercise contextpaths'(test: Test) {
     test.deepEqual(FieldUtils.renderObject({
-      str: ContextField.fromStringAt('$$.Execution.StartTime'),
-      count: ContextField.fromNumberAt('$$.State.RetryCount'),
-      token: ContextField.taskToken,
+      str: Context.stringAt('$$.Execution.StartTime'),
+      count: Context.numberAt('$$.State.RetryCount'),
+      token: Context.taskToken,
     }), {
       'str.$': '$$.Execution.StartTime',
       'count.$': '$$.State.RetryCount',
@@ -45,13 +45,13 @@ export = {
   'find all referenced paths'(test: Test) {
     test.deepEqual(FieldUtils.findReferencedPaths({
       literal: 'literal',
-      field: DataField.fromStringAt('$.stringField'),
-      listField: DataField.fromListAt('$.listField'),
+      field: Data.stringAt('$.stringField'),
+      listField: Data.listAt('$.listField'),
       deep: [
         'literal',
         {
-          field: DataField.fromStringAt('$.stringField'),
-          deepField: DataField.fromNumberAt('$.numField'),
+          field: Data.stringAt('$.stringField'),
+          deepField: Data.numberAt('$.numField'),
         }
       ]
     }), [
@@ -66,7 +66,7 @@ export = {
   'cannot have JsonPath fields in arrays'(test: Test) {
     test.throws(() => {
       FieldUtils.renderObject({
-        deep: [DataField.fromStringAt('$.hello')]
+        deep: [Data.stringAt('$.hello')]
       });
     }, /Cannot use JsonPath fields in an array/);
 
@@ -75,7 +75,7 @@ export = {
 
   'datafield path must be correct'(test: Test) {
     test.throws(() => {
-      DataField.fromStringAt('hello');
+      Data.stringAt('hello');
     }, /must start with '\$.'/);
 
     test.done();
@@ -83,7 +83,7 @@ export = {
 
   'context path must be correct'(test: Test) {
     test.throws(() => {
-      ContextField.fromStringAt('hello');
+      Context.stringAt('hello');
     }, /must start with '\$\$.'/);
 
     test.done();
@@ -91,15 +91,15 @@ export = {
 
   'test contains task token'(test: Test) {
     test.equal(true, FieldUtils.containsTaskToken({
-      field: ContextField.taskToken
+      field: Context.taskToken
     }));
 
     test.equal(true, FieldUtils.containsTaskToken({
-      field: ContextField.fromStringAt('$$.Task'),
+      field: Context.stringAt('$$.Task'),
     }));
 
     test.equal(true, FieldUtils.containsTaskToken({
-      field: ContextField.entireContext
+      field: Context.entireContext
     }));
 
     test.equal(false, FieldUtils.containsTaskToken({
@@ -107,9 +107,29 @@ export = {
     }));
 
     test.equal(false, FieldUtils.containsTaskToken({
-      oops: ContextField.fromStringAt('$$.Execution.StartTime')
+      oops: Context.stringAt('$$.Execution.StartTime')
     }));
 
     test.done();
   },
+
+  'arbitrary JSONPath fields are not replaced'(test: Test) {
+    test.deepEqual(FieldUtils.renderObject({
+      field: '$.content',
+    }), {
+      field: '$.content'
+    });
+
+    test.done();
+  },
+
+  'fields cannot be used somewhere in a string interpolation'(test: Test) {
+    test.throws(() => {
+      FieldUtils.renderObject({
+        field: `contains ${Data.stringAt('$.hello')}`
+      });
+    }, /Field references must be the entire string/);
+
+    test.done();
+  }
 };

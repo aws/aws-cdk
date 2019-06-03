@@ -8,17 +8,8 @@ import sfn = require('@aws-cdk/aws-stepfunctions');
 export interface PublishToTopicProps {
   /**
    * The text message to send to the topic.
-   *
-   * @default - Exactly one of `message` and `messageObject` is required.
    */
-  readonly message?: string;
-
-  /**
-   * Object to be JSON-encoded and used as message
-   *
-   * @default - Exactly one of `message` and `messageObject` is required.
-   */
-  readonly messageObject?: {[key: string]: any};
+  readonly message: sfn.TaskInput;
 
   /**
    * If true, send a different message to every subscription type
@@ -46,9 +37,6 @@ export interface PublishToTopicProps {
  */
 export class PublishToTopic implements sfn.IStepFunctionsTask {
   constructor(private readonly topic: sns.ITopic, private readonly props: PublishToTopicProps) {
-    if ((props.message === undefined) === (props.messageObject === undefined)) {
-      throw new Error(`Supply exactly one of 'message' or 'messageObject'`);
-    }
   }
 
   public bind(_task: sfn.Task): sfn.StepFunctionsTaskProperties {
@@ -61,7 +49,7 @@ export class PublishToTopic implements sfn.IStepFunctionsTask {
       parameters: {
         TopicArn: this.topic.topicArn,
         ...sfn.FieldUtils.renderObject({
-          Message: this.props.message || this.props.messageObject,
+          Message: this.props.message.value,
           MessageStructure: this.props.messagePerSubscriptionType ? "json" : undefined,
           Subject: this.props.subject,
         })

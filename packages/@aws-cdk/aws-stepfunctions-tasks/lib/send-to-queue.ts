@@ -7,18 +7,9 @@ import sfn = require('@aws-cdk/aws-stepfunctions');
  */
 export interface SendToQueueProps {
   /**
-   * The text message to send to the topic.
-   *
-   * @default - Exactly one of `message` and `messageObject` is required.
+   * The text message to send to the queue.
    */
-  readonly message?: string;
-
-  /**
-   * Object to be JSON-encoded and used as message
-   *
-   * @default - Exactly one of `message` and `messageObject` is required.
-   */
-  readonly messageObject?: {[key: string]: any};
+  readonly messageBody: sfn.TaskInput;
 
   /**
    * The length of time, in seconds, for which to delay a specific message.
@@ -55,9 +46,6 @@ export interface SendToQueueProps {
  */
 export class SendToQueue implements sfn.IStepFunctionsTask {
   constructor(private readonly queue: sqs.IQueue, private readonly props: SendToQueueProps) {
-    if ((props.message === undefined) === (props.messageObject === undefined)) {
-      throw new Error(`Supply exactly one of 'message' or 'messageObject'`);
-    }
   }
 
   public bind(_task: sfn.Task): sfn.StepFunctionsTaskProperties {
@@ -70,7 +58,7 @@ export class SendToQueue implements sfn.IStepFunctionsTask {
       parameters: {
         QueueUrl: this.queue.queueUrl,
         ...sfn.FieldUtils.renderObject({
-          MessageBody: this.props.message || this.props.messageObject,
+          MessageBody: this.props.messageBody.value,
           DelaySeconds: this.props.delaySeconds,
           MessageDeduplicationId: this.props.messageDeduplicationId,
           MessageGroupId: this.props.messageGroupId,

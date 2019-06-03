@@ -37,7 +37,7 @@ const definition = new sfn.Pass(stack, 'Start', {
       environment: [
         {
           name: 'SOME_KEY',
-          value: sfn.DataField.fromStringAt('$.SomeKey')
+          value: sfn.Data.stringAt('$.SomeKey')
         }
       ]
     }

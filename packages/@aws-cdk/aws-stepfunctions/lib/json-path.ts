@@ -1,14 +1,14 @@
 import { Token, TokenMap } from '@aws-cdk/cdk';
 
-const JSON_PATH_TOKEN_SYMBOL = Symbol.for('JsonPathToken');
+const JSON_PATH_TOKEN_SYMBOL = Symbol.for('@aws-cdk/aws-stepfunctions.JsonPathToken');
 
 export class JsonPathToken extends Token {
-  public static isJsonPathToken(x: object): x is JsonPathToken {
+  public static isJsonPathToken(x: any): x is JsonPathToken {
     return (x as any)[JSON_PATH_TOKEN_SYMBOL] === true;
   }
 
   constructor(public readonly path: string) {
-    super(() => path); // Make function to prevent eager evaluation in superclass
+    super(() => path, `field${path}`); // Make function to prevent eager evaluation in superclass
     Object.defineProperty(this, JSON_PATH_TOKEN_SYMBOL, { value: true });
   }
 }
@@ -161,7 +161,16 @@ function renderNumber(key: string, value: number): {[key: string]: number | stri
  * Otherwise return undefined.
  */
 function jsonPathString(x: string): string | undefined {
-  return pathFromToken(TokenMap.instance().lookupString(x));
+  const fragments = TokenMap.instance().splitString(x);
+  const jsonPathTokens = fragments.tokens.filter(JsonPathToken.isJsonPathToken);
+
+  if (jsonPathTokens.length > 0 && fragments.length > 1) {
+    throw new Error(`Field references must be the entire string, cannot concatenate them (found '${x}')`);
+  }
+  if (jsonPathTokens.length > 0) {
+    return jsonPathTokens[0].path;
+  }
+  return undefined;
 }
 
 /**

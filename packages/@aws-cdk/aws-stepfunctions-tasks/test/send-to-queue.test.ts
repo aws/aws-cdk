@@ -15,8 +15,8 @@ beforeEach(() => {
 test('publish to queue', () => {
   // WHEN
   const pub = new sfn.Task(stack, 'Send', { task: new tasks.SendToQueue(queue, {
-    message: 'Send this message',
-    messageDeduplicationId: sfn.DataField.fromStringAt('$.deduping'),
+    messageBody: sfn.TaskInput.fromText('Send this message'),
+    messageDeduplicationId: sfn.Data.stringAt('$.deduping'),
   }) });
 
   // THEN
@@ -36,7 +36,7 @@ test('message body can come from state', () => {
   // WHEN
   const pub = new sfn.Task(stack, 'Send', {
     task: new tasks.SendToQueue(queue, {
-      message: sfn.DataField.fromStringAt('$.theMessage')
+      messageBody: sfn.TaskInput.fromDataAt('$.theMessage')
     })
   });
 
@@ -56,10 +56,10 @@ test('message body can be an object', () => {
   // WHEN
   const pub = new sfn.Task(stack, 'Send', {
     task: new tasks.SendToQueue(queue, {
-      messageObject: {
+      messageBody: sfn.TaskInput.fromObject({
         literal: 'literal',
-        SomeInput: sfn.DataField.fromStringAt('$.theMessage')
-      }
+        SomeInput: sfn.Data.stringAt('$.theMessage')
+      })
     })
   });
 
@@ -82,9 +82,9 @@ test('message body object can contain references', () => {
   // WHEN
   const pub = new sfn.Task(stack, 'Send', {
     task: new tasks.SendToQueue(queue, {
-      messageObject: {
+      messageBody: sfn.TaskInput.fromObject({
         queueArn: queue.queueArn
-      }
+      })
     })
   });
 

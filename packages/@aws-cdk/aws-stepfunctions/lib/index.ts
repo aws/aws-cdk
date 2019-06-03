@@ -1,5 +1,6 @@
 export * from './fields';
 export * from './activity';
+export * from './input';
 export * from './types';
 export * from './condition';
 export * from './state-machine';
