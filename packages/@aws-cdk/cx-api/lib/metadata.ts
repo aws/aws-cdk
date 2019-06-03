@@ -19,6 +19,11 @@ export const ERROR_METADATA_KEY = 'aws:cdk:error';
  */
 export const PATH_METADATA_KEY = 'aws:cdk:path';
 
+/**
+ * Tag metadata key.
+ */
+export const STACK_TAGS_METADATA_KEY = 'aws:cdk:stack-tags';
+
 export enum SynthesisMessageLevel {
   INFO = 'info',
   WARNING = 'warning',

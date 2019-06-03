@@ -2,12 +2,12 @@ import cxapi = require('@aws-cdk/cx-api');
 import { CfnCondition } from './cfn-condition';
 import { Construct, IConstruct } from './construct';
 import { CreationPolicy, DeletionPolicy, UpdatePolicy } from './resource-policy';
-import { TagManager } from './tag-manager';
 import { capitalizePropertyNames, ignoreEmpty, PostResolveToken } from './util';
 // import required to be here, otherwise causes a cycle when running the generated JavaScript
 // tslint:disable-next-line:ordered-imports
 import { CfnRefElement } from './cfn-element';
 import { CfnReference } from './cfn-reference';
+import { TagManager } from './tag-manager';
 
 export interface CfnResourceProps {
   /**
@@ -23,12 +23,6 @@ export interface CfnResourceProps {
   readonly properties?: any;
 }
 
-export interface ITaggable {
-  /**
-   * TagManager to set, remove and format tags
-   */
-  readonly tags: TagManager;
-}
 /**
  * Represents a CloudFormation resource.
  */
@@ -54,13 +48,6 @@ export class CfnResource extends CfnRefElement {
    */
   public static isCfnResource(construct: IConstruct): construct is CfnResource {
     return (construct as any).resourceType !== undefined;
-  }
-
-  /**
-   * Check whether the given construct is Taggable
-   */
-  public static isTaggable(construct: any): construct is ITaggable {
-    return (construct as any).tags !== undefined;
   }
 
   /**
@@ -212,7 +199,7 @@ export class CfnResource extends CfnRefElement {
   public _toCloudFormation(): object {
     try {
       // merge property overrides onto properties and then render (and validate).
-      const tags = CfnResource.isTaggable(this) ? this.tags.renderTags() : undefined;
+      const tags = TagManager.isTaggable(this) ? this.tags.renderTags() : undefined;
       const properties = deepMerge(
         this.properties || {},
         { tags },
@@ -281,6 +268,7 @@ export enum TagType {
   Standard = 'StandardTag',
   AutoScalingGroup = 'AutoScalingGroupTag',
   Map = 'StringToStringMap',
+  KeyValue = 'KeyValue',
   NotTaggable = 'NotTaggable',
 }
 

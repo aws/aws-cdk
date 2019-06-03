@@ -2,6 +2,7 @@ import cxapi = require('@aws-cdk/cx-api');
 import aws = require('aws-sdk');
 import colors = require('colors/safe');
 import uuid = require('uuid');
+import { Tag } from "../api/cxapp/stacks";
 import { prepareAssets } from '../assets';
 import { debug, error, print } from '../logging';
 import { toYAML } from '../serialize';
@@ -32,6 +33,7 @@ export interface DeployStackOptions {
   quiet?: boolean;
   ci?: boolean;
   reuseAssets?: string[];
+  tags?: Tag[];
 }
 
 const LARGE_TEMPLATE_SIZE_KB = 50;
@@ -73,7 +75,8 @@ export async function deployStack(options: DeployStackOptions): Promise<DeploySt
     TemplateURL: bodyParameter.TemplateURL,
     Parameters: params,
     RoleARN: options.roleArn,
-    Capabilities: [ 'CAPABILITY_IAM', 'CAPABILITY_NAMED_IAM', 'CAPABILITY_AUTO_EXPAND' ]
+    Capabilities: [ 'CAPABILITY_IAM', 'CAPABILITY_NAMED_IAM', 'CAPABILITY_AUTO_EXPAND' ],
+    Tags: options.tags
   }).promise();
   debug('Initiated creation of changeset: %s; waiting for it to finish creating...', changeSet.Id);
   const changeSetDescription = await waitForChangeSet(cfn, deployName, changeSetName);

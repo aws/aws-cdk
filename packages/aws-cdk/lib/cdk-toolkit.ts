@@ -1,7 +1,7 @@
 import colors = require('colors/safe');
 import fs = require('fs-extra');
 import { format } from 'util';
-import { AppStacks, ExtendedStackSelection } from "./api/cxapp/stacks";
+import { AppStacks, ExtendedStackSelection, Tag } from "./api/cxapp/stacks";
 import { IDeploymentTarget } from './api/deployment-target';
 import { printSecurityDiff, printStackDiff, RequireApproval } from './diff';
 import { data, error, highlight, print, success } from './logging';
@@ -108,6 +108,10 @@ export class CdkToolkit {
         print('%s: deploying...', colors.bold(stack.name));
       }
 
+      if (!options.tags || options.tags.length === 0) {
+        options.tags = this.appStacks.getTagsFromStackMetadata(stack);
+      }
+
       try {
         const result = await this.provisioner.deployStack({
           stack,
@@ -116,6 +120,7 @@ export class CdkToolkit {
           ci: options.ci,
           toolkitStackName: options.toolkitStackName,
           reuseAssets: options.reuseAssets,
+          tags: options.tags
         });
 
         const message = result.noOp
@@ -229,4 +234,9 @@ export interface DeployOptions {
    * Reuse the assets with the given asset IDs
    */
   reuseAssets?: string[];
+
+  /**
+   * Tags to pass to CloudFormation for deployment
+   */
+  tags?: Tag[];
 }
