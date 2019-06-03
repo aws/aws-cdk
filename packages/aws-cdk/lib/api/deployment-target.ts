@@ -1,4 +1,5 @@
 import { CloudFormationStackArtifact } from '@aws-cdk/cx-api';
+import { Tag } from "../api/cxapp/stacks";
 import { debug } from '../logging';
 import { deserializeStructure } from '../serialize';
 import { Mode } from './aws-auth/credentials';
@@ -28,6 +29,7 @@ export interface DeployStackOptions {
   ci?: boolean;
   toolkitStackName?: string;
   reuseAssets?: string[];
+  tags?: Tag[];
 }
 
 export interface ProvisionerProps {
@@ -71,6 +73,7 @@ export class CloudFormationDeploymentTarget implements IDeploymentTarget {
       ci: options.ci,
       reuseAssets: options.reuseAssets,
       toolkitInfo,
+      tags: options.tags
     });
   }
 }
