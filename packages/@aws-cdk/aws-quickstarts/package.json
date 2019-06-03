@@ -2,7 +2,7 @@
   "name": "@aws-cdk/aws-quickstarts",
   "version": "0.33.0",
   "description": "AWS Quickstarts for the CDK",
-  "deprecated": "The @aws-cdk/aws-quickstarts module has been deprecated",
+  "deprecated": "This module has been deprecated. Use `@aws-cdk/aws-cloudformation.CfnStack` instead",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "jsii": {
