@@ -2,22 +2,24 @@ import events = require('@aws-cdk/aws-events');
 import iam = require('@aws-cdk/aws-iam');
 import sqs = require('@aws-cdk/aws-sqs');
 
-const fifoQualifier = "fifo";
-
 /**
  * Customize the SQS Queue Event Target
  */
 export interface SqsQueueProps {
 
   /**
-   * The messageGroupId for the queue
+   * Message Group ID for messages sent to this queue
    *
-   * @default empty string
+   * Required for FIFO queues, leave empty for regular queues.
+   *
+   * @default - no message group ID (regular queue)
    */
   readonly messageGroupId?: string;
 
   /**
-   * The message to send to the queue
+   * The message to send to the queue.
+   *
+   * Must be a valid JSON text passed to the target queue.
    *
    * @default the entire CloudWatch event
    */
@@ -61,7 +63,7 @@ export class SqsQueue implements events.IRuleTarget {
       arn: this.queue.queueArn,
       input: this.props.message,
     };
-    if (this.queue.queueName.split('.').pop() === fifoQualifier && this.props.messageGroupId !== undefined) {
+    if (!!this.props.messageGroupId) {
       Object.assign(result, { sqsParameters: { messageGroupId: this.props.messageGroupId } });
     }
     return result;
