@@ -2,6 +2,7 @@
   "name": "@aws-cdk/runtime-values",
   "version": "0.33.0",
   "description": "Runtime values support for the AWS CDK",
+  "deprecated": "This package has been deprecated",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "jsii": {
@@ -55,25 +56,10 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "^0.33.0",
-    "@aws-cdk/aws-ec2": "^0.33.0",
-    "@aws-cdk/aws-lambda": "^0.33.0",
-    "@aws-cdk/aws-sqs": "^0.33.0",
     "cdk-build-tools": "^0.33.0",
-    "cdk-integ-tools": "^0.33.0",
     "pkglint": "^0.33.0"
   },
-  "dependencies": {
-    "@aws-cdk/aws-iam": "^0.33.0",
-    "@aws-cdk/aws-ssm": "^0.33.0",
-    "@aws-cdk/cdk": "^0.33.0"
-  },
   "homepage": "https://github.com/awslabs/aws-cdk",
-  "peerDependencies": {
-    "@aws-cdk/aws-iam": "^0.33.0",
-    "@aws-cdk/aws-ssm": "^0.33.0",
-    "@aws-cdk/cdk": "^0.33.0"
-  },
   "engines": {
     "node": ">= 8.10.0"
   },
