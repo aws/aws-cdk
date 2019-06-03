@@ -18,6 +18,10 @@ interface CfnAsgTag {
   propagateAtLaunch: boolean;
 }
 
+interface StackTag {
+  Key: string;
+  Value: string;
+}
 /**
  * Interface for converter between CloudFormation and internal tag representations
  */
@@ -142,6 +146,36 @@ class MapFormatter implements ITagFormatter {
   }
 }
 
+/**
+ * StackTags are of the format { Key: key, Value: value }
+ */
+class KeyValueFormatter implements ITagFormatter {
+  public parseTags(keyValueTags: any, priority: number): Tag[] {
+    const tags: Tag[] = [];
+    for (const key in keyValueTags) {
+      if (keyValueTags.hasOwnProperty(key)) {
+        const value = keyValueTags[key];
+        tags.push({
+          key,
+          value,
+          priority
+        });
+      }
+    }
+    return tags;
+  }
+  public formatTags(unformattedTags: Tag[]): any {
+    const tags: StackTag[] = [];
+    unformattedTags.forEach(tag => {
+      tags.push({
+        Key: tag.key,
+        Value: tag.value
+      });
+    });
+    return tags;
+  }
+}
+
 class NoFormat implements ITagFormatter {
   public parseTags(_cfnPropertyTags: any): Tag[] {
     return [];
@@ -155,13 +189,32 @@ const TAG_FORMATTERS: {[key: string]: ITagFormatter} = {
   [TagType.AutoScalingGroup]: new AsgFormatter(),
   [TagType.Standard]: new StandardFormatter(),
   [TagType.Map]: new MapFormatter(),
+  [TagType.KeyValue]: new KeyValueFormatter(),
   [TagType.NotTaggable]: new NoFormat(),
 };
+
+/**
+ * Interface to implement tags.
+ */
+export interface ITaggable {
+  /**
+   * TagManager to set, remove and format tags
+   */
+  readonly tags: TagManager;
+}
 
 /**
  * TagManager facilitates a common implementation of tagging for Constructs.
  */
 export class TagManager {
+
+  /**
+   * Check whether the given construct is Taggable
+   */
+  public static isTaggable(construct: any): construct is ITaggable {
+    return (construct as any).tags !== undefined;
+  }
+
   private readonly tags = new Map<string, Tag>();
   private readonly priorities = new Map<string, number>();
   private readonly tagFormatter: ITagFormatter;
@@ -215,6 +268,13 @@ export class TagManager {
     }
 
     return true;
+  }
+
+  /**
+   * Returns true if there are any tags defined
+   */
+  public hasTags(): boolean {
+    return this.tags.size > 0;
   }
 
   private _setTag(...tags: Tag[]) {
