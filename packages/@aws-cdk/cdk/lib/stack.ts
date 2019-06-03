@@ -505,7 +505,7 @@ export class Stack extends Construct implements ITaggable {
     }
 
     if (this.tags.hasTags()) {
-      this.node.addMetadata(cxapi.TAGS_METADATA_KEY, this.tags.renderTags());
+      this.node.addMetadata(metadata.TAGS_METADATA_KEY, this.tags.renderTags());
     }
   }
 

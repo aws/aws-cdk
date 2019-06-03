@@ -31,11 +31,6 @@ export const DISABLE_VERSION_REPORTING = 'aws:cdk:disable-version-reporting';
 export const DISABLE_ASSET_STAGING_CONTEXT = 'aws:cdk:disable-asset-staging';
 
 /**
- * Tag metadata key.
- */
-export const TAGS_METADATA_KEY = 'aws:cdk:stack-tags';
-
-/**
  * If this context key is set, the CDK will stage assets under the specified
  * directory. Otherwise, assets will not be staged.
  * Omits stack traces from construct metadata entries.
