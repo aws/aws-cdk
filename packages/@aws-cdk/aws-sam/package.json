@@ -23,6 +23,9 @@
       "python": {
         "distName": "aws-cdk.aws-sam",
         "module": "aws_cdk.aws_sam"
+      },
+      "awsdocs": {
+        "title": "Serverless"
       }
     }
   },

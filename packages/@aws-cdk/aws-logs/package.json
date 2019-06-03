@@ -23,6 +23,9 @@
       "python": {
         "distName": "aws-cdk.aws-logs",
         "module": "aws_cdk.aws_logs"
+      },
+      "awsdocs": {
+        "title": "Logs"
       }
     }
   },

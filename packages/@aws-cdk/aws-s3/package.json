@@ -23,6 +23,9 @@
       "python": {
         "distName": "aws-cdk.aws-s3",
         "module": "aws_cdk.aws_s3"
+      },
+      "awsdocs": {
+        "title": "S3"
       }
     }
   },

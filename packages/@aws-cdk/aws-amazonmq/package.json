@@ -23,6 +23,9 @@
       "python": {
         "distName": "aws-cdk.aws-amazonmq",
         "module": "aws_cdk.aws_amazonmq"
+      },
+      "awsdocs": {
+        "title": "AmazonMQ"
       }
     }
   },

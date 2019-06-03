@@ -23,6 +23,9 @@
       "python": {
         "distName": "aws-cdk.aws-waf",
         "module": "aws_cdk.aws_waf"
+      },
+      "awsdocs": {
+        "title": "WAF"
       }
     }
   },

@@ -23,6 +23,9 @@
       "python": {
         "distName": "aws-cdk.aws-fsx",
         "module": "aws_cdk.aws_fsx"
+      },
+      "awsdocs": {
+        "title": "FSx"
       }
     }
   },

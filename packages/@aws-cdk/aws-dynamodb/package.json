@@ -23,6 +23,9 @@
       "python": {
         "distName": "aws-cdk.aws-dynamodb",
         "module": "aws_cdk.aws_dynamodb"
+      },
+      "awsdocs": {
+        "title": "DynamoDB"
       }
     }
   },

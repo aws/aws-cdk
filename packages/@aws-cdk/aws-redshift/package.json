@@ -23,6 +23,9 @@
       "python": {
         "distName": "aws-cdk.aws-redshift",
         "module": "aws_cdk.aws_redshift"
+      },
+      "awsdocs": {
+        "title": "Redshift"
       }
     }
   },

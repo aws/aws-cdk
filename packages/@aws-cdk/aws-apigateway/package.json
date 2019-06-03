@@ -23,6 +23,9 @@
       "python": {
         "distName": "aws-cdk.aws-apigateway",
         "module": "aws_cdk.aws_apigateway"
+      },
+      "awsdocs": {
+        "title": "ApiGateway"
       }
     }
   },

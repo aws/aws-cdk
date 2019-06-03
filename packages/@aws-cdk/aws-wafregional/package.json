@@ -23,6 +23,9 @@
       "python": {
         "distName": "aws-cdk.aws-wafregional",
         "module": "aws_cdk.aws_wafregional"
+      },
+      "awsdocs": {
+        "title": "WAFRegional"
       }
     }
   },

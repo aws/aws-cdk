@@ -23,6 +23,9 @@
       "python": {
         "distName": "aws-cdk.aws-sagemaker",
         "module": "aws_cdk.aws_sagemaker"
+      },
+      "awsdocs": {
+        "title": "SageMaker"
       }
     }
   },

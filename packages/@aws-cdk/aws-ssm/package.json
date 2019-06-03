@@ -23,6 +23,9 @@
       "python": {
         "distName": "aws-cdk.aws-ssm",
         "module": "aws_cdk.aws_ssm"
+      },
+      "awsdocs": {
+        "title": "SSM"
       }
     }
   },

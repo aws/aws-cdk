@@ -23,6 +23,9 @@
       "python": {
         "distName": "aws-cdk.aws-ecs",
         "module": "aws_cdk.aws_ecs"
+      },
+      "awsdocs": {
+        "title": "ECS"
       }
     }
   },

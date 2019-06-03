@@ -23,6 +23,9 @@
       "python": {
         "distName": "aws-cdk.aws-cloud9",
         "module": "aws_cdk.aws_cloud9"
+      },
+      "awsdocs": {
+        "title": "Cloud9"
       }
     }
   },

@@ -212,6 +212,19 @@ export class JSIIPythonTarget extends ValidationRule {
   }
 }
 
+export class AWSDocsTarget extends ValidationRule {
+  public readonly name = 'jsii/awsdocs';
+
+  public validate(pkg: PackageJson): void {
+    const scopes = pkg.json['cdk-build'] && pkg.json['cdk-build'].cloudformation;
+    if (!scopes) {
+      return;
+    }
+    const scope = typeof scopes === 'string' ? scopes : scopes[0];
+    expectJSON(this.name, pkg, 'jsii.targets.awsdocs.title', scope.replace(/^AWS::/, '').replace(/::/g, '-'));
+  }
+}
+
 export class CDKPackage extends ValidationRule {
   public readonly name = 'package-info/scripts/package';
 

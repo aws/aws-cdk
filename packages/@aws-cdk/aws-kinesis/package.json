@@ -23,6 +23,9 @@
       "python": {
         "distName": "aws-cdk.aws-kinesis",
         "module": "aws_cdk.aws_kinesis"
+      },
+      "awsdocs": {
+        "title": "Kinesis"
       }
     }
   },

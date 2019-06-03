@@ -23,6 +23,9 @@
       "python": {
         "distName": "aws-cdk.aws-inspector",
         "module": "aws_cdk.aws_inspector"
+      },
+      "awsdocs": {
+        "title": "Inspector"
       }
     }
   },

@@ -23,6 +23,9 @@
       "python": {
         "distName": "aws-cdk.aws-guardduty",
         "module": "aws_cdk.aws_guardduty"
+      },
+      "awsdocs": {
+        "title": "GuardDuty"
       }
     }
   },

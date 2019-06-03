@@ -23,6 +23,9 @@
       "python": {
         "distName": "aws-cdk.aws-kms",
         "module": "aws_cdk.aws_kms"
+      },
+      "awsdocs": {
+        "title": "KMS"
       }
     }
   },

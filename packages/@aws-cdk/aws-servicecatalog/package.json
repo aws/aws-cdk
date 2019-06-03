@@ -23,6 +23,9 @@
       "python": {
         "distName": "aws-cdk.aws-servicecatalog",
         "module": "aws_cdk.aws_servicecatalog"
+      },
+      "awsdocs": {
+        "title": "ServiceCatalog"
       }
     }
   },

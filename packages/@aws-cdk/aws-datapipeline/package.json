@@ -23,6 +23,9 @@
       "python": {
         "distName": "aws-cdk.aws-datapipeline",
         "module": "aws_cdk.aws_datapipeline"
+      },
+      "awsdocs": {
+        "title": "DataPipeline"
       }
     }
   },
