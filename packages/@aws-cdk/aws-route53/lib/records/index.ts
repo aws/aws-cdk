@@ -1,4 +1,3 @@
 export * from './alias';
-export * from './txt';
-export * from './cname';
+export * from './basic';
 export * from './zone-delegation';

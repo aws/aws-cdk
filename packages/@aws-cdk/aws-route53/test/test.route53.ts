@@ -80,7 +80,7 @@ export = {
     new TxtRecord(importedZone as any, 'Record', {
       zone: importedZone,
       recordName: 'lookHere',
-      recordValue: 'SeeThere'
+      values: ['SeeThere']
     });
 
     expect(stack2).to(haveResource("AWS::Route53::RecordSet", {

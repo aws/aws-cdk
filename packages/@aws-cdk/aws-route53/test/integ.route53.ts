@@ -1,12 +1,12 @@
 import ec2 = require('@aws-cdk/aws-ec2');
 import cdk = require('@aws-cdk/cdk');
-import { CnameRecord, PrivateHostedZone, PublicHostedZone, TxtRecord } from '../lib';
+import { ARecord, CaaAmazonRecord, CnameRecord, PrivateHostedZone, PublicHostedZone, TxtRecord } from '../lib';
 
 const app = new cdk.App();
 
 const stack = new cdk.Stack(app, 'aws-cdk-route53-integ');
 
-const vpc = new ec2.Vpc(stack, 'VPC');
+const vpc = new ec2.Vpc(stack, 'VPC', { maxAZs: 1 });
 
 const privateZone = new PrivateHostedZone(stack, 'PrivateZone', {
   zoneName: 'cdk.local', vpc
@@ -23,14 +23,30 @@ publicZone.addDelegation(publicSubZone);
 new TxtRecord(privateZone, 'TXT', {
   zone: privateZone,
   recordName: '_foo',
-  recordValue: 'Bar!',
+  values: [
+    'Bar!',
+    'Baz?'
+  ],
   ttl: 60
 });
 
 new CnameRecord(stack, 'CNAME', {
   zone: privateZone,
   recordName: 'www',
-  recordValue: 'server'
+  domainName: 'server'
+});
+
+new ARecord(stack, 'A', {
+  zone: privateZone,
+  recordName: 'test',
+  ipAddresses: [
+    '1.2.3.4',
+    '5.6.7.8'
+  ]
+});
+
+new CaaAmazonRecord(stack, 'CaaAmazon', {
+  zone: publicZone
 });
 
 new cdk.CfnOutput(stack, 'PrivateZoneId', { value: privateZone.hostedZoneId });
