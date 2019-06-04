@@ -67,7 +67,7 @@
     "@aws-cdk/assert": "^0.33.0",
     "@types/aws-lambda": "^8.10.24",
     "@types/lodash": "^4.14.128",
-    "@types/nock": "^9.3.1",
+    "@types/nock": "^10.0.3",
     "@types/sinon": "^7.0.11",
     "aws-sdk": "^2.438.0",
     "aws-sdk-mock": "^4.4.0",
