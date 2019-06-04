@@ -57,7 +57,8 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "cdk-build-tools": "^0.33.0",
-    "pkglint": "^0.33.0"
+    "pkglint": "^0.33.0",
+    "cdk-integ-tools": "^0.33.0"
   },
   "homepage": "https://github.com/awslabs/aws-cdk",
   "engines": {
@@ -67,5 +68,6 @@
     "exclude": [
       "props-no-any:@aws-cdk/runtime-values.RuntimeValueProps.value"
     ]
-  }
+  },
+  "stability": "experimental"
 }

@@ -89,5 +89,6 @@
       "import:@aws-cdk/aws-ecr.Repository",
       "construct-base-is-private:@aws-cdk/aws-ecr.RepositoryBase"
     ]
-  }
+  },
+  "stability": "experimental"
 }

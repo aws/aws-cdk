@@ -107,5 +107,6 @@
     "exclude": [
       "construct-ctor-props-optional:@aws-cdk/aws-codebuild.Project"
     ]
-  }
+  },
+  "stability": "experimental"
 }

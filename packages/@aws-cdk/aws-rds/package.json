@@ -99,5 +99,6 @@
     "exclude": [
       "construct-base-is-private:@aws-cdk/aws-rds.DatabaseInstanceBase"
     ]
-  }
+  },
+  "stability": "experimental"
 }

@@ -89,5 +89,6 @@
       "from-signature:@aws-cdk/aws-secretsmanager.SecretTargetAttachment.fromSecretTargetAttachmentSecretArn",
       "from-attributes:fromSecretTargetAttachmentAttributes"
     ]
-  }
+  },
+  "stability": "experimental"
 }

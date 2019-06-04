@@ -92,5 +92,6 @@
       "construct-ctor:@aws-cdk/aws-elasticloadbalancingv2.BaseLoadBalancer.<initializer>",
       "construct-ctor:@aws-cdk/aws-elasticloadbalancingv2.TargetGroupBase.<initializer>"
     ]
-  }
+  },
+  "stability": "experimental"
 }

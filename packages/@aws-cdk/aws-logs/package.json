@@ -84,5 +84,6 @@
     "exclude": [
       "props-no-arn-refs:@aws-cdk/aws-logs.CrossAccountDestinationProps.targetArn"
     ]
-  }
+  },
+  "stability": "experimental"
 }

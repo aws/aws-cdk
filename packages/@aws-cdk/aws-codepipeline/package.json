@@ -99,5 +99,6 @@
       "import-props-interface:@aws-cdk/aws-codepipeline.PipelineImportProps",
       "resource-attribute:@aws-cdk/aws-codepipeline.IPipeline.pipelineVersion"
     ]
-  }
+  },
+  "stability": "experimental"
 }

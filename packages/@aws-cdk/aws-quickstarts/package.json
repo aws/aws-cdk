@@ -67,5 +67,6 @@
     "exclude": [
       "props-default-doc"
     ]
-  }
+  },
+  "stability": "experimental"
 }

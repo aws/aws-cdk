@@ -94,5 +94,6 @@
     "exclude": [
       "construct-base-is-private:@aws-cdk/aws-sns.TopicBase"
     ]
-  }
+  },
+  "stability": "experimental"
 }
