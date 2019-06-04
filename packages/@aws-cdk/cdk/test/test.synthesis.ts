@@ -1,11 +1,10 @@
 import cxapi = require('@aws-cdk/cx-api');
-import { CloudAssemblyBuilder } from '@aws-cdk/cx-api';
 import fs = require('fs');
 import { Test } from 'nodeunit';
 import os = require('os');
 import path = require('path');
 import cdk = require('../lib');
-import { Construct, ISynthesisSession, Synthesizer } from '../lib';
+import { Construct, ConstructNode, ISynthesisSession } from '../lib';
 
 function createModernApp() {
   return new cdk.App({
@@ -21,10 +20,10 @@ export = {
     const app = createModernApp();
 
     // WHEN
-    const session = app.run();
+    const session = app.synth();
 
     // THEN
-    test.same(app.run(), session); // same session if we run() again
+    test.same(app.synth(), session); // same session if we synth() again
     test.deepEqual(list(session.directory), [ 'cdk.out', 'manifest.json' ]);
     test.deepEqual(readJson(session.directory, 'manifest.json').artifacts, {});
     test.done();
@@ -36,7 +35,7 @@ export = {
     new cdk.Stack(app, 'one-stack');
 
     // WHEN
-    const session = app.run();
+    const session = app.synth();
 
     // THEN
     test.deepEqual(list(session.directory), [
@@ -52,8 +51,8 @@ export = {
     const app = createModernApp();
     const stack = new cdk.Stack(app, 'one-stack');
 
-    class MyConstruct extends cdk.Construct implements cdk.ISynthesizable {
-      public synthesize(s: ISynthesisSession) {
+    class MyConstruct extends cdk.Construct {
+      protected synthesize(s: ISynthesisSession) {
         writeJson(s.assembly.outdir, 'foo.json', { bar: 123 });
         s.assembly.addArtifact('my-random-construct', {
           type: cxapi.ArtifactType.AwsCloudFormationStack,
@@ -68,7 +67,7 @@ export = {
     new MyConstruct(stack, 'MyConstruct');
 
     // WHEN
-    const session = app.run();
+    const session = app.synth();
 
     // THEN
     test.deepEqual(list(session.directory), [
@@ -79,7 +78,8 @@ export = {
     ]);
     test.deepEqual(readJson(session.directory, 'foo.json'), { bar: 123 });
     test.deepEqual(session.manifest, {
-      version: '0.33.0',
+      version: '0.34.0',
+      entrypoints: [ 'one-stack' ],
       artifacts: {
         'my-random-construct': {
           type: 'aws:cloudformation:stack',
@@ -104,19 +104,10 @@ export = {
         super(undefined as any, 'id');
       }
 
-      protected validate(): string[] {
-        calls.push('validate');
-        return [];
-      }
-
-      protected prepare(): void {
-        calls.push('prepare');
-      }
-
-      protected synthesize(session: CloudAssemblyBuilder) {
+      protected synthesize(session: ISynthesisSession) {
         calls.push('synthesize');
 
-        session.addArtifact('art', {
+        session.assembly.addArtifact('art', {
           type: cxapi.ArtifactType.AwsCloudFormationStack,
           properties: {
             templateFile: 'hey.json',
@@ -128,14 +119,21 @@ export = {
           environment: 'aws://unknown-account/us-east-1'
         });
 
-        writeJson(session.outdir, 'hey.json', { hello: 123 });
+        writeJson(session.assembly.outdir, 'hey.json', { hello: 123 });
+      }
+
+      protected validate(): string[] {
+        calls.push('validate');
+        return [];
+      }
+
+      protected prepare(): void {
+        calls.push('prepare');
       }
     }
 
     const root = new SynthesizeMe();
-
-    const synth = new Synthesizer();
-    const assembly = synth.synthesize(root, { outdir: fs.mkdtempSync(path.join(os.tmpdir(), 'outdir')) });
+    const assembly = ConstructNode.synth(root.node, { outdir: fs.mkdtempSync(path.join(os.tmpdir(), 'outdir')) });
 
     test.deepEqual(calls, [ 'prepare', 'validate', 'synthesize' ]);
     const stack = assembly.getStack('art');
@@ -156,7 +154,7 @@ export = {
     stack.setParameterValue(param, 'Foo');
 
     // THEN
-    const session = app.run();
+    const session = app.synth();
     const artifact = session.getStack('my-stack');
     test.deepEqual(artifact.parameters, {
       MyParam: 'Foo'

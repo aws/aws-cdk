@@ -47,4 +47,4 @@ new events.Rule(stack, 'rule', {
   targets: [new targets.CodePipeline(pipeline)]
 });
 
-app.run();
+app.synth();

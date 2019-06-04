@@ -12,7 +12,7 @@ function withApp(props: AppProps, block: (app: App) => void): cxapi.CloudAssembl
 
   block(app);
 
-  return app.run();
+  return app.synth();
 }
 
 function synth(context?: { [key: string]: any }): cxapi.CloudAssembly {
@@ -140,7 +140,7 @@ export = {
   test.done();
 },
 
-'app.run() performs validation first and if there are errors, it returns the errors'(test: Test) {
+'app.synth() performs validation first and if there are errors, it returns the errors'(test: Test) {
 
   class Child extends Construct {
     protected validate() {
@@ -158,7 +158,7 @@ export = {
   new Child(parent, 'C1');
   new Child(parent, 'C2');
 
-  test.throws(() => app.run(), /Validation failed with the following errors/);
+  test.throws(() => app.synth(), /Validation failed with the following errors/);
 
   test.done();
 },
@@ -168,7 +168,8 @@ export = {
     constructor(scope: App, id: string, props?: StackProps) {
       super(scope, id, props);
 
-      this.reportMissingContext('missing-context-key', {
+      this.reportMissingContext({
+        key: 'missing-context-key',
         provider: 'fake',
         props: {
           account: '12345689012',
@@ -177,7 +178,8 @@ export = {
       },
       );
 
-      this.reportMissingContext('missing-context-key-2', {
+      this.reportMissingContext({
+        key: 'missing-context-key-2',
         provider: 'fake2',
         props: {
           foo: 'bar',
@@ -189,27 +191,29 @@ export = {
     }
   }
 
-  const response = withApp({}, app => {
+  const assembly = withApp({}, app => {
     new MyStack(app, 'MyStack');
   });
 
-  test.deepEqual(response.missing, {
-    "missing-context-key": {
+  test.deepEqual(assembly.manifest.missing, [
+    {
+      key: "missing-context-key",
       provider: 'fake',
       props: {
         account: '12345689012',
         region: 'ab-north-1',
       },
     },
-    "missing-context-key-2": {
+    {
+      key: "missing-context-key-2",
       provider: 'fake2',
       props: {
         account: '12345689012',
         region: 'ab-south-1',
         foo: 'bar',
       },
-    },
-  });
+    }
+  ]);
 
   test.done();
 },
@@ -218,12 +222,12 @@ export = {
   const context: any = {};
   context[cxapi.DISABLE_VERSION_REPORTING] = true;
 
-  const response = withApp(context, app => {
+  const assembly = withApp(context, app => {
     const stack = new Stack(app, 'stack1');
     new CfnResource(stack, 'MyResource', { type: 'Resource::Type' });
   });
 
-  test.deepEqual(response.runtime, { libraries: {} });
+  test.deepEqual(assembly.runtime, { libraries: {} });
   test.done();
 },
 

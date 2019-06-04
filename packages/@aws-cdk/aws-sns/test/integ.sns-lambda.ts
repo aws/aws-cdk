@@ -22,7 +22,7 @@ const app = new cdk.App();
 
 new SnsToSqs(app, 'aws-cdk-sns-lambda');
 
-app.run();
+app.synth();
 
 function handler(event: any, _context: any, callback: any) {
   // tslint:disable:no-console

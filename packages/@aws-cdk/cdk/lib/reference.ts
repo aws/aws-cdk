@@ -11,8 +11,8 @@ export class Reference extends Token {
   /**
    * Check whether this is actually a Reference
    */
-  public static isReference(x: Token): x is Reference {
-    return (x as any)[REFERENCE_SYMBOL] === true;
+  public static isReference(x: any): x is Reference {
+    return REFERENCE_SYMBOL in x;
   }
 
   public readonly target: Construct;

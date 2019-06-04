@@ -45,4 +45,4 @@ const creating = new CreatingStack(app, 'sspms-creating');
 const using = new UsingStack(app, 'sspms-using');
 using.addDependency(creating);
 
-app.run();
+app.synth();

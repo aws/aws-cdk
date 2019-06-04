@@ -53,4 +53,4 @@ const stack2 = new Stack2(app, 'Stack2', {
 
 Array.isArray(stack2);
 
-app.run();
+app.synth();

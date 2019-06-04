@@ -945,7 +945,7 @@ export = {
       const user = new iam.User(stackB, 'UserWhoNeedsAccess');
       streamFromStackA.grantRead(user);
 
-      test.throws(() => app.run(), /'stackB' depends on 'stackA'/);
+      test.throws(() => app.synth(), /'stackB' depends on 'stackA'/);
       test.done();
     }
   }

@@ -15,4 +15,4 @@ key.addToResourcePolicy(new PolicyStatement()
 
 key.addAlias('alias/bar');
 
-app.run();
+app.synth();

@@ -30,4 +30,4 @@ const app = new cdk.App();
 
 new TestStack(app, 'test-codebuild-docker-asset');
 
-app.run();
+app.synth();

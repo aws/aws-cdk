@@ -12,7 +12,7 @@ const FIXED_RESULT = testAssembly({
 },
 {
   stackName: 'witherrors',
-  hidden: false,
+  entrypoint: true,
   template: { resource: 'errorresource' },
   metadata: {
     '/resource': [
@@ -86,7 +86,7 @@ export = {
       {
         stackName: 'NotAutoDeployedStack',
         template: { resource: 'Resource' },
-        hidden: true,
+        entrypoint: false,
       },
     ]);
 
@@ -105,7 +105,7 @@ export = {
       {
         stackName: 'NotAutoDeployedStack',
         template: { resource: 'Resource' },
-        hidden: true,
+        entrypoint: false,
       },
     ]);
 
@@ -124,11 +124,10 @@ export = {
       {
         stackName: 'NotAutoDeployedStack',
         template: { resource: 'Resource' },
-        hidden: true,
+        entrypoint: false,
       },
       {
         stackName: 'AutoDeployedStack',
-        hidden: false,
         depends: [ 'NotAutoDeployedStack' ],
         template: { resource: 'Resource' },
       },

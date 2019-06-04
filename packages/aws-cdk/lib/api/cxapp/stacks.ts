@@ -91,10 +91,10 @@ export class AppStacks {
 
     if (selectors.length === 0) {
       // remove non-auto deployed Stacks
-      const visibleStacks = stacks.filter(s => !s.manifest.hidden);
-      debug('Stack name not specified, so defaulting to all available stacks: ' + listStackNames(visibleStacks));
-      this.applyRenames(visibleStacks);
-      return visibleStacks;
+      const entrypoints = stacks.filter(s => s.entrypoint);
+      debug('Stack name not specified, so defaulting to all available stacks: ' + listStackNames(entrypoints));
+      this.applyRenames(entrypoints);
+      return entrypoints;
     }
 
     const allStacks = new Map<string, cxapi.CloudFormationStackArtifact>();
@@ -177,10 +177,10 @@ export class AppStacks {
     while (true) {
       const assembly = await this.props.synthesizer(this.props.aws, this.props.configuration);
 
-      if (assembly.missing) {
+      if (assembly.manifest.missing) {
         debug(`Some context information is missing. Fetching...`);
 
-        await contextproviders.provideContextValues(assembly.missing, this.props.configuration.context, this.props.aws);
+        await contextproviders.provideContextValues(assembly.manifest.missing, this.props.configuration.context, this.props.aws);
 
         // Cache the new context to disk
         await this.props.configuration.saveContext();

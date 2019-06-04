@@ -7,37 +7,36 @@ const FIXTURES = path.join(__dirname, 'fixtures');
 test('empty assembly', () => {
   const assembly = new CloudAssembly(path.join(FIXTURES, 'empty'));
   expect(assembly.artifacts).toEqual([]);
-  expect(assembly.missing).toBeUndefined();
   expect(assembly.runtime).toEqual({ libraries: { } });
   expect(assembly.stacks).toEqual([]);
   expect(assembly.version).toEqual(CLOUD_ASSEMBLY_VERSION);
+  expect(assembly.manifest).toMatchSnapshot();
 });
 
 test('assembly a single cloudformation stack', () => {
   const assembly = new CloudAssembly(path.join(FIXTURES, 'single-stack'));
   expect(assembly.artifacts).toHaveLength(1);
   expect(assembly.stacks).toHaveLength(1);
-  expect(assembly.missing).toBeUndefined();
+  expect(assembly.manifest.missing).toBeUndefined();
   expect(assembly.runtime).toEqual({ libraries: { } });
   expect(assembly.version).toEqual(CLOUD_ASSEMBLY_VERSION);
   expect(assembly.artifacts[0]).toEqual(assembly.stacks[0]);
 
   const stack = assembly.stacks[0];
+  expect(stack.manifest).toMatchSnapshot();
   expect(stack.assets).toHaveLength(0);
-  expect(stack.manifest.hidden).toBeFalsy();
   expect(stack.dependencies).toEqual([]);
   expect(stack.environment).toEqual({ account: '37736633', region: 'us-region-1', name: 'aws://37736633/us-region-1' });
   expect(stack.template).toEqual({ Resources: { MyBucket: { Type: "AWS::S3::Bucket" } } });
   expect(stack.messages).toEqual([]);
   expect(stack.manifest.metadata).toEqual(undefined);
-  expect(stack.manifest.missing).toEqual(undefined);
   expect(stack.originalName).toEqual('MyStackName');
   expect(stack.name).toEqual('MyStackName');
 });
 
 test('assembly with missing context', () => {
   const assembly = new CloudAssembly(path.join(FIXTURES, 'missing-context'));
-  expect(assembly.missing).toMatchSnapshot();
+  expect(assembly.manifest.missing).toMatchSnapshot();
 });
 
 test('assembly with multiple stacks', () => {
@@ -88,7 +87,7 @@ test('fails for invalid dependencies', () => {
 });
 
 test('verifyManifestVersion', () => {
-  verifyManifestVersion('0.33.0');
-  expect(() => verifyManifestVersion('0.31.0')).toThrow('CDK CLI can only be used with apps created by CDK >= 0.33.0');
-  expect(() => verifyManifestVersion('0.34.0')).toThrow('CDK CLI >= 0.34.0 is required to interact with this app');
+  verifyManifestVersion('0.34.0');
+  expect(() => verifyManifestVersion('0.31.0')).toThrow('CDK CLI can only be used with apps created by CDK >= 0.34.0');
+  expect(() => verifyManifestVersion('0.35.0')).toThrow('CDK CLI >= 0.35.0 is required to interact with this app');
 });

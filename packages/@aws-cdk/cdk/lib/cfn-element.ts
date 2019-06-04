@@ -1,6 +1,8 @@
 import cxapi = require('@aws-cdk/cx-api');
-import { Construct, IConstruct, PATH_SEP } from "./construct";
+import { Construct, ConstructNode } from "./construct";
 import { Token } from './token';
+
+const CFN_ELEMENT_SYMBOL = Symbol.for('@aws-cdk/cdk.CfnElement');
 
 /**
  * An element of a CloudFormation stack.
@@ -15,8 +17,8 @@ export abstract class CfnElement extends Construct {
    *
    * @returns The construct as a stack element or undefined if it is not a stack element.
    */
-  public static isCfnElement(construct: IConstruct): construct is CfnElement {
-    return ('logicalId' in construct && '_toCloudFormation' in construct);
+  public static isCfnElement(x: any): x is CfnElement {
+    return CFN_ELEMENT_SYMBOL in x;
   }
 
   /**
@@ -41,6 +43,8 @@ export abstract class CfnElement extends Construct {
    */
   constructor(scope: Construct, id: string) {
     super(scope, id);
+
+    Object.defineProperty(this, CFN_ELEMENT_SYMBOL, { value: true });
 
     this.node.addMetadata(cxapi.LOGICAL_ID_METADATA_KEY, new (require("./token").Token)(() => this.logicalId), this.constructor);
 
@@ -87,7 +91,7 @@ export abstract class CfnElement extends Construct {
    * Return the path with respect to the stack
    */
   public get stackPath(): string {
-    return this.node.ancestors(this.node.stack).map(c => c.node.id).join(PATH_SEP);
+    return this.node.ancestors(this.node.stack).map(c => c.node.id).join(ConstructNode.PATH_SEP);
   }
 
   /**

@@ -42,4 +42,4 @@ const producer = new Producer(app, 'ProducerStack');
 new Consumer(app, 'ConsumerStack', { userBucket: producer.myBucket });
 /// !hide
 
-app.run();
+app.synth();

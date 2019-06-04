@@ -22,4 +22,4 @@ for (const rule of rules) {
   sg.addIngressRule(new ec2.AnyIPv4(), rule);
 }
 
-app.run();
+app.synth();

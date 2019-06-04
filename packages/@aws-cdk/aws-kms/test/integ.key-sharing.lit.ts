@@ -37,4 +37,4 @@ const keyStack = new KeyStack(app, 'KeyStack');
 new UseStack(app, 'UseStack', { key: keyStack.key });
 /// !hide
 
-app.run();
+app.synth();

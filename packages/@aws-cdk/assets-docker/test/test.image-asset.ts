@@ -172,7 +172,7 @@ export = {
       directory: path.join(__dirname, 'demo-image')
     });
 
-    const session = app.run();
+    const session = app.synth();
 
     test.ok(fs.existsSync(path.join(session.directory, 'asset.1a17a141505ac69144931fe263d130f4612251caa4bbbdaf68a44ed0f405439c/Dockerfile')));
     test.ok(fs.existsSync(path.join(session.directory, 'asset.1a17a141505ac69144931fe263d130f4612251caa4bbbdaf68a44ed0f405439c/index.py')));

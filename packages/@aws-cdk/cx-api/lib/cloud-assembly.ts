@@ -21,6 +21,18 @@ export interface AssemblyManifest {
   readonly artifacts?: { [id: string]: ArtifactManifest };
 
   /**
+   * A list of artifact IDs that are entrypoints of this app. Entrypoints will
+   * automatically be deployed when running "cdk deploy".
+   */
+  readonly entrypoints?: string[];
+
+  /**
+   * Missing context information. If this field has values, it means that the
+   * cloud assembly is not complete and should not be deployed.
+   */
+  readonly missing?: MissingContext[];
+
+  /**
    * Runtime information.
    */
   readonly runtime?: RuntimeInfo;
@@ -51,11 +63,6 @@ export class CloudAssembly {
   public readonly artifacts: CloudArtifact[];
 
   /**
-   * The set of missing context information (or `undefined` if there is no missing context).
-   */
-  public readonly missing?: { [key: string]: MissingContext };
-
-  /**
    * Runtime information such as module versions used to synthesize this assembly.
    */
   public readonly runtime: RuntimeInfo;
@@ -77,7 +84,6 @@ export class CloudAssembly {
     verifyManifestVersion(this.version);
 
     this.artifacts = this.renderArtifacts();
-    this.missing = this.renderMissing();
     this.runtime = this.manifest.runtime || { libraries: { } };
 
     // force validation of deps by accessing 'depends' on all artifacts
@@ -139,17 +145,6 @@ export class CloudAssembly {
 
     return topologicalSort(result, x => x.id, x => x._dependencyIDs);
   }
-
-  private renderMissing() {
-    const missing: { [key: string]: MissingContext } = { };
-    for (const artifact of Object.values(this.manifest.artifacts || {})) {
-      for (const [ key, m ] of Object.entries(artifact.missing || {})) {
-        missing[key] = m;
-      }
-    }
-
-    return Object.keys(missing).length > 0 ? missing : undefined;
-  }
 }
 
 /**
@@ -162,6 +157,8 @@ export class CloudAssemblyBuilder {
   public readonly outdir: string;
 
   private readonly artifacts: { [id: string]: ArtifactManifest } = { };
+  private readonly entrypoints = new Array<string>();
+  private readonly missing = new Array<MissingContext>();
 
   /**
    * Initializes a cloud assembly builder.
@@ -193,11 +190,36 @@ export class CloudAssemblyBuilder {
     this.artifacts[id] = filterUndefined(manifest);
   }
 
-  public build(options: BuildOptions = { }): CloudAssembly {
+  /**
+   * Marks an artifact as an entrypoint, which means that it will be automatically
+   * deployed with "cdk deploy".
+   *
+   * @param id The ID of the artifact.
+   */
+  public addEntrypoint(id: string) {
+    this.entrypoints.push(id);
+  }
+
+  /**
+   * Reports that some context is missing in order for this cloud assembly to be fully synthesized.
+   * @param missing Missing context information.
+   */
+  public addMissing(missing: MissingContext) {
+    this.missing.push(missing);
+  }
+
+  /**
+   * Finalizes the cloud assembly into the output directory returns a
+   * `CloudAssembly` object that can be used to inspect the assembly.
+   * @param options
+   */
+  public build(options: AssemblyBuildOptions = { }): CloudAssembly {
     const manifest: AssemblyManifest = filterUndefined({
       version: CLOUD_ASSEMBLY_VERSION,
       artifacts: this.artifacts,
-      runtime: options.runtimeInfo
+      entrypoints: this.entrypoints.length > 0 ? this.entrypoints : undefined,
+      runtime: options.runtimeInfo,
+      missing: this.missing.length > 0 ? this.missing : undefined
     });
 
     const manifestFilePath = path.join(this.outdir, MANIFEST_FILE);
@@ -205,14 +227,14 @@ export class CloudAssemblyBuilder {
 
     // "backwards compatibility": in order for the old CLI to tell the user they
     // need a new version, we'll emit the legacy manifest with only "version".
-    // this will result in an error "CDK Toolkit >= 0.33.0 is required in order to interact with this program."
+    // this will result in an error "CDK Toolkit >= 0.34.0 is required in order to interact with this program."
     fs.writeFileSync(path.join(this.outdir, 'cdk.out'), JSON.stringify({ version: CLOUD_ASSEMBLY_VERSION }));
 
     return new CloudAssembly(this.outdir);
   }
 }
 
-export interface BuildOptions {
+export interface AssemblyBuildOptions {
   /**
    * Include runtime information (module versions) in manifest.
    * @default true
@@ -234,7 +256,19 @@ export interface RuntimeInfo {
  * Represents a missing piece of context.
  */
 export interface MissingContext {
+  /**
+   * The missing context key.
+   */
+  readonly key: string;
+
+  /**
+   * The provider from which we expect this context key to be obtained.
+   */
   readonly provider: string;
+
+  /**
+   * A set of provider-specific options.
+   */
   readonly props: {
     account?: string;
     region?: string;

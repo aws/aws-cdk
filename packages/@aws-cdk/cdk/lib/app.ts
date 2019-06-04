@@ -1,8 +1,7 @@
 import cxapi = require('@aws-cdk/cx-api');
 import { CloudAssembly } from '@aws-cdk/cx-api';
-import { Construct } from './construct';
+import { Construct, ConstructNode } from './construct';
 import { collectRuntimeInformation } from './runtime-info';
-import { Synthesizer } from './synthesis';
 
 const APP_SYMBOL = Symbol.for('@aws-cdk/cdk.App');
 
@@ -13,7 +12,7 @@ export interface AppProps {
   /**
    * Automatically call run before the application exits
    *
-   * If you set this, you don't have to call `run()` anymore.
+   * If you set this, you don't have to call `synth()` anymore.
    *
    * @default true if running via CDK toolkit (`CDK_OUTDIR` is set), false otherwise
    */
@@ -104,9 +103,9 @@ export class App extends Construct {
 
     const autoRun = props.autoRun !== undefined ? props.autoRun : cxapi.OUTDIR_ENV in process.env;
     if (autoRun) {
-      // run() guarantuees it will only execute once, so a default of 'true'
+      // synth() guarantuees it will only execute once, so a default of 'true'
       // doesn't bite manual calling of the function.
-      process.once('beforeExit', () => this.run());
+      process.once('beforeExit', () => this.synth());
     }
   }
 
@@ -117,15 +116,13 @@ export class App extends Construct {
    * @returns a `CloudAssembly` which can be used to inspect synthesized
    * artifacts such as CloudFormation templates and assets.
    */
-  public run(): CloudAssembly {
-    // this app has already been executed, no-op for you
+  public synth(): CloudAssembly {
+    // we already have a cloud assembly, no-op for you
     if (this._assembly) {
       return this._assembly;
     }
 
-    const synth = new Synthesizer();
-
-    const assembly = synth.synthesize(this, {
+    const assembly = ConstructNode.synth(this.node, {
       outdir: this.outdir,
       runtimeInfo: this.runtimeInfo ? collectRuntimeInformation() : undefined
     });

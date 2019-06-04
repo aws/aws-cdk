@@ -19,4 +19,4 @@ class KinesisEventSourceTest extends cdk.Stack {
 
 const app = new cdk.App();
 new KinesisEventSourceTest(app, 'lambda-event-source-kinesis');
-app.run();
+app.synth();

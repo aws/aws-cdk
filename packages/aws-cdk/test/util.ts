@@ -5,7 +5,7 @@ import path = require('path');
 export interface TestStackArtifact {
   stackName: string;
   template: any;
-  hidden?: boolean;
+  entrypoint?: boolean;
   depends?: string[];
   metadata?: cxapi.StackMetadata;
   assets?: cxapi.AssetMetadataEntry[];
@@ -29,13 +29,18 @@ export function testAssembly(...stacks: TestStackArtifact[]): cxapi.CloudAssembl
     builder.addArtifact(stack.stackName, {
       type: cxapi.ArtifactType.AwsCloudFormationStack,
       environment: 'aws://12345/here',
-      hidden: stack.hidden,
+
       dependencies: stack.depends,
       metadata,
       properties: {
         templateFile
       }
     });
+
+    const entrypoint = stack.entrypoint === undefined ? true : stack.entrypoint;
+    if (entrypoint) {
+      builder.addEntrypoint(stack.stackName);
+    }
   }
 
   return builder.build();

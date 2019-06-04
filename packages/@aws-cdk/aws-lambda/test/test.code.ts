@@ -63,7 +63,7 @@ export = {
       });
 
       // THEN
-      const assembly = app.run();
+      const assembly = app.synth();
       const synthesized = assembly.stacks[0];
 
       // Func1 has an asset, Func2 does not

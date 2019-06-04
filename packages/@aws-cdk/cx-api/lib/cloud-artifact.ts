@@ -1,4 +1,4 @@
-import { CloudAssembly, MissingContext } from './cloud-assembly';
+import { CloudAssembly } from './cloud-assembly';
 import { Environment, EnvironmentUtils } from './environment';
 import {
   ERROR_METADATA_KEY,
@@ -46,19 +46,9 @@ export interface ArtifactManifest {
   readonly dependencies?: string[];
 
   /**
-   * Any missing context information.
-   */
-  readonly missing?: { [key: string]: MissingContext };
-
-  /**
    * The set of properties for this artifact (depends on type)
    */
   readonly properties?: { [name: string]: any };
-
-  /**
-   * True if this artifact should be be explicitly deployed or is it a "hidden" artifact.
-   */
-  readonly hidden?: boolean;
 }
 
 /**
@@ -112,6 +102,11 @@ export class CloudArtifact {
   public readonly environment: Environment;
 
   /**
+   * Indicates if this artifact is an entrypoint of the assembly.
+   */
+  public readonly entrypoint: boolean;
+
+  /**
    * IDs of all dependencies. Used when topologically sorting the artifacts within the cloud assembly.
    * @internal
    */
@@ -127,6 +122,7 @@ export class CloudArtifact {
     this.environment = EnvironmentUtils.parse(manifest.environment);
     this.messages = this.renderMessages();
     this._dependencyIDs = manifest.dependencies || [];
+    this.entrypoint = (assembly.manifest.entrypoints || []).includes(id);
   }
 
   /**

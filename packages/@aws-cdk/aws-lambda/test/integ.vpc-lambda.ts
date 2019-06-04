@@ -14,4 +14,4 @@ new lambda.Function(stack, 'MyLambda', {
   vpc
 });
 
-app.run();
+app.synth();

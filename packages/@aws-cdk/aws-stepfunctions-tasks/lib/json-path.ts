@@ -36,11 +36,11 @@ export class JsonPath {
   }
 }
 
-const JSON_PATH_TOKEN_SYMBOL = Symbol.for('JsonPathToken');
+const JSON_PATH_TOKEN_SYMBOL = Symbol.for('@aws-cdk/aws-step-functions-tasks.JsonPathToken');
 
 class JsonPathToken extends Token {
-  public static isJsonPathToken(x: object): x is JsonPathToken {
-    return (x as any)[JSON_PATH_TOKEN_SYMBOL] === true;
+  public static isJsonPathToken(x: any): x is JsonPathToken {
+    return JSON_PATH_TOKEN_SYMBOL in x;
   }
 
   constructor(public readonly path: string) {

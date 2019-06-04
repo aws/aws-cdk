@@ -57,4 +57,4 @@ pipeline.addToRolePolicy(new iam.PolicyStatement()
   .addAllResources()
 );
 
-app.run();
+app.synth();

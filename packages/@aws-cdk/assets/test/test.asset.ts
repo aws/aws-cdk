@@ -29,7 +29,7 @@ export = {
     test.ok(entry, 'found metadata entry');
 
     // verify that now the template contains parameters for this asset
-    const session = app.run();
+    const session = app.synth();
 
     test.deepEqual(stack.node.resolve(entry!.data), {
       path: SAMPLE_ASSET_DIR,
@@ -57,7 +57,7 @@ export = {
       path: dirPath
     });
 
-    const synth = app.run().getStack(stack.name);
+    const synth = app.synth().getStack(stack.name);
     const meta = synth.manifest.metadata || {};
     test.deepEqual(meta['/my-stack/MyAsset'][0].data, {
       path: 'asset.6b84b87243a4a01c592d78e1fd3855c4bfef39328cd0a450cc97e81717fea2a2',
@@ -249,7 +249,7 @@ export = {
       });
 
       // THEN
-      app.run();
+      app.synth();
       test.ok(fs.existsSync(tempdir));
       test.ok(fs.existsSync(path.join(tempdir, 'asset.a7a79cdf84b802ea8b198059ff899cffc095a1b9606e919f98e05bf80779756b.zip')));
       test.done();
@@ -269,7 +269,7 @@ export = {
       });
 
       // THEN
-      app.run();
+      app.synth();
       test.ok(fs.existsSync(tempdir));
       const hash = 'asset.6b84b87243a4a01c592d78e1fd3855c4bfef39328cd0a450cc97e81717fea2a2';
       test.ok(fs.existsSync(path.join(tempdir, hash, 'sample-asset-file.txt')));
@@ -341,7 +341,7 @@ export = {
       new ZipDirectoryAsset(stack, 'MyAsset', { path: SAMPLE_ASSET_DIR });
 
       // WHEN
-      const session = app.run();
+      const session = app.synth();
       const artifact = session.getStack(stack.name);
 
       const md = Object.values(artifact.manifest.metadata || {})[0][0].data;
