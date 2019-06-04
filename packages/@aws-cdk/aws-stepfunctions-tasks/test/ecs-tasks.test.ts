@@ -4,7 +4,6 @@ import ecs = require('@aws-cdk/aws-ecs');
 import sfn = require('@aws-cdk/aws-stepfunctions');
 import { Stack } from '@aws-cdk/cdk';
 import tasks = require('../lib');
-import { JsonPath, NumberValue } from '../lib';
 
 let stack: Stack;
 let vpc: ec2.Vpc;
@@ -20,7 +19,7 @@ beforeEach(() => {
   });
 });
 
-test('Canot create a Farkate task with a fargate-incompatible task definition', () => {
+test('Cannot create a Fargate task with a fargate-incompatible task definition', () => {
   const taskDefinition = new ecs.TaskDefinition(stack, 'TD', {
     memoryMiB: '512',
     cpu: '256',
@@ -35,7 +34,7 @@ test('Canot create a Farkate task with a fargate-incompatible task definition', 
     .toThrowError(/not configured for compatibility with Fargate/);
 });
 
-test('Canot create a Farkate task without a default container', () => {
+test('Cannot create a Fargate task without a default container', () => {
   const taskDefinition = new ecs.TaskDefinition(stack, 'TD', {
     memoryMiB: '512',
     cpu: '256',
@@ -64,7 +63,7 @@ test('Running a Fargate Task', () => {
       {
         containerName: 'TheContainer',
         environment: [
-          {name: 'SOME_KEY', value: JsonPath.stringFromPath('$.SomeKey')}
+          {name: 'SOME_KEY', value: sfn.Data.stringAt('$.SomeKey')}
         ]
       }
     ]
@@ -162,7 +161,7 @@ test('Running an EC2 Task with bridge network', () => {
       {
         containerName: 'TheContainer',
         environment: [
-          {name: 'SOME_KEY', value: JsonPath.stringFromPath('$.SomeKey')}
+          {name: 'SOME_KEY', value: sfn.Data.stringAt('$.SomeKey')}
         ]
       }
     ]
@@ -296,9 +295,9 @@ test('Running an EC2 Task with overridden number values', () => {
     containerOverrides: [
       {
         containerName: 'TheContainer',
-        command: JsonPath.listFromPath('$.TheCommand'),
-        cpu: NumberValue.fromNumber(5),
-        memoryLimit: JsonPath.numberFromPath('$.MemoryLimit'),
+        command: sfn.Data.listAt('$.TheCommand'),
+        cpu: 5,
+        memoryLimit: sfn.Data.numberAt('$.MemoryLimit'),
       }
     ]
   });

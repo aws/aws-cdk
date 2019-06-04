@@ -45,7 +45,7 @@ async function parseCommandLineArguments() {
     .option('asset-metadata', { type: 'boolean', desc: 'Include "aws:asset:*" CloudFormation metadata for resources that user assets (enabled by default)', default: true })
     .option('role-arn', { type: 'string', alias: 'r', desc: 'ARN of Role to use when invoking CloudFormation', default: undefined, requiresArg: true })
     .option('toolkit-stack-name', { type: 'string', desc: 'The name of the CDK toolkit stack', requiresArg: true })
-    .option('staging', { type: 'boolean', desc: 'copy assets to the output directory (use --no-staging to disable)', default: true })
+    .option('staging', { type: 'boolean', desc: 'copy assets to the output directory (use --no-staging to disable, needed for local debugging the source files with SAM CLI)', default: true })
     .option('output', { type: 'string', alias: 'o', desc: 'emits the synthesized cloud assembly into a directory (default: cdk.out)', requiresArg: true })
     .command([ 'list', 'ls' ], 'Lists all stacks in the app', yargs => yargs
       .option('long', { type: 'boolean', default: false, alias: 'l', desc: 'display environment information for each stack' }))
@@ -58,6 +58,7 @@ async function parseCommandLineArguments() {
       .option('exclusively', { type: 'boolean', alias: 'e', desc: 'only deploy requested stacks, don\'t include dependencies' })
       .option('require-approval', { type: 'string', choices: [RequireApproval.Never, RequireApproval.AnyChange, RequireApproval.Broadening], desc: 'what security-sensitive changes need manual approval' }))
       .option('ci', { type: 'boolean', desc: 'Force CI detection. Use --no-ci to disable CI autodetection.', default: process.env.CI !== undefined })
+      .option('tags', { type: 'array', alias: 't', desc: 'tags to add to the stack (KEY=VALUE)', nargs: 1, requiresArg: true })
     .command('destroy [STACKS..]', 'Destroy the stack(s) named STACKS', yargs => yargs
       .option('exclusively', { type: 'boolean', alias: 'x', desc: 'only deploy requested stacks, don\'t include dependees' })
       .option('force', { type: 'boolean', alias: 'f', desc: 'Do not ask for confirmation before destroying the stacks' }))
@@ -99,7 +100,6 @@ async function initCommandLine() {
     proxyAddress: argv.proxy,
     ec2creds: argv.ec2creds,
   });
-
   const configuration = new Configuration(argv);
   await configuration.load();
 
@@ -198,7 +198,8 @@ async function initCommandLine() {
           roleArn: args.roleArn,
           requireApproval: configuration.settings.get(['requireApproval']),
           ci: args.ci,
-          reuseAssets: args['build-exclude']
+          reuseAssets: args['build-exclude'],
+          tags: configuration.settings.get(['tags'])
         });
 
       case 'destroy':

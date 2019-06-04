@@ -12,7 +12,7 @@ type IntrinsicFragment = { type: 'intrinsic'; value: any; };
 type Fragment =  LiteralFragment | TokenFragment | IntrinsicFragment;
 
 /**
- * Fragments of a string with markers
+ * Fragments of a concatenated string containing stringified Tokens
  */
 export class TokenizedStringFragments {
   private readonly fragments = new Array<Fragment>();
@@ -43,6 +43,22 @@ export class TokenizedStringFragments {
     this.fragments.push({ type: 'intrinsic', value });
   }
 
+  /**
+   * Return all Tokens from this string
+   */
+  public get tokens(): Token[] {
+    const ret = new Array<Token>();
+    for (const f of this.fragments) {
+      if (f.type === 'token') {
+        ret.push(f.token);
+      }
+    }
+    return ret;
+  }
+
+  /**
+   * Apply a transformation function to all tokens in the string
+   */
   public mapTokens(mapper: ITokenMapper): TokenizedStringFragments {
     const ret = new TokenizedStringFragments();
 

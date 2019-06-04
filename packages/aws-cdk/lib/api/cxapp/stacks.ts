@@ -62,6 +62,7 @@ export interface AppStacksProps {
  * In a class because it shares some global state
  */
 export class AppStacks {
+
   /**
    * Since app execution basically always synthesizes all the stacks,
    * we can invoke it once and cache the response for subsequent calls.
@@ -234,6 +235,21 @@ export class AppStacks {
   }
 
   /**
+   * Returns and array with the tags available in the stack metadata.
+   */
+  public getTagsFromStackMetadata(stack: cxapi.CloudFormationStackArtifact): Tag[] {
+    for (const id of Object.keys(stack.metadata)) {
+      const metadata = stack.metadata[id];
+      for (const entry of metadata) {
+        if (entry.type === cxapi.STACK_TAGS_METADATA_KEY) {
+          return entry.data;
+        }
+      }
+    }
+    return [];
+  }
+
+  /**
    * Extracts 'aws:cdk:warning|info|error' metadata entries from the stack synthesis
    */
   private processMessages(stacks: cxapi.CloudFormationStackArtifact[]) {
@@ -367,4 +383,16 @@ function includeUpstreamStacks(
   if (added.length > 0) {
     print('Including dependency stacks: %s', colors.bold(added.join(', ')));
   }
+}
+
+export interface SelectedStack extends cxapi.CloudFormationStackArtifact {
+  /**
+   * The original name of the stack before renaming
+   */
+  originalName: string;
+}
+
+export interface Tag {
+  readonly Key: string;
+  readonly Value: string;
 }

@@ -549,6 +549,38 @@ export = {
       test.done();
     },
 
+    'overrides are applied after render'(test: Test) {
+      // GIVEN
+      class MyResource extends CfnResource {
+        public renderProperties() {
+          return { Fixed: 123 };
+        }
+      }
+      const stack = new Stack();
+      const cfn = new MyResource(stack, 'rr', { type: 'AWS::Resource::Type' });
+
+      // WHEN
+      cfn.addPropertyOverride('Boom', 'Hi');
+      cfn.addOverride('Properties.Foo.Bar', 'Bar');
+
+      // THEN
+      test.deepEqual(stack._toCloudFormation(), {
+        Resources: {
+          rr: {
+            Type: 'AWS::Resource::Type',
+            Properties: {
+              Fixed: 123,
+              Boom: 'Hi',
+              Foo: {
+                Bar: 'Bar'
+              }
+            }
+          }
+        }
+      });
+      test.done();
+    },
+
     'untypedPropertyOverrides': {
 
       'can be used by derived classes to specify overrides before render()'(test: Test) {
