@@ -24,6 +24,9 @@
         "distName": "aws-cdk.aws-certificatemanager",
         "module": "aws_cdk.aws_certificatemanager"
       }
+    },
+    "metadata": {
+      "awsdocs:title": "Amazon Certificate Manager"
     }
   },
   "repository": {

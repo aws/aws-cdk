@@ -24,6 +24,9 @@
         "distName": "aws-cdk.aws-cognito",
         "module": "aws_cdk.aws_cognito"
       }
+    },
+    "metadata": {
+      "awsdocs:title": "Amazon Cognito"
     }
   },
   "repository": {

@@ -1,4 +1,4 @@
-## AWS Compute and Networking Construct Library
+## Amazon EC2 Construct Library
 
 The `@aws-cdk/aws-ec2` package contains primitives for setting up networking and
 instances.

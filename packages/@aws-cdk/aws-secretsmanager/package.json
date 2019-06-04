@@ -24,6 +24,9 @@
         "distName": "aws-cdk.aws-secretsmanager",
         "module": "aws_cdk.aws_secretsmanager"
       }
+    },
+    "metadata": {
+      "awsdocs:title": "AWS Secrets Manager"
     }
   },
   "repository": {
