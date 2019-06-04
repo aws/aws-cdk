@@ -37,7 +37,7 @@ const definition = new sfn.Pass(stack, 'Start', {
       environment: [
         {
           name: 'SOME_KEY',
-          value: tasks.JsonPath.stringFromPath('$.SomeKey')
+          value: sfn.Data.stringAt('$.SomeKey')
         }
       ]
     }

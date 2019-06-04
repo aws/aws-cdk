@@ -77,7 +77,7 @@ export function resolve(obj: any, options: IResolveOptions): any {
   // string - potentially replace all stringified Tokens
   //
   if (typeof(obj) === 'string') {
-    const str = TokenString.forStringToken(obj);
+    const str = TokenString.forString(obj);
     if (str.test()) {
       const fragments = str.split(tokenMap.lookupToken.bind(tokenMap));
       return options.resolver.resolveString(fragments, makeContext());

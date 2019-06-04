@@ -24,7 +24,7 @@ export class TokenString {
   /**
    * Returns a `TokenString` for this string.
    */
-  public static forStringToken(s: string) {
+  public static forString(s: string) {
     return new TokenString(s, STRING_TOKEN_REGEX);
   }
 
@@ -106,7 +106,7 @@ export function containsListTokenElement(xs: any[]) {
  */
 export function unresolved(obj: any): boolean {
   if (typeof(obj) === 'string') {
-    return TokenString.forStringToken(obj).test();
+    return TokenString.forString(obj).test();
   } else if (typeof obj === 'number') {
     return extractTokenDouble(obj) !== undefined;
   } else if (Array.isArray(obj) && obj.length === 1) {
