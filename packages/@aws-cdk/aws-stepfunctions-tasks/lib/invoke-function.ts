@@ -12,7 +12,7 @@ export class InvokeFunction implements sfn.IStepFunctionsTask {
   constructor(private readonly lambdaFunction: lambda.IFunction) {
   }
 
-  public bind(_task: sfn.Task): sfn.StepFunctionsTaskProps {
+  public bind(_task: sfn.Task): sfn.StepFunctionsTaskConfig {
     return {
       resourceArn: this.lambdaFunction.functionArn,
       policyStatements: [new iam.PolicyStatement()

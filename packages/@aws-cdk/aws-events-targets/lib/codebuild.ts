@@ -13,7 +13,7 @@ export class CodeBuildProject implements events.IRuleTarget {
   /**
    * Allows using build projects as event rule targets.
    */
-  public bind(_rule: events.IRule): events.RuleTargetProps {
+  public bind(_rule: events.IRule): events.RuleTargetConfig {
     return {
       id: this.project.node.id,
       arn: this.project.projectArn,

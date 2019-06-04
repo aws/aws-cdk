@@ -39,7 +39,7 @@ export class PublishToTopic implements sfn.IStepFunctionsTask {
   constructor(private readonly topic: sns.ITopic, private readonly props: PublishToTopicProps) {
   }
 
-  public bind(_task: sfn.Task): sfn.StepFunctionsTaskProps {
+  public bind(_task: sfn.Task): sfn.StepFunctionsTaskConfig {
     return {
       resourceArn: 'arn:aws:states:::sns:publish',
       policyStatements: [new iam.PolicyStatement()

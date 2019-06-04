@@ -13,13 +13,13 @@ export interface IRuleTarget {
    *
    * @param rule The CloudWatch Event Rule that would trigger this target.
    */
-  bind(rule: IRule): RuleTargetProps;
+  bind(rule: IRule): RuleTargetConfig;
 }
 
 /**
  * Properties for an event rule target
  */
-export interface RuleTargetProps {
+export interface RuleTargetConfig {
   /**
    * A unique, user-defined identifier for the target. Acceptable values
    * include alphanumeric characters, periods (.), hyphens (-), and

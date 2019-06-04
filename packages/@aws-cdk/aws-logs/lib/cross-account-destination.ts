@@ -3,7 +3,7 @@ import cdk = require('@aws-cdk/cdk');
 import { Construct } from '@aws-cdk/cdk';
 import { ILogGroup } from './log-group';
 import { CfnDestination } from './logs.generated';
-import { ILogSubscriptionDestination, LogSubscriptionDestinationProps } from './subscription-filter';
+import { ILogSubscriptionDestination, LogSubscriptionDestinationConfig } from './subscription-filter';
 
 /**
  * Properties for a CrossAccountDestination
@@ -83,7 +83,7 @@ export class CrossAccountDestination extends cdk.Construct implements ILogSubscr
     this.policyDocument.addStatement(statement);
   }
 
-  public bind(_scope: Construct, _sourceLogGroup: ILogGroup): LogSubscriptionDestinationProps {
+  public bind(_scope: Construct, _sourceLogGroup: ILogGroup): LogSubscriptionDestinationConfig {
     return { arn: this.destinationArn };
   }
 

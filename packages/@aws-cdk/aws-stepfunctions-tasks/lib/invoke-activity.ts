@@ -24,7 +24,7 @@ export class InvokeActivity implements sfn.IStepFunctionsTask {
   constructor(private readonly activity: sfn.IActivity, private readonly props: InvokeActivityProps = {}) {
   }
 
-  public bind(_task: sfn.Task): sfn.StepFunctionsTaskProps {
+  public bind(_task: sfn.Task): sfn.StepFunctionsTaskConfig {
     return {
       resourceArn: this.activity.activityArn,
       metricDimensions: { ActivityArn: this.activity.activityArn },

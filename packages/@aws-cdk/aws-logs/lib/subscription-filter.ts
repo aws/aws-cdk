@@ -18,13 +18,13 @@ export interface ILogSubscriptionDestination {
    * The destination may reconfigure its own permissions in response to this
    * function call.
    */
-  bind(scope: Construct, sourceLogGroup: ILogGroup): LogSubscriptionDestinationProps;
+  bind(scope: Construct, sourceLogGroup: ILogGroup): LogSubscriptionDestinationConfig;
 }
 
 /**
  * Properties returned by a Subscription destination
  */
-export interface LogSubscriptionDestinationProps {
+export interface LogSubscriptionDestinationConfig {
   /**
    * The ARN of the subscription's destination
    */

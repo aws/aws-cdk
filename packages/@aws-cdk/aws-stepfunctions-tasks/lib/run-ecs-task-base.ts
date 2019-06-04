@@ -72,7 +72,7 @@ export class EcsRunTaskBase implements ec2.IConnectable, sfn.IStepFunctionsTask 
     }
   }
 
-  public bind(task: sfn.Task): sfn.StepFunctionsTaskProps {
+  public bind(task: sfn.Task): sfn.StepFunctionsTaskConfig {
     if (this.networkConfiguration !== undefined) {
       // Make sure we have a security group if we're using AWSVPC networking
       if (this.securityGroup === undefined) {
