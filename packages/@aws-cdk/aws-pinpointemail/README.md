@@ -1,4 +1,4 @@
-## AWS::PinpointEmail Construct Library
+## Amazon Pinpoint Email Construct Library
 
 This module is part of the [AWS Cloud Development Kit](https://github.com/awslabs/aws-cdk) project.
 

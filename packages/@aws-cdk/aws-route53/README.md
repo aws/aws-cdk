@@ -1,4 +1,4 @@
-## AWS Route53 Construct Library
+## Amazon Route53 Construct Library
 
 To add a public hosted zone:
 

@@ -1,4 +1,4 @@
-## AWS CloudFront Construct Library
+## Amazon CloudFront Construct Library
 A CloudFront construct - for setting up the AWS CDN with ease!
 
 Example usage:

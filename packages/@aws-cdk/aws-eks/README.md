@@ -1,4 +1,4 @@
-## AWS Elastic Container Service for Kubernetes (EKS) Construct Library
+## Amazon EKS Construct Library
 
 This construct library allows you to define and create [Amazon Elastic Container Service for Kubernetes (EKS)](https://aws.amazon.com/eks/) clusters programmatically.
 

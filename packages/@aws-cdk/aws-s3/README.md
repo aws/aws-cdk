@@ -1,4 +1,4 @@
-## AWS S3 Construct Library
+## Amazon S3 Construct Library
 
 Define an unencrypted S3 bucket.
 
