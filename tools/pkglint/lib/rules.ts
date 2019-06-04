@@ -252,7 +252,10 @@ export class AWSDocsMetadata extends ValidationRule {
     if (!title || (serviceName && serviceName !== title)) {
       pkg.report({
         ruleName: this.name,
-        message: `JSII packages bound to a CloudFormation scope must have the awsdocs:title JSII metadata entry.`,
+        message: [
+          `JSII packages bound to a CloudFormation scope must have the awsdocs:title JSII metadata entry.`,
+          `Service names are recorded in ${require.resolve('./aws-service-official-names.json')}`,
+        ].join('\n'),
         fix: serviceName ? () => deepSet(pkg.json, ['jsii', 'metadata', 'awsdocs:title'], serviceName) : undefined
       });
     }
