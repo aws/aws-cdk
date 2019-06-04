@@ -24,10 +24,7 @@
         "distName": "aws-cdk.aws-mediastore",
         "module": "aws_cdk.aws_mediastore"
       },
-      "sphinx": {},
-      "awsdocs": {
-        "title": "MediaStore"
-      }
+      "sphinx": {}
     }
   },
   "repository": {

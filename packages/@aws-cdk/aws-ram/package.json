@@ -23,9 +23,6 @@
       "python": {
         "distName": "aws-cdk.aws-ram",
         "module": "aws_cdk.aws_ram"
-      },
-      "awsdocs": {
-        "title": "RAM"
       }
     }
   },

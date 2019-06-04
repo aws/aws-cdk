@@ -23,9 +23,6 @@
       "python": {
         "distName": "aws-cdk.aws-greengrass",
         "module": "aws_cdk.aws_greengrass"
-      },
-      "awsdocs": {
-        "title": "Greengrass"
       }
     }
   },

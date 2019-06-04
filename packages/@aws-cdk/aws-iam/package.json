@@ -23,9 +23,6 @@
       "python": {
         "distName": "aws-cdk.aws-iam",
         "module": "aws_cdk.aws_iam"
-      },
-      "awsdocs": {
-        "title": "IAM"
       }
     }
   },

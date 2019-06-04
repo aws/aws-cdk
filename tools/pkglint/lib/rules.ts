@@ -12,6 +12,9 @@ import {
   monoRepoRoot, monoRepoVersion
 } from './util';
 
+// tslint:disable-next-line: no-var-requires
+const AWS_SERVICE_NAMES = require('./aws-service-official-names.json');
+
 /**
  * Verify that the package name matches the directory name
  */
@@ -212,7 +215,7 @@ export class JSIIPythonTarget extends ValidationRule {
   }
 }
 
-export class AWSDocsTarget extends ValidationRule {
+export class AWSDocsMetadata extends ValidationRule {
   public readonly name = 'jsii/awsdocs';
 
   public validate(pkg: PackageJson): void {
@@ -220,8 +223,16 @@ export class AWSDocsTarget extends ValidationRule {
     if (!scopes) {
       return;
     }
-    const scope = typeof scopes === 'string' ? scopes : scopes[0];
-    expectJSON(this.name, pkg, 'jsii.targets.awsdocs.title', scope.replace(/^AWS::/, '').replace(/::/g, '-'));
+    const scope: string = typeof scopes === 'string' ? scopes : scopes[0];
+    const serviceName = AWS_SERVICE_NAMES[scope];
+    const title = deepGet(pkg.json, ['jsii', 'metadata', 'awsdocs:title']);
+    if (!title || (serviceName && serviceName !== title)) {
+      pkg.report({
+        ruleName: this.name,
+        message: `JSII packages bound to a CloudFormation scope must have the awsdocs:title JSII metadata entry.`,
+        fix: serviceName ? () => deepSet(pkg.json, ['jsii', 'metadata', 'awsdocs:title'], serviceName) : undefined
+      });
+    }
   }
 }
 

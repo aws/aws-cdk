@@ -23,9 +23,6 @@
       "python": {
         "distName": "aws-cdk.aws-dlm",
         "module": "aws_cdk.aws_dlm"
-      },
-      "awsdocs": {
-        "title": "DLM"
       }
     }
   },

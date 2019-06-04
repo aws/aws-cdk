@@ -23,9 +23,6 @@
       "python": {
         "distName": "aws-cdk.aws-eks",
         "module": "aws_cdk.aws_eks"
-      },
-      "awsdocs": {
-        "title": "EKS"
       }
     }
   },

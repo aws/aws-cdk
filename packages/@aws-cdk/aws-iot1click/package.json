@@ -23,9 +23,6 @@
       "python": {
         "distName": "aws-cdk.aws-iot1click",
         "module": "aws_cdk.aws_iot1click"
-      },
-      "awsdocs": {
-        "title": "IoT1Click"
       }
     }
   },

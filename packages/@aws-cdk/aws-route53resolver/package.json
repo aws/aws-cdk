@@ -23,9 +23,6 @@
       "python": {
         "distName": "aws-cdk.aws-route53resolver",
         "module": "aws_cdk.aws_route53resolver"
-      },
-      "awsdocs": {
-        "title": "Route53Resolver"
       }
     }
   },

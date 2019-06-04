@@ -23,9 +23,6 @@
       "python": {
         "distName": "aws-cdk.aws-efs",
         "module": "aws_cdk.aws_efs"
-      },
-      "awsdocs": {
-        "title": "EFS"
       }
     }
   },

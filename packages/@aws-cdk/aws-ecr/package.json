@@ -23,9 +23,6 @@
       "python": {
         "distName": "aws-cdk.aws-ecr",
         "module": "aws_cdk.aws_ecr"
-      },
-      "awsdocs": {
-        "title": "ECR"
       }
     }
   },

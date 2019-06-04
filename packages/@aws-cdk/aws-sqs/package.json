@@ -23,9 +23,6 @@
       "python": {
         "distName": "aws-cdk.aws-sqs",
         "module": "aws_cdk.aws_sqs"
-      },
-      "awsdocs": {
-        "title": "SQS"
       }
     }
   },

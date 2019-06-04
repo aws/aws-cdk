@@ -24,10 +24,7 @@
         "distName": "aws-cdk.aws-transfer",
         "module": "aws_cdk.aws_transfer"
       },
-      "sphinx": {},
-      "awsdocs": {
-        "title": "Transfer"
-      }
+      "sphinx": {}
     }
   },
   "repository": {

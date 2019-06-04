@@ -23,9 +23,6 @@
       "python": {
         "distName": "aws-cdk.aws-cloudformation",
         "module": "aws_cdk.aws_cloudformation"
-      },
-      "awsdocs": {
-        "title": "CloudFormation"
       }
     }
   },

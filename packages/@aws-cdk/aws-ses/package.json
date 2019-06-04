@@ -23,9 +23,6 @@
       "python": {
         "distName": "aws-cdk.aws-ses",
         "module": "aws_cdk.aws_ses"
-      },
-      "awsdocs": {
-        "title": "SES"
       }
     }
   },

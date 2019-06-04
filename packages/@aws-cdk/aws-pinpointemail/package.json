@@ -24,10 +24,7 @@
         "distName": "aws-cdk.aws-pinpointemail",
         "module": "aws_cdk.aws_pinpointemail"
       },
-      "sphinx": {},
-      "awsdocs": {
-        "title": "PinpointEmail"
-      }
+      "sphinx": {}
     }
   },
   "repository": {

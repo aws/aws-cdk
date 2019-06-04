@@ -23,9 +23,6 @@
       "python": {
         "distName": "aws-cdk.aws-autoscaling",
         "module": "aws_cdk.aws_autoscaling"
-      },
-      "awsdocs": {
-        "title": "AutoScaling"
       }
     }
   },

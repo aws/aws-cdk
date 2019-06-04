@@ -23,9 +23,6 @@
       "python": {
         "distName": "aws-cdk.aws-elasticloadbalancingv2",
         "module": "aws_cdk.aws_elasticloadbalancingv2"
-      },
-      "awsdocs": {
-        "title": "ElasticLoadBalancingV2"
       }
     }
   },

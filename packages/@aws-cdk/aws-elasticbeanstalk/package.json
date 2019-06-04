@@ -23,9 +23,6 @@
       "python": {
         "distName": "aws-cdk.aws-elasticbeanstalk",
         "module": "aws_cdk.aws_elasticbeanstalk"
-      },
-      "awsdocs": {
-        "title": "ElasticBeanstalk"
       }
     }
   },
