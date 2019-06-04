@@ -124,15 +124,38 @@ export class ReadmeFile extends ValidationRule {
 
   public validate(pkg: PackageJson): void {
     const readmeFile = path.join(pkg.packageRoot, 'README.md');
+
+    const scopes = pkg.json['cdk-build'] && pkg.json['cdk-build'].cloudformation;
+    if (!scopes) {
+      return;
+    }
+    const scope: string = typeof scopes === 'string' ? scopes : scopes[0];
+    const serviceName = AWS_SERVICE_NAMES[scope];
+
+    const headline = serviceName && `${serviceName} Construct Library`;
+
     if (!fs.existsSync(readmeFile)) {
       pkg.report({
         ruleName: this.name,
         message: 'There must be a README.md file at the root of the package',
         fix: () => fs.writeFileSync(
           readmeFile,
-          `## ${pkg.json.description}\nThis module is part of the [AWS Cloud Development Kit](https://github.com/awslabs/aws-cdk) project.`
+          [
+            `## ${headline || pkg.json.description}`,
+            'This module is part of the[AWS Cloud Development Kit](https://github.com/awslabs/aws-cdk) project.'
+          ].join('\n')
         )
       });
+    } else if (headline) {
+      const requiredFirstLine = `## ${headline}`;
+      const [firstLine, ...rest] = fs.readFileSync(readmeFile, { encoding: 'utf8' }).split('\n');
+      if (firstLine !== requiredFirstLine) {
+        pkg.report({
+          ruleName: this.name,
+          message: `The title of the README.md file must be "${headline}"`,
+          fix: () => fs.writeFileSync(readmeFile, [requiredFirstLine, ...rest].join('\n')),
+        });
+      }
     }
   }
 }
