@@ -24,6 +24,9 @@
         "distName": "aws-cdk.aws-sagemaker",
         "module": "aws_cdk.aws_sagemaker"
       }
+    },
+    "metadata": {
+      "awsdocs:title": "Amazon SageMaker"
     }
   },
   "repository": {

@@ -24,6 +24,9 @@
         "distName": "aws-cdk.aws-applicationautoscaling",
         "module": "aws_cdk.aws_applicationautoscaling"
       }
+    },
+    "metadata": {
+      "awsdocs:title": "Application Auto Scaling"
     }
   },
   "repository": {
