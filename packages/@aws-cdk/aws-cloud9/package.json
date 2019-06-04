@@ -24,6 +24,9 @@
         "distName": "aws-cdk.aws-cloud9",
         "module": "aws_cdk.aws_cloud9"
       }
+    },
+    "metadata": {
+      "awsdocs:title": "AWS Cloud9"
     }
   },
   "repository": {

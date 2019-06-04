@@ -24,6 +24,9 @@
         "distName": "aws-cdk.aws-kms",
         "module": "aws_cdk.aws_kms"
       }
+    },
+    "metadata": {
+      "awsdocs:title": "AWS Key Management Service"
     }
   },
   "repository": {

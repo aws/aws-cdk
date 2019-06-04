@@ -24,6 +24,9 @@
         "distName": "aws-cdk.aws-sqs",
         "module": "aws_cdk.aws_sqs"
       }
+    },
+    "metadata": {
+      "awsdocs:title": "Amazon Simple Queue Service"
     }
   },
   "repository": {

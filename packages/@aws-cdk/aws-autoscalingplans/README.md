@@ -1,2 +1,2 @@
-## The CDK Construct Library for AWS Auto-Scaling Plans
+## AWS Auto Scaling Plans Construct Library
 This module is part of the [AWS Cloud Development Kit](https://github.com/awslabs/aws-cdk) project.

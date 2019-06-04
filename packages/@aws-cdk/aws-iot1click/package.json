@@ -24,6 +24,9 @@
         "distName": "aws-cdk.aws-iot1click",
         "module": "aws_cdk.aws_iot1click"
       }
+    },
+    "metadata": {
+      "awsdocs:title": "AWS IoT 1-Click"
     }
   },
   "repository": {

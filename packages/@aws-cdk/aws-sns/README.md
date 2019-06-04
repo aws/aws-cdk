@@ -1,4 +1,4 @@
-## AWS SNS Construct Library
+## Amazon Simple Notification Service Construct Library
 
 Add an SNS Topic to your stack:
 

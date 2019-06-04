@@ -1,2 +1,2 @@
-## The CDK Construct Library for AWS Elastic MapReduce (EMR)
+## Amazon EMR Construct Library
 This module is part of the [AWS Cloud Development Kit](https://github.com/awslabs/aws-cdk) project.

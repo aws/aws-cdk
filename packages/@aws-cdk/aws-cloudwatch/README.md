@@ -1,4 +1,4 @@
-## Metrics
+## Amazon CloudWatch Construct Library
 
 Metric objects represent a metric that is emitted by AWS services or your own
 application, such as `CPUUsage`, `FailureCount` or `Bandwidth`.

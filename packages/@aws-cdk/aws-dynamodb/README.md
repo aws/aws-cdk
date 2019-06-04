@@ -1,4 +1,4 @@
-## AWS DynamoDB Construct Library
+## Amazon DynamoDB Construct Library
 
 Here is a minimal deployable DynamoDB table definition:
 

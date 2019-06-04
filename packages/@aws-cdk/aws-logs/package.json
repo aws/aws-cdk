@@ -24,6 +24,9 @@
         "distName": "aws-cdk.aws-logs",
         "module": "aws_cdk.aws_logs"
       }
+    },
+    "metadata": {
+      "awsdocs:title": "Amazon CloudWatch Logs"
     }
   },
   "repository": {

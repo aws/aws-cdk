@@ -1,4 +1,4 @@
-# AWS CodeCommit
+## AWS CodeCommit Construct Library
 
 AWS CodeCommit is a version control service that enables you to privately store and manage Git repositories in the AWS cloud.
 

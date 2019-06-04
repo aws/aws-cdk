@@ -1,4 +1,4 @@
-## AWS Elastic Load Balancing Construct Library
+## Amazon Elastic Load Balancing Construct Library
 
 The `@aws-cdk/aws-ec2` package provides constructs for configuring
 classic load balancers.

@@ -24,6 +24,9 @@
         "distName": "aws-cdk.aws-ecs",
         "module": "aws_cdk.aws_ecs"
       }
+    },
+    "metadata": {
+      "awsdocs:title": "Amazon ECS"
     }
   },
   "repository": {

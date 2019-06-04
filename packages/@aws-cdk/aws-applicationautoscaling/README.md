@@ -1,4 +1,4 @@
-## AWS Application AutoScaling Construct Library
+## AWS Auto Scaling Construct Library
 
 **Application AutoScaling** is used to configure autoscaling for all
 services other than scaling EC2 instances. For example, you will use this to

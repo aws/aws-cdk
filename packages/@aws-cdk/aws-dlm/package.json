@@ -24,6 +24,9 @@
         "distName": "aws-cdk.aws-dlm",
         "module": "aws_cdk.aws_dlm"
       }
+    },
+    "metadata": {
+      "awsdocs:title": "Amazon Data Lifecycle Manager"
     }
   },
   "repository": {

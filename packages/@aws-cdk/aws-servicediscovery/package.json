@@ -24,6 +24,9 @@
         "distName": "aws-cdk.aws-servicediscovery",
         "module": "aws_cdk.aws_servicediscovery"
       }
+    },
+    "metadata": {
+      "awsdocs:title": "Amazon ECS Service Discovery"
     }
   },
   "repository": {

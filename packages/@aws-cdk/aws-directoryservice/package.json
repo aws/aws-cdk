@@ -24,6 +24,9 @@
         "distName": "aws-cdk.aws-directoryservice",
         "module": "aws_cdk.aws_directoryservice"
       }
+    },
+    "metadata": {
+      "awsdocs:title": "AWS Directory Service"
     }
   },
   "repository": {

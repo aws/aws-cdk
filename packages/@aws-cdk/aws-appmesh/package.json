@@ -24,6 +24,9 @@
         "distName": "aws-cdk.aws-appmesh",
         "module": "aws_cdk.aws_appmesh"
       }
+    },
+    "metadata": {
+      "awsdocs:title": "AWS App Mesh"
     }
   },
   "repository": {

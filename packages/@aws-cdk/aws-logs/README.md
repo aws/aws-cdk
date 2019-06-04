@@ -1,4 +1,4 @@
-## AWS CloudWatch Logs Construct Library
+## Amazon CloudWatch Logs Construct Library
 
 This library supplies constructs for working with CloudWatch Logs.
 

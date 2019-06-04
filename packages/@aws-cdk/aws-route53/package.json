@@ -24,6 +24,9 @@
         "distName": "aws-cdk.aws-route53",
         "module": "aws_cdk.aws_route53"
       }
+    },
+    "metadata": {
+      "awsdocs:title": "Amazon Route53"
     }
   },
   "repository": {

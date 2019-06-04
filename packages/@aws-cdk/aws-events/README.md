@@ -1,4 +1,4 @@
-## AWS CloudWatch Events Construct Library
+## Amazon CloudWatch Events Construct Library
 
 Amazon CloudWatch Events delivers a near real-time stream of system events that
 describe changes in AWS resources. For example, an AWS CodePipeline emits the

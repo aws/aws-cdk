@@ -1,4 +1,4 @@
-## CDK Construct Library for Amazon API Gateway
+## Amazon API Gateway Construct Library
 
 Amazon API Gateway is a fully managed service that makes it easy for developers
 to publish, maintain, monitor, and secure APIs at any scale. Create an API to

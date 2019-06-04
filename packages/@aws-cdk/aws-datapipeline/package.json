@@ -24,6 +24,9 @@
         "distName": "aws-cdk.aws-datapipeline",
         "module": "aws_cdk.aws_datapipeline"
       }
+    },
+    "metadata": {
+      "awsdocs:title": "AWS Data Pipeline"
     }
   },
   "repository": {

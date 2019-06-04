@@ -24,6 +24,9 @@
         "distName": "aws-cdk.aws-docdb",
         "module": "aws_cdk.aws_docdb"
       }
+    },
+    "metadata": {
+      "awsdocs:title": "Amazon DocumentDB"
     }
   },
   "repository": {

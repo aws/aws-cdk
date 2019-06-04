@@ -1,4 +1,4 @@
-## AWS IAM Construct Library
+## AWS Identity and Access Management Construct Library
 
 Define a role and add permissions to it. This will automatically create and
 attach an IAM policy to the role:

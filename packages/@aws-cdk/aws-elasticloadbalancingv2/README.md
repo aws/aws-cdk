@@ -1,4 +1,4 @@
-## AWS Application and Network Load Balancing Construct Library
+## Amazon Elastic Load Balancing V2 Construct Library
 
 The `@aws-cdk/aws-elasticloadbalancingv2` package provides constructs for
 configuring application and network load balancers.

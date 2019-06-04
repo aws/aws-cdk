@@ -1,4 +1,4 @@
-## AWS Kinesis Construct Library
+## Amazon Kinesis Construct Library
 
 Define an unencrypted Kinesis stream.
 
