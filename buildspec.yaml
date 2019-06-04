@@ -12,7 +12,12 @@ phases:
       - /bin/bash ./build.sh
   post_build:
     commands:
-      - "[ -f .BUILD_COMPLETED ] && [ -z \"${SKIP_PACK:-}\" ] && /bin/bash ./pack.sh"
+      - |
+        if [ -f .BUILD_COMPLETED ]; then
+          if [ -z \"${SKIP_PACK:-}\" ]; then
+            /bin/bash ./pack.sh
+          fi
+        fi
 artifacts:
   files:
     - "**/*"
