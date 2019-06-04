@@ -301,7 +301,10 @@ export class CaaRecord extends BasicRecord {
 export interface CaaAmazonRecordProps extends RecordProps {}
 
 /**
- * A DNS Amazon CAA record
+ * A DNS Amazon CAA record.
+ *
+ * A CAA record to restrict certificate authorities allowed
+ * to issue certificates for a domain to Amazon only.
  *
  * @resource AWS::Route53::RecordSet
  */

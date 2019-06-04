@@ -1,7 +1,7 @@
 import ec2 = require('@aws-cdk/aws-ec2');
 import { Construct, Resource, Token } from '@aws-cdk/cdk';
 import { HostedZoneAttributes, IHostedZone } from './hosted-zone-ref';
-import { ZoneDelegationRecord } from './records';
+import { CaaAmazonRecord, ZoneDelegationRecord } from './records';
 import { CfnHostedZone } from './route53.generated';
 import { validateZoneName } from './util';
 
@@ -107,7 +107,19 @@ export class HostedZone extends Resource implements IHostedZone {
   }
 }
 
-export interface PublicHostedZoneProps extends CommonHostedZoneProps { }
+/**
+ * Construction properties for a PublicHostedZone.
+ */
+export interface PublicHostedZoneProps extends CommonHostedZoneProps {
+  /**
+   * Whether to create a CAA record to restrict certificate authorities allowed
+   * to issue certificates for this domain to Amazon only.
+   *
+   * @default false
+   */
+  readonly caaAmazon?: boolean;
+}
+
 export interface IPublicHostedZone extends IHostedZone { }
 
 /**
@@ -127,6 +139,12 @@ export class PublicHostedZone extends HostedZone implements IPublicHostedZone {
 
   constructor(scope: Construct, id: string, props: PublicHostedZoneProps) {
     super(scope, id, props);
+
+    if (props.caaAmazon) {
+      new CaaAmazonRecord(this, 'CaaAmazon', {
+        zone: this
+      });
+    }
   }
 
   public addVpc(_vpc: ec2.IVpc) {

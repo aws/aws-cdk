@@ -194,6 +194,27 @@ export = {
     }));
     test.done();
   },
+
+  'public hosted zone wiht caaAmazon set to true'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new PublicHostedZone(stack, 'MyHostedZone', {
+      zoneName: 'protected.com',
+      caaAmazon: true
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::Route53::RecordSet', {
+      Type: 'CAA',
+      Name: 'protected.com.',
+      ResourceRecords: [
+        '0 issue "amazon.com"'
+      ]
+    }));
+    test.done();
+  }
 };
 
 class TestApp {
