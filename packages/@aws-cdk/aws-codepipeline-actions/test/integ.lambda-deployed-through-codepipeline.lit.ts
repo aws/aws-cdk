@@ -11,7 +11,7 @@ const app = new cdk.App();
 const lambdaStack = new cdk.Stack(app, 'LambdaStack', {
   // remove the Stack from `cdk synth` and `cdk deploy`
   // unless you explicitly filter for it
-  autoDeploy: false,
+  entrypoint: false,
 });
 const lambdaCode = lambda.Code.cfnParameters();
 new lambda.Function(lambdaStack, 'Lambda', {
