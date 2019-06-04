@@ -76,7 +76,7 @@ export class EcsTask implements events.IRuleTarget {
   /**
    * Allows using tasks as target of CloudWatch events
    */
-  public bind(rule: events.IRule): events.RuleTargetProperties {
+  public bind(rule: events.IRule): events.RuleTargetProps {
     const policyStatements = [new iam.PolicyStatement()
       .addAction('ecs:RunTask')
       .addResource(this.taskDefinition.taskDefinitionArn)

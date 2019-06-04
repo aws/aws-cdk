@@ -9,13 +9,13 @@ export interface IStepFunctionsTask {
   /**
    * Called when the task object is used in a workflow
    */
-  bind(task: Task): StepFunctionsTaskProperties;
+  bind(task: Task): StepFunctionsTaskProps;
 }
 
 /**
  * Properties that define what kind of task should be created
  */
-export interface StepFunctionsTaskProperties {
+export interface StepFunctionsTaskProps {
   /**
    * The resource that represents the work to be executed
    *

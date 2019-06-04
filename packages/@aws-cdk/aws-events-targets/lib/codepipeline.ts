@@ -10,7 +10,7 @@ export class CodePipeline implements events.IRuleTarget {
   constructor(private readonly pipeline: codepipeline.IPipeline) {
   }
 
-  public bind(_rule: events.IRule): events.RuleTargetProperties {
+  public bind(_rule: events.IRule): events.RuleTargetProps {
     return {
       id: this.pipeline.node.id,
       arn: this.pipeline.pipelineArn,

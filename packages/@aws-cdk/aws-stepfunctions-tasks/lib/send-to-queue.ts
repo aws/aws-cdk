@@ -48,7 +48,7 @@ export class SendToQueue implements sfn.IStepFunctionsTask {
   constructor(private readonly queue: sqs.IQueue, private readonly props: SendToQueueProps) {
   }
 
-  public bind(_task: sfn.Task): sfn.StepFunctionsTaskProperties {
+  public bind(_task: sfn.Task): sfn.StepFunctionsTaskProps {
     return {
       resourceArn: 'arn:aws:states:::sqs:sendMessage',
       policyStatements: [new iam.PolicyStatement()

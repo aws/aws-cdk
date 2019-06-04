@@ -206,7 +206,7 @@ class StepScalingAlarmAction implements cloudwatch.IAlarmAction {
   constructor(private readonly stepScalingAction: StepScalingAction) {
   }
 
-  public bind(_scope: cdk.Construct, _alarm: cloudwatch.IAlarm): cloudwatch.AlarmActionProperties {
+  public bind(_scope: cdk.Construct, _alarm: cloudwatch.IAlarm): cloudwatch.AlarmActionProps {
     return { alarmActionArn: this.stepScalingAction.scalingPolicyArn };
   }
 }

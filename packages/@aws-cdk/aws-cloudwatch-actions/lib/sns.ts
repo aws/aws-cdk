@@ -9,7 +9,7 @@ export class SnsAction implements cloudwatch.IAlarmAction {
   constructor(private readonly topic: sns.ITopic) {
   }
 
-  public bind(_scope: Construct, _alarm: cloudwatch.IAlarm): cloudwatch.AlarmActionProperties {
+  public bind(_scope: Construct, _alarm: cloudwatch.IAlarm): cloudwatch.AlarmActionProps {
     return { alarmActionArn: this.topic.topicArn };
   }
 }
