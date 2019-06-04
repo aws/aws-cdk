@@ -80,7 +80,7 @@ export class ConstructNode {
   /**
    * List of children and their names
    */
-  private readonly _children: { [name: string]: Construct } = { };
+  private readonly _children: { [name: string]: IConstruct } = { };
   private readonly context: { [key: string]: any } = { };
   private readonly _metadata = new Array<cxapi.MetadataEntry>();
   private readonly references = new Set<Reference>();
@@ -188,13 +188,13 @@ export class ConstructNode {
    * @param path Relative path of a direct or indirect child
    * @returns a child by path or undefined if not found.
    */
-  public tryFindChild(path: string): Construct | undefined {
+  public tryFindChild(path: string): IConstruct | undefined {
     if (path.startsWith(ConstructNode.PATH_SEP)) {
       throw new Error('Path must be relative');
     }
     const parts = path.split(ConstructNode.PATH_SEP);
 
-    let curr: Construct | undefined = this.host;
+    let curr: IConstruct | undefined = this.host;
     while (curr != null && parts.length > 0) {
       curr = curr.node._children[parts.shift()!];
     }
@@ -212,7 +212,7 @@ export class ConstructNode {
    * @param path Relative path of a direct or indirect child
    * @returns Child with the given path.
    */
-  public findChild(path: string): Construct {
+  public findChild(path: string): IConstruct {
     const ret = this.tryFindChild(path);
     if (!ret) {
       throw new Error(`No child with path: '${path}'`);
@@ -245,12 +245,12 @@ export class ConstructNode {
   /**
    * Return this construct and all of its children in the given order
    */
-  public findAll(order: ConstructOrder = ConstructOrder.PreOrder): Construct[] {
-    const ret = new Array<Construct>();
+  public findAll(order: ConstructOrder = ConstructOrder.PreOrder): IConstruct[] {
+    const ret = new Array<IConstruct>();
     visit(this.host);
     return ret;
 
-    function visit(node: Construct) {
+    function visit(node: IConstruct) {
       if (order === ConstructOrder.PreOrder) {
         ret.push(node);
       }
