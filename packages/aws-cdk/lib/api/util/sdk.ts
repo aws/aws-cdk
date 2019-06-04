@@ -84,7 +84,7 @@ export class SDK {
       });
     }
 
-    this.defaultAwsAccount = new DefaultAWSAccount(defaultCredentialProvider, getCLICompatibleDefaultRegion(this.profile));
+    this.defaultAwsAccount = new DefaultAWSAccount(defaultCredentialProvider, getCLICompatibleDefaultRegionGetter(this.profile));
     this.credentialsCache = new CredentialsCache(this.defaultAwsAccount, defaultCredentialProvider);
   }
 
@@ -137,7 +137,7 @@ export class SDK {
   }
 
   public async defaultRegion(): Promise<string | undefined> {
-    return await getCLICompatibleDefaultRegion(this.profile);
+    return await getCLICompatibleDefaultRegionGetter(this.profile)();
   }
 
   public defaultAccount(): Promise<string | undefined> {
@@ -226,7 +226,7 @@ class DefaultAWSAccount {
 
   constructor(
       private readonly defaultCredentialsProvider: Promise<AWS.CredentialProviderChain>,
-      private readonly region: Promise<string | undefined>) {
+      private readonly region: () => Promise<string | undefined>) {
   }
 
   /**
@@ -258,7 +258,7 @@ class DefaultAWSAccount {
       const accountId = await this.accountCache.fetch(creds.accessKeyId, async () => {
         // if we don't have one, resolve from STS and store in cache.
         debug('Looking up default account ID from STS');
-        const result = await new AWS.STS({ credentials: creds, region: await this.region }).getCallerIdentity().promise();
+        const result = await new AWS.STS({ credentials: creds, region: await this.region() }).getCallerIdentity().promise();
         const aid = result.Account;
         if (!aid) {
           debug('STS didn\'t return an account ID');
@@ -333,31 +333,43 @@ async function makeCLICompatibleCredentialProvider(profile: string | undefined, 
  *   SDK does not allow us to specify a profile at runtime).
  * - AWS_DEFAULT_PROFILE and AWS_DEFAULT_REGION are also used as environment
  *   variables to be used to determine the region.
+ *
+ * Returns a function that can be invoked to retrieve the actual region value
+ * (used to be just a promise, but that would lead to firing off a failing
+ * operation and if it was never awaited NodeJS would complain).
  */
-async function getCLICompatibleDefaultRegion(profile: string | undefined): Promise<string | undefined> {
-  profile = profile || process.env.AWS_PROFILE || process.env.AWS_DEFAULT_PROFILE || 'default';
+function getCLICompatibleDefaultRegionGetter(profile: string | undefined): () => Promise<string | undefined> {
+  let retrieved = false;
+  let region: string | undefined;
+  return async () => {
+    if (!retrieved) {
+      profile = profile || process.env.AWS_PROFILE || process.env.AWS_DEFAULT_PROFILE || 'default';
 
-  // Defaults inside constructor
-  const toCheck = [
-    {filename: process.env.AWS_SHARED_CREDENTIALS_FILE },
-    {isConfig: true, filename: process.env.AWS_CONFIG_FILE},
-  ];
+      // Defaults inside constructor
+      const toCheck = [
+        {filename: process.env.AWS_SHARED_CREDENTIALS_FILE },
+        {isConfig: true, filename: process.env.AWS_CONFIG_FILE},
+      ];
 
-  let region = process.env.AWS_REGION || process.env.AMAZON_REGION ||
-    process.env.AWS_DEFAULT_REGION || process.env.AMAZON_DEFAULT_REGION;
+      region = process.env.AWS_REGION || process.env.AMAZON_REGION ||
+        process.env.AWS_DEFAULT_REGION || process.env.AMAZON_DEFAULT_REGION;
 
-  while (!region && toCheck.length > 0) {
-    const configFile = new SharedIniFile(toCheck.shift());
-    const section = await configFile.getProfile(profile);
-    region = section && section.region;
-  }
+      while (!region && toCheck.length > 0) {
+        const configFile = new SharedIniFile(toCheck.shift());
+        const section = await configFile.getProfile(profile);
+        region = section && section.region;
+      }
 
-  if (!region) {
-    const usedProfile = !profile ? '' : ` (profile: "${profile}")`;
-    throw new Error(`Unable to determine AWS region from environment or AWS configuration${usedProfile}`);
-  }
+      if (!region) {
+        const usedProfile = !profile ? '' : ` (profile: "${profile}")`;
+        debug(`Unable to determine AWS region from environment or AWS configuration${usedProfile}`);
+      }
 
-  return region;
+      retrieved = true;
+    }
+
+    return region;
+  };
 }
 
 /**
