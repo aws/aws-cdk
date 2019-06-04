@@ -1,4 +1,4 @@
-## The CDK Construct Library for AWS Service Discovery
+## Amazon ECS Service Discovery Construct Library
 This module is part of the [AWS Cloud Development Kit](https://github.com/awslabs/aws-cdk) project.
 
 This package contains constructs for working with **AWS Cloud Map**

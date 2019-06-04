@@ -1,4 +1,4 @@
-## The CDK Construct Library for AWS Systems Manager
+## AWS Systems Manager Construct Library
 This module is part of the [AWS Cloud Development Kit](https://github.com/awslabs/aws-cdk) project.
 
 ### Installation

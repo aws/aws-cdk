@@ -1,4 +1,4 @@
-## AWS KMS Construct Library
+## AWS Key Management Service Construct Library
 
 Defines a KMS key:
 
