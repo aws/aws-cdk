@@ -59,6 +59,8 @@ export = {
 
     const synth = app.synth().getStack(stack.name);
     const meta = synth.manifest.metadata || {};
+    test.ok(meta['/my-stack/MyAsset']);
+    test.ok(meta['/my-stack/MyAsset'][0]);
     test.deepEqual(meta['/my-stack/MyAsset'][0].data, {
       path: 'asset.6b84b87243a4a01c592d78e1fd3855c4bfef39328cd0a450cc97e81717fea2a2',
       id: "mystackMyAssetD6B1B593",
@@ -343,8 +345,8 @@ export = {
       // WHEN
       const session = app.synth();
       const artifact = session.getStack(stack.name);
-
-      const md = Object.values(artifact.manifest.metadata || {})[0][0].data;
+      const metadata = artifact.manifest.metadata || {};
+      const md = Object.values(metadata)[0]![0]!.data;
       test.deepEqual(md.path, 'asset.6b84b87243a4a01c592d78e1fd3855c4bfef39328cd0a450cc97e81717fea2a2');
       test.done();
     }

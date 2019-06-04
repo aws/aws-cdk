@@ -4,7 +4,7 @@ import { CfnSecurityGroup, CfnSecurityGroupEgress, CfnSecurityGroupIngress } fro
 import { IPortRange, ISecurityGroupRule } from './security-group-rule';
 import { IVpc } from './vpc';
 
-const SECURITY_GROUP_SYMBOL = Symbol.for('aws-cdk:isSecurityGroup');
+const SECURITY_GROUP_SYMBOL = Symbol.for('@aws-cdk/iam.SecurityGroup');
 
 export interface ISecurityGroup extends IResource, ISecurityGroupRule, IConnectable {
   /**

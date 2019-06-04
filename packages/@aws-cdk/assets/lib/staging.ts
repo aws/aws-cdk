@@ -67,12 +67,11 @@ export class Staging extends Construct {
   }
 
   public synthesize(session: ISynthesisSession) {
-    const assembly = session.assembly;
     if (!this.relativePath) {
       return;
     }
 
-    const targetPath = path.join(assembly.outdir, this.relativePath);
+    const targetPath = path.join(session.assembly.outdir, this.relativePath);
 
     // asset already staged
     if (fs.existsSync(targetPath)) {

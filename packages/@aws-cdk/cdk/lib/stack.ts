@@ -100,7 +100,7 @@ export class Stack extends Construct implements ITaggable {
    * Indicates if this stack is an entrypoint, which means that it won't be
    * automatically deployed when running `cdk deploy` without arguments.
    */
-  public readonly entrypoint: boolean;
+  private readonly entrypoint: boolean;
 
   /**
    * Other stacks this stack depends on

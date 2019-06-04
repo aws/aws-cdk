@@ -19,30 +19,6 @@ export interface IConstruct extends IDependable {
   readonly node: ConstructNode;
 }
 
-export interface ISynthesisSession {
-  /**
-   * The cloud assembly being synthesized.
-   */
-  assembly: cxapi.CloudAssemblyBuilder;
-}
-
-/**
- * Options for synthesis.
- */
-export interface SynthesisOptions extends cxapi.AssemblyBuildOptions {
-  /**
-   * The output directory into which to synthesize the cloud assembly.
-   * @default - creates a temporary directory
-   */
-  readonly outdir?: string;
-
-  /**
-   * Whether synthesis should skip the validation phase.
-   * @default false
-   */
-  readonly skipValidation?: boolean;
-}
-
 /**
  * Represents the construct node in the scope tree.
  */
@@ -218,7 +194,7 @@ export class ConstructNode {
     }
     const parts = path.split(ConstructNode.PATH_SEP);
 
-    let curr: Construct|undefined = this.host;
+    let curr: Construct | undefined = this.host;
     while (curr != null && parts.length > 0) {
       curr = curr.node._children[parts.shift()!];
     }
@@ -799,6 +775,33 @@ export interface Dependency {
 export interface OutgoingReference {
   readonly source: IConstruct;
   readonly reference: Reference;
+}
+
+/**
+ * Represents a single session of synthesis. Passed into `Construct.synthesize()` methods.
+ */
+export interface ISynthesisSession {
+  /**
+   * The cloud assembly being synthesized.
+   */
+  assembly: cxapi.CloudAssemblyBuilder;
+}
+
+/**
+ * Options for synthesis.
+ */
+export interface SynthesisOptions extends cxapi.AssemblyBuildOptions {
+  /**
+   * The output directory into which to synthesize the cloud assembly.
+   * @default - creates a temporary directory
+   */
+  readonly outdir?: string;
+
+  /**
+   * Whether synthesis should skip the validation phase.
+   * @default false
+   */
+  readonly skipValidation?: boolean;
 }
 
 function ignore(_x: any) {
