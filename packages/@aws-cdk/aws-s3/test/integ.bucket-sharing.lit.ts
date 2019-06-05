@@ -1,3 +1,4 @@
+/// !cdk-integ *
 import iam = require('@aws-cdk/aws-iam');
 import cdk = require('@aws-cdk/cdk');
 import s3 = require('../lib');
