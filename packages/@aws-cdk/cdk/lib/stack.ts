@@ -8,6 +8,8 @@ import { Environment } from './environment';
 import { HashedAddressingScheme, IAddressingScheme, LogicalIDs } from './logical-id';
 import { makeUniqueId } from './uniqueid';
 
+const STACK_SYMBOL = Symbol.for('@aws-cdk/cdk.Stack');
+
 export interface StackProps {
   /**
    * The AWS environment (account/region) where this stack will be deployed.
@@ -32,26 +34,12 @@ export interface StackProps {
   readonly namingScheme?: IAddressingScheme;
 
   /**
-   * Indicates if this stack is an entrypoint of your app, which means that it
-   * will be automatically deployed when running `cdk deploy` without arguments.
-   *
-   * Setting this to `false` is useful when you have a stack in your CDK app
-   * which you don't want to deploy using the CDK toolkit. For example, because
-   * you're planning on deploying it through a deployment pipeline.
-   *
-   * @default true
-   */
-  readonly entrypoint?: boolean;
-
-  /**
    * Stack tags that will be applied to all the taggable resources and the stack itself.
    *
    * @default {}
    */
   readonly tags?: { [key: string]: string };
 }
-
-const STACK_SYMBOL = Symbol.for('@aws-cdk/cdk.Stack');
 
 /**
  * A root construct which represents a single CloudFormation stack.
@@ -97,12 +85,6 @@ export class Stack extends Construct implements ITaggable {
   public readonly name: string;
 
   /**
-   * Indicates if this stack is an entrypoint, which means that it won't be
-   * automatically deployed when running `cdk deploy` without arguments.
-   */
-  private readonly entrypoint: boolean;
-
-  /**
    * Other stacks this stack depends on
    */
   private readonly stackDependencies = new Set<StackDependency>();
@@ -144,7 +126,6 @@ export class Stack extends Construct implements ITaggable {
 
     this.logicalIds = new LogicalIDs(props.namingScheme ? props.namingScheme : new HashedAddressingScheme());
     this.name = props.stackName !== undefined ? props.stackName : this.calculateStackName();
-    this.entrypoint = props.entrypoint === undefined ? true : false;
     this.tags = new TagManager(TagType.KeyValue, 'aws:cdk:stack', props.tags);
 
     if (!Stack.VALID_STACK_NAME_REGEX.test(this.name)) {
@@ -520,10 +501,6 @@ export class Stack extends Construct implements ITaggable {
 
     for (const ctx of this.missingContext) {
       builder.addMissing(ctx);
-    }
-
-    if (this.entrypoint) {
-      builder.addEntrypoint(this.name);
     }
   }
 

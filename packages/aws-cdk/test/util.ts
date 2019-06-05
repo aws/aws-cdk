@@ -5,7 +5,6 @@ import path = require('path');
 export interface TestStackArtifact {
   stackName: string;
   template: any;
-  entrypoint?: boolean;
   depends?: string[];
   metadata?: cxapi.StackMetadata;
   assets?: cxapi.AssetMetadataEntry[];
@@ -36,11 +35,6 @@ export function testAssembly(...stacks: TestStackArtifact[]): cxapi.CloudAssembl
         templateFile
       }
     });
-
-    const entrypoint = stack.entrypoint === undefined ? true : stack.entrypoint;
-    if (entrypoint) {
-      builder.addEntrypoint(stack.stackName);
-    }
   }
 
   return builder.build();

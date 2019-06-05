@@ -91,10 +91,9 @@ export class AppStacks {
 
     if (selectors.length === 0) {
       // remove non-auto deployed Stacks
-      const entrypoints = stacks.filter(s => s.entrypoint);
-      debug('Stack name not specified, so defaulting to all available stacks: ' + listStackNames(entrypoints));
-      this.applyRenames(entrypoints);
-      return entrypoints;
+      debug('Stack name not specified, so defaulting to all available stacks: ' + listStackNames(stacks));
+      this.applyRenames(stacks);
+      return stacks;
     }
 
     const allStacks = new Map<string, cxapi.CloudFormationStackArtifact>();

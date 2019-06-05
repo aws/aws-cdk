@@ -102,11 +102,6 @@ export class CloudArtifact {
   public readonly environment: Environment;
 
   /**
-   * Indicates if this artifact is an entrypoint of the assembly.
-   */
-  public readonly entrypoint: boolean;
-
-  /**
    * IDs of all dependencies. Used when topologically sorting the artifacts within the cloud assembly.
    * @internal
    */
@@ -122,7 +117,6 @@ export class CloudArtifact {
     this.environment = EnvironmentUtils.parse(manifest.environment);
     this.messages = this.renderMessages();
     this._dependencyIDs = manifest.dependencies || [];
-    this.entrypoint = (assembly.manifest.entrypoints || []).includes(id);
   }
 
   /**

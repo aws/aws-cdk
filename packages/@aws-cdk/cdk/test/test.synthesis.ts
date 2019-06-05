@@ -79,7 +79,6 @@ export = {
     test.deepEqual(readJson(session.directory, 'foo.json'), { bar: 123 });
     test.deepEqual(session.manifest, {
       version: '0.34.0',
-      entrypoints: [ 'one-stack' ],
       artifacts: {
         'my-random-construct': {
           type: 'aws:cloudformation:stack',

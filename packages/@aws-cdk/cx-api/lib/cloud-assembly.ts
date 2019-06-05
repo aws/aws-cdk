@@ -21,12 +21,6 @@ export interface AssemblyManifest {
   readonly artifacts?: { [id: string]: ArtifactManifest };
 
   /**
-   * A list of artifact IDs that are entrypoints of this app. Entrypoints will
-   * automatically be deployed when running "cdk deploy".
-   */
-  readonly entrypoints?: string[];
-
-  /**
    * Missing context information. If this field has values, it means that the
    * cloud assembly is not complete and should not be deployed.
    */
@@ -157,7 +151,6 @@ export class CloudAssemblyBuilder {
   public readonly outdir: string;
 
   private readonly artifacts: { [id: string]: ArtifactManifest } = { };
-  private readonly entrypoints = new Array<string>();
   private readonly missing = new Array<MissingContext>();
 
   /**
@@ -191,16 +184,6 @@ export class CloudAssemblyBuilder {
   }
 
   /**
-   * Marks an artifact as an entrypoint, which means that it will be automatically
-   * deployed with "cdk deploy".
-   *
-   * @param id The ID of the artifact.
-   */
-  public addEntrypoint(id: string) {
-    this.entrypoints.push(id);
-  }
-
-  /**
    * Reports that some context is missing in order for this cloud assembly to be fully synthesized.
    * @param missing Missing context information.
    */
@@ -217,7 +200,6 @@ export class CloudAssemblyBuilder {
     const manifest: AssemblyManifest = filterUndefined({
       version: CLOUD_ASSEMBLY_VERSION,
       artifacts: this.artifacts,
-      entrypoints: this.entrypoints.length > 0 ? this.entrypoints : undefined,
       runtime: options.runtimeInfo,
       missing: this.missing.length > 0 ? this.missing : undefined
     });
