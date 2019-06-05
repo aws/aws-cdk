@@ -26,4 +26,4 @@ const app = new cdk.App();
 
 new TestStack(app, 'codebuild-default-project');
 
-app.run();
+app.synth();

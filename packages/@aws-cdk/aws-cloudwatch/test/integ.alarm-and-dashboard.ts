@@ -50,4 +50,4 @@ dashboard.add(new cloudwatch.SingleValueWidget({
   metrics: [metric]
 }));
 
-app.run();
+app.synth();

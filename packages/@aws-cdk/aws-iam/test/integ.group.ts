@@ -9,4 +9,4 @@ const stack = new Stack(app, 'integ-iam-role-1');
 
 new Group(stack, 'MyGroup');
 
-app.run();
+app.synth();

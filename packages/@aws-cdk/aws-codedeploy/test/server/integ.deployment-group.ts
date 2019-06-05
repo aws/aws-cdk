@@ -42,4 +42,4 @@ new codedeploy.ServerDeploymentGroup(stack, 'CodeDeployGroup', {
   },
 });
 
-app.run();
+app.synth();

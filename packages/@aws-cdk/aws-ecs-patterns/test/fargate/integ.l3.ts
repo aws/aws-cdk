@@ -17,4 +17,4 @@ new ecsPatterns.LoadBalancedFargateService(stack, 'L3', {
   image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
 });
 
-app.run();
+app.synth();

@@ -284,7 +284,7 @@ enum InputType {
 }
 
 function isEventField(x: any): x is EventField {
-  return typeof x === 'object' && x !== null && x[EVENT_FIELD_SYMBOL];
+  return EVENT_FIELD_SYMBOL in x;
 }
 
 const EVENT_FIELD_SYMBOL = Symbol.for('@aws-cdk/aws-events.EventField');

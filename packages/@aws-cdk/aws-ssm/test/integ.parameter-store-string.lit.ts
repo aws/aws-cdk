@@ -1,3 +1,4 @@
+/// !cdk-integ *
 import cdk = require('@aws-cdk/cdk');
 import ssm = require('../lib');
 
@@ -45,4 +46,4 @@ const creating = new CreatingStack(app, 'sspms-creating');
 const using = new UsingStack(app, 'sspms-using');
 using.addDependency(creating);
 
-app.run();
+app.synth();

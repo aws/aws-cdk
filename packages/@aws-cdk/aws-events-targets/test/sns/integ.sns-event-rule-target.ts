@@ -23,4 +23,4 @@ topic.subscribeQueue(queue);
 
 event.addTarget(new targets.SnsTopic(topic));
 
-app.run();
+app.synth();

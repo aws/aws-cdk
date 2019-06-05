@@ -1,3 +1,4 @@
+import { SynthUtils } from '@aws-cdk/assert';
 import cdk = require('@aws-cdk/cdk');
 import { Test } from 'nodeunit';
 import { HostedZone, HostedZoneAttributes, HostedZoneProvider } from '../lib';
@@ -9,7 +10,9 @@ export = {
       const stack = new cdk.Stack(undefined, 'TestStack', { env: { account: '12345', region: 'us-east-1' } });
       const filter = {domainName: 'test.com'};
       new HostedZoneProvider(stack, filter).findHostedZone();
-      const key = Object.keys(stack.missingContext)[0];
+
+      const missing = SynthUtils.synthesize(stack).assembly.manifest.missing!;
+      test.ok(missing && missing.length === 1);
 
       const fakeZone = {
         Id: "/hostedzone/11111111111111",
@@ -22,7 +25,7 @@ export = {
         ResourceRecordSetCount: 3
       };
 
-      stack.node.setContext(key, fakeZone);
+      stack.node.setContext(missing[0].key, fakeZone);
 
       const cdkZoneProps: HostedZoneAttributes = {
         hostedZoneId: fakeZone.Id,

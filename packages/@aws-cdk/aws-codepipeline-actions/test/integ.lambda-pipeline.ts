@@ -42,4 +42,4 @@ lambdaStage.addAction(new cpactions.LambdaInvokeAction({
   lambda: lambdaFun,
 }));
 
-app.run();
+app.synth();

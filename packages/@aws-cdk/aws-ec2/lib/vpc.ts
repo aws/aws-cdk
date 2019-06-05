@@ -9,6 +9,8 @@ import { InterfaceVpcEndpoint, InterfaceVpcEndpointOptions } from './vpc-endpoin
 import { VpcLookupOptions, VpcNetworkProvider } from './vpc-network-provider';
 import { VpnConnection, VpnConnectionOptions, VpnConnectionType } from './vpn';
 
+const VPC_SUBNET_SYMBOL = Symbol.for('@aws-cdk/aws-ec2.VpcSubnet');
+
 export interface ISubnet extends IResource {
   /**
    * The Availability Zone the subnet is located in
@@ -1047,8 +1049,6 @@ export interface SubnetProps {
   readonly mapPublicIpOnLaunch?: boolean;
 }
 
-const IS_VPC_SUBNET = Symbol.for('@aws-cdk/aws-ec2.VpcSubnet');
-
 /**
  * Represents a new VPC subnet resource
  *
@@ -1056,8 +1056,8 @@ const IS_VPC_SUBNET = Symbol.for('@aws-cdk/aws-ec2.VpcSubnet');
  */
 export class Subnet extends cdk.Resource implements ISubnet {
 
-  public static isVpcSubnet(o: any): o is Subnet {
-    return IS_VPC_SUBNET in o;
+  public static isVpcSubnet(x: any): x is Subnet {
+    return VPC_SUBNET_SYMBOL in x;
   }
 
   public static fromSubnetAttributes(scope: cdk.Construct, id: string, attrs: SubnetAttributes): ISubnet {
@@ -1109,7 +1109,7 @@ export class Subnet extends cdk.Resource implements ISubnet {
   constructor(scope: cdk.Construct, id: string, props: SubnetProps) {
     super(scope, id);
 
-    Object.defineProperty(this, IS_VPC_SUBNET, { value: true });
+    Object.defineProperty(this, VPC_SUBNET_SYMBOL, { value: true });
 
     this.node.apply(new cdk.Tag(NAME_TAG, this.node.path));
 

@@ -101,4 +101,4 @@ class DatabaseInstanceStack extends cdk.Stack {
 }
 
 new DatabaseInstanceStack(app, 'aws-cdk-rds-instance');
-app.run();
+app.synth();

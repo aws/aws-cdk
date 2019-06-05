@@ -91,10 +91,9 @@ export class AppStacks {
 
     if (selectors.length === 0) {
       // remove non-auto deployed Stacks
-      const autoDeployedStacks = stacks.filter(s => s.autoDeploy);
-      debug('Stack name not specified, so defaulting to all available stacks: ' + listStackNames(autoDeployedStacks));
-      this.applyRenames(autoDeployedStacks);
-      return autoDeployedStacks;
+      debug('Stack name not specified, so defaulting to all available stacks: ' + listStackNames(stacks));
+      this.applyRenames(stacks);
+      return stacks;
     }
 
     const allStacks = new Map<string, cxapi.CloudFormationStackArtifact>();
@@ -158,12 +157,8 @@ export class AppStacks {
    */
   public async synthesizeStack(stackName: string): Promise<cxapi.CloudFormationStackArtifact> {
     const resp = await this.synthesizeStacks();
-    const stack = resp.stacks.find(s => s.name === stackName);
-    if (!stack) {
-      throw new Error(`Stack ${stackName} not found`);
-    }
+    const stack = resp.getStack(stackName);
     this.applyRenames([stack]);
-
     return stack;
   }
 
@@ -181,10 +176,10 @@ export class AppStacks {
     while (true) {
       const assembly = await this.props.synthesizer(this.props.aws, this.props.configuration);
 
-      if (assembly.missing) {
+      if (assembly.manifest.missing) {
         debug(`Some context information is missing. Fetching...`);
 
-        await contextproviders.provideContextValues(assembly.missing, this.props.configuration.context, this.props.aws);
+        await contextproviders.provideContextValues(assembly.manifest.missing, this.props.configuration.context, this.props.aws);
 
         // Cache the new context to disk
         await this.props.configuration.saveContext();
@@ -235,18 +230,10 @@ export class AppStacks {
   }
 
   /**
-   * Returns and array with the tags available in the stack metadata.
+   * @returns an array with the tags available in the stack metadata.
    */
   public getTagsFromStackMetadata(stack: cxapi.CloudFormationStackArtifact): Tag[] {
-    for (const id of Object.keys(stack.metadata)) {
-      const metadata = stack.metadata[id];
-      for (const entry of metadata) {
-        if (entry.type === cxapi.STACK_TAGS_METADATA_KEY) {
-          return entry.data;
-        }
-      }
-    }
-    return [];
+    return stack.findMetadataByType(cxapi.STACK_TAGS_METADATA_KEY).map(x => x.data);
   }
 
   /**
@@ -342,7 +329,7 @@ function includeDownstreamStacks(
 
     for (const [name, stack] of allStacks) {
       // Select this stack if it's not selected yet AND it depends on a stack that's in the selected set
-      if (!selectedStacks.has(name) && (stack.depends || []).some(dep => selectedStacks.has(dep.id))) {
+      if (!selectedStacks.has(name) && (stack.dependencies || []).some(dep => selectedStacks.has(dep.id))) {
         selectedStacks.set(name, stack);
         added.push(name);
         madeProgress = true;
@@ -370,7 +357,7 @@ function includeUpstreamStacks(
 
     for (const stack of selectedStacks.values()) {
       // Select an additional stack if it's not selected yet and a dependency of a selected stack (and exists, obviously)
-      for (const dependencyName of stack.depends.map(x => x.id)) {
+      for (const dependencyName of stack.dependencies.map(x => x.id)) {
         if (!selectedStacks.has(dependencyName) && allStacks.has(dependencyName)) {
           added.push(dependencyName);
           selectedStacks.set(dependencyName, allStacks.get(dependencyName)!);

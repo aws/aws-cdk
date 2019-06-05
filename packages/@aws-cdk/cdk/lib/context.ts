@@ -47,10 +47,12 @@ export class ContextProvider {
       return value;
     }
 
-    this.context.node.stack.reportMissingContext(this.key, {
+    this.context.node.stack.reportMissingContext({
+      key: this.key,
       provider: this.provider,
       props: this.props,
     });
+
     return defaultValue;
   }
   /**
@@ -74,10 +76,12 @@ export class ContextProvider {
       return value;
     }
 
-    this.context.node.stack.reportMissingContext(this.key, {
+    this.context.node.stack.reportMissingContext({
+      key: this.key,
       provider: this.provider,
       props: this.props,
     });
+
     return defaultValue;
   }
 
@@ -104,7 +108,8 @@ export class ContextProvider {
         return value;
       }
 
-      this.context.node.stack.reportMissingContext(this.key, {
+      this.context.node.stack.reportMissingContext({
+        key: this.key,
         provider: this.provider,
         props: this.props,
       });

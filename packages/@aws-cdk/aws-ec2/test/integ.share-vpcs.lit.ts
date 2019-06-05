@@ -1,3 +1,4 @@
+/// !cdk-integ *
 import cdk = require('@aws-cdk/cdk');
 import ec2 = require("../lib");
 
@@ -53,4 +54,4 @@ const stack2 = new Stack2(app, 'Stack2', {
 
 Array.isArray(stack2);
 
-app.run();
+app.synth();

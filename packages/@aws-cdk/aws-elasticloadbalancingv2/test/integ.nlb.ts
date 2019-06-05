@@ -28,4 +28,4 @@ group.node.addDependency(...vpc.internetDependencies);
 
 // The target's security group must allow being routed by the LB and the clients.
 
-app.run();
+app.synth();

@@ -27,4 +27,4 @@ readScaling.scaleOnSchedule('ScaleDownAtNight', {
 });
 /// !hide
 
-app.run();
+app.synth();

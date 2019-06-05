@@ -7,7 +7,7 @@ import { createStackTrace } from './stack-trace';
 import { Token } from './token';
 import { makeUniqueId } from './uniqueid';
 
-export const PATH_SEP = '/';
+const CONSTRUCT_SYMBOL = Symbol.for('@aws-cdk/cdk.Construct');
 
 /**
  * Represents a construct.
@@ -24,6 +24,43 @@ export interface IConstruct extends IDependable {
  */
 export class ConstructNode {
   /**
+   * Separator used to delimit construct path components.
+   */
+  public static readonly PATH_SEP = '/';
+
+  /**
+   * Synthesizes a CloudAssembly from a construct tree.
+   * @param root The root of the construct tree.
+   * @param options Synthesis options.
+   */
+  public static synth(root: ConstructNode, options: SynthesisOptions = { }): cxapi.CloudAssembly {
+    const builder = new cxapi.CloudAssemblyBuilder(options.outdir);
+
+    // the three holy phases of synthesis: prepare, validate and synthesize
+
+    // prepare
+    root.prepareTree();
+
+    // validate
+    const validate = options.skipValidation === undefined ? true : !options.skipValidation;
+    if (validate) {
+      const errors = root.validateTree();
+      if (errors.length > 0) {
+        const errorList = errors.map(e => `[${e.source.node.path}] ${e.message}`).join('\n  ');
+        throw new Error(`Validation failed with the following errors:\n  ${errorList}`);
+      }
+    }
+
+    // synthesize (leaves first)
+    for (const construct of root.findAll(ConstructOrder.PostOrder)) {
+      (construct as any).synthesize({ assembly: builder }); // "as any" is needed because we want to keep "synthesize" protected
+    }
+
+    // write session manifest and lock store
+    return builder.build(options);
+  }
+
+  /**
    * Returns the scope in which this construct is defined.
    */
   public readonly scope?: IConstruct;
@@ -38,7 +75,7 @@ export class ConstructNode {
   /**
    * An array of aspects applied to this node
    */
-  public readonly aspects: IAspect[] = [];
+  private readonly aspects: IAspect[] = [];
 
   /**
    * List of children and their names
@@ -114,7 +151,7 @@ export class ConstructNode {
    */
   public get path(): string {
     const components = this.ancestors().slice(1).map(c => c.node.id);
-    return components.join(PATH_SEP);
+    return components.join(ConstructNode.PATH_SEP);
   }
 
   /**
@@ -152,12 +189,12 @@ export class ConstructNode {
    * @returns a child by path or undefined if not found.
    */
   public tryFindChild(path: string): IConstruct | undefined {
-    if (path.startsWith(PATH_SEP)) {
+    if (path.startsWith(ConstructNode.PATH_SEP)) {
       throw new Error('Path must be relative');
     }
-    const parts = path.split(PATH_SEP);
+    const parts = path.split(ConstructNode.PATH_SEP);
 
-    let curr: IConstruct|undefined = this.host;
+    let curr: IConstruct | undefined = this.host;
     while (curr != null && parts.length > 0) {
       curr = curr.node._children[parts.shift()!];
     }
@@ -339,8 +376,8 @@ export class ConstructNode {
       errors = errors.concat(child.node.validateTree());
     }
 
-    const localErrors: string[] = (this.host as any).validate();
-    return errors.concat(localErrors.map(msg => new ValidationError(this.host, msg)));
+    const localErrors: string[] = (this.host as any).validate(); // "as any" is needed because we want to keep "validate" protected
+    return errors.concat(localErrors.map(msg => ({ source: this.host, message: msg })));
   }
 
   /**
@@ -355,7 +392,7 @@ export class ConstructNode {
     // Use .reverse() to achieve post-order traversal
     for (const construct of constructs.reverse()) {
       if (Construct.isConstruct(construct)) {
-        (construct as any).prepare();
+        (construct as any).prepare(); // "as any" is needed because we want to keep "prepare" protected
       }
     }
   }
@@ -431,7 +468,7 @@ export class ConstructNode {
    * @param childName The type name of the child construct.
    * @returns The resolved path part name of the child
    */
-  public addChild(child: IConstruct, childName: string) {
+  public addChild(child: Construct, childName: string) {
     if (this.locked) {
 
       // special error if root is locked
@@ -586,7 +623,7 @@ export class ConstructNode {
    */
   private _escapePathSeparator(id: string) {
     if (!id) { return id; }
-    return id.split(PATH_SEP).join('--');
+    return id.split(ConstructNode.PATH_SEP).join('--');
   }
 }
 
@@ -600,12 +637,12 @@ export class Construct implements IConstruct {
   /**
    * Return whether the given object is a Construct
    */
-  public static isConstruct(x: IConstruct): x is Construct {
-    return (x as any).prepare !== undefined && (x as any).validate !== undefined;
+  public static isConstruct(x: any): x is Construct {
+    return CONSTRUCT_SYMBOL in x;
   }
 
   /**
-   * Construct node.
+   * Construct tree node which offers APIs for interacting with the construct tree.
    */
   public readonly node: ConstructNode;
 
@@ -618,12 +655,13 @@ export class Construct implements IConstruct {
    * dash `--`.
    */
   constructor(scope: Construct, id: string) {
+    Object.defineProperty(this, CONSTRUCT_SYMBOL, { value: true });
+
     this.node = new ConstructNode(this, scope, id);
 
-    // Implement IDependable privately
-    const self = this;
+    // implement IDependable privately
     DependableTrait.implement(this, {
-      get dependencyRoots() { return [self]; },
+      dependencyRoots: [ this ]
     });
   }
 
@@ -660,12 +698,33 @@ export class Construct implements IConstruct {
   protected prepare(): void {
     return;
   }
+
+  /**
+   * Allows this construct to emit artifacts into the cloud assembly during synthesis.
+   *
+   * This method is usually implemented by framework-level constructs such as `Stack` and `Asset`
+   * as they participate in synthesizing the cloud assembly.
+   *
+   * @param session The synthesis session.
+   */
+  protected synthesize(session: ISynthesisSession): void {
+    ignore(session);
+  }
 }
 
-export class ValidationError {
-  constructor(public readonly source: IConstruct, public readonly message: string) {
+/**
+ * An error returned during the validation phase.
+ */
+export interface ValidationError {
+  /**
+   * The construct which emitted the error.
+   */
+  readonly source: Construct;
 
-  }
+  /**
+   * The error message.
+   */
+  readonly message: string;
 }
 
 /**
@@ -716,6 +775,37 @@ export interface Dependency {
 export interface OutgoingReference {
   readonly source: IConstruct;
   readonly reference: Reference;
+}
+
+/**
+ * Represents a single session of synthesis. Passed into `Construct.synthesize()` methods.
+ */
+export interface ISynthesisSession {
+  /**
+   * The cloud assembly being synthesized.
+   */
+  assembly: cxapi.CloudAssemblyBuilder;
+}
+
+/**
+ * Options for synthesis.
+ */
+export interface SynthesisOptions extends cxapi.AssemblyBuildOptions {
+  /**
+   * The output directory into which to synthesize the cloud assembly.
+   * @default - creates a temporary directory
+   */
+  readonly outdir?: string;
+
+  /**
+   * Whether synthesis should skip the validation phase.
+   * @default false
+   */
+  readonly skipValidation?: boolean;
+}
+
+function ignore(_x: any) {
+  return;
 }
 
 // Import this _after_ everything else to help node work the classes out in the correct order...
