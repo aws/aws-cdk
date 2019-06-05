@@ -13,7 +13,7 @@ export class FunctionHook implements autoscaling.ILifecycleHookTarget {
   constructor(private readonly fn: lambda.IFunction) {
   }
 
-  public bind(scope: Construct, lifecycleHook: autoscaling.ILifecycleHook): autoscaling.LifecycleHookTargetProps {
+  public bind(scope: Construct, lifecycleHook: autoscaling.ILifecycleHook): autoscaling.LifecycleHookTargetConfig {
     const topic = new sns.Topic(scope, 'Topic');
     topic.subscribeLambda(this.fn);
     return new TopicHook(topic).bind(scope, lifecycleHook);

@@ -8,13 +8,13 @@ export interface IAliasRecordTarget {
   /**
    * Return hosted zone ID and DNS name, usable for Route53 alias targets
    */
-  bind(record: IAliasRecord): AliasRecordTargetProps;
+  bind(record: IAliasRecord): AliasRecordTargetConfig;
 }
 
 /**
  * Represents the properties of an alias target destination.
  */
-export interface AliasRecordTargetProps {
+export interface AliasRecordTargetConfig {
   /**
    * Hosted zone ID of the target
    */

@@ -14,7 +14,7 @@ export class SqsDestination implements s3.IBucketNotificationDestination {
    * Allows using SQS queues as destinations for bucket notifications.
    * Use `bucket.onEvent(event, queue)` to subscribe.
    */
-  public bind(_scope: Construct, bucket: s3.IBucket): s3.BucketNotificationDestinationProps {
+  public bind(_scope: Construct, bucket: s3.IBucket): s3.BucketNotificationDestinationConfig {
     this.queue.grantSendMessages(new iam.ServicePrincipal('s3.amazonaws.com', {
       conditions: {
         ArnLike: { 'aws:SourceArn': bucket.bucketArn }
