@@ -54,7 +54,6 @@ export = {
       type: 'AWS::Fake::Thing',
     });
     res.node.apply(new Tag('foo', 'bar'));
-    test.deepEqual(res.node.aspects.length, 1);
     root.node.prepareTree();
     test.deepEqual(res.tags.renderTags(), [{key: 'foo', value: 'bar'}]);
     test.deepEqual(res2.tags.renderTags(), [{key: 'foo', value: 'bar'}]);

@@ -25,4 +25,4 @@ new route53.AliasRecord(zone, 'Alias', {
   target: new targets.LoadBalancerTarget(lb)
 });
 
-app.run();
+app.synth();

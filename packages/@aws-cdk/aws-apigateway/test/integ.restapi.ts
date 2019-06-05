@@ -82,4 +82,4 @@ const app = new cdk.App();
 
 new Test(app, 'test-apigateway-restapi');
 
-app.run();
+app.synth();

@@ -1,3 +1,4 @@
+/// !cdk-integ *
 import iam = require('@aws-cdk/aws-iam');
 import cdk = require('@aws-cdk/cdk');
 import s3 = require('../lib');
@@ -42,4 +43,4 @@ const producer = new Producer(app, 'ProducerStack');
 new Consumer(app, 'ConsumerStack', { userBucket: producer.myBucket });
 /// !hide
 
-app.run();
+app.synth();

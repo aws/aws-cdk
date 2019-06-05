@@ -28,4 +28,4 @@ service2.registerIpInstance('IpInstance', {
   ipv4: '54.239.25.192',
 });
 
-app.run();
+app.synth();

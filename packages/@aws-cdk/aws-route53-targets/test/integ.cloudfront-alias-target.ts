@@ -31,4 +31,4 @@ new route53.AliasRecord(zone, 'Alias', {
   target: new targets.CloudFrontTarget(distribution)
 });
 
-app.run();
+app.synth();

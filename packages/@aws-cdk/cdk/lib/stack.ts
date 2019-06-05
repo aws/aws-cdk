@@ -3,10 +3,13 @@ import fs = require('fs');
 import path = require('path');
 import { App } from './app';
 import { CfnParameter } from './cfn-parameter';
-import { Construct, IConstruct, PATH_SEP } from './construct';
+import { Construct, ConstructNode, IConstruct, ISynthesisSession } from './construct';
 import { Environment } from './environment';
 import { HashedAddressingScheme, IAddressingScheme, LogicalIDs } from './logical-id';
 import { makeUniqueId } from './uniqueid';
+
+const STACK_SYMBOL = Symbol.for('@aws-cdk/cdk.Stack');
+
 export interface StackProps {
   /**
    * The AWS environment (account/region) where this stack will be deployed.
@@ -31,17 +34,6 @@ export interface StackProps {
   readonly namingScheme?: IAddressingScheme;
 
   /**
-   * Should the Stack be deployed when running `cdk deploy` without arguments
-   * (and listed when running `cdk synth` without arguments).
-   * Setting this to `false` is useful when you have a Stack in your CDK app
-   * that you don't want to deploy using the CDK toolkit -
-   * for example, because you're planning on deploying it through CodePipeline.
-   *
-   * @default true
-   */
-  readonly autoDeploy?: boolean;
-
-  /**
    * Stack tags that will be applied to all the taggable resources and the stack itself.
    *
    * @default {}
@@ -49,33 +41,17 @@ export interface StackProps {
   readonly tags?: { [key: string]: string };
 }
 
-const STACK_SYMBOL = Symbol.for('@aws-cdk/cdk.Stack');
-
 /**
  * A root construct which represents a single CloudFormation stack.
  */
 export class Stack extends Construct implements ITaggable {
-
-  /**
-   * Adds a metadata annotation "aws:cdk:physical-name" to the construct if physicalName
-   * is non-null. This can be used later by tools and aspects to determine if resources
-   * have been created with physical names.
-   */
-  public static annotatePhysicalName(construct: Construct, physicalName?: string) {
-    if (physicalName == null) {
-      return;
-    }
-
-    construct.node.addMetadata('aws:cdk:physical-name', physicalName);
-  }
-
   /**
    * Return whether the given object is a Stack.
    *
    * We do attribute detection since we can't reliably use 'instanceof'.
    */
-  public static isStack(obj: any): obj is Stack {
-    return obj[STACK_SYMBOL] === true;
+  public static isStack(x: any): x is Stack {
+    return STACK_SYMBOL in x;
   }
 
   private static readonly VALID_STACK_NAME_REGEX = /^[A-Za-z][A-Za-z0-9-]*$/;
@@ -84,13 +60,6 @@ export class Stack extends Construct implements ITaggable {
    * Tags to be applied to the stack.
    */
   public readonly tags: TagManager;
-
-  /**
-   * Lists all missing contextual information.
-   * This is returned when the stack is synthesized under the 'missing' attribute
-   * and allows tooling to obtain the context and re-synthesize.
-   */
-  public readonly missingContext: { [key: string]: cxapi.MissingContext } = { };
 
   /**
    * The environment in which this stack is deployed.
@@ -116,17 +85,6 @@ export class Stack extends Construct implements ITaggable {
   public readonly name: string;
 
   /**
-   * Should the Stack be deployed when running `cdk deploy` without arguments
-   * (and listed when running `cdk synth` without arguments).
-   * Setting this to `false` is useful when you have a Stack in your CDK app
-   * that you don't want to deploy using the CDK toolkit -
-   * for example, because you're planning on deploying it through CodePipeline.
-   *
-   * By default, this is `true`.
-   */
-  public readonly autoDeploy: boolean;
-
-  /**
    * Other stacks this stack depends on
    */
   private readonly stackDependencies = new Set<StackDependency>();
@@ -144,6 +102,13 @@ export class Stack extends Construct implements ITaggable {
   private readonly configuredEnv: Environment;
 
   /**
+   * Lists all missing contextual information.
+   * This is returned when the stack is synthesized under the 'missing' attribute
+   * and allows tooling to obtain the context and re-synthesize.
+   */
+  private readonly missingContext = new Array<cxapi.MissingContext>();
+
+  /**
    * Creates a new stack.
    *
    * @param scope Parent of this stack, usually a Program instance.
@@ -159,10 +124,9 @@ export class Stack extends Construct implements ITaggable {
     this.configuredEnv = props.env || {};
     this.env = this.parseEnvironment(props.env);
 
-    this.logicalIds = new LogicalIDs(props && props.namingScheme ? props.namingScheme : new HashedAddressingScheme());
+    this.logicalIds = new LogicalIDs(props.namingScheme ? props.namingScheme : new HashedAddressingScheme());
     this.name = props.stackName !== undefined ? props.stackName : this.calculateStackName();
-    this.autoDeploy = props && props.autoDeploy === false ? false : true;
-    this.tags = new TagManager(TagType.KeyValue, "aws:cdk:stack", props.tags);
+    this.tags = new TagManager(TagType.KeyValue, 'aws:cdk:stack', props.tags);
 
     if (!Stack.VALID_STACK_NAME_REGEX.test(this.name)) {
       throw new Error(`Stack name must match the regular expression: ${Stack.VALID_STACK_NAME_REGEX.toString()}, got '${name}'`);
@@ -272,12 +236,13 @@ export class Stack extends Construct implements ITaggable {
   /**
    * Indicate that a context key was expected
    *
-   * Contains instructions on how the key should be supplied.
-   * @param key Key that uniquely identifies this missing context.
-   * @param details The set of parameters needed to obtain the context (specific to context provider).
+   * Contains instructions which will be emitted into the cloud assembly on how
+   * the key should be supplied.
+   *
+   * @param report The set of parameters needed to obtain the context
    */
-  public reportMissingContext(key: string, details: cxapi.MissingContext) {
-    this.missingContext[key] = details;
+  public reportMissingContext(report: cxapi.MissingContext) {
+    this.missingContext.push(report);
   }
 
   /**
@@ -509,7 +474,8 @@ export class Stack extends Construct implements ITaggable {
     }
   }
 
-  protected synthesize(builder: cxapi.CloudAssemblyBuilder): void {
+  protected synthesize(session: ISynthesisSession): void {
+    const builder = session.assembly;
     const template = `${this.name}.template.json`;
 
     // write the CloudFormation template as a JSON file
@@ -529,11 +495,13 @@ export class Stack extends Construct implements ITaggable {
       type: cxapi.ArtifactType.AwsCloudFormationStack,
       environment: this.environment,
       properties,
-      autoDeploy: this.autoDeploy ? undefined : false,
       dependencies: deps.length > 0 ? deps : undefined,
       metadata: Object.keys(meta).length > 0 ? meta : undefined,
-      missing: this.missingContext && Object.keys(this.missingContext).length > 0 ? this.missingContext : undefined
     });
+
+    for (const ctx of this.missingContext) {
+      builder.addMissing(ctx);
+    }
   }
 
   /**
@@ -571,7 +539,7 @@ export class Stack extends Construct implements ITaggable {
     const app = this.parentApp();
 
     if (app && app.node.metadata.length > 0) {
-      output[PATH_SEP] = app.node.metadata;
+      output[ConstructNode.PATH_SEP] = app.node.metadata;
     }
 
     return output;
@@ -580,7 +548,7 @@ export class Stack extends Construct implements ITaggable {
 
       if (node.node.metadata.length > 0) {
         // Make the path absolute
-        output[PATH_SEP + node.node.path] = node.node.metadata.map(md => node.node.resolve(md) as cxapi.MetadataEntry);
+        output[ConstructNode.PATH_SEP + node.node.path] = node.node.metadata.map(md => node.node.resolve(md) as cxapi.MetadataEntry);
       }
 
       for (const child of node.node.children) {

@@ -26,4 +26,4 @@ class DynamoEventSourceTest extends cdk.Stack {
 
 const app = new cdk.App();
 new DynamoEventSourceTest(app, 'lambda-event-source-dynamodb');
-app.run();
+app.synth();

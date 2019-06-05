@@ -23,4 +23,4 @@ new elb.LoadBalancer(stack, 'LB', {
   targets: []
 });
 
-app.run();
+app.synth();
