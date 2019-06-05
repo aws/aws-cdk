@@ -1,3 +1,4 @@
+/// !cdk-integ *
 import cdk = require('@aws-cdk/cdk');
 import ec2 = require("../lib");
 
