@@ -48,7 +48,7 @@ export class SqsQueue implements events.IRuleTarget {
    *
    * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/events/resource-based-policies-cwe.html#sqs-permissions
    */
-  public bind(rule: events.IRule): events.RuleTargetProperties {
+  public bind(rule: events.IRule): events.RuleTargetConfig {
     // deduplicated automatically
     this.queue.grantSendMessages(new iam.ServicePrincipal('events.amazonaws.com',
       {
