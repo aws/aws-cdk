@@ -123,7 +123,7 @@ export class IntegrationTest {
       return pragma;
     }
 
-    const stacks = (await this.invoke([ 'ls' ])).split('\n');
+    const stacks = (await this.invoke([ 'ls' ], { context: STATIC_TEST_CONTEXT })).split('\n');
     if (stacks.length !== 1) {
       throw new Error(`"cdk-integ" can only operate on apps with a single stack.\n\n` +
         `  If your app has multiple stacks, specify which stack to select by adding this to your test source:\n\n` +
