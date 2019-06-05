@@ -23,4 +23,4 @@ class MetricFilterIntegStack extends Stack {
 
 const app = new App();
 new MetricFilterIntegStack(app, 'aws-cdk-metricfilter-integ');
-app.run();
+app.synth();

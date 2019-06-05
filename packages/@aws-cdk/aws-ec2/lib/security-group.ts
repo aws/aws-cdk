@@ -4,7 +4,7 @@ import { CfnSecurityGroup, CfnSecurityGroupEgress, CfnSecurityGroupIngress } fro
 import { IPortRange, ISecurityGroupRule } from './security-group-rule';
 import { IVpc } from './vpc';
 
-const isSecurityGroupSymbol = Symbol.for('aws-cdk:isSecurityGroup');
+const SECURITY_GROUP_SYMBOL = Symbol.for('@aws-cdk/iam.SecurityGroup');
 
 export interface ISecurityGroup extends IResource, ISecurityGroupRule, IConnectable {
   /**
@@ -43,8 +43,8 @@ abstract class SecurityGroupBase extends Resource implements ISecurityGroup {
   /**
    * Return whether the indicated object is a security group
    */
-  public static isSecurityGroup(construct: any): construct is SecurityGroupBase {
-    return (construct as any)[isSecurityGroupSymbol] === true;
+  public static isSecurityGroup(x: any): x is SecurityGroupBase {
+    return SECURITY_GROUP_SYMBOL in x;
   }
 
   public abstract readonly securityGroupId: string;
@@ -60,7 +60,7 @@ abstract class SecurityGroupBase extends Resource implements ISecurityGroup {
   constructor(scope: Construct, id: string) {
     super(scope, id);
 
-    Object.defineProperty(this, isSecurityGroupSymbol, { value: true });
+    Object.defineProperty(this, SECURITY_GROUP_SYMBOL, { value: true });
   }
 
   public get uniqueId() {

@@ -25,4 +25,4 @@ const app = new cdk.App();
 
 new TestStack(app, 'integ-iam-external-role');
 
-app.run();
+app.synth();

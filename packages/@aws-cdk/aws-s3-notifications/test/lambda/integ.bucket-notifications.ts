@@ -24,7 +24,7 @@ const bucketB = new s3.Bucket(stack, 'YourBucket', {
 bucketA.addObjectCreatedNotification(new s3n.LambdaDestination(fn), { suffix: '.png' });
 bucketB.addEventNotification(s3.EventType.ObjectRemoved, new s3n.LambdaDestination(fn));
 
-app.run();
+app.synth();
 
 // tslint:disable:no-console
 function handler(event: any, _context: any, callback: any) {

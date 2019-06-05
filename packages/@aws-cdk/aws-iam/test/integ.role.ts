@@ -21,4 +21,4 @@ new Role(stack, 'TestRole2', {
   externalId: 'supply-me',
 });
 
-app.run();
+app.synth();

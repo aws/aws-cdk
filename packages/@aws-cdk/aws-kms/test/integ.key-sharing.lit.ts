@@ -1,3 +1,4 @@
+/// !cdk-integ *
 import cdk = require('@aws-cdk/cdk');
 import kms = require('../lib');
 
@@ -37,4 +38,4 @@ const keyStack = new KeyStack(app, 'KeyStack');
 new UseStack(app, 'UseStack', { key: keyStack.key });
 /// !hide
 
-app.run();
+app.synth();

@@ -11,4 +11,4 @@ new cdk.CfnOutput(stack, 'RepositoryURI', {
   value: repo.repositoryUri
 });
 
-app.run();
+app.synth();

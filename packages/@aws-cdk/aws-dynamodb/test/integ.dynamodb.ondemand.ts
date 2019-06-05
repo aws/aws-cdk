@@ -126,4 +126,4 @@ tableWithLocalSecondaryIndex.addLocalSecondaryIndex({
   sortKey: LSI_SORT_KEY
 });
 
-app.run();
+app.synth();

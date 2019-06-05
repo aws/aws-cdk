@@ -23,4 +23,4 @@ const app = new cdk.App();
 
 new MyStack(app, 'sns-bucket-notifications');
 
-app.run();
+app.synth();

@@ -1,13 +1,22 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`assembly a single cloudformation stack 1`] = `
+Object {
+  "environment": "aws://37736633/us-region-1",
+  "properties": Object {
+    "templateFile": "template.json",
+  },
+  "type": "aws:cloudformation:stack",
+}
+`;
+
 exports[`assembly with missing context 1`] = `
 Object {
-  "missing:context:key": Object {
+  "key": "missing:context:key",
+  "props": Object {
     "foo": 123,
   },
-  "missing:context:key2": Object {
-    "foo": 6688,
-  },
+  "provider": "context-provider",
 }
 `;
 
@@ -26,6 +35,12 @@ Array [
     "sourceHash": "docker-asset-source",
   },
 ]
+`;
+
+exports[`empty assembly 1`] = `
+Object {
+  "version": "0.34.0",
+}
 `;
 
 exports[`messages 1`] = `

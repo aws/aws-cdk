@@ -15,7 +15,7 @@ new GlobalTable(app, 'globdynamodb', {
   tableName: 'GlobalTable',
   regions: [ "us-east-1", "us-east-2", "us-west-2" ]
 });
-app.run();
+app.synth();
 ```
 
 ## Implementation Notes

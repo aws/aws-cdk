@@ -30,4 +30,4 @@ asg.scaleOnCpuUtilization('KeepCPUReasonable', {
   targetUtilizationPercent: 50
 });
 
-app.run();
+app.synth();

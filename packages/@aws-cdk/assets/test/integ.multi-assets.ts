@@ -24,4 +24,4 @@ class TestStack extends cdk.Stack {
 
 const app = new cdk.App();
 new TestStack(app, 'aws-cdk-multi-assets');
-app.run();
+app.synth();

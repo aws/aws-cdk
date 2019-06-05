@@ -26,4 +26,4 @@ vpc.addVpnConnection('Static', { // Static routing
   ]
 });
 
-app.run();
+app.synth();

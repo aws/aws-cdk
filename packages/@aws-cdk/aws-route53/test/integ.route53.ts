@@ -36,4 +36,4 @@ new CnameRecord(stack, 'CNAME', {
 new cdk.CfnOutput(stack, 'PrivateZoneId', { value: privateZone.hostedZoneId });
 new cdk.CfnOutput(stack, 'PublicZoneId', { value: publicZone.hostedZoneId });
 
-app.run();
+app.synth();

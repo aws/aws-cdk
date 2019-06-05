@@ -40,4 +40,4 @@ class ConfigStack extends cdk.Stack {
 }
 
 new ConfigStack(app, 'aws-cdk-config-rule-integ');
-app.run();
+app.synth();

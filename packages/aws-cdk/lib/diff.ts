@@ -39,7 +39,7 @@ export function printStackDiff(
   }
 
   if (!diff.isEmpty) {
-    cfnDiff.formatDifferences(stream || process.stderr, diff, newTemplate.logicalIdToPathMap, context);
+    cfnDiff.formatDifferences(stream || process.stderr, diff, buildLogicalToPathMap(newTemplate), context);
   } else {
     print(colors.green('There were no differences'));
   }
@@ -68,7 +68,7 @@ export function printSecurityDiff(oldTemplate: any, newTemplate: cxapi.CloudForm
     warning(`This deployment will make potentially sensitive changes according to your current security approval level (--require-approval ${requireApproval}).`);
     warning(`Please confirm you intend to make the following modifications:\n`);
 
-    cfnDiff.formatSecurityChanges(process.stdout, diff, newTemplate.logicalIdToPathMap);
+    cfnDiff.formatSecurityChanges(process.stdout, diff, buildLogicalToPathMap(newTemplate));
     return true;
   }
   return false;
@@ -87,4 +87,12 @@ function difRequiresApproval(diff: cfnDiff.TemplateDiff, requireApproval: Requir
     case RequireApproval.Broadening: return diff.permissionsBroadened;
     default: throw new Error(`Unrecognized approval level: ${requireApproval}`);
   }
+}
+
+function buildLogicalToPathMap(stack: cxapi.CloudFormationStackArtifact) {
+  const map: { [id: string]: string } = {};
+  for (const md of stack.findMetadataByType(cxapi.LOGICAL_ID_METADATA_KEY)) {
+    map[md.data] = md.path;
+  }
+  return map;
 }

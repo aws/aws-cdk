@@ -164,7 +164,7 @@ export = {
 
     // THEN
     // Need to do this manually now, since we're in testing mode. In a normal CDK app,
-    // this happens as part of app.run().
+    // this happens as part of app.synth().
     app.node.prepareTree();
 
     test.deepEqual(stack1._toCloudFormation(), {
@@ -202,7 +202,7 @@ export = {
 
     // THEN
     // Need to do this manually now, since we're in testing mode. In a normal CDK app,
-    // this happens as part of app.run().
+    // this happens as part of app.synth().
     app.node.prepareTree();
 
     test.deepEqual(stack2._toCloudFormation(), {
@@ -263,7 +263,7 @@ export = {
 
     // THEN
     // Need to do this manually now, since we're in testing mode. In a normal CDK app,
-    // this happens as part of app.run().
+    // this happens as part of app.synth().
     app.node.prepareTree();
 
     test.deepEqual(stack2._toCloudFormation(), {
@@ -437,7 +437,7 @@ export = {
     });
 
     // THEN
-    const session = app.run();
+    const session = app.synth();
     test.deepEqual(stack.name, 'valid-stack-name');
     test.ok(session.tryGetArtifact('valid-stack-name'));
     test.done();

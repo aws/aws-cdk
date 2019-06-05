@@ -59,4 +59,4 @@ const app = new cdk.App();
 
 new SucceedingStack(app, 'SucceedingStack');
 
-app.run();
+app.synth();

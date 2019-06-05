@@ -237,12 +237,15 @@ export class StackActivityMonitor {
   }
 
   private findMetadataFor(logicalId: string | undefined): { entry: cxapi.MetadataEntry, path: string } | undefined {
-    const metadata = this.stack.metadata;
+    const metadata = this.stack.manifest.metadata;
     if (!logicalId || !metadata) { return undefined; }
     for (const path of Object.keys(metadata)) {
-      const entry = metadata[path].filter(e => e.type === 'aws:cdk:logicalId')
-                      .find(e => e.data === logicalId);
-      if (entry) { return { entry, path }; }
+      const entry = metadata[path]
+        .filter(e => e.type === cxapi.LOGICAL_ID_METADATA_KEY)
+        .find(e => e.data === logicalId);
+      if (entry) {
+        return { entry, path };
+      }
     }
     return undefined;
   }

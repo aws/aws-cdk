@@ -16,7 +16,7 @@ async function main() {
 
   const app = new cdk.App();
   new DeclarativeStack(app, stackName, { template, typeSystem });
-  app.run();
+  app.synth();
 }
 
 main().catch(e => {

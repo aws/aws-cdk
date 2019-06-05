@@ -18,4 +18,4 @@ const policy = new Policy(stack, 'MyPolicy');
 policy.attachToGroup(g1);
 policy.addStatement(new PolicyStatement().addResource(g2.groupArn).addAction('iam:*'));
 
-app.run();
+app.synth();

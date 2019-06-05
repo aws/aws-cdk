@@ -1,64 +1,131 @@
-import { CloudAssembly, MissingContext } from './cloud-assembly';
+import { CloudAssembly } from './cloud-assembly';
 import { Environment, EnvironmentUtils } from './environment';
-import { ERROR_METADATA_KEY, INFO_METADATA_KEY, MetadataEntry, SynthesisMessage, SynthesisMessageLevel, WARNING_METADATA_KEY } from './metadata';
+import {
+  ERROR_METADATA_KEY,
+  INFO_METADATA_KEY,
+  MetadataEntry,
+  MetadataEntryResult,
+  SynthesisMessage,
+  SynthesisMessageLevel,
+  WARNING_METADATA_KEY } from './metadata';
 
+/**
+ * Type of cloud artifact.
+ */
 export enum ArtifactType {
-  None = 'none',
+  None = 'none', // required due to a jsii bug
+
+  /**
+   * The artifact is an AWS CloudFormation stack.
+   */
   AwsCloudFormationStack = 'aws:cloudformation:stack',
 }
 
-export interface Artifact {
+/**
+ * A manifest for a single artifact within the cloud assembly.
+ */
+export interface ArtifactManifest {
+  /**
+   * The type of artifact.
+   */
   readonly type: ArtifactType;
+
+  /**
+   * The environment into which this artifact is deployed.
+   */
   readonly environment: string; // format: aws://account/region
+
+  /**
+   * Associated metadata.
+   */
   readonly metadata?: { [path: string]: MetadataEntry[] };
+
+  /**
+   * IDs of artifacts that must be deployed before this artifact.
+   */
   readonly dependencies?: string[];
-  readonly missing?: { [key: string]: MissingContext };
+
+  /**
+   * The set of properties for this artifact (depends on type)
+   */
   readonly properties?: { [name: string]: any };
-  readonly autoDeploy?: boolean;
 }
 
+/**
+ * Artifact properties for CloudFormation stacks.
+ */
 export interface AwsCloudFormationStackProperties {
+  /**
+   * A file relative to the assembly root which contains the CloudFormation template for this stack.
+   */
   readonly templateFile: string;
+
+  /**
+   * Values for CloudFormation stack parameters that should be passed when the stack is deployed.
+   */
   readonly parameters?: { [id: string]: string };
 }
 
+/**
+ * Represents an artifact within a cloud assembly.
+ */
 export class CloudArtifact {
-  public static from(assembly: CloudAssembly, name: string, artifact: Artifact): CloudArtifact {
+  /**
+   * Returns a subclass of `CloudArtifact` based on the artifact type defined in the artifact manifest.
+   * @param assembly The cloud assembly from which to load the artifact
+   * @param id The artifact ID
+   * @param artifact The artifact manifest
+   */
+  public static from(assembly: CloudAssembly, id: string, artifact: ArtifactManifest): CloudArtifact {
     switch (artifact.type) {
       case ArtifactType.AwsCloudFormationStack:
-        return new CloudFormationStackArtifact(assembly, name, artifact);
+        return new CloudFormationStackArtifact(assembly, id, artifact);
 
       default:
         throw new Error(`unsupported artifact type: ${artifact.type}`);
     }
   }
 
-  public readonly type: ArtifactType;
-  public readonly missing: { [key: string]: MissingContext };
-  public readonly autoDeploy: boolean;
+  /**
+   * The artifact's manifest
+   */
+  public readonly manifest: ArtifactManifest;
+
+  /**
+   * The set of messages extracted from the artifact's metadata.
+   */
   public readonly messages: SynthesisMessage[];
+
+  /**
+   * The environment into which to deploy this artifact.
+   */
   public readonly environment: Environment;
-  public readonly metadata: { [path: string]: MetadataEntry[] };
-  public readonly dependsIDs: string[];
-  public readonly properties: { [name: string]: any };
 
-  private _deps?: CloudArtifact[]; // cache
+  /**
+   * IDs of all dependencies. Used when topologically sorting the artifacts within the cloud assembly.
+   * @internal
+   */
+  public readonly _dependencyIDs: string[];
 
-  constructor(public readonly assembly: CloudAssembly, public readonly id: string, artifact: Artifact) {
-    this.missing = artifact.missing || { };
-    this.type = artifact.type;
-    this.environment = EnvironmentUtils.parse(artifact.environment);
-    this.autoDeploy = artifact.autoDeploy === undefined ? true : artifact.autoDeploy;
-    this.metadata = artifact.metadata || { };
+  /**
+   * Cache of resolved dependencies.
+   */
+  private _deps?: CloudArtifact[];
+
+  protected constructor(public readonly assembly: CloudAssembly, public readonly id: string, manifest: ArtifactManifest) {
+    this.manifest = manifest;
+    this.environment = EnvironmentUtils.parse(manifest.environment);
     this.messages = this.renderMessages();
-    this.dependsIDs = artifact.dependencies || [];
-    this.properties = artifact.properties || { };
+    this._dependencyIDs = manifest.dependencies || [];
   }
 
-  public get depends(): CloudArtifact[] {
+  /**
+   * Returns all the artifacts that this artifact depends on.
+   */
+  public get dependencies(): CloudArtifact[] {
     if (this._deps) { return this._deps; }
 
-    this._deps = this.dependsIDs.map(id => {
+    this._deps = this._dependencyIDs.map(id => {
       const dep = this.assembly.artifacts.find(a => a.id === id);
       if (!dep) {
         throw new Error(`Artifact ${this.id} depends on non-existing artifact ${id}`);
@@ -69,10 +136,26 @@ export class CloudArtifact {
     return this._deps;
   }
 
+  /**
+   * @returns all the metadata entries of a specific type in this artifact.
+   * @param type
+   */
+  public findMetadataByType(type: string) {
+    const result = new Array<MetadataEntryResult>();
+    for (const path of Object.keys(this.manifest.metadata || {})) {
+      for (const entry of (this.manifest.metadata || {})[path]) {
+        if (entry.type === type) {
+          result.push({ path, ...entry });
+        }
+      }
+    }
+    return result;
+  }
+
   private renderMessages() {
     const messages = new Array<SynthesisMessage>();
 
-    for (const [ id, metadata ] of Object.entries(this.metadata)) {
+    for (const [ id, metadata ] of Object.entries(this.manifest.metadata || { })) {
       for (const entry of metadata) {
         let level: SynthesisMessageLevel;
         switch (entry.type) {

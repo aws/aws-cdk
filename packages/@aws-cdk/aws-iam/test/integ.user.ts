@@ -11,4 +11,4 @@ new User(stack, 'MyUser', {
   passwordResetRequired: true
 });
 
-app.run();
+app.synth();

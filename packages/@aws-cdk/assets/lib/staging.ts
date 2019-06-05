@@ -1,4 +1,4 @@
-import { Construct } from '@aws-cdk/cdk';
+import { Construct, ISynthesisSession } from '@aws-cdk/cdk';
 import cxapi = require('@aws-cdk/cx-api');
 import fs = require('fs');
 import path = require('path');
@@ -66,12 +66,12 @@ export class Staging extends Construct {
     }
   }
 
-  protected synthesize(session: cxapi.CloudAssemblyBuilder) {
+  protected synthesize(session: ISynthesisSession) {
     if (!this.relativePath) {
       return;
     }
 
-    const targetPath = path.join(session.outdir, this.relativePath);
+    const targetPath = path.join(session.assembly.outdir, this.relativePath);
 
     // asset already staged
     if (fs.existsSync(targetPath)) {

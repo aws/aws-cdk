@@ -5,7 +5,6 @@ import path = require('path');
 export interface TestStackArtifact {
   stackName: string;
   template: any;
-  autoDeploy?: boolean;
   depends?: string[];
   metadata?: cxapi.StackMetadata;
   assets?: cxapi.AssetMetadataEntry[];
@@ -29,7 +28,7 @@ export function testAssembly(...stacks: TestStackArtifact[]): cxapi.CloudAssembl
     builder.addArtifact(stack.stackName, {
       type: cxapi.ArtifactType.AwsCloudFormationStack,
       environment: 'aws://12345/here',
-      autoDeploy: stack.autoDeploy,
+
       dependencies: stack.depends,
       metadata,
       properties: {

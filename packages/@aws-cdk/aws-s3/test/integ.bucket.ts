@@ -21,4 +21,4 @@ const user = new iam.User(stack, 'MyUser');
 bucket.grantReadWrite(user);
 otherwiseEncryptedBucket.grantRead(user);
 
-app.run();
+app.synth();

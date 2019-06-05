@@ -11,4 +11,4 @@ new Project(stack, 'MyProject', {
   buildScriptAsset: new assets.ZipDirectoryAsset(stack, 'Bundle', { path: 'script_bundle' })
 });
 
-app.run();
+app.synth();

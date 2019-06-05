@@ -1,3 +1,4 @@
+/// !cdk-integ *
 import { AttributeType } from '@aws-cdk/aws-dynamodb';
 import { App } from '@aws-cdk/cdk';
 import { GlobalTable } from '../lib';
@@ -8,4 +9,4 @@ new GlobalTable(app, 'globdynamodbinteg', {
   tableName: 'integrationtest',
   regions: [ "us-east-1", "us-east-2", "us-west-2" ]
 });
-app.run();
+app.synth();

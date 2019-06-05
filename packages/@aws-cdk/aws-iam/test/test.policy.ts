@@ -10,7 +10,7 @@ export = {
     const stack = new Stack(app, 'MyStack');
     new Policy(stack, 'MyPolicy');
 
-    test.throws(() => app.run(), /Policy is empty/);
+    test.throws(() => app.synth(), /Policy is empty/);
     test.done();
   },
 
@@ -250,7 +250,7 @@ export = {
     const app = new App();
     const stack = new Stack(app, 'MyStack');
     new Policy(stack, 'MyPolicy');
-    test.throws(() => app.run(), /Policy must be attached to at least one principal: user, group or role/);
+    test.throws(() => app.synth(), /Policy must be attached to at least one principal: user, group or role/);
     test.done();
   },
 

@@ -21,4 +21,4 @@ class S3EventSourceTest extends cdk.Stack {
 
 const app = new cdk.App();
 new S3EventSourceTest(app, 'lambda-event-source-s3');
-app.run();
+app.synth();

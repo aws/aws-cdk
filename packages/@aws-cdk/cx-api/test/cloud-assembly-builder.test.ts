@@ -25,14 +25,14 @@ test('cloud assembly builder', () => {
         prop2: '555'
       }
     },
-    missing: {
-      foo: {
-        provider: 'context-provider',
-        props: {
-          a: 'A',
-          b: 2
-        }
-      }
+  });
+
+  session.addMissing({
+    key: 'foo',
+    provider: 'context-provider',
+    props: {
+      a: 'A',
+      b: 2
     }
   });
 
@@ -53,13 +53,15 @@ test('cloud assembly builder', () => {
   }));
 
   const assembly = session.build();
-
   const manifest = assembly.manifest;
 
   // THEN
   // verify the manifest looks right
   expect(manifest).toStrictEqual({
     version: CLOUD_ASSEMBLY_VERSION,
+    missing: [
+      { key: 'foo', provider: 'context-provider', props: { a: 'A', b: 2 } }
+    ],
     artifacts: {
       'my-first-artifact': {
         type: 'aws:cloudformation:stack',
@@ -73,9 +75,6 @@ test('cloud assembly builder', () => {
             prop2: '555'
           },
         },
-        missing: {
-          foo: { provider: 'context-provider', props: { a: 'A', b: 2 } }
-        }
       },
       'minimal-artifact': {
         type: 'aws:cloudformation:stack',

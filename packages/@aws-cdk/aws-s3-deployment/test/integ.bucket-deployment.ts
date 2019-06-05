@@ -34,4 +34,4 @@ const app = new cdk.App();
 
 new TestBucketDeployment(app, 'test-bucket-deployments-1');
 
-app.run();
+app.synth();

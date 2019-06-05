@@ -33,4 +33,4 @@ class EventStack extends cdk.Stack {
 }
 
 new EventStack(app, 'aws-ecs-integ-ecs');
-app.run();
+app.synth();

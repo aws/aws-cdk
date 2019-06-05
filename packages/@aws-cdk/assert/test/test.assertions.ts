@@ -209,7 +209,7 @@ function synthesizedStack(fn: (stack: cdk.Stack) => void): cx.CloudFormationStac
   const stack = new cdk.Stack(app, 'TestStack');
   fn(stack);
 
-  const assembly = app.run();
+  const assembly = app.synth();
   return assembly.getStack(stack.name);
 }
 

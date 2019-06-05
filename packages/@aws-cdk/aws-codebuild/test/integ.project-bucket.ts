@@ -21,4 +21,4 @@ new codebuild.Project(stack, 'MyProject', {
   }
 });
 
-app.run();
+app.synth();

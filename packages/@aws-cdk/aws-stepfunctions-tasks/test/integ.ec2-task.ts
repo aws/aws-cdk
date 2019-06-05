@@ -48,4 +48,4 @@ new sfn.StateMachine(stack, 'StateMachine', {
   definition,
 });
 
-app.run();
+app.synth();

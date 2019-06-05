@@ -27,4 +27,4 @@ new lambda.Function(stack, 'OneYear', {
   logRetentionDays: logs.RetentionDays.OneYear
 });
 
-app.run();
+app.synth();

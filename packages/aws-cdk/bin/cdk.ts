@@ -227,7 +227,7 @@ async function initCommandLine() {
 
   async function cliMetadata(stackName: string) {
     const s = await appStacks.synthesizeStack(stackName);
-    return s.metadata;
+    return s.manifest.metadata || {};
   }
 
   /**

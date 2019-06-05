@@ -40,4 +40,4 @@ new codepipeline.Pipeline(stack, 'Pipeline', {
   ],
 });
 
-app.run();
+app.synth();

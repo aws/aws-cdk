@@ -22,4 +22,4 @@ const bucket2 = new s3.Bucket(stack, 'Bucket2', {
 });
 bucket2.addObjectRemovedNotification(new s3n.SnsDestination(topic3), { prefix: 'foo' }, { suffix: 'foo/bar' });
 
-app.run();
+app.synth();

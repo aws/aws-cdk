@@ -19,7 +19,7 @@ timer.addTarget(new targets.LambdaFunction(fn));
 const timer2 = new events.Rule(stack, 'Timer2', { scheduleExpression: 'rate(2 minutes)' });
 timer2.addTarget(new targets.LambdaFunction(fn));
 
-app.run();
+app.synth();
 
 // tslint:disable:no-console
 function handler(event: any, _context: any, callback: any) {

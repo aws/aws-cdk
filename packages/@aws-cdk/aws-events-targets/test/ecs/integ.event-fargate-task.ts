@@ -48,4 +48,4 @@ class EventStack extends cdk.Stack {
 }
 
 new EventStack(app, 'aws-ecs-integ-fargate');
-app.run();
+app.synth();

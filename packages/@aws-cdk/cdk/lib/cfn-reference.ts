@@ -21,7 +21,7 @@ export class CfnReference extends Reference {
    * Check whether this is actually a Reference
    */
   public static isCfnReference(x: Token): x is CfnReference {
-    return (x as any)[CFN_REFERENCE_SYMBOL] === true;
+    return CFN_REFERENCE_SYMBOL in x;
   }
 
   /**

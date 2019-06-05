@@ -18,4 +18,4 @@ class SqsEventSourceTest extends cdk.Stack {
 
 const app = new cdk.App();
 new SqsEventSourceTest(app, 'lambda-event-source-sqs');
-app.run();
+app.synth();

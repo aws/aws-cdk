@@ -41,4 +41,4 @@ group2.metricTargetResponseTime().newAlarm(stack, 'ResponseTimeHigh2', {
   evaluationPeriods: 2,
 });
 
-app.run();
+app.synth();

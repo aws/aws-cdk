@@ -17,4 +17,4 @@ new autoscaling.AutoScalingGroup(stack, 'Fleet', {
   spotPrice: '0.20'
 });
 
-app.run();
+app.synth();

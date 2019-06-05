@@ -38,4 +38,4 @@ new cicd.PipelineDeployStackAction(stack, 'DeployStack', {
   capabilities: cfn.CloudFormationCapabilities.None,
 });
 
-app.run();
+app.synth();

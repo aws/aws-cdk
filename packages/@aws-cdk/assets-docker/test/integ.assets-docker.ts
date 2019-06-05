@@ -12,4 +12,4 @@ const asset = new assets.DockerImageAsset(stack, 'DockerImage', {
 new cdk.CfnOutput(stack, 'ArtifactHash', { value: asset.artifactHash });
 new cdk.CfnOutput(stack, 'ImageUri', { value: asset.imageUri });
 
-app.run();
+app.synth();

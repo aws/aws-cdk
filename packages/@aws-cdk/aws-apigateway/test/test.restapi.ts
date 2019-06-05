@@ -131,7 +131,7 @@ export = {
     api.root.addResource('bar').addResource('goo');
 
     // THEN
-    test.throws(() => app.run(), /The REST API doesn't contain any methods/);
+    test.throws(() => app.synth(), /The REST API doesn't contain any methods/);
     test.done();
   },
 

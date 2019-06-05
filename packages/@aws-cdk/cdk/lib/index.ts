@@ -36,6 +36,5 @@ export * from './environment';
 
 export * from './runtime';
 export * from './secret-value';
-export * from './synthesis';
 
 export * from './resource';

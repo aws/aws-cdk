@@ -127,4 +127,4 @@ const user = new iam.User(stack, 'User');
 table.grantReadData(user);
 tableWithGlobalAndLocalSecondaryIndex.grantReadData(user);
 
-app.run();
+app.synth();

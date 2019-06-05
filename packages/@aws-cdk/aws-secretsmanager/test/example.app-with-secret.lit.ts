@@ -23,4 +23,4 @@ class ExampleStack extends cdk.Stack {
 
 const app = new cdk.App();
 new ExampleStack(app, 'aws-cdk-secret-integ');
-app.run();
+app.synth();

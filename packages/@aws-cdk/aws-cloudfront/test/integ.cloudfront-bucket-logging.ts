@@ -52,4 +52,4 @@ new cloudfront.CloudFrontWebDistribution(stack, 'AnAmazingWebsiteProbably2', {
   loggingConfig: {}
 });
 
-app.run();
+app.synth();

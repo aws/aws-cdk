@@ -13,4 +13,4 @@ new Bucket(stack, 'MyBucket', {
   removalPolicy: RemovalPolicy.Destroy
 });
 
-app.run();
+app.synth();

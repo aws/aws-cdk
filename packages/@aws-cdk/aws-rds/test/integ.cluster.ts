@@ -36,4 +36,4 @@ const cluster = new DatabaseCluster(stack, 'Database', {
 
 cluster.connections.allowDefaultPortFromAnyIpv4('Open to the world');
 
-app.run();
+app.synth();

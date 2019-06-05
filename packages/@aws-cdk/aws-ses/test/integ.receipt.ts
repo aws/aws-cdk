@@ -73,4 +73,4 @@ new ses.WhiteListReceiptFilter(stack, 'WhiteList', {
   ]
 });
 
-app.run();
+app.synth();

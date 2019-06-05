@@ -1,4 +1,4 @@
-import { Stack, SynthesisOptions, Synthesizer } from '@aws-cdk/cdk';
+import { ConstructNode, Stack, SynthesisOptions } from '@aws-cdk/cdk';
 import cxapi = require('@aws-cdk/cx-api');
 
 export class SynthUtils {
@@ -7,8 +7,8 @@ export class SynthUtils {
    */
   public static synthesize(stack: Stack, options: SynthesisOptions = { }): cxapi.CloudFormationStackArtifact {
     // always synthesize against the root (be it an App or whatever) so all artifacts will be included
-    const synth = new Synthesizer();
-    const assembly = synth.synthesize(stack.node.root, options);
+    const root = stack.node.root;
+    const assembly = ConstructNode.synth(root.node, options);
     return assembly.getStack(stack.name);
   }
 

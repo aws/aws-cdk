@@ -1,11 +1,10 @@
 import cxapi = require('@aws-cdk/cx-api');
-import { CloudAssemblyBuilder } from '@aws-cdk/cx-api';
 import fs = require('fs');
 import { Test } from 'nodeunit';
 import os = require('os');
 import path = require('path');
 import cdk = require('../lib');
-import { Construct, Synthesizer } from '../lib';
+import { Construct, ConstructNode, ISynthesisSession } from '../lib';
 
 function createModernApp() {
   return new cdk.App({
@@ -21,10 +20,10 @@ export = {
     const app = createModernApp();
 
     // WHEN
-    const session = app.run();
+    const session = app.synth();
 
     // THEN
-    test.same(app.run(), session); // same session if we run() again
+    test.same(app.synth(), session); // same session if we synth() again
     test.deepEqual(list(session.directory), [ 'cdk.out', 'manifest.json' ]);
     test.deepEqual(readJson(session.directory, 'manifest.json').artifacts, {});
     test.done();
@@ -36,7 +35,7 @@ export = {
     new cdk.Stack(app, 'one-stack');
 
     // WHEN
-    const session = app.run();
+    const session = app.synth();
 
     // THEN
     test.deepEqual(list(session.directory), [
@@ -52,10 +51,10 @@ export = {
     const app = createModernApp();
     const stack = new cdk.Stack(app, 'one-stack');
 
-    class MyConstruct extends cdk.Construct implements cdk.ISynthesizable {
-      public synthesize(s: cxapi.CloudAssemblyBuilder) {
-        writeJson(s.outdir, 'foo.json', { bar: 123 });
-        s.addArtifact('my-random-construct', {
+    class MyConstruct extends cdk.Construct {
+      protected synthesize(s: ISynthesisSession) {
+        writeJson(s.assembly.outdir, 'foo.json', { bar: 123 });
+        s.assembly.addArtifact('my-random-construct', {
           type: cxapi.ArtifactType.AwsCloudFormationStack,
           environment: 'aws://12345/bar',
           properties: {
@@ -68,7 +67,7 @@ export = {
     new MyConstruct(stack, 'MyConstruct');
 
     // WHEN
-    const session = app.run();
+    const session = app.synth();
 
     // THEN
     test.deepEqual(list(session.directory), [
@@ -79,7 +78,7 @@ export = {
     ]);
     test.deepEqual(readJson(session.directory, 'foo.json'), { bar: 123 });
     test.deepEqual(session.manifest, {
-      version: '0.33.0',
+      version: '0.34.0',
       artifacts: {
         'my-random-construct': {
           type: 'aws:cloudformation:stack',
@@ -104,6 +103,24 @@ export = {
         super(undefined as any, 'id');
       }
 
+      protected synthesize(session: ISynthesisSession) {
+        calls.push('synthesize');
+
+        session.assembly.addArtifact('art', {
+          type: cxapi.ArtifactType.AwsCloudFormationStack,
+          properties: {
+            templateFile: 'hey.json',
+            parameters: {
+              paramId: 'paramValue',
+              paramId2: 'paramValue2'
+            }
+          },
+          environment: 'aws://unknown-account/us-east-1'
+        });
+
+        writeJson(session.assembly.outdir, 'hey.json', { hello: 123 });
+      }
+
       protected validate(): string[] {
         calls.push('validate');
         return [];
@@ -112,29 +129,16 @@ export = {
       protected prepare(): void {
         calls.push('prepare');
       }
-
-      protected synthesize(session: CloudAssemblyBuilder) {
-        calls.push('synthesize');
-
-        session.addArtifact('art', {
-          type: cxapi.ArtifactType.AwsCloudFormationStack,
-          properties: { templateFile: 'hey.json' },
-          environment: 'aws://unknown-account/us-east-1'
-        });
-
-        writeJson(session.outdir, 'hey.json', { hello: 123 });
-      }
     }
 
     const root = new SynthesizeMe();
-
-    const synth = new Synthesizer();
-    const assembly = synth.synthesize(root, { outdir: fs.mkdtempSync(path.join(os.tmpdir(), 'outdir')) });
+    const assembly = ConstructNode.synth(root.node, { outdir: fs.mkdtempSync(path.join(os.tmpdir(), 'outdir')) });
 
     test.deepEqual(calls, [ 'prepare', 'validate', 'synthesize' ]);
     const stack = assembly.getStack('art');
     test.deepEqual(stack.template, { hello: 123 });
-    test.deepEqual(stack.properties, { templateFile: 'hey.json' });
+    test.deepEqual(stack.templateFile, 'hey.json');
+    test.deepEqual(stack.parameters, { paramId: 'paramValue', paramId2: 'paramValue2' });
     test.deepEqual(stack.environment, { region: 'us-east-1', account: 'unknown-account', name: 'aws://unknown-account/us-east-1' });
     test.done();
   },
@@ -149,9 +153,9 @@ export = {
     stack.setParameterValue(param, 'Foo');
 
     // THEN
-    const session = app.run();
-    const props = session.getStack('my-stack').properties;
-    test.deepEqual(props.parameters, {
+    const session = app.synth();
+    const artifact = session.getStack('my-stack');
+    test.deepEqual(artifact.parameters, {
       MyParam: 'Foo'
     });
     test.done();

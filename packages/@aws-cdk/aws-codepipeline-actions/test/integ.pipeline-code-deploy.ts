@@ -48,4 +48,4 @@ deployStage.addAction(new cpactions.CodeDeployServerDeployAction({
   input: sourceOutput,
 }));
 
-app.run();
+app.synth();

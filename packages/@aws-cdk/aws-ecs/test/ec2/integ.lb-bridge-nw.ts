@@ -44,4 +44,4 @@ listener.addTargets('ECS', {
 
 new cdk.CfnOutput(stack, 'LoadBalancerDNS', { value: lb.loadBalancerDnsName, });
 
-app.run();
+app.synth();

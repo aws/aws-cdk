@@ -25,4 +25,4 @@ const app = new cdk.App();
 
 new EksClusterStack(app, 'eks-integ-test');
 
-app.run();
+app.synth();

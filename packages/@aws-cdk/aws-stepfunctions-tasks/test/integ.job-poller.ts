@@ -47,4 +47,4 @@ class JobPollerStack extends cdk.Stack {
 
 const app = new cdk.App();
 new JobPollerStack(app, 'aws-stepfunctions-integ');
-app.run();
+app.synth();

@@ -24,4 +24,4 @@ alias.addPermission('AliasPermission', {
   principal: new iam.ServicePrincipal('cloudformation.amazonaws.com')
 });
 
-app.run();
+app.synth();

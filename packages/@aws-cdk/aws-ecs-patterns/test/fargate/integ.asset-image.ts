@@ -25,4 +25,4 @@ const fargateService = new ecsPatterns.LoadBalancedFargateService(stack, "Fargat
 // CfnOutput the DNS where you can access your service
 new cdk.CfnOutput(stack, 'LoadBalancerDNS', { value: fargateService.loadBalancer.loadBalancerDnsName });
 
-app.run();
+app.synth();

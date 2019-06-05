@@ -47,4 +47,4 @@ new codepipeline.Pipeline(stack, 'MyPipeline', {
   ],
 });
 
-app.run();
+app.synth();

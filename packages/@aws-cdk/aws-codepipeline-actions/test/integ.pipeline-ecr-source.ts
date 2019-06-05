@@ -26,4 +26,4 @@ sourceStage.addAction(new cpactions.EcrSourceAction({
 const approveStage = pipeline.addStage({ name: 'Approve' });
 approveStage.addAction(new cpactions.ManualApprovalAction({ actionName: 'ManualApproval' }));
 
-app.run();
+app.synth();

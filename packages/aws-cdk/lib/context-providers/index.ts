@@ -15,12 +15,11 @@ export type ProviderMap = {[name: string]: ProviderConstructor};
  * Iterate over the list of missing context values and invoke the appropriate providers from the map to retrieve them
  */
 export async function provideContextValues(
-  missingValues: { [key: string]: cxapi.MissingContext },
+  missingValues: cxapi.MissingContext[],
   context: Context,
   sdk: SDK) {
-  for (const key of Object.keys(missingValues)) {
-    const missingContext = missingValues[key];
-
+  for (const missingContext of missingValues) {
+    const key = missingContext.key;
     const constructor = availableContextProviders[missingContext.provider];
     if (!constructor) {
       // tslint:disable-next-line:max-line-length
