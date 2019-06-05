@@ -83,6 +83,7 @@
     "@aws-cdk/aws-ec2": "^0.33.0",
     "@aws-cdk/aws-ecs": "^0.33.0",
     "@aws-cdk/aws-iam": "^0.33.0",
+    "@aws-cdk/aws-kms": "^0.33.0",
     "@aws-cdk/aws-lambda": "^0.33.0",
     "@aws-cdk/aws-sns": "^0.33.0",
     "@aws-cdk/aws-sqs": "^0.33.0",
