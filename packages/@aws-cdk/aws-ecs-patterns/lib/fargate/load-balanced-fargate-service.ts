@@ -1,4 +1,5 @@
 import ecs = require('@aws-cdk/aws-ecs');
+import iam = require('@aws-cdk/aws-iam');
 import cdk = require('@aws-cdk/cdk');
 import { LoadBalancedServiceBase, LoadBalancedServiceBaseProps } from '../base/load-balanced-service-base';
 
@@ -41,7 +42,63 @@ export interface LoadBalancedFargateServiceProps extends LoadBalancedServiceBase
    *
    * @default 512
    */
-  readonly memoryLimitMiB?: number;
+  readonly memoryMiB?: string;
+
+  /**
+   * Determines whether your Fargate Service will be assigned a public IP address.
+   *
+   * @default false
+   */
+  readonly publicTasks?: boolean;
+
+  /**
+   * Domain name for the service, e.g. api.example.com
+   *
+   * @default - No domain name.
+   */
+  readonly domainName?: string;
+
+  /**
+   * Route53 hosted zone for the domain, e.g. "example.com."
+   *
+   * @default - No Route53 hosted domain zone.
+   */
+  readonly domainZone?: IHostedZone;
+
+  /**
+   * Whether to create an AWS log driver
+   *
+   * @default true
+   */
+  readonly createLogs?: boolean;
+
+  /**
+   * Override for the Fargate Task Definition execution role
+   *
+   * @default - No value
+   */
+  readonly executionRole?: iam.IRole;
+
+  /**
+   * Override for the Fargate Task Definition task role
+   *
+   * @default - No value
+   */
+  readonly taskRole?: iam.IRole;
+
+  /**
+   * Override value for the container name
+   *
+   * @default - No value
+   */
+  readonly containerName?: string;
+
+  /**
+   * Override value for the service name
+   *
+   * @default - No value
+   */
+  readonly serviceName?: string;
 }
 
 /**
@@ -59,10 +116,14 @@ export class LoadBalancedFargateService extends LoadBalancedServiceBase {
 
     const taskDefinition = new ecs.FargateTaskDefinition(this, 'TaskDef', {
       memoryLimitMiB: props.memoryLimitMiB,
-      cpu: props.cpu
+      cpu: props.cpu,
+      executionRole: props.executionRole !== undefined ? props.executionRole : undefined,
+      taskRole: props.taskRole !== undefined ? props.taskRole : undefined
     });
 
-    const container = taskDefinition.addContainer('web', {
+    const containerName = props.containerName !== undefined ? props.containerName : 'web';
+
+    const container = taskDefinition.addContainer(containerName, {
       image: props.image,
       logging: this.logDriver,
       environment: props.environment
@@ -77,7 +138,8 @@ export class LoadBalancedFargateService extends LoadBalancedServiceBase {
       cluster: props.cluster,
       desiredCount: props.desiredCount || 1,
       taskDefinition,
-      assignPublicIp
+      assignPublicIp,
+      serviceName: props.serviceName || undefined
     });
     this.service = service;
 
