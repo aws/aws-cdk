@@ -126,8 +126,7 @@ async function main() {
           python: {
             distName: pythonDistName,
             module: pythonModuleName
-          },
-          sphinx: {}
+          }
         }
       },
       repository: {
