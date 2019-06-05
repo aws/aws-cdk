@@ -24,6 +24,9 @@
         "distName": "aws-cdk.aws-appsync",
         "module": "aws_cdk.aws_appsync"
       }
+    },
+    "metadata": {
+      "awsdocs:title": "AWS AppSync"
     }
   },
   "repository": {

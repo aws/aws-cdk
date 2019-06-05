@@ -1,4 +1,4 @@
-## CDK Construct Library for Amazon API Gateway
+## Amazon API Gateway Construct Library
 <div class="stability_label"
      style="background-color: #EC5315; color: white !important; margin: 0 0 1rem 0; padding: 1rem; line-height: 1.5;">
   Stability: 1 - Experimental. This API is still under active development and subject to non-backward

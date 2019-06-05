@@ -24,6 +24,9 @@
         "distName": "aws-cdk.aws-lambda",
         "module": "aws_cdk.aws_lambda"
       }
+    },
+    "metadata": {
+      "awsdocs:title": "AWS Lambda"
     }
   },
   "repository": {
@@ -106,6 +109,11 @@
   },
   "engines": {
     "node": ">= 8.10.0"
+  },
+  "awslint": {
+    "exclude": [
+      "integ-return-type:@aws-cdk/aws-lambda.IEventSource.bind"
+    ]
   },
   "stability": "experimental"
 }

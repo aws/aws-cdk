@@ -24,6 +24,9 @@
         "distName": "aws-cdk.aws-codedeploy",
         "module": "aws_cdk.aws_codedeploy"
       }
+    },
+    "metadata": {
+      "awsdocs:title": "AWS CodeDeploy"
     }
   },
   "repository": {

@@ -24,6 +24,9 @@
         "distName": "aws-cdk.aws-appstream",
         "module": "aws_cdk.aws_appstream"
       }
+    },
+    "metadata": {
+      "awsdocs:title": "Amazon AppStream 2.0"
     }
   },
   "repository": {

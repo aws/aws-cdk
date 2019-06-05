@@ -24,6 +24,9 @@
         "distName": "aws-cdk.aws-gamelift",
         "module": "aws_cdk.aws_gamelift"
       }
+    },
+    "metadata": {
+      "awsdocs:title": "Amazon GameLift"
     }
   },
   "repository": {

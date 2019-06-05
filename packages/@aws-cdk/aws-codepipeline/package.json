@@ -24,6 +24,9 @@
         "distName": "aws-cdk.aws-codepipeline",
         "module": "aws_cdk.aws_codepipeline"
       }
+    },
+    "metadata": {
+      "awsdocs:title": "AWS CodePipeline"
     }
   },
   "repository": {
