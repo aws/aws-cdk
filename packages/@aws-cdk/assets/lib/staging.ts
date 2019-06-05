@@ -66,7 +66,7 @@ export class Staging extends Construct {
     }
   }
 
-  public synthesize(session: ISynthesisSession) {
+  protected synthesize(session: ISynthesisSession) {
     if (!this.relativePath) {
       return;
     }
