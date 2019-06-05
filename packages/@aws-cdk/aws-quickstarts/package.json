@@ -68,5 +68,5 @@
       "props-default-doc"
     ]
   },
-  "stability": "experimental"
+  "stability": "deprecated"
 }

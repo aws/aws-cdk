@@ -141,19 +141,35 @@ export class StabilitySetting extends ValidationRule {
   public readonly name = 'package-info/stability';
 
   public validate(pkg: PackageJson): void {
-    const stability = pkg.json.stability;
+    if (pkg.json.private) {
+      // Does not apply to private packages!
+      return;
+    }
+
+    let stability = pkg.json.stability;
     switch (stability) {
-      case 'deprecated':
       case 'experimental':
       case 'stable':
-        return this.validateReadmeHasBanner(pkg, stability);
+      case 'deprecated':
+        if (pkg.json.deprecated && stability !== 'deprecated') {
+          pkg.report({
+            ruleName: this.name,
+            message: `Package is deprecated, but is marked with stability "${stability}"`,
+            fix: () => pkg.json.stability = 'deprecated',
+          });
+          stability = 'deprecated';
+        }
+        break;
       default:
+        const defaultStability = pkg.json.deprecated ? 'deprecated' : 'experimental';
         pkg.report({
           ruleName: this.name,
           message: `Invalid stability configuration in package.json: ${JSON.stringify(stability)}`,
-          fix: () => pkg.json.stability = 'experimental',
+          fix: () => pkg.json.stability = defaultStability,
         });
+        stability = defaultStability;
     }
+    this.validateReadmeHasBanner(pkg, stability);
   }
 
   private validateReadmeHasBanner(pkg: PackageJson, stability: string) {

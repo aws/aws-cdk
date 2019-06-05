@@ -7,7 +7,6 @@
 </div>
 
 
-
 ```ts
 const alexaAsk = require('@aws-cdk/alexa-ask');
 ```

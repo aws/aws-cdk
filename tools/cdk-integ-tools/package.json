@@ -46,6 +46,5 @@
   "homepage": "https://github.com/awslabs/aws-cdk",
   "engines": {
     "node": ">= 8.10.0"
-  },
-  "stability": "experimental"
+  }
 }

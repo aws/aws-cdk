@@ -69,5 +69,5 @@
       "props-no-any:@aws-cdk/runtime-values.RuntimeValueProps.value"
     ]
   },
-  "stability": "experimental"
+  "stability": "deprecated"
 }
