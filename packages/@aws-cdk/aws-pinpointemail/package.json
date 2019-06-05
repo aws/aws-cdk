@@ -23,8 +23,7 @@
       "python": {
         "distName": "aws-cdk.aws-pinpointemail",
         "module": "aws_cdk.aws_pinpointemail"
-      },
-      "sphinx": {}
+      }
     },
     "metadata": {
       "awsdocs:title": "Amazon Pinpoint Email"
