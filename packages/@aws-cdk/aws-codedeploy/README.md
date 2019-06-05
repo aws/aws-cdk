@@ -1,4 +1,4 @@
-## The CDK Construct Library for AWS CodeDeploy
+## AWS CodeDeploy Construct Library
 
 AWS CodeDeploy is a deployment service that automates application deployments to Amazon EC2 instances, on-premises instances, serverless Lambda functions, or Amazon ECS services.
 

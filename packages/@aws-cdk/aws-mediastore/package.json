@@ -25,6 +25,9 @@
         "module": "aws_cdk.aws_mediastore"
       },
       "sphinx": {}
+    },
+    "metadata": {
+      "awsdocs:title": "AWS Elemental MediaStore"
     }
   },
   "repository": {

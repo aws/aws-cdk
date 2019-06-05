@@ -1,4 +1,4 @@
-## Amazon Elastic Container Registry Construct Library
+## Amazon ECR Construct Library
 
 This package contains constructs for working with Amazon Elastic Container Registry.
 

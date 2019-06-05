@@ -24,6 +24,9 @@
         "distName": "aws-cdk.aws-cloudwatch",
         "module": "aws_cdk.aws_cloudwatch"
       }
+    },
+    "metadata": {
+      "awsdocs:title": "Amazon CloudWatch"
     }
   },
   "repository": {

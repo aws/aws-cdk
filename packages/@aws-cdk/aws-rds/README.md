@@ -1,4 +1,4 @@
-## AWS RDS Construct Library
+## Amazon Relational Database Service Construct Library
 
 ### Starting a Clustered Database
 
