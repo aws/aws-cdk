@@ -7,6 +7,7 @@ import util = require('util');
 
 const stat = util.promisify(fs.stat);
 const readdir = util.promisify(fs.readdir);
+const CDK_INTEG_STACK_PRAGMA = '/// !cdk-integ:stack';
 
 export class IntegrationTests {
   constructor(private readonly directory: string) {
@@ -14,6 +15,8 @@ export class IntegrationTests {
 
   public async fromCliArgs(tests?: string[]): Promise<IntegrationTest[]> {
     let allTests = await this.discover();
+    const all = allTests.map(x => x.name);
+    let foundAll = true;
 
     if (tests && tests.length > 0) {
       // Pare down found tests to filter
@@ -22,7 +25,13 @@ export class IntegrationTests {
       const selectedNames = allTests.map(t => t.name);
       for (const unmatched of tests.filter(t => !selectedNames.includes(t))) {
         process.stderr.write(`No such integ test: ${unmatched}\n`);
+        foundAll = false;
       }
+    }
+
+    if (!foundAll) {
+      process.stderr.write(`Available tests: ${all.join(' ')}\n`);
+      return [];
     }
 
     return allTests;
@@ -62,11 +71,13 @@ export class IntegrationTest {
   public readonly expectedFileName: string;
   private readonly expectedFilePath: string;
   private readonly cdkContextPath: string;
+  private readonly sourceFilePath: string;
 
   constructor(private readonly directory: string, public readonly name: string) {
     const baseName = this.name.endsWith('.js') ? this.name.substr(0, this.name.length - 3) : this.name;
     this.expectedFileName = baseName + '.expected.json';
     this.expectedFilePath = path.join(this.directory, this.expectedFileName);
+    this.sourceFilePath = path.join(this.directory, this.name);
     this.cdkContextPath = path.join(this.directory, 'cdk.context.json');
   }
 
@@ -95,6 +106,31 @@ export class IntegrationTest {
     return fs.existsSync(this.expectedFilePath);
   }
 
+  /**
+   * Returns the single test stack to use.
+   *
+   * If the test has a single stack, it will be chosen. Otherwise a pragma is expected within the
+   * test file the name of the stack:
+   *
+   * @example
+   *
+   *    /// !cdk-integ:stack <stack-name>
+   *
+   */
+  public async determineTestStack() {
+    const pragma = (await this.readStackPragma());
+    const availableStacks = (await this.invoke([ 'ls' ])).split('\n');
+    const selectedStacks = availableStacks.filter((x: any) => pragma ? x === pragma : x);
+    if (selectedStacks.length !== 1) {
+      throw new Error(`"cdk-integ" can only operate on apps with a single stack.\n\n` +
+        `  If your app has multiple stacks, specify which stack to select by adding this to your test source:\n\n` +
+        `  ${CDK_INTEG_STACK_PRAGMA} <stack-name>\n\n` +
+        `  Available stacks: ${availableStacks.join(' ')}\n`);
+    }
+
+    return selectedStacks[0];
+  }
+
   public async readExpected(): Promise<any> {
     return JSON.parse((await util.promisify(fs.readFile)(this.expectedFilePath, { encoding: 'utf-8' })));
   }
@@ -111,6 +147,25 @@ export class IntegrationTest {
     if (fs.existsSync(this.cdkContextPath)) {
       fs.unlinkSync(this.cdkContextPath);
     }
+  }
+
+  /**
+   * Reads the test source file and looks for the "!cdk-integ" pragma. If it exists, returns it's
+   * contents. This allows integ tests to supply custom command line arguments to "cdk deploy" and "cdk synth".
+   */
+  private async readStackPragma(): Promise<string | undefined> {
+    const source = await util.promisify(fs.readFile)(this.sourceFilePath, 'utf-8');
+    const pragmaLine = source.split('\n').find(x => x.startsWith(CDK_INTEG_STACK_PRAGMA));
+    if (!pragmaLine) {
+      return undefined;
+    }
+
+    const args = pragmaLine.substring(CDK_INTEG_STACK_PRAGMA.length).trim().split(' ');
+    if (args.length !== 1) {
+      throw new Error(`Syntax of stack pragma in test code: ${CDK_INTEG_STACK_PRAGMA} <stack>`);
+    }
+
+    return args[0];
   }
 }
 

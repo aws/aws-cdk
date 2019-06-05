@@ -1,3 +1,4 @@
+/// !cdk-integ:stack PipelineStack
 import codebuild = require('@aws-cdk/aws-codebuild');
 import codecommit = require('@aws-cdk/aws-codecommit');
 import codepipeline = require('@aws-cdk/aws-codepipeline');
