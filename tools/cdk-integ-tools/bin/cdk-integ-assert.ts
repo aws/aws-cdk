@@ -24,7 +24,7 @@ async function main() {
     args.push('--no-asset-metadata');
     args.push('--no-staging');
 
-    const actual = await test.invoke(['--json', ...args, 'synth', stackToDeploy], { json: true, context: STATIC_TEST_CONTEXT });
+    const actual = await test.invoke(['--json', ...args, 'synth', ...stackToDeploy], { json: true, context: STATIC_TEST_CONTEXT });
 
     const diff = diffTemplate(expected, actual);
 

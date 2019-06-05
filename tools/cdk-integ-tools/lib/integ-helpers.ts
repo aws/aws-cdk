@@ -7,7 +7,7 @@ import util = require('util');
 
 const stat = util.promisify(fs.stat);
 const readdir = util.promisify(fs.readdir);
-const CDK_INTEG_STACK_PRAGMA = '/// !cdk-integ:stack';
+const CDK_INTEG_STACK_PRAGMA = '/// !cdk-integ';
 
 export class IntegrationTests {
   constructor(private readonly directory: string) {
@@ -114,21 +114,24 @@ export class IntegrationTest {
    *
    * @example
    *
-   *    /// !cdk-integ:stack <stack-name>
+   *    /// !cdk-integ <stack-name>
    *
    */
-  public async determineTestStack() {
+  public async determineTestStack(): Promise<string[]> {
     const pragma = (await this.readStackPragma());
-    const availableStacks = (await this.invoke([ 'ls' ])).split('\n');
-    const selectedStacks = availableStacks.filter((x: any) => pragma ? x === pragma : x);
-    if (selectedStacks.length !== 1) {
-      throw new Error(`"cdk-integ" can only operate on apps with a single stack.\n\n` +
-        `  If your app has multiple stacks, specify which stack to select by adding this to your test source:\n\n` +
-        `  ${CDK_INTEG_STACK_PRAGMA} <stack-name>\n\n` +
-        `  Available stacks: ${availableStacks.join(' ')}\n`);
+    if (pragma.length > 0) {
+      return pragma;
     }
 
-    return selectedStacks[0];
+    const stacks = (await this.invoke([ 'ls' ])).split('\n');
+    if (stacks.length !== 1) {
+      throw new Error(`"cdk-integ" can only operate on apps with a single stack.\n\n` +
+        `  If your app has multiple stacks, specify which stack to select by adding this to your test source:\n\n` +
+        `      ${CDK_INTEG_STACK_PRAGMA} STACK ...\n\n` +
+        `  Available stacks: ${stacks.join(' ')} (wildcards are also supported)\n`);
+    }
+
+    return stacks;
   }
 
   public async readExpected(): Promise<any> {
@@ -153,19 +156,18 @@ export class IntegrationTest {
    * Reads the test source file and looks for the "!cdk-integ" pragma. If it exists, returns it's
    * contents. This allows integ tests to supply custom command line arguments to "cdk deploy" and "cdk synth".
    */
-  private async readStackPragma(): Promise<string | undefined> {
+  private async readStackPragma(): Promise<string[]> {
     const source = await util.promisify(fs.readFile)(this.sourceFilePath, 'utf-8');
-    const pragmaLine = source.split('\n').find(x => x.startsWith(CDK_INTEG_STACK_PRAGMA));
+    const pragmaLine = source.split('\n').find(x => x.startsWith(CDK_INTEG_STACK_PRAGMA + ' '));
     if (!pragmaLine) {
-      return undefined;
+      return [];
     }
 
     const args = pragmaLine.substring(CDK_INTEG_STACK_PRAGMA.length).trim().split(' ');
-    if (args.length !== 1) {
-      throw new Error(`Syntax of stack pragma in test code: ${CDK_INTEG_STACK_PRAGMA} <stack>`);
+    if (args.length === 0) {
+      throw new Error(`Invalid syntax for cdk-integ pragma. Usage: "${CDK_INTEG_STACK_PRAGMA} STACK ..."`);
     }
-
-    return args[0];
+    return args;
   }
 }
 
