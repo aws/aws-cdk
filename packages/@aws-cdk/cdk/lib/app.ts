@@ -131,6 +131,13 @@ export class App extends Construct {
     return assembly;
   }
 
+  /**
+   * @deprecated use `synth()`
+   */
+  public run() {
+    return this.synth();
+  }
+
   private loadContext(defaults: { [key: string]: string } = { }) {
     // prime with defaults passed through constructor
     for (const [ k, v ] of Object.entries(defaults)) {
