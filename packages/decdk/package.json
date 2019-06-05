@@ -136,7 +136,8 @@
     "jsii-reflect": "^0.11.0",
     "jsonschema": "^1.2.4",
     "yaml": "1.5.0",
-    "yargs": "^13.2.2"
+    "yargs": "^13.2.2",
+    "@aws-cdk/aws-cloudwatch-actions": "^0.33.0"
   },
   "devDependencies": {
     "@types/fs-extra": "^5.0.5",

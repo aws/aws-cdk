@@ -1,4 +1,5 @@
 import { Construct, IResource, Resource, Token } from '@aws-cdk/cdk';
+import { IAlarmAction } from './alarm-action';
 import { CfnAlarm } from './cloudwatch.generated';
 import { HorizontalAnnotation } from './graph';
 import { Dimension, Metric, MetricAlarmProps, Statistic, Unit } from './metric';
@@ -160,7 +161,7 @@ export class Alarm extends Resource implements IAlarm {
       this.alarmActionArns = [];
     }
 
-    this.alarmActionArns.push(...actions.map(a => a.alarmActionArn));
+    this.alarmActionArns.push(...actions.map(a => a.bind(this, this).alarmActionArn));
   }
 
   /**
@@ -173,7 +174,7 @@ export class Alarm extends Resource implements IAlarm {
       this.insufficientDataActionArns = [];
     }
 
-    this.insufficientDataActionArns.push(...actions.map(a => a.alarmActionArn));
+    this.insufficientDataActionArns.push(...actions.map(a => a.bind(this, this).alarmActionArn));
   }
 
   /**
@@ -186,7 +187,7 @@ export class Alarm extends Resource implements IAlarm {
       this.okActionArns = [];
     }
 
-    this.okActionArns.push(...actions.map(a => a.alarmActionArn));
+    this.okActionArns.push(...actions.map(a => a.bind(this, this).alarmActionArn));
   }
 
   /**
@@ -220,16 +221,6 @@ function describePeriod(seconds: number) {
   if (seconds === 1) { return '1 second'; }
   if (seconds > 60) { return (seconds / 60) + ' minutes'; }
   return seconds + ' seconds';
-}
-
-/**
- * Interface for objects that can be the targets of CloudWatch alarm actions
- */
-export interface IAlarmAction {
-  /**
-   * Return the ARN that should be used for a CloudWatch Alarm action
-   */
-  readonly alarmActionArn: string;
 }
 
 /**

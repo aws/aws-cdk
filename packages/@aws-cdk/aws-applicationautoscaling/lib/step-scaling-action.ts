@@ -1,4 +1,3 @@
-import cloudwatch = require('@aws-cdk/aws-cloudwatch');
 import cdk = require('@aws-cdk/cdk');
 import { CfnScalingPolicy } from './applicationautoscaling.generated';
 import { IScalableTarget } from './scalable-target';
@@ -67,16 +66,11 @@ export interface StepScalingActionProps {
  *
  * This Action must be used as the target of a CloudWatch alarm to take effect.
  */
-export class StepScalingAction extends cdk.Construct implements cloudwatch.IAlarmAction {
+export class StepScalingAction extends cdk.Construct {
   /**
    * ARN of the scaling policy
    */
   public readonly scalingPolicyArn: string;
-
-  /**
-   * ARN when this scaling policy is used as an Alarm action
-   */
-  public readonly alarmActionArn: string;
 
   private readonly adjustments = new Array<CfnScalingPolicy.StepAdjustmentProperty>();
 
@@ -100,7 +94,6 @@ export class StepScalingAction extends cdk.Construct implements cloudwatch.IAlar
     });
 
     this.scalingPolicyArn = resource.scalingPolicyArn;
-    this.alarmActionArn = this.scalingPolicyArn;
   }
 
   /**
