@@ -1,7 +1,7 @@
 import ec2 = require('@aws-cdk/aws-ec2');
 import { Construct, Resource, Token } from '@aws-cdk/cdk';
 import { HostedZoneAttributes, IHostedZone } from './hosted-zone-ref';
-import { CaaAmazonRecord, ZoneDelegationRecord } from './records';
+import { CaaAmazonRecord, ZoneDelegationRecord } from './record-set';
 import { CfnHostedZone } from './route53.generated';
 import { validateZoneName } from './util';
 
@@ -160,7 +160,7 @@ export class PublicHostedZone extends HostedZone implements IPublicHostedZone {
   public addDelegation(delegate: IPublicHostedZone, opts: ZoneDelegationOptions = {}): void {
     new ZoneDelegationRecord(this, `${this.zoneName} -> ${delegate.zoneName}`, {
       zone: this,
-      delegatedZoneName: delegate.zoneName,
+      recordName: delegate.zoneName,
       nameServers: delegate.hostedZoneNameServers!, // PublicHostedZones always have name servers!
       comment: opts.comment,
       ttl: opts.ttl,

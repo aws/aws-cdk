@@ -1,5 +1,5 @@
 import ecs = require('@aws-cdk/aws-ecs');
-import { AliasRecord, IHostedZone } from '@aws-cdk/aws-route53';
+import { ARecord, IHostedZone, RecordTarget } from '@aws-cdk/aws-route53';
 import targets = require('@aws-cdk/aws-route53-targets');
 import cdk = require('@aws-cdk/cdk');
 import { LoadBalancedServiceBase, LoadBalancedServiceBaseProps } from '../base/load-balanced-service-base';
@@ -120,10 +120,10 @@ export class LoadBalancedFargateService extends LoadBalancedServiceBase {
         throw new Error('A Route53 hosted domain zone name is required to configure the specified domain name');
       }
 
-      new AliasRecord(this, "DNS", {
+      new ARecord(this, "DNS", {
         zone: props.domainZone,
         recordName: props.domainName,
-        target: new targets.LoadBalancerTarget(this.loadBalancer),
+        target: RecordTarget.fromAliasRecordTarget(new targets.LoadBalancerTarget(this.loadBalancer)),
       });
     }
   }

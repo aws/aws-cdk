@@ -1,4 +1,4 @@
-import { IAliasRecord } from "./records/alias";
+import { IRecordSet } from "./record-set";
 
 /**
  * Classes that are valid alias record targets, like CloudFront distributions and load
@@ -8,7 +8,7 @@ export interface IAliasRecordTarget {
   /**
    * Return hosted zone ID and DNS name, usable for Route53 alias targets
    */
-  bind(record: IAliasRecord): AliasRecordTargetProps;
+  bind(record: IRecordSet): AliasRecordTargetProps;
 }
 
 /**

@@ -25,10 +25,10 @@ const distribution = new cloudfront.CloudFrontWebDistribution(stack, 'MyDistribu
   ]
  });
 
-new route53.AliasRecord(zone, 'Alias', {
+new route53.ARecord(zone, 'Alias', {
   zone,
   recordName: '_foo',
-  target: new targets.CloudFrontTarget(distribution)
+  target: route53.RecordTarget.fromAliasRecordTarget(new targets.CloudFrontTarget(distribution))
 });
 
 app.run();

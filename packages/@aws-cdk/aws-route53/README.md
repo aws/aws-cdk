@@ -48,7 +48,28 @@ new route53.TxtRecord(this, 'TXTRecord', {
 });
 ```
 
-Constructs are available for A, AAAA, CAA, CNAME, MX, SRV and TXT records.
+To add a A record to your zone:
+```ts
+import route53 = require('@aws-cdk/aws-route53');
+
+new route53.AaaaRecord(this, 'AaaaRecord', {
+  zone: myZone,
+  target: route53.RecordTarget.fromIpAddresses('1.2.3.4', '5.6.7.8')
+})
+```
+
+To add a AAAA record pointing to a CloudFront distribution:
+```ts
+import route53 = require('@aws-cdk/aws-route53');
+import targets = require('@aws-cdk/aws-route53-targets');
+
+new route53.AaaaRecord(this, 'Alias', {
+  zone: myZone,
+  target: route53.RecordTarget.fromAliasRecordTarget(new targets.CloudFrontTarget(distribution))
+})
+```
+
+Constructs are available for A, AAAA, CAA, CNAME, MX, NS, SRV and TXT records.
 
 Use the `CaaAmazonRecord` construct to easily restrict certificate authorities
 allowed to issue certificates for a domain to Amazon only.

@@ -1,7 +1,18 @@
-import { Construct, Resource } from '@aws-cdk/cdk';
-import { IHostedZone } from '../hosted-zone-ref';
-import { CfnRecordSet } from '../route53.generated';
-import { determineFullyQualifiedDomainName } from './_util';
+import { Construct, IResource, Resource, Token } from '@aws-cdk/cdk';
+import { IAliasRecordTarget } from './alias-record-target';
+import { IHostedZone } from './hosted-zone-ref';
+import { CfnRecordSet } from './route53.generated';
+import { determineFullyQualifiedDomainName } from './util';
+
+/**
+ * A record set
+ */
+export interface IRecordSet extends IResource {
+  /**
+   * The domain name of the record
+   */
+  readonly domainName: string;
+}
 
 /**
  * The record type.
@@ -22,9 +33,9 @@ export enum RecordType {
 }
 
 /**
- * Propreties for a record.
+ * Options for a RecordSet.
  */
-export interface RecordProps {
+export interface RecordSetOptions {
   /**
    * The hosted zone in which to define the new record.
    */
@@ -43,54 +54,90 @@ export interface RecordProps {
    * @default 1800 seconds
    */
   readonly ttl?: number;
+
+  /**
+   * A comment to add on the record.
+   *
+   * @default no comment
+   */
+  readonly comment?: string;
 }
 
 /**
- * Construction properties for a BasicRecord.
+ * Construction properties for a RecordSet.
  */
-export interface BasicRecordProps extends RecordProps {
+export interface RecordSetProps extends RecordSetOptions {
   /**
    * The record type.
    */
   readonly recordType: RecordType;
 
   /**
-   * The values for this record.
+   * The values for this record. Either `recordValues` or `target` must be
+   * specified.
+   *
+   * @default no values
    */
-  readonly recordValues: string[];
+  readonly recordValues?: string[];
+
+  /**
+   * The target for an alias record. Either `target` or `recordValues` must be
+   * specified.
+   *
+   * @default no target
+   */
+  readonly target?: IAliasRecordTarget;
 }
 
 /**
- * A basic record
- *
- * @resource AWS::Route53::RecordSet
- *
- * @see https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/resource-record-sets-values-basic.html
+ * A record set.
  */
-export class BasicRecord extends Resource {
-  constructor(scope: Construct, id: string, props: BasicRecordProps) {
+export class RecordSet extends Resource implements IRecordSet {
+  public readonly domainName: string;
+
+  constructor(scope: Construct, id: string, props: RecordSetProps) {
     super(scope, id);
 
-    const ttl = props.ttl === undefined ? 1800 : props.ttl;
+    if (!(props.recordValues || props.target) || (props.recordValues && props.target)) {
+      throw new Error('Either `recordValues` or `target` must be specified.');
+    }
 
-    new CfnRecordSet(this, 'Resource', {
+    const ttl = props.target ? undefined : (props.ttl || 1800).toString();
+
+    const recordSet = new CfnRecordSet(this, 'Resource', {
       hostedZoneId: props.zone.hostedZoneId,
       name: determineFullyQualifiedDomainName(props.recordName || props.zone.zoneName, props.zone),
       type: props.recordType,
       resourceRecords: props.recordValues,
-      ttl: ttl.toString()
+      aliasTarget: props.target && props.target.bind(this),
+      ttl,
+      comment: props.comment
     });
+
+    this.domainName = recordSet.ref;
+  }
+}
+
+export class RecordTarget {
+  public static fromIpAddresses(...ipAddresses: string[]) {
+    return new RecordTarget(ipAddresses);
+  }
+
+  public static fromAliasRecordTarget(aliasTarget: IAliasRecordTarget) {
+    return new RecordTarget(undefined, aliasTarget);
+  }
+  private constructor(public readonly values?: string[], public readonly aliasTarget?: IAliasRecordTarget) {
   }
 }
 
 /**
  * Construction properties for a ARecord.
  */
-export interface ARecordProps extends RecordProps {
+export interface ARecordProps extends RecordSetOptions {
   /**
-   * The IP addresses.
+   * The target.
    */
-  readonly ipAddresses: string[];
+  readonly target: RecordTarget;
 }
 
 /**
@@ -98,12 +145,13 @@ export interface ARecordProps extends RecordProps {
  *
  * @resource AWS::Route53::RecordSet
  */
-export class ARecord extends BasicRecord {
+export class ARecord extends RecordSet {
   constructor(scope: Construct, id: string, props: ARecordProps) {
     super(scope, id, {
       ...props,
       recordType: RecordType.A,
-      recordValues: props.ipAddresses,
+      recordValues: props.target.values,
+      target: props.target.aliasTarget,
     });
   }
 }
@@ -111,19 +159,20 @@ export class ARecord extends BasicRecord {
 /**
  * Construction properties for a AaaaRecord.
  */
-export interface AaaaRecordProps extends RecordProps, ARecordProps {}
+export interface AaaaRecordProps extends RecordSetOptions, ARecordProps {}
 
 /**
  * A DNS AAAA record
  *
  * @resource AWS::Route53::RecordSet
  */
-export class AaaaRecord extends BasicRecord {
+export class AaaaRecord extends RecordSet {
   constructor(scope: Construct, id: string, props: AaaaRecordProps) {
     super(scope, id, {
       ...props,
       recordType: RecordType.AAAA,
-      recordValues: props.ipAddresses,
+      recordValues: props.target.values,
+      target: props.target.aliasTarget,
     });
   }
 }
@@ -131,7 +180,7 @@ export class AaaaRecord extends BasicRecord {
 /**
  * Construction properties for a CnameRecord.
  */
-export interface CnameRecordProps extends RecordProps {
+export interface CnameRecordProps extends RecordSetOptions {
   /**
    * The domain name.
    */
@@ -143,7 +192,7 @@ export interface CnameRecordProps extends RecordProps {
  *
  * @resource AWS::Route53::RecordSet
  */
-export class CnameRecord extends BasicRecord {
+export class CnameRecord extends RecordSet {
   constructor(scope: Construct, id: string, props: CnameRecordProps) {
     super(scope, id, {
       ...props,
@@ -156,7 +205,7 @@ export class CnameRecord extends BasicRecord {
 /**
  * Construction properties for a TxtRecord.
  */
-export interface TxtRecordProps extends RecordProps {
+export interface TxtRecordProps extends RecordSetOptions {
   /**
    * The text values.
    */
@@ -168,7 +217,7 @@ export interface TxtRecordProps extends RecordProps {
  *
  * @resource AWS::Route53::RecordSet
  */
-export class TxtRecord extends BasicRecord {
+export class TxtRecord extends RecordSet {
   constructor(scope: Construct, id: string, props: TxtRecordProps) {
     super(scope, id, {
       ...props,
@@ -205,7 +254,7 @@ export interface SrvRecordValue {
 /**
  * Construction properties for a SrvRecord.
  */
-export interface SrvRecordProps extends RecordProps {
+export interface SrvRecordProps extends RecordSetOptions {
   /**
    * The values.
    */
@@ -217,7 +266,7 @@ export interface SrvRecordProps extends RecordProps {
  *
  * @resource AWS::Route53::RecordSet
  */
-export class SrvRecord extends BasicRecord {
+export class SrvRecord extends RecordSet {
   constructor(scope: Construct, id: string, props: SrvRecordProps) {
     super(scope, id, {
       ...props,
@@ -273,7 +322,7 @@ export interface CaaRecordValue {
 /**
  * Construction properties for a CaaRecord.
  */
-export interface CaaRecordProps extends RecordProps {
+export interface CaaRecordProps extends RecordSetOptions {
   /**
    * The values.
    */
@@ -285,7 +334,7 @@ export interface CaaRecordProps extends RecordProps {
  *
  * @resource AWS::Route53::RecordSet
  */
-export class CaaRecord extends BasicRecord {
+export class CaaRecord extends RecordSet {
   constructor(scope: Construct, id: string, props: CaaRecordProps) {
     super(scope, id, {
       ...props,
@@ -298,7 +347,7 @@ export class CaaRecord extends BasicRecord {
 /**
  * Construction properties for a CaaAmazonRecord.
  */
-export interface CaaAmazonRecordProps extends RecordProps {}
+export interface CaaAmazonRecordProps extends RecordSetOptions {}
 
 /**
  * A DNS Amazon CAA record.
@@ -342,7 +391,7 @@ export interface MxRecordValue {
 /**
  * Construction properties for a MxRecord.
  */
-export interface MxRecordProps extends RecordProps {
+export interface MxRecordProps extends RecordSetOptions {
   /**
    * The values.
    */
@@ -354,12 +403,38 @@ export interface MxRecordProps extends RecordProps {
  *
  * @resource AWS::Route53::RecordSet
  */
-export class MxRecord extends BasicRecord {
+export class MxRecord extends RecordSet {
   constructor(scope: Construct, id: string, props: MxRecordProps) {
     super(scope, id, {
       ...props,
       recordType: RecordType.MX,
       recordValues: props.values.map(v => `${v.priority} ${v.hostName}`)
+    });
+  }
+}
+
+/**
+ * Construction properties for a ZoneDelegationRecord
+ */
+export interface ZoneDelegationRecordProps extends RecordSetOptions {
+  /**
+   * The name servers to report in the delegation records.
+   */
+  readonly nameServers: string[];
+}
+
+/**
+ * A record to delegate further lookups to a different set of name servers.
+ */
+export class ZoneDelegationRecord extends RecordSet {
+  constructor(scope: Construct, id: string, props: ZoneDelegationRecordProps) {
+    super(scope, id, {
+      ...props,
+      recordType: RecordType.NS,
+      recordValues: Token.isToken(props.nameServers)
+        ? props.nameServers // Can't map a string-array token!
+        : props.nameServers.map(ns => (Token.isToken(ns) || ns.endsWith('.')) ? ns : `${ns}.`),
+      ttl: props.ttl || 172_800
     });
   }
 }

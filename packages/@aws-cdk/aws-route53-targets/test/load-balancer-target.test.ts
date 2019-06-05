@@ -19,10 +19,10 @@ test('use ALB as record target', () => {
   const zone = new route53.PublicHostedZone(stack, 'HostedZone', { zoneName: 'test.public' });
 
   // WHEN
-  new route53.AliasRecord(zone, 'Alias', {
+  new route53.ARecord(zone, 'Alias', {
     zone,
     recordName: '_foo',
-    target: new targets.LoadBalancerTarget(lb)
+    target: route53.RecordTarget.fromAliasRecordTarget(new targets.LoadBalancerTarget(lb))
   });
 
   // THEN
