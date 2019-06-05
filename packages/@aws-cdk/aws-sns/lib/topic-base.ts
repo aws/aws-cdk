@@ -1,4 +1,3 @@
-import cloudwatch = require('@aws-cdk/aws-cloudwatch');
 import iam = require('@aws-cdk/aws-iam');
 import lambda = require('@aws-cdk/aws-lambda');
 import sqs = require('@aws-cdk/aws-sqs');
@@ -7,10 +6,7 @@ import { IResource, Resource } from '@aws-cdk/cdk';
 import { TopicPolicy } from './policy';
 import { Subscription, SubscriptionProtocol } from './subscription';
 
-export interface ITopic extends
-  IResource,
-  cloudwatch.IAlarmAction {
-
+export interface ITopic extends IResource {
   /**
    * @attribute
    */
@@ -250,10 +246,6 @@ export abstract class TopicBase extends Resource implements ITopic {
       resourceArns: [this.topicArn],
       resource: this,
     });
-  }
-
-  public get alarmActionArn(): string {
-    return this.topicArn;
   }
 
 }

@@ -10,7 +10,7 @@ export class LambdaDestination implements logs.ILogSubscriptionDestination {
   constructor(private readonly fn: lambda.IFunction) {
   }
 
-  public bind(_scope: Construct, logGroup: logs.ILogGroup): logs.LogSubscriptionDestinationProperties {
+  public bind(_scope: Construct, logGroup: logs.ILogGroup): logs.LogSubscriptionDestinationConfig {
     const arn = logGroup.logGroupArn;
 
     const logSubscriptionDestinationPolicyAddedFor: string[] = [];

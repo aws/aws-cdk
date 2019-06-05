@@ -39,3 +39,7 @@ export function getDocTag(documentable: reflect.Documentable, tag: string): stri
 
   return undefined;
 }
+
+export function memberFqn(m: reflect.Method | reflect.Property) {
+  return `${m.parentType.fqn}.${m.name}`;
+}

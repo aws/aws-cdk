@@ -10,7 +10,7 @@ export class LambdaDestination implements s3.IBucketNotificationDestination {
   constructor(private readonly fn: lambda.IFunction) {
   }
 
-  public bind(_scope: Construct, bucket: s3.IBucket): s3.BucketNotificationDestinationProps {
+  public bind(_scope: Construct, bucket: s3.IBucket): s3.BucketNotificationDestinationConfig {
     const permissionId = `AllowBucketNotificationsFrom${bucket.node.uniqueId}`;
 
     if (this.fn.node.tryFindChild(permissionId) === undefined) {

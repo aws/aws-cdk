@@ -1,7 +1,7 @@
 import { expect, haveResource } from '@aws-cdk/assert';
-import { Stack } from '@aws-cdk/cdk';
+import { Construct, Stack } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
-import { Alarm, IAlarmAction, Metric } from '../lib';
+import { Alarm, IAlarm, IAlarmAction, Metric } from '../lib';
 
 const testMetric = new Metric({
   namespace: 'CDK/Test',
@@ -136,7 +136,7 @@ class TestAlarmAction implements IAlarmAction {
   constructor(private readonly arn: string) {
   }
 
-  public get alarmActionArn(): string {
-    return this.arn;
+  public bind(_scope: Construct, _alarm: IAlarm) {
+    return { alarmActionArn: this.arn };
   }
 }
