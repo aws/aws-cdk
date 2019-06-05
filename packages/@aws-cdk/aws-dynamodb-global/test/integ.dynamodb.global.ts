@@ -1,3 +1,4 @@
+/// !cdk-integ *
 import { AttributeType } from '@aws-cdk/aws-dynamodb';
 import { App } from '@aws-cdk/cdk';
 import { GlobalTable } from '../lib';
