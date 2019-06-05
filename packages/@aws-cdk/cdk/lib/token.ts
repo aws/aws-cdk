@@ -10,6 +10,23 @@ import { TokenMap } from "./token-map";
 export const RESOLVE_METHOD = 'resolve';
 
 /**
+ * Interface for Tokens
+ *
+ * Tokens are special objects that participate in synthesis.
+ */
+export interface IToken {
+  /**
+   *
+   */
+  readonly displayHint?: string;
+
+  /**
+   * Produce the Token's value at resolution time
+   */
+  [RESOLVE_METHOD](context: IResolveContext): any;
+}
+
+/**
  * Represents a special or lazily-evaluated value.
  *
  * Can be used to delay evaluation of a certain value in case, for example,
@@ -19,7 +36,7 @@ export const RESOLVE_METHOD = 'resolve';
  * Tokens can be embedded into strings while retaining their original
  * semantics.
  */
-export class Token {
+export abstract class Token implements IToken {
   /**
    * @deprecated use `Token.isToken`
    */
@@ -38,50 +55,6 @@ export class Token {
   }
 
   /**
-   * The captured stack trace which represents the location in which this token was created.
-   */
-  protected readonly trace: string[];
-
-  private tokenStringification?: string;
-  private tokenListification?: string[];
-  private tokenNumberification?: number;
-
-  /**
-   * Creates a token that resolves to `value`.
-   *
-   * If value is a function, the function is evaluated upon resolution and
-   * the value it returns will be used as the token's value.
-   *
-   * displayName is used to represent the Token when it's embedded into a string; it
-   * will look something like this:
-   *
-   *    "embedded in a larger string is ${Token[DISPLAY_NAME.123]}"
-   *
-   * This value is used as a hint to humans what the meaning of the Token is,
-   * and does not have any effect on the evaluation.
-   *
-   * Must contain only alphanumeric and simple separator characters (_.:-).
-   *
-   * @param valueOrFunction What this token will evaluate to, literal or function.
-   * @param displayName A human-readable display hint for this Token
-   */
-  constructor(private readonly valueOrFunction?: any, private readonly displayName?: string) {
-    this.trace = createStackTrace();
-  }
-
-  /**
-   * @returns The resolved value for this token.
-   */
-  public resolve(context: IResolveContext): any {
-    let value = this.valueOrFunction;
-    if (typeof(value) === 'function') {
-      value = value(context);
-    }
-
-    return value;
-  }
-
-  /**
    * Return a reversible string representation of this token
    *
    * If the Token is initialized with a literal, the stringified value of the
@@ -92,25 +65,66 @@ export class Token {
    * complex values with the Tokens restored by calling `resolve()`
    * on the string.
    */
+  public static encodeAsString(token: IToken): string {
+    return TokenMap.instance().registerString(token);
+  }
+
+  /**
+   * Return a reversible number representation of this token
+   */
+  public static encodeAsNumber(token: IToken): number {
+    return TokenMap.instance().registerNumber(token);
+  }
+
+  /**
+   * Return a reversible list representation of this token
+   */
+  public static encodeAsList(token: IToken): string[] {
+    return TokenMap.instance().registerList(token);
+  }
+
+  /**
+   * The captured stack trace which represents the location in which this token was created.
+   */
+  protected readonly trace: string[];
+
+  /**
+   * displayName is used to represent the Token when it's embedded into a string; it
+   * will look something like this:
+   *
+   *    "embedded in a larger string is ${Token[DISPLAY_NAME.123]}"
+   *
+   * This value is used as a hint to humans what the meaning of the Token is,
+   * and does not have any effect on the evaluation.
+   *
+   * Must contain only alphanumeric and simple separator characters (_.:-).
+   *
+   * @param displayHint A human-readable display hint for this Token
+   */
+  constructor(public readonly displayHint?: string) {
+    this.trace = createStackTrace();
+  }
+
+  /**
+   * @returns The resolved value for this token.
+   */
+  public abstract resolve(context: IResolveContext): any;
+
+  /**
+   * Convert an instance of this Token to a string
+   *
+   * This method will be called implicitly by language runtimes if the object
+   * is embedded into a string. We treat it the same as an explicit
+   * stringification.
+   */
   public toString(): string {
-    // Optimization: if we can immediately resolve this, don't bother
-    // registering a Token (unless it's already a token).
-    if (typeof(this.valueOrFunction) === 'string') {
-      return this.valueOrFunction;
-    }
-
-    if (this.tokenStringification === undefined) {
-      this.tokenStringification = TokenMap.instance().registerString(this, this.displayName);
-    }
-
-    return this.tokenStringification;
+    return Token.encodeAsString(this);
   }
 
   /**
    * Turn this Token into JSON
    *
-   * This gets called by JSON.stringify(). We want to prohibit this, because
-   * it's not possible to do this properly, so we just throw an error here.
+   * Called automatically when JSON.stringify() is called on a Token.
    */
   public toJSON(): any {
     // We can't do the right work here because in case we contain a function, we
@@ -123,53 +137,7 @@ export class Token {
     // throw here we'll obfuscate that descriptive error with something worse.
     // So return a string representation that indicates this thing is a token
     // and needs resolving.
-    return JSON.stringify(`<unresolved-token:${this.displayName || 'TOKEN'}>`);
-  }
-
-  /**
-   * Return a string list representation of this token
-   *
-   * Call this if the Token intrinsically evaluates to a list of strings.
-   * If so, you can represent the Token in a similar way in the type
-   * system.
-   *
-   * Note that even though the Token is represented as a list of strings, you
-   * still cannot do any operations on it such as concatenation, indexing,
-   * or taking its length. The only useful operations you can do to these lists
-   * is constructing a `FnJoin` or a `FnSelect` on it.
-   */
-  public toList(): string[] {
-    if (Array.isArray(this.valueOrFunction)) {
-      return this.valueOrFunction;
-    }
-
-    if (this.tokenListification === undefined) {
-      this.tokenListification = TokenMap.instance().registerList(this, this.displayName);
-    }
-    return this.tokenListification;
-  }
-
-  /**
-   * Return a floating point representation of this Token
-   *
-   * Call this if the Token intrinsically resolves to something that represents
-   * a number, and you need to pass it into an API that expects a number.
-   *
-   * You may not do any operations on the returned value; any arithmetic or
-   * other operations can and probably will destroy the token-ness of the value.
-   */
-  public toNumber(): number {
-    // Optimization: if we can immediately resolve this, don't bother
-    // registering a Token.
-    if (typeof(this.valueOrFunction) === 'number') {
-      return this.valueOrFunction;
-    }
-
-    if (this.tokenNumberification === undefined) {
-      this.tokenNumberification = TokenMap.instance().registerNumber(this);
-    }
-
-    return this.tokenNumberification;
+    return JSON.stringify(`<unresolved-token:${this.displayHint || 'TOKEN'}>`);
   }
 
   /**

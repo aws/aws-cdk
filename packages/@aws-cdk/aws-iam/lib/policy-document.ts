@@ -269,9 +269,7 @@ export class PolicyStatement extends cdk.Token {
   }
 
   public limitToAccount(accountId: string): PolicyStatement {
-    return this.addCondition('StringEquals', new cdk.Token(() => {
-      return { 'sts:ExternalId': accountId };
-    }));
+    return this.addCondition('StringEquals', { 'sts:ExternalId': accountId });
   }
 
   //

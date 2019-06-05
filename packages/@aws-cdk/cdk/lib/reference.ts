@@ -1,17 +1,18 @@
-import { Token } from "./token";
+import { Intrinsic } from "./intrinsic";
+import { IToken } from "./token";
 
 const REFERENCE_SYMBOL = Symbol.for('@aws-cdk/cdk.Reference');
 
 /**
- * A Token that represents a reference between two constructs
+ * An intrinsic Token that represents a reference to a construct.
  *
  * References are recorded.
  */
-export class Reference extends Token {
+export abstract class Reference extends Intrinsic {
   /**
    * Check whether this is actually a Reference
    */
-  public static isReference(x: Token): x is Reference {
+  public static isReference(x: IToken): x is Reference {
     return (x as any)[REFERENCE_SYMBOL] === true;
   }
 

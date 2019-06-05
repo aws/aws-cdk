@@ -2,7 +2,7 @@ import events = require('@aws-cdk/aws-events');
 import iam = require('@aws-cdk/aws-iam');
 import kms = require('@aws-cdk/aws-kms');
 import s3 = require('@aws-cdk/aws-s3');
-import { Construct, RemovalPolicy, Resource, Stack, Token } from '@aws-cdk/cdk';
+import { Construct, Lazy, RemovalPolicy, Resource, Stack } from '@aws-cdk/cdk';
 import { Action, IPipeline, IStage } from "./action";
 import { CfnPipeline } from './codepipeline.generated';
 import { Stage } from './stage';
@@ -242,9 +242,9 @@ export class Pipeline extends PipelineBase {
     });
 
     const codePipeline = new CfnPipeline(this, 'Resource', {
-      artifactStore: new Token(() => this.renderArtifactStore()),
-      artifactStores: new Token(() => this.renderArtifactStores()),
-      stages: new Token(() => this.renderStages()),
+      artifactStore: Lazy.anyValue({ produce: () => this.renderArtifactStore() }),
+      artifactStores: Lazy.anyValue({ produce: () => this.renderArtifactStores() }),
+      stages: Lazy.anyValue({ produce: () => this.renderStages() }),
       roleArn: this.role.roleArn,
       restartExecutionOnUpdate: props && props.restartExecutionOnUpdate,
       name: props && props.pipelineName,

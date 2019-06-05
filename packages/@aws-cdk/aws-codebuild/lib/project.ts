@@ -6,7 +6,7 @@ import ecr = require('@aws-cdk/aws-ecr');
 import events = require('@aws-cdk/aws-events');
 import iam = require('@aws-cdk/aws-iam');
 import kms = require('@aws-cdk/aws-kms');
-import { Aws, Construct, IResource, Resource, Token } from '@aws-cdk/cdk';
+import { Aws, Construct, IResource, Lazy, Resource } from '@aws-cdk/cdk';
 import { BuildArtifacts, CodePipelineBuildArtifacts, NoBuildArtifacts } from './artifacts';
 import { Cache } from './cache';
 import { CfnProject } from './codebuild.generated';
@@ -701,8 +701,8 @@ export class Project extends ProjectBase {
       cache: cache._toCloudFormation(),
       name: props.projectName,
       timeoutInMinutes: props.timeout,
-      secondarySources: new Token(() => this.renderSecondarySources()),
-      secondaryArtifacts: new Token(() => this.renderSecondaryArtifacts()),
+      secondarySources: Lazy.anyValue({ produce: () => this.renderSecondarySources() }),
+      secondaryArtifacts: Lazy.anyValue({ produce: () => this.renderSecondaryArtifacts() }),
       triggers: this.source._buildTriggers(),
       vpcConfig: this.configureVpc(props),
     });

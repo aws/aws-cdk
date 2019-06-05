@@ -280,8 +280,8 @@ export class CfnParametersCode extends Code {
   /** @internal */
   public _toJSON(_?: cdk.CfnResource): CfnFunction.CodeProperty {
     return {
-      s3Bucket: this._bucketNameParam!.stringValue,
-      s3Key: this._objectKeyParam!.stringValue,
+      s3Bucket: this._bucketNameParam!.valueAsString,
+      s3Key: this._objectKeyParam!.valueAsString,
     };
   }
 

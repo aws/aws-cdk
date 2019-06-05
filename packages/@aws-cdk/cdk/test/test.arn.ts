@@ -1,5 +1,6 @@
 import { Test } from 'nodeunit';
-import { ArnComponents, CfnOutput, ScopedAws, Stack, Token } from '../lib';
+import { ArnComponents, CfnOutput, ScopedAws, Stack } from '../lib';
+import { Intrinsic } from '../lib/intrinsic';
 
 export = {
   'create from components with defaults'(test: Test) {
@@ -175,7 +176,7 @@ export = {
     'a Token with : separator'(test: Test) {
       const stack = new Stack();
       const theToken = { Ref: 'SomeParameter' };
-      const parsed = stack.parseArn(new Token(() => theToken).toString(), ':');
+      const parsed = stack.parseArn(new Intrinsic(theToken).toString(), ':');
 
       test.deepEqual(stack.node.resolve(parsed.partition), { 'Fn::Select': [ 1, { 'Fn::Split': [ ':', theToken ]} ]});
       test.deepEqual(stack.node.resolve(parsed.service), { 'Fn::Select': [ 2, { 'Fn::Split': [ ':', theToken ]} ]});
@@ -191,7 +192,7 @@ export = {
     'a Token with / separator'(test: Test) {
       const stack = new Stack();
       const theToken = { Ref: 'SomeParameter' };
-      const parsed = stack.parseArn(new Token(() => theToken).toString());
+      const parsed = stack.parseArn(new Intrinsic(theToken).toString());
 
       test.equal(parsed.sep, '/');
 

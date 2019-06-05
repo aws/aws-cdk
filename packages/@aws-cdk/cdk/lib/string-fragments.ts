@@ -1,5 +1,5 @@
 import { IFragmentConcatenator } from "./resolve";
-import { Token } from "./token";
+import { IToken, Token } from "./token";
 
 /**
  * Result of the split of a string with Tokens
@@ -7,7 +7,7 @@ import { Token } from "./token";
  * Either a literal part of the string, or an unresolved Token.
  */
 type LiteralFragment = { type: 'literal'; lit: any; };
-type TokenFragment = { type: 'token'; token: Token; };
+type TokenFragment = { type: 'token'; token: IToken; };
 type IntrinsicFragment = { type: 'intrinsic'; value: any; };
 type Fragment =  LiteralFragment | TokenFragment | IntrinsicFragment;
 
@@ -17,7 +17,7 @@ type Fragment =  LiteralFragment | TokenFragment | IntrinsicFragment;
 export class TokenizedStringFragments {
   private readonly fragments = new Array<Fragment>();
 
-  public get firstToken(): Token | undefined {
+  public get firstToken(): IToken | undefined {
     const first = this.fragments[0];
     if (first.type === 'token') { return first.token; }
     return undefined;
@@ -35,7 +35,7 @@ export class TokenizedStringFragments {
     this.fragments.push({ type: 'literal', lit });
   }
 
-  public addToken(token: Token) {
+  public addToken(token: IToken) {
     this.fragments.push({ type: 'token', token });
   }
 
@@ -97,7 +97,7 @@ export interface ITokenMapper {
   /**
    * Replace a single token
    */
-  mapToken(t: Token): any;
+  mapToken(t: IToken): any;
 }
 
 /**

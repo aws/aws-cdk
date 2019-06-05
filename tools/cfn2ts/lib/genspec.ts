@@ -192,7 +192,7 @@ export function attributeDefinition(resourceName: CodeName, attributeName: strin
 export function refAttributeDefinition(resourceName: CodeName, refKind: string): Attribute {
   const propertyName = codemaker.toCamelCase(descriptiveAttributeName(resourceName, refKind));
 
-  const constructorArguments = 'this.ref';
+  const constructorArguments = 'this.refToken';
 
   return new Attribute(propertyName, 'string', constructorArguments);
 }

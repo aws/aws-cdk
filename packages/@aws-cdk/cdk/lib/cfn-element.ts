@@ -1,5 +1,6 @@
 import { Construct, IConstruct, PATH_SEP } from "./construct";
-import { Token } from './token';
+import { Lazy } from "./lazy";
+import { IToken, Token } from './token';
 
 const LOGICAL_ID_MD = 'aws:cdk:logicalId';
 
@@ -43,10 +44,11 @@ export abstract class CfnElement extends Construct {
   constructor(scope: Construct, id: string) {
     super(scope, id);
 
-    this.node.addMetadata(LOGICAL_ID_MD, new (require("./token").Token)(() => this.logicalId), this.constructor);
-
     this._logicalId = this.node.stack.logicalIds.getLogicalId(this);
-    this.logicalId = new Token(() => this._logicalId, `${notTooLong(this.node.path)}.LogicalID`).toString();
+    this.logicalId = Lazy.stringValue({ produce: () => this._logicalId }, {
+      displayHint: `${notTooLong(this.node.path)}.LogicalID`
+    });
+    this.node.addMetadata(LOGICAL_ID_MD, this.logicalId, this.constructor);
   }
 
   /**
@@ -143,16 +145,16 @@ export abstract class CfnElement extends Construct {
  */
 export abstract class CfnRefElement extends CfnElement {
   /**
-   * Returns a token to a CloudFormation { Ref } that references this entity based on it's logical ID.
+   * Return a string that will CloudFormation { Ref } this stack element
    */
   public get ref(): string {
-    return this.referenceToken.toString();
+    return Token.encodeAsString(this.refToken);
   }
 
   /**
    * Return a token that will CloudFormation { Ref } this stack element
    */
-  public get referenceToken(): Token {
+  public get refToken(): IToken {
     return CfnReference.for(this, 'Ref');
   }
 }

@@ -1,6 +1,6 @@
 import events = require('@aws-cdk/aws-events');
 import iam = require('@aws-cdk/aws-iam');
-import { Construct, DeletionPolicy, IConstruct, IResource, Resource, Token } from '@aws-cdk/cdk';
+import { Construct, DeletionPolicy, IConstruct, IResource, Lazy, Resource, Token } from '@aws-cdk/cdk';
 import { CfnRepository } from './ecr.generated';
 import { CountType, LifecycleRule, TagStatus } from './lifecycle';
 
@@ -343,8 +343,8 @@ export class Repository extends RepositoryBase {
     const resource = new CfnRepository(this, 'Resource', {
       repositoryName: props.repositoryName,
       // It says "Text", but they actually mean "Object".
-      repositoryPolicyText: new Token(() => this.policyDocument),
-      lifecyclePolicy: new Token(() => this.renderLifecyclePolicy()),
+      repositoryPolicyText: Lazy.anyValue({ produce: () => this.policyDocument }),
+      lifecyclePolicy: Lazy.anyValue({ produce: () => this.renderLifecyclePolicy() }),
     });
 
     if (props.retain) {

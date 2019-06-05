@@ -1,6 +1,6 @@
 import { IFragmentConcatenator } from "./resolve";
 import { TokenizedStringFragments } from "./string-fragments";
-import { RESOLVE_METHOD, Token } from "./token";
+import { IToken, RESOLVE_METHOD } from "./token";
 
 // Details for encoding and decoding Tokens into native types; should not be exported
 
@@ -41,7 +41,7 @@ export class TokenString {
   /**
    * Split string on markers, substituting markers with Tokens
    */
-  public split(lookup: (id: string) => Token): TokenizedStringFragments {
+  public split(lookup: (id: string) => IToken): TokenizedStringFragments {
     const ret = new TokenizedStringFragments();
 
     let rest = 0;

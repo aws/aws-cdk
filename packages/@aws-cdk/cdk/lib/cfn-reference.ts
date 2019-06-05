@@ -36,8 +36,8 @@ export class CfnReference extends Reference {
    */
   public static for(target: CfnRefElement, attribute: string) {
     return CfnReference.singletonReference(target, attribute, () => {
-      const cfnInstrinsic = attribute === 'Ref' ? { Ref: target.logicalId } : { 'Fn::GetAtt': [ target.logicalId, attribute ]};
-      return new CfnReference(cfnInstrinsic, attribute, target);
+      const cfnIntrinsic = attribute === 'Ref' ? { Ref: target.logicalId } : { 'Fn::GetAtt': [ target.logicalId, attribute ]};
+      return new CfnReference(cfnIntrinsic, attribute, target);
     });
   }
 
@@ -46,8 +46,8 @@ export class CfnReference extends Reference {
    */
   public static forPseudo(pseudoName: string, scope: Construct) {
     return CfnReference.singletonReference(scope, `Pseudo:${pseudoName}`, () => {
-      const cfnInstrinsic = { Ref: pseudoName };
-      return new CfnReference(cfnInstrinsic, pseudoName, scope);
+      const cfnIntrinsic = { Ref: pseudoName };
+      return new CfnReference(cfnIntrinsic, pseudoName, scope);
     });
   }
 
@@ -86,10 +86,6 @@ export class CfnReference extends Reference {
   private readonly originalDisplayName: string;
 
   private constructor(value: any, displayName: string, target: Construct) {
-    if (typeof(value) === 'function') {
-      throw new Error('Reference can only hold CloudFormation intrinsics (not a function)');
-    }
-
     // prepend scope path to display name
     super(value, `${target.node.id}.${displayName}`, target);
     this.originalDisplayName = displayName;
@@ -161,12 +157,13 @@ export class CfnReference extends Reference {
 
     // We want to return an actual FnImportValue Token here, but Fn.importValue() returns a 'string',
     // so construct one in-place.
-    return new Token({ 'Fn::ImportValue': output.obtainExportName() });
+    return new Intrinsic({ 'Fn::ImportValue': output.obtainExportName() });
   }
 }
 
 import { CfnRefElement } from "./cfn-element";
 import { CfnOutput } from "./cfn-output";
 import { Construct, IConstruct } from "./construct";
+import { Intrinsic } from "./intrinsic";
 import { Stack } from "./stack";
 import { IResolveContext, Token } from "./token";

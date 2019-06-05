@@ -1,6 +1,6 @@
 import { CfnRefElement } from './cfn-element';
 import { Construct } from './construct';
-import { IResolveContext } from './token';
+import { IResolveContext, IToken } from './token';
 
 export interface CfnConditionProps {
   /**
@@ -15,7 +15,9 @@ export interface CfnConditionProps {
  * Represents a CloudFormation condition, for resources which must be conditionally created and
  * the determination must be made at deploy time.
  */
-export class CfnCondition extends CfnRefElement implements ICfnConditionExpression {
+export class CfnCondition extends CfnRefElement implements ICfnConditionExpression, IToken {
+  public readonly displayHint: string | undefined;
+
   /**
    * The condition statement.
    */
@@ -27,6 +29,7 @@ export class CfnCondition extends CfnRefElement implements ICfnConditionExpressi
    */
   constructor(scope: Construct, id: string, props?: CfnConditionProps) {
     super(scope, id);
+    this.displayHint = `Cond${id}`;
     this.expression = props && props.expression;
   }
 

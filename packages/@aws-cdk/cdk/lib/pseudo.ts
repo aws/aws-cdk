@@ -1,5 +1,6 @@
 import { CfnReference } from './cfn-reference';
 import { Construct } from './construct';
+import { Intrinsic } from './intrinsic';
 import { Token } from './token';
 
 const AWS_ACCOUNTID = 'AWS::AccountId';
@@ -23,35 +24,35 @@ export class Aws {
   }
 
   public static get accountId(): string {
-    return new UnscopedPseudo(AWS_ACCOUNTID).toString();
+    return Token.encodeAsString(new UnscopedPseudo(AWS_ACCOUNTID));
   }
 
   public static get urlSuffix(): string {
-    return new UnscopedPseudo(AWS_URLSUFFIX).toString();
+    return Token.encodeAsString(new UnscopedPseudo(AWS_URLSUFFIX));
   }
 
   public static get notificationArns(): string[] {
-    return new UnscopedPseudo(AWS_NOTIFICATIONARNS).toList();
+    return Token.encodeAsList(new UnscopedPseudo(AWS_NOTIFICATIONARNS));
   }
 
   public static get partition(): string {
-    return new UnscopedPseudo(AWS_PARTITION).toString();
+    return Token.encodeAsString(new UnscopedPseudo(AWS_PARTITION));
   }
 
   public static get region(): string {
-    return new UnscopedPseudo(AWS_REGION).toString();
+    return Token.encodeAsString(new UnscopedPseudo(AWS_REGION));
   }
 
   public static get stackId(): string {
-    return new UnscopedPseudo(AWS_STACKID).toString();
+    return Token.encodeAsString(new UnscopedPseudo(AWS_STACKID));
   }
 
   public static get stackName(): string {
-    return new UnscopedPseudo(AWS_STACKNAME).toString();
+    return Token.encodeAsString(new UnscopedPseudo(AWS_STACKNAME));
   }
 
   public static get noValue(): string {
-    return new UnscopedPseudo(AWS_NOVALUE).toString();
+    return Token.encodeAsString(new UnscopedPseudo(AWS_NOVALUE));
   }
 }
 
@@ -66,35 +67,35 @@ export class ScopedAws {
   }
 
   public get accountId(): string {
-    return CfnReference.forPseudo(AWS_ACCOUNTID, this.scope).toString();
+    return Token.encodeAsString(CfnReference.forPseudo(AWS_ACCOUNTID, this.scope));
   }
 
   public get urlSuffix(): string {
-    return CfnReference.forPseudo(AWS_URLSUFFIX, this.scope).toString();
+    return Token.encodeAsString(CfnReference.forPseudo(AWS_URLSUFFIX, this.scope));
   }
 
   public get notificationArns(): string[] {
-    return CfnReference.forPseudo(AWS_NOTIFICATIONARNS, this.scope).toList();
+    return Token.encodeAsList(CfnReference.forPseudo(AWS_NOTIFICATIONARNS, this.scope));
   }
 
   public get partition(): string {
-    return CfnReference.forPseudo(AWS_PARTITION, this.scope).toString();
+    return Token.encodeAsString(CfnReference.forPseudo(AWS_PARTITION, this.scope));
   }
 
   public get region(): string {
-    return CfnReference.forPseudo(AWS_REGION, this.scope).toString();
+    return Token.encodeAsString(CfnReference.forPseudo(AWS_REGION, this.scope));
   }
 
   public get stackId(): string {
-    return CfnReference.forPseudo(AWS_STACKID, this.scope).toString();
+    return Token.encodeAsString(CfnReference.forPseudo(AWS_STACKID, this.scope));
   }
 
   public get stackName(): string {
-    return CfnReference.forPseudo(AWS_STACKNAME, this.scope).toString();
+    return Token.encodeAsString(CfnReference.forPseudo(AWS_STACKNAME, this.scope));
   }
 }
 
-class UnscopedPseudo extends Token {
+class UnscopedPseudo extends Intrinsic {
   constructor(name: string) {
     super({ Ref: name }, name);
   }

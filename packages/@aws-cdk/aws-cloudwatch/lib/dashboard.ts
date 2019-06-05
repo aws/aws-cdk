@@ -1,4 +1,4 @@
-import { Construct, Resource, Token } from "@aws-cdk/cdk";
+import { Construct, Lazy, Resource } from "@aws-cdk/cdk";
 import { CfnDashboard } from './cloudwatch.generated';
 import { Column, Row } from "./layout";
 import { IWidget } from "./widget";
@@ -58,7 +58,7 @@ export class Dashboard extends Resource {
 
     new CfnDashboard(this, 'Resource', {
       dashboardName: (props && props.dashboardName) || undefined,
-      dashboardBody: new Token(() => {
+      dashboardBody: Lazy.stringValue({ produce: () => {
         const column = new Column(...this.rows);
         column.position(0, 0);
         return this.node.stringifyJson({
@@ -67,7 +67,7 @@ export class Dashboard extends Resource {
           periodOverride: props ? props.periodOverride : undefined,
           widgets: column.toJson(),
         });
-      }).toString()
+      }})
     });
   }
 

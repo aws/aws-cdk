@@ -12,7 +12,7 @@ export = {
       description: 'My first parameter'
     });
 
-    new CfnResource(stack, 'Resource', { type: 'Type', properties: { ReferenceToParam: param.ref } });
+    new CfnResource(stack, 'Resource', { type: 'Type', properties: { ReferenceToParam: param.refToken } });
 
     test.deepEqual(stack._toCloudFormation(), {
       Parameters: {

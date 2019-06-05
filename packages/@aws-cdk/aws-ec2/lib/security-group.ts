@@ -1,4 +1,4 @@
-import { Construct, IResource, Resource, Token } from '@aws-cdk/cdk';
+import { Construct, IResource, Lazy, Resource } from '@aws-cdk/cdk';
 import { Connections, IConnectable } from './connections';
 import { CfnSecurityGroup, CfnSecurityGroupEgress, CfnSecurityGroupIngress } from './ec2.generated';
 import { IPortRange, ISecurityGroupRule } from './security-group-rule';
@@ -275,8 +275,8 @@ export class SecurityGroup extends SecurityGroupBase {
     this.securityGroup = new CfnSecurityGroup(this, 'Resource', {
       groupName: props.groupName,
       groupDescription,
-      securityGroupIngress: new Token(() => this.directIngressRules),
-      securityGroupEgress: new Token(() => this.directEgressRules),
+      securityGroupIngress: Lazy.anyValue({ produce: () => this.directIngressRules }),
+      securityGroupEgress: Lazy.anyValue({ produce: () => this.directEgressRules }),
       vpcId: props.vpc.vpcId,
     });
 

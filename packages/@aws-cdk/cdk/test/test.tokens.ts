@@ -1,5 +1,5 @@
 import { Test } from 'nodeunit';
-import { App as Root, findTokens, Fn, Stack, Token } from '../lib';
+import { App as Root, findTokens, Fn, Intrinsic, Lazy, Stack, Token } from '../lib';
 import { createTokenDouble, extractTokenDouble } from '../lib/encoding';
 import { TokenMap } from '../lib/token-map';
 import { evaluateCFN } from './evaluate-cfn';
@@ -14,7 +14,7 @@ export = {
   'if a value is an object with a token value, it will be evaluated'(test: Test) {
     const obj = {
       RegularValue: 'hello',
-      LazyValue: new Token('World')
+      LazyValue: new Intrinsic('World')
     };
 
     test.deepEqual(resolve(obj), {
@@ -53,7 +53,7 @@ export = {
 
   'tokens are evaluated recursively'(test: Test) {
     const obj = new Promise1();
-    const actual = resolve(new Token(() => ({ Obj: obj })));
+    const actual = resolve(new Intrinsic({ Obj: obj }));
 
     test.deepEqual(actual, {
       Obj: [
@@ -132,9 +132,9 @@ export = {
   },
 
   'Token can be used to create tokens that contain a constant value'(test: Test) {
-    test.equal(resolve(new Token(12)), 12);
-    test.equal(resolve(new Token('hello')), 'hello');
-    test.deepEqual(resolve(new Token([ 'hi', 'there' ])), [ 'hi', 'there' ]);
+    test.equal(resolve(new Intrinsic(12)), 12);
+    test.equal(resolve(new Intrinsic('hello')), 'hello');
+    test.deepEqual(resolve(new Intrinsic([ 'hi', 'there' ])), [ 'hi', 'there' ]);
     test.done();
   },
 
@@ -148,7 +148,7 @@ export = {
 
   'tokens can be stringified and evaluated to conceptual value'(test: Test) {
     // GIVEN
-    const token = new Token(() => 'woof woof');
+    const token = new Intrinsic('woof woof');
 
     // WHEN
     const stringified = `The dog says: ${token}`;
@@ -161,7 +161,7 @@ export = {
 
   'tokens stringification can be reversed'(test: Test) {
     // GIVEN
-    const token = new Token(() => 'woof woof');
+    const token = new Intrinsic('woof woof');
 
     // THEN
     test.equal(token, TokenMap.instance().lookupString(`${token}`));
@@ -170,7 +170,7 @@ export = {
 
   'concatenated tokens are undefined'(test: Test) {
     // GIVEN
-    const token = new Token(() => 'woof woof');
+    const token = new Intrinsic( 'woof woof');
 
     // WHEN
     test.equal(undefined, TokenMap.instance().lookupString(`${token}bla`));
@@ -182,7 +182,7 @@ export = {
 
   'Tokens stringification and reversing of CloudFormation Tokens is implemented using Fn::Join'(test: Test) {
     // GIVEN
-    const token = new Token(() => ({ woof: 'woof' }));
+    const token = new Intrinsic( ({ woof: 'woof' }));
 
     // WHEN
     const stringified = `The dog says: ${token}`;
@@ -197,8 +197,8 @@ export = {
 
   'Doubly nested strings evaluate correctly in scalar context'(test: Test) {
     // GIVEN
-    const token1 = new Token(() => "world");
-    const token2 = new Token(() => `hello ${token1}`);
+    const token1 = new Intrinsic( "world");
+    const token2 = new Intrinsic( `hello ${token1}`);
 
     // WHEN
     const resolved1 = resolve(token2.toString());
@@ -213,7 +213,7 @@ export = {
 
   'integer Tokens can be stringified and evaluate to conceptual value'(test: Test) {
     // GIVEN
-    for (const token of literalTokensThatResolveTo(1)) {
+    for (const token of tokensThatResolveTo(1)) {
       // WHEN
       const stringified = `the number is ${token}`;
       const resolved = resolve(stringified);
@@ -226,7 +226,7 @@ export = {
 
   'intrinsic Tokens can be stringified and evaluate to conceptual value'(test: Test) {
     // GIVEN
-    for (const bucketName of cloudFormationTokensThatResolveTo({ Ref: 'MyBucket' })) {
+    for (const bucketName of tokensThatResolveTo({ Ref: 'MyBucket' })) {
       // WHEN
       const resolved = resolve(`my bucket is named ${bucketName}`);
 
@@ -268,7 +268,7 @@ export = {
 
   'tokens can be used in hash keys but must resolve to a string'(test: Test) {
     // GIVEN
-    const token = new Token(() => 'I am a string');
+    const token = new Intrinsic( 'I am a string');
 
     // WHEN
     const s = {
@@ -282,7 +282,7 @@ export = {
 
   'tokens can be nested in hash keys'(test: Test) {
     // GIVEN
-    const token = new Token(() => new Token(() => new Token(() => 'I am a string')));
+    const token = new Intrinsic(Lazy.stringValue({ produce: () => Lazy.stringValue({ produce: (() => 'I am a string') }) }));
 
     // WHEN
     const s = {
@@ -296,8 +296,8 @@ export = {
 
   'tokens can be nested and concatenated in hash keys'(test: Test) {
     // GIVEN
-    const innerToken = new Token(() => 'toot');
-    const token = new Token(() => `${innerToken} the woot`);
+    const innerToken = new Intrinsic( 'toot');
+    const token = new Intrinsic( `${innerToken} the woot`);
 
     // WHEN
     const s = {
@@ -311,8 +311,8 @@ export = {
 
   'can find nested tokens in hash keys'(test: Test) {
     // GIVEN
-    const innerToken = new Token(() => 'toot');
-    const token = new Token(() => `${innerToken} the woot`);
+    const innerToken = new Intrinsic( 'toot');
+    const token = new Intrinsic( `${innerToken} the woot`);
 
     // WHEN
     const s = {
@@ -328,7 +328,7 @@ export = {
 
   'fails if token in a hash key resolves to a non-string'(test: Test) {
     // GIVEN
-    const token = new Token({ Ref: 'Other' });
+    const token = new Intrinsic({ Ref: 'Other' });
 
     // WHEN
     const s = {
@@ -343,11 +343,11 @@ export = {
   'list encoding': {
     'can encode Token to string and resolve the encoding'(test: Test) {
       // GIVEN
-      const token = new Token({ Ref: 'Other' });
+      const token = new Intrinsic({ Ref: 'Other' });
 
       // WHEN
       const struct = {
-        XYZ: token.toList()
+        XYZ: Token.encodeAsList(token)
       };
 
       // THEN
@@ -360,10 +360,10 @@ export = {
 
     'cannot add to encoded list'(test: Test) {
       // GIVEN
-      const token = new Token({ Ref: 'Other' });
+      const token = new Intrinsic({ Ref: 'Other' });
 
       // WHEN
-      const encoded: string[] = token.toList();
+      const encoded: string[] = Token.encodeAsList(token);
       encoded.push('hello');
 
       // THEN
@@ -376,10 +376,10 @@ export = {
 
     'cannot add to strings in encoded list'(test: Test) {
       // GIVEN
-      const token = new Token({ Ref: 'Other' });
+      const token = new Intrinsic({ Ref: 'Other' });
 
       // WHEN
-      const encoded: string[] = token.toList();
+      const encoded: string[] = Token.encodeAsList(token);
       encoded[0] += 'hello';
 
       // THEN
@@ -392,7 +392,7 @@ export = {
 
     'can pass encoded lists to FnSelect'(test: Test) {
       // GIVEN
-      const encoded: string[] = new Token({ Ref: 'Other' }).toList();
+      const encoded: string[] = Token.encodeAsList(new Intrinsic({ Ref: 'Other' }));
 
       // WHEN
       const struct = Fn.select(1, encoded);
@@ -407,7 +407,7 @@ export = {
 
     'can pass encoded lists to FnJoin'(test: Test) {
       // GIVEN
-      const encoded: string[] = new Token({ Ref: 'Other' }).toList();
+      const encoded: string[] = Token.encodeAsList(new Intrinsic({ Ref: 'Other' }));
 
       // WHEN
       const struct = Fn.join('/', encoded);
@@ -422,7 +422,7 @@ export = {
 
     'can pass encoded lists to FnJoin, even if join is stringified'(test: Test) {
       // GIVEN
-      const encoded: string[] = new Token({ Ref: 'Other' }).toList();
+      const encoded: string[] = Token.encodeAsList(new Intrinsic({ Ref: 'Other' }));
 
       // WHEN
       const struct = Fn.join('/', encoded).toString();
@@ -467,10 +467,10 @@ export = {
 
     'can number-encode and resolve Token objects'(test: Test) {
       // GIVEN
-      const x = new Token(() => 123);
+      const x = new Intrinsic( 123);
 
       // THEN
-      const encoded = x.toNumber();
+      const encoded = Token.encodeAsNumber(x);
       test.equal(true, Token.isToken(encoded), 'encoded number does not test as token');
 
       // THEN
@@ -484,13 +484,13 @@ export = {
   'stack trace is captured at token creation'(test: Test) {
     function fn1() {
       function fn2() {
-        class ExposeTrace extends Token {
+        class ExposeTrace extends Intrinsic {
           public get creationTrace() {
             return this.trace;
           }
         }
 
-        return new ExposeTrace(() => 'hello');
+        return new ExposeTrace('hello');
       }
 
       return fn2();
@@ -506,7 +506,7 @@ export = {
     function fn1() {
       function fn2() {
         function fn3() {
-          class ThrowingToken extends Token {
+          class ThrowingToken extends Intrinsic {
             public throwError(message: string) {
               throw this.newError(message);
             }
@@ -527,7 +527,6 @@ export = {
     const tests: any = { };
 
     const inputs = [
-      () => 'lazy',
       'a string',
       1234,
       { an_object: 1234 },
@@ -537,76 +536,61 @@ export = {
 
     for (const input of inputs) {
       // GIVEN
-      const stringToken = new Token(input).toString();
-      const numberToken = new Token(input).toNumber();
-      const listToken = new Token(input).toList();
+      const stringToken = Token.encodeAsString(new Intrinsic(input));
+      const numberToken = Token.encodeAsNumber(new Intrinsic(input));
+      const listToken = Token.encodeAsList(new Intrinsic(input));
 
       // THEN
-      const expected = typeof(input) === 'function' ? input() : input;
+      const expected = input;
 
       tests[`${input}<string>.toNumber()`] = (test: Test) => {
-        test.deepEqual(resolve(new Token(stringToken).toNumber()), expected);
+        test.deepEqual(resolve(Token.encodeAsNumber(new Intrinsic(stringToken))), expected);
         test.done();
       };
 
       tests[`${input}<list>.toNumber()`] = (test: Test) => {
-        test.deepEqual(resolve(new Token(listToken).toNumber()), expected);
+        test.deepEqual(resolve(Token.encodeAsNumber(new Intrinsic(listToken))), expected);
         test.done();
       };
 
       tests[`${input}<number>.toNumber()`] = (test: Test) => {
-        test.deepEqual(resolve(new Token(numberToken).toNumber()), expected);
+        test.deepEqual(resolve(Token.encodeAsNumber(new Intrinsic(numberToken))), expected);
         test.done();
       };
 
       tests[`${input}<string>.toString()`] = (test: Test) => {
-        test.deepEqual(resolve(new Token(stringToken).toString()), expected);
+        test.deepEqual(resolve(new Intrinsic(stringToken).toString()), expected);
         test.done();
       };
 
       tests[`${input}<list>.toString()`] = (test: Test) => {
-        test.deepEqual(resolve(new Token(listToken).toString()), expected);
+        test.deepEqual(resolve(new Intrinsic(listToken).toString()), expected);
         test.done();
       };
 
       tests[`${input}<number>.toString()`] = (test: Test) => {
-        test.deepEqual(resolve(new Token(numberToken).toString()), expected);
+        test.deepEqual(resolve(new Intrinsic(numberToken).toString()), expected);
         test.done();
       };
 
       tests[`${input}<string>.toList()`] = (test: Test) => {
-        test.deepEqual(resolve(new Token(stringToken).toList()), expected);
+        test.deepEqual(resolve(Token.encodeAsList(new Intrinsic(stringToken))), expected);
         test.done();
       };
 
       tests[`${input}<list>.toList()`] = (test: Test) => {
-        test.deepEqual(resolve(new Token(listToken).toList()), expected);
+        test.deepEqual(resolve(Token.encodeAsList(new Intrinsic(listToken))), expected);
         test.done();
       };
 
       tests[`${input}<number>.toList()`] = (test: Test) => {
-        test.deepEqual(resolve(new Token(numberToken).toList()), expected);
+        test.deepEqual(resolve(Token.encodeAsList(new Intrinsic(numberToken))), expected);
         test.done();
       };
     }
 
     return tests;
   })(),
-
-  'toXxx short circuts if the input is of the same type': {
-    'toNumber(number)'(test: Test) {
-      test.deepEqual(new Token(123).toNumber(), 123);
-      test.done();
-    },
-    'toList(list)'(test: Test) {
-      test.deepEqual(new Token([1, 2, 3]).toList(), [1, 2, 3]);
-      test.done();
-    },
-    'toString(string)'(test: Test) {
-      test.deepEqual(new Token('string').toString(), 'string'),
-      test.done();
-    }
-  }
 };
 
 class Promise2 extends Token {
@@ -616,7 +600,7 @@ class Promise2 extends Token {
         stringProp: 'hello',
         numberProp: 1234,
       },
-      Recurse: new Token(() => 42)
+      Recurse: new Intrinsic( 42)
     };
   }
 }
@@ -643,30 +627,13 @@ class DataType extends BaseDataType {
 }
 
 /**
- * Return various flavors of Tokens that resolve to the given value
- */
-function literalTokensThatResolveTo(value: any): Token[] {
-  return [
-    new Token(value),
-    new Token(() => value)
-  ];
-}
-
-/**
- * Return various flavors of Tokens that resolve to the given value
- */
-function cloudFormationTokensThatResolveTo(value: any): Token[] {
-  return [
-    new Token(value),
-    new Token(() => value)
-  ];
-}
-
-/**
  * Return Tokens in both flavors that resolve to the given string
  */
-function tokensThatResolveTo(value: string): Token[] {
-  return literalTokensThatResolveTo(value).concat(cloudFormationTokensThatResolveTo(value));
+function tokensThatResolveTo(value: any): Token[] {
+  return [
+    new Intrinsic(value),
+    Lazy.anyValue({ produce: () => value })
+  ];
 }
 
 /**

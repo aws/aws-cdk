@@ -1,4 +1,5 @@
-import { CloudFormationLang, DefaultTokenResolver, IResolveContext, resolve, StringConcat, Token } from '@aws-cdk/cdk';
+import { CloudFormationLang, DefaultTokenResolver, Intrinsic, IResolveContext, Lazy,
+  resolve, StringConcat, Token } from '@aws-cdk/cdk';
 import { IRule } from './rule-ref';
 
 /**
@@ -205,9 +206,9 @@ class FieldAwareEventInput extends RuleTargetInput {
   private unquoteKeyPlaceholders(sub: string) {
     if (this.inputType !== InputType.Object) { return sub; }
 
-    return new Token((ctx: IResolveContext) =>
+    return Lazy.stringValue({ produce: (ctx: IResolveContext) =>
       ctx.resolve(sub).replace(OPENING_STRING_REGEX, '<').replace(CLOSING_STRING_REGEX, '>')
-    ).toString();
+    });
   }
 }
 
@@ -220,7 +221,7 @@ const CLOSING_STRING_REGEX = new RegExp(regexQuote(UNLIKELY_CLOSING_STRING + '"'
 /**
  * Represents a field in the event pattern
  */
-export class EventField extends Token {
+export class EventField extends Intrinsic {
   /**
    * Extract the event ID from the event
    */
@@ -271,7 +272,7 @@ export class EventField extends Token {
   }
 
   private constructor(public readonly path: string, public readonly nameHint?: string) {
-    super(() => path);
+    super(path, nameHint);
 
     Object.defineProperty(this, EVENT_FIELD_SYMBOL, { value: true });
   }

@@ -2,7 +2,7 @@ import ec2 = require('@aws-cdk/aws-ec2');
 import ecs = require('@aws-cdk/aws-ecs');
 import events = require ('@aws-cdk/aws-events');
 import iam = require('@aws-cdk/aws-iam');
-import { Construct, Token } from '@aws-cdk/cdk';
+import { Construct, Lazy } from '@aws-cdk/cdk';
 import { ContainerOverride } from './ecs-task-properties';
 import { singletonEventRole } from './util';
 
@@ -118,7 +118,7 @@ export class EcsEc2Task implements events.IRuleTarget {
     return {
       awsvpcConfiguration: {
         subnets: this.props.cluster.vpc.selectSubnets(subnetSelection).subnetIds,
-        securityGroups: new Token(() => [securityGroup.securityGroupId]),
+        securityGroups: Lazy.listValue({ produce: () => [securityGroup.securityGroupId] }),
       }
     };
   }

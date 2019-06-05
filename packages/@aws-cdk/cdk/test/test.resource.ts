@@ -371,7 +371,7 @@ export = {
     const stack = new Stack();
     const r = new CfnResource(stack, 'MyResource', { type: 'R' });
 
-    test.deepEqual(stack.node.resolve(r.ref), { Ref: 'MyResource' });
+    test.deepEqual(stack.node.resolve(r.refToken), { Ref: 'MyResource' });
     test.done();
   },
 

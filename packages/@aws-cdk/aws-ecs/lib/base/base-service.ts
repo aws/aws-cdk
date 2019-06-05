@@ -4,7 +4,7 @@ import ec2 = require('@aws-cdk/aws-ec2');
 import elbv2 = require('@aws-cdk/aws-elasticloadbalancingv2');
 import iam = require('@aws-cdk/aws-iam');
 import cloudmap = require('@aws-cdk/aws-servicediscovery');
-import { IResource, Resource } from '@aws-cdk/cdk';
+import { IResource, Lazy, Resource } from '@aws-cdk/cdk';
 import cdk = require('@aws-cdk/cdk');
 import { NetworkMode, TaskDefinition } from '../base/task-definition';
 import { ICluster } from '../cluster';
@@ -146,15 +146,15 @@ export abstract class BaseService extends Resource
     this.resource = new CfnService(this, "Service", {
       desiredCount: props.desiredCount,
       serviceName: props.serviceName,
-      loadBalancers: new cdk.Token(() => this.loadBalancers),
+      loadBalancers: Lazy.anyValue({ produce: () => this.loadBalancers }),
       deploymentConfiguration: {
         maximumPercent: props.maximumPercent || 200,
         minimumHealthyPercent: props.minimumHealthyPercent === undefined ? 50 : props.minimumHealthyPercent
       },
       healthCheckGracePeriodSeconds: props.healthCheckGracePeriodSeconds,
       /* role: never specified, supplanted by Service Linked Role */
-      networkConfiguration: new cdk.Token(() => this.networkConfiguration),
-      serviceRegistries: new cdk.Token(() => this.serviceRegistries),
+      networkConfiguration: Lazy.anyValue({ produce: () => this.networkConfiguration }),
+      serviceRegistries: Lazy.anyValue({ produce: () => this.serviceRegistries }),
       ...additionalProps
     });
 
@@ -249,7 +249,7 @@ export abstract class BaseService extends Resource
       awsvpcConfiguration: {
         assignPublicIp: assignPublicIp ? 'ENABLED' : 'DISABLED',
         subnets: vpc.selectSubnets(vpcSubnets).subnetIds,
-        securityGroups: new cdk.Token(() => [securityGroup!.securityGroupId]).toList(),
+        securityGroups: Lazy.listValue({ produce: () => [securityGroup!.securityGroupId] }),
       }
     };
   }

@@ -78,7 +78,7 @@ export class AwsIntegration extends Integration {
     super({
       type,
       integrationHttpMethod: props.integrationHttpMethod || 'POST',
-      uri: new cdk.Token(() => {
+      uri: cdk.Lazy.stringValue({ produce: () => {
         if (!this.scope) { throw new Error('AwsIntegration must be used in API'); }
         return this.scope.node.stack.formatArn({
           service: 'apigateway',
@@ -87,7 +87,7 @@ export class AwsIntegration extends Integration {
           sep: '/',
           resourceName: apiValue,
         });
-      }),
+      }}),
       options: props.options,
     });
   }

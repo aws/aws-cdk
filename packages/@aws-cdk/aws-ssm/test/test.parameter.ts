@@ -44,7 +44,10 @@ export = {
 
     // THEN
     test.doesNotThrow(() => {
-       new ssm.StringParameter(stack, 'Parameter', { allowedPattern: '^Bar$', stringValue: new cdk.Token(() => 'Foo!').toString() });
+       new ssm.StringParameter(stack, 'Parameter', {
+         allowedPattern: '^Bar$',
+         stringValue: cdk.Lazy.stringValue({ produce: () => 'Foo!' }),
+      });
     });
     test.done();
   },
@@ -99,7 +102,7 @@ export = {
     // THEN
     test.doesNotThrow(() => new ssm.StringListParameter(stack, 'Parameter', {
       allowedPattern: '^(Foo|Bar)$',
-      stringListValue: ['Foo', new cdk.Token(() => 'Baz!').toString()]
+      stringListValue: ['Foo', cdk.Lazy.stringValue({ produce: () => 'Baz!' })],
     }));
     test.done();
   },

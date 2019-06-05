@@ -1,5 +1,6 @@
 import { ICfnConditionExpression } from './cfn-condition';
-import { minimalCloudFormationJoin } from './instrinsics';
+import { minimalCloudFormationJoin } from './cloudformation-lang';
+import { Intrinsic } from './intrinsic';
 import { IResolveContext, Token } from './token';
 
 // tslint:disable:max-line-length
@@ -57,7 +58,7 @@ export class Fn {
       return source.split(delimiter);
     }
 
-    return new FnSplit(delimiter, source).toList();
+    return Token.encodeAsList(new FnSplit(delimiter, source));
   }
 
   /**
@@ -113,7 +114,7 @@ export class Fn {
    * @returns a token represented as a string
    */
   public static cidr(ipBlock: string, count: number, sizeMask?: string): string[] {
-    return new FnCidr(ipBlock, count, sizeMask).toList();
+    return Token.encodeAsList(new FnCidr(ipBlock, count, sizeMask));
   }
 
   /**
@@ -130,7 +131,7 @@ export class Fn {
    * @returns a token represented as a string array
    */
   public static getAZs(region?: string): string[] {
-    return new FnGetAZs(region).toList();
+    return Token.encodeAsList(new FnGetAZs(region));
   }
 
   /**
@@ -264,7 +265,7 @@ export class Fn {
    * @returns a token represented as a string array
    */
   public refAll(parameterType: string): string[] {
-    return new FnRefAll(parameterType).toList();
+    return Token.encodeAsList(new FnRefAll(parameterType));
   }
 
   /**
@@ -292,14 +293,14 @@ export class Fn {
    * @returns a token represented as a string array
    */
   public valueOfAll(parameterType: string, attribute: string): string[] {
-    return new FnValueOfAll(parameterType, attribute).toList();
+    return Token.encodeAsList(new FnValueOfAll(parameterType, attribute));
   }
 }
 
 /**
  * Base class for tokens that represent CloudFormation intrinsic functions.
  */
-class FnBase extends Token {
+class FnBase extends Intrinsic {
   constructor(name: string, value: any) {
     super({ [name]: value });
   }
@@ -456,7 +457,7 @@ class FnCidr extends FnBase {
   }
 }
 
-class FnConditionBase extends Token implements ICfnConditionExpression {
+class FnConditionBase extends Intrinsic implements ICfnConditionExpression {
   constructor(type: string, value: any) {
     super({ [type]: value });
   }

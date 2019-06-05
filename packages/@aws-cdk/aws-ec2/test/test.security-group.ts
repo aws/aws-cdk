@@ -1,5 +1,5 @@
 import { expect, haveResource } from '@aws-cdk/assert';
-import { Stack, Token } from '@aws-cdk/cdk';
+import { Intrinsic, Lazy, Stack, Token } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
 
 import {
@@ -145,11 +145,11 @@ export = {
 
     const ports = [
       new TcpPort(1234),
-      new TcpPort(new Token(5000).toNumber()),
+      new TcpPort(Token.encodeAsNumber(new Intrinsic(5000))),
       new TcpAllPorts(),
       new TcpPortRange(80, 90),
       new UdpPort(2345),
-      new UdpPort(new Token(777).toNumber()),
+      new UdpPort(Token.encodeAsNumber(new Intrinsic(777))),
       new UdpAllPorts(),
       new UdpPortRange(85, 95),
       new IcmpTypeAndCode(5, 1),
@@ -174,8 +174,8 @@ export = {
 
   'if tokens are used in ports, `canInlineRule` should be false to avoid cycles'(test: Test) {
     // GIVEN
-    const p1 = new Token(() => 80).toNumber();
-    const p2 = new Token(() => 5000).toNumber();
+    const p1 = Lazy.numberValue({ produce: () => 80 });
+    const p2 = Lazy.numberValue({ produce: () => 5000 });
 
     // WHEN
     const ports = [

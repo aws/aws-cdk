@@ -1,6 +1,6 @@
 import appscaling = require('@aws-cdk/aws-applicationautoscaling');
 import iam = require('@aws-cdk/aws-iam');
-import { Aws, Construct, Resource, Token } from '@aws-cdk/cdk';
+import { Aws, Construct, Lazy, Resource } from '@aws-cdk/cdk';
 import { CfnTable } from './dynamodb.generated';
 import { EnableScalingProps, IScalableTableAttribute } from './scalable-attribute-api';
 import { ScalableTableAttribute } from './scalable-table-attribute';
@@ -233,8 +233,8 @@ export class Table extends Resource {
       tableName: props.tableName,
       keySchema: this.keySchema,
       attributeDefinitions: this.attributeDefinitions,
-      globalSecondaryIndexes: new Token(() => this.globalSecondaryIndexes.length > 0 ? this.globalSecondaryIndexes : undefined),
-      localSecondaryIndexes: new Token(() => this.localSecondaryIndexes.length > 0 ? this.localSecondaryIndexes : undefined),
+      globalSecondaryIndexes: Lazy.anyValue({ produce: () => this.globalSecondaryIndexes }, { omitEmptyArray: true }),
+      localSecondaryIndexes: Lazy.anyValue({ produce: () => this.localSecondaryIndexes }, { omitEmptyArray: true }),
       pointInTimeRecoverySpecification: props.pitrEnabled ? { pointInTimeRecoveryEnabled: props.pitrEnabled } : undefined,
       billingMode: this.billingMode === BillingMode.PayPerRequest ? this.billingMode : undefined,
       provisionedThroughput: props.billingMode === BillingMode.PayPerRequest ? undefined : {
@@ -423,7 +423,7 @@ export class Table extends Resource {
       actions,
       resourceArns: [
         this.tableArn,
-        new Token(() => this.hasIndex ? `${this.tableArn}/index/*` : Aws.noValue).toString()
+        Lazy.stringValue({ produce: () => this.hasIndex ? `${this.tableArn}/index/*` : Aws.noValue })
       ],
       scope: this,
     });

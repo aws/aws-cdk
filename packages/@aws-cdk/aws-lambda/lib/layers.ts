@@ -1,4 +1,4 @@
-import { Construct, IResource, Resource, Token } from '@aws-cdk/cdk';
+import { Construct, IResource, Lazy, Resource } from '@aws-cdk/cdk';
 import { Code } from './code';
 import { CfnLayerVersion, CfnLayerVersionPermission } from './lambda.generated';
 import { Runtime } from './runtime';
@@ -169,9 +169,9 @@ export class LayerVersion extends LayerVersionBase {
     // Allow usage of the code in this context...
     props.code.bind(this);
 
-    const resource = new CfnLayerVersion(this, 'Resource', {
+    const resource: CfnLayerVersion = new CfnLayerVersion(this, 'Resource', {
       compatibleRuntimes: props.compatibleRuntimes && props.compatibleRuntimes.map(r => r.name),
-      content: new Token(() => props.code._toJSON(resource)),
+      content: Lazy.anyValue({ produce: () => props.code._toJSON(resource) }),
       description: props.description,
       layerName: props.name,
       licenseInfo: props.license,

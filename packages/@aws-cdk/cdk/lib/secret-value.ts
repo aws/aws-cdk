@@ -1,6 +1,6 @@
 import { CfnDynamicReference, CfnDynamicReferenceService } from './cfn-dynamic-reference';
 import { CfnParameter } from './cfn-parameter';
-import { Token } from './token';
+import { Intrinsic } from './intrinsic';
 
 /**
  * Work with secret values in the CDK
@@ -17,7 +17,7 @@ import { Token } from './token';
  * You can escape the check by calling `Secret.plainTex()`, but doing
  * so is highly discouraged.
  */
-export class SecretValue extends Token {
+export class SecretValue extends Intrinsic {
   /**
    * Construct a literal secret value for use with secret-aware constructs
    *
@@ -74,7 +74,7 @@ export class SecretValue extends Token {
    * @param ref The dynamic reference to use.
    */
   public static cfnDynamicReference(ref: CfnDynamicReference) {
-    return new SecretValue(() => ref.toString());
+    return new SecretValue(ref);
   }
 
   /**
@@ -90,7 +90,7 @@ export class SecretValue extends Token {
       throw new Error(`CloudFormation parameter must be configured with "NoEcho"`);
     }
 
-    return new SecretValue(param.value);
+    return new SecretValue(param.refToken);
   }
 }
 

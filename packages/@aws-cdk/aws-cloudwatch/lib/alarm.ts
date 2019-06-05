@@ -1,4 +1,4 @@
-import { Construct, IResource, Resource, Token } from '@aws-cdk/cdk';
+import { Construct, IResource, Lazy, Resource } from '@aws-cdk/cdk';
 import { CfnAlarm } from './cloudwatch.generated';
 import { HorizontalAnnotation } from './graph';
 import { Dimension, Metric, MetricAlarmProps, Statistic, Unit } from './metric';
@@ -132,9 +132,9 @@ export class Alarm extends Resource implements IAlarm {
 
       // Actions
       actionsEnabled: props.actionsEnabled,
-      alarmActions: new Token(() => this.alarmActionArns).toList(),
-      insufficientDataActions: new Token(() => this.insufficientDataActionArns).toList(),
-      okActions: new Token(() => this.okActionArns).toList(),
+      alarmActions: Lazy.listValue({ produce: () => this.alarmActionArns }),
+      insufficientDataActions: Lazy.listValue({ produce: (() => this.insufficientDataActionArns) }),
+      okActions: Lazy.listValue({ produce: () => this.okActionArns }),
 
       // Metric
       ...metricJson(props.metric)

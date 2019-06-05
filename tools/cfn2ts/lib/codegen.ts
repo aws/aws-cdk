@@ -297,9 +297,9 @@ export default class CodeGenerator {
     // initialize all attribute properties
     for (const at of attributes) {
       if (at.attributeType === 'string') {
-        this.code.line(`this.${at.propertyName} = ${at.constructorArguments}.toString();`);
+        this.code.line(`this.${at.propertyName} = ${CORE}.Token.encodeAsString(${at.constructorArguments});`);
       } else if (at.attributeType === 'string[]') {
-        this.code.line(`this.${at.propertyName} = ${at.constructorArguments}.toList();`);
+        this.code.line(`this.${at.propertyName} = ${CORE}.Token.encodeAsList(${at.constructorArguments});`);
       } else if (at.attributeType === genspec.TOKEN_NAME.fqn) {
         this.code.line(`this.${at.propertyName} = ${at.constructorArguments};`);
       }

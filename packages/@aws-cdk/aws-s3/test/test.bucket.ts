@@ -32,7 +32,7 @@ export = {
   'CFN properties are type-validated during resolution'(test: Test) {
     const stack = new cdk.Stack();
     new s3.Bucket(stack, 'MyBucket', {
-      bucketName: new cdk.Token(() => 5).toString()  // Oh no
+      bucketName: cdk.Token.encodeAsString(new cdk.Intrinsic(5))  // Oh no
     });
 
     test.throws(() => {
@@ -106,7 +106,7 @@ export = {
     const stack = new cdk.Stack();
 
     test.doesNotThrow(() => new s3.Bucket(stack, 'MyBucket', {
-      bucketName: new cdk.Token(() => '_BUCKET').toString()
+      bucketName: cdk.Lazy.stringValue({ produce: () => '_BUCKET' })
     }));
 
     test.done();

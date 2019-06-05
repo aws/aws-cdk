@@ -1,5 +1,6 @@
 import { Test } from 'nodeunit';
-import { CloudFormationLang, Fn, Stack, Token } from '../lib';
+import { CloudFormationLang, Fn, Lazy, Stack, Token } from '../lib';
+import { Intrinsic } from '../lib/intrinsic';
 import { evaluateCFN } from './evaluate-cfn';
 
 export = {
@@ -54,7 +55,7 @@ export = {
   'integer Tokens behave correctly in stringification and JSONification'(test: Test) {
     // GIVEN
     const stack = new Stack();
-    const num = new Token(() => 1);
+    const num = new Intrinsic(1);
     const embedded = `the number is ${num}`;
 
     // WHEN
@@ -82,7 +83,7 @@ export = {
   'intrinsic Tokens embed correctly in JSONification'(test: Test) {
     // GIVEN
     const stack = new Stack();
-    const bucketName = new Token({ Ref: 'MyBucket' });
+    const bucketName = new Intrinsic({ Ref: 'MyBucket' });
 
     // WHEN
     const resolved = stack.node.resolve(CloudFormationLang.toJSON({ theBucket: bucketName }));
@@ -96,7 +97,7 @@ export = {
 
   'fake intrinsics are serialized to objects'(test: Test) {
     const stack = new Stack();
-    const fakeIntrinsics = new Token(() => ({
+    const fakeIntrinsics = new Intrinsic({
       a: {
         'Fn::GetArtifactAtt': {
           key: 'val',
@@ -108,7 +109,7 @@ export = {
           'val2',
         ],
       },
-    }));
+    });
 
     const stringified = CloudFormationLang.toJSON(fakeIntrinsics);
     test.equal(evaluateCFN(stack.node.resolve(stringified)),
@@ -138,7 +139,7 @@ export = {
   'Tokens in Tokens are handled correctly'(test: Test) {
     // GIVEN
     const stack = new Stack();
-    const bucketName = new Token({ Ref: 'MyBucket' });
+    const bucketName = new Intrinsic({ Ref: 'MyBucket' });
     const combinedName = Fn.join('', [ 'The bucket name is ', bucketName.toString() ]);
 
     // WHEN
@@ -154,7 +155,7 @@ export = {
   'Doubly nested strings evaluate correctly in JSON context'(test: Test) {
     // WHEN
     const stack = new Stack();
-    const fidoSays = new Token(() => 'woof');
+    const fidoSays = Lazy.stringValue({ produce: () => 'woof' });
 
     // WHEN
     const resolved = stack.node.resolve(CloudFormationLang.toJSON({
@@ -170,7 +171,7 @@ export = {
   'Doubly nested intrinsics evaluate correctly in JSON context'(test: Test) {
     // GIVEN
     const stack = new Stack();
-    const fidoSays = new Token(() => ({ Ref: 'Something' }));
+    const fidoSays = Lazy.anyValue({ produce: () => ({ Ref: 'Something' }) });
 
     // WHEN
     const resolved = stack.node.resolve(CloudFormationLang.toJSON({
@@ -187,7 +188,7 @@ export = {
   'Quoted strings in embedded JSON context are escaped'(test: Test) {
     // GIVEN
     const stack = new Stack();
-    const fidoSays = new Token(() => '"woof"');
+    const fidoSays = Lazy.stringValue({ produce: () => '"woof"' });
 
     // WHEN
     const resolved = stack.node.resolve(CloudFormationLang.toJSON({
@@ -206,7 +207,7 @@ export = {
  */
 function tokensThatResolveTo(value: any): Token[] {
   return [
-    new Token(value),
-    new Token(() => value)
+    new Intrinsic(value),
+    Lazy.anyValue({ produce: () => value })
   ];
 }
