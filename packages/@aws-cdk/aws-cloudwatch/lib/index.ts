@@ -1,4 +1,5 @@
 export * from './alarm';
+export * from './alarm-action';
 export * from './dashboard';
 export * from './graph';
 export * from './layout';
