@@ -1,3 +1,4 @@
+import lambda = require('@aws-cdk/aws-lambda');
 import s3 = require('@aws-cdk/aws-s3');
 import cdk = require('@aws-cdk/cdk');
 import { CfnDistribution } from './cloudfront.generated';
@@ -344,6 +345,27 @@ export interface Behavior {
    */
   readonly maxTtlSeconds?: number;
 
+  /**
+   * Declares associated lambda@edge functions for this distribution behaviour.
+   *
+   * @default undefined
+   */
+  readonly lambdaFunctionAssociations?: LambdaFunctionAssociation[];
+
+}
+
+export interface LambdaFunctionAssociation {
+
+  readonly eventType?: LambdaEdgeEventType;
+
+  readonly lambdaFunction?: lambda.IFunction;
+}
+
+export enum LambdaEdgeEventType {
+  OriginRequest = "origin-request",
+  OriginResponse = "origin-response",
+  ViewerRequest = "viewer-request",
+  ViewerResponse = "viewer-response",
 }
 
 export interface ErrorConfiguration {
@@ -690,6 +712,15 @@ export class CloudFrontWebDistribution extends cdk.Construct implements IDistrib
     };
     if (!input.isDefaultBehavior) {
       toReturn = Object.assign(toReturn, { pathPattern: input.pathPattern });
+    }
+    if (input.lambdaFunctionAssociations) {
+      toReturn = Object.assign(toReturn, {
+        lambdaFunctionAssociations: input.lambdaFunctionAssociations
+          .map(fna => ({
+            eventType: fna.eventType,
+            lambdaFunctionArn: fna.lambdaFunction ? fna.lambdaFunction.functionArn : undefined,
+          }))
+      });
     }
     return toReturn;
   }
