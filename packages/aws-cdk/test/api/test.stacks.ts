@@ -4,7 +4,7 @@ import { SDK } from '../../lib';
 import { AppStacks, ExtendedStackSelection } from '../../lib/api/cxapp/stacks';
 import { Renames } from '../../lib/renames';
 import { Configuration } from '../../lib/settings';
-import { testAssembly, TestStackArtifact } from '../util';
+import { testAssembly } from '../util';
 
 const FIXED_RESULT = testAssembly({
   stackName: 'withouterrors',
@@ -78,72 +78,4 @@ export = {
 
     test.done();
   },
-
-  async 'does not return non-autoDeployed Stacks when called without any selectors'(test: Test) {
-    // GIVEN
-    const stacks = appStacksWith([
-      {
-        stackName: 'NotAutoDeployedStack',
-        template: { resource: 'Resource' },
-      },
-    ]);
-
-    // WHEN
-    const synthed = await stacks.selectStacks([], ExtendedStackSelection.None);
-
-    // THEN
-    test.equal(synthed.length, 0);
-
-    test.done();
-  },
-
-  async 'does return non-autoDeployed Stacks when called with selectors matching it'(test: Test) {
-    // GIVEN
-    const stacks = appStacksWith([
-      {
-        stackName: 'NotAutoDeployedStack',
-        template: { resource: 'Resource' },
-      },
-    ]);
-
-    // WHEN
-    const synthed = await stacks.selectStacks(['NotAutoDeployedStack'], ExtendedStackSelection.None);
-
-    // THEN
-    test.equal(synthed.length, 1);
-
-    test.done();
-  },
-
-  async "does return an non-autoDeployed Stack when it's a dependency of a selected Stack"(test: Test) {
-    // GIVEN
-    const stacks = appStacksWith([
-      {
-        stackName: 'NotAutoDeployedStack',
-        template: { resource: 'Resource' },
-      },
-      {
-        stackName: 'AutoDeployedStack',
-        depends: [ 'NotAutoDeployedStack' ],
-        template: { resource: 'Resource' },
-      },
-    ]);
-
-    // WHEN
-    const synthed = await stacks.selectStacks(['AutoDeployedStack'], ExtendedStackSelection.Upstream);
-
-    // THEN
-    test.equal(synthed.length, 2);
-
-    test.done();
-  },
 };
-
-function appStacksWith(stacks: TestStackArtifact[]): AppStacks {
-  const assembly = testAssembly(...stacks);
-  return new AppStacks({
-    configuration: new Configuration(),
-    aws: new SDK(),
-    synthesizer: async () => assembly,
-  });
-}
