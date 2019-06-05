@@ -25,6 +25,9 @@
         "module": "aws_cdk.aws_pinpointemail"
       },
       "sphinx": {}
+    },
+    "metadata": {
+      "awsdocs:title": "Amazon Pinpoint Email"
     }
   },
   "repository": {

@@ -10,7 +10,7 @@ test('publish to SNS', () => {
 
   // WHEN
   const pub = new sfn.Task(stack, 'Publish', { task: new tasks.PublishToTopic(topic, {
-    message: 'Send this message'
+    message: sfn.TaskInput.fromText('Send this message')
   }) });
 
   // THEN
@@ -21,6 +21,32 @@ test('publish to SNS', () => {
     Parameters: {
       TopicArn: { Ref: 'TopicBFC7AF6E' },
       Message: 'Send this message'
+    },
+  });
+});
+
+test('publish JSON to SNS', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const topic = new sns.Topic(stack, 'Topic');
+
+  // WHEN
+  const pub = new sfn.Task(stack, 'Publish', { task: new tasks.PublishToTopic(topic, {
+    message: sfn.TaskInput.fromObject({
+      Input: 'Send this message'
+    })
+  }) });
+
+  // THEN
+  expect(stack.node.resolve(pub.toStateJson())).toEqual({
+    Type: 'Task',
+    Resource: 'arn:aws:states:::sns:publish',
+    End: true,
+    Parameters: {
+      TopicArn: { Ref: 'TopicBFC7AF6E' },
+      Message: {
+        Input: 'Send this message'
+      }
     },
   });
 });

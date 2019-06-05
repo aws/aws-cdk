@@ -102,7 +102,6 @@
     "@aws-cdk/aws-opsworks": "^0.33.0",
     "@aws-cdk/aws-opsworkscm": "^0.33.0",
     "@aws-cdk/aws-pinpointemail": "^0.33.0",
-    "@aws-cdk/aws-quickstarts": "^0.33.0",
     "@aws-cdk/aws-ram": "^0.33.0",
     "@aws-cdk/aws-rds": "^0.33.0",
     "@aws-cdk/aws-redshift": "^0.33.0",
@@ -133,12 +132,12 @@
     "@aws-cdk/cfnspec": "^0.33.0",
     "@aws-cdk/cx-api": "^0.33.0",
     "@aws-cdk/region-info": "^0.33.0",
-    "@aws-cdk/runtime-values": "^0.33.0",
     "fs-extra": "^7.0.1",
     "jsii-reflect": "^0.11.0",
     "jsonschema": "^1.2.4",
     "yaml": "1.5.0",
-    "yargs": "^13.2.2"
+    "yargs": "^13.2.2",
+    "@aws-cdk/aws-cloudwatch-actions": "^0.33.0"
   },
   "devDependencies": {
     "@types/fs-extra": "^5.0.5",

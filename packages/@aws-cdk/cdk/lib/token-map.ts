@@ -1,5 +1,6 @@
 import { BEGIN_LIST_TOKEN_MARKER, BEGIN_STRING_TOKEN_MARKER, createTokenDouble,
   END_TOKEN_MARKER, extractTokenDouble, TokenString, VALID_KEY_CHARS } from "./encoding";
+import { TokenizedStringFragments } from "./string-fragments";
 import { IToken, Token } from "./token";
 
 const glob = global as any;
@@ -85,9 +86,8 @@ export class TokenMap {
    * Reverse a string representation into a Token object
    */
   public lookupString(s: string): IToken | undefined {
-    const str = TokenString.forStringToken(s);
-    const fragments = str.split(this.lookupToken.bind(this));
-    if (fragments.length === 1) {
+    const fragments = this.splitString(s);
+    if (fragments.tokens.length > 0 && fragments.length === 1) {
       return fragments.firstToken;
     }
     return undefined;
@@ -104,6 +104,14 @@ export class TokenMap {
       return fragments.firstToken;
     }
     return undefined;
+  }
+
+  /**
+   * Split a string into literals and Tokens
+   */
+  public splitString(s: string): TokenizedStringFragments {
+    const str = TokenString.forString(s);
+    return str.split(this.lookupToken.bind(this));
   }
 
   /**

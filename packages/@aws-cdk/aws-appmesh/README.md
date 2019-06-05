@@ -1,4 +1,4 @@
-## AWS::AppMesh Construct Library
+## AWS App Mesh Construct Library
 
 This module is part of the [AWS Cloud Development Kit](https://github.com/awslabs/aws-cdk) project.
 

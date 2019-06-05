@@ -1,4 +1,4 @@
-# Amazon ECS
+## Amazon ECS Construct Library
 
 This package contains constructs for working with **Amazon Elastic Container
 Service** (Amazon ECS).
@@ -287,7 +287,7 @@ you can configure on your instances.
 ## Integration with CloudWatch Events
 
 To start an Amazon ECS task on an Amazon EC2-backed Cluster, instantiate an
-`@aws-cdk/aws-events-targets.EcsEc2Task` instead of an `Ec2Service`:
+`@aws-cdk/aws-events-targets.EcsTask` instead of an `Ec2Service`:
 
 ```ts
 import targets = require('@aws-cdk/aws-events-targets');

@@ -3,7 +3,6 @@ import ecs = require('@aws-cdk/aws-ecs');
 import iam = require('@aws-cdk/aws-iam');
 import sfn = require('@aws-cdk/aws-stepfunctions');
 import cdk = require('@aws-cdk/cdk');
-import { renderNumber, renderString, renderStringList } from './json-path';
 import { ContainerOverride } from './run-ecs-task-base-types';
 
 /**
@@ -73,7 +72,7 @@ export class EcsRunTaskBase implements ec2.IConnectable, sfn.IStepFunctionsTask 
     }
   }
 
-  public bind(task: sfn.Task): sfn.StepFunctionsTaskProperties {
+  public bind(task: sfn.Task): sfn.StepFunctionsTaskConfig {
     if (this.networkConfiguration !== undefined) {
       // Make sure we have a security group if we're using AWSVPC networking
       if (this.securityGroup === undefined) {
@@ -162,17 +161,17 @@ function renderOverrides(containerOverrides?: ContainerOverride[]) {
 
   const ret = new Array<any>();
   for (const override of containerOverrides) {
-    ret.push({
-      ...renderString('Name', override.containerName),
-      ...renderStringList('Command', override.command),
-      ...renderNumber('Cpu', override.cpu),
-      ...renderNumber('Memory', override.memoryLimit),
-      ...renderNumber('MemoryReservation', override.memoryReservation),
+    ret.push(sfn.FieldUtils.renderObject({
+      Name: override.containerName,
+      Command: override.command,
+      Cpu: override.cpu,
+      Memory: override.memoryLimit,
+      MemoryReservation: override.memoryReservation,
       Environment: override.environment && override.environment.map(e => ({
-        ...renderString('Name', e.name),
-        ...renderString('Value', e.value),
+        Name: e.name,
+        Value: e.value,
       }))
-    });
+    }));
   }
 
   return { ContainerOverrides: ret };

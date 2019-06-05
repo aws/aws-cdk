@@ -1,17 +1,15 @@
 import iam = require('@aws-cdk/aws-iam');
 import sqs = require('@aws-cdk/aws-sqs');
 import sfn = require('@aws-cdk/aws-stepfunctions');
-import { renderNumber, renderString } from './json-path';
-import { NumberValue } from './number-value';
 
 /**
  * Properties for SendMessageTask
  */
 export interface SendToQueueProps {
   /**
-   * The message body to send to the queue.
+   * The text message to send to the queue.
    */
-  readonly messageBody: string;
+  readonly messageBody: sfn.TaskInput;
 
   /**
    * The length of time, in seconds, for which to delay a specific message.
@@ -20,7 +18,7 @@ export interface SendToQueueProps {
    *
    * @default Default value of the queue is used
    */
-  readonly delaySeconds?: NumberValue;
+  readonly delaySeconds?: number;
 
   /**
    * The token used for deduplication of sent messages.
@@ -50,7 +48,7 @@ export class SendToQueue implements sfn.IStepFunctionsTask {
   constructor(private readonly queue: sqs.IQueue, private readonly props: SendToQueueProps) {
   }
 
-  public bind(_task: sfn.Task): sfn.StepFunctionsTaskProperties {
+  public bind(_task: sfn.Task): sfn.StepFunctionsTaskConfig {
     return {
       resourceArn: 'arn:aws:states:::sqs:sendMessage',
       policyStatements: [new iam.PolicyStatement()
@@ -59,10 +57,12 @@ export class SendToQueue implements sfn.IStepFunctionsTask {
       ],
       parameters: {
         QueueUrl: this.queue.queueUrl,
-        ...renderString('MessageBody', this.props.messageBody),
-        ...renderNumber('DelaySeconds', this.props.delaySeconds),
-        ...renderString('MessageDeduplicationId', this.props.messageDeduplicationId),
-        ...renderString('MessageGroupId', this.props.messageGroupId),
+        ...sfn.FieldUtils.renderObject({
+          MessageBody: this.props.messageBody.value,
+          DelaySeconds: this.props.delaySeconds,
+          MessageDeduplicationId: this.props.messageDeduplicationId,
+          MessageGroupId: this.props.messageGroupId,
+        })
       }
     };
   }

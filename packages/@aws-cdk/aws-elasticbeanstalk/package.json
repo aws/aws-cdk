@@ -24,6 +24,9 @@
         "distName": "aws-cdk.aws-elasticbeanstalk",
         "module": "aws_cdk.aws_elasticbeanstalk"
       }
+    },
+    "metadata": {
+      "awsdocs:title": "AWS Elastic Beanstalk"
     }
   },
   "repository": {

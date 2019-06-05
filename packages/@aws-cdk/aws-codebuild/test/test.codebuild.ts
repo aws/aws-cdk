@@ -1,6 +1,7 @@
 import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
 import codecommit = require('@aws-cdk/aws-codecommit');
 import ec2 = require('@aws-cdk/aws-ec2');
+import kms = require('@aws-cdk/aws-kms');
 import s3 = require('@aws-cdk/aws-s3');
 import cdk = require('@aws-cdk/cdk');
 import { Test } from 'nodeunit';
@@ -714,7 +715,47 @@ export = {
         })
       , /Configure 'allowAllOutbound' directly on the supplied SecurityGroup/);
       test.done();
-    }
+    },
+
+    'with a KMS Key adds decrypt permissions to the CodeBuild Role'(test: Test) {
+      const stack = new cdk.Stack();
+
+      const key = new kms.Key(stack, 'MyKey');
+
+      new codebuild.PipelineProject(stack, 'MyProject', {
+        encryptionKey: key,
+      });
+
+      expect(stack).to(haveResourceLike('AWS::IAM::Policy', {
+        "PolicyDocument": {
+          "Statement": [
+            {}, // CloudWatch logs
+            {
+              "Action": [
+                "kms:Decrypt",
+                "kms:Encrypt",
+                "kms:ReEncrypt*",
+                "kms:GenerateDataKey*",
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "MyKey6AB29FA6",
+                  "Arn",
+                ],
+              },
+            },
+          ],
+        },
+        "Roles": [
+          {
+            "Ref": "MyProjectRole9BBE5233",
+          },
+        ],
+      }));
+
+      test.done();
+    },
   },
 
   'using timeout and path in S3 artifacts sets it correctly'(test: Test) {

@@ -24,6 +24,9 @@
         "distName": "aws-cdk.aws-glue",
         "module": "aws_cdk.aws_glue"
       }
+    },
+    "metadata": {
+      "awsdocs:title": "AWS Glue"
     }
   },
   "repository": {

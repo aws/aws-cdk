@@ -1,4 +1,4 @@
-## AWS Certificate Manager Construct Library
+## Amazon Certificate Manager Construct Library
 
 This package provides Constructs for provisioning and referencing certificates which
 can be used in CloudFront and ELB.
