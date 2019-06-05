@@ -148,7 +148,7 @@ export = {
     new route53.ARecord(zone, 'Alias', {
       zone,
       recordName: '_foo',
-      target: route53.RecordTarget.fromAliasRecordTarget(target)
+      target: route53.RecordTarget.fromAlias(target)
     });
 
     // THEN
@@ -216,7 +216,7 @@ export = {
     // WHEN
     new route53.AaaaRecord(zone, 'Alias', {
       zone,
-      target: route53.RecordTarget.fromAliasRecordTarget(target)
+      target: route53.RecordTarget.fromAlias(target)
     });
 
     // THEN

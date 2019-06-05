@@ -123,7 +123,7 @@ export class LoadBalancedFargateService extends LoadBalancedServiceBase {
       new ARecord(this, "DNS", {
         zone: props.domainZone,
         recordName: props.domainName,
-        target: RecordTarget.fromAliasRecordTarget(new targets.LoadBalancerTarget(this.loadBalancer)),
+        target: RecordTarget.fromAlias(new targets.LoadBalancerTarget(this.loadBalancer)),
       });
     }
   }

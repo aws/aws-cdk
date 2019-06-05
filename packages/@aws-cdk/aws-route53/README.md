@@ -65,7 +65,7 @@ import targets = require('@aws-cdk/aws-route53-targets');
 
 new route53.AaaaRecord(this, 'Alias', {
   zone: myZone,
-  target: route53.RecordTarget.fromAliasRecordTarget(new targets.CloudFrontTarget(distribution))
+  target: route53.RecordTarget.fromAlias(new targets.CloudFrontTarget(distribution))
 })
 ```
 

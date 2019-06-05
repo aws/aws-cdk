@@ -118,14 +118,24 @@ export class RecordSet extends Resource implements IRecordSet {
   }
 }
 
+/**
+ * Type union for A and AAAA record that accepts multiple types of target.
+ */
 export class RecordTarget {
+  /**
+   * Use ip addresses as target.
+   */
   public static fromIpAddresses(...ipAddresses: string[]) {
     return new RecordTarget(ipAddresses);
   }
 
-  public static fromAliasRecordTarget(aliasTarget: IAliasRecordTarget) {
+  /**
+   * Use an alias as target.
+   */
+  public static fromAlias(aliasTarget: IAliasRecordTarget) {
     return new RecordTarget(undefined, aliasTarget);
   }
+
   private constructor(public readonly values?: string[], public readonly aliasTarget?: IAliasRecordTarget) {
   }
 }
