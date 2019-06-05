@@ -358,7 +358,7 @@ export interface LambdaFunctionAssociation {
 
   readonly eventType?: LambdaEdgeEventType;
 
-  readonly lambdaFunction?: lambda.IFunction;
+  readonly lambdaFunction?: lambda.IVersion;
 }
 
 export enum LambdaEdgeEventType {
@@ -718,7 +718,7 @@ export class CloudFrontWebDistribution extends cdk.Construct implements IDistrib
         lambdaFunctionAssociations: input.lambdaFunctionAssociations
           .map(fna => ({
             eventType: fna.eventType,
-            lambdaFunctionArn: fna.lambdaFunction ? fna.lambdaFunction.functionArn : undefined,
+            lambdaFunctionArn: fna.lambdaFunction && fna.lambdaFunction.versionArn,
           }))
       });
     }

@@ -63,6 +63,14 @@
         "LambdaServiceRoleA8ED4D3B"
       ]
     },
+    "LambdaVersionFA49E61E": {
+      "Type": "AWS::Lambda::Version",
+      "Properties": {
+        "FunctionName": {
+          "Ref": "LambdaD247545B"
+        }
+      }
+    },
     "MyDistributionCFDistributionDE147309": {
       "Type": "AWS::CloudFront::Distribution",
       "Properties": {
@@ -89,10 +97,7 @@
               {
                 "EventType": "origin-request",
                 "LambdaFunctionARN": {
-                  "Fn::GetAtt": [
-                    "LambdaD247545B",
-                    "Arn"
-                  ]
+                  "Ref": "LambdaVersionFA49E61E"
                 }
               }
             ]

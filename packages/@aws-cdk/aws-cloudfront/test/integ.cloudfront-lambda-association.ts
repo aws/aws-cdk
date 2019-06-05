@@ -17,6 +17,10 @@ const lambdaFunction = new lambda.Function(stack, 'Lambda', {
   runtime: lambda.Runtime.NodeJS810
 });
 
+const lambdaVersion = new lambda.Version(stack, 'LambdaVersion', {
+  lambda: lambdaFunction
+});
+
 new cloudfront.CloudFrontWebDistribution(stack, 'MyDistribution', {
   originConfigs: [
     {
@@ -25,7 +29,7 @@ new cloudfront.CloudFrontWebDistribution(stack, 'MyDistribution', {
       },
       behaviors : [ {isDefaultBehavior: true, lambdaFunctionAssociations: [{
         eventType: cloudfront.LambdaEdgeEventType.OriginRequest,
-        lambdaFunction
+        lambdaFunction: lambdaVersion
       }]}]
     }
   ]
