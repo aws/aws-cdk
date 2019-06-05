@@ -8,13 +8,13 @@ export interface ILifecycleHookTarget {
   /**
    * Called when this object is used as the target of a lifecycle hook
    */
-  bind(scope: Construct, lifecycleHook: ILifecycleHook): LifecycleHookTargetProps;
+  bind(scope: Construct, lifecycleHook: ILifecycleHook): LifecycleHookTargetConfig;
 }
 
 /**
  * Properties to add the target to a lifecycle hook
  */
-export interface LifecycleHookTargetProps {
+export interface LifecycleHookTargetConfig {
   /**
    * The ARN to use as the notification target
    */
