@@ -439,7 +439,7 @@ export class Function extends FunctionBase {
 
     resource.node.addDependency(this.role);
 
-    this.functionName = resource.ref;
+    this.functionName = resource.refAsString;
     this.functionArn = resource.functionArn;
     this.handler = props.handler;
     this.runtime = props.runtime;

@@ -46,6 +46,6 @@ export class AliasRecord extends Construct implements IAliasRecord {
       aliasTarget: props.target.bind(this)
     });
 
-    this.domainName = record.ref;
+    this.domainName = record.refAsString;
   }
 }

@@ -5,7 +5,7 @@ export = {
   'outputs can be added to the stack'(test: Test) {
     const stack = new Stack();
     const res = new CfnResource(stack, 'MyResource', { type: 'R' });
-    const ref = res.refToken;
+    const ref = res.ref;
 
     new CfnOutput(stack, 'MyOutput', {
       export: 'ExportName',
@@ -18,13 +18,6 @@ export = {
       { Description: 'CfnOutput properties',
         Export: { Name: 'ExportName' },
         Value: { Ref: 'MyResource' } } } });
-    test.done();
-  },
-
-  'outputs cannot be referenced'(test: Test) {
-    const stack = new Stack();
-    const output = new CfnOutput(stack, 'MyOutput', { description: 'My CfnOutput', value: 'boom' });
-    test.throws(() => output.ref);
     test.done();
   },
 

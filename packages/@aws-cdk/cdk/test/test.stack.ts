@@ -198,7 +198,7 @@ export = {
 
     // WHEN - used in another resource
     new CfnResource(stack2, 'SomeResource', { type: 'AWS::Some::Resource', properties: {
-      someProperty: new Intrinsic(resource1.refToken),
+      someProperty: new Intrinsic(resource1.ref),
     }});
 
     // THEN
@@ -389,7 +389,7 @@ export = {
 
     // { Ref } and { GetAtt }
     new CfnResource(stack, 'RefToBonjour', { type: 'Other::Resource', properties: {
-      RefToBonjour: bonjour.refToken.toString(),
+      RefToBonjour: bonjour.refAsString,
       GetAttBonjour: bonjour.getAtt('TheAtt').toString()
     }});
 

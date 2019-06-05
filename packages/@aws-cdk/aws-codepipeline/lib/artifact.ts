@@ -118,9 +118,11 @@ export class ArtifactPath {
 }
 
 function artifactAttribute(artifact: Artifact, attributeName: string) {
-  return new Intrinsic({ 'Fn::GetArtifactAtt': [artifact.artifactName, attributeName] }).toString();
+  const lazyArtifactName = Lazy.stringValue({ produce: () => artifact.artifactName });
+  return new Intrinsic({ 'Fn::GetArtifactAtt': [lazyArtifactName, attributeName] }).toString();
 }
 
 function artifactGetParam(artifact: Artifact, jsonFile: string, keyName: string) {
-  return new Intrinsic({ 'Fn::GetParam': [artifact.artifactName, jsonFile, keyName] }).toString();
+  const lazyArtifactName = Lazy.stringValue({ produce: () => artifact.artifactName });
+  return new Intrinsic({ 'Fn::GetParam': [lazyArtifactName, jsonFile, keyName] }).toString();
 }

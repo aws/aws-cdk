@@ -82,7 +82,7 @@ export = {
           runOrder: 8,
           output: new codepipeline.Artifact('A'),
           branch: 'branch',
-          oauthToken: SecretValue.plainText(secret.stringValue),
+          oauthToken: SecretValue.plainText(secret.valueAsString),
           owner: 'foo',
           repo: 'bar',
           trigger: cpactions.GitHubTrigger.Poll
@@ -141,7 +141,7 @@ export = {
           runOrder: 8,
           output: new codepipeline.Artifact('A'),
           branch: 'branch',
-          oauthToken: SecretValue.plainText(secret.stringValue),
+          oauthToken: SecretValue.plainText(secret.valueAsString),
           owner: 'foo',
           repo: 'bar',
           trigger: cpactions.GitHubTrigger.None
@@ -200,7 +200,7 @@ export = {
           runOrder: 8,
           output: new codepipeline.Artifact('A'),
           branch: 'branch',
-          oauthToken: SecretValue.plainText(secret.stringValue),
+          oauthToken: SecretValue.plainText(secret.valueAsString),
           owner: 'foo',
           repo: 'bar'
         }),

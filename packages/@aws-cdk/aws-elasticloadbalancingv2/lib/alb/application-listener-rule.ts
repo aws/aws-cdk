@@ -147,7 +147,7 @@ export class ApplicationListenerRule extends cdk.Construct {
       this.addFixedResponse(props.fixedResponse);
     }
 
-    this.listenerRuleArn = resource.ref;
+    this.listenerRuleArn = resource.refAsString;
   }
 
   /**

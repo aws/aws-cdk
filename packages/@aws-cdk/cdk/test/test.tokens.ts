@@ -471,7 +471,8 @@ export = {
 
       // THEN
       const encoded = Token.encodeAsNumber(x);
-      test.equal(true, Token.isToken(encoded), 'encoded number does not test as token');
+      test.equal(false, Token.isToken(encoded), 'encoded number does not test as token');
+      test.equal(true, Token.unresolved(encoded), 'encoded number does not test as token');
 
       // THEN
       const resolved = resolve({ value: encoded });

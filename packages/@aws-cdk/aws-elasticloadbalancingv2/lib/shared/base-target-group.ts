@@ -234,7 +234,7 @@ export abstract class TargetGroupBase extends cdk.Construct implements ITargetGr
     });
 
     this.targetGroupLoadBalancerArns = this.resource.targetGroupLoadBalancerArns;
-    this.targetGroupArn = this.resource.ref;
+    this.targetGroupArn = this.resource.refAsString;
     this.targetGroupFullName = this.resource.targetGroupFullName;
     this.loadBalancerArns = this.resource.targetGroupLoadBalancerArns.toString();
     this.targetGroupName = this.resource.targetGroupName;

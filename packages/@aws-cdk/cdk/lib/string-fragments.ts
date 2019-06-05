@@ -46,8 +46,8 @@ export class TokenizedStringFragments {
   /**
    * Return all Tokens from this string
    */
-  public get tokens(): Token[] {
-    const ret = new Array<Token>();
+  public get tokens(): IToken[] {
+    const ret = new Array<IToken>();
     for (const f of this.fragments) {
       if (f.type === 'token') {
         ret.push(f.token);
@@ -69,7 +69,7 @@ export class TokenizedStringFragments {
           break;
         case 'token':
           const mapped = mapper.mapToken(f.token);
-          if (isTokenObject(mapped)) {
+          if (Token.isToken(mapped)) {
             ret.addToken(mapped);
           } else {
             ret.addIntrinsic(mapped);
@@ -127,14 +127,4 @@ function fragmentValue(fragment: Fragment): any {
     case 'token': return fragment.token.toString();
     case 'intrinsic': return fragment.value;
   }
-}
-
-/**
- * Whether x is literally a Token object
- *
- * Can't use Token.isToken() because that has been co-opted
- * to mean something else.
- */
-function isTokenObject(x: any): x is Token {
-  return typeof(x) === 'object' && x !== null && Token.isToken(x);
 }

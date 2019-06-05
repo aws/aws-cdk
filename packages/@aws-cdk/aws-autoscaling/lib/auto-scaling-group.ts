@@ -383,7 +383,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
       keyName: props.keyName,
       instanceType: props.instanceType.toString(),
       securityGroups: securityGroupsToken,
-      iamInstanceProfile: iamProfile.ref,
+      iamInstanceProfile: iamProfile.refAsString,
       userData: userDataToken,
       associatePublicIpAddress: props.associatePublicIpAddress,
       spotPrice: props.spotPrice,
@@ -408,7 +408,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
       minSize: minCapacity.toString(),
       maxSize: maxCapacity.toString(),
       desiredCapacity: desiredCapacity.toString(),
-      launchConfigurationName: launchConfig.ref,
+      launchConfigurationName: launchConfig.refAsString,
       loadBalancerNames: Lazy.listValue({ produce: () => this.loadBalancerNames }, { omitEmpty: true }),
       targetGroupArns: Lazy.listValue({ produce: () => this.targetGroupArns }, { omitEmpty: true }),
       notificationConfigurations: !props.notificationsTopic ? undefined : [

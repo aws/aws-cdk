@@ -149,7 +149,7 @@ export abstract class BaseLoadBalancer extends Resource {
     this.loadBalancerDnsName = resource.loadBalancerDnsName;
     this.loadBalancerFullName = resource.loadBalancerFullName;
     this.loadBalancerName = resource.loadBalancerName;
-    this.loadBalancerArn = resource.ref;
+    this.loadBalancerArn = resource.refAsString;
     this.loadBalancerSecurityGroups = resource.loadBalancerSecurityGroups;
   }
 

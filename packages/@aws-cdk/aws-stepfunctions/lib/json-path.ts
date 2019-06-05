@@ -1,14 +1,14 @@
-import { Token, TokenMap } from '@aws-cdk/cdk';
+import { Intrinsic, IToken, TokenMap } from '@aws-cdk/cdk';
 
 const JSON_PATH_TOKEN_SYMBOL = Symbol.for('@aws-cdk/aws-stepfunctions.JsonPathToken');
 
-export class JsonPathToken extends Token {
+export class JsonPathToken extends Intrinsic {
   public static isJsonPathToken(x: any): x is JsonPathToken {
     return (x as any)[JSON_PATH_TOKEN_SYMBOL] === true;
   }
 
   constructor(public readonly path: string) {
-    super(() => path, `field${path}`); // Make function to prevent eager evaluation in superclass
+    super(path, { displayHint: `field${path}` }); // Make function to prevent eager evaluation in superclass
     Object.defineProperty(this, JSON_PATH_TOKEN_SYMBOL, { value: true });
   }
 }
@@ -191,6 +191,6 @@ function jsonPathNumber(x: number): string | undefined {
   return pathFromToken(TokenMap.instance().lookupNumberToken(x));
 }
 
-function pathFromToken(token: Token | undefined) {
+function pathFromToken(token: IToken | undefined) {
   return token && (JsonPathToken.isJsonPathToken(token) ? token.path : undefined);
 }

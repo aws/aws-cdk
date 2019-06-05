@@ -90,7 +90,7 @@ export class SecretValue extends Intrinsic {
       throw new Error(`CloudFormation parameter must be configured with "NoEcho"`);
     }
 
-    return new SecretValue(param.refToken);
+    return new SecretValue(param.value);
   }
 }
 

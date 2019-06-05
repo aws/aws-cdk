@@ -16,7 +16,7 @@ export const RESOLVE_METHOD = 'resolve';
  */
 export interface IToken {
   /**
-   *
+   * A hint for the Token's purpose when stringifying it
    */
   readonly displayHint?: string;
 
@@ -24,6 +24,16 @@ export interface IToken {
    * Produce the Token's value at resolution time
    */
   [RESOLVE_METHOD](context: IResolveContext): any;
+}
+
+/**
+ * Properties for instantiating a Token
+ */
+export interface TokenProps {
+  /**
+   * A hint for the Token's purpose when stringifying it
+   */
+  readonly displayHint?: string;
 }
 
 /**
@@ -38,20 +48,19 @@ export interface IToken {
  */
 export abstract class Token implements IToken {
   /**
-   * @deprecated use `Token.isToken`
+   * Return true if input value is a Token or encoded Token
    */
   public static unresolved(obj: any): boolean {
     return unresolved(obj);
   }
 
   /**
-   * Returns true if obj is a token (i.e. has the resolve() method or is a
-   * string or array which includes token markers).
+   * Returns true if obj is an IToken object.
    *
    * @param obj The object to test.
    */
-  public static isToken(obj: any): boolean {
-    return unresolved(obj);
+  public static isToken(obj: any): obj is IToken {
+    return obj && typeof obj[RESOLVE_METHOD] === 'function';
   }
 
   /**
@@ -98,10 +107,8 @@ export abstract class Token implements IToken {
    * and does not have any effect on the evaluation.
    *
    * Must contain only alphanumeric and simple separator characters (_.:-).
-   *
-   * @param displayHint A human-readable display hint for this Token
    */
-  constructor(public readonly displayHint?: string) {
+  constructor(private readonly props: TokenProps = {}) {
     this.trace = createStackTrace();
   }
 
@@ -137,7 +144,7 @@ export abstract class Token implements IToken {
     // throw here we'll obfuscate that descriptive error with something worse.
     // So return a string representation that indicates this thing is a token
     // and needs resolving.
-    return JSON.stringify(`<unresolved-token:${this.displayHint || 'TOKEN'}>`);
+    return JSON.stringify(`<unresolved-token:${this.props.displayHint || 'TOKEN'}>`);
   }
 
   /**

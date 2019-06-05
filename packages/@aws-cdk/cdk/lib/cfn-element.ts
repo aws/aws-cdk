@@ -131,6 +131,13 @@ export abstract class CfnElement extends Construct {
       if (e.type !== 'CfnSynthesisError') { throw e; }
     }
   }
+
+  /**
+   * Return a token that will CloudFormation { Ref } this stack element
+   */
+  protected get ref(): IToken {
+    return CfnReference.for(this, 'Ref');
+  }
 }
 
 /**
@@ -145,17 +152,17 @@ export abstract class CfnElement extends Construct {
  */
 export abstract class CfnRefElement extends CfnElement {
   /**
-   * Return a string that will CloudFormation { Ref } this stack element
+   * Return a token that will CloudFormation { Ref } this stack element
    */
-  public get ref(): string {
-    return Token.encodeAsString(this.refToken);
+  public get ref(): IToken {
+    return super.ref;
   }
 
   /**
-   * Return a token that will CloudFormation { Ref } this stack element
+   * Return a string that will CloudFormation { Ref } this stack element
    */
-  public get refToken(): IToken {
-    return CfnReference.for(this, 'Ref');
+  public get refAsString(): string {
+    return Token.encodeAsString(this.ref);
   }
 }
 

@@ -54,7 +54,7 @@ export class Fn {
   public static split(delimiter: string, source: string): string[] {
 
     // short-circut if source is not a token
-    if (!Token.isToken(source)) {
+    if (!Token.unresolved(source)) {
       return source.split(delimiter);
     }
 
@@ -68,7 +68,7 @@ export class Fn {
    * @returns a token represented as a string
    */
   public static select(index: number, array: string[]): string {
-    if (!Token.isToken(array)) {
+    if (!Token.unresolved(array)) {
       return array[index];
     }
 
@@ -651,7 +651,7 @@ class FnJoin extends Token {
   }
 
   public resolve(context: IResolveContext): any {
-    if (Token.isToken(this.listOfValues)) {
+    if (Token.unresolved(this.listOfValues)) {
       // This is a list token, don't try to do smart things with it.
       return { 'Fn::Join': [ this.delimiter, this.listOfValues ] };
     }

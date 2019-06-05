@@ -135,7 +135,7 @@ class FieldAwareEventInput extends RuleTargetInput {
       if (existing !== undefined) { return existing; }
 
       fieldCounter += 1;
-      const key = f.nameHint || `f${fieldCounter}`;
+      const key = f.displayHint || `f${fieldCounter}`;
       pathToKey.set(f.path, key);
       return key;
     }
@@ -271,8 +271,8 @@ export class EventField extends Intrinsic {
     return new EventField(path, nameHint).toString();
   }
 
-  private constructor(public readonly path: string, public readonly nameHint?: string) {
-    super(path, nameHint);
+  private constructor(public readonly path: string, public readonly displayHint?: string) {
+    super(path, { displayHint });
 
     Object.defineProperty(this, EVENT_FIELD_SYMBOL, { value: true });
   }

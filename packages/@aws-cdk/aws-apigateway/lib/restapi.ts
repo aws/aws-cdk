@@ -219,7 +219,7 @@ export class RestApi extends Resource implements IRestApi {
       parameters: props.parameters,
     });
 
-    this.restApiId = resource.ref;
+    this.restApiId = resource.refAsString;
 
     this.configureDeployment(props);
 

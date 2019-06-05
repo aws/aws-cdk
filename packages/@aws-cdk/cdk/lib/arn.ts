@@ -78,7 +78,7 @@ export function arnFromComponents(components: ArnComponents, stack: Stack): stri
  *      components of the ARN.
  */
 export function parseArn(arn: string, sepIfToken: string = '/', hasName: boolean = true): ArnComponents {
-  if (Token.isToken(arn)) {
+  if (Token.unresolved(arn)) {
     return parseToken(arn, sepIfToken, hasName);
   }
 

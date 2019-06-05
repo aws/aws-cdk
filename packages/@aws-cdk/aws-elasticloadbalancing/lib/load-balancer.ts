@@ -281,7 +281,7 @@ export class LoadBalancer extends Resource implements IConnectable {
    * @attribute
    */
   public get loadBalancerName() {
-    return this.elb.ref;
+    return this.elb.refAsString;
   }
 
   /**

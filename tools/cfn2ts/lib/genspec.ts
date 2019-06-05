@@ -174,6 +174,8 @@ export function attributeDefinition(resourceName: CodeName, attributeName: strin
   let attrType: string;
   if ('PrimitiveType' in spec && spec.PrimitiveType === 'String') {
     attrType = 'string';
+  } else if ('PrimitiveType' in spec && spec.PrimitiveType === 'Integer') {
+    attrType = 'number';
   } else if ('Type' in spec && 'PrimitiveItemType' in spec && spec.Type === 'List' && spec.PrimitiveItemType === 'String') {
     attrType = 'string[]';
   } else {
@@ -192,7 +194,7 @@ export function attributeDefinition(resourceName: CodeName, attributeName: strin
 export function refAttributeDefinition(resourceName: CodeName, refKind: string): Attribute {
   const propertyName = codemaker.toCamelCase(descriptiveAttributeName(resourceName, refKind));
 
-  const constructorArguments = 'this.refToken';
+  const constructorArguments = 'this.ref';
 
   return new Attribute(propertyName, 'string', constructorArguments);
 }

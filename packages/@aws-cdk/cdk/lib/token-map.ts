@@ -76,9 +76,7 @@ export class TokenMap {
   public tokenFromEncoding(x: any): IToken | undefined {
     if (typeof 'x' === 'string') { return this.lookupString(x); }
     if (Array.isArray(x)) { return this.lookupList(x); }
-    if (typeof x === 'object' && x !== null && Token.isToken(x)) {
-      return x as IToken;
-    }
+    if (Token.isToken(x)) { return x; }
     return undefined;
   }
 

@@ -97,6 +97,6 @@ export class ScopedAws {
 
 class UnscopedPseudo extends Intrinsic {
   constructor(name: string) {
-    super({ Ref: name }, name);
+    super({ Ref: name }, { displayHint: name });
   }
 }

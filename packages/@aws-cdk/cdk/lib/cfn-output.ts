@@ -135,10 +135,6 @@ export class CfnOutput extends CfnElement {
     };
   }
 
-  public get ref(): string {
-    throw new Error('Outputs cannot be referenced');
-  }
-
   /**
    * Allocate an export name for this `CfnOutput` if not already done.
    */

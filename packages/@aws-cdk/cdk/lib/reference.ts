@@ -18,8 +18,8 @@ export abstract class Reference extends Intrinsic {
 
   public readonly target: Construct;
 
-  constructor(value: any, displayName: string, target: Construct) {
-    super(value, displayName);
+  constructor(value: any, displayHint: string, target: Construct) {
+    super(value, { displayHint });
     this.target = target;
     Object.defineProperty(this, REFERENCE_SYMBOL, { value: true });
   }

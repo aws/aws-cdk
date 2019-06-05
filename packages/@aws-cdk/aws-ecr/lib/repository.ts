@@ -288,7 +288,7 @@ export class Repository extends RepositoryBase {
     // if repositoryArn is a token, the repository name is also required. this is because
     // repository names can include "/" (e.g. foo/bar/myrepo) and it is impossible to
     // parse the name from an ARN using CloudFormation's split/select.
-    if (Token.isToken(repositoryArn)) {
+    if (Token.unresolved(repositoryArn)) {
       throw new Error('"repositoryArn" is a late-bound value, and therefore "repositoryName" is required. Use `fromRepositoryAttributes` instead');
     }
 

@@ -1,4 +1,4 @@
-import { CfnRefElement } from './cfn-element';
+import { CfnElement } from './cfn-element';
 import { Construct } from './construct';
 import { IResolveContext, IToken, Token } from './token';
 
@@ -92,7 +92,7 @@ export interface CfnParameterProps {
  * Parameters enable you to input custom values to your template each time you create or
  * update a stack.
  */
-export class CfnParameter extends CfnRefElement implements IToken {
+export class CfnParameter extends CfnElement implements IToken {
   public readonly displayHint: string | undefined;
 
   /**
@@ -121,13 +121,20 @@ export class CfnParameter extends CfnRefElement implements IToken {
   }
 
   /**
+   * The parameter value as a Token
+   */
+  public get value(): IToken {
+    return super.ref;
+  }
+
+  /**
    * The parameter value, if it represents a string.
    */
   public get valueAsString(): string {
     if (!isStringType(this.type)) {
       throw new Error(`Parameter type (${this.type}) is not a string type`);
     }
-    return this.refToken.toString();
+    return Token.encodeAsString(this.ref);
   }
 
   /**
@@ -137,7 +144,7 @@ export class CfnParameter extends CfnRefElement implements IToken {
     if (!isListType(this.type)) {
       throw new Error(`Parameter type (${this.type}) is not a string list type`);
     }
-    return Token.encodeAsList(this.refToken);
+    return Token.encodeAsList(this.ref);
   }
 
   /**
@@ -147,7 +154,7 @@ export class CfnParameter extends CfnRefElement implements IToken {
     if (!isNumberType(this.type)) {
       throw new Error(`Parameter type (${this.type}) is not a number type`);
     }
-    return Token.encodeAsNumber(this.refToken);
+    return Token.encodeAsNumber(this.ref);
   }
 
   /**
@@ -174,7 +181,7 @@ export class CfnParameter extends CfnRefElement implements IToken {
   }
 
   public resolve(_context: IResolveContext): any {
-    return this.refToken;
+    return this.ref;
   }
 }
 

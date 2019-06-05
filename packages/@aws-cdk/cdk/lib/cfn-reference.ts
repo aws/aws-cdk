@@ -32,9 +32,9 @@ export class CfnReference extends Reference {
    * the prepare() phase (for the purpose of cross-stack references), it's
    * important that the state isn't lost if it's lazily created, like so:
    *
-   *     new Token(() => new CfnReference(...))
+   *     Lazy.stringValue({ produce: () => new CfnReference(...) })
    */
-  public static for(target: CfnRefElement, attribute: string) {
+  public static for(target: CfnElement, attribute: string) {
     return CfnReference.singletonReference(target, attribute, () => {
       const cfnIntrinsic = attribute === 'Ref' ? { Ref: target.logicalId } : { 'Fn::GetAtt': [ target.logicalId, attribute ]};
       return new CfnReference(cfnIntrinsic, attribute, target);
@@ -161,7 +161,7 @@ export class CfnReference extends Reference {
   }
 }
 
-import { CfnRefElement } from "./cfn-element";
+import { CfnElement } from "./cfn-element";
 import { CfnOutput } from "./cfn-output";
 import { Construct, IConstruct } from "./construct";
 import { Intrinsic } from "./intrinsic";

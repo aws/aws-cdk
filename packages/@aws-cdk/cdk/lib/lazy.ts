@@ -118,8 +118,8 @@ export class Lazy {
 }
 
 class LazyString extends Token {
-  constructor(private readonly producer: IStringValue, displayName?: string) {
-    super(displayName);
+  constructor(private readonly producer: IStringValue, displayHint?: string) {
+    super({ displayHint });
   }
 
   public resolve(context: IResolveContext) {
@@ -128,8 +128,8 @@ class LazyString extends Token {
 }
 
 class LazyNumber extends Token {
-  constructor(private readonly producer: INumberValue, displayName?: string) {
-    super(displayName);
+  constructor(private readonly producer: INumberValue, displayHint?: string) {
+    super({ displayHint });
   }
 
   public resolve(context: IResolveContext) {
@@ -139,7 +139,7 @@ class LazyNumber extends Token {
 
 class LazyList extends Token {
   constructor(private readonly producer: IListValue, private readonly options: LazyListValueOptions = {}) {
-    super(options.displayHint);
+    super(options);
   }
 
   public resolve(context: IResolveContext) {
@@ -153,7 +153,7 @@ class LazyList extends Token {
 
 class LazyAny extends Token {
   constructor(private readonly producer: IAnyValue, private readonly options: LazyAnyValueOptions = {}) {
-    super(options.displayHint);
+    super(options);
   }
 
   public resolve(context: IResolveContext) {
