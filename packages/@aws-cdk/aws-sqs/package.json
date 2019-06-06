@@ -91,5 +91,6 @@
     "exclude": [
       "construct-base-is-private:@aws-cdk/aws-sqs.QueueBase"
     ]
-  }
+  },
+  "stability": "experimental"
 }

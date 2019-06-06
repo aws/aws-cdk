@@ -68,5 +68,6 @@
     "exclude": [
       "props-no-any:@aws-cdk/runtime-values.RuntimeValueProps.value"
     ]
-  }
+  },
+  "stability": "deprecated"
 }

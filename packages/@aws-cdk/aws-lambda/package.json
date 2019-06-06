@@ -114,5 +114,6 @@
     "exclude": [
       "integ-return-type:@aws-cdk/aws-lambda.IEventSource.bind"
     ]
-  }
+  },
+  "stability": "experimental"
 }

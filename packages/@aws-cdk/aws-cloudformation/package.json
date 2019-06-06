@@ -102,5 +102,6 @@
       "construct-ctor:@aws-cdk/aws-cloudformation.PipelineCloudFormationDeployAction.<initializer>",
       "construct-ctor-props-optional:@aws-cdk/aws-cloudformation.AwsCustomResource"
     ]
-  }
+  },
+  "stability": "experimental"
 }
