@@ -1,6 +1,6 @@
 import ec2 = require('@aws-cdk/aws-ec2');
 import cdk = require('@aws-cdk/cdk');
-import { ARecord, CaaAmazonRecord, CnameRecord, PrivateHostedZone, PublicHostedZone, RecordTarget, TxtRecord } from '../lib';
+import { AddressRecordTarget, ARecord, CaaAmazonRecord, CnameRecord, PrivateHostedZone, PublicHostedZone, TxtRecord } from '../lib';
 
 const app = new cdk.App();
 
@@ -39,7 +39,7 @@ new CnameRecord(stack, 'CNAME', {
 new ARecord(stack, 'A', {
   zone: privateZone,
   recordName: 'test',
-  target: RecordTarget.fromIpAddresses('1.2.3.4', '5.6.7.8')
+  target: AddressRecordTarget.fromIpAddresses('1.2.3.4', '5.6.7.8')
 });
 
 new CaaAmazonRecord(stack, 'CaaAmazon', {

@@ -17,7 +17,7 @@ export = {
       zone,
       recordName: 'www',
       recordType: route53.RecordType.CNAME,
-      recordValues: ['zzz']
+      target: route53.RecordTarget.fromValues('zzz')
     });
 
     // THEN
@@ -48,7 +48,7 @@ export = {
       zone,
       recordName: 'aa',
       recordType: route53.RecordType.CNAME,
-      recordValues: ['bbb'],
+      target: route53.RecordTarget.fromValues('bbb'),
       ttl: 6077
     });
 
@@ -79,7 +79,7 @@ export = {
     new route53.RecordSet(stack, 'Basic', {
       zone,
       recordType: route53.RecordType.A,
-      recordValues: ['1.2.3.4'],
+      target: route53.RecordTarget.fromValues('1.2.3.4'),
     });
 
     // THEN
@@ -108,7 +108,7 @@ export = {
     new route53.ARecord(stack, 'A', {
       zone,
       recordName: 'www',
-      target: route53.RecordTarget.fromIpAddresses('1.2.3.4', '5.6.7.8'),
+      target: route53.AddressRecordTarget.fromIpAddresses('1.2.3.4', '5.6.7.8'),
     });
 
     // THEN
@@ -179,7 +179,7 @@ export = {
     new route53.AaaaRecord(stack, 'AAAA', {
       zone,
       recordName: 'www',
-      target: route53.RecordTarget.fromIpAddresses('2001:0db8:85a3:0000:0000:8a2e:0370:7334'),
+      target: route53.AddressRecordTarget.fromIpAddresses('2001:0db8:85a3:0000:0000:8a2e:0370:7334'),
     });
 
     // THEN

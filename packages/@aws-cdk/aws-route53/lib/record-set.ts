@@ -64,6 +64,28 @@ export interface RecordSetOptions {
 }
 
 /**
+ * Type union for a record that accepts multiple types of target.
+ */
+export class RecordTarget {
+  /**
+   * Use string values as target.
+   */
+  public static fromValues(...values: string[]) {
+    return new RecordTarget(values);
+  }
+
+  /**
+   * Use an alias as target.
+   */
+  public static fromAlias(aliasTarget: IAliasRecordTarget) {
+    return new RecordTarget(undefined, aliasTarget);
+  }
+
+  protected constructor(public readonly values?: string[], public readonly aliasTarget?: IAliasRecordTarget) {
+  }
+}
+
+/**
  * Construction properties for a RecordSet.
  */
 export interface RecordSetProps extends RecordSetOptions {
@@ -73,20 +95,10 @@ export interface RecordSetProps extends RecordSetOptions {
   readonly recordType: RecordType;
 
   /**
-   * The values for this record. Either `recordValues` or `target` must be
-   * specified.
-   *
-   * @default no values
+   * The target for this record, either `RecordTarget.fromValues()` or
+   * `RecordTarget.fromAlias()`.
    */
-  readonly recordValues?: string[];
-
-  /**
-   * The target for an alias record. Either `target` or `recordValues` must be
-   * specified.
-   *
-   * @default no target
-   */
-  readonly target?: IAliasRecordTarget;
+  readonly target: RecordTarget;
 }
 
 /**
@@ -98,18 +110,14 @@ export class RecordSet extends Resource implements IRecordSet {
   constructor(scope: Construct, id: string, props: RecordSetProps) {
     super(scope, id);
 
-    if (!(props.recordValues || props.target) || (props.recordValues && props.target)) {
-      throw new Error('Either `recordValues` or `target` must be specified.');
-    }
-
-    const ttl = props.target ? undefined : (props.ttl || 1800).toString();
+    const ttl = props.target.aliasTarget ? undefined : (props.ttl || 1800).toString();
 
     const recordSet = new CfnRecordSet(this, 'Resource', {
       hostedZoneId: props.zone.hostedZoneId,
       name: determineFullyQualifiedDomainName(props.recordName || props.zone.zoneName, props.zone),
       type: props.recordType,
-      resourceRecords: props.recordValues,
-      aliasTarget: props.target && props.target.bind(this),
+      resourceRecords: props.target.values,
+      aliasTarget: props.target.aliasTarget && props.target.aliasTarget.bind(this),
       ttl,
       comment: props.comment
     });
@@ -119,24 +127,14 @@ export class RecordSet extends Resource implements IRecordSet {
 }
 
 /**
- * Type union for A and AAAA record that accepts multiple types of target.
+ *
  */
-export class RecordTarget {
+export class AddressRecordTarget extends RecordTarget {
   /**
-   * Use ip addresses as target.
+   * Use ip adresses as target.
    */
   public static fromIpAddresses(...ipAddresses: string[]) {
-    return new RecordTarget(ipAddresses);
-  }
-
-  /**
-   * Use an alias as target.
-   */
-  public static fromAlias(aliasTarget: IAliasRecordTarget) {
-    return new RecordTarget(undefined, aliasTarget);
-  }
-
-  private constructor(public readonly values?: string[], public readonly aliasTarget?: IAliasRecordTarget) {
+    return RecordTarget.fromValues(...ipAddresses);
   }
 }
 
@@ -147,7 +145,7 @@ export interface ARecordProps extends RecordSetOptions {
   /**
    * The target.
    */
-  readonly target: RecordTarget;
+  readonly target: AddressRecordTarget;
 }
 
 /**
@@ -160,8 +158,7 @@ export class ARecord extends RecordSet {
     super(scope, id, {
       ...props,
       recordType: RecordType.A,
-      recordValues: props.target.values,
-      target: props.target.aliasTarget,
+      target: props.target,
     });
   }
 }
@@ -181,8 +178,7 @@ export class AaaaRecord extends RecordSet {
     super(scope, id, {
       ...props,
       recordType: RecordType.AAAA,
-      recordValues: props.target.values,
-      target: props.target.aliasTarget,
+      target: props.target,
     });
   }
 }
@@ -207,7 +203,7 @@ export class CnameRecord extends RecordSet {
     super(scope, id, {
       ...props,
       recordType: RecordType.CNAME,
-      recordValues: [props.domainName]
+      target: RecordTarget.fromValues(props.domainName)
     });
   }
 }
@@ -232,7 +228,7 @@ export class TxtRecord extends RecordSet {
     super(scope, id, {
       ...props,
       recordType: RecordType.TXT,
-      recordValues: props.values && props.values.map(v => JSON.stringify(v)),
+      target: RecordTarget.fromValues(...props.values.map(v => JSON.stringify(v))),
     });
   }
 }
@@ -281,7 +277,7 @@ export class SrvRecord extends RecordSet {
     super(scope, id, {
       ...props,
       recordType: RecordType.SRV,
-      recordValues: props.values.map(v => `${v.priority} ${v.weight} ${v.port} ${v.hostName}`),
+      target: RecordTarget.fromValues(...props.values.map(v => `${v.priority} ${v.weight} ${v.port} ${v.hostName}`)),
     });
   }
 }
@@ -349,7 +345,7 @@ export class CaaRecord extends RecordSet {
     super(scope, id, {
       ...props,
       recordType: RecordType.CAA,
-      recordValues: props.values.map(v => `${v.flag} ${v.tag} "${v.value}"`),
+      target: RecordTarget.fromValues(...props.values.map(v => `${v.flag} ${v.tag} "${v.value}"`)),
     });
   }
 }
@@ -418,7 +414,7 @@ export class MxRecord extends RecordSet {
     super(scope, id, {
       ...props,
       recordType: RecordType.MX,
-      recordValues: props.values.map(v => `${v.priority} ${v.hostName}`)
+      target: RecordTarget.fromValues(...props.values.map(v => `${v.priority} ${v.hostName}`))
     });
   }
 }
@@ -441,9 +437,10 @@ export class ZoneDelegationRecord extends RecordSet {
     super(scope, id, {
       ...props,
       recordType: RecordType.NS,
-      recordValues: Token.isToken(props.nameServers)
+      target: RecordTarget.fromValues(...Token.isToken(props.nameServers)
         ? props.nameServers // Can't map a string-array token!
-        : props.nameServers.map(ns => (Token.isToken(ns) || ns.endsWith('.')) ? ns : `${ns}.`),
+        : props.nameServers.map(ns => (Token.isToken(ns) || ns.endsWith('.')) ? ns : `${ns}.`)
+      ),
       ttl: props.ttl || 172_800
     });
   }

@@ -1,5 +1,5 @@
 import ecs = require('@aws-cdk/aws-ecs');
-import { ARecord, IHostedZone, RecordTarget } from '@aws-cdk/aws-route53';
+import { AddressRecordTarget, ARecord, IHostedZone } from '@aws-cdk/aws-route53';
 import targets = require('@aws-cdk/aws-route53-targets');
 import cdk = require('@aws-cdk/cdk');
 import { LoadBalancedServiceBase, LoadBalancedServiceBaseProps } from '../base/load-balanced-service-base';
@@ -123,7 +123,7 @@ export class LoadBalancedFargateService extends LoadBalancedServiceBase {
       new ARecord(this, "DNS", {
         zone: props.domainZone,
         recordName: props.domainName,
-        target: RecordTarget.fromAlias(new targets.LoadBalancerTarget(this.loadBalancer)),
+        target: AddressRecordTarget.fromAlias(new targets.LoadBalancerTarget(this.loadBalancer)),
       });
     }
   }
