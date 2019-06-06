@@ -1,7 +1,7 @@
 import iam = require('@aws-cdk/aws-iam');
 import lambda = require('@aws-cdk/aws-lambda');
 import s3 = require('@aws-cdk/aws-s3');
-import { CfnResource, Construct } from '@aws-cdk/cdk';
+import { CfnResource, Construct, Stack } from '@aws-cdk/cdk';
 
 /**
  * Use a Lambda function as a bucket notification destination
@@ -15,7 +15,7 @@ export class LambdaDestination implements s3.IBucketNotificationDestination {
 
     if (this.fn.node.tryFindChild(permissionId) === undefined) {
       this.fn.addPermission(permissionId, {
-        sourceAccount: bucket.node.stack.accountId,
+        sourceAccount: Stack.of(bucket).accountId,
         principal: new iam.ServicePrincipal('s3.amazonaws.com'),
         sourceArn: bucket.bucketArn
       });

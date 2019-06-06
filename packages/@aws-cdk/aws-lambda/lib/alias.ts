@@ -97,7 +97,7 @@ export class Alias extends FunctionBase {
     // ARN parsing splits on `:`, so we can only get the function's name from the ARN as resourceName...
     // And we're parsing it out (instead of using the underlying function directly) in order to have use of it incur
     // an implicit dependency on the resource.
-    this.functionName = `${this.node.stack.parseArn(alias.aliasArn, ":").resourceName!}:${props.aliasName}`;
+    this.functionName = `${Stack.of(this).parseArn(alias.aliasArn, ":").resourceName!}:${props.aliasName}`;
     this.functionArn = alias.aliasArn;
   }
 

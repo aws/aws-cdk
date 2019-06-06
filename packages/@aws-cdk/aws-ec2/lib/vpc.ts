@@ -1,5 +1,5 @@
 import cdk = require('@aws-cdk/cdk');
-import { ConcreteDependable, Construct, IConstruct, IDependable, IResource, Resource } from '@aws-cdk/cdk';
+import { ConcreteDependable, Construct, IConstruct, IDependable, IResource, Resource, Stack } from '@aws-cdk/cdk';
 import { CfnEIP, CfnInternetGateway, CfnNatGateway, CfnRoute, CfnVPNGateway, CfnVPNGatewayRoutePropagation } from './ec2.generated';
 import { CfnRouteTable, CfnSubnet, CfnSubnetRouteTableAssociation, CfnVPC, CfnVPCGatewayAttachment } from './ec2.generated';
 import { NetworkBuilder } from './network-util';
@@ -301,7 +301,7 @@ abstract class VpcBase extends Resource implements IVpc {
    * The region where this VPC is defined
    */
   public get region(): string {
-    return this.node.stack.region;
+    return Stack.of(this).region;
   }
 
   /**

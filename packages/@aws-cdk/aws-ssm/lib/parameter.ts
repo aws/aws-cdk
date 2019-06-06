@@ -1,5 +1,5 @@
 import iam = require('@aws-cdk/aws-iam');
-import { CfnDynamicReference, CfnDynamicReferenceService, Construct, Fn, IResource, Resource, Token } from '@aws-cdk/cdk';
+import { CfnDynamicReference, CfnDynamicReferenceService, Construct, Fn, IResource, Resource, Token, Stack } from '@aws-cdk/cdk';
 import ssm = require('./ssm.generated');
 
 /**
@@ -119,7 +119,7 @@ abstract class ParameterBase extends Resource implements IParameter {
   public abstract readonly parameterType: string;
 
   public get parameterArn(): string {
-    return this.node.stack.formatArn({
+    return Stack.of(this).formatArn({
       service: 'ssm',
       resource: 'parameter',
       sep: '', // Sep is empty because this.parameterName starts with a / already!

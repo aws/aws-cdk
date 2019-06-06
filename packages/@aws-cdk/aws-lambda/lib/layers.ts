@@ -1,4 +1,4 @@
-import { Construct, IResource, Resource, Token } from '@aws-cdk/cdk';
+import { Construct, IResource, Resource, Stack, Token } from '@aws-cdk/cdk';
 import { Code } from './code';
 import { CfnLayerVersion, CfnLayerVersionPermission } from './lambda.generated';
 import { Runtime } from './runtime';
@@ -223,10 +223,10 @@ export class SingletonLayerVersion extends Construct implements ILayerVersion {
 
   private ensureLayerVersion(props: SingletonLayerVersionProps): ILayerVersion {
     const singletonId = `SingletonLayer-${props.uuid}`;
-    const existing = this.node.stack.node.tryFindChild(singletonId);
+    const existing = Stack.of(this).node.tryFindChild(singletonId);
     if (existing) {
       return existing as unknown as ILayerVersion;
     }
-    return new LayerVersion(this.node.stack, singletonId, props);
+    return new LayerVersion(Stack.of(this), singletonId, props);
   }
 }

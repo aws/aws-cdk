@@ -1,4 +1,5 @@
 import cdk = require('@aws-cdk/cdk');
+import { Stack } from '@aws-cdk/cdk';
 import { BucketAttributes } from './bucket';
 
 export function parseBucketArn(construct: cdk.IConstruct, props: BucketAttributes): string {
@@ -9,7 +10,7 @@ export function parseBucketArn(construct: cdk.IConstruct, props: BucketAttribute
   }
 
   if (props.bucketName) {
-    return construct.node.stack.formatArn({
+    return Stack.of(construct).formatArn({
       // S3 Bucket names are globally unique in a partition,
       // and so their ARNs have empty region and account components
       region: '',
@@ -34,7 +35,7 @@ export function parseBucketName(construct: cdk.IConstruct, props: BucketAttribut
 
     const resolved = construct.node.resolve(props.bucketArn);
     if (typeof(resolved) === 'string') {
-      const components = construct.node.stack.parseArn(resolved);
+      const components = Stack.of(construct).parseArn(resolved);
       if (components.service !== 's3') {
         throw new Error('Invalid ARN. Expecting "s3" service:' + resolved);
       }

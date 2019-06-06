@@ -2,6 +2,7 @@ import cloudformation = require('@aws-cdk/aws-cloudformation');
 import codepipeline = require('@aws-cdk/aws-codepipeline');
 import iam = require('@aws-cdk/aws-iam');
 import cdk = require('@aws-cdk/cdk');
+import { Stack } from '@aws-cdk/cdk';
 
 /**
  * Properties common to all CloudFormation actions
@@ -524,7 +525,7 @@ class SingletonPolicy extends cdk.Construct {
   }
 
   private stackArnFromProps(props: { stackName: string, region?: string }): string {
-    return this.node.stack.formatArn({
+    return Stack.of(this).formatArn({
       region: props.region,
       service: 'cloudformation',
       resource: 'stack',

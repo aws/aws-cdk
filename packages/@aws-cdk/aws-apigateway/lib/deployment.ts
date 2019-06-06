@@ -1,4 +1,4 @@
-import { Construct, DeletionPolicy, Resource, Token } from '@aws-cdk/cdk';
+import { Construct, DeletionPolicy, Resource, Stack, Token } from '@aws-cdk/cdk';
 import crypto = require('crypto');
 import { CfnDeployment, CfnDeploymentProps } from './apigateway.generated';
 import { IRestApi } from './restapi';
@@ -99,7 +99,7 @@ class LatestDeploymentResource extends CfnDeployment {
   constructor(scope: Construct, id: string, props: CfnDeploymentProps) {
     super(scope, id, props);
 
-    this.originalLogicalId = this.node.stack.logicalIds.getLogicalId(this);
+    this.originalLogicalId = Stack.of(this).logicalIds.getLogicalId(this);
   }
 
   /**

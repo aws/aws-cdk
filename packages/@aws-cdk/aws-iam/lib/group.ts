@@ -106,7 +106,7 @@ export class Group extends GroupBase {
    * @param groupArn (e.g. `arn:aws:iam::account-id:group/group-name`)
    */
   public static fromGroupArn(scope: Construct, id: string, groupArn: string): IGroup {
-    const groupName = scope.node.stack.parseArn(groupArn).resourceName!;
+    const groupName = Stack.of(scope).parseArn(groupArn).resourceName!;
     class Import extends GroupBase {
       public groupName = groupName;
       public groupArn = groupArn;
