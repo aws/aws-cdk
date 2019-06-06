@@ -39,12 +39,12 @@ export class ConstructNode {
     // the three holy phases of synthesis: prepare, validate and synthesize
 
     // prepare
-    root.prepareTree();
+    this.prepare(root);
 
     // validate
     const validate = options.skipValidation === undefined ? true : !options.skipValidation;
     if (validate) {
-      const errors = root.validateTree();
+      const errors = this.validate(root);
       if (errors.length > 0) {
         const errorList = errors.map(e => `[${e.source.node.path}] ${e.message}`).join('\n  ');
         throw new Error(`Validation failed with the following errors:\n  ${errorList}`);
@@ -61,41 +61,64 @@ export class ConstructNode {
   }
 
   /**
+   * Invokes "prepare" on all constructs (depth-first, post-order) in the tree under `node`.
+   * @param node The root node
+   */
+  public static prepare(node: ConstructNode) {
+    const constructs = node.findAll(ConstructOrder.PreOrder);
+
+    // Aspects are applied root to leaf
+    for (const construct of constructs) {
+      construct.node.invokeAspects();
+    }
+
+    // Use .reverse() to achieve post-order traversal
+    for (const construct of constructs.reverse()) {
+      if (Construct.isConstruct(construct)) {
+        (construct as any).prepare(); // "as any" is needed because we want to keep "prepare" protected
+      }
+    }
+  }
+
+  /**
+   * Invokes "validate" on all constructs in the tree (depth-first, pre-order) and returns
+   * the list of all errors. An empty list indicates that there are no errors.
+   *
+   * @param node The root node
+   */
+  public static validate(node: ConstructNode) {
+    let errors = new Array<ValidationError>();
+
+    for (const child of node.children) {
+      errors = errors.concat(this.validate(child.node));
+    }
+
+    const localErrors: string[] = (node.host as any).validate(); // "as any" is needed because we want to keep "validate" protected
+    return errors.concat(localErrors.map(msg => ({ source: node.host, message: msg })));
+  }
+
+  /**
    * Returns the scope in which this construct is defined.
+   *
+   * The value is `undefined` at the root of the construct scope tree.
    */
   public readonly scope?: IConstruct;
 
   /**
-   * The scoped construct ID
-   * This ID is unique amongst all constructs defined in the same scope.
-   * To obtain a global unique id for this construct, use `uniqueId`.
+   * The id of this construct within the current scope.
+   *
+   * This is a a scope-unique id. To obtain an app-unique id for this construct, use `uniqueId`.
    */
   public readonly id: string;
 
-  /**
-   * An array of aspects applied to this node
-   */
-  private readonly aspects: IAspect[] = [];
-
-  /**
-   * List of children and their names
-   */
-  private readonly _children: { [name: string]: IConstruct } = { };
-  private readonly context: { [key: string]: any } = { };
+  private _locked = false; // if this is "true", addChild will fail
+  private readonly _aspects: IAspect[] = [];
+  private readonly _children: { [id: string]: IConstruct } = { };
+  private readonly _context: { [key: string]: any } = { };
   private readonly _metadata = new Array<cxapi.MetadataEntry>();
-  private readonly references = new Set<Reference>();
-  private readonly dependencies = new Set<IDependable>();
-
-  /** Will be used to cache the value of ``this.stack``. */
-  private _stack?: import('./stack').Stack;
-
-  /**
-   * If this is set to 'true'. addChild() calls for this construct and any child
-   * will fail. This is used to prevent tree mutations during synthesis.
-   */
-  private _locked = false;
-
-  private invokedAspects: IAspect[] = [];
+  private readonly _references = new Set<Reference>();
+  private readonly _dependencies = new Set<IDependable>();
+  private readonly invokedAspects: IAspect[] = [];
 
   constructor(private readonly host: Construct, scope: IConstruct, id: string) {
     id = id || ''; // if undefined, convert to empty string
@@ -126,31 +149,12 @@ export class ConstructNode {
   }
 
   /**
-   * The stack the construct is a part of.
-   */
-  public get stack(): import('./stack').Stack {
-    // Lazy import to break cyclic import
-    const stack: typeof import('./stack') = require('./stack');
-    return this._stack || (this._stack = _lookStackUp(this));
-
-    function _lookStackUp(_this: ConstructNode): import('./stack').Stack  {
-      if (stack.Stack.isStack(_this.host)) {
-        return _this.host;
-      }
-      if (!_this.scope) {
-        throw new Error(`No stack could be identified for the construct at path ${_this.path}`);
-      }
-      return _this.scope.node.stack;
-    }
-  }
-
-  /**
    * The full, absolute path of this construct in the tree.
    *
    * Components are separated by '/'.
    */
   public get path(): string {
-    const components = this.ancestors().slice(1).map(c => c.node.id);
+    const components = this.scopes.slice(1).map(c => c.node.id);
     return components.join(ConstructNode.PATH_SEP);
   }
 
@@ -159,24 +163,8 @@ export class ConstructNode {
    * Includes all components of the tree.
    */
   public get uniqueId(): string {
-    const components = this.ancestors().slice(1).map(c => c.node.id);
+    const components = this.scopes.slice(1).map(c => c.node.id);
     return components.length > 0 ? makeUniqueId(components) : '';
-  }
-
-  /**
-   * Returns a string with a tree representation of this construct and it's children.
-   */
-  public toTreeString(depth = 0) {
-    let out = '';
-    for (let i = 0; i < depth; ++i) {
-      out += '  ';
-    }
-    const name = this.id || '';
-    out += `${this.typename}${name.length > 0 ? ' [' + name + ']' : ''}\n`;
-    for (const child of this.children) {
-      out += child.node.toTreeString(depth + 1);
-    }
-    return out;
   }
 
   /**
@@ -277,7 +265,7 @@ export class ConstructNode {
       const names = this.children.map(c => c.node.id);
       throw new Error('Cannot set context after children have been added: ' + names.join(','));
     }
-    this.context[key] = value;
+    this._context[key] = value;
   }
 
   /**
@@ -286,36 +274,21 @@ export class ConstructNode {
    * Context is usually initialized at the root, but can be overridden at any point in the tree.
    *
    * @param key The context key
-   * @returns The context value or undefined
+   * @returns The context value or `undefined` if there is no context value for thie key.
    */
-  public getContext(key: string): any {
-    const value = this.context[key];
+  public tryGetContext(key: string): any {
+    const value = this._context[key];
     if (value !== undefined) { return value; }
 
-    return this.scope && this.scope.node.getContext(key);
+    return this.scope && this.scope.node.tryGetContext(key);
   }
 
   /**
-   * Retrieve a value from tree-global context
-   *
-   * It is an error if the context object is not available.
-   */
-  public requireContext(key: string): any {
-    const value = this.getContext(key);
-
-    if (value == null) {
-      throw new Error(`You must supply a context value named '${key}'`);
-    }
-
-    return value;
-  }
-
-  /**
-   * An array of metadata objects associated with this construct.
+   * An immutable array of metadata objects associated with this construct.
    * This can be used, for example, to implement support for deprecation notices, source mapping, etc.
    */
   public get metadata() {
-    return this._metadata;
+    return [ ...this._metadata ];
   }
 
   /**
@@ -333,7 +306,7 @@ export class ConstructNode {
       return;
     }
 
-    const trace = this.getContext(cxapi.DISABLE_METADATA_STACK_TRACE) ? undefined : createStackTrace(from || this.addMetadata);
+    const trace = this.tryGetContext(cxapi.DISABLE_METADATA_STACK_TRACE) ? undefined : createStackTrace(from || this.addMetadata);
     this._metadata.push({ type, data, trace });
   }
 
@@ -366,62 +339,25 @@ export class ConstructNode {
   }
 
   /**
-   * Invokes 'validate' on all child constructs and then on this construct (depth-first).
-   * @returns A list of validation errors. If the list is empty, all constructs are valid.
-   */
-  public validateTree(): ValidationError[] {
-    let errors = new Array<ValidationError>();
-
-    for (const child of this.children) {
-      errors = errors.concat(child.node.validateTree());
-    }
-
-    const localErrors: string[] = (this.host as any).validate(); // "as any" is needed because we want to keep "validate" protected
-    return errors.concat(localErrors.map(msg => ({ source: this.host, message: msg })));
-  }
-
-  /**
-   * Run 'prepare()' on all constructs in the tree
-   */
-  public prepareTree() {
-    const constructs = this.host.node.findAll(ConstructOrder.PreOrder);
-    // Aspects are applied root to leaf
-    for (const construct of constructs) {
-      construct.node.invokeAspects();
-    }
-    // Use .reverse() to achieve post-order traversal
-    for (const construct of constructs.reverse()) {
-      if (Construct.isConstruct(construct)) {
-        (construct as any).prepare(); // "as any" is needed because we want to keep "prepare" protected
-      }
-    }
-  }
-
-  /**
    * Applies the aspect to this Constructs node
    */
-  public apply(aspect: IAspect): void {
-    this.aspects.push(aspect);
+  public applyAspect(aspect: IAspect): void {
+    this._aspects.push(aspect);
     return;
   }
 
   /**
-   * Return the ancestors (including self) of this Construct up until and
-   * excluding the indicated component
-   *
-   * @param upTo The construct to return the path components relative to, or the
-   * entire list of ancestors (including root) if omitted. This construct will
-   * not be included in the returned list.
+   * All parent scopes of this construct.
    *
    * @returns a list of parent scopes. The last element in the list will always
-   * be `this` and the first element is the oldest scope (if `upTo` is not set,
-   * it will be the root of the construct tree).
+   * be the current construct and the first element will be the root of the
+   * tree.
    */
-  public ancestors(upTo?: Construct): IConstruct[] {
+  public get scopes(): IConstruct[] {
     const ret = new Array<IConstruct>();
 
     let curr: IConstruct | undefined = this.host;
-    while (curr && curr !== upTo) {
+    while (curr) {
       ret.unshift(curr);
       curr = curr.node && curr.node.scope;
     }
@@ -433,58 +369,7 @@ export class ConstructNode {
    * @returns The root of the construct tree.
    */
   public get root() {
-    return this.ancestors()[0];
-  }
-
-  /**
-   * Throws if the `props` bag doesn't include the property `name`.
-   * In the future we can add some type-checking here, maybe even auto-generate during compilation.
-   * @param props The props bag.
-   * @param name The name of the required property.
-   *
-   * @deprecated use ``requireProperty`` from ``@aws-cdk/runtime`` instead.
-   */
-  public required(props: any, name: string): any {
-    if (!(name in props)) {
-      throw new Error(`Construct of type ${this.typename} is missing required property: ${name}`);
-    }
-
-    const value = props[name];
-    return value;
-  }
-
-  /**
-   * @returns The type name of this node.
-   */
-  public get typename(): string {
-    const ctor: any = this.host.constructor;
-    return ctor.name || 'Construct';
-  }
-
-  /**
-   * Adds a child construct to this node.
-   *
-   * @param child The child construct
-   * @param childName The type name of the child construct.
-   * @returns The resolved path part name of the child
-   */
-  public addChild(child: Construct, childName: string) {
-    if (this.locked) {
-
-      // special error if root is locked
-      if (!this.path) {
-        throw new Error('Cannot add children during synthesis');
-      }
-
-      throw new Error(`Cannot add children to "${this.path}" during synthesis`);
-    }
-
-    if (childName in this._children) {
-      const name = this.id || '';
-      throw new Error(`There is already a Construct with name '${childName}' in ${this.typename}${name.length > 0 ? ' [' + name + ']' : ''}`);
-    }
-
-    this._children[childName] = child;
+    return this.scopes[0];
   }
 
   /**
@@ -539,22 +424,22 @@ export class ConstructNode {
   /**
    * Record a reference originating from this construct node
    */
-  public recordReference(...refs: Token[]) {
+  public addReference(...refs: Token[]) {
     for (const ref of refs) {
       if (Reference.isReference(ref)) {
-        this.references.add(ref);
+        this._references.add(ref);
       }
     }
   }
 
   /**
-   * Return all references of the given type originating from this node or any of its children
+   * Return all references originating from this node or any of its children
    */
-  public findReferences(): OutgoingReference[] {
+  public get references(): OutgoingReference[] {
     const ret = new Set<OutgoingReference>();
 
     function recurse(node: ConstructNode) {
-      for (const reference of node.references) {
+      for (const reference of node._references) {
         ret.add({ source: node.host, reference });
       }
 
@@ -576,19 +461,19 @@ export class ConstructNode {
    */
   public addDependency(...dependencies: IDependable[]) {
     for (const dependency of dependencies) {
-      this.dependencies.add(dependency);
+      this._dependencies.add(dependency);
     }
   }
 
   /**
    * Return all dependencies registered on this node or any of its children
    */
-  public findDependencies(): Dependency[] {
+  public get dependencies(): Dependency[] {
     const found = new Map<IConstruct, Set<IConstruct>>(); // Deduplication map
     const ret = new Array<Dependency>();
 
     for (const source of this.findAll()) {
-      for (const dependable of source.node.dependencies) {
+      for (const dependable of source.node._dependencies) {
         for (const target of DependableTrait.get(dependable).dependencyRoots) {
           let foundTargets = found.get(source);
           if (!foundTargets) { found.set(source, foundTargets = new Set()); }
@@ -605,11 +490,38 @@ export class ConstructNode {
   }
 
   /**
+   * Adds a child construct to this node.
+   *
+   * @param child The child construct
+   * @param childName The type name of the child construct.
+   * @returns The resolved path part name of the child
+   */
+  private addChild(child: Construct, childName: string) {
+    if (this.locked) {
+
+      // special error if root is locked
+      if (!this.path) {
+        throw new Error('Cannot add children during synthesis');
+      }
+
+      throw new Error(`Cannot add children to "${this.path}" during synthesis`);
+    }
+
+    if (childName in this._children) {
+      const name = this.id || '';
+      const typeName = this.host.constructor.name;
+      throw new Error(`There is already a Construct with name '${childName}' in ${typeName}${name.length > 0 ? ' [' + name + ']' : ''}`);
+    }
+
+    this._children[childName] = child;
+  }
+
+  /**
    * Triggers each aspect to invoke visit
    */
   private invokeAspects(): void {
     const descendants = this.findAll();
-    for (const aspect of this.aspects) {
+    for (const aspect of this._aspects) {
       if (this.invokedAspects.includes(aspect)) {
         continue;
       }
@@ -669,8 +581,7 @@ export class Construct implements IConstruct {
    * Returns a string representation of this construct.
    */
   public toString() {
-    const path = this.node.path;
-    return this.node.typename + (path.length > 0 ? ` [${path}]` : '');
+    return this.node.path || '<root>';
   }
 
   /**
@@ -758,22 +669,17 @@ export interface Dependency {
 }
 
 /**
- * A single dependency
+ * Represents a reference that originates from a specific construct.
  */
-export interface Dependency {
-  /**
-   * Source the dependency
-   */
-  readonly source: IConstruct;
-
-  /**
-   * Target of the dependency
-   */
-  readonly target: IConstruct;
-}
-
 export interface OutgoingReference {
+  /**
+   * The originating construct.
+   */
   readonly source: IConstruct;
+
+  /**
+   * The reference.
+   */
   readonly reference: Reference;
 }
 

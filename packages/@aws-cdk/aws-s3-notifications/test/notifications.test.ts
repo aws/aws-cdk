@@ -3,7 +3,7 @@ import '@aws-cdk/assert/jest';
 import s3 = require('@aws-cdk/aws-s3');
 import sns = require('@aws-cdk/aws-sns');
 import cdk = require('@aws-cdk/cdk');
-import { Stack } from '@aws-cdk/cdk';
+import { ConstructNode, Stack } from '@aws-cdk/cdk';
 import s3n = require('../lib');
 
 // tslint:disable:object-literal-key-quotes
@@ -290,7 +290,8 @@ test('a notification destination can specify a set of dependencies that must be 
 
   bucket.addObjectCreatedNotification(dest);
 
-  stack.node.prepareTree();
+  ConstructNode.prepare(stack.node);
+
   expect(SynthUtils.synthesize(stack).template.Resources.BucketNotifications8F2E257D).toEqual({
     Type: 'Custom::S3BucketNotifications',
     Properties: {

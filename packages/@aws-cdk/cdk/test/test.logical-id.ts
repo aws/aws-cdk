@@ -1,5 +1,5 @@
 import { Test } from 'nodeunit';
-import { CfnResource, Construct, HashedAddressingScheme, IAddressingScheme, Stack } from '../lib';
+import { CfnResource, Construct, ConstructNode, HashedAddressingScheme, IAddressingScheme, Stack } from '../lib';
 
 /**
  * These tests are executed once (for specific ID schemes)
@@ -210,7 +210,7 @@ const allSchemesTests: {[name: string]: (scheme: IAddressingScheme, test: Test) 
     c2.node.addDependency(c1);
 
     // THEN
-    stack.node.prepareTree();
+    ConstructNode.prepare(stack.node);
     test.deepEqual(stack._toCloudFormation(), {
       Resources: {
         NewName: {

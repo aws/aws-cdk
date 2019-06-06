@@ -1,6 +1,6 @@
 import { expect, haveResource } from '@aws-cdk/assert';
 import iam = require('@aws-cdk/aws-iam');
-import { Stack, Tag } from '@aws-cdk/cdk';
+import { ConstructNode, Stack, Tag } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
 import {
   Attribute,
@@ -967,7 +967,7 @@ export = {
       sortKey: LSI_SORT_KEY
     });
 
-    const errors = table.node.validateTree();
+    const errors = ConstructNode.validate(table.node);
 
     test.strictEqual(1, errors.length);
     test.strictEqual('a sort key of the table must be specified to add local secondary indexes', errors[0].message);

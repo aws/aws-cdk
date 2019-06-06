@@ -1,8 +1,8 @@
 import cxapi = require('@aws-cdk/cx-api');
 import { Test } from 'nodeunit';
 import { App, App as Root, applyRemovalPolicy, CfnCondition,
-    CfnResource, Construct, DeletionPolicy, Fn,
-    HashedAddressingScheme, RemovalPolicy, Stack } from '../lib';
+    CfnResource, Construct, ConstructNode, DeletionPolicy,
+    Fn, HashedAddressingScheme, RemovalPolicy, Stack } from '../lib';
 
 export = {
   'all resources derive from Resource, which derives from Entity'(test: Test) {
@@ -130,7 +130,7 @@ export = {
     r2.node.addDependency(r1);
     r2.node.addDependency(r3);
 
-    stack.node.prepareTree();
+    ConstructNode.prepare(stack.node);
     test.deepEqual(stack._toCloudFormation(), {
       Resources: {
         Counter1: {
@@ -351,7 +351,7 @@ export = {
     dependingResource.node.addDependency(c1, c2);
     dependingResource.node.addDependency(c3);
 
-    stack.node.prepareTree();
+    ConstructNode.prepare(stack.node);
     test.deepEqual(stack._toCloudFormation(), { Resources:
       { MyC1R1FB2A562F: { Type: 'T1' },
         MyC1R2AE2B5066: { Type: 'T2' },
@@ -660,7 +660,7 @@ export = {
     resB.node.addDependency(resA);
 
     // THEN
-    app.node.prepareTree();
+    ConstructNode.prepare(app.node);
     test.deepEqual(stackB._toCloudFormation(), {
       Resources: {
         Resource: {
@@ -669,7 +669,7 @@ export = {
         }
       }
     });
-    test.deepEqual(stackB.dependencies().map(s => s.node.id), ['StackA']);
+    test.deepEqual(stackB.dependencies.map(s => s.node.id), ['StackA']);
 
     test.done();
   },

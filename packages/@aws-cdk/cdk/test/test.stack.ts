@@ -1,6 +1,6 @@
 import cxapi = require('@aws-cdk/cx-api');
 import { Test } from 'nodeunit';
-import { App, CfnCondition, CfnOutput, CfnParameter, CfnResource, Construct, Include, ScopedAws, Stack, Token } from '../lib';
+import { App, CfnCondition, CfnOutput, CfnParameter, CfnResource, Construct, ConstructNode, Include, ScopedAws, Stack, Token } from '../lib';
 
 export = {
   'a stack can be serialized into a CloudFormation template, initially it\'s empty'(test: Test) {
@@ -94,12 +94,12 @@ export = {
     test.ok(!stack.node.tryFindChild('foo'), 'empty stack');
 
     const r1 = new CfnResource(stack, 'Hello', { type: 'MyResource' });
-    test.equal(stack.findResource(r1.stackPath), r1, 'look up top-level');
+    test.equal(stack.findResource(r1.node.path), r1, 'look up top-level');
 
     const child = new Construct(stack, 'Child');
     const r2 = new CfnResource(child, 'Hello', { type: 'MyResource' });
 
-    test.equal(stack.findResource(r2.stackPath), r2, 'look up child');
+    test.equal(stack.findResource(r2.node.path), r2, 'look up child');
 
     test.done();
   },
@@ -165,7 +165,7 @@ export = {
     // THEN
     // Need to do this manually now, since we're in testing mode. In a normal CDK app,
     // this happens as part of app.synth().
-    app.node.prepareTree();
+    ConstructNode.prepare(app.node);
 
     test.deepEqual(stack1._toCloudFormation(), {
       Outputs: {
@@ -203,7 +203,7 @@ export = {
     // THEN
     // Need to do this manually now, since we're in testing mode. In a normal CDK app,
     // this happens as part of app.synth().
-    app.node.prepareTree();
+    ConstructNode.prepare(app.node);
 
     test.deepEqual(stack2._toCloudFormation(), {
       Resources: {
@@ -228,7 +228,7 @@ export = {
     // WHEN - used in another stack
     new CfnParameter(stack2, 'SomeParameter', { type: 'String', default: new Token(() => account1) });
 
-    app.node.prepareTree();
+    ConstructNode.prepare(app.node);
 
     // THEN
     test.deepEqual(stack1._toCloudFormation(), {
@@ -264,7 +264,7 @@ export = {
     // THEN
     // Need to do this manually now, since we're in testing mode. In a normal CDK app,
     // this happens as part of app.synth().
-    app.node.prepareTree();
+    ConstructNode.prepare(app.node);
 
     test.deepEqual(stack2._toCloudFormation(), {
       Outputs: {
@@ -287,7 +287,7 @@ export = {
     // WHEN - used in another stack
     new CfnParameter(stack2, 'SomeParameter', { type: 'String', default: `TheAccountIs${account1}` });
 
-    app.node.prepareTree();
+    ConstructNode.prepare(app.node);
 
     // THEN
     test.deepEqual(stack2._toCloudFormation(), {
@@ -315,7 +315,7 @@ export = {
     new CfnParameter(stack1, 'SomeParameter', { type: 'String', default: account2 });
 
     test.throws(() => {
-      app.node.prepareTree();
+      ConstructNode.prepare(app.node);
       // tslint:disable-next-line:max-line-length
     }, "'Stack2' depends on 'Stack1' (Stack2/SomeParameter -> Stack1.AWS::AccountId). Adding this dependency (Stack1/SomeParameter -> Stack2.AWS::AccountId) would create a cyclic reference.");
 
@@ -332,10 +332,10 @@ export = {
     // WHEN
     new CfnParameter(stack2, 'SomeParameter', { type: 'String', default: account1 });
 
-    app.node.prepareTree();
+    ConstructNode.prepare(app.node);
 
     // THEN
-    test.deepEqual(stack2.dependencies().map(s => s.node.id), ['Stack1']);
+    test.deepEqual(stack2.dependencies.map(s => s.node.id), ['Stack1']);
 
     test.done();
   },
@@ -351,7 +351,7 @@ export = {
     new CfnParameter(stack2, 'SomeParameter', { type: 'String', default: account1 });
 
     test.throws(() => {
-      app.node.prepareTree();
+      ConstructNode.prepare(app.node);
     }, /Can only reference cross stacks in the same region and account/);
 
     test.done();
@@ -452,7 +452,23 @@ export = {
       /Stack name must match the regular expression/);
 
     test.done();
-  }
+  },
+
+  'Stack.of(stack) returns the correct stack'(test: Test) {
+    const stack = new Stack();
+    test.same(Stack.of(stack), stack);
+    const parent = new Construct(stack, 'Parent');
+    const construct = new Construct(parent, 'Construct');
+    test.same(Stack.of(construct), stack);
+    test.done();
+  },
+
+  'Stack.of() throws when there is no parent Stack'(test: Test) {
+    const root = new Construct(undefined as any, 'Root');
+    const construct = new Construct(root, 'Construct');
+    test.throws(() => Stack.of(construct), /No stack could be identified for the construct at path/);
+    test.done();
+  },
 };
 
 class StackWithPostProcessor extends Stack {

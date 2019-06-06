@@ -9,6 +9,7 @@ import { HashedAddressingScheme, IAddressingScheme, LogicalIDs } from './logical
 import { makeUniqueId } from './uniqueid';
 
 const STACK_SYMBOL = Symbol.for('@aws-cdk/cdk.Stack');
+const VALID_STACK_NAME_REGEX = /^[A-Za-z][A-Za-z0-9-]*$/;
 
 export interface StackProps {
   /**
@@ -54,7 +55,25 @@ export class Stack extends Construct implements ITaggable {
     return STACK_SYMBOL in x;
   }
 
-  private static readonly VALID_STACK_NAME_REGEX = /^[A-Za-z][A-Za-z0-9-]*$/;
+  /**
+   * Looks up the first stack scope in which `construct` is defined. Fails if there is no stack up the tree.
+   * @param construct The construct to start the search from.
+   */
+  public static of(construct: IConstruct): Stack {
+    return _lookup(construct);
+
+    function _lookup(c: IConstruct): Stack  {
+      if (Stack.isStack(c)) {
+        return c;
+      }
+
+      if (!c.node.scope) {
+        throw new Error(`No stack could be identified for the construct at path ${construct.node.path}`);
+      }
+
+      return _lookup(c.node.scope);
+    }
+  }
 
   /**
    * Tags to be applied to the stack.
@@ -128,8 +147,8 @@ export class Stack extends Construct implements ITaggable {
     this.name = props.stackName !== undefined ? props.stackName : this.calculateStackName();
     this.tags = new TagManager(TagType.KeyValue, 'aws:cdk:stack', props.tags);
 
-    if (!Stack.VALID_STACK_NAME_REGEX.test(this.name)) {
-      throw new Error(`Stack name must match the regular expression: ${Stack.VALID_STACK_NAME_REGEX.toString()}, got '${name}'`);
+    if (!VALID_STACK_NAME_REGEX.test(this.name)) {
+      throw new Error(`Stack name must match the regular expression: ${VALID_STACK_NAME_REGEX.toString()}, got '${name}'`);
     }
   }
 
@@ -274,7 +293,7 @@ export class Stack extends Construct implements ITaggable {
   /**
    * Return the stacks this stack depends on
    */
-  public dependencies(): Stack[] {
+  public get dependencies(): Stack[] {
     return Array.from(this.stackDependencies.values()).map(d => d.stack);
   }
 
@@ -435,8 +454,8 @@ export class Stack extends Construct implements ITaggable {
    * @internal
    */
   protected _validateId(name: string) {
-    if (name && !Stack.VALID_STACK_NAME_REGEX.test(name)) {
-      throw new Error(`Stack name must match the regular expression: ${Stack.VALID_STACK_NAME_REGEX.toString()}, got '${name}'`);
+    if (name && !VALID_STACK_NAME_REGEX.test(name)) {
+      throw new Error(`Stack name must match the regular expression: ${VALID_STACK_NAME_REGEX.toString()}, got '${name}'`);
     }
   }
 
@@ -449,15 +468,15 @@ export class Stack extends Construct implements ITaggable {
    */
   protected prepare() {
     // References
-    for (const ref of this.node.findReferences()) {
+    for (const ref of this.node.references) {
       if (CfnReference.isCfnReference(ref.reference)) {
         ref.reference.consumeFromStack(this, ref.source);
       }
     }
 
     // Resource dependencies
-    for (const dependency of this.node.findDependencies()) {
-      const theirStack = dependency.target.node.stack;
+    for (const dependency of this.node.dependencies) {
+      const theirStack = Stack.of(dependency.target);
       if (theirStack !== undefined && theirStack !== this) {
         this.addDependency(theirStack);
       } else {
@@ -482,7 +501,7 @@ export class Stack extends Construct implements ITaggable {
     const outPath = path.join(builder.outdir, template);
     fs.writeFileSync(outPath, JSON.stringify(this._toCloudFormation(), undefined, 2));
 
-    const deps = this.dependencies().map(s => s.name);
+    const deps = this.dependencies.map(s => s.name);
     const meta = this.collectMetadata();
 
     const properties: cxapi.AwsCloudFormationStackProperties = {
@@ -509,8 +528,8 @@ export class Stack extends Construct implements ITaggable {
    */
   private parseEnvironment(env: Environment = {}) {
     return {
-      account: env.account ? env.account : this.node.getContext(cxapi.DEFAULT_ACCOUNT_CONTEXT_KEY),
-      region: env.region ? env.region : this.node.getContext(cxapi.DEFAULT_REGION_CONTEXT_KEY)
+      account: env.account ? env.account : this.node.tryGetContext(cxapi.DEFAULT_ACCOUNT_CONTEXT_KEY),
+      region: env.region ? env.region : this.node.tryGetContext(cxapi.DEFAULT_REGION_CONTEXT_KEY)
     };
   }
 
@@ -563,7 +582,7 @@ export class Stack extends Construct implements ITaggable {
   private calculateStackName() {
     // In tests, it's possible for this stack to be the root object, in which case
     // we need to use it as part of the root path.
-    const rootPath = this.node.scope !== undefined ? this.node.ancestors().slice(1) : [this];
+    const rootPath = this.node.scope !== undefined ? this.node.scopes.slice(1) : [this];
     const ids = rootPath.map(c => c.node.id);
 
     // Special case, if rootPath is length 1 then just use ID (backwards compatibility)

@@ -95,14 +95,14 @@ export class CfnReference extends Reference {
     this.originalDisplayName = displayName;
     this.replacementTokens = new Map<Stack, Token>();
 
-    this.producingStack = target.node.stack;
+    this.producingStack = Stack.of(target);
     Object.defineProperty(this, CFN_REFERENCE_SYMBOL, { value: true });
   }
 
   public resolve(context: IResolveContext): any {
     // If we have a special token for this consuming stack, resolve that. Otherwise resolve as if
     // we are in the same stack.
-    const token = this.replacementTokens.get(context.scope.node.stack);
+    const token = this.replacementTokens.get(Stack.of(context.scope));
     if (token) {
       return token.resolve(context);
     } else {
