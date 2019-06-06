@@ -1,4 +1,4 @@
-import { Construct, Resource } from '@aws-cdk/cdk';
+import { Construct, Resource, Stack } from '@aws-cdk/cdk';
 import { CfnGroup } from './iam.generated';
 import { IIdentity } from './identity-base';
 import { Policy } from './policy';
