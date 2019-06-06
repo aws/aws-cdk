@@ -33,13 +33,13 @@
     "fast-deep-equal": "^2.0.1",
     "source-map-support": "^0.5.12",
     "string-width": "^4.1.0",
-    "table": "^5.2.3"
+    "table": "^5.4.0"
   },
   "devDependencies": {
     "@types/string-width": "^4.0.1",
     "@types/table": "^4.0.5",
     "cdk-build-tools": "^0.33.0",
-    "fast-check": "^1.14.0",
+    "fast-check": "^1.15.1",
     "pkglint": "^0.33.0"
   },
   "repository": {
