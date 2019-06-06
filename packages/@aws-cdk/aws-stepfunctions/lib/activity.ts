@@ -1,5 +1,5 @@
 import cloudwatch = require('@aws-cdk/aws-cloudwatch');
-import { Construct, IResource, Resource } from '@aws-cdk/cdk';
+import { Construct, IResource, Resource, Stack } from '@aws-cdk/cdk';
 import { CfnActivity } from './stepfunctions.generated';
 
 export interface ActivityProps {
@@ -22,7 +22,7 @@ export class Activity extends Resource implements IActivity {
         class Imported extends Construct implements IActivity {
             public get activityArn() { return activityArn; }
             public get activityName() {
-                return this.node.stack.parseArn(activityArn, ':').resourceName || '';
+                return Stack.of(this).parseArn(activityArn, ':').resourceName || '';
             }
         }
 
@@ -33,7 +33,7 @@ export class Activity extends Resource implements IActivity {
      * Construct an Activity from an existing Activity Name
      */
     public static fromActivityName(scope: Construct, id: string, activityName: string): IActivity {
-        return Activity.fromActivityArn(scope, id, scope.node.stack.formatArn({
+        return Activity.fromActivityArn(scope, id, Stack.of(scope).formatArn({
             service: 'states',
             resource: 'activity',
             resourceName: activityName,

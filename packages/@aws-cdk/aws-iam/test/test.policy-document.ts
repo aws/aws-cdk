@@ -17,7 +17,7 @@ export = {
     p.addAwsAccountPrincipal(`my${new Token({ account: 'account' })}name`);
     p.limitToAccount('12221121221');
 
-    test.deepEqual(stack.node.resolve(p), { Action:
+    test.deepEqual(stack.resolve(p), { Action:
       [ 'sqs:SendMessage',
         'dynamodb:CreateTable',
         'dynamodb:DeleteTable' ],
@@ -51,7 +51,7 @@ export = {
     doc.addStatement(p1);
     doc.addStatement(p2);
 
-    test.deepEqual(stack.node.resolve(doc), {
+    test.deepEqual(stack.resolve(doc), {
       Version: '2012-10-17',
       Statement:
         [ { Effect: 'Allow', Action: 'sqs:SendMessage', Resource: '*' },
@@ -73,7 +73,7 @@ export = {
     const doc = new PolicyDocument(base);
     doc.addStatement(new PolicyStatement().addResource('resource').addAction('action'));
 
-    test.deepEqual(stack.node.resolve(doc), { Version: 'Foo',
+    test.deepEqual(stack.resolve(doc), { Version: 'Foo',
     Something: 123,
     Statement:
      [ { Statement1: 1 },
@@ -85,7 +85,7 @@ export = {
   'Permission allows specifying multiple actions upon construction'(test: Test) {
     const stack = new Stack();
     const perm = new PolicyStatement().addResource('MyResource').addActions('Action1', 'Action2', 'Action3');
-    test.deepEqual(stack.node.resolve(perm), {
+    test.deepEqual(stack.resolve(perm), {
       Effect: 'Allow',
       Action: [ 'Action1', 'Action2', 'Action3' ],
       Resource: 'MyResource' });
@@ -95,7 +95,7 @@ export = {
   'PolicyDoc resolves to undefined if there are no permissions'(test: Test) {
     const stack = new Stack();
     const p = new PolicyDocument();
-    test.deepEqual(stack.node.resolve(p), undefined);
+    test.deepEqual(stack.resolve(p), undefined);
     test.done();
   },
 
@@ -104,7 +104,7 @@ export = {
     const p = new PolicyStatement();
     const canoncialUser = "averysuperduperlongstringfor";
     p.addPrincipal(new CanonicalUserPrincipal(canoncialUser));
-    test.deepEqual(stack.node.resolve(p), {
+    test.deepEqual(stack.resolve(p), {
       Effect: "Allow",
       Principal: {
         CanonicalUser: canoncialUser
@@ -118,7 +118,7 @@ export = {
 
     const p = new PolicyStatement();
     p.addAccountRootPrincipal();
-    test.deepEqual(stack.node.resolve(p), {
+    test.deepEqual(stack.resolve(p), {
       Effect: "Allow",
       Principal: {
         AWS: {
@@ -142,7 +142,7 @@ export = {
     const stack = new Stack();
     const p = new PolicyStatement();
     p.addFederatedPrincipal("com.amazon.cognito", { StringEquals: { key: 'value' }});
-    test.deepEqual(stack.node.resolve(p), {
+    test.deepEqual(stack.resolve(p), {
       Effect: "Allow",
       Principal: {
         Federated: "com.amazon.cognito"
@@ -160,7 +160,7 @@ export = {
     const p = new PolicyStatement();
     p.addAwsAccountPrincipal('1234');
     p.addAwsAccountPrincipal('5678');
-    test.deepEqual(stack.node.resolve(p), {
+    test.deepEqual(stack.resolve(p), {
       Effect: 'Allow',
       Principal: {
         AWS: [
@@ -226,7 +226,7 @@ export = {
 
       p.addStatement(new PolicyStatement().addPrincipal(new Anyone()));
 
-      test.deepEqual(stack.node.resolve(p), {
+      test.deepEqual(stack.resolve(p), {
         Statement: [
           { Effect: 'Allow', Principal: '*' }
         ],
@@ -241,7 +241,7 @@ export = {
 
       p.addStatement(new PolicyStatement().addPrincipal(new AnyPrincipal()));
 
-      test.deepEqual(stack.node.resolve(p), {
+      test.deepEqual(stack.resolve(p), {
         Statement: [
           { Effect: 'Allow', Principal: '*' }
         ],
@@ -256,7 +256,7 @@ export = {
 
       p.addStatement(new PolicyStatement().addAnyPrincipal());
 
-      test.deepEqual(stack.node.resolve(p), {
+      test.deepEqual(stack.resolve(p), {
         Statement: [
           { Effect: 'Allow', Principal: '*' }
         ],
@@ -274,7 +274,7 @@ export = {
     p.addStatement(new PolicyStatement().addArnPrincipal('111222-B'));
     p.addStatement(new PolicyStatement().addPrincipal(new ArnPrincipal('111222-C')));
 
-    test.deepEqual(stack.node.resolve(p), {
+    test.deepEqual(stack.resolve(p), {
       Statement: [ {
         Effect: 'Allow', Principal: { AWS: '111222-A' } },
         { Effect: 'Allow', Principal: { AWS: '111222-B' } },
@@ -293,7 +293,7 @@ export = {
       .addActions(...new Token(() => ['a', 'b', 'c']).toList())
       .addResources(...new Token(() => ['x', 'y', 'z']).toList());
 
-    test.deepEqual(stack.node.resolve(statement), {
+    test.deepEqual(stack.resolve(statement), {
       Effect: 'Allow',
       Action: ['a', 'b', 'c'],
       Resource: ['x', 'y', 'z'],
@@ -309,7 +309,7 @@ export = {
     p.addStatement(new PolicyStatement().addCanonicalUserPrincipal('cannonical-user-1'));
     p.addStatement(new PolicyStatement().addPrincipal(new CanonicalUserPrincipal('cannonical-user-2')));
 
-    test.deepEqual(stack.node.resolve(p), {
+    test.deepEqual(stack.resolve(p), {
       Statement: [
         { Effect: 'Allow', Principal: { CanonicalUser: 'cannonical-user-1' } },
         { Effect: 'Allow', Principal: { CanonicalUser: 'cannonical-user-2' } }
@@ -330,7 +330,7 @@ export = {
     };
     const s = new PolicyStatement().addAccountRootPrincipal()
                                    .addPrincipal(arrayPrincipal);
-    test.deepEqual(stack.node.resolve(s), {
+    test.deepEqual(stack.resolve(s), {
       Effect: 'Allow',
       Principal: {
         AWS: [
@@ -351,7 +351,7 @@ export = {
       .addResource('resource')
       .addAction('action');
 
-    test.deepEqual(stack.node.resolve(s), {
+    test.deepEqual(stack.resolve(s), {
       Action: 'action',
       Effect: 'Allow',
       Principal: { AWS: '349494949494', Service: 'test.service' },
@@ -368,7 +368,7 @@ export = {
         .addAction('test:Action')
         .addServicePrincipal('codedeploy.amazonaws.com');
 
-      test.deepEqual(stack.node.resolve(s), {
+      test.deepEqual(stack.resolve(s), {
         Effect: 'Allow',
         Action: 'test:Action',
         Principal: { Service: 'codedeploy.cn-north-1.amazonaws.com.cn' }
@@ -383,7 +383,7 @@ export = {
         .addAction('test:Action')
         .addServicePrincipal('codedeploy.amazonaws.com', { region: 'cn-north-1' });
 
-      test.deepEqual(stack.node.resolve(s), {
+      test.deepEqual(stack.resolve(s), {
         Effect: 'Allow',
         Action: 'test:Action',
         Principal: { Service: 'codedeploy.cn-north-1.amazonaws.com.cn' }
@@ -398,7 +398,7 @@ export = {
         .addAction('test:Action')
         .addServicePrincipal('test.service-principal.dev');
 
-      test.deepEqual(stack.node.resolve(s), {
+      test.deepEqual(stack.resolve(s), {
         Effect: 'Allow',
         Action: 'test:Action',
         Principal: { Service: 'test.service-principal.dev' }
@@ -414,7 +414,7 @@ export = {
       const stack = new Stack();
       const p = new CompositePrincipal(new ArnPrincipal('i:am:an:arn'));
       const statement = new PolicyStatement().addPrincipal(p);
-      test.deepEqual(stack.node.resolve(statement), { Effect: 'Allow', Principal: { AWS: 'i:am:an:arn' } });
+      test.deepEqual(stack.resolve(statement), { Effect: 'Allow', Principal: { AWS: 'i:am:an:arn' } });
       test.done();
     },
 
@@ -445,7 +445,7 @@ export = {
       statement.addAwsPrincipal('aws-principal-3');
       statement.addCondition('cond2', { boom: 123 });
 
-      test.deepEqual(stack.node.resolve(statement), {
+      test.deepEqual(stack.resolve(statement), {
         Condition: {
           cond2: { boom: 123 }
         },
@@ -496,7 +496,7 @@ export = {
       p.addStatement(statement);
 
       // THEN
-      test.equal(stack.node.resolve(p).Statement.length, 1);
+      test.equal(stack.resolve(p).Statement.length, 1);
       test.done();
     },
 
@@ -517,7 +517,7 @@ export = {
       p.addStatement(statement2);
 
       // THEN
-      test.equal(stack.node.resolve(p).Statement.length, 1);
+      test.equal(stack.resolve(p).Statement.length, 1);
       test.done();
     },
 
@@ -546,7 +546,7 @@ export = {
         .addResource('resource'));
 
       // THEN
-      test.equal(stack.node.resolve(p).Statement.length, 1);
+      test.equal(stack.resolve(p).Statement.length, 1);
       test.done();
     }
   },
@@ -565,7 +565,7 @@ export = {
 
     // THEN
     const stack = new Stack();
-    test.deepEqual(stack.node.resolve(doc), {
+    test.deepEqual(stack.resolve(doc), {
       Version: '2012-10-17',
       Statement: [
         { Action: 'action1', Effect: 'Allow', Resource: 'resource1', Sid: '0' },

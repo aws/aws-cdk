@@ -1,4 +1,4 @@
-import { Construct, IResource, Resource, Token } from '@aws-cdk/cdk';
+import { Construct, IResource, Resource, Stack, Token } from '@aws-cdk/cdk';
 import { Connections, IConnectable } from './connections';
 import { CfnSecurityGroup, CfnSecurityGroupEgress, CfnSecurityGroupIngress } from './ec2.generated';
 import { IPortRange, ISecurityGroupRule } from './security-group-rule';
@@ -178,7 +178,7 @@ function determineRuleScope(
 }
 
 function differentStacks(group1: SecurityGroupBase, group2: SecurityGroupBase) {
-  return group1.node.stack !== group2.node.stack;
+  return Stack.of(group1) !== Stack.of(group2);
 }
 
 export interface SecurityGroupProps {

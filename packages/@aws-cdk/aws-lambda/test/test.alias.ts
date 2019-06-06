@@ -31,7 +31,7 @@ export = {
         Type: "AWS::Lambda::Alias",
         Properties: {
           FunctionName: { Ref: "MyLambdaCCE802FB" },
-          FunctionVersion: stack.node.resolve(version.version),
+          FunctionVersion: stack.resolve(version.version),
           Name: "prod"
         }
         }
@@ -86,11 +86,11 @@ export = {
     });
 
     expect(stack).to(haveResource('AWS::Lambda::Alias', {
-      FunctionVersion: stack.node.resolve(version1.version),
+      FunctionVersion: stack.resolve(version1.version),
       RoutingConfig: {
         AdditionalVersionWeights: [
           {
-          FunctionVersion: stack.node.resolve(version2.version),
+          FunctionVersion: stack.resolve(version2.version),
           FunctionWeight: 0.1
           }
         ]
@@ -213,7 +213,7 @@ export = {
     const alias = new lambda.Alias(stack, 'Alias', { aliasName: 'prod', version });
 
     // WHEN
-    test.deepEqual(stack.node.resolve(alias.functionName), {
+    test.deepEqual(stack.resolve(alias.functionName), {
       "Fn::Join": [
         "",
         [

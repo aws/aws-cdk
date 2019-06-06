@@ -367,7 +367,7 @@ export = {
     });
 
     // THEN
-    test.deepEqual(stack.node.resolve(instance.metricCPUUtilization()), {
+    test.deepEqual(stack.resolve(instance.metricCPUUtilization()), {
       dimensions: { DBInstanceIdentifier: { Ref: 'InstanceC1063A87' } },
       namespace: 'AWS/RDS',
       metricName: 'CPUUtilization',

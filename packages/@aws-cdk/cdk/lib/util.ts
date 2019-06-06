@@ -1,4 +1,5 @@
 import { IConstruct } from "./construct";
+import { Stack } from './stack';
 import { IResolveContext, IResolvedValuePostProcessor, Token } from "./token";
 
 /**
@@ -6,7 +7,8 @@ import { IResolveContext, IResolvedValuePostProcessor, Token } from "./token";
  * @param obj The object.
  */
 export function capitalizePropertyNames(construct: IConstruct, obj: any): any {
-  obj = construct.node.resolve(obj);
+  const stack = Stack.of(construct);
+  obj = stack.resolve(obj);
 
   if (typeof(obj) !== 'object') {
     return obj;

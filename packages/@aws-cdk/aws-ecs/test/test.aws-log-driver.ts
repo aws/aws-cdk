@@ -23,7 +23,7 @@ export = {
     }));
 
     test.deepEqual(
-      stack.node.resolve(driver.renderLogDriver()),
+      stack.resolve(driver.renderLogDriver()),
       {
         logDriver: 'awslogs',
         options: {
@@ -52,7 +52,7 @@ export = {
 
     // THEN
     test.deepEqual(
-      stack.node.resolve(driver.renderLogDriver()),
+      stack.resolve(driver.renderLogDriver()),
       {
         logDriver: 'awslogs',
         options: {

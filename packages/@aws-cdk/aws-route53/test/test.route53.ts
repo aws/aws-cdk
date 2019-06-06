@@ -188,8 +188,8 @@ export = {
     expect(stack).to(haveResource('AWS::Route53::RecordSet', {
       Type: 'NS',
       Name: 'sub.top.test.',
-      HostedZoneId: zone.node.resolve(zone.hostedZoneId),
-      ResourceRecords: zone.node.resolve(delegate.hostedZoneNameServers),
+      HostedZoneId: stack.resolve(zone.hostedZoneId),
+      ResourceRecords: stack.resolve(delegate.hostedZoneNameServers),
       TTL: '1337',
     }));
     test.done();

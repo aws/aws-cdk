@@ -1,7 +1,9 @@
 import cxapi = require('@aws-cdk/cx-api');
 import { Construct } from './construct';
+import { Stack } from './stack';
 
 type ContextProviderProps = {[key: string]: any};
+
 /**
  * Base class for the model side of context providers
  *
@@ -12,15 +14,17 @@ type ContextProviderProps = {[key: string]: any};
  * ContextProvider needs access to a Construct to hook into the context mechanism.
  */
 export class ContextProvider {
-
   private readonly props: ContextProviderProps;
 
   constructor(private readonly context: Construct,
               private readonly provider: string,
               props: ContextProviderProps = {}) {
+
+    const stack = Stack.of(context);
+
     this.props = {
-      account: context.node.stack.env.account,
-      region: context.node.stack.env.region,
+      account: stack.env.account,
+      region: stack.env.region,
       ...props,
     };
   }
@@ -41,13 +45,13 @@ export class ContextProvider {
       return defaultValue;
     }
 
-    const value = this.context.node.getContext(this.key);
+    const value = this.context.node.tryGetContext(this.key);
 
     if (value != null) {
       return value;
     }
 
-    this.context.node.stack.reportMissingContext({
+    this.reportMissingContext({
       key: this.key,
       provider: this.provider,
       props: this.props,
@@ -67,7 +71,7 @@ export class ContextProvider {
       return defaultValue;
     }
 
-    const value = this.context.node.getContext(this.key);
+    const value = this.context.node.tryGetContext(this.key);
 
     if (value != null) {
       if (typeof value !== 'string') {
@@ -76,7 +80,7 @@ export class ContextProvider {
       return value;
     }
 
-    this.context.node.stack.reportMissingContext({
+    this.reportMissingContext({
       key: this.key,
       provider: this.provider,
       props: this.props,
@@ -89,33 +93,36 @@ export class ContextProvider {
    * Read a provider value, verifying it's a list
    * @param defaultValue The value to return if there is no value defined for this context key
    */
-  public getStringListValue(
-    defaultValue: string[]): string[] {
-      // if scope is undefined, this is probably a test mode, so we just
-      // return the default value and report an error so this in not accidentally used
-      // in the toolkit
-      if (!this.props.account || !this.props.region) {
-        this.context.node.addError(formatMissingScopeError(this.provider, this.props));
-        return defaultValue;
-      }
-
-      const value = this.context.node.getContext(this.key);
-
-      if (value != null) {
-        if (!value.map) {
-          throw new Error(`Context value '${this.key}' is supposed to be a list, got '${JSON.stringify(value)}'`);
-        }
-        return value;
-      }
-
-      this.context.node.stack.reportMissingContext({
-        key: this.key,
-        provider: this.provider,
-        props: this.props,
-      });
-
+  public getStringListValue(defaultValue: string[]): string[] {
+    // if scope is undefined, this is probably a test mode, so we just
+    // return the default value and report an error so this in not accidentally used
+    // in the toolkit
+    if (!this.props.account || !this.props.region) {
+      this.context.node.addError(formatMissingScopeError(this.provider, this.props));
       return defaultValue;
     }
+
+    const value = this.context.node.tryGetContext(this.key);
+
+    if (value != null) {
+      if (!value.map) {
+        throw new Error(`Context value '${this.key}' is supposed to be a list, got '${JSON.stringify(value)}'`);
+      }
+      return value;
+    }
+
+    this.reportMissingContext({
+      key: this.key,
+      provider: this.provider,
+      props: this.props,
+    });
+
+    return defaultValue;
+  }
+
+  protected reportMissingContext(report: cxapi.MissingContext) {
+    Stack.of(this.context).reportMissingContext(report);
+  }
 }
 
 /**

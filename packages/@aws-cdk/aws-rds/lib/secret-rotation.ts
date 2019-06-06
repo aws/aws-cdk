@@ -2,7 +2,7 @@ import ec2 = require('@aws-cdk/aws-ec2');
 import lambda = require('@aws-cdk/aws-lambda');
 import serverless = require('@aws-cdk/aws-sam');
 import secretsmanager = require('@aws-cdk/aws-secretsmanager');
-import { Construct } from '@aws-cdk/cdk';
+import { Construct, Stack } from '@aws-cdk/cdk';
 
 /**
  * A secret rotation serverless application.
@@ -113,7 +113,7 @@ export class SecretRotation extends Construct {
     const application = new serverless.CfnApplication(this, 'Resource', {
       location: props.application,
       parameters: {
-        endpoint: `https://secretsmanager.${this.node.stack.region}.${this.node.stack.urlSuffix}`,
+        endpoint: `https://secretsmanager.${Stack.of(this).region}.${Stack.of(this).urlSuffix}`,
         functionName: rotationFunctionName,
         vpcSecurityGroupIds: securityGroup.securityGroupId,
         vpcSubnetIds: subnetIds.join(',')
@@ -121,7 +121,7 @@ export class SecretRotation extends Construct {
     });
 
     // Dummy import to reference this function in the rotation schedule
-    const rotationLambda = lambda.Function.fromFunctionArn(this, 'RotationLambda', this.node.stack.formatArn({
+    const rotationLambda = lambda.Function.fromFunctionArn(this, 'RotationLambda', Stack.of(this).formatArn({
       service: 'lambda',
       resource: 'function',
       sep: ':',
@@ -133,7 +133,7 @@ export class SecretRotation extends Construct {
     const permission = new lambda.CfnPermission(this, 'Permission', {
       action: 'lambda:InvokeFunction',
       functionName: rotationFunctionName,
-      principal: `secretsmanager.${this.node.stack.urlSuffix}`
+      principal: `secretsmanager.${Stack.of(this).urlSuffix}`
     });
     permission.node.addDependency(application); // Add permission after application is deployed
 

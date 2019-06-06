@@ -349,7 +349,7 @@ export = {
     const rule = new Rule(stack, 'EventRule');
     rule.addTarget(t1);
 
-    test.deepEqual(stack.node.resolve(receivedRuleArn), stack.node.resolve(rule.ruleArn));
+    test.deepEqual(stack.resolve(receivedRuleArn), stack.resolve(rule.ruleArn));
     test.deepEqual(receivedRuleId, rule.node.uniqueId);
     test.done();
   },

@@ -6,7 +6,7 @@ import targets = require('@aws-cdk/aws-events-targets');
 import lambda = require('@aws-cdk/aws-lambda');
 import s3 = require('@aws-cdk/aws-s3');
 import sns = require('@aws-cdk/aws-sns');
-import { App, CfnParameter, SecretValue, Stack } from '@aws-cdk/cdk';
+import { App, CfnParameter, ConstructNode, SecretValue, Stack } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
 import cpactions = require('../lib');
 
@@ -47,7 +47,7 @@ export = {
     });
 
     test.notDeepEqual(SynthUtils.toCloudFormation(stack), {});
-    test.deepEqual([], pipeline.node.validateTree());
+    test.deepEqual([], ConstructNode.validate(pipeline.node));
     test.done();
   },
 
@@ -280,7 +280,7 @@ export = {
       ]
     }));
 
-    test.deepEqual([], p.node.validateTree());
+    test.deepEqual([], ConstructNode.validate(p.node));
     test.done();
   },
 
@@ -371,7 +371,7 @@ export = {
       ]
     }));
 
-    test.deepEqual([], pipeline.node.validateTree());
+    test.deepEqual([], ConstructNode.validate(pipeline.node));
     test.done();
   },
 

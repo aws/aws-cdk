@@ -1,5 +1,5 @@
 import { Test } from 'nodeunit';
-import { CfnResource, CfnResourceProps, Construct, RemoveTag, Stack, Tag, TagManager, TagType } from '../lib';
+import { CfnResource, CfnResourceProps, Construct, ConstructNode, RemoveTag, Stack, Tag, TagManager, TagType } from '../lib';
 
 class TaggableResource extends CfnResource {
   public readonly tags: TagManager;
@@ -53,8 +53,10 @@ export = {
     const map = new MapTaggableResource(res, 'MapFakeResource', {
       type: 'AWS::Fake::Thing',
     });
-    res.node.apply(new Tag('foo', 'bar'));
-    root.node.prepareTree();
+    res.node.applyAspect(new Tag('foo', 'bar'));
+
+    ConstructNode.synth(root.node);
+
     test.deepEqual(res.tags.renderTags(), [{key: 'foo', value: 'bar'}]);
     test.deepEqual(res2.tags.renderTags(), [{key: 'foo', value: 'bar'}]);
     test.deepEqual(map.tags.renderTags(), {foo: 'bar'});
@@ -69,11 +71,11 @@ export = {
     const res2 = new TaggableResource(res, 'FakeResource', {
       type: 'AWS::Fake::Thing',
     });
-    res.node.apply(new Tag('foo', 'bar'));
-    res.node.apply(new Tag('foo', 'foobar'));
-    res.node.apply(new Tag('foo', 'baz'));
-    res2.node.apply(new Tag('foo', 'good'));
-    root.node.prepareTree();
+    res.node.applyAspect(new Tag('foo', 'bar'));
+    res.node.applyAspect(new Tag('foo', 'foobar'));
+    res.node.applyAspect(new Tag('foo', 'baz'));
+    res2.node.applyAspect(new Tag('foo', 'good'));
+    ConstructNode.prepare(root.node);
     test.deepEqual(res.tags.renderTags(), [{key: 'foo', value: 'baz'}]);
     test.deepEqual(res2.tags.renderTags(), [{key: 'foo', value: 'good'}]);
     test.done();
@@ -93,11 +95,11 @@ export = {
     const map = new MapTaggableResource(res, 'MapFakeResource', {
       type: 'AWS::Fake::Thing',
     });
-    root.node.apply(new Tag('root', 'was here'));
-    res.node.apply(new Tag('first', 'there is only 1'));
-    res.node.apply(new RemoveTag('root'));
-    res.node.apply(new RemoveTag('doesnotexist'));
-    root.node.prepareTree();
+    root.node.applyAspect(new Tag('root', 'was here'));
+    res.node.applyAspect(new Tag('first', 'there is only 1'));
+    res.node.applyAspect(new RemoveTag('root'));
+    res.node.applyAspect(new RemoveTag('doesnotexist'));
+    ConstructNode.prepare(root.node);
 
     test.deepEqual(res.tags.renderTags(), [{key: 'first', value: 'there is only 1'}]);
     test.deepEqual(map.tags.renderTags(), {first: 'there is only 1'});
@@ -111,12 +113,12 @@ export = {
       type: 'AWS::Fake::Thing',
     });
 
-    res.node.apply(new Tag('foo', 'bar'));
-    root.node.prepareTree();
+    res.node.applyAspect(new Tag('foo', 'bar'));
+    ConstructNode.prepare(root.node);
     test.deepEqual(res.tags.renderTags(), [{key: 'foo', value: 'bar'}]);
-    root.node.prepareTree();
+    ConstructNode.prepare(root.node);
     test.deepEqual(res.tags.renderTags(), [{key: 'foo', value: 'bar'}]);
-    root.node.prepareTree();
+    ConstructNode.prepare(root.node);
     test.deepEqual(res.tags.renderTags(), [{key: 'foo', value: 'bar'}]);
     test.done();
   },
@@ -128,9 +130,9 @@ export = {
     const res2 = new TaggableResource(res, 'FakeResource', {
       type: 'AWS::Fake::Thing',
     });
-    res.node.apply(new RemoveTag('key'));
-    res2.node.apply(new Tag('key', 'value'));
-    root.node.prepareTree();
+    res.node.applyAspect(new RemoveTag('key'));
+    res2.node.applyAspect(new Tag('key', 'value'));
+    ConstructNode.prepare(root.node);
     test.deepEqual(res.tags.renderTags(), undefined);
     test.deepEqual(res2.tags.renderTags(), undefined);
     test.done();
@@ -143,9 +145,9 @@ export = {
     const res2 = new TaggableResource(res, 'FakeResource', {
       type: 'AWS::Fake::Thing',
     });
-    res.node.apply(new RemoveTag('key', {priority: 0}));
-    res2.node.apply(new Tag('key', 'value'));
-    root.node.prepareTree();
+    res.node.applyAspect(new RemoveTag('key', {priority: 0}));
+    res2.node.applyAspect(new Tag('key', 'value'));
+    ConstructNode.prepare(root.node);
     test.deepEqual(res.tags.renderTags(), undefined);
     test.deepEqual(res2.tags.renderTags(), [{key: 'key', value: 'value'}]);
     test.done();
@@ -187,8 +189,8 @@ export = {
         ],
       },
     });
-    aspectBranch.node.apply(new Tag('aspects', 'rule'));
-    root.node.prepareTree();
+    aspectBranch.node.applyAspect(new Tag('aspects', 'rule'));
+    ConstructNode.prepare(root.node);
     test.deepEqual(aspectBranch.testProperties().tags, [{key: 'aspects', value: 'rule'}, {key: 'cfn', value: 'is cool'}]);
     test.deepEqual(asgResource.testProperties().tags, [
       {key: 'aspects', value: 'rule', propagateAtLaunch: true},

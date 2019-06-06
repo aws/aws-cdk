@@ -3,7 +3,7 @@ import ec2 = require('@aws-cdk/aws-ec2');
 import iam = require('@aws-cdk/aws-iam');
 import logs = require('@aws-cdk/aws-logs');
 import sqs = require('@aws-cdk/aws-sqs');
-import { Construct, Fn, Token } from '@aws-cdk/cdk';
+import { Construct, Fn, Stack, Token } from '@aws-cdk/cdk';
 import { Code } from './code';
 import { IEventSource } from './event-source';
 import { FunctionAttributes, FunctionBase, IFunction } from './function-base';
@@ -414,10 +414,11 @@ export class Function extends FunctionBase {
       this.role.addToPolicy(statement);
     }
 
-    const isChina = this.node.stack.env.region && this.node.stack.env.region.startsWith('cn-');
+    const region = Stack.of(this).env.region;
+    const isChina = region && region.startsWith('cn-');
     if (isChina && props.environment && Object.keys(props.environment).length > 0) {
       // tslint:disable-next-line:max-line-length
-      throw new Error(`Environment variables are not supported in this region (${this.node.stack.env.region}); consider using tags or SSM parameters instead`);
+      throw new Error(`Environment variables are not supported in this region (${region}); consider using tags or SSM parameters instead`);
     }
 
     const resource = new CfnFunction(this, 'Resource', {

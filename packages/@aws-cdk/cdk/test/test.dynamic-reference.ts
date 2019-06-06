@@ -10,7 +10,7 @@ export = {
     const ref = new CfnDynamicReference(CfnDynamicReferenceService.Ssm, 'a:b:c');
 
     // THEN
-    test.equal(stack.node.resolve(ref), '{{resolve:ssm:a:b:c}}');
+    test.equal(stack.resolve(ref), '{{resolve:ssm:a:b:c}}');
 
     test.done();
   },

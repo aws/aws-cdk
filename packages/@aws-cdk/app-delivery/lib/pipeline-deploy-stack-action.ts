@@ -105,7 +105,7 @@ export class PipelineDeployStackAction extends cdk.Construct {
   constructor(scope: cdk.Construct, id: string, props: PipelineDeployStackActionProps) {
     super(scope, id);
 
-    if (!cdk.environmentEquals(props.stack.env, this.node.stack.env)) {
+    if (!cdk.environmentEquals(props.stack.env, cdk.Stack.of(this).env)) {
       // FIXME: Add the necessary to extend to stacks in a different account
       throw new Error(`Cross-environment deployment is not supported`);
     }

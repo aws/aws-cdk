@@ -1,5 +1,5 @@
 import cdk = require('@aws-cdk/cdk');
-import { ConcreteDependable, Construct, IConstruct, IDependable, IResource, Resource } from '@aws-cdk/cdk';
+import { ConcreteDependable, Construct, IConstruct, IDependable, IResource, Resource, Stack } from '@aws-cdk/cdk';
 import { CfnEIP, CfnInternetGateway, CfnNatGateway, CfnRoute, CfnVPNGateway, CfnVPNGatewayRoutePropagation } from './ec2.generated';
 import { CfnRouteTable, CfnSubnet, CfnSubnetRouteTableAssociation, CfnVPC, CfnVPCGatewayAttachment } from './ec2.generated';
 import { NetworkBuilder } from './network-util';
@@ -301,7 +301,7 @@ abstract class VpcBase extends Resource implements IVpc {
    * The region where this VPC is defined
    */
   public get region(): string {
-    return this.node.stack.region;
+    return Stack.of(this).region;
   }
 
   /**
@@ -787,7 +787,7 @@ export class Vpc extends VpcBase {
     this.vpcDefaultSecurityGroup = this.resource.vpcDefaultSecurityGroup;
     this.vpcIpv6CidrBlocks = this.resource.vpcIpv6CidrBlocks;
 
-    this.node.apply(new cdk.Tag(NAME_TAG, this.node.path));
+    this.node.applyAspect(new cdk.Tag(NAME_TAG, this.node.path));
 
     this.availabilityZones = new cdk.AvailabilityZoneProvider(this).availabilityZones;
     this.availabilityZones.sort();
@@ -1004,8 +1004,8 @@ export class Vpc extends VpcBase {
 
       // These values will be used to recover the config upon provider import
       const includeResourceTypes = [CfnSubnet.resourceTypeName];
-      subnet.node.apply(new cdk.Tag(SUBNETNAME_TAG, subnetConfig.name, {includeResourceTypes}));
-      subnet.node.apply(new cdk.Tag(SUBNETTYPE_TAG, subnetTypeTagValue(subnetConfig.subnetType), {includeResourceTypes}));
+      subnet.node.applyAspect(new cdk.Tag(SUBNETNAME_TAG, subnetConfig.name, {includeResourceTypes}));
+      subnet.node.applyAspect(new cdk.Tag(SUBNETTYPE_TAG, subnetTypeTagValue(subnetConfig.subnetType), {includeResourceTypes}));
     });
   }
 }
@@ -1111,7 +1111,7 @@ export class Subnet extends cdk.Resource implements ISubnet {
 
     Object.defineProperty(this, VPC_SUBNET_SYMBOL, { value: true });
 
-    this.node.apply(new cdk.Tag(NAME_TAG, this.node.path));
+    this.node.applyAspect(new cdk.Tag(NAME_TAG, this.node.path));
 
     this.availabilityZone = props.availabilityZone;
     const subnet = new CfnSubnet(this, 'Subnet', {

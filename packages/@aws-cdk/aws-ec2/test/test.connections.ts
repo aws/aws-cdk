@@ -1,5 +1,5 @@
 import { expect, haveResource } from '@aws-cdk/assert';
-import { App, Stack } from '@aws-cdk/cdk';
+import { App, ConstructNode, Stack } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
 
 import {
@@ -179,7 +179,7 @@ export = {
     sg2.connections.allowFrom(sg1, new TcpPort(100));
 
     // THEN -- both rules are in Stack2
-    app.node.prepareTree();
+    ConstructNode.prepare(app.node);
 
     expect(stack2).to(haveResource('AWS::EC2::SecurityGroupIngress', {
       GroupId: { "Fn::GetAtt": [ "SecurityGroupDD263621", "GroupId" ] },
@@ -210,7 +210,7 @@ export = {
     sg2.connections.allowTo(sg1, new TcpPort(100));
 
     // THEN -- both rules are in Stack2
-    app.node.prepareTree();
+    ConstructNode.prepare(app.node);
 
     expect(stack2).to(haveResource('AWS::EC2::SecurityGroupIngress', {
       GroupId: { "Fn::ImportValue": "Stack1:ExportsOutputFnGetAttSecurityGroupDD263621GroupIdDF6F8B09" },
@@ -243,7 +243,7 @@ export = {
     sg2.connections.allowFrom(sg1b, new TcpPort(100));
 
     // THEN -- both egress rules are in Stack2
-    app.node.prepareTree();
+    ConstructNode.prepare(app.node);
 
     expect(stack2).to(haveResource('AWS::EC2::SecurityGroupEgress', {
       GroupId: { "Fn::ImportValue": "Stack1:ExportsOutputFnGetAttSecurityGroupAED40ADC5GroupId1D10C76A" },

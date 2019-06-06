@@ -1,5 +1,5 @@
 import iam = require('@aws-cdk/aws-iam');
-import { CfnOutput, Construct, IResource as IResourceBase, Resource } from '@aws-cdk/cdk';
+import { CfnOutput, Construct, IResource as IResourceBase, Resource, Stack } from '@aws-cdk/cdk';
 import { ApiKey, IApiKey } from './api-key';
 import { CfnAccount, CfnRestApi } from './apigateway.generated';
 import { Deployment } from './deployment';
@@ -284,7 +284,7 @@ export class RestApi extends Resource implements IRestApi {
       method = '*';
     }
 
-    return this.node.stack.formatArn({
+    return Stack.of(this).formatArn({
       service: 'execute-api',
       resource: this.restApiId,
       sep: '/',
@@ -343,7 +343,7 @@ export class RestApi extends Resource implements IRestApi {
   private configureCloudWatchRole(apiResource: CfnRestApi) {
     const role = new iam.Role(this, 'CloudWatchRole', {
       assumedBy: new iam.ServicePrincipal('apigateway.amazonaws.com'),
-      managedPolicyArns: [ this.node.stack.formatArn({
+      managedPolicyArns: [ Stack.of(this).formatArn({
         service: 'iam',
         region: '',
         account: 'aws',

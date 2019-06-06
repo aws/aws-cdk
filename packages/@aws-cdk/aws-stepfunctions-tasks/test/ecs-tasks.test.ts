@@ -74,7 +74,7 @@ test('Running a Fargate Task', () => {
   });
 
   // THEN
-  expect(stack.node.resolve(runTask.toStateJson())).toEqual({
+  expect(stack.resolve(runTask.toStateJson())).toEqual({
     End: true,
     Parameters: {
       Cluster: {"Fn::GetAtt": ["ClusterEB0386A7", "Arn"]},
@@ -172,7 +172,7 @@ test('Running an EC2 Task with bridge network', () => {
   });
 
   // THEN
-  expect(stack.node.resolve(runTask.toStateJson())).toEqual({
+  expect(stack.resolve(runTask.toStateJson())).toEqual({
     End: true,
     Parameters: {
       Cluster: {"Fn::GetAtt": ["ClusterEB0386A7", "Arn"]},
@@ -260,7 +260,7 @@ test('Running an EC2 Task with placement strategies', () => {
   });
 
   // THEN
-  expect(stack.node.resolve(runTask.toStateJson())).toEqual({
+  expect(stack.resolve(runTask.toStateJson())).toEqual({
     End: true,
     Parameters: {
       Cluster: {"Fn::GetAtt": ["ClusterEB0386A7", "Arn"]},
@@ -306,7 +306,7 @@ test('Running an EC2 Task with overridden number values', () => {
   const runTask = new sfn.Task(stack, 'Run', { task: ec2Task });
 
   // THEN
-  expect(stack.node.resolve(runTask.toStateJson())).toEqual({
+  expect(stack.resolve(runTask.toStateJson())).toEqual({
     End: true,
     Parameters: {
       Cluster: {"Fn::GetAtt": ["ClusterEB0386A7", "Arn"]},

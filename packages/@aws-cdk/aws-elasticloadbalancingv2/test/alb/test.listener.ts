@@ -1,6 +1,7 @@
 import { expect, haveResource, MatchStyle } from '@aws-cdk/assert';
 import ec2 = require('@aws-cdk/aws-ec2');
 import cdk = require('@aws-cdk/cdk');
+import { ConstructNode } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
 import elbv2 = require('../../lib');
 import { FakeSelfRegisteringTarget } from '../helpers';
@@ -88,7 +89,7 @@ export = {
     });
 
     // THEN
-    const errors = stack.node.validateTree();
+    const errors = ConstructNode.validate(stack.node);
     test.deepEqual(errors.map(e => e.message), ['HTTPS Listener needs at least one certificate (call addCertificateArns)']);
 
     test.done();
@@ -430,7 +431,7 @@ export = {
       test.equal('AWS/ApplicationELB', metric.namespace);
       const loadBalancerArn = { Ref: "LBSomeListenerCA01F1A0" };
 
-      test.deepEqual(lb.node.resolve(metric.dimensions), {
+      test.deepEqual(stack.resolve(metric.dimensions), {
          TargetGroup: { 'Fn::GetAtt': [ 'TargetGroup3D7CD9B8', 'TargetGroupFullName' ] },
          LoadBalancer: { 'Fn::Join':
             [ '',

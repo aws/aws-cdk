@@ -152,7 +152,6 @@ export = {
     test.done();
 
     function synthesize() {
-      stack.node.prepareTree();
       return SynthUtils.synthesize(stack).template;
     }
   },

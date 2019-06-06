@@ -36,7 +36,7 @@ export = {
 
       // WHEN
       const provider = new HostedZoneProvider(stack, filter);
-      const zoneProps = stack.node.resolve(provider.findHostedZone());
+      const zoneProps = stack.resolve(provider.findHostedZone());
       const zoneRef = provider.findAndImport(stack, 'MyZoneProvider');
 
       // THEN

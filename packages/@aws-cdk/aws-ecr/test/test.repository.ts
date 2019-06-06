@@ -158,7 +158,7 @@ export = {
 
     // THEN
     const arnSplit = { 'Fn::Split': [ ':', { 'Fn::GetAtt': [ 'Repo02AC86CF', 'Arn' ] } ] };
-    test.deepEqual(repo.node.resolve(uri), { 'Fn::Join': [ '', [
+    test.deepEqual(stack.resolve(uri), { 'Fn::Join': [ '', [
       { 'Fn::Select': [ 4, arnSplit ] },
       '.dkr.ecr.',
       { 'Fn::Select': [ 3, arnSplit ] },
@@ -177,8 +177,8 @@ export = {
     const repo2 = ecr.Repository.fromRepositoryArn(stack, 'repo', 'arn:aws:ecr:us-east-1:585695036304:repository/foo/bar/foo/fooo');
 
     // THEN
-    test.deepEqual(repo2.node.resolve(repo2.repositoryArn), 'arn:aws:ecr:us-east-1:585695036304:repository/foo/bar/foo/fooo');
-    test.deepEqual(repo2.node.resolve(repo2.repositoryName), 'foo/bar/foo/fooo');
+    test.deepEqual(stack.resolve(repo2.repositoryArn), 'arn:aws:ecr:us-east-1:585695036304:repository/foo/bar/foo/fooo');
+    test.deepEqual(stack.resolve(repo2.repositoryName), 'foo/bar/foo/fooo');
 
     test.done();
   },
@@ -205,8 +205,8 @@ export = {
     });
 
     // THEN
-    test.deepEqual(repo.node.resolve(repo.repositoryArn), { 'Fn::GetAtt': [ 'Boom', 'Arn' ] });
-    test.deepEqual(repo.node.resolve(repo.repositoryName), { 'Fn::GetAtt': [ 'Boom', 'Name' ] });
+    test.deepEqual(stack.resolve(repo.repositoryArn), { 'Fn::GetAtt': [ 'Boom', 'Arn' ] });
+    test.deepEqual(stack.resolve(repo.repositoryName), { 'Fn::GetAtt': [ 'Boom', 'Name' ] });
     test.done();
   },
 
@@ -218,7 +218,7 @@ export = {
     const repo = ecr.Repository.fromRepositoryName(stack, 'just-name', 'my-repo');
 
     // THEN
-    test.deepEqual(repo.node.resolve(repo.repositoryArn), {
+    test.deepEqual(stack.resolve(repo.repositoryArn), {
       'Fn::Join': [ '', [
         'arn:',
         { Ref: 'AWS::Partition' },
@@ -229,7 +229,7 @@ export = {
         ':repository/my-repo' ]
       ]
     });
-    test.deepEqual(repo.node.resolve(repo.repositoryName), 'my-repo');
+    test.deepEqual(stack.resolve(repo.repositoryName), 'my-repo');
     test.done();
   },
 
@@ -245,8 +245,8 @@ export = {
     });
 
     // THEN
-    test.deepEqual(repo.node.resolve(repo.repositoryName), { 'Fn::GetAtt': [ 'Boom', 'Name' ] });
-    test.deepEqual(repo.node.resolve(repo.repositoryArn), {
+    test.deepEqual(stack.resolve(repo.repositoryName), { 'Fn::GetAtt': [ 'Boom', 'Name' ] });
+    test.deepEqual(stack.resolve(repo.repositoryArn), {
     'Fn::Join': [ '', [
       'arn:',
       { Ref: 'AWS::Partition' },

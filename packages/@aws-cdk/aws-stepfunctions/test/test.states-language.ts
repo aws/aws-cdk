@@ -722,7 +722,7 @@ class SimpleChain extends stepfunctions.StateMachineFragment {
 }
 
 function render(sm: stepfunctions.IChainable) {
-    return new cdk.Stack().node.resolve(new stepfunctions.StateGraph(sm.startState, 'Test Graph').toGraphJson());
+    return new cdk.Stack().resolve(new stepfunctions.StateGraph(sm.startState, 'Test Graph').toGraphJson());
 }
 
 class FakeTask implements IStepFunctionsTask {

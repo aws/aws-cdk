@@ -122,8 +122,8 @@ export = {
         },
       }));
 
-      test.equal(stack.node.resolve(code.bucketNameParam), 'FunctionLambdaSourceBucketNameParameter9E9E108F');
-      test.equal(stack.node.resolve(code.objectKeyParam), 'FunctionLambdaSourceObjectKeyParameter1C7AED11');
+      test.equal(stack.resolve(code.bucketNameParam), 'FunctionLambdaSourceBucketNameParameter9E9E108F');
+      test.equal(stack.resolve(code.objectKeyParam), 'FunctionLambdaSourceObjectKeyParameter1C7AED11');
 
       test.done();
     },
@@ -156,8 +156,8 @@ export = {
         objectKeyParam: bucketKeyParam,
       });
 
-      test.equal(stack.node.resolve(code.bucketNameParam), 'BucketNameParam');
-      test.equal(stack.node.resolve(code.objectKeyParam), 'ObjectKeyParam');
+      test.equal(stack.resolve(code.bucketNameParam), 'BucketNameParam');
+      test.equal(stack.resolve(code.objectKeyParam), 'ObjectKeyParam');
 
       new lambda.Function(stack, 'Function', {
         code,
@@ -192,7 +192,7 @@ export = {
       });
 
       // when
-      const overrides = stack.node.resolve(code.assign({
+      const overrides = stack.resolve(code.assign({
         bucketName: 'SomeBucketName',
         objectKey: 'SomeObjectKey',
       }));

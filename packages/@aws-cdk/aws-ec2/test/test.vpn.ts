@@ -274,7 +274,7 @@ export = {
     });
 
     // THEN
-    test.deepEqual(stack.node.resolve(vpn.metricTunnelState()), {
+    test.deepEqual(stack.resolve(vpn.metricTunnelState()), {
       dimensions: { VpnId: { Ref: 'VpcNetworkVpnA476C58D' } },
       namespace: 'AWS/VPN',
       metricName: 'TunnelState',
@@ -290,7 +290,7 @@ export = {
     const stack = new Stack();
 
     // THEN
-    test.deepEqual(stack.node.resolve(VpnConnection.metricAllTunnelDataOut()), {
+    test.deepEqual(stack.resolve(VpnConnection.metricAllTunnelDataOut()), {
       namespace: 'AWS/VPN',
       metricName: 'TunnelDataOut',
       periodSec: 300,

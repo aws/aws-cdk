@@ -56,7 +56,7 @@ const tableWithGlobalAndLocalSecondaryIndex = new Table(stack, TABLE_WITH_GLOBAL
   sortKey: TABLE_SORT_KEY
 });
 
-tableWithGlobalAndLocalSecondaryIndex.node.apply(new Tag('Environment', 'Production'));
+tableWithGlobalAndLocalSecondaryIndex.node.applyAspect(new Tag('Environment', 'Production'));
 
 tableWithGlobalAndLocalSecondaryIndex.addGlobalSecondaryIndex({
   indexName: GSI_TEST_CASE_1,

@@ -9,7 +9,6 @@ export * from './dependency';
 export * from './resolve';
 export * from './string-fragments';
 
-export * from './cloudformation-lang';
 export * from './reference';
 export * from './cfn-condition';
 export * from './fn';

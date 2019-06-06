@@ -17,7 +17,7 @@ export = {
     });
 
     // THEN
-    test.deepEqual(stack.node.resolve(widget.toJson()), [{
+    test.deepEqual(stack.resolve(widget.toJson()), [{
       type: 'metric',
       width: 6,
       height: 6,
@@ -45,7 +45,7 @@ export = {
     });
 
     // THEN
-    test.deepEqual(stack.node.resolve(widget.toJson()), [{
+    test.deepEqual(stack.resolve(widget.toJson()), [{
       type: 'metric',
       width: 6,
       height: 6,
@@ -74,7 +74,7 @@ export = {
     });
 
     // THEN
-    test.deepEqual(stack.node.resolve(widget.toJson()), [{
+    test.deepEqual(stack.resolve(widget.toJson()), [{
       type: 'metric',
       width: 6,
       height: 3,
@@ -105,7 +105,7 @@ export = {
     });
 
     // THEN
-    test.deepEqual(stack.node.resolve(widget.toJson()), [{
+    test.deepEqual(stack.resolve(widget.toJson()), [{
       type: 'metric',
       width: 6,
       height: 6,
@@ -139,7 +139,7 @@ export = {
     });
 
     // THEN
-    test.deepEqual(stack.node.resolve(widget.toJson()), [{
+    test.deepEqual(stack.resolve(widget.toJson()), [{
       type: 'metric',
       width: 6,
       height: 6,
@@ -182,7 +182,7 @@ export = {
     });
 
     // THEN
-    test.deepEqual(stack.node.resolve(widget.toJson()), [{
+    test.deepEqual(stack.resolve(widget.toJson()), [{
       type: 'metric',
       width: 6,
       height: 6,
@@ -229,7 +229,7 @@ export = {
     });
 
     // THEN
-    test.deepEqual(stack.node.resolve(widget.toJson()), [{
+    test.deepEqual(stack.resolve(widget.toJson()), [{
       type: 'metric',
       width: 6,
       height: 6,

@@ -1,6 +1,6 @@
 import iam = require('@aws-cdk/aws-iam');
 import sns = require('@aws-cdk/aws-sns');
-import { Construct, Token } from '@aws-cdk/cdk';
+import { Construct, Stack, Token } from '@aws-cdk/cdk';
 import { ManagedRule, RuleProps } from './rule';
 
 /**
@@ -81,7 +81,7 @@ export class CloudFormationStackDriftDetectionCheck extends ManagedRule {
       }
     });
 
-    this.scopeToResource('AWS::CloudFormation::Stack', props.ownStackOnly ? this.node.stack.stackId : undefined);
+    this.scopeToResource('AWS::CloudFormation::Stack', props.ownStackOnly ? Stack.of(this).stackId : undefined);
 
     this.role = props.role || new iam.Role(this, 'Role', {
       assumedBy: new iam.ServicePrincipal('config.amazonaws.com'),

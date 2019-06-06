@@ -52,7 +52,7 @@ export = nodeunit.testCase({
     });
 
     // THEN
-    test.deepEqual(stack.node.resolve(role.roleName),
+    test.deepEqual(stack.resolve(role.roleName),
                    { Ref: 'Lazy399F7F48'});
     test.done();
   }

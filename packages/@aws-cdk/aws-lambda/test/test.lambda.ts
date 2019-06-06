@@ -1084,7 +1084,7 @@ export = {
     });
 
     // THEN
-    test.deepEqual(stack.node.resolve(fn.metricErrors()), {
+    test.deepEqual(stack.resolve(fn.metricErrors()), {
       dimensions: { FunctionName: { Ref: 'Function76856677' }},
       namespace: 'AWS/Lambda',
       metricName: 'Errors',

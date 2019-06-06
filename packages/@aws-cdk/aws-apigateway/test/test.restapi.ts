@@ -336,7 +336,7 @@ export = {
     const imported = apigateway.RestApi.fromRestApiId(stack, 'imported-api', 'api-rxt4498f');
 
     // THEN
-    test.deepEqual(imported.node.resolve(imported.restApiId), 'api-rxt4498f');
+    test.deepEqual(stack.resolve(imported.restApiId), 'api-rxt4498f');
     test.done();
   },
 
@@ -347,7 +347,7 @@ export = {
     api.root.addMethod('GET');
 
     // THEN
-    test.deepEqual(api.node.resolve(api.url), { 'Fn::Join':
+    test.deepEqual(stack.resolve(api.url), { 'Fn::Join':
     [ '',
       [ 'https://',
       { Ref: 'apiC8550315' },
@@ -358,7 +358,7 @@ export = {
       "/",
       { Ref: 'apiDeploymentStageprod896C8101' },
       '/' ] ] });
-    test.deepEqual(api.node.resolve(api.urlForPath('/foo/bar')), { 'Fn::Join':
+    test.deepEqual(stack.resolve(api.urlForPath('/foo/bar')), { 'Fn::Join':
     [ '',
       [ 'https://',
       { Ref: 'apiC8550315' },
@@ -405,7 +405,7 @@ export = {
     const arn = api.executeApiArn('method', '/path', 'stage');
 
     // THEN
-    test.deepEqual(api.node.resolve(arn), { 'Fn::Join':
+    test.deepEqual(stack.resolve(arn), { 'Fn::Join':
     [ '',
       [ 'arn:',
       { Ref: 'AWS::Partition' },
@@ -438,7 +438,7 @@ export = {
     const method = api.root.addMethod('ANY');
 
     // THEN
-    test.deepEqual(api.node.resolve(method.methodArn), { 'Fn::Join':
+    test.deepEqual(stack.resolve(method.methodArn), { 'Fn::Join':
     [ '',
       [ 'arn:',
       { Ref: 'AWS::Partition' },

@@ -27,7 +27,7 @@ export interface AppProps {
   readonly outdir?: string;
 
   /**
-   * Include stack traces in construct metadata entries.
+   * Include construct creation stack trace in the `aws:cdk:trace` metadata key of all constructs.
    * @default true stack traces are included unless `aws:cdk:disable-stack-trace` is set in the context.
    */
   readonly stackTraces?: boolean;
@@ -98,7 +98,7 @@ export class App extends Construct {
     }
 
     // both are reverse logic
-    this.runtimeInfo = this.node.getContext(cxapi.DISABLE_VERSION_REPORTING) ? false : true;
+    this.runtimeInfo = this.node.tryGetContext(cxapi.DISABLE_VERSION_REPORTING) ? false : true;
     this.outdir = props.outdir || process.env[cxapi.OUTDIR_ENV];
 
     const autoRun = props.autoRun !== undefined ? props.autoRun : cxapi.OUTDIR_ENV in process.env;

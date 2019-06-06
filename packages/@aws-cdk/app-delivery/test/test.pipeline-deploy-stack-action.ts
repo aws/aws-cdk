@@ -6,6 +6,7 @@ import cpactions = require('@aws-cdk/aws-codepipeline-actions');
 import iam = require('@aws-cdk/aws-iam');
 import s3 = require('@aws-cdk/aws-s3');
 import cdk = require('@aws-cdk/cdk');
+import { ConstructNode } from '@aws-cdk/cdk';
 import cxapi = require('@aws-cdk/cx-api');
 import fc = require('fast-check');
 import nodeunit = require('nodeunit');
@@ -289,7 +290,7 @@ export = nodeunit.testCase({
           for (let i = 0 ; i < assetCount ; i++) {
             deployedStack.node.addMetadata(cxapi.ASSET_METADATA, {});
           }
-          test.deepEqual(action.node.validateTree().map(x => x.message),
+          test.deepEqual(ConstructNode.validate(action.node).map(x => x.message),
             [`Cannot deploy the stack DeployedStack because it references ${assetCount} asset(s)`]);
         }
       )

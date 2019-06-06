@@ -31,7 +31,7 @@ export = {
     // verify that now the template contains parameters for this asset
     const session = app.synth();
 
-    test.deepEqual(stack.node.resolve(entry!.data), {
+    test.deepEqual(stack.resolve(entry!.data), {
       path: SAMPLE_ASSET_DIR,
       id: 'MyStackMyAssetBDDF29E3',
       packaging: 'zip',
@@ -84,7 +84,7 @@ export = {
     // synthesize first so "prepare" is called
     const template = SynthUtils.synthesize(stack).template;
 
-    test.deepEqual(stack.node.resolve(entry!.data), {
+    test.deepEqual(stack.resolve(entry!.data), {
       path: 'asset.78add9eaf468dfa2191da44a7da92a21baba4c686cf6053d772556768ef21197.txt',
       packaging: 'file',
       id: 'MyAsset',

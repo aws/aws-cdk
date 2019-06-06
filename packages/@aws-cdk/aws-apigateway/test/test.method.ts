@@ -148,7 +148,7 @@ export = {
     });
 
     // THEN
-    test.deepEqual(method.node.resolve(method.methodArn), {
+    test.deepEqual(stack.resolve(method.methodArn), {
       "Fn::Join": [
         "",
         [
@@ -182,7 +182,7 @@ export = {
     });
 
     // THEN
-    test.deepEqual(method.node.resolve(method.testMethodArn), {
+    test.deepEqual(stack.resolve(method.testMethodArn), {
       "Fn::Join": [
         "",
         [

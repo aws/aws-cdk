@@ -1,4 +1,4 @@
-import { Construct, Resource } from '@aws-cdk/cdk';
+import { Construct, Resource, Stack } from '@aws-cdk/cdk';
 import { Grant } from './grant';
 import { CfnRole } from './iam.generated';
 import { IIdentity } from './identity-base';
@@ -114,7 +114,7 @@ export class Role extends Resource implements IRole {
       public readonly assumeRoleAction: string = 'sts:AssumeRole';
       public readonly policyFragment = new ArnPrincipal(roleArn).policyFragment;
       public readonly roleArn = roleArn;
-      public readonly roleName = scope.node.stack.parseArn(roleArn).resourceName!;
+      public readonly roleName = Stack.of(scope).parseArn(roleArn).resourceName!;
 
       public addToPolicy(_statement: PolicyStatement): boolean {
         // Statement will be added to resource instead

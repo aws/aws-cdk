@@ -1,6 +1,6 @@
 import iam = require('@aws-cdk/aws-iam');
 import { PolicyDocument, PolicyStatement } from '@aws-cdk/aws-iam';
-import { Construct, DeletionPolicy, IResource, Resource } from '@aws-cdk/cdk';
+import { Construct, DeletionPolicy, IResource, Resource, Stack } from '@aws-cdk/cdk';
 import { Alias } from './alias';
 import { CfnKey } from './kms.generated';
 
@@ -79,9 +79,11 @@ abstract class KeyBase extends Resource implements IKey {
    * no-op.
    */
   public addToResourcePolicy(statement: PolicyStatement, allowNoOp = true) {
+    const stack = Stack.of(this);
+
     if (!this.policy) {
       if (allowNoOp) { return; }
-      throw new Error(`Unable to add statement to IAM resource policy for KMS key: ${JSON.stringify(this.node.resolve(this.keyArn))}`);
+      throw new Error(`Unable to add statement to IAM resource policy for KMS key: ${JSON.stringify(stack.resolve(this.keyArn))}`);
     }
 
     this.policy.addStatement(statement);

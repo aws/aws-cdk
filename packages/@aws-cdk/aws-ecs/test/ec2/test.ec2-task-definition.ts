@@ -222,7 +222,7 @@ export = {
 
       // THEN
       expect(stack).to(haveResourceLike("AWS::ECS::TaskDefinition", {
-        TaskRoleArn: stack.node.resolve(taskDefinition.taskRole.roleArn)
+        TaskRoleArn: stack.resolve(taskDefinition.taskRole.roleArn)
       }));
 
       test.done();

@@ -10,7 +10,7 @@ export = {
     const v = SecretValue.plainText('this just resolves to a string');
 
     // THEN
-    test.deepEqual(stack.node.resolve(v), 'this just resolves to a string');
+    test.deepEqual(stack.resolve(v), 'this just resolves to a string');
     test.done();
   },
 
@@ -26,7 +26,7 @@ export = {
     });
 
     // THEN
-    test.deepEqual(stack.node.resolve(v), '{{resolve:secretsmanager:secret-id:SecretString:json-key:version-stage:version-id}}');
+    test.deepEqual(stack.resolve(v), '{{resolve:secretsmanager:secret-id:SecretString:json-key:version-stage:version-id}}');
     test.done();
   },
 
@@ -38,7 +38,7 @@ export = {
     const v = SecretValue.secretsManager('secret-id');
 
     // THEN
-    test.deepEqual(stack.node.resolve(v), '{{resolve:secretsmanager:secret-id:SecretString:::}}');
+    test.deepEqual(stack.resolve(v), '{{resolve:secretsmanager:secret-id:SecretString:::}}');
     test.done();
   },
 
@@ -55,7 +55,7 @@ export = {
     const v = SecretValue.ssmSecure('param-name', 'param-version');
 
     // THEN
-    test.deepEqual(stack.node.resolve(v), '{{resolve:ssm-secure:param-name:param-version}}');
+    test.deepEqual(stack.resolve(v), '{{resolve:ssm-secure:param-name:param-version}}');
     test.done();
   },
 
@@ -67,7 +67,7 @@ export = {
     const v = SecretValue.cfnDynamicReference(new CfnDynamicReference(CfnDynamicReferenceService.Ssm, 'foo:bar'));
 
     // THEN
-    test.deepEqual(stack.node.resolve(v), '{{resolve:ssm:foo:bar}}');
+    test.deepEqual(stack.resolve(v), '{{resolve:ssm:foo:bar}}');
     test.done();
   },
 
@@ -80,7 +80,7 @@ export = {
     const v = SecretValue.cfnParameter(p);
 
     // THEN
-    test.deepEqual(stack.node.resolve(v), { Ref: 'MyParam' });
+    test.deepEqual(stack.resolve(v), { Ref: 'MyParam' });
     test.done();
   },
 

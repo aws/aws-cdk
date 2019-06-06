@@ -59,8 +59,8 @@ export = {
       const repo = Repository.fromRepositoryArn(stack, 'ImportedRepo', repositoryArn);
 
       // THEN
-      test.deepEqual(repo.node.resolve(repo.repositoryArn), repositoryArn);
-      test.deepEqual(repo.node.resolve(repo.repositoryName), 'my-repo');
+      test.deepEqual(stack.resolve(repo.repositoryArn), repositoryArn);
+      test.deepEqual(stack.resolve(repo.repositoryName), 'my-repo');
 
       test.done();
     },
@@ -73,7 +73,7 @@ export = {
       const repo = Repository.fromRepositoryName(stack, 'ImportedRepo', 'my-repo');
 
       // THEN
-      test.deepEqual(repo.node.resolve(repo.repositoryArn), {
+      test.deepEqual(stack.resolve(repo.repositoryArn), {
         'Fn::Join': ['', [
           'arn:',
           { Ref: 'AWS::Partition' },
@@ -84,7 +84,7 @@ export = {
           ':my-repo'
         ]],
       });
-      test.deepEqual(repo.node.resolve(repo.repositoryName), 'my-repo');
+      test.deepEqual(stack.resolve(repo.repositoryName), 'my-repo');
 
       test.done();
     },

@@ -468,7 +468,7 @@ export = {
 
       const x = new iam.PolicyStatement().addResource(bucket.bucketArn).addAction('s3:ListBucket');
 
-      test.deepEqual(bucket.node.resolve(x), {
+      test.deepEqual(stack.resolve(x), {
         Action: 's3:ListBucket',
         Effect: 'Allow',
         Resource: { 'Fn::GetAtt': ['MyBucketF68F3FF0', 'Arn'] }
@@ -484,7 +484,7 @@ export = {
 
       const p = new iam.PolicyStatement().addResource(bucket.arnForObjects('hello/world')).addAction('s3:GetObject');
 
-      test.deepEqual(bucket.node.resolve(p), {
+      test.deepEqual(stack.resolve(p), {
         Action: 's3:GetObject',
         Effect: 'Allow',
         Resource: {
@@ -510,7 +510,7 @@ export = {
       const resource = bucket.arnForObjects(`home/${team.groupName}/${user.userName}/*`);
       const p = new iam.PolicyStatement().addResource(resource).addAction('s3:GetObject');
 
-      test.deepEqual(bucket.node.resolve(p), {
+      test.deepEqual(stack.resolve(p), {
         Action: 's3:GetObject',
         Effect: 'Allow',
         Resource: {
@@ -562,14 +562,14 @@ export = {
       const p = new iam.PolicyStatement().addResource(bucket.bucketArn).addAction('s3:ListBucket');
 
       // it is possible to obtain a permission statement for a ref
-      test.deepEqual(bucket.node.resolve(p), {
+      test.deepEqual(stack.resolve(p), {
         Action: 's3:ListBucket',
         Effect: 'Allow',
         Resource: 'arn:aws:s3:::my-bucket'
       });
 
       test.deepEqual(bucket.bucketArn, bucketArn);
-      test.deepEqual(bucket.node.resolve(bucket.bucketName), 'my-bucket');
+      test.deepEqual(stack.resolve(bucket.bucketName), 'my-bucket');
 
       test.deepEqual(SynthUtils.synthesize(stack).template, {}, 'the ref is not a real resource');
       test.done();
@@ -1338,7 +1338,7 @@ export = {
       const bucket = new s3.Bucket(stack, 'Website', {
         websiteIndexDocument: 'index.html'
       });
-      test.deepEqual(bucket.node.resolve(bucket.bucketWebsiteUrl), { 'Fn::GetAtt': ['Website32962D0B', 'WebsiteURL'] });
+      test.deepEqual(stack.resolve(bucket.bucketWebsiteUrl), { 'Fn::GetAtt': ['Website32962D0B', 'WebsiteURL'] });
       test.done();
     }
   },
@@ -1365,7 +1365,7 @@ export = {
 
     // THEN
     test.deepEqual(bucket.bucketName, 'my-bucket-name');
-    test.deepEqual(stack.node.resolve(bucket.bucketArn), {
+    test.deepEqual(stack.resolve(bucket.bucketArn), {
       'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':s3:::my-bucket-name']]
     });
     test.done();

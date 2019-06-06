@@ -1,5 +1,6 @@
 import { Test } from 'nodeunit';
 import { CfnOutput, CfnParameter, CfnResource, Include, Stack } from '../lib';
+import { toCloudFormation } from './util';
 
 export = {
   'the Include construct can be used to embed an existing template as-is into a stack'(test: Test) {
@@ -7,7 +8,7 @@ export = {
 
     new Include(stack, 'T1', { template: clone(template) });
 
-    test.deepEqual(stack._toCloudFormation(), {
+    test.deepEqual(toCloudFormation(stack), {
       Parameters: { MyParam: { Type: 'String', Default: 'Hello' } },
       Resources: {
         MyResource1: { Type: 'ResourceType1', Properties: { P1: 1, P2: 2 } },
@@ -24,7 +25,7 @@ export = {
     new CfnOutput(stack, 'MyOutput', { description: 'Out!', disableExport: true, value: 'hey' });
     new CfnParameter(stack, 'MyParam2', { type: 'Integer' });
 
-    test.deepEqual(stack._toCloudFormation(), {
+    test.deepEqual(toCloudFormation(stack), {
       Parameters: {
         MyParam: { Type: 'String', Default: 'Hello' },
         MyParam2: { Type: 'Integer' } },
@@ -46,7 +47,7 @@ export = {
     new CfnOutput(stack, 'MyOutput', { description: 'Out!', value: 'in' });
     new CfnParameter(stack, 'MyParam', { type: 'Integer' }); // duplicate!
 
-    test.throws(() => stack._toCloudFormation());
+    test.throws(() => toCloudFormation(stack));
     test.done();
   },
 };

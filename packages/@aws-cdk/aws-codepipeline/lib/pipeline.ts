@@ -170,7 +170,7 @@ export class Pipeline extends PipelineBase {
   public static fromPipelineArn(scope: Construct, id: string, pipelineArn: string): IPipeline {
 
     class Import extends PipelineBase {
-      public pipelineName = scope.node.stack.parseArn(pipelineArn).resource;
+      public pipelineName = Stack.of(scope).parseArn(pipelineArn).resource;
       public pipelineArn = pipelineArn;
 
       public grantBucketRead(identity: iam.IGrantable): iam.Grant {
@@ -261,7 +261,7 @@ export class Pipeline extends PipelineBase {
     this.artifactStores = {};
 
     // Does not expose a Fn::GetAtt for the ARN so we'll have to make it ourselves
-    this.pipelineArn = this.node.stack.formatArn({
+    this.pipelineArn = Stack.of(this).formatArn({
       service: 'codepipeline',
       resource: this.pipelineName
     });
@@ -362,7 +362,7 @@ export class Pipeline extends PipelineBase {
 
   private ensureReplicationBucketExistsFor(region: string) {
     // get the region the Pipeline itself is in
-    const pipelineRegion = this.node.stack.requireRegion(
+    const pipelineRegion = Stack.of(this).requireRegion(
         "You need to specify an explicit region when using CodePipeline's cross-region support");
 
     // if we already have an ArtifactStore generated for this region, or it's the Pipeline's region, nothing to do
@@ -372,9 +372,9 @@ export class Pipeline extends PipelineBase {
 
     let replicationBucketName = this.crossRegionReplicationBuckets[region];
     if (!replicationBucketName) {
-      const pipelineAccount = this.node.stack.requireAccountId(
+      const pipelineAccount = Stack.of(this).requireAccountId(
           "You need to specify an explicit account when using CodePipeline's cross-region support");
-      const app = this.node.stack.parentApp();
+      const app = Stack.of(this).parentApp();
       if (!app) {
         throw new Error(`Pipeline stack which uses cross region actions must be part of an application`);
       }
@@ -499,7 +499,7 @@ export class Pipeline extends PipelineBase {
 
     // add the Pipeline's artifact store
     const primaryStore = this.renderPrimaryArtifactStore();
-    this.artifactStores[this.node.stack.requireRegion()] = {
+    this.artifactStores[Stack.of(this).requireRegion()] = {
       location: primaryStore.location,
       type: primaryStore.type,
       encryptionKey: primaryStore.encryptionKey,

@@ -1,5 +1,6 @@
 import { expect, haveResourceLike } from '@aws-cdk/assert';
 import cdk = require('@aws-cdk/cdk');
+import { ConstructNode } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
 import codepipeline = require('../lib');
 import { FakeBuildAction } from './fake-build-action';
@@ -176,6 +177,6 @@ export = {
 };
 
 function validate(construct: cdk.IConstruct): cdk.ValidationError[] {
-  construct.node.prepareTree();
-  return construct.node.validateTree();
+  ConstructNode.prepare(construct.node);
+  return ConstructNode.validate(construct.node);
 }

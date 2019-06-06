@@ -1,6 +1,6 @@
 import iam = require('@aws-cdk/aws-iam');
 import kms = require('@aws-cdk/aws-kms');
-import { Construct, IResource, Resource, SecretValue } from '@aws-cdk/cdk';
+import { Construct, IResource, Resource, SecretValue, Stack } from '@aws-cdk/cdk';
 import { RotationSchedule, RotationScheduleOptions } from './rotation-schedule';
 import secretsmanager = require('./secretsmanager.generated');
 
@@ -121,7 +121,7 @@ abstract class SecretBase extends Resource implements ISecret {
     if (this.encryptionKey) {
       // @see https://docs.aws.amazon.com/fr_fr/kms/latest/developerguide/services-secrets-manager.html
       this.encryptionKey.grantDecrypt(
-        new kms.ViaServicePrincipal(`secretsmanager.${this.node.stack.region}.amazonaws.com`, grantee.grantPrincipal)
+        new kms.ViaServicePrincipal(`secretsmanager.${Stack.of(this).region}.amazonaws.com`, grantee.grantPrincipal)
       );
     }
 

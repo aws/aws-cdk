@@ -1,6 +1,6 @@
 import appscaling = require('@aws-cdk/aws-applicationautoscaling');
 import iam = require('@aws-cdk/aws-iam');
-import { Aws, Construct, Resource, Token } from '@aws-cdk/cdk';
+import { Aws, Construct, Resource, Stack, Token } from '@aws-cdk/cdk';
 import { CfnTable } from './dynamodb.generated';
 import { EnableScalingProps, IScalableTableAttribute } from './scalable-attribute-api';
 import { ScalableTableAttribute } from './scalable-table-attribute';
@@ -635,7 +635,7 @@ export class Table extends Resource {
   private makeScalingRole(): iam.IRole {
     // Use a Service Linked Role.
     // https://docs.aws.amazon.com/autoscaling/application/userguide/application-auto-scaling-service-linked-roles.html
-    return iam.Role.fromRoleArn(this, 'ScalingRole', this.node.stack.formatArn({
+    return iam.Role.fromRoleArn(this, 'ScalingRole', Stack.of(this).formatArn({
       service: 'iam',
       resource: 'role/aws-service-role/dynamodb.application-autoscaling.amazonaws.com',
       resourceName: 'AWSServiceRoleForApplicationAutoScaling_DynamoDBTable'
