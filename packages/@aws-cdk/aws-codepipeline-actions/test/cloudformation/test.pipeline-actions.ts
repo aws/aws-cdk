@@ -72,7 +72,7 @@ export = nodeunit.testCase({
       });
 
       test.deepEqual(
-        stack.node.resolve(pipelineRole.statements),
+        stack.resolve(pipelineRole.statements),
         [
           {
             Action: 'iam:PassRole',
@@ -153,7 +153,7 @@ export = nodeunit.testCase({
       });
 
       test.deepEqual(
-        stack.node.resolve(pipelineRole.statements),
+        stack.resolve(pipelineRole.statements),
         [
           {
             Action: 'cloudformation:ExecuteChangeSet',
@@ -385,5 +385,5 @@ class RoleDouble extends iam.Role {
 }
 
 function resolve(x: any): any {
-  return new cdk.Stack().node.resolve(x);
+  return new cdk.Stack().resolve(x);
 }

@@ -1,6 +1,6 @@
 import events = require('@aws-cdk/aws-events');
 import iam = require('@aws-cdk/aws-iam');
-import { Construct, DeletionPolicy, IConstruct, IResource, Resource, Token, Stack } from '@aws-cdk/cdk';
+import { Construct, DeletionPolicy, IConstruct, IResource, Resource, Stack, Token } from '@aws-cdk/cdk';
 import { CfnRepository } from './ecr.generated';
 import { CountType, LifecycleRule, TagStatus } from './lifecycle';
 
@@ -400,12 +400,13 @@ export class Repository extends RepositoryBase {
    * Render the life cycle policy object
    */
   private renderLifecyclePolicy(): CfnRepository.LifecyclePolicyProperty | undefined {
+    const stack = Stack.of(this);
     let lifecyclePolicyText: any;
 
     if (this.lifecycleRules.length === 0 && !this.registryId) { return undefined; }
 
     if (this.lifecycleRules.length > 0) {
-      lifecyclePolicyText = JSON.stringify(this.node.resolve({
+      lifecyclePolicyText = JSON.stringify(stack.resolve({
         rules: this.orderedLifecycleRules().map(renderLifecycleRule),
       }));
     }

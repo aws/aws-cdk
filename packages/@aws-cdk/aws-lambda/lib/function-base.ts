@@ -273,7 +273,7 @@ export abstract class FunctionBase extends Resource implements IFunction  {
       return (principal as iam.ServicePrincipal).service;
     }
 
-    throw new Error(`Invalid principal type for Lambda permission statement: ${this.node.resolve(principal.toString())}. ` +
+    throw new Error(`Invalid principal type for Lambda permission statement: ${stack.resolve(principal.toString())}. ` +
       'Supported: AccountPrincipal, ServicePrincipal');
   }
 }

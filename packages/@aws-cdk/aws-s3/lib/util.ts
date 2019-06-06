@@ -33,7 +33,7 @@ export function parseBucketName(construct: cdk.IConstruct, props: BucketAttribut
   // if we have a string arn, we can extract the bucket name from it.
   if (props.bucketArn) {
 
-    const resolved = construct.node.resolve(props.bucketArn);
+    const resolved = stack.resolve(props.bucketArn);
     if (typeof(resolved) === 'string') {
       const components = Stack.of(construct).parseArn(resolved);
       if (components.service !== 's3') {

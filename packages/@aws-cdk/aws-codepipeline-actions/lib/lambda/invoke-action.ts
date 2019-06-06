@@ -1,6 +1,7 @@
 import codepipeline = require('@aws-cdk/aws-codepipeline');
 import iam = require('@aws-cdk/aws-iam');
 import lambda = require('@aws-cdk/aws-lambda');
+import { Stack } from '@aws-cdk/cdk';
 
 /**
  * Construction properties of the {@link LambdaInvokeAction Lambda invoke CodePipeline Action}.
@@ -68,7 +69,7 @@ export class LambdaInvokeAction extends codepipeline.Action {
       },
       configuration: {
         FunctionName: props.lambda.functionName,
-        UserParameters: props.lambda.node.stringifyJson(props.userParameters),
+        UserParameters: Stack.of(props.lambda).stringifyJson(props.userParameters),
       },
     });
 

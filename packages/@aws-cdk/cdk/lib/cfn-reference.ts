@@ -152,7 +152,7 @@ export class CfnReference extends Reference {
     }
 
     // Ensure a singleton CfnOutput for this value
-    const resolved = producingStack.node.resolve(tokenValue);
+    const resolved = producingStack.resolve(tokenValue);
     const id = 'Output' + JSON.stringify(resolved);
     let output = stackExports.node.tryFindChild(id) as CfnOutput;
     if (!output) {

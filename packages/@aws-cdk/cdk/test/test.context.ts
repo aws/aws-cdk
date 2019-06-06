@@ -85,7 +85,7 @@ export = {
     stack.node.setContext(key, 'abc');
 
     const ssmp = new SSMParameterProvider(stack,  {parameterName: 'test'});
-    const azs = stack.node.resolve(ssmp.parameterValue());
+    const azs = stack.resolve(ssmp.parameterValue());
     test.deepEqual(azs, 'abc');
 
     test.done();

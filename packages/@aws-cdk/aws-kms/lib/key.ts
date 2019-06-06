@@ -78,7 +78,7 @@ abstract class KeyBase extends Construct implements IKey {
   public addToResourcePolicy(statement: PolicyStatement, allowNoOp = true) {
     if (!this.policy) {
       if (allowNoOp) { return; }
-      throw new Error(`Unable to add statement to IAM resource policy for KMS key: ${JSON.stringify(this.node.resolve(this.keyArn))}`);
+      throw new Error(`Unable to add statement to IAM resource policy for KMS key: ${JSON.stringify(stack.resolve(this.keyArn))}`);
     }
 
     this.policy.addStatement(statement);

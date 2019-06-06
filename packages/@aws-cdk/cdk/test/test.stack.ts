@@ -1,11 +1,12 @@
 import cxapi = require('@aws-cdk/cx-api');
 import { Test } from 'nodeunit';
 import { App, CfnCondition, CfnOutput, CfnParameter, CfnResource, Construct, ConstructNode, Include, ScopedAws, Stack, Token } from '../lib';
+import { toCloudFormation } from './util';
 
 export = {
   'a stack can be serialized into a CloudFormation template, initially it\'s empty'(test: Test) {
     const stack = new Stack();
-    test.deepEqual(stack._toCloudFormation(), { });
+    test.deepEqual(toCloudFormation(stack), { });
     test.done();
   },
 
@@ -14,7 +15,7 @@ export = {
     stack.templateOptions.templateFormatVersion = 'MyTemplateVersion';
     stack.templateOptions.description = 'This is my description';
     stack.templateOptions.transform = 'SAMy';
-    test.deepEqual(stack._toCloudFormation(), {
+    test.deepEqual(toCloudFormation(stack), {
       Description: 'This is my description',
       AWSTemplateFormatVersion: 'MyTemplateVersion',
       Transform: 'SAMy'
@@ -34,7 +35,7 @@ export = {
     const stack = new Stack(undefined, 'MyStack');
     new CfnResource(stack, 'MyResource', { type: 'MyResourceType' });
 
-    test.deepEqual(stack._toCloudFormation(), { Resources: { MyResource: { Type: 'MyResourceType' } } });
+    test.deepEqual(toCloudFormation(stack), { Resources: { MyResource: { Type: 'MyResourceType' } } });
     test.done();
   },
 
@@ -48,7 +49,7 @@ export = {
       MetadataKey: 'MetadataValue'
     };
 
-    test.deepEqual(stack._toCloudFormation(), {
+    test.deepEqual(toCloudFormation(stack), {
       Description: 'StackDescription',
       Transform: 'Transform',
       AWSTemplateFormatVersion: 'TemplateVersion',
@@ -146,7 +147,7 @@ export = {
 
     new Include(stack, 'Include', { template });
 
-    const output = stack._toCloudFormation();
+    const output = toCloudFormation(stack);
 
     test.equal(typeof output.Description, 'string');
     test.done();
@@ -163,11 +164,11 @@ export = {
     new CfnParameter(stack2, 'SomeParameter', { type: 'String', default: account1 });
 
     // THEN
-    // Need to do this manually now, since we're in testing mode. In a normal CDK app,
-    // this happens as part of app.synth().
-    ConstructNode.prepare(app.node);
+    const assembly = app.synth();
+    const template1 = assembly.getStack(stack1.name).template;
+    const template2 = assembly.getStack(stack2.name).template;
 
-    test.deepEqual(stack1._toCloudFormation(), {
+    test.deepEqual(template1, {
       Outputs: {
         ExportsOutputRefAWSAccountIdAD568057: {
           Value: { Ref: 'AWS::AccountId' },
@@ -176,7 +177,7 @@ export = {
       }
     });
 
-    test.deepEqual(stack2._toCloudFormation(), {
+    test.deepEqual(template2, {
       Parameters: {
         SomeParameter: {
           Type: 'String',
@@ -201,11 +202,10 @@ export = {
     }});
 
     // THEN
-    // Need to do this manually now, since we're in testing mode. In a normal CDK app,
-    // this happens as part of app.synth().
-    ConstructNode.prepare(app.node);
+    const assembly = app.synth();
+    const template2 = assembly.getStack(stack2.name).template;
 
-    test.deepEqual(stack2._toCloudFormation(), {
+    test.deepEqual(template2, {
       Resources: {
         SomeResource: {
           Type: 'AWS::Some::Resource',
@@ -228,10 +228,12 @@ export = {
     // WHEN - used in another stack
     new CfnParameter(stack2, 'SomeParameter', { type: 'String', default: new Token(() => account1) });
 
-    ConstructNode.prepare(app.node);
+    const assembly = app.synth();
+    const template1 = assembly.getStack(stack1.name).template;
+    const template2 = assembly.getStack(stack2.name).template;
 
     // THEN
-    test.deepEqual(stack1._toCloudFormation(), {
+    test.deepEqual(template1, {
       Outputs: {
         ExportsOutputRefAWSAccountIdAD568057: {
           Value: { Ref: 'AWS::AccountId' },
@@ -240,7 +242,7 @@ export = {
       }
     });
 
-    test.deepEqual(stack2._toCloudFormation(), {
+    test.deepEqual(template2, {
       Parameters: {
         SomeParameter: {
           Type: 'String',
@@ -262,11 +264,10 @@ export = {
     new CfnOutput(stack2, 'DemOutput', { value: stack1.region });
 
     // THEN
-    // Need to do this manually now, since we're in testing mode. In a normal CDK app,
-    // this happens as part of app.synth().
-    ConstructNode.prepare(app.node);
+    const assembly = app.synth();
+    const template2 = assembly.getStack(stack2.name).template;
 
-    test.deepEqual(stack2._toCloudFormation(), {
+    test.deepEqual(template2, {
       Outputs: {
         DemOutput: {
           Value: { Ref: 'AWS::Region' },
@@ -287,10 +288,11 @@ export = {
     // WHEN - used in another stack
     new CfnParameter(stack2, 'SomeParameter', { type: 'String', default: `TheAccountIs${account1}` });
 
-    ConstructNode.prepare(app.node);
+    const assembly = app.synth();
+    const template2 = assembly.getStack(stack2.name).template;
 
     // THEN
-    test.deepEqual(stack2._toCloudFormation(), {
+    test.deepEqual(template2, {
       Parameters: {
         SomeParameter: {
           Type: 'String',
@@ -363,7 +365,7 @@ export = {
     const stack = new Stack(app, 'Stack1', { env: { account: '123456789012', region: 'es-norst-1' }});
 
     // THEN
-    test.equal(stack.node.resolve(stack.region), 'es-norst-1');
+    test.equal(stack.resolve(stack.region), 'es-norst-1');
 
     test.done();
   },
@@ -376,7 +378,7 @@ export = {
     const stack = new Stack(app, 'Stack1');
 
     // THEN
-    test.deepEqual(stack.node.resolve(stack.region), { Ref: 'AWS::Region' });
+    test.deepEqual(stack.resolve(stack.region), { Ref: 'AWS::Region' });
 
     test.done();
   },
@@ -395,7 +397,7 @@ export = {
     bonjour.overrideLogicalId('BOOM');
 
     // THEN
-    test.deepEqual(stack._toCloudFormation(), { Resources:
+    test.deepEqual(toCloudFormation(stack), { Resources:
       { BOOM: { Type: 'Resource::Type' },
         RefToBonjour:
          { Type: 'Other::Resource',

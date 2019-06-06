@@ -39,7 +39,7 @@ test('when notification are added, a custom resource is provisioned + a lambda h
 
 test('when notification are added, you can tag the lambda', () => {
   const stack = new cdk.Stack();
-  stack.node.apply(new cdk.Tag('Lambda', 'AreTagged'));
+  stack.node.applyAspect(new cdk.Tag('Lambda', 'AreTagged'));
 
   const bucket = new s3.Bucket(stack, 'MyBucket');
 

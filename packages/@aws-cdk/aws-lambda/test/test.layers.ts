@@ -20,7 +20,7 @@ export = testCase({
     // THEN
     expect(stack).to(haveResource('AWS::Lambda::LayerVersion', {
       Content: {
-        S3Bucket: stack.node.resolve(bucket.bucketName),
+        S3Bucket: stack.resolve(bucket.bucketName),
         S3Key: 'ObjectKey',
       },
       CompatibleRuntimes: ['nodejs8.10']
@@ -46,12 +46,12 @@ export = testCase({
     // THEN
     expect(stack).to(haveResource('AWS::Lambda::LayerVersionPermission', {
       Action: 'lambda:GetLayerVersion',
-      LayerVersionArn: stack.node.resolve(layer.layerVersionArn),
+      LayerVersionArn: stack.resolve(layer.layerVersionArn),
       Principal: '123456789012',
     }));
     expect(stack).to(haveResource('AWS::Lambda::LayerVersionPermission', {
       Action: 'lambda:GetLayerVersion',
-      LayerVersionArn: stack.node.resolve(layer.layerVersionArn),
+      LayerVersionArn: stack.resolve(layer.layerVersionArn),
       Principal: '*',
       OrganizationId: 'o-123456'
     }));

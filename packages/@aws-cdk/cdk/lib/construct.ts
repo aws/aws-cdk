@@ -1,8 +1,6 @@
 import cxapi = require('@aws-cdk/cx-api');
 import { IAspect } from './aspect';
-import { CLOUDFORMATION_TOKEN_RESOLVER, CloudFormationLang } from './cloudformation-lang';
 import { DependableTrait, IDependable } from './dependency';
-import { resolve } from './resolve';
 import { createStackTrace } from './stack-trace';
 import { Token } from './token';
 import { makeUniqueId } from './uniqueid';
@@ -401,24 +399,6 @@ export class ConstructNode {
     }
 
     return false;
-  }
-
-  /**
-   * Resolve a tokenized value in the context of the current Construct
-   */
-  public resolve(obj: any): any {
-    return resolve(obj, {
-      scope: this.host,
-      prefix: [],
-      resolver: CLOUDFORMATION_TOKEN_RESOLVER,
-    });
-  }
-
-  /**
-   * Convert an object, potentially containing tokens, to a JSON string
-   */
-  public stringifyJson(obj: any): string {
-    return CloudFormationLang.toJSON(obj).toString();
   }
 
   /**

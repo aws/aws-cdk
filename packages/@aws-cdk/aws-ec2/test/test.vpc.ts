@@ -11,7 +11,7 @@ export = {
       "vpc.vpcId returns a token to the VPC ID"(test: Test) {
         const stack = getTestStack();
         const vpc = new Vpc(stack, 'TheVPC');
-        test.deepEqual(stack.node.resolve(vpc.vpcId), {Ref: 'TheVPC92636AB0' } );
+        test.deepEqual(stack.resolve(vpc.vpcId), {Ref: 'TheVPC92636AB0' } );
         test.done();
       },
 
@@ -66,7 +66,7 @@ export = {
       const zones = new AvailabilityZoneProvider(stack).availabilityZones.length;
       test.equal(vpc.publicSubnets.length, zones);
       test.equal(vpc.privateSubnets.length, zones);
-      test.deepEqual(stack.node.resolve(vpc.vpcId), { Ref: 'TheVPC92636AB0' });
+      test.deepEqual(stack.resolve(vpc.vpcId), { Ref: 'TheVPC92636AB0' });
       test.done();
     },
 
@@ -565,8 +565,8 @@ export = {
 
       const vpc = new Vpc(stack, 'TheVPC');
       // overwrite to set propagate
-      vpc.node.apply(new Tag('BusinessUnit', 'Marketing', {includeResourceTypes: [CfnVPC.resourceTypeName]}));
-      vpc.node.apply(new Tag('VpcType', 'Good'));
+      vpc.node.applyAspect(new Tag('BusinessUnit', 'Marketing', {includeResourceTypes: [CfnVPC.resourceTypeName]}));
+      vpc.node.applyAspect(new Tag('VpcType', 'Good'));
       expect(stack).to(haveResource("AWS::EC2::VPC", hasTags(toCfnTags(allTags))));
       const taggables = ['Subnet', 'InternetGateway', 'NatGateway', 'RouteTable'];
       const propTags = toCfnTags(tags);
@@ -597,7 +597,7 @@ export = {
       const vpc = new Vpc(stack, 'TheVPC');
       const tag = {Key: 'Late', Value: 'Adder'};
       expect(stack).notTo(haveResource('AWS::EC2::VPC', hasTags([tag])));
-      vpc.node.apply(new Tag(tag.Key, tag.Value));
+      vpc.node.applyAspect(new Tag(tag.Key, tag.Value));
       expect(stack).to(haveResource('AWS::EC2::VPC', hasTags([tag])));
       test.done();
     },
@@ -713,7 +713,7 @@ export = {
       });
 
       // THEN
-      test.deepEqual(vpc2.node.resolve(vpc2.vpcId), {
+      test.deepEqual(stack.resolve(vpc2.vpcId), {
         'Fn::ImportValue': 'TestStack:TheVPCVpcIdD346CDBA'
       });
 
@@ -732,7 +732,7 @@ export = {
       });
 
       // THEN
-      test.deepEqual(imported.node.resolve(imported.vpcId), {
+      test.deepEqual(stack.resolve(imported.vpcId), {
         'Fn::ImportValue': 'TestStack:TheVPCVpcIdD346CDBA'
       });
 

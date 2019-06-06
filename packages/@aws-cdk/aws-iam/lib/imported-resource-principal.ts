@@ -38,7 +38,7 @@ export class ImportedResourcePrincipal implements IPrincipal {
   }
 
   public addToPolicy(statement: PolicyStatement): boolean {
-    const repr = JSON.stringify(this.resource.node.resolve(statement));
+    const repr = JSON.stringify(this.stack.resolve(statement));
     this.resource.node.addWarning(`Add statement to this resource's role: ${repr}`);
     return true; // Pretend we did the work. The human will do it for us, eventually.
   }

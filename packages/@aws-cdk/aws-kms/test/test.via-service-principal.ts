@@ -15,7 +15,7 @@ export = {
       .addResource('*');
 
     // THEN
-    test.deepEqual(stack.node.resolve(statement), {
+    test.deepEqual(stack.resolve(statement), {
       Action: 'abc:call',
       Condition: { StringEquals: { 'kms:ViaService': 'bla.amazonaws.com' } },
       Effect: 'Allow',
@@ -37,7 +37,7 @@ export = {
       .addResource('*');
 
     // THEN
-    test.deepEqual(stack.node.resolve(statement), {
+    test.deepEqual(stack.resolve(statement), {
       Action: 'abc:call',
       Condition: {
         StringEquals: {

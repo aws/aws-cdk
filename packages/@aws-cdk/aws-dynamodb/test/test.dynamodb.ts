@@ -319,7 +319,7 @@ export = {
       partitionKey: TABLE_PARTITION_KEY,
       sortKey: TABLE_SORT_KEY,
     });
-    table.node.apply(new Tag('Environment', 'Production'));
+    table.node.applyAspect(new Tag('Environment', 'Production'));
 
     expect(stack).to(haveResource('AWS::DynamoDB::Table',
       {

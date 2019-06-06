@@ -80,7 +80,7 @@ export class StateMachine extends Resource implements IStateMachine {
         const resource = new CfnStateMachine(this, 'Resource', {
             stateMachineName: props.stateMachineName,
             roleArn: this.role.roleArn,
-            definitionString: this.node.stringifyJson(graph.toGraphJson()),
+            definitionString: Stack.of(this).stringifyJson(graph.toGraphJson()),
         });
 
         for (const statement of graph.policyStatements) {

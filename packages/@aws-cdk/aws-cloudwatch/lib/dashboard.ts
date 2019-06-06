@@ -1,4 +1,4 @@
-import { Construct, Resource, Token } from "@aws-cdk/cdk";
+import { Construct, Resource, Stack, Token } from "@aws-cdk/cdk";
 import { CfnDashboard } from './cloudwatch.generated';
 import { Column, Row } from "./layout";
 import { IWidget } from "./widget";
@@ -61,7 +61,7 @@ export class Dashboard extends Resource {
       dashboardBody: new Token(() => {
         const column = new Column(...this.rows);
         column.position(0, 0);
-        return this.node.stringifyJson({
+        return Stack.of(this).stringifyJson({
           start: props ? props.start : undefined,
           end: props ? props.end : undefined,
           periodOverride: props ? props.periodOverride : undefined,

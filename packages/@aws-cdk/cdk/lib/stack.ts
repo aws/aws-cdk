@@ -3,9 +3,11 @@ import fs = require('fs');
 import path = require('path');
 import { App } from './app';
 import { CfnParameter } from './cfn-parameter';
+import { CLOUDFORMATION_TOKEN_RESOLVER, CloudFormationLang } from './cloudformation-lang';
 import { Construct, ConstructNode, IConstruct, ISynthesisSession } from './construct';
 import { Environment } from './environment';
 import { HashedAddressingScheme, IAddressingScheme, LogicalIDs } from './logical-id';
+import { resolve } from './resolve';
 import { makeUniqueId } from './uniqueid';
 
 const STACK_SYMBOL = Symbol.for('@aws-cdk/cdk.Stack');
@@ -179,41 +181,21 @@ export class Stack extends Construct implements ITaggable {
   }
 
   /**
-   * Returns the CloudFormation template for this stack by traversing
-   * the tree and invoking _toCloudFormation() on all Entity objects.
-   *
-   * @internal
+   * Resolve a tokenized value in the context of the current Construct
    */
-  public _toCloudFormation() {
-    // before we begin synthesis, we shall lock this stack, so children cannot be added
-    this.node.lock();
+  public resolve(obj: any): any {
+    return resolve(obj, {
+      scope: this,
+      prefix: [],
+      resolver: CLOUDFORMATION_TOKEN_RESOLVER,
+    });
+  }
 
-    try {
-      const template: any = {
-        Description: this.templateOptions.description,
-        Transform: this.templateOptions.transform,
-        AWSTemplateFormatVersion: this.templateOptions.templateFormatVersion,
-        Metadata: this.templateOptions.metadata
-      };
-
-      const elements = cfnElements(this);
-      const fragments = elements.map(e => this.node.resolve(e._toCloudFormation()));
-
-      // merge in all CloudFormation fragments collected from the tree
-      for (const fragment of fragments) {
-        merge(template, fragment);
-      }
-
-      // resolve all tokens and remove all empties
-      const ret = this.node.resolve(template) || {};
-
-      this.logicalIds.assertAllRenamesApplied();
-
-      return ret;
-    } finally {
-      // allow mutations after synthesis is finished.
-      this.node.unlock();
-    }
+  /**
+   * Convert an object, potentially containing tokens, to a JSON string
+   */
+  public stringifyJson(obj: any): string {
+    return CloudFormationLang.toJSON(obj).toString();
   }
 
   /**
@@ -506,7 +488,7 @@ export class Stack extends Construct implements ITaggable {
 
     const properties: cxapi.AwsCloudFormationStackProperties = {
       templateFile: template,
-      parameters: Object.keys(this.parameterValues).length > 0 ? this.node.resolve(this.parameterValues) : undefined
+      parameters: Object.keys(this.parameterValues).length > 0 ? this.resolve(this.parameterValues) : undefined
     };
 
     // add an artifact that represents this stack
@@ -520,6 +502,44 @@ export class Stack extends Construct implements ITaggable {
 
     for (const ctx of this.missingContext) {
       builder.addMissing(ctx);
+    }
+  }
+
+  /**
+   * Returns the CloudFormation template for this stack by traversing
+   * the tree and invoking _toCloudFormation() on all Entity objects.
+   *
+   * @internal
+   */
+  protected _toCloudFormation() {
+    // before we begin synthesis, we shall lock this stack, so children cannot be added
+    this.node.lock();
+
+    try {
+      const template: any = {
+        Description: this.templateOptions.description,
+        Transform: this.templateOptions.transform,
+        AWSTemplateFormatVersion: this.templateOptions.templateFormatVersion,
+        Metadata: this.templateOptions.metadata
+      };
+
+      const elements = cfnElements(this);
+      const fragments = elements.map(e => this.resolve(e._toCloudFormation()));
+
+      // merge in all CloudFormation fragments collected from the tree
+      for (const fragment of fragments) {
+        merge(template, fragment);
+      }
+
+      // resolve all tokens and remove all empties
+      const ret = this.resolve(template) || {};
+
+      this.logicalIds.assertAllRenamesApplied();
+
+      return ret;
+    } finally {
+      // allow mutations after synthesis is finished.
+      this.node.unlock();
     }
   }
 
@@ -552,6 +572,7 @@ export class Stack extends Construct implements ITaggable {
 
   private collectMetadata() {
     const output: { [id: string]: cxapi.MetadataEntry[] } = { };
+    const stack = this;
 
     visit(this);
 
@@ -567,7 +588,7 @@ export class Stack extends Construct implements ITaggable {
 
       if (node.node.metadata.length > 0) {
         // Make the path absolute
-        output[ConstructNode.PATH_SEP + node.node.path] = node.node.metadata.map(md => node.node.resolve(md) as cxapi.MetadataEntry);
+        output[ConstructNode.PATH_SEP + node.node.path] = node.node.metadata.map(md => stack.resolve(md) as cxapi.MetadataEntry);
       }
 
       for (const child of node.node.children) {

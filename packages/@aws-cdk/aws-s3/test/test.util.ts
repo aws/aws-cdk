@@ -14,7 +14,7 @@ export = {
     'produce arn from bucket name'(test: Test) {
       const stack = new cdk.Stack();
       const bucketName = 'hello';
-      test.deepEqual(stack.node.resolve(parseBucketArn(stack, { bucketName })), { 'Fn::Join':
+      test.deepEqual(stack.resolve(parseBucketArn(stack, { bucketName })), { 'Fn::Join':
       [ '',
         [ 'arn:',
         { Ref: 'AWS::Partition' },
@@ -34,21 +34,21 @@ export = {
     'explicit name'(test: Test) {
       const stack = new cdk.Stack();
       const bucketName = 'foo';
-      test.deepEqual(stack.node.resolve(parseBucketName(stack, { bucketName })), 'foo');
+      test.deepEqual(stack.resolve(parseBucketName(stack, { bucketName })), 'foo');
       test.done();
     },
 
     'extract bucket name from string arn'(test: Test) {
       const stack = new cdk.Stack();
       const bucketArn = 'arn:aws:s3:::my-bucket';
-      test.deepEqual(stack.node.resolve(parseBucketName(stack, { bucketArn })), 'my-bucket');
+      test.deepEqual(stack.resolve(parseBucketName(stack, { bucketArn })), 'my-bucket');
       test.done();
     },
 
     'undefined if cannot extract name from a non-string arn'(test: Test) {
       const stack = new cdk.Stack();
       const bucketArn = `arn:aws:s3:::${new cdk.Token({ Ref: 'my-bucket' })}`;
-      test.deepEqual(stack.node.resolve(parseBucketName(stack, { bucketArn })), undefined);
+      test.deepEqual(stack.resolve(parseBucketName(stack, { bucketArn })), undefined);
       test.done();
     },
 
