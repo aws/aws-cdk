@@ -99,6 +99,6 @@ export class CrossAccountDestination extends cdk.Construct implements ILogSubscr
    * Return a stringified JSON version of the PolicyDocument
    */
   private lazyStringifiedPolicyDocument(): string {
-    return new cdk.Token(() => this.policyDocument.isEmpty ? '' : Stack.of(this).stringifyJson(this.policyDocument)).toString();
+    return new cdk.Token(() => this.policyDocument.isEmpty ? '' : Stack.of(this).toJsonString(this.policyDocument)).toString();
   }
 }

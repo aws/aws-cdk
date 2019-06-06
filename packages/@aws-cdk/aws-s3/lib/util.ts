@@ -30,20 +30,9 @@ export function parseBucketName(construct: cdk.IConstruct, props: BucketAttribut
     return props.bucketName;
   }
 
-  // if we have a string arn, we can extract the bucket name from it.
+  // extract bucket name from bucket arn
   if (props.bucketArn) {
-
-    const resolved = stack.resolve(props.bucketArn);
-    if (typeof(resolved) === 'string') {
-      const components = Stack.of(construct).parseArn(resolved);
-      if (components.service !== 's3') {
-        throw new Error('Invalid ARN. Expecting "s3" service:' + resolved);
-      }
-      if (components.resourceName) {
-        throw new Error(`Bucket ARN must not contain a path`);
-      }
-      return components.resource;
-    }
+    return Stack.of(construct).parseArn(props.bucketArn).resource;
   }
 
   // no bucket name is okay since it's optional.

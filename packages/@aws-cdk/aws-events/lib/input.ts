@@ -1,4 +1,4 @@
-import { CloudFormationLang, DefaultTokenResolver, IResolveContext, resolve, StringConcat, Token } from '@aws-cdk/cdk';
+import { DefaultTokenResolver, IResolveContext, resolve, StringConcat, Token } from '@aws-cdk/cdk';
 import { IRule } from './rule-ref';
 
 /**
@@ -159,6 +159,8 @@ class FieldAwareEventInput extends RuleTargetInput {
       }
     }
 
+    const stack = Stack.of(rule);
+
     let resolved: string;
     if (this.inputType === InputType.Multiline) {
       // JSONify individual lines
@@ -166,9 +168,9 @@ class FieldAwareEventInput extends RuleTargetInput {
         scope: rule,
         resolver: new EventFieldReplacer()
       });
-      resolved = resolved.split('\n').map(CloudFormationLang.toJSON).join('\n');
+      resolved = resolved.split('\n').map(stack.toJsonString).join('\n');
     } else {
-      resolved = CloudFormationLang.toJSON(resolve(this.input, {
+      resolved = stack.toJsonString(Token.resolve(this.input, {
         scope: rule,
         resolver: new EventFieldReplacer()
       }));

@@ -1,5 +1,5 @@
 import iam = require('@aws-cdk/aws-iam');
-import { CfnDynamicReference, CfnDynamicReferenceService, Construct, Fn, IResource, Resource, Token, Stack } from '@aws-cdk/cdk';
+import { CfnDynamicReference, CfnDynamicReferenceService, Construct, Fn, IResource, Resource, Stack, Token } from '@aws-cdk/cdk';
 import ssm = require('./ssm.generated');
 
 /**

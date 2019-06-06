@@ -179,7 +179,7 @@ export = {
     sg2.connections.allowFrom(sg1, new TcpPort(100));
 
     // THEN -- both rules are in Stack2
-    ConstructNode.prepare(app.node;
+    ConstructNode.prepare(app.node);
 
     expect(stack2).to(haveResource('AWS::EC2::SecurityGroupIngress', {
       GroupId: { "Fn::GetAtt": [ "SecurityGroupDD263621", "GroupId" ] },
@@ -210,7 +210,7 @@ export = {
     sg2.connections.allowTo(sg1, new TcpPort(100));
 
     // THEN -- both rules are in Stack2
-    ConstructNode.prepare(app.node;
+    ConstructNode.prepare(app.node);
 
     expect(stack2).to(haveResource('AWS::EC2::SecurityGroupIngress', {
       GroupId: { "Fn::ImportValue": "Stack1:ExportsOutputFnGetAttSecurityGroupDD263621GroupIdDF6F8B09" },

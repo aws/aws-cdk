@@ -1,4 +1,4 @@
-import cdk = require('@aws-cdk/cdk');
+import { IConstruct, Stack } from '@aws-cdk/cdk';
 import { PolicyStatement } from './policy-document';
 import { IPrincipal, PrincipalPolicyFragment } from './principals';
 
@@ -9,7 +9,7 @@ export interface ImportedResourcePrincipalProps {
   /**
    * The resource the role proxy is for
    */
-  readonly resource: cdk.IConstruct;
+  readonly resource: IConstruct;
 }
 
 /**
@@ -26,7 +26,7 @@ export interface ImportedResourcePrincipalProps {
 export class ImportedResourcePrincipal implements IPrincipal {
   public readonly assumeRoleAction: string = 'sts:AssumeRole';
   public readonly grantPrincipal: IPrincipal;
-  private readonly resource: cdk.IConstruct;
+  private readonly resource: IConstruct;
 
   constructor(props: ImportedResourcePrincipalProps) {
     this.resource = props.resource;
@@ -38,7 +38,8 @@ export class ImportedResourcePrincipal implements IPrincipal {
   }
 
   public addToPolicy(statement: PolicyStatement): boolean {
-    const repr = JSON.stringify(this.stack.resolve(statement));
+    const stack = Stack.of(this.resource);
+    const repr = JSON.stringify(stack.resolve(statement));
     this.resource.node.addWarning(`Add statement to this resource's role: ${repr}`);
     return true; // Pretend we did the work. The human will do it for us, eventually.
   }

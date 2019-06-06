@@ -69,7 +69,7 @@ export class LambdaInvokeAction extends codepipeline.Action {
       },
       configuration: {
         FunctionName: props.lambda.functionName,
-        UserParameters: Stack.of(props.lambda).stringifyJson(props.userParameters),
+        UserParameters: Stack.of(props.lambda).toJsonString(props.userParameters),
       },
     });
 

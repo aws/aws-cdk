@@ -713,7 +713,7 @@ export = {
       });
 
       // THEN
-      test.deepEqual(stack.resolve(vpc2.vpcId), {
+      test.deepEqual(Stack.of(vpc2).resolve(vpc2.vpcId), {
         'Fn::ImportValue': 'TestStack:TheVPCVpcIdD346CDBA'
       });
 
@@ -732,7 +732,7 @@ export = {
       });
 
       // THEN
-      test.deepEqual(stack.resolve(imported.vpcId), {
+      test.deepEqual(Stack.of(imported).resolve(imported.vpcId), {
         'Fn::ImportValue': 'TestStack:TheVPCVpcIdD346CDBA'
       });
 

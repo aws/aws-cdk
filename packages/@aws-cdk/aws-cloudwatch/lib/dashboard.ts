@@ -61,7 +61,7 @@ export class Dashboard extends Resource {
       dashboardBody: new Token(() => {
         const column = new Column(...this.rows);
         column.position(0, 0);
-        return Stack.of(this).stringifyJson({
+        return Stack.of(this).toJsonString({
           start: props ? props.start : undefined,
           end: props ? props.end : undefined,
           periodOverride: props ? props.periodOverride : undefined,

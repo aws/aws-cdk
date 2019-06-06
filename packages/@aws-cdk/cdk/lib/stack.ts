@@ -181,7 +181,7 @@ export class Stack extends Construct implements ITaggable {
   }
 
   /**
-   * Resolve a tokenized value in the context of the current Construct
+   * Resolve a tokenized value in the context of the current stack.
    */
   public resolve(obj: any): any {
     return resolve(obj, {
@@ -194,7 +194,7 @@ export class Stack extends Construct implements ITaggable {
   /**
    * Convert an object, potentially containing tokens, to a JSON string
    */
-  public stringifyJson(obj: any): string {
+  public toJsonString(obj: any): string {
     return CloudFormationLang.toJSON(obj).toString();
   }
 
