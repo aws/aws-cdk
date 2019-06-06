@@ -118,7 +118,10 @@ export default class CodeGenerator {
     if (!spec.Properties || Object.keys(spec.Properties).length === 0) { return; }
     const name = genspec.CodeName.forResourceProperties(resourceContext);
 
-    this.docLink(spec.Documentation, `Properties for defining a \`${resourceContext.specName!.fqn}\``);
+    this.docLink(spec.Documentation,
+      `Properties for defining a \`${resourceContext.specName!.fqn}\``,
+      '',
+      '@stable');
     this.code.openBlock(`export interface ${name.className}`);
 
     const conversionTable = this.emitPropsTypeProperties(resourceContext, spec.Properties);
@@ -167,7 +170,7 @@ export default class CodeGenerator {
     }
   }
 
-  private emitResourceType(resourceName: genspec.CodeName, spec: schema.ResourceType, deprecated?: genspec.CodeName): void {
+  private emitResourceType(resourceName: genspec.CodeName, spec: schema.ResourceType): void {
     this.beginNamespace(resourceName);
 
     const cfnName = resourceName.specName!.fqn;
@@ -181,16 +184,11 @@ export default class CodeGenerator {
       this.code.line();
     }
 
-    const deprecation = deprecated &&
-      `"cloudformation.${resourceName.fqn}" will be deprecated in a future release ` +
-      `in favor of "${deprecated.fqn}" (see https://github.com/awslabs/aws-cdk/issues/878)`;
-
-    this.docLink(spec.Documentation, ...[
+    this.docLink(spec.Documentation,
       `A CloudFormation \`${cfnName}\``,
       '',
       `@cloudformationResource ${cfnName}`,
-      ...(deprecation ? [ `@deprecated ${deprecation}` ] : [ ]),
-    ]);
+      '@stable');
     this.openClass(resourceName, RESOURCE_BASE_CLASS);
 
     //
@@ -305,9 +303,6 @@ export default class CodeGenerator {
       }
     }
 
-    if (deprecated) {
-      this.code.line(`this.node.addWarning('DEPRECATION: ${deprecation}');`);
-    }
     if (tagEnum !== `${TAG_TYPE}.NotTaggable`) {
       this.code.line('const tags = props === undefined ? undefined : props.tags;');
       this.code.line(`this.tags = new ${TAG_MANAGER}(${tagEnum}, ${resourceTypeName}, tags);`);
@@ -545,7 +540,7 @@ export default class CodeGenerator {
     this.code.line();
     this.beginNamespace(typeName);
 
-    this.docLink(propTypeSpec.Documentation);
+    this.docLink(propTypeSpec.Documentation, '@stable');
     if (!propTypeSpec.Properties || Object.keys(propTypeSpec.Properties).length === 0) {
       this.code.line(`// tslint:disable-next-line:no-empty-interface | A genuine empty-object type`);
     }
