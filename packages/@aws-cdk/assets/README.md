@@ -1,13 +1,16 @@
 ## AWS CDK Assets
-<div class="stability_label">
+<!--BEGIN STABILITY BANNER-->
 
-  > **Stability: 1 - Experimental.**
-  >
-  > This API is still under active development and subject to non - backward
-  > compatible changes or removal in any future version. Use of the API is not recommended in production
-  > environments. Experimental APIs are not subject to the Semantic Versioning model.
+---
 
-</div>
+![Stability: Experimental](https://img.shields.io/badge/stability-Experimental-important.svg?style=for-the-badge)
+
+> This API is still under active development and subject to non-backward
+> compatible changes or removal in any future version. Use of the API is not recommended in production
+> environments. Experimental APIs are not subject to the Semantic Versioning model.
+
+---
+<!--END STABILITY BANNER-->
 
 Assets are local files or directories which are needed by a CDK app. A common
 example is a directory which contains the handler code for a Lambda function,
