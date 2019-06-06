@@ -15,7 +15,7 @@
 Defines a KMS key:
 
 ```js
-new EncryptionKey(this, 'MyKey', {
+new Key(this, 'MyKey', {
     enableKeyRotation: true
 });
 ```
@@ -23,7 +23,7 @@ new EncryptionKey(this, 'MyKey', {
 Add a couple of aliases:
 
 ```js
-const key = new EncryptionKey(this, 'MyKey');
+const key = new Key(this, 'MyKey');
 key.addAlias('alias/foo');
 key.addAlias('alias/bar');
 ```
@@ -39,10 +39,10 @@ pass the construct to the other stack:
 ### Importing existing keys
 
 To use a KMS key that is not defined in this CDK app, but is created through other means, use
-`EncryptionKey.import(parent, name, ref)`:
+`Key.import(parent, name, ref)`:
 
 ```ts
-const myKeyImported = EncryptionKey.import(this, 'MyImportedKey', {
+const myKeyImported = Key.import(this, 'MyImportedKey', {
     keyArn: 'arn:aws:...'
 });
 
