@@ -75,6 +75,35 @@
             "Echo11F3FB29",
             "Arn"
           ]
+        },
+        "FilterPolicy": {
+          "color": [
+            "red",
+            {
+              "prefix": "bl"
+            },
+            {
+              "prefix": "ye"
+            }
+          ],
+          "size": [
+            {
+              "anything-but": [
+                "small",
+                "medium"
+              ]
+            }
+          ],
+          "price": [
+            {
+              "numeric": [
+                ">=",
+                100,
+                "<=",
+                200
+              ]
+            }
+          ]
         }
       }
     },

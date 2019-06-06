@@ -5,6 +5,7 @@ import cdk = require('@aws-cdk/cdk');
 import { IResource, Resource } from '@aws-cdk/cdk';
 import { TopicPolicy } from './policy';
 import { Subscription, SubscriptionProtocol } from './subscription';
+import { SubscriptionFilterPolicy } from './subscription-filter-policy';
 
 export interface ITopic extends IResource {
   /**
@@ -20,7 +21,11 @@ export interface ITopic extends IResource {
   /**
    * Subscribe some endpoint to this topic
    */
-  subscribe(name: string, endpoint: string, protocol: SubscriptionProtocol, rawMessageDelivery?: boolean): Subscription;
+  subscribe(name: string,
+            endpoint: string,
+            protocol: SubscriptionProtocol,
+            rawMessageDelivery?: boolean,
+            filterPolicy?: SubscriptionFilterPolicy): Subscription;
 
   /**
    * Defines a subscription from this SNS topic to an SQS queue.
@@ -31,7 +36,7 @@ export interface ITopic extends IResource {
    * @param queue The target queue
    * @param rawMessageDelivery Enable raw message delivery
    */
-  subscribeQueue(queue: sqs.IQueue, rawMessageDelivery?: boolean): Subscription;
+  subscribeQueue(queue: sqs.IQueue, rawMessageDelivery?: boolean, filterPolicy?: SubscriptionFilterPolicy): Subscription;
 
   /**
    * Defines a subscription from this SNS Topic to a Lambda function.
@@ -41,7 +46,7 @@ export interface ITopic extends IResource {
    *
    * @param lambdaFunction The Lambda function to invoke
    */
-  subscribeLambda(lambdaFunction: lambda.IFunction): Subscription;
+  subscribeLambda(lambdaFunction: lambda.IFunction, filterPolicy?: SubscriptionFilterPolicy): Subscription;
 
   /**
    * Defines a subscription from this SNS topic to an email address.
@@ -50,7 +55,7 @@ export interface ITopic extends IResource {
    * @param emailAddress The email address to use.
    * @param options Options to use for email subscription
    */
-  subscribeEmail(name: string, emailAddress: string, options?: EmailSubscriptionOptions): Subscription;
+  subscribeEmail(name: string, emailAddress: string, options?: EmailSubscriptionOptions, filterPolicy?: SubscriptionFilterPolicy): Subscription;
 
   /**
    * Defines a subscription from this SNS topic to an http:// or https:// URL.
@@ -59,7 +64,7 @@ export interface ITopic extends IResource {
    * @param url The URL to invoke
    * @param rawMessageDelivery Enable raw message delivery
    */
-  subscribeUrl(name: string, url: string, rawMessageDelivery?: boolean): Subscription;
+  subscribeUrl(name: string, url: string, rawMessageDelivery?: boolean, filterPolicy?: SubscriptionFilterPolicy): Subscription;
 
   /**
    * Adds a statement to the IAM resource policy associated with this topic.
@@ -96,12 +101,17 @@ export abstract class TopicBase extends Resource implements ITopic {
   /**
    * Subscribe some endpoint to this topic
    */
-  public subscribe(name: string, endpoint: string, protocol: SubscriptionProtocol, rawMessageDelivery?: boolean): Subscription {
+  public subscribe(name: string,
+                   endpoint: string,
+                   protocol: SubscriptionProtocol,
+                   rawMessageDelivery?: boolean,
+                   filterPolicy?: SubscriptionFilterPolicy): Subscription {
     return new Subscription(this, name, {
       topic: this,
       endpoint,
       protocol,
       rawMessageDelivery,
+      filterPolicy,
     });
   }
 
@@ -114,7 +124,7 @@ export abstract class TopicBase extends Resource implements ITopic {
    * @param queue The target queue
    * @param rawMessageDelivery Enable raw message delivery
    */
-  public subscribeQueue(queue: sqs.IQueue, rawMessageDelivery?: boolean): Subscription {
+  public subscribeQueue(queue: sqs.IQueue, rawMessageDelivery?: boolean, filterPolicy?: SubscriptionFilterPolicy): Subscription {
     if (!cdk.Construct.isConstruct(queue)) {
       throw new Error(`The supplied Queue object must be an instance of Construct`);
     }
@@ -132,6 +142,7 @@ export abstract class TopicBase extends Resource implements ITopic {
       endpoint: queue.queueArn,
       protocol: SubscriptionProtocol.Sqs,
       rawMessageDelivery,
+      filterPolicy,
     });
 
     // add a statement to the queue resource policy which allows this topic
@@ -153,7 +164,7 @@ export abstract class TopicBase extends Resource implements ITopic {
    *
    * @param lambdaFunction The Lambda function to invoke
    */
-  public subscribeLambda(lambdaFunction: lambda.IFunction): Subscription {
+  public subscribeLambda(lambdaFunction: lambda.IFunction, filterPolicy?: SubscriptionFilterPolicy): Subscription {
     if (!cdk.Construct.isConstruct(lambdaFunction)) {
       throw new Error(`The supplied lambda Function object must be an instance of Construct`);
     }
@@ -170,6 +181,7 @@ export abstract class TopicBase extends Resource implements ITopic {
       topic: this,
       endpoint: lambdaFunction.functionArn,
       protocol: SubscriptionProtocol.Lambda,
+      filterPolicy,
     });
 
     lambdaFunction.addPermission(this.node.id, {
@@ -187,13 +199,17 @@ export abstract class TopicBase extends Resource implements ITopic {
    * @param emailAddress The email address to use.
    * @param options Options for the email delivery format.
    */
-  public subscribeEmail(name: string, emailAddress: string, options?: EmailSubscriptionOptions): Subscription {
+  public subscribeEmail(name: string,
+                        emailAddress: string,
+                        options?: EmailSubscriptionOptions,
+                        filterPolicy?: SubscriptionFilterPolicy): Subscription {
     const protocol = (options && options.json ? SubscriptionProtocol.EmailJson : SubscriptionProtocol.Email);
 
     return new Subscription(this, name, {
       topic: this,
       endpoint: emailAddress,
-      protocol
+      protocol,
+      filterPolicy
     });
   }
 
@@ -204,7 +220,7 @@ export abstract class TopicBase extends Resource implements ITopic {
    * @param url The URL to invoke
    * @param rawMessageDelivery Enable raw message delivery
    */
-  public subscribeUrl(name: string, url: string, rawMessageDelivery?: boolean): Subscription {
+  public subscribeUrl(name: string, url: string, rawMessageDelivery?: boolean, filterPolicy?: SubscriptionFilterPolicy): Subscription {
     if (!url.startsWith('http://') && !url.startsWith('https://')) {
       throw new Error('URL must start with either http:// or https://');
     }
@@ -216,6 +232,7 @@ export abstract class TopicBase extends Resource implements ITopic {
       endpoint: url,
       protocol,
       rawMessageDelivery,
+      filterPolicy,
     });
   }
 

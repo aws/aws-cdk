@@ -42,6 +42,26 @@ Subscribe a queue to the topic:
 Note that subscriptions of queues in different accounts need to be manually confirmed by
 reading the initial message from the queue and visiting the link found in it.
 
+#### Filter policy
+A filter policy can be specified when subscribing an endpoint to a topic.
+
+Example with a Lambda subscription:
+```ts
+const myTopic = new sns.Topic(this, 'MyTopic');
+const fn = new lambda.Function(this, 'Function', ...);
+
+// Lambda should receive only message matching the following conditions on attributes:
+// color: 'red' or 'orange' or begins with 'bl'
+// size: anything but 'small' or 'medium'
+// price: between 100 and 200 or greater than 300
+const filterPolicy = new sns.SubscriptionFilterPolicy();
+filterPolicy.addStringFilter('color').whitelist('red', 'orange').matchPrefixes('bl');
+filterPolicy.addStringFilter('size').blacklist('small', 'medium');
+filterPolicy.addNumericFilter('price').between(100, 200).greaterThan(300);
+
+topic.subscribeLambda(fn, filterPolicy);
+```
+
 ### CloudWatch Event Rule Target
 
 SNS topics can be used as targets for CloudWatch event rules.

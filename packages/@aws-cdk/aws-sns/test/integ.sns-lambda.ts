@@ -14,7 +14,12 @@ class SnsToSqs extends cdk.Stack {
       code: lambda.Code.inline(`exports.handler = ${handler.toString()}`)
     });
 
-    topic.subscribeLambda(fction);
+    const filterPolicy = new sns.SubscriptionFilterPolicy();
+    filterPolicy.addStringFilter('color').whitelist('red').matchPrefixes('bl', 'ye');
+    filterPolicy.addStringFilter('size').blacklist('small', 'medium');
+    filterPolicy.addNumericFilter('price').between(100, 200);
+
+    topic.subscribeLambda(fction, filterPolicy);
   }
 }
 

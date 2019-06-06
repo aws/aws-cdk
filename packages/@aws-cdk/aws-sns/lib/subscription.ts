@@ -1,5 +1,6 @@
 import { Construct, Resource } from '@aws-cdk/cdk';
 import { CfnSubscription } from './sns.generated';
+import { SubscriptionFilterPolicy } from './subscription-filter-policy';
 import { ITopic } from './topic-base';
 
 /**
@@ -31,6 +32,13 @@ export interface SubscriptionProps {
    * @default false
    */
   readonly rawMessageDelivery?: boolean;
+
+  /**
+   * The filter policy.
+   *
+   * @default all messages are delivered
+   */
+  readonly filterPolicy?: SubscriptionFilterPolicy;
 }
 
 /**
@@ -52,6 +60,7 @@ export class Subscription extends Resource {
       protocol: props.protocol,
       topicArn: props.topic.topicArn,
       rawMessageDelivery: props.rawMessageDelivery,
+      filterPolicy: props.filterPolicy && props.filterPolicy.render(),
     });
 
   }

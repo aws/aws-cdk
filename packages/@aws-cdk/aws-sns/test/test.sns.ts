@@ -370,6 +370,48 @@ export = {
       test.done();
     },
 
+    'lambda subscription with filter policy'(test: Test) {
+      const stack = new cdk.Stack();
+
+      const topic = new sns.Topic(stack, 'MyTopic', {
+        topicName: 'topicName',
+        displayName: 'displayName'
+      });
+
+      const fction = new lambda.Function(stack, 'MyFunc', {
+        runtime: lambda.Runtime.NodeJS810,
+        handler: 'index.handler',
+        code: lambda.Code.inline('exports.handler = function(e, c, cb) { return cb() }')
+      });
+
+      const filterPolicy = new sns.SubscriptionFilterPolicy();
+      filterPolicy.addStringFilter('color').whitelist('red');
+      filterPolicy.addNumericFilter('price').between(100, 200);
+
+      topic.subscribeLambda(fction, filterPolicy);
+
+      expect(stack).to(haveResource('AWS::SNS::Subscription', {
+        Endpoint: {
+          'Fn::GetAtt': [
+            'MyFunc8A243A2C',
+            'Arn'
+          ]
+        },
+        Protocol: 'lambda',
+        TopicArn: {
+          Ref: 'MyTopic86869434'
+        },
+        FilterPolicy: {
+          color: ['red'],
+          price: [
+            { numeric: ['>=', 100, '<=', 200] }
+          ]
+        },
+      }));
+
+      test.done();
+    },
+
     'email subscription'(test: Test) {
       const stack = new cdk.Stack();
 
