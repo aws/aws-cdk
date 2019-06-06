@@ -90,5 +90,6 @@
       "import-props-interface:@aws-cdk/aws-stepfunctions.ActivityImportProps",
       "export:@aws-cdk/aws-stepfunctions.IActivity"
     ]
-  }
+  },
+  "stability": "experimental"
 }

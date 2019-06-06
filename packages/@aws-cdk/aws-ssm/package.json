@@ -89,5 +89,6 @@
       "from-attributes:fromStringParameterAttributes",
       "from-attributes:fromStringListParameterAttributes"
     ]
-  }
+  },
+  "stability": "experimental"
 }

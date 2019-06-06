@@ -90,5 +90,6 @@
   },
   "bundledDependencies": [
     "minimatch"
-  ]
+  ],
+  "stability": "experimental"
 }

@@ -161,6 +161,104 @@ export class ReadmeFile extends ValidationRule {
 }
 
 /**
+ * There must be a stability setting, and that the appropriate banner is present in the README.md file.
+ */
+export class StabilitySetting extends ValidationRule {
+  public readonly name = 'package-info/stability';
+
+  public validate(pkg: PackageJson): void {
+    if (pkg.json.private) {
+      // Does not apply to private packages!
+      return;
+    }
+
+    let stability = pkg.json.stability;
+    switch (stability) {
+      case 'experimental':
+      case 'stable':
+      case 'deprecated':
+        if (pkg.json.deprecated && stability !== 'deprecated') {
+          pkg.report({
+            ruleName: this.name,
+            message: `Package is deprecated, but is marked with stability "${stability}"`,
+            fix: () => pkg.json.stability = 'deprecated',
+          });
+          stability = 'deprecated';
+        }
+        break;
+      default:
+        const defaultStability = pkg.json.deprecated ? 'deprecated' : 'experimental';
+        pkg.report({
+          ruleName: this.name,
+          message: `Invalid stability configuration in package.json: ${JSON.stringify(stability)}`,
+          fix: () => pkg.json.stability = defaultStability,
+        });
+        stability = defaultStability;
+    }
+    this.validateReadmeHasBanner(pkg, stability);
+  }
+
+  private validateReadmeHasBanner(pkg: PackageJson, stability: string) {
+    const badge = this.readmeBadge(stability);
+    if (!badge) {
+      // Somehow, we don't have a badge for this stability level
+      return;
+    }
+    const readmeFile = path.join(pkg.packageRoot, 'README.md');
+    if (!fs.existsSync(readmeFile)) {
+      // Presence of the file is asserted by another rule
+      return;
+    }
+    const readmeContent = fs.readFileSync(readmeFile, { encoding: 'utf8' });
+    const badgeRegex = new RegExp(badge.replace(/[.*+?^${}()|[\]\\]/g, '\\$&').replace(/\w+/g, '\\w+'));
+    if (!badgeRegex.test(readmeContent)) {
+      // Removing a possible old, now invalid stability indication from the README.md before adding a new one
+      const [title, ...body] = readmeContent.replace(/<div class="stability_label"(?:.|\n)+?<\/div>\n/m, '').split('\n');
+      pkg.report({
+        ruleName: this.name,
+        message: `Missing stability banner for ${stability} in README.md file`,
+        fix: () => fs.writeFileSync(readmeFile, [title, badge, ...body].join('\n')),
+      });
+    }
+  }
+
+  private readmeBadge(stability: string) {
+    switch (stability) {
+      case 'deprecated':
+        return _div(
+          '#D60027',
+          'Stability: 0 - Deprecated. This API may emit warnings. Backward compatibility is not guaranteed.',
+        );
+      case 'experimental':
+        return _div(
+          '#EC5315',
+          'Stability: 1 - Experimental. This API is still under active development and subject to non-backward',
+          'compatible changes or removal in any future version. Use of the API is not recommended in production',
+          'environments. Experimental APIs are not subject to the Semantic Versioning model.',
+        );
+      case 'stable':
+        return _div(
+          '#4EBA0F',
+          'Stability: 2 - Stable. This API is subject to the Semantic Versioning model. It will not be subject to',
+          'non-backward compatible changes or removal in a subsequent patch or feature release.'
+        );
+      default:
+        return undefined;
+    }
+
+    function _div(color: string, ...messages: string[]) {
+      return [
+        '<div class="stability_label"',
+        `     style="background-color: ${color}; color: white !important; margin: 0 0 1rem 0; padding: 1rem; line-height: 1.5;">`,
+        ...messages.map(message => `  ${message}`),
+        '</div>',
+        '',
+      ].join('\n');
+    }
+  }
+}
+
+/**
  * Keywords must contain CDK keywords and be sorted
  */
 export class CDKKeywords extends ValidationRule {

@@ -91,5 +91,6 @@
       "from-attributes:fromPrivateHostedZoneAttributes",
       "from-attributes:fromPublicHostedZoneAttributes"
     ]
-  }
+  },
+  "stability": "experimental"
 }

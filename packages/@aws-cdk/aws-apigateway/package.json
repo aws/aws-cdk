@@ -93,5 +93,6 @@
     "exclude": [
       "from-method:@aws-cdk/aws-apigateway.Resource"
     ]
-  }
+  },
+  "stability": "experimental"
 }
