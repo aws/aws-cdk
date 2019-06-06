@@ -198,7 +198,7 @@ export class Asset extends cdk.Construct implements IAsset {
    * (e.g. "Code" for AWS::Lambda::Function)
    */
   public addResourceMetadata(resource: cdk.CfnResource, resourceProperty: string) {
-    if (!this.node.getContext(cxapi.ASSET_RESOURCE_METADATA_ENABLED_CONTEXT)) {
+    if (!this.node.tryGetContext(cxapi.ASSET_RESOURCE_METADATA_ENABLED_CONTEXT)) {
       return; // not enabled
     }
 

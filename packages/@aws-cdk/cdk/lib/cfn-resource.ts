@@ -108,7 +108,7 @@ export class CfnResource extends CfnRefElement {
     // if aws:cdk:enable-path-metadata is set, embed the current construct's
     // path in the CloudFormation template, so it will be possible to trace
     // back to the actual construct path.
-    if (this.node.getContext(cxapi.PATH_METADATA_ENABLE_CONTEXT)) {
+    if (this.node.tryGetContext(cxapi.PATH_METADATA_ENABLE_CONTEXT)) {
       this.options.metadata = {
         [cxapi.PATH_METADATA_KEY]: this.node.path
       };
@@ -190,6 +190,13 @@ export class CfnResource extends CfnRefElement {
    */
   public addDependsOn(resource: CfnResource) {
     this.dependsOn.add(resource);
+  }
+
+  /**
+   * @returns a string representation of this resource
+   */
+  public toString() {
+    return `${super.toString()} [${this.resourceType}]`;
   }
 
   /**

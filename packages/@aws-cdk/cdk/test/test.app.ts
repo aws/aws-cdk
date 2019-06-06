@@ -96,8 +96,8 @@ export = {
     key2: 'val2'
   });
   const prog = new App();
-  test.deepEqual(prog.node.getContext('key1'), 'val1');
-  test.deepEqual(prog.node.getContext('key2'), 'val2');
+  test.deepEqual(prog.node.tryGetContext('key1'), 'val1');
+  test.deepEqual(prog.node.tryGetContext('key2'), 'val2');
   test.done();
 },
 
@@ -129,7 +129,7 @@ export = {
 'setContext(k,v) can be used to set context programmatically'(test: Test) {
   const prog = new App();
   prog.node.setContext('foo', 'bar');
-  test.deepEqual(prog.node.getContext('foo'), 'bar');
+  test.deepEqual(prog.node.tryGetContext('foo'), 'bar');
   test.done();
 },
 
@@ -310,6 +310,6 @@ class MyConstruct extends Construct {
     super(scope, id);
 
     new CfnResource(this, 'r1', { type: 'ResourceType1' });
-    new CfnResource(this, 'r2', { type: 'ResourceType2', properties: { FromContext: this.node.getContext('ctx1') } });
+    new CfnResource(this, 'r2', { type: 'ResourceType2', properties: { FromContext: this.node.tryGetContext('ctx1') } });
   }
 }
