@@ -1,4 +1,5 @@
 import cdk = require('@aws-cdk/cdk');
+import { ConstructNode } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
 import { IStage } from '../lib/action';
 import { Artifact } from '../lib/artifact';
@@ -49,7 +50,7 @@ export = {
       const stack = new cdk.Stack();
       const pipeline = new Pipeline(stack, 'Pipeline');
 
-      test.deepEqual(pipeline.node.validateTree().length, 1);
+      test.deepEqual(ConstructNode.validate(pipeline.node).length, 1);
 
       test.done();
     },
@@ -68,7 +69,7 @@ export = {
         ],
       });
 
-      test.deepEqual(pipeline.node.validateTree().length, 1);
+      test.deepEqual(ConstructNode.validate(pipeline.node).length, 1);
 
       test.done();
     }

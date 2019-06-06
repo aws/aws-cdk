@@ -3,7 +3,7 @@ import iam = require('@aws-cdk/aws-iam');
 import kms = require('@aws-cdk/aws-kms');
 import logs = require('@aws-cdk/aws-logs');
 import s3 = require('@aws-cdk/aws-s3');
-import { Construct, Resource } from '@aws-cdk/cdk';
+import { Construct, Resource, Stack } from '@aws-cdk/cdk';
 import { CfnTrail } from './cloudtrail.generated';
 
 // AWS::CloudTrail CloudFormation Resources:
@@ -136,7 +136,7 @@ export class Trail extends Resource {
       .addServicePrincipal(cloudTrailPrincipal));
 
     s3bucket.addToResourcePolicy(new iam.PolicyStatement()
-      .addResource(s3bucket.arnForObjects(`AWSLogs/${this.node.stack.accountId}/*`))
+      .addResource(s3bucket.arnForObjects(`AWSLogs/${Stack.of(this).accountId}/*`))
       .addActions("s3:PutObject")
       .addServicePrincipal(cloudTrailPrincipal)
       .setCondition("StringEquals", {'s3:x-amz-acl': "bucket-owner-full-control"}));
