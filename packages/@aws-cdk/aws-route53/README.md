@@ -52,7 +52,7 @@ To add a A record to your zone:
 ```ts
 import route53 = require('@aws-cdk/aws-route53');
 
-new route53.AaaaRecord(this, 'AaaaRecord', {
+new route53.ARecord(this, 'ARecord', {
   zone: myZone,
   target: route53.AddressRecordTarget.fromIpAddresses('1.2.3.4', '5.6.7.8')
 })
