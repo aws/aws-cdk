@@ -24,6 +24,9 @@
         "distName": "aws-cdk.aws-apigateway",
         "module": "aws_cdk.aws_apigateway"
       }
+    },
+    "metadata": {
+      "awsdocs:title": "Amazon API Gateway"
     }
   },
   "repository": {
@@ -90,5 +93,6 @@
     "exclude": [
       "from-method:@aws-cdk/aws-apigateway.Resource"
     ]
-  }
+  },
+  "stability": "experimental"
 }

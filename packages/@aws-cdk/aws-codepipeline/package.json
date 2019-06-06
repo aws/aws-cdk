@@ -24,6 +24,9 @@
         "distName": "aws-cdk.aws-codepipeline",
         "module": "aws_cdk.aws_codepipeline"
       }
+    },
+    "metadata": {
+      "awsdocs:title": "AWS CodePipeline"
     }
   },
   "repository": {
@@ -99,5 +102,6 @@
       "import-props-interface:@aws-cdk/aws-codepipeline.PipelineImportProps",
       "resource-attribute:@aws-cdk/aws-codepipeline.IPipeline.pipelineVersion"
     ]
-  }
+  },
+  "stability": "experimental"
 }

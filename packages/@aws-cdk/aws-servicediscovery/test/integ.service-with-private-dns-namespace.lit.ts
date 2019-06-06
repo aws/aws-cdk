@@ -23,4 +23,4 @@ const loadbalancer = new elbv2.ApplicationLoadBalancer(stack, 'LB', { vpc, inter
 
 service.registerLoadBalancer("Loadbalancer", loadbalancer);
 
-app.run();
+app.synth();

@@ -24,6 +24,9 @@
         "distName": "aws-cdk.aws-dms",
         "module": "aws_cdk.aws_dms"
       }
+    },
+    "metadata": {
+      "awsdocs:title": "AWS Database Migration Service"
     }
   },
   "repository": {
@@ -74,5 +77,6 @@
   },
   "engines": {
     "node": ">= 8.10.0"
-  }
+  },
+  "stability": "experimental"
 }

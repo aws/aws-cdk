@@ -24,6 +24,9 @@
         "distName": "aws-cdk.aws-autoscaling",
         "module": "aws_cdk.aws_autoscaling"
       }
+    },
+    "metadata": {
+      "awsdocs:title": "Amazon EC2 Auto Scaling"
     }
   },
   "repository": {
@@ -96,5 +99,6 @@
       "resource-interface-extends-construct:@aws-cdk/aws-autoscaling.IAutoScalingGroup",
       "export:@aws-cdk/aws-autoscaling.IAutoScalingGroup"
     ]
-  }
+  },
+  "stability": "experimental"
 }

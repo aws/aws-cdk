@@ -23,8 +23,10 @@
       "python": {
         "distName": "aws-cdk.aws-transfer",
         "module": "aws_cdk.aws_transfer"
-      },
-      "sphinx": {}
+      }
+    },
+    "metadata": {
+      "awsdocs:title": "AWS Transfer for SFTP"
     }
   },
   "repository": {
@@ -76,5 +78,6 @@
   },
   "engines": {
     "node": ">= 8.10.0"
-  }
+  },
+  "stability": "experimental"
 }

@@ -26,7 +26,7 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@types/jest": "^24.0.11",
+    "@types/jest": "^24.0.13",
     "cdk-build-tools": "^0.33.0",
     "pkglint": "^0.33.0"
   },
@@ -34,7 +34,7 @@
     "@aws-cdk/cdk": "^0.33.0",
     "@aws-cdk/cloudformation-diff": "^0.33.0",
     "@aws-cdk/cx-api": "^0.33.0",
-    "jest": "^24.7.1",
+    "jest": "^24.8.0",
     "source-map-support": "^0.5.12"
   },
   "repository": {
@@ -49,5 +49,6 @@
   "homepage": "https://github.com/awslabs/aws-cdk",
   "engines": {
     "node": ">= 8.10.0"
-  }
+  },
+  "stability": "experimental"
 }

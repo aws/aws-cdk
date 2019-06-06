@@ -24,6 +24,9 @@
         "distName": "aws-cdk.aws-amazonmq",
         "module": "aws_cdk.aws_amazonmq"
       }
+    },
+    "metadata": {
+      "awsdocs:title": "Amazon MQ"
     }
   },
   "repository": {
@@ -74,5 +77,6 @@
   },
   "engines": {
     "node": ">= 8.10.0"
-  }
+  },
+  "stability": "experimental"
 }

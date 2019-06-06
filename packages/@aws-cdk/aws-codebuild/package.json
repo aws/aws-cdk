@@ -24,6 +24,9 @@
         "distName": "aws-cdk.aws-codebuild",
         "module": "aws_cdk.aws_codebuild"
       }
+    },
+    "metadata": {
+      "awsdocs:title": "AWS CodeBuild"
     }
   },
   "repository": {
@@ -107,5 +110,6 @@
     "exclude": [
       "construct-ctor-props-optional:@aws-cdk/aws-codebuild.Project"
     ]
-  }
+  },
+  "stability": "experimental"
 }

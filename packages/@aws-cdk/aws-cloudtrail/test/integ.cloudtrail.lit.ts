@@ -10,4 +10,4 @@ const bucket = new s3.Bucket(stack, 'Bucket', { removalPolicy: cdk.RemovalPolicy
 const trail = new cloudtrail.Trail(stack, 'Trail');
 trail.addS3EventSelector([bucket.arnForObjects('')]);
 
-app.run();
+app.synth();

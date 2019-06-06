@@ -24,6 +24,9 @@
         "distName": "aws-cdk.aws-ram",
         "module": "aws_cdk.aws_ram"
       }
+    },
+    "metadata": {
+      "awsdocs:title": "AWS Resource Access Manager"
     }
   },
   "repository": {
@@ -75,5 +78,6 @@
   },
   "engines": {
     "node": ">= 8.10.0"
-  }
+  },
+  "stability": "experimental"
 }

@@ -78,4 +78,4 @@ const user = new iam.User(stack, 'MyUser');
 ordinaryTable.grantReadWrite(user);
 encryptedTable.grantReadWrite(user);
 
-app.run();
+app.synth();

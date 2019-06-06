@@ -65,4 +65,4 @@ pipeline.addStage({
   ],
 });
 
-app.run();
+app.synth();

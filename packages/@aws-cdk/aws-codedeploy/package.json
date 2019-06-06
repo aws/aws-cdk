@@ -24,6 +24,9 @@
         "distName": "aws-cdk.aws-codedeploy",
         "module": "aws_cdk.aws_codedeploy"
       }
+    },
+    "metadata": {
+      "awsdocs:title": "AWS CodeDeploy"
     }
   },
   "repository": {
@@ -99,5 +102,6 @@
       "construct-interface-extends-iconstruct:@aws-cdk/aws-codedeploy.IServerDeploymentConfig",
       "resource-interface-extends-resource:@aws-cdk/aws-codedeploy.IServerDeploymentConfig"
     ]
-  }
+  },
+  "stability": "experimental"
 }

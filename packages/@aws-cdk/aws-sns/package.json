@@ -27,7 +27,10 @@
     },
     "excludeTypescript": [
       "examples"
-    ]
+    ],
+    "metadata": {
+      "awsdocs:title": "Amazon Simple Notification Service"
+    }
   },
   "repository": {
     "type": "git",
@@ -94,5 +97,6 @@
     "exclude": [
       "construct-base-is-private:@aws-cdk/aws-sns.TopicBase"
     ]
-  }
+  },
+  "stability": "experimental"
 }

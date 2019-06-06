@@ -24,6 +24,9 @@
         "distName": "aws-cdk.aws-logs",
         "module": "aws_cdk.aws_logs"
       }
+    },
+    "metadata": {
+      "awsdocs:title": "Amazon CloudWatch Logs"
     }
   },
   "repository": {
@@ -84,5 +87,6 @@
     "exclude": [
       "props-no-arn-refs:@aws-cdk/aws-logs.CrossAccountDestinationProps.targetArn"
     ]
-  }
+  },
+  "stability": "experimental"
 }

@@ -24,6 +24,9 @@
         "distName": "aws-cdk.aws-elasticloadbalancing",
         "module": "aws_cdk.aws_elasticloadbalancing"
       }
+    },
+    "metadata": {
+      "awsdocs:title": "Amazon Elastic Load Balancing"
     }
   },
   "repository": {
@@ -77,5 +80,6 @@
   },
   "engines": {
     "node": ">= 8.10.0"
-  }
+  },
+  "stability": "experimental"
 }

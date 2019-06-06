@@ -42,4 +42,4 @@ new ecs.Ec2Service(stack, "FrontendService", {
   }
 });
 
-app.run();
+app.synth();

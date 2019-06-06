@@ -1,4 +1,16 @@
-## AWS IAM Construct Library
+## AWS Identity and Access Management Construct Library
+<!--BEGIN STABILITY BANNER-->
+
+---
+
+![Stability: Experimental](https://img.shields.io/badge/stability-Experimental-important.svg?style=for-the-badge)
+
+> This API is still under active development and subject to non-backward
+> compatible changes or removal in any future version. Use of the API is not recommended in production
+> environments. Experimental APIs are not subject to the Semantic Versioning model.
+
+---
+<!--END STABILITY BANNER-->
 
 Define a role and add permissions to it. This will automatically create and
 attach an IAM policy to the role:

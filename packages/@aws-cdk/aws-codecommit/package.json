@@ -24,6 +24,9 @@
         "distName": "aws-cdk.aws-codecommit",
         "module": "aws_cdk.aws_codecommit"
       }
+    },
+    "metadata": {
+      "awsdocs:title": "AWS CodeCommit"
     }
   },
   "repository": {
@@ -86,5 +89,6 @@
   },
   "engines": {
     "node": ">= 8.10.0"
-  }
+  },
+  "stability": "experimental"
 }
