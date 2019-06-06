@@ -60,7 +60,7 @@ export class LoadBalancedEc2Service extends LoadBalancedServiceBase {
     });
 
     const service = new ecs.Ec2Service(this, "Service", {
-      cluster: props.cluster,
+      cluster: this.cluster,
       desiredCount: props.desiredCount || 1,
       taskDefinition
     });

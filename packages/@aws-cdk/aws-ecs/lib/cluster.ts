@@ -1,6 +1,7 @@
 import autoscaling = require('@aws-cdk/aws-autoscaling');
 import cloudwatch = require ('@aws-cdk/aws-cloudwatch');
 import ec2 = require('@aws-cdk/aws-ec2');
+import { Vpc } from '@aws-cdk/aws-ec2';
 import iam = require('@aws-cdk/aws-iam');
 import cloudmap = require('@aws-cdk/aws-servicediscovery');
 import { Construct, IResource, Resource, SSMParameterProvider } from '@aws-cdk/cdk';
@@ -20,8 +21,10 @@ export interface ClusterProps {
 
   /**
    * The VPC where your ECS instances will be running or your ENIs will be deployed
+   *
+   * @default creates a new VPC
    */
-  readonly vpc: ec2.IVpc;
+  readonly vpc?: ec2.IVpc;
 }
 
 /**
@@ -65,12 +68,16 @@ export class Cluster extends Resource implements ICluster {
    */
   private _hasEc2Capacity: boolean = false;
 
-  constructor(scope: Construct, id: string, props: ClusterProps) {
+  constructor(scope: Construct, id: string, props?: ClusterProps) {
     super(scope, id);
 
-    const cluster = new CfnCluster(this, 'Resource', {clusterName: props.clusterName});
+    const cluster = new CfnCluster(this, 'Resource', {clusterName: props ? props.clusterName : undefined});
 
-    this.vpc = props.vpc;
+    if (props && props.vpc) {
+      this.vpc = props.vpc;
+    } else {
+      this.vpc = new Vpc(this, 'Vpc', { maxAZs: 2 });
+    }
     this.clusterArn = cluster.clusterArn;
     this.clusterName = cluster.clusterName;
   }

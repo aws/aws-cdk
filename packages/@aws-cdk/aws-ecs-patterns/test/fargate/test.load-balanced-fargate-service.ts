@@ -48,5 +48,23 @@ export = {
     }));
 
     test.done();
+  },
+
+  'setting vpc and cluster throws error'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+
+    // WHEN
+    test.throws(() => new ecsPatterns.LoadBalancedFargateService(stack, 'Service', {
+      cluster,
+      vpc,
+      loadBalancerType: ecsPatterns.LoadBalancerType.Network,
+      image: ecs.ContainerImage.fromRegistry("/aws/aws-example-app")
+    }));
+
+    test.done();
   }
+
 };

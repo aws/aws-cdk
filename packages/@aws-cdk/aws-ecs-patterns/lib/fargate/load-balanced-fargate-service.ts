@@ -106,7 +106,7 @@ export class LoadBalancedFargateService extends LoadBalancedServiceBase {
 
     const assignPublicIp = props.publicTasks !== undefined ? props.publicTasks : false;
     const service = new ecs.FargateService(this, "Service", {
-      cluster: props.cluster,
+      cluster: this.cluster,
       desiredCount: props.desiredCount || 1,
       taskDefinition,
       assignPublicIp

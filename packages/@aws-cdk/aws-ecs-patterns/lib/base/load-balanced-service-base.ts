@@ -1,5 +1,7 @@
 import { ICertificate } from '@aws-cdk/aws-certificatemanager';
+import ec2 = require('@aws-cdk/aws-ec2');
 import ecs = require('@aws-cdk/aws-ecs');
+import { Cluster } from '@aws-cdk/aws-ecs';
 import elbv2 = require('@aws-cdk/aws-elasticloadbalancingv2');
 import cdk = require('@aws-cdk/cdk');
 
@@ -11,8 +13,19 @@ export enum LoadBalancerType {
 export interface LoadBalancedServiceBaseProps {
   /**
    * The cluster where your service will be deployed
+   * You can only specify either vpc or cluster. Alternatively, you can leave both blank
+   *
+   * @default create a new cluster
    */
-  readonly cluster: ecs.ICluster;
+  readonly cluster?: ecs.ICluster;
+
+  /**
+   * VPC that the cluster instances or tasks are running in
+   * You can only specify either vpc or cluster. Alternatively, you can leave both blank
+   *
+   * @default use vpc of cluster or create a new one
+   */
+  readonly vpc?: ec2.IVpc;
 
   /**
    * The image to start.
@@ -75,8 +88,18 @@ export abstract class LoadBalancedServiceBase extends cdk.Construct {
 
   public readonly targetGroup: elbv2.ApplicationTargetGroup | elbv2.NetworkTargetGroup;
 
+  public readonly cluster: ecs.ICluster;
+
   constructor(scope: cdk.Construct, id: string, props: LoadBalancedServiceBaseProps) {
     super(scope, id);
+
+    if (props.cluster && props.vpc) {
+      throw new Error(`You can only specify either vpc or cluster. Alternatively, you can leave both blank`);
+    } else if (props.cluster) {
+      this.cluster = props.cluster;
+    } else {
+      this.cluster = new Cluster(this, 'Cluster', { vpc: props.vpc });
+    }
 
     // Load balancer
     this.loadBalancerType = props.loadBalancerType !== undefined ? props.loadBalancerType : LoadBalancerType.Application;
@@ -88,7 +111,7 @@ export abstract class LoadBalancedServiceBase extends cdk.Construct {
     const internetFacing = props.publicLoadBalancer !== undefined ? props.publicLoadBalancer : true;
 
     const lbProps = {
-      vpc: props.cluster.vpc,
+      vpc: this.cluster.vpc,
       internetFacing
     };
 
