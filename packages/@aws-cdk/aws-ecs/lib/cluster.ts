@@ -68,12 +68,12 @@ export class Cluster extends Resource implements ICluster {
    */
   private _hasEc2Capacity: boolean = false;
 
-  constructor(scope: Construct, id: string, props?: ClusterProps) {
+  constructor(scope: Construct, id: string, props: ClusterProps = {}) {
     super(scope, id);
 
-    const cluster = new CfnCluster(this, 'Resource', {clusterName: props ? props.clusterName : undefined});
+    const cluster = new CfnCluster(this, 'Resource', {clusterName: props.clusterName});
 
-    if (props && props.vpc) {
+    if (props.vpc) {
       this.vpc = props.vpc;
     } else {
       this.vpc = new Vpc(this, 'Vpc', { maxAZs: 2 });
