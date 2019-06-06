@@ -213,7 +213,7 @@ export class StabilitySetting extends ValidationRule {
     const badgeRegex = new RegExp(badge.replace(/[.*+?^${}()|[\]\\]/g, '\\$&').replace(/\w+/g, '\\w+'));
     if (!badgeRegex.test(readmeContent)) {
       // Removing a possible old, now invalid stability indication from the README.md before adding a new one
-      const [title, ...body] = readmeContent.replace(/<div class="stability_label"(?:.|\n)+?<\/div>\n/m, '').split('\n');
+      const [title, ...body] = readmeContent.replace(/<div class="stability_label"(?:.|\n)+?<\/div>\n+/m, '').split('\n');
       pkg.report({
         ruleName: this.name,
         message: `Missing stability banner for ${stability} in README.md file`,
@@ -226,31 +226,34 @@ export class StabilitySetting extends ValidationRule {
     switch (stability) {
       case 'deprecated':
         return _div(
-          '#D60027',
-          'Stability: 0 - Deprecated. This API may emit warnings. Backward compatibility is not guaranteed.',
+          'Stability: 0 - Deprecated.',
+          'This API may emit warnings.Backward compatibility is not guaranteed.',
         );
       case 'experimental':
         return _div(
-          '#EC5315',
-          'Stability: 1 - Experimental. This API is still under active development and subject to non-backward',
+          'Stability: 1 - Experimental.',
+          'This API is still under active development and subject to non - backward',
           'compatible changes or removal in any future version. Use of the API is not recommended in production',
           'environments. Experimental APIs are not subject to the Semantic Versioning model.',
         );
       case 'stable':
         return _div(
-          '#4EBA0F',
-          'Stability: 2 - Stable. This API is subject to the Semantic Versioning model. It will not be subject to',
+          'Stability: 2 - Stable.',
+          'This API is subject to the Semantic Versioning model. It will not be subject to',
           'non-backward compatible changes or removal in a subsequent patch or feature release.'
         );
       default:
         return undefined;
     }
 
-    function _div(color: string, ...messages: string[]) {
+    function _div(heading: string, ...messages: string[]) {
       return [
-        '<div class="stability_label"',
-        `     style="background-color: ${color}; color: white !important; margin: 0 0 1rem 0; padding: 1rem; line-height: 1.5;">`,
-        ...messages.map(message => `  ${message}`),
+        '<div class="stability_label">',
+        '',
+        `  > **${heading}**`,
+        '  >',
+        ...messages.map(message => `  > ${message}`),
+        '',
         '</div>',
         '',
       ].join('\n');
