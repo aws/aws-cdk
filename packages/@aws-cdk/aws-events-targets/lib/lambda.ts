@@ -37,9 +37,10 @@ export class LambdaFunction implements events.IRuleTarget {
         sourceArn: rule.ruleArn
       });
     }
+    const id = this.handler.node.uniqueId;
 
     return {
-      id: this.handler.node.uniqueId,
+      id: id.substring(Math.max(id.length - 64, 0), id.length),
       arn: this.handler.functionArn,
       input: this.props.event,
     };
