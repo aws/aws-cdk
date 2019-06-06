@@ -85,5 +85,6 @@
     "exclude": [
       "from-method:@aws-cdk/aws-events.Rule"
     ]
-  }
+  },
+  "stability": "experimental"
 }

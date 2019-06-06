@@ -1,9 +1,12 @@
 import iam = require('@aws-cdk/aws-iam');
 import { PolicyDocument, PolicyStatement } from '@aws-cdk/aws-iam';
-import { Construct, DeletionPolicy, IResource, Stack } from '@aws-cdk/cdk';
-import { EncryptionKeyAlias } from './alias';
+import { Construct, DeletionPolicy, IResource, Resource, Stack } from '@aws-cdk/cdk';
+import { Alias } from './alias';
 import { CfnKey } from './kms.generated';
 
+/**
+ * A KMS Key, either managed by this CDK app, or imported.
+ */
 export interface IKey extends IResource {
   /**
    * The ARN of the key.
@@ -15,7 +18,7 @@ export interface IKey extends IResource {
   /**
    * Defines a new alias for the key.
    */
-  addAlias(alias: string): EncryptionKeyAlias;
+  addAlias(alias: string): Alias;
 
   /**
    * Adds a statement to the KMS key resource policy.
@@ -47,7 +50,7 @@ export interface IKey extends IResource {
   grantEncryptDecrypt(grantee: iam.IGrantable): iam.Grant;
 }
 
-abstract class KeyBase extends Construct implements IKey {
+abstract class KeyBase extends Resource implements IKey {
   /**
    * The ARN of the key.
    */
@@ -64,8 +67,8 @@ abstract class KeyBase extends Construct implements IKey {
   /**
    * Defines a new alias for the key.
    */
-  public addAlias(alias: string): EncryptionKeyAlias {
-    return new EncryptionKeyAlias(this, 'Alias', { alias, key: this });
+  public addAlias(alias: string): Alias {
+    return new Alias(this, 'Alias', { name: alias, targetKey: this });
   }
 
   /**
@@ -181,9 +184,17 @@ export interface KeyProps {
 
 /**
  * Defines a KMS key.
+ *
+ * @resource AWS::KMS::Key
  */
 export class Key extends KeyBase {
-
+  /**
+   * Import an externally defined KMS Key using its ARN.
+   *
+   * @param scope  the construct that will "own" the imported key.
+   * @param id     the id of the imported key in the construct tree.
+   * @param keyArn the ARN of an existing KMS key.
+   */
   public static fromKeyArn(scope: Construct, id: string, keyArn: string): IKey {
     class Import extends KeyBase {
       public keyArn = keyArn;
