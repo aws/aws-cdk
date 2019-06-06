@@ -1,3 +1,4 @@
+/// !cdk-integ PipelineStack
 import codebuild = require('@aws-cdk/aws-codebuild');
 import codecommit = require('@aws-cdk/aws-codecommit');
 import codepipeline = require('@aws-cdk/aws-codepipeline');
@@ -8,11 +9,7 @@ import codepipeline_actions = require('../lib');
 const app = new cdk.App();
 
 /// !show
-const lambdaStack = new cdk.Stack(app, 'LambdaStack', {
-  // remove the Stack from `cdk synth` and `cdk deploy`
-  // unless you explicitly filter for it
-  autoDeploy: false,
-});
+const lambdaStack = new cdk.Stack(app, 'LambdaStack');
 const lambdaCode = lambda.Code.cfnParameters();
 new lambda.Function(lambdaStack, 'Lambda', {
   code: lambdaCode,

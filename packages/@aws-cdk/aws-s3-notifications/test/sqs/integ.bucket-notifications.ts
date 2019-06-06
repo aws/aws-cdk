@@ -22,4 +22,4 @@ bucket2.addObjectCreatedNotification(new s3n.SqsDestination(queue), { suffix: '.
 const encryptedQueue = new sqs.Queue(stack, 'EncryptedQueue', { encryption: sqs.QueueEncryption.Kms });
 bucket1.addObjectRemovedNotification(new s3n.SqsDestination(encryptedQueue));
 
-app.run();
+app.synth();

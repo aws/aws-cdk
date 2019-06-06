@@ -18,4 +18,4 @@ service.registerCnameInstance('CnameInstance', {
   instanceCname: 'service.pizza',
 });
 
-app.run();
+app.synth();

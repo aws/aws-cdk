@@ -16,4 +16,4 @@ new autoscaling.AutoScalingGroup(stack, 'Fleet', {
   machineImage: new ec2.AmazonLinuxImage({ generation: ec2.AmazonLinuxGeneration.AmazonLinux2 }),
 });
 
-app.run();
+app.synth();

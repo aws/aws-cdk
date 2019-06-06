@@ -1,8 +1,6 @@
 import { CfnElement } from './cfn-element';
 import { makeUniqueId } from './uniqueid';
 
-const PATH_SEP = '/';
-
 /**
  * Interface for classes that implementation logical ID assignment strategies
  */
@@ -93,8 +91,9 @@ export class LogicalIDs {
    * Return the logical ID for the given stack element
    */
   public getLogicalId(cfnElement: CfnElement): string {
-    const path = cfnElement.stackPath.split(PATH_SEP);
-
+    const scopes = cfnElement.node.scopes;
+    const stackIndex = scopes.indexOf(cfnElement.stack);
+    const path = scopes.slice(stackIndex + 1).map(x => x.node.id);
     const generatedId = this.namingScheme.allocateAddress(path);
     const finalId = this.applyRename(generatedId);
     validateLogicalId(finalId);

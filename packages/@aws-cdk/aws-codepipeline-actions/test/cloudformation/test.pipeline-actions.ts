@@ -2,6 +2,7 @@ import codepipeline = require('@aws-cdk/aws-codepipeline');
 import events = require('@aws-cdk/aws-events');
 import iam = require('@aws-cdk/aws-iam');
 import cdk = require('@aws-cdk/cdk');
+import { Stack } from '@aws-cdk/cdk';
 import _ = require('lodash');
 import nodeunit = require('nodeunit');
 import cpactions = require('../../lib');
@@ -71,7 +72,7 @@ export = nodeunit.testCase({
       });
 
       test.deepEqual(
-        stack.node.resolve(pipelineRole.statements),
+        stack.resolve(pipelineRole.statements),
         [
           {
             Action: 'iam:PassRole',
@@ -152,7 +153,7 @@ export = nodeunit.testCase({
       });
 
       test.deepEqual(
-        stack.node.resolve(pipelineRole.statements),
+        stack.resolve(pipelineRole.statements),
         [
           {
             Action: 'cloudformation:ExecuteChangeSet',
@@ -294,7 +295,7 @@ function _isOrContains(entity: string | string[], value: string): boolean {
 }
 
 function _stackArn(stackName: string, scope: cdk.IConstruct): string {
-  return scope.node.stack.formatArn({
+  return Stack.of(scope).formatArn({
     service: 'cloudformation',
     resource: 'stack',
     resourceName: `${stackName}/*`,
@@ -309,11 +310,11 @@ class PipelineDouble extends cdk.Construct implements codepipeline.IPipeline {
   constructor(scope: cdk.Construct, id: string, { pipelineName, role }: { pipelineName?: string, role: iam.Role }) {
     super(scope, id);
     this.pipelineName = pipelineName || 'TestPipeline';
-    this.pipelineArn = this.node.stack.formatArn({ service: 'codepipeline', resource: 'pipeline', resourceName: this.pipelineName });
+    this.pipelineArn = Stack.of(this).formatArn({ service: 'codepipeline', resource: 'pipeline', resourceName: this.pipelineName });
     this.role = role;
   }
 
-  public bind(_rule: events.IRule): events.RuleTargetProperties {
+  public bind(_rule: events.IRule): events.RuleTargetConfig {
     throw new Error('asRuleTarget() is unsupported in PipelineDouble');
   }
 
@@ -384,5 +385,5 @@ class RoleDouble extends iam.Role {
 }
 
 function resolve(x: any): any {
-  return new cdk.Stack().node.resolve(x);
+  return new cdk.Stack().resolve(x);
 }

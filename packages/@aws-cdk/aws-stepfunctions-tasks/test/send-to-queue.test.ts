@@ -20,7 +20,7 @@ test('publish to queue', () => {
   }) });
 
   // THEN
-  expect(stack.node.resolve(pub.toStateJson())).toEqual({
+  expect(stack.resolve(pub.toStateJson())).toEqual({
     Type: 'Task',
     Resource: 'arn:aws:states:::sqs:sendMessage',
     End: true,
@@ -41,7 +41,7 @@ test('message body can come from state', () => {
   });
 
   // THEN
-  expect(stack.node.resolve(pub.toStateJson())).toEqual({
+  expect(stack.resolve(pub.toStateJson())).toEqual({
     Type: 'Task',
     Resource: 'arn:aws:states:::sqs:sendMessage',
     End: true,
@@ -64,7 +64,7 @@ test('message body can be an object', () => {
   });
 
   // THEN
-  expect(stack.node.resolve(pub.toStateJson())).toEqual({
+  expect(stack.resolve(pub.toStateJson())).toEqual({
     Type: 'Task',
     Resource: 'arn:aws:states:::sqs:sendMessage',
     End: true,
@@ -89,7 +89,7 @@ test('message body object can contain references', () => {
   });
 
   // THEN
-  expect(stack.node.resolve(pub.toStateJson())).toEqual({
+  expect(stack.resolve(pub.toStateJson())).toEqual({
     Type: 'Task',
     Resource: 'arn:aws:states:::sqs:sendMessage',
     End: true,

@@ -15,7 +15,7 @@ export = {
     });
 
     // THEN
-    test.equal(ref.node.resolve(ref.stringValue), '{{resolve:ssm:/some/key:123}}');
+    test.equal(stack.resolve(ref.stringValue), '{{resolve:ssm:/some/key:123}}');
 
     test.done();
   },
@@ -39,7 +39,7 @@ export = {
       }
     });
 
-    test.deepEqual(ref.node.resolve(ref.stringValue), { Ref: 'RefParameter407AF5C8' });
+    test.deepEqual(stack.resolve(ref.stringValue), { Ref: 'RefParameter407AF5C8' });
 
     test.done();
   },
@@ -55,7 +55,7 @@ export = {
     });
 
     // THEN
-    test.equal(stack.node.resolve(ref), '{{resolve:ssm-secure:/some/key:123}}');
+    test.equal(stack.resolve(ref), '{{resolve:ssm-secure:/some/key:123}}');
 
     test.done();
   },

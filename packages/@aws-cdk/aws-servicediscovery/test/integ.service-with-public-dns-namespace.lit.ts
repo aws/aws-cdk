@@ -24,4 +24,4 @@ service.registerIpInstance('IpInstance', {
   port: 443
 });
 
-app.run();
+app.synth();

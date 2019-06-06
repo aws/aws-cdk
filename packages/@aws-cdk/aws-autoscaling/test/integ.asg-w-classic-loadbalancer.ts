@@ -28,4 +28,4 @@ const lb = new elb.LoadBalancer(stack, 'LB', {
 lb.addTarget(asg);
 lb.addListener({ externalPort: 80 });
 
-app.run();
+app.synth();

@@ -69,4 +69,4 @@ function helloCode(_event: any, _context: any, callback: any) {
   });
 }
 
-new BookApp().run();
+new BookApp().synth();

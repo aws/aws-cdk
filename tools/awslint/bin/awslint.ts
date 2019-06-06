@@ -6,7 +6,7 @@ import reflect = require('jsii-reflect');
 import path = require('path');
 import yargs = require('yargs');
 import { AggregateLinter, apiLinter, attributesLinter, cfnResourceLinter, constructLinter, DiagnosticLevel, eventsLinter, exportsLinter, importsLinter,
-  moduleLinter, resourceLinter } from '../lib';
+  integrationLinter, moduleLinter, resourceLinter } from '../lib';
 
 const linter = new AggregateLinter(
   moduleLinter,
@@ -17,7 +17,8 @@ const linter = new AggregateLinter(
   importsLinter,
   attributesLinter,
   exportsLinter,
-  eventsLinter
+  eventsLinter,
+  integrationLinter
 );
 
 let stackTrace = false;

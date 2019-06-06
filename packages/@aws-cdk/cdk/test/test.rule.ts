@@ -1,5 +1,6 @@
 import { Test } from 'nodeunit';
 import { CfnRule, Fn, Stack } from '../lib';
+import { toCloudFormation } from './util';
 
 export = {
   'Rule can be used to create rules'(test: Test) {
@@ -9,7 +10,7 @@ export = {
     rule.addAssertion(Fn.conditionEquals('lhs', 'rhs'), 'lhs equals rhs');
     rule.addAssertion(Fn.conditionNot(Fn.conditionAnd(Fn.conditionContains([ 'hello', 'world' ], "world"))), 'some assertion');
 
-    test.deepEqual(stack._toCloudFormation(), {
+    test.deepEqual(toCloudFormation(stack), {
       Rules: {
         MyRule: {
           Assertions: [

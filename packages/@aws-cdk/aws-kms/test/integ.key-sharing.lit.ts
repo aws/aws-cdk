@@ -1,3 +1,4 @@
+/// !cdk-integ *
 import cdk = require('@aws-cdk/cdk');
 import kms = require('../lib');
 
@@ -18,7 +19,7 @@ class KeyStack extends cdk.Stack {
 }
 
 interface UseStackProps extends cdk.StackProps {
-  key: kms.IKey; // Use IEncryptionKey here
+  key: kms.IKey; // Use IKey here
 }
 
 /**
@@ -28,7 +29,7 @@ class UseStack extends cdk.Stack {
   constructor(scope: cdk.App, id: string, props: UseStackProps) {
     super(scope, id, props);
 
-    // Use the IEncryptionKey object here.
+    // Use the IKey object here.
     props.key.addAlias('alias/foo');
   }
 }
@@ -37,4 +38,4 @@ const keyStack = new KeyStack(app, 'KeyStack');
 new UseStack(app, 'UseStack', { key: keyStack.key });
 /// !hide
 
-app.run();
+app.synth();
