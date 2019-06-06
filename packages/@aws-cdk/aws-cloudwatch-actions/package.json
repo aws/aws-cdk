@@ -74,7 +74,7 @@
     "cdk-integ-tools": "^0.33.0",
     "cfn2ts": "^0.33.0",
     "pkglint": "^0.33.0",
-    "jest": "^24.7.1"
+    "jest": "^24.8.0"
   },
   "dependencies": {
     "@aws-cdk/aws-applicationautoscaling": "^0.33.0",
