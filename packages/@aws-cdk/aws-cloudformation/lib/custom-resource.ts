@@ -1,6 +1,6 @@
 import lambda = require('@aws-cdk/aws-lambda');
 import sns = require('@aws-cdk/aws-sns');
-import { CfnResource, Construct, Resource } from '@aws-cdk/cdk';
+import { applyRemovalPolicy, CfnResource, Construct, RemovalPolicy, Resource } from '@aws-cdk/cdk';
 import { CfnCustomResource } from './cloudformation.generated';
 
 /**
@@ -21,9 +21,7 @@ export class CustomResourceProvider {
    */
   public static topic(topic: sns.ITopic) { return new CustomResourceProvider(topic.topicArn); }
 
-  private constructor(public readonly serviceToken: string) {
-
-  }
+  private constructor(public readonly serviceToken: string) {}
 }
 
 /**
@@ -67,6 +65,13 @@ export interface CustomResourceProps {
    * @default - AWS::CloudFormation::CustomResource
    */
   readonly resourceType?: string;
+
+  /**
+   * The policy to apply when this resource is removed from the application.
+   *
+   * @default cdk.RemovalPolicy.Destroy
+   */
+  readonly removalPolicy?: RemovalPolicy;
 }
 
 /**
@@ -91,6 +96,8 @@ export class CustomResource extends Resource {
         ...uppercaseProperties(props.properties || {})
       }
     });
+
+    applyRemovalPolicy(this.resource, props.removalPolicy);
   }
 
   public getAtt(attributeName: string) {
