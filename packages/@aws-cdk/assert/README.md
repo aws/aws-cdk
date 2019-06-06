@@ -1,11 +1,16 @@
 ## Testing utilities and assertions for CDK libraries
-<div class="stability_label"
-     style="background-color: #EC5315; color: white !important; margin: 0 0 1rem 0; padding: 1rem; line-height: 1.5;">
-  Stability: 1 - Experimental. This API is still under active development and subject to non-backward
-  compatible changes or removal in any future version. Use of the API is not recommended in production
-  environments. Experimental APIs are not subject to the Semantic Versioning model.
-</div>
+<!--BEGIN STABILITY BANNER-->
 
+---
+
+![Stability: Experimental](https://img.shields.io/badge/stability-Experimental-important.svg?style=for-the-badge)
+
+> This API is still under active development and subject to non-backward
+> compatible changes or removal in any future version. Use of the API is not recommended in production
+> environments. Experimental APIs are not subject to the Semantic Versioning model.
+
+---
+<!--END STABILITY BANNER-->
 
 This library contains helpers for writing unit tests and integration tests for CDK libraries
 
