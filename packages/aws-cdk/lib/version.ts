@@ -5,7 +5,7 @@ import os = require('os');
 import path = require('path');
 import semver = require('semver');
 import { promisify } from 'util';
-import { debug, print, warning } from '../lib/logging';
+import { debug, print } from '../lib/logging';
 import { formatAsBanner } from '../lib/util/console-formatters';
 
 const ONE_DAY_IN_SECONDS = 1 * 24 * 60 * 60;
@@ -116,6 +116,6 @@ export async function displayVersionMessage(): Promise<void> {
       bannerMsg.forEach((e) => print(e));
     }
   } catch (err) {
-    warning(`Could not run version check - ${err.message}`);
+    debug(`Could not run version check - ${err.message}`);
   }
 }
