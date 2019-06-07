@@ -20,7 +20,7 @@ export class CfnReference extends Reference {
   /**
    * Check whether this is actually a Reference
    */
-  public static isCfnReference(x: Token): x is CfnReference {
+  public static isCfnReference(x: IResolvable): x is CfnReference {
     return CFN_REFERENCE_SYMBOL in x;
   }
 

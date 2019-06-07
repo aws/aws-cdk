@@ -12,7 +12,7 @@ export abstract class Reference extends Intrinsic {
    * Check whether this is actually a Reference
    */
   public static isReference(x: any): x is Reference {
-    return typeof 'x' === 'object' && x !== null && REFERENCE_SYMBOL in x;
+    return typeof x === 'object' && x !== null && REFERENCE_SYMBOL in x;
   }
 
   public readonly target: Construct;
