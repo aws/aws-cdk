@@ -7,7 +7,7 @@ import { CLOUDFORMATION_TOKEN_RESOLVER, CloudFormationLang } from './cloudformat
 import { Construct, ConstructNode, IConstruct, ISynthesisSession } from './construct';
 import { Environment } from './environment';
 import { HashedAddressingScheme, IAddressingScheme, LogicalIDs } from './logical-id';
-import { resolve } from './resolve';
+import { resolve } from './private/resolve';
 import { makeUniqueId } from './uniqueid';
 
 const STACK_SYMBOL = Symbol.for('@aws-cdk/cdk.Stack');
