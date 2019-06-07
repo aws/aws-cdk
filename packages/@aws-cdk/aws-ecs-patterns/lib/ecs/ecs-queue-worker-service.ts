@@ -3,7 +3,7 @@ import cdk = require('@aws-cdk/cdk');
 import { QueueWorkerServiceBase, QueueWorkerServiceBaseProps } from '../base/queue-worker-service-base';
 
 /**
- * Properties to define an Ec2 query worker service
+ * Properties to define an Ec2 queue worker service
  */
 export interface Ec2QueueWorkerServiceProps extends QueueWorkerServiceBaseProps {
   /**
@@ -41,9 +41,15 @@ export interface Ec2QueueWorkerServiceProps extends QueueWorkerServiceBaseProps 
 }
 
 /**
- * Class to create an Ec2 query worker service
+ * Class to create an Ec2 queue worker service
  */
 export class Ec2QueueWorkerService extends QueueWorkerServiceBase {
+
+  /**
+   * The ECS service in this construct
+   */
+  public readonly service: ecs.Ec2Service;
+
   constructor(scope: cdk.Construct, id: string, props: Ec2QueueWorkerServiceProps) {
     super(scope, id, props);
 
@@ -61,11 +67,11 @@ export class Ec2QueueWorkerService extends QueueWorkerServiceBase {
 
     // Create an ECS service with the previously defined Task Definition and configure
     // autoscaling based on cpu utilization and number of messages visible in the SQS queue.
-    const ecsService = new ecs.Ec2Service(this, 'QueueWorkerService', {
+    this.service = new ecs.Ec2Service(this, 'QueueWorkerService', {
       cluster: props.cluster,
       desiredCount: this.desiredCount,
       taskDefinition
     });
-    this.configureAutoscalingForService(ecsService);
+    this.configureAutoscalingForService(this.service);
   }
 }
