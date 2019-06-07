@@ -87,6 +87,7 @@
     "@aws-cdk/aws-iam": "^0.33.0",
     "@aws-cdk/aws-kms": "^0.33.0",
     "@aws-cdk/aws-s3": "^0.33.0",
+    "@aws-cdk/aws-secretsmanager": "^0.33.0",
     "@aws-cdk/cdk": "^0.33.0"
   },
   "homepage": "https://github.com/awslabs/aws-cdk",
@@ -101,6 +102,7 @@
     "@aws-cdk/aws-iam": "^0.33.0",
     "@aws-cdk/aws-kms": "^0.33.0",
     "@aws-cdk/aws-s3": "^0.33.0",
+    "@aws-cdk/aws-secretsmanager": "^0.33.0",
     "@aws-cdk/cdk": "^0.33.0"
   },
   "engines": {

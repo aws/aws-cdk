@@ -39,33 +39,6 @@
               ]
             }
           ]
-        },
-        "PolicyDocument": {
-          "Statement": [
-            {
-              "Action": [
-                "ecr:GetDownloadUrlForLayer",
-                "ecr:BatchGetImage",
-                "ecr:BatchCheckLayerAvailability"
-              ],
-              "Effect": "Allow",
-              "Principal": {
-                "Service": {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "codebuild.",
-                      {
-                        "Ref": "AWS::URLSuffix"
-                      }
-                    ]
-                  ]
-                }
-              },
-              "Sid": "CodeBuild"
-            }
-          ],
-          "Version": "2012-10-17"
         }
       },
       "DependsOn": [
@@ -263,6 +236,16 @@
           "Statement": [
             {
               "Action": [
+                "ecr:GetAutheticationToken",
+                "ecr:GetDownloadUrlForLayer",
+                "ecr:BatchGetImage",
+                "ecr:BatchCheckLayerAvailability"
+              ],
+              "Effect": "Allow",
+              "Resource": "*"
+            },
+            {
+              "Action": [
                 "logs:CreateLogGroup",
                 "logs:CreateLogStream",
                 "logs:PutLogEvents"
@@ -438,6 +421,7 @@
               ]
             ]
           },
+          "ImagePullCredentialsType": "SERVICE_ROLE",
           "PrivilegedMode": false,
           "Type": "LINUX_CONTAINER"
         },

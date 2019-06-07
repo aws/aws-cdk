@@ -6,6 +6,7 @@ import ecr = require('@aws-cdk/aws-ecr');
 import events = require('@aws-cdk/aws-events');
 import iam = require('@aws-cdk/aws-iam');
 import kms = require('@aws-cdk/aws-kms');
+import secretsmanager = require('@aws-cdk/aws-secretsmanager');
 import { Aws, Construct, IResource, Resource, Stack, Token } from '@aws-cdk/cdk';
 import { BuildArtifacts, CodePipelineBuildArtifacts, NoBuildArtifacts } from './artifacts';
 import { Cache } from './cache';
@@ -813,6 +814,17 @@ export class Project extends ProjectBase {
     return p;
   }
 
+  private attachEcrPermission() {
+    this.addToRolePolicy(new iam.PolicyStatement()
+    .addAllResources()
+    .addActions(
+      'ecr:GetAutheticationToken',
+      'ecr:GetDownloadUrlForLayer',
+      'ecr:BatchGetImage',
+      'ecr:BatchCheckLayerAvailability'
+    ));
+  }
+
   private renderEnvironment(env: BuildEnvironment = {},
                             projectVars: { [name: string]: BuildEnvironmentVariable } = {}): CfnProject.EnvironmentProperty {
     const vars: { [name: string]: BuildEnvironmentVariable } = {};
@@ -830,6 +842,10 @@ export class Project extends ProjectBase {
 
     const hasEnvironmentVars = Object.keys(vars).length > 0;
 
+    if (isECRImage(this.buildImage.imageId)) {
+      this.attachEcrPermission();
+    }
+
     const errors = this.buildImage.validate(env);
     if (errors.length > 0) {
       throw new Error("Invalid CodeBuild environment: " + errors.join('\n'));
@@ -838,6 +854,12 @@ export class Project extends ProjectBase {
     return {
       type: this.buildImage.type,
       image: this.buildImage.imageId,
+      imagePullCredentialsType: this.buildImage.imagePullCredentialsType,
+      registryCredential: this.buildImage.secretsManagerCredential ?
+      {
+        credentialProvider: 'SECRETS_MANAGER',
+        credential: this.buildImage.secretsManagerCredential.secretArn
+      } : undefined,
       privilegedMode: env.privileged || false,
       computeType: env.computeType || this.buildImage.defaultComputeType,
       environmentVariables: !hasEnvironmentVars ? undefined : Object.keys(vars).map(name => ({
@@ -945,6 +967,11 @@ export enum ComputeType {
   Large = 'BUILD_GENERAL1_LARGE'
 }
 
+export enum ImagePullCredentialsType {
+  CodeBuild = 'CODEBUILD',
+  ServiceRole = 'SERVICE_ROLE'
+}
+
 export interface BuildEnvironment {
   /**
    * The image used for the builds.
@@ -1004,6 +1031,16 @@ export interface IBuildImage {
   readonly defaultComputeType: ComputeType;
 
   /**
+   * The type of credentials AWS CodeBuild uses to pull images in your build.
+   */
+  readonly imagePullCredentialsType?: ImagePullCredentialsType;
+
+  /**
+   * The credentials for access to a private registry.
+   */
+  readonly secretsManagerCredential?: secretsmanager.ISecret;
+
+  /**
    * Allows the image a chance to validate whether the passed configuration is correct.
    *
    * @param buildEnvironment the current build environment
@@ -1023,7 +1060,7 @@ export interface IBuildImage {
  *
  * You can also specify a custom image using one of the static methods:
  *
- * - LinuxBuildImage.fromDockerHub(image)
+ * - LinuxBuildImage.fromDockerRegistry(image[, secretsManagerCredential])
  * - LinuxBuildImage.fromEcrRepository(repo[, tag])
  * - LinuxBuildImage.fromAsset(parent, id, props)
  *
@@ -1067,8 +1104,8 @@ export class LinuxBuildImage implements IBuildImage {
   /**
    * @returns a Linux build image from a Docker Hub image.
    */
-  public static fromDockerHub(name: string): LinuxBuildImage {
-    return new LinuxBuildImage(name);
+  public static fromDockerRegistry(name: string, secretsManagerCredential?: secretsmanager.ISecret): LinuxBuildImage {
+    return new LinuxBuildImage(name, ImagePullCredentialsType.ServiceRole, secretsManagerCredential);
   }
 
   /**
@@ -1083,9 +1120,7 @@ export class LinuxBuildImage implements IBuildImage {
    * @param tag Image tag (default "latest")
    */
   public static fromEcrRepository(repository: ecr.IRepository, tag: string = 'latest'): LinuxBuildImage {
-    const image = new LinuxBuildImage(repository.repositoryUriForTag(tag));
-    repository.addToResourcePolicy(ecrAccessForCodeBuildService());
-    return image;
+    return new LinuxBuildImage(repository.repositoryUriForTag(tag), ImagePullCredentialsType.ServiceRole);
   }
 
   /**
@@ -1093,19 +1128,16 @@ export class LinuxBuildImage implements IBuildImage {
    */
   public static fromAsset(scope: Construct, id: string, props: DockerImageAssetProps): LinuxBuildImage {
     const asset = new DockerImageAsset(scope, id, props);
-    const image = new LinuxBuildImage(asset.imageUri);
-
-    // allow this codebuild to pull this image (CodeBuild doesn't use a role, so
-    // we can't use `asset.grantUseImage()`.
-    asset.repository.addToResourcePolicy(ecrAccessForCodeBuildService());
-
-    return image;
+    return new LinuxBuildImage(asset.imageUri, ImagePullCredentialsType.ServiceRole);
   }
 
   public readonly type = 'LINUX_CONTAINER';
   public readonly defaultComputeType = ComputeType.Small;
 
-  private constructor(public readonly imageId: string) {
+  private constructor(
+    public readonly imageId: string,
+    public readonly imagePullCredentialsType?: ImagePullCredentialsType,
+    public readonly secretsManagerCredential?: secretsmanager.ISecret) {
   }
 
   public validate(_: BuildEnvironment): string[] {
@@ -1148,7 +1180,7 @@ export class LinuxBuildImage implements IBuildImage {
  *
  * You can also specify a custom image using one of the static methods:
  *
- * - WindowsBuildImage.fromDockerHub(image)
+ * - WindowsBuildImage.fromDockerRegistry(image[, secretsManagerCredential])
  * - WindowsBuildImage.fromEcrRepository(repo[, tag])
  * - WindowsBuildImage.fromAsset(parent, id, props)
  *
@@ -1160,8 +1192,8 @@ export class WindowsBuildImage implements IBuildImage {
   /**
    * @returns a Windows build image from a Docker Hub image.
    */
-  public static fromDockerHub(name: string): WindowsBuildImage {
-    return new WindowsBuildImage(name);
+  public static fromDockerRegistry(name: string, secretsManagerCredential?: secretsmanager.ISecret): WindowsBuildImage {
+    return new WindowsBuildImage(name, ImagePullCredentialsType.ServiceRole, secretsManagerCredential);
   }
 
   /**
@@ -1176,9 +1208,7 @@ export class WindowsBuildImage implements IBuildImage {
    * @param tag Image tag (default "latest")
    */
   public static fromEcrRepository(repository: ecr.IRepository, tag: string = 'latest'): WindowsBuildImage {
-    const image = new WindowsBuildImage(repository.repositoryUriForTag(tag));
-    repository.addToResourcePolicy(ecrAccessForCodeBuildService());
-    return image;
+    return new WindowsBuildImage(repository.repositoryUriForTag(tag), ImagePullCredentialsType.ServiceRole);
   }
 
   /**
@@ -1186,18 +1216,15 @@ export class WindowsBuildImage implements IBuildImage {
    */
   public static fromAsset(scope: Construct, id: string, props: DockerImageAssetProps): WindowsBuildImage {
     const asset = new DockerImageAsset(scope, id, props);
-    const image = new WindowsBuildImage(asset.imageUri);
-
-    // allow this codebuild to pull this image (CodeBuild doesn't use a role, so
-    // we can't use `asset.grantUseImage()`.
-    asset.repository.addToResourcePolicy(ecrAccessForCodeBuildService());
-
-    return image;
+    return new WindowsBuildImage(asset.imageUri, ImagePullCredentialsType.ServiceRole);
   }
   public readonly type = 'WINDOWS_CONTAINER';
   public readonly defaultComputeType = ComputeType.Medium;
 
-  private constructor(public readonly imageId: string) {
+  private constructor(
+    public readonly imageId: string,
+    public readonly imagePullCredentialsType?: ImagePullCredentialsType,
+    public readonly secretsManagerCredential?: secretsmanager.ISecret) {
   }
 
   public validate(buildEnvironment: BuildEnvironment): string[] {
@@ -1287,13 +1314,6 @@ function extendBuildSpec(buildSpec: any, extend: any) {
   }
 }
 
-function ecrAccessForCodeBuildService(): iam.PolicyStatement {
-  return new iam.PolicyStatement()
-    .describe('CodeBuild')
-    .addServicePrincipal('codebuild.amazonaws.com')
-    .addActions(
-      'ecr:GetDownloadUrlForLayer',
-      'ecr:BatchGetImage',
-      'ecr:BatchCheckLayerAvailability'
-    );
+function isECRImage(imageUri: string) {
+  return /^(.+).dkr.ecr.(.+).amazonaws.com[.]{0,1}[a-z]{0,3}\/([^:]+):?.*$/.test(imageUri);
 }
