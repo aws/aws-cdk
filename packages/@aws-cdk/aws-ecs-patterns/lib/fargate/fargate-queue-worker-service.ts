@@ -45,9 +45,14 @@ export interface FargateQueueWorkerServiceProps extends QueueWorkerServiceBasePr
 }
 
 /**
- * Class to create a Fargate query worker service
+ * Class to create a Fargate queue worker service
  */
 export class FargateQueueWorkerService extends QueueWorkerServiceBase {
+  /**
+   * The Fargate service in this construct
+   */
+  public readonly service: ecs.FargateService;
+
   constructor(scope: cdk.Construct, id: string, props: FargateQueueWorkerServiceProps) {
     super(scope, id, props);
 
@@ -65,11 +70,11 @@ export class FargateQueueWorkerService extends QueueWorkerServiceBase {
 
     // Create a Fargate service with the previously defined Task Definition and configure
     // autoscaling based on cpu utilization and number of messages visible in the SQS queue.
-    const fargateService = new ecs.FargateService(this, 'FargateQueueWorkerService', {
+    this.service = new ecs.FargateService(this, 'FargateQueueWorkerService', {
       cluster: props.cluster,
       desiredCount: this.desiredCount,
       taskDefinition
     });
-    this.configureAutoscalingForService(fargateService);
+    this.configureAutoscalingForService(this.service);
   }
 }
