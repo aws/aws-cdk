@@ -1,7 +1,6 @@
 import { exec as _exec } from 'child_process';
 import colors = require('colors/safe');
-import fs = require('fs');
-import { mkdirsSync } from 'fs-extra';
+import fs = require('fs-extra');
 import os = require('os');
 import path = require('path');
 import semver = require('semver');
@@ -11,11 +10,7 @@ import { formatAsBanner } from '../lib/util/console-formatters';
 
 const ONE_DAY_IN_SECONDS = 1 * 24 * 60 * 60;
 
-const close = promisify(fs.close);
 const exec = promisify(_exec);
-const open = promisify(fs.open);
-const stat = promisify(fs.stat);
-const write = promisify(fs.write);
 
 export const DISPLAY_VERSION = `${versionNumber()} (build ${commit()})`;
 
@@ -46,7 +41,7 @@ export class VersionCheckTTL {
   constructor(file?: string, ttlSecs?: number) {
     this.file = file || VersionCheckTTL.timestampFilePath();
     try {
-      mkdirsSync(path.dirname(this.file));
+      fs.mkdirsSync(path.dirname(this.file));
       fs.accessSync(path.dirname(this.file), fs.constants.W_OK);
     } catch {
       throw new Error(`Directory (${path.dirname(this.file)}) is not writable.`);
@@ -56,7 +51,7 @@ export class VersionCheckTTL {
 
   public async hasExpired(): Promise<boolean> {
     try {
-      const lastCheckTime = (await stat(this.file)).mtimeMs;
+      const lastCheckTime = (await fs.stat(this.file)).mtimeMs;
       const today = new Date().getTime();
 
       if ((today - lastCheckTime) / 1000 > this.ttlSecs) { // convert ms to sec
@@ -73,12 +68,10 @@ export class VersionCheckTTL {
   }
 
   public async update(latestVersion?: string): Promise<void> {
-    const fd = await open(this.file, 'w');
-    if (latestVersion && latestVersion.trim()) {
-      // writing to a file for debugging or manual check purposes only
-      await write(fd, latestVersion);
+    if (!latestVersion) {
+      latestVersion = '';
     }
-    await close(fd);
+    fs.writeFileSync(this.file, latestVersion);
   }
 }
 

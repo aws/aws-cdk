@@ -1,5 +1,7 @@
+import fs = require('fs-extra');
 import { Test } from 'nodeunit';
 import os = require('os');
+import path = require('path');
 import sinon = require('sinon');
 import { setTimeout as _setTimeout } from 'timers';
 import { promisify } from 'util';
@@ -19,7 +21,9 @@ export = {
 
   'initialization fails on unwritable directory'(test: Test) {
     test.expect(1);
-    test.throws(() => new VersionCheckTTL('/cdk-test/cache'), /not writable/);
+    const cacheFile = tmpfile();
+    sinon.stub(fs, 'mkdirsSync').withArgs(path.dirname(cacheFile)).throws('Cannot make directory');
+    test.throws(() => new VersionCheckTTL(cacheFile), /not writable/);
     test.done();
   },
 
@@ -74,5 +78,25 @@ export = {
     sinon.stub(os, 'userInfo').returns({ username: '', uid: 10, gid: 11, shell: null, homedir: ''});
     test.throws(() => new VersionCheckTTL(), /Cannot determine home directory/);
     test.done();
-  }
+  },
+
+  'Version specified is stored in the TTL file'(test: Test) {
+    test.expect(1);
+    const cacheFile = tmpfile();
+    const cache = new VersionCheckTTL(cacheFile, 1);
+    cache.update('1.1.1');
+    const storedVersion = fs.readFileSync(cacheFile, 'utf8');
+    test.equal(storedVersion, '1.1.1');
+    test.done();
+  },
+
+  'No Version specified for storage in the TTL file'(test: Test) {
+    test.expect(1);
+    const cacheFile = tmpfile();
+    const cache = new VersionCheckTTL(cacheFile, 1);
+    cache.update();
+    const storedVersion = fs.readFileSync(cacheFile, 'utf8');
+    test.equal(storedVersion, '');
+    test.done();
+  },
 };
