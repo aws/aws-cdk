@@ -71,7 +71,7 @@ export class VersionCheckTTL {
     if (!latestVersion) {
       latestVersion = '';
     }
-    fs.writeFileSync(this.file, latestVersion);
+    await fs.writeFile(this.file, latestVersion);
   }
 }
 
