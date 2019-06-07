@@ -44,7 +44,7 @@
                 "Arn"
               ]
             },
-            "Id": "MyProject",
+            "Id": "awscdkcodebuildeventsMyProjectEF919B0E",
             "RoleArn": {
               "Fn::GetAtt": [
                 "MyProjectEventsRole5B7D93F5",
@@ -56,7 +56,7 @@
             "Arn": {
               "Ref": "MyTopic86869434"
             },
-            "Id": "MyTopic",
+            "Id": "awscdkcodebuildeventsMyTopic550011DC",
             "InputTransformer": {
               "InputPathsMap": {
                 "f1": "$.detail.repositoryName",
@@ -284,7 +284,7 @@
             "Arn": {
               "Ref": "MyTopic86869434"
             },
-            "Id": "MyTopic"
+            "Id": "awscdkcodebuildeventsMyTopic550011DC"
           }
         ]
       }
@@ -313,7 +313,7 @@
             "Arn": {
               "Ref": "MyTopic86869434"
             },
-            "Id": "MyTopic",
+            "Id": "awscdkcodebuildeventsMyTopic550011DC",
             "InputTransformer": {
               "InputPathsMap": {
                 "f1": "$.detail.completed-phase"

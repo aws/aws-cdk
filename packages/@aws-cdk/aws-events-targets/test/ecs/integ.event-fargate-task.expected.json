@@ -609,7 +609,7 @@
                     "Arn"
                   ]
                 },
-                "Id": "TaskDef-on-EcsCluster",
+                "Id": "awsecsintegfargateTaskDef8878AF94-on-awsecsintegfargateEcsCluster46E816CB",
                 "EcsParameters": {
                   "TaskDefinitionArn": {
                     "Ref": "TaskDef54694570"
@@ -645,7 +645,7 @@
               }
             ]
           },
-          "physicalResourceId": "TaskDef-on-EcsCluster"
+          "physicalResourceId": "awsecsintegfargateTaskDef8878AF94-on-awsecsintegfargateEcsCluster46E816CB"
         },
         "Update": {
           "service": "CloudWatchEvents",
@@ -686,7 +686,7 @@
                     "Arn"
                   ]
                 },
-                "Id": "TaskDef-on-EcsCluster",
+                "Id": "awsecsintegfargateTaskDef8878AF94-on-awsecsintegfargateEcsCluster46E816CB",
                 "EcsParameters": {
                   "TaskDefinitionArn": {
                     "Ref": "TaskDef54694570"
@@ -722,7 +722,7 @@
               }
             ]
           },
-          "physicalResourceId": "TaskDef-on-EcsCluster"
+          "physicalResourceId": "awsecsintegfargateTaskDef8878AF94-on-awsecsintegfargateEcsCluster46E816CB"
         }
       }
     },
@@ -933,7 +933,7 @@
                 "Ref": "TaskDef54694570"
               }
             },
-            "Id": "TaskDef-on-EcsCluster",
+            "Id": "egfargateTaskDef8878AF94-on-awsecsintegfargateEcsCluster46E816CB",
             "Input": "{\"containerOverrides\":[{\"name\":\"TheContainer\",\"environment\":[{\"name\":\"I_WAS_TRIGGERED\",\"value\":\"From CloudWatch Events\"}]}]}",
             "RoleArn": {
               "Fn::GetAtt": [

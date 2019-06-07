@@ -365,7 +365,7 @@
                 ]
               ]
             },
-            "Id": "Pipeline",
+            "Id": "pipelineeventsPipelineD8DD4529",
             "RoleArn": {
               "Fn::GetAtt": [
                 "PipelineEventsRole46BEEA7C",
