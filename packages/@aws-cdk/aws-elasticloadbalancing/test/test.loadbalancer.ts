@@ -93,6 +93,25 @@ export = {
     }));
 
     test.done();
+  },
+
+  'enable cross zone load balancing'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+    const vpc = new Vpc(stack, 'VCP');
+
+    // WHEN
+    new LoadBalancer(stack, 'LB', {
+      vpc,
+      crossZone: true,
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::ElasticLoadBalancing::LoadBalancer', {
+      CrossZone: true
+    }));
+
+    test.done();
   }
 };
 
