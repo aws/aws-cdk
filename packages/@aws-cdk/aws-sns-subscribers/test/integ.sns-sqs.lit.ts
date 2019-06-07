@@ -1,6 +1,7 @@
+import sns = require('@aws-cdk/aws-sns');
 import sqs = require('@aws-cdk/aws-sqs');
 import cdk = require('@aws-cdk/cdk');
-import sns = require('../lib');
+import subs = require('../lib');
 
 class SnsToSqs extends cdk.Stack {
   constructor(scope: cdk.App, id: string, props?: cdk.StackProps) {
@@ -10,7 +11,7 @@ class SnsToSqs extends cdk.Stack {
     const topic = new sns.Topic(this, 'MyTopic');
     const queue = new sqs.Queue(this, 'MyQueue');
 
-    topic.subscribeQueue(queue);
+    topic.subscribe(new subs.SqsSubscriber(queue));
     /// !hide
   }
 }

@@ -530,7 +530,7 @@ export class Construct implements IConstruct {
    * Return whether the given object is a Construct
    */
   public static isConstruct(x: any): x is Construct {
-    return CONSTRUCT_SYMBOL in x;
+    return typeof x === 'object' && x !== null && CONSTRUCT_SYMBOL in x;
   }
 
   /**

@@ -7,6 +7,7 @@ import software.amazon.awscdk.services.iam.User;
 import software.amazon.awscdk.services.iam.UserProps;
 import software.amazon.awscdk.services.sns.Topic;
 import software.amazon.awscdk.services.sns.TopicProps;
+import software.amazon.awscdk.services.sns.subscribers.SqsSubscriber;
 import software.amazon.awscdk.services.sqs.Queue;
 import software.amazon.awscdk.services.sqs.QueueProps;
 
@@ -26,7 +27,7 @@ public class HelloStack extends Stack {
                 .withDisplayName("My First Topic Yeah")
                 .build());
 
-        topic.subscribeQueue(queue);
+        topic.subscribe(new SqsSubscriber(queue));
 
         HelloConstruct hello = new HelloConstruct(this, "Buckets", HelloConstructProps.builder()
                 .withBucketCount(5)

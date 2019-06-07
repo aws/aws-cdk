@@ -1,6 +1,7 @@
 using Amazon.CDK;
 using Amazon.CDK.AWS.IAM;
 using Amazon.CDK.AWS.SNS;
+using Amazon.CDK.AWS.SNS.Subscribers;
 using Amazon.CDK.AWS.SQS;
 
 namespace HelloCdk
@@ -20,7 +21,7 @@ namespace HelloCdk
                 DisplayName = "My First Topic Yeah"
             });
 
-            topic.SubscribeQueue(queue, null);
+            topic.Subscribe(new SqsSubscriber(queue, null));
 
             // You can also define your own constructs and use them in your stack.
             HelloConstruct hello = new HelloConstruct(this, "Buckets", new HelloConstructProps()

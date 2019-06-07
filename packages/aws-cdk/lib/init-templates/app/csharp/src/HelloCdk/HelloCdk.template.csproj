@@ -9,6 +9,7 @@
     <PackageReference Include="Amazon.CDK" Version="%cdk-version%" />
     <PackageReference Include="Amazon.CDK.AWS.IAM" Version="%cdk-version%" />
     <PackageReference Include="Amazon.CDK.AWS.SNS" Version="%cdk-version%" />
+    <PackageReference Include="Amazon.CDK.AWS.SNS.Subscribers" Version="%cdk-version%" />
     <PackageReference Include="Amazon.CDK.AWS.SQS" Version="%cdk-version%" />
   </ItemGroup>
 
