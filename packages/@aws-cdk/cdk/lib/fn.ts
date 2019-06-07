@@ -662,6 +662,14 @@ class FnJoin implements IResolvable {
     return { 'Fn::Join': [ this.delimiter, resolved ] };
   }
 
+  public toString() {
+    return Token.asString(this, { displayHint: 'Fn::Join' });
+  }
+
+  public toJSON() {
+    return `<Fn::Join>`;
+  }
+
   /**
    * Optimization: if an Fn::Join is nested in another one and they share the same delimiter, then flatten it up. Also,
    * if two concatenated elements are literal strings (not tokens), then pre-concatenate them with the delimiter, to
