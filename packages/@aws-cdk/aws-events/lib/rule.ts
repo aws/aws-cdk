@@ -230,5 +230,7 @@ export class Rule extends Resource implements IRule {
  * Result must match regex [\.\-_A-Za-z0-9]+
  */
 function sanitizeId(id: string) {
-  return id.replace(/[^\.\-_A-Za-z0-9]/g, '-');
+  const _id = id.replace(/[^\.\-_A-Za-z0-9]/g, '-');
+  // cut to 64 chars to respect AWS::Events::Rule Target Id field specification
+  return _id.substring(Math.max(_id.length - 64, 0), _id.length);
 }

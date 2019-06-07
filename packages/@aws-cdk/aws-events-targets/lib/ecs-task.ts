@@ -99,7 +99,7 @@ export class EcsTask implements events.IRuleTarget {
         .addResource(this.taskDefinition.taskRole.roleArn));
     }
 
-    const id = this.taskDefinition.node.id + '-on-' + this.cluster.node.id;
+    const id = this.taskDefinition.node.uniqueId + '-on-' + this.cluster.node.uniqueId;
     const arn = this.cluster.clusterArn;
     const role = singletonEventRole(this.taskDefinition, policyStatements);
     const containerOverrides = this.props.containerOverrides && this.props.containerOverrides
