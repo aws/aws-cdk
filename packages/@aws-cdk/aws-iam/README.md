@@ -26,6 +26,28 @@ Managed policies can be attached using `xxx.attachManagedPolicy(arn)`:
 
 [attaching managed policies](test/example.managedpolicy.lit.ts)
 
+### Extending permissions for existing resources
+
+Many of the AWS CDK resources have `grant*` methods that allow you to grant other resources access to that resource. As an example, the following code gives a Lambda function write permissions (Put, Update, Delete) to a DynamoDB table.
+
+```typescript
+const fn = new lambda.Function(...);
+const table = new dynamodb.Table(...);
+
+table.grantWriteData(fn);
+```
+
+The more generic `grant` method allows you to give specific permissions to a resource:
+
+```typescript
+const fn = new lambda.Function(...);
+const table = new dynamodb.Table(...);
+
+table.grant(fn, 'dynamodb:PutItem');
+```
+
+You can find which `grant*` methods exist for a resource in the [AWS CDK API Reference](https://docs.aws.amazon.com/cdk/api/latest/docs/aws-construct-library.html).
+
 ### Configuring an ExternalId
 
 If you need to create roles that will be assumed by 3rd parties, it is generally a good idea to [require an `ExternalId`
