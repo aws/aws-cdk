@@ -228,6 +228,7 @@
             "Protocol": "http"
           }
         ],
+        "CrossZone": false,
         "HealthCheck": {
           "HealthyThreshold": "2",
           "Interval": "30",
