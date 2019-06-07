@@ -1,6 +1,6 @@
 import { Test } from 'nodeunit';
 import { ArnComponents, CfnOutput, ScopedAws, Stack } from '../lib';
-import { Intrinsic } from '../lib/intrinsic';
+import { Intrinsic } from '../lib/private/intrinsic';
 
 export = {
   'create from components with defaults'(test: Test) {

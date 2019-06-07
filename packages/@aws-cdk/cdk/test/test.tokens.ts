@@ -1,7 +1,9 @@
 import { Test } from 'nodeunit';
-import { App as Root, findTokens, Fn, Intrinsic, Lazy, Stack, Token } from '../lib';
-import { createTokenDouble, extractTokenDouble } from '../lib/encoding';
-import { TokenMap } from '../lib/token-map';
+import { App as Root, Fn, isResolvableObject, Lazy, Stack, Token, Tokenization } from '../lib';
+import { createTokenDouble, extractTokenDouble } from '../lib/private/encoding';
+import { Intrinsic } from '../lib/private/intrinsic';
+import { findTokens } from '../lib/private/resolve';
+import { IResolvable } from '../lib/resolvable';
 import { evaluateCFN } from './evaluate-cfn';
 
 export = {
@@ -125,9 +127,9 @@ export = {
   },
 
   'isToken(obj) can be used to determine if an object is a token'(test: Test) {
-    test.ok(Token.isToken({ resolve: () => 123 }));
-    test.ok(Token.isToken({ a: 1, b: 2, resolve: () => 'hello' }));
-    test.ok(!Token.isToken({ a: 1, b: 2, resolve: 3 }));
+    test.ok(isResolvableObject({ resolve: () => 123 }));
+    test.ok(isResolvableObject({ a: 1, b: 2, resolve: () => 'hello' }));
+    test.ok(!isResolvableObject({ a: 1, b: 2, resolve: 3 }));
     test.done();
   },
 
@@ -164,19 +166,7 @@ export = {
     const token = new Intrinsic('woof woof');
 
     // THEN
-    test.equal(token, TokenMap.instance().lookupString(`${token}`));
-    test.done();
-  },
-
-  'concatenated tokens are undefined'(test: Test) {
-    // GIVEN
-    const token = new Intrinsic( 'woof woof');
-
-    // WHEN
-    test.equal(undefined, TokenMap.instance().lookupString(`${token}bla`));
-    test.equal(undefined, TokenMap.instance().lookupString(`bla${token}`));
-    test.equal(undefined, TokenMap.instance().lookupString(`bla`));
-
+    test.equal(token, Tokenization.reverseString(`${token}`).firstToken);
     test.done();
   },
 
@@ -347,7 +337,7 @@ export = {
 
       // WHEN
       const struct = {
-        XYZ: Token.encodeAsList(token)
+        XYZ: Token.asList(token)
       };
 
       // THEN
@@ -363,7 +353,7 @@ export = {
       const token = new Intrinsic({ Ref: 'Other' });
 
       // WHEN
-      const encoded: string[] = Token.encodeAsList(token);
+      const encoded: string[] = Token.asList(token);
       encoded.push('hello');
 
       // THEN
@@ -379,7 +369,7 @@ export = {
       const token = new Intrinsic({ Ref: 'Other' });
 
       // WHEN
-      const encoded: string[] = Token.encodeAsList(token);
+      const encoded: string[] = Token.asList(token);
       encoded[0] += 'hello';
 
       // THEN
@@ -392,7 +382,7 @@ export = {
 
     'can pass encoded lists to FnSelect'(test: Test) {
       // GIVEN
-      const encoded: string[] = Token.encodeAsList(new Intrinsic({ Ref: 'Other' }));
+      const encoded: string[] = Token.asList(new Intrinsic({ Ref: 'Other' }));
 
       // WHEN
       const struct = Fn.select(1, encoded);
@@ -407,7 +397,7 @@ export = {
 
     'can pass encoded lists to FnJoin'(test: Test) {
       // GIVEN
-      const encoded: string[] = Token.encodeAsList(new Intrinsic({ Ref: 'Other' }));
+      const encoded: string[] = Token.asList(new Intrinsic({ Ref: 'Other' }));
 
       // WHEN
       const struct = Fn.join('/', encoded);
@@ -422,7 +412,7 @@ export = {
 
     'can pass encoded lists to FnJoin, even if join is stringified'(test: Test) {
       // GIVEN
-      const encoded: string[] = Token.encodeAsList(new Intrinsic({ Ref: 'Other' }));
+      const encoded: string[] = Token.asList(new Intrinsic({ Ref: 'Other' }));
 
       // WHEN
       const struct = Fn.join('/', encoded).toString();
@@ -470,9 +460,9 @@ export = {
       const x = new Intrinsic( 123);
 
       // THEN
-      const encoded = Token.encodeAsNumber(x);
-      test.equal(false, Token.isToken(encoded), 'encoded number does not test as token');
-      test.equal(true, Token.unresolved(encoded), 'encoded number does not test as token');
+      const encoded = Token.asNumber(x);
+      test.equal(false, isResolvableObject(encoded), 'encoded number does not test as token');
+      test.equal(true, Token.isUnresolved(encoded), 'encoded number does not test as token');
 
       // THEN
       const resolved = resolve({ value: encoded });
@@ -537,25 +527,25 @@ export = {
 
     for (const input of inputs) {
       // GIVEN
-      const stringToken = Token.encodeAsString(new Intrinsic(input));
-      const numberToken = Token.encodeAsNumber(new Intrinsic(input));
-      const listToken = Token.encodeAsList(new Intrinsic(input));
+      const stringToken = Token.asString(new Intrinsic(input));
+      const numberToken = Token.asNumber(new Intrinsic(input));
+      const listToken = Token.asList(new Intrinsic(input));
 
       // THEN
       const expected = input;
 
       tests[`${input}<string>.toNumber()`] = (test: Test) => {
-        test.deepEqual(resolve(Token.encodeAsNumber(new Intrinsic(stringToken))), expected);
+        test.deepEqual(resolve(Token.asNumber(new Intrinsic(stringToken))), expected);
         test.done();
       };
 
       tests[`${input}<list>.toNumber()`] = (test: Test) => {
-        test.deepEqual(resolve(Token.encodeAsNumber(new Intrinsic(listToken))), expected);
+        test.deepEqual(resolve(Token.asNumber(new Intrinsic(listToken))), expected);
         test.done();
       };
 
       tests[`${input}<number>.toNumber()`] = (test: Test) => {
-        test.deepEqual(resolve(Token.encodeAsNumber(new Intrinsic(numberToken))), expected);
+        test.deepEqual(resolve(Token.asNumber(new Intrinsic(numberToken))), expected);
         test.done();
       };
 
@@ -575,17 +565,17 @@ export = {
       };
 
       tests[`${input}<string>.toList()`] = (test: Test) => {
-        test.deepEqual(resolve(Token.encodeAsList(new Intrinsic(stringToken))), expected);
+        test.deepEqual(resolve(Token.asList(new Intrinsic(stringToken))), expected);
         test.done();
       };
 
       tests[`${input}<list>.toList()`] = (test: Test) => {
-        test.deepEqual(resolve(Token.encodeAsList(new Intrinsic(listToken))), expected);
+        test.deepEqual(resolve(Token.asList(new Intrinsic(listToken))), expected);
         test.done();
       };
 
       tests[`${input}<number>.toList()`] = (test: Test) => {
-        test.deepEqual(resolve(Token.encodeAsList(new Intrinsic(numberToken))), expected);
+        test.deepEqual(resolve(Token.asList(new Intrinsic(numberToken))), expected);
         test.done();
       };
     }
@@ -594,7 +584,7 @@ export = {
   })(),
 };
 
-class Promise2 extends Token {
+class Promise2 implements IResolvable {
   public resolve() {
     return {
       Data: {
@@ -606,7 +596,7 @@ class Promise2 extends Token {
   }
 }
 
-class Promise1 extends Token {
+class Promise1 implements IResolvable {
   public p2 = [ new Promise2(), new Promise2() ];
 
   public resolve() {

@@ -1,7 +1,7 @@
 import cxapi = require('@aws-cdk/cx-api');
 import { Test } from 'nodeunit';
 import { App, CfnCondition, CfnOutput, CfnParameter, CfnResource, Construct, Include, Lazy, ScopedAws, Stack } from '../lib';
-import { Intrinsic } from '../lib/intrinsic';
+import { Intrinsic } from '../lib/private/intrinsic';
 
 export = {
   'a stack can be serialized into a CloudFormation template, initially it\'s empty'(test: Test) {

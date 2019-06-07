@@ -2,7 +2,7 @@ import fc = require('fast-check');
 import _ = require('lodash');
 import nodeunit = require('nodeunit');
 import { Fn, Stack, Token } from '../lib';
-import { Intrinsic } from '../lib/intrinsic';
+import { Intrinsic } from '../lib/private/intrinsic';
 
 function asyncTest(cb: (test: nodeunit.Test) => Promise<void>): (test: nodeunit.Test) => void {
   return async (test: nodeunit.Test) => {
@@ -130,8 +130,8 @@ export = nodeunit.testCase({
 });
 
 function stringListToken(o: any): string[] {
-  return Token.encodeAsList(new Intrinsic(o));
+  return Token.asList(new Intrinsic(o));
 }
 function stringToken(o: any): string {
-  return Token.encodeAsString(new Intrinsic(o));
+  return Token.asString(new Intrinsic(o));
 }

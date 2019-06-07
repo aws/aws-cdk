@@ -1,40 +1,10 @@
 import { IConstruct } from "./construct";
-import { unresolved } from "./encoding";
-import { createStackTrace } from './stack-trace';
-import { TokenMap } from "./token-map";
-
-/**
- * If objects has a function property by this name, they will be considered tokens, and this
- * function will be called to resolve the value for this object.
- */
-export const RESOLVE_METHOD = 'resolve';
-
-/**
- * Interface for Tokens
- *
- * Tokens are special objects that participate in synthesis.
- */
-export interface IToken {
-  /**
-   * A hint for the Token's purpose when stringifying it
-   */
-  readonly displayHint?: string;
-
-  /**
-   * Produce the Token's value at resolution time
-   */
-  [RESOLVE_METHOD](context: IResolveContext): any;
-}
-
-/**
- * Properties for instantiating a Token
- */
-export interface TokenProps {
-  /**
-   * A hint for the Token's purpose when stringifying it
-   */
-  readonly displayHint?: string;
-}
+import { unresolved } from "./private/encoding";
+import { Intrinsic } from "./private/intrinsic";
+import { resolve } from "./private/resolve";
+import { TokenMap } from "./private/token-map";
+import { IResolvable, ITokenResolver } from "./resolvable";
+import { TokenizedStringFragments } from "./string-fragments";
 
 /**
  * Represents a special or lazily-evaluated value.
@@ -46,21 +16,23 @@ export interface TokenProps {
  * Tokens can be embedded into strings while retaining their original
  * semantics.
  */
-export abstract class Token implements IToken {
+export class Token {
   /**
-   * Return true if input value is a Token or encoded Token
-   */
-  public static unresolved(obj: any): boolean {
-    return unresolved(obj);
-  }
-
-  /**
-   * Returns true if obj is an IToken object.
+   * Returns true if obj represents an unresolved value
+   *
+   * One of these must be true:
+   *
+   * - `obj` is an IResolvable
+   * - `obj` is a string containing at least one encoded `IResolvable`
+   * - `obj` is either an encoded number or list
+   *
+   * This does NOT recurse into lists or objects to see if they
+   * containing resolvables.
    *
    * @param obj The object to test.
    */
-  public static isToken(obj: any): obj is IToken {
-    return obj && typeof obj[RESOLVE_METHOD] === 'function';
+  public static isUnresolved(obj: any): boolean {
+    return unresolved(obj);
   }
 
   /**
@@ -74,116 +46,108 @@ export abstract class Token implements IToken {
    * complex values with the Tokens restored by calling `resolve()`
    * on the string.
    */
-  public static encodeAsString(token: IToken): string {
-    return TokenMap.instance().registerString(token);
+  public static asString(value: any, options: EncodingOptions = {}): string {
+    if (typeof value === 'string') { return value; }
+    return TokenMap.instance().registerString(Token.asAny(value), options.displayHint);
   }
 
   /**
    * Return a reversible number representation of this token
    */
-  public static encodeAsNumber(token: IToken): number {
-    return TokenMap.instance().registerNumber(token);
+  public static asNumber(value: any): number {
+    if (typeof value === 'number') { return value; }
+    return TokenMap.instance().registerNumber(Token.asAny(value));
   }
 
   /**
    * Return a reversible list representation of this token
    */
-  public static encodeAsList(token: IToken): string[] {
-    return TokenMap.instance().registerList(token);
+  public static asList(value: any, options: EncodingOptions = {}): string[] {
+    if (Array.isArray(value) && value.every(x => typeof x === 'string')) { return value; }
+    return TokenMap.instance().registerList(Token.asAny(value), options.displayHint);
   }
 
   /**
-   * The captured stack trace which represents the location in which this token was created.
+   * Return a resolvable representation of the given value
    */
-  protected readonly trace: string[];
-
-  /**
-   * displayName is used to represent the Token when it's embedded into a string; it
-   * will look something like this:
-   *
-   *    "embedded in a larger string is ${Token[DISPLAY_NAME.123]}"
-   *
-   * This value is used as a hint to humans what the meaning of the Token is,
-   * and does not have any effect on the evaluation.
-   *
-   * Must contain only alphanumeric and simple separator characters (_.:-).
-   */
-  constructor(private readonly props: TokenProps = {}) {
-    this.trace = createStackTrace();
+  public static asAny(value: any): IResolvable {
+    return isResolvableObject(value) ? value : new Intrinsic(value);
   }
 
-  /**
-   * @returns The resolved value for this token.
-   */
-  public abstract resolve(context: IResolveContext): any;
-
-  /**
-   * Convert an instance of this Token to a string
-   *
-   * This method will be called implicitly by language runtimes if the object
-   * is embedded into a string. We treat it the same as an explicit
-   * stringification.
-   */
-  public toString(): string {
-    return Token.encodeAsString(this);
-  }
-
-  /**
-   * Turn this Token into JSON
-   *
-   * Called automatically when JSON.stringify() is called on a Token.
-   */
-  public toJSON(): any {
-    // We can't do the right work here because in case we contain a function, we
-    // won't know the type of value that function represents (in the simplest
-    // case, string or number), and we can't know that without an
-    // IResolveContext to actually do the resolution, which we don't have.
-
-    // We used to throw an error, but since JSON.stringify() is often used in
-    // error messages to produce a readable representation of an object, if we
-    // throw here we'll obfuscate that descriptive error with something worse.
-    // So return a string representation that indicates this thing is a token
-    // and needs resolving.
-    return JSON.stringify(`<unresolved-token:${this.props.displayHint || 'TOKEN'}>`);
-  }
-
-  /**
-   * Creates a throwable Error object that contains the token creation stack trace.
-   * @param message Error message
-   */
-  protected newError(message: string): any {
-    return new Error(`${message}\nToken created:\n    at ${this.trace.join('\n    at ')}\nError thrown:`);
+  private constructor() {
   }
 }
 
 /**
- * Current resolution context for tokens
+ * Less oft-needed functions to manipulate Tokens
  */
-export interface IResolveContext {
+export class Tokenization {
   /**
-   * The scope from which resolution has been initiated
+   * Un-encode a string potentially containing encoded tokens
+   */
+  public static reverseString(s: string): TokenizedStringFragments {
+    return TokenMap.instance().splitString(s);
+  }
+
+  /**
+   * Un-encode a Tokenized value from a number
+   */
+  public static reverseNumber(n: number): IResolvable | undefined {
+    return TokenMap.instance().lookupNumberToken(n);
+  }
+
+  /**
+   * Un-encode a Tokenized value from a list
+   */
+  public static reverseList(l: string[]): IResolvable | undefined {
+    return TokenMap.instance().lookupList(l);
+  }
+
+  /**
+   * Resolves an object by evaluating all tokens and removing any undefined or empty objects or arrays.
+   * Values can only be primitives, arrays or tokens. Other objects (i.e. with methods) will be rejected.
+   *
+   * @param obj The object to resolve.
+   * @param options Prefix key path components for diagnostics.
+   */
+  public static resolve(obj: any, options: ResolveOptions): any {
+    return resolve(obj, options);
+  }
+
+  private constructor() {
+  }
+}
+
+/**
+ * Options to the resolve() operation
+ *
+ * NOT the same as the ResolveContext; ResolveContext is exposed to Token
+ * implementors and resolution hooks, whereas this struct is just to bundle
+ * a number of things that would otherwise be arguments to resolve() in a
+ * readable way.
+ */
+export interface ResolveOptions {
+  /**
+   * The scope from which resolution is performed
    */
   readonly scope: IConstruct;
 
   /**
-   * Resolve an inner object
+   * The resolver to apply to any resolvable tokens found
    */
-  resolve(x: any): any;
+  readonly resolver: ITokenResolver;
 }
 
 /**
- * A Token that can post-process the complete resolved value, after resolve() has recursed over it
+ * Properties to string encodings
  */
-export interface IResolvedValuePostProcessor {
+export interface EncodingOptions {
   /**
-   * Process the completely resolved value, after full recursion/resolution has happened
+   * A hint for the Token's purpose when stringifying it
    */
-  postProcess(input: any, context: IResolveContext): any;
+  readonly displayHint?: string;
 }
 
-/**
- * Whether the given object is an `IResolvedValuePostProcessor`
- */
-export function isResolvedValuePostProcessor(x: any): x is IResolvedValuePostProcessor {
-  return x.postProcess !== undefined;
+export function isResolvableObject(x: any): x is IResolvable {
+  return typeof(x) === 'object' && x !== null && typeof x.resolve === 'function';
 }

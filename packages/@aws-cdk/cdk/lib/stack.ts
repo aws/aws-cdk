@@ -682,8 +682,8 @@ function cfnElements(node: IConstruct, into: CfnElement[] = []): CfnElement[] {
 // These imports have to be at the end to prevent circular imports
 import { ArnComponents, arnFromComponents, parseArn } from './arn';
 import { CfnElement } from './cfn-element';
-import { CfnReference } from './cfn-reference';
 import { CfnResource, TagType } from './cfn-resource';
+import { CfnReference } from './private/cfn-reference';
 import { Aws, ScopedAws } from './pseudo';
 import { ITaggable, TagManager } from './tag-manager';
 

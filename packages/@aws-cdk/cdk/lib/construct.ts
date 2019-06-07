@@ -2,8 +2,9 @@ import cxapi = require('@aws-cdk/cx-api');
 import { IAspect } from './aspect';
 import { CLOUDFORMATION_TOKEN_RESOLVER, CloudFormationLang } from './cloudformation-lang';
 import { DependableTrait, IDependable } from './dependency';
-import { resolve } from './resolve';
-import { createStackTrace } from './stack-trace';
+import { resolve } from './private/resolve';
+import { createStackTrace } from './private/stack-trace';
+import { IResolvable } from './resolvable';
 import { Token } from './token';
 import { makeUniqueId } from './uniqueid';
 
@@ -83,7 +84,7 @@ export class ConstructNode {
     // escape any path separators so they don't wreck havoc
     this.id = this._escapePathSeparator(this.id);
 
-    if (Token.unresolved(id)) {
+    if (Token.isUnresolved(id)) {
       throw new Error(`Cannot use tokens in construct ID: ${id}`);
     }
   }
@@ -502,7 +503,7 @@ export class ConstructNode {
   /**
    * Record a reference originating from this construct node
    */
-  public recordReference(...refs: Token[]) {
+  public recordReference(...refs: IResolvable[]) {
     for (const ref of refs) {
       if (Reference.isReference(ref)) {
         this.references.add(ref);

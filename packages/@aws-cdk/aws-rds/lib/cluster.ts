@@ -1,7 +1,7 @@
 import ec2 = require('@aws-cdk/aws-ec2');
 import kms = require('@aws-cdk/aws-kms');
 import secretsmanager = require('@aws-cdk/aws-secretsmanager');
-import { Construct, DeletionPolicy, Intrinsic, Resource, Token } from '@aws-cdk/cdk';
+import { Construct, DeletionPolicy, Resource, Token } from '@aws-cdk/cdk';
 import { DatabaseClusterAttributes, IDatabaseCluster } from './cluster-ref';
 import { DatabaseSecret } from './database-secret';
 import { Endpoint } from './endpoint';
@@ -328,7 +328,7 @@ export class DatabaseCluster extends DatabaseClusterBase {
     this.clusterIdentifier = cluster.refAsString;
 
     // create a number token that represents the port of the cluster
-    const portAttribute = Token.encodeAsNumber(new Intrinsic(cluster.dbClusterEndpointPort));
+    const portAttribute = Token.asNumber(cluster.dbClusterEndpointPort);
     this.clusterEndpoint = new Endpoint(cluster.dbClusterEndpointAddress, portAttribute);
     this.clusterReadEndpoint = new Endpoint(cluster.dbClusterReadEndpointAddress, portAttribute);
 

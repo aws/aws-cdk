@@ -1,8 +1,9 @@
-import { Intrinsic } from "./intrinsic";
 import { Lazy } from "./lazy";
-import { DefaultTokenResolver, IFragmentConcatenator, resolve } from "./resolve";
+import { Intrinsic } from "./private/intrinsic";
+import { resolve } from "./private/resolve";
+import { DefaultTokenResolver, IFragmentConcatenator, IResolvable, IResolveContext  } from "./resolvable";
 import { TokenizedStringFragments } from "./string-fragments";
-import { IResolveContext, Token } from "./token";
+import { Token } from "./token";
 
 /**
  * Routines that know how to do operations at the CloudFormation document language level
@@ -44,7 +45,7 @@ export class CloudFormationLang {
         super(CLOUDFORMATION_CONCAT);
       }
 
-      public resolveToken(t: Token, context: IResolveContext) {
+      public resolveToken(t: IResolvable, context: IResolveContext) {
         return wrap(super.resolveToken(t, context));
       }
       public resolveString(fragments: TokenizedStringFragments, context: IResolveContext) {
@@ -157,7 +158,7 @@ export function minimalCloudFormationJoin(delimiter: string, values: any[]): any
   return values;
 
   function isPlainString(obj: any): boolean {
-    return typeof obj === 'string' && !require('./token').Token.unresolved(obj);
+    return typeof obj === 'string' && !Token.isUnresolved(obj);
   }
 
   function isSplicableFnJoinIntrinsic(obj: any): boolean {

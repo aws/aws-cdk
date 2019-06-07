@@ -1,6 +1,6 @@
 import { Test } from 'nodeunit';
 import { CloudFormationLang, Fn, Lazy, Stack, Token } from '../lib';
-import { Intrinsic } from '../lib/intrinsic';
+import { Intrinsic } from '../lib/private/intrinsic';
 import { evaluateCFN } from './evaluate-cfn';
 
 export = {

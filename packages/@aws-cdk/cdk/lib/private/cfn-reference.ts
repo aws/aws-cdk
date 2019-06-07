@@ -1,4 +1,4 @@
-import { Reference } from "./reference";
+import { Reference } from "../reference";
 
 const CFN_REFERENCE_SYMBOL = Symbol.for('@aws-cdk/cdk.CfnReference');
 
@@ -81,15 +81,15 @@ export class CfnReference extends Reference {
   /**
    * The Tokens that should be returned for each consuming stack (as decided by the producing Stack)
    */
-  private readonly replacementTokens: Map<Stack, Token>;
+  private readonly replacementTokens: Map<Stack, IResolvable>;
 
   private readonly originalDisplayName: string;
 
-  private constructor(value: any, displayName: string, target: Construct) {
+  private constructor(value: any, private readonly displayName: string, target: Construct) {
     // prepend scope path to display name
-    super(value, `${target.node.id}.${displayName}`, target);
+    super(value, target);
     this.originalDisplayName = displayName;
-    this.replacementTokens = new Map<Stack, Token>();
+    this.replacementTokens = new Map<Stack, IResolvable>();
 
     this.producingStack = target.node.stack;
     Object.defineProperty(this, CFN_REFERENCE_SYMBOL, { value: true });
@@ -125,11 +125,20 @@ export class CfnReference extends Reference {
   }
 
   /**
+   * Implementation of toString() that will use the display name
+   */
+  public toString(): string {
+    return Token.asString(this, {
+      displayHint: `${this.target.node.id}.${this.displayName}`
+    });
+  }
+
+  /**
    * Export a Token value for use in another stack
    *
    * Works by mutating the producing stack in-place.
    */
-  private exportValue(tokenValue: Token, consumingStack: Stack): Token {
+  private exportValue(tokenValue: Token, consumingStack: Stack): IResolvable {
     const producingStack = this.producingStack!;
 
     if (producingStack.env.account !== consumingStack.env.account || producingStack.env.region !== consumingStack.env.region) {
@@ -161,9 +170,10 @@ export class CfnReference extends Reference {
   }
 }
 
-import { CfnElement } from "./cfn-element";
-import { CfnOutput } from "./cfn-output";
-import { Construct, IConstruct } from "./construct";
+import { CfnElement } from "../cfn-element";
+import { CfnOutput } from "../cfn-output";
+import { Construct, IConstruct } from "../construct";
+import { IResolvable, IResolveContext } from "../resolvable";
+import { Stack } from "../stack";
+import { Token } from "../token";
 import { Intrinsic } from "./intrinsic";
-import { Stack } from "./stack";
-import { IResolveContext, Token } from "./token";

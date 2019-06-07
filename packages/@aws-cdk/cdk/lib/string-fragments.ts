@@ -1,5 +1,5 @@
-import { IFragmentConcatenator } from "./resolve";
-import { IToken, Token } from "./token";
+import { IFragmentConcatenator, IResolvable } from "./resolvable";
+import { isResolvableObject } from "./token";
 
 /**
  * Result of the split of a string with Tokens
@@ -7,7 +7,7 @@ import { IToken, Token } from "./token";
  * Either a literal part of the string, or an unresolved Token.
  */
 type LiteralFragment = { type: 'literal'; lit: any; };
-type TokenFragment = { type: 'token'; token: IToken; };
+type TokenFragment = { type: 'token'; token: IResolvable; };
 type IntrinsicFragment = { type: 'intrinsic'; value: any; };
 type Fragment =  LiteralFragment | TokenFragment | IntrinsicFragment;
 
@@ -17,7 +17,7 @@ type Fragment =  LiteralFragment | TokenFragment | IntrinsicFragment;
 export class TokenizedStringFragments {
   private readonly fragments = new Array<Fragment>();
 
-  public get firstToken(): IToken | undefined {
+  public get firstToken(): IResolvable | undefined {
     const first = this.fragments[0];
     if (first.type === 'token') { return first.token; }
     return undefined;
@@ -35,7 +35,7 @@ export class TokenizedStringFragments {
     this.fragments.push({ type: 'literal', lit });
   }
 
-  public addToken(token: IToken) {
+  public addToken(token: IResolvable) {
     this.fragments.push({ type: 'token', token });
   }
 
@@ -46,8 +46,8 @@ export class TokenizedStringFragments {
   /**
    * Return all Tokens from this string
    */
-  public get tokens(): IToken[] {
-    const ret = new Array<IToken>();
+  public get tokens(): IResolvable[] {
+    const ret = new Array<IResolvable>();
     for (const f of this.fragments) {
       if (f.type === 'token') {
         ret.push(f.token);
@@ -69,7 +69,7 @@ export class TokenizedStringFragments {
           break;
         case 'token':
           const mapped = mapper.mapToken(f.token);
-          if (Token.isToken(mapped)) {
+          if (isResolvableObject(mapped)) {
             ret.addToken(mapped);
           } else {
             ret.addIntrinsic(mapped);
@@ -113,7 +113,7 @@ export interface ITokenMapper {
   /**
    * Replace a single token
    */
-  mapToken(t: IToken): any;
+  mapToken(t: IResolvable): any;
 }
 
 /**

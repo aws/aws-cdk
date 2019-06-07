@@ -1,6 +1,6 @@
 import { CfnDynamicReference, CfnDynamicReferenceService } from './cfn-dynamic-reference';
 import { CfnParameter } from './cfn-parameter';
-import { Intrinsic } from './intrinsic';
+import { Intrinsic } from './private/intrinsic';
 
 /**
  * Work with secret values in the CDK

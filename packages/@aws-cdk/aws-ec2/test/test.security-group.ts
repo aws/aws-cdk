@@ -1,5 +1,5 @@
 import { expect, haveResource } from '@aws-cdk/assert';
-import { Intrinsic, Lazy, Stack, Token } from '@aws-cdk/cdk';
+import { Lazy, Stack } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
 
 import {
@@ -145,11 +145,11 @@ export = {
 
     const ports = [
       new TcpPort(1234),
-      new TcpPort(Token.encodeAsNumber(new Intrinsic(5000))),
+      new TcpPort(Lazy.numberValue({ produce: () => 5000 })),
       new TcpAllPorts(),
       new TcpPortRange(80, 90),
       new UdpPort(2345),
-      new UdpPort(Token.encodeAsNumber(new Intrinsic(777))),
+      new UdpPort(Lazy.numberValue({ produce: () => 7777 })),
       new UdpAllPorts(),
       new UdpPortRange(85, 95),
       new IcmpTypeAndCode(5, 1),

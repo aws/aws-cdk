@@ -1,6 +1,6 @@
 import { CfnRefElement } from './cfn-element';
 import { Construct } from './construct';
-import { IResolveContext, IToken } from './token';
+import { IResolvable, IResolveContext } from './resolvable';
 
 export interface CfnConditionProps {
   /**
@@ -15,7 +15,7 @@ export interface CfnConditionProps {
  * Represents a CloudFormation condition, for resources which must be conditionally created and
  * the determination must be made at deploy time.
  */
-export class CfnCondition extends CfnRefElement implements ICfnConditionExpression, IToken {
+export class CfnCondition extends CfnRefElement implements ICfnConditionExpression, IResolvable {
   public readonly displayHint: string | undefined;
 
   /**

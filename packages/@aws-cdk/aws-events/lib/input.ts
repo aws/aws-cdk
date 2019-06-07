@@ -1,5 +1,5 @@
-import { CloudFormationLang, DefaultTokenResolver, Intrinsic, IResolveContext, Lazy,
-  resolve, StringConcat, Token } from '@aws-cdk/cdk';
+import { CloudFormationLang, DefaultTokenResolver, IResolvable, IResolveContext,
+  Lazy, StringConcat, Token, Tokenization } from '@aws-cdk/cdk';
 import { IRule } from './rule-ref';
 
 /**
@@ -163,13 +163,13 @@ class FieldAwareEventInput extends RuleTargetInput {
     let resolved: string;
     if (this.inputType === InputType.Multiline) {
       // JSONify individual lines
-      resolved = resolve(this.input, {
+      resolved = Tokenization.resolve(this.input, {
         scope: rule,
         resolver: new EventFieldReplacer()
       });
       resolved = resolved.split('\n').map(CloudFormationLang.toJSON).join('\n');
     } else {
-      resolved = CloudFormationLang.toJSON(resolve(this.input, {
+      resolved = CloudFormationLang.toJSON(Tokenization.resolve(this.input, {
         scope: rule,
         resolver: new EventFieldReplacer()
       }));
@@ -221,60 +221,73 @@ const CLOSING_STRING_REGEX = new RegExp(regexQuote(UNLIKELY_CLOSING_STRING + '"'
 /**
  * Represents a field in the event pattern
  */
-export class EventField extends Intrinsic {
+export class EventField implements IResolvable {
   /**
    * Extract the event ID from the event
    */
   public static get eventId(): string {
-    return this.fromPath('$.id', 'eventId');
+    return this.fromPath('$.id');
   }
 
   /**
    * Extract the detail type from the event
    */
   public static get detailType(): string {
-    return this.fromPath('$.detail-type', 'detailType');
+    return this.fromPath('$.detail-type');
   }
 
   /**
    * Extract the source from the event
    */
   public static get source(): string {
-    return this.fromPath('$.source', 'source');
+    return this.fromPath('$.source');
   }
 
   /**
    * Extract the account from the event
    */
   public static get account(): string {
-    return this.fromPath('$.account', 'account');
+    return this.fromPath('$.account');
   }
 
   /**
    * Extract the time from the event
    */
   public static get time(): string {
-    return this.fromPath('$.time', 'time');
+    return this.fromPath('$.time');
   }
 
   /**
    * Extract the region from the event
    */
   public static get region(): string {
-    return this.fromPath('$.region', 'region');
+    return this.fromPath('$.region');
   }
 
   /**
    * Extract a custom JSON path from the event
    */
-  public static fromPath(path: string, nameHint?: string): string {
-    return new EventField(path, nameHint).toString();
+  public static fromPath(path: string): string {
+    return new EventField(path).toString();
   }
 
-  private constructor(public readonly path: string, public readonly displayHint?: string) {
-    super(path, { displayHint });
+  public readonly displayHint: string;
 
+  private constructor(public readonly path: string) {
+    this.displayHint = this.path.replace(/^[^a-zA-Z]+/, '');
     Object.defineProperty(this, EVENT_FIELD_SYMBOL, { value: true });
+  }
+
+  public resolve(_ctx: IResolveContext): any {
+    return this.path;
+  }
+
+  public toString() {
+    return Token.asString(this, { displayHint: this.displayHint });
+  }
+
+  public toJSON() {
+    return `<path:${this.path}>`;
   }
 }
 

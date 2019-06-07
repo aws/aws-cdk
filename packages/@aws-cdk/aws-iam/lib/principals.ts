@@ -310,25 +310,41 @@ export class CompositePrincipal extends PrincipalBase {
 /**
  * A lazy token that requires an instance of Stack to evaluate
  */
-class StackDependentToken extends cdk.Token {
+class StackDependentToken implements cdk.IResolvable {
   constructor(private readonly fn: (stack: cdk.Stack) => any) {
-    super();
   }
 
   public resolve(context: cdk.IResolveContext) {
     return this.fn(context.scope.node.stack);
   }
+
+  public toString() {
+    return cdk.Token.asString(this);
+  }
+
+  public toJSON() {
+    return `<unresolved-token>`;
+  }
 }
 
-class ServicePrincipalToken extends cdk.Token {
+class ServicePrincipalToken implements cdk.IResolvable {
   constructor(private readonly service: string,
               private readonly opts: ServicePrincipalOpts) {
-    super();
   }
 
   public resolve(ctx: cdk.IResolveContext) {
     const region = this.opts.region || ctx.scope.node.stack.region;
     const fact = RegionInfo.get(region).servicePrincipal(this.service);
     return fact || Default.servicePrincipal(this.service, region, ctx.scope.node.stack.urlSuffix);
+  }
+
+  public toString() {
+    return cdk.Token.asString(this, {
+      displayHint: this.service
+    });
+  }
+
+  public toJSON() {
+    return `<${this.service}>`;
   }
 }

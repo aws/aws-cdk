@@ -88,7 +88,7 @@ export class CodeName {
 }
 
 export const TAG_NAME = new CodeName('', CORE_NAMESPACE, 'CfnTag');
-export const TOKEN_NAME = new CodeName('', CORE_NAMESPACE, 'Token');
+export const TOKEN_NAME = new CodeName('', CORE_NAMESPACE, 'IResolvable');
 
 /**
  * Resource attribute

@@ -1,7 +1,8 @@
+import { IResolvable } from "../resolvable";
+import { TokenizedStringFragments } from "../string-fragments";
+import { Token } from "../token";
 import { BEGIN_LIST_TOKEN_MARKER, BEGIN_STRING_TOKEN_MARKER, createTokenDouble,
   END_TOKEN_MARKER, extractTokenDouble, TokenString, VALID_KEY_CHARS } from "./encoding";
-import { TokenizedStringFragments } from "./string-fragments";
-import { IToken, Token } from "./token";
 
 const glob = global as any;
 
@@ -29,8 +30,8 @@ export class TokenMap {
     return glob.__cdkTokenMap;
   }
 
-  private readonly stringTokenMap = new Map<string, IToken>();
-  private readonly numberTokenMap = new Map<number, IToken>();
+  private readonly stringTokenMap = new Map<string, IResolvable>();
+  private readonly numberTokenMap = new Map<number, IResolvable>();
   private tokenCounter = 0;
 
   /**
@@ -44,9 +45,9 @@ export class TokenMap {
    * hint. This may be used to produce aesthetically pleasing and
    * recognizable token representations for humans.
    */
-  public registerString(token: IToken): string {
+  public registerString(token: IResolvable, displayHint?: string): string {
     return cachedValue(token, STRING_SYMBOL, () => {
-      const key = this.registerStringKey(token);
+      const key = this.registerStringKey(token, displayHint);
       return `${BEGIN_STRING_TOKEN_MARKER}${key}${END_TOKEN_MARKER}`;
     });
   }
@@ -54,9 +55,9 @@ export class TokenMap {
   /**
    * Generate a unique string for this Token, returning a key
    */
-  public registerList(token: IToken): string[] {
+  public registerList(token: IResolvable, displayHint?: string): string[] {
     return cachedValue(token, LIST_SYMBOL, () => {
-      const key = this.registerStringKey(token);
+      const key = this.registerStringKey(token, displayHint);
       return [`${BEGIN_LIST_TOKEN_MARKER}${key}${END_TOKEN_MARKER}`];
     });
   }
@@ -64,7 +65,7 @@ export class TokenMap {
   /**
    * Create a unique number representation for this Token and return it
    */
-  public registerNumber(token: IToken): number {
+  public registerNumber(token: IResolvable): number {
     return cachedValue(token, NUMBER_SYMBOL, () => {
       return this.registerNumberKey(token);
     });
@@ -73,17 +74,17 @@ export class TokenMap {
   /**
    * Lookup a token from an encoded value
    */
-  public tokenFromEncoding(x: any): IToken | undefined {
+  public tokenFromEncoding(x: any): IResolvable | undefined {
     if (typeof 'x' === 'string') { return this.lookupString(x); }
     if (Array.isArray(x)) { return this.lookupList(x); }
-    if (Token.isToken(x)) { return x; }
+    if (Token.isUnresolved(x)) { return x; }
     return undefined;
   }
 
   /**
    * Reverse a string representation into a Token object
    */
-  public lookupString(s: string): IToken | undefined {
+  public lookupString(s: string): IResolvable | undefined {
     const fragments = this.splitString(s);
     if (fragments.tokens.length > 0 && fragments.length === 1) {
       return fragments.firstToken;
@@ -94,7 +95,7 @@ export class TokenMap {
   /**
    * Reverse a string representation into a Token object
    */
-  public lookupList(xs: string[]): IToken | undefined {
+  public lookupList(xs: string[]): IResolvable | undefined {
     if (xs.length !== 1) { return undefined; }
     const str = TokenString.forListToken(xs[0]);
     const fragments = str.split(this.lookupToken.bind(this));
@@ -115,7 +116,7 @@ export class TokenMap {
   /**
    * Reverse a number encoding into a Token, or undefined if the number wasn't a Token
    */
-  public lookupNumberToken(x: number): IToken | undefined {
+  public lookupNumberToken(x: number): IResolvable | undefined {
     const tokenIndex = extractTokenDouble(x);
     if (tokenIndex === undefined) { return undefined; }
     const t = this.numberTokenMap.get(tokenIndex);
@@ -128,7 +129,7 @@ export class TokenMap {
    *
    * This excludes the token markers.
    */
-  public lookupToken(key: string): IToken {
+  public lookupToken(key: string): IResolvable {
     const token = this.stringTokenMap.get(key);
     if (!token) {
       throw new Error(`Unrecognized token key: ${key}`);
@@ -136,15 +137,15 @@ export class TokenMap {
     return token;
   }
 
-  private registerStringKey(token: IToken): string {
+  private registerStringKey(token: IResolvable, displayHint?: string): string {
     const counter = this.tokenCounter++;
-    const representation = (token.displayHint || `TOKEN`).replace(new RegExp(`[^${VALID_KEY_CHARS}]`, 'g'), '.');
+    const representation = (displayHint || `TOKEN`).replace(new RegExp(`[^${VALID_KEY_CHARS}]`, 'g'), '.');
     const key = `${representation}.${counter}`;
     this.stringTokenMap.set(key, token);
     return key;
   }
 
-  private registerNumberKey(token: IToken): number {
+  private registerNumberKey(token: IResolvable): number {
     const counter = this.tokenCounter++;
     this.numberTokenMap.set(counter, token);
     return createTokenDouble(counter);

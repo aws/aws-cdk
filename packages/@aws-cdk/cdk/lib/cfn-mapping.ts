@@ -44,12 +44,12 @@ export class CfnMapping extends CfnRefElement {
    */
   public findInMap(key1: string, key2: string): string {
     // opportunistically check that the key exists (if the key does not contain tokens)
-    if (!Token.unresolved(key1) && !(key1 in this.mapping)) {
+    if (!Token.isUnresolved(key1) && !(key1 in this.mapping)) {
       throw new Error(`Mapping doesn't contain top-level key '${key1}'`);
     }
 
     // opportunistically check that the second key exists (if the key does not contain tokens)
-    if (!Token.unresolved(key1) && !Token.unresolved(key2) && !(key2 in this.mapping[key1])) {
+    if (!Token.isUnresolved(key1) && !Token.isUnresolved(key2) && !(key2 in this.mapping[key1])) {
       throw new Error(`Mapping doesn't contain second-level key '${key2}'`);
     }
 

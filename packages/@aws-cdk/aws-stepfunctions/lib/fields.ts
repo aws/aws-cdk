@@ -18,7 +18,7 @@ export class Data {
    */
   public static listAt(path: string): string[] {
     validateDataPath(path);
-    return Token.encodeAsList(new JsonPathToken(path));
+    return Token.asList(new JsonPathToken(path));
   }
 
   /**
@@ -26,7 +26,7 @@ export class Data {
    */
   public static numberAt(path: string): number {
     validateDataPath(path);
-    return Token.encodeAsNumber(new JsonPathToken(path));
+    return Token.asNumber(new JsonPathToken(path));
   }
 
   /**
@@ -62,7 +62,7 @@ export class Context {
    */
   public static numberAt(path: string): number {
     validateContextPath(path);
-    return Token.encodeAsNumber(new JsonPathToken(path));
+    return Token.asNumber(new JsonPathToken(path));
   }
 
   /**

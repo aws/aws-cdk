@@ -1,6 +1,6 @@
 import { Construct, IConstruct, PATH_SEP } from "./construct";
 import { Lazy } from "./lazy";
-import { IToken, Token } from './token';
+import { Token } from './token';
 
 const LOGICAL_ID_MD = 'aws:cdk:logicalId';
 
@@ -135,7 +135,7 @@ export abstract class CfnElement extends Construct {
   /**
    * Return a token that will CloudFormation { Ref } this stack element
    */
-  protected get ref(): IToken {
+  protected get ref(): IResolvable {
     return CfnReference.for(this, 'Ref');
   }
 }
@@ -154,7 +154,7 @@ export abstract class CfnRefElement extends CfnElement {
   /**
    * Return a token that will CloudFormation { Ref } this stack element
    */
-  public get ref(): IToken {
+  public get ref(): IResolvable {
     return super.ref;
   }
 
@@ -162,7 +162,7 @@ export abstract class CfnRefElement extends CfnElement {
    * Return a string that will CloudFormation { Ref } this stack element
    */
   public get refAsString(): string {
-    return Token.encodeAsString(this.ref);
+    return Token.asString(this.ref);
   }
 }
 
@@ -171,5 +171,6 @@ function notTooLong(x: string) {
   return x.substr(0, 47) + '...' + x.substr(x.length - 47);
 }
 
-import { CfnReference } from "./cfn-reference";
-import { findTokens } from "./resolve";
+import { CfnReference } from "./private/cfn-reference";
+import { findTokens } from "./private/resolve";
+import { IResolvable } from "./resolvable";

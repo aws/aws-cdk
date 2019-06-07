@@ -47,7 +47,7 @@ export = {
 
     'undefined if cannot extract name from a non-string arn'(test: Test) {
       const stack = new cdk.Stack();
-      const bucketArn = `arn:aws:s3:::${new cdk.Intrinsic({ Ref: 'my-bucket' })}`;
+      const bucketArn = `arn:aws:s3:::${cdk.Token.asString({ Ref: 'my-bucket' })}`;
       test.deepEqual(stack.node.resolve(parseBucketName(stack, { bucketArn })), undefined);
       test.done();
     },

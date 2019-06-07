@@ -1,7 +1,7 @@
 import { expect, haveResourceLike } from "@aws-cdk/assert";
 import codepipeline = require('@aws-cdk/aws-codepipeline');
 import lambda = require('@aws-cdk/aws-lambda');
-import { Aws, Intrinsic, Lazy, SecretValue, Stack } from "@aws-cdk/cdk";
+import { Aws, Lazy, SecretValue, Stack, Token } from "@aws-cdk/cdk";
 import { Test } from 'nodeunit';
 import cpactions = require('../../lib');
 
@@ -68,7 +68,7 @@ export = {
 
     'properly resolves any stringified Tokens passed in userParameters'(test: Test) {
       const stack = stackIncludingLambdaInvokeCodePipeline({
-        key: new Intrinsic(null).toString(),
+        key: Token.asString(null),
       });
 
       expect(stack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {

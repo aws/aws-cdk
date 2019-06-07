@@ -1,4 +1,5 @@
-import { IResolveContext, Token } from "./token";
+import { IResolvable, IResolveContext } from "./resolvable";
+import { Token } from "./token";
 
 /**
  * Interface for lazy string producers
@@ -13,7 +14,7 @@ export interface IStringValue {
 /**
  * Interface for lazy list producers
  */
-export interface IListValue {
+export interface IListProducer {
   /**
    * Produce the list value
    */
@@ -23,7 +24,7 @@ export interface IListValue {
 /**
  * Interface for lazy number producers
  */
-export interface INumberValue {
+export interface INumberProducer {
   /**
    * Produce the number value
    */
@@ -33,7 +34,7 @@ export interface INumberValue {
 /**
  * Interface for lazy untyped value producers
  */
-export interface IAnyValue {
+export interface IAnyProducer {
   /**
    * Produce the value
    */
@@ -98,18 +99,18 @@ export interface LazyAnyValueOptions {
  */
 export class Lazy {
   public static stringValue(producer: IStringValue, options: LazyStringValueOptions = {}) {
-    return Token.encodeAsString(new LazyString(producer, options.displayHint));
+    return Token.asString(new LazyString(producer), options);
   }
 
-  public static numberValue(producer: INumberValue) {
-    return Token.encodeAsNumber(new LazyNumber(producer));
+  public static numberValue(producer: INumberProducer) {
+    return Token.asNumber(new LazyNumber(producer));
   }
 
-  public static listValue(producer: IListValue, options: LazyListValueOptions = {}) {
-    return Token.encodeAsList(new LazyList(producer, options));
+  public static listValue(producer: IListProducer, options: LazyListValueOptions = {}) {
+    return Token.asList(new LazyList(producer, options), options);
   }
 
-  public static anyValue(producer: IAnyValue, options: LazyAnyValueOptions = {}): any {
+  public static anyValue(producer: IAnyProducer, options: LazyAnyValueOptions = {}): IResolvable {
     return new LazyAny(producer, options);
   }
 
@@ -117,9 +118,27 @@ export class Lazy {
   }
 }
 
-class LazyString extends Token {
-  constructor(private readonly producer: IStringValue, displayHint?: string) {
-    super({ displayHint });
+abstract class LazyBase implements IResolvable {
+  public abstract resolve(context: IResolveContext): any;
+
+  public toString() {
+    return Token.asString(this);
+  }
+
+  /**
+   * Turn this Token into JSON
+   *
+   * Called automatically when JSON.stringify() is called on a Token.
+   */
+  public toJSON(): any {
+    return '<unresolved-lazy>';
+  }
+
+}
+
+class LazyString extends LazyBase {
+  constructor(private readonly producer: IStringValue) {
+    super();
   }
 
   public resolve(context: IResolveContext) {
@@ -127,9 +146,9 @@ class LazyString extends Token {
   }
 }
 
-class LazyNumber extends Token {
-  constructor(private readonly producer: INumberValue, displayHint?: string) {
-    super({ displayHint });
+class LazyNumber extends LazyBase {
+  constructor(private readonly producer: INumberProducer) {
+    super();
   }
 
   public resolve(context: IResolveContext) {
@@ -137,9 +156,9 @@ class LazyNumber extends Token {
   }
 }
 
-class LazyList extends Token {
-  constructor(private readonly producer: IListValue, private readonly options: LazyListValueOptions = {}) {
-    super(options);
+class LazyList extends LazyBase {
+  constructor(private readonly producer: IListProducer, private readonly options: LazyListValueOptions = {}) {
+    super();
   }
 
   public resolve(context: IResolveContext) {
@@ -151,9 +170,9 @@ class LazyList extends Token {
   }
 }
 
-class LazyAny extends Token {
-  constructor(private readonly producer: IAnyValue, private readonly options: LazyAnyValueOptions = {}) {
-    super(options);
+class LazyAny extends LazyBase {
+  constructor(private readonly producer: IAnyProducer, private readonly options: LazyAnyValueOptions = {}) {
+    super();
   }
 
   public resolve(context: IResolveContext) {

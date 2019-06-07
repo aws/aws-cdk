@@ -1,6 +1,7 @@
-import { IFragmentConcatenator } from "./resolve";
-import { TokenizedStringFragments } from "./string-fragments";
-import { IToken, RESOLVE_METHOD } from "./token";
+import { IResolvable } from "../resolvable";
+import { IFragmentConcatenator } from "../resolvable";
+import { TokenizedStringFragments } from "../string-fragments";
+import { isResolvableObject } from "../token";
 
 // Details for encoding and decoding Tokens into native types; should not be exported
 
@@ -41,7 +42,7 @@ export class TokenString {
   /**
    * Split string on markers, substituting markers with Tokens
    */
-  public split(lookup: (id: string) => IToken): TokenizedStringFragments {
+  public split(lookup: (id: string) => IResolvable): TokenizedStringFragments {
     const ret = new TokenizedStringFragments();
 
     let rest = 0;
@@ -102,7 +103,6 @@ export function containsListTokenElement(xs: any[]) {
  * that includes token markers), or it's a listifictaion of a Token string.
  *
  * @param obj The object to test.
- * @deprecated use `Token.unresolved`
  */
 export function unresolved(obj: any): boolean {
   if (typeof(obj) === 'string') {
@@ -112,7 +112,7 @@ export function unresolved(obj: any): boolean {
   } else if (Array.isArray(obj) && obj.length === 1) {
     return typeof(obj[0]) === 'string' && TokenString.forListToken(obj[0]).test();
   } else {
-    return obj && typeof(obj[RESOLVE_METHOD]) === 'function';
+    return isResolvableObject(obj);
   }
 }
 

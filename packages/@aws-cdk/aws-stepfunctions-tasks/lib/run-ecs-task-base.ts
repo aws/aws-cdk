@@ -63,7 +63,7 @@ export class EcsRunTaskBase implements ec2.IConnectable, sfn.IStepFunctionsTask 
 
     for (const override of this.props.containerOverrides || []) {
       const name = override.containerName;
-      if (!cdk.Token.unresolved(name)) {
+      if (!cdk.Token.isUnresolved(name)) {
         const cont = this.props.taskDefinition.node.tryFindChild(name);
         if (!cont) {
           throw new Error(`Overrides mention container with name '${name}', but no such container in task definition`);

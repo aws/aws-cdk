@@ -1,4 +1,4 @@
-import { Intrinsic, Lazy, Stack } from '@aws-cdk/cdk';
+import { Lazy, Stack, Token } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
 import { Anyone, AnyPrincipal, CanonicalUserPrincipal, IPrincipal, PolicyDocument, PolicyStatement } from '../lib';
 import { ArnPrincipal, CompositePrincipal, FederatedPrincipal, PrincipalPolicyFragment, ServicePrincipal } from '../lib';
@@ -14,7 +14,7 @@ export = {
     p.addResource('yourQueue');
 
     p.addAllResources();
-    p.addAwsAccountPrincipal(`my${new Intrinsic({ account: 'account' })}name`);
+    p.addAwsAccountPrincipal(`my${Token.asString({ account: 'account' })}name`);
     p.limitToAccount('12221121221');
 
     test.deepEqual(stack.node.resolve(p), { Action:

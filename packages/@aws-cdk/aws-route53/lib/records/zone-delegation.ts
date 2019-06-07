@@ -28,9 +28,9 @@ export class ZoneDelegationRecord extends cdk.Construct {
     super(scope, id);
 
     const ttl = props.ttl === undefined ? 172_800 : props.ttl;
-    const resourceRecords = cdk.Token.unresolved(props.nameServers)
+    const resourceRecords = cdk.Token.isUnresolved(props.nameServers)
       ? props.nameServers // Can't map a string-array token!
-      : props.nameServers.map(ns => (cdk.Token.unresolved(ns) || ns.endsWith('.')) ? ns : `${ns}.`);
+      : props.nameServers.map(ns => (cdk.Token.isUnresolved(ns) || ns.endsWith('.')) ? ns : `${ns}.`);
 
     new CfnRecordSet(this, 'Resource', {
       hostedZoneId: props.zone.hostedZoneId,
