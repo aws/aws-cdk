@@ -80,21 +80,21 @@ export = {
     test.done();
   },
 
-  'Version specified is stored in the TTL file'(test: Test) {
+  async 'Version specified is stored in the TTL file'(test: Test) {
     test.expect(1);
     const cacheFile = tmpfile();
     const cache = new VersionCheckTTL(cacheFile, 1);
-    cache.update('1.1.1');
+    await cache.update('1.1.1');
     const storedVersion = fs.readFileSync(cacheFile, 'utf8');
     test.equal(storedVersion, '1.1.1');
     test.done();
   },
 
-  'No Version specified for storage in the TTL file'(test: Test) {
+  async 'No Version specified for storage in the TTL file'(test: Test) {
     test.expect(1);
     const cacheFile = tmpfile();
     const cache = new VersionCheckTTL(cacheFile, 1);
-    cache.update();
+    await cache.update();
     const storedVersion = fs.readFileSync(cacheFile, 'utf8');
     test.equal(storedVersion, '');
     test.done();
