@@ -1,3 +1,5 @@
+# Change Log
+
 ## [0.34.0](https://github.com/awslabs/aws-cdk/compare/v0.33.0...v0.34.0) (2019-06-07)
 
 ### Bug Fixes
@@ -44,25 +46,21 @@
 * **route53:** `recordValue: string` prop in `route53.TxtRecord` changed to `values: string[]`
 * `recordValue` prop in `route53.CnameRecord` renamed to `domainName`
 * `route53.AliasRecord` has been removed, use `route53.ARecord` or `route53.AaaaRecord` with the `target` prop.
-* **core:**
 * **kms:** The `EncryptionKeyAlias` class was renamed to `Alias`.
 Associated types (such as `EncryptionKeyAliasProps`) were renamed in the
 same way.
-* **core:** * **cli:** This release requires CDK CLI >= 0.34.0
+* **cli:** This release requires CDK CLI >= 0.34.0
 * **core:** `App.run()` was renamed to `App.synth()` (soft deprecation, it will be removed in the next release).
 * **cloudwatch:** using an SNS topic as CloudWatch Alarm Actxion now
 requires an integration object from the `@aws-cdk/aws-cloudwatch-actions`
 package.
 * **event-targets:** `targets.EcsEc2Task` renamed to `targets.EcsTask`
-* * SNS - Subscription `endpoint` is now type `string` (previously `any`)
+* SNS - Subscription `endpoint` is now type `string` (previously `any`)
 * Step Functions - `result` in the Pass state is now type `map` (previously `any`)
 * the following modules are no longer released: `@aws-cdk/applet-js`, `@aws-cdk/aws-autoscaling-api`, `@aws-cdk/aws-codedeploy-api`
 * **cli:** applets are no longer supported as an app type, use "decdk" instead.
 * **core:** Properties passed to `addPropertyOverride` should match in capitalization to the CloudFormation schema (normally pascal case). For example, `addPropertyOverride('accessControl', 'xxx')` should now be `addPropertyOverride('AccessControl', 'xxx')`.
 
-
-
-# Change Log
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
