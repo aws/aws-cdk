@@ -26,7 +26,7 @@ Managed policies can be attached using `xxx.attachManagedPolicy(arn)`:
 
 [attaching managed policies](test/example.managedpolicy.lit.ts)
 
-### Extending permissions for existing resources
+### Granting permissions to resources
 
 Many of the AWS CDK resources have `grant*` methods that allow you to grant other resources access to that resource. As an example, the following code gives a Lambda function write permissions (Put, Update, Delete) to a DynamoDB table.
 
@@ -45,6 +45,8 @@ const table = new dynamodb.Table(...);
 
 table.grant(fn, 'dynamodb:PutItem');
 ```
+
+The `grant*` methods accept an `IGrantable` object. This interface is implemented by IAM principles resources (groups, users and roles) and resources that assume a role such as a Lambda function, EC2 instance or a Codebuild project.
 
 You can find which `grant*` methods exist for a resource in the [AWS CDK API Reference](https://docs.aws.amazon.com/cdk/api/latest/docs/aws-construct-library.html).
 
