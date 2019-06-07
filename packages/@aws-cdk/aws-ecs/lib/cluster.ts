@@ -22,7 +22,7 @@ export interface ClusterProps {
   /**
    * The VPC where your ECS instances will be running or your ENIs will be deployed
    *
-   * @default creates a new VPC
+   * @default - creates a new VPC with two AZs
    */
   readonly vpc?: ec2.IVpc;
 }

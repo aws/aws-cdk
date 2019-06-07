@@ -15,7 +15,7 @@ export interface LoadBalancedServiceBaseProps {
    * The cluster where your service will be deployed
    * You can only specify either vpc or cluster. Alternatively, you can leave both blank
    *
-   * @default create a new cluster
+   * @default - create a new cluster; if you do not specify a cluster nor a vpc, a new VPC will be created for you as well
    */
   readonly cluster?: ecs.ICluster;
 
@@ -23,7 +23,7 @@ export interface LoadBalancedServiceBaseProps {
    * VPC that the cluster instances or tasks are running in
    * You can only specify either vpc or cluster. Alternatively, you can leave both blank
    *
-   * @default use vpc of cluster or create a new one
+   * @default - use vpc of cluster or create a new one
    */
   readonly vpc?: ec2.IVpc;
 
