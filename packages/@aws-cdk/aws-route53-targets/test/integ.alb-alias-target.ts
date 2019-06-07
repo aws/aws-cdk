@@ -19,10 +19,10 @@ const lb = new elbv2.ApplicationLoadBalancer(stack, 'LB', {
 
 const zone = new route53.PublicHostedZone(stack, 'HostedZone', { zoneName: 'test.public' });
 
-new route53.AliasRecord(zone, 'Alias', {
+new route53.ARecord(zone, 'Alias', {
   zone,
   recordName: '_foo',
-  target: new targets.LoadBalancerTarget(lb)
+  target: route53.AddressRecordTarget.fromAlias(new targets.LoadBalancerTarget(lb))
 });
 
 app.synth();
