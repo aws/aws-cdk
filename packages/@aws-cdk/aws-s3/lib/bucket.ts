@@ -1,7 +1,7 @@
 import events = require('@aws-cdk/aws-events');
 import iam = require('@aws-cdk/aws-iam');
 import kms = require('@aws-cdk/aws-kms');
-import { applyRemovalPolicy, Construct, IResource, Lazy, RemovalPolicy, Resource, Token } from '@aws-cdk/cdk';
+import { applyRemovalPolicy, Construct, IResource, Lazy, RemovalPolicy, Resource, Stack, Token } from '@aws-cdk/cdk';
 import { EOL } from 'os';
 import { BucketPolicy } from './bucket-policy';
 import { IBucketNotificationDestination } from './destination';
@@ -361,7 +361,8 @@ abstract class BucketBase extends Resource implements IBucket {
    * @returns an ObjectS3Url token
    */
   public urlForObject(key?: string): string {
-    const components = [ `https://s3.${this.node.stack.region}.${this.node.stack.urlSuffix}/${this.bucketName}` ];
+    const stack = Stack.of(this);
+    const components = [ `https://s3.${stack.region}.${stack.urlSuffix}/${this.bucketName}` ];
     if (key) {
       // trim prepending '/'
       if (typeof key === 'string' && key.startsWith('/')) {
@@ -717,8 +718,9 @@ export class Bucket extends BucketBase {
    * `bucket.export()` or manually created.
    */
   public static fromBucketAttributes(scope: Construct, id: string, attrs: BucketAttributes): IBucket {
-    const region = scope.node.stack.region;
-    const urlSuffix = scope.node.stack.urlSuffix;
+    const stack = Stack.of(scope);
+    const region = stack.region;
+    const urlSuffix = stack.urlSuffix;
 
     const bucketName = parseBucketName(scope, attrs);
     if (!bucketName) {

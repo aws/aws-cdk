@@ -23,4 +23,4 @@ new Project(stack, 'MyProject', {
     vpc
 });
 
-app.run();
+app.synth();

@@ -1,4 +1,5 @@
 import cdk = require('@aws-cdk/cdk');
+import { Stack } from '@aws-cdk/cdk';
 import { Default, RegionInfo } from '@aws-cdk/region-info';
 import { PolicyStatement } from './policy-document';
 import { mergePrincipal } from './util';
@@ -315,7 +316,7 @@ class StackDependentToken implements cdk.IResolvable {
   }
 
   public resolve(context: cdk.IResolveContext) {
-    return this.fn(context.scope.node.stack);
+    return this.fn(Stack.of(context.scope));
   }
 
   public toString() {
@@ -333,9 +334,9 @@ class ServicePrincipalToken implements cdk.IResolvable {
   }
 
   public resolve(ctx: cdk.IResolveContext) {
-    const region = this.opts.region || ctx.scope.node.stack.region;
+    const region = this.opts.region || Stack.of(ctx.scope).region;
     const fact = RegionInfo.get(region).servicePrincipal(this.service);
-    return fact || Default.servicePrincipal(this.service, region, ctx.scope.node.stack.urlSuffix);
+    return fact || Default.servicePrincipal(this.service, region, Stack.of(ctx.scope).urlSuffix);
   }
 
   public toString() {

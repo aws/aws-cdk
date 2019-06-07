@@ -4,7 +4,7 @@ import ec2 = require('@aws-cdk/aws-ec2');
 import elbv2 = require('@aws-cdk/aws-elasticloadbalancingv2');
 import iam = require('@aws-cdk/aws-iam');
 import cloudmap = require('@aws-cdk/aws-servicediscovery');
-import { IResource, Lazy, Resource } from '@aws-cdk/cdk';
+import { IResource, Lazy, Resource, Stack } from '@aws-cdk/cdk';
 import cdk = require('@aws-cdk/cdk');
 import { NetworkMode, TaskDefinition } from '../base/task-definition';
 import { ICluster } from '../cluster';
@@ -289,7 +289,7 @@ export abstract class BaseService extends Resource
    */
   private makeAutoScalingRole(): iam.IRole {
     // Use a Service Linked Role.
-    return iam.Role.fromRoleArn(this, 'ScalingRole', this.node.stack.formatArn({
+    return iam.Role.fromRoleArn(this, 'ScalingRole', Stack.of(this).formatArn({
       service: 'iam',
       resource: 'role/aws-service-role/ecs.application-autoscaling.amazonaws.com',
       resourceName: 'AWSServiceRoleForApplicationAutoScaling_ECSService',

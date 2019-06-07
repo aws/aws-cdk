@@ -5,7 +5,7 @@ import kms = require('@aws-cdk/aws-kms');
 import lambda = require('@aws-cdk/aws-lambda');
 import logs = require('@aws-cdk/aws-logs');
 import secretsmanager = require('@aws-cdk/aws-secretsmanager');
-import { Construct, DeletionPolicy, IResource, Resource, SecretValue, Token } from '@aws-cdk/cdk';
+import { Construct, DeletionPolicy, IResource, Resource, SecretValue, Stack, Token } from '@aws-cdk/cdk';
 import { DatabaseSecret } from './database-secret';
 import { Endpoint } from './endpoint';
 import { IOptionGroup} from './option-group';
@@ -130,7 +130,7 @@ export abstract class DatabaseInstanceBase extends Resource implements IDatabase
    * The instance arn.
    */
   public get instanceArn(): string {
-    return this.node.stack.formatArn({
+    return Stack.of(this).formatArn({
       service: 'rds',
       resource: 'db',
       sep: ':',
@@ -487,7 +487,7 @@ abstract class DatabaseInstanceNew extends DatabaseInstanceBase implements IData
     if (props.monitoringInterval) {
       monitoringRole = new iam.Role(this, 'MonitoringRole', {
         assumedBy: new iam.ServicePrincipal('monitoring.rds.amazonaws.com'),
-        managedPolicyArns: [this.node.stack.formatArn({
+        managedPolicyArns: [Stack.of(this).formatArn({
           service: 'iam',
           region: '',
           account: 'aws',

@@ -1,6 +1,6 @@
 import cxapi = require('@aws-cdk/cx-api');
 import { Test } from 'nodeunit';
-import { App, AvailabilityZoneProvider, Construct, ContextProvider, SSMParameterProvider, Stack } from '../lib';
+import { App, AvailabilityZoneProvider, Construct, ConstructNode, ContextProvider, SSMParameterProvider, Stack } from '../lib';
 
 export = {
   'AvailabilityZoneProvider returns a list with dummy values if the context is not available'(test: Test) {
@@ -85,7 +85,7 @@ export = {
     stack.node.setContext(key, 'abc');
 
     const ssmp = new SSMParameterProvider(stack,  {parameterName: 'test'});
-    const azs = stack.node.resolve(ssmp.parameterValue());
+    const azs = stack.resolve(ssmp.parameterValue());
     test.deepEqual(azs, 'abc');
 
     test.done();
@@ -100,9 +100,9 @@ export = {
     test.deepEqual(new AvailabilityZoneProvider(stack).availabilityZones, [ 'dummy1a', 'dummy1b', 'dummy1c' ]);
     test.deepEqual(new SSMParameterProvider(child, {parameterName: 'foo'}).parameterValue(), 'dummy');
 
-    const assembly = app.run();
+    const assembly = app.synth();
     const output = assembly.getStack('test-stack');
-    const metadata = output.metadata;
+    const metadata = output.manifest.metadata || {};
     const azError: cxapi.MetadataEntry | undefined = metadata['/test-stack'].find(x => x.type === cxapi.ERROR_METADATA_KEY);
     const ssmError: cxapi.MetadataEntry | undefined = metadata['/test-stack/ChildConstruct'].find(x => x.type === cxapi.ERROR_METADATA_KEY);
 
@@ -113,13 +113,13 @@ export = {
   },
 };
 
-function firstKey(obj: any): string {
-  return Object.keys(obj)[0];
-}
-
 /**
  * Get the expected context key from a stack with missing parameters
  */
 function expectedContextKey(stack: Stack): string {
-  return firstKey(stack.missingContext);
+  const missing = ConstructNode.synth(stack.node).manifest.missing;
+  if (!missing || missing.length !== 1) {
+    throw new Error(`Expecting assembly to include a single missing context report`);
+  }
+  return missing[0].key;
 }

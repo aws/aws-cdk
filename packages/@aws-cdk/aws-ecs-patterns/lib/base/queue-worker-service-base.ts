@@ -4,7 +4,7 @@ import sqs = require('@aws-cdk/aws-sqs');
 import cdk = require('@aws-cdk/cdk');
 
 /**
- * Properties to define a Query Worker service
+ * Properties to define a queue worker service
  */
 export interface QueueWorkerServiceBaseProps {
   /**

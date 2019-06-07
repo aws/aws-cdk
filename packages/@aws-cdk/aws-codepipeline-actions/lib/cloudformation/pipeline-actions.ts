@@ -2,6 +2,7 @@ import cloudformation = require('@aws-cdk/aws-cloudformation');
 import codepipeline = require('@aws-cdk/aws-codepipeline');
 import iam = require('@aws-cdk/aws-iam');
 import cdk = require('@aws-cdk/cdk');
+import { Stack } from '@aws-cdk/cdk';
 
 /**
  * Properties common to all CloudFormation actions
@@ -227,7 +228,7 @@ export abstract class CloudFormationDeployAction extends CloudFormationAction {
       // None evaluates to empty string which is falsey and results in undefined
       Capabilities: (capabilities && capabilities.toString()) || undefined,
       RoleArn: cdk.Lazy.stringValue({ produce: () => this.deploymentRole.roleArn }),
-      ParameterOverrides: cdk.Lazy.stringValue({ produce: () => this.scope.node.stringifyJson(props.parameterOverrides) }),
+      ParameterOverrides: cdk.Lazy.stringValue({ produce: () => Stack.of(this.scope).toJsonString(props.parameterOverrides) }),
       TemplateConfiguration: props.templateConfiguration ? props.templateConfiguration.location : undefined,
       StackName: props.stackName,
     });
@@ -524,7 +525,7 @@ class SingletonPolicy extends cdk.Construct {
   }
 
   private stackArnFromProps(props: { stackName: string, region?: string }): string {
-    return this.node.stack.formatArn({
+    return Stack.of(this).formatArn({
       region: props.region,
       service: 'cloudformation',
       resource: 'stack',

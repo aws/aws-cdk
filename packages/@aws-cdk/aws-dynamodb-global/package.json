@@ -81,5 +81,6 @@
     "node": ">= 8.10.0"
   },
   "main": "lib/index.js",
-  "types": "lib/index.d.ts"
+  "types": "lib/index.d.ts",
+  "stability": "experimental"
 }

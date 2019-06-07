@@ -60,4 +60,4 @@ sourceAction.onStateChange('OnActionStateChange', new targets.SnsTopic(topic)).a
   detail: { state: [ 'STARTED' ] }
 });
 
-app.run();
+app.synth();

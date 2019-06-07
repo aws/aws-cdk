@@ -113,7 +113,7 @@ export = {
     const param = new ssm.StringParameter(stack, 'Parameter', { stringValue: 'Foo' });
 
     // THEN
-    test.deepEqual(param.node.resolve(param.parameterArn), {
+    test.deepEqual(stack.resolve(param.parameterArn), {
       'Fn::Join': ['', [
         'arn:',
         { Ref: 'AWS::Partition' },
@@ -136,7 +136,7 @@ export = {
     const param = ssm.StringParameter.fromStringParameterName(stack, 'MyParamName', 'MyParamName');
 
     // THEN
-    test.deepEqual(stack.node.resolve(param.parameterArn), {
+    test.deepEqual(stack.resolve(param.parameterArn), {
       'Fn::Join': [ '', [
         'arn:',
         { Ref: 'AWS::Partition' },
@@ -146,9 +146,9 @@ export = {
         { Ref: 'AWS::AccountId' },
         ':parameterMyParamName' ] ]
     });
-    test.deepEqual(stack.node.resolve(param.parameterName), 'MyParamName');
-    test.deepEqual(stack.node.resolve(param.parameterType), 'String');
-    test.deepEqual(stack.node.resolve(param.stringValue), '{{resolve:ssm:MyParamName}}');
+    test.deepEqual(stack.resolve(param.parameterName), 'MyParamName');
+    test.deepEqual(stack.resolve(param.parameterType), 'String');
+    test.deepEqual(stack.resolve(param.stringValue), '{{resolve:ssm:MyParamName}}');
     test.done();
   },
 
@@ -160,7 +160,7 @@ export = {
     const param = ssm.StringListParameter.fromStringListParameterName(stack, 'MyParamName', 'MyParamName');
 
     // THEN
-    test.deepEqual(stack.node.resolve(param.parameterArn), {
+    test.deepEqual(stack.resolve(param.parameterArn), {
       'Fn::Join': [ '', [
         'arn:',
         { Ref: 'AWS::Partition' },
@@ -170,9 +170,9 @@ export = {
         { Ref: 'AWS::AccountId' },
         ':parameterMyParamName' ] ]
     });
-    test.deepEqual(stack.node.resolve(param.parameterName), 'MyParamName');
-    test.deepEqual(stack.node.resolve(param.parameterType), 'StringList');
-    test.deepEqual(stack.node.resolve(param.stringListValue), { 'Fn::Split': [ ',', '{{resolve:ssm:MyParamName}}' ] });
+    test.deepEqual(stack.resolve(param.parameterName), 'MyParamName');
+    test.deepEqual(stack.resolve(param.parameterType), 'StringList');
+    test.deepEqual(stack.resolve(param.stringListValue), { 'Fn::Split': [ ',', '{{resolve:ssm:MyParamName}}' ] });
     test.done();
   }
 };

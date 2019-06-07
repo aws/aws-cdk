@@ -1,5 +1,4 @@
 import { Intrinsic } from "./private/intrinsic";
-import { IResolvable } from "./resolvable";
 
 const REFERENCE_SYMBOL = Symbol.for('@aws-cdk/cdk.Reference');
 
@@ -12,8 +11,8 @@ export abstract class Reference extends Intrinsic {
   /**
    * Check whether this is actually a Reference
    */
-  public static isReference(x: IResolvable): x is Reference {
-    return (x as any)[REFERENCE_SYMBOL] === true;
+  public static isReference(x: any): x is Reference {
+    return typeof 'x' === 'object' && x !== null && REFERENCE_SYMBOL in x;
   }
 
   public readonly target: Construct;

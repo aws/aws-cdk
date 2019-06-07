@@ -1,4 +1,4 @@
-import { Construct, Lazy, Resource } from "@aws-cdk/cdk";
+import { Construct, Lazy, Resource, Stack } from "@aws-cdk/cdk";
 import { CfnDashboard } from './cloudwatch.generated';
 import { Column, Row } from "./layout";
 import { IWidget } from "./widget";
@@ -61,7 +61,7 @@ export class Dashboard extends Resource {
       dashboardBody: Lazy.stringValue({ produce: () => {
         const column = new Column(...this.rows);
         column.position(0, 0);
-        return this.node.stringifyJson({
+        return Stack.of(this).toJsonString({
           start: props ? props.start : undefined,
           end: props ? props.end : undefined,
           periodOverride: props ? props.periodOverride : undefined,

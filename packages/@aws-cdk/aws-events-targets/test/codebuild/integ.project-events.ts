@@ -46,4 +46,4 @@ onCommitRule.addTarget(new targets.SnsTopic(topic, {
   )
 }));
 
-app.run();
+app.synth();

@@ -45,4 +45,4 @@ new cdk.CfnOutput(stack, 'MessageId', { value: snsPublish.getData('MessageId') }
 new cdk.CfnOutput(stack, 'TopicArn', { value: listTopics.getData('Topics.0.TopicArn') });
 new cdk.CfnOutput(stack, 'ParameterValue', { value: getParameter.getData('Parameter.Value') });
 
-app.run();
+app.synth();

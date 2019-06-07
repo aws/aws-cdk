@@ -1,8 +1,9 @@
-import { Construct, IConstruct, PATH_SEP } from "./construct";
+import cxapi = require('@aws-cdk/cx-api');
+import { Construct } from "./construct";
 import { Lazy } from "./lazy";
 import { Token } from './token';
 
-const LOGICAL_ID_MD = 'aws:cdk:logicalId';
+const CFN_ELEMENT_SYMBOL = Symbol.for('@aws-cdk/cdk.CfnElement');
 
 /**
  * An element of a CloudFormation stack.
@@ -17,8 +18,8 @@ export abstract class CfnElement extends Construct {
    *
    * @returns The construct as a stack element or undefined if it is not a stack element.
    */
-  public static isCfnElement(construct: IConstruct): construct is CfnElement {
-    return ('logicalId' in construct && '_toCloudFormation' in construct);
+  public static isCfnElement(x: any): x is CfnElement {
+    return CFN_ELEMENT_SYMBOL in x;
   }
 
   /**
@@ -32,6 +33,11 @@ export abstract class CfnElement extends Construct {
    */
   public readonly logicalId: string;
 
+  /**
+   * The stack in which this element is defined. CfnElements must be defined within a stack scope (directly or indirectly).
+   */
+  public readonly stack: Stack;
+
   private _logicalId: string;
 
   /**
@@ -44,11 +50,15 @@ export abstract class CfnElement extends Construct {
   constructor(scope: Construct, id: string) {
     super(scope, id);
 
-    this._logicalId = this.node.stack.logicalIds.getLogicalId(this);
+    Object.defineProperty(this, CFN_ELEMENT_SYMBOL, { value: true });
+
+    this.stack = Stack.of(this);
+    this._logicalId = this.stack.logicalIds.getLogicalId(this);
     this.logicalId = Lazy.stringValue({ produce: () => this._logicalId }, {
       displayHint: `${notTooLong(this.node.path)}.LogicalID`
     });
-    this.node.addMetadata(LOGICAL_ID_MD, this.logicalId, this.constructor);
+
+    this.node.addMetadata(cxapi.LOGICAL_ID_METADATA_KEY, this.logicalId, this.constructor);
   }
 
   /**
@@ -65,7 +75,7 @@ export abstract class CfnElement extends Construct {
    *      node +internal+ entries filtered.
    */
   public get creationStackTrace(): string[] | undefined {
-    const trace = this.node.metadata.find(md => md.type === LOGICAL_ID_MD)!.trace;
+    const trace = this.node.metadata.find(md => md.type === cxapi.LOGICAL_ID_METADATA_KEY)!.trace;
     if (!trace) {
       return undefined;
     }
@@ -84,13 +94,6 @@ export abstract class CfnElement extends Construct {
     function shouldFilter(str: string): boolean {
       return str.match(/[^(]+\(internal\/.*/) !== null;
     }
-  }
-
-  /**
-   * Return the path with respect to the stack
-   */
-  public get stackPath(): string {
-    return this.node.ancestors(this.node.stack).map(c => c.node.id).join(PATH_SEP);
   }
 
   /**
@@ -126,7 +129,7 @@ export abstract class CfnElement extends Construct {
       // This does make the assumption that the error will not be rectified,
       // but the error will be thrown later on anyway. If the error doesn't
       // get thrown down the line, we may miss references.
-      this.node.recordReference(...findTokens(this, () => this._toCloudFormation()));
+      this.node.addReference(...findTokens(this, () => this._toCloudFormation()));
     } catch (e) {
       if (e.type !== 'CfnSynthesisError') { throw e; }
     }
@@ -174,3 +177,4 @@ function notTooLong(x: string) {
 import { CfnReference } from "./private/cfn-reference";
 import { findTokens } from "./private/resolve";
 import { IResolvable } from "./resolvable";
+import { Stack } from './stack';

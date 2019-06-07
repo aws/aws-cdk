@@ -1,4 +1,16 @@
 ## @aws-cdk/aws-dynamodb-global
+<!--BEGIN STABILITY BANNER-->
+
+---
+
+![Stability: Experimental](https://img.shields.io/badge/stability-Experimental-important.svg?style=for-the-badge)
+
+> This API is still under active development and subject to non-backward
+> compatible changes or removal in any future version. Use of the API is not recommended in production
+> environments. Experimental APIs are not subject to the Semantic Versioning model.
+
+---
+<!--END STABILITY BANNER-->
 
 Global Tables builds upon DynamoDB’s global footprint to provide you with a fully managed, multi-region, and multi-master database that provides fast, local, read and write performance for massively scaled, global applications. Global Tables replicates your Amazon DynamoDB tables automatically across your choice of AWS regions.
 
@@ -15,7 +27,7 @@ new GlobalTable(app, 'globdynamodb', {
   tableName: 'GlobalTable',
   regions: [ "us-east-1", "us-east-2", "us-west-2" ]
 });
-app.run();
+app.synth();
 ```
 
 ## Implementation Notes

@@ -1,6 +1,6 @@
 import events = require('@aws-cdk/aws-events');
 import iam = require('@aws-cdk/aws-iam');
-import { Construct, DeletionPolicy, IConstruct, IResource, Lazy, Resource, Token } from '@aws-cdk/cdk';
+import { Construct, DeletionPolicy, IConstruct, IResource, Lazy, Resource, Stack, Token } from '@aws-cdk/cdk';
 import { CfnRepository } from './ecr.generated';
 import { CountType, LifecycleRule, TagStatus } from './lifecycle';
 
@@ -120,7 +120,7 @@ export abstract class RepositoryBase extends Resource implements IRepository {
    */
   public repositoryUriForTag(tag?: string): string {
     const tagSuffix = tag ? `:${tag}` : '';
-    const parts = this.node.stack.parseArn(this.repositoryArn);
+    const parts = Stack.of(this).parseArn(this.repositoryArn);
     return `${parts.account}.dkr.ecr.${parts.region}.amazonaws.com/${this.repositoryName}${tagSuffix}`;
   }
 
@@ -324,7 +324,7 @@ export class Repository extends RepositoryBase {
    * as the current stack.
    */
   public static arnForLocalRepository(repositoryName: string, scope: IConstruct): string {
-    return scope.node.stack.formatArn({
+    return Stack.of(scope).formatArn({
       service: 'ecr',
       resource: 'repository',
       resourceName: repositoryName
@@ -400,12 +400,13 @@ export class Repository extends RepositoryBase {
    * Render the life cycle policy object
    */
   private renderLifecyclePolicy(): CfnRepository.LifecyclePolicyProperty | undefined {
+    const stack = Stack.of(this);
     let lifecyclePolicyText: any;
 
     if (this.lifecycleRules.length === 0 && !this.registryId) { return undefined; }
 
     if (this.lifecycleRules.length > 0) {
-      lifecyclePolicyText = JSON.stringify(this.node.resolve({
+      lifecyclePolicyText = JSON.stringify(stack.resolve({
         rules: this.orderedLifecycleRules().map(renderLifecycleRule),
       }));
     }

@@ -1,5 +1,5 @@
 import { Test } from 'nodeunit';
-import { App as Root, Fn, isResolvableObject, Lazy, Stack, Token, Tokenization } from '../lib';
+import { Fn, isResolvableObject, Lazy, Stack, Token, Tokenization } from '../lib';
 import { createTokenDouble, extractTokenDouble } from '../lib/private/encoding';
 import { Intrinsic } from '../lib/private/intrinsic';
 import { findTokens } from '../lib/private/resolve';
@@ -633,5 +633,5 @@ function tokensThatResolveTo(value: any): Token[] {
  * So I don't have to change all call sites in this file.
  */
 function resolve(x: any) {
-  return new Root().node.resolve(x);
+  return new Stack().resolve(x);
 }

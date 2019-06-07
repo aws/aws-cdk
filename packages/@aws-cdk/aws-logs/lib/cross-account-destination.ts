@@ -1,6 +1,6 @@
 import iam = require('@aws-cdk/aws-iam');
 import cdk = require('@aws-cdk/cdk');
-import { Construct, Lazy } from '@aws-cdk/cdk';
+import { Construct, Lazy, Stack } from '@aws-cdk/cdk';
 import { ILogGroup } from './log-group';
 import { CfnDestination } from './logs.generated';
 import { ILogSubscriptionDestination, LogSubscriptionDestinationConfig } from './subscription-filter';
@@ -92,7 +92,7 @@ export class CrossAccountDestination extends cdk.Construct implements ILogSubscr
    */
   private generateUniqueName(): string {
     // Combination of stack name and LogicalID, which are guaranteed to be unique.
-    return this.node.stack.name + '-' + this.resource.logicalId;
+    return Stack.of(this).name + '-' + this.resource.logicalId;
   }
 
   /**
@@ -100,7 +100,7 @@ export class CrossAccountDestination extends cdk.Construct implements ILogSubscr
    */
   private lazyStringifiedPolicyDocument(): string {
     return Lazy.stringValue({ produce: () =>
-      this.policyDocument.isEmpty ? '' : this.node.stringifyJson(this.policyDocument)
+      this.policyDocument.isEmpty ? '' : Stack.of(this).toJsonString(this.policyDocument)
     });
   }
 }

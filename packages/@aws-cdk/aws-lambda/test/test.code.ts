@@ -63,12 +63,15 @@ export = {
       });
 
       // THEN
-      const assembly = app.run();
+      const assembly = app.synth();
       const synthesized = assembly.stacks[0];
 
       // Func1 has an asset, Func2 does not
-      test.deepEqual(synthesized.metadata['/MyStack/Func1/Code'][0].type, 'aws:cdk:asset');
-      test.deepEqual(synthesized.metadata['/MyStack/Func2/Code'], undefined);
+      const metadata = synthesized.manifest.metadata || {};
+      test.ok(metadata['/MyStack/Func1/Code']);
+      test.deepEqual(metadata['/MyStack/Func1/Code'].length, 1);
+      test.deepEqual(metadata['/MyStack/Func1/Code'][0].type, 'aws:cdk:asset');
+      test.deepEqual(metadata['/MyStack/Func2/Code'], undefined);
 
       test.done();
     },
@@ -119,8 +122,8 @@ export = {
         },
       }));
 
-      test.equal(stack.node.resolve(code.bucketNameParam), 'FunctionLambdaSourceBucketNameParameter9E9E108F');
-      test.equal(stack.node.resolve(code.objectKeyParam), 'FunctionLambdaSourceObjectKeyParameter1C7AED11');
+      test.equal(stack.resolve(code.bucketNameParam), 'FunctionLambdaSourceBucketNameParameter9E9E108F');
+      test.equal(stack.resolve(code.objectKeyParam), 'FunctionLambdaSourceObjectKeyParameter1C7AED11');
 
       test.done();
     },
@@ -153,8 +156,8 @@ export = {
         objectKeyParam: bucketKeyParam,
       });
 
-      test.equal(stack.node.resolve(code.bucketNameParam), 'BucketNameParam');
-      test.equal(stack.node.resolve(code.objectKeyParam), 'ObjectKeyParam');
+      test.equal(stack.resolve(code.bucketNameParam), 'BucketNameParam');
+      test.equal(stack.resolve(code.objectKeyParam), 'ObjectKeyParam');
 
       new lambda.Function(stack, 'Function', {
         code,
@@ -189,7 +192,7 @@ export = {
       });
 
       // when
-      const overrides = stack.node.resolve(code.assign({
+      const overrides = stack.resolve(code.assign({
         bucketName: 'SomeBucketName',
         objectKey: 'SomeObjectKey',
       }));

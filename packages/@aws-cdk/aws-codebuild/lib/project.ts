@@ -6,7 +6,7 @@ import ecr = require('@aws-cdk/aws-ecr');
 import events = require('@aws-cdk/aws-events');
 import iam = require('@aws-cdk/aws-iam');
 import kms = require('@aws-cdk/aws-kms');
-import { Aws, Construct, IResource, Lazy, Resource } from '@aws-cdk/cdk';
+import { Aws, Construct, IResource, Lazy, Resource, Stack } from '@aws-cdk/cdk';
 import { BuildArtifacts, CodePipelineBuildArtifacts, NoBuildArtifacts } from './artifacts';
 import { Cache } from './cache';
 import { CfnProject } from './codebuild.generated';
@@ -541,7 +541,7 @@ export class Project extends ProjectBase {
     class Import extends ProjectBase {
       public readonly grantPrincipal: iam.IPrincipal;
       public readonly projectArn = projectArn;
-      public readonly projectName = scope.node.stack.parseArn(projectArn).resourceName!;
+      public readonly projectName = Stack.of(scope).parseArn(projectArn).resourceName!;
       public readonly role?: iam.Role = undefined;
 
       constructor(s: Construct, i: string) {
@@ -578,7 +578,7 @@ export class Project extends ProjectBase {
       constructor(s: Construct, i: string) {
         super(s, i);
 
-        this.projectArn = this.node.stack.formatArn({
+        this.projectArn = Stack.of(this).formatArn({
           service: 'codebuild',
           resource: 'project',
           resourceName: projectName,
@@ -793,7 +793,7 @@ export class Project extends ProjectBase {
   }
 
   private createLoggingPermission() {
-    const logGroupArn = this.node.stack.formatArn({
+    const logGroupArn = Stack.of(this).formatArn({
       service: 'logs',
       resource: 'log-group',
       sep: ':',

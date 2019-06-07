@@ -19,4 +19,4 @@ const app = new cdk.App();
 
 new SnsToSqs(app, 'aws-cdk-sns-sqs');
 
-app.run();
+app.synth();

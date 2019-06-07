@@ -1,5 +1,5 @@
-import { CloudFormationLang, DefaultTokenResolver, IResolvable, IResolveContext,
-  Lazy, StringConcat, Token, Tokenization } from '@aws-cdk/cdk';
+import { DefaultTokenResolver, IResolvable, IResolveContext,
+  Lazy, Stack, StringConcat, Token, Tokenization } from '@aws-cdk/cdk';
 import { IRule } from './rule-ref';
 
 /**
@@ -160,6 +160,8 @@ class FieldAwareEventInput extends RuleTargetInput {
       }
     }
 
+    const stack = Stack.of(rule);
+
     let resolved: string;
     if (this.inputType === InputType.Multiline) {
       // JSONify individual lines
@@ -167,9 +169,9 @@ class FieldAwareEventInput extends RuleTargetInput {
         scope: rule,
         resolver: new EventFieldReplacer()
       });
-      resolved = resolved.split('\n').map(CloudFormationLang.toJSON).join('\n');
+      resolved = resolved.split('\n').map(stack.toJsonString).join('\n');
     } else {
-      resolved = CloudFormationLang.toJSON(Tokenization.resolve(this.input, {
+      resolved = stack.toJsonString(Tokenization.resolve(this.input, {
         scope: rule,
         resolver: new EventFieldReplacer()
       }));
@@ -298,7 +300,7 @@ enum InputType {
 }
 
 function isEventField(x: any): x is EventField {
-  return typeof x === 'object' && x !== null && x[EVENT_FIELD_SYMBOL];
+  return EVENT_FIELD_SYMBOL in x;
 }
 
 const EVENT_FIELD_SYMBOL = Symbol.for('@aws-cdk/aws-events.EventField');
