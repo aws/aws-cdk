@@ -725,6 +725,7 @@
             "Protocol": "http"
           }
         ],
+        "CrossZone": false,
         "Scheme": "internal",
         "SecurityGroups": [
           {
