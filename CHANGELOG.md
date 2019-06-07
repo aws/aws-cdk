@@ -1,5 +1,7 @@
 # Change Log
 
+All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
+
 ## [0.34.0](https://github.com/awslabs/aws-cdk/compare/v0.33.0...v0.34.0) (2019-06-07)
 
 ### Bug Fixes
@@ -61,8 +63,6 @@ package.
 * **cli:** applets are no longer supported as an app type, use "decdk" instead.
 * **core:** Properties passed to `addPropertyOverride` should match in capitalization to the CloudFormation schema (normally pascal case). For example, `addPropertyOverride('accessControl', 'xxx')` should now be `addPropertyOverride('AccessControl', 'xxx')`.
 
-
-All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
 ## [0.33.0](https://github.com/awslabs/aws-cdk/compare/v0.32.0...v0.33.0) (2019-05-30)
 
