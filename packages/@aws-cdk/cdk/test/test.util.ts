@@ -1,8 +1,8 @@
-import { Test } from 'nodeunit';
+import { Test, testCase } from 'nodeunit';
 import { Stack } from '../lib';
-import { capitalizePropertyNames, ignoreEmpty } from '../lib/util';
+import { capitalizePropertyNames, filterUndefined, ignoreEmpty } from '../lib/util';
 
-export = {
+export = testCase({
   'capitalizeResourceProperties capitalizes all keys of an object (recursively) from camelCase to PascalCase'(test: Test) {
     const c = new Stack();
 
@@ -71,8 +71,20 @@ export = {
       test.deepEqual(stack.resolve(ignoreEmpty({ xoo: { resolve: () => [ undefined, undefined ] }})), { xoo: [] });
       test.done();
     }
+  },
+
+  'filterUnderined': {
+    'is null-safe (aka treats null and undefined the same)'(test: Test) {
+      test.deepEqual(filterUndefined({ 'a null': null, 'a not null': true }), { 'a not null': true });
+      test.done();
+    },
+
+    'removes undefined, but leaves the rest'(test: Test) {
+      test.deepEqual(filterUndefined({ 'an undefined': undefined, 'yes': true }), { yes: true });
+      test.done();
+    }
   }
-};
+});
 
 class SomeToken {
   public foo = 60;
