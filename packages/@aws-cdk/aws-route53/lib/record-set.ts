@@ -166,7 +166,12 @@ export class ARecord extends RecordSet {
 /**
  * Construction properties for a AaaaRecord.
  */
-export interface AaaaRecordProps extends RecordSetOptions, ARecordProps {}
+export interface AaaaRecordProps extends RecordSetOptions {
+  /**
+   * The target.
+   */
+  readonly target: AddressRecordTarget;
+}
 
 /**
  * A DNS AAAA record
