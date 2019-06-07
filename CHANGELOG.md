@@ -1,3 +1,67 @@
+## [0.34.0](https://github.com/awslabs/aws-cdk/compare/v0.33.0...v0.34.0) (2019-06-07)
+
+### Bug Fixes
+
+* **build:** Correct buildspec so it does not fail ([#2737](https://github.com/awslabs/aws-cdk/issues/2737)) ([e362ac8](https://github.com/awslabs/aws-cdk/commit/e362ac8))
+* **certificatemanager:** correct certificateArn typo in the README ([#2712](https://github.com/awslabs/aws-cdk/issues/2712)) ([2bfc1c2](https://github.com/awslabs/aws-cdk/commit/2bfc1c2))
+* **cli:** don't fail if region cannot be determined ([#2721](https://github.com/awslabs/aws-cdk/issues/2721)) ([0c72ef3](https://github.com/awslabs/aws-cdk/commit/0c72ef3)), closes [#2697](https://github.com/awslabs/aws-cdk/issues/2697)
+* **cli:** remove support for applets ([#2691](https://github.com/awslabs/aws-cdk/issues/2691)) ([0997ee2](https://github.com/awslabs/aws-cdk/commit/0997ee2))
+* **cloudwatch:** move SNS Alarm Action to `aws-cloudwatch-actions` ([#2688](https://github.com/awslabs/aws-cdk/issues/2688)) ([e3df21a](https://github.com/awslabs/aws-cdk/commit/e3df21a))
+* **codebuild:** grant the Project's Role permissions to the KMS Key if it was passed. ([#2715](https://github.com/awslabs/aws-cdk/issues/2715)) ([4e12fe6](https://github.com/awslabs/aws-cdk/commit/4e12fe6))
+* **core:** apply overrides after rendering properties ([#2685](https://github.com/awslabs/aws-cdk/issues/2685)) ([f2636e5](https://github.com/awslabs/aws-cdk/commit/f2636e5)), closes [#2677](https://github.com/awslabs/aws-cdk/issues/2677)
+* **core:** Make filterUndefined null-safe ([#2789](https://github.com/awslabs/aws-cdk/issues/2789)) ([e4fb811](https://github.com/awslabs/aws-cdk/commit/e4fb811)), closes [awslabs/jsii#523](https://github.com/awslabs/jsii/issues/523)
+* **ecs:** remove LoadBalancedFargateServiceApplet, no longer supported ([#2779](https://github.com/awslabs/aws-cdk/issues/2779)) ([a610017](https://github.com/awslabs/aws-cdk/commit/a610017))
+* **ecs-patterns:** expose service on queue worker services ([#2780](https://github.com/awslabs/aws-cdk/issues/2780)) ([6d83cb9](https://github.com/awslabs/aws-cdk/commit/6d83cb9))
+* **pkglint:** Adjust stability banner style ([#2768](https://github.com/awslabs/aws-cdk/issues/2768)) ([da94d8b](https://github.com/awslabs/aws-cdk/commit/da94d8b))
+* **route53:** support zone roots as record names ([#2705](https://github.com/awslabs/aws-cdk/issues/2705)) ([08a2852](https://github.com/awslabs/aws-cdk/commit/08a2852))
+* **stepfunctions:** improve Task payload encoding ([#2706](https://github.com/awslabs/aws-cdk/issues/2706)) ([1c13faa](https://github.com/awslabs/aws-cdk/commit/1c13faa))
+
+
+### Code Refactoring
+
+* Construct props must not use the 'any' type (awslint:props-no-any) ([#2701](https://github.com/awslabs/aws-cdk/issues/2701)) ([cb2b334](https://github.com/awslabs/aws-cdk/commit/cb2b334)), closes [#2673](https://github.com/awslabs/aws-cdk/issues/2673)
+* remove deprecated modules ([#2693](https://github.com/awslabs/aws-cdk/issues/2693)) ([421bf6d](https://github.com/awslabs/aws-cdk/commit/421bf6d))
+* **core:** improvements to Construct API ([#2767](https://github.com/awslabs/aws-cdk/issues/2767)) ([3f7a0ad](https://github.com/awslabs/aws-cdk/commit/3f7a0ad)), closes [#1934](https://github.com/awslabs/aws-cdk/issues/1934) [#2766](https://github.com/awslabs/aws-cdk/issues/2766)
+* **core:** misc cleanups to App-related APIs ([#2731](https://github.com/awslabs/aws-cdk/issues/2731)) ([b2e1964](https://github.com/awslabs/aws-cdk/commit/b2e1964)), closes [#1891](https://github.com/awslabs/aws-cdk/issues/1891) [#2750](https://github.com/awslabs/aws-cdk/issues/2750)
+* **kms:** Rename EncryptionKeyAlias to Alias ([#2769](https://github.com/awslabs/aws-cdk/issues/2769)) ([da8e1d5](https://github.com/awslabs/aws-cdk/commit/da8e1d5))
+
+
+### Features
+
+* **core:** node.defaultChild as a shortcut to escape hatch ([#2684](https://github.com/awslabs/aws-cdk/issues/2684)) ([8cd3c23](https://github.com/awslabs/aws-cdk/commit/8cd3c23)), closes [#2290](https://github.com/awslabs/aws-cdk/issues/2290)
+* **core+cli:** support tagging of stacks ([#2185](https://github.com/awslabs/aws-cdk/issues/2185)) ([d0e19d5](https://github.com/awslabs/aws-cdk/commit/d0e19d5)), closes [#932](https://github.com/awslabs/aws-cdk/issues/932)
+* **event-targets:** add support for fargate/awsvpc tasks ([#2707](https://github.com/awslabs/aws-cdk/issues/2707)) ([2754dde](https://github.com/awslabs/aws-cdk/commit/2754dde))
+* **events:** support SQS queues as rule targets ([#2683](https://github.com/awslabs/aws-cdk/issues/2683)) ([078e34a](https://github.com/awslabs/aws-cdk/commit/078e34a)), closes [#1786](https://github.com/awslabs/aws-cdk/issues/1786)
+* **rds:** add engineVersion to DatabaseCluster ([#2698](https://github.com/awslabs/aws-cdk/issues/2698)) ([0593d51](https://github.com/awslabs/aws-cdk/commit/0593d51)), closes [#2212](https://github.com/awslabs/aws-cdk/issues/2212)
+* **rds:** add support for database instances ([#2187](https://github.com/awslabs/aws-cdk/issues/2187)) ([b864041](https://github.com/awslabs/aws-cdk/commit/b864041)), closes [#2075](https://github.com/awslabs/aws-cdk/issues/2075) [#1693](https://github.com/awslabs/aws-cdk/issues/1693)
+* **route53:** improve constructs for basic records ([#2741](https://github.com/awslabs/aws-cdk/issues/2741)) ([696f53f](https://github.com/awslabs/aws-cdk/commit/696f53f))
+* **s3:** default to KMS if encryptionKey is specified ([#2719](https://github.com/awslabs/aws-cdk/issues/2719)) ([ae4a04f](https://github.com/awslabs/aws-cdk/commit/ae4a04f)), closes [#2714](https://github.com/awslabs/aws-cdk/issues/2714)
+* **tokens:** enable type coercion ([#2680](https://github.com/awslabs/aws-cdk/issues/2680)) ([0f54698](https://github.com/awslabs/aws-cdk/commit/0f54698)), closes [#2679](https://github.com/awslabs/aws-cdk/issues/2679)
+
+
+### BREAKING CHANGES
+
+* **route53:** `recordValue: string` prop in `route53.TxtRecord` changed to `values: string[]`
+* `recordValue` prop in `route53.CnameRecord` renamed to `domainName`
+* `route53.AliasRecord` has been removed, use `route53.ARecord` or `route53.AaaaRecord` with the `target` prop.
+* **core:**
+* **kms:** The `EncryptionKeyAlias` class was renamed to `Alias`.
+Associated types (such as `EncryptionKeyAliasProps`) were renamed in the
+same way.
+* **core:** * **cli:** This release requires CDK CLI >= 0.34.0
+* **core:** `App.run()` was renamed to `App.synth()` (soft deprecation, it will be removed in the next release).
+* **cloudwatch:** using an SNS topic as CloudWatch Alarm Actxion now
+requires an integration object from the `@aws-cdk/aws-cloudwatch-actions`
+package.
+* **event-targets:** `targets.EcsEc2Task` renamed to `targets.EcsTask`
+* * SNS - Subscription `endpoint` is now type `string` (previously `any`)
+* Step Functions - `result` in the Pass state is now type `map` (previously `any`)
+* the following modules are no longer released: `@aws-cdk/applet-js`, `@aws-cdk/aws-autoscaling-api`, `@aws-cdk/aws-codedeploy-api`
+* **cli:** applets are no longer supported as an app type, use "decdk" instead.
+* **core:** Properties passed to `addPropertyOverride` should match in capitalization to the CloudFormation schema (normally pascal case). For example, `addPropertyOverride('accessControl', 'xxx')` should now be `addPropertyOverride('AccessControl', 'xxx')`.
+
+
+
 # Change Log
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
