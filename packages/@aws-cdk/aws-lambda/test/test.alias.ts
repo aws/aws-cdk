@@ -40,6 +40,39 @@ export = {
     test.done();
   },
 
+  'can create an alias to $LATEST'(test: Test): void {
+    const stack = new Stack();
+    const fn = new lambda.Function(stack, 'MyLambda', {
+      code: new lambda.InlineCode('hello()'),
+      handler: 'index.hello',
+      runtime: lambda.Runtime.NodeJS810,
+    });
+
+    new lambda.Alias(stack, 'Alias', {
+      aliasName: 'latest',
+      version: fn.latestVersion,
+    });
+
+    expect(stack).to(beASupersetOfTemplate({
+      MyLambdaVersion16CDE3C40: {
+        Type: "AWS::Lambda::Version",
+        Properties: {
+          FunctionName: { Ref: "MyLambdaCCE802FB" }
+        }
+        },
+        Alias325C5727: {
+        Type: "AWS::Lambda::Alias",
+        Properties: {
+          FunctionName: { Ref: "MyLambdaCCE802FB" },
+          FunctionVersion: '$LATEST',
+          Name: "latest"
+        }
+        }
+    }));
+
+    test.done();
+  },
+
   'can use newVersion to create a new Version'(test: Test) {
     const stack = new Stack();
     const fn = new lambda.Function(stack, 'MyLambda', {
