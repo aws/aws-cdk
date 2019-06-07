@@ -24,10 +24,10 @@ test('use CloudFront as record target', () => {
 
   // WHEN
   const zone = new route53.PublicHostedZone(stack, 'HostedZone', { zoneName: 'test.public' });
-  new route53.AliasRecord(zone, 'Alias', {
+  new route53.ARecord(zone, 'Alias', {
     zone,
     recordName: '_foo',
-    target: new targets.CloudFrontTarget(distribution)
+    target: route53.AddressRecordTarget.fromAlias(new targets.CloudFrontTarget(distribution))
   });
 
   // THEN
