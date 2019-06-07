@@ -100,7 +100,8 @@
     "@aws-cdk/aws-sns": "^0.33.0",
     "@aws-cdk/aws-sqs": "^0.33.0",
     "@aws-cdk/aws-stepfunctions": "^0.33.0",
-    "@aws-cdk/cdk": "^0.33.0"
+    "@aws-cdk/cdk": "^0.33.0",
+    "@aws-cdk/aws-kms": "^0.33.0"
   },
   "engines": {
     "node": ">= 8.10.0"

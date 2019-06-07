@@ -1,6 +1,13 @@
 import ec2 = require('@aws-cdk/aws-ec2');
 import kms = require('@aws-cdk/aws-kms');
 
+//
+// Create Training Job types
+//
+
+/**
+ * Identifies the training algorithm to use.
+ */
 export interface AlgorithmSpecification {
 
     /**
@@ -21,9 +28,12 @@ export interface AlgorithmSpecification {
     /**
      * Input mode that the algorithm supports.
      */
-    readonly trainingInputMode: InputMode.File | InputMode.Pipe;
+    readonly trainingInputMode: InputMode;
 }
 
+/**
+ *  Describes the training, validation or test dataset and the Amazon S3 location where it is stored.
+ */
 export interface Channel {
 
     /**
@@ -34,7 +44,7 @@ export interface Channel {
     /**
      * Compression type if training data is compressed
      */
-    readonly compressionType?: CompressionType.None | CompressionType.Gzip;
+    readonly compressionType?: CompressionType;
 
     /**
      * Content type
@@ -49,12 +59,12 @@ export interface Channel {
     /**
      * Input mode to use for the data channel in a training job.
      */
-    readonly inputMode?: InputMode.File | InputMode.Pipe;
+    readonly inputMode?: InputMode;
 
     /**
      * Record wrapper type
      */
-    readonly recordWrapperType?: RecordWrapperType.None | RecordWrapperType.RecordIO;
+    readonly recordWrapperType?: RecordWrapperType;
 
     /**
      * Shuffle config option for input data in a channel.
@@ -62,6 +72,9 @@ export interface Channel {
     readonly shuffleConfig?: ShuffleConfig;
 }
 
+/**
+ * Configuration for a shuffle option for input data in a channel.
+ */
 export interface ShuffleConfig {
     /**
      * Determines the shuffling order.
@@ -69,6 +82,9 @@ export interface ShuffleConfig {
     readonly seed: number;
 }
 
+/**
+ * Location of the channel data.
+ */
 export interface DataSource {
     /**
      * S3 location of the data source that is associated with a channel.
@@ -76,6 +92,9 @@ export interface DataSource {
     readonly s3DataSource: S3DataSource;
 }
 
+/**
+ * S3 location of the channel data.
+ */
 export interface S3DataSource {
     /**
      * List of one or more attribute names to use that are found in a specified augmented manifest file.
@@ -85,7 +104,7 @@ export interface S3DataSource {
     /**
      * S3 Data Distribution Type
      */
-    readonly s3DataDistributionType?: S3DataDistributionType.FullyReplicated | S3DataDistributionType.ShardedByS3Key;
+    readonly s3DataDistributionType?: S3DataDistributionType;
 
     /**
      * S3 Data Type
@@ -98,6 +117,9 @@ export interface S3DataSource {
     readonly s3Uri: string;
 }
 
+/**
+ * Identifies the Amazon S3 location where you want Amazon SageMaker to save the results of model training.
+ */
 export interface OutputDataConfig {
   /**
    * Optional KMS encryption key that Amazon SageMaker uses to encrypt the model artifacts at rest using Amazon S3 server-side encryption.
@@ -110,6 +132,9 @@ export interface OutputDataConfig {
   readonly s3OutputPath: string;
 }
 
+/**
+ * Sets a time limit for training. 
+ */
 export interface StoppingCondition {
     /**
      * The maximum length of time, in seconds, that the training or compilation job can run.
@@ -117,18 +142,9 @@ export interface StoppingCondition {
     readonly maxRuntimeInSeconds?: number;
 }
 
-export interface Tag {
-    /**
-     * Key tag.
-     */
-    readonly key: string;
-
-    /**
-     * Value tag.
-     */
-    readonly value: string;
-}
-
+/**
+ * Identifies the resources, ML compute instances, and ML storage volumes to deploy for model training.
+ */
 export interface ResourceConfig {
 
     /**
@@ -152,6 +168,9 @@ export interface ResourceConfig {
     readonly volumeSizeInGB: number;
 }
 
+/**
+ * Specifies the VPC that you want your training job to connect to.
+ */
 export interface VpcConfig {
     /**
      * VPC security groups.
@@ -159,11 +178,19 @@ export interface VpcConfig {
     readonly securityGroups: ec2.ISecurityGroup[];
 
     /**
+     * VPC id
+     */
+    readonly vpc: ec2.Vpc;
+
+    /**
      * VPC subnets.
      */
-    readonly subnetSelection: ec2.SubnetSelection;
+    readonly subnets: ec2.ISubnet[];
 }
 
+/**
+ * Specifies the metric name and regular expressions used to parse algorithm logs.
+ */
 export interface MetricDefinition {
 
     /**
@@ -177,6 +204,9 @@ export interface MetricDefinition {
     readonly regex: string;
 }
 
+/**
+ * S3 Data Type.
+ */
 export enum S3DataType {
     /**
      * Manifest File Data Type
@@ -194,6 +224,9 @@ export enum S3DataType {
     AugmentedManifestFile = 'AugmentedManifestFile'
 }
 
+/**
+ * S3 Data Distribution Type.
+ */
 export enum S3DataDistributionType {
     /**
      * Fully replicated S3 Data Distribution Type
@@ -206,6 +239,9 @@ export enum S3DataDistributionType {
     ShardedByS3Key = 'ShardedByS3Key'
 }
 
+/**
+ * Define the format of the input data.
+ */
 export enum RecordWrapperType {
     /**
      * None record wrapper type
@@ -218,6 +254,9 @@ export enum RecordWrapperType {
     RecordIO = 'RecordIO'
 }
 
+/**
+ *  Input mode that the algorithm supports.
+ */
 export enum InputMode {
     /**
      * Pipe mode
@@ -230,6 +269,9 @@ export enum InputMode {
     File = 'File'
 }
 
+/**Compression type of the data.
+ * 
+ */
 export enum CompressionType {
     /**
      * None compression type
@@ -240,4 +282,167 @@ export enum CompressionType {
      * Gzip compression type
      */
     Gzip = 'Gzip'
+}
+
+//
+// Create Transform Job types
+//
+
+/**
+ *  Dataset to be transformed and the Amazon S3 location where it is stored.
+ */
+export interface TransformInput {
+
+    /**
+     * The compression type of the transform data.
+     */
+    readonly compressionType?: CompressionType;
+
+    /**
+     * Multipurpose internet mail extension (MIME) type of the data.
+     */
+    readonly contentType?: string;
+
+    /**
+     * S3 location of the channel data
+     */
+    readonly transformDataSource: TransformDataSource;
+
+    /**
+     * 
+     */
+    readonly splitType?: SplitType;
+}
+
+/**
+ * S3 location of the input data that the model can consume.
+ */
+export interface TransformDataSource {
+
+    /**
+     * S3 location of the input data
+     */
+    readonly s3DataSource: TransformS3DataSource;
+}
+
+/**
+ * Location of the channel data.
+ */
+export interface TransformS3DataSource {
+
+    /**
+     * S3 Data Type
+     */
+    readonly s3DataType: S3DataType;
+
+    /**
+     * Identifies either a key name prefix or a manifest.
+     */
+    readonly s3Uri: string;
+}
+
+/**
+ * S3 location where you want Amazon SageMaker to save the results from the transform job.
+ */
+export interface TransformOutput {
+
+    /**
+     * MIME type used to specify the output data.
+     */
+    readonly accept?: string;
+
+    /**
+     * Defines how to assemble the results of the transform job as a single S3 object.
+     */
+    readonly assembleWith?: AssembleWith;
+
+    /**
+     * AWS KMS key that Amazon SageMaker uses to encrypt the model artifacts at rest using Amazon S3 server-side encryption.
+     */
+    readonly encryptionKey?: kms.Key;
+
+    /**
+     * S3 path where you want Amazon SageMaker to store the results of the transform job.
+     */
+    readonly s3OutputPath: string;
+}
+
+/**
+ * ML compute instances for the transform job.
+ */
+export interface TransformResources {
+
+    /**
+     * Nmber of ML compute instances to use in the transform job
+     */
+    readonly instanceCount: number;
+
+    /**
+     * ML compute instance type for the transform job.
+     */
+    readonly instanceType: ec2.InstanceType;
+
+    /**
+     * AWS KMS key that Amazon SageMaker uses to encrypt data on the storage volume attached to the ML compute instance(s).
+     */
+    readonly volumeKmsKeyId?: kms.Key;
+}
+
+/**
+ * Specifies the number of records to include in a mini-batch for an HTTP inference request.
+ */
+export enum BatchStrategy {
+
+    /**
+     * Fits multiple records in a mini-batch.
+     */
+    MultiRecord = 'MultiRecord',
+
+    /**
+     * Use a single record when making an invocation request.
+     */
+    SingleRecord = 'SingleRecord'
+}
+
+/**
+ * Method to use to split the transform job's data files into smaller batches.
+ */
+export enum SplitType {
+
+    /**
+     * Input data files are not split,
+     */
+    None = 'None',
+
+    /**
+     * Split records on a newline character boundary.
+     */
+    Line = 'Line',
+
+    /**
+     * Split using MXNet RecordIO format.
+     */
+    RecordIO = 'RecordIO',
+
+    /**
+     * Split using TensorFlow TFRecord format.
+     */    
+    TFRecord = 'TFRecord'
+}
+
+/**
+ * How to assemble the results of the transform job as a single S3 object.
+ */
+export enum AssembleWith {
+
+    /**
+     * Concatenate the results in binary format.
+     */
+    None = 'None',
+
+    /**
+     * Add a newline character at the end of every transformed record.
+     */
+    Line = 'Line'
+
 }

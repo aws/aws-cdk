@@ -1,70 +1,107 @@
+import ec2 = require('@aws-cdk/aws-ec2');
 import iam = require('@aws-cdk/aws-iam');
 import sfn = require('@aws-cdk/aws-stepfunctions');
-import cdk = require('@aws-cdk/cdk');
-import { AlgorithmSpecification, Channel, OutputDataConfig, ResourceConfig, StoppingCondition, Tag, VpcConfig } from './sagemaker-base-types';
+
+import { TrainingJobParameters, TransformJobParameters } from './sagemaker-task-params';
 
 /**
- * Basic properties for SageMaker CreateTrainingJob tasks.
+ * Class representing the SageMaker Create Training Job task.
  */
-export interface CreateTrainingJobkProps {
+export class SagemakerTrainingJobTask implements ec2.IConnectable, sfn.IStepFunctionsTask {
 
-    /**
-     * Name of the training job.
-     */
-    readonly trainingJobName: string;
+    public readonly connections: ec2.Connections = new ec2.Connections();
 
-    /**
-     * Identifies the training algorithm to use.
-     */
-    readonly algorithmSpec: AlgorithmSpecification;
+    constructor(private readonly parameters: TrainingJobParameters, private readonly sync: boolean = false) {}
 
-    /**
-     * Enables encryption between ML compute instances.
-     */
-    readonly enableInterContainerTrafficEncryption?: boolean;
+    public bind(task: sfn.Task): sfn.StepFunctionsTaskProperties {
+        return {
+          resourceArn: 'arn:aws:states:::sagemaker:createTrainingJob' + (this.sync ? '.sync' : ''),
+          parameters: sfn.FieldUtils.renderObject(this.parameters.toJson()),
+          policyStatements: this.makePolicyStatements(task),
+        };
+    }
 
-    /**
-     * Isolates the training container.
-     */
-    readonly enableNetworkIsolation?: boolean;
+    private makePolicyStatements(task: sfn.Task): iam.PolicyStatement[] {
+        const stack = task.node.stack;
 
-    /**
-     * Algorithm-specific parameters that influence the quality of the model.
-     */
-    readonly hyperparameters?: {[key: string]: any};
+        // https://docs.aws.amazon.com/step-functions/latest/dg/sagemaker-iam.html
+        const policyStatements = [
+          new iam.PolicyStatement()
+            .addActions('sagemaker:CreateTrainingJob', 'sagemaker:DescribeTrainingJob', 'sagemaker:StopTrainingJob')
+            .addResource(stack.formatArn({
+                service: 'sagemaker',
+                resource: 'training-job',
+                resourceName: '*'
+            })),
+          new iam.PolicyStatement()
+            .addAction('sagemaker:ListTags')
+            .addAllResources(),
+          new iam.PolicyStatement()
+            .addAction('iam:PassRole')
+            .addResources(this.parameters.role.roleArn)
+            .addCondition('StringEquals', { "iam:PassedToService": "sagemaker.amazonaws.com" })
+        ];
 
-    /**
-     * Array of Channel objects. Each channel is a named input source.
-     */
-    readonly inputDataConfig: Channel[];
+        if (this.sync) {
+          policyStatements.push(new iam.PolicyStatement()
+            .addActions("events:PutTargets", "events:PutRule", "events:DescribeRule")
+            .addResource(stack.formatArn({
+              service: 'events',
+              resource: 'rule',
+              resourceName: 'StepFunctionsGetEventsForSageMakerTrainingJobsRule'
+          })));
+        }
 
-    /**
-     * Path to the S3 bucket where you want to store model artifacts.
-     */
-    readonly outputDataConfig: OutputDataConfig;
+        return policyStatements;
+      }
+}
 
-    /**
-     * Resources to use for model training.
-     */
-    readonly resourceConfig: ResourceConfig;
+/**
+ * Class representing the SageMaker Create Transform Job task.
+ */
+export class SagemakerTransformJobTask implements sfn.IStepFunctionsTask {
 
-    /**
-     * IAM role that Amazon SageMaker can assume to perform tasks on your behalf.
-     */
-    readonly role: iam.Role;
+  constructor(private readonly parameters: TransformJobParameters, private readonly sync: boolean = false) {}
 
-    /**
-     * Stopping condition
-     */
-    readonly stoppingCondition?: StoppingCondition;
+  public bind(task: sfn.Task): sfn.StepFunctionsTaskProperties {
+      return {
+        resourceArn: 'arn:aws:states:::sagemaker:createTransformJob' + (this.sync ? '.sync' : ''),
+        parameters: sfn.FieldUtils.renderObject(this.parameters.toJson()),
+        policyStatements: this.makePolicyStatements(task),
+      };
+  }
 
-    /**
-     * Tags
-     */
-    readonly tags?: Tag[];
+  private makePolicyStatements(task: sfn.Task): iam.PolicyStatement[] {
+      const stack = task.node.stack;
 
-    /**
-     * VPC config
-     */
-    readonly vpcConfig?: VpcConfig;
+      // https://docs.aws.amazon.com/step-functions/latest/dg/sagemaker-iam.html
+      const policyStatements = [
+        new iam.PolicyStatement()
+          .addActions('sagemaker:CreateTransformJob', 'sagemaker:DescribeTransformJob', 'sagemaker:StopTransformJob')
+          .addResource(stack.formatArn({
+              service: 'sagemaker',
+              resource: 'transform-job',
+              resourceName: '*'
+          })),
+        new iam.PolicyStatement()
+          .addAction('sagemaker:ListTags')
+          .addAllResources(),
+        new iam.PolicyStatement()
+          .addAction('iam:PassRole')
+          .addResources(this.parameters.role.roleArn)
+          .addCondition('StringEquals', { "iam:PassedToService": "sagemaker.amazonaws.com" })
+      ];
+
+      if (this.sync) {
+        policyStatements.push(new iam.PolicyStatement()
+          .addActions("events:PutTargets", "events:PutRule", "events:DescribeRule")
+          .addResource(stack.formatArn({
+            service: 'events',
+            resource: 'rule',
+            resourceName: 'StepFunctionsGetEventsForSageMakerTransformJobsRule'
+        })));
+      }
+
+      return policyStatements;
+    }
 }
