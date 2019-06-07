@@ -53,22 +53,12 @@ export = {
       version: fn.latestVersion,
     });
 
-    expect(stack).to(beASupersetOfTemplate({
-      MyLambdaVersion16CDE3C40: {
-        Type: "AWS::Lambda::Version",
-        Properties: {
-          FunctionName: { Ref: "MyLambdaCCE802FB" }
-        }
-        },
-        Alias325C5727: {
-        Type: "AWS::Lambda::Alias",
-        Properties: {
-          FunctionName: { Ref: "MyLambdaCCE802FB" },
-          FunctionVersion: '$LATEST',
-          Name: "latest"
-        }
-        }
+    expect(stack).to(haveResource('AWS::Lambda::Alias', {
+      FunctionName: { Ref: "MyLambdaCCE802FB" },
+      FunctionVersion: '$LATEST',
+      Name: 'latest',
     }));
+    expect(stack).notTo(haveResource('AWS::Lambda::Version'));
 
     test.done();
   },
