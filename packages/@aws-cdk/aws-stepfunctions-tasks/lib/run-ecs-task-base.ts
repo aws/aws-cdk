@@ -3,6 +3,7 @@ import ecs = require('@aws-cdk/aws-ecs');
 import iam = require('@aws-cdk/aws-iam');
 import sfn = require('@aws-cdk/aws-stepfunctions');
 import cdk = require('@aws-cdk/cdk');
+import { Stack } from '@aws-cdk/cdk';
 import { ContainerOverride } from './run-ecs-task-base-types';
 
 /**
@@ -72,7 +73,7 @@ export class EcsRunTaskBase implements ec2.IConnectable, sfn.IStepFunctionsTask 
     }
   }
 
-  public bind(task: sfn.Task): sfn.StepFunctionsTaskProperties {
+  public bind(task: sfn.Task): sfn.StepFunctionsTaskConfig {
     if (this.networkConfiguration !== undefined) {
       // Make sure we have a security group if we're using AWSVPC networking
       if (this.securityGroup === undefined) {
@@ -117,7 +118,7 @@ export class EcsRunTaskBase implements ec2.IConnectable, sfn.IStepFunctionsTask 
   }
 
   private makePolicyStatements(task: sfn.Task): iam.PolicyStatement[] {
-    const stack = task.node.stack;
+    const stack = Stack.of(task);
 
     // https://docs.aws.amazon.com/step-functions/latest/dg/ecs-iam.html
     const policyStatements = [

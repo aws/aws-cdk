@@ -89,5 +89,6 @@
     "exclude": [
       "resource-attribute:@aws-cdk/aws-ec2.ISecurityGroup.securityGroupVpcId"
     ]
-  }
+  },
+  "stability": "experimental"
 }

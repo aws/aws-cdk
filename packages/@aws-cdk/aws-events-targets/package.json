@@ -76,7 +76,7 @@
     "@aws-cdk/aws-sqs": "^0.33.0",
     "cdk-build-tools": "^0.33.0",
     "cdk-integ-tools": "^0.33.0",
-    "jest": "^24.7.1",
+    "jest": "^24.8.0",
     "pkglint": "^0.33.0"
   },
   "dependencies": {
@@ -109,5 +109,6 @@
   },
   "engines": {
     "node": ">= 8.10.0"
-  }
+  },
+  "stability": "experimental"
 }

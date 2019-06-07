@@ -16,4 +16,4 @@ new Queue(stack, 'FifoQueue', {
 
 new CfnOutput(stack, 'QueueUrl', { value: queue.queueUrl });
 
-app.run();
+app.synth();

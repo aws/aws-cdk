@@ -63,7 +63,7 @@
   "devDependencies": {
     "@aws-cdk/assert": "^0.33.0",
     "@types/minimatch": "^3.0.3",
-    "@types/sinon": "^7.0.11",
+    "@types/sinon": "^7.0.12",
     "aws-cdk": "^0.33.0",
     "cdk-build-tools": "^0.33.0",
     "cdk-integ-tools": "^0.33.0",
@@ -90,5 +90,6 @@
   },
   "bundledDependencies": [
     "minimatch"
-  ]
+  ],
+  "stability": "experimental"
 }

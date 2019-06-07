@@ -1,5 +1,6 @@
 import { Test } from 'nodeunit';
 import { CfnOutput, CfnResource, Stack } from '../lib';
+import { toCloudFormation } from './util';
 
 export = {
   'outputs can be added to the stack'(test: Test) {
@@ -12,7 +13,7 @@ export = {
       value: ref,
       description: 'CfnOutput properties'
     });
-    test.deepEqual(stack._toCloudFormation(), { Resources: { MyResource: { Type: 'R' } },
+    test.deepEqual(toCloudFormation(stack), { Resources: { MyResource: { Type: 'R' } },
     Outputs:
      { MyOutput:
       { Description: 'CfnOutput properties',
@@ -47,16 +48,16 @@ export = {
   'if stack name is undefined, we will only use the logical ID for the export name'(test: Test) {
     const stack = new Stack();
     const output = new CfnOutput(stack, 'MyOutput', { value: 'boom' });
-    test.deepEqual(stack.node.resolve(output.makeImportValue()), { 'Fn::ImportValue': 'Stack:MyOutput' });
+    test.deepEqual(stack.resolve(output.makeImportValue()), { 'Fn::ImportValue': 'Stack:MyOutput' });
     test.done();
   },
 
   'makeImportValue can be used to create an Fn::ImportValue from an output'(test: Test) {
     const stack = new Stack(undefined, 'MyStack');
     const output = new CfnOutput(stack, 'MyOutput', { value: 'boom' });
-    test.deepEqual(stack.node.resolve(output.makeImportValue()), { 'Fn::ImportValue': 'MyStack:MyOutput' });
+    test.deepEqual(stack.resolve(output.makeImportValue()), { 'Fn::ImportValue': 'MyStack:MyOutput' });
 
-    test.deepEqual(stack._toCloudFormation(), {
+    test.deepEqual(toCloudFormation(stack), {
       Outputs: {
         MyOutput: {
           Value: 'boom',
@@ -75,7 +76,7 @@ export = {
     new CfnOutput(stack, 'SomeOutput', { value: 'x' });
 
     // THEN
-    test.deepEqual(stack._toCloudFormation(), {
+    test.deepEqual(toCloudFormation(stack), {
       Outputs: {
         SomeOutput: {
           Value: 'x'

@@ -10,7 +10,7 @@ export class SnsDestination implements s3.IBucketNotificationDestination {
   constructor(private readonly topic: sns.ITopic) {
   }
 
-  public bind(_scope: Construct, bucket: s3.IBucket): s3.BucketNotificationDestinationProps {
+  public bind(_scope: Construct, bucket: s3.IBucket): s3.BucketNotificationDestinationConfig {
     this.topic.addToResourcePolicy(new iam.PolicyStatement()
       .addServicePrincipal('s3.amazonaws.com')
       .addAction('sns:Publish')

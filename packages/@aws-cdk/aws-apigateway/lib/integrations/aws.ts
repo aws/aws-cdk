@@ -1,4 +1,5 @@
 import cdk = require('@aws-cdk/cdk');
+import { Stack } from '@aws-cdk/cdk';
 import { Integration, IntegrationOptions, IntegrationType } from '../integration';
 import { Method } from '../method';
 import { parseAwsApiCall } from '../util';
@@ -80,7 +81,7 @@ export class AwsIntegration extends Integration {
       integrationHttpMethod: props.integrationHttpMethod || 'POST',
       uri: new cdk.Token(() => {
         if (!this.scope) { throw new Error('AwsIntegration must be used in API'); }
-        return this.scope.node.stack.formatArn({
+        return Stack.of(this.scope).formatArn({
           service: 'apigateway',
           account: backend,
           resource: apiType,

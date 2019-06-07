@@ -99,5 +99,6 @@
       "resource-interface-extends-construct:@aws-cdk/aws-autoscaling.IAutoScalingGroup",
       "export:@aws-cdk/aws-autoscaling.IAutoScalingGroup"
     ]
-  }
+  },
+  "stability": "experimental"
 }

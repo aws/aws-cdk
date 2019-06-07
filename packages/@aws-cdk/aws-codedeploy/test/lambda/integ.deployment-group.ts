@@ -45,4 +45,4 @@ new codedeploy.LambdaDeploymentGroup(stack, 'BlueGreenDeployment', {
   postHook
 });
 
-app.run();
+app.synth();

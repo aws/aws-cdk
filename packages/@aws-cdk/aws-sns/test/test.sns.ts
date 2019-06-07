@@ -629,7 +629,7 @@ export = {
       {
         "Action": "sns:Publish",
         "Effect": "Allow",
-        "Resource": stack.node.resolve(topic.topicArn)
+        "Resource": stack.resolve(topic.topicArn)
       }
       ],
     }
@@ -703,7 +703,7 @@ export = {
     const topic = new sns.Topic(stack, 'Topic');
 
     // THEN
-    test.deepEqual(stack.node.resolve(topic.metricNumberOfMessagesPublished()), {
+    test.deepEqual(stack.resolve(topic.metricNumberOfMessagesPublished()), {
       dimensions: {TopicName: { 'Fn::GetAtt': [ 'TopicBFC7AF6E', 'TopicName' ] }},
       namespace: 'AWS/SNS',
       metricName: 'NumberOfMessagesPublished',
@@ -711,7 +711,7 @@ export = {
       statistic: 'Sum'
     });
 
-    test.deepEqual(stack.node.resolve(topic.metricPublishSize()), {
+    test.deepEqual(stack.resolve(topic.metricPublishSize()), {
       dimensions: {TopicName: { 'Fn::GetAtt': [ 'TopicBFC7AF6E', 'TopicName' ] }},
       namespace: 'AWS/SNS',
       metricName: 'PublishSize',

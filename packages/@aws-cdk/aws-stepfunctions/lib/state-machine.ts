@@ -1,6 +1,6 @@
 import cloudwatch = require('@aws-cdk/aws-cloudwatch');
 import iam = require('@aws-cdk/aws-iam');
-import { Construct, IResource, Resource } from '@aws-cdk/cdk';
+import { Construct, IResource, Resource, Stack } from '@aws-cdk/cdk';
 import { StateGraph } from './state-graph';
 import { CfnStateMachine } from './stepfunctions.generated';
 import { IChainable } from './types';
@@ -71,7 +71,7 @@ export class StateMachine extends Resource implements IStateMachine {
         super(scope, id);
 
         this.role = props.role || new iam.Role(this, 'Role', {
-            assumedBy: new iam.ServicePrincipal(`states.${this.node.stack.region}.amazonaws.com`),
+            assumedBy: new iam.ServicePrincipal(`states.${Stack.of(this).region}.amazonaws.com`),
         });
 
         const graph = new StateGraph(props.definition.startState, `State Machine ${id} definition`);
@@ -80,7 +80,7 @@ export class StateMachine extends Resource implements IStateMachine {
         const resource = new CfnStateMachine(this, 'Resource', {
             stateMachineName: props.stateMachineName,
             roleArn: this.role.roleArn,
-            definitionString: this.node.stringifyJson(graph.toGraphJson()),
+            definitionString: Stack.of(this).toJsonString(graph.toGraphJson()),
         });
 
         for (const statement of graph.policyStatements) {

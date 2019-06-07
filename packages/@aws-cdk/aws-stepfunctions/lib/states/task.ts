@@ -2,7 +2,7 @@ import cloudwatch = require('@aws-cdk/aws-cloudwatch');
 import cdk = require('@aws-cdk/cdk');
 import { Chain } from '../chain';
 import { StateGraph } from '../state-graph';
-import { IStepFunctionsTask, StepFunctionsTaskProperties } from '../step-functions-task';
+import { IStepFunctionsTask, StepFunctionsTaskConfig } from '../step-functions-task';
 import { CatchProps, IChainable, INextable, RetryProps } from '../types';
 import { renderJsonPath, State, StateType } from './state';
 
@@ -75,7 +75,7 @@ export interface TaskProps {
 export class Task extends State implements INextable {
     public readonly endStates: INextable[];
     private readonly timeoutSeconds?: number;
-    private readonly taskProps: StepFunctionsTaskProperties;
+    private readonly taskProps: StepFunctionsTaskConfig;
 
     constructor(scope: cdk.Construct, id: string, props: TaskProps) {
         super(scope, id, props);

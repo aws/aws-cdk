@@ -157,9 +157,9 @@ export = {
     p.addAwsPrincipal('arn');
     key.addToResourcePolicy(p);
 
-    key.node.apply(new Tag('tag1', 'value1'));
-    key.node.apply(new Tag('tag2', 'value2'));
-    key.node.apply(new Tag('tag3', ''));
+    key.node.applyAspect(new Tag('tag1', 'value1'));
+    key.node.applyAspect(new Tag('tag2', 'value2'));
+    key.node.applyAspect(new Tag('tag3', ''));
 
     expect(stack).to(exactlyMatchTemplate({
       Resources: {

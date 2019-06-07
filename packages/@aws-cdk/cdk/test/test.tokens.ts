@@ -1,5 +1,5 @@
 import { Test } from 'nodeunit';
-import { App as Root, findTokens, Fn, Stack, Token } from '../lib';
+import { findTokens, Fn, Stack, Token } from '../lib';
 import { createTokenDouble, extractTokenDouble } from '../lib/encoding';
 import { TokenMap } from '../lib/token-map';
 import { evaluateCFN } from './evaluate-cfn';
@@ -675,5 +675,5 @@ function tokensThatResolveTo(value: string): Token[] {
  * So I don't have to change all call sites in this file.
  */
 function resolve(x: any) {
-  return new Root().node.resolve(x);
+  return new Stack().resolve(x);
 }

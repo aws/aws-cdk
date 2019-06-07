@@ -48,7 +48,7 @@ export = nodeunit.testCase({
         'd'
       ]);
 
-      test.deepEqual(stack.node.resolve(obj), { 'Fn::Join': [ "",
+      test.deepEqual(stack.resolve(obj), { 'Fn::Join': [ "",
         [
           "a",
           { 'Fn::GetAtt': ['a', 'bc'] },
@@ -63,7 +63,7 @@ export = nodeunit.testCase({
       await fc.assert(
         fc.property(
           fc.string(), anyValue,
-          (delimiter, value) => _.isEqual(stack.node.resolve(Fn.join(delimiter, [value])), value)
+          (delimiter, value) => _.isEqual(stack.resolve(Fn.join(delimiter, [value])), value)
         ),
         { verbose: true }
       );
@@ -73,7 +73,7 @@ export = nodeunit.testCase({
       await fc.assert(
         fc.property(
           fc.string(), fc.array(nonEmptyString, 1, 15),
-          (delimiter, values) => stack.node.resolve(Fn.join(delimiter, values)) === values.join(delimiter)
+          (delimiter, values) => stack.resolve(Fn.join(delimiter, values)) === values.join(delimiter)
         ),
         { verbose: true }
       );
@@ -84,7 +84,7 @@ export = nodeunit.testCase({
         fc.property(
           fc.string(), fc.array(nonEmptyString, 1, 3), tokenish, fc.array(nonEmptyString, 1, 3),
           (delimiter, prefix, obj, suffix) =>
-            _.isEqual(stack.node.resolve(Fn.join(delimiter, [...prefix, stringToken(obj), ...suffix])),
+            _.isEqual(stack.resolve(Fn.join(delimiter, [...prefix, stringToken(obj), ...suffix])),
                       { 'Fn::Join': [delimiter, [prefix.join(delimiter), obj, suffix.join(delimiter)]] })
         ),
         { verbose: true, seed: 1539874645005, path: "0:0:0:0:0:0:0:0:0" }
@@ -99,8 +99,8 @@ export = nodeunit.testCase({
                       fc.array(anyValue),
           (delimiter, prefix, nested, suffix) =>
             // Gonna test
-            _.isEqual(stack.node.resolve(Fn.join(delimiter, [...prefix, Fn.join(delimiter, nested), ...suffix])),
-                      stack.node.resolve(Fn.join(delimiter, [...prefix, ...nested, ...suffix])))
+            _.isEqual(stack.resolve(Fn.join(delimiter, [...prefix, Fn.join(delimiter, nested), ...suffix])),
+                      stack.resolve(Fn.join(delimiter, [...prefix, ...nested, ...suffix])))
         ),
         { verbose: true }
       );
@@ -116,7 +116,7 @@ export = nodeunit.testCase({
           (delimiter1, delimiter2, prefix,  nested, suffix) => {
             fc.pre(delimiter1 !== delimiter2);
             const join = Fn.join(delimiter1, [...prefix, Fn.join(delimiter2, stringListToken(nested)), ...suffix]);
-            const resolved = stack.node.resolve(join);
+            const resolved = stack.resolve(join);
             return resolved['Fn::Join'][1].find((e: any) => typeof e === 'object'
                                                         && ('Fn::Join' in e)
                                                         && e['Fn::Join'][0] === delimiter2) != null;

@@ -29,14 +29,14 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@types/fs-extra": "^5.0.5",
+    "@types/fs-extra": "^7.0.0",
     "@types/yargs": "^13.0.0",
     "cdk-build-tools": "^0.33.0",
     "pkglint": "^0.33.0"
   },
   "dependencies": {
-    "fs-extra": "^7.0.1",
-    "yargs": "^13.2.2"
+    "fs-extra": "^8.0.1",
+    "yargs": "^13.2.4"
   },
   "keywords": [
     "aws",
