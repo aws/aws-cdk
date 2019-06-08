@@ -54,7 +54,7 @@ test('create basic training job', () => {
     })});
 
     // THEN
-    expect(stack.node.resolve(task.toStateJson())).toEqual({
+    expect(stack.resolve(task.toStateJson())).toEqual({
       Type: 'Task',
       Resource: 'arn:aws:states:::sagemaker:createTrainingJob',
       End: true,
@@ -164,7 +164,7 @@ test('create complex training job', () => {
     })});
 
     // THEN
-    expect(stack.node.resolve(task.toStateJson())).toEqual({
+    expect(stack.resolve(task.toStateJson())).toEqual({
       Type: 'Task',
       Resource: 'arn:aws:states:::sagemaker:createTrainingJob.sync',
       End: true,
@@ -269,7 +269,7 @@ test('pass param to training job', () => {
     })});
 
     // THEN
-    expect(stack.node.resolve(task.toStateJson())).toEqual({
+    expect(stack.resolve(task.toStateJson())).toEqual({
       Type: 'Task',
       Resource: 'arn:aws:states:::sagemaker:createTrainingJob',
       End: true,

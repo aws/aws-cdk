@@ -45,7 +45,7 @@ test('create basic transform job', () => {
     }) });
 
     // THEN
-    expect(stack.node.resolve(task.toStateJson())).toEqual({
+    expect(stack.resolve(task.toStateJson())).toEqual({
       Type: 'Task',
       Resource: 'arn:aws:states:::sagemaker:createTransformJob',
       End: true,
@@ -108,7 +108,7 @@ test('create complex transform job', () => {
     }) });
 
     // THEN
-    expect(stack.node.resolve(task.toStateJson())).toEqual({
+    expect(stack.resolve(task.toStateJson())).toEqual({
       Type: 'Task',
       Resource: 'arn:aws:states:::sagemaker:createTransformJob.sync',
       End: true,
@@ -169,7 +169,7 @@ test('pass param to transform job', () => {
     }) });
 
     // THEN
-    expect(stack.node.resolve(task.toStateJson())).toEqual({
+    expect(stack.resolve(task.toStateJson())).toEqual({
         Type: 'Task',
         Resource: 'arn:aws:states:::sagemaker:createTransformJob',
         End: true,

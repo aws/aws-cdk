@@ -1,7 +1,7 @@
 import ec2 = require('@aws-cdk/aws-ec2');
 import iam = require('@aws-cdk/aws-iam');
 import sfn = require('@aws-cdk/aws-stepfunctions');
-
+import { Stack } from '@aws-cdk/cdk';
 import { AlgorithmSpecification, Channel, OutputDataConfig, ResourceConfig, StoppingCondition, VpcConfig } from './sagemaker-task-base-types';
 
 export interface SagemakerTrainProps {
@@ -71,7 +71,7 @@ export class SagemakerTrainTask implements ec2.IConnectable, sfn.IStepFunctionsT
 
     constructor(private readonly props: SagemakerTrainProps) { }
 
-    public bind(task: sfn.Task): sfn.StepFunctionsTaskProperties {
+    public bind(task: sfn.Task): sfn.StepFunctionsTaskConfig  {
         return {
           resourceArn: 'arn:aws:states:::sagemaker:createTrainingJob' + (this.props.synchronous ? '.sync' : ''),
           parameters: sfn.FieldUtils.renderObject(this.renderParameters()),
@@ -173,7 +173,7 @@ export class SagemakerTrainTask implements ec2.IConnectable, sfn.IStepFunctionsT
     }
 
     private makePolicyStatements(task: sfn.Task): iam.PolicyStatement[] {
-        const stack = task.node.stack;
+        const stack = Stack.of(task);
 
         // https://docs.aws.amazon.com/step-functions/latest/dg/sagemaker-iam.html
         const policyStatements = [

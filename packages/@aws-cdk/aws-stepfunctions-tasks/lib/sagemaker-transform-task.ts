@@ -1,6 +1,6 @@
 import iam = require('@aws-cdk/aws-iam');
 import sfn = require('@aws-cdk/aws-stepfunctions');
-
+import { Stack } from '@aws-cdk/cdk';
 import { BatchStrategy, TransformInput, TransformOutput, TransformResources } from './sagemaker-task-base-types';
 
 export interface SagemakerTransformProps {
@@ -73,7 +73,7 @@ export class SagemakerTransformTask implements sfn.IStepFunctionsTask {
 
     constructor(private readonly props: SagemakerTransformProps) { }
 
-    public bind(task: sfn.Task): sfn.StepFunctionsTaskProperties {
+    public bind(task: sfn.Task): sfn.StepFunctionsTaskConfig {
         return {
           resourceArn: 'arn:aws:states:::sagemaker:createTransformJob' + (this.props.synchronous ? '.sync' : ''),
           parameters: sfn.FieldUtils.renderObject(this.renderParameters()),
@@ -142,7 +142,7 @@ export class SagemakerTransformTask implements sfn.IStepFunctionsTask {
     }
 
     private makePolicyStatements(task: sfn.Task): iam.PolicyStatement[] {
-        const stack = task.node.stack;
+        const stack = Stack.of(task);
 
         // https://docs.aws.amazon.com/step-functions/latest/dg/sagemaker-iam.html
         const policyStatements = [
