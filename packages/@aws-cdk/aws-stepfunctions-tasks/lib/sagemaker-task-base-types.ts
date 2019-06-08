@@ -5,9 +5,6 @@ import kms = require('@aws-cdk/aws-kms');
 // Create Training Job types
 //
 
-/**
- * Identifies the training algorithm to use.
- */
 export interface AlgorithmSpecification {
 
     /**
@@ -117,9 +114,6 @@ export interface S3DataSource {
     readonly s3Uri: string;
 }
 
-/**
- * Identifies the Amazon S3 location where you want Amazon SageMaker to save the results of model training.
- */
 export interface OutputDataConfig {
   /**
    * Optional KMS encryption key that Amazon SageMaker uses to encrypt the model artifacts at rest using Amazon S3 server-side encryption.
@@ -132,9 +126,6 @@ export interface OutputDataConfig {
   readonly s3OutputPath: string;
 }
 
-/**
- * Sets a time limit for training. 
- */
 export interface StoppingCondition {
     /**
      * The maximum length of time, in seconds, that the training or compilation job can run.
@@ -142,9 +133,6 @@ export interface StoppingCondition {
     readonly maxRuntimeInSeconds?: number;
 }
 
-/**
- * Identifies the resources, ML compute instances, and ML storage volumes to deploy for model training.
- */
 export interface ResourceConfig {
 
     /**
@@ -168,9 +156,6 @@ export interface ResourceConfig {
     readonly volumeSizeInGB: number;
 }
 
-/**
- * Specifies the VPC that you want your training job to connect to.
- */
 export interface VpcConfig {
     /**
      * VPC security groups.

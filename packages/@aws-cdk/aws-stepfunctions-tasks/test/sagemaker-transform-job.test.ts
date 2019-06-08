@@ -5,7 +5,7 @@ import kms = require('@aws-cdk/aws-kms');
 import sfn = require('@aws-cdk/aws-stepfunctions');
 import cdk = require('@aws-cdk/cdk');
 import tasks = require('../lib');
-import { S3DataType, BatchStrategy } from '../lib';
+import { BatchStrategy, S3DataType } from '../lib';
 
 let stack: cdk.Stack;
 let role: iam.Role;
@@ -23,28 +23,29 @@ beforeEach(() => {
 
 test('create basic transform job', () => {
     // WHEN
-    const params = new tasks.TransformJobParameters("MyTransformJob", "MyModelName", role);
-    params.addTransformInput(
-            {
-                transformDataSource: {
-                    s3DataSource: {
-                        s3Uri: 's3://inputbucket/prefix',
-                        s3DataType: S3DataType.S3Prefix,
-                    }
+    const task = new sfn.Task(stack, 'TransformTask', { task: new tasks.SagemakerTransformTask({
+        transformJobName: "MyTransformJob",
+        modelName: "MyModelName",
+        role,
+        transformInput: {
+            transformDataSource: {
+                s3DataSource: {
+                    s3Uri: 's3://inputbucket/prefix',
+                    s3DataType: S3DataType.S3Prefix,
                 }
-            })
-            .addTransformOutput({
-                    s3OutputPath: 's3://outputbucket/prefix',
-            })
-            .addTransformResources({
-                instanceCount: 1,
-                instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.P3, ec2.InstanceSize.XLarge2),
-            });
-
-    const pub = new sfn.Task(stack, 'TransformTask', { task: new tasks.SagemakerTransformJobTask(params) });
+            }
+        },
+        transformOutput: {
+            s3OutputPath: 's3://outputbucket/prefix',
+        },
+        transformResources: {
+            instanceCount: 1,
+            instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.P3, ec2.InstanceSize.XLarge2),
+        }
+    }) });
 
     // THEN
-    expect(stack.node.resolve(pub.toStateJson())).toEqual({
+    expect(stack.node.resolve(task.toStateJson())).toEqual({
       Type: 'Task',
       Resource: 'arn:aws:states:::sagemaker:createTransformJob',
       End: true,
@@ -73,35 +74,41 @@ test('create basic transform job', () => {
 test('create complex transform job', () => {
     // WHEN
     const kmsKey = new kms.Key(stack, 'Key');
-    const params = new tasks.TransformJobParameters("MyTransformJob", "MyModelName", role);
-    params.addTransformInput(
-            {
-                transformDataSource: {
-                    s3DataSource: {
-                        s3Uri: 's3://inputbucket/prefix',
-                        s3DataType: S3DataType.S3Prefix,
-                    }
+    const task = new sfn.Task(stack, 'TransformTask', { task: new tasks.SagemakerTransformTask({
+        transformJobName: "MyTransformJob",
+        modelName: "MyModelName",
+        synchronous: true,
+        role,
+        transformInput: {
+            transformDataSource: {
+                s3DataSource: {
+                    s3Uri: 's3://inputbucket/prefix',
+                    s3DataType: S3DataType.S3Prefix,
                 }
-            })
-            .addTransformOutput({
-                    s3OutputPath: 's3://outputbucket/prefix',
-                    encryptionKey: kmsKey,
-            })
-            .addTransformResources({
-                instanceCount: 1,
-                instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.P3, ec2.InstanceSize.XLarge2),
-                volumeKmsKeyId: kmsKey,
-            })
-            .addTag('Project', 'MyProject')
-            .addBatchStrategy(BatchStrategy.MultiRecord)
-            .addEnvironmentVar('SOMEVAR', 'myvalue')
-            .addMaxConcurrentTransforms(3)
-            .addMxaxPayloadInMB(100);
-
-    const pub = new sfn.Task(stack, 'TransformTask', { task: new tasks.SagemakerTransformJobTask(params, true) });
+            }
+        },
+        transformOutput: {
+            s3OutputPath: 's3://outputbucket/prefix',
+            encryptionKey: kmsKey,
+        },
+        transformResources: {
+            instanceCount: 1,
+            instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.P3, ec2.InstanceSize.XLarge2),
+            volumeKmsKeyId: kmsKey,
+        },
+        tags: {
+            Project: 'MyProject',
+        },
+        batchStrategy: BatchStrategy.MultiRecord,
+        environment: {
+            SOMEVAR: 'myvalue'
+        },
+        maxConcurrentTransforms: 3,
+        maxPayloadInMB: 100,
+    }) });
 
     // THEN
-    expect(stack.node.resolve(pub.toStateJson())).toEqual({
+    expect(stack.node.resolve(task.toStateJson())).toEqual({
       Type: 'Task',
       Resource: 'arn:aws:states:::sagemaker:createTransformJob.sync',
       End: true,
@@ -140,28 +147,29 @@ test('create complex transform job', () => {
 
 test('pass param to transform job', () => {
     // WHEN
-    const params = new tasks.TransformJobParameters(sfn.Data.stringAt('$.TransformJobName'), sfn.Data.stringAt('$.ModelName'), role);
-    params.addTransformInput(
-        {
+    const task = new sfn.Task(stack, 'TransformTask', { task: new tasks.SagemakerTransformTask({
+        transformJobName: sfn.Data.stringAt('$.TransformJobName'),
+        modelName: sfn.Data.stringAt('$.ModelName'),
+        role,
+        transformInput: {
             transformDataSource: {
                 s3DataSource: {
                     s3Uri: 's3://inputbucket/prefix',
                     s3DataType: S3DataType.S3Prefix,
                 }
             }
-        })
-        .addTransformOutput({
-                s3OutputPath: 's3://outputbucket/prefix',
-        })
-        .addTransformResources({
+        },
+        transformOutput: {
+            s3OutputPath: 's3://outputbucket/prefix',
+        },
+        transformResources: {
             instanceCount: 1,
             instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.P3, ec2.InstanceSize.XLarge2),
-        });
-
-    const pub = new sfn.Task(stack, 'TransformTask', { task: new tasks.SagemakerTransformJobTask(params) });
+        }
+    }) });
 
     // THEN
-    expect(stack.node.resolve(pub.toStateJson())).toEqual({
+    expect(stack.node.resolve(task.toStateJson())).toEqual({
         Type: 'Task',
         Resource: 'arn:aws:states:::sagemaker:createTransformJob',
         End: true,
@@ -185,12 +193,4 @@ test('pass param to transform job', () => {
           }
         },
       });
-});
-
-test('throw error when mandatory parameter not found', () => {
-    // WHEN
-    const params = new tasks.TransformJobParameters("MyTransformJob", "MyModelName", role);
-
-    // THEN
-    expect(() => params.toJson()).toThrow();
 });

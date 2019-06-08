@@ -22,31 +22,39 @@ beforeEach(() => {
 
 test('create basic training job', () => {
     // WHEN
-    const params = new tasks.TrainingJobParameters("MyTrainJob", role);
-    params.addAlgorithmSpec({ algorithmName: "BlazingText", trainingInputMode: tasks.InputMode.File})
-            .addInputDataConfig(
-                {
-                    channelName: "train",
-                    dataSource: {
-                        s3DataSource: {
-                            s3DataType: tasks.S3DataType.S3Prefix,
-                            s3Uri: "s3://mybucket/mytrainpath"
-                        }
+    const task = new sfn.Task(stack, 'TrainSagemaker', { task: new tasks.SagemakerTrainTask({
+        trainingJobName: "MyTrainJob",
+        role,
+        algorithmSpecification: {
+            algorithmName: "BlazingText",
+            trainingInputMode: tasks.InputMode.File
+        },
+        inputDataConfig: [
+            {
+                channelName: 'train',
+                dataSource: {
+                    s3DataSource: {
+                        s3DataType: tasks.S3DataType.S3Prefix,
+                        s3Uri: "s3://mybucket/mytrainpath"
                     }
-                })
-            .addOutputDataConfig({ s3OutputPath: 's3://mybucket/myoutputpath' })
-            .addResourceConfig(
-                {
-                    instanceCount: 1,
-                    instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.P3, ec2.InstanceSize.XLarge2),
-                    volumeSizeInGB: 50
-                })
-            .addStoppingCondition(3600);
-
-    const pub = new sfn.Task(stack, 'TrainSagemaker', { task: new tasks.SagemakerTrainingJobTask(params) });
+                }
+            }
+        ],
+        outputDataConfig: {
+            s3OutputPath: 's3://mybucket/myoutputpath'
+        },
+        resourceConfig: {
+            instanceCount: 1,
+            instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.P3, ec2.InstanceSize.XLarge2),
+            volumeSizeInGB: 50
+        },
+        stoppingCondition: {
+            maxRuntimeInSeconds: 3600
+        }
+    })});
 
     // THEN
-    expect(stack.node.resolve(pub.toStateJson())).toEqual({
+    expect(stack.node.resolve(task.toStateJson())).toEqual({
       Type: 'Task',
       Resource: 'arn:aws:states:::sagemaker:createTrainingJob',
       End: true,
@@ -90,60 +98,73 @@ test('create complex training job', () => {
     const securityGroup = new ec2.SecurityGroup(stack, 'SecurityGroup', { vpc, description: 'My SG' });
     securityGroup.addIngressRule(new ec2.AnyIPv4(), new ec2.TcpPort(22), 'allow ssh access from the world');
 
-    const params = new tasks.TrainingJobParameters("MyTrainJob", role);
-    params.addAlgorithmSpec(
+    const task = new sfn.Task(stack, 'TrainSagemaker', { task: new tasks.SagemakerTrainTask({
+        trainingJobName: "MyTrainJob",
+        synchronous: true,
+        role,
+        algorithmSpecification: {
+            algorithmName: "BlazingText",
+            trainingInputMode: tasks.InputMode.File,
+            metricDefinitions: [
                 {
-                    algorithmName: "BlazingText",
-                    trainingInputMode: tasks.InputMode.File,
-                    metricDefinitions: [
-                        {
-                            name: 'mymetric', regex: 'regex_pattern'
-                        }
-                    ]
-                })
-            .addHyperparameter("lr", "0.1" )
-            .addInputDataConfigs([
-                {
-                    channelName: "train",
-                    contentType: "image/jpeg",
-                    compressionType: tasks.CompressionType.None,
-                    recordWrapperType: tasks.RecordWrapperType.RecordIO,
-                    dataSource: {
-                        s3DataSource: {
-                            s3DataType: tasks.S3DataType.S3Prefix,
-                            s3Uri: "s3://mybucket/mytrainpath",
-                        }
-                    }
-                },
-                {
-                    channelName: "test",
-                    contentType: "image/jpeg",
-                    compressionType: tasks.CompressionType.Gzip,
-                    recordWrapperType: tasks.RecordWrapperType.RecordIO,
-                    dataSource: {
-                        s3DataSource: {
-                            s3DataType: tasks.S3DataType.S3Prefix,
-                            s3Uri: "s3://mybucket/mytestpath",
-                        }
+                    name: 'mymetric', regex: 'regex_pattern'
+                }
+            ]
+        },
+        hyperparameters: {
+            lr: "0.1"
+        },
+        inputDataConfig: [
+            {
+                channelName: "train",
+                contentType: "image/jpeg",
+                compressionType: tasks.CompressionType.None,
+                recordWrapperType: tasks.RecordWrapperType.RecordIO,
+                dataSource: {
+                    s3DataSource: {
+                        s3DataType: tasks.S3DataType.S3Prefix,
+                        s3Uri: "s3://mybucket/mytrainpath",
                     }
                 }
-            ])
-            .addOutputDataConfig({ s3OutputPath: 's3://mybucket/myoutputpath', encryptionKey: kmsKey })
-            .addResourceConfig(
-                {
-                    instanceCount: 1,
-                    instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.P3, ec2.InstanceSize.XLarge2),
-                    volumeSizeInGB: 50,
-                    volumeKmsKeyId: kmsKey,
-                })
-            .addStoppingCondition(3600)
-            .addTag("Project", "MyProject")
-            .addVpcConfig({ vpc, subnets: vpc.privateSubnets, securityGroups: [ securityGroup ] });
-
-    const pub = new sfn.Task(stack, 'TrainSagemaker', { task: new tasks.SagemakerTrainingJobTask(params, true) });
+            },
+            {
+                channelName: "test",
+                contentType: "image/jpeg",
+                compressionType: tasks.CompressionType.Gzip,
+                recordWrapperType: tasks.RecordWrapperType.RecordIO,
+                dataSource: {
+                    s3DataSource: {
+                        s3DataType: tasks.S3DataType.S3Prefix,
+                        s3Uri: "s3://mybucket/mytestpath",
+                    }
+                }
+            }
+        ],
+        outputDataConfig: {
+            s3OutputPath: 's3://mybucket/myoutputpath',
+            encryptionKey: kmsKey
+        },
+        resourceConfig: {
+            instanceCount: 1,
+            instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.P3, ec2.InstanceSize.XLarge2),
+            volumeSizeInGB: 50,
+            volumeKmsKeyId: kmsKey,
+        },
+        stoppingCondition: {
+            maxRuntimeInSeconds: 3600
+        },
+        tags: {
+           Project: "MyProject"
+        },
+        vpcConfig: {
+            vpc,
+            subnets: vpc.privateSubnets,
+            securityGroups: [ securityGroup ]
+        }
+    })});
 
     // THEN
-    expect(stack.node.resolve(pub.toStateJson())).toEqual({
+    expect(stack.node.resolve(task.toStateJson())).toEqual({
       Type: 'Task',
       Resource: 'arn:aws:states:::sagemaker:createTrainingJob.sync',
       End: true,
@@ -216,31 +237,39 @@ test('create complex training job', () => {
 
 test('pass param to training job', () => {
     // WHEN
-    const params = new tasks.TrainingJobParameters(sfn.Data.stringAt('$.JobName'), role);
-    params.addAlgorithmSpec({ algorithmName: "BlazingText", trainingInputMode: tasks.InputMode.File})
-            .addInputDataConfig(
-                {
-                    channelName: "train",
-                    dataSource: {
-                        s3DataSource: {
-                            s3DataType: tasks.S3DataType.S3Prefix,
-                            s3Uri: sfn.Data.stringAt('$.S3Bucket')
-                        }
+    const task = new sfn.Task(stack, 'TrainSagemaker', { task: new tasks.SagemakerTrainTask({
+        trainingJobName: sfn.Data.stringAt('$.JobName'),
+        role,
+        algorithmSpecification: {
+            algorithmName: "BlazingText",
+            trainingInputMode: tasks.InputMode.File
+        },
+        inputDataConfig: [
+            {
+                channelName: 'train',
+                dataSource: {
+                    s3DataSource: {
+                        s3DataType: tasks.S3DataType.S3Prefix,
+                        s3Uri: sfn.Data.stringAt('$.S3Bucket')
                     }
-                })
-            .addOutputDataConfig({ s3OutputPath: 's3://mybucket/myoutputpath' })
-            .addResourceConfig(
-                {
-                    instanceCount: 1,
-                    instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.P3, ec2.InstanceSize.XLarge2),
-                    volumeSizeInGB: 50
-                })
-            .addStoppingCondition(3600);
-
-    const pub = new sfn.Task(stack, 'TrainSagemaker', { task: new tasks.SagemakerTrainingJobTask(params) });
+                }
+            }
+        ],
+        outputDataConfig: {
+            s3OutputPath: 's3://mybucket/myoutputpath'
+        },
+        resourceConfig: {
+            instanceCount: 1,
+            instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.P3, ec2.InstanceSize.XLarge2),
+            volumeSizeInGB: 50
+        },
+        stoppingCondition: {
+            maxRuntimeInSeconds: 3600
+        }
+    })});
 
     // THEN
-    expect(stack.node.resolve(pub.toStateJson())).toEqual({
+    expect(stack.node.resolve(task.toStateJson())).toEqual({
       Type: 'Task',
       Resource: 'arn:aws:states:::sagemaker:createTrainingJob',
       End: true,
@@ -248,14 +277,14 @@ test('pass param to training job', () => {
         'TrainingJobName.$': '$.JobName',
         'RoleArn': { "Fn::GetAtt": [ "Role1ABCC5F0", "Arn" ] },
         'AlgorithmSpecification': {
-            'TrainingInputMode': 'File',
-            'AlgorithmName': 'BlazingText',
+            TrainingInputMode: 'File',
+            AlgorithmName: 'BlazingText',
         },
         'InputDataConfig': [
             {
-                'ChannelName': 'train',
-                'DataSource': {
-                    'S3DataSource': {
+                ChannelName: 'train',
+                DataSource: {
+                    S3DataSource: {
                         'S3DataType': 'S3Prefix',
                         'S3Uri.$': '$.S3Bucket'
                     }
@@ -263,33 +292,16 @@ test('pass param to training job', () => {
             }
         ],
         'OutputDataConfig': {
-            'S3OutputPath': 's3://mybucket/myoutputpath'
+            S3OutputPath: 's3://mybucket/myoutputpath'
         },
         'ResourceConfig': {
-            'InstanceCount': 1,
-            'InstanceType': 'ml.p3.2xlarge',
-            'VolumeSizeInGB': 50
+            InstanceCount: 1,
+            InstanceType: 'ml.p3.2xlarge',
+            VolumeSizeInGB: 50
         },
         'StoppingCondition': {
-            'MaxRuntimeInSeconds': 3600
+            MaxRuntimeInSeconds: 3600
         }
       },
     });
-});
-
-test('throw error when mandatory parameter not found', () => {
-    // WHEN
-    const params = new tasks.TrainingJobParameters(sfn.Data.stringAt('$.JobName'), role);
-    params.addAlgorithmSpec({ algorithmName: "BlazingText", trainingInputMode: tasks.InputMode.File})
-            .addOutputDataConfig({ s3OutputPath: 's3://mybucket/myoutputpath' })
-            .addResourceConfig(
-                {
-                    instanceCount: 1,
-                    instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.P3, ec2.InstanceSize.XLarge2),
-                    volumeSizeInGB: 50
-                })
-            .addStoppingCondition(3600);
-
-    // THEN
-    expect(() => params.toJson()).toThrow();
 });
