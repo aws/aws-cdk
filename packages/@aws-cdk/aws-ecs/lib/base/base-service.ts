@@ -227,9 +227,27 @@ export abstract class BaseService extends Resource
     return new cloudwatch.Metric({
       namespace: 'AWS/ECS',
       metricName,
-      dimensions: { ServiceName: this.serviceName },
+      dimensions: { ClusterName: this.clusterName, ServiceName: this.serviceName },
       ...props
     });
+  }
+
+  /**
+   * Metric for cluster Memory utilization
+   *
+   * @default average over 5 minutes
+   */
+  public metricMemoryUtilization(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return this.metric('MemoryUtilization', props);
+  }
+
+  /**
+   * Metric for cluster CPU utilization
+   *
+   * @default average over 5 minutes
+   */
+  public metricCpuUtilization(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return this.metric('CPUUtilization', props);
   }
 
   /**
