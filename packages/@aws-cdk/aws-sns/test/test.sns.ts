@@ -278,7 +278,7 @@ export = {
       });
 
       const fction = new lambda.Function(stack, 'MyFunc', {
-        runtime: lambda.Runtime.NodeJS810,
+        runtime: lambda.Runtime.Nodejs810,
         handler: 'index.handler',
         code: lambda.Code.inline('exports.handler = function(e, c, cb) { return cb() }')
       });
@@ -415,7 +415,7 @@ export = {
 
       const queue = new sqs.Queue(stack, 'MyQueue');
       const func = new lambda.Function(stack, 'MyFunc', {
-        runtime: lambda.Runtime.NodeJS810,
+        runtime: lambda.Runtime.Nodejs810,
         handler: 'index.handler',
         code: lambda.Code.inline('exports.handler = function(e, c, cb) { return cb() }')
       });
