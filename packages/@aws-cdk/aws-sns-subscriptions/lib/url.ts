@@ -4,7 +4,7 @@ import { Construct } from '@aws-cdk/cdk';
 /**
  * Options for URL subscriptions.
  */
-export interface UrlSubscriberProps {
+export interface UrlSubscriptionProps {
   /**
    * The message to the queue is the same as it was sent to the topic
    *
@@ -22,8 +22,8 @@ export interface UrlSubscriberProps {
  *
  * @see https://docs.aws.amazon.com/sns/latest/dg/sns-http-https-endpoint-as-subscriber.html
  */
-export class UrlSubscriber implements sns.ISubscriber {
-  constructor(private readonly url: string, private readonly props: UrlSubscriberProps = {}) {
+export class UrlSubscription implements sns.ISubscription {
+  constructor(private readonly url: string, private readonly props: UrlSubscriptionProps = {}) {
     if (!url.startsWith('http://') && !url.startsWith('https://')) {
       throw new Error('URL must start with either http:// or https://');
     }

@@ -71,7 +71,7 @@
     "@aws-cdk/aws-s3": "^0.33.0",
     "@aws-cdk/aws-s3-notifications": "^0.33.0",
     "@aws-cdk/aws-sns": "^0.33.0",
-    "@aws-cdk/aws-sns-subscribers": "^0.33.0",
+    "@aws-cdk/aws-sns-subscriptions": "^0.33.0",
     "@aws-cdk/aws-sqs": "^0.33.0",
     "@aws-cdk/cdk": "^0.33.0"
   },
@@ -86,7 +86,7 @@
     "@aws-cdk/aws-s3": "^0.33.0",
     "@aws-cdk/aws-s3-notifications": "^0.33.0",
     "@aws-cdk/aws-sns": "^0.33.0",
-    "@aws-cdk/aws-sns-subscribers": "^0.33.0",
+    "@aws-cdk/aws-sns-subscriptions": "^0.33.0",
     "@aws-cdk/aws-sqs": "^0.33.0",
     "@aws-cdk/cdk": "^0.33.0"
   },

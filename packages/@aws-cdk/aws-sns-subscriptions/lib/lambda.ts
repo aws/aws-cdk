@@ -6,7 +6,7 @@ import { Construct } from '@aws-cdk/cdk';
 /**
  * Use a Lambda function as a subscription target
  */
-export class LambdaSubscriber implements sns.ISubscriber {
+export class LambdaSubscription implements sns.ISubscription {
   constructor(private readonly fn: lambda.IFunction) {
   }
 

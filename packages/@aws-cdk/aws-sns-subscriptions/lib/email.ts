@@ -4,7 +4,7 @@ import { Construct } from '@aws-cdk/cdk';
 /**
  * Options for email subscriptions.
  */
-export interface EmailSubscriberProps {
+export interface EmailSubscriptionProps {
   /**
    * Indicates if the full notification JSON should be sent to the email
    * address or just the message text.
@@ -19,8 +19,8 @@ export interface EmailSubscriberProps {
  *
  * Email subscriptions require confirmation.
  */
-export class EmailSubscriber implements sns.ISubscriber {
-  constructor(private readonly emailAddress: string, private readonly props: EmailSubscriberProps = {}) {
+export class EmailSubscription implements sns.ISubscription {
+  constructor(private readonly emailAddress: string, private readonly props: EmailSubscriptionProps = {}) {
   }
 
   public bind(scope: Construct, topic: sns.ITopic): void {

@@ -15,7 +15,7 @@ class SnsToSqs extends cdk.Stack {
       code: lambda.Code.inline(`exports.handler = ${handler.toString()}`)
     });
 
-    topic.subscribe(new subs.LambdaSubscriber(fction));
+    topic.addSubscription(new subs.LambdaSubscription(fction));
   }
 }
 

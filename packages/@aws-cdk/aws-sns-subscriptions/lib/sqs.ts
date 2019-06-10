@@ -6,7 +6,7 @@ import { Construct } from '@aws-cdk/cdk';
 /**
  * Properties for an SQS subscription
  */
-export interface SqsSubscriberProps {
+export interface SqsSubscriptionProps {
   /**
    * The message to the queue is the same as it was sent to the topic
    *
@@ -20,8 +20,8 @@ export interface SqsSubscriberProps {
 /**
  * Use an SQS queue as a subscription target
  */
-export class SqsSubscriber implements sns.ISubscriber {
-  constructor(private readonly queue: sqs.IQueue, private readonly props: SqsSubscriberProps = {}) {
+export class SqsSubscription implements sns.ISubscription {
+  constructor(private readonly queue: sqs.IQueue, private readonly props: SqsSubscriptionProps = {}) {
   }
 
   public bind(_scope: Construct, topic: sns.ITopic): void {

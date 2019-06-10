@@ -25,24 +25,24 @@ const topic = new sns.Topic(this, 'Topic', {
 ### Subscriptions
 
 Various subscriptions can be added to the topic by calling the
-`.subscribe(...)` method on the topic. It accepts a *subscriber* object,
+`.addSubscription(...)` method on the topic. It accepts a *subscription* object,
 default implementations of which can be found in the
-`@aws-cdk/aws-sns-subscribers` package:
+`@aws-cdk/aws-sns-subscriptions` package:
 
 Add an HTTPS Subscription to your topic:
 
 ```ts
-import subs = require('@aws-cdk/aws-sns-subscribers');
+import subs = require('@aws-cdk/aws-sns-subscriptions');
 
 const myTopic = new sns.Topic(this, 'MyTopic');
 
-myTopic.subscribe(new subs.UrlSubscriber('https://foobar.com/'));
+myTopic.addSubscription(new subs.UrlSubscription('https://foobar.com/'));
 ```
 
 Subscribe a queue to the topic:
 
 ```ts
-myTopic.subscribe(new subs.SqsSubscription(queue));
+myTopic.addSubscription(new subs.SqsSubscription(queue));
 ```
 
 Note that subscriptions of queues in different accounts need to be manually confirmed by

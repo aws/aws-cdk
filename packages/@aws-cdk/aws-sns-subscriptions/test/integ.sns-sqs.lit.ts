@@ -11,7 +11,7 @@ class SnsToSqs extends cdk.Stack {
     const topic = new sns.Topic(this, 'MyTopic');
     const queue = new sqs.Queue(this, 'MyQueue');
 
-    topic.subscribe(new subs.SqsSubscriber(queue));
+    topic.addSubscription(new subs.SqsSubscription(queue));
     /// !hide
   }
 }

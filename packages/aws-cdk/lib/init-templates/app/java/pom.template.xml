@@ -60,7 +60,7 @@
         </dependency>
         <dependency>
             <groupId>software.amazon.awscdk</groupId>
-            <artifactId>sns-subscribers</artifactId>
+            <artifactId>sns-subscriptions</artifactId>
             <version>%cdk-version%</version>
         </dependency>
         <dependency>

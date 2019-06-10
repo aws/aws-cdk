@@ -1,35 +1,35 @@
 {
-  "name": "@aws-cdk/aws-sns-subscribers",
+  "name": "@aws-cdk/aws-sns-subscriptions",
   "version": "0.33.0",
-  "description": "CDK Subscriber Constructs for AWS SNS",
+  "description": "CDK Subscription Constructs for AWS SNS",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "jsii": {
     "outdir": "dist",
     "targets": {
       "java": {
-        "package": "software.amazon.awscdk.services.sns.subscribers",
+        "package": "software.amazon.awscdk.services.sns.subscriptions",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "sns-subscribers"
+          "artifactId": "sns-subscriptions"
         }
       },
       "dotnet": {
-        "namespace": "Amazon.CDK.AWS.SNS.Subscribers",
-        "packageId": "Amazon.CDK.AWS.SNS.Subscribers",
+        "namespace": "Amazon.CDK.AWS.SNS.Subscriptions",
+        "packageId": "Amazon.CDK.AWS.SNS.Subscriptions",
         "signAssembly": true,
         "assemblyOriginatorKeyFile": "../../key.snk"
       },
       "python": {
-        "distName": "aws-cdk.aws-sns-subscribers",
-        "module": "aws_cdk.aws_sns_subscribers"
+        "distName": "aws-cdk.aws-sns-subscriptions",
+        "module": "aws_cdk.aws_sns_subscriptions"
       }
     }
   },
   "repository": {
     "type": "git",
     "url": "https://github.com/awslabs/aws-cdk.git",
-    "directory": "packages/@aws-cdk/aws-sns-subscribers"
+    "directory": "packages/@aws-cdk/aws-sns-subscriptions"
   },
   "scripts": {
     "build": "cdk-build",

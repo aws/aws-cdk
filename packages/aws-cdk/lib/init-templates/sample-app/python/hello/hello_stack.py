@@ -2,7 +2,7 @@ from aws_cdk import (
     aws_iam as iam,
     aws_sqs as sqs,
     aws_sns as sns,
-    aws_sns_subscribers as subs,
+    aws_sns_subscriptions as subs,
     cdk
 )
 
@@ -24,7 +24,7 @@ class MyStack(cdk.Stack):
             display_name="My First Topic"
         )
 
-        topic.subscribe(subs.SqsSubscription(queue))
+        topic.add_subscription(subs.SqsSubscription(queue))
 
         hello = HelloConstruct(self, "MyHelloConstruct", num_buckets=4)
         user = iam.User(self, "MyUser")

@@ -19,7 +19,7 @@ beforeEach(() => {
 });
 
 test('url subscription', () => {
-  topic.subscribe(new subs.UrlSubscriber('https://foobar.com/'));
+  topic.addSubscription(new subs.UrlSubscription('https://foobar.com/'));
 
   expect(stack).toMatchTemplate({
     "Resources": {
@@ -45,7 +45,7 @@ test('url subscription', () => {
 });
 
 test('url subscription (with raw delivery)', () => {
-  topic.subscribe(new subs.UrlSubscriber('https://foobar.com/', {
+  topic.addSubscription(new subs.UrlSubscription('https://foobar.com/', {
     rawMessageDelivery: true
   }));
 
@@ -74,7 +74,7 @@ test('url subscription (with raw delivery)', () => {
 test('queue subscription', () => {
   const queue = new sqs.Queue(stack, 'MyQueue');
 
-  topic.subscribe(new subs.SqsSubscriber(queue));
+  topic.addSubscription(new subs.SqsSubscription(queue));
 
   expect(stack).toMatchTemplate({
     "Resources": {
@@ -145,7 +145,7 @@ test('queue subscription', () => {
 test('queue subscription (with raw delivery)', () => {
   const queue = new sqs.Queue(stack, 'MyQueue');
 
-  topic.subscribe(new subs.SqsSubscriber(queue, { rawMessageDelivery: true }));
+  topic.addSubscription(new subs.SqsSubscription(queue, { rawMessageDelivery: true }));
 
   expect(stack).toHaveResource('AWS::SNS::Subscription', {
     "Endpoint": {
@@ -169,7 +169,7 @@ test('lambda subscription', () => {
     code: lambda.Code.inline('exports.handler = function(e, c, cb) { return cb() }')
   });
 
-  topic.subscribe(new subs.LambdaSubscriber(fction));
+  topic.addSubscription(new subs.LambdaSubscription(fction));
 
   expect(stack).toMatchTemplate({
     "Resources": {
@@ -255,7 +255,7 @@ test('lambda subscription', () => {
 });
 
 test('email subscription', () => {
-  topic.subscribe(new subs.EmailSubscriber('foo@bar.com'));
+  topic.addSubscription(new subs.EmailSubscription('foo@bar.com'));
 
   expect(stack).toMatchTemplate({
     "Resources": {
@@ -288,8 +288,8 @@ test('multiple subscriptions', () => {
     code: lambda.Code.inline('exports.handler = function(e, c, cb) { return cb() }')
   });
 
-  topic.subscribe(new subs.SqsSubscriber(queue));
-  topic.subscribe(new subs.LambdaSubscriber(func));
+  topic.addSubscription(new subs.SqsSubscription(queue));
+  topic.addSubscription(new subs.LambdaSubscription(func));
 
   expect(stack).toMatchTemplate({
     "Resources": {

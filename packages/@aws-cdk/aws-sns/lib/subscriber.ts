@@ -2,8 +2,8 @@ import { Construct } from '@aws-cdk/cdk';
 import { ITopic } from './topic-base';
 
 /**
- * Topic subscriber
+ * Topic subscription
  */
-export interface ISubscriber {
+export interface ISubscription {
   bind(scope: Construct, topic: ITopic): void;
 }
