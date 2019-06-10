@@ -52,7 +52,7 @@ export interface SagemakerTrainProps {
     readonly resourceConfig: ResourceConfig;
 
     /**
-     * Sets a time limit for training. 
+     * Sets a time limit for training.
      */
     readonly stoppingCondition: StoppingCondition;
 
@@ -166,7 +166,7 @@ export class SagemakerTrainTask implements ec2.IConnectable, sfn.IStepFunctionsT
     }
 
     private renderVpcConfig(config: VpcConfig | undefined): {[key: string]: any} {
-        return (config) ? { VpcConfig: { 
+        return (config) ? { VpcConfig: {
             SecurityGroupIds: config.securityGroups.map(sg => ( sg.securityGroupId )),
             Subnets: config.subnets.map(subnet => ( subnet.subnetId )),
         }} : {};
