@@ -62,6 +62,9 @@ package.
 * the following modules are no longer released: `@aws-cdk/applet-js`, `@aws-cdk/aws-autoscaling-api`, `@aws-cdk/aws-codedeploy-api`
 * **cli:** applets are no longer supported as an app type, use "decdk" instead.
 * **core:** Properties passed to `addPropertyOverride` should match in capitalization to the CloudFormation schema (normally pascal case). For example, `addPropertyOverride('accessControl', 'xxx')` should now be `addPropertyOverride('AccessControl', 'xxx')`.
+* **rds**: `rds.RotationSingleUser` renamed to `rds.SecretRotation`
+* **rds**: `rds.ClusterParameterGroup` no longer has `setParameter()` and `removeParameter()` methods, use the parameters prop directly in the constructor instead.
+
 
 
 ## [0.33.0](https://github.com/awslabs/aws-cdk/compare/v0.32.0...v0.33.0) (2019-05-30)
