@@ -126,6 +126,8 @@ couple of the tasks available are:
 * `tasks.SendToQueue` -- send a message to an SQS queue
 * `tasks.RunEcsFargateTask`/`ecs.RunEcsEc2Task` -- run a container task,
   depending on the type of capacity.
+* `tasks.SagemakerTrainTask` -- run a SageMaker training job
+* `tasks.SagemakerTransformTask` -- run a SageMaker transform job
 
 #### Task parameters from the state json
 
@@ -246,6 +248,34 @@ fargateTask.connections.allowToDefaultPort(rdsCluster, 'Read the database');
 
 const task = new sfn.Task(this, 'CallFargate', {
     task: fargateTask
+});
+```
+
+#### SgaeMaker Transform example
+
+```ts
+const transformJob = new tasks.SagemakerTransformTask(        
+    transformJobName: "MyTransformJob",
+    modelName: "MyModelName",
+    role,
+    transformInput: {
+        transformDataSource: {
+            s3DataSource: {
+                s3Uri: 's3://inputbucket/train',
+                s3DataType: S3DataType.S3Prefix,
+            }
+        }
+    },
+    transformOutput: {
+        s3OutputPath: 's3://outputbucket/TransformJobOutputPath',
+    },
+    transformResources: {
+        instanceCount: 1,
+        instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.M4, ec2.InstanceSize.XLarge),
+});
+
+const task = new sfn.Task(this, 'Batch Inference', {
+    task: transformJob
 });
 ```
 
