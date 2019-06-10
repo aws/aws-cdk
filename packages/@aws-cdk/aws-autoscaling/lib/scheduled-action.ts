@@ -75,7 +75,7 @@ export interface ScheduledActionProps extends BasicScheduledActionProps {
   readonly autoScalingGroup: IAutoScalingGroup;
 }
 
-const CRON_PART = '(\\*|\\?|[0-9]+)';
+const CRON_PART = '(\\*|\\?|\\d+((\\/|\\-){0,1}(\\d+))*)';
 
 const CRON_EXPRESSION = new RegExp('^' + [CRON_PART, CRON_PART, CRON_PART, CRON_PART, CRON_PART].join('\\s+') + '$');
 
