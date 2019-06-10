@@ -251,7 +251,7 @@ const task = new sfn.Task(this, 'CallFargate', {
 });
 ```
 
-#### SgaeMaker Transform example
+#### SageMaker Transform example
 
 ```ts
 const transformJob = new tasks.SagemakerTransformTask(        
