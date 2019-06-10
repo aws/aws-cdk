@@ -260,5 +260,32 @@ export = {
     test.deepEqual(importedRole.roleArn, 'arn:aws:iam::123456789012:role/S3Access');
     test.deepEqual(importedRole.roleName, 'S3Access');
     test.done();
+  },
+
+  'add policy to imported role'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+    const importedRole = Role.fromRoleArn(stack, 'ImportedRole', 'arn:aws:iam::123456789012:role/MyRole');
+
+    // WHEN
+    importedRole.addToPolicy(new PolicyStatement()
+      .addAction('s3:*')
+      .addResource('xyz'));
+
+    // THEN
+    expect(stack).to(haveResource('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: "s3:*",
+            Effect: "Allow",
+            Resource: "xyz"
+          }
+        ],
+        Version: "2012-10-17"
+      },
+      Roles: [ "MyRole" ]
+    }));
+    test.done();
   }
 };
