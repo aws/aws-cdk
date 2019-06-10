@@ -254,8 +254,8 @@ export enum InputMode {
     File = 'File'
 }
 
-/**Compression type of the data.
- * 
+/**
+ * Compression type of the data.
  */
 export enum CompressionType {
     /**
@@ -294,7 +294,7 @@ export interface TransformInput {
     readonly transformDataSource: TransformDataSource;
 
     /**
-     * 
+     * Method to use to split the transform job's data files into smaller batches.
      */
     readonly splitType?: SplitType;
 }
@@ -411,7 +411,7 @@ export enum SplitType {
 
     /**
      * Split using TensorFlow TFRecord format.
-     */    
+     */
     TFRecord = 'TFRecord'
 }
 
