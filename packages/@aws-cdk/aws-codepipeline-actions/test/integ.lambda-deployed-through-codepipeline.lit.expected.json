@@ -679,10 +679,10 @@
                 ]
               ]
             },
-            "Id": "Pipeline",
+            "Id": "PipelineStackPipeline9DB740AF",
             "RoleArn": {
               "Fn::GetAtt": [
-                "PipelineStackPipeline9DB740AF",
+                "PipelineEventsRole46BEEA7C",
                 "Arn"
               ]
             }
