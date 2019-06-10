@@ -276,7 +276,7 @@ export class EventField implements IResolvable {
   public readonly displayHint: string;
 
   private constructor(public readonly path: string) {
-    this.displayHint = this.path.replace(/^[^a-zA-Z]+/, '');
+    this.displayHint = this.path.replace(/^[^a-zA-Z0-9_-]+/, '').replace(/[^a-zA-Z0-9_-]/g, '-');
     Object.defineProperty(this, EVENT_FIELD_SYMBOL, { value: true });
   }
 

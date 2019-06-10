@@ -199,9 +199,9 @@ export = {
             "Id": "T2",
             "InputTransformer": {
             "InputPathsMap": {
-              "detail.bla": "$.detail.bla"
+              "detail-bla": "$.detail.bla"
             },
-            "InputTemplate": "\"This is <detail.bla>\""
+            "InputTemplate": "\"This is <detail-bla>\""
             },
           }
           ]
@@ -275,9 +275,9 @@ export = {
               "Id": "T3",
               "InputTransformer": {
                 "InputPathsMap": {
-                  "f1": "$.detail.bar"
+                  "detail-bar": "$.detail.bar"
                 },
-                "InputTemplate": "{\"foo\":<f1>}"
+                "InputTemplate": "{\"foo\":<detail-bar>}"
               }
             },
             {
