@@ -22,7 +22,7 @@ export interface UrlSubscriptionProps {
  *
  * @see https://docs.aws.amazon.com/sns/latest/dg/sns-http-https-endpoint-as-subscriber.html
  */
-export class UrlSubscription implements sns.ISubscription {
+export class UrlSubscription implements sns.ITopicSubscription {
   constructor(private readonly url: string, private readonly props: UrlSubscriptionProps = {}) {
     if (!url.startsWith('http://') && !url.startsWith('https://')) {
       throw new Error('URL must start with either http:// or https://');

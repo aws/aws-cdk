@@ -19,7 +19,7 @@ export interface EmailSubscriptionProps {
  *
  * Email subscriptions require confirmation.
  */
-export class EmailSubscription implements sns.ISubscription {
+export class EmailSubscription implements sns.ITopicSubscription {
   constructor(private readonly emailAddress: string, private readonly props: EmailSubscriptionProps = {}) {
   }
 

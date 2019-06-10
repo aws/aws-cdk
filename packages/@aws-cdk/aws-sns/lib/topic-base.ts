@@ -1,7 +1,7 @@
 import iam = require('@aws-cdk/aws-iam');
 import { IResource, Resource } from '@aws-cdk/cdk';
 import { TopicPolicy } from './policy';
-import { ISubscription } from './subscriber';
+import { ITopicSubscription } from './subscriber';
 
 export interface ITopic extends IResource {
   /**
@@ -17,7 +17,7 @@ export interface ITopic extends IResource {
   /**
    * Subscribe some endpoint to this topic
    */
-  addSubscription(subscription: ISubscription): void;
+  addSubscription(subscription: ITopicSubscription): void;
 
   /**
    * Adds a statement to the IAM resource policy associated with this topic.
@@ -54,7 +54,7 @@ export abstract class TopicBase extends Resource implements ITopic {
   /**
    * Subscribe some endpoint to this topic
    */
-  public addSubscription(subscription: ISubscription) {
+  public addSubscription(subscription: ITopicSubscription) {
     subscription.bind(this, this);
   }
 

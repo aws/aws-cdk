@@ -20,7 +20,7 @@ export interface SqsSubscriptionProps {
 /**
  * Use an SQS queue as a subscription target
  */
-export class SqsSubscription implements sns.ISubscription {
+export class SqsSubscription implements sns.ITopicSubscription {
   constructor(private readonly queue: sqs.IQueue, private readonly props: SqsSubscriptionProps = {}) {
   }
 
