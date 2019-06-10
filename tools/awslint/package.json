@@ -19,8 +19,8 @@
     "camelcase": "^5.3.1",
     "colors": "^1.3.3",
     "fs-extra": "^8.0.1",
-    "jsii-reflect": "^0.11.1",
-    "jsii-spec": "^0.11.1",
+    "jsii-reflect": "^0.11.2",
+    "jsii-spec": "^0.11.2",
     "yargs": "^13.2.4"
   },
   "devDependencies": {
