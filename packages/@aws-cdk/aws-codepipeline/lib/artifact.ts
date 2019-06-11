@@ -1,5 +1,5 @@
 import s3 = require("@aws-cdk/aws-s3");
-import { Token } from "@aws-cdk/cdk";
+import { Lazy, Token } from "@aws-cdk/cdk";
 import validation = require('./validation');
 
 /**
@@ -112,15 +112,17 @@ export class ArtifactPath {
   public get location() {
     const artifactName = this.artifact.artifactName
       ? this.artifact.artifactName
-      : new Token(() => this.artifact.artifactName).toString();
+      : Lazy.stringValue({ produce: () => this.artifact.artifactName });
     return `${artifactName}::${this.fileName}`;
   }
 }
 
 function artifactAttribute(artifact: Artifact, attributeName: string) {
-  return new Token(() => ({ 'Fn::GetArtifactAtt': [artifact.artifactName, attributeName] })).toString();
+  const lazyArtifactName = Lazy.stringValue({ produce: () => artifact.artifactName });
+  return Token.asString({ 'Fn::GetArtifactAtt': [lazyArtifactName, attributeName] });
 }
 
 function artifactGetParam(artifact: Artifact, jsonFile: string, keyName: string) {
-  return new Token(() => ({ 'Fn::GetParam': [artifact.artifactName, jsonFile, keyName] })).toString();
+  const lazyArtifactName = Lazy.stringValue({ produce: () => artifact.artifactName });
+  return Token.asString({ 'Fn::GetParam': [lazyArtifactName, jsonFile, keyName] });
 }

@@ -42,7 +42,7 @@ export class ManualApprovalAction extends codepipeline.Action {
       category: codepipeline.ActionCategory.Approval,
       provider: 'Manual',
       artifactBounds: { minInputs: 0, maxInputs: 0, minOutputs: 0, maxOutputs: 0 },
-      configuration: new cdk.Token(() => this.actionConfiguration()),
+      configuration: cdk.Lazy.anyValue({ produce: () => this.actionConfiguration() }),
     });
 
     this.props = props;

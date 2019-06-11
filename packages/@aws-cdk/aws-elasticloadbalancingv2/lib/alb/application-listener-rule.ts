@@ -130,8 +130,8 @@ export class ApplicationListenerRule extends cdk.Construct {
     const resource = new CfnListenerRule(this, 'Resource', {
       listenerArn: props.listener.listenerArn,
       priority: props.priority,
-      conditions: new cdk.Token(() => this.renderConditions()),
-      actions: new cdk.Token(() => this.actions),
+      conditions: cdk.Lazy.anyValue({ produce: () => this.renderConditions() }),
+      actions: cdk.Lazy.anyValue({ produce: () => this.actions }),
     });
 
     if (props.hostHeader) {
@@ -147,7 +147,7 @@ export class ApplicationListenerRule extends cdk.Construct {
       this.addFixedResponse(props.fixedResponse);
     }
 
-    this.listenerRuleArn = resource.ref;
+    this.listenerRuleArn = resource.refAsString;
   }
 
   /**

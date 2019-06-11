@@ -67,7 +67,7 @@ export class LambdaApplication extends Resource implements ILambdaApplication {
       computePlatform: 'Lambda'
     });
 
-    this.applicationName = resource.ref;
+    this.applicationName = resource.refAsString;
     this.applicationArn = arnForApplication(this.applicationName);
   }
 }

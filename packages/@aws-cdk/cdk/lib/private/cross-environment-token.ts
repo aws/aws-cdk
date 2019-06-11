@@ -1,7 +1,7 @@
-import { ArnComponents } from './arn';
-import { IResource } from './resource';
-import { Stack } from './stack';
-import { IResolveContext, Token } from './token';
+import { ArnComponents } from '../arn';
+import { IResolvable, IResolveContext } from '../resolvable';
+import { IResource } from '../resource';
+import { Stack } from '../stack';
 
 /**
  * A Token that represents a reference that spans accounts and/or regions,
@@ -10,9 +10,7 @@ import { IResolveContext, Token } from './token';
  * instead use the {@link ResourceIdentifiers} class.
  * This class is private to the @aws-cdk/cdk package.
  */
-export abstract class CrossEnvironmentToken extends Token {
-  private readonly resource: IResource;
-
+export abstract class CrossEnvironmentToken implements IResolvable {
   /**
    * @param regularValue the value used when this is referenced NOT from a cross account and/or region Stack
    * @param crossEnvironmentValue the value used when this is referenced from a cross account and/or region Stack
@@ -20,9 +18,7 @@ export abstract class CrossEnvironmentToken extends Token {
    * @param displayName a short name to be used in Token display
    */
   protected constructor(private readonly regularValue: string, private readonly crossEnvironmentValue: any,
-                        resource: IResource, displayName: string) {
-    super(undefined, displayName);
-
+                        private readonly resource: IResource) {
     this.resource = resource;
   }
 
@@ -41,13 +37,13 @@ export abstract class CrossEnvironmentToken extends Token {
 }
 
 export class CrossEnvironmentPhysicalArnToken extends CrossEnvironmentToken {
-  constructor(regularValue: string, arnComponents: ArnComponents, resource: IResource, displayName: string = 'Arn') {
-    super(regularValue, Stack.of(resource).formatArn(arnComponents), resource, displayName);
+  constructor(regularValue: string, arnComponents: ArnComponents, resource: IResource) {
+    super(regularValue, Stack.of(resource).formatArn(arnComponents), resource);
   }
 }
 
 export class CrossEnvironmentPhysicalNameToken extends CrossEnvironmentToken {
-  constructor(regularValue: string, resource: IResource, displayName: string = 'Ref') {
-    super(regularValue, resource.physicalName.value, resource, displayName);
+  constructor(regularValue: string, resource: IResource) {
+    super(regularValue, resource.physicalName.value, resource);
   }
 }

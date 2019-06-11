@@ -1,4 +1,4 @@
-import { Construct, IResource, Resource, Token } from '@aws-cdk/cdk';
+import { Construct, IResource, Lazy, Resource } from '@aws-cdk/cdk';
 import { IGroup } from './group';
 import { CfnPolicy } from './iam.generated';
 import { PolicyDocument, PolicyStatement } from './policy-document';
@@ -94,7 +94,7 @@ export class Policy extends Resource implements IPolicy {
 
     const resource = new CfnPolicy(this, 'Resource', {
       policyDocument: this.document,
-      policyName: new Token(() => this.policyName).toString(),
+      policyName: Lazy.stringValue({ produce: () => this.policyName }).toString(),
       roles: undefinedIfEmpty(() => this.roles.map(r => r.roleName)),
       users: undefinedIfEmpty(() => this.users.map(u => u.userName)),
       groups: undefinedIfEmpty(() => this.groups.map(g => g.groupName)),

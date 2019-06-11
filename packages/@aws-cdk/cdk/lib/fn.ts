@@ -1,6 +1,8 @@
 import { ICfnConditionExpression } from './cfn-condition';
-import { minimalCloudFormationJoin } from './instrinsics';
-import { IResolveContext, Token } from './token';
+import { minimalCloudFormationJoin } from './cloudformation-lang';
+import { Intrinsic } from './private/intrinsic';
+import { IResolvable, IResolveContext } from './resolvable';
+import { Token } from './token';
 
 // tslint:disable:max-line-length
 
@@ -53,11 +55,11 @@ export class Fn {
   public static split(delimiter: string, source: string): string[] {
 
     // short-circut if source is not a token
-    if (!Token.isToken(source)) {
+    if (!Token.isUnresolved(source)) {
       return source.split(delimiter);
     }
 
-    return new FnSplit(delimiter, source).toList();
+    return Token.asList(new FnSplit(delimiter, source));
   }
 
   /**
@@ -67,7 +69,7 @@ export class Fn {
    * @returns a token represented as a string
    */
   public static select(index: number, array: string[]): string {
-    if (!Token.isToken(array)) {
+    if (!Token.isUnresolved(array)) {
       return array[index];
     }
 
@@ -113,7 +115,7 @@ export class Fn {
    * @returns a token represented as a string
    */
   public static cidr(ipBlock: string, count: number, sizeMask?: string): string[] {
-    return new FnCidr(ipBlock, count, sizeMask).toList();
+    return Token.asList(new FnCidr(ipBlock, count, sizeMask));
   }
 
   /**
@@ -130,7 +132,7 @@ export class Fn {
    * @returns a token represented as a string array
    */
   public static getAZs(region?: string): string[] {
-    return new FnGetAZs(region).toList();
+    return Token.asList(new FnGetAZs(region));
   }
 
   /**
@@ -264,7 +266,7 @@ export class Fn {
    * @returns a token represented as a string array
    */
   public refAll(parameterType: string): string[] {
-    return new FnRefAll(parameterType).toList();
+    return Token.asList(new FnRefAll(parameterType));
   }
 
   /**
@@ -292,14 +294,14 @@ export class Fn {
    * @returns a token represented as a string array
    */
   public valueOfAll(parameterType: string, attribute: string): string[] {
-    return new FnValueOfAll(parameterType, attribute).toList();
+    return Token.asList(new FnValueOfAll(parameterType, attribute));
   }
 }
 
 /**
  * Base class for tokens that represent CloudFormation intrinsic functions.
  */
-class FnBase extends Token {
+class FnBase extends Intrinsic {
   constructor(name: string, value: any) {
     super({ [name]: value });
   }
@@ -456,7 +458,7 @@ class FnCidr extends FnBase {
   }
 }
 
-class FnConditionBase extends Token implements ICfnConditionExpression {
+class FnConditionBase extends Intrinsic implements ICfnConditionExpression {
   constructor(type: string, value: any) {
     super({ [type]: value });
   }
@@ -627,7 +629,7 @@ class FnValueOfAll extends FnBase {
  * the specified delimiter. If a delimiter is the empty string, the set of values are concatenated
  * with no delimiter.
  */
-class FnJoin extends Token {
+class FnJoin implements IResolvable {
   private readonly delimiter: string;
   private readonly listOfValues: any[];
   // Cache for the result of resolveValues() - since it otherwise would be computed several times
@@ -643,14 +645,13 @@ class FnJoin extends Token {
     if (listOfValues.length === 0) {
       throw new Error(`FnJoin requires at least one value to be provided`);
     }
-    super();
 
     this.delimiter = delimiter;
     this.listOfValues = listOfValues;
   }
 
   public resolve(context: IResolveContext): any {
-    if (Token.isToken(this.listOfValues)) {
+    if (Token.isUnresolved(this.listOfValues)) {
       // This is a list token, don't try to do smart things with it.
       return { 'Fn::Join': [ this.delimiter, this.listOfValues ] };
     }
@@ -659,6 +660,14 @@ class FnJoin extends Token {
       return resolved[0];
     }
     return { 'Fn::Join': [ this.delimiter, resolved ] };
+  }
+
+  public toString() {
+    return Token.asString(this, { displayHint: 'Fn::Join' });
+  }
+
+  public toJSON() {
+    return `<Fn::Join>`;
   }
 
   /**

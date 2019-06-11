@@ -1,7 +1,7 @@
-import { IConstruct } from './construct';
+import { IConstruct } from '../construct';
+import { DefaultTokenResolver, IResolvable, IResolveContext, ITokenResolver, StringConcat } from '../resolvable';
+import { TokenizedStringFragments } from '../string-fragments';
 import { containsListTokenElement, TokenString, unresolved } from "./encoding";
-import { TokenizedStringFragments } from './string-fragments';
-import { IResolveContext, isResolvedValuePostProcessor, RESOLVE_METHOD, Token } from "./token";
 import { TokenMap } from './token-map';
 
 // This file should not be exported to consumers, resolving should happen through Construct.resolve()
@@ -156,106 +156,9 @@ export function resolve(obj: any, options: IResolveOptions): any {
 }
 
 /**
- * How to resolve tokens
- */
-export interface ITokenResolver {
-  /**
-   * Resolve a single token
-   */
-  resolveToken(t: Token, context: IResolveContext): any;
-
-  /**
-   * Resolve a string with at least one stringified token in it
-   *
-   * (May use concatenation)
-   */
-  resolveString(s: TokenizedStringFragments, context: IResolveContext): any;
-
-  /**
-   * Resolve a tokenized list
-   */
-  resolveList(l: string[], context: IResolveContext): any;
-}
-
-/**
- * Function used to concatenate symbols in the target document language
- *
- * Interface so it could potentially be exposed over jsii.
- */
-export interface IFragmentConcatenator {
-  /**
-   * Join the fragment on the left and on the right
-   */
-  join(left: any | undefined, right: any | undefined): any;
-}
-
-/**
- * Converts all fragments to strings and concats those
- *
- * Drops 'undefined's.
- */
-export class StringConcat implements IFragmentConcatenator {
-  public join(left: any | undefined, right: any | undefined): any {
-    if (left === undefined) { return right !== undefined ? `${right}` : undefined; }
-    if (right === undefined) { return `${left}`; }
-    return `${left}${right}`;
-  }
-}
-
-/**
- * Default resolver implementation
- */
-export class DefaultTokenResolver implements ITokenResolver {
-  constructor(private readonly concat: IFragmentConcatenator) {
-  }
-
-  /**
-   * Default Token resolution
-   *
-   * Resolve the Token, recurse into whatever it returns,
-   * then finally post-process it.
-   */
-  public resolveToken(t: Token, context: IResolveContext) {
-    let resolved = t[RESOLVE_METHOD](context);
-
-    // The token might have returned more values that need resolving, recurse
-    resolved = context.resolve(resolved);
-
-    if (isResolvedValuePostProcessor(t)) {
-      resolved = t.postProcess(resolved, context);
-    }
-
-    return resolved;
-  }
-
-  /**
-   * Resolve string fragments to Tokens
-   */
-  public resolveString(fragments: TokenizedStringFragments, context: IResolveContext) {
-    return fragments.mapTokens({ mapToken: context.resolve }).join(this.concat);
-  }
-
-  public resolveList(xs: string[], context: IResolveContext) {
-    // Must be a singleton list token, because concatenation is not allowed.
-    if (xs.length !== 1) {
-      throw new Error(`Cannot add elements to list token, got: ${xs}`);
-    }
-
-    const str = TokenString.forListToken(xs[0]);
-    const fragments = str.split(tokenMap.lookupToken.bind(tokenMap));
-    if (fragments.length !== 1) {
-      throw new Error(`Cannot concatenate strings in a tokenized string array, got: ${xs[0]}`);
-    }
-
-    return fragments.mapTokens({ mapToken: context.resolve }).firstValue;
-  }
-
-}
-
-/**
  * Find all Tokens that are used in the given structure
  */
-export function findTokens(scope: IConstruct, fn: () => any): Token[] {
+export function findTokens(scope: IConstruct, fn: () => any): IResolvable[] {
   const resolver = new RememberingTokenResolver(new StringConcat());
 
   resolve(fn(), { scope, prefix: [], resolver });
@@ -267,9 +170,9 @@ export function findTokens(scope: IConstruct, fn: () => any): Token[] {
  * Remember all Tokens encountered while resolving
  */
 export class RememberingTokenResolver extends DefaultTokenResolver {
-  private readonly tokensSeen = new Set<Token>();
+  private readonly tokensSeen = new Set<IResolvable>();
 
-  public resolveToken(t: Token, context: IResolveContext) {
+  public resolveToken(t: IResolvable, context: IResolveContext) {
     this.tokensSeen.add(t);
     return super.resolveToken(t, context);
   }
@@ -279,7 +182,7 @@ export class RememberingTokenResolver extends DefaultTokenResolver {
     return ret;
   }
 
-  public get tokens(): Token[] {
+  public get tokens(): IResolvable[] {
     return Array.from(this.tokensSeen);
   }
 }

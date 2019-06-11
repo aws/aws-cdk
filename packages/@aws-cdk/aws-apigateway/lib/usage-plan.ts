@@ -1,4 +1,4 @@
-import { Token } from '@aws-cdk/cdk';
+import { Lazy, Token } from '@aws-cdk/cdk';
 import { Construct, Resource } from '@aws-cdk/cdk';
 import { IApiKey } from './api-key';
 import { CfnUsagePlan, CfnUsagePlanKey } from './apigateway.generated';
@@ -156,7 +156,7 @@ export class UsagePlan extends Resource {
     let resource: CfnUsagePlan;
 
     resource = new CfnUsagePlan(this, 'Resource', {
-      apiStages: new Token(() => this.renderApiStages(this.apiStages)),
+      apiStages: Lazy.anyValue({ produce: () => this.renderApiStages(this.apiStages) }),
       description: props.description,
       quota: this.renderQuota(props),
       throttle: this.renderThrottle(props.throttle),
@@ -165,7 +165,7 @@ export class UsagePlan extends Resource {
 
     this.apiStages.push(...(props.apiStages || []));
 
-    this.usagePlanId = resource.ref;
+    this.usagePlanId = resource.refAsString;
 
     // Add ApiKey when
     if (props.apiKey) {

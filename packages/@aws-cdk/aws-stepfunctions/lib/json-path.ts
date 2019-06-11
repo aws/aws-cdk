@@ -1,15 +1,29 @@
-import { Token, TokenMap } from '@aws-cdk/cdk';
+import { IResolvable, IResolveContext, Token, Tokenization } from '@aws-cdk/cdk';
 
 const JSON_PATH_TOKEN_SYMBOL = Symbol.for('@aws-cdk/aws-stepfunctions.JsonPathToken');
 
-export class JsonPathToken extends Token {
+export class JsonPathToken implements IResolvable {
   public static isJsonPathToken(x: any): x is JsonPathToken {
     return (x as any)[JSON_PATH_TOKEN_SYMBOL] === true;
   }
 
+  public displayHint: string;
+
   constructor(public readonly path: string) {
-    super(() => path, `field${path}`); // Make function to prevent eager evaluation in superclass
+    this.displayHint = path.replace(/^[^a-zA-Z]+/, '');
     Object.defineProperty(this, JSON_PATH_TOKEN_SYMBOL, { value: true });
+  }
+
+  public resolve(_ctx: IResolveContext): any {
+    return this.path;
+  }
+
+  public toString() {
+    return Token.asString(this, { displayHint: this.displayHint });
+  }
+
+  public toJSON() {
+    return `<path:${this.path}>`;
   }
 }
 
@@ -161,7 +175,7 @@ function renderNumber(key: string, value: number): {[key: string]: number | stri
  * Otherwise return undefined.
  */
 function jsonPathString(x: string): string | undefined {
-  const fragments = TokenMap.instance().splitString(x);
+  const fragments = Tokenization.reverseString(x);
   const jsonPathTokens = fragments.tokens.filter(JsonPathToken.isJsonPathToken);
 
   if (jsonPathTokens.length > 0 && fragments.length > 1) {
@@ -179,7 +193,7 @@ function jsonPathString(x: string): string | undefined {
  * Otherwise return undefined.
  */
 function jsonPathStringList(x: string[]): string | undefined {
-  return pathFromToken(TokenMap.instance().lookupList(x));
+  return pathFromToken(Tokenization.reverseList(x));
 }
 
 /**
@@ -188,9 +202,9 @@ function jsonPathStringList(x: string[]): string | undefined {
  * Otherwise return undefined.
  */
 function jsonPathNumber(x: number): string | undefined {
-  return pathFromToken(TokenMap.instance().lookupNumberToken(x));
+  return pathFromToken(Tokenization.reverseNumber(x));
 }
 
-function pathFromToken(token: Token | undefined) {
+function pathFromToken(token: IResolvable | undefined) {
   return token && (JsonPathToken.isJsonPathToken(token) ? token.path : undefined);
 }

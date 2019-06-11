@@ -45,7 +45,7 @@ export = {
     });
 
     // THEN
-    test.ok(cdk.Token.isToken(propValue));
+    test.ok(cdk.Token.isUnresolved(propValue));
     test.deepEqual(toCloudFormation(stack), {
       Resources: {
         MyResource: {
