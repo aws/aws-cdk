@@ -4,7 +4,7 @@ import { CfnUser } from './iam.generated';
 import { IIdentity } from './identity-base';
 import { IManagedPolicy } from './managed-policy';
 import { Policy } from './policy';
-import { PolicyStatement } from './policy-document';
+import { PolicyStatement } from './policy-statement';
 import { ArnPrincipal, PrincipalPolicyFragment } from './principals';
 import { IPrincipal } from './principals';
 import { AttachedPolicies, undefinedIfEmpty } from './util';
@@ -156,7 +156,7 @@ export class User extends Resource implements IIdentity {
       this.defaultPolicy.attachToUser(this);
     }
 
-    this.defaultPolicy.addStatement(statement);
+    this.defaultPolicy.addStatements(statement);
     return true;
   }
 

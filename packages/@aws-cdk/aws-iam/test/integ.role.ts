@@ -12,7 +12,7 @@ const role = new Role(stack, 'TestRole', {
 role.addToPolicy(new PolicyStatement().addResource('*').addAction('sqs:SendMessage'));
 
 const policy = new Policy(stack, 'HelloPolicy', { policyName: 'Default' });
-policy.addStatement(new PolicyStatement().addAction('ec2:*').addResource('*'));
+policy.addStatements(new PolicyStatement().addAction('ec2:*').addResource('*'));
 policy.attachToRole(role);
 
 // Role with an external ID

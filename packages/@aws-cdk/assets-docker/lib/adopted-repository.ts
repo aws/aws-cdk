@@ -88,6 +88,6 @@ export class AdoptedRepository extends ecr.RepositoryBase {
    * use the custom resource to modify the ECR resource policy if needed.
    */
   public addToResourcePolicy(statement: iam.PolicyStatement) {
-    this.policyDocument.addStatement(statement);
+    this.policyDocument.addStatements(statement);
   }
 }

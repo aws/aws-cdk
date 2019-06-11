@@ -19,8 +19,8 @@ export = {
     const stack = new Stack(app, 'MyStack');
 
     const policy = new Policy(stack, 'MyPolicy', { policyName: 'MyPolicyName' });
-    policy.addStatement(new PolicyStatement().addResource('*').addAction('sqs:SendMessage'));
-    policy.addStatement(new PolicyStatement().addResource('arn').addAction('sns:Subscribe'));
+    policy.addStatements(new PolicyStatement().addResource('*').addAction('sqs:SendMessage'));
+    policy.addStatements(new PolicyStatement().addResource('arn').addAction('sns:Subscribe'));
 
     const group = new Group(stack, 'MyGroup');
     group.attachInlinePolicy(policy);
@@ -45,8 +45,8 @@ export = {
     const stack = new Stack(app, 'MyStack');
 
     const policy = new Policy(stack, 'MyPolicy');
-    policy.addStatement(new PolicyStatement().addResource('*').addAction('sqs:SendMessage'));
-    policy.addStatement(new PolicyStatement().addResource('arn').addAction('sns:Subscribe'));
+    policy.addStatements(new PolicyStatement().addResource('*').addAction('sqs:SendMessage'));
+    policy.addStatements(new PolicyStatement().addResource('arn').addAction('sns:Subscribe'));
 
     const user = new User(stack, 'MyUser');
     user.attachInlinePolicy(policy);
@@ -116,7 +116,7 @@ export = {
     const app = new App();
     const stack = new Stack(app, 'MyStack');
     const p = new Policy(stack, 'MyPolicy');
-    p.addStatement(new PolicyStatement().addAction('*').addResource('*'));
+    p.addStatements(new PolicyStatement().addAction('*').addResource('*'));
 
     const user = new User(stack, 'MyUser');
     p.attachToUser(user);
@@ -148,7 +148,7 @@ export = {
     p.attachToUser(new User(stack, 'User2'));
     p.attachToGroup(new Group(stack, 'Group1'));
     p.attachToRole(new Role(stack, 'Role1', { assumedBy: new ServicePrincipal('test.service') }));
-    p.addStatement(new PolicyStatement().addResource('*').addAction('dynamodb:GetItem'));
+    p.addStatements(new PolicyStatement().addResource('*').addAction('dynamodb:GetItem'));
 
     expect(stack).toMatch({ Resources:
       { MyTestPolicy316BDB50:
@@ -190,7 +190,7 @@ export = {
     group.attachInlinePolicy(policy);
     role.attachInlinePolicy(policy);
 
-    policy.addStatement(new PolicyStatement().addResource('*').addAction('*'));
+    policy.addStatements(new PolicyStatement().addResource('*').addAction('*'));
 
     expect(stack).toMatch({ Resources:
       { MyPolicy39D66CF6:

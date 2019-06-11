@@ -4,7 +4,8 @@ import { CfnRole } from './iam.generated';
 import { IIdentity } from './identity-base';
 import { IManagedPolicy } from './managed-policy';
 import { Policy } from './policy';
-import { PolicyDocument, PolicyStatement } from './policy-document';
+import { PolicyDocument } from './policy-document';
+import { PolicyStatement } from './policy-statement';
 import { ArnPrincipal, IPrincipal, PrincipalPolicyFragment } from './principals';
 import { AttachedPolicies } from './util';
 
@@ -247,7 +248,7 @@ export class Role extends Resource implements IRole {
       this.defaultPolicy = new Policy(this, 'DefaultPolicy');
       this.attachInlinePolicy(this.defaultPolicy);
     }
-    this.defaultPolicy.addStatement(statement);
+    this.defaultPolicy.addStatements(statement);
     return true;
   }
 
@@ -327,7 +328,9 @@ function createAssumeRolePolicy(principal: IPrincipal, externalId?: string) {
     statement.addCondition('StringEquals', { 'sts:ExternalId': externalId });
   }
 
-  return new PolicyDocument().addStatement(statement);
+  const doc = new PolicyDocument();
+  doc.addStatements(statement);
+  return doc;
 }
 
 function validateMaxSessionDuration(duration?: number) {

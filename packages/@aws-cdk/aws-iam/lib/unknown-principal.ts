@@ -1,5 +1,5 @@
 import { IConstruct, Stack } from '@aws-cdk/cdk';
-import { PolicyStatement } from './policy-document';
+import { PolicyStatement } from './policy-statement';
 import { IPrincipal, PrincipalPolicyFragment } from './principals';
 
 /**

@@ -48,8 +48,8 @@ export = {
     p2.deny();
     p2.addActions('cloudformation:CreateStack');
 
-    doc.addStatement(p1);
-    doc.addStatement(p2);
+    doc.addStatements(p1);
+    doc.addStatements(p2);
 
     test.deepEqual(stack.resolve(doc), {
       Version: '2012-10-17',
@@ -57,28 +57,6 @@ export = {
         [ { Effect: 'Allow', Action: 'sqs:SendMessage', Resource: '*' },
           { Effect: 'Deny', Action: 'cloudformation:CreateStack' } ] });
 
-    test.done();
-  },
-
-  'A PolicyDocument can be initialized with an existing policy, which is merged upon serialization'(test: Test) {
-    const stack = new Stack();
-    const base = {
-      Version: 'Foo',
-      Something: 123,
-      Statement: [
-        { Statement1: 1 },
-        { Statement2: 2 }
-      ]
-    };
-    const doc = new PolicyDocument(base);
-    doc.addStatement(new PolicyStatement().addResource('resource').addAction('action'));
-
-    test.deepEqual(stack.resolve(doc), { Version: 'Foo',
-    Something: 123,
-    Statement:
-     [ { Statement1: 1 },
-       { Statement2: 2 },
-       { Effect: 'Allow', Action: 'action', Resource: 'resource' } ] });
     test.done();
   },
 
@@ -212,9 +190,9 @@ export = {
   'statementCount returns the number of statement in the policy document'(test: Test) {
     const p = new PolicyDocument();
     test.equal(p.statementCount, 0);
-    p.addStatement(new PolicyStatement().addAction('action1'));
+    p.addStatements(new PolicyStatement().addAction('action1'));
     test.equal(p.statementCount, 1);
-    p.addStatement(new PolicyStatement().addAction('action2'));
+    p.addStatements(new PolicyStatement().addAction('action2'));
     test.equal(p.statementCount, 2);
     test.done();
   },
@@ -224,7 +202,7 @@ export = {
       const stack = new Stack();
       const p = new PolicyDocument();
 
-      p.addStatement(new PolicyStatement().addPrincipal(new Anyone()));
+      p.addStatements(new PolicyStatement().addPrincipal(new Anyone()));
 
       test.deepEqual(stack.resolve(p), {
         Statement: [
@@ -239,7 +217,7 @@ export = {
       const stack = new Stack();
       const p = new PolicyDocument();
 
-      p.addStatement(new PolicyStatement().addPrincipal(new AnyPrincipal()));
+      p.addStatements(new PolicyStatement().addPrincipal(new AnyPrincipal()));
 
       test.deepEqual(stack.resolve(p), {
         Statement: [
@@ -254,7 +232,7 @@ export = {
       const stack = new Stack();
       const p = new PolicyDocument();
 
-      p.addStatement(new PolicyStatement().addAnyPrincipal());
+      p.addStatements(new PolicyStatement().addAnyPrincipal());
 
       test.deepEqual(stack.resolve(p), {
         Statement: [
@@ -270,9 +248,9 @@ export = {
     const stack = new Stack();
     const p = new PolicyDocument();
 
-    p.addStatement(new PolicyStatement().addAwsPrincipal('111222-A'));
-    p.addStatement(new PolicyStatement().addArnPrincipal('111222-B'));
-    p.addStatement(new PolicyStatement().addPrincipal(new ArnPrincipal('111222-C')));
+    p.addStatements(new PolicyStatement().addAwsPrincipal('111222-A'));
+    p.addStatements(new PolicyStatement().addArnPrincipal('111222-B'));
+    p.addStatements(new PolicyStatement().addPrincipal(new ArnPrincipal('111222-C')));
 
     test.deepEqual(stack.resolve(p), {
       Statement: [ {
@@ -306,8 +284,8 @@ export = {
     const stack = new Stack();
     const p = new PolicyDocument();
 
-    p.addStatement(new PolicyStatement().addCanonicalUserPrincipal('cannonical-user-1'));
-    p.addStatement(new PolicyStatement().addPrincipal(new CanonicalUserPrincipal('cannonical-user-2')));
+    p.addStatements(new PolicyStatement().addCanonicalUserPrincipal('cannonical-user-1'));
+    p.addStatements(new PolicyStatement().addPrincipal(new CanonicalUserPrincipal('cannonical-user-2')));
 
     test.deepEqual(stack.resolve(p), {
       Statement: [
@@ -491,9 +469,9 @@ export = {
         });
 
       // WHEN
-      p.addStatement(statement);
-      p.addStatement(statement);
-      p.addStatement(statement);
+      p.addStatements(statement);
+      p.addStatements(statement);
+      p.addStatements(statement);
 
       // THEN
       test.equal(stack.resolve(p).Statement.length, 1);
@@ -513,55 +491,28 @@ export = {
         .addAction(Lazy.stringValue({ produce: () => 'action' }));
 
       // WHEN
-      p.addStatement(statement1);
-      p.addStatement(statement2);
+      p.addStatements(statement1);
+      p.addStatements(statement2);
 
       // THEN
       test.equal(stack.resolve(p).Statement.length, 1);
       test.done();
     },
 
-    'with base document'(test: Test) {
-      // GIVEN
-      const stack = new Stack();
-
-      // WHEN
-      const p = new PolicyDocument({
-        Statement: [
-          {
-            Action: 'action',
-            Effect: 'Allow',
-            Resource: 'resource'
-          },
-          {
-            Action: 'action',
-            Effect: 'Allow',
-            Resource: 'resource'
-          }
-        ]
-      });
-
-      p.addStatement(new PolicyStatement()
-        .addAction('action')
-        .addResource('resource'));
-
-      // THEN
-      test.equal(stack.resolve(p).Statement.length, 1);
-      test.done();
-    }
   },
 
   'autoAssignSids enables auto-assignment of a unique SID for each statement'(test: Test) {
     // GIVEN
-    const doc = new PolicyDocument();
-    doc.addStatement(new PolicyStatement().addAction('action1').addResource('resource1'));
-    doc.addStatement(new PolicyStatement().addAction('action1').addResource('resource1'));
-    doc.addStatement(new PolicyStatement().addAction('action1').addResource('resource1'));
-    doc.addStatement(new PolicyStatement().addAction('action1').addResource('resource1'));
-    doc.addStatement(new PolicyStatement().addAction('action2').addResource('resource2'));
+    const doc = new PolicyDocument({
+      assignSids: true
+    });
 
     // WHEN
-    doc.autoAssignSids();
+    doc.addStatements(new PolicyStatement().addAction('action1').addResource('resource1'));
+    doc.addStatements(new PolicyStatement().addAction('action1').addResource('resource1'));
+    doc.addStatements(new PolicyStatement().addAction('action1').addResource('resource1'));
+    doc.addStatements(new PolicyStatement().addAction('action1').addResource('resource1'));
+    doc.addStatements(new PolicyStatement().addAction('action2').addResource('resource2'));
 
     // THEN
     const stack = new Stack();

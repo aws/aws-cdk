@@ -86,7 +86,7 @@ abstract class KeyBase extends Resource implements IKey {
       throw new Error(`Unable to add statement to IAM resource policy for KMS key: ${JSON.stringify(stack.resolve(this.keyArn))}`);
     }
 
-    this.policy.addStatement(statement);
+    this.policy.addStatements(statement);
   }
 
   /**

@@ -1,5 +1,5 @@
 import cdk = require('@aws-cdk/cdk');
-import { PolicyStatement } from "./policy-document";
+import { PolicyStatement } from "./policy-statement";
 import { IGrantable } from "./principals";
 
 /**
