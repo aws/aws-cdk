@@ -99,7 +99,7 @@ class LatestDeploymentResource extends CfnDeployment {
   constructor(scope: Construct, id: string, props: CfnDeploymentProps) {
     super(scope, id, props);
 
-    this.originalLogicalId = Stack.of(this).logicalIds.getLogicalId(this);
+    this.originalLogicalId = Stack.of(this).getLogicalId(this);
   }
 
   /**

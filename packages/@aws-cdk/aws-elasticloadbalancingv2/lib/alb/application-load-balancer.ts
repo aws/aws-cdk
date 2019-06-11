@@ -86,7 +86,11 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
     this.setAttribute('access_logs.s3.bucket', bucket.bucketName.toString());
     this.setAttribute('access_logs.s3.prefix', prefix);
 
-    const region = Stack.of(this).requireRegion('Enable ELBv2 access logging');
+    const region = Stack.of(this).region;
+    if (Token.unresolved(region)) {
+      throw new Error(`Region is required to enable ELBv2 access logging`);
+    }
+
     const account = ELBV2_ACCOUNTS[region];
     if (!account) {
       throw new Error(`Cannot enable access logging; don't know ELBv2 account for region ${region}`);

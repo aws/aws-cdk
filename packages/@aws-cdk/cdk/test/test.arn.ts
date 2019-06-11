@@ -1,5 +1,6 @@
 import { Test } from 'nodeunit';
-import { ArnComponents, CfnOutput, ScopedAws, Stack, Token } from '../lib';
+import { CfnOutput, ScopedAws, Stack, Token } from '../lib';
+import { ArnComponents } from '../lib/arn';
 import { toCloudFormation } from './util';
 
 export = {

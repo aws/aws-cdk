@@ -67,7 +67,6 @@ export = {
         [{ type: 'aws:cdk:logicalId', data: 's1c2' },
         { type: 'aws:cdk:warning', data: 'warning1' },
         { type: 'aws:cdk:warning', data: 'warning2' }],
-      '/': [{ type: 'applevel', data: 123 }]
     });
 
     const stack2 = response.stacks[1];
@@ -84,7 +83,6 @@ export = {
         [{ type: 'aws:cdk:logicalId', data: 's1c2r1D1791C01' }],
       '/stack2/s1c2/r2':
         [{ type: 'aws:cdk:logicalId', data: 's1c2r25F685FFF' }],
-      '/': [{ type: 'applevel', data: 123 }]
     });
 
     test.done();

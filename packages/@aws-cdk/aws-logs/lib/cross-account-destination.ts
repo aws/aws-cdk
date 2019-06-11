@@ -92,7 +92,7 @@ export class CrossAccountDestination extends cdk.Construct implements ILogSubscr
    */
   private generateUniqueName(): string {
     // Combination of stack name and LogicalID, which are guaranteed to be unique.
-    return Stack.of(this).name + '-' + this.resource.logicalId;
+    return Stack.of(this).stackName + '-' + this.resource.logicalId;
   }
 
   /**

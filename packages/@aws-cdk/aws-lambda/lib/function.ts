@@ -414,8 +414,8 @@ export class Function extends FunctionBase {
       this.role.addToPolicy(statement);
     }
 
-    const region = Stack.of(this).env.region;
-    const isChina = region && region.startsWith('cn-');
+    const region = Stack.of(this).region;
+    const isChina = !Token.unresolved(region) && region.startsWith('cn-');
     if (isChina && props.environment && Object.keys(props.environment).length > 0) {
       // tslint:disable-next-line:max-line-length
       throw new Error(`Environment variables are not supported in this region (${region}); consider using tags or SSM parameters instead`);

@@ -2,7 +2,7 @@ import events = require('@aws-cdk/aws-events');
 import iam = require('@aws-cdk/aws-iam');
 import kms = require('@aws-cdk/aws-kms');
 import s3 = require('@aws-cdk/aws-s3');
-import { Construct, RemovalPolicy, Resource, Stack, Token } from '@aws-cdk/cdk';
+import { App, Construct, RemovalPolicy, Resource, Stack, Token } from '@aws-cdk/cdk';
 import { Action, IPipeline, IStage } from "./action";
 import { CfnPipeline } from './codepipeline.generated';
 import { Stage } from './stage';
@@ -360,10 +360,17 @@ export class Pipeline extends PipelineBase {
     });
   }
 
+  private requireRegion(error?: string) {
+    const region = Stack.of(this).region;
+    if (Token.unresolved(region)) {
+      throw new Error(error || 'region is required');
+    }
+    return region;
+  }
+
   private ensureReplicationBucketExistsFor(region: string) {
     // get the region the Pipeline itself is in
-    const pipelineRegion = Stack.of(this).requireRegion(
-        "You need to specify an explicit region when using CodePipeline's cross-region support");
+    const pipelineRegion = this.requireRegion(`You need to specify an explicit region when using CodePipeline's cross-region support`);
 
     // if we already have an ArtifactStore generated for this region, or it's the Pipeline's region, nothing to do
     if (this.artifactStores[region] || region === pipelineRegion) {
@@ -372,11 +379,14 @@ export class Pipeline extends PipelineBase {
 
     let replicationBucketName = this.crossRegionReplicationBuckets[region];
     if (!replicationBucketName) {
-      const pipelineAccount = Stack.of(this).requireAccountId(
-          "You need to specify an explicit account when using CodePipeline's cross-region support");
-      const app = Stack.of(this).parentApp();
-      if (!app) {
-        throw new Error(`Pipeline stack which uses cross region actions must be part of an application`);
+      const pipelineAccount = Stack.of(this).account;
+      if (Token.unresolved(pipelineAccount)) {
+        throw new Error("You need to specify an explicit account when using CodePipeline's cross-region support");
+      }
+
+      const app = this.node.root;
+      if (!app || !App.isApp(app)) {
+        throw new Error(`Pipeline stack which uses cross region actions must be part of a CDK app`);
       }
       const crossRegionScaffoldStack = new CrossRegionScaffoldStack(this, `cross-region-stack-${pipelineAccount}:${region}`, {
         region,
@@ -499,7 +509,7 @@ export class Pipeline extends PipelineBase {
 
     // add the Pipeline's artifact store
     const primaryStore = this.renderPrimaryArtifactStore();
-    this.artifactStores[Stack.of(this).requireRegion()] = {
+    this.artifactStores[this.requireRegion()] = {
       location: primaryStore.location,
       type: primaryStore.type,
       encryptionKey: primaryStore.encryptionKey,
