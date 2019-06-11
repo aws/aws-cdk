@@ -18,7 +18,7 @@ export = {
 
     // THEN
     expect(stack).to(haveResource('AWS::AutoScaling::ScheduledAction', {
-      Recurrence: '0 8 * * *',
+      Recurrence: '0 8 * * * *',
       MinSize: 10
     }));
 

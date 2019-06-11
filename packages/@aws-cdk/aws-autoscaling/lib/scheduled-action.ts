@@ -75,9 +75,27 @@ export interface ScheduledActionProps extends BasicScheduledActionProps {
   readonly autoScalingGroup: IAutoScalingGroup;
 }
 
-const CRON_PART = '(\\*|\\?|\\d+((\\/|\\-){0,1}(\\d+))*)';
+const CRON_MINUTES = `(\\*|([0-9]|[1-4][0-9]|5[0-9])|((([0-9]|[1-4][0-9]|5[0-9]))
+(\\,|\\/|\\-)(([0-9]|[1-4][0-9]|5[0-9]))))`;
+const CRON_HOURS = `(\\*|([0-9]|1[0-9]|2[0-3])|
+((([0-9]|1[0-9]|2[0-3]))(\\,|\\/|\\-)(([0-9]|1[0-9]|2[0-3]))))`;
+const CRON_DAY_OF_MONTH = `(\\*|\\?|L|([0-9]|1[0-9]|2[0-3])?W|
+([1-9]|[12][0-9]|3[01])|((([1-9]|[12][0-9]|3[01]))(\\,|\\/|\\-)(([1-9]|[12][0-9]|3[01]))))`;
+const CRON_MONTH = `(\\*|([1-9]|1[0-2]|JAN|FEB|MAR|APR|MAY|JUN|JUL|AUG|SEP|OCT|NOV|DEC)|
+(([1-9]|1[0-2]|JAN|FEB|MAR|APR|MAY|JUN|JUL|AUG|SEP|OCT|NOV|DEC)
+(\\,|\\/|\\-)([1-9]|1[0-2]|JAN|FEB|MAR|APR|MAY|JUN|JUL|AUG|SEP|OCT|NOV|DEC)))`;
+const CRON_DAY_OF_WEEK = `(\\*|\\?|L|[1-7]\\#[1-9]|
+([1-7]|MON|TUE|WED|THU|FRI|SAT|SUN)|(([1-7]|MON|TUE|WED|THU|FRI|SAT|SUN)
+(\\,|\\-)([1-7]|MON|TUE|WED|THU|FRI|SAT|SUN)))`;
+const CRON_YEAR = `(\\*|(19[78][0-9]|199[0-9]|20[0-9]{2}|21[0-8][0-9]|219[0-9])|
+(((19[78][0-9]|199[0-9]|20[0-9]{2}|21[0-8][0-9]|219[0-9]))(\\,|\\/|\\-)
+((19[78][0-9]|199[0-9]|20[0-9]{2}|21[0-8][0-9]|219[0-9]))))`;
 
-const CRON_EXPRESSION = new RegExp('^' + [CRON_PART, CRON_PART, CRON_PART, CRON_PART, CRON_PART].join('\\s+') + '$');
+const CRON_EXPRESSION = new RegExp('^' +
+  [
+    CRON_MINUTES, CRON_HOURS, CRON_DAY_OF_MONTH, CRON_MONTH, CRON_DAY_OF_WEEK, CRON_YEAR
+  ]
+.join('\\s+') + '$');
 
 /**
  * Define a scheduled scaling action

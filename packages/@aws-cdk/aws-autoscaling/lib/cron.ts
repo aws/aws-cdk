@@ -14,6 +14,6 @@ export class Cron {
   public static dailyUtc(hour: number, minute?: number) {
     minute = minute || 0;
     // In this cron flavor, 3rd and 5th expression can both be *
-    return `${minute} ${hour} * * *`;
+    return `${minute} ${hour} * * * *`;
   }
 }
