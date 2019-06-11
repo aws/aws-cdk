@@ -401,13 +401,7 @@ class ImportedCluster extends Resource implements ICluster {
     this.clusterArn = props.clusterArn !== undefined ? props.clusterArn : Stack.of(this).formatArn({
       service: 'ecs',
       resource: 'cluster',
-      resourceName: props.clusterName,
-    });
-
-    this.clusterArn = props.clusterArn !== undefined ? props.clusterArn : Stack.of(this).formatArn({
-      service: 'ecs',
-      resource: 'cluster',
-      resourceName: props.clusterName,
+      resourceName: props.clusterName
     });
 
     let i = 1;

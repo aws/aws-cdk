@@ -5,7 +5,7 @@ import elbv2 = require('@aws-cdk/aws-elasticloadbalancingv2');
 import iam = require('@aws-cdk/aws-iam');
 import sns = require('@aws-cdk/aws-sns');
 
-import { AutoScalingRollingUpdate, Construct, Fn, IResource, Lazy, Resource, Tag } from '@aws-cdk/cdk';
+import { AutoScalingRollingUpdate, Construct, Fn, IResource, Lazy, Resource, Stack, Tag } from '@aws-cdk/cdk';
 import { CfnAutoScalingGroup, CfnAutoScalingGroupProps, CfnLaunchConfiguration } from './autoscaling.generated';
 import { BasicLifecycleHookProps, LifecycleHook } from './lifecycle-hook';
 import { BasicScheduledActionProps, ScheduledAction } from './scheduled-action';
@@ -196,6 +196,7 @@ export interface AutoScalingGroupProps extends CommonAutoScalingGroupProps {
 abstract class AutoScalingGroupBase extends Resource implements IAutoScalingGroup {
 
   public abstract autoScalingGroupName: string;
+  public abstract autoScalingGroupArn: string;
   protected albTargetGroup?: elbv2.ApplicationTargetGroup;
 
   /**
@@ -318,6 +319,11 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
   public static fromAutoScalingGroupName(scope: Construct, id: string, autoScalingGroupName: string): IAutoScalingGroup {
     class Import extends AutoScalingGroupBase {
       public autoScalingGroupName = autoScalingGroupName;
+      public autoScalingGroupArn = Stack.of(this).formatArn({
+        service: 'autoscaling',
+        resource: 'autoScalingGroup:*:autoScalingGroupName',
+        resourceName: this.autoScalingGroupName
+      });
     }
 
     return new Import(scope, id);
@@ -342,6 +348,11 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
    * Name of the AutoScalingGroup
    */
   public readonly autoScalingGroupName: string;
+
+  /**
+   * Arn of the AutoScalingGroup
+   */
+  public readonly autoScalingGroupArn: string;
 
   private readonly userDataLines = new Array<string>();
   private readonly autoScalingGroup: CfnAutoScalingGroup;
@@ -432,6 +443,11 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
     this.autoScalingGroup = new CfnAutoScalingGroup(this, 'ASG', asgProps);
     this.osType = machineImage.os.type;
     this.autoScalingGroupName = this.autoScalingGroup.autoScalingGroupName;
+    this.autoScalingGroupArn = Stack.of(this).formatArn({
+      service: 'autoscaling',
+      resource: 'autoScalingGroup:*:autoScalingGroupName',
+      resourceName: this.autoScalingGroupName
+    });
 
     this.applyUpdatePolicies(props);
   }
@@ -706,6 +722,12 @@ export interface IAutoScalingGroup extends IResource {
    * @attribute
    */
   readonly autoScalingGroupName: string;
+
+  /**
+   * The arn of the AutoScalingGroup
+   * @attribute
+   */
+  readonly autoScalingGroupArn: string;
 
   /**
    * Send a message to either an SQS queue or SNS topic when instances launch or terminate
