@@ -29,7 +29,6 @@
             {
               "Action": [
                 "sqs:SendMessage",
-                "sqs:SendMessageBatch",
                 "sqs:GetQueueAttributes",
                 "sqs:GetQueueUrl"
               ],
