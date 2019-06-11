@@ -4,6 +4,9 @@ import sns = require('@aws-cdk/aws-sns');
 import { Construct } from '@aws-cdk/cdk';
 import { SubscriptionProps } from './subscription';
 
+/**
+ * Properties for a Lambda subscription
+ */
 export interface LambdaSubscriptionProps extends SubscriptionProps {
 
 }

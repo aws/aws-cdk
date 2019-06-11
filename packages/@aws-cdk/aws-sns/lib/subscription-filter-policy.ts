@@ -38,6 +38,9 @@ export class StringFilter extends Filter {
   }
 }
 
+/**
+ * Filter for a number attribute.
+ */
 export class NumericFilter extends Filter {
   /**
    * Match one or more values.
