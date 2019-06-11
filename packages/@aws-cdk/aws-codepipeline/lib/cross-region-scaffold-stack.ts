@@ -42,7 +42,7 @@ export class CrossRegionScaffoldStack extends CrossRegionScaffolding {
       props.region, props.account, false, 12);
 
     new s3.Bucket(this, 'CrossRegionCodePipelineReplicationBucket', {
-      bucketName: replicationBucketName,
+      bucketName: cdk.PhysicalName.of(replicationBucketName),
     });
     this.replicationBucketName = replicationBucketName;
   }

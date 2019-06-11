@@ -1,11 +1,9 @@
 import ecs = require('@aws-cdk/aws-ecs');
-import { AddressRecordTarget, ARecord, IHostedZone } from '@aws-cdk/aws-route53';
-import targets = require('@aws-cdk/aws-route53-targets');
 import cdk = require('@aws-cdk/cdk');
 import { LoadBalancedServiceBase, LoadBalancedServiceBaseProps } from '../base/load-balanced-service-base';
 
 /**
- * Properties for a LoadBalancedEcsService
+ * Properties for a LoadBalancedFargateService
  */
 export interface LoadBalancedFargateServiceProps extends LoadBalancedServiceBaseProps {
   /**
@@ -44,34 +42,6 @@ export interface LoadBalancedFargateServiceProps extends LoadBalancedServiceBase
    * @default 512
    */
   readonly memoryMiB?: string;
-
-  /**
-   * Determines whether your Fargate Service will be assigned a public IP address.
-   *
-   * @default false
-   */
-  readonly publicTasks?: boolean;
-
-  /**
-   * Domain name for the service, e.g. api.example.com
-   *
-   * @default - No domain name.
-   */
-  readonly domainName?: string;
-
-  /**
-   * Route53 hosted zone for the domain, e.g. "example.com."
-   *
-   * @default - No Route53 hosted domain zone.
-   */
-  readonly domainZone?: IHostedZone;
-
-  /**
-   * Whether to create an AWS log driver
-   *
-   * @default true
-   */
-  readonly createLogs?: boolean;
 }
 
 /**
@@ -92,11 +62,9 @@ export class LoadBalancedFargateService extends LoadBalancedServiceBase {
       cpu: props.cpu
     });
 
-    const optIn = props.createLogs !== undefined ? props.createLogs : true;
-
     const container = taskDefinition.addContainer('web', {
       image: props.image,
-      logging: optIn ? this.createAWSLogDriver(this.node.id) : undefined,
+      logging: this.logDriver,
       environment: props.environment
     });
 
@@ -114,21 +82,5 @@ export class LoadBalancedFargateService extends LoadBalancedServiceBase {
     this.service = service;
 
     this.addServiceAsTarget(service);
-
-    if (typeof props.domainName !== 'undefined') {
-      if (typeof props.domainZone === 'undefined') {
-        throw new Error('A Route53 hosted domain zone name is required to configure the specified domain name');
-      }
-
-      new ARecord(this, "DNS", {
-        zone: props.domainZone,
-        recordName: props.domainName,
-        target: AddressRecordTarget.fromAlias(new targets.LoadBalancerTarget(this.loadBalancer)),
-      });
-    }
-  }
-
-  private createAWSLogDriver(prefix: string): ecs.AwsLogDriver {
-    return new ecs.AwsLogDriver(this, 'Logging', { streamPrefix: prefix });
   }
 }

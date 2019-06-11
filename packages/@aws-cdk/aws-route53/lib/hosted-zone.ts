@@ -1,5 +1,5 @@
 import ec2 = require('@aws-cdk/aws-ec2');
-import { Construct, Resource, Token } from '@aws-cdk/cdk';
+import { Construct, Lazy, Resource } from '@aws-cdk/cdk';
 import { HostedZoneAttributes, IHostedZone } from './hosted-zone-ref';
 import { CaaAmazonRecord, ZoneDelegationRecord } from './record-set';
 import { CfnHostedZone } from './route53.generated';
@@ -45,7 +45,7 @@ export interface HostedZoneProps extends CommonHostedZoneProps {
 export class HostedZone extends Resource implements IHostedZone {
 
   public static fromHostedZoneId(scope: Construct, id: string, hostedZoneId: string): IHostedZone {
-    class Import extends Construct implements IHostedZone {
+    class Import extends Resource implements IHostedZone {
       public readonly hostedZoneId = hostedZoneId;
       public get zoneName(): string {
         throw new Error(`HostedZone.fromHostedZoneId doesn't support "zoneName"`);
@@ -59,7 +59,7 @@ export class HostedZone extends Resource implements IHostedZone {
    * Imports a hosted zone from another stack.
    */
   public static fromHostedZoneAttributes(scope: Construct, id: string, attrs: HostedZoneAttributes): IHostedZone {
-    class Import extends Construct implements IHostedZone {
+    class Import extends Resource implements IHostedZone {
       public readonly hostedZoneId = attrs.hostedZoneId;
       public readonly zoneName = attrs.zoneName;
     }
@@ -85,10 +85,10 @@ export class HostedZone extends Resource implements IHostedZone {
       name: props.zoneName + '.',
       hostedZoneConfig: props.comment ? { comment: props.comment } : undefined,
       queryLoggingConfig: props.queryLogsLogGroupArn ? { cloudWatchLogsLogGroupArn: props.queryLogsLogGroupArn } : undefined,
-      vpcs: new Token(() => this.vpcs.length === 0 ? undefined : this.vpcs)
+      vpcs: Lazy.anyValue({ produce: () => this.vpcs.length === 0 ? undefined : this.vpcs })
     });
 
-    this.hostedZoneId = resource.ref;
+    this.hostedZoneId = resource.refAsString;
     this.hostedZoneNameServers = resource.hostedZoneNameServers;
     this.zoneName = props.zoneName;
 
