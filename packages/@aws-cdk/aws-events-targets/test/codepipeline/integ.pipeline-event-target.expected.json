@@ -7,7 +7,7 @@
         "Triggers": []
       }
     },
-    "pipelinePipeline22F2A91DArtifactsBucketEncryptionKey87C796D2": {
+    "PipelineArtifactsBucketEncryptionKey01D58D69": {
       "Type": "AWS::KMS::Key",
       "Properties": {
         "KeyPolicy": {
@@ -60,7 +60,7 @@
               "Principal": {
                 "AWS": {
                   "Fn::GetAtt": [
-                    "pipelinePipeline22F2A91DRole58B7B05E",
+                    "PipelineRoleD68726F7",
                     "Arn"
                   ]
                 }
@@ -73,7 +73,7 @@
       },
       "DeletionPolicy": "Retain"
     },
-    "pipelinePipeline22F2A91DArtifactsBucketC1799DCD": {
+    "PipelineArtifactsBucket22248F97": {
       "Type": "AWS::S3::Bucket",
       "Properties": {
         "BucketEncryption": {
@@ -82,7 +82,7 @@
               "ServerSideEncryptionByDefault": {
                 "KMSMasterKeyID": {
                   "Fn::GetAtt": [
-                    "pipelinePipeline22F2A91DArtifactsBucketEncryptionKey87C796D2",
+                    "PipelineArtifactsBucketEncryptionKey01D58D69",
                     "Arn"
                   ]
                 },
@@ -94,7 +94,7 @@
       },
       "DeletionPolicy": "Retain"
     },
-    "pipelinePipeline22F2A91DRole58B7B05E": {
+    "PipelineRoleD68726F7": {
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
@@ -121,7 +121,7 @@
         }
       }
     },
-    "pipelinePipeline22F2A91DRoleDefaultPolicyCDEE9D19": {
+    "PipelineRoleDefaultPolicyC7A05455": {
       "Type": "AWS::IAM::Policy",
       "Properties": {
         "PolicyDocument": {
@@ -139,7 +139,7 @@
               "Resource": [
                 {
                   "Fn::GetAtt": [
-                    "pipelinePipeline22F2A91DArtifactsBucketC1799DCD",
+                    "PipelineArtifactsBucket22248F97",
                     "Arn"
                   ]
                 },
@@ -149,7 +149,7 @@
                     [
                       {
                         "Fn::GetAtt": [
-                          "pipelinePipeline22F2A91DArtifactsBucketC1799DCD",
+                          "PipelineArtifactsBucket22248F97",
                           "Arn"
                         ]
                       },
@@ -170,7 +170,7 @@
               "Effect": "Allow",
               "Resource": {
                 "Fn::GetAtt": [
-                  "pipelinePipeline22F2A91DArtifactsBucketEncryptionKey87C796D2",
+                  "PipelineArtifactsBucketEncryptionKey01D58D69",
                   "Arn"
                 ]
               }
@@ -178,20 +178,20 @@
           ],
           "Version": "2012-10-17"
         },
-        "PolicyName": "pipelinePipeline22F2A91DRoleDefaultPolicyCDEE9D19",
+        "PolicyName": "PipelineRoleDefaultPolicyC7A05455",
         "Roles": [
           {
-            "Ref": "pipelinePipeline22F2A91DRole58B7B05E"
+            "Ref": "PipelineRoleD68726F7"
           }
         ]
       }
     },
-    "pipelinePipeline22F2A91DEB5D089B": {
+    "PipelineC660917D": {
       "Type": "AWS::CodePipeline::Pipeline",
       "Properties": {
         "RoleArn": {
           "Fn::GetAtt": [
-            "pipelinePipeline22F2A91DRole58B7B05E",
+            "PipelineRoleD68726F7",
             "Arn"
           ]
         },
@@ -248,24 +248,24 @@
           "EncryptionKey": {
             "Id": {
               "Fn::GetAtt": [
-                "pipelinePipeline22F2A91DArtifactsBucketEncryptionKey87C796D2",
+                "PipelineArtifactsBucketEncryptionKey01D58D69",
                 "Arn"
               ]
             },
             "Type": "KMS"
           },
           "Location": {
-            "Ref": "pipelinePipeline22F2A91DArtifactsBucketC1799DCD"
+            "Ref": "PipelineArtifactsBucket22248F97"
           },
           "Type": "S3"
         }
       },
       "DependsOn": [
-        "pipelinePipeline22F2A91DRoleDefaultPolicyCDEE9D19",
-        "pipelinePipeline22F2A91DRole58B7B05E"
+        "PipelineRoleDefaultPolicyC7A05455",
+        "PipelineRoleD68726F7"
       ]
     },
-    "pipelinePipeline22F2A91DEventsRole048D7F59": {
+    "PipelineEventsRole46BEEA7C": {
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
@@ -292,7 +292,7 @@
         }
       }
     },
-    "pipelinePipeline22F2A91DEventsRoleDefaultPolicyEED1010F": {
+    "PipelineEventsRoleDefaultPolicyFF4FCCE0": {
       "Type": "AWS::IAM::Policy",
       "Properties": {
         "PolicyDocument": {
@@ -318,7 +318,7 @@
                     },
                     ":",
                     {
-                      "Ref": "pipelinePipeline22F2A91DEB5D089B"
+                      "Ref": "PipelineC660917D"
                     }
                   ]
                 ]
@@ -327,10 +327,10 @@
           ],
           "Version": "2012-10-17"
         },
-        "PolicyName": "pipelinePipeline22F2A91DEventsRoleDefaultPolicyEED1010F",
+        "PolicyName": "PipelineEventsRoleDefaultPolicyFF4FCCE0",
         "Roles": [
           {
-            "Ref": "pipelinePipeline22F2A91DEventsRole048D7F59"
+            "Ref": "PipelineEventsRole46BEEA7C"
           }
         ]
       }
@@ -360,15 +360,15 @@
                   },
                   ":",
                   {
-                    "Ref": "pipelinePipeline22F2A91DEB5D089B"
+                    "Ref": "PipelineC660917D"
                   }
                 ]
               ]
             },
-            "Id": "pipelineeventspipelinePipeline22F2A91DFBB66895",
+            "Id": "Pipeline",
             "RoleArn": {
               "Fn::GetAtt": [
-                "pipelinePipeline22F2A91DEventsRole048D7F59",
+                "PipelineEventsRole46BEEA7C",
                 "Arn"
               ]
             }
