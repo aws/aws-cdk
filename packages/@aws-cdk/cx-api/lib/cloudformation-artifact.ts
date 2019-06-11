@@ -31,9 +31,9 @@ export class CloudFormationStackArtifact extends CloudArtifact {
   public readonly parameters: { [id: string]: string };
 
   /**
-   * The name of this stack. This is read/write and can be used to rename the stack.
+   * The name of this stack.
    */
-  public name: string;
+  public readonly name: string;
 
   constructor(assembly: CloudAssembly, name: string, artifact: ArtifactManifest) {
     super(assembly, name, artifact);
