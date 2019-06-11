@@ -27,7 +27,7 @@ const taskTokenHandler = new sfn.Task(stack, 'Invoke Handler with task token', {
   task: new tasks.InvokeFunction(callbackHandler, {
     waitForTaskToken: true,
     payload: {
-      "token.$": "$$.Task.Token"
+      token: sfn.Context.taskToken
     }
   }),
   inputPath: '$.guid',
