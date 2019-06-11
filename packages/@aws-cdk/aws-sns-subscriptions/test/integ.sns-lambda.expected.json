@@ -3,6 +3,21 @@
     "MyTopic86869434": {
       "Type": "AWS::SNS::Topic"
     },
+    "MyTopicEchoD1E0EE5C": {
+      "Type": "AWS::SNS::Subscription",
+      "Properties": {
+        "Protocol": "lambda",
+        "TopicArn": {
+          "Ref": "MyTopic86869434"
+        },
+        "Endpoint": {
+          "Fn::GetAtt": [
+            "Echo11F3FB29",
+            "Arn"
+          ]
+        }
+      }
+    },
     "EchoServiceRoleBE28060B": {
       "Type": "AWS::IAM::Role",
       "Properties": {
@@ -62,21 +77,6 @@
       "DependsOn": [
         "EchoServiceRoleBE28060B"
       ]
-    },
-    "EchoMyTopicSubscriptionA634C6D7": {
-      "Type": "AWS::SNS::Subscription",
-      "Properties": {
-        "Protocol": "lambda",
-        "TopicArn": {
-          "Ref": "MyTopic86869434"
-        },
-        "Endpoint": {
-          "Fn::GetAtt": [
-            "Echo11F3FB29",
-            "Arn"
-          ]
-        }
-      }
     },
     "EchoMyTopicF6EBB45F": {
       "Type": "AWS::Lambda::Permission",

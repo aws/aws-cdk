@@ -4,9 +4,9 @@ import { SubscriptionFilterPolicy } from './subscription-filter-policy';
 import { ITopic } from './topic-base';
 
 /**
- * Properties for creating a new subscription
+ * Options for creating a new subscription
  */
-export interface SubscriptionProps {
+export interface SubscriptionOptions {
   /**
    * What type of subscription to add.
    */
@@ -18,11 +18,6 @@ export interface SubscriptionProps {
    * The meaning of this value depends on the value for 'protocol'.
    */
   readonly endpoint: string;
-
-  /**
-   * The topic to subscribe to.
-   */
-  readonly topic: ITopic;
 
   /**
    * true if raw message delivery is enabled for the subscription. Raw messages are free of JSON formatting and can be
@@ -40,11 +35,20 @@ export interface SubscriptionProps {
    */
   readonly filterPolicy?: SubscriptionFilterPolicy;
 }
+/**
+ * Properties for creating a new subscription
+ */
+export interface SubscriptionProps extends SubscriptionOptions {
+  /**
+   * The topic to subscribe to.
+   */
+  readonly topic: ITopic;
+}
 
 /**
  * A new subscription.
  *
- * Prefer to use the `ITopic.subscribeXxx()` methods to creating instances of
+ * Prefer to use the `ITopic.addSubscription()` methods to create instances of
  * this class.
  */
 export class Subscription extends Resource {

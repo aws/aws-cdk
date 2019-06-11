@@ -1,10 +1,10 @@
 import sns = require('@aws-cdk/aws-sns');
-import { Construct } from '@aws-cdk/cdk';
+import { SubscriptionProps } from './subscription';
 
 /**
  * Options for URL subscriptions.
  */
-export interface UrlSubscriptionProps {
+export interface UrlSubscriptionProps extends SubscriptionProps {
   /**
    * The message to the queue is the same as it was sent to the topic
    *
@@ -29,12 +29,13 @@ export class UrlSubscription implements sns.ITopicSubscription {
     }
   }
 
-  public bind(scope: Construct, topic: sns.ITopic): void {
-    new sns.Subscription(scope, this.url, {
-      topic,
+  public bind(_topic: sns.ITopic): sns.TopicSubscriptionConfig {
+    return {
+      id: this.url,
       endpoint: this.url,
       protocol: this.url.startsWith('https:') ? sns.SubscriptionProtocol.Https : sns.SubscriptionProtocol.Http,
       rawMessageDelivery: this.props.rawMessageDelivery,
-    });
+      filterPolicy: this.props.filterPolicy,
+    };
   }
 }

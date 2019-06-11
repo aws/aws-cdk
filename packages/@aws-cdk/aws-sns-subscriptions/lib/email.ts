@@ -1,10 +1,10 @@
 import sns = require('@aws-cdk/aws-sns');
-import { Construct } from '@aws-cdk/cdk';
+import { SubscriptionProps } from './subscription';
 
 /**
  * Options for email subscriptions.
  */
-export interface EmailSubscriptionProps {
+export interface EmailSubscriptionProps extends SubscriptionProps {
   /**
    * Indicates if the full notification JSON should be sent to the email
    * address or just the message text.
@@ -23,11 +23,12 @@ export class EmailSubscription implements sns.ITopicSubscription {
   constructor(private readonly emailAddress: string, private readonly props: EmailSubscriptionProps = {}) {
   }
 
-  public bind(scope: Construct, topic: sns.ITopic): void {
-    new sns.Subscription(scope, this.emailAddress, {
-      topic,
+  public bind(_topic: sns.ITopic): sns.TopicSubscriptionConfig {
+    return {
+      id: this.emailAddress,
       endpoint: this.emailAddress,
-      protocol: this.props.json ? sns.SubscriptionProtocol.EmailJson : sns.SubscriptionProtocol.Email
-    });
+      protocol: this.props.json ? sns.SubscriptionProtocol.EmailJson : sns.SubscriptionProtocol.Email,
+      filterPolicy: this.props.filterPolicy,
+    };
   }
 }

@@ -91,8 +91,7 @@
   },
   "awslint": {
     "exclude": [
-      "construct-base-is-private:@aws-cdk/aws-sns.TopicBase",
-      "integ-return-type:@aws-cdk/aws-sns.ITopicSubscription.bind"
+      "construct-base-is-private:@aws-cdk/aws-sns.TopicBase"
     ]
   },
   "stability": "experimental"

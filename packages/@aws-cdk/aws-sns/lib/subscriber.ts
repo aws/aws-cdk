@@ -1,9 +1,16 @@
-import { Construct } from '@aws-cdk/cdk';
+import { SubscriptionOptions } from './subscription';
 import { ITopic } from './topic-base';
+
+export interface TopicSubscriptionConfig extends SubscriptionOptions {
+  /**
+   * The id of the construct that is being subscribed to the topic.
+   */
+  readonly id: string;
+}
 
 /**
  * Topic subscription
  */
 export interface ITopicSubscription {
-  bind(scope: Construct, topic: ITopic): void;
+  bind(topic: ITopic): TopicSubscriptionConfig;
 }
