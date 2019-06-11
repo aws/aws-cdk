@@ -467,5 +467,36 @@ export = {
 
       test.done();
     },
+  },
+
+  'Metric'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+    const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+    const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
+    taskDefinition.addContainer('Container', {
+      image: ecs.ContainerImage.fromRegistry('hello')
+    });
+
+    // WHEN
+    const service = new ecs.FargateService(stack, 'Service', {
+      cluster,
+      taskDefinition,
+    });
+
+    // THEN
+    test.deepEqual(stack.resolve(service.metricCpuUtilization()), {
+      dimensions: {
+        ClusterName: { Ref: 'EcsCluster97242B84' },
+        ServiceName: { 'Fn::GetAtt': ['ServiceD69D759B', 'Name'] }
+      },
+      namespace: 'AWS/ECS',
+      metricName: 'CPUUtilization',
+      periodSec: 300,
+      statistic: 'Average'
+    });
+
+    test.done();
   }
 };

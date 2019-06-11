@@ -1,4 +1,3 @@
-import cloudwatch = require ('@aws-cdk/aws-cloudwatch');
 import ec2 = require('@aws-cdk/aws-ec2');
 import elb = require('@aws-cdk/aws-elasticloadbalancing');
 import { Construct, Lazy, Resource } from '@aws-cdk/cdk';
@@ -240,36 +239,6 @@ export class Ec2Service extends BaseService implements IEc2Service, elb.ILoadBal
       containerName: this.taskDefinition.defaultContainer!.node.id,
       containerPort: this.taskDefinition.defaultContainer!.containerPort,
     });
-  }
-
-  /**
-   * Return the given named metric for this Service
-   */
-  public metric(metricName: string, props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    return new cloudwatch.Metric({
-      namespace: 'AWS/ECS',
-      metricName,
-      dimensions: { ClusterName: this.clusterName, ServiceName: this.serviceName },
-      ...props
-    });
-  }
-
-  /**
-   * Metric for cluster Memory utilization
-   *
-   * @default average over 5 minutes
-   */
-  public metricMemoryUtilization(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    return this.metric('MemoryUtilization', props );
-  }
-
-  /**
-   * Metric for cluster CPU utilization
-   *
-   * @default average over 5 minutes
-   */
-  public metricCpuUtilization(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    return this.metric('CPUUtilization', props);
   }
 
   /**
