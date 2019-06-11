@@ -112,10 +112,8 @@ export = {
       testGrant((q, p) => q.grantConsumeMessages(p),
         'sqs:ReceiveMessage',
         'sqs:ChangeMessageVisibility',
-        'sqs:ChangeMessageVisibilityBatch',
         'sqs:GetQueueUrl',
         'sqs:DeleteMessage',
-        'sqs:DeleteMessageBatch',
         'sqs:GetQueueAttributes',
       );
       test.done();
@@ -124,7 +122,6 @@ export = {
     'grantSendMessages'(test: Test) {
       testGrant((q, p) => q.grantSendMessages(p),
         'sqs:SendMessage',
-        'sqs:SendMessageBatch',
         'sqs:GetQueueAttributes',
         'sqs:GetQueueUrl',
       );
@@ -250,7 +247,6 @@ export = {
             {
               "Action": [
                 "sqs:SendMessage",
-                "sqs:SendMessageBatch",
                 "sqs:GetQueueAttributes",
                 "sqs:GetQueueUrl"
               ],

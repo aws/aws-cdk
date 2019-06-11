@@ -19,6 +19,13 @@ export interface Ec2ServiceProps extends BaseServiceProps {
   readonly taskDefinition: TaskDefinition;
 
   /**
+   * Assign public IP addresses to each task
+   *
+   * @default - Use subnet default.
+   */
+  readonly assignPublicIp?: boolean;
+
+  /**
    * In what subnets to place the task's ENIs
    *
    * (Only applicable in case the TaskDefinition is configured for AwsVpc networking)
@@ -127,7 +134,7 @@ export class Ec2Service extends BaseService implements IEc2Service, elb.ILoadBal
     this.daemon = props.daemon || false;
 
     if (props.taskDefinition.networkMode === NetworkMode.AwsVpc) {
-      this.configureAwsVpcNetworking(props.cluster.vpc, false, props.vpcSubnets, props.securityGroup);
+      this.configureAwsVpcNetworking(props.cluster.vpc, props.assignPublicIp, props.vpcSubnets, props.securityGroup);
     } else {
       // Either None, Bridge or Host networking. Copy SecurityGroup from ASG.
       validateNoNetworkingProps(props);
@@ -281,8 +288,8 @@ export class Ec2Service extends BaseService implements IEc2Service, elb.ILoadBal
  * Validate combinations of networking arguments
  */
 function validateNoNetworkingProps(props: Ec2ServiceProps) {
-  if (props.vpcSubnets !== undefined || props.securityGroup !== undefined) {
-    throw new Error('vpcSubnets and securityGroup can only be used in AwsVpc networking mode');
+  if (props.vpcSubnets !== undefined || props.securityGroup !== undefined || props.assignPublicIp) {
+    throw new Error('vpcSubnets, securityGroup and assignPublicIp can only be used in AwsVpc networking mode');
   }
 }
 

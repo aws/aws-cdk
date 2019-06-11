@@ -18,8 +18,10 @@ export interface LazyRoleProps extends RoleProps {
  * (such as when AutoScaling is configured). The role can be configured in one
  * place, but if it never gets used it doesn't get instantiated and will
  * not be synthesized or deployed.
+ *
+ * @resource AWS::IAM::Role
  */
-export class LazyRole extends cdk.Construct implements IRole {
+export class LazyRole extends cdk.Resource implements IRole {
   public readonly grantPrincipal: IPrincipal = this;
   public readonly assumeRoleAction: string = 'sts:AssumeRole';
   private role?: Role;
@@ -76,6 +78,7 @@ export class LazyRole extends cdk.Construct implements IRole {
     return this.instantiate().roleArn;
   }
 
+  /** @attribute */
   public get roleId(): string {
     return this.instantiate().roleId;
   }

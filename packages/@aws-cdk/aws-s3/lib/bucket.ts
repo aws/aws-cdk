@@ -1,7 +1,7 @@
 import events = require('@aws-cdk/aws-events');
 import iam = require('@aws-cdk/aws-iam');
 import kms = require('@aws-cdk/aws-kms');
-import { applyRemovalPolicy, Construct, IResource, Lazy, RemovalPolicy, Resource, Stack, Token } from '@aws-cdk/cdk';
+import { applyRemovalPolicy, Construct, IResource, PhysicalName, RemovalPolicy, Resource, ResourceIdentifiers, Stack, Token } from '@aws-cdk/cdk';
 import { EOL } from 'os';
 import { BucketPolicy } from './bucket-policy';
 import { IBucketNotificationDestination } from './destination';
@@ -508,18 +508,52 @@ abstract class BucketBase extends Resource implements IBucket {
                 resourceArn: string, ...otherResourceArns: string[]) {
     const resources = [ resourceArn, ...otherResourceArns ];
 
-    const ret = iam.Grant.addToPrincipalOrResource({
-      grantee,
-      actions: bucketActions,
-      resourceArns: resources,
-      resource: this,
-    });
+    const crossAccountAccess = this.isGranteeFromAnotherAccount(grantee);
+    let ret: iam.Grant;
+    if (crossAccountAccess) {
+      // if the access is cross-account, we need to trust the accessing principal in the bucket's policy
+      ret = iam.Grant.addToPrincipalAndResource({
+        grantee,
+        actions: bucketActions,
+        resourceArns: resources,
+        resource: this,
+      });
+    } else {
+      // if not, we don't need to modify the resource policy if the grantee is an identity principal
+      ret = iam.Grant.addToPrincipalOrResource({
+        grantee,
+        actions: bucketActions,
+        resourceArns: resources,
+        resource: this,
+      });
+    }
 
     if (this.encryptionKey) {
-      this.encryptionKey.grant(grantee, ...keyActions);
+      if (crossAccountAccess) {
+        // we can't access the Key ARN (they don't have physical names),
+        // so fall back on using '*'. ToDo we need to make this better... somehow
+        iam.Grant.addToPrincipalAndResource({
+          actions: keyActions,
+          grantee,
+          resourceArns: ['*'],
+          resource: this.encryptionKey,
+        });
+      } else {
+        this.encryptionKey.grant(grantee, ...keyActions);
+      }
     }
 
     return ret;
+  }
+
+  private isGranteeFromAnotherAccount(grantee: iam.IGrantable): boolean {
+    if (!(grantee instanceof Construct)) {
+      return false;
+    }
+    const c = grantee as Construct;
+    const bucketStack = Stack.of(this);
+    const identityStack = Stack.of(c);
+    return bucketStack.env.account !== identityStack.env.account;
   }
 }
 
@@ -626,7 +660,7 @@ export interface BucketProps {
    *
    * @default - Assigned by CloudFormation (recommended).
    */
-  readonly bucketName?: string;
+  readonly bucketName?: PhysicalName;
 
   /**
    * Policy to apply when the bucket is removed from this stack.
@@ -776,7 +810,9 @@ export class Bucket extends BucketBase {
   private readonly metrics: BucketMetrics[] = [];
 
   constructor(scope: Construct, id: string, props: BucketProps = {}) {
-    super(scope, id);
+    super(scope, id, {
+      physicalName: props.bucketName,
+    });
 
     const { bucketEncryption, encryptionKey } = this.parseEncryption(props);
     if (props.bucketName && !Token.isUnresolved(props.bucketName)) {
@@ -784,7 +820,7 @@ export class Bucket extends BucketBase {
     }
 
     const resource = new CfnBucket(this, 'Resource', {
-      bucketName: props && props.bucketName,
+      bucketName: this.physicalName.value,
       bucketEncryption,
       versioningConfiguration: props.versioned ? { status: 'Enabled' } : undefined,
       lifecycleConfiguration: Lazy.anyValue({ produce: () => this.parseLifecycleConfiguration() }),
@@ -798,8 +834,18 @@ export class Bucket extends BucketBase {
     this.versioned = props.versioned;
     this.encryptionKey = encryptionKey;
 
-    this.bucketArn = resource.bucketArn;
-    this.bucketName = resource.bucketName;
+    const resourceIdentifiers = new ResourceIdentifiers(this, {
+      arn: resource.bucketArn,
+      name: resource.bucketName,
+      arnComponents: {
+        region: '',
+        account: '',
+        service: 's3',
+        resource: this.physicalName.value || '',
+      },
+    });
+    this.bucketArn = resourceIdentifiers.arn;
+    this.bucketName = resourceIdentifiers.name;
     this.bucketDomainName = resource.bucketDomainName;
     this.bucketWebsiteUrl = resource.bucketWebsiteUrl;
     this.bucketDualStackDomainName = resource.bucketDualStackDomainName;
@@ -893,7 +939,14 @@ export class Bucket extends BucketBase {
     return this.addEventNotification(EventType.ObjectRemoved, dest, ...filters);
   }
 
-  private validateBucketName(bucketName: string) {
+  private validateBucketName(physicalName: PhysicalName): void {
+    const bucketName = physicalName.value;
+    if (!bucketName || Token.isUnresolved(bucketName)) {
+      // the name is a late-bound value, not a defined string,
+      // so skip validation
+      return;
+    }
+
     const errors: string[] = [];
 
     // Rules codified from https://docs.aws.amazon.com/AmazonS3/latest/dev/BucketRestrictions.html

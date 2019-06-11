@@ -84,12 +84,14 @@ export class CfnReference extends Reference {
   private readonly replacementTokens: Map<Stack, IResolvable>;
 
   private readonly originalDisplayName: string;
+  private readonly humanReadableDesc: string;
 
   private constructor(value: any, private readonly displayName: string, target: Construct) {
     // prepend scope path to display name
     super(value, target);
     this.originalDisplayName = displayName;
     this.replacementTokens = new Map<Stack, IResolvable>();
+    this.humanReadableDesc = `target = ${target.node.path}`;
 
     this.producingStack = Stack.of(target);
     Object.defineProperty(this, CFN_REFERENCE_SYMBOL, { value: true });
@@ -142,7 +144,7 @@ export class CfnReference extends Reference {
     const producingStack = this.producingStack!;
 
     if (producingStack.env.account !== consumingStack.env.account || producingStack.env.region !== consumingStack.env.region) {
-      throw this.newError('Can only reference cross stacks in the same region and account.');
+      throw this.newError(`Can only reference cross stacks in the same region and account. ${this.humanReadableDesc}`);
     }
 
     // Ensure a singleton "Exports" scoping Construct
