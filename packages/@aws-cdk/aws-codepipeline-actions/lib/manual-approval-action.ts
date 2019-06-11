@@ -1,5 +1,6 @@
 import codepipeline = require('@aws-cdk/aws-codepipeline');
 import sns = require('@aws-cdk/aws-sns');
+import subs = require('@aws-cdk/aws-sns-subscriptions');
 import cdk = require('@aws-cdk/cdk');
 
 /**
@@ -62,7 +63,7 @@ export class ManualApprovalAction extends codepipeline.Action {
     if (this._notificationTopic) {
       this._notificationTopic.grantPublish(info.role);
       for (const notifyEmail of this.props.notifyEmails || []) {
-        this._notificationTopic.subscribeEmail(`Subscription-${notifyEmail}`, notifyEmail);
+        this._notificationTopic.addSubscription(new subs.EmailSubscription(notifyEmail));
       }
     }
   }

@@ -192,7 +192,7 @@
     "PipelineApproveManualApprovalTopicResourceF5A35B20": {
       "Type": "AWS::SNS::Topic"
     },
-    "PipelineApproveManualApprovalTopicResourceSubscriptionadamruka85gmailcom76398FFA": {
+    "PipelineApproveManualApprovalTopicResourceadamruka85gmailcom202874CD": {
       "Type": "AWS::SNS::Subscription",
       "Properties": {
         "Protocol": "email",

@@ -1,4 +1,5 @@
 const sns = require('@aws-cdk/aws-sns');
+const subs = require('@aws-cdk/aws-sns-subscribers');
 const sqs = require('@aws-cdk/aws-sqs');
 const cdk = require('@aws-cdk/cdk');
 
@@ -17,7 +18,7 @@ class %name.PascalCased%Stack extends cdk.Stack {
 
     const topic = new sns.Topic(this, '%name.PascalCased%Topic');
 
-    topic.subscribeQueue(queue);
+    topic.subscribe(new subs.SqsSubscriber(queue));
   }
 }
 
