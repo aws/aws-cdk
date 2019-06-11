@@ -151,7 +151,7 @@ export = {
       cluster,
       image: ecs.ContainerImage.fromRegistry('test'),
       desiredCount: 2,
-      createLogs: false,
+      enableLogging: false,
       environment: {
         TEST_ENVIRONMENT_VARIABLE1: "test environment variable 1 value",
         TEST_ENVIRONMENT_VARIABLE2: "test environment variable 2 value"
