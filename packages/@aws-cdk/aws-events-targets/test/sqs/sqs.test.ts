@@ -22,7 +22,6 @@ test('sns topic as an event rule target', () => {
         {
           Action: [
             "sqs:SendMessage",
-            "sqs:SendMessageBatch",
             "sqs:GetQueueAttributes",
             "sqs:GetQueueUrl"
           ],
@@ -86,7 +85,6 @@ test('multiple uses of a queue as a target results in multi policy statement bec
         {
           Action: [
             "sqs:SendMessage",
-            "sqs:SendMessageBatch",
             "sqs:GetQueueAttributes",
             "sqs:GetQueueUrl"
           ],
@@ -112,7 +110,6 @@ test('multiple uses of a queue as a target results in multi policy statement bec
         {
           Action: [
             "sqs:SendMessage",
-            "sqs:SendMessageBatch",
             "sqs:GetQueueAttributes",
             "sqs:GetQueueUrl"
           ],

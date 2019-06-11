@@ -61,7 +61,6 @@
             {
               "Action": [
                 "sqs:SendMessage",
-                "sqs:SendMessageBatch",
                 "sqs:GetQueueAttributes",
                 "sqs:GetQueueUrl"
               ],
@@ -99,7 +98,6 @@
             {
               "Action": [
                 "sqs:SendMessage",
-                "sqs:SendMessageBatch",
                 "sqs:GetQueueAttributes",
                 "sqs:GetQueueUrl"
               ],
@@ -390,7 +388,6 @@
             {
               "Action": [
                 "sqs:SendMessage",
-                "sqs:SendMessageBatch",
                 "sqs:GetQueueAttributes",
                 "sqs:GetQueueUrl"
               ],
