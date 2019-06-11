@@ -107,7 +107,7 @@ You can do it through the CDK:
 import cloudtrail = require('@aws-cdk/aws-cloudtrail');
 
 const key = 'some/key.zip';
-const trail = new cloudtrail.CloudTrail(this, 'CloudTrail');
+const trail = new cloudtrail.Trail(this, 'CloudTrail');
 trail.addS3EventSelector([sourceBucket.arnForObjects(key)], {
   readWriteType: cloudtrail.ReadWriteType.WriteOnly,
 });

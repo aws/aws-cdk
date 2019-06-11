@@ -32,7 +32,7 @@ import autoscaling = require('@aws-cdk/aws-autoscaling');
 
 // ...
 
-const vpc = new ec2.VpcNetwork(...);
+const vpc = new ec2.Vpc(...);
 
 // Create the load balancer in a VPC. 'internetFacing' is 'false'
 // by default, which creates an internal load balancer.

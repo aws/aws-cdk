@@ -19,7 +19,7 @@ Example usage:
 ```ts
 import cloudtrail = require('@aws-cdk/aws-cloudtrail');
 
-const trail = new cloudtrail.CloudTrail(this, 'CloudTrail');
+const trail = new cloudtrail.Trail(this, 'CloudTrail');
 ```
 
 You can instantiate the CloudTrail construct with no arguments - this will by default:
@@ -43,7 +43,7 @@ For example, to log to CloudWatch Logs
 
 import cloudtrail = require('@aws-cdk/aws-cloudtrail');
 
-const trail = new cloudtrail.CloudTrail(this, 'CloudTrail', {
+const trail = new cloudtrail.Trail(this, 'CloudTrail', {
   sendToCloudWatchLogs: true
 });
 ```
@@ -58,7 +58,7 @@ Example:
 ```ts
 import cloudtrail = require('@aws-cdk/aws-cloudtrail');
 
-const trail = new cloudtrail.CloudTrail(this, 'MyAmazingCloudTrail');
+const trail = new cloudtrail.Trail(this, 'MyAmazingCloudTrail');
 
 // Adds an event selector to the bucket magic-bucket.
 // By default, this includes management events and all operations (Read + Write)
