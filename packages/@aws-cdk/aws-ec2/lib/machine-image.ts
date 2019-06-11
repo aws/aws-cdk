@@ -181,7 +181,7 @@ export class GenericLinuxImage implements IMachineImageSource  {
 
   public getImage(scope: Construct): MachineImage {
     let region = Stack.of(scope).region;
-    if (Token.unresolved(region)) {
+    if (Token.isUnresolved(region)) {
       region = Context.getDefaultRegion(scope);
     }
 
