@@ -1,6 +1,7 @@
 import lambda = require('@aws-cdk/aws-lambda');
+import sns = require('@aws-cdk/aws-sns');
 import cdk = require('@aws-cdk/cdk');
-import sns = require('../lib');
+import subs = require('../lib');
 
 class SnsToSqs extends cdk.Stack {
   constructor(scope: cdk.App, id: string, props?: cdk.StackProps) {
@@ -14,7 +15,7 @@ class SnsToSqs extends cdk.Stack {
       code: lambda.Code.inline(`exports.handler = ${handler.toString()}`)
     });
 
-    topic.subscribeLambda(fction);
+    topic.addSubscription(new subs.LambdaSubscription(fction));
   }
 }
 

@@ -1007,5 +1007,37 @@ export = {
 
       test.done();
     },
+  },
+
+  'Metric'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+    const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+    cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
+    const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'FargateTaskDef');
+    taskDefinition.addContainer('Container', {
+      image: ecs.ContainerImage.fromRegistry('hello')
+    });
+
+    // WHEN
+    const service = new ecs.Ec2Service(stack, 'Service', {
+      cluster,
+      taskDefinition,
+    });
+
+    // THEN
+    test.deepEqual(stack.resolve(service.metricMemoryUtilization()), {
+      dimensions: {
+        ClusterName: { Ref: 'EcsCluster97242B84' },
+        ServiceName: { 'Fn::GetAtt': ['ServiceD69D759B', 'Name'] }
+      },
+      namespace: 'AWS/ECS',
+      metricName: 'MemoryUtilization',
+      periodSec: 300,
+      statistic: 'Average'
+    });
+
+    test.done();
   }
 };
