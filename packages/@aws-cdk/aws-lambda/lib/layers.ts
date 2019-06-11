@@ -1,4 +1,4 @@
-import { Construct, IResource, Resource, Token } from '@aws-cdk/cdk';
+import { Construct, IResource, Resource, Stack, Token } from '@aws-cdk/cdk';
 import { Code } from './code';
 import { CfnLayerVersion, CfnLayerVersionPermission } from './lambda.generated';
 import { Runtime } from './runtime';
@@ -199,8 +199,10 @@ export interface SingletonLayerVersionProps extends LayerVersionProps {
  * A Singleton Lambda Layer Version. The construct gurantees exactly one LayerVersion will be created in a given Stack
  * for the provided ``uuid``. It is recommended to use ``uuidgen`` to create a new ``uuid`` each time a new singleton
  * layer is created.
+ *
+ * @resource AWS::Lambda::LayerVersion
  */
-export class SingletonLayerVersion extends Construct implements ILayerVersion {
+export class SingletonLayerVersion extends Resource implements ILayerVersion {
   private readonly layerVersion: ILayerVersion;
 
   constructor(scope: Construct, id: string, props: SingletonLayerVersionProps) {
@@ -223,10 +225,10 @@ export class SingletonLayerVersion extends Construct implements ILayerVersion {
 
   private ensureLayerVersion(props: SingletonLayerVersionProps): ILayerVersion {
     const singletonId = `SingletonLayer-${props.uuid}`;
-    const existing = this.node.stack.node.tryFindChild(singletonId);
+    const existing = Stack.of(this).node.tryFindChild(singletonId);
     if (existing) {
       return existing as unknown as ILayerVersion;
     }
-    return new LayerVersion(this.node.stack, singletonId, props);
+    return new LayerVersion(Stack.of(this), singletonId, props);
   }
 }

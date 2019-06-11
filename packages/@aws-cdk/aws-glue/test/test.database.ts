@@ -84,9 +84,9 @@ export = {
     // THEN
     test.deepEqual(database.databaseArn, 'arn:aws:glue:us-east-1:123456789012:database/db1');
     test.deepEqual(database.databaseName, 'db1');
-    test.deepEqual(stack.node.resolve(database.catalogArn), { 'Fn::Join': [ '',
+    test.deepEqual(stack.resolve(database.catalogArn), { 'Fn::Join': [ '',
       [ 'arn:', { Ref: 'AWS::Partition' }, ':glue:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':catalog' ] ] });
-    test.deepEqual(stack.node.resolve(database.catalogId), { Ref: 'AWS::AccountId' });
+    test.deepEqual(stack.resolve(database.catalogId), { Ref: 'AWS::AccountId' });
     test.done();
   }
 };

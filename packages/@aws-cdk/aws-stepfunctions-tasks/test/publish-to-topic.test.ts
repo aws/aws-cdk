@@ -14,7 +14,7 @@ test('publish to SNS', () => {
   }) });
 
   // THEN
-  expect(stack.node.resolve(pub.toStateJson())).toEqual({
+  expect(stack.resolve(pub.toStateJson())).toEqual({
     Type: 'Task',
     Resource: 'arn:aws:states:::sns:publish',
     End: true,
@@ -38,7 +38,7 @@ test('publish JSON to SNS', () => {
   }) });
 
   // THEN
-  expect(stack.node.resolve(pub.toStateJson())).toEqual({
+  expect(stack.resolve(pub.toStateJson())).toEqual({
     Type: 'Task',
     Resource: 'arn:aws:states:::sns:publish',
     End: true,

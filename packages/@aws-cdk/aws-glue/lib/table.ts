@@ -1,7 +1,7 @@
 import iam = require('@aws-cdk/aws-iam');
 import kms = require('@aws-cdk/aws-kms');
 import s3 = require('@aws-cdk/aws-s3');
-import { Construct, Fn, IResource, Resource } from '@aws-cdk/cdk';
+import { Construct, Fn, IResource, Resource, Stack } from '@aws-cdk/cdk';
 import { DataFormat } from './data-format';
 import { IDatabase } from './database';
 import { CfnTable } from './glue.generated';
@@ -150,7 +150,7 @@ export interface TableProps {
 export class Table extends Resource implements ITable {
 
   public static fromTableArn(scope: Construct, id: string, tableArn: string): ITable {
-    const tableName = Fn.select(1, Fn.split('/', scope.node.stack.parseArn(tableArn).resourceName!));
+    const tableName = Fn.select(1, Fn.split('/', Stack.of(scope).parseArn(tableArn).resourceName!));
 
     return Table.fromTableAttributes(scope, id, {
       tableArn,
@@ -166,7 +166,7 @@ export class Table extends Resource implements ITable {
    * @param attrs Import attributes
    */
   public static fromTableAttributes(scope: Construct, id: string, attrs: TableAttributes): ITable {
-    class Import extends Construct implements ITable {
+    class Import extends Resource implements ITable {
       public readonly tableArn = attrs.tableArn;
       public readonly tableName = attrs.tableName;
     }
@@ -277,7 +277,7 @@ export class Table extends Resource implements ITable {
     });
 
     this.tableName = tableResource.tableName;
-    this.tableArn = this.node.stack.formatArn({
+    this.tableArn = Stack.of(this).formatArn({
       service: 'glue',
       resource: 'table',
       resourceName: `${this.database.databaseName}/${this.tableName}`

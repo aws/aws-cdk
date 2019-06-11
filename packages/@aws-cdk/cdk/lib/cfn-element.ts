@@ -1,6 +1,5 @@
 import cxapi = require('@aws-cdk/cx-api');
-import { Construct, ConstructNode } from "./construct";
-import { Token } from './token';
+import { Construct } from "./construct";
 
 const CFN_ELEMENT_SYMBOL = Symbol.for('@aws-cdk/cdk.CfnElement');
 
@@ -32,6 +31,11 @@ export abstract class CfnElement extends Construct {
    */
   public readonly logicalId: string;
 
+  /**
+   * The stack in which this element is defined. CfnElements must be defined within a stack scope (directly or indirectly).
+   */
+  public readonly stack: Stack;
+
   private _logicalId: string;
 
   /**
@@ -48,7 +52,8 @@ export abstract class CfnElement extends Construct {
 
     this.node.addMetadata(cxapi.LOGICAL_ID_METADATA_KEY, new (require("./token").Token)(() => this.logicalId), this.constructor);
 
-    this._logicalId = this.node.stack.logicalIds.getLogicalId(this);
+    this.stack = Stack.of(this);
+    this._logicalId = this.stack.logicalIds.getLogicalId(this);
     this.logicalId = new Token(() => this._logicalId, `${notTooLong(this.node.path)}.LogicalID`).toString();
   }
 
@@ -88,13 +93,6 @@ export abstract class CfnElement extends Construct {
   }
 
   /**
-   * Return the path with respect to the stack
-   */
-  public get stackPath(): string {
-    return this.node.ancestors(this.node.stack).map(c => c.node.id).join(ConstructNode.PATH_SEP);
-  }
-
-  /**
    * Returns the CloudFormation 'snippet' for this entity. The snippet will only be merged
    * at the root level to ensure there are no identity conflicts.
    *
@@ -127,7 +125,7 @@ export abstract class CfnElement extends Construct {
       // This does make the assumption that the error will not be rectified,
       // but the error will be thrown later on anyway. If the error doesn't
       // get thrown down the line, we may miss references.
-      this.node.recordReference(...findTokens(this, () => this._toCloudFormation()));
+      this.node.addReference(...findTokens(this, () => this._toCloudFormation()));
     } catch (e) {
       if (e.type !== 'CfnSynthesisError') { throw e; }
     }
@@ -167,3 +165,5 @@ function notTooLong(x: string) {
 
 import { CfnReference } from "./cfn-reference";
 import { findTokens } from "./resolve";
+import { Stack } from './stack';
+import { Token } from './token';

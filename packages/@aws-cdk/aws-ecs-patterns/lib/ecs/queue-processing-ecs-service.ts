@@ -1,11 +1,11 @@
 import ecs = require('@aws-cdk/aws-ecs');
 import cdk = require('@aws-cdk/cdk');
-import { QueueWorkerServiceBase, QueueWorkerServiceBaseProps } from '../base/queue-worker-service-base';
+import { QueueProcessingServiceBase, QueueProcessingServiceBaseProps } from '../base/queue-processing-service-base';
 
 /**
- * Properties to define an Ec2 query worker service
+ * Properties to define a queue processing Ec2 service
  */
-export interface Ec2QueueWorkerServiceProps extends QueueWorkerServiceBaseProps {
+export interface QueueProcessingEc2ServiceProps extends QueueProcessingServiceBaseProps {
   /**
    * The minimum number of CPU units to reserve for the container.
    *
@@ -41,15 +41,21 @@ export interface Ec2QueueWorkerServiceProps extends QueueWorkerServiceBaseProps 
 }
 
 /**
- * Class to create an Ec2 query worker service
+ * Class to create a queue processing Ec2 service
  */
-export class Ec2QueueWorkerService extends QueueWorkerServiceBase {
-  constructor(scope: cdk.Construct, id: string, props: Ec2QueueWorkerServiceProps) {
+export class QueueProcessingEc2Service extends QueueProcessingServiceBase {
+
+  /**
+   * The ECS service in this construct
+   */
+  public readonly service: ecs.Ec2Service;
+
+  constructor(scope: cdk.Construct, id: string, props: QueueProcessingEc2ServiceProps) {
     super(scope, id, props);
 
     // Create a Task Definition for the container to start
-    const taskDefinition = new ecs.Ec2TaskDefinition(this, 'QueueWorkerTaskDef');
-    taskDefinition.addContainer('QueueWorkerContainer', {
+    const taskDefinition = new ecs.Ec2TaskDefinition(this, 'QueueProcessingTaskDef');
+    taskDefinition.addContainer('QueueProcessingContainer', {
       image: props.image,
       memoryLimitMiB: props.memoryLimitMiB,
       memoryReservationMiB: props.memoryReservationMiB,
@@ -61,11 +67,11 @@ export class Ec2QueueWorkerService extends QueueWorkerServiceBase {
 
     // Create an ECS service with the previously defined Task Definition and configure
     // autoscaling based on cpu utilization and number of messages visible in the SQS queue.
-    const ecsService = new ecs.Ec2Service(this, 'QueueWorkerService', {
+    this.service = new ecs.Ec2Service(this, 'QueueProcessingService', {
       cluster: props.cluster,
       desiredCount: this.desiredCount,
       taskDefinition
     });
-    this.configureAutoscalingForService(ecsService);
+    this.configureAutoscalingForService(this.service);
   }
 }

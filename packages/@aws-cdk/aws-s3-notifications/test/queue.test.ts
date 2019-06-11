@@ -19,7 +19,6 @@ test('queues can be used as destinations', () => {
         {
           Action: [
             "sqs:SendMessage",
-            "sqs:SendMessageBatch",
             "sqs:GetQueueAttributes",
             "sqs:GetQueueUrl"
           ],

@@ -4,7 +4,7 @@ import ec2 = require('@aws-cdk/aws-ec2');
 import { Vpc } from '@aws-cdk/aws-ec2';
 import iam = require('@aws-cdk/aws-iam');
 import cloudmap = require('@aws-cdk/aws-servicediscovery');
-import { Construct, IResource, Resource, SSMParameterProvider } from '@aws-cdk/cdk';
+import { Construct, IResource, Resource, SSMParameterProvider, Stack } from '@aws-cdk/cdk';
 import { InstanceDrainHook } from './drain-hook/instance-drain-hook';
 import { CfnCluster } from './ecs.generated';
 
@@ -367,7 +367,7 @@ export interface ClusterAttributes {
 /**
  * An Cluster that has been imported
  */
-class ImportedCluster extends Construct implements ICluster {
+class ImportedCluster extends Resource implements ICluster {
   /**
    * Name of the cluster
    */
@@ -405,13 +405,13 @@ class ImportedCluster extends Construct implements ICluster {
     this.hasEc2Capacity = props.hasEc2Capacity !== false;
     this._defaultNamespace = props.defaultNamespace;
 
-    this.clusterArn = props.clusterArn !== undefined ? props.clusterArn : this.node.stack.formatArn({
+    this.clusterArn = props.clusterArn !== undefined ? props.clusterArn : Stack.of(this).formatArn({
       service: 'ecs',
       resource: 'cluster',
       resourceName: props.clusterName,
     });
 
-    this.clusterArn = props.clusterArn !== undefined ? props.clusterArn : this.node.stack.formatArn({
+    this.clusterArn = props.clusterArn !== undefined ? props.clusterArn : Stack.of(this).formatArn({
       service: 'ecs',
       resource: 'cluster',
       resourceName: props.clusterName,

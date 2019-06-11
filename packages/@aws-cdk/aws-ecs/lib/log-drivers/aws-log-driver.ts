@@ -1,5 +1,6 @@
 import logs = require('@aws-cdk/aws-logs');
 import cdk = require('@aws-cdk/cdk');
+import { Stack } from '@aws-cdk/cdk';
 import { ContainerDefinition } from '../container-definition';
 import { CfnTaskDefinition } from '../ecs.generated';
 import { LogDriver } from "./log-driver";
@@ -97,7 +98,7 @@ export class AwsLogDriver extends LogDriver {
       options: removeEmpty({
         'awslogs-group': this.logGroup.logGroupName,
         'awslogs-stream-prefix': this.props.streamPrefix,
-        'awslogs-region': this.node.stack.region,
+        'awslogs-region': Stack.of(this).region,
         'awslogs-datetime-format': this.props.datetimeFormat,
         'awslogs-multiline-pattern': this.props.multilinePattern,
       }),
