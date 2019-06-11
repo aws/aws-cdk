@@ -50,7 +50,7 @@ export class PublishToTopic implements sfn.IStepFunctionsTask {
     this.waitForTaskToken = props.waitForTaskToken === true;
   }
 
-  public bind(_task: sfn.Task): sfn.StepFunctionsTaskProperties {
+  public bind(_task: sfn.Task): sfn.StepFunctionsTaskConfig {
     return {
       resourceArn: 'arn:aws:states:::sns:publish' + (this.waitForTaskToken ? '.waitForTaskToken' : ''),
       policyStatements: [new iam.PolicyStatement()

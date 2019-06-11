@@ -1,21 +1,20 @@
 import cxapi = require('@aws-cdk/cx-api');
 import { CloudAssembly } from '@aws-cdk/cx-api';
-import { Construct } from './construct';
+import { Construct, ConstructNode } from './construct';
 import { collectRuntimeInformation } from './runtime-info';
-import { Synthesizer } from './synthesis';
 
 const APP_SYMBOL = Symbol.for('@aws-cdk/cdk.App');
 
 /**
- * Custom construction properties for a CDK program
+ * Initialization props for apps.
  */
 export interface AppProps {
   /**
    * Automatically call run before the application exits
    *
-   * If you set this, you don't have to call `run()` anymore.
+   * If you set this, you don't have to call `synth()` anymore.
    *
-   * @default true if running via CDK toolkit (CDK_OUTDIR is set), false otherwise
+   * @default true if running via CDK toolkit (`CDK_OUTDIR` is set), false otherwise
    */
   readonly autoRun?: boolean;
 
@@ -28,30 +27,49 @@ export interface AppProps {
   readonly outdir?: string;
 
   /**
-   * Include stack traces in construct metadata entries.
-   * @default true stack traces are included
+   * Include construct creation stack trace in the `aws:cdk:trace` metadata key of all constructs.
+   * @default true stack traces are included unless `aws:cdk:disable-stack-trace` is set in the context.
    */
   readonly stackTraces?: boolean;
 
   /**
    * Include runtime versioning information in cloud assembly manifest
-   * @default true runtime info is included
+   * @default true runtime info is included unless `aws:cdk:disable-runtime-info` is set in the context.
    */
   readonly runtimeInfo?: boolean;
 
   /**
-   * Additional context values for the application
+   * Additional context values for the application.
    *
-   * @default No additional context
+   * Context can be read from any construct using `node.getContext(key)`.
+   *
+   * @default - no additional context
    */
   readonly context?: { [key: string]: string };
 }
 
 /**
- * Represents a CDK program.
+ * A construct which represents an entire CDK app. This construct is normally
+ * the root of the construct tree.
+ *
+ * You would normally define an `App` instance in your program's entrypoint,
+ * then define constructs where the app is used as the parent scope.
+ *
+ * After all the child constructs are defined within the app, you should call
+ * `app.synth()` which will emit a "cloud assembly" from this app into the
+ * directory specified by `outdir`. Cloud assemblies includes artifacts such as
+ * CloudFormation templates and assets that are needed to deploy this app into
+ * the AWS cloud.
+ *
+ * @see https://docs.aws.amazon.com/cdk/latest/guide/apps_and_stacks.html
  */
 export class App extends Construct {
 
+  /**
+   * Checks if an object is an instance of the `App` class.
+   * @returns `true` if `obj` is an `App`.
+   * @param obj The object to evaluate
+   */
   public static isApp(obj: any): obj is App {
     return APP_SYMBOL in obj;
   }
@@ -62,7 +80,7 @@ export class App extends Construct {
 
   /**
    * Initializes a CDK application.
-   * @param request Optional toolkit request (e.g. for tests)
+   * @param props initialization properties
    */
   constructor(props: AppProps = {}) {
     super(undefined as any, '');
@@ -80,40 +98,44 @@ export class App extends Construct {
     }
 
     // both are reverse logic
-    this.runtimeInfo = this.node.getContext(cxapi.DISABLE_VERSION_REPORTING) ? false : true;
+    this.runtimeInfo = this.node.tryGetContext(cxapi.DISABLE_VERSION_REPORTING) ? false : true;
     this.outdir = props.outdir || process.env[cxapi.OUTDIR_ENV];
 
     const autoRun = props.autoRun !== undefined ? props.autoRun : cxapi.OUTDIR_ENV in process.env;
-
     if (autoRun) {
-      // run() guarantuees it will only execute once, so a default of 'true' doesn't bite manual calling
-      // of the function.
-      process.once('beforeExit', () => this.run());
+      // synth() guarantuees it will only execute once, so a default of 'true'
+      // doesn't bite manual calling of the function.
+      process.once('beforeExit', () => this.synth());
     }
   }
 
   /**
-   * Runs the program. Output is written to output directory as specified in the
-   * request.
+   * Synthesizes a cloud assembly for this app. Emits it to the directory
+   * specified by `outdir`.
    *
-   * @returns a `CloudAssembly` which includes all the synthesized artifacts
-   * such as CloudFormation templates and assets.
+   * @returns a `CloudAssembly` which can be used to inspect synthesized
+   * artifacts such as CloudFormation templates and assets.
    */
-  public run(): CloudAssembly {
-    // this app has already been executed, no-op for you
+  public synth(): CloudAssembly {
+    // we already have a cloud assembly, no-op for you
     if (this._assembly) {
       return this._assembly;
     }
 
-    const synth = new Synthesizer();
-
-    const assembly = synth.synthesize(this, {
+    const assembly = ConstructNode.synth(this.node, {
       outdir: this.outdir,
       runtimeInfo: this.runtimeInfo ? collectRuntimeInformation() : undefined
     });
 
     this._assembly = assembly;
     return assembly;
+  }
+
+  /**
+   * @deprecated use `synth()`
+   */
+  public run() {
+    return this.synth();
   }
 
   private loadContext(defaults: { [key: string]: string } = { }) {

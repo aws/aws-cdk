@@ -1,4 +1,4 @@
-import { Construct, SSMParameterProvider } from '@aws-cdk/cdk';
+import { Construct, SSMParameterProvider, Stack } from '@aws-cdk/cdk';
 
 /**
  * Interface for classes that can select an appropriate machine image to use
@@ -188,7 +188,7 @@ export class GenericLinuxImage implements IMachineImageSource  {
   }
 
   public getImage(scope: Construct): MachineImage {
-    const region = scope.node.stack.requireRegion('AMI cannot be determined');
+    const region = Stack.of(scope).requireRegion('AMI cannot be determined');
     const ami = region !== 'test-region' ? this.amiMap[region] : 'ami-12345';
     if (!ami) {
       throw new Error(`Unable to find AMI in AMI map: no AMI specified for region '${region}'`);

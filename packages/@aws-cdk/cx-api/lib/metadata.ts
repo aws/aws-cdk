@@ -20,6 +20,11 @@ export const ERROR_METADATA_KEY = 'aws:cdk:error';
 export const PATH_METADATA_KEY = 'aws:cdk:path';
 
 /**
+ * Represents the CloudFormation logical ID of a resource at a certain path.
+ */
+export const LOGICAL_ID_METADATA_KEY = 'aws:cdk:logicalId';
+
+/**
  * Tag metadata key.
  */
 export const STACK_TAGS_METADATA_KEY = 'aws:cdk:stack-tags';
@@ -47,6 +52,13 @@ export interface MetadataEntry {
    * A stack trace for when the entry was created.
    */
   readonly trace?: string[];
+}
+
+export interface MetadataEntryResult extends MetadataEntry {
+  /**
+   * The path in which this entry was defined.
+   */
+  readonly path: string;
 }
 
 /**

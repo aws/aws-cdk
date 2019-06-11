@@ -1,4 +1,16 @@
-## CDK Construct Library for Amazon API Gateway
+## Amazon API Gateway Construct Library
+<!--BEGIN STABILITY BANNER-->
+
+---
+
+![Stability: Experimental](https://img.shields.io/badge/stability-Experimental-important.svg?style=for-the-badge)
+
+> This API is still under active development and subject to non-backward
+> compatible changes or removal in any future version. Use of the API is not recommended in production
+> environments. Experimental APIs are not subject to the Semantic Versioning model.
+
+---
+<!--END STABILITY BANNER-->
 
 Amazon API Gateway is a fully managed service that makes it easy for developers
 to publish, maintain, monitor, and secure APIs at any scale. Create an API to

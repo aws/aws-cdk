@@ -313,7 +313,7 @@ export class Cluster extends Resource implements ICluster {
     autoScalingGroup.role.attachManagedPolicy(new iam.AwsManagedPolicy('AmazonEC2ContainerRegistryReadOnly', this).policyArn);
 
     // EKS Required Tags
-    autoScalingGroup.node.apply(new Tag(`kubernetes.io/cluster/${this.clusterName}`, 'owned', { applyToLaunchedInstances: true }));
+    autoScalingGroup.node.applyAspect(new Tag(`kubernetes.io/cluster/${this.clusterName}`, 'owned', { applyToLaunchedInstances: true }));
 
     // Create an CfnOutput for the Instance Role ARN (need to paste it into aws-auth-cm.yaml)
     new CfnOutput(autoScalingGroup, 'InstanceRoleARN', {
@@ -337,7 +337,7 @@ export class Cluster extends Resource implements ICluster {
         return;
       }
 
-      subnet.node.apply(new Tag("kubernetes.io/role/internal-elb", "1"));
+      subnet.node.applyAspect(new Tag("kubernetes.io/role/internal-elb", "1"));
     }
   }
 }

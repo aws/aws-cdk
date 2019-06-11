@@ -286,12 +286,12 @@ export default class CodeGenerator {
     if (spec.RequiredTransform) {
       const transformField = `${resourceName.className}.requiredTransform`;
       this.code.line('// If a different transform than the required one is in use, this resource cannot be used');
-      this.code.openBlock(`if (this.node.stack.templateOptions.transform && this.node.stack.templateOptions.transform !== ${transformField})`);
+      this.code.openBlock(`if (this.stack.templateOptions.transform && this.stack.templateOptions.transform !== ${transformField})`);
       // tslint:disable-next-line:max-line-length
-      this.code.line(`throw new Error(\`The \${JSON.stringify(${transformField})} transform is required when using ${resourceName.className}, but the \${JSON.stringify(this.node.stack.templateOptions.transform)} is used.\`);`);
+      this.code.line(`throw new Error(\`The \${JSON.stringify(${transformField})} transform is required when using ${resourceName.className}, but the \${JSON.stringify(this.stack.templateOptions.transform)} is used.\`);`);
       this.code.closeBlock();
       this.code.line('// Automatically configure the required transform');
-      this.code.line(`this.node.stack.templateOptions.transform = ${resourceName.className}.requiredTransform;`);
+      this.code.line(`this.stack.templateOptions.transform = ${resourceName.className}.requiredTransform;`);
     }
 
     // initialize all attribute properties

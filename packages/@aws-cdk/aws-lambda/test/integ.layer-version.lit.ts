@@ -31,4 +31,4 @@ new lambda.Function(stack, 'MyLayeredLambda', {
 });
 /// !hide
 
-app.run();
+app.synth();

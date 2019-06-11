@@ -1,9 +1,21 @@
 # CDK Construct library for higher-level ECS Constructs
+<!--BEGIN STABILITY BANNER-->
+
+---
+
+![Stability: Experimental](https://img.shields.io/badge/stability-Experimental-important.svg?style=for-the-badge)
+
+> This API is still under active development and subject to non-backward
+> compatible changes or removal in any future version. Use of the API is not recommended in production
+> environments. Experimental APIs are not subject to the Semantic Versioning model.
+
+---
+<!--END STABILITY BANNER-->
 
 This library provides higher-level ECS constructs which follow common architectural patterns. It contains:
 
 * Load Balanced Services
-* Queue Worker Services
+* Queue Processing Services
 * Scheduled Tasks (cron jobs)
 
 ## Load Balanced Services
@@ -36,14 +48,14 @@ const loadBalancedFargateService = new ecsPatterns.LoadBalancedFargateService(st
 });
 ```
 
-## Queue Worker Services
+## Queue Processing Services
 
 To define a service that creates a queue and reads from that queue, instantiate one of the following:
 
-* `Ec2QueueWorkerService`
+* `QueueProcessingEc2Service`
 
 ```ts
-const ecsQueueWorkerService = new Ec2QueueWorkerService(stack, 'Service', {
+const queueProcessingEc2Service = new QueueProcessingEc2Service(stack, 'Service', {
   cluster,
   memoryLimitMiB: 1024,
   image: ecs.ContainerImage.fromRegistry('test'),
@@ -59,10 +71,10 @@ const ecsQueueWorkerService = new Ec2QueueWorkerService(stack, 'Service', {
 });
 ```
 
-* `FargateQueueWorkerService`
+* `QueueProcessingFargateService`
 
 ```ts
-const fargateQueueWorkerService = new FargateQueueWorkerService(stack, 'Service', {
+const queueProcessingFargateService = new QueueProcessingFargateService(stack, 'Service', {
   cluster,
   memoryMiB: '512',
   image: ecs.ContainerImage.fromRegistry('test'),

@@ -1,6 +1,6 @@
 import iam = require('@aws-cdk/aws-iam');
 import kms = require('@aws-cdk/aws-kms');
-import { Construct, IResource, Resource } from '@aws-cdk/cdk';
+import { Construct, IResource, Resource, Stack } from '@aws-cdk/cdk';
 import { CfnStream } from './kinesis.generated';
 
 export interface IStream extends IResource {
@@ -227,7 +227,7 @@ export class Stream extends StreamBase {
   public static fromStreamAttributes(scope: Construct, id: string, attrs: StreamAttributes): IStream {
     class Import extends StreamBase {
       public readonly streamArn = attrs.streamArn;
-      public readonly streamName = scope.node.stack.parseArn(attrs.streamArn).resourceName!;
+      public readonly streamName = Stack.of(scope).parseArn(attrs.streamArn).resourceName!;
       public readonly encryptionKey = attrs.encryptionKey;
     }
 

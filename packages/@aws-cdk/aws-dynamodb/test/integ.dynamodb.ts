@@ -54,7 +54,7 @@ const tableWithGlobalAndLocalSecondaryIndex = new Table(stack, TABLE_WITH_GLOBAL
   sortKey: TABLE_SORT_KEY
 });
 
-tableWithGlobalAndLocalSecondaryIndex.node.apply(new Tag('Environment', 'Production'));
+tableWithGlobalAndLocalSecondaryIndex.node.applyAspect(new Tag('Environment', 'Production'));
 tableWithGlobalAndLocalSecondaryIndex.addGlobalSecondaryIndex({
   indexName: GSI_TEST_CASE_1,
   partitionKey: GSI_PARTITION_KEY,
@@ -127,4 +127,4 @@ const user = new iam.User(stack, 'User');
 table.grantReadData(user);
 tableWithGlobalAndLocalSecondaryIndex.grantReadData(user);
 
-app.run();
+app.synth();

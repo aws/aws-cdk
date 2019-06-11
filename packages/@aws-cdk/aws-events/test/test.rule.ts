@@ -97,7 +97,7 @@ export = {
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'MyStack');
     new Rule(stack, 'Rule');
-    test.throws(() => app.run(), /Either 'eventPattern' or 'scheduleExpression' must be defined/);
+    test.throws(() => app.synth(), /Either 'eventPattern' or 'scheduleExpression' must be defined/);
     test.done();
   },
 
@@ -349,7 +349,7 @@ export = {
     const rule = new Rule(stack, 'EventRule');
     rule.addTarget(t1);
 
-    test.deepEqual(stack.node.resolve(receivedRuleArn), stack.node.resolve(rule.ruleArn));
+    test.deepEqual(stack.resolve(receivedRuleArn), stack.resolve(rule.ruleArn));
     test.deepEqual(receivedRuleId, rule.node.uniqueId);
     test.done();
   },

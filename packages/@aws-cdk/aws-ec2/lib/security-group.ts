@@ -1,10 +1,10 @@
-import { Construct, IResource, Resource, Token } from '@aws-cdk/cdk';
+import { Construct, IResource, Resource, Stack, Token } from '@aws-cdk/cdk';
 import { Connections, IConnectable } from './connections';
 import { CfnSecurityGroup, CfnSecurityGroupEgress, CfnSecurityGroupIngress } from './ec2.generated';
 import { IPortRange, ISecurityGroupRule } from './security-group-rule';
 import { IVpc } from './vpc';
 
-const isSecurityGroupSymbol = Symbol.for('aws-cdk:isSecurityGroup');
+const SECURITY_GROUP_SYMBOL = Symbol.for('@aws-cdk/iam.SecurityGroup');
 
 export interface ISecurityGroup extends IResource, ISecurityGroupRule, IConnectable {
   /**
@@ -43,8 +43,8 @@ abstract class SecurityGroupBase extends Resource implements ISecurityGroup {
   /**
    * Return whether the indicated object is a security group
    */
-  public static isSecurityGroup(construct: any): construct is SecurityGroupBase {
-    return (construct as any)[isSecurityGroupSymbol] === true;
+  public static isSecurityGroup(x: any): x is SecurityGroupBase {
+    return SECURITY_GROUP_SYMBOL in x;
   }
 
   public abstract readonly securityGroupId: string;
@@ -60,7 +60,7 @@ abstract class SecurityGroupBase extends Resource implements ISecurityGroup {
   constructor(scope: Construct, id: string) {
     super(scope, id);
 
-    Object.defineProperty(this, isSecurityGroupSymbol, { value: true });
+    Object.defineProperty(this, SECURITY_GROUP_SYMBOL, { value: true });
   }
 
   public get uniqueId() {
@@ -178,7 +178,7 @@ function determineRuleScope(
 }
 
 function differentStacks(group1: SecurityGroupBase, group2: SecurityGroupBase) {
-  return group1.node.stack !== group2.node.stack;
+  return Stack.of(group1) !== Stack.of(group2);
 }
 
 export interface SecurityGroupProps {

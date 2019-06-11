@@ -21,7 +21,7 @@ export class CfnReference extends Reference {
    * Check whether this is actually a Reference
    */
   public static isCfnReference(x: Token): x is CfnReference {
-    return (x as any)[CFN_REFERENCE_SYMBOL] === true;
+    return CFN_REFERENCE_SYMBOL in x;
   }
 
   /**
@@ -84,6 +84,7 @@ export class CfnReference extends Reference {
   private readonly replacementTokens: Map<Stack, Token>;
 
   private readonly originalDisplayName: string;
+  private readonly humanReadableDesc: string;
 
   private constructor(value: any, displayName: string, target: Construct) {
     if (typeof(value) === 'function') {
@@ -94,15 +95,16 @@ export class CfnReference extends Reference {
     super(value, `${target.node.id}.${displayName}`, target);
     this.originalDisplayName = displayName;
     this.replacementTokens = new Map<Stack, Token>();
+    this.humanReadableDesc = `target = ${target.node.path}`;
 
-    this.producingStack = target.node.stack;
+    this.producingStack = Stack.of(target);
     Object.defineProperty(this, CFN_REFERENCE_SYMBOL, { value: true });
   }
 
   public resolve(context: IResolveContext): any {
     // If we have a special token for this consuming stack, resolve that. Otherwise resolve as if
     // we are in the same stack.
-    const token = this.replacementTokens.get(context.scope.node.stack);
+    const token = this.replacementTokens.get(Stack.of(context.scope));
     if (token) {
       return token.resolve(context);
     } else {
@@ -137,7 +139,7 @@ export class CfnReference extends Reference {
     const producingStack = this.producingStack!;
 
     if (producingStack.env.account !== consumingStack.env.account || producingStack.env.region !== consumingStack.env.region) {
-      throw this.newError('Can only reference cross stacks in the same region and account.');
+      throw this.newError(`Can only reference cross stacks in the same region and account. ${this.humanReadableDesc}`);
     }
 
     // Ensure a singleton "Exports" scoping Construct
@@ -152,7 +154,7 @@ export class CfnReference extends Reference {
     }
 
     // Ensure a singleton CfnOutput for this value
-    const resolved = producingStack.node.resolve(tokenValue);
+    const resolved = producingStack.resolve(tokenValue);
     const id = 'Output' + JSON.stringify(resolved);
     let output = stackExports.node.tryFindChild(id) as CfnOutput;
     if (!output) {

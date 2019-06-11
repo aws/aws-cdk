@@ -50,7 +50,7 @@ export class InvokeFunction implements sfn.IStepFunctionsTask {
     }
   }
 
-  public bind(_task: sfn.Task): sfn.StepFunctionsTaskProperties {
+  public bind(_task: sfn.Task): sfn.StepFunctionsTaskConfig {
     const resourceArn = this.invokeAsIntegratedService
       ? 'arn:aws:states:::lambda:invoke' + this.waitForTaskToken ? '.waitForTaskToken' : ''
       : this.lambdaFunction.functionArn;

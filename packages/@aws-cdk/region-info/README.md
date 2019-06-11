@@ -1,4 +1,17 @@
 # AWS Region-Specific Information Directory
+<!--BEGIN STABILITY BANNER-->
+
+---
+
+![Stability: Experimental](https://img.shields.io/badge/stability-Experimental-important.svg?style=for-the-badge)
+
+> This API is still under active development and subject to non-backward
+> compatible changes or removal in any future version. Use of the API is not recommended in production
+> environments. Experimental APIs are not subject to the Semantic Versioning model.
+
+---
+<!--END STABILITY BANNER-->
+
 ## Usage
 Some information used in CDK Applications differs from one AWS region to
 another, such as service principals used in IAM policies, S3 static website

@@ -1,9 +1,21 @@
-## AWS KMS Construct Library
+## AWS Key Management Service Construct Library
+<!--BEGIN STABILITY BANNER-->
+
+---
+
+![Stability: Experimental](https://img.shields.io/badge/stability-Experimental-important.svg?style=for-the-badge)
+
+> This API is still under active development and subject to non-backward
+> compatible changes or removal in any future version. Use of the API is not recommended in production
+> environments. Experimental APIs are not subject to the Semantic Versioning model.
+
+---
+<!--END STABILITY BANNER-->
 
 Defines a KMS key:
 
 ```js
-new EncryptionKey(this, 'MyKey', {
+new Key(this, 'MyKey', {
     enableKeyRotation: true
 });
 ```
@@ -11,7 +23,7 @@ new EncryptionKey(this, 'MyKey', {
 Add a couple of aliases:
 
 ```js
-const key = new EncryptionKey(this, 'MyKey');
+const key = new Key(this, 'MyKey');
 key.addAlias('alias/foo');
 key.addAlias('alias/bar');
 ```
@@ -27,10 +39,10 @@ pass the construct to the other stack:
 ### Importing existing keys
 
 To use a KMS key that is not defined in this CDK app, but is created through other means, use
-`EncryptionKey.import(parent, name, ref)`:
+`Key.import(parent, name, ref)`:
 
 ```ts
-const myKeyImported = EncryptionKey.import(this, 'MyImportedKey', {
+const myKeyImported = Key.import(this, 'MyImportedKey', {
     keyArn: 'arn:aws:...'
 });
 

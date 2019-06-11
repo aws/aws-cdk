@@ -100,10 +100,10 @@ export = {
     // THEN
 
     // "import" returns an IQueue bound to `Fn::ImportValue`s.
-    test.deepEqual(stack.node.resolve(imports.queueArn), 'arn:aws:sqs:us-east-1:123456789012:queue1');
-    test.deepEqual(stack.node.resolve(imports.queueUrl), { 'Fn::Join':
+    test.deepEqual(stack.resolve(imports.queueArn), 'arn:aws:sqs:us-east-1:123456789012:queue1');
+    test.deepEqual(stack.resolve(imports.queueUrl), { 'Fn::Join':
       [ '', [ 'https://sqs.', { Ref: 'AWS::Region' }, '.', { Ref: 'AWS::URLSuffix' }, '/', { Ref: 'AWS::AccountId' }, '/queue1' ] ] });
-    test.deepEqual(stack.node.resolve(imports.queueName), 'queue1');
+    test.deepEqual(stack.resolve(imports.queueName), 'queue1');
     test.done();
   },
 
@@ -112,10 +112,8 @@ export = {
       testGrant((q, p) => q.grantConsumeMessages(p),
         'sqs:ReceiveMessage',
         'sqs:ChangeMessageVisibility',
-        'sqs:ChangeMessageVisibilityBatch',
         'sqs:GetQueueUrl',
         'sqs:DeleteMessage',
-        'sqs:DeleteMessageBatch',
         'sqs:GetQueueAttributes',
       );
       test.done();
@@ -124,7 +122,6 @@ export = {
     'grantSendMessages'(test: Test) {
       testGrant((q, p) => q.grantSendMessages(p),
         'sqs:SendMessage',
-        'sqs:SendMessageBatch',
         'sqs:GetQueueAttributes',
         'sqs:GetQueueUrl',
       );
@@ -250,7 +247,6 @@ export = {
             {
               "Action": [
                 "sqs:SendMessage",
-                "sqs:SendMessageBatch",
                 "sqs:GetQueueAttributes",
                 "sqs:GetQueueUrl"
               ],
@@ -281,7 +277,7 @@ export = {
     const topic = new Queue(stack, 'Queue');
 
     // THEN
-    test.deepEqual(stack.node.resolve(topic.metricNumberOfMessagesSent()), {
+    test.deepEqual(stack.resolve(topic.metricNumberOfMessagesSent()), {
       dimensions: {QueueName: { 'Fn::GetAtt': [ 'Queue4A7E3555', 'QueueName' ] }},
       namespace: 'AWS/SQS',
       metricName: 'NumberOfMessagesSent',
@@ -289,7 +285,7 @@ export = {
       statistic: 'Sum'
     });
 
-    test.deepEqual(stack.node.resolve(topic.metricSentMessageSize()), {
+    test.deepEqual(stack.resolve(topic.metricSentMessageSize()), {
       dimensions: {QueueName: { 'Fn::GetAtt': [ 'Queue4A7E3555', 'QueueName' ] }},
       namespace: 'AWS/SQS',
       metricName: 'SentMessageSize',

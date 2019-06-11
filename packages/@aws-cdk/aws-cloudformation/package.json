@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/aws-cloudformation",
-  "version": "0.33.0",
+  "version": "0.34.0",
   "description": "CDK Constructs for AWS CloudFormation",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -24,6 +24,9 @@
         "distName": "aws-cdk.aws-cloudformation",
         "module": "aws_cdk.aws_cloudformation"
       }
+    },
+    "metadata": {
+      "awsdocs:title": "AWS CloudFormation"
     }
   },
   "repository": {
@@ -60,24 +63,24 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "^0.33.0",
-    "@aws-cdk/aws-events": "^0.33.0",
-    "@types/aws-lambda": "^8.10.23",
-    "@types/nock": "^9.3.1",
-    "@types/sinon": "^7.0.10",
-    "aws-sdk-mock": "^4.3.1",
-    "cdk-build-tools": "^0.33.0",
-    "cdk-integ-tools": "^0.33.0",
-    "cfn2ts": "^0.33.0",
+    "@aws-cdk/assert": "^0.34.0",
+    "@aws-cdk/aws-events": "^0.34.0",
+    "@types/aws-lambda": "^8.10.26",
+    "@types/nock": "^10.0.3",
+    "@types/sinon": "^7.0.12",
+    "aws-sdk-mock": "^4.4.0",
+    "cdk-build-tools": "^0.34.0",
+    "cdk-integ-tools": "^0.34.0",
+    "cfn2ts": "^0.34.0",
     "nock": "^10.0.6",
-    "pkglint": "^0.33.0",
-    "sinon": "^7.3.1"
+    "pkglint": "^0.34.0",
+    "sinon": "^7.3.2"
   },
   "dependencies": {
-    "@aws-cdk/aws-iam": "^0.33.0",
-    "@aws-cdk/aws-lambda": "^0.33.0",
-    "@aws-cdk/aws-sns": "^0.33.0",
-    "@aws-cdk/cdk": "^0.33.0",
+    "@aws-cdk/aws-iam": "^0.34.0",
+    "@aws-cdk/aws-lambda": "^0.34.0",
+    "@aws-cdk/aws-sns": "^0.34.0",
+    "@aws-cdk/cdk": "^0.34.0",
     "aws-sdk": "^2.409.0"
   },
   "bundledDependencies": [
@@ -85,10 +88,10 @@
   ],
   "homepage": "https://github.com/awslabs/aws-cdk",
   "peerDependencies": {
-    "@aws-cdk/aws-iam": "^0.33.0",
-    "@aws-cdk/aws-lambda": "^0.33.0",
-    "@aws-cdk/aws-sns": "^0.33.0",
-    "@aws-cdk/cdk": "^0.33.0"
+    "@aws-cdk/aws-iam": "^0.34.0",
+    "@aws-cdk/aws-lambda": "^0.34.0",
+    "@aws-cdk/aws-sns": "^0.34.0",
+    "@aws-cdk/cdk": "^0.34.0"
   },
   "engines": {
     "node": ">= 8.10.0"
@@ -99,5 +102,6 @@
       "construct-ctor:@aws-cdk/aws-cloudformation.PipelineCloudFormationDeployAction.<initializer>",
       "construct-ctor-props-optional:@aws-cdk/aws-cloudformation.AwsCustomResource"
     ]
-  }
+  },
+  "stability": "experimental"
 }

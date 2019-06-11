@@ -1,5 +1,6 @@
 import { Test } from 'nodeunit';
 import { Aws, CfnMapping, CfnResource, Fn, Stack } from '../lib';
+import { toCloudFormation } from './util';
 
 export = {
   'mappings can be added as another type of entity, and mapping.findInMap can be used to get a token'(test: Test) {
@@ -28,7 +29,7 @@ export = {
     mapping.setValue('TopLevelKey2', 'SecondLevelKey2', 'Hi');
     mapping.setValue('TopLevelKey1', 'SecondLevelKey1', [ 1, 2, 3, 4 ]);
 
-    test.deepEqual(stack._toCloudFormation(), { Mappings:
+    test.deepEqual(toCloudFormation(stack), { Mappings:
       { MyMapping:
          { TopLevelKey1:
           { SecondLevelKey1: [ 1, 2, 3, 4 ],
@@ -59,8 +60,8 @@ export = {
     const v2 = Fn.findInMap(mapping.logicalId, 'instanceCount', Aws.region);
 
     const expected = { 'Fn::FindInMap': [ 'mapping', 'instanceCount', { Ref: 'AWS::Region' } ] };
-    test.deepEqual(stack.node.resolve(v1), expected);
-    test.deepEqual(stack.node.resolve(v2), expected);
+    test.deepEqual(stack.resolve(v1), expected);
+    test.deepEqual(stack.resolve(v2), expected);
     test.done();
   },
 
@@ -79,7 +80,7 @@ export = {
     const v = mapping.findInMap(Aws.region, 'size');
 
     // THEN
-    test.deepEqual(stack.node.resolve(v), {
+    test.deepEqual(stack.resolve(v), {
       "Fn::FindInMap": [ 'mapping', { Ref: "AWS::Region" }, "size" ]
     });
     test.done();
@@ -101,7 +102,7 @@ export = {
 
     // THEN
     test.throws(() => mapping.findInMap('not-found', Aws.region), /Mapping doesn't contain top-level key 'not-found'/);
-    test.deepEqual(stack.node.resolve(v), { 'Fn::FindInMap': [ 'mapping', 'size', { Ref: 'AWS::Region' } ] });
+    test.deepEqual(stack.resolve(v), { 'Fn::FindInMap': [ 'mapping', 'size', { Ref: 'AWS::Region' } ] });
     test.done();
   },
 };
