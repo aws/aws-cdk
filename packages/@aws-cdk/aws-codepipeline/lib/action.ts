@@ -53,6 +53,10 @@ export interface ActionBind {
   readonly role: iam.IRole;
 }
 
+interface ExtendedActionBind extends ActionBind {
+  readonly actionRole?: iam.IRole;
+}
+
 /**
  * The abstract view of an AWS CodePipeline as required and used by Actions.
  * It extends {@link events.IRuleTarget},
@@ -168,6 +172,15 @@ export interface ActionProps extends CommonActionProps {
   readonly configuration?: any;
   readonly version?: string;
   readonly owner?: string;
+
+  /**
+   * The optional resource that is backing this Action.
+   * This is used for automatically handling Actions backed by
+   * resources from a different account and/or region.
+   *
+   * @default the Action is not backed by any resource
+   */
+  readonly resource?: IResource;
 }
 
 /**
@@ -198,21 +211,19 @@ export abstract class Action {
   public readonly region?: string;
 
   /**
+   * The optional resource that is backing this Action.
+   * This is used for automatically handling Actions backed by
+   * resources from a different account and/or region.
+   */
+  public readonly resource?: IResource;
+
+  /**
    * The action's configuration. These are key-value pairs that specify input values for an action.
    * For more information, see the AWS CodePipeline User Guide.
    *
    * http://docs.aws.amazon.com/codepipeline/latest/userguide/reference-pipeline-structure.html#action-requirements
    */
   public readonly configuration?: any;
-
-  /**
-   * The service role that is assumed during execution of action.
-   * This role is not mandatory, however more advanced configuration
-   * may require specifying it.
-   *
-   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-codepipeline-pipeline-stages-actions.html
-   */
-  public readonly role?: iam.IRole;
 
   /**
    * The order in which AWS CodePipeline runs this action.
@@ -230,6 +241,7 @@ export abstract class Action {
   private readonly _actionOutputArtifacts = new Array<Artifact>();
   private readonly artifactBounds: ActionArtifactBounds;
 
+  private _role?: iam.IRole;
   private _pipeline?: IPipeline;
   private _stage?: IStage;
   private _scope?: Construct;
@@ -246,7 +258,8 @@ export abstract class Action {
     this.artifactBounds = props.artifactBounds;
     this.runOrder = props.runOrder === undefined ? 1 : props.runOrder;
     this.actionName = props.actionName;
-    this.role = props.role;
+    this._role = props.role;
+    this.resource = props.resource;
 
     for (const inputArtifact of props.inputs || []) {
       this.addInputArtifact(inputArtifact);
@@ -272,6 +285,14 @@ export abstract class Action {
     return rule;
   }
 
+  /**
+   * The service role that is assumed during execution of this action.
+   * If this is undefined, the Action will execute in the context of the Pipeline Role.
+   */
+  public get role(): iam.IRole | undefined {
+    return this._role;
+  }
+
   public get inputs(): Artifact[] {
     return this._actionInputArtifacts.slice();
   }
@@ -287,6 +308,22 @@ export abstract class Action {
       .concat(validation.validateArtifactBounds('output', this.outputs, this.artifactBounds.minOutputs,
         this.artifactBounds.maxOutputs, this.category, this.provider)
     );
+  }
+
+  /** @internal */
+  public _actionAttachedToPipeline(info: ExtendedActionBind): void {
+    if (this._stage) {
+      throw new Error(`Action '${this.actionName}' has been added to a pipeline twice`);
+    }
+
+    this._pipeline = info.pipeline;
+    this._stage = info.stage;
+    this._scope = info.scope;
+    if (!this._role) {
+      this._role = info.actionRole;
+    }
+
+    this.bind(info);
   }
 
   protected addInputArtifact(artifact: Artifact): void {
@@ -335,20 +372,6 @@ export abstract class Action {
     }
 
     artifacts.push(artifact);
-  }
-
-  // ignore unused private method (it's actually used in Pipeline)
-  // @ts-ignore
-  private _actionAttachedToPipeline(info: ActionBind): void {
-    if (this._stage) {
-      throw new Error(`Action '${this.actionName}' has been added to a pipeline twice`);
-    }
-
-    this._pipeline = info.pipeline;
-    this._stage = info.stage;
-    this._scope = info.scope;
-
-    this.bind(info);
   }
 
   private get pipeline(): IPipeline {

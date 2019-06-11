@@ -1,6 +1,7 @@
 import cxapi = require('@aws-cdk/cx-api');
 import { Test } from 'nodeunit';
-import { App, CfnCondition, CfnOutput, CfnParameter, CfnResource, Construct, ConstructNode, Include, ScopedAws, Stack, Token } from '../lib';
+import { App, CfnCondition, CfnOutput, CfnParameter, CfnResource, Construct, ConstructNode, Include, Lazy, ScopedAws, Stack } from '../lib';
+import { Intrinsic } from '../lib/private/intrinsic';
 import { toCloudFormation } from './util';
 
 export = {
@@ -198,7 +199,7 @@ export = {
 
     // WHEN - used in another resource
     new CfnResource(stack2, 'SomeResource', { type: 'AWS::Some::Resource', properties: {
-      someProperty: new Token(() => resource1.ref),
+      someProperty: new Intrinsic(resource1.ref),
     }});
 
     // THEN
@@ -226,7 +227,7 @@ export = {
     const stack2 = new Stack(app, 'Stack2');
 
     // WHEN - used in another stack
-    new CfnParameter(stack2, 'SomeParameter', { type: 'String', default: new Token(() => account1) });
+    new CfnParameter(stack2, 'SomeParameter', { type: 'String', default: Lazy.stringValue({ produce: () => account1 }) });
 
     const assembly = app.synth();
     const template1 = assembly.getStack(stack1.name).template;
@@ -390,7 +391,7 @@ export = {
 
     // { Ref } and { GetAtt }
     new CfnResource(stack, 'RefToBonjour', { type: 'Other::Resource', properties: {
-      RefToBonjour: bonjour.ref.toString(),
+      RefToBonjour: bonjour.refAsString,
       GetAttBonjour: bonjour.getAtt('TheAtt').toString()
     }});
 

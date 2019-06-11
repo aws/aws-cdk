@@ -53,7 +53,7 @@ export class Topic extends TopicBase {
       topicName: props.topicName
     });
 
-    this.topicArn = resource.ref;
+    this.topicArn = resource.refAsString;
     this.topicName = resource.topicName;
   }
 }

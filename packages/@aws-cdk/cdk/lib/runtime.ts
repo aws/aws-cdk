@@ -374,7 +374,7 @@ export function unionValidator(...validators: Validator[]): Validator {
 /**
  * Return whether the indicated value represents a CloudFormation intrinsic.
  *
- * CloudFormation instrinsics are modeled as objects with a single key, which
+ * CloudFormation intrinsics are modeled as objects with a single key, which
  * look like: { "Fn::GetAtt": [...] } or similar.
  */
 function isCloudFormationIntrinsic(x: any) {

@@ -77,8 +77,6 @@
     "@aws-cdk/aws-cloudwatch": "^0.34.0",
     "@aws-cdk/aws-events": "^0.34.0",
     "@aws-cdk/aws-iam": "^0.34.0",
-    "@aws-cdk/aws-lambda": "^0.34.0",
-    "@aws-cdk/aws-sqs": "^0.34.0",
     "@aws-cdk/cdk": "^0.34.0"
   },
   "homepage": "https://github.com/awslabs/aws-cdk",
@@ -86,8 +84,6 @@
     "@aws-cdk/aws-cloudwatch": "^0.34.0",
     "@aws-cdk/aws-events": "^0.34.0",
     "@aws-cdk/aws-iam": "^0.34.0",
-    "@aws-cdk/aws-lambda": "^0.34.0",
-    "@aws-cdk/aws-sqs": "^0.34.0",
     "@aws-cdk/cdk": "^0.34.0"
   },
   "engines": {
@@ -95,7 +91,8 @@
   },
   "awslint": {
     "exclude": [
-      "construct-base-is-private:@aws-cdk/aws-sns.TopicBase"
+      "construct-base-is-private:@aws-cdk/aws-sns.TopicBase",
+      "integ-return-type:@aws-cdk/aws-sns.ITopicSubscription.bind"
     ]
   },
   "stability": "experimental"
