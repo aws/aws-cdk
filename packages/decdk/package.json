@@ -121,6 +121,7 @@
     "@aws-cdk/aws-servicediscovery": "^0.34.0",
     "@aws-cdk/aws-ses": "^0.34.0",
     "@aws-cdk/aws-sns": "^0.34.0",
+    "@aws-cdk/aws-sns-subscriptions": "^0.34.0",
     "@aws-cdk/aws-sqs": "^0.34.0",
     "@aws-cdk/aws-ssm": "^0.34.0",
     "@aws-cdk/aws-stepfunctions": "^0.34.0",
