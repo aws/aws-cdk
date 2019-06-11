@@ -86,7 +86,7 @@ export class CfnReference extends Reference {
   private readonly originalDisplayName: string;
   private readonly humanReadableDesc: string;
 
-  private constructor(value: any, private readonly displayName: string, target: Construct) {
+  protected constructor(value: any, private readonly displayName: string, target: IConstruct) {
     // prepend scope path to display name
     super(value, target);
     this.originalDisplayName = displayName;
