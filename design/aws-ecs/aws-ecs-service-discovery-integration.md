@@ -58,7 +58,7 @@ export interface NamespaceOptions {
    *
    * @default VPC of the cluster for Private DNS Namespace, otherwise none
    */
-  vpc?: ec2.IVpcNetwork;
+  vpc?: ec2.IVpc;
 }
 ```
 
@@ -122,7 +122,7 @@ export interface ServiceDiscoveryOptions {
 A full example would look like the following:
 
 ```
-const vpc = new ec2.VpcNetwork(stack, 'Vpc', { maxAZs: 2 });
+const vpc = new ec2.Vpc(stack, 'Vpc', { maxAZs: 2 });
 
 // Cloud Map Namespace
 const namespace = new servicediscovery.PrivateDnsNamespace(stack, 'MyNamespace', {

@@ -47,7 +47,7 @@ assert(bucket.encryptionKey instanceof kms.Key);
 You can also supply your own key:
 
 ```ts
-const myKmsKey = new kms.EncryptionKey(this, 'MyKey');
+const myKmsKey = new kms.Key(this, 'MyKey');
 
 const bucket = new Bucket(this, 'MyEncryptedBucket', {
     encryption: BucketEncryption.Kms,

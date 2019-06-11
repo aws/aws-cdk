@@ -28,13 +28,13 @@ const stream = newStream(this, 'MyEncryptedStream', {
 });
 
 // you can access the encryption key:
-assert(stream.encryptionKey instanceof kms.EncryptionKey);
+assert(stream.encryptionKey instanceof kms.Key);
 ```
 
 You can also supply your own key:
 
 ```ts
-const myKmsKey = new kms.EncryptionKey(this, 'MyKey');
+const myKmsKey = new kms.Key(this, 'MyKey');
 
 const stream = new Stream(this, 'MyEncryptedStream', {
     encryption: StreamEncryption.Kms,
