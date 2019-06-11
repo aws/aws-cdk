@@ -465,7 +465,7 @@
           "Ref": "FleetASG3971DFE5"
         },
         "MinSize": 5,
-        "Recurrence": "0 8 * * * *"
+        "Recurrence": "0 8 * * *"
       }
     },
     "FleetScheduledActionScaleDownAtNight11A03803": {
@@ -475,7 +475,7 @@
           "Ref": "FleetASG3971DFE5"
         },
         "MaxSize": 2,
-        "Recurrence": "0 20 * * * *"
+        "Recurrence": "0 20 * * *"
       }
     },
     "FleetScalingPolicyKeepCPUReasonable89F05216": {

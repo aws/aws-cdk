@@ -9,7 +9,8 @@ export interface BasicScheduledActionProps {
   /**
    * When to perform this action.
    *
-   * Supports cron expressions.
+   * Supports cron expressions. Notice that although YEAR is supported for appscaling, 
+   * it's not supported for instance scaling.
    *
    * For more information about cron expressions, see https://en.wikipedia.org/wiki/Cron.
    *
@@ -87,13 +88,14 @@ const CRON_MONTH = `(\\*|([1-9]|1[0-2]|JAN|FEB|MAR|APR|MAY|JUN|JUL|AUG|SEP|OCT|N
 const CRON_DAY_OF_WEEK = `(\\*|\\?|L|[1-7]\\#[1-9]|
 ([1-7]|MON|TUE|WED|THU|FRI|SAT|SUN)|(([1-7]|MON|TUE|WED|THU|FRI|SAT|SUN)
 (\\,|\\-)([1-7]|MON|TUE|WED|THU|FRI|SAT|SUN)))`;
-const CRON_YEAR = `(\\*|(19[78][0-9]|199[0-9]|20[0-9]{2}|21[0-8][0-9]|219[0-9])|
-(((19[78][0-9]|199[0-9]|20[0-9]{2}|21[0-8][0-9]|219[0-9]))(\\,|\\/|\\-)
-((19[78][0-9]|199[0-9]|20[0-9]{2}|21[0-8][0-9]|219[0-9]))))`;
 
 const CRON_EXPRESSION = new RegExp('^' +
   [
-    CRON_MINUTES, CRON_HOURS, CRON_DAY_OF_MONTH, CRON_MONTH, CRON_DAY_OF_WEEK, CRON_YEAR
+    CRON_MINUTES, 
+    CRON_HOURS, 
+    CRON_DAY_OF_MONTH, 
+    CRON_MONTH, 
+    CRON_DAY_OF_WEEK,
   ]
 .join('\\s+') + '$');
 
