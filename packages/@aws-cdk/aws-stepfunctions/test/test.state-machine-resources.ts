@@ -129,4 +129,47 @@ export = {
         test.done();
     },
 
+    'Can grant start execution to a role'(test: Test) {
+        // GIVEN
+        const stack = new cdk.Stack();
+        const task = new stepfunctions.Task(stack, 'Task', {
+            task: {
+                bind: () => ({ resourceArn: 'resource' })
+            }
+        });
+        const stateMachine = new stepfunctions.StateMachine(stack, 'StateMachine', {
+            definition: task
+        });
+        const role = new iam.Role(stack, 'Role', {
+            assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com')
+        });
+
+        // WHEN
+        stateMachine.grantStartExecution(role);
+
+        // THEN
+        expect(stack).to(haveResource('AWS::IAM::Policy', {
+            PolicyDocument: {
+                Statement: [
+                    {
+                        Action: 'states:StartExecution',
+                        Effect: 'Allow',
+                        Resource: {
+                            Ref: 'StateMachine2E01A3A5'
+                        }
+                    }
+                ],
+                Version: '2012-10-17',
+            },
+            PolicyName: 'RoleDefaultPolicy5FFB7DAB',
+            Roles: [
+                {
+                    Ref: 'Role1ABCC5F0'
+                }
+            ]
+        }));
+
+        test.done();
+    }
+
 };
