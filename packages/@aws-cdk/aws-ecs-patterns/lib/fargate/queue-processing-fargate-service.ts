@@ -1,11 +1,11 @@
 import ecs = require('@aws-cdk/aws-ecs');
 import cdk = require('@aws-cdk/cdk');
-import { QueueWorkerServiceBase, QueueWorkerServiceBaseProps } from '../base/queue-worker-service-base';
+import { QueueProcessingServiceBase, QueueProcessingServiceBaseProps } from '../base/queue-processing-service-base';
 
 /**
- * Properties to define a Fargate queue worker service
+ * Properties to define a queue processing Fargate service
  */
-export interface FargateQueueWorkerServiceProps extends QueueWorkerServiceBaseProps {
+export interface QueueProcessingFargateServiceProps extends QueueProcessingServiceBaseProps {
   /**
    * The number of cpu units used by the task.
    * Valid values, which determines your range of valid values for the memory parameter:
@@ -45,23 +45,23 @@ export interface FargateQueueWorkerServiceProps extends QueueWorkerServiceBasePr
 }
 
 /**
- * Class to create a Fargate queue worker service
+ * Class to create a queue processing Fargate service
  */
-export class FargateQueueWorkerService extends QueueWorkerServiceBase {
+export class QueueProcessingFargateService extends QueueProcessingServiceBase {
   /**
    * The Fargate service in this construct
    */
   public readonly service: ecs.FargateService;
 
-  constructor(scope: cdk.Construct, id: string, props: FargateQueueWorkerServiceProps) {
+  constructor(scope: cdk.Construct, id: string, props: QueueProcessingFargateServiceProps) {
     super(scope, id, props);
 
     // Create a Task Definition for the container to start
-    const taskDefinition = new ecs.FargateTaskDefinition(this, 'QueueWorkerTaskDef', {
+    const taskDefinition = new ecs.FargateTaskDefinition(this, 'QueueProcessingTaskDef', {
       memoryMiB: props.memoryMiB !== undefined ? props.memoryMiB : '512',
       cpu: props.cpu !== undefined ? props.cpu : '256',
     });
-    taskDefinition.addContainer('QueueWorkerContainer', {
+    taskDefinition.addContainer('QueueProcessingContainer', {
       image: props.image,
       command: props.command,
       environment: this.environment,
@@ -70,7 +70,7 @@ export class FargateQueueWorkerService extends QueueWorkerServiceBase {
 
     // Create a Fargate service with the previously defined Task Definition and configure
     // autoscaling based on cpu utilization and number of messages visible in the SQS queue.
-    this.service = new ecs.FargateService(this, 'FargateQueueWorkerService', {
+    this.service = new ecs.FargateService(this, 'QueueProcessingFargateService', {
       cluster: props.cluster,
       desiredCount: this.desiredCount,
       taskDefinition
