@@ -75,6 +75,7 @@ export class CodeBuildAction extends codepipeline.Action {
       artifactBounds: { minInputs: 1, maxInputs: 5, minOutputs: 0, maxOutputs: 5 },
       inputs: [props.input, ...props.extraInputs || []],
       outputs: getOutputs(props),
+      resource: props.project,
       configuration: {
         ProjectName: props.project.projectName,
       },
@@ -83,7 +84,7 @@ export class CodeBuildAction extends codepipeline.Action {
     this.props = props;
 
     if (this.inputs.length > 1) {
-      this.configuration.PrimarySource = new cdk.Token(() => this.inputs[0].artifactName);
+      this.configuration.PrimarySource = cdk.Lazy.stringValue({ produce: () => this.inputs[0].artifactName });
     }
   }
 

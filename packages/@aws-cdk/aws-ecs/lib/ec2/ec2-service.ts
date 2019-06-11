@@ -1,7 +1,7 @@
 import cloudwatch = require ('@aws-cdk/aws-cloudwatch');
 import ec2 = require('@aws-cdk/aws-ec2');
 import elb = require('@aws-cdk/aws-elasticloadbalancing');
-import { Construct, Resource, Token } from '@aws-cdk/cdk';
+import { Construct, Lazy, Resource } from '@aws-cdk/cdk';
 import { BaseService, BaseServiceProps, IService } from '../base/base-service';
 import { NetworkMode, TaskDefinition } from '../base/task-definition';
 import { CfnService } from '../ecs.generated';
@@ -17,6 +17,13 @@ export interface Ec2ServiceProps extends BaseServiceProps {
    * [disable-awslint:ref-via-interface]
    */
   readonly taskDefinition: TaskDefinition;
+
+  /**
+   * Assign public IP addresses to each task
+   *
+   * @default - Use subnet default.
+   */
+  readonly assignPublicIp?: boolean;
 
   /**
    * In what subnets to place the task's ENIs
@@ -116,8 +123,8 @@ export class Ec2Service extends BaseService implements IEc2Service, elb.ILoadBal
       cluster: props.cluster.clusterName,
       taskDefinition: props.taskDefinition.taskDefinitionArn,
       launchType: 'EC2',
-      placementConstraints: new Token(() => this.constraints.length > 0 ? this.constraints : undefined),
-      placementStrategies: new Token(() => this.strategies.length > 0 ? this.strategies : undefined),
+      placementConstraints: Lazy.anyValue({ produce: () => this.constraints }, { omitEmptyArray: true }),
+      placementStrategies: Lazy.anyValue({ produce: () => this.strategies }, { omitEmptyArray: true }),
       schedulingStrategy: props.daemon ? 'DAEMON' : 'REPLICA',
     }, props.cluster.clusterName, props.taskDefinition);
 
@@ -127,7 +134,7 @@ export class Ec2Service extends BaseService implements IEc2Service, elb.ILoadBal
     this.daemon = props.daemon || false;
 
     if (props.taskDefinition.networkMode === NetworkMode.AwsVpc) {
-      this.configureAwsVpcNetworking(props.cluster.vpc, false, props.vpcSubnets, props.securityGroup);
+      this.configureAwsVpcNetworking(props.cluster.vpc, props.assignPublicIp, props.vpcSubnets, props.securityGroup);
     } else {
       // Either None, Bridge or Host networking. Copy SecurityGroup from ASG.
       validateNoNetworkingProps(props);
@@ -281,8 +288,8 @@ export class Ec2Service extends BaseService implements IEc2Service, elb.ILoadBal
  * Validate combinations of networking arguments
  */
 function validateNoNetworkingProps(props: Ec2ServiceProps) {
-  if (props.vpcSubnets !== undefined || props.securityGroup !== undefined) {
-    throw new Error('vpcSubnets and securityGroup can only be used in AwsVpc networking mode');
+  if (props.vpcSubnets !== undefined || props.securityGroup !== undefined || props.assignPublicIp) {
+    throw new Error('vpcSubnets, securityGroup and assignPublicIp can only be used in AwsVpc networking mode');
   }
 }
 

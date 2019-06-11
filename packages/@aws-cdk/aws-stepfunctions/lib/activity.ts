@@ -19,7 +19,7 @@ export class Activity extends Resource implements IActivity {
      * Construct an Activity from an existing Activity ARN
      */
     public static fromActivityArn(scope: Construct, id: string, activityArn: string): IActivity {
-        class Imported extends Construct implements IActivity {
+        class Imported extends Resource implements IActivity {
             public get activityArn() { return activityArn; }
             public get activityName() {
                 return Stack.of(this).parseArn(activityArn, ':').resourceName || '';

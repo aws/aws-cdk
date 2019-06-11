@@ -42,10 +42,8 @@ export interface IQueue extends IResource {
    * This will grant the following permissions:
    *
    *   - sqs:ChangeMessageVisibility
-   *   - sqs:ChangeMessageVisibilityBatch
    *   - sqs:DeleteMessage
    *   - sqs:ReceiveMessage
-   *   - sqs:DeleteMessageBatch
    *   - sqs:GetQueueAttributes
    *   - sqs:GetQueueUrl
    *
@@ -59,7 +57,6 @@ export interface IQueue extends IResource {
    * This will grant the following permissions:
    *
    *  - sqs:SendMessage
-   *  - sqs:SendMessageBatch
    *  - sqs:GetQueueAttributes
    *  - sqs:GetQueueUrl
    *
@@ -147,10 +144,8 @@ export abstract class QueueBase extends Resource implements IQueue {
    * This will grant the following permissions:
    *
    *   - sqs:ChangeMessageVisibility
-   *   - sqs:ChangeMessageVisibilityBatch
    *   - sqs:DeleteMessage
    *   - sqs:ReceiveMessage
-   *   - sqs:DeleteMessageBatch
    *   - sqs:GetQueueAttributes
    *   - sqs:GetQueueUrl
    *
@@ -160,10 +155,8 @@ export abstract class QueueBase extends Resource implements IQueue {
     const ret = this.grant(grantee,
       'sqs:ReceiveMessage',
       'sqs:ChangeMessageVisibility',
-      'sqs:ChangeMessageVisibilityBatch',
       'sqs:GetQueueUrl',
       'sqs:DeleteMessage',
-      'sqs:DeleteMessageBatch',
       'sqs:GetQueueAttributes');
 
     if (this.encryptionMasterKey) {
@@ -179,7 +172,6 @@ export abstract class QueueBase extends Resource implements IQueue {
    * This will grant the following permissions:
    *
    *  - sqs:SendMessage
-   *  - sqs:SendMessageBatch
    *  - sqs:GetQueueAttributes
    *  - sqs:GetQueueUrl
    *
@@ -188,7 +180,6 @@ export abstract class QueueBase extends Resource implements IQueue {
   public grantSendMessages(grantee: iam.IGrantable) {
     const ret = this.grant(grantee,
       'sqs:SendMessage',
-      'sqs:SendMessageBatch',
       'sqs:GetQueueAttributes',
       'sqs:GetQueueUrl');
 

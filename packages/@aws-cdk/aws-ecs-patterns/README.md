@@ -15,7 +15,7 @@
 This library provides higher-level ECS constructs which follow common architectural patterns. It contains:
 
 * Load Balanced Services
-* Queue Worker Services
+* Queue Processing Services
 * Scheduled Tasks (cron jobs)
 
 ## Load Balanced Services
@@ -48,14 +48,14 @@ const loadBalancedFargateService = new ecsPatterns.LoadBalancedFargateService(st
 });
 ```
 
-## Queue Worker Services
+## Queue Processing Services
 
 To define a service that creates a queue and reads from that queue, instantiate one of the following:
 
-* `Ec2QueueWorkerService`
+* `QueueProcessingEc2Service`
 
 ```ts
-const ecsQueueWorkerService = new Ec2QueueWorkerService(stack, 'Service', {
+const queueProcessingEc2Service = new QueueProcessingEc2Service(stack, 'Service', {
   cluster,
   memoryLimitMiB: 1024,
   image: ecs.ContainerImage.fromRegistry('test'),
@@ -71,10 +71,10 @@ const ecsQueueWorkerService = new Ec2QueueWorkerService(stack, 'Service', {
 });
 ```
 
-* `FargateQueueWorkerService`
+* `QueueProcessingFargateService`
 
 ```ts
-const fargateQueueWorkerService = new FargateQueueWorkerService(stack, 'Service', {
+const queueProcessingFargateService = new QueueProcessingFargateService(stack, 'Service', {
   cluster,
   memoryMiB: '512',
   image: ecs.ContainerImage.fromRegistry('test'),
