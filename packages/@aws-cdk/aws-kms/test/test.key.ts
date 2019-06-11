@@ -80,7 +80,7 @@ export = {
 
     const key = new Key(stack, 'MyKey');
     const p = new PolicyStatement().addAllResources().addAction('kms:encrypt');
-    p.addAwsPrincipal('arn');
+    p.addArnPrincipal('arn');
     key.addToResourcePolicy(p);
 
     expect(stack).to(exactlyMatchTemplate({
@@ -154,7 +154,7 @@ export = {
       enabled: false,
     });
     const p = new PolicyStatement().addAllResources().addAction('kms:encrypt');
-    p.addAwsPrincipal('arn');
+    p.addArnPrincipal('arn');
     key.addToResourcePolicy(p);
 
     key.node.applyAspect(new Tag('tag1', 'value1'));

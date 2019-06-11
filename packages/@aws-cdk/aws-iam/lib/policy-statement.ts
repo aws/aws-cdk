@@ -4,9 +4,33 @@ import { AccountPrincipal, AccountRootPrincipal, Anyone, ArnPrincipal, Canonical
 import { mergePrincipal } from './util';
 
 /**
+ * An abstract PolicyStatement
+ */
+export interface IPolicyStatement {
+  /**
+   * Render the policy statement to JSON
+   */
+  toStatementJson(): any;
+}
+
+/**
  * Represents a statement in an IAM policy document.
  */
-export class PolicyStatement implements cdk.IResolvable {
+export class PolicyStatement implements IPolicyStatement {
+  public static fromAttributes(attrs: PolicyStatementAttributes): IPolicyStatement {
+    const st = new PolicyStatement();
+    st.addActions(...attrs.actions || []);
+    (attrs.principals || []).forEach(p => st.addPrincipal(p));
+    st.addResources(...attrs.resourceArns || []);
+    if (attrs.conditions !== undefined) {
+      st.addConditions(attrs.conditions);
+    }
+    return st;
+  }
+
+  /**
+   * Statement ID for this statement
+   */
   public sid?: string;
 
   private action = new Array<any>();
@@ -51,16 +75,12 @@ export class PolicyStatement implements cdk.IResolvable {
     return this;
   }
 
-  public addAwsPrincipal(arn: string): this {
-    return this.addPrincipal(new ArnPrincipal(arn));
-  }
-
   public addAwsAccountPrincipal(accountId: string): this {
     return this.addPrincipal(new AccountPrincipal(accountId));
   }
 
   public addArnPrincipal(arn: string): this {
-    return this.addAwsPrincipal(arn);
+    return this.addPrincipal(new ArnPrincipal(arn));
   }
 
   /**
@@ -180,14 +200,7 @@ export class PolicyStatement implements cdk.IResolvable {
     return this.addCondition('StringEquals', { 'sts:ExternalId': accountId });
   }
 
-  //
-  // Serialization
-  //
-  public resolve(_context: cdk.IResolveContext): any {
-    return this.toJson();
-  }
-
-  public toJson(): any {
+  public toStatementJson(): any {
     return {
       Action: _norm(this.action),
       Condition: _norm(this.condition),
@@ -251,12 +264,50 @@ export class PolicyStatement implements cdk.IResolvable {
     });
   }
 
+  /**
+   * JSON-ify the statement
+   *
+   * Used when JSON.stringify() is called
+   */
   public toJSON() {
-    return this.toJson();
+    return this.toStatementJson();
   }
 }
 
 export enum PolicyStatementEffect {
   Allow = 'Allow',
   Deny = 'Deny',
+}
+
+/**
+ * Interface for creating a policy statement
+ */
+export interface PolicyStatementAttributes {
+  /**
+   * List of actions to add to the statement
+   *
+   * @default - no actions
+   */
+  actions?: string[];
+
+  /**
+   * List of principals to add to the statement
+   *
+   * @default - no principals
+   */
+  principals?: IPrincipal[];
+
+  /**
+   * Resource ARNs to add to the statement
+   *
+   * @default - no principals
+   */
+  resourceArns?: string[];
+
+  /**
+   * Conditions to add to the statement
+   *
+   * @default - no condition
+   */
+  conditions?: {[key: string]: any};
 }

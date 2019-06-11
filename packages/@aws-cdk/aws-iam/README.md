@@ -71,7 +71,7 @@ If multiple principals are added to the policy statement, they will be merged to
 const statement = new PolicyStatement();
 statement.addServicePrincipal('cloudwatch.amazonaws.com');
 statement.addServicePrincipal('ec2.amazonaws.com');
-statement.addAwsPrincipal('arn:aws:boom:boom');
+statement.addArnPrincipal('arn:aws:boom:boom');
 ```
 
 Will result in:

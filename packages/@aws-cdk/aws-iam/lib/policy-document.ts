@@ -1,6 +1,6 @@
 import cdk = require('@aws-cdk/cdk');
 import { IPostProcessor } from '@aws-cdk/cdk';
-import { PolicyStatement } from './policy-statement';
+import { IPolicyStatement } from './policy-statement';
 
 /**
  * Properties for a new PolicyDocument
@@ -18,7 +18,7 @@ export interface PolicyDocumentProps {
  * A PolicyDocument is a collection of statements
  */
 export class PolicyDocument implements cdk.IResolvable {
-  private readonly statements = new Array<PolicyStatement>();
+  private readonly statements = new Array<IPolicyStatement>();
   private readonly autoAssignSids: boolean;
 
   constructor(props: PolicyDocumentProps = {}) {
@@ -47,7 +47,7 @@ export class PolicyDocument implements cdk.IResolvable {
    *
    * @param statement the statement to add.
    */
-  public addStatements(...statement: PolicyStatement[]) {
+  public addStatements(...statement: IPolicyStatement[]) {
     this.statements.push(...statement);
   }
 
@@ -60,13 +60,22 @@ export class PolicyDocument implements cdk.IResolvable {
     });
   }
 
+  /**
+   * JSON-ify the document
+   *
+   * Used when JSON.stringify() is called
+   */
+  public toJSON() {
+    return this.render();
+  }
+
   private render(): any {
     if (this.isEmpty) {
       return undefined;
     }
 
     const doc = {
-      Statement: this.statements,
+      Statement: this.statements.map(s => s.toStatementJson()),
       Version: '2012-10-17'
     };
 

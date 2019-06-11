@@ -11,7 +11,7 @@ const key = new Key(stack, 'MyKey', { retain: false });
 key.addToResourcePolicy(new PolicyStatement()
   .addAllResources()
   .addAction('kms:encrypt')
-  .addAwsPrincipal(stack.accountId));
+  .addArnPrincipal(stack.accountId));
 
 key.addAlias('alias/bar');
 
