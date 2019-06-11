@@ -166,7 +166,7 @@ export class Table extends Resource implements ITable {
    * @param attrs Import attributes
    */
   public static fromTableAttributes(scope: Construct, id: string, attrs: TableAttributes): ITable {
-    class Import extends Construct implements ITable {
+    class Import extends Resource implements ITable {
       public readonly tableArn = attrs.tableArn;
       public readonly tableName = attrs.tableName;
     }

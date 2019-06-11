@@ -50,7 +50,7 @@ export class LogStream extends Resource implements ILogStream {
    * Import an existing LogGroup
    */
   public static fromLogStreamName(scope: Construct, id: string, logStreamName: string): ILogStream {
-    class Import extends Construct implements ILogStream {
+    class Import extends Resource implements ILogStream {
       public readonly logStreamName = logStreamName;
     }
 

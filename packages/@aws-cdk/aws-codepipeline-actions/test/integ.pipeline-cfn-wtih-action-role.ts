@@ -45,16 +45,12 @@ const cfnStage = {
   ],
 };
 
-const pipeline = new codepipeline.Pipeline(stack, 'MyPipeline', {
+new codepipeline.Pipeline(stack, 'MyPipeline', {
   artifactBucket: bucket,
   stages: [
     sourceStage,
     cfnStage,
   ],
 });
-pipeline.addToRolePolicy(new iam.PolicyStatement()
-  .addActions("sts:AssumeRole", "iam:PassRole")
-  .addAllResources()
-);
 
 app.synth();

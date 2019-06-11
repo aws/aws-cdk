@@ -50,7 +50,7 @@ export class Database extends Resource implements IDatabase {
   public static fromDatabaseArn(scope: Construct, id: string, databaseArn: string): IDatabase {
     const stack = Stack.of(scope);
 
-    class Import extends Construct implements IDatabase {
+    class Import extends Resource implements IDatabase {
       public databaseArn = databaseArn;
       public databaseName = stack.parseArn(databaseArn).resourceName!;
       public catalogArn = stack.formatArn({ service: 'glue', resource: 'catalog' });

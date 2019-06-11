@@ -302,7 +302,7 @@ function _stackArn(stackName: string, scope: cdk.IConstruct): string {
   });
 }
 
-class PipelineDouble extends cdk.Construct implements codepipeline.IPipeline {
+class PipelineDouble extends cdk.Resource implements codepipeline.IPipeline {
   public readonly pipelineName: string;
   public readonly pipelineArn: string;
   public readonly role: iam.Role;

@@ -75,6 +75,7 @@ export class CodeBuildAction extends codepipeline.Action {
       artifactBounds: { minInputs: 1, maxInputs: 5, minOutputs: 0, maxOutputs: 5 },
       inputs: [props.input, ...props.extraInputs || []],
       outputs: getOutputs(props),
+      resource: props.project,
       configuration: {
         ProjectName: props.project.projectName,
       },

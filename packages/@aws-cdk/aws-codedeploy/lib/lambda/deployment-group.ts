@@ -257,7 +257,7 @@ export interface LambdaDeploymentGroupAttributes {
   readonly deploymentGroupName: string;
 }
 
-class ImportedLambdaDeploymentGroup extends cdk.Construct implements ILambdaDeploymentGroup {
+class ImportedLambdaDeploymentGroup extends cdk.Resource implements ILambdaDeploymentGroup {
   public readonly application: ILambdaApplication;
   public readonly deploymentGroupName: string;
   public readonly deploymentGroupArn: string;

@@ -25,8 +25,10 @@ export interface DnsValidatedCertificateProps extends CertificateProps {
 /**
  * A certificate managed by AWS Certificate Manager.  Will be automatically
  * validated using DNS validation against the specified Route 53 hosted zone.
+ *
+ * @resource AWS::CertificateManager::Certificate
  */
-export class DnsValidatedCertificate extends cdk.Construct implements ICertificate {
+export class DnsValidatedCertificate extends cdk.Resource implements ICertificate {
     public readonly certificateArn: string;
     private normalizedZoneName: string;
     private hostedZoneId: string;

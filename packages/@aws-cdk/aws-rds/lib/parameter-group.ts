@@ -29,7 +29,7 @@ abstract class ParameterGroupBase extends Resource implements IParameterGroup {
    * Imports a parameter group
    */
   public static fromParameterGroupName(scope: Construct, id: string, parameterGroupName: string): IParameterGroup {
-    class Import extends Construct implements IParameterGroup {
+    class Import extends Resource implements IParameterGroup {
       public readonly parameterGroupName = parameterGroupName;
     }
     return new Import(scope, id);

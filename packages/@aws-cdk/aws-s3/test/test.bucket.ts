@@ -1,4 +1,4 @@
-import { expect, haveResource, SynthUtils } from '@aws-cdk/assert';
+import { expect, haveResource, haveResourceLike, SynthUtils } from '@aws-cdk/assert';
 import iam = require('@aws-cdk/aws-iam');
 import kms = require('@aws-cdk/aws-kms');
 import cdk = require('@aws-cdk/cdk');
@@ -32,7 +32,7 @@ export = {
   'CFN properties are type-validated during resolution'(test: Test) {
     const stack = new cdk.Stack();
     new s3.Bucket(stack, 'MyBucket', {
-      bucketName: new cdk.Token(() => 5).toString()  // Oh no
+      bucketName: cdk.PhysicalName.of(new cdk.Token(() => 5).toString())  // Oh no
     });
 
     test.throws(() => {
@@ -92,11 +92,11 @@ export = {
     const stack = new cdk.Stack();
 
     test.doesNotThrow(() => new s3.Bucket(stack, 'MyBucket1', {
-      bucketName: 'abc.xyz-34ab'
+      bucketName: cdk.PhysicalName.of('abc.xyz-34ab'),
     }));
 
     test.doesNotThrow(() => new s3.Bucket(stack, 'MyBucket2', {
-      bucketName: '124.pp--33'
+      bucketName: cdk.PhysicalName.of('124.pp--33'),
     }));
 
     test.done();
@@ -106,7 +106,7 @@ export = {
     const stack = new cdk.Stack();
 
     test.doesNotThrow(() => new s3.Bucket(stack, 'MyBucket', {
-      bucketName: new cdk.Token(() => '_BUCKET').toString()
+      bucketName: cdk.PhysicalName.of(new cdk.Token(() => '_BUCKET').toString()),
     }));
 
     test.done();
@@ -125,7 +125,7 @@ export = {
     ].join(EOL);
 
     test.throws(() => new s3.Bucket(stack, 'MyBucket', {
-      bucketName: bucket
+      bucketName: cdk.PhysicalName.of(bucket),
       // tslint:disable-next-line:only-arrow-functions
     }), function(err: Error) {
       return expectedErrors === err.message;
@@ -138,11 +138,11 @@ export = {
     const stack = new cdk.Stack();
 
     test.throws(() => new s3.Bucket(stack, 'MyBucket1', {
-      bucketName: 'a'
+      bucketName: cdk.PhysicalName.of('a'),
     }), /at least 3/);
 
     test.throws(() => new s3.Bucket(stack, 'MyBucket2', {
-      bucketName: new Array(65).join('x')
+      bucketName: cdk.PhysicalName.of(new Array(65).join('x')),
     }), /no more than 63/);
 
     test.done();
@@ -152,15 +152,15 @@ export = {
     const stack = new cdk.Stack();
 
     test.throws(() => new s3.Bucket(stack, 'MyBucket1', {
-      bucketName: 'b@cket'
+      bucketName: cdk.PhysicalName.of('b@cket'),
     }), /offset: 1/);
 
     test.throws(() => new s3.Bucket(stack, 'MyBucket2', {
-      bucketName: 'bucKet'
+      bucketName: cdk.PhysicalName.of('bucKet'),
     }), /offset: 3/);
 
     test.throws(() => new s3.Bucket(stack, 'MyBucket3', {
-      bucketName: 'bučket'
+      bucketName: cdk.PhysicalName.of('bučket'),
     }), /offset: 2/);
 
     test.done();
@@ -170,11 +170,11 @@ export = {
     const stack = new cdk.Stack();
 
     test.throws(() => new s3.Bucket(stack, 'MyBucket1', {
-      bucketName: '-ucket'
+      bucketName: cdk.PhysicalName.of('-ucket'),
     }), /offset: 0/);
 
     test.throws(() => new s3.Bucket(stack, 'MyBucket2', {
-      bucketName: 'bucke.'
+      bucketName: cdk.PhysicalName.of('bucke.'),
     }), /offset: 5/);
 
     test.done();
@@ -184,19 +184,19 @@ export = {
     const stack = new cdk.Stack();
 
     test.throws(() => new s3.Bucket(stack, 'MyBucket1', {
-      bucketName: 'buc..ket'
+      bucketName: cdk.PhysicalName.of('buc..ket'),
     }), /offset: 3/);
 
     test.throws(() => new s3.Bucket(stack, 'MyBucket2', {
-      bucketName: 'buck.-et'
+      bucketName: cdk.PhysicalName.of('buck.-et'),
     }), /offset: 4/);
 
     test.throws(() => new s3.Bucket(stack, 'MyBucket3', {
-      bucketName: 'b-.ucket'
+      bucketName: cdk.PhysicalName.of('b-.ucket'),
     }), /offset: 1/);
 
     test.doesNotThrow(() => new s3.Bucket(stack, 'MyBucket4', {
-      bucketName: 'bu--cket'
+      bucketName: cdk.PhysicalName.of('bu--cket'),
     }));
 
     test.done();
@@ -206,19 +206,19 @@ export = {
     const stack = new cdk.Stack();
 
     test.throws(() => new s3.Bucket(stack, 'MyBucket1', {
-      bucketName: '1.2.3.4'
+      bucketName: cdk.PhysicalName.of('1.2.3.4'),
     }), /must not resemble an IP address/);
 
     test.doesNotThrow(() => new s3.Bucket(stack, 'MyBucket2', {
-      bucketName: '1.2.3'
+      bucketName: cdk.PhysicalName.of('1.2.3'),
     }));
 
     test.doesNotThrow(() => new s3.Bucket(stack, 'MyBucket3', {
-      bucketName: '1.2.3.a'
+      bucketName: cdk.PhysicalName.of('1.2.3.a'),
     }));
 
     test.doesNotThrow(() => new s3.Bucket(stack, 'MyBucket4', {
-      bucketName: '1000.2.3.4'
+      bucketName: cdk.PhysicalName.of('1000.2.3.4'),
     }));
 
     test.done();
@@ -1009,86 +1009,250 @@ export = {
     test.done();
   },
 
-  'cross-stack permissions'(test: Test) {
-    const app = new cdk.App();
-    const stackA = new cdk.Stack(app, 'stackA');
-    const bucketFromStackA = new s3.Bucket(stackA, 'MyBucket');
+  'cross-stack permissions': {
+    'in the same account and region'(test: Test) {
+      const app = new cdk.App();
+      const stackA = new cdk.Stack(app, 'stackA');
+      const bucketFromStackA = new s3.Bucket(stackA, 'MyBucket');
 
-    const stackB = new cdk.Stack(app, 'stackB');
-    const user = new iam.User(stackB, 'UserWhoNeedsAccess');
-    bucketFromStackA.grantRead(user);
+      const stackB = new cdk.Stack(app, 'stackB');
+      const user = new iam.User(stackB, 'UserWhoNeedsAccess');
+      bucketFromStackA.grantRead(user);
 
-    expect(stackA).toMatch({
-      "Resources": {
-        "MyBucketF68F3FF0": {
-          "Type": "AWS::S3::Bucket",
-          "DeletionPolicy": "Retain"
-        }
-      },
-      "Outputs": {
-        "ExportsOutputFnGetAttMyBucketF68F3FF0Arn0F7E8E58": {
-          "Value": {
-            "Fn::GetAtt": [
-              "MyBucketF68F3FF0",
-              "Arn"
-            ]
-          },
-          "Export": {
-            "Name": "stackA:ExportsOutputFnGetAttMyBucketF68F3FF0Arn0F7E8E58"
+      expect(stackA).toMatch({
+        "Resources": {
+          "MyBucketF68F3FF0": {
+            "Type": "AWS::S3::Bucket",
+            "DeletionPolicy": "Retain"
           }
-        }
-      }
-    });
-
-    expect(stackB).toMatch({
-      "Resources": {
-        "UserWhoNeedsAccessF8959C3D": {
-          "Type": "AWS::IAM::User"
         },
-        "UserWhoNeedsAccessDefaultPolicy6A9EB530": {
-          "Type": "AWS::IAM::Policy",
-          "Properties": {
-            "PolicyDocument": {
-              "Statement": [
-                {
-                  "Action": [
-                    "s3:GetObject*",
-                    "s3:GetBucket*",
-                    "s3:List*"
-                  ],
-                  "Effect": "Allow",
-                  "Resource": [
-                    {
-                      "Fn::ImportValue": "stackA:ExportsOutputFnGetAttMyBucketF68F3FF0Arn0F7E8E58"
-                    },
-                    {
-                      "Fn::Join": [
-                        "",
-                        [
-                          {
-                            "Fn::ImportValue": "stackA:ExportsOutputFnGetAttMyBucketF68F3FF0Arn0F7E8E58"
-                          },
-                          "/*"
-                        ]
-                      ]
-                    }
-                  ]
-                }
-              ],
-              "Version": "2012-10-17"
+        "Outputs": {
+          "ExportsOutputFnGetAttMyBucketF68F3FF0Arn0F7E8E58": {
+            "Value": {
+              "Fn::GetAtt": [
+                "MyBucketF68F3FF0",
+                "Arn"
+              ]
             },
-            "PolicyName": "UserWhoNeedsAccessDefaultPolicy6A9EB530",
-            "Users": [
-              {
-                "Ref": "UserWhoNeedsAccessF8959C3D"
-              }
-            ]
+            "Export": {
+              "Name": "stackA:ExportsOutputFnGetAttMyBucketF68F3FF0Arn0F7E8E58"
+            }
           }
         }
-      }
-    });
+      });
 
-    test.done();
+      expect(stackB).toMatch({
+        "Resources": {
+          "UserWhoNeedsAccessF8959C3D": {
+            "Type": "AWS::IAM::User"
+          },
+          "UserWhoNeedsAccessDefaultPolicy6A9EB530": {
+            "Type": "AWS::IAM::Policy",
+            "Properties": {
+              "PolicyDocument": {
+                "Statement": [
+                  {
+                    "Action": [
+                      "s3:GetObject*",
+                      "s3:GetBucket*",
+                      "s3:List*"
+                    ],
+                    "Effect": "Allow",
+                    "Resource": [
+                      {
+                        "Fn::ImportValue": "stackA:ExportsOutputFnGetAttMyBucketF68F3FF0Arn0F7E8E58"
+                      },
+                      {
+                        "Fn::Join": [
+                          "",
+                          [
+                            {
+                              "Fn::ImportValue": "stackA:ExportsOutputFnGetAttMyBucketF68F3FF0Arn0F7E8E58"
+                            },
+                            "/*"
+                          ]
+                        ]
+                      }
+                    ]
+                  }
+                ],
+                "Version": "2012-10-17"
+              },
+              "PolicyName": "UserWhoNeedsAccessDefaultPolicy6A9EB530",
+              "Users": [
+                {
+                  "Ref": "UserWhoNeedsAccessF8959C3D"
+                }
+              ]
+            }
+          }
+        }
+      });
+
+      test.done();
+    },
+
+    'in different accounts'(test: Test) {
+      // given
+      const stackA = new cdk.Stack(undefined, 'StackA', { env: { account: '123456789012' }});
+      const bucketFromStackA = new s3.Bucket(stackA, 'MyBucket', {
+        bucketName: cdk.PhysicalName.of('my-bucket-physical-name'),
+      });
+
+      const stackB = new cdk.Stack(undefined, 'StackB', { env: { account: '234567890123' }});
+      const roleFromStackB = new iam.Role(stackB, 'MyRole', {
+        assumedBy: new iam.AccountPrincipal('234567890123'),
+        roleName: cdk.PhysicalName.of('MyRolePhysicalName'),
+      });
+
+      // when
+      bucketFromStackA.grantRead(roleFromStackB);
+
+      // then
+      expect(stackA).to(haveResourceLike('AWS::S3::BucketPolicy', {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "s3:GetObject*",
+                "s3:GetBucket*",
+                "s3:List*",
+              ],
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition",
+                      },
+                      ":iam::234567890123:role/MyRolePhysicalName",
+                    ],
+                  ],
+                },
+              },
+            },
+          ],
+        },
+      }));
+
+      expect(stackB).to(haveResourceLike('AWS::IAM::Policy', {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "s3:GetObject*",
+                "s3:GetBucket*",
+                "s3:List*",
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition",
+                      },
+                      ":s3:::my-bucket-physical-name",
+                    ],
+                  ],
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition",
+                      },
+                      ":s3:::my-bucket-physical-name/*",
+                    ],
+                  ],
+                },
+              ],
+            },
+          ],
+        },
+      }));
+
+      test.done();
+    },
+
+    'in different accounts, with a KMS Key'(test: Test) {
+      // given
+      const stackA = new cdk.Stack(undefined, 'StackA', { env: { account: '123456789012' }});
+      const key = new kms.Key(stackA, 'MyKey');
+      const bucketFromStackA = new s3.Bucket(stackA, 'MyBucket', {
+        bucketName: cdk.PhysicalName.of('my-bucket-physical-name'),
+        encryptionKey: key,
+        encryption: s3.BucketEncryption.Kms,
+      });
+
+      const stackB = new cdk.Stack(undefined, 'StackB', { env: { account: '234567890123' }});
+      const roleFromStackB = new iam.Role(stackB, 'MyRole', {
+        assumedBy: new iam.AccountPrincipal('234567890123'),
+        roleName: cdk.PhysicalName.of('MyRolePhysicalName'),
+      });
+
+      // when
+      bucketFromStackA.grantRead(roleFromStackB);
+
+      // then
+      expect(stackA).to(haveResourceLike('AWS::KMS::Key', {
+        "KeyPolicy": {
+          "Statement": [
+            {
+              // grant to the root of the owning account
+            },
+            {
+              "Action": [
+                "kms:Decrypt",
+                "kms:DescribeKey",
+              ],
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition",
+                      },
+                      ":iam::234567890123:role/MyRolePhysicalName",
+                    ],
+                  ],
+                },
+              },
+            },
+          ],
+        },
+      }));
+
+      expect(stackB).to(haveResourceLike('AWS::IAM::Policy', {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              // Bucket grant
+            },
+            {
+              "Action": [
+                "kms:Decrypt",
+                "kms:DescribeKey",
+              ],
+              "Effect": "Allow",
+              "Resource": "*",
+            },
+          ],
+        },
+      }));
+
+      test.done();
+    },
   },
 
   'urlForObject returns a token with the S3 URL of the token'(test: Test) {

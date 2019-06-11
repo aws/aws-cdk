@@ -45,7 +45,7 @@ export interface HostedZoneProps extends CommonHostedZoneProps {
 export class HostedZone extends Resource implements IHostedZone {
 
   public static fromHostedZoneId(scope: Construct, id: string, hostedZoneId: string): IHostedZone {
-    class Import extends Construct implements IHostedZone {
+    class Import extends Resource implements IHostedZone {
       public readonly hostedZoneId = hostedZoneId;
       public get zoneName(): string {
         throw new Error(`HostedZone.fromHostedZoneId doesn't support "zoneName"`);
@@ -59,7 +59,7 @@ export class HostedZone extends Resource implements IHostedZone {
    * Imports a hosted zone from another stack.
    */
   public static fromHostedZoneAttributes(scope: Construct, id: string, attrs: HostedZoneAttributes): IHostedZone {
-    class Import extends Construct implements IHostedZone {
+    class Import extends Resource implements IHostedZone {
       public readonly hostedZoneId = attrs.hostedZoneId;
       public readonly zoneName = attrs.zoneName;
     }

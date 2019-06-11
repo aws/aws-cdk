@@ -199,8 +199,10 @@ export interface SingletonLayerVersionProps extends LayerVersionProps {
  * A Singleton Lambda Layer Version. The construct gurantees exactly one LayerVersion will be created in a given Stack
  * for the provided ``uuid``. It is recommended to use ``uuidgen`` to create a new ``uuid`` each time a new singleton
  * layer is created.
+ *
+ * @resource AWS::Lambda::LayerVersion
  */
-export class SingletonLayerVersion extends Construct implements ILayerVersion {
+export class SingletonLayerVersion extends Resource implements ILayerVersion {
   private readonly layerVersion: ILayerVersion;
 
   constructor(scope: Construct, id: string, props: SingletonLayerVersionProps) {

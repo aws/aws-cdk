@@ -37,3 +37,5 @@ export * from './runtime';
 export * from './secret-value';
 
 export * from './resource';
+export * from './physical-name';
+export * from './resource-identifiers';

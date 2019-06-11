@@ -302,7 +302,7 @@ export class UserPool extends Resource implements IUserPool {
     /**
      * Define a user pool which has been declared in another stack
      */
-    class Import extends Construct implements IUserPool {
+    class Import extends Resource implements IUserPool {
       public readonly userPoolId = attrs.userPoolId;
       public readonly userPoolArn = attrs.userPoolArn;
       public readonly userPoolProviderName = attrs.userPoolProviderName;
