@@ -19,7 +19,7 @@ export interface LoadBalancedFargateServiceProps extends LoadBalancedServiceBase
    *
    * @default 256
    */
-  readonly cpu?: string;
+  readonly cpu?: number;
 
   /**
    * The amount (in MiB) of memory used by the task.
@@ -41,7 +41,7 @@ export interface LoadBalancedFargateServiceProps extends LoadBalancedServiceBase
    *
    * @default 512
    */
-  readonly memoryMiB?: string;
+  readonly memoryLimitMiB?: number;
 }
 
 /**
@@ -58,7 +58,7 @@ export class LoadBalancedFargateService extends LoadBalancedServiceBase {
     super(scope, id, props);
 
     const taskDefinition = new ecs.FargateTaskDefinition(this, 'TaskDef', {
-      memoryMiB: props.memoryMiB,
+      memoryLimitMiB: props.memoryLimitMiB,
       cpu: props.cpu
     });
 
