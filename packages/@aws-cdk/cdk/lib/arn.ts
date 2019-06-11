@@ -135,7 +135,7 @@ export class Arn {
    *      components of the ARN.
    */
   public static parse(arn: string, sepIfToken: string = '/', hasName: boolean = true): ArnComponents {
-    if (Token.isToken(arn)) {
+    if (Token.isUnresolved(arn)) {
       return parseToken(arn, sepIfToken, hasName);
     }
 

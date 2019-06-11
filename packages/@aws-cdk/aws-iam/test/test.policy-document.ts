@@ -1,4 +1,4 @@
-import { Stack, Token } from '@aws-cdk/cdk';
+import { Lazy, Stack, Token } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
 import { Anyone, AnyPrincipal, CanonicalUserPrincipal, IPrincipal, PolicyDocument, PolicyStatement } from '../lib';
 import { ArnPrincipal, CompositePrincipal, FederatedPrincipal, PrincipalPolicyFragment, ServicePrincipal } from '../lib';
@@ -14,7 +14,7 @@ export = {
     p.addResource('yourQueue');
 
     p.addAllResources();
-    p.addAwsAccountPrincipal(`my${new Token({ account: 'account' })}name`);
+    p.addAwsAccountPrincipal(`my${Token.asString({ account: 'account' })}name`);
     p.limitToAccount('12221121221');
 
     test.deepEqual(stack.resolve(p), { Action:
@@ -290,8 +290,8 @@ export = {
     const stack = new Stack();
 
     const statement = new PolicyStatement()
-      .addActions(...new Token(() => ['a', 'b', 'c']).toList())
-      .addResources(...new Token(() => ['x', 'y', 'z']).toList());
+      .addActions(...Lazy.listValue({ produce: () => ['a', 'b', 'c'] }))
+      .addResources(...Lazy.listValue({ produce: () => ['x', 'y', 'z'] }));
 
     test.deepEqual(stack.resolve(statement), {
       Effect: 'Allow',
@@ -506,11 +506,11 @@ export = {
       const p = new PolicyDocument();
 
       const statement1 = new PolicyStatement()
-        .addResource(new Token(() => 'resource').toString())
-        .addAction(new Token(() => 'action').toString());
+        .addResource(Lazy.stringValue({ produce: () => 'resource' }))
+        .addAction(Lazy.stringValue({ produce: () => 'action' }));
       const statement2 = new PolicyStatement()
-        .addResource(new Token(() => 'resource').toString())
-        .addAction(new Token(() => 'action').toString());
+        .addResource(Lazy.stringValue({ produce: () => 'resource' }))
+        .addAction(Lazy.stringValue({ produce: () => 'action' }));
 
       // WHEN
       p.addStatement(statement1);

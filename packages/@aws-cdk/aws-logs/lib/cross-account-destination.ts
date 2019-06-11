@@ -1,6 +1,6 @@
 import iam = require('@aws-cdk/aws-iam');
 import cdk = require('@aws-cdk/cdk');
-import { Construct, Stack } from '@aws-cdk/cdk';
+import { Construct, Lazy, Stack } from '@aws-cdk/cdk';
 import { ILogGroup } from './log-group';
 import { CfnDestination } from './logs.generated';
 import { ILogSubscriptionDestination, LogSubscriptionDestinationConfig } from './subscription-filter';
@@ -65,7 +65,7 @@ export class CrossAccountDestination extends cdk.Construct implements ILogSubscr
     super(scope, id);
 
     // In the underlying model, the name is not optional, but we make it so anyway.
-    const destinationName = props.destinationName || new cdk.Token(() => this.generateUniqueName()).toString();
+    const destinationName = props.destinationName || Lazy.stringValue({ produce: () => this.generateUniqueName() });
 
     this.resource = new CfnDestination(this, 'Resource', {
       destinationName,
@@ -99,6 +99,8 @@ export class CrossAccountDestination extends cdk.Construct implements ILogSubscr
    * Return a stringified JSON version of the PolicyDocument
    */
   private lazyStringifiedPolicyDocument(): string {
-    return new cdk.Token(() => this.policyDocument.isEmpty ? '' : Stack.of(this).toJsonString(this.policyDocument)).toString();
+    return Lazy.stringValue({ produce: () =>
+      this.policyDocument.isEmpty ? '' : Stack.of(this).toJsonString(this.policyDocument)
+    });
   }
 }

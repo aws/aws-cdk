@@ -355,7 +355,7 @@ export interface ClusterAttributes {
 /**
  * An Cluster that has been imported
  */
-class ImportedCluster extends Construct implements ICluster {
+class ImportedCluster extends Resource implements ICluster {
   /**
    * Name of the cluster
    */

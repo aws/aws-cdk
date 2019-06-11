@@ -112,7 +112,7 @@ As you can see many tags are generated with only a few intent based directives. 
 
 ```ts
 // snip //
-const vpc = new ec2.VpcNetwork(marketingStack, 'MarketingVpc', {
+const vpc = new ec2.Vpc(marketingStack, 'MarketingVpc', {
   maxAZs: 3 // Default is all AZs in region
   });
 // override the VPC tags with Platform
@@ -150,7 +150,7 @@ true. If false the property is set accordingly.
 
 ```ts
 // ... snip
-const vpc = new ec2.VpcNetwork(this, 'MyVpc', { ... });
+const vpc = new ec2.Vpc(this, 'MyVpc', { ... });
 vpc.node.apply(new cdk.Tag('MyKey', 'MyValue', { applyToLaunchedInstances: false }));
 // ... snip
 ```
@@ -164,12 +164,12 @@ interpreted as apply to any resource type.
 
 ```ts
 // ... snip
-const vpc = new ec2.VpcNetwork(this, 'MyVpc', { ... });
+const vpc = new ec2.Vpc(this, 'MyVpc', { ... });
 vpc.node.apply(new cdk.Tag('MyKey', 'MyValue', { includeResourceTypes: ['AWS::EC2::Subnet']}));
 // ... snip
 ```
 
-#### excludeResourceTypes 
+#### excludeResourceTypes
 
 Exclude is the inverse of include. Exclude is also an array of CloudFormation
 Resource Types. As the aspect visit nodes it will not take action if the node is
@@ -179,7 +179,7 @@ over include in the event of a collision.
 
 ```ts
 // ... snip
-const vpc = new ec2.VpcNetwork(this, 'MyVpc', { ... });
+const vpc = new ec2.Vpc(this, 'MyVpc', { ... });
 vpc.node.apply(new cdk.Tag('MyKey', 'MyValue', { exludeResourceTypes: ['AWS::EC2::Subnet']}));
 // ... snip
 ```
@@ -193,7 +193,7 @@ setting for removing tags uses a higher priority than the standard tag.
 
 ```ts
 // ... snip
-const vpc = new ec2.VpcNetwork(this, 'MyVpc', { ... });
+const vpc = new ec2.Vpc(this, 'MyVpc', { ... });
 vpc.node.apply(new cdk.Tag('MyKey', 'MyValue', { priority: 2 }));
 // ... snip
 ```

@@ -1,7 +1,8 @@
 import cxapi = require('@aws-cdk/cx-api');
 import { IAspect } from './aspect';
 import { DependableTrait, IDependable } from './dependency';
-import { createStackTrace } from './stack-trace';
+import { createStackTrace } from './private/stack-trace';
+import { IResolvable } from './resolvable';
 import { Token } from './token';
 import { makeUniqueId } from './uniqueid';
 
@@ -148,7 +149,7 @@ export class ConstructNode {
     // escape any path separators so they don't wreck havoc
     this.id = this._escapePathSeparator(this.id);
 
-    if (Token.isToken(id)) {
+    if (Token.isUnresolved(id)) {
       throw new Error(`Cannot use tokens in construct ID: ${id}`);
     }
   }
@@ -396,7 +397,7 @@ export class ConstructNode {
   /**
    * Record a reference originating from this construct node
    */
-  public addReference(...refs: Token[]) {
+  public addReference(...refs: IResolvable[]) {
     for (const ref of refs) {
       if (Reference.isReference(ref)) {
         this._references.add(ref);
@@ -539,7 +540,7 @@ export class Construct implements IConstruct {
    * Return whether the given object is a Construct
    */
   public static isConstruct(x: any): x is Construct {
-    return CONSTRUCT_SYMBOL in x;
+    return typeof x === 'object' && x !== null && CONSTRUCT_SYMBOL in x;
   }
 
   /**

@@ -5,8 +5,8 @@ import { App, Stack, Token } from '../lib';
 export = {
   'By default, environment region and account are not defined and resolve to intrinsics'(test: Test) {
     const stack = new Stack();
-    test.ok(Token.unresolved(stack.account));
-    test.ok(Token.unresolved(stack.region));
+    test.ok(Token.isUnresolved(stack.account));
+    test.ok(Token.isUnresolved(stack.region));
     test.deepEqual(stack.resolve(stack.account), { Ref: "AWS::AccountId" });
     test.deepEqual(stack.resolve(stack.region), { Ref: "AWS::Region" });
     test.done();

@@ -1,5 +1,5 @@
 import ec2 = require('@aws-cdk/aws-ec2');
-import { Construct, IResource, Resource, Token } from '@aws-cdk/cdk';
+import { Construct, IResource, Lazy, Resource } from '@aws-cdk/cdk';
 import { CfnLoadBalancer } from '../elasticloadbalancingv2.generated';
 import { Attributes, ifUndefined, renderAttributes } from './util';
 
@@ -136,7 +136,7 @@ export abstract class BaseLoadBalancer extends Resource {
       name: baseProps.loadBalancerName,
       subnets: subnetIds,
       scheme: internetFacing ? 'internet-facing' : 'internal',
-      loadBalancerAttributes: new Token(() => renderAttributes(this.attributes)),
+      loadBalancerAttributes: Lazy.anyValue({ produce: () => renderAttributes(this.attributes) }),
       ...additionalProps
     });
     if (internetFacing) {
@@ -149,7 +149,7 @@ export abstract class BaseLoadBalancer extends Resource {
     this.loadBalancerDnsName = resource.loadBalancerDnsName;
     this.loadBalancerFullName = resource.loadBalancerFullName;
     this.loadBalancerName = resource.loadBalancerName;
-    this.loadBalancerArn = resource.ref;
+    this.loadBalancerArn = resource.refAsString;
     this.loadBalancerSecurityGroups = resource.loadBalancerSecurityGroups;
   }
 

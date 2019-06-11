@@ -79,11 +79,11 @@ export class ContextProvider {
     // (AWS::Region, AWS::AccountId) if user did not explicitly specify them
     // when they defined the stack, but this is not good enough for
     // environmental context because we need concrete values during synthesis.
-    if (!account || Token.unresolved(account)) {
+    if (!account || Token.isUnresolved(account)) {
       account = Context.getDefaultAccount(this.context);
     }
 
-    if (!region || Token.unresolved(region)) {
+    if (!region || Token.isUnresolved(region)) {
       region = Context.getDefaultRegion(this.context);
     }
 

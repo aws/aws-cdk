@@ -3,10 +3,11 @@ import codebuild = require('@aws-cdk/aws-codebuild');
 import codecommit = require('@aws-cdk/aws-codecommit');
 import codepipeline = require('@aws-cdk/aws-codepipeline');
 import targets = require('@aws-cdk/aws-events-targets');
+import iam = require('@aws-cdk/aws-iam');
 import lambda = require('@aws-cdk/aws-lambda');
 import s3 = require('@aws-cdk/aws-s3');
 import sns = require('@aws-cdk/aws-sns');
-import { App, Aws, CfnParameter, ConstructNode, SecretValue, Stack } from '@aws-cdk/cdk';
+import { App, Aws, CfnParameter, ConstructNode, PhysicalName, SecretValue, Stack } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
 import cpactions = require('../lib');
 
@@ -82,7 +83,7 @@ export = {
           runOrder: 8,
           output: new codepipeline.Artifact('A'),
           branch: 'branch',
-          oauthToken: SecretValue.plainText(secret.stringValue),
+          oauthToken: SecretValue.plainText(secret.valueAsString),
           owner: 'foo',
           repo: 'bar',
           trigger: cpactions.GitHubTrigger.Poll
@@ -141,7 +142,7 @@ export = {
           runOrder: 8,
           output: new codepipeline.Artifact('A'),
           branch: 'branch',
-          oauthToken: SecretValue.plainText(secret.stringValue),
+          oauthToken: SecretValue.plainText(secret.valueAsString),
           owner: 'foo',
           repo: 'bar',
           trigger: cpactions.GitHubTrigger.None
@@ -200,7 +201,7 @@ export = {
           runOrder: 8,
           output: new codepipeline.Artifact('A'),
           branch: 'branch',
-          oauthToken: SecretValue.plainText(secret.stringValue),
+          oauthToken: SecretValue.plainText(secret.valueAsString),
           owner: 'foo',
           repo: 'bar'
         }),
@@ -397,7 +398,7 @@ export = {
         const stack = new Stack();
 
         new codebuild.PipelineProject(stack, 'MyProject', {
-          projectName: 'MyProject',
+          projectName: PhysicalName.of('MyProject'),
         });
 
         expect(stack).to(haveResourceLike('AWS::CodeBuild::Project', {
@@ -698,6 +699,153 @@ export = {
       test.equal(usEast1ScaffoldStack.account, pipelineAccount);
       test.ok(usEast1ScaffoldStack.node.id.indexOf('us-east-1') !== -1,
         `expected '${usEast1ScaffoldStack.node.id}' to contain 'us-east-1'`);
+
+      test.done();
+    },
+  },
+
+  'cross-account Pipeline': {
+    'with a CodeBuild Project in a different account works correctly'(test: Test) {
+      const app = new App();
+
+      const buildAccount = '901234567890';
+      const buildStack = new Stack(app, 'BuildStack', {
+        env: { account: buildAccount },
+      });
+      const rolePhysicalName = 'ProjectRolePhysicalName';
+      const projectRole = new iam.Role(buildStack, 'ProjectRole', {
+        assumedBy: new iam.ServicePrincipal('codebuild.amazonaws.com'),
+        roleName: PhysicalName.of(rolePhysicalName),
+      });
+      const projectPhysicalName = 'ProjectPhysicalName';
+      const project = new codebuild.PipelineProject(buildStack, 'Project', {
+        projectName: PhysicalName.of(projectPhysicalName),
+        role: projectRole,
+      });
+
+      const pipelineStack = new Stack(app, 'PipelineStack', {
+        env: { account: '123456789012' },
+      });
+      const sourceBucket = new s3.Bucket(pipelineStack, 'ArtifactBucket', {
+        bucketName: PhysicalName.of('source-bucket'),
+        encryption: s3.BucketEncryption.Kms,
+      });
+      const sourceOutput = new codepipeline.Artifact();
+      new codepipeline.Pipeline(pipelineStack, 'Pipeline', {
+        stages: [
+          {
+            name: 'Source',
+            actions: [
+              new cpactions.S3SourceAction({
+                actionName: 'S3',
+                bucket: sourceBucket,
+                bucketKey: 'path/to/file.zip',
+                output: sourceOutput,
+              }),
+            ],
+          },
+          {
+            name: 'Build',
+            actions: [
+              new cpactions.CodeBuildAction({
+                actionName: 'CodeBuild',
+                project,
+                input: sourceOutput,
+                output: new codepipeline.Artifact(),
+              }),
+            ],
+          },
+        ],
+      });
+
+      expect(pipelineStack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
+        "Stages": [
+          {
+            "Name": "Source",
+          },
+          {
+            "Name": "Build",
+            "Actions": [
+              {
+                "Name": "CodeBuild",
+                "Configuration": {
+                  "ProjectName": projectPhysicalName,
+                },
+                "RoleArn": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition",
+                      },
+                      `:iam::${buildAccount}:role/buildstackebuildactionrole166c75d145cdaa010350`,
+                    ],
+                  ],
+                },
+              },
+            ],
+          },
+        ],
+      }));
+
+      expect(buildStack).to(haveResourceLike('AWS::IAM::Policy', {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              // log permissions from the CodeBuild Project Construct...
+            },
+            {
+              "Action": [
+                "s3:GetObject*",
+                "s3:GetBucket*",
+                "s3:List*",
+                "s3:DeleteObject*",
+                "s3:PutObject*",
+                "s3:Abort*",
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition",
+                      },
+                      `:s3:::pipelinestackeartifactsbucket5409dc8418216ab8debe`,
+                    ],
+                  ],
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition",
+                      },
+                      `:s3:::pipelinestackeartifactsbucket5409dc8418216ab8debe/*`,
+                    ],
+                  ],
+                },
+              ],
+            },
+            {
+              "Action": [
+                "kms:Decrypt",
+                "kms:DescribeKey",
+                "kms:Encrypt",
+                "kms:ReEncrypt*",
+                "kms:GenerateDataKey*",
+              ],
+              "Effect": "Allow",
+              "Resource": "*",
+            },
+          ],
+        },
+      }));
 
       test.done();
     },

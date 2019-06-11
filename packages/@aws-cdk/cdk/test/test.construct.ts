@@ -1,6 +1,6 @@
 import cxapi = require('@aws-cdk/cx-api');
 import { Test } from 'nodeunit';
-import { App as Root, Construct, ConstructNode, ConstructOrder, IConstruct, Token, ValidationError } from '../lib';
+import { App as Root, Construct, ConstructNode, ConstructOrder, IConstruct, Lazy, ValidationError } from '../lib';
 
 // tslint:disable:variable-name
 // tslint:disable:max-line-length
@@ -66,7 +66,7 @@ export = {
   "dont allow unresolved tokens to be used in construct IDs"(test: Test) {
     // GIVEN
     const root = new Root();
-    const token = new Token(() => 'lazy');
+    const token = Lazy.stringValue({ produce: () => 'lazy' });
 
     // WHEN + THEN
     test.throws(() => new Construct(root, `MyID: ${token}`), /Cannot use tokens in construct ID: MyID: \${Token/);
