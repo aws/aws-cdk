@@ -25,8 +25,8 @@ export function generatePhysicalName(resource: IResource): string {
   const sha256 = crypto.createHash('sha256')
     .update(stackPart.bareStr)
     .update(idPart.bareStr)
-    .update(stack.region || '')
-    .update(stack.account || '');
+    .update(region || '')
+    .update(account || '');
   const hash = sha256.digest('hex').slice(0, hashLength);
 
   const ret = [...parts, hash].join('');

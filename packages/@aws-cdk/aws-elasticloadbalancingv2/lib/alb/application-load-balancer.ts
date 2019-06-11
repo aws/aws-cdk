@@ -2,7 +2,7 @@ import cloudwatch = require('@aws-cdk/aws-cloudwatch');
 import ec2 = require('@aws-cdk/aws-ec2');
 import iam = require('@aws-cdk/aws-iam');
 import s3 = require('@aws-cdk/aws-s3');
-import { Construct, Lazy, Resource, Stack } from '@aws-cdk/cdk';
+import { Construct, Lazy, Resource, Stack, Token } from '@aws-cdk/cdk';
 import { BaseLoadBalancer, BaseLoadBalancerProps, ILoadBalancerV2 } from '../shared/base-load-balancer';
 import { IpAddressType } from '../shared/enums';
 import { ApplicationListener, BaseApplicationListenerProps } from './application-listener';
@@ -87,7 +87,7 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
     this.setAttribute('access_logs.s3.prefix', prefix);
 
     const region = Stack.of(this).region;
-    if (Token.unresolved(region)) {
+    if (Token.isUnresolved(region)) {
       throw new Error(`Region is required to enable ELBv2 access logging`);
     }
 

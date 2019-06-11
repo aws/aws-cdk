@@ -2,7 +2,7 @@ import events = require('@aws-cdk/aws-events');
 import iam = require('@aws-cdk/aws-iam');
 import kms = require('@aws-cdk/aws-kms');
 import s3 = require('@aws-cdk/aws-s3');
-import { App, Construct, Lazy, PhysicalName, RemovalPolicy, Resource, Stack } from '@aws-cdk/cdk';
+import { App, Construct, Lazy, PhysicalName, RemovalPolicy, Resource, Stack, Token } from '@aws-cdk/cdk';
 import { Action, IPipeline, IStage } from "./action";
 import { CfnPipeline } from './codepipeline.generated';
 import { Stage } from './stage';
@@ -364,23 +364,19 @@ export class Pipeline extends PipelineBase {
     });
   }
 
-<<<<<<< HEAD
   private requireRegion(error?: string) {
     const region = Stack.of(this).region;
-    if (Token.unresolved(region)) {
+    if (Token.isUnresolved(region)) {
       throw new Error(error || 'region is required');
     }
     return region;
   }
 
-  private ensureReplicationBucketExistsFor(region: string) {
-=======
   private ensureReplicationBucketExistsFor(region?: string) {
     if (!region) {
       return;
     }
 
->>>>>>> origin/master
     // get the region the Pipeline itself is in
     const pipelineRegion = this.requireRegion(`You need to specify an explicit region when using CodePipeline's cross-region support`);
 
@@ -392,7 +388,7 @@ export class Pipeline extends PipelineBase {
     let replicationBucketName = this.crossRegionReplicationBuckets[region];
     if (!replicationBucketName) {
       const pipelineAccount = Stack.of(this).account;
-      if (Token.unresolved(pipelineAccount)) {
+      if (Token.isUnresolved(pipelineAccount)) {
         throw new Error("You need to specify an explicit account when using CodePipeline's cross-region support");
       }
 
@@ -435,8 +431,7 @@ export class Pipeline extends PipelineBase {
       const pipelineStack = Stack.of(this);
       const resourceStack = Stack.of(action.resource);
       // check if resource is from a different account
-      if (pipelineStack.env.account && resourceStack.env.account &&
-          pipelineStack.env.account !== resourceStack.env.account) {
+      if (pipelineStack.environment !== resourceStack.environment) {
         // if it is, the pipeline's bucket must have a KMS key
         if (!this.artifactBucket.encryptionKey) {
           throw new Error('The Pipeline is being used in a cross-account manner, ' +
@@ -448,7 +443,7 @@ export class Pipeline extends PipelineBase {
         // generate a role in the other stack, that the Pipeline will assume for executing this action
         actionRole = new iam.Role(resourceStack,
             `${this.node.uniqueId}-${stage.stageName}-${action.actionName}-ActionRole`, {
-          assumedBy: new iam.AccountPrincipal(pipelineStack.env.account),
+          assumedBy: new iam.AccountPrincipal(pipelineStack.account),
           roleName: PhysicalName.auto({ crossEnvironment: true }),
         });
 
