@@ -1,38 +1,38 @@
 # AWS ECS - L3 Construct for Autoscaling ECS/Fargate Service that Processes Items in a SQS Queue
 
-To address issue [#2396](https://github.com/awslabs/aws-cdk/issues/2396), the AWS ECS CDK construct library should provide a way for customers to create a queue worker service (an AWS ECS/Fargate service that processes items from an sqs queue). This would mean adding new ECS CDK constructs `Ec2QueueWorkerService` and `FargateQueryWorkerService`, that would take in the necessary properties required to create a task definition, an SQS queue as well as an ECS/Fargate service and enable autoscaling for the service based on cpu usage and the SQS queue's approximateNumberOfMessagesVisible metric. 
+To address issue [#2396](https://github.com/awslabs/aws-cdk/issues/2396), the AWS ECS CDK construct library should provide a way for customers to create a queue processing service (an AWS ECS/Fargate service that processes items from an sqs queue). This would mean adding new ECS CDK constructs `QueueProcessingEc2Service` and `QueueProcessingFargateService`, that would take in the necessary properties required to create a task definition, an SQS queue as well as an ECS/Fargate service and enable autoscaling for the service based on cpu usage and the SQS queue's approximateNumberOfMessagesVisible metric. 
 
 ## General approach
 
-The new `ecs.QueueWorkerServiceBase`, `ecs.Ec2QueueWorkerService` and `ecs.FargateQueueWorkerService` classes will create L3 constructs for:
+The new `ecs.QueueProcessingServiceBase`, `ecs.QueueProcessingEc2Service` and `ecs.QueueProcessingFargateService` classes will create L3 constructs for:
 
-* Ec2QueueWorkerService
-* FargateQueueWorkerService
+* QueueProcessingEc2Service
+* QueueProcessingFargateService
 
-A `QueueWorkerService` will create a task definition with the specified container (on both EC2 and Fargate). An AWS SQS `Queue` will be created and autoscaling of the ECS Service will be dependent on both CPU as well as the SQS queue's `ApproximateNumberOfMessagesVisible` metric. 
+A `QueueProcessingService` will create a task definition with the specified container (on both EC2 and Fargate). An AWS SQS `Queue` will be created and autoscaling of the ECS Service will be dependent on both CPU as well as the SQS queue's `ApproximateNumberOfMessagesVisible` metric. 
 
-The `QueueWorkerService` constructs (for EC2 and Fargate) will use the following existing constructs:
+The `QueueProcessingService` constructs (for EC2 and Fargate) will use the following existing constructs:
 
 * Ec2TaskDefinition/FargateTaskDefinition - To create a Task Definition for the container to start
-* SQSQueue - The queue that the worker is processing from
+* SQSQueue - The queue that the service is processing from
 * Ec2Service/FargateService - The Service running the container
 
 ## Code changes
 
-Given the above, we should make the following changes to support queue workers on ECS (for both EC2 and Fargate):
-1. Create `QueueWorkerServiceBaseProps` interface and `QueueWorkerServiceBase` construct
-2. Create `Ec2QueueWorkerServiceProps` interface  and `Ec2QueueWorkerService` construct
-3. Create `FargateQueueWorkerServiceProps` interface  and `FargateQueueWorkerService` construct
+Given the above, we should make the following changes to support queue processing on ECS (for both EC2 and Fargate):
+1. Create `QueueProcessingServiceBaseProps` interface and `QueueProcessingServiceBase` construct
+2. Create `QueueProcessingEc2ServiceProps` interface  and `QueueProcessingEc2Service` construct
+3. Create `QueueProcessingFargateServiceProps` interface  and `QueueProcessingFargateService` construct
 
-### Part 1: Create `QueueWorkerServiceBaseProps` interface  and `QueueWorkerServiceBase` construct  
+### Part 1: Create `QueueProcessingServiceBaseProps` interface  and `QueueProcessingServiceBase` construct  
 
-The `QueueWorkerServiceBaseProps` interface will contain common properties used to construct both the Ec2QueueWorkerService and the FargateQueueWorkerService:
+The `QueueProcessingServiceBaseProps` interface will contain common properties used to construct both the QueueProcessingEc2Service and the QueueProcessingFargateService:
 
 ```ts
 /**
- * Properties to define a Query Worker service
+ * Properties to define a queue processing service
  */
-export interface QueueWorkerServiceBaseProps {
+export interface QueueProcessingServiceBaseProps {
   /**
    * Cluster where service will be deployed
    */
@@ -100,15 +100,15 @@ export interface QueueWorkerServiceBaseProps {
 }
 ```
 
-### Part 2: Create `Ec2QueueWorkerServiceProps` interface  and `Ec2QueueWorkerService` construct  
+### Part 2: Create `QueueProcessingEc2ServiceProps` interface  and `QueueProcessingEc2Service` construct  
 
-The `Ec2QueueWorkerServiceProps` interface will contain properties to construct the Ec2TaskDefinition, SQSQueue and Ec2Service:
+The `QueueProcessingEc2ServiceProps` interface will contain properties to construct the Ec2TaskDefinition, SQSQueue and Ec2Service:
 
 ```ts
 /**
  * Properties to define an ECS service
  */
-export interface Ec2QueueWorkerServiceProps {
+export interface QueueProcessingEc2ServiceProps {
   /**
    * The minimum number of CPU units to reserve for the container.
    *
@@ -146,18 +146,18 @@ export interface Ec2QueueWorkerServiceProps {
 
 An example use case:
 ```ts
-// Create the vpc and cluster used by the Queue Worker task
+// Create the vpc and cluster used by the queue processing service
 const vpc = new ec2.VpcNetwork(stack, 'Vpc', { maxAZs: 1 });
 const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
 cluster.addCapacity('DefaultAutoScalingGroup', {
   instanceType: new ec2.InstanceType('t2.micro')
 });
-const queue = new sqs.Queue(stack, 'WorkerQueue', { 
-  QueueName: 'EcsWorkerQueue'
+const queue = new sqs.Queue(stack, 'ProcessingQueue', { 
+  QueueName: 'EcsEventQueue'
 });
 
-// Create the Queue Worker  task
-new Ec2QueueWorkerService(stack, 'EcsQueueWorkerService', {
+// Create the queue processing service
+new QueueProcessingEc2Service(stack, 'QueueProcessingEc2Service', {
   cluster,
   image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
   desiredTaskCount: 2,
@@ -168,15 +168,15 @@ new Ec2QueueWorkerService(stack, 'EcsQueueWorkerService', {
 });
 ```
 
-### Part 3: Create `FargateQueueWorkerServiceProps` interface  and `FargateQueueWorkerService` construct  
+### Part 3: Create `QueueProcessingFargateServiceProps` interface  and `QueueProcessingFargateService` construct  
 
-The `FargateQueueWorkerServiceProps` interface will contain properties to construct the FargateTaskDefinition, SQSQueue and FargateService:
+The `QueueProcessingFargateServiceProps` interface will contain properties to construct the FargateTaskDefinition, SQSQueue and FargateService:
 
 ```ts
 /**
- * Properties to define an Fargate service
+ * Properties to define a Fargate service
  */
-export interface FargateQueueWorkerServiceProps {
+export interface QueueProcessingFargateServiceProps {
   /**
    * The number of cpu units used by the task.
    * Valid values, which determines your range of valid values for the memory parameter:
@@ -218,15 +218,15 @@ export interface FargateQueueWorkerServiceProps {
 
 An example use case:
 ```ts
-// Create the vpc and cluster used by the Queue Worker task
+// Create the vpc and cluster used by the queue processing service
 const vpc = new ec2.VpcNetwork(stack, 'Vpc', { maxAZs: 2 });
 const cluster = new ecs.Cluster(stack, 'FargateCluster', { vpc });
-const queue = new sqs.Queue(stack, 'WorkerQueue', { 
-  QueueName: 'FargateWorkerQueue'
+const queue = new sqs.Queue(stack, 'ProcessingQueue', { 
+  QueueName: 'FargateEventQueue'
 });
 
-// Create the Queue Worker task
-new FargateQueueWorkerService(stack, 'FargateQueueWorkerService', {
+// Create the queue processing service
+new QueueProcessingFargateService(stack, 'QueueProcessingFargateService', {
   cluster,
   image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
   desiredTaskCount: 2,

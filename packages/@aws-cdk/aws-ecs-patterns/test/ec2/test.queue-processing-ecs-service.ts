@@ -15,7 +15,7 @@ export = {
     cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
 
     // WHEN
-    new ecsPatterns.Ec2QueueWorkerService(stack, 'Service', {
+    new ecsPatterns.QueueProcessingEc2Service(stack, 'Service', {
       cluster,
       memoryLimitMiB: 512,
       image: ecs.ContainerImage.fromRegistry('test')
@@ -37,7 +37,7 @@ export = {
               Name: "QUEUE_NAME",
               Value: {
                 "Fn::GetAtt": [
-                  "ServiceEcsWorkerServiceQueue19BF278C",
+                  "ServiceEcsProcessingQueueC266885C",
                   "QueueName"
                 ]
               }
@@ -47,7 +47,7 @@ export = {
             LogDriver: "awslogs",
             Options: {
               "awslogs-group": {
-                Ref: "ServiceQueueWorkerLoggingLogGroup5E11C73B"
+                Ref: "ServiceProcessingContainerLoggingLogGroupF40B9C5D"
               },
               "awslogs-stream-prefix": "Service",
               "awslogs-region": {
@@ -55,6 +55,7 @@ export = {
               }
             }
           },
+          Essential: true,
           Image: "test",
           Memory: 512
         }
@@ -73,7 +74,7 @@ export = {
     const queue = new sqs.Queue(stack, 'ecs-test-queue', { queueName: 'ecs-test-sqs-queue'});
 
     // WHEN
-    new ecsPatterns.Ec2QueueWorkerService(stack, 'Service', {
+    new ecsPatterns.QueueProcessingEc2Service(stack, 'Service', {
       cluster,
       memoryLimitMiB: 1024,
       image: ecs.ContainerImage.fromRegistry('test'),

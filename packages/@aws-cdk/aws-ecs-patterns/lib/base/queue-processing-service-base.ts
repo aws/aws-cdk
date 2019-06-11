@@ -4,9 +4,9 @@ import sqs = require('@aws-cdk/aws-sqs');
 import cdk = require('@aws-cdk/cdk');
 
 /**
- * Properties to define a queue worker service
+ * Properties to define a queue processing service
  */
-export interface QueueWorkerServiceBaseProps {
+export interface QueueProcessingServiceBaseProps {
   /**
    * Cluster where service will be deployed
    */
@@ -74,15 +74,15 @@ export interface QueueWorkerServiceBaseProps {
 }
 
 /**
- * Base class for a Fargate and ECS queue worker service
+ * Base class for a Fargate and ECS queue processing service
  */
-export abstract class QueueWorkerServiceBase extends cdk.Construct {
+export abstract class QueueProcessingServiceBase extends cdk.Construct {
   /**
-   * The SQS queue that the worker service will process from
+   * The SQS queue that the service will process from
    */
   public readonly sqsQueue: sqs.IQueue;
 
-  // Properties that have defaults defined. The Queue Worker will handle assigning undefined properties with default
+  // Properties that have defaults defined. The Queue Processing Service will handle assigning undefined properties with default
   // values so that derived classes do not need to maintain the same logic.
 
   /**
@@ -106,11 +106,11 @@ export abstract class QueueWorkerServiceBase extends cdk.Construct {
    */
   public readonly logDriver?: ecs.LogDriver;
 
-  constructor(scope: cdk.Construct, id: string, props: QueueWorkerServiceBaseProps) {
+  constructor(scope: cdk.Construct, id: string, props: QueueProcessingServiceBaseProps) {
     super(scope, id);
 
-    // Create the worker SQS queue if one is not provided
-    this.sqsQueue = props.queue !== undefined ? props.queue : new sqs.Queue(this, 'EcsWorkerServiceQueue', {});
+    // Create the SQS queue if one is not provided
+    this.sqsQueue = props.queue !== undefined ? props.queue : new sqs.Queue(this, 'EcsProcessingQueue', {});
 
     // Setup autoscaling scaling intervals
     const defaultScalingSteps = [{ upper: 0, change: -1 }, { lower: 100, change: +1 }, { lower: 500, change: +5 }];
@@ -118,7 +118,7 @@ export abstract class QueueWorkerServiceBase extends cdk.Construct {
 
     // Create log driver if logging is enabled
     const enableLogging = props.enableLogging !== undefined ? props.enableLogging : true;
-    this.logDriver = enableLogging ? this.createAwsLogDriver(this.node.id) : undefined;
+    this.logDriver = enableLogging ? this.createAWSLogDriver(this.node.id) : undefined;
 
     // Add the queue name to environment variables
     this.environment = { ...(props.environment || {}), QUEUE_NAME: this.sqsQueue.queueName };
@@ -152,7 +152,7 @@ export abstract class QueueWorkerServiceBase extends cdk.Construct {
    *
    * @param prefix the Cloudwatch logging prefix
    */
-  private createAwsLogDriver(prefix: string): ecs.AwsLogDriver {
-    return new ecs.AwsLogDriver(this, 'QueueWorkerLogging', { streamPrefix: prefix });
+  private createAWSLogDriver(prefix: string): ecs.AwsLogDriver {
+    return new ecs.AwsLogDriver(this, 'ProcessingContainerLogging', { streamPrefix: prefix });
   }
 }

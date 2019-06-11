@@ -15,7 +15,7 @@ export = {
     cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
 
     // WHEN
-    new ecsPatterns.FargateQueueWorkerService(stack, 'Service', {
+    new ecsPatterns.QueueProcessingFargateService(stack, 'Service', {
       cluster,
       memoryMiB: '512',
       image: ecs.ContainerImage.fromRegistry('test')
@@ -37,7 +37,7 @@ export = {
               Name: "QUEUE_NAME",
               Value: {
                 "Fn::GetAtt": [
-                  "ServiceEcsWorkerServiceQueue19BF278C",
+                  "ServiceEcsProcessingQueueC266885C",
                   "QueueName"
                 ]
               }
@@ -47,7 +47,7 @@ export = {
             LogDriver: "awslogs",
             Options: {
               "awslogs-group": {
-                Ref: "ServiceQueueWorkerLoggingLogGroup5E11C73B"
+                Ref: "ServiceProcessingContainerLoggingLogGroupF40B9C5D"
               },
               "awslogs-stream-prefix": "Service",
               "awslogs-region": {
@@ -72,7 +72,7 @@ export = {
     const queue = new sqs.Queue(stack, 'fargate-test-queue', { queueName: 'fargate-test-sqs-queue'});
 
     // WHEN
-    new ecsPatterns.FargateQueueWorkerService(stack, 'Service', {
+    new ecsPatterns.QueueProcessingFargateService(stack, 'Service', {
       cluster,
       memoryMiB: '512',
       image: ecs.ContainerImage.fromRegistry('test'),
