@@ -53,6 +53,23 @@ Associated types (such as `EncryptionKeyAliasProps`) were renamed in the
 same way.
 * **cli:** This release requires CDK CLI >= 0.34.0
 * **core:** `App.run()` was renamed to `App.synth()` (soft deprecation, it will be removed in the next release).
+* **core:** `node.stack` is now `Stack.of(construct)` (fixes #2766)
+* **core:** `node.resolve` has been moved to `stack.resolve`.
+* **core:** `node.stringifyJson` has been moved to `stack.stringifyJson`.
+* **core:** `node.validateTree` is now `ConstructNode.validate(node)`
+* **core:** `node.prepareTree` is now `ConstructNode.prepare(node)`
+* **core:** `node.getContext` is now `node.tryGetContext`
+* **core:** `node.recordReference` is now `node.addReference`
+* **core:** `node.apply` is now `node.applyAspect`
+* **core:** `node.ancestors()` is now `node.scopes`
+* **core:** `node.required` has been removed.
+* **core:** `node.typename` has been removed.
+* **core:** `node.addChild` is now private
+* **core:** `node.findReferences()` is now `node.references`
+* **core:** `node.findDependencies()` is now `node.dependencies`
+* **core:** `stack.dependencies()` is now `stack.dependencies`
+* **core:** `CfnElement.stackPath` has been removed.
+* **core:** `CloudFormationLang` is now internal (use `stack.toJsonString()`)
 * **cloudwatch:** using an SNS topic as CloudWatch Alarm Actxion now
 requires an integration object from the `@aws-cdk/aws-cloudwatch-actions`
 package.

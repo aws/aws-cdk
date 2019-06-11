@@ -6,7 +6,7 @@ import ecr = require('@aws-cdk/aws-ecr');
 import events = require('@aws-cdk/aws-events');
 import iam = require('@aws-cdk/aws-iam');
 import kms = require('@aws-cdk/aws-kms');
-import { Aws, Construct, IResource, Resource, Stack, Token } from '@aws-cdk/cdk';
+import { Aws, Construct, IResource, PhysicalName, Resource, ResourceIdentifiers, Stack, Token } from '@aws-cdk/cdk';
 import { BuildArtifacts, CodePipelineBuildArtifacts, NoBuildArtifacts } from './artifacts';
 import { Cache } from './cache';
 import { CfnProject } from './codebuild.generated';
@@ -451,7 +451,7 @@ export interface CommonProjectProps {
    *
    * @default - Name is automatically generated.
    */
-  readonly projectName?: string;
+  readonly projectName?: PhysicalName;
 
   /**
    * VPC network to place codebuild network interfaces
@@ -616,13 +616,16 @@ export class Project extends ProjectBase {
   private _securityGroups: ec2.ISecurityGroup[] = [];
 
   constructor(scope: Construct, id: string, props: ProjectProps) {
-    super(scope, id);
+    super(scope, id, {
+      physicalName: props.projectName,
+    });
 
     if (props.buildScriptAssetEntrypoint && !props.buildScriptAsset) {
       throw new Error('To use buildScriptAssetEntrypoint, supply buildScriptAsset as well.');
     }
 
     this.role = props.role || new iam.Role(this, 'Role', {
+      roleName: PhysicalName.auto({ crossEnvironment: true }),
       assumedBy: new iam.ServicePrincipal('codebuild.amazonaws.com')
     });
     this.grantPrincipal = this.role;
@@ -700,7 +703,7 @@ export class Project extends ProjectBase {
       encryptionKey: props.encryptionKey && props.encryptionKey.keyArn,
       badgeEnabled: props.badge,
       cache: cache._toCloudFormation(),
-      name: props.projectName,
+      name: this.physicalName.value,
       timeoutInMinutes: props.timeout,
       secondarySources: new Token(() => this.renderSecondarySources()),
       secondaryArtifacts: new Token(() => this.renderSecondaryArtifacts()),
@@ -708,8 +711,17 @@ export class Project extends ProjectBase {
       vpcConfig: this.configureVpc(props),
     });
 
-    this.projectArn = resource.projectArn;
-    this.projectName = resource.projectName;
+    const resourceIdentifiers = new ResourceIdentifiers(this, {
+      arn: resource.projectArn,
+      name: resource.projectName,
+      arnComponents: {
+        service: 'codebuild',
+        resource: 'project',
+        resourceName: this.physicalName.value,
+      },
+    });
+    this.projectArn = resourceIdentifiers.arn;
+    this.projectName = resourceIdentifiers.name;
 
     this.addToRolePolicy(this.createLoggingPermission());
 

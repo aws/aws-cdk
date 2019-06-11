@@ -229,6 +229,34 @@ export = {
         // THEN
         test.done();
       },
+
+      "it errors if assignPublicIp is true"(test: Test) {
+        // GIVEN
+        const stack = new cdk.Stack();
+        const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+        const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+        cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
+        const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', {
+          networkMode: NetworkMode.Bridge
+        });
+
+        taskDefinition.addContainer("web", {
+          image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
+          memoryLimitMiB: 512
+        });
+
+      // THEN
+        test.throws(() => {
+          new ecs.Ec2Service(stack, "Ec2Service", {
+            cluster,
+            taskDefinition,
+            assignPublicIp: true
+          });
+        });
+
+        // THEN
+        test.done();
+      },
     },
 
     "with a TaskDefinition with AwsVpc network mode": {
