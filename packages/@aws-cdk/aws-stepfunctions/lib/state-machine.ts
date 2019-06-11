@@ -37,20 +37,39 @@ export interface StateMachineProps {
 }
 
 /**
- * Define a StepFunctions State Machine
+ * A new or imported state machine.
  */
-export class StateMachine extends Resource implements IStateMachine {
+abstract class StateMachineBase extends Resource implements IStateMachine {
     /**
      * Import a state machine
      */
     public static fromStateMachineArn(scope: Construct, id: string, stateMachineArn: string): IStateMachine {
-        class Import extends Resource implements IStateMachine {
+        class Import extends StateMachineBase {
             public readonly stateMachineArn = stateMachineArn;
         }
 
         return new Import(scope, id);
     }
 
+    public abstract readonly stateMachineArn: string;
+
+    /**
+     * Grant the given identity permissions to start an execution of this state
+     * machine.
+     */
+    public grantStartExecution(identity: iam.IGrantable): iam.Grant {
+        return iam.Grant.addToPrincipal({
+            grantee: identity,
+            actions: ['states:StartExecution'],
+            resourceArns: [this.stateMachineArn]
+        });
+    }
+}
+
+/**
+ * Define a StepFunctions State Machine
+ */
+export class StateMachine extends StateMachineBase {
     /**
      * Execution role of this state machine
      */
