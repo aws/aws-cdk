@@ -49,7 +49,7 @@ export = {
 
     'can parse bucket name even if it contains a token'(test: Test) {
       const stack = new cdk.Stack();
-      const bucketArn = `arn:aws:s3:::${new cdk.Token({ Ref: 'my-bucket' })}`;
+      const bucketArn = `arn:aws:s3:::${cdk.Token.asString({ Ref: 'my-bucket' })}`;
 
       test.deepEqual(stack.resolve(parseBucketName(stack, { bucketArn })), {
         "Fn::Select": [

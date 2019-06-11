@@ -168,7 +168,7 @@ export = {
       bind: () => ({
         id: 'T2',
         arn: 'ARN2',
-        input: RuleTargetInput.fromText(`This is ${EventField.fromPath('$.detail.bla', 'bla')}`),
+        input: RuleTargetInput.fromText(`This is ${EventField.fromPath('$.detail.bla')}`),
       })
     };
 
@@ -199,9 +199,9 @@ export = {
             "Id": "T2",
             "InputTransformer": {
             "InputPathsMap": {
-              "bla": "$.detail.bla"
+              "detail-bla": "$.detail.bla"
             },
-            "InputTemplate": "\"This is <bla>\""
+            "InputTemplate": "\"This is <detail-bla>\""
             },
           }
           ]
@@ -275,9 +275,9 @@ export = {
               "Id": "T3",
               "InputTransformer": {
                 "InputPathsMap": {
-                  "f1": "$.detail.bar"
+                  "detail-bar": "$.detail.bar"
                 },
-                "InputTemplate": "{\"foo\":<f1>}"
+                "InputTemplate": "{\"foo\":<detail-bar>}"
               }
             },
             {

@@ -22,13 +22,6 @@ export = {
     test.done();
   },
 
-  'outputs cannot be referenced'(test: Test) {
-    const stack = new Stack();
-    const output = new CfnOutput(stack, 'MyOutput', { description: 'My CfnOutput', value: 'boom' });
-    test.throws(() => output.ref);
-    test.done();
-  },
-
   'disableExport can be used to disable the auto-export behavior'(test: Test) {
     const stack = new Stack();
     const output = new CfnOutput(stack, 'MyOutput', { disableExport: true, value: 'boom' });

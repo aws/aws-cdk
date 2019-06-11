@@ -1,12 +1,15 @@
-import { CfnRefElement } from './cfn-element';
+import { CfnElement } from './cfn-element';
 import { Construct } from './construct';
+import { IResolvable, IResolveContext } from './resolvable';
 import { Token } from './token';
 
 export interface CfnParameterProps {
   /**
    * The data type for the parameter (DataType).
+   *
+   * @default String
    */
-  readonly type: string;
+  readonly type?: string;
 
   /**
    * A value of the appropriate type for the template to use if no value is specified
@@ -90,26 +93,15 @@ export interface CfnParameterProps {
  * Parameters enable you to input custom values to your template each time you create or
  * update a stack.
  */
-export class CfnParameter extends CfnRefElement {
-  /**
-   * A token that represents the actual value of this parameter.
-   */
-  public value: Token;
-
-  /**
-   * The parameter value token represented as a string.
-   */
-  public stringValue: string;
-
-  /**
-   * The parameter value token represented as a string array.
-   */
-  public stringListValue: string[];
+export class CfnParameter extends CfnElement implements IResolvable {
+  public readonly displayHint: string | undefined;
 
   /**
    * Indicates if this parameter has "NoEcho" set.
    */
   public readonly noEcho: boolean;
+
+  private readonly type: string;
 
   private properties: CfnParameterProps;
 
@@ -121,13 +113,49 @@ export class CfnParameter extends CfnRefElement {
    * @param scope The parent construct.
    * @param props The parameter properties.
    */
-  constructor(scope: Construct, id: string, props: CfnParameterProps) {
+  constructor(scope: Construct, id: string, props: CfnParameterProps = {}) {
     super(scope, id);
+    this.type = props.type || 'String';
+    this.displayHint = `Param${id}`;
     this.properties = props;
-    this.value = this.referenceToken;
-    this.stringValue = this.value.toString();
-    this.stringListValue = this.value.toList();
     this.noEcho = props.noEcho || false;
+  }
+
+  /**
+   * The parameter value as a Token
+   */
+  public get value(): IResolvable {
+    return super.ref;
+  }
+
+  /**
+   * The parameter value, if it represents a string.
+   */
+  public get valueAsString(): string {
+    if (!isStringType(this.type)) {
+      throw new Error(`Parameter type (${this.type}) is not a string type`);
+    }
+    return Token.asString(this.ref);
+  }
+
+  /**
+   * The parameter value, if it represents a string list.
+   */
+  public get valueAsList(): string[] {
+    if (!isListType(this.type)) {
+      throw new Error(`Parameter type (${this.type}) is not a string list type`);
+    }
+    return Token.asList(this.ref);
+  }
+
+  /**
+   * The parameter value, if it represents a string list.
+   */
+  public get valueAsNumber(): number {
+    if (!isNumberType(this.type)) {
+      throw new Error(`Parameter type (${this.type}) is not a number type`);
+    }
+    return Token.asNumber(this.ref);
   }
 
   /**
@@ -137,7 +165,7 @@ export class CfnParameter extends CfnRefElement {
     return {
       Parameters: {
         [this.logicalId]: {
-          Type: this.properties.type,
+          Type: this.type,
           Default: this.properties.default,
           AllowedPattern: this.properties.allowedPattern,
           AllowedValues: this.properties.allowedValues,
@@ -153,11 +181,28 @@ export class CfnParameter extends CfnRefElement {
     };
   }
 
-  /**
-   * Allows using parameters as tokens without the need to dereference them.
-   * This implicitly implements Token, until we make it an interface.
-   */
-  public resolve(): any {
-    return this.value;
+  public resolve(_context: IResolveContext): any {
+    return this.ref;
   }
+}
+
+/**
+ * Whether the given parameter type looks like a list type
+ */
+function isListType(type: string) {
+  return type.indexOf('List<') >= 0 || type.indexOf('CommaDelimitedList') >= 0;
+}
+
+/**
+ * Whether the given parameter type looks like a number type
+ */
+function isNumberType(type: string) {
+  return type === 'Number';
+}
+
+/**
+ * Whether the given parameter type looks like a string type
+ */
+function isStringType(type: string) {
+  return !isListType(type) && !isNumberType(type);
 }

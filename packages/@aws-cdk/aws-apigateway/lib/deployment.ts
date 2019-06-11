@@ -1,4 +1,4 @@
-import { Construct, DeletionPolicy, Resource, Stack, Token } from '@aws-cdk/cdk';
+import { Construct, DeletionPolicy, Lazy, Resource, Stack } from '@aws-cdk/cdk';
 import crypto = require('crypto');
 import { CfnDeployment, CfnDeploymentProps } from './apigateway.generated';
 import { IRestApi } from './restapi';
@@ -76,7 +76,7 @@ export class Deployment extends Resource {
     }
 
     this.api = props.api;
-    this.deploymentId = new Token(() => this.resource.deploymentId).toString();
+    this.deploymentId = Lazy.stringValue({ produce: () => this.resource.deploymentId });
   }
 
   /**

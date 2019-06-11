@@ -1,5 +1,7 @@
 import cxapi = require('@aws-cdk/cx-api');
 import { Construct } from "./construct";
+import { Lazy } from "./lazy";
+import { Token } from './token';
 
 const CFN_ELEMENT_SYMBOL = Symbol.for('@aws-cdk/cdk.CfnElement');
 
@@ -50,11 +52,13 @@ export abstract class CfnElement extends Construct {
 
     Object.defineProperty(this, CFN_ELEMENT_SYMBOL, { value: true });
 
-    this.node.addMetadata(cxapi.LOGICAL_ID_METADATA_KEY, new (require("./token").Token)(() => this.logicalId), this.constructor);
-
     this.stack = Stack.of(this);
     this._logicalId = this.stack.logicalIds.getLogicalId(this);
-    this.logicalId = new Token(() => this._logicalId, `${notTooLong(this.node.path)}.LogicalID`).toString();
+    this.logicalId = Lazy.stringValue({ produce: () => this._logicalId }, {
+      displayHint: `${notTooLong(this.node.path)}.LogicalID`
+    });
+
+    this.node.addMetadata(cxapi.LOGICAL_ID_METADATA_KEY, this.logicalId, this.constructor);
   }
 
   /**
@@ -130,6 +134,13 @@ export abstract class CfnElement extends Construct {
       if (e.type !== 'CfnSynthesisError') { throw e; }
     }
   }
+
+  /**
+   * Return a token that will CloudFormation { Ref } this stack element
+   */
+  protected get ref(): IResolvable {
+    return CfnReference.for(this, 'Ref');
+  }
 }
 
 /**
@@ -144,17 +155,17 @@ export abstract class CfnElement extends Construct {
  */
 export abstract class CfnRefElement extends CfnElement {
   /**
-   * Returns a token to a CloudFormation { Ref } that references this entity based on it's logical ID.
+   * Return a token that will CloudFormation { Ref } this stack element
    */
-  public get ref(): string {
-    return this.referenceToken.toString();
+  public get ref(): IResolvable {
+    return super.ref;
   }
 
   /**
-   * Return a token that will CloudFormation { Ref } this stack element
+   * Return a string that will CloudFormation { Ref } this stack element
    */
-  public get referenceToken(): Token {
-    return CfnReference.for(this, 'Ref');
+  public get refAsString(): string {
+    return Token.asString(this.ref);
   }
 }
 
@@ -163,7 +174,7 @@ function notTooLong(x: string) {
   return x.substr(0, 47) + '...' + x.substr(x.length - 47);
 }
 
-import { CfnReference } from "./cfn-reference";
-import { findTokens } from "./resolve";
+import { CfnReference } from "./private/cfn-reference";
+import { findTokens } from "./private/resolve";
+import { IResolvable } from "./resolvable";
 import { Stack } from './stack';
-import { Token } from './token';

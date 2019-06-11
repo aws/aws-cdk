@@ -382,7 +382,7 @@ function invokeMethod(stack: cdk.Stack, method: reflect.Callable, parameters: an
  * an `Fn::GetAtt`.
  */
 function deconstructGetAtt(stack: cdk.Stack, id: string, attribute: string) {
-  new cdk.Token(() => {
+  return cdk.Lazy.stringValue({ produce: () => {
     const res = stack.node.tryFindChild(id);
     if (!res) {
       const include = stack.node.tryFindChild('Include') as cdk.Include;
@@ -399,7 +399,7 @@ function deconstructGetAtt(stack: cdk.Stack, id: string, attribute: string) {
       return { "Fn::GetAtt": [ id, attribute ] };
     }
     return (res as any)[attribute];
-  }).toString();
+  }});
 }
 
 function findConstruct(stack: cdk.Stack, id: string) {

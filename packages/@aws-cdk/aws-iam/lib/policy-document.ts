@@ -3,7 +3,7 @@ import { AccountPrincipal, AccountRootPrincipal, Anyone, ArnPrincipal, Canonical
   FederatedPrincipal, IPrincipal, ServicePrincipal, ServicePrincipalOpts } from './principals';
 import { mergePrincipal } from './util';
 
-export class PolicyDocument extends cdk.Token implements cdk.IResolvedValuePostProcessor {
+export class PolicyDocument implements cdk.IResolvableWithPostProcess {
   private statements = new Array<PolicyStatement>();
   private _autoAssignSids = false;
 
@@ -13,7 +13,6 @@ export class PolicyDocument extends cdk.Token implements cdk.IResolvedValuePostP
    * policy. All statements of this document will be copied in.
    */
   constructor(private readonly baseDocument: any = {}) {
-    super();
   }
 
   /**
@@ -24,17 +23,7 @@ export class PolicyDocument extends cdk.Token implements cdk.IResolvedValuePostP
   }
 
   public resolve(_context: cdk.IResolveContext): any {
-    if (this.isEmpty) {
-      return undefined;
-    }
-
-    const doc = {
-      ...this.baseDocument,
-      Statement: (this.baseDocument.Statement || []).concat(this.statements),
-      Version: this.baseDocument.Version || '2012-10-17'
-    };
-
-    return doc;
+    return this.render();
   }
 
   /**
@@ -92,12 +81,36 @@ export class PolicyDocument extends cdk.Token implements cdk.IResolvedValuePostP
     this.statements.push(statement);
     return this;
   }
+
+  public toString() {
+    return cdk.Token.asString(this, {
+      displayHint: 'PolicyDocument'
+    });
+  }
+
+  public toJSON() {
+    return this.render();
+  }
+
+  private render() {
+    if (this.isEmpty) {
+      return undefined;
+    }
+
+    const doc = {
+      ...this.baseDocument,
+      Statement: (this.baseDocument.Statement || []).concat(this.statements),
+      Version: this.baseDocument.Version || '2012-10-17'
+    };
+
+    return doc;
+  }
 }
 
 /**
  * Represents a statement in an IAM policy document.
  */
-export class PolicyStatement extends cdk.Token {
+export class PolicyStatement implements cdk.IResolvable {
   public sid?: string;
 
   private action = new Array<any>();
@@ -107,7 +120,6 @@ export class PolicyStatement extends cdk.Token {
   private effect?: PolicyStatementEffect;
 
   constructor(effect: PolicyStatementEffect = PolicyStatementEffect.Allow) {
-    super();
     this.effect = effect;
   }
 
@@ -269,9 +281,7 @@ export class PolicyStatement extends cdk.Token {
   }
 
   public limitToAccount(accountId: string): PolicyStatement {
-    return this.addCondition('StringEquals', new cdk.Token(() => {
-      return { 'sts:ExternalId': accountId };
-    }));
+    return this.addCondition('StringEquals', { 'sts:ExternalId': accountId });
   }
 
   //
@@ -297,7 +307,7 @@ export class PolicyStatement extends cdk.Token {
         return undefined;
       }
 
-      if (cdk.Token.isToken(values)) {
+      if (cdk.Token.isUnresolved(values)) {
         return values;
       }
 
@@ -337,6 +347,16 @@ export class PolicyStatement extends cdk.Token {
       }
       return result;
     }
+  }
+
+  public toString() {
+    return cdk.Token.asString(this, {
+      displayHint: 'PolicyStatement'
+    });
+  }
+
+  public toJSON() {
+    return this.toJson();
   }
 }
 

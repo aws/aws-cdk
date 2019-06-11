@@ -81,7 +81,7 @@ export class Alias extends AliasBase {
   constructor(scope: Construct, id: string, props: AliasProps) {
     super(scope, id);
 
-    if (!Token.unresolved(props.name)) {
+    if (!Token.isUnresolved(props.name)) {
       if (!props.name.startsWith(REQUIRED_ALIAS_PREFIX)) {
         throw new Error(`Alias must start with the prefix "${REQUIRED_ALIAS_PREFIX}": ${props.name}`);
       }

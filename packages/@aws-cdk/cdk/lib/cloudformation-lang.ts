@@ -1,7 +1,9 @@
-import { isIntrinsic, minimalCloudFormationJoin } from "./instrinsics";
-import { DefaultTokenResolver, IFragmentConcatenator, resolve } from "./resolve";
+import { Lazy } from "./lazy";
+import { Intrinsic } from "./private/intrinsic";
+import { resolve } from "./private/resolve";
+import { DefaultTokenResolver, IFragmentConcatenator, IResolvable, IResolveContext  } from "./resolvable";
 import { TokenizedStringFragments } from "./string-fragments";
-import { IResolveContext, Token } from "./token";
+import { Token } from "./token";
 
 /**
  * Routines that know how to do operations at the CloudFormation document language level
@@ -43,7 +45,7 @@ export class CloudFormationLang {
         super(CLOUDFORMATION_CONCAT);
       }
 
-      public resolveToken(t: Token, context: IResolveContext) {
+      public resolveToken(t: IResolvable, context: IResolveContext) {
         return wrap(super.resolveToken(t, context));
       }
       public resolveString(fragments: TokenizedStringFragments, context: IResolveContext) {
@@ -55,15 +57,15 @@ export class CloudFormationLang {
     }
 
     // We need a ResolveContext to get started so return a Token
-    return new Token((ctx: IResolveContext) => {
-      return JSON.stringify(resolve(obj, {
+    return Lazy.stringValue({ produce: (ctx: IResolveContext) =>
+      JSON.stringify(resolve(obj, {
         scope: ctx.scope,
         resolver: new IntrinsincWrapper()
-      }));
-    }).toString();
+      }))
+    });
 
     function wrap(value: any): any {
-      return isIntrinsic(value) ? new IntrinsicToken(() => deepQuoteStringsForJSON(value)) : value;
+      return isIntrinsic(value) ? new JsonToken(deepQuoteStringsForJSON(value)) : value;
     }
   }
 
@@ -92,7 +94,7 @@ export class CloudFormationLang {
 /**
  * Token that also stringifies in the toJSON() operation.
  */
-class IntrinsicToken extends Token {
+class JsonToken extends Intrinsic {
   /**
    * Special handler that gets called when JSON.stringify() is used.
    */
@@ -135,3 +137,53 @@ const CLOUDFORMATION_CONCAT: IFragmentConcatenator = {
  * Default Token resolver for CloudFormation templates
  */
 export const CLOUDFORMATION_TOKEN_RESOLVER = new DefaultTokenResolver(CLOUDFORMATION_CONCAT);
+
+/**
+ * Do an intelligent CloudFormation join on the given values, producing a minimal expression
+ */
+export function minimalCloudFormationJoin(delimiter: string, values: any[]): any[] {
+  let i = 0;
+  while (i < values.length) {
+    const el = values[i];
+    if (isSplicableFnJoinIntrinsic(el)) {
+      values.splice(i, 1, ...el['Fn::Join'][1]);
+    } else if (i > 0 && isPlainString(values[i - 1]) && isPlainString(values[i])) {
+      values[i - 1] += delimiter + values[i];
+      values.splice(i, 1);
+    } else {
+      i += 1;
+    }
+  }
+
+  return values;
+
+  function isPlainString(obj: any): boolean {
+    return typeof obj === 'string' && !Token.isUnresolved(obj);
+  }
+
+  function isSplicableFnJoinIntrinsic(obj: any): boolean {
+    return isIntrinsic(obj)
+      && Object.keys(obj)[0] === 'Fn::Join'
+      && obj['Fn::Join'][0] === delimiter;
+  }
+}
+
+/**
+ * Return whether the given value represents a CloudFormation intrinsic
+ */
+function isIntrinsic(x: any) {
+  if (Array.isArray(x) || x === null || typeof x !== 'object') { return false; }
+
+  const keys = Object.keys(x);
+  if (keys.length !== 1) { return false; }
+
+  return keys[0] === 'Ref' || isNameOfCloudFormationIntrinsic(keys[0]);
+}
+
+export function isNameOfCloudFormationIntrinsic(name: string): boolean {
+  if (!name.startsWith('Fn::')) {
+    return false;
+  }
+  // these are 'fake' intrinsics, only usable inside the parameter overrides of a CFN CodePipeline Action
+  return name !== 'Fn::GetArtifactAtt' && name !== 'Fn::GetParam';
+}

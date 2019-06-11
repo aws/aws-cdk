@@ -68,7 +68,7 @@ export class ServerApplication extends Resource implements IServerApplication {
       computePlatform: 'Server',
     });
 
-    this.applicationName = resource.ref;
+    this.applicationName = resource.refAsString;
     this.applicationArn = arnForApplication(this.applicationName);
   }
 }

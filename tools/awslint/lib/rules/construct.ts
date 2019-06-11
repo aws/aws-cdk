@@ -234,7 +234,7 @@ constructLinter.add({
 
       const found = (fqn && e.ctx.sys.tryFindFqn(fqn));
       if (found) {
-        e.assert(!(fqn === e.ctx.core.tokenClass.fqn), `${e.ctx.propsFqn}.${property.name}`);
+        e.assert(!(fqn === e.ctx.core.tokenInterface.fqn), `${e.ctx.propsFqn}.${property.name}`);
       }
     }
   }

@@ -94,7 +94,7 @@ export class ApiKey extends Resource implements IApiKey {
       stageKeys: this.renderStageKeys(props.resources)
     });
 
-    this.keyId = resource.ref;
+    this.keyId = resource.refAsString;
   }
 
   private renderStageKeys(resources: RestApi[] | undefined): CfnApiKey.StageKeyProperty[] | undefined {

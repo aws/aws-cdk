@@ -84,7 +84,7 @@ export class CodeBuildAction extends codepipeline.Action {
     this.props = props;
 
     if (this.inputs.length > 1) {
-      this.configuration.PrimarySource = new cdk.Token(() => this.inputs[0].artifactName);
+      this.configuration.PrimarySource = cdk.Lazy.stringValue({ produce: () => this.inputs[0].artifactName });
     }
   }
 

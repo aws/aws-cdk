@@ -1,5 +1,5 @@
 import iam = require('@aws-cdk/aws-iam');
-import { Construct, IResource, Resource, Token } from '@aws-cdk/cdk';
+import { Construct, IResource, Lazy, Resource } from '@aws-cdk/cdk';
 import { ContainerDefinition, ContainerDefinitionOptions } from '../container-definition';
 import { CfnTaskDefinition } from '../ecs.generated';
 import { PlacementConstraint } from '../placement';
@@ -262,9 +262,9 @@ export class TaskDefinition extends TaskDefinitionBase {
     });
 
     const taskDef = new CfnTaskDefinition(this, 'Resource', {
-      containerDefinitions: new Token(() => this.containers.map(x => x.renderContainerDefinition())),
-      volumes: new Token(() => this.volumes),
-      executionRoleArn: new Token(() => this.executionRole && this.executionRole.roleArn).toString(),
+      containerDefinitions: Lazy.anyValue({ produce: () => this.containers.map(x => x.renderContainerDefinition()) }),
+      volumes: Lazy.anyValue({ produce: () => this.volumes }),
+      executionRoleArn: Lazy.stringValue({ produce: () => this.executionRole && this.executionRole.roleArn }),
       family: this.family,
       taskRoleArn: this.taskRole.roleArn,
       requiresCompatibilities: [
@@ -272,8 +272,9 @@ export class TaskDefinition extends TaskDefinitionBase {
         ...(isFargateCompatible(props.compatibility) ? ["FARGATE"] : []),
       ],
       networkMode: this.networkMode,
-      placementConstraints: new Token(
-        () => !isFargateCompatible(this.compatibility) && this.placementConstraints.length > 0 ? this.placementConstraints : undefined),
+      placementConstraints: Lazy.anyValue({ produce: () =>
+        !isFargateCompatible(this.compatibility) && this.placementConstraints.length > 0 ? this.placementConstraints : undefined
+      }),
       cpu: props.cpu,
       memory: props.memoryMiB,
     });

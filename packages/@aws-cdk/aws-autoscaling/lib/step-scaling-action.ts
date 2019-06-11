@@ -78,7 +78,7 @@ export class StepScalingAction extends cdk.Construct {
       adjustmentType: props.adjustmentType,
       minAdjustmentMagnitude: props.minAdjustmentMagnitude,
       metricAggregationType: props.metricAggregationType,
-      stepAdjustments: new cdk.Token(() => this.adjustments),
+      stepAdjustments: cdk.Lazy.anyValue({ produce: () => this.adjustments }),
     });
 
     this.scalingPolicyArn = resource.scalingPolicyArn;

@@ -227,8 +227,8 @@ export abstract class CloudFormationDeployAction extends CloudFormationAction {
       ...configuration,
       // None evaluates to empty string which is falsey and results in undefined
       Capabilities: (capabilities && capabilities.toString()) || undefined,
-      RoleArn: new cdk.Token(() => this.deploymentRole.roleArn),
-      ParameterOverrides: new cdk.Token(() => Stack.of(this.scope).toJsonString(props.parameterOverrides)),
+      RoleArn: cdk.Lazy.stringValue({ produce: () => this.deploymentRole.roleArn }),
+      ParameterOverrides: cdk.Lazy.stringValue({ produce: () => Stack.of(this.scope).toJsonString(props.parameterOverrides) }),
       TemplateConfiguration: props.templateConfiguration ? props.templateConfiguration.location : undefined,
       StackName: props.stackName,
     });

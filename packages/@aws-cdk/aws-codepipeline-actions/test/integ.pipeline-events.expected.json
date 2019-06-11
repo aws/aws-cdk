@@ -476,10 +476,10 @@
             "Id": "MyTopic",
             "InputTransformer": {
               "InputPathsMap": {
-                "f1": "$.detail.pipeline",
-                "f2": "$.detail.state"
+                "detail-pipeline": "$.detail.pipeline",
+                "detail-state": "$.detail.state"
               },
-              "InputTemplate": "\"Pipeline <f1> changed state to <f2>\""
+              "InputTemplate": "\"Pipeline <detail-pipeline> changed state to <detail-state>\""
             }
           }
         ]

@@ -257,7 +257,7 @@ export class Queue extends QueueBase {
     this.encryptionMasterKey = encryptionMasterKey;
     this.queueArn = queue.queueArn;
     this.queueName = queue.queueName;
-    this.queueUrl = queue.ref;
+    this.queueUrl = queue.refAsString;
 
     function _determineEncryptionProps(this: Queue): { encryptionProps: EncryptionProps, encryptionMasterKey?: kms.IKey } {
       let encryption = props.encryption || QueueEncryption.Unencrypted;

@@ -1,9 +1,14 @@
+import { IResolvable } from "../resolvable";
+import { TokenizedStringFragments } from "../string-fragments";
+import { Token } from "../token";
 import { BEGIN_LIST_TOKEN_MARKER, BEGIN_STRING_TOKEN_MARKER, createTokenDouble,
   END_TOKEN_MARKER, extractTokenDouble, TokenString, VALID_KEY_CHARS } from "./encoding";
-import { TokenizedStringFragments } from "./string-fragments";
-import { Token } from "./token";
 
 const glob = global as any;
+
+const STRING_SYMBOL = Symbol.for('@aws-cdk/cdk.TokenMap.STRING');
+const LIST_SYMBOL = Symbol.for('@aws-cdk/cdk.TokenMap.LIST');
+const NUMBER_SYMBOL = Symbol.for('@aws-cdk/cdk.TokenMap.NUMBER');
 
 /**
  * Central place where we keep a mapping from Tokens to their String representation
@@ -25,8 +30,8 @@ export class TokenMap {
     return glob.__cdkTokenMap;
   }
 
-  private readonly stringTokenMap = new Map<string, Token>();
-  private readonly numberTokenMap = new Map<number, Token>();
+  private readonly stringTokenMap = new Map<string, IResolvable>();
+  private readonly numberTokenMap = new Map<number, IResolvable>();
   private tokenCounter = 0;
 
   /**
@@ -40,38 +45,64 @@ export class TokenMap {
    * hint. This may be used to produce aesthetically pleasing and
    * recognizable token representations for humans.
    */
-  public registerString(token: Token, representationHint?: string): string {
-    const key = this.register(token, representationHint);
-    return `${BEGIN_STRING_TOKEN_MARKER}${key}${END_TOKEN_MARKER}`;
+  public registerString(token: IResolvable, displayHint?: string): string {
+    return cachedValue(token, STRING_SYMBOL, () => {
+      const key = this.registerStringKey(token, displayHint);
+      return `${BEGIN_STRING_TOKEN_MARKER}${key}${END_TOKEN_MARKER}`;
+    });
   }
 
   /**
    * Generate a unique string for this Token, returning a key
    */
-  public registerList(token: Token, representationHint?: string): string[] {
-    const key = this.register(token, representationHint);
-    return [`${BEGIN_LIST_TOKEN_MARKER}${key}${END_TOKEN_MARKER}`];
-  }
-
-  /**
-   * Lookup a token from an encoded value
-   */
-  public tokenFromEncoding(x: any): Token | undefined {
-    if (typeof 'x' === 'string') { return this.lookupString(x); }
-    if (Array.isArray(x)) { return this.lookupList(x); }
-    if (typeof x === 'object' && x !== null && Token.isToken(x)) {
-      return x as Token;
-    }
-    return undefined;
+  public registerList(token: IResolvable, displayHint?: string): string[] {
+    return cachedValue(token, LIST_SYMBOL, () => {
+      const key = this.registerStringKey(token, displayHint);
+      return [`${BEGIN_LIST_TOKEN_MARKER}${key}${END_TOKEN_MARKER}`];
+    });
   }
 
   /**
    * Create a unique number representation for this Token and return it
    */
-  public registerNumber(token: Token): number {
-    const tokenIndex = this.tokenCounter++;
-    this.numberTokenMap.set(tokenIndex, token);
-    return createTokenDouble(tokenIndex);
+  public registerNumber(token: IResolvable): number {
+    return cachedValue(token, NUMBER_SYMBOL, () => {
+      return this.registerNumberKey(token);
+    });
+  }
+
+  /**
+   * Lookup a token from an encoded value
+   */
+  public tokenFromEncoding(x: any): IResolvable | undefined {
+    if (typeof 'x' === 'string') { return this.lookupString(x); }
+    if (Array.isArray(x)) { return this.lookupList(x); }
+    if (Token.isUnresolved(x)) { return x; }
+    return undefined;
+  }
+
+  /**
+   * Reverse a string representation into a Token object
+   */
+  public lookupString(s: string): IResolvable | undefined {
+    const fragments = this.splitString(s);
+    if (fragments.tokens.length > 0 && fragments.length === 1) {
+      return fragments.firstToken;
+    }
+    return undefined;
+  }
+
+  /**
+   * Reverse a string representation into a Token object
+   */
+  public lookupList(xs: string[]): IResolvable | undefined {
+    if (xs.length !== 1) { return undefined; }
+    const str = TokenString.forListToken(xs[0]);
+    const fragments = str.split(this.lookupToken.bind(this));
+    if (fragments.length === 1) {
+      return fragments.firstToken;
+    }
+    return undefined;
   }
 
   /**
@@ -83,33 +114,9 @@ export class TokenMap {
   }
 
   /**
-   * Reverse a string representation into a Token object
-   */
-  public lookupString(s: string): Token | undefined {
-    const fragments = this.splitString(s);
-    if (fragments.tokens.length > 0 && fragments.length === 1) {
-      return fragments.firstToken;
-    }
-    return undefined;
-  }
-
-  /**
-   * Reverse a string representation into a Token object
-   */
-  public lookupList(xs: string[]): Token | undefined {
-    if (xs.length !== 1) { return undefined; }
-    const str = TokenString.forListToken(xs[0]);
-    const fragments = str.split(this.lookupToken.bind(this));
-    if (fragments.length === 1) {
-      return fragments.firstToken;
-    }
-    return undefined;
-  }
-
-  /**
    * Reverse a number encoding into a Token, or undefined if the number wasn't a Token
    */
-  public lookupNumberToken(x: number): Token | undefined {
+  public lookupNumberToken(x: number): IResolvable | undefined {
     const tokenIndex = extractTokenDouble(x);
     if (tokenIndex === undefined) { return undefined; }
     const t = this.numberTokenMap.get(tokenIndex);
@@ -122,7 +129,7 @@ export class TokenMap {
    *
    * This excludes the token markers.
    */
-  public lookupToken(key: string): Token {
+  public lookupToken(key: string): IResolvable {
     const token = this.stringTokenMap.get(key);
     if (!token) {
       throw new Error(`Unrecognized token key: ${key}`);
@@ -130,11 +137,29 @@ export class TokenMap {
     return token;
   }
 
-  private register(token: Token, representationHint?: string): string {
+  private registerStringKey(token: IResolvable, displayHint?: string): string {
     const counter = this.tokenCounter++;
-    const representation = (representationHint || `TOKEN`).replace(new RegExp(`[^${VALID_KEY_CHARS}]`, 'g'), '.');
+    const representation = (displayHint || `TOKEN`).replace(new RegExp(`[^${VALID_KEY_CHARS}]`, 'g'), '.');
     const key = `${representation}.${counter}`;
     this.stringTokenMap.set(key, token);
     return key;
   }
+
+  private registerNumberKey(token: IResolvable): number {
+    const counter = this.tokenCounter++;
+    this.numberTokenMap.set(counter, token);
+    return createTokenDouble(counter);
+  }
+}
+
+/**
+ * Get a cached value for an object, storing it on the object in a symbol
+ */
+function cachedValue<A extends object, B>(x: A, sym: symbol, prod: () => B) {
+  let cached = (x as any)[sym as any];
+  if (cached === undefined) {
+    cached = prod();
+    Object.defineProperty(x, sym, { value: cached });
+  }
+  return cached;
 }

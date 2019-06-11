@@ -1,4 +1,4 @@
-import { Construct, Resource, Token } from '@aws-cdk/cdk';
+import { Construct, Lazy, Resource } from '@aws-cdk/cdk';
 import { EventPattern } from './event-pattern';
 import { CfnRule } from './events.generated';
 import { IRule } from './rule-ref';
@@ -96,9 +96,9 @@ export class Rule extends Resource implements IRule {
       name: props.ruleName,
       description: props.description,
       state: props.enabled == null ? 'ENABLED' : (props.enabled ? 'ENABLED' : 'DISABLED'),
-      scheduleExpression: new Token(() => this.scheduleExpression).toString(),
-      eventPattern: new Token(() => this.renderEventPattern()),
-      targets: new Token(() => this.renderTargets()),
+      scheduleExpression: Lazy.stringValue({ produce: () => this.scheduleExpression }),
+      eventPattern: Lazy.anyValue({ produce: () => this.renderEventPattern() }),
+      targets: Lazy.anyValue({ produce: () => this.renderTargets() }),
     });
 
     this.ruleArn = resource.ruleArn;

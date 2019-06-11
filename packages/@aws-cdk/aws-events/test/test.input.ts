@@ -81,7 +81,7 @@ export = {
         scheduleExpression: 'rate(1 minute)'
       });
 
-      const world = new cdk.Token(() => 'world');
+      const world = cdk.Lazy.stringValue({ produce: () => 'world' });
 
       // WHEN
       rule.addTarget(new SomeTarget(RuleTargetInput.fromText(`hello ${world}`)));

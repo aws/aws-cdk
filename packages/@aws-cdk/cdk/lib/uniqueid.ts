@@ -36,7 +36,7 @@ export function makeUniqueId(components: string[]) {
   }
 
   // Lazy require in order to break a module dependency cycle
-  const unresolvedTokens = components.filter(c => require('./encoding').unresolved(c));
+  const unresolvedTokens = components.filter(c => require('./private/encoding').unresolved(c));
   if (unresolvedTokens.length > 0) {
     throw new Error(`ID components may not include unresolved tokens: ${unresolvedTokens.join(',')}`);
   }

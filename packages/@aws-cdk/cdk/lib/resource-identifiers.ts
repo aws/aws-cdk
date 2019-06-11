@@ -1,6 +1,7 @@
 import { ArnComponents } from './arn';
-import { CrossEnvironmentPhysicalArnToken, CrossEnvironmentPhysicalNameToken } from './cross-environment-token';
+import { CrossEnvironmentPhysicalArnToken, CrossEnvironmentPhysicalNameToken } from './private/cross-environment-token';
 import { IResource } from './resource';
+import { Token } from './token';
 
 /**
  * Construction properties for {@link ResourceIdentifiers}.
@@ -31,15 +32,15 @@ export class ResourceIdentifiers {
   public readonly name: string;
 
   constructor(resource: IResource, props: ResourceIdentifiersProps) {
-    this.arn = new CrossEnvironmentPhysicalArnToken(
+    this.arn = Token.asString(new CrossEnvironmentPhysicalArnToken(
       props.arn,
       props.arnComponents,
       resource,
-    ).toString();
+    ), { displayHint: 'Arn' });
 
-    this.name = new CrossEnvironmentPhysicalNameToken(
+    this.name = Token.asString(new CrossEnvironmentPhysicalNameToken(
       props.name,
       resource,
-    ).toString();
+    ), { displayHint: 'Name' });
   }
 }

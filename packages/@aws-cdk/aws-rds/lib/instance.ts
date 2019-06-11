@@ -744,7 +744,7 @@ export class DatabaseInstance extends DatabaseInstanceSource implements IDatabas
     this.dbInstanceEndpointPort = instance.dbInstanceEndpointPort;
 
     // create a number token that represents the port of the instance
-    const portAttribute = new Token(() => instance.dbInstanceEndpointPort).toNumber();
+    const portAttribute = Token.asNumber(instance.dbInstanceEndpointPort);
     this.instanceEndpoint = new Endpoint(instance.dbInstanceEndpointAddress, portAttribute);
 
     const deleteReplacePolicy = props.deleteReplacePolicy || DeletionPolicy.Retain;
@@ -838,7 +838,7 @@ export class DatabaseInstanceFromSnapshot extends DatabaseInstanceSource impleme
     this.dbInstanceEndpointPort = instance.dbInstanceEndpointPort;
 
     // create a number token that represents the port of the instance
-    const portAttribute = new Token(() => instance.dbInstanceEndpointPort).toNumber();
+    const portAttribute = Token.asNumber(instance.dbInstanceEndpointPort);
     this.instanceEndpoint = new Endpoint(instance.dbInstanceEndpointAddress, portAttribute);
 
     const deleteReplacePolicy = props.deleteReplacePolicy || DeletionPolicy.Retain;
@@ -915,7 +915,7 @@ export class DatabaseInstanceReadReplica extends DatabaseInstanceNew implements 
     this.dbInstanceEndpointPort = instance.dbInstanceEndpointPort;
 
     // create a number token that represents the port of the instance
-    const portAttribute = new Token(() => instance.dbInstanceEndpointPort).toNumber();
+    const portAttribute = Token.asNumber(instance.dbInstanceEndpointPort);
     this.instanceEndpoint = new Endpoint(instance.dbInstanceEndpointAddress, portAttribute);
 
     const deleteReplacePolicy = props.deleteReplacePolicy || DeletionPolicy.Retain;

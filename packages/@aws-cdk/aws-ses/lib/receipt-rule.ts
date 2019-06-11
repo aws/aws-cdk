@@ -1,5 +1,5 @@
 import lambda = require('@aws-cdk/aws-lambda');
-import { Construct, IResource, Resource, Token } from '@aws-cdk/cdk';
+import { Construct, IResource, Lazy, Resource } from '@aws-cdk/cdk';
 import { IReceiptRuleAction, LambdaInvocationType, ReceiptRuleActionProps, ReceiptRuleLambdaAction } from './receipt-rule-action';
 import { IReceiptRuleSet } from './receipt-rule-set';
 import { CfnReceiptRule } from './ses.generated';
@@ -118,7 +118,7 @@ export class ReceiptRule extends Resource implements IReceiptRule {
     const resource = new CfnReceiptRule(this, 'Resource', {
       after: props.after ? props.after.receiptRuleName : undefined,
       rule: {
-        actions: new Token(() => this.getRenderedActions()),
+        actions: Lazy.anyValue({ produce: () => this.getRenderedActions() }),
         enabled: props.enabled === undefined ? true : props.enabled,
         name: props.name,
         recipients: props.recipients,

@@ -1,5 +1,5 @@
-import { IFragmentConcatenator } from "./resolve";
-import { Token } from "./token";
+import { IFragmentConcatenator, IResolvable } from "./resolvable";
+import { isResolvableObject } from "./token";
 
 /**
  * Result of the split of a string with Tokens
@@ -7,7 +7,7 @@ import { Token } from "./token";
  * Either a literal part of the string, or an unresolved Token.
  */
 type LiteralFragment = { type: 'literal'; lit: any; };
-type TokenFragment = { type: 'token'; token: Token; };
+type TokenFragment = { type: 'token'; token: IResolvable; };
 type IntrinsicFragment = { type: 'intrinsic'; value: any; };
 type Fragment =  LiteralFragment | TokenFragment | IntrinsicFragment;
 
@@ -17,7 +17,7 @@ type Fragment =  LiteralFragment | TokenFragment | IntrinsicFragment;
 export class TokenizedStringFragments {
   private readonly fragments = new Array<Fragment>();
 
-  public get firstToken(): Token | undefined {
+  public get firstToken(): IResolvable | undefined {
     const first = this.fragments[0];
     if (first.type === 'token') { return first.token; }
     return undefined;
@@ -35,7 +35,7 @@ export class TokenizedStringFragments {
     this.fragments.push({ type: 'literal', lit });
   }
 
-  public addToken(token: Token) {
+  public addToken(token: IResolvable) {
     this.fragments.push({ type: 'token', token });
   }
 
@@ -46,8 +46,8 @@ export class TokenizedStringFragments {
   /**
    * Return all Tokens from this string
    */
-  public get tokens(): Token[] {
-    const ret = new Array<Token>();
+  public get tokens(): IResolvable[] {
+    const ret = new Array<IResolvable>();
     for (const f of this.fragments) {
       if (f.type === 'token') {
         ret.push(f.token);
@@ -69,7 +69,7 @@ export class TokenizedStringFragments {
           break;
         case 'token':
           const mapped = mapper.mapToken(f.token);
-          if (isTokenObject(mapped)) {
+          if (isResolvableObject(mapped)) {
             ret.addToken(mapped);
           } else {
             ret.addIntrinsic(mapped);
@@ -113,7 +113,7 @@ export interface ITokenMapper {
   /**
    * Replace a single token
    */
-  mapToken(t: Token): any;
+  mapToken(t: IResolvable): any;
 }
 
 /**
@@ -127,14 +127,4 @@ function fragmentValue(fragment: Fragment): any {
     case 'token': return fragment.token.toString();
     case 'intrinsic': return fragment.value;
   }
-}
-
-/**
- * Whether x is literally a Token object
- *
- * Can't use Token.isToken() because that has been co-opted
- * to mean something else.
- */
-function isTokenObject(x: any): x is Token {
-  return typeof(x) === 'object' && x !== null && Token.isToken(x);
 }

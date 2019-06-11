@@ -1,5 +1,5 @@
 import iam = require('@aws-cdk/aws-iam');
-import { Aws, Construct, IResource, Resource, Token } from '@aws-cdk/cdk';
+import { Aws, Construct, IResource, Lazy, Resource } from '@aws-cdk/cdk';
 import { Connections, IConnectable } from './connections';
 import { CfnVPCEndpoint } from './ec2.generated';
 import { SecurityGroup } from './security-group';
@@ -172,7 +172,7 @@ export class GatewayVpcEndpoint extends VpcEndpoint implements IGatewayVpcEndpoi
     }
 
     const endpoint = new CfnVPCEndpoint(this, 'Resource', {
-      policyDocument: new Token(() => this.policyDocument),
+      policyDocument: Lazy.anyValue({ produce: () => this.policyDocument }),
       routeTableIds,
       serviceName: props.service.name,
       vpcEndpointType: VpcEndpointType.Gateway,
@@ -373,7 +373,7 @@ export class InterfaceVpcEndpoint extends VpcEndpoint implements IInterfaceVpcEn
 
     const endpoint = new CfnVPCEndpoint(this, 'Resource', {
       privateDnsEnabled: props.privateDnsEnabled !== undefined ? props.privateDnsEnabled : true,
-      policyDocument: new Token(() => this.policyDocument),
+      policyDocument: Lazy.anyValue({ produce: () => this.policyDocument }),
       securityGroupIds: [this.securityGroupId],
       serviceName: props.service.name,
       vpcEndpointType: VpcEndpointType.Interface,
