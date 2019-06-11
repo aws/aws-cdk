@@ -4,7 +4,8 @@
 export class Cron {
 
   /**
-   * Return a cron expression to run every day at a particular time
+   * Return a cron expression to run every day at a particular time.
+   * Notice that although YEAR is supported for appscaling, it's not supported for instance scaling.
    *
    * The time is specified in UTC.
    *
