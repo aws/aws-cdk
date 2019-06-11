@@ -1,6 +1,6 @@
+import { Lazy } from "./lazy";
 import { generatePhysicalName } from "./physical-name-generator";
 import { IResource } from './resource';
-import { Token } from "./token";
 
 /**
  * Options allowing customizing the automatically generated physical name of the resource.
@@ -103,7 +103,7 @@ class LateBoundPhysicalName extends PhysicalName {
     super();
 
     this.value = options.crossEnvironment
-      ? new Token(() => this.name).toString()
+      ? Lazy.stringValue({ produce: () => this.name })
       : undefined;
   }
 

@@ -1,4 +1,4 @@
-import { Reference } from "./reference";
+import { Reference } from "../reference";
 
 const CFN_REFERENCE_SYMBOL = Symbol.for('@aws-cdk/cdk.CfnReference');
 
@@ -20,7 +20,7 @@ export class CfnReference extends Reference {
   /**
    * Check whether this is actually a Reference
    */
-  public static isCfnReference(x: Token): x is CfnReference {
+  public static isCfnReference(x: IResolvable): x is CfnReference {
     return CFN_REFERENCE_SYMBOL in x;
   }
 
@@ -32,12 +32,12 @@ export class CfnReference extends Reference {
    * the prepare() phase (for the purpose of cross-stack references), it's
    * important that the state isn't lost if it's lazily created, like so:
    *
-   *     new Token(() => new CfnReference(...))
+   *     Lazy.stringValue({ produce: () => new CfnReference(...) })
    */
-  public static for(target: CfnRefElement, attribute: string) {
+  public static for(target: CfnElement, attribute: string) {
     return CfnReference.singletonReference(target, attribute, () => {
-      const cfnInstrinsic = attribute === 'Ref' ? { Ref: target.logicalId } : { 'Fn::GetAtt': [ target.logicalId, attribute ]};
-      return new CfnReference(cfnInstrinsic, attribute, target);
+      const cfnIntrinsic = attribute === 'Ref' ? { Ref: target.logicalId } : { 'Fn::GetAtt': [ target.logicalId, attribute ]};
+      return new CfnReference(cfnIntrinsic, attribute, target);
     });
   }
 
@@ -46,8 +46,8 @@ export class CfnReference extends Reference {
    */
   public static forPseudo(pseudoName: string, scope: Construct) {
     return CfnReference.singletonReference(scope, `Pseudo:${pseudoName}`, () => {
-      const cfnInstrinsic = { Ref: pseudoName };
-      return new CfnReference(cfnInstrinsic, pseudoName, scope);
+      const cfnIntrinsic = { Ref: pseudoName };
+      return new CfnReference(cfnIntrinsic, pseudoName, scope);
     });
   }
 
@@ -81,20 +81,16 @@ export class CfnReference extends Reference {
   /**
    * The Tokens that should be returned for each consuming stack (as decided by the producing Stack)
    */
-  private readonly replacementTokens: Map<Stack, Token>;
+  private readonly replacementTokens: Map<Stack, IResolvable>;
 
   private readonly originalDisplayName: string;
   private readonly humanReadableDesc: string;
 
-  private constructor(value: any, displayName: string, target: Construct) {
-    if (typeof(value) === 'function') {
-      throw new Error('Reference can only hold CloudFormation intrinsics (not a function)');
-    }
-
+  protected constructor(value: any, private readonly displayName: string, target: IConstruct) {
     // prepend scope path to display name
-    super(value, `${target.node.id}.${displayName}`, target);
+    super(value, target);
     this.originalDisplayName = displayName;
-    this.replacementTokens = new Map<Stack, Token>();
+    this.replacementTokens = new Map<Stack, IResolvable>();
     this.humanReadableDesc = `target = ${target.node.path}`;
 
     this.producingStack = Stack.of(target);
@@ -131,11 +127,20 @@ export class CfnReference extends Reference {
   }
 
   /**
+   * Implementation of toString() that will use the display name
+   */
+  public toString(): string {
+    return Token.asString(this, {
+      displayHint: `${this.target.node.id}.${this.displayName}`
+    });
+  }
+
+  /**
    * Export a Token value for use in another stack
    *
    * Works by mutating the producing stack in-place.
    */
-  private exportValue(tokenValue: Token, consumingStack: Stack): Token {
+  private exportValue(tokenValue: Token, consumingStack: Stack): IResolvable {
     const producingStack = this.producingStack!;
 
     if (producingStack.env.account !== consumingStack.env.account || producingStack.env.region !== consumingStack.env.region) {
@@ -163,12 +168,14 @@ export class CfnReference extends Reference {
 
     // We want to return an actual FnImportValue Token here, but Fn.importValue() returns a 'string',
     // so construct one in-place.
-    return new Token({ 'Fn::ImportValue': output.obtainExportName() });
+    return new Intrinsic({ 'Fn::ImportValue': output.obtainExportName() });
   }
 }
 
-import { CfnRefElement } from "./cfn-element";
-import { CfnOutput } from "./cfn-output";
-import { Construct, IConstruct } from "./construct";
-import { Stack } from "./stack";
-import { IResolveContext, Token } from "./token";
+import { CfnElement } from "../cfn-element";
+import { CfnOutput } from "../cfn-output";
+import { Construct, IConstruct } from "../construct";
+import { IResolvable, IResolveContext } from "../resolvable";
+import { Stack } from "../stack";
+import { Token } from "../token";
+import { Intrinsic } from "./intrinsic";

@@ -1,7 +1,8 @@
 import events = require('@aws-cdk/aws-events');
 import iam = require('@aws-cdk/aws-iam');
 import kms = require('@aws-cdk/aws-kms');
-import { applyRemovalPolicy, Construct, IResource, PhysicalName, RemovalPolicy, Resource, ResourceIdentifiers, Stack, Token } from '@aws-cdk/cdk';
+import { applyRemovalPolicy, Construct, IResource, Lazy, PhysicalName,
+  RemovalPolicy, Resource, ResourceIdentifiers, Stack, Token } from '@aws-cdk/cdk';
 import { EOL } from 'os';
 import { BucketPolicy } from './bucket-policy';
 import { IBucketNotificationDestination } from './destination';
@@ -815,16 +816,18 @@ export class Bucket extends BucketBase {
     });
 
     const { bucketEncryption, encryptionKey } = this.parseEncryption(props);
-    this.validateBucketName(this.physicalName);
+    if (props.bucketName && !Token.isUnresolved(props.bucketName)) {
+      this.validateBucketName(props.bucketName);
+    }
 
     const resource = new CfnBucket(this, 'Resource', {
       bucketName: this.physicalName.value,
       bucketEncryption,
       versioningConfiguration: props.versioned ? { status: 'Enabled' } : undefined,
-      lifecycleConfiguration: new Token(() => this.parseLifecycleConfiguration()),
+      lifecycleConfiguration: Lazy.anyValue({ produce: () => this.parseLifecycleConfiguration() }),
       websiteConfiguration: this.renderWebsiteConfiguration(props),
       publicAccessBlockConfiguration: props.blockPublicAccess,
-      metricsConfigurations: new Token(() => this.parseMetricConfiguration())
+      metricsConfigurations: Lazy.anyValue({ produce: () => this.parseMetricConfiguration() })
     });
 
     applyRemovalPolicy(resource, props.removalPolicy !== undefined ? props.removalPolicy : RemovalPolicy.Orphan);
@@ -939,7 +942,7 @@ export class Bucket extends BucketBase {
 
   private validateBucketName(physicalName: PhysicalName): void {
     const bucketName = physicalName.value;
-    if (!bucketName || Token.isToken(bucketName)) {
+    if (!bucketName || Token.isUnresolved(bucketName)) {
       // the name is a late-bound value, not a defined string,
       // so skip validation
       return;

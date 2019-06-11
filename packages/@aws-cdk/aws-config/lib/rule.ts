@@ -1,7 +1,7 @@
 import events = require('@aws-cdk/aws-events');
 import iam = require('@aws-cdk/aws-iam');
 import lambda = require('@aws-cdk/aws-lambda');
-import { Construct, IResource, Resource, Token } from '@aws-cdk/cdk';
+import { Construct, IResource, Lazy, Resource } from '@aws-cdk/cdk';
 import { CfnConfigRule } from './config.generated';
 
 /**
@@ -255,7 +255,7 @@ export class ManagedRule extends RuleNew {
       description: props.description,
       inputParameters: props.inputParameters,
       maximumExecutionFrequency: props.maximumExecutionFrequency,
-      scope: new Token(() => this.scope),
+      scope: Lazy.anyValue({ produce: () => this.scope }),
       source: {
         owner: 'AWS',
         sourceIdentifier: props.identifier
@@ -358,7 +358,7 @@ export class CustomRule extends RuleNew {
       description: props.description,
       inputParameters: props.inputParameters,
       maximumExecutionFrequency: props.maximumExecutionFrequency,
-      scope: new Token(() => this.scope),
+      scope: Lazy.anyValue({ produce: () => this.scope }),
       source: {
         owner: 'CUSTOM_LAMBDA',
         sourceDetails,
