@@ -6,6 +6,7 @@ import contextproviders = require('../../context-providers');
 import { debug, error, print, warning } from '../../logging';
 import { Renames } from '../../renames';
 import { Configuration } from '../../settings';
+import { flatMap } from '../../util/arrays';
 import { SDK } from '../util/sdk';
 
 /**
@@ -233,7 +234,7 @@ export class AppStacks {
    * @returns an array with the tags available in the stack metadata.
    */
   public getTagsFromStackMetadata(stack: cxapi.CloudFormationStackArtifact): Tag[] {
-    return stack.findMetadataByType(cxapi.STACK_TAGS_METADATA_KEY).map(x => x.data);
+    return flatMap(stack.findMetadataByType(cxapi.STACK_TAGS_METADATA_KEY), x => x.data);
   }
 
   /**
