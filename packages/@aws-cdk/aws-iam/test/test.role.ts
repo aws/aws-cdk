@@ -116,10 +116,10 @@ export = {
 
     const role = new Role(stack, 'MyRole', {
       assumedBy: new ServicePrincipal('test.service'),
-      managedPolicyArns: [ 'managed1', 'managed2' ]
+      managedPolicies: [ { managedPolicyArn: 'managed1' }, { managedPolicyArn: 'managed2' } ]
     });
 
-    role.attachManagedPolicy('managed3');
+    role.addManagedPolicy({ managedPolicyArn: 'managed3' });
     expect(stack).toMatch({ Resources:
       { MyRoleF48FFE04:
          { Type: 'AWS::IAM::Role',

@@ -1,11 +1,12 @@
-import { Construct, PhysicalName, Resource, ResourceIdentifiers, Stack } from '@aws-cdk/cdk';
+import { Construct, Lazy, PhysicalName, Resource, ResourceIdentifiers, Stack } from '@aws-cdk/cdk';
 import { Grant } from './grant';
 import { CfnRole } from './iam.generated';
 import { IIdentity } from './identity-base';
+import { IManagedPolicy } from './managed-policy';
 import { Policy } from './policy';
 import { PolicyDocument, PolicyStatement } from './policy-document';
 import { ArnPrincipal, IPrincipal, PrincipalPolicyFragment } from './principals';
-import { AttachedPolicies, undefinedIfEmpty } from './util';
+import { AttachedPolicies } from './util';
 
 export interface RoleProps {
   /**
@@ -33,7 +34,7 @@ export interface RoleProps {
    *
    * @default - No managed policies.
    */
-  readonly managedPolicyArns?: string[];
+  readonly managedPolicies?: IManagedPolicy[];
 
   /**
    * A list of named policies to inline into this role. These policies will be
@@ -125,7 +126,7 @@ export class Role extends Resource implements IRole {
         // FIXME: Add warning that we're ignoring this
       }
 
-      public attachManagedPolicy(_arn: string): void {
+      public addManagedPolicy(_policy: IManagedPolicy): void {
         // FIXME: Add warning that we're ignoring this
       }
 
@@ -186,7 +187,7 @@ export class Role extends Resource implements IRole {
   public readonly policyFragment: PrincipalPolicyFragment;
 
   private defaultPolicy?: Policy;
-  private readonly managedPolicyArns: string[];
+  private readonly managedPolicies: IManagedPolicy[] = [];
   private readonly attachedPolicies = new AttachedPolicies();
 
   constructor(scope: Construct, id: string, props: RoleProps) {
@@ -195,13 +196,13 @@ export class Role extends Resource implements IRole {
     });
 
     this.assumeRolePolicy = createAssumeRolePolicy(props.assumedBy, props.externalId);
-    this.managedPolicyArns = props.managedPolicyArns || [ ];
+    this.managedPolicies.push(...props.managedPolicies || []);
 
     validateMaxSessionDuration(props.maxSessionDurationSec);
 
     const role = new CfnRole(this, 'Resource', {
       assumeRolePolicyDocument: this.assumeRolePolicy as any,
-      managedPolicyArns: undefinedIfEmpty(() => this.managedPolicyArns),
+      managedPolicyArns: Lazy.listValue({ produce: () => this.managedPolicies.map(p => p.managedPolicyArn) }, { omitEmpty: true }),
       policies: _flatten(props.inlinePolicies),
       path: props.path,
       roleName: this.physicalName.value,
@@ -252,10 +253,10 @@ export class Role extends Resource implements IRole {
 
   /**
    * Attaches a managed policy to this role.
-   * @param arn The ARN of the managed policy to attach.
+   * @param policy The the managed policy to attach.
    */
-  public attachManagedPolicy(arn: string) {
-    this.managedPolicyArns.push(arn);
+  public addManagedPolicy(policy: IManagedPolicy) {
+    this.managedPolicies.push(policy);
   }
 
   /**

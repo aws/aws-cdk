@@ -265,7 +265,7 @@ export class Function extends FunctionBase {
       constructor(s: Construct, i: string) {
         super(s, i);
 
-        this.grantPrincipal = role || new iam.ImportedResourcePrincipal({ resource: this } );
+        this.grantPrincipal = role || new iam.UnknownPrincipal({ resource: this } );
 
         if (attrs.securityGroupId) {
           this._connections = new ec2.Connections({
@@ -394,19 +394,19 @@ export class Function extends FunctionBase {
 
     this.environment = props.environment || { };
 
-    const managedPolicyArns = new Array<string>();
+    const managedPolicies = new Array<iam.IManagedPolicy>();
 
     // the arn is in the form of - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
-    managedPolicyArns.push(new iam.AwsManagedPolicy("service-role/AWSLambdaBasicExecutionRole", this).policyArn);
+    managedPolicies.push(iam.ManagedPolicy.fromAwsManagedPolicyName("service-role/AWSLambdaBasicExecutionRole"));
 
     if (props.vpc) {
       // Policy that will have ENI creation permissions
-      managedPolicyArns.push(new iam.AwsManagedPolicy("service-role/AWSLambdaVPCAccessExecutionRole", this).policyArn);
+      managedPolicies.push(iam.ManagedPolicy.fromAwsManagedPolicyName("service-role/AWSLambdaVPCAccessExecutionRole"));
     }
 
     this.role = props.role || new iam.Role(this, 'ServiceRole', {
       assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
-      managedPolicyArns,
+      managedPolicies
     });
     this.grantPrincipal = this.role;
 

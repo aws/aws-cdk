@@ -50,14 +50,8 @@ export class NotificationsResourceHandler extends cdk.Construct {
 
     const role = new iam.Role(this, 'Role', {
       assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
-      managedPolicyArns: [
-        Stack.of(this).formatArn({
-          service: 'iam',
-          region: '', // no region for managed policy
-          account: 'aws', // the account for a managed policy is 'aws'
-          resource: 'policy',
-          resourceName: 'service-role/AWSLambdaBasicExecutionRole',
-        })
+      managedPolicies: [
+        iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSLambdaBasicExecutionRole')
       ]
     });
 

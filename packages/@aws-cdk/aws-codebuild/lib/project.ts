@@ -546,7 +546,7 @@ export class Project extends ProjectBase {
 
       constructor(s: Construct, i: string) {
         super(s, i);
-        this.grantPrincipal = new iam.ImportedResourcePrincipal({ resource: this });
+        this.grantPrincipal = new iam.UnknownPrincipal({ resource: this });
       }
     }
 
@@ -584,7 +584,7 @@ export class Project extends ProjectBase {
           resourceName: projectName,
         });
 
-        this.grantPrincipal = new iam.ImportedResourcePrincipal({ resource: this });
+        this.grantPrincipal = new iam.UnknownPrincipal({ resource: this });
         this.projectName = projectName;
       }
     }

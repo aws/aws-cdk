@@ -3,9 +3,9 @@ import { PolicyStatement } from './policy-document';
 import { IPrincipal, PrincipalPolicyFragment } from './principals';
 
 /**
- * Properties for an ImportedResourcePrincipal
+ * Properties for an UnknownPrincipal
  */
-export interface ImportedResourcePrincipalProps {
+export interface UnknownPrincipalProps {
   /**
    * The resource the role proxy is for
    */
@@ -13,7 +13,7 @@ export interface ImportedResourcePrincipalProps {
 }
 
 /**
- * A principal associated with an imported resource
+ * A principal for use in resources that need to have a role but it's unknown
  *
  * Some resources have roles associated with them which they assume, such as
  * Lambda Functions, CodeBuild projects, StepFunctions machines, etc.
@@ -23,12 +23,12 @@ export interface ImportedResourcePrincipalProps {
  * instead, which will add user warnings when statements are attempted to be
  * added to it.
  */
-export class ImportedResourcePrincipal implements IPrincipal {
+export class UnknownPrincipal implements IPrincipal {
   public readonly assumeRoleAction: string = 'sts:AssumeRole';
   public readonly grantPrincipal: IPrincipal;
   private readonly resource: IConstruct;
 
-  constructor(props: ImportedResourcePrincipalProps) {
+  constructor(props: UnknownPrincipalProps) {
     this.resource = props.resource;
     this.grantPrincipal = this;
   }
