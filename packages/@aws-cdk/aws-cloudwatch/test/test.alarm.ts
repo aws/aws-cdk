@@ -91,7 +91,7 @@ export = {
     const stack = new Stack();
 
     // WHEN
-    testMetric.newAlarm(stack, 'Alarm', {
+    testMetric.createAlarm(stack, 'Alarm', {
       threshold: 1000,
       evaluationPeriods: 2,
       statistic: 'min',
@@ -117,7 +117,7 @@ export = {
     const stack = new Stack();
 
     // WHEN
-    testMetric.newAlarm(stack, 'Alarm', {
+    testMetric.createAlarm(stack, 'Alarm', {
       threshold: 1000,
       evaluationPeriods: 2,
       statistic: 'p99.9'
