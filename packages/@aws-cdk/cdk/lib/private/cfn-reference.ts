@@ -143,7 +143,7 @@ export class CfnReference extends Reference {
   private exportValue(tokenValue: Token, consumingStack: Stack): IResolvable {
     const producingStack = this.producingStack!;
 
-    if (producingStack.env.account !== consumingStack.env.account || producingStack.env.region !== consumingStack.env.region) {
+    if (producingStack.environment !== consumingStack.environment) {
       throw this.newError(`Can only reference cross stacks in the same region and account. ${this.humanReadableDesc}`);
     }
 

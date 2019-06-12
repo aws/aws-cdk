@@ -1,4 +1,4 @@
-import { Construct, SSMParameterProvider, Stack } from '@aws-cdk/cdk';
+import { Construct, Context, Stack, Token } from '@aws-cdk/cdk';
 
 /**
  * Interface for classes that can select an appropriate machine image to use
@@ -25,11 +25,7 @@ export class WindowsImage implements IMachineImageSource  {
    * Return the image to use in the given context
    */
   public getImage(scope: Construct): MachineImage {
-    const ssmProvider = new SSMParameterProvider(scope, {
-      parameterName: this.imageParameterName(this.version),
-    });
-
-    const ami = ssmProvider.parameterValue();
+    const ami = Context.getSsmParameter(scope, this.imageParameterName(this.version));
     return new MachineImage(ami, new WindowsOS());
   }
 
@@ -106,11 +102,7 @@ export class AmazonLinuxImage implements IMachineImageSource {
     ].filter(x => x !== undefined); // Get rid of undefineds
 
     const parameterName = '/aws/service/ami-amazon-linux-latest/' + parts.join('-');
-
-    const ssmProvider = new SSMParameterProvider(scope, {
-      parameterName,
-    });
-    const ami = ssmProvider.parameterValue();
+    const ami = Context.getSsmParameter(scope, parameterName);
     return new MachineImage(ami, new LinuxOS());
   }
 }
@@ -188,7 +180,11 @@ export class GenericLinuxImage implements IMachineImageSource  {
   }
 
   public getImage(scope: Construct): MachineImage {
-    const region = Stack.of(scope).requireRegion('AMI cannot be determined');
+    let region = Stack.of(scope).region;
+    if (Token.isUnresolved(region)) {
+      region = Context.getDefaultRegion(scope);
+    }
+
     const ami = region !== 'test-region' ? this.amiMap[region] : 'ami-12345';
     if (!ami) {
       throw new Error(`Unable to find AMI in AMI map: no AMI specified for region '${region}'`);

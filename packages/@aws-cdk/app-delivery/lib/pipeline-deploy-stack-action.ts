@@ -105,7 +105,7 @@ export class PipelineDeployStackAction extends cdk.Construct {
   constructor(scope: cdk.Construct, id: string, props: PipelineDeployStackActionProps) {
     super(scope, id);
 
-    if (!cdk.environmentEquals(props.stack.env, cdk.Stack.of(this).env)) {
+    if (props.stack.environment !== cdk.Stack.of(this).environment) {
       // FIXME: Add the necessary to extend to stacks in a different account
       throw new Error(`Cross-environment deployment is not supported`);
     }
@@ -125,8 +125,8 @@ export class PipelineDeployStackAction extends cdk.Construct {
       actionName: 'ChangeSet',
       changeSetName,
       runOrder: createChangeSetRunOrder,
-      stackName: props.stack.name,
-      templatePath: props.input.atPath(`${props.stack.name}.template.yaml`),
+      stackName: props.stack.stackName,
+      templatePath: props.input.atPath(`${props.stack.stackName}.template.yaml`),
       adminPermissions: props.adminPermissions,
       deploymentRole: props.role,
       capabilities,
@@ -136,7 +136,7 @@ export class PipelineDeployStackAction extends cdk.Construct {
       actionName: 'Execute',
       changeSetName,
       runOrder: executeChangeSetRunOrder,
-      stackName: props.stack.name,
+      stackName: props.stack.stackName,
     }));
 
     this.deploymentRole = changeSetAction.deploymentRole;
@@ -160,7 +160,7 @@ export class PipelineDeployStackAction extends cdk.Construct {
     const assets = this.stack.node.metadata.filter(md => md.type === cxapi.ASSET_METADATA);
     if (assets.length > 0) {
       // FIXME: Implement the necessary actions to publish assets
-      result.push(`Cannot deploy the stack ${this.stack.name} because it references ${assets.length} asset(s)`);
+      result.push(`Cannot deploy the stack ${this.stack.stackName} because it references ${assets.length} asset(s)`);
     }
     return result;
   }

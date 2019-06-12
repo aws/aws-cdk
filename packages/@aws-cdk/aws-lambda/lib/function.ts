@@ -3,7 +3,7 @@ import ec2 = require('@aws-cdk/aws-ec2');
 import iam = require('@aws-cdk/aws-iam');
 import logs = require('@aws-cdk/aws-logs');
 import sqs = require('@aws-cdk/aws-sqs');
-import { Construct, Fn, Lazy, Stack } from '@aws-cdk/cdk';
+import { Construct, Fn, Lazy, Stack, Token } from '@aws-cdk/cdk';
 import { Code } from './code';
 import { IEventSource } from './event-source';
 import { FunctionAttributes, FunctionBase, IFunction } from './function-base';
@@ -414,8 +414,8 @@ export class Function extends FunctionBase {
       this.role.addToPolicy(statement);
     }
 
-    const region = Stack.of(this).env.region;
-    const isChina = region && region.startsWith('cn-');
+    const region = Stack.of(this).region;
+    const isChina = !Token.isUnresolved(region) && region.startsWith('cn-');
     if (isChina && props.environment && Object.keys(props.environment).length > 0) {
       // tslint:disable-next-line:max-line-length
       throw new Error(`Environment variables are not supported in this region (${region}); consider using tags or SSM parameters instead`);

@@ -142,24 +142,6 @@ export = {
     test.deepEqual(stack.environment, { region: 'us-east-1', account: 'unknown-account', name: 'aws://unknown-account/us-east-1' });
     test.done();
   },
-
-  'stack.setParameterValue can be used to assign parameters'(test: Test) {
-    // GIVEN
-    const app = createModernApp();
-    const stack = new cdk.Stack(app, 'my-stack');
-    const param = new cdk.CfnParameter(stack, 'MyParam', { type: 'string' });
-
-    // WHEN
-    stack.setParameterValue(param, 'Foo');
-
-    // THEN
-    const session = app.synth();
-    const artifact = session.getStack('my-stack');
-    test.deepEqual(artifact.parameters, {
-      MyParam: 'Foo'
-    });
-    test.done();
-  },
 };
 
 function list(outdir: string) {

@@ -9,7 +9,7 @@ export class SynthUtils {
     // always synthesize against the root (be it an App or whatever) so all artifacts will be included
     const root = stack.node.root;
     const assembly = ConstructNode.synth(root.node, options);
-    return assembly.getStack(stack.name);
+    return assembly.getStack(stack.stackName);
   }
 
   /**

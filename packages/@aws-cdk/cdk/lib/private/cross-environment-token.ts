@@ -26,8 +26,7 @@ export abstract class CrossEnvironmentToken implements IResolvable {
     const consumingStack = Stack.of(context.scope);
     const owningStack = Stack.of(this.resource);
 
-    if (consumingStack.env.account !== owningStack.env.account ||
-        consumingStack.env.region !== owningStack.env.region) {
+    if (consumingStack.environment !== owningStack.environment) {
       this.resource.physicalName._resolveCrossEnvironment(this.resource);
       return this.crossEnvironmentValue;
     } else {

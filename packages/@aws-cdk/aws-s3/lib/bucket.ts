@@ -548,13 +548,12 @@ abstract class BucketBase extends Resource implements IBucket {
   }
 
   private isGranteeFromAnotherAccount(grantee: iam.IGrantable): boolean {
-    if (!(grantee instanceof Construct)) {
+    if (!(Construct.isConstruct(grantee))) {
       return false;
     }
-    const c = grantee as Construct;
     const bucketStack = Stack.of(this);
-    const identityStack = Stack.of(c);
-    return bucketStack.env.account !== identityStack.env.account;
+    const identityStack = Stack.of(grantee);
+    return bucketStack.account !== identityStack.account;
   }
 }
 

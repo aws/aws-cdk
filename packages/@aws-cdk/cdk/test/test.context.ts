@@ -1,11 +1,11 @@
 import cxapi = require('@aws-cdk/cx-api');
 import { Test } from 'nodeunit';
-import { App, AvailabilityZoneProvider, Construct, ConstructNode, ContextProvider, SSMParameterProvider, Stack } from '../lib';
+import { App, Construct, ConstructNode, Context, ContextProvider, Stack } from '../lib';
 
 export = {
   'AvailabilityZoneProvider returns a list with dummy values if the context is not available'(test: Test) {
     const stack = new Stack(undefined, 'TestStack', { env: { account: '12345', region: 'us-east-1' } });
-    const azs = new AvailabilityZoneProvider(stack).availabilityZones;
+    const azs = Context.getAvailabilityZones(stack);
 
     test.deepEqual(azs, ['dummy1a', 'dummy1b', 'dummy1c']);
     test.done();
@@ -13,13 +13,13 @@ export = {
 
   'AvailabilityZoneProvider will return context list if available'(test: Test) {
     const stack = new Stack(undefined, 'TestStack', { env: { account: '12345', region: 'us-east-1' } });
-    const before = new AvailabilityZoneProvider(stack).availabilityZones;
+    const before = Context.getAvailabilityZones(stack);
     test.deepEqual(before, [ 'dummy1a', 'dummy1b', 'dummy1c' ]);
     const key = expectedContextKey(stack);
 
     stack.node.setContext(key, ['us-east-1a', 'us-east-1b']);
 
-    const azs = new AvailabilityZoneProvider(stack).availabilityZones;
+    const azs = Context.getAvailabilityZones(stack);
     test.deepEqual(azs, ['us-east-1a', 'us-east-1b']);
 
     test.done();
@@ -27,14 +27,14 @@ export = {
 
   'AvailabilityZoneProvider will complain if not given a list'(test: Test) {
     const stack = new Stack(undefined, 'TestStack', { env: { account: '12345', region: 'us-east-1' } });
-    const before = new AvailabilityZoneProvider(stack).availabilityZones;
+    const before = Context.getAvailabilityZones(stack);
     test.deepEqual(before, [ 'dummy1a', 'dummy1b', 'dummy1c' ]);
     const key = expectedContextKey(stack);
 
     stack.node.setContext(key, 'not-a-list');
 
     test.throws(
-      () => new AvailabilityZoneProvider(stack).availabilityZones
+      () => Context.getAvailabilityZones(stack)
     );
 
     test.done();
@@ -79,13 +79,13 @@ export = {
 
   'SSM parameter provider will return context values if available'(test: Test) {
     const stack = new Stack(undefined, 'TestStack', { env: { account: '12345', region: 'us-east-1' } });
-    new SSMParameterProvider(stack,  {parameterName: 'test'}).parameterValue();
+    Context.getSsmParameter(stack, 'test');
     const key = expectedContextKey(stack);
 
     stack.node.setContext(key, 'abc');
 
-    const ssmp = new SSMParameterProvider(stack,  {parameterName: 'test'});
-    const azs = stack.resolve(ssmp.parameterValue());
+    const ssmp = Context.getSsmParameter(stack, 'test');
+    const azs = stack.resolve(ssmp);
     test.deepEqual(azs, 'abc');
 
     test.done();
@@ -97,8 +97,8 @@ export = {
 
     const child = new Construct(stack, 'ChildConstruct');
 
-    test.deepEqual(new AvailabilityZoneProvider(stack).availabilityZones, [ 'dummy1a', 'dummy1b', 'dummy1c' ]);
-    test.deepEqual(new SSMParameterProvider(child, {parameterName: 'foo'}).parameterValue(), 'dummy');
+    test.deepEqual(Context.getAvailabilityZones(stack), [ 'dummy1a', 'dummy1b', 'dummy1c' ]);
+    test.deepEqual(Context.getSsmParameter(child, 'foo'), 'dummy');
 
     const assembly = app.synth();
     const output = assembly.getStack('test-stack');
@@ -111,6 +111,18 @@ export = {
 
     test.done();
   },
+
+  'fails if region is not specified in CLI context'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    stack.node.setContext(cxapi.DEFAULT_ACCOUNT_CONTEXT_KEY, '1111111111');
+
+    // THEN
+    test.throws(() => Context.getAvailabilityZones(stack), /A region must be specified in order to obtain environmental context: availability-zones/);
+    test.done();
+  }
 };
 
 /**

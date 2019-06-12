@@ -210,7 +210,7 @@ function synthesizedStack(fn: (stack: cdk.Stack) => void): cx.CloudFormationStac
   fn(stack);
 
   const assembly = app.synth();
-  return assembly.getStack(stack.name);
+  return assembly.getStack(stack.stackName);
 }
 
 interface TestResourceProps extends cdk.CfnResourceProps {
