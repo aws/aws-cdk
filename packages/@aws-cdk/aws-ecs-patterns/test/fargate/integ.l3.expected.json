@@ -513,7 +513,7 @@
           ]
         },
         "Family": "awsecsintegL3TaskDefAA25240E",
-        "Memory": "1GB",
+        "Memory": "1024",
         "NetworkMode": "awsvpc",
         "RequiresCompatibilities": [
           "FARGATE"

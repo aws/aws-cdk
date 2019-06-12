@@ -17,7 +17,7 @@ export = {
     // WHEN
     new ecsPatterns.QueueProcessingFargateService(stack, 'Service', {
       cluster,
-      memoryMiB: '512',
+      memoryLimitMiB: 512,
       image: ecs.ContainerImage.fromRegistry('test')
     });
 
@@ -74,7 +74,7 @@ export = {
     // WHEN
     new ecsPatterns.QueueProcessingFargateService(stack, 'Service', {
       cluster,
-      memoryMiB: '512',
+      memoryLimitMiB: 512,
       image: ecs.ContainerImage.fromRegistry('test'),
       command: ["-c", "4", "amazon.com"],
       enableLogging: false,

@@ -135,12 +135,12 @@ To run a task or service with Amazon EC2 launch type, use the `Ec2TaskDefinition
 `FargateTaskDefinition`. These classes provide a simplified API that only contain
 properties relevant for that specific launch type.
 
-For a `FargateTaskDefinition`, specify the task size (`memoryMiB` and `cpu`):
+For a `FargateTaskDefinition`, specify the task size (`memoryLimitMiB` and `cpu`):
 
 ```ts
 const fargateTaskDefinition = new ecs.FargateTaskDefinition(this, 'TaskDef', {
-  memoryMiB: '512',
-  cpu: '256'
+  memoryLimitMiB: 512,
+  cpu: 256
 });
 ```
 To add containers to a task definition, call `addContainer()`:
@@ -186,7 +186,7 @@ The following example uses both:
 ```ts
 const taskDefinition = new ecs.TaskDefinition(this, 'TaskDef', {
   memoryMiB: '512',
-  cpu: 256,
+  cpu: '256',
   networkMode: 'awsvpc',
   compatibility: ecs.Compatibility.Ec2AndFargate,
 });

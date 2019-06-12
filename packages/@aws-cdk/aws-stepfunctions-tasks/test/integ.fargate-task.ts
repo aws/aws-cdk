@@ -16,8 +16,8 @@ const cluster = new ecs.Cluster(stack, 'FargateCluster', { vpc });
 
 // Build task definition
 const taskDefinition = new ecs.FargateTaskDefinition(stack, 'TaskDef', {
-  memoryMiB: '512',
-  cpu: '256'
+  memoryLimitMiB: 512,
+  cpu: 256
 });
 taskDefinition.addContainer('TheContainer', {
   image: ecs.ContainerImage.fromAsset(stack, 'EventImage', { directory: path.resolve(__dirname, 'eventhandler-image') }),

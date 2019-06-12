@@ -16,7 +16,7 @@ export interface FargateTaskDefinitionProps extends CommonTaskDefinitionProps {
    *
    * @default 256
    */
-  readonly cpu?: string;
+  readonly cpu?: number;
 
   /**
    * The amount (in MiB) of memory used by the task.
@@ -36,7 +36,7 @@ export interface FargateTaskDefinitionProps extends CommonTaskDefinitionProps {
    *
    * @default 512
    */
-  readonly memoryMiB?: string;
+  readonly memoryLimitMiB?: number;
 }
 
 export interface IFargateTaskDefinition extends ITaskDefinition {
@@ -71,8 +71,8 @@ export class FargateTaskDefinition extends TaskDefinition implements IFargateTas
   constructor(scope: Construct, id: string, props: FargateTaskDefinitionProps = {}) {
     super(scope, id, {
       ...props,
-      cpu: props.cpu || '256',
-      memoryMiB: props.memoryMiB || '512',
+      cpu: props.cpu !== undefined ? String(props.cpu) : '256',
+      memoryMiB: props.memoryLimitMiB !== undefined ? String(props.memoryLimitMiB) : '512',
       compatibility: Compatibility.Fargate,
       networkMode: NetworkMode.AwsVpc,
     });

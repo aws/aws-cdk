@@ -11,8 +11,8 @@ const vpc = new ec2.Vpc(stack, 'Vpc', { maxAZs: 2 });
 const cluster = new ecs.Cluster(stack, 'FargateCluster', { vpc });
 
 const taskDefinition = new ecs.FargateTaskDefinition(stack, 'TaskDef', {
-  memoryMiB: '1GB',
-  cpu: '512'
+  memoryLimitMiB: 1024,
+  cpu: 512
 });
 
 const container = taskDefinition.addContainer('web', {
