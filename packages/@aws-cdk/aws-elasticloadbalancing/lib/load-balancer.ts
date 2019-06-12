@@ -49,6 +49,16 @@ export interface LoadBalancerProps {
    * @default - None.
    */
   readonly healthCheck?: HealthCheck;
+
+  /**
+   * Whether cross zone load balancing is enabled
+   *
+   * This controls whether the load balancer evenly distributes requests
+   * across each availability zone
+   *
+   * @default true
+   */
+  readonly crossZone?: boolean;
 }
 
 /**
@@ -226,6 +236,7 @@ export class LoadBalancer extends Resource implements IConnectable {
       listeners: Lazy.anyValue({ produce: () => this.listeners }),
       scheme: props.internetFacing ? 'internet-facing' : 'internal',
       healthCheck: props.healthCheck && healthCheckToJSON(props.healthCheck),
+      crossZone: (props.crossZone === undefined || props.crossZone) ? true : false
     });
     if (props.internetFacing) {
       this.elb.node.addDependency(...subnets.map(s => s.internetConnectivityEstablished));
