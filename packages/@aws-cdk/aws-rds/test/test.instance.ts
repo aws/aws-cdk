@@ -376,5 +376,36 @@ export = {
     });
 
     test.done();
+  },
+
+  'can resolve endpoint port and socket address'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    const instance = new rds.DatabaseInstance(stack, 'Instance', {
+      engine: rds.DatabaseInstanceEngine.Mysql,
+      instanceClass: new ec2.InstanceTypePair(ec2.InstanceClass.Burstable2, ec2.InstanceSize.Small),
+      masterUsername: 'admin',
+      vpc
+    });
+
+    test.deepEqual(stack.resolve(instance.instanceEndpoint.port), {
+      'Fn::GetAtt': ['InstanceC1063A87', 'Endpoint.Port']
+    });
+
+    test.deepEqual(stack.resolve(instance.instanceEndpoint.socketAddress), {
+      'Fn::Join': [
+        '',
+        [
+          { 'Fn::GetAtt': ['InstanceC1063A87', 'Endpoint.Address'] },
+          ':',
+          { 'Fn::GetAtt': ['InstanceC1063A87', 'Endpoint.Port'] },
+        ]
+      ]
+    });
+
+    test.done();
   }
 };
