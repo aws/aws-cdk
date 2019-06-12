@@ -10,6 +10,12 @@ export interface IVersion extends IResource {
   readonly version: string;
 
   /**
+   * The ARN of this version.
+   * @attribute
+   */
+  readonly versionArn?: string;
+
+  /**
    * The underlying AWS Lambda function.
    */
   readonly lambda: IFunction;
@@ -48,6 +54,11 @@ export interface VersionAttributes {
   readonly version: string;
 
   /**
+   * The version arn.
+   */
+  readonly versionArn?: string;
+
+  /**
    * The lambda function.
    */
   readonly lambda: IFunction;
@@ -80,6 +91,7 @@ export class Version extends Resource implements IVersion {
   }
 
   public readonly version: string;
+  public readonly versionArn?: string;
   public readonly lambda: IFunction;
 
   constructor(scope: Construct, id: string, props: VersionProps) {
@@ -92,6 +104,7 @@ export class Version extends Resource implements IVersion {
     });
 
     this.version = version.version;
+    this.versionArn = version.versionArn;
     this.lambda = props.lambda;
   }
 }
