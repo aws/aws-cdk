@@ -21,7 +21,7 @@ export interface ScheduledEc2TaskProps {
    *
    * @see http://docs.aws.amazon.com/AmazonCloudWatch/latest/events/ScheduledEvents.html
    */
-  readonly scheduleExpression: string;
+  readonly schedule: events.Schedule;
 
   /**
    * The CMD value to pass to the container. A string with commands delimited by commas.

@@ -2,6 +2,7 @@ import { Construct, Lazy, Resource } from '@aws-cdk/cdk';
 import { EventPattern } from './event-pattern';
 import { CfnRule } from './events.generated';
 import { IRule } from './rule-ref';
+import { Schedule } from './schedule';
 import { IRuleTarget } from './target';
 import { mergeEventPattern } from './util';
 
@@ -39,7 +40,7 @@ export interface RuleProps {
    *
    * @default - None.
    */
-  readonly scheduleExpression?: string;
+  readonly schedule?: Schedule;
 
   /**
    * Describes which events CloudWatch Events routes to the specified target.
@@ -104,7 +105,7 @@ export class Rule extends Resource implements IRule {
     this.ruleArn = resource.ruleArn;
 
     this.addEventPattern(props.eventPattern);
-    this.scheduleExpression = props.scheduleExpression;
+    this.scheduleExpression = props.schedule && props.schedule.expression;
 
     for (const target of props.targets || []) {
       this.addTarget(target);
