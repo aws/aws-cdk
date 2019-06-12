@@ -11,7 +11,7 @@ class SnsToSqs extends cdk.Stack {
 
     const fction = new lambda.Function(this, 'Echo', {
       handler: 'index.handler',
-      runtime: lambda.Runtime.NodeJS810,
+      runtime: lambda.Runtime.Nodejs810,
       code: lambda.Code.inline(`exports.handler = ${handler.toString()}`)
     });
 

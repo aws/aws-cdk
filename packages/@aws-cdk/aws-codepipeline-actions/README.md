@@ -396,7 +396,7 @@ const lambdaCode = lambda.Code.cfnParameters();
 const func = new lambda.Function(lambdaStack, 'Lambda', {
   code: lambdaCode,
   handler: 'index.handler',
-  runtime: lambda.Runtime.NodeJS810,
+  runtime: lambda.Runtime.Nodejs810,
 });
 // used to make sure each CDK synthesis produces a different Version
 const version = func.newVersion();

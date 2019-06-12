@@ -10,7 +10,7 @@ export = {
     const stack = new cdk.Stack();
     const secret = new secretsmanager.Secret(stack, 'Secret');
     const rotationLambda = new lambda.Function(stack, 'Lambda', {
-      runtime: lambda.Runtime.NodeJS810,
+      runtime: lambda.Runtime.Nodejs810,
       code: lambda.Code.inline('export.handler = event => event;'),
       handler: 'index.handler'
     });

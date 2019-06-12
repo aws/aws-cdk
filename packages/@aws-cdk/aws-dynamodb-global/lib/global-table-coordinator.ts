@@ -16,7 +16,7 @@ export class GlobalTableCoordinator extends cdk.Stack {
       code: lambda.Code.asset(path.resolve(__dirname, "../", "lambda-packages", "aws-global-table-coordinator", "lib")),
       description: "Lambda to make DynamoDB a global table",
       handler: "index.handler",
-      runtime: lambda.Runtime.NodeJS810,
+      runtime: lambda.Runtime.Nodejs810,
       timeout: 300,
       uuid: "D38B65A6-6B54-4FB6-9BAD-9CD40A6DAC12",
     });

@@ -11,7 +11,7 @@ function mockFunction(stack: cdk.Stack, id: string) {
   return new lambda.Function(stack, id, {
     code: lambda.Code.inline('mock'),
     handler: 'index.handler',
-    runtime: lambda.Runtime.NodeJS810
+    runtime: lambda.Runtime.Nodejs810
   });
 }
 function mockAlias(stack: cdk.Stack) {

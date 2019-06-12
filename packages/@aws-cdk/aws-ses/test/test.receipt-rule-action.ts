@@ -135,7 +135,7 @@ export = {
     const fn = new lambda.Function(stack, 'Function', {
       code: lambda.Code.inline(''),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NodeJS810
+      runtime: lambda.Runtime.Nodejs810
     });
 
     // WHEN
