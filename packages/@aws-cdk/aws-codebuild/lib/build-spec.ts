@@ -5,7 +5,7 @@ import { IResolveContext, Lazy, Stack } from '@aws-cdk/cdk';
  */
 export abstract class BuildSpec {
   public static fromObject(value: {[key: string]: any}): BuildSpec {
-    return new StructuredBuildSpec(value);
+    return new ObjectBuildSpec(value);
   }
 
   /**
@@ -13,9 +13,14 @@ export abstract class BuildSpec {
    *
    * Use this if you want to use a file different from 'buildspec.yml'`
    */
-  public static fromFilename(filename: string): BuildSpec {
+  public static fromSourceFilename(filename: string): BuildSpec {
     return new FilenameBuildSpec(filename);
   }
+
+  /**
+   * Whether the buildspec is directly available or deferred until build-time
+   */
+  public abstract readonly isImmediate: boolean;
 
   protected constructor() {
   }
@@ -30,6 +35,8 @@ export abstract class BuildSpec {
  * BuildSpec that just returns the input unchanged
  */
 class FilenameBuildSpec extends BuildSpec {
+  public readonly isImmediate: boolean = false;
+
   constructor(private readonly filename: string) {
     super();
   }
@@ -46,7 +53,9 @@ class FilenameBuildSpec extends BuildSpec {
 /**
  * BuildSpec that understands about structure
  */
-class StructuredBuildSpec extends BuildSpec {
+class ObjectBuildSpec extends BuildSpec {
+  public readonly isImmediate: boolean = true;
+
   constructor(public readonly spec: {[key: string]: any}) {
     super();
   }
@@ -74,11 +83,11 @@ class StructuredBuildSpec extends BuildSpec {
  * @internal
  */
 export function mergeBuildSpecs(lhs: BuildSpec, rhs: BuildSpec): BuildSpec {
-  if (!(lhs instanceof StructuredBuildSpec) || !(rhs instanceof StructuredBuildSpec)) {
+  if (!(lhs instanceof ObjectBuildSpec) || !(rhs instanceof ObjectBuildSpec)) {
     throw new Error('Can only merge buildspecs created using BuildSpec.fromObject()');
   }
 
-  return new StructuredBuildSpec(copyCommands(lhs.spec, rhs.spec));
+  return new ObjectBuildSpec(copyCommands(lhs.spec, rhs.spec));
 }
 
 /**

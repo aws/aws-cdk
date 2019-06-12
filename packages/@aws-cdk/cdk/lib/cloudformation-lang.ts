@@ -20,7 +20,7 @@ export class CloudFormationLang {
    * in CloudFormation will fail.
    *
    * @param obj The object to stringify
-   * @param number Indentation to use
+   * @param space Indentation to use (default: no pretty-printing)
    */
   public static toJSON(obj: any, space?: number): string {
     // This works in two stages:

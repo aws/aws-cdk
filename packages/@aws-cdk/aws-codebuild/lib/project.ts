@@ -8,7 +8,7 @@ import iam = require('@aws-cdk/aws-iam');
 import kms = require('@aws-cdk/aws-kms');
 import { Aws, Construct, IResource, Lazy, PhysicalName, Resource, ResourceIdentifiers, Stack } from '@aws-cdk/cdk';
 import { BuildArtifacts, CodePipelineBuildArtifacts, NoBuildArtifacts } from './artifacts';
-import { BuildSpec, mergeBuildSpecsCommands } from './build-spec';
+import { BuildSpec, mergeBuildSpecs } from './build-spec';
 import { Cache } from './cache';
 import { CfnProject } from './codebuild.generated';
 import { BuildSource, NoSource, SourceType } from './source';
@@ -655,7 +655,7 @@ export class Project extends ProjectBase {
       environmentVariables[S3_KEY_ENV] = { value: props.buildScriptAsset.s3ObjectKey };
 
       const runScript = this.buildImage.runScriptBuildspec(props.buildScriptAssetEntrypoint || 'build.sh');
-      buildSpec = buildSpec ? mergeBuildSpecsCommands(buildSpec, runScript) : runScript;
+      buildSpec = buildSpec ? mergeBuildSpecs(buildSpec, runScript) : runScript;
       props.buildScriptAsset.grantRead(this.role);
     }
 
@@ -665,17 +665,15 @@ export class Project extends ProjectBase {
         throw new Error(`Badge is not supported for source type ${this.source.type}`);
       }
 
-      const sourceJson = this.source._toSourceJSON();
-      if (buildSpec) {
-        return {
-          ...sourceJson,
-          buildSpec: buildSpec.toBuildSpec()
-        };
-      } else if (this.source.type === SourceType.None) {
-        throw new Error("If the Project's source is NoSource, you need to provide a buildSpec");
-      } else {
-        return sourceJson;
+      if (this.source.type === SourceType.None && (buildSpec === undefined || !buildSpec.isImmediate)) {
+        throw new Error("If the Project's source is NoSource, you need to provide a concrete buildSpec");
       }
+
+      const sourceJson = this.source._toSourceJSON();
+      return {
+        ...sourceJson,
+        buildSpec: buildSpec && buildSpec.toBuildSpec()
+      };
     };
 
     this._secondarySources = [];
