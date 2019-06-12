@@ -11,9 +11,9 @@ const bucket = new s3.Bucket(stack, 'MyBucket', {
 });
 
 new codebuild.Project(stack, 'MyProject', {
-  buildSpec: {
+  buildSpec: codebuild.BuildSpec.fromObject({
     version: '0.2',
-  },
+  }),
   secondarySources: [
     new codebuild.S3BucketSource({
       bucket,
