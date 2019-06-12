@@ -12,7 +12,7 @@ const awsAccountId = stack.account;
 /// !show
 const layer = new lambda.LayerVersion(stack, 'MyLayer', {
   code: lambda.Code.directory(path.join(__dirname, 'layer-code')),
-  compatibleRuntimes: [lambda.Runtime.NodeJS810],
+  compatibleRuntimes: [lambda.Runtime.Nodejs810],
   license: 'Apache-2.0',
   description: 'A layer to test the L2 construct',
 });
@@ -26,7 +26,7 @@ layer.addPermission('remote-account-grant', { accountId: awsAccountId });
 new lambda.Function(stack, 'MyLayeredLambda', {
   code: new lambda.InlineCode('foo'),
   handler: 'index.handler',
-  runtime: lambda.Runtime.NodeJS810,
+  runtime: lambda.Runtime.Nodejs810,
   layers: [layer],
 });
 /// !hide
