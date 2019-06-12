@@ -1,5 +1,7 @@
 # The only AWS account number allowed to be used in tests (used by git-secrets)
 account = '123456789012';
+# account used for cross-environment tests in addition to the one above
+account: '234567890123'
 # Account patterns used in the README
 account: '000000000000'
 account: '111111111111'
