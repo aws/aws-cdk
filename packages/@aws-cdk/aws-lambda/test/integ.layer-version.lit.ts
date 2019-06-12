@@ -7,7 +7,7 @@ const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-cdk-layer-version-1');
 
 // Just for the example - granting to the current account is not necessary.
-const awsAccountId = stack.accountId;
+const awsAccountId = stack.account;
 
 /// !show
 const layer = new lambda.LayerVersion(stack, 'MyLayer', {
