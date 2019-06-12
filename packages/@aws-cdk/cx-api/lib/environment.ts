@@ -1,7 +1,9 @@
 /**
  * Parser for the artifact environment field.
+ *
+ * Account validation is relaxed to allow account aliasing in the future.
  */
-const AWS_ENV_REGEX = /aws\:\/\/([0-9]+|unknown-account)\/([a-z\-0-9]+)/;
+const AWS_ENV_REGEX = /aws\:\/\/([a-z0-9A-Z\-\@\.\_]+)\/([a-z\-0-9]+)/;
 
 /**
  * Models an AWS execution environment, for use within the CDK toolkit.
@@ -10,7 +12,7 @@ export interface Environment {
   /** The arbitrary name of this environment (user-set, or at least user-meaningful) */
   readonly name: string;
 
-  /** The 12-digit AWS account ID for the account this environment deploys into */
+  /** The AWS account this environment deploys into */
   readonly account: string;
 
   /** The AWS region name where this environment deploys into */
@@ -23,7 +25,7 @@ export class EnvironmentUtils {
     if (!env) {
       throw new Error(
         `Unable to parse environment specification "${environment}". ` +
-        `Expected format: aws://acount/region`);
+        `Expected format: aws://account/region`);
     }
 
     const [ , account, region ] = env;
