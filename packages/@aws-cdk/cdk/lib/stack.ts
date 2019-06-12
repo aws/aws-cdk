@@ -181,8 +181,8 @@ export class Stack extends Construct implements ITaggable {
   /**
    * Convert an object, potentially containing tokens, to a JSON string
    */
-  public toJsonString(obj: any): string {
-    return CloudFormationLang.toJSON(obj).toString();
+  public toJsonString(obj: any, space?: number): string {
+    return CloudFormationLang.toJSON(obj, space).toString();
   }
 
   /**
