@@ -14,7 +14,7 @@ export abstract class Schedule {
   /**
    * Construct a schedule from an interval and a time unit
    */
-  public static fromRate(interval: number, unit: TimeUnit = TimeUnit.Hour): Schedule {
+  public static fromRate(interval: number, unit: TimeUnit): Schedule {
     const unitStr = interval !== 1 ? `${unit}s` : unit;
 
     return new LiteralSchedule(`rate(${interval} ${unitStr})`);

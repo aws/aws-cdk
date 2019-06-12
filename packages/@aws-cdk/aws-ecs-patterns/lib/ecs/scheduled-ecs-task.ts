@@ -106,7 +106,7 @@ export class ScheduledEc2Task extends cdk.Construct {
 
     // An EventRule that describes the event trigger (in this case a scheduled run)
     const eventRule = new events.Rule(this, 'ScheduledEventRule', {
-      scheduleExpression: props.scheduleExpression,
+      schedule: props.schedule,
     });
     eventRule.addTarget(eventRuleTarget);
   }

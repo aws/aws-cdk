@@ -1,6 +1,7 @@
 import { expect, haveResource } from '@aws-cdk/assert';
 import ec2 = require('@aws-cdk/aws-ec2');
 import ecs = require('@aws-cdk/aws-ecs');
+import events = require('@aws-cdk/aws-events');
 import cdk = require('@aws-cdk/cdk');
 import { Test } from 'nodeunit';
 import { ScheduledEc2Task } from '../../lib';
@@ -19,7 +20,7 @@ export = {
       cluster,
       image: ecs.ContainerImage.fromRegistry('henk'),
       memoryLimitMiB: 512,
-      scheduleExpression: 'rate(1 minute)'
+      schedule: events.Schedule.fromExpression('rate(1 minute)')
     });
 
     // THEN
@@ -85,7 +86,7 @@ export = {
       memoryLimitMiB: 512,
       cpu: 2,
       environment: { name: 'TRIGGER', value: 'CloudWatch Events' },
-      scheduleExpression: 'rate(1 minute)'
+      schedule: events.Schedule.fromExpression('rate(1 minute)')
     });
 
     // THEN
@@ -159,7 +160,7 @@ export = {
       cluster,
       image: ecs.ContainerImage.fromRegistry('henk'),
       memoryReservationMiB: 512,
-      scheduleExpression: 'rate(1 minute)'
+      schedule: events.Schedule.fromExpression('rate(1 minute)')
     });
 
     // THEN
@@ -208,7 +209,7 @@ export = {
       image: ecs.ContainerImage.fromRegistry('henk'),
       memoryReservationMiB: 512,
       command: ["-c", "4", "amazon.com"],
-      scheduleExpression: 'rate(1 minute)'
+      schedule: events.Schedule.fromExpression('rate(1 minute)')
     });
 
     // THEN

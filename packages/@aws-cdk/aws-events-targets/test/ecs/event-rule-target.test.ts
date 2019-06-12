@@ -21,7 +21,7 @@ test("Can use EC2 taskdef as EventRule target", () => {
   });
 
   const rule = new events.Rule(stack, 'Rule', {
-    scheduleExpression: 'rate(1 minute)',
+    schedule: events.Schedule.fromExpression('rate(1 min)')
   });
 
   // WHEN
@@ -68,7 +68,7 @@ test("Can use Fargate taskdef as EventRule target", () => {
   });
 
   const rule = new events.Rule(stack, 'Rule', {
-    scheduleExpression: 'rate(1 minute)',
+    schedule: events.Schedule.fromExpression('rate(1 min)')
   });
 
   // WHEN
