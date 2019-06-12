@@ -883,7 +883,7 @@ export class Project extends ProjectBase {
     }));
 
     const policy = new iam.Policy(this, 'PolicyDocument', {
-      policyName: 'CodeBuildEC2Policy',
+      policyName: PhysicalName.of('CodeBuildEC2Policy'),
       statements: [
         new iam.PolicyStatement({
           resources: ['*'],

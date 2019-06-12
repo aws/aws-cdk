@@ -1,5 +1,5 @@
 import ec2 = require('@aws-cdk/aws-ec2');
-import { Construct, IResource, Lazy, Resource } from '@aws-cdk/cdk';
+import { Construct, IResource, Lazy, PhysicalName, Resource } from '@aws-cdk/cdk';
 import { CfnLoadBalancer } from '../elasticloadbalancingv2.generated';
 import { Attributes, ifUndefined, renderAttributes } from './util';
 
@@ -12,7 +12,7 @@ export interface BaseLoadBalancerProps {
    *
    * @default - Automatically generated name.
    */
-  readonly loadBalancerName?: string;
+  readonly loadBalancerName?: PhysicalName;
 
   /**
    * The VPC network to place the load balancer in
@@ -121,7 +121,9 @@ export abstract class BaseLoadBalancer extends Resource {
   private readonly attributes: Attributes = {};
 
   constructor(scope: Construct, id: string, baseProps: BaseLoadBalancerProps, additionalProps: any) {
-    super(scope, id);
+    super(scope, id, {
+      physicalName: baseProps.loadBalancerName,
+    });
 
     const internetFacing = ifUndefined(baseProps.internetFacing, false);
 
@@ -133,7 +135,7 @@ export abstract class BaseLoadBalancer extends Resource {
     this.vpc = baseProps.vpc;
 
     const resource = new CfnLoadBalancer(this, 'Resource', {
-      name: baseProps.loadBalancerName,
+      name: this.physicalName.value,
       subnets: subnetIds,
       scheme: internetFacing ? 'internet-facing' : 'internal',
       loadBalancerAttributes: Lazy.anyValue({ produce: () => renderAttributes(this.attributes) }),

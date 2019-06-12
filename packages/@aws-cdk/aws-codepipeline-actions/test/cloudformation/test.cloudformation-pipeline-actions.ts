@@ -21,7 +21,9 @@ export = {
   });
 
   /** Source! */
-  const repo = new Repository(stack, 'MyVeryImportantRepo', { repositoryName: 'my-very-important-repo' });
+  const repo = new Repository(stack, 'MyVeryImportantRepo', {
+    repositoryName: cdk.PhysicalName.of('my-very-important-repo'),
+  });
 
   const sourceOutput = new codepipeline.Artifact('SourceArtifact');
   const source = new cpactions.CodeCommitSourceAction({
@@ -430,7 +432,9 @@ class TestFixture extends cdk.Stack {
     this.pipeline = new codepipeline.Pipeline(this, 'Pipeline');
     this.sourceStage = this.pipeline.addStage({ stageName: 'Source' });
     this.deployStage = this.pipeline.addStage({ stageName: 'Deploy' });
-    this.repo = new Repository(this, 'MyVeryImportantRepo', { repositoryName: 'my-very-important-repo' });
+    this.repo = new Repository(this, 'MyVeryImportantRepo', {
+      repositoryName: cdk.PhysicalName.of('my-very-important-repo'),
+    });
     this.sourceOutput = new codepipeline.Artifact('SourceArtifact');
     const source = new cpactions.CodeCommitSourceAction({
       actionName: 'Source',

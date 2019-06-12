@@ -1,5 +1,5 @@
 import events = require('@aws-cdk/aws-events');
-import { Construct, IConstruct, IResource, Resource, Stack } from '@aws-cdk/cdk';
+import { Construct, IConstruct, IResource, PhysicalName, Resource, ResourceIdentifiers, Stack } from '@aws-cdk/cdk';
 import { CfnRepository } from './codecommit.generated';
 
 export interface IRepository extends IResource {
@@ -212,7 +212,7 @@ export interface RepositoryProps {
   /**
    * Name of the repository. This property is required for all repositories.
    */
-  readonly repositoryName: string;
+  readonly repositoryName: PhysicalName;
 
   /**
    * A description of the repository. Use the description to identify the
@@ -270,21 +270,33 @@ export class Repository extends RepositoryBase {
     });
   }
 
+  public readonly repositoryArn: string;
+  public readonly repositoryName: string;
   private readonly repository: CfnRepository;
   private readonly triggers = new Array<CfnRepository.RepositoryTriggerProperty>();
 
   constructor(scope: Construct, id: string, props: RepositoryProps) {
-    super(scope, id);
+    super(scope, id, {
+      physicalName: props.repositoryName,
+    });
 
     this.repository = new CfnRepository(this, 'Resource', {
-      repositoryName: props.repositoryName,
+      repositoryName: this.physicalName.value || '',
       repositoryDescription: props.description,
       triggers: this.triggers
     });
-  }
 
-  public get repositoryArn() {
-    return this.repository.attrArn;
+    const resourceIdentifiers = new ResourceIdentifiers(this, {
+      arn: this.repository.attrArn,
+      name: this.repository.attrName,
+      arnComponents: {
+        service: 'codecommit',
+        resource: this.physicalName.value || '',
+      },
+    });
+
+    this.repositoryArn = resourceIdentifiers.arn;
+    this.repositoryName = resourceIdentifiers.name;
   }
 
   public get repositoryCloneUrlHttp() {
@@ -293,10 +305,6 @@ export class Repository extends RepositoryBase {
 
   public get repositoryCloneUrlSsh() {
     return this.repository.attrCloneUrlSsh;
-  }
-
-  public get repositoryName() {
-    return this.repository.attrName;
   }
 
   /**

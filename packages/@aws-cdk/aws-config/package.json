@@ -88,5 +88,14 @@
   "engines": {
     "node": ">= 8.10.0"
   },
+  "awslint": {
+    "exclude": [
+      "props-physical-name:@aws-cdk/aws-config.CustomRuleProps.ruleName",
+      "props-physical-name:@aws-cdk/aws-config.ManagedRuleProps.ruleName",
+      "props-physical-name:@aws-cdk/aws-config.AccessKeysRotatedProps.ruleName",
+      "props-physical-name:@aws-cdk/aws-config.CloudFormationStackNotificationCheckProps.ruleName",
+      "props-physical-name:@aws-cdk/aws-config.CloudFormationStackDriftDetectionCheckProps.ruleName"
+    ]
+  },
   "stability": "experimental"
 }
