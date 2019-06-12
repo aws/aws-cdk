@@ -34,7 +34,7 @@ export interface AwsLogDriverProps {
    *
    * @default - Logs never expire.
    */
-  readonly logRetentionDays?: logs.RetentionDays;
+  readonly logRetention?: logs.RetentionDays;
 
   /**
    * This option defines a multiline start pattern in Python strftime format.
@@ -73,12 +73,12 @@ export class AwsLogDriver extends LogDriver {
   constructor(scope: cdk.Construct, id: string, private readonly props: AwsLogDriverProps) {
     super(scope, id);
 
-    if (props.logGroup && props.logRetentionDays) {
+    if (props.logGroup && props.logRetention) {
       throw new Error('Cannot specify both `logGroup` and `logRetentionDays`.');
     }
 
     this.logGroup = props.logGroup || new logs.LogGroup(this, 'LogGroup', {
-        retentionDays: props.logRetentionDays || Infinity,
+        retention: props.logRetention || Infinity,
     });
   }
 

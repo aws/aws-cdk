@@ -1,6 +1,7 @@
 import iam = require('@aws-cdk/aws-iam');
 import sqs = require('@aws-cdk/aws-sqs');
 import sfn = require('@aws-cdk/aws-stepfunctions');
+import { Duration, toSeconds } from '@aws-cdk/cdk';
 
 /**
  * Properties for SendMessageTask
@@ -18,7 +19,7 @@ export interface SendToQueueProps {
    *
    * @default Default value of the queue is used
    */
-  readonly delaySeconds?: number;
+  readonly delay?: Duration;
 
   /**
    * The token used for deduplication of sent messages.
@@ -59,7 +60,7 @@ export class SendToQueue implements sfn.IStepFunctionsTask {
         QueueUrl: this.queue.queueUrl,
         ...sfn.FieldUtils.renderObject({
           MessageBody: this.props.messageBody.value,
-          DelaySeconds: this.props.delaySeconds,
+          DelaySeconds: toSeconds(this.props.delay),
           MessageDeduplicationId: this.props.messageDeduplicationId,
           MessageGroupId: this.props.messageGroupId,
         })

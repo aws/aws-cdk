@@ -88,7 +88,9 @@
   "awslint": {
     "exclude": [
       "import-props-interface:@aws-cdk/aws-stepfunctions.ActivityImportProps",
-      "export:@aws-cdk/aws-stepfunctions.IActivity"
+      "export:@aws-cdk/aws-stepfunctions.IActivity",
+      "duration-prop-type:@aws-cdk/aws-stepfunctions.WaitProps.duration",
+      "duration-prop-type:@aws-cdk/aws-stepfunctions.Errors.Timeout"
     ]
   },
   "stability": "experimental"

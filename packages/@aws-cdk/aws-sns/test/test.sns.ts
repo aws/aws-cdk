@@ -212,7 +212,7 @@ export = {
       dimensions: {TopicName: { 'Fn::GetAtt': [ 'TopicBFC7AF6E', 'TopicName' ] }},
       namespace: 'AWS/SNS',
       metricName: 'NumberOfMessagesPublished',
-      periodSec: 300,
+      period: cdk.Duration.minutes(5),
       statistic: 'Sum'
     });
 
@@ -220,7 +220,7 @@ export = {
       dimensions: {TopicName: { 'Fn::GetAtt': [ 'TopicBFC7AF6E', 'TopicName' ] }},
       namespace: 'AWS/SNS',
       metricName: 'PublishSize',
-      periodSec: 300,
+      period: cdk.Duration.minutes(5),
       statistic: 'Average'
     });
 

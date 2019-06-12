@@ -1,5 +1,5 @@
 import kms = require('@aws-cdk/aws-kms');
-import { Construct, Stack } from '@aws-cdk/cdk';
+import { Construct, Duration, Stack, toSeconds } from '@aws-cdk/cdk';
 import { IQueue, QueueAttributes, QueueBase } from './queue-base';
 import { CfnQueue } from './sqs.generated';
 import { validateProps } from './validate-props';
@@ -23,9 +23,9 @@ export interface QueueProps {
    * You can specify an integer value from 60 seconds (1 minute) to 1209600
    * seconds (14 days). The default value is 345600 seconds (4 days).
    *
-   * @default 345600 seconds (4 days)
+   * @default Duration.days(4)
    */
-  readonly retentionPeriodSec?: number;
+  readonly retentionPeriod?: Duration;
 
   /**
    * The time in seconds that the delivery of all messages in the queue is delayed.
@@ -35,7 +35,7 @@ export interface QueueProps {
    *
    * @default 0
    */
-  readonly deliveryDelaySec?: number;
+  readonly deliveryDelay?: Duration;
 
   /**
    * The limit of how many bytes that a message can contain before Amazon SQS rejects it.
@@ -57,7 +57,7 @@ export interface QueueProps {
    *
    *  @default 0
    */
-  readonly receiveMessageWaitTimeSec?: number;
+  readonly receiveMessageWaitTime?: Duration;
 
   /**
    * Timeout of processing a single message.
@@ -69,9 +69,9 @@ export interface QueueProps {
    * Values must be from 0 to 43200 seconds (12 hours). If you don't specify
    * a value, AWS CloudFormation uses the default value of 30 seconds.
    *
-   * @default 30
+   * @default Duration.seconds(30)
    */
-  readonly visibilityTimeoutSec?: number;
+  readonly visibilityTimeout?: Duration;
 
   /**
    * Send messages to this queue if they were unsuccessfully dequeued a number of times.
@@ -111,9 +111,9 @@ export interface QueueProps {
    * The value must be an integer between 60 (1 minute) and 86,400 (24
    * hours). The default is 300 (5 minutes).
    *
-   * @default 300 (5 minutes)
+   * @default Duration.minutes(5)
    */
-  readonly dataKeyReuseSec?: number;
+  readonly dataKeyReuse?: Duration;
 
   /**
    * Whether this a first-in-first-out (FIFO) queue.
@@ -248,11 +248,11 @@ export class Queue extends QueueBase {
       ...this.determineFifoProps(props),
       ...encryptionProps,
       redrivePolicy,
-      delaySeconds: props.deliveryDelaySec,
+      delaySeconds: toSeconds(props.deliveryDelay),
       maximumMessageSize: props.maxMessageSizeBytes,
-      messageRetentionPeriod: props.retentionPeriodSec,
-      receiveMessageWaitTimeSeconds: props.receiveMessageWaitTimeSec,
-      visibilityTimeout: props.visibilityTimeoutSec,
+      messageRetentionPeriod: toSeconds(props.retentionPeriod),
+      receiveMessageWaitTimeSeconds: toSeconds(props.receiveMessageWaitTime),
+      visibilityTimeout: toSeconds(props.visibilityTimeout),
     });
     this.encryptionMasterKey = encryptionMasterKey;
     this.queueArn = queue.queueArn;
@@ -277,7 +277,7 @@ export class Queue extends QueueBase {
           encryptionMasterKey: masterKey,
           encryptionProps: {
             kmsMasterKeyId: 'alias/aws/sqs',
-            kmsDataKeyReusePeriodSeconds: props.dataKeyReuseSec
+            kmsDataKeyReusePeriodSeconds: props.dataKeyReuse && props.dataKeyReuse.toSeconds()
           }
         };
       }
@@ -291,7 +291,7 @@ export class Queue extends QueueBase {
           encryptionMasterKey: masterKey,
           encryptionProps: {
             kmsMasterKeyId: masterKey.keyArn,
-            kmsDataKeyReusePeriodSeconds: props.dataKeyReuseSec
+            kmsDataKeyReusePeriodSeconds: props.dataKeyReuse && props.dataKeyReuse.toSeconds()
           }
         };
       }

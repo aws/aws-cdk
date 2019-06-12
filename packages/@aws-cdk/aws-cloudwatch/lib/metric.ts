@@ -29,11 +29,9 @@ export interface MetricProps {
   /**
    * The period over which the specified statistic is applied.
    *
-   * Specify time in seconds, in multiples of 60.
-   *
-   * @default 300
+   * @default Duration.minutes(5)
    */
-  readonly periodSec?: number;
+  readonly period?: cdk.Duration;
 
   /**
    * What function to use for aggregating.
@@ -98,23 +96,22 @@ export class Metric {
   public readonly dimensions?: DimensionHash;
   public readonly namespace: string;
   public readonly metricName: string;
-  public readonly periodSec: number;
+  public readonly period: cdk.Duration;
   public readonly statistic: string;
   public readonly unit?: Unit;
   public readonly label?: string;
   public readonly color?: string;
 
   constructor(props: MetricProps) {
-    if (props.periodSec !== undefined
-      && props.periodSec !== 1 && props.periodSec !== 5 && props.periodSec !== 10 && props.periodSec !== 30
-      && props.periodSec % 60 !== 0) {
-      throw new Error("'periodSec' must be 1, 5, 10, 30, or a multiple of 60");
+    this.period = props.period || cdk.Duration.minutes(5);
+    const periodSec = this.period.toSeconds();
+    if (periodSec !== 1 && periodSec !== 5 && periodSec !== 10 && periodSec !== 30 && periodSec % 60 !== 0) {
+      throw new Error(`'period' must be 1, 5, 10, 30, or a multiple of 60 seconds, received ${props.period}`);
     }
 
     this.dimensions = props.dimensions;
     this.namespace = props.namespace;
     this.metricName = props.metricName;
-    this.periodSec = props.periodSec !== undefined ? props.periodSec : 300;
     // Try parsing, this will throw if it's not a valid stat
     this.statistic = normalizeStatistic(props.statistic || "Average");
     this.label = props.label;
@@ -134,7 +131,7 @@ export class Metric {
       dimensions: ifUndefined(props.dimensions, this.dimensions),
       namespace: this.namespace,
       metricName: this.metricName,
-      periodSec: ifUndefined(props.periodSec, this.periodSec),
+      period: ifUndefined(props.period, this.period),
       statistic: ifUndefined(props.statistic, this.statistic),
       unit: ifUndefined(props.unit, this.unit),
       label: ifUndefined(props.label, this.label),
@@ -152,7 +149,7 @@ export class Metric {
     return new Alarm(scope, id, {
       metric: this.with({
         statistic: props.statistic,
-        periodSec: props.periodSec,
+        period: props.period,
       }),
       alarmName: props.alarmName,
       alarmDescription: props.alarmDescription,
@@ -255,11 +252,9 @@ export interface MetricOptions {
   /**
    * The period over which the specified statistic is applied.
    *
-   * Specify time in seconds, in multiples of 60.
-   *
-   * @default 300
+   * @default Duration.minutes(5)
    */
-  readonly periodSec?: number;
+  readonly period?: cdk.Duration;
 
   /**
    * What function to use for aggregating.
@@ -300,11 +295,9 @@ export interface MetricAlarmProps {
   /**
    * The period over which the specified statistic is applied.
    *
-   * Specify time in seconds, in multiples of 60.
-   *
-   * @default 300
+   * @default Duration.minutes(5)
    */
-  readonly periodSec?: number;
+  readonly period?: cdk.Duration;
 
   /**
    * What function to use for aggregating.

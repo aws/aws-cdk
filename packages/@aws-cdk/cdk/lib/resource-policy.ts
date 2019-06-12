@@ -1,3 +1,5 @@
+import { Duration } from "./duration";
+
 /**
  * Associate the CreationPolicy attribute with a resource to prevent its status from reaching create complete until
  * AWS CloudFormation receives a specified number of success signals or the timeout period is exceeded. To signal a
@@ -61,7 +63,7 @@ export interface ResourceSignal {
    * The timeout period starts after AWS CloudFormation starts creating the resource, and the timeout expires no sooner
    * than the time you specify but can occur shortly thereafter. The maximum time that you can specify is 12 hours.
    */
-  readonly timeout?: string;
+  readonly timeout?: Duration;
 }
 
 /**

@@ -52,7 +52,7 @@ export = {
     // WHEN
     const repo = new ecr.Repository(stack, 'Repo');
     repo.addLifecycleRule({
-      maxImageAgeDays: 5,
+      maxImageAge: cdk.Duration.days(5),
     });
 
     // THEN

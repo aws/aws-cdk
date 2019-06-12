@@ -91,7 +91,8 @@
   },
   "awslint": {
     "exclude": [
-      "from-method:@aws-cdk/aws-apigateway.Resource"
+      "from-method:@aws-cdk/aws-apigateway.Resource",
+      "duration-prop-type:@aws-cdk/aws-apigateway.QuotaSettings.period"
     ]
   },
   "stability": "experimental"

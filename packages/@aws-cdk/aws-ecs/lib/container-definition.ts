@@ -434,9 +434,9 @@ export interface HealthCheck {
    *
    * You may specify between 5 and 300 seconds.
    *
-   * @default 30
+   * @default Duration.seconds(30)
    */
-  readonly intervalSeconds?: number;
+  readonly interval?: cdk.Duration;
 
   /**
    * Number of times to retry a failed health check before the container is considered unhealthy.
@@ -454,16 +454,16 @@ export interface HealthCheck {
    *
    * @default No start period
    */
-  readonly startPeriod?: number;
+  readonly startPeriod?: cdk.Duration;
 
   /**
    * The time period in seconds to wait for a health check to succeed before it is considered a failure.
    *
    * You may specify between 2 and 60 seconds.
    *
-   * @default 5
+   * @default Duration.seconds(5)
    */
-  readonly timeout?: number;
+  readonly timeout?: cdk.Duration;
 }
 
 function renderKV(env: { [key: string]: string }, keyName: string, valueName: string): any {
@@ -477,10 +477,10 @@ function renderKV(env: { [key: string]: string }, keyName: string, valueName: st
 function renderHealthCheck(hc: HealthCheck): CfnTaskDefinition.HealthCheckProperty {
   return {
     command: getHealthCheckCommand(hc),
-    interval: hc.intervalSeconds !== undefined ? hc.intervalSeconds : 30,
+    interval: hc.interval != null ? hc.interval.toSeconds() : 30,
     retries: hc.retries !== undefined ? hc.retries : 3,
-    startPeriod: hc.startPeriod,
-    timeout: hc.timeout !== undefined ? hc.timeout : 5,
+    startPeriod: cdk.toSeconds(hc.startPeriod),
+    timeout: hc.timeout !== undefined ? hc.timeout.toSeconds() : 5,
   };
 }
 

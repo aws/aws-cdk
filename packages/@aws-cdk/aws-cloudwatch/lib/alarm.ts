@@ -146,7 +146,7 @@ export class Alarm extends Resource implements IAlarm {
     this.metric = props.metric;
     this.annotation = {
       // tslint:disable-next-line:max-line-length
-      label: `${this.metric.label || this.metric.metricName} ${OPERATOR_SYMBOLS[comparisonOperator]} ${props.threshold} for ${props.evaluationPeriods} datapoints within ${describePeriod(props.evaluationPeriods * props.metric.periodSec)}`,
+      label: `${this.metric.label || this.metric.metricName} ${OPERATOR_SYMBOLS[comparisonOperator]} ${props.threshold} for ${props.evaluationPeriods} datapoints within ${describePeriod(props.evaluationPeriods * props.metric.period.toSeconds())}`,
       value: props.threshold,
     };
   }
@@ -235,7 +235,7 @@ function metricJson(metric: Metric): AlarmMetricJson {
     dimensions: dims.length > 0 ? dims : undefined,
     namespace: metric.namespace,
     metricName: metric.metricName,
-    period: metric.periodSec,
+    period: metric.period.toSeconds(),
     statistic: stat.type === 'simple' ? stat.statistic : undefined,
     extendedStatistic: stat.type === 'percentile' ? 'p' + stat.percentile : undefined,
     unit: metric.unit
@@ -245,7 +245,7 @@ function metricJson(metric: Metric): AlarmMetricJson {
 /**
  * Properties used to construct the Metric identifying part of an Alarm
  */
-export interface AlarmMetricJson {
+interface AlarmMetricJson {
   /**
    * The dimensions to apply to the alarm
    */

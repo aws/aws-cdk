@@ -10,21 +10,21 @@ new lambda.Function(stack, 'OneWeek', {
   code: new lambda.InlineCode('exports.handler = (event) => console.log(JSON.stringify(event));'),
   handler: 'index.handler',
   runtime: lambda.Runtime.NodeJS810,
-  logRetentionDays: logs.RetentionDays.OneWeek
+  logRetention: logs.RetentionDays.OneWeek
 });
 
 new lambda.Function(stack, 'OneMonth', {
   code: new lambda.InlineCode('exports.handler = (event) => console.log(JSON.stringify(event));'),
   handler: 'index.handler',
   runtime: lambda.Runtime.NodeJS810,
-  logRetentionDays: logs.RetentionDays.OneMonth
+  logRetention: logs.RetentionDays.OneMonth
 });
 
 new lambda.Function(stack, 'OneYear', {
   code: new lambda.InlineCode('exports.handler = (event) => console.log(JSON.stringify(event));'),
   handler: 'index.handler',
   runtime: lambda.Runtime.NodeJS810,
-  logRetentionDays: logs.RetentionDays.OneYear
+  logRetention: logs.RetentionDays.OneYear
 });
 
 app.synth();

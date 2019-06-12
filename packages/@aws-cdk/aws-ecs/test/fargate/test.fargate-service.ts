@@ -174,7 +174,7 @@ export = {
       new ecs.FargateService(stack, 'Svc', {
         cluster,
         taskDefinition,
-        healthCheckGracePeriodSeconds: 10
+        healthCheckGracePeriod: cdk.Duration.seconds(10)
       });
 
       // THEN
@@ -493,7 +493,7 @@ export = {
       },
       namespace: 'AWS/ECS',
       metricName: 'CPUUtilization',
-      periodSec: 300,
+      period: cdk.Duration.minutes(5),
       statistic: 'Average'
     });
 

@@ -5,7 +5,7 @@ import elbv2 = require('@aws-cdk/aws-elasticloadbalancingv2');
 import iam = require('@aws-cdk/aws-iam');
 import sns = require('@aws-cdk/aws-sns');
 
-import { AutoScalingRollingUpdate, Construct, Fn, IResource, Lazy, Resource, Tag } from '@aws-cdk/cdk';
+import { AutoScalingRollingUpdate, Construct, Duration, Fn, IResource, Lazy, Resource, Tag } from '@aws-cdk/cdk';
 import { CfnAutoScalingGroup, CfnAutoScalingGroupProps, CfnLaunchConfiguration } from './autoscaling.generated';
 import { BasicLifecycleHookProps, LifecycleHook } from './lifecycle-hook';
 import { BasicScheduledActionProps, ScheduledAction } from './scheduled-action';
@@ -130,16 +130,16 @@ export interface CommonAutoScalingGroupProps {
    *
    * The maximum value is 43200 (12 hours).
    *
-   * @default 300 (5 minutes)
+   * @default Duration.minutes(5)
    */
-  readonly resourceSignalTimeoutSec?: number;
+  readonly resourceSignalTimeout?: Duration;
 
   /**
    * Default scaling cooldown for this AutoScalingGroup
    *
-   * @default 300 (5 minutes)
+   * @default Duration.minutes(5)
    */
-  readonly cooldownSeconds?: number;
+  readonly cooldown?: Duration;
 
   /**
    * Whether instances in the Auto Scaling Group should have public
@@ -353,10 +353,6 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
   constructor(scope: Construct, id: string, props: AutoScalingGroupProps) {
     super(scope, id);
 
-    if (props.cooldownSeconds !== undefined && props.cooldownSeconds < 0) {
-      throw new RangeError(`cooldownSeconds cannot be negative, got: ${props.cooldownSeconds}`);
-    }
-
     this.securityGroup = new ec2.SecurityGroup(this, 'InstanceSecurityGroup', {
       vpc: props.vpc,
       allowAllOutbound: props.allowAllOutbound !== false
@@ -404,7 +400,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
 
     const { subnetIds } = props.vpc.selectSubnets(props.vpcSubnets);
     const asgProps: CfnAutoScalingGroupProps = {
-      cooldown: props.cooldownSeconds !== undefined ? `${props.cooldownSeconds}` : undefined,
+      cooldown: props.cooldown !== undefined ? `${props.cooldown}` : undefined,
       minSize: minCapacity.toString(),
       maxSize: maxCapacity.toString(),
       desiredCapacity: desiredCapacity.toString(),
@@ -526,12 +522,12 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
       };
     }
 
-    if (props.resourceSignalCount !== undefined || props.resourceSignalTimeoutSec !== undefined) {
+    if (props.resourceSignalCount !== undefined || props.resourceSignalTimeout !== undefined) {
       this.autoScalingGroup.options.creationPolicy = {
         ...this.autoScalingGroup.options.creationPolicy,
         resourceSignal: {
           count: props.resourceSignalCount,
-          timeout: props.resourceSignalTimeoutSec !== undefined ? renderIsoDuration(props.resourceSignalTimeoutSec) : undefined,
+          timeout: props.resourceSignalTimeout,
         }
       };
     }
@@ -605,9 +601,9 @@ export interface RollingUpdateConfiguration {
    * PT#H#M#S, where each # is the number of hours, minutes, and seconds,
    * respectively). The maximum PauseTime is one hour (PT1H).
    *
-   * @default 300 if the waitOnResourceSignals property is true, otherwise 0
+   * @default Duration.minutes(5) if the waitOnResourceSignals property is true, otherwise 0
    */
-  readonly pauseTimeSec?: number;
+  readonly pauseTime?: Duration;
 
   /**
    * Specifies whether the Auto Scaling group waits on signals from new instances during an update.
@@ -651,45 +647,20 @@ export enum ScalingProcess {
  */
 function renderRollingUpdateConfig(config: RollingUpdateConfiguration = {}): AutoScalingRollingUpdate {
   const waitOnResourceSignals = config.minSuccessfulInstancesPercent !== undefined ? true : false;
-  const pauseTimeSec = config.pauseTimeSec !== undefined ? config.pauseTimeSec : (waitOnResourceSignals ? 300 : 0);
+  const pauseTime = config.pauseTime || (waitOnResourceSignals ? Duration.minutes(5) : Duration.seconds(0));
 
   return {
     maxBatchSize: config.maxBatchSize,
     minInstancesInService: config.minInstancesInService,
     minSuccessfulInstancesPercent: validatePercentage(config.minSuccessfulInstancesPercent),
     waitOnResourceSignals,
-    pauseTime: renderIsoDuration(pauseTimeSec),
+    pauseTime: pauseTime && pauseTime.toISOString(),
     suspendProcesses: config.suspendProcesses !== undefined ? config.suspendProcesses :
       // Recommended list of processes to suspend from here:
       // https://aws.amazon.com/premiumsupport/knowledge-center/auto-scaling-group-rolling-updates/
       [ScalingProcess.HealthCheck, ScalingProcess.ReplaceUnhealthy, ScalingProcess.AZRebalance,
         ScalingProcess.AlarmNotification, ScalingProcess.ScheduledActions],
   };
-}
-
-/**
- * Render a number of seconds to a PTnX string.
- */
-function renderIsoDuration(seconds: number): string {
-  const ret: string[] = [];
-
-  if (seconds === 0) {
-    return 'PT0S';
-  }
-
-  if (seconds >= 3600) {
-    ret.push(`${Math.floor(seconds / 3600)}H`);
-    seconds %= 3600;
-  }
-  if (seconds >= 60) {
-    ret.push(`${Math.floor(seconds / 60)}M`);
-    seconds %= 60;
-  }
-  if (seconds > 0) {
-    ret.push(`${seconds}S`);
-  }
-
-  return 'PT' + ret.join('');
 }
 
 function validatePercentage(x?: number): number | undefined {

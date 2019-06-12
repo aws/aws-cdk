@@ -3,7 +3,7 @@ import cloudwatch = require ('@aws-cdk/aws-cloudwatch');
 import ec2 = require('@aws-cdk/aws-ec2');
 import iam = require('@aws-cdk/aws-iam');
 import cloudmap = require('@aws-cdk/aws-servicediscovery');
-import { Construct, IResource, Resource, SSMParameterProvider, Stack } from '@aws-cdk/cdk';
+import { Construct, Duration, IResource, Resource, SSMParameterProvider, Stack } from '@aws-cdk/cdk';
 import { InstanceDrainHook } from './drain-hook/instance-drain-hook';
 import { CfnCluster } from './ecs.generated';
 
@@ -167,11 +167,11 @@ export class Cluster extends Resource implements ICluster {
     ).addAllResources());
 
     // 0 disables, otherwise forward to underlying implementation which picks the sane default
-    if (options.taskDrainTimeSeconds !== 0) {
+    if (!options.taskDrainTime || options.taskDrainTime.toSeconds() !== 0) {
       new InstanceDrainHook(autoScalingGroup, 'DrainECSHook', {
         autoScalingGroup,
         cluster: this,
-        drainTimeSec: options.taskDrainTimeSeconds
+        drainTime: options.taskDrainTime
       });
     }
   }
@@ -442,9 +442,9 @@ export interface AddAutoScalingGroupCapacityOptions {
    *
    * Set to 0 to disable task draining.
    *
-   * @default 300
+   * @default Duration.minutes(5)
    */
-  readonly taskDrainTimeSeconds?: number;
+  readonly taskDrainTime?: Duration;
 }
 
 /**

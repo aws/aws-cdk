@@ -284,9 +284,9 @@ export interface LogGroupProps {
    *
    * To retain all logs, set this value to Infinity.
    *
-   * @default 731 days (2 years)
+   * @default RetentionDays.TwoYears
    */
-  readonly retentionDays?: RetentionDays;
+  readonly retention?: RetentionDays;
 
   /**
    * Retain the log group if the stack or containing construct ceases to exist
@@ -330,7 +330,7 @@ export class LogGroup extends LogGroupBase {
   constructor(scope: Construct, id: string, props: LogGroupProps = {}) {
     super(scope, id);
 
-    let retentionInDays = props.retentionDays;
+    let retentionInDays = props.retention;
     if (retentionInDays === undefined) { retentionInDays = RetentionDays.TwoYears; }
     if (retentionInDays === Infinity) { retentionInDays = undefined; }
 

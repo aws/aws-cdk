@@ -108,7 +108,9 @@
   },
   "awslint": {
     "exclude": [
-      "construct-ctor-props-optional:@aws-cdk/aws-codebuild.Project"
+      "construct-ctor-props-optional:@aws-cdk/aws-codebuild.Project",
+      "duration-prop-type:@aws-cdk/aws-codebuild.PhaseChangeEvent.completedPhaseDurationSeconds",
+      "duration-prop-name:@aws-cdk/aws-codebuild.PhaseChangeEvent.completedPhaseDurationSeconds"
     ]
   },
   "stability": "experimental"

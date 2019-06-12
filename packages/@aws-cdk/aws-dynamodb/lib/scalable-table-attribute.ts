@@ -27,8 +27,8 @@ export class ScalableTableAttribute extends appscaling.BaseScalableAttribute {
     super.doScaleToTrackMetric('Tracking', {
       policyName: props.policyName,
       disableScaleIn: props.disableScaleIn,
-      scaleInCooldownSec: props.scaleInCooldownSec,
-      scaleOutCooldownSec: props.scaleOutCooldownSec,
+      scaleInCooldown: props.scaleInCooldown,
+      scaleOutCooldown: props.scaleOutCooldown,
       targetValue: props.targetUtilizationPercent,
       predefinedMetric,
     });

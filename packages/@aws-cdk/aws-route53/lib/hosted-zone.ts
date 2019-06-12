@@ -1,5 +1,5 @@
 import ec2 = require('@aws-cdk/aws-ec2');
-import { Construct, Lazy, Resource } from '@aws-cdk/cdk';
+import { Construct, Duration, Lazy, Resource } from '@aws-cdk/cdk';
 import { HostedZoneAttributes, IHostedZone } from './hosted-zone-ref';
 import { CaaAmazonRecord, ZoneDelegationRecord } from './record-set';
 import { CfnHostedZone } from './route53.generated';
@@ -184,7 +184,7 @@ export interface ZoneDelegationOptions {
    *
    * @default 172800
    */
-  readonly ttl?: number;
+  readonly ttl?: Duration;
 }
 
 export interface PrivateHostedZoneProps extends CommonHostedZoneProps {

@@ -1,11 +1,12 @@
+import { toSeconds } from '@aws-cdk/cdk';
 import { QueueProps } from './index';
 
 export function validateProps(props: QueueProps) {
-  validateRange('delivery delay', props.deliveryDelaySec, 0, 900, 'seconds');
+  validateRange('delivery delay', toSeconds(props.deliveryDelay), 0, 900, 'seconds');
   validateRange('maximum message size', props.maxMessageSizeBytes, 1_024, 262_144, 'bytes');
-  validateRange('message retention period', props.retentionPeriodSec, 60, 1_209_600, 'seconds');
-  validateRange('receive wait time', props.receiveMessageWaitTimeSec, 0, 20, 'seconds');
-  validateRange('visibility timeout', props.visibilityTimeoutSec, 0, 43_200, 'seconds');
+  validateRange('message retention period', toSeconds(props.retentionPeriod), 60, 1_209_600, 'seconds');
+  validateRange('receive wait time', toSeconds(props.receiveMessageWaitTime), 0, 20, 'seconds');
+  validateRange('visibility timeout', toSeconds(props.visibilityTimeout), 0, 43_200, 'seconds');
   validateRange('dead letter target maximum receive count', props.deadLetterQueue && props.deadLetterQueue.maxReceiveCount, 1, +Infinity);
 }
 

@@ -4,8 +4,7 @@ import ec2 = require('@aws-cdk/aws-ec2');
 import elbv2 = require('@aws-cdk/aws-elasticloadbalancingv2');
 import iam = require('@aws-cdk/aws-iam');
 import cloudmap = require('@aws-cdk/aws-servicediscovery');
-import { IResource, Lazy, Resource, Stack } from '@aws-cdk/cdk';
-import cdk = require('@aws-cdk/cdk');
+import { Construct, Duration, Fn, IResource, Lazy, Resource, Stack, toSeconds } from '@aws-cdk/cdk';
 import { NetworkMode, TaskDefinition } from '../base/task-definition';
 import { ICluster } from '../cluster';
 import { CfnService } from '../ecs.generated';
@@ -66,7 +65,7 @@ export interface BaseServiceProps {
    *
    * @default ??? FIXME
    */
-  readonly healthCheckGracePeriodSeconds?: number;
+  readonly healthCheckGracePeriod?: Duration;
 
   /**
    * Options for enabling AWS Cloud Map service discovery for the service
@@ -133,7 +132,7 @@ export abstract class BaseService extends Resource
   private readonly resource: CfnService;
   private scalableTaskCount?: ScalableTaskCount;
 
-  constructor(scope: cdk.Construct,
+  constructor(scope: Construct,
               id: string,
               props: BaseServiceProps,
               additionalProps: any,
@@ -151,7 +150,7 @@ export abstract class BaseService extends Resource
         maximumPercent: props.maximumPercent || 200,
         minimumHealthyPercent: props.minimumHealthyPercent === undefined ? 50 : props.minimumHealthyPercent
       },
-      healthCheckGracePeriodSeconds: props.healthCheckGracePeriodSeconds,
+      healthCheckGracePeriodSeconds: toSeconds(props.healthCheckGracePeriod),
       /* role: never specified, supplanted by Service Linked Role */
       networkConfiguration: Lazy.anyValue({ produce: () => this.networkConfiguration }),
       serviceRegistries: Lazy.anyValue({ produce: () => this.serviceRegistries }),
@@ -164,7 +163,7 @@ export abstract class BaseService extends Resource
     // are enabled for the principal in a given region.
     const longArnEnabled = props.longArnEnabled !== undefined ? props.longArnEnabled : false;
     this.serviceName = longArnEnabled
-      ? cdk.Fn.select(2, cdk.Fn.split('/', this.serviceArn))
+      ? Fn.select(2, Fn.split('/', this.serviceArn))
       : this.resource.serviceName;
 
     this.clusterName = clusterName;
@@ -411,7 +410,7 @@ export interface ServiceDiscoveryOptions {
    *
    * @default 60
    */
-  readonly dnsTtlSec?: number;
+  readonly dnsTtl?: Duration;
 
   /**
    * The number of 30-second intervals that you want Cloud Map to wait after receiving an

@@ -49,7 +49,7 @@ export class BucketDeployment extends cdk.Construct {
       runtime: lambda.Runtime.Python36,
       handler: 'index.handler',
       lambdaPurpose: 'Custom::CDKBucketDeployment',
-      timeout: 15 * 60
+      timeout: cdk.Duration.minutes(15)
     });
 
     const source = props.source.bind(this);

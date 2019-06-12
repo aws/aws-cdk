@@ -87,7 +87,7 @@ export = {
       vpc,
       deletionProtection: true,
       http2Enabled: false,
-      idleTimeoutSecs: 1000,
+      idleTimeout: cdk.Duration.seconds(1000),
     });
 
     // THEN

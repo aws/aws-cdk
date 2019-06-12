@@ -70,7 +70,7 @@ const definition = submitJob
 
 new sfn.StateMachine(this, 'StateMachine', {
     definition,
-    timeoutSec: 300
+    timeout: Duration.minutes(5)
 });
 ```
 
@@ -143,12 +143,12 @@ similar to (for example) `inputPath`.
 const task = new sfn.Task(this, 'Invoke The Lambda', {
     task: new tasks.InvokeFunction(myLambda),
     inputPath: '$.input',
-    timeoutSeconds: 300,
+    timeout: Duration.minutes(5),
 });
 
 // Add a retry policy
 task.addRetry({
-    intervalSeconds: 5,
+    interval: Duration.seconds(5),
     maxAttempts: 10
 });
 

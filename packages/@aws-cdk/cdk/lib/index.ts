@@ -27,6 +27,7 @@ export * from './cfn-dynamic-reference';
 export * from './tag';
 export * from './removal-policy';
 export * from './arn';
+export * from './duration';
 
 export * from './app';
 export * from './context';

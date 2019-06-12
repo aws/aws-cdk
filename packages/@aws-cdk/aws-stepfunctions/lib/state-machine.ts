@@ -1,6 +1,6 @@
 import cloudwatch = require('@aws-cdk/aws-cloudwatch');
 import iam = require('@aws-cdk/aws-iam');
-import { Construct, IResource, Resource, Stack } from '@aws-cdk/cdk';
+import { Construct, Duration, IResource, Resource, Stack } from '@aws-cdk/cdk';
 import { StateGraph } from './state-graph';
 import { CfnStateMachine } from './stepfunctions.generated';
 import { IChainable } from './types';
@@ -33,7 +33,7 @@ export interface StateMachineProps {
      *
      * @default No timeout
      */
-    readonly timeoutSec?: number;
+    readonly timeout?: Duration;
 }
 
 /**
@@ -94,7 +94,7 @@ export class StateMachine extends StateMachineBase {
         });
 
         const graph = new StateGraph(props.definition.startState, `State Machine ${id} definition`);
-        graph.timeoutSeconds = props.timeoutSec;
+        graph.timeout = props.timeout;
 
         const resource = new CfnStateMachine(this, 'Resource', {
             stateMachineName: props.stateMachineName,

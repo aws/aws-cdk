@@ -875,7 +875,7 @@ export class Bucket extends BucketBase {
    * @param rule The rule to add
    */
   public addLifecycleRule(rule: LifecycleRule) {
-    if ((rule.noncurrentVersionExpirationInDays !== undefined
+    if ((rule.noncurrentVersionExpiration !== undefined
       || (rule.noncurrentVersionTransitions && rule.noncurrentVersionTransitions.length > 0))
       && !this.versioned) {
       throw new Error("Cannot use 'noncurrent' rules on a nonversioned bucket");
@@ -1061,17 +1061,24 @@ export class Bucket extends BucketBase {
     function parseLifecycleRule(rule: LifecycleRule): CfnBucket.RuleProperty {
       const enabled = rule.enabled !== undefined ? rule.enabled : true;
 
-      const x = {
+      const x: CfnBucket.RuleProperty = {
         // tslint:disable-next-line:max-line-length
-        abortIncompleteMultipartUpload: rule.abortIncompleteMultipartUploadAfterDays !== undefined ? { daysAfterInitiation: rule.abortIncompleteMultipartUploadAfterDays } : undefined,
+        abortIncompleteMultipartUpload: rule.abortIncompleteMultipartUploadAfter !== undefined ? { daysAfterInitiation: rule.abortIncompleteMultipartUploadAfter.toDays() } : undefined,
         expirationDate: rule.expirationDate,
-        expirationInDays: rule.expirationInDays,
+        expirationInDays: rule.expiration && rule.expiration.toDays(),
         id: rule.id,
-        noncurrentVersionExpirationInDays: rule.noncurrentVersionExpirationInDays,
-        noncurrentVersionTransitions: rule.noncurrentVersionTransitions,
+        noncurrentVersionExpirationInDays: rule.noncurrentVersionExpiration && rule.noncurrentVersionExpiration.toDays(),
+        noncurrentVersionTransitions: rule.noncurrentVersionTransitions && rule.noncurrentVersionTransitions.map(transition => ({
+          storageClass: transition.storageClass,
+          transitionInDays: transition.transitionAfter.toDays(),
+        })),
         prefix: rule.prefix,
         status: enabled ? 'Enabled' : 'Disabled',
-        transitions: rule.transitions,
+        transitions: rule.transitions && rule.transitions.map(transition => ({
+          storageClass: transition.storageClass,
+          transitionDate: transition.transitionDate,
+          transitionInDays: transition.transitionAfter && transition.transitionAfter.toDays(),
+        })),
         tagFilters: self.parseTagFilters(rule.tagFilters)
       };
 

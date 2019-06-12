@@ -28,11 +28,11 @@ export interface InstanceDrainHookProps {
   /**
    * How many seconds to give tasks to drain before the instance is terminated anyway
    *
-   * Must be between 0 and 900.
+   * Must be between 0 and 15 minutes.
    *
-   * @default 900
+   * @default Duration.minutes(15)
    */
-  drainTimeSec?: number;
+  drainTime?: cdk.Duration;
 }
 
 /**
@@ -42,11 +42,7 @@ export class InstanceDrainHook extends cdk.Construct {
   constructor(scope: cdk.Construct, id: string, props: InstanceDrainHookProps) {
     super(scope, id);
 
-    const drainTimeSeconds = props.drainTimeSec !== undefined ? props.drainTimeSec : 300;
-
-    if (drainTimeSeconds < 0 || drainTimeSeconds > 900) {
-      throw new Error(`Drain time must be between 0 and 900 seconds, got: ${drainTimeSeconds}`);
-    }
+    const drainTime = props.drainTime || cdk.Duration.minutes(5);
 
     // Invoke Lambda via SNS Topic
     const fn = new lambda.Function(this, 'Function', {
@@ -55,7 +51,7 @@ export class InstanceDrainHook extends cdk.Construct {
       runtime: lambda.Runtime.Python36,
       // Timeout: some extra margin for additional API calls made by the Lambda,
       // up to a maximum of 15 minutes.
-      timeout: Math.min(drainTimeSeconds + 10, 900),
+      timeout: cdk.Duration.seconds(Math.min(drainTime.toSeconds() + 10, 900)),
       environment: {
         CLUSTER: props.cluster.clusterName
       }
@@ -66,7 +62,7 @@ export class InstanceDrainHook extends cdk.Construct {
       lifecycleTransition: autoscaling.LifecycleTransition.InstanceTerminating,
       defaultResult: autoscaling.DefaultResult.Continue,
       notificationTarget: new hooks.FunctionHook(fn),
-      heartbeatTimeoutSec: drainTimeSeconds,
+      heartbeatTimeout: drainTime,
     });
 
     // FIXME: These should probably be restricted usefully in some way, but I don't exactly

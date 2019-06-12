@@ -6,7 +6,7 @@ import ecr = require('@aws-cdk/aws-ecr');
 import events = require('@aws-cdk/aws-events');
 import iam = require('@aws-cdk/aws-iam');
 import kms = require('@aws-cdk/aws-kms');
-import { Aws, Construct, IResource, Lazy, PhysicalName, Resource, ResourceIdentifiers, Stack } from '@aws-cdk/cdk';
+import { Aws, Construct, Duration, IResource, Lazy, PhysicalName, Resource, ResourceIdentifiers, Stack } from '@aws-cdk/cdk';
 import { BuildArtifacts, CodePipelineBuildArtifacts, NoBuildArtifacts } from './artifacts';
 import { Cache } from './cache';
 import { CfnProject } from './codebuild.generated';
@@ -435,9 +435,9 @@ export interface CommonProjectProps {
    * not complete. For valid values, see the timeoutInMinutes field in the AWS
    * CodeBuild User Guide.
    *
-   * @default 60
+   * @default Duration.hours(1)
    */
-  readonly timeout?: number;
+  readonly timeout?: Duration;
 
   /**
    * Additional environment variables to add to the build environment.
@@ -704,7 +704,7 @@ export class Project extends ProjectBase {
       badgeEnabled: props.badge,
       cache: cache._toCloudFormation(),
       name: this.physicalName.value,
-      timeoutInMinutes: props.timeout,
+      timeoutInMinutes: props.timeout && props.timeout.toMinutes(),
       secondarySources: Lazy.anyValue({ produce: () => this.renderSecondarySources() }),
       secondaryArtifacts: Lazy.anyValue({ produce: () => this.renderSecondaryArtifacts() }),
       triggers: this.source._buildTriggers(),

@@ -315,7 +315,7 @@ function metricJson(metric: Metric, yAxis: string): any[] {
     yAxis,
     label: metric.label,
     color: metric.color,
-    period: metric.periodSec,
+    period: metric.period.toSeconds(),
     stat: stat.type === 'simple' ? stat.statistic : 'p' + stat.percentile.toString(),
   });
 

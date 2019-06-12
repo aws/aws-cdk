@@ -1,7 +1,7 @@
 import { expect, haveResource } from '@aws-cdk/assert';
 import iam = require('@aws-cdk/aws-iam');
 import kms = require('@aws-cdk/aws-kms');
-import { Stack } from '@aws-cdk/cdk';
+import { Duration, Stack } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
 import sqs = require('../lib');
 import { Queue } from '../lib';
@@ -281,7 +281,7 @@ export = {
       dimensions: {QueueName: { 'Fn::GetAtt': [ 'Queue4A7E3555', 'QueueName' ] }},
       namespace: 'AWS/SQS',
       metricName: 'NumberOfMessagesSent',
-      periodSec: 300,
+      period: Duration.minutes(5),
       statistic: 'Sum'
     });
 
@@ -289,7 +289,7 @@ export = {
       dimensions: {QueueName: { 'Fn::GetAtt': [ 'Queue4A7E3555', 'QueueName' ] }},
       namespace: 'AWS/SQS',
       metricName: 'SentMessageSize',
-      periodSec: 300,
+      period: Duration.minutes(5),
       statistic: 'Average'
     });
 

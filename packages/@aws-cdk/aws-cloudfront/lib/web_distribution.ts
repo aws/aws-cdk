@@ -193,9 +193,9 @@ export interface CustomOriginConfig {
   /**
    * The keep alive timeout when making calls in seconds.
    *
-   * @default 5
+   * @default Duration.seconds(5)
    */
-  readonly originKeepaliveTimeoutSeconds?: number,
+  readonly originKeepaliveTimeout?: cdk.Duration,
 
   /**
    * The protocol (http or https) policy to use when interacting with the origin.
@@ -207,9 +207,9 @@ export interface CustomOriginConfig {
   /**
    * The read timeout when calling the origin in seconds
    *
-   * @default 30
+   * @default Duration.seconds(30)
    */
-  readonly originReadTimeoutSeconds?: number
+  readonly originReadTimeout?: cdk.Duration
 
   /**
    * The SSL versions to use when interacting with the origin.
@@ -299,7 +299,7 @@ export interface Behavior {
    * @default 86400 (1 day)
    *
    */
-  readonly defaultTtlSeconds?: number;
+  readonly defaultTtl?: cdk.Duration;
 
   /**
    * The method this CloudFront distribution responds do.
@@ -334,35 +334,16 @@ export interface Behavior {
    * The minimum amount of time that you want objects to stay in the cache
    * before CloudFront queries your origin.
    */
-  readonly minTtlSeconds?: number;
+  readonly minTtl?: cdk.Duration;
 
   /**
    * The max amount of time you want objects to stay in the cache
    * before CloudFront queries your origin.
    *
-   * @default 31536000 (one year)
+   * @default Duration.seconds(31536000) (one year)
    */
-  readonly maxTtlSeconds?: number;
+  readonly maxTtl?: cdk.Duration;
 
-}
-
-export interface ErrorConfiguration {
-  /**
-   * The error code matched from the origin
-   */
-  readonly originErrorCode: number;
-  /**
-   * The error code that is sent to the caller.
-   */
-  readonly respondWithErrorCode: number;
-  /**
-   * The path to service instead
-   */
-  readonly respondWithPage: string;
-  /**
-   * How long before this error is retried.
-   */
-  readonly cacheTtl?: number;
 }
 
 export interface CloudFrontWebDistributionProps {
@@ -582,8 +563,8 @@ export class CloudFrontWebDistribution extends cdk.Construct implements IDistrib
           ? {
             httpPort: originConfig.customOriginSource.httpPort || 80,
             httpsPort: originConfig.customOriginSource.httpsPort || 443,
-            originKeepaliveTimeout: originConfig.customOriginSource.originKeepaliveTimeoutSeconds || 5,
-            originReadTimeout: originConfig.customOriginSource.originReadTimeoutSeconds || 30,
+            originKeepaliveTimeout: cdk.toSeconds(originConfig.customOriginSource.originKeepaliveTimeout) || 5,
+            originReadTimeout: cdk.toSeconds(originConfig.customOriginSource.originReadTimeout) || 30,
             originProtocolPolicy: originConfig.customOriginSource.originProtocolPolicy || OriginProtocolPolicy.HttpsOnly,
             originSslProtocols: originConfig.customOriginSource.allowedOriginSSLVersions || [OriginSslPolicy.TLSv1_2]
           }
@@ -680,10 +661,10 @@ export class CloudFrontWebDistribution extends cdk.Construct implements IDistrib
       allowedMethods: this.METHOD_LOOKUP_MAP[input.allowedMethods || CloudFrontAllowedMethods.GET_HEAD],
       cachedMethods: this.METHOD_LOOKUP_MAP[input.cachedMethods || CloudFrontAllowedCachedMethods.GET_HEAD],
       compress: input.compress,
-      defaultTtl: input.defaultTtlSeconds,
+      defaultTtl: cdk.toSeconds(input.defaultTtl),
       forwardedValues: input.forwardedValues || { queryString: false, cookies: { forward: "none" } },
-      maxTtl: input.maxTtlSeconds,
-      minTtl: input.minTtlSeconds,
+      maxTtl: cdk.toSeconds(input.maxTtl),
+      minTtl: cdk.toSeconds(input.minTtl),
       trustedSigners: input.trustedSigners,
       targetOriginId: input.targetOriginId,
       viewerProtocolPolicy: protoPolicy || ViewerProtocolPolicy.RedirectToHTTPS,

@@ -24,8 +24,8 @@ export = {
       vpc,
       databaseName: 'ORCL',
       storageEncrypted: true,
-      backupRetentionPeriod: 7,
-      monitoringInterval: 60,
+      backupRetention: cdk.Duration.days(7),
+      monitoringInterval: cdk.Duration.seconds(60),
       enablePerformanceInsights: true,
       cloudwatchLogsExports: [
         'trace',
@@ -39,74 +39,70 @@ export = {
 
     // THEN
     expect(stack).to(haveResource('AWS::RDS::DBInstance', {
-      Properties: {
-        DBInstanceClass: 'db.t2.medium',
-        AllocatedStorage: '100',
-        AutoMinorVersionUpgrade: false,
-        BackupRetentionPeriod: '7',
-        CopyTagsToSnapshot: true,
-        DBName: 'ORCL',
-        DBSubnetGroupName: {
-          Ref: 'InstanceSubnetGroupF2CBA54F'
-        },
-        DeletionProtection: true,
-        EnableCloudwatchLogsExports: [
-          'trace',
-          'audit',
-          'alert',
-          'listener'
-        ],
-        EnablePerformanceInsights: true,
-        Engine: 'oracle-se1',
-        Iops: 1000,
-        LicenseModel: 'bring-your-own-license',
-        MasterUsername: {
-          'Fn::Join': [
-            '',
-            [
-              '{{resolve:secretsmanager:',
-              {
-                Ref: 'InstanceSecret478E0A47'
-              },
-              ':SecretString:username::}}'
-            ]
+      DBInstanceClass: 'db.t2.medium',
+      AllocatedStorage: '100',
+      AutoMinorVersionUpgrade: false,
+      BackupRetentionPeriod: '7',
+      CopyTagsToSnapshot: true,
+      DBName: 'ORCL',
+      DBSubnetGroupName: {
+        Ref: 'InstanceSubnetGroupF2CBA54F'
+      },
+      DeletionProtection: true,
+      EnableCloudwatchLogsExports: [
+        'trace',
+        'audit',
+        'alert',
+        'listener'
+      ],
+      EnablePerformanceInsights: true,
+      Engine: 'oracle-se1',
+      Iops: 1000,
+      LicenseModel: 'bring-your-own-license',
+      MasterUsername: {
+        'Fn::Join': [
+          '',
+          [
+            '{{resolve:secretsmanager:',
+            {
+              Ref: 'InstanceSecret478E0A47'
+            },
+            ':SecretString:username::}}'
           ]
-        },
-        MasterUserPassword: {
-          'Fn::Join': [
-            '',
-            [
-              '{{resolve:secretsmanager:',
-              {
-                Ref: 'InstanceSecret478E0A47'
-              },
-              ':SecretString:password::}}'
-            ]
-          ]
-        },
-        MonitoringInterval: 60,
-        MonitoringRoleArn: {
-          'Fn::GetAtt': [
-            'InstanceMonitoringRole3E2B4286',
-            'Arn'
-          ]
-        },
-        MultiAZ: true,
-        PerformanceInsightsRetentionPeriod: 7,
-        StorageEncrypted: true,
-        StorageType: 'io1',
-        VPCSecurityGroups: [
-          {
-            'Fn::GetAtt': [
-              'InstanceSecurityGroupB4E5FA83',
-              'GroupId'
-            ]
-          }
         ]
       },
-      DeletionPolicy: 'Retain',
-      UpdateReplacePolicy: 'Retain'
-    }, ResourcePart.CompleteDefinition));
+      MasterUserPassword: {
+        'Fn::Join': [
+          '',
+          [
+            '{{resolve:secretsmanager:',
+            {
+              Ref: 'InstanceSecret478E0A47'
+            },
+            ':SecretString:password::}}'
+          ]
+        ]
+      },
+      MonitoringInterval: 60,
+      MonitoringRoleArn: {
+        'Fn::GetAtt': [
+          'InstanceMonitoringRole3E2B4286',
+          'Arn'
+        ]
+      },
+      MultiAZ: true,
+      PerformanceInsightsRetentionPeriod: 7,
+      StorageEncrypted: true,
+      StorageType: 'io1',
+      VPCSecurityGroups: [
+        {
+          'Fn::GetAtt': [
+            'InstanceSecurityGroupB4E5FA83',
+            'GroupId'
+          ]
+        }
+      ]
+    }));
 
     expect(stack).to(haveResource('AWS::RDS::DBInstance', {
       DeletionPolicy: 'Retain',
@@ -371,7 +367,7 @@ export = {
       dimensions: { DBInstanceIdentifier: { Ref: 'InstanceC1063A87' } },
       namespace: 'AWS/RDS',
       metricName: 'CPUUtilization',
-      periodSec: 300,
+      period: cdk.Duration.minutes(5),
       statistic: 'Average'
     });
 

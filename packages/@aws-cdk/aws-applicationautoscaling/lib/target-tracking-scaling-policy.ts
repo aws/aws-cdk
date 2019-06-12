@@ -37,14 +37,14 @@ export interface BaseTargetTrackingProps {
    *
    * @default - No scale in cooldown.
    */
-  readonly scaleInCooldownSec?: number;
+  readonly scaleInCooldown?: cdk.Duration;
 
   /**
    * Period after a scale out activity completes before another scale out activity can start.
    *
    * @default - No scale out cooldown.
    */
-  readonly scaleOutCooldownSec?: number;
+  readonly scaleOutCooldown?: cdk.Duration;
 }
 
 /**
@@ -115,13 +115,6 @@ export class TargetTrackingScalingPolicy extends cdk.Construct {
       throw new Error(`Exactly one of 'customMetric' or 'predefinedMetric' must be specified.`);
     }
 
-    if (props.scaleInCooldownSec !== undefined && props.scaleInCooldownSec < 0) {
-      throw new RangeError(`scaleInCooldown cannot be negative, got: ${props.scaleInCooldownSec}`);
-    }
-    if (props.scaleOutCooldownSec !== undefined && props.scaleOutCooldownSec < 0) {
-      throw new RangeError(`scaleOutCooldown cannot be negative, got: ${props.scaleOutCooldownSec}`);
-    }
-
     super(scope, id);
 
     const resource = new CfnScalingPolicy(this, 'Resource', {
@@ -135,8 +128,8 @@ export class TargetTrackingScalingPolicy extends cdk.Construct {
           predefinedMetricType: props.predefinedMetric,
           resourceLabel: props.resourceLabel,
         } : undefined,
-        scaleInCooldown: props.scaleInCooldownSec,
-        scaleOutCooldown: props.scaleOutCooldownSec,
+        scaleInCooldown: cdk.toSeconds(props.scaleInCooldown),
+        scaleOutCooldown: cdk.toSeconds(props.scaleOutCooldown),
         targetValue: props.targetValue
       }
     });

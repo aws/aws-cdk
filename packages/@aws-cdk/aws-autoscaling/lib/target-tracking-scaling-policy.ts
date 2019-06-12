@@ -29,14 +29,14 @@ export interface BaseTargetTrackingProps {
    *
    * @default - The default cooldown configured on the AutoScalingGroup.
    */
-  readonly cooldownSeconds?: number;
+  readonly cooldown?: cdk.Duration;
 
   /**
    * Estimated time until a newly launched instance can send metrics to CloudWatch.
    *
    * @default - Same as the cooldown.
    */
-  readonly estimatedInstanceWarmupSeconds?: number;
+  readonly estimatedInstanceWarmup?: cdk.Duration;
 }
 
 /**
@@ -113,14 +113,6 @@ export class TargetTrackingScalingPolicy extends cdk.Construct {
       throw new Error(`Exactly one of 'customMetric' or 'predefinedMetric' must be specified.`);
     }
 
-    if (props.cooldownSeconds !== undefined && props.cooldownSeconds < 0) {
-      throw new RangeError(`cooldownSeconds cannot be negative, got: ${props.cooldownSeconds}`);
-    }
-
-    if (props.estimatedInstanceWarmupSeconds !== undefined && props.estimatedInstanceWarmupSeconds < 0) {
-      throw new RangeError(`estimatedInstanceWarmupSeconds cannot be negative, got: ${props.estimatedInstanceWarmupSeconds}`);
-    }
-
     if (props.predefinedMetric === PredefinedMetric.ALBRequestCountPerTarget && !props.resourceLabel) {
       throw new Error('When tracking the ALBRequestCountPerTarget metric, the ALB identifier must be supplied in resourceLabel');
     }
@@ -130,8 +122,8 @@ export class TargetTrackingScalingPolicy extends cdk.Construct {
     this.resource = new CfnScalingPolicy(this, 'Resource', {
       policyType: 'TargetTrackingScaling',
       autoScalingGroupName: props.autoScalingGroup.autoScalingGroupName,
-      cooldown: props.cooldownSeconds !== undefined ? `${props.cooldownSeconds}` : undefined,
-      estimatedInstanceWarmup: props.estimatedInstanceWarmupSeconds,
+      cooldown: props.cooldown && props.cooldown.toSeconds().toString(),
+      estimatedInstanceWarmup: cdk.toSeconds(props.estimatedInstanceWarmup),
       targetTrackingConfiguration: {
         customizedMetricSpecification: renderCustomMetric(props.customMetric),
         disableScaleIn: props.disableScaleIn,
