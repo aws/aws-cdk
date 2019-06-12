@@ -1,6 +1,7 @@
 import reflect = require('jsii-reflect');
 import { Linter, MethodSignatureParameterExpectation } from '../linter';
 import { CoreTypes } from './core-types';
+import { ResourceReflection } from './resource';
 
 export const constructLinter = new Linter<ConstructReflection>(assembly => assembly.classes
   .filter(t => CoreTypes.isConstructClass(t))
@@ -292,4 +293,28 @@ constructLinter.add({
     e.assert(!property.type.isAny, `${e.ctx.propsFqn}.${property.name}`);
     }
   }
+});
+
+constructLinter.add({
+  code: 'props-physical-name',
+  message: "Every Resource must have a single physical name construction property, called <baseNameOfResource>Name",
+  eval: e => {
+    if (!e.ctx.propsType) { return; }
+    if (!e.ctx.hasPropsArgument) { return; }
+
+    // this rule only applies to Resources
+    if (!CoreTypes.isResourceClass(e.ctx.classType)) { return; }
+
+    const physicalNameProps = e.ctx.propsType.allProperties.filter(p => p.type.toString() === '@aws-cdk/cdk.PhysicalName');
+    if (physicalNameProps.length !== 1) {
+      e.assert(false, `${e.ctx.propsFqn}`);
+    } else {
+      // check the name of the property
+      const classBasename = new ResourceReflection(e.ctx).basename;
+      const basename = `${classBasename[0].toLowerCase()}${classBasename.slice(1)}`;
+
+      const physicalNameProp = physicalNameProps[0];
+      e.assert(physicalNameProp.name === `${basename}Name`, `${e.ctx.propsFqn}.${physicalNameProp.name}`);
+    }
+  },
 });
