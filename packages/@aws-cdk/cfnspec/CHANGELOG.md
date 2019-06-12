@@ -1,3 +1,35 @@
+
+# Serverless Application Model (SAM) Resource Specification v2016-10-31
+
+## New Resource Types
+
+
+## Attribute Changes
+
+
+## Property Changes
+
+* AWS::Serverless::Function Policies.ItemTypes (__changed__)
+  * Added SAMPolicyTemplate
+
+## Property Type Changes
+
+* AWS::Serverless::Function.BucketSAMPT (__added__)
+* AWS::Serverless::Function.CollectionSAMPT (__added__)
+* AWS::Serverless::Function.DomainSAMPT (__added__)
+* AWS::Serverless::Function.EmptySAMPT (__added__)
+* AWS::Serverless::Function.FunctionSAMPT (__added__)
+* AWS::Serverless::Function.IdentitySAMPT (__added__)
+* AWS::Serverless::Function.KeySAMPT (__added__)
+* AWS::Serverless::Function.LogGroupSAMPT (__added__)
+* AWS::Serverless::Function.QueueSAMPT (__added__)
+* AWS::Serverless::Function.SAMPolicyTemplate (__added__)
+* AWS::Serverless::Function.StateMachineSAMPT (__added__)
+* AWS::Serverless::Function.StreamSAMPT (__added__)
+* AWS::Serverless::Function.TableSAMPT (__added__)
+* AWS::Serverless::Function.TableStreamSAMPT (__added__)
+* AWS::Serverless::Function.TopicSAMPT (__added__)
+
 # CloudFormation Resource Specification v3.3.0
 
 ## New Resource Types
