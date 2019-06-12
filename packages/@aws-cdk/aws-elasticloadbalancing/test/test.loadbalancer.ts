@@ -112,7 +112,45 @@ export = {
     }));
 
     test.done();
-  }
+  },
+
+  'disable cross zone load balancing'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+    const vpc = new Vpc(stack, 'VCP');
+
+    // WHEN
+    new LoadBalancer(stack, 'LB', {
+      vpc,
+      crossZone: false,
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::ElasticLoadBalancing::LoadBalancer', {
+      CrossZone: false
+    }));
+
+    test.done();
+  },
+
+  'cross zone load balancing enabled by default'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+    const vpc = new Vpc(stack, 'VCP');
+
+    // WHEN
+    new LoadBalancer(stack, 'LB', {
+      vpc,
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::ElasticLoadBalancing::LoadBalancer', {
+      CrossZone: true
+    }));
+
+    test.done();
+  },
+
 };
 
 class FakeTarget implements ILoadBalancerTarget {
