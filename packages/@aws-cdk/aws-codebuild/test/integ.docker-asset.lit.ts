@@ -7,14 +7,14 @@ class TestStack extends cdk.Stack {
     super(scope, id);
 
     new codebuild.Project(this, 'MyProject', {
-      buildSpec: {
+      buildSpec: codebuild.BuildSpec.fromObject({
         version: "0.2",
         phases: {
           build: {
             commands: [ 'ls' ]
           }
         }
-      },
+      }),
       /// !show
       environment: {
         buildImage: codebuild.LinuxBuildImage.fromAsset(this, 'MyImage', {
