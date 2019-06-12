@@ -1,4 +1,16 @@
 ## Amazon EC2 Construct Library
+<!--BEGIN STABILITY BANNER-->
+
+---
+
+![Stability: Experimental](https://img.shields.io/badge/stability-Experimental-important.svg?style=for-the-badge)
+
+> This API is still under active development and subject to non-backward
+> compatible changes or removal in any future version. Use of the API is not recommended in production
+> environments. Experimental APIs are not subject to the Semantic Versioning model.
+
+---
+<!--END STABILITY BANNER-->
 
 The `@aws-cdk/aws-ec2` package contains primitives for setting up networking and
 instances.
@@ -7,19 +19,19 @@ instances.
 
 Most projects need a Virtual Private Cloud to provide security by means of
 network partitioning. This is easily achieved by creating an instance of
-`VpcNetwork`:
+`Vpc`:
 
 ```ts
 import ec2 = require('@aws-cdk/aws-ec2');
 
-const vpc = new ec2.VpcNetwork(this, 'VPC');
+const vpc = new ec2.Vpc(this, 'VPC');
 ```
 
 All default Constructs requires EC2 instances to be launched inside a VPC, so
 you should generally start by defining a VPC whenever you need to launch
 instances for your project.
 
-Our default `VpcNetwork` class creates a private and public subnet for every
+Our default `Vpc` class creates a private and public subnet for every
 availability zone. Classes that use the VPC will generally launch instances
 into all private subnets, and provide a parameter called `vpcSubnets` to
 allow you to override the placement. [Read more about
@@ -27,14 +39,14 @@ subnets](https://docs.aws.amazon.com/AmazonVPC/latest/UserGuide/VPC_Subnets.html
 
 
 #### Advanced Subnet Configuration
-If you require the ability to configure subnets the `VpcNetwork` can be
+If you require the ability to configure subnets the `Vpc` can be
 customized with `SubnetConfiguration` array. This is best explained by an
 example:
 
 ```ts
 import ec2 = require('@aws-cdk/aws-ec2');
 
-const vpc = new ec2.VpcNetwork(this, 'TheVPC', {
+const vpc = new ec2.Vpc(this, 'TheVPC', {
   cidr: '10.0.0.0/21',
   subnetConfiguration: [
     {
@@ -59,7 +71,7 @@ const vpc = new ec2.VpcNetwork(this, 'TheVPC', {
 The example above is one possible configuration, but the user can use the
 constructs above to implement many other network configurations.
 
-The `VpcNetwork` from the above configuration in a Region with three
+The `Vpc` from the above configuration in a Region with three
 availability zones will be the following:
  * IngressSubnet1: 10.0.0.0/24
  * IngressSubnet2: 10.0.1.0/24
@@ -98,7 +110,7 @@ distributed for the application.
 ```ts
 import ec2 = require('@aws-cdk/aws-ec2');
 
-const vpc = new ec2.VpcNetwork(this, 'TheVPC', {
+const vpc = new ec2.Vpc(this, 'TheVPC', {
   cidr: '10.0.0.0/16',
   natGateways: 1,
   subnetConfiguration: [
@@ -120,7 +132,7 @@ const vpc = new ec2.VpcNetwork(this, 'TheVPC', {
 });
 ```
 
-The `VpcNetwork` from the above configuration in a Region with three
+The `Vpc` from the above configuration in a Region with three
 availability zones will be the following:
  * PublicSubnet1: 10.0.0.0/26
  * PublicSubnet2: 10.0.0.64/26
@@ -144,7 +156,7 @@ traffic. This can be accomplished with a single parameter configuration:
 ```ts
 import ec2 = require('@aws-cdk/aws-ec2');
 
-const vpc = new ec2.VpcNetwork(this, 'TheVPC', {
+const vpc = new ec2.Vpc(this, 'TheVPC', {
   cidr: '10.0.0.0/16',
   natGateways: 1,
   natGatewayPlacement: {subnetName: 'Public'},
@@ -168,7 +180,7 @@ const vpc = new ec2.VpcNetwork(this, 'TheVPC', {
 });
 ```
 
-The `VpcNetwork` above will have the exact same subnet definitions as listed
+The `Vpc` above will have the exact same subnet definitions as listed
 above. However, this time the VPC will have only 1 NAT Gateway and all
 Application subnets will route to the NAT Gateway.
 
@@ -181,7 +193,7 @@ by setting the `reserved` subnetConfiguration property to true, as shown below:
 
 ```ts
 import ec2 = require('@aws-cdk/aws-ec2');
-const vpc = new ec2.VpcNetwork(this, 'TheVPC', {
+const vpc = new ec2.Vpc(this, 'TheVPC', {
   cidr: '10.0.0.0/16',
   natGateways: 1,
   subnetConfiguration: [
@@ -228,7 +240,7 @@ can reuse a VPC defined in one Stack in another by using `export()` and
 
 #### Importing an existing VPC
 
-If your VPC is created outside your CDK app, you can use `importFromContext()`:
+If your VPC is created outside your CDK app, you can use `fromLookup()`:
 
 [importing existing VPCs](test/integ.import-default-vpc.lit.ts)
 
@@ -355,7 +367,7 @@ selectable by instantiating one of these classes:
 Create your VPC with VPN connections by specifying the `vpnConnections` props (keys are construct `id`s):
 
 ```ts
-const vpc = new ec2.VpcNetwork(stack, 'MyVpc', {
+const vpc = new ec2.Vpc(stack, 'MyVpc', {
   vpnConnections: {
     dynamic: { // Dynamic routing (BGP)
       ip: '1.2.3.4'
@@ -374,7 +386,7 @@ const vpc = new ec2.VpcNetwork(stack, 'MyVpc', {
 To create a VPC that can accept VPN connections, set `vpnGateway` to `true`:
 
 ```ts
-const vpc = new ec2.VpcNetwork(stack, 'MyVpc', {
+const vpc = new ec2.Vpc(stack, 'MyVpc', {
   vpnGateway: true
 });
 ```

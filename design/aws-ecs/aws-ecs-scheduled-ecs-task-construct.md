@@ -118,7 +118,7 @@ The `ScheduledEc2Task` construct will use the following existing constructs:
 An example use case to create a task that is scheduled to run every minute:
 ```ts
 // Create the vpc and cluster used by the scheduled task
-const vpc = new ec2.VpcNetwork(stack, 'Vpc', { maxAZs: 1 });
+const vpc = new ec2.Vpc(stack, 'Vpc', { maxAZs: 1 });
 const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
 cluster.addCapacity('DefaultAutoScalingGroup', {
   instanceType: new ec2.InstanceType('t2.micro')

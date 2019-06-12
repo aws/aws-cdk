@@ -97,7 +97,7 @@ export = {
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'MyStack');
     new Rule(stack, 'Rule');
-    test.throws(() => app.run(), /Either 'eventPattern' or 'scheduleExpression' must be defined/);
+    test.throws(() => app.synth(), /Either 'eventPattern' or 'scheduleExpression' must be defined/);
     test.done();
   },
 
@@ -168,7 +168,7 @@ export = {
       bind: () => ({
         id: 'T2',
         arn: 'ARN2',
-        input: RuleTargetInput.fromText(`This is ${EventField.fromPath('$.detail.bla', 'bla')}`),
+        input: RuleTargetInput.fromText(`This is ${EventField.fromPath('$.detail.bla')}`),
       })
     };
 
@@ -199,9 +199,9 @@ export = {
             "Id": "T2",
             "InputTransformer": {
             "InputPathsMap": {
-              "bla": "$.detail.bla"
+              "detail-bla": "$.detail.bla"
             },
-            "InputTemplate": "\"This is <bla>\""
+            "InputTemplate": "\"This is <detail-bla>\""
             },
           }
           ]
@@ -275,9 +275,9 @@ export = {
               "Id": "T3",
               "InputTransformer": {
                 "InputPathsMap": {
-                  "f1": "$.detail.bar"
+                  "detail-bar": "$.detail.bar"
                 },
-                "InputTemplate": "{\"foo\":<f1>}"
+                "InputTemplate": "{\"foo\":<detail-bar>}"
               }
             },
             {
@@ -349,7 +349,7 @@ export = {
     const rule = new Rule(stack, 'EventRule');
     rule.addTarget(t1);
 
-    test.deepEqual(stack.node.resolve(receivedRuleArn), stack.node.resolve(rule.ruleArn));
+    test.deepEqual(stack.resolve(receivedRuleArn), stack.resolve(rule.ruleArn));
     test.deepEqual(receivedRuleId, rule.node.uniqueId);
     test.done();
   },

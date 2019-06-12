@@ -18,4 +18,4 @@ const app = new cdk.App();
 
 new TestStack(app, 'iam-integ-composite-principal');
 
-app.run();
+app.synth();

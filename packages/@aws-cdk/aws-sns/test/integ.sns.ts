@@ -16,4 +16,4 @@ const app = new App();
 
 new SNSInteg(app, 'SNSInteg');
 
-app.run();
+app.synth();

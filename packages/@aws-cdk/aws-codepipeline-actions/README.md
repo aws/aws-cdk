@@ -1,4 +1,16 @@
 ## AWS CodePipeline Actions
+<!--BEGIN STABILITY BANNER-->
+
+---
+
+![Stability: Experimental](https://img.shields.io/badge/stability-Experimental-important.svg?style=for-the-badge)
+
+> This API is still under active development and subject to non-backward
+> compatible changes or removal in any future version. Use of the API is not recommended in production
+> environments. Experimental APIs are not subject to the Semantic Versioning model.
+
+---
+<!--END STABILITY BANNER-->
 
 This package contains Actions that can be used in a CodePipeline.
 
@@ -95,7 +107,7 @@ You can do it through the CDK:
 import cloudtrail = require('@aws-cdk/aws-cloudtrail');
 
 const key = 'some/key.zip';
-const trail = new cloudtrail.CloudTrail(this, 'CloudTrail');
+const trail = new cloudtrail.Trail(this, 'CloudTrail');
 trail.addS3EventSelector([sourceBucket.arnForObjects(key)], {
   readWriteType: cloudtrail.ReadWriteType.WriteOnly,
 });

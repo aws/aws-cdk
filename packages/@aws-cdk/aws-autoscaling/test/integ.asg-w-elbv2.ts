@@ -37,4 +37,4 @@ asg.scaleOnRequestCount('AModestLoad', {
   targetRequestsPerSecond: 1
 });
 
-app.run();
+app.synth();

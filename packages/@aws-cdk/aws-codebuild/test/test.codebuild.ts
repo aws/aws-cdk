@@ -1135,7 +1135,7 @@ export = {
       environment: {
         environmentVariables: {
           FOO: { value: '1234' },
-          BAR: { value: `111${new cdk.Token({ twotwotwo: '222' })}`, type: codebuild.BuildEnvironmentVariableType.ParameterStore }
+          BAR: { value: `111${cdk.Token.asString({ twotwotwo: '222' })}`, type: codebuild.BuildEnvironmentVariableType.ParameterStore }
         }
       },
       environmentVariables: {

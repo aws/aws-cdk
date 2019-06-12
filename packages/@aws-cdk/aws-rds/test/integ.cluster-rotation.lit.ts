@@ -22,4 +22,4 @@ const cluster = new rds.DatabaseCluster(stack, 'Database', {
 cluster.addRotationSingleUser('Rotation');
 /// !hide
 
-app.run();
+app.synth();

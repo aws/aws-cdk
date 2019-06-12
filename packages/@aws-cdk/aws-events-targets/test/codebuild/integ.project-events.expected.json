@@ -59,10 +59,10 @@
             "Id": "MyTopic",
             "InputTransformer": {
               "InputPathsMap": {
-                "f1": "$.detail.repositoryName",
-                "f2": "$.detail.referenceName"
+                "detail-repositoryName": "$.detail.repositoryName",
+                "detail-referenceName": "$.detail.referenceName"
               },
-              "InputTemplate": "\"A commit was pushed to the repository <f1> on branch <f2>\""
+              "InputTemplate": "\"A commit was pushed to the repository <detail-repositoryName> on branch <detail-referenceName>\""
             }
           }
         ]
@@ -316,9 +316,9 @@
             "Id": "MyTopic",
             "InputTransformer": {
               "InputPathsMap": {
-                "f1": "$.detail.completed-phase"
+                "detail-completed-phase": "$.detail.completed-phase"
               },
-              "InputTemplate": "\"Build phase changed to <f1>\""
+              "InputTemplate": "\"Build phase changed to <detail-completed-phase>\""
             }
           }
         ]

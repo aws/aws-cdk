@@ -1,5 +1,5 @@
 import kms = require('@aws-cdk/aws-kms');
-import { Construct } from '@aws-cdk/cdk';
+import { Construct, Stack } from '@aws-cdk/cdk';
 import { IQueue, QueueAttributes, QueueBase } from './queue-base';
 import { CfnQueue } from './sqs.generated';
 import { validateProps } from './validate-props';
@@ -189,7 +189,7 @@ export class Queue extends QueueBase {
    * Import an existing queue
    */
   public static fromQueueAttributes(scope: Construct, id: string, attrs: QueueAttributes): IQueue {
-    const stack = scope.node.stack;
+    const stack = Stack.of(scope);
     const queueName = attrs.queueName || stack.parseArn(attrs.queueArn).resource;
     const queueUrl = attrs.queueUrl || `https://sqs.${stack.region}.${stack.urlSuffix}/${stack.accountId}/${queueName}`;
 
@@ -257,7 +257,7 @@ export class Queue extends QueueBase {
     this.encryptionMasterKey = encryptionMasterKey;
     this.queueArn = queue.queueArn;
     this.queueName = queue.queueName;
-    this.queueUrl = queue.ref;
+    this.queueUrl = queue.refAsString;
 
     function _determineEncryptionProps(this: Queue): { encryptionProps: EncryptionProps, encryptionMasterKey?: kms.IKey } {
       let encryption = props.encryption || QueueEncryption.Unencrypted;

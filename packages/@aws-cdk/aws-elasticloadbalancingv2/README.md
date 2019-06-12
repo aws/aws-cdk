@@ -1,4 +1,16 @@
 ## Amazon Elastic Load Balancing V2 Construct Library
+<!--BEGIN STABILITY BANNER-->
+
+---
+
+![Stability: Experimental](https://img.shields.io/badge/stability-Experimental-important.svg?style=for-the-badge)
+
+> This API is still under active development and subject to non-backward
+> compatible changes or removal in any future version. Use of the API is not recommended in production
+> environments. Experimental APIs are not subject to the Semantic Versioning model.
+
+---
+<!--END STABILITY BANNER-->
 
 The `@aws-cdk/aws-elasticloadbalancingv2` package provides constructs for
 configuring application and network load balancers.
@@ -20,7 +32,7 @@ import autoscaling = require('@aws-cdk/aws-autoscaling');
 
 // ...
 
-const vpc = new ec2.VpcNetwork(...);
+const vpc = new ec2.Vpc(...);
 
 // Create the load balancer in a VPC. 'internetFacing' is 'false'
 // by default, which creates an internal load balancer.

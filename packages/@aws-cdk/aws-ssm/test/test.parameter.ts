@@ -44,7 +44,10 @@ export = {
 
     // THEN
     test.doesNotThrow(() => {
-       new ssm.StringParameter(stack, 'Parameter', { allowedPattern: '^Bar$', stringValue: new cdk.Token(() => 'Foo!').toString() });
+       new ssm.StringParameter(stack, 'Parameter', {
+         allowedPattern: '^Bar$',
+         stringValue: cdk.Lazy.stringValue({ produce: () => 'Foo!' }),
+      });
     });
     test.done();
   },
@@ -99,7 +102,7 @@ export = {
     // THEN
     test.doesNotThrow(() => new ssm.StringListParameter(stack, 'Parameter', {
       allowedPattern: '^(Foo|Bar)$',
-      stringListValue: ['Foo', new cdk.Token(() => 'Baz!').toString()]
+      stringListValue: ['Foo', cdk.Lazy.stringValue({ produce: () => 'Baz!' })],
     }));
     test.done();
   },
@@ -110,7 +113,7 @@ export = {
     const param = new ssm.StringParameter(stack, 'Parameter', { stringValue: 'Foo' });
 
     // THEN
-    test.deepEqual(param.node.resolve(param.parameterArn), {
+    test.deepEqual(stack.resolve(param.parameterArn), {
       'Fn::Join': ['', [
         'arn:',
         { Ref: 'AWS::Partition' },
@@ -133,7 +136,7 @@ export = {
     const param = ssm.StringParameter.fromStringParameterName(stack, 'MyParamName', 'MyParamName');
 
     // THEN
-    test.deepEqual(stack.node.resolve(param.parameterArn), {
+    test.deepEqual(stack.resolve(param.parameterArn), {
       'Fn::Join': [ '', [
         'arn:',
         { Ref: 'AWS::Partition' },
@@ -143,9 +146,9 @@ export = {
         { Ref: 'AWS::AccountId' },
         ':parameterMyParamName' ] ]
     });
-    test.deepEqual(stack.node.resolve(param.parameterName), 'MyParamName');
-    test.deepEqual(stack.node.resolve(param.parameterType), 'String');
-    test.deepEqual(stack.node.resolve(param.stringValue), '{{resolve:ssm:MyParamName}}');
+    test.deepEqual(stack.resolve(param.parameterName), 'MyParamName');
+    test.deepEqual(stack.resolve(param.parameterType), 'String');
+    test.deepEqual(stack.resolve(param.stringValue), '{{resolve:ssm:MyParamName}}');
     test.done();
   },
 
@@ -157,7 +160,7 @@ export = {
     const param = ssm.StringListParameter.fromStringListParameterName(stack, 'MyParamName', 'MyParamName');
 
     // THEN
-    test.deepEqual(stack.node.resolve(param.parameterArn), {
+    test.deepEqual(stack.resolve(param.parameterArn), {
       'Fn::Join': [ '', [
         'arn:',
         { Ref: 'AWS::Partition' },
@@ -167,9 +170,9 @@ export = {
         { Ref: 'AWS::AccountId' },
         ':parameterMyParamName' ] ]
     });
-    test.deepEqual(stack.node.resolve(param.parameterName), 'MyParamName');
-    test.deepEqual(stack.node.resolve(param.parameterType), 'StringList');
-    test.deepEqual(stack.node.resolve(param.stringListValue), { 'Fn::Split': [ ',', '{{resolve:ssm:MyParamName}}' ] });
+    test.deepEqual(stack.resolve(param.parameterName), 'MyParamName');
+    test.deepEqual(stack.resolve(param.parameterType), 'StringList');
+    test.deepEqual(stack.resolve(param.stringListValue), { 'Fn::Split': [ ',', '{{resolve:ssm:MyParamName}}' ] });
     test.done();
   }
 };

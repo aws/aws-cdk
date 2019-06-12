@@ -135,10 +135,6 @@ export class CfnOutput extends CfnElement {
     };
   }
 
-  public get ref(): string {
-    throw new Error('Outputs cannot be referenced');
-  }
-
   /**
    * Allocate an export name for this `CfnOutput` if not already done.
    */
@@ -161,7 +157,7 @@ export class CfnOutput extends CfnElement {
    */
   private uniqueOutputName() {
     // prefix export name with stack name since exports are global within account + region.
-    const stackName = this.node.stack.name;
+    const stackName = this.stack.name;
     return (stackName ? stackName + ':' : '') + this.logicalId;
   }
 }

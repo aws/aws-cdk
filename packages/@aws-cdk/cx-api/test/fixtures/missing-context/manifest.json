@@ -1,12 +1,14 @@
 {
-  "version": "0.33.0",
+  "version": "0.34.0",
+  "missing": {
+    "key": "missing:context:key",
+    "provider": "context-provider",
+    "props": { "foo": 123 }
+  },
   "artifacts": {
     "MyStackName": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://37736633/us-region-1",
-      "missing": {
-        "missing:context:key": { "foo": 123 }
-      },
       "properties": {
         "templateFile": "template.json"
       }

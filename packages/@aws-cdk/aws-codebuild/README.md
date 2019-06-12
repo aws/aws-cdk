@@ -1,4 +1,16 @@
 ## AWS CodeBuild Construct Library
+<!--BEGIN STABILITY BANNER-->
+
+---
+
+![Stability: Experimental](https://img.shields.io/badge/stability-Experimental-important.svg?style=for-the-badge)
+
+> This API is still under active development and subject to non-backward
+> compatible changes or removal in any future version. Use of the API is not recommended in production
+> environments. Experimental APIs are not subject to the Semantic Versioning model.
+
+---
+<!--END STABILITY BANNER-->
 
 AWS CodeBuild is a fully managed continuous integration service that compiles
 source code, runs tests, and produces software packages that are ready to
@@ -304,7 +316,7 @@ For example:
 
 ```ts
 const stack = new cdk.Stack(app, 'aws-cdk-codebuild-project-vpc');
-const vpc = new ec2.VpcNetwork(stack, 'MyVPC');
+const vpc = new ec2.Vpc(stack, 'MyVPC');
 const securityGroup = new ec2.SecurityGroup(stack, 'SecurityGroup1', {
     allowAllOutbound: true,
     description: 'Example',

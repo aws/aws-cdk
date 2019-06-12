@@ -45,7 +45,7 @@ export class ParameterStoreString extends cdk.Construct {
         type: 'AWS::SSM::Parameter::Value<String>',
         default: props.parameterName
       });
-      this.stringValue = param.stringValue;
+      this.stringValue = param.valueAsString;
     } else {
       // Use a dynamic reference
       const dynRef = new cdk.CfnDynamicReference(cdk.CfnDynamicReferenceService.Ssm, `${props.parameterName}:${props.version}`);

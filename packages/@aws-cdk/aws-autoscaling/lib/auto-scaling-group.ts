@@ -5,7 +5,7 @@ import elbv2 = require('@aws-cdk/aws-elasticloadbalancingv2');
 import iam = require('@aws-cdk/aws-iam');
 import sns = require('@aws-cdk/aws-sns');
 
-import { AutoScalingRollingUpdate, Construct, Fn, IResource, Resource, Tag, Token } from '@aws-cdk/cdk';
+import { AutoScalingRollingUpdate, Construct, Fn, IResource, Lazy, Resource, Tag } from '@aws-cdk/cdk';
 import { CfnAutoScalingGroup, CfnAutoScalingGroupProps, CfnLaunchConfiguration } from './autoscaling.generated';
 import { BasicLifecycleHookProps, LifecycleHook } from './lifecycle-hook';
 import { BasicScheduledActionProps, ScheduledAction } from './scheduled-action';
@@ -363,7 +363,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
     });
     this.connections = new ec2.Connections({ securityGroups: [this.securityGroup] });
     this.securityGroups.push(this.securityGroup);
-    this.node.apply(new Tag(NAME_TAG, this.node.path));
+    this.node.applyAspect(new Tag(NAME_TAG, this.node.path));
 
     this.role = props.role || new iam.Role(this, 'InstanceRole', {
       assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com')
@@ -375,15 +375,15 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
 
     // use delayed evaluation
     const machineImage = props.machineImage.getImage(this);
-    const userDataToken = new Token(() => Fn.base64((machineImage.os.createUserData(this.userDataLines)))).toString();
-    const securityGroupsToken = new Token(() => this.securityGroups.map(sg => sg.securityGroupId));
+    const userDataToken = Lazy.stringValue({ produce: () => Fn.base64((machineImage.os.createUserData(this.userDataLines))) });
+    const securityGroupsToken = Lazy.listValue({ produce: () => this.securityGroups.map(sg => sg.securityGroupId) });
 
     const launchConfig = new CfnLaunchConfiguration(this, 'LaunchConfig', {
       imageId: machineImage.imageId,
       keyName: props.keyName,
       instanceType: props.instanceType.toString(),
-      securityGroups: securityGroupsToken.toList(),
-      iamInstanceProfile: iamProfile.ref,
+      securityGroups: securityGroupsToken,
+      iamInstanceProfile: iamProfile.refAsString,
       userData: userDataToken,
       associatePublicIpAddress: props.associatePublicIpAddress,
       spotPrice: props.spotPrice,
@@ -408,9 +408,9 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
       minSize: minCapacity.toString(),
       maxSize: maxCapacity.toString(),
       desiredCapacity: desiredCapacity.toString(),
-      launchConfigurationName: launchConfig.ref,
-      loadBalancerNames: new Token(() => this.loadBalancerNames.length > 0 ? this.loadBalancerNames : undefined).toList(),
-      targetGroupArns: new Token(() => this.targetGroupArns.length > 0 ? this.targetGroupArns : undefined).toList(),
+      launchConfigurationName: launchConfig.refAsString,
+      loadBalancerNames: Lazy.listValue({ produce: () => this.loadBalancerNames }, { omitEmpty: true }),
+      targetGroupArns: Lazy.listValue({ produce: () => this.targetGroupArns }, { omitEmpty: true }),
       notificationConfigurations: !props.notificationsTopic ? undefined : [
         {
           topicArn: props.notificationsTopic.topicArn,

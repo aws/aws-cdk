@@ -1,4 +1,4 @@
-import { Construct, IResource, Resource, Token } from '@aws-cdk/cdk';
+import { Construct, IResource, Lazy, Resource, Stack } from '@aws-cdk/cdk';
 import { Code } from './code';
 import { CfnLayerVersion, CfnLayerVersionPermission } from './lambda.generated';
 import { Runtime } from './runtime';
@@ -169,9 +169,9 @@ export class LayerVersion extends LayerVersionBase {
     // Allow usage of the code in this context...
     props.code.bind(this);
 
-    const resource = new CfnLayerVersion(this, 'Resource', {
+    const resource: CfnLayerVersion = new CfnLayerVersion(this, 'Resource', {
       compatibleRuntimes: props.compatibleRuntimes && props.compatibleRuntimes.map(r => r.name),
-      content: new Token(() => props.code._toJSON(resource)),
+      content: Lazy.anyValue({ produce: () => props.code._toJSON(resource) }),
       description: props.description,
       layerName: props.name,
       licenseInfo: props.license,
@@ -199,8 +199,10 @@ export interface SingletonLayerVersionProps extends LayerVersionProps {
  * A Singleton Lambda Layer Version. The construct gurantees exactly one LayerVersion will be created in a given Stack
  * for the provided ``uuid``. It is recommended to use ``uuidgen`` to create a new ``uuid`` each time a new singleton
  * layer is created.
+ *
+ * @resource AWS::Lambda::LayerVersion
  */
-export class SingletonLayerVersion extends Construct implements ILayerVersion {
+export class SingletonLayerVersion extends Resource implements ILayerVersion {
   private readonly layerVersion: ILayerVersion;
 
   constructor(scope: Construct, id: string, props: SingletonLayerVersionProps) {
@@ -223,10 +225,10 @@ export class SingletonLayerVersion extends Construct implements ILayerVersion {
 
   private ensureLayerVersion(props: SingletonLayerVersionProps): ILayerVersion {
     const singletonId = `SingletonLayer-${props.uuid}`;
-    const existing = this.node.stack.node.tryFindChild(singletonId);
+    const existing = Stack.of(this).node.tryFindChild(singletonId);
     if (existing) {
       return existing as unknown as ILayerVersion;
     }
-    return new LayerVersion(this.node.stack, singletonId, props);
+    return new LayerVersion(Stack.of(this), singletonId, props);
   }
 }

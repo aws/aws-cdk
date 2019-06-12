@@ -1,5 +1,5 @@
 import iam = require('@aws-cdk/aws-iam');
-import { CfnDynamicReference, CfnDynamicReferenceService, Construct, Fn, IResource, Resource, Token } from '@aws-cdk/cdk';
+import { CfnDynamicReference, CfnDynamicReferenceService, Construct, Fn, IResource, Resource, Stack, Token } from '@aws-cdk/cdk';
 import ssm = require('./ssm.generated');
 
 /**
@@ -119,7 +119,7 @@ abstract class ParameterBase extends Resource implements IParameter {
   public abstract readonly parameterType: string;
 
   public get parameterArn(): string {
-    return this.node.stack.formatArn({
+    return Stack.of(this).formatArn({
       service: 'ssm',
       resource: 'parameter',
       sep: '', // Sep is empty because this.parameterName starts with a / already!
@@ -217,11 +217,11 @@ export class StringListParameter extends ParameterBase implements IStringListPar
   constructor(scope: Construct, id: string, props: StringListParameterProps) {
     super(scope, id);
 
-    if (props.stringListValue.find(str => !Token.isToken(str) && str.indexOf(',') !== -1)) {
+    if (props.stringListValue.find(str => !Token.isUnresolved(str) && str.indexOf(',') !== -1)) {
       throw new Error('Values of a StringList SSM Parameter cannot contain the \',\' character. Use a string parameter instead.');
     }
 
-    if (props.allowedPattern && !Token.isToken(props.stringListValue)) {
+    if (props.allowedPattern && !Token.isUnresolved(props.stringListValue)) {
       props.stringListValue.forEach(str => _assertValidValue(str, props.allowedPattern!));
     }
 
@@ -249,7 +249,7 @@ export class StringListParameter extends ParameterBase implements IStringListPar
  *         ``cdk.unresolved``).
  */
 function _assertValidValue(value: string, allowedPattern: string): void {
-  if (Token.isToken(value) || Token.isToken(allowedPattern)) {
+  if (Token.isUnresolved(value) || Token.isUnresolved(allowedPattern)) {
     // Unable to perform validations against unresolved tokens
     return;
   }

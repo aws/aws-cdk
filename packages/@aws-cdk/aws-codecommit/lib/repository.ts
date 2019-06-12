@@ -233,7 +233,7 @@ export class Repository extends RepositoryBase {
    * @param repositoryArn (e.g. `arn:aws:codecommit:us-east-1:123456789012:MyDemoRepo`)
    */
   public static fromRepositoryArn(scope: Construct, id: string, repositoryArn: string): IRepository {
-    const stack = scope.node.stack;
+    const stack = Stack.of(scope);
     const repositoryName = stack.parseArn(repositoryArn).resource;
 
     class Import extends RepositoryBase {
@@ -247,7 +247,7 @@ export class Repository extends RepositoryBase {
   }
 
   public static fromRepositoryName(scope: Construct, id: string, repositoryName: string): IRepository {
-    const stack = scope.node.stack;
+    const stack = Stack.of(scope);
 
     class Import extends RepositoryBase {
       public repositoryName = repositoryName;
@@ -264,7 +264,7 @@ export class Repository extends RepositoryBase {
   }
 
   private static arnForLocalRepository(repositoryName: string, scope: IConstruct): string {
-    return scope.node.stack.formatArn({
+    return Stack.of(scope).formatArn({
       service: 'codecommit',
       resource: repositoryName,
     });

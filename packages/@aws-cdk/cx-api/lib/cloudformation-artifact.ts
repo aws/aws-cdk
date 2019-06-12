@@ -1,55 +1,52 @@
+import fs = require('fs');
+import path = require('path');
 import { ASSET_METADATA, AssetMetadataEntry } from './assets';
-import { Artifact, AwsCloudFormationStackProperties, CloudArtifact } from './cloud-artifact';
+import { ArtifactManifest, AwsCloudFormationStackProperties, CloudArtifact } from './cloud-artifact';
 import { CloudAssembly } from './cloud-assembly';
 
 export class CloudFormationStackArtifact extends CloudArtifact {
+  /**
+   * The CloudFormation template for this stack.
+   */
   public readonly template: any;
+
+  /**
+   * The file name of the template.
+   */
+  public readonly templateFile: string;
+
+  /**
+   * The original name as defined in the CDK app.
+   */
   public readonly originalName: string;
-  public readonly logicalIdToPathMap: { [logicalId: string]: string };
+
+  /**
+   * Any assets associated with this stack.
+   */
   public readonly assets: AssetMetadataEntry[];
 
-  public name: string;
+  /**
+   * CloudFormation parameters to pass to the stack.
+   */
+  public readonly parameters: { [id: string]: string };
 
-  constructor(assembly: CloudAssembly, name: string, artifact: Artifact) {
+  /**
+   * The name of this stack.
+   */
+  public readonly name: string;
+
+  constructor(assembly: CloudAssembly, name: string, artifact: ArtifactManifest) {
     super(assembly, name, artifact);
 
     if (!artifact.properties || !artifact.properties.templateFile) {
       throw new Error(`Invalid CloudFormation stack artifact. Missing "templateFile" property in cloud assembly manifest`);
     }
+    const properties = (this.manifest.properties || {}) as AwsCloudFormationStackProperties;
+    this.templateFile = properties.templateFile;
+    this.parameters = properties.parameters || { };
 
-    const properties = this.properties as AwsCloudFormationStackProperties;
-    this.template = this.assembly.readJson(properties.templateFile);
-    this.originalName = name;
-    this.name = this.originalName;
-    this.logicalIdToPathMap = this.buildLogicalToPathMap();
-    this.assets = this.buildAssets();
-  }
-
-  private buildAssets() {
-    const assets = new Array<AssetMetadataEntry>();
-
-    for (const k of Object.keys(this.metadata)) {
-      for (const entry of this.metadata[k]) {
-        if (entry.type === ASSET_METADATA) {
-          assets.push(entry.data);
-        }
-      }
-    }
-
-    return assets;
-  }
-
-  private buildLogicalToPathMap() {
-    const map: { [id: string]: string } = {};
-    for (const cpath of Object.keys(this.metadata)) {
-      const md = this.metadata[cpath];
-      for (const e of md) {
-        if (e.type === 'aws:cdk:logicalId') {
-          const logical = e.data;
-          map[logical] = cpath;
-        }
-      }
-    }
-    return map;
+    this.name = this.originalName = name;
+    this.template = JSON.parse(fs.readFileSync(path.join(this.assembly.directory, this.templateFile), 'utf-8'));
+    this.assets = this.findMetadataByType(ASSET_METADATA).map(e => e.data);
   }
 }

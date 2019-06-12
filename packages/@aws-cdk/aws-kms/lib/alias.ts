@@ -1,24 +1,57 @@
-import { Construct } from '@aws-cdk/cdk';
+import { Construct, IResource, Resource, Token } from '@aws-cdk/cdk';
 import { IKey } from './key';
 import { CfnAlias } from './kms.generated';
 
 const REQUIRED_ALIAS_PREFIX = 'alias/';
-const DISALLOWED_PREFIX = REQUIRED_ALIAS_PREFIX + 'AWS';
+const DISALLOWED_PREFIX = REQUIRED_ALIAS_PREFIX + 'aws/';
 
-export interface EncryptionKeyAliasProps {
+/**
+ * A KMS Key alias.
+ */
+export interface IAlias extends IResource {
+  /**
+   * The name of the alias.
+   *
+   * @attribute AliasName
+   */
+  readonly aliasName: string;
+
+  /**
+   * The Key to which the Alias refers.
+   *
+   * @attribute TargetKeyId
+   */
+  readonly aliasTargetKey: IKey;
+}
+
+/**
+ * Construction properties for a KMS Key Alias object.
+ */
+export interface AliasProps {
   /**
    * The name of the alias. The name must start with alias followed by a
    * forward slash, such as alias/. You can't specify aliases that begin with
    * alias/AWS. These aliases are reserved.
    */
-  readonly alias: string;
+  readonly name: string;
 
   /**
    * The ID of the key for which you are creating the alias. Specify the key's
    * globally unique identifier or Amazon Resource Name (ARN). You can't
    * specify another alias.
    */
-  readonly key: IKey;
+  readonly targetKey: IKey;
+}
+
+abstract class AliasBase extends Resource implements IAlias {
+  public abstract readonly aliasName: string;
+
+  public abstract readonly aliasTargetKey: IKey;
+}
+
+export interface AliasAttributes {
+  readonly aliasName: string;
+  readonly aliasTargetKey: IKey;
 }
 
 /**
@@ -29,31 +62,46 @@ export interface EncryptionKeyAliasProps {
  * Working with Aliases in the AWS Key Management Service Developer Guide.
  *
  * You can also add an alias for a key by calling `key.addAlias(alias)`.
+ *
+ * @resource AWS::KMS::Alias
  */
-export class EncryptionKeyAlias extends Construct {
-  /**
-   * The name of the alias.
-   */
-  public aliasName: string;
+export class Alias extends AliasBase {
+  public static fromAliasAttributes(scope: Construct, id: string, attrs: AliasAttributes): IAlias {
+    // tslint:disable-next-line: class-name
+    class _Alias extends AliasBase {
+      public get aliasName() { return attrs.aliasName; }
+      public get aliasTargetKey() { return attrs.aliasTargetKey; }
+    }
+    return new _Alias(scope, id);
+  }
 
-  constructor(scope: Construct, id: string, props: EncryptionKeyAliasProps) {
+  public readonly aliasName: string;
+  public readonly aliasTargetKey: IKey;
+
+  constructor(scope: Construct, id: string, props: AliasProps) {
     super(scope, id);
 
-    if (!props.alias.startsWith(REQUIRED_ALIAS_PREFIX)) {
-      throw new Error(`Alias must start with the prefix "${REQUIRED_ALIAS_PREFIX}": ${props.alias}`);
-    }
+    if (!Token.isUnresolved(props.name)) {
+      if (!props.name.startsWith(REQUIRED_ALIAS_PREFIX)) {
+        throw new Error(`Alias must start with the prefix "${REQUIRED_ALIAS_PREFIX}": ${props.name}`);
+      }
 
-    if (props.alias === REQUIRED_ALIAS_PREFIX) {
-      throw new Error(`Alias must include a value after "${REQUIRED_ALIAS_PREFIX}": ${props.alias}`);
-    }
+      if (props.name === REQUIRED_ALIAS_PREFIX) {
+        throw new Error(`Alias must include a value after "${REQUIRED_ALIAS_PREFIX}": ${props.name}`);
+      }
 
-    if (props.alias.startsWith(DISALLOWED_PREFIX)) {
-      throw new Error(`Alias cannot start with ${DISALLOWED_PREFIX}: ${props.alias}`);
+      if (props.name.startsWith(DISALLOWED_PREFIX)) {
+        throw new Error(`Alias cannot start with ${DISALLOWED_PREFIX}: ${props.name}`);
+      }
+
+      if (!props.name.match(/^[a-zA-Z0-9:/_-]{1,256}$/)) {
+        throw new Error(`Alias name must be between 1 and 256 characters in a-zA-Z0-9:/_-`);
+      }
     }
 
     const resource = new CfnAlias(this, 'Resource', {
-      aliasName: props.alias,
-      targetKeyId: props.key.keyArn
+      aliasName: props.name,
+      targetKeyId: props.targetKey.keyArn
     });
 
     this.aliasName = resource.aliasName;

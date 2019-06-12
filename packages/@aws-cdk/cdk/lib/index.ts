@@ -3,13 +3,12 @@ export * from './tag-aspect';
 
 export * from './construct';
 export * from './token';
-export * from './token-map';
+export * from './resolvable';
+export * from './lazy';
 export * from './tag-manager';
 export * from './dependency';
-export * from './resolve';
 export * from './string-fragments';
 
-export * from './cloudformation-lang';
 export * from './reference';
 export * from './cfn-condition';
 export * from './fn';
@@ -18,7 +17,6 @@ export * from './logical-id';
 export * from './cfn-mapping';
 export * from './cfn-output';
 export * from './cfn-parameter';
-export * from './cfn-reference';
 export * from './pseudo';
 export * from './cfn-resource';
 export * from './resource-policy';
@@ -36,6 +34,11 @@ export * from './environment';
 
 export * from './runtime';
 export * from './secret-value';
-export * from './synthesis';
 
 export * from './resource';
+export * from './physical-name';
+export * from './resource-identifiers';
+
+// WARNING: Should not be exported, but currently is because of a bug. See the
+// class description for more information.
+export * from './private/intrinsic';
