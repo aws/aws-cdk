@@ -118,7 +118,7 @@ export = {
       fn.addPermission('S3Permission', {
         action: 'lambda:*',
         principal: new iam.ServicePrincipal('s3.amazonaws.com'),
-        sourceAccount: stack.accountId,
+        sourceAccount: stack.account,
         sourceArn: 'arn:aws:s3:::my_bucket'
       });
 

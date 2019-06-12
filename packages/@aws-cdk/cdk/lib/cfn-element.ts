@@ -38,7 +38,10 @@ export abstract class CfnElement extends Construct {
    */
   public readonly stack: Stack;
 
-  private _logicalId: string;
+  /**
+   * An explicit logical ID provided by `overrideLogicalId`.
+   */
+  private _logicalIdOverride?: string;
 
   /**
    * Creates an entity and binds it to a tree.
@@ -53,8 +56,8 @@ export abstract class CfnElement extends Construct {
     Object.defineProperty(this, CFN_ELEMENT_SYMBOL, { value: true });
 
     this.stack = Stack.of(this);
-    this._logicalId = this.stack.logicalIds.getLogicalId(this);
-    this.logicalId = Lazy.stringValue({ produce: () => this._logicalId }, {
+
+    this.logicalId = Lazy.stringValue({ produce: () => this.synthesizeLogicalId() }, {
       displayHint: `${notTooLong(this.node.path)}.LogicalID`
     });
 
@@ -66,7 +69,7 @@ export abstract class CfnElement extends Construct {
    * @param newLogicalId The new logical ID to use for this stack element.
    */
   public overrideLogicalId(newLogicalId: string) {
-    this._logicalId = newLogicalId;
+    this._logicalIdOverride = newLogicalId;
   }
 
   /**
@@ -140,6 +143,19 @@ export abstract class CfnElement extends Construct {
    */
   protected get ref(): IResolvable {
     return CfnReference.for(this, 'Ref');
+  }
+
+  /**
+   * Called during synthesize to render the logical ID of this element. If
+   * `overrideLogicalId` was it will be used, otherwise, we will allocate the
+   * logical ID through the stack.
+   */
+  private synthesizeLogicalId() {
+    if (this._logicalIdOverride) {
+      return this._logicalIdOverride;
+    } else {
+      return this.stack.getLogicalId(this);
+    }
   }
 }
 

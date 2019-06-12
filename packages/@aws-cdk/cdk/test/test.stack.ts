@@ -90,31 +90,6 @@ export = {
     test.done();
   },
 
-  'Construct.findResource(logicalId) can be used to retrieve a resource by its path'(test: Test) {
-    const stack = new Stack();
-
-    test.ok(!stack.node.tryFindChild('foo'), 'empty stack');
-
-    const r1 = new CfnResource(stack, 'Hello', { type: 'MyResource' });
-    test.equal(stack.findResource(r1.node.path), r1, 'look up top-level');
-
-    const child = new Construct(stack, 'Child');
-    const r2 = new CfnResource(child, 'Hello', { type: 'MyResource' });
-
-    test.equal(stack.findResource(r2.node.path), r2, 'look up child');
-
-    test.done();
-  },
-
-  'Stack.findResource will fail if the element is not a resource'(test: Test) {
-    const stack = new Stack();
-
-    const p = new CfnParameter(stack, 'MyParam', { type: 'String' });
-
-    test.throws(() => stack.findResource(p.node.path));
-    test.done();
-  },
-
   'Stack.getByPath can be used to find any CloudFormation element (Parameter, Output, etc)'(test: Test) {
 
     const stack = new Stack();
@@ -166,8 +141,8 @@ export = {
 
     // THEN
     const assembly = app.synth();
-    const template1 = assembly.getStack(stack1.name).template;
-    const template2 = assembly.getStack(stack2.name).template;
+    const template1 = assembly.getStack(stack1.stackName).template;
+    const template2 = assembly.getStack(stack2.stackName).template;
 
     test.deepEqual(template1, {
       Outputs: {
@@ -204,7 +179,7 @@ export = {
 
     // THEN
     const assembly = app.synth();
-    const template2 = assembly.getStack(stack2.name).template;
+    const template2 = assembly.getStack(stack2.stackName).template;
 
     test.deepEqual(template2, {
       Resources: {
@@ -230,8 +205,8 @@ export = {
     new CfnParameter(stack2, 'SomeParameter', { type: 'String', default: Lazy.stringValue({ produce: () => account1 }) });
 
     const assembly = app.synth();
-    const template1 = assembly.getStack(stack1.name).template;
-    const template2 = assembly.getStack(stack2.name).template;
+    const template1 = assembly.getStack(stack1.stackName).template;
+    const template2 = assembly.getStack(stack2.stackName).template;
 
     // THEN
     test.deepEqual(template1, {
@@ -255,7 +230,7 @@ export = {
     test.done();
   },
 
-  'Cross-stack use of Region returns nonscoped intrinsic'(test: Test) {
+  'Cross-stack use of Region and account returns nonscoped intrinsic because the two stacks must be in the same region anyway'(test: Test) {
     // GIVEN
     const app = new App();
     const stack1 = new Stack(app, 'Stack1');
@@ -263,15 +238,19 @@ export = {
 
     // WHEN - used in another stack
     new CfnOutput(stack2, 'DemOutput', { value: stack1.region });
+    new CfnOutput(stack2, 'DemAccount', { value: stack1.account });
 
     // THEN
     const assembly = app.synth();
-    const template2 = assembly.getStack(stack2.name).template;
+    const template2 = assembly.getStack(stack2.stackName).template;
 
     test.deepEqual(template2, {
       Outputs: {
         DemOutput: {
           Value: { Ref: 'AWS::Region' },
+        },
+        DemAccount: {
+          Value: { Ref: 'AWS::AccountId' },
         }
       }
     });
@@ -290,7 +269,7 @@ export = {
     new CfnParameter(stack2, 'SomeParameter', { type: 'String', default: `TheAccountIs${account1}` });
 
     const assembly = app.synth();
-    const template2 = assembly.getStack(stack2.name).template;
+    const template2 = assembly.getStack(stack2.stackName).template;
 
     // THEN
     test.deepEqual(template2, {
@@ -413,7 +392,7 @@ export = {
     const stack = new Stack(undefined, 'Stack', { stackName: 'otherName' });
 
     // THEN
-    test.deepEqual(stack.name, 'otherName');
+    test.deepEqual(stack.stackName, 'otherName');
 
     test.done();
   },
@@ -425,7 +404,7 @@ export = {
     const stack = new Stack(app, 'Stack');
 
     // THEN
-    test.deepEqual(stack.name, 'ProdStackD5279B22');
+    test.deepEqual(stack.stackName, 'ProdStackD5279B22');
 
     test.done();
   },
@@ -441,7 +420,7 @@ export = {
 
     // THEN
     const session = app.synth();
-    test.deepEqual(stack.name, 'valid-stack-name');
+    test.deepEqual(stack.stackName, 'valid-stack-name');
     test.ok(session.tryGetArtifact('valid-stack-name'));
     test.done();
   },

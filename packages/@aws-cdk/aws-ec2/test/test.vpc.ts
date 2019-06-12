@@ -1,5 +1,5 @@
 import { countResources, expect, haveResource, haveResourceLike, isSuperObject } from '@aws-cdk/assert';
-import { AvailabilityZoneProvider, Construct, Stack, Tag } from '@aws-cdk/cdk';
+import { Construct, Context, Stack, Tag } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
 import { CfnVPC, DefaultInstanceTenancy, IVpc, SubnetType, Vpc } from '../lib';
 import { exportVpc } from './export-helper';
@@ -63,7 +63,7 @@ export = {
     "contains the correct number of subnets"(test: Test) {
       const stack = getTestStack();
       const vpc = new Vpc(stack, 'TheVPC');
-      const zones = new AvailabilityZoneProvider(stack).availabilityZones.length;
+      const zones = Context.getAvailabilityZones(stack).length;
       test.equal(vpc.publicSubnets.length, zones);
       test.equal(vpc.privateSubnets.length, zones);
       test.deepEqual(stack.resolve(vpc.vpcId), { Ref: 'TheVPC92636AB0' });
@@ -109,7 +109,7 @@ export = {
 
     "with no subnets defined, the VPC should have an IGW, and a NAT Gateway per AZ"(test: Test) {
       const stack = getTestStack();
-      const zones = new AvailabilityZoneProvider(stack).availabilityZones.length;
+      const zones = Context.getAvailabilityZones(stack).length;
       new Vpc(stack, 'TheVPC', { });
       expect(stack).to(countResources("AWS::EC2::InternetGateway", 1));
       expect(stack).to(countResources("AWS::EC2::NatGateway", zones));
@@ -186,7 +186,7 @@ export = {
     },
     "with custom subnets, the VPC should have the right number of subnets, an IGW, and a NAT Gateway per AZ"(test: Test) {
       const stack = getTestStack();
-      const zones = new AvailabilityZoneProvider(stack).availabilityZones.length;
+      const zones = Context.getAvailabilityZones(stack).length;
       new Vpc(stack, 'TheVPC', {
         cidr: '10.0.0.0/21',
         subnetConfiguration: [
