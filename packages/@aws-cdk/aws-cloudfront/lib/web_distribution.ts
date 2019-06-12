@@ -348,7 +348,7 @@ export interface Behavior {
   /**
    * Declares associated lambda@edge functions for this distribution behaviour.
    *
-   * @default undefined
+   * @default No lambda function associated
    */
   readonly lambdaFunctionAssociations?: LambdaFunctionAssociation[];
 
@@ -356,15 +356,36 @@ export interface Behavior {
 
 export interface LambdaFunctionAssociation {
 
-  readonly eventType?: LambdaEdgeEventType;
+  /**
+   * The lambda event type defines at which event the lambda
+   * is called during the request lifecycle
+   */
+  readonly eventType: LambdaEdgeEventType;
 
-  readonly lambdaFunction?: lambda.IVersion;
+  /**
+   * A version of the lambda to associate
+   */
+  readonly lambdaFunction: lambda.IVersion;
 }
 
 export enum LambdaEdgeEventType {
+  /**
+   * The origin-request specifies the request to the
+   * origin location (e.g. S3)
+   */
   OriginRequest = "origin-request",
+  /**
+   * The origin-response specifies the response from the
+   * origin location (e.g. S3)
+   */
   OriginResponse = "origin-response",
+  /**
+   * The viewer-request specifies the incoming request
+   */
   ViewerRequest = "viewer-request",
+  /**
+   * The viewer-response specifies the outgoing reponse
+   */
   ViewerResponse = "viewer-response",
 }
 
