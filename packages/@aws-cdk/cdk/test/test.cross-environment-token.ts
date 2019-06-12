@@ -115,7 +115,7 @@ export = {
                   {
                     Ref: 'AWS::Partition',
                   },
-                  ':myservice:::my-resource/stack1stack1myresourcec54ced43dd713f848d67',
+                  ':myservice:::my-resource/stack1stack1myresourcec54ced43dab875fcfa49',
                 ],
               ],
             },
@@ -150,7 +150,7 @@ export = {
       test.deepEqual(toCloudFormation(stack2), {
         Outputs: {
           Output: {
-            Value: 'stack1stack1myresourcec54ced436e583666c674',
+            Value: 'stack1stack1myresourcec54ced43dab875fcfa49',
           },
         },
       });

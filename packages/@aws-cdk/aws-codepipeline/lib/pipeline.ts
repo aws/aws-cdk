@@ -364,10 +364,10 @@ export class Pipeline extends PipelineBase {
     });
   }
 
-  private requireRegion(error?: string) {
+  private requireRegion() {
     const region = Stack.of(this).region;
     if (Token.isUnresolved(region)) {
-      throw new Error(error || 'region is required');
+      throw new Error(`You need to specify an explicit region when using CodePipeline's cross-region support`);
     }
     return region;
   }
@@ -378,7 +378,7 @@ export class Pipeline extends PipelineBase {
     }
 
     // get the region the Pipeline itself is in
-    const pipelineRegion = this.requireRegion(`You need to specify an explicit region when using CodePipeline's cross-region support`);
+    const pipelineRegion = this.requireRegion();
 
     // if we already have an ArtifactStore generated for this region, or it's the Pipeline's region, nothing to do
     if (this.artifactStores[region] || region === pipelineRegion) {
@@ -564,7 +564,8 @@ export class Pipeline extends PipelineBase {
 
     // add the Pipeline's artifact store
     const primaryStore = this.renderPrimaryArtifactStore();
-    this.artifactStores[this.requireRegion()] = {
+    const primaryRegion = this.requireRegion();
+    this.artifactStores[primaryRegion] = {
       location: primaryStore.location,
       type: primaryStore.type,
       encryptionKey: primaryStore.encryptionKey,
