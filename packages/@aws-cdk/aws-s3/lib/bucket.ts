@@ -1061,17 +1061,24 @@ export class Bucket extends BucketBase {
     function parseLifecycleRule(rule: LifecycleRule): CfnBucket.RuleProperty {
       const enabled = rule.enabled !== undefined ? rule.enabled : true;
 
-      const x = {
+      const x: CfnBucket.RuleProperty = {
         // tslint:disable-next-line:max-line-length
         abortIncompleteMultipartUpload: rule.abortIncompleteMultipartUploadAfterDays !== undefined ? { daysAfterInitiation: rule.abortIncompleteMultipartUploadAfterDays } : undefined,
         expirationDate: rule.expirationDate,
         expirationInDays: rule.expirationInDays,
         id: rule.id,
         noncurrentVersionExpirationInDays: rule.noncurrentVersionExpirationInDays,
-        noncurrentVersionTransitions: rule.noncurrentVersionTransitions,
+        noncurrentVersionTransitions: (rule.noncurrentVersionTransitions || []).map(t => ({
+          storageClass: t.storageClass.value,
+          transitionInDays: t.transitionInDays
+        })),
         prefix: rule.prefix,
         status: enabled ? 'Enabled' : 'Disabled',
-        transitions: rule.transitions,
+        transitions: (rule.transitions || []).map(t => ({
+          storageClass: t.storageClass.value,
+          transitionDate: t.transitionDate,
+          transitionInDays: t.transitionInDays
+        })),
         tagFilters: self.parseTagFilters(rule.tagFilters)
       };
 
