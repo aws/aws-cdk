@@ -1,5 +1,5 @@
 import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
-import { CodePipelineBuildArtifacts, CodePipelineSource, Project } from '@aws-cdk/aws-codebuild';
+import codebuild = require('@aws-cdk/aws-codebuild');
 import { Repository } from '@aws-cdk/aws-codecommit';
 import codepipeline = require('@aws-cdk/aws-codepipeline');
 import { Role } from '@aws-cdk/aws-iam';
@@ -37,11 +37,7 @@ export = {
 
   /** Build! */
 
-  const buildArtifacts = new CodePipelineBuildArtifacts();
-  const project = new Project(stack, 'MyBuildProject', {
-    source: new CodePipelineSource(),
-    artifacts: buildArtifacts,
-  });
+  const project = new codebuild.PipelineProject(stack, 'MyBuildProject');
 
   const buildOutput = new codepipeline.Artifact('OutputYo');
   const buildAction = new cpactions.CodeBuildAction({
