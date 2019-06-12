@@ -1,8 +1,12 @@
+import ec2 = require('@aws-cdk/aws-ec2');
 import iam = require('@aws-cdk/aws-iam');
 import sfn = require('@aws-cdk/aws-stepfunctions');
-import { Stack } from '@aws-cdk/cdk';
-import { BatchStrategy, TransformInput, TransformOutput, TransformResources } from './sagemaker-task-base-types';
+import { Construct, Stack } from '@aws-cdk/cdk';
+import { BatchStrategy, S3DataType, TransformInput, TransformOutput, TransformResources } from './sagemaker-task-base-types';
 
+/**
+ *  @experimental
+ */
 export interface SagemakerTransformProps {
 
     /**
@@ -13,7 +17,7 @@ export interface SagemakerTransformProps {
     /**
      * Role for thte Training Job.
      */
-    readonly role: iam.Role;
+    readonly role?: iam.IRole;
 
     /**
      * Specify if the task is synchronous or asychronous.
@@ -63,15 +67,60 @@ export interface SagemakerTransformProps {
     /**
      * ML compute instances for the transform job.
      */
-    readonly transformResources: TransformResources;
+    readonly transformResources?: TransformResources;
 }
 
 /**
  * Class representing the SageMaker Create Training Job task.
+ *
+ *  @experimental
  */
 export class SagemakerTransformTask implements sfn.IStepFunctionsTask {
 
-    constructor(private readonly props: SagemakerTransformProps) { }
+    /**
+     * The execution role for the Sagemaker training job.
+     *
+     * @default new role for Amazon SageMaker to assume is automatically created.
+     */
+    public readonly role: iam.IRole;
+
+    /**
+     * Dataset to be transformed and the Amazon S3 location where it is stored.
+     */
+    private readonly transformInput: TransformInput;
+
+    /**
+     * ML compute instances for the transform job.
+     */
+    private readonly transformResources: TransformResources;
+
+    constructor(scope: Construct, private readonly props: SagemakerTransformProps) {
+
+        // set the sagemaker role or create new one
+        this.role = props.role || new iam.Role(scope, 'SagemakerRole', {
+            assumedBy: new iam.ServicePrincipal('sagemaker.amazonaws.com'),
+            managedPolicyArns: [
+                new iam.AwsManagedPolicy('AmazonSageMakerFullAccess', scope).policyArn
+            ]
+        });
+
+        // set the S3 Data type of the input data config objects to be 'S3Prefix' if not defined
+        this.transformInput = (props.transformInput.transformDataSource.s3DataSource.s3DataType) ? (props.transformInput) :
+            Object.assign({}, props.transformInput,
+                { transformDataSource:
+                    { s3DataSource:
+                        { ...props.transformInput.transformDataSource.s3DataSource,
+                        s3DataType: S3DataType.S3Prefix
+                        }
+                    }
+            });
+
+        // set the default value for the transform resources
+        this.transformResources = props.transformResources || {
+            instanceCount: 1,
+            instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.M4, ec2.InstanceSize.XLarge),
+        };
+    }
 
     public bind(task: sfn.Task): sfn.StepFunctionsTaskConfig {
         return {
@@ -89,10 +138,10 @@ export class SagemakerTransformTask implements sfn.IStepFunctionsTask {
             ...(this.props.maxPayloadInMB) ? { MaxPayloadInMB: this.props.maxPayloadInMB } : {},
             ModelName: this.props.modelName,
             ...(this.renderTags(this.props.tags)),
-            ...(this.renderTransformInput(this.props.transformInput)),
+            ...(this.renderTransformInput(this.transformInput)),
             TransformJobName: this.props.transformJobName,
             ...(this.renderTransformOutput(this.props.transformOutput)),
-            ...(this.renderTransformResources(this.props.transformResources)),
+            ...(this.renderTransformResources(this.transformResources)),
         };
     }
 
@@ -158,7 +207,7 @@ export class SagemakerTransformTask implements sfn.IStepFunctionsTask {
             .addAllResources(),
           new iam.PolicyStatement()
             .addAction('iam:PassRole')
-            .addResources(this.props.role.roleArn)
+            .addResources(this.role.roleArn)
             .addCondition('StringEquals', { "iam:PassedToService": "sagemaker.amazonaws.com" })
         ];
 

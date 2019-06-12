@@ -7,34 +7,24 @@ import cdk = require('@aws-cdk/cdk');
 import tasks = require('../lib');
 
 let stack: cdk.Stack;
-let role: iam.Role;
 
 beforeEach(() => {
     // GIVEN
     stack = new cdk.Stack();
-    role = new iam.Role(stack, 'Role', {
-        assumedBy: new iam.ServicePrincipal('sagemaker.amazonaws.com'),
-        managedPolicyArns: [
-            new iam.AwsManagedPolicy('AmazonSageMakerFullAccess', stack).policyArn
-        ],
-    });
   });
 
 test('create basic training job', () => {
     // WHEN
-    const task = new sfn.Task(stack, 'TrainSagemaker', { task: new tasks.SagemakerTrainTask({
+    const task = new sfn.Task(stack, 'TrainSagemaker', { task: new tasks.SagemakerTrainTask(stack, {
         trainingJobName: "MyTrainJob",
-        role,
         algorithmSpecification: {
             algorithmName: "BlazingText",
-            trainingInputMode: tasks.InputMode.File
         },
         inputDataConfig: [
             {
                 channelName: 'train',
                 dataSource: {
                     s3DataSource: {
-                        s3DataType: tasks.S3DataType.S3Prefix,
                         s3Uri: "s3://mybucket/mytrainpath"
                     }
                 }
@@ -43,14 +33,6 @@ test('create basic training job', () => {
         outputDataConfig: {
             s3OutputPath: 's3://mybucket/myoutputpath'
         },
-        resourceConfig: {
-            instanceCount: 1,
-            instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.P3, ec2.InstanceSize.XLarge2),
-            volumeSizeInGB: 50
-        },
-        stoppingCondition: {
-            maxRuntimeInSeconds: 3600
-        }
     })});
 
     // THEN
@@ -59,11 +41,9 @@ test('create basic training job', () => {
       Resource: 'arn:aws:states:::sagemaker:createTrainingJob',
       End: true,
       Parameters: {
-        TrainingJobName: 'MyTrainJob',
-        RoleArn: { "Fn::GetAtt": [ "Role1ABCC5F0", "Arn" ] },
         AlgorithmSpecification: {
-            TrainingInputMode: 'File',
             AlgorithmName: 'BlazingText',
+            TrainingInputMode: 'File',
         },
         InputDataConfig: [
             {
@@ -81,12 +61,14 @@ test('create basic training job', () => {
         },
         ResourceConfig: {
             InstanceCount: 1,
-            InstanceType: 'ml.p3.2xlarge',
-            VolumeSizeInGB: 50
+            InstanceType: 'ml.m4.xlarge',
+            VolumeSizeInGB: 10
         },
+        RoleArn: { "Fn::GetAtt": [ "SagemakerRole5FDB64E1", "Arn" ] },
         StoppingCondition: {
             MaxRuntimeInSeconds: 3600
-        }
+        },
+        TrainingJobName: 'MyTrainJob',
       },
     });
 });
@@ -98,7 +80,14 @@ test('create complex training job', () => {
     const securityGroup = new ec2.SecurityGroup(stack, 'SecurityGroup', { vpc, description: 'My SG' });
     securityGroup.addIngressRule(new ec2.AnyIPv4(), new ec2.TcpPort(22), 'allow ssh access from the world');
 
-    const task = new sfn.Task(stack, 'TrainSagemaker', { task: new tasks.SagemakerTrainTask({
+    const role = new iam.Role(stack, 'Role', {
+        assumedBy: new iam.ServicePrincipal('sagemaker.amazonaws.com'),
+        managedPolicyArns: [
+            new iam.AwsManagedPolicy('AmazonSageMakerFullAccess', stack).policyArn
+        ],
+    });
+
+    const task = new sfn.Task(stack, 'TrainSagemaker', { task: new tasks.SagemakerTrainTask(stack, {
         trainingJobName: "MyTrainJob",
         synchronous: true,
         role,
@@ -237,7 +226,14 @@ test('create complex training job', () => {
 
 test('pass param to training job', () => {
     // WHEN
-    const task = new sfn.Task(stack, 'TrainSagemaker', { task: new tasks.SagemakerTrainTask({
+    const role = new iam.Role(stack, 'Role', {
+        assumedBy: new iam.ServicePrincipal('sagemaker.amazonaws.com'),
+        managedPolicyArns: [
+            new iam.AwsManagedPolicy('AmazonSageMakerFullAccess', stack).policyArn
+        ],
+    });
+
+    const task = new sfn.Task(stack, 'TrainSagemaker', { task: new tasks.SagemakerTrainTask(stack, {
         trainingJobName: sfn.Data.stringAt('$.JobName'),
         role,
         algorithmSpecification: {

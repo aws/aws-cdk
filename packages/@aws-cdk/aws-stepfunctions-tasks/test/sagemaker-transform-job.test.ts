@@ -23,25 +23,19 @@ beforeEach(() => {
 
 test('create basic transform job', () => {
     // WHEN
-    const task = new sfn.Task(stack, 'TransformTask', { task: new tasks.SagemakerTransformTask({
+    const task = new sfn.Task(stack, 'TransformTask', { task: new tasks.SagemakerTransformTask(stack, {
         transformJobName: "MyTransformJob",
         modelName: "MyModelName",
-        role,
         transformInput: {
             transformDataSource: {
                 s3DataSource: {
                     s3Uri: 's3://inputbucket/prefix',
-                    s3DataType: S3DataType.S3Prefix,
                 }
             }
         },
         transformOutput: {
             s3OutputPath: 's3://outputbucket/prefix',
         },
-        transformResources: {
-            instanceCount: 1,
-            instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.P3, ec2.InstanceSize.XLarge2),
-        }
     }) });
 
     // THEN
@@ -65,7 +59,7 @@ test('create basic transform job', () => {
         },
         TransformResources: {
             InstanceCount: 1,
-            InstanceType: 'ml.p3.2xlarge',
+            InstanceType: 'ml.m4.xlarge',
         }
       },
     });
@@ -74,7 +68,7 @@ test('create basic transform job', () => {
 test('create complex transform job', () => {
     // WHEN
     const kmsKey = new kms.Key(stack, 'Key');
-    const task = new sfn.Task(stack, 'TransformTask', { task: new tasks.SagemakerTransformTask({
+    const task = new sfn.Task(stack, 'TransformTask', { task: new tasks.SagemakerTransformTask(stack, {
         transformJobName: "MyTransformJob",
         modelName: "MyModelName",
         synchronous: true,
@@ -147,7 +141,7 @@ test('create complex transform job', () => {
 
 test('pass param to transform job', () => {
     // WHEN
-    const task = new sfn.Task(stack, 'TransformTask', { task: new tasks.SagemakerTransformTask({
+    const task = new sfn.Task(stack, 'TransformTask', { task: new tasks.SagemakerTransformTask(stack, {
         transformJobName: sfn.Data.stringAt('$.TransformJobName'),
         modelName: sfn.Data.stringAt('$.ModelName'),
         role,

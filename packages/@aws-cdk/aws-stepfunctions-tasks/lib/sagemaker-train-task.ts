@@ -1,9 +1,13 @@
 import ec2 = require('@aws-cdk/aws-ec2');
 import iam = require('@aws-cdk/aws-iam');
 import sfn = require('@aws-cdk/aws-stepfunctions');
-import { Stack } from '@aws-cdk/cdk';
-import { AlgorithmSpecification, Channel, OutputDataConfig, ResourceConfig, StoppingCondition, VpcConfig } from './sagemaker-task-base-types';
+import { Construct, Stack } from '@aws-cdk/cdk';
+import { AlgorithmSpecification, Channel, InputMode, OutputDataConfig, ResourceConfig,
+         S3DataType, StoppingCondition, VpcConfig,  } from './sagemaker-task-base-types';
 
+/**
+ *  @experimental
+ */
 export interface SagemakerTrainProps {
 
     /**
@@ -14,10 +18,12 @@ export interface SagemakerTrainProps {
     /**
      * Role for thte Training Job.
      */
-    readonly role: iam.Role;
+    readonly role?: iam.IRole;
 
     /**
      * Specify if the task is synchronous or asychronous.
+     *
+     * @default false
      */
     readonly synchronous?: boolean;
 
@@ -49,12 +55,12 @@ export interface SagemakerTrainProps {
     /**
      * Identifies the resources, ML compute instances, and ML storage volumes to deploy for model training.
      */
-    readonly resourceConfig: ResourceConfig;
+    readonly resourceConfig?: ResourceConfig;
 
     /**
      * Sets a time limit for training.
      */
-    readonly stoppingCondition: StoppingCondition;
+    readonly stoppingCondition?: StoppingCondition;
 
     /**
      * Specifies the VPC that you want your training job to connect to.
@@ -67,9 +73,80 @@ export interface SagemakerTrainProps {
  */
 export class SagemakerTrainTask implements ec2.IConnectable, sfn.IStepFunctionsTask {
 
+    /**
+     * Allows specify security group connections for instances of this fleet.
+     */
     public readonly connections: ec2.Connections = new ec2.Connections();
 
-    constructor(private readonly props: SagemakerTrainProps) { }
+    /**
+     * The execution role for the Sagemaker training job.
+     *
+     * @default new role for Amazon SageMaker to assume is automatically created.
+     */
+    public readonly role: iam.IRole;
+
+    /**
+     * The Algorithm Specification
+     */
+    private readonly algorithmSpecification: AlgorithmSpecification;
+
+    /**
+     * The Input Data Config.
+     */
+    private readonly inputDataConfig: Channel[];
+
+    /**
+     * The resource config for the task.
+     */
+    private readonly resourceConfig: ResourceConfig;
+
+    /**
+     * The resource config for the task.
+     */
+    private readonly stoppingCondition: StoppingCondition;
+
+    constructor(scope: Construct, private readonly props: SagemakerTrainProps) {
+
+        // set the default resource config if not defined.
+        this.resourceConfig = props.resourceConfig || {
+            instanceCount: 1,
+            instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.M4, ec2.InstanceSize.XLarge),
+            volumeSizeInGB: 10
+        };
+
+        // set the stopping condition if not defined
+        this.stoppingCondition = props.stoppingCondition || {
+            maxRuntimeInSeconds: 3600
+        };
+
+        // set the sagemaker role or create new one
+        this.role = props.role || new iam.Role(scope, 'SagemakerRole', {
+            assumedBy: new iam.ServicePrincipal('sagemaker.amazonaws.com'),
+            managedPolicyArns: [
+                new iam.AwsManagedPolicy('AmazonSageMakerFullAccess', scope).policyArn
+            ]
+        });
+
+        // set the input mode to 'File' if not defined
+        this.algorithmSpecification = ( props.algorithmSpecification.trainingInputMode ) ?
+            ( props.algorithmSpecification ) :
+            ( { ...props.algorithmSpecification, trainingInputMode: InputMode.File } );
+
+        // set the S3 Data type of the input data config objects to be 'S3Prefix' if not defined
+        this.inputDataConfig = props.inputDataConfig.map(config => {
+            if (!config.dataSource.s3DataSource.s3DataType) {
+                return Object.assign({}, config, { dataSource: { s3DataSource:
+                    { ...config.dataSource.s3DataSource, s3DataType: S3DataType.S3Prefix } } });
+            } else {
+                return config;
+            }
+        });
+
+        // add the security groups to the connections object
+        if (this.props.vpcConfig) {
+            this.props.vpcConfig.securityGroups.forEach(sg => this.connections.addSecurityGroup(sg));
+        }
+    }
 
     public bind(task: sfn.Task): sfn.StepFunctionsTaskConfig  {
         return {
@@ -82,12 +159,12 @@ export class SagemakerTrainTask implements ec2.IConnectable, sfn.IStepFunctionsT
     private renderParameters(): {[key: string]: any} {
         return {
             TrainingJobName: this.props.trainingJobName,
-            RoleArn: this.props.role.roleArn,
-            ...(this.renderAlgorithmSpecification(this.props.algorithmSpecification)),
-            ...(this.renderInputDataConfig(this.props.inputDataConfig)),
+            RoleArn: this.role.roleArn,
+            ...(this.renderAlgorithmSpecification(this.algorithmSpecification)),
+            ...(this.renderInputDataConfig(this.inputDataConfig)),
             ...(this.renderOutputDataConfig(this.props.outputDataConfig)),
-            ...(this.renderResourceConfig(this.props.resourceConfig)),
-            ...(this.renderStoppingCondition(this.props.stoppingCondition)),
+            ...(this.renderResourceConfig(this.resourceConfig)),
+            ...(this.renderStoppingCondition(this.stoppingCondition)),
             ...(this.renderHyperparameters(this.props.hyperparameters)),
             ...(this.renderTags(this.props.tags)),
             ...(this.renderVpcConfig(this.props.vpcConfig)),
@@ -189,7 +266,7 @@ export class SagemakerTrainTask implements ec2.IConnectable, sfn.IStepFunctionsT
             .addAllResources(),
           new iam.PolicyStatement()
             .addAction('iam:PassRole')
-            .addResources(this.props.role.roleArn)
+            .addResources(this.role.roleArn)
             .addCondition('StringEquals', { "iam:PassedToService": "sagemaker.amazonaws.com" })
         ];
 

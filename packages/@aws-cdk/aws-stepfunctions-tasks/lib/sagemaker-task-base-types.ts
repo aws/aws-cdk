@@ -5,6 +5,9 @@ import kms = require('@aws-cdk/aws-kms');
 // Create Training Job types
 //
 
+/**
+ * @experimental
+ */
 export interface AlgorithmSpecification {
 
     /**
@@ -24,12 +27,16 @@ export interface AlgorithmSpecification {
 
     /**
      * Input mode that the algorithm supports.
+     *
+     * @default is 'File' mode
      */
-    readonly trainingInputMode: InputMode;
+    readonly trainingInputMode?: InputMode;
 }
 
 /**
  *  Describes the training, validation or test dataset and the Amazon S3 location where it is stored.
+ *
+ * @experimental
  */
 export interface Channel {
 
@@ -71,6 +78,8 @@ export interface Channel {
 
 /**
  * Configuration for a shuffle option for input data in a channel.
+ *
+ * @experimental
  */
 export interface ShuffleConfig {
     /**
@@ -81,6 +90,8 @@ export interface ShuffleConfig {
 
 /**
  * Location of the channel data.
+ *
+ * @experimental
  */
 export interface DataSource {
     /**
@@ -91,6 +102,8 @@ export interface DataSource {
 
 /**
  * S3 location of the channel data.
+ *
+ * @experimental
  */
 export interface S3DataSource {
     /**
@@ -106,7 +119,7 @@ export interface S3DataSource {
     /**
      * S3 Data Type
      */
-    readonly s3DataType: S3DataType;
+    readonly s3DataType?: S3DataType;
 
     /**
      * S3 Uri
@@ -114,6 +127,9 @@ export interface S3DataSource {
     readonly s3Uri: string;
 }
 
+/**
+ * @experimental
+ */
 export interface OutputDataConfig {
   /**
    * Optional KMS encryption key that Amazon SageMaker uses to encrypt the model artifacts at rest using Amazon S3 server-side encryption.
@@ -137,11 +153,15 @@ export interface ResourceConfig {
 
     /**
      * The number of ML compute instances to use.
+     *
+     * @default 1 instance.
      */
     readonly instanceCount: number;
 
     /**
      * ML compute instance type.
+     *
+     * @default is the 'm4.xlarge' instance type.
      */
     readonly instanceType: ec2.InstanceType;
 
@@ -152,10 +172,16 @@ export interface ResourceConfig {
 
     /**
      * Size of the ML storage volume that you want to provision.
+     *
+     * @default 10 GB EBS volume.
      */
     readonly volumeSizeInGB: number;
 }
 
+/**
+ *
+ * @experimental
+ */
 export interface VpcConfig {
     /**
      * VPC security groups.
@@ -175,6 +201,8 @@ export interface VpcConfig {
 
 /**
  * Specifies the metric name and regular expressions used to parse algorithm logs.
+ *
+ * @experimental
  */
 export interface MetricDefinition {
 
@@ -275,6 +303,8 @@ export enum CompressionType {
 
 /**
  *  Dataset to be transformed and the Amazon S3 location where it is stored.
+ *
+ *  @experimental
  */
 export interface TransformInput {
 
@@ -301,6 +331,8 @@ export interface TransformInput {
 
 /**
  * S3 location of the input data that the model can consume.
+ *
+ *  @experimental
  */
 export interface TransformDataSource {
 
@@ -312,13 +344,17 @@ export interface TransformDataSource {
 
 /**
  * Location of the channel data.
+ *
+ *  @experimental
  */
 export interface TransformS3DataSource {
 
     /**
      * S3 Data Type
+     *
+     * @default 'S3Prefix'
      */
-    readonly s3DataType: S3DataType;
+    readonly s3DataType?: S3DataType;
 
     /**
      * Identifies either a key name prefix or a manifest.
@@ -328,6 +364,8 @@ export interface TransformS3DataSource {
 
 /**
  * S3 location where you want Amazon SageMaker to save the results from the transform job.
+ *
+ *  @experimental
  */
 export interface TransformOutput {
 
@@ -354,6 +392,8 @@ export interface TransformOutput {
 
 /**
  * ML compute instances for the transform job.
+ *
+ *  @experimental
  */
 export interface TransformResources {
 
