@@ -13,7 +13,6 @@ export * from './reference';
 export * from './cfn-condition';
 export * from './fn';
 export * from './include';
-export * from './logical-id';
 export * from './cfn-mapping';
 export * from './cfn-output';
 export * from './cfn-parameter';

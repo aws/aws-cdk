@@ -157,7 +157,7 @@ export class CfnOutput extends CfnElement {
    */
   private uniqueOutputName() {
     // prefix export name with stack name since exports are global within account + region.
-    const stackName = this.stack.name;
+    const stackName = this.stack.stackName;
     return (stackName ? stackName + ':' : '') + this.logicalId;
   }
 }

@@ -54,7 +54,7 @@ export class Database extends Resource implements IDatabase {
       public databaseArn = databaseArn;
       public databaseName = stack.parseArn(databaseArn).resourceName!;
       public catalogArn = stack.formatArn({ service: 'glue', resource: 'catalog' });
-      public catalogId = stack.accountId;
+      public catalogId = stack.account;
     }
 
     return new Import(scope, id);
@@ -95,7 +95,7 @@ export class Database extends Resource implements IDatabase {
       this.locationUri = `s3://${bucket.bucketName}/${props.databaseName}`;
     }
 
-    this.catalogId = Stack.of(this).accountId;
+    this.catalogId = Stack.of(this).account;
     const resource = new CfnDatabase(this, 'Resource', {
       catalogId: this.catalogId,
       databaseInput: {
