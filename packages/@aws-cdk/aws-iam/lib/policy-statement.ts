@@ -4,57 +4,37 @@ import { AccountPrincipal, AccountRootPrincipal, Anyone, ArnPrincipal, Canonical
 import { mergePrincipal } from './util';
 
 /**
- * An abstract PolicyStatement
- */
-export interface IPolicyStatement {
-  /**
-   * Render the policy statement to JSON
-   */
-  toStatementJson(): any;
-}
-
-/**
  * Represents a statement in an IAM policy document.
  */
-export class PolicyStatement implements IPolicyStatement {
-  public static fromAttributes(attrs: PolicyStatementAttributes): IPolicyStatement {
-    const st = new PolicyStatement();
-    st.addActions(...attrs.actions || []);
-    (attrs.principals || []).forEach(p => st.addPrincipal(p));
-    st.addResources(...attrs.resourceArns || []);
-    if (attrs.conditions !== undefined) {
-      st.addConditions(attrs.conditions);
-    }
-    return st;
-  }
-
+export class PolicyStatement {
   /**
    * Statement ID for this statement
    */
   public sid?: string;
+  public effect: Effect;
 
   private action = new Array<any>();
   private principal: { [key: string]: any[] } = {};
   private resource = new Array<any>();
   private condition: { [key: string]: any } = { };
-  private effect?: PolicyStatementEffect;
 
-  constructor(effect: PolicyStatementEffect = PolicyStatementEffect.Allow) {
-    this.effect = effect;
+  constructor(props: PolicyStatementProps = {}) {
+    this.effect = Effect.Allow;
+
+    this.addActions(...props.actions || []);
+    this.addPrincipals(...props.principals || []);
+    this.addResources(...props.resources || []);
+    if (props.conditions !== undefined) {
+      this.addConditions(props.conditions);
+    }
   }
 
   //
   // Actions
   //
 
-  public addAction(action: string): PolicyStatement {
-    this.action.push(action);
-    return this;
-  }
-
-  public addActions(...actions: string[]): PolicyStatement {
-    actions.forEach(action => this.addAction(action));
-    return this;
+  public addActions(...actions: string[]) {
+    this.action.push(...actions);
   }
 
   //
@@ -68,19 +48,20 @@ export class PolicyStatement implements IPolicyStatement {
     return Object.keys(this.principal).length > 0;
   }
 
-  public addPrincipal(principal: IPrincipal): this {
-    const fragment = principal.policyFragment;
-    mergePrincipal(this.principal, fragment.principalJson);
-    this.addConditions(fragment.conditions);
-    return this;
+  public addPrincipals(...principals: IPrincipal[]) {
+    for (const principal of principals) {
+      const fragment = principal.policyFragment;
+      mergePrincipal(this.principal, fragment.principalJson);
+      this.addConditions(fragment.conditions);
+    }
   }
 
-  public addAwsAccountPrincipal(accountId: string): this {
-    return this.addPrincipal(new AccountPrincipal(accountId));
+  public addAwsAccountPrincipal(accountId: string) {
+    this.addPrincipals(new AccountPrincipal(accountId));
   }
 
-  public addArnPrincipal(arn: string): this {
-    return this.addPrincipal(new ArnPrincipal(arn));
+  public addArnPrincipal(arn: string) {
+    this.addPrincipals(new ArnPrincipal(arn));
   }
 
   /**
@@ -89,45 +70,39 @@ export class PolicyStatement implements IPolicyStatement {
    * @param service the service name for which a service principal is requested (e.g: `s3.amazonaws.com`).
    * @param opts    options for adding the service principal (such as specifying a principal in a different region)
    */
-  public addServicePrincipal(service: string, opts?: ServicePrincipalOpts): this {
-    return this.addPrincipal(new ServicePrincipal(service, opts));
+  public addServicePrincipal(service: string, opts?: ServicePrincipalOpts) {
+    this.addPrincipals(new ServicePrincipal(service, opts));
   }
 
-  public addFederatedPrincipal(federated: any, conditions: {[key: string]: any}): this {
-    return this.addPrincipal(new FederatedPrincipal(federated, conditions));
+  public addFederatedPrincipal(federated: any, conditions: {[key: string]: any}) {
+    this.addPrincipals(new FederatedPrincipal(federated, conditions));
   }
 
-  public addAccountRootPrincipal(): this {
-    return this.addPrincipal(new AccountRootPrincipal());
+  public addAccountRootPrincipal() {
+    this.addPrincipals(new AccountRootPrincipal());
   }
 
-  public addCanonicalUserPrincipal(canonicalUserId: string): this {
-    return this.addPrincipal(new CanonicalUserPrincipal(canonicalUserId));
+  public addCanonicalUserPrincipal(canonicalUserId: string) {
+    this.addPrincipals(new CanonicalUserPrincipal(canonicalUserId));
   }
 
-  public addAnyPrincipal(): this {
-    return this.addPrincipal(new Anyone());
+  public addAnyPrincipal() {
+    this.addPrincipals(new Anyone());
   }
 
   //
   // Resources
   //
 
-  public addResource(arn: string): PolicyStatement {
-    this.resource.push(arn);
-    return this;
+  public addResources(...arns: string[]) {
+    this.resource.push(...arns);
   }
 
   /**
    * Adds a ``"*"`` resource to this statement.
    */
-  public addAllResources(): PolicyStatement {
-    return this.addResource('*');
-  }
-
-  public addResources(...arns: string[]): PolicyStatement {
-    arns.forEach(r => this.addResource(r));
-    return this;
+  public addAllResources() {
+    this.addResources('*');
   }
 
   /**
@@ -137,34 +112,6 @@ export class PolicyStatement implements IPolicyStatement {
     return this.resource && this.resource.length > 0;
   }
 
-  /**
-   * @deprecated Use `statement.sid = value`
-   */
-  public describe(sid: string): PolicyStatement {
-    this.sid = sid;
-    return this;
-  }
-
-  //
-  // Effect
-  //
-
-  /**
-   * Sets the permission effect to allow access to resources.
-   */
-  public allow(): PolicyStatement {
-    this.effect = PolicyStatementEffect.Allow;
-    return this;
-  }
-
-  /**
-   * Sets the permission effect to deny access to resources.
-   */
-  public deny(): PolicyStatement {
-    this.effect = PolicyStatementEffect.Deny;
-    return this;
-  }
-
   //
   // Condition
   //
@@ -172,32 +119,24 @@ export class PolicyStatement implements IPolicyStatement {
   /**
    * Add a condition to the Policy
    */
-  public addCondition(key: string, value: any): PolicyStatement {
+  public addCondition(key: string, value: any) {
     this.condition[key] = value;
-    return this;
   }
 
   /**
    * Add multiple conditions to the Policy
    */
-  public addConditions(conditions: {[key: string]: any}): PolicyStatement {
+  public addConditions(conditions: {[key: string]: any}) {
     Object.keys(conditions).map(key => {
       this.addCondition(key, conditions[key]);
     });
-    return this;
   }
 
   /**
-   * Add a condition to the Policy.
-   *
-   * @deprecated For backwards compatibility. Use addCondition() instead.
+   * Add a condition that limits to a given account
    */
-  public setCondition(key: string, value: any): PolicyStatement {
-    return this.addCondition(key, value);
-  }
-
-  public limitToAccount(accountId: string): PolicyStatement {
-    return this.addCondition('StringEquals', { 'sts:ExternalId': accountId });
+  public addAccountCondition(accountId: string) {
+    this.addCondition('StringEquals', { 'sts:ExternalId': accountId });
   }
 
   public toStatementJson(): any {
@@ -274,7 +213,7 @@ export class PolicyStatement implements IPolicyStatement {
   }
 }
 
-export enum PolicyStatementEffect {
+export enum Effect {
   Allow = 'Allow',
   Deny = 'Deny',
 }
@@ -282,32 +221,32 @@ export enum PolicyStatementEffect {
 /**
  * Interface for creating a policy statement
  */
-export interface PolicyStatementAttributes {
+export interface PolicyStatementProps {
   /**
    * List of actions to add to the statement
    *
    * @default - no actions
    */
-  actions?: string[];
+  readonly actions?: string[];
 
   /**
    * List of principals to add to the statement
    *
    * @default - no principals
    */
-  principals?: IPrincipal[];
+  readonly principals?: IPrincipal[];
 
   /**
    * Resource ARNs to add to the statement
    *
    * @default - no principals
    */
-  resourceArns?: string[];
+  readonly resources?: string[];
 
   /**
    * Conditions to add to the statement
    *
    * @default - no condition
    */
-  conditions?: {[key: string]: any};
+  readonly conditions?: {[key: string]: any};
 }

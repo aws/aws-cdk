@@ -17,10 +17,10 @@ export class CodeBuildProject implements events.IRuleTarget {
     return {
       id: this.project.node.id,
       arn: this.project.projectArn,
-      role: singletonEventRole(this.project, [new iam.PolicyStatement()
-        .addAction('codebuild:StartBuild')
-        .addResource(this.project.projectArn)
-      ]),
+      role: singletonEventRole(this.project, [new iam.PolicyStatement({
+        actions: ['codebuild:StartBuild'],
+        resources: [this.project.projectArn],
+      })]),
     };
   }
 }

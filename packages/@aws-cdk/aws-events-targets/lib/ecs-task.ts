@@ -78,25 +78,29 @@ export class EcsTask implements events.IRuleTarget {
    * Allows using tasks as target of CloudWatch events
    */
   public bind(rule: events.IRule): events.RuleTargetConfig {
-    const policyStatements = [new iam.PolicyStatement()
-      .addAction('ecs:RunTask')
-      .addResource(this.taskDefinition.taskDefinitionArn)
-      .addCondition('ArnEquals', { "ecs:cluster": this.cluster.clusterArn })
-    ];
+    const policyStatements = [new iam.PolicyStatement({
+      actions: ['ecs:RunTask'],
+      resources: [this.taskDefinition.taskDefinitionArn],
+      conditions: {
+        ArnEquals: { "ecs:cluster": this.cluster.clusterArn }
+      }
+    })];
 
     // If it so happens that a Task Execution Role was created for the TaskDefinition,
     // then the CloudWatch Events Role must have permissions to pass it (otherwise it doesn't).
     if (this.taskDefinition.executionRole !== undefined) {
-      policyStatements.push(new iam.PolicyStatement()
-        .addAction('iam:PassRole')
-        .addResource(this.taskDefinition.executionRole.roleArn));
+      policyStatements.push(new iam.PolicyStatement({
+        actions: ['iam:PassRole'],
+        resources: [this.taskDefinition.executionRole.roleArn],
+      }));
     }
 
     // For Fargate task we need permission to pass the task role.
     if (this.taskDefinition.isFargateCompatible) {
-      policyStatements.push(new iam.PolicyStatement()
-        .addAction('iam:PassRole')
-        .addResource(this.taskDefinition.taskRole.roleArn));
+      policyStatements.push(new iam.PolicyStatement({
+        actions: ['iam:PassRole'],
+        resources: [this.taskDefinition.taskRole.roleArn]
+      }));
     }
 
     const id = this.taskDefinition.node.id + '-on-' + this.cluster.node.id;
@@ -147,12 +151,14 @@ export class EcsTask implements events.IRuleTarget {
           physicalResourceId: id,
         },
         policyStatements: [ // Cannot use automatic policy statements because we need iam:PassRole
-          new iam.PolicyStatement()
-            .addAction('events:PutTargets')
-            .addResource(rule.ruleArn),
-          new iam.PolicyStatement()
-            .addAction('iam:PassRole')
-            .addResource(role.roleArn)
+          new iam.PolicyStatement({
+            actions: ['events:PutTargets'],
+            resources: [rule.ruleArn],
+          }),
+          new iam.PolicyStatement({
+            actions: ['iam:PassRole'],
+            resources: [role.roleArn],
+          })
         ]
       });
     }

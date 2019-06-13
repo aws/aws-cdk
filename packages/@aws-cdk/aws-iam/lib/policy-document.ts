@@ -1,6 +1,6 @@
 import cdk = require('@aws-cdk/cdk');
 import { IPostProcessor } from '@aws-cdk/cdk';
-import { IPolicyStatement } from './policy-statement';
+import { PolicyStatement } from './policy-statement';
 
 /**
  * Properties for a new PolicyDocument
@@ -12,17 +12,26 @@ export interface PolicyDocumentProps {
    * @default false
    */
   readonly assignSids?: boolean;
+
+  /**
+   * Initial statements to add to the policy document
+   *
+   * @default - No statements
+   */
+  readonly statements?: PolicyStatement[];
 }
 
 /**
  * A PolicyDocument is a collection of statements
  */
 export class PolicyDocument implements cdk.IResolvable {
-  private readonly statements = new Array<IPolicyStatement>();
+  private readonly statements = new Array<PolicyStatement>();
   private readonly autoAssignSids: boolean;
 
   constructor(props: PolicyDocumentProps = {}) {
     this.autoAssignSids = !!props.assignSids;
+
+    this.addStatements(...props.statements || []);
   }
 
   public resolve(context: cdk.IResolveContext): any {
@@ -47,7 +56,7 @@ export class PolicyDocument implements cdk.IResolvable {
    *
    * @param statement the statement to add.
    */
-  public addStatements(...statement: IPolicyStatement[]) {
+  public addStatements(...statement: PolicyStatement[]) {
     this.statements.push(...statement);
   }
 

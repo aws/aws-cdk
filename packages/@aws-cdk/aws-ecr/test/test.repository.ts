@@ -266,7 +266,7 @@ export = {
     const repo = new ecr.Repository(stack, 'Repo');
 
     // WHEN
-    repo.addToResourcePolicy(new iam.PolicyStatement().addAction('*'));
+    repo.addToResourcePolicy(new iam.PolicyStatement({ actions: ['*'] }));
 
     // THEN
     expect(stack).to(haveResource('AWS::ECR::Repository', {

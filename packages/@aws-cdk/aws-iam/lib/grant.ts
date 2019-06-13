@@ -106,10 +106,11 @@ export class Grant {
 
     if (result.success) { return result; }
 
-    const statement = new PolicyStatement()
-      .addActions(...options.actions)
-      .addResources(...(options.resourceSelfArns || options.resourceArns))
-      .addPrincipal(options.grantee!.grantPrincipal);
+    const statement = new PolicyStatement({
+      actions: options.actions,
+      resources: (options.resourceSelfArns || options.resourceArns),
+      principals: [options.grantee!.grantPrincipal]
+    });
 
     options.resource.addToResourcePolicy(statement);
 
@@ -123,9 +124,10 @@ export class Grant {
    * the permissions to a present principal is not an error.
    */
   public static addToPrincipal(options: GrantOnPrincipalOptions): Grant {
-    const statement = new PolicyStatement()
-      .addActions(...options.actions)
-      .addResources(...options.resourceArns);
+    const statement = new PolicyStatement({
+      actions: options.actions,
+      resources: options.resourceArns
+    });
 
     const addedToPrincipal = options.grantee.grantPrincipal.addToPolicy(statement);
 
@@ -147,10 +149,11 @@ export class Grant {
       scope: options.resource,
     });
 
-    const statement = new PolicyStatement()
-      .addActions(...options.actions)
-      .addResources(...(options.resourceSelfArns || options.resourceArns))
-      .addPrincipal(options.grantee!.grantPrincipal);
+    const statement = new PolicyStatement({
+      actions: options.actions,
+      resources: (options.resourceSelfArns || options.resourceArns),
+      principals: [options.grantee!.grantPrincipal]
+    });
 
     options.resource.addToResourcePolicy(statement);
 

@@ -15,10 +15,10 @@ export class InvokeFunction implements sfn.IStepFunctionsTask {
   public bind(_task: sfn.Task): sfn.StepFunctionsTaskConfig {
     return {
       resourceArn: this.lambdaFunction.functionArn,
-      policyStatements: [new iam.PolicyStatement()
-        .addResource(this.lambdaFunction.functionArn)
-        .addActions("lambda:InvokeFunction")
-      ],
+      policyStatements: [new iam.PolicyStatement({
+        resources: [this.lambdaFunction.functionArn],
+        actions: ["lambda:InvokeFunction"],
+      })],
       metricPrefixSingular: 'LambdaFunction',
       metricPrefixPlural: 'LambdaFunctions',
       metricDimensions: { LambdaFunctionArn: this.lambdaFunction.functionArn },

@@ -222,8 +222,8 @@ export = nodeunit.testCase({
       adminPermissions: false,
     });
     // we might need to add permissions
-    deployAction.addToDeploymentRolePolicy( new iam.PolicyStatement().
-      addActions(
+    deployAction.addToDeploymentRolePolicy(new iam.PolicyStatement({
+      actions: [
         'ec2:AuthorizeSecurityGroupEgress',
         'ec2:AuthorizeSecurityGroupIngress',
         'ec2:DeleteSecurityGroup',
@@ -231,8 +231,9 @@ export = nodeunit.testCase({
         'ec2:CreateSecurityGroup',
         'ec2:RevokeSecurityGroupEgress',
         'ec2:RevokeSecurityGroupIngress'
-      ).
-      addAllResources());
+      ],
+      resources: ['*']
+    }));
 
     // THEN //
     // there should be 3 policies 1. CodePipeline, 2. Codebuild, 3.

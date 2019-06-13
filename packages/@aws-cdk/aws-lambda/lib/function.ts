@@ -612,9 +612,10 @@ export class Function extends FunctionBase {
       retentionPeriodSec: 1209600
     });
 
-    this.addToRolePolicy(new iam.PolicyStatement()
-      .addAction('sqs:SendMessage')
-      .addResource(deadLetterQueue.queueArn));
+    this.addToRolePolicy(new iam.PolicyStatement({
+      actions: ['sqs:SendMessage'],
+      resources: [deadLetterQueue.queueArn]
+    }));
 
     return {
       targetArn: deadLetterQueue.queueArn
@@ -626,9 +627,10 @@ export class Function extends FunctionBase {
       return undefined;
     }
 
-    this.addToRolePolicy(new iam.PolicyStatement()
-      .addActions('xray:PutTraceSegments', 'xray:PutTelemetryRecords')
-      .addAllResources());
+    this.addToRolePolicy(new iam.PolicyStatement({
+      actions: ['xray:PutTraceSegments', 'xray:PutTelemetryRecords'],
+      resources: ['*']
+    }));
 
     return {
       mode: Tracing[props.tracing]

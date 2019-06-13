@@ -12,7 +12,10 @@ const fn = new lambda.Function(stack, 'MyLambda', {
   runtime: lambda.Runtime.NodeJS810,
 });
 
-fn.addToRolePolicy(new iam.PolicyStatement().addAllResources().addAction('*'));
+fn.addToRolePolicy(new iam.PolicyStatement({
+  resources: ['*'],
+  actions: ['*']
+}));
 
 const version = fn.addVersion('1');
 

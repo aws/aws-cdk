@@ -9,10 +9,11 @@ export = {
     const stack = new cdk.Stack();
 
     // WHEN
-    const statement = new iam.PolicyStatement()
-      .addAction('abc:call')
-      .addPrincipal(new kms.ViaServicePrincipal('bla.amazonaws.com'))
-      .addResource('*');
+    const statement = new iam.PolicyStatement({
+      actions: ['abc:call'],
+      principals: [new kms.ViaServicePrincipal('bla.amazonaws.com')],
+      resources: ['*']
+    });
 
     // THEN
     test.deepEqual(stack.resolve(statement), {
@@ -31,10 +32,11 @@ export = {
     const stack = new cdk.Stack();
 
     // WHEN
-    const statement = new iam.PolicyStatement()
-      .addAction('abc:call')
-      .addPrincipal(new kms.ViaServicePrincipal('bla.amazonaws.com', new iam.OrganizationPrincipal('o-1234')))
-      .addResource('*');
+    const statement = new iam.PolicyStatement({
+      actions: ['abc:call'],
+      principals: [new kms.ViaServicePrincipal('bla.amazonaws.com', new iam.OrganizationPrincipal('o-1234'))],
+      resources: ['*']
+    });
 
     // THEN
     test.deepEqual(stack.resolve(statement), {

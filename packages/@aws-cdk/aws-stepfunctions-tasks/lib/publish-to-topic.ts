@@ -42,10 +42,10 @@ export class PublishToTopic implements sfn.IStepFunctionsTask {
   public bind(_task: sfn.Task): sfn.StepFunctionsTaskConfig {
     return {
       resourceArn: 'arn:aws:states:::sns:publish',
-      policyStatements: [new iam.PolicyStatement()
-        .addAction('sns:Publish')
-        .addResource(this.topic.topicArn)
-      ],
+      policyStatements: [new iam.PolicyStatement({
+        actions: ['sns:Publish'],
+        resources: [this.topic.topicArn]
+      })],
       parameters: {
         TopicArn: this.topic.topicArn,
         ...sfn.FieldUtils.renderObject({

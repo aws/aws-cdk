@@ -320,9 +320,8 @@ export interface IRole extends IIdentity {
 
 function createAssumeRolePolicy(principal: IPrincipal, externalId?: string) {
   const statement = new PolicyStatement();
-  statement
-      .addPrincipal(principal)
-      .addAction(principal.assumeRoleAction);
+  statement.addPrincipals(principal);
+  statement.addActions(principal.assumeRoleAction);
 
   if (externalId !== undefined) {
     statement.addCondition('StringEquals', { 'sts:ExternalId': externalId });

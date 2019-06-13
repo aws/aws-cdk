@@ -9,10 +9,10 @@ const role = new Role(stack, 'TestRole', {
   assumedBy: new ServicePrincipal('sqs.amazonaws.com')
 });
 
-role.addToPolicy(new PolicyStatement().addResource('*').addAction('sqs:SendMessage'));
+role.addToPolicy(new PolicyStatement({ resources: ['*'], actions: ['sqs:SendMessage'] }));
 
 const policy = new Policy(stack, 'HelloPolicy', { policyName: 'Default' });
-policy.addStatements(new PolicyStatement().addAction('ec2:*').addResource('*'));
+policy.addStatements(new PolicyStatement({ actions: ['ec2:*'], resources: ['*'] }));
 policy.attachToRole(role);
 
 // Role with an external ID

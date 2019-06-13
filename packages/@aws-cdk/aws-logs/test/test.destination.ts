@@ -43,8 +43,9 @@ export = {
     });
 
     // WHEN
-    dest.addToPolicy(new iam.PolicyStatement()
-      .addAction('logs:TalkToMe'));
+    dest.addToPolicy(new iam.PolicyStatement({
+      actions: ['logs:TalkToMe']
+    }));
 
     // THEN
     expect(stack).to(haveResource('AWS::Logs::Destination', (props: any) => {

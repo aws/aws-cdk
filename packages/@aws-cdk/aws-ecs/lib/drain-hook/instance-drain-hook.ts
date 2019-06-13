@@ -71,27 +71,30 @@ export class InstanceDrainHook extends cdk.Construct {
 
     // FIXME: These should probably be restricted usefully in some way, but I don't exactly
     // know how.
-    fn.addToRolePolicy(new iam.PolicyStatement()
-      .addActions(
+    fn.addToRolePolicy(new iam.PolicyStatement({
+      actions: [
         'autoscaling:CompleteLifecycleAction',
         'ec2:DescribeInstances',
         'ec2:DescribeInstanceAttribute',
         'ec2:DescribeInstanceStatus',
         'ec2:DescribeHosts',
-      )
-      .addAllResources());
+      ],
+      resources: ['*']
+    }));
 
     // FIXME: These should be restricted to the ECS cluster probably, but I don't exactly
     // know how.
-    fn.addToRolePolicy(new iam.PolicyStatement()
-      .addActions(
+    fn.addToRolePolicy(new iam.PolicyStatement({
+      actions: [
         'ecs:ListContainerInstances',
         'ecs:SubmitContainerStateChange',
         'ecs:SubmitTaskStateChange',
         'ecs:DescribeContainerInstances',
         'ecs:UpdateContainerInstancesState',
         'ecs:ListTasks',
-        'ecs:DescribeTasks')
-      .addAllResources());
+        'ecs:DescribeTasks'
+      ],
+      resources: ['*']
+    }));
   }
 }

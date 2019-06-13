@@ -56,9 +56,10 @@ export class NotificationsResourceHandler extends cdk.Construct {
     });
 
     // handler allows to put bucket notification on s3 buckets.
-    role.addToPolicy(new iam.PolicyStatement()
-      .addAction('s3:PutBucketNotification')
-      .addAllResources());
+    role.addToPolicy(new iam.PolicyStatement({
+      actions: ['s3:PutBucketNotification'],
+      resources: ['*']
+    }));
 
     const resourceType = 'AWS::Lambda::Function';
     class InLineLambda extends cdk.CfnResource {

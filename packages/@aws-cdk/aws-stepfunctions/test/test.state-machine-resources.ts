@@ -12,10 +12,10 @@ export = {
             task: {
                 bind: () => ({
                     resourceArn: 'resource',
-                    policyStatements: [new iam.PolicyStatement()
-                        .addAction('resource:Everything')
-                        .addResource('resource')
-                    ],
+                    policyStatements: [new iam.PolicyStatement({
+                        actions: ['resource:Everything'],
+                        resources: ['resource']
+                    })],
                 })
             }
         });
@@ -50,9 +50,10 @@ export = {
                 bind: () => ({
                     resourceArn: 'resource',
                     policyStatements: [
-                        new iam.PolicyStatement()
-                            .addAction('resource:Everything')
-                            .addResource('resource')
+                        new iam.PolicyStatement({
+                            actions: ['resource:Everything'],
+                            resources: ['resource']
+                        })
                     ]
                 })
             }

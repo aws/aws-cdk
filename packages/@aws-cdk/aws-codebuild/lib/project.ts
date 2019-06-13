@@ -814,15 +814,10 @@ export class Project extends ProjectBase {
 
     const logGroupStarArn = `${logGroupArn}:*`;
 
-    const p = new iam.PolicyStatement();
-    p.allow();
-    p.addResource(logGroupArn);
-    p.addResource(logGroupStarArn);
-    p.addAction('logs:CreateLogGroup');
-    p.addAction('logs:CreateLogStream');
-    p.addAction('logs:PutLogEvents');
-
-    return p;
+    return new iam.PolicyStatement({
+      resources: [logGroupArn, logGroupStarArn],
+      actions: ['logs:CreateLogGroup', 'logs:CreateLogStream', 'logs:PutLogEvents'],
+    });
   }
 
   private renderEnvironment(env: BuildEnvironment = {},
@@ -899,26 +894,26 @@ export class Project extends ProjectBase {
       });
       this._securityGroups = [securityGroup];
     }
-    this.addToRoleInlinePolicy(new iam.PolicyStatement()
-      .addAllResources()
-      .addActions(
-        'ec2:CreateNetworkInterface',
-        'ec2:DescribeNetworkInterfaces',
-        'ec2:DeleteNetworkInterface',
-        'ec2:DescribeSubnets',
-        'ec2:DescribeSecurityGroups',
-        'ec2:DescribeDhcpOptions',
-        'ec2:DescribeVpcs'
-      ));
-    this.addToRolePolicy(new iam.PolicyStatement()
-      .addResource(`arn:aws:ec2:${Aws.region}:${Aws.accountId}:network-interface/*`)
-      .addCondition('StringEquals', {
-        "ec2:Subnet": props.vpc
-          .selectSubnets(props.subnetSelection).subnetIds
-          .map(si => `arn:aws:ec2:${Aws.region}:${Aws.accountId}:subnet/${si}`),
-        "ec2:AuthorizedService": "codebuild.amazonaws.com"
-      })
-      .addAction('ec2:CreateNetworkInterfacePermission'));
+    this.addToRoleInlinePolicy(new iam.PolicyStatement({
+      resources: ['*'],
+      actions: [
+        'ec2:CreateNetworkInterface', 'ec2:DescribeNetworkInterfaces',
+        'ec2:DeleteNetworkInterface', 'ec2:DescribeSubnets',
+        'ec2:DescribeSecurityGroups', 'ec2:DescribeDhcpOptions',
+        'ec2:DescribeVpcs']
+    }));
+    this.addToRolePolicy(new iam.PolicyStatement({
+      resources: [`arn:aws:ec2:${Aws.region}:${Aws.accountId}:network-interface/*`],
+      actions: ['ec2:CreateNetworkInterfacePermission'],
+      conditions: {
+        StringEquals: {
+          "ec2:Subnet": props.vpc
+            .selectSubnets(props.subnetSelection).subnetIds
+            .map(si => `arn:aws:ec2:${Aws.region}:${Aws.accountId}:subnet/${si}`),
+          "ec2:AuthorizedService": "codebuild.amazonaws.com"
+        }
+      }
+    }));
     return {
       vpcId: props.vpc.vpcId,
       subnets: props.vpc.selectSubnets(props.subnetSelection).subnetIds,
@@ -1300,12 +1295,10 @@ function extendBuildSpec(buildSpec: any, extend: any) {
 }
 
 function ecrAccessForCodeBuildService(): iam.PolicyStatement {
-  return new iam.PolicyStatement()
-    .describe('CodeBuild')
-    .addServicePrincipal('codebuild.amazonaws.com')
-    .addActions(
-      'ecr:GetDownloadUrlForLayer',
-      'ecr:BatchGetImage',
-      'ecr:BatchCheckLayerAvailability'
-    );
+  const s = new iam.PolicyStatement({
+    principals: [new iam.ServicePrincipal('codebuild.amazonaws.com')],
+    actions: ['ecr:GetDownloadUrlForLayer', 'ecr:BatchGetImage', 'ecr:BatchCheckLayerAvailability'],
+  });
+  s.sid = 'CodeBuild';
+  return s;
 }

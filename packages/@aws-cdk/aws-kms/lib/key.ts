@@ -250,9 +250,10 @@ export class Key extends KeyBase {
       "kms:CancelKeyDeletion"
     ];
 
-    this.addToResourcePolicy(new PolicyStatement()
-      .addAllResources()
-      .addActions(...actions)
-      .addAccountRootPrincipal());
+    this.addToResourcePolicy(new PolicyStatement({
+      resources: ['*'],
+      actions,
+      principals: [new iam.AccountRootPrincipal()]
+    }));
   }
 }

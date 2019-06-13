@@ -16,6 +16,9 @@ for (let i = 0; i < 5; ++i) {
 
 const policy = new Policy(stack, 'MyPolicy');
 policy.attachToGroup(g1);
-policy.addStatements(new PolicyStatement().addResource(g2.groupArn).addAction('iam:*'));
+policy.addStatements(new PolicyStatement({
+  resources: [g2.groupArn],
+  actions: ['iam:*']
+}));
 
 app.synth();

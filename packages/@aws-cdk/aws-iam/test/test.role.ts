@@ -89,7 +89,7 @@ export = {
     // add a policy to the role
     const after = new Stack();
     const afterRole = new Role(after, 'MyRole', { assumedBy: new ServicePrincipal('sns.amazonaws.com') });
-    afterRole.addToPolicy(new PolicyStatement().addResource('myresource').addAction('myaction'));
+    afterRole.addToPolicy(new PolicyStatement({ resources: ['myresource'], actions: ['myaction'] }));
     expect(after).to(haveResource('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
