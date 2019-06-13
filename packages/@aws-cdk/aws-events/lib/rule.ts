@@ -1,4 +1,4 @@
-import { Construct, Lazy, Resource } from '@aws-cdk/cdk';
+import { Construct, Lazy, PhysicalName, Resource, ResourceIdentifiers } from '@aws-cdk/cdk';
 import { EventPattern } from './event-pattern';
 import { CfnRule } from './events.generated';
 import { IRule } from './rule-ref';
@@ -19,7 +19,7 @@ export interface RuleProps {
    * @default - AWS CloudFormation generates a unique physical ID and uses that ID
    * for the rule name. For more information, see Name Type.
    */
-  readonly ruleName?: string;
+  readonly ruleName?: PhysicalName;
 
   /**
    * Indicates whether the rule is enabled.
@@ -90,10 +90,12 @@ export class Rule extends Resource implements IRule {
   private scheduleExpression?: string;
 
   constructor(scope: Construct, id: string, props: RuleProps = { }) {
-    super(scope, id);
+    super(scope, id, {
+      physicalName: props.ruleName,
+    });
 
     const resource = new CfnRule(this, 'Resource', {
-      name: props.ruleName,
+      name: this.physicalName.value,
       description: props.description,
       state: props.enabled == null ? 'ENABLED' : (props.enabled ? 'ENABLED' : 'DISABLED'),
       scheduleExpression: Lazy.stringValue({ produce: () => this.scheduleExpression }),
@@ -101,7 +103,16 @@ export class Rule extends Resource implements IRule {
       targets: Lazy.anyValue({ produce: () => this.renderTargets() }),
     });
 
-    this.ruleArn = resource.ruleArn;
+    const resourceIdentifiers = new ResourceIdentifiers(this, {
+      arn: resource.ruleArn,
+      name: resource.ruleId,
+      arnComponents: {
+        service: 'events',
+        resource: 'rule',
+        resourceName: this.physicalName.value,
+      },
+    });
+    this.ruleArn = resourceIdentifiers.arn;
 
     this.addEventPattern(props.eventPattern);
     this.scheduleExpression = props.scheduleExpression;
