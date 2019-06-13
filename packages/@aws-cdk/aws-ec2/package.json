@@ -87,7 +87,11 @@
   },
   "awslint": {
     "exclude": [
-      "resource-attribute:@aws-cdk/aws-ec2.ISecurityGroup.securityGroupVpcId"
+      "resource-attribute:@aws-cdk/aws-ec2.ISecurityGroup.securityGroupVpcId",
+      "no-unused-type:@aws-cdk/aws-ec2.ConnectionRule",
+      "no-unused-type:@aws-cdk/aws-ec2.Protocol",
+      "no-unused-type:@aws-cdk/aws-ec2.VpcEndpointType",
+      "no-unused-type:@aws-cdk/aws-ec2.VpnConnectionType"
     ]
   },
   "stability": "experimental"

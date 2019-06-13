@@ -3,7 +3,7 @@ import cdk = require('@aws-cdk/cdk');
 import { Alarm, ComparisonOperator, TreatMissingData } from './alarm';
 import { normalizeStatistic } from './util.statistic';
 
-export type DimensionHash = {[dim: string]: any};
+export type DimensionHash = { [dim: string]: any };
 
 /**
  * Properties for a metric
@@ -195,17 +195,6 @@ export interface Dimension {
    * Value of the dimension
    */
   readonly value: any;
-}
-
-/**
- * Statistic to use over the aggregation period
- */
-export enum Statistic {
-  SampleCount = 'SampleCount',
-  Average = 'Average',
-  Sum = 'Sum',
-  Minimum = 'Minimum',
-  Maximum = 'Maximum',
 }
 
 /**

@@ -3,10 +3,9 @@ import { CfnOutput, Construct, IResource as IResourceBase, Resource, Stack } fro
 import { ApiKey, IApiKey } from './api-key';
 import { CfnAccount, CfnRestApi } from './apigateway.generated';
 import { Deployment } from './deployment';
-import { Integration } from './integration';
-import { Method, MethodOptions } from './method';
-import { IResource, ResourceBase, ResourceOptions } from './resource';
-import { Stage, StageOptions } from './stage';
+import { Method } from './method';
+import { IResource, ResourceOptions, RootResource } from './resource';
+import { IStage, Stage, StageOptions } from './stage';
 import { UsagePlan, UsagePlanProps } from './usage-plan';
 
 export interface IRestApi extends IResourceBase {
@@ -15,6 +14,14 @@ export interface IRestApi extends IResourceBase {
    * @attribute
    */
   readonly restApiId: string;
+
+  /**
+   * API Gateway stage that points to the latest deployment (if defined).
+   *
+   * If `deploy` is disabled, you will need to explicitly assign this value in order to
+   * set up integrations.
+   */
+  deploymentStage?: IStage;
 }
 
 export interface RestApiProps extends ResourceOptions {
@@ -190,7 +197,7 @@ export class RestApi extends Resource implements IRestApi {
    * If `deploy` is disabled, you will need to explicitly assign this value in order to
    * set up integrations.
    */
-  public deploymentStage?: Stage;
+  public deploymentStage?: IStage;
 
   /**
    * Represents the root resource ("/") of this API. Use it to define the API model:
@@ -388,24 +395,4 @@ export enum EndpointType {
    * For a private API and its custom domain name.
    */
   Private = 'PRIVATE'
-}
-
-class RootResource extends ResourceBase {
-  public readonly parentResource?: IResource;
-  public readonly restApi: RestApi;
-  public readonly resourceId: string;
-  public readonly path: string;
-  public readonly defaultIntegration?: Integration | undefined;
-  public readonly defaultMethodOptions?: MethodOptions | undefined;
-
-  constructor(api: RestApi, props: RestApiProps, resourceId: string) {
-    super(api, 'Default');
-
-    this.parentResource = undefined;
-    this.defaultIntegration = props.defaultIntegration;
-    this.defaultMethodOptions = props.defaultMethodOptions;
-    this.restApi = api;
-    this.resourceId = resourceId;
-    this.path = '/';
-  }
 }

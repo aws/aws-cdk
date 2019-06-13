@@ -498,8 +498,10 @@ function isNextable(x: any): x is INextable {
 
 /**
  * State types
+ *
+ * @internal
  */
-export enum StateType {
+export const enum StateType {
     Pass = 'Pass',
     Task = 'Task',
     Choice = 'Choice',

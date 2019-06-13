@@ -2,7 +2,7 @@ import { Construct, IResource as IResourceBase, Resource as ResourceConstruct } 
 import { CfnResource, CfnResourceProps } from './apigateway.generated';
 import { Integration } from './integration';
 import { Method, MethodOptions } from './method';
-import { RestApi } from './restapi';
+import { RestApi, RestApiProps } from './restapi';
 
 export interface IResource extends IResourceBase {
   /**
@@ -118,7 +118,7 @@ export interface ResourceProps extends ResourceOptions {
   readonly pathPart: string;
 }
 
-export abstract class ResourceBase extends ResourceConstruct implements IResource {
+abstract class ResourceBase extends ResourceConstruct implements IResource {
   public abstract readonly parentResource?: IResource;
   public abstract readonly restApi: RestApi;
   public abstract readonly resourceId: string;
@@ -181,6 +181,29 @@ export abstract class ResourceBase extends ResourceConstruct implements IResourc
     }
 
     return resource.resourceForPath(parts.join('/'));
+  }
+}
+
+/**
+ * @internal
+ */
+export class RootResource extends ResourceBase {
+  public readonly parentResource?: IResource;
+  public readonly restApi: RestApi;
+  public readonly resourceId: string;
+  public readonly path: string;
+  public readonly defaultIntegration?: Integration | undefined;
+  public readonly defaultMethodOptions?: MethodOptions | undefined;
+
+  constructor(api: RestApi, props: RestApiProps, resourceId: string) {
+    super(api, 'Default');
+
+    this.parentResource = undefined;
+    this.defaultIntegration = props.defaultIntegration;
+    this.defaultMethodOptions = props.defaultMethodOptions;
+    this.restApi = api;
+    this.resourceId = resourceId;
+    this.path = '/';
   }
 }
 

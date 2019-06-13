@@ -1,19 +1,7 @@
 import { Construct, IResource as IResourceBase, Resource } from '@aws-cdk/cdk';
 import { CfnApiKey } from './apigateway.generated';
 import { ResourceOptions } from "./resource";
-import { RestApi } from './restapi';
-
-/**
- * API keys are alphanumeric string values that you distribute to
- * app developer customers to grant access to your API
- */
-export interface ApiKeyAttributes {
-  /**
-   * The API key ID.
-   * @attribute
-   */
-  readonly keyId: string;
-}
+import { IRestApi } from './restapi';
 
 /**
  * API keys are alphanumeric string values that you distribute to
@@ -35,7 +23,7 @@ export interface ApiKeyProps extends ResourceOptions {
    * A list of resources this api key is associated with.
    * @default none
    */
-  readonly resources?: RestApi[];
+  readonly resources?: IRestApi[];
 
   /**
    * An AWS Marketplace customer identifier to use when integrating with the AWS SaaS Marketplace.
@@ -80,6 +68,13 @@ export interface ApiKeyProps extends ResourceOptions {
  * for Method resources that require an Api Key.
  */
 export class ApiKey extends Resource implements IApiKey {
+  public static fromApiKeyId(scope: Construct, id: string, apiKeyId: string): IApiKey {
+    class Import extends Resource implements IApiKey {
+      public readonly keyId = apiKeyId;
+    }
+    return new Import(scope, id);
+  }
+
   public readonly keyId: string;
 
   constructor(scope: Construct, id: string, props: ApiKeyProps = { }) {
@@ -97,12 +92,12 @@ export class ApiKey extends Resource implements IApiKey {
     this.keyId = resource.refAsString;
   }
 
-  private renderStageKeys(resources: RestApi[] | undefined): CfnApiKey.StageKeyProperty[] | undefined {
+  private renderStageKeys(resources: IRestApi[] | undefined): CfnApiKey.StageKeyProperty[] | undefined {
     if (!resources) {
       return undefined;
     }
 
-    return resources.map((resource: RestApi) => {
+    return resources.map(resource => {
       const restApi = resource;
       const restApiId = restApi.restApiId;
       const stageName = restApi.deploymentStage!.stageName.toString();

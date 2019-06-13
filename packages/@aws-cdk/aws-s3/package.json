@@ -82,6 +82,11 @@
     "@aws-cdk/aws-kms": "^0.34.0",
     "@aws-cdk/cdk": "^0.34.0"
   },
+  "awslint": {
+    "exclude": [
+      "no-unused-type:@aws-cdk/aws-s3.Location"
+    ]
+  },
   "engines": {
     "node": ">= 8.10.0"
   },

@@ -16,16 +16,6 @@ export interface IOptionGroup extends IResource {
 }
 
 /**
- * Reference to an existing option group.
- */
-export interface OptionGroupAttributes {
-  /**
-   * The name of the option group.
-   */
-  readonly optionGroupName: string;
-}
-
-/**
  * Configuration properties for an option.
  */
 export interface OptionConfiguration {

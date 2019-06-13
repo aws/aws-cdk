@@ -1,5 +1,3 @@
-import { Statistic } from "./metric";
-
 export interface SimpleStatistic {
   type: 'simple';
   statistic: Statistic;
@@ -57,4 +55,15 @@ export function normalizeStatistic(stat: string): string {
     // floating point rounding issues, return as-is but lowercase the p.
     return stat.toLowerCase();
   }
+}
+
+/**
+ * Statistic to use over the aggregation period
+ */
+const enum Statistic {
+  SampleCount = 'SampleCount',
+  Average = 'Average',
+  Sum = 'Sum',
+  Minimum = 'Minimum',
+  Maximum = 'Maximum',
 }

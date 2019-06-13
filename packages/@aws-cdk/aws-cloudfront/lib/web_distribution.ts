@@ -389,25 +389,6 @@ export enum LambdaEdgeEventType {
   ViewerResponse = "viewer-response",
 }
 
-export interface ErrorConfiguration {
-  /**
-   * The error code matched from the origin
-   */
-  readonly originErrorCode: number;
-  /**
-   * The error code that is sent to the caller.
-   */
-  readonly respondWithErrorCode: number;
-  /**
-   * The path to service instead
-   */
-  readonly respondWithPage: string;
-  /**
-   * How long before this error is retried.
-   */
-  readonly cacheTtl?: number;
-}
-
 export interface CloudFrontWebDistributionProps {
 
   /**

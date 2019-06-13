@@ -4,7 +4,7 @@ import { IApiKey } from './api-key';
 import { CfnUsagePlan, CfnUsagePlanKey } from './apigateway.generated';
 import { Method } from './method';
 import { IRestApi } from './restapi';
-import { Stage } from './stage';
+import { IStage } from './stage';
 import { validateInteger } from './util';
 
 /**
@@ -78,7 +78,7 @@ export interface ThrottlingPerMethod {
 /**
  * Type of Usage Plan Key. Currently the only supported type is 'API_KEY'
  */
-export enum UsagePlanKeyType {
+const enum UsagePlanKeyType {
   ApiKey = 'API_KEY'
 }
 
@@ -97,7 +97,7 @@ export interface UsagePlanPerApiStage {
    * [disable-awslint:ref-via-interface]
    * @default none
    */
-  readonly stage?: Stage,
+  readonly stage?: IStage,
 
   /**
    * @default none

@@ -2,7 +2,7 @@ import { Construct, IResource, Lazy, Resource, Stack } from '@aws-cdk/cdk';
 import { IAlarmAction } from './alarm-action';
 import { CfnAlarm } from './cloudwatch.generated';
 import { HorizontalAnnotation } from './graph';
-import { Dimension, Metric, MetricAlarmProps, Statistic, Unit } from './metric';
+import { Dimension, Metric, MetricAlarmProps, Unit } from './metric';
 import { parseStatistic } from './util.statistic';
 
 export interface IAlarm extends IResource {
@@ -245,7 +245,7 @@ function metricJson(metric: Metric): AlarmMetricJson {
 /**
  * Properties used to construct the Metric identifying part of an Alarm
  */
-export interface AlarmMetricJson {
+interface AlarmMetricJson {
   /**
    * The dimensions to apply to the alarm
    */
@@ -269,7 +269,7 @@ export interface AlarmMetricJson {
   /**
    * Simple aggregation function to use
    */
-  readonly statistic?: Statistic;
+  readonly statistic?: string;
 
   /**
    * Percentile aggregation function to use

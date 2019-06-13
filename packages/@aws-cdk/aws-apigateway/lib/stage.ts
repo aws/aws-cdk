@@ -1,4 +1,4 @@
-import { Construct, Resource, Stack } from '@aws-cdk/cdk';
+import { Construct, IResource, Resource, Stack } from '@aws-cdk/cdk';
 import { CfnStage } from './apigateway.generated';
 import { Deployment } from './deployment';
 import { IRestApi } from './restapi';
@@ -157,7 +157,60 @@ export interface MethodDeploymentOptions {
   readonly cacheDataEncrypted?: boolean;
 }
 
-export class Stage extends Resource {
+export interface IStage extends IResource {
+   /**
+    * @attribute
+    */
+  readonly stageName: string;
+
+  /**
+   * The RestApi this stage is on.
+   */
+  readonly restApi: IRestApi;
+
+  /**
+   * Returns the invoke URL for a certain path.
+   * @param path The resource path
+   */
+  urlForPath(path?: string): string;
+}
+
+/**
+ * Attributes of a Stage.
+ */
+export interface StageAttributes {
+  /**
+   * The name of the stage.
+   */
+  readonly stageName: string;
+
+  /**
+   * The RestApi this stage is of.
+   */
+  readonly restApi: IRestApi;
+}
+
+abstract class StageBase extends Resource implements IStage {
+  public abstract readonly stageName: string;
+  public abstract readonly restApi: IRestApi;
+
+  public urlForPath(path: string = '/') {
+    if (!path.startsWith('/')) {
+      throw new Error(`Path must begin with "/": ${path}`);
+    }
+    return `https://${this.restApi.restApiId}.execute-api.${Stack.of(this).region}.${Stack.of(this).urlSuffix}/${this.stageName}${path}`;
+  }
+}
+
+export class Stage extends StageBase {
+  public static fromStageAttributes(scope: Construct, id: string, attrs: StageAttributes): IStage {
+    class Import extends StageBase {
+      public readonly stageName = attrs.stageName;
+      public readonly restApi = attrs.restApi;
+    }
+    return new Import(scope, id);
+  }
+
   /**
    * @attribute
    */
@@ -199,17 +252,6 @@ export class Stage extends Resource {
 
     this.stageName = resource.refAsString;
     this.restApi = props.deployment.api;
-  }
-
-  /**
-   * Returns the invoke URL for a certain path.
-   * @param path The resource path
-   */
-  public urlForPath(path: string = '/') {
-    if (!path.startsWith('/')) {
-      throw new Error(`Path must begin with "/": ${path}`);
-    }
-    return `https://${this.restApi.restApiId}.execute-api.${Stack.of(this).region}.${Stack.of(this).urlSuffix}/${this.stageName}${path}`;
   }
 
   private renderMethodSettings(props: StageProps): CfnStage.MethodSettingProperty[] | undefined {

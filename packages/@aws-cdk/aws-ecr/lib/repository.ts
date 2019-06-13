@@ -2,7 +2,7 @@ import events = require('@aws-cdk/aws-events');
 import iam = require('@aws-cdk/aws-iam');
 import { Construct, DeletionPolicy, IConstruct, IResource, Lazy, Resource, Stack, Token } from '@aws-cdk/cdk';
 import { CfnRepository } from './ecr.generated';
-import { CountType, LifecycleRule, TagStatus } from './lifecycle';
+import { LifecycleRule, TagStatus } from './lifecycle';
 
 /**
  * Represents an ECR repository.
@@ -478,4 +478,19 @@ function renderLifecycleRule(rule: LifecycleRule) {
       type: 'expire'
     }
   };
+}
+
+/**
+ * Select images based on counts
+ */
+const enum CountType {
+  /**
+   * Set a limit on the number of images in your repository
+   */
+  ImageCountMoreThan = 'imageCountMoreThan',
+
+  /**
+   * Set an age limit on the images in your repository
+   */
+  SinceImagePushed = 'sinceImagePushed',
 }

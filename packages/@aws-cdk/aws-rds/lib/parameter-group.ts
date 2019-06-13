@@ -12,16 +12,6 @@ export interface IParameterGroup extends IResource {
 }
 
 /**
- * Reference to an existing parameter group
- */
-export interface ParameterGroupAttributes {
-  /**
-   * The name of the parameter group
-   */
-  readonly parameterGroupName: string;
-}
-
-/**
  * A new cluster or instance parameter group
  */
 abstract class ParameterGroupBase extends Resource implements IParameterGroup {

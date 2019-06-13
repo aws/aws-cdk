@@ -1,5 +1,6 @@
 export * from './construct';
 export * from './module';
+export * from './no-unused-type';
 export * from './resource';
 export * from './imports';
 export * from './cfn-resource';
