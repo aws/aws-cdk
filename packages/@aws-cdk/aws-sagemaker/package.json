@@ -70,9 +70,15 @@
     "pkglint": "^0.34.0"
   },
   "dependencies": {
+    "@aws-cdk/aws-ec2": "^0.34.0",
+    "@aws-cdk/aws-iam": "^0.34.0",    
+    "@aws-cdk/aws-kms": "^0.34.0",       
     "@aws-cdk/cdk": "^0.34.0"
   },
   "peerDependencies": {
+    "@aws-cdk/aws-ec2": "^0.34.0",
+    "@aws-cdk/aws-iam": "^0.34.0",    
+    "@aws-cdk/aws-kms": "^0.34.0",           
     "@aws-cdk/cdk": "^0.34.0"
   },
   "engines": {
