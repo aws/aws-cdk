@@ -4,6 +4,7 @@ import { CfnAlarm } from './cloudwatch.generated';
 import { HorizontalAnnotation } from './graph';
 import { CreateAlarmOptions } from './metric';
 import { IMetric } from './metric-types';
+import { normalizeStatistic } from './util.statistic';
 
 export interface IAlarm extends IResource {
   /**
@@ -140,7 +141,12 @@ export class Alarm extends Resource implements IAlarm {
       okActions: Lazy.listValue({ produce: () => this.okActionArns }),
 
       // Metric
-      ...config,
+      ...dropUndef(config),
+      ...dropUndef({
+        // Alarm overrides
+        period: props.periodSec,
+        statistic: props.statistic && normalizeStatistic(props.statistic),
+      })
     });
 
     this.alarmArn = alarm.alarmArn;
@@ -223,4 +229,14 @@ function describePeriod(seconds: number) {
   if (seconds === 1) { return '1 second'; }
   if (seconds > 60) { return (seconds / 60) + ' minutes'; }
   return seconds + ' seconds';
+}
+
+function dropUndef<T extends object>(x: T): T {
+  const ret: any = {};
+  for (const [key, value] of Object.entries(x)) {
+    if (value !== undefined) {
+      ret[key] = value;
+    }
+  }
+  return ret;
 }
