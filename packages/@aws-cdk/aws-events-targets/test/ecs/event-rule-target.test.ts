@@ -175,9 +175,9 @@ test("Can use Fargate taskdef as EventRule target", () => {
         },
         InputTransformer: {
           InputPathsMap: {
-            f1: "$.detail.event"
+            "detail-event": "$.detail.event"
           },
-          InputTemplate: "{\"containerOverrides\":[{\"name\":\"TheContainer\",\"command\":[\"echo\",<f1>]}]}"
+          InputTemplate: "{\"containerOverrides\":[{\"name\":\"TheContainer\",\"command\":[\"echo\",<detail-event>]}]}"
         },
         RoleArn: { "Fn::GetAtt": ["TaskDefEventsRoleFB3B67B8", "Arn"] },
         Id: taskDefinition.node.uniqueId

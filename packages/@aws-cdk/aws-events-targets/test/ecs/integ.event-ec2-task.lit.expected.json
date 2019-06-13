@@ -1122,7 +1122,7 @@
                 "Ref": "TaskDef54694570"
               }
             },
-            "Id": "TaskDef-on-EcsCluster",
+            "Id": "awsecsintegecsTaskDef8DD0C801",
             "Input": "{\"containerOverrides\":[{\"name\":\"TheContainer\",\"environment\":[{\"name\":\"I_WAS_TRIGGERED\",\"value\":\"From CloudWatch Events\"}]}]}",
             "RoleArn": {
               "Fn::GetAtt": [
