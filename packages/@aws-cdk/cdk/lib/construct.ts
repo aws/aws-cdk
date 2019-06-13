@@ -40,19 +40,26 @@ export class ConstructNode {
     // prepare
     this.prepare(root);
 
-    // validate
-    const validate = options.skipValidation === undefined ? true : !options.skipValidation;
-    if (validate) {
-      const errors = this.validate(root);
-      if (errors.length > 0) {
-        const errorList = errors.map(e => `[${e.source.node.path}] ${e.message}`).join('\n  ');
-        throw new Error(`Validation failed with the following errors:\n  ${errorList}`);
-      }
-    }
+    // do not allow adding children after this stage
+    root._lock();
 
-    // synthesize (leaves first)
-    for (const construct of root.findAll(ConstructOrder.PostOrder)) {
-      (construct as any).synthesize({ assembly: builder }); // "as any" is needed because we want to keep "synthesize" protected
+    try {
+      // validate
+      const validate = options.skipValidation === undefined ? true : !options.skipValidation;
+      if (validate) {
+        const errors = this.validate(root);
+        if (errors.length > 0) {
+          const errorList = errors.map(e => `[${e.source.node.path}] ${e.message}`).join('\n  ');
+          throw new Error(`Validation failed with the following errors:\n  ${errorList}`);
+        }
+      }
+
+      // synthesize (leaves first)
+      for (const construct of root.findAll(ConstructOrder.PostOrder)) {
+        (construct as any).synthesize({ assembly: builder }); // "as any" is needed because we want to keep "synthesize" protected
+      }
+    } finally {
+      root._unlock();
     }
 
     // write session manifest and lock store
@@ -372,21 +379,6 @@ export class ConstructNode {
   }
 
   /**
-   * Locks this construct from allowing more children to be added. After this
-   * call, no more children can be added to this construct or to any children.
-   */
-  public lock() {
-    this._locked = true;
-  }
-
-  /**
-   * Unlocks this costruct and allows mutations (adding children).
-   */
-  public unlock() {
-    this._locked = false;
-  }
-
-  /**
    * Returns true if this construct or the scopes in which it is defined are
    * locked.
    */
@@ -468,6 +460,23 @@ export class ConstructNode {
     }
 
     return ret;
+  }
+
+  /**
+   * Locks this construct from allowing more children to be added. After this
+   * call, no more children can be added to this construct or to any children.
+   * @internal
+   */
+  private _lock() {
+    this._locked = true;
+  }
+
+  /**
+   * Unlocks this costruct and allows mutations (adding children).
+   * @internal
+   */
+  private _unlock() {
+    this._locked = false;
   }
 
   /**

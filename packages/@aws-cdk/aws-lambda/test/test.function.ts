@@ -18,7 +18,7 @@ export = testCase({
     });
     const layer = new lambda.LayerVersion(stack, 'myLayer', {
       code,
-      compatibleRuntimes: [lambda.Runtime.NodeJS]
+      compatibleRuntimes: [lambda.Runtime.Nodejs]
     });
 
     // THEN

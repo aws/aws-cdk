@@ -116,7 +116,7 @@ function stackIncludingLambdaInvokeCodePipeline(userParams: { [key: string]: any
             lambda: new lambda.Function(stack, 'Lambda', {
               code: lambda.Code.cfnParameters(),
               handler: 'index.handler',
-              runtime: lambda.Runtime.NodeJS810,
+              runtime: lambda.Runtime.Nodejs810,
             }),
             userParameters: userParams,
           }),

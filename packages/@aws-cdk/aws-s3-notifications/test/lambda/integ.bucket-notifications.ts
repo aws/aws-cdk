@@ -12,7 +12,7 @@ const bucketA = new s3.Bucket(stack, 'MyBucket', {
 });
 
 const fn = new lambda.Function(stack, 'MyFunction', {
-  runtime: lambda.Runtime.NodeJS810,
+  runtime: lambda.Runtime.Nodejs810,
   handler: 'index.handler',
   code: lambda.Code.inline(`exports.handler = ${handler.toString()}`)
 });

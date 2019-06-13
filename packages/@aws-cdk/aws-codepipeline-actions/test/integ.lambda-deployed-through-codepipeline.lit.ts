@@ -14,7 +14,7 @@ const lambdaCode = lambda.Code.cfnParameters();
 new lambda.Function(lambdaStack, 'Lambda', {
   code: lambdaCode,
   handler: 'index.handler',
-  runtime: lambda.Runtime.NodeJS810,
+  runtime: lambda.Runtime.Nodejs810,
 });
 // other resources that your Lambda needs, added to the lambdaStack...
 
@@ -47,7 +47,7 @@ const cdkBuildProject = new codebuild.Project(pipelineStack, 'CdkBuildProject', 
   environment: {
     buildImage: codebuild.LinuxBuildImage.UBUNTU_14_04_NODEJS_10_1_0,
   },
-  buildSpec: {
+  buildSpec: codebuild.BuildSpec.fromObject({
     version: '0.2',
     phases: {
       install: {
@@ -63,7 +63,7 @@ const cdkBuildProject = new codebuild.Project(pipelineStack, 'CdkBuildProject', 
     artifacts: {
       files: 'LambdaStack.template.yaml',
     },
-  },
+  }),
 });
 const cdkBuildOutput = new codepipeline.Artifact();
 const cdkBuildAction = new codepipeline_actions.CodeBuildAction({
@@ -80,7 +80,7 @@ const lambdaBuildProject = new codebuild.Project(pipelineStack, 'LambdaBuildProj
   environment: {
     buildImage: codebuild.LinuxBuildImage.UBUNTU_14_04_NODEJS_10_1_0,
   },
-  buildSpec: {
+  buildSpec: codebuild.BuildSpec.fromObject({
     version: '0.2',
     phases: {
       install: {
@@ -96,7 +96,7 @@ const lambdaBuildProject = new codebuild.Project(pipelineStack, 'LambdaBuildProj
         'node_modules/**/*',
       ],
     },
-  },
+  }),
 });
 const lambdaBuildOutput = new codepipeline.Artifact();
 const lambdaBuildAction = new codepipeline_actions.CodeBuildAction({

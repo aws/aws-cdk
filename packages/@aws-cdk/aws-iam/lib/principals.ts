@@ -232,7 +232,7 @@ export class FederatedPrincipal extends PrincipalBase {
 
 export class AccountRootPrincipal extends AccountPrincipal {
   constructor() {
-    super(new StackDependentToken(stack => stack.accountId).toString());
+    super(new StackDependentToken(stack => stack.account).toString());
   }
 
   public toString() {

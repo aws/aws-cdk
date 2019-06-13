@@ -2,7 +2,7 @@ import cxapi = require('@aws-cdk/cx-api');
 import { Test } from 'nodeunit';
 import { App, App as Root, applyRemovalPolicy, CfnCondition,
     CfnResource, Construct, ConstructNode, DeletionPolicy,
-    Fn, HashedAddressingScheme, RemovalPolicy, Stack } from '../lib';
+    Fn, RemovalPolicy, Stack } from '../lib';
 import { toCloudFormation } from './util';
 
 export = {
@@ -38,7 +38,7 @@ export = {
   },
 
   'all entities have a logical ID calculated based on their full path in the tree'(test: Test) {
-    const stack = new Stack(undefined, 'TestStack', { namingScheme: new HashedAddressingScheme() });
+    const stack = new Stack(undefined, 'TestStack');
     const level1 = new Construct(stack, 'level1');
     const level2 = new Construct(level1, 'level2');
     const level3 = new Construct(level2, 'level3');
@@ -662,7 +662,7 @@ export = {
 
     // THEN
     const assembly = app.run();
-    const templateB = assembly.getStack(stackB.name).template;
+    const templateB = assembly.getStack(stackB.stackName).template;
 
     test.deepEqual(templateB, {
       Resources: {
