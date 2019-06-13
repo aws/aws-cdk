@@ -1,13 +1,9 @@
 import iam = require('@aws-cdk/aws-iam');
-import cdk = require('@aws-cdk/cdk');
 import { Test } from 'nodeunit';
 import kms = require('../lib');
 
 export = {
   'Via service, any principal'(test: Test) {
-    // GIVEN
-    const stack = new cdk.Stack();
-
     // WHEN
     const statement = new iam.PolicyStatement({
       actions: ['abc:call'],
@@ -16,7 +12,7 @@ export = {
     });
 
     // THEN
-    test.deepEqual(stack.resolve(statement), {
+    test.deepEqual(statement.toStatementJson(), {
       Action: 'abc:call',
       Condition: { StringEquals: { 'kms:ViaService': 'bla.amazonaws.com' } },
       Effect: 'Allow',
@@ -28,9 +24,6 @@ export = {
   },
 
   'Via service, principal with conditions'(test: Test) {
-    // GIVEN
-    const stack = new cdk.Stack();
-
     // WHEN
     const statement = new iam.PolicyStatement({
       actions: ['abc:call'],
@@ -39,7 +32,7 @@ export = {
     });
 
     // THEN
-    test.deepEqual(stack.resolve(statement), {
+    test.deepEqual(statement.toStatementJson(), {
       Action: 'abc:call',
       Condition: {
         StringEquals: {
