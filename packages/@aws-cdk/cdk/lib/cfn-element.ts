@@ -139,13 +139,6 @@ export abstract class CfnElement extends Construct {
   }
 
   /**
-   * Return a token that will CloudFormation { Ref } this stack element
-   */
-  protected get ref(): IResolvable {
-    return CfnReference.for(this, 'Ref');
-  }
-
-  /**
    * Called during synthesize to render the logical ID of this element. If
    * `overrideLogicalId` was it will be used, otherwise, we will allocate the
    * logical ID through the stack.
@@ -174,7 +167,7 @@ export abstract class CfnRefElement extends CfnElement {
    * Return a token that will CloudFormation { Ref } this stack element
    */
   public get ref(): IResolvable {
-    return super.ref;
+    return CfnReference.for(this, 'Ref');
   }
 
   /**
