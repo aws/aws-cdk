@@ -9,3 +9,4 @@ export * from './run-ecs-fargate-task';
 export * from './sagemaker-task-base-types';
 export * from './sagemaker-train-task';
 export * from './sagemaker-transform-task';
+export * from './run-lambda-task';
