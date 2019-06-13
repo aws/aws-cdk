@@ -1,6 +1,6 @@
 import events = require('@aws-cdk/aws-events');
 import iam = require('@aws-cdk/aws-iam');
-import { Construct, DeletionPolicy, IConstruct, IResource, Lazy, Resource, Stack, Token } from '@aws-cdk/cdk';
+import { Construct, DeletionPolicy, IConstruct, IResource, Lazy, PhysicalName, Resource, ResourceIdentifiers, Stack, Token } from '@aws-cdk/cdk';
 import { CfnRepository } from './ecr.generated';
 import { CountType, LifecycleRule, TagStatus } from './lifecycle';
 
@@ -230,7 +230,7 @@ export interface RepositoryProps {
    *
    * @default Automatically generated name.
    */
-  readonly repositoryName?: string;
+  readonly repositoryName?: PhysicalName;
 
   /**
    * Life cycle rules to apply to this registry
@@ -338,10 +338,12 @@ export class Repository extends RepositoryBase {
   private policyDocument?: iam.PolicyDocument;
 
   constructor(scope: Construct, id: string, props: RepositoryProps = {}) {
-    super(scope, id);
+    super(scope, id, {
+      physicalName: props.repositoryName,
+    });
 
     const resource = new CfnRepository(this, 'Resource', {
-      repositoryName: props.repositoryName,
+      repositoryName: this.physicalName.value,
       // It says "Text", but they actually mean "Object".
       repositoryPolicyText: Lazy.anyValue({ produce: () => this.policyDocument }),
       lifecyclePolicy: Lazy.anyValue({ produce: () => this.renderLifecyclePolicy() }),
@@ -356,8 +358,17 @@ export class Repository extends RepositoryBase {
       props.lifecycleRules.forEach(this.addLifecycleRule.bind(this));
     }
 
-    this.repositoryName = resource.repositoryName;
-    this.repositoryArn = resource.repositoryArn;
+    const resourceIdentifiers = new ResourceIdentifiers(this, {
+      arn: resource.repositoryArn,
+      name: resource.repositoryName,
+      arnComponents: {
+        service: 'ecr',
+        resource: 'repository',
+        resourceName: this.physicalName.value,
+      },
+    });
+    this.repositoryName = resourceIdentifiers.name;
+    this.repositoryArn = resourceIdentifiers.arn;
   }
 
   public addToResourcePolicy(statement: iam.PolicyStatement) {
