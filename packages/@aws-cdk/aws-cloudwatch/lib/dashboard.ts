@@ -1,4 +1,4 @@
-import { Construct, Lazy, Resource, Stack } from "@aws-cdk/cdk";
+import { Construct, Lazy, PhysicalName, Resource, Stack } from "@aws-cdk/cdk";
 import { CfnDashboard } from './cloudwatch.generated';
 import { Column, Row } from "./layout";
 import { IWidget } from "./widget";
@@ -14,7 +14,7 @@ export interface DashboardProps {
    *
    * @default Automatically generated name
    */
-  readonly dashboardName?: string;
+  readonly dashboardName?: PhysicalName;
 
   /**
    * The start of the time range to use for each widget on the dashboard.
@@ -54,10 +54,12 @@ export class Dashboard extends Resource {
   private readonly rows: IWidget[] = [];
 
   constructor(scope: Construct, id: string, props?: DashboardProps) {
-    super(scope, id);
+    super(scope, id, {
+      physicalName: props && props.dashboardName,
+    });
 
     new CfnDashboard(this, 'Resource', {
-      dashboardName: (props && props.dashboardName) || undefined,
+      dashboardName: this.physicalName.value,
       dashboardBody: Lazy.stringValue({ produce: () => {
         const column = new Column(...this.rows);
         column.position(0, 0);

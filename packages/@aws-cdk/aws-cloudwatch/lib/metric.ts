@@ -327,7 +327,7 @@ export interface MetricAlarmProps {
    *
    * @default Automatically generated name
    */
-  readonly alarmName?: string;
+  readonly alarmName?: cdk.PhysicalName;
 
   /**
    * Description for the alarm

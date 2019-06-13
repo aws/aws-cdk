@@ -1,5 +1,5 @@
 import { expect, haveResource, isSuperObject } from '@aws-cdk/assert';
-import { App, Stack } from '@aws-cdk/cdk';
+import { App, PhysicalName, Stack } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
 import { Dashboard, GraphWidget, PeriodOverride, TextWidget } from '../lib';
 
@@ -127,7 +127,7 @@ export = {
 
     // WHEN
     new Dashboard(stack, 'MyDashboard', {
-      dashboardName: 'MyCustomDashboardName'
+      dashboardName: PhysicalName.of('MyCustomDashboardName'),
     });
 
     // THEN
