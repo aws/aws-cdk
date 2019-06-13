@@ -144,43 +144,41 @@ export = {
     test.done();
   },
 
-  // 'setting servicename updates service name with given name'(test: Test) {
-  //   // GIVEN
-  //   const stack = new cdk.Stack();
-  //   const vpc = new ec2.Vpc(stack, 'VPC');
-  //   const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+  'setting servicename updates service name with given name'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
 
-  //   // WHEN
-  //   new ecsPatterns.LoadBalancedFargateService(stack, 'Service', {
-  //     cluster,
-  //     loadBalancerType: ecsPatterns.LoadBalancerType.Network,
-  //     image: ecs.ContainerImage.fromRegistry("/aws/aws-example-app"),
-  //     serviceName: 'bob'
-  //   });
+    // WHEN
+    new ecsPatterns.LoadBalancedFargateService(stack, 'Service', {
+      cluster,
+      loadBalancerType: ecsPatterns.LoadBalancerType.Network,
+      image: ecs.ContainerImage.fromRegistry("/aws/aws-example-app"),
+      serviceName: 'bob'
+    });
+    // THEN
+    const serviceTaskDefinition = SynthUtils.synthesize(stack).template.Resources.Service9571FDD8;
+    test.deepEqual(serviceTaskDefinition.Properties.ServiceName, 'bob');
+    test.done();
+  },
 
-  //   // THEN
-  //   const serviceTaskDefinition = SynthUtils.synthesize(stack).template.Resources.ServiceTaskDef1922A00F;
-  //   console.log(serviceTaskDefinition);
-  //   test.deepEqual(serviceTaskDefinition.Properties.ContainerDefinitions[0].Name, 'bob');
-  //   test.done();
-  // },
+  'not setting servicename updates service name with default'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
 
-  // 'not setting servicename updates service name with default'(test: Test) {
-  //   // GIVEN
-  //   const stack = new cdk.Stack();
-  //   const vpc = new ec2.Vpc(stack, 'VPC');
-  //   const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+    // WHEN
+    new ecsPatterns.LoadBalancedFargateService(stack, 'Service', {
+      cluster,
+      loadBalancerType: ecsPatterns.LoadBalancerType.Network,
+      image: ecs.ContainerImage.fromRegistry("/aws/aws-example-app"),
+    });
 
-  //   // WHEN
-  //   new ecsPatterns.LoadBalancedFargateService(stack, 'Service', {
-  //     cluster,
-  //     loadBalancerType: ecsPatterns.LoadBalancerType.Network,
-  //     image: ecs.ContainerImage.fromRegistry("/aws/aws-example-app"),
-  //   });
-
-  //   // THEN
-  //   const serviceTaskDefinition = SynthUtils.synthesize(stack).template.Resources.ServiceTaskDef1922A00F;
-  //   test.deepEqual(serviceTaskDefinition.Properties.ContainerDefinitions[0].Name, 'web');
-  //   test.done();
-  // }
+    // THEN
+    const serviceTaskDefinition = SynthUtils.synthesize(stack).template.Resources.Service9571FDD8;
+    test.equal(serviceTaskDefinition.Properties.ServiceName, undefined);
+    test.done();
+  }
 };

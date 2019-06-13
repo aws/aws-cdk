@@ -42,35 +42,7 @@ export interface LoadBalancedFargateServiceProps extends LoadBalancedServiceBase
    *
    * @default 512
    */
-  readonly memoryMiB?: string;
-
-  /**
-   * Determines whether your Fargate Service will be assigned a public IP address.
-   *
-   * @default false
-   */
-  readonly publicTasks?: boolean;
-
-  /**
-   * Domain name for the service, e.g. api.example.com
-   *
-   * @default - No domain name.
-   */
-  readonly domainName?: string;
-
-  /**
-   * Route53 hosted zone for the domain, e.g. "example.com."
-   *
-   * @default - No Route53 hosted domain zone.
-   */
-  readonly domainZone?: IHostedZone;
-
-  /**
-   * Whether to create an AWS log driver
-   *
-   * @default true
-   */
-  readonly createLogs?: boolean;
+  readonly memoryLimitMiB?: number;
 
   /**
    * Override for the Fargate Task Definition execution role
@@ -132,7 +104,6 @@ export class LoadBalancedFargateService extends LoadBalancedServiceBase {
     container.addPortMappings({
       containerPort: props.containerPort || 80,
     });
-
     const assignPublicIp = props.publicTasks !== undefined ? props.publicTasks : false;
     const service = new ecs.FargateService(this, "Service", {
       cluster: props.cluster,
