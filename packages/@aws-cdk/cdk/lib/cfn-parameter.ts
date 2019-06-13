@@ -1,5 +1,6 @@
 import { CfnElement } from './cfn-element';
 import { Construct } from './construct';
+import { CfnReference } from './private/cfn-reference';
 import { IResolvable, IResolveContext } from './resolvable';
 import { Token } from './token';
 
@@ -125,7 +126,7 @@ export class CfnParameter extends CfnElement implements IResolvable {
    * The parameter value as a Token
    */
   public get value(): IResolvable {
-    return super.ref;
+    return CfnReference.for(this, 'Ref');
   }
 
   /**
@@ -135,7 +136,7 @@ export class CfnParameter extends CfnElement implements IResolvable {
     if (!isStringType(this.type)) {
       throw new Error(`Parameter type (${this.type}) is not a string type`);
     }
-    return Token.asString(this.ref);
+    return Token.asString(this.value);
   }
 
   /**
@@ -145,7 +146,7 @@ export class CfnParameter extends CfnElement implements IResolvable {
     if (!isListType(this.type)) {
       throw new Error(`Parameter type (${this.type}) is not a string list type`);
     }
-    return Token.asList(this.ref);
+    return Token.asList(this.value);
   }
 
   /**
@@ -155,7 +156,7 @@ export class CfnParameter extends CfnElement implements IResolvable {
     if (!isNumberType(this.type)) {
       throw new Error(`Parameter type (${this.type}) is not a number type`);
     }
-    return Token.asNumber(this.ref);
+    return Token.asNumber(this.value);
   }
 
   /**
@@ -182,7 +183,7 @@ export class CfnParameter extends CfnElement implements IResolvable {
   }
 
   public resolve(_context: IResolveContext): any {
-    return this.ref;
+    return this.value;
   }
 }
 
