@@ -1,6 +1,6 @@
 import cloudwatch = require('@aws-cdk/aws-cloudwatch');
 import iam = require('@aws-cdk/aws-iam');
-import { Construct, IResource, Resource, Stack } from '@aws-cdk/cdk';
+import { Construct, IResource, PhysicalName, Resource, ResourceIdentifiers, Stack } from '@aws-cdk/cdk';
 import { StateGraph } from './state-graph';
 import { CfnStateMachine } from './stepfunctions.generated';
 import { IChainable } from './types';
@@ -14,7 +14,7 @@ export interface StateMachineProps {
      *
      * @default A name is automatically generated
      */
-    readonly stateMachineName?: string;
+    readonly stateMachineName?: PhysicalName;
 
     /**
      * Definition for this state machine
@@ -87,7 +87,9 @@ export class StateMachine extends StateMachineBase {
     public readonly stateMachineArn: string;
 
     constructor(scope: Construct, id: string, props: StateMachineProps) {
-        super(scope, id);
+        super(scope, id, {
+            physicalName: props.stateMachineName,
+        });
 
         this.role = props.role || new iam.Role(this, 'Role', {
             assumedBy: new iam.ServicePrincipal(`states.${Stack.of(this).region}.amazonaws.com`),
@@ -97,7 +99,7 @@ export class StateMachine extends StateMachineBase {
         graph.timeoutSeconds = props.timeoutSec;
 
         const resource = new CfnStateMachine(this, 'Resource', {
-            stateMachineName: props.stateMachineName,
+            stateMachineName: this.physicalName.value,
             roleArn: this.role.roleArn,
             definitionString: Stack.of(this).toJsonString(graph.toGraphJson()),
         });
@@ -106,8 +108,18 @@ export class StateMachine extends StateMachineBase {
             this.addToRolePolicy(statement);
         }
 
-        this.stateMachineName = resource.stateMachineName;
-        this.stateMachineArn = resource.stateMachineArn;
+        const resourceIdentifiers = new ResourceIdentifiers(this, {
+            arn: resource.stateMachineArn,
+            name: resource.stateMachineName,
+            arnComponents: {
+                service: 'states',
+                resource: 'stateMachine',
+                resourceName: this.physicalName.value,
+                sep: ':',
+            },
+        });
+        this.stateMachineName = resourceIdentifiers.name;
+        this.stateMachineArn = resourceIdentifiers.arn;
     }
 
     /**
