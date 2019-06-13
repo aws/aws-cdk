@@ -140,14 +140,14 @@ export class PolicyStatement {
   }
 
   public toStatementJson(): any {
-    return {
+    return noUndef({
       Action: _norm(this.action),
       Condition: _norm(this.condition),
       Effect: _norm(this.effect),
       Principal: _normPrincipal(this.principal),
       Resource: _norm(this.resource),
       Sid: _norm(this.sid),
-    };
+    });
 
     function _norm(values: any) {
 
@@ -249,4 +249,14 @@ export interface PolicyStatementProps {
    * @default - no condition
    */
   readonly conditions?: {[key: string]: any};
+}
+
+function noUndef(x: any): any {
+  const ret: any = {};
+  for (const [key, value] of Object.entries(x)) {
+    if (value !== undefined) {
+      ret[key] = value;
+    }
+  }
+  return ret;
 }
