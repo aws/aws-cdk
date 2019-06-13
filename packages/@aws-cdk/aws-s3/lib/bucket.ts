@@ -1067,13 +1067,13 @@ export class Bucket extends BucketBase {
         expirationInDays: rule.expirationInDays,
         id: rule.id,
         noncurrentVersionExpirationInDays: rule.noncurrentVersionExpirationInDays,
-        noncurrentVersionTransitions: (rule.noncurrentVersionTransitions || []).map(t => ({
+        noncurrentVersionTransitions: mapOrUndefined(rule.noncurrentVersionTransitions, t => ({
           storageClass: t.storageClass.value,
           transitionInDays: t.transitionInDays
         })),
         prefix: rule.prefix,
         status: enabled ? 'Enabled' : 'Disabled',
-        transitions: (rule.transitions || []).map(t => ({
+        transitions: mapOrUndefined(rule.transitions, t => ({
           storageClass: t.storageClass.value,
           transitionDate: t.transitionDate,
           transitionInDays: t.transitionInDays
@@ -1286,4 +1286,12 @@ export interface OnCloudTrailBucketEventOptions extends events.OnEventOptions {
    * @default - Watch changes to all objects
    */
   readonly paths?: string[];
+}
+
+function mapOrUndefined<T, U>(list: T[] | undefined, callback: (element: T) => U): U[] | undefined {
+  if (!list || list.length === 0) {
+    return undefined;
+  }
+
+  return list.map(callback);
 }
