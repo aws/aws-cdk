@@ -505,17 +505,24 @@ export class Stack extends Construct implements ITaggable {
    */
   private parseEnvironment(env: Environment = {}) {
     // if an environment property is explicitly specified when the stack is
-    // created, it will be used as concrete values for all intents.
-    const region = env.region;
-    const account = env.account;
+    // created, it will be used as concrete values for all intents. if not, use
+    // tokens for account and region but they do not need to be scoped, the only
+    // situation in which export/fn::importvalue would work if { Ref:
+    // "AWS::AccountId" } is the same for provider and consumer anyway.
+    const region = env.region || Aws.region;
+    const account = env.account || Aws.accountId;
 
-    // account and region do not need to be scoped, the only situation in which
-    // export/fn::importvalue would work if { Ref: "AWS::AccountId" } is the
-    // same for provider and consumer anyway.
+    // temporary fix for #2853, eventually behavior will be based on #2866.
+    // set the cloud assembly manifest environment spec of this stack to use the
+    // default account/region from the toolkit in case account/region are undefined or
+    // unresolved (i.e. tokens).
+    const envAccount = !Token.isUnresolved(account) ? account : Context.getDefaultAccount(this) || 'unknown-account';
+    const envRegion  = !Token.isUnresolved(region)  ? region  : Context.getDefaultRegion(this)  || 'unknown-region';
+
     return {
       account: account || Aws.accountId,
       region: region || Aws.region,
-      environment: EnvironmentUtils.format(account || 'unknown-account', region || 'unknown-region')
+      environment: EnvironmentUtils.format(envAccount, envRegion)
     };
   }
 
@@ -651,9 +658,11 @@ function cfnElements(node: IConstruct, into: CfnElement[] = []): CfnElement[] {
 import { Arn, ArnComponents } from './arn';
 import { CfnElement } from './cfn-element';
 import { CfnResource, TagType } from './cfn-resource';
+import { Context } from './context';
 import { CfnReference } from './private/cfn-reference';
 import { Aws, ScopedAws } from './pseudo';
 import { ITaggable, TagManager } from './tag-manager';
+import { Token } from './token';
 
 /**
  * Find all resources in a set of constructs
