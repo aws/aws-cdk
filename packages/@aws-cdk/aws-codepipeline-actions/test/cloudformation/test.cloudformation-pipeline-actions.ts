@@ -504,6 +504,48 @@ export = {
 
   test.done();
   },
+
+  'Empty capabilities is not passed to template'(test: Test) {
+  // GIVEN
+  const stack = new TestFixture();
+
+  // WHEN
+  stack.deployStage.addAction(new cpactions.CloudFormationCreateUpdateStackAction({
+    actionName: 'CreateUpdate',
+    stackName: 'MyStack',
+    templatePath: stack.sourceOutput.atPath('template.yaml'),
+    adminPermissions: false,
+    capabilities: [
+      CloudFormationCapabilities.None
+    ]
+  }));
+
+  const roleId = "PipelineDeployCreateUpdateRole515CB7D4";
+
+  // THEN: Action in Pipeline has no capabilities
+  expect(stack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
+    "Stages": [
+    { "Name": "Source" /* don't care about the rest */ },
+    {
+      "Name": "Deploy",
+      "Actions": [
+      {
+        "Configuration": {
+        "RoleArn": { "Fn::GetAtt": [ roleId, "Arn" ] },
+        "ActionMode": "CREATE_UPDATE",
+        "StackName": "MyStack",
+        "TemplatePath": "SourceArtifact::template.yaml"
+        },
+        "InputArtifacts": [{"Name": "SourceArtifact"}],
+        "Name": "CreateUpdate",
+      },
+      ],
+    }
+    ]
+  }));
+
+  test.done();
+  },
 };
 
 /**

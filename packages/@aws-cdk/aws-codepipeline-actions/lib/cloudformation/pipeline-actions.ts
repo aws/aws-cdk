@@ -545,7 +545,8 @@ function parseCapabilities(capabilities: any): any {
   if (capabilities === undefined) {
     return undefined;
   } else if (capabilities.length === 1) {
-    return capabilities.toString();
+    const capability = capabilities.toString();
+    return (capability === '') ? undefined : capability;
   } else if (capabilities.length > 1) {
     return capabilities.join(',');
   }
