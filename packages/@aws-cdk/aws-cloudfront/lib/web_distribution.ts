@@ -363,9 +363,9 @@ export interface LambdaFunctionAssociation {
   readonly eventType: LambdaEdgeEventType;
 
   /**
-   * A version of the lambda to associate
+   * A version of the lambda to associate or a resolvable resource
    */
-  readonly lambdaFunction: lambda.IVersion;
+  readonly lambdaFunction: lambda.IVersion | cdk.IResolvable;
 }
 
 export enum LambdaEdgeEventType {
