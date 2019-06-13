@@ -97,21 +97,21 @@ export = nodeunit.testCase({
       stage: selfUpdateStage1,
       stack: pipelineStack,
       input: selfUpdatingStack.synthesizedApp,
-      capabilities: cfn.CloudFormationCapabilities.NamedIAM,
+      capabilities: [cfn.CloudFormationCapabilities.NamedIAM],
       adminPermissions: false,
     });
     new PipelineDeployStackAction(pipelineStack, 'DeployStack', {
       stage: selfUpdateStage2,
       stack: stackWithNoCapability,
       input: selfUpdatingStack.synthesizedApp,
-      capabilities: cfn.CloudFormationCapabilities.None,
+      capabilities: [cfn.CloudFormationCapabilities.None],
       adminPermissions: false,
     });
     new PipelineDeployStackAction(pipelineStack, 'DeployStack2', {
       stage: selfUpdateStage3,
       stack: stackWithAnonymousCapability,
       input: selfUpdatingStack.synthesizedApp,
-      capabilities: cfn.CloudFormationCapabilities.AnonymousIAM,
+      capabilities: [cfn.CloudFormationCapabilities.AnonymousIAM],
       adminPermissions: false,
     });
     expect(pipelineStack).to(haveResource('AWS::CodePipeline::Pipeline', hasPipelineAction({
