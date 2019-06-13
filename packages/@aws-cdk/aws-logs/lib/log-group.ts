@@ -1,6 +1,6 @@
 import cloudwatch = require('@aws-cdk/aws-cloudwatch');
 import iam = require('@aws-cdk/aws-iam');
-import { applyRemovalPolicy, Construct, IResource, RemovalPolicy, Resource, Stack } from '@aws-cdk/cdk';
+import { applyRemovalPolicy, Construct, IResource, PhysicalName, RemovalPolicy, Resource, ResourceIdentifiers, Stack } from '@aws-cdk/cdk';
 import { LogStream } from './log-stream';
 import { CfnLogGroup } from './logs.generated';
 import { MetricFilter } from './metric-filter';
@@ -277,7 +277,7 @@ export interface LogGroupProps {
    *
    * @default Automatically generated
    */
-  readonly logGroupName?: string;
+  readonly logGroupName?: PhysicalName;
 
   /**
    * How long, in days, the log contents will be retained.
@@ -328,7 +328,9 @@ export class LogGroup extends LogGroupBase {
   public readonly logGroupName: string;
 
   constructor(scope: Construct, id: string, props: LogGroupProps = {}) {
-    super(scope, id);
+    super(scope, id, {
+      physicalName: props.logGroupName,
+    });
 
     let retentionInDays = props.retentionDays;
     if (retentionInDays === undefined) { retentionInDays = RetentionDays.TwoYears; }
@@ -339,7 +341,7 @@ export class LogGroup extends LogGroupBase {
     }
 
     const resource = new CfnLogGroup(this, 'Resource', {
-      logGroupName: props.logGroupName,
+      logGroupName: this.physicalName.value,
       retentionInDays,
     });
 
@@ -347,8 +349,18 @@ export class LogGroup extends LogGroupBase {
       applyRemovalPolicy(resource, RemovalPolicy.Orphan);
     }
 
-    this.logGroupArn = resource.logGroupArn;
-    this.logGroupName = resource.logGroupName;
+    const resourceIdentifiers = new ResourceIdentifiers(this, {
+      arn: resource.logGroupArn,
+      name: resource.logGroupName,
+      arnComponents: {
+        service: 'logs',
+        resource: 'log-group',
+        resourceName: this.physicalName.value,
+        sep: ':',
+      },
+    });
+    this.logGroupArn = resourceIdentifiers.arn;
+    this.logGroupName = resourceIdentifiers.name;
   }
 }
 
@@ -363,7 +375,7 @@ export interface NewLogStreamProps {
    *
    * @default Automatically generated
    */
-  readonly logStreamName?: string;
+  readonly logStreamName?: PhysicalName;
 }
 
 /**

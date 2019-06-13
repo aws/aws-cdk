@@ -1,4 +1,4 @@
-import { Construct, DeletionPolicy, IResource, Resource } from '@aws-cdk/cdk';
+import { Construct, DeletionPolicy, IResource, PhysicalName, Resource, ResourceIdentifiers } from '@aws-cdk/cdk';
 import { ILogGroup } from './log-group';
 import { CfnLogStream } from './logs.generated';
 
@@ -26,7 +26,7 @@ export interface LogStreamProps {
    *
    * @default Automatically generated
    */
-  readonly logStreamName?: string;
+  readonly logStreamName?: PhysicalName;
 
   /**
    * Retain the log stream if the stack or containing construct ceases to exist
@@ -63,17 +63,29 @@ export class LogStream extends Resource implements ILogStream {
   public readonly logStreamName: string;
 
   constructor(scope: Construct, id: string, props: LogStreamProps) {
-    super(scope, id);
+    super(scope, id, {
+      physicalName: props.logStreamName,
+    });
 
     const resource = new CfnLogStream(this, 'Resource', {
       logGroupName: props.logGroup.logGroupName,
-      logStreamName: props.logStreamName
+      logStreamName: this.physicalName.value,
     });
 
     if (props.retainLogStream !== false) {
       resource.options.deletionPolicy = DeletionPolicy.Retain;
     }
 
-    this.logStreamName = resource.logStreamName;
+    const resourceIdentifiers = new ResourceIdentifiers(this, {
+      arn: '',
+      name: resource.logStreamName,
+      arnComponents: {
+        service: 'logs',
+        resource: 'log-group',
+        resourceName: `log-stream:${this.physicalName.value}`,
+        sep: ':',
+      },
+    });
+    this.logStreamName = resourceIdentifiers.name;
   }
 }
