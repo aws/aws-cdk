@@ -262,18 +262,18 @@ export class CfnParametersCode extends Code {
    * Create a parameters map from this instance's CloudFormation parameters.
    *
    * It returns a map with 2 keys that correspond to the names of the parameters defined in this Lambda code,
-   * and as values it contains the appropriate expressions pointing at the provided S3 coordinates
-   * (most likely, obtained from a CodePipeline Artifact by calling the `artifact.s3Coordinates` method).
+   * and as values it contains the appropriate expressions pointing at the provided S3 location
+   * (most likely, obtained from a CodePipeline Artifact by calling the `artifact.s3Location` method).
    * The result should be provided to the CloudFormation Action
    * that is deploying the Stack that the Lambda with this code is part of,
    * in the `parameterOverrides` property.
    *
-   * @param coordinates the coordinates of the object in S3 that represents the Lambda code
+   * @param location the location of the object in S3 that represents the Lambda code
    */
-  public assign(coordinates: s3.Coordinates): { [name: string]: any } {
+  public assign(location: s3.Location): { [name: string]: any } {
     const ret: { [name: string]: any } = {};
-    ret[this.bucketNameParam] = coordinates.bucketName;
-    ret[this.objectKeyParam] = coordinates.objectKey;
+    ret[this.bucketNameParam] = location.bucketName;
+    ret[this.objectKeyParam] = location.objectKey;
     return ret;
   }
 
