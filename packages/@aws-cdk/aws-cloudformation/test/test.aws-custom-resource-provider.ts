@@ -223,5 +223,52 @@ export = {
     test.equal(request.isDone(), true);
 
     test.done();
-  }
+  },
+
+  async 'restrict output path'(test: Test) {
+    const listObjectsFake = sinon.fake.resolves({
+      Contents: [
+        {
+          Key: 'first-key',
+          ETag: 'first-key-etag'
+        },
+        {
+          Key: 'second-key',
+          ETag: 'second-key-etag',
+        }
+      ]
+    } as SDK.S3.ListObjectsOutput);
+
+    AWS.mock('S3', 'listObjects', listObjectsFake);
+
+    const event: AWSLambda.CloudFormationCustomResourceCreateEvent = {
+      ...eventCommon,
+      RequestType: 'Create',
+      ResourceProperties: {
+        ServiceToken: 'token',
+        Create: {
+          service: 'S3',
+          action: 'listObjects',
+          parameters: {
+            Bucket: 'my-bucket'
+          },
+          physicalResourceId: 'id',
+          outputPath: 'Contents.0'
+        } as AwsSdkCall
+      }
+    };
+
+    const request = createRequest(body =>
+      body.Status === 'SUCCESS' &&
+      body.PhysicalResourceId === 'id' &&
+      body.Data!['Contents.0.Key'] === 'first-key' &&
+      body.Data!['Contents.1.Key'] === undefined
+    );
+
+    await handler(event, {} as AWSLambda.Context);
+
+    test.equal(request.isDone(), true);
+
+    test.done();
+  },
 };
