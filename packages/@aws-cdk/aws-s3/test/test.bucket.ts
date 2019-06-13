@@ -468,7 +468,7 @@ export = {
 
       const x = new iam.PolicyStatement({ resources: [bucket.bucketArn], actions: ['s3:ListBucket'] });
 
-      test.deepEqual(stack.resolve(x), {
+      test.deepEqual(stack.resolve(x.toStatementJson()), {
         Action: 's3:ListBucket',
         Effect: 'Allow',
         Resource: { 'Fn::GetAtt': ['MyBucketF68F3FF0', 'Arn'] }
@@ -484,7 +484,7 @@ export = {
 
       const p = new iam.PolicyStatement({ resources: [bucket.arnForObjects('hello/world')], actions: ['s3:GetObject'] });
 
-      test.deepEqual(stack.resolve(p), {
+      test.deepEqual(stack.resolve(p.toStatementJson()), {
         Action: 's3:GetObject',
         Effect: 'Allow',
         Resource: {
@@ -510,7 +510,7 @@ export = {
       const resource = bucket.arnForObjects(`home/${team.groupName}/${user.userName}/*`);
       const p = new iam.PolicyStatement({ resources: [resource], actions: ['s3:GetObject'] });
 
-      test.deepEqual(stack.resolve(p), {
+      test.deepEqual(stack.resolve(p.toStatementJson()), {
         Action: 's3:GetObject',
         Effect: 'Allow',
         Resource: {
@@ -562,7 +562,7 @@ export = {
       const p = new iam.PolicyStatement({ resources: [bucket.bucketArn], actions: ['s3:ListBucket'] });
 
       // it is possible to obtain a permission statement for a ref
-      test.deepEqual(stack.resolve(p), {
+      test.deepEqual(p.toStatementJson(), {
         Action: 's3:ListBucket',
         Effect: 'Allow',
         Resource: 'arn:aws:s3:::my-bucket'
