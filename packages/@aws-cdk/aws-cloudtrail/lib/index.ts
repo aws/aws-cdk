@@ -128,19 +128,19 @@ export class Trail extends Resource {
     super(scope, id);
 
     const s3bucket = new s3.Bucket(this, 'S3', {encryption: s3.BucketEncryption.Unencrypted});
-    const cloudTrailPrincipal = "cloudtrail.amazonaws.com";
+    const cloudTrailPrincipal = new iam.ServicePrincipal("cloudtrail.amazonaws.com");
 
     s3bucket.addToResourcePolicy(new iam.PolicyStatement({
       resources: [s3bucket.bucketArn],
       actions: ['s3:GetBucketAcl'],
-      principals: [new iam.ServicePrincipal(cloudTrailPrincipal)]
+      principals: [cloudTrailPrincipal],
     }));
 
     s3bucket.addToResourcePolicy(new iam.PolicyStatement({
-      resources: [s3bucket.arnForObjects(`AWSLogs/${Stack.of(this).accountId}/*`)],
+      resources: [s3bucket.arnForObjects(`AWSLogs/${Stack.of(this).account}/*`)],
       actions: ["s3:PutObject"],
-      principals: [new iam.ServicePrincipal(cloudTrailPrincipal)],
-      conditions: {
+      principals: [cloudTrailPrincipal],
+      conditions:  {
         StringEquals: {'s3:x-amz-acl': "bucket-owner-full-control"}
       }
     }));
@@ -152,7 +152,7 @@ export class Trail extends Resource {
         retentionInDays: props.cloudWatchLogsRetentionTimeDays || logs.RetentionDays.OneYear
       });
 
-      logsRole = new iam.Role(this, 'LogsRole', { assumedBy: new iam.ServicePrincipal(cloudTrailPrincipal) });
+      logsRole = new iam.Role(this, 'LogsRole', { assumedBy: cloudTrailPrincipal });
 
       logsRole.addToPolicy(new iam.PolicyStatement({
         actions: ["logs:PutLogEvents", "logs:CreateLogStream"],

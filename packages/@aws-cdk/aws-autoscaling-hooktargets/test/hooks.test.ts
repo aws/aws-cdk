@@ -57,7 +57,7 @@ describe('given an AutoScalingGroup', () => {
     // GIVEN
     const fn = new lambda.Function(stack, 'Fn', {
       code: lambda.Code.inline('foo'),
-      runtime: lambda.Runtime.NodeJS810,
+      runtime: lambda.Runtime.Nodejs810,
       handler: 'index.index',
     });
 

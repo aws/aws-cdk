@@ -69,32 +69,39 @@ export class InstanceDrainHook extends cdk.Construct {
       heartbeatTimeoutSec: drainTimeSeconds,
     });
 
-    // FIXME: These should probably be restricted usefully in some way, but I don't exactly
-    // know how.
+    // Describe actions cannot be restricted and restrict the CompleteLifecycleAction to the ASG arn
+    // https://docs.aws.amazon.com/autoscaling/ec2/userguide/control-access-using-iam.html
     fn.addToRolePolicy(new iam.PolicyStatement({
       actions: [
-        'autoscaling:CompleteLifecycleAction',
         'ec2:DescribeInstances',
         'ec2:DescribeInstanceAttribute',
         'ec2:DescribeInstanceStatus',
-        'ec2:DescribeHosts',
+        'ec2:DescribeHosts'
       ],
       resources: ['*']
     }));
 
-    // FIXME: These should be restricted to the ECS cluster probably, but I don't exactly
-    // know how.
+    // Restrict to the ASG
+    fn.addToRolePolicy(new iam.PolicyStatement({
+      actions: ['autoscaling:CompleteLifecycleAction'],
+      resources: [props.autoScalingGroup.autoScalingGroupArn],
+    }));
+
+    fn.addToRolePolicy(new iam.PolicyStatement({
+      actions: ['ecs:DescribeContainerInstances', 'ecs:DescribeTasks'],
+      resources: ['*'],
+    }));
+
+    // Restrict to the ECS Cluster
     fn.addToRolePolicy(new iam.PolicyStatement({
       actions: [
         'ecs:ListContainerInstances',
         'ecs:SubmitContainerStateChange',
         'ecs:SubmitTaskStateChange',
-        'ecs:DescribeContainerInstances',
         'ecs:UpdateContainerInstancesState',
-        'ecs:ListTasks',
-        'ecs:DescribeTasks'
+        'ecs:ListTasks'
       ],
-      resources: ['*']
+      resources: [props.cluster.clusterArn]
     }));
   }
 }

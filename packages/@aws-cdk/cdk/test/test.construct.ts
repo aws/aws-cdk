@@ -359,11 +359,11 @@ export = {
 
     class LockableConstruct extends Construct {
       public lockMe() {
-        this.node.lock();
+        (this.node as any)._lock();
       }
 
       public unlockMe() {
-        this.node.unlock();
+        (this.node as any)._unlock();
       }
     }
 

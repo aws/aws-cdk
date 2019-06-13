@@ -11,7 +11,7 @@ export = {
     const handler = new lambda.Function(stack, 'MyFunc', {
       code: lambda.Code.inline('boom'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NodeJS,
+      runtime: lambda.Runtime.Nodejs,
     });
 
     // WHEN
@@ -37,7 +37,7 @@ export = {
     const handler = new lambda.Function(stack, 'MyFunc', {
       code: lambda.Code.inline('boom'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NodeJS,
+      runtime: lambda.Runtime.Nodejs,
     });
 
     // WHEN
@@ -74,7 +74,7 @@ export = {
     const handler = new lambda.Function(stack, 'MyFunc', {
       code: lambda.Code.inline('boom'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NodeJS,
+      runtime: lambda.Runtime.Nodejs,
     });
 
     // WHEN
