@@ -64,7 +64,7 @@ export class Subscription extends Resource {
       protocol: props.protocol,
       topicArn: props.topic.topicArn,
       rawMessageDelivery: props.rawMessageDelivery,
-      filterPolicy: props.filterPolicy && props.filterPolicy.render(),
+      filterPolicy: props.filterPolicy && props.filterPolicy.policy,
     });
 
   }

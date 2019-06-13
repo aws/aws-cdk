@@ -449,18 +449,24 @@ test('throws with mutliple subscriptions of the same subscriber', () => {
 
 test('with filter policy', () => {
   const fction = new lambda.Function(stack, 'MyFunc', {
-    runtime: lambda.Runtime.NodeJS810,
+    runtime: lambda.Runtime.Nodejs810,
     handler: 'index.handler',
     code: lambda.Code.inline('exports.handler = function(e, c, cb) { return cb() }')
   });
 
-  const filterPolicy = new sns.SubscriptionFilterPolicy();
-  filterPolicy.addStringFilter('color').whitelist('red').matchPrefixes('bl', 'ye');
-  filterPolicy.addStringFilter('size').blacklist('small', 'medium');
-  filterPolicy.addNumericFilter('price').between(100, 200);
-
   topic.addSubscription(new subs.LambdaSubscription(fction, {
-    filterPolicy
+    filterPolicy: new sns.SubscriptionFilterPolicy({
+      color: sns.SubscriptionFilter.stringFilter({
+        whitelist: ['red'],
+        matchPrefixes: ['bl', 'ye'],
+      }),
+      size: sns.SubscriptionFilter.stringFilter({
+        blacklist: ['small', 'medium'],
+      }),
+      price: sns.SubscriptionFilter.numericFilter({
+        between: { start: 100, stop: 200 }
+      })
+    })
   }));
 
   expect(stack).toHaveResource('AWS::SNS::Subscription', {

@@ -1,153 +1,167 @@
-abstract class Filter {
-  /**
-   * The conditions of the filter.
-   * Conditions are `OR`ed.
-   */
-  public readonly conditions: any[] = [];
-}
-
-/**
- * Filter for a string attribute.
- */
-export class StringFilter extends Filter {
-  /**
-   * Match one or more values.
-   * Can be chained with other conditions.
-   */
-  public whitelist(...values: string[]) {
-    this.conditions.push(...values);
-    return this;
-  }
-
-  /**
-   * Match any value that doesn't include any of the specified values.
-   * Can be chained with other conditions.
-   */
-  public blacklist(...values: string[]) {
-    this.conditions.push({ 'anything-but': values });
-    return this;
-  }
-
-  /**
-   * Matches values that begins with the specified prefixes.
-   * Can be chained with other conditions.
-   */
-  public matchPrefixes(...prefixes: string[]) {
-    this.conditions.push(...prefixes.map(p => ({ prefix: p })));
-    return this;
-  }
-}
-
-/**
- * Filter for a number attribute.
- */
-export class NumericFilter extends Filter {
-  /**
-   * Match one or more values.
-   * Can be chained with other conditions.
-   */
-  public whitelist(...values: number[]) {
-    this.conditions.push(...values.map(v => ({ numeric: ['=', v] })));
-    return this;
-  }
-
-  /**
-   * Match values that are greater than the specified value.
-   * Can be chained with other conditions.
-   */
-  public greaterThan(value: number) {
-    this.conditions.push({ numeric: ['>', value] });
-    return this;
-  }
-
-  /**
-   * Match values that are greater than or equal to the specified value.
-   * Can be chained with other conditions.
-   */
-  public greaterThanOrEqualTo(value: number) {
-    this.conditions.push({ numeric: ['>=', value] });
-    return this;
-  }
-
-  /**
-   * Match values that are less than the specified value.
-   * Can be chained with other conditions.
-   */
-  public lessThan(value: number) {
-    this.conditions.push({ numeric: ['<', value] });
-    return this;
-  }
-
-  /**
-   * Match values that are less than or equal to the specified value.
-   * Can be chained with other conditions.
-   */
-  public lessThanOrEqualTo(value: number) {
-    this.conditions.push({ numeric: ['<=', value] });
-    return this;
-  }
-
-  /**
-   * Match values that are between the specified values.
-   * Can be chained with other conditions.
-   */
-  public between(start: number, stop: number) {
-    this.conditions.push({ numeric: ['>=', start, '<=', stop ]});
-    return this;
-  }
-
-  /**
-   * Match values that are strictly between the specified values.
-   * Can be chained with other conditions.
-   */
-  public betweenStrict(start: number, stop: number) {
-    this.conditions.push({ numeric: ['>', start, '<', stop ]});
-    return this;
-  }
-}
-
 /**
  * A SNS subscription filter policy.
  */
 export class SubscriptionFilterPolicy {
-  private readonly policy: { [name: string]: any[] } = {};
-
   /**
-   * Add a filter on a string attribute.
-   *
-   * @param name the attribute name
+   * The filter policy.
    */
-  public addStringFilter(name: string): StringFilter {
-    const filter = new StringFilter();
-    this.policy[name] = filter.conditions;
-    return filter;
-  }
+  public readonly policy: { [attribute: string]: any[] };
 
-  /**
-   * Add a filter on a numeric attribute.
-   *
-   * @param name the attribute name
-   */
-  public addNumericFilter(name: string): NumericFilter {
-    const filter = new NumericFilter();
-    this.policy[name] = filter.conditions;
-    return filter;
-  }
-
-  /**
-   * Renders the policy.
-   */
-  public render() {
-    if (Object.keys(this.policy).length > 5) {
+  constructor(attributesMap: { [attribute: string]: SubscriptionFilter }) {
+    if (Object.keys(attributesMap).length > 5) {
       throw new Error('A filter policy can have a maximum of 5 attribute names.');
     }
+
+    this.policy = Object.entries(attributesMap)
+      .reduce(
+        (acc, [k, v]) => ({ ...acc, [k]: v.conditions }),
+        {}
+      );
 
     let total = 1;
     Object.values(this.policy).forEach(filter => { total *= filter.length; });
     if (total > 100) {
       throw new Error(`The total combination of values (${total}) must not exceed 100.`);
     }
-
-    return this.policy;
   }
+}
+
+/**
+ * Conditions that can be applied to string attributes.
+ */
+export interface StringConditions {
+  /**
+   * Match one or more values.
+   */
+  readonly whitelist?: string[];
+
+  /**
+   * Match any value that doesn't include any of the specified values.
+   */
+  readonly blacklist?: string[];
+
+  /**
+   * Matches values that begins with the specified prefixes.
+   */
+  readonly matchPrefixes?: string[];
+}
+
+/**
+ * Between condition for a numeric attribute.
+ */
+export interface BetweenCondition {
+  /**
+   * The start value.
+   */
+  readonly start: number;
+
+  /**
+   * The stop value.
+   */
+  readonly stop: number;
+}
+
+/**
+ * Conditions that can be applied to numeric attributes.
+ */
+export interface NumericConditions {
+  /**
+   * Match one or more values.
+   */
+  readonly whitelist?: number[];
+
+  /**
+   * Match values that are greater than the specified value.
+   */
+  readonly greaterThan?: number;
+
+  /**
+   * Match values that are greater than or equal to the specified value.
+   */
+  readonly greaterThanOrEqualTo?: number;
+
+  /**
+   * Match values that are less than the specified value.
+   */
+  readonly lessThan?: number;
+
+  /**
+   * Match values that are less than or equal to the specified value.
+   */
+  readonly lessThanOrEqualTo?: number;
+
+  /**
+   * Match values that are between the specified values.
+   */
+  readonly between?: BetweenCondition;
+
+  /**
+   * Match values that are strictly between the specified values.
+   */
+  readonly betweenStrict?: BetweenCondition;
+}
+
+/**
+ * A subscription filter for an attribute.
+ */
+export class SubscriptionFilter {
+  /**
+   * Returns a subscription filter for a string attribute.
+   */
+  public static stringFilter(stringConditions: StringConditions) {
+    const conditions = [];
+
+    if (stringConditions.whitelist) {
+      conditions.push(...stringConditions.whitelist);
+    }
+
+    if (stringConditions.blacklist) {
+      conditions.push({ 'anything-but': stringConditions.blacklist });
+    }
+
+    if (stringConditions.matchPrefixes) {
+      conditions.push(...stringConditions.matchPrefixes.map(p => ({ prefix: p })));
+    }
+
+    return new SubscriptionFilter(conditions);
+  }
+
+  /**
+   * Returns a subscription filter for a numeric attribute.
+   */
+  public static numericFilter(numericConditions: NumericConditions) {
+    const conditions = [];
+
+    if (numericConditions.whitelist) {
+      conditions.push(...numericConditions.whitelist.map(v => ({ numeric: ['=', v] })));
+    }
+
+    if (numericConditions.greaterThan) {
+      conditions.push({ numeric: ['>', numericConditions.greaterThan] });
+    }
+
+    if (numericConditions.greaterThanOrEqualTo) {
+      conditions.push({ numeric: ['>=', numericConditions.greaterThanOrEqualTo] });
+    }
+
+    if (numericConditions.lessThan) {
+      conditions.push({ numeric: ['<', numericConditions.lessThan] });
+    }
+
+    if (numericConditions.lessThanOrEqualTo) {
+      conditions.push({ numeric: ['<=', numericConditions.lessThanOrEqualTo] });
+    }
+
+    if (numericConditions.between) {
+      conditions.push({ numeric: ['>=', numericConditions.between.start, '<=', numericConditions.between.stop ]});
+    }
+
+    if (numericConditions.betweenStrict) {
+      conditions.push({ numeric: ['>', numericConditions.betweenStrict.start, '<', numericConditions.betweenStrict.stop ]});
+    }
+
+    return new SubscriptionFilter(conditions);
+  }
+
+  constructor(public readonly conditions: any[] = []) {}
 }
