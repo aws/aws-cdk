@@ -83,5 +83,10 @@
   "engines": {
     "node": ">= 8.10.0"
   },
+  "awslint": {
+    "exclude": [
+      "props-physical-name:@aws-cdk/aws-iam.LazyRoleProps.roleName"
+    ]
+  },
   "stability": "experimental"
 }
