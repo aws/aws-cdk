@@ -3,7 +3,7 @@ import cloudwatch = require ('@aws-cdk/aws-cloudwatch');
 import ec2 = require('@aws-cdk/aws-ec2');
 import iam = require('@aws-cdk/aws-iam');
 import cloudmap = require('@aws-cdk/aws-servicediscovery');
-import { Construct, Context, IResource, Resource, Stack } from '@aws-cdk/cdk';
+import { Construct, Context, IResource, PhysicalName, Resource, ResourceIdentifiers, Stack } from '@aws-cdk/cdk';
 import { InstanceDrainHook } from './drain-hook/instance-drain-hook';
 import { CfnCluster } from './ecs.generated';
 
@@ -16,7 +16,7 @@ export interface ClusterProps {
    *
    * @default CloudFormation-generated name
    */
-  readonly clusterName?: string;
+  readonly clusterName?: PhysicalName;
 
   /**
    * The VPC where your ECS instances will be running or your ENIs will be deployed
@@ -66,13 +66,27 @@ export class Cluster extends Resource implements ICluster {
   private _hasEc2Capacity: boolean = false;
 
   constructor(scope: Construct, id: string, props: ClusterProps) {
-    super(scope, id);
+    super(scope, id, {
+      physicalName: props.clusterName,
+    });
 
-    const cluster = new CfnCluster(this, 'Resource', {clusterName: props.clusterName});
+    const cluster = new CfnCluster(this, 'Resource', {
+      clusterName: this.physicalName.value,
+    });
+
+    const resourceIdentifiers = new ResourceIdentifiers(this, {
+      arn: cluster.clusterArn,
+      name: cluster.clusterName,
+      arnComponents: {
+        service: 'ecs',
+        resource: 'cluster',
+        resourceName: this.physicalName.value,
+      },
+    });
+    this.clusterArn = resourceIdentifiers.arn;
+    this.clusterName = resourceIdentifiers.name;
 
     this.vpc = props.vpc;
-    this.clusterArn = cluster.clusterArn;
-    this.clusterName = cluster.clusterName;
   }
 
   /**
