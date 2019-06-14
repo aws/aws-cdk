@@ -745,7 +745,7 @@ export class Project extends ProjectBase {
   public addToRoleInlinePolicy(statement: iam.PolicyStatement) {
     if (this.role) {
       const policy = new iam.Policy(this, 'PolicyDocument', {
-        policyName: 'CodeBuildEC2Policy',
+        policyName: PhysicalName.of('CodeBuildEC2Policy'),
         statements: [statement]
       });
       this.role.attachInlinePolicy(policy);

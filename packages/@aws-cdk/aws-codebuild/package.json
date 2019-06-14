@@ -108,7 +108,8 @@
   },
   "awslint": {
     "exclude": [
-      "construct-ctor-props-optional:@aws-cdk/aws-codebuild.Project"
+      "construct-ctor-props-optional:@aws-cdk/aws-codebuild.Project",
+      "props-physical-name:@aws-cdk/aws-codebuild.PipelineProjectProps.projectName"
     ]
   },
   "stability": "experimental"
