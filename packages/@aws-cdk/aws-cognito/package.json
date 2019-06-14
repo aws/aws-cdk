@@ -85,7 +85,9 @@
   "awslint": {
     "exclude": [
       "from-method:@aws-cdk/aws-cognito.UserPool",
-      "from-arn:UserPool.fromUserPoolArn"
+      "from-arn:UserPool.fromUserPoolArn",
+      "props-physical-name:@aws-cdk/aws-cognito.UserPoolProps.poolName",
+      "props-physical-name:@aws-cdk/aws-cognito.UserPoolClientProps.clientName"
     ]
   },
   "stability": "experimental"
