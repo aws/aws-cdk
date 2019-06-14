@@ -29,7 +29,7 @@ test('Supports invoke mode', () => {
       "Fn::Join": ["", [
         "{\"StartAt\":\"Task\",\"States\":{\"Task\":{\"End\":true,\"Parameters\":{\"FunctionName\":\"",
         { Ref: "Fn9270CBC0" },
-        "\",\"InvocationStyle\":\"RequestResponse\",\"Payload\":{\"test\":\"test\"}},\"OutputPath\":\"$.Payload\",\"Type\":\"Task\"," +
+        "\",\"InvocationType\":\"RequestResponse\",\"Payload\":{\"test\":\"test\"}},\"OutputPath\":\"$.Payload\",\"Type\":\"Task\"," +
         "\"Resource\":\"arn:aws:states:::lambda:invoke\"}}}"
       ]]
     },
@@ -62,7 +62,7 @@ test('Supports invoke event mode', () => {
       "Fn::Join": ["", [
         "{\"StartAt\":\"Task\",\"States\":{\"Task\":{\"End\":true,\"Parameters\":{\"FunctionName\":\"",
         { Ref: "Fn9270CBC0" },
-        "\",\"InvocationStyle\":\"Event\",\"Payload\":{\"test\":\"test\"}},\"OutputPath\":\"$.Payload\",\"Type\":\"Task\"," +
+        "\",\"InvocationType\":\"Event\",\"Payload\":{\"test\":\"test\"}},\"OutputPath\":\"$.Payload\",\"Type\":\"Task\"," +
         "\"Resource\":\"arn:aws:states:::lambda:invoke\"}}}"
       ]]
     },
@@ -97,7 +97,7 @@ test('Supports invoke mode with alias', () => {
         { Ref: "Fn9270CBC0" },
         "\",\"Qualifier\":\"",
         { "Fn::GetAtt": [ "FnVersionv18BAE864D", "Version" ] },
-        "\",\"InvocationStyle\":\"RequestResponse\",\"Payload\":{\"test\":\"test\"}},\"OutputPath\":\"$.Payload\",\"Type\":\"Task\"," +
+        "\",\"InvocationType\":\"RequestResponse\",\"Payload\":{\"test\":\"test\"}},\"OutputPath\":\"$.Payload\",\"Type\":\"Task\"," +
         "\"Resource\":\"arn:aws:states:::lambda:invoke\"}}}"
       ]]
     },
@@ -134,7 +134,7 @@ test('Supports invoke mode with alias', () => {
       "Fn::Join": ["", [
         "{\"StartAt\":\"Task\",\"States\":{\"Task\":{\"End\":true,\"Parameters\":{\"FunctionName\":\"",
         { Ref: "Fn9270CBC0" }, "\",\"Qualifier\":\"TEST\"," +
-        "\"InvocationStyle\":\"RequestResponse\",\"Payload\":{\"test\":\"test\"}},\"OutputPath\":\"$.Payload\",\"Type\":\"Task\"," +
+        "\"InvocationType\":\"RequestResponse\",\"Payload\":{\"test\":\"test\"}},\"OutputPath\":\"$.Payload\",\"Type\":\"Task\"," +
         "\"Resource\":\"arn:aws:states:::lambda:invoke\"}}}"
       ]]
     },
@@ -167,7 +167,7 @@ test('Supports Callback mode', () => {
       "Fn::Join": ["", [
         "{\"StartAt\":\"Task\",\"States\":{\"Task\":{\"End\":true,\"Parameters\":{\"FunctionName\":\"",
         { Ref: "Fn9270CBC0" },
-        "\",\"InvocationStyle\":\"RequestResponse\",\"Payload\":{\"test\":\"test\",\"token.$\":\"$$.Task.Token\"}},\"Type\":\"Task\"," +
+        "\",\"InvocationType\":\"RequestResponse\",\"Payload\":{\"test\":\"test\",\"token.$\":\"$$.Task.Token\"}},\"Type\":\"Task\"," +
         "\"Resource\":\"arn:aws:states:::lambda:invoke.waitForTaskToken\"}}}"
       ]]
     },
@@ -201,7 +201,7 @@ test('Supports Callback event mode', () => {
       "Fn::Join": ["", [
         "{\"StartAt\":\"Task\",\"States\":{\"Task\":{\"End\":true,\"Parameters\":{\"FunctionName\":\"",
         { Ref: "Fn9270CBC0" },
-        "\",\"InvocationStyle\":\"Event\",\"Payload\":{\"test\":\"test\",\"token.$\":\"$$.Task.Token\"}},\"Type\":\"Task\"," +
+        "\",\"InvocationType\":\"Event\",\"Payload\":{\"test\":\"test\",\"token.$\":\"$$.Task.Token\"}},\"Type\":\"Task\"," +
         "\"Resource\":\"arn:aws:states:::lambda:invoke.waitForTaskToken\"}}}"
       ]]
     },

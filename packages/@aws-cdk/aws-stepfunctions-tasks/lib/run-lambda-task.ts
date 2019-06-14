@@ -191,7 +191,7 @@ export class RunLambdaTask implements IStepFunctionsTask {
       parameters: {
         FunctionName: this.functionName,
         Qualifier: this.functionQualifier,
-        InvocationStyle: (this.fireAndForget ? 'Event' : 'RequestResponse'),
+        InvocationType: (this.fireAndForget ? 'Event' : 'RequestResponse'),
         Payload: this.payload
       },
       metricPrefixSingular: 'LambdaFunction',
