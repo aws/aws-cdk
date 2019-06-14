@@ -58,16 +58,14 @@ export class PublicDnsNamespace extends Resource implements IPublicDnsNamespace 
   public readonly type: NamespaceType;
 
   constructor(scope: Construct, id: string, props: PublicDnsNamespaceProps) {
-    super(scope, id, {
-      physicalName: props.namespaceName,
-    });
+    super(scope, id);
 
     const ns = new CfnPublicDnsNamespace(this, 'Resource', {
-      name: this.physicalName.value!,
+      name: props.name,
       description: props.description,
     });
 
-    this.namespaceName = this.physicalName.value!;
+    this.namespaceName = props.name;
     this.namespaceId = ns.publicDnsNamespaceId;
     this.namespaceArn = ns.publicDnsNamespaceArn;
     this.type = NamespaceType.DnsPublic;

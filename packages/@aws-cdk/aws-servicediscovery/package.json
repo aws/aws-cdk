@@ -87,9 +87,9 @@
   },
   "awslint": {
     "exclude": [
-      "props-physical-name:@aws-cdk/aws-servicediscovery.HttpNamespaceProps.namespaceName",
-      "props-physical-name:@aws-cdk/aws-servicediscovery.PublicDnsNamespaceProps.namespaceName",
-      "props-physical-name:@aws-cdk/aws-servicediscovery.PrivateDnsNamespaceProps.namespaceName",
+      "props-physical-name:@aws-cdk/aws-servicediscovery.HttpNamespaceProps",
+      "props-physical-name:@aws-cdk/aws-servicediscovery.PublicDnsNamespaceProps",
+      "props-physical-name:@aws-cdk/aws-servicediscovery.PrivateDnsNamespaceProps",
       "props-physical-name:@aws-cdk/aws-servicediscovery.AliasTargetInstanceProps",
       "props-physical-name:@aws-cdk/aws-servicediscovery.CnameInstanceProps",
       "props-physical-name:@aws-cdk/aws-servicediscovery.IpInstanceProps",

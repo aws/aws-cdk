@@ -1,4 +1,4 @@
-import { IResource, PhysicalName } from '@aws-cdk/cdk';
+import { IResource } from '@aws-cdk/cdk';
 
 export interface INamespace extends IResource {
   /**
@@ -29,7 +29,7 @@ export interface BaseNamespaceProps {
   /**
    * A name for the Namespace.
    */
-  readonly namespaceName: PhysicalName;
+  readonly name: string;
 
   /**
    * A description of the Namespace.
