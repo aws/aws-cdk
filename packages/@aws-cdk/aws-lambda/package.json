@@ -112,7 +112,11 @@
   },
   "awslint": {
     "exclude": [
-      "integ-return-type:@aws-cdk/aws-lambda.IEventSource.bind"
+      "integ-return-type:@aws-cdk/aws-lambda.IEventSource.bind",
+      "props-physical-name:@aws-cdk/aws-lambda.VersionProps",
+      "props-physical-name:@aws-cdk/aws-lambda.EventSourceMappingProps",
+      "props-physical-name:@aws-cdk/aws-lambda.SingletonFunctionProps.functionName",
+      "props-physical-name:@aws-cdk/aws-lambda.SingletonLayerVersionProps.layerVersionName"
     ]
   },
   "stability": "experimental"

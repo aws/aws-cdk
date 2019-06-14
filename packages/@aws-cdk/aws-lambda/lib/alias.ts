@@ -1,5 +1,5 @@
 import cloudwatch = require('@aws-cdk/aws-cloudwatch');
-import { Construct, Stack } from '@aws-cdk/cdk';
+import { Construct, PhysicalName, ResourceIdentifiers, Stack } from '@aws-cdk/cdk';
 import { FunctionBase, IFunction } from './function-base';
 import { IVersion } from './lambda-version';
 import { CfnAlias } from './lambda.generated';
@@ -25,7 +25,7 @@ export interface AliasProps {
   /**
    * Name of this alias
    */
-  readonly aliasName: string;
+  readonly aliasName: PhysicalName;
 
   /**
    * Additional versions with individual weights this alias points to
@@ -81,24 +81,36 @@ export class Alias extends FunctionBase {
   private readonly underlyingLambda: IFunction;
 
   constructor(scope: Construct, id: string, props: AliasProps) {
-    super(scope, id);
+    super(scope, id, {
+      physicalName: props.aliasName,
+    });
 
-    this.aliasName = props.aliasName;
+    this.aliasName = this.physicalName.value || '';
     this.underlyingLambda = props.version.lambda;
 
     const alias = new CfnAlias(this, 'Resource', {
-      name: props.aliasName,
+      name: this.aliasName,
       description: props.description,
       functionName: this.underlyingLambda.functionName,
       functionVersion: props.version.version,
       routingConfig: this.determineRoutingConfig(props)
     });
 
+    const resourceIdentifiers = new ResourceIdentifiers(this, {
+      arn: alias.aliasArn,
+      name: this.aliasName,
+      arnComponents: {
+        service: 'lambda',
+        resource: 'function',
+        resourceName: `${this.underlyingLambda.functionName}:${this.physicalName.value}`,
+        sep: ':',
+      },
+    });
+    this.functionArn = resourceIdentifiers.arn;
     // ARN parsing splits on `:`, so we can only get the function's name from the ARN as resourceName...
     // And we're parsing it out (instead of using the underlying function directly) in order to have use of it incur
     // an implicit dependency on the resource.
-    this.functionName = `${Stack.of(this).parseArn(alias.aliasArn, ":").resourceName!}:${props.aliasName}`;
-    this.functionArn = alias.aliasArn;
+    this.functionName = `${Stack.of(this).parseArn(this.functionArn, ":").resourceName!}:${this.aliasName}`;
   }
 
   /**
