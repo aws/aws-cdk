@@ -1,5 +1,5 @@
 import iam = require('@aws-cdk/aws-iam');
-import { CfnOutput, Construct, IResource as IResourceBase, Resource, Stack } from '@aws-cdk/cdk';
+import { CfnOutput, Construct, IResource as IResourceBase, PhysicalName, Resource, Stack } from '@aws-cdk/cdk';
 import { ApiKey, IApiKey } from './api-key';
 import { CfnAccount, CfnRestApi } from './apigateway.generated';
 import { Deployment } from './deployment';
@@ -64,7 +64,7 @@ export interface RestApiProps extends ResourceOptions {
    *
    * @default - ID of the RestApi construct.
    */
-  readonly restApiName?: string;
+  readonly restApiName?: PhysicalName;
 
   /**
    * Custom header parameters for the request.
@@ -204,10 +204,12 @@ export class RestApi extends Resource implements IRestApi {
   private readonly methods = new Array<Method>();
 
   constructor(scope: Construct, id: string, props: RestApiProps = { }) {
-    super(scope, id);
+    super(scope, id, {
+      physicalName: props.restApiName,
+    });
 
     const resource = new CfnRestApi(this, 'Resource', {
-      name: props.restApiName || id,
+      name: this.physicalName.value || id,
       description: props.description,
       policy: props.policy,
       failOnWarnings: props.failOnWarnings,
