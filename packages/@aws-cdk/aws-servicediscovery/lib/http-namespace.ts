@@ -58,14 +58,16 @@ export class HttpNamespace extends Resource implements IHttpNamespace {
   public readonly type: NamespaceType;
 
   constructor(scope: Construct, id: string, props: HttpNamespaceProps) {
-    super(scope, id);
+    super(scope, id, {
+      physicalName: props.namespaceName,
+    });
 
     const ns = new CfnHttpNamespace(this, 'Resource', {
-      name: props.name,
+      name: this.physicalName.value!,
       description: props.description
     });
 
-    this.namespaceName = props.name;
+    this.namespaceName = this.physicalName.value!;
     this.namespaceId = ns.httpNamespaceId;
     this.namespaceArn = ns.httpNamespaceArn;
     this.type = NamespaceType.Http;

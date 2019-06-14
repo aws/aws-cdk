@@ -9,7 +9,7 @@ export = {
     const stack = new cdk.Stack();
 
     new servicediscovery.HttpNamespace(stack, 'MyNamespace', {
-      name: 'foobar.com',
+      namespaceName: cdk.PhysicalName.of('foobar.com'),
     });
 
     expect(stack).toMatch({
@@ -30,7 +30,7 @@ export = {
     const stack = new cdk.Stack();
 
     new servicediscovery.PublicDnsNamespace(stack, 'MyNamespace', {
-      name: 'foobar.com',
+      namespaceName: cdk.PhysicalName.of('foobar.com'),
     });
 
     expect(stack).toMatch({
@@ -52,7 +52,7 @@ export = {
     const vpc = new ec2.Vpc(stack, 'MyVpc');
 
     new servicediscovery.PrivateDnsNamespace(stack, 'MyNamespace', {
-      name: 'foobar.com',
+      namespaceName: cdk.PhysicalName.of('foobar.com'),
       vpc
     });
 

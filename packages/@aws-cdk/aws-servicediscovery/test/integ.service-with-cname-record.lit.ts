@@ -5,7 +5,7 @@ const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-servicediscovery-integ');
 
 const namespace = new servicediscovery.PublicDnsNamespace(stack, 'Namespace', {
-  name: 'foobar.com',
+  namespaceName: cdk.PhysicalName.of('foobar.com'),
 });
 
 const service = namespace.createService('Service', {

@@ -11,7 +11,7 @@ export = {
     const stack = new cdk.Stack();
 
     const namespace = new servicediscovery.HttpNamespace(stack, 'MyNamespace', {
-      name: 'http',
+      namespaceName: cdk.PhysicalName.of('http'),
     });
 
     const service = namespace.createService('MyService', {
@@ -48,7 +48,7 @@ export = {
     const stack = new cdk.Stack();
 
     const namespace = new servicediscovery.PublicDnsNamespace(stack, 'MyNamespace', {
-      name: 'public',
+      namespaceName: cdk.PhysicalName.of('public'),
     });
 
     const service = namespace.createService('MyService', {
@@ -87,7 +87,7 @@ export = {
     const vpc = new ec2.Vpc(stack, 'MyVpc');
 
     const namespace = new servicediscovery.PrivateDnsNamespace(stack, 'MyNamespace', {
-      name: 'public',
+      namespaceName: cdk.PhysicalName.of('public'),
       vpc
     });
 
@@ -126,7 +126,7 @@ export = {
     const stack = new cdk.Stack();
 
     const namespace = new servicediscovery.PublicDnsNamespace(stack, 'MyNamespace', {
-      name: 'public',
+      namespaceName: cdk.PhysicalName.of('public'),
     });
 
     const service = namespace.createService('MyService', {
@@ -149,7 +149,7 @@ export = {
     const stack = new cdk.Stack();
 
     const namespace = new servicediscovery.PublicDnsNamespace(stack, 'MyNamespace', {
-      name: 'dns',
+      namespaceName: cdk.PhysicalName.of('dns'),
     });
 
     const service = namespace.createService('MyService', {
@@ -172,7 +172,7 @@ export = {
     const stack = new cdk.Stack();
 
     const namespace = new servicediscovery.PublicDnsNamespace(stack, 'MyNamespace', {
-      name: 'dns',
+      namespaceName: cdk.PhysicalName.of('dns'),
     });
 
     const service = namespace.createService('MyService', {
@@ -195,7 +195,7 @@ export = {
     const stack = new cdk.Stack();
 
     const namespace = new servicediscovery.PublicDnsNamespace(stack, 'MyNamespace', {
-      name: 'dns',
+      namespaceName: cdk.PhysicalName.of('dns'),
     });
 
     const service = namespace.createService('MyService', {
@@ -218,7 +218,7 @@ export = {
     const stack = new cdk.Stack();
 
     const namespace = new servicediscovery.PublicDnsNamespace(stack, 'MyNamespace', {
-      name: 'dns',
+      namespaceName: cdk.PhysicalName.of('dns'),
     });
 
     const service = namespace.createService('MyService', {
@@ -244,7 +244,7 @@ export = {
     const alb = new elbv2.ApplicationLoadBalancer(stack, 'MyALB', { vpc });
 
     const namespace = new servicediscovery.PrivateDnsNamespace(stack, 'MyNamespace', {
-      name: 'dns',
+      namespaceName: cdk.PhysicalName.of('dns'),
       vpc
     });
 
@@ -284,7 +284,7 @@ export = {
     const stack = new cdk.Stack();
 
     const namespace = new servicediscovery.HttpNamespace(stack, 'MyNamespace', {
-      name: 'http',
+      namespaceName: cdk.PhysicalName.of('http'),
     });
 
     const service = new servicediscovery.Service(stack, 'MyService', {
@@ -308,7 +308,7 @@ export = {
     const stack = new cdk.Stack();
 
     const namespace = new servicediscovery.PublicDnsNamespace(stack, 'MyNamespace', {
-      name: 'http',
+      namespaceName: cdk.PhysicalName.of('http'),
     });
 
     const service = namespace.createService('MyService', {
@@ -331,7 +331,7 @@ export = {
     const stack = new cdk.Stack();
 
     const namespace = new servicediscovery.PublicDnsNamespace(stack, 'MyNamespace', {
-      name: 'dns',
+      namespaceName: cdk.PhysicalName.of('dns'),
     });
 
     const service = namespace.createService('MyService', {
@@ -366,7 +366,7 @@ export = {
     const stack = new cdk.Stack();
 
     const namespace = new servicediscovery.HttpNamespace(stack, 'MyNamespace', {
-      name: 'http',
+      namespaceName: cdk.PhysicalName.of('http'),
     });
 
     const service = new servicediscovery.Service(stack, 'MyService', {
@@ -388,7 +388,7 @@ export = {
     const stack = new cdk.Stack();
 
     const namespace = new servicediscovery.HttpNamespace(stack, 'MyNamespace', {
-      name: 'http',
+      namespaceName: cdk.PhysicalName.of('http'),
     });
 
     const service = namespace.createService('MyService');
@@ -419,7 +419,7 @@ export = {
     const stack = new cdk.Stack();
 
     const namespace = new servicediscovery.PublicDnsNamespace(stack, 'MyNamespace', {
-      name: 'http',
+      namespaceName: cdk.PhysicalName.of('http'),
     });
 
     const service = namespace.createService('MyService');
@@ -439,7 +439,7 @@ export = {
     const stack = new cdk.Stack();
 
     const namespace = new servicediscovery.HttpNamespace(stack, 'MyNamespace', {
-      name: 'http',
+      namespaceName: cdk.PhysicalName.of('http'),
     });
 
     const service = namespace.createService('MyService');
@@ -459,7 +459,7 @@ export = {
     const stack = new cdk.Stack();
 
     const namespace = new servicediscovery.HttpNamespace(stack, 'MyNamespace', {
-      name: 'http',
+      namespaceName: cdk.PhysicalName.of('http'),
     });
 
     const service = namespace.createService('MyService');
@@ -480,7 +480,7 @@ export = {
     const stack = new cdk.Stack();
 
     const namespace = new servicediscovery.PublicDnsNamespace(stack, 'MyNamespace', {
-      name: 'public',
+      namespaceName: cdk.PhysicalName.of('public'),
     });
 
     const service = namespace.createService('MyService');

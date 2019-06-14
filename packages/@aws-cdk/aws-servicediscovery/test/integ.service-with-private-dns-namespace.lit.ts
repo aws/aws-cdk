@@ -9,7 +9,7 @@ const stack = new cdk.Stack(app, 'aws-servicediscovery-integ');
 const vpc = new ec2.Vpc(stack, 'Vpc', { maxAZs: 2 });
 
 const namespace = new servicediscovery.PrivateDnsNamespace(stack, 'Namespace', {
-  name: 'boobar.com',
+  namespaceName: cdk.PhysicalName.of('boobar.com'),
   vpc,
 });
 
