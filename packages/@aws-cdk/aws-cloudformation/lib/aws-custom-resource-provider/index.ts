@@ -1,6 +1,6 @@
 // tslint:disable:no-console
 import AWS = require('aws-sdk');
-import { AwsSdkCall } from './aws-sdk-call';
+import { AwsSdkCall } from '../aws-custom-resource';
 
 /**
  * Flattens a nested object
