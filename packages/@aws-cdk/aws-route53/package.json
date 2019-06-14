@@ -89,7 +89,20 @@
   "awslint": {
     "exclude": [
       "from-attributes:fromPrivateHostedZoneAttributes",
-      "from-attributes:fromPublicHostedZoneAttributes"
+      "from-attributes:fromPublicHostedZoneAttributes",
+      "props-physical-name:@aws-cdk/aws-route53.ZoneDelegationRecordProps",
+      "props-physical-name:@aws-cdk/aws-route53.ARecordProps",
+      "props-physical-name:@aws-cdk/aws-route53.CaaAmazonRecordProps",
+      "props-physical-name:@aws-cdk/aws-route53.CaaRecordProps",
+      "props-physical-name:@aws-cdk/aws-route53.CnameRecordProps",
+      "props-physical-name:@aws-cdk/aws-route53.HostedZoneProps",
+      "props-physical-name:@aws-cdk/aws-route53.MxRecordProps",
+      "props-physical-name:@aws-cdk/aws-route53.PrivateHostedZoneProps",
+      "props-physical-name:@aws-cdk/aws-route53.PublicHostedZoneProps",
+      "props-physical-name:@aws-cdk/aws-route53.RecordSetProps",
+      "props-physical-name:@aws-cdk/aws-route53.SrvRecordProps",
+      "props-physical-name:@aws-cdk/aws-route53.TxtRecordProps",
+      "props-physical-name:@aws-cdk/aws-route53.AaaaRecordProps"
     ]
   },
   "stability": "experimental"
