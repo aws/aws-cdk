@@ -1,6 +1,6 @@
 import appscaling = require('@aws-cdk/aws-applicationautoscaling');
 import iam = require('@aws-cdk/aws-iam');
-import { Aws, Construct, Lazy, Resource, Stack } from '@aws-cdk/cdk';
+import { Aws, Construct, Lazy, PhysicalName, Resource, ResourceIdentifiers, Stack } from '@aws-cdk/cdk';
 import { CfnTable } from './dynamodb.generated';
 import { EnableScalingProps, IScalableTableAttribute } from './scalable-attribute-api';
 import { ScalableTableAttribute } from './scalable-table-attribute';
@@ -114,7 +114,7 @@ export interface TableProps extends TableOptions {
    * Enforces a particular physical table name.
    * @default <generated>
    */
-  readonly tableName?: string;
+  readonly tableName?: PhysicalName;
 }
 
 export interface SecondaryIndexProps {
@@ -224,13 +224,15 @@ export class Table extends Resource {
   private readonly scalingRole: iam.IRole;
 
   constructor(scope: Construct, id: string, props: TableProps) {
-    super(scope, id);
+    super(scope, id, {
+      physicalName: props.tableName,
+    });
 
     this.billingMode = props.billingMode || BillingMode.Provisioned;
     this.validateProvisioning(props);
 
     this.table = new CfnTable(this, 'Resource', {
-      tableName: props.tableName,
+      tableName: this.physicalName.value,
       keySchema: this.keySchema,
       attributeDefinitions: this.attributeDefinitions,
       globalSecondaryIndexes: Lazy.anyValue({ produce: () => this.globalSecondaryIndexes }, { omitEmptyArray: true }),
@@ -248,8 +250,17 @@ export class Table extends Resource {
 
     if (props.tableName) { this.node.addMetadata('aws:cdk:hasPhysicalName', props.tableName); }
 
-    this.tableArn = this.table.tableArn;
-    this.tableName = this.table.tableName;
+    const resourceIdentifiers = new ResourceIdentifiers(this, {
+      arn: this.table.tableArn,
+      name: this.table.tableName,
+      arnComponents: {
+        service: 'dynamodb',
+        resource: 'table',
+        resourceName: this.physicalName.value,
+      },
+    });
+    this.tableArn = resourceIdentifiers.arn;
+    this.tableName = resourceIdentifiers.name;
     this.tableStreamArn = this.table.tableStreamArn;
 
     this.scalingRole = this.makeScalingRole();
