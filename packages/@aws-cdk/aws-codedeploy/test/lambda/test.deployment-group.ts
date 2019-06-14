@@ -16,7 +16,7 @@ function mockFunction(stack: cdk.Stack, id: string) {
 }
 function mockAlias(stack: cdk.Stack) {
   return new lambda.Alias(stack, 'Alias', {
-    aliasName: 'my-alias',
+    aliasName: cdk.PhysicalName.of('my-alias'),
     version: new lambda.Version(stack, 'Version', {
       lambda: mockFunction(stack, 'Function')
     })
@@ -108,7 +108,7 @@ export = {
         application,
         alias,
         deploymentConfig: LambdaDeploymentConfig.AllAtOnce,
-        deploymentGroupName: 'test'
+        deploymentGroupName: cdk.PhysicalName.of('test'),
       });
 
       expect(stack).to(haveResourceLike('AWS::CodeDeploy::DeploymentGroup', {

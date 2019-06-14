@@ -4,7 +4,7 @@ import ec2 = require('@aws-cdk/aws-ec2');
 import iam = require('@aws-cdk/aws-iam');
 import s3 = require('@aws-cdk/aws-s3');
 import cdk = require('@aws-cdk/cdk');
-import { Stack } from '@aws-cdk/cdk';
+import { PhysicalName, Stack } from '@aws-cdk/cdk';
 import { CfnDeploymentGroup } from '../codedeploy.generated';
 import { AutoRollbackConfig } from '../rollback-config';
 import { arnForDeploymentGroup, renderAlarmConfiguration, renderAutoRollbackConfiguration } from '../utils';
@@ -73,8 +73,8 @@ abstract class ServerDeploymentGroupBase extends cdk.Resource implements IServer
   public readonly deploymentConfig: IServerDeploymentConfig;
   public abstract readonly autoScalingGroups?: autoscaling.AutoScalingGroup[];
 
-  constructor(scope: cdk.Construct, id: string, deploymentConfig?: IServerDeploymentConfig) {
-    super(scope, id);
+  constructor(scope: cdk.Construct, id: string, deploymentConfig?: IServerDeploymentConfig, props?: cdk.ResourceProps) {
+    super(scope, id, props);
     this.deploymentConfig = deploymentConfig || ServerDeploymentConfig.OneAtATime;
   }
 }
@@ -153,7 +153,7 @@ export interface ServerDeploymentGroupProps {
    *
    * @default - An auto-generated name will be used.
    */
-  readonly deploymentGroupName?: string;
+  readonly deploymentGroupName?: PhysicalName;
 
   /**
    * The EC2/on-premise Deployment Configuration to use for this Deployment Group.
@@ -266,7 +266,9 @@ export class ServerDeploymentGroup extends ServerDeploymentGroupBase {
   private readonly alarms: cloudwatch.IAlarm[];
 
   constructor(scope: cdk.Construct, id: string, props: ServerDeploymentGroupProps = {}) {
-    super(scope, id, props.deploymentConfig);
+    super(scope, id, props.deploymentConfig, {
+      physicalName: props.deploymentGroupName,
+    });
 
     this.application = props.application || new ServerApplication(this, 'Application');
 
@@ -286,7 +288,7 @@ export class ServerDeploymentGroup extends ServerDeploymentGroupBase {
 
     const resource = new CfnDeploymentGroup(this, 'Resource', {
       applicationName: this.application.applicationName,
-      deploymentGroupName: props.deploymentGroupName,
+      deploymentGroupName: this.physicalName.value,
       serviceRoleArn: this.role.roleArn,
       deploymentConfigName: props.deploymentConfig &&
         props.deploymentConfig.deploymentConfigName,
@@ -303,8 +305,18 @@ export class ServerDeploymentGroup extends ServerDeploymentGroupBase {
       autoRollbackConfiguration: cdk.Lazy.anyValue({ produce: () => renderAutoRollbackConfiguration(this.alarms, props.autoRollback) }),
     });
 
-    this.deploymentGroupName = resource.deploymentGroupName;
-    this.deploymentGroupArn = arnForDeploymentGroup(this.application.applicationName, this.deploymentGroupName);
+    const resourceIdentifiers = new cdk.ResourceIdentifiers(this, {
+      arn: arnForDeploymentGroup(this.application.applicationName, resource.deploymentGroupName),
+      name: resource.deploymentGroupName,
+      arnComponents: {
+        service: 'codedeploy',
+        resource: 'deploymentgroup',
+        resourceName: `${this.application.physicalName.value}/${this.physicalName.value}`,
+        sep: ':',
+      },
+    });
+    this.deploymentGroupName = resourceIdentifiers.name;
+    this.deploymentGroupArn = resourceIdentifiers.arn;
   }
 
   /**

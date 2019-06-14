@@ -65,7 +65,7 @@ export interface ServerDeploymentConfigProps {
    *
    * @default a name will be auto-generated
    */
-  readonly deploymentConfigName?: string;
+  readonly deploymentConfigName?: cdk.PhysicalName;
 
   /**
    * Minimum number of healthy hosts.
@@ -106,10 +106,12 @@ export class ServerDeploymentConfig extends cdk.Resource implements IServerDeplo
   public readonly deploymentConfigArn: string;
 
   constructor(scope: cdk.Construct, id: string, props: ServerDeploymentConfigProps) {
-    super(scope, id);
+    super(scope, id, {
+      physicalName: props.deploymentConfigName,
+    });
 
     const resource = new CfnDeploymentConfig(this, 'Resource', {
-      deploymentConfigName: props.deploymentConfigName,
+      deploymentConfigName: this.physicalName.value,
       minimumHealthyHosts: props.minimumHealthyHosts._json,
     });
 
