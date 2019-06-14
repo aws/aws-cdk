@@ -93,7 +93,11 @@
     "exclude": [
       "construct-ctor:@aws-cdk/aws-elasticloadbalancingv2.BaseListener.<initializer>.params[2]",
       "construct-ctor:@aws-cdk/aws-elasticloadbalancingv2.BaseLoadBalancer.<initializer>",
-      "construct-ctor:@aws-cdk/aws-elasticloadbalancingv2.TargetGroupBase.<initializer>"
+      "construct-ctor:@aws-cdk/aws-elasticloadbalancingv2.TargetGroupBase.<initializer>",
+      "props-physical-name:@aws-cdk/aws-elasticloadbalancingv2.ApplicationListenerProps",
+      "props-physical-name:@aws-cdk/aws-elasticloadbalancingv2.NetworkListenerProps",
+      "props-physical-name:@aws-cdk/aws-elasticloadbalancingv2.ApplicationLoadBalancerProps.loadBalancerName",
+      "props-physical-name:@aws-cdk/aws-elasticloadbalancingv2.NetworkLoadBalancerProps.loadBalancerName"
     ]
   },
   "stability": "experimental"

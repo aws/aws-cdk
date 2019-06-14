@@ -83,7 +83,7 @@ export = {
 
     // WHEN
     new elbv2.NetworkLoadBalancer(stack, 'ALB', {
-      loadBalancerName: 'myLoadBalancer',
+      loadBalancerName: cdk.PhysicalName.of('myLoadBalancer'),
       vpc
     });
 
