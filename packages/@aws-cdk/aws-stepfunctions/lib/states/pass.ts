@@ -1,7 +1,77 @@
 import cdk = require('@aws-cdk/cdk');
-import { Chain } from '../chain';
-import { IChainable, INextable } from '../types';
-import { renderJsonPath, State, StateType } from './state';
+import {Chain} from '../chain';
+import {IChainable, INextable} from '../types';
+import {renderJsonPath, State, StateType} from './state';
+
+export abstract class Result {
+    public static fromString(value: string): StringResult {
+        return new StringResult(value);
+    }
+
+    public static fromNumber(value: number): NumberResult {
+        return new NumberResult(value);
+    }
+
+    public static fromBoolean(value: boolean): BooleanResult {
+        return new BooleanResult(value);
+    }
+
+    public static fromMap(value: {[key: string]: any}): MapResult {
+        return new MapResult(value);
+    }
+
+    public abstract value: any;
+}
+
+export class StringResult extends Result {
+    public readonly value: string;
+
+    constructor(value: string) {
+        super();
+
+        this.value = value;
+    }
+}
+
+export class NumberResult extends Result {
+    public readonly value: number;
+
+    constructor(value: number) {
+        super();
+
+        this.value = value;
+    }
+}
+
+export class BooleanResult extends Result {
+    readonly value: boolean;
+
+    constructor(value: boolean) {
+        super();
+
+        this.value = value;
+    }
+}
+
+export class ArrayResult extends Result {
+    public readonly value: any[];
+
+    constructor(value: any[]) {
+        super();
+
+        this.value = value;
+    }
+}
+
+export class MapResult extends Result {
+    public readonly value: {[key: string]: any};
+
+    constructor(value: {[key: string]: any}) {
+        super();
+
+        this.value = value;
+    }
+}
 
 /**
  * Properties for defining a Pass state
@@ -51,7 +121,7 @@ export interface PassProps {
      *
      * @default No injected result
      */
-    readonly result?: {[key: string]: any} | string | number | boolean | null | any[];
+    readonly result?: Result;
 }
 
 /**
@@ -62,7 +132,7 @@ export interface PassProps {
 export class Pass extends State implements INextable {
     public readonly endStates: INextable[];
 
-    private readonly result?: any;
+    private readonly result?: Result;
 
     constructor(scope: cdk.Construct, id: string, props: PassProps = {}) {
         super(scope, id, props);
@@ -86,7 +156,7 @@ export class Pass extends State implements INextable {
         return {
             Type: StateType.Pass,
             Comment: this.comment,
-            Result: this.result,
+            Result: this.result ? this.result.value : undefined,
             ResultPath: renderJsonPath(this.resultPath),
             ...this.renderInputOutput(),
             ...this.renderNextEnd(),
