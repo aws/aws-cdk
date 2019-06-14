@@ -1,4 +1,4 @@
-import { Construct, IResource, Lazy, Resource, Stack } from '@aws-cdk/cdk';
+import { Construct, IResource, Lazy, Resource } from '@aws-cdk/cdk';
 import { Code } from './code';
 import { CfnLayerVersion, CfnLayerVersionPermission } from './lambda.generated';
 import { Runtime } from './runtime';
@@ -179,56 +179,5 @@ export class LayerVersion extends LayerVersionBase {
 
     this.layerVersionArn = resource.layerVersionArn;
     this.compatibleRuntimes = props.compatibleRuntimes;
-  }
-}
-
-/**
- * Properties of a Singleton Lambda Layer Version.
- */
-export interface SingletonLayerVersionProps extends LayerVersionProps {
-  /**
-   * A unique identifier to identify this lambda layer version.
-   *
-   * The identifier should be unique across all layer providers.
-   * We recommend generating a UUID per provider.
-   */
-  readonly uuid: string;
-}
-
-/**
- * A Singleton Lambda Layer Version. The construct gurantees exactly one LayerVersion will be created in a given Stack
- * for the provided ``uuid``. It is recommended to use ``uuidgen`` to create a new ``uuid`` each time a new singleton
- * layer is created.
- *
- * @resource AWS::Lambda::LayerVersion
- */
-export class SingletonLayerVersion extends Resource implements ILayerVersion {
-  private readonly layerVersion: ILayerVersion;
-
-  constructor(scope: Construct, id: string, props: SingletonLayerVersionProps) {
-    super(scope, id);
-
-    this.layerVersion = this.ensureLayerVersion(props);
-  }
-
-  public get layerVersionArn(): string {
-    return this.layerVersion.layerVersionArn;
-  }
-
-  public get compatibleRuntimes(): Runtime[] | undefined {
-    return this.layerVersion.compatibleRuntimes;
-  }
-
-  public addPermission(id: string, grantee: LayerVersionPermission) {
-    this.layerVersion.addPermission(id, grantee);
-  }
-
-  private ensureLayerVersion(props: SingletonLayerVersionProps): ILayerVersion {
-    const singletonId = `SingletonLayer-${props.uuid}`;
-    const existing = Stack.of(this).node.tryFindChild(singletonId);
-    if (existing) {
-      return existing as unknown as ILayerVersion;
-    }
-    return new LayerVersion(Stack.of(this), singletonId, props);
   }
 }
