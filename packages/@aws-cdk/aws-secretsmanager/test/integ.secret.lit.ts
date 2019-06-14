@@ -26,7 +26,7 @@ class SecretsManagerStack extends cdk.Stack {
     });
 
     new iam.User(this, 'OtherUser', {
-      userName: templatedSecret.secretJsonValue('username').toString(),
+      userName: cdk.PhysicalName.of(templatedSecret.secretJsonValue('username').toString()),
       password: templatedSecret.secretJsonValue('password')
     });
     /// !hide
