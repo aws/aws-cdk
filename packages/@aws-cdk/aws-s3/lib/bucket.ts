@@ -1067,16 +1067,16 @@ export class Bucket extends BucketBase {
         expirationInDays: rule.expiration && rule.expiration.toDays(),
         id: rule.id,
         noncurrentVersionExpirationInDays: rule.noncurrentVersionExpiration && rule.noncurrentVersionExpiration.toDays(),
-        noncurrentVersionTransitions: rule.noncurrentVersionTransitions && rule.noncurrentVersionTransitions.map(transition => ({
-          storageClass: transition.storageClass,
-          transitionInDays: transition.transitionAfter.toDays(),
+        noncurrentVersionTransitions: mapOrUndefined(rule.noncurrentVersionTransitions, t => ({
+          storageClass: t.storageClass.value,
+          transitionInDays: t.transitionAfter.toDays()
         })),
         prefix: rule.prefix,
         status: enabled ? 'Enabled' : 'Disabled',
-        transitions: rule.transitions && rule.transitions.map(transition => ({
-          storageClass: transition.storageClass,
-          transitionDate: transition.transitionDate,
-          transitionInDays: transition.transitionAfter && transition.transitionAfter.toDays(),
+        transitions: mapOrUndefined(rule.transitions, t => ({
+          storageClass: t.storageClass.value,
+          transitionDate: t.transitionDate,
+          transitionInDays: t.transitionAfter && t.transitionAfter.toDays()
         })),
         tagFilters: self.parseTagFilters(rule.tagFilters)
       };
@@ -1286,4 +1286,12 @@ export interface OnCloudTrailBucketEventOptions extends events.OnEventOptions {
    * @default - Watch changes to all objects
    */
   readonly paths?: string[];
+}
+
+function mapOrUndefined<T, U>(list: T[] | undefined, callback: (element: T) => U): U[] | undefined {
+  if (!list || list.length === 0) {
+    return undefined;
+  }
+
+  return list.map(callback);
 }
