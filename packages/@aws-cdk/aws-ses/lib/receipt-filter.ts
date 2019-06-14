@@ -1,4 +1,4 @@
-import { Construct, Resource } from '@aws-cdk/cdk';
+import { Construct, PhysicalName, Resource } from '@aws-cdk/cdk';
 import { CfnReceiptFilter } from './ses.generated';
 
 /**
@@ -25,7 +25,7 @@ export interface ReceiptFilterProps {
    *
    * @default a CloudFormation generated name
    */
-  readonly name?: string;
+  readonly receiptFilterName?: PhysicalName;
 
   /**
    * The ip address or range to filter.
@@ -47,16 +47,18 @@ export interface ReceiptFilterProps {
  * block all receipt filter.
  */
 export class ReceiptFilter extends Resource {
-  constructor(scope: Construct, id: string, props?: ReceiptFilterProps) {
-    super(scope, id);
+  constructor(scope: Construct, id: string, props: ReceiptFilterProps = {}) {
+    super(scope, id, {
+      physicalName: props.receiptFilterName,
+    });
 
     new CfnReceiptFilter(this, 'Resource', {
       filter: {
         ipFilter: {
-          cidr: (props && props.ip) || '0.0.0.0/0',
-          policy: (props && props.policy) || ReceiptFilterPolicy.Block
+          cidr: props.ip || '0.0.0.0/0',
+          policy: props.policy || ReceiptFilterPolicy.Block,
         },
-        name: props ? props.name : undefined
+        name: this.physicalName.value,
       }
     });
   }
