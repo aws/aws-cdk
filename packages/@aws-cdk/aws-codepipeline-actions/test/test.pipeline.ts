@@ -18,7 +18,7 @@ export = {
     const stack = new Stack();
 
     const repository = new codecommit.Repository(stack, 'MyRepo', {
-       repositoryName: 'my-repo',
+       repositoryName: PhysicalName.of('my-repo'),
     });
 
     const pipeline = new codepipeline.Pipeline(stack, 'Pipeline');
@@ -56,7 +56,7 @@ export = {
     const stack = new Stack(undefined, 'StackName');
 
     new codepipeline.Pipeline(stack, 'Pipeline', {
-      pipelineName: Aws.stackName,
+      pipelineName: PhysicalName.of(Aws.stackName),
     });
 
     expect(stack, true).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
@@ -872,6 +872,6 @@ function stageForTesting(stack: Stack): codepipeline.IStage {
 
 function repositoryForTesting(stack: Stack): codecommit.Repository {
   return new codecommit.Repository(stack, 'Repository', {
-    repositoryName: 'Repository'
+    repositoryName: PhysicalName.of('Repository'),
   });
 }
