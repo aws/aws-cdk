@@ -297,7 +297,8 @@ constructLinter.add({
 
 constructLinter.add({
   code: 'props-physical-name',
-  message: "Every Resource must have a single physical name construction property, called <baseNameOfResource>Name",
+  message: "Every Resource must have a single physical name construction property, " +
+    "with a name that is an ending substring of <baseNameOfResource>Name",
   eval: e => {
     if (!e.ctx.propsType) { return; }
     if (!e.ctx.hasPropsArgument) { return; }
@@ -310,11 +311,11 @@ constructLinter.add({
       e.assert(false, `${e.ctx.propsFqn}`);
     } else {
       // check the name of the property
-      const classBasename = new ResourceReflection(e.ctx).basename;
-      const basename = `${classBasename[0].toLowerCase()}${classBasename.slice(1)}`;
+      const basename = `${new ResourceReflection(e.ctx).basename}Name`.toLowerCase();
 
       const physicalNameProp = physicalNameProps[0];
-      e.assert(physicalNameProp.name === `${basename}Name`, `${e.ctx.propsFqn}.${physicalNameProp.name}`);
+      e.assert(basename.endsWith(physicalNameProp.name.toLowerCase()) && physicalNameProp.name.endsWith('Name'),
+        `${e.ctx.propsFqn}.${physicalNameProp.name}`);
     }
   },
 });
