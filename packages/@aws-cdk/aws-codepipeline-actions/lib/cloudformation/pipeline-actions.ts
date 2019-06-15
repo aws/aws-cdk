@@ -1,4 +1,5 @@
 import cloudformation = require('@aws-cdk/aws-cloudformation');
+import { CloudFormationCapabilities } from '@aws-cdk/aws-cloudformation';
 import codepipeline = require('@aws-cdk/aws-codepipeline');
 import iam = require('@aws-cdk/aws-iam');
 import cdk = require('@aws-cdk/cdk');
@@ -541,7 +542,7 @@ interface StatementTemplate {
 
 type StatementCondition = { [op: string]: { [attribute: string]: string } };
 
-function parseCapabilities(capabilities: any): any {
+function parseCapabilities(capabilities: CloudFormationCapabilities[] | undefined): string | undefined {
   if (capabilities === undefined) {
     return undefined;
   } else if (capabilities.length === 1) {
@@ -550,4 +551,6 @@ function parseCapabilities(capabilities: any): any {
   } else if (capabilities.length > 1) {
     return capabilities.join(',');
   }
+
+  return undefined;
 }
