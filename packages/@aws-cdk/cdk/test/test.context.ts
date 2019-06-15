@@ -1,6 +1,6 @@
 import cxapi = require('@aws-cdk/cx-api');
 import { Test } from 'nodeunit';
-import { App, Construct, ConstructNode, Context, ContextProvider, Stack } from '../lib';
+import { App, Construct, ConstructNode, Context, ContextProvider, Fn, Stack } from '../lib';
 
 export = {
   'AvailabilityZoneProvider returns a list with dummy values if the context is not available'(test: Test) {
@@ -35,6 +35,50 @@ export = {
 
     test.throws(
       () => Context.getAvailabilityZones(stack)
+    );
+
+    test.done();
+  },
+
+  'Set availability zone for a stack'(test: Test) {
+    const stack = new Stack(undefined, 'TestStack', { env: { account: '12345', region: 'us-east-1' } });
+    const before = Context.getAvailabilityZones(stack);
+    test.deepEqual(before, [ 'dummy1a', 'dummy1b', 'dummy1c' ]);
+
+    const expctedAzs = ['us-east-1', 'us-west-2', 'us-west-1'];
+    Context.setAvailabilityZones(stack, expctedAzs);
+    const azs = Context.getAvailabilityZones(stack);
+    test.deepEqual(expctedAzs, azs);
+
+    test.done();
+  },
+
+  'Set availability zone for one stack does not effect other stacks'(test: Test) {
+    const stackA = new Stack(undefined, 'TestStack', { env: { account: '12345', region: 'us-east-1' } });
+    const beforeA = Context.getAvailabilityZones(stackA);
+    test.deepEqual(beforeA, [ 'dummy1a', 'dummy1b', 'dummy1c' ]);
+
+    const stackB = new Stack(undefined, 'TestStack', { env: { account: '12345', region: 'us-east-1' } });
+    const beforeB = Context.getAvailabilityZones(stackB);
+    test.deepEqual(beforeB, [ 'dummy1a', 'dummy1b', 'dummy1c' ]);
+
+    const azs = ['us-east-1', 'us-west-2', 'us-west-1'];
+    Context.setAvailabilityZones(stackA, azs);
+
+    const afterA = Context.getAvailabilityZones(stackA);
+    const afterB = Context.getAvailabilityZones(stackB);
+    test.notDeepEqual(afterA, afterB);
+
+    test.done();
+  },
+
+  'setAvailabilityZones will complain if given an unresolved value'(test: Test) {
+    const stack = new Stack(undefined, 'TestStack', { env: { account: '12345', region: 'us-east-1' } });
+    const before = Context.getAvailabilityZones(stack);
+    test.deepEqual(before, [ 'dummy1a', 'dummy1b', 'dummy1c' ]);
+
+    test.throws(
+      () => Context.setAvailabilityZones(stack, Fn.getAZs())
     );
 
     test.done();

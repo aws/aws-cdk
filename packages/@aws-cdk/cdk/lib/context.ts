@@ -35,6 +35,22 @@ export class Context {
   }
 
   /**
+   * Set the availability zone to be used in the given scope
+   * @param scope Some construct scope.
+   * @param azs the list of availability zone
+   */
+  public static setAvailabilityZones(scope: Construct, azs: string[]) {
+    // Prevent using getAZ() return value which will result in an resolvable value
+    if (Token.isUnresolved(azs)) {
+      throw new Error(`The list of azs must hold concrate values, for using getAZs see:<link to example of using getAZs with select>`);
+    }
+
+    const stack = Stack.of(scope);
+    const cp = new ContextProvider(scope, cxapi.AVAILABILITY_ZONE_PROVIDER);
+    stack.node.setContext(cp.key, azs);
+  }
+  
+  /**
    * Retrieves the value of an SSM parameter.
    * @param scope Some construct scope.
    * @param parameterName The name of the parameter
