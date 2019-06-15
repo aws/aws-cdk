@@ -125,8 +125,6 @@
   },
   "awslint": {
     "exclude": [
-      "props-physical-name:@aws-cdk/aws-ecs.Ec2ServiceProps.serviceName",
-      "props-physical-name:@aws-cdk/aws-ecs.FargateServiceProps.serviceName",
       "props-physical-name:@aws-cdk/aws-ecs.TaskDefinitionProps",
       "props-physical-name:@aws-cdk/aws-ecs.Ec2TaskDefinitionProps",
       "props-physical-name:@aws-cdk/aws-ecs.FargateTaskDefinitionProps"
