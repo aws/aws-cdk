@@ -100,12 +100,7 @@
   "awslint": {
     "exclude": [
       "construct-interface-extends-iconstruct:@aws-cdk/aws-codedeploy.IServerDeploymentConfig",
-      "resource-interface-extends-resource:@aws-cdk/aws-codedeploy.IServerDeploymentConfig",
-      "props-physical-name:@aws-cdk/aws-codedeploy.LambdaApplicationProps.applicationName",
-      "props-physical-name:@aws-cdk/aws-codedeploy.LambdaDeploymentGroupProps.deploymentGroupName",
-      "props-physical-name:@aws-cdk/aws-codedeploy.ServerApplicationProps.applicationName",
-      "props-physical-name:@aws-cdk/aws-codedeploy.ServerDeploymentGroupProps.deploymentGroupName",
-      "props-physical-name:@aws-cdk/aws-codedeploy.ServerDeploymentConfigProps.deploymentConfigName"
+      "resource-interface-extends-resource:@aws-cdk/aws-codedeploy.IServerDeploymentConfig"
     ]
   },
   "stability": "experimental"
