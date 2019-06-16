@@ -789,8 +789,7 @@ export class Vpc extends VpcBase {
 
     this.node.applyAspect(new cdk.Tag(NAME_TAG, this.node.path));
 
-    this.availabilityZones = new cdk.AvailabilityZoneProvider(this).availabilityZones;
-    this.availabilityZones.sort();
+    this.availabilityZones = cdk.Context.getAvailabilityZones(this);
 
     const maxAZs = props.maxAZs !== undefined ? props.maxAZs : 3;
     this.availabilityZones = this.availabilityZones.slice(0, maxAZs);
@@ -945,10 +944,6 @@ export class Vpc extends VpcBase {
    */
   private createSubnets() {
     const remainingSpaceSubnets: SubnetConfiguration[] = [];
-
-    // Calculate number of public/private subnets based on number of AZs
-    const zones = new cdk.AvailabilityZoneProvider(this).availabilityZones;
-    zones.sort();
 
     for (const subnet of this.subnetConfiguration) {
       if (subnet.cidrMask === undefined) {

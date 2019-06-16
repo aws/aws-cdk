@@ -26,14 +26,14 @@ export class Runtime {
   /** A list of all known `Runtime`'s. */
   public static readonly All = new Array<Runtime>();
 
-  /** @deprecated Use `NodeJS810` or `NodeJS10x` */
-  public static readonly NodeJS =       new Runtime('nodejs',         RuntimeFamily.NodeJS, { supportsInlineCode: true });
-  /** @deprecated Use `NodeJS810` or `NodeJS10x` */
-  public static readonly NodeJS43 =     new Runtime('nodejs4.3',      RuntimeFamily.NodeJS, { supportsInlineCode: true });
-  /** @deprecated Use `NodeJS810` or `NodeJS10x` */
-  public static readonly NodeJS610 =    new Runtime('nodejs6.10',     RuntimeFamily.NodeJS, { supportsInlineCode: true });
-  public static readonly NodeJS810 =    new Runtime('nodejs8.10',     RuntimeFamily.NodeJS, { supportsInlineCode: true });
-  public static readonly NodeJS10x =    new Runtime('nodejs10.x',     RuntimeFamily.NodeJS, { supportsInlineCode: false });
+  /** @deprecated Use `Nodejs810` or `Nodejs10x` */
+  public static readonly Nodejs =       new Runtime('nodejs',         RuntimeFamily.NodeJS, { supportsInlineCode: true });
+  /** @deprecated Use `Nodejs810` or `Nodejs10x` */
+  public static readonly Nodejs43 =     new Runtime('nodejs4.3',      RuntimeFamily.NodeJS, { supportsInlineCode: true });
+  /** @deprecated Use `Nodejs810` or `Nodejs10x` */
+  public static readonly Nodejs610 =    new Runtime('nodejs6.10',     RuntimeFamily.NodeJS, { supportsInlineCode: true });
+  public static readonly Nodejs810 =    new Runtime('nodejs8.10',     RuntimeFamily.NodeJS, { supportsInlineCode: true });
+  public static readonly Nodejs10x =    new Runtime('nodejs10.x',     RuntimeFamily.NodeJS, { supportsInlineCode: false });
   public static readonly Python27 =     new Runtime('python2.7',      RuntimeFamily.Python, { supportsInlineCode: true });
   public static readonly Python36 =     new Runtime('python3.6',      RuntimeFamily.Python, { supportsInlineCode: true });
   public static readonly Python37 =     new Runtime('python3.7',      RuntimeFamily.Python, { supportsInlineCode: true });
