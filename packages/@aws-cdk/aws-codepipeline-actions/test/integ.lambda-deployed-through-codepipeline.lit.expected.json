@@ -679,7 +679,7 @@
                 ]
               ]
             },
-            "Id": "pipelinePipeline22F2A91D",
+            "Id": "PipelineStackPipeline9DB740AF",
             "RoleArn": {
               "Fn::GetAtt": [
                 "PipelineEventsRole46BEEA7C",
@@ -751,7 +751,7 @@
                 ]
               ]
             },
-            "Id": "pipelinePipeline22F2A91D",
+            "Id": "PipelineStackPipeline9DB740AF",
             "RoleArn": {
               "Fn::GetAtt": [
                 "PipelineEventsRole46BEEA7C",

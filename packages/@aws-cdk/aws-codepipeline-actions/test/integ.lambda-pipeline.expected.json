@@ -444,7 +444,7 @@
                 ]
               ]
             },
-            "Id": "pipelinePipeline22F2A91D",
+            "Id": "awscdkcodepipelinelambdaPipeline87A4B3D3",
             "RoleArn": {
               "Fn::GetAtt": [
                 "PipelineEventsRole46BEEA7C",
