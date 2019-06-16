@@ -5,6 +5,8 @@ import { Construct, Fn, Lazy, Resource } from '@aws-cdk/cdk';
 import { CfnNotebookInstance, CfnNotebookInstanceLifecycleConfig } from './sagemaker.generated';
 
 /**
+ * Construction properties for a SageMaker Notebook instance
+ *
  * @experimental
  */
 export interface NotebookInstanceProps {
@@ -52,11 +54,11 @@ export interface NotebookInstanceProps {
     readonly enableRootAccess?: boolean;
 
     /**
-     * Security groups attached to the notebook instance.
+     * VPC to deploy the notebook instance.
      *
      * @default none
      */
-    readonly securityGroups?: ec2.ISecurityGroup[];
+    readonly vpc?: ec2.IVpc;
 
     /**
      * Subnet where the notebook instance is deployed to in the VPC.
@@ -64,13 +66,6 @@ export interface NotebookInstanceProps {
      * @default none
      */
     readonly subnet?: ec2.ISubnet;
-
-    /**
-     * Tags for the notebook instance.
-     *
-     * @default none
-     */
-    readonly tags?: {[key: string]: any};
 
     /**
      * Size of the notebook volume in GB.
@@ -81,6 +76,8 @@ export interface NotebookInstanceProps {
 }
 
 /**
+ * Defines a SageMaker Notebook instance.
+ *
  * @experimental
  */
 export class NotebookInstance extends Resource implements ec2.IConnectable {
@@ -88,23 +85,34 @@ export class NotebookInstance extends Resource implements ec2.IConnectable {
     /**
      * Allows specify security group connections for instances of this fleet.
      */
-    public readonly connections: ec2.Connections = new ec2.Connections();
+    public readonly connections: ec2.Connections;
 
-    /** @attribute */
+    /**
+     * Notebook instance name.
+     *
+     * @attribute
+     */
     public readonly notebookInstanceName: string;
+
+    /**
+     * Notebook instance ARN.
+     *
+     * @attribute
+     */
+    public readonly notebookInstanceArn: string;
+
+    private readonly vpc: ec2.IVpc;
+    private readonly securityGroup: ec2.ISecurityGroup;
+    private readonly securityGroups: ec2.ISecurityGroup[] = [];
+    private readonly subnet: ec2.ISubnet;
 
     private readonly role: iam.IRole;
     private readonly instanceType: string;
     private readonly onCreateLines = new Array<string>();
     private readonly onStartLines = new Array<string>();
-    private readonly tags: {[key: string]: any} = {};
 
-    constructor(scope: Construct, id: string, props?: NotebookInstanceProps) {
+    constructor(scope: Construct, id: string, props: NotebookInstanceProps = {}) {
         super(scope, id);
-
-        if (!props) {
-            props = {};
-        }
 
         // set the instance type if defined otherwise set to 'ml.t2.medium'
         if (props.instanceType) {
@@ -120,12 +128,26 @@ export class NotebookInstance extends Resource implements ec2.IConnectable {
             this.notebookInstanceName = props.notebookInstanceName;
         }
 
-        // set the notebook instance tags
-        this.tags = (props.tags) ? (props.tags) : {};
-
-        // add the security groups to the connections object
-        if (props.securityGroups) {
-            props.securityGroups.forEach(sg => this.connections.addSecurityGroup(sg));
+        // setup the networking of the notebook instance
+        if (props.vpc) {
+            this.vpc = props.vpc;
+            // create a security group
+            this.securityGroup = new ec2.SecurityGroup(this, 'NotebookSecurityGroup', {
+                vpc: props.vpc
+            });
+            this.connections = new ec2.Connections({ securityGroups: [this.securityGroup] });
+            this.securityGroups.push(this.securityGroup);
+            if (props.subnet) {
+                this.subnet = props.subnet;
+            } else {
+                if (this.vpc.privateSubnets.length > 0) {
+                    this.subnet = this.vpc.privateSubnets[0];
+                } else if (this.vpc.publicSubnets.length > 0) {
+                    this.subnet = this.vpc.publicSubnets[0];
+                } else {
+                    throw new Error("No available subnets to deploy notebook instance");
+                }
+            }
         }
 
         // validate the value of volumeSizeInGB
@@ -150,20 +172,22 @@ export class NotebookInstance extends Resource implements ec2.IConnectable {
         });
 
         // create the CfnNotebookInstance resource
-        new CfnNotebookInstance(this, 'NotebookInstance', {
+        const notebook = new CfnNotebookInstance(this, 'NotebookInstance', {
             roleArn: this.role.roleArn,
             instanceType: this.instanceType,
             lifecycleConfigName: lifecycleConfig.notebookInstanceLifecycleConfigName,
             notebookInstanceName: this.notebookInstanceName,
-            tags: (Object.keys(this.tags).length > 0) ? (Object.keys(this.tags).map(key => ({ key, value: this.tags[key] }))) : undefined,
             directInternetAccess: props.enableDirectInternetAccess !== undefined ?
                 (props.enableDirectInternetAccess ? 'Enabled' : 'Disabled') : undefined,
             volumeSizeInGb: props.volumeSizeInGB,
-            subnetId: props.subnet !== undefined ? props.subnet.subnetId : undefined,
-            securityGroupIds: props.securityGroups !== undefined ? props.securityGroups.map(sg => (sg.securityGroupId)) : undefined,
+            subnetId: this.subnet !== undefined ? this.subnet.subnetId : undefined,
+            securityGroupIds: Lazy.listValue( {produce: () =>
+                (this.securityGroups !== undefined ? this.securityGroups.map(sg => (sg.securityGroupId)) : undefined)}),
             rootAccess: props.enableRootAccess !== undefined ? (props.enableRootAccess ? 'Enabled' : 'Disabled') : undefined,
             kmsKeyId: props.kmsKeyId !== undefined ? props.kmsKeyId.keyArn : undefined,
         });
+        this.notebookInstanceName = notebook.notebookInstanceName;
+        this.notebookInstanceArn = notebook.notebookInstanceArn;
     }
 
     /**
@@ -180,6 +204,15 @@ export class NotebookInstance extends Resource implements ec2.IConnectable {
      */
     public addOnStartScript(...scriptLines: string[]) {
         scriptLines.forEach(scriptLine => this.onStartLines.push(scriptLine));
+    }
+
+    /**
+     * Add the security group to the notebook instance.
+     *
+     * @param securityGroup: The security group to add
+     */
+    public addSecurityGroup(securityGroup: ec2.ISecurityGroup): void {
+        this.securityGroups.push(securityGroup);
     }
 
     /**

@@ -38,21 +38,19 @@ export = {
             const instanceType = new ec2.InstanceTypePair(ec2.InstanceClass.M4, ec2.InstanceSize.XLarge);
 
             // create the notebook instance
-            new sagemaker.NotebookInstance(stack, 'Notebook', {
+            const notebook = new sagemaker.NotebookInstance(stack, 'Notebook', {
                 kmsKeyId: key,
+                vpc,
                 role,
                 instanceType,
                 notebookInstanceName: "mynotebook",
-                tags: {
-                    Name: "myname",
-                    Project: "myproject"
-                },
                 subnet: subnets[0],
-                securityGroups: [ sg ],
                 enableDirectInternetAccess: true,
                 enableRootAccess: false,
                 volumeSizeInGB: 100,
             });
+            notebook.addSecurityGroup(sg);
+            notebook.node.applyAspect(new cdk.Tag("Project", "myproject"));
 
             // THEN
             expect(stack).to(haveResource("AWS::SageMaker::NotebookInstance", {
@@ -65,13 +63,13 @@ export = {
                 },
                 NotebookInstanceName: "mynotebook",
                 Tags: [
-                    { Key: "Name", Value: "myname" },
                     { Key: "Project", Value: "myproject" },
                 ],
                 SubnetId: {
                     Ref: "VpcPrivateSubnet1Subnet536B997A"
                 },
                 SecurityGroupIds: [
+                    { "Fn::GetAtt": [ "NotebookNotebookSecurityGroup65EB76D3", "GroupId" ] },
                     { "Fn::GetAtt": [ "SecurityGroupDD263621", "GroupId" ] },
                 ],
                 VolumeSizeInGB: 100,
