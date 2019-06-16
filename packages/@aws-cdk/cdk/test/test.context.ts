@@ -40,7 +40,7 @@ export = {
     test.done();
   },
 
-  'Set availability zone for a stack'(test: Test) {
+  'Set availability zone for a stack via Context'(test: Test) {
     const stack = new Stack(undefined, 'TestStack', { env: { account: '12345', region: 'us-east-1' } });
     const before = Context.getAvailabilityZones(stack);
     test.deepEqual(before, [ 'dummy1a', 'dummy1b', 'dummy1c' ]);
