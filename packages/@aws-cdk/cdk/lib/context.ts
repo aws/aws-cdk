@@ -37,9 +37,9 @@ export class Context {
   /**
    * Set the availability zone to be used in the given scope
    * Given a scope it will set the AZs list in the first stack scope in which the given scope is defined
-   * Note that supplying an unresolved value such us the return value of getAZ() will throw  
+   * Note that supplying an unresolved value such us the return value of getAZ() will throw
    * @param scope Some construct scope.
-   * @param azs the list of availability zone
+   * @param azs the list of availability zones
    */
   public static setAvailabilityZones(scope: Construct, azs: string[]) {
     // Prevent using getAZ() return value which will result in an resolvable value
@@ -51,7 +51,7 @@ export class Context {
     const cp = new ContextProvider(scope, cxapi.AVAILABILITY_ZONE_PROVIDER);
     stack.node.setContext(cp.key, azs);
   }
-  
+
   /**
    * Retrieves the value of an SSM parameter.
    * @param scope Some construct scope.
