@@ -10,7 +10,7 @@ export = {
   "When creating an ECS Cluster": {
     "with only required properties set, it correctly sets default properties"(test: Test) {
       // GIVEN
-      const stack =  new cdk.Stack();
+      const stack = new cdk.Stack();
       const vpc = new ec2.Vpc(stack, 'MyVpc', {});
       const cluster = new ecs.Cluster(stack, 'EcsCluster', {
         vpc,
@@ -115,7 +115,7 @@ export = {
       }));
 
       expect(stack).to(haveResource("AWS::IAM::Role", {
-          AssumeRolePolicyDocument: {
+        AssumeRolePolicyDocument: {
           Statement: [
             {
               Action: "sts:AssumeRole",
@@ -126,39 +126,42 @@ export = {
             }
           ],
           Version: "2012-10-17"
-        }
+        },
+        ManagedPolicyArns: [
+          { "Fn::Join": ["", ["arn:", { Ref: "AWS::Partition" }, ":iam::aws:policy/service-role/AmazonEC2ContainerServiceforEC2Role"]] }
+        ]
       }));
 
-      expect(stack).to(haveResource("AWS::IAM::Policy", {
-        PolicyDocument: {
-          Statement: [
-            {
-              Action: [
-                "ecs:CreateCluster",
-                "ecs:DeregisterContainerInstance",
-                "ecs:DiscoverPollEndpoint",
-                "ecs:Poll",
-                "ecs:RegisterContainerInstance",
-                "ecs:StartTelemetrySession",
-                "ecs:Submit*",
-                "ecr:GetAuthorizationToken",
-                "logs:CreateLogStream",
-                "logs:PutLogEvents"
-              ],
-              Effect: "Allow",
-              Resource: "*"
-            }
-          ],
-          Version: "2012-10-17"
-        }
-      }));
+      // expect(stack).to(haveResource("AWS::IAM::Policy", {
+      //   PolicyDocument: {
+      //     Statement: [
+      //       {
+      //         Action: [
+      //           "ecs:CreateCluster",
+      //           "ecs:DeregisterContainerInstance",
+      //           "ecs:DiscoverPollEndpoint",
+      //           "ecs:Poll",
+      //           "ecs:RegisterContainerInstance",
+      //           "ecs:StartTelemetrySession",
+      //           "ecs:Submit*",
+      //           "ecr:GetAuthorizationToken",
+      //           "logs:CreateLogStream",
+      //           "logs:PutLogEvents"
+      //         ],
+      //         Effect: "Allow",
+      //         Resource: "*"
+      //       }
+      //     ],
+      //     Version: "2012-10-17"
+      //   }
+      // }));
 
       test.done();
     },
 
     'lifecycle hook is automatically added'(test: Test) {
       // GIVEN
-      const stack =  new cdk.Stack();
+      const stack = new cdk.Stack();
       const vpc = new ec2.Vpc(stack, 'MyVpc', {});
       const cluster = new ecs.Cluster(stack, 'EcsCluster', {
         vpc,
@@ -176,7 +179,7 @@ export = {
         DefaultResult: "CONTINUE",
         HeartbeatTimeout: 300,
         NotificationTargetARN: { Ref: "EcsClusterDefaultAutoScalingGroupLifecycleHookDrainHookTopicACD2D4A4" },
-        RoleARN: { "Fn::GetAtt": [ "EcsClusterDefaultAutoScalingGroupLifecycleHookDrainHookRoleA38EC83B", "Arn" ] }
+        RoleARN: { "Fn::GetAtt": ["EcsClusterDefaultAutoScalingGroupLifecycleHookDrainHookRoleA38EC83B", "Arn"] }
       }));
 
       test.done();
@@ -298,10 +301,10 @@ export = {
 
     // THEN
     expect(stack).to(haveResource("AWS::ServiceDiscovery::PrivateDnsNamespace", {
-       Name: 'foo.com',
-        Vpc: {
-          Ref: 'MyVpcF9F0CA6F'
-        }
+      Name: 'foo.com',
+      Vpc: {
+        Ref: 'MyVpcF9F0CA6F'
+      }
     }));
 
     test.done();
@@ -325,7 +328,7 @@ export = {
 
     // THEN
     expect(stack).to(haveResource("AWS::ServiceDiscovery::PublicDnsNamespace", {
-       Name: 'foo.com',
+      Name: 'foo.com',
     }));
 
     test.done();

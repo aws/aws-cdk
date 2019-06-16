@@ -1,5 +1,5 @@
 import autoscaling = require('@aws-cdk/aws-autoscaling');
-import cloudwatch = require ('@aws-cdk/aws-cloudwatch');
+import cloudwatch = require('@aws-cdk/aws-cloudwatch');
 import ec2 = require('@aws-cdk/aws-ec2');
 import iam = require('@aws-cdk/aws-iam');
 import cloudmap = require('@aws-cdk/aws-servicediscovery');
@@ -68,7 +68,7 @@ export class Cluster extends Resource implements ICluster {
   constructor(scope: Construct, id: string, props: ClusterProps) {
     super(scope, id);
 
-    const cluster = new CfnCluster(this, 'Resource', {clusterName: props.clusterName});
+    const cluster = new CfnCluster(this, 'Resource', { clusterName: props.clusterName });
 
     this.vpc = props.vpc;
     this.clusterArn = cluster.clusterArn;
@@ -153,18 +153,22 @@ export class Cluster extends Resource implements ICluster {
 
     // ECS instances must be able to do these things
     // Source: https://docs.aws.amazon.com/AmazonECS/latest/developerguide/instance_IAM_role.html
-    autoScalingGroup.addToRolePolicy(new iam.PolicyStatement().addActions(
-      "ecs:CreateCluster",
-      "ecs:DeregisterContainerInstance",
-      "ecs:DiscoverPollEndpoint",
-      "ecs:Poll",
-      "ecs:RegisterContainerInstance",
-      "ecs:StartTelemetrySession",
-      "ecs:Submit*",
-      "ecr:GetAuthorizationToken",
-      "logs:CreateLogStream",
-      "logs:PutLogEvents"
-    ).addAllResources());
+    autoScalingGroup.role.attachManagedPolicy(new iam.AwsManagedPolicy('service-role/AmazonEC2ContainerServiceforEC2Role', this).policyArn);
+
+    // // ECS instances must be able to do these things
+    // // Source: https://docs.aws.amazon.com/AmazonECS/latest/developerguide/instance_IAM_role.html
+    // autoScalingGroup.addToRolePolicy(new iam.PolicyStatement().addActions(
+    //   "ecs:CreateCluster",
+    //   "ecs:DeregisterContainerInstance",
+    //   "ecs:DiscoverPollEndpoint",
+    //   "ecs:Poll",
+    //   "ecs:RegisterContainerInstance",
+    //   "ecs:StartTelemetrySession",
+    //   "ecs:Submit*",
+    //   "ecr:GetAuthorizationToken",
+    //   "logs:CreateLogStream",
+    //   "logs:PutLogEvents"
+    // ).addAllResources());
 
     // 0 disables, otherwise forward to underlying implementation which picks the sane default
     if (options.taskDrainTimeSeconds !== 0) {
@@ -198,7 +202,7 @@ export class Cluster extends Resource implements ICluster {
    * @default average over 5 minutes
    */
   public metricMemoryReservation(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    return this.metric('MemoryReservation', props );
+    return this.metric('MemoryReservation', props);
   }
 
   /**
@@ -257,11 +261,11 @@ export class EcsOptimizedAmi implements ec2.IMachineImageSource {
 
     // set the SSM parameter name
     this.amiParameterName = "/aws/service/ecs/optimized-ami/"
-                          + ( this.generation === ec2.AmazonLinuxGeneration.AmazonLinux ? "amazon-linux/" : "" )
-                          + ( this.generation === ec2.AmazonLinuxGeneration.AmazonLinux2 ? "amazon-linux-2/" : "" )
-                          + ( this.hwType === AmiHardwareType.Gpu ? "gpu/" : "" )
-                          + ( this.hwType === AmiHardwareType.Arm ? "arm64/" : "" )
-                          + "recommended";
+      + (this.generation === ec2.AmazonLinuxGeneration.AmazonLinux ? "amazon-linux/" : "")
+      + (this.generation === ec2.AmazonLinuxGeneration.AmazonLinux2 ? "amazon-linux-2/" : "")
+      + (this.hwType === AmiHardwareType.Gpu ? "gpu/" : "")
+      + (this.hwType === AmiHardwareType.Arm ? "arm64/" : "")
+      + "recommended";
   }
 
   /**
