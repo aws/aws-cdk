@@ -4,7 +4,11 @@
     "Repo": {
       "Type": "@aws-cdk/aws-codecommit.Repository",
       "Properties": {
-        "repositoryName": "my-first-decdk-repo"
+        "repositoryName": {
+         "of": {
+          "name": "my-first-decdk-repo"
+         }
+        }
       }
     },
     "Key": {
