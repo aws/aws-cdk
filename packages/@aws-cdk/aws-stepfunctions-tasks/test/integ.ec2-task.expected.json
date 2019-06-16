@@ -48,37 +48,19 @@
             }
           ],
           "Version": "2012-10-17"
-        }
-      }
-    },
-    "FargateClusterDefaultAutoScalingGroupInstanceRoleDefaultPolicy3BD78F3E": {
-      "Type": "AWS::IAM::Policy",
-      "Properties": {
-        "PolicyDocument": {
-          "Statement": [
-            {
-              "Action": [
-                "ecs:CreateCluster",
-                "ecs:DeregisterContainerInstance",
-                "ecs:DiscoverPollEndpoint",
-                "ecs:Poll",
-                "ecs:RegisterContainerInstance",
-                "ecs:StartTelemetrySession",
-                "ecs:Submit*",
-                "ecr:GetAuthorizationToken",
-                "logs:CreateLogStream",
-                "logs:PutLogEvents"
-              ],
-              "Effect": "Allow",
-              "Resource": "*"
-            }
-          ],
-          "Version": "2012-10-17"
         },
-        "PolicyName": "FargateClusterDefaultAutoScalingGroupInstanceRoleDefaultPolicy3BD78F3E",
-        "Roles": [
+        "ManagedPolicyArns": [
           {
-            "Ref": "FargateClusterDefaultAutoScalingGroupInstanceRole0C1F7FF7"
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":iam::aws:policy/service-role/AmazonEC2ContainerServiceforEC2Role"
+              ]
+            ]
           }
         ]
       }
@@ -125,7 +107,6 @@
         }
       },
       "DependsOn": [
-        "FargateClusterDefaultAutoScalingGroupInstanceRoleDefaultPolicy3BD78F3E",
         "FargateClusterDefaultAutoScalingGroupInstanceRole0C1F7FF7"
       ]
     },
@@ -159,9 +140,6 @@
           "IgnoreUnmodifiedGroupSizeProperties": true
         }
       }
-    },
-    "FargateClusterDefaultAutoScalingGroupLifecycleHookDrainHookTopic49146C10": {
-      "Type": "AWS::SNS::Topic"
     },
     "FargateClusterDefaultAutoScalingGroupDrainECSHookFunctionServiceRole7FEDCD32": {
       "Type": "AWS::IAM::Role",
@@ -395,6 +373,9 @@
           }
         ]
       }
+    },
+    "FargateClusterDefaultAutoScalingGroupLifecycleHookDrainHookTopic49146C10": {
+      "Type": "AWS::SNS::Topic"
     },
     "FargateClusterDefaultAutoScalingGroupLifecycleHookDrainHook2AE13680": {
       "Type": "AWS::AutoScaling::LifecycleHook",
