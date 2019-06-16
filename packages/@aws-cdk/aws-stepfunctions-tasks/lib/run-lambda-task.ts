@@ -161,7 +161,9 @@ export class RunLambdaTask implements IStepFunctionsTask {
     const stack = Stack.of(_task);
     const functionArn = stack.formatArn({
       service: 'lambda',
-      resource: this.functionName
+      resourceName: this.functionName,
+      resource: 'function',
+      sep: ':'
     });
 
     let resourceArn =  "arn:aws:states:::lambda:invoke";
