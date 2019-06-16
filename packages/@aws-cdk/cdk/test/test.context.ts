@@ -45,7 +45,7 @@ export = {
     const before = Context.getAvailabilityZones(stack);
     test.deepEqual(before, [ 'dummy1a', 'dummy1b', 'dummy1c' ]);
 
-    const expctedAzs = ['us-east-1', 'us-west-2', 'us-west-1'];
+    const expctedAzs = ['us-east-1b', 'us-east-1c', 'us-east-1a'];
     Context.setAvailabilityZones(stack, expctedAzs);
     const azs = Context.getAvailabilityZones(stack);
     test.deepEqual(expctedAzs, azs);
@@ -62,7 +62,7 @@ export = {
     const beforeB = Context.getAvailabilityZones(stackB);
     test.deepEqual(beforeB, [ 'dummy1a', 'dummy1b', 'dummy1c' ]);
 
-    const azs = ['us-east-1', 'us-west-2', 'us-west-1'];
+    const azs = ['us-east-1b', 'us-east-1c', 'us-east-1a'];
     Context.setAvailabilityZones(stackA, azs);
 
     const afterA = Context.getAvailabilityZones(stackA);
