@@ -6,8 +6,8 @@ const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-ecs-integ');
 
 new ecsPatterns.LoadBalancedFargateService(stack, 'L3', {
-  memoryMiB: '1GB',
-  cpu: '512',
+  memoryLimitMiB: 1024,
+  cpu: 512,
   image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
 });
 

@@ -10,8 +10,8 @@ const vpc = new ec2.Vpc(stack, 'Vpc', { maxAZs: 2 });
 
 new ecsPatterns.LoadBalancedFargateService(stack, 'L3', {
   vpc,
-  memoryMiB: '1GB',
-  cpu: '512',
+  memoryLimitMiB: 1024,
+  cpu: 512,
   image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
 });
 
