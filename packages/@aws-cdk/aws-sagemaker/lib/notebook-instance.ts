@@ -158,9 +158,7 @@ export class NotebookInstance extends Resource implements ec2.IConnectable {
         // set the sagemaker role or create new one
         this.role = props.role || new iam.Role(this, 'SagemakerRole', {
             assumedBy: new iam.ServicePrincipal('sagemaker.amazonaws.com'),
-            managedPolicyArns: [
-                new iam.AwsManagedPolicy('AmazonSageMakerFullAccess', scope).policyArn
-            ]
+            managedPolicies: [iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AmazonSageMakerFullAccess')],
         });
 
         // create the Lifecycle Config resource
