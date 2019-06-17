@@ -11,6 +11,8 @@ const NAME_TAG: string = 'Name';
 
 /**
  * Construction properties for a SageMaker Endpoint.
+ *
+ * @experimental
  */
 export interface EndpointProps {
 
@@ -46,6 +48,8 @@ export interface EndpointProps {
 
 /**
  * Construction properties for the Production Variant.
+ *
+ * @experimental
  */
 export interface ProductionVariant {
 
@@ -102,6 +106,8 @@ export enum AcceleratorType {
 
 /**
  * Defines a SageMaker Endpoint and associated configuration resource.
+ *
+ * @experimental
  */
 export class Endpoint extends Resource {
 

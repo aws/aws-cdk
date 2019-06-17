@@ -10,6 +10,8 @@ const NAME_TAG: string = 'Name';
 
 /**
  * Interface that defines a Model resource.
+ *
+ * @experimental
  */
 export interface IModel extends IResource {
     /**
@@ -29,6 +31,8 @@ export interface IModel extends IResource {
 
 /**
  * Construction properties for a generic container image.
+ *
+ * @experimental
  */
 export interface GenericContainerProps {
 
@@ -61,6 +65,8 @@ export interface GenericContainerProps {
 
 /**
  * Interface that defines a container definition.
+ *
+ * @experimental
  */
 export interface IContainerDefinition {
     /**
@@ -91,6 +97,7 @@ export interface IContainerDefinition {
 /**
  * Construct an ECR Container Image URI from a map of region names to ECR container URIs.
  *
+ * @experimental
  */
 export class GenericContainerDefinition implements IContainerDefinition  {
 
@@ -131,6 +138,8 @@ export class GenericContainerDefinition implements IContainerDefinition  {
 
 /**
  * Construction properties for a SageMaker Model.
+ *
+ * @experimental
  */
 export interface ModelProps {
 
@@ -172,6 +181,8 @@ export interface ModelProps {
 
 /**
  * Defines a SageMaker Model.
+ *
+ * @experimental
  */
 export class Model extends Resource implements IModel, ec2.IConnectable {
 
@@ -281,8 +292,14 @@ export class Model extends Resource implements IModel, ec2.IConnectable {
 
     protected validate(): string[] {
         const result = super.validate();
+        // check that either primary container or list of containers defined
         if (!(this.primaryContainer) && (this.containers.length === 0)) {
             result.push("Must define either Primary Container or list of inference containers");
+        }
+
+        // check that container list is not greater than 5
+        if (this.containers.length > 5) {
+            result.push("Cannot have more than 5 containers in inference pipeline");
         }
         return result;
     }

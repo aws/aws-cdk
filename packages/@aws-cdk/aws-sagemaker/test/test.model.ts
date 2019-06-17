@@ -4,6 +4,7 @@ import iam = require('@aws-cdk/aws-iam');
 import cdk = require('@aws-cdk/cdk');
 import { Test } from 'nodeunit';
 import sagemaker = require('../lib');
+import { GenericContainerDefinition } from '../lib';
 
 export = {
     "When creating Sagemaker Model": {
@@ -93,5 +94,90 @@ export = {
 
             test.done();
         },
+        "use list of containers in inference pipeline"(test: Test) {
+            // GIVEN
+            const region = 'us-west-2'; // hardcode the region
+            const stack = new cdk.Stack(undefined, undefined, {
+                env: {
+                    region
+                },
+            });
+            // create the notebook instance
+            const containerImage1 = new sagemaker.GenericContainerDefinition({
+                amiMap: { 'us-west-2': "123456789012.dkr.ecr.us-west-2.amazonaws.com/mymodel1:latest" },
+            });
+            const containerImage2 = new sagemaker.GenericContainerDefinition({
+                amiMap: { 'us-west-2': "123456789012.dkr.ecr.us-west-2.amazonaws.com/mymodel2:latest" },
+            });
+            const model = new sagemaker.Model(stack, 'Model', {
+                modelName: "MyModel",
+            });
+            model.addContainer(containerImage1);
+            model.addContainer(containerImage2);
+
+            // THEN
+            expect(stack).to(haveResource("AWS::SageMaker::Model", {
+                Containers: [
+                    { Image: "123456789012.dkr.ecr.us-west-2.amazonaws.com/mymodel1:latest" },
+                    { Image: "123456789012.dkr.ecr.us-west-2.amazonaws.com/mymodel2:latest" },
+                ],
+                Tags: [
+                    { Key: "Name", Value: "Model" },
+                ]
+            }));
+
+            test.done();
+        },
+        "it throws error when no primary nor containers defined"(test: Test) {
+            // GIVEN
+            const stack = new cdk.Stack();
+            // create the model
+            const model = new sagemaker.Model(stack, 'Model');
+
+            // WHEN
+            const errors = validate(stack);
+
+            test.equal(errors.length, 1);
+            const error = errors[0];
+            test.same(error.source, model);
+            test.equal(error.message, "Must define either Primary Container or list of inference containers");
+
+            test.done();
+        },
+        "it throws error when more than 5 containers defined"(test: Test) {
+            // GIVEN
+            const region = 'test-region'; // hardcode the region
+            const stack = new cdk.Stack(undefined, undefined, {
+                env: {
+                    region
+                },
+            });
+            // create the model
+            const model = new sagemaker.Model(stack, 'Model');
+            const container = new GenericContainerDefinition();
+            times (6) (() => model.addContainer(container));
+
+            // WHEN
+            const errors = validate(stack);
+
+            test.equal(errors.length, 1);
+            const error = errors[0];
+            test.same(error.source, model);
+            test.equal(error.message, "Cannot have more than 5 containers in inference pipeline");
+
+            test.done();
+        },
+    }
+};
+
+function validate(construct: cdk.IConstruct): cdk.ValidationError[] {
+    cdk.ConstructNode.prepare(construct.node);
+    return cdk.ConstructNode.validate(construct.node);
+}
+
+const times = (x: number) => (f: () => void) => {
+    if (x > 0) {
+      f();
+      times (x - 1) (f);
     }
 };

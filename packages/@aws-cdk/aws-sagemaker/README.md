@@ -12,6 +12,78 @@
 ---
 <!--END STABILITY BANNER-->
 
+### Notebook instance
+
+Define a notebook instance.
+
 ```ts
-const sagemaker = require('@aws-cdk/aws-sagemaker');
+new NotebookInstance(this, 'MyNotebook');
+```
+
+Add a KMS encryption key, launch in own VPC, set the instance type to 'ml.p3.xlarge', disable direct internet access and set the EBS volume size to 100 GB.
+
+```ts
+const vpc = new ec2.Vpc(this, "Vpc");
+const key = new kms.Key(this, 'Key');
+new NotebookInstance(this, 'MyNotebook', {
+    vpc,
+    kmsKeyId: key,
+    instanceType = new ec2.InstanceType('p3.2xlarge'),
+    enableDirectInternetAccess: false,
+    volumeSizeInGB: 100,
+});
+```
+
+Add custom scripts when notebook instance is created and started.
+
+```ts
+const notebook =new NotebookInstance(this, 'MyNotebook');
+notebook.addOnCreateScript('echo "Creating Notebook"');
+notebook.addOnStartScript('echo "Starting Notebook"');
+```
+
+Add a security group to the notebook instance.
+
+```ts
+const vpc = new ec2.Vpc(this, "Vpc");
+const sg = new ec2.SecurityGroup(stack, 'SecurityGroup', { vpc });
+const notebook =new NotebookInstance(this, 'MyNotebook', {
+    vpc
+});
+notebook.addSecurityGroup(sg);
+```
+
+### Models
+
+Define a model.
+
+```ts
+new Model(this, 'MyModel', {
+    primaryContainer: new GenericContainerDefinition( { 'us-west-2': '123456789012.dkr.ecr.us-west-2.amazonaws.com/mymodel:latest' })
+});
+```
+
+Define a model with a container inference pipeline.
+
+```ts
+const model = new Model(this, 'MyModel');
+model.addContainer(new GenericContainerDefinition({ 'us-west-2': '123456789012.dkr.ecr.us-west-2.amazonaws.com/mymodel1:latest' }));
+model.addContainer(new GenericContainerDefinition({ 'us-west-2': '123456789012.dkr.ecr.us-west-2.amazonaws.com/mymodel2:latest' }));
+```
+
+### Endpoonts
+
+Define an endpoint.
+
+```ts
+const model = new Model(this, 'MyModel', {
+    primaryContainer: new GenericContainerDefinition( { 'us-west-2': '123456789012.dkr.ecr.us-west-2.amazonaws.com/mymodel:latest' })
+});
+const endpooint = new sagemaker.Endpoint(stack, 'Endpoint', {
+    productionVariants: [ 
+        { 
+            model,
+        }   
+    ],
+});
 ```
