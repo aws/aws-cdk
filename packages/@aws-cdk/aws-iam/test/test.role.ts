@@ -268,9 +268,10 @@ export = {
     const importedRole = Role.fromRoleArn(stack, 'ImportedRole', 'arn:aws:iam::123456789012:role/MyRole');
 
     // WHEN
-    importedRole.addToPolicy(new PolicyStatement()
-      .addAction('s3:*')
-      .addResource('xyz'));
+    importedRole.addToPolicy(new PolicyStatement({
+      actions: ['s3:*'],
+      resources: ['xyz']
+    }));
 
     // THEN
     expect(stack).to(haveResource('AWS::IAM::Policy', {

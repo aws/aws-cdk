@@ -126,7 +126,7 @@ export class Role extends Resource implements IRole {
           this.defaultPolicy = new Policy(this, 'Policy');
           this.attachInlinePolicy(this.defaultPolicy);
         }
-        this.defaultPolicy.addStatement(statement);
+        this.defaultPolicy.addStatements(statement);
         return true;
       }
 
