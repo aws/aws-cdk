@@ -21,7 +21,7 @@ const sourceAction = new cpactions.S3SourceAction({
   output: sourceOutput,
 });
 const sourceStage = {
-  name: 'Source',
+  stageName: 'Source',
   actions: [sourceAction],
 };
 
@@ -33,7 +33,7 @@ role.addToPolicy(new iam.PolicyStatement({
   resources: ['*']
 }));
 const cfnStage = {
-  name: 'CFN',
+  stageName: 'CFN',
   actions: [
     new cpactions.CloudFormationCreateUpdateStackAction({
       actionName: 'CFN_Deploy',

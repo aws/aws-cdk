@@ -42,7 +42,7 @@ const sourceAction = new codepipeline_actions.CodeCommitSourceAction({
   output: sourceOutput,
 });
 pipeline.addStage({
-  name: 'Source',
+  stageName: 'Source',
   actions: [sourceAction],
 });
 ```
@@ -65,7 +65,7 @@ const sourceAction = new codepipeline_actions.GitHubSourceAction({
   trigger: codepipeline_actions.GitHubTrigger.Poll // default: 'WebHook', 'None' is also possible for no Source trigger
 });
 pipeline.addStage({
-  name: 'Source',
+  stageName: 'Source',
   actions: [sourceAction],
 });
 ```
@@ -90,7 +90,7 @@ const sourceAction = new codepipeline_actions.S3SourceAction({
   output: sourceOutput,
 });
 pipeline.addStage({
-  name: 'Source',
+  stageName: 'Source',
   actions: [sourceAction],
 });
 ```
@@ -136,7 +136,7 @@ const sourceAction = new codepipeline_actions.EcrSourceAction({
   output: sourceOutput,
 });
 pipeline.addStage({
-  actionName: 'Source',
+  stageName: 'Source',
   actions: [sourceAction],
 });
 ```
@@ -172,11 +172,11 @@ const buildAction = new codepipeline_actions.CodeBuildAction({
 new codepipeline.Pipeline(this, 'MyPipeline', {
   stages: [
     {
-      name: 'Source',
+      stageName: 'Source',
       actions: [sourceAction],
     },
     {
-      name: 'Build',
+      stageName: 'Build',
       actions: [buildAction],
     },
   ],
@@ -382,7 +382,7 @@ const deployAction = new codepipeline_actions.CodeDeployServerDeployAction({
   deploymentGroup,
 });
 pipeline.addStage({
-  name: 'Deploy',
+  stageName: 'Deploy',
   actions: [deployAction],
 });
 ```
@@ -423,7 +423,7 @@ The deploy Action receives one input Artifact which contains the [image definiti
 
 ```typescript
 const deployStage = pipeline.addStage({
-  name: 'Deploy',
+  stageName: 'Deploy',
   actions: [
     new codepipeline_actions.EcsDeployAction({
       actionName: 'DeployAction',
@@ -458,7 +458,7 @@ const deployAction = new codepipeline_actions.S3DeployAction({
   input: sourceOutput,
 });
 const deployStage = pipeline.addStage({
-  name: 'Deploy',
+  stageName: 'Deploy',
   actions: [deployAction],
 });
 ```
@@ -552,7 +552,7 @@ const lambdaAction = new codepipeline_actions.LambdaInvokeAction({
   lambda: fn,
 });
 pipeline.addStage({
-  actionName: 'Lambda',
+  stageName: 'Lambda',
   actions: [lambdaAction],
 });
 ```
