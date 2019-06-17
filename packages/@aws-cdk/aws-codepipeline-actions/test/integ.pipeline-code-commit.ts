@@ -12,7 +12,7 @@ const repo = new codecommit.Repository(stack, 'MyRepo', { repositoryName: 'my-re
 new codepipeline.Pipeline(stack, 'Pipeline', {
   stages: [
     {
-      name: 'source',
+      stageName: 'source',
       actions: [
         new cpactions.CodeCommitSourceAction({
           actionName: 'source',
@@ -22,7 +22,7 @@ new codepipeline.Pipeline(stack, 'Pipeline', {
       ],
     },
     {
-      name: 'build',
+      stageName: 'build',
       actions: [
         new cpactions.ManualApprovalAction({ actionName: 'manual' }),
       ],

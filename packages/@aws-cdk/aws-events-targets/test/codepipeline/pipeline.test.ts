@@ -12,7 +12,7 @@ test('use codebuild project as an eventrule target', () => {
   const srcArtifact = new codepipeline.Artifact('Src');
   const buildArtifact = new codepipeline.Artifact('Bld');
   pipeline.addStage({
-    name: 'Source',
+    stageName: 'Source',
     actions: [new TestAction({
       actionName: 'Hello',
       category: codepipeline.ActionCategory.Source,
@@ -21,7 +21,7 @@ test('use codebuild project as an eventrule target', () => {
       outputs: [srcArtifact]})]
   });
   pipeline.addStage({
-    name: 'Build',
+    stageName: 'Build',
     actions: [new TestAction({
       actionName: 'Hello',
       category: codepipeline.ActionCategory.Build,

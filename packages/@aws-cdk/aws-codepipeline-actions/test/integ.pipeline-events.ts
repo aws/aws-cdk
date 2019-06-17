@@ -28,12 +28,12 @@ const sourceAction = new cpactions.CodeCommitSourceAction({
   pollForSourceChanges: true,
 });
 const sourceStage = pipeline.addStage({
-  name: 'Source',
+  stageName: 'Source',
   actions: [sourceAction],
 });
 
 pipeline.addStage({
-  name: 'Build',
+  stageName: 'Build',
   actions: [
     new cpactions.CodeBuildAction({
       actionName: 'CodeBuildAction',

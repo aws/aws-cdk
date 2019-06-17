@@ -38,7 +38,7 @@ You can provide Stages when creating the Pipeline:
 const pipeline = new codepipeline.Pipeline(this, 'MyFirstPipeline', {
   stages: [
     {
-      name: 'Source',
+      stageName: 'Source',
       actions: [
         // see below...
       ],
@@ -51,7 +51,7 @@ Or append a Stage to an existing Pipeline:
 
 ```ts
 const sourceStage = pipeline.addStage({
-  name: 'Source',
+  stageName: 'Source',
   actions: [ // optional property
     // see below...
   ],
@@ -62,7 +62,7 @@ You can insert the new Stage at an arbitrary point in the Pipeline:
 
 ```ts
 const someStage = pipeline.addStage({
-  name: 'SomeStage',
+  stageName: 'SomeStage',
   placement: {
     // note: you can only specify one of the below properties
     rightBefore: anotherStage,

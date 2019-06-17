@@ -72,7 +72,7 @@ export = {
       new codepipeline.Pipeline(stack, 'Pipeline', {
         stages: [
           {
-            name: 'Source',
+            stageName: 'Source',
             actions: [
               new FakeSourceAction({
                 actionName: 'Source',
@@ -86,7 +86,7 @@ export = {
             ],
           },
           {
-            name: 'Build',
+            stageName: 'Build',
             actions: [
               new FakeBuildAction({
                 actionName: 'Build',
@@ -121,7 +121,7 @@ export = {
       new codepipeline.Pipeline(stack, 'Pipeline', {
         stages: [
           {
-            name: 'Source',
+            stageName: 'Source',
             actions: [
               new FakeSourceAction({
                 actionName: 'Source',
@@ -136,7 +136,7 @@ export = {
             ],
           },
           {
-            name: 'Build',
+            stageName: 'Build',
             actions: [
               new FakeBuildAction({
                 actionName: 'Build',
@@ -166,12 +166,12 @@ export = {
       output: sourceOutput,
     });
     pipeline.addStage({
-      name: 'Source',
+      stageName: 'Source',
       actions: [sourceAction],
     });
 
     pipeline.addStage({
-      name: 'Build',
+      stageName: 'Build',
       actions: [
         new FakeBuildAction({
           actionName: 'CodeBuild',
@@ -228,7 +228,7 @@ export = {
     const pipeline = new codepipeline.Pipeline(stack, 'Pipeline', {
       stages: [
         {
-          name: 'Source',
+          stageName: 'Source',
           actions: [
             new FakeSourceAction({
               actionName: 'Source',
@@ -240,12 +240,12 @@ export = {
     });
 
     const action = new FakeBuildAction({ actionName: 'FakeAction', input: sourceOutput });
-    const stage2 = {
-      name: 'Stage2',
+    const stage2: codepipeline.StageProps = {
+      stageName: 'Stage2',
       actions: [action],
     };
-    const stage3 = {
-      name: 'Stage3',
+    const stage3: codepipeline.StageProps = {
+      stageName: 'Stage3',
       actions: [action],
     };
 

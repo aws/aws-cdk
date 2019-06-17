@@ -24,11 +24,11 @@ const deployBucket = new s3.Bucket(stack, 'DeployBucket', {});
 new codepipeline.Pipeline(stack, 'Pipeline', {
   stages: [
     {
-      name: 'Source',
+      stageName: 'Source',
       actions: [sourceAction],
     },
     {
-      name: 'Deploy',
+      stageName: 'Deploy',
       actions: [
         new cpactions.S3DeployAction({
           actionName: 'DeployAction',

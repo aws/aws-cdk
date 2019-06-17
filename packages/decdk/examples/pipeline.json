@@ -21,7 +21,7 @@
       "Properties": {
         "stages": [
           {
-            "name": "Source",
+            "stageName": "Source",
             "actions": [
               {
                 "@aws-cdk/aws-codepipeline-actions.CodeCommitSourceAction":  {
@@ -37,7 +37,7 @@
             ]
           },
           {
-            "name": "Build",
+            "stageName": "Build",
             "actions": [
               {
                 "@aws-cdk/aws-codepipeline-actions.CodeBuildAction":   {
@@ -60,7 +60,7 @@
             ]
           },
           {
-            "name": "Deploy",
+            "stageName": "Deploy",
             "actions": [
               {
                 "@aws-cdk/aws-codepipeline-actions.CloudFormationCreateUpdateStackAction": {

@@ -35,7 +35,7 @@ const sourceAction2 = new cpactions.S3SourceAction({
   output: source2Output,
 });
 pipeline.addStage({
-  name: 'Source',
+  stageName: 'Source',
   actions: [
     sourceAction1,
     sourceAction2,
@@ -68,7 +68,7 @@ const testAction = new cpactions.CodeBuildAction({
   ],
 });
 pipeline.addStage({
-  name: 'Build',
+  stageName: 'Build',
   actions: [
     buildAction,
     testAction,

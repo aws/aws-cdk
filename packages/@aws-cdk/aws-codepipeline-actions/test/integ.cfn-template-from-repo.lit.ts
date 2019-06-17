@@ -19,7 +19,7 @@ const source = new cpactions.CodeCommitSourceAction({
   pollForSourceChanges: true,
 });
 const sourceStage = {
-  name: 'Source',
+  stageName: 'Source',
   actions: [source],
 };
 
@@ -28,7 +28,7 @@ const stackName = 'OurStack';
 const changeSetName = 'StagedChangeSet';
 
 const prodStage = {
-  name: 'Deploy',
+  stageName: 'Deploy',
   actions: [
     new cpactions.CloudFormationCreateReplaceChangeSetAction({
       actionName: 'PrepareChanges',

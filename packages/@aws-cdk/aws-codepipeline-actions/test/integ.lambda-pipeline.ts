@@ -11,7 +11,7 @@ const stack = new cdk.Stack(app, 'aws-cdk-codepipeline-lambda');
 
 const pipeline = new codepipeline.Pipeline(stack, 'Pipeline');
 
-const sourceStage = pipeline.addStage({ name: 'Source' });
+const sourceStage = pipeline.addStage({ stageName: 'Source' });
 const bucket = new s3.Bucket(stack, 'PipelineBucket', {
   versioned: true,
   removalPolicy: cdk.RemovalPolicy.Destroy,
@@ -36,7 +36,7 @@ const lambdaFun = new lambda.Function(stack, 'LambdaFun', {
   handler: 'index.handler',
   runtime: lambda.Runtime.Nodejs810,
 });
-const lambdaStage = pipeline.addStage({ name: 'Lambda' });
+const lambdaStage = pipeline.addStage({ stageName: 'Lambda' });
 lambdaStage.addAction(new cpactions.LambdaInvokeAction({
   actionName: 'Lambda' ,
   lambda: lambdaFun,
