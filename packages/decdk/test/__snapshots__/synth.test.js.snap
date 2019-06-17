@@ -2502,7 +2502,7 @@ Object {
                 ],
               ],
             },
-            "Id": "Pipeline",
+            "Id": "pipelinePipeline22F2A91D",
             "RoleArn": Object {
               "Fn::GetAtt": Array [
                 "PipelineEventsRole46BEEA7C",

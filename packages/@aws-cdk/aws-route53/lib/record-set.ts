@@ -122,7 +122,7 @@ export class RecordSet extends Resource implements IRecordSet {
       comment: props.comment
     });
 
-    this.domainName = recordSet.ref;
+    this.domainName = recordSet.refAsString;
   }
 }
 
@@ -442,9 +442,9 @@ export class ZoneDelegationRecord extends RecordSet {
     super(scope, id, {
       ...props,
       recordType: RecordType.NS,
-      target: RecordTarget.fromValues(...Token.isToken(props.nameServers)
+      target: RecordTarget.fromValues(...Token.isUnresolved(props.nameServers)
         ? props.nameServers // Can't map a string-array token!
-        : props.nameServers.map(ns => (Token.isToken(ns) || ns.endsWith('.')) ? ns : `${ns}.`)
+        : props.nameServers.map(ns => (Token.isUnresolved(ns) || ns.endsWith('.')) ? ns : `${ns}.`)
       ),
       ttl: props.ttl || 172_800
     });

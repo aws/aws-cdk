@@ -47,7 +47,7 @@ const project = new codebuild.PipelineProject(stack, 'EcsProject', {
     buildImage: codebuild.LinuxBuildImage.UBUNTU_14_04_DOCKER_17_09_0,
     privileged: true,
   },
-  buildSpec: {
+  buildSpec: codebuild.BuildSpec.fromObject({
     version: '0.2',
     phases: {
       pre_build: {
@@ -66,7 +66,7 @@ const project = new codebuild.PipelineProject(stack, 'EcsProject', {
     artifacts: {
       files: 'imagedefinitions.json',
     },
-  },
+  }),
   environmentVariables: {
     'REPOSITORY_URI': {
       value: repository.repositoryUri,

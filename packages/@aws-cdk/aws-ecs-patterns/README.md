@@ -42,8 +42,8 @@ const loadBalancedEcsService = new ecsPatterns.LoadBalancedEc2Service(stack, 'Se
 ```ts
 const loadBalancedFargateService = new ecsPatterns.LoadBalancedFargateService(stack, 'Service', {
   cluster,
-  memoryMiB: '1GB',
-  cpu: '512',
+  memoryLimitMiB: 1024,
+  cpu: 512,
   image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
 });
 ```
@@ -76,7 +76,7 @@ const queueProcessingEc2Service = new QueueProcessingEc2Service(stack, 'Service'
 ```ts
 const queueProcessingFargateService = new QueueProcessingFargateService(stack, 'Service', {
   cluster,
-  memoryMiB: '512',
+  memoryLimitMiB: 512,
   image: ecs.ContainerImage.fromRegistry('test'),
   command: ["-c", "4", "amazon.com"],
   enableLogging: false,

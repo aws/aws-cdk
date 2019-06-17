@@ -61,7 +61,7 @@
                 ]
               ]
             },
-            "Id": "Pipeline",
+            "Id": "awscdkcodepipelinecodecommitPipelineF780CA18",
             "RoleArn": {
               "Fn::GetAtt": [
                 "PipelineEventsRole46BEEA7C",

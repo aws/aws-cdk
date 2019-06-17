@@ -147,7 +147,7 @@ export interface QueueProcessingEc2ServiceProps {
 An example use case:
 ```ts
 // Create the vpc and cluster used by the queue processing service
-const vpc = new ec2.VpcNetwork(stack, 'Vpc', { maxAZs: 1 });
+const vpc = new ec2.Vpc(stack, 'Vpc', { maxAZs: 1 });
 const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
 cluster.addCapacity('DefaultAutoScalingGroup', {
   instanceType: new ec2.InstanceType('t2.micro')
@@ -219,7 +219,7 @@ export interface QueueProcessingFargateServiceProps {
 An example use case:
 ```ts
 // Create the vpc and cluster used by the queue processing service
-const vpc = new ec2.VpcNetwork(stack, 'Vpc', { maxAZs: 2 });
+const vpc = new ec2.Vpc(stack, 'Vpc', { maxAZs: 2 });
 const cluster = new ecs.Cluster(stack, 'FargateCluster', { vpc });
 const queue = new sqs.Queue(stack, 'ProcessingQueue', { 
   QueueName: 'FargateEventQueue'

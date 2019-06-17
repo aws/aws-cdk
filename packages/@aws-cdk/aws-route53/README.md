@@ -30,7 +30,7 @@ VPC you're configuring for private hosted zones.
 import ec2 = require('@aws-cdk/aws-ec2');
 import route53 = require('@aws-cdk/aws-route53');
 
-const vpc = new ec2.VpcNetwork(this, 'VPC');
+const vpc = new ec2.Vpc(this, 'VPC');
 
 const zone = new route53.PrivateHostedZone(this, 'HostedZone', {
   zoneName: 'fully.qualified.domain.com',

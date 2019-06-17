@@ -7,7 +7,7 @@ import iam = require('@aws-cdk/aws-iam');
 import lambda = require('@aws-cdk/aws-lambda');
 import s3 = require('@aws-cdk/aws-s3');
 import sns = require('@aws-cdk/aws-sns');
-import { App, CfnParameter, ConstructNode, PhysicalName, SecretValue, Stack } from '@aws-cdk/cdk';
+import { App, Aws, CfnParameter, ConstructNode, PhysicalName, SecretValue, Stack } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
 import cpactions = require('../lib');
 
@@ -56,7 +56,7 @@ export = {
     const stack = new Stack(undefined, 'StackName');
 
     new codepipeline.Pipeline(stack, 'Pipeline', {
-      pipelineName: stack.stackName,
+      pipelineName: Aws.stackName,
     });
 
     expect(stack, true).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
@@ -83,7 +83,7 @@ export = {
           runOrder: 8,
           output: new codepipeline.Artifact('A'),
           branch: 'branch',
-          oauthToken: SecretValue.plainText(secret.stringValue),
+          oauthToken: SecretValue.plainText(secret.valueAsString),
           owner: 'foo',
           repo: 'bar',
           trigger: cpactions.GitHubTrigger.Poll
@@ -142,7 +142,7 @@ export = {
           runOrder: 8,
           output: new codepipeline.Artifact('A'),
           branch: 'branch',
-          oauthToken: SecretValue.plainText(secret.stringValue),
+          oauthToken: SecretValue.plainText(secret.valueAsString),
           owner: 'foo',
           repo: 'bar',
           trigger: cpactions.GitHubTrigger.None
@@ -201,7 +201,7 @@ export = {
           runOrder: 8,
           output: new codepipeline.Artifact('A'),
           branch: 'branch',
-          oauthToken: SecretValue.plainText(secret.stringValue),
+          oauthToken: SecretValue.plainText(secret.valueAsString),
           owner: 'foo',
           repo: 'bar'
         }),
@@ -434,7 +434,7 @@ export = {
     const lambdaFun = new lambda.Function(stack, 'Function', {
       code: new lambda.InlineCode('bla'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NodeJS810,
+      runtime: lambda.Runtime.Nodejs810,
     });
 
     const pipeline = new codepipeline.Pipeline(stack, 'Pipeline');
@@ -695,8 +695,8 @@ export = {
 
       const usEast1ScaffoldStack = pipeline.crossRegionScaffolding['us-east-1'];
       test.notEqual(usEast1ScaffoldStack, undefined);
-      test.equal(usEast1ScaffoldStack.env.region, 'us-east-1');
-      test.equal(usEast1ScaffoldStack.env.account, pipelineAccount);
+      test.equal(usEast1ScaffoldStack.region, 'us-east-1');
+      test.equal(usEast1ScaffoldStack.account, pipelineAccount);
       test.ok(usEast1ScaffoldStack.node.id.indexOf('us-east-1') !== -1,
         `expected '${usEast1ScaffoldStack.node.id}' to contain 'us-east-1'`);
 

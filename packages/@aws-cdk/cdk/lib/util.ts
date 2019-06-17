@@ -1,6 +1,7 @@
 import { IConstruct } from "./construct";
-import { Stack } from './stack';
-import { IResolveContext, IResolvedValuePostProcessor, Token } from "./token";
+import { Intrinsic } from "./private/intrinsic";
+import { IResolvableWithPostProcess, IResolveContext } from "./resolvable";
+import { Stack } from "./stack";
 
 /**
  * Given an object, converts all keys to PascalCase given they are currently in camel case.
@@ -77,7 +78,7 @@ export function filterUndefined(obj: any): any {
 /**
  * A Token that applies a function AFTER resolve resolution
  */
-export class PostResolveToken extends Token implements IResolvedValuePostProcessor {
+export class PostResolveToken extends Intrinsic implements IResolvableWithPostProcess {
   constructor(value: any, private readonly processor: (x: any) => any) {
     super(value);
   }

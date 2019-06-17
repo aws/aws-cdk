@@ -9,7 +9,7 @@ enum CoreTypesFqn {
   ConstructInterface = "@aws-cdk/cdk.IConstruct",
   Resource = "@aws-cdk/cdk.Resource",
   ResourceInterface = "@aws-cdk/cdk.IResource",
-  Token = "@aws-cdk/cdk.Token"
+  ResolvableInterface = "@aws-cdk/cdk.IResolvable"
 }
 
 export class CoreTypes {
@@ -108,8 +108,8 @@ export class CoreTypes {
   /**
    * @returns `classType` for the core type Token
    */
-  public get tokenClass() {
-    return this.sys.findClass(CoreTypesFqn.Token);
+  public get tokenInterface() {
+    return this.sys.findInterface(CoreTypesFqn.ResolvableInterface);
   }
 
   private readonly sys: TypeSystem;

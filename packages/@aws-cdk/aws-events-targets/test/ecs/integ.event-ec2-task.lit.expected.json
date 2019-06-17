@@ -352,9 +352,6 @@
         }
       }
     },
-    "EcsClusterDefaultAutoScalingGroupLifecycleHookDrainHookTopicACD2D4A4": {
-      "Type": "AWS::SNS::Topic"
-    },
     "EcsClusterDefaultAutoScalingGroupDrainECSHookFunctionServiceRole94543EDA": {
       "Type": "AWS::IAM::Role",
       "Properties": {
@@ -403,7 +400,6 @@
           "Statement": [
             {
               "Action": [
-                "autoscaling:CompleteLifecycleAction",
                 "ec2:DescribeInstances",
                 "ec2:DescribeInstanceAttribute",
                 "ec2:DescribeInstanceStatus",
@@ -413,17 +409,55 @@
               "Resource": "*"
             },
             {
+              "Action": "autoscaling:CompleteLifecycleAction",
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":autoscaling:",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ":",
+                    {
+                      "Ref": "AWS::AccountId"
+                    },
+                    ":autoScalingGroup:*:autoScalingGroupName/",
+                    {
+                      "Ref": "EcsClusterDefaultAutoScalingGroupASGC1A785DB"
+                    }
+                  ]
+                ]
+              }
+            },
+            {
               "Action": [
-                "ecs:ListContainerInstances",
-                "ecs:SubmitContainerStateChange",
-                "ecs:SubmitTaskStateChange",
                 "ecs:DescribeContainerInstances",
-                "ecs:UpdateContainerInstancesState",
-                "ecs:ListTasks",
                 "ecs:DescribeTasks"
               ],
               "Effect": "Allow",
               "Resource": "*"
+            },
+            {
+              "Action": [
+                "ecs:ListContainerInstances",
+                "ecs:SubmitContainerStateChange",
+                "ecs:SubmitTaskStateChange",
+                "ecs:UpdateContainerInstancesState",
+                "ecs:ListTasks"
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "EcsCluster97242B84",
+                  "Arn"
+                ]
+              }
             }
           ],
           "Version": "2012-10-17"
@@ -550,6 +584,9 @@
           }
         ]
       }
+    },
+    "EcsClusterDefaultAutoScalingGroupLifecycleHookDrainHookTopicACD2D4A4": {
+      "Type": "AWS::SNS::Topic"
     },
     "EcsClusterDefaultAutoScalingGroupLifecycleHookDrainHookFFA63029": {
       "Type": "AWS::AutoScaling::LifecycleHook",
@@ -845,6 +882,76 @@
         ]
       }
     },
+    "TaskDefEventsRoleFB3B67B8": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "events.",
+                      {
+                        "Ref": "AWS::URLSuffix"
+                      }
+                    ]
+                  ]
+                }
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      }
+    },
+    "TaskDefEventsRoleDefaultPolicyA124E85B": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "ecs:RunTask",
+              "Condition": {
+                "ArnEquals": {
+                  "ecs:cluster": {
+                    "Fn::GetAtt": [
+                      "EcsCluster97242B84",
+                      "Arn"
+                    ]
+                  }
+                }
+              },
+              "Effect": "Allow",
+              "Resource": {
+                "Ref": "TaskDef54694570"
+              }
+            },
+            {
+              "Action": "iam:PassRole",
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "TaskDefExecutionRoleB4775C97",
+                  "Arn"
+                ]
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "TaskDefEventsRoleDefaultPolicyA124E85B",
+        "Roles": [
+          {
+            "Ref": "TaskDefEventsRoleFB3B67B8"
+          }
+        ]
+      }
+    },
     "EventImageAdoptRepositoryDFAAC242": {
       "Type": "Custom::ECRAdoptedRepository",
       "Properties": {
@@ -1052,7 +1159,7 @@
                 "Ref": "TaskDef54694570"
               }
             },
-            "Id": "TaskDef-on-EcsCluster",
+            "Id": "awsecsintegecsTaskDef8DD0C801",
             "Input": "{\"containerOverrides\":[{\"name\":\"TheContainer\",\"environment\":[{\"name\":\"I_WAS_TRIGGERED\",\"value\":\"From CloudWatch Events\"}]}]}",
             "RoleArn": {
               "Fn::GetAtt": [
@@ -1060,76 +1167,6 @@
                 "Arn"
               ]
             }
-          }
-        ]
-      }
-    },
-    "TaskDefEventsRoleFB3B67B8": {
-      "Type": "AWS::IAM::Role",
-      "Properties": {
-        "AssumeRolePolicyDocument": {
-          "Statement": [
-            {
-              "Action": "sts:AssumeRole",
-              "Effect": "Allow",
-              "Principal": {
-                "Service": {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "events.",
-                      {
-                        "Ref": "AWS::URLSuffix"
-                      }
-                    ]
-                  ]
-                }
-              }
-            }
-          ],
-          "Version": "2012-10-17"
-        }
-      }
-    },
-    "TaskDefEventsRoleDefaultPolicyA124E85B": {
-      "Type": "AWS::IAM::Policy",
-      "Properties": {
-        "PolicyDocument": {
-          "Statement": [
-            {
-              "Action": "ecs:RunTask",
-              "Condition": {
-                "ArnEquals": {
-                  "ecs:cluster": {
-                    "Fn::GetAtt": [
-                      "EcsCluster97242B84",
-                      "Arn"
-                    ]
-                  }
-                }
-              },
-              "Effect": "Allow",
-              "Resource": {
-                "Ref": "TaskDef54694570"
-              }
-            },
-            {
-              "Action": "iam:PassRole",
-              "Effect": "Allow",
-              "Resource": {
-                "Fn::GetAtt": [
-                  "TaskDefExecutionRoleB4775C97",
-                  "Arn"
-                ]
-              }
-            }
-          ],
-          "Version": "2012-10-17"
-        },
-        "PolicyName": "TaskDefEventsRoleDefaultPolicyA124E85B",
-        "Roles": [
-          {
-            "Ref": "TaskDefEventsRoleFB3B67B8"
           }
         ]
       }

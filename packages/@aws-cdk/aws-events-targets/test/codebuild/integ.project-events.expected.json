@@ -44,7 +44,7 @@
                 "Arn"
               ]
             },
-            "Id": "MyProject",
+            "Id": "awscdkcodebuildeventsMyProjectEF919B0E",
             "RoleArn": {
               "Fn::GetAtt": [
                 "MyProjectEventsRole5B7D93F5",
@@ -56,67 +56,14 @@
             "Arn": {
               "Ref": "MyTopic86869434"
             },
-            "Id": "MyTopic",
+            "Id": "awscdkcodebuildeventsMyTopic550011DC",
             "InputTransformer": {
               "InputPathsMap": {
-                "f1": "$.detail.repositoryName",
-                "f2": "$.detail.referenceName"
+                "detail-repositoryName": "$.detail.repositoryName",
+                "detail-referenceName": "$.detail.referenceName"
               },
-              "InputTemplate": "\"A commit was pushed to the repository <f1> on branch <f2>\""
+              "InputTemplate": "\"A commit was pushed to the repository <detail-repositoryName> on branch <detail-referenceName>\""
             }
-          }
-        ]
-      }
-    },
-    "MyProjectEventsRole5B7D93F5": {
-      "Type": "AWS::IAM::Role",
-      "Properties": {
-        "AssumeRolePolicyDocument": {
-          "Statement": [
-            {
-              "Action": "sts:AssumeRole",
-              "Effect": "Allow",
-              "Principal": {
-                "Service": {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "events.",
-                      {
-                        "Ref": "AWS::URLSuffix"
-                      }
-                    ]
-                  ]
-                }
-              }
-            }
-          ],
-          "Version": "2012-10-17"
-        }
-      }
-    },
-    "MyProjectEventsRoleDefaultPolicy397DCBF8": {
-      "Type": "AWS::IAM::Policy",
-      "Properties": {
-        "PolicyDocument": {
-          "Statement": [
-            {
-              "Action": "codebuild:StartBuild",
-              "Effect": "Allow",
-              "Resource": {
-                "Fn::GetAtt": [
-                  "MyProject39F7B0AE",
-                  "Arn"
-                ]
-              }
-            }
-          ],
-          "Version": "2012-10-17"
-        },
-        "PolicyName": "MyProjectEventsRoleDefaultPolicy397DCBF8",
-        "Roles": [
-          {
-            "Ref": "MyProjectEventsRole5B7D93F5"
           }
         ]
       }
@@ -267,16 +214,16 @@
           "source": [
             "aws.codebuild"
           ],
-          "detail-type": [
-            "CodeBuild Build State Change"
-          ],
           "detail": {
             "project-name": [
               {
                 "Ref": "MyProject39F7B0AE"
               }
             ]
-          }
+          },
+          "detail-type": [
+            "CodeBuild Build State Change"
+          ]
         },
         "State": "ENABLED",
         "Targets": [
@@ -284,7 +231,7 @@
             "Arn": {
               "Ref": "MyTopic86869434"
             },
-            "Id": "MyTopic"
+            "Id": "awscdkcodebuildeventsMyTopic550011DC"
           }
         ]
       }
@@ -296,16 +243,16 @@
           "source": [
             "aws.codebuild"
           ],
-          "detail-type": [
-            "CodeBuild Build Phase Change"
-          ],
           "detail": {
             "project-name": [
               {
                 "Ref": "MyProject39F7B0AE"
               }
             ]
-          }
+          },
+          "detail-type": [
+            "CodeBuild Build Phase Change"
+          ]
         },
         "State": "ENABLED",
         "Targets": [
@@ -313,13 +260,66 @@
             "Arn": {
               "Ref": "MyTopic86869434"
             },
-            "Id": "MyTopic",
+            "Id": "awscdkcodebuildeventsMyTopic550011DC",
             "InputTransformer": {
               "InputPathsMap": {
-                "f1": "$.detail.completed-phase"
+                "detail-completed-phase": "$.detail.completed-phase"
               },
-              "InputTemplate": "\"Build phase changed to <f1>\""
+              "InputTemplate": "\"Build phase changed to <detail-completed-phase>\""
             }
+          }
+        ]
+      }
+    },
+    "MyProjectEventsRole5B7D93F5": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "events.",
+                      {
+                        "Ref": "AWS::URLSuffix"
+                      }
+                    ]
+                  ]
+                }
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      }
+    },
+    "MyProjectEventsRoleDefaultPolicy397DCBF8": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "codebuild:StartBuild",
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "MyProject39F7B0AE",
+                  "Arn"
+                ]
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "MyProjectEventsRoleDefaultPolicy397DCBF8",
+        "Roles": [
+          {
+            "Ref": "MyProjectEventsRole5B7D93F5"
           }
         ]
       }

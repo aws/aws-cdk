@@ -789,8 +789,7 @@ export class Vpc extends VpcBase {
 
     this.node.applyAspect(new cdk.Tag(NAME_TAG, this.node.path));
 
-    this.availabilityZones = new cdk.AvailabilityZoneProvider(this).availabilityZones;
-    this.availabilityZones.sort();
+    this.availabilityZones = cdk.Context.getAvailabilityZones(this);
 
     const maxAZs = props.maxAZs !== undefined ? props.maxAZs : 3;
     this.availabilityZones = this.availabilityZones.slice(0, maxAZs);
@@ -810,12 +809,12 @@ export class Vpc extends VpcBase {
       });
       this.internetDependencies.push(igw);
       const att = new CfnVPCGatewayAttachment(this, 'VPCGW', {
-        internetGatewayId: igw.ref,
-        vpcId: this.resource.ref
+        internetGatewayId: igw.refAsString,
+        vpcId: this.resource.refAsString
       });
 
       (this.publicSubnets as PublicSubnet[]).forEach(publicSubnet => {
-        publicSubnet.addDefaultInternetRoute(igw.ref, att);
+        publicSubnet.addDefaultInternetRoute(igw.refAsString, att);
       });
 
       // if gateways are needed create them
@@ -945,10 +944,6 @@ export class Vpc extends VpcBase {
    */
   private createSubnets() {
     const remainingSpaceSubnets: SubnetConfiguration[] = [];
-
-    // Calculate number of public/private subnets based on number of AZs
-    const zones = new cdk.AvailabilityZoneProvider(this).availabilityZones;
-    zones.sort();
 
     for (const subnet of this.subnetConfiguration) {
       if (subnet.cidrMask === undefined) {
@@ -1129,12 +1124,12 @@ export class Subnet extends cdk.Resource implements ISubnet {
     const table = new CfnRouteTable(this, 'RouteTable', {
       vpcId: props.vpcId,
     });
-    this.routeTableId = table.ref;
+    this.routeTableId = table.refAsString;
 
     // Associate the public route table for this subnet, to this subnet
     new CfnSubnetRouteTableAssociation(this, 'RouteTableAssociation', {
       subnetId: this.subnetId,
-      routeTableId: table.ref
+      routeTableId: table.refAsString
     });
   }
 
