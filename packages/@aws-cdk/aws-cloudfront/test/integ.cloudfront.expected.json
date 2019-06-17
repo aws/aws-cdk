@@ -1,6 +1,7 @@
 {
   "Resources": {
     "Bucket83908E77": {
+      "DeletionPolicy": "Delete",
       "Type": "AWS::S3::Bucket"
     },
     "MyDistributionCFDistributionDE147309": {

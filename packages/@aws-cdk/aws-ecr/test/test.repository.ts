@@ -1,6 +1,7 @@
 import { expect, haveResource, haveResourceLike, ResourcePart } from '@aws-cdk/assert';
 import iam = require('@aws-cdk/aws-iam');
 import cdk = require('@aws-cdk/cdk');
+import { RemovalPolicy } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
 import ecr = require('../lib');
 
@@ -18,7 +19,8 @@ export = {
     expect(stack).toMatch({
       Resources: {
         Repo02AC86CF: {
-          Type: "AWS::ECR::Repository"
+          Type: "AWS::ECR::Repository",
+          DeletionPolicy: "Retain"
         }
       }
     });
@@ -320,12 +322,12 @@ export = {
     }
   },
 
-  '"retain" can be used to retain the repo when the resource is deleted'(test: Test) {
+  'removal policy is "Retain" by default'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
 
     // WHEN
-    new ecr.Repository(stack, 'Repo', { retain: true });
+    new ecr.Repository(stack, 'Repo');
 
     // THEN
     expect(stack).to(haveResource('AWS::ECR::Repository', {
@@ -333,5 +335,23 @@ export = {
       "DeletionPolicy": "Retain"
     }, ResourcePart.CompleteDefinition));
     test.done();
+  },
+
+  '"Delete" removal policy can be set explicitly'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new ecr.Repository(stack, 'Repo', {
+      removalPolicy: RemovalPolicy.Destroy
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::ECR::Repository', {
+      "Type": "AWS::ECR::Repository",
+      "DeletionPolicy": "Delete"
+    }, ResourcePart.CompleteDefinition));
+    test.done();
   }
+
 };

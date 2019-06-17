@@ -1,6 +1,6 @@
 import cloudwatch = require('@aws-cdk/aws-cloudwatch');
 import iam = require('@aws-cdk/aws-iam');
-import { applyRemovalPolicy, Construct, IResource, RemovalPolicy, Resource, Stack } from '@aws-cdk/cdk';
+import { Construct, IResource, RemovalPolicy, Resource, Stack } from '@aws-cdk/cdk';
 import { LogStream } from './log-stream';
 import { CfnLogGroup } from './logs.generated';
 import { MetricFilter } from './metric-filter';
@@ -289,16 +289,16 @@ export interface LogGroupProps {
   readonly retentionDays?: RetentionDays;
 
   /**
-   * Retain the log group if the stack or containing construct ceases to exist
+   * Determine the removal policy of this log group.
    *
    * Normally you want to retain the log group so you can diagnose issues
    * from logs even after a deployment that no longer includes the log group.
    * In that case, use the normal date-based retention policy to age out your
    * logs.
    *
-   * @default true
+   * @default RemovalPolicy.Retain
    */
-  readonly retainLogGroup?: boolean;
+  readonly removalPolicy?: RemovalPolicy;
 }
 
 /**
@@ -343,9 +343,7 @@ export class LogGroup extends LogGroupBase {
       retentionInDays,
     });
 
-    if (props.retainLogGroup !== false) {
-      applyRemovalPolicy(resource, RemovalPolicy.Orphan);
-    }
+    resource.applyRemovalPolicy(props.removalPolicy);
 
     this.logGroupArn = resource.logGroupArn;
     this.logGroupName = resource.logGroupName;

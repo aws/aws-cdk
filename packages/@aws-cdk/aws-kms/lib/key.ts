@@ -1,6 +1,6 @@
 import iam = require('@aws-cdk/aws-iam');
 import { PolicyDocument, PolicyStatement } from '@aws-cdk/aws-iam';
-import { Construct, DeletionPolicy, IResource, Resource, Stack } from '@aws-cdk/cdk';
+import { Construct, IResource, RemovalPolicy, Resource, Stack } from '@aws-cdk/cdk';
 import { Alias } from './alias';
 import { CfnKey } from './kms.generated';
 
@@ -177,9 +177,9 @@ export interface KeyProps {
    * Whether the encryption key should be retained when it is removed from the Stack. This is useful when one wants to
    * retain access to data that was encrypted with a key that is being retired.
    *
-   * @default true
+   * @default RemovalPolicy.Retain
    */
-  readonly retain?: boolean;
+  readonly removalPolicy?: RemovalPolicy;
 }
 
 /**
@@ -225,9 +225,8 @@ export class Key extends KeyBase {
     });
 
     this.keyArn = resource.keyArn;
-    resource.options.deletionPolicy = props.retain === false
-                                    ? DeletionPolicy.Delete
-                                    : DeletionPolicy.Retain;
+
+    resource.applyRemovalPolicy(props.removalPolicy);
   }
 
   /**
