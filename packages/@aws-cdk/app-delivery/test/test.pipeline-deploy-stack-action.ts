@@ -348,7 +348,7 @@ function createSelfUpdatingStack(pipelineStack: cdk.Stack): SelfUpdatingPipeline
     actionName: 'CodeBuild',
     project,
     input: sourceOutput,
-    output: buildOutput,
+    outputs: [buildOutput],
   });
   pipeline.addStage({
     name: 'build',

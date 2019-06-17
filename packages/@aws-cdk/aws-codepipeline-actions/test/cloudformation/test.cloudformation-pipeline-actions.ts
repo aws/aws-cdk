@@ -48,7 +48,7 @@ export = {
     actionName: 'build',
     project,
     input: sourceOutput,
-    output: buildOutput,
+    outputs: [buildOutput],
   });
   pipeline.addStage({
     name: 'build',
