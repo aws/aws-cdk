@@ -1284,7 +1284,7 @@ export = {
     let bindCount = 0;
 
     class EventSource implements lambda.IEventSource {
-      public bind(_: lambda.FunctionBase): void {
+      public bind(_: lambda.IFunction): void {
         bindCount++;
       }
     }

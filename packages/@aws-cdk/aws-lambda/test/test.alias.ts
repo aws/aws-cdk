@@ -71,7 +71,7 @@ export = {
       runtime: lambda.Runtime.Nodejs810,
     });
 
-    const version = fn.newVersion();
+    const version = fn.addVersion('NewVersion');
 
     new lambda.Alias(stack, 'Alias', {
       aliasName: 'prod',
