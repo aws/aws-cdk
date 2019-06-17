@@ -63,7 +63,7 @@ const fn = new lambda.Function(this, 'Function', ...);
 topic.subscribeLambda(new subs.LambdaSubscription(fn, {
     filterPolicy: {
         color: sns.SubscriptionFilter.stringFilter({
-            whiteliste: ['red', 'orange'],
+            whitelist: ['red', 'orange'],
             matchPrefixes: ['bl']
         }),
         size: sns.SubscriptionFilter.stringFilter({
