@@ -1,4 +1,5 @@
 import { expect, haveResource } from '@aws-cdk/assert';
+import * as cloudformation from '@aws-cdk/aws-cloudformation';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/cdk';
@@ -327,14 +328,15 @@ export = {
     const stack = new cdk.Stack();
     const sourceBucket = new s3.Bucket(stack, 'Bucket');
 
-    const lambdaFunction = new lambda.Function(stack, 'Lambda', {
+    const lambdaFunction = new lambda.SingletonFunction(stack, 'Lambda', {
+      uuid: 'xxxx-xxxx-xxxx-xxxx',
       code: lambda.Code.inline('foo'),
       handler: 'index.handler',
       runtime: lambda.Runtime.Nodejs810
     });
 
-    const lambdaVersion = new lambda.Version(stack, 'LambdaVersion', {
-      lambda: lambdaFunction
+    const customResource = new cloudformation.CustomResource(stack, 'CustomResource', {
+      provider: cloudformation.CustomResourceProvider.lambda(lambdaFunction)
     });
 
     new CloudFrontWebDistribution(stack, 'AnAmazingWebsiteProbably', {
@@ -348,7 +350,11 @@ export = {
               isDefaultBehavior: true,
               lambdaFunctionAssociations: [{
                 eventType: LambdaEdgeEventType.OriginRequest,
-                lambdaFunction: cdk.Token.asAny(lambdaVersion.versionArn)
+                lambdaFunction: lambda.Version.fromVersionArn(
+                  stack,
+                  'LambdaEdgeVersion',
+                  customResource.getAtt('Output').toString()
+                )
               }]
             }
           ]
@@ -394,7 +400,7 @@ export = {
             {
               "EventType": "origin-request",
               "LambdaFunctionARN": {
-                "Ref": "LambdaVersionFA49E61E"
+                "Fn::GetAtt": ["CustomResource", "Output"]
               }
             }
           ]

@@ -1,5 +1,6 @@
 import cloudwatch = require('@aws-cdk/aws-cloudwatch');
-import { Construct } from '@aws-cdk/cdk';
+import { Construct, Fn } from '@aws-cdk/cdk';
+import { Function } from './function';
 import { IFunction, QualifiedFunctionBase } from './function-base';
 import { CfnVersion } from './lambda.generated';
 
@@ -72,6 +73,18 @@ export interface VersionAttributes {
  */
 export class Version extends QualifiedFunctionBase implements IVersion {
 
+  /**
+   * @param scope The cdk scope creating this resource
+   * @param id The cdk id of this resource
+   * @param versionArn The version ARN to create this version from
+   */
+  public static fromVersionArn(scope: Construct, id: string, versionArn: string): IVersion {
+    return Version.fromVersionAttributes(scope, id, {
+      version: extractVersionFromArn(versionArn),
+      lambda: Function.fromFunctionArn(scope, `${id}Function`, versionArn),
+    });
+  }
+
   public static fromVersionAttributes(scope: Construct, id: string, attrs: VersionAttributes): IVersion {
     class Import extends QualifiedFunctionBase implements IVersion {
       public readonly version = attrs.version;
@@ -130,4 +143,21 @@ export class Version extends QualifiedFunctionBase implements IVersion {
       ...props
     });
   }
+}
+
+/**
+ * Given an opaque (token) ARN, returns a CloudFormation expression that extracts the version
+ * name from the ARN.
+ *
+ * Version ARNs look like this:
+ *
+ *   arn:aws:lambda:region:account-id:function:function-name:version
+ *
+ * ..which means that in order to extract the `version` component from the ARN, we can
+ * split the ARN using ":" and select the component in index 7.
+ *
+ * @returns `FnSelect(7, FnSplit(':', arn))`
+ */
+function extractVersionFromArn(arn: string) {
+  return Fn.select(7, Fn.split(':', arn));
 }

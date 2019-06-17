@@ -72,6 +72,7 @@
   },
   "dependencies": {
     "@aws-cdk/aws-certificatemanager": "^0.35.0",
+    "@aws-cdk/aws-cloudformation": "^0.35.0",
     "@aws-cdk/aws-iam": "^0.35.0",
     "@aws-cdk/aws-kms": "^0.35.0",
     "@aws-cdk/aws-lambda": "^0.35.0",
@@ -81,6 +82,7 @@
   "homepage": "https://github.com/awslabs/aws-cdk",
   "peerDependencies": {
     "@aws-cdk/aws-certificatemanager": "^0.35.0",
+    "@aws-cdk/aws-cloudformation": "^0.35.0",
     "@aws-cdk/aws-iam": "^0.35.0",
     "@aws-cdk/aws-kms": "^0.35.0",
     "@aws-cdk/aws-lambda": "^0.35.0",
