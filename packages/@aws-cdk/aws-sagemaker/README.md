@@ -79,7 +79,7 @@ Define an endpoint.
 const model = new Model(this, 'MyModel', {
     primaryContainer: new GenericContainerDefinition( { 'us-west-2': '123456789012.dkr.ecr.us-west-2.amazonaws.com/mymodel:latest' })
 });
-const endpooint = new sagemaker.Endpoint(stack, 'Endpoint', {
+const endpooint = new Endpoint(stack, 'MyEndpoint', {
     productionVariants: [ 
         { 
             model,
