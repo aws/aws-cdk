@@ -345,8 +345,8 @@ export class CustomRule extends RuleNew {
     });
 
     if (props.lambdaFunction.role) {
-      props.lambdaFunction.role.attachManagedPolicy(
-        new iam.AwsManagedPolicy('service-role/AWSConfigRulesExecutionRole', this).policyArn
+      props.lambdaFunction.role.addManagedPolicy(
+        iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSConfigRulesExecutionRole')
       );
     }
 

@@ -112,9 +112,10 @@ export = {
     });
 
     // WHEN
-    asset.repository.addToResourcePolicy(new iam.PolicyStatement()
-      .addAction('BOOM')
-      .addPrincipal(new iam.ServicePrincipal('test.service')));
+    asset.repository.addToResourcePolicy(new iam.PolicyStatement({
+      actions: ['BOOM'],
+      principals: [new iam.ServicePrincipal('test.service')]
+    }));
 
     // THEN
     expect(stack).to(haveResource('Custom::ECRAdoptedRepository', {

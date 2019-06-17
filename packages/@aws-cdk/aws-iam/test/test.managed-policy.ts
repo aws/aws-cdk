@@ -1,13 +1,13 @@
 import cdk = require('@aws-cdk/cdk');
 import { Test } from 'nodeunit';
-import { AwsManagedPolicy } from '../lib';
+import { ManagedPolicy } from '../lib';
 
 export = {
   'simple managed policy'(test: Test) {
     const stack = new cdk.Stack();
-    const mp = new AwsManagedPolicy("service-role/SomePolicy", stack);
+    const mp = ManagedPolicy.fromAwsManagedPolicyName("service-role/SomePolicy");
 
-    test.deepEqual(stack.resolve(mp.policyArn), {
+    test.deepEqual(stack.resolve(mp.managedPolicyArn), {
       "Fn::Join": ['', [
         'arn:',
         { Ref: 'AWS::Partition' },

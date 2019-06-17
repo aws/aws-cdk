@@ -339,24 +339,27 @@ export class ReceiptRuleS3Action implements IReceiptRuleAction {
     // See https://docs.aws.amazon.com/ses/latest/DeveloperGuide/receiving-email-permissions.html#receiving-email-permissions-s3
     const keyPattern = this.props.objectKeyPrefix || '';
 
-    const s3Statement = new iam.PolicyStatement()
-      .addAction('s3:PutObject')
-      .addServicePrincipal('ses.amazonaws.com')
-      .addResource(this.props.bucket.arnForObjects(`${keyPattern}*`))
-      .addCondition('StringEquals', {
-        'aws:Referer': cdk.Aws.accountId
-      });
+    const s3Statement = new iam.PolicyStatement({
+      actions: ['s3:PutObject'],
+      principals: [new iam.ServicePrincipal('ses.amazonaws.com')],
+      resources: [this.props.bucket.arnForObjects(`${keyPattern}*`)],
+      conditions: {
+        StringEquals: {
+          'aws:Referer': cdk.Aws.accountId
+        }
+      }
+    });
 
     this.props.bucket.addToResourcePolicy(s3Statement);
 
     // Allow SES to use KMS master key
     // See https://docs.aws.amazon.com/ses/latest/DeveloperGuide/receiving-email-permissions.html#receiving-email-permissions-kms
     if (this.props.kmsKey && !/alias\/aws\/ses$/.test(this.props.kmsKey.keyArn)) {
-      const kmsStatement = new iam.PolicyStatement()
-        .addActions('km:Encrypt', 'kms:GenerateDataKey')
-        .addServicePrincipal('ses.amazonaws.com')
-        .addAllResources()
-        .addConditions({
+      const kmsStatement = new iam.PolicyStatement({
+        actions: ['km:Encrypt', 'kms:GenerateDataKey'],
+        principals: [ new iam.ServicePrincipal('ses.amazonaws.com')],
+        resources: ['*'],
+        conditions: {
           Null: {
             'kms:EncryptionContext:aws:ses:rule-name': 'false',
             'kms:EncryptionContext:aws:ses:message-id': 'false'
@@ -364,7 +367,8 @@ export class ReceiptRuleS3Action implements IReceiptRuleAction {
           StringEquals: {
             'kms:EncryptionContext:aws:ses:source-account': cdk.Aws.accountId
           }
-        });
+        }
+      });
 
       this.props.kmsKey.addToResourcePolicy(kmsStatement);
     }

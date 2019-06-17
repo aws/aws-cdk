@@ -231,9 +231,10 @@ export = {
       vpc
     });
 
-    fleet.addToRolePolicy(new iam.PolicyStatement()
-      .addAction('test:SpecialName')
-      .addAllResources());
+    fleet.addToRolePolicy(new iam.PolicyStatement({
+      actions: ['test:SpecialName'],
+      resources: ['*']
+    }));
 
     expect(stack).to(haveResource('AWS::IAM::Policy', {
       PolicyDocument: {

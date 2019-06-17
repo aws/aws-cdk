@@ -466,9 +466,10 @@ export class CodeCommitSource extends GitBuildSource {
    */
   public _bind(project: Project) {
     // https://docs.aws.amazon.com/codebuild/latest/userguide/setting-up.html
-    project.addToRolePolicy(new iam.PolicyStatement()
-      .addAction('codecommit:GitPull')
-      .addResource(this.repo.repositoryArn));
+    project.addToRolePolicy(new iam.PolicyStatement({
+      actions: ['codecommit:GitPull'],
+      resources: [this.repo.repositoryArn]
+    }));
   }
 
   protected toSourceProperty(): any {

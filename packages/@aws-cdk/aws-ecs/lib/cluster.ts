@@ -153,18 +153,21 @@ export class Cluster extends Resource implements ICluster {
 
     // ECS instances must be able to do these things
     // Source: https://docs.aws.amazon.com/AmazonECS/latest/developerguide/instance_IAM_role.html
-    autoScalingGroup.addToRolePolicy(new iam.PolicyStatement().addActions(
-      "ecs:CreateCluster",
-      "ecs:DeregisterContainerInstance",
-      "ecs:DiscoverPollEndpoint",
-      "ecs:Poll",
-      "ecs:RegisterContainerInstance",
-      "ecs:StartTelemetrySession",
-      "ecs:Submit*",
-      "ecr:GetAuthorizationToken",
-      "logs:CreateLogStream",
-      "logs:PutLogEvents"
-    ).addAllResources());
+    autoScalingGroup.addToRolePolicy(new iam.PolicyStatement({
+      actions: [
+        "ecs:CreateCluster",
+        "ecs:DeregisterContainerInstance",
+        "ecs:DiscoverPollEndpoint",
+        "ecs:Poll",
+        "ecs:RegisterContainerInstance",
+        "ecs:StartTelemetrySession",
+        "ecs:Submit*",
+        "ecr:GetAuthorizationToken",
+        "logs:CreateLogStream",
+        "logs:PutLogEvents"
+      ],
+      resources: ['*']
+    }));
 
     // 0 disables, otherwise forward to underlying implementation which picks the sane default
     if (options.taskDrainTimeSeconds !== 0) {

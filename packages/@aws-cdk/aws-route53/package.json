@@ -92,5 +92,10 @@
       "from-attributes:fromPublicHostedZoneAttributes"
     ]
   },
-  "stability": "experimental"
+  "stability": "experimental",
+  "nyc": {
+    "statements": 60,
+    "lines": 60,
+    "branches": 60
+  }
 }

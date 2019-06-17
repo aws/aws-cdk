@@ -89,7 +89,7 @@ export = {
     // add a policy to the role
     const after = new Stack();
     const afterRole = new Role(after, 'MyRole', { assumedBy: new ServicePrincipal('sns.amazonaws.com') });
-    afterRole.addToPolicy(new PolicyStatement().addResource('myresource').addAction('myaction'));
+    afterRole.addToPolicy(new PolicyStatement({ resources: ['myresource'], actions: ['myaction'] }));
     expect(after).to(haveResource('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
@@ -116,10 +116,10 @@ export = {
 
     const role = new Role(stack, 'MyRole', {
       assumedBy: new ServicePrincipal('test.service'),
-      managedPolicyArns: [ 'managed1', 'managed2' ]
+      managedPolicies: [ { managedPolicyArn: 'managed1' }, { managedPolicyArn: 'managed2' } ]
     });
 
-    role.attachManagedPolicy('managed3');
+    role.addManagedPolicy({ managedPolicyArn: 'managed3' });
     expect(stack).toMatch({ Resources:
       { MyRoleF48FFE04:
          { Type: 'AWS::IAM::Role',
@@ -268,9 +268,10 @@ export = {
     const importedRole = Role.fromRoleArn(stack, 'ImportedRole', 'arn:aws:iam::123456789012:role/MyRole');
 
     // WHEN
-    importedRole.addToPolicy(new PolicyStatement()
-      .addAction('s3:*')
-      .addResource('xyz'));
+    importedRole.addToPolicy(new PolicyStatement({
+      actions: ['s3:*'],
+      resources: ['xyz']
+    }));
 
     // THEN
     expect(stack).to(haveResource('AWS::IAM::Policy', {

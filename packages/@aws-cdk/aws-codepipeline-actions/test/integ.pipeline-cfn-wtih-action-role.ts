@@ -28,10 +28,10 @@ const sourceStage = {
 const role = new iam.Role(stack, 'ActionRole', {
   assumedBy: new iam.AccountPrincipal(cdk.Aws.accountId)
 });
-role.addToPolicy(new iam.PolicyStatement()
-  .addAction('sqs:*')
-  .addAllResources()
-);
+role.addToPolicy(new iam.PolicyStatement({
+  actions: ['sqs:*'],
+  resources: ['*']
+}));
 const cfnStage = {
   name: 'CFN',
   actions: [

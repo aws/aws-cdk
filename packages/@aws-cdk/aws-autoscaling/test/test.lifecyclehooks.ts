@@ -71,9 +71,10 @@ export = {
 
 class FakeNotificationTarget implements autoscaling.ILifecycleHookTarget {
   public bind(_scope: Construct, lifecycleHook: autoscaling.ILifecycleHook): autoscaling.LifecycleHookTargetConfig {
-    lifecycleHook.role.addToPolicy(new iam.PolicyStatement()
-      .addAction('action:Work')
-      .addAllResources());
+    lifecycleHook.role.addToPolicy(new iam.PolicyStatement({
+      actions: ['action:Work'],
+      resources: ['*']
+    }));
     return { notificationTargetArn: 'target:arn', };
   }
 }

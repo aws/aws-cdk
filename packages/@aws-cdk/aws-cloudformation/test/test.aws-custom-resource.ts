@@ -134,9 +134,10 @@ export = {
         physicalResourceIdPath: 'ETag'
       },
       policyStatements: [
-        new iam.PolicyStatement()
-          .addAction('s3:PutObject')
-          .addResource('arn:aws:s3:::my-bucket/my-key')
+        new iam.PolicyStatement({
+          actions: ['s3:PutObject'],
+          resources: ['arn:aws:s3:::my-bucket/my-key']
+        })
       ]
     });
 

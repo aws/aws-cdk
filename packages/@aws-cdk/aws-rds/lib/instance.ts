@@ -487,13 +487,7 @@ abstract class DatabaseInstanceNew extends DatabaseInstanceBase implements IData
     if (props.monitoringInterval) {
       monitoringRole = new iam.Role(this, 'MonitoringRole', {
         assumedBy: new iam.ServicePrincipal('monitoring.rds.amazonaws.com'),
-        managedPolicyArns: [Stack.of(this).formatArn({
-          service: 'iam',
-          region: '',
-          account: 'aws',
-          resource: 'policy',
-          resourceName: 'service-role/AmazonRDSEnhancedMonitoringRole'
-        })]
+        managedPolicies: [iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AmazonRDSEnhancedMonitoringRole')],
       });
     }
 

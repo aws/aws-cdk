@@ -72,8 +72,9 @@ export class CodeCommitSourceAction extends codepipeline.Action {
       'codecommit:CancelUploadArchive',
     ];
 
-    info.role.addToPolicy(new iam.PolicyStatement()
-      .addResource(this.props.repository.repositoryArn)
-      .addActions(...actions));
+    info.role.addToPolicy(new iam.PolicyStatement({
+      resources: [this.props.repository.repositoryArn],
+      actions
+    }));
   }
 }

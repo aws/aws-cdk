@@ -58,7 +58,7 @@ export = {
   /** Deploy! */
 
   // To execute a change set - yes, you probably do need *:* 🤷‍♀️
-  changeSetExecRole.addToPolicy(new PolicyStatement().addAllResources().addAction("*"));
+  changeSetExecRole.addToPolicy(new PolicyStatement({ resources: ['*'], actions: ['*'] }));
 
   const stackName = 'BrelandsStack';
   const changeSetName = 'MyMagicalChangeSet';
