@@ -134,7 +134,7 @@ export abstract class QueueBase extends Resource implements IQueue {
     }
 
     if (this.policy) {
-      this.policy.document.addStatement(statement);
+      this.policy.document.addStatements(statement);
     }
   }
 

@@ -57,15 +57,19 @@ export class SendToQueue implements sfn.IStepFunctionsTask {
 
   constructor(private readonly queue: sqs.IQueue, private readonly props: SendToQueueProps) {
     this.waitForTaskToken = props.waitForTaskToken === true;
+
+    if (this.waitForTaskToken && !sfn.FieldUtils.containsTaskToken(props.messageBody.value)) {
+      throw new Error('Task Token is missing in messageBody (pass Context.taskToken somewhere in messageBody)');
+    }
   }
 
   public bind(_task: sfn.Task): sfn.StepFunctionsTaskConfig {
     return {
       resourceArn: 'arn:aws:states:::sqs:sendMessage' + (this.waitForTaskToken ? '.waitForTaskToken' : ''),
-      policyStatements: [new iam.PolicyStatement()
-        .addAction('sqs:SendMessage')
-        .addResource(this.queue.queueArn)
-      ],
+      policyStatements: [new iam.PolicyStatement({
+        actions: ['sqs:SendMessage'],
+        resources: [this.queue.queueArn]
+      })],
       parameters: {
         QueueUrl: this.queue.queueUrl,
         ...sfn.FieldUtils.renderObject({

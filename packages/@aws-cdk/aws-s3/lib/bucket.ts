@@ -348,7 +348,7 @@ abstract class BucketBase extends Resource implements IBucket {
     }
 
     if (this.policy) {
-      this.policy.document.addStatement(permission);
+      this.policy.document.addStatements(permission);
     }
   }
 

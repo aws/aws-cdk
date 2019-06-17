@@ -48,15 +48,19 @@ export class PublishToTopic implements sfn.IStepFunctionsTask {
 
   constructor(private readonly topic: sns.ITopic, private readonly props: PublishToTopicProps) {
     this.waitForTaskToken = props.waitForTaskToken === true;
+
+    if (this.waitForTaskToken && !sfn.FieldUtils.containsTaskToken(props.message.value)) {
+      throw new Error('Task Token is missing in message (pass Context.taskToken somewhere in message)');
+    }
   }
 
   public bind(_task: sfn.Task): sfn.StepFunctionsTaskConfig {
     return {
       resourceArn: 'arn:aws:states:::sns:publish' + (this.waitForTaskToken ? '.waitForTaskToken' : ''),
-      policyStatements: [new iam.PolicyStatement()
-        .addAction('sns:Publish')
-        .addResource(this.topic.topicArn)
-      ],
+      policyStatements: [new iam.PolicyStatement({
+        actions: ['sns:Publish'],
+        resources: [this.topic.topicArn]
+      })],
       parameters: {
         TopicArn: this.topic.topicArn,
         ...sfn.FieldUtils.renderObject({

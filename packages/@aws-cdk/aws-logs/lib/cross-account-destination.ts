@@ -80,7 +80,7 @@ export class CrossAccountDestination extends cdk.Construct implements ILogSubscr
   }
 
   public addToPolicy(statement: iam.PolicyStatement) {
-    this.policyDocument.addStatement(statement);
+    this.policyDocument.addStatements(statement);
   }
 
   public bind(_scope: Construct, _sourceLogGroup: ILogGroup): LogSubscriptionDestinationConfig {

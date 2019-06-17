@@ -24,11 +24,11 @@ export class SqsDestination implements s3.IBucketNotificationDestination {
     // if this queue is encrypted, we need to allow S3 to read messages since that's how
     // it verifies that the notification destination configuration is valid.
     if (this.queue.encryptionMasterKey) {
-      this.queue.encryptionMasterKey.addToResourcePolicy(new iam.PolicyStatement()
-        .addServicePrincipal('s3.amazonaws.com')
-        .addAction('kms:GenerateDataKey*')
-        .addAction('kms:Decrypt')
-        .addAllResources(), /* allowNoOp */ false);
+      this.queue.encryptionMasterKey.addToResourcePolicy(new iam.PolicyStatement({
+        principals: [new iam.ServicePrincipal('s3.amazonaws.com')],
+        actions: ['kms:GenerateDataKey*', 'kms:Decrypt'],
+        resources: ['*'],
+      }), /* allowNoOp */ false);
     }
 
     return {

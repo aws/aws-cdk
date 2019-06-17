@@ -40,7 +40,7 @@ export abstract class VpcEndpoint extends Resource implements IVpcEndpoint {
       this.policyDocument = new iam.PolicyDocument();
     }
 
-    this.policyDocument.addStatement(statement);
+    this.policyDocument.addStatements(statement);
   }
 }
 

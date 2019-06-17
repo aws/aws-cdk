@@ -151,7 +151,7 @@ export class LambdaDeploymentGroup extends cdk.Resource implements ILambdaDeploy
       assumedBy: new iam.ServicePrincipal('codedeploy.amazonaws.com')
     });
 
-    this.role.attachManagedPolicy('arn:aws:iam::aws:policy/service-role/AWSCodeDeployRoleForLambda');
+    this.role.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSCodeDeployRoleForLambda'));
 
     const resource = new CfnDeploymentGroup(this, 'Resource', {
       applicationName: this.application.applicationName,

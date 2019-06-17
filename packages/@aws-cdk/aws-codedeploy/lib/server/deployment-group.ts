@@ -272,7 +272,7 @@ export class ServerDeploymentGroup extends ServerDeploymentGroupBase {
 
     this.role = props.role || new iam.Role(this, 'Role', {
       assumedBy: new iam.ServicePrincipal('codedeploy.amazonaws.com'),
-      managedPolicyArns: ['arn:aws:iam::aws:policy/service-role/AWSCodeDeployRole'],
+      managedPolicies: [iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSCodeDeployRole')],
     });
 
     this._autoScalingGroups = props.autoScalingGroups || [];
