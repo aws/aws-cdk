@@ -1,6 +1,6 @@
 import { Construct, Resource } from '@aws-cdk/cdk';
 import { CfnSubscription } from './sns.generated';
-import { SubscriptionFilterPolicy } from './subscription-filter-policy';
+import { SubscriptionFilter } from './subscription-filter';
 import { ITopic } from './topic-base';
 
 /**
@@ -31,9 +31,9 @@ export interface SubscriptionOptions {
   /**
    * The filter policy.
    *
-   * @default all messages are delivered
+   * @default - all messages are delivered
    */
-  readonly filterPolicy?: SubscriptionFilterPolicy;
+  readonly filterPolicy?: { [attribute: string]: SubscriptionFilter };
 }
 /**
  * Properties for creating a new subscription
@@ -52,6 +52,8 @@ export interface SubscriptionProps extends SubscriptionOptions {
  * this class.
  */
 export class Subscription extends Resource {
+  private readonly filterPolicy?: { [attribute: string]: any[] };
+
   constructor(scope: Construct, id: string, props: SubscriptionProps) {
     super(scope, id);
 
@@ -59,12 +61,30 @@ export class Subscription extends Resource {
       throw new Error('Raw message delivery can only be enabled for HTTP/S and SQS subscriptions.');
     }
 
+    if (props.filterPolicy) {
+      if (Object.keys(props.filterPolicy).length > 5) {
+        throw new Error('A filter policy can have a maximum of 5 attribute names.');
+      }
+
+      this.filterPolicy = Object.entries(props.filterPolicy)
+        .reduce(
+          (acc, [k, v]) => ({ ...acc, [k]: v.conditions }),
+          {}
+        );
+
+      let total = 1;
+      Object.values(this.filterPolicy).forEach(filter => { total *= filter.length; });
+      if (total > 100) {
+        throw new Error(`The total combination of values (${total}) must not exceed 100.`);
+      }
+    }
+
     new CfnSubscription(this, 'Resource', {
       endpoint: props.endpoint,
       protocol: props.protocol,
       topicArn: props.topic.topicArn,
       rawMessageDelivery: props.rawMessageDelivery,
-      filterPolicy: props.filterPolicy && props.filterPolicy.policy,
+      filterPolicy: this.filterPolicy,
     });
 
   }

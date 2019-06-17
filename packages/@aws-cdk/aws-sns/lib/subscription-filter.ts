@@ -1,32 +1,4 @@
 /**
- * A SNS subscription filter policy.
- */
-export class SubscriptionFilterPolicy {
-  /**
-   * The filter policy.
-   */
-  public readonly policy: { [attribute: string]: any[] };
-
-  constructor(attributesMap: { [attribute: string]: SubscriptionFilter }) {
-    if (Object.keys(attributesMap).length > 5) {
-      throw new Error('A filter policy can have a maximum of 5 attribute names.');
-    }
-
-    this.policy = Object.entries(attributesMap)
-      .reduce(
-        (acc, [k, v]) => ({ ...acc, [k]: v.conditions }),
-        {}
-      );
-
-    let total = 1;
-    Object.values(this.policy).forEach(filter => { total *= filter.length; });
-    if (total > 100) {
-      throw new Error(`The total combination of values (${total}) must not exceed 100.`);
-    }
-  }
-}
-
-/**
  * Conditions that can be applied to string attributes.
  */
 export interface StringConditions {

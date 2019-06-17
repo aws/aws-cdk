@@ -60,21 +60,21 @@ const fn = new lambda.Function(this, 'Function', ...);
 // color: 'red' or 'orange' or begins with 'bl'
 // size: anything but 'small' or 'medium'
 // price: between 100 and 200 or greater than 300
-const filterPolicy = new sns.SubscriptionFilterPolicy({
-    color: sns.SubscriptionFilter.stringFilter({
-        whiteliste: ['red', 'orange'],
-        matchPrefixes: ['bl']
-    }),
-    size: sns.SubscriptionFilter.stringFilter({
-        blacklist: ['small', 'medium'],
-    }),
-    price: sns.SubscriptionFilter.numericFilter({
-        between: [100, 200],
-        greaterThan: 300
-    })
-});
-
-topic.subscribeLambda(new subs.LambdaSubscription(fn, { filterPolicy }));
+topic.subscribeLambda(new subs.LambdaSubscription(fn, {
+    filterPolicy: {
+        color: sns.SubscriptionFilter.stringFilter({
+            whiteliste: ['red', 'orange'],
+            matchPrefixes: ['bl']
+        }),
+        size: sns.SubscriptionFilter.stringFilter({
+            blacklist: ['small', 'medium'],
+        }),
+        price: sns.SubscriptionFilter.numericFilter({
+            between: [100, 200],
+            greaterThan: 300
+        })
+    }
+}));
 ```
 
 ### CloudWatch Event Rule Target

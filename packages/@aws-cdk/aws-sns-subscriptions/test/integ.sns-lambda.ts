@@ -24,7 +24,7 @@ class SnsToLambda extends cdk.Stack {
     });
 
     topic.addSubscription(new subs.LambdaSubscription(fctionFiltered, {
-      filterPolicy: new sns.SubscriptionFilterPolicy({
+      filterPolicy: {
         color: sns.SubscriptionFilter.stringFilter({
           whitelist: ['red'],
           matchPrefixes: ['bl', 'ye'],
@@ -35,7 +35,7 @@ class SnsToLambda extends cdk.Stack {
         price: sns.SubscriptionFilter.numericFilter({
           between: { start: 100, stop: 200 }
         })
-      })
+      }
     }));
   }
 }

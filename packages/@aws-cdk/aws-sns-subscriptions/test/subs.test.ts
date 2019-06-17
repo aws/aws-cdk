@@ -455,7 +455,7 @@ test('with filter policy', () => {
   });
 
   topic.addSubscription(new subs.LambdaSubscription(fction, {
-    filterPolicy: new sns.SubscriptionFilterPolicy({
+    filterPolicy: {
       color: sns.SubscriptionFilter.stringFilter({
         whitelist: ['red'],
         matchPrefixes: ['bl', 'ye'],
@@ -466,7 +466,7 @@ test('with filter policy', () => {
       price: sns.SubscriptionFilter.numericFilter({
         between: { start: 100, stop: 200 }
       })
-    })
+    }
   }));
 
   expect(stack).toHaveResource('AWS::SNS::Subscription', {

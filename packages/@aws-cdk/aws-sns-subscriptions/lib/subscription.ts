@@ -4,7 +4,7 @@ export interface SubscriptionProps {
   /**
    * The filter policy.
    *
-   * @default all messages are delivered
+   * @default - all messages are delivered
    */
-  readonly filterPolicy?: sns.SubscriptionFilterPolicy;
+  readonly filterPolicy?: { [attribute: string]: sns.SubscriptionFilter };
 }
