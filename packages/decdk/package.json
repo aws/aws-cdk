@@ -32,6 +32,7 @@
     "@aws-cdk/assets": "^0.34.0",
     "@aws-cdk/assets-docker": "^0.34.0",
     "@aws-cdk/aws-amazonmq": "^0.34.0",
+    "@aws-cdk/aws-amplify": "^0.34.0",
     "@aws-cdk/aws-apigateway": "^0.34.0",
     "@aws-cdk/aws-applicationautoscaling": "^0.34.0",
     "@aws-cdk/aws-appmesh": "^0.34.0",

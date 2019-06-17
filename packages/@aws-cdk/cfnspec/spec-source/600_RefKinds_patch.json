@@ -4859,6 +4859,294 @@
         ],
         "description": "Set RefKind of AWS::WAFRegional::RegexPatternSet to Id"
       }
+    },
+    "AWS::Amplify::App": {
+      "patch": {
+        "operations": [
+          {
+            "op": "add",
+            "path": "/RefKind",
+            "value": "None"
+          }
+        ],
+        "description": "Set RefKind of AWS::Amplify::App to None"
+      }
+    },
+    "AWS::Amplify::Branch": {
+      "patch": {
+        "operations": [
+          {
+            "op": "add",
+            "path": "/RefKind",
+            "value": "None"
+          }
+        ],
+        "description": "Set RefKind of AWS::Amplify::Branch to None"
+      }
+    },
+    "AWS::Amplify::Domain": {
+      "patch": {
+        "operations": [
+          {
+            "op": "add",
+            "path": "/RefKind",
+            "value": "None"
+          }
+        ],
+        "description": "Set RefKind of AWS::Amplify::Domain to None"
+      }
+    },
+    "AWS::EC2::ClientVpnAuthorizationRule": {
+      "patch": {
+        "operations": [
+          {
+            "op": "add",
+            "path": "/RefKind",
+            "value": "None"
+          }
+        ],
+        "description": "Set RefKind of AWS::EC2::ClientVpnAuthorizationRule to None"
+      }
+    },
+    "AWS::EC2::ClientVpnEndpoint": {
+      "patch": {
+        "operations": [
+          {
+            "op": "add",
+            "path": "/RefKind",
+            "value": "Id"
+          }
+        ],
+        "description": "Set RefKind of AWS::EC2::ClientVpnEndpoint to Id"
+      }
+    },
+    "AWS::EC2::ClientVpnRoute": {
+      "patch": {
+        "operations": [
+          {
+            "op": "add",
+            "path": "/RefKind",
+            "value": "None"
+          }
+        ],
+        "description": "Set RefKind of AWS::EC2::ClientVpnRoute to None"
+      }
+    },
+    "AWS::EC2::ClientVpnTargetNetworkAssociation": {
+      "patch": {
+        "operations": [
+          {
+            "op": "add",
+            "path": "/RefKind",
+            "value": "Id"
+          }
+        ],
+        "description": "Set RefKind of AWS::EC2::ClientVpnTargetNetworkAssociation to Id"
+      }
+    },
+    "AWS::IoTThingsGraph::FlowTemplate": {
+      "patch": {
+        "operations": [
+          {
+            "op": "add",
+            "path": "/RefKind",
+            "value": "None"
+          }
+        ],
+        "description": "Set RefKind of AWS::IoTThingsGraph::FlowTemplate to None"
+      }
+    },
+    "AWS::MSK::Cluster": {
+      "patch": {
+        "operations": [
+          {
+            "op": "add",
+            "path": "/RefKind",
+            "value": "Arn"
+          }
+        ],
+        "description": "Set RefKind of AWS::MSK::Cluster to Arn"
+      }
+    },
+    "AWS::Pinpoint::ADMChannel": {
+      "patch": {
+        "operations": [
+          {
+            "op": "add",
+            "path": "/RefKind",
+            "value": "Id"
+          }
+        ],
+        "description": "Set RefKind of AWS::Pinpoint::ADMChannel to Id"
+      }
+    },
+    "AWS::Pinpoint::APNSChannel": {
+      "patch": {
+        "operations": [
+          {
+            "op": "add",
+            "path": "/RefKind",
+            "value": "Id"
+          }
+        ],
+        "description": "Set RefKind of AWS::Pinpoint::APNSChannel to Id"
+      }
+    },
+    "AWS::Pinpoint::APNSSandboxChannel": {
+      "patch": {
+        "operations": [
+          {
+            "op": "add",
+            "path": "/RefKind",
+            "value": "Id"
+          }
+        ],
+        "description": "Set RefKind of AWS::Pinpoint::APNSSandboxChannel to Id"
+      }
+    },
+    "AWS::Pinpoint::APNSVoipChannel": {
+      "patch": {
+        "operations": [
+          {
+            "op": "add",
+            "path": "/RefKind",
+            "value": "Id"
+          }
+        ],
+        "description": "Set RefKind of AWS::Pinpoint::APNSVoipChannel to Id"
+      }
+    },
+    "AWS::Pinpoint::APNSVoipSandboxChannel": {
+      "patch": {
+        "operations": [
+          {
+            "op": "add",
+            "path": "/RefKind",
+            "value": "Id"
+          }
+        ],
+        "description": "Set RefKind of AWS::Pinpoint::APNSVoipSandboxChannel to Id"
+      }
+    },
+    "AWS::Pinpoint::App": {
+      "patch": {
+        "operations": [
+          {
+            "op": "add",
+            "path": "/RefKind",
+            "value": "Id"
+          }
+        ],
+        "description": "Set RefKind of AWS::Pinpoint::App to Id"
+      }
+    },
+    "AWS::Pinpoint::ApplicationSettings": {
+      "patch": {
+        "operations": [
+          {
+            "op": "add",
+            "path": "/RefKind",
+            "value": "Id"
+          }
+        ],
+        "description": "Set RefKind of AWS::Pinpoint::ApplicationSettings to Id"
+      }
+    },
+    "AWS::Pinpoint::BaiduChannel": {
+      "patch": {
+        "operations": [
+          {
+            "op": "add",
+            "path": "/RefKind",
+            "value": "Id"
+          }
+        ],
+        "description": "Set RefKind of AWS::Pinpoint::BaiduChannel to Id"
+      }
+    },
+    "AWS::Pinpoint::Campaign": {
+      "patch": {
+        "operations": [
+          {
+            "op": "add",
+            "path": "/RefKind",
+            "value": "Id"
+          }
+        ],
+        "description": "Set RefKind of AWS::Pinpoint::Campaign to Id"
+      }
+    },
+    "AWS::Pinpoint::EmailChannel": {
+      "patch": {
+        "operations": [
+          {
+            "op": "add",
+            "path": "/RefKind",
+            "value": "Id"
+          }
+        ],
+        "description": "Set RefKind of AWS::Pinpoint::EmailChannel to Id"
+      }
+    },
+    "AWS::Pinpoint::EventStream": {
+      "patch": {
+        "operations": [
+          {
+            "op": "add",
+            "path": "/RefKind",
+            "value": "Id"
+          }
+        ],
+        "description": "Set RefKind of AWS::Pinpoint::EventStream to Id"
+      }
+    },
+    "AWS::Pinpoint::GCMChannel": {
+      "patch": {
+        "operations": [
+          {
+            "op": "add",
+            "path": "/RefKind",
+            "value": "Id"
+          }
+        ],
+        "description": "Set RefKind of AWS::Pinpoint::GCMChannel to Id"
+      }
+    },
+    "AWS::Pinpoint::SMSChannel": {
+      "patch": {
+        "operations": [
+          {
+            "op": "add",
+            "path": "/RefKind",
+            "value": "Id"
+          }
+        ],
+        "description": "Set RefKind of AWS::Pinpoint::SMSChannel to Id"
+      }
+    },
+    "AWS::Pinpoint::Segment": {
+      "patch": {
+        "operations": [
+          {
+            "op": "add",
+            "path": "/RefKind",
+            "value": "Id"
+          }
+        ],
+        "description": "Set RefKind of AWS::Pinpoint::Segment to Id"
+      }
+    },
+    "AWS::Pinpoint::VoiceChannel": {
+      "patch": {
+        "operations": [
+          {
+            "op": "add",
+            "path": "/RefKind",
+            "value": "Id"
+          }
+        ],
+        "description": "Set RefKind of AWS::Pinpoint::VoiceChannel to Id"
+      }
     }
   }
 }
