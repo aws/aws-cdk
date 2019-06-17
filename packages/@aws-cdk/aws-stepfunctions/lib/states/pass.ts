@@ -3,13 +3,6 @@ import {Chain} from '../chain';
 import {IChainable, INextable} from '../types';
 import {renderJsonPath, State, StateType} from './state';
 
-export interface ResultValue {
-    readonly stringValue?: string
-    readonly numberValue?: number
-    readonly booleanValue?: boolean
-    readonly mapValue?: {[key: string]: any}
-}
-
 export class Result {
     public static fromString(value: string): Result {
         return new Result(ResultType.Text, value);
