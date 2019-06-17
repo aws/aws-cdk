@@ -64,16 +64,16 @@ export = {
       loadBalancerType: ecsPatterns.LoadBalancerType.Network,
       image: ecs.ContainerImage.fromRegistry("/aws/aws-example-app")
     }));
-    
+
     test.done();
   },
-    
+
   'setting executionRole updated taskDefinition with given execution role'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'VPC');
     const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
-    
+
     const executionRole = new iam.Role(stack, 'ExecutionRole', {
       path: '/',
       assumedBy: new iam.CompositePrincipal(
