@@ -148,11 +148,11 @@ export class Asset extends cdk.Construct implements IAsset {
       type: 'String',
     });
 
-    this.s3BucketName = bucketParam.stringValue;
-    this.s3Prefix = cdk.Fn.select(0, cdk.Fn.split(cxapi.ASSET_PREFIX_SEPARATOR, keyParam.stringValue)).toString();
-    const s3Filename = cdk.Fn.select(1, cdk.Fn.split(cxapi.ASSET_PREFIX_SEPARATOR, keyParam.stringValue)).toString();
+    this.s3BucketName = bucketParam.valueAsString;
+    this.s3Prefix = cdk.Fn.select(0, cdk.Fn.split(cxapi.ASSET_PREFIX_SEPARATOR, keyParam.valueAsString)).toString();
+    const s3Filename = cdk.Fn.select(1, cdk.Fn.split(cxapi.ASSET_PREFIX_SEPARATOR, keyParam.valueAsString)).toString();
     this.s3ObjectKey = `${this.s3Prefix}${s3Filename}`;
-    this.artifactHash = hashParam.stringValue;
+    this.artifactHash = hashParam.valueAsString;
 
     this.bucket = s3.Bucket.fromBucketName(this, 'AssetBucket', this.s3BucketName);
 
@@ -198,7 +198,7 @@ export class Asset extends cdk.Construct implements IAsset {
    * (e.g. "Code" for AWS::Lambda::Function)
    */
   public addResourceMetadata(resource: cdk.CfnResource, resourceProperty: string) {
-    if (!this.node.getContext(cxapi.ASSET_RESOURCE_METADATA_ENABLED_CONTEXT)) {
+    if (!this.node.tryGetContext(cxapi.ASSET_RESOURCE_METADATA_ENABLED_CONTEXT)) {
       return; // not enabled
     }
 

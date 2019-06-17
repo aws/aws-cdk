@@ -33,20 +33,20 @@ export class LogRetention extends cdk.Construct {
     // Custom resource provider
     const provider = new SingletonFunction(this, 'Provider', {
       code: Code.asset(path.join(__dirname, 'log-retention-provider')),
-      runtime: Runtime.NodeJS810,
+      runtime: Runtime.Nodejs810,
       handler: 'index.handler',
       uuid: 'aae0aa3c-5b4d-4f87-b02d-85b201efdd8a',
       lambdaPurpose: 'LogRetention',
     });
 
-    provider.addToRolePolicy( // Duplicate statements will be deduplicated by `PolicyDocument`
-      new iam.PolicyStatement()
-        .addActions('logs:PutRetentionPolicy', 'logs:DeleteRetentionPolicy')
-        // We need '*' here because we will also put a retention policy on
-        // the log group of the provider function. Referencing it's name
-        // creates a CF circular dependency.
-        .addAllResources()
-    );
+    // Duplicate statements will be deduplicated by `PolicyDocument`
+    provider.addToRolePolicy(new iam.PolicyStatement({
+      actions: ['logs:PutRetentionPolicy', 'logs:DeleteRetentionPolicy'],
+      // We need '*' here because we will also put a retention policy on
+      // the log group of the provider function. Referencing it's name
+      // creates a CF circular dependency.
+      resources: ['*'],
+    }));
 
     // Need to use a CfnResource here to prevent lerna dependency cycles
     // @aws-cdk/aws-cloudformation -> @aws-cdk/aws-lambda -> @aws-cdk/aws-cloudformation

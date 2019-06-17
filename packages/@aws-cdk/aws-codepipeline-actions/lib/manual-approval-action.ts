@@ -1,5 +1,6 @@
 import codepipeline = require('@aws-cdk/aws-codepipeline');
 import sns = require('@aws-cdk/aws-sns');
+import subs = require('@aws-cdk/aws-sns-subscriptions');
 import cdk = require('@aws-cdk/cdk');
 
 /**
@@ -42,7 +43,7 @@ export class ManualApprovalAction extends codepipeline.Action {
       category: codepipeline.ActionCategory.Approval,
       provider: 'Manual',
       artifactBounds: { minInputs: 0, maxInputs: 0, minOutputs: 0, maxOutputs: 0 },
-      configuration: new cdk.Token(() => this.actionConfiguration()),
+      configuration: cdk.Lazy.anyValue({ produce: () => this.actionConfiguration() }),
     });
 
     this.props = props;
@@ -62,7 +63,7 @@ export class ManualApprovalAction extends codepipeline.Action {
     if (this._notificationTopic) {
       this._notificationTopic.grantPublish(info.role);
       for (const notifyEmail of this.props.notifyEmails || []) {
-        this._notificationTopic.subscribeEmail(`Subscription-${notifyEmail}`, notifyEmail);
+        this._notificationTopic.addSubscription(new subs.EmailSubscription(notifyEmail));
       }
     }
   }

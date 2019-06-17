@@ -1,12 +1,15 @@
 import { IConstruct } from "./construct";
-import { IResolveContext, IResolvedValuePostProcessor, Token } from "./token";
+import { Intrinsic } from "./private/intrinsic";
+import { IPostProcessor, IResolveContext } from "./resolvable";
+import { Stack } from "./stack";
 
 /**
  * Given an object, converts all keys to PascalCase given they are currently in camel case.
  * @param obj The object.
  */
 export function capitalizePropertyNames(construct: IConstruct, obj: any): any {
-  obj = construct.node.resolve(obj);
+  const stack = Stack.of(construct);
+  obj = stack.resolve(obj);
 
   if (typeof(obj) !== 'object') {
     return obj;
@@ -51,17 +54,17 @@ export function ignoreEmpty(obj: any): any {
 }
 
 /**
- * Returns a copy of `obj` without undefined values in maps or arrays.
+ * Returns a copy of `obj` without `undefined` (or `null`) values in maps or arrays.
  */
 export function filterUndefined(obj: any): any {
   if (Array.isArray(obj)) {
-    return obj.filter(x => x !== undefined).map(x => filterUndefined(x));
+    return obj.filter(x => x != null).map(x => filterUndefined(x));
   }
 
   if (typeof(obj) === 'object') {
     const ret: any = { };
     for (const [key, value] of Object.entries(obj)) {
-      if (value === undefined) {
+      if (value == null) {
         continue;
       }
       ret[key] = filterUndefined(value);
@@ -75,9 +78,14 @@ export function filterUndefined(obj: any): any {
 /**
  * A Token that applies a function AFTER resolve resolution
  */
-export class PostResolveToken extends Token implements IResolvedValuePostProcessor {
+export class PostResolveToken extends Intrinsic implements IPostProcessor {
   constructor(value: any, private readonly processor: (x: any) => any) {
     super(value);
+  }
+
+  public resolve(context: IResolveContext) {
+    context.registerPostProcessor(this);
+    return super.resolve(context);
   }
 
   public postProcess(o: any, _context: IResolveContext): any {

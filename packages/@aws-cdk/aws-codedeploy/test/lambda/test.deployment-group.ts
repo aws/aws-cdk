@@ -11,7 +11,7 @@ function mockFunction(stack: cdk.Stack, id: string) {
   return new lambda.Function(stack, id, {
     code: lambda.Code.inline('mock'),
     handler: 'index.handler',
-    runtime: lambda.Runtime.NodeJS810
+    runtime: lambda.Runtime.Nodejs810
   });
 }
 function mockAlias(stack: cdk.Stack) {
@@ -95,7 +95,18 @@ export = {
           }],
           Version: "2012-10-17"
         },
-        ManagedPolicyArns: ['arn:aws:iam::aws:policy/service-role/AWSCodeDeployRoleForLambda']
+        ManagedPolicyArns: [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                { Ref: "AWS::Partition" },
+                ':iam::aws:policy/service-role/AWSCodeDeployRoleForLambda'
+              ]
+            ]
+          }
+        ]
       }));
 
       test.done();
@@ -143,7 +154,18 @@ export = {
           }],
           Version: "2012-10-17"
         },
-        ManagedPolicyArns: ['arn:aws:iam::aws:policy/service-role/AWSCodeDeployRoleForLambda']
+        ManagedPolicyArns: [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                { Ref: "AWS::Partition" },
+                ':iam::aws:policy/service-role/AWSCodeDeployRoleForLambda'
+              ]
+            ]
+          }
+        ]
       }));
 
       test.done();

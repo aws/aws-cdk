@@ -1,5 +1,6 @@
 import iam = require('@aws-cdk/aws-iam');
 import cdk = require('@aws-cdk/cdk');
+import { Stack } from '@aws-cdk/cdk';
 
 /**
  * A Lambda-based custom resource handler that provisions S3 bucket
@@ -26,7 +27,7 @@ export class NotificationsResourceHandler extends cdk.Construct {
    * @returns The ARN of the custom resource lambda function.
    */
   public static singleton(context: cdk.Construct) {
-    const root = context.node.stack;
+    const root = Stack.of(context);
 
     // well-known logical id to ensure stack singletonity
     const logicalId = 'BucketNotificationsHandler050a0587b7544547bf325f094a3db834';
@@ -49,21 +50,16 @@ export class NotificationsResourceHandler extends cdk.Construct {
 
     const role = new iam.Role(this, 'Role', {
       assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
-      managedPolicyArns: [
-        this.node.stack.formatArn({
-          service: 'iam',
-          region: '', // no region for managed policy
-          account: 'aws', // the account for a managed policy is 'aws'
-          resource: 'policy',
-          resourceName: 'service-role/AWSLambdaBasicExecutionRole',
-        })
+      managedPolicies: [
+        iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSLambdaBasicExecutionRole')
       ]
     });
 
     // handler allows to put bucket notification on s3 buckets.
-    role.addToPolicy(new iam.PolicyStatement()
-      .addAction('s3:PutBucketNotification')
-      .addAllResources());
+    role.addToPolicy(new iam.PolicyStatement({
+      actions: ['s3:PutBucketNotification'],
+      resources: ['*']
+    }));
 
     const resourceType = 'AWS::Lambda::Function';
     class InLineLambda extends cdk.CfnResource {

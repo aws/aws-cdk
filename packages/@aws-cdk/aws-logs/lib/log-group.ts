@@ -1,6 +1,6 @@
 import cloudwatch = require('@aws-cdk/aws-cloudwatch');
 import iam = require('@aws-cdk/aws-iam');
-import { CfnResource, Construct, IResource, RemovalPolicy, Resource } from '@aws-cdk/cdk';
+import { CfnResource, Construct, IResource, RemovalPolicy, Resource, Stack } from '@aws-cdk/cdk';
 import { LogStream } from './log-stream';
 import { CfnLogGroup } from './logs.generated';
 import { MetricFilter } from './metric-filter';
@@ -311,7 +311,7 @@ export class LogGroup extends LogGroupBase {
   public static fromLogGroupArn(scope: Construct, id: string, logGroupArn: string): ILogGroup {
     class Import extends LogGroupBase {
       public readonly logGroupArn = logGroupArn;
-      public readonly logGroupName = scope.node.stack.parseArn(logGroupArn, ':').resourceName!;
+      public readonly logGroupName = Stack.of(scope).parseArn(logGroupArn, ':').resourceName!;
     }
 
     return new Import(scope, id);

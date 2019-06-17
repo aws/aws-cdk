@@ -107,7 +107,7 @@ You can do it through the CDK:
 import cloudtrail = require('@aws-cdk/aws-cloudtrail');
 
 const key = 'some/key.zip';
-const trail = new cloudtrail.CloudTrail(this, 'CloudTrail');
+const trail = new cloudtrail.Trail(this, 'CloudTrail');
 trail.addS3EventSelector([sourceBucket.arnForObjects(key)], {
   readWriteType: cloudtrail.ReadWriteType.WriteOnly,
 });
@@ -396,7 +396,7 @@ const lambdaCode = lambda.Code.cfnParameters();
 const func = new lambda.Function(lambdaStack, 'Lambda', {
   code: lambdaCode,
   handler: 'index.handler',
-  runtime: lambda.Runtime.NodeJS810,
+  runtime: lambda.Runtime.Nodejs810,
 });
 // used to make sure each CDK synthesis produces a different Version
 const version = func.newVersion();

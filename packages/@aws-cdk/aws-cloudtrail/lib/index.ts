@@ -3,7 +3,7 @@ import iam = require('@aws-cdk/aws-iam');
 import kms = require('@aws-cdk/aws-kms');
 import logs = require('@aws-cdk/aws-logs');
 import s3 = require('@aws-cdk/aws-s3');
-import { Construct, Resource } from '@aws-cdk/cdk';
+import { Construct, Resource, Stack } from '@aws-cdk/cdk';
 import { CfnTrail } from './cloudtrail.generated';
 
 // AWS::CloudTrail CloudFormation Resources:
@@ -128,18 +128,22 @@ export class Trail extends Resource {
     super(scope, id);
 
     const s3bucket = new s3.Bucket(this, 'S3', {encryption: s3.BucketEncryption.Unencrypted});
-    const cloudTrailPrincipal = "cloudtrail.amazonaws.com";
+    const cloudTrailPrincipal = new iam.ServicePrincipal("cloudtrail.amazonaws.com");
 
-    s3bucket.addToResourcePolicy(new iam.PolicyStatement()
-      .addResource(s3bucket.bucketArn)
-      .addActions('s3:GetBucketAcl')
-      .addServicePrincipal(cloudTrailPrincipal));
+    s3bucket.addToResourcePolicy(new iam.PolicyStatement({
+      resources: [s3bucket.bucketArn],
+      actions: ['s3:GetBucketAcl'],
+      principals: [cloudTrailPrincipal],
+    }));
 
-    s3bucket.addToResourcePolicy(new iam.PolicyStatement()
-      .addResource(s3bucket.arnForObjects(`AWSLogs/${this.node.stack.accountId}/*`))
-      .addActions("s3:PutObject")
-      .addServicePrincipal(cloudTrailPrincipal)
-      .setCondition("StringEquals", {'s3:x-amz-acl': "bucket-owner-full-control"}));
+    s3bucket.addToResourcePolicy(new iam.PolicyStatement({
+      resources: [s3bucket.arnForObjects(`AWSLogs/${Stack.of(this).account}/*`)],
+      actions: ["s3:PutObject"],
+      principals: [cloudTrailPrincipal],
+      conditions:  {
+        StringEquals: {'s3:x-amz-acl': "bucket-owner-full-control"}
+      }
+    }));
 
     let logGroup: logs.CfnLogGroup | undefined;
     let logsRole: iam.IRole | undefined;
@@ -148,11 +152,12 @@ export class Trail extends Resource {
         retentionInDays: props.cloudWatchLogsRetentionTimeDays || logs.RetentionDays.OneYear
       });
 
-      logsRole = new iam.Role(this, 'LogsRole', { assumedBy: new iam.ServicePrincipal(cloudTrailPrincipal) });
+      logsRole = new iam.Role(this, 'LogsRole', { assumedBy: cloudTrailPrincipal });
 
-      logsRole.addToPolicy(new iam.PolicyStatement()
-        .addActions("logs:PutLogEvents", "logs:CreateLogStream")
-        .addResource(logGroup.logGroupArn));
+      logsRole.addToPolicy(new iam.PolicyStatement({
+        actions: ["logs:PutLogEvents", "logs:CreateLogStream"],
+        resources: [logGroup.logGroupArn],
+      }));
     }
     if (props.managementEvents) {
       const managementEvent =  {

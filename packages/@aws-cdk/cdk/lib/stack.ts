@@ -1,14 +1,16 @@
 import cxapi = require('@aws-cdk/cx-api');
+import { EnvironmentUtils } from '@aws-cdk/cx-api';
 import fs = require('fs');
 import path = require('path');
-import { App } from './app';
-import { CfnParameter } from './cfn-parameter';
+import { CLOUDFORMATION_TOKEN_RESOLVER, CloudFormationLang } from './cloudformation-lang';
 import { Construct, ConstructNode, IConstruct, ISynthesisSession } from './construct';
 import { Environment } from './environment';
-import { HashedAddressingScheme, IAddressingScheme, LogicalIDs } from './logical-id';
+import { LogicalIDs } from './logical-id';
+import { resolve } from './private/resolve';
 import { makeUniqueId } from './uniqueid';
 
 const STACK_SYMBOL = Symbol.for('@aws-cdk/cdk.Stack');
+const VALID_STACK_NAME_REGEX = /^[A-Za-z][A-Za-z0-9-]*$/;
 
 export interface StackProps {
   /**
@@ -25,13 +27,6 @@ export interface StackProps {
    * @default - Derived from construct path.
    */
   readonly stackName?: string;
-
-  /**
-   * Strategy for logical ID generation
-   *
-   * @default - The HashedNamingScheme will be used.
-   */
-  readonly namingScheme?: IAddressingScheme;
 
   /**
    * Stack tags that will be applied to all the taggable resources and the stack itself.
@@ -51,10 +46,28 @@ export class Stack extends Construct implements ITaggable {
    * We do attribute detection since we can't reliably use 'instanceof'.
    */
   public static isStack(x: any): x is Stack {
-    return STACK_SYMBOL in x;
+    return x !== null && typeof(x) === 'object' && STACK_SYMBOL in x;
   }
 
-  private static readonly VALID_STACK_NAME_REGEX = /^[A-Za-z][A-Za-z0-9-]*$/;
+  /**
+   * Looks up the first stack scope in which `construct` is defined. Fails if there is no stack up the tree.
+   * @param construct The construct to start the search from.
+   */
+  public static of(construct: IConstruct): Stack {
+    return _lookup(construct);
+
+    function _lookup(c: IConstruct): Stack  {
+      if (Stack.isStack(c)) {
+        return c;
+      }
+
+      if (!c.node.scope) {
+        throw new Error(`No stack could be identified for the construct at path ${construct.node.path}`);
+      }
+
+      return _lookup(c.node.scope);
+    }
+  }
 
   /**
    * Tags to be applied to the stack.
@@ -62,51 +75,68 @@ export class Stack extends Construct implements ITaggable {
   public readonly tags: TagManager;
 
   /**
-   * The environment in which this stack is deployed.
-   */
-  public readonly env: Environment;
-
-  /**
-   * Logical ID generation strategy
-   */
-  public readonly logicalIds: LogicalIDs;
-
-  /**
    * Options for CloudFormation template (like version, transform, description).
    */
   public readonly templateOptions: ITemplateOptions = {};
 
   /**
-   * The CloudFormation stack name.
+   * The concrete CloudFormation physical stack name.
    *
-   * This is the stack name either configuration via the `stackName` property
-   * or automatically derived from the construct path.
+   * This is either the name defined explicitly in the `stackName` prop or
+   * allocated based on the stack's location in the construct tree. Stacks that
+   * are directly defined under the app use their construct `id` as their stack
+   * name. Stacks that are defined deeper within the tree will use a hashed naming
+   * scheme based on the construct path to ensure uniqueness.
+   *
+   * If you wish to obtain the deploy-time AWS::StackName intrinsic,
+   * you can use `Aws.stackName` directly.
    */
-  public readonly name: string;
+  public readonly stackName: string;
+
+  /**
+   * The region into which this stack will be deployed.
+   *
+   * This will be a concrete value only if an account was specified in `env`
+   * when the stack was defined. Otherwise, it will be a string that resolves to
+   * `{ "Ref": "AWS::Region" }`
+   */
+  public readonly region: string;
+
+  /**
+   * The account into which this stack will be deployed.
+   *
+   * This will be a concrete value only if an account was specified in `env`
+   * when the stack was defined. Otherwise, it will be a string that resolves to
+   * `{ "Ref": "AWS::AccountId" }`
+   */
+  public readonly account: string;
+
+  /**
+   * The environment coordinates in which this stack is deployed. In the form
+   * `aws://account/region`. Use `stack.account` and `stack.region` to obtain
+   * the specific values, no need to parse.
+   *
+   * If either account or region are undefined, `unknown-account` or
+   * `unknown-region` will be used respectively.
+   */
+  public readonly environment: string;
+
+  /**
+   * Logical ID generation strategy
+   */
+  private readonly _logicalIds: LogicalIDs;
 
   /**
    * Other stacks this stack depends on
    */
-  private readonly stackDependencies = new Set<StackDependency>();
-
-  /**
-   * Values set for parameters in cloud assembly.
-   */
-  private readonly parameterValues: { [logicalId: string]: string } = { };
-
-  /**
-   * Environment as configured via props
-   *
-   * (Both on Stack and inherited from App)
-   */
-  private readonly configuredEnv: Environment;
+  private readonly _stackDependencies = new Set<StackDependency>();
 
   /**
    * Lists all missing contextual information.
    * This is returned when the stack is synthesized under the 'missing' attribute
    * and allows tooling to obtain the context and re-synthesize.
    */
-  private readonly missingContext = new Array<cxapi.MissingContext>();
+  private readonly _missingContext = new Array<cxapi.MissingContext>();
 
   /**
    * Creates a new stack.
@@ -121,116 +151,38 @@ export class Stack extends Construct implements ITaggable {
 
     Object.defineProperty(this, STACK_SYMBOL, { value: true });
 
-    this.configuredEnv = props.env || {};
-    this.env = this.parseEnvironment(props.env);
+    this._logicalIds = new LogicalIDs();
 
-    this.logicalIds = new LogicalIDs(props.namingScheme ? props.namingScheme : new HashedAddressingScheme());
-    this.name = props.stackName !== undefined ? props.stackName : this.calculateStackName();
+    const { account, region, environment } = this.parseEnvironment(props.env);
+
+    this.account = account;
+    this.region = region;
+    this.environment = environment;
+
+    this.stackName = props.stackName !== undefined ? props.stackName : this.calculateStackName();
     this.tags = new TagManager(TagType.KeyValue, 'aws:cdk:stack', props.tags);
 
-    if (!Stack.VALID_STACK_NAME_REGEX.test(this.name)) {
-      throw new Error(`Stack name must match the regular expression: ${Stack.VALID_STACK_NAME_REGEX.toString()}, got '${name}'`);
+    if (!VALID_STACK_NAME_REGEX.test(this.stackName)) {
+      throw new Error(`Stack name must match the regular expression: ${VALID_STACK_NAME_REGEX.toString()}, got '${name}'`);
     }
   }
 
   /**
-   * Returns the environment specification for this stack (aws://account/region).
+   * Resolve a tokenized value in the context of the current stack.
    */
-  public get environment() {
-    const account = this.env.account || 'unknown-account';
-    const region = this.env.region || 'unknown-region';
-    return cxapi.EnvironmentUtils.format(account, region);
+  public resolve(obj: any): any {
+    return resolve(obj, {
+      scope: this,
+      prefix: [],
+      resolver: CLOUDFORMATION_TOKEN_RESOLVER,
+    });
   }
 
   /**
-   * Looks up a resource by path.
-   *
-   * @returns The Resource or undefined if not found
+   * Convert an object, potentially containing tokens, to a JSON string
    */
-  public findResource(constructPath: string): CfnResource | undefined {
-    const r = this.node.findChild(constructPath);
-    if (!r) { return undefined; }
-
-    // found an element, check if it's a resource (duck-type)
-    if (!('resourceType' in r)) {
-      throw new Error(`Found a stack element for ${constructPath} but it is not a resource: ${r.toString()}`);
-    }
-
-    return r as CfnResource;
-  }
-
-  /**
-   * Returns the CloudFormation template for this stack by traversing
-   * the tree and invoking _toCloudFormation() on all Entity objects.
-   *
-   * @internal
-   */
-  public _toCloudFormation() {
-    // before we begin synthesis, we shall lock this stack, so children cannot be added
-    this.node.lock();
-
-    try {
-      const template: any = {
-        Description: this.templateOptions.description,
-        Transform: this.templateOptions.transform,
-        AWSTemplateFormatVersion: this.templateOptions.templateFormatVersion,
-        Metadata: this.templateOptions.metadata
-      };
-
-      const elements = cfnElements(this);
-      const fragments = elements.map(e => this.node.resolve(e._toCloudFormation()));
-
-      // merge in all CloudFormation fragments collected from the tree
-      for (const fragment of fragments) {
-        merge(template, fragment);
-      }
-
-      // resolve all tokens and remove all empties
-      const ret = this.node.resolve(template) || {};
-
-      this.logicalIds.assertAllRenamesApplied();
-
-      return ret;
-    } finally {
-      // allow mutations after synthesis is finished.
-      this.node.unlock();
-    }
-  }
-
-  /**
-   * @param why more information about why region is required.
-   * @returns The region in which this stack is deployed. Throws if region is not defined.
-   */
-  public requireRegion(why?: string) {
-    if (!this.env.region) {
-      throw new Error(`${why ? why + '. ' : ''}Stack requires region information. It can be either supplied via the "env" property, ` +
-          `via the "${cxapi.DEFAULT_REGION_CONTEXT_KEY}" context parameters or using "aws configure"`);
-    }
-
-    return this.env.region;
-  }
-
-  /**
-   * Returns the AWS account ID of this Stack,
-   * or throws an exception if the account ID is not set in the environment.
-   *
-   * @param why more information about why is the account ID required
-   * @returns the AWS account ID of this Stack
-   */
-  public requireAccountId(why?: string): string {
-    if (!this.env.account) {
-      throw new Error(`${why ? why + '. ' : ''}Stack requires account information. ` +
-        'It can be supplied either via the "env" property when creating the Stack, or by using "aws configure"');
-    }
-
-    return this.env.account;
-  }
-
-  public parentApp(): App | undefined {
-    const parent = this.node.scope;
-    return parent instanceof App
-      ? parent
-      : undefined;
+  public toJsonString(obj: any, space?: number): string {
+    return CloudFormationLang.toJSON(obj, space).toString();
   }
 
   /**
@@ -242,18 +194,37 @@ export class Stack extends Construct implements ITaggable {
    * @param report The set of parameters needed to obtain the context
    */
   public reportMissingContext(report: cxapi.MissingContext) {
-    this.missingContext.push(report);
+    this._missingContext.push(report);
   }
 
   /**
    * Rename a generated logical identities
+   *
+   * To modify the naming scheme strategy, extend the `Stack` class and
+   * override the `createNamingScheme` method.
    */
-  public renameLogical(oldId: string, newId: string) {
-    if (this.node.children.length > 0) {
-      throw new Error("All renames must be set up before adding elements to the stack");
-    }
+  public renameLogicalId(oldId: string, newId: string) {
+    this._logicalIds.addRename(oldId, newId);
+  }
 
-    this.logicalIds.renameLogical(oldId, newId);
+  /**
+   * Allocates a stack-unique CloudFormation-compatible logical identity for a
+   * specific resource.
+   *
+   * This method is called when a `CfnElement` is created and used to render the
+   * initial logical identity of resources. Logical ID renames are applied at
+   * this stage.
+   *
+   * This method uses the protected method `allocateLogicalId` to render the
+   * logical ID for an element. To modify the naming scheme, extend the `Stack`
+   * class and override this method.
+   *
+   * @param element The CloudFormation element for which a logical identity is
+   * needed.
+   */
+  public getLogicalId(element: CfnElement): string {
+    const logicalId = this.allocateLogicalId(element);
+    return this._logicalIds.applyRename(logicalId);
   }
 
   /**
@@ -268,48 +239,14 @@ export class Stack extends Construct implements ITaggable {
         // tslint:disable-next-line:max-line-length
         throw new Error(`'${stack.node.path}' depends on '${this.node.path}' (${dep.join(', ')}). Adding this dependency (${reason}) would create a cyclic reference.`);
     }
-    this.stackDependencies.add({ stack, reason });
+    this._stackDependencies.add({ stack, reason });
   }
 
   /**
    * Return the stacks this stack depends on
    */
-  public dependencies(): Stack[] {
-    return Array.from(this.stackDependencies.values()).map(d => d.stack);
-  }
-
-  /**
-   * The account in which this stack is defined
-   *
-   * Either returns the literal account for this stack if it was specified
-   * literally upon Stack construction, or a symbolic value that will evaluate
-   * to the correct account at deployment time.
-   */
-  public get accountId(): string {
-    if (this.configuredEnv.account) {
-      return this.configuredEnv.account;
-    }
-    // Does not need to be scoped, the only situation in which
-    // Export/Fn::ImportValue would work if { Ref: "AWS::AccountId" } is the
-    // same for provider and consumer anyway.
-    return Aws.accountId;
-  }
-
-  /**
-   * The region in which this stack is defined
-   *
-   * Either returns the literal region for this stack if it was specified
-   * literally upon Stack construction, or a symbolic value that will evaluate
-   * to the correct region at deployment time.
-   */
-  public get region(): string {
-    if (this.configuredEnv.region) {
-      return this.configuredEnv.region;
-    }
-    // Does not need to be scoped, the only situation in which
-    // Export/Fn::ImportValue would work if { Ref: "AWS::AccountId" } is the
-    // same for provider and consumer anyway.
-    return Aws.region;
+  public get dependencies(): Stack[] {
+    return Array.from(this._stackDependencies.values()).map(d => d.stack);
   }
 
   /**
@@ -339,15 +276,6 @@ export class Stack extends Construct implements ITaggable {
   }
 
   /**
-   * The name of the stack currently being deployed
-   *
-   * Only available at deployment time; this will always return an unresolved value.
-   */
-  public get stackName(): string {
-    return new ScopedAws(this).stackName;
-  }
-
-  /**
    * Returns the list of notification Amazon Resource Names (ARNs) for the current stack.
    */
   public get notificationArns(): string[] {
@@ -372,7 +300,7 @@ export class Stack extends Construct implements ITaggable {
    * can be 'undefined'.
    */
   public formatArn(components: ArnComponents): string {
-    return arnFromComponents(components, this);
+    return Arn.format(components, this);
   }
 
   /**
@@ -414,16 +342,54 @@ export class Stack extends Construct implements ITaggable {
    *      components of the ARN.
    */
   public parseArn(arn: string, sepIfToken: string = '/', hasName: boolean = true): ArnComponents {
-    return parseArn(arn, sepIfToken, hasName);
+    return Arn.parse(arn, sepIfToken, hasName);
   }
 
   /**
-   * Sets the value of a CloudFormation parameter.
-   * @param parameter The parameter to set the value for
-   * @param value The value, can use `${}` notation to reference other assembly block attributes.
+   * Returns the naming scheme used to allocate logical IDs. By default, uses
+   * the `HashedAddressingScheme` but this method can be overridden to customize
+   * this behavior.
+   *
+   * In order to make sure logical IDs are unique and stable, we hash the resource
+   * construct tree path (i.e. toplevel/secondlevel/.../myresource) and add it as
+   * a suffix to the path components joined without a separator (CloudFormation
+   * IDs only allow alphanumeric characters).
+   *
+   * The result will be:
+   *
+   *   <path.join('')><md5(path.join('/')>
+   *     "human"      "hash"
+   *
+   * If the "human" part of the ID exceeds 240 characters, we simply trim it so
+   * the total ID doesn't exceed CloudFormation's 255 character limit.
+   *
+   * We only take 8 characters from the md5 hash (0.000005 chance of collision).
+   *
+   * Special cases:
+   *
+   * - If the path only contains a single component (i.e. it's a top-level
+   *   resource), we won't add the hash to it. The hash is not needed for
+   *   disamiguation and also, it allows for a more straightforward migration an
+   *   existing CloudFormation template to a CDK stack without logical ID changes
+   *   (or renames).
+   * - For aesthetic reasons, if the last components of the path are the same
+   *   (i.e. `L1/L2/Pipeline/Pipeline`), they will be de-duplicated to make the
+   *   resulting human portion of the ID more pleasing: `L1L2Pipeline<HASH>`
+   *   instead of `L1L2PipelinePipeline<HASH>`
+   * - If a component is named "Default" it will be omitted from the path. This
+   *   allows refactoring higher level abstractions around constructs without affecting
+   *   the IDs of already deployed resources.
+   * - If a component is named "Resource" it will be omitted from the user-visible
+   *   path, but included in the hash. This reduces visual noise in the human readable
+   *   part of the identifier.
+   *
+   * @param cfnElement The element for which the logical ID is allocated.
    */
-  public setParameterValue(parameter: CfnParameter, value: string) {
-    this.parameterValues[parameter.logicalId] = value;
+  protected allocateLogicalId(cfnElement: CfnElement): string {
+    const scopes = cfnElement.node.scopes;
+    const stackIndex = scopes.indexOf(cfnElement.stack);
+    const pathComponents = scopes.slice(stackIndex + 1).map(x => x.node.id);
+    return makeUniqueId(pathComponents);
   }
 
   /**
@@ -435,8 +401,8 @@ export class Stack extends Construct implements ITaggable {
    * @internal
    */
   protected _validateId(name: string) {
-    if (name && !Stack.VALID_STACK_NAME_REGEX.test(name)) {
-      throw new Error(`Stack name must match the regular expression: ${Stack.VALID_STACK_NAME_REGEX.toString()}, got '${name}'`);
+    if (name && !VALID_STACK_NAME_REGEX.test(name)) {
+      throw new Error(`Stack name must match the regular expression: ${VALID_STACK_NAME_REGEX.toString()}, got '${name}'`);
     }
   }
 
@@ -449,15 +415,15 @@ export class Stack extends Construct implements ITaggable {
    */
   protected prepare() {
     // References
-    for (const ref of this.node.findReferences()) {
+    for (const ref of this.node.references) {
       if (CfnReference.isCfnReference(ref.reference)) {
         ref.reference.consumeFromStack(this, ref.source);
       }
     }
 
     // Resource dependencies
-    for (const dependency of this.node.findDependencies()) {
-      const theirStack = dependency.target.node.stack;
+    for (const dependency of this.node.dependencies) {
+      const theirStack = Stack.of(dependency.target);
       if (theirStack !== undefined && theirStack !== this) {
         this.addDependency(theirStack);
       } else {
@@ -476,22 +442,21 @@ export class Stack extends Construct implements ITaggable {
 
   protected synthesize(session: ISynthesisSession): void {
     const builder = session.assembly;
-    const template = `${this.name}.template.json`;
+    const template = `${this.stackName}.template.json`;
 
     // write the CloudFormation template as a JSON file
     const outPath = path.join(builder.outdir, template);
     fs.writeFileSync(outPath, JSON.stringify(this._toCloudFormation(), undefined, 2));
 
-    const deps = this.dependencies().map(s => s.name);
+    const deps = this.dependencies.map(s => s.stackName);
     const meta = this.collectMetadata();
 
     const properties: cxapi.AwsCloudFormationStackProperties = {
-      templateFile: template,
-      parameters: Object.keys(this.parameterValues).length > 0 ? this.node.resolve(this.parameterValues) : undefined
+      templateFile: template
     };
 
     // add an artifact that represents this stack
-    builder.addArtifact(this.name, {
+    builder.addArtifact(this.stackName, {
       type: cxapi.ArtifactType.AwsCloudFormationStack,
       environment: this.environment,
       properties,
@@ -499,18 +464,65 @@ export class Stack extends Construct implements ITaggable {
       metadata: Object.keys(meta).length > 0 ? meta : undefined,
     });
 
-    for (const ctx of this.missingContext) {
+    for (const ctx of this._missingContext) {
       builder.addMissing(ctx);
     }
   }
 
   /**
-   * Applied defaults to environment attributes.
+   * Returns the CloudFormation template for this stack by traversing
+   * the tree and invoking _toCloudFormation() on all Entity objects.
+   *
+   * @internal
+   */
+  protected _toCloudFormation() {
+    const template: any = {
+      Description: this.templateOptions.description,
+      Transform: this.templateOptions.transform,
+      AWSTemplateFormatVersion: this.templateOptions.templateFormatVersion,
+      Metadata: this.templateOptions.metadata
+    };
+
+    const elements = cfnElements(this);
+    const fragments = elements.map(e => this.resolve(e._toCloudFormation()));
+
+    // merge in all CloudFormation fragments collected from the tree
+    for (const fragment of fragments) {
+      merge(template, fragment);
+    }
+
+    // resolve all tokens and remove all empties
+    const ret = this.resolve(template) || {};
+
+    this._logicalIds.assertAllRenamesApplied();
+
+    return ret;
+  }
+
+  /**
+   * Determine the various stack environment attributes.
+   *
    */
   private parseEnvironment(env: Environment = {}) {
+    // if an environment property is explicitly specified when the stack is
+    // created, it will be used as concrete values for all intents. if not, use
+    // tokens for account and region but they do not need to be scoped, the only
+    // situation in which export/fn::importvalue would work if { Ref:
+    // "AWS::AccountId" } is the same for provider and consumer anyway.
+    const region = env.region || Aws.region;
+    const account = env.account || Aws.accountId;
+
+    // temporary fix for #2853, eventually behavior will be based on #2866.
+    // set the cloud assembly manifest environment spec of this stack to use the
+    // default account/region from the toolkit in case account/region are undefined or
+    // unresolved (i.e. tokens).
+    const envAccount = !Token.isUnresolved(account) ? account : Context.getDefaultAccount(this) || 'unknown-account';
+    const envRegion  = !Token.isUnresolved(region)  ? region  : Context.getDefaultRegion(this)  || 'unknown-region';
+
     return {
-      account: env.account ? env.account : this.node.getContext(cxapi.DEFAULT_ACCOUNT_CONTEXT_KEY),
-      region: env.region ? env.region : this.node.getContext(cxapi.DEFAULT_REGION_CONTEXT_KEY)
+      account: account || Aws.accountId,
+      region: region || Aws.region,
+      environment: EnvironmentUtils.format(envAccount, envRegion)
     };
   }
 
@@ -522,7 +534,7 @@ export class Stack extends Construct implements ITaggable {
    */
   private stackDependencyReasons(other: Stack): string[] | undefined {
     if (this === other) { return []; }
-    for (const dep of this.stackDependencies) {
+    for (const dep of this._stackDependencies) {
       const ret = dep.stack.stackDependencyReasons(other);
       if (ret !== undefined) {
         return [dep.reason].concat(ret);
@@ -533,14 +545,9 @@ export class Stack extends Construct implements ITaggable {
 
   private collectMetadata() {
     const output: { [id: string]: cxapi.MetadataEntry[] } = { };
+    const stack = this;
 
     visit(this);
-
-    const app = this.parentApp();
-
-    if (app && app.node.metadata.length > 0) {
-      output[ConstructNode.PATH_SEP] = app.node.metadata;
-    }
 
     return output;
 
@@ -548,7 +555,7 @@ export class Stack extends Construct implements ITaggable {
 
       if (node.node.metadata.length > 0) {
         // Make the path absolute
-        output[ConstructNode.PATH_SEP + node.node.path] = node.node.metadata.map(md => node.node.resolve(md) as cxapi.MetadataEntry);
+        output[ConstructNode.PATH_SEP + node.node.path] = node.node.metadata.map(md => stack.resolve(md) as cxapi.MetadataEntry);
       }
 
       for (const child of node.node.children) {
@@ -563,7 +570,7 @@ export class Stack extends Construct implements ITaggable {
   private calculateStackName() {
     // In tests, it's possible for this stack to be the root object, in which case
     // we need to use it as part of the root path.
-    const rootPath = this.node.scope !== undefined ? this.node.ancestors().slice(1) : [this];
+    const rootPath = this.node.scope !== undefined ? this.node.scopes.slice(1) : [this];
     const ids = rootPath.map(c => c.node.id);
 
     // Special case, if rootPath is length 1 then just use ID (backwards compatibility)
@@ -648,12 +655,14 @@ function cfnElements(node: IConstruct, into: CfnElement[] = []): CfnElement[] {
 }
 
 // These imports have to be at the end to prevent circular imports
-import { ArnComponents, arnFromComponents, parseArn } from './arn';
+import { Arn, ArnComponents } from './arn';
 import { CfnElement } from './cfn-element';
-import { CfnReference } from './cfn-reference';
 import { CfnResource, TagType } from './cfn-resource';
+import { Context } from './context';
+import { CfnReference } from './private/cfn-reference';
 import { Aws, ScopedAws } from './pseudo';
 import { ITaggable, TagManager } from './tag-manager';
+import { Token } from './token';
 
 /**
  * Find all resources in a set of constructs

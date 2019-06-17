@@ -3,7 +3,7 @@ import ec2 = require('@aws-cdk/aws-ec2');
 import iam = require('@aws-cdk/aws-iam');
 import logs = require('@aws-cdk/aws-logs');
 import sqs = require('@aws-cdk/aws-sqs');
-import { Construct, Fn, Token } from '@aws-cdk/cdk';
+import { Construct, Fn, Lazy, Stack, Token } from '@aws-cdk/cdk';
 import { Code } from './code';
 import { IEventSource } from './event-source';
 import { FunctionAttributes, FunctionBase, IFunction } from './function-base';
@@ -265,7 +265,7 @@ export class Function extends FunctionBase {
       constructor(s: Construct, i: string) {
         super(s, i);
 
-        this.grantPrincipal = role || new iam.ImportedResourcePrincipal({ resource: this } );
+        this.grantPrincipal = role || new iam.UnknownPrincipal({ resource: this } );
 
         if (attrs.securityGroupId) {
           this._connections = new ec2.Connections({
@@ -394,19 +394,19 @@ export class Function extends FunctionBase {
 
     this.environment = props.environment || { };
 
-    const managedPolicyArns = new Array<string>();
+    const managedPolicies = new Array<iam.IManagedPolicy>();
 
     // the arn is in the form of - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
-    managedPolicyArns.push(new iam.AwsManagedPolicy("service-role/AWSLambdaBasicExecutionRole", this).policyArn);
+    managedPolicies.push(iam.ManagedPolicy.fromAwsManagedPolicyName("service-role/AWSLambdaBasicExecutionRole"));
 
     if (props.vpc) {
       // Policy that will have ENI creation permissions
-      managedPolicyArns.push(new iam.AwsManagedPolicy("service-role/AWSLambdaVPCAccessExecutionRole", this).policyArn);
+      managedPolicies.push(iam.ManagedPolicy.fromAwsManagedPolicyName("service-role/AWSLambdaVPCAccessExecutionRole"));
     }
 
     this.role = props.role || new iam.Role(this, 'ServiceRole', {
       assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
-      managedPolicyArns,
+      managedPolicies
     });
     this.grantPrincipal = this.role;
 
@@ -414,22 +414,23 @@ export class Function extends FunctionBase {
       this.role.addToPolicy(statement);
     }
 
-    const isChina = this.node.stack.env.region && this.node.stack.env.region.startsWith('cn-');
+    const region = Stack.of(this).region;
+    const isChina = !Token.isUnresolved(region) && region.startsWith('cn-');
     if (isChina && props.environment && Object.keys(props.environment).length > 0) {
       // tslint:disable-next-line:max-line-length
-      throw new Error(`Environment variables are not supported in this region (${this.node.stack.env.region}); consider using tags or SSM parameters instead`);
+      throw new Error(`Environment variables are not supported in this region (${region}); consider using tags or SSM parameters instead`);
     }
 
-    const resource = new CfnFunction(this, 'Resource', {
+    const resource: CfnFunction = new CfnFunction(this, 'Resource', {
       functionName: props.functionName,
       description: props.description,
-      code: new Token(() => props.code._toJSON(resource)),
-      layers: new Token(() => this.layers.length > 0 ? this.layers.map(layer => layer.layerVersionArn) : undefined).toList(),
+      code: Lazy.anyValue({ produce: () => props.code._toJSON(resource) }),
+      layers: Lazy.listValue({ produce: () => this.layers.map(layer => layer.layerVersionArn) }, { omitEmpty: true }),
       handler: props.handler,
       timeout: props.timeout,
       runtime: props.runtime.name,
       role: this.role.roleArn,
-      environment: new Token(() => this.renderEnvironment()),
+      environment: Lazy.anyValue({ produce: () => this.renderEnvironment() }),
       memorySize: props.memorySize,
       vpcConfig: this.configureVpc(props),
       deadLetterConfig: this.buildDeadLetterConfig(props),
@@ -439,7 +440,7 @@ export class Function extends FunctionBase {
 
     resource.node.addDependency(this.role);
 
-    this.functionName = resource.ref;
+    this.functionName = resource.refAsString;
     this.functionArn = resource.functionArn;
     this.handler = props.handler;
     this.runtime = props.runtime;
@@ -611,9 +612,10 @@ export class Function extends FunctionBase {
       retentionPeriodSec: 1209600
     });
 
-    this.addToRolePolicy(new iam.PolicyStatement()
-      .addAction('sqs:SendMessage')
-      .addResource(deadLetterQueue.queueArn));
+    this.addToRolePolicy(new iam.PolicyStatement({
+      actions: ['sqs:SendMessage'],
+      resources: [deadLetterQueue.queueArn]
+    }));
 
     return {
       targetArn: deadLetterQueue.queueArn
@@ -625,9 +627,10 @@ export class Function extends FunctionBase {
       return undefined;
     }
 
-    this.addToRolePolicy(new iam.PolicyStatement()
-      .addActions('xray:PutTraceSegments', 'xray:PutTelemetryRecords')
-      .addAllResources());
+    this.addToRolePolicy(new iam.PolicyStatement({
+      actions: ['xray:PutTraceSegments', 'xray:PutTelemetryRecords'],
+      resources: ['*']
+    }));
 
     return {
       mode: Tracing[props.tracing]

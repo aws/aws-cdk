@@ -96,7 +96,7 @@ export class OptionGroup extends Resource implements IOptionGroup {
    * Import an existing option group.
    */
   public static fromOptionGroupName(scope: Construct, id: string, optionGroupName: string): IOptionGroup {
-    class Import extends Construct {
+    class Import extends Resource {
       public readonly optionGroupName = optionGroupName;
     }
     return new Import(scope, id);

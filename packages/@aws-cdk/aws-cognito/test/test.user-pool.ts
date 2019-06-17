@@ -28,7 +28,7 @@ export = {
     const fn = new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NodeJS810,
+      runtime: lambda.Runtime.Nodejs810,
     });
 
     // WHEN
@@ -42,8 +42,8 @@ export = {
     // THEN
     expect(stack).to(haveResourceLike('AWS::Cognito::UserPool', {
       LambdaConfig: {
-        PreSignUp: fn.node.resolve(fn.functionArn),
-        CustomMessage: fn.node.resolve(fn.functionArn)
+        PreSignUp: stack.resolve(fn.functionArn),
+        CustomMessage: stack.resolve(fn.functionArn)
       }
     }));
 
@@ -56,7 +56,7 @@ export = {
     const fn = new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NodeJS810,
+      runtime: lambda.Runtime.Nodejs810,
     });
 
     // WHEN
@@ -73,14 +73,14 @@ export = {
     // THEN
     expect(stack).to(haveResourceLike('AWS::Cognito::UserPool', {
       LambdaConfig: {
-        CreateAuthChallenge: fn.node.resolve(fn.functionArn),
-        CustomMessage: fn.node.resolve(fn.functionArn),
-        DefineAuthChallenge: fn.node.resolve(fn.functionArn),
-        PostAuthentication: fn.node.resolve(fn.functionArn),
-        PostConfirmation: fn.node.resolve(fn.functionArn),
-        PreAuthentication: fn.node.resolve(fn.functionArn),
-        PreSignUp: fn.node.resolve(fn.functionArn),
-        VerifyAuthChallengeResponse: fn.node.resolve(fn.functionArn)
+        CreateAuthChallenge: stack.resolve(fn.functionArn),
+        CustomMessage: stack.resolve(fn.functionArn),
+        DefineAuthChallenge: stack.resolve(fn.functionArn),
+        PostAuthentication: stack.resolve(fn.functionArn),
+        PostConfirmation: stack.resolve(fn.functionArn),
+        PreAuthentication: stack.resolve(fn.functionArn),
+        PreSignUp: stack.resolve(fn.functionArn),
+        VerifyAuthChallengeResponse: stack.resolve(fn.functionArn)
       }
     }));
 
@@ -93,7 +93,7 @@ export = {
     const fn = new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NodeJS810,
+      runtime: lambda.Runtime.Nodejs810,
     });
 
     // WHEN
@@ -105,7 +105,7 @@ export = {
 
     // THEN
     expect(stack).to(haveResourceLike('AWS::Lambda::Permission', {
-      FunctionName: fn.node.resolve(fn.functionArn),
+      FunctionName: stack.resolve(fn.functionArn),
       Principal: 'cognito-idp.amazonaws.com'
     }));
 

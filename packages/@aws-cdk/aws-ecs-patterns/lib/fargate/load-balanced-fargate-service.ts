@@ -1,11 +1,10 @@
 import ecs = require('@aws-cdk/aws-ecs');
-import { AliasRecord, IHostedZone } from '@aws-cdk/aws-route53';
-import targets = require('@aws-cdk/aws-route53-targets');
+import iam = require('@aws-cdk/aws-iam');
 import cdk = require('@aws-cdk/cdk');
 import { LoadBalancedServiceBase, LoadBalancedServiceBaseProps } from '../base/load-balanced-service-base';
 
 /**
- * Properties for a LoadBalancedEcsService
+ * Properties for a LoadBalancedFargateService
  */
 export interface LoadBalancedFargateServiceProps extends LoadBalancedServiceBaseProps {
   /**
@@ -21,7 +20,7 @@ export interface LoadBalancedFargateServiceProps extends LoadBalancedServiceBase
    *
    * @default 256
    */
-  readonly cpu?: string;
+  readonly cpu?: number;
 
   /**
    * The amount (in MiB) of memory used by the task.
@@ -43,35 +42,35 @@ export interface LoadBalancedFargateServiceProps extends LoadBalancedServiceBase
    *
    * @default 512
    */
-  readonly memoryMiB?: string;
+  readonly memoryLimitMiB?: number;
 
   /**
-   * Determines whether your Fargate Service will be assigned a public IP address.
+   * Override for the Fargate Task Definition execution role
    *
-   * @default false
+   * @default - No value
    */
-  readonly publicTasks?: boolean;
+  readonly executionRole?: iam.IRole;
 
   /**
-   * Domain name for the service, e.g. api.example.com
+   * Override for the Fargate Task Definition task role
    *
-   * @default - No domain name.
+   * @default - No value
    */
-  readonly domainName?: string;
+  readonly taskRole?: iam.IRole;
 
   /**
-   * Route53 hosted zone for the domain, e.g. "example.com."
+   * Override value for the container name
    *
-   * @default - No Route53 hosted domain zone.
+   * @default - No value
    */
-  readonly domainZone?: IHostedZone;
+  readonly containerName?: string;
 
   /**
-   * Whether to create an AWS log driver
+   * Override value for the service name
    *
-   * @default true
+   * @default - No value
    */
-  readonly createLogs?: boolean;
+  readonly serviceName?: string;
 }
 
 /**
@@ -88,47 +87,33 @@ export class LoadBalancedFargateService extends LoadBalancedServiceBase {
     super(scope, id, props);
 
     const taskDefinition = new ecs.FargateTaskDefinition(this, 'TaskDef', {
-      memoryMiB: props.memoryMiB,
-      cpu: props.cpu
+      memoryLimitMiB: props.memoryLimitMiB,
+      cpu: props.cpu,
+      executionRole: props.executionRole !== undefined ? props.executionRole : undefined,
+      taskRole: props.taskRole !== undefined ? props.taskRole : undefined
     });
 
-    const optIn = props.createLogs !== undefined ? props.createLogs : true;
+    const containerName = props.containerName !== undefined ? props.containerName : 'web';
 
-    const container = taskDefinition.addContainer('web', {
+    const container = taskDefinition.addContainer(containerName, {
       image: props.image,
-      logging: optIn ? this.createAWSLogDriver(this.node.id) : undefined,
+      logging: this.logDriver,
       environment: props.environment
     });
 
     container.addPortMappings({
       containerPort: props.containerPort || 80,
     });
-
     const assignPublicIp = props.publicTasks !== undefined ? props.publicTasks : false;
     const service = new ecs.FargateService(this, "Service", {
       cluster: props.cluster,
       desiredCount: props.desiredCount || 1,
       taskDefinition,
-      assignPublicIp
+      assignPublicIp,
+      serviceName: props.serviceName || undefined
     });
     this.service = service;
 
     this.addServiceAsTarget(service);
-
-    if (typeof props.domainName !== 'undefined') {
-      if (typeof props.domainZone === 'undefined') {
-        throw new Error('A Route53 hosted domain zone name is required to configure the specified domain name');
-      }
-
-      new AliasRecord(this, "DNS", {
-        zone: props.domainZone,
-        recordName: props.domainName,
-        target: new targets.LoadBalancerTarget(this.loadBalancer),
-      });
-    }
-  }
-
-  private createAWSLogDriver(prefix: string): ecs.AwsLogDriver {
-    return new ecs.AwsLogDriver(this, 'Logging', { streamPrefix: prefix });
   }
 }

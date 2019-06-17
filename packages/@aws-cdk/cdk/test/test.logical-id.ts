@@ -1,13 +1,14 @@
 import { Test } from 'nodeunit';
-import { CfnResource, Construct, HashedAddressingScheme, IAddressingScheme, Stack } from '../lib';
+import { CfnElement, CfnResource, Construct, Stack } from '../lib';
+import { toCloudFormation } from './util';
 
 /**
  * These tests are executed once (for specific ID schemes)
  */
-const uniqueTests = {
+export = {
   'if the naming scheme uniquifies with a hash we can have the same concatenated identifier'(test: Test) {
     // GIVEN
-    const stack = new Stack(undefined, 'TestStack', { namingScheme: new HashedAddressingScheme() });
+    const stack = new Stack(undefined, 'TestStack');
 
     const A = new Construct(stack, 'A');
     new CfnResource(A, 'BC', { type: 'Resource' });
@@ -23,13 +24,13 @@ const uniqueTests = {
 
   'special case: if the resource is top-level, a hash is not added'(test: Test) {
     // GIVEN
-    const stack = new Stack(undefined, 'TestStack', { namingScheme: new HashedAddressingScheme() });
+    const stack = new Stack(undefined, 'TestStack');
 
     // WHEN
     const r = new CfnResource(stack, 'MyAwesomeness', { type: 'Resource' });
 
     // THEN
-    test.equal(stack.node.resolve(r.logicalId), 'MyAwesomeness');
+    test.equal(stack.resolve(r.logicalId), 'MyAwesomeness');
 
     test.done();
   },
@@ -37,14 +38,14 @@ const uniqueTests = {
   'Logical IDs can be renamed at the stack level'(test: Test) {
     // GIVEN
     const stack = new Stack();
-    stack.renameLogical('ParentThingResource75D1D9CB', 'Renamed');
 
     // WHEN
     const parent = new Construct(stack, 'Parent');
     new CfnResource(parent, 'ThingResource', { type: 'AWS::TAAS::Thing' });
+    stack.renameLogicalId('ParentThingResource75D1D9CB', 'Renamed');
 
     // THEN
-    const template = stack._toCloudFormation();
+    const template = toCloudFormation(stack);
     test.ok('Renamed' in template.Resources);
 
     test.done();
@@ -53,15 +54,13 @@ const uniqueTests = {
   'Renames for objects that don\'t exist fail'(test: Test) {
     // GIVEN
     const stack = new Stack();
-    stack.renameLogical('DOESNOTEXIST', 'Renamed');
-
-    // WHEN
     new Construct(stack, 'Parent');
 
+    // WHEN
+    stack.renameLogicalId('DOESNOTEXIST', 'Renamed');
+
     // THEN
-    test.throws(() => {
-      stack._toCloudFormation();
-    });
+    test.throws(() => toCloudFormation(stack));
 
     test.done();
   },
@@ -69,17 +68,15 @@ const uniqueTests = {
   'ID Renames that collide with existing IDs should fail'(test: Test) {
     // GIVEN
     const stack = new Stack();
-    stack.renameLogical('ParentThingResource1916E7808', 'ParentThingResource2F19948CB');
+    stack.renameLogicalId('ParentThingResource1916E7808', 'ParentThingResource2F19948CB');
 
     // WHEN
     const parent = new Construct(stack, 'Parent');
     new CfnResource(parent, 'ThingResource1', { type: 'AWS::TAAS::Thing' });
+    new CfnResource(parent, 'ThingResource2', { type: 'AWS::TAAS::Thing' });
 
     // THEN
-    test.throws(() => {
-      new CfnResource(parent, 'ThingResource2', { type: 'AWS::TAAS::Thing' });
-    });
-
+    test.throws(() => toCloudFormation(stack), /Two objects have been assigned the same Logical ID/);
     test.done();
   },
 
@@ -95,7 +92,7 @@ const uniqueTests = {
     new CfnResource(child2, 'HeyThere', { type: 'AWS::TAAS::Thing' });
 
     // THEN
-    const template = stack._toCloudFormation();
+    const template = toCloudFormation(stack);
     test.deepEqual(template, {
       Resources: {
         ParentChildHeyThere35220347: {
@@ -112,7 +109,7 @@ const uniqueTests = {
     const stack1 = new Stack();
     const parent1 = new Construct(stack1, 'Parent');
     new CfnResource(parent1, 'HeyThere', { type: 'AWS::TAAS::Thing' });
-    const template1 = stack1._toCloudFormation();
+    const template1 = toCloudFormation(stack1);
 
     // AND
     const theId1 = Object.keys(template1.Resources)[0];
@@ -123,7 +120,7 @@ const uniqueTests = {
     const parent2 = new Construct(stack2, 'Parent');
     const invisibleWrapper = new Construct(parent2, 'Default');
     new CfnResource(invisibleWrapper, 'HeyThere', { type: 'AWS::TAAS::Thing' });
-    const template2 = stack1._toCloudFormation();
+    const template2 = toCloudFormation(stack1);
 
     const theId2 = Object.keys(template2.Resources)[0];
     test.equal('AWS::TAAS::Thing', template2.Resources[theId2].Type);
@@ -135,9 +132,8 @@ const uniqueTests = {
   },
 
   'non-alphanumeric characters are removed from the human part of the logical ID'(test: Test) {
-    const scheme = new HashedAddressingScheme();
-    const val1 = scheme.allocateAddress([ 'Foo-bar', 'B00m', 'Hello_World', '&&Horray Horray.' ]);
-    const val2 = scheme.allocateAddress([ 'Foobar', 'B00m', 'HelloWorld', 'HorrayHorray' ]);
+    const val1 = logicalForElementInPath([ 'Foo-bar', 'B00m', 'Hello_World', '&&Horray Horray.' ]);
+    const val2 = logicalForElementInPath([ 'Foobar', 'B00m', 'HelloWorld', 'HorrayHorray' ]);
 
     // same human part, different hash
     test.deepEqual(val1, 'FoobarB00mHelloWorldHorrayHorray640E99FB');
@@ -146,38 +142,28 @@ const uniqueTests = {
   },
 
   'non-alphanumeric characters are removed even if the ID has only one component'(test: Test) {
-    const scheme = new HashedAddressingScheme();
-    const val1 = scheme.allocateAddress([ 'Foo-bar' ]);
+    const val1 = logicalForElementInPath([ 'Foo-bar' ]);
 
     // same human part, different hash
     test.deepEqual(val1, 'Foobar');
     test.done();
-  }
-};
+  },
 
-const schemes: {[name: string]: IAddressingScheme} = {
-  "hashing scheme": new HashedAddressingScheme(),
-};
-
-/**
- * These tests are executed for all generators
- */
-const allSchemesTests: {[name: string]: (scheme: IAddressingScheme, test: Test) => void } = {
-  'empty identifiers are not allowed'(scheme: IAddressingScheme, test: Test) {
+  'empty identifiers are not allowed'(test: Test) {
     // GIVEN
-    const stack = new Stack(undefined, 'TestStack', { namingScheme: scheme });
+    const stack = new Stack();
 
     // WHEN
-    test.throws(() => {
-       new CfnResource(stack, '.', { type: 'R' });
-    });
+    new CfnResource(stack, '.', { type: 'R' });
+
+    // THEN
+    test.throws(() => toCloudFormation(stack), /Logical ID must adhere to the regular expression/);
     test.done();
   },
 
-  'too large identifiers are truncated yet still remain unique'(scheme: IAddressingScheme, test: Test) {
+  'too large identifiers are truncated yet still remain unique'(test: Test) {
     // GIVEN
-    const stack = new Stack(undefined, 'TestStack', { namingScheme: scheme });
-
+    const stack = new Stack();
     const A = new Construct(stack, generateString(100));
     const B = new Construct(A, generateString(100));
 
@@ -197,10 +183,10 @@ const allSchemesTests: {[name: string]: (scheme: IAddressingScheme, test: Test) 
     test.done();
   },
 
-  'Refs and dependencies will correctly reflect renames done at the stack level'(scheme: IAddressingScheme, test: Test) {
+  'Refs and dependencies will correctly reflect renames done at the stack level'(test: Test) {
     // GIVEN
-    const stack = new Stack(undefined, 'TestStack', { namingScheme: scheme });
-    stack.renameLogical('OriginalName', 'NewName');
+    const stack = new Stack();
+    stack.renameLogicalId('OriginalName', 'NewName');
 
     // WHEN
     const c1 = new CfnResource(stack, 'OriginalName', { type: 'R1' });
@@ -210,34 +196,50 @@ const allSchemesTests: {[name: string]: (scheme: IAddressingScheme, test: Test) 
     c2.node.addDependency(c1);
 
     // THEN
-    stack.node.prepareTree();
-    test.deepEqual(stack._toCloudFormation(), {
+    test.deepEqual(toCloudFormation(stack), {
       Resources: {
-        NewName: {
-          Type: 'R1' },
+        NewName: { Type: 'R1' },
         Construct2: {
           Type: 'R2',
-          Properties: {
-            ReferenceToR1: { Ref: 'NewName' } },
-          DependsOn: [ 'NewName' ] } } });
+          Properties: { ReferenceToR1: { Ref: 'NewName' } },
+          DependsOn: [ 'NewName' ]
+        }
+      }
+    });
 
     test.done();
   },
+
+  'customize logical id allocation behavior by overriding `Stack.allocateLogicalId`'(test: Test) {
+    class MyStack extends Stack {
+      protected allocateLogicalId(element: CfnElement): string {
+        if (element.node.id === 'A') { return 'LogicalIdOfA'; }
+        if (element.node.id === 'B') { return 'LogicalIdOfB'; }
+        throw new Error(`Invalid element ID`);
+      }
+    }
+
+    const stack = new MyStack();
+    new CfnResource(stack, 'A', { type: 'Type::Of::A' });
+    const group = new Construct(stack, 'Group');
+    new CfnResource(group, 'B', { type: 'Type::Of::B' });
+
+    // renames can also be applied on custom logical IDs.
+    stack.renameLogicalId('LogicalIdOfB', 'BoomBoomB');
+
+    const c = new CfnResource(stack, 'B', { type: 'Type::Of::C' });
+    c.overrideLogicalId('TheC');
+
+    test.deepEqual(toCloudFormation(stack), {
+      Resources: {
+        LogicalIdOfA: { Type: 'Type::Of::A' },
+        BoomBoomB: { Type: 'Type::Of::B' },
+        TheC: { Type: 'Type::Of::C' }
+      }
+    });
+    test.done();
+  }
 };
-
-// Combine the one-off tests and generate tests for each scheme
-const exp: any = uniqueTests;
-Object.keys(schemes).forEach(schemeName => {
-  const scheme = schemes[schemeName];
-  Object.keys(allSchemesTests).forEach(testName => {
-    const testFunction = allSchemesTests[testName];
-    exp[`${schemeName}: ${testName}`] = (test: Test) => {
-      testFunction(scheme, test);
-    };
-  });
-});
-
-export = exp;
 
 function generateString(chars: number) {
   let s = '';
@@ -249,4 +251,14 @@ function generateString(chars: number) {
   function randomAlpha() {
     return String.fromCharCode('a'.charCodeAt(0) + Math.floor(Math.random() * 26));
   }
+}
+
+function logicalForElementInPath(constructPath: string[]): string {
+  const stack = new Stack();
+  let scope: Construct = stack;
+  for (const component of constructPath) {
+    scope = new CfnResource(scope, component, { type: 'Foo' });
+  }
+
+  return stack.resolve((scope as CfnResource).logicalId);
 }

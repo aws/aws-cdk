@@ -17,7 +17,7 @@ export = {
     },
     'fails if larger than 4096 bytes'(test: Test) {
       test.throws(
-        () => defineFunction(lambda.Code.inline(generateRandomString(4097)), lambda.Runtime.NodeJS810),
+        () => defineFunction(lambda.Code.inline(generateRandomString(4097)), lambda.Runtime.Nodejs810),
         /Lambda source is too large, must be <= 4096 but is 4097/);
       test.done();
     }
@@ -52,13 +52,13 @@ export = {
       // WHEN
       new lambda.Function(stack, 'Func1', {
         handler: 'foom',
-        runtime: lambda.Runtime.NodeJS810,
+        runtime: lambda.Runtime.Nodejs810,
         code: directoryAsset
       });
 
       new lambda.Function(stack, 'Func2', {
         handler: 'foom',
-        runtime: lambda.Runtime.NodeJS810,
+        runtime: lambda.Runtime.Nodejs810,
         code: directoryAsset
       });
 
@@ -86,7 +86,7 @@ export = {
       // WHEN
       new lambda.Function(stack, 'Func1', {
         code: lambda.Code.asset(location),
-        runtime: lambda.Runtime.NodeJS810,
+        runtime: lambda.Runtime.Nodejs810,
         handler: 'foom',
       });
 
@@ -107,7 +107,7 @@ export = {
       const code = new lambda.CfnParametersCode();
       new lambda.Function(stack, 'Function', {
         code,
-        runtime: lambda.Runtime.NodeJS810,
+        runtime: lambda.Runtime.Nodejs810,
         handler: 'index.handler',
       });
 
@@ -122,8 +122,8 @@ export = {
         },
       }));
 
-      test.equal(stack.node.resolve(code.bucketNameParam), 'FunctionLambdaSourceBucketNameParameter9E9E108F');
-      test.equal(stack.node.resolve(code.objectKeyParam), 'FunctionLambdaSourceObjectKeyParameter1C7AED11');
+      test.equal(stack.resolve(code.bucketNameParam), 'FunctionLambdaSourceBucketNameParameter9E9E108F');
+      test.equal(stack.resolve(code.objectKeyParam), 'FunctionLambdaSourceObjectKeyParameter1C7AED11');
 
       test.done();
     },
@@ -156,12 +156,12 @@ export = {
         objectKeyParam: bucketKeyParam,
       });
 
-      test.equal(stack.node.resolve(code.bucketNameParam), 'BucketNameParam');
-      test.equal(stack.node.resolve(code.objectKeyParam), 'ObjectKeyParam');
+      test.equal(stack.resolve(code.bucketNameParam), 'BucketNameParam');
+      test.equal(stack.resolve(code.objectKeyParam), 'ObjectKeyParam');
 
       new lambda.Function(stack, 'Function', {
         code,
-        runtime: lambda.Runtime.NodeJS810,
+        runtime: lambda.Runtime.Nodejs810,
         handler: 'index.handler',
       });
 
@@ -192,7 +192,7 @@ export = {
       });
 
       // when
-      const overrides = stack.node.resolve(code.assign({
+      const overrides = stack.resolve(code.assign({
         bucketName: 'SomeBucketName',
         objectKey: 'SomeObjectKey',
       }));
@@ -206,7 +206,7 @@ export = {
   },
 };
 
-function defineFunction(code: lambda.Code, runtime: lambda.Runtime = lambda.Runtime.NodeJS810) {
+function defineFunction(code: lambda.Code, runtime: lambda.Runtime = lambda.Runtime.Nodejs810) {
   const stack = new cdk.Stack();
   return new lambda.Function(stack, 'Func', {
     handler: 'foom',

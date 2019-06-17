@@ -301,7 +301,7 @@ export class DatabaseCluster extends DatabaseClusterBase {
       engine: props.engine.name,
       engineVersion: props.engineVersion,
       dbClusterIdentifier: props.clusterIdentifier,
-      dbSubnetGroupName: subnetGroup.ref,
+      dbSubnetGroupName: subnetGroup.refAsString,
       vpcSecurityGroupIds: [this.securityGroupId],
       port: props.port,
       dbClusterParameterGroupName: props.parameterGroup && props.parameterGroup.parameterGroupName,
@@ -325,10 +325,10 @@ export class DatabaseCluster extends DatabaseClusterBase {
     cluster.options.deletionPolicy = deleteReplacePolicy;
     cluster.options.updateReplacePolicy = deleteReplacePolicy;
 
-    this.clusterIdentifier = cluster.ref;
+    this.clusterIdentifier = cluster.refAsString;
 
     // create a number token that represents the port of the cluster
-    const portAttribute = new Token(() => cluster.dbClusterEndpointPort).toNumber();
+    const portAttribute = Token.asNumber(cluster.dbClusterEndpointPort);
     this.clusterEndpoint = new Endpoint(cluster.dbClusterEndpointAddress, portAttribute);
     this.clusterReadEndpoint = new Endpoint(cluster.dbClusterReadEndpointAddress, portAttribute);
 
@@ -358,13 +358,13 @@ export class DatabaseCluster extends DatabaseClusterBase {
         // Link to cluster
         engine: props.engine.name,
         engineVersion: props.engineVersion,
-        dbClusterIdentifier: cluster.ref,
+        dbClusterIdentifier: cluster.refAsString,
         dbInstanceIdentifier: instanceIdentifier,
         // Instance properties
         dbInstanceClass: databaseInstanceType(props.instanceProps.instanceType),
         publiclyAccessible,
         // This is already set on the Cluster. Unclear to me whether it should be repeated or not. Better yes.
-        dbSubnetGroupName: subnetGroup.ref,
+        dbSubnetGroupName: subnetGroup.refAsString,
         dbParameterGroupName: props.instanceProps.parameterGroup && props.instanceProps.parameterGroup.parameterGroupName,
       });
 
@@ -375,7 +375,7 @@ export class DatabaseCluster extends DatabaseClusterBase {
       // things in the right order.
       instance.node.addDependency(internetConnected);
 
-      this.instanceIdentifiers.push(instance.ref);
+      this.instanceIdentifiers.push(instance.refAsString);
       this.instanceEndpoints.push(new Endpoint(instance.dbInstanceEndpointAddress, portAttribute));
     }
 

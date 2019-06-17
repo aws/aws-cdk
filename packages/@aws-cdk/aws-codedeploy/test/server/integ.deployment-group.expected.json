@@ -725,6 +725,7 @@
             "Protocol": "http"
           }
         ],
+        "CrossZone": true,
         "Scheme": "internal",
         "SecurityGroups": [
           {
@@ -795,7 +796,18 @@
           "Version": "2012-10-17"
         },
         "ManagedPolicyArns": [
-          "arn:aws:iam::aws:policy/service-role/AWSCodeDeployRole"
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":iam::aws:policy/service-role/AWSCodeDeployRole"
+              ]
+            ]
+          }
         ]
       }
     },

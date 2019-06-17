@@ -28,10 +28,10 @@ const sourceStage = {
 const role = new iam.Role(stack, 'ActionRole', {
   assumedBy: new iam.AccountPrincipal(cdk.Aws.accountId)
 });
-role.addToPolicy(new iam.PolicyStatement()
-  .addAction('sqs:*')
-  .addAllResources()
-);
+role.addToPolicy(new iam.PolicyStatement({
+  actions: ['sqs:*'],
+  resources: ['*']
+}));
 const cfnStage = {
   name: 'CFN',
   actions: [
@@ -45,16 +45,12 @@ const cfnStage = {
   ],
 };
 
-const pipeline = new codepipeline.Pipeline(stack, 'MyPipeline', {
+new codepipeline.Pipeline(stack, 'MyPipeline', {
   artifactBucket: bucket,
   stages: [
     sourceStage,
     cfnStage,
   ],
 });
-pipeline.addToRolePolicy(new iam.PolicyStatement()
-  .addActions("sts:AssumeRole", "iam:PassRole")
-  .addAllResources()
-);
 
 app.synth();

@@ -4,6 +4,7 @@ import iam = require('@aws-cdk/aws-iam');
 import { IResource, Resource } from '@aws-cdk/cdk';
 import { IEventSource } from './event-source';
 import { EventSourceMapping, EventSourceMappingOptions } from './event-source-mapping';
+import { IVersion } from './lambda-version';
 import { CfnPermission } from './lambda.generated';
 import { Permission } from './permission';
 
@@ -39,6 +40,11 @@ export interface IFunction extends IResource, ec2.IConnectable, iam.IGrantable {
    * If this is is `false`, trying to access the `connections` object will fail.
    */
   readonly isBoundToVpc: boolean;
+
+  /**
+   * The `$LATEST` version of this function.
+   */
+  readonly latestVersion: IVersion;
 
   /**
    * Adds an event source that maps to this AWS Lambda function.
@@ -138,6 +144,11 @@ export abstract class FunctionBase extends Resource implements IFunction  {
    * Undefined if the function was imported without a role.
    */
   public abstract readonly role?: iam.IRole;
+
+  /**
+   * The $LATEST version of this function.
+   */
+  public readonly latestVersion: IVersion = new LatestVersion(this);
 
   /**
    * Whether the addPermission() call adds any permissions
@@ -273,7 +284,20 @@ export abstract class FunctionBase extends Resource implements IFunction  {
       return (principal as iam.ServicePrincipal).service;
     }
 
-    throw new Error(`Invalid principal type for Lambda permission statement: ${this.node.resolve(principal.toString())}. ` +
+    throw new Error(`Invalid principal type for Lambda permission statement: ${principal.constructor.name}. ` +
       'Supported: AccountPrincipal, ServicePrincipal');
+  }
+}
+
+/**
+ * The $LATEST version of a function, useful when attempting to create aliases.
+ */
+class LatestVersion extends Resource implements IVersion {
+  public readonly lambda: IFunction;
+  public readonly version = '$LATEST';
+
+  constructor(lambda: FunctionBase) {
+    super(lambda, '$LATEST');
+    this.lambda = lambda;
   }
 }

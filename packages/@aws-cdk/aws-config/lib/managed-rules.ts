@@ -1,6 +1,6 @@
 import iam = require('@aws-cdk/aws-iam');
 import sns = require('@aws-cdk/aws-sns');
-import { Construct, Token } from '@aws-cdk/cdk';
+import { Construct, Lazy, Stack } from '@aws-cdk/cdk';
 import { ManagedRule, RuleProps } from './rule';
 
 /**
@@ -77,16 +77,16 @@ export class CloudFormationStackDriftDetectionCheck extends ManagedRule {
       ...props,
       identifier: 'CLOUDFORMATION_STACK_DRIFT_DETECTION_CHECK',
       inputParameters: {
-        cloudformationRoleArn: new Token(() => this.role.roleArn)
+        cloudformationRoleArn: Lazy.stringValue({ produce: () => this.role.roleArn })
       }
     });
 
-    this.scopeToResource('AWS::CloudFormation::Stack', props.ownStackOnly ? this.node.stack.stackId : undefined);
+    this.scopeToResource('AWS::CloudFormation::Stack', props.ownStackOnly ? Stack.of(this).stackId : undefined);
 
     this.role = props.role || new iam.Role(this, 'Role', {
       assumedBy: new iam.ServicePrincipal('config.amazonaws.com'),
-      managedPolicyArns: [
-        new iam.AwsManagedPolicy('ReadOnlyAccess', this).policyArn,
+      managedPolicies: [
+        iam.ManagedPolicy.fromAwsManagedPolicyName('ReadOnlyAccess')
       ]
     });
   }

@@ -16,7 +16,7 @@ export class GlobalTableCoordinator extends cdk.Stack {
       code: lambda.Code.asset(path.resolve(__dirname, "../", "lambda-packages", "aws-global-table-coordinator", "lib")),
       description: "Lambda to make DynamoDB a global table",
       handler: "index.handler",
-      runtime: lambda.Runtime.NodeJS810,
+      runtime: lambda.Runtime.Nodejs810,
       timeout: 300,
       uuid: "D38B65A6-6B54-4FB6-9BAD-9CD40A6DAC12",
     });
@@ -40,16 +40,16 @@ export class GlobalTableCoordinator extends cdk.Stack {
  */
 function grantCreateGlobalTableLambda(principal?: iam.IPrincipal): void {
   if (principal) {
-    principal.addToPolicy(new iam.PolicyStatement()
-      .allow()
-      .addAllResources()
-      .addAction("iam:CreateServiceLinkedRole")
-      .addAction("application-autoscaling:DeleteScalingPolicy")
-      .addAction("application-autoscaling:DeregisterScalableTarget")
-      .addAction("dynamodb:CreateGlobalTable")
-      .addAction("dynamodb:DescribeLimits")
-      .addAction("dynamodb:DeleteTable")
-      .addAction("dynamodb:DescribeGlobalTable")
-      .addAction("dynamodb:UpdateGlobalTable"));
+    principal.addToPolicy(new iam.PolicyStatement({
+      resources: ['*'],
+      actions: [
+        "iam:CreateServiceLinkedRole",
+        "application-autoscaling:DeleteScalingPolicy",
+        "application-autoscaling:DeregisterScalableTarget",
+        "dynamodb:CreateGlobalTable", "dynamodb:DescribeLimits",
+        "dynamodb:DeleteTable", "dynamodb:DescribeGlobalTable",
+        "dynamodb:UpdateGlobalTable",
+      ]
+    }));
   }
 }

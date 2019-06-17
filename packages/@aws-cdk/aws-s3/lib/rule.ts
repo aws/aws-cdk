@@ -146,23 +146,57 @@ export interface NoncurrentVersionTransition {
 /**
  * Storage class to move an object to
  */
-export enum StorageClass {
+export class StorageClass {
   /**
-   * Storage class for data that is accessed less frequently, but requires rapid access when needed.
+   * Storage class for data that is accessed less frequently, but requires rapid
+   * access when needed.
    *
    * Has lower availability than Standard storage.
    */
-  InfrequentAccess = 'STANDARD_IA',
+  public static readonly InfrequentAccess = new StorageClass('STANDARD_IA');
 
   /**
    * Infrequent Access that's only stored in one availability zone.
    *
    * Has lower availability than standard InfrequentAccess.
    */
-  OneZoneInfrequentAccess = 'ONEZONE_IA',
+  public static readonly OneZoneInfrequentAccess = new StorageClass('ONEZONE_IA');
 
   /**
-   * Storage class for long-term archival that can take between minutes and hours to access.
+   * Storage class for long-term archival that can take between minutes and
+   * hours to access.
+   *
+   * Use for archives where portions of the data might need to be retrieved in
+   * minutes. Data stored in the GLACIER storage class has a minimum storage
+   * duration period of 90 days and can be accessed in as little as 1-5 minutes
+   * using expedited retrieval. If you delete an object before the 90-day
+   * minimum, you are charged for 90 days.
    */
-  Glacier = 'GLACIER'
+  public static readonly Glacier = new StorageClass('GLACIER');
+
+  /**
+   * Use for archiving data that rarely needs to be accessed. Data stored in the
+   * DEEP_ARCHIVE storage class has a minimum storage duration period of 180
+   * days and a default retrieval time of 12 hours. If you delete an object
+   * before the 180-day minimum, you are charged for 180 days. For pricing
+   * information, see Amazon S3 Pricing.
+   */
+  public static readonly DeepArchive = new StorageClass('DEEP_ARCHIVE');
+
+  /**
+   * The INTELLIGENT_TIERING storage class is designed to optimize storage costs
+   * by automatically moving data to the most cost-effective storage access
+   * tier, without performance impact or operational overhead.
+   * INTELLIGENT_TIERING delivers automatic cost savings by moving data on a
+   * granular object level between two access tiers, a frequent access tier and
+   * a lower-cost infrequent access tier, when access patterns change. The
+   * INTELLIGENT_TIERING storage class is ideal if you want to optimize storage
+   * costs automatically for long-lived data when access patterns are unknown or
+   * unpredictable.
+   */
+  public static readonly IntelligentTiering = new StorageClass('INTELLIGENT_TIERING');
+
+  constructor(public readonly value: string) { }
+
+  public toString() { return this.value; }
 }

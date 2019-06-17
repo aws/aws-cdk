@@ -33,12 +33,26 @@ function fixBooleans(object: object) {
       : v);
 }
 
+/**
+ * Filters the keys of an object.
+ */
+function filterKeys(object: object, pred: (key: string) => boolean) {
+  return Object.entries(object)
+    .reduce(
+      (acc, [k, v]) => pred(k)
+        ? { ...acc, [k]: v }
+        : acc,
+        {}
+    );
+}
+
 export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent, context: AWSLambda.Context) {
   try {
     console.log(JSON.stringify(event));
     console.log('AWS SDK VERSION: ' + (AWS as any).VERSION);
 
     let physicalResourceId = (event as any).PhysicalResourceId;
+    let flatData: { [key: string]: string } = {};
     let data: { [key: string]: string } = {};
     const call: AwsSdkCall | undefined = event.ResourceProperties[event.RequestType];
 
@@ -47,18 +61,19 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
 
       try {
         const response = await awsService[call.action](call.parameters && fixBooleans(call.parameters)).promise();
-        data = flatten(response);
+        flatData = flatten(response);
+        data = call.outputPath
+          ? filterKeys(flatData, k => k.startsWith(call.outputPath!))
+          : flatData;
       } catch (e) {
         if (!call.catchErrorPattern || !new RegExp(call.catchErrorPattern).test(e.code)) {
           throw e;
         }
       }
 
-      if (call.physicalResourceIdPath) {
-        physicalResourceId = data[call.physicalResourceIdPath];
-      } else {
-        physicalResourceId = call.physicalResourceId!;
-      }
+      physicalResourceId = call.physicalResourceIdPath
+        ? flatData[call.physicalResourceIdPath]
+        : call.physicalResourceId;
     }
 
     await respond('SUCCESS', 'OK', physicalResourceId, data);

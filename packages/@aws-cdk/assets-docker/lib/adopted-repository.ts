@@ -33,7 +33,7 @@ export class AdoptedRepository extends ecr.RepositoryBase {
     super(scope, id);
 
     const fn = new lambda.SingletonFunction(this, 'Function', {
-      runtime: lambda.Runtime.NodeJS810,
+      runtime: lambda.Runtime.Nodejs810,
       lambdaPurpose: 'AdoptEcrRepository',
       handler: 'handler.handler',
       code: lambda.Code.asset(path.join(__dirname, 'adopt-repository')),
@@ -41,15 +41,16 @@ export class AdoptedRepository extends ecr.RepositoryBase {
       timeout: 300
     });
 
-    fn.addToRolePolicy(new iam.PolicyStatement()
-      .addResource(ecr.Repository.arnForLocalRepository(props.repositoryName, this))
-      .addActions(
+    fn.addToRolePolicy(new iam.PolicyStatement({
+      resources: [ecr.Repository.arnForLocalRepository(props.repositoryName, this)],
+      actions: [
         'ecr:GetRepositoryPolicy',
         'ecr:SetRepositoryPolicy',
         'ecr:DeleteRepository',
         'ecr:ListImages',
         'ecr:BatchDeleteImage'
-      ));
+      ],
+    }));
 
     const adopter = new cfn.CustomResource(this, 'Resource', {
       resourceType: 'Custom::ECRAdoptedRepository',
@@ -88,6 +89,6 @@ export class AdoptedRepository extends ecr.RepositoryBase {
    * use the custom resource to modify the ECR resource policy if needed.
    */
   public addToResourcePolicy(statement: iam.PolicyStatement) {
-    this.policyDocument.addStatement(statement);
+    this.policyDocument.addStatements(statement);
   }
 }

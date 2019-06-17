@@ -88,7 +88,7 @@ export class CodeName {
 }
 
 export const TAG_NAME = new CodeName('', CORE_NAMESPACE, 'CfnTag');
-export const TOKEN_NAME = new CodeName('', CORE_NAMESPACE, 'Token');
+export const TOKEN_NAME = new CodeName('', CORE_NAMESPACE, 'IResolvable');
 
 /**
  * Resource attribute
@@ -174,6 +174,8 @@ export function attributeDefinition(resourceName: CodeName, attributeName: strin
   let attrType: string;
   if ('PrimitiveType' in spec && spec.PrimitiveType === 'String') {
     attrType = 'string';
+  } else if ('PrimitiveType' in spec && spec.PrimitiveType === 'Integer') {
+    attrType = 'number';
   } else if ('Type' in spec && 'PrimitiveItemType' in spec && spec.Type === 'List' && spec.PrimitiveItemType === 'String') {
     attrType = 'string[]';
   } else {

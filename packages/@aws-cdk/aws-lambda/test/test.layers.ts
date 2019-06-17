@@ -14,13 +14,13 @@ export = testCase({
     // WHEN
     new lambda.LayerVersion(stack, 'LayerVersion', {
       code,
-      compatibleRuntimes: [lambda.Runtime.NodeJS810]
+      compatibleRuntimes: [lambda.Runtime.Nodejs810]
     });
 
     // THEN
     expect(stack).to(haveResource('AWS::Lambda::LayerVersion', {
       Content: {
-        S3Bucket: stack.node.resolve(bucket.bucketName),
+        S3Bucket: stack.resolve(bucket.bucketName),
         S3Key: 'ObjectKey',
       },
       CompatibleRuntimes: ['nodejs8.10']
@@ -36,7 +36,7 @@ export = testCase({
     const code = new lambda.S3Code(bucket, 'ObjectKey');
     const layer = new lambda.LayerVersion(stack, 'LayerVersion', {
       code,
-      compatibleRuntimes: [lambda.Runtime.NodeJS810]
+      compatibleRuntimes: [lambda.Runtime.Nodejs810]
     });
 
     // WHEN
@@ -46,12 +46,12 @@ export = testCase({
     // THEN
     expect(stack).to(haveResource('AWS::Lambda::LayerVersionPermission', {
       Action: 'lambda:GetLayerVersion',
-      LayerVersionArn: stack.node.resolve(layer.layerVersionArn),
+      LayerVersionArn: stack.resolve(layer.layerVersionArn),
       Principal: '123456789012',
     }));
     expect(stack).to(haveResource('AWS::Lambda::LayerVersionPermission', {
       Action: 'lambda:GetLayerVersion',
-      LayerVersionArn: stack.node.resolve(layer.layerVersionArn),
+      LayerVersionArn: stack.resolve(layer.layerVersionArn),
       Principal: '*',
       OrganizationId: 'o-123456'
     }));
