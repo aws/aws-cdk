@@ -1,7 +1,7 @@
-import { expect } from '@aws-cdk/assert';
-import lambda = require('@aws-cdk/aws-lambda');
-import s3 = require('@aws-cdk/aws-s3');
-import cdk = require('@aws-cdk/cdk');
+import { expect, haveResource } from '@aws-cdk/assert';
+import * as lambda from '@aws-cdk/aws-lambda';
+import * as s3 from '@aws-cdk/aws-s3';
+import * as cdk from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
 import { CloudFrontWebDistribution, LambdaEdgeEventType, ViewerProtocolPolicy } from '../lib';
 
@@ -356,134 +356,56 @@ export = {
       ]
     });
 
-    expect(stack).toMatch({
-      "Resources": {
-        "Bucket83908E77": {
-          "Type": "AWS::S3::Bucket",
-          "DeletionPolicy": "Retain",
-        },
-        "LambdaServiceRoleA8ED4D3B": {
-          "Type": "AWS::IAM::Role",
-          "Properties": {
-            "AssumeRolePolicyDocument": {
-              "Statement": [
-                {
-                  "Action": "sts:AssumeRole",
-                  "Effect": "Allow",
-                  "Principal": {
-                    "Service": {
-                      "Fn::Join": [
-                        "",
-                        [
-                          "lambda.",
-                          {
-                            "Ref": "AWS::URLSuffix"
-                          }
-                        ]
-                      ]
-                    }
-                  }
-                }
-              ],
-              "Version": "2012-10-17"
-            },
-            "ManagedPolicyArns": [
-              {
-                "Fn::Join": [
-                  "",
-                  [
-                    "arn:",
-                    {
-                      "Ref": "AWS::Partition"
-                    },
-                    ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
-                  ]
-                ]
-              }
-            ]
-          }
-        },
-        "LambdaD247545B": {
-          "Type": "AWS::Lambda::Function",
-          "Properties": {
-            "Code": {
-              "ZipFile": "foo"
-            },
-            "Handler": "index.handler",
-            "Role": {
+    expect(stack).to(haveResource('AWS::CloudFront::Distribution', {
+      "DistributionConfig": {
+        "DefaultRootObject": "index.html",
+        "Origins": [
+          {
+            "DomainName": {
               "Fn::GetAtt": [
-                "LambdaServiceRoleA8ED4D3B",
-                "Arn"
+                "Bucket83908E77",
+                "RegionalDomainName"
               ]
             },
-            "Runtime": "nodejs8.10"
+            "Id": "origin1",
+            "S3OriginConfig": {}
+          }
+        ],
+        "ViewerCertificate": {
+          "CloudFrontDefaultCertificate": true
+        },
+        "PriceClass": "PriceClass_100",
+        "DefaultCacheBehavior": {
+          "AllowedMethods": [
+            "GET",
+            "HEAD"
+          ],
+          "CachedMethods": [
+            "GET",
+            "HEAD"
+          ],
+          "TargetOriginId": "origin1",
+          "ViewerProtocolPolicy": "redirect-to-https",
+          "ForwardedValues": {
+            "QueryString": false,
+            "Cookies": { "Forward": "none" }
           },
-          "DependsOn": [
-            "LambdaServiceRoleA8ED4D3B"
+          "LambdaFunctionAssociations": [
+            {
+              "EventType": "origin-request",
+              "LambdaFunctionARN": {
+                "Ref": "LambdaVersionFA49E61E"
+              }
+            }
           ]
         },
-        "LambdaVersionFA49E61E": {
-          "Type": "AWS::Lambda::Version",
-          "Properties": {
-            "FunctionName": {
-              "Ref": "LambdaD247545B"
-            }
-          }
-        },
-        "AnAmazingWebsiteProbablyCFDistribution47E3983B": {
-          "Type": "AWS::CloudFront::Distribution",
-          "Properties": {
-            "DistributionConfig": {
-              "DefaultRootObject": "index.html",
-              "Origins": [
-                {
-                  "DomainName": {
-                    "Fn::GetAtt": [
-                      "Bucket83908E77",
-                      "RegionalDomainName"
-                    ]
-                  },
-                  "Id": "origin1",
-                  "S3OriginConfig": {}
-                }
-              ],
-              "ViewerCertificate": {
-                "CloudFrontDefaultCertificate": true
-              },
-              "PriceClass": "PriceClass_100",
-              "DefaultCacheBehavior": {
-                "AllowedMethods": [
-                  "GET",
-                  "HEAD"
-                ],
-                "CachedMethods": [
-                  "GET",
-                  "HEAD"
-                ],
-                "TargetOriginId": "origin1",
-                "ViewerProtocolPolicy": "redirect-to-https",
-                "ForwardedValues": {
-                  "QueryString": false,
-                  "Cookies": { "Forward": "none" }
-                },
-                "LambdaFunctionAssociations": [
-                  {
-                    "EventType": "origin-request",
-                    "LambdaFunctionARN": {
-                      "Ref": "LambdaVersionFA49E61E"
-                    }
-                  }
-                ]
-              },
-              "Enabled": true,
-              "IPV6Enabled": true,
-              "HttpVersion": "http2",
-              "CacheBehaviors": []
-            }
-          }
-        }
+        "Enabled": true,
+        "IPV6Enabled": true,
+        "HttpVersion": "http2",
+        "CacheBehaviors": []
       }
-    });
+    }));
+
     test.done();
   },
 
