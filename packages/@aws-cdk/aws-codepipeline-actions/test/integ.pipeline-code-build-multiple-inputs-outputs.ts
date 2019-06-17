@@ -50,8 +50,8 @@ const buildAction = new cpactions.CodeBuildAction({
   extraInputs: [
     source2Output,
   ],
-  output: new codepipeline.Artifact(),
-  extraOutputs: [
+  outputs: [
+    new codepipeline.Artifact(),
     new codepipeline.Artifact(),
   ],
 });
@@ -63,7 +63,7 @@ const testAction = new cpactions.CodeBuildAction({
   extraInputs: [
     source1Output,
   ],
-  extraOutputs: [
+  outputs: [
     new codepipeline.Artifact('CustomOutput2'),
   ],
 });

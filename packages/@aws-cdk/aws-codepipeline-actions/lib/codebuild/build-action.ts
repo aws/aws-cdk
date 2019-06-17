@@ -36,14 +36,16 @@ export interface CodeBuildActionProps extends codepipeline.CommonActionProps {
   readonly extraInputs?: codepipeline.Artifact[];
 
   /**
-   * The optional primary output Artifact of this action.
+   * The list of output Artifacts for this action.
+   * **Note**: if you specify more than one output Artifact here,
+   * you cannot use the primary 'artifacts' section of the buildspec;
+   * you have to use the 'secondary-artifacts' section instead.
+   * See https://docs.aws.amazon.com/codebuild/latest/userguide/sample-multi-in-out.html
+   * for details.
+   *
+   * @default the action will not have any outputs
    */
-  readonly output?: codepipeline.Artifact;
-
-  /**
-   * The list of additional output Artifacts for this action.
-   */
-  readonly extraOutputs?: codepipeline.Artifact[];
+  readonly outputs?: codepipeline.Artifact[];
 
   /**
    * The action's Project.
@@ -74,7 +76,6 @@ export class CodeBuildAction extends codepipeline.Action {
       provider: 'CodeBuild',
       artifactBounds: { minInputs: 1, maxInputs: 5, minOutputs: 0, maxOutputs: 5 },
       inputs: [props.input, ...props.extraInputs || []],
-      outputs: getOutputs(props),
       resource: props.project,
       configuration: {
         ProjectName: props.project.projectName,
@@ -106,13 +107,4 @@ export class CodeBuildAction extends codepipeline.Action {
       info.pipeline.grantBucketRead(this.props.project);
     }
   }
-}
-
-function getOutputs(props: CodeBuildActionProps): codepipeline.Artifact[] {
-  const ret = new Array<codepipeline.Artifact>();
-  if (props.output) {
-    ret.push(props.output);
-  }
-  ret.push(...props.extraOutputs || []);
-  return ret;
 }

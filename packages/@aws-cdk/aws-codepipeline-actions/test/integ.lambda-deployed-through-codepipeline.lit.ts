@@ -70,7 +70,7 @@ const cdkBuildAction = new codepipeline_actions.CodeBuildAction({
   actionName: 'CDK_Build',
   project: cdkBuildProject,
   input: cdkSourceOutput,
-  output: cdkBuildOutput,
+  outputs: [cdkBuildOutput],
 });
 
 // build your Lambda code, using CodeBuild
@@ -103,7 +103,7 @@ const lambdaBuildAction = new codepipeline_actions.CodeBuildAction({
   actionName: 'Lambda_Build',
   project: lambdaBuildProject,
   input: lambdaSourceOutput,
-  output: lambdaBuildOutput,
+  outputs: [lambdaBuildOutput],
 });
 
 pipeline.addStage({
