@@ -1,7 +1,7 @@
 import { Lazy } from "./lazy";
 import { Intrinsic } from "./private/intrinsic";
 import { resolve } from "./private/resolve";
-import { DefaultTokenResolver, IFragmentConcatenator, IResolvable, IResolveContext  } from "./resolvable";
+import { DefaultTokenResolver, IFragmentConcatenator, IPostProcessor, IResolvable, IResolveContext  } from "./resolvable";
 import { TokenizedStringFragments } from "./string-fragments";
 import { Token } from "./token";
 
@@ -20,8 +20,9 @@ export class CloudFormationLang {
    * in CloudFormation will fail.
    *
    * @param obj The object to stringify
+   * @param space Indentation to use (default: no pretty-printing)
    */
-  public static toJSON(obj: any): string {
+  public static toJSON(obj: any, space?: number): string {
     // This works in two stages:
     //
     // First, resolve everything. This gets rid of the lazy evaluations, evaluation
@@ -45,8 +46,8 @@ export class CloudFormationLang {
         super(CLOUDFORMATION_CONCAT);
       }
 
-      public resolveToken(t: IResolvable, context: IResolveContext) {
-        return wrap(super.resolveToken(t, context));
+      public resolveToken(t: IResolvable, context: IResolveContext, postProcess: IPostProcessor) {
+        return wrap(super.resolveToken(t, context, postProcess));
       }
       public resolveString(fragments: TokenizedStringFragments, context: IResolveContext) {
         return wrap(super.resolveString(fragments, context));
@@ -61,7 +62,7 @@ export class CloudFormationLang {
       JSON.stringify(resolve(obj, {
         scope: ctx.scope,
         resolver: new IntrinsincWrapper()
-      }))
+      }), undefined, space)
     });
 
     function wrap(value: any): any {

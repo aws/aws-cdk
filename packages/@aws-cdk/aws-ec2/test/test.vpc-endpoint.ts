@@ -1,5 +1,5 @@
 import { expect, haveResource } from '@aws-cdk/assert';
-import { PolicyStatement } from '@aws-cdk/aws-iam';
+import { AnyPrincipal, PolicyStatement } from '@aws-cdk/aws-iam';
 import { Stack } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
 // tslint:disable-next-line:max-line-length
@@ -127,12 +127,11 @@ export = {
       });
 
       // WHEN
-      endpoint.addToPolicy(
-        new PolicyStatement()
-          .addAnyPrincipal()
-          .addActions('s3:GetObject', 's3:ListBucket')
-          .addAllResources()
-      );
+      endpoint.addToPolicy(new PolicyStatement({
+        principals: [new AnyPrincipal()],
+        actions: ['s3:GetObject', 's3:ListBucket'],
+        resources: ['*']
+      }));
 
       // THEN
       expect(stack).to(haveResource('AWS::EC2::VPCEndpoint', {
@@ -164,11 +163,10 @@ export = {
       });
 
       // THEN
-      test.throws(() => endpoint.addToPolicy(
-        new PolicyStatement()
-          .addActions('s3:GetObject', 's3:ListBucket')
-          .addAllResources()
-      ), /`Principal`/);
+      test.throws(() => endpoint.addToPolicy(new PolicyStatement({
+        actions: ['s3:GetObject', 's3:ListBucket'],
+        resources: ['*']
+      })), /`Principal`/);
 
       test.done();
     },

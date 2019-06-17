@@ -762,9 +762,9 @@ export = {
     const stack = new cdk.Stack();
     const bucket = new s3.Bucket(stack, 'Bucket');
     new codebuild.Project(stack, 'Project', {
-      buildSpec: {
+      buildSpec: codebuild.BuildSpec.fromObject({
         version: '0.2',
-      },
+      }),
       artifacts: new codebuild.S3BucketBuildArtifacts({
         path: 'some/path',
         name: 'some_name',
@@ -791,9 +791,9 @@ export = {
 
       test.throws(() => {
         new codebuild.Project(stack, 'MyProject', {
-          buildSpec: {
+          buildSpec: codebuild.BuildSpec.fromObject({
             version: '0.2',
-          },
+          }),
           secondarySources: [
             new codebuild.CodePipelineSource(),
           ],
@@ -857,9 +857,9 @@ export = {
 
       test.throws(() => {
         new codebuild.Project(stack, 'MyProject', {
-          buildSpec: {
+          buildSpec: codebuild.BuildSpec.fromObject({
             version: '0.2',
-          },
+          }),
           secondaryArtifacts: [
             new codebuild.S3BucketBuildArtifacts({
               bucket: new s3.Bucket(stack, 'MyBucket'),
