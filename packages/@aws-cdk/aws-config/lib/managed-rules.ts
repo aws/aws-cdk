@@ -85,8 +85,8 @@ export class CloudFormationStackDriftDetectionCheck extends ManagedRule {
 
     this.role = props.role || new iam.Role(this, 'Role', {
       assumedBy: new iam.ServicePrincipal('config.amazonaws.com'),
-      managedPolicyArns: [
-        new iam.AwsManagedPolicy('ReadOnlyAccess', this).policyArn,
+      managedPolicies: [
+        iam.ManagedPolicy.fromAwsManagedPolicyName('ReadOnlyAccess')
       ]
     });
   }

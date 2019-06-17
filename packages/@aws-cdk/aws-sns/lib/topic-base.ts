@@ -83,7 +83,7 @@ export abstract class TopicBase extends Resource implements ITopic {
     }
 
     if (this.policy) {
-      this.policy.document.addStatement(statement);
+      this.policy.document.addStatements(statement);
     }
   }
 

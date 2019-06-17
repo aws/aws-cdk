@@ -99,8 +99,8 @@ export class SagemakerTransformTask implements sfn.IStepFunctionsTask {
         // set the sagemaker role or create new one
         this.role = props.role || new iam.Role(scope, 'SagemakerRole', {
             assumedBy: new iam.ServicePrincipal('sagemaker.amazonaws.com'),
-            managedPolicyArns: [
-                new iam.AwsManagedPolicy('AmazonSageMakerFullAccess', scope).policyArn
+            managedPolicies: [
+                iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonSageMakerFullAccess')
             ]
         });
 
@@ -195,30 +195,36 @@ export class SagemakerTransformTask implements sfn.IStepFunctionsTask {
 
         // https://docs.aws.amazon.com/step-functions/latest/dg/sagemaker-iam.html
         const policyStatements = [
-          new iam.PolicyStatement()
-            .addActions('sagemaker:CreateTransformJob', 'sagemaker:DescribeTransformJob', 'sagemaker:StopTransformJob')
-            .addResource(stack.formatArn({
-                service: 'sagemaker',
-                resource: 'transform-job',
-                resourceName: '*'
-            })),
-          new iam.PolicyStatement()
-            .addAction('sagemaker:ListTags')
-            .addAllResources(),
-          new iam.PolicyStatement()
-            .addAction('iam:PassRole')
-            .addResources(this.role.roleArn)
-            .addCondition('StringEquals', { "iam:PassedToService": "sagemaker.amazonaws.com" })
+            new iam.PolicyStatement({
+                actions: ['sagemaker:CreateTransformJob', 'sagemaker:DescribeTransformJob', 'sagemaker:StopTransformJob'],
+                resources: [stack.formatArn({
+                    service: 'sagemaker',
+                    resource: 'transform-job',
+                    resourceName: '*'
+                })]
+            }),
+            new iam.PolicyStatement({
+                actions: ['sagemaker:ListTags'],
+                resources: ['*'],
+            }),
+            new iam.PolicyStatement({
+                actions: ['iam:PassRole'],
+                resources: [this.role.roleArn],
+                conditions: {
+                    StringEquals: { "iam:PassedToService": "sagemaker.amazonaws.com" }
+                }
+            })
         ];
 
         if (this.props.synchronous) {
-          policyStatements.push(new iam.PolicyStatement()
-            .addActions("events:PutTargets", "events:PutRule", "events:DescribeRule")
-            .addResource(stack.formatArn({
-              service: 'events',
-              resource: 'rule',
-              resourceName: 'StepFunctionsGetEventsForSageMakerTransformJobsRule'
-          })));
+            policyStatements.push(new iam.PolicyStatement({
+                actions: ["events:PutTargets", "events:PutRule", "events:DescribeRule"],
+                resources: [stack.formatArn({
+                    service: 'events',
+                    resource: 'rule',
+                    resourceName: 'StepFunctionsGetEventsForSageMakerTransformJobsRule'
+                }) ]
+            }));
         }
 
         return policyStatements;

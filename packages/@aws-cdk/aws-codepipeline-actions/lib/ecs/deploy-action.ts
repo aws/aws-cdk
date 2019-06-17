@@ -62,28 +62,30 @@ export class EcsDeployAction extends codepipeline.Action {
   protected bind(info: codepipeline.ActionBind): void {
     // permissions based on CodePipeline documentation:
     // https://docs.aws.amazon.com/codepipeline/latest/userguide/how-to-custom-role.html#how-to-update-role-new-services
-    info.role.addToPolicy(new iam.PolicyStatement()
-      .addActions(
+    info.role.addToPolicy(new iam.PolicyStatement({
+      actions: [
         'ecs:DescribeServices',
         'ecs:DescribeTaskDefinition',
         'ecs:DescribeTasks',
         'ecs:ListTasks',
         'ecs:RegisterTaskDefinition',
         'ecs:UpdateService',
-      )
-      .addAllResources());
+      ],
+      resources: ['*']
+    }));
 
-    info.role.addToPolicy(new iam.PolicyStatement()
-      .addActions(
-        'iam:PassRole',
-      )
-      .addAllResources()
-      .addCondition('StringEqualsIfExists', {
-        'iam:PassedToService': [
-          'ec2.amazonaws.com',
-          'ecs-tasks.amazonaws.com',
-        ],
-      }));
+    info.role.addToPolicy(new iam.PolicyStatement({
+      actions: ['iam:PassRole'],
+      resources: ['*'],
+      conditions: {
+        StringEqualsIfExists: {
+          'iam:PassedToService': [
+            'ec2.amazonaws.com',
+            'ecs-tasks.amazonaws.com',
+          ],
+        }
+      }
+    }));
   }
 }
 

@@ -15,8 +15,8 @@ beforeEach(() => {
     stack = new cdk.Stack();
     role = new iam.Role(stack, 'Role', {
         assumedBy: new iam.ServicePrincipal('sagemaker.amazonaws.com'),
-        managedPolicyArns: [
-            new iam.AwsManagedPolicy('AmazonSageMakerFullAccess', stack).policyArn
+        managedPolicies: [
+            iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonSageMakerFullAccess')
         ],
     });
   });

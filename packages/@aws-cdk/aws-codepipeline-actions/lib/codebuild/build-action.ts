@@ -90,13 +90,14 @@ export class CodeBuildAction extends codepipeline.Action {
 
   protected bind(info: codepipeline.ActionBind): void {
     // grant the Pipeline role the required permissions to this Project
-    info.role.addToPolicy(new iam.PolicyStatement()
-      .addResource(this.props.project.projectArn)
-      .addActions(
+    info.role.addToPolicy(new iam.PolicyStatement({
+      resources: [this.props.project.projectArn],
+      actions: [
         'codebuild:BatchGetBuilds',
         'codebuild:StartBuild',
         'codebuild:StopBuild',
-      ));
+      ]
+    }));
 
     // allow the Project access to the Pipeline's artifact Bucket
     if (this.outputs.length > 0) {

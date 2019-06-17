@@ -364,7 +364,7 @@ export class Repository extends RepositoryBase {
     if (this.policyDocument === undefined) {
       this.policyDocument = new iam.PolicyDocument();
     }
-    this.policyDocument.addStatement(statement);
+    this.policyDocument.addStatements(statement);
   }
 
   /**

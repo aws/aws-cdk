@@ -487,13 +487,7 @@ abstract class DatabaseInstanceNew extends DatabaseInstanceBase implements IData
     if (props.monitoringInterval) {
       monitoringRole = new iam.Role(this, 'MonitoringRole', {
         assumedBy: new iam.ServicePrincipal('monitoring.rds.amazonaws.com'),
-        managedPolicyArns: [Stack.of(this).formatArn({
-          service: 'iam',
-          region: '',
-          account: 'aws',
-          resource: 'policy',
-          resourceName: 'service-role/AmazonRDSEnhancedMonitoringRole'
-        })]
+        managedPolicies: [iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AmazonRDSEnhancedMonitoringRole')],
       });
     }
 
@@ -507,7 +501,7 @@ abstract class DatabaseInstanceNew extends DatabaseInstanceBase implements IData
     this.newCfnProps = {
       autoMinorVersionUpgrade: props.autoMinorVersionUpgrade,
       availabilityZone: props.multiAz ? undefined : props.availabilityZone,
-      backupRetentionPeriod: props.backupRetentionPeriod ? props.backupRetentionPeriod.toString() : undefined,
+      backupRetentionPeriod: props.backupRetentionPeriod !== undefined ? props.backupRetentionPeriod.toString() : undefined,
       copyTagsToSnapshot: props.copyTagsToSnapshot !== undefined ? props.copyTagsToSnapshot : true,
       dbInstanceClass: `db.${props.instanceClass}`,
       dbInstanceIdentifier: props.instanceIdentifier,

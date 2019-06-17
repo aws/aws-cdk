@@ -15,12 +15,12 @@ export class CodeBuildProject implements events.IRuleTarget {
    */
   public bind(_rule: events.IRule): events.RuleTargetConfig {
     return {
-      id: this.project.node.id,
+      id: this.project.node.uniqueId,
       arn: this.project.projectArn,
-      role: singletonEventRole(this.project, [new iam.PolicyStatement()
-        .addAction('codebuild:StartBuild')
-        .addResource(this.project.projectArn)
-      ]),
+      role: singletonEventRole(this.project, [new iam.PolicyStatement({
+        actions: ['codebuild:StartBuild'],
+        resources: [this.project.projectArn],
+      })]),
     };
   }
 }
