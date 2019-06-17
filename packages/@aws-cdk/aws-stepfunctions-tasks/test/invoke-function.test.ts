@@ -58,7 +58,7 @@ test('Lambda function payload ends up in Parameters', () => {
 
 test('Lambda function can be used in a Task with Task Token', () => {
   const task = new sfn.Task(stack, 'Task', {
-    task: new tasks.InvokeFunction(fn, {
+    task: new tasks.RunLambdaTask(fn, {
       waitForTaskToken: true,
       payload: {
         token: sfn.Context.taskToken
@@ -84,7 +84,7 @@ test('Lambda function can be used in a Task with Task Token', () => {
 test('Task throws if waitForTaskToken is supplied but task token is not included', () => {
   expect(() => {
     new sfn.Task(stack, 'Task', {
-      task: new tasks.InvokeFunction(fn, {
+      task: new tasks.RunLambdaTask(fn, {
         waitForTaskToken: true
       })
     });

@@ -24,7 +24,7 @@ const callbackHandler = new Function(stack, 'CallbackHandler', {
 });
 
 const taskTokenHandler = new sfn.Task(stack, 'Invoke Handler with task token', {
-  task: new tasks.InvokeFunction(callbackHandler, {
+  task: new tasks.RunLambdaTask(callbackHandler, {
     waitForTaskToken: true,
     payload: {
       token: sfn.Context.taskToken
