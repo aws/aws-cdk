@@ -507,7 +507,7 @@ abstract class DatabaseInstanceNew extends DatabaseInstanceBase implements IData
     this.newCfnProps = {
       autoMinorVersionUpgrade: props.autoMinorVersionUpgrade,
       availabilityZone: props.multiAz ? undefined : props.availabilityZone,
-      backupRetentionPeriod: props.backupRetentionPeriod ? props.backupRetentionPeriod.toString() : undefined,
+      backupRetentionPeriod: props.backupRetentionPeriod !== undefined ? props.backupRetentionPeriod.toString() : undefined,
       copyTagsToSnapshot: props.copyTagsToSnapshot !== undefined ? props.copyTagsToSnapshot : true,
       dbInstanceClass: `db.${props.instanceClass}`,
       dbInstanceIdentifier: props.instanceIdentifier,
