@@ -70,7 +70,7 @@ topic.subscribeLambda(new subs.LambdaSubscription(fn, {
             blacklist: ['small', 'medium'],
         }),
         price: sns.SubscriptionFilter.numericFilter({
-            between: [100, 200],
+            between: { start: 100, stop: 200 },
             greaterThan: 300
         })
     }
