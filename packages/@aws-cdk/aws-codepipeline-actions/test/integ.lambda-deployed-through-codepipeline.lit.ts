@@ -121,7 +121,7 @@ pipeline.addStage({
       stackName: 'LambdaStackDeployedName',
       adminPermissions: true,
       parameterOverrides: {
-        ...lambdaCode.assign(lambdaBuildOutput.s3Coordinates),
+        ...lambdaCode.assign(lambdaBuildOutput.s3Location),
       },
       extraInputs: [
         lambdaBuildOutput,

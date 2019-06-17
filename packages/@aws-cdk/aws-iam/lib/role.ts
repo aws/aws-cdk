@@ -118,13 +118,21 @@ export class Role extends Resource implements IRole {
       public readonly roleArn = roleArn;
       public readonly roleName = Stack.of(scope).parseArn(roleArn).resourceName!;
 
-      public addToPolicy(_statement: PolicyStatement): boolean {
-        // Statement will be added to resource instead
-        return false;
+      private readonly attachedPolicies = new AttachedPolicies();
+      private defaultPolicy?: Policy;
+
+      public addToPolicy(statement: PolicyStatement): boolean {
+        if (!this.defaultPolicy) {
+          this.defaultPolicy = new Policy(this, 'Policy');
+          this.attachInlinePolicy(this.defaultPolicy);
+        }
+        this.defaultPolicy.addStatement(statement);
+        return true;
       }
 
-      public attachInlinePolicy(_policy: Policy): void {
-        // FIXME: Add warning that we're ignoring this
+      public attachInlinePolicy(policy: Policy): void {
+        this.attachedPolicies.attach(policy);
+        policy.attachToRole(this);
       }
 
       public addManagedPolicy(_policy: IManagedPolicy): void {
