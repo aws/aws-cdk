@@ -29,7 +29,7 @@ export class SfnStateMachine implements events.IRuleTarget {
    */
   public bind(_rule: events.IRule): events.RuleTargetConfig {
     return {
-        id: this.machine.node.id,
+        id: this.machine.node.uniqueId,
         arn: this.machine.stateMachineArn,
         role: singletonEventRole(this.machine, [new iam.PolicyStatement()
             .addAction('states:StartExecution')

@@ -59,7 +59,7 @@ export class SqsQueue implements events.IRuleTarget {
     );
 
     const result = {
-      id: this.queue.node.id,
+      id: this.queue.node.uniqueId,
       arn: this.queue.queueArn,
       input: this.props.message,
     };

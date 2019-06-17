@@ -39,7 +39,7 @@ export class LambdaFunction implements events.IRuleTarget {
     }
 
     return {
-      id: this.handler.node.id,
+      id: this.handler.node.uniqueId,
       arn: this.handler.functionArn,
       input: this.props.event,
     };

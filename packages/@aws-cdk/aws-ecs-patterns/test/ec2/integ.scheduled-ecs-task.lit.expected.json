@@ -847,7 +847,7 @@
                 "Ref": "ScheduledEc2TaskScheduledTaskDef56328BA4"
               }
             },
-            "Id": "ScheduledTaskDef-on-EcsCluster",
+            "Id": "awsecsintegecsScheduledEc2TaskScheduledTaskDef18FB4348",
             "Input": "{}",
             "RoleArn": {
               "Fn::GetAtt": [
