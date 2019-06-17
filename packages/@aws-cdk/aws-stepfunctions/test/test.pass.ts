@@ -23,9 +23,16 @@ export = {
 
         test.done();
     },
-    'fromMap has proper value'(test: Test) {
+    'fromObject has proper value'(test: Test) {
         const testValue = {a: 1};
-        const result = Result.fromMap(testValue);
+        const result = Result.fromObject(testValue);
+        test.deepEqual(result.value, testValue);
+
+        test.done();
+    },
+    'fromArray has proper value'(test: Test) {
+        const testValue = [1];
+        const result = Result.fromArray(testValue);
         test.deepEqual(result.value, testValue);
 
         test.done();

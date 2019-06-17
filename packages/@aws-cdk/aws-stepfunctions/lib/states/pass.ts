@@ -3,74 +3,44 @@ import {Chain} from '../chain';
 import {IChainable, INextable} from '../types';
 import {renderJsonPath, State, StateType} from './state';
 
-export abstract class Result {
-    public static fromString(value: string): StringResult {
-        return new StringResult(value);
-    }
-
-    public static fromNumber(value: number): NumberResult {
-        return new NumberResult(value);
-    }
-
-    public static fromBoolean(value: boolean): BooleanResult {
-        return new BooleanResult(value);
-    }
-
-    public static fromMap(value: {[key: string]: any}): MapResult {
-        return new MapResult(value);
-    }
-
-    public abstract value: any;
+export interface ResultValue {
+    readonly stringValue?: string
+    readonly numberValue?: number
+    readonly booleanValue?: boolean
+    readonly mapValue?: {[key: string]: any}
 }
 
-export class StringResult extends Result {
-    public readonly value: string;
-
-    constructor(value: string) {
-        super();
-
-        this.value = value;
+export class Result {
+    public static fromString(value: string): Result {
+        return new Result(ResultType.Text, value);
     }
-}
 
-export class NumberResult extends Result {
-    public readonly value: number;
+    public static fromNumber(value: number): Result {
+        return new Result(ResultType.Number, value);
+    }
 
-    constructor(value: number) {
-        super();
+    public static fromBoolean(value: boolean): Result {
+        return new Result(ResultType.Boolean, value);
+    }
 
-        this.value = value;
+    public static fromObject(value: {[key: string]: any}): Result {
+        return new Result(ResultType.Object, value);
+    }
+
+    public static fromArray(value: any[]): Result {
+        return new Result(ResultType.Array, value);
+    }
+
+    private constructor(public readonly type: ResultType, public readonly value: any) {
     }
 }
 
-export class BooleanResult extends Result {
-    readonly value: boolean;
-
-    constructor(value: boolean) {
-        super();
-
-        this.value = value;
-    }
-}
-
-export class ArrayResult extends Result {
-    public readonly value: any[];
-
-    constructor(value: any[]) {
-        super();
-
-        this.value = value;
-    }
-}
-
-export class MapResult extends Result {
-    public readonly value: {[key: string]: any};
-
-    constructor(value: {[key: string]: any}) {
-        super();
-
-        this.value = value;
-    }
+export enum ResultType {
+    Text,
+    Number,
+    Boolean,
+    Object,
+    Array,
 }
 
 /**
@@ -159,7 +129,7 @@ export class Pass extends State implements INextable {
             Result: this.result ? this.result.value : undefined,
             ResultPath: renderJsonPath(this.resultPath),
             ...this.renderInputOutput(),
-            ...this.renderNextEnd(),
+            ...this.renderNextEnd()
         };
     }
 }
