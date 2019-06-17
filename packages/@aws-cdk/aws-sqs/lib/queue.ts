@@ -191,7 +191,7 @@ export class Queue extends QueueBase {
   public static fromQueueAttributes(scope: Construct, id: string, attrs: QueueAttributes): IQueue {
     const stack = Stack.of(scope);
     const queueName = attrs.queueName || stack.parseArn(attrs.queueArn).resource;
-    const queueUrl = attrs.queueUrl || `https://sqs.${stack.region}.${stack.urlSuffix}/${stack.accountId}/${queueName}`;
+    const queueUrl = attrs.queueUrl || `https://sqs.${stack.region}.${stack.urlSuffix}/${stack.account}/${queueName}`;
 
     class Import extends QueueBase {
       public readonly queueArn = attrs.queueArn; // arn:aws:sqs:us-east-1:123456789012:queue1
@@ -257,7 +257,7 @@ export class Queue extends QueueBase {
     this.encryptionMasterKey = encryptionMasterKey;
     this.queueArn = queue.queueArn;
     this.queueName = queue.queueName;
-    this.queueUrl = queue.ref;
+    this.queueUrl = queue.refAsString;
 
     function _determineEncryptionProps(this: Queue): { encryptionProps: EncryptionProps, encryptionMasterKey?: kms.IKey } {
       let encryption = props.encryption || QueueEncryption.Unencrypted;

@@ -18,7 +18,7 @@ This construct library allows you to define AWS Lambda Functions.
 import lambda = require('@aws-cdk/aws-lambda');
 
 const fn = new lambda.Function(this, 'MyFunction', {
-    runtime: lambda.Runtime.NodeJS810,
+    runtime: lambda.Runtime.Nodejs810,
     handler: 'index.handler',
     code: lambda.Code.asset('./lambda-handler'),
 });
@@ -100,7 +100,7 @@ See the documentation for the __@aws-cdk/aws-lambda-event-sources__ module for m
 import lambda = require('@aws-cdk/aws-lambda');
 
 const fn = new lambda.Function(this, 'MyFunction', {
-    runtime: lambda.Runtime.NodeJS810,
+    runtime: lambda.Runtime.Nodejs810,
     handler: 'index.handler',
     code: lambda.Code.inline('exports.handler = function(event, ctx, cb) { return cb(null, "hi"); }'),
     deadLetterQueueEnabled: true
@@ -115,7 +115,7 @@ to learn more about AWS Lambdas and DLQs.
 import lambda = require('@aws-cdk/aws-lambda');
 
 const fn = new lambda.Function(this, 'MyFunction', {
-    runtime: lambda.Runtime.NodeJS810,
+    runtime: lambda.Runtime.Nodejs810,
     handler: 'index.handler',
     code: lambda.Code.inline('exports.handler = function(event, ctx, cb) { return cb(null, "hi"); }'),
     tracing: lambda.Tracing.Active
@@ -130,7 +130,7 @@ to learn more about AWS Lambda's X-Ray support.
 import lambda = require('@aws-cdk/aws-lambda');
 
 const fn = new lambda.Function(this, 'MyFunction', {
-    runtime: lambda.Runtime.NodeJS810,
+    runtime: lambda.Runtime.Nodejs810,
     handler: 'index.handler',
     code: lambda.Code.inline('exports.handler = function(event, ctx, cb) { return cb(null, "hi"); }'),
     reservedConcurrentExecutions: 100

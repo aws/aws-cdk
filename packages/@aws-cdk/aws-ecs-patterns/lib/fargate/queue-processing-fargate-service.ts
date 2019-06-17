@@ -19,7 +19,7 @@ export interface QueueProcessingFargateServiceProps extends QueueProcessingServi
    *
    * @default 256
    */
-  readonly cpu?: string;
+  readonly cpu?: number;
 
   /**
    * The amount (in MiB) of memory used by the task.
@@ -41,7 +41,7 @@ export interface QueueProcessingFargateServiceProps extends QueueProcessingServi
    *
    * @default 512
    */
-  readonly memoryMiB?: string;
+  readonly memoryLimitMiB?: number;
 }
 
 /**
@@ -58,8 +58,8 @@ export class QueueProcessingFargateService extends QueueProcessingServiceBase {
 
     // Create a Task Definition for the container to start
     const taskDefinition = new ecs.FargateTaskDefinition(this, 'QueueProcessingTaskDef', {
-      memoryMiB: props.memoryMiB !== undefined ? props.memoryMiB : '512',
-      cpu: props.cpu !== undefined ? props.cpu : '256',
+      memoryLimitMiB: props.memoryLimitMiB,
+      cpu: props.cpu,
     });
     taskDefinition.addContainer('QueueProcessingContainer', {
       image: props.image,

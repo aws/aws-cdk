@@ -107,7 +107,7 @@ export class BucketNotifications extends cdk.Construct {
         properties: {
           ServiceToken: handlerArn,
           BucketName: this.bucket.bucketName,
-          NotificationConfiguration: new cdk.Token(() => this.renderNotificationConfiguration())
+          NotificationConfiguration: cdk.Lazy.anyValue({ produce: () => this.renderNotificationConfiguration() })
         }
       });
     }

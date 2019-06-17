@@ -25,7 +25,7 @@ export class Endpoint {
     this.hostname = address;
     this.port = port;
 
-    const portDesc = Token.isToken(port) ? '{IndirectPort}' : port;
+    const portDesc = Token.isUnresolved(port) ? Token.asString(port) : port;
     this.socketAddress = `${address}:${portDesc}`;
   }
 }

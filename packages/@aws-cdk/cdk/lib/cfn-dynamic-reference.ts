@@ -1,4 +1,4 @@
-import { Token } from "./token";
+import { Intrinsic } from "./private/intrinsic";
 
 /**
  * Properties for a Dynamic Reference
@@ -23,9 +23,9 @@ export interface DynamicReferenceProps {
  *
  * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/dynamic-references.html
  */
-export class CfnDynamicReference extends Token {
+export class CfnDynamicReference extends Intrinsic {
   constructor(service: CfnDynamicReferenceService, key: string) {
-    super(() => '{{resolve:' + service + ':' + key + '}}');
+    super('{{resolve:' + service + ':' + key + '}}');
   }
 }
 

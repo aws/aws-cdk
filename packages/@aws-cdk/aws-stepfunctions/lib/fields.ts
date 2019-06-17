@@ -1,3 +1,4 @@
+import { Token } from "@aws-cdk/cdk";
 import { findReferencedPaths, JsonPathToken, renderObject } from "./json-path";
 
 /**
@@ -17,7 +18,7 @@ export class Data {
    */
   public static listAt(path: string): string[] {
     validateDataPath(path);
-    return new JsonPathToken(path).toList();
+    return Token.asList(new JsonPathToken(path));
   }
 
   /**
@@ -25,7 +26,7 @@ export class Data {
    */
   public static numberAt(path: string): number {
     validateDataPath(path);
-    return new JsonPathToken(path).toNumber();
+    return Token.asNumber(new JsonPathToken(path));
   }
 
   /**
@@ -61,7 +62,7 @@ export class Context {
    */
   public static numberAt(path: string): number {
     validateContextPath(path);
-    return new JsonPathToken(path).toNumber();
+    return Token.asNumber(new JsonPathToken(path));
   }
 
   /**

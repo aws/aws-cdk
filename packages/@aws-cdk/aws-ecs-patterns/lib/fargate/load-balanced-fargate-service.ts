@@ -1,4 +1,5 @@
 import ecs = require('@aws-cdk/aws-ecs');
+import iam = require('@aws-cdk/aws-iam');
 import cdk = require('@aws-cdk/cdk');
 import { LoadBalancedServiceBase, LoadBalancedServiceBaseProps } from '../base/load-balanced-service-base';
 
@@ -19,7 +20,7 @@ export interface LoadBalancedFargateServiceProps extends LoadBalancedServiceBase
    *
    * @default 256
    */
-  readonly cpu?: string;
+  readonly cpu?: number;
 
   /**
    * The amount (in MiB) of memory used by the task.
@@ -41,7 +42,35 @@ export interface LoadBalancedFargateServiceProps extends LoadBalancedServiceBase
    *
    * @default 512
    */
-  readonly memoryMiB?: string;
+  readonly memoryLimitMiB?: number;
+
+  /**
+   * Override for the Fargate Task Definition execution role
+   *
+   * @default - No value
+   */
+  readonly executionRole?: iam.IRole;
+
+  /**
+   * Override for the Fargate Task Definition task role
+   *
+   * @default - No value
+   */
+  readonly taskRole?: iam.IRole;
+
+  /**
+   * Override value for the container name
+   *
+   * @default - No value
+   */
+  readonly containerName?: string;
+
+  /**
+   * Override value for the service name
+   *
+   * @default - No value
+   */
+  readonly serviceName?: string;
 }
 
 /**
@@ -58,11 +87,15 @@ export class LoadBalancedFargateService extends LoadBalancedServiceBase {
     super(scope, id, props);
 
     const taskDefinition = new ecs.FargateTaskDefinition(this, 'TaskDef', {
-      memoryMiB: props.memoryMiB,
-      cpu: props.cpu
+      memoryLimitMiB: props.memoryLimitMiB,
+      cpu: props.cpu,
+      executionRole: props.executionRole !== undefined ? props.executionRole : undefined,
+      taskRole: props.taskRole !== undefined ? props.taskRole : undefined
     });
 
-    const container = taskDefinition.addContainer('web', {
+    const containerName = props.containerName !== undefined ? props.containerName : 'web';
+
+    const container = taskDefinition.addContainer(containerName, {
       image: props.image,
       logging: this.logDriver,
       environment: props.environment
@@ -71,13 +104,13 @@ export class LoadBalancedFargateService extends LoadBalancedServiceBase {
     container.addPortMappings({
       containerPort: props.containerPort || 80,
     });
-
     const assignPublicIp = props.publicTasks !== undefined ? props.publicTasks : false;
     const service = new ecs.FargateService(this, "Service", {
       cluster: this.cluster,
       desiredCount: props.desiredCount || 1,
       taskDefinition,
-      assignPublicIp
+      assignPublicIp,
+      serviceName: props.serviceName || undefined
     });
     this.service = service;
 

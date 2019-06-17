@@ -109,7 +109,7 @@ new glue.Table(stack, 'MyTable', {
 // with an explicit KMS key
 new glue.Table(stack, 'MyTable', {
   encryption: glue.TableEncryption.Kms,
-  encryptionKey: new kms.EncryptionKey(stack, 'MyKey')
+  encryptionKey: new kms.Key(stack, 'MyKey')
   ...
 });
 ```
@@ -131,7 +131,7 @@ new glue.Table(stack, 'MyTable', {
 // with an explicit KMS key
 new glue.Table(stack, 'MyTable', {
   encryption: glue.TableEncryption.ClientSideKms,
-  encryptionKey: new kms.EncryptionKey(stack, 'MyKey')
+  encryptionKey: new kms.Key(stack, 'MyKey')
   ...
 });
 ```

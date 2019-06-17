@@ -1,8 +1,58 @@
 import cxapi = require('@aws-cdk/cx-api');
 import { Construct } from './construct';
 import { Stack } from './stack';
+import { Token } from './token';
 
 type ContextProviderProps = {[key: string]: any};
+
+/**
+ * Methods for CDK-related context information.
+ */
+export class Context {
+  /**
+   * Returns the default region as passed in through the CDK CLI.
+   *
+   * @returns The default region as specified in context or `undefined` if the region is not specified.
+   */
+  public static getDefaultRegion(scope: Construct) { return scope.node.tryGetContext(cxapi.DEFAULT_REGION_CONTEXT_KEY); }
+
+  /**
+   * Returns the default account ID as passed in through the CDK CLI.
+   *
+   * @returns The default account ID as specified in context or `undefined` if the account ID is not specified.
+   */
+  public static getDefaultAccount(scope: Construct) { return scope.node.tryGetContext(cxapi.DEFAULT_ACCOUNT_CONTEXT_KEY); }
+
+  /**
+   * Returnst the list of AZs in the scope's environment (account/region).
+   *
+   * If they are not available in the context, returns a set of dummy values and
+   * reports them as missing, and let the CLI resolve them by calling EC2
+   * `DescribeAvailabilityZones` on the target environment.
+   */
+  public static getAvailabilityZones(scope: Construct) {
+    return new AvailabilityZoneProvider(scope).availabilityZones;
+  }
+
+  /**
+   * Retrieves the value of an SSM parameter.
+   * @param scope Some construct scope.
+   * @param parameterName The name of the parameter
+   * @param options Options
+   */
+  public static getSsmParameter(scope: Construct, parameterName: string, options: SsmParameterOptions = { }) {
+    return new SsmParameterProvider(scope, parameterName).parameterValue(options.defaultValue);
+  }
+
+  private constructor() { }
+}
+
+export interface SsmParameterOptions {
+  /**
+   * The default/dummy value to return if the SSM parameter is not available in the context.
+   */
+  readonly defaultValue?: string;
+}
 
 /**
  * Base class for the model side of context providers
@@ -22,9 +72,29 @@ export class ContextProvider {
 
     const stack = Stack.of(context);
 
+    let account: undefined | string = stack.account;
+    let region: undefined | string = stack.region;
+
+    // stack.account and stack.region will defer to deploy-time resolution
+    // (AWS::Region, AWS::AccountId) if user did not explicitly specify them
+    // when they defined the stack, but this is not good enough for
+    // environmental context because we need concrete values during synthesis.
+    if (!account || Token.isUnresolved(account)) {
+      account = Context.getDefaultAccount(this.context);
+    }
+
+    if (!region || Token.isUnresolved(region)) {
+      region = Context.getDefaultRegion(this.context);
+    }
+
+    // this is probably an issue. we can't have only account but no region specified
+    if (account && !region) {
+      throw new Error(`A region must be specified in order to obtain environmental context: ${provider}`);
+    }
+
     this.props = {
-      account: stack.env.account,
-      region: stack.env.region,
+      account,
+      region,
       ...props,
     };
   }
@@ -38,17 +108,16 @@ export class ContextProvider {
    * Read a provider value and verify it is not `null`
    */
   public getValue(defaultValue: any): any {
+    const value = this.context.node.tryGetContext(this.key);
+    if (value != null) {
+      return value;
+    }
+
     // if account or region is not defined this is probably a test mode, so we just
     // return the default value
     if (!this.props.account || !this.props.region) {
       this.context.node.addError(formatMissingScopeError(this.provider, this.props));
       return defaultValue;
-    }
-
-    const value = this.context.node.tryGetContext(this.key);
-
-    if (value != null) {
-      return value;
     }
 
     this.reportMissingContext({
@@ -64,13 +133,6 @@ export class ContextProvider {
    * @param defaultValue The value to return if there is no value defined for this context key
    */
   public getStringValue( defaultValue: string): string {
-    // if scope is undefined, this is probably a test mode, so we just
-    // return the default value
-    if (!this.props.account || !this.props.region) {
-      this.context.node.addError(formatMissingScopeError(this.provider, this.props));
-      return defaultValue;
-    }
-
     const value = this.context.node.tryGetContext(this.key);
 
     if (value != null) {
@@ -78,6 +140,13 @@ export class ContextProvider {
         throw new TypeError(`Expected context parameter '${this.key}' to be a string, but got '${JSON.stringify(value)}'`);
       }
       return value;
+    }
+
+    // if scope is undefined, this is probably a test mode, so we just
+    // return the default value
+    if (!this.props.account || !this.props.region) {
+      this.context.node.addError(formatMissingScopeError(this.provider, this.props));
+      return defaultValue;
     }
 
     this.reportMissingContext({
@@ -94,14 +163,6 @@ export class ContextProvider {
    * @param defaultValue The value to return if there is no value defined for this context key
    */
   public getStringListValue(defaultValue: string[]): string[] {
-    // if scope is undefined, this is probably a test mode, so we just
-    // return the default value and report an error so this in not accidentally used
-    // in the toolkit
-    if (!this.props.account || !this.props.region) {
-      this.context.node.addError(formatMissingScopeError(this.provider, this.props));
-      return defaultValue;
-    }
-
     const value = this.context.node.tryGetContext(this.key);
 
     if (value != null) {
@@ -109,6 +170,14 @@ export class ContextProvider {
         throw new Error(`Context value '${this.key}' is supposed to be a list, got '${JSON.stringify(value)}'`);
       }
       return value;
+    }
+
+    // if scope is undefined, this is probably a test mode, so we just
+    // return the default value and report an error so this in not accidentally used
+    // in the toolkit
+    if (!this.props.account || !this.props.region) {
+      this.context.node.addError(formatMissingScopeError(this.provider, this.props));
+      return defaultValue;
     }
 
     this.reportMissingContext({
@@ -138,7 +207,7 @@ function colonQuote(xs: string): string {
 /**
  * Context provider that will return the availability zones for the current account and region
  */
-export class AvailabilityZoneProvider {
+class AvailabilityZoneProvider {
   private provider: ContextProvider;
 
   constructor(context: Construct) {
@@ -146,28 +215,29 @@ export class AvailabilityZoneProvider {
   }
 
   /**
+   * Returns the context key the AZ provider looks up in the context to obtain
+   * the list of AZs in the current environment.
+   */
+  public get key() {
+    return this.provider.key;
+  }
+
+  /**
    * Return the list of AZs for the current account and region
    */
   public get availabilityZones(): string[] {
-
     return this.provider.getStringListValue(['dummy1a', 'dummy1b', 'dummy1c']);
   }
 }
 
-export interface SSMParameterProviderProps {
-  /**
-   * The name of the parameter to lookup
-   */
-  readonly parameterName: string;
-}
 /**
  * Context provider that will read values from the SSM parameter store in the indicated account and region
  */
-export class SSMParameterProvider {
+class SsmParameterProvider {
   private provider: ContextProvider;
 
-  constructor(context: Construct, props: SSMParameterProviderProps) {
-    this.provider = new ContextProvider(context, cxapi.SSM_PARAMETER_PROVIDER, props);
+  constructor(context: Construct, parameterName: string) {
+    this.provider = new ContextProvider(context, cxapi.SSM_PARAMETER_PROVIDER, { parameterName });
   }
 
   /**

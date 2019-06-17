@@ -1,7 +1,6 @@
-import cloudwatch = require ('@aws-cdk/aws-cloudwatch');
 import ec2 = require('@aws-cdk/aws-ec2');
 import elb = require('@aws-cdk/aws-elasticloadbalancing');
-import { Construct, Resource, Token } from '@aws-cdk/cdk';
+import { Construct, Lazy, Resource } from '@aws-cdk/cdk';
 import { BaseService, BaseServiceProps, IService } from '../base/base-service';
 import { NetworkMode, TaskDefinition } from '../base/task-definition';
 import { CfnService } from '../ecs.generated';
@@ -123,8 +122,8 @@ export class Ec2Service extends BaseService implements IEc2Service, elb.ILoadBal
       cluster: props.cluster.clusterName,
       taskDefinition: props.taskDefinition.taskDefinitionArn,
       launchType: 'EC2',
-      placementConstraints: new Token(() => this.constraints.length > 0 ? this.constraints : undefined),
-      placementStrategies: new Token(() => this.strategies.length > 0 ? this.strategies : undefined),
+      placementConstraints: Lazy.anyValue({ produce: () => this.constraints }, { omitEmptyArray: true }),
+      placementStrategies: Lazy.anyValue({ produce: () => this.strategies }, { omitEmptyArray: true }),
       schedulingStrategy: props.daemon ? 'DAEMON' : 'REPLICA',
     }, props.cluster.clusterName, props.taskDefinition);
 
@@ -240,36 +239,6 @@ export class Ec2Service extends BaseService implements IEc2Service, elb.ILoadBal
       containerName: this.taskDefinition.defaultContainer!.node.id,
       containerPort: this.taskDefinition.defaultContainer!.containerPort,
     });
-  }
-
-  /**
-   * Return the given named metric for this Service
-   */
-  public metric(metricName: string, props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    return new cloudwatch.Metric({
-      namespace: 'AWS/ECS',
-      metricName,
-      dimensions: { ClusterName: this.clusterName, ServiceName: this.serviceName },
-      ...props
-    });
-  }
-
-  /**
-   * Metric for cluster Memory utilization
-   *
-   * @default average over 5 minutes
-   */
-  public metricMemoryUtilization(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    return this.metric('MemoryUtilization', props );
-  }
-
-  /**
-   * Metric for cluster CPU utilization
-   *
-   * @default average over 5 minutes
-   */
-  public metricCpuUtilization(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    return this.metric('CPUUtilization', props);
   }
 
   /**

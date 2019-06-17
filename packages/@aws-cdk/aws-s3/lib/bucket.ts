@@ -1,7 +1,8 @@
 import events = require('@aws-cdk/aws-events');
 import iam = require('@aws-cdk/aws-iam');
 import kms = require('@aws-cdk/aws-kms');
-import { applyRemovalPolicy, Construct, IResource, PhysicalName, RemovalPolicy, Resource, ResourceIdentifiers, Stack, Token } from '@aws-cdk/cdk';
+import { applyRemovalPolicy, Construct, IResource, Lazy, PhysicalName,
+  RemovalPolicy, Resource, ResourceIdentifiers, Stack, Token } from '@aws-cdk/cdk';
 import { EOL } from 'os';
 import { BucketPolicy } from './bucket-policy';
 import { IBucketNotificationDestination } from './destination';
@@ -547,13 +548,12 @@ abstract class BucketBase extends Resource implements IBucket {
   }
 
   private isGranteeFromAnotherAccount(grantee: iam.IGrantable): boolean {
-    if (!(grantee instanceof Construct)) {
+    if (!(Construct.isConstruct(grantee))) {
       return false;
     }
-    const c = grantee as Construct;
     const bucketStack = Stack.of(this);
-    const identityStack = Stack.of(c);
-    return bucketStack.env.account !== identityStack.env.account;
+    const identityStack = Stack.of(grantee);
+    return bucketStack.account !== identityStack.account;
   }
 }
 
@@ -815,16 +815,18 @@ export class Bucket extends BucketBase {
     });
 
     const { bucketEncryption, encryptionKey } = this.parseEncryption(props);
-    this.validateBucketName(this.physicalName);
+    if (props.bucketName && !Token.isUnresolved(props.bucketName)) {
+      this.validateBucketName(props.bucketName);
+    }
 
     const resource = new CfnBucket(this, 'Resource', {
       bucketName: this.physicalName.value,
       bucketEncryption,
       versioningConfiguration: props.versioned ? { status: 'Enabled' } : undefined,
-      lifecycleConfiguration: new Token(() => this.parseLifecycleConfiguration()),
+      lifecycleConfiguration: Lazy.anyValue({ produce: () => this.parseLifecycleConfiguration() }),
       websiteConfiguration: this.renderWebsiteConfiguration(props),
       publicAccessBlockConfiguration: props.blockPublicAccess,
-      metricsConfigurations: new Token(() => this.parseMetricConfiguration())
+      metricsConfigurations: Lazy.anyValue({ produce: () => this.parseMetricConfiguration() })
     });
 
     applyRemovalPolicy(resource, props.removalPolicy !== undefined ? props.removalPolicy : RemovalPolicy.Orphan);
@@ -939,7 +941,7 @@ export class Bucket extends BucketBase {
 
   private validateBucketName(physicalName: PhysicalName): void {
     const bucketName = physicalName.value;
-    if (!bucketName || Token.isToken(bucketName)) {
+    if (!bucketName || Token.isUnresolved(bucketName)) {
       // the name is a late-bound value, not a defined string,
       // so skip validation
       return;
@@ -1058,17 +1060,24 @@ export class Bucket extends BucketBase {
     function parseLifecycleRule(rule: LifecycleRule): CfnBucket.RuleProperty {
       const enabled = rule.enabled !== undefined ? rule.enabled : true;
 
-      const x = {
+      const x: CfnBucket.RuleProperty = {
         // tslint:disable-next-line:max-line-length
         abortIncompleteMultipartUpload: rule.abortIncompleteMultipartUploadAfterDays !== undefined ? { daysAfterInitiation: rule.abortIncompleteMultipartUploadAfterDays } : undefined,
         expirationDate: rule.expirationDate,
         expirationInDays: rule.expirationInDays,
         id: rule.id,
         noncurrentVersionExpirationInDays: rule.noncurrentVersionExpirationInDays,
-        noncurrentVersionTransitions: rule.noncurrentVersionTransitions,
+        noncurrentVersionTransitions: mapOrUndefined(rule.noncurrentVersionTransitions, t => ({
+          storageClass: t.storageClass.value,
+          transitionInDays: t.transitionInDays
+        })),
         prefix: rule.prefix,
         status: enabled ? 'Enabled' : 'Disabled',
-        transitions: rule.transitions,
+        transitions: mapOrUndefined(rule.transitions, t => ({
+          storageClass: t.storageClass.value,
+          transitionDate: t.transitionDate,
+          transitionInDays: t.transitionInDays
+        })),
         tagFilters: self.parseTagFilters(rule.tagFilters)
       };
 
@@ -1277,4 +1286,12 @@ export interface OnCloudTrailBucketEventOptions extends events.OnEventOptions {
    * @default - Watch changes to all objects
    */
   readonly paths?: string[];
+}
+
+function mapOrUndefined<T, U>(list: T[] | undefined, callback: (element: T) => U): U[] | undefined {
+  if (!list || list.length === 0) {
+    return undefined;
+  }
+
+  return list.map(callback);
 }
