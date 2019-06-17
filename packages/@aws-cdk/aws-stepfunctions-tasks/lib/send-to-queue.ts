@@ -51,10 +51,10 @@ export class SendToQueue implements sfn.IStepFunctionsTask {
   public bind(_task: sfn.Task): sfn.StepFunctionsTaskConfig {
     return {
       resourceArn: 'arn:aws:states:::sqs:sendMessage',
-      policyStatements: [new iam.PolicyStatement()
-        .addAction('sqs:SendMessage')
-        .addResource(this.queue.queueArn)
-      ],
+      policyStatements: [new iam.PolicyStatement({
+        actions: ['sqs:SendMessage'],
+        resources: [this.queue.queueArn]
+      })],
       parameters: {
         QueueUrl: this.queue.queueUrl,
         ...sfn.FieldUtils.renderObject({

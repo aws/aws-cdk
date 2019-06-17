@@ -343,14 +343,7 @@ export class RestApi extends Resource implements IRestApi {
   private configureCloudWatchRole(apiResource: CfnRestApi) {
     const role = new iam.Role(this, 'CloudWatchRole', {
       assumedBy: new iam.ServicePrincipal('apigateway.amazonaws.com'),
-      managedPolicyArns: [ Stack.of(this).formatArn({
-        service: 'iam',
-        region: '',
-        account: 'aws',
-        resource: 'policy',
-        sep: '/',
-        resourceName: 'service-role/AmazonAPIGatewayPushToCloudWatchLogs'
-      }) ]
+      managedPolicies: [iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AmazonAPIGatewayPushToCloudWatchLogs')],
     });
 
     const resource = new CfnAccount(this, 'Account', {

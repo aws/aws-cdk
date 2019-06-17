@@ -86,7 +86,7 @@ abstract class KeyBase extends Resource implements IKey {
       throw new Error(`Unable to add statement to IAM resource policy for KMS key: ${JSON.stringify(stack.resolve(this.keyArn))}`);
     }
 
-    this.policy.addStatement(statement);
+    this.policy.addStatements(statement);
   }
 
   /**
@@ -250,9 +250,10 @@ export class Key extends KeyBase {
       "kms:CancelKeyDeletion"
     ];
 
-    this.addToResourcePolicy(new PolicyStatement()
-      .addAllResources()
-      .addActions(...actions)
-      .addAccountRootPrincipal());
+    this.addToResourcePolicy(new PolicyStatement({
+      resources: ['*'],
+      actions,
+      principals: [new iam.AccountRootPrincipal()]
+    }));
   }
 }
