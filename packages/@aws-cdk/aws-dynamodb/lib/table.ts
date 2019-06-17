@@ -329,7 +329,7 @@ export class Table extends Resource {
     }
 
     return this.tableScaling.scalableReadAttribute = new ScalableTableAttribute(this, 'ReadScaling', {
-      serviceNamespace: appscaling.ServiceNamespace.DynamoDb,
+      serviceNamespace: appscaling.ServiceNamespace.DYNAMODB,
       resourceId: `table/${this.tableName}`,
       dimension: 'dynamodb:table:ReadCapacityUnits',
       role: this.scalingRole,
@@ -351,7 +351,7 @@ export class Table extends Resource {
     }
 
     return this.tableScaling.scalableWriteAttribute = new ScalableTableAttribute(this, 'WriteScaling', {
-      serviceNamespace: appscaling.ServiceNamespace.DynamoDb,
+      serviceNamespace: appscaling.ServiceNamespace.DYNAMODB,
       resourceId: `table/${this.tableName}`,
       dimension: 'dynamodb:table:WriteCapacityUnits',
       role: this.scalingRole,
@@ -377,7 +377,7 @@ export class Table extends Resource {
     }
 
     return attributePair.scalableReadAttribute = new ScalableTableAttribute(this, `${indexName}ReadScaling`, {
-      serviceNamespace: appscaling.ServiceNamespace.DynamoDb,
+      serviceNamespace: appscaling.ServiceNamespace.DYNAMODB,
       resourceId: `table/${this.tableName}/index/${indexName}`,
       dimension: 'dynamodb:index:ReadCapacityUnits',
       role: this.scalingRole,
@@ -403,7 +403,7 @@ export class Table extends Resource {
     }
 
     return attributePair.scalableWriteAttribute = new ScalableTableAttribute(this, `${indexName}WriteScaling`, {
-      serviceNamespace: appscaling.ServiceNamespace.DynamoDb,
+      serviceNamespace: appscaling.ServiceNamespace.DYNAMODB,
       resourceId: `table/${this.tableName}/index/${indexName}`,
       dimension: 'dynamodb:index:WriteCapacityUnits',
       role: this.scalingRole,

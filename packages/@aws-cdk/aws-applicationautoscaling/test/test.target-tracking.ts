@@ -13,7 +13,7 @@ export = {
 
     // WHEN
     target.scaleToTrackMetric('Tracking', {
-      predefinedMetric: appscaling.PredefinedMetric.EC2SpotFleetRequestAverageCPUUtilization,
+      predefinedMetric: appscaling.PredefinedMetric.EC2_SPOT_FLEET_REQUEST_AVERAGE_CPU_UTILIZATION,
       targetValue: 30,
     });
 

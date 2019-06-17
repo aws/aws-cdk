@@ -233,40 +233,40 @@ export enum ServiceNamespace {
   /**
    * Elastic Container Service
    */
-  Ecs = 'ecs',
+  ECS = 'ecs',
 
   /**
    * Elastic Map Reduce
    */
-  ElasticMapReduce = 'elasticmapreduce',
+  ELASTIC_MAP_REDUCE = 'elasticmapreduce',
 
   /**
    * Elastic Compute Cloud
    */
-  Ec2 = 'ec2',
+  EC2 = 'ec2',
 
   /**
    * App Stream
    */
-  AppStream = 'appstream',
+  APPSTREAM = 'appstream',
 
   /**
    * Dynamo DB
    */
-  DynamoDb = 'dynamodb',
+  DYNAMODB = 'dynamodb',
 
   /**
    * Relational Database Service
    */
-  Rds = 'rds',
+  RDS = 'rds',
 
   /**
    * SageMaker
    */
-  SageMaker = 'sagemaker',
+  SAGEMAKER = 'sagemaker',
 
   /**
    * Custom Resource
    */
-  CustomResource = 'custom-resource',
+  CUSTOM_RESOURCE = 'custom-resource',
 }

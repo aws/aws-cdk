@@ -75,8 +75,8 @@ export class StepScalingPolicy extends cdk.Construct {
       throw new Error('You must supply at least 2 intervals for autoscaling');
     }
 
-    const adjustmentType = props.adjustmentType || AdjustmentType.ChangeInCapacity;
-    const changesAreAbsolute = adjustmentType === AdjustmentType.ExactCapacity;
+    const adjustmentType = props.adjustmentType || AdjustmentType.CHANGE_IN_CAPACITY;
+    const changesAreAbsolute = adjustmentType === AdjustmentType.EXACT_CAPACITY;
 
     const intervals = normalizeIntervals(props.scalingSteps, changesAreAbsolute);
     const alarms = findAlarmThresholds(intervals);
@@ -183,11 +183,11 @@ export interface ScalingInterval {
 function aggregationTypeFromMetric(metric: cloudwatch.Metric): MetricAggregationType {
   switch (metric.statistic) {
     case 'Average':
-      return MetricAggregationType.Average;
+      return MetricAggregationType.AVERAGE;
     case 'Minimum':
-      return MetricAggregationType.Minimum;
+      return MetricAggregationType.MINIMUM;
     case 'Maximum':
-      return MetricAggregationType.Maximum;
+      return MetricAggregationType.MAXIMUM;
     default:
       throw new Error(`Cannot only scale on 'Minimum', 'Maximum', 'Average' metrics, got ${metric.statistic}`);
   }
