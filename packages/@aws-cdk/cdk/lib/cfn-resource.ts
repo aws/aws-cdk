@@ -1,6 +1,7 @@
 import cxapi = require('@aws-cdk/cx-api');
 import { CfnCondition } from './cfn-condition';
 import { Construct, IConstruct } from './construct';
+import { RemovalPolicy } from './removal-policy';
 import { CreationPolicy, DeletionPolicy, UpdatePolicy } from './resource-policy';
 import { capitalizePropertyNames, ignoreEmpty, PostResolveToken } from './util';
 // import required to be here, otherwise causes a cycle when running the generated JavaScript
@@ -48,6 +49,23 @@ export class CfnResource extends CfnRefElement {
    */
   public static isCfnResource(construct: IConstruct): construct is CfnResource {
     return (construct as any).resourceType !== undefined;
+  }
+
+  /**
+   * Applies a `RemovalPolicy` to a given CfnResource.
+   * @param resource      the resource on which the `RemovalPolivy` will be applied.
+   * @param removalPolicy the `RemovalPolicy` to apply.
+   */
+  public static applyRemovalPolicy(resource: CfnResource, removalPolicy: RemovalPolicy | undefined): void {
+    if (removalPolicy === RemovalPolicy.Orphan || removalPolicy === RemovalPolicy.Forbid) {
+      resource.options.deletionPolicy = DeletionPolicy.Retain;
+    }
+
+    // attach metadata that will tell the toolkit to protect this resource by
+    // applying an appropriate stack update policy.
+    if (removalPolicy === RemovalPolicy.Forbid) {
+      resource.node.addMetadata('aws:cdk:protected', true);
+    }
   }
 
   /**

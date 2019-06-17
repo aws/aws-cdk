@@ -1,6 +1,6 @@
 import lambda = require('@aws-cdk/aws-lambda');
 import sns = require('@aws-cdk/aws-sns');
-import { applyRemovalPolicy, CfnResource, Construct, RemovalPolicy, Resource } from '@aws-cdk/cdk';
+import { CfnResource, Construct, RemovalPolicy, Resource } from '@aws-cdk/cdk';
 import { CfnCustomResource } from './cloudformation.generated';
 
 /**
@@ -97,7 +97,7 @@ export class CustomResource extends Resource {
       }
     });
 
-    applyRemovalPolicy(this.resource, props.removalPolicy);
+    CfnResource.applyRemovalPolicy(this.resource, props.removalPolicy);
   }
 
   public getAtt(attributeName: string) {

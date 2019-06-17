@@ -1,8 +1,6 @@
 import cxapi = require('@aws-cdk/cx-api');
 import { Test } from 'nodeunit';
-import { App, App as Root, applyRemovalPolicy, CfnCondition,
-    CfnResource, Construct, DeletionPolicy, Fn,
-    HashedAddressingScheme, RemovalPolicy, Stack } from '../lib';
+import { App, App as Root, CfnCondition, CfnResource, Construct, DeletionPolicy, Fn, HashedAddressingScheme, RemovalPolicy, Stack } from '../lib';
 
 export = {
   'all resources derive from Resource, which derives from Entity'(test: Test) {
@@ -297,9 +295,9 @@ export = {
     const forbid = new CfnResource(stack, 'Forbid', { type: 'T2' });
     const destroy = new CfnResource(stack, 'Destroy', { type: 'T3' });
 
-    applyRemovalPolicy(orphan, RemovalPolicy.Orphan);
-    applyRemovalPolicy(forbid, RemovalPolicy.Forbid);
-    applyRemovalPolicy(destroy, RemovalPolicy.Destroy);
+    CfnResource.applyRemovalPolicy(orphan, RemovalPolicy.Orphan);
+    CfnResource.applyRemovalPolicy(forbid, RemovalPolicy.Forbid);
+    CfnResource.applyRemovalPolicy(destroy, RemovalPolicy.Destroy);
 
     test.deepEqual(stack._toCloudFormation(), { Resources:
       { Orphan: { Type: 'T1', DeletionPolicy: 'Retain' },

@@ -1,6 +1,6 @@
 import cloudwatch = require('@aws-cdk/aws-cloudwatch');
 import iam = require('@aws-cdk/aws-iam');
-import { applyRemovalPolicy, Construct, IResource, RemovalPolicy, Resource } from '@aws-cdk/cdk';
+import { CfnResource, Construct, IResource, RemovalPolicy, Resource } from '@aws-cdk/cdk';
 import { LogStream } from './log-stream';
 import { CfnLogGroup } from './logs.generated';
 import { MetricFilter } from './metric-filter';
@@ -344,7 +344,7 @@ export class LogGroup extends LogGroupBase {
     });
 
     if (props.retainLogGroup !== false) {
-      applyRemovalPolicy(resource, RemovalPolicy.Orphan);
+      CfnResource.applyRemovalPolicy(resource, RemovalPolicy.Orphan);
     }
 
     this.logGroupArn = resource.logGroupArn;

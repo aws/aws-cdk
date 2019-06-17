@@ -1,7 +1,7 @@
 import events = require('@aws-cdk/aws-events');
 import iam = require('@aws-cdk/aws-iam');
 import kms = require('@aws-cdk/aws-kms');
-import { applyRemovalPolicy, Construct, IResource, RemovalPolicy, Resource, Token } from '@aws-cdk/cdk';
+import { CfnResource, Construct, IResource, RemovalPolicy, Resource, Token } from '@aws-cdk/cdk';
 import { EOL } from 'os';
 import { BucketPolicy } from './bucket-policy';
 import { IBucketNotificationDestination } from './destination';
@@ -791,7 +791,7 @@ export class Bucket extends BucketBase {
       metricsConfigurations: new Token(() => this.parseMetricConfiguration())
     });
 
-    applyRemovalPolicy(resource, props.removalPolicy !== undefined ? props.removalPolicy : RemovalPolicy.Orphan);
+    CfnResource.applyRemovalPolicy(resource, props.removalPolicy !== undefined ? props.removalPolicy : RemovalPolicy.Orphan);
 
     this.versioned = props.versioned;
     this.encryptionKey = encryptionKey;
