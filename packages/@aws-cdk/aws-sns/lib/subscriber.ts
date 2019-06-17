@@ -6,9 +6,10 @@ import { ITopic } from './topic-base';
  */
 export interface TopicSubscriptionConfig extends SubscriptionOptions {
   /**
-   * The id of the construct that is being subscribed to the topic.
+   * The id of the subscriber. Will be used as the id for the subscription in
+   * the topic's scope.
    */
-  readonly id: string;
+  readonly subscriberId: string;
 }
 
 /**
