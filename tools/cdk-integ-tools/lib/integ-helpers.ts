@@ -1,12 +1,9 @@
 // Helper functions for integration tests
 import { DEFAULT_ACCOUNT_CONTEXT_KEY, DEFAULT_REGION_CONTEXT_KEY } from '@aws-cdk/cx-api';
 import { spawnSync } from 'child_process';
-import fs = require('fs');
+import fs = require('fs-extra');
 import path = require('path');
-import util = require('util');
 
-const stat = util.promisify(fs.stat);
-const readdir = util.promisify(fs.readdir);
 const CDK_INTEG_STACK_PRAGMA = '/// !cdk-integ';
 
 export class IntegrationTests {
@@ -53,10 +50,10 @@ export class IntegrationTests {
     const rootDir = this.directory;
 
     async function recurse(dir: string) {
-      const files = await readdir(dir);
+      const files = await fs.readdir(dir);
       for (const file of files) {
         const fullPath = path.join(dir, file);
-        const statf = await stat(fullPath);
+        const statf = await fs.stat(fullPath);
         if (statf.isFile()) { ret.push(fullPath.substr(rootDir.length + 1)); }
         if (statf.isDirectory()) { await recurse(path.join(fullPath)); }
       }
@@ -135,20 +132,23 @@ export class IntegrationTest {
   }
 
   public async readExpected(): Promise<any> {
-    return JSON.parse((await util.promisify(fs.readFile)(this.expectedFilePath, { encoding: 'utf-8' })));
+    return JSON.parse(await fs.readFile(this.expectedFilePath, { encoding: 'utf-8' }));
   }
 
   public async writeExpected(actual: any) {
-    await util.promisify(fs.writeFile)(this.expectedFilePath, JSON.stringify(actual, undefined, 2), { encoding: 'utf-8' });
+    await fs.writeFile(this.expectedFilePath, JSON.stringify(actual, undefined, 2), { encoding: 'utf-8' });
   }
 
   private async writeCdkContext(config: any) {
-    await util.promisify(fs.writeFile)(this.cdkContextPath, JSON.stringify(config, undefined, 2), { encoding: 'utf-8' });
+    await fs.writeFile(this.cdkContextPath, JSON.stringify(config, undefined, 2), { encoding: 'utf-8' });
   }
 
   private deleteCdkContext() {
     if (fs.existsSync(this.cdkContextPath)) {
       fs.unlinkSync(this.cdkContextPath);
+    }
+    if (fs.existsSync('cdk.out')) {
+      fs.removeSync('cdk.out');
     }
   }
 
@@ -157,7 +157,7 @@ export class IntegrationTest {
    * contents. This allows integ tests to supply custom command line arguments to "cdk deploy" and "cdk synth".
    */
   private async readStackPragma(): Promise<string[]> {
-    const source = await util.promisify(fs.readFile)(this.sourceFilePath, 'utf-8');
+    const source = await fs.readFile(this.sourceFilePath, 'utf-8');
     const pragmaLine = source.split('\n').find(x => x.startsWith(CDK_INTEG_STACK_PRAGMA + ' '));
     if (!pragmaLine) {
       return [];
