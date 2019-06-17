@@ -80,7 +80,7 @@ const buildAction = new cpactions.CodeBuildAction({
   actionName: 'CodeBuild',
   project,
   input: sourceOutput,
-  output: buildOutput,
+  outputs: [buildOutput],
 });
 
 new codepipeline.Pipeline(stack, 'MyPipeline', {

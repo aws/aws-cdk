@@ -166,7 +166,7 @@ const buildAction = new codepipeline_actions.CodeBuildAction({
   actionName: 'CodeBuild',
   project,
   input: sourceOutput,
-  output: new codepipeline.Artifact(), // optional
+  outputs: [new codepipeline.Artifact()], // optional
 });
 
 new codepipeline.Pipeline(this, 'MyPipeline', {
@@ -233,11 +233,11 @@ const buildAction = new codepipeline_actions.CodeBuildAction({
   actionName: 'Build',
   project,
   input: sourceOutput1,
-  output: new codepipeline.Artifact('artifact1'), // for better buildspec readability - see below
   extraInputs: [
     sourceOutput2, // this is where 'source2' comes from
   ],
-  extraOutputs: [
+  outputs: [
+    new codepipeline.Artifact('artifact1'), // for better buildspec readability - see below
     new codepipeline.Artifact('artifact2'),
   ],
 });
@@ -246,7 +246,7 @@ const buildAction = new codepipeline_actions.CodeBuildAction({
 **Note**: when a CodeBuild Action in a Pipeline has more than one output, it
 only uses the `secondary-artifacts` field of the buildspec, never the
 primary output specification directly under `artifacts`. Because of that, it
-pays to name even your primary output artifact on the Pipeline, like we did
+pays to explicitly name all output artifacts of that Action, like we did
 above, so that you know what name to use in the buildspec.
 
 Example buildspec for the above project:
