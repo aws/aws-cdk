@@ -286,20 +286,22 @@ export default class CodeGenerator {
     if (spec.RequiredTransform) {
       const transformField = `${resourceName.className}.requiredTransform`;
       this.code.line('// If a different transform than the required one is in use, this resource cannot be used');
-      this.code.openBlock(`if (this.node.stack.templateOptions.transform && this.node.stack.templateOptions.transform !== ${transformField})`);
+      this.code.openBlock(`if (this.stack.templateOptions.transform && this.stack.templateOptions.transform !== ${transformField})`);
       // tslint:disable-next-line:max-line-length
-      this.code.line(`throw new Error(\`The \${JSON.stringify(${transformField})} transform is required when using ${resourceName.className}, but the \${JSON.stringify(this.node.stack.templateOptions.transform)} is used.\`);`);
+      this.code.line(`throw new Error(\`The \${JSON.stringify(${transformField})} transform is required when using ${resourceName.className}, but the \${JSON.stringify(this.stack.templateOptions.transform)} is used.\`);`);
       this.code.closeBlock();
       this.code.line('// Automatically configure the required transform');
-      this.code.line(`this.node.stack.templateOptions.transform = ${resourceName.className}.requiredTransform;`);
+      this.code.line(`this.stack.templateOptions.transform = ${resourceName.className}.requiredTransform;`);
     }
 
     // initialize all attribute properties
     for (const at of attributes) {
       if (at.attributeType === 'string') {
-        this.code.line(`this.${at.propertyName} = ${at.constructorArguments}.toString();`);
+        this.code.line(`this.${at.propertyName} = ${CORE}.Token.asString(${at.constructorArguments});`);
       } else if (at.attributeType === 'string[]') {
-        this.code.line(`this.${at.propertyName} = ${at.constructorArguments}.toList();`);
+        this.code.line(`this.${at.propertyName} = ${CORE}.Token.asList(${at.constructorArguments});`);
+      } else if (at.attributeType === 'number') {
+        this.code.line(`this.${at.propertyName} = ${CORE}.Token.asNumber(${at.constructorArguments});`);
       } else if (at.attributeType === genspec.TOKEN_NAME.fqn) {
         this.code.line(`this.${at.propertyName} = ${at.constructorArguments};`);
       }

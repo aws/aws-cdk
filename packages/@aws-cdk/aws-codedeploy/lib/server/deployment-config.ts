@@ -113,7 +113,7 @@ export class ServerDeploymentConfig extends cdk.Resource implements IServerDeplo
       minimumHealthyHosts: props.minimumHealthyHosts._json,
     });
 
-    this.deploymentConfigName = resource.ref.toString();
+    this.deploymentConfigName = resource.refAsString;
     this.deploymentConfigArn = arnForDeploymentConfig(this.deploymentConfigName);
   }
 }

@@ -1,5 +1,6 @@
 import cxapi = require('@aws-cdk/cx-api');
-import { Construct, ConstructNode } from "./construct";
+import { Construct } from "./construct";
+import { Lazy } from "./lazy";
 import { Token } from './token';
 
 const CFN_ELEMENT_SYMBOL = Symbol.for('@aws-cdk/cdk.CfnElement');
@@ -32,7 +33,15 @@ export abstract class CfnElement extends Construct {
    */
   public readonly logicalId: string;
 
-  private _logicalId: string;
+  /**
+   * The stack in which this element is defined. CfnElements must be defined within a stack scope (directly or indirectly).
+   */
+  public readonly stack: Stack;
+
+  /**
+   * An explicit logical ID provided by `overrideLogicalId`.
+   */
+  private _logicalIdOverride?: string;
 
   /**
    * Creates an entity and binds it to a tree.
@@ -46,10 +55,13 @@ export abstract class CfnElement extends Construct {
 
     Object.defineProperty(this, CFN_ELEMENT_SYMBOL, { value: true });
 
-    this.node.addMetadata(cxapi.LOGICAL_ID_METADATA_KEY, new (require("./token").Token)(() => this.logicalId), this.constructor);
+    this.stack = Stack.of(this);
 
-    this._logicalId = this.node.stack.logicalIds.getLogicalId(this);
-    this.logicalId = new Token(() => this._logicalId, `${notTooLong(this.node.path)}.LogicalID`).toString();
+    this.logicalId = Lazy.stringValue({ produce: () => this.synthesizeLogicalId() }, {
+      displayHint: `${notTooLong(this.node.path)}.LogicalID`
+    });
+
+    this.node.addMetadata(cxapi.LOGICAL_ID_METADATA_KEY, this.logicalId, this.constructor);
   }
 
   /**
@@ -57,7 +69,7 @@ export abstract class CfnElement extends Construct {
    * @param newLogicalId The new logical ID to use for this stack element.
    */
   public overrideLogicalId(newLogicalId: string) {
-    this._logicalId = newLogicalId;
+    this._logicalIdOverride = newLogicalId;
   }
 
   /**
@@ -85,13 +97,6 @@ export abstract class CfnElement extends Construct {
     function shouldFilter(str: string): boolean {
       return str.match(/[^(]+\(internal\/.*/) !== null;
     }
-  }
-
-  /**
-   * Return the path with respect to the stack
-   */
-  public get stackPath(): string {
-    return this.node.ancestors(this.node.stack).map(c => c.node.id).join(ConstructNode.PATH_SEP);
   }
 
   /**
@@ -127,9 +132,22 @@ export abstract class CfnElement extends Construct {
       // This does make the assumption that the error will not be rectified,
       // but the error will be thrown later on anyway. If the error doesn't
       // get thrown down the line, we may miss references.
-      this.node.recordReference(...findTokens(this, () => this._toCloudFormation()));
+      this.node.addReference(...findTokens(this, () => this._toCloudFormation()));
     } catch (e) {
       if (e.type !== 'CfnSynthesisError') { throw e; }
+    }
+  }
+
+  /**
+   * Called during synthesize to render the logical ID of this element. If
+   * `overrideLogicalId` was it will be used, otherwise, we will allocate the
+   * logical ID through the stack.
+   */
+  private synthesizeLogicalId() {
+    if (this._logicalIdOverride) {
+      return this._logicalIdOverride;
+    } else {
+      return this.stack.getLogicalId(this);
     }
   }
 }
@@ -146,17 +164,17 @@ export abstract class CfnElement extends Construct {
  */
 export abstract class CfnRefElement extends CfnElement {
   /**
-   * Returns a token to a CloudFormation { Ref } that references this entity based on it's logical ID.
+   * Return a token that will CloudFormation { Ref } this stack element
    */
-  public get ref(): string {
-    return this.referenceToken.toString();
+  public get ref(): IResolvable {
+    return CfnReference.for(this, 'Ref');
   }
 
   /**
-   * Return a token that will CloudFormation { Ref } this stack element
+   * Return a string that will CloudFormation { Ref } this stack element
    */
-  public get referenceToken(): Token {
-    return CfnReference.for(this, 'Ref');
+  public get refAsString(): string {
+    return Token.asString(this.ref);
   }
 }
 
@@ -165,5 +183,7 @@ function notTooLong(x: string) {
   return x.substr(0, 47) + '...' + x.substr(x.length - 47);
 }
 
-import { CfnReference } from "./cfn-reference";
-import { findTokens } from "./resolve";
+import { CfnReference } from "./private/cfn-reference";
+import { findTokens } from "./private/resolve";
+import { IResolvable } from "./resolvable";
+import { Stack } from './stack';

@@ -3,7 +3,7 @@ import ec2 = require('@aws-cdk/aws-ec2');
 import iam = require('@aws-cdk/aws-iam');
 import logs = require('@aws-cdk/aws-logs');
 import sqs = require('@aws-cdk/aws-sqs');
-import { Construct, Fn, Token } from '@aws-cdk/cdk';
+import { Construct, Fn, Lazy, Stack, Token } from '@aws-cdk/cdk';
 import { Code } from './code';
 import { IEventSource } from './event-source';
 import { FunctionAttributes, FunctionBase, IFunction } from './function-base';
@@ -414,22 +414,23 @@ export class Function extends FunctionBase {
       this.role.addToPolicy(statement);
     }
 
-    const isChina = this.node.stack.env.region && this.node.stack.env.region.startsWith('cn-');
+    const region = Stack.of(this).region;
+    const isChina = !Token.isUnresolved(region) && region.startsWith('cn-');
     if (isChina && props.environment && Object.keys(props.environment).length > 0) {
       // tslint:disable-next-line:max-line-length
-      throw new Error(`Environment variables are not supported in this region (${this.node.stack.env.region}); consider using tags or SSM parameters instead`);
+      throw new Error(`Environment variables are not supported in this region (${region}); consider using tags or SSM parameters instead`);
     }
 
-    const resource = new CfnFunction(this, 'Resource', {
+    const resource: CfnFunction = new CfnFunction(this, 'Resource', {
       functionName: props.functionName,
       description: props.description,
-      code: new Token(() => props.code._toJSON(resource)),
-      layers: new Token(() => this.layers.length > 0 ? this.layers.map(layer => layer.layerVersionArn) : undefined).toList(),
+      code: Lazy.anyValue({ produce: () => props.code._toJSON(resource) }),
+      layers: Lazy.listValue({ produce: () => this.layers.map(layer => layer.layerVersionArn) }, { omitEmpty: true }),
       handler: props.handler,
       timeout: props.timeout,
       runtime: props.runtime.name,
       role: this.role.roleArn,
-      environment: new Token(() => this.renderEnvironment()),
+      environment: Lazy.anyValue({ produce: () => this.renderEnvironment() }),
       memorySize: props.memorySize,
       vpcConfig: this.configureVpc(props),
       deadLetterConfig: this.buildDeadLetterConfig(props),
@@ -439,7 +440,7 @@ export class Function extends FunctionBase {
 
     resource.node.addDependency(this.role);
 
-    this.functionName = resource.ref;
+    this.functionName = resource.refAsString;
     this.functionArn = resource.functionArn;
     this.handler = props.handler;
     this.runtime = props.runtime;

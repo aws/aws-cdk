@@ -310,7 +310,7 @@ export = {
     const fn = new lambda.Function(stack, 'Function', {
       code: lambda.Code.inline('dummy'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NodeJS810
+      runtime: lambda.Runtime.Nodejs810
     });
 
     // WHEN
@@ -367,13 +367,66 @@ export = {
     });
 
     // THEN
-    test.deepEqual(stack.node.resolve(instance.metricCPUUtilization()), {
+    test.deepEqual(stack.resolve(instance.metricCPUUtilization()), {
       dimensions: { DBInstanceIdentifier: { Ref: 'InstanceC1063A87' } },
       namespace: 'AWS/RDS',
       metricName: 'CPUUtilization',
       periodSec: 300,
       statistic: 'Average'
     });
+
+    test.done();
+  },
+
+  'can resolve endpoint port and socket address'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    const instance = new rds.DatabaseInstance(stack, 'Instance', {
+      engine: rds.DatabaseInstanceEngine.Mysql,
+      instanceClass: new ec2.InstanceTypePair(ec2.InstanceClass.Burstable2, ec2.InstanceSize.Small),
+      masterUsername: 'admin',
+      vpc
+    });
+
+    test.deepEqual(stack.resolve(instance.instanceEndpoint.port), {
+      'Fn::GetAtt': ['InstanceC1063A87', 'Endpoint.Port']
+    });
+
+    test.deepEqual(stack.resolve(instance.instanceEndpoint.socketAddress), {
+      'Fn::Join': [
+        '',
+        [
+          { 'Fn::GetAtt': ['InstanceC1063A87', 'Endpoint.Address'] },
+          ':',
+          { 'Fn::GetAtt': ['InstanceC1063A87', 'Endpoint.Port'] },
+        ]
+      ]
+    });
+
+    test.done();
+  },
+
+  'can deactivate backup'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    new rds.DatabaseInstance(stack, 'Instance', {
+      engine: rds.DatabaseInstanceEngine.Mysql,
+      instanceClass: new ec2.InstanceTypePair(ec2.InstanceClass.Burstable2, ec2.InstanceSize.Small),
+      masterUsername: 'admin',
+      vpc,
+      backupRetentionPeriod: 0,
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::RDS::DBInstance', {
+      BackupRetentionPeriod: '0'
+    }));
 
     test.done();
   }

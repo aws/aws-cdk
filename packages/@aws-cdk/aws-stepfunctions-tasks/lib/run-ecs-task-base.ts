@@ -3,6 +3,7 @@ import ecs = require('@aws-cdk/aws-ecs');
 import iam = require('@aws-cdk/aws-iam');
 import sfn = require('@aws-cdk/aws-stepfunctions');
 import cdk = require('@aws-cdk/cdk');
+import { Stack } from '@aws-cdk/cdk';
 import { ContainerOverride } from './run-ecs-task-base-types';
 
 /**
@@ -63,7 +64,7 @@ export class EcsRunTaskBase implements ec2.IConnectable, sfn.IStepFunctionsTask 
 
     for (const override of this.props.containerOverrides || []) {
       const name = override.containerName;
-      if (!cdk.Token.isToken(name)) {
+      if (!cdk.Token.isUnresolved(name)) {
         const cont = this.props.taskDefinition.node.tryFindChild(name);
         if (!cont) {
           throw new Error(`Overrides mention container with name '${name}', but no such container in task definition`);
@@ -111,13 +112,13 @@ export class EcsRunTaskBase implements ec2.IConnectable, sfn.IStepFunctionsTask 
       AwsvpcConfiguration: {
         AssignPublicIp: assignPublicIp !== undefined ? (assignPublicIp ? 'ENABLED' : 'DISABLED') : undefined,
         Subnets: vpc.selectSubnets(subnetSelection).subnetIds,
-        SecurityGroups: new cdk.Token(() => [this.securityGroup!.securityGroupId]),
+        SecurityGroups: cdk.Lazy.listValue({ produce: () => [this.securityGroup!.securityGroupId] }),
       }
     };
   }
 
   private makePolicyStatements(task: sfn.Task): iam.PolicyStatement[] {
-    const stack = task.node.stack;
+    const stack = Stack.of(task);
 
     // https://docs.aws.amazon.com/step-functions/latest/dg/ecs-iam.html
     const policyStatements = [
@@ -129,7 +130,7 @@ export class EcsRunTaskBase implements ec2.IConnectable, sfn.IStepFunctionsTask 
         .addAllResources(),
       new iam.PolicyStatement()
         .addAction('iam:PassRole')
-        .addResources(...new cdk.Token(() => this.taskExecutionRoles().map(r => r.roleArn)).toList())
+        .addResources(...cdk.Lazy.listValue({ produce: () => this.taskExecutionRoles().map(r => r.roleArn) }))
     ];
 
     if (this.sync) {

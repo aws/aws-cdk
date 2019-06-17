@@ -57,7 +57,7 @@ export class Staging extends Construct {
     this.copyOptions = props;
     this.sourceHash = fingerprint(this.sourcePath, props);
 
-    const stagingDisabled = this.node.getContext(cxapi.DISABLE_ASSET_STAGING_CONTEXT);
+    const stagingDisabled = this.node.tryGetContext(cxapi.DISABLE_ASSET_STAGING_CONTEXT);
     if (stagingDisabled) {
       this.stagedPath = this.sourcePath;
     } else {

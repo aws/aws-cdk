@@ -1,4 +1,4 @@
-import { Construct, Resource } from '@aws-cdk/cdk';
+import { Construct, Resource, Stack } from '@aws-cdk/cdk';
 import { CfnMethod, CfnMethodProps } from './apigateway.generated';
 import { ConnectionType, Integration } from './integration';
 import { MockIntegration } from './integrations/mock';
@@ -124,7 +124,7 @@ export class Method extends Resource {
 
     const resource = new CfnMethod(this, 'Resource', methodProps);
 
-    this.methodId = resource.ref;
+    this.methodId = resource.refAsString;
 
     props.resource.restApi._attachMethod(this);
 
@@ -197,7 +197,7 @@ export class Method extends Resource {
     } else if (options.credentialsPassthrough) {
       // arn:aws:iam::*:user/*
       // tslint:disable-next-line:max-line-length
-      credentials = this.node.stack.formatArn({ service: 'iam', region: '', account: '*', resource: 'user', sep: '/', resourceName: '*' });
+      credentials = Stack.of(this).formatArn({ service: 'iam', region: '', account: '*', resource: 'user', sep: '/', resourceName: '*' });
     }
 
     return {

@@ -2,7 +2,7 @@ import events = require('@aws-cdk/aws-events');
 import iam = require('@aws-cdk/aws-iam');
 import kms = require('@aws-cdk/aws-kms');
 import s3 = require('@aws-cdk/aws-s3');
-import { Construct, RemovalPolicy, Resource, Stack, Token } from '@aws-cdk/cdk';
+import { App, Construct, Lazy, PhysicalName, RemovalPolicy, Resource, Stack, Token } from '@aws-cdk/cdk';
 import { Action, IPipeline, IStage } from "./action";
 import { CfnPipeline } from './codepipeline.generated';
 import { Stage } from './stage';
@@ -170,7 +170,7 @@ export class Pipeline extends PipelineBase {
   public static fromPipelineArn(scope: Construct, id: string, pipelineArn: string): IPipeline {
 
     class Import extends PipelineBase {
-      public pipelineName = scope.node.stack.parseArn(pipelineArn).resource;
+      public pipelineName = Stack.of(scope).parseArn(pipelineArn).resource;
       public pipelineArn = pipelineArn;
 
       public grantBucketRead(identity: iam.IGrantable): iam.Grant {
@@ -218,9 +218,8 @@ export class Pipeline extends PipelineBase {
   private readonly artifactStores: { [region: string]: CfnPipeline.ArtifactStoreProperty };
   private readonly _crossRegionScaffoldStacks: { [region: string]: CrossRegionScaffoldStack } = {};
 
-  constructor(scope: Construct, id: string, props?: PipelineProps) {
+  constructor(scope: Construct, id: string, props: PipelineProps = {}) {
     super(scope, id);
-    props = props || {};
 
     validateName('Pipeline', props.pipelineName);
 
@@ -229,6 +228,7 @@ export class Pipeline extends PipelineBase {
     if (!propsBucket) {
       const encryptionKey = new kms.Key(this, 'ArtifactsBucketEncryptionKey');
       propsBucket = new s3.Bucket(this, 'ArtifactsBucket', {
+        bucketName: PhysicalName.auto({ crossEnvironment: true }),
         encryptionKey,
         encryption: s3.BucketEncryption.Kms,
         removalPolicy: RemovalPolicy.Orphan
@@ -242,9 +242,9 @@ export class Pipeline extends PipelineBase {
     });
 
     const codePipeline = new CfnPipeline(this, 'Resource', {
-      artifactStore: new Token(() => this.renderArtifactStore()),
-      artifactStores: new Token(() => this.renderArtifactStores()),
-      stages: new Token(() => this.renderStages()),
+      artifactStore: Lazy.anyValue({ produce: () => this.renderArtifactStore() }),
+      artifactStores: Lazy.anyValue({ produce: () => this.renderArtifactStores() }),
+      stages: Lazy.anyValue({ produce: () => this.renderStages() }),
       roleArn: this.role.roleArn,
       restartExecutionOnUpdate: props && props.restartExecutionOnUpdate,
       name: props && props.pipelineName,
@@ -255,13 +255,13 @@ export class Pipeline extends PipelineBase {
 
     this.artifactBucket.grantReadWrite(this.role);
 
-    this.pipelineName = codePipeline.ref;
+    this.pipelineName = codePipeline.refAsString;
     this.pipelineVersion = codePipeline.pipelineVersion;
     this.crossRegionReplicationBuckets = props.crossRegionReplicationBuckets || {};
     this.artifactStores = {};
 
     // Does not expose a Fn::GetAtt for the ARN so we'll have to make it ourselves
-    this.pipelineArn = this.node.stack.formatArn({
+    this.pipelineArn = Stack.of(this).formatArn({
       service: 'codepipeline',
       resource: this.pipelineName
     });
@@ -348,22 +348,37 @@ export class Pipeline extends PipelineBase {
   // ignore unused private method (it's actually used in Stage)
   // @ts-ignore
   private _attachActionToPipeline(stage: Stage, action: Action, actionScope: cdk.Construct): void {
-    if (action.region) {
-      // handle cross-region Actions here
-      this.ensureReplicationBucketExistsFor(action.region);
-    }
-    (action as any)._actionAttachedToPipeline({
+    // handle cross-region actions here
+    this.ensureReplicationBucketExistsFor(action.region);
+
+    // get the role for the given action
+    const actionRole = this.getRoleForAction(stage, action);
+
+    // call the action callback which eventually calls bind()
+    action._actionAttachedToPipeline({
       pipeline: this,
       stage,
       scope: actionScope,
-      role: this.role,
+      role: actionRole ? actionRole : this.role,
+      actionRole,
     });
   }
 
-  private ensureReplicationBucketExistsFor(region: string) {
+  private requireRegion() {
+    const region = Stack.of(this).region;
+    if (Token.isUnresolved(region)) {
+      throw new Error(`You need to specify an explicit region when using CodePipeline's cross-region support`);
+    }
+    return region;
+  }
+
+  private ensureReplicationBucketExistsFor(region?: string) {
+    if (!region) {
+      return;
+    }
+
     // get the region the Pipeline itself is in
-    const pipelineRegion = this.node.stack.requireRegion(
-        "You need to specify an explicit region when using CodePipeline's cross-region support");
+    const pipelineRegion = this.requireRegion();
 
     // if we already have an ArtifactStore generated for this region, or it's the Pipeline's region, nothing to do
     if (this.artifactStores[region] || region === pipelineRegion) {
@@ -372,11 +387,14 @@ export class Pipeline extends PipelineBase {
 
     let replicationBucketName = this.crossRegionReplicationBuckets[region];
     if (!replicationBucketName) {
-      const pipelineAccount = this.node.stack.requireAccountId(
-          "You need to specify an explicit account when using CodePipeline's cross-region support");
-      const app = this.node.stack.parentApp();
-      if (!app) {
-        throw new Error(`Pipeline stack which uses cross region actions must be part of an application`);
+      const pipelineAccount = Stack.of(this).account;
+      if (Token.isUnresolved(pipelineAccount)) {
+        throw new Error("You need to specify an explicit account when using CodePipeline's cross-region support");
+      }
+
+      const app = this.node.root;
+      if (!app || !App.isApp(app)) {
+        throw new Error(`Pipeline stack which uses cross region actions must be part of a CDK app`);
       }
       const crossRegionScaffoldStack = new CrossRegionScaffoldStack(this, `cross-region-stack-${pipelineAccount}:${region}`, {
         region,
@@ -395,6 +413,53 @@ export class Pipeline extends PipelineBase {
       location: replicationBucket.bucketName,
       type: 'S3',
     };
+  }
+
+  /**
+   * Gets the role used for this action,
+   * including handling the case when the action is supposed to be cross-region.
+   *
+   * @param stage the stage the action belongs to
+   * @param action the action to return/create a role for
+   */
+  private getRoleForAction(stage: Stage, action: Action): iam.IRole | undefined {
+    let actionRole: iam.IRole | undefined;
+
+    if (action.role) {
+      actionRole = action.role;
+    } else if (action.resource) {
+      const pipelineStack = Stack.of(this);
+      const resourceStack = Stack.of(action.resource);
+      // check if resource is from a different account
+      if (pipelineStack.environment !== resourceStack.environment) {
+        // if it is, the pipeline's bucket must have a KMS key
+        if (!this.artifactBucket.encryptionKey) {
+          throw new Error('The Pipeline is being used in a cross-account manner, ' +
+            'but its artifact bucket does not have a KMS key defined. ' +
+            'A KMS key is required for a cross-account Pipeline. ' +
+            'Make sure to pass a Bucket with a Key when creating the Pipeline');
+        }
+
+        // generate a role in the other stack, that the Pipeline will assume for executing this action
+        actionRole = new iam.Role(resourceStack,
+            `${this.node.uniqueId}-${stage.stageName}-${action.actionName}-ActionRole`, {
+          assumedBy: new iam.AccountPrincipal(pipelineStack.account),
+          roleName: PhysicalName.auto({ crossEnvironment: true }),
+        });
+
+        // the other stack has to be deployed before the pipeline stack
+        pipelineStack.addDependency(resourceStack);
+      }
+    }
+
+    // the pipeline role needs assumeRole permissions to the action role
+    if (actionRole) {
+      this.role.addToPolicy(new iam.PolicyStatement()
+        .addAction('sts:AssumeRole')
+        .addResource(actionRole.roleArn));
+    }
+
+    return actionRole;
   }
 
   private calculateInsertIndexFromPlacement(placement: StagePlacement): number {
@@ -499,7 +564,8 @@ export class Pipeline extends PipelineBase {
 
     // add the Pipeline's artifact store
     const primaryStore = this.renderPrimaryArtifactStore();
-    this.artifactStores[this.node.stack.requireRegion()] = {
+    const primaryRegion = this.requireRegion();
+    this.artifactStores[primaryRegion] = {
       location: primaryStore.location,
       type: primaryStore.type,
       encryptionKey: primaryStore.encryptionKey,

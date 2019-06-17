@@ -1,7 +1,8 @@
 import events = require('@aws-cdk/aws-events');
 import iam = require('@aws-cdk/aws-iam');
 import kms = require('@aws-cdk/aws-kms');
-import { applyRemovalPolicy, Construct, IResource, RemovalPolicy, Resource, Token } from '@aws-cdk/cdk';
+import { applyRemovalPolicy, Construct, IResource, Lazy, PhysicalName,
+  RemovalPolicy, Resource, ResourceIdentifiers, Stack, Token } from '@aws-cdk/cdk';
 import { EOL } from 'os';
 import { BucketPolicy } from './bucket-policy';
 import { IBucketNotificationDestination } from './destination';
@@ -361,7 +362,8 @@ abstract class BucketBase extends Resource implements IBucket {
    * @returns an ObjectS3Url token
    */
   public urlForObject(key?: string): string {
-    const components = [ `https://s3.${this.node.stack.region}.${this.node.stack.urlSuffix}/${this.bucketName}` ];
+    const stack = Stack.of(this);
+    const components = [ `https://s3.${stack.region}.${stack.urlSuffix}/${this.bucketName}` ];
     if (key) {
       // trim prepending '/'
       if (typeof key === 'string' && key.startsWith('/')) {
@@ -507,18 +509,51 @@ abstract class BucketBase extends Resource implements IBucket {
                 resourceArn: string, ...otherResourceArns: string[]) {
     const resources = [ resourceArn, ...otherResourceArns ];
 
-    const ret = iam.Grant.addToPrincipalOrResource({
-      grantee,
-      actions: bucketActions,
-      resourceArns: resources,
-      resource: this,
-    });
+    const crossAccountAccess = this.isGranteeFromAnotherAccount(grantee);
+    let ret: iam.Grant;
+    if (crossAccountAccess) {
+      // if the access is cross-account, we need to trust the accessing principal in the bucket's policy
+      ret = iam.Grant.addToPrincipalAndResource({
+        grantee,
+        actions: bucketActions,
+        resourceArns: resources,
+        resource: this,
+      });
+    } else {
+      // if not, we don't need to modify the resource policy if the grantee is an identity principal
+      ret = iam.Grant.addToPrincipalOrResource({
+        grantee,
+        actions: bucketActions,
+        resourceArns: resources,
+        resource: this,
+      });
+    }
 
     if (this.encryptionKey) {
-      this.encryptionKey.grant(grantee, ...keyActions);
+      if (crossAccountAccess) {
+        // we can't access the Key ARN (they don't have physical names),
+        // so fall back on using '*'. ToDo we need to make this better... somehow
+        iam.Grant.addToPrincipalAndResource({
+          actions: keyActions,
+          grantee,
+          resourceArns: ['*'],
+          resource: this.encryptionKey,
+        });
+      } else {
+        this.encryptionKey.grant(grantee, ...keyActions);
+      }
     }
 
     return ret;
+  }
+
+  private isGranteeFromAnotherAccount(grantee: iam.IGrantable): boolean {
+    if (!(Construct.isConstruct(grantee))) {
+      return false;
+    }
+    const bucketStack = Stack.of(this);
+    const identityStack = Stack.of(grantee);
+    return bucketStack.account !== identityStack.account;
   }
 }
 
@@ -597,6 +632,70 @@ export interface BucketMetrics {
   readonly tagFilters?: {[tag: string]: any};
 }
 
+/**
+ * All http request methods
+ */
+export enum HttpMethods {
+  /**
+   * The GET method requests a representation of the specified resource.
+   */
+  GET = "GET",
+  /**
+   * The PUT method replaces all current representations of the target resource with the request payload.
+   */
+  PUT = "PUT",
+  /**
+   * The HEAD method asks for a response identical to that of a GET request, but without the response body.
+   */
+  HEAD = "HEAD",
+  /**
+   * The POST method is used to submit an entity to the specified resource, often causing a change in state or side effects on the server.
+   */
+  POST = "POST",
+  /**
+   * The DELETE method deletes the specified resource.
+   */
+  DELETE = "DELETE",
+}
+
+/**
+ * Specifies a cross-origin access rule for an Amazon S3 bucket.
+ */
+export interface CorsRule {
+  /**
+   * A unique identifier for this rule.
+   *
+   * @default - No id specified.
+   */
+  readonly id?: string;
+  /**
+   * The time in seconds that your browser is to cache the preflight response for the specified resource.
+   *
+   * @default - No caching.
+   */
+  readonly maxAge?: number;
+  /**
+   * Headers that are specified in the Access-Control-Request-Headers header.
+   *
+   * @default - No headers allowed.
+   */
+  readonly allowedHeaders?: string[];
+  /**
+   * An HTTP method that you allow the origin to execute.
+   */
+  readonly allowedMethods: HttpMethods[];
+  /**
+   * One or more origins you want customers to be able to access the bucket from.
+   */
+  readonly allowedOrigins: string[];
+  /**
+   * One or more headers in the response that you want customers to be able to access from their applications.
+   *
+   * @default - No headers exposed.
+   */
+  readonly exposedHeaders?: string[];
+}
+
 export interface BucketProps {
   /**
    * The kind of server-side encryption to apply to this bucket.
@@ -625,7 +724,7 @@ export interface BucketProps {
    *
    * @default - Assigned by CloudFormation (recommended).
    */
-  readonly bucketName?: string;
+  readonly bucketName?: PhysicalName;
 
   /**
    * Policy to apply when the bucket is removed from this stack.
@@ -690,6 +789,15 @@ export interface BucketProps {
    * @default - No metrics configuration.
    */
   readonly metrics?: BucketMetrics[];
+
+  /**
+   * The CORS configuration of this bucket.
+   *
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-s3-bucket-cors.html
+   *
+   * @default - No CORS configuration.
+   */
+  readonly cors?: CorsRule[];
 }
 
 /**
@@ -717,8 +825,9 @@ export class Bucket extends BucketBase {
    * `bucket.export()` or manually created.
    */
   public static fromBucketAttributes(scope: Construct, id: string, attrs: BucketAttributes): IBucket {
-    const region = scope.node.stack.region;
-    const urlSuffix = scope.node.stack.urlSuffix;
+    const stack = Stack.of(scope);
+    const region = stack.region;
+    const urlSuffix = stack.urlSuffix;
 
     const bucketName = parseBucketName(scope, attrs);
     if (!bucketName) {
@@ -772,23 +881,27 @@ export class Bucket extends BucketBase {
   private readonly versioned?: boolean;
   private readonly notifications: BucketNotifications;
   private readonly metrics: BucketMetrics[] = [];
+  private readonly cors: CorsRule[] = [];
 
   constructor(scope: Construct, id: string, props: BucketProps = {}) {
-    super(scope, id);
+    super(scope, id, {
+      physicalName: props.bucketName,
+    });
 
     const { bucketEncryption, encryptionKey } = this.parseEncryption(props);
-    if (props.bucketName && !Token.isToken(props.bucketName)) {
+    if (props.bucketName && !Token.isUnresolved(props.bucketName)) {
       this.validateBucketName(props.bucketName);
     }
 
     const resource = new CfnBucket(this, 'Resource', {
-      bucketName: props && props.bucketName,
+      bucketName: this.physicalName.value,
       bucketEncryption,
       versioningConfiguration: props.versioned ? { status: 'Enabled' } : undefined,
-      lifecycleConfiguration: new Token(() => this.parseLifecycleConfiguration()),
+      lifecycleConfiguration: Lazy.anyValue({ produce: () => this.parseLifecycleConfiguration() }),
       websiteConfiguration: this.renderWebsiteConfiguration(props),
       publicAccessBlockConfiguration: props.blockPublicAccess,
-      metricsConfigurations: new Token(() => this.parseMetricConfiguration())
+      metricsConfigurations: Lazy.anyValue({ produce: () => this.parseMetricConfiguration() }),
+      corsConfiguration: Lazy.anyValue({ produce: () => this.parseCorsConfiguration() })
     });
 
     applyRemovalPolicy(resource, props.removalPolicy !== undefined ? props.removalPolicy : RemovalPolicy.Orphan);
@@ -796,8 +909,18 @@ export class Bucket extends BucketBase {
     this.versioned = props.versioned;
     this.encryptionKey = encryptionKey;
 
-    this.bucketArn = resource.bucketArn;
-    this.bucketName = resource.bucketName;
+    const resourceIdentifiers = new ResourceIdentifiers(this, {
+      arn: resource.bucketArn,
+      name: resource.bucketName,
+      arnComponents: {
+        region: '',
+        account: '',
+        service: 's3',
+        resource: this.physicalName.value || '',
+      },
+    });
+    this.bucketArn = resourceIdentifiers.arn;
+    this.bucketName = resourceIdentifiers.name;
     this.bucketDomainName = resource.bucketDomainName;
     this.bucketWebsiteUrl = resource.bucketWebsiteUrl;
     this.bucketDualStackDomainName = resource.bucketDualStackDomainName;
@@ -807,6 +930,8 @@ export class Bucket extends BucketBase {
 
     // Add all bucket metric configurations rules
     (props.metrics || []).forEach(this.addMetric.bind(this));
+    // Add all cors configuration rules
+    (props.cors || []).forEach(this.addCorsRule.bind(this));
 
     // Add all lifecycle rules
     (props.lifecycleRules || []).forEach(this.addLifecycleRule.bind(this));
@@ -842,6 +967,15 @@ export class Bucket extends BucketBase {
    */
   public addMetric(metric: BucketMetrics) {
     this.metrics.push(metric);
+  }
+
+  /**
+   * Adds a cross-origin access configuration for objects in an Amazon S3 bucket
+   *
+   * @param rule The CORS configuration rule to add
+   */
+  public addCorsRule(rule: CorsRule) {
+    this.cors.push(rule);
   }
 
   /**
@@ -891,7 +1025,14 @@ export class Bucket extends BucketBase {
     return this.addEventNotification(EventType.ObjectRemoved, dest, ...filters);
   }
 
-  private validateBucketName(bucketName: string) {
+  private validateBucketName(physicalName: PhysicalName): void {
+    const bucketName = physicalName.value;
+    if (!bucketName || Token.isUnresolved(bucketName)) {
+      // the name is a late-bound value, not a defined string,
+      // so skip validation
+      return;
+    }
+
     const errors: string[] = [];
 
     // Rules codified from https://docs.aws.amazon.com/AmazonS3/latest/dev/BucketRestrictions.html
@@ -1005,17 +1146,24 @@ export class Bucket extends BucketBase {
     function parseLifecycleRule(rule: LifecycleRule): CfnBucket.RuleProperty {
       const enabled = rule.enabled !== undefined ? rule.enabled : true;
 
-      const x = {
+      const x: CfnBucket.RuleProperty = {
         // tslint:disable-next-line:max-line-length
         abortIncompleteMultipartUpload: rule.abortIncompleteMultipartUploadAfterDays !== undefined ? { daysAfterInitiation: rule.abortIncompleteMultipartUploadAfterDays } : undefined,
         expirationDate: rule.expirationDate,
         expirationInDays: rule.expirationInDays,
         id: rule.id,
         noncurrentVersionExpirationInDays: rule.noncurrentVersionExpirationInDays,
-        noncurrentVersionTransitions: rule.noncurrentVersionTransitions,
+        noncurrentVersionTransitions: mapOrUndefined(rule.noncurrentVersionTransitions, t => ({
+          storageClass: t.storageClass.value,
+          transitionInDays: t.transitionInDays
+        })),
         prefix: rule.prefix,
         status: enabled ? 'Enabled' : 'Disabled',
-        transitions: rule.transitions,
+        transitions: mapOrUndefined(rule.transitions, t => ({
+          storageClass: t.storageClass.value,
+          transitionDate: t.transitionDate,
+          transitionInDays: t.transitionInDays
+        })),
         tagFilters: self.parseTagFilters(rule.tagFilters)
       };
 
@@ -1037,6 +1185,25 @@ export class Bucket extends BucketBase {
         id: metric.id,
         prefix: metric.prefix,
         tagFilters: self.parseTagFilters(metric.tagFilters)
+      };
+    }
+  }
+
+  private parseCorsConfiguration(): CfnBucket.CorsConfigurationProperty | undefined {
+    if (!this.cors || this.cors.length === 0) {
+      return undefined;
+    }
+
+    return { corsRules: this.cors.map(parseCors) };
+
+    function parseCors(rule: CorsRule): CfnBucket.CorsRuleProperty {
+      return {
+        id: rule.id,
+        maxAge: rule.maxAge,
+        allowedHeaders: rule.allowedHeaders,
+        allowedMethods: rule.allowedMethods,
+        allowedOrigins: rule.allowedOrigins,
+        exposedHeaders: rule.exposedHeaders
       };
     }
   }
@@ -1224,4 +1391,12 @@ export interface OnCloudTrailBucketEventOptions extends events.OnEventOptions {
    * @default - Watch changes to all objects
    */
   readonly paths?: string[];
+}
+
+function mapOrUndefined<T, U>(list: T[] | undefined, callback: (element: T) => U): U[] | undefined {
+  if (!list || list.length === 0) {
+    return undefined;
+  }
+
+  return list.map(callback);
 }

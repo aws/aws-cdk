@@ -10,7 +10,7 @@ export = {
     const fn = new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('hello()'),
       handler: 'index.hello',
-      runtime: lambda.Runtime.NodeJS810,
+      runtime: lambda.Runtime.Nodejs810,
     });
 
     const version = fn.addVersion('1');
@@ -31,11 +31,34 @@ export = {
         Type: "AWS::Lambda::Alias",
         Properties: {
           FunctionName: { Ref: "MyLambdaCCE802FB" },
-          FunctionVersion: stack.node.resolve(version.version),
+          FunctionVersion: stack.resolve(version.version),
           Name: "prod"
         }
         }
     }));
+
+    test.done();
+  },
+
+  'can create an alias to $LATEST'(test: Test): void {
+    const stack = new Stack();
+    const fn = new lambda.Function(stack, 'MyLambda', {
+      code: new lambda.InlineCode('hello()'),
+      handler: 'index.hello',
+      runtime: lambda.Runtime.Nodejs810,
+    });
+
+    new lambda.Alias(stack, 'Alias', {
+      aliasName: 'latest',
+      version: fn.latestVersion,
+    });
+
+    expect(stack).to(haveResource('AWS::Lambda::Alias', {
+      FunctionName: { Ref: "MyLambdaCCE802FB" },
+      FunctionVersion: '$LATEST',
+      Name: 'latest',
+    }));
+    expect(stack).notTo(haveResource('AWS::Lambda::Version'));
 
     test.done();
   },
@@ -45,7 +68,7 @@ export = {
     const fn = new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('hello()'),
       handler: 'index.hello',
-      runtime: lambda.Runtime.NodeJS810,
+      runtime: lambda.Runtime.Nodejs810,
     });
 
     const version = fn.newVersion();
@@ -73,7 +96,7 @@ export = {
     const fn = new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('hello()'),
       handler: 'index.hello',
-      runtime: lambda.Runtime.NodeJS810,
+      runtime: lambda.Runtime.Nodejs810,
     });
 
     const version1 = fn.addVersion('1');
@@ -86,11 +109,11 @@ export = {
     });
 
     expect(stack).to(haveResource('AWS::Lambda::Alias', {
-      FunctionVersion: stack.node.resolve(version1.version),
+      FunctionVersion: stack.resolve(version1.version),
       RoutingConfig: {
         AdditionalVersionWeights: [
           {
-          FunctionVersion: stack.node.resolve(version2.version),
+          FunctionVersion: stack.resolve(version2.version),
           FunctionWeight: 0.1
           }
         ]
@@ -106,7 +129,7 @@ export = {
     const fn = new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('hello()'),
       handler: 'index.hello',
-      runtime: lambda.Runtime.NodeJS810,
+      runtime: lambda.Runtime.Nodejs810,
     });
 
     const version = fn.addVersion('1');
@@ -137,7 +160,7 @@ export = {
     const fn = new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('hello()'),
       handler: 'index.hello',
-      runtime: lambda.Runtime.NodeJS810,
+      runtime: lambda.Runtime.Nodejs810,
     });
 
     const version = fn.addVersion('1');
@@ -187,7 +210,7 @@ export = {
     const fn = new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('hello()'),
       handler: 'index.hello',
-      runtime: lambda.Runtime.NodeJS810,
+      runtime: lambda.Runtime.Nodejs810,
     });
 
     const version = fn.addVersion('1');
@@ -206,14 +229,14 @@ export = {
     const fn = new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('hello()'),
       handler: 'index.hello',
-      runtime: lambda.Runtime.NodeJS810,
+      runtime: lambda.Runtime.Nodejs810,
     });
 
     const version = fn.addVersion('1');
     const alias = new lambda.Alias(stack, 'Alias', { aliasName: 'prod', version });
 
     // WHEN
-    test.deepEqual(stack.node.resolve(alias.functionName), {
+    test.deepEqual(stack.resolve(alias.functionName), {
       "Fn::Join": [
         "",
         [

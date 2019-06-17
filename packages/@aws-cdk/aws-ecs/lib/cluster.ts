@@ -3,7 +3,7 @@ import cloudwatch = require ('@aws-cdk/aws-cloudwatch');
 import ec2 = require('@aws-cdk/aws-ec2');
 import iam = require('@aws-cdk/aws-iam');
 import cloudmap = require('@aws-cdk/aws-servicediscovery');
-import { Construct, IResource, Resource, SSMParameterProvider } from '@aws-cdk/cdk';
+import { Construct, Context, IResource, Resource, Stack } from '@aws-cdk/cdk';
 import { InstanceDrainHook } from './drain-hook/instance-drain-hook';
 import { CfnCluster } from './ecs.generated';
 
@@ -268,13 +268,8 @@ export class EcsOptimizedAmi implements ec2.IMachineImageSource {
    * Return the correct image
    */
   public getImage(scope: Construct): ec2.MachineImage {
-    const ssmProvider = new SSMParameterProvider(scope, {
-      parameterName: this.amiParameterName
-    });
-
-    const json = ssmProvider.parameterValue("{\"image_id\": \"\"}");
+    const json = Context.getSsmParameter(scope, this.amiParameterName, { defaultValue: "{\"image_id\": \"\"}" });
     const ami = JSON.parse(json).image_id;
-
     return new ec2.MachineImage(ami, new ec2.LinuxOS());
   }
 }
@@ -360,7 +355,7 @@ export interface ClusterAttributes {
 /**
  * An Cluster that has been imported
  */
-class ImportedCluster extends Construct implements ICluster {
+class ImportedCluster extends Resource implements ICluster {
   /**
    * Name of the cluster
    */
@@ -398,16 +393,10 @@ class ImportedCluster extends Construct implements ICluster {
     this.hasEc2Capacity = props.hasEc2Capacity !== false;
     this._defaultNamespace = props.defaultNamespace;
 
-    this.clusterArn = props.clusterArn !== undefined ? props.clusterArn : this.node.stack.formatArn({
+    this.clusterArn = props.clusterArn !== undefined ? props.clusterArn : Stack.of(this).formatArn({
       service: 'ecs',
       resource: 'cluster',
-      resourceName: props.clusterName,
-    });
-
-    this.clusterArn = props.clusterArn !== undefined ? props.clusterArn : this.node.stack.formatArn({
-      service: 'ecs',
-      resource: 'cluster',
-      resourceName: props.clusterName,
+      resourceName: props.clusterName
     });
 
     let i = 1;

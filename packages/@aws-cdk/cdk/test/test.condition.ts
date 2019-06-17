@@ -1,5 +1,6 @@
 import { Test } from 'nodeunit';
 import cdk = require('../lib');
+import { toCloudFormation } from './util';
 
 export = {
   'chain conditions'(test: Test) {
@@ -16,7 +17,7 @@ export = {
     });
 
     // THEN
-    test.deepEqual(stack._toCloudFormation(), {
+    test.deepEqual(toCloudFormation(stack), {
       Parameters: { Param1: { Type: 'String' } },
       Conditions: {
         Condition1: { 'Fn::Equals': [ 'a', 'b' ] },
@@ -44,8 +45,8 @@ export = {
     });
 
     // THEN
-    test.ok(cdk.Token.isToken(propValue));
-    test.deepEqual(stack._toCloudFormation(), {
+    test.ok(cdk.Token.isUnresolved(propValue));
+    test.deepEqual(toCloudFormation(stack), {
       Resources: {
         MyResource: {
           Type: 'AWS::Foo::Bar',

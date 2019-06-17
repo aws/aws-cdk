@@ -3,6 +3,7 @@ import ec2 = require('@aws-cdk/aws-ec2');
 import ecs = require('@aws-cdk/aws-ecs');
 import events = require ('@aws-cdk/aws-events');
 import iam = require('@aws-cdk/aws-iam');
+import { Stack } from '@aws-cdk/cdk';
 import { ContainerOverride } from './ecs-task-properties';
 import { singletonEventRole } from './util';
 
@@ -98,7 +99,7 @@ export class EcsTask implements events.IRuleTarget {
         .addResource(this.taskDefinition.taskRole.roleArn));
     }
 
-    const id = this.taskDefinition.node.id + '-on-' + this.cluster.node.id;
+    const id = this.taskDefinition.node.uniqueId;
     const arn = this.cluster.clusterArn;
     const role = singletonEventRole(this.taskDefinition, policyStatements);
     const containerOverrides = this.props.containerOverrides && this.props.containerOverrides
@@ -121,7 +122,7 @@ export class EcsTask implements events.IRuleTarget {
           apiVersion: '2015-10-07',
           action: 'putTargets',
           parameters: {
-            Rule: this.taskDefinition.node.stack.parseArn(rule.ruleArn).resourceName,
+            Rule: Stack.of(this.taskDefinition).parseArn(rule.ruleArn).resourceName,
             Targets: [
               {
                 Arn: arn,

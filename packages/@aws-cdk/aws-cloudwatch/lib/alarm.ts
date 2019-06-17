@@ -1,4 +1,4 @@
-import { Construct, IResource, Resource, Token } from '@aws-cdk/cdk';
+import { Construct, IResource, Lazy, Resource, Stack } from '@aws-cdk/cdk';
 import { IAlarmAction } from './alarm-action';
 import { CfnAlarm } from './cloudwatch.generated';
 import { HorizontalAnnotation } from './graph';
@@ -80,7 +80,7 @@ export class Alarm extends Resource implements IAlarm {
   public static fromAlarmArn(scope: Construct, id: string, alarmArn: string): IAlarm {
     class Import extends Resource implements IAlarm {
       public readonly alarmArn = alarmArn;
-      public readonly alarmName = scope.node.stack.parseArn(alarmArn, ':').resourceName!;
+      public readonly alarmName = Stack.of(scope).parseArn(alarmArn, ':').resourceName!;
     }
     return new Import(scope, id);
   }
@@ -133,9 +133,9 @@ export class Alarm extends Resource implements IAlarm {
 
       // Actions
       actionsEnabled: props.actionsEnabled,
-      alarmActions: new Token(() => this.alarmActionArns).toList(),
-      insufficientDataActions: new Token(() => this.insufficientDataActionArns).toList(),
-      okActions: new Token(() => this.okActionArns).toList(),
+      alarmActions: Lazy.listValue({ produce: () => this.alarmActionArns }),
+      insufficientDataActions: Lazy.listValue({ produce: (() => this.insufficientDataActionArns) }),
+      okActions: Lazy.listValue({ produce: () => this.okActionArns }),
 
       // Metric
       ...metricJson(props.metric)

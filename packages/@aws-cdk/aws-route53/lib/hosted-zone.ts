@@ -1,7 +1,7 @@
 import ec2 = require('@aws-cdk/aws-ec2');
-import { Construct, Resource, Token } from '@aws-cdk/cdk';
+import { Construct, Lazy, Resource } from '@aws-cdk/cdk';
 import { HostedZoneAttributes, IHostedZone } from './hosted-zone-ref';
-import { ZoneDelegationRecord } from './records';
+import { CaaAmazonRecord, ZoneDelegationRecord } from './record-set';
 import { CfnHostedZone } from './route53.generated';
 import { validateZoneName } from './util';
 
@@ -45,7 +45,7 @@ export interface HostedZoneProps extends CommonHostedZoneProps {
 export class HostedZone extends Resource implements IHostedZone {
 
   public static fromHostedZoneId(scope: Construct, id: string, hostedZoneId: string): IHostedZone {
-    class Import extends Construct implements IHostedZone {
+    class Import extends Resource implements IHostedZone {
       public readonly hostedZoneId = hostedZoneId;
       public get zoneName(): string {
         throw new Error(`HostedZone.fromHostedZoneId doesn't support "zoneName"`);
@@ -59,7 +59,7 @@ export class HostedZone extends Resource implements IHostedZone {
    * Imports a hosted zone from another stack.
    */
   public static fromHostedZoneAttributes(scope: Construct, id: string, attrs: HostedZoneAttributes): IHostedZone {
-    class Import extends Construct implements IHostedZone {
+    class Import extends Resource implements IHostedZone {
       public readonly hostedZoneId = attrs.hostedZoneId;
       public readonly zoneName = attrs.zoneName;
     }
@@ -85,10 +85,10 @@ export class HostedZone extends Resource implements IHostedZone {
       name: props.zoneName + '.',
       hostedZoneConfig: props.comment ? { comment: props.comment } : undefined,
       queryLoggingConfig: props.queryLogsLogGroupArn ? { cloudWatchLogsLogGroupArn: props.queryLogsLogGroupArn } : undefined,
-      vpcs: new Token(() => this.vpcs.length === 0 ? undefined : this.vpcs)
+      vpcs: Lazy.anyValue({ produce: () => this.vpcs.length === 0 ? undefined : this.vpcs })
     });
 
-    this.hostedZoneId = resource.ref;
+    this.hostedZoneId = resource.refAsString;
     this.hostedZoneNameServers = resource.hostedZoneNameServers;
     this.zoneName = props.zoneName;
 
@@ -107,7 +107,19 @@ export class HostedZone extends Resource implements IHostedZone {
   }
 }
 
-export interface PublicHostedZoneProps extends CommonHostedZoneProps { }
+/**
+ * Construction properties for a PublicHostedZone.
+ */
+export interface PublicHostedZoneProps extends CommonHostedZoneProps {
+  /**
+   * Whether to create a CAA record to restrict certificate authorities allowed
+   * to issue certificates for this domain to Amazon only.
+   *
+   * @default false
+   */
+  readonly caaAmazon?: boolean;
+}
+
 export interface IPublicHostedZone extends IHostedZone { }
 
 /**
@@ -127,6 +139,12 @@ export class PublicHostedZone extends HostedZone implements IPublicHostedZone {
 
   constructor(scope: Construct, id: string, props: PublicHostedZoneProps) {
     super(scope, id, props);
+
+    if (props.caaAmazon) {
+      new CaaAmazonRecord(this, 'CaaAmazon', {
+        zone: this
+      });
+    }
   }
 
   public addVpc(_vpc: ec2.IVpc) {
@@ -142,7 +160,7 @@ export class PublicHostedZone extends HostedZone implements IPublicHostedZone {
   public addDelegation(delegate: IPublicHostedZone, opts: ZoneDelegationOptions = {}): void {
     new ZoneDelegationRecord(this, `${this.zoneName} -> ${delegate.zoneName}`, {
       zone: this,
-      delegatedZoneName: delegate.zoneName,
+      recordName: delegate.zoneName,
       nameServers: delegate.hostedZoneNameServers!, // PublicHostedZones always have name servers!
       comment: opts.comment,
       ttl: opts.ttl,

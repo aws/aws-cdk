@@ -25,8 +25,10 @@ export interface DnsValidatedCertificateProps extends CertificateProps {
 /**
  * A certificate managed by AWS Certificate Manager.  Will be automatically
  * validated using DNS validation against the specified Route 53 hosted zone.
+ *
+ * @resource AWS::CertificateManager::Certificate
  */
-export class DnsValidatedCertificate extends cdk.Construct implements ICertificate {
+export class DnsValidatedCertificate extends cdk.Resource implements ICertificate {
     public readonly certificateArn: string;
     private normalizedZoneName: string;
     private hostedZoneId: string;
@@ -48,7 +50,7 @@ export class DnsValidatedCertificate extends cdk.Construct implements ICertifica
         const requestorFunction = new lambda.Function(this, 'CertificateRequestorFunction', {
             code: lambda.Code.asset(path.resolve(__dirname, '..', 'lambda-packages', 'dns_validated_certificate_handler', 'lib')),
             handler: 'index.certificateRequestHandler',
-            runtime: lambda.Runtime.NodeJS810,
+            runtime: lambda.Runtime.Nodejs810,
             timeout: 15 * 60 // 15 minutes
         });
         requestorFunction.addToRolePolicy(

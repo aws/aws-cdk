@@ -46,11 +46,12 @@ test("Can use EC2 taskdef as EventRule target", () => {
         },
         InputTransformer: {
           InputPathsMap: {
-            f1: "$.detail.event"
+            "detail-event": "$.detail.event"
           },
-          InputTemplate: "{\"containerOverrides\":[{\"name\":\"TheContainer\",\"command\":[\"echo\",<f1>]}]}"
+          InputTemplate: "{\"containerOverrides\":[{\"name\":\"TheContainer\",\"command\":[\"echo\",<detail-event>]}]}"
         },
-        RoleArn: { "Fn::GetAtt": ["TaskDefEventsRoleFB3B67B8", "Arn"] }
+        RoleArn: { "Fn::GetAtt": ["TaskDefEventsRoleFB3B67B8", "Arn"] },
+        Id: taskDefinition.node.uniqueId
       }
     ]
   });
@@ -123,7 +124,7 @@ test("Can use Fargate taskdef as EventRule target", () => {
                 "Arn"
               ]
             },
-            Id: "TaskDef-on-EcsCluster",
+            Id: taskDefinition.node.uniqueId,
             EcsParameters: {
               TaskDefinitionArn: {
                 Ref: "TaskDef54694570"
@@ -159,7 +160,29 @@ test("Can use Fargate taskdef as EventRule target", () => {
           }
         ]
       },
-      physicalResourceId: "TaskDef-on-EcsCluster"
+      physicalResourceId: taskDefinition.node.uniqueId
     }
   });
+
+  // THEN
+  expect(stack).toHaveResourceLike('AWS::Events::Rule', {
+    Targets: [
+      {
+        Arn: { "Fn::GetAtt": ["EcsCluster97242B84", "Arn"] },
+        EcsParameters: {
+          TaskCount: 1,
+          TaskDefinitionArn: { Ref: "TaskDef54694570" }
+        },
+        InputTransformer: {
+          InputPathsMap: {
+            "detail-event": "$.detail.event"
+          },
+          InputTemplate: "{\"containerOverrides\":[{\"name\":\"TheContainer\",\"command\":[\"echo\",<detail-event>]}]}"
+        },
+        RoleArn: { "Fn::GetAtt": ["TaskDefEventsRoleFB3B67B8", "Arn"] },
+        Id: taskDefinition.node.uniqueId
+      }
+    ]
+  });
+
 });

@@ -4,8 +4,8 @@ import colors = require('colors/safe');
 import minimatch = require('minimatch');
 import contextproviders = require('../../context-providers');
 import { debug, error, print, warning } from '../../logging';
-import { Renames } from '../../renames';
 import { Configuration } from '../../settings';
+import { flatMap } from '../../util/arrays';
 import { SDK } from '../util/sdk';
 
 /**
@@ -44,11 +44,6 @@ export interface AppStacksProps {
    * AWS object (used by synthesizer and contextprovider)
    */
   aws: SDK;
-
-  /**
-   * Renames to apply
-   */
-  renames?: Renames;
 
   /**
    * Callback invoked to synthesize the actual stacks
@@ -100,11 +95,7 @@ export class AppStacks {
    */
   public assembly?: cxapi.CloudAssembly;
 
-  private readonly renames: Renames;
-
-  constructor(private readonly props: AppStacksProps) {
-    this.renames = props.renames || new Renames({});
-  }
+  constructor(private readonly props: AppStacksProps) {}
 
   /**
    * List all stacks in the CX and return the selected ones
@@ -121,8 +112,6 @@ export class AppStacks {
     }
 
     if (selectors.length === 0) {
-      this.applyRenames(stacks);
-
       switch (options.defaultBehavior) {
         case DefaultSelection.AllStacks:
           return stacks;
@@ -177,7 +166,6 @@ export class AppStacks {
 
     // Only check selected stacks for errors
     this.processMessages(selectedList);
-    this.applyRenames(stacks);
 
     return selectedList;
   }
@@ -189,8 +177,6 @@ export class AppStacks {
    * topologically sorted order. If there are dependencies that are not in the
    * set, they will be ignored; it is the user's responsibility that the
    * non-selected stacks have already been deployed previously.
-   *
-   * Renames are *NOT* applied in list mode.
    */
   public async listStacks(): Promise<cxapi.CloudFormationStackArtifact[]> {
     const response = await this.synthesizeStacks();
@@ -203,7 +189,6 @@ export class AppStacks {
   public async synthesizeStack(stackName: string): Promise<cxapi.CloudFormationStackArtifact> {
     const resp = await this.synthesizeStacks();
     const stack = resp.getStack(stackName);
-    this.applyRenames([stack]);
     return stack;
   }
 
@@ -278,7 +263,7 @@ export class AppStacks {
    * @returns an array with the tags available in the stack metadata.
    */
   public getTagsFromStackMetadata(stack: cxapi.CloudFormationStackArtifact): Tag[] {
-    return stack.findMetadataByType(cxapi.STACK_TAGS_METADATA_KEY).map(x => x.data);
+    return flatMap(stack.findMetadataByType(cxapi.STACK_TAGS_METADATA_KEY), x => x.data);
   }
 
   /**
@@ -320,13 +305,6 @@ export class AppStacks {
 
     if (this.props.verbose && entry.trace) {
       logFn(`  ${entry.trace.join('\n  ')}`);
-    }
-  }
-
-  private applyRenames(stacks: cxapi.CloudFormationStackArtifact[]) {
-    this.renames.validateSelectedStacks(stacks);
-    for (const stack of stacks) {
-      stack.name = this.renames.finalName(stack.name);
     }
   }
 }

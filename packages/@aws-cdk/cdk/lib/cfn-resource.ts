@@ -1,13 +1,14 @@
 import cxapi = require('@aws-cdk/cx-api');
 import { CfnCondition } from './cfn-condition';
-import { Construct, IConstruct } from './construct';
-import { CreationPolicy, DeletionPolicy, UpdatePolicy } from './resource-policy';
-import { capitalizePropertyNames, ignoreEmpty, PostResolveToken } from './util';
 // import required to be here, otherwise causes a cycle when running the generated JavaScript
 // tslint:disable-next-line:ordered-imports
 import { CfnRefElement } from './cfn-element';
-import { CfnReference } from './cfn-reference';
+import { Construct, IConstruct } from './construct';
+import { CfnReference } from './private/cfn-reference';
+import { IResolvable } from './resolvable';
+import { CreationPolicy, DeletionPolicy, UpdatePolicy } from './resource-policy';
 import { TagManager } from './tag-manager';
+import { capitalizePropertyNames, ignoreEmpty, PostResolveToken } from './util';
 
 export interface CfnResourceProps {
   /**
@@ -108,7 +109,7 @@ export class CfnResource extends CfnRefElement {
     // if aws:cdk:enable-path-metadata is set, embed the current construct's
     // path in the CloudFormation template, so it will be possible to trace
     // back to the actual construct path.
-    if (this.node.getContext(cxapi.PATH_METADATA_ENABLE_CONTEXT)) {
+    if (this.node.tryGetContext(cxapi.PATH_METADATA_ENABLE_CONTEXT)) {
       this.options.metadata = {
         [cxapi.PATH_METADATA_KEY]: this.node.path
       };
@@ -121,7 +122,7 @@ export class CfnResource extends CfnRefElement {
    * in case there is no generated attribute.
    * @param attributeName The name of the attribute.
    */
-  public getAtt(attributeName: string) {
+  public getAtt(attributeName: string): IResolvable {
     return CfnReference.for(this, attributeName);
   }
 
@@ -190,6 +191,13 @@ export class CfnResource extends CfnRefElement {
    */
   public addDependsOn(resource: CfnResource) {
     this.dependsOn.add(resource);
+  }
+
+  /**
+   * @returns a string representation of this resource
+   */
+  public toString() {
+    return `${super.toString()} [${this.resourceType}]`;
   }
 
   /**

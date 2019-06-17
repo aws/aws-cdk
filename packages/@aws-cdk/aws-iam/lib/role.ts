@@ -1,4 +1,4 @@
-import { Construct, Resource } from '@aws-cdk/cdk';
+import { Construct, PhysicalName, Resource, ResourceIdentifiers, Stack } from '@aws-cdk/cdk';
 import { Grant } from './grant';
 import { CfnRole } from './iam.generated';
 import { IIdentity } from './identity-base';
@@ -68,7 +68,7 @@ export interface RoleProps {
    * @default - AWS CloudFormation generates a unique physical ID and uses that ID
    * for the group name.
    */
-  readonly roleName?: string;
+  readonly roleName?: PhysicalName;
 
   /**
    * The maximum session duration (in seconds) that you want to set for the
@@ -109,20 +109,28 @@ export class Role extends Resource implements IRole {
    */
   public static fromRoleArn(scope: Construct, id: string, roleArn: string): IRole {
 
-    class Import extends Construct implements IRole {
+    class Import extends Resource implements IRole {
       public readonly grantPrincipal: IPrincipal = this;
       public readonly assumeRoleAction: string = 'sts:AssumeRole';
       public readonly policyFragment = new ArnPrincipal(roleArn).policyFragment;
       public readonly roleArn = roleArn;
-      public readonly roleName = scope.node.stack.parseArn(roleArn).resourceName!;
+      public readonly roleName = Stack.of(scope).parseArn(roleArn).resourceName!;
 
-      public addToPolicy(_statement: PolicyStatement): boolean {
-        // Statement will be added to resource instead
-        return false;
+      private readonly attachedPolicies = new AttachedPolicies();
+      private defaultPolicy?: Policy;
+
+      public addToPolicy(statement: PolicyStatement): boolean {
+        if (!this.defaultPolicy) {
+          this.defaultPolicy = new Policy(this, 'Policy');
+          this.attachInlinePolicy(this.defaultPolicy);
+        }
+        this.defaultPolicy.addStatement(statement);
+        return true;
       }
 
-      public attachInlinePolicy(_policy: Policy): void {
-        // FIXME: Add warning that we're ignoring this
+      public attachInlinePolicy(policy: Policy): void {
+        this.attachedPolicies.attach(policy);
+        policy.attachToRole(this);
       }
 
       public attachManagedPolicy(_arn: string): void {
@@ -190,7 +198,9 @@ export class Role extends Resource implements IRole {
   private readonly attachedPolicies = new AttachedPolicies();
 
   constructor(scope: Construct, id: string, props: RoleProps) {
-    super(scope, id);
+    super(scope, id, {
+      physicalName: props.roleName,
+    });
 
     this.assumeRolePolicy = createAssumeRolePolicy(props.assumedBy, props.externalId);
     this.managedPolicyArns = props.managedPolicyArns || [ ];
@@ -202,13 +212,23 @@ export class Role extends Resource implements IRole {
       managedPolicyArns: undefinedIfEmpty(() => this.managedPolicyArns),
       policies: _flatten(props.inlinePolicies),
       path: props.path,
-      roleName: props.roleName,
+      roleName: this.physicalName.value,
       maxSessionDuration: props.maxSessionDurationSec,
     });
 
     this.roleId = role.roleId;
-    this.roleArn = role.roleArn;
-    this.roleName = role.roleName;
+    const resourceIdentifiers = new ResourceIdentifiers(this, {
+      arn: role.roleArn,
+      name: role.roleName,
+      arnComponents: {
+        region: '', // IAM is global in each partition
+        service: 'iam',
+        resource: 'role',
+        resourceName: this.physicalName.value,
+      },
+    });
+    this.roleArn = resourceIdentifiers.arn;
+    this.roleName = resourceIdentifiers.name;
     this.policyFragment = new ArnPrincipal(this.roleArn).policyFragment;
 
     function _flatten(policies?: { [name: string]: PolicyDocument }) {

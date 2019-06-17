@@ -1,5 +1,5 @@
 import ec2 = require('@aws-cdk/aws-ec2');
-import { Construct, IResource, Resource, Token } from '@aws-cdk/cdk';
+import { Construct, IResource, Lazy, Resource } from '@aws-cdk/cdk';
 import { BaseListener } from '../shared/base-listener';
 import { HealthCheck } from '../shared/base-target-group';
 import { ApplicationProtocol, SslPolicy } from '../shared/enums';
@@ -112,7 +112,7 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
 
     super(scope, id, {
       loadBalancerArn: props.loadBalancer.loadBalancerArn,
-      certificates: new Token(() => this.certificateArns.map(certificateArn => ({ certificateArn }))),
+      certificates: Lazy.anyValue({ produce: () => this.certificateArns.map(certificateArn => ({ certificateArn })) }),
       protocol,
       port,
       sslPolicy: props.sslPolicy,

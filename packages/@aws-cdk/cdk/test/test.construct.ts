@@ -1,6 +1,6 @@
 import cxapi = require('@aws-cdk/cx-api');
 import { Test } from 'nodeunit';
-import { App as Root, ArnComponents, Construct, ConstructOrder, Stack, Token } from '../lib';
+import { App as Root, Construct, ConstructNode, ConstructOrder, IConstruct, Lazy, ValidationError } from '../lib';
 
 // tslint:disable:variable-name
 // tslint:disable:max-line-length
@@ -66,7 +66,7 @@ export = {
   "dont allow unresolved tokens to be used in construct IDs"(test: Test) {
     // GIVEN
     const root = new Root();
-    const token = new Token(() => 'lazy');
+    const token = Lazy.stringValue({ produce: () => 'lazy' });
 
     // WHEN + THEN
     test.throws(() => new Construct(root, `MyID: ${token}`), /Cannot use tokens in construct ID: MyID: \${Token/);
@@ -92,50 +92,6 @@ export = {
     const root = new Root();
     const c = new Construct(root, 'Default');
     test.throws(() => c.node.uniqueId, /Unable to calculate a unique id for an empty set of components/);
-    test.done();
-  },
-
-  'construct.node.stack returns the correct stack'(test: Test) {
-    const stack = new Stack();
-    test.same(stack.node.stack, stack);
-    const parent = new Construct(stack, 'Parent');
-    const construct = new Construct(parent, 'Construct');
-    test.same(construct.node.stack, stack);
-    test.done();
-  },
-
-  'construct.node.stack throws when there is no parent Stack'(test: Test) {
-    const root = new Root();
-    const construct = new Construct(root, 'Construct');
-    test.throws(() => construct.node.stack, /No stack could be identified for the construct at path/);
-    test.done();
-  },
-
-  'construct.node.stack.formatArn forwards to the Stack'(test: Test) {
-    const stack = new Stack();
-    const components: ArnComponents = { service: 'test', resource: 'test' };
-    const dummyArn = 'arn:::dummy';
-    stack.formatArn = (args) => {
-      test.same(args, components);
-      return dummyArn;
-    };
-
-    const construct = new Construct(stack, 'Construct');
-    test.same(construct.node.stack.formatArn(components), dummyArn);
-    test.done();
-  },
-
-  'construct.node.stack.parseArn forwards to the Stack'(test: Test) {
-    const stack = new Stack();
-    const components: ArnComponents = { service: 'test', resource: 'test' };
-    const dummyArn = 'arn:::dummy';
-    stack.parseArn = (arn) => {
-      test.same(arn, dummyArn);
-      return components;
-    };
-
-    const construct = new Construct(stack, 'Construct');
-    test.same(construct.node.stack.parseArn(dummyArn), components);
     test.done();
   },
 
@@ -169,10 +125,10 @@ export = {
   'construct.toString() and construct.toTreeString() can be used for diagnostics'(test: Test) {
     const t = createTree();
 
-    test.equal(t.root.toString(), 'App');
-    test.equal(t.child1_1_1.toString(), 'Construct [Child1/Child11/Child111]');
-    test.equal(t.child2.toString(), 'Construct [Child2]');
-    test.equal(t.root.node.toTreeString(), 'App\n  Construct [Child1]\n    Construct [Child11]\n      Construct [Child111]\n    Construct [Child12]\n  Construct [Child2]\n    Construct [Child21]\n');
+    test.equal(t.root.toString(), '<root>');
+    test.equal(t.child1_1_1.toString(), 'Child1/Child11/Child111');
+    test.equal(t.child2.toString(), 'Child2');
+    test.equal(toTreeString(t.root), 'App\n  Construct [Child1]\n    Construct [Child11]\n      Construct [Child111]\n    Construct [Child12]\n  Construct [Child2]\n    Construct [Child21]\n');
     test.done();
   },
 
@@ -183,8 +139,8 @@ export = {
     };
 
     const t = createTree(context);
-    test.equal(t.root.node.getContext('ctx1'), 12);
-    test.equal(t.child1_1_1.node.getContext('ctx2'), 'hello');
+    test.equal(t.root.node.tryGetContext('ctx1'), 12);
+    test.equal(t.child1_1_1.node.tryGetContext('ctx2'), 'hello');
     test.done();
   },
 
@@ -202,22 +158,22 @@ export = {
     child3.node.setContext('c1', 'child3');
     child3.node.setContext('c4', 'child3');
 
-    test.equal(root.node.getContext('c1'), 'root');
-    test.equal(root.node.getContext('c2'), 'root');
-    test.equal(root.node.getContext('c3'), undefined);
+    test.equal(root.node.tryGetContext('c1'), 'root');
+    test.equal(root.node.tryGetContext('c2'), 'root');
+    test.equal(root.node.tryGetContext('c3'), undefined);
 
-    test.equal(child1.node.getContext('c1'), 'root');
-    test.equal(child1.node.getContext('c2'), 'child1');
-    test.equal(child1.node.getContext('c3'), 'child1');
+    test.equal(child1.node.tryGetContext('c1'), 'root');
+    test.equal(child1.node.tryGetContext('c2'), 'child1');
+    test.equal(child1.node.tryGetContext('c3'), 'child1');
 
-    test.equal(child2.node.getContext('c1'), 'root');
-    test.equal(child2.node.getContext('c2'), 'root');
-    test.equal(child2.node.getContext('c3'), undefined);
+    test.equal(child2.node.tryGetContext('c1'), 'root');
+    test.equal(child2.node.tryGetContext('c2'), 'root');
+    test.equal(child2.node.tryGetContext('c3'), undefined);
 
-    test.equal(child3.node.getContext('c1'), 'child3');
-    test.equal(child3.node.getContext('c2'), 'child1');
-    test.equal(child3.node.getContext('c3'), 'child1');
-    test.equal(child3.node.getContext('c4'), 'child3');
+    test.equal(child3.node.tryGetContext('c1'), 'child3');
+    test.equal(child3.node.tryGetContext('c2'), 'child1');
+    test.equal(child3.node.tryGetContext('c3'), 'child1');
+    test.equal(child3.node.tryGetContext('c4'), 'child3');
 
     test.done();
   },
@@ -343,21 +299,8 @@ export = {
     test.done();
   },
 
-  'construct.required(props, name) can be used to validate that required properties are defined'(test: Test) {
-    const root = new Root();
-
-    // should be ok
-    const c = new ConstructWithRequired(root, 'Construct', { requiredProp: 123, anotherRequiredProp: true });
-    test.equal(c.requiredProp, 123);
-    test.equal(c.anotherRequiredProp, true);
-
-    // should throw
-    test.throws(() => new ConstructWithRequired(root, 'C', { optionalProp: 'hello' } as any));
-    test.done();
-  },
-
   // tslint:disable-next-line:max-line-length
-  'construct.validate() can be implemented to perform validation, construct.validateTree() will return all errors from the subtree (DFS)'(test: Test) {
+  'construct.validate() can be implemented to perform validation, ConstructNode.validate(construct.node) will return all errors from the subtree (DFS)'(test: Test) {
 
     class MyConstruct extends Construct {
       protected validate() {
@@ -398,7 +341,7 @@ export = {
 
     const stack = new TestStack();
 
-    const errors = (stack.node.validateTree()).map(v => ({ path: v.source.node.path, message: v.message }));
+    const errors = ConstructNode.validate(stack.node).map((v: ValidationError) => ({ path: v.source.node.path, message: v.message }));
 
     // validate DFS
     test.deepEqual(errors, [
@@ -416,11 +359,11 @@ export = {
 
     class LockableConstruct extends Construct {
       public lockMe() {
-        this.node.lock();
+        (this.node as any)._lock();
       }
 
       public unlockMe() {
-        this.node.unlock();
+        (this.node as any)._unlock();
       }
     }
 
@@ -465,11 +408,8 @@ export = {
   },
 
   'ancestors returns a list of parents up to root'(test: Test) {
-    const { child1, child1_1_1 } = createTree();
-
-    test.deepEqual(child1_1_1.node.ancestors().map(x => x.node.id), [ '', 'Child1', 'Child11', 'Child111' ]);
-    test.deepEqual(child1_1_1.node.ancestors(child1).map(x => x.node.id), [ 'Child11', 'Child111' ]);
-    test.deepEqual(child1_1_1.node.ancestors(child1_1_1), [ ]);
+    const { child1_1_1 } = createTree();
+    test.deepEqual(child1_1_1.node.scopes.map(x => x.node.id), [ '', 'Child1', 'Child11', 'Child111' ]);
     test.done();
   },
 
@@ -547,20 +487,18 @@ class MyBeautifulConstruct extends Construct {
   }
 }
 
-interface ConstructWithRequiredProps {
-  optionalProp?: string;
-  requiredProp: number;
-  anotherRequiredProp: boolean;
-}
-
-class ConstructWithRequired extends Construct {
-  public readonly requiredProp: string;
-  public readonly anotherRequiredProp: boolean;
-
-  constructor(scope: Construct, id: string, props: ConstructWithRequiredProps) {
-    super(scope, id);
-
-    this.requiredProp = this.node.required(props, 'requiredProp');
-    this.anotherRequiredProp = this.node.required(props, 'anotherRequiredProp');
+/**
+ * Returns a string with a tree representation of this construct and it's children.
+ */
+function toTreeString(node: IConstruct, depth = 0) {
+  let out = '';
+  for (let i = 0; i < depth; ++i) {
+    out += '  ';
   }
+  const name = node.node.id || '';
+  out += `${node.constructor.name}${name.length > 0 ? ' [' + name + ']' : ''}\n`;
+  for (const child of node.node.children) {
+    out += toTreeString(child, depth + 1);
+  }
+  return out;
 }

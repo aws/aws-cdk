@@ -14,7 +14,6 @@ import { RequireApproval } from '../lib/diff';
 import { availableInitLanguages, cliInit, printAvailableTemplates } from '../lib/init';
 import { data, debug, error, print, setVerbose, success } from '../lib/logging';
 import { PluginHost } from '../lib/plugin';
-import { parseRenames } from '../lib/renames';
 import { serializeStructure } from '../lib/serialize';
 import { Configuration, Settings } from '../lib/settings';
 import version = require('../lib/version');
@@ -31,7 +30,6 @@ async function parseCommandLineArguments() {
     .option('app', { type: 'string', alias: 'a', desc: 'REQUIRED: command-line for executing your app or a cloud assembly directory (e.g. "node bin/my-app.js")', requiresArg: true })
     .option('context', { type: 'array', alias: 'c', desc: 'Add contextual string parameter (KEY=VALUE)', nargs: 1, requiresArg: true })
     .option('plugin', { type: 'array', alias: 'p', desc: 'Name or path of a node package that extend the CDK features. Can be specified multiple times', nargs: 1 })
-    .option('rename', { type: 'string', desc: 'Rename stack name if different from the one defined in the cloud executable ([ORIGINAL:]RENAMED)', requiresArg: true })
     .option('trace', { type: 'boolean', desc: 'Print trace for stack warnings' })
     .option('strict', { type: 'boolean', desc: 'Do not construct stacks with warnings' })
     .option('ignore-errors', { type: 'boolean', default: false, desc: 'Ignores synthesis errors, which will likely produce an invalid output' })
@@ -112,7 +110,6 @@ async function initCommandLine() {
     configuration,
     aws,
     synthesizer: execProgram,
-    renames: parseRenames(argv.rename)
   });
 
   /** Function to load plug-ins, using configurations additively. */

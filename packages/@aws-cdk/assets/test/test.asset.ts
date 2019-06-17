@@ -31,7 +31,7 @@ export = {
     // verify that now the template contains parameters for this asset
     const session = app.synth();
 
-    test.deepEqual(stack.node.resolve(entry!.data), {
+    test.deepEqual(stack.resolve(entry!.data), {
       path: SAMPLE_ASSET_DIR,
       id: 'MyStackMyAssetBDDF29E3',
       packaging: 'zip',
@@ -57,7 +57,7 @@ export = {
       path: dirPath
     });
 
-    const synth = app.synth().getStack(stack.name);
+    const synth = app.synth().getStack(stack.stackName);
     const meta = synth.manifest.metadata || {};
     test.ok(meta['/my-stack/MyAsset']);
     test.ok(meta['/my-stack/MyAsset'][0]);
@@ -84,7 +84,7 @@ export = {
     // synthesize first so "prepare" is called
     const template = SynthUtils.synthesize(stack).template;
 
-    test.deepEqual(stack.node.resolve(entry!.data), {
+    test.deepEqual(stack.resolve(entry!.data), {
       path: 'asset.78add9eaf468dfa2191da44a7da92a21baba4c686cf6053d772556768ef21197.txt',
       packaging: 'file',
       id: 'MyAsset',
@@ -344,7 +344,7 @@ export = {
 
       // WHEN
       const session = app.synth();
-      const artifact = session.getStack(stack.name);
+      const artifact = session.getStack(stack.stackName);
       const metadata = artifact.manifest.metadata || {};
       const md = Object.values(metadata)[0]![0]!.data;
       test.deepEqual(md.path, 'asset.6b84b87243a4a01c592d78e1fd3855c4bfef39328cd0a450cc97e81717fea2a2');
