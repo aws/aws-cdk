@@ -20,8 +20,8 @@ export = {
     // WHEN
     asg.addLifecycleHook('Transition', {
       notificationTarget: new FakeNotificationTarget(),
-      lifecycleTransition: autoscaling.LifecycleTransition.InstanceLaunching,
-      defaultResult: autoscaling.DefaultResult.Abandon,
+      lifecycleTransition: autoscaling.LifecycleTransition.INSTANCE_LAUNCHING,
+      defaultResult: autoscaling.DefaultResult.ABANDON,
     });
 
     // THEN

@@ -261,7 +261,7 @@ export = {
       instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.M4, ec2.InstanceSize.Micro),
       machineImage: new ec2.AmazonLinuxImage(),
       vpc,
-      updateType: autoscaling.UpdateType.ReplacingUpdate,
+      updateType: autoscaling.UpdateType.REPLACING_UPDATE,
       replacingUpdateMinSuccessfulInstancesPercent: 50
     });
 
@@ -292,7 +292,7 @@ export = {
       instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.M4, ec2.InstanceSize.Micro),
       machineImage: new ec2.AmazonLinuxImage(),
       vpc,
-      updateType: autoscaling.UpdateType.RollingUpdate,
+      updateType: autoscaling.UpdateType.ROLLING_UPDATE,
       rollingUpdateConfiguration: {
         minSuccessfulInstancesPercent: 50,
         pauseTimeSec: 345
@@ -377,7 +377,7 @@ export = {
       instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.M4, ec2.InstanceSize.Micro),
       machineImage: new ec2.AmazonLinuxImage(),
       vpc,
-      updateType: autoscaling.UpdateType.RollingUpdate,
+      updateType: autoscaling.UpdateType.ROLLING_UPDATE,
       rollingUpdateConfiguration: {
         minSuccessfulInstancesPercent: 50,
         pauseTimeSec: 345
