@@ -21,7 +21,7 @@ export class LambdaSubscription implements sns.ITopicSubscription {
     // subscribing the same queue twice on the same topic.
     const subscriptionName = topic.node.id + 'Subscription';
     if (this.fn.node.tryFindChild(subscriptionName)) {
-      throw new Error(`A subscription between the topic ${topic.node.id} and the lambda ${this.fn.id} already exists`);
+      throw new Error(`A subscription between the topic ${topic.node.id} and the lambda ${this.fn.node.id} already exists`);
     }
 
     new sns.Subscription(this.fn, subscriptionName, {

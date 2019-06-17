@@ -9,6 +9,7 @@ export * from './lambda-version';
 export * from './singleton-lambda';
 export * from './event-source';
 export * from './event-source-mapping';
+
 export * from './log-retention';
 
 // AWS::Lambda CloudFormation Resources:

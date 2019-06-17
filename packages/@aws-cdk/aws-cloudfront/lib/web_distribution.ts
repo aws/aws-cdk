@@ -739,7 +739,7 @@ export class CloudFrontWebDistribution extends cdk.Construct implements IDistrib
         lambdaFunctionAssociations: input.lambdaFunctionAssociations
           .map(fna => ({
             eventType: fna.eventType,
-            lambdaFunctionArn: fna.lambdaFunction && fna.lambdaFunction.versionArn,
+            lambdaFunctionArn: fna.lambdaFunction && fna.lambdaFunction.functionArn,
           }))
       });
     }

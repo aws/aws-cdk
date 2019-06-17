@@ -11,11 +11,6 @@ import { Permission } from './permission';
 export interface IFunction extends IResource, ec2.IConnectable, iam.IGrantable {
 
   /**
-   * Logical ID of this Function.
-   */
-  readonly id: string;
-
-  /**
    * The name of the function.
    *
    * @attribute
@@ -122,7 +117,7 @@ export interface FunctionAttributes {
   readonly securityGroupId?: string;
 }
 
-export abstract class FunctionBase extends Resource implements IFunction  {
+export abstract class FunctionBase extends Resource implements IFunction {
   /**
    * The principal this Lambda Function is running as
    */
@@ -144,11 +139,6 @@ export abstract class FunctionBase extends Resource implements IFunction  {
    * Undefined if the function was imported without a role.
    */
   public abstract readonly role?: iam.IRole;
-
-  /**
-   * The $LATEST version of this function.
-   */
-  public readonly latestVersion: IVersion = new LatestVersion(this);
 
   /**
    * Whether the addPermission() call adds any permissions
@@ -188,10 +178,6 @@ export abstract class FunctionBase extends Resource implements IFunction  {
     });
   }
 
-  public get id() {
-    return this.node.id;
-  }
-
   public addToRolePolicy(statement: iam.PolicyStatement) {
     if (!this.role) {
       return;
@@ -211,6 +197,11 @@ export abstract class FunctionBase extends Resource implements IFunction  {
       throw new Error('Only VPC-associated Lambda Functions have security groups to manage. Supply the "vpc" parameter when creating the Lambda, or "securityGroupId" when importing it.');
     }
     return this._connections;
+  }
+
+  public get latestVersion(): IVersion {
+    // Dynamic to avoid invinite recursion when creating the LatestVersion instance...
+    return new LatestVersion(this);
   }
 
   /**
@@ -289,15 +280,45 @@ export abstract class FunctionBase extends Resource implements IFunction  {
   }
 }
 
+export abstract class QualifiedFunctionBase extends FunctionBase {
+  public abstract readonly lambda: IFunction;
+
+  public get latestVersion() {
+    return this.lambda.latestVersion;
+  }
+}
+
 /**
  * The $LATEST version of a function, useful when attempting to create aliases.
  */
-class LatestVersion extends Resource implements IVersion {
+class LatestVersion extends FunctionBase implements IVersion {
   public readonly lambda: IFunction;
   public readonly version = '$LATEST';
+
+  protected readonly canCreatePermissions = true;
 
   constructor(lambda: FunctionBase) {
     super(lambda, '$LATEST');
     this.lambda = lambda;
+  }
+
+  public get functionArn() {
+    return `${this.lambda.functionArn}:${this.version}`;
+  }
+
+  public get functionName() {
+    return `${this.lambda.functionName}:${this.version}`;
+  }
+
+  public get grantPrincipal() {
+    return this.lambda.grantPrincipal;
+  }
+
+  public get latestVersion() {
+    return this;
+  }
+
+  public get role() {
+    return this.lambda.role;
   }
 }
