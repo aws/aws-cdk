@@ -1,9 +1,10 @@
-import { Construct, Resource, SecretValue } from '@aws-cdk/cdk';
+import { Construct, Lazy, Resource, SecretValue } from '@aws-cdk/cdk';
 import { IGroup } from './group';
 import { CfnUser } from './iam.generated';
 import { IIdentity } from './identity-base';
+import { IManagedPolicy } from './managed-policy';
 import { Policy } from './policy';
-import { PolicyStatement } from './policy-document';
+import { PolicyStatement } from './policy-statement';
 import { ArnPrincipal, PrincipalPolicyFragment } from './principals';
 import { IPrincipal } from './principals';
 import { AttachedPolicies, undefinedIfEmpty } from './util';
@@ -97,7 +98,7 @@ export class User extends Resource implements IIdentity {
   public readonly policyFragment: PrincipalPolicyFragment;
 
   private readonly groups = new Array<any>();
-  private readonly managedPolicyArns = new Array<string>();
+  private readonly managedPolicies = new Array<IManagedPolicy>();
   private readonly attachedPolicies = new AttachedPolicies();
   private defaultPolicy?: Policy;
 
@@ -107,7 +108,7 @@ export class User extends Resource implements IIdentity {
     const user = new CfnUser(this, 'Resource', {
       userName: props.userName,
       groups: undefinedIfEmpty(() => this.groups),
-      managedPolicyArns: undefinedIfEmpty(() => this.managedPolicyArns),
+      managedPolicyArns: Lazy.listValue({ produce: () => this.managedPolicies.map(p => p.managedPolicyArn) }, { omitEmpty: true }),
       path: props.path,
       loginProfile: this.parseLoginProfile(props)
     });
@@ -130,10 +131,10 @@ export class User extends Resource implements IIdentity {
 
   /**
    * Attaches a managed policy to the user.
-   * @param arn The ARN of the managed policy to attach.
+   * @param policy The managed policy to attach.
    */
-  public attachManagedPolicy(arn: string) {
-    this.managedPolicyArns.push(arn);
+  public addManagedPolicy(policy: IManagedPolicy) {
+    this.managedPolicies.push(policy);
   }
 
   /**
@@ -155,7 +156,7 @@ export class User extends Resource implements IIdentity {
       this.defaultPolicy.attachToUser(this);
     }
 
-    this.defaultPolicy.addStatement(statement);
+    this.defaultPolicy.addStatements(statement);
     return true;
   }
 

@@ -16,6 +16,11 @@ export interface IResolveContext {
    * Resolve an inner object
    */
   resolve(x: any): any;
+
+  /**
+   * Use this postprocessor after the entire token structure has been resolved
+   */
+  registerPostProcessor(postProcessor: IPostProcessor): void;
 }
 
 /**
@@ -40,7 +45,7 @@ export interface IResolvable {
 /**
  * A Token that can post-process the complete resolved value, after resolve() has recursed over it
  */
-export interface IResolvableWithPostProcess extends IResolvable {
+export interface IPostProcessor  {
   /**
    * Process the completely resolved value, after full recursion/resolution has happened
    */
@@ -54,7 +59,7 @@ export interface ITokenResolver {
   /**
    * Resolve a single token
    */
-  resolveToken(t: IResolvable, context: IResolveContext): any;
+  resolveToken(t: IResolvable, context: IResolveContext, postProcessor: IPostProcessor): any;
 
   /**
    * Resolve a string with at least one stringified token in it
@@ -107,15 +112,13 @@ export class DefaultTokenResolver implements ITokenResolver {
    * Resolve the Token, recurse into whatever it returns,
    * then finally post-process it.
    */
-  public resolveToken(t: IResolvable, context: IResolveContext) {
+  public resolveToken(t: IResolvable, context: IResolveContext, postProcessor: IPostProcessor) {
     let resolved = t.resolve(context);
 
     // The token might have returned more values that need resolving, recurse
     resolved = context.resolve(resolved);
 
-    if (isResolvedValuePostProcessor(t)) {
-      resolved = t.postProcess(resolved, context);
-    }
+    resolved = postProcessor.postProcess(resolved, context);
 
     return resolved;
   }
@@ -142,11 +145,4 @@ export class DefaultTokenResolver implements ITokenResolver {
 
     return fragments.mapTokens({ mapToken: context.resolve }).firstValue;
   }
-}
-
-/**
- * Whether the given object is an `IResolvedValuePostProcessor`
- */
-function isResolvedValuePostProcessor(x: any): x is IResolvableWithPostProcess {
-  return x.postProcess !== undefined;
 }
