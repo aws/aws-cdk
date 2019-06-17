@@ -70,7 +70,7 @@ const source = new codepipeline_actions.GitHubSourceAction({
   /* ... */
 });
 pipeline.addStage({
-  name: 'source',
+  stageName: 'source',
   actions: [source],
 });
 
@@ -92,12 +92,12 @@ const buildAction = new codepipeline_actions.CodeBuildAction({
   output: synthesizedApp,
 });
 pipeline.addStage({
-  name: 'build',
+  stageName: 'build',
   actions: [buildAction],
 });
 
 // Optionally, self-update the pipeline stack
-const selfUpdateStage = pipeline.addStage({ name: 'SelfUpdate' });
+const selfUpdateStage = pipeline.addStage({ stageName: 'SelfUpdate' });
 new cicd.PipelineDeployStackAction(pipelineStack, 'SelfUpdatePipeline', {
   stage: selfUpdateStage,
   stack: pipelineStack,
@@ -105,7 +105,7 @@ new cicd.PipelineDeployStackAction(pipelineStack, 'SelfUpdatePipeline', {
 });
 
 // Now add our service stacks
-const deployStage = pipeline.addStage({ name: 'Deploy' });
+const deployStage = pipeline.addStage({ stageName: 'Deploy' });
 const serviceStackA = new MyServiceStackA(app, 'ServiceStackA', { /* ... */ });
 // Add actions to deploy the stacks in the deploy stage:
 const deployServiceAAction = new cicd.PipelineDeployStackAction(pipelineStack, 'DeployServiceStackA', {

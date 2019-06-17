@@ -31,7 +31,7 @@ const pipeline = new codepipeline.Pipeline(stack, 'Pipeline', {
   artifactBucket: bucket,
 });
 
-const sourceStage = pipeline.addStage({ name: 'Source' });
+const sourceStage = pipeline.addStage({ stageName: 'Source' });
 const sourceOutput = new codepipeline.Artifact('SourceOutput');
 const sourceAction = new cpactions.S3SourceAction({
   actionName: 'S3Source',
@@ -41,7 +41,7 @@ const sourceAction = new cpactions.S3SourceAction({
 });
 sourceStage.addAction(sourceAction);
 
-const deployStage = pipeline.addStage({ name: 'Deploy' });
+const deployStage = pipeline.addStage({ stageName: 'Deploy' });
 deployStage.addAction(new cpactions.CodeDeployServerDeployAction({
   actionName: 'CodeDeploy',
   deploymentGroup,
