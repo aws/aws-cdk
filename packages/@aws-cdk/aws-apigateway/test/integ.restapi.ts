@@ -12,7 +12,7 @@ class Test extends cdk.Stack {
         cacheClusterEnabled: true,
         stageName: 'beta',
         description: 'beta stage',
-        loggingLevel: apigateway.MethodLoggingLevel.Info,
+        loggingLevel: apigateway.MethodLoggingLevel.INFO,
         dataTraceEnabled: true,
         methodOptions: {
           '/api/appliances/GET': {
@@ -60,7 +60,7 @@ class Test extends cdk.Stack {
       description: 'Free tier monthly usage plan',
       quota: {
         limit: 10000,
-        period: apigateway.Period.Month
+        period: apigateway.Period.MONTH
       }
     });
     plan.addApiStage({

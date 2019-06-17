@@ -115,7 +115,7 @@ export class Method extends Resource {
       httpMethod: this.httpMethod,
       operationName: options.operationName || defaultMethodOptions.operationName,
       apiKeyRequired: options.apiKeyRequired || defaultMethodOptions.apiKeyRequired,
-      authorizationType: options.authorizationType || defaultMethodOptions.authorizationType || AuthorizationType.None,
+      authorizationType: options.authorizationType || defaultMethodOptions.authorizationType || AuthorizationType.NONE,
       authorizerId: options.authorizerId || defaultMethodOptions.authorizerId,
       requestParameters: options.requestParameters,
       integration: this.renderIntegration(props.integration),
@@ -184,11 +184,11 @@ export class Method extends Resource {
       throw new Error(`'credentialsPassthrough' and 'credentialsRole' are mutually exclusive`);
     }
 
-    if (options.connectionType === ConnectionType.VpcLink && options.vpcLink === undefined) {
+    if (options.connectionType === ConnectionType.VPC_LINK && options.vpcLink === undefined) {
       throw new Error(`'connectionType' of VPC_LINK requires 'vpcLink' prop to be set`);
     }
 
-    if (options.connectionType === ConnectionType.Internet && options.vpcLink !== undefined) {
+    if (options.connectionType === ConnectionType.INTERNET && options.vpcLink !== undefined) {
       throw new Error(`cannot set 'vpcLink' where 'connectionType' is INTERNET`);
     }
 
@@ -250,7 +250,7 @@ export enum AuthorizationType {
   /**
    * Open access.
    */
-  None = 'NONE',
+  NONE = 'NONE',
 
   /**
    * Use AWS IAM permissions.
@@ -260,10 +260,10 @@ export enum AuthorizationType {
   /**
    * Use a custom authorizer.
    */
-  Custom = 'CUSTOM',
+  CUSTOM = 'CUSTOM',
 
   /**
    * Use an AWS Cognito user pool.
    */
-  Cognito = 'COGNITO_USER_POOLS',
+  COGNITO = 'COGNITO_USER_POOLS',
 }

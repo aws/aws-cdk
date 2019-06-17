@@ -29,9 +29,9 @@ export interface ThrottleSettings {
  * Time period for which quota settings apply.
  */
 export enum Period {
-  Day = 'DAY',
-  Week = 'WEEK',
-  Month = 'MONTH'
+  DAY = 'DAY',
+  WEEK = 'WEEK',
+  MONTH = 'MONTH'
 }
 
 /**
@@ -79,7 +79,7 @@ export interface ThrottlingPerMethod {
  * Type of Usage Plan Key. Currently the only supported type is 'API_KEY'
  */
 export enum UsagePlanKeyType {
-  ApiKey = 'API_KEY'
+  API_KEY = 'API_KEY'
 }
 
 /**
@@ -181,7 +181,7 @@ export class UsagePlan extends Resource {
   public addApiKey(apiKey: IApiKey): void {
     new CfnUsagePlanKey(this, 'UsagePlanKeyResource', {
       keyId: apiKey.keyId,
-      keyType: UsagePlanKeyType.ApiKey,
+      keyType: UsagePlanKeyType.API_KEY,
       usagePlanId: this.usagePlanId
     });
   }

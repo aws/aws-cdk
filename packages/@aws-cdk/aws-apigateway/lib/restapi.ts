@@ -358,29 +358,29 @@ export enum ApiKeySourceType {
   /**
    * To read the API key from the `X-API-Key` header of a request.
    */
-  Header = 'HEADER',
+  HEADER = 'HEADER',
 
   /**
    * To read the API key from the `UsageIdentifierKey` from a custom authorizer.
    */
-  Authorizer = 'AUTHORIZER',
+  AUTHORIZER = 'AUTHORIZER',
 }
 
 export enum EndpointType {
   /**
    * For an edge-optimized API and its custom domain name.
    */
-  Edge = 'EDGE',
+  EDGE = 'EDGE',
 
   /**
    * For a regional API and its custom domain name.
    */
-  Regional = 'REGIONAL',
+  REGIONAL = 'REGIONAL',
 
   /**
    * For a private API and its custom domain name.
    */
-  Private = 'PRIVATE'
+  PRIVATE = 'PRIVATE'
 }
 
 class RootResource extends ResourceBase {
