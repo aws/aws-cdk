@@ -5,6 +5,7 @@ import { CfnCondition } from './cfn-condition';
 import { CfnRefElement } from './cfn-element';
 import { Construct, IConstruct } from './construct';
 import { CfnReference } from './private/cfn-reference';
+import { RemovalPolicy, RemovalPolicyOptions } from './removal-policy';
 import { IResolvable } from './resolvable';
 import { CreationPolicy, DeletionPolicy, UpdatePolicy } from './resource-policy';
 import { TagManager } from './tag-manager';
@@ -102,6 +103,33 @@ export class CfnResource extends CfnRefElement {
       this.options.metadata = {
         [cxapi.PATH_METADATA_KEY]: this.node.path
       };
+    }
+  }
+
+  /**
+   * Sets the deletion policy of the resource based on the removal policy specified.
+   */
+  public applyRemovalPolicy(policy: RemovalPolicy | undefined, options: RemovalPolicyOptions = {}) {
+    policy = policy || options.default || RemovalPolicy.Retain;
+
+    let deletionPolicy;
+
+    switch (policy) {
+      case RemovalPolicy.Destroy:
+        deletionPolicy = DeletionPolicy.Delete;
+        break;
+
+      case RemovalPolicy.Retain:
+        deletionPolicy = DeletionPolicy.Retain;
+        break;
+
+      default:
+        throw new Error(`Invalid removal policy: ${policy}`);
+    }
+
+    this.options.deletionPolicy = deletionPolicy;
+    if (options.applyToUpdateReplacePolicy) {
+      this.options.updateReplacePolicy = deletionPolicy;
     }
   }
 

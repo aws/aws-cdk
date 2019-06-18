@@ -1,6 +1,6 @@
 import { expect, haveResource, matchTemplate } from '@aws-cdk/assert';
 import iam = require('@aws-cdk/aws-iam');
-import { Stack } from '@aws-cdk/cdk';
+import { RemovalPolicy, Stack } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
 import { LogGroup, RetentionDays } from '../lib';
 
@@ -66,14 +66,17 @@ export = {
     // WHEN
     new LogGroup(stack, 'LogGroup', {
       retentionDays: Infinity,
-      retainLogGroup: false
+      removalPolicy: RemovalPolicy.Destroy
     });
 
     // THEN
     expect(stack).to(matchTemplate({
       Resources: {
-        LogGroupF5B46931: { Type: "AWS::Logs::LogGroup" }
+        LogGroupF5B46931: {
+          Type: "AWS::Logs::LogGroup",
+          DeletionPolicy: "Delete"
         }
+      }
     }));
 
     test.done();
