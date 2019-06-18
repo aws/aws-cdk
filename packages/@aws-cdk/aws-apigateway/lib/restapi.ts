@@ -178,21 +178,6 @@ export class RestApi extends Resource implements IRestApi {
   public readonly restApiRootResourceId: string;
 
   /**
-   * API Gateway deployment that represents the latest changes of the API.
-   * This resource will be automatically updated every time the REST API model changes.
-   * This will be undefined if `deploy` is false.
-   */
-  public latestDeployment?: Deployment;
-
-  /**
-   * API Gateway stage that points to the latest deployment (if defined).
-   *
-   * If `deploy` is disabled, you will need to explicitly assign this value in order to
-   * set up integrations.
-   */
-  public deploymentStage?: Stage;
-
-  /**
    * Represents the root resource ("/") of this API. Use it to define the API model:
    *
    *    api.root.addMethod('ANY', redirectToHomePage); // "ANY /"
@@ -202,6 +187,8 @@ export class RestApi extends Resource implements IRestApi {
   public readonly root: IResource;
 
   private readonly methods = new Array<Method>();
+  private _latestDeployment: Deployment;
+  private _deploymentStage: Stage;
 
   constructor(scope: Construct, id: string, props: RestApiProps = { }) {
     super(scope, id);
@@ -229,6 +216,25 @@ export class RestApi extends Resource implements IRestApi {
     }
 
     this.root = new RootResource(this, props, resource.restApiRootResourceId);
+  }
+
+  /**
+   * API Gateway deployment that represents the latest changes of the API.
+   * This resource will be automatically updated every time the REST API model changes.
+   * This will be undefined if `deploy` is false.
+   */
+  public get latestDeployment() {
+    return this._latestDeployment;
+  }
+
+  /**
+   * API Gateway stage that points to the latest deployment (if defined).
+   *
+   * If `deploy` is disabled, you will need to explicitly assign this value in order to
+   * set up integrations.
+   */
+  public get deploymentStage(): Stage {
+    return this._deploymentStage;
   }
 
   /**
@@ -275,7 +281,7 @@ export class RestApi extends Resource implements IRestApi {
    * @param path The resource path. Must start with '/' (default `*`)
    * @param stage The stage (default `*`)
    */
-  public executeApiArn(method: string = '*', path: string = '/*', stage: string = '*') {
+  public arnForExecuteApi(method: string = '*', path: string = '/*', stage: string = '*') {
     if (!path.startsWith('/')) {
       throw new Error(`"path" must begin with a "/": '${path}'`);
     }
@@ -317,7 +323,7 @@ export class RestApi extends Resource implements IRestApi {
     const deploy = props.deploy === undefined ? true : props.deploy;
     if (deploy) {
 
-      this.latestDeployment = new Deployment(this, 'Deployment', {
+      this._latestDeployment = new Deployment(this, 'Deployment', {
         description: 'Automatically created by the RestApi construct',
         api: this,
         retainDeployments: props.retainDeployments
@@ -327,7 +333,7 @@ export class RestApi extends Resource implements IRestApi {
       // stage name is part of the endpoint, so that makes sense.
       const stageName = (props.deployOptions && props.deployOptions.stageName) || 'prod';
 
-      this.deploymentStage = new Stage(this, `DeploymentStage.${stageName}`, {
+      this._deploymentStage = new Stage(this, `DeploymentStage.${stageName}`, {
         deployment: this.latestDeployment,
         ...props.deployOptions
       });
