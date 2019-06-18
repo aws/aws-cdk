@@ -105,7 +105,7 @@ export class Rule extends Resource implements IRule {
     this.ruleArn = resource.attrArn;
 
     this.addEventPattern(props.eventPattern);
-    this.scheduleExpression = props.schedule && props.schedule.expression;
+    this.scheduleExpression = props.schedule && props.schedule.expressionString;
 
     for (const target of props.targets || []) {
       this.addTarget(target);

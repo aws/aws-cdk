@@ -32,7 +32,7 @@ test('use codebuild project as an eventrule target', () => {
   });
 
   const rule = new events.Rule(stack, 'rule', {
-    schedule: events.Schedule.fromExpression('rate(1 minute)'),
+    schedule: events.Schedule.expression('rate(1 minute)'),
   });
 
   // WHEN

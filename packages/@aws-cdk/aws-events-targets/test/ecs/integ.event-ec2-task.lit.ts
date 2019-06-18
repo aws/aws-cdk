@@ -32,7 +32,7 @@ class EventStack extends cdk.Stack {
 
     // An Rule that describes the event trigger (in this case a scheduled run)
     const rule = new events.Rule(this, 'Rule', {
-      schedule: events.Schedule.fromRate(1, events.TimeUnit.Minute),
+      schedule: events.Schedule.rate(1, events.TimeUnit.Minute),
     });
 
     // Use EcsTask as the target of the Rule

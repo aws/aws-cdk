@@ -7,14 +7,14 @@ export abstract class Schedule {
    *
    * @param expression The expression to use. Must be in a format that Cloudwatch Events will recognize
    */
-  public static fromExpression(expression: string): Schedule {
+  public static expression(expression: string): Schedule {
     return new LiteralSchedule(expression);
   }
 
   /**
    * Construct a schedule from an interval and a time unit
    */
-  public static fromRate(interval: number, unit: TimeUnit): Schedule {
+  public static rate(interval: number, unit: TimeUnit): Schedule {
     const unitStr = interval !== 1 ? `${unit}s` : unit;
 
     return new LiteralSchedule(`rate(${interval} ${unitStr})`);
@@ -23,19 +23,19 @@ export abstract class Schedule {
   /**
    * Create a schedule from a set of cron fields
    */
-  public static fromCron(options: CronOptions): Schedule {
+  public static cron(options: CronOptions): Schedule {
     if (options.weekDay !== undefined && options.day !== undefined) {
       throw new Error(`Cannot supply both 'day' and 'weekDay', use at most one`);
     }
 
-    const minute = ifUndef(options.minute, '*');
-    const hour = ifUndef(options.hour, '*');
-    const month = ifUndef(options.month, '*');
-    const year = ifUndef(options.year, '*');
+    const minute = fallback(options.minute, '*');
+    const hour = fallback(options.hour, '*');
+    const month = fallback(options.month, '*');
+    const year = fallback(options.year, '*');
 
     // Weekday defaults to '?' if not supplied. If it is supplied, day must become '?'
-    const day = ifUndef(options.day, options.weekDay !== undefined ? '?' : '*');
-    const weekDay = ifUndef(options.weekDay, '?');
+    const day = fallback(options.day, options.weekDay !== undefined ? '?' : '*');
+    const weekDay = fallback(options.weekDay, '?');
 
     return new LiteralSchedule(`cron(${minute} ${hour} ${day} ${month} ${weekDay} ${year})`);
   }
@@ -43,7 +43,7 @@ export abstract class Schedule {
   /**
    * Retrieve the expression for this schedule
    */
-  public abstract readonly expression: string;
+  public abstract readonly expressionString: string;
 
   protected constructor() {
   }
@@ -122,11 +122,11 @@ export interface CronOptions {
 }
 
 class LiteralSchedule extends Schedule {
-  constructor(public readonly expression: string) {
+  constructor(public readonly expressionString: string) {
     super();
   }
 }
 
-function ifUndef<T>(x: T | undefined, def: T): T {
+function fallback<T>(x: T | undefined, def: T): T {
   return x === undefined ? def : x;
 }

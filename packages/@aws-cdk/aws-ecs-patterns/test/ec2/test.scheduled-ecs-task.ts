@@ -20,7 +20,7 @@ export = {
       cluster,
       image: ecs.ContainerImage.fromRegistry('henk'),
       memoryLimitMiB: 512,
-      schedule: events.Schedule.fromExpression('rate(1 minute)')
+      schedule: events.Schedule.expression('rate(1 minute)')
     });
 
     // THEN
@@ -86,7 +86,7 @@ export = {
       memoryLimitMiB: 512,
       cpu: 2,
       environment: { name: 'TRIGGER', value: 'CloudWatch Events' },
-      schedule: events.Schedule.fromExpression('rate(1 minute)')
+      schedule: events.Schedule.expression('rate(1 minute)')
     });
 
     // THEN
@@ -160,7 +160,7 @@ export = {
       cluster,
       image: ecs.ContainerImage.fromRegistry('henk'),
       memoryReservationMiB: 512,
-      schedule: events.Schedule.fromExpression('rate(1 minute)')
+      schedule: events.Schedule.expression('rate(1 minute)')
     });
 
     // THEN
@@ -209,7 +209,7 @@ export = {
       image: ecs.ContainerImage.fromRegistry('henk'),
       memoryReservationMiB: 512,
       command: ["-c", "4", "amazon.com"],
-      schedule: events.Schedule.fromExpression('rate(1 minute)')
+      schedule: events.Schedule.expression('rate(1 minute)')
     });
 
     // THEN
