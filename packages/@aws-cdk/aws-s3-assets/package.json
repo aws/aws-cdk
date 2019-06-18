@@ -1,36 +1,35 @@
 {
-  "name": "@aws-cdk/assets-docker",
+  "name": "@aws-cdk/aws-s3-assets",
   "version": "0.34.0",
-  "deprecated": "moved to @aws-cdk/aws-ecr-assets",
-  "description": "deprecated: moved to @aws-cdk/aws-ecr-assets",
+  "description": "Deploy local files and directories to S3",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "jsii": {
     "outdir": "dist",
     "targets": {
       "java": {
-        "package": "software.amazon.awscdk.assets.docker",
+        "package": "software.amazon.awscdk.services.s3.assets",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "cdk-assets-docker"
+          "artifactId": "s3-assets"
         }
       },
       "dotnet": {
-        "namespace": "Amazon.CDK.Assets.Docker",
-        "packageId": "Amazon.CDK.Assets.Docker",
+        "namespace": "Amazon.CDK.AWS.S3.Assets",
+        "packageId": "Amazon.CDK.AWS.S3.Assets",
         "signAssembly": true,
         "assemblyOriginatorKeyFile": "../../key.snk"
       },
       "python": {
-        "distName": "aws-cdk.assets-docker",
-        "module": "aws_cdk.assets_docker"
+        "distName": "aws-cdk.aws-s3-assets",
+        "module": "aws_cdk.aws_s3_assets"
       }
     }
   },
   "repository": {
     "type": "git",
     "url": "https://github.com/awslabs/aws-cdk.git",
-    "directory": "packages/@aws-cdk/assets-docker"
+    "directory": "packages/@aws-cdk/aws-s3-assets"
   },
   "scripts": {
     "build": "cdk-build",
@@ -47,9 +46,9 @@
   "keywords": [
     "aws",
     "cdk",
+    "s3",
     "constructs",
-    "assets",
-    "docker"
+    "assets"
   ],
   "author": {
     "name": "Amazon Web Services",
@@ -58,13 +57,32 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
+    "@aws-cdk/assert": "^0.34.0",
+    "@types/sinon": "^7.0.12",
+    "aws-cdk": "^0.34.0",
     "cdk-build-tools": "^0.34.0",
     "cdk-integ-tools": "^0.34.0",
-    "pkglint": "^0.34.0"
+    "pkglint": "^0.34.0",
+    "sinon": "^7.3.2",
+    "ts-mock-imports": "^1.2.3"
+  },
+  "dependencies": {
+    "@aws-cdk/assets": "^0.34.0",
+    "@aws-cdk/aws-iam": "^0.34.0",
+    "@aws-cdk/aws-s3": "^0.34.0",
+    "@aws-cdk/cdk": "^0.34.0",
+    "@aws-cdk/cx-api": "^0.34.0"
   },
   "homepage": "https://github.com/awslabs/aws-cdk",
+  "peerDependencies": {
+    "@aws-cdk/assets": "^0.34.0",
+    "@aws-cdk/aws-iam": "^0.34.0",
+    "@aws-cdk/aws-s3": "^0.34.0",
+    "@aws-cdk/cdk": "^0.34.0",
+    "@aws-cdk/cx-api": "^0.34.0"
+  },
   "engines": {
     "node": ">= 8.10.0"
   },
-  "stability": "deprecated"
+  "stability": "experimental"
 }

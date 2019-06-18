@@ -1,5 +1,5 @@
-import assets = require('@aws-cdk/assets');
 import s3 = require('@aws-cdk/aws-s3');
+import s3_assets = require('@aws-cdk/aws-s3-assets');
 import cdk = require('@aws-cdk/cdk');
 import { CfnFunction } from './lambda.generated';
 
@@ -129,7 +129,7 @@ export class InlineCode extends Code {
  */
 export class AssetCode extends Code {
   public readonly isInline = false;
-  private asset?: assets.Asset;
+  private asset?: s3_assets.Asset;
 
   /**
    * @param path The path to the asset file or directory.
@@ -141,7 +141,7 @@ export class AssetCode extends Code {
   public bind(construct: cdk.Construct) {
     // If the same AssetCode is used multiple times, retain only the first instantiation.
     if (!this.asset) {
-      this.asset = new assets.Asset(construct, 'Code', { path: this.path });
+      this.asset = new s3_assets.Asset(construct, 'Code', { path: this.path });
     }
 
     if (!this.asset.isZipArchive) {

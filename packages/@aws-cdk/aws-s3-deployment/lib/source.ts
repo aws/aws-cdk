@@ -1,5 +1,5 @@
-import assets = require('@aws-cdk/assets');
 import s3 = require('@aws-cdk/aws-s3');
+import s3_assets = require('@aws-cdk/aws-s3-assets');
 import cdk = require('@aws-cdk/cdk');
 
 export interface SourceConfig {
@@ -54,7 +54,7 @@ export class Source {
   public static asset(path: string): ISource {
     return {
       bind(context: cdk.Construct): SourceConfig {
-        const asset = new assets.Asset(context, 'Asset', { path });
+        const asset = new s3_assets.Asset(context, 'Asset', { path });
         if (!asset.isZipArchive) {
           throw new Error(`Asset path must be either a .zip file or a directory`);
         }

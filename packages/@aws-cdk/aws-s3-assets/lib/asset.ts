@@ -1,11 +1,10 @@
+import assets = require('@aws-cdk/assets');
 import iam = require('@aws-cdk/aws-iam');
 import s3 = require('@aws-cdk/aws-s3');
 import cdk = require('@aws-cdk/cdk');
 import cxapi = require('@aws-cdk/cx-api');
 import fs = require('fs');
 import path = require('path');
-import { CopyOptions } from './fs/copy-options';
-import { Staging } from './staging';
 
 const ARCHIVE_EXTENSIONS = [ '.zip', '.jar' ];
 
@@ -25,7 +24,7 @@ export enum AssetPackaging {
   File = 'file',
 }
 
-export interface AssetProps extends CopyOptions {
+export interface AssetProps extends assets.CopyOptions {
   /**
    * The disk location of the asset.
    *
@@ -44,29 +43,11 @@ export interface AssetProps extends CopyOptions {
   readonly readers?: iam.IGrantable[];
 }
 
-export interface IAsset extends cdk.IConstruct {
-  /**
-   * A hash of the source of this asset, which is available at construction time. As this is a plain
-   * string, it can be used in construct IDs in order to enforce creation of a new resource when
-   * the content hash has changed.
-   */
-  readonly sourceHash: string;
-
-  /**
-   * A hash of the bundle for of this asset, which is only available at deployment time. As this is
-   * a late-bound token, it may not be used in construct IDs, but can be passed as a resource
-   * property in order to force a change on a resource when an asset is effectively updated. This is
-   * more reliable than `sourceHash` in particular for assets which bundling phase involve external
-   * resources that can change over time (such as Docker image builds).
-   */
-  readonly artifactHash: string;
-}
-
 /**
  * An asset represents a local file or directory, which is automatically uploaded to S3
  * and then can be referenced within a CDK application.
  */
-export class Asset extends cdk.Construct implements IAsset {
+export class Asset extends cdk.Construct implements assets.IAsset {
   /**
    * Attribute that represents the name of the bucket this asset exists in.
    */
@@ -114,7 +95,7 @@ export class Asset extends cdk.Construct implements IAsset {
     super(scope, id);
 
     // stage the asset source (conditionally).
-    const staging = new Staging(this, 'Stage', {
+    const staging = new assets.Staging(this, 'Stage', {
       ...props,
       sourcePath: path.resolve(props.path),
     });
