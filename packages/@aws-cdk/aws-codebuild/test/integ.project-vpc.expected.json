@@ -423,7 +423,10 @@
             "Ref": "MyVPCAFB07A31"
           }
         }
-      }
+      },
+      "DependsOn": [
+        "MyProjectPolicyDocument646EE0F2"
+      ]
     }
   }
 }
