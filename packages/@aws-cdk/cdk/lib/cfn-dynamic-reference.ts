@@ -36,15 +36,15 @@ export enum CfnDynamicReferenceService {
   /**
    * Plaintext value stored in AWS Systems Manager Parameter Store
    */
-  Ssm = 'ssm',
+  SSM = 'ssm',
 
   /**
    * Secure string stored in AWS Systems Manager Parameter Store
    */
-  SsmSecure = 'ssm-secure',
+  SSM_SECURE = 'ssm-secure',
 
   /**
    * Secret stored in AWS Secrets Manager
    */
-  SecretsManager = 'secretsmanager',
+  SECRETS_MANAGER = 'secretsmanager',
 }

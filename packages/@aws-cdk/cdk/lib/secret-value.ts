@@ -47,7 +47,7 @@ export class SecretValue extends Intrinsic {
       options.versionId    || ''
     ];
 
-    const dyref = new CfnDynamicReference(CfnDynamicReferenceService.SecretsManager, parts.join(':'));
+    const dyref = new CfnDynamicReference(CfnDynamicReferenceService.SECRETS_MANAGER, parts.join(':'));
     return this.cfnDynamicReference(dyref);
   }
 
@@ -63,7 +63,7 @@ export class SecretValue extends Intrinsic {
    */
   public static ssmSecure(parameterName: string, version: string): SecretValue {
     const parts = [ parameterName, version ];
-    return this.cfnDynamicReference(new CfnDynamicReference(CfnDynamicReferenceService.SsmSecure, parts.join(':')));
+    return this.cfnDynamicReference(new CfnDynamicReference(CfnDynamicReferenceService.SSM_SECURE, parts.join(':')));
   }
 
   /**

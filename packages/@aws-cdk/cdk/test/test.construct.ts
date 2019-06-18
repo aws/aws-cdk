@@ -401,9 +401,9 @@ export = {
     new Construct(c2, '5');
 
     // THEN
-    test.deepEqual(c1.node.findAll().map(x => x.node.id), c1.node.findAll(ConstructOrder.PreOrder).map(x => x.node.id)); // default is PreOrder
-    test.deepEqual(c1.node.findAll(ConstructOrder.PreOrder).map(x => x.node.id), [ '1', '2', '4', '5', '3' ]);
-    test.deepEqual(c1.node.findAll(ConstructOrder.PostOrder).map(x => x.node.id), [ '4', '5', '2', '3', '1' ]);
+    test.deepEqual(c1.node.findAll().map(x => x.node.id), c1.node.findAll(ConstructOrder.PREORDER).map(x => x.node.id)); // default is PreOrder
+    test.deepEqual(c1.node.findAll(ConstructOrder.PREORDER).map(x => x.node.id), [ '1', '2', '4', '5', '3' ]);
+    test.deepEqual(c1.node.findAll(ConstructOrder.POSTORDER).map(x => x.node.id), [ '4', '5', '2', '3', '1' ]);
     test.done();
   },
 

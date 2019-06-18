@@ -160,7 +160,7 @@ export class Stack extends Construct implements ITaggable {
     this.environment = environment;
 
     this.stackName = props.stackName !== undefined ? props.stackName : this.calculateStackName();
-    this.tags = new TagManager(TagType.KeyValue, 'aws:cdk:stack', props.tags);
+    this.tags = new TagManager(TagType.KEY_VALUE, 'aws:cdk:stack', props.tags);
 
     if (!VALID_STACK_NAME_REGEX.test(this.stackName)) {
       throw new Error(`Stack name must match the regular expression: ${VALID_STACK_NAME_REGEX.toString()}, got '${name}'`);
@@ -457,7 +457,7 @@ export class Stack extends Construct implements ITaggable {
 
     // add an artifact that represents this stack
     builder.addArtifact(this.stackName, {
-      type: cxapi.ArtifactType.AwsCloudFormationStack,
+      type: cxapi.ArtifactType.AWS_CLOUDFORMATION_STACK,
       environment: this.environment,
       properties,
       dependencies: deps.length > 0 ? deps : undefined,

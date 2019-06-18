@@ -273,11 +273,11 @@ export class CfnResource extends CfnRefElement {
 }
 
 export enum TagType {
-  Standard = 'StandardTag',
-  AutoScalingGroup = 'AutoScalingGroupTag',
-  Map = 'StringToStringMap',
-  KeyValue = 'KeyValue',
-  NotTaggable = 'NotTaggable',
+  STANDARD = 'StandardTag',
+  AUTO_SCALING_GROUP = 'AutoScalingGroupTag',
+  MAP = 'StringToStringMap',
+  KEY_VALUE = 'KeyValue',
+  NOT_TAGGABLE = 'NotTaggable',
 }
 
 export interface IResourceOptions {

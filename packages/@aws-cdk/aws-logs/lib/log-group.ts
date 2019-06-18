@@ -344,7 +344,7 @@ export class LogGroup extends LogGroupBase {
     });
 
     if (props.retainLogGroup !== false) {
-      applyRemovalPolicy(resource, RemovalPolicy.Orphan);
+      applyRemovalPolicy(resource, RemovalPolicy.ORPHAN);
     }
 
     this.logGroupArn = resource.logGroupArn;

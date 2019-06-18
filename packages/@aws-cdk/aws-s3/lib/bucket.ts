@@ -904,7 +904,7 @@ export class Bucket extends BucketBase {
       corsConfiguration: Lazy.anyValue({ produce: () => this.parseCorsConfiguration() })
     });
 
-    applyRemovalPolicy(resource, props.removalPolicy !== undefined ? props.removalPolicy : RemovalPolicy.Orphan);
+    applyRemovalPolicy(resource, props.removalPolicy !== undefined ? props.removalPolicy : RemovalPolicy.ORPHAN);
 
     this.versioned = props.versioned;
     this.encryptionKey = encryptionKey;

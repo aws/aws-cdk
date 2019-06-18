@@ -72,7 +72,7 @@ export class Deployment extends Resource {
     });
 
     if (props.retainDeployments) {
-      this.resource.options.deletionPolicy = DeletionPolicy.Retain;
+      this.resource.options.deletionPolicy = DeletionPolicy.RETAIN;
     }
 
     this.api = props.api;

@@ -76,7 +76,7 @@ export enum DeletionPolicy {
    * deletion policy to any resource type. By default, if you don't specify a DeletionPolicy, AWS CloudFormation deletes
    * your resources. However, be aware of the following considerations:
    */
-  Delete = 'Delete',
+  DELETE = 'Delete',
 
   /**
    * AWS CloudFormation keeps the resource without deleting the resource or its contents when its stack is deleted.
@@ -84,7 +84,7 @@ export enum DeletionPolicy {
    * the stack will be in Delete_Complete state; however, resources that are retained continue to exist and continue to incur
    * applicable charges until you delete those resources.
    */
-  Retain = 'Retain',
+  RETAIN = 'Retain',
 
   /**
    * For resources that support snapshots (AWS::EC2::Volume, AWS::ElastiCache::CacheCluster, AWS::ElastiCache::ReplicationGroup,
@@ -93,7 +93,7 @@ export enum DeletionPolicy {
    * Delete_Complete state; however, the snapshots that are created with this policy continue to exist and continue to
    * incur applicable charges until you delete those snapshots.
    */
-  Snapshot = 'Snapshot',
+  SNAPSHOT = 'Snapshot',
 }
 
 /**
