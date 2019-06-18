@@ -363,7 +363,7 @@ export interface LambdaFunctionAssociation {
   readonly eventType: LambdaEdgeEventType;
 
   /**
-   * A version of the lambda to associate or a resolvable resource
+   * A version of the lambda to associate
    */
   readonly lambdaFunction: lambda.IVersion;
 }

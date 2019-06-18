@@ -74,6 +74,8 @@ export interface VersionAttributes {
 export class Version extends QualifiedFunctionBase implements IVersion {
 
   /**
+   * Construct a Version object from a Version ARN.
+   *
    * @param scope The cdk scope creating this resource
    * @param id The cdk id of this resource
    * @param versionArn The version ARN to create this version from
@@ -155,8 +157,6 @@ export class Version extends QualifiedFunctionBase implements IVersion {
  *
  * ..which means that in order to extract the `function arn` component from the ARN, we can
  * split the ARN using ":" and join indices 0-6.
- *
- * @returns `FnSelect(7, FnSplit(':', arn))`
  */
 function extractFunctionArnFromVersionArn(arn: string) {
   return Fn.join(':', [
