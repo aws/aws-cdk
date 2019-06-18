@@ -71,7 +71,7 @@ export = {
       try {
         new GlobalTable(stack, CONSTRUCT_NAME, {
           tableName: TABLE_NAME,
-          streamSpecification: StreamViewType.KeysOnly,
+          stream: StreamViewType.KeysOnly,
           partitionKey: TABLE_PARTITION_KEY,
           regions: [ 'us-east-1', 'us-east-2', 'us-west-2' ]
         });

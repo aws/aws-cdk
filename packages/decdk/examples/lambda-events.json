@@ -11,7 +11,7 @@
           "name": "ID",
           "type": "String"
         },
-        "streamSpecification": "NewAndOldImages"
+        "stream": "NewAndOldImages"
       }
     },
     "HelloWorldFunction": {

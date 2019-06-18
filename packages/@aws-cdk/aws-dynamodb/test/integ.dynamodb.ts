@@ -46,10 +46,10 @@ const table = new Table(stack, TABLE, {
 });
 
 const tableWithGlobalAndLocalSecondaryIndex = new Table(stack, TABLE_WITH_GLOBAL_AND_LOCAL_SECONDARY_INDEX, {
-  pitrEnabled: true,
-  sseEnabled: true,
-  streamSpecification: StreamViewType.KeysOnly,
-  ttlAttributeName: 'timeToLive',
+  pointInTimeRecovery: true,
+  serverSideEncryption: true,
+  stream: StreamViewType.KeysOnly,
+  timeToLiveAttribute: 'timeToLive',
   partitionKey: TABLE_PARTITION_KEY,
   sortKey: TABLE_SORT_KEY
 });
