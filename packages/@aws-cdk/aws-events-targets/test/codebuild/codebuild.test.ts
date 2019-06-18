@@ -7,7 +7,7 @@ import targets = require('../../lib');
 test('use codebuild project as an eventrule target', () => {
   // GIVEN
   const stack = new Stack();
-  const project = new codebuild.Project(stack, 'MyProject', { source: new codebuild.CodePipelineSource() });
+  const project = new codebuild.PipelineProject(stack, 'MyProject');
   const rule = new events.Rule(stack, 'Rule', {
     schedule: events.Schedule.fromExpression('rate(1 min)')
   });

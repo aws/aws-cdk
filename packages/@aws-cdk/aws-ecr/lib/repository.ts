@@ -356,15 +356,15 @@ export class Repository extends RepositoryBase {
       props.lifecycleRules.forEach(this.addLifecycleRule.bind(this));
     }
 
-    this.repositoryName = resource.repositoryName;
-    this.repositoryArn = resource.repositoryArn;
+    this.repositoryName = resource.refAsString;
+    this.repositoryArn = resource.attrArn;
   }
 
   public addToResourcePolicy(statement: iam.PolicyStatement) {
     if (this.policyDocument === undefined) {
       this.policyDocument = new iam.PolicyDocument();
     }
-    this.policyDocument.addStatement(statement);
+    this.policyDocument.addStatements(statement);
   }
 
   /**

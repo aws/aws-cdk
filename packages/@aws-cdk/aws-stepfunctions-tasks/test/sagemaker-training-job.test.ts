@@ -82,8 +82,8 @@ test('create complex training job', () => {
 
     const role = new iam.Role(stack, 'Role', {
         assumedBy: new iam.ServicePrincipal('sagemaker.amazonaws.com'),
-        managedPolicyArns: [
-            new iam.AwsManagedPolicy('AmazonSageMakerFullAccess', stack).policyArn
+        managedPolicies: [
+            iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonSageMakerFullAccess')
         ],
     });
 
@@ -228,8 +228,8 @@ test('pass param to training job', () => {
     // WHEN
     const role = new iam.Role(stack, 'Role', {
         assumedBy: new iam.ServicePrincipal('sagemaker.amazonaws.com'),
-        managedPolicyArns: [
-            new iam.AwsManagedPolicy('AmazonSageMakerFullAccess', stack).policyArn
+        managedPolicies: [
+            iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonSageMakerFullAccess'),
         ],
     });
 

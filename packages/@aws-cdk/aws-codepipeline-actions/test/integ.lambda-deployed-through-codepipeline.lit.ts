@@ -36,7 +36,7 @@ const lambdaSourceAction = new codepipeline_actions.CodeCommitSourceAction({
   output: lambdaSourceOutput,
 });
 pipeline.addStage({
-  name: 'Source',
+  stageName: 'Source',
   actions: [cdkSourceAction, lambdaSourceAction],
 });
 
@@ -47,7 +47,7 @@ const cdkBuildProject = new codebuild.Project(pipelineStack, 'CdkBuildProject', 
   environment: {
     buildImage: codebuild.LinuxBuildImage.UBUNTU_14_04_NODEJS_10_1_0,
   },
-  buildSpec: {
+  buildSpec: codebuild.BuildSpec.fromObject({
     version: '0.2',
     phases: {
       install: {
@@ -63,14 +63,14 @@ const cdkBuildProject = new codebuild.Project(pipelineStack, 'CdkBuildProject', 
     artifacts: {
       files: 'LambdaStack.template.yaml',
     },
-  },
+  }),
 });
 const cdkBuildOutput = new codepipeline.Artifact();
 const cdkBuildAction = new codepipeline_actions.CodeBuildAction({
   actionName: 'CDK_Build',
   project: cdkBuildProject,
   input: cdkSourceOutput,
-  output: cdkBuildOutput,
+  outputs: [cdkBuildOutput],
 });
 
 // build your Lambda code, using CodeBuild
@@ -80,7 +80,7 @@ const lambdaBuildProject = new codebuild.Project(pipelineStack, 'LambdaBuildProj
   environment: {
     buildImage: codebuild.LinuxBuildImage.UBUNTU_14_04_NODEJS_10_1_0,
   },
-  buildSpec: {
+  buildSpec: codebuild.BuildSpec.fromObject({
     version: '0.2',
     phases: {
       install: {
@@ -96,24 +96,24 @@ const lambdaBuildProject = new codebuild.Project(pipelineStack, 'LambdaBuildProj
         'node_modules/**/*',
       ],
     },
-  },
+  }),
 });
 const lambdaBuildOutput = new codepipeline.Artifact();
 const lambdaBuildAction = new codepipeline_actions.CodeBuildAction({
   actionName: 'Lambda_Build',
   project: lambdaBuildProject,
   input: lambdaSourceOutput,
-  output: lambdaBuildOutput,
+  outputs: [lambdaBuildOutput],
 });
 
 pipeline.addStage({
-  name: 'Build',
+  stageName: 'Build',
   actions: [cdkBuildAction, lambdaBuildAction],
 });
 
 // finally, deploy your Lambda Stack
 pipeline.addStage({
-  name: 'Deploy',
+  stageName: 'Deploy',
   actions: [
     new codepipeline_actions.CloudFormationCreateUpdateStackAction({
       actionName: 'Lambda_CFN_Deploy',
@@ -121,7 +121,7 @@ pipeline.addStage({
       stackName: 'LambdaStackDeployedName',
       adminPermissions: true,
       parameterOverrides: {
-        ...lambdaCode.assign(lambdaBuildOutput.s3Coordinates),
+        ...lambdaCode.assign(lambdaBuildOutput.s3Location),
       },
       extraInputs: [
         lambdaBuildOutput,

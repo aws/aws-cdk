@@ -272,7 +272,7 @@ export class ServerDeploymentGroup extends ServerDeploymentGroupBase {
 
     this.role = props.role || new iam.Role(this, 'Role', {
       assumedBy: new iam.ServicePrincipal('codedeploy.amazonaws.com'),
-      managedPolicyArns: ['arn:aws:iam::aws:policy/service-role/AWSCodeDeployRole'],
+      managedPolicies: [iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSCodeDeployRole')],
     });
 
     this._autoScalingGroups = props.autoScalingGroups || [];
@@ -303,7 +303,7 @@ export class ServerDeploymentGroup extends ServerDeploymentGroupBase {
       autoRollbackConfiguration: cdk.Lazy.anyValue({ produce: () => renderAutoRollbackConfiguration(this.alarms, props.autoRollback) }),
     });
 
-    this.deploymentGroupName = resource.deploymentGroupName;
+    this.deploymentGroupName = resource.refAsString;
     this.deploymentGroupArn = arnForDeploymentGroup(this.application.applicationName, this.deploymentGroupName);
   }
 

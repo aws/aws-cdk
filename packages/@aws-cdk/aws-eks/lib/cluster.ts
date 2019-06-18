@@ -208,9 +208,9 @@ export class Cluster extends Resource implements ICluster {
 
     this.role = props.role || new iam.Role(this, 'ClusterRole', {
       assumedBy: new iam.ServicePrincipal('eks.amazonaws.com'),
-      managedPolicyArns: [
-        new iam.AwsManagedPolicy('AmazonEKSClusterPolicy', this).policyArn,
-        new iam.AwsManagedPolicy('AmazonEKSServicePolicy', this).policyArn,
+      managedPolicies: [
+        iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonEKSClusterPolicy'),
+        iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonEKSServicePolicy'),
       ],
     });
 
@@ -238,10 +238,10 @@ export class Cluster extends Resource implements ICluster {
       }
     });
 
-    this.clusterName = resource.clusterName;
-    this.clusterArn = resource.clusterArn;
-    this.clusterEndpoint = resource.clusterEndpoint;
-    this.clusterCertificateAuthorityData = resource.clusterCertificateAuthorityData;
+    this.clusterName = resource.refAsString;
+    this.clusterArn = resource.attrArn;
+    this.clusterEndpoint = resource.attrEndpoint;
+    this.clusterCertificateAuthorityData = resource.attrCertificateAuthorityData;
 
     new CfnOutput(this, 'ClusterName', { value: this.clusterName, disableExport: true });
   }
@@ -308,9 +308,9 @@ export class Cluster extends Resource implements ICluster {
     // FIXME: Add a cfn-signal call once we've sorted out UserData and can write reliable
     // signaling scripts: https://github.com/awslabs/aws-cdk/issues/623
 
-    autoScalingGroup.role.attachManagedPolicy(new iam.AwsManagedPolicy('AmazonEKSWorkerNodePolicy', this).policyArn);
-    autoScalingGroup.role.attachManagedPolicy(new iam.AwsManagedPolicy('AmazonEKS_CNI_Policy', this).policyArn);
-    autoScalingGroup.role.attachManagedPolicy(new iam.AwsManagedPolicy('AmazonEC2ContainerRegistryReadOnly', this).policyArn);
+    autoScalingGroup.role.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonEKSWorkerNodePolicy'));
+    autoScalingGroup.role.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonEKS_CNI_Policy'));
+    autoScalingGroup.role.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonEC2ContainerRegistryReadOnly'));
 
     // EKS Required Tags
     autoScalingGroup.node.applyAspect(new Tag(`kubernetes.io/cluster/${this.clusterName}`, 'owned', { applyToLaunchedInstances: true }));

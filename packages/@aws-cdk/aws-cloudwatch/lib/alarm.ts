@@ -141,8 +141,8 @@ export class Alarm extends Resource implements IAlarm {
       ...metricJson(props.metric)
     });
 
-    this.alarmArn = alarm.alarmArn;
-    this.alarmName = alarm.alarmName;
+    this.alarmArn = alarm.attrArn;
+    this.alarmName = alarm.refAsString;
     this.metric = props.metric;
     this.annotation = {
       // tslint:disable-next-line:max-line-length

@@ -17,11 +17,11 @@ const repo = new codecommit.Repository(stack, 'Repo', {
   repositoryName: 'TestRepository'
 });
 
-const pipeline = new codepipeline.Pipeline(stack, 'Pipeline');
+const pipeline = new codepipeline.Pipeline(stack, 'pipelinePipeline22F2A91D');
 
 const srcArtifact = new codepipeline.Artifact('Src');
 pipeline.addStage({
-  name: 'Source',
+  stageName: 'Source',
   actions: [new MockAction({
     actionName: 'CodeCommit',
     category: codepipeline.ActionCategory.Source,
@@ -34,7 +34,7 @@ pipeline.addStage({
     outputs: [srcArtifact]})]
 });
 pipeline.addStage({
-  name: 'Build',
+  stageName: 'Build',
   actions: [new MockAction({
     actionName: 'Hello',
     category: codepipeline.ActionCategory.Approval,

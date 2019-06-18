@@ -22,7 +22,7 @@ export = {
       const pipeline = new codepipeline.Pipeline(stack, 'Pipeline', {
         stages: [
           {
-            name: 'Source',
+            stageName: 'Source',
             actions: [
               new FakeSourceAction({
                 actionName: 'Source',
@@ -31,7 +31,7 @@ export = {
             ],
           },
           {
-            name: 'Build',
+            stageName: 'Build',
             actions: [
               new FakeBuildAction({
                 actionName: 'Build',
@@ -58,7 +58,7 @@ export = {
       const pipeline = new codepipeline.Pipeline(stack, 'Pipeline', {
         stages: [
           {
-            name: 'Source',
+            stageName: 'Source',
             actions: [
               new FakeSourceAction({
                 actionName: 'Source',
@@ -67,7 +67,7 @@ export = {
             ],
           },
           {
-            name: 'Build',
+            stageName: 'Build',
             actions: [
               new FakeBuildAction({
                 actionName: 'Build',
@@ -94,7 +94,7 @@ export = {
       const pipeline = new codepipeline.Pipeline(stack, 'Pipeline', {
         stages: [
           {
-            name: 'Source',
+            stageName: 'Source',
             actions: [
               new FakeSourceAction({
                 actionName: 'Source',
@@ -103,7 +103,7 @@ export = {
             ],
           },
           {
-            name: 'Build',
+            stageName: 'Build',
             actions: [
               new FakeBuildAction({
                 actionName: 'Build',
@@ -135,7 +135,7 @@ export = {
       new codepipeline.Pipeline(stack, 'Pipeline', {
         stages: [
           {
-            name: 'Source',
+            stageName: 'Source',
             actions: [
               new FakeSourceAction({
                 actionName: 'source1',
@@ -148,7 +148,7 @@ export = {
             ],
           },
           {
-            name: 'Build',
+            stageName: 'Build',
             actions: [
               new FakeBuildAction({
                 actionName: 'build1',

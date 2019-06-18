@@ -75,12 +75,12 @@ export class CrossAccountDestination extends cdk.Construct implements ILogSubscr
       targetArn: props.targetArn
     });
 
-    this.destinationArn = this.resource.destinationArn;
-    this.destinationName = this.resource.destinationName;
+    this.destinationArn = this.resource.attrArn;
+    this.destinationName = this.resource.refAsString;
   }
 
   public addToPolicy(statement: iam.PolicyStatement) {
-    this.policyDocument.addStatement(statement);
+    this.policyDocument.addStatements(statement);
   }
 
   public bind(_scope: Construct, _sourceLogGroup: ILogGroup): LogSubscriptionDestinationConfig {

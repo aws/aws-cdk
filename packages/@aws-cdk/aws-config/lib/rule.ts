@@ -262,10 +262,10 @@ export class ManagedRule extends RuleNew {
       }
     });
 
-    this.configRuleName = rule.configRuleName;
-    this.configRuleArn = rule.configRuleArn;
-    this.configRuleId = rule.configRuleId;
-    this.configRuleComplianceType = rule.configRuleComplianceType;
+    this.configRuleName = rule.refAsString;
+    this.configRuleArn = rule.attrArn;
+    this.configRuleId = rule.attrConfigRuleId;
+    this.configRuleComplianceType = rule.attrComplianceType;
 
     this.isManaged = true;
   }
@@ -345,8 +345,8 @@ export class CustomRule extends RuleNew {
     });
 
     if (props.lambdaFunction.role) {
-      props.lambdaFunction.role.attachManagedPolicy(
-        new iam.AwsManagedPolicy('service-role/AWSConfigRulesExecutionRole', this).policyArn
+      props.lambdaFunction.role.addManagedPolicy(
+        iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSConfigRulesExecutionRole')
       );
     }
 
@@ -366,10 +366,10 @@ export class CustomRule extends RuleNew {
       }
     });
 
-    this.configRuleName = rule.configRuleName;
-    this.configRuleArn = rule.configRuleArn;
-    this.configRuleId = rule.configRuleId;
-    this.configRuleComplianceType = rule.configRuleComplianceType;
+    this.configRuleName = rule.refAsString;
+    this.configRuleArn = rule.attrArn;
+    this.configRuleId = rule.attrConfigRuleId;
+    this.configRuleComplianceType = rule.attrComplianceType;
 
     if (props.configurationChanges) {
       this.isCustomWithChanges = true;

@@ -16,6 +16,11 @@ export interface IResolveContext {
    * Resolve an inner object
    */
   resolve(x: any): any;
+
+  /**
+   * Use this postprocessor after the entire token structure has been resolved
+   */
+  registerPostProcessor(postProcessor: IPostProcessor): void;
 }
 
 /**
@@ -24,6 +29,12 @@ export interface IResolveContext {
  * Tokens are special objects that participate in synthesis.
  */
 export interface IResolvable {
+  /**
+   * The creation stack of this resolvable which will be appended to errors
+   * thrown during resolution.
+   */
+  readonly creationStack?: string[];
+
   /**
    * Produce the Token's value at resolution time
    */
@@ -40,7 +51,7 @@ export interface IResolvable {
 /**
  * A Token that can post-process the complete resolved value, after resolve() has recursed over it
  */
-export interface IResolvableWithPostProcess extends IResolvable {
+export interface IPostProcessor  {
   /**
    * Process the completely resolved value, after full recursion/resolution has happened
    */
@@ -54,7 +65,7 @@ export interface ITokenResolver {
   /**
    * Resolve a single token
    */
-  resolveToken(t: IResolvable, context: IResolveContext): any;
+  resolveToken(t: IResolvable, context: IResolveContext, postProcessor: IPostProcessor): any;
 
   /**
    * Resolve a string with at least one stringified token in it
@@ -107,17 +118,23 @@ export class DefaultTokenResolver implements ITokenResolver {
    * Resolve the Token, recurse into whatever it returns,
    * then finally post-process it.
    */
-  public resolveToken(t: IResolvable, context: IResolveContext) {
-    let resolved = t.resolve(context);
+  public resolveToken(t: IResolvable, context: IResolveContext, postProcessor: IPostProcessor) {
+    try {
+      let resolved = t.resolve(context);
 
-    // The token might have returned more values that need resolving, recurse
-    resolved = context.resolve(resolved);
+      // The token might have returned more values that need resolving, recurse
+      resolved = context.resolve(resolved);
+      resolved = postProcessor.postProcess(resolved, context);
+      return resolved;
+    } catch (e) {
+      let message = `Resolution error: ${e.message}.`;
+      if (t.creationStack && t.creationStack.length > 0) {
+        message += `\nObject creation stack:\n  at ${t.creationStack.join('\n  at ')}`;
+      }
 
-    if (isResolvedValuePostProcessor(t)) {
-      resolved = t.postProcess(resolved, context);
+      e.message = message;
+      throw e;
     }
-
-    return resolved;
   }
 
   /**
@@ -142,11 +159,4 @@ export class DefaultTokenResolver implements ITokenResolver {
 
     return fragments.mapTokens({ mapToken: context.resolve }).firstValue;
   }
-}
-
-/**
- * Whether the given object is an `IResolvedValuePostProcessor`
- */
-function isResolvedValuePostProcessor(x: any): x is IResolvableWithPostProcess {
-  return x.postProcess !== undefined;
 }
