@@ -88,7 +88,7 @@ export = {
 
     // WHEN
     const imported = LogGroup.fromLogGroupArn(stack2, 'lg', 'arn:aws:logs:us-east-1:123456789012:log-group:my-log-group');
-    imported.newStream(stack2, 'MakeMeAStream');
+    imported.addStream('MakeMeAStream');
 
     // THEN
     expect(stack2).to(haveResource('AWS::Logs::LogStream', {
