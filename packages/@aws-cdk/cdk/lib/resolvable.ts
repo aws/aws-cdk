@@ -30,6 +30,12 @@ export interface IResolveContext {
  */
 export interface IResolvable {
   /**
+   * The creation stack of this resolvable which will be appended to errors
+   * thrown during resolution.
+   */
+  readonly creationStack?: string[];
+
+  /**
    * Produce the Token's value at resolution time
    */
   resolve(context: IResolveContext): any;
@@ -113,14 +119,22 @@ export class DefaultTokenResolver implements ITokenResolver {
    * then finally post-process it.
    */
   public resolveToken(t: IResolvable, context: IResolveContext, postProcessor: IPostProcessor) {
-    let resolved = t.resolve(context);
+    try {
+      let resolved = t.resolve(context);
 
-    // The token might have returned more values that need resolving, recurse
-    resolved = context.resolve(resolved);
+      // The token might have returned more values that need resolving, recurse
+      resolved = context.resolve(resolved);
+      resolved = postProcessor.postProcess(resolved, context);
+      return resolved;
+    } catch (e) {
+      let message = `Resolution error: ${e.message}.`;
+      if (t.creationStack && t.creationStack.length > 0) {
+        message += `\nObject creation stack:\n  at ${t.creationStack.join('\n  at ')}`;
+      }
 
-    resolved = postProcessor.postProcess(resolved, context);
-
-    return resolved;
+      e.message = message;
+      throw e;
+    }
   }
 
   /**
