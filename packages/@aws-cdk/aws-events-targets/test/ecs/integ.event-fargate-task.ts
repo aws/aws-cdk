@@ -20,9 +20,7 @@ class EventStack extends cdk.Stack {
     // Create a Task Definition for the container to start
     const taskDefinition = new ecs.FargateTaskDefinition(this, 'TaskDef');
     taskDefinition.addContainer('TheContainer', {
-      image: ecs.ContainerImage.fromAsset(this, 'EventImage', {
-        directory: path.resolve(__dirname, 'eventhandler-image')
-      }),
+      image: ecs.ContainerImage.fromAsset(path.resolve(__dirname, 'eventhandler-image')),
       logging: new ecs.AwsLogDriver(this, 'TaskLogging', { streamPrefix: 'EventDemo' })
     });
 
