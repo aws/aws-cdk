@@ -8,12 +8,12 @@ export enum ReceiptFilterPolicy {
   /**
    * Allow the ip address or range.
    */
-  Allow = 'Allow',
+  ALLOW = 'Allow',
 
   /**
    * Block the ip address or range.
    */
-  Block = 'Block'
+  BLOCK = 'Block'
 }
 
 /**
@@ -54,7 +54,7 @@ export class ReceiptFilter extends Resource {
       filter: {
         ipFilter: {
           cidr: (props && props.ip) || '0.0.0.0/0',
-          policy: (props && props.policy) || ReceiptFilterPolicy.Block
+          policy: (props && props.policy) || ReceiptFilterPolicy.BLOCK
         },
         name: props ? props.name : undefined
       }
@@ -84,7 +84,7 @@ export class WhiteListReceiptFilter extends Construct {
     props.ips.forEach(ip => {
       new ReceiptFilter(this, `Allow${ip.replace(/[^\d]/g, '')}`, {
         ip,
-        policy: ReceiptFilterPolicy.Allow
+        policy: ReceiptFilterPolicy.ALLOW
       });
     });
   }

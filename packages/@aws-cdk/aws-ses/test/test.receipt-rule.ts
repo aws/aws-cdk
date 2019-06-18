@@ -21,7 +21,7 @@ export = {
           name: 'SecondRule',
           recipients: ['hello@aws.com'],
           scanEnabled: true,
-          tlsPolicy: TlsPolicy.Require
+          tlsPolicy: TlsPolicy.REQUIRE
         }
       ]
     });

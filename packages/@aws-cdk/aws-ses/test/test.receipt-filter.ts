@@ -14,7 +14,7 @@ export = {
     new ReceiptFilter(stack, 'Filter', {
       ip: '1.2.3.4/16',
       name: 'MyFilter',
-      policy: ReceiptFilterPolicy.Block
+      policy: ReceiptFilterPolicy.BLOCK
     });
 
     // THEN
