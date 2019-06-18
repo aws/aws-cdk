@@ -144,7 +144,7 @@ export abstract class DatabaseInstanceBase extends Resource implements IDatabase
   public asSecretAttachmentTarget(): secretsmanager.SecretAttachmentTargetProps {
     return {
       targetId: this.instanceIdentifier,
-      targetType: secretsmanager.AttachmentTargetType.Instance
+      targetType: secretsmanager.AttachmentTargetType.INSTANCE
     };
   }
 }

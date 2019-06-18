@@ -174,7 +174,7 @@ abstract class DatabaseClusterBase extends Resource implements IDatabaseCluster 
   public asSecretAttachmentTarget(): secretsmanager.SecretAttachmentTargetProps {
     return {
       targetId: this.clusterIdentifier,
-      targetType: secretsmanager.AttachmentTargetType.Cluster
+      targetType: secretsmanager.AttachmentTargetType.CLUSTER
     };
   }
 }

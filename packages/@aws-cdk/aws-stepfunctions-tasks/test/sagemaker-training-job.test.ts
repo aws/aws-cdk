@@ -135,7 +135,7 @@ test('create complex training job', () => {
         },
         resourceConfig: {
             instanceCount: 1,
-            instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.P3, ec2.InstanceSize.XLarge2),
+            instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.P3, ec2.InstanceSize.XLARGE2),
             volumeSizeInGB: 50,
             volumeKmsKeyId: kmsKey,
         },
@@ -256,7 +256,7 @@ test('pass param to training job', () => {
         },
         resourceConfig: {
             instanceCount: 1,
-            instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.P3, ec2.InstanceSize.XLarge2),
+            instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.P3, ec2.InstanceSize.XLARGE2),
             volumeSizeInGB: 50
         },
         stoppingCondition: {

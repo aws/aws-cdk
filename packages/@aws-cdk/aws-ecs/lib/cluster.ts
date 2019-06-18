@@ -86,10 +86,10 @@ export class Cluster extends Resource implements ICluster {
     }
 
     const namespaceType = options.type === undefined || options.type === NamespaceType.PRIVATE_DNS
-      ? cloudmap.NamespaceType.DnsPrivate
-      : cloudmap.NamespaceType.DnsPublic;
+      ? cloudmap.NamespaceType.DNS_PRIVATE
+      : cloudmap.NamespaceType.DNS_PUBLIC;
 
-    const sdNamespace = namespaceType === cloudmap.NamespaceType.DnsPrivate ?
+    const sdNamespace = namespaceType === cloudmap.NamespaceType.DNS_PRIVATE ?
       new cloudmap.PrivateDnsNamespace(this, 'DefaultServiceDiscoveryNamespace', {
         name: options.name,
         vpc: this.vpc

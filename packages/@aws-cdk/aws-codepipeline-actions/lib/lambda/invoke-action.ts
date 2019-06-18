@@ -59,7 +59,7 @@ export class LambdaInvokeAction extends codepipeline.Action {
   constructor(props: LambdaInvokeActionProps) {
     super({
       ...props,
-      category: codepipeline.ActionCategory.Invoke,
+      category: codepipeline.ActionCategory.INVOKE,
       provider: 'Lambda',
       artifactBounds: {
         minInputs: 0,

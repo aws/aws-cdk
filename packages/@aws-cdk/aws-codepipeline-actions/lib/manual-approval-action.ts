@@ -40,7 +40,7 @@ export class ManualApprovalAction extends codepipeline.Action {
   constructor(props: ManualApprovalActionProps) {
     super({
       ...props,
-      category: codepipeline.ActionCategory.Approval,
+      category: codepipeline.ActionCategory.APPROVAL,
       provider: 'Manual',
       artifactBounds: { minInputs: 0, maxInputs: 0, minOutputs: 0, maxOutputs: 0 },
       configuration: cdk.Lazy.anyValue({ produce: () => this.actionConfiguration() }),

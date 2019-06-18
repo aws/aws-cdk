@@ -380,7 +380,7 @@ export = {
     });
 
     // THEN
-    test.equal(cluster2.defaultNamespace!.type, cloudmap.NamespaceType.DnsPrivate);
+    test.equal(cluster2.defaultNamespace!.type, cloudmap.NamespaceType.DNS_PRIVATE);
     test.deepEqual(stack2.resolve(cluster2.defaultNamespace!.namespaceId), 'import-namespace-id');
 
     // Can retrieve subnets from VPC - will throw 'There are no 'Private' subnets in this VPC. Use a different VPC subnet selection.' if broken.
