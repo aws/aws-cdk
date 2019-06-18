@@ -2,8 +2,9 @@ import { Construct, IResource, Lazy, Resource, Stack } from '@aws-cdk/cdk';
 import { IAlarmAction } from './alarm-action';
 import { CfnAlarm } from './cloudwatch.generated';
 import { HorizontalAnnotation } from './graph';
-import { Dimension, Metric, MetricAlarmProps, Statistic, Unit } from './metric';
-import { parseStatistic } from './util.statistic';
+import { CreateAlarmOptions } from './metric';
+import { IMetric } from './metric-types';
+import { normalizeStatistic } from './util.statistic';
 
 export interface IAlarm extends IResource {
   /**
@@ -20,14 +21,14 @@ export interface IAlarm extends IResource {
 /**
  * Properties for Alarms
  */
-export interface AlarmProps extends MetricAlarmProps {
+export interface AlarmProps extends CreateAlarmOptions {
   /**
    * The metric to add the alarm on
    *
    * Metric objects can be obtained from most resources, or you can construct
    * custom Metric objects by instantiating one.
    */
-  readonly metric: Metric;
+  readonly metric: IMetric;
 }
 
 /**
@@ -102,7 +103,7 @@ export class Alarm extends Resource implements IAlarm {
   /**
    * The metric object this alarm was based on
    */
-  public readonly metric: Metric;
+  public readonly metric: IMetric;
 
   private alarmActionArns?: string[];
   private insufficientDataActionArns?: string[];
@@ -117,6 +118,8 @@ export class Alarm extends Resource implements IAlarm {
     super(scope, id);
 
     const comparisonOperator = props.comparisonOperator || ComparisonOperator.GreaterThanOrEqualToThreshold;
+
+    const config = props.metric.toAlarmConfig();
 
     const alarm = new CfnAlarm(this, 'Resource', {
       // Meta
@@ -138,7 +141,12 @@ export class Alarm extends Resource implements IAlarm {
       okActions: Lazy.listValue({ produce: () => this.okActionArns }),
 
       // Metric
-      ...metricJson(props.metric)
+      ...dropUndef(config),
+      ...dropUndef({
+        // Alarm overrides
+        period: props.periodSec,
+        statistic: props.statistic && normalizeStatistic(props.statistic),
+      })
     });
 
     this.alarmArn = alarm.attrArn;
@@ -146,7 +154,7 @@ export class Alarm extends Resource implements IAlarm {
     this.metric = props.metric;
     this.annotation = {
       // tslint:disable-next-line:max-line-length
-      label: `${this.metric.label || this.metric.metricName} ${OPERATOR_SYMBOLS[comparisonOperator]} ${props.threshold} for ${props.evaluationPeriods} datapoints within ${describePeriod(props.evaluationPeriods * props.metric.periodSec)}`,
+      label: `${this.metric} ${OPERATOR_SYMBOLS[comparisonOperator]} ${props.threshold} for ${props.evaluationPeriods} datapoints within ${describePeriod(props.evaluationPeriods * config.period)}`,
       value: props.threshold,
     };
   }
@@ -223,61 +231,12 @@ function describePeriod(seconds: number) {
   return seconds + ' seconds';
 }
 
-/**
- * Return the JSON structure which represents the given metric in an alarm.
- */
-function metricJson(metric: Metric): AlarmMetricJson {
-  const stat = parseStatistic(metric.statistic);
-
-  const dims = metric.dimensionsAsList();
-
-  return {
-    dimensions: dims.length > 0 ? dims : undefined,
-    namespace: metric.namespace,
-    metricName: metric.metricName,
-    period: metric.periodSec,
-    statistic: stat.type === 'simple' ? stat.statistic : undefined,
-    extendedStatistic: stat.type === 'percentile' ? 'p' + stat.percentile : undefined,
-    unit: metric.unit
-  };
-}
-
-/**
- * Properties used to construct the Metric identifying part of an Alarm
- */
-export interface AlarmMetricJson {
-  /**
-   * The dimensions to apply to the alarm
-   */
-  readonly dimensions?: Dimension[];
-
-  /**
-   * Namespace of the metric
-   */
-  readonly namespace: string;
-
-  /**
-   * Name of the metric
-   */
-  readonly metricName: string;
-
-  /**
-   * How many seconds to aggregate over
-   */
-  readonly period: number;
-
-  /**
-   * Simple aggregation function to use
-   */
-  readonly statistic?: Statistic;
-
-  /**
-   * Percentile aggregation function to use
-   */
-  readonly extendedStatistic?: string;
-
-  /**
-   * The unit of the alarm
-   */
-  readonly unit?: Unit;
+function dropUndef<T extends object>(x: T): T {
+  const ret: any = {};
+  for (const [key, value] of Object.entries(x)) {
+    if (value !== undefined) {
+      ret[key] = value;
+    }
+  }
+  return ret;
 }
