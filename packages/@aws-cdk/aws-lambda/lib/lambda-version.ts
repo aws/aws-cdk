@@ -81,7 +81,7 @@ export class Version extends QualifiedFunctionBase implements IVersion {
   public static fromVersionArn(scope: Construct, id: string, versionArn: string): IVersion {
     return Version.fromVersionAttributes(scope, id, {
       version: extractVersionFromArn(versionArn),
-      lambda: Function.fromFunctionArn(scope, `${id}Function`, versionArn),
+      lambda: Function.fromFunctionArn(scope, `${id}Function`, extractFunctionArnFromVersionArn(versionArn)),
     });
   }
 
@@ -143,6 +143,31 @@ export class Version extends QualifiedFunctionBase implements IVersion {
       ...props
     });
   }
+}
+
+/**
+ * Given an opaque (token) ARN, returns a CloudFormation expression that extracts the function
+ * ARN from the ARN.
+ *
+ * Version ARNs look like this:
+ *
+ *   arn:aws:lambda:region:account-id:function:function-name:version
+ *
+ * ..which means that in order to extract the `function arn` component from the ARN, we can
+ * split the ARN using ":" and join indices 0-6.
+ *
+ * @returns `FnSelect(7, FnSplit(':', arn))`
+ */
+function extractFunctionArnFromVersionArn(arn: string) {
+  return Fn.join(':', [
+    Fn.select(0, Fn.split(':', arn)),
+    Fn.select(1, Fn.split(':', arn)),
+    Fn.select(2, Fn.split(':', arn)),
+    Fn.select(3, Fn.split(':', arn)),
+    Fn.select(4, Fn.split(':', arn)),
+    Fn.select(5, Fn.split(':', arn)),
+    Fn.select(6, Fn.split(':', arn))
+  ]);
 }
 
 /**
