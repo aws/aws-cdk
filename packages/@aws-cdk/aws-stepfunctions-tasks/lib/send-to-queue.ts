@@ -36,6 +36,13 @@ export interface SendToQueueProps {
    * @default No group ID
    */
   readonly messageGroupId?: string;
+
+  /**
+   * Whether to pause the workflow until a task token is returned
+   *
+   * @default false
+   */
+  readonly waitForTaskToken?: boolean;
 }
 
 /**
@@ -45,12 +52,20 @@ export interface SendToQueueProps {
  * integration with other AWS services via a specific class instance.
  */
 export class SendToQueue implements sfn.IStepFunctionsTask {
+
+  private readonly waitForTaskToken: boolean;
+
   constructor(private readonly queue: sqs.IQueue, private readonly props: SendToQueueProps) {
+    this.waitForTaskToken = props.waitForTaskToken === true;
+
+    if (this.waitForTaskToken && !sfn.FieldUtils.containsTaskToken(props.messageBody.value)) {
+      throw new Error('Task Token is missing in messageBody (pass Context.taskToken somewhere in messageBody)');
+    }
   }
 
   public bind(_task: sfn.Task): sfn.StepFunctionsTaskConfig {
     return {
-      resourceArn: 'arn:aws:states:::sqs:sendMessage',
+      resourceArn: 'arn:aws:states:::sqs:sendMessage' + (this.waitForTaskToken ? '.waitForTaskToken' : ''),
       policyStatements: [new iam.PolicyStatement({
         actions: ['sqs:SendMessage'],
         resources: [this.queue.queueArn]
