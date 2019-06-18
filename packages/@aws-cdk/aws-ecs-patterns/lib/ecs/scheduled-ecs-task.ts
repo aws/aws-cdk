@@ -21,7 +21,7 @@ export interface ScheduledEc2TaskProps {
    *
    * @see http://docs.aws.amazon.com/AmazonCloudWatch/latest/events/ScheduledEvents.html
    */
-  readonly scheduleExpression: string;
+  readonly schedule: events.Schedule;
 
   /**
    * The CMD value to pass to the container. A string with commands delimited by commas.
@@ -106,7 +106,7 @@ export class ScheduledEc2Task extends cdk.Construct {
 
     // An EventRule that describes the event trigger (in this case a scheduled run)
     const eventRule = new events.Rule(this, 'ScheduledEventRule', {
-      scheduleExpression: props.scheduleExpression,
+      schedule: props.schedule,
     });
     eventRule.addTarget(eventRuleTarget);
   }

@@ -30,12 +30,16 @@
 export interface EventPattern {
   /**
    * By default, this is set to 0 (zero) in all events.
+   *
+   * @default - No filtering on version
    */
   readonly version?: string[];
 
   /**
    * A unique value is generated for every event. This can be helpful in
    * tracing events as they move through rules to targets, and are processed.
+   *
+   * @default - No filtering on id
    */
   readonly id?: string[];
 
@@ -44,6 +48,8 @@ export interface EventPattern {
    * that appear in the detail field.
    *
    * Represents the "detail-type" event field.
+   *
+   * @default - No filtering on detail type
    */
   readonly detailType?: string[];
 
@@ -58,11 +64,14 @@ export interface EventPattern {
    * CloudFront is aws.cloudfront.
    *
    * @see http://docs.aws.amazon.com/general/latest/gr/aws-arns-and-namespaces.html#genref-aws-service-namespaces
+   * @default - No filtering on source
    */
   readonly source?: string[];
 
   /**
    * The 12-digit number identifying an AWS account.
+   *
+   * @default - No filtering on account
    */
   readonly account?: string[];
 
@@ -71,11 +80,15 @@ export interface EventPattern {
    * the event. If the event spans a time interval, the service might choose
    * to report the start time, so this value can be noticeably before the time
    * the event is actually received.
+   *
+   * @default - No filtering on time
    */
   readonly time?: string[];
 
   /**
    * Identifies the AWS region where the event originated.
+   *
+   * @default - No filtering on region
    */
   readonly region?: string[];
 
@@ -88,12 +101,16 @@ export interface EventPattern {
    * instance ARNs, Auto Scaling events include ARNs for both instances and
    * Auto Scaling groups, but API calls with AWS CloudTrail do not include
    * resource ARNs.
+   *
+   * @default - No filtering on resource
    */
   readonly resources?: string[];
 
   /**
    * A JSON object, whose content is at the discretion of the service
    * originating the event.
+   *
+   * @default - No filtering on detail
    */
-  readonly detail?: any;
+  readonly detail?: {[key: string]: any};
 }

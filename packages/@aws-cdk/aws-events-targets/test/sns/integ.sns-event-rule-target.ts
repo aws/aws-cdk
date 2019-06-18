@@ -16,7 +16,7 @@ const stack = new cdk.Stack(app, 'aws-cdk-sns-event-target');
 
 const topic = new sns.Topic(stack, 'MyTopic');
 const event = new events.Rule(stack, 'EveryMinute', {
-  scheduleExpression: 'rate(1 minute)'
+  schedule: events.Schedule.rate(1, events.TimeUnit.Minute),
 });
 
 const queue = new sqs.Queue(stack, 'MyQueue');

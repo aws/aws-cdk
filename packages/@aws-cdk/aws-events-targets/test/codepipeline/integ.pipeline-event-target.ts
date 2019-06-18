@@ -43,7 +43,7 @@ pipeline.addStage({
 });
 
 new events.Rule(stack, 'rule', {
-  scheduleExpression: 'rate(1 minute)',
+  schedule: events.Schedule.expression('rate(1 minute)'),
   targets: [new targets.CodePipeline(pipeline)]
 });
 

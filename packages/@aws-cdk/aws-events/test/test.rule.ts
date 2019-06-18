@@ -4,7 +4,7 @@ import { ServicePrincipal } from '@aws-cdk/aws-iam';
 import cdk = require('@aws-cdk/cdk');
 import { Stack } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
-import { EventField, IRule, IRuleTarget, RuleTargetInput } from '../lib';
+import { EventField, IRule, IRuleTarget, RuleTargetInput, Schedule, TimeUnit } from '../lib';
 import { Rule } from '../lib/rule';
 
 // tslint:disable:object-literal-key-quotes
@@ -14,7 +14,7 @@ export = {
     const stack = new cdk.Stack();
 
     new Rule(stack, 'MyRule', {
-      scheduleExpression: 'rate(10 minutes)'
+        schedule: Schedule.rate(10, TimeUnit.Minute),
     });
 
     expect(stack).toMatch({
@@ -37,8 +37,8 @@ export = {
 
     // WHEN
     new Rule(stack, 'MyRule', {
-    ruleName: 'PhysicalName',
-    scheduleExpression: 'rate(10 minutes)'
+      ruleName: 'PhysicalName',
+      schedule: Schedule.rate(10, TimeUnit.Minute),
     });
 
     // THEN
@@ -97,7 +97,7 @@ export = {
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'MyStack');
     new Rule(stack, 'Rule');
-    test.throws(() => app.synth(), /Either 'eventPattern' or 'scheduleExpression' must be defined/);
+    test.throws(() => app.synth(), /Either 'eventPattern' or 'schedule' must be defined/);
     test.done();
   },
 
@@ -174,7 +174,7 @@ export = {
 
     const rule = new Rule(stack, 'EventRule', {
       targets: [ t1 ],
-      scheduleExpression: 'rate(5 minutes)'
+      schedule: Schedule.rate(5, TimeUnit.Minute),
     });
 
     rule.addTarget(t2);
@@ -215,7 +215,9 @@ export = {
   'input template can contain tokens'(test: Test) {
     const stack = new cdk.Stack();
 
-    const rule = new Rule(stack, 'EventRule', { scheduleExpression: 'rate(1 minute)' });
+    const rule = new Rule(stack, 'EventRule', {
+      schedule: Schedule.rate(1, TimeUnit.Minute),
+    });
 
     // a plain string should just be stringified (i.e. double quotes added and escaped)
     rule.addTarget({
@@ -298,7 +300,9 @@ export = {
     // GIVEN
     const stack = new cdk.Stack();
 
-    const rule = new Rule(stack, 'EventRule', { scheduleExpression: 'rate(1 minute)' });
+    const rule = new Rule(stack, 'EventRule', {
+      schedule: Schedule.rate(1, TimeUnit.Minute),
+    });
 
     const role = new iam.Role(stack, 'SomeRole', {
       assumedBy: new ServicePrincipal('nobody')
@@ -372,7 +376,7 @@ export = {
 
     // WHEN
     new Rule(stack, 'Rule', {
-      scheduleExpression: 'foom',
+      schedule: Schedule.expression('foom'),
       enabled: false
     });
 
@@ -388,7 +392,7 @@ export = {
     // GIVEN
     const stack = new cdk.Stack();
     const rule = new Rule(stack, 'Rule', {
-      scheduleExpression: 'foom',
+      schedule: Schedule.expression('foom'),
       enabled: false
     });
     rule.addTarget(new SomeTarget());
