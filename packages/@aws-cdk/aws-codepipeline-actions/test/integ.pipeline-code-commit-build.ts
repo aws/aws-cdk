@@ -26,7 +26,7 @@ const buildAction = new cpactions.CodeBuildAction({
   actionName: 'build',
   project,
   input: sourceOutput,
-  output: new codepipeline.Artifact(),
+  outputs: [new codepipeline.Artifact()],
 });
 const testAction = new cpactions.CodeBuildAction({
   type: cpactions.CodeBuildActionType.TEST,
@@ -38,12 +38,12 @@ const testAction = new cpactions.CodeBuildAction({
 new codepipeline.Pipeline(stack, 'Pipeline', {
   stages: [
     {
-      name: 'source',
+      stageName: 'source',
       actions: [sourceAction],
     },
   ],
 }).addStage({
-  name: 'build',
+  stageName: 'build',
   actions: [
     buildAction,
     testAction,

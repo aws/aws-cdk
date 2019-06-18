@@ -45,6 +45,6 @@ export class VpcLink extends Resource {
       targetArns: props.targets.map(nlb => nlb.loadBalancerArn)
     });
 
-    this.vpcLinkId = cfnResource.vpcLinkId;
+    this.vpcLinkId = cfnResource.refAsString;
   }
 }

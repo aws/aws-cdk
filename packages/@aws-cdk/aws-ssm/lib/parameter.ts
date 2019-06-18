@@ -185,9 +185,9 @@ export class StringParameter extends ParameterBase implements IStringParameter {
       value: props.stringValue,
     });
 
-    this.parameterName = resource.parameterName;
-    this.parameterType = resource.parameterType;
-    this.stringValue = resource.parameterValue;
+    this.parameterName = resource.refAsString;
+    this.parameterType = resource.attrType;
+    this.stringValue = resource.attrValue;
   }
 }
 
@@ -233,9 +233,9 @@ export class StringListParameter extends ParameterBase implements IStringListPar
       value: props.stringListValue.join(','),
     });
 
-    this.parameterName = resource.parameterName;
-    this.parameterType = resource.parameterType;
-    this.stringListValue = Fn.split(',', resource.parameterValue);
+    this.parameterName = resource.refAsString;
+    this.parameterType = resource.attrType;
+    this.stringListValue = Fn.split(',', resource.attrValue);
   }
 }
 

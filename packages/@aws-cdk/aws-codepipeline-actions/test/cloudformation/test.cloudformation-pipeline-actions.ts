@@ -31,7 +31,7 @@ export = {
     pollForSourceChanges: true,
   });
   pipeline.addStage({
-    name: 'source',
+    stageName: 'source',
     actions: [source]
   });
 
@@ -48,10 +48,10 @@ export = {
     actionName: 'build',
     project,
     input: sourceOutput,
-    output: buildOutput,
+    outputs: [buildOutput],
   });
   pipeline.addStage({
-    name: 'build',
+    stageName: 'build',
     actions: [buildAction],
   });
 
@@ -63,7 +63,7 @@ export = {
   const stackName = 'BrelandsStack';
   const changeSetName = 'MyMagicalChangeSet';
   pipeline.addStage({
-    name: 'prod',
+    stageName: 'prod',
     actions: [
       new cpactions.CloudFormationCreateReplaceChangeSetAction({
         actionName: 'BuildChangeSetProd',
@@ -432,8 +432,8 @@ class TestFixture extends cdk.Stack {
     super();
 
     this.pipeline = new codepipeline.Pipeline(this, 'Pipeline');
-    this.sourceStage = this.pipeline.addStage({ name: 'Source' });
-    this.deployStage = this.pipeline.addStage({ name: 'Deploy' });
+    this.sourceStage = this.pipeline.addStage({ stageName: 'Source' });
+    this.deployStage = this.pipeline.addStage({ stageName: 'Deploy' });
     this.repo = new Repository(this, 'MyVeryImportantRepo', { repositoryName: 'my-very-important-repo' });
     this.sourceOutput = new codepipeline.Artifact('SourceArtifact');
     const source = new cpactions.CodeCommitSourceAction({

@@ -87,7 +87,8 @@ export interface ComplexMapProperty extends MapPropertyBase {
 }
 
 export interface TagPropertyStandard extends PropertyBase {
-  ItemType: 'Tag';
+  ItemType: 'Tag' | 'TagsEntry' | 'TagRef';
+  Type: 'Tags';
 }
 
 export interface TagPropertyAutoScalingGroup extends PropertyBase {
@@ -237,7 +238,13 @@ export function isTagProperty(prop: Property): prop is TagProperty {
 }
 
 export function isTagPropertyStandard(prop: Property): prop is TagPropertyStandard {
-  return (prop as TagPropertyStandard).ItemType === 'Tag';
+  return (
+    (prop as TagPropertyStandard).ItemType === 'Tag' ||
+    (prop as TagPropertyStandard).ItemType === 'TagsEntry' ||
+    (prop as TagPropertyStandard).Type === 'Tags' ||
+    (prop as TagPropertyStandard).ItemType === 'TagRef'
+  );
+
 }
 
 export function isTagPropertyAutoScalingGroup(prop: Property): prop is TagPropertyAutoScalingGroup {

@@ -179,10 +179,10 @@ export class GatewayVpcEndpoint extends VpcEndpoint implements IGatewayVpcEndpoi
       vpcId: props.vpc.vpcId
     });
 
-    this.vpcEndpointId = endpoint.vpcEndpointId;
-    this.vpcEndpointCreationTimestamp = endpoint.vpcEndpointCreationTimestamp;
-    this.vpcEndpointDnsEntries = endpoint.vpcEndpointDnsEntries;
-    this.vpcEndpointNetworkInterfaceIds = endpoint.vpcEndpointNetworkInterfaceIds;
+    this.vpcEndpointId = endpoint.refAsString;
+    this.vpcEndpointCreationTimestamp = endpoint.attrCreationTimestamp;
+    this.vpcEndpointDnsEntries = endpoint.attrDnsEntries;
+    this.vpcEndpointNetworkInterfaceIds = endpoint.attrNetworkInterfaceIds;
   }
 }
 
@@ -381,10 +381,10 @@ export class InterfaceVpcEndpoint extends VpcEndpoint implements IInterfaceVpcEn
       vpcId: props.vpc.vpcId
     });
 
-    this.vpcEndpointId = endpoint.vpcEndpointId;
-    this.vpcEndpointCreationTimestamp = endpoint.vpcEndpointCreationTimestamp;
-    this.vpcEndpointDnsEntries = endpoint.vpcEndpointDnsEntries;
-    this.vpcEndpointNetworkInterfaceIds = endpoint.vpcEndpointNetworkInterfaceIds;
+    this.vpcEndpointId = endpoint.refAsString;
+    this.vpcEndpointCreationTimestamp = endpoint.attrCreationTimestamp;
+    this.vpcEndpointDnsEntries = endpoint.attrDnsEntries;
+    this.vpcEndpointNetworkInterfaceIds = endpoint.attrNetworkInterfaceIds;
   }
 }
 
