@@ -28,7 +28,7 @@ describe('given an AutoScalingGroup', () => {
 
     // WHEN
     asg.addLifecycleHook('Trans', {
-      lifecycleTransition: autoscaling.LifecycleTransition.InstanceLaunching,
+      lifecycleTransition: autoscaling.LifecycleTransition.INSTANCE_LAUNCHING,
       notificationTarget: new hooks.QueueHook(queue),
     });
 
@@ -43,7 +43,7 @@ describe('given an AutoScalingGroup', () => {
 
     // WHEN
     asg.addLifecycleHook('Trans', {
-      lifecycleTransition: autoscaling.LifecycleTransition.InstanceLaunching,
+      lifecycleTransition: autoscaling.LifecycleTransition.INSTANCE_LAUNCHING,
       notificationTarget: new hooks.TopicHook(topic),
     });
 
@@ -63,7 +63,7 @@ describe('given an AutoScalingGroup', () => {
 
     // WHEN
     asg.addLifecycleHook('Trans', {
-      lifecycleTransition: autoscaling.LifecycleTransition.InstanceLaunching,
+      lifecycleTransition: autoscaling.LifecycleTransition.INSTANCE_LAUNCHING,
       notificationTarget: new hooks.FunctionHook(fn),
     });
 
