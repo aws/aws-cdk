@@ -724,9 +724,9 @@ export class DatabaseInstance extends DatabaseInstanceSource implements IDatabas
       ...this.sourceCfnProps,
       characterSetName: props.characterSetName,
       kmsKeyId: props.kmsKey && props.kmsKey.keyArn,
-      masterUsername: secret ? secret.secretJsonValue('username').toString() : props.masterUsername,
+      masterUsername: secret ? secret.secretValueFromJson('username').toString() : props.masterUsername,
       masterUserPassword: secret
-        ? secret.secretJsonValue('password').toString()
+        ? secret.secretValueFromJson('password').toString()
         : (props.masterUserPassword
           ? props.masterUserPassword.toString()
           : undefined),
@@ -819,9 +819,9 @@ export class DatabaseInstanceFromSnapshot extends DatabaseInstanceSource impleme
     const instance = new CfnDBInstance(this, 'Resource', {
       ...this.sourceCfnProps,
       dbSnapshotIdentifier: props.snapshotIdentifier,
-      masterUsername: secret ? secret.secretJsonValue('username').toString() : props.masterUsername,
+      masterUsername: secret ? secret.secretValueFromJson('username').toString() : props.masterUsername,
       masterUserPassword: secret
-        ? secret.secretJsonValue('password').toString()
+        ? secret.secretValueFromJson('password').toString()
         : (props.masterUserPassword
           ? props.masterUserPassword.toString()
           : undefined),
