@@ -36,7 +36,7 @@ const lambdaSourceAction = new codepipeline_actions.CodeCommitSourceAction({
   output: lambdaSourceOutput,
 });
 pipeline.addStage({
-  name: 'Source',
+  stageName: 'Source',
   actions: [cdkSourceAction, lambdaSourceAction],
 });
 
@@ -70,7 +70,7 @@ const cdkBuildAction = new codepipeline_actions.CodeBuildAction({
   actionName: 'CDK_Build',
   project: cdkBuildProject,
   input: cdkSourceOutput,
-  output: cdkBuildOutput,
+  outputs: [cdkBuildOutput],
 });
 
 // build your Lambda code, using CodeBuild
@@ -103,17 +103,17 @@ const lambdaBuildAction = new codepipeline_actions.CodeBuildAction({
   actionName: 'Lambda_Build',
   project: lambdaBuildProject,
   input: lambdaSourceOutput,
-  output: lambdaBuildOutput,
+  outputs: [lambdaBuildOutput],
 });
 
 pipeline.addStage({
-  name: 'Build',
+  stageName: 'Build',
   actions: [cdkBuildAction, lambdaBuildAction],
 });
 
 // finally, deploy your Lambda Stack
 pipeline.addStage({
-  name: 'Deploy',
+  stageName: 'Deploy',
   actions: [
     new codepipeline_actions.CloudFormationCreateUpdateStackAction({
       actionName: 'Lambda_CFN_Deploy',

@@ -42,7 +42,7 @@ const sourceAction = new codepipeline_actions.CodeCommitSourceAction({
   output: sourceOutput,
 });
 pipeline.addStage({
-  name: 'Source',
+  stageName: 'Source',
   actions: [sourceAction],
 });
 ```
@@ -65,7 +65,7 @@ const sourceAction = new codepipeline_actions.GitHubSourceAction({
   trigger: codepipeline_actions.GitHubTrigger.Poll // default: 'WebHook', 'None' is also possible for no Source trigger
 });
 pipeline.addStage({
-  name: 'Source',
+  stageName: 'Source',
   actions: [sourceAction],
 });
 ```
@@ -90,7 +90,7 @@ const sourceAction = new codepipeline_actions.S3SourceAction({
   output: sourceOutput,
 });
 pipeline.addStage({
-  name: 'Source',
+  stageName: 'Source',
   actions: [sourceAction],
 });
 ```
@@ -136,7 +136,7 @@ const sourceAction = new codepipeline_actions.EcrSourceAction({
   output: sourceOutput,
 });
 pipeline.addStage({
-  actionName: 'Source',
+  stageName: 'Source',
   actions: [sourceAction],
 });
 ```
@@ -166,32 +166,21 @@ const buildAction = new codepipeline_actions.CodeBuildAction({
   actionName: 'CodeBuild',
   project,
   input: sourceOutput,
-  output: new codepipeline.Artifact(), // optional
+  outputs: [new codepipeline.Artifact()], // optional
 });
 
 new codepipeline.Pipeline(this, 'MyPipeline', {
   stages: [
     {
-      name: 'Source',
+      stageName: 'Source',
       actions: [sourceAction],
     },
     {
-      name: 'Build',
+      stageName: 'Build',
       actions: [buildAction],
     },
   ],
 });
-```
-
-The `PipelineProject` utility class is a simple sugar around the `Project`
-class, it's equivalent to:
-
-```ts
-const project = new codebuild.Project(this, 'MyProject', {
-  source: new codebuild.CodePipelineSource(),
-  artifacts: new codebuild.CodePipelineBuildArtifacts(),
-  // rest of the properties from PipelineProject are passed unchanged...
-}
 ```
 
 The default category of the CodeBuild Action is `Build`;
@@ -233,11 +222,11 @@ const buildAction = new codepipeline_actions.CodeBuildAction({
   actionName: 'Build',
   project,
   input: sourceOutput1,
-  output: new codepipeline.Artifact('artifact1'), // for better buildspec readability - see below
   extraInputs: [
     sourceOutput2, // this is where 'source2' comes from
   ],
-  extraOutputs: [
+  outputs: [
+    new codepipeline.Artifact('artifact1'), // for better buildspec readability - see below
     new codepipeline.Artifact('artifact2'),
   ],
 });
@@ -246,7 +235,7 @@ const buildAction = new codepipeline_actions.CodeBuildAction({
 **Note**: when a CodeBuild Action in a Pipeline has more than one output, it
 only uses the `secondary-artifacts` field of the buildspec, never the
 primary output specification directly under `artifacts`. Because of that, it
-pays to name even your primary output artifact on the Pipeline, like we did
+pays to explicitly name all output artifacts of that Action, like we did
 above, so that you know what name to use in the buildspec.
 
 Example buildspec for the above project:
@@ -382,7 +371,7 @@ const deployAction = new codepipeline_actions.CodeDeployServerDeployAction({
   deploymentGroup,
 });
 pipeline.addStage({
-  name: 'Deploy',
+  stageName: 'Deploy',
   actions: [deployAction],
 });
 ```
@@ -423,7 +412,7 @@ The deploy Action receives one input Artifact which contains the [image definiti
 
 ```typescript
 const deployStage = pipeline.addStage({
-  name: 'Deploy',
+  stageName: 'Deploy',
   actions: [
     new codepipeline_actions.EcsDeployAction({
       actionName: 'DeployAction',
@@ -458,7 +447,7 @@ const deployAction = new codepipeline_actions.S3DeployAction({
   input: sourceOutput,
 });
 const deployStage = pipeline.addStage({
-  name: 'Deploy',
+  stageName: 'Deploy',
   actions: [deployAction],
 });
 ```
@@ -552,7 +541,7 @@ const lambdaAction = new codepipeline_actions.LambdaInvokeAction({
   lambda: fn,
 });
 pipeline.addStage({
-  actionName: 'Lambda',
+  stageName: 'Lambda',
   actions: [lambdaAction],
 });
 ```

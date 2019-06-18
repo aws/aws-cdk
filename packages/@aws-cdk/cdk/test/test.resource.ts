@@ -294,18 +294,24 @@ export = {
   'removal policy is a high level abstraction of deletion policy used by l2'(test: Test) {
     const stack = new Stack();
 
-    const orphan = new CfnResource(stack, 'Orphan', { type: 'T1' });
-    const forbid = new CfnResource(stack, 'Forbid', { type: 'T2' });
+    const retain = new CfnResource(stack, 'Retain', { type: 'T1' });
     const destroy = new CfnResource(stack, 'Destroy', { type: 'T3' });
+    const def = new CfnResource(stack, 'Default1', { type: 'T4' });
+    const def2 = new CfnResource(stack, 'Default2', { type: 'T4' });
 
-    CfnResource.applyRemovalPolicy(orphan, RemovalPolicy.Orphan);
-    CfnResource.applyRemovalPolicy(forbid, RemovalPolicy.Forbid);
-    CfnResource.applyRemovalPolicy(destroy, RemovalPolicy.Destroy);
+    retain.applyRemovalPolicy(RemovalPolicy.Retain);
+    destroy.applyRemovalPolicy(RemovalPolicy.Destroy);
+    def.applyRemovalPolicy(undefined, { default: RemovalPolicy.Destroy });
+    def2.applyRemovalPolicy(undefined);
 
-    test.deepEqual(toCloudFormation(stack), { Resources:
-      { Orphan: { Type: 'T1', DeletionPolicy: 'Retain' },
-        Forbid: { Type: 'T2', DeletionPolicy: 'Retain' },
-        Destroy: { Type: 'T3' } } });
+    test.deepEqual(toCloudFormation(stack), {
+      Resources: {
+        Retain: { Type: 'T1', DeletionPolicy: 'Retain' },
+        Destroy: { Type: 'T3', DeletionPolicy: 'Delete' },
+        Default1: { Type: 'T4', DeletionPolicy: 'Delete' }, // explicit default
+        Default2: { Type: 'T4', DeletionPolicy: 'Retain' } // implicit default
+      }
+    });
     test.done();
   },
 
@@ -582,7 +588,7 @@ export = {
       test.done();
     },
 
-    'untypedPropertyOverrides': {
+    'using mutable properties': {
 
       'can be used by derived classes to specify overrides before render()'(test: Test) {
         const stack = new Stack();
@@ -591,7 +597,7 @@ export = {
           prop1: 'foo'
         });
 
-        r.setProperty('prop2', 'bar');
+        r.prop2 = 'bar';
 
         test.deepEqual(toCloudFormation(stack), { Resources:
           { MyResource:
@@ -605,7 +611,7 @@ export = {
 
         const r = new CustomizableResource(stack, 'MyResource');
 
-        r.setProperty('prop3', 'zoo');
+        r.prop3 = 'zoo';
 
         test.deepEqual(toCloudFormation(stack), { Resources:
           { MyResource:
@@ -619,8 +625,8 @@ export = {
 
         const r = new CustomizableResource(stack, 'MyResource', { });
 
-        r.setProperty('prop3', 'zoo');
-        r.setProperty('prop2', 'hey');
+        r.prop3 = 'zoo';
+        r.prop2 = 'hey';
 
         test.deepEqual(toCloudFormation(stack), { Resources:
           { MyResource:
@@ -687,14 +693,21 @@ class Counter extends CfnResource {
   public readonly arn: string;
   public readonly url: string;
 
+  public count: number;
+
   constructor(scope: Construct, id: string, props: CounterProps) {
     super(scope, id, { type: 'My::Counter', properties: { Count: props.Count } });
     this.arn = this.getAtt('Arn').toString();
     this.url = this.getAtt('URL').toString();
+    this.count = props.Count;
   }
 
   public increment(by = 1) {
-    this.properties.Count += by;
+    this.count += by;
+  }
+
+  protected get cfnProperties(): { [key: string]: any } {
+    return {Count: this.count};
   }
 }
 
@@ -703,19 +716,41 @@ function withoutHash(logId: string) {
 }
 
 class CustomizableResource extends CfnResource {
+  public prop1: any;
+  public prop2: any;
+  public prop3: any;
+
   constructor(scope: Construct, id: string, props?: any) {
     super(scope, id, { type: 'MyResourceType', properties: props });
+    if (props !== undefined) {
+      this.prop1 = props.prop1;
+      this.prop2 = props.prop2;
+      this.prop3 = props.prop3;
+    }
   }
 
-  public setProperty(key: string, value: any) {
-    this.untypedPropertyOverrides[key] = value;
+  public renderProperties(): { [key: string]: any } {
+    const props = this.updatedProperites;
+    const render: { [key: string]: any } = {};
+    for (const key of Object.keys(props)) {
+      render[key.toUpperCase()] = props[key];
+    }
+    return render;
   }
 
-  public renderProperties(properties: any) {
-    return {
-      PROP1: properties.prop1,
-      PROP2: properties.prop2,
-      PROP3: properties.prop3
+  protected get updatedProperites(): { [key: string]: any } {
+    const props: { [key: string]: any } = {
+      prop1: this.prop1,
+      prop2: this.prop2,
+      prop3: this.prop3,
     };
+    const cleanProps: { [key: string]: any } = { };
+    for (const key of Object.keys(props)) {
+      if (props[key] === undefined) {
+        continue;
+      }
+      cleanProps[key] = props[key];
+    }
+    return cleanProps;
   }
 }

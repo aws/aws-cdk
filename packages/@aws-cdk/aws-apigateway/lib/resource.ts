@@ -211,7 +211,7 @@ export class Resource extends ResourceBase {
     };
     const resource = new CfnResource(this, 'Resource', resourceProps);
 
-    this.resourceId = resource.resourceId;
+    this.resourceId = resource.refAsString;
     this.restApi = props.parent.restApi;
 
     // render resource path (special case for root)

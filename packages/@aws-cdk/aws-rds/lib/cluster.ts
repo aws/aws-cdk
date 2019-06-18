@@ -1,7 +1,7 @@
 import ec2 = require('@aws-cdk/aws-ec2');
 import kms = require('@aws-cdk/aws-kms');
 import secretsmanager = require('@aws-cdk/aws-secretsmanager');
-import { Construct, DeletionPolicy, Resource, Token } from '@aws-cdk/cdk';
+import { Construct,   RemovalPolicy, Resource, Token } from '@aws-cdk/cdk';
 import { DatabaseClusterAttributes, IDatabaseCluster } from './cluster-ref';
 import { DatabaseSecret } from './database-secret';
 import { Endpoint } from './endpoint';
@@ -122,12 +122,12 @@ export interface DatabaseClusterProps {
   readonly parameterGroup?: IParameterGroup;
 
   /**
-   * The CloudFormation policy to apply when the cluster and its instances
-   * are removed from the stack or replaced during an update.
+   * The removal policy to apply when the cluster and its instances are removed
+   * from the stack or replaced during an update.
    *
    * @default - Retain cluster.
    */
-  readonly deleteReplacePolicy?: DeletionPolicy
+  readonly removalPolicy?: RemovalPolicy
 }
 
 /**
@@ -321,16 +321,16 @@ export class DatabaseCluster extends DatabaseClusterBase {
       storageEncrypted: props.kmsKey ? true : props.storageEncrypted
     });
 
-    const deleteReplacePolicy = props.deleteReplacePolicy || DeletionPolicy.Retain;
-    cluster.options.deletionPolicy = deleteReplacePolicy;
-    cluster.options.updateReplacePolicy = deleteReplacePolicy;
+    cluster.applyRemovalPolicy(props.removalPolicy, {
+      applyToUpdateReplacePolicy: true
+    });
 
     this.clusterIdentifier = cluster.refAsString;
 
     // create a number token that represents the port of the cluster
-    const portAttribute = Token.asNumber(cluster.dbClusterEndpointPort);
-    this.clusterEndpoint = new Endpoint(cluster.dbClusterEndpointAddress, portAttribute);
-    this.clusterReadEndpoint = new Endpoint(cluster.dbClusterReadEndpointAddress, portAttribute);
+    const portAttribute = Token.asNumber(cluster.attrEndpointPort);
+    this.clusterEndpoint = new Endpoint(cluster.attrEndpointAddress, portAttribute);
+    this.clusterReadEndpoint = new Endpoint(cluster.attrEndpointAddress, portAttribute);
 
     if (secret) {
       this.secret = secret.addTargetAttachment('AttachedSecret', {
@@ -368,15 +368,16 @@ export class DatabaseCluster extends DatabaseClusterBase {
         dbParameterGroupName: props.instanceProps.parameterGroup && props.instanceProps.parameterGroup.parameterGroupName,
       });
 
-      instance.options.deletionPolicy = deleteReplacePolicy;
-      instance.options.updateReplacePolicy = deleteReplacePolicy;
+      instance.applyRemovalPolicy(props.removalPolicy, {
+        applyToUpdateReplacePolicy: true
+      });
 
       // We must have a dependency on the NAT gateway provider here to create
       // things in the right order.
       instance.node.addDependency(internetConnected);
 
       this.instanceIdentifiers.push(instance.refAsString);
-      this.instanceEndpoints.push(new Endpoint(instance.dbInstanceEndpointAddress, portAttribute));
+      this.instanceEndpoints.push(new Endpoint(instance.attrEndpointAddress, portAttribute));
     }
 
     const defaultPortRange = new ec2.TcpPort(this.clusterEndpoint.port);

@@ -80,22 +80,22 @@ const buildAction = new cpactions.CodeBuildAction({
   actionName: 'CodeBuild',
   project,
   input: sourceOutput,
-  output: buildOutput,
+  outputs: [buildOutput],
 });
 
 new codepipeline.Pipeline(stack, 'MyPipeline', {
   artifactBucket: bucket,
   stages: [
     {
-      name: 'Source',
+      stageName: 'Source',
       actions: [sourceAction],
     },
     {
-      name: 'Build',
+      stageName: 'Build',
       actions: [buildAction],
     },
     {
-      name: 'Deploy',
+      stageName: 'Deploy',
       actions: [
         new cpactions.EcsDeployAction({
           actionName: 'DeployAction',

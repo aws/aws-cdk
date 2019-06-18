@@ -39,36 +39,18 @@ export = testCase({
       test.done();
     },
 
-    '.Orphan'(test: Test) {
+    '.Retain'(test: Test) {
       // GIVEN
       const app = new cdk.App();
       const stack = new cdk.Stack(app, 'Test');
 
       // WHEN
-      new TestCustomResource(stack, 'Custom', {  removalPolicy: cdk.RemovalPolicy.Orphan });
+      new TestCustomResource(stack, 'Custom', {  removalPolicy: cdk.RemovalPolicy.Retain });
 
       // THEN
       expect(stack).to(haveResource('AWS::CloudFormation::CustomResource', {
         DeletionPolicy: 'Retain',
       }, ResourcePart.CompleteDefinition));
-      test.equal(app.synth().tryGetArtifact(stack.stackName)!.findMetadataByType('aws:cdk:protected').length, 0);
-
-      test.done();
-    },
-
-    '.Forbid'(test: Test) {
-      // GIVEN
-      const app = new cdk.App();
-      const stack = new cdk.Stack(app, 'Test');
-
-      // WHEN
-      new TestCustomResource(stack, 'Custom', {  removalPolicy: cdk.RemovalPolicy.Forbid });
-
-      // THEN
-      expect(stack).to(haveResource('AWS::CloudFormation::CustomResource', {
-        DeletionPolicy: 'Retain',
-      }, ResourcePart.CompleteDefinition));
-      test.ok(app.synth().tryGetArtifact(stack.stackName)!.findMetadataByType('aws:cdk:protected')[0].data);
 
       test.done();
     },
@@ -128,26 +110,28 @@ export = testCase({
         ]
         },
         "Custom1D319B237": {
-        "Type": "AWS::CloudFormation::CustomResource",
-        "Properties": {
-          "ServiceToken": {
-          "Fn::GetAtt": [
-            "SingletonLambdaTestCustomResourceProviderA9255269",
-            "Arn"
-          ]
+          "Type": "AWS::CloudFormation::CustomResource",
+          "DeletionPolicy": "Delete",
+          "Properties": {
+            "ServiceToken": {
+              "Fn::GetAtt": [
+                "SingletonLambdaTestCustomResourceProviderA9255269",
+                "Arn"
+              ]
+            }
           }
-        }
         },
         "Custom2DD5FB44D": {
-        "Type": "AWS::CloudFormation::CustomResource",
-        "Properties": {
-          "ServiceToken": {
-          "Fn::GetAtt": [
-            "SingletonLambdaTestCustomResourceProviderA9255269",
-            "Arn"
-          ]
+          "Type": "AWS::CloudFormation::CustomResource",
+          "DeletionPolicy": "Delete",
+          "Properties": {
+            "ServiceToken": {
+              "Fn::GetAtt": [
+                "SingletonLambdaTestCustomResourceProviderA9255269",
+                "Arn"
+              ]
+            }
           }
-        }
         }
       }
     });

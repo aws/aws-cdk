@@ -299,35 +299,35 @@ export class LoadBalancer extends Resource implements IConnectable {
    * @attribute
    */
   public get loadBalancerCanonicalHostedZoneNameId() {
-    return this.elb.loadBalancerCanonicalHostedZoneNameId;
+    return this.elb.attrCanonicalHostedZoneNameId;
   }
 
   /**
    * @attribute
    */
   public get loadBalancerCanonicalHostedZoneName() {
-    return this.elb.loadBalancerCanonicalHostedZoneName;
+    return this.elb.attrCanonicalHostedZoneName;
   }
 
   /**
    * @attribute
    */
   public get loadBalancerDnsName() {
-    return this.elb.loadBalancerDnsName;
+    return this.elb.attrDnsName;
   }
 
   /**
    * @attribute
    */
   public get loadBalancerSourceSecurityGroupGroupName() {
-    return this.elb.loadBalancerSourceSecurityGroupGroupName;
+    return this.elb.attrSourceSecurityGroupGroupName;
   }
 
   /**
    * @attribute
    */
   public get loadBalancerSourceSecurityGroupOwnerAlias() {
-    return this.elb.loadBalancerSourceSecurityGroupOwnerAlias;
+    return this.elb.attrSourceSecurityGroupOwnerAlias;
   }
 
   /**

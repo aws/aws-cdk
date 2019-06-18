@@ -3,7 +3,7 @@ import cdk = require("@aws-cdk/cdk");
 import { GlobalTableCoordinator } from "./global-table-coordinator";
 
 /**
- * Properties for the mutliple DynamoDB tables to mash together into a
+ * Properties for the multiple DynamoDB tables to mash together into a
  * global table
  */
 export interface GlobalTableProps extends cdk.StackProps, dynamodb.TableOptions {

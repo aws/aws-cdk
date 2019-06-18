@@ -1,7 +1,7 @@
 import events = require('@aws-cdk/aws-events');
 import iam = require('@aws-cdk/aws-iam');
 import kms = require('@aws-cdk/aws-kms');
-import { CfnResource, Construct, IResource, Lazy, PhysicalName,
+import { Construct, IResource, Lazy, PhysicalName,
   RemovalPolicy, Resource, ResourceIdentifiers, Stack, Token } from '@aws-cdk/cdk';
 import { EOL } from 'os';
 import { BucketPolicy } from './bucket-policy';
@@ -904,14 +904,14 @@ export class Bucket extends BucketBase {
       corsConfiguration: Lazy.anyValue({ produce: () => this.parseCorsConfiguration() })
     });
 
-    CfnResource.applyRemovalPolicy(resource, props.removalPolicy !== undefined ? props.removalPolicy : RemovalPolicy.Orphan);
+    resource.applyRemovalPolicy(props.removalPolicy);
 
     this.versioned = props.versioned;
     this.encryptionKey = encryptionKey;
 
     const resourceIdentifiers = new ResourceIdentifiers(this, {
-      arn: resource.bucketArn,
-      name: resource.bucketName,
+      arn: resource.attrArn,
+      name: resource.refAsString,
       arnComponents: {
         region: '',
         account: '',
@@ -921,10 +921,10 @@ export class Bucket extends BucketBase {
     });
     this.bucketArn = resourceIdentifiers.arn;
     this.bucketName = resourceIdentifiers.name;
-    this.bucketDomainName = resource.bucketDomainName;
-    this.bucketWebsiteUrl = resource.bucketWebsiteUrl;
-    this.bucketDualStackDomainName = resource.bucketDualStackDomainName;
-    this.bucketRegionalDomainName = resource.bucketRegionalDomainName;
+    this.bucketDomainName = resource.attrDomainName;
+    this.bucketWebsiteUrl = resource.attrWebsiteUrl;
+    this.bucketDualStackDomainName = resource.attrDualStackDomainName;
+    this.bucketRegionalDomainName = resource.attrRegionalDomainName;
 
     this.disallowPublicAccess = props.blockPublicAccess && props.blockPublicAccess.blockPublicPolicy;
 

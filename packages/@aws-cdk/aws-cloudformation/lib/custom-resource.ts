@@ -97,7 +97,7 @@ export class CustomResource extends Resource {
       }
     });
 
-    CfnResource.applyRemovalPolicy(this.resource, props.removalPolicy);
+    this.resource.applyRemovalPolicy(props.removalPolicy, { default: RemovalPolicy.Destroy });
   }
 
   public getAtt(attributeName: string) {
@@ -123,7 +123,7 @@ function uppercaseProperties(props: Properties): Properties {
 
 function renderResourceType(resourceType?: string) {
   if (!resourceType) {
-    return CfnCustomResource.resourceTypeName;
+    return CfnCustomResource.cfnResourceTypeName;
   }
 
   if (!resourceType.startsWith('Custom::')) {

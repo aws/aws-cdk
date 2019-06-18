@@ -166,7 +166,7 @@ export class LambdaDeploymentGroup extends cdk.Resource implements ILambdaDeploy
       autoRollbackConfiguration: cdk.Lazy.anyValue({ produce: () => renderAutoRollbackConfiguration(this.alarms, props.autoRollback) }),
     });
 
-    this.deploymentGroupName = resource.deploymentGroupName;
+    this.deploymentGroupName = resource.refAsString;
     this.deploymentGroupArn = arnForDeploymentGroup(this.application.applicationName, this.deploymentGroupName);
 
     if (props.preHook) {
@@ -179,7 +179,7 @@ export class LambdaDeploymentGroup extends cdk.Resource implements ILambdaDeploy
     (props.alias.node.findChild('Resource') as lambda.CfnAlias).options.updatePolicy = {
       codeDeployLambdaAliasUpdate: {
         applicationName: this.application.applicationName,
-        deploymentGroupName: resource.deploymentGroupName,
+        deploymentGroupName: resource.refAsString,
         beforeAllowTrafficHook: cdk.Lazy.stringValue({ produce: () => this.preHook && this.preHook.functionName }),
         afterAllowTrafficHook: cdk.Lazy.stringValue({ produce: () => this.postHook && this.postHook.functionName }),
       }
