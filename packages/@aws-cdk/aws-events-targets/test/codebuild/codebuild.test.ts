@@ -8,7 +8,9 @@ test('use codebuild project as an eventrule target', () => {
   // GIVEN
   const stack = new Stack();
   const project = new codebuild.PipelineProject(stack, 'MyProject');
-  const rule = new events.Rule(stack, 'Rule', { scheduleExpression: 'rate(1 min)' });
+  const rule = new events.Rule(stack, 'Rule', {
+    schedule: events.Schedule.expression('rate(1 min)')
+  });
 
   // WHEN
   rule.addTarget(new targets.CodeBuildProject(project));
