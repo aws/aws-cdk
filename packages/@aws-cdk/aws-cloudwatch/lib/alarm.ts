@@ -34,10 +34,10 @@ export interface AlarmProps extends MetricAlarmProps {
  * Comparison operator for evaluating alarms
  */
 export enum ComparisonOperator {
-  GreaterThanOrEqualToThreshold = 'GreaterThanOrEqualToThreshold',
-  GreaterThanThreshold = 'GreaterThanThreshold',
-  LessThanThreshold = 'LessThanThreshold',
-  LessThanOrEqualToThreshold = 'LessThanOrEqualToThreshold',
+  GREATER_THAN_OR_EQUAL_TO_THRESHOLD = 'GreaterThanOrEqualToThreshold',
+  GREATER_THAN_THRESHOLD = 'GreaterThanThreshold',
+  LESS_THAN_THRESHOLD = 'LessThanThreshold',
+  LESS_THAN_OR_EQUAL_TO_THRESHOLD = 'LessThanOrEqualToThreshold',
 }
 
 const OPERATOR_SYMBOLS: {[key: string]: string} = {
@@ -54,22 +54,22 @@ export enum TreatMissingData {
   /**
    * Missing data points are treated as breaching the threshold
    */
-  Breaching = 'breaching',
+  BREACHING = 'breaching',
 
   /**
    * Missing data points are treated as being within the threshold
    */
-  NotBreaching = 'notBreaching',
+  NOT_BREACHING = 'notBreaching',
 
   /**
    * The current alarm state is maintained
    */
-  Ignore = 'ignore',
+  IGNORE = 'ignore',
 
   /**
    * The alarm does not consider missing data points when evaluating whether to change state
    */
-  Missing = 'missing'
+  MISSING = 'missing'
 }
 
 /**
@@ -116,7 +116,7 @@ export class Alarm extends Resource implements IAlarm {
   constructor(scope: Construct, id: string, props: AlarmProps) {
     super(scope, id);
 
-    const comparisonOperator = props.comparisonOperator || ComparisonOperator.GreaterThanOrEqualToThreshold;
+    const comparisonOperator = props.comparisonOperator || ComparisonOperator.GREATER_THAN_OR_EQUAL_TO_THRESHOLD;
 
     const alarm = new CfnAlarm(this, 'Resource', {
       // Meta

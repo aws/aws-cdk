@@ -273,17 +273,17 @@ export enum Shading {
   /**
    * Don't add shading
    */
-  None = 'none',
+  NONE = 'none',
 
   /**
    * Add shading above the annotation
    */
-  Above = 'above',
+  ABOVE = 'above',
 
   /**
    * Add shading below the annotation
    */
-  Below = 'below'
+  BELOW = 'below'
 }
 
 function mapAnnotation(yAxis: string): ((x: HorizontalAnnotation) => any) {

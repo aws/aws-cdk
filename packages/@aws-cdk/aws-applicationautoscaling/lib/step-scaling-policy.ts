@@ -104,7 +104,7 @@ export class StepScalingPolicy extends cdk.Construct {
         // Recommended by AutoScaling
         metric: props.metric.with({ periodSec: 60 }),
         alarmDescription: 'Lower threshold scaling alarm',
-        comparisonOperator: cloudwatch.ComparisonOperator.LessThanOrEqualToThreshold,
+        comparisonOperator: cloudwatch.ComparisonOperator.LESS_THAN_OR_EQUAL_TO_THRESHOLD,
         evaluationPeriods: 1,
         threshold,
       });
@@ -134,7 +134,7 @@ export class StepScalingPolicy extends cdk.Construct {
         // Recommended by AutoScaling
         metric: props.metric.with({ periodSec: 60 }),
         alarmDescription: 'Upper threshold scaling alarm',
-        comparisonOperator: cloudwatch.ComparisonOperator.GreaterThanOrEqualToThreshold,
+        comparisonOperator: cloudwatch.ComparisonOperator.GREATER_THAN_OR_EQUAL_TO_THRESHOLD,
         evaluationPeriods: 1,
         threshold,
       });

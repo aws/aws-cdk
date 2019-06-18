@@ -17,15 +17,15 @@ export function parseStatistic(stat: string): SimpleStatistic | PercentileStatis
 
   // Simple statistics
   const statMap: {[k: string]: Statistic} = {
-    average: Statistic.Average,
-    avg: Statistic.Average,
-    minimum: Statistic.Minimum,
-    min: Statistic.Minimum,
-    maximum: Statistic.Maximum,
-    max: Statistic.Maximum,
-    samplecount: Statistic.SampleCount,
-    n: Statistic.SampleCount,
-    sum: Statistic.Sum,
+    average: Statistic.AVERAGE,
+    avg: Statistic.AVERAGE,
+    minimum: Statistic.MINIMUM,
+    min: Statistic.MINIMUM,
+    maximum: Statistic.MAXIMUM,
+    max: Statistic.MAXIMUM,
+    samplecount: Statistic.SAMPLE_count,
+    n: Statistic.SAMPLE_count,
+    sum: Statistic.SUM,
   };
 
   if (lowerStat in statMap) {
