@@ -8,7 +8,7 @@ class TestStack extends cdk.Stack {
     super(scope, id, props);
 
     /// !show
-    const asset = new assets.ZipDirectoryAsset(this, 'SampleAsset', {
+    const asset = new assets.Asset(this, 'SampleAsset', {
       path: path.join(__dirname, 'sample-asset-directory')
     });
 

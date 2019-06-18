@@ -7,7 +7,7 @@ class TestStack extends cdk.Stack {
   constructor(scope: cdk.App, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
-    const asset = new assets.FileAsset(this, 'MyFile', {
+    const asset = new assets.Asset(this, 'MyFile', {
       path: path.join(__dirname, 'file-asset.txt')
     });
 
