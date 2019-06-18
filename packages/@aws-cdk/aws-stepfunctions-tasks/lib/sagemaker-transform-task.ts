@@ -110,7 +110,7 @@ export class SagemakerTransformTask implements sfn.IStepFunctionsTask {
                 { transformDataSource:
                     { s3DataSource:
                         { ...props.transformInput.transformDataSource.s3DataSource,
-                        s3DataType: S3DataType.S3Prefix
+                        s3DataType: S3DataType.S3_PREFIX
                         }
                     }
             });

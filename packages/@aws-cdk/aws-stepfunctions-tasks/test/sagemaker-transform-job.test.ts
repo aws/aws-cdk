@@ -77,7 +77,7 @@ test('create complex transform job', () => {
             transformDataSource: {
                 s3DataSource: {
                     s3Uri: 's3://inputbucket/prefix',
-                    s3DataType: S3DataType.S3Prefix,
+                    s3DataType: S3DataType.S3_PREFIX,
                 }
             }
         },
@@ -93,7 +93,7 @@ test('create complex transform job', () => {
         tags: {
             Project: 'MyProject',
         },
-        batchStrategy: BatchStrategy.MultiRecord,
+        batchStrategy: BatchStrategy.MULTI_RECORD,
         environment: {
             SOMEVAR: 'myvalue'
         },
@@ -149,7 +149,7 @@ test('pass param to transform job', () => {
             transformDataSource: {
                 s3DataSource: {
                     s3Uri: 's3://inputbucket/prefix',
-                    s3DataType: S3DataType.S3Prefix,
+                    s3DataType: S3DataType.S3_PREFIX,
                 }
             }
         },
