@@ -186,7 +186,7 @@ Alternatively, you can specify a custom image using one of the static methods on
   Hub.
 * Use `.fromEcrRepository(repo[, tag])` to reference an image available in an
   ECR repository.
-* Use `.fromAsset(this, id, { directory: dir })` to use an image created from a
+* Use `.fromAsset(directory)` to use an image created from a
   local asset.
 
 The following example shows how to define an image from a Docker asset:

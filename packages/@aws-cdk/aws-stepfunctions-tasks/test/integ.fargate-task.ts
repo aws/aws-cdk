@@ -20,7 +20,7 @@ const taskDefinition = new ecs.FargateTaskDefinition(stack, 'TaskDef', {
   cpu: 256
 });
 taskDefinition.addContainer('TheContainer', {
-  image: ecs.ContainerImage.fromAsset(stack, 'EventImage', { directory: path.resolve(__dirname, 'eventhandler-image') }),
+  image: ecs.ContainerImage.fromAsset(path.resolve(__dirname, 'eventhandler-image')),
   memoryLimitMiB: 256,
   logging: new ecs.AwsLogDriver(stack, 'TaskLogging', { streamPrefix: 'EventDemo' })
 });
