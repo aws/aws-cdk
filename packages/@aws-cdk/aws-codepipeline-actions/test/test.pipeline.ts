@@ -1,4 +1,4 @@
-import { expect, haveResource, haveResourceLike, not, SynthUtils } from '@aws-cdk/assert';
+import { countResources, expect, haveResource, haveResourceLike, not, SynthUtils } from '@aws-cdk/assert';
 import codebuild = require('@aws-cdk/aws-codebuild');
 import codecommit = require('@aws-cdk/aws-codecommit');
 import codepipeline = require('@aws-cdk/aws-codepipeline');
@@ -596,19 +596,19 @@ export = {
           account: pipelineAccount,
         },
       });
-      const bucket = new s3.Bucket(stack, 'MyBucket');
       const pipeline = new codepipeline.Pipeline(stack, 'MyPipeline', {
         crossRegionReplicationBuckets: {
-          'us-west-1': 'sfo-replication-bucket',
+          'us-west-1': s3.Bucket.fromBucketName(stack, 'ImportedBucket', 'sfo-replication-bucket'),
         },
       });
 
+      const sourceBucket = new s3.Bucket(stack, 'MyBucket');
       const sourceOutput = new codepipeline.Artifact('SourceOutput');
       const sourceAction = new cpactions.S3SourceAction({
         actionName: 'BucketSource',
         bucketKey: '/some/key',
         output: sourceOutput,
-        bucket,
+        bucket: sourceBucket,
       });
       pipeline.addStage({
         stageName: 'Stage1',
@@ -648,19 +648,25 @@ export = {
             "Region": "us-east-1",
             "ArtifactStore": {
               "Type": "S3",
+              "Location": "cdk-cross-region-codepipeline-replication-bucket-685c6feea5fb",
             },
           },
           {
             "Region": "us-west-1",
             "ArtifactStore": {
-              "Location": "sfo-replication-bucket",
               "Type": "S3",
+              "Location": "sfo-replication-bucket",
             },
           },
           {
             "Region": "us-west-2",
             "ArtifactStore": {
               "Type": "S3",
+              "EncryptionKey": {
+                "Type": "KMS",
+                "Id": {
+                },
+              },
             },
           },
         ],
@@ -685,18 +691,90 @@ export = {
               },
             ],
           },
-        ]
+        ],
       }));
 
-      test.equal(pipeline.crossRegionScaffolding[pipelineRegion], undefined);
-      test.equal(pipeline.crossRegionScaffolding['us-west-1'], undefined);
+      test.equal(pipeline.crossRegionSupport[pipelineRegion], undefined);
+      test.equal(pipeline.crossRegionSupport['us-west-1'], undefined);
 
-      const usEast1ScaffoldStack = pipeline.crossRegionScaffolding['us-east-1'];
-      test.notEqual(usEast1ScaffoldStack, undefined);
-      test.equal(usEast1ScaffoldStack.region, 'us-east-1');
-      test.equal(usEast1ScaffoldStack.account, pipelineAccount);
-      test.ok(usEast1ScaffoldStack.node.id.indexOf('us-east-1') !== -1,
-        `expected '${usEast1ScaffoldStack.node.id}' to contain 'us-east-1'`);
+      const usEast1Support = pipeline.crossRegionSupport['us-east-1'];
+      test.notEqual(usEast1Support, undefined);
+      test.equal(usEast1Support.stack.region, 'us-east-1');
+      test.equal(usEast1Support.stack.account, pipelineAccount);
+      test.ok(usEast1Support.stack.node.id.indexOf('us-east-1') !== -1,
+        `expected '${usEast1Support.stack.node.id}' to contain 'us-east-1'`);
+
+      test.done();
+    },
+
+    'allows specifying only one of artifactBucket and crossRegionReplicationBuckets'(test: Test) {
+      const stack = new Stack();
+
+      test.throws(() => {
+        new codepipeline.Pipeline(stack, 'Pipeline', {
+          artifactBucket: new s3.Bucket(stack, 'Bucket'),
+          crossRegionReplicationBuckets: {
+            // even an empty map should trigger this validation...
+          },
+        });
+      }, /Only one of artifactBucket and crossRegionReplicationBuckets can be specified!/);
+      test.done();
+    },
+
+    'does not create a new artifact Bucket if one was provided in the cross-region Buckets for the Pipeline region'(test: Test) {
+      const pipelineRegion = 'us-west-2';
+
+      const stack = new Stack(undefined, undefined, {
+        env: {
+          region: pipelineRegion,
+        },
+      });
+      const sourceOutput = new codepipeline.Artifact();
+      new codepipeline.Pipeline(stack, 'Pipeline', {
+        crossRegionReplicationBuckets: {
+          [pipelineRegion]: new s3.Bucket(stack, 'Bucket', {
+            bucketName: PhysicalName.of('my-pipeline-bucket'),
+          })
+        },
+        stages: [
+          {
+            stageName: 'Source',
+            actions: [
+              new cpactions.CodeCommitSourceAction({
+                actionName: 'Source',
+                output: sourceOutput,
+                repository: new codecommit.Repository(stack, 'Repo', { repositoryName: 'Repo' }),
+              }),
+            ],
+          },
+          {
+            stageName: 'Build',
+            actions: [
+              new cpactions.CodeBuildAction({
+                actionName: 'Build',
+                input: sourceOutput,
+                project: new codebuild.PipelineProject(stack, 'Project'),
+              }),
+            ],
+          },
+        ],
+      });
+
+      expect(stack).to(countResources('AWS::S3::Bucket', 1));
+
+      expect(stack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
+        "ArtifactStores": [
+          {
+            "Region": pipelineRegion,
+            "ArtifactStore": {
+              "Type": "S3",
+              "Location": {
+                "Ref": "Bucket83908E77",
+              },
+            },
+          },
+        ],
+      }));
 
       test.done();
     },
