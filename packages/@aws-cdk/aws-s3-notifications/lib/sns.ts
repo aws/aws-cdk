@@ -19,7 +19,7 @@ export class SnsDestination implements s3.IBucketNotificationDestination {
         ArnLike: { "aws:SourceArn": bucket.bucketArn }
       }
     }));
-
+TOPIC
     return {
       arn: this.topic.topicArn,
       type: s3.BucketNotificationDestinationType.Topic,
