@@ -1,5 +1,5 @@
 export * from './auto-scaling-group';
-export * from './cron';
+export * from './schedule';
 export * from './lifecycle-hook';
 export * from './lifecycle-hook-target';
 export * from './scheduled-action';
