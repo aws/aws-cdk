@@ -21,16 +21,16 @@ export enum Tracing {
    * Lambda will respect any tracing header it receives from an upstream service.
    * If no tracing header is received, Lambda will call X-Ray for a tracing decision.
    */
-  Active,
+  ACTIVE,
   /**
    * Lambda will only trace the request from an upstream service
    * if it contains a tracing header with "sampled=1"
    */
-  PassThrough,
+  PASS_THROUGH,
   /**
    * Lambda will not trace any request.
    */
-  Disabled
+  DISABLED
 }
 
 export interface FunctionProps {
@@ -599,7 +599,7 @@ export class Function extends FunctionBase {
   }
 
   private buildTracingConfig(props: FunctionProps) {
-    if (props.tracing === undefined || props.tracing === Tracing.Disabled) {
+    if (props.tracing === undefined || props.tracing === Tracing.DISABLED) {
       return undefined;
     }
 
