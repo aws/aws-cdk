@@ -222,7 +222,7 @@ export = {
       tableName: TABLE_NAME,
       readCapacity: 42,
       writeCapacity: 1337,
-      streamSpecification: StreamViewType.NewAndOldImages,
+      stream: StreamViewType.NewAndOldImages,
       partitionKey: TABLE_PARTITION_KEY,
       sortKey: TABLE_SORT_KEY
     });
@@ -252,7 +252,7 @@ export = {
       tableName: TABLE_NAME,
       readCapacity: 42,
       writeCapacity: 1337,
-      streamSpecification: StreamViewType.NewImage,
+      stream: StreamViewType.NewImage,
       partitionKey: TABLE_PARTITION_KEY,
       sortKey: TABLE_SORT_KEY
     });
@@ -282,7 +282,7 @@ export = {
       tableName: TABLE_NAME,
       readCapacity: 42,
       writeCapacity: 1337,
-      streamSpecification: StreamViewType.OldImage,
+      stream: StreamViewType.OldImage,
       partitionKey: TABLE_PARTITION_KEY,
       sortKey: TABLE_SORT_KEY
     });
@@ -312,11 +312,11 @@ export = {
       tableName: TABLE_NAME,
       readCapacity: 42,
       writeCapacity: 1337,
-      pitrEnabled: true,
-      sseEnabled: true,
+      pointInTimeRecovery: true,
+      serverSideEncryption: true,
       billingMode: BillingMode.Provisioned,
-      streamSpecification: StreamViewType.KeysOnly,
-      ttlAttributeName: 'timeToLive',
+      stream: StreamViewType.KeysOnly,
+      timeToLiveAttribute: 'timeToLive',
       partitionKey: TABLE_PARTITION_KEY,
       sortKey: TABLE_SORT_KEY,
     });
@@ -1180,7 +1180,7 @@ export = {
           name: 'id',
           type: AttributeType.String
         },
-        streamSpecification: StreamViewType.NewImage
+        stream: StreamViewType.NewImage
       });
       const user = new iam.User(stack, 'user');
 
