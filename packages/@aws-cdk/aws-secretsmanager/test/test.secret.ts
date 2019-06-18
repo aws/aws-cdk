@@ -304,7 +304,7 @@ export = {
     test.equals(secret.secretArn, secretArn);
     test.same(secret.encryptionKey, encryptionKey);
     test.deepEqual(stack.resolve(secret.secretValue), '{{resolve:secretsmanager:arn::of::a::secret:SecretString:::}}');
-    test.deepEqual(stack.resolve(secret.secretJsonValue('password')), '{{resolve:secretsmanager:arn::of::a::secret:SecretString:password::}}');
+    test.deepEqual(stack.resolve(secret.secretValueFromJson('password')), '{{resolve:secretsmanager:arn::of::a::secret:SecretString:password::}}');
     test.done();
   },
 
@@ -399,7 +399,7 @@ export = {
     const stack = new Stack();
 
     // WHEN
-    const imported = secretsmanager.Secret.fromSecretAttributes(stack, 'Imported', { secretArn: 'my-secret-arn' }).secretJsonValue('password');
+    const imported = secretsmanager.Secret.fromSecretAttributes(stack, 'Imported', { secretArn: 'my-secret-arn' }).secretValueFromJson('password');
     const value = SecretValue.secretsManager('my-secret-arn', { jsonField: 'password' });
 
     // THEN

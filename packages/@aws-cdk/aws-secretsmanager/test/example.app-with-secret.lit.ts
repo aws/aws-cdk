@@ -14,7 +14,7 @@ class ExampleStack extends cdk.Stack {
     new iam.User(this, 'User', {
       // Get the 'password' field from the secret that looks like
       // { "username": "XXXX", "password": "YYYY" }
-      password: loginSecret.secretJsonValue('password')
+      password: loginSecret.secretValueFromJson('password')
     });
     /// !hide
 
