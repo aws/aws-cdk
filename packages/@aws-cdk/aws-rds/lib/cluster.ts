@@ -344,7 +344,7 @@ export class DatabaseCluster extends DatabaseClusterBase {
     }
 
     // Get the actual subnet objects so we can depend on internet connectivity.
-    const internetConnected = props.instanceProps.vpc.selectSubnets(props.instanceProps.vpcSubnets).internetConnectedDependency;
+    const internetConnected = props.instanceProps.vpc.selectSubnets(props.instanceProps.vpcSubnets).internetConnectivityEstablished;
     for (let i = 0; i < instanceCount; i++) {
       const instanceIndex = i + 1;
 

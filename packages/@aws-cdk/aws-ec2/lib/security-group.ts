@@ -1,12 +1,13 @@
 import { Construct, IResource, Lazy, Resource, Stack } from '@aws-cdk/cdk';
-import { Connections, IConnectable } from './connections';
+import { Connections } from './connections';
 import { CfnSecurityGroup, CfnSecurityGroupEgress, CfnSecurityGroupIngress } from './ec2.generated';
-import { IPortRange, ISecurityGroupRule } from './security-group-rule';
+import { IPeer } from './peer';
+import { Port } from './port';
 import { IVpc } from './vpc';
 
 const SECURITY_GROUP_SYMBOL = Symbol.for('@aws-cdk/iam.SecurityGroup');
 
-export interface ISecurityGroup extends IResource, ISecurityGroupRule, IConnectable {
+export interface ISecurityGroup extends IResource, IPeer {
   /**
    * ID for the current security group
    * @attribute
@@ -22,7 +23,7 @@ export interface ISecurityGroup extends IResource, ISecurityGroupRule, IConnecta
    * peer is also a SecurityGroup, the rule object is created under the remote
    * SecurityGroup object.
    */
-  addIngressRule(peer: ISecurityGroupRule, connection: IPortRange, description?: string, remoteRule?: boolean): void;
+  addIngressRule(peer: IPeer, connection: Port, description?: string, remoteRule?: boolean): void;
 
   /**
    * Add an egress rule for the current security group
@@ -33,7 +34,7 @@ export interface ISecurityGroup extends IResource, ISecurityGroupRule, IConnecta
    * peer is also a SecurityGroup, the rule object is created under the remote
    * SecurityGroup object.
    */
-  addEgressRule(peer: ISecurityGroupRule, connection: IPortRange, description?: string, remoteRule?: boolean): void;
+  addEgressRule(peer: IPeer, connection: Port, description?: string, remoteRule?: boolean): void;
 }
 
 /**
@@ -55,7 +56,7 @@ abstract class SecurityGroupBase extends Resource implements ISecurityGroup {
   /**
    * FIXME: Where to place this??
    */
-  public readonly defaultPortRange?: IPortRange;
+  public readonly defaultPortRange?: Port;
 
   constructor(scope: Construct, id: string) {
     super(scope, id);
@@ -67,7 +68,7 @@ abstract class SecurityGroupBase extends Resource implements ISecurityGroup {
     return this.node.uniqueId;
   }
 
-  public addIngressRule(peer: ISecurityGroupRule, connection: IPortRange, description?: string, remoteRule?: boolean) {
+  public addIngressRule(peer: IPeer, connection: Port, description?: string, remoteRule?: boolean) {
     if (description === undefined) {
       description = `from ${peer.uniqueId}:${connection}`;
     }
@@ -85,7 +86,7 @@ abstract class SecurityGroupBase extends Resource implements ISecurityGroup {
     }
   }
 
-  public addEgressRule(peer: ISecurityGroupRule, connection: IPortRange, description?: string, remoteRule?: boolean) {
+  public addEgressRule(peer: IPeer, connection: Port, description?: string, remoteRule?: boolean) {
     if (description === undefined) {
       description = `to ${peer.uniqueId}:${connection}`;
     }
@@ -162,8 +163,8 @@ abstract class SecurityGroupBase extends Resource implements ISecurityGroup {
  */
 function determineRuleScope(
       group: SecurityGroupBase,
-      peer: ISecurityGroupRule,
-      connection: IPortRange,
+      peer: IPeer,
+      connection: Port,
       fromTo: 'from' | 'to',
       remoteRule?: boolean): [SecurityGroupBase, string] {
 
@@ -287,7 +288,7 @@ export class SecurityGroup extends SecurityGroupBase {
     this.addDefaultEgressRule();
   }
 
-  public addIngressRule(peer: ISecurityGroupRule, connection: IPortRange, description?: string, remoteRule?: boolean) {
+  public addIngressRule(peer: IPeer, connection: Port, description?: string, remoteRule?: boolean) {
     if (!peer.canInlineRule || !connection.canInlineRule) {
       super.addIngressRule(peer, connection, description, remoteRule);
       return;
@@ -304,7 +305,7 @@ export class SecurityGroup extends SecurityGroupBase {
     });
   }
 
-  public addEgressRule(peer: ISecurityGroupRule, connection: IPortRange, description?: string, remoteRule?: boolean) {
+  public addEgressRule(peer: IPeer, connection: Port, description?: string, remoteRule?: boolean) {
     if (this.allowAllOutbound) {
       // In the case of "allowAllOutbound", we don't add any more rules. There
       // is only one rule which allows all traffic and that subsumes any other

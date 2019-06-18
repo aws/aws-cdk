@@ -1,5 +1,6 @@
+import { IPeer, Peer } from "./peer";
+import { Port } from './port';
 import { ISecurityGroup } from "./security-group";
-import { AnyIPv4, IPortRange, ISecurityGroupRule } from "./security-group-rule";
 
 /**
  * The goal of this module is to make possible to write statements like this:
@@ -33,7 +34,7 @@ export interface ConnectionsProps {
    *
    * @default Derived from securityGroup if set.
    */
-  readonly securityGroupRule?: ISecurityGroupRule;
+  readonly securityGroupRule?: IPeer;
 
   /**
    * What securityGroup(s) this object is managing connections for
@@ -47,7 +48,7 @@ export interface ConnectionsProps {
    *
    * @default No default port range
    */
-  readonly defaultPortRange?: IPortRange;
+  readonly defaultPortRange?: Port;
 }
 
 /**
@@ -67,7 +68,7 @@ export class Connections implements IConnectable {
   /**
    * The default port configured for this connection peer, if available
    */
-  public readonly defaultPortRange?: IPortRange;
+  public readonly defaultPortRange?: Port;
 
   /**
    * Underlying securityGroup for this Connections object, if present
@@ -80,7 +81,7 @@ export class Connections implements IConnectable {
   /**
    * The rule that defines how to represent this peer in a security group
    */
-  private readonly _securityGroupRules = new ReactiveList<ISecurityGroupRule>();
+  private readonly _securityGroupRules = new ReactiveList<IPeer>();
 
   /**
    * When doing bidirectional grants between Connections, make sure we don't recursive infinitely
@@ -121,7 +122,7 @@ export class Connections implements IConnectable {
   /**
    * Allow connections to the peer on the given port
    */
-  public allowTo(other: IConnectable, portRange: IPortRange, description?: string) {
+  public allowTo(other: IConnectable, portRange: Port, description?: string) {
     if (this.skip) { return; }
 
     const remoteRule = this.remoteRule; // Capture current value into local for callback to close over
@@ -144,7 +145,7 @@ export class Connections implements IConnectable {
   /**
    * Allow connections from the peer on the given port
    */
-  public allowFrom(other: IConnectable, portRange: IPortRange, description?: string) {
+  public allowFrom(other: IConnectable, portRange: Port, description?: string) {
     if (this.skip) { return; }
 
     const remoteRule = this.remoteRule; // Capture current value into local for callback to close over
@@ -167,7 +168,7 @@ export class Connections implements IConnectable {
   /**
    * Allow hosts inside the security group to connect to each other on the given port
    */
-  public allowInternally(portRange: IPortRange, description?: string) {
+  public allowInternally(portRange: Port, description?: string) {
     this._securityGroups.forEachAndForever(securityGroup => {
       this._securityGroupRules.forEachAndForever(rule => {
         securityGroup.addIngressRule(rule, portRange, description);
@@ -180,15 +181,15 @@ export class Connections implements IConnectable {
   /**
    * Allow to all IPv4 ranges
    */
-  public allowToAnyIPv4(portRange: IPortRange, description?: string) {
-    this.allowTo(new AnyIPv4(), portRange, description);
+  public allowToAnyIPv4(portRange: Port, description?: string) {
+    this.allowTo(Peer.anyIpv4(), portRange, description);
   }
 
   /**
    * Allow from any IPv4 ranges
    */
-  public allowFromAnyIPv4(portRange: IPortRange, description?: string) {
-    this.allowFrom(new AnyIPv4(), portRange, description);
+  public allowFromAnyIPv4(portRange: Port, description?: string) {
+    this.allowFrom(Peer.anyIpv4(), portRange, description);
   }
 
   /**
