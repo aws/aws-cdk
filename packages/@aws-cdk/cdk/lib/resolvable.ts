@@ -132,7 +132,8 @@ export class DefaultTokenResolver implements ITokenResolver {
         message += `\nObject creation stack:\n  at ${t.creationStack.join('\n  at ')}`;
       }
 
-      throw new Error(message);
+      e.message = message;
+      throw e;
     }
   }
 
