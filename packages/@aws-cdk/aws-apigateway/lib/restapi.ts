@@ -186,9 +186,16 @@ export class RestApi extends Resource implements IRestApi {
    */
   public readonly root: IResource;
 
+  /**
+   * API Gateway stage that points to the latest deployment (if defined).
+   *
+   * If `deploy` is disabled, you will need to explicitly assign this value in order to
+   * set up integrations.
+   */
+  public deploymentStage: Stage;
+
   private readonly methods = new Array<Method>();
-  private _latestDeployment: Deployment;
-  private _deploymentStage: Stage;
+  private _latestDeployment: Deployment | undefined;
 
   constructor(scope: Construct, id: string, props: RestApiProps = { }) {
     super(scope, id);
@@ -225,16 +232,6 @@ export class RestApi extends Resource implements IRestApi {
    */
   public get latestDeployment() {
     return this._latestDeployment;
-  }
-
-  /**
-   * API Gateway stage that points to the latest deployment (if defined).
-   *
-   * If `deploy` is disabled, you will need to explicitly assign this value in order to
-   * set up integrations.
-   */
-  public get deploymentStage(): Stage {
-    return this._deploymentStage;
   }
 
   /**
@@ -333,8 +330,8 @@ export class RestApi extends Resource implements IRestApi {
       // stage name is part of the endpoint, so that makes sense.
       const stageName = (props.deployOptions && props.deployOptions.stageName) || 'prod';
 
-      this._deploymentStage = new Stage(this, `DeploymentStage.${stageName}`, {
-        deployment: this.latestDeployment,
+      this.deploymentStage = new Stage(this, `DeploymentStage.${stageName}`, {
+        deployment: this._latestDeployment,
         ...props.deployOptions
       });
 
