@@ -1,6 +1,6 @@
 // tslint:disable-next-line:ban-types
-export function createStackTrace(below?: Function): string[] {
-  below = below || createStackTrace; // hide myself if nothing else
+export function captureStackTrace(below?: Function): string[] {
+  below = below || captureStackTrace; // hide myself if nothing else
   const object = { stack: '' };
   const previousLimit = Error.stackTraceLimit;
   try {
