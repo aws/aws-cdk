@@ -2,6 +2,7 @@
   "Resources": {
     "Destination920A3C57": {
       "Type": "AWS::S3::Bucket",
+      "DeletionPolicy": "Delete",
       "Properties": {
         "WebsiteConfiguration": {
           "IndexDocument": "index.html"

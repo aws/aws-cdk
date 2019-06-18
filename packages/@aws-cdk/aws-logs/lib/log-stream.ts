@@ -1,4 +1,4 @@
-import { Construct, DeletionPolicy, IResource, Resource } from '@aws-cdk/cdk';
+import { Construct, IResource, RemovalPolicy, Resource } from '@aws-cdk/cdk';
 import { ILogGroup } from './log-group';
 import { CfnLogStream } from './logs.generated';
 
@@ -29,17 +29,18 @@ export interface LogStreamProps {
   readonly logStreamName?: string;
 
   /**
-   * Retain the log stream if the stack or containing construct ceases to exist
+   * Determine what happens when the log stream resource is removed from the
+   * app.
    *
-   * Normally you want to retain the log stream so you can diagnose issues
-   * from logs even after a deployment that no longer includes the log stream.
+   * Normally you want to retain the log stream so you can diagnose issues from
+   * logs even after a deployment that no longer includes the log stream.
    *
    * The date-based retention policy of your log group will age out the logs
    * after a certain time.
    *
-   * @default true
+   * @default RemovalPolicy.Retain
    */
-  readonly retainLogStream?: boolean;
+  readonly removalPolicy?: RemovalPolicy;
 }
 
 /**
@@ -70,10 +71,8 @@ export class LogStream extends Resource implements ILogStream {
       logStreamName: props.logStreamName
     });
 
-    if (props.retainLogStream !== false) {
-      resource.options.deletionPolicy = DeletionPolicy.Retain;
-    }
+    resource.applyRemovalPolicy(props.removalPolicy);
 
-    this.logStreamName = resource.logStreamName;
+    this.logStreamName = resource.refAsString;
   }
 }

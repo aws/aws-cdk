@@ -248,9 +248,9 @@ export class Table extends Resource {
 
     if (props.tableName) { this.node.addMetadata('aws:cdk:hasPhysicalName', props.tableName); }
 
-    this.tableArn = this.table.tableArn;
-    this.tableName = this.table.tableName;
-    this.tableStreamArn = this.table.tableStreamArn;
+    this.tableArn = this.table.attrArn;
+    this.tableName = this.table.refAsString;
+    this.tableStreamArn = this.table.attrStreamArn;
 
     this.scalingRole = this.makeScalingRole();
 

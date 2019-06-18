@@ -29,11 +29,11 @@ new codepipeline.Pipeline(stack, 'MyPipeline', {
   artifactBucket: bucket,
   stages: [
     {
-      name: 'Source',
+      stageName: 'Source',
       actions: [sourceAction],
     },
     {
-      name: 'CFN',
+      stageName: 'CFN',
       actions: [
         new cpactions.CloudFormationCreateUpdateStackAction({
           actionName: 'CFN_Deploy',

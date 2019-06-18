@@ -9,7 +9,7 @@ class TaggableResource extends CfnResource {
     this.tags = new TagManager(TagType.Standard, 'AWS::Fake::Resource', tags);
   }
   public testProperties() {
-    return this.properties;
+    return this.cfnProperties;
   }
 }
 
@@ -21,7 +21,7 @@ class AsgTaggableResource extends CfnResource {
     this.tags = new TagManager(TagType.AutoScalingGroup, 'AWS::Fake::Resource', tags);
   }
   public testProperties() {
-    return this.properties;
+    return this.cfnProperties;
   }
 }
 
@@ -33,7 +33,7 @@ class MapTaggableResource extends CfnResource {
     this.tags = new TagManager(TagType.Map, 'AWS::Fake::Resource', tags);
   }
   public testProperties() {
-    return this.properties;
+    return this.cfnProperties;
   }
 }
 

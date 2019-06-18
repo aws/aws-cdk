@@ -5,7 +5,7 @@ import kms = require('@aws-cdk/aws-kms');
 import lambda = require('@aws-cdk/aws-lambda');
 import logs = require('@aws-cdk/aws-logs');
 import secretsmanager = require('@aws-cdk/aws-secretsmanager');
-import { Construct, DeletionPolicy, IResource, Resource, SecretValue, Stack, Token } from '@aws-cdk/cdk';
+import { Construct, IResource, RemovalPolicy, Resource, SecretValue, Stack, Token } from '@aws-cdk/cdk';
 import { DatabaseSecret } from './database-secret';
 import { Endpoint } from './endpoint';
 import { IOptionGroup} from './option-group';
@@ -445,9 +445,9 @@ export interface DatabaseInstanceNewProps {
    * The CloudFormation policy to apply when the instance is removed from the
    * stack or replaced during an update.
    *
-   * @default Retain
+   * @default RemovalPolicy.Retain
    */
-  readonly deleteReplacePolicy?: DeletionPolicy
+  readonly removalPolicy?: RemovalPolicy
 }
 
 /**
@@ -505,7 +505,7 @@ abstract class DatabaseInstanceNew extends DatabaseInstanceBase implements IData
       copyTagsToSnapshot: props.copyTagsToSnapshot !== undefined ? props.copyTagsToSnapshot : true,
       dbInstanceClass: `db.${props.instanceClass}`,
       dbInstanceIdentifier: props.instanceIdentifier,
-      dbSubnetGroupName: subnetGroup.dbSubnetGroupName,
+      dbSubnetGroupName: subnetGroup.refAsString,
       deleteAutomatedBackups: props.deleteAutomatedBackups,
       deletionProtection,
       enableCloudwatchLogsExports: this.cloudwatchLogsExports,
@@ -733,17 +733,17 @@ export class DatabaseInstance extends DatabaseInstanceSource implements IDatabas
       storageEncrypted: props.kmsKey ? true : props.storageEncrypted
     });
 
-    this.instanceIdentifier = instance.dbInstanceId;
-    this.dbInstanceEndpointAddress = instance.dbInstanceEndpointAddress;
-    this.dbInstanceEndpointPort = instance.dbInstanceEndpointPort;
+    this.instanceIdentifier = instance.refAsString;
+    this.dbInstanceEndpointAddress = instance.attrEndpointAddress;
+    this.dbInstanceEndpointPort = instance.attrEndpointPort;
 
     // create a number token that represents the port of the instance
-    const portAttribute = Token.asNumber(instance.dbInstanceEndpointPort);
-    this.instanceEndpoint = new Endpoint(instance.dbInstanceEndpointAddress, portAttribute);
+    const portAttribute = Token.asNumber(instance.attrEndpointPort);
+    this.instanceEndpoint = new Endpoint(instance.attrEndpointAddress, portAttribute);
 
-    const deleteReplacePolicy = props.deleteReplacePolicy || DeletionPolicy.Retain;
-    instance.options.deletionPolicy = deleteReplacePolicy;
-    instance.options.updateReplacePolicy = deleteReplacePolicy;
+    instance.applyRemovalPolicy(props.removalPolicy, {
+      applyToUpdateReplacePolicy: true
+    });
 
     if (secret) {
       this.secret = secret.addTargetAttachment('AttachedSecret', {
@@ -827,17 +827,17 @@ export class DatabaseInstanceFromSnapshot extends DatabaseInstanceSource impleme
           : undefined),
     });
 
-    this.instanceIdentifier = instance.dbInstanceId;
-    this.dbInstanceEndpointAddress = instance.dbInstanceEndpointAddress;
-    this.dbInstanceEndpointPort = instance.dbInstanceEndpointPort;
+    this.instanceIdentifier = instance.refAsString;
+    this.dbInstanceEndpointAddress = instance.attrEndpointAddress;
+    this.dbInstanceEndpointPort = instance.attrEndpointPort;
 
     // create a number token that represents the port of the instance
-    const portAttribute = Token.asNumber(instance.dbInstanceEndpointPort);
-    this.instanceEndpoint = new Endpoint(instance.dbInstanceEndpointAddress, portAttribute);
+    const portAttribute = Token.asNumber(instance.attrEndpointPort);
+    this.instanceEndpoint = new Endpoint(instance.attrEndpointAddress, portAttribute);
 
-    const deleteReplacePolicy = props.deleteReplacePolicy || DeletionPolicy.Retain;
-    instance.options.deletionPolicy = deleteReplacePolicy;
-    instance.options.updateReplacePolicy = deleteReplacePolicy;
+    instance.applyRemovalPolicy(props.removalPolicy, {
+      applyToUpdateReplacePolicy: true
+    });
 
     if (secret) {
       this.secret = secret.addTargetAttachment('AttachedSecret', {
@@ -904,17 +904,17 @@ export class DatabaseInstanceReadReplica extends DatabaseInstanceNew implements 
       storageEncrypted: props.kmsKey ? true : props.storageEncrypted,
     });
 
-    this.instanceIdentifier = instance.dbInstanceId;
-    this.dbInstanceEndpointAddress = instance.dbInstanceEndpointAddress;
-    this.dbInstanceEndpointPort = instance.dbInstanceEndpointPort;
+    this.instanceIdentifier = instance.refAsString;
+    this.dbInstanceEndpointAddress = instance.attrEndpointAddress;
+    this.dbInstanceEndpointPort = instance.attrEndpointPort;
 
     // create a number token that represents the port of the instance
-    const portAttribute = Token.asNumber(instance.dbInstanceEndpointPort);
-    this.instanceEndpoint = new Endpoint(instance.dbInstanceEndpointAddress, portAttribute);
+    const portAttribute = Token.asNumber(instance.attrEndpointPort);
+    this.instanceEndpoint = new Endpoint(instance.attrEndpointAddress, portAttribute);
 
-    const deleteReplacePolicy = props.deleteReplacePolicy || DeletionPolicy.Retain;
-    instance.options.deletionPolicy = deleteReplacePolicy;
-    instance.options.updateReplacePolicy = deleteReplacePolicy;
+    instance.applyRemovalPolicy(props.removalPolicy, {
+      applyToUpdateReplacePolicy: true
+    });
 
     this.connections = new ec2.Connections({
       securityGroups: [this.securityGroup],

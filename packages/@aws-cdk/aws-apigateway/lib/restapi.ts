@@ -215,7 +215,7 @@ export class RestApi extends Resource implements IRestApi {
       this.configureCloudWatchRole(resource);
     }
 
-    this.root = new RootResource(this, props, resource.restApiRootResourceId);
+    this.root = new RootResource(this, props, resource.attrRootResourceId);
   }
 
   /**

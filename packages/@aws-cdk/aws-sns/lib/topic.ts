@@ -54,6 +54,6 @@ export class Topic extends TopicBase {
     });
 
     this.topicArn = resource.refAsString;
-    this.topicName = resource.topicName;
+    this.topicName = resource.attrTopicName;
   }
 }
