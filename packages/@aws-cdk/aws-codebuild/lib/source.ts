@@ -68,7 +68,7 @@ export abstract class BuildSource {
  * and because of that, you're not allowed to specify an identifier for it.
  */
 export class NoSource extends BuildSource {
-  public readonly type: SourceType = SourceType.None;
+  public readonly type: SourceType = SourceType.NONE;
 
   constructor() {
     super({});
@@ -453,7 +453,7 @@ export interface CodeCommitSourceProps extends GitBuildSourceProps {
  * CodeCommit Source definition for a CodeBuild project.
  */
 export class CodeCommitSource extends GitBuildSource {
-  public readonly type: SourceType = SourceType.CodeCommit;
+  public readonly type: SourceType = SourceType.CODECOMMIT;
   private readonly repo: codecommit.IRepository;
 
   constructor(props: CodeCommitSourceProps) {
@@ -521,7 +521,7 @@ export class S3BucketSource extends BuildSource {
  * and because of that, you're not allowed to specify an identifier for it.
  */
 export class CodePipelineSource extends BuildSource {
-  public readonly type: SourceType = SourceType.CodePipeline;
+  public readonly type: SourceType = SourceType.CODEPIPELINE;
 
   constructor() {
     super({});
@@ -551,7 +551,7 @@ export interface GitHubSourceProps extends ThirdPartyGitBuildSourceProps {
  * GitHub Source definition for a CodeBuild project.
  */
 export class GitHubSource extends ThirdPartyGitBuildSource {
-  public readonly type: SourceType = SourceType.GitHub;
+  public readonly type: SourceType = SourceType.GITHUB;
   private readonly httpsCloneUrl: string;
 
   constructor(props: GitHubSourceProps) {
@@ -587,7 +587,7 @@ export interface GitHubEnterpriseSourceProps extends ThirdPartyGitBuildSourcePro
  * GitHub Enterprise Source definition for a CodeBuild project.
  */
 export class GitHubEnterpriseSource extends ThirdPartyGitBuildSource {
-  public readonly type: SourceType = SourceType.GitHubEnterprise;
+  public readonly type: SourceType = SourceType.GITHUB_ENTERPRISE;
   private readonly httpsCloneUrl: string;
   private readonly ignoreSslErrors?: boolean;
 
@@ -628,7 +628,7 @@ export interface BitBucketSourceProps extends ThirdPartyGitBuildSourceProps {
  * BitBucket Source definition for a CodeBuild project.
  */
 export class BitBucketSource extends ThirdPartyGitBuildSource {
-  public readonly type: SourceType = SourceType.BitBucket;
+  public readonly type: SourceType = SourceType.BITBUCKET;
   private readonly httpsCloneUrl: any;
 
   constructor(props: BitBucketSourceProps) {
@@ -674,12 +674,12 @@ export class BitBucketSource extends ThirdPartyGitBuildSource {
  * Source types for CodeBuild Project
  */
 export enum SourceType {
-  None = 'NO_SOURCE',
-  CodeCommit = 'CODECOMMIT',
-  CodePipeline = 'CODEPIPELINE',
-  GitHub = 'GITHUB',
-  GitHubEnterprise = 'GITHUB_ENTERPRISE',
-  BitBucket = 'BITBUCKET',
+  NONE = 'NO_SOURCE',
+  CODECOMMIT = 'CODECOMMIT',
+  CODEPIPELINE = 'CODEPIPELINE',
+  GITHUB = 'GITHUB',
+  GITHUB_ENTERPRISE = 'GITHUB_ENTERPRISE',
+  BITBUCKET = 'BITBUCKET',
   S3 = 'S3',
 }
 

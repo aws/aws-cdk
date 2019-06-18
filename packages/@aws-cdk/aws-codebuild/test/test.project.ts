@@ -232,7 +232,7 @@ export = {
     // WHEN
     new codebuild.Project(stack, 'Project', {
       source: new codebuild.CodePipelineSource(),
-      cache: Cache.local(LocalCacheMode.Custom, LocalCacheMode.DockerLayer, LocalCacheMode.Source)
+      cache: Cache.local(LocalCacheMode.CUSTOM, LocalCacheMode.DOCKER_LAYER, LocalCacheMode.SOURCE)
     });
 
     // THEN

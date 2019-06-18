@@ -1135,7 +1135,7 @@ export = {
       environment: {
         environmentVariables: {
           FOO: { value: '1234' },
-          BAR: { value: `111${cdk.Token.asString({ twotwotwo: '222' })}`, type: codebuild.BuildEnvironmentVariableType.ParameterStore }
+          BAR: { value: `111${cdk.Token.asString({ twotwotwo: '222' })}`, type: codebuild.BuildEnvironmentVariableType.PARAMETER_STORE }
         }
       },
       environmentVariables: {
@@ -1219,7 +1219,7 @@ export = {
     const stack = new cdk.Stack();
     const invalidEnvironment: codebuild.BuildEnvironment = {
       buildImage: codebuild.WindowsBuildImage.WIN_SERVER_CORE_2016_BASE,
-      computeType: codebuild.ComputeType.Small,
+      computeType: codebuild.ComputeType.SMALL,
     };
 
     test.throws(() => {
