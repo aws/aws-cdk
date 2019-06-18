@@ -1,0 +1,83 @@
+{
+  "name": "@aws-cdk/aws-iotthingsgraph",
+  "version": "0.34.0",
+  "description": "The CDK Construct Library for AWS::IoTThingsGraph",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "jsii": {
+    "outdir": "dist",
+    "targets": {
+      "dotnet": {
+        "namespace": "Amazon.CDK.AWS.IoTThingsGraph",
+        "packageId": "Amazon.CDK.AWS.IoTThingsGraph",
+        "signAssembly": true,
+        "assemblyOriginatorKeyFile": "../../key.snk"
+      },
+      "java": {
+        "package": "software.amazon.awscdk.services.iotthingsgraph",
+        "maven": {
+          "groupId": "software.amazon.awscdk",
+          "artifactId": "iotthingsgraph"
+        }
+      },
+      "python": {
+        "distName": "aws-cdk.aws-iotthingsgraph",
+        "module": "aws_cdk.aws_iotthingsgraph"
+      }
+    },
+    "metadata": {
+      "awsdocs:title": "AWS IoT Things Graph"
+    }
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/awslabs/aws-cdk.git",
+    "directory": "packages/@aws-cdk/aws-iotthingsgraph"
+  },
+  "homepage": "https://github.com/awslabs/aws-cdk",
+  "scripts": {
+    "build": "cdk-build",
+    "integ": "cdk-integ",
+    "lint": "cdk-lint",
+    "package": "cdk-package",
+    "awslint": "cdk-awslint",
+    "pkglint": "pkglint -f",
+    "test": "cdk-test",
+    "watch": "cdk-watch",
+    "cfn2ts": "cfn2ts",
+    "build+test": "npm run build && npm test",
+    "build+test+package": "npm run build+test && npm run package"
+  },
+  "cdk-build": {
+    "cloudformation": "AWS::IoTThingsGraph"
+  },
+  "keywords": [
+    "aws",
+    "cdk",
+    "constructs",
+    "AWS::IoTThingsGraph",
+    "aws-iotthingsgraph"
+  ],
+  "author": {
+    "name": "Amazon Web Services",
+    "url": "https://aws.amazon.com",
+    "organization": true
+  },
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "@aws-cdk/assert": "^0.34.0",
+    "cdk-build-tools": "^0.34.0",
+    "cfn2ts": "^0.34.0",
+    "pkglint": "^0.34.0"
+  },
+  "dependencies": {
+    "@aws-cdk/cdk": "^0.34.0"
+  },
+  "peerDependencies": {
+    "@aws-cdk/cdk": "^0.34.0"
+  },
+  "engines": {
+    "node": ">= 8.10.0"
+  },
+  "stability": "experimental"
+}
