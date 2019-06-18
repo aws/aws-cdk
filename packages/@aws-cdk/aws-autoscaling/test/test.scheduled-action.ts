@@ -12,7 +12,7 @@ export = {
 
     // WHEN
     asg.scaleOnSchedule('ScaleOutInTheMorning', {
-      schedule: autoscaling.Schedule.cron({ hour: '8' }),
+      schedule: autoscaling.Schedule.cron({ hour: '8', minute: '0' }),
       minCapacity: 10,
     });
 

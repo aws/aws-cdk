@@ -23,10 +23,8 @@ export abstract class Schedule {
     const minute = fallback(options.minute, '*');
     const hour = fallback(options.hour, '*');
     const month = fallback(options.month, '*');
-
-    // Weekday defaults to '?' if not supplied. If it is supplied, day must become '?'
-    const day = fallback(options.day, options.weekDay !== undefined ? '?' : '*');
-    const weekDay = fallback(options.weekDay, '?');
+    const day = fallback(options.day, '*');
+    const weekDay = fallback(options.weekDay, '*');
 
     return new LiteralSchedule(`${minute} ${hour} ${day} ${month} ${weekDay}`);
   }
