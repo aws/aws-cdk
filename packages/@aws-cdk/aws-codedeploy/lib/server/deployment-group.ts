@@ -340,7 +340,7 @@ export class ServerDeploymentGroup extends ServerDeploymentGroupBase {
     this.codeDeployBucket.grantRead(asg.role, 'latest/*');
 
     switch (asg.osType) {
-      case ec2.OperatingSystemType.Linux:
+      case ec2.OperatingSystemType.LINUX:
         asg.addUserData(
           'PKG_CMD=`which yum 2>/dev/null`',
           'if [ -z "$PKG_CMD" ]; then',
@@ -362,7 +362,7 @@ export class ServerDeploymentGroup extends ServerDeploymentGroupBase {
           'rm -fr $TMP_DIR',
         );
         break;
-      case ec2.OperatingSystemType.Windows:
+      case ec2.OperatingSystemType.WINDOWS:
         asg.addUserData(
           'Set-Variable -Name TEMPDIR -Value (New-TemporaryFile).DirectoryName',
           `aws s3 cp s3://aws-codedeploy-${Stack.of(this).region}/latest/codedeploy-agent.msi $TEMPDIR\\codedeploy-agent.msi`,
