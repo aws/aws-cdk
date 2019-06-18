@@ -153,7 +153,7 @@ export = {
         const stack = getTestStack();
 
         const cloudTrail = new Trail(stack, 'MyAmazingCloudTrail');
-        cloudTrail.addS3EventSelector(["arn:aws:s3:::"], { includeManagementEvents: false, readWriteType: ReadWriteType.ReadOnly });
+        cloudTrail.addS3EventSelector(["arn:aws:s3:::"], { includeManagementEvents: false, readWriteType: ReadWriteType.READ_ONLY });
 
         expect(stack).to(haveResource("AWS::CloudTrail::Trail"));
         expect(stack).to(haveResource("AWS::S3::Bucket"));
@@ -178,7 +178,7 @@ export = {
       'with management event'(test: Test) {
         const stack = getTestStack();
 
-        new Trail(stack, 'MyAmazingCloudTrail', { managementEvents: ReadWriteType.WriteOnly });
+        new Trail(stack, 'MyAmazingCloudTrail', { managementEvents: ReadWriteType.WRITE_ONLY });
 
         const trail: any = SynthUtils.synthesize(stack).template.Resources.MyAmazingCloudTrail54516E8D;
         test.equals(trail.Properties.EventSelectors.length, 1);
@@ -194,7 +194,7 @@ export = {
   'add an event rule'(test: Test) {
     // GIVEN
     const stack = getTestStack();
-    const trail = new Trail(stack, 'MyAmazingCloudTrail', { managementEvents: ReadWriteType.WriteOnly });
+    const trail = new Trail(stack, 'MyAmazingCloudTrail', { managementEvents: ReadWriteType.WRITE_ONLY });
 
     // WHEN
     trail.onCloudTrailEvent('DoEvents', {

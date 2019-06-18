@@ -96,9 +96,9 @@ export interface TrailProps {
 }
 
 export enum ReadWriteType {
-  ReadOnly = "ReadOnly",
-  WriteOnly = "WriteOnly",
-  All = "All"
+  READ_ONLY = "ReadOnly",
+  WRITE_ONLY = "WriteOnly",
+  ALL = "All"
 }
 
 /**
