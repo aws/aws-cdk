@@ -43,7 +43,7 @@ export class GlobalTable extends cdk.Construct {
       throw new Error("dynamoProps.stream MUST be set to dynamodb.StreamViewType.NewAndOldImages");
     }
 
-    // need to set this streamSpecification, otherwise global tables don't work
+    // need to set this stream specification, otherwise global tables don't work
     // And no way to set a default value in an interface
     const stackProps: dynamodb.TableProps = {
       ...props,
