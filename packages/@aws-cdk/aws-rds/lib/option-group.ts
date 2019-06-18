@@ -122,7 +122,7 @@ export class OptionGroup extends Resource implements IOptionGroup {
       optionConfigurations: this.renderConfigurations(props.configurations)
     });
 
-    this.optionGroupName = optionGroup.optionGroupName;
+    this.optionGroupName = optionGroup.refAsString;
   }
 
   /**

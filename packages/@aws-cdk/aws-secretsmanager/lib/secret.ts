@@ -189,7 +189,7 @@ export class Secret extends SecretBase {
     });
 
     this.encryptionKey = props.encryptionKey;
-    this.secretArn = resource.secretArn;
+    this.secretArn = resource.refAsString;
   }
 
   /**
@@ -309,8 +309,8 @@ export class SecretTargetAttachment extends SecretBase implements ISecretTargetA
     this.encryptionKey = props.secret.encryptionKey;
 
     // This allows to reference the secret after attachment (dependency).
-    this.secretArn = attachment.secretTargetAttachmentSecretArn;
-    this.secretTargetAttachmentSecretArn = attachment.secretTargetAttachmentSecretArn;
+    this.secretArn = attachment.refAsString;
+    this.secretTargetAttachmentSecretArn = attachment.refAsString;
   }
 }
 

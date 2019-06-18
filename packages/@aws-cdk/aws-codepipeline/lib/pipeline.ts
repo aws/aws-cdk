@@ -256,7 +256,7 @@ export class Pipeline extends PipelineBase {
     this.artifactBucket.grantReadWrite(this.role);
 
     this.pipelineName = codePipeline.refAsString;
-    this.pipelineVersion = codePipeline.pipelineVersion;
+    this.pipelineVersion = codePipeline.attrVersion;
     this.crossRegionReplicationBuckets = props.crossRegionReplicationBuckets || {};
     this.artifactStores = {};
 
