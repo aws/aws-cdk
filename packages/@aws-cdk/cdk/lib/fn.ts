@@ -2,6 +2,7 @@ import { ICfnConditionExpression } from './cfn-condition';
 import { minimalCloudFormationJoin } from './cloudformation-lang';
 import { Intrinsic } from './private/intrinsic';
 import { IResolvable, IResolveContext } from './resolvable';
+import { captureStackTrace } from './stack-trace';
 import { Token } from './token';
 
 // tslint:disable:max-line-length
@@ -630,6 +631,8 @@ class FnValueOfAll extends FnBase {
  * with no delimiter.
  */
 class FnJoin implements IResolvable {
+  public readonly creationStack: string[];
+
   private readonly delimiter: string;
   private readonly listOfValues: any[];
   // Cache for the result of resolveValues() - since it otherwise would be computed several times
@@ -648,6 +651,7 @@ class FnJoin implements IResolvable {
 
     this.delimiter = delimiter;
     this.listOfValues = listOfValues;
+    this.creationStack = captureStackTrace();
   }
 
   public resolve(context: IResolveContext): any {

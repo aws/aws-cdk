@@ -32,8 +32,11 @@ export interface IResolvable {
   /**
    * The creation stack of this resolvable which will be appended to errors
    * thrown during resolution.
+   *
+   * If this returns an empty array or `undefined` the stack will not be
+   * attached.
    */
-  readonly creationStack?: string[];
+  readonly creationStack: string[] | undefined;
 
   /**
    * Produce the Token's value at resolution time
