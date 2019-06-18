@@ -38,7 +38,7 @@ export interface StageProps {
   /**
    * The physical, human-readable name to assign to this Pipeline Stage.
    */
-  readonly name: string;
+  readonly stageName: string;
 
   /**
    * The list of Actions to create this Stage with.
@@ -256,7 +256,7 @@ export class Pipeline extends PipelineBase {
     this.artifactBucket.grantReadWrite(this.role);
 
     this.pipelineName = codePipeline.refAsString;
-    this.pipelineVersion = codePipeline.pipelineVersion;
+    this.pipelineVersion = codePipeline.attrVersion;
     this.crossRegionReplicationBuckets = props.crossRegionReplicationBuckets || {};
     this.artifactStores = {};
 
@@ -279,8 +279,8 @@ export class Pipeline extends PipelineBase {
    */
   public addStage(props: StageAddToPipelineProps): IStage {
     // check for duplicate Stages and names
-    if (this.stages.find(s => s.stageName === props.name)) {
-      throw new Error(`Stage with duplicate name '${props.name}' added to the Pipeline`);
+    if (this.stages.find(s => s.stageName === props.stageName)) {
+      throw new Error(`Stage with duplicate name '${props.stageName}' added to the Pipeline`);
     }
 
     const stage = new Stage(props, this);

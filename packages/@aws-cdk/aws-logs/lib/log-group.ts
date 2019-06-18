@@ -345,8 +345,8 @@ export class LogGroup extends LogGroupBase {
 
     resource.applyRemovalPolicy(props.removalPolicy);
 
-    this.logGroupArn = resource.logGroupArn;
-    this.logGroupName = resource.logGroupName;
+    this.logGroupArn = resource.attrArn;
+    this.logGroupName = resource.refAsString;
   }
 }
 

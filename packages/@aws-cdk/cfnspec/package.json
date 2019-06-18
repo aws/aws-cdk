@@ -5,7 +5,6 @@
   "scripts": {
     "update": "cdk-build && /bin/bash build-tools/update.sh",
     "build": "cdk-build && node build-tools/build",
-    "set-refkind": "cdk-build && node build-tools/set-refkind",
     "watch": "cdk-watch",
     "pkglint": "pkglint -f",
     "test": "cdk-test",

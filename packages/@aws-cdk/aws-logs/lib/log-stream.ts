@@ -73,6 +73,6 @@ export class LogStream extends Resource implements ILogStream {
 
     resource.applyRemovalPolicy(props.removalPolicy);
 
-    this.logStreamName = resource.logStreamName;
+    this.logStreamName = resource.refAsString;
   }
 }

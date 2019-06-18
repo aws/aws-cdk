@@ -97,7 +97,7 @@ function stackIncludingLambdaInvokeCodePipeline(userParams: { [key: string]: any
   new codepipeline.Pipeline(stack, 'Pipeline', {
     stages: [
       {
-        name: 'Source',
+        stageName: 'Source',
         actions: [
           new cpactions.GitHubSourceAction({
             actionName: 'GitHub',
@@ -109,7 +109,7 @@ function stackIncludingLambdaInvokeCodePipeline(userParams: { [key: string]: any
         ],
       },
       {
-        name: 'Invoke',
+        stageName: 'Invoke',
         actions: [
           new cpactions.LambdaInvokeAction({
             actionName: 'Lambda',

@@ -328,9 +328,9 @@ export class DatabaseCluster extends DatabaseClusterBase {
     this.clusterIdentifier = cluster.refAsString;
 
     // create a number token that represents the port of the cluster
-    const portAttribute = Token.asNumber(cluster.dbClusterEndpointPort);
-    this.clusterEndpoint = new Endpoint(cluster.dbClusterEndpointAddress, portAttribute);
-    this.clusterReadEndpoint = new Endpoint(cluster.dbClusterReadEndpointAddress, portAttribute);
+    const portAttribute = Token.asNumber(cluster.attrEndpointPort);
+    this.clusterEndpoint = new Endpoint(cluster.attrEndpointAddress, portAttribute);
+    this.clusterReadEndpoint = new Endpoint(cluster.attrEndpointAddress, portAttribute);
 
     if (secret) {
       this.secret = secret.addTargetAttachment('AttachedSecret', {
@@ -377,7 +377,7 @@ export class DatabaseCluster extends DatabaseClusterBase {
       instance.node.addDependency(internetConnected);
 
       this.instanceIdentifiers.push(instance.refAsString);
-      this.instanceEndpoints.push(new Endpoint(instance.dbInstanceEndpointAddress, portAttribute));
+      this.instanceEndpoints.push(new Endpoint(instance.attrEndpointAddress, portAttribute));
     }
 
     const defaultPortRange = new ec2.TcpPort(this.clusterEndpoint.port);

@@ -116,7 +116,7 @@ function uppercaseProperties(props: Properties): Properties {
 
 function renderResourceType(resourceType?: string) {
   if (!resourceType) {
-    return CfnCustomResource.resourceTypeName;
+    return CfnCustomResource.cfnResourceTypeName;
   }
 
   if (!resourceType.startsWith('Custom::')) {

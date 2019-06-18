@@ -505,7 +505,7 @@ abstract class DatabaseInstanceNew extends DatabaseInstanceBase implements IData
       copyTagsToSnapshot: props.copyTagsToSnapshot !== undefined ? props.copyTagsToSnapshot : true,
       dbInstanceClass: `db.${props.instanceClass}`,
       dbInstanceIdentifier: props.instanceIdentifier,
-      dbSubnetGroupName: subnetGroup.dbSubnetGroupName,
+      dbSubnetGroupName: subnetGroup.refAsString,
       deleteAutomatedBackups: props.deleteAutomatedBackups,
       deletionProtection,
       enableCloudwatchLogsExports: this.cloudwatchLogsExports,
@@ -733,13 +733,13 @@ export class DatabaseInstance extends DatabaseInstanceSource implements IDatabas
       storageEncrypted: props.kmsKey ? true : props.storageEncrypted
     });
 
-    this.instanceIdentifier = instance.dbInstanceId;
-    this.dbInstanceEndpointAddress = instance.dbInstanceEndpointAddress;
-    this.dbInstanceEndpointPort = instance.dbInstanceEndpointPort;
+    this.instanceIdentifier = instance.refAsString;
+    this.dbInstanceEndpointAddress = instance.attrEndpointAddress;
+    this.dbInstanceEndpointPort = instance.attrEndpointPort;
 
     // create a number token that represents the port of the instance
-    const portAttribute = Token.asNumber(instance.dbInstanceEndpointPort);
-    this.instanceEndpoint = new Endpoint(instance.dbInstanceEndpointAddress, portAttribute);
+    const portAttribute = Token.asNumber(instance.attrEndpointPort);
+    this.instanceEndpoint = new Endpoint(instance.attrEndpointAddress, portAttribute);
 
     instance.applyRemovalPolicy(props.removalPolicy, {
       applyToUpdateReplacePolicy: true
@@ -827,13 +827,13 @@ export class DatabaseInstanceFromSnapshot extends DatabaseInstanceSource impleme
           : undefined),
     });
 
-    this.instanceIdentifier = instance.dbInstanceId;
-    this.dbInstanceEndpointAddress = instance.dbInstanceEndpointAddress;
-    this.dbInstanceEndpointPort = instance.dbInstanceEndpointPort;
+    this.instanceIdentifier = instance.refAsString;
+    this.dbInstanceEndpointAddress = instance.attrEndpointAddress;
+    this.dbInstanceEndpointPort = instance.attrEndpointPort;
 
     // create a number token that represents the port of the instance
-    const portAttribute = Token.asNumber(instance.dbInstanceEndpointPort);
-    this.instanceEndpoint = new Endpoint(instance.dbInstanceEndpointAddress, portAttribute);
+    const portAttribute = Token.asNumber(instance.attrEndpointPort);
+    this.instanceEndpoint = new Endpoint(instance.attrEndpointAddress, portAttribute);
 
     instance.applyRemovalPolicy(props.removalPolicy, {
       applyToUpdateReplacePolicy: true
@@ -904,13 +904,13 @@ export class DatabaseInstanceReadReplica extends DatabaseInstanceNew implements 
       storageEncrypted: props.kmsKey ? true : props.storageEncrypted,
     });
 
-    this.instanceIdentifier = instance.dbInstanceId;
-    this.dbInstanceEndpointAddress = instance.dbInstanceEndpointAddress;
-    this.dbInstanceEndpointPort = instance.dbInstanceEndpointPort;
+    this.instanceIdentifier = instance.refAsString;
+    this.dbInstanceEndpointAddress = instance.attrEndpointAddress;
+    this.dbInstanceEndpointPort = instance.attrEndpointPort;
 
     // create a number token that represents the port of the instance
-    const portAttribute = Token.asNumber(instance.dbInstanceEndpointPort);
-    this.instanceEndpoint = new Endpoint(instance.dbInstanceEndpointAddress, portAttribute);
+    const portAttribute = Token.asNumber(instance.attrEndpointPort);
+    this.instanceEndpoint = new Endpoint(instance.attrEndpointAddress, portAttribute);
 
     instance.applyRemovalPolicy(props.removalPolicy, {
       applyToUpdateReplacePolicy: true
