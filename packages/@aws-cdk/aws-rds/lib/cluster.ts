@@ -306,9 +306,9 @@ export class DatabaseCluster extends DatabaseClusterBase {
       port: props.port,
       dbClusterParameterGroupName: props.parameterGroup && props.parameterGroup.parameterGroupName,
       // Admin
-      masterUsername: secret ? secret.secretJsonValue('username').toString() : props.masterUser.username,
+      masterUsername: secret ? secret.secretValueFromJson('username').toString() : props.masterUser.username,
       masterUserPassword: secret
-        ? secret.secretJsonValue('password').toString()
+        ? secret.secretValueFromJson('password').toString()
         : (props.masterUser.password
             ? props.masterUser.password.toString()
             : undefined),
