@@ -29,15 +29,13 @@ export = {
       repository,
     });
     pipeline.addStage({
-      name: 'source',
+      stageName: 'source',
       actions: [source],
     });
 
-    const project = new codebuild.Project(stack, 'MyBuildProject', {
-       source: new codebuild.CodePipelineSource()
-    });
+    const project = new codebuild.PipelineProject(stack, 'MyBuildProject');
     pipeline.addStage({
-      name: 'build',
+      stageName: 'build',
       actions: [
         new cpactions.CodeBuildAction({
           actionName: 'build',
@@ -76,7 +74,7 @@ export = {
     const p = new codepipeline.Pipeline(stack, 'P');
 
     p.addStage({
-      name: 'Source',
+      stageName: 'Source',
       actions: [
         new cpactions.GitHubSourceAction({
           actionName: 'GH',
@@ -92,7 +90,7 @@ export = {
     });
 
     p.addStage({
-      name: 'Two',
+      stageName: 'Two',
       actions: [
         new cpactions.ManualApprovalAction({ actionName: 'Boo' }),
       ],
@@ -135,7 +133,7 @@ export = {
     const p = new codepipeline.Pipeline(stack, 'P');
 
     p.addStage({
-      name: 'Source',
+      stageName: 'Source',
       actions: [
         new cpactions.GitHubSourceAction({
           actionName: 'GH',
@@ -151,7 +149,7 @@ export = {
     });
 
     p.addStage({
-      name: 'Two',
+      stageName: 'Two',
       actions: [
         new cpactions.ManualApprovalAction({ actionName: 'Boo' }),
       ],
@@ -194,7 +192,7 @@ export = {
     const p = new codepipeline.Pipeline(stack, 'P');
 
     p.addStage({
-      name: 'Source',
+      stageName: 'Source',
       actions: [
         new cpactions.GitHubSourceAction({
           actionName: 'GH',
@@ -209,7 +207,7 @@ export = {
     });
 
     p.addStage({
-      name: 'Two',
+      stageName: 'Two',
       actions: [
         new cpactions.ManualApprovalAction({ actionName: 'Boo' }),
       ],
@@ -293,7 +291,7 @@ export = {
     const pipeline = new codepipeline.Pipeline(stack, 'PL');
 
     pipeline.addStage({
-      name: 'S1',
+      stageName: 'S1',
       actions: [
         new cpactions.S3SourceAction({
           actionName: 'A1',
@@ -305,7 +303,7 @@ export = {
     });
 
     pipeline.addStage({
-      name: 'S2',
+      stageName: 'S2',
       actions: [
         new cpactions.ManualApprovalAction({ actionName: 'A2' }),
       ],
@@ -455,7 +453,7 @@ export = {
       bucket,
     });
     pipeline.addStage({
-      name: 'Source',
+      stageName: 'Source',
       actions: [
         source1,
         source2,
@@ -476,7 +474,7 @@ export = {
       ],
     });
     pipeline.addStage({
-      name: 'Stage',
+      stageName: 'Stage',
       actions: [lambdaAction],
     });
 
@@ -613,12 +611,12 @@ export = {
         bucket,
       });
       pipeline.addStage({
-        name: 'Stage1',
+        stageName: 'Stage1',
         actions: [sourceAction],
       });
 
       pipeline.addStage({
-        name: 'Stage2',
+        stageName: 'Stage2',
         actions: [
           new cpactions.CloudFormationCreateReplaceChangeSetAction({
             actionName: 'Action1',
@@ -734,7 +732,7 @@ export = {
       new codepipeline.Pipeline(pipelineStack, 'Pipeline', {
         stages: [
           {
-            name: 'Source',
+            stageName: 'Source',
             actions: [
               new cpactions.S3SourceAction({
                 actionName: 'S3',
@@ -745,13 +743,13 @@ export = {
             ],
           },
           {
-            name: 'Build',
+            stageName: 'Build',
             actions: [
               new cpactions.CodeBuildAction({
                 actionName: 'CodeBuild',
                 project,
                 input: sourceOutput,
-                output: new codepipeline.Artifact(),
+                outputs: [new codepipeline.Artifact()],
               }),
             ],
           },
@@ -867,7 +865,7 @@ export = {
 
 function stageForTesting(stack: Stack): codepipeline.IStage {
   const pipeline = new codepipeline.Pipeline(stack, 'pipeline');
-  return pipeline.addStage({ name: 'stage' });
+  return pipeline.addStage({ stageName: 'stage' });
 }
 
 function repositoryForTesting(stack: Stack): codecommit.Repository {

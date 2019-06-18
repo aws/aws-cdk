@@ -347,8 +347,8 @@ export class LogGroup extends LogGroupBase {
       applyRemovalPolicy(resource, RemovalPolicy.Orphan);
     }
 
-    this.logGroupArn = resource.logGroupArn;
-    this.logGroupName = resource.logGroupName;
+    this.logGroupArn = resource.attrArn;
+    this.logGroupName = resource.refAsString;
   }
 }
 

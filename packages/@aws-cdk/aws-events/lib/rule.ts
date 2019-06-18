@@ -101,7 +101,7 @@ export class Rule extends Resource implements IRule {
       targets: Lazy.anyValue({ produce: () => this.renderTargets() }),
     });
 
-    this.ruleArn = resource.ruleArn;
+    this.ruleArn = resource.attrArn;
 
     this.addEventPattern(props.eventPattern);
     this.scheduleExpression = props.scheduleExpression;

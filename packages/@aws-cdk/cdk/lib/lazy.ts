@@ -1,3 +1,4 @@
+import { createStackTrace } from './private/stack-trace';
 import { IResolvable, IResolveContext } from "./resolvable";
 import { Token } from "./token";
 
@@ -119,8 +120,13 @@ export class Lazy {
 }
 
 abstract class LazyBase implements IResolvable {
-  public abstract resolve(context: IResolveContext): any;
+  public readonly creationStack: string[];
 
+  constructor() {
+    this.creationStack = createStackTrace();
+  }
+
+  public abstract resolve(context: IResolveContext): any;
   public toString() {
     return Token.asString(this);
   }
