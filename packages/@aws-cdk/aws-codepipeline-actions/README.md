@@ -183,17 +183,6 @@ new codepipeline.Pipeline(this, 'MyPipeline', {
 });
 ```
 
-The `PipelineProject` utility class is a simple sugar around the `Project`
-class, it's equivalent to:
-
-```ts
-const project = new codebuild.Project(this, 'MyProject', {
-  source: new codebuild.CodePipelineSource(),
-  artifacts: new codebuild.CodePipelineBuildArtifacts(),
-  // rest of the properties from PipelineProject are passed unchanged...
-}
-```
-
 The default category of the CodeBuild Action is `Build`;
 if you want a `Test` Action instead,
 override the `type` property:

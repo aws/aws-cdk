@@ -42,15 +42,10 @@ methods and attributes.
 ## Source
 
 Build projects are usually associated with a _source_, which is specified via
-the `source` property which accepts a class that extends the `BuildSource`
-abstract base class. The supported sources are:
-
-### `NoSource`
-
-This is the default and implies that no source is associated with this
-build project.
-
-The `buildSpec` option is required in this case.
+the `source` property which accepts a class that extends the `Source`
+abstract base class.
+The default is to have no source associated with the build project;
+the `buildSpec` option is required in that case.
 
 Here's a CodeBuild project with no source which simply prints `Hello,
 CodeBuild!`:
@@ -67,11 +62,11 @@ import codecommit = require('@aws-cdk/aws-codecommit');
 
 const repository = new codecommit.Repository(this, 'MyRepo', { repositoryName: 'foo' });
 new codebuild.Project(this, 'MyFirstCodeCommitProject', {
-  source: new codebuild.CodeCommitSource({ repository }),
+  source: codebuild.Source.codeCommit({ repository }),
 });
 ```
 
-### `S3BucketSource`
+### `S3Source`
 
 Create a CodeBuild project with an S3 bucket as the source:
 
@@ -81,17 +76,12 @@ import s3 = require('@aws-cdk/aws-s3');
 
 const bucket = new s3.Bucket(this, 'MyBucket');
 new codebuild.Project(this, 'MyProject', {
-  source: new codebuild.S3BucketSource({
+  source: codebuild.Source.s3({
     bucket: bucket,
     path: 'path/to/file.zip',
   }),
 });
 ```
-
-### `CodePipelineSource`
-
-Used as a special source type when a CodeBuild project is used as a
-CodePipeline action.
 
 ### `GitHubSource` and `GitHubEnterpriseSource`
 
@@ -99,7 +89,7 @@ These source types can be used to build code from a GitHub repository.
 Example:
 
 ```typescript
-const gitHubSource = new codebuild.GitHubSource({
+const gitHubSource = codebuild.Source.gitHub({
   owner: 'awslabs',
   repo: 'aws-cdk',
   webhook: true, // optional, default: true if `webhookFilteres` were provided, false otherwise
@@ -120,6 +110,23 @@ aws codebuild import-source-credentials --server-type GITHUB --auth-type PERSONA
 ### `BitBucketSource`
 
 This source type can be used to build code from a BitBucket repository.
+
+## CodePipeline
+
+To add a CodeBuild Project as an Action to CodePipeline,
+use the `PipelineProject` class instead of `Project`.
+It's a simple class that doesn't allow you to specify `sources`,
+`secondarySources`, `artifacts` or `secondaryArtifacts`,
+as these are handled by setting input and output CodePipeline `Artifact` instances on the Action,
+instead of setting them on the Project.
+
+```typescript
+const project = new codebuild.PipelineProject(this, 'Project', {
+  // properties as above...
+})
+```
+
+For more details, see the readme of the `@aws-cdk/@aws-codepipeline` package.
 
 ## Caching
 
@@ -225,13 +232,13 @@ multiple outputs. For example:
 ```ts
 const project = new codebuild.Project(this, 'MyProject', {
   secondarySources: [
-    new codebuild.CodeCommitSource({
+    codebuild.Source.codeCommit({
       identifier: 'source2',
       repository: repo,
     }),
   ],
   secondaryArtifacts: [
-    new codebuild.S3BucketBuildArtifacts({
+    codebuild.Artifacts.s3({
       identifier: 'artifact2',
       bucket: bucket,
       path: 'some/path',
@@ -324,7 +331,7 @@ const securityGroup = new ec2.SecurityGroup(stack, 'SecurityGroup1', {
     vpc: vpc,
 });
 new Project(stack, 'MyProject', {
-    buildScriptAsset: new assets.ZipDirectoryAsset(stack, 'Bundle', { path: 'script_bundle' }),
+    buildScript: new assets.ZipDirectoryAsset(stack, 'Bundle', { path: 'script_bundle' }),
     securityGroups: [securityGroup],
     vpc: vpc
 });
