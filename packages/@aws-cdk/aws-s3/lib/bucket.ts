@@ -1,7 +1,7 @@
 import events = require('@aws-cdk/aws-events');
 import iam = require('@aws-cdk/aws-iam');
 import kms = require('@aws-cdk/aws-kms');
-import { applyRemovalPolicy, Construct, IResource, Lazy, PhysicalName,
+import { Construct, IResource, Lazy, PhysicalName,
   RemovalPolicy, Resource, ResourceIdentifiers, Stack, Token } from '@aws-cdk/cdk';
 import { EOL } from 'os';
 import { BucketPolicy } from './bucket-policy';
@@ -904,7 +904,7 @@ export class Bucket extends BucketBase {
       corsConfiguration: Lazy.anyValue({ produce: () => this.parseCorsConfiguration() })
     });
 
-    applyRemovalPolicy(resource, props.removalPolicy !== undefined ? props.removalPolicy : RemovalPolicy.Orphan);
+    resource.applyRemovalPolicy(props.removalPolicy);
 
     this.versioned = props.versioned;
     this.encryptionKey = encryptionKey;

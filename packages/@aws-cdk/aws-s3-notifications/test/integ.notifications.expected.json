@@ -1,6 +1,7 @@
 {
   "Resources": {
     "Bucket83908E77": {
+      "DeletionPolicy": "Delete",
       "Type": "AWS::S3::Bucket"
     },
     "BucketNotifications8F2E257D": {
@@ -263,6 +264,7 @@
       }
     },
     "Bucket25524B414": {
+      "DeletionPolicy": "Delete",
       "Type": "AWS::S3::Bucket"
     },
     "Bucket2NotificationsD9BA2A77": {

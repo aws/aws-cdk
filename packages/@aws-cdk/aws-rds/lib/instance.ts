@@ -5,7 +5,7 @@ import kms = require('@aws-cdk/aws-kms');
 import lambda = require('@aws-cdk/aws-lambda');
 import logs = require('@aws-cdk/aws-logs');
 import secretsmanager = require('@aws-cdk/aws-secretsmanager');
-import { Construct, DeletionPolicy, IResource, Resource, SecretValue, Stack, Token } from '@aws-cdk/cdk';
+import { Construct, IResource, RemovalPolicy, Resource, SecretValue, Stack, Token } from '@aws-cdk/cdk';
 import { DatabaseSecret } from './database-secret';
 import { Endpoint } from './endpoint';
 import { IOptionGroup} from './option-group';
@@ -445,9 +445,9 @@ export interface DatabaseInstanceNewProps {
    * The CloudFormation policy to apply when the instance is removed from the
    * stack or replaced during an update.
    *
-   * @default Retain
+   * @default RemovalPolicy.Retain
    */
-  readonly deleteReplacePolicy?: DeletionPolicy
+  readonly removalPolicy?: RemovalPolicy
 }
 
 /**
@@ -741,9 +741,9 @@ export class DatabaseInstance extends DatabaseInstanceSource implements IDatabas
     const portAttribute = Token.asNumber(instance.attrEndpointPort);
     this.instanceEndpoint = new Endpoint(instance.attrEndpointAddress, portAttribute);
 
-    const deleteReplacePolicy = props.deleteReplacePolicy || DeletionPolicy.Retain;
-    instance.options.deletionPolicy = deleteReplacePolicy;
-    instance.options.updateReplacePolicy = deleteReplacePolicy;
+    instance.applyRemovalPolicy(props.removalPolicy, {
+      applyToUpdateReplacePolicy: true
+    });
 
     if (secret) {
       this.secret = secret.addTargetAttachment('AttachedSecret', {
@@ -835,9 +835,9 @@ export class DatabaseInstanceFromSnapshot extends DatabaseInstanceSource impleme
     const portAttribute = Token.asNumber(instance.attrEndpointPort);
     this.instanceEndpoint = new Endpoint(instance.attrEndpointAddress, portAttribute);
 
-    const deleteReplacePolicy = props.deleteReplacePolicy || DeletionPolicy.Retain;
-    instance.options.deletionPolicy = deleteReplacePolicy;
-    instance.options.updateReplacePolicy = deleteReplacePolicy;
+    instance.applyRemovalPolicy(props.removalPolicy, {
+      applyToUpdateReplacePolicy: true
+    });
 
     if (secret) {
       this.secret = secret.addTargetAttachment('AttachedSecret', {
@@ -912,9 +912,9 @@ export class DatabaseInstanceReadReplica extends DatabaseInstanceNew implements 
     const portAttribute = Token.asNumber(instance.attrEndpointPort);
     this.instanceEndpoint = new Endpoint(instance.attrEndpointAddress, portAttribute);
 
-    const deleteReplacePolicy = props.deleteReplacePolicy || DeletionPolicy.Retain;
-    instance.options.deletionPolicy = deleteReplacePolicy;
-    instance.options.updateReplacePolicy = deleteReplacePolicy;
+    instance.applyRemovalPolicy(props.removalPolicy, {
+      applyToUpdateReplacePolicy: true
+    });
 
     this.connections = new ec2.Connections({
       securityGroups: [this.securityGroup],

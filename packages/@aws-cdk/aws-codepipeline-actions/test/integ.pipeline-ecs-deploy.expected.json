@@ -194,7 +194,8 @@
       "Type": "AWS::ECS::Cluster"
     },
     "EcrRepoBB83A592": {
-      "Type": "AWS::ECR::Repository"
+      "Type": "AWS::ECR::Repository",
+      "DeletionPolicy": "Retain"
     },
     "TaskDefTaskRole1EDB4A67": {
       "Type": "AWS::IAM::Role",
@@ -310,6 +311,7 @@
     },
     "MyBucketF68F3FF0": {
       "Type": "AWS::S3::Bucket",
+      "DeletionPolicy": "Delete",
       "Properties": {
         "VersioningConfiguration": {
           "Status": "Enabled"

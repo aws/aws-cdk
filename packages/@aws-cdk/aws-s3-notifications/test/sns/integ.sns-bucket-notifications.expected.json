@@ -99,6 +99,7 @@
       }
     },
     "MyBucketF68F3FF0": {
+      "DeletionPolicy": "Delete",
       "Type": "AWS::S3::Bucket"
     },
     "MyBucketNotifications46AC0CD2": {

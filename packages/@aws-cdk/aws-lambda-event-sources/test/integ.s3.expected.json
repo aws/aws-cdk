@@ -83,6 +83,7 @@
       }
     },
     "B08E7C7AF": {
+      "DeletionPolicy": "Delete",
       "Type": "AWS::S3::Bucket"
     },
     "BNotificationsEB8DA980": {

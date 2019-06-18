@@ -69,6 +69,7 @@
     },
     "MyBucketF68F3FF0": {
       "Type": "AWS::S3::Bucket",
+      "DeletionPolicy": "Delete",
       "Properties": {
         "BucketEncryption": {
           "ServerSideEncryptionConfiguration": [
@@ -89,6 +90,7 @@
     },
     "MyOtherBucket543F3540": {
       "Type": "AWS::S3::Bucket",
+      "DeletionPolicy": "Delete",
       "Properties": {
         "BucketEncryption": {
           "ServerSideEncryptionConfiguration": [

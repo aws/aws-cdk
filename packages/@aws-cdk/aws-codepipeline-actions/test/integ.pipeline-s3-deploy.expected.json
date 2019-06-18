@@ -67,6 +67,7 @@
       }
     },
     "PipelineBucketB967BD35": {
+      "DeletionPolicy": "Delete",
       "Type": "AWS::S3::Bucket",
       "Properties": {
         "VersioningConfiguration": {

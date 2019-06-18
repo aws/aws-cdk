@@ -1,6 +1,7 @@
 {
   "Resources": {
     "ArtifactBucket7410C9EF": {
+      "DeletionPolicy": "Delete",
       "Type": "AWS::S3::Bucket"
     },
     "CodePipelineRoleB3A660B4": {

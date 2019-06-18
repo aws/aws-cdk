@@ -1,6 +1,6 @@
 import cxapi = require('@aws-cdk/cx-api');
 import { Test } from 'nodeunit';
-import { App, App as Root, applyRemovalPolicy, CfnCondition,
+import { App, App as Root, CfnCondition,
     CfnResource, Construct, ConstructNode, DeletionPolicy,
     Fn, RemovalPolicy, Stack } from '../lib';
 import { toCloudFormation } from './util';
@@ -294,18 +294,24 @@ export = {
   'removal policy is a high level abstraction of deletion policy used by l2'(test: Test) {
     const stack = new Stack();
 
-    const orphan = new CfnResource(stack, 'Orphan', { type: 'T1' });
-    const forbid = new CfnResource(stack, 'Forbid', { type: 'T2' });
+    const retain = new CfnResource(stack, 'Retain', { type: 'T1' });
     const destroy = new CfnResource(stack, 'Destroy', { type: 'T3' });
+    const def = new CfnResource(stack, 'Default1', { type: 'T4' });
+    const def2 = new CfnResource(stack, 'Default2', { type: 'T4' });
 
-    applyRemovalPolicy(orphan, RemovalPolicy.Orphan);
-    applyRemovalPolicy(forbid, RemovalPolicy.Forbid);
-    applyRemovalPolicy(destroy, RemovalPolicy.Destroy);
+    retain.applyRemovalPolicy(RemovalPolicy.Retain);
+    destroy.applyRemovalPolicy(RemovalPolicy.Destroy);
+    def.applyRemovalPolicy(undefined, { default: RemovalPolicy.Destroy });
+    def2.applyRemovalPolicy(undefined);
 
-    test.deepEqual(toCloudFormation(stack), { Resources:
-      { Orphan: { Type: 'T1', DeletionPolicy: 'Retain' },
-        Forbid: { Type: 'T2', DeletionPolicy: 'Retain' },
-        Destroy: { Type: 'T3' } } });
+    test.deepEqual(toCloudFormation(stack), {
+      Resources: {
+        Retain: { Type: 'T1', DeletionPolicy: 'Retain' },
+        Destroy: { Type: 'T3', DeletionPolicy: 'Delete' },
+        Default1: { Type: 'T4', DeletionPolicy: 'Delete' }, // explicit default
+        Default2: { Type: 'T4', DeletionPolicy: 'Retain' } // implicit default
+      }
+    });
     test.done();
   },
 
