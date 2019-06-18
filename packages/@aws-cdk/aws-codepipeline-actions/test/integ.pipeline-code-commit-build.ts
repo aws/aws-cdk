@@ -19,9 +19,7 @@ const sourceAction = new cpactions.CodeCommitSourceAction({
   pollForSourceChanges: true,
 });
 
-const project = new codebuild.Project(stack, 'MyBuildProject', {
-  source: new codebuild.CodePipelineSource(),
-});
+const project = new codebuild.PipelineProject(stack, 'MyBuildProject');
 const buildAction = new cpactions.CodeBuildAction({
   actionName: 'build',
   project,
