@@ -2,6 +2,7 @@ import { ArnComponents } from '../arn';
 import { IResolvable, IResolveContext } from '../resolvable';
 import { IResource } from '../resource';
 import { Stack } from '../stack';
+import { captureStackTrace } from '../stack-trace';
 
 /**
  * A Token that represents a reference that spans accounts and/or regions,
@@ -11,6 +12,8 @@ import { Stack } from '../stack';
  * This class is private to the @aws-cdk/cdk package.
  */
 export abstract class CrossEnvironmentToken implements IResolvable {
+  public readonly creationStack: string[];
+
   /**
    * @param regularValue the value used when this is referenced NOT from a cross account and/or region Stack
    * @param crossEnvironmentValue the value used when this is referenced from a cross account and/or region Stack
@@ -20,6 +23,7 @@ export abstract class CrossEnvironmentToken implements IResolvable {
   protected constructor(private readonly regularValue: string, private readonly crossEnvironmentValue: any,
                         private readonly resource: IResource) {
     this.resource = resource;
+    this.creationStack = captureStackTrace();
   }
 
   public resolve(context: IResolveContext): any {
