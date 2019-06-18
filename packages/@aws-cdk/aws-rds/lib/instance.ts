@@ -174,17 +174,17 @@ export enum LicenseModel {
   /**
    * License included.
    */
-  LicenseIncluded = 'license-included',
+  LICENSE_INCLUDED = 'license-included',
 
   /**
    * Bring your own licencse.
    */
-  BringYourOwnLicense = 'bring-your-own-license',
+  BRING_YOUR_OWN_LICENSE = 'bring-your-own-license',
 
   /**
    * General public license.
    */
-  GeneralPublicLicense = 'general-public-license'
+  GENERAL_PUBLIC_LICENSE = 'general-public-license'
 }
 
 /**
@@ -209,7 +209,7 @@ export enum StorageType {
   /**
    * Standard.
    */
-  Standard = 'standard',
+  STANDARD = 'standard',
 
   /**
    * General purpose (SSD).
@@ -229,12 +229,12 @@ export enum PerformanceInsightRetentionPeriod {
   /**
    * Default retention period of 7 days.
    */
-  Default = 7,
+  DEFAULT = 7,
 
   /**
    * Long term retention period of 2 years.
    */
-  LongTerm = 731
+  LONG_TERM = 731
 }
 
 /**
@@ -520,13 +520,13 @@ abstract class DatabaseInstanceNew extends DatabaseInstanceBase implements IData
         ? props.performanceInsightKmsKey && props.performanceInsightKmsKey.keyArn
         : undefined,
       performanceInsightsRetentionPeriod: props.enablePerformanceInsights
-        ? (props.performanceInsightRetentionPeriod || PerformanceInsightRetentionPeriod.Default)
+        ? (props.performanceInsightRetentionPeriod || PerformanceInsightRetentionPeriod.DEFAULT)
         : undefined,
       port: props.port ? props.port.toString() : undefined,
       preferredBackupWindow: props.preferredBackupWindow,
       preferredMaintenanceWindow: props.preferredMaintenanceWindow,
       processorFeatures: props.processorFeatures && renderProcessorFeatures(props.processorFeatures),
-      publiclyAccessible: props.vpcPlacement && props.vpcPlacement.subnetType === ec2.SubnetType.Public,
+      publiclyAccessible: props.vpcPlacement && props.vpcPlacement.subnetType === ec2.SubnetType.PUBLIC,
       storageType,
       vpcSecurityGroups: [this.securityGroupId]
     };
