@@ -27,12 +27,13 @@ class UsingStack extends cdk.Stack {
 
     // Retrieve a specific version of the secret (SecureString) parameter.
     // 'version' is always required.
-    const secretValue = ssm.StringParameter.fromSecureStringParameterAttributes(this, 'MyValue', {
+    const secretValue = ssm.StringParameter.fromSecureStringParameterAttributes(this, 'MySecureValue', {
       parameterName: '/My/Secret/Parameter',
       version: 5
     });
     /// !hide
 
+    new cdk.CfnResource(this, 'Dummy', { type: 'AWS::SNS::Topic' });
     new cdk.CfnOutput(this, 'TheValue', { value: stringValue });
 
     // Cannot be provisioned so cannot be actually used

@@ -183,24 +183,24 @@ export class StringParameter extends ParameterBase implements IStringParameter {
   /**
    * Imports an external string parameter by name.
    */
-  public static fromStringParameterName(scope: Construct, id: string, parameterName: string): IStringParameter {
-    return this.fromStringParameterAttributes(scope, id, { parameterName });
+  public static fromStringParameterName(scope: Construct, id: string, stringParameterName: string): IStringParameter {
+    return this.fromStringParameterAttributes(scope, id, { parameterName: stringParameterName });
   }
 
   /**
    * Imports an external string parameter with name and optional version.
    */
-  public static fromStringParameterAttributes(scope: Construct, id: string, attributes: StringParameterAttributes): IStringParameter {
-    if (!attributes.parameterName) {
+  public static fromStringParameterAttributes(scope: Construct, id: string, attrs: StringParameterAttributes): IStringParameter {
+    if (!attrs.parameterName) {
       throw new Error(`parameterName cannot be an empty string`);
     }
 
-    const stringValue = attributes.version
-      ? new CfnDynamicReference(CfnDynamicReferenceService.Ssm, `${attributes.parameterName}:${attributes.version}`).toString()
-      : new CfnParameter(scope, `${id}.Parameter`, { type: 'AWS::SSM::Parameter::Value<String>', default: attributes.parameterName }).valueAsString;
+    const stringValue = attrs.version
+      ? new CfnDynamicReference(CfnDynamicReferenceService.Ssm, `${attrs.parameterName}:${attrs.version}`).toString()
+      : new CfnParameter(scope, `${id}.Parameter`, { type: 'AWS::SSM::Parameter::Value<String>', default: attrs.parameterName }).valueAsString;
 
     class Import extends ParameterBase {
-      public readonly parameterName = attributes.parameterName;
+      public readonly parameterName = attrs.parameterName;
       public readonly parameterType = STRING_PARAM_TYPE;
       public readonly stringValue = stringValue;
     }
@@ -211,11 +211,11 @@ export class StringParameter extends ParameterBase implements IStringParameter {
   /**
    * Imports a secure string parameter from the SSM parameter store.
    */
-  public static fromSecureStringParameterAttributes(scope: Construct, id: string, attributes: SecureStringParameterAttributes): IStringParameter {
-    const stringValue = new CfnDynamicReference(CfnDynamicReferenceService.SsmSecure, `${attributes.parameterName}:${attributes.version}`).toString();
+  public static fromSecureStringParameterAttributes(scope: Construct, id: string, attrs: SecureStringParameterAttributes): IStringParameter {
+    const stringValue = new CfnDynamicReference(CfnDynamicReferenceService.SsmSecure, `${attrs.parameterName}:${attrs.version}`).toString();
 
     class Import extends ParameterBase {
-      public readonly parameterName = attributes.parameterName;
+      public readonly parameterName = attrs.parameterName;
       public readonly parameterType = SECURE_STRING_PARAM_TYPE;
       public readonly stringValue = stringValue;
     }
