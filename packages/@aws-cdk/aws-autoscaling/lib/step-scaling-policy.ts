@@ -8,7 +8,7 @@ export interface BasicStepScalingPolicyProps {
   /**
    * Metric to scale on.
    */
-  readonly metric: cloudwatch.Metric;
+  readonly metric: cloudwatch.IMetric;
 
   /**
    * The intervals for scaling.
@@ -102,8 +102,8 @@ export class StepScalingPolicy extends cdk.Construct {
       }
 
       this.lowerAlarm = new cloudwatch.Alarm(this, 'LowerAlarm', {
-        // Recommended by AutoScaling
-        metric: props.metric.with({ periodSec: 60 }),
+        metric: props.metric,
+        periodSec: 60, // Recommended by AutoScaling
         alarmDescription: 'Lower threshold scaling alarm',
         comparisonOperator: cloudwatch.ComparisonOperator.LessThanOrEqualToThreshold,
         evaluationPeriods: 1,
@@ -133,7 +133,8 @@ export class StepScalingPolicy extends cdk.Construct {
 
       this.upperAlarm = new cloudwatch.Alarm(this, 'UpperAlarm', {
         // Recommended by AutoScaling
-        metric: props.metric.with({ periodSec: 60 }),
+        metric: props.metric,
+        periodSec: 60, // Recommended by AutoScaling
         alarmDescription: 'Upper threshold scaling alarm',
         comparisonOperator: cloudwatch.ComparisonOperator.GreaterThanOrEqualToThreshold,
         evaluationPeriods: 1,
@@ -144,8 +145,9 @@ export class StepScalingPolicy extends cdk.Construct {
   }
 }
 
-function aggregationTypeFromMetric(metric: cloudwatch.Metric): MetricAggregationType {
-  switch (metric.statistic) {
+function aggregationTypeFromMetric(metric: cloudwatch.IMetric): MetricAggregationType {
+  const statistic = metric.toAlarmConfig().statistic;
+  switch (statistic) {
     case 'Average':
       return MetricAggregationType.Average;
     case 'Minimum':
@@ -153,7 +155,7 @@ function aggregationTypeFromMetric(metric: cloudwatch.Metric): MetricAggregation
     case 'Maximum':
       return MetricAggregationType.Maximum;
     default:
-      throw new Error(`Cannot only scale on 'Minimum', 'Maximum', 'Average' metrics, got ${metric.statistic}`);
+      throw new Error(`Cannot only scale on 'Minimum', 'Maximum', 'Average' metrics, got ${statistic}`);
   }
 }
 

@@ -806,7 +806,7 @@ export interface MetricTargetTrackingProps extends BaseTargetTrackingProps {
    * target value, your ASG should scale out, and if it's lower it should
    * scale in.
    */
-  readonly metric: cloudwatch.Metric;
+  readonly metric: cloudwatch.IMetric;
 
   /**
    * Value to keep the metric around

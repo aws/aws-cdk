@@ -46,7 +46,6 @@ export = {
       PolicyType: "TargetTrackingScaling",
       TargetTrackingScalingPolicyConfiguration: {
         CustomizedMetricSpecification: {
-          Dimensions: [],
           MetricName: "Metric",
           Namespace: "Test",
           Statistic: "Average"

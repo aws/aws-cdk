@@ -31,12 +31,12 @@ const group2 = listener.addTargets('ConditionalTarget', {
   targets: [new elbv2.IpTarget('10.0.1.2')]
 });
 
-group1.metricTargetResponseTime().newAlarm(stack, 'ResponseTimeHigh1', {
+group1.metricTargetResponseTime().createAlarm(stack, 'ResponseTimeHigh1', {
   threshold: 5,
   evaluationPeriods: 2,
 });
 
-group2.metricTargetResponseTime().newAlarm(stack, 'ResponseTimeHigh2', {
+group2.metricTargetResponseTime().createAlarm(stack, 'ResponseTimeHigh2', {
   threshold: 5,
   evaluationPeriods: 2,
 });

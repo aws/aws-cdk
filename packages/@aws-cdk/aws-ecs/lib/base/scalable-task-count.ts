@@ -139,7 +139,7 @@ export interface TrackCustomMetricProps extends appscaling.BaseTargetTrackingPro
    * - metric > targetValue => scale out
    * - metric < targetValue => scale in
    */
-  readonly metric: cloudwatch.Metric;
+  readonly metric: cloudwatch.IMetric;
 
   /**
    * The target value to achieve for the metric
