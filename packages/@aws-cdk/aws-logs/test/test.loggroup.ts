@@ -11,7 +11,7 @@ export = {
 
     // WHEN
     new LogGroup(stack, 'LogGroup', {
-      retentionDays: RetentionDays.OneWeek
+      retentionDays: RetentionDays.ONE_WEEK
     });
 
     // THEN
