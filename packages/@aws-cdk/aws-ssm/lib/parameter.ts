@@ -1,5 +1,5 @@
 import iam = require('@aws-cdk/aws-iam');
-import { CfnDynamicReference, CfnDynamicReferenceService, Construct, Fn, IResource, Resource, Stack, Token, CfnParameter } from '@aws-cdk/cdk';
+import { CfnDynamicReference, CfnDynamicReferenceService, CfnParameter, Construct, Fn, IResource, Resource, Stack, Token } from '@aws-cdk/cdk';
 import ssm = require('./ssm.generated');
 
 /**
@@ -148,7 +148,7 @@ const STRING_PARAM_TYPE = 'String';
 const SECURE_STRING_PARAM_TYPE = 'SecureString';
 const STRINGLIST_PARAM_TYPE = 'StringList';
 
-export interface ParameterAttributes {
+export interface StringParameterAttributes {
   /**
    * The name of the parameter store value
    */
@@ -181,9 +181,16 @@ export interface SecureStringParameterAttributes {
 export class StringParameter extends ParameterBase implements IStringParameter {
 
   /**
-   * Imports an external string parameter.
+   * Imports an external string parameter by name.
    */
-  public static fromStringParameterAttributes(scope: Construct, id: string, attributes: ParameterAttributes): IStringParameter {
+  public static fromStringParameterName(scope: Construct, id: string, parameterName: string): IStringParameter {
+    return this.fromStringParameterAttributes(scope, id, { parameterName });
+  }
+
+  /**
+   * Imports an external string parameter with name and optional version.
+   */
+  public static fromStringParameterAttributes(scope: Construct, id: string, attributes: StringParameterAttributes): IStringParameter {
     if (!attributes.parameterName) {
       throw new Error(`parameterName cannot be an empty string`);
     }
@@ -201,6 +208,9 @@ export class StringParameter extends ParameterBase implements IStringParameter {
     return new Import(scope, id);
   }
 
+  /**
+   * Imports a secure string parameter from the SSM parameter store.
+   */
   public static fromSecureStringParameterAttributes(scope: Construct, id: string, attributes: SecureStringParameterAttributes): IStringParameter {
     const stringValue = new CfnDynamicReference(CfnDynamicReferenceService.SsmSecure, `${attributes.parameterName}:${attributes.version}`).toString();
 

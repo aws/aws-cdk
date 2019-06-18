@@ -3,7 +3,6 @@ import cdk = require('@aws-cdk/cdk');
 import { Stack } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
 import ssm = require('../lib');
-import { version } from 'punycode';
 
 export = {
   'creating a String SSM Parameter'(test: Test) {
@@ -125,6 +124,38 @@ export = {
         ':parameter',
         { Ref: 'Parameter9E1B4FBA' }
       ]]
+    });
+    test.done();
+  },
+
+  'StringParameter.fromStringParameterName'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    const param = ssm.StringParameter.fromStringParameterName(stack, 'MyParamName', 'MyParamName');
+
+    // THEN
+    test.deepEqual(stack.resolve(param.parameterArn), {
+      'Fn::Join': [ '', [
+        'arn:',
+        { Ref: 'AWS::Partition' },
+        ':ssm:',
+        { Ref: 'AWS::Region' },
+        ':',
+        { Ref: 'AWS::AccountId' },
+        ':parameterMyParamName' ] ]
+    });
+    test.deepEqual(stack.resolve(param.parameterName), 'MyParamName');
+    test.deepEqual(stack.resolve(param.parameterType), 'String');
+    test.deepEqual(stack.resolve(param.stringValue), { Ref: 'MyParamNameParameter' });
+    expect(stack).toMatch({
+      Parameters: {
+        MyParamNameParameter: {
+          Type: "AWS::SSM::Parameter::Value<String>",
+          Default: "MyParamName"
+        }
+      }
     });
     test.done();
   },
