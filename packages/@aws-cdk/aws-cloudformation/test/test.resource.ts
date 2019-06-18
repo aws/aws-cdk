@@ -19,7 +19,7 @@ export = testCase({
 
       // THEN
       expect(stack).to(haveResource('AWS::CloudFormation::CustomResource', {}, ResourcePart.CompleteDefinition));
-      test.equal(app.synth().tryGetArtifact(stack.name)!.findMetadataByType('aws:cdk:protected').length, 0);
+      test.equal(app.synth().tryGetArtifact(stack.stackName)!.findMetadataByType('aws:cdk:protected').length, 0);
 
       test.done();
     },
@@ -34,7 +34,7 @@ export = testCase({
 
       // THEN
       expect(stack).to(haveResource('AWS::CloudFormation::CustomResource', {}, ResourcePart.CompleteDefinition));
-      test.equal(app.synth().tryGetArtifact(stack.name)!.findMetadataByType('aws:cdk:protected').length, 0);
+      test.equal(app.synth().tryGetArtifact(stack.stackName)!.findMetadataByType('aws:cdk:protected').length, 0);
 
       test.done();
     },
@@ -51,7 +51,7 @@ export = testCase({
       expect(stack).to(haveResource('AWS::CloudFormation::CustomResource', {
         DeletionPolicy: 'Retain',
       }, ResourcePart.CompleteDefinition));
-      test.equal(app.synth().tryGetArtifact(stack.name)!.findMetadataByType('aws:cdk:protected').length, 0);
+      test.equal(app.synth().tryGetArtifact(stack.stackName)!.findMetadataByType('aws:cdk:protected').length, 0);
 
       test.done();
     },
@@ -68,7 +68,7 @@ export = testCase({
       expect(stack).to(haveResource('AWS::CloudFormation::CustomResource', {
         DeletionPolicy: 'Retain',
       }, ResourcePart.CompleteDefinition));
-      test.ok(app.synth().tryGetArtifact(stack.name)!.findMetadataByType('aws:cdk:protected')[0].data);
+      test.ok(app.synth().tryGetArtifact(stack.stackName)!.findMetadataByType('aws:cdk:protected')[0].data);
 
       test.done();
     },
