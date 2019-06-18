@@ -49,7 +49,7 @@ export class CnameInstance extends InstanceBase {
   constructor(scope: cdk.Construct, id: string, props: CnameInstanceProps) {
     super(scope, id);
 
-    if (props.service.namespace.type === NamespaceType.Http) {
+    if (props.service.namespace.type === NamespaceType.HTTP) {
       throw new Error('Namespace associated with Service must be a DNS Namespace.');
     }
 

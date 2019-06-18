@@ -32,7 +32,7 @@ export class PublicDnsNamespace extends Resource implements IPublicDnsNamespace 
       public namespaceName = attrs.namespaceName;
       public namespaceId = attrs.namespaceId;
       public namespaceArn = attrs.namespaceArn;
-      public type = NamespaceType.DnsPublic;
+      public type = NamespaceType.DNS_PUBLIC;
     }
     return new Import(scope, id);
   }
@@ -68,7 +68,7 @@ export class PublicDnsNamespace extends Resource implements IPublicDnsNamespace 
     this.namespaceName = props.name;
     this.namespaceId = ns.publicDnsNamespaceId;
     this.namespaceArn = ns.publicDnsNamespaceArn;
-    this.type = NamespaceType.DnsPublic;
+    this.type = NamespaceType.DNS_PUBLIC;
   }
 
   /** @attribute */
