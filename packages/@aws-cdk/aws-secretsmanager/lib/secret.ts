@@ -222,12 +222,12 @@ export enum AttachmentTargetType {
   /**
    * A database instance
    */
-  Instance = 'AWS::RDS::DBInstance',
+  INSTANCE = 'AWS::RDS::DBInstance',
 
   /**
    * A database cluster
    */
-  Cluster = 'AWS::RDS::DBCluster'
+  CLUSTER = 'AWS::RDS::DBCluster'
 }
 
 /**
