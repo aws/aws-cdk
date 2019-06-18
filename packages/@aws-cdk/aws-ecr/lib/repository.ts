@@ -376,20 +376,20 @@ export class Repository extends RepositoryBase {
   public addLifecycleRule(rule: LifecycleRule) {
     // Validate rule here so users get errors at the expected location
     if (rule.tagStatus === undefined) {
-      rule = { ...rule, tagStatus: rule.tagPrefixList === undefined ? TagStatus.Any : TagStatus.Tagged };
+      rule = { ...rule, tagStatus: rule.tagPrefixList === undefined ? TagStatus.ANY : TagStatus.TAGGED };
     }
 
-    if (rule.tagStatus === TagStatus.Tagged && (rule.tagPrefixList === undefined || rule.tagPrefixList.length === 0)) {
+    if (rule.tagStatus === TagStatus.TAGGED && (rule.tagPrefixList === undefined || rule.tagPrefixList.length === 0)) {
       throw new Error('TagStatus.Tagged requires the specification of a tagPrefixList');
     }
-    if (rule.tagStatus !== TagStatus.Tagged && rule.tagPrefixList !== undefined) {
+    if (rule.tagStatus !== TagStatus.TAGGED && rule.tagPrefixList !== undefined) {
       throw new Error('tagPrefixList can only be specified when tagStatus is set to Tagged');
     }
     if ((rule.maxImageAgeDays !== undefined) === (rule.maxImageCount !== undefined)) {
       throw new Error(`Life cycle rule must contain exactly one of 'maxImageAgeDays' and 'maxImageCount', got: ${JSON.stringify(rule)}`);
     }
 
-    if (rule.tagStatus === TagStatus.Any && this.lifecycleRules.filter(r => r.tagStatus === TagStatus.Any).length > 0) {
+    if (rule.tagStatus === TagStatus.ANY && this.lifecycleRules.filter(r => r.tagStatus === TagStatus.ANY).length > 0) {
       throw new Error('Life cycle can only have one TagStatus.Any rule');
     }
 
@@ -425,9 +425,9 @@ export class Repository extends RepositoryBase {
   private orderedLifecycleRules(): LifecycleRule[] {
     if (this.lifecycleRules.length === 0) { return []; }
 
-    const prioritizedRules = this.lifecycleRules.filter(r => r.rulePriority !== undefined && r.tagStatus !== TagStatus.Any);
-    const autoPrioritizedRules = this.lifecycleRules.filter(r => r.rulePriority === undefined && r.tagStatus !== TagStatus.Any);
-    const anyRules = this.lifecycleRules.filter(r => r.tagStatus === TagStatus.Any);
+    const prioritizedRules = this.lifecycleRules.filter(r => r.rulePriority !== undefined && r.tagStatus !== TagStatus.ANY);
+    const autoPrioritizedRules = this.lifecycleRules.filter(r => r.rulePriority === undefined && r.tagStatus !== TagStatus.ANY);
+    const anyRules = this.lifecycleRules.filter(r => r.tagStatus === TagStatus.ANY);
     if (anyRules.length > 0 && anyRules[0].rulePriority !== undefined && autoPrioritizedRules.length > 0) {
       // Supporting this is too complex for very little value. We just prohibit it.
       throw new Error("Cannot combine prioritized TagStatus.Any rule with unprioritized rules. Remove rulePriority from the 'Any' rule.");
@@ -451,7 +451,7 @@ export class Repository extends RepositoryBase {
 }
 
 function validateAnyRuleLast(rules: LifecycleRule[]) {
-  const anyRules = rules.filter(r => r.tagStatus === TagStatus.Any);
+  const anyRules = rules.filter(r => r.tagStatus === TagStatus.ANY);
   if (anyRules.length === 1) {
     const maxPrio = Math.max(...rules.map(r => r.rulePriority!));
     if (anyRules[0].rulePriority !== maxPrio) {
@@ -468,9 +468,9 @@ function renderLifecycleRule(rule: LifecycleRule) {
     rulePriority: rule.rulePriority,
     description: rule.description,
     selection: {
-      tagStatus: rule.tagStatus || TagStatus.Any,
+      tagStatus: rule.tagStatus || TagStatus.ANY,
       tagPrefixList: rule.tagPrefixList,
-      countType: rule.maxImageAgeDays !== undefined ? CountType.SinceImagePushed : CountType.ImageCountMoreThan,
+      countType: rule.maxImageAgeDays !== undefined ? CountType.SINCE_IMAGE_PUSHED : CountType.IMAGE_COUNT_MORE_THAN,
       countNumber: rule.maxImageAgeDays !== undefined ? rule.maxImageAgeDays : rule.maxImageCount,
       countUnit: rule.maxImageAgeDays !== undefined ? 'days' : undefined,
     },
