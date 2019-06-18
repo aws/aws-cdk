@@ -284,19 +284,19 @@ export class Repository extends RepositoryBase {
   }
 
   public get repositoryArn() {
-    return this.repository.repositoryArn;
+    return this.repository.attrArn;
   }
 
   public get repositoryCloneUrlHttp() {
-    return this.repository.repositoryCloneUrlHttp;
+    return this.repository.attrCloneUrlHttp;
   }
 
   public get repositoryCloneUrlSsh() {
-    return this.repository.repositoryCloneUrlSsh;
+    return this.repository.attrCloneUrlSsh;
   }
 
   public get repositoryName() {
-    return this.repository.repositoryName;
+    return this.repository.attrName;
   }
 
   /**

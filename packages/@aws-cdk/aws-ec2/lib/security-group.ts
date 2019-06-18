@@ -280,9 +280,9 @@ export class SecurityGroup extends SecurityGroupBase {
       vpcId: props.vpc.vpcId,
     });
 
-    this.securityGroupId = this.securityGroup.securityGroupId;
-    this.securityGroupVpcId = this.securityGroup.securityGroupVpcId;
-    this.securityGroupName = this.securityGroup.securityGroupName;
+    this.securityGroupId = this.securityGroup.attrGroupId;
+    this.securityGroupVpcId = this.securityGroup.attrVpcId;
+    this.securityGroupName = this.securityGroup.refAsString;
 
     this.addDefaultEgressRule();
   }

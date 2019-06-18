@@ -116,7 +116,7 @@ export class LifecycleHook extends Resource implements ILifecycleHook {
     // lifecycle hook.
     resource.node.addDependency(this.role);
 
-    this.lifecycleHookName = resource.lifecycleHookName;
+    this.lifecycleHookName = resource.refAsString;
   }
 }
 

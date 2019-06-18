@@ -257,8 +257,8 @@ export class Stream extends StreamBase {
       shardCount,
       streamEncryption
     });
-    this.streamArn = this.stream.streamArn;
-    this.streamName = this.stream.streamId;
+    this.streamArn = this.stream.attrArn;
+    this.streamName = this.stream.refAsString;
     this.encryptionKey = encryptionKey;
 
     if (props.streamName) { this.node.addMetadata('aws:cdk:hasPhysicalName', props.streamName); }

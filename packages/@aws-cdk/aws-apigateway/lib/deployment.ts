@@ -76,7 +76,7 @@ export class Deployment extends Resource {
     }
 
     this.api = props.api;
-    this.deploymentId = Lazy.stringValue({ produce: () => this.resource.deploymentId });
+    this.deploymentId = Lazy.stringValue({ produce: () => this.resource.refAsString });
   }
 
   /**

@@ -119,7 +119,7 @@ export class ScalableTarget extends Resource implements IScalableTarget {
       serviceNamespace: props.serviceNamespace
     });
 
-    this.scalableTargetId = resource.scalableTargetId;
+    this.scalableTargetId = resource.refAsString;
   }
 
   /**

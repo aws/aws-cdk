@@ -89,7 +89,7 @@ export class HostedZone extends Resource implements IHostedZone {
     });
 
     this.hostedZoneId = resource.refAsString;
-    this.hostedZoneNameServers = resource.hostedZoneNameServers;
+    this.hostedZoneNameServers = resource.attrNameServers;
     this.zoneName = props.zoneName;
 
     for (const vpc of props.vpcs || []) {

@@ -113,8 +113,8 @@ export class User extends Resource implements IIdentity {
       loginProfile: this.parseLoginProfile(props)
     });
 
-    this.userName = user.userName;
-    this.userArn = user.userArn;
+    this.userName = user.refAsString;
+    this.userArn = user.attrArn;
     this.policyFragment = new ArnPrincipal(this.userArn).policyFragment;
 
     if (props.groups) {

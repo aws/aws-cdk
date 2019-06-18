@@ -706,8 +706,8 @@ export class Project extends ProjectBase {
     });
 
     const resourceIdentifiers = new ResourceIdentifiers(this, {
-      arn: resource.projectArn,
-      name: resource.projectName,
+      arn: resource.attrArn,
+      name: resource.refAsString,
       arnComponents: {
         service: 'codebuild',
         resource: 'project',

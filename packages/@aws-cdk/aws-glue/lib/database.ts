@@ -105,7 +105,7 @@ export class Database extends Resource implements IDatabase {
     });
 
     // see https://docs.aws.amazon.com/glue/latest/dg/glue-specifying-resource-arns.html#data-catalog-resource-arns
-    this.databaseName = resource.databaseName;
+    this.databaseName = resource.refAsString;
     this.databaseArn = Stack.of(this).formatArn({
       service: 'glue',
       resource: 'database',

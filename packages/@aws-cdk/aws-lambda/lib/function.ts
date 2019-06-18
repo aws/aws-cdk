@@ -436,7 +436,7 @@ export class Function extends FunctionBase {
     resource.node.addDependency(this.role);
 
     this.functionName = resource.refAsString;
-    this.functionArn = resource.functionArn;
+    this.functionArn = resource.attrArn;
     this.runtime = props.runtime;
 
     // allow code to bind to stack.

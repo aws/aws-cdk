@@ -76,8 +76,8 @@ export class UserPoolClient extends Resource {
       explicitAuthFlows: props.enabledAuthFlows
     });
 
-    this.userPoolClientId = resource.userPoolClientId;
-    this.userPoolClientClientSecret = resource.userPoolClientClientSecret;
-    this.userPoolClientName = resource.userPoolClientName;
+    this.userPoolClientId = resource.refAsString;
+    this.userPoolClientClientSecret = resource.attrClientSecret;
+    this.userPoolClientName = resource.attrName;
   }
 }

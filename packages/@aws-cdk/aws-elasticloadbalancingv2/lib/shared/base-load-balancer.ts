@@ -145,12 +145,12 @@ export abstract class BaseLoadBalancer extends Resource {
 
     if (baseProps.deletionProtection) { this.setAttribute('deletion_protection.enabled', 'true'); }
 
-    this.loadBalancerCanonicalHostedZoneId = resource.loadBalancerCanonicalHostedZoneId;
-    this.loadBalancerDnsName = resource.loadBalancerDnsName;
-    this.loadBalancerFullName = resource.loadBalancerFullName;
-    this.loadBalancerName = resource.loadBalancerName;
+    this.loadBalancerCanonicalHostedZoneId = resource.attrCanonicalHostedZoneId;
+    this.loadBalancerDnsName = resource.attrDnsName;
+    this.loadBalancerFullName = resource.attrLoadBalancerFullName;
+    this.loadBalancerName = resource.attrLoadBalancerName;
     this.loadBalancerArn = resource.refAsString;
-    this.loadBalancerSecurityGroups = resource.loadBalancerSecurityGroups;
+    this.loadBalancerSecurityGroups = resource.attrSecurityGroups;
   }
 
   /**

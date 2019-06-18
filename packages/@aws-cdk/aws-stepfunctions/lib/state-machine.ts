@@ -106,8 +106,8 @@ export class StateMachine extends StateMachineBase {
             this.addToRolePolicy(statement);
         }
 
-        this.stateMachineName = resource.stateMachineName;
-        this.stateMachineArn = resource.stateMachineArn;
+        this.stateMachineName = resource.attrName;
+        this.stateMachineArn = resource.refAsString;
     }
 
     /**

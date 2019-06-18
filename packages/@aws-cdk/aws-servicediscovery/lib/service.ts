@@ -274,9 +274,9 @@ export class Service extends ServiceBase {
       namespaceId: props.namespace.namespaceId
     });
 
-    this.serviceName = service.serviceName;
-    this.serviceArn = service.serviceArn;
-    this.serviceId = service.serviceId;
+    this.serviceName = service.attrName;
+    this.serviceArn = service.attrArn;
+    this.serviceId = service.attrId;
     this.namespace = props.namespace;
     this.dnsRecordType = dnsRecordType;
     this.routingPolicy = routingPolicy;

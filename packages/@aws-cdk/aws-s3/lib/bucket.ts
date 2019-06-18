@@ -910,8 +910,8 @@ export class Bucket extends BucketBase {
     this.encryptionKey = encryptionKey;
 
     const resourceIdentifiers = new ResourceIdentifiers(this, {
-      arn: resource.bucketArn,
-      name: resource.bucketName,
+      arn: resource.attrArn,
+      name: resource.refAsString,
       arnComponents: {
         region: '',
         account: '',
@@ -921,10 +921,10 @@ export class Bucket extends BucketBase {
     });
     this.bucketArn = resourceIdentifiers.arn;
     this.bucketName = resourceIdentifiers.name;
-    this.bucketDomainName = resource.bucketDomainName;
-    this.bucketWebsiteUrl = resource.bucketWebsiteUrl;
-    this.bucketDualStackDomainName = resource.bucketDualStackDomainName;
-    this.bucketRegionalDomainName = resource.bucketRegionalDomainName;
+    this.bucketDomainName = resource.attrDomainName;
+    this.bucketWebsiteUrl = resource.attrWebsiteUrl;
+    this.bucketDualStackDomainName = resource.attrDualStackDomainName;
+    this.bucketRegionalDomainName = resource.attrRegionalDomainName;
 
     this.disallowPublicAccess = props.blockPublicAccess && props.blockPublicAccess.blockPublicPolicy;
 

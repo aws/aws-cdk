@@ -255,8 +255,8 @@ export class Queue extends QueueBase {
       visibilityTimeout: props.visibilityTimeoutSec,
     });
     this.encryptionMasterKey = encryptionMasterKey;
-    this.queueArn = queue.queueArn;
-    this.queueName = queue.queueName;
+    this.queueArn = queue.attrArn;
+    this.queueName = queue.attrQueueName;
     this.queueUrl = queue.refAsString;
 
     function _determineEncryptionProps(this: Queue): { encryptionProps: EncryptionProps, encryptionMasterKey?: kms.IKey } {

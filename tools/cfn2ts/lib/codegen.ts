@@ -69,8 +69,6 @@ export default class CodeGenerator {
     for (const name of Object.keys(this.spec.ResourceTypes).sort()) {
       const resourceType = this.spec.ResourceTypes[name];
 
-      this.validateRefKindPresence(name, resourceType);
-
       const cfnName = SpecName.parse(name);
       const resourceName = genspec.CodeName.forCfnResource(cfnName, this.affix);
       this.code.line();
@@ -121,7 +119,7 @@ export default class CodeGenerator {
     this.docLink(spec.Documentation, `Properties for defining a \`${resourceContext.specName!.fqn}\``);
     this.code.openBlock(`export interface ${name.className}`);
 
-    const conversionTable = this.emitPropsTypeProperties(resourceContext, spec.Properties);
+    const conversionTable = this.emitPropsTypeProperties(resourceContext, spec.Properties, Container.Interface);
 
     this.code.closeBlock();
 
@@ -138,13 +136,23 @@ export default class CodeGenerator {
    *
    * Return a mapping of { originalName -> newName }.
    */
-  private emitPropsTypeProperties(resource: genspec.CodeName, propertiesSpec: { [name: string]: schema.Property }): Dictionary<string> {
+  private emitPropsTypeProperties(
+    resource: genspec.CodeName,
+    propertiesSpec: { [name: string]: schema.Property },
+    container: Container): Dictionary<string> {
     const propertyMap: Dictionary<string> = {};
 
     Object.keys(propertiesSpec).sort(propertyComparator).forEach(propName => {
+      this.code.line();
       const propSpec = propertiesSpec[propName];
       const additionalDocs = resource.specName!.relativeName(propName).fqn;
-      const newName = this.emitProperty(resource, propName, propSpec, quoteCode(additionalDocs));
+      const newName = this.emitProperty({
+        context: resource,
+        propName,
+        spec: propSpec,
+        additionalDocs: quoteCode(additionalDocs)},
+        container
+      );
       propertyMap[propName] = newName;
     });
     return propertyMap;
@@ -197,11 +205,11 @@ export default class CodeGenerator {
     // Static inspectors.
     //
 
-    const resourceTypeName = `${JSON.stringify(cfnName)}`;
+    const cfnResourceTypeName = `${JSON.stringify(cfnName)}`;
     this.code.line('/**');
     this.code.line(` * The CloudFormation resource type name for this resource class.`);
     this.code.line(' */');
-    this.code.line(`public static readonly resourceTypeName = ${resourceTypeName};`);
+    this.code.line(`public static readonly cfnResourceTypeName = ${cfnResourceTypeName};`);
 
     if (spec.RequiredTransform) {
       this.code.line('/**');
@@ -223,7 +231,7 @@ export default class CodeGenerator {
         this.code.line();
 
         this.docLink(undefined, `@cloudformationAttribute ${attributeName}`);
-        const attr = genspec.attributeDefinition(resourceName, attributeName, attributeSpec);
+        const attr = genspec.attributeDefinition(attributeName, attributeSpec);
 
         this.code.line(`public readonly ${attr.propertyName}: ${attr.attributeType};`);
 
@@ -231,31 +239,10 @@ export default class CodeGenerator {
       }
     }
 
-    //
-    // Ref attribute
-    //
-    if (spec.RefKind !== schema.SpecialRefKind.None) {
-      const refAttribute = genspec.refAttributeDefinition(resourceName, spec.RefKind!);
-
-      // If there's already an attribute with the same name, ref is not needed
-      if (!attributes.some(a => a.propertyName === refAttribute.propertyName)) {
-        this.code.line(`public readonly ${refAttribute.propertyName}: ${refAttribute.attributeType};`);
-        attributes.push(refAttribute);
-      }
-    }
-    // set the TagType to help format tags later
-    const tagEnum = tagType(spec);
-    if (tagEnum !== `${TAG_TYPE}.NotTaggable`) {
-      this.code.line();
-      this.code.line('/**');
-      this.code.line(' * The `TagManager` handles setting, removing and formatting tags');
-      this.code.line(' *');
-      this.code.line(' * Tags should be managed either passing them as properties during');
-      this.code.line(' * initiation or by calling methods on this object. If both techniques are');
-      this.code.line(' * used only the tags from the TagManager will be used. `Tag` (aspect)');
-      this.code.line(' * will use the manager.');
-      this.code.line(' */');
-      this.code.line(`public readonly tags: ${TAG_MANAGER};`);
+    // set class properties to match CloudFormation Properties spec
+    let propMap;
+    if (propsType) {
+      propMap = this.emitPropsTypeProperties(resourceName, spec.Properties!, Container.Class);
     }
 
     //
@@ -271,9 +258,9 @@ export default class CodeGenerator {
     this.code.line(` * @param props - resource properties`);
     this.code.line(' */');
     const optionalProps = spec.Properties && !Object.values(spec.Properties).some(p => p.Required || false);
-    const propsArgument = propsType ? `, props${optionalProps ? '?' : ''}: ${propsType.className}` : '';
+    const propsArgument = propsType ? `, props: ${propsType.className}${optionalProps ? ' = {}' : ''}` : '';
     this.code.openBlock(`constructor(scope: ${CONSTRUCT_CLASS}, id: string${propsArgument})`);
-    this.code.line(`super(scope, id, { type: ${resourceName.className}.resourceTypeName${propsType ? ', properties: props' : ''} });`);
+    this.code.line(`super(scope, id, { type: ${resourceName.className}.cfnResourceTypeName${propsType ? ', properties: props' : ''} });`);
     // verify all required properties
     if (spec.Properties) {
       for (const propName of Object.keys(spec.Properties)) {
@@ -310,20 +297,24 @@ export default class CodeGenerator {
     if (deprecated) {
       this.code.line(`this.node.addWarning('DEPRECATION: ${deprecation}');`);
     }
-    if (tagEnum !== `${TAG_TYPE}.NotTaggable`) {
-      this.code.line('const tags = props === undefined ? undefined : props.tags;');
-      this.code.line(`this.tags = new ${TAG_MANAGER}(${tagEnum}, ${resourceTypeName}, tags);`);
-    }
 
+    // initialize all property class members
+    if (propsType && propMap) {
+      this.code.line();
+      for (const prop of Object.values(propMap)) {
+        if (prop === 'tags' && isTaggable(spec)) {
+          this.code.line(`this.tags = new ${TAG_MANAGER}(${tagType(spec)}, ${cfnResourceTypeName}, props.tags);`);
+        } else {
+          this.code.line(`this.${prop} = props.${prop};`);
+        }
+      }
+    }
     this.code.closeBlock();
 
-    //
-    // propertyOverrides
-    //
-
-    if (propsType) {
+    // setup render properties
+    if (propsType && propMap) {
       this.code.line();
-      this.emitCloudFormationPropertiesOverride(propsType);
+      this.emitCloudFormationProperties(propsType, propMap, isTaggable(spec));
     }
 
     this.closeClass(resourceName);
@@ -336,13 +327,21 @@ export default class CodeGenerator {
    *
    * Since resolve() deep-resolves, we only need to do this once.
    */
-  private emitCloudFormationPropertiesOverride(propsType: genspec.CodeName) {
-    this.code.openBlock(`public get propertyOverrides(): ${propsType.className}`);
-    this.code.line(`return this.untypedPropertyOverrides;`);
+  private emitCloudFormationProperties(propsType: genspec.CodeName, propMap: Dictionary<string>, taggable: boolean) {
+    this.code.openBlock('protected get cfnProperties(): { [key: string]: any } ');
+    this.code.indent('return {');
+    for (const prop of Object.values(propMap)) {
+      // handle tag rendering because of special cases
+      if (prop === 'tags' && taggable) {
+        this.code.line(`${prop}: this.tags.renderTags(),`);
+        continue;
+      }
+      this.code.line(`${prop}: this.${prop},`);
+    }
+    this.code.unindent('};');
     this.code.closeBlock();
-
-    this.code.openBlock('protected renderProperties(properties: any): { [key: string]: any } ');
-    this.code.line(`return ${genspec.cfnMapperName(propsType).fqn}(properties);`);
+    this.code.openBlock('protected renderProperties(props: {[key: string]: any}): { [key: string]: any } ');
+    this.code.line(`return ${genspec.cfnMapperName(propsType).fqn}(props);`);
     this.code.closeBlock();
   }
 
@@ -516,15 +515,43 @@ export default class CodeGenerator {
     this.code.closeBlock();
   }
 
-  private emitProperty(context: genspec.CodeName, propName: string, spec: schema.Property, additionalDocs: string): string {
-    const question = spec.Required ? '' : '?';
-    const javascriptPropertyName = genspec.cloudFormationToScriptName(propName);
+  private emitInterfaceProperty(props: EmitPropertyProps): string {
+    const javascriptPropertyName = genspec.cloudFormationToScriptName(props.propName);
 
-    this.docLink(spec.Documentation, additionalDocs);
-    this.code.line(`readonly ${javascriptPropertyName}${question}: ${this.findNativeType(context, spec, propName)};`);
+    this.docLink(props.spec.Documentation, props.additionalDocs);
+    const line = `: ${this.findNativeType(props.context, props.spec, props.propName)};`;
 
+    const question = props.spec.Required ? '' : '?';
+    this.code.line(`readonly ${javascriptPropertyName}${question}${line}`);
     return javascriptPropertyName;
   }
+
+  private emitClassProperty(props: EmitPropertyProps): string {
+    const javascriptPropertyName = genspec.cloudFormationToScriptName(props.propName);
+
+    this.docLink(props.spec.Documentation, props.additionalDocs);
+    const question = props.spec.Required ? ';' : ' | undefined;';
+    const line = `: ${this.findNativeType(props.context, props.spec, props.propName)}${question}`;
+    if (props.propName === 'Tags' && schema.isTagProperty(props.spec)) {
+      this.code.line(`public readonly tags: ${TAG_MANAGER};`);
+    } else {
+      this.code.line(`public ${javascriptPropertyName}${line}`);
+    }
+    return javascriptPropertyName;
+  }
+
+  private emitProperty(props: EmitPropertyProps, container: Container): string {
+    switch (container) {
+      case Container.Class:
+        return this.emitClassProperty(props);
+      case Container.Interface:
+        return this.emitInterfaceProperty(props);
+      default:
+        throw new Error(`Unsupported container ${container}`);
+    }
+
+  }
+
   private beginNamespace(type: genspec.CodeName) {
     if (type.namespace) {
       const parts = type.namespace.split('.');
@@ -557,7 +584,12 @@ export default class CodeGenerator {
       Object.keys(propTypeSpec.Properties).forEach(propName => {
         const propSpec = propTypeSpec.Properties[propName];
         const additionalDocs = quoteCode(`${typeName.fqn}.${propName}`);
-        const newName = this.emitProperty(resourceContext, propName, propSpec, additionalDocs);
+        const newName = this.emitInterfaceProperty({
+          context: resourceContext,
+          propName,
+          spec: propSpec,
+          additionalDocs,
+        });
         conversionTable[propName] = newName;
       });
     }
@@ -577,6 +609,7 @@ export default class CodeGenerator {
   private findNativeType(resourceContext: genspec.CodeName, propSpec: schema.Property, propName?: string): string {
     const alternatives: string[] = [];
 
+    // render the union of all item types
     if (schema.isCollectionProperty(propSpec)) {
       // render the union of all item types
       const itemTypes = genspec.specTypesToCodeTypes(resourceContext, itemTypeNames(propSpec));
@@ -595,7 +628,6 @@ export default class CodeGenerator {
         alternatives.push(`{ [key: string]: (${union}) }`);
       } else {
         // To make TSLint happy, we have to either emit: SingleType[] or Array<Alt1 | Alt2>
-
         if (union.indexOf('|') !== -1) {
           alternatives.push(`Array<${union}>`);
         } else {
@@ -620,7 +652,6 @@ export default class CodeGenerator {
     if (!tokenizableType(alternatives) && propName !== 'Tags') {
       alternatives.push(genspec.TOKEN_NAME.fqn);
     }
-
     return alternatives.join(' | ');
   }
 
@@ -650,12 +681,6 @@ export default class CodeGenerator {
     this.code.line(' */');
     return;
   }
-
-  private validateRefKindPresence(name: string, resourceType: schema.ResourceType): any {
-    if (!resourceType.RefKind) { // Both empty string and undefined
-      throw new Error(`Resource ${name} does not have a RefKind; please run in @aws-cdk/cfnspec: npm run set-refkind ${name} Arn|Id|None|...`);
-    }
-  }
 }
 
 /**
@@ -684,7 +709,9 @@ function tokenizableType(alternatives: string[]) {
     return true;
   }
 
-  // TODO: number
+  if (type === 'number') {
+    return true;
+  }
 
   return false;
 }
@@ -703,4 +730,20 @@ function tagType(resource: schema.ResourceType): string {
     }
   }
   return `${TAG_TYPE}.NotTaggable`;
+}
+
+function isTaggable(resource: schema.ResourceType): boolean {
+  return tagType(resource) !== `${TAG_TYPE}.NotTaggable`;
+}
+
+enum Container {
+  Interface = 'INTERFACE',
+  Class = 'CLASS',
+}
+
+interface EmitPropertyProps {
+  context: genspec.CodeName;
+  propName: string;
+  spec: schema.Property;
+  additionalDocs: string;
 }

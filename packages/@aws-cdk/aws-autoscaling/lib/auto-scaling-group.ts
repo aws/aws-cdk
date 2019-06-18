@@ -442,7 +442,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
 
     this.autoScalingGroup = new CfnAutoScalingGroup(this, 'ASG', asgProps);
     this.osType = machineImage.os.type;
-    this.autoScalingGroupName = this.autoScalingGroup.autoScalingGroupName;
+    this.autoScalingGroupName = this.autoScalingGroup.refAsString;
     this.autoScalingGroupArn = Stack.of(this).formatArn({
       service: 'autoscaling',
       resource: 'autoScalingGroup:*:autoScalingGroupName',

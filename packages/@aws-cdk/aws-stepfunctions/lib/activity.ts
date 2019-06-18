@@ -58,8 +58,8 @@ export class Activity extends Resource implements IActivity {
             name: props.activityName || this.generateName()
         });
 
-        this.activityArn = resource.activityArn;
-        this.activityName = resource.activityName;
+        this.activityArn = resource.refAsString;
+        this.activityName = resource.attrName;
     }
 
     /**

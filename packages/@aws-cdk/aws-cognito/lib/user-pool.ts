@@ -395,10 +395,10 @@ export class UserPool extends Resource implements IUserPool {
       autoVerifiedAttributes: props.autoVerifiedAttributes,
       lambdaConfig: Lazy.anyValue({ produce: () => this.triggers })
     });
-    this.userPoolId = userPool.userPoolId;
-    this.userPoolArn = userPool.userPoolArn;
-    this.userPoolProviderName = userPool.userPoolProviderName;
-    this.userPoolProviderUrl = userPool.userPoolProviderUrl;
+    this.userPoolId = userPool.refAsString;
+    this.userPoolArn = userPool.attrArn;
+    this.userPoolProviderName = userPool.attrProviderName;
+    this.userPoolProviderUrl = userPool.attrProviderUrl;
   }
 
   /**

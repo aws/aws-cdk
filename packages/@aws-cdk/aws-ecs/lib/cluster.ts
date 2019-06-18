@@ -71,8 +71,8 @@ export class Cluster extends Resource implements ICluster {
     const cluster = new CfnCluster(this, 'Resource', {clusterName: props.clusterName});
 
     this.vpc = props.vpc;
-    this.clusterArn = cluster.clusterArn;
-    this.clusterName = cluster.clusterName;
+    this.clusterArn = cluster.attrArn;
+    this.clusterName = cluster.refAsString;
   }
 
   /**

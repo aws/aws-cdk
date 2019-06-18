@@ -7,6 +7,8 @@ import { CfnDBClusterParameterGroup, CfnDBParameterGroup } from './rds.generated
 export interface IParameterGroup extends IResource {
   /**
    * The name of this parameter group
+   *
+   * @attribute
    */
   readonly parameterGroupName: string;
 }
@@ -83,7 +85,7 @@ export class ParameterGroup extends ParameterGroupBase {
       parameters: props.parameters,
     });
 
-    this.parameterGroupName = resource.dbParameterGroupName;
+    this.parameterGroupName = resource.refAsString;
   }
 }
 
@@ -114,6 +116,6 @@ export class ClusterParameterGroup extends ParameterGroupBase {
       parameters: props.parameters,
     });
 
-    this.parameterGroupName = resource.dbClusterParameterGroupName;
+    this.parameterGroupName = resource.refAsString;
   }
 }

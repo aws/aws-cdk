@@ -158,14 +158,14 @@ export abstract class BaseService extends Resource
       ...additionalProps
     });
 
-    this.serviceArn = this.resource.serviceArn;
+    this.serviceArn = this.resource.refAsString;
 
     // This is a workaround for CFN bug that returns the cluster name instead of the service name when long ARN formats
     // are enabled for the principal in a given region.
     const longArnEnabled = props.longArnEnabled !== undefined ? props.longArnEnabled : false;
     this.serviceName = longArnEnabled
       ? cdk.Fn.select(2, cdk.Fn.split('/', this.serviceArn))
-      : this.resource.serviceName;
+      : this.resource.attrName;
 
     this.clusterName = clusterName;
     this.cluster = props.cluster;

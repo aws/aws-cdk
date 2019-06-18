@@ -81,7 +81,7 @@ export class StepScalingAction extends cdk.Construct {
       stepAdjustments: cdk.Lazy.anyValue({ produce: () => this.adjustments }),
     });
 
-    this.scalingPolicyArn = resource.scalingPolicyArn;
+    this.scalingPolicyArn = resource.refAsString;
   }
 
   /**

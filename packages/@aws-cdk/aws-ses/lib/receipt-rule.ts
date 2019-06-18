@@ -128,7 +128,7 @@ export class ReceiptRule extends Resource implements IReceiptRule {
       ruleSetName: props.ruleSet.receiptRuleSetName
     });
 
-    this.receiptRuleName = resource.receiptRuleName;
+    this.receiptRuleName = resource.refAsString;
 
     if (props.actions) {
       props.actions.forEach(action => this.addAction(action));
