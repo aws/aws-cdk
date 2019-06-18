@@ -75,52 +75,22 @@ export class Duration {
   /**
    * @returns the value of this `Duration` expressed in Seconds.
    */
-  public toSeconds(_opts: TimeConversionOptions = {}): number {
-    switch (this.unit) {
-      case TimeUnit.Seconds:
-        return this.amount;
-      case TimeUnit.Minutes:
-        return this.amount * 60;
-      case TimeUnit.Hours:
-        return this.amount * 3600;
-      case TimeUnit.Days:
-        return this.amount * 86_400;
-      default:
-        throw new Error(`Unexpected time unit: ${this.unit}`);
-    }
+  public toSeconds(opts: TimeConversionOptions = {}): number {
+    return _ensureIntegral(this.amount * this.unit.inSeconds, opts);
   }
 
+  /**
+   * @returns the value of this `Duration` expressed in Minutes.
+   */
   public toMinutes(opts: TimeConversionOptions = {}): number {
-    switch (this.unit) {
-      case TimeUnit.Seconds:
-        return this.safeConversion(60, opts, TimeUnit.Seconds);
-      case TimeUnit.Minutes:
-        return this.amount;
-      case TimeUnit.Hours:
-        return this.amount * 60;
-      case TimeUnit.Days:
-        return this.amount * 1_440;
-      default:
-        throw new Error(`Unexpected time unit: ${this.unit}`);
-    }
+    return _ensureIntegral(this.amount * this.unit.inMinutes, opts);
   }
 
   /**
    * @returns the value of this `Duration` expressed in Days.
    */
   public toDays(opts: TimeConversionOptions = {}): number {
-    switch (this.unit) {
-      case TimeUnit.Seconds:
-        return this.safeConversion(86_400, opts, TimeUnit.Days);
-      case TimeUnit.Minutes:
-        return this.safeConversion(1_440, opts, TimeUnit.Days);
-      case TimeUnit.Hours:
-        return this.safeConversion(24, opts, TimeUnit.Days);
-      case TimeUnit.Days:
-        return this.amount;
-      default:
-        throw new Error(`Unexpected time unit: ${this.unit}`);
-    }
+    return _ensureIntegral(this.amount * this.unit.inDays, opts);
   }
 
   /**
@@ -144,24 +114,6 @@ export class Duration {
 
   public toString(): string {
     return `${this.amount} ${this.unit}`;
-  }
-
-  /**
-   * Divides the current duration by a certain amount and throws an exception if `opts` requires `integral` conversion
-   * and the requirement is not satisfied.
-   *
-   * @param divisor    the value to divide `this.amount` by.
-   * @param opts       conversion options instructing whether integral conversion is required or not.
-   * @param targetUnit the unit of time we are converting to, so it can be used in the error message when needed
-   *
-   * @returns the result of `this.amount / divisor`.
-   */
-  private safeConversion(divisor: number, { integral = true }: TimeConversionOptions, targetUnit: TimeUnit): number {
-    const remainder = this.amount % divisor;
-    if (integral && remainder !== 0) {
-      throw new Error(`Impossible intergal conversion of ${this} to ${targetUnit} was requested`);
-    }
-    return this.amount / divisor;
   }
 
   private fractionDuration(symbol: string, modulus: number, next: (amount: number) => Duration): string {
@@ -189,13 +141,6 @@ export interface TimeConversionOptions {
   readonly integral?: boolean;
 }
 
-const enum TimeUnit {
-  Seconds = 's',
-  Minutes = 'minutes',
-  Hours = 'hours',
-  Days = 'days'
-}
-
 /**
  * Helpful syntax sugar for turning an optional `Duration` into a count of seconds.
  *
@@ -205,4 +150,30 @@ const enum TimeUnit {
  */
 export function toSeconds(duration: Duration | undefined): number | undefined {
   return duration && duration.toSeconds();
+}
+
+class TimeUnit {
+  public static readonly Seconds = new TimeUnit('seconds', 1);
+  public static readonly Minutes = new TimeUnit('minutes', 60);
+  public static readonly Hours = new TimeUnit('hours', 3_600);
+  public static readonly Days = new TimeUnit('days', 86_400);
+
+  public readonly inMinutes: number;
+  public readonly inDays: number;
+
+  private constructor(public readonly label: string, public readonly inSeconds: number) {
+    this.inMinutes = inSeconds / 60;
+    this.inDays = inSeconds / 86_400;
+  }
+
+  public toString() {
+    return this.label;
+  }
+}
+
+function _ensureIntegral(value: number, { integral = true }: TimeConversionOptions) {
+  if (!Number.isInteger(value) && integral) {
+    throw new Error(`Required integral time unit conversion, but value ${value} is not integral.`);
+  }
+  return value;
 }
