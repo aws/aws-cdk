@@ -15,12 +15,12 @@ export enum AssetPackaging {
    * Path refers to a directory on disk, the contents of the directory is
    * archived into a .zip.
    */
-  ZIP_DIRECTORY = 'zip',
+  ZipDirectory = 'zip',
 
   /**
    * Path refers to a single file on disk. The file is uploaded as-is.
    */
-  FILE = 'file',
+  File = 'file',
 }
 
 export interface AssetProps extends CopyOptions {
@@ -123,7 +123,7 @@ export class Asset extends cdk.Construct implements IAsset {
 
     // sets isZipArchive based on the type of packaging and file extension
     const allowedExtensions: string[] = ['.jar', '.zip'];
-    this.isZipArchive = props.packaging === AssetPackaging.ZIP_DIRECTORY
+    this.isZipArchive = props.packaging === AssetPackaging.ZipDirectory
       ? true
       : allowedExtensions.some(ext => staging.sourcePath.toLowerCase().endsWith(ext));
 
@@ -241,7 +241,7 @@ export interface FileAssetProps {
  */
 export class FileAsset extends Asset {
   constructor(scope: cdk.Construct, id: string, props: FileAssetProps) {
-    super(scope, id, { packaging: AssetPackaging.FILE, ...props });
+    super(scope, id, { packaging: AssetPackaging.File, ...props });
   }
 }
 
@@ -265,7 +265,7 @@ export interface ZipDirectoryAssetProps {
  */
 export class ZipDirectoryAsset extends Asset {
   constructor(scope: cdk.Construct, id: string, props: ZipDirectoryAssetProps) {
-    super(scope, id, { packaging: AssetPackaging.ZIP_DIRECTORY, ...props });
+    super(scope, id, { packaging: AssetPackaging.ZipDirectory, ...props });
   }
 }
 
@@ -275,13 +275,13 @@ function validateAssetOnDisk(assetPath: string, packaging: AssetPackaging) {
   }
 
   switch (packaging) {
-    case AssetPackaging.ZIP_DIRECTORY:
+    case AssetPackaging.ZipDirectory:
       if (!fs.statSync(assetPath).isDirectory()) {
         throw new Error(`${assetPath} is expected to be a directory when asset packaging is 'zip'`);
       }
       break;
 
-    case AssetPackaging.FILE:
+    case AssetPackaging.File:
       if (!fs.statSync(assetPath).isFile()) {
         throw new Error(`${assetPath} is expected to be a regular file when asset packaging is 'file'`);
       }

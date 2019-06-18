@@ -16,7 +16,7 @@ const CONSTRUCT_NAME = 'aws-cdk-dynamodb-global';
 
 // DynamoDB table parameters
 const TABLE_NAME = 'GlobalTable';
-const TABLE_PARTITION_KEY: Attribute = { name: 'hashKey', type: AttributeType.String };
+const TABLE_PARTITION_KEY: Attribute = { name: 'hashKey', type: AttributeType.STRING };
 
 const STACK_PROPS: GlobalTableProps = {
     partitionKey: TABLE_PARTITION_KEY,
@@ -71,7 +71,7 @@ export = {
       try {
         new GlobalTable(stack, CONSTRUCT_NAME, {
           tableName: TABLE_NAME,
-          streamSpecification: StreamViewType.KeysOnly,
+          streamSpecification: StreamViewType.KEYS_ONLY,
           partitionKey: TABLE_PARTITION_KEY,
           regions: [ 'us-east-1', 'us-east-2', 'us-west-2' ]
         });

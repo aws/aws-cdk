@@ -12,7 +12,7 @@ test('cloud assembly builder', () => {
 
   // WHEN
   session.addArtifact('my-first-artifact', {
-    type: ArtifactType.AWS_CLOUDFORMATION_STACK,
+    type: ArtifactType.AwsCloudFormationStack,
     environment: 'aws://1222344/us-east-1',
     dependencies: ['minimal-artifact'],
     metadata: {
@@ -37,7 +37,7 @@ test('cloud assembly builder', () => {
   });
 
   session.addArtifact('minimal-artifact', {
-    type: ArtifactType.AWS_CLOUDFORMATION_STACK,
+    type: ArtifactType.AwsCloudFormationStack,
     environment: 'aws://111/helo-world',
     properties: {
       templateFile

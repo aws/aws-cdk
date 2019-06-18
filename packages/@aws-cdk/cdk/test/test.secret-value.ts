@@ -64,7 +64,7 @@ export = {
     const stack = new Stack();
 
     // WHEN
-    const v = SecretValue.cfnDynamicReference(new CfnDynamicReference(CfnDynamicReferenceService.SSM, 'foo:bar'));
+    const v = SecretValue.cfnDynamicReference(new CfnDynamicReference(CfnDynamicReferenceService.Ssm, 'foo:bar'));
 
     // THEN
     test.deepEqual(stack.resolve(v), '{{resolve:ssm:foo:bar}}');

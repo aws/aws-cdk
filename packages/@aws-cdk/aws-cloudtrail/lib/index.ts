@@ -127,7 +127,7 @@ export class Trail extends Resource {
   constructor(scope: Construct, id: string, props: TrailProps = {}) {
     super(scope, id);
 
-    const s3bucket = new s3.Bucket(this, 'S3', {encryption: s3.BucketEncryption.Unencrypted});
+    const s3bucket = new s3.Bucket(this, 'S3', {encryption: s3.BucketEncryption.UNENCRYPTED});
     const cloudTrailPrincipal = new iam.ServicePrincipal("cloudtrail.amazonaws.com");
 
     s3bucket.addToResourcePolicy(new iam.PolicyStatement({
@@ -149,7 +149,7 @@ export class Trail extends Resource {
     let logsRole: iam.IRole | undefined;
     if (props.sendToCloudWatchLogs) {
       logGroup = new logs.CfnLogGroup(this, "LogGroup", {
-        retentionInDays: props.cloudWatchLogsRetentionTimeDays || logs.RetentionDays.OneYear
+        retentionInDays: props.cloudWatchLogsRetentionTimeDays || logs.RetentionDays.ONE_YEAR
       });
 
       logsRole = new iam.Role(this, 'LogsRole', { assumedBy: cloudTrailPrincipal });

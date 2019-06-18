@@ -226,8 +226,8 @@ export class Key extends KeyBase {
 
     this.keyArn = resource.keyArn;
     resource.options.deletionPolicy = props.retain === false
-                                    ? DeletionPolicy.DELETE
-                                    : DeletionPolicy.RETAIN;
+                                    ? DeletionPolicy.Delete
+                                    : DeletionPolicy.Retain;
   }
 
   /**

@@ -8,7 +8,7 @@ export enum CloudFormationCapabilities {
    * Pass this capability if you wish to block the creation IAM resources.
    * @link https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-iam-template.html#using-iam-capabilities
    */
-  NONE = '',
+  None = '',
 
   /**
    * Capability to create anonymous IAM resources
@@ -16,7 +16,7 @@ export enum CloudFormationCapabilities {
    * Pass this capability if you're only creating anonymous resources.
    * @link https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-iam-template.html#using-iam-capabilities
    */
-  ANONYMOUS_IAM = 'CAPABILITY_IAM',
+  AnonymousIAM = 'CAPABILITY_IAM',
 
   /**
    * Capability to create named IAM resources.
@@ -27,5 +27,5 @@ export enum CloudFormationCapabilities {
    * `CloudFormationCapabilities.NamedIAM` implies `CloudFormationCapabilities.IAM`; you don't have to pass both.
    * @link https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-iam-template.html#using-iam-capabilities
    */
-  NAMED_IAM = 'CAPABILITY_NAMED_IAM',
+  NamedIAM = 'CAPABILITY_NAMED_IAM',
 }

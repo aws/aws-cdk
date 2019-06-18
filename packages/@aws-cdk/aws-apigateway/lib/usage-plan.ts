@@ -76,10 +76,10 @@ export interface ThrottlingPerMethod {
 }
 
 /**
- * Type of Usage Plan Key. Currently the only supported type is 'API_KEY'
+ * Type of Usage Plan Key. Currently the only supported type is 'ApiKey'
  */
 export enum UsagePlanKeyType {
-  API_KEY = 'API_KEY'
+  ApiKey = 'API_KEY'
 }
 
 /**
@@ -181,7 +181,7 @@ export class UsagePlan extends Resource {
   public addApiKey(apiKey: IApiKey): void {
     new CfnUsagePlanKey(this, 'UsagePlanKeyResource', {
       keyId: apiKey.keyId,
-      keyType: UsagePlanKeyType.API_KEY,
+      keyType: UsagePlanKeyType.ApiKey,
       usagePlanId: this.usagePlanId
     });
   }

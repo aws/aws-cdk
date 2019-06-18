@@ -71,7 +71,7 @@ export class LogStream extends Resource implements ILogStream {
     });
 
     if (props.retainLogStream !== false) {
-      resource.options.deletionPolicy = DeletionPolicy.RETAIN;
+      resource.options.deletionPolicy = DeletionPolicy.Retain;
     }
 
     this.logStreamName = resource.logStreamName;

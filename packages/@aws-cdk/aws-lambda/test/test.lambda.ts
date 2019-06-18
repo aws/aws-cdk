@@ -1323,7 +1323,7 @@ export = {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
       runtime: lambda.Runtime.Nodejs,
-      logRetentionDays: logs.RetentionDays.OneMonth
+      logRetentionDays: logs.RetentionDays.ONE_MONTH
     });
 
     // THEN

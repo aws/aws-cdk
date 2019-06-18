@@ -215,8 +215,8 @@ export = {
         beforeAllowTrafficHook: 'lambda1',
       },
     };
-    r1.options.deletionPolicy = DeletionPolicy.RETAIN;
-    r1.options.updateReplacePolicy = DeletionPolicy.SNAPSHOT;
+    r1.options.deletionPolicy = DeletionPolicy.Retain;
+    r1.options.updateReplacePolicy = DeletionPolicy.Snapshot;
 
     test.deepEqual(toCloudFormation(stack), {
       Resources: {
@@ -298,9 +298,9 @@ export = {
     const forbid = new CfnResource(stack, 'Forbid', { type: 'T2' });
     const destroy = new CfnResource(stack, 'Destroy', { type: 'T3' });
 
-    applyRemovalPolicy(orphan, RemovalPolicy.ORPHAN);
-    applyRemovalPolicy(forbid, RemovalPolicy.FORBID);
-    applyRemovalPolicy(destroy, RemovalPolicy.DESTROY);
+    applyRemovalPolicy(orphan, RemovalPolicy.Orphan);
+    applyRemovalPolicy(forbid, RemovalPolicy.Forbid);
+    applyRemovalPolicy(destroy, RemovalPolicy.Destroy);
 
     test.deepEqual(toCloudFormation(stack), { Resources:
       { Orphan: { Type: 'T1', DeletionPolicy: 'Retain' },

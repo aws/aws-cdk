@@ -345,11 +345,11 @@ function validateSchema(columns: Column[], partitionKeys?: Column[]): void {
 
 // map TableEncryption to bucket's SSE configuration (s3.BucketEncryption)
 const encryptionMappings = {
-  [TableEncryption.S3_MANAGED]: s3.BucketEncryption.S3Managed,
-  [TableEncryption.KMS_MANAGED]: s3.BucketEncryption.KmsManaged,
-  [TableEncryption.KMS]: s3.BucketEncryption.Kms,
-  [TableEncryption.CLIENT_SIDE_KMS]: s3.BucketEncryption.Unencrypted,
-  [TableEncryption.UNENCRYPTED]: s3.BucketEncryption.Unencrypted,
+  [TableEncryption.S3_MANAGED]: s3.BucketEncryption.S3_MANAGED,
+  [TableEncryption.KMS_MANAGED]: s3.BucketEncryption.KMS_MANAGED,
+  [TableEncryption.KMS]: s3.BucketEncryption.KMS,
+  [TableEncryption.CLIENT_SIDE_KMS]: s3.BucketEncryption.UNENCRYPTED,
+  [TableEncryption.UNENCRYPTED]: s3.BucketEncryption.UNENCRYPTED,
 };
 
 // create the bucket to store a table's data depending on the `encryption` and `encryptionKey` properties.

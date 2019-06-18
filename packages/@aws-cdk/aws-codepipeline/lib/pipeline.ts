@@ -230,7 +230,7 @@ export class Pipeline extends PipelineBase {
       propsBucket = new s3.Bucket(this, 'ArtifactsBucket', {
         bucketName: PhysicalName.auto({ crossEnvironment: true }),
         encryptionKey,
-        encryption: s3.BucketEncryption.Kms,
+        encryption: s3.BucketEncryption.KMS,
         removalPolicy: RemovalPolicy.Orphan
       });
     }

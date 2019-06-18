@@ -13,12 +13,12 @@ import {
  * Type of cloud artifact.
  */
 export enum ArtifactType {
-  NONE = 'none', // required due to a jsii bug
+  None = 'none', // required due to a jsii bug
 
   /**
    * The artifact is an AWS CloudFormation stack.
    */
-  AWS_CLOUDFORMATION_STACK = 'aws:cloudformation:stack',
+  AwsCloudFormationStack = 'aws:cloudformation:stack',
 }
 
 /**
@@ -78,7 +78,7 @@ export class CloudArtifact {
    */
   public static from(assembly: CloudAssembly, id: string, artifact: ArtifactManifest): CloudArtifact {
     switch (artifact.type) {
-      case ArtifactType.AWS_CLOUDFORMATION_STACK:
+      case ArtifactType.AwsCloudFormationStack:
         return new CloudFormationStackArtifact(assembly, id, artifact);
 
       default:
