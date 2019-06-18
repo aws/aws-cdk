@@ -26,7 +26,7 @@ export = {
         CidrBlock: '10.0.0.0/16',
         EnableDnsHostnames: true,
         EnableDnsSupport: true,
-        InstanceTenancy: ec2.DefaultInstanceTenancy.Default,
+        InstanceTenancy: ec2.DefaultInstanceTenancy.DEFAULT,
         Tags: [
           {
             Key: "Name",
@@ -229,7 +229,7 @@ export = {
     cluster.addCapacity('GpuAutoScalingGroup', {
       instanceType: new ec2.InstanceType('t2.micro'),
       machineImage: new ecs.EcsOptimizedAmi({
-        hwType: ecs.AmiHardwareType.Gpu
+        hwType: ecs.AmiHardwareType.GPU
       }),
     });
 
@@ -253,8 +253,8 @@ export = {
       cluster.addCapacity('GpuAutoScalingGroup', {
         instanceType: new ec2.InstanceType('t2.micro'),
         machineImage: new ecs.EcsOptimizedAmi({
-          generation: ec2.AmazonLinuxGeneration.AmazonLinux,
-          hwType: ecs.AmiHardwareType.Gpu,
+          generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX,
+          hwType: ecs.AmiHardwareType.GPU,
         }),
       });
     });
@@ -320,7 +320,7 @@ export = {
     // WHEN
     cluster.addDefaultCloudMapNamespace({
       name: "foo.com",
-      type: ecs.NamespaceType.PublicDns
+      type: ecs.NamespaceType.PUBLIC_DNS
     });
 
     // THEN

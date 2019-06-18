@@ -8,12 +8,12 @@ export enum BinPackResource {
   /**
    * Fill up hosts' CPU allocations first
    */
-  Cpu = 'cpu',
+  CPU = 'cpu',
 
   /**
    * Fill up hosts' memory allocations first
    */
-  Memory = 'memory',
+  MEMORY = 'memory',
 }
 
 /**
@@ -51,7 +51,7 @@ export class PlacementStrategy {
    * This ensures the total consumption of CPU is lowest
    */
   public static packedByCpu() {
-    return PlacementStrategy.packedBy(BinPackResource.Cpu);
+    return PlacementStrategy.packedBy(BinPackResource.CPU);
   }
 
   /**
@@ -60,7 +60,7 @@ export class PlacementStrategy {
    * This ensures the total consumption of memory is lowest
    */
   public static packedByMemory() {
-    return PlacementStrategy.packedBy(BinPackResource.Memory);
+    return PlacementStrategy.packedBy(BinPackResource.MEMORY);
   }
 
   /**
