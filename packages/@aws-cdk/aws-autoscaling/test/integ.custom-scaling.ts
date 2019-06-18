@@ -17,12 +17,12 @@ const asg = new autoscaling.AutoScalingGroup(stack, 'Fleet', {
 });
 
 asg.scaleOnSchedule('ScaleUpInTheMorning', {
-  schedule: autoscaling.Cron.dailyUtc(8),
+  schedule: autoscaling.Schedule.cron({ hour: '8' }),
   minCapacity: 5
 });
 
 asg.scaleOnSchedule('ScaleDownAtNight', {
-  schedule: autoscaling.Cron.dailyUtc(20),
+  schedule: autoscaling.Schedule.cron({ hour: '20' }),
   maxCapacity: 2
 });
 

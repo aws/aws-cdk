@@ -23,7 +23,7 @@ export abstract class Schedule {
   /**
    * Construct a Schedule from a moment in time
    */
-  public static at(moment: Date) {
+  public static at(moment: Date): Schedule {
     return new LiteralSchedule(`at(${formatISO(moment)})`);
   }
 
