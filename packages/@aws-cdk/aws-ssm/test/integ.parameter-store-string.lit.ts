@@ -7,7 +7,7 @@ class CreatingStack extends cdk.Stack {
     super(scope, id);
 
     new ssm.StringParameter(this, 'String', {
-      name: '/My/Public/Parameter',
+      parameterName: '/My/Public/Parameter',
       stringValue: 'abcdef'
     });
   }
@@ -20,14 +20,14 @@ class UsingStack extends cdk.Stack {
     /// !show
     // Retrieve the latest value of the non-secret parameter
     // with name "/My/String/Parameter".
-    const stringValue = new ssm.ParameterStoreString(this, 'MyValue', {
+    const stringValue = ssm.StringParameter.fromStringParameterAttributes(this, 'MyValue', {
       parameterName: '/My/Public/Parameter',
       // 'version' can be specified but is optional.
     }).stringValue;
 
     // Retrieve a specific version of the secret (SecureString) parameter.
     // 'version' is always required.
-    const secretValue = new ssm.ParameterStoreSecureString({
+    const secretValue = ssm.StringParameter.fromSecureStringParameterAttributes(this, 'MyValue', {
       parameterName: '/My/Secret/Parameter',
       version: 5
     });
