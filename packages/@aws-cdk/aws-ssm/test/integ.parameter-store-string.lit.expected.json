@@ -13,15 +13,20 @@
   },
   {
     "Parameters": {
-      "MyValueParameterCCC58B13": {
+      "MyValueParameter": {
         "Type": "AWS::SSM::Parameter::Value<String>",
         "Default": "/My/Public/Parameter"
+      }
+    },
+    "Resources": {
+      "Dummy": {
+        "Type": "AWS::SNS::Topic"
       }
     },
     "Outputs": {
       "TheValue": {
         "Value": {
-          "Ref": "MyValueParameterCCC58B13"
+          "Ref": "MyValueParameter"
         }
       }
     }

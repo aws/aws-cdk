@@ -13,7 +13,7 @@ export = {
     new ssm.StringParameter(stack, 'Parameter', {
       allowedPattern: '.*',
       description: 'The value Foo',
-      name: 'FooParameter',
+      parameterName: 'FooParameter',
       stringValue: 'Foo',
     });
 
@@ -60,7 +60,7 @@ export = {
     new ssm.StringListParameter(stack, 'Parameter', {
       allowedPattern: '(Foo|Bar)',
       description: 'The values Foo and Bar',
-      name: 'FooParameter',
+      parameterName: 'FooParameter',
       stringListValue: ['Foo', 'Bar'],
     });
 
@@ -128,7 +128,7 @@ export = {
     test.done();
   },
 
-  'StringParameter.fromName'(test: Test) {
+  'StringParameter.fromStringParameterName'(test: Test) {
     // GIVEN
     const stack = new Stack();
 
@@ -148,7 +148,42 @@ export = {
     });
     test.deepEqual(stack.resolve(param.parameterName), 'MyParamName');
     test.deepEqual(stack.resolve(param.parameterType), 'String');
-    test.deepEqual(stack.resolve(param.stringValue), '{{resolve:ssm:MyParamName}}');
+    test.deepEqual(stack.resolve(param.stringValue), { Ref: 'MyParamNameParameter' });
+    expect(stack).toMatch({
+      Parameters: {
+        MyParamNameParameter: {
+          Type: "AWS::SSM::Parameter::Value<String>",
+          Default: "MyParamName"
+        }
+      }
+    });
+    test.done();
+  },
+
+  'StringParameter.fromStringParameterAttributes'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    const param = ssm.StringParameter.fromStringParameterAttributes(stack, 'MyParamName', {
+      parameterName: 'MyParamName',
+      version: 2
+    });
+
+    // THEN
+    test.deepEqual(stack.resolve(param.parameterArn), {
+      'Fn::Join': [ '', [
+        'arn:',
+        { Ref: 'AWS::Partition' },
+        ':ssm:',
+        { Ref: 'AWS::Region' },
+        ':',
+        { Ref: 'AWS::AccountId' },
+        ':parameterMyParamName' ] ]
+    });
+    test.deepEqual(stack.resolve(param.parameterName), 'MyParamName');
+    test.deepEqual(stack.resolve(param.parameterType), 'String');
+    test.deepEqual(stack.resolve(param.stringValue), '{{resolve:ssm:MyParamName:2}}');
     test.done();
   },
 
