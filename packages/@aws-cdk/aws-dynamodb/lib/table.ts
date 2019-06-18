@@ -226,7 +226,7 @@ export class Table extends Resource {
   constructor(scope: Construct, id: string, props: TableProps) {
     super(scope, id);
 
-    this.billingMode = props.billingMode || BillingMode.Provisioned;
+    this.billingMode = props.billingMode || BillingMode.PROVISIONED;
     this.validateProvisioning(props);
 
     this.table = new CfnTable(this, 'Resource', {
@@ -236,8 +236,8 @@ export class Table extends Resource {
       globalSecondaryIndexes: Lazy.anyValue({ produce: () => this.globalSecondaryIndexes }, { omitEmptyArray: true }),
       localSecondaryIndexes: Lazy.anyValue({ produce: () => this.localSecondaryIndexes }, { omitEmptyArray: true }),
       pointInTimeRecoverySpecification: props.pitrEnabled ? { pointInTimeRecoveryEnabled: props.pitrEnabled } : undefined,
-      billingMode: this.billingMode === BillingMode.PayPerRequest ? this.billingMode : undefined,
-      provisionedThroughput: props.billingMode === BillingMode.PayPerRequest ? undefined : {
+      billingMode: this.billingMode === BillingMode.PAY_PER_REQUEST ? this.billingMode : undefined,
+      provisionedThroughput: props.billingMode === BillingMode.PAY_PER_REQUEST ? undefined : {
         readCapacityUnits: props.readCapacity || 5,
         writeCapacityUnits: props.writeCapacity || 5
       },
@@ -281,7 +281,7 @@ export class Table extends Resource {
       indexName: props.indexName,
       keySchema: gsiKeySchema,
       projection: gsiProjection,
-      provisionedThroughput: this.billingMode === BillingMode.PayPerRequest ? undefined : {
+      provisionedThroughput: this.billingMode === BillingMode.PAY_PER_REQUEST ? undefined : {
         readCapacityUnits: props.readCapacity || 5,
         writeCapacityUnits: props.writeCapacity || 5
       }
@@ -324,7 +324,7 @@ export class Table extends Resource {
     if (this.tableScaling.scalableReadAttribute) {
       throw new Error('Read AutoScaling already enabled for this table');
     }
-    if (this.billingMode === BillingMode.PayPerRequest) {
+    if (this.billingMode === BillingMode.PAY_PER_REQUEST) {
       throw new Error('AutoScaling is not available for tables with PAY_PER_REQUEST billing mode');
     }
 
@@ -346,7 +346,7 @@ export class Table extends Resource {
     if (this.tableScaling.scalableWriteAttribute) {
       throw new Error('Write AutoScaling already enabled for this table');
     }
-    if (this.billingMode === BillingMode.PayPerRequest) {
+    if (this.billingMode === BillingMode.PAY_PER_REQUEST) {
       throw new Error('AutoScaling is not available for tables with PAY_PER_REQUEST billing mode');
     }
 
@@ -365,7 +365,7 @@ export class Table extends Resource {
    * @returns An object to configure additional AutoScaling settings for this attribute
    */
   public autoScaleGlobalSecondaryIndexReadCapacity(indexName: string, props: EnableScalingProps): IScalableTableAttribute {
-    if (this.billingMode === BillingMode.PayPerRequest) {
+    if (this.billingMode === BillingMode.PAY_PER_REQUEST) {
       throw new Error('AutoScaling is not available for tables with PAY_PER_REQUEST billing mode');
     }
     const attributePair = this.indexScaling.get(indexName);
@@ -391,7 +391,7 @@ export class Table extends Resource {
    * @returns An object to configure additional AutoScaling settings for this attribute
    */
   public autoScaleGlobalSecondaryIndexWriteCapacity(indexName: string, props: EnableScalingProps): IScalableTableAttribute {
-    if (this.billingMode === BillingMode.PayPerRequest) {
+    if (this.billingMode === BillingMode.PAY_PER_REQUEST) {
       throw new Error('AutoScaling is not available for tables with PAY_PER_REQUEST billing mode');
     }
     const attributePair = this.indexScaling.get(indexName);
@@ -514,7 +514,7 @@ export class Table extends Resource {
    * @param props read and write capacity properties
    */
   private validateProvisioning(props: { readCapacity?: number, writeCapacity?: number}): void {
-    if (this.billingMode === BillingMode.PayPerRequest) {
+    if (this.billingMode === BillingMode.PAY_PER_REQUEST) {
       if (props.readCapacity !== undefined || props.writeCapacity !== undefined) {
         throw new Error('you cannot provision read and write capacity for a table with PAY_PER_REQUEST billing mode');
       }
@@ -572,14 +572,14 @@ export class Table extends Resource {
   }
 
   private buildIndexProjection(props: SecondaryIndexProps): CfnTable.ProjectionProperty {
-    if (props.projectionType === ProjectionType.Include && !props.nonKeyAttributes) {
+    if (props.projectionType === ProjectionType.INCLUDE && !props.nonKeyAttributes) {
       // https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dynamodb-projectionobject.html
-      throw new Error(`non-key attributes should be specified when using ${ProjectionType.Include} projection type`);
+      throw new Error(`non-key attributes should be specified when using ${ProjectionType.INCLUDE} projection type`);
     }
 
-    if (props.projectionType !== ProjectionType.Include && props.nonKeyAttributes) {
+    if (props.projectionType !== ProjectionType.INCLUDE && props.nonKeyAttributes) {
       // this combination causes validation exception, status code 400, while trying to create CFN stack
-      throw new Error(`non-key attributes should not be specified when not using ${ProjectionType.Include} projection type`);
+      throw new Error(`non-key attributes should not be specified when not using ${ProjectionType.INCLUDE} projection type`);
     }
 
     if (props.nonKeyAttributes) {
@@ -587,7 +587,7 @@ export class Table extends Resource {
     }
 
     return {
-      projectionType: props.projectionType ? props.projectionType : ProjectionType.All,
+      projectionType: props.projectionType ? props.projectionType : ProjectionType.ALL,
       nonKeyAttributes: props.nonKeyAttributes ? props.nonKeyAttributes : undefined
     };
   }
@@ -651,9 +651,9 @@ export class Table extends Resource {
 }
 
 export enum AttributeType {
-  Binary = 'B',
-  Number = 'N',
-  String = 'S',
+  BINARY = 'B',
+  NUMBER = 'N',
+  STRING = 'S',
 }
 
 /**
@@ -663,17 +663,17 @@ export enum BillingMode {
   /**
    * Pay only for what you use. You don't configure Read/Write capacity units.
    */
-  PayPerRequest = 'PAY_PER_REQUEST',
+  PAY_PER_REQUEST = 'PAY_PER_REQUEST',
   /**
    * Explicitly specified Read/Write capacity units.
    */
-  Provisioned = 'PROVISIONED',
+  PROVISIONED = 'PROVISIONED',
 }
 
 export enum ProjectionType {
-  KeysOnly = 'KEYS_ONLY',
-  Include = 'INCLUDE',
-  All = 'ALL'
+  KEYS_ONLY = 'KEYS_ONLY',
+  INCLUDE = 'INCLUDE',
+  ALL = 'ALL'
 }
 
 /**
@@ -684,13 +684,13 @@ export enum ProjectionType {
  */
 export enum StreamViewType {
   /** The entire item, as it appears after it was modified, is written to the stream. */
-  NewImage = 'NEW_IMAGE',
+  NEW_IMAGE = 'NEW_IMAGE',
   /** The entire item, as it appeared before it was modified, is written to the stream. */
-  OldImage = 'OLD_IMAGE',
+  OLD_IMAGE = 'OLD_IMAGE',
   /** Both the new and the old item images of the item are written to the stream. */
-  NewAndOldImages = 'NEW_AND_OLD_IMAGES',
+  NEW_AND_OLD_IMAGES = 'NEW_AND_OLD_IMAGES',
   /** Only the key attributes of the modified item are written to the stream. */
-  KeysOnly = 'KEYS_ONLY'
+  KEYS_ONLY = 'KEYS_ONLY'
 }
 
 /**
