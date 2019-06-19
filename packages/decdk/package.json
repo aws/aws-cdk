@@ -30,7 +30,6 @@
     "@aws-cdk/alexa-ask": "^0.34.0",
     "@aws-cdk/app-delivery": "^0.34.0",
     "@aws-cdk/assets": "^0.34.0",
-    "@aws-cdk/assets-docker": "^0.34.0",
     "@aws-cdk/aws-amazonmq": "^0.34.0",
     "@aws-cdk/aws-amplify": "^0.34.0",
     "@aws-cdk/aws-apigateway": "^0.34.0",
@@ -142,7 +141,9 @@
     "jsii-reflect": "^0.11.2",
     "jsonschema": "^1.2.4",
     "yaml": "1.6.0",
-    "yargs": "^13.2.4"
+    "yargs": "^13.2.4",
+    "@aws-cdk/aws-ecr-assets": "^0.34.0",
+    "@aws-cdk/aws-s3-assets": "^0.34.0"
   },
   "devDependencies": {
     "@types/fs-extra": "^7.0.0",

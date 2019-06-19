@@ -7,17 +7,17 @@ class TestStack extends cdk.Stack {
   constructor(scope: cdk.App, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
-    /// !show
-    const asset = new assets.FileAsset(this, 'SampleAsset', {
+    const asset = new assets.Asset(this, 'MyFile', {
       path: path.join(__dirname, 'file-asset.txt')
     });
-    /// !hide
 
-    const user = new iam.User(this, 'MyUser');
-    asset.grantRead(user);
+    /// !show
+    const group = new iam.Group(this, 'MyUserGroup');
+    asset.grantRead(group);
+    /// !hide
   }
 }
 
 const app = new cdk.App();
-new TestStack(app, 'aws-cdk-asset-file-test');
+new TestStack(app, 'aws-cdk-asset-refs');
 app.synth();

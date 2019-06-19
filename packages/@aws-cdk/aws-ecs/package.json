@@ -72,7 +72,7 @@
     "proxyquire": "^2.1.0"
   },
   "dependencies": {
-    "@aws-cdk/assets-docker": "^0.34.0",
+    "@aws-cdk/aws-ecr-assets": "^0.34.0",
     "@aws-cdk/aws-applicationautoscaling": "^0.34.0",
     "@aws-cdk/aws-autoscaling": "^0.34.0",
     "@aws-cdk/aws-autoscaling-hooktargets": "^0.34.0",
@@ -97,7 +97,7 @@
   },
   "homepage": "https://github.com/awslabs/aws-cdk",
   "peerDependencies": {
-    "@aws-cdk/assets-docker": "^0.34.0",
+    "@aws-cdk/aws-ecr-assets": "^0.34.0",
     "@aws-cdk/aws-applicationautoscaling": "^0.34.0",
     "@aws-cdk/aws-autoscaling": "^0.34.0",
     "@aws-cdk/aws-autoscaling-hooktargets": "^0.34.0",

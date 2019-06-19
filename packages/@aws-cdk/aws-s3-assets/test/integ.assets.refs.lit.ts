@@ -8,16 +8,20 @@ class TestStack extends cdk.Stack {
     super(scope, id, props);
 
     /// !show
-    const asset = new assets.ZipDirectoryAsset(this, 'SampleAsset', {
+    const asset = new assets.Asset(this, 'SampleAsset', {
       path: path.join(__dirname, 'sample-asset-directory')
     });
+
+    new cdk.CfnOutput(this, 'S3BucketName', { value: asset.s3BucketName });
+    new cdk.CfnOutput(this, 'S3ObjectKey', { value: asset.s3ObjectKey });
+    new cdk.CfnOutput(this, 'S3URL', { value: asset.s3Url });
     /// !hide
 
-    const user = new iam.User(this, 'MyUser');
-    asset.grantRead(user);
+    // we need at least one resource
+    asset.grantRead(new iam.User(this, 'MyUser'));
   }
 }
 
 const app = new cdk.App();
-new TestStack(app, 'aws-cdk-asset-test');
+new TestStack(app, 'aws-cdk-asset-refs');
 app.synth();
