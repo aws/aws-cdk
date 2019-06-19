@@ -7,7 +7,7 @@ All notable changes to this project will be documented in this file. See [standa
 
 ### Bug Fixes
 
-* **aws-cdk:** Move version check TTL file to home directory ([#2774](https://github.com/awslabs/aws-cdk/issues/2774)) ([1ae11c0](https://github.com/awslabs/aws-cdk/commit/1ae11c0))
+* **cli:** Move version check TTL file to home directory ([#2774](https://github.com/awslabs/aws-cdk/issues/2774)) ([1ae11c0](https://github.com/awslabs/aws-cdk/commit/1ae11c0))
 * **cli:** correctly pass Stack-level Tags ([#2829](https://github.com/awslabs/aws-cdk/issues/2829)) ([e0718ef](https://github.com/awslabs/aws-cdk/commit/e0718ef)), closes [#2822](https://github.com/awslabs/aws-cdk/issues/2822)
 * **cli:** Hide @types/yargs types from types ([#2907](https://github.com/awslabs/aws-cdk/issues/2907)) ([095d8e2](https://github.com/awslabs/aws-cdk/commit/095d8e2)), closes [#2895](https://github.com/awslabs/aws-cdk/issues/2895)
 * **cloudformation-diff:** string.replace error on `cdk context` ([#2870](https://github.com/awslabs/aws-cdk/issues/2870)) ([b8a1c8e](https://github.com/awslabs/aws-cdk/commit/b8a1c8e)), closes [/github.com/sindresorhus/string-width/commit/0bc308a2903c15087d187aa2069a12f8210f3eee#diff-168726dbe96b3ce427e7fedce31bb0bcR7](https://github.com//github.com/sindresorhus/string-width/commit/0bc308a2903c15087d187aa2069a12f8210f3eee/issues/diff-168726dbe96b3ce427e7fedce31bb0bcR7) [#2854](https://github.com/awslabs/aws-cdk/issues/2854)
@@ -19,7 +19,7 @@ All notable changes to this project will be documented in this file. See [standa
 * **ecs-patterns:** update constructs for ECS/Fargate consistency ([#2795](https://github.com/awslabs/aws-cdk/issues/2795)) ([1378e2d](https://github.com/awslabs/aws-cdk/commit/1378e2d))
 * **events-targets:** event targets can have the same construct id ([#2744](https://github.com/awslabs/aws-cdk/issues/2744)) ([210dd0f](https://github.com/awslabs/aws-cdk/commit/210dd0f)), closes [40aws-cdk/aws-events-targets/lib/lambda.ts#L32](https://github.com/40aws-cdk/aws-events-targets/lib/lambda.ts/issues/L32) [40aws-cdk/cdk/lib/construct.ts#L31-L36](https://github.com/40aws-cdk/cdk/lib/construct.ts/issues/L31-L36) [aws-cdk/aws-events/lib/rule.ts#L124-L126](https://github.com/aws-cdk/aws-events/lib/rule.ts/issues/L124-L126) [#2377](https://github.com/awslabs/aws-cdk/issues/2377)
 * **iam:** support adding permissions to imported roles ([#2805](https://github.com/awslabs/aws-cdk/issues/2805)) ([936464f](https://github.com/awslabs/aws-cdk/commit/936464f)), closes [#2381](https://github.com/awslabs/aws-cdk/issues/2381) [#2651](https://github.com/awslabs/aws-cdk/issues/2651) [#2652](https://github.com/awslabs/aws-cdk/issues/2652) [#2662](https://github.com/awslabs/aws-cdk/issues/2662)
-* **init:** Correct java init template ([#2889](https://github.com/awslabs/aws-cdk/issues/2889)) ([b3b3ba9](https://github.com/awslabs/aws-cdk/commit/b3b3ba9))
+* **cli:** Correct java init template ([#2889](https://github.com/awslabs/aws-cdk/issues/2889)) ([b3b3ba9](https://github.com/awslabs/aws-cdk/commit/b3b3ba9))
 * **rds:** allow setting backupRetentionPeriod=0 ([#2875](https://github.com/awslabs/aws-cdk/issues/2875)) ([b0730dd](https://github.com/awslabs/aws-cdk/commit/b0730dd))
 * **rds:** fix unresolved endpoint socket address ([#2846](https://github.com/awslabs/aws-cdk/issues/2846)) ([902636a](https://github.com/awslabs/aws-cdk/commit/902636a)), closes [#2711](https://github.com/awslabs/aws-cdk/issues/2711)
 * **sqs:** remove 'Batch' permissions ([#2806](https://github.com/awslabs/aws-cdk/issues/2806)) ([654cb37](https://github.com/awslabs/aws-cdk/commit/654cb37)), closes [#2381](https://github.com/awslabs/aws-cdk/issues/2381)
@@ -42,11 +42,13 @@ All notable changes to this project will be documented in this file. See [standa
 * **ssm:** API cleanups ([#2904](https://github.com/awslabs/aws-cdk/issues/2904)) ([bd1bcf5](https://github.com/awslabs/aws-cdk/commit/bd1bcf5))
 * clean up API for removal policy across the library ([#2893](https://github.com/awslabs/aws-cdk/issues/2893)) ([65014ab](https://github.com/awslabs/aws-cdk/commit/65014ab))
 * **sns:** move subscribers to `aws-sns-subscribers` ([#2804](https://github.com/awslabs/aws-cdk/issues/2804)) ([9ef899c](https://github.com/awslabs/aws-cdk/commit/9ef899c))
+* **events:** clean up Events APIs (#2840) ([1e23921](https://github.com/awslabs/aws-cdk/commit/1e23921)), closes [#2840](https://github.com/awslabs/aws-cdk/issues/2840)
+* **iam:** cleanup of IAM library (#2823) ([b735d1c](https://github.com/awslabs/aws-cdk/commit/b735d1c)), closes [#2823](https://github.com/awslabs/aws-cdk/issues/2823)
 
 
 ### Features
 
-* **cdk:** Expose props in CFN resources and remove propertyOverrides ([#2372](https://github.com/awslabs/aws-cdk/issues/2372)) ([#2372](https://github.com/awslabs/aws-cdk/issues/2372)) ([aa61dfb](https://github.com/awslabs/aws-cdk/commit/aa61dfb)), closes [#2100](https://github.com/awslabs/aws-cdk/issues/2100)
+* **cli:** Expose props in CFN resources and remove propertyOverrides ([#2372](https://github.com/awslabs/aws-cdk/issues/2372)) ([#2372](https://github.com/awslabs/aws-cdk/issues/2372)) ([aa61dfb](https://github.com/awslabs/aws-cdk/commit/aa61dfb)), closes [#2100](https://github.com/awslabs/aws-cdk/issues/2100)
 * **cli:** deploy/destory require explicit stack selection if app contains more than a single stack ([#2772](https://github.com/awslabs/aws-cdk/issues/2772)) ([118a716](https://github.com/awslabs/aws-cdk/commit/118a716)), closes [#2731](https://github.com/awslabs/aws-cdk/issues/2731)
 * **cli:** Remove stack rename support ([#2819](https://github.com/awslabs/aws-cdk/issues/2819)) ([0f30e39](https://github.com/awslabs/aws-cdk/commit/0f30e39)), closes [#2670](https://github.com/awslabs/aws-cdk/issues/2670)
 * **cloudformation:** add option to restrict data returned AwsCustomResource ([#2859](https://github.com/awslabs/aws-cdk/issues/2859)) ([a691900](https://github.com/awslabs/aws-cdk/commit/a691900)), closes [#2825](https://github.com/awslabs/aws-cdk/issues/2825)
@@ -66,10 +68,6 @@ All notable changes to this project will be documented in this file. See [standa
 * formalize the concept of physical names, and use them for cross-environment CodePipelines. ([#1924](https://github.com/awslabs/aws-cdk/issues/1924)) ([6daaca8](https://github.com/awslabs/aws-cdk/commit/6daaca8))
 
 
-*  refactor(events): clean up Events APIs (#2840) ([1e23921](https://github.com/awslabs/aws-cdk/commit/1e23921)), closes [#2840](https://github.com/awslabs/aws-cdk/issues/2840)
-*  refactor(iam): cleanup of IAM library (#2823) ([b735d1c](https://github.com/awslabs/aws-cdk/commit/b735d1c)), closes [#2823](https://github.com/awslabs/aws-cdk/issues/2823)
-
-
 ### BREAKING CHANGES
 
 * **assets:** `AssetProps.packaging` has been removed and is now automatically discovered based on the file type.
@@ -77,13 +75,13 @@ All notable changes to this project will be documented in this file. See [standa
 * **assets:** `FileAsset` has been removed, use `aws-s3-assets.Asset`.
 * **lambda:** `Code.directory` and `Code.file` have been removed. Use `Code.asset`.
 * **assets-docker:** The module has been renamed to **aws-ecr-assets**
-* **ecs:** * **ecs**: the property that specifies the type of EC2 AMI optimized for ECS was renamed to `hardwareType` from `hwType`.
+* **ecs:** the property that specifies the type of EC2 AMI optimized for ECS was renamed to `hardwareType` from `hwType`.
 * **codebuild:** the method addToRoleInlinePolicy in CodeBuild's Project class has been removed.
 * **dynamodb:** `TableOptions.pitrEnabled` renamed to `pointInTimeRecovery`.
 * **dynamodb:** `TableOptions.sseEnabled` renamed to `serverSideEncryption`.
 * **dynamodb:** `TableOptions.ttlAttributeName` renamed to `timeToLiveAttribute`.
 * **dynamodb:** `TableOptions.streamSpecification` renamed `stream`.
-* **ecs:** * **ecs**: `ContainerImage.fromAsset()` now takes only build directory
+* **ecs:** `ContainerImage.fromAsset()` now takes only build directory
   directly (no need to pass `scope` or `id` anymore).
 * **secretsmanager:** `ISecret.secretJsonValue` renamed to `secretValueFromJson`.
 * **ssm:** `ParameterStoreString` has been removed. Use `StringParameter.fromStringParameterAttributes`.
@@ -99,7 +97,7 @@ All notable changes to this project will be documented in this file. See [standa
 * **apigateway:** `MethodOptions.authorizerId` is now called `authorizer` and accepts an `IAuthorizer` which is a placeholder interface for the authorizer resource.
 * **apigateway:** `restapi.executeApiArn` renamed to `arnForExecuteApi`.
 * **apigateway:** `restapi.latestDeployment` and `deploymentStage` are now read-only.
-* * **events**: `EventPattern.detail` is now a map.
+* **events**: `EventPattern.detail` is now a map.
 * **events**: `scheduleExpression: string` is now `schedule: Schedule`.
 * multiple modules have been changed to use `cdk.RemovalPolicy`
 to configure the resource's removal policy.
@@ -112,22 +110,23 @@ to configure the resource's removal policy.
 * **logs:** `LogStreamProps.retainLogStream` is now `removalPolicy`
 * **rds:** `DatabaseClusterProps.deleteReplacePolicy` is now `removalPolicy`
 * **rds:** `DatabaseInstanceNewProps.deleteReplacePolicy` is now `removalPolicy`
-* **codebuild:** * codebuild: rename BuildSource to Source, S3BucketSource to S3Source, BuildArtifacts to Artifacts, S3BucketBuildArtifacts to S3Artifacts
-* codebuild: the classes CodePipelineBuildSource, CodePipelineBuildArtifacts, NoBuildSource, and NoBuildArtifacts have been removed
-* codebuild: rename buildScriptAsset and buildScriptAssetEntrypoint to buildScript and buildScriptEntrypoint, respectively
-* **cdk:** All L1 ("Cfn") Resources attributes are now prefixed with
+* **codebuild:** rename BuildSource to Source, S3BucketSource to S3Source, BuildArtifacts to Artifacts, S3BucketBuildArtifacts to S3Artifacts
+* **codebuild:** the classes CodePipelineBuildSource, CodePipelineBuildArtifacts, NoBuildSource, and NoBuildArtifacts have been removed
+* **codebuild:** rename buildScriptAsset and buildScriptAssetEntrypoint to buildScript and buildScriptEntrypoint, respectively
+* **cli:** All L1 ("Cfn") Resources attributes are now prefixed with
 `attr` instead of the resource type. For example, in S3 `bucket.bucketArn` is now `bucket.attrArn`.
 * `propertyOverrides` has been removed from all "Cfn" resources, instead
 users can now read/write resource properties directly on the resource class. For example, instead of `lambda.propertyOverrides.runtime` just use `lambda.runtime`.
 * **codepipeline:** the property designating the name of the stage when creating a CodePipeline is now called `stageName` instead of `name`
 * **codepipeline:** the output and extraOutputs properties of the CodeBuildAction were merged into one property, outputs.
-* **lambda:** - Renamed `Function.addLayer` to `addLayers` and made it variadic
-- Removed `IFunction.handler` property
-- Removed `IVersion.versionArn` property (the value is at `functionArn`)
-- Removed `SingletonLayerVersion`
-- Stopped exporting `LogRetention`
-* **cli:** * **cli:** if an app includes more than one stack "cdk deploy" and "cdk destroy" now require that an explicit selector will be passed. Use "cdk deploy '*'" if you want to select all stacks.
-* * **iam**: `PolicyStatement` no longer has a fluid API, and accepts a
+* **lambda:**
+  - Renamed `Function.addLayer` to `addLayers` and made it variadic
+  - Removed `IFunction.handler` property
+  - Removed `IVersion.versionArn` property (the value is at `functionArn`)
+  - Removed `SingletonLayerVersion`
+  - Stopped exporting `LogRetention`
+* **cli:** if an app includes more than one stack "cdk deploy" and "cdk destroy" now require that an explicit selector will be passed. Use "cdk deploy '*'" if you want to select all stacks.
+* **iam**: `PolicyStatement` no longer has a fluid API, and accepts a
   props object to be able to set the important fields.
 * **iam**: rename `ImportedResourcePrincipal` to `UnknownPrincipal`.
 * **iam**: `managedPolicyArns` renamed to `managedPolicies`, takes
@@ -141,8 +140,8 @@ users can now read/write resource properties directly on the resource class. For
 enum. This means that you need to call `.value` in order to obtain it's value.
 * **s3:** `s3.Coordinates` renamed to `s3.Location`
 * **codepipeline:** `Artifact.s3Coordinates` renamed to `Artifact.s3Location`.
-* **codebuild:** * **codebuild**: buildSpec argument is now a `BuildSpec` object.
-* **lambda:** * **lambda:** `lambda.Runtime.NodeJS*` are now `lambda.Runtime.Nodejs*`
+* **codebuild:** buildSpec argument is now a `BuildSpec` object.
+* **lambda:** `lambda.Runtime.NodeJS*` are now `lambda.Runtime.Nodejs*`
 * **core:** multiple changes to the `Stack` API
 * **core:** `stack.name` renamed to `stack.stackName`
 * **core:** `stack.stackName` will return the concrete stack name. Use `Aws.stackName` to indicate { Ref: "AWS::StackName" }.
@@ -166,9 +165,9 @@ enum. This means that you need to call `.value` in order to obtain it's value.
 requires an integration object from the `@aws-cdk/aws-sns-subscribers`
 package.
 * **ecs-patterns:** Renamed QueueWorkerService for base, ec2 and fargate to QueueProcessingService, QueueProcessingEc2Service, and QueueProcessingFargateService.
-* * iam: `roleName` in `RoleProps` is now of type `PhysicalName`
-* s3: `bucketName` in `BucketProps` is now of type `PhysicalName`
-* codebuild: `roleName` in `RoleProps` is now of type `PhysicalName`
+* **iam:** `roleName` in `RoleProps` is now of type `PhysicalName`
+* **s3:** `bucketName` in `BucketProps` is now of type `PhysicalName`
+* **codebuild:** `roleName` in `RoleProps` is now of type `PhysicalName`
 
 
 
