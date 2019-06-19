@@ -71,8 +71,8 @@ export class Cluster extends Resource implements ICluster {
     const cluster = new CfnCluster(this, 'Resource', {clusterName: props.clusterName});
 
     this.vpc = props.vpc;
-    this.clusterArn = cluster.clusterArn;
-    this.clusterName = cluster.clusterName;
+    this.clusterArn = cluster.attrArn;
+    this.clusterName = cluster.refAsString;
   }
 
   /**
@@ -221,7 +221,7 @@ export interface EcsOptimizedAmiProps {
   /**
    * What generation of Amazon Linux to use
    *
-   * @default AmazonLinuxGeneration.AmazonLinux if hwType equal to AmiHardwareType.Standard else AmazonLinuxGeneration.AmazonLinux2
+   * @default AmazonLinuxGeneration.AmazonLinux if hardwareType equal to AmiHardwareType.Standard else AmazonLinuxGeneration.AmazonLinux2
    */
   readonly generation?: ec2.AmazonLinuxGeneration;
 
@@ -230,7 +230,7 @@ export interface EcsOptimizedAmiProps {
    *
    * @default AmiHardwareType.Standard
    */
-  readonly hwType?: AmiHardwareType;
+  readonly hardwareType?: AmiHardwareType;
 }
 
 /**
@@ -243,7 +243,7 @@ export class EcsOptimizedAmi implements ec2.IMachineImageSource {
   private readonly amiParameterName: string;
 
   constructor(props?: EcsOptimizedAmiProps) {
-    this.hwType = (props && props.hwType) || AmiHardwareType.Standard;
+    this.hwType = (props && props.hardwareType) || AmiHardwareType.Standard;
     if (props && props.generation) {      // generation defined in the props object
       if (props.generation === ec2.AmazonLinuxGeneration.AmazonLinux && this.hwType !== AmiHardwareType.Standard) {
         throw new Error(`Amazon Linux does not support special hardware type. Use Amazon Linux 2 instead`);

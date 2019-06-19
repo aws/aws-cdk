@@ -60,7 +60,7 @@ export = {
       const pipeline = new Pipeline(stack, 'Pipeline');
 
       pipeline.addStage({
-        name: 'FirstStage',
+        stageName: 'FirstStage',
         actions: [
           new FakeSourceAction({
             actionName: 'FakeSource',
@@ -79,5 +79,5 @@ export = {
 function stageForTesting(): IStage {
   const stack = new cdk.Stack();
   const pipeline = new Pipeline(stack, 'Pipeline');
-  return pipeline.addStage({ name: 'stage' });
+  return pipeline.addStage({ stageName: 'stage' });
 }

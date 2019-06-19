@@ -218,10 +218,10 @@ export class Role extends Resource implements IRole {
       maxSessionDuration: props.maxSessionDurationSec,
     });
 
-    this.roleId = role.roleId;
+    this.roleId = role.attrRoleId;
     const resourceIdentifiers = new ResourceIdentifiers(this, {
-      arn: role.roleArn,
-      name: role.roleName,
+      arn: role.attrArn,
+      name: role.refAsString,
       arnComponents: {
         region: '', // IAM is global in each partition
         service: 'iam',

@@ -258,7 +258,7 @@ export = {
     // GIVEN
     const stack = new cdk.Stack();
     new lambda.Function(stack, 'MyLambda', {
-      code: lambda.Code.directory(path.join(__dirname, 'my-lambda-handler')),
+      code: lambda.Code.asset(path.join(__dirname, 'my-lambda-handler')),
       handler: 'index.handler',
       runtime: lambda.Runtime.Python36
     });
@@ -1284,7 +1284,7 @@ export = {
     let bindCount = 0;
 
     class EventSource implements lambda.IEventSource {
-      public bind(_: lambda.FunctionBase): void {
+      public bind(_: lambda.IFunction): void {
         bindCount++;
       }
     }

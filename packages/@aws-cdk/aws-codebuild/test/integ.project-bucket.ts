@@ -12,7 +12,7 @@ const bucket = new s3.Bucket(stack, 'MyBucket', {
 });
 
 new codebuild.Project(stack, 'MyProject', {
-  source: new codebuild.S3BucketSource({
+  source: codebuild.Source.s3({
     bucket,
     path: 'path/to/my/source.zip',
   }),

@@ -156,7 +156,7 @@ export class Trail extends Resource {
 
       logsRole.addToPolicy(new iam.PolicyStatement({
         actions: ["logs:PutLogEvents", "logs:CreateLogStream"],
-        resources: [logGroup.logGroupArn],
+        resources: [logGroup.attrArn],
       }));
     }
     if (props.managementEvents) {
@@ -177,14 +177,14 @@ export class Trail extends Resource {
       kmsKeyId:  props.kmsKey && props.kmsKey.keyArn,
       s3BucketName: s3bucket.bucketName,
       s3KeyPrefix: props.s3KeyPrefix,
-      cloudWatchLogsLogGroupArn: logGroup && logGroup.logGroupArn,
+      cloudWatchLogsLogGroupArn: logGroup && logGroup.attrArn,
       cloudWatchLogsRoleArn: logsRole && logsRole.roleArn,
       snsTopicName: props.snsTopic,
       eventSelectors: this.eventSelectors
     });
 
-    this.trailArn = trail.trailArn;
-    this.trailSnsTopicArn = trail.trailSnsTopicArn;
+    this.trailArn = trail.attrArn;
+    this.trailSnsTopicArn = trail.attrSnsTopicArn;
 
     const s3BucketPolicy = s3bucket.node.findChild("Policy").node.findChild("Resource") as s3.CfnBucketPolicy;
     trail.node.addDependency(s3BucketPolicy);

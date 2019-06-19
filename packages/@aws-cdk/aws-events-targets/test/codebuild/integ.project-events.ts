@@ -14,7 +14,7 @@ const stack = new cdk.Stack(app, 'aws-cdk-codebuild-events');
 
 const repo = new codecommit.Repository(stack, 'MyRepo', { repositoryName: 'aws-cdk-codebuild-events' });
 const project = new codebuild.Project(stack, 'MyProject', {
-  source: new codebuild.CodeCommitSource({ repository: repo }),
+  source: codebuild.Source.codeCommit({ repository: repo }),
 });
 
 const queue = new sqs.Queue(stack, 'MyQueue');

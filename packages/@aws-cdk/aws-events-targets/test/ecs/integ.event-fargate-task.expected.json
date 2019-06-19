@@ -255,7 +255,7 @@
                                 ":repository/",
                                 {
                                   "Fn::GetAtt": [
-                                    "EventImageAdoptRepositoryDFAAC242",
+                                    "TaskDefTheContainerAssetImageAdoptRepository997406C3",
                                     "RepositoryName"
                                   ]
                                 }
@@ -292,7 +292,7 @@
                                 ":repository/",
                                 {
                                   "Fn::GetAtt": [
-                                    "EventImageAdoptRepositoryDFAAC242",
+                                    "TaskDefTheContainerAssetImageAdoptRepository997406C3",
                                     "RepositoryName"
                                   ]
                                 }
@@ -306,7 +306,7 @@
                   ".amazonaws.com/",
                   {
                     "Fn::GetAtt": [
-                      "EventImageAdoptRepositoryDFAAC242",
+                      "TaskDefTheContainerAssetImageAdoptRepository997406C3",
                       "RepositoryName"
                     ]
                   },
@@ -318,7 +318,7 @@
                         "Fn::Split": [
                           "@sha256:",
                           {
-                            "Ref": "EventImageImageNameE972A8B1"
+                            "Ref": "TaskDefTheContainerAssetImageImageName92ECAC22"
                           }
                         ]
                       }
@@ -368,6 +368,34 @@
         },
         "Volumes": []
       }
+    },
+    "TaskDefTheContainerAssetImageAdoptRepository997406C3": {
+      "Type": "Custom::ECRAdoptedRepository",
+      "Properties": {
+        "ServiceToken": {
+          "Fn::GetAtt": [
+            "AdoptEcrRepositorydbc60defc59544bcaa5c28c95d68f62c52BE89E9",
+            "Arn"
+          ]
+        },
+        "RepositoryName": {
+          "Fn::Select": [
+            0,
+            {
+              "Fn::Split": [
+                "@sha256:",
+                {
+                  "Ref": "TaskDefTheContainerAssetImageImageName92ECAC22"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "DependsOn": [
+        "AdoptEcrRepositorydbc60defc59544bcaa5c28c95d68f62cServiceRoleDefaultPolicy6BC8737C",
+        "AdoptEcrRepositorydbc60defc59544bcaa5c28c95d68f62cServiceRoleD788AA17"
+      ]
     },
     "TaskDefExecutionRoleB4775C97": {
       "Type": "AWS::IAM::Role",
@@ -427,7 +455,7 @@
                     ":repository/",
                     {
                       "Fn::GetAtt": [
-                        "EventImageAdoptRepositoryDFAAC242",
+                        "TaskDefTheContainerAssetImageAdoptRepository997406C3",
                         "RepositoryName"
                       ]
                     }
@@ -726,33 +754,9 @@
         }
       }
     },
-    "EventImageAdoptRepositoryDFAAC242": {
-      "Type": "Custom::ECRAdoptedRepository",
-      "Properties": {
-        "ServiceToken": {
-          "Fn::GetAtt": [
-            "AdoptEcrRepositorydbc60defc59544bcaa5c28c95d68f62c52BE89E9",
-            "Arn"
-          ]
-        },
-        "RepositoryName": {
-          "Fn::Select": [
-            0,
-            {
-              "Fn::Split": [
-                "@sha256:",
-                {
-                  "Ref": "EventImageImageNameE972A8B1"
-                }
-              ]
-            }
-          ]
-        }
-      },
-      "DependsOn": [
-        "AdoptEcrRepositorydbc60defc59544bcaa5c28c95d68f62cServiceRoleDefaultPolicy6BC8737C",
-        "AdoptEcrRepositorydbc60defc59544bcaa5c28c95d68f62cServiceRoleD788AA17"
-      ]
+    "TaskLoggingLogGroupC7E938D4": {
+      "Type": "AWS::Logs::LogGroup",
+      "DeletionPolicy": "Retain"
     },
     "AdoptEcrRepositorydbc60defc59544bcaa5c28c95d68f62cServiceRoleD788AA17": {
       "Type": "AWS::IAM::Role",
@@ -833,7 +837,7 @@
                           "Fn::Split": [
                             "@sha256:",
                             {
-                              "Ref": "EventImageImageNameE972A8B1"
+                              "Ref": "TaskDefTheContainerAssetImageImageName92ECAC22"
                             }
                           ]
                         }
@@ -909,10 +913,6 @@
         "AdoptEcrRepositorydbc60defc59544bcaa5c28c95d68f62cServiceRoleDefaultPolicy6BC8737C",
         "AdoptEcrRepositorydbc60defc59544bcaa5c28c95d68f62cServiceRoleD788AA17"
       ]
-    },
-    "TaskLoggingLogGroupC7E938D4": {
-      "Type": "AWS::Logs::LogGroup",
-      "DeletionPolicy": "Retain"
     },
     "Rule4C995B7F": {
       "Type": "AWS::Events::Rule",
@@ -1079,9 +1079,9 @@
     }
   },
   "Parameters": {
-    "EventImageImageNameE972A8B1": {
+    "TaskDefTheContainerAssetImageImageName92ECAC22": {
       "Type": "String",
-      "Description": "ECR repository name and tag asset \"aws-ecs-integ-fargate/EventImage\""
+      "Description": "ECR repository name and tag asset \"aws-ecs-integ-fargate/TaskDef/TheContainer/AssetImage\""
     },
     "AdoptEcrRepositorydbc60defc59544bcaa5c28c95d68f62cCodeS3Bucket92AB06B6": {
       "Type": "String",

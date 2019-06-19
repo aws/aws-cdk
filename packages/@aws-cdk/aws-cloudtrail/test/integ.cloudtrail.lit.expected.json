@@ -1,7 +1,8 @@
 {
   "Resources": {
     "Bucket83908E77": {
-      "Type": "AWS::S3::Bucket"
+      "Type": "AWS::S3::Bucket",
+      "DeletionPolicy": "Delete"
     },
     "TrailS30071F172": {
       "Type": "AWS::S3::Bucket",
