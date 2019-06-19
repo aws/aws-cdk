@@ -72,6 +72,7 @@
     "proxyquire": "^2.1.0"
   },
   "dependencies": {
+    "@aws-cdk/aws-ecr-assets": "^0.35.0",
     "@aws-cdk/aws-applicationautoscaling": "^0.35.0",
     "@aws-cdk/aws-autoscaling": "^0.35.0",
     "@aws-cdk/aws-autoscaling-hooktargets": "^0.35.0",
@@ -80,7 +81,7 @@
     "@aws-cdk/aws-cloudwatch": "^0.35.0",
     "@aws-cdk/aws-ec2": "^0.35.0",
     "@aws-cdk/aws-ecr": "^0.35.0",
-    "@aws-cdk/aws-ecr-assets": "^0.35.0",
+    "@aws-cdk/aws-ssm": "^0.35.0",
     "@aws-cdk/aws-elasticloadbalancing": "^0.35.0",
     "@aws-cdk/aws-elasticloadbalancingv2": "^0.35.0",
     "@aws-cdk/aws-iam": "^0.35.0",
@@ -97,6 +98,7 @@
   },
   "homepage": "https://github.com/awslabs/aws-cdk",
   "peerDependencies": {
+    "@aws-cdk/aws-ecr-assets": "^0.35.0",
     "@aws-cdk/aws-applicationautoscaling": "^0.35.0",
     "@aws-cdk/aws-autoscaling": "^0.35.0",
     "@aws-cdk/aws-autoscaling-hooktargets": "^0.35.0",
@@ -105,8 +107,8 @@
     "@aws-cdk/aws-cloudwatch": "^0.35.0",
     "@aws-cdk/aws-ec2": "^0.35.0",
     "@aws-cdk/aws-ecr": "^0.35.0",
-    "@aws-cdk/aws-ecr-assets": "^0.35.0",
     "@aws-cdk/aws-elasticloadbalancing": "^0.35.0",
+    "@aws-cdk/aws-ssm": "^0.35.0",
     "@aws-cdk/aws-elasticloadbalancingv2": "^0.35.0",
     "@aws-cdk/aws-iam": "^0.35.0",
     "@aws-cdk/aws-lambda": "^0.35.0",

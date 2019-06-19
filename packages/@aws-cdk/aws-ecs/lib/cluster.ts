@@ -3,7 +3,8 @@ import cloudwatch = require ('@aws-cdk/aws-cloudwatch');
 import ec2 = require('@aws-cdk/aws-ec2');
 import iam = require('@aws-cdk/aws-iam');
 import cloudmap = require('@aws-cdk/aws-servicediscovery');
-import { Construct, Context, IResource, Resource, Stack } from '@aws-cdk/cdk';
+import ssm = require('@aws-cdk/aws-ssm');
+import { Construct, IResource, Resource, Stack } from '@aws-cdk/cdk';
 import { InstanceDrainHook } from './drain-hook/instance-drain-hook';
 import { CfnCluster } from './ecs.generated';
 
@@ -264,15 +265,14 @@ export class EcsOptimizedAmi implements ec2.IMachineImageSource {
                           + ( this.generation === ec2.AmazonLinuxGeneration.AmazonLinux2 ? "amazon-linux-2/" : "" )
                           + ( this.hwType === AmiHardwareType.Gpu ? "gpu/" : "" )
                           + ( this.hwType === AmiHardwareType.Arm ? "arm64/" : "" )
-                          + "recommended";
+                          + "recommended/image_id";
   }
 
   /**
    * Return the correct image
    */
   public getImage(scope: Construct): ec2.MachineImage {
-    const json = Context.getSsmParameter(scope, this.amiParameterName, { defaultValue: "{\"image_id\": \"\"}" });
-    const ami = JSON.parse(json).image_id;
+    const ami = ssm.StringParameter.valueForStringParameter(scope, this.amiParameterName);
     return new ec2.MachineImage(ami, new ec2.LinuxOS());
   }
 }

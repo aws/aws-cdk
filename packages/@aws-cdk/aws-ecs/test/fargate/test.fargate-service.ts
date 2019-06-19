@@ -58,9 +58,6 @@ export = {
               {
                 Ref: "MyVpcPrivateSubnet2Subnet0040C983"
               },
-              {
-                Ref: "MyVpcPrivateSubnet3Subnet772D6AD7"
-              }
             ]
           }
         }
