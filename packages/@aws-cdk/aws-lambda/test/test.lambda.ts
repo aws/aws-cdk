@@ -294,7 +294,7 @@ export = {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
       runtime: lambda.Runtime.Nodejs810,
-      functionName: 'OneFunctionToRuleThemAll',
+      functionName: cdk.PhysicalName.of('OneFunctionToRuleThemAll'),
       deadLetterQueueEnabled: true
     });
 
@@ -582,7 +582,7 @@ export = {
     const stack = new cdk.Stack();
 
     const dlQueue = new sqs.Queue(stack, 'DeadLetterQueue', {
-      queueName: 'MyLambda_DLQ',
+      queueName: cdk.PhysicalName.of('MyLambda_DLQ'),
       retentionPeriodSec: 1209600
     });
 
@@ -691,7 +691,7 @@ export = {
     const stack = new cdk.Stack();
 
     const dlQueue = new sqs.Queue(stack, 'DeadLetterQueue', {
-      queueName: 'MyLambda_DLQ',
+      queueName: cdk.PhysicalName.of('MyLambda_DLQ'),
       retentionPeriodSec: 1209600
     });
 
@@ -801,7 +801,7 @@ export = {
     const stack = new cdk.Stack();
 
     const dlQueue = new sqs.Queue(stack, 'DeadLetterQueue', {
-      queueName: 'MyLambda_DLQ',
+      queueName: cdk.PhysicalName.of('MyLambda_DLQ'),
       retentionPeriodSec: 1209600
     });
 

@@ -47,7 +47,7 @@ const firstRule = ruleSet.addRule('FirstRule', {
       topic
     })
   ],
-  name: 'FirstRule',
+  receiptRuleName: cdk.PhysicalName.of('FirstRule'),
   recipients: ['cdk-ses-receipt-test@yopmail.com'],
   scanEnabled: true,
   tlsPolicy: ses.TlsPolicy.REQUIRE,

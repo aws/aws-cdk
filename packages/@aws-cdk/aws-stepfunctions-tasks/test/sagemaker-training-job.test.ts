@@ -217,7 +217,6 @@ test('create complex training job', () => {
             Subnets: [
                 { Ref: "VPCPrivateSubnet1Subnet8BCA10E0" },
                 { Ref: "VPCPrivateSubnet2SubnetCFCDAA7A" },
-                { Ref: "VPCPrivateSubnet3Subnet3EDCD457" }
             ]
         }
       },

@@ -141,7 +141,7 @@ export = {
     const api = new apigateway.RestApi(stack, 'restapi', {
       deploy: false,
       cloudWatchRole: false,
-      restApiName: 'my-rest-api'
+      restApiName: cdk.PhysicalName.of('my-rest-api'),
     });
 
     api.root.addMethod('GET');
@@ -176,7 +176,7 @@ export = {
     const api = new apigateway.RestApi(stack, 'restapi', {
       deploy: false,
       cloudWatchRole: false,
-      restApiName: 'my-rest-api'
+      restApiName: cdk.PhysicalName.of('my-rest-api'),
     });
 
     // WHEN

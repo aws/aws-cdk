@@ -58,6 +58,7 @@ class Test extends cdk.Stack {
       name: 'Basic',
       apiKey: key,
       description: 'Free tier monthly usage plan',
+      throttle: { rateLimit: 5 },
       quota: {
         limit: 10000,
         period: apigateway.Period.MONTH

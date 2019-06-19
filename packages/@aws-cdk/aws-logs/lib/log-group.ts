@@ -1,6 +1,6 @@
 import cloudwatch = require('@aws-cdk/aws-cloudwatch');
 import iam = require('@aws-cdk/aws-iam');
-import { Construct, IResource, RemovalPolicy, Resource, Stack } from '@aws-cdk/cdk';
+import { Construct, IResource, PhysicalName, RemovalPolicy, Resource, ResourceIdentifiers, Stack } from '@aws-cdk/cdk';
 import { LogStream } from './log-stream';
 import { CfnLogGroup } from './logs.generated';
 import { MetricFilter } from './metric-filter';
@@ -271,7 +271,7 @@ export interface LogGroupProps {
    *
    * @default Automatically generated
    */
-  readonly logGroupName?: string;
+  readonly logGroupName?: PhysicalName;
 
   /**
    * How long, in days, the log contents will be retained.
@@ -322,7 +322,9 @@ export class LogGroup extends LogGroupBase {
   public readonly logGroupName: string;
 
   constructor(scope: Construct, id: string, props: LogGroupProps = {}) {
-    super(scope, id);
+    super(scope, id, {
+      physicalName: props.logGroupName,
+    });
 
     let retentionInDays = props.retentionDays;
     if (retentionInDays === undefined) { retentionInDays = RetentionDays.TWO_YEARS; }
@@ -333,14 +335,24 @@ export class LogGroup extends LogGroupBase {
     }
 
     const resource = new CfnLogGroup(this, 'Resource', {
-      logGroupName: props.logGroupName,
+      logGroupName: this.physicalName.value,
       retentionInDays,
     });
 
     resource.applyRemovalPolicy(props.removalPolicy);
 
-    this.logGroupArn = resource.attrArn;
-    this.logGroupName = resource.refAsString;
+    const resourceIdentifiers = new ResourceIdentifiers(this, {
+      arn: resource.attrArn,
+      name: resource.refAsString,
+      arnComponents: {
+        service: 'logs',
+        resource: 'log-group',
+        resourceName: this.physicalName.value,
+        sep: ':',
+      },
+    });
+    this.logGroupArn = resourceIdentifiers.arn;
+    this.logGroupName = resourceIdentifiers.name;
   }
 }
 
@@ -355,7 +367,7 @@ export interface StreamOptions {
    *
    * @default Automatically generated
    */
-  readonly logStreamName?: string;
+  readonly logStreamName?: PhysicalName;
 }
 
 /**

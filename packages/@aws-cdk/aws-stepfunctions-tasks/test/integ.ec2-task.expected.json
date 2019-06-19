@@ -96,7 +96,9 @@
     "FargateClusterDefaultAutoScalingGroupLaunchConfig57306899": {
       "Type": "AWS::AutoScaling::LaunchConfiguration",
       "Properties": {
-        "ImageId": "ami-1234",
+        "ImageId": {
+          "Ref": "SsmParameterValueawsserviceecsoptimizedamiamazonlinuxrecommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
+        },
         "InstanceType": "t2.micro",
         "IamInstanceProfile": {
           "Ref": "FargateClusterDefaultAutoScalingGroupInstanceProfile2C0FEF3B"
@@ -227,15 +229,7 @@
                     {
                       "Ref": "AWS::Partition"
                     },
-                    ":autoscaling:",
-                    {
-                      "Ref": "AWS::Region"
-                    },
-                    ":",
-                    {
-                      "Ref": "AWS::AccountId"
-                    },
-                    ":autoScalingGroup:*:autoScalingGroupName/",
+                    ":autoscaling:test-region:12345678:autoScalingGroup:*:autoScalingGroupName/",
                     {
                       "Ref": "FargateClusterDefaultAutoScalingGroupASG36A4948F"
                     }
@@ -471,15 +465,7 @@
                                 {
                                   "Ref": "AWS::Partition"
                                 },
-                                ":ecr:",
-                                {
-                                  "Ref": "AWS::Region"
-                                },
-                                ":",
-                                {
-                                  "Ref": "AWS::AccountId"
-                                },
-                                ":repository/",
+                                ":ecr:test-region:12345678:repository/",
                                 {
                                   "Fn::GetAtt": [
                                     "TaskDefTheContainerAssetImageAdoptRepository997406C3",
@@ -508,15 +494,7 @@
                                 {
                                   "Ref": "AWS::Partition"
                                 },
-                                ":ecr:",
-                                {
-                                  "Ref": "AWS::Region"
-                                },
-                                ":",
-                                {
-                                  "Ref": "AWS::AccountId"
-                                },
-                                ":repository/",
+                                ":ecr:test-region:12345678:repository/",
                                 {
                                   "Fn::GetAtt": [
                                     "TaskDefTheContainerAssetImageAdoptRepository997406C3",
@@ -562,9 +540,7 @@
                   "Ref": "TaskLoggingLogGroupC7E938D4"
                 },
                 "awslogs-stream-prefix": "EventDemo",
-                "awslogs-region": {
-                  "Ref": "AWS::Region"
-                }
+                "awslogs-region": "test-region"
               }
             },
             "Memory": 256,
@@ -671,15 +647,7 @@
                     {
                       "Ref": "AWS::Partition"
                     },
-                    ":ecr:",
-                    {
-                      "Ref": "AWS::Region"
-                    },
-                    ":",
-                    {
-                      "Ref": "AWS::AccountId"
-                    },
-                    ":repository/",
+                    ":ecr:test-region:12345678:repository/",
                     {
                       "Fn::GetAtt": [
                         "TaskDefTheContainerAssetImageAdoptRepository997406C3",
@@ -786,15 +754,7 @@
                     {
                       "Ref": "AWS::Partition"
                     },
-                    ":ecr:",
-                    {
-                      "Ref": "AWS::Region"
-                    },
-                    ":",
-                    {
-                      "Ref": "AWS::AccountId"
-                    },
-                    ":repository/",
+                    ":ecr:test-region:12345678:repository/",
                     {
                       "Fn::Select": [
                         0,
@@ -888,18 +848,7 @@
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": {
-                "Service": {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "states.",
-                      {
-                        "Ref": "AWS::Region"
-                      },
-                      ".amazonaws.com"
-                    ]
-                  ]
-                }
+                "Service": "states.test-region.amazonaws.com"
               }
             }
           ],
@@ -960,15 +909,7 @@
                     {
                       "Ref": "AWS::Partition"
                     },
-                    ":events:",
-                    {
-                      "Ref": "AWS::Region"
-                    },
-                    ":",
-                    {
-                      "Ref": "AWS::AccountId"
-                    },
-                    ":rule/StepFunctionsGetEventsForECSTaskRule"
+                    ":events:test-region:12345678:rule/StepFunctionsGetEventsForECSTaskRule"
                   ]
                 ]
               }
@@ -1016,6 +957,10 @@
     }
   },
   "Parameters": {
+    "SsmParameterValueawsserviceecsoptimizedamiamazonlinuxrecommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter": {
+      "Type": "AWS::SSM::Parameter::Value<String>",
+      "Default": "/aws/service/ecs/optimized-ami/amazon-linux/recommended/image_id"
+    },
     "TaskDefTheContainerAssetImageImageName92ECAC22": {
       "Type": "String",
       "Description": "ECR repository name and tag asset \"aws-ecs-integ2/TaskDef/TheContainer/AssetImage\""

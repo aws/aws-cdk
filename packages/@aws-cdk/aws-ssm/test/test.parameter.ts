@@ -1,6 +1,6 @@
 import { expect, haveResource } from '@aws-cdk/assert';
 import cdk = require('@aws-cdk/cdk');
-import { Stack } from '@aws-cdk/cdk';
+import { App, Stack } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
 import ssm = require('../lib');
 
@@ -13,7 +13,7 @@ export = {
     new ssm.StringParameter(stack, 'Parameter', {
       allowedPattern: '.*',
       description: 'The value Foo',
-      parameterName: 'FooParameter',
+      parameterName: cdk.PhysicalName.of('FooParameter'),
       stringValue: 'Foo',
     });
 
@@ -60,7 +60,7 @@ export = {
     new ssm.StringListParameter(stack, 'Parameter', {
       allowedPattern: '(Foo|Bar)',
       description: 'The values Foo and Bar',
-      parameterName: 'FooParameter',
+      parameterName: cdk.PhysicalName.of('FooParameter'),
       stringListValue: ['Foo', 'Bar'],
     });
 
@@ -209,5 +209,79 @@ export = {
     test.deepEqual(stack.resolve(param.parameterType), 'StringList');
     test.deepEqual(stack.resolve(param.stringListValue), { 'Fn::Split': [ ',', '{{resolve:ssm:MyParamName}}' ] });
     test.done();
+  },
+
+  'fromLookup will use the SSM context provider to read value during synthesis'(test: Test) {
+    // GIVEN
+    const app = new App();
+    const stack = new Stack(app, 'my-staq', { env: { region: 'us-east-1', account: '12344' }});
+
+    // WHEN
+    const value = ssm.StringParameter.valueFromLookup(stack, 'my-param-name');
+
+    // THEN
+    test.deepEqual(value, 'dummy-value-for-my-param-name');
+    test.deepEqual(app.synth().manifest.missing, [
+      {
+        key: 'ssm:account=12344:parameterName=my-param-name:region=us-east-1',
+        props: {
+          account: '12344',
+          region: 'us-east-1',
+          parameterName: 'my-param-name'
+        },
+        provider: 'ssm'
+      }
+    ]);
+    test.done();
+  },
+
+  'valueForStringParameter': {
+
+    'returns a token that represents the SSM parameter value'(test: Test) {
+      // GIVEN
+      const stack = new Stack();
+
+      // WHEN
+      const value = ssm.StringParameter.valueForStringParameter(stack, 'my-param-name');
+
+      // THEN
+      expect(stack).toMatch({
+        Parameters: {
+          SsmParameterValuemyparamnameC96584B6F00A464EAD1953AFF4B05118Parameter: {
+            Type: "AWS::SSM::Parameter::Value<String>",
+            Default: "my-param-name"
+          }
+        }
+      });
+      test.deepEqual(stack.resolve(value), { Ref: 'SsmParameterValuemyparamnameC96584B6F00A464EAD1953AFF4B05118Parameter' });
+      test.done();
+    },
+
+    'de-dup based on parameter name'(test: Test) {
+      // GIVEN
+      const stack = new Stack();
+
+      // WHEN
+      ssm.StringParameter.valueForStringParameter(stack, 'my-param-name');
+      ssm.StringParameter.valueForStringParameter(stack, 'my-param-name');
+      ssm.StringParameter.valueForStringParameter(stack, 'my-param-name-2');
+      ssm.StringParameter.valueForStringParameter(stack, 'my-param-name');
+
+      // THEN
+      expect(stack).toMatch({
+        Parameters: {
+          SsmParameterValuemyparamnameC96584B6F00A464EAD1953AFF4B05118Parameter: {
+            Type: "AWS::SSM::Parameter::Value<String>",
+            Default: "my-param-name"
+          },
+          SsmParameterValuemyparamname2C96584B6F00A464EAD1953AFF4B05118Parameter: {
+            Type: "AWS::SSM::Parameter::Value<String>",
+            Default: "my-param-name-2"
+          }
+        }
+      });
+      test.done();
+    }
+
   }
 };

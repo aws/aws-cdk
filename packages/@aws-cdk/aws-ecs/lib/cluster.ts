@@ -3,7 +3,8 @@ import cloudwatch = require ('@aws-cdk/aws-cloudwatch');
 import ec2 = require('@aws-cdk/aws-ec2');
 import iam = require('@aws-cdk/aws-iam');
 import cloudmap = require('@aws-cdk/aws-servicediscovery');
-import { Construct, Context, IResource, Resource, Stack } from '@aws-cdk/cdk';
+import ssm = require('@aws-cdk/aws-ssm');
+import { Construct, IResource, PhysicalName, Resource, ResourceIdentifiers, Stack } from '@aws-cdk/cdk';
 import { InstanceDrainHook } from './drain-hook/instance-drain-hook';
 import { CfnCluster } from './ecs.generated';
 
@@ -16,7 +17,7 @@ export interface ClusterProps {
    *
    * @default CloudFormation-generated name
    */
-  readonly clusterName?: string;
+  readonly clusterName?: PhysicalName;
 
   /**
    * The VPC where your ECS instances will be running or your ENIs will be deployed
@@ -66,13 +67,27 @@ export class Cluster extends Resource implements ICluster {
   private _hasEc2Capacity: boolean = false;
 
   constructor(scope: Construct, id: string, props: ClusterProps) {
-    super(scope, id);
+    super(scope, id, {
+      physicalName: props.clusterName,
+    });
 
-    const cluster = new CfnCluster(this, 'Resource', {clusterName: props.clusterName});
+    const cluster = new CfnCluster(this, 'Resource', {
+      clusterName: this.physicalName.value,
+    });
+
+    const resourceIdentifiers = new ResourceIdentifiers(this, {
+      arn: cluster.attrArn,
+      name: cluster.refAsString,
+      arnComponents: {
+        service: 'ecs',
+        resource: 'cluster',
+        resourceName: this.physicalName.value,
+      },
+    });
+    this.clusterArn = resourceIdentifiers.arn;
+    this.clusterName = resourceIdentifiers.name;
 
     this.vpc = props.vpc;
-    this.clusterArn = cluster.attrArn;
-    this.clusterName = cluster.refAsString;
   }
 
   /**
@@ -264,15 +279,14 @@ export class EcsOptimizedAmi implements ec2.IMachineImageSource {
                           + ( this.generation === ec2.AmazonLinuxGeneration.AMAZON_LINUX_2 ? "amazon-linux-2/" : "" )
                           + ( this.hwType === AmiHardwareType.GPU ? "gpu/" : "" )
                           + ( this.hwType === AmiHardwareType.ARM ? "arm64/" : "" )
-                          + "recommended";
+                          + "recommended/image_id";
   }
 
   /**
    * Return the correct image
    */
   public getImage(scope: Construct): ec2.MachineImage {
-    const json = Context.getSsmParameter(scope, this.amiParameterName, { defaultValue: "{\"image_id\": \"\"}" });
-    const ami = JSON.parse(json).image_id;
+    const ami = ssm.StringParameter.valueForStringParameter(scope, this.amiParameterName);
     return new ec2.MachineImage(ami, new ec2.LinuxOS());
   }
 }

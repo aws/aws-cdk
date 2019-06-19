@@ -121,9 +121,6 @@ export = {
         },
         {
           Ref: 'VPCPrivateSubnet2SubnetCFCDAA7A'
-        },
-        {
-          Ref: 'VPCPrivateSubnet3Subnet3EDCD457'
         }
       ]
     }));
@@ -315,6 +312,68 @@ export = {
 
     // WHEN
     instance.onEvent('InstanceEvent', { target: new targets.LambdaFunction(fn) });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::Events::Rule', {
+      EventPattern: {
+        source: [
+          'aws.rds'
+        ],
+        resources: [
+          {
+            'Fn::Join': [
+              '',
+              [
+                'arn:',
+                {
+                  Ref: 'AWS::Partition'
+                },
+                ':rds:',
+                {
+                  Ref: 'AWS::Region'
+                },
+                ':',
+                {
+                  Ref: 'AWS::AccountId'
+                },
+                ':db:',
+                {
+                  Ref: 'InstanceC1063A87'
+                }
+              ]
+            ]
+          }
+        ]
+      },
+      Targets: [
+        {
+          Arn: {
+            'Fn::GetAtt': [
+              'Function76856677',
+              'Arn'
+            ],
+          },
+          Id: 'Function'
+        }
+      ]
+    }));
+
+    test.done();
+  },
+
+  'on event without target'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const instance = new rds.DatabaseInstance(stack, 'Instance', {
+      engine: rds.DatabaseInstanceEngine.Mysql,
+      instanceClass: new ec2.InstanceTypePair(ec2.InstanceClass.Burstable2, ec2.InstanceSize.Small),
+      masterUsername: 'admin',
+      vpc
+    });
+
+    // WHEN
+    instance.onEvent('InstanceEvent');
 
     // THEN
     expect(stack).to(haveResource('AWS::Events::Rule', {
