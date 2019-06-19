@@ -79,7 +79,7 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
     await respond('SUCCESS', 'OK', physicalResourceId, data);
   } catch (e) {
     console.log(e);
-    await respond('FAILED', e.message, context.logStreamName, {});
+    await respond('FAILED', e.message || 'Internal Error', context.logStreamName, {});
   }
 
   function respond(responseStatus: string, reason: string, physicalResourceId: string, data: any) {
