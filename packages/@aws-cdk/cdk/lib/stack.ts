@@ -4,6 +4,7 @@ import fs = require('fs');
 import path = require('path');
 import { CLOUDFORMATION_TOKEN_RESOLVER, CloudFormationLang } from './cloudformation-lang';
 import { Construct, ConstructNode, IConstruct, ISynthesisSession } from './construct';
+import { ContextProvider } from './context-provider';
 import { Environment } from './environment';
 import { LogicalIDs } from './logical-id';
 import { resolve } from './private/resolve';
@@ -94,20 +95,46 @@ export class Stack extends Construct implements ITaggable {
   public readonly stackName: string;
 
   /**
-   * The region into which this stack will be deployed.
+   * The AWS region into which this stack will be deployed (e.g. `us-west-2`).
    *
-   * This will be a concrete value only if an account was specified in `env`
-   * when the stack was defined. Otherwise, it will be a string that resolves to
-   * `{ "Ref": "AWS::Region" }`
+   * This value is resolved according to the following rules:
+   *
+   * 1. The value provided to `env.region` when the stack is defined. This can
+   *    either be a concerete region (e.g. `us-west-2`) or the `Aws.region`
+   *    token.
+   * 3. `Aws.region`, which is represents the CloudFormation intrinsic reference
+   *    `{ "Ref": "AWS::Region" }` encoded as a string token.
+   *
+   * Preferably, you should use the return value as an opaque string and not
+   * attempt to parse it to implement your logic. If you do, you must first
+   * check that it is a concerete value an not an unresolved token. If this
+   * value is an unresolved token (`Token.isUnresolved(stack.region)` returns
+   * `true`), this implies that the user wishes that this stack will synthesize
+   * into a **region-agnostic template**. In this case, your code should either
+   * fail (throw an error, emit a synth error using `node.addError`) or
+   * implement some other region-agnostic behavior.
    */
   public readonly region: string;
 
   /**
-   * The account into which this stack will be deployed.
+   * The AWS account into which this stack will be deployed.
    *
-   * This will be a concrete value only if an account was specified in `env`
-   * when the stack was defined. Otherwise, it will be a string that resolves to
-   * `{ "Ref": "AWS::AccountId" }`
+   * This value is resolved according to the following rules:
+   *
+   * 1. The value provided to `env.account` when the stack is defined. This can
+   *    either be a concerete region (e.g. `1772638347`) or the `Aws.accountId`
+   *    token.
+   * 3. `Aws.accountId`, which represents the CloudFormation intrinsic reference
+   *    `{ "Ref": "AWS::AccountId" }` encoded as a string token.
+   *
+   * Preferably, you should use the return value as an opaque string and not
+   * attempt to parse it to implement your logic. If you do, you must first
+   * check that it is a concerete value an not an unresolved token. If this
+   * value is an unresolved token (`Token.isUnresolved(stack.account)` returns
+   * `true`), this implies that the user wishes that this stack will synthesize
+   * into a **account-agnostic template**. In this case, your code should either
+   * fail (throw an error, emit a synth error using `node.addError`) or
+   * implement some other region-agnostic behavior.
    */
   public readonly account: string;
 
@@ -116,8 +143,13 @@ export class Stack extends Construct implements ITaggable {
    * `aws://account/region`. Use `stack.account` and `stack.region` to obtain
    * the specific values, no need to parse.
    *
-   * If either account or region are undefined, `unknown-account` or
-   * `unknown-region` will be used respectively.
+   * You can use this value to determine if two stacks are targeting the same
+   * environment.
+   *
+   * If either `stack.account` or `stack.region` are not concrete values (e.g.
+   * `Aws.account` or `Aws.region`) the special strings `unknown-account` and/or
+   * `unknown-region` will be used respectively to indicate this stack is
+   * region/account-agnostic.
    */
   public readonly environment: string;
 
@@ -301,6 +333,43 @@ export class Stack extends Construct implements ITaggable {
    */
   public formatArn(components: ArnComponents): string {
     return Arn.format(components, this);
+  }
+
+  /**
+   * Returnst the list of AZs that are availability in the AWS environment
+   * (account/region) associated with this stack.
+   *
+   * If the stack is environment-agnostic (either account and/or region are
+   * tokens), this property will return an array with 2 tokens that will resolve
+   * at deploy-time to the first two availability zones returned from CloudFormation's
+   * `Fn::GetAZs` intrinsic function.
+   *
+   * If they are not available in the context, returns a set of dummy values and
+   * reports them as missing, and let the CLI resolve them by calling EC2
+   * `DescribeAvailabilityZones` on the target environment.
+   */
+  public get availabilityZones() {
+    // if account/region are tokens, we can't obtain AZs through the context
+    // provider, so we fallback to use Fn::GetAZs. the current lowest common
+    // denominator is 2 AZs across all AWS regions.
+    const agnostic = Token.isUnresolved(this.account) || Token.isUnresolved(this.region);
+    if (agnostic) {
+      return [
+        Fn.select(0, Fn.getAZs()),
+        Fn.select(1, Fn.getAZs())
+      ];
+    }
+
+    const value = ContextProvider.getValue(this, {
+      provider: cxapi.AVAILABILITY_ZONE_PROVIDER,
+      dummyValue: ['dummy1a', 'dummy1b', 'dummy1c'],
+    });
+
+    if (!Array.isArray(value)) {
+      throw new Error(`Provider ${cxapi.AVAILABILITY_ZONE_PROVIDER} expects a list`);
+    }
+
+    return value;
   }
 
   /**
@@ -505,23 +574,21 @@ export class Stack extends Construct implements ITaggable {
    */
   private parseEnvironment(env: Environment = {}) {
     // if an environment property is explicitly specified when the stack is
-    // created, it will be used as concrete values for all intents. if not, use
-    // tokens for account and region but they do not need to be scoped, the only
-    // situation in which export/fn::importvalue would work if { Ref:
-    // "AWS::AccountId" } is the same for provider and consumer anyway.
-    const region = env.region || Aws.region;
+    // created, it will be used. if not, use tokens for account and region but
+    // they do not need to be scoped, the only situation in which
+    // export/fn::importvalue would work if { Ref: "AWS::AccountId" } is the
+    // same for provider and consumer anyway.
     const account = env.account || Aws.accountId;
+    const region  = env.region  || Aws.region;
 
-    // temporary fix for #2853, eventually behavior will be based on #2866.
-    // set the cloud assembly manifest environment spec of this stack to use the
-    // default account/region from the toolkit in case account/region are undefined or
-    // unresolved (i.e. tokens).
-    const envAccount = !Token.isUnresolved(account) ? account : Context.getDefaultAccount(this) || 'unknown-account';
-    const envRegion  = !Token.isUnresolved(region)  ? region  : Context.getDefaultRegion(this)  || 'unknown-region';
+    // this is the "aws://" env specification that will be written to the cloud assembly
+    // manifest. it will use "unknown-account" and "unknown-region" to indicate
+    // environment-agnosticness.
+    const envAccount = !Token.isUnresolved(account) ? account : cxapi.UNKNOWN_ACCOUNT;
+    const envRegion  = !Token.isUnresolved(region)  ? region  : cxapi.UNKNOWN_REGION;
 
     return {
-      account: account || Aws.accountId,
-      region: region || Aws.region,
+      account, region,
       environment: EnvironmentUtils.format(envAccount, envRegion)
     };
   }
@@ -658,7 +725,7 @@ function cfnElements(node: IConstruct, into: CfnElement[] = []): CfnElement[] {
 import { Arn, ArnComponents } from './arn';
 import { CfnElement } from './cfn-element';
 import { CfnResource, TagType } from './cfn-resource';
-import { Context } from './context';
+import { Fn } from './fn';
 import { CfnReference } from './private/cfn-reference';
 import { Aws, ScopedAws } from './pseudo';
 import { ITaggable, TagManager } from './tag-manager';

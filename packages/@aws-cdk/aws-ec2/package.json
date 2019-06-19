@@ -71,6 +71,7 @@
   },
   "dependencies": {
     "@aws-cdk/aws-cloudwatch": "^0.34.0",
+    "@aws-cdk/aws-ssm": "^0.34.0",
     "@aws-cdk/aws-iam": "^0.34.0",
     "@aws-cdk/cdk": "^0.34.0",
     "@aws-cdk/cx-api": "^0.34.0"
@@ -78,6 +79,7 @@
   "homepage": "https://github.com/awslabs/aws-cdk",
   "peerDependencies": {
     "@aws-cdk/aws-cloudwatch": "^0.34.0",
+    "@aws-cdk/aws-ssm": "^0.34.0",
     "@aws-cdk/aws-iam": "^0.34.0",
     "@aws-cdk/cdk": "^0.34.0",
     "@aws-cdk/cx-api": "^0.34.0"
