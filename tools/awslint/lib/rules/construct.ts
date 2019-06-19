@@ -313,10 +313,10 @@ constructLinter.add({
       const physicalNameProp = physicalNameProps[0];
 
       // check the name of the property
-      const basename = new ResourceReflection(e.ctx).basename + 'Name';
+      const resourceName = new ResourceReflection(e.ctx).cfn.fullname.split('::')[2];
       const capitalizedProp = physicalNameProp.name[0].toUpperCase() + physicalNameProp.name.slice(1);
 
-      e.assert(basename.endsWith(capitalizedProp), `${e.ctx.propsFqn}.${physicalNameProp.name}`);
+      e.assert(`${resourceName}Name`.endsWith(capitalizedProp), `${e.ctx.propsFqn}.${physicalNameProp.name}`);
     }
   },
 });
