@@ -234,7 +234,7 @@ export class Trail extends Resource {
    *
    * Be sure to filter the event further down using an event pattern.
    */
-  public onCloudTrailEvent(id: string, options: events.OnEventOptions): events.Rule {
+  public onCloudTrailEvent(id: string, options: events.OnEventOptions = {}): events.Rule {
     const rule = new events.Rule(this, id, options);
     rule.addTarget(options.target);
     rule.addEventPattern({

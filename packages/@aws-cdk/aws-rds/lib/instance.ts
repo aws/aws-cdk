@@ -116,7 +116,7 @@ export abstract class DatabaseInstanceBase extends Resource implements IDatabase
    * Defines a CloudWatch event rule which triggers for instance events. Use
    * `rule.addEventPattern(pattern)` to specify a filter.
    */
-  public onEvent(id: string, options: events.OnEventOptions) {
+  public onEvent(id: string, options: events.OnEventOptions = {}) {
     const rule = new events.Rule(this, id, options);
     rule.addEventPattern({
       source: ['aws.rds'],

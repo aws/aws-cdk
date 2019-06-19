@@ -65,7 +65,7 @@ abstract class RuleBase extends Resource implements IRule {
    * Defines a CloudWatch event rule which triggers for rule events. Use
    * `rule.addEventPattern(pattern)` to specify a filter.
    */
-  public onEvent(id: string, options: events.OnEventOptions) {
+  public onEvent(id: string, options: events.OnEventOptions = {}) {
     const rule = new events.Rule(this, id, options);
     rule.addEventPattern({
       source: ['aws.config'],
@@ -80,7 +80,7 @@ abstract class RuleBase extends Resource implements IRule {
   /**
    * Defines a CloudWatch event rule which triggers for rule compliance events.
    */
-  public onComplianceChange(id: string, options: events.OnEventOptions): events.Rule {
+  public onComplianceChange(id: string, options: events.OnEventOptions = {}): events.Rule {
     const rule = this.onEvent(id, options);
     rule.addEventPattern({
       detailType: [ 'Config Rules Compliance Change' ],
@@ -91,7 +91,7 @@ abstract class RuleBase extends Resource implements IRule {
   /**
    * Defines a CloudWatch event rule which triggers for rule re-evaluation status events.
    */
-  public onReEvaluationStatus(id: string, options: events.OnEventOptions): events.Rule {
+  public onReEvaluationStatus(id: string, options: events.OnEventOptions = {}): events.Rule {
     const rule = this.onEvent(id, options);
     rule.addEventPattern({
       detailType: [ 'Config Rules Re-evaluation Status' ],
