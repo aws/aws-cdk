@@ -192,17 +192,12 @@ export = {
 
     // WHEN
     new codebuild.Project(stack, 'Project', {
-<<<<<<< HEAD
-      source: new codebuild.CodePipelineSource(),
-      cache: Cache.local(LocalCacheMode.CUSTOM, LocalCacheMode.DOCKER_LAYER, LocalCacheMode.SOURCE)
-=======
       source: codebuild.Source.s3({
         bucket: new Bucket(stack, 'Bucket'),
         path: 'path',
       }),
-      cache: codebuild.Cache.local(codebuild.LocalCacheMode.Custom, codebuild.LocalCacheMode.DockerLayer,
-        codebuild.LocalCacheMode.Source)
->>>>>>> master
+      cache: codebuild.Cache.local(codebuild.LocalCacheMode.CUSTOM, codebuild.LocalCacheMode.DOCKER_LAYER,
+        codebuild.LocalCacheMode.SOURCE)
     });
 
     // THEN

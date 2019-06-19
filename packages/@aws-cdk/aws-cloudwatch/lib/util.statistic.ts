@@ -23,8 +23,8 @@ export function parseStatistic(stat: string): SimpleStatistic | PercentileStatis
     min: Statistic.MINIMUM,
     maximum: Statistic.MAXIMUM,
     max: Statistic.MAXIMUM,
-    samplecount: Statistic.SAMPLE_count,
-    n: Statistic.SAMPLE_count,
+    samplecount: Statistic.SAMPLE_COUNT,
+    n: Statistic.SAMPLE_COUNT,
     sum: Statistic.SUM,
   };
 
