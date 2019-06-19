@@ -395,7 +395,8 @@
       "DependsOn": [
         "AdoptEcrRepositorydbc60defc59544bcaa5c28c95d68f62cServiceRoleDefaultPolicy6BC8737C",
         "AdoptEcrRepositorydbc60defc59544bcaa5c28c95d68f62cServiceRoleD788AA17"
-      ]
+      ],
+      "DeletionPolicy": "Delete"
     },
     "TaskDefExecutionRoleB4775C97": {
       "Type": "AWS::IAM::Role",
@@ -752,7 +753,8 @@
           },
           "physicalResourceId": "awsecsintegfargateTaskDef8878AF94"
         }
-      }
+      },
+      "DeletionPolicy": "Delete"
     },
     "TaskLoggingLogGroupC7E938D4": {
       "Type": "AWS::Logs::LogGroup",
