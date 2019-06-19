@@ -23,14 +23,20 @@ export function zipDirectory(directory: string, outputFile: string): Promise<voi
     output.on('open', async () => {
       archive.pipe(output);
 
-      await files.reduce(async (acc, file) => { // Append files serially to ensure file order
-        await acc;
+      const contents = await Promise.all(files.map(async (file) => {
         const data = await fs.readFile(path.join(directory, file));
-        archive.append(data, {
-          name: file,
+        return {
+          data,
+          name: file
+        };
+      }));
+
+      contents.forEach(content => { // Append files serially to ensure file order
+        archive.append(content.data, {
+          name: content.name,
           date: new Date(0), // reset dates to get the same hash for the same content
         });
-      }, Promise.resolve());
+      });
 
       archive.finalize();
     });
