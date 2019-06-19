@@ -276,7 +276,7 @@ export class Table extends Resource implements ITable {
       }
     });
 
-    this.tableName = tableResource.tableName;
+    this.tableName = tableResource.refAsString;
     this.tableArn = Stack.of(this).formatArn({
       service: 'glue',
       resource: 'table',

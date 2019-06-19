@@ -534,7 +534,10 @@ export = {
 
   'removal policy can be used to specify behavior upon delete'(test: Test) {
     const stack = new cdk.Stack();
-    new s3.Bucket(stack, 'MyBucket', { removalPolicy: cdk.RemovalPolicy.Orphan, encryption: s3.BucketEncryption.UNENCRYPTED });
+    new s3.Bucket(stack, 'MyBucket', {
+      removalPolicy: cdk.RemovalPolicy.Retain,
+      encryption: s3.BucketEncryption.UNENCRYPTED
+    });
 
     expect(stack).toMatch({
       Resources: {

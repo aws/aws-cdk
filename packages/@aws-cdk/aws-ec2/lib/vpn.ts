@@ -162,7 +162,7 @@ export class VpnConnection extends cdk.Construct implements IVpnConnection {
       type
     });
 
-    this.customerGatewayId = customerGateway.customerGatewayName;
+    this.customerGatewayId = customerGateway.refAsString;
     this.customerGatewayAsn = bgpAsn;
     this.customerGatewayIp = props.ip;
 
@@ -199,13 +199,13 @@ export class VpnConnection extends cdk.Construct implements IVpnConnection {
 
     const vpnConnection = new CfnVPNConnection(this, 'Resource', {
       type,
-      customerGatewayId: customerGateway.customerGatewayName,
+      customerGatewayId: customerGateway.refAsString,
       staticRoutesOnly: props.staticRoutes ? true : false,
       vpnGatewayId: props.vpc.vpnGatewayId,
       vpnTunnelOptionsSpecifications: props.tunnelOptions
     });
 
-    this.vpnId = vpnConnection.vpnConnectionName;
+    this.vpnId = vpnConnection.refAsString;
 
     if (props.staticRoutes) {
       props.staticRoutes.forEach(route => {

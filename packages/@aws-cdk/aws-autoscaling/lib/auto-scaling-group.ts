@@ -442,7 +442,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
 
     this.autoScalingGroup = new CfnAutoScalingGroup(this, 'ASG', asgProps);
     this.osType = machineImage.os.type;
-    this.autoScalingGroupName = this.autoScalingGroup.autoScalingGroupName;
+    this.autoScalingGroupName = this.autoScalingGroup.refAsString;
     this.autoScalingGroupArn = Stack.of(this).formatArn({
       service: 'autoscaling',
       resource: 'autoScalingGroup:*:autoScalingGroupName',
@@ -806,7 +806,7 @@ export interface MetricTargetTrackingProps extends BaseTargetTrackingProps {
    * target value, your ASG should scale out, and if it's lower it should
    * scale in.
    */
-  readonly metric: cloudwatch.Metric;
+  readonly metric: cloudwatch.IMetric;
 
   /**
    * Value to keep the metric around

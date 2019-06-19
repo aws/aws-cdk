@@ -37,7 +37,7 @@ export = {
 
     // WHEN
     target.scaleOnSchedule('ScaleUp', {
-      schedule: 'rate(1 second)',
+      schedule: appscaling.Schedule.rate(1, appscaling.TimeUnit.Minute),
       maxCapacity: 50,
       minCapacity: 1,
     });
@@ -50,7 +50,7 @@ export = {
             MaxCapacity: 50,
             MinCapacity: 1
           },
-          Schedule: "rate(1 second)",
+          Schedule: "rate(1 minute)",
           ScheduledActionName: "ScaleUp"
         }
       ]

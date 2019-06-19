@@ -78,8 +78,8 @@ export class PrivateDnsNamespace extends Resource implements IPrivateDnsNamespac
     });
 
     this.namespaceName = props.name;
-    this.namespaceId = ns.privateDnsNamespaceId;
-    this.namespaceArn = ns.privateDnsNamespaceArn;
+    this.namespaceId = ns.attrId;
+    this.namespaceArn = ns.attrArn;
     this.type = NamespaceType.DNS_PRIVATE;
   }
 

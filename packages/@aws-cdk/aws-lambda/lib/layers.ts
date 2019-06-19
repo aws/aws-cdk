@@ -177,7 +177,7 @@ export class LayerVersion extends LayerVersionBase {
       licenseInfo: props.license,
     });
 
-    this.layerVersionArn = resource.layerVersionArn;
+    this.layerVersionArn = resource.refAsString;
     this.compatibleRuntimes = props.compatibleRuntimes;
   }
 }

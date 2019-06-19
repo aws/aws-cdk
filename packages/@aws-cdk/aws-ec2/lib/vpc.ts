@@ -781,11 +781,11 @@ export class Vpc extends VpcBase {
       instanceTenancy,
     });
 
-    this.vpcDefaultNetworkAcl = this.resource.vpcDefaultNetworkAcl;
-    this.vpcCidrBlockAssociations = this.resource.vpcCidrBlockAssociations;
-    this.vpcCidrBlock = this.resource.vpcCidrBlock;
-    this.vpcDefaultSecurityGroup = this.resource.vpcDefaultSecurityGroup;
-    this.vpcIpv6CidrBlocks = this.resource.vpcIpv6CidrBlocks;
+    this.vpcDefaultNetworkAcl = this.resource.attrDefaultNetworkAcl;
+    this.vpcCidrBlockAssociations = this.resource.attrCidrBlockAssociations;
+    this.vpcCidrBlock = this.resource.attrCidrBlock;
+    this.vpcDefaultSecurityGroup = this.resource.attrDefaultSecurityGroup;
+    this.vpcIpv6CidrBlocks = this.resource.attrIpv6CidrBlocks;
 
     this.node.applyAspect(new cdk.Tag(NAME_TAG, this.node.path));
 
@@ -794,7 +794,7 @@ export class Vpc extends VpcBase {
     const maxAZs = props.maxAZs !== undefined ? props.maxAZs : 3;
     this.availabilityZones = this.availabilityZones.slice(0, maxAZs);
 
-    this.vpcId = this.resource.vpcId;
+    this.vpcId = this.resource.refAsString;
 
     this.subnetConfiguration = ifUndefined(props.subnetConfiguration, Vpc.DEFAULT_SUBNETS);
     // subnetConfiguration and natGateways must be set before calling createSubnets
@@ -843,10 +843,10 @@ export class Vpc extends VpcBase {
 
       const attachment = new CfnVPCGatewayAttachment(this, 'VPCVPNGW', {
         vpcId: this.vpcId,
-        vpnGatewayId: vpnGateway.vpnGatewayName
+        vpnGatewayId: vpnGateway.refAsString,
       });
 
-      this.vpnGatewayId = vpnGateway.vpnGatewayName;
+      this.vpnGatewayId = vpnGateway.refAsString;
 
       // Propagate routes on route tables associated with the right subnets
       const vpnRoutePropagation = props.vpnRoutePropagation || [{ subnetType: SubnetType.PRIVATE }];
@@ -933,7 +933,7 @@ export class Vpc extends VpcBase {
     natSubnets = natSubnets.slice(0, natCount);
     for (const sub of natSubnets) {
       const gateway = sub.addNatGateway();
-      this.natGatewayByAZ[sub.availabilityZone] = gateway.natGatewayId;
+      this.natGatewayByAZ[sub.availabilityZone] = gateway.refAsString;
       this.natDependencies.push(gateway);
     }
   }
@@ -998,7 +998,7 @@ export class Vpc extends VpcBase {
       }
 
       // These values will be used to recover the config upon provider import
-      const includeResourceTypes = [CfnSubnet.resourceTypeName];
+      const includeResourceTypes = [CfnSubnet.cfnResourceTypeName];
       subnet.node.applyAspect(new cdk.Tag(SUBNETNAME_TAG, subnetConfig.name, {includeResourceTypes}));
       subnet.node.applyAspect(new cdk.Tag(SUBNETTYPE_TAG, subnetTypeTagValue(subnetConfig.subnetType), {includeResourceTypes}));
     });
@@ -1115,11 +1115,11 @@ export class Subnet extends cdk.Resource implements ISubnet {
       availabilityZone: props.availabilityZone,
       mapPublicIpOnLaunch: props.mapPublicIpOnLaunch,
     });
-    this.subnetId = subnet.subnetId;
-    this.subnetVpcId = subnet.subnetVpcId;
-    this.subnetAvailabilityZone = subnet.subnetAvailabilityZone;
-    this.subnetIpv6CidrBlocks = subnet.subnetIpv6CidrBlocks;
-    this.subnetNetworkAclAssociationId = subnet.subnetNetworkAclAssociationId;
+    this.subnetId = subnet.refAsString;
+    this.subnetVpcId = subnet.attrVpcId;
+    this.subnetAvailabilityZone = subnet.attrAvailabilityZone;
+    this.subnetIpv6CidrBlocks = subnet.attrIpv6CidrBlocks;
+    this.subnetNetworkAclAssociationId = subnet.attrNetworkAclAssociationId;
 
     const table = new CfnRouteTable(this, 'RouteTable', {
       vpcId: props.vpcId,
@@ -1203,7 +1203,7 @@ export class PublicSubnet extends Subnet implements IPublicSubnet {
       subnetId: this.subnetId,
       allocationId: new CfnEIP(this, `EIP`, {
         domain: 'vpc'
-      }).eipAllocationId,
+      }).attrAllocationId,
     });
     return ngw;
   }

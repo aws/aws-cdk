@@ -45,6 +45,15 @@ export interface DashboardProps {
    * @default Auto
    */
   readonly periodOverride?: PeriodOverride;
+
+  /**
+   * Initial set of widgets on the dashboard
+   *
+   * One array represents a row of widgets.
+   *
+   * @default - No widgets
+   */
+  readonly widgets?: IWidget[][]
 }
 
 /**
@@ -53,21 +62,25 @@ export interface DashboardProps {
 export class Dashboard extends Resource {
   private readonly rows: IWidget[] = [];
 
-  constructor(scope: Construct, id: string, props?: DashboardProps) {
+  constructor(scope: Construct, id: string, props: DashboardProps = {}) {
     super(scope, id);
 
     new CfnDashboard(this, 'Resource', {
-      dashboardName: (props && props.dashboardName) || undefined,
+      dashboardName: props.dashboardName,
       dashboardBody: Lazy.stringValue({ produce: () => {
         const column = new Column(...this.rows);
         column.position(0, 0);
         return Stack.of(this).toJsonString({
-          start: props ? props.start : undefined,
-          end: props ? props.end : undefined,
-          periodOverride: props ? props.periodOverride : undefined,
+          start: props.start,
+          end: props.end,
+          periodOverride: props.periodOverride,
           widgets: column.toJson(),
         });
       }})
+    });
+
+    (props.widgets || []).forEach(row => {
+      this.addWidgets(...row);
     });
   }
 
@@ -80,7 +93,7 @@ export class Dashboard extends Resource {
    * Multiple widgets added in the same call to add() will be laid out next
    * to each other.
    */
-  public add(...widgets: IWidget[]) {
+  public addWidgets(...widgets: IWidget[]) {
     if (widgets.length === 0) {
       return;
     }

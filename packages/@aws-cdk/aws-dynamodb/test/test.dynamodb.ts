@@ -1,4 +1,5 @@
 import { expect, haveResource } from '@aws-cdk/assert';
+import appscaling = require('@aws-cdk/aws-applicationautoscaling');
 import iam = require('@aws-cdk/aws-iam');
 import { ConstructNode, Stack, Tag } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
@@ -221,7 +222,7 @@ export = {
       tableName: TABLE_NAME,
       readCapacity: 42,
       writeCapacity: 1337,
-      streamSpecification: StreamViewType.NEW_AND_OLD_IMAGES,
+      stream: StreamViewType.NEW_AND_OLD_IMAGES,
       partitionKey: TABLE_PARTITION_KEY,
       sortKey: TABLE_SORT_KEY
     });
@@ -251,7 +252,7 @@ export = {
       tableName: TABLE_NAME,
       readCapacity: 42,
       writeCapacity: 1337,
-      streamSpecification: StreamViewType.NEW_IMAGE,
+      stream: StreamViewType.NEW_IMAGE,
       partitionKey: TABLE_PARTITION_KEY,
       sortKey: TABLE_SORT_KEY
     });
@@ -281,7 +282,7 @@ export = {
       tableName: TABLE_NAME,
       readCapacity: 42,
       writeCapacity: 1337,
-      streamSpecification: StreamViewType.OLD_IMAGE,
+      stream: StreamViewType.OLD_IMAGE,
       partitionKey: TABLE_PARTITION_KEY,
       sortKey: TABLE_SORT_KEY
     });
@@ -311,11 +312,11 @@ export = {
       tableName: TABLE_NAME,
       readCapacity: 42,
       writeCapacity: 1337,
-      pitrEnabled: true,
-      sseEnabled: true,
+      pointInTimeRecovery: true,
+      serverSideEncryption: true,
       billingMode: BillingMode.PROVISIONED,
-      streamSpecification: StreamViewType.KEYS_ONLY,
-      ttlAttributeName: 'timeToLive',
+      stream: StreamViewType.KEYS_ONLY,
+      timeToLiveAttribute: 'timeToLive',
       partitionKey: TABLE_PARTITION_KEY,
       sortKey: TABLE_SORT_KEY,
     });
@@ -1101,7 +1102,7 @@ export = {
     // WHEN
     const scaling = table.autoScaleReadCapacity({ minCapacity: 1, maxCapacity: 100 });
     scaling.scaleOnSchedule('SaveMoneyByNotScalingUp', {
-      schedule: 'cron(* * ? * * )',
+      schedule: appscaling.Schedule.cron({}),
       maxCapacity: 10
     });
 
@@ -1110,7 +1111,7 @@ export = {
       ScheduledActions: [
         {
           ScalableTargetAction: { "MaxCapacity": 10 },
-          Schedule: "cron(* * ? * * )",
+          Schedule: "cron(* * * * ? *)",
           ScheduledActionName: "SaveMoneyByNotScalingUp"
         }
       ]
@@ -1179,7 +1180,7 @@ export = {
           name: 'id',
           type: AttributeType.STRING
         },
-        streamSpecification: StreamViewType.NEW_IMAGE
+        stream: StreamViewType.NEW_IMAGE
       });
       const user = new iam.User(stack, 'user');
 

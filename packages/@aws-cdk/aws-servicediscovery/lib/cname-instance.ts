@@ -67,7 +67,7 @@ export class CnameInstance extends InstanceBase {
     });
 
     this.service = props.service;
-    this.instanceId = resource.instanceId;
+    this.instanceId = resource.refAsString;
     this.cname = props.instanceCname;
   }
 }

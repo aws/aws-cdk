@@ -13,10 +13,14 @@ const fn = new lambda.Function(stack, 'MyFunc', {
   code: lambda.Code.inline(`exports.handler = ${handler.toString()}`)
 });
 
-const timer = new events.Rule(stack, 'Timer', { scheduleExpression: 'rate(1 minute)' });
+const timer = new events.Rule(stack, 'Timer', {
+  schedule: events.Schedule.rate(1, events.TimeUnit.Minute),
+});
 timer.addTarget(new targets.LambdaFunction(fn));
 
-const timer2 = new events.Rule(stack, 'Timer2', { scheduleExpression: 'rate(2 minutes)' });
+const timer2 = new events.Rule(stack, 'Timer2', {
+  schedule: events.Schedule.rate(2, events.TimeUnit.Minute),
+});
 timer2.addTarget(new targets.LambdaFunction(fn));
 
 app.synth();

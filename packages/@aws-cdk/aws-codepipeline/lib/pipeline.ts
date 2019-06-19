@@ -231,7 +231,7 @@ export class Pipeline extends PipelineBase {
         bucketName: PhysicalName.auto({ crossEnvironment: true }),
         encryptionKey,
         encryption: s3.BucketEncryption.KMS,
-        removalPolicy: RemovalPolicy.Orphan
+        removalPolicy: RemovalPolicy.Retain
       });
     }
     this.artifactBucket = propsBucket;
@@ -256,7 +256,7 @@ export class Pipeline extends PipelineBase {
     this.artifactBucket.grantReadWrite(this.role);
 
     this.pipelineName = codePipeline.refAsString;
-    this.pipelineVersion = codePipeline.pipelineVersion;
+    this.pipelineVersion = codePipeline.attrVersion;
     this.crossRegionReplicationBuckets = props.crossRegionReplicationBuckets || {};
     this.artifactStores = {};
 

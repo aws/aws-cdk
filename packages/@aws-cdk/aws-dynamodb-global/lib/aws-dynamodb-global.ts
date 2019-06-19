@@ -39,15 +39,15 @@ export class GlobalTable extends cdk.Construct {
     super(scope, id);
     this._regionalTables = [];
 
-    if (props.streamSpecification != null && props.streamSpecification !== dynamodb.StreamViewType.NEW_AND_OLD_IMAGES) {
-      throw new Error("dynamoProps.streamSpecification MUST be set to dynamodb.StreamViewType.NEW_AND_OLD_IMAGES");
+    if (props.stream != null && props.stream !== dynamodb.StreamViewType.NEW_AND_OLD_IMAGES) {
+      throw new Error("dynamoProps.stream MUST be set to dynamodb.StreamViewType.NEW_AND_OLD_IMAGES");
     }
 
-    // need to set this streamSpecification, otherwise global tables don't work
+    // need to set this stream specification, otherwise global tables don't work
     // And no way to set a default value in an interface
-    const stackProps = {
+    const stackProps: dynamodb.TableProps = {
       ...props,
-      streamSpecification: dynamodb.StreamViewType.NEW_AND_OLD_IMAGES
+      stream: dynamodb.StreamViewType.NEW_AND_OLD_IMAGES
     };
 
     // here we loop through the configured regions.

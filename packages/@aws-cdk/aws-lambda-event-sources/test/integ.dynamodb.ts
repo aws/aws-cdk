@@ -14,7 +14,7 @@ class DynamoEventSourceTest extends cdk.Stack {
         name: 'id',
         type: dynamodb.AttributeType.STRING
       },
-      streamSpecification: dynamodb.StreamViewType.NEW_IMAGE
+      stream: dynamodb.StreamViewType.NEW_IMAGE
     });
 
     fn.addEventSource(new DynamoEventSource(queue, {

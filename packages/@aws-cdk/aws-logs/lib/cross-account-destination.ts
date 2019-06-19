@@ -39,8 +39,10 @@ export interface CrossAccountDestinationProps {
  * subscribe a Kinesis stream using the integration class in the
  * `@aws-cdk/aws-logs-destinations` package; if necessary, a
  * `CrossAccountDestination` will be created automatically.
+ *
+ * @resource AWS::Logs::Destination
  */
-export class CrossAccountDestination extends cdk.Construct implements ILogSubscriptionDestination {
+export class CrossAccountDestination extends cdk.Resource implements ILogSubscriptionDestination {
   /**
    * Policy object of this CrossAccountDestination object
    */
@@ -48,11 +50,13 @@ export class CrossAccountDestination extends cdk.Construct implements ILogSubscr
 
   /**
    * The name of this CrossAccountDestination object
+   * @attribute
    */
   public readonly destinationName: string;
 
   /**
    * The ARN of this CrossAccountDestination object
+   * @attribute
    */
   public readonly destinationArn: string;
 
@@ -75,8 +79,8 @@ export class CrossAccountDestination extends cdk.Construct implements ILogSubscr
       targetArn: props.targetArn
     });
 
-    this.destinationArn = this.resource.destinationArn;
-    this.destinationName = this.resource.destinationName;
+    this.destinationArn = this.resource.attrArn;
+    this.destinationName = this.resource.refAsString;
   }
 
   public addToPolicy(statement: iam.PolicyStatement) {

@@ -1,4 +1,4 @@
-import { Statistic } from "./metric";
+import { Statistic } from "./metric-types";
 
 export interface SimpleStatistic {
   type: 'simple';

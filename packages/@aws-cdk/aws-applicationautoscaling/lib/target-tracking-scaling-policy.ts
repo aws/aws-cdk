@@ -89,7 +89,7 @@ export interface BasicTargetTrackingScalingPolicyProps extends BaseTargetTrackin
    *
    * @default - No custom metric.
    */
-  readonly customMetric?: cloudwatch.Metric;
+  readonly customMetric?: cloudwatch.IMetric;
 }
 
 /**
@@ -141,18 +141,24 @@ export class TargetTrackingScalingPolicy extends cdk.Construct {
       }
     });
 
-    this.scalingPolicyArn = resource.scalingPolicyArn;
+    this.scalingPolicyArn = resource.refAsString;
   }
 }
 
-function renderCustomMetric(metric?: cloudwatch.Metric): CfnScalingPolicy.CustomizedMetricSpecificationProperty | undefined {
+function renderCustomMetric(metric?: cloudwatch.IMetric): CfnScalingPolicy.CustomizedMetricSpecificationProperty | undefined {
   if (!metric) { return undefined; }
+  const c = metric.toAlarmConfig();
+
+  if (!c.statistic) {
+    throw new Error('Can only use Average, Minimum, Maximum, SampleCount, Sum statistic for target tracking');
+  }
+
   return {
-    dimensions: metric.dimensionsAsList(),
-    metricName: metric.metricName,
-    namespace: metric.namespace,
-    statistic: metric.statistic,
-    unit: metric.unit
+    dimensions: c.dimensions,
+    metricName: c.metricName,
+    namespace: c.namespace,
+    statistic: c.statistic,
+    unit: c.unit
   };
 }
 

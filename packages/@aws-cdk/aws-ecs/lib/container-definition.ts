@@ -1,7 +1,7 @@
 import iam = require('@aws-cdk/aws-iam');
 import cdk = require('@aws-cdk/cdk');
 import { NetworkMode, TaskDefinition } from './base/task-definition';
-import { ContainerImage } from './container-image';
+import { ContainerImage, ContainerImageConfig } from './container-image';
 import { CfnTaskDefinition } from './ecs.generated';
 import { LinuxParameters } from './linux-parameters';
 import { LogDriver } from './log-drivers/log-driver';
@@ -247,6 +247,8 @@ export class ContainerDefinition extends cdk.Construct {
    */
   private readonly links = new Array<string>();
 
+  private readonly imageConfig: ContainerImageConfig;
+
   constructor(scope: cdk.Construct, id: string, private readonly props: ContainerDefinitionProps) {
     super(scope, id);
     this.essential = props.essential !== undefined ? props.essential : true;
@@ -254,7 +256,7 @@ export class ContainerDefinition extends cdk.Construct {
     this.memoryLimitSpecified = props.memoryLimitMiB !== undefined || props.memoryReservationMiB !== undefined;
     this.linuxParameters = props.linuxParameters;
 
-    props.image.bind(this);
+    this.imageConfig = props.image.bind(this, this);
     if (props.logging) { props.logging.bind(this); }
     props.taskDefinition._linkContainer(this);
   }
@@ -395,7 +397,7 @@ export class ContainerDefinition extends cdk.Construct {
       entryPoint: this.props.entryPoint,
       essential: this.essential,
       hostname: this.props.hostname,
-      image: this.props.image.imageName,
+      image: this.imageConfig.imageName,
       memory: this.props.memoryLimitMiB,
       memoryReservation: this.props.memoryReservationMiB,
       mountPoints: this.mountPoints.map(renderMountPoint),
@@ -403,7 +405,7 @@ export class ContainerDefinition extends cdk.Construct {
       portMappings: this.portMappings.map(renderPortMapping),
       privileged: this.props.privileged,
       readonlyRootFilesystem: this.props.readonlyRootFilesystem,
-      repositoryCredentials: this.props.image.toRepositoryCredentialsJson(),
+      repositoryCredentials: this.imageConfig.repositoryCredentials,
       ulimits: this.ulimits.map(renderUlimit),
       user: this.props.user,
       volumesFrom: this.volumesFrom.map(renderVolumeFrom),

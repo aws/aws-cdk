@@ -18,7 +18,7 @@ export = {
         name: 'id',
         type: dynamodb.AttributeType.STRING
       },
-      streamSpecification: dynamodb.StreamViewType.NEW_IMAGE
+      stream: dynamodb.StreamViewType.NEW_IMAGE
     });
 
     // WHEN
@@ -84,7 +84,7 @@ export = {
         name: 'id',
         type: dynamodb.AttributeType.STRING
       },
-      streamSpecification: dynamodb.StreamViewType.NEW_IMAGE
+      stream: dynamodb.StreamViewType.NEW_IMAGE
     });
 
     // WHEN
@@ -120,7 +120,7 @@ export = {
         name: 'id',
         type: dynamodb.AttributeType.STRING
       },
-      streamSpecification: dynamodb.StreamViewType.NEW_IMAGE
+      stream: dynamodb.StreamViewType.NEW_IMAGE
     });
 
     // WHEN
@@ -141,7 +141,7 @@ export = {
         name: 'id',
         type: dynamodb.AttributeType.STRING
       },
-      streamSpecification: dynamodb.StreamViewType.NEW_IMAGE
+      stream: dynamodb.StreamViewType.NEW_IMAGE
     });
 
     // WHEN

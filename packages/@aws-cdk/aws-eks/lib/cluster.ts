@@ -238,10 +238,10 @@ export class Cluster extends Resource implements ICluster {
       }
     });
 
-    this.clusterName = resource.clusterName;
-    this.clusterArn = resource.clusterArn;
-    this.clusterEndpoint = resource.clusterEndpoint;
-    this.clusterCertificateAuthorityData = resource.clusterCertificateAuthorityData;
+    this.clusterName = resource.refAsString;
+    this.clusterArn = resource.attrArn;
+    this.clusterEndpoint = resource.attrEndpoint;
+    this.clusterCertificateAuthorityData = resource.attrCertificateAuthorityData;
 
     new CfnOutput(this, 'ClusterName', { value: this.clusterName, disableExport: true });
   }

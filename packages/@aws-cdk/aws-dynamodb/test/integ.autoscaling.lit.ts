@@ -17,12 +17,12 @@ readScaling.scaleOnUtilization({
 });
 
 readScaling.scaleOnSchedule('ScaleUpInTheMorning', {
-  schedule: appscaling.Cron.dailyUtc(8),
+  schedule: appscaling.Schedule.cron({ hour: '8', minute: '0' }),
   minCapacity: 20,
 });
 
 readScaling.scaleOnSchedule('ScaleDownAtNight', {
-  schedule: appscaling.Cron.dailyUtc(20),
+  schedule: appscaling.Schedule.cron({ hour: '20', minute: '0' }),
   maxCapacity: 20
 });
 /// !hide

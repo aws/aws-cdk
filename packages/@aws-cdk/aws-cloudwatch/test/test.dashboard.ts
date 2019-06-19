@@ -10,17 +10,17 @@ export = {
     const dashboard = new Dashboard(stack, 'Dash');
 
     // WHEN
-    dashboard.add(new TextWidget({
+    dashboard.addWidgets(new TextWidget({
       width: 10,
       height: 2,
       markdown: "first"
     }));
-    dashboard.add(new TextWidget({
+    dashboard.addWidgets(new TextWidget({
       width: 1,
       height: 4,
       markdown: "second"
     }));
-    dashboard.add(new TextWidget({
+    dashboard.addWidgets(new TextWidget({
       width: 4,
       height: 1,
       markdown: "third"
@@ -42,7 +42,7 @@ export = {
     const dashboard = new Dashboard(stack, 'Dash');
 
     // WHEN
-    dashboard.add(
+    dashboard.addWidgets(
       new TextWidget({
         width: 10,
         height: 2,
@@ -76,7 +76,7 @@ export = {
     const dashboard = new Dashboard(stack, 'Dash');
 
     // WHEN
-    dashboard.add(
+    dashboard.addWidgets(
       new GraphWidget({ width: 1, height: 1 }) // GraphWidget has internal reference to current region
     );
 
@@ -103,7 +103,7 @@ export = {
     });
 
     // WHEN
-    dashboard.add(
+    dashboard.addWidgets(
       new GraphWidget({ width: 1, height: 1 }) // GraphWidget has internal reference to current region
     );
 

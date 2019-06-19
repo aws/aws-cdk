@@ -10,11 +10,15 @@ import { AttachedPolicies } from './util';
 
 export interface IGroup extends IIdentity {
   /**
+   * Returns the IAM Group Name
+   *
    * @attribute
    */
   readonly groupName: string;
 
   /**
+   * Returns the IAM Group ARN
+   *
    * @attribute
    */
   readonly groupArn: string;
@@ -132,8 +136,8 @@ export class Group extends GroupBase {
       path: props.path,
     });
 
-    this.groupName = group.groupName;
-    this.groupArn = group.groupArn;
+    this.groupName = group.refAsString;
+    this.groupArn = group.attrArn;
   }
 
   /**

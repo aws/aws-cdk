@@ -85,28 +85,28 @@ export interface TableOptions {
 
   /**
    * Whether point-in-time recovery is enabled.
-   * @default undefined, point-in-time recovery is disabled
+   * @default - point-in-time recovery is disabled
    */
-  readonly pitrEnabled?: boolean;
+  readonly pointInTimeRecovery?: boolean;
 
   /**
    * Whether server-side encryption with an AWS managed customer master key is enabled.
-   * @default undefined, server-side encryption is enabled with an AWS owned customer master key
+   * @default - server-side encryption is enabled with an AWS owned customer master key
    */
-  readonly sseEnabled?: boolean;
+  readonly serverSideEncryption?: boolean;
 
   /**
    * The name of TTL attribute.
-   * @default undefined, TTL is disabled
+   * @default - TTL is disabled
    */
-  readonly ttlAttributeName?: string;
+  readonly timeToLiveAttribute?: string;
 
   /**
    * When an item in the table is modified, StreamViewType determines what information
    * is written to the stream for this table. Valid values for StreamViewType are:
    * @default undefined, streams are disabled
    */
-  readonly streamSpecification?: StreamViewType;
+  readonly stream?: StreamViewType;
 }
 
 export interface TableProps extends TableOptions {
@@ -235,22 +235,22 @@ export class Table extends Resource {
       attributeDefinitions: this.attributeDefinitions,
       globalSecondaryIndexes: Lazy.anyValue({ produce: () => this.globalSecondaryIndexes }, { omitEmptyArray: true }),
       localSecondaryIndexes: Lazy.anyValue({ produce: () => this.localSecondaryIndexes }, { omitEmptyArray: true }),
-      pointInTimeRecoverySpecification: props.pitrEnabled ? { pointInTimeRecoveryEnabled: props.pitrEnabled } : undefined,
+      pointInTimeRecoverySpecification: props.pointInTimeRecovery ? { pointInTimeRecoveryEnabled: props.pointInTimeRecovery } : undefined,
       billingMode: this.billingMode === BillingMode.PAY_PER_REQUEST ? this.billingMode : undefined,
       provisionedThroughput: props.billingMode === BillingMode.PAY_PER_REQUEST ? undefined : {
         readCapacityUnits: props.readCapacity || 5,
         writeCapacityUnits: props.writeCapacity || 5
       },
-      sseSpecification: props.sseEnabled ? { sseEnabled: props.sseEnabled } : undefined,
-      streamSpecification: props.streamSpecification ? { streamViewType: props.streamSpecification } : undefined,
-      timeToLiveSpecification: props.ttlAttributeName ? { attributeName: props.ttlAttributeName, enabled: true } : undefined
+      sseSpecification: props.serverSideEncryption ? { sseEnabled: props.serverSideEncryption } : undefined,
+      streamSpecification: props.stream ? { streamViewType: props.stream } : undefined,
+      timeToLiveSpecification: props.timeToLiveAttribute ? { attributeName: props.timeToLiveAttribute, enabled: true } : undefined
     });
 
     if (props.tableName) { this.node.addMetadata('aws:cdk:hasPhysicalName', props.tableName); }
 
-    this.tableArn = this.table.tableArn;
-    this.tableName = this.table.tableName;
-    this.tableStreamArn = this.table.tableStreamArn;
+    this.tableArn = this.table.attrArn;
+    this.tableName = this.table.refAsString;
+    this.tableStreamArn = this.table.attrStreamArn;
 
     this.scalingRole = this.makeScalingRole();
 

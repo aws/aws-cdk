@@ -66,8 +66,8 @@ export class PublicDnsNamespace extends Resource implements IPublicDnsNamespace 
     });
 
     this.namespaceName = props.name;
-    this.namespaceId = ns.publicDnsNamespaceId;
-    this.namespaceArn = ns.publicDnsNamespaceArn;
+    this.namespaceId = ns.attrId;
+    this.namespaceArn = ns.attrArn;
     this.type = NamespaceType.DNS_PUBLIC;
   }
 

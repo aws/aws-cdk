@@ -43,7 +43,7 @@ export = {
         DBInstanceClass: 'db.t2.medium',
         AllocatedStorage: '100',
         AutoMinorVersionUpgrade: false,
-        BackupRetentionPeriod: '7',
+        BackupRetentionPeriod: 7,
         CopyTagsToSnapshot: true,
         DBName: 'ORCL',
         DBSubnetGroupName: {
@@ -425,7 +425,7 @@ export = {
 
     // THEN
     expect(stack).to(haveResource('AWS::RDS::DBInstance', {
-      BackupRetentionPeriod: '0'
+      BackupRetentionPeriod: 0
     }));
 
     test.done();
