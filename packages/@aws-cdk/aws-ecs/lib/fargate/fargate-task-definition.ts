@@ -39,18 +39,14 @@ export interface FargateTaskDefinitionProps extends CommonTaskDefinitionProps {
   readonly memoryLimitMiB?: number;
 }
 
-export interface IFargateTaskDefinition extends ITaskDefinition {
-
-}
-
 /**
  * A definition for Tasks on a Fargate cluster
  * @resource AWS::ECS::TaskDefinition
  */
-export class FargateTaskDefinition extends TaskDefinition implements IFargateTaskDefinition {
+export class FargateTaskDefinition extends TaskDefinition implements ITaskDefinition {
 
-  public static fromFargateTaskDefinitionArn(scope: Construct, id: string, fargateTaskDefinitionArn: string): IFargateTaskDefinition {
-    class Import extends Resource implements IFargateTaskDefinition {
+  public static fromFargateTaskDefinitionArn(scope: Construct, id: string, fargateTaskDefinitionArn: string): ITaskDefinition {
+    class Import extends Resource implements ITaskDefinition {
       public readonly taskDefinitionArn = fargateTaskDefinitionArn;
       public readonly compatibility = Compatibility.Fargate;
       public readonly isEc2Compatible = false;

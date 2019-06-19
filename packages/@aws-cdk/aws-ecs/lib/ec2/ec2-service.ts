@@ -67,19 +67,15 @@ export interface Ec2ServiceProps extends BaseServiceProps {
   readonly daemon?: boolean;
 }
 
-export interface IEc2Service extends IService {
-
-}
-
 /**
  * Start a service on an ECS cluster
  *
  * @resource AWS::ECS::Service
  */
-export class Ec2Service extends BaseService implements IEc2Service, elb.ILoadBalancerTarget {
+export class Ec2Service extends BaseService implements IService, elb.ILoadBalancerTarget {
 
-  public static fromEc2ServiceArn(scope: Construct, id: string, ec2ServiceArn: string): IEc2Service {
-    class Import extends Resource implements IEc2Service {
+  public static fromEc2ServiceArn(scope: Construct, id: string, ec2ServiceArn: string): IService {
+    class Import extends Resource implements IService {
       public readonly serviceArn = ec2ServiceArn;
     }
     return new Import(scope, id);

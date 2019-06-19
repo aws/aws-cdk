@@ -47,19 +47,15 @@ export interface FargateServiceProps extends BaseServiceProps {
   readonly platformVersion?: FargatePlatformVersion;
 }
 
-export interface IFargateService extends IService {
-
-}
-
 /**
  * Start a service on an ECS cluster
  *
  * @resource AWS::ECS::Service
  */
-export class FargateService extends BaseService implements IFargateService {
+export class FargateService extends BaseService implements IService {
 
-  public static fromFargateServiceArn(scope: Construct, id: string, fargateServiceArn: string): IFargateService {
-    class Import extends Resource implements IFargateService {
+  public static fromFargateServiceArn(scope: Construct, id: string, fargateServiceArn: string): IService {
+    class Import extends Resource implements IService {
       public readonly serviceArn = fargateServiceArn;
     }
     return new Import(scope, id);
