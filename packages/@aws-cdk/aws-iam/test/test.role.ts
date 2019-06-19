@@ -290,4 +290,26 @@ export = {
     test.done();
   },
 
+  'can supply permissions boundary'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+
+    new Role(stack, 'MyRole', {
+      assumedBy: new ServicePrincipal('sns.amazonaws.com'),
+      permissionsBoundary: 'arn:aws:iam::1234567890:policy/Test-Permissions-Boundary'
+    });
+
+    expect(stack).toMatch({ Resources:
+      { MyRoleF48FFE04:
+         { Type: 'AWS::IAM::Role',
+         Properties:
+          { AssumeRolePolicyDocument:
+           { Statement:
+            [ { Action: 'sts:AssumeRole',
+              Effect: 'Allow',
+              Principal: { Service: 'sns.amazonaws.com' } } ],
+             Version: '2012-10-17' },
+            PermissionsBoundary: 'arn:aws:iam::1234567890:policy/Test-Permissions-Boundary' } } } });
+    test.done();
+  }
 };

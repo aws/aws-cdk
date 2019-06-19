@@ -49,6 +49,25 @@ export interface RoleProps {
   readonly inlinePolicies?: { [name: string]: PolicyDocument };
 
   /**
+   * AWS supports permissions boundaries for IAM entities (users or roles).
+   * A permissions boundary is an advanced feature for using a managed policy
+   * to set the maximum permissions that an identity-based policy can grant to
+   * an IAM entity. An entity's permissions boundary allows it to perform only
+   * the actions that are allowed by both its identity-based policies and its
+   * permissions boundaries.
+   *
+   * You can use an AWS managed policy or a customer managed policy to set the
+   * boundary for an IAM entity (user or role). That policy limits the maximum
+   * permissions for the user or role.
+   *
+   * @link https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-iam-role.html#cfn-iam-role-permissionsboundary
+   * @link https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_boundaries.html
+   *
+   * @default - No permissions boundaries required.
+   */
+  readonly permissionsBoundary?: string;
+
+  /**
    * The path associated with this role. For information about IAM paths, see
    * Friendly Names and Paths in IAM User Guide.
    *
@@ -213,6 +232,7 @@ export class Role extends Resource implements IRole {
     const role = new CfnRole(this, 'Resource', {
       assumeRolePolicyDocument: this.assumeRolePolicy as any,
       managedPolicyArns: Lazy.listValue({ produce: () => this.managedPolicies.map(p => p.managedPolicyArn) }, { omitEmpty: true }),
+      permissionsBoundary: props.permissionsBoundary,
       policies: _flatten(props.inlinePolicies),
       path: props.path,
       roleName: this.physicalName,
@@ -310,6 +330,13 @@ export interface IRole extends IIdentity {
    * @attribute
    */
   readonly roleName: string;
+
+  /**
+   * Returns the permissions boundary of the role.
+   *
+   * @attribute
+   */
+  readonly permissionsBoundary?: string;
 
   /**
    * Grant the actions defined in actions to the identity Principal on this resource.
