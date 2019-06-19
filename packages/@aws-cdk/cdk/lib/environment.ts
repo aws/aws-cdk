@@ -5,7 +5,7 @@ export interface Environment {
   /**
    * The AWS account ID for this environment.
    *
-   * This can be either a concrete value such as `` or `Aws.accountId` which
+   * This can be either a concrete value such as `585191031104` or `Aws.accountId` which
    * indicates that account ID will only be determined during deployment (it
    * will resolve to the CloudFormation intrinsic `{"Ref":"AWS::AccountId"}`).
    * Note that certain features, such as cross-stack references and

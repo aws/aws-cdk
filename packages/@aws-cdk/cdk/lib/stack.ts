@@ -122,8 +122,8 @@ export class Stack extends Construct implements ITaggable {
    * This value is resolved according to the following rules:
    *
    * 1. The value provided to `env.account` when the stack is defined. This can
-   *    either be a concerete region (e.g. `1772638347`) or the `Aws.accountId`
-   *    token.
+   *    either be a concerete account (e.g. `585695031111`) or the
+   *    `Aws.accountId` token.
    * 3. `Aws.accountId`, which represents the CloudFormation intrinsic reference
    *    `{ "Ref": "AWS::AccountId" }` encoded as a string token.
    *
