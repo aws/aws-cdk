@@ -68,10 +68,10 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "@aws-cdk/assert": "^0.34.0",
-    "@types/aws-lambda": "^8.10.26",
-    "@types/lodash": "^4.14.133",
+    "@types/aws-lambda": "^8.10.27",
+    "@types/lodash": "^4.14.134",
     "@types/nock": "^10.0.3",
-    "@types/sinon": "^7.0.12",
+    "@types/sinon": "^7.0.13",
     "aws-sdk": "^2.438.0",
     "aws-sdk-mock": "^4.4.0",
     "cdk-build-tools": "^0.34.0",

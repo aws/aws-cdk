@@ -40,7 +40,7 @@
     "@types/mockery": "^1.4.29",
     "@types/request": "^2.48.1",
     "@types/semver": "^6.0.0",
-    "@types/sinon": "^7.0.12",
+    "@types/sinon": "^7.0.13",
     "@types/table": "^4.0.5",
     "@types/uuid": "^3.4.4",
     "@types/yaml": "^1.0.2",
@@ -67,7 +67,7 @@
     "request": "^2.88.0",
     "semver": "^6.1.1",
     "source-map-support": "^0.5.12",
-    "table": "^5.4.0",
+    "table": "^5.4.1",
     "yaml": "^1.6.0",
     "yargs": "^13.2.4"
   },

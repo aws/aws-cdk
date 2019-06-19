@@ -91,7 +91,9 @@
   },
   "awslint": {
     "exclude": [
-      "from-method:@aws-cdk/aws-apigateway.Resource"
+      "from-method:@aws-cdk/aws-apigateway.Resource",
+      "from-method:@aws-cdk/aws-apigateway.ApiKey",
+      "ref-via-interface:@aws-cdk/aws-apigateway.ApiKeyProps.resources"
     ]
   },
   "stability": "experimental"
