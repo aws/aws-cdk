@@ -52,7 +52,7 @@ export class ToolkitInfo {
    * already exists by this key.
    */
   public async uploadIfChanged(data: string | Buffer | DataView, props: UploadProps): Promise<Uploaded> {
-    const s3 = await this.props.sdk.s3(this.props.environment, Mode.ForWriting);
+    const s3 = await this.props.sdk.s3(this.props.environment.account, this.props.environment.region, Mode.ForWriting);
 
     const s3KeyPrefix = props.s3KeyPrefix || '';
     const s3KeySuffix = props.s3KeySuffix || '';
@@ -101,7 +101,7 @@ export class ToolkitInfo {
    * Prepare an ECR repository for uploading to using Docker
    */
   public async prepareEcrRepository(asset: cxapi.ContainerImageAssetMetadataEntry): Promise<EcrRepositoryInfo> {
-    const ecr = await this.props.sdk.ecr(this.props.environment, Mode.ForWriting);
+    const ecr = await this.props.sdk.ecr(this.props.environment.account, this.props.environment.region, Mode.ForWriting);
     let repositoryName;
     if ( asset.repositoryName ) {
       // Repository name provided by user
@@ -148,7 +148,7 @@ export class ToolkitInfo {
    * Get ECR credentials
    */
   public async getEcrCredentials(): Promise<EcrCredentials> {
-    const ecr = await this.props.sdk.ecr(this.props.environment, Mode.ForReading);
+    const ecr = await this.props.sdk.ecr(this.props.environment.account, this.props.environment.region, Mode.ForReading);
 
     debug(`Fetching ECR authorization token`);
     const authData =  (await ecr.getAuthorizationToken({ }).promise()).authorizationData || [];
@@ -169,7 +169,7 @@ export class ToolkitInfo {
    * Check if image already exists in ECR repository
    */
   public async checkEcrImage(repositoryName: string, imageTag: string): Promise<boolean> {
-    const ecr = await this.props.sdk.ecr(this.props.environment, Mode.ForReading);
+    const ecr = await this.props.sdk.ecr(this.props.environment.account, this.props.environment.region, Mode.ForReading);
 
     try {
       debug(`${repositoryName}: checking for image ${imageTag}`);
@@ -210,7 +210,7 @@ async function objectExists(s3: aws.S3, bucket: string, key: string) {
 }
 
 export async function loadToolkitInfo(environment: cxapi.Environment, sdk: SDK, stackName: string): Promise<ToolkitInfo | undefined> {
-  const cfn = await sdk.cloudFormation(environment, Mode.ForReading);
+  const cfn = await sdk.cloudFormation(environment.account, environment.region, Mode.ForReading);
   const stack = await waitForStack(cfn, stackName);
   if (!stack) {
     debug('The environment %s doesn\'t have the CDK toolkit stack (%s) installed. Use %s to setup your environment for use with the toolkit.',

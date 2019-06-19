@@ -657,9 +657,6 @@ export = {
             },
             {
               "Ref": "MyVPCPrivateSubnet2SubnetA420D3F0"
-            },
-            {
-              "Ref": "MyVPCPrivateSubnet3SubnetE1B8B1B4"
             }
           ],
           "VpcId": {

@@ -85,7 +85,6 @@ test('Running a Fargate Task', () => {
           Subnets: [
             {Ref: "VpcPrivateSubnet1Subnet536B997A"},
             {Ref: "VpcPrivateSubnet2Subnet3788AAA1"},
-            {Ref: "VpcPrivateSubnet3SubnetF258B56E"},
           ]
         },
       },

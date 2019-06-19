@@ -19,6 +19,9 @@ export interface Environment {
   readonly region: string;
 }
 
+export const UNKNOWN_ACCOUNT = 'unknown-account';
+export const UNKNOWN_REGION = 'unknown-region';
+
 export class EnvironmentUtils {
   public static parse(environment: string): Environment {
     const env = AWS_ENV_REGEX.exec(environment);

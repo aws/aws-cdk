@@ -5,14 +5,14 @@ export const OUTDIR_ENV = 'CDK_OUTDIR';
 export const CONTEXT_ENV = 'CDK_CONTEXT_JSON';
 
 /**
- * Context parameter for the default AWS account to use if a stack's environment is not set.
+ * Environment variable set by the CDK CLI with the default AWS account ID.
  */
-export const DEFAULT_ACCOUNT_CONTEXT_KEY = 'aws:cdk:toolkit:default-account';
+export const DEFAULT_ACCOUNT_ENV = 'CDK_DEFAULT_ACCOUNT';
 
 /**
- * Context parameter for the default AWS region to use if a stack's environment is not set.
+ * Environment variable set by the CDK CLI with the default AWS region.
  */
-export const DEFAULT_REGION_CONTEXT_KEY = 'aws:cdk:toolkit:default-region';
+export const DEFAULT_REGION_ENV = 'CDK_DEFAULT_REGION';
 
 /**
  * Enables the embedding of the "aws:cdk:path" in CloudFormation template metadata.

@@ -49,7 +49,7 @@ export async function deployStack(options: DeployStackOptions): Promise<DeploySt
 
   const executionId = uuid.v4();
 
-  const cfn = await options.sdk.cloudFormation(options.stack.environment, Mode.ForWriting);
+  const cfn = await options.sdk.cloudFormation(options.stack.environment.account, options.stack.environment.region, Mode.ForWriting);
   const bodyParameter = await makeBodyParameter(options.stack, options.toolkitInfo);
 
   if (await stackFailedCreating(cfn, deployName)) {
@@ -156,7 +156,7 @@ export async function destroyStack(options: DestroyStackOptions) {
   }
 
   const deployName = options.deployName || options.stack.name;
-  const cfn = await options.sdk.cloudFormation(options.stack.environment, Mode.ForWriting);
+  const cfn = await options.sdk.cloudFormation(options.stack.environment.account, options.stack.environment.region, Mode.ForWriting);
   if (!await stackExists(cfn, deployName)) {
     return;
   }

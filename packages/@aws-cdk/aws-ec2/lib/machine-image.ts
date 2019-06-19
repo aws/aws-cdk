@@ -1,4 +1,5 @@
-import { Construct, Context, Stack, Token } from '@aws-cdk/cdk';
+import ssm = require('@aws-cdk/aws-ssm');
+import { Construct, Stack, Token } from '@aws-cdk/cdk';
 
 /**
  * Interface for classes that can select an appropriate machine image to use
@@ -25,7 +26,8 @@ export class WindowsImage implements IMachineImageSource  {
    * Return the image to use in the given context
    */
   public getImage(scope: Construct): MachineImage {
-    const ami = Context.getSsmParameter(scope, this.imageParameterName(this.version));
+    const parameterName = this.imageParameterName(this.version);
+    const ami = ssm.StringParameter.valueForStringParameter(scope, parameterName);
     return new MachineImage(ami, new WindowsOS());
   }
 
@@ -102,7 +104,7 @@ export class AmazonLinuxImage implements IMachineImageSource {
     ].filter(x => x !== undefined); // Get rid of undefineds
 
     const parameterName = '/aws/service/ami-amazon-linux-latest/' + parts.join('-');
-    const ami = Context.getSsmParameter(scope, parameterName);
+    const ami = ssm.StringParameter.valueForStringParameter(scope, parameterName);
     return new MachineImage(ami, new LinuxOS());
   }
 }
@@ -180,9 +182,9 @@ export class GenericLinuxImage implements IMachineImageSource  {
   }
 
   public getImage(scope: Construct): MachineImage {
-    let region = Stack.of(scope).region;
+    const region = Stack.of(scope).region;
     if (Token.isUnresolved(region)) {
-      region = Context.getDefaultRegion(scope);
+      throw new Error(`Unable to determine AMI from AMI map since stack is region-agnostic`);
     }
 
     const ami = region !== 'test-region' ? this.amiMap[region] : 'ami-12345';

@@ -1,5 +1,8 @@
 import iam = require('@aws-cdk/aws-iam');
-import { CfnDynamicReference, CfnDynamicReferenceService, CfnParameter, Construct, Fn, IResource, Resource, Stack, Token } from '@aws-cdk/cdk';
+import {
+  CfnDynamicReference, CfnDynamicReferenceService, CfnParameter,
+  Construct, ContextProvider, Fn, IResource, Resource, Stack, Token } from '@aws-cdk/cdk';
+import cxapi = require('@aws-cdk/cx-api');
 import ssm = require('./ssm.generated');
 
 /**
@@ -223,6 +226,53 @@ export class StringParameter extends ParameterBase implements IStringParameter {
     return new Import(scope, id);
   }
 
+  /**
+   * Reads the value of an SSM parameter during synthesis through an
+   * environmental context provider.
+   *
+   * Requires that the stack this scope is defined in will have explicit
+   * account/region information. Otherwise, it will fail during synthesis.
+   */
+  public static valueFromLookup(scope: Construct, parameterName: string): string {
+    const value = ContextProvider.getValue(scope, {
+      provider: cxapi.SSM_PARAMETER_PROVIDER,
+      props: { parameterName },
+      dummyValue: `dummy-value-for-${parameterName}`
+    });
+
+    return value;
+  }
+
+  /**
+   * Returns a token that will resolve (during deployment) to the string value of an SSM string parameter.
+   * @param scope Some scope within a stack
+   * @param parameterName The name of the SSM parameter.
+   * @param version The parameter version (recommended in order to ensure that the value won't change during deployment)
+   */
+  public static valueForStringParameter(scope: Construct, parameterName: string, version?: number): string {
+    const stack = Stack.of(scope);
+    const id = makeIdentityForImportedValue(parameterName);
+    const exists = stack.node.tryFindChild(id) as IStringParameter;
+    if (exists) { return exists.stringValue; }
+
+    return this.fromStringParameterAttributes(stack, id, { parameterName, version }).stringValue;
+  }
+
+  /**
+   * Returns a token that will resolve (during deployment)
+   * @param scope Some scope within a stack
+   * @param parameterName The name of the SSM parameter
+   * @param version The parameter version (required for secure strings)
+   */
+  public static valueForSecureStringParameter(scope: Construct, parameterName: string, version: number): string {
+    const stack = Stack.of(scope);
+    const id = makeIdentityForImportedValue(parameterName);
+    const exists = stack.node.tryFindChild(id) as IStringParameter;
+    if (exists) { return exists.stringValue; }
+
+    return this.fromSecureStringParameterAttributes(stack, id, { parameterName, version }).stringValue;
+  }
+
   public readonly parameterName: string;
   public readonly parameterType: string;
   public readonly stringValue: string;
@@ -313,4 +363,8 @@ function _assertValidValue(value: string, allowedPattern: string): void {
   if (!new RegExp(allowedPattern).test(value)) {
     throw new Error(`The supplied value (${value}) does not match the specified allowedPattern (${allowedPattern})`);
   }
+}
+
+function makeIdentityForImportedValue(parameterName: string) {
+  return `SsmParameterValue:${parameterName}:C96584B6-F00A-464E-AD19-53AFF4B05118`;
 }

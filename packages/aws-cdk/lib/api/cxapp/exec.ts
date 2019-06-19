@@ -11,7 +11,7 @@ export async function execProgram(aws: SDK, config: Configuration): Promise<cxap
   const env: { [key: string]: string } = { };
 
   const context = config.context.all;
-  await populateDefaultEnvironmentIfNeeded(aws, context);
+  await populateDefaultEnvironmentIfNeeded(aws, env);
 
   let pathMetadata: boolean = config.settings.get(['pathMetadata']);
   if (pathMetadata === undefined) {
@@ -73,6 +73,8 @@ export async function execProgram(aws: SDK, config: Configuration): Promise<cxap
   debug('outdir:', outdir);
   env[cxapi.OUTDIR_ENV] = outdir;
 
+  debug('env:', env);
+
   await exec();
 
   return new cxapi.CloudAssembly(outdir);
@@ -124,16 +126,12 @@ export async function execProgram(aws: SDK, config: Configuration): Promise<cxap
  *
  * @param context The context key/value bash.
  */
-async function populateDefaultEnvironmentIfNeeded(aws: SDK, context: any) {
-  if (!(cxapi.DEFAULT_REGION_CONTEXT_KEY in context)) {
-    context[cxapi.DEFAULT_REGION_CONTEXT_KEY] = await aws.defaultRegion();
-    debug(`Setting "${cxapi.DEFAULT_REGION_CONTEXT_KEY}" context to`, context[cxapi.DEFAULT_REGION_CONTEXT_KEY]);
-  }
+async function populateDefaultEnvironmentIfNeeded(aws: SDK, env: { [key: string]: string | undefined}) {
+  env[cxapi.DEFAULT_REGION_ENV] = await aws.defaultRegion();
+  debug(`Setting "${cxapi.DEFAULT_REGION_ENV}" environment variable to`, env[cxapi.DEFAULT_REGION_ENV]);
 
-  if (!(cxapi.DEFAULT_ACCOUNT_CONTEXT_KEY in context)) {
-    context[cxapi.DEFAULT_ACCOUNT_CONTEXT_KEY] = await aws.defaultAccount();
-    debug(`Setting "${cxapi.DEFAULT_ACCOUNT_CONTEXT_KEY}" context to`, context[cxapi.DEFAULT_ACCOUNT_CONTEXT_KEY]);
-  }
+  env[cxapi.DEFAULT_ACCOUNT_ENV] = await aws.defaultAccount();
+  debug(`Setting "${cxapi.DEFAULT_ACCOUNT_ENV}" environment variable to`, env[cxapi.DEFAULT_ACCOUNT_ENV]);
 }
 
 /**
