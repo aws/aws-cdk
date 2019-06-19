@@ -1,4 +1,4 @@
-import { Construct, IResource, Resource } from '@aws-cdk/cdk';
+import { Construct, IResource, PhysicalName, Resource, ResourceIdentifiers } from '@aws-cdk/cdk';
 import { CfnApplication } from "../codedeploy.generated";
 import { arnForApplication } from "../utils";
 
@@ -29,7 +29,7 @@ export interface LambdaApplicationProps {
    *
    * @default an auto-generated name will be used
    */
-  readonly applicationName?: string;
+  readonly applicationName?: PhysicalName;
 }
 
 /**
@@ -60,14 +60,26 @@ export class LambdaApplication extends Resource implements ILambdaApplication {
   public readonly applicationName: string;
 
   constructor(scope: Construct, id: string, props: LambdaApplicationProps = {}) {
-    super(scope, id);
+    super(scope, id, {
+      physicalName: props.applicationName,
+    });
 
     const resource = new CfnApplication(this, 'Resource', {
-      applicationName: props.applicationName,
+      applicationName: this.physicalName.value,
       computePlatform: 'Lambda'
     });
 
-    this.applicationName = resource.refAsString;
-    this.applicationArn = arnForApplication(this.applicationName);
+    const resourceIdentifiers = new ResourceIdentifiers(this, {
+      arn: arnForApplication(resource.refAsString),
+      name: resource.refAsString,
+      arnComponents: {
+        service: 'codedeploy',
+        resource: 'application',
+        resourceName: this.physicalName.value,
+        sep: ':',
+      },
+    });
+    this.applicationName = resourceIdentifiers.name;
+    this.applicationArn = resourceIdentifiers.arn;
   }
 }

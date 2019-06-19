@@ -20,7 +20,7 @@ fn.addToRolePolicy(new iam.PolicyStatement({
 const version = fn.addVersion('1');
 
 const alias = new lambda.Alias(stack, 'Alias', {
-  aliasName: 'prod',
+  aliasName: cdk.PhysicalName.of('prod'),
   version,
 });
 alias.addPermission('AliasPermission', {

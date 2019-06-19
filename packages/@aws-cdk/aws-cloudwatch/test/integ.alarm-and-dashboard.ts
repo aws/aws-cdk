@@ -27,7 +27,7 @@ const alarm = metric.createAlarm(stack, 'Alarm', {
 });
 
 const dashboard = new cloudwatch.Dashboard(stack, 'Dash', {
-  dashboardName: 'MyCustomDashboardName',
+  dashboardName: cdk.PhysicalName.of('MyCustomDashboardName'),
   start: '-9H',
   end: '2018-12-17T06:00:00.000Z',
   periodOverride: PeriodOverride.Inherit

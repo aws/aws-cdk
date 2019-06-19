@@ -1,6 +1,6 @@
 import iam = require('@aws-cdk/aws-iam');
 import lambda = require('@aws-cdk/aws-lambda');
-import { Construct, IResource, Lazy, Resource } from '@aws-cdk/cdk';
+import { Construct, IResource, Lazy, PhysicalName, Resource, ResourceIdentifiers } from '@aws-cdk/cdk';
 import { CfnUserPool } from './cognito.generated';
 
 /**
@@ -204,9 +204,9 @@ export interface UserPoolProps {
   /**
    * Name of the user pool
    *
-   * @default - Unique ID.
+   * @default - automatically generated name by CloudFormation at deploy time
    */
-  readonly poolName?: string;
+  readonly poolName?: PhysicalName;
 
   /**
    * Method used for user registration & sign in.
@@ -335,7 +335,9 @@ export class UserPool extends Resource implements IUserPool {
   private triggers: CfnUserPool.LambdaConfigProperty = { };
 
   constructor(scope: Construct, id: string, props: UserPoolProps = {}) {
-    super(scope, id);
+    super(scope, id, {
+      physicalName: props.poolName,
+    });
 
     let aliasAttributes: UserPoolAttribute[] | undefined;
     let usernameAttributes: UserPoolAttribute[] | undefined;
@@ -389,14 +391,25 @@ export class UserPool extends Resource implements IUserPool {
     }
 
     const userPool = new CfnUserPool(this, 'Resource', {
-      userPoolName: props.poolName || this.node.uniqueId,
+      userPoolName: this.physicalName.value,
       usernameAttributes,
       aliasAttributes,
       autoVerifiedAttributes: props.autoVerifiedAttributes,
       lambdaConfig: Lazy.anyValue({ produce: () => this.triggers })
     });
-    this.userPoolId = userPool.refAsString;
-    this.userPoolArn = userPool.attrArn;
+
+    const resourceIdentifiers = new ResourceIdentifiers(this, {
+      arn: userPool.attrArn,
+      name: userPool.refAsString,
+      arnComponents: {
+        service: 'cognito',
+        resource: 'userpool',
+        resourceName: this.physicalName.value,
+      },
+    });
+    this.userPoolId = resourceIdentifiers.name;
+    this.userPoolArn = resourceIdentifiers.arn;
+
     this.userPoolProviderName = userPool.attrProviderName;
     this.userPoolProviderUrl = userPool.attrProviderUrl;
   }
