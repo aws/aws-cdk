@@ -229,7 +229,7 @@ export = {
     cluster.addCapacity('GpuAutoScalingGroup', {
       instanceType: new ec2.InstanceType('t2.micro'),
       machineImage: new ecs.EcsOptimizedAmi({
-        hwType: ecs.AmiHardwareType.GPU
+        hardwareType: ecs.AmiHardwareType.GPU
       }),
     });
 
@@ -254,7 +254,7 @@ export = {
         instanceType: new ec2.InstanceType('t2.micro'),
         machineImage: new ecs.EcsOptimizedAmi({
           generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX,
-          hwType: ecs.AmiHardwareType.GPU,
+          hardwareType: ecs.AmiHardwareType.GPU,
         }),
       });
     });
