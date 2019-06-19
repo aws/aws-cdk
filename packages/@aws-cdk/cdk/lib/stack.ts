@@ -354,7 +354,7 @@ export class Stack extends Construct implements ITaggable {
     // denominator is 2 AZs across all AWS regions.
     const agnostic = Token.isUnresolved(this.account) || Token.isUnresolved(this.region);
     if (agnostic) {
-      return [
+      return this.node.tryGetContext(cxapi.AVAILABILITY_ZONE_FALLBACK_CONTEXT_KEY) || [
         Fn.select(0, Fn.getAZs()),
         Fn.select(1, Fn.getAZs())
       ];
