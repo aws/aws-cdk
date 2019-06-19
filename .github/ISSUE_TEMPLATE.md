@@ -3,13 +3,13 @@ name: New Issue
 labels: needs-triage
 ---
 
-**Note: for support questions, please first reference our [documentation](https://docs.aws.amazon.com/CDK/latest/userguide), then use [Stackoverflow](https://stackoverflow.com/questions/ask?tags=aws-cdk)**. This repository's issues are intended for feature requests and bug reports.
+**Note: for support questions, please first reference our [documentation](https://docs.aws.amazon.com/cdk/api/latest), then use [Stackoverflow](https://stackoverflow.com/questions/ask?tags=aws-cdk)**. This repository's issues are intended for feature requests and bug reports.
 
 * **I'm submitting a ...**
   - [ ] :beetle: bug report
   - [ ] :rocket: feature request
   - [ ] :books: construct library gap
-  - [ ] :phone: security issue or vulnerability => Please see [policy](https://github.com/awslabs/aws-cdk/securi$
+  - [ ] :phone: security issue or vulnerability => Please see [policy](https://github.com/awslabs/aws-cdk/security/policy)
   - [ ] :question: support request => Please see note at the top of this template.
 
 
@@ -17,7 +17,7 @@ labels: needs-triage
 
 
 
-* **If the current behavior is a :beetle:bug:beetle:bug: Please provide the steps to reproduce**
+* **If the current behavior is a :beetle:bug:beetle:: Please provide the steps to reproduce**
 
 
 
