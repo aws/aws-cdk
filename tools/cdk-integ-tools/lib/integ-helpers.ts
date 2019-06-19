@@ -148,8 +148,10 @@ export class IntegrationTest {
     if (fs.existsSync(this.cdkContextPath)) {
       fs.unlinkSync(this.cdkContextPath);
     }
-    if (fs.existsSync('cdk.out')) {
-      fs.removeSync('cdk.out');
+
+    const cdkOutPath = path.join(this.directory, 'cdk.out');
+    if (fs.existsSync(cdkOutPath)) {
+      fs.removeSync(cdkOutPath);
     }
   }
 
