@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/assets-docker",
-  "version": "0.34.0",
+  "version": "0.35.0",
   "deprecated": "moved to @aws-cdk/aws-ecr-assets",
   "description": "deprecated: moved to @aws-cdk/aws-ecr-assets",
   "main": "lib/index.js",
@@ -58,9 +58,9 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "cdk-build-tools": "^0.34.0",
-    "cdk-integ-tools": "^0.34.0",
-    "pkglint": "^0.34.0"
+    "cdk-build-tools": "^0.35.0",
+    "cdk-integ-tools": "^0.35.0",
+    "pkglint": "^0.35.0"
   },
   "homepage": "https://github.com/awslabs/aws-cdk",
   "engines": {
