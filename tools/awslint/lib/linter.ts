@@ -173,7 +173,7 @@ export class Evaluation<T> {
   }
 
   public assertParameterOptional(actual: boolean, expected: boolean, scope: string) {
-    return this.assert(actual === expected, scope, ` (${scope} should be ${expected ? 'optional' : 'mandatory '})`);
+    return this.assert(actual === expected, scope, ` (${scope} should be ${expected ? 'optional' : 'mandatory'})`);
   }
 
   public assertSignature(method: reflect.Callable, expectations: MethodSignatureExpectations) {
