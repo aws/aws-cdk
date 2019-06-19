@@ -1,4 +1,5 @@
 import iam = require('@aws-cdk/aws-iam');
+import { FieldUtils } from "./fields";
 import { State } from "./states/state";
 
 /**
@@ -101,7 +102,7 @@ export class StateGraph {
     public toGraphJson(): object {
         const states: any = {};
         for (const state of this.allStates) {
-            states[state.stateId] = state.toStateJson();
+            states[state.stateId] = FieldUtils.renderObject(state.toStateJson());
         }
 
         return {
