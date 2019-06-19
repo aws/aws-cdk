@@ -1,7 +1,7 @@
 import events = require('@aws-cdk/aws-events');
 import iam = require('@aws-cdk/aws-iam');
 import kms = require('@aws-cdk/aws-kms');
-import { applyRemovalPolicy, Construct, IResource, Lazy, PhysicalName,
+import { Construct, IResource, Lazy, PhysicalName,
   RemovalPolicy, Resource, ResourceIdentifiers, Stack, Token } from '@aws-cdk/cdk';
 import { EOL } from 'os';
 import { BucketPolicy } from './bucket-policy';
@@ -301,7 +301,7 @@ abstract class BucketBase extends Resource implements IBucket {
    * @param id The id of the rule
    * @param options Options for adding the rule
    */
-  public onCloudTrailEvent(id: string, options: OnCloudTrailBucketEventOptions): events.Rule {
+  public onCloudTrailEvent(id: string, options: OnCloudTrailBucketEventOptions = {}): events.Rule {
     const rule = new events.Rule(this, id, options);
     rule.addTarget(options.target);
     rule.addEventPattern({
@@ -326,7 +326,7 @@ abstract class BucketBase extends Resource implements IBucket {
    * @param id The id of the rule
    * @param options Options for adding the rule
    */
-  public onCloudTrailPutObject(id: string, options: OnCloudTrailBucketEventOptions): events.Rule {
+  public onCloudTrailPutObject(id: string, options: OnCloudTrailBucketEventOptions = {}): events.Rule {
     const rule = this.onCloudTrailEvent(id, options);
     rule.addEventPattern({
       detail: {
@@ -348,7 +348,7 @@ abstract class BucketBase extends Resource implements IBucket {
     }
 
     if (this.policy) {
-      this.policy.document.addStatement(permission);
+      this.policy.document.addStatements(permission);
     }
   }
 
@@ -632,6 +632,70 @@ export interface BucketMetrics {
   readonly tagFilters?: {[tag: string]: any};
 }
 
+/**
+ * All http request methods
+ */
+export enum HttpMethods {
+  /**
+   * The GET method requests a representation of the specified resource.
+   */
+  GET = "GET",
+  /**
+   * The PUT method replaces all current representations of the target resource with the request payload.
+   */
+  PUT = "PUT",
+  /**
+   * The HEAD method asks for a response identical to that of a GET request, but without the response body.
+   */
+  HEAD = "HEAD",
+  /**
+   * The POST method is used to submit an entity to the specified resource, often causing a change in state or side effects on the server.
+   */
+  POST = "POST",
+  /**
+   * The DELETE method deletes the specified resource.
+   */
+  DELETE = "DELETE",
+}
+
+/**
+ * Specifies a cross-origin access rule for an Amazon S3 bucket.
+ */
+export interface CorsRule {
+  /**
+   * A unique identifier for this rule.
+   *
+   * @default - No id specified.
+   */
+  readonly id?: string;
+  /**
+   * The time in seconds that your browser is to cache the preflight response for the specified resource.
+   *
+   * @default - No caching.
+   */
+  readonly maxAge?: number;
+  /**
+   * Headers that are specified in the Access-Control-Request-Headers header.
+   *
+   * @default - No headers allowed.
+   */
+  readonly allowedHeaders?: string[];
+  /**
+   * An HTTP method that you allow the origin to execute.
+   */
+  readonly allowedMethods: HttpMethods[];
+  /**
+   * One or more origins you want customers to be able to access the bucket from.
+   */
+  readonly allowedOrigins: string[];
+  /**
+   * One or more headers in the response that you want customers to be able to access from their applications.
+   *
+   * @default - No headers exposed.
+   */
+  readonly exposedHeaders?: string[];
+}
+
 export interface BucketProps {
   /**
    * The kind of server-side encryption to apply to this bucket.
@@ -725,6 +789,15 @@ export interface BucketProps {
    * @default - No metrics configuration.
    */
   readonly metrics?: BucketMetrics[];
+
+  /**
+   * The CORS configuration of this bucket.
+   *
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-s3-bucket-cors.html
+   *
+   * @default - No CORS configuration.
+   */
+  readonly cors?: CorsRule[];
 }
 
 /**
@@ -808,6 +881,7 @@ export class Bucket extends BucketBase {
   private readonly versioned?: boolean;
   private readonly notifications: BucketNotifications;
   private readonly metrics: BucketMetrics[] = [];
+  private readonly cors: CorsRule[] = [];
 
   constructor(scope: Construct, id: string, props: BucketProps = {}) {
     super(scope, id, {
@@ -826,17 +900,18 @@ export class Bucket extends BucketBase {
       lifecycleConfiguration: Lazy.anyValue({ produce: () => this.parseLifecycleConfiguration() }),
       websiteConfiguration: this.renderWebsiteConfiguration(props),
       publicAccessBlockConfiguration: props.blockPublicAccess,
-      metricsConfigurations: Lazy.anyValue({ produce: () => this.parseMetricConfiguration() })
+      metricsConfigurations: Lazy.anyValue({ produce: () => this.parseMetricConfiguration() }),
+      corsConfiguration: Lazy.anyValue({ produce: () => this.parseCorsConfiguration() })
     });
 
-    applyRemovalPolicy(resource, props.removalPolicy !== undefined ? props.removalPolicy : RemovalPolicy.Orphan);
+    resource.applyRemovalPolicy(props.removalPolicy);
 
     this.versioned = props.versioned;
     this.encryptionKey = encryptionKey;
 
     const resourceIdentifiers = new ResourceIdentifiers(this, {
-      arn: resource.bucketArn,
-      name: resource.bucketName,
+      arn: resource.attrArn,
+      name: resource.refAsString,
       arnComponents: {
         region: '',
         account: '',
@@ -846,15 +921,17 @@ export class Bucket extends BucketBase {
     });
     this.bucketArn = resourceIdentifiers.arn;
     this.bucketName = resourceIdentifiers.name;
-    this.bucketDomainName = resource.bucketDomainName;
-    this.bucketWebsiteUrl = resource.bucketWebsiteUrl;
-    this.bucketDualStackDomainName = resource.bucketDualStackDomainName;
-    this.bucketRegionalDomainName = resource.bucketRegionalDomainName;
+    this.bucketDomainName = resource.attrDomainName;
+    this.bucketWebsiteUrl = resource.attrWebsiteUrl;
+    this.bucketDualStackDomainName = resource.attrDualStackDomainName;
+    this.bucketRegionalDomainName = resource.attrRegionalDomainName;
 
     this.disallowPublicAccess = props.blockPublicAccess && props.blockPublicAccess.blockPublicPolicy;
 
     // Add all bucket metric configurations rules
     (props.metrics || []).forEach(this.addMetric.bind(this));
+    // Add all cors configuration rules
+    (props.cors || []).forEach(this.addCorsRule.bind(this));
 
     // Add all lifecycle rules
     (props.lifecycleRules || []).forEach(this.addLifecycleRule.bind(this));
@@ -890,6 +967,15 @@ export class Bucket extends BucketBase {
    */
   public addMetric(metric: BucketMetrics) {
     this.metrics.push(metric);
+  }
+
+  /**
+   * Adds a cross-origin access configuration for objects in an Amazon S3 bucket
+   *
+   * @param rule The CORS configuration rule to add
+   */
+  public addCorsRule(rule: CorsRule) {
+    this.cors.push(rule);
   }
 
   /**
@@ -1099,6 +1185,25 @@ export class Bucket extends BucketBase {
         id: metric.id,
         prefix: metric.prefix,
         tagFilters: self.parseTagFilters(metric.tagFilters)
+      };
+    }
+  }
+
+  private parseCorsConfiguration(): CfnBucket.CorsConfigurationProperty | undefined {
+    if (!this.cors || this.cors.length === 0) {
+      return undefined;
+    }
+
+    return { corsRules: this.cors.map(parseCors) };
+
+    function parseCors(rule: CorsRule): CfnBucket.CorsRuleProperty {
+      return {
+        id: rule.id,
+        maxAge: rule.maxAge,
+        allowedHeaders: rule.allowedHeaders,
+        allowedMethods: rule.allowedMethods,
+        allowedOrigins: rule.allowedOrigins,
+        exposedHeaders: rule.exposedHeaders
       };
     }
   }

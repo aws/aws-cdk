@@ -1,7 +1,6 @@
 import fs = require('fs-extra');
 import os = require('os');
 import fs_path = require('path');
-import yargs = require('yargs');
 import { Tag } from './api/cxapp/stacks';
 import { debug, warning } from './logging';
 import util = require('./util');
@@ -13,6 +12,8 @@ export const PROJECT_CONTEXT = 'cdk.context.json';
 export const USER_DEFAULTS = '~/.cdk.json';
 
 const CONTEXT_KEY = 'context';
+
+export type Arguments = { readonly [name: string]: unknown };
 
 /**
  * All sources of settings combined
@@ -33,7 +34,7 @@ export class Configuration {
   private projectContext: Settings;
   private loaded = false;
 
-  constructor(commandLineArguments?: yargs.Arguments) {
+  constructor(commandLineArguments?: Arguments) {
     this.commandLineArguments = commandLineArguments
                               ? Settings.fromCommandLineArguments(commandLineArguments)
                               : new Settings();
@@ -191,7 +192,7 @@ export class Settings {
    * @param argv the received CLI arguments.
    * @returns a new Settings object.
    */
-  public static fromCommandLineArguments(argv: yargs.Arguments): Settings {
+  public static fromCommandLineArguments(argv: Arguments): Settings {
     const context = this.parseStringContextListToObject(argv);
     const tags = this.parseStringTagsListToObject(argv);
 
@@ -220,7 +221,7 @@ export class Settings {
     return ret;
   }
 
-  private static parseStringContextListToObject(argv: yargs.Arguments): any {
+  private static parseStringContextListToObject(argv: Arguments): any {
     const context: any = {};
 
     for (const assignment of ((argv as any).context || [])) {
@@ -238,7 +239,7 @@ export class Settings {
     return context;
   }
 
-  private static parseStringTagsListToObject(argv: yargs.Arguments): Tag[] {
+  private static parseStringTagsListToObject(argv: Arguments): Tag[] {
     const tags: Tag[] = [];
 
     for (const assignment of ((argv as any).tags || [])) {

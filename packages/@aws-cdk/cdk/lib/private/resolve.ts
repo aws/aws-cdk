@@ -1,5 +1,5 @@
 import { IConstruct } from '../construct';
-import { DefaultTokenResolver, IResolvable, IResolveContext, ITokenResolver, StringConcat } from '../resolvable';
+import { DefaultTokenResolver, IPostProcessor, IResolvable, IResolveContext, ITokenResolver, StringConcat } from '../resolvable';
 import { TokenizedStringFragments } from '../string-fragments';
 import { containsListTokenElement, TokenString, unresolved } from "./encoding";
 import { TokenMap } from './token-map';
@@ -36,12 +36,18 @@ export function resolve(obj: any, options: IResolveOptions): any {
   /**
    * Make a new resolution context
    */
-  function makeContext(appendPath?: string): IResolveContext {
+  function makeContext(appendPath?: string): [IResolveContext, IPostProcessor] {
     const newPrefix = appendPath !== undefined ? prefix.concat([appendPath]) : options.prefix;
-    return {
+
+    let postProcessor: IPostProcessor | undefined;
+
+    const context: IResolveContext = {
       scope: options.scope,
-      resolve(x: any) { return resolve(x, { ...options, prefix: newPrefix }); }
+      registerPostProcessor(pp) { postProcessor = pp; },
+      resolve(x: any) { return resolve(x, { ...options, prefix: newPrefix }); },
     };
+
+    return [context, { postProcess(x) { return postProcessor ? postProcessor.postProcess(x, context) : x; }}];
   }
 
   // protect against cyclic references by limiting depth.
@@ -80,7 +86,7 @@ export function resolve(obj: any, options: IResolveOptions): any {
     const str = TokenString.forString(obj);
     if (str.test()) {
       const fragments = str.split(tokenMap.lookupToken.bind(tokenMap));
-      return options.resolver.resolveString(fragments, makeContext());
+      return options.resolver.resolveString(fragments, makeContext()[0]);
     }
     return obj;
   }
@@ -89,7 +95,7 @@ export function resolve(obj: any, options: IResolveOptions): any {
   // number - potentially decode Tokenized number
   //
   if (typeof(obj) === 'number') {
-    return resolveNumberToken(obj, makeContext());
+    return resolveNumberToken(obj, makeContext()[0]);
   }
 
   //
@@ -106,11 +112,11 @@ export function resolve(obj: any, options: IResolveOptions): any {
 
   if (Array.isArray(obj)) {
     if (containsListTokenElement(obj)) {
-      return options.resolver.resolveList(obj, makeContext());
+      return options.resolver.resolveList(obj, makeContext()[0]);
     }
 
     const arr = obj
-      .map((x, i) => makeContext(`${i}`).resolve(x))
+      .map((x, i) => makeContext(`${i}`)[0].resolve(x))
       .filter(x => typeof(x) !== 'undefined');
 
     return arr;
@@ -121,7 +127,8 @@ export function resolve(obj: any, options: IResolveOptions): any {
   //
 
   if (unresolved(obj)) {
-    return options.resolver.resolveToken(obj, makeContext());
+    const [context, postProcessor] = makeContext();
+    return options.resolver.resolveToken(obj, context, postProcessor);
   }
 
   //
@@ -137,12 +144,12 @@ export function resolve(obj: any, options: IResolveOptions): any {
 
   const result: any = { };
   for (const key of Object.keys(obj)) {
-    const resolvedKey = makeContext().resolve(key);
+    const resolvedKey = makeContext()[0].resolve(key);
     if (typeof(resolvedKey) !== 'string') {
       throw new Error(`"${key}" is used as the key in a map so must resolve to a string, but it resolves to: ${JSON.stringify(resolvedKey)}`);
     }
 
-    const value = makeContext(key).resolve(obj[key]);
+    const value = makeContext(key)[0].resolve(obj[key]);
 
     // skip undefined
     if (typeof(value) === 'undefined') {
@@ -172,9 +179,9 @@ export function findTokens(scope: IConstruct, fn: () => any): IResolvable[] {
 export class RememberingTokenResolver extends DefaultTokenResolver {
   private readonly tokensSeen = new Set<IResolvable>();
 
-  public resolveToken(t: IResolvable, context: IResolveContext) {
+  public resolveToken(t: IResolvable, context: IResolveContext, postProcessor: IPostProcessor) {
     this.tokensSeen.add(t);
-    return super.resolveToken(t, context);
+    return super.resolveToken(t, context, postProcessor);
   }
 
   public resolveString(s: TokenizedStringFragments, context: IResolveContext) {

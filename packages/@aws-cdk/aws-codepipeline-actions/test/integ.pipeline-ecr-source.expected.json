@@ -1,6 +1,7 @@
 {
   "Resources": {
     "MyBucketF68F3FF0": {
+      "DeletionPolicy": "Delete",
       "Type": "AWS::S3::Bucket"
     },
     "MyPipelineRoleC0D47CA4": {
@@ -226,7 +227,8 @@
       }
     },
     "MyEcrRepo767466D0": {
-      "Type": "AWS::ECR::Repository"
+      "Type": "AWS::ECR::Repository",
+      "DeletionPolicy": "Retain"
     },
     "MyEcrRepoawscdkcodepipelineecrsourceMyPipeline63CF3194SourceEventRule911FDB6D": {
       "Type": "AWS::Events::Rule",
@@ -277,7 +279,7 @@
                 ]
               ]
             },
-            "Id": "MyPipeline",
+            "Id": "awscdkcodepipelineecrsourceMyPipeline63CF3194",
             "RoleArn": {
               "Fn::GetAtt": [
                 "MyPipelineEventsRoleFAB99F32",

@@ -1,6 +1,6 @@
 import events = require('@aws-cdk/aws-events');
 import iam = require('@aws-cdk/aws-iam');
-import { Construct, DeletionPolicy, IConstruct, IResource, Lazy, Resource, Stack, Token } from '@aws-cdk/cdk';
+import { Construct, IConstruct, IResource, Lazy, RemovalPolicy, Resource, Stack, Token } from '@aws-cdk/cdk';
 import { CfnRepository } from './ecr.generated';
 import { CountType, LifecycleRule, TagStatus } from './lifecycle';
 
@@ -133,7 +133,7 @@ export abstract class RepositoryBase extends Resource implements IRepository {
    * @param id The id of the rule
    * @param options Options for adding the rule
    */
-  public onCloudTrailEvent(id: string, options: events.OnEventOptions): events.Rule {
+  public onCloudTrailEvent(id: string, options: events.OnEventOptions = {}): events.Rule {
     const rule = new events.Rule(this, id, options);
     rule.addTarget(options.target);
     rule.addEventPattern({
@@ -158,7 +158,7 @@ export abstract class RepositoryBase extends Resource implements IRepository {
    * @param id The id of the rule
    * @param options Options for adding the rule
    */
-  public onCloudTrailImagePushed(id: string, options: OnCloudTrailImagePushedOptions): events.Rule {
+  public onCloudTrailImagePushed(id: string, options: OnCloudTrailImagePushedOptions = {}): events.Rule {
     const rule = this.onCloudTrailEvent(id, options);
     rule.addEventPattern({
       detail: {
@@ -248,14 +248,11 @@ export interface RepositoryProps {
   readonly lifecycleRegistryId?: string;
 
   /**
-   * Retain the repository on stack deletion
+   * Determine what happens to the repository when the resource/stack is deleted.
    *
-   * If you don't set this to true, the registry must be empty, otherwise
-   * your stack deletion will fail.
-   *
-   * @default false
+   * @default RemovalPolicy.Retain
    */
-  readonly retain?: boolean;
+  readonly removalPolicy?: RemovalPolicy;
 }
 
 export interface RepositoryAttributes {
@@ -347,24 +344,22 @@ export class Repository extends RepositoryBase {
       lifecyclePolicy: Lazy.anyValue({ produce: () => this.renderLifecyclePolicy() }),
     });
 
-    if (props.retain) {
-      resource.options.deletionPolicy = DeletionPolicy.Retain;
-    }
+    resource.applyRemovalPolicy(props.removalPolicy);
 
     this.registryId = props.lifecycleRegistryId;
     if (props.lifecycleRules) {
       props.lifecycleRules.forEach(this.addLifecycleRule.bind(this));
     }
 
-    this.repositoryName = resource.repositoryName;
-    this.repositoryArn = resource.repositoryArn;
+    this.repositoryName = resource.refAsString;
+    this.repositoryArn = resource.attrArn;
   }
 
   public addToResourcePolicy(statement: iam.PolicyStatement) {
     if (this.policyDocument === undefined) {
       this.policyDocument = new iam.PolicyDocument();
     }
-    this.policyDocument.addStatement(statement);
+    this.policyDocument.addStatements(statement);
   }
 
   /**

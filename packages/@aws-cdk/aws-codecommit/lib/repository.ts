@@ -117,7 +117,7 @@ abstract class RepositoryBase extends Resource implements IRepository {
    * Defines a CloudWatch event rule which triggers for repository events. Use
    * `rule.addEventPattern(pattern)` to specify a filter.
    */
-  public onEvent(id: string, options: events.OnEventOptions) {
+  public onEvent(id: string, options: events.OnEventOptions = {}) {
     const rule = new events.Rule(this, id, options);
     rule.addEventPattern({
       source: [ 'aws.codecommit' ],
@@ -131,7 +131,7 @@ abstract class RepositoryBase extends Resource implements IRepository {
    * Defines a CloudWatch event rule which triggers when a "CodeCommit
    * Repository State Change" event occurs.
    */
-  public onStateChange(id: string, options: events.OnEventOptions) {
+  public onStateChange(id: string, options: events.OnEventOptions = {}) {
     const rule = this.onEvent(id, options);
     rule.addEventPattern({
       detailType: [ 'CodeCommit Repository State Change' ],
@@ -143,7 +143,7 @@ abstract class RepositoryBase extends Resource implements IRepository {
    * Defines a CloudWatch event rule which triggers when a reference is
    * created (i.e. a new branch/tag is created) to the repository.
    */
-  public onReferenceCreated(id: string, options: events.OnEventOptions) {
+  public onReferenceCreated(id: string, options: events.OnEventOptions = {}) {
     const rule = this.onStateChange(id, options);
     rule.addEventPattern({ detail: { event: [ 'referenceCreated' ] } });
     return rule;
@@ -153,7 +153,7 @@ abstract class RepositoryBase extends Resource implements IRepository {
    * Defines a CloudWatch event rule which triggers when a reference is
    * updated (i.e. a commit is pushed to an existing or new branch) from the repository.
    */
-  public onReferenceUpdated(id: string, options: events.OnEventOptions) {
+  public onReferenceUpdated(id: string, options: events.OnEventOptions = {}) {
     const rule = this.onStateChange(id, options);
     rule.addEventPattern({ detail: { event: [ 'referenceCreated', 'referenceUpdated' ] } });
     return rule;
@@ -163,7 +163,7 @@ abstract class RepositoryBase extends Resource implements IRepository {
    * Defines a CloudWatch event rule which triggers when a reference is
    * delete (i.e. a branch/tag is deleted) from the repository.
    */
-  public onReferenceDeleted(id: string, options: events.OnEventOptions) {
+  public onReferenceDeleted(id: string, options: events.OnEventOptions = {}) {
     const rule = this.onStateChange(id, options);
     rule.addEventPattern({ detail: { event: [ 'referenceDeleted' ] } });
     return rule;
@@ -172,7 +172,7 @@ abstract class RepositoryBase extends Resource implements IRepository {
   /**
    * Defines a CloudWatch event rule which triggers when a pull request state is changed.
    */
-  public onPullRequestStateChange(id: string, options: events.OnEventOptions) {
+  public onPullRequestStateChange(id: string, options: events.OnEventOptions = {}) {
     const rule = this.onEvent(id, options);
     rule.addEventPattern({ detailType: [ 'CodeCommit Pull Request State Change' ] });
     return rule;
@@ -181,7 +181,7 @@ abstract class RepositoryBase extends Resource implements IRepository {
   /**
    * Defines a CloudWatch event rule which triggers when a comment is made on a pull request.
    */
-  public onCommentOnPullRequest(id: string, options: events.OnEventOptions) {
+  public onCommentOnPullRequest(id: string, options: events.OnEventOptions = {}) {
     const rule = this.onEvent(id, options);
     rule.addEventPattern({ detailType: [ 'CodeCommit Comment on Pull Request' ] });
     return rule;
@@ -190,7 +190,7 @@ abstract class RepositoryBase extends Resource implements IRepository {
   /**
    * Defines a CloudWatch event rule which triggers when a comment is made on a commit.
    */
-  public onCommentOnCommit(id: string, options: events.OnEventOptions) {
+  public onCommentOnCommit(id: string, options: events.OnEventOptions = {}) {
     const rule = this.onEvent(id, options);
     rule.addEventPattern({ detailType: [ 'CodeCommit Comment on Commit' ] });
     return rule;
@@ -199,7 +199,7 @@ abstract class RepositoryBase extends Resource implements IRepository {
   /**
    * Defines a CloudWatch event rule which triggers when a commit is pushed to a branch.
    */
-  public onCommit(id: string, options: OnCommitOptions) {
+  public onCommit(id: string, options: OnCommitOptions = {}) {
     const rule = this.onReferenceUpdated(id, options);
     if (options.branches) {
       rule.addEventPattern({ detail: { referenceName: options.branches }});
@@ -284,19 +284,19 @@ export class Repository extends RepositoryBase {
   }
 
   public get repositoryArn() {
-    return this.repository.repositoryArn;
+    return this.repository.attrArn;
   }
 
   public get repositoryCloneUrlHttp() {
-    return this.repository.repositoryCloneUrlHttp;
+    return this.repository.attrCloneUrlHttp;
   }
 
   public get repositoryCloneUrlSsh() {
-    return this.repository.repositoryCloneUrlSsh;
+    return this.repository.attrCloneUrlSsh;
   }
 
   public get repositoryName() {
-    return this.repository.repositoryName;
+    return this.repository.attrName;
   }
 
   /**

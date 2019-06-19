@@ -29,7 +29,7 @@ export interface ISecret extends IResource {
   /**
    * Interpret the secret as a JSON object and return a field's value from it as a `SecretValue`.
    */
-  secretJsonValue(key: string): SecretValue;
+  secretValueFromJson(key: string): SecretValue;
 
   /**
    * Grants reading the secret value to some role.
@@ -129,10 +129,10 @@ abstract class SecretBase extends Resource implements ISecret {
   }
 
   public get secretValue() {
-    return this.secretJsonValue('');
+    return this.secretValueFromJson('');
   }
 
-  public secretJsonValue(jsonField: string) {
+  public secretValueFromJson(jsonField: string) {
     return SecretValue.secretsManager(this.secretArn, { jsonField });
   }
 
@@ -189,7 +189,7 @@ export class Secret extends SecretBase {
     });
 
     this.encryptionKey = props.encryptionKey;
-    this.secretArn = resource.secretArn;
+    this.secretArn = resource.refAsString;
   }
 
   /**
@@ -309,8 +309,8 @@ export class SecretTargetAttachment extends SecretBase implements ISecretTargetA
     this.encryptionKey = props.secret.encryptionKey;
 
     // This allows to reference the secret after attachment (dependency).
-    this.secretArn = attachment.secretTargetAttachmentSecretArn;
-    this.secretTargetAttachmentSecretArn = attachment.secretTargetAttachmentSecretArn;
+    this.secretArn = attachment.refAsString;
+    this.secretTargetAttachmentSecretArn = attachment.refAsString;
   }
 }
 

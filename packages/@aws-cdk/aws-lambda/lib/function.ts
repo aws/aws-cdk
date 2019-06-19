@@ -257,15 +257,15 @@ export class Function extends FunctionBase {
     class Import extends FunctionBase {
       public readonly functionName = functionName;
       public readonly functionArn = functionArn;
-      public readonly role = role;
       public readonly grantPrincipal: iam.IPrincipal;
+      public readonly role = role;
 
       protected readonly canCreatePermissions = false;
 
       constructor(s: Construct, i: string) {
         super(s, i);
 
-        this.grantPrincipal = role || new iam.ImportedResourcePrincipal({ resource: this } );
+        this.grantPrincipal = role || new iam.UnknownPrincipal({ resource: this } );
 
         if (attrs.securityGroupId) {
           this._connections = new ec2.Connections({
@@ -371,11 +371,6 @@ export class Function extends FunctionBase {
   public readonly runtime: Runtime;
 
   /**
-   * The name of the handler configured for this lambda.
-   */
-  public readonly handler: string;
-
-  /**
    * The principal this Lambda Function is running as
    */
   public readonly grantPrincipal: iam.IPrincipal;
@@ -394,19 +389,19 @@ export class Function extends FunctionBase {
 
     this.environment = props.environment || { };
 
-    const managedPolicyArns = new Array<string>();
+    const managedPolicies = new Array<iam.IManagedPolicy>();
 
     // the arn is in the form of - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
-    managedPolicyArns.push(new iam.AwsManagedPolicy("service-role/AWSLambdaBasicExecutionRole", this).policyArn);
+    managedPolicies.push(iam.ManagedPolicy.fromAwsManagedPolicyName("service-role/AWSLambdaBasicExecutionRole"));
 
     if (props.vpc) {
       // Policy that will have ENI creation permissions
-      managedPolicyArns.push(new iam.AwsManagedPolicy("service-role/AWSLambdaVPCAccessExecutionRole", this).policyArn);
+      managedPolicies.push(iam.ManagedPolicy.fromAwsManagedPolicyName("service-role/AWSLambdaVPCAccessExecutionRole"));
     }
 
     this.role = props.role || new iam.Role(this, 'ServiceRole', {
       assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
-      managedPolicyArns,
+      managedPolicies
     });
     this.grantPrincipal = this.role;
 
@@ -441,15 +436,14 @@ export class Function extends FunctionBase {
     resource.node.addDependency(this.role);
 
     this.functionName = resource.refAsString;
-    this.functionArn = resource.functionArn;
-    this.handler = props.handler;
+    this.functionArn = resource.attrArn;
     this.runtime = props.runtime;
 
     // allow code to bind to stack.
     props.code.bind(this);
 
-    for (const layer of props.layers || []) {
-      this.addLayer(layer);
+    if (props.layers) {
+      this.addLayers(...props.layers);
     }
 
     for (const event of props.events || []) {
@@ -481,22 +475,23 @@ export class Function extends FunctionBase {
   }
 
   /**
-   * Adds a Lambda Layer to this Lambda function.
+   * Adds one or more Lambda Layers to this Lambda function.
    *
-   * @param layer the layer to be added.
+   * @param layers the layers to be added.
    *
    * @throws if there are already 5 layers on this function, or the layer is incompatible with this function's runtime.
    */
-  public addLayer(layer: ILayerVersion): this {
-    if (this.layers.length === 5) {
-      throw new Error('Unable to add layer: this lambda function already uses 5 layers.');
+  public addLayers(...layers: ILayerVersion[]): void {
+    for (const layer of layers) {
+      if (this.layers.length === 5) {
+        throw new Error('Unable to add layer: this lambda function already uses 5 layers.');
+      }
+      if (layer.compatibleRuntimes && !layer.compatibleRuntimes.find(runtime => runtime.runtimeEquals(this.runtime))) {
+        const runtimes = layer.compatibleRuntimes.map(runtime => runtime.name).join(', ');
+        throw new Error(`This lambda function uses a runtime that is incompatible with this layer (${this.runtime.name} is not in [${runtimes}])`);
+      }
+      this.layers.push(layer);
     }
-    if (layer.compatibleRuntimes && !layer.compatibleRuntimes.find(runtime => runtime.runtimeEquals(this.runtime))) {
-      const runtimes = layer.compatibleRuntimes.map(runtime => runtime.name).join(', ');
-      throw new Error(`This lambda function uses a runtime that is incompatible with this layer (${this.runtime.name} is not in [${runtimes}])`);
-    }
-    this.layers.push(layer);
-    return this;
   }
 
   /**
@@ -521,25 +516,6 @@ export class Function extends FunctionBase {
       codeSha256,
       description,
     });
-  }
-
-  /**
-   * Add a new version for this Lambda, always with a different name.
-   *
-   * This is similar to the {@link addVersion} method,
-   * but useful when deploying this Lambda through CodePipeline with blue/green deployments.
-   * When using {@link addVersion},
-   * your Alias will not be updated until you change the name passed to {@link addVersion} in your CDK code.
-   * When deploying through a Pipeline,
-   * that might lead to a situation where a change to your Lambda application code will never be activated,
-   * even though it traveled through the entire Pipeline,
-   * because the Alias is still pointing to an old Version.
-   * This method creates a new, unique Version every time the CDK code is executed,
-   * and so prevents that from happening.
-   */
-  public newVersion(): Version {
-    const now = new Date();
-    return this.addVersion(now.toISOString());
   }
 
   private renderEnvironment() {
@@ -612,9 +588,10 @@ export class Function extends FunctionBase {
       retentionPeriodSec: 1209600
     });
 
-    this.addToRolePolicy(new iam.PolicyStatement()
-      .addAction('sqs:SendMessage')
-      .addResource(deadLetterQueue.queueArn));
+    this.addToRolePolicy(new iam.PolicyStatement({
+      actions: ['sqs:SendMessage'],
+      resources: [deadLetterQueue.queueArn]
+    }));
 
     return {
       targetArn: deadLetterQueue.queueArn
@@ -626,9 +603,10 @@ export class Function extends FunctionBase {
       return undefined;
     }
 
-    this.addToRolePolicy(new iam.PolicyStatement()
-      .addActions('xray:PutTraceSegments', 'xray:PutTelemetryRecords')
-      .addAllResources());
+    this.addToRolePolicy(new iam.PolicyStatement({
+      actions: ['xray:PutTraceSegments', 'xray:PutTelemetryRecords'],
+      resources: ['*']
+    }));
 
     return {
       mode: Tracing[props.tracing]

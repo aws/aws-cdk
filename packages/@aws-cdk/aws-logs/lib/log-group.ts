@@ -1,6 +1,6 @@
 import cloudwatch = require('@aws-cdk/aws-cloudwatch');
 import iam = require('@aws-cdk/aws-iam');
-import { applyRemovalPolicy, Construct, IResource, RemovalPolicy, Resource, Stack } from '@aws-cdk/cdk';
+import { Construct, IResource, RemovalPolicy, Resource, Stack } from '@aws-cdk/cdk';
 import { LogStream } from './log-stream';
 import { CfnLogGroup } from './logs.generated';
 import { MetricFilter } from './metric-filter';
@@ -23,29 +23,26 @@ export interface ILogGroup extends IResource {
   /**
    * Create a new Log Stream for this Log Group
    *
-   * @param scope Parent construct
    * @param id Unique identifier for the construct in its parent
    * @param props Properties for creating the LogStream
    */
-  newStream(scope: Construct, id: string, props?: NewLogStreamProps): LogStream;
+  addStream(id: string, props?: StreamOptions): LogStream;
 
   /**
    * Create a new Subscription Filter on this Log Group
    *
-   * @param scope Parent construct
    * @param id Unique identifier for the construct in its parent
    * @param props Properties for creating the SubscriptionFilter
    */
-  newSubscriptionFilter(scope: Construct, id: string, props: NewSubscriptionFilterProps): SubscriptionFilter;
+  addSubscriptionFilter(id: string, props: SubscriptionFilterOptions): SubscriptionFilter;
 
   /**
    * Create a new Metric Filter on this Log Group
    *
-   * @param scope Parent construct
    * @param id Unique identifier for the construct in its parent
    * @param props Properties for creating the MetricFilter
    */
-  newMetricFilter(scope: Construct, id: string, props: NewMetricFilterProps): MetricFilter;
+  addMetricFilter(id: string, props: MetricFilterOptions): MetricFilter;
 
   /**
    * Extract a metric from structured log events in the LogGroup
@@ -91,12 +88,11 @@ abstract class LogGroupBase extends Resource implements ILogGroup {
   /**
    * Create a new Log Stream for this Log Group
    *
-   * @param scope Parent construct
    * @param id Unique identifier for the construct in its parent
    * @param props Properties for creating the LogStream
    */
-  public newStream(scope: Construct, id: string, props: NewLogStreamProps = {}): LogStream {
-    return new LogStream(scope, id, {
+  public addStream(id: string, props: StreamOptions = {}): LogStream {
+    return new LogStream(this, id, {
       logGroup: this,
       ...props
     });
@@ -105,12 +101,11 @@ abstract class LogGroupBase extends Resource implements ILogGroup {
   /**
    * Create a new Subscription Filter on this Log Group
    *
-   * @param scope Parent construct
    * @param id Unique identifier for the construct in its parent
    * @param props Properties for creating the SubscriptionFilter
    */
-  public newSubscriptionFilter(scope: Construct, id: string, props: NewSubscriptionFilterProps): SubscriptionFilter {
-    return new SubscriptionFilter(scope, id, {
+  public addSubscriptionFilter(id: string, props: SubscriptionFilterOptions): SubscriptionFilter {
+    return new SubscriptionFilter(this, id, {
       logGroup: this,
       ...props
     });
@@ -119,12 +114,11 @@ abstract class LogGroupBase extends Resource implements ILogGroup {
   /**
    * Create a new Metric Filter on this Log Group
    *
-   * @param scope Parent construct
    * @param id Unique identifier for the construct in its parent
    * @param props Properties for creating the MetricFilter
    */
-  public newMetricFilter(scope: Construct, id: string, props: NewMetricFilterProps): MetricFilter {
-    return new MetricFilter(scope, id, {
+  public addMetricFilter(id: string, props: MetricFilterOptions): MetricFilter {
+    return new MetricFilter(this, id, {
       logGroup: this,
       ...props
     });
@@ -289,16 +283,16 @@ export interface LogGroupProps {
   readonly retentionDays?: RetentionDays;
 
   /**
-   * Retain the log group if the stack or containing construct ceases to exist
+   * Determine the removal policy of this log group.
    *
    * Normally you want to retain the log group so you can diagnose issues
    * from logs even after a deployment that no longer includes the log group.
    * In that case, use the normal date-based retention policy to age out your
    * logs.
    *
-   * @default true
+   * @default RemovalPolicy.Retain
    */
-  readonly retainLogGroup?: boolean;
+  readonly removalPolicy?: RemovalPolicy;
 }
 
 /**
@@ -343,19 +337,17 @@ export class LogGroup extends LogGroupBase {
       retentionInDays,
     });
 
-    if (props.retainLogGroup !== false) {
-      applyRemovalPolicy(resource, RemovalPolicy.Orphan);
-    }
+    resource.applyRemovalPolicy(props.removalPolicy);
 
-    this.logGroupArn = resource.logGroupArn;
-    this.logGroupName = resource.logGroupName;
+    this.logGroupArn = resource.attrArn;
+    this.logGroupName = resource.refAsString;
   }
 }
 
 /**
  * Properties for a new LogStream created from a LogGroup
  */
-export interface NewLogStreamProps {
+export interface StreamOptions {
   /**
    * The name of the log stream to create.
    *
@@ -369,7 +361,7 @@ export interface NewLogStreamProps {
 /**
  * Properties for a new SubscriptionFilter created from a LogGroup
  */
-export interface NewSubscriptionFilterProps {
+export interface SubscriptionFilterOptions {
   /**
    * The destination to send the filtered events to.
    *
@@ -386,7 +378,7 @@ export interface NewSubscriptionFilterProps {
 /**
  * Properties for a MetricFilter created from a LogGroup
  */
-export interface NewMetricFilterProps {
+export interface MetricFilterOptions {
   /**
    * Pattern to search for log events.
    */

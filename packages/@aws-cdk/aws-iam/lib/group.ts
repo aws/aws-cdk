@@ -1,19 +1,24 @@
-import { Construct, Resource, Stack } from '@aws-cdk/cdk';
+import { Construct, Lazy, Resource, Stack } from '@aws-cdk/cdk';
 import { CfnGroup } from './iam.generated';
 import { IIdentity } from './identity-base';
+import { IManagedPolicy } from './managed-policy';
 import { Policy } from './policy';
-import { PolicyStatement } from './policy-document';
+import { PolicyStatement } from './policy-statement';
 import { ArnPrincipal, IPrincipal, PrincipalPolicyFragment } from './principals';
 import { IUser } from './user';
-import { AttachedPolicies, undefinedIfEmpty } from './util';
+import { AttachedPolicies } from './util';
 
 export interface IGroup extends IIdentity {
   /**
+   * Returns the IAM Group Name
+   *
    * @attribute
    */
   readonly groupName: string;
 
   /**
+   * Returns the IAM Group ARN
+   *
    * @attribute
    */
   readonly groupArn: string;
@@ -74,7 +79,7 @@ abstract class GroupBase extends Resource implements IGroup {
     policy.attachToGroup(this);
   }
 
-  public attachManagedPolicy(_arn: string) {
+  public addManagedPolicy(_policy: IManagedPolicy) {
     // drop
   }
 
@@ -94,7 +99,7 @@ abstract class GroupBase extends Resource implements IGroup {
       this.defaultPolicy.attachToGroup(this);
     }
 
-    this.defaultPolicy.addStatement(statement);
+    this.defaultPolicy.addStatements(statement);
     return true;
   }
 }
@@ -118,28 +123,28 @@ export class Group extends GroupBase {
   public readonly groupName: string;
   public readonly groupArn: string;
 
-  private readonly managedPolicies: string[];
+  private readonly managedPolicies: IManagedPolicy[] = [];
 
   constructor(scope: Construct, id: string, props: GroupProps = {}) {
     super(scope, id);
 
-    this.managedPolicies = props.managedPolicyArns || [];
+    this.managedPolicies.push(...props.managedPolicyArns || []);
 
     const group = new CfnGroup(this, 'Resource', {
       groupName: props.groupName,
-      managedPolicyArns: undefinedIfEmpty(() => this.managedPolicies),
+      managedPolicyArns: Lazy.listValue({ produce: () => this.managedPolicies.map(p => p.managedPolicyArn) }, { omitEmpty: true }),
       path: props.path,
     });
 
-    this.groupName = group.groupName;
-    this.groupArn = group.groupArn;
+    this.groupName = group.refAsString;
+    this.groupArn = group.attrArn;
   }
 
   /**
    * Attaches a managed policy to this group.
-   * @param arn The ARN of the managed policy to attach.
+   * @param policy The managed policy to attach.
    */
-  public attachManagedPolicy(arn: string) {
-    this.managedPolicies.push(arn);
+  public addManagedPolicy(policy: IManagedPolicy) {
+    this.managedPolicies.push(policy);
   }
 }

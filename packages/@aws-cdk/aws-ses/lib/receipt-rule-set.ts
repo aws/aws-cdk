@@ -103,7 +103,7 @@ export class ReceiptRuleSet extends ReceiptRuleSetBase {
       ruleSetName: props ? props.name : undefined
     });
 
-    this.receiptRuleSetName = resource.receiptRuleSetName;
+    this.receiptRuleSetName = resource.refAsString;
 
     if (props) {
       const rules = props.rules || [];

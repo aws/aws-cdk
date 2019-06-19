@@ -51,7 +51,7 @@ export = {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
       runtime: lambda.Runtime.Nodejs810,
-      initialPolicy: [new iam.PolicyStatement().addAction("*").addAllResources()]
+      initialPolicy: [new iam.PolicyStatement({ actions: ["*"], resources: ["*"]  })]
     });
     expect(stack).toMatch({ Resources:
       { MyLambdaServiceRole4539ECB6:
@@ -205,7 +205,7 @@ export = {
       const role = new iam.Role(stack, 'SomeRole', {
         assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
       });
-      role.addToPolicy(new iam.PolicyStatement().addAction('confirm:itsthesame'));
+      role.addToPolicy(new iam.PolicyStatement({ actions: ['confirm:itsthesame'] }));
 
       // WHEN
       const fn = new lambda.Function(stack, 'Function', {
@@ -214,11 +214,11 @@ export = {
         handler: 'index.test',
         role,
         initialPolicy: [
-          new iam.PolicyStatement().addAction('inline:inline')
+          new iam.PolicyStatement({ actions: ['inline:inline'] })
         ]
       });
 
-      fn.addToRolePolicy(new iam.PolicyStatement().addAction('explicit:explicit'));
+      fn.addToRolePolicy(new iam.PolicyStatement({ actions: ['explicit:explicit'] }));
 
       // THEN
       expect(stack).to(haveResource('AWS::IAM::Policy', {
@@ -258,7 +258,7 @@ export = {
     // GIVEN
     const stack = new cdk.Stack();
     new lambda.Function(stack, 'MyLambda', {
-      code: lambda.Code.directory(path.join(__dirname, 'my-lambda-handler')),
+      code: lambda.Code.asset(path.join(__dirname, 'my-lambda-handler')),
       handler: 'index.handler',
       runtime: lambda.Runtime.Python36
     });
@@ -1284,7 +1284,7 @@ export = {
     let bindCount = 0;
 
     class EventSource implements lambda.IEventSource {
-      public bind(_: lambda.FunctionBase): void {
+      public bind(_: lambda.IFunction): void {
         bindCount++;
       }
     }

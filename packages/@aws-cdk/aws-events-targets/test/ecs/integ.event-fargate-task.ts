@@ -20,15 +20,13 @@ class EventStack extends cdk.Stack {
     // Create a Task Definition for the container to start
     const taskDefinition = new ecs.FargateTaskDefinition(this, 'TaskDef');
     taskDefinition.addContainer('TheContainer', {
-      image: ecs.ContainerImage.fromAsset(this, 'EventImage', {
-        directory: path.resolve(__dirname, 'eventhandler-image')
-      }),
+      image: ecs.ContainerImage.fromAsset(path.resolve(__dirname, 'eventhandler-image')),
       logging: new ecs.AwsLogDriver(this, 'TaskLogging', { streamPrefix: 'EventDemo' })
     });
 
     // A rule that describes the event trigger (in this case a scheduled run)
     const rule = new events.Rule(this, 'Rule', {
-      scheduleExpression: 'rate(1 minute)',
+      schedule: events.Schedule.rate(1, events.TimeUnit.Minute),
     });
 
     // Use EcsTask as the target of the Rule

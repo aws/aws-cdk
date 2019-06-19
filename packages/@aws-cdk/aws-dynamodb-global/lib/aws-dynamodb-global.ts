@@ -3,7 +3,7 @@ import cdk = require("@aws-cdk/cdk");
 import { GlobalTableCoordinator } from "./global-table-coordinator";
 
 /**
- * Properties for the mutliple DynamoDB tables to mash together into a
+ * Properties for the multiple DynamoDB tables to mash together into a
  * global table
  */
 export interface GlobalTableProps extends cdk.StackProps, dynamodb.TableOptions {
@@ -39,15 +39,15 @@ export class GlobalTable extends cdk.Construct {
     super(scope, id);
     this._regionalTables = [];
 
-    if (props.streamSpecification != null && props.streamSpecification !== dynamodb.StreamViewType.NewAndOldImages) {
-      throw new Error("dynamoProps.streamSpecification MUST be set to dynamodb.StreamViewType.NewAndOldImages");
+    if (props.stream != null && props.stream !== dynamodb.StreamViewType.NewAndOldImages) {
+      throw new Error("dynamoProps.stream MUST be set to dynamodb.StreamViewType.NewAndOldImages");
     }
 
-    // need to set this streamSpecification, otherwise global tables don't work
+    // need to set this stream specification, otherwise global tables don't work
     // And no way to set a default value in an interface
-    const stackProps = {
+    const stackProps: dynamodb.TableProps = {
       ...props,
-      streamSpecification: dynamodb.StreamViewType.NewAndOldImages
+      stream: dynamodb.StreamViewType.NewAndOldImages
     };
 
     // here we loop through the configured regions.

@@ -1,5 +1,7 @@
 import ec2 = require('@aws-cdk/aws-ec2');
-import { Construct, Lazy, Resource } from '@aws-cdk/cdk';
+import { Construct, ContextProvider, Lazy, Resource } from '@aws-cdk/cdk';
+import cxapi = require('@aws-cdk/cx-api');
+import { HostedZoneProviderProps } from './hosted-zone-provider';
 import { HostedZoneAttributes, IHostedZone } from './hosted-zone-ref';
 import { CaaAmazonRecord, ZoneDelegationRecord } from './record-set';
 import { CfnHostedZone } from './route53.generated';
@@ -67,6 +69,37 @@ export class HostedZone extends Resource implements IHostedZone {
     return new Import(scope, id);
   }
 
+  /**
+   * Lookup a hosted zone in the current account/region based on query parameters.
+   */
+  public static fromLookup(scope: Construct, id: string, query: HostedZoneProviderProps): IHostedZone {
+    const DEFAULT_HOSTED_ZONE: HostedZoneContextResponse = {
+      Id: '/hostedzone/DUMMY',
+      Name: 'example.com',
+    };
+
+    interface HostedZoneContextResponse {
+      Id: string;
+      Name: string;
+    }
+
+    const response: HostedZoneContextResponse = ContextProvider.getValue(scope, {
+      provider: cxapi.HOSTED_ZONE_PROVIDER,
+      dummyValue: DEFAULT_HOSTED_ZONE,
+      props: query
+    });
+
+    // CDK handles the '.' at the end, so remove it here
+    if (response.Name.endsWith('.')) {
+      response.Name = response.Name.substring(0, response.Name.length - 1);
+    }
+
+    return this.fromHostedZoneAttributes(scope, id, {
+      hostedZoneId: response.Id,
+      zoneName: response.Name,
+    });
+  }
+
   public readonly hostedZoneId: string;
   public readonly zoneName: string;
   public readonly hostedZoneNameServers?: string[];
@@ -89,7 +122,7 @@ export class HostedZone extends Resource implements IHostedZone {
     });
 
     this.hostedZoneId = resource.refAsString;
-    this.hostedZoneNameServers = resource.hostedZoneNameServers;
+    this.hostedZoneNameServers = resource.attrNameServers;
     this.zoneName = props.zoneName;
 
     for (const vpc of props.vpcs || []) {

@@ -21,19 +21,19 @@ const sourceAction = new cpactions.S3SourceAction({
   output: sourceOutput,
 });
 const sourceStage = {
-  name: 'Source',
+  stageName: 'Source',
   actions: [sourceAction],
 };
 
 const role = new iam.Role(stack, 'ActionRole', {
   assumedBy: new iam.AccountPrincipal(cdk.Aws.accountId)
 });
-role.addToPolicy(new iam.PolicyStatement()
-  .addAction('sqs:*')
-  .addAllResources()
-);
+role.addToPolicy(new iam.PolicyStatement({
+  actions: ['sqs:*'],
+  resources: ['*']
+}));
 const cfnStage = {
-  name: 'CFN',
+  stageName: 'CFN',
   actions: [
     new cpactions.CloudFormationCreateUpdateStackAction({
       actionName: 'CFN_Deploy',

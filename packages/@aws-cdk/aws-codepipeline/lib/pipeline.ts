@@ -38,7 +38,7 @@ export interface StageProps {
   /**
    * The physical, human-readable name to assign to this Pipeline Stage.
    */
-  readonly name: string;
+  readonly stageName: string;
 
   /**
    * The list of Actions to create this Stage with.
@@ -114,7 +114,7 @@ abstract class PipelineBase extends Resource implements IPipeline {
    * @param id Identifier for this event handler.
    * @param options Additional options to pass to the event rule.
    */
-  public onEvent(id: string, options: events.OnEventOptions): events.Rule {
+  public onEvent(id: string, options: events.OnEventOptions = {}): events.Rule {
     const rule = new events.Rule(this, id, options);
     rule.addTarget(options.target);
     rule.addEventPattern({
@@ -131,7 +131,7 @@ abstract class PipelineBase extends Resource implements IPipeline {
    * @param id Identifier for this event handler.
    * @param options Additional options to pass to the event rule.
    */
-  public onStateChange(id: string, options: events.OnEventOptions): events.Rule {
+  public onStateChange(id: string, options: events.OnEventOptions = {}): events.Rule {
     const rule = this.onEvent(id, options);
     rule.addEventPattern({
       detailType: [ 'CodePipeline Pipeline Execution State Change' ],
@@ -231,7 +231,7 @@ export class Pipeline extends PipelineBase {
         bucketName: PhysicalName.auto({ crossEnvironment: true }),
         encryptionKey,
         encryption: s3.BucketEncryption.Kms,
-        removalPolicy: RemovalPolicy.Orphan
+        removalPolicy: RemovalPolicy.Retain
       });
     }
     this.artifactBucket = propsBucket;
@@ -256,7 +256,7 @@ export class Pipeline extends PipelineBase {
     this.artifactBucket.grantReadWrite(this.role);
 
     this.pipelineName = codePipeline.refAsString;
-    this.pipelineVersion = codePipeline.pipelineVersion;
+    this.pipelineVersion = codePipeline.attrVersion;
     this.crossRegionReplicationBuckets = props.crossRegionReplicationBuckets || {};
     this.artifactStores = {};
 
@@ -279,8 +279,8 @@ export class Pipeline extends PipelineBase {
    */
   public addStage(props: StageAddToPipelineProps): IStage {
     // check for duplicate Stages and names
-    if (this.stages.find(s => s.stageName === props.name)) {
-      throw new Error(`Stage with duplicate name '${props.name}' added to the Pipeline`);
+    if (this.stages.find(s => s.stageName === props.stageName)) {
+      throw new Error(`Stage with duplicate name '${props.stageName}' added to the Pipeline`);
     }
 
     const stage = new Stage(props, this);
@@ -454,9 +454,10 @@ export class Pipeline extends PipelineBase {
 
     // the pipeline role needs assumeRole permissions to the action role
     if (actionRole) {
-      this.role.addToPolicy(new iam.PolicyStatement()
-        .addAction('sts:AssumeRole')
-        .addResource(actionRole.roleArn));
+      this.role.addToPolicy(new iam.PolicyStatement({
+        actions: ['sts:AssumeRole'],
+        resources: [actionRole.roleArn]
+      }));
     }
 
     return actionRole;
