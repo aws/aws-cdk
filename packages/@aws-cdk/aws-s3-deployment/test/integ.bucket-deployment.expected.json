@@ -2,12 +2,12 @@
   "Resources": {
     "Destination920A3C57": {
       "Type": "AWS::S3::Bucket",
-      "DeletionPolicy": "Delete",
       "Properties": {
         "WebsiteConfiguration": {
           "IndexDocument": "index.html"
         }
-      }
+      },
+      "DeletionPolicy": "Delete"
     },
     "DestinationPolicy7982387E": {
       "Type": "AWS::S3::BucketPolicy",
@@ -90,7 +90,8 @@
           "Ref": "Destination920A3C57"
         },
         "RetainOnDelete": false
-      }
+      },
+      "DeletionPolicy": "Delete"
     },
     "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRole89A01265": {
       "Type": "AWS::IAM::Role",
@@ -407,7 +408,8 @@
         },
         "DestinationBucketKeyPrefix": "deploy/here/",
         "RetainOnDelete": false
-      }
+      },
+      "DeletionPolicy": "Delete"
     }
   },
   "Parameters": {
