@@ -7,7 +7,7 @@ import fs = require('fs');
 import { Test } from 'nodeunit';
 import os = require('os');
 import path = require('path');
-import { FileAsset, ZipDirectoryAsset } from '../lib/asset';
+import { Asset } from '../lib/asset';
 
 const SAMPLE_ASSET_DIR = path.join(__dirname, 'sample-asset-directory');
 
@@ -19,7 +19,7 @@ export = {
       }
     });
     const stack = new cdk.Stack(app, 'MyStack');
-    const asset = new ZipDirectoryAsset(stack, 'MyAsset', {
+    const asset = new Asset(stack, 'MyAsset', {
       path: SAMPLE_ASSET_DIR
     });
 
@@ -53,7 +53,7 @@ export = {
     const stack = new cdk.Stack(app, 'my-stack');
     const dirPath = path.resolve(__dirname, 'sample-asset-directory');
 
-    new ZipDirectoryAsset(stack, 'MyAsset', {
+    new Asset(stack, 'MyAsset', {
       path: dirPath
     });
 
@@ -77,7 +77,7 @@ export = {
   '"file" assets'(test: Test) {
     const stack = new cdk.Stack();
     const filePath = path.join(__dirname, 'file-asset.txt');
-    const asset = new FileAsset(stack, 'MyAsset', { path: filePath });
+    const asset = new Asset(stack, 'MyAsset', { path: filePath });
     const entry = asset.node.metadata.find(m => m.type === 'aws:cdk:asset');
     test.ok(entry, 'found metadata entry');
 
@@ -106,7 +106,7 @@ export = {
     const user = new iam.User(stack, 'MyUser');
     const group = new iam.Group(stack, 'MyGroup');
 
-    const asset = new ZipDirectoryAsset(stack, 'MyAsset', {
+    const asset = new Asset(stack, 'MyAsset', {
       path: path.join(__dirname, 'sample-asset-directory'),
       readers: [ user ]
     });
@@ -140,7 +140,7 @@ export = {
   },
   'fails if directory not found'(test: Test) {
     const stack = new cdk.Stack();
-    test.throws(() => new ZipDirectoryAsset(stack, 'MyDirectory', {
+    test.throws(() => new Asset(stack, 'MyDirectory', {
       path: '/path/not/found/' + Math.random() * 999999
     }));
     test.done();
@@ -151,8 +151,8 @@ export = {
     const stack = new cdk.Stack();
 
     // WHEN
-    new ZipDirectoryAsset(stack, 'MyDirectory1', { path: path.join(__dirname, 'sample-asset-directory') });
-    new ZipDirectoryAsset(stack, 'MyDirectory2', { path: path.join(__dirname, 'sample-asset-directory') });
+    new Asset(stack, 'MyDirectory1', { path: path.join(__dirname, 'sample-asset-directory') });
+    new Asset(stack, 'MyDirectory2', { path: path.join(__dirname, 'sample-asset-directory') });
 
     // THEN: no error
 
@@ -164,19 +164,19 @@ export = {
     const stack = new cdk.Stack();
 
     // WHEN
-    const nonZipAsset = new FileAsset(stack, 'NonZipAsset', {
+    const nonZipAsset = new Asset(stack, 'NonZipAsset', {
       path: path.join(__dirname, 'sample-asset-directory', 'sample-asset-file.txt')
     });
 
-    const zipDirectoryAsset = new ZipDirectoryAsset(stack, 'ZipDirectoryAsset', {
+    const zipDirectoryAsset = new Asset(stack, 'ZipDirectoryAsset', {
       path: path.join(__dirname, 'sample-asset-directory')
     });
 
-    const zipFileAsset = new FileAsset(stack, 'ZipFileAsset', {
+    const zipFileAsset = new Asset(stack, 'ZipFileAsset', {
       path: path.join(__dirname, 'sample-asset-directory', 'sample-zip-asset.zip')
     });
 
-    const jarFileAsset = new FileAsset(stack, 'JarFileAsset', {
+    const jarFileAsset = new Asset(stack, 'JarFileAsset', {
       path: path.join(__dirname, 'sample-asset-directory', 'sample-jar-asset.jar')
     });
 
@@ -195,7 +195,7 @@ export = {
 
     const location = path.join(__dirname, 'sample-asset-directory');
     const resource = new cdk.CfnResource(stack, 'MyResource', { type: 'My::Resource::Type' });
-    const asset = new ZipDirectoryAsset(stack, 'MyAsset', { path: location });
+    const asset = new Asset(stack, 'MyAsset', { path: location });
 
     // WHEN
     asset.addResourceMetadata(resource, 'PropName');
@@ -215,7 +215,7 @@ export = {
     const stack = new cdk.Stack();
 
     const resource = new cdk.CfnResource(stack, 'MyResource', { type: 'My::Resource::Type' });
-    const asset = new ZipDirectoryAsset(stack, 'MyAsset', { path: SAMPLE_ASSET_DIR });
+    const asset = new Asset(stack, 'MyAsset', { path: SAMPLE_ASSET_DIR });
 
     // WHEN
     asset.addResourceMetadata(resource, 'PropName');
@@ -242,11 +242,11 @@ export = {
       const stack = new Stack(app, 'stack');
 
       // WHEN
-      new FileAsset(stack, 'ZipFile', {
+      new Asset(stack, 'ZipFile', {
         path: path.join(SAMPLE_ASSET_DIR, 'sample-zip-asset.zip')
       });
 
-      new FileAsset(stack, 'TextFile', {
+      new Asset(stack, 'TextFile', {
         path: path.join(SAMPLE_ASSET_DIR, 'sample-asset-file.txt')
       });
 
@@ -266,7 +266,7 @@ export = {
       const stack = new Stack(app, 'stack');
 
       // WHEN
-      new ZipDirectoryAsset(stack, 'ZipDirectory', {
+      new Asset(stack, 'ZipDirectory', {
         path: SAMPLE_ASSET_DIR
       });
 
@@ -296,7 +296,7 @@ export = {
       const stack = new Stack(app, 'stack');
 
       const resource = new cdk.CfnResource(stack, 'MyResource', { type: 'My::Resource::Type' });
-      const asset = new ZipDirectoryAsset(stack, 'MyAsset', { path: SAMPLE_ASSET_DIR });
+      const asset = new Asset(stack, 'MyAsset', { path: SAMPLE_ASSET_DIR });
 
       // WHEN
       asset.addResourceMetadata(resource, 'PropName');
@@ -323,7 +323,7 @@ export = {
       const stack = new Stack(app, 'stack');
 
       const resource = new cdk.CfnResource(stack, 'MyResource', { type: 'My::Resource::Type' });
-      const asset = new ZipDirectoryAsset(stack, 'MyAsset', { path: SAMPLE_ASSET_DIR });
+      const asset = new Asset(stack, 'MyAsset', { path: SAMPLE_ASSET_DIR });
 
       // WHEN
       asset.addResourceMetadata(resource, 'PropName');
@@ -340,7 +340,7 @@ export = {
       // GIVEN
       const app = new App();
       const stack = new Stack(app, 'stack');
-      new ZipDirectoryAsset(stack, 'MyAsset', { path: SAMPLE_ASSET_DIR });
+      new Asset(stack, 'MyAsset', { path: SAMPLE_ASSET_DIR });
 
       // WHEN
       const session = app.synth();

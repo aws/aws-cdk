@@ -1,11 +1,11 @@
-import { DockerImageAsset, DockerImageAssetProps } from '@aws-cdk/assets-docker';
 import cloudwatch = require('@aws-cdk/aws-cloudwatch');
 import ec2 = require('@aws-cdk/aws-ec2');
 import ecr = require('@aws-cdk/aws-ecr');
+import { DockerImageAsset, DockerImageAssetProps } from '@aws-cdk/aws-ecr-assets';
 import events = require('@aws-cdk/aws-events');
 import iam = require('@aws-cdk/aws-iam');
 import kms = require('@aws-cdk/aws-kms');
-import { Aws, Construct, IResource, Lazy, PhysicalName, Resource, ResourceIdentifiers, Stack } from '@aws-cdk/cdk';
+import { Aws, CfnResource, Construct, IResource, Lazy, PhysicalName, Resource, ResourceIdentifiers, Stack } from '@aws-cdk/cdk';
 import { IArtifacts } from './artifacts';
 import { BuildSpec } from './build-spec';
 import { Cache } from './cache';
@@ -699,6 +699,8 @@ export class Project extends ProjectBase {
       vpcConfig: this.configureVpc(props),
     });
 
+    this.addVpcRequiredPermissions(props, resource);
+
     const resourceIdentifiers = new ResourceIdentifiers(this, {
       arn: resource.attrArn,
       name: resource.refAsString,
@@ -715,20 +717,6 @@ export class Project extends ProjectBase {
 
     if (props.encryptionKey) {
       props.encryptionKey.grantEncryptDecrypt(this);
-    }
-  }
-
-  /**
-   * Add a permission only if there's a policy attached.
-   * @param statement The permissions statement to add
-   */
-  public addToRoleInlinePolicy(statement: iam.PolicyStatement) {
-    if (this.role) {
-      const policy = new iam.Policy(this, 'PolicyDocument', {
-        policyName: 'CodeBuildEC2Policy',
-        statements: [statement]
-      });
-      this.role.attachInlinePolicy(policy);
     }
   }
 
@@ -869,31 +857,55 @@ export class Project extends ProjectBase {
     }
     this._connections = new ec2.Connections({ securityGroups });
 
-    this.addToRoleInlinePolicy(new iam.PolicyStatement({
-      resources: ['*'],
-      actions: [
-        'ec2:CreateNetworkInterface', 'ec2:DescribeNetworkInterfaces',
-        'ec2:DeleteNetworkInterface', 'ec2:DescribeSubnets',
-        'ec2:DescribeSecurityGroups', 'ec2:DescribeDhcpOptions',
-        'ec2:DescribeVpcs']
-    }));
-    this.addToRolePolicy(new iam.PolicyStatement({
-      resources: [`arn:aws:ec2:${Aws.region}:${Aws.accountId}:network-interface/*`],
-      actions: ['ec2:CreateNetworkInterfacePermission'],
-      conditions: {
-        StringEquals: {
-          "ec2:Subnet": props.vpc
-            .selectSubnets(props.subnetSelection).subnetIds
-            .map(si => `arn:aws:ec2:${Aws.region}:${Aws.accountId}:subnet/${si}`),
-          "ec2:AuthorizedService": "codebuild.amazonaws.com"
-        }
-      }
-    }));
     return {
       vpcId: props.vpc.vpcId,
       subnets: props.vpc.selectSubnets(props.subnetSelection).subnetIds,
       securityGroupIds: this.connections.securityGroups.map(s => s.securityGroupId)
     };
+  }
+
+  private addVpcRequiredPermissions(props: ProjectProps, project: CfnProject): void {
+    if (!props.vpc || !this.role) {
+      return;
+    }
+
+    this.role.addToPolicy(new iam.PolicyStatement({
+      resources: [`arn:aws:ec2:${Aws.region}:${Aws.accountId}:network-interface/*`],
+      actions: ['ec2:CreateNetworkInterfacePermission'],
+      conditions: {
+        StringEquals: {
+          'ec2:Subnet': props.vpc
+            .selectSubnets(props.subnetSelection).subnetIds
+            .map(si => `arn:aws:ec2:${Aws.region}:${Aws.accountId}:subnet/${si}`),
+          'ec2:AuthorizedService': 'codebuild.amazonaws.com'
+        },
+      },
+    }));
+
+    const policy = new iam.Policy(this, 'PolicyDocument', {
+      policyName: 'CodeBuildEC2Policy',
+      statements: [
+        new iam.PolicyStatement({
+          resources: ['*'],
+          actions: [
+            'ec2:CreateNetworkInterface',
+            'ec2:DescribeNetworkInterfaces',
+            'ec2:DeleteNetworkInterface',
+            'ec2:DescribeSubnets',
+            'ec2:DescribeSecurityGroups',
+            'ec2:DescribeDhcpOptions',
+            'ec2:DescribeVpcs',
+          ],
+        }),
+      ],
+    });
+    this.role.attachInlinePolicy(policy);
+
+    // add an explicit dependency between the EC2 Policy and this Project -
+    // otherwise, creating the Project fails,
+    // as it requires these permissions to be already attached to the Project's Role
+    const cfnPolicy = policy.node.findChild('Resource') as CfnResource;
+    project.addDependsOn(cfnPolicy);
   }
 
   private validateCodePipelineSettings(artifacts: IArtifacts) {

@@ -55,7 +55,7 @@ async function main() {
     } finally {
       if (argv.clean) {
         console.error(`Cleaning up.`);
-        await test.invoke(['destroy', '--force']);
+        await test.invoke(['destroy', '--force', ...stackToDeploy]);
       } else {
         console.error('Skipping clean up (--no-clean).');
       }
