@@ -1,5 +1,5 @@
 import sns = require('@aws-cdk/aws-sns');
-import { SubscriptionProps } from './subscription';
+import { Construct, Token } from '@aws-cdk/cdk';
 
 /**
  * Options for URL subscriptions.
@@ -23,17 +23,17 @@ export interface UrlSubscriptionProps extends SubscriptionProps {
  * @see https://docs.aws.amazon.com/sns/latest/dg/sns-http-https-endpoint-as-subscriber.html
  */
 export class UrlSubscription implements sns.ITopicSubscription {
-  constructor(private readonly url: string, private readonly props: UrlSubscriptionProps = {}) {
-    if (!url.startsWith('http://') && !url.startsWith('https://')) {
+  constructor(private readonly url: string, private readonly protocol: sns.SubscriptionProtocol, private readonly props: UrlSubscriptionProps = {}) {
+    if (!Token.isUnresolved(url) && !url.startsWith('http://') && !url.startsWith('https://')) {
       throw new Error('URL must start with either http:// or https://');
     }
   }
 
-  public bind(_topic: sns.ITopic): sns.TopicSubscriptionConfig {
-    return {
-      subscriberId: this.url,
+  public bind(scope: Construct, topic: sns.ITopic): void {
+    new sns.Subscription(scope, topic.node.uniqueId + 'Url', {
+      topic,
       endpoint: this.url,
-      protocol: this.url.startsWith('https:') ? sns.SubscriptionProtocol.HTTPS : sns.SubscriptionProtocol.HTTP,
+      protocol: this.protocol,
       rawMessageDelivery: this.props.rawMessageDelivery,
       filterPolicy: this.props.filterPolicy,
     };
