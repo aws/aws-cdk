@@ -64,14 +64,14 @@
             "ScalableTargetAction": {
               "MinCapacity": 20
             },
-            "Schedule": "cron(0 8 * * ?)",
+            "Schedule": "cron(0 8 * * ? *)",
             "ScheduledActionName": "ScaleUpInTheMorning"
           },
           {
             "ScalableTargetAction": {
               "MaxCapacity": 20
             },
-            "Schedule": "cron(0 20 * * ?)",
+            "Schedule": "cron(0 20 * * ? *)",
             "ScheduledActionName": "ScaleDownAtNight"
           }
         ]

@@ -77,7 +77,7 @@ import s3 = require('@aws-cdk/aws-s3');
 const bucket = new s3.Bucket(this, 'MyBucket');
 new codebuild.Project(this, 'MyProject', {
   source: codebuild.Source.s3({
-    bucket: bucket,
+    bucket,
     path: 'path/to/file.zip',
   }),
 });
@@ -138,7 +138,10 @@ With S3 caching, the cache is stored in an S3 bucket which is available from mul
 
 ```typescript
 new codebuild.Project(this, 'Project', {
-  source: new codebuild.CodePipelineSource(),
+  source: codebuild.Source.bitBucket({
+    owner: 'awslabs',
+    repo: 'aws-cdk',
+  }),
   cache: codebuild.Cache.bucket(new Bucket(this, 'Bucket'))
 });
 ```
@@ -153,7 +156,9 @@ With local caching, the cache is stored on the codebuild instance itself. CodeBu
 
 ```typescript
 new codebuild.Project(this, 'Project', {
-  source: new codebuild.CodePipelineSource(),
+  source: codebuild.Source.gitHubEnterprise({
+    httpsCloneUrl: 'https://my-github-enterprise.com/owner/repo',
+  }),
   cache: codebuild.Cache.local(LocalCacheMode.DockerLayer, LocalCacheMode.Custom)
 });
 ```
@@ -186,7 +191,7 @@ Alternatively, you can specify a custom image using one of the static methods on
   Hub.
 * Use `.fromEcrRepository(repo[, tag])` to reference an image available in an
   ECR repository.
-* Use `.fromAsset(this, id, { directory: dir })` to use an image created from a
+* Use `.fromAsset(directory)` to use an image created from a
   local asset.
 
 The following example shows how to define an image from a Docker asset:
@@ -262,10 +267,10 @@ with their identifier.
 
 So, a buildspec for the above Project could look something like this:
 
-```ts
+```typescript
 const project = new codebuild.Project(this, 'MyProject', {
   // secondary sources and artifacts as above...
-  buildSpec: {
+  buildSpec: codebuild.BuildSpec.fromObject({
     version: '0.2',
     phases: {
       build: {
@@ -285,7 +290,7 @@ const project = new codebuild.Project(this, 'MyProject', {
         },
       },
     },
-  },
+  }),
 });
 ```
 
@@ -330,8 +335,10 @@ const securityGroup = new ec2.SecurityGroup(stack, 'SecurityGroup1', {
     groupName: 'MySecurityGroup',
     vpc: vpc,
 });
-new Project(stack, 'MyProject', {
-    buildScript: new assets.ZipDirectoryAsset(stack, 'Bundle', { path: 'script_bundle' }),
+new codebuild.Project(stack, 'MyProject', {
+    buildSpec: codebuild.BuildSpec.fromObject({
+      // ...
+    }),
     securityGroups: [securityGroup],
     vpc: vpc
 });

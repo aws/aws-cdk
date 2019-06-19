@@ -38,4 +38,4 @@ AWS Global DynamoDB Tables is an odd case currently.  The way this package works
 
 ### Notes
 
-GlobalTable() will set `dynamoProps.streamSpecification` to be `NEW_AND_OLD_IMAGES` since this is a required attribute for AWS Global DynamoDB tables to work.  The package will throw an error if any other `streamSpecification` is set in `DynamoDBGlobalStackProps`.
+GlobalTable() will set `dynamoProps.stream` to be `NEW_AND_OLD_IMAGES` since this is a required attribute for AWS Global DynamoDB tables to work.  The package will throw an error if any other `stream` specification is set in `DynamoDBGlobalStackProps`.

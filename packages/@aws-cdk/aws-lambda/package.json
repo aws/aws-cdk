@@ -83,7 +83,7 @@
     "sinon": "^7.3.2"
   },
   "dependencies": {
-    "@aws-cdk/assets": "^0.34.0",
+    "@aws-cdk/aws-s3-assets": "^0.34.0",
     "@aws-cdk/aws-cloudwatch": "^0.34.0",
     "@aws-cdk/aws-ec2": "^0.34.0",
     "@aws-cdk/aws-events": "^0.34.0",
@@ -96,7 +96,7 @@
   },
   "homepage": "https://github.com/awslabs/aws-cdk",
   "peerDependencies": {
-    "@aws-cdk/assets": "^0.34.0",
+    "@aws-cdk/aws-s3-assets": "^0.34.0",
     "@aws-cdk/aws-cloudwatch": "^0.34.0",
     "@aws-cdk/aws-ec2": "^0.34.0",
     "@aws-cdk/aws-events": "^0.34.0",
