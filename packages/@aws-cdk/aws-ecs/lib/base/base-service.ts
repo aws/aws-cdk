@@ -64,7 +64,7 @@ export interface BaseServiceProps {
   /**
    * Time after startup to ignore unhealthy load balancer checks.
    *
-   * @default ??? FIXME
+   * @default - defaults to 60 seconds if not set and at least one load balancer is in-use
    */
   readonly healthCheckGracePeriodSeconds?: number;
 
@@ -151,7 +151,12 @@ export abstract class BaseService extends Resource
         maximumPercent: props.maximumPercent || 200,
         minimumHealthyPercent: props.minimumHealthyPercent === undefined ? 50 : props.minimumHealthyPercent
       },
-      healthCheckGracePeriodSeconds: props.healthCheckGracePeriodSeconds,
+      // only set the grace period when load balancers are configured and
+      // healthCheckGracePeriodSeconds is not already set
+      healthCheckGracePeriodSeconds: Lazy.anyValue({ produce: () =>
+        this.loadBalancers
+        && this.loadBalancers.length
+        && props.healthCheckGracePeriodSeconds === undefined ? 60 : props.healthCheckGracePeriodSeconds}),
       /* role: never specified, supplanted by Service Linked Role */
       networkConfiguration: Lazy.anyValue({ produce: () => this.networkConfiguration }),
       serviceRegistries: Lazy.anyValue({ produce: () => this.serviceRegistries }),
