@@ -2,6 +2,7 @@ import cloudwatch = require('@aws-cdk/aws-cloudwatch');
 import ec2 = require('@aws-cdk/aws-ec2');
 import iam = require('@aws-cdk/aws-iam');
 import s3 = require('@aws-cdk/aws-s3');
+import cdk = require('@aws-cdk/cdk');
 import { Construct, Lazy, Resource, Stack, Token } from '@aws-cdk/cdk';
 import { BaseLoadBalancer, BaseLoadBalancerProps, ILoadBalancerV2 } from '../shared/base-load-balancer';
 import { IpAddressType } from '../shared/enums';
@@ -97,7 +98,7 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
     }
 
     prefix = prefix || '';
-    bucket.grantPut(new iam.AccountPrincipal(account), prefix + '*');
+    bucket.grantPut(new iam.AccountPrincipal(account), cdk.Fn.sub((prefix ? prefix + "/" : "") + 'AWSLogs/' + "${AWS::AccountId}" + '/*'));
 
     // make sure the bucket's policy is created before the ALB (see https://github.com/awslabs/aws-cdk/issues/1633)
     this.node.addDependency(bucket);

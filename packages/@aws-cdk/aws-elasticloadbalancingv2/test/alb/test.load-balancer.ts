@@ -146,7 +146,8 @@ export = {
             Action: [ "s3:PutObject*", "s3:Abort*" ],
             Effect: 'Allow',
             Principal: { AWS: { "Fn::Join": [ "", [ "arn:", { Ref: "AWS::Partition" }, ":iam::127311923021:root" ] ] } },
-            Resource: { "Fn::Join": [ "", [ { "Fn::GetAtt": [ "AccessLoggingBucketA6D88F29", "Arn" ] }, "/*" ] ] }
+            Resource: { "Fn::Join": [ "", [ { "Fn::GetAtt": [ "AccessLoggingBucketA6D88F29", "Arn" ] }, "/",
+            { "Fn::Sub": "AWSLogs/${AWS::AccountId}/*" } ] ] }
           }
         ]
       }
@@ -198,7 +199,8 @@ export = {
             Action: [ "s3:PutObject*", "s3:Abort*" ],
             Effect: 'Allow',
             Principal: { AWS: { "Fn::Join": [ "", [ "arn:", { Ref: "AWS::Partition" }, ":iam::127311923021:root" ] ] } },
-            Resource: { "Fn::Join": [ "", [ { "Fn::GetAtt": [ "AccessLoggingBucketA6D88F29", "Arn" ] }, "/prefix-of-access-logs*" ] ] }
+            Resource: { "Fn::Join": [ "", [ { "Fn::GetAtt": [ "AccessLoggingBucketA6D88F29", "Arn" ] }, "/",
+            { "Fn::Sub": "prefix-of-access-logs/AWSLogs/${AWS::AccountId}/*" } ] ] }
           }
         ]
       }
