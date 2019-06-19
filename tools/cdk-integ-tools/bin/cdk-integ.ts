@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // Exercise all integ stacks and if they deploy, update the expected synth files
 import yargs = require('yargs');
-import { IntegrationTests, STATIC_TEST_CONTEXT } from '../lib/integ-helpers';
+import { IntegrationTests, STATIC_TEST_CONTEXT, STATIC_TEST_ENV } from '../lib/integ-helpers';
 
 // tslint:disable:no-console
 
@@ -48,6 +48,7 @@ async function main() {
       const actual = await test.invoke([ ...args, '--json', 'synth', ...stackToDeploy ], {
         json: true,
         context: STATIC_TEST_CONTEXT,
+        env: STATIC_TEST_ENV,
         verbose: argv.verbose
       });
 
@@ -55,7 +56,7 @@ async function main() {
     } finally {
       if (argv.clean) {
         console.error(`Cleaning up.`);
-        await test.invoke(['destroy', '--force']);
+        await test.invoke(['destroy', '--force', ...stackToDeploy ]);
       } else {
         console.error('Skipping clean up (--no-clean).');
       }

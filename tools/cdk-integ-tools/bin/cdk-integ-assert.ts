@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // Verify that all integration tests still match their expected output
 import { diffTemplate, formatDifferences } from '@aws-cdk/cloudformation-diff';
-import { IntegrationTests, STATIC_TEST_CONTEXT } from '../lib/integ-helpers';
+import { IntegrationTests, STATIC_TEST_CONTEXT, STATIC_TEST_ENV } from '../lib/integ-helpers';
 
 // tslint:disable:no-console
 
@@ -10,7 +10,7 @@ async function main() {
   const failures: string[] = [];
 
   for (const test of tests) {
-    process.stdout.write(`Verifying ${test.name} against ${test.expectedFileName}... `);
+    process.stdout.write(`Verifying ${test.name} against ${test.expectedFileName} ... `);
 
     if (!test.hasExpected()) {
       throw new Error(`No such file: ${test.expectedFileName}. Run 'npm run integ'.`);
@@ -24,7 +24,11 @@ async function main() {
     args.push('--no-asset-metadata');
     args.push('--no-staging');
 
-    const actual = await test.invoke(['--json', ...args, 'synth', ...stackToDeploy], { json: true, context: STATIC_TEST_CONTEXT });
+    const actual = await test.invoke(['--json', ...args, 'synth', ...stackToDeploy], {
+      json: true,
+      context: STATIC_TEST_CONTEXT,
+      env: STATIC_TEST_ENV
+    });
 
     const diff = diffTemplate(expected, actual);
 

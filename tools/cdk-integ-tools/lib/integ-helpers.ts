@@ -1,8 +1,8 @@
 // Helper functions for integration tests
-import { DEFAULT_ACCOUNT_CONTEXT_KEY, DEFAULT_REGION_CONTEXT_KEY } from '@aws-cdk/cx-api';
 import { spawnSync } from 'child_process';
 import fs = require('fs-extra');
 import path = require('path');
+import { AVAILABILITY_ZONE_FALLBACK_CONTEXT_KEY } from '../../../packages/@aws-cdk/cx-api/lib';
 
 const CDK_INTEG_STACK_PRAGMA = '/// !cdk-integ';
 
@@ -78,7 +78,7 @@ export class IntegrationTest {
     this.cdkContextPath = path.join(this.directory, 'cdk.context.json');
   }
 
-  public async invoke(args: string[], options: { json?: boolean, context?: any, verbose?: boolean } = { }): Promise<any> {
+  public async invoke(args: string[], options: { json?: boolean, context?: any, verbose?: boolean, env?: any } = { }): Promise<any> {
     // Write context to cdk.json, afterwards delete. We need to do this because there is no way
     // to pass structured context data from the command-line, currently.
     if (options.context) {
@@ -93,6 +93,7 @@ export class IntegrationTest {
         cwd: this.directory,
         json: options.json,
         verbose: options.verbose,
+        env: options.env
       });
     } finally {
       this.deleteCdkContext();
@@ -171,11 +172,15 @@ export class IntegrationTest {
   }
 }
 
+export const STATIC_TEST_ENV = {
+  CDK_INTEG_ACCOUNT: "12345678",
+  CDK_INTEG_REGION: "test-region",
+};
+
 // Default context we run all integ tests with, so they don't depend on the
 // account of the exercising user.
 export const STATIC_TEST_CONTEXT = {
-  [DEFAULT_ACCOUNT_CONTEXT_KEY]: "12345678",
-  [DEFAULT_REGION_CONTEXT_KEY]: "test-region",
+  [AVAILABILITY_ZONE_FALLBACK_CONTEXT_KEY]: [ "test-region-1a", "test-region-1b", "test-region-1c" ],
   "availability-zones:account=12345678:region=test-region": [ "test-region-1a", "test-region-1b", "test-region-1c" ],
   "ssm:account=12345678:parameterName=/aws/service/ami-amazon-linux-latest/amzn-ami-hvm-x86_64-gp2:region=test-region": "ami-1234",
   "ssm:account=12345678:parameterName=/aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-gp2:region=test-region": "ami-1234",
@@ -191,12 +196,13 @@ export const STATIC_TEST_CONTEXT = {
 /**
  * Our own execute function which doesn't use shells and strings.
  */
-function exec(commandLine: string[], options: { cwd?: string, json?: boolean, verbose?: boolean} = { }): any {
+function exec(commandLine: string[], options: { cwd?: string, json?: boolean, verbose?: boolean, env?: any } = { }): any {
   const proc = spawnSync(commandLine[0], commandLine.slice(1), {
     stdio: [ 'ignore', 'pipe', options.verbose ? 'inherit' : 'pipe' ], // inherit STDERR in verbose mode
     env: {
       ...process.env,
-      CDK_INTEG_MODE: '1'
+      CDK_INTEG_MODE: '1',
+      ...options.env,
     },
     cwd: options.cwd
   });
