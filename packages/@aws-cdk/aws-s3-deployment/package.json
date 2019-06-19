@@ -80,7 +80,7 @@
     "pkglint": "^0.34.0"
   },
   "dependencies": {
-    "@aws-cdk/assets": "^0.34.0",
+    "@aws-cdk/aws-s3-assets": "^0.34.0",
     "@aws-cdk/aws-cloudformation": "^0.34.0",
     "@aws-cdk/aws-iam": "^0.34.0",
     "@aws-cdk/aws-lambda": "^0.34.0",
@@ -89,7 +89,7 @@
   },
   "homepage": "https://github.com/awslabs/aws-cdk",
   "peerDependencies": {
-    "@aws-cdk/assets": "^0.34.0",
+    "@aws-cdk/aws-s3-assets": "^0.34.0",
     "@aws-cdk/aws-cloudformation": "^0.34.0",
     "@aws-cdk/aws-iam": "^0.34.0",
     "@aws-cdk/aws-lambda": "^0.34.0",

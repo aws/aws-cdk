@@ -12,11 +12,11 @@ class TestStack extends cdk.Stack {
 
     // Check that the same asset added multiple times is
     // uploaded and copied.
-    new assets.FileAsset(this, 'SampleAsset1', {
+    new assets.Asset(this, 'SampleAsset1', {
       path: path.join(__dirname, 'file-asset.txt')
     });
 
-    new assets.FileAsset(this, 'SampleAsset2', {
+    new assets.Asset(this, 'SampleAsset2', {
       path: path.join(__dirname, 'file-asset.txt')
     });
   }
