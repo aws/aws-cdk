@@ -11,7 +11,7 @@ export interface GlobalTableProps extends cdk.StackProps, dynamodb.TableOptions 
    * Name of the DynamoDB table to use across all regional tables.
    * This is required for global tables.
    */
-  readonly tableName: string;
+  readonly tableName: cdk.PhysicalName;
 
   /**
    * Array of environments to create DynamoDB tables in.

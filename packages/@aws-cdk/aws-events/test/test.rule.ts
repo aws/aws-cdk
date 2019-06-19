@@ -37,7 +37,7 @@ export = {
 
     // WHEN
     new Rule(stack, 'MyRule', {
-      ruleName: 'PhysicalName',
+      ruleName: cdk.PhysicalName.of('PhysicalName'),
       schedule: Schedule.rate(10, TimeUnit.Minute),
     });
 

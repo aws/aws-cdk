@@ -13,7 +13,7 @@ const vpc = new ec2.Vpc(stack, 'MyVPC', {
 const securityGroup = new ec2.SecurityGroup(stack, 'SecurityGroup1', {
     allowAllOutbound: true,
     description: 'Example',
-    groupName: 'Bob',
+    groupName: cdk.PhysicalName.of('Bob'),
     vpc,
 });
 new codebuild.Project(stack, 'MyProject', {
