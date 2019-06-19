@@ -121,7 +121,7 @@ export class IntegrationTest {
       return pragma;
     }
 
-    const stacks = (await this.invoke([ 'ls' ], { context: STATIC_TEST_CONTEXT })).split('\n');
+    const stacks = (await this.invoke([ 'ls' ], { ...DEFAULT_SYNTH_OPTIONS })).split('\n');
     if (stacks.length !== 1) {
       throw new Error(`"cdk-integ" can only operate on apps with a single stack.\n\n` +
         `  If your app has multiple stacks, specify which stack to select by adding this to your test source:\n\n` +
@@ -174,24 +174,25 @@ export class IntegrationTest {
   }
 }
 
-export const STATIC_TEST_ENV = {
-  CDK_INTEG_ACCOUNT: "12345678",
-  CDK_INTEG_REGION: "test-region",
-};
-
 // Default context we run all integ tests with, so they don't depend on the
 // account of the exercising user.
-export const STATIC_TEST_CONTEXT = {
-  [AVAILABILITY_ZONE_FALLBACK_CONTEXT_KEY]: [ "test-region-1a", "test-region-1b", "test-region-1c" ],
-  "availability-zones:account=12345678:region=test-region": [ "test-region-1a", "test-region-1b", "test-region-1c" ],
-  "ssm:account=12345678:parameterName=/aws/service/ami-amazon-linux-latest/amzn-ami-hvm-x86_64-gp2:region=test-region": "ami-1234",
-  "ssm:account=12345678:parameterName=/aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-gp2:region=test-region": "ami-1234",
-  "ssm:account=12345678:parameterName=/aws/service/ecs/optimized-ami/amazon-linux/recommended:region=test-region": "{\"image_id\": \"ami-1234\"}",
-  "vpc-provider:account=12345678:filter.isDefault=true:region=test-region": {
-    vpcId: "vpc-60900905",
-    availabilityZones: [ "us-east-1a", "us-east-1b", "us-east-1c" ],
-    publicSubnetIds: [ "subnet-e19455ca", "subnet-e0c24797", "subnet-ccd77395", ],
-    publicSubnetNames: [ "Public" ]
+export const DEFAULT_SYNTH_OPTIONS = {
+  context: {
+    [AVAILABILITY_ZONE_FALLBACK_CONTEXT_KEY]: [ "test-region-1a", "test-region-1b", "test-region-1c" ],
+    "availability-zones:account=12345678:region=test-region": [ "test-region-1a", "test-region-1b", "test-region-1c" ],
+    "ssm:account=12345678:parameterName=/aws/service/ami-amazon-linux-latest/amzn-ami-hvm-x86_64-gp2:region=test-region": "ami-1234",
+    "ssm:account=12345678:parameterName=/aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-gp2:region=test-region": "ami-1234",
+    "ssm:account=12345678:parameterName=/aws/service/ecs/optimized-ami/amazon-linux/recommended:region=test-region": "{\"image_id\": \"ami-1234\"}",
+    "vpc-provider:account=12345678:filter.isDefault=true:region=test-region": {
+      vpcId: "vpc-60900905",
+      availabilityZones: [ "us-east-1a", "us-east-1b", "us-east-1c" ],
+      publicSubnetIds: [ "subnet-e19455ca", "subnet-e0c24797", "subnet-ccd77395", ],
+      publicSubnetNames: [ "Public" ]
+    }
+  },
+  env: {
+    CDK_INTEG_ACCOUNT: "12345678",
+    CDK_INTEG_REGION: "test-region",
   }
 };
 

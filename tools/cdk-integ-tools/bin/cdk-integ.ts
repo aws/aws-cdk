@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // Exercise all integ stacks and if they deploy, update the expected synth files
 import yargs = require('yargs');
-import { IntegrationTests, STATIC_TEST_CONTEXT, STATIC_TEST_ENV } from '../lib/integ-helpers';
+import { DEFAULT_SYNTH_OPTIONS, IntegrationTests } from '../lib/integ-helpers';
 
 // tslint:disable:no-console
 
@@ -40,16 +40,18 @@ async function main() {
 
     try {
       // tslint:disable-next-line:max-line-length
-      await test.invoke([ ...args, 'deploy', '--require-approval', 'never', ...stackToDeploy ], { verbose: argv.verbose }); // Note: no context, so use default user settings!
+      await test.invoke([ ...args, 'deploy', '--require-approval', 'never', ...stackToDeploy ], {
+        verbose: argv.verbose
+        // Note: no "context" and "env", so use default user settings!
+      });
 
       console.error(`Success! Writing out reference synth.`);
 
       // If this all worked, write the new expectation file
       const actual = await test.invoke([ ...args, '--json', 'synth', ...stackToDeploy ], {
         json: true,
-        context: STATIC_TEST_CONTEXT,
-        env: STATIC_TEST_ENV,
-        verbose: argv.verbose
+        verbose: argv.verbose,
+        ...DEFAULT_SYNTH_OPTIONS
       });
 
       await test.writeExpected(actual);

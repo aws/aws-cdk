@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // Verify that all integration tests still match their expected output
 import { diffTemplate, formatDifferences } from '@aws-cdk/cloudformation-diff';
-import { IntegrationTests, STATIC_TEST_CONTEXT, STATIC_TEST_ENV } from '../lib/integ-helpers';
+import { DEFAULT_SYNTH_OPTIONS, IntegrationTests } from '../lib/integ-helpers';
 
 // tslint:disable:no-console
 
@@ -23,11 +23,9 @@ async function main() {
     args.push('--no-path-metadata');
     args.push('--no-asset-metadata');
     args.push('--no-staging');
-
     const actual = await test.invoke(['--json', ...args, 'synth', ...stackToDeploy], {
       json: true,
-      context: STATIC_TEST_CONTEXT,
-      env: STATIC_TEST_ENV
+      ...DEFAULT_SYNTH_OPTIONS
     });
 
     const diff = diffTemplate(expected, actual);
