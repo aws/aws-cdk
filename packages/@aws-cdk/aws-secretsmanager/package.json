@@ -90,7 +90,9 @@
   "awslint": {
     "exclude": [
       "from-signature:@aws-cdk/aws-secretsmanager.SecretTargetAttachment.fromSecretTargetAttachmentSecretArn",
-      "from-attributes:fromSecretTargetAttachmentAttributes"
+      "from-attributes:fromSecretTargetAttachmentAttributes",
+      "props-physical-name:@aws-cdk/aws-secretsmanager.RotationScheduleProps",
+      "props-physical-name:@aws-cdk/aws-secretsmanager.SecretTargetAttachmentProps"
     ]
   },
   "stability": "experimental"

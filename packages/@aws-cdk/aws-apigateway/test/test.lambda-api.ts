@@ -81,7 +81,7 @@ export = {
       runtime: lambda.Runtime.Nodejs810,
     });
     const alias = new lambda.Alias(stack, 'alias', {
-      aliasName: 'my-alias',
+      aliasName: cdk.PhysicalName.of('my-alias'),
       version: new lambda.Version(stack, 'version', {
         lambda: handler
       })

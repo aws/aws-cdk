@@ -81,5 +81,10 @@
   "engines": {
     "node": ">= 8.10.0"
   },
+  "awslint": {
+    "exclude": [
+      "props-physical-name:@aws-cdk/aws-elasticloadbalancing.LoadBalancerProps"
+    ]
+  },
   "stability": "experimental"
 }

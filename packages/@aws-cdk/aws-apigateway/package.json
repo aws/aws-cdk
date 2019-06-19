@@ -93,7 +93,14 @@
     "exclude": [
       "from-method:@aws-cdk/aws-apigateway.Resource",
       "from-method:@aws-cdk/aws-apigateway.ApiKey",
-      "ref-via-interface:@aws-cdk/aws-apigateway.ApiKeyProps.resources"
+      "ref-via-interface:@aws-cdk/aws-apigateway.ApiKeyProps.resources",
+      "props-physical-name:@aws-cdk/aws-apigateway.DeploymentProps",
+      "props-physical-name:@aws-cdk/aws-apigateway.MethodProps",
+      "props-physical-name:@aws-cdk/aws-apigateway.ProxyResourceProps",
+      "props-physical-name:@aws-cdk/aws-apigateway.ResourceProps",
+      "props-physical-name:@aws-cdk/aws-apigateway.StageProps",
+      "props-physical-name:@aws-cdk/aws-apigateway.UsagePlanProps",
+      "props-physical-name:@aws-cdk/aws-apigateway.LambdaRestApiProps"
     ]
   },
   "stability": "experimental"

@@ -1,7 +1,7 @@
 import events = require('@aws-cdk/aws-events');
 import iam = require('@aws-cdk/aws-iam');
 import lambda = require('@aws-cdk/aws-lambda');
-import { Construct, IResource, Lazy, Resource } from '@aws-cdk/cdk';
+import { Construct, IResource, Lazy, PhysicalName, Resource } from '@aws-cdk/cdk';
 import { CfnConfigRule } from './config.generated';
 
 /**
@@ -193,7 +193,7 @@ export interface RuleProps {
    *
    * @default a CloudFormation generated name
    */
-  readonly name?: string;
+  readonly ruleName?: PhysicalName;
 
   /**
    * A description about this AWS Config rule.
@@ -248,10 +248,12 @@ export class ManagedRule extends RuleNew {
   public readonly configRuleComplianceType: string;
 
   constructor(scope: Construct, id: string, props: ManagedRuleProps) {
-    super(scope, id);
+    super(scope, id, {
+      physicalName: props.ruleName,
+    });
 
     const rule = new CfnConfigRule(this, 'Resource', {
-      configRuleName: props.name,
+      configRuleName: this.physicalName.value,
       description: props.description,
       inputParameters: props.inputParameters,
       maximumExecutionFrequency: props.maximumExecutionFrequency,
@@ -313,7 +315,9 @@ export class CustomRule extends RuleNew {
   public readonly configRuleComplianceType: string;
 
   constructor(scope: Construct, id: string, props: CustomRuleProps) {
-    super(scope, id);
+    super(scope, id, {
+      physicalName: props.ruleName,
+    });
 
     if (!props.configurationChanges && !props.periodic) {
       throw new Error('At least one of `configurationChanges` or `periodic` must be set to true.');
@@ -354,7 +358,7 @@ export class CustomRule extends RuleNew {
     this.node.addDependency(props.lambdaFunction);
 
     const rule = new CfnConfigRule(this, 'Resource', {
-      configRuleName: props.name,
+      configRuleName: this.physicalName.value,
       description: props.description,
       inputParameters: props.inputParameters,
       maximumExecutionFrequency: props.maximumExecutionFrequency,

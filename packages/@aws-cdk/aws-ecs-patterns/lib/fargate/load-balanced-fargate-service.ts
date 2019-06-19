@@ -68,9 +68,9 @@ export interface LoadBalancedFargateServiceProps extends LoadBalancedServiceBase
   /**
    * Override value for the service name
    *
-   * @default - No value
+   * @default CloudFormation-generated name
    */
-  readonly serviceName?: string;
+  readonly serviceName?: cdk.PhysicalName;
 }
 
 /**
@@ -110,7 +110,7 @@ export class LoadBalancedFargateService extends LoadBalancedServiceBase {
       desiredCount: props.desiredCount || 1,
       taskDefinition,
       assignPublicIp,
-      serviceName: props.serviceName || undefined
+      serviceName: props.serviceName,
     });
     this.service = service;
 

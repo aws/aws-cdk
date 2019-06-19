@@ -112,7 +112,9 @@
   },
   "awslint": {
     "exclude": [
-      "integ-return-type:@aws-cdk/aws-lambda.IEventSource.bind"
+      "integ-return-type:@aws-cdk/aws-lambda.IEventSource.bind",
+      "props-physical-name:@aws-cdk/aws-lambda.VersionProps",
+      "props-physical-name:@aws-cdk/aws-lambda.EventSourceMappingProps"
     ]
   },
   "stability": "experimental"

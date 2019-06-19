@@ -1,4 +1,4 @@
-import { Construct, Stack } from '@aws-cdk/cdk';
+import { Construct, PhysicalName, ResourceIdentifiers, Stack } from '@aws-cdk/cdk';
 import { CfnTopic } from './sns.generated';
 import { ITopic, TopicBase } from './topic-base';
 
@@ -22,7 +22,7 @@ export interface TopicProps {
    *
    * @default Generated name
    */
-  readonly topicName?: string;
+  readonly topicName?: PhysicalName;
 }
 
 /**
@@ -46,14 +46,24 @@ export class Topic extends TopicBase {
   protected readonly autoCreatePolicy: boolean = true;
 
   constructor(scope: Construct, id: string, props: TopicProps = {}) {
-    super(scope, id);
+    super(scope, id, {
+      physicalName: props.topicName,
+    });
 
     const resource = new CfnTopic(this, 'Resource', {
       displayName: props.displayName,
-      topicName: props.topicName
+      topicName: this.physicalName.value,
     });
 
-    this.topicArn = resource.refAsString;
-    this.topicName = resource.attrTopicName;
+    const resourceIdentifiers = new ResourceIdentifiers(this, {
+      arn: resource.refAsString,
+      name: resource.attrTopicName,
+      arnComponents: {
+        service: 'sns',
+        resource: this.physicalName.value || '',
+      },
+    });
+    this.topicArn = resourceIdentifiers.arn;
+    this.topicName = resourceIdentifiers.name;
   }
 }

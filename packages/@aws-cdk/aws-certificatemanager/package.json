@@ -86,5 +86,11 @@
   "engines": {
     "node": ">= 8.10.0"
   },
+  "awslint": {
+    "exclude": [
+      "props-physical-name:@aws-cdk/aws-certificatemanager.CertificateProps",
+      "props-physical-name:@aws-cdk/aws-certificatemanager.DnsValidatedCertificateProps"
+    ]
+  },
   "stability": "experimental"
 }

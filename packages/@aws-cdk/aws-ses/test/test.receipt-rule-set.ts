@@ -1,5 +1,5 @@
 import { expect, haveResource } from '@aws-cdk/assert';
-import { Stack } from '@aws-cdk/cdk';
+import { PhysicalName, Stack } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
 import { ReceiptRuleSet } from '../lib';
 
@@ -12,7 +12,7 @@ export = {
 
     // WHEN
     new ReceiptRuleSet(stack, 'RuleSet', {
-      name: 'MyRuleSet'
+      receiptRuleSetName: PhysicalName.of('MyRuleSet'),
     });
 
     // THEN

@@ -2,7 +2,7 @@ import '@aws-cdk/assert/jest';
 import lambda = require('@aws-cdk/aws-lambda');
 import sns = require('@aws-cdk/aws-sns');
 import sqs = require('@aws-cdk/aws-sqs');
-import { Stack } from '@aws-cdk/cdk';
+import { PhysicalName, Stack } from '@aws-cdk/cdk';
 import subs = require('../lib');
 
 // tslint:disable:object-literal-key-quotes
@@ -13,7 +13,7 @@ let topic: sns.Topic;
 beforeEach(() => {
   stack = new Stack();
   topic = new sns.Topic(stack, 'MyTopic', {
-    topicName: 'topicName',
+    topicName: PhysicalName.of('topicName'),
     displayName: 'displayName'
   });
 });

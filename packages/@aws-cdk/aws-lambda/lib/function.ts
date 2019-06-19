@@ -3,7 +3,7 @@ import ec2 = require('@aws-cdk/aws-ec2');
 import iam = require('@aws-cdk/aws-iam');
 import logs = require('@aws-cdk/aws-logs');
 import sqs = require('@aws-cdk/aws-sqs');
-import { Construct, Fn, Lazy, Stack, Token } from '@aws-cdk/cdk';
+import { Construct, Fn, Lazy, PhysicalName, ResourceIdentifiers, Stack, Token } from '@aws-cdk/cdk';
 import { Code } from './code';
 import { IEventSource } from './event-source';
 import { FunctionAttributes, FunctionBase, IFunction } from './function-base';
@@ -91,7 +91,7 @@ export interface FunctionProps {
    * @default - AWS CloudFormation generates a unique physical ID and uses that
    * ID for the function's name. For more information, see Name Type.
    */
-  readonly functionName?: string;
+  readonly functionName?: PhysicalName;
 
   /**
    * The amount of memory, in MB, that is allocated to your Lambda function.
@@ -385,7 +385,9 @@ export class Function extends FunctionBase {
   private readonly environment?: { [key: string]: any };
 
   constructor(scope: Construct, id: string, props: FunctionProps) {
-    super(scope, id);
+    super(scope, id, {
+      physicalName: props.functionName,
+    });
 
     this.environment = props.environment || { };
 
@@ -417,7 +419,7 @@ export class Function extends FunctionBase {
     }
 
     const resource: CfnFunction = new CfnFunction(this, 'Resource', {
-      functionName: props.functionName,
+      functionName: this.physicalName.value,
       description: props.description,
       code: Lazy.anyValue({ produce: () => props.code._toJSON(resource) }),
       layers: Lazy.listValue({ produce: () => this.layers.map(layer => layer.layerVersionArn) }, { omitEmpty: true }),
@@ -435,8 +437,18 @@ export class Function extends FunctionBase {
 
     resource.node.addDependency(this.role);
 
-    this.functionName = resource.refAsString;
-    this.functionArn = resource.attrArn;
+    const resourceIdentifiers = new ResourceIdentifiers(this, {
+      arn: resource.attrArn,
+      name: resource.refAsString,
+      arnComponents: {
+        service: 'lambda',
+        resource: 'function',
+        resourceName: this.physicalName.value,
+        sep: ':',
+      },
+    });
+    this.functionName = resourceIdentifiers.name;
+    this.functionArn = resourceIdentifiers.arn;
     this.runtime = props.runtime;
 
     // allow code to bind to stack.

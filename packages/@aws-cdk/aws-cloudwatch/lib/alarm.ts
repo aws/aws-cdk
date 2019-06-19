@@ -1,4 +1,4 @@
-import { Construct, IResource, Lazy, Resource, Stack } from '@aws-cdk/cdk';
+import { Construct, IResource, Lazy, Resource, ResourceIdentifiers, Stack } from '@aws-cdk/cdk';
 import { IAlarmAction } from './alarm-action';
 import { CfnAlarm } from './cloudwatch.generated';
 import { HorizontalAnnotation } from './graph';
@@ -115,7 +115,9 @@ export class Alarm extends Resource implements IAlarm {
   private readonly annotation: HorizontalAnnotation;
 
   constructor(scope: Construct, id: string, props: AlarmProps) {
-    super(scope, id);
+    super(scope, id, {
+      physicalName: props.alarmName,
+    });
 
     const comparisonOperator = props.comparisonOperator || ComparisonOperator.GreaterThanOrEqualToThreshold;
 
@@ -124,7 +126,7 @@ export class Alarm extends Resource implements IAlarm {
     const alarm = new CfnAlarm(this, 'Resource', {
       // Meta
       alarmDescription: props.alarmDescription,
-      alarmName: props.alarmName,
+      alarmName: this.physicalName.value,
 
       // Evaluation
       comparisonOperator,
@@ -149,8 +151,19 @@ export class Alarm extends Resource implements IAlarm {
       })
     });
 
-    this.alarmArn = alarm.attrArn;
-    this.alarmName = alarm.refAsString;
+    const resourceIdentifiers = new ResourceIdentifiers(this, {
+      arn: alarm.attrArn,
+      name: alarm.refAsString,
+      arnComponents: {
+        service: 'cloudwatch',
+        resource: 'alarm',
+        resourceName: this.physicalName.value,
+        sep: ':',
+      },
+    });
+    this.alarmArn = resourceIdentifiers.arn;
+    this.alarmName = resourceIdentifiers.name;
+
     this.metric = props.metric;
     this.annotation = {
       // tslint:disable-next-line:max-line-length

@@ -100,7 +100,15 @@
   },
   "awslint": {
     "exclude": [
-      "construct-base-is-private:@aws-cdk/aws-rds.DatabaseInstanceBase"
+      "construct-base-is-private:@aws-cdk/aws-rds.DatabaseInstanceBase",
+      "props-physical-name:@aws-cdk/aws-rds.ParameterGroupProps",
+      "props-physical-name:@aws-cdk/aws-rds.ClusterParameterGroupProps",
+      "props-physical-name:@aws-cdk/aws-rds.DatabaseClusterProps",
+      "props-physical-name:@aws-cdk/aws-rds.DatabaseInstanceProps",
+      "props-physical-name:@aws-cdk/aws-rds.DatabaseInstanceFromSnapshotProps",
+      "props-physical-name:@aws-cdk/aws-rds.DatabaseInstanceReadReplicaProps",
+      "props-physical-name:@aws-cdk/aws-rds.DatabaseSecretProps",
+      "props-physical-name:@aws-cdk/aws-rds.OptionGroupProps"
     ]
   },
   "stability": "experimental"

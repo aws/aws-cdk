@@ -1,5 +1,5 @@
 import kms = require('@aws-cdk/aws-kms');
-import { Construct, Stack } from '@aws-cdk/cdk';
+import { Construct, PhysicalName, ResourceIdentifiers, Stack } from '@aws-cdk/cdk';
 import { IQueue, QueueAttributes, QueueBase } from './queue-base';
 import { CfnQueue } from './sqs.generated';
 import { validateProps } from './validate-props';
@@ -15,7 +15,7 @@ export interface QueueProps {
    *
    * @default CloudFormation-generated name
    */
-  readonly queueName?: string;
+  readonly queueName?: PhysicalName;
 
   /**
    * The number of seconds that Amazon SQS retains a message.
@@ -230,7 +230,9 @@ export class Queue extends QueueBase {
   protected readonly autoCreatePolicy = true;
 
   constructor(scope: Construct, id: string, props: QueueProps = {}) {
-    super(scope, id);
+    super(scope, id, {
+      physicalName: props.queueName,
+    });
 
     validateProps(props);
 
@@ -244,7 +246,7 @@ export class Queue extends QueueBase {
     const { encryptionMasterKey, encryptionProps } = _determineEncryptionProps.call(this);
 
     const queue = new CfnQueue(this, 'Resource', {
-      queueName: props.queueName,
+      queueName: this.physicalName.value,
       ...this.determineFifoProps(props),
       ...encryptionProps,
       redrivePolicy,
@@ -254,9 +256,18 @@ export class Queue extends QueueBase {
       receiveMessageWaitTimeSeconds: props.receiveMessageWaitTimeSec,
       visibilityTimeout: props.visibilityTimeoutSec,
     });
+
+    const resourceIdentifiers = new ResourceIdentifiers(this, {
+      arn: queue.attrArn,
+      name: queue.attrQueueName,
+      arnComponents: {
+        service: 'sqs',
+        resource: this.physicalName.value || '',
+      },
+    });
+    this.queueArn = resourceIdentifiers.arn;
+    this.queueName = resourceIdentifiers.name;
     this.encryptionMasterKey = encryptionMasterKey;
-    this.queueArn = queue.attrArn;
-    this.queueName = queue.attrQueueName;
     this.queueUrl = queue.refAsString;
 
     function _determineEncryptionProps(this: Queue): { encryptionProps: EncryptionProps, encryptionMasterKey?: kms.IKey } {
@@ -306,15 +317,16 @@ export class Queue extends QueueBase {
   private determineFifoProps(props: QueueProps): FifoProps {
     // Check if any of the signals that we have say that this is a FIFO queue.
     let fifoQueue = props.fifo;
-    if (typeof fifoQueue === 'undefined' && typeof props.queueName === 'string' && props.queueName.endsWith('.fifo')) { fifoQueue = true; }
+    const queueName = props.queueName && props.queueName.value;
+    if (typeof fifoQueue === 'undefined' && typeof queueName === 'string' && queueName.endsWith('.fifo')) { fifoQueue = true; }
     if (typeof fifoQueue === 'undefined' && props.contentBasedDeduplication) { fifoQueue = true; }
 
     // If we have a name, see that it agrees with the FIFO setting
-    if (typeof props.queueName === 'string') {
-      if (fifoQueue && !props.queueName.endsWith('.fifo')) {
+    if (typeof queueName === 'string') {
+      if (fifoQueue && !queueName.endsWith('.fifo')) {
         throw new Error("FIFO queue names must end in '.fifo'");
       }
-      if (!fifoQueue && props.queueName.endsWith('.fifo')) {
+      if (!fifoQueue && queueName.endsWith('.fifo')) {
         throw new Error("Non-FIFO queue name may not end in '.fifo'");
       }
     }

@@ -81,5 +81,11 @@
   "engines": {
     "node": ">= 8.10.0"
   },
+  "awslint": {
+    "exclude": [
+      "props-physical-name:@aws-cdk/aws-kms.AliasProps",
+      "props-physical-name:@aws-cdk/aws-kms.KeyProps"
+    ]
+  },
   "stability": "experimental"
 }

@@ -125,5 +125,12 @@
   "engines": {
     "node": ">= 8.10.0"
   },
+  "awslint": {
+    "exclude": [
+      "props-physical-name:@aws-cdk/aws-ecs.TaskDefinitionProps",
+      "props-physical-name:@aws-cdk/aws-ecs.Ec2TaskDefinitionProps",
+      "props-physical-name:@aws-cdk/aws-ecs.FargateTaskDefinitionProps"
+    ]
+  },
   "stability": "experimental"
 }
