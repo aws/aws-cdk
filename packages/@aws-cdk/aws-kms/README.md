@@ -39,15 +39,14 @@ pass the construct to the other stack:
 ### Importing existing keys
 
 To use a KMS key that is not defined in this CDK app, but is created through other means, use
-`Key.import(parent, name, ref)`:
+`Key.fromKeyArn(parent, name, ref)`:
 
 ```ts
-const myKeyImported = Key.import(this, 'MyImportedKey', {
-    keyArn: 'arn:aws:...'
-});
+import kms = require('@aws-cdk/aws-kms');
+const myKeyImported = kms.Key.fromKeyArn(this, 'MyImportedKey', 'arn:aws:...');
 
 // you can do stuff with this imported key.
-key.addAlias('alias/foo');
+myKeyImported.addAlias('alias/foo');
 ```
 
 Note that a call to `.addToPolicy(statement)` on `myKeyImported` will not have
