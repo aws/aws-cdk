@@ -133,7 +133,7 @@ export abstract class RepositoryBase extends Resource implements IRepository {
    * @param id The id of the rule
    * @param options Options for adding the rule
    */
-  public onCloudTrailEvent(id: string, options: events.OnEventOptions): events.Rule {
+  public onCloudTrailEvent(id: string, options: events.OnEventOptions = {}): events.Rule {
     const rule = new events.Rule(this, id, options);
     rule.addTarget(options.target);
     rule.addEventPattern({
@@ -158,7 +158,7 @@ export abstract class RepositoryBase extends Resource implements IRepository {
    * @param id The id of the rule
    * @param options Options for adding the rule
    */
-  public onCloudTrailImagePushed(id: string, options: OnCloudTrailImagePushedOptions): events.Rule {
+  public onCloudTrailImagePushed(id: string, options: OnCloudTrailImagePushedOptions = {}): events.Rule {
     const rule = this.onCloudTrailEvent(id, options);
     rule.addEventPattern({
       detail: {

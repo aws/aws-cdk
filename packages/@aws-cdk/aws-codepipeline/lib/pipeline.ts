@@ -114,7 +114,7 @@ abstract class PipelineBase extends Resource implements IPipeline {
    * @param id Identifier for this event handler.
    * @param options Additional options to pass to the event rule.
    */
-  public onEvent(id: string, options: events.OnEventOptions): events.Rule {
+  public onEvent(id: string, options: events.OnEventOptions = {}): events.Rule {
     const rule = new events.Rule(this, id, options);
     rule.addTarget(options.target);
     rule.addEventPattern({
@@ -131,7 +131,7 @@ abstract class PipelineBase extends Resource implements IPipeline {
    * @param id Identifier for this event handler.
    * @param options Additional options to pass to the event rule.
    */
-  public onStateChange(id: string, options: events.OnEventOptions): events.Rule {
+  public onStateChange(id: string, options: events.OnEventOptions = {}): events.Rule {
     const rule = this.onEvent(id, options);
     rule.addEventPattern({
       detailType: [ 'CodePipeline Pipeline Execution State Change' ],

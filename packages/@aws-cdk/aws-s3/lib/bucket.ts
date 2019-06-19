@@ -301,7 +301,7 @@ abstract class BucketBase extends Resource implements IBucket {
    * @param id The id of the rule
    * @param options Options for adding the rule
    */
-  public onCloudTrailEvent(id: string, options: OnCloudTrailBucketEventOptions): events.Rule {
+  public onCloudTrailEvent(id: string, options: OnCloudTrailBucketEventOptions = {}): events.Rule {
     const rule = new events.Rule(this, id, options);
     rule.addTarget(options.target);
     rule.addEventPattern({
@@ -326,7 +326,7 @@ abstract class BucketBase extends Resource implements IBucket {
    * @param id The id of the rule
    * @param options Options for adding the rule
    */
-  public onCloudTrailPutObject(id: string, options: OnCloudTrailBucketEventOptions): events.Rule {
+  public onCloudTrailPutObject(id: string, options: OnCloudTrailBucketEventOptions = {}): events.Rule {
     const rule = this.onCloudTrailEvent(id, options);
     rule.addEventPattern({
       detail: {

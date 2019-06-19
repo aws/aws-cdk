@@ -7,11 +7,15 @@ import { IRuleTarget } from "./target";
 export interface OnEventOptions {
   /**
    * The target to register for the event
+   *
+   * @default - No target is added to the rule. Use `addTarget()` to add a target.
    */
-  readonly target: IRuleTarget;
+  readonly target?: IRuleTarget;
 
   /**
    * A description of the rule's purpose.
+   *
+   * @default - No description
    */
   readonly description?: string;
 
@@ -28,6 +32,8 @@ export interface OnEventOptions {
    * The method that generates the rule probably imposes some type of event
    * filtering. The filtering implied by what you pass here is added
    * on top of that filtering.
+   *
+   * @default - No additional filtering based on an event pattern.
    *
    * @see
    * http://docs.aws.amazon.com/AmazonCloudWatch/latest/DeveloperGuide/CloudWatchEventsandEventPatterns.html
