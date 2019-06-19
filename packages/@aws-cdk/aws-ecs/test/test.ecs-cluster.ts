@@ -36,7 +36,9 @@ export = {
       }));
 
       expect(stack).to(haveResource("AWS::AutoScaling::LaunchConfiguration", {
-        ImageId: "", // Should this not be the latest image ID?
+        ImageId: {
+          Ref: "SsmParameterValueawsserviceecsoptimizedamiamazonlinuxrecommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
+        },
         InstanceType: "t2.micro",
         IamInstanceProfile: {
           Ref: "EcsClusterDefaultAutoScalingGroupInstanceProfile2CE606B3"
@@ -86,9 +88,6 @@ export = {
           },
           {
             Ref: "MyVpcPrivateSubnet2Subnet0040C983"
-          },
-          {
-            Ref: "MyVpcPrivateSubnet3Subnet772D6AD7"
           }
         ]
       }));
@@ -235,7 +234,9 @@ export = {
 
     // THEN
     expect(stack).to(haveResource("AWS::AutoScaling::LaunchConfiguration", {
-      ImageId: ""
+      ImageId: {
+        Ref: "SsmParameterValueawsserviceecsoptimizedamiamazonlinux2gpurecommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
+      }
     }));
 
     test.done();

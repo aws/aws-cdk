@@ -121,9 +121,6 @@ export = {
         },
         {
           Ref: 'VPCPrivateSubnet2SubnetCFCDAA7A'
-        },
-        {
-          Ref: 'VPCPrivateSubnet3Subnet3EDCD457'
         }
       ]
     }));
