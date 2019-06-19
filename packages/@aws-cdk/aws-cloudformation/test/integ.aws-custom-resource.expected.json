@@ -38,7 +38,8 @@
             "Ref": "TopicBFC7AF6E"
           }
         }
-      }
+      },
+      "DeletionPolicy": "Delete"
     },
     "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2": {
       "Type": "AWS::IAM::Role",
@@ -186,6 +187,17 @@
           "action": "listTopics",
           "physicalResourceIdPath": "Topics.0.TopicArn"
         }
+      },
+      "DependsOn": [
+        "TopicBFC7AF6E"
+      ],
+      "DeletionPolicy": "Delete"
+    },
+    "DummyParameter53662B67": {
+      "Type": "AWS::SSM::Parameter",
+      "Properties": {
+        "Type": "String",
+        "Value": "1337"
       }
     },
     "GetParameter42B0A00E": {
@@ -201,7 +213,9 @@
           "service": "SSM",
           "action": "getParameter",
           "parameters": {
-            "Name": "my-parameter",
+            "Name": {
+              "Ref": "DummyParameter53662B67"
+            },
             "WithDecryption": true
           },
           "physicalResourceIdPath": "Parameter.ARN"
@@ -210,12 +224,15 @@
           "service": "SSM",
           "action": "getParameter",
           "parameters": {
-            "Name": "my-parameter",
+            "Name": {
+              "Ref": "DummyParameter53662B67"
+            },
             "WithDecryption": true
           },
           "physicalResourceIdPath": "Parameter.ARN"
         }
-      }
+      },
+      "DeletionPolicy": "Delete"
     }
   },
   "Parameters": {
