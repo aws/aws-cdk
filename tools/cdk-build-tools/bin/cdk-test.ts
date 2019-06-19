@@ -9,7 +9,6 @@ async function main() {
   const args = yargs
     .env('CDK_TEST')
     .usage('Usage: cdk-test')
-    .option('quick', { type: 'boolean', alias: 'q', desc: `Skip slow tests`, default: false })
     .option('jsii-diff', {
       type: 'string',
       desc: 'Specify a different jsii-diff executable',
@@ -79,18 +78,6 @@ async function main() {
   // Run integration test if the package has integ test files
   if (await hasIntegTests()) {
     await shell(['cdk-integ-assert'], { timers });
-  }
-
-  // Run compatibility check if not disabled (against the latest
-  // published version)
-  if (!args.quick) {
-    try {
-      await shell([args["jsii-diff"], 'npm:'], { timers });
-    } catch (e) {
-      // If there was an exception running jsii-diff, swallow it
-      process.stderr.write(`The package seems to have undergone breaking API changes. Please revise and try to avoid.\n`);
-      process.stderr.write(`(This is just a warning for now but will soon become a build failure.)\n`);
-    }
   }
 }
 
