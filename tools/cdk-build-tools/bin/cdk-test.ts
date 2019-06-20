@@ -9,12 +9,6 @@ async function main() {
   const args = yargs
     .env('CDK_TEST')
     .usage('Usage: cdk-test')
-    .option('jsii-diff', {
-      type: 'string',
-      desc: 'Specify a different jsii-diff executable',
-      default: require.resolve('jsii-diff/bin/jsii-diff'),
-      defaultDescription: 'jsii-diff provided by node dependencies'
-    })
     .option('jest', {
       type: 'string',
       desc: 'Specify a different jest executable',
