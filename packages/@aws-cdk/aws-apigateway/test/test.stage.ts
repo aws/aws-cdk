@@ -20,7 +20,7 @@ export = {
         testapiD6451F70: {
         Type: "AWS::ApiGateway::RestApi",
         Properties: {
-          Name: "test-api"
+          Name: "testapiD6451F70"
         }
         },
         testapiGETD8DE4ED1: {

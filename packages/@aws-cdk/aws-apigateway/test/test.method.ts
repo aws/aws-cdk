@@ -5,7 +5,7 @@ import iam = require('@aws-cdk/aws-iam');
 import cdk = require('@aws-cdk/cdk');
 import { Test } from 'nodeunit';
 import apigateway = require('../lib');
-import { ConnectionType, EmptyModel, ErrorModel } from '../lib';
+import { ConnectionType } from '../lib';
 
 export = {
   'default setup'(test: Test) {
@@ -349,8 +349,8 @@ export = {
               'method.response.header.errthing': true
             },
             responseModels: {
-              'application/json': new EmptyModel(),
-              'text/plain': new ErrorModel()
+              'application/json': apigateway.Model.EmptyModel,
+              'text/plain': apigateway.Model.ErrorModel
             }
           }
         ]
@@ -443,6 +443,142 @@ export = {
     expect(stack).to(haveResource('AWS::ApiGateway::Method', { HttpMethod: "POST" }));
     expect(stack).to(haveResource('AWS::ApiGateway::Method', { HttpMethod: "GET" }));
     expect(stack).to(haveResource('AWS::ApiGateway::Method', { HttpMethod: "PUT" }));
+    test.done();
+  },
+
+  'requestModel can be set'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const api = new apigateway.RestApi(stack, 'test-api', { deploy: false });
+    const model = new apigateway.CfnModel(stack, 'test-model', {
+      contentType: "application/json",
+      name: 'TestModel',
+      restApiId: api.restApiId,
+      schema: {
+        $schema: "http://json-schema.org/draft-04/schema#",
+        title: "test",
+        type: "object",
+        properties: { message: { type: "string" } }
+      }
+    });
+
+    // WHEN
+    new apigateway.Method(stack, 'method-man', {
+      httpMethod: 'GET',
+      resource: api.root,
+      options: {
+        requestModels: {
+          "application/json": { modelName: model.modelName }
+        }
+      }
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::ApiGateway::Method', {
+      HttpMethod: 'GET',
+      RequestModels: {
+        "application/json": { Ref: stack.getLogicalId(model) }
+      }
+    }));
+
+    test.done();
+  },
+
+  'methodResponse has a mix of response modes'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const api = new apigateway.RestApi(stack, 'test-api', { deploy: false });
+    const htmlModel = api.addModel('my-model', {
+      schema: {
+        $schema: "http://json-schema.org/draft-04/schema#",
+        title: "test",
+        type: "object",
+        properties: { message: { type: "string" } }
+      }
+    });
+
+    // WHEN
+    new apigateway.Method(stack, 'method-man', {
+      httpMethod: 'GET',
+      resource: api.root,
+      options: {
+        methodResponses: [{
+            statusCode: '200'
+          }, {
+            statusCode: "400",
+            responseParameters: {
+              'method.response.header.killerbees': false
+            }
+          }, {
+            statusCode: "500",
+            responseParameters: {
+              'method.response.header.errthing': true
+            },
+            responseModels: {
+              'application/json': apigateway.Model.EmptyModel,
+              'text/plain': apigateway.Model.ErrorModel,
+              'text/html': htmlModel
+            }
+          }
+        ]
+      }
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::ApiGateway::Method', {
+      HttpMethod: 'GET',
+      MethodResponses: [{
+          StatusCode: "200"
+        }, {
+          StatusCode: "400",
+          ResponseParameters: {
+            'method.response.header.killerbees': false
+          }
+        }, {
+          StatusCode: "500",
+          ResponseParameters: {
+            'method.response.header.errthing': true
+          },
+          ResponseModels: {
+            'application/json': 'Empty',
+            'text/plain': 'Error',
+            'text/html': { Ref: stack.getLogicalId(htmlModel.node.findChild('Resource') as cdk.CfnElement) }
+          }
+        }
+      ]
+    }));
+
+    test.done();
+  },
+
+  'method has a request validator'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const api = new apigateway.RestApi(stack, 'test-api', { deploy: false });
+    const validator = api.addRequestValidator('validator', {
+      validateRequestBody: true,
+      validateRequestParameters: false
+    });
+
+    // WHEN
+    new apigateway.Method(stack, 'method-man', {
+      httpMethod: 'GET',
+      resource: api.root,
+      options: {
+        requestValidator: validator
+      }
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::ApiGateway::Method', {
+      RequestValidatorId: { Ref: stack.getLogicalId(validator.node.findChild('Resource') as cdk.CfnElement) }
+    }));
+    expect(stack).to(haveResource('AWS::ApiGateway::RequestValidator', {
+      RestApiId: { Ref: stack.getLogicalId(api.node.findChild('Resource') as cdk.CfnElement) },
+      ValidateRequestBody: true,
+      ValidateRequestParameters: false
+    }));
+
     test.done();
   }
 };
