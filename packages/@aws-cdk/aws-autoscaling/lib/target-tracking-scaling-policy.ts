@@ -123,7 +123,7 @@ export class TargetTrackingScalingPolicy extends cdk.Construct {
       policyType: 'TargetTrackingScaling',
       autoScalingGroupName: props.autoScalingGroup.autoScalingGroupName,
       cooldown: props.cooldown && props.cooldown.toSeconds().toString(),
-      estimatedInstanceWarmup: cdk.toSeconds(props.estimatedInstanceWarmup),
+      estimatedInstanceWarmup: props.estimatedInstanceWarmup && props.estimatedInstanceWarmup.toSeconds(),
       targetTrackingConfiguration: {
         customizedMetricSpecification: renderCustomMetric(props.customMetric),
         disableScaleIn: props.disableScaleIn,

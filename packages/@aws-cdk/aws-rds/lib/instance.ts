@@ -518,7 +518,7 @@ abstract class DatabaseInstanceNew extends DatabaseInstanceBase implements IData
       enableIamDatabaseAuthentication: props.iamAuthentication,
       enablePerformanceInsights: props.enablePerformanceInsights,
       iops,
-      monitoringInterval: toSeconds(props.monitoringInterval),
+      monitoringInterval: props.monitoringInterval && props.monitoringInterval.toSeconds(),
       monitoringRoleArn: monitoringRole && monitoringRole.roleArn,
       multiAz: props.multiAz,
       optionGroupName: props.optionGroup && props.optionGroup.optionGroupName,

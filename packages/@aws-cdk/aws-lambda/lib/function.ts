@@ -427,7 +427,7 @@ export class Function extends FunctionBase {
       code: Lazy.anyValue({ produce: () => props.code._toJSON(resource) }),
       layers: Lazy.listValue({ produce: () => this.layers.map(layer => layer.layerVersionArn) }, { omitEmpty: true }),
       handler: props.handler,
-      timeout: toSeconds(props.timeout),
+      timeout: props.timeout && props.timeout.toSeconds(),
       runtime: props.runtime.name,
       role: this.role.roleArn,
       environment: Lazy.anyValue({ produce: () => this.renderEnvironment() }),

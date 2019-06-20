@@ -103,7 +103,7 @@ export class LifecycleHook extends Resource implements ILifecycleHook {
     const resource = new CfnLifecycleHook(this, 'Resource', {
       autoScalingGroupName: props.autoScalingGroup.autoScalingGroupName,
       defaultResult: props.defaultResult,
-      heartbeatTimeout: toSeconds(props.heartbeatTimeout),
+      heartbeatTimeout: props.heartbeatTimeout && props.heartbeatTimeout.toSeconds(),
       lifecycleHookName: props.lifecycleHookName,
       lifecycleTransition: props.lifecycleTransition,
       notificationMetadata: props.notificationMetadata,

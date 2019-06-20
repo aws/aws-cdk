@@ -128,8 +128,8 @@ export class TargetTrackingScalingPolicy extends cdk.Construct {
           predefinedMetricType: props.predefinedMetric,
           resourceLabel: props.resourceLabel,
         } : undefined,
-        scaleInCooldown: cdk.toSeconds(props.scaleInCooldown),
-        scaleOutCooldown: cdk.toSeconds(props.scaleOutCooldown),
+        scaleInCooldown: props.scaleInCooldown && props.scaleInCooldown.toSeconds(),
+        scaleOutCooldown: props.scaleOutCooldown && props.scaleOutCooldown.toSeconds(),
         targetValue: props.targetValue
       }
     });

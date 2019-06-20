@@ -150,7 +150,7 @@ export abstract class BaseService extends Resource
         maximumPercent: props.maximumPercent || 200,
         minimumHealthyPercent: props.minimumHealthyPercent === undefined ? 50 : props.minimumHealthyPercent
       },
-      healthCheckGracePeriodSeconds: toSeconds(props.healthCheckGracePeriod),
+      healthCheckGracePeriodSeconds: props.healthCheckGracePeriod && props.healthCheckGracePeriod.toSeconds(),
       /* role: never specified, supplanted by Service Linked Role */
       networkConfiguration: Lazy.anyValue({ produce: () => this.networkConfiguration }),
       serviceRegistries: Lazy.anyValue({ produce: () => this.serviceRegistries }),

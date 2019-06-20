@@ -128,8 +128,8 @@ export class Task extends State implements INextable {
             Resource: this.taskProps.resourceArn,
             Parameters: this.taskProps.parameters,
             ResultPath: renderJsonPath(this.resultPath),
-            TimeoutSeconds: cdk.toSeconds(this.timeout),
-            HeartbeatSeconds: cdk.toSeconds(this.taskProps.heartbeat),
+            TimeoutSeconds: this.timeout && this.timeout.toSeconds(),
+            HeartbeatSeconds: this.taskProps.heartbeat && this.taskProps.heartbeat.toSeconds(),
         };
     }
 

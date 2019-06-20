@@ -1,9 +1,15 @@
 import nodeunit = require('nodeunit');
-import { Duration } from '../lib';
+import { Duration, Stack, Token } from '../lib';
 
 export = nodeunit.testCase({
   'negative amount'(test: nodeunit.Test) {
     test.throws(() => Duration.seconds(-1), /negative/);
+
+    test.done();
+  },
+
+  'unresolved amount'(test: nodeunit.Test) {
+    test.throws(new Stack().resolve(Duration.seconds(Token.asNumber(1337))));
 
     test.done();
   },

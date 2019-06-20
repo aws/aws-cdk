@@ -1,3 +1,5 @@
+import { Token } from "./token";
+
 /**
  * Represents a length of time.
  */
@@ -64,6 +66,9 @@ export class Duration {
   private readonly unit: TimeUnit;
 
   private constructor(amount: number, unit: TimeUnit) {
+    if (Token.isUnresolved(amount)) {
+      throw new Error(`Duration amounts cannot be unresolved tokens. Received ${amount}`);
+    }
     if (amount < 0) {
       throw new Error(`Duration amounts cannot be negative. Received: ${amount}`);
     }
@@ -113,7 +118,12 @@ export class Duration {
   }
 
   public toString(): string {
-    return `${this.amount} ${this.unit}`;
+    return Token.asString(
+      () => {
+        throw new Error(`Duration.toString() was used, but .toSeconds, .toMinutes or .toDays should have been called instead`);
+      },
+      { displayHint: `${this.amount} ${this.unit.label}` }
+    );
   }
 
   private fractionDuration(symbol: string, modulus: number, next: (amount: number) => Duration): string {
@@ -139,17 +149,6 @@ export interface TimeConversionOptions {
    * @default true
    */
   readonly integral?: boolean;
-}
-
-/**
- * Helpful syntax sugar for turning an optional `Duration` into a count of seconds.
- *
- * @param duration an optional duration to convert into an amount of sunctions.
- *
- * @return `duration && duration.toSeconds()`.
- */
-export function toSeconds(duration: Duration | undefined): number | undefined {
-  return duration && duration.toSeconds();
 }
 
 class TimeUnit {

@@ -74,7 +74,7 @@ export class StepScalingAction extends cdk.Construct {
       policyType: 'StepScaling',
       autoScalingGroupName: props.autoScalingGroup.autoScalingGroupName,
       cooldown: props.cooldown && props.cooldown.toSeconds().toString(),
-      estimatedInstanceWarmup: cdk.toSeconds(props.estimatedInstanceWarmup),
+      estimatedInstanceWarmup: props.estimatedInstanceWarmup && props.estimatedInstanceWarmup.toSeconds(),
       adjustmentType: props.adjustmentType,
       minAdjustmentMagnitude: props.minAdjustmentMagnitude,
       metricAggregationType: props.metricAggregationType,

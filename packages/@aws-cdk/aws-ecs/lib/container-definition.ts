@@ -479,7 +479,7 @@ function renderHealthCheck(hc: HealthCheck): CfnTaskDefinition.HealthCheckProper
     command: getHealthCheckCommand(hc),
     interval: hc.interval != null ? hc.interval.toSeconds() : 30,
     retries: hc.retries !== undefined ? hc.retries : 3,
-    startPeriod: cdk.toSeconds(hc.startPeriod),
+    startPeriod: hc.startPeriod && hc.startPeriod.toSeconds(),
     timeout: hc.timeout !== undefined ? hc.timeout.toSeconds() : 5,
   };
 }

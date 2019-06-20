@@ -606,8 +606,8 @@ export class CloudFrontWebDistribution extends cdk.Construct implements IDistrib
           ? {
             httpPort: originConfig.customOriginSource.httpPort || 80,
             httpsPort: originConfig.customOriginSource.httpsPort || 443,
-            originKeepaliveTimeout: cdk.toSeconds(originConfig.customOriginSource.originKeepaliveTimeout) || 5,
-            originReadTimeout: cdk.toSeconds(originConfig.customOriginSource.originReadTimeout) || 30,
+            originKeepaliveTimeout: originConfig.customOriginSource.originKeepaliveTimeout && originConfig.customOriginSource.originKeepaliveTimeout.toSeconds() || 5,
+            originReadTimeout: originConfig.customOriginSource.originReadTimeout && originConfig.customOriginSource.originReadTimeout.toSeconds() || 30,
             originProtocolPolicy: originConfig.customOriginSource.originProtocolPolicy || OriginProtocolPolicy.HttpsOnly,
             originSslProtocols: originConfig.customOriginSource.allowedOriginSSLVersions || [OriginSslPolicy.TLSv1_2]
           }
@@ -704,10 +704,10 @@ export class CloudFrontWebDistribution extends cdk.Construct implements IDistrib
       allowedMethods: this.METHOD_LOOKUP_MAP[input.allowedMethods || CloudFrontAllowedMethods.GET_HEAD],
       cachedMethods: this.METHOD_LOOKUP_MAP[input.cachedMethods || CloudFrontAllowedCachedMethods.GET_HEAD],
       compress: input.compress,
-      defaultTtl: cdk.toSeconds(input.defaultTtl),
+      defaultTtl: input.defaultTtl && input.defaultTtl.toSeconds(),
       forwardedValues: input.forwardedValues || { queryString: false, cookies: { forward: "none" } },
-      maxTtl: cdk.toSeconds(input.maxTtl),
-      minTtl: cdk.toSeconds(input.minTtl),
+      maxTtl: input.maxTtl && input.maxTtl.toSeconds(),
+      minTtl: input.minTtl && input.minTtl.toSeconds(),
       trustedSigners: input.trustedSigners,
       targetOriginId: input.targetOriginId,
       viewerProtocolPolicy: protoPolicy || ViewerProtocolPolicy.RedirectToHTTPS,

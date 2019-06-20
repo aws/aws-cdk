@@ -248,11 +248,11 @@ export class Queue extends QueueBase {
       ...this.determineFifoProps(props),
       ...encryptionProps,
       redrivePolicy,
-      delaySeconds: toSeconds(props.deliveryDelay),
+      delaySeconds: props.deliveryDelay && props.deliveryDelay.toSeconds(),
       maximumMessageSize: props.maxMessageSizeBytes,
-      messageRetentionPeriod: toSeconds(props.retentionPeriod),
-      receiveMessageWaitTimeSeconds: toSeconds(props.receiveMessageWaitTime),
-      visibilityTimeout: toSeconds(props.visibilityTimeout),
+      messageRetentionPeriod: props.retentionPeriod && props.retentionPeriod.toSeconds(),
+      receiveMessageWaitTimeSeconds: props.receiveMessageWaitTime && props.receiveMessageWaitTime.toSeconds(),
+      visibilityTimeout: props.visibilityTimeout && props.visibilityTimeout.toSeconds(),
     });
     this.encryptionMasterKey = encryptionMasterKey;
     this.queueArn = queue.queueArn;

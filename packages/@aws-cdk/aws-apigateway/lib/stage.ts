@@ -256,7 +256,7 @@ export class Stage extends Resource {
       return {
         httpMethod, resourcePath,
         cacheDataEncrypted: options.cacheDataEncrypted,
-        cacheTtlInSeconds: toSeconds(options.cacheTtl),
+        cacheTtlInSeconds: options.cacheTtl && options.cacheTtl.toSeconds(),
         cachingEnabled: options.cachingEnabled,
         dataTraceEnabled: options.dataTraceEnabled,
         loggingLevel: options.loggingLevel,

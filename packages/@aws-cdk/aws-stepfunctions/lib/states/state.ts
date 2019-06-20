@@ -437,7 +437,7 @@ interface CatchTransition {
 function renderRetry(retry: RetryProps) {
     return {
         ErrorEquals: retry.errors,
-        IntervalSeconds: cdk.toSeconds(retry.interval),
+        IntervalSeconds: retry.interval && retry.interval.toSeconds(),
         MaxAttempts: retry.maxAttempts,
         BackoffRate: retry.backoffRate
     };

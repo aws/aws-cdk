@@ -196,7 +196,7 @@ export class Role extends Resource implements IRole {
     this.assumeRolePolicy = createAssumeRolePolicy(props.assumedBy, props.externalId);
     this.managedPolicyArns = props.managedPolicyArns || [ ];
 
-    const maxSessionDuration = toSeconds(props.maxSessionDuration);
+    const maxSessionDuration = props.maxSessionDuration && props.maxSessionDuration.toSeconds();
     validateMaxSessionDuration(maxSessionDuration);
 
     const role = new CfnRole(this, 'Resource', {
