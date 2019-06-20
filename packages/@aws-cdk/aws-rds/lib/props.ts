@@ -1,6 +1,6 @@
 import ec2 = require('@aws-cdk/aws-ec2');
 import kms = require('@aws-cdk/aws-kms');
-import { SecretValue } from '@aws-cdk/cdk';
+import { Duration, SecretValue } from '@aws-cdk/cdk';
 import { IParameterGroup } from './parameter-group';
 import { SecretRotationApplication } from './secret-rotation';
 
@@ -80,7 +80,7 @@ export interface BackupProps {
   /**
    * How many days to retain the backup
    */
-  readonly retentionDays: number;
+  readonly retention: Duration;
 
   /**
    * A daily time range in 24-hours UTC format in which backups preferably execute.

@@ -53,8 +53,8 @@ class DatabaseInstanceStack extends cdk.Stack {
       vpc,
       databaseName: 'ORCL',
       storageEncrypted: true,
-      backupRetentionPeriod: 7,
-      monitoringInterval: 60,
+      backupRetention: cdk.Duration.days(7),
+      monitoringInterval: cdk.Duration.seconds(60),
       enablePerformanceInsights: true,
       cloudwatchLogsExports: [
         'trace',

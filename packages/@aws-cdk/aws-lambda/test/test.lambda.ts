@@ -583,7 +583,7 @@ export = {
 
     const dlQueue = new sqs.Queue(stack, 'DeadLetterQueue', {
       queueName: cdk.PhysicalName.of('MyLambda_DLQ'),
-      retentionPeriodSec: 1209600
+      retentionPeriod: cdk.Duration.days(14)
     });
 
     new lambda.Function(stack, 'MyLambda', {
@@ -692,7 +692,7 @@ export = {
 
     const dlQueue = new sqs.Queue(stack, 'DeadLetterQueue', {
       queueName: cdk.PhysicalName.of('MyLambda_DLQ'),
-      retentionPeriodSec: 1209600
+      retentionPeriod: cdk.Duration.days(14)
     });
 
     new lambda.Function(stack, 'MyLambda', {
@@ -802,7 +802,7 @@ export = {
 
     const dlQueue = new sqs.Queue(stack, 'DeadLetterQueue', {
       queueName: cdk.PhysicalName.of('MyLambda_DLQ'),
-      retentionPeriodSec: 1209600
+      retentionPeriod: cdk.Duration.days(14),
     });
 
     test.throws(() => new lambda.Function(stack, 'MyLambda', {
@@ -1088,7 +1088,7 @@ export = {
       dimensions: { FunctionName: { Ref: 'Function76856677' }},
       namespace: 'AWS/Lambda',
       metricName: 'Errors',
-      periodSec: 300,
+      period: cdk.Duration.minutes(5),
       statistic: 'Sum',
     });
 
@@ -1323,7 +1323,7 @@ export = {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
       runtime: lambda.Runtime.Nodejs,
-      logRetentionDays: logs.RetentionDays.ONE_MONTH
+      logRetention: logs.RetentionDays.ONE_MONTH
     });
 
     // THEN

@@ -146,7 +146,7 @@ export class Alarm extends Resource implements IAlarm {
       ...dropUndef(config),
       ...dropUndef({
         // Alarm overrides
-        period: props.periodSec,
+        period: props.period && props.period.toSeconds(),
         statistic: props.statistic && normalizeStatistic(props.statistic),
       })
     });

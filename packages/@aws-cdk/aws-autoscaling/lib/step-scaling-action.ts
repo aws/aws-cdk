@@ -16,14 +16,14 @@ export interface StepScalingActionProps {
    *
    * @default The default cooldown configured on the AutoScalingGroup
    */
-  readonly cooldownSeconds?: number;
+  readonly cooldown?: cdk.Duration;
 
   /**
    * Estimated time until a newly launched instance can send metrics to CloudWatch.
    *
    * @default Same as the cooldown
    */
-  readonly estimatedInstanceWarmupSeconds?: number;
+  readonly estimatedInstanceWarmup?: cdk.Duration;
 
   /**
    * How the adjustment numbers are interpreted
@@ -73,8 +73,8 @@ export class StepScalingAction extends cdk.Construct {
     const resource = new CfnScalingPolicy(this, 'Resource', {
       policyType: 'StepScaling',
       autoScalingGroupName: props.autoScalingGroup.autoScalingGroupName,
-      cooldown: props.cooldownSeconds !== undefined ? `${props.cooldownSeconds}` : undefined,
-      estimatedInstanceWarmup: props.estimatedInstanceWarmupSeconds,
+      cooldown: props.cooldown && props.cooldown.toSeconds().toString(),
+      estimatedInstanceWarmup: props.estimatedInstanceWarmup && props.estimatedInstanceWarmup.toSeconds(),
       adjustmentType: props.adjustmentType,
       minAdjustmentMagnitude: props.minAdjustmentMagnitude,
       metricAggregationType: props.metricAggregationType,

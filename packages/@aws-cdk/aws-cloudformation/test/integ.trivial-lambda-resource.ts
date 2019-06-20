@@ -27,7 +27,7 @@ class DemoResource extends cdk.Construct {
         // This makes the demo only work as top-level TypeScript program, but that's fine for now
         code: new lambda.InlineCode(fs.readFileSync('integ.trivial-lambda-provider.py', { encoding: 'utf-8' })),
         handler: 'index.main',
-        timeout: 300,
+        timeout: cdk.Duration.minutes(5),
         runtime: lambda.Runtime.Python27,
       })),
       properties: props

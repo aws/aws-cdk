@@ -1031,7 +1031,7 @@ export = {
       },
       namespace: 'AWS/ECS',
       metricName: 'MemoryUtilization',
-      periodSec: 300,
+      period: cdk.Duration.minutes(5),
       statistic: 'Average'
     });
 

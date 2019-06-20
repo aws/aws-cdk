@@ -38,7 +38,7 @@ export class AdoptedRepository extends ecr.RepositoryBase {
       handler: 'handler.handler',
       code: lambda.Code.asset(path.join(__dirname, 'adopt-repository')),
       uuid: 'dbc60def-c595-44bc-aa5c-28c95d68f62c',
-      timeout: 300
+      timeout: cdk.Duration.minutes(5)
     });
 
     fn.addToRolePolicy(new iam.PolicyStatement({

@@ -35,7 +35,7 @@ export interface BasicStepScalingPolicyProps {
    * @see https://docs.aws.amazon.com/autoscaling/application/APIReference/API_StepScalingPolicyConfiguration.html
    * @default No cooldown period
    */
-  readonly cooldownSec?: number;
+  readonly cooldown?: cdk.Duration;
 
   /**
    * Minimum absolute number to adjust capacity with as result of percentage scaling.
@@ -86,7 +86,7 @@ export class StepScalingPolicy extends cdk.Construct {
 
       this.lowerAction = new StepScalingAction(this, 'LowerPolicy', {
         adjustmentType,
-        cooldownSec: props.cooldownSec,
+        cooldown: props.cooldown,
         metricAggregationType: aggregationTypeFromMetric(props.metric),
         minAdjustmentMagnitude: props.minAdjustmentMagnitude,
         scalingTarget: props.scalingTarget,
@@ -101,8 +101,9 @@ export class StepScalingPolicy extends cdk.Construct {
       }
 
       this.lowerAlarm = new cloudwatch.Alarm(this, 'LowerAlarm', {
+        // Recommended by AutoScaling
         metric: props.metric,
-        periodSec: 60, // Recommended by AutoScaling
+        period: cdk.Duration.minutes(1), // Recommended by AutoScaling
         alarmDescription: 'Lower threshold scaling alarm',
         comparisonOperator: cloudwatch.ComparisonOperator.LESS_THAN_OR_EQUAL_TO_THRESHOLD,
         evaluationPeriods: 1,
@@ -116,7 +117,7 @@ export class StepScalingPolicy extends cdk.Construct {
 
       this.upperAction = new StepScalingAction(this, 'UpperPolicy', {
         adjustmentType,
-        cooldownSec: props.cooldownSec,
+        cooldown: props.cooldown,
         metricAggregationType: aggregationTypeFromMetric(props.metric),
         minAdjustmentMagnitude: props.minAdjustmentMagnitude,
         scalingTarget: props.scalingTarget,
@@ -131,8 +132,9 @@ export class StepScalingPolicy extends cdk.Construct {
       }
 
       this.upperAlarm = new cloudwatch.Alarm(this, 'UpperAlarm', {
+        // Recommended by AutoScaling
         metric: props.metric,
-        periodSec: 60, // Recommended by AutoScaling
+        period: cdk.Duration.minutes(1), // Recommended by AutoScaling
         alarmDescription: 'Upper threshold scaling alarm',
         comparisonOperator: cloudwatch.ComparisonOperator.GREATER_THAN_OR_EQUAL_TO_THRESHOLD,
         evaluationPeriods: 1,

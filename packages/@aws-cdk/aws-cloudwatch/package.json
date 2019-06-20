@@ -78,6 +78,12 @@
     "@aws-cdk/aws-iam": "^0.35.0",
     "@aws-cdk/cdk": "^0.35.0"
   },
+  "awslint": {
+    "exclude": [
+      "duration-prop-type:@aws-cdk/aws-cloudwatch.MetricAlarmConfig.period",
+      "duration-prop-type:@aws-cdk/aws-cloudwatch.MetricGraphConfig.period"
+    ]
+  },
   "engines": {
     "node": ">= 8.10.0"
   },

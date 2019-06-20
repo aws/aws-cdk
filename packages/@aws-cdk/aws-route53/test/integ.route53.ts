@@ -27,7 +27,7 @@ new TxtRecord(privateZone, 'TXT', {
     'Bar!',
     'Baz?'
   ],
-  ttl: 60
+  ttl: cdk.Duration.minutes(1)
 });
 
 new CnameRecord(stack, 'CNAME', {

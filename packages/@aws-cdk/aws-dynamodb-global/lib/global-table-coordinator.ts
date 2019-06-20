@@ -17,7 +17,7 @@ export class GlobalTableCoordinator extends cdk.Stack {
       description: "Lambda to make DynamoDB a global table",
       handler: "index.handler",
       runtime: lambda.Runtime.Nodejs810,
-      timeout: 300,
+      timeout: cdk.Duration.minutes(5),
       uuid: "D38B65A6-6B54-4FB6-9BAD-9CD40A6DAC12",
     });
 

@@ -1,6 +1,6 @@
 import cloudwatch = require('@aws-cdk/aws-cloudwatch');
 import ec2 = require('@aws-cdk/aws-ec2');
-import { Construct, IConstruct } from '@aws-cdk/cdk';
+import { Construct, Duration, IConstruct } from '@aws-cdk/cdk';
 import { BaseTargetGroupProps, ITargetGroup, loadBalancerNameFromListenerArn, LoadBalancerTargetProps,
          TargetGroupBase, TargetGroupImportProps } from '../shared/base-target-group';
 import { ApplicationProtocol } from '../shared/enums';
@@ -31,11 +31,11 @@ export interface ApplicationTargetGroupProps extends BaseTargetGroupProps {
    * The time period during which the load balancer sends a newly registered
    * target a linearly increasing share of the traffic to the target group.
    *
-   * The range is 30–900 seconds (15 minutes).
+   * The range is 30-900 seconds (15 minutes).
    *
    * @default 0
    */
-  readonly slowStartSec?: number;
+  readonly slowStart?: Duration;
 
   /**
    * The stickiness cookie expiration period.
@@ -45,9 +45,9 @@ export interface ApplicationTargetGroupProps extends BaseTargetGroupProps {
    * After this period, the cookie is considered stale. The minimum value is
    * 1 second and the maximum value is 7 days (604800 seconds).
    *
-   * @default 86400 (1 day)
+   * @default Duration.days(1)
    */
-  readonly stickinessCookieDurationSec?: number;
+  readonly stickinessCookieDuration?: Duration;
 
   /**
    * The targets to add to this target group.
@@ -86,11 +86,11 @@ export class ApplicationTargetGroup extends TargetGroupBase implements IApplicat
     this.connectableMembers = [];
     this.listeners = [];
 
-    if (props.slowStartSec !== undefined) {
-      this.setAttribute('slow_start.duration_seconds', props.slowStartSec.toString());
+    if (props.slowStart !== undefined) {
+      this.setAttribute('slow_start.duration_seconds', props.slowStart.toSeconds().toString());
     }
-    if (props.stickinessCookieDurationSec !== undefined) {
-      this.enableCookieStickiness(props.stickinessCookieDurationSec);
+    if (props.stickinessCookieDuration !== undefined) {
+      this.enableCookieStickiness(props.stickinessCookieDuration);
     }
 
     this.addTarget(...(props.targets || []));
@@ -109,10 +109,10 @@ export class ApplicationTargetGroup extends TargetGroupBase implements IApplicat
   /**
    * Enable sticky routing via a cookie to members of this target group
    */
-  public enableCookieStickiness(durationSec: number) {
+  public enableCookieStickiness(duration: Duration) {
     this.setAttribute('stickiness.enabled', 'true');
     this.setAttribute('stickiness.type', 'lb_cookie');
-    this.setAttribute('stickiness.lb_cookie.duration_seconds', durationSec.toString());
+    this.setAttribute('stickiness.lb_cookie.duration_seconds', duration.toSeconds().toString());
   }
 
   /**

@@ -67,7 +67,7 @@ export interface TrailProps {
    *
    *  @default logs.RetentionDays.OneYear
    */
-  readonly cloudWatchLogsRetentionTimeDays?: logs.RetentionDays;
+  readonly cloudWatchLogsRetention?: logs.RetentionDays;
 
   /** The AWS Key Management Service (AWS KMS) key ID that you want to use to encrypt CloudTrail logs.
    *
@@ -151,7 +151,7 @@ export class Trail extends Resource {
     let logsRole: iam.IRole | undefined;
     if (props.sendToCloudWatchLogs) {
       logGroup = new logs.CfnLogGroup(this, "LogGroup", {
-        retentionInDays: props.cloudWatchLogsRetentionTimeDays || logs.RetentionDays.ONE_YEAR
+        retentionInDays: props.cloudWatchLogsRetention || logs.RetentionDays.ONE_YEAR
       });
 
       logsRole = new iam.Role(this, 'LogsRole', { assumedBy: cloudTrailPrincipal });

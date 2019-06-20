@@ -1,5 +1,5 @@
 import { expect, haveResource,  } from '@aws-cdk/assert';
-import { Stack } from '@aws-cdk/cdk';
+import { Duration, Stack } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
 import { Vpc, VpnConnection } from '../lib';
 
@@ -278,7 +278,7 @@ export = {
       dimensions: { VpnId: { Ref: 'VpcNetworkVpnA476C58D' } },
       namespace: 'AWS/VPN',
       metricName: 'TunnelState',
-      periodSec: 300,
+      period: Duration.minutes(5),
       statistic: 'Average'
     });
 
@@ -293,7 +293,7 @@ export = {
     test.deepEqual(stack.resolve(VpnConnection.metricAllTunnelDataOut()), {
       namespace: 'AWS/VPN',
       metricName: 'TunnelDataOut',
-      periodSec: 300,
+      period: Duration.minutes(5),
       statistic: 'Sum'
     });
 

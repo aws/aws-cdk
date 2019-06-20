@@ -391,8 +391,8 @@ export class Repository extends RepositoryBase {
     if (rule.tagStatus !== TagStatus.TAGGED && rule.tagPrefixList !== undefined) {
       throw new Error('tagPrefixList can only be specified when tagStatus is set to Tagged');
     }
-    if ((rule.maxImageAgeDays !== undefined) === (rule.maxImageCount !== undefined)) {
-      throw new Error(`Life cycle rule must contain exactly one of 'maxImageAgeDays' and 'maxImageCount', got: ${JSON.stringify(rule)}`);
+    if ((rule.maxImageAge !== undefined) === (rule.maxImageCount !== undefined)) {
+      throw new Error(`Life cycle rule must contain exactly one of 'maxImageAge' and 'maxImageCount', got: ${JSON.stringify(rule)}`);
     }
 
     if (rule.tagStatus === TagStatus.ANY && this.lifecycleRules.filter(r => r.tagStatus === TagStatus.ANY).length > 0) {
@@ -476,9 +476,9 @@ function renderLifecycleRule(rule: LifecycleRule) {
     selection: {
       tagStatus: rule.tagStatus || TagStatus.ANY,
       tagPrefixList: rule.tagPrefixList,
-      countType: rule.maxImageAgeDays !== undefined ? CountType.SINCE_IMAGE_PUSHED : CountType.IMAGE_COUNT_MORE_THAN,
-      countNumber: rule.maxImageAgeDays !== undefined ? rule.maxImageAgeDays : rule.maxImageCount,
-      countUnit: rule.maxImageAgeDays !== undefined ? 'days' : undefined,
+      countType: rule.maxImageAge !== undefined ? CountType.SINCE_IMAGE_PUSHED : CountType.IMAGE_COUNT_MORE_THAN,
+      countNumber: rule.maxImageAge !== undefined ? rule.maxImageAge.toDays() : rule.maxImageCount,
+      countUnit: rule.maxImageAge !== undefined ? 'days' : undefined,
     },
     action: {
       type: 'expire'

@@ -15,7 +15,7 @@ export = {
     code: new lambda.InlineCode('def hello(): pass'),
     runtime: lambda.Runtime.Python27,
     handler: 'index.hello',
-    timeout: 300,
+    timeout: cdk.Duration.minutes(5),
     });
   }
 

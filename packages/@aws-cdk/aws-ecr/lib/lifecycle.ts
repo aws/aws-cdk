@@ -1,3 +1,5 @@
+import { Duration } from '@aws-cdk/cdk';
+
 /**
  * An ECR life cycle rule
  */
@@ -50,11 +52,11 @@ export interface LifecycleRule {
   readonly maxImageCount?: number;
 
   /**
-   * The maximum age of images to retain
+   * The maximum age of images to retain. The value must represent a number of days.
    *
-   * Specify exactly one of maxImageCount and maxImageAgeDays.
+   * Specify exactly one of maxImageCount and maxImageAge.
    */
-  readonly maxImageAgeDays?: number;
+  readonly maxImageAge?: Duration;
 }
 
 /**

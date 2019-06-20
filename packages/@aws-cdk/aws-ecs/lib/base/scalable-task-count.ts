@@ -40,8 +40,8 @@ export class ScalableTaskCount extends appscaling.BaseScalableAttribute {
       policyName: props.policyName,
       disableScaleIn: props.disableScaleIn,
       targetValue: props.targetUtilizationPercent,
-      scaleInCooldownSec: props.scaleInCooldownSec,
-      scaleOutCooldownSec: props.scaleOutCooldownSec
+      scaleInCooldown: props.scaleInCooldown,
+      scaleOutCooldown: props.scaleOutCooldown
     });
   }
 
@@ -54,8 +54,8 @@ export class ScalableTaskCount extends appscaling.BaseScalableAttribute {
       targetValue: props.targetUtilizationPercent,
       policyName: props.policyName,
       disableScaleIn: props.disableScaleIn,
-      scaleInCooldownSec: props.scaleInCooldownSec,
-      scaleOutCooldownSec: props.scaleOutCooldownSec
+      scaleInCooldown: props.scaleInCooldown,
+      scaleOutCooldown: props.scaleOutCooldown
     });
   }
 
@@ -72,8 +72,8 @@ export class ScalableTaskCount extends appscaling.BaseScalableAttribute {
       targetValue: props.requestsPerTarget,
       policyName: props.policyName,
       disableScaleIn: props.disableScaleIn,
-      scaleInCooldownSec: props.scaleInCooldownSec,
-      scaleOutCooldownSec: props.scaleOutCooldownSec
+      scaleInCooldown: props.scaleInCooldown,
+      scaleOutCooldown: props.scaleOutCooldown
     });
   }
 
@@ -86,8 +86,8 @@ export class ScalableTaskCount extends appscaling.BaseScalableAttribute {
       targetValue: props.targetValue,
       policyName: props.policyName,
       disableScaleIn: props.disableScaleIn,
-      scaleInCooldownSec: props.scaleInCooldownSec,
-      scaleOutCooldownSec: props.scaleOutCooldownSec,
+      scaleInCooldown: props.scaleInCooldown,
+      scaleOutCooldown: props.scaleOutCooldown,
     });
   }
 }

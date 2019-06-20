@@ -11,7 +11,7 @@ const namespace = new servicediscovery.PublicDnsNamespace(stack, 'Namespace', {
 const service = namespace.createService('Service', {
   name: 'foo',
   dnsRecordType: servicediscovery.DnsRecordType.CNAME,
-  dnsTtlSec: 30
+  dnsTtl: cdk.Duration.seconds(30)
 });
 
 service.registerCnameInstance('CnameInstance', {

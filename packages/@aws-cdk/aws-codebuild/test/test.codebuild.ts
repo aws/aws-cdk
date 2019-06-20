@@ -782,7 +782,7 @@ export = {
         name: 'some_name',
         bucket,
       }),
-      timeout: 123,
+      timeout: cdk.Duration.minutes(123),
     });
 
     expect(stack).to(haveResourceLike('AWS::CodeBuild::Project', {

@@ -1,7 +1,7 @@
 import ec2 = require('@aws-cdk/aws-ec2');
 import iam = require('@aws-cdk/aws-iam');
 import sfn = require('@aws-cdk/aws-stepfunctions');
-import { Construct, Stack } from '@aws-cdk/cdk';
+import { Construct, Duration, Stack } from '@aws-cdk/cdk';
 import { AlgorithmSpecification, Channel, InputMode, OutputDataConfig, ResourceConfig,
          S3DataType, StoppingCondition, VpcConfig,  } from './sagemaker-task-base-types';
 
@@ -116,7 +116,7 @@ export class SagemakerTrainTask implements ec2.IConnectable, sfn.IStepFunctionsT
 
         // set the stopping condition if not defined
         this.stoppingCondition = props.stoppingCondition || {
-            maxRuntimeInSeconds: 3600
+            maxRuntime: Duration.hours(1)
         };
 
         // set the sagemaker role or create new one
@@ -229,7 +229,7 @@ export class SagemakerTrainTask implements ec2.IConnectable, sfn.IStepFunctionsT
     private renderStoppingCondition(config: StoppingCondition): {[key: string]: any} {
         return {
             StoppingCondition: {
-                MaxRuntimeInSeconds: config.maxRuntimeInSeconds
+                MaxRuntimeInSeconds: config.maxRuntime && config.maxRuntime.toSeconds()
             }
         };
     }

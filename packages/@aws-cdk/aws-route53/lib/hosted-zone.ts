@@ -1,5 +1,5 @@
 import ec2 = require('@aws-cdk/aws-ec2');
-import { Construct, ContextProvider, Lazy, Resource } from '@aws-cdk/cdk';
+import { Construct, ContextProvider, Duration, Lazy, Resource } from '@aws-cdk/cdk';
 import cxapi = require('@aws-cdk/cx-api');
 import { HostedZoneProviderProps } from './hosted-zone-provider';
 import { HostedZoneAttributes, IHostedZone } from './hosted-zone-ref';
@@ -217,7 +217,7 @@ export interface ZoneDelegationOptions {
    *
    * @default 172800
    */
-  readonly ttl?: number;
+  readonly ttl?: Duration;
 }
 
 export interface PrivateHostedZoneProps extends CommonHostedZoneProps {
