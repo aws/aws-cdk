@@ -1,5 +1,5 @@
 import { Test } from 'nodeunit';
-import { App, CfnOutput, Construct, PhysicalName, Resource, ResourceIdentifiers, Stack } from '../lib';
+import { App, CfnOutput, Construct, PhysicalName, Resource, Stack } from '../lib';
 import { toCloudFormation } from './util';
 
 // tslint:disable:object-literal-key-quotes
@@ -196,7 +196,7 @@ class MyResource extends Resource {
       physicalName,
     });
 
-    const resourceIdentifiers = new ResourceIdentifiers(this, {
+    const resourceIdentifiers = this.getCrossEnvironmentAttributes({
       arn: 'simple-arn',
       name: 'simple-name',
       arnComponents: {

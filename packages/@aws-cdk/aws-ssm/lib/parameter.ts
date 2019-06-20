@@ -1,7 +1,7 @@
 import iam = require('@aws-cdk/aws-iam');
 import {
   CfnDynamicReference, CfnDynamicReferenceService, CfnParameter,
-  Construct, ContextProvider, Fn, IConstruct, IResource, PhysicalName, Resource, ResourceIdentifiers, Stack, Token
+  Construct, ContextProvider, Fn, IConstruct, IResource, PhysicalName, Resource, Stack, Token
 } from '@aws-cdk/cdk';
 import cxapi = require('@aws-cdk/cx-api');
 import ssm = require('./ssm.generated');
@@ -290,7 +290,7 @@ export class StringParameter extends ParameterBase implements IStringParameter {
       value: props.stringValue,
     });
 
-    const resourceIdentifiers = new ResourceIdentifiers(this, {
+    const resourceIdentifiers = this.getCrossEnvironmentAttributes({
       arn: arnForParameterName(this, resource.ref),
       name: resource.ref,
       arnComponents: {
@@ -353,7 +353,7 @@ export class StringListParameter extends ParameterBase implements IStringListPar
       type: STRINGLIST_PARAM_TYPE,
       value: props.stringListValue.join(','),
     });
-    const resourceIdentifiers = new ResourceIdentifiers(this, {
+    const resourceIdentifiers = this.getCrossEnvironmentAttributes({
       arn: arnForParameterName(this, resource.ref),
       name: resource.ref,
       arnComponents: {

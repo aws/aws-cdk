@@ -1,7 +1,7 @@
 import iam = require('@aws-cdk/aws-iam');
 import kms = require('@aws-cdk/aws-kms');
 import s3 = require('@aws-cdk/aws-s3');
-import { Construct, Fn, IResource, PhysicalName, Resource, ResourceIdentifiers, Stack } from '@aws-cdk/cdk';
+import { Construct, Fn, IResource, PhysicalName, Resource, Stack } from '@aws-cdk/cdk';
 import { DataFormat } from './data-format';
 import { IDatabase } from './database';
 import { CfnTable } from './glue.generated';
@@ -278,7 +278,7 @@ export class Table extends Resource implements ITable {
       }
     });
 
-    const resourceIdentifiers = new ResourceIdentifiers(this, {
+    const resourceIdentifiers = this.getCrossEnvironmentAttributes({
       arn: Stack.of(this).formatArn({
         service: 'glue',
         resource: 'table',
@@ -288,7 +288,7 @@ export class Table extends Resource implements ITable {
       arnComponents: {
         service: 'glue',
         resource: 'table',
-        resourceName: `${this.database.physicalName}/${this.physicalName}`
+        resourceName: `${this.database.databaseName}/${this.physicalName}`
       },
     });
     this.tableName = resourceIdentifiers.name;

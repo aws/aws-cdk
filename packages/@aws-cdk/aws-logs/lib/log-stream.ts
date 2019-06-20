@@ -1,4 +1,4 @@
-import { Construct, IResource, PhysicalName, RemovalPolicy, Resource, ResourceIdentifiers } from '@aws-cdk/cdk';
+import { Construct, IResource, PhysicalName, RemovalPolicy, Resource } from '@aws-cdk/cdk';
 import { ILogGroup } from './log-group';
 import { CfnLogStream } from './logs.generated';
 
@@ -75,7 +75,7 @@ export class LogStream extends Resource implements ILogStream {
 
     resource.applyRemovalPolicy(props.removalPolicy);
 
-    const resourceIdentifiers = new ResourceIdentifiers(this, {
+    const resourceIdentifiers = this.getCrossEnvironmentAttributes({
       arn: '',
       name: resource.ref,
       arnComponents: {

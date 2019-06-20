@@ -1,4 +1,4 @@
-import { Construct, Lazy, PhysicalName, Resource, ResourceIdentifiers } from '@aws-cdk/cdk';
+import { Construct, Lazy, PhysicalName, Resource } from '@aws-cdk/cdk';
 import { EventPattern } from './event-pattern';
 import { CfnRule } from './events.generated';
 import { IRule } from './rule-ref';
@@ -104,7 +104,7 @@ export class Rule extends Resource implements IRule {
       targets: Lazy.anyValue({ produce: () => this.renderTargets() }),
     });
 
-    const resourceIdentifiers = new ResourceIdentifiers(this, {
+    const resourceIdentifiers = this.getCrossEnvironmentAttributes({
       arn: resource.attrArn,
       name: resource.name || '',
       arnComponents: {

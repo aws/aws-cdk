@@ -1,5 +1,5 @@
 import cloudwatch = require('@aws-cdk/aws-cloudwatch');
-import { Construct, PhysicalName, ResourceIdentifiers, Stack } from '@aws-cdk/cdk';
+import { Construct, PhysicalName, Stack } from '@aws-cdk/cdk';
 import { IFunction, QualifiedFunctionBase } from './function-base';
 import { IVersion } from './lambda-version';
 import { CfnAlias } from './lambda.generated';
@@ -130,13 +130,13 @@ export class Alias extends QualifiedFunctionBase implements IAlias {
       routingConfig: this.determineRoutingConfig(props)
     });
 
-    const resourceIdentifiers = new ResourceIdentifiers(this, {
+    const resourceIdentifiers = this.getCrossEnvironmentAttributes({
       arn: alias.ref,
       name: this.aliasName,
       arnComponents: {
         service: 'lambda',
         resource: 'function',
-        resourceName: `${this.lambda.physicalName}:${this.physicalName}`,
+        resourceName: `${this.lambda.functionName}:${this.physicalName}`,
         sep: ':',
       },
     });

@@ -1,6 +1,6 @@
 import iam = require('@aws-cdk/aws-iam');
 import kms = require('@aws-cdk/aws-kms');
-import { Construct, IResource, PhysicalName, Resource, ResourceIdentifiers, SecretValue, Stack } from '@aws-cdk/cdk';
+import { Construct, IResource, PhysicalName, Resource, SecretValue, Stack } from '@aws-cdk/cdk';
 import { RotationSchedule, RotationScheduleOptions } from './rotation-schedule';
 import secretsmanager = require('./secretsmanager.generated');
 
@@ -190,7 +190,7 @@ export class Secret extends SecretBase {
       name: this.physicalName,
     });
 
-    const resourceIdentifiers = new ResourceIdentifiers(this, {
+    const resourceIdentifiers = this.getCrossEnvironmentAttributes({
       arn: resource.ref,
       name: this.physicalName,
       arnComponents: {

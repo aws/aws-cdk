@@ -1,4 +1,4 @@
-import { Construct, Lazy, PhysicalName, Resource, ResourceIdentifiers, Stack } from '@aws-cdk/cdk';
+import { Construct, Lazy, PhysicalName, Resource, Stack } from '@aws-cdk/cdk';
 import { CfnGroup } from './iam.generated';
 import { IIdentity } from './identity-base';
 import { IManagedPolicy } from './managed-policy';
@@ -138,7 +138,7 @@ export class Group extends GroupBase {
       path: props.path,
     });
 
-    const resourceIdentifiers = new ResourceIdentifiers(this, {
+    const resourceIdentifiers = this.getCrossEnvironmentAttributes({
       arn: group.attrArn,
       name: group.ref,
       arnComponents: {

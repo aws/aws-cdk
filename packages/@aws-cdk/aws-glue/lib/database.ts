@@ -1,5 +1,5 @@
 import s3 = require('@aws-cdk/aws-s3');
-import { Construct, IResource, PhysicalName, Resource, ResourceIdentifiers, Stack } from '@aws-cdk/cdk';
+import { Construct, IResource, PhysicalName, Resource, Stack } from '@aws-cdk/cdk';
 import { CfnDatabase } from './glue.generated';
 
 export interface IDatabase extends IResource {
@@ -107,7 +107,7 @@ export class Database extends Resource implements IDatabase {
     });
 
     // see https://docs.aws.amazon.com/glue/latest/dg/glue-specifying-resource-arns.html#data-catalog-resource-arns
-    const resourceIdentifiers = new ResourceIdentifiers(this, {
+    const resourceIdentifiers = this.getCrossEnvironmentAttributes({
       arn: Stack.of(this).formatArn({
         service: 'glue',
         resource: 'database',

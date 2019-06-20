@@ -1,4 +1,4 @@
-import { Construct, IResource, PhysicalName, Resource, ResourceIdentifiers } from '@aws-cdk/cdk';
+import { Construct, IResource, PhysicalName, Resource } from '@aws-cdk/cdk';
 import { CfnApplication } from "../codedeploy.generated";
 import { arnForApplication } from "../utils";
 
@@ -69,7 +69,7 @@ export class LambdaApplication extends Resource implements ILambdaApplication {
       computePlatform: 'Lambda'
     });
 
-    const resourceIdentifiers = new ResourceIdentifiers(this, {
+    const resourceIdentifiers = this.getCrossEnvironmentAttributes({
       arn: arnForApplication(resource.ref),
       name: resource.ref,
       arnComponents: {

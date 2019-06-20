@@ -3,7 +3,7 @@ import ec2 = require('@aws-cdk/aws-ec2');
 import iam = require('@aws-cdk/aws-iam');
 import logs = require('@aws-cdk/aws-logs');
 import sqs = require('@aws-cdk/aws-sqs');
-import { Construct, Duration, Fn, Lazy, PhysicalName, ResourceIdentifiers, Stack, Token } from '@aws-cdk/cdk';
+import { Construct, Duration, Fn, Lazy, PhysicalName, Stack, Token } from '@aws-cdk/cdk';
 import { Code } from './code';
 import { IEventSource } from './event-source';
 import { FunctionAttributes, FunctionBase, IFunction } from './function-base';
@@ -437,7 +437,7 @@ export class Function extends FunctionBase {
 
     resource.node.addDependency(this.role);
 
-    const resourceIdentifiers = new ResourceIdentifiers(this, {
+    const resourceIdentifiers = this.getCrossEnvironmentAttributes({
       arn: resource.attrArn,
       name: resource.ref,
       arnComponents: {

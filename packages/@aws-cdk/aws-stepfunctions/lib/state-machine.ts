@@ -1,6 +1,6 @@
 import cloudwatch = require('@aws-cdk/aws-cloudwatch');
 import iam = require('@aws-cdk/aws-iam');
-import { Construct, Duration, IResource, PhysicalName, Resource, ResourceIdentifiers, Stack } from '@aws-cdk/cdk';
+import { Construct, Duration, IResource, PhysicalName, Resource, Stack } from '@aws-cdk/cdk';
 import { StateGraph } from './state-graph';
 import { CfnStateMachine } from './stepfunctions.generated';
 import { IChainable } from './types';
@@ -108,7 +108,7 @@ export class StateMachine extends StateMachineBase {
             this.addToRolePolicy(statement);
         }
 
-        const resourceIdentifiers = new ResourceIdentifiers(this, {
+        const resourceIdentifiers = this.getCrossEnvironmentAttributes({
             arn: resource.ref,
             name: resource.attrName,
             arnComponents: {

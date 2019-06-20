@@ -1,4 +1,4 @@
-import { Construct, Duration, Lazy, PhysicalName, Resource, ResourceIdentifiers, Stack } from '@aws-cdk/cdk';
+import { Construct, Duration, Lazy, PhysicalName, Resource, Stack } from '@aws-cdk/cdk';
 import { Grant } from './grant';
 import { CfnRole } from './iam.generated';
 import { IIdentity } from './identity-base';
@@ -219,7 +219,7 @@ export class Role extends Resource implements IRole {
     });
 
     this.roleId = role.attrRoleId;
-    const resourceIdentifiers = new ResourceIdentifiers(this, {
+    const resourceIdentifiers = this.getCrossEnvironmentAttributes({
       arn: role.attrArn,
       name: role.ref,
       arnComponents: {

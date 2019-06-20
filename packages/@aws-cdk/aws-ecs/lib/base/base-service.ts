@@ -4,7 +4,7 @@ import ec2 = require('@aws-cdk/aws-ec2');
 import elbv2 = require('@aws-cdk/aws-elasticloadbalancingv2');
 import iam = require('@aws-cdk/aws-iam');
 import cloudmap = require('@aws-cdk/aws-servicediscovery');
-import { Construct, Duration, Fn, IResource, Lazy, PhysicalName, Resource, ResourceIdentifiers, Stack } from '@aws-cdk/cdk';
+import { Construct, Duration, Fn, IResource, Lazy, PhysicalName, Resource, Stack } from '@aws-cdk/cdk';
 import { NetworkMode, TaskDefinition } from '../base/task-definition';
 import { ICluster } from '../cluster';
 import { CfnService } from '../ecs.generated';
@@ -166,13 +166,13 @@ export abstract class BaseService extends Resource
       ? Fn.select(2, Fn.split('/', this.resource.ref))
       : this.resource.attrName;
 
-    const resourceIdentifiers = new ResourceIdentifiers(this, {
+    const resourceIdentifiers = this.getCrossEnvironmentAttributes({
       arn: this.resource.ref,
       name: serviceName,
       arnComponents: {
         service: 'ecs',
         resource: 'service',
-        resourceName: `${props.cluster.physicalName}/${this.physicalName}`,
+        resourceName: `${props.cluster.clusterName}/${this.physicalName}`,
       },
     });
     this.serviceArn = resourceIdentifiers.arn;

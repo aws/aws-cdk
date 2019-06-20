@@ -1,4 +1,4 @@
-import { Construct, Lazy, PhysicalName, Resource, ResourceIdentifiers, SecretValue } from '@aws-cdk/cdk';
+import { Construct, Lazy, PhysicalName, Resource, SecretValue } from '@aws-cdk/cdk';
 import { IGroup } from './group';
 import { CfnUser } from './iam.generated';
 import { IIdentity } from './identity-base';
@@ -115,7 +115,7 @@ export class User extends Resource implements IIdentity {
       loginProfile: this.parseLoginProfile(props)
     });
 
-    const resourceIdentifiers = new ResourceIdentifiers(this, {
+    const resourceIdentifiers = this.getCrossEnvironmentAttributes({
       arn: user.attrArn,
       name: user.ref,
       arnComponents: {

@@ -305,13 +305,13 @@ export class ServerDeploymentGroup extends ServerDeploymentGroupBase {
       autoRollbackConfiguration: cdk.Lazy.anyValue({ produce: () => renderAutoRollbackConfiguration(this.alarms, props.autoRollback) }),
     });
 
-    const resourceIdentifiers = new cdk.ResourceIdentifiers(this, {
+    const resourceIdentifiers = this.getCrossEnvironmentAttributes({
       arn: arnForDeploymentGroup(this.application.applicationName, resource.ref),
       name: resource.ref,
       arnComponents: {
         service: 'codedeploy',
         resource: 'deploymentgroup',
-        resourceName: `${this.application.physicalName}/${this.physicalName}`,
+        resourceName: `${this.application.applicationName}/${this.physicalName}`,
         sep: ':',
       },
     });

@@ -1,5 +1,5 @@
 import events = require('@aws-cdk/aws-events');
-import { Construct, IConstruct, IResource, PhysicalName, Resource, ResourceIdentifiers, Stack } from '@aws-cdk/cdk';
+import { Construct, IConstruct, IResource, PhysicalName, Resource, Stack } from '@aws-cdk/cdk';
 import { CfnRepository } from './codecommit.generated';
 
 export interface IRepository extends IResource {
@@ -288,7 +288,7 @@ export class Repository extends RepositoryBase {
       triggers: this.triggers
     });
 
-    const resourceIdentifiers = new ResourceIdentifiers(this, {
+    const resourceIdentifiers = this.getCrossEnvironmentAttributes({
       arn: this.repository.attrArn,
       name: this.repository.attrName,
       arnComponents: {

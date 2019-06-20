@@ -1,5 +1,5 @@
 import cloudwatch = require('@aws-cdk/aws-cloudwatch');
-import { Construct, IResource, Lazy, PhysicalName, Resource, ResourceIdentifiers, Stack } from '@aws-cdk/cdk';
+import { Construct, IResource, Lazy, PhysicalName, Resource, Stack } from '@aws-cdk/cdk';
 import { CfnActivity } from './stepfunctions.generated';
 
 export interface ActivityProps {
@@ -61,7 +61,7 @@ export class Activity extends Resource implements IActivity {
             name: this.physicalName! // not null because of above call to `super`
         });
 
-        const resourceIdentifiers = new ResourceIdentifiers(this, {
+        const resourceIdentifiers = this.getCrossEnvironmentAttributes({
             arn: resource.ref,
             name: resource.attrName,
             arnComponents: {

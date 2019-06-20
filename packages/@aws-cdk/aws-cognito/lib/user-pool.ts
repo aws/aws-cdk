@@ -1,6 +1,6 @@
 import iam = require('@aws-cdk/aws-iam');
 import lambda = require('@aws-cdk/aws-lambda');
-import { Construct, IResource, Lazy, PhysicalName, Resource, ResourceIdentifiers } from '@aws-cdk/cdk';
+import { Construct, IResource, Lazy, PhysicalName, Resource } from '@aws-cdk/cdk';
 import { CfnUserPool } from './cognito.generated';
 
 /**
@@ -398,7 +398,7 @@ export class UserPool extends Resource implements IUserPool {
       lambdaConfig: Lazy.anyValue({ produce: () => this.triggers })
     });
 
-    const resourceIdentifiers = new ResourceIdentifiers(this, {
+    const resourceIdentifiers = this.getCrossEnvironmentAttributes({
       arn: userPool.attrArn,
       name: userPool.ref,
       arnComponents: {

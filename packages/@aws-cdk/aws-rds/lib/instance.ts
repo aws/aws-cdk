@@ -8,7 +8,7 @@ import secretsmanager = require('@aws-cdk/aws-secretsmanager');
 import { Construct, Duration, IResource, RemovalPolicy, Resource, SecretValue, Stack, Token } from '@aws-cdk/cdk';
 import { DatabaseSecret } from './database-secret';
 import { Endpoint } from './endpoint';
-import { IOptionGroup} from './option-group';
+import { IOptionGroup } from './option-group';
 import { IParameterGroup } from './parameter-group';
 import { DatabaseClusterEngine } from './props';
 import { CfnDBInstance, CfnDBInstanceProps, CfnDBSubnetGroup } from './rds.generated';

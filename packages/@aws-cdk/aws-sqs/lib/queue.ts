@@ -1,5 +1,5 @@
 import kms = require('@aws-cdk/aws-kms');
-import { Construct, Duration, PhysicalName, ResourceIdentifiers, Stack } from '@aws-cdk/cdk';
+import { Construct, Duration, PhysicalName, Stack } from '@aws-cdk/cdk';
 import { IQueue, QueueAttributes, QueueBase } from './queue-base';
 import { CfnQueue } from './sqs.generated';
 import { validateProps } from './validate-props';
@@ -257,7 +257,7 @@ export class Queue extends QueueBase {
       visibilityTimeout: props.visibilityTimeout && props.visibilityTimeout.toSeconds(),
     });
 
-    const resourceIdentifiers = new ResourceIdentifiers(this, {
+    const resourceIdentifiers = this.getCrossEnvironmentAttributes({
       arn: queue.attrArn,
       name: queue.attrQueueName,
       arnComponents: {

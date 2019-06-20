@@ -2,7 +2,7 @@ import autoscaling = require('@aws-cdk/aws-autoscaling');
 import ec2 = require('@aws-cdk/aws-ec2');
 import { Subnet } from '@aws-cdk/aws-ec2';
 import iam = require('@aws-cdk/aws-iam');
-import { CfnOutput, Construct, IResource, PhysicalName, Resource, ResourceIdentifiers, Tag } from '@aws-cdk/cdk';
+import { CfnOutput, Construct, IResource, PhysicalName, Resource, Tag } from '@aws-cdk/cdk';
 import { EksOptimizedAmi, nodeTypeForInstanceType } from './ami';
 import { CfnCluster } from './eks.generated';
 import { maxPodsForInstanceType } from './instance-data';
@@ -240,7 +240,7 @@ export class Cluster extends Resource implements ICluster {
       }
     });
 
-    const resourceIdentifiers = new ResourceIdentifiers(this, {
+    const resourceIdentifiers = this.getCrossEnvironmentAttributes({
       arn: resource.attrArn,
       name: resource.ref,
       arnComponents: {
