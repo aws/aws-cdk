@@ -57,6 +57,7 @@ installed, or use the Docker workflow.
  - [Ruby 2.5.1](https://www.ruby-lang.org/en/news/2018/03/28/ruby-2-5-1-released/)
 
 ## Pull Requests
+*PLEASE NOTE: We are working hard to stabilize the CDK APIs and tuning them to meet our consistency guidelines. While we work on getting the APIs aligned with our guidelines, we are pausing work on most community PRs starting around the 21st of this month. Please continue to report issues and submit feature requests, of course. We expect to get back to work on community PRs within a few weeks.*
 
 ### Step 1: Open Issue
 
@@ -130,17 +131,41 @@ BREAKING CHANGE: Description of what broke and how to achieve this behavior now
 
 * Push to a GitHub fork or to a branch (naming convention: `<user>/<feature-bug-name>`)
 * Submit a Pull Requests on GitHub and assign the PR for a review to the "awslabs/aws-cdk" team.
+* Please follow the PR checklist written below. We trust our contributors to self-check, and this helps that process!
 * Discuss review comments and iterate until you get at least one “Approve”. When iterating, push new commits to the
   same branch. Usually all these are going to be squashed when you merge to master. The commit messages should be hints
   for you when you finalize your merge commit message.
 * Make sure to update the PR title/description if things change. The PR title/description are going to be used as the
-  commit title/message and will appear in the CHANGELOG, so maintain them all the way throughout the process.
+  commit title/message and will appear in the CHANGELOG, so maintain them all the way throughout the process.  
 
 ### Step 6: Merge
 
 * Make sure your PR builds successfully (we have CodeBuild setup to automatically build all PRs)
 * Once approved and tested, a maintainer will squash-merge to master and will use your PR title/description as the
   commit message.
+
+---
+### Pull Request Checklist
+
+* [ ] Testing
+  - Unit test added (prefer not to modify an existing test, otherwise, it's probably a breaking change)
+  - __CLI change?:__ coordinate update of integration tests with team
+  - __cdk-init template change?:__ coordinated update of integration tests with team
+* [ ] Docs
+  - __jsdocs__: All public APIs documented
+  - __README__: README and/or documentation topic updated
+  - __Design__: For significant features, design document added to `design` folder
+* [ ] Title and Description
+  - __Change type__: title prefixed with **fix**, **feat** and module name in parens, which will appear in changelog
+  - __Title__: use lower-case and doesn't end with a period
+  - __Breaking?__: last paragraph: "BREAKING CHANGE: <describe what changed + link for details>"
+  - __Issues__: Indicate issues fixed via: "**Fixes #xxx**" or "**Closes #xxx**"
+* [ ] Sensitive Modules (requires 2 PR approvers)
+  - IAM Policy Document (in @aws-cdk/aws-iam)
+  - EC2 Security Groups and ACLs (in @aws-cdk/aws-ec2)
+  - Grant APIs (only if not based on official documentation with a reference)
+
+---
 
 ## Tools
 
