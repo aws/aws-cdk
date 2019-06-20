@@ -11,7 +11,7 @@ const namespace = new servicediscovery.PublicDnsNamespace(stack, 'Namespace', {
 const service = namespace.createService('Service', {
   name: 'foo',
   dnsRecordType: servicediscovery.DnsRecordType.A,
-  dnsTtlSec: 30,
+  dnsTtl: cdk.Duration.seconds(30),
   healthCheck: {
     type: servicediscovery.HealthCheckType.HTTPS,
     resourcePath: '/healthcheck',

@@ -312,7 +312,7 @@ export class DatabaseCluster extends DatabaseClusterBase {
         : (props.masterUser.password
             ? props.masterUser.password.toString()
             : undefined),
-      backupRetentionPeriod: props.backup && props.backup.retentionDays,
+      backupRetentionPeriod: props.backup && props.backup.retention && props.backup.retention.toDays(),
       preferredBackupWindow: props.backup && props.backup.preferredWindow,
       preferredMaintenanceWindow: props.preferredMaintenanceWindow,
       databaseName: props.defaultDatabaseName,

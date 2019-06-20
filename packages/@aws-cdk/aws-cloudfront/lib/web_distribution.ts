@@ -194,9 +194,9 @@ export interface CustomOriginConfig {
   /**
    * The keep alive timeout when making calls in seconds.
    *
-   * @default 5
+   * @default Duration.seconds(5)
    */
-  readonly originKeepaliveTimeoutSeconds?: number,
+  readonly originKeepaliveTimeout?: cdk.Duration,
 
   /**
    * The protocol (http or https) policy to use when interacting with the origin.
@@ -208,9 +208,9 @@ export interface CustomOriginConfig {
   /**
    * The read timeout when calling the origin in seconds
    *
-   * @default 30
+   * @default Duration.seconds(30)
    */
-  readonly originReadTimeoutSeconds?: number
+  readonly originReadTimeout?: cdk.Duration
 
   /**
    * The SSL versions to use when interacting with the origin.
@@ -300,7 +300,7 @@ export interface Behavior {
    * @default 86400 (1 day)
    *
    */
-  readonly defaultTtlSeconds?: number;
+  readonly defaultTtl?: cdk.Duration;
 
   /**
    * The method this CloudFront distribution responds do.
@@ -335,15 +335,15 @@ export interface Behavior {
    * The minimum amount of time that you want objects to stay in the cache
    * before CloudFront queries your origin.
    */
-  readonly minTtlSeconds?: number;
+  readonly minTtl?: cdk.Duration;
 
   /**
    * The max amount of time you want objects to stay in the cache
    * before CloudFront queries your origin.
    *
-   * @default 31536000 (one year)
+   * @default Duration.seconds(31536000) (one year)
    */
-  readonly maxTtlSeconds?: number;
+  readonly maxTtl?: cdk.Duration;
 
   /**
    * Declares associated lambda@edge functions for this distribution behaviour.
@@ -387,25 +387,6 @@ export enum LambdaEdgeEventType {
    * The viewer-response specifies the outgoing reponse
    */
   VIEWER_RESPONSE = "viewer-response",
-}
-
-export interface ErrorConfiguration {
-  /**
-   * The error code matched from the origin
-   */
-  readonly originErrorCode: number;
-  /**
-   * The error code that is sent to the caller.
-   */
-  readonly respondWithErrorCode: number;
-  /**
-   * The path to service instead
-   */
-  readonly respondWithPage: string;
-  /**
-   * How long before this error is retried.
-   */
-  readonly cacheTtl?: number;
 }
 
 export interface CloudFrontWebDistributionProps {
@@ -625,8 +606,10 @@ export class CloudFrontWebDistribution extends cdk.Construct implements IDistrib
           ? {
             httpPort: originConfig.customOriginSource.httpPort || 80,
             httpsPort: originConfig.customOriginSource.httpsPort || 443,
-            originKeepaliveTimeout: originConfig.customOriginSource.originKeepaliveTimeoutSeconds || 5,
-            originReadTimeout: originConfig.customOriginSource.originReadTimeoutSeconds || 30,
+            originKeepaliveTimeout: originConfig.customOriginSource.originKeepaliveTimeout
+              && originConfig.customOriginSource.originKeepaliveTimeout.toSeconds() || 5,
+            originReadTimeout: originConfig.customOriginSource.originReadTimeout
+              && originConfig.customOriginSource.originReadTimeout.toSeconds() || 30,
             originProtocolPolicy: originConfig.customOriginSource.originProtocolPolicy || OriginProtocolPolicy.HTTPS_ONLY,
             originSslProtocols: originConfig.customOriginSource.allowedOriginSSLVersions || [OriginSslPolicy.TLS_V1_2]
           }
@@ -723,10 +706,10 @@ export class CloudFrontWebDistribution extends cdk.Construct implements IDistrib
       allowedMethods: this.METHOD_LOOKUP_MAP[input.allowedMethods || CloudFrontAllowedMethods.GET_HEAD],
       cachedMethods: this.METHOD_LOOKUP_MAP[input.cachedMethods || CloudFrontAllowedCachedMethods.GET_HEAD],
       compress: input.compress,
-      defaultTtl: input.defaultTtlSeconds,
+      defaultTtl: input.defaultTtl && input.defaultTtl.toSeconds(),
       forwardedValues: input.forwardedValues || { queryString: false, cookies: { forward: "none" } },
-      maxTtl: input.maxTtlSeconds,
-      minTtl: input.minTtlSeconds,
+      maxTtl: input.maxTtl && input.maxTtl.toSeconds(),
+      minTtl: input.minTtl && input.minTtl.toSeconds(),
       trustedSigners: input.trustedSigners,
       targetOriginId: input.targetOriginId,
       viewerProtocolPolicy: protoPolicy || ViewerProtocolPolicy.REDIRECT_TO_HTTPS,

@@ -106,7 +106,7 @@ export = {
         const stack = getTestStack();
         new Trail(stack, 'MyAmazingCloudTrail', {
           sendToCloudWatchLogs: true,
-          cloudWatchLogsRetentionTimeDays: RetentionDays.ONE_WEEK
+          cloudWatchLogsRetention: RetentionDays.ONE_WEEK
         });
 
         expect(stack).to(haveResource("AWS::CloudTrail::Trail"));

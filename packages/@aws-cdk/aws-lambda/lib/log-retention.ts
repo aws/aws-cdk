@@ -18,7 +18,7 @@ export interface LogRetentionProps {
   /**
    * The number of days log events are kept in CloudWatch Logs.
    */
-  readonly retentionDays: logs.RetentionDays;
+  readonly retention: logs.RetentionDays;
 }
 
 /**
@@ -55,7 +55,7 @@ export class LogRetention extends cdk.Construct {
       properties: {
         ServiceToken: provider.functionArn,
         LogGroupName: props.logGroupName,
-        RetentionInDays: props.retentionDays === Infinity ? undefined : props.retentionDays
+        RetentionInDays: props.retention === Infinity ? undefined : props.retention
       }
     });
   }

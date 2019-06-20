@@ -215,7 +215,7 @@ export class CfnResource extends CfnRefElement {
             Type: this.cfnResourceType,
             Properties: ignoreEmpty(this.cfnProperties),
             DependsOn: ignoreEmpty(renderDependsOn(this.dependsOn)),
-            CreationPolicy: capitalizePropertyNames(this, this.options.creationPolicy),
+            CreationPolicy:  capitalizePropertyNames(this, renderCreationPolicy(this.options.creationPolicy)),
             UpdatePolicy: capitalizePropertyNames(this, this.options.updatePolicy),
             UpdateReplacePolicy: capitalizePropertyNames(this, this.options.updateReplacePolicy),
             DeletionPolicy: capitalizePropertyNames(this, this.options.deletionPolicy),
@@ -250,6 +250,15 @@ export class CfnResource extends CfnRefElement {
         .from(dependsOn)
         .sort((x, y) => x.node.path.localeCompare(y.node.path))
         .map(r => r.logicalId);
+    }
+
+    function renderCreationPolicy(policy: CreationPolicy | undefined): any {
+      if (!policy) { return undefined; }
+      const result: any = { ...policy };
+      if (policy.resourceSignal && policy.resourceSignal.timeout) {
+        result.resourceSignal = policy.resourceSignal;
+      }
+      return result;
     }
   }
 

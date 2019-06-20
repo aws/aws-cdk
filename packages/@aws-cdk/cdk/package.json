@@ -35,6 +35,7 @@
     "exclude": [
       "construct-ctor:@aws-cdk/cdk.App.<initializer>",
       "props-no-cfn-types:@aws-cdk/cdk.CfnOutputProps.condition",
+      "duration-prop-type:@aws-cdk/cdk.ResourceSignal.timeout",
       "props-no-any:@aws-cdk/cdk.CfnParameterProps.default",
       "props-no-cfn-types:@aws-cdk/cdk.CfnRuleProps.assertions",
       "construct-ctor:@aws-cdk/cdk.Stack.<initializer>.params[1]"

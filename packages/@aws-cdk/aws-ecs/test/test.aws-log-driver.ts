@@ -12,7 +12,7 @@ export = {
     // WHEN
     const driver = new ecs.AwsLogDriver(stack, 'Log', {
       datetimeFormat: 'format',
-      logRetentionDays: logs.RetentionDays.ONE_MONTH,
+      logRetention: logs.RetentionDays.ONE_MONTH,
       multilinePattern: 'pattern',
       streamPrefix: 'hello'
     });
@@ -74,7 +74,7 @@ export = {
     // THEN
     test.throws(() => new ecs.AwsLogDriver(stack, 'Log', {
       logGroup,
-      logRetentionDays: logs.RetentionDays.FIVE_DAYS,
+      logRetention: logs.RetentionDays.FIVE_DAYS,
       streamPrefix: 'hello'
     }), /`logGroup`.*`logRetentionDays`/);
 

@@ -372,9 +372,9 @@ export = {
       memoryLimitMiB: 1024,
       healthCheck: {
         command: [hcCommand],
-        intervalSeconds: 20,
+        interval: cdk.Duration.seconds(20),
         retries: 5,
-        startPeriod: 10
+        startPeriod: cdk.Duration.seconds(10)
       }
     });
 
@@ -408,9 +408,9 @@ export = {
       memoryLimitMiB: 1024,
       healthCheck: {
         command: ["CMD-SHELL", hcCommand],
-        intervalSeconds: 20,
+        interval: cdk.Duration.seconds(20),
         retries: 5,
-        startPeriod: 10
+        startPeriod: cdk.Duration.seconds(10)
       }
     });
 
@@ -444,9 +444,9 @@ export = {
       memoryLimitMiB: 1024,
       healthCheck: {
         command: ["CMD", hcCommand],
-        intervalSeconds: 20,
+        interval: cdk.Duration.seconds(20),
         retries: 5,
-        startPeriod: 10
+        startPeriod: cdk.Duration.seconds(10)
       }
     });
 
