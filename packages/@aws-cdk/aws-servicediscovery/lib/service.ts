@@ -1,5 +1,5 @@
 import elbv2 = require('@aws-cdk/aws-elasticloadbalancingv2');
-import { Construct, IResource, Resource } from '@aws-cdk/cdk';
+import { Construct, Duration, IResource, Resource } from '@aws-cdk/cdk';
 import { AliasTargetInstance } from './alias-target-instance';
 import { CnameInstance, CnameInstanceBaseProps  } from './cname-instance';
 import { IInstance } from './instance';
@@ -98,9 +98,9 @@ export interface DnsServiceProps extends BaseServiceProps {
    * The amount of time, in seconds, that you want DNS resolvers to cache the settings for this
    * record.
    *
-   * @default 60
+   * @default Duration.minutes(1)
    */
-  readonly dnsTtlSec?: number;
+  readonly dnsTtl?: Duration;
 
   /**
    * The routing policy that you want to apply to all DNS records that AWS Cloud Map creates when you
@@ -248,7 +248,7 @@ export class Service extends ServiceBase {
     const dnsConfig: CfnService.DnsConfigProperty | undefined = props.namespace.type === NamespaceType.HTTP
       ? undefined
       : {
-          dnsRecords: renderDnsRecords(dnsRecordType, props.dnsTtlSec),
+          dnsRecords: renderDnsRecords(dnsRecordType, props.dnsTtl),
           namespaceId: props.namespace.namespaceId,
           routingPolicy,
         };
@@ -324,8 +324,8 @@ export class Service extends ServiceBase {
   }
 }
 
-function renderDnsRecords(dnsRecordType: DnsRecordType, dnsTtlSec?: number): CfnService.DnsRecordProperty[] {
-  const ttl = dnsTtlSec !== undefined ? dnsTtlSec : 60;
+function renderDnsRecords(dnsRecordType: DnsRecordType, dnsTtl: Duration = Duration.minutes(1)): CfnService.DnsRecordProperty[] {
+  const ttl = dnsTtl.toSeconds();
 
   if (dnsRecordType === DnsRecordType.A_AAAA) {
     return [{

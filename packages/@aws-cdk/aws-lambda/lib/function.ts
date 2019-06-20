@@ -3,7 +3,7 @@ import ec2 = require('@aws-cdk/aws-ec2');
 import iam = require('@aws-cdk/aws-iam');
 import logs = require('@aws-cdk/aws-logs');
 import sqs = require('@aws-cdk/aws-sqs');
-import { Construct, Fn, Lazy, PhysicalName, ResourceIdentifiers, Stack, Token } from '@aws-cdk/cdk';
+import { Construct, Duration, Fn, Lazy, PhysicalName, ResourceIdentifiers, Stack, Token } from '@aws-cdk/cdk';
 import { Code } from './code';
 import { IEventSource } from './event-source';
 import { FunctionAttributes, FunctionBase, IFunction } from './function-base';
@@ -64,9 +64,9 @@ export interface FunctionProps {
    * the function. Because the execution time affects cost, set this value
    * based on the function's expected execution time.
    *
-   * @default 3
+   * @default Duration.seconds(3)
    */
-  readonly timeout?: number;
+  readonly timeout?: Duration;
 
   /**
    * Key-value pairs that Lambda caches and makes available for your Lambda
@@ -219,7 +219,7 @@ export interface FunctionProps {
    *
    * @default - Logs never expire.
    */
-  readonly logRetentionDays?: logs.RetentionDays;
+  readonly logRetention?: logs.RetentionDays;
 }
 
 /**
@@ -424,7 +424,7 @@ export class Function extends FunctionBase {
       code: Lazy.anyValue({ produce: () => props.code._toJSON(resource) }),
       layers: Lazy.listValue({ produce: () => this.layers.map(layer => layer.layerVersionArn) }, { omitEmpty: true }),
       handler: props.handler,
-      timeout: props.timeout,
+      timeout: props.timeout && props.timeout.toSeconds(),
       runtime: props.runtime.name,
       role: this.role.roleArn,
       environment: Lazy.anyValue({ produce: () => this.renderEnvironment() }),
@@ -463,10 +463,10 @@ export class Function extends FunctionBase {
     }
 
     // Log retention
-    if (props.logRetentionDays) {
+    if (props.logRetention) {
       new LogRetention(this, 'LogRetention', {
         logGroupName: `/aws/lambda/${this.functionName}`,
-        retentionDays: props.logRetentionDays
+        retention: props.logRetention
       });
     }
   }
@@ -597,7 +597,7 @@ export class Function extends FunctionBase {
     }
 
     const deadLetterQueue = props.deadLetterQueue || new sqs.Queue(this, 'DeadLetterQueue', {
-      retentionPeriodSec: 1209600
+      retentionPeriod: Duration.days(14)
     });
 
     this.addToRolePolicy(new iam.PolicyStatement({

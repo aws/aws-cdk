@@ -292,7 +292,7 @@ export = {
       port: 80,
       targets: [new FakeSelfRegisteringTarget(stack, 'Target', vpc)]
     });
-    group.enableCookieStickiness(3600);
+    group.enableCookieStickiness(cdk.Duration.hours(1));
 
     // THEN
     expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::TargetGroup', {
@@ -329,8 +329,8 @@ export = {
     });
     group.configureHealthCheck({
       unhealthyThresholdCount: 3,
-      timeoutSeconds: 3600,
-      intervalSecs: 30,
+      timeout: cdk.Duration.hours(1),
+      interval: cdk.Duration.seconds(30),
       path: '/test',
     });
 

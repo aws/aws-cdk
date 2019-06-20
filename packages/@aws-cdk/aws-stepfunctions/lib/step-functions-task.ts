@@ -1,5 +1,6 @@
 import cloudwatch = require('@aws-cdk/aws-cloudwatch');
 import iam = require('@aws-cdk/aws-iam');
+import { Duration } from '@aws-cdk/cdk';
 import { Task } from './states/task';
 
 /**
@@ -47,7 +48,7 @@ export interface StepFunctionsTaskConfig {
    *
    * @default No heart beat timeout
    */
-  readonly heartbeatSeconds?: number;
+  readonly heartbeat?: Duration;
 
   /**
    * Additional policy statements to add to the execution role
