@@ -166,15 +166,15 @@ function renderCustomMetric(metric?: cloudwatch.IMetric): CfnScalingPolicy.Custo
  * One of the predefined autoscaling metrics
  */
 export enum PredefinedMetric {
-  DynamoDBReadCapacityUtilization = 'DynamoDBReadCapacityUtilization',
-  DynamoDBWriteCapacityUtilization = 'DynamoDBWriteCapacityUtilization',
-  ALBRequestCountPerTarget = 'ALBRequestCountPerTarget',
-  RDSReaderAverageCPUUtilization = 'RDSReaderAverageCPUUtilization',
-  RDSReaderAverageDatabaseConnections = 'RDSReaderAverageDatabaseConnections',
-  EC2SpotFleetRequestAverageCPUUtilization = 'EC2SpotFleetRequestAverageCPUUtilization',
-  EC2SpotFleetRequestAverageNetworkIn = 'EC2SpotFleetRequestAverageNetworkIn',
-  EC2SpotFleetRequestAverageNetworkOut = 'EC2SpotFleetRequestAverageNetworkOut',
-  SageMakerVariantInvocationsPerInstance = 'SageMakerVariantInvocationsPerInstance',
-  ECSServiceAverageCPUUtilization = 'ECSServiceAverageCPUUtilization',
-  ECSServiceAverageMemoryUtilization = 'ECSServiceAverageMemoryUtilization',
+  DYNAMODB_READ_CAPACITY_UTILIZATION = 'DynamoDBReadCapacityUtilization',
+  DYANMODB_WRITE_CAPACITY_UTILIZATION = 'DynamoDBWriteCapacityUtilization',
+  ALB_REQUEST_COUNT_PER_TARGET = 'ALBRequestCountPerTarget',
+  RDS_READER_AVERAGE_CPU_UTILIZATION = 'RDSReaderAverageCPUUtilization',
+  RDS_READER_AVERAGE_DATABASE_CONNECTIONS = 'RDSReaderAverageDatabaseConnections',
+  EC2_SPOT_FLEET_REQUEST_AVERAGE_CPU_UTILIZATION = 'EC2SpotFleetRequestAverageCPUUtilization',
+  EC2_SPOT_FLEET_REQUEST_AVERAGE_NETWORK_IN = 'EC2SpotFleetRequestAverageNetworkIn',
+  EC2_SPOT_FLEET_REQUEST_AVERAGE_NETWORK_OUT = 'EC2SpotFleetRequestAverageNetworkOut',
+  SAGEMAKER_VARIANT_INVOCATIONS_PER_INSTANCE = 'SageMakerVariantInvocationsPerInstance',
+  ECS_SERVICE_AVERAGE_CPU_UTILIZATION = 'ECSServiceAverageCPUUtilization',
+  ECS_SERVICE_AVERAGE_MEMORY_UTILIZATION = 'ECSServiceAverageMemoryUtilization',
 }

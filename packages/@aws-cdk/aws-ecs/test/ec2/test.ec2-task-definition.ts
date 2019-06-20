@@ -58,7 +58,7 @@ export = {
 
       container.addUlimits({
         hardLimit: 128,
-        name: ecs.UlimitName.Rss,
+        name: ecs.UlimitName.RSS,
         softLimit: 128
       });
 
@@ -75,7 +75,7 @@ export = {
           PortMappings: [{
             ContainerPort: 3000,
             HostPort: 0,
-            Protocol: Protocol.Tcp
+            Protocol: Protocol.TCP
           }],
           Ulimits: [{
             HardLimit: 128,

@@ -14,8 +14,8 @@ const bucket = new s3.Bucket(stack, 'Bucket', {
 const topic = new sns.Topic(stack, 'Topic');
 const topic3 = new sns.Topic(stack, 'Topic3');
 
-bucket.addEventNotification(s3.EventType.ObjectCreatedPut, new s3n.SnsDestination(topic));
-bucket.addEventNotification(s3.EventType.ObjectRemoved, new s3n.SnsDestination(topic3), { prefix: 'home/myusername/' });
+bucket.addEventNotification(s3.EventType.OBJECT_CREATED_PUT, new s3n.SnsDestination(topic));
+bucket.addEventNotification(s3.EventType.OBJECT_REMOVED, new s3n.SnsDestination(topic3), { prefix: 'home/myusername/' });
 
 const bucket2 = new s3.Bucket(stack, 'Bucket2', {
   removalPolicy: cdk.RemovalPolicy.Destroy

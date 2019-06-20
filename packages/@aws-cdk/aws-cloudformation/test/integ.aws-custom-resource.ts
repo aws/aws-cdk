@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 import sns = require('@aws-cdk/aws-sns');
+import ssm = require('@aws-cdk/aws-ssm');
 import cdk = require('@aws-cdk/cdk');
 import { AwsCustomResource } from '../lib';
 
@@ -28,13 +29,17 @@ const listTopics = new AwsCustomResource(stack, 'ListTopics', {
     physicalResourceIdPath: 'Topics.0.TopicArn'
   }
 });
+listTopics.node.addDependency(topic);
 
+const ssmParameter = new ssm.StringParameter(stack, 'DummyParameter', {
+  stringValue: '1337',
+});
 const getParameter = new AwsCustomResource(stack, 'GetParameter', {
   onUpdate: {
     service: 'SSM',
     action: 'getParameter',
     parameters: {
-      Name: 'my-parameter',
+      Name: ssmParameter.parameterName,
       WithDecryption: true
     },
     physicalResourceIdPath: 'Parameter.ARN'

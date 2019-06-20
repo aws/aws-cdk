@@ -267,6 +267,10 @@ export class ConstructNode {
    * @param value The context value
    */
   public setContext(key: string, value: any) {
+    if (Token.isUnresolved(key)) {
+      throw new Error(`Invalid context key "${key}". It contains unresolved tokens`);
+    }
+
     if (this.children.length > 0) {
       const names = this.children.map(c => c.node.id);
       throw new Error('Cannot set context after children have been added: ' + names.join(','));
@@ -283,6 +287,10 @@ export class ConstructNode {
    * @returns The context value or `undefined` if there is no context value for thie key.
    */
   public tryGetContext(key: string): any {
+    if (Token.isUnresolved(key)) {
+      throw new Error(`Invalid context key "${key}". It contains unresolved tokens`);
+    }
+
     const value = this._context[key];
     if (value !== undefined) { return value; }
 
