@@ -809,7 +809,7 @@ export class Project extends ProjectBase {
       computeType: env.computeType || this.buildImage.defaultComputeType,
       environmentVariables: !hasEnvironmentVars ? undefined : Object.keys(vars).map(name => ({
         name,
-        type: vars[name].type || BuildEnvironmentVariableType.PlainText,
+        type: vars[name].type || BuildEnvironmentVariableType.PLAINTEXT,
         value: vars[name].value
       }))
     };
@@ -924,9 +924,9 @@ export class Project extends ProjectBase {
  * Build machine compute type.
  */
 export enum ComputeType {
-  Small = 'BUILD_GENERAL1_SMALL',
-  Medium = 'BUILD_GENERAL1_MEDIUM',
-  Large = 'BUILD_GENERAL1_LARGE'
+  SMALL = 'BUILD_GENERAL1_SMALL',
+  MEDIUM = 'BUILD_GENERAL1_MEDIUM',
+  LARGE = 'BUILD_GENERAL1_LARGE'
 }
 
 export interface BuildEnvironment {
@@ -1087,7 +1087,7 @@ export class LinuxBuildImage implements IBuildImage {
   }
 
   public readonly type = 'LINUX_CONTAINER';
-  public readonly defaultComputeType = ComputeType.Small;
+  public readonly defaultComputeType = ComputeType.SMALL;
 
   private constructor(public readonly imageId: string) {
   }
@@ -1179,14 +1179,14 @@ export class WindowsBuildImage implements IBuildImage {
     return image;
   }
   public readonly type = 'WINDOWS_CONTAINER';
-  public readonly defaultComputeType = ComputeType.Medium;
+  public readonly defaultComputeType = ComputeType.MEDIUM;
 
   private constructor(public readonly imageId: string) {
   }
 
   public validate(buildEnvironment: BuildEnvironment): string[] {
     const ret: string[] = [];
-    if (buildEnvironment.computeType === ComputeType.Small) {
+    if (buildEnvironment.computeType === ComputeType.SMALL) {
       ret.push("Windows images do not support the Small ComputeType");
     }
     return ret;
@@ -1236,12 +1236,12 @@ export enum BuildEnvironmentVariableType {
   /**
    * An environment variable in plaintext format.
    */
-  PlainText = 'PLAINTEXT',
+  PLAINTEXT = 'PLAINTEXT',
 
   /**
    * An environment variable stored in Systems Manager Parameter Store.
    */
-  ParameterStore = 'PARAMETER_STORE'
+  PARAMETER_STORE = 'PARAMETER_STORE'
 }
 
 function ecrAccessForCodeBuildService(): iam.PolicyStatement {

@@ -74,7 +74,7 @@ export abstract class CloudFormationAction extends codepipeline.Action {
         ? [props.output || new codepipeline.Artifact(`${props.actionName}_${props.stackName}_Artifact`)]
         : undefined,
       provider: 'CloudFormation',
-      category: codepipeline.ActionCategory.Deploy,
+      category: codepipeline.ActionCategory.DEPLOY,
       configuration: {
         StackName: props.stackName,
         OutputFileName: props.outputFileName,

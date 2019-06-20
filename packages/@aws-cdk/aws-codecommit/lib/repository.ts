@@ -315,8 +315,8 @@ export class Repository extends RepositoryBase {
   public notify(arn: string, options?: RepositoryTriggerOptions): Repository {
 
     let evt = options && options.events;
-    if (evt && evt.length > 1 && evt.indexOf(RepositoryEventTrigger.All) > -1) {
-      evt = [RepositoryEventTrigger.All];
+    if (evt && evt.length > 1 && evt.indexOf(RepositoryEventTrigger.ALL) > -1) {
+      evt = [RepositoryEventTrigger.ALL];
     }
 
     const customData = options && options.customData;
@@ -336,7 +336,7 @@ export class Repository extends RepositoryBase {
       name,
       customData,
       branches,
-      events: evt || [RepositoryEventTrigger.All],
+      events: evt || [RepositoryEventTrigger.ALL],
     });
     return this;
   }
@@ -376,8 +376,8 @@ export interface RepositoryTriggerOptions {
  * Repository events that will cause the trigger to run actions in another service.
  */
 export enum RepositoryEventTrigger {
-  All = 'all',
-  UpdateRef = 'updateReference',
-  CreateRef = 'createReference',
-  DeleteRef = 'deleteReference'
+  ALL = 'all',
+  UPDATE_REF = 'updateReference',
+  CREATE_REF = 'createReference',
+  DELETE_REF = 'deleteReference'
 }

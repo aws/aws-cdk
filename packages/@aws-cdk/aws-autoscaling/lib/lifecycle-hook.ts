@@ -123,8 +123,8 @@ export class LifecycleHook extends Resource implements ILifecycleHook {
 }
 
 export enum DefaultResult {
-  Continue = 'CONTINUE',
-  Abandon = 'ABANDON',
+  CONTINUE = 'CONTINUE',
+  ABANDON = 'ABANDON',
 }
 
 /**
@@ -134,10 +134,10 @@ export enum LifecycleTransition {
   /**
    * Execute the hook when an instance is about to be added
    */
-  InstanceLaunching = 'autoscaling:EC2_INSTANCE_LAUNCHING',
+  INSTANCE_LAUNCHING = 'autoscaling:EC2_INSTANCE_LAUNCHING',
 
   /**
    * Execute the hook when an instance is about to be terminated
    */
-  InstanceTerminating = 'autoscaling:EC2_INSTANCE_TERMINATING',
+  INSTANCE_TERMINATING = 'autoscaling:EC2_INSTANCE_TERMINATING',
 }

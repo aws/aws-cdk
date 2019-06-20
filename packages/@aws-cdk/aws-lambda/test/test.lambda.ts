@@ -823,7 +823,7 @@ export = {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
       runtime: lambda.Runtime.Nodejs810,
-      tracing: lambda.Tracing.Active
+      tracing: lambda.Tracing.ACTIVE
     });
 
     expect(stack).to(haveResource('AWS::IAM::Policy', {
@@ -881,7 +881,7 @@ export = {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
       runtime: lambda.Runtime.Nodejs810,
-      tracing: lambda.Tracing.PassThrough
+      tracing: lambda.Tracing.PASS_THROUGH
     });
 
     expect(stack).to(haveResource('AWS::IAM::Policy', {
@@ -939,7 +939,7 @@ export = {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
       runtime: lambda.Runtime.Nodejs810,
-      tracing: lambda.Tracing.Disabled
+      tracing: lambda.Tracing.DISABLED
     });
 
     expect(stack).notTo(haveResource('AWS::IAM::Policy', {
@@ -1323,7 +1323,7 @@ export = {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
       runtime: lambda.Runtime.Nodejs,
-      logRetentionDays: logs.RetentionDays.OneMonth
+      logRetentionDays: logs.RetentionDays.ONE_MONTH
     });
 
     // THEN

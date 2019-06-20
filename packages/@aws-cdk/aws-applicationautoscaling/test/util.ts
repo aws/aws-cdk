@@ -6,7 +6,7 @@ import { ServiceNamespace } from '../lib';
 
 export function createScalableTarget(scope: cdk.Construct) {
   return new appscaling.ScalableTarget(scope, 'Target', {
-    serviceNamespace: ServiceNamespace.DynamoDb,
+    serviceNamespace: ServiceNamespace.DYNAMODB,
     scalableDimension: 'test:TestCount',
     resourceId: 'test:this/test',
     minCapacity: 1,

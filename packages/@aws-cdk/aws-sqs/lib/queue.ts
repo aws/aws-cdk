@@ -161,19 +161,19 @@ export enum QueueEncryption {
   /**
    * Messages in the queue are not encrypted
    */
-  Unencrypted = 'NONE',
+  UNENCRYPTED = 'NONE',
 
   /**
    * Server-side KMS encryption with a master key managed by SQS.
    */
-  KmsManaged = 'MANAGED',
+  KMS_MANAGED = 'MANAGED',
 
   /**
    * Server-side encryption with a KMS key managed by the user.
    *
    * If `encryptionKey` is specified, this key will be used, otherwise, one will be defined.
    */
-  Kms = 'KMS',
+  KMS = 'KMS',
 }
 
 /**
@@ -271,17 +271,17 @@ export class Queue extends QueueBase {
     this.queueUrl = queue.refAsString;
 
     function _determineEncryptionProps(this: Queue): { encryptionProps: EncryptionProps, encryptionMasterKey?: kms.IKey } {
-      let encryption = props.encryption || QueueEncryption.Unencrypted;
+      let encryption = props.encryption || QueueEncryption.UNENCRYPTED;
 
-      if (encryption !== QueueEncryption.Kms && props.encryptionMasterKey) {
-        encryption = QueueEncryption.Kms; // KMS is implied by specifying an encryption key
+      if (encryption !== QueueEncryption.KMS && props.encryptionMasterKey) {
+        encryption = QueueEncryption.KMS; // KMS is implied by specifying an encryption key
       }
 
-      if (encryption === QueueEncryption.Unencrypted) {
+      if (encryption === QueueEncryption.UNENCRYPTED) {
         return { encryptionProps: {} };
       }
 
-      if (encryption === QueueEncryption.KmsManaged) {
+      if (encryption === QueueEncryption.KMS_MANAGED) {
         const masterKey = kms.Key.fromKeyArn(this, 'Key', 'alias/aws/sqs');
 
         return {
@@ -293,7 +293,7 @@ export class Queue extends QueueBase {
         };
       }
 
-      if (encryption === QueueEncryption.Kms) {
+      if (encryption === QueueEncryption.KMS) {
         const masterKey = props.encryptionMasterKey || new kms.Key(this, 'Key', {
           description: `Created by ${this.node.path}`
         });

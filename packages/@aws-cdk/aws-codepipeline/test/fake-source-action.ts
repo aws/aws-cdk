@@ -10,7 +10,7 @@ export class FakeSourceAction extends codepipeline.Action {
   constructor(props: FakeSourceActionProps) {
     super({
       ...props,
-      category: codepipeline.ActionCategory.Source,
+      category: codepipeline.ActionCategory.SOURCE,
       provider: 'Fake',
       artifactBounds: { minInputs: 0, maxInputs: 0, minOutputs: 1, maxOutputs: 4 },
       outputs: [props.output, ...props.extraOutputs || []],
