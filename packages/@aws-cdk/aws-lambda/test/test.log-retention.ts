@@ -2,7 +2,7 @@ import { expect, haveResource } from '@aws-cdk/assert';
 import logs = require('@aws-cdk/aws-logs');
 import cdk = require('@aws-cdk/cdk');
 import { Test } from 'nodeunit';
-import lambda = require('../lib');
+import { LogRetention } from '../lib/log-retention';
 
 // tslint:disable:object-literal-key-quotes
 
@@ -12,9 +12,9 @@ export = {
     const stack = new cdk.Stack();
 
     // WHEN
-    new lambda.LogRetention(stack, 'MyLambda', {
+    new LogRetention(stack, 'MyLambda', {
       logGroupName: 'group',
-      retention: logs.RetentionDays.OneMonth
+      retention: logs.RetentionDays.ONE_MONTH
     });
 
     // THEN

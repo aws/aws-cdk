@@ -45,8 +45,8 @@ class DatabaseInstanceStack extends cdk.Stack {
     // Database instance with production values
     const instance = new rds.DatabaseInstance(this, 'Instance', {
       engine: rds.DatabaseInstanceEngine.OracleSE1,
-      licenseModel: rds.LicenseModel.BringYourOwnLicense,
-      instanceClass: new ec2.InstanceTypePair(ec2.InstanceClass.Burstable2, ec2.InstanceSize.Medium),
+      licenseModel: rds.LicenseModel.BRING_YOUR_OWN_LICENSE,
+      instanceClass: new ec2.InstanceTypePair(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.MEDIUM),
       multiAz: true,
       storageType: rds.StorageType.IO1,
       masterUsername: 'syscdk',
@@ -62,7 +62,7 @@ class DatabaseInstanceStack extends cdk.Stack {
         'alert',
         'listener'
       ],
-      cloudwatchLogsRetention: logs.RetentionDays.OneMonth,
+      cloudwatchLogsRetention: logs.RetentionDays.ONE_MONTH,
       autoMinorVersionUpgrade: false,
       optionGroup,
       parameterGroup

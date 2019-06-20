@@ -12,12 +12,15 @@ const fn = new lambda.Function(stack, 'MyLambda', {
   runtime: lambda.Runtime.Nodejs810,
 });
 
-fn.addToRolePolicy(new iam.PolicyStatement().addAllResources().addAction('*'));
+fn.addToRolePolicy(new iam.PolicyStatement({
+  resources: ['*'],
+  actions: ['*']
+}));
 
 const version = fn.addVersion('1');
 
 const alias = new lambda.Alias(stack, 'Alias', {
-  aliasName: 'prod',
+  aliasName: cdk.PhysicalName.of('prod'),
   version,
 });
 alias.addPermission('AliasPermission', {

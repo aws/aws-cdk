@@ -102,7 +102,7 @@ export class EcsRunTaskBase implements ec2.IConnectable, sfn.IStepFunctionsTask 
       securityGroup?: ec2.ISecurityGroup) {
 
     if (subnetSelection === undefined) {
-      subnetSelection = { subnetType: assignPublicIp ? ec2.SubnetType.Public : ec2.SubnetType.Private };
+      subnetSelection = { subnetType: assignPublicIp ? ec2.SubnetType.PUBLIC : ec2.SubnetType.PRIVATE };
     }
 
     // If none is given here, one will be created later on during bind()
@@ -122,25 +122,29 @@ export class EcsRunTaskBase implements ec2.IConnectable, sfn.IStepFunctionsTask 
 
     // https://docs.aws.amazon.com/step-functions/latest/dg/ecs-iam.html
     const policyStatements = [
-      new iam.PolicyStatement()
-        .addAction('ecs:RunTask')
-        .addResource(this.props.taskDefinition.taskDefinitionArn),
-      new iam.PolicyStatement()
-        .addActions('ecs:StopTask', 'ecs:DescribeTasks')
-        .addAllResources(),
-      new iam.PolicyStatement()
-        .addAction('iam:PassRole')
-        .addResources(...cdk.Lazy.listValue({ produce: () => this.taskExecutionRoles().map(r => r.roleArn) }))
+      new iam.PolicyStatement({
+        actions: ['ecs:RunTask'],
+        resources: [this.props.taskDefinition.taskDefinitionArn],
+      }),
+      new iam.PolicyStatement({
+        actions: ['ecs:StopTask', 'ecs:DescribeTasks'],
+        resources: ['*'],
+      }),
+      new iam.PolicyStatement({
+        actions: ['iam:PassRole'],
+        resources: cdk.Lazy.listValue({ produce: () => this.taskExecutionRoles().map(r => r.roleArn) })
+      }),
     ];
 
     if (this.sync) {
-      policyStatements.push(new iam.PolicyStatement()
-        .addActions("events:PutTargets", "events:PutRule", "events:DescribeRule")
-        .addResource(stack.formatArn({
+      policyStatements.push(new iam.PolicyStatement({
+        actions: ["events:PutTargets", "events:PutRule", "events:DescribeRule"],
+        resources: [stack.formatArn({
           service: 'events',
           resource: 'rule',
           resourceName: 'StepFunctionsGetEventsForECSTaskRule'
-      })));
+        })]
+      }));
     }
 
     return policyStatements;

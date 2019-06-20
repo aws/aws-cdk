@@ -45,7 +45,7 @@ export = {
   'bucket without encryption'(test: Test) {
     const stack = new cdk.Stack();
     new s3.Bucket(stack, 'MyBucket', {
-      encryption: s3.BucketEncryption.Unencrypted
+      encryption: s3.BucketEncryption.UNENCRYPTED
     });
 
     expect(stack).toMatch({
@@ -63,7 +63,7 @@ export = {
   'bucket with managed encryption'(test: Test) {
     const stack = new cdk.Stack();
     new s3.Bucket(stack, 'MyBucket', {
-      encryption: s3.BucketEncryption.KmsManaged
+      encryption: s3.BucketEncryption.KMS_MANAGED
     });
 
     expect(stack).toMatch({
@@ -229,7 +229,7 @@ export = {
     const myKey = new kms.Key(stack, 'MyKey');
 
     test.throws(() => new s3.Bucket(stack, 'MyBucket', {
-      encryption: s3.BucketEncryption.KmsManaged,
+      encryption: s3.BucketEncryption.KMS_MANAGED,
       encryptionKey: myKey
     }), /encryptionKey is specified, so 'encryption' must be set to KMS/);
 
@@ -241,7 +241,7 @@ export = {
     const myKey = new kms.Key(stack, 'MyKey');
 
     test.throws(() => new s3.Bucket(stack, 'MyBucket', {
-      encryption: s3.BucketEncryption.Unencrypted,
+      encryption: s3.BucketEncryption.UNENCRYPTED,
       encryptionKey: myKey
     }), /encryptionKey is specified, so 'encryption' must be set to KMS/);
 
@@ -253,7 +253,7 @@ export = {
 
     const encryptionKey = new kms.Key(stack, 'MyKey', { description: 'hello, world' });
 
-    new s3.Bucket(stack, 'MyBucket', { encryptionKey, encryption: s3.BucketEncryption.Kms });
+    new s3.Bucket(stack, 'MyBucket', { encryptionKey, encryption: s3.BucketEncryption.KMS });
 
     expect(stack).toMatch({
       "Resources": {
@@ -427,9 +427,9 @@ export = {
 
     'addPermission creates a bucket policy'(test: Test) {
       const stack = new cdk.Stack();
-      const bucket = new s3.Bucket(stack, 'MyBucket', { encryption: s3.BucketEncryption.Unencrypted });
+      const bucket = new s3.Bucket(stack, 'MyBucket', { encryption: s3.BucketEncryption.UNENCRYPTED });
 
-      bucket.addToResourcePolicy(new iam.PolicyStatement().addResource('foo').addAction('bar'));
+      bucket.addToResourcePolicy(new iam.PolicyStatement({ resources: ['foo'], actions: [ 'bar' ]}));
 
       expect(stack).toMatch({
         "Resources": {
@@ -464,11 +464,11 @@ export = {
     'forBucket returns a permission statement associated with the bucket\'s ARN'(test: Test) {
       const stack = new cdk.Stack();
 
-      const bucket = new s3.Bucket(stack, 'MyBucket', { encryption: s3.BucketEncryption.Unencrypted });
+      const bucket = new s3.Bucket(stack, 'MyBucket', { encryption: s3.BucketEncryption.UNENCRYPTED });
 
-      const x = new iam.PolicyStatement().addResource(bucket.bucketArn).addAction('s3:ListBucket');
+      const x = new iam.PolicyStatement({ resources: [bucket.bucketArn], actions: ['s3:ListBucket'] });
 
-      test.deepEqual(stack.resolve(x), {
+      test.deepEqual(stack.resolve(x.toStatementJson()), {
         Action: 's3:ListBucket',
         Effect: 'Allow',
         Resource: { 'Fn::GetAtt': ['MyBucketF68F3FF0', 'Arn'] }
@@ -480,11 +480,11 @@ export = {
     'arnForObjects returns a permission statement associated with objects in the bucket'(test: Test) {
       const stack = new cdk.Stack();
 
-      const bucket = new s3.Bucket(stack, 'MyBucket', { encryption: s3.BucketEncryption.Unencrypted });
+      const bucket = new s3.Bucket(stack, 'MyBucket', { encryption: s3.BucketEncryption.UNENCRYPTED });
 
-      const p = new iam.PolicyStatement().addResource(bucket.arnForObjects('hello/world')).addAction('s3:GetObject');
+      const p = new iam.PolicyStatement({ resources: [bucket.arnForObjects('hello/world')], actions: ['s3:GetObject'] });
 
-      test.deepEqual(stack.resolve(p), {
+      test.deepEqual(stack.resolve(p.toStatementJson()), {
         Action: 's3:GetObject',
         Effect: 'Allow',
         Resource: {
@@ -502,15 +502,15 @@ export = {
 
       const stack = new cdk.Stack();
 
-      const bucket = new s3.Bucket(stack, 'MyBucket', { encryption: s3.BucketEncryption.Unencrypted });
+      const bucket = new s3.Bucket(stack, 'MyBucket', { encryption: s3.BucketEncryption.UNENCRYPTED });
 
       const user = new iam.User(stack, 'MyUser');
       const team = new iam.Group(stack, 'MyTeam');
 
       const resource = bucket.arnForObjects(`home/${team.groupName}/${user.userName}/*`);
-      const p = new iam.PolicyStatement().addResource(resource).addAction('s3:GetObject');
+      const p = new iam.PolicyStatement({ resources: [resource], actions: ['s3:GetObject'] });
 
-      test.deepEqual(stack.resolve(p), {
+      test.deepEqual(stack.resolve(p.toStatementJson()), {
         Action: 's3:GetObject',
         Effect: 'Allow',
         Resource: {
@@ -534,7 +534,10 @@ export = {
 
   'removal policy can be used to specify behavior upon delete'(test: Test) {
     const stack = new cdk.Stack();
-    new s3.Bucket(stack, 'MyBucket', { removalPolicy: cdk.RemovalPolicy.Orphan, encryption: s3.BucketEncryption.Unencrypted });
+    new s3.Bucket(stack, 'MyBucket', {
+      removalPolicy: cdk.RemovalPolicy.Retain,
+      encryption: s3.BucketEncryption.UNENCRYPTED
+    });
 
     expect(stack).toMatch({
       Resources: {
@@ -557,12 +560,12 @@ export = {
       const bucket = s3.Bucket.fromBucketAttributes(stack, 'ImportedBucket', { bucketArn });
 
       // this is a no-op since the bucket is external
-      bucket.addToResourcePolicy(new iam.PolicyStatement().addResource('foo').addAction('bar'));
+      bucket.addToResourcePolicy(new iam.PolicyStatement({ resources: ['foo'], actions: ['bar']}));
 
-      const p = new iam.PolicyStatement().addResource(bucket.bucketArn).addAction('s3:ListBucket');
+      const p = new iam.PolicyStatement({ resources: [bucket.bucketArn], actions: ['s3:ListBucket'] });
 
       // it is possible to obtain a permission statement for a ref
-      test.deepEqual(stack.resolve(p), {
+      test.deepEqual(p.toStatementJson(), {
         Action: 's3:ListBucket',
         Effect: 'Allow',
         Resource: 'arn:aws:s3:::my-bucket'
@@ -578,7 +581,7 @@ export = {
     'import can also be used to import arbitrary ARNs'(test: Test) {
       const stack = new cdk.Stack();
       const bucket = s3.Bucket.fromBucketAttributes(stack, 'ImportedBucket', { bucketArn: 'arn:aws:s3:::my-bucket' });
-      bucket.addToResourcePolicy(new iam.PolicyStatement().addAllResources().addAction('*'));
+      bucket.addToResourcePolicy(new iam.PolicyStatement({ resources: ['*'], actions: ['*'] }));
 
       // at this point we technically didn't create any resources in the consuming stack.
       expect(stack).toMatch({});
@@ -586,9 +589,9 @@ export = {
       // but now we can reference the bucket
       // you can even use the bucket name, which will be extracted from the arn provided.
       const user = new iam.User(stack, 'MyUser');
-      user.addToPolicy(new iam.PolicyStatement()
-        .addResource(bucket.arnForObjects(`my/folder/${bucket.bucketName}`))
-        .addAction('s3:*'));
+      user.addToPolicy(new iam.PolicyStatement({
+        resources: [bucket.arnForObjects(`my/folder/${bucket.bucketName}`)],
+        actions: ['s3:*'] }));
 
       expect(stack).toMatch({
         "Resources": {
@@ -762,7 +765,7 @@ export = {
     'grant permissions to non-identity principal'(test: Test) {
       // GIVEN
       const stack = new cdk.Stack();
-      const bucket = new s3.Bucket(stack, 'MyBucket', { encryption: s3.BucketEncryption.Kms });
+      const bucket = new s3.Bucket(stack, 'MyBucket', { encryption: s3.BucketEncryption.KMS });
 
       // WHEN
       bucket.grantRead(new iam.OrganizationPrincipal('o-1234'));
@@ -820,7 +823,7 @@ export = {
 
     'if an encryption key is included, encrypt/decrypt permissions are also added both ways'(test: Test) {
       const stack = new cdk.Stack();
-      const bucket = new s3.Bucket(stack, 'MyBucket', { encryption: s3.BucketEncryption.Kms });
+      const bucket = new s3.Bucket(stack, 'MyBucket', { encryption: s3.BucketEncryption.KMS });
       const user = new iam.User(stack, 'MyUser');
       bucket.grantReadWrite(user);
 
@@ -991,7 +994,7 @@ export = {
 
   'more grants'(test: Test) {
     const stack = new cdk.Stack();
-    const bucket = new s3.Bucket(stack, 'MyBucket', { encryption: s3.BucketEncryption.Kms });
+    const bucket = new s3.Bucket(stack, 'MyBucket', { encryption: s3.BucketEncryption.KMS });
     const putter = new iam.User(stack, 'Putter');
     const writer = new iam.User(stack, 'Writer');
     const deleter = new iam.User(stack, 'Deleter');
@@ -1189,7 +1192,7 @@ export = {
       const bucketFromStackA = new s3.Bucket(stackA, 'MyBucket', {
         bucketName: cdk.PhysicalName.of('my-bucket-physical-name'),
         encryptionKey: key,
-        encryption: s3.BucketEncryption.Kms,
+        encryption: s3.BucketEncryption.KMS,
       });
 
       const stackB = new cdk.Stack(undefined, 'StackB', { env: { account: '234567890123' }});

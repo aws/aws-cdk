@@ -56,7 +56,12 @@ export = {
   'addToPolicy will automatically create a policy for this queue'(test: Test) {
     const stack = new Stack();
     const queue = new sqs.Queue(stack, 'MyQueue');
-    queue.addToResourcePolicy(new iam.PolicyStatement().addAllResources().addActions('sqs:*').addPrincipal(new iam.ArnPrincipal('arn')));
+    queue.addToResourcePolicy(new iam.PolicyStatement({
+      resources: ['*'],
+      actions: ['sqs:*'],
+      principals: [new iam.ArnPrincipal('arn')]
+    }));
+
     expect(stack).toMatch({
       "Resources": {
         "MyQueueE6CA6235": {
@@ -195,7 +200,7 @@ export = {
     'a kms key will be allocated if encryption = kms but a master key is not specified'(test: Test) {
       const stack = new Stack();
 
-      new sqs.Queue(stack, 'Queue', { encryption: sqs.QueueEncryption.Kms });
+      new sqs.Queue(stack, 'Queue', { encryption: sqs.QueueEncryption.KMS });
 
       expect(stack).to(haveResource('AWS::KMS::Key'));
       expect(stack).to(haveResource('AWS::SQS::Queue', {
@@ -213,7 +218,7 @@ export = {
     'it is possible to use a managed kms key'(test: Test) {
       const stack = new Stack();
 
-      new sqs.Queue(stack, 'Queue', { encryption: sqs.QueueEncryption.KmsManaged });
+      new sqs.Queue(stack, 'Queue', { encryption: sqs.QueueEncryption.KMS_MANAGED });
       expect(stack).toMatch({
         "Resources": {
         "Queue4A7E3555": {
@@ -231,7 +236,7 @@ export = {
       // GIVEN
       const stack = new Stack();
       const queue = new sqs.Queue(stack, 'Queue', {
-        encryption: sqs.QueueEncryption.Kms
+        encryption: sqs.QueueEncryption.KMS
       });
       const role = new iam.Role(stack, 'Role', {
         assumedBy: new iam.ServicePrincipal('someone')

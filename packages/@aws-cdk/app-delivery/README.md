@@ -5,6 +5,9 @@
 
 ![Stability: Experimental](https://img.shields.io/badge/stability-Experimental-important.svg?style=for-the-badge)
 
+> **This is a _developer preview_ (public beta) module. Releases might lack important features and might have
+> future breaking changes.**
+> 
 > This API is still under active development and subject to non-backward
 > compatible changes or removal in any future version. Use of the API is not recommended in production
 > environments. Experimental APIs are not subject to the Semantic Versioning model.
@@ -70,7 +73,7 @@ const source = new codepipeline_actions.GitHubSourceAction({
   /* ... */
 });
 pipeline.addStage({
-  name: 'source',
+  stageName: 'source',
   actions: [source],
 });
 
@@ -89,15 +92,15 @@ const buildAction = new codepipeline_actions.CodeBuildAction({
   actionName: 'CodeBuild',
   project,
   input: sourceOutput,
-  output: synthesizedApp,
+  outputs: [synthesizedApp],
 });
 pipeline.addStage({
-  name: 'build',
+  stageName: 'build',
   actions: [buildAction],
 });
 
 // Optionally, self-update the pipeline stack
-const selfUpdateStage = pipeline.addStage({ name: 'SelfUpdate' });
+const selfUpdateStage = pipeline.addStage({ stageName: 'SelfUpdate' });
 new cicd.PipelineDeployStackAction(pipelineStack, 'SelfUpdatePipeline', {
   stage: selfUpdateStage,
   stack: pipelineStack,
@@ -105,7 +108,7 @@ new cicd.PipelineDeployStackAction(pipelineStack, 'SelfUpdatePipeline', {
 });
 
 // Now add our service stacks
-const deployStage = pipeline.addStage({ name: 'Deploy' });
+const deployStage = pipeline.addStage({ stageName: 'Deploy' });
 const serviceStackA = new MyServiceStackA(app, 'ServiceStackA', { /* ... */ });
 // Add actions to deploy the stacks in the deploy stage:
 const deployServiceAAction = new cicd.PipelineDeployStackAction(pipelineStack, 'DeployServiceStackA', {

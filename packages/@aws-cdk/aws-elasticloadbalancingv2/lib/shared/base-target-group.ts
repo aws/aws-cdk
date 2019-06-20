@@ -237,11 +237,11 @@ export abstract class TargetGroupBase extends cdk.Construct implements ITargetGr
       ...additionalProps
     });
 
-    this.targetGroupLoadBalancerArns = this.resource.targetGroupLoadBalancerArns;
+    this.targetGroupLoadBalancerArns = this.resource.attrLoadBalancerArns;
     this.targetGroupArn = this.resource.refAsString;
-    this.targetGroupFullName = this.resource.targetGroupFullName;
-    this.loadBalancerArns = this.resource.targetGroupLoadBalancerArns.toString();
-    this.targetGroupName = this.resource.targetGroupName;
+    this.targetGroupFullName = this.resource.attrTargetGroupFullName;
+    this.loadBalancerArns = this.resource.attrLoadBalancerArns.toString();
+    this.targetGroupName = this.resource.attrTargetGroupName;
     this.defaultPort = additionalProps.port;
   }
 

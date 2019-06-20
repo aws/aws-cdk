@@ -9,7 +9,10 @@ export = nodeunit.testCase({
   },
 
   'unresolved amount'(test: nodeunit.Test) {
-    test.throws(new Stack().resolve(Duration.seconds(Token.asNumber(1337))));
+    test.throws(
+      () => new Stack().resolve(Duration.seconds(Token.asNumber({ resolve: () => 1337 }))),
+      /Duration amounts cannot be unresolved tokens./
+    );
 
     test.done();
   },

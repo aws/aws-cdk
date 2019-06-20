@@ -58,9 +58,6 @@ export = {
               {
                 Ref: "MyVpcPrivateSubnet2Subnet0040C983"
               },
-              {
-                Ref: "MyVpcPrivateSubnet3Subnet772D6AD7"
-              }
             ]
           }
         }
@@ -364,7 +361,7 @@ export = {
       // WHEN
       cluster.addDefaultCloudMapNamespace({
         name: 'foo.com',
-        type: NamespaceType.PrivateDns
+        type: NamespaceType.PRIVATE_DNS
       });
 
       new ecs.FargateService(stack, 'Service', {
@@ -424,7 +421,7 @@ export = {
       // WHEN
       cluster.addDefaultCloudMapNamespace({
         name: 'foo.com',
-        type: NamespaceType.PrivateDns
+        type: NamespaceType.PRIVATE_DNS
       });
 
       new ecs.FargateService(stack, 'Service', {

@@ -43,7 +43,7 @@ export class AlexaSkillDeployAction extends codepipeline.Action {
   constructor(props: AlexaSkillDeployActionProps) {
     super({
       ...props,
-      category: codepipeline.ActionCategory.Deploy,
+      category: codepipeline.ActionCategory.DEPLOY,
       owner: 'ThirdParty',
       provider: 'AlexaSkillsKit',
       artifactBounds: {

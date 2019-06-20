@@ -1,4 +1,4 @@
-import { Construct, Duration, IResource, Resource, Token, toSeconds } from '@aws-cdk/cdk';
+import { Construct, Duration, IResource, Resource, Token } from '@aws-cdk/cdk';
 import { IAliasRecordTarget } from './alias-record-target';
 import { IHostedZone } from './hosted-zone-ref';
 import { CfnRecordSet } from './route53.generated';
@@ -110,7 +110,7 @@ export class RecordSet extends Resource implements IRecordSet {
   constructor(scope: Construct, id: string, props: RecordSetProps) {
     super(scope, id);
 
-    const ttl = props.target.aliasTarget ? undefined : (toSeconds(props.ttl) || 1800).toString();
+    const ttl = props.target.aliasTarget ? undefined : ((props.ttl && props.ttl.toSeconds()) || 1800).toString();
 
     const recordSet = new CfnRecordSet(this, 'Resource', {
       hostedZoneId: props.zone.hostedZoneId,

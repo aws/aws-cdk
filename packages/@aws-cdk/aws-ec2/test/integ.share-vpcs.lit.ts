@@ -11,6 +11,11 @@ interface ConstructThatTakesAVpcProps {
 class ConstructThatTakesAVpc extends cdk.Construct {
   constructor(scope: cdk.Construct, id: string, _props: ConstructThatTakesAVpcProps) {
     super(scope, id);
+
+    // new ec2.CfnInstance(this, 'Instance', {
+    //   subnetId: props.vpc.privateSubnets[0].subnetId,
+    //   imageId: new ec2.AmazonLinuxImage().getImage(this).imageId,
+    // });
   }
 }
 

@@ -89,7 +89,7 @@ export = {
     // add a policy to the role
     const after = new Stack();
     const afterRole = new Role(after, 'MyRole', { assumedBy: new ServicePrincipal('sns.amazonaws.com') });
-    afterRole.addToPolicy(new PolicyStatement().addResource('myresource').addAction('myaction'));
+    afterRole.addToPolicy(new PolicyStatement({ resources: ['myresource'], actions: ['myaction'] }));
     expect(after).to(haveResource('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
@@ -116,10 +116,10 @@ export = {
 
     const role = new Role(stack, 'MyRole', {
       assumedBy: new ServicePrincipal('test.service'),
-      managedPolicyArns: [ 'managed1', 'managed2' ]
+      managedPolicies: [ { managedPolicyArn: 'managed1' }, { managedPolicyArn: 'managed2' } ]
     });
 
-    role.attachManagedPolicy('managed3');
+    role.addManagedPolicy({ managedPolicyArn: 'managed3' });
     expect(stack).toMatch({ Resources:
       { MyRoleF48FFE04:
          { Type: 'AWS::IAM::Role',
@@ -259,6 +259,34 @@ export = {
     // THEN
     test.deepEqual(importedRole.roleArn, 'arn:aws:iam::123456789012:role/S3Access');
     test.deepEqual(importedRole.roleName, 'S3Access');
+    test.done();
+  },
+
+  'add policy to imported role'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+    const importedRole = Role.fromRoleArn(stack, 'ImportedRole', 'arn:aws:iam::123456789012:role/MyRole');
+
+    // WHEN
+    importedRole.addToPolicy(new PolicyStatement({
+      actions: ['s3:*'],
+      resources: ['xyz']
+    }));
+
+    // THEN
+    expect(stack).to(haveResource('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: "s3:*",
+            Effect: "Allow",
+            Resource: "xyz"
+          }
+        ],
+        Version: "2012-10-17"
+      },
+      Roles: [ "MyRole" ]
+    }));
     test.done();
   }
 };

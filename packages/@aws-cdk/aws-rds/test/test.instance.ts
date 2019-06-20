@@ -16,8 +16,8 @@ export = {
     // WHEN
     new rds.DatabaseInstance(stack, 'Instance', {
       engine: rds.DatabaseInstanceEngine.OracleSE1,
-      licenseModel: rds.LicenseModel.BringYourOwnLicense,
-      instanceClass: new ec2.InstanceTypePair(ec2.InstanceClass.Burstable2, ec2.InstanceSize.Medium),
+      licenseModel: rds.LicenseModel.BRING_YOUR_OWN_LICENSE,
+      instanceClass: new ec2.InstanceTypePair(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.MEDIUM),
       multiAz: true,
       storageType: rds.StorageType.IO1,
       masterUsername: 'syscdk',
@@ -25,7 +25,7 @@ export = {
       databaseName: 'ORCL',
       storageEncrypted: true,
       backupRetention: cdk.Duration.days(7),
-      monitoringInterval: cdk.Duration.seconds(60),
+      monitoringInterval: cdk.Duration.minutes(1),
       enablePerformanceInsights: true,
       cloudwatchLogsExports: [
         'trace',
@@ -33,76 +33,80 @@ export = {
         'alert',
         'listener'
       ],
-      cloudwatchLogsRetention: logs.RetentionDays.OneMonth,
+      cloudwatchLogsRetention: logs.RetentionDays.ONE_MONTH,
       autoMinorVersionUpgrade: false,
     });
 
     // THEN
     expect(stack).to(haveResource('AWS::RDS::DBInstance', {
-      DBInstanceClass: 'db.t2.medium',
-      AllocatedStorage: '100',
-      AutoMinorVersionUpgrade: false,
-      BackupRetentionPeriod: '7',
-      CopyTagsToSnapshot: true,
-      DBName: 'ORCL',
-      DBSubnetGroupName: {
-        Ref: 'InstanceSubnetGroupF2CBA54F'
-      },
-      DeletionProtection: true,
-      EnableCloudwatchLogsExports: [
-        'trace',
-        'audit',
-        'alert',
-        'listener'
-      ],
-      EnablePerformanceInsights: true,
-      Engine: 'oracle-se1',
-      Iops: 1000,
-      LicenseModel: 'bring-your-own-license',
-      MasterUsername: {
-        'Fn::Join': [
-          '',
-          [
-            '{{resolve:secretsmanager:',
-            {
-              Ref: 'InstanceSecret478E0A47'
-            },
-            ':SecretString:username::}}'
+      Properties: {
+        DBInstanceClass: 'db.t2.medium',
+        AllocatedStorage: '100',
+        AutoMinorVersionUpgrade: false,
+        BackupRetentionPeriod: 7,
+        CopyTagsToSnapshot: true,
+        DBName: 'ORCL',
+        DBSubnetGroupName: {
+          Ref: 'InstanceSubnetGroupF2CBA54F'
+        },
+        DeletionProtection: true,
+        EnableCloudwatchLogsExports: [
+          'trace',
+          'audit',
+          'alert',
+          'listener'
+        ],
+        EnablePerformanceInsights: true,
+        Engine: 'oracle-se1',
+        Iops: 1000,
+        LicenseModel: 'bring-your-own-license',
+        MasterUsername: {
+          'Fn::Join': [
+            '',
+            [
+              '{{resolve:secretsmanager:',
+              {
+                Ref: 'InstanceSecret478E0A47'
+              },
+              ':SecretString:username::}}'
+            ]
           ]
-        ]
-      },
-      MasterUserPassword: {
-        'Fn::Join': [
-          '',
-          [
-            '{{resolve:secretsmanager:',
-            {
-              Ref: 'InstanceSecret478E0A47'
-            },
-            ':SecretString:password::}}'
+        },
+        MasterUserPassword: {
+          'Fn::Join': [
+            '',
+            [
+              '{{resolve:secretsmanager:',
+              {
+                Ref: 'InstanceSecret478E0A47'
+              },
+              ':SecretString:password::}}'
+            ]
           ]
-        ]
-      },
-      MonitoringInterval: 60,
-      MonitoringRoleArn: {
-        'Fn::GetAtt': [
-          'InstanceMonitoringRole3E2B4286',
-          'Arn'
-        ]
-      },
-      MultiAZ: true,
-      PerformanceInsightsRetentionPeriod: 7,
-      StorageEncrypted: true,
-      StorageType: 'io1',
-      VPCSecurityGroups: [
-        {
+        },
+        MonitoringInterval: 60,
+        MonitoringRoleArn: {
           'Fn::GetAtt': [
-            'InstanceSecurityGroupB4E5FA83',
-            'GroupId'
+            'InstanceMonitoringRole3E2B4286',
+            'Arn'
           ]
-        }
-      ]
-    }));
+        },
+        MultiAZ: true,
+        PerformanceInsightsRetentionPeriod: 7,
+        StorageEncrypted: true,
+        StorageType: 'io1',
+        VPCSecurityGroups: [
+          {
+            'Fn::GetAtt': [
+              'InstanceSecurityGroupB4E5FA83',
+              'GroupId'
+            ]
+          }
+        ]
+      },
+      DeletionPolicy: 'Retain',
+      UpdateReplacePolicy: 'Retain'
+    }, ResourcePart.CompleteDefinition));
 
     expect(stack).to(haveResource('AWS::RDS::DBInstance', {
       DeletionPolicy: 'Retain',
@@ -117,9 +121,6 @@ export = {
         },
         {
           Ref: 'VPCPrivateSubnet2SubnetCFCDAA7A'
-        },
-        {
-          Ref: 'VPCPrivateSubnet3Subnet3EDCD457'
         }
       ]
     }));
@@ -207,7 +208,7 @@ export = {
     // WHEN
     new rds.DatabaseInstance(stack, 'Database', {
       engine: rds.DatabaseInstanceEngine.SqlServerEE,
-      instanceClass: new ec2.InstanceTypePair(ec2.InstanceClass.Burstable2, ec2.InstanceSize.Small),
+      instanceClass: new ec2.InstanceTypePair(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
       masterUsername: 'syscdk',
       masterUserPassword: cdk.SecretValue.plainText('tooshort'),
       vpc,
@@ -236,7 +237,7 @@ export = {
     new rds.DatabaseInstanceFromSnapshot(stack, 'Instance', {
       snapshotIdentifier: 'my-snapshot',
       engine: rds.DatabaseInstanceEngine.Postgres,
-      instanceClass: new ec2.InstanceTypePair(ec2.InstanceClass.Burstable2, ec2.InstanceSize.Large),
+      instanceClass: new ec2.InstanceTypePair(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.LARGE),
       vpc
     });
 
@@ -256,7 +257,7 @@ export = {
     test.throws(() => new rds.DatabaseInstanceFromSnapshot(stack, 'Instance', {
       snapshotIdentifier: 'my-snapshot',
       engine: rds.DatabaseInstanceEngine.Mysql,
-      instanceClass: new ec2.InstanceTypePair(ec2.InstanceClass.Burstable2, ec2.InstanceSize.Large),
+      instanceClass: new ec2.InstanceTypePair(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.LARGE),
       vpc,
       generateMasterUserPassword: true,
     }), /`masterUsername`.*`generateMasterUserPassword`/);
@@ -270,7 +271,7 @@ export = {
     const vpc = new ec2.Vpc(stack, 'VPC');
     const sourceInstance = new rds.DatabaseInstance(stack, 'Instance', {
       engine: rds.DatabaseInstanceEngine.Mysql,
-      instanceClass: new ec2.InstanceTypePair(ec2.InstanceClass.Burstable2, ec2.InstanceSize.Small),
+      instanceClass: new ec2.InstanceTypePair(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
       masterUsername: 'admin',
       vpc
     });
@@ -279,7 +280,7 @@ export = {
     new rds.DatabaseInstanceReadReplica(stack, 'ReadReplica', {
       sourceDatabaseInstance: sourceInstance,
       engine: rds.DatabaseInstanceEngine.Mysql,
-      instanceClass: new ec2.InstanceTypePair(ec2.InstanceClass.Burstable2, ec2.InstanceSize.Large),
+      instanceClass: new ec2.InstanceTypePair(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.LARGE),
       vpc
     });
 
@@ -299,7 +300,7 @@ export = {
     const vpc = new ec2.Vpc(stack, 'VPC');
     const instance = new rds.DatabaseInstance(stack, 'Instance', {
       engine: rds.DatabaseInstanceEngine.Mysql,
-      instanceClass: new ec2.InstanceTypePair(ec2.InstanceClass.Burstable2, ec2.InstanceSize.Small),
+      instanceClass: new ec2.InstanceTypePair(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
       masterUsername: 'admin',
       vpc
     });
@@ -311,6 +312,68 @@ export = {
 
     // WHEN
     instance.onEvent('InstanceEvent', { target: new targets.LambdaFunction(fn) });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::Events::Rule', {
+      EventPattern: {
+        source: [
+          'aws.rds'
+        ],
+        resources: [
+          {
+            'Fn::Join': [
+              '',
+              [
+                'arn:',
+                {
+                  Ref: 'AWS::Partition'
+                },
+                ':rds:',
+                {
+                  Ref: 'AWS::Region'
+                },
+                ':',
+                {
+                  Ref: 'AWS::AccountId'
+                },
+                ':db:',
+                {
+                  Ref: 'InstanceC1063A87'
+                }
+              ]
+            ]
+          }
+        ]
+      },
+      Targets: [
+        {
+          Arn: {
+            'Fn::GetAtt': [
+              'Function76856677',
+              'Arn'
+            ],
+          },
+          Id: 'Function'
+        }
+      ]
+    }));
+
+    test.done();
+  },
+
+  'on event without target'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const instance = new rds.DatabaseInstance(stack, 'Instance', {
+      engine: rds.DatabaseInstanceEngine.Mysql,
+      instanceClass: new ec2.InstanceTypePair(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+      masterUsername: 'admin',
+      vpc
+    });
+
+    // WHEN
+    instance.onEvent('InstanceEvent');
 
     // THEN
     expect(stack).to(haveResource('AWS::Events::Rule', {
@@ -357,7 +420,7 @@ export = {
     // WHEN
     const instance = new rds.DatabaseInstance(stack, 'Instance', {
       engine: rds.DatabaseInstanceEngine.Mysql,
-      instanceClass: new ec2.InstanceTypePair(ec2.InstanceClass.Burstable2, ec2.InstanceSize.Small),
+      instanceClass: new ec2.InstanceTypePair(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
       masterUsername: 'admin',
       vpc
     });
@@ -382,7 +445,7 @@ export = {
     // WHEN
     const instance = new rds.DatabaseInstance(stack, 'Instance', {
       engine: rds.DatabaseInstanceEngine.Mysql,
-      instanceClass: new ec2.InstanceTypePair(ec2.InstanceClass.Burstable2, ec2.InstanceSize.Small),
+      instanceClass: new ec2.InstanceTypePair(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
       masterUsername: 'admin',
       vpc
     });
@@ -401,6 +464,28 @@ export = {
         ]
       ]
     });
+
+    test.done();
+  },
+
+  'can deactivate backup'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    new rds.DatabaseInstance(stack, 'Instance', {
+      engine: rds.DatabaseInstanceEngine.Mysql,
+      instanceClass: new ec2.InstanceTypePair(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+      masterUsername: 'admin',
+      vpc,
+      backupRetention: cdk.Duration.seconds(0),
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::RDS::DBInstance', {
+      BackupRetentionPeriod: 0
+    }));
 
     test.done();
   }

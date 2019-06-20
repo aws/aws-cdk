@@ -1,7 +1,7 @@
 import ec2 = require('@aws-cdk/aws-ec2');
 import iam = require('@aws-cdk/aws-iam');
 import sfn = require('@aws-cdk/aws-stepfunctions');
-import { Construct, Stack } from '@aws-cdk/cdk';
+import { Construct, Duration, Stack } from '@aws-cdk/cdk';
 import { AlgorithmSpecification, Channel, InputMode, OutputDataConfig, ResourceConfig,
          S3DataType, StoppingCondition, VpcConfig,  } from './sagemaker-task-base-types';
 
@@ -110,33 +110,33 @@ export class SagemakerTrainTask implements ec2.IConnectable, sfn.IStepFunctionsT
         // set the default resource config if not defined.
         this.resourceConfig = props.resourceConfig || {
             instanceCount: 1,
-            instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.M4, ec2.InstanceSize.XLarge),
+            instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.M4, ec2.InstanceSize.XLARGE),
             volumeSizeInGB: 10
         };
 
         // set the stopping condition if not defined
         this.stoppingCondition = props.stoppingCondition || {
-            maxRuntimeInSeconds: 3600
+            maxRuntime: Duration.hours(1)
         };
 
         // set the sagemaker role or create new one
         this.role = props.role || new iam.Role(scope, 'SagemakerRole', {
             assumedBy: new iam.ServicePrincipal('sagemaker.amazonaws.com'),
-            managedPolicyArns: [
-                new iam.AwsManagedPolicy('AmazonSageMakerFullAccess', scope).policyArn
+            managedPolicies: [
+                iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonSageMakerFullAccess')
             ]
         });
 
         // set the input mode to 'File' if not defined
         this.algorithmSpecification = ( props.algorithmSpecification.trainingInputMode ) ?
             ( props.algorithmSpecification ) :
-            ( { ...props.algorithmSpecification, trainingInputMode: InputMode.File } );
+            ( { ...props.algorithmSpecification, trainingInputMode: InputMode.FILE } );
 
         // set the S3 Data type of the input data config objects to be 'S3Prefix' if not defined
         this.inputDataConfig = props.inputDataConfig.map(config => {
             if (!config.dataSource.s3DataSource.s3DataType) {
                 return Object.assign({}, config, { dataSource: { s3DataSource:
-                    { ...config.dataSource.s3DataSource, s3DataType: S3DataType.S3Prefix } } });
+                    { ...config.dataSource.s3DataSource, s3DataType: S3DataType.S3_PREFIX } } });
             } else {
                 return config;
             }
@@ -229,7 +229,7 @@ export class SagemakerTrainTask implements ec2.IConnectable, sfn.IStepFunctionsT
     private renderStoppingCondition(config: StoppingCondition): {[key: string]: any} {
         return {
             StoppingCondition: {
-                MaxRuntimeInSeconds: config.maxRuntimeInSeconds
+                MaxRuntimeInSeconds: config.maxRuntime && config.maxRuntime.toSeconds()
             }
         };
     }
@@ -254,30 +254,38 @@ export class SagemakerTrainTask implements ec2.IConnectable, sfn.IStepFunctionsT
 
         // https://docs.aws.amazon.com/step-functions/latest/dg/sagemaker-iam.html
         const policyStatements = [
-          new iam.PolicyStatement()
-            .addActions('sagemaker:CreateTrainingJob', 'sagemaker:DescribeTrainingJob', 'sagemaker:StopTrainingJob')
-            .addResource(stack.formatArn({
-                service: 'sagemaker',
-                resource: 'training-job',
-                resourceName: '*'
-            })),
-          new iam.PolicyStatement()
-            .addAction('sagemaker:ListTags')
-            .addAllResources(),
-          new iam.PolicyStatement()
-            .addAction('iam:PassRole')
-            .addResources(this.role.roleArn)
-            .addCondition('StringEquals', { "iam:PassedToService": "sagemaker.amazonaws.com" })
+            new iam.PolicyStatement({
+                actions: ['sagemaker:CreateTrainingJob', 'sagemaker:DescribeTrainingJob', 'sagemaker:StopTrainingJob'],
+                resources: [
+                    stack.formatArn({
+                        service: 'sagemaker',
+                        resource: 'training-job',
+                        resourceName: '*'
+                    })
+                ],
+            }),
+            new iam.PolicyStatement({
+                actions: ['sagemaker:ListTags'],
+                resources: ['*']
+            }),
+            new iam.PolicyStatement({
+                actions: ['iam:PassRole'],
+                resources: [this.role.roleArn],
+                conditions: {
+                    StringEquals: { "iam:PassedToService": "sagemaker.amazonaws.com" }
+                }
+            })
         ];
 
         if (this.props.synchronous) {
-          policyStatements.push(new iam.PolicyStatement()
-            .addActions("events:PutTargets", "events:PutRule", "events:DescribeRule")
-            .addResource(stack.formatArn({
-              service: 'events',
-              resource: 'rule',
-              resourceName: 'StepFunctionsGetEventsForSageMakerTrainingJobsRule'
-          })));
+            policyStatements.push(new iam.PolicyStatement({
+                actions: ["events:PutTargets", "events:PutRule", "events:DescribeRule"],
+                resources: [stack.formatArn({
+                    service: 'events',
+                    resource: 'rule',
+                    resourceName: 'StepFunctionsGetEventsForSageMakerTrainingJobsRule'
+                })]
+            }));
         }
 
         return policyStatements;

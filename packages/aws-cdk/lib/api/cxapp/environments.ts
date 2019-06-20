@@ -1,12 +1,13 @@
 import cxapi = require('@aws-cdk/cx-api');
 import minimatch = require('minimatch');
-import { AppStacks, ExtendedStackSelection } from './stacks';
+import { AppStacks } from './stacks';
 
 export async function globEnvironmentsFromStacks(appStacks: AppStacks, environmentGlobs: string[]): Promise<cxapi.Environment[]> {
   if (environmentGlobs.length === 0) {
     environmentGlobs = [ '**' ]; // default to ALL
   }
-  const stacks = await appStacks.selectStacks([], ExtendedStackSelection.None);
+
+  const stacks = await appStacks.listStacks();
 
   const availableEnvironments = distinct(stacks.map(stack => stack.environment)
                             .filter(env => env !== undefined) as cxapi.Environment[]);

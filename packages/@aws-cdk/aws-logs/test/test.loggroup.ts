@@ -1,6 +1,6 @@
 import { expect, haveResource, matchTemplate } from '@aws-cdk/assert';
 import iam = require('@aws-cdk/aws-iam');
-import { Stack } from '@aws-cdk/cdk';
+import { RemovalPolicy, Stack } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
 import { LogGroup, RetentionDays } from '../lib';
 
@@ -11,7 +11,7 @@ export = {
 
     // WHEN
     new LogGroup(stack, 'LogGroup', {
-      retention: RetentionDays.OneWeek
+      retention: RetentionDays.ONE_WEEK
     });
 
     // THEN
@@ -66,14 +66,17 @@ export = {
     // WHEN
     new LogGroup(stack, 'LogGroup', {
       retention: Infinity,
-      retainLogGroup: false
+      removalPolicy: RemovalPolicy.Destroy
     });
 
     // THEN
     expect(stack).to(matchTemplate({
       Resources: {
-        LogGroupF5B46931: { Type: "AWS::Logs::LogGroup" }
+        LogGroupF5B46931: {
+          Type: "AWS::Logs::LogGroup",
+          DeletionPolicy: "Delete"
         }
+      }
     }));
 
     test.done();
@@ -85,7 +88,7 @@ export = {
 
     // WHEN
     const imported = LogGroup.fromLogGroupArn(stack2, 'lg', 'arn:aws:logs:us-east-1:123456789012:log-group:my-log-group');
-    imported.newStream(stack2, 'MakeMeAStream');
+    imported.addStream('MakeMeAStream');
 
     // THEN
     expect(stack2).to(haveResource('AWS::Logs::LogStream', {

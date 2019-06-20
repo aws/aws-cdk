@@ -1,6 +1,6 @@
 import iam = require('@aws-cdk/aws-iam');
 import kms = require('@aws-cdk/aws-kms');
-import { Construct, IResource, Resource, Stack } from '@aws-cdk/cdk';
+import { Construct, IResource, PhysicalName, Resource, ResourceIdentifiers, Stack } from '@aws-cdk/cdk';
 import { CfnStream } from './kinesis.generated';
 
 export interface IStream extends IResource {
@@ -173,7 +173,7 @@ export interface StreamProps {
    * Enforces a particular physical stream name.
    * @default <generated>
    */
-  readonly streamName?: string;
+  readonly streamName?: PhysicalName;
 
   /**
    * The number of hours for the data records that are stored in shards to remain accessible.
@@ -241,7 +241,9 @@ export class Stream extends StreamBase {
   private readonly stream: CfnStream;
 
   constructor(scope: Construct, id: string, props: StreamProps = {}) {
-    super(scope, id);
+    super(scope, id, {
+      physicalName: props.streamName,
+    });
 
     const shardCount = props.shardCount || 1;
     const retentionPeriodHours = props.retentionPeriodHours || 24;
@@ -252,13 +254,24 @@ export class Stream extends StreamBase {
     const { streamEncryption, encryptionKey } = this.parseEncryption(props);
 
     this.stream = new CfnStream(this, "Resource", {
-      name: props.streamName,
+      name: this.physicalName.value,
       retentionPeriodHours,
       shardCount,
       streamEncryption
     });
-    this.streamArn = this.stream.streamArn;
-    this.streamName = this.stream.streamId;
+
+    const resourceIdentifiers = new ResourceIdentifiers(this, {
+      arn: this.stream.attrArn,
+      name: this.stream.refAsString,
+      arnComponents: {
+        service: 'kinesis',
+        resource: 'stream',
+        resourceName: this.physicalName.value,
+      },
+    });
+    this.streamArn = resourceIdentifiers.arn;
+    this.streamName = resourceIdentifiers.name;
+
     this.encryptionKey = encryptionKey;
 
     if (props.streamName) { this.node.addMetadata('aws:cdk:hasPhysicalName', props.streamName); }
@@ -274,18 +287,18 @@ export class Stream extends StreamBase {
   } {
 
     // default to unencrypted.
-    const encryptionType = props.encryption || StreamEncryption.Unencrypted;
+    const encryptionType = props.encryption || StreamEncryption.UNENCRYPTED;
 
     // if encryption key is set, encryption must be set to KMS.
-    if (encryptionType !== StreamEncryption.Kms && props.encryptionKey) {
+    if (encryptionType !== StreamEncryption.KMS && props.encryptionKey) {
       throw new Error(`encryptionKey is specified, so 'encryption' must be set to KMS (value: ${encryptionType})`);
     }
 
-    if (encryptionType === StreamEncryption.Unencrypted) {
+    if (encryptionType === StreamEncryption.UNENCRYPTED) {
       return { streamEncryption: undefined, encryptionKey: undefined };
     }
 
-    if (encryptionType === StreamEncryption.Kms) {
+    if (encryptionType === StreamEncryption.KMS) {
       const encryptionKey = props.encryptionKey || new kms.Key(this, 'Key', {
         description: `Created by ${this.node.path}`
       });
@@ -308,11 +321,11 @@ export enum StreamEncryption {
   /**
    * Records in the stream are not encrypted.
    */
-  Unencrypted = 'NONE',
+  UNENCRYPTED = 'NONE',
 
   /**
    * Server-side encryption with a KMS key managed by the user.
    * If `encryptionKey` is specified, this key will be used, otherwise, one will be defined.
    */
-  Kms = 'KMS',
+  KMS = 'KMS',
 }

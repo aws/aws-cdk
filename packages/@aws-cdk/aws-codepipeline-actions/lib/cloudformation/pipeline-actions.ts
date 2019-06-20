@@ -74,7 +74,7 @@ export abstract class CloudFormationAction extends codepipeline.Action {
         ? [props.output || new codepipeline.Artifact(`${props.actionName}_${props.stackName}_Artifact`)]
         : undefined,
       provider: 'CloudFormation',
-      category: codepipeline.ActionCategory.Deploy,
+      category: codepipeline.ActionCategory.DEPLOY,
       configuration: {
         StackName: props.stackName,
         OutputFileName: props.outputFileName,
@@ -260,7 +260,10 @@ export abstract class CloudFormationDeployAction extends CloudFormationAction {
       });
 
       if (this.props.adminPermissions) {
-        this._deploymentRole.addToPolicy(new iam.PolicyStatement().addAction('*').addAllResources());
+        this._deploymentRole.addToPolicy(new iam.PolicyStatement({
+          actions: ['*'],
+          resources: ['*'],
+        }));
       }
     }
 
@@ -448,7 +451,7 @@ class SingletonPolicy extends cdk.Construct {
     this.statementFor({
       actions: ['cloudformation:ExecuteChangeSet'],
       conditions: { StringEquals: { 'cloudformation:ChangeSetName': props.changeSetName } },
-    }).addResource(this.stackArnFromProps(props));
+    }).addResources(this.stackArnFromProps(props));
   }
 
   public grantCreateReplaceChangeSet(props: { stackName: string, changeSetName: string, region?: string }): void {
@@ -460,7 +463,7 @@ class SingletonPolicy extends cdk.Construct {
         'cloudformation:DescribeStacks',
       ],
       conditions: { StringEqualsIfExists: { 'cloudformation:ChangeSetName': props.changeSetName } },
-    }).addResource(this.stackArnFromProps(props));
+    }).addResources(this.stackArnFromProps(props));
   }
 
   public grantCreateUpdateStack(props: { stackName: string, replaceOnFailure?: boolean, region?: string }): void {
@@ -476,7 +479,7 @@ class SingletonPolicy extends cdk.Construct {
     if (props.replaceOnFailure) {
       actions.push('cloudformation:DeleteStack');
     }
-    this.statementFor({ actions }).addResource(this.stackArnFromProps(props));
+    this.statementFor({ actions }).addResources(this.stackArnFromProps(props));
   }
 
   public grantDeleteStack(props: { stackName: string, region?: string }): void {
@@ -485,17 +488,17 @@ class SingletonPolicy extends cdk.Construct {
         'cloudformation:DescribeStack*',
         'cloudformation:DeleteStack',
       ]
-    }).addResource(this.stackArnFromProps(props));
+    }).addResources(this.stackArnFromProps(props));
   }
 
   public grantPassRole(role: iam.IRole): void {
-    this.statementFor({ actions: ['iam:PassRole'] }).addResource(role.roleArn);
+    this.statementFor({ actions: ['iam:PassRole'] }).addResources(role.roleArn);
   }
 
   private statementFor(template: StatementTemplate): iam.PolicyStatement {
     const key = keyFor(template);
     if (!(key in this.statements)) {
-      this.statements[key] = new iam.PolicyStatement().addActions(...template.actions);
+      this.statements[key] = new iam.PolicyStatement({ actions: template.actions });
       if (template.conditions) {
         this.statements[key].addConditions(template.conditions);
       }

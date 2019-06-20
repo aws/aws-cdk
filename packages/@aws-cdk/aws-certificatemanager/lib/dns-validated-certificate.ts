@@ -53,21 +53,18 @@ export class DnsValidatedCertificate extends cdk.Resource implements ICertificat
             runtime: lambda.Runtime.Nodejs810,
             timeout: cdk.Duration.minutes(15)
         });
-        requestorFunction.addToRolePolicy(
-            new iam.PolicyStatement()
-                .addActions('acm:RequestCertificate', 'acm:DescribeCertificate', 'acm:DeleteCertificate')
-                .addResource('*')
-        );
-        requestorFunction.addToRolePolicy(
-            new iam.PolicyStatement()
-                .addActions('route53:GetChange')
-                .addResource('*')
-        );
-        requestorFunction.addToRolePolicy(
-            new iam.PolicyStatement()
-                .addActions('route53:changeResourceRecordSets')
-                .addResource(`arn:aws:route53:::hostedzone/${this.hostedZoneId}`)
-        );
+        requestorFunction.addToRolePolicy(new iam.PolicyStatement({
+            actions: ['acm:RequestCertificate', 'acm:DescribeCertificate', 'acm:DeleteCertificate'],
+            resources: ['*'],
+        }));
+        requestorFunction.addToRolePolicy(new iam.PolicyStatement({
+            actions: ['route53:GetChange'],
+            resources: ['*'],
+        }));
+        requestorFunction.addToRolePolicy(new iam.PolicyStatement({
+            actions: ['route53:changeResourceRecordSets'],
+            resources: [`arn:aws:route53:::hostedzone/${this.hostedZoneId}`],
+        }));
 
         const certificate = new cfn.CustomResource(this, 'CertificateRequestorResource', {
             provider: cfn.CustomResourceProvider.lambda(requestorFunction),

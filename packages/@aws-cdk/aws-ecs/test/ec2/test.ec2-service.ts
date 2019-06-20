@@ -221,7 +221,7 @@ export = {
             cluster,
             taskDefinition,
             vpcSubnets: {
-              subnetType: ec2.SubnetType.Public
+              subnetType: ec2.SubnetType.PUBLIC
             }
           });
         });
@@ -300,9 +300,6 @@ export = {
                 {
                   Ref: "MyVpcPrivateSubnet2Subnet0040C983"
                 },
-                {
-                  Ref: "MyVpcPrivateSubnet3Subnet772D6AD7"
-                }
               ]
             }
           }
@@ -330,7 +327,7 @@ export = {
           cluster,
           taskDefinition,
           vpcSubnets: {
-            subnetType: ec2.SubnetType.Public
+            subnetType: ec2.SubnetType.PUBLIC
           }
         });
 
@@ -532,7 +529,7 @@ export = {
         taskDefinition
       });
 
-      service.placePackedBy(BinPackResource.Memory);
+      service.placePackedBy(BinPackResource.MEMORY);
 
       // THEN
       expect(stack).to(haveResource("AWS::ECS::Service", {
@@ -566,7 +563,7 @@ export = {
 
       // THEN
       test.throws(() => {
-        service.placePackedBy(BinPackResource.Memory);
+        service.placePackedBy(BinPackResource.MEMORY);
       });
 
       test.done();
@@ -686,7 +683,7 @@ export = {
       // WHEN
       cluster.addDefaultCloudMapNamespace({
         name: 'foo.com',
-        type: NamespaceType.PrivateDns
+        type: NamespaceType.PRIVATE_DNS
       });
 
       new ecs.Ec2Service(stack, 'Service', {
@@ -763,7 +760,7 @@ export = {
       // WHEN
       cluster.addDefaultCloudMapNamespace({
         name: 'foo.com',
-        type: NamespaceType.PrivateDns
+        type: NamespaceType.PRIVATE_DNS
       });
 
       new ecs.Ec2Service(stack, 'Service', {
@@ -874,7 +871,7 @@ export = {
       // WHEN
       cluster.addDefaultCloudMapNamespace({
         name: 'foo.com',
-        type: NamespaceType.PrivateDns
+        type: NamespaceType.PRIVATE_DNS
       });
 
       new ecs.Ec2Service(stack, 'Service', {
@@ -949,7 +946,7 @@ export = {
       // WHEN
       cluster.addDefaultCloudMapNamespace({
         name: 'foo.com',
-        type: NamespaceType.PrivateDns
+        type: NamespaceType.PRIVATE_DNS
       });
 
       new ecs.Ec2Service(stack, 'Service', {

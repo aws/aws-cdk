@@ -27,7 +27,7 @@ export = {
       const stack = new cdk.Stack();
 
       new sns.Topic(stack, 'MyTopic', {
-        topicName: 'topicName'
+        topicName: cdk.PhysicalName.of('topicName'),
       });
 
       expect(stack).toMatch({
@@ -69,7 +69,7 @@ export = {
       const stack = new cdk.Stack();
 
       new sns.Topic(stack, 'MyTopic', {
-        topicName: 'topicName',
+        topicName: cdk.PhysicalName.of('topicName'),
         displayName: 'displayName'
       });
 
@@ -97,10 +97,11 @@ export = {
     const topic = new sns.Topic(stack, 'Topic');
 
     // WHEN
-    topic.addToResourcePolicy(new iam.PolicyStatement()
-      .addAllResources()
-      .addActions('sns:*')
-      .addPrincipal(new iam.ArnPrincipal('arn')));
+    topic.addToResourcePolicy(new iam.PolicyStatement({
+      resources: ['*'],
+      actions: ['sns:*'],
+      principals: [new iam.ArnPrincipal('arn')]
+    }));
 
     // THEN
     expect(stack).to(haveResource('AWS::SNS::TopicPolicy', {
@@ -150,8 +151,8 @@ export = {
 
     const topic = new sns.Topic(stack, 'MyTopic');
 
-    topic.addToResourcePolicy(new iam.PolicyStatement().addAction('statement0'));
-    topic.addToResourcePolicy(new iam.PolicyStatement().addAction('statement1'));
+    topic.addToResourcePolicy(new iam.PolicyStatement({ actions: ['statement0'] }));
+    topic.addToResourcePolicy(new iam.PolicyStatement({ actions: ['statement1'] }));
 
     expect(stack).toMatch({
       "Resources": {

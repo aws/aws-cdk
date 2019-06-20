@@ -1,4 +1,4 @@
-import { Construct, Duration, Resource, Stack, toSeconds } from '@aws-cdk/cdk';
+import { Construct, Duration, Resource, Stack } from '@aws-cdk/cdk';
 import { CfnStage } from './apigateway.generated';
 import { Deployment } from './deployment';
 import { IRestApi } from './restapi';
@@ -85,9 +85,9 @@ export interface StageProps extends StageOptions {
 }
 
 export enum MethodLoggingLevel {
-  Off = 'OFF',
-  Error = 'ERROR',
-  Info = 'INFO'
+  OFF = 'OFF',
+  ERROR = 'ERROR',
+  INFO = 'INFO'
 }
 
 export interface MethodDeploymentOptions {

@@ -41,16 +41,19 @@ export class SqsSubscription implements sns.ITopicSubscription {
     new sns.Subscription(this.queue, subscriptionName, {
       topic,
       endpoint: this.queue.queueArn,
-      protocol: sns.SubscriptionProtocol.Sqs,
+      protocol: sns.SubscriptionProtocol.SQS,
       rawMessageDelivery: this.props.rawMessageDelivery,
     });
 
     // add a statement to the queue resource policy which allows this topic
     // to send messages to the queue.
-    this.queue.addToResourcePolicy(new iam.PolicyStatement()
-      .addResource(this.queue.queueArn)
-      .addAction('sqs:SendMessage')
-      .addServicePrincipal('sns.amazonaws.com')
-      .setCondition('ArnEquals', { 'aws:SourceArn': topic.topicArn }));
+    this.queue.addToResourcePolicy(new iam.PolicyStatement({
+      resources: [this.queue.queueArn],
+      actions: ['sqs:SendMessage'],
+      principals: [new iam.ServicePrincipal('sns.amazonaws.com')],
+      conditions: {
+        ArnEquals: { 'aws:SourceArn': topic.topicArn }
+      }
+    }));
   }
 }

@@ -5,6 +5,9 @@
 
 ![Stability: Experimental](https://img.shields.io/badge/stability-Experimental-important.svg?style=for-the-badge)
 
+> **This is a _developer preview_ (public beta) module. Releases might lack important features and might have
+> future breaking changes.**
+> 
 > This API is still under active development and subject to non-backward
 > compatible changes or removal in any future version. Use of the API is not recommended in production
 > environments. Experimental APIs are not subject to the Semantic Versioning model.
@@ -95,7 +98,7 @@ If multiple principals are added to the policy statement, they will be merged to
 const statement = new PolicyStatement();
 statement.addServicePrincipal('cloudwatch.amazonaws.com');
 statement.addServicePrincipal('ec2.amazonaws.com');
-statement.addAwsPrincipal('arn:aws:boom:boom');
+statement.addArnPrincipal('arn:aws:boom:boom');
 ```
 
 Will result in:

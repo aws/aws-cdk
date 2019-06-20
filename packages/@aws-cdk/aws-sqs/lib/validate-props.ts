@@ -1,4 +1,3 @@
-import { toSeconds } from '@aws-cdk/cdk';
 import { QueueProps } from './index';
 
 export function validateProps(props: QueueProps) {

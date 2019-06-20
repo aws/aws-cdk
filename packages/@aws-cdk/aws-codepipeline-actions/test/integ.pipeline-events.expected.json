@@ -374,7 +374,7 @@
             "Arn": {
               "Ref": "MyTopic86869434"
             },
-            "Id": "MyTopic"
+            "Id": "awscdkpipelineeventtargetMyTopic8D32776A"
           }
         ]
       }
@@ -426,7 +426,7 @@
             "Arn": {
               "Ref": "MyTopic86869434"
             },
-            "Id": "MyTopic"
+            "Id": "awscdkpipelineeventtargetMyTopic8D32776A"
           }
         ]
       }
@@ -473,7 +473,7 @@
             "Arn": {
               "Ref": "MyTopic86869434"
             },
-            "Id": "MyTopic",
+            "Id": "awscdkpipelineeventtargetMyTopic8D32776A",
             "InputTransformer": {
               "InputPathsMap": {
                 "detail-pipeline": "$.detail.pipeline",

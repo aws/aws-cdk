@@ -23,10 +23,10 @@ const source = new cpactions.GitHubSourceAction({
   output: sourceOutput,
 });
 pipeline.addStage({
-  name: 'Source',
+  stageName: 'Source',
   actions: [source],
 });
-const stage = pipeline.addStage({ name: 'Deploy' });
+const stage = pipeline.addStage({ stageName: 'Deploy' });
 new cicd.PipelineDeployStackAction(stack, 'DeployStack', {
   stage,
   stack,

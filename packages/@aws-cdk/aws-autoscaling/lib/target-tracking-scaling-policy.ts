@@ -70,7 +70,7 @@ export interface BasicTargetTrackingScalingPolicyProps extends BaseTargetTrackin
    *
    * @default - No custom metric.
    */
-  readonly customMetric?: cloudwatch.Metric;
+  readonly customMetric?: cloudwatch.IMetric;
 
   /**
    * The resource label associated with the predefined metric
@@ -113,7 +113,7 @@ export class TargetTrackingScalingPolicy extends cdk.Construct {
       throw new Error(`Exactly one of 'customMetric' or 'predefinedMetric' must be specified.`);
     }
 
-    if (props.predefinedMetric === PredefinedMetric.ALBRequestCountPerTarget && !props.resourceLabel) {
+    if (props.predefinedMetric === PredefinedMetric.ALB_REQUEST_COUNT_PER_TARGET && !props.resourceLabel) {
       throw new Error('When tracking the ALBRequestCountPerTarget metric, the ALB identifier must be supplied in resourceLabel');
     }
 
@@ -135,18 +135,24 @@ export class TargetTrackingScalingPolicy extends cdk.Construct {
       }
     });
 
-    this.scalingPolicyArn = this.resource.scalingPolicyArn;
+    this.scalingPolicyArn = this.resource.refAsString;
   }
 }
 
-function renderCustomMetric(metric?: cloudwatch.Metric): CfnScalingPolicy.CustomizedMetricSpecificationProperty | undefined {
+function renderCustomMetric(metric?: cloudwatch.IMetric): CfnScalingPolicy.CustomizedMetricSpecificationProperty | undefined {
   if (!metric) { return undefined; }
+  const c = metric.toAlarmConfig();
+
+  if (!c.statistic) {
+    throw new Error('Can only use Average, Minimum, Maximum, SampleCount, Sum statistic for target tracking');
+  }
+
   return {
-    dimensions: metric.dimensionsAsList(),
-    metricName: metric.metricName,
-    namespace: metric.namespace,
-    statistic: metric.statistic,
-    unit: metric.unit
+    dimensions: c.dimensions,
+    metricName: c.metricName,
+    namespace: c.namespace,
+    statistic: c.statistic,
+    unit: c.unit
   };
 }
 
@@ -157,22 +163,22 @@ export enum PredefinedMetric {
   /**
    * Average CPU utilization of the Auto Scaling group
    */
-  ASGAverageCPUUtilization = 'ASGAverageCPUUtilization',
+  ASG_AVERAGE_CPU_UTILIZATION = 'ASGAverageCPUUtilization',
 
   /**
    * Average number of bytes received on all network interfaces by the Auto Scaling group
    */
-  ASGAverageNetworkIn = 'ASGAverageNetworkIn',
+  ASG_AVERAGE_NETWORK_IN = 'ASGAverageNetworkIn',
 
   /**
    * Average number of bytes sent out on all network interfaces by the Auto Scaling group
    */
-  ASGAverageNetworkOut = 'ASGAverageNetworkOut',
+  ASG_AVERAGE_NETWORK_OUT = 'ASGAverageNetworkOut',
 
   /**
    * Number of requests completed per target in an Application Load Balancer target group
    *
    * Specify the ALB to look at in the `resourceLabel` field.
    */
-  ALBRequestCountPerTarget = 'ALBRequestCountPerTarget',
+  ALB_REQUEST_COUNT_PER_TARGET = 'ALBRequestCountPerTarget',
 }

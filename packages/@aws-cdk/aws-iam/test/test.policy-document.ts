@@ -1,6 +1,6 @@
 import { Lazy, Stack, Token } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
-import { Anyone, AnyPrincipal, CanonicalUserPrincipal, IPrincipal, PolicyDocument, PolicyStatement } from '../lib';
+import { Anyone, AnyPrincipal, CanonicalUserPrincipal, Effect, IPrincipal, PolicyDocument, PolicyStatement } from '../lib';
 import { ArnPrincipal, CompositePrincipal, FederatedPrincipal, PrincipalPolicyFragment, ServicePrincipal } from '../lib';
 
 export = {
@@ -8,16 +8,16 @@ export = {
     const stack = new Stack();
 
     const p = new PolicyStatement();
-    p.addAction('sqs:SendMessage');
+    p.addActions('sqs:SendMessage');
     p.addActions('dynamodb:CreateTable', 'dynamodb:DeleteTable');
-    p.addResource('myQueue');
-    p.addResource('yourQueue');
+    p.addResources('myQueue');
+    p.addResources('yourQueue');
 
     p.addAllResources();
     p.addAwsAccountPrincipal(`my${Token.asString({ account: 'account' })}name`);
-    p.limitToAccount('12221121221');
+    p.addAccountCondition('12221121221');
 
-    test.deepEqual(stack.resolve(p), { Action:
+    test.deepEqual(stack.resolve(p.toStatementJson()), { Action:
       [ 'sqs:SendMessage',
         'dynamodb:CreateTable',
         'dynamodb:DeleteTable' ],
@@ -41,15 +41,15 @@ export = {
     const stack = new Stack();
     const doc = new PolicyDocument();
     const p1 = new PolicyStatement();
-    p1.addAction('sqs:SendMessage');
-    p1.addResource('*');
+    p1.addActions('sqs:SendMessage');
+    p1.addResources('*');
 
     const p2 = new PolicyStatement();
-    p2.deny();
+    p2.effect = Effect.DENY;
     p2.addActions('cloudformation:CreateStack');
 
-    doc.addStatement(p1);
-    doc.addStatement(p2);
+    doc.addStatements(p1);
+    doc.addStatements(p2);
 
     test.deepEqual(stack.resolve(doc), {
       Version: '2012-10-17',
@@ -60,32 +60,13 @@ export = {
     test.done();
   },
 
-  'A PolicyDocument can be initialized with an existing policy, which is merged upon serialization'(test: Test) {
-    const stack = new Stack();
-    const base = {
-      Version: 'Foo',
-      Something: 123,
-      Statement: [
-        { Statement1: 1 },
-        { Statement2: 2 }
-      ]
-    };
-    const doc = new PolicyDocument(base);
-    doc.addStatement(new PolicyStatement().addResource('resource').addAction('action'));
-
-    test.deepEqual(stack.resolve(doc), { Version: 'Foo',
-    Something: 123,
-    Statement:
-     [ { Statement1: 1 },
-       { Statement2: 2 },
-       { Effect: 'Allow', Action: 'action', Resource: 'resource' } ] });
-    test.done();
-  },
-
   'Permission allows specifying multiple actions upon construction'(test: Test) {
     const stack = new Stack();
-    const perm = new PolicyStatement().addResource('MyResource').addActions('Action1', 'Action2', 'Action3');
-    test.deepEqual(stack.resolve(perm), {
+    const perm = new PolicyStatement();
+    perm.addResources('MyResource');
+    perm.addActions('Action1', 'Action2', 'Action3');
+
+    test.deepEqual(stack.resolve(perm.toStatementJson()), {
       Effect: 'Allow',
       Action: [ 'Action1', 'Action2', 'Action3' ],
       Resource: 'MyResource' });
@@ -103,8 +84,8 @@ export = {
     const stack = new Stack();
     const p = new PolicyStatement();
     const canoncialUser = "averysuperduperlongstringfor";
-    p.addPrincipal(new CanonicalUserPrincipal(canoncialUser));
-    test.deepEqual(stack.resolve(p), {
+    p.addPrincipals(new CanonicalUserPrincipal(canoncialUser));
+    test.deepEqual(stack.resolve(p.toStatementJson()), {
       Effect: "Allow",
       Principal: {
         CanonicalUser: canoncialUser
@@ -118,7 +99,7 @@ export = {
 
     const p = new PolicyStatement();
     p.addAccountRootPrincipal();
-    test.deepEqual(stack.resolve(p), {
+    test.deepEqual(stack.resolve(p.toStatementJson()), {
       Effect: "Allow",
       Principal: {
         AWS: {
@@ -142,7 +123,7 @@ export = {
     const stack = new Stack();
     const p = new PolicyStatement();
     p.addFederatedPrincipal("com.amazon.cognito", { StringEquals: { key: 'value' }});
-    test.deepEqual(stack.resolve(p), {
+    test.deepEqual(stack.resolve(p.toStatementJson()), {
       Effect: "Allow",
       Principal: {
         Federated: "com.amazon.cognito"
@@ -160,7 +141,7 @@ export = {
     const p = new PolicyStatement();
     p.addAwsAccountPrincipal('1234');
     p.addAwsAccountPrincipal('5678');
-    test.deepEqual(stack.resolve(p), {
+    test.deepEqual(stack.resolve(p.toStatementJson()), {
       Effect: 'Allow',
       Principal: {
         AWS: [
@@ -180,7 +161,7 @@ export = {
 
     'true if there is one resource'(test: Test) {
       test.equal(
-        new PolicyStatement().addResource('one-resource').hasResource,
+        new PolicyStatement({ resources: ['one-resource'] }).hasResource,
         true,
         'hasResource is true when there is one resource');
       test.done();
@@ -188,8 +169,8 @@ export = {
 
     'true for multiple resources'(test: Test) {
       const p = new PolicyStatement();
-      p.addResource('r1');
-      p.addResource('r2');
+      p.addResources('r1');
+      p.addResources('r2');
       test.equal(p.hasResource, true, 'hasResource is true when there are multiple resource');
       test.done();
     },
@@ -203,7 +184,7 @@ export = {
 
     'true if there is a principal'(test: Test) {
       const p = new PolicyStatement();
-      p.addAwsPrincipal('bla');
+      p.addArnPrincipal('bla');
       test.equal(p.hasPrincipal, true);
       test.done();
     }
@@ -212,9 +193,9 @@ export = {
   'statementCount returns the number of statement in the policy document'(test: Test) {
     const p = new PolicyDocument();
     test.equal(p.statementCount, 0);
-    p.addStatement(new PolicyStatement().addAction('action1'));
+    p.addStatements(new PolicyStatement({ actions: ['action1'] }));
     test.equal(p.statementCount, 1);
-    p.addStatement(new PolicyStatement().addAction('action2'));
+    p.addStatements(new PolicyStatement({ actions: ['action2'] }));
     test.equal(p.statementCount, 2);
     test.done();
   },
@@ -224,7 +205,7 @@ export = {
       const stack = new Stack();
       const p = new PolicyDocument();
 
-      p.addStatement(new PolicyStatement().addPrincipal(new Anyone()));
+      p.addStatements(new PolicyStatement({ principals: [new Anyone()] }));
 
       test.deepEqual(stack.resolve(p), {
         Statement: [
@@ -239,7 +220,7 @@ export = {
       const stack = new Stack();
       const p = new PolicyDocument();
 
-      p.addStatement(new PolicyStatement().addPrincipal(new AnyPrincipal()));
+      p.addStatements(new PolicyStatement({ principals: [new AnyPrincipal()] }));
 
       test.deepEqual(stack.resolve(p), {
         Statement: [
@@ -254,7 +235,9 @@ export = {
       const stack = new Stack();
       const p = new PolicyDocument();
 
-      p.addStatement(new PolicyStatement().addAnyPrincipal());
+      const s = new PolicyStatement();
+      s.addAnyPrincipal();
+      p.addStatements(s);
 
       test.deepEqual(stack.resolve(p), {
         Statement: [
@@ -266,34 +249,14 @@ export = {
     }
   },
 
-  'addAwsPrincipal/addArnPrincipal are the aliases'(test: Test) {
-    const stack = new Stack();
-    const p = new PolicyDocument();
-
-    p.addStatement(new PolicyStatement().addAwsPrincipal('111222-A'));
-    p.addStatement(new PolicyStatement().addArnPrincipal('111222-B'));
-    p.addStatement(new PolicyStatement().addPrincipal(new ArnPrincipal('111222-C')));
-
-    test.deepEqual(stack.resolve(p), {
-      Statement: [ {
-        Effect: 'Allow', Principal: { AWS: '111222-A' } },
-        { Effect: 'Allow', Principal: { AWS: '111222-B' } },
-        { Effect: 'Allow', Principal: { AWS: '111222-C' } }
-      ],
-      Version: '2012-10-17'
-    });
-
-    test.done();
-  },
-
   'addResources() will not break a list-encoded Token'(test: Test) {
     const stack = new Stack();
 
-    const statement = new PolicyStatement()
-      .addActions(...Lazy.listValue({ produce: () => ['a', 'b', 'c'] }))
-      .addResources(...Lazy.listValue({ produce: () => ['x', 'y', 'z'] }));
+    const statement = new PolicyStatement();
+    statement.addActions(...Lazy.listValue({ produce: () => ['a', 'b', 'c'] }));
+    statement.addResources(...Lazy.listValue({ produce: () => ['x', 'y', 'z'] }));
 
-    test.deepEqual(stack.resolve(statement), {
+    test.deepEqual(stack.resolve(statement.toStatementJson()), {
       Effect: 'Allow',
       Action: ['a', 'b', 'c'],
       Resource: ['x', 'y', 'z'],
@@ -306,8 +269,14 @@ export = {
     const stack = new Stack();
     const p = new PolicyDocument();
 
-    p.addStatement(new PolicyStatement().addCanonicalUserPrincipal('cannonical-user-1'));
-    p.addStatement(new PolicyStatement().addPrincipal(new CanonicalUserPrincipal('cannonical-user-2')));
+    const s1 = new PolicyStatement();
+    s1.addCanonicalUserPrincipal('cannonical-user-1');
+
+    const s2 = new PolicyStatement();
+    s2.addPrincipals(new CanonicalUserPrincipal('cannonical-user-2'));
+
+    p.addStatements(s1);
+    p.addStatements(s2);
 
     test.deepEqual(stack.resolve(p), {
       Statement: [
@@ -328,9 +297,10 @@ export = {
       policyFragment: new PrincipalPolicyFragment({ AWS: ['foo', 'bar'] }),
       addToPolicy() { return false; }
     };
-    const s = new PolicyStatement().addAccountRootPrincipal()
-                                   .addPrincipal(arrayPrincipal);
-    test.deepEqual(stack.resolve(s), {
+    const s = new PolicyStatement();
+    s.addAccountRootPrincipal();
+    s.addPrincipals(arrayPrincipal);
+    test.deepEqual(stack.resolve(s.toStatementJson()), {
       Effect: 'Allow',
       Principal: {
         AWS: [
@@ -345,13 +315,13 @@ export = {
   // https://github.com/awslabs/aws-cdk/issues/1201
   'policy statements with multiple principal types can be created using multiple addPrincipal calls'(test: Test) {
     const stack = new Stack();
-    const s = new PolicyStatement()
-      .addAwsPrincipal('349494949494')
-      .addServicePrincipal('test.service')
-      .addResource('resource')
-      .addAction('action');
+    const s = new PolicyStatement();
+    s.addArnPrincipal('349494949494');
+    s.addServicePrincipal('test.service');
+    s.addResources('resource');
+    s.addActions('action');
 
-    test.deepEqual(stack.resolve(s), {
+    test.deepEqual(stack.resolve(s.toStatementJson()), {
       Action: 'action',
       Effect: 'Allow',
       Principal: { AWS: '349494949494', Service: 'test.service' },
@@ -364,11 +334,11 @@ export = {
   'Service principals': {
     'regional service principals resolve appropriately'(test: Test) {
       const stack = new Stack(undefined, undefined, { env: { region: 'cn-north-1' } });
-      const s = new PolicyStatement()
-        .addAction('test:Action')
-        .addServicePrincipal('codedeploy.amazonaws.com');
+      const s = new PolicyStatement();
+      s.addActions('test:Action');
+      s.addServicePrincipal('codedeploy.amazonaws.com');
 
-      test.deepEqual(stack.resolve(s), {
+      test.deepEqual(stack.resolve(s.toStatementJson()), {
         Effect: 'Allow',
         Action: 'test:Action',
         Principal: { Service: 'codedeploy.cn-north-1.amazonaws.com.cn' }
@@ -379,11 +349,11 @@ export = {
 
     'regional service principals resolve appropriately (with user-set region)'(test: Test) {
       const stack = new Stack(undefined, undefined, { env: { region: 'cn-northeast-1' } });
-      const s = new PolicyStatement()
-        .addAction('test:Action')
-        .addServicePrincipal('codedeploy.amazonaws.com', { region: 'cn-north-1' });
+      const s = new PolicyStatement();
+      s.addActions('test:Action');
+      s.addServicePrincipal('codedeploy.amazonaws.com', { region: 'cn-north-1' });
 
-      test.deepEqual(stack.resolve(s), {
+      test.deepEqual(stack.resolve(s.toStatementJson()), {
         Effect: 'Allow',
         Action: 'test:Action',
         Principal: { Service: 'codedeploy.cn-north-1.amazonaws.com.cn' }
@@ -394,11 +364,11 @@ export = {
 
     'obscure service principals resolve to the user-provided value'(test: Test) {
       const stack = new Stack(undefined, undefined, { env: { region: 'cn-north-1' } });
-      const s = new PolicyStatement()
-        .addAction('test:Action')
-        .addServicePrincipal('test.service-principal.dev');
+      const s = new PolicyStatement();
+      s.addActions('test:Action');
+      s.addServicePrincipal('test.service-principal.dev');
 
-      test.deepEqual(stack.resolve(s), {
+      test.deepEqual(stack.resolve(s.toStatementJson()), {
         Effect: 'Allow',
         Action: 'test:Action',
         Principal: { Service: 'test.service-principal.dev' }
@@ -413,8 +383,9 @@ export = {
     'with a single principal'(test: Test) {
       const stack = new Stack();
       const p = new CompositePrincipal(new ArnPrincipal('i:am:an:arn'));
-      const statement = new PolicyStatement().addPrincipal(p);
-      test.deepEqual(stack.resolve(statement), { Effect: 'Allow', Principal: { AWS: 'i:am:an:arn' } });
+      const statement = new PolicyStatement();
+      statement.addPrincipals(p);
+      test.deepEqual(stack.resolve(statement.toStatementJson()), { Effect: 'Allow', Principal: { AWS: 'i:am:an:arn' } });
       test.done();
     },
 
@@ -439,13 +410,14 @@ export = {
         new ServicePrincipal('another.service')
       );
 
-      const statement = new PolicyStatement().addPrincipal(p);
+      const statement = new PolicyStatement();
+      statement.addPrincipals(p);
 
       // add via policy statement
-      statement.addAwsPrincipal('aws-principal-3');
+      statement.addArnPrincipal('aws-principal-3');
       statement.addCondition('cond2', { boom: 123 });
 
-      test.deepEqual(stack.resolve(statement), {
+      test.deepEqual(stack.resolve(statement.toStatementJson()), {
         Condition: {
           cond2: { boom: 123 }
         },
@@ -477,11 +449,11 @@ export = {
       const stack = new Stack();
       const p = new PolicyDocument();
 
-      const statement = new PolicyStatement()
-        .addResources('resource1', 'resource2')
-        .addActions('action1', 'action2')
-        .addServicePrincipal('service')
-        .addConditions({
+      const statement = new PolicyStatement();
+      statement.addResources('resource1', 'resource2');
+      statement.addActions('action1', 'action2');
+      statement.addServicePrincipal('service');
+      statement.addConditions({
           a: {
             b: 'c'
           },
@@ -491,9 +463,9 @@ export = {
         });
 
       // WHEN
-      p.addStatement(statement);
-      p.addStatement(statement);
-      p.addStatement(statement);
+      p.addStatements(statement);
+      p.addStatements(statement);
+      p.addStatements(statement);
 
       // THEN
       test.equal(stack.resolve(p).Statement.length, 1);
@@ -505,63 +477,37 @@ export = {
       const stack = new Stack();
       const p = new PolicyDocument();
 
-      const statement1 = new PolicyStatement()
-        .addResource(Lazy.stringValue({ produce: () => 'resource' }))
-        .addAction(Lazy.stringValue({ produce: () => 'action' }));
-      const statement2 = new PolicyStatement()
-        .addResource(Lazy.stringValue({ produce: () => 'resource' }))
-        .addAction(Lazy.stringValue({ produce: () => 'action' }));
+      const statement1 = new PolicyStatement();
+      statement1.addResources(Lazy.stringValue({ produce: () => 'resource' }));
+      statement1.addActions(Lazy.stringValue({ produce: () => 'action' }));
+
+      const statement2 = new PolicyStatement();
+      statement2.addResources(Lazy.stringValue({ produce: () => 'resource' }));
+      statement2.addActions(Lazy.stringValue({ produce: () => 'action' }));
 
       // WHEN
-      p.addStatement(statement1);
-      p.addStatement(statement2);
+      p.addStatements(statement1);
+      p.addStatements(statement2);
 
       // THEN
       test.equal(stack.resolve(p).Statement.length, 1);
       test.done();
     },
 
-    'with base document'(test: Test) {
-      // GIVEN
-      const stack = new Stack();
-
-      // WHEN
-      const p = new PolicyDocument({
-        Statement: [
-          {
-            Action: 'action',
-            Effect: 'Allow',
-            Resource: 'resource'
-          },
-          {
-            Action: 'action',
-            Effect: 'Allow',
-            Resource: 'resource'
-          }
-        ]
-      });
-
-      p.addStatement(new PolicyStatement()
-        .addAction('action')
-        .addResource('resource'));
-
-      // THEN
-      test.equal(stack.resolve(p).Statement.length, 1);
-      test.done();
-    }
   },
 
   'autoAssignSids enables auto-assignment of a unique SID for each statement'(test: Test) {
     // GIVEN
-    const doc = new PolicyDocument();
-    doc.addStatement(new PolicyStatement().addAction('action1').addResource('resource1'));
-    doc.addStatement(new PolicyStatement().addAction('action1').addResource('resource1'));
-    doc.addStatement(new PolicyStatement().addAction('action1').addResource('resource1'));
-    doc.addStatement(new PolicyStatement().addAction('action1').addResource('resource1'));
-    doc.addStatement(new PolicyStatement().addAction('action2').addResource('resource2'));
+    const doc = new PolicyDocument({
+      assignSids: true
+    });
 
     // WHEN
-    doc.autoAssignSids();
+    doc.addStatements(new PolicyStatement({ actions: ['action1'], resources: ['resource1']}));
+    doc.addStatements(new PolicyStatement({ actions: ['action1'], resources: ['resource1']}));
+    doc.addStatements(new PolicyStatement({ actions: ['action1'], resources: ['resource1']}));
+    doc.addStatements(new PolicyStatement({ actions: ['action1'], resources: ['resource1']}));
+    doc.addStatements(new PolicyStatement({ actions: ['action2'], resources: ['resource2']}));
 
     // THEN
     const stack = new Stack();
@@ -573,5 +519,32 @@ export = {
       ],
     });
     test.done();
-  }
+  },
+
+  'constructor args are equivalent to mutating in-place'(test: Test) {
+    const stack = new Stack();
+
+    const s = new PolicyStatement();
+    s.addActions('action1', 'action2');
+    s.addAllResources();
+    s.addArnPrincipal('arn');
+    s.addCondition('key', { equals: 'value' });
+
+    const doc1 = new PolicyDocument();
+    doc1.addStatements(s);
+
+    const doc2 = new PolicyDocument();
+    doc2.addStatements(new PolicyStatement({
+      actions: ['action1', 'action2'],
+      resources: ['*'],
+      principals: [new ArnPrincipal('arn')],
+      conditions: {
+        key: { equals: 'value' }
+      }
+    }));
+
+    test.deepEqual(stack.resolve(doc1), stack.resolve(doc2));
+
+    test.done();
+  },
 };

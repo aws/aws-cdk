@@ -12,14 +12,14 @@ export = {
     // WHEN
     const driver = new ecs.AwsLogDriver(stack, 'Log', {
       datetimeFormat: 'format',
-      logRetention: logs.RetentionDays.OneMonth,
+      logRetention: logs.RetentionDays.ONE_MONTH,
       multilinePattern: 'pattern',
       streamPrefix: 'hello'
     });
 
     // THEN
     expect(stack).to(haveResource('AWS::Logs::LogGroup', {
-      RetentionInDays: logs.RetentionDays.OneMonth
+      RetentionInDays: logs.RetentionDays.ONE_MONTH
     }));
 
     test.deepEqual(
@@ -74,7 +74,7 @@ export = {
     // THEN
     test.throws(() => new ecs.AwsLogDriver(stack, 'Log', {
       logGroup,
-      logRetention: logs.RetentionDays.FiveDays,
+      logRetention: logs.RetentionDays.FIVE_DAYS,
       streamPrefix: 'hello'
     }), /`logGroup`.*`logRetentionDays`/);
 

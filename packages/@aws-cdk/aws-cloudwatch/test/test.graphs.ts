@@ -94,7 +94,7 @@ export = {
     // GIVEN
     const stack = new Stack();
 
-    const alarm = new Metric({ namespace: 'CDK', metricName: 'Test' }).newAlarm(stack, 'Alarm', {
+    const alarm = new Metric({ namespace: 'CDK', metricName: 'Test' }).createAlarm(stack, 'Alarm', {
       evaluationPeriods: 2,
       threshold: 1000
     });
@@ -133,7 +133,7 @@ export = {
       leftAnnotations: [{
         value: 1000,
         color: '667788',
-        fill: Shading.Below,
+        fill: Shading.BELOW,
         label: 'this is the annotation',
       }]
     });
@@ -170,7 +170,7 @@ export = {
 
     const metric = new Metric({ namespace: 'CDK', metricName: 'Test' });
 
-    const alarm = metric.newAlarm(stack, 'Alarm', {
+    const alarm = metric.createAlarm(stack, 'Alarm', {
       evaluationPeriods: 2,
       threshold: 1000
     });

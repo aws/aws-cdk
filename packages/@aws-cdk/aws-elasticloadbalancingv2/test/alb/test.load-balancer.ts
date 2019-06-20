@@ -2,7 +2,7 @@ import { expect, haveResource, ResourcePart } from '@aws-cdk/assert';
 import ec2 = require('@aws-cdk/aws-ec2');
 import s3 = require('@aws-cdk/aws-s3');
 import cdk = require('@aws-cdk/cdk');
-import { Stack } from '@aws-cdk/cdk';
+import { PhysicalName, Stack } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
 import elbv2 = require('../../lib');
 
@@ -24,7 +24,6 @@ export = {
       Subnets: [
         { Ref: "StackPublicSubnet1Subnet0AD81D22" },
         { Ref: "StackPublicSubnet2Subnet3C7D2288" },
-        { Ref: "StackPublicSubnet3SubnetCC1055D9" }
       ],
       Type: "application"
     }));
@@ -48,7 +47,6 @@ export = {
       DependsOn: [
         'StackPublicSubnet1DefaultRoute16154E3D',
         'StackPublicSubnet2DefaultRoute0319539B',
-        'StackPublicSubnet3DefaultRouteBC0DA152'
       ]
     }, ResourcePart.CompleteDefinition));
 
@@ -69,7 +67,6 @@ export = {
       Subnets: [
         { Ref: "StackPrivateSubnet1Subnet47AC2BC7" },
         { Ref: "StackPrivateSubnet2SubnetA2F8EDD8" },
-        { Ref: "StackPrivateSubnet3Subnet28548F2E" }
       ],
       Type: "application"
     }));
@@ -255,7 +252,7 @@ export = {
 
     // WHEN
     new elbv2.ApplicationLoadBalancer(stack, 'ALB', {
-      loadBalancerName: 'myLoadBalancer',
+      loadBalancerName: PhysicalName.of('myLoadBalancer'),
       vpc
     });
 

@@ -17,14 +17,14 @@ const dist = new cloudfront.CloudFrontWebDistribution(stack, 'Distribution', {
     behaviors: [{ isDefaultBehavior: true }],
     s3OriginSource: {
       s3BucketSource: bucket,
-      originAccessIdentityId: oai.cloudFrontOriginAccessIdentityId,
+      originAccessIdentityId: oai.refAsString,
     },
   }]
 });
-bucket.addToResourcePolicy(new iam.PolicyStatement()
-  .allow()
-  .addActions('s3:Get*', 's3:List*')
-  .addResources(bucket.bucketArn, bucket.arnForObjects('*'))
-  .addCanonicalUserPrincipal(oai.cloudFrontOriginAccessIdentityS3CanonicalUserId));
+bucket.addToResourcePolicy(new iam.PolicyStatement({
+  actions: ['s3:Get*', 's3:List*'],
+  resources: [bucket.bucketArn, bucket.arnForObjects('*')],
+  principals: [new iam.CanonicalUserPrincipal(oai.attrS3CanonicalUserId)],
+}));
 
 new cdk.CfnOutput(stack, 'DistributionDomainName', { value: dist.domainName });

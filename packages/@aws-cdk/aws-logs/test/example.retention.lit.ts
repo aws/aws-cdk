@@ -7,7 +7,7 @@ function shortLogGroup() {
   /// !show
   // Configure log group for short retention
   const logGroup = new LogGroup(stack, 'LogGroup', {
-    retention: RetentionDays.OneWeek
+    retention: RetentionDays.ONE_WEEK
   });
   /// !hide
   return logGroup;
