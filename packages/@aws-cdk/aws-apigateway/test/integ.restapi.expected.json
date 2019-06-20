@@ -3,7 +3,7 @@
     "myapi4C7BF186": {
       "Type": "AWS::ApiGateway::RestApi",
       "Properties": {
-        "Name": "my-api"
+        "Name": "myapi4C7BF186"
       }
     },
     "myapiDeployment92F2CB4919460d935da8177bcfbc418506e514ff": {

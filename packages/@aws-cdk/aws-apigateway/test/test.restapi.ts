@@ -21,7 +21,7 @@ export = {
         myapi4C7BF186: {
           Type: "AWS::ApiGateway::RestApi",
           Properties: {
-            Name: "my-api"
+            Name: "myapi4C7BF186"
           }
         },
         myapiGETF990CE3C: {
@@ -100,12 +100,12 @@ export = {
     test.done();
   },
 
-  '"name" is defaulted to construct id'(test: Test) {
+  '"name" is defaulted to resource unique id'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
 
     // WHEN
-    const api = new apigateway.RestApi(stack, 'my-first-api', {
+    const api = new apigateway.RestApi(stack, 'restapi', {
       deploy: false,
       cloudWatchRole: false,
     });
@@ -114,7 +114,7 @@ export = {
 
     // THEN
     expect(stack).to(haveResource('AWS::ApiGateway::RestApi', {
-      Name: "my-first-api"
+      Name: "restapiC5611D27"
     }));
 
     test.done();
@@ -140,8 +140,7 @@ export = {
     const stack = new cdk.Stack();
     const api = new apigateway.RestApi(stack, 'restapi', {
       deploy: false,
-      cloudWatchRole: false,
-      restApiName: 'my-rest-api'
+      cloudWatchRole: false
     });
 
     api.root.addMethod('GET');
@@ -175,8 +174,7 @@ export = {
     const stack = new cdk.Stack();
     const api = new apigateway.RestApi(stack, 'restapi', {
       deploy: false,
-      cloudWatchRole: false,
-      restApiName: 'my-rest-api'
+      cloudWatchRole: false
     });
 
     // WHEN
@@ -208,7 +206,7 @@ export = {
       restapiC5611D27: {
         Type: "AWS::ApiGateway::RestApi",
         Properties: {
-        Name: "restapi"
+        Name: "restapiC5611D27"
         }
       },
       restapir1CF2997EA: {
@@ -491,7 +489,7 @@ export = {
 
     expect(stack).to(haveResource('AWS::ApiGateway::RestApi', {
       CloneFrom: "foobar",
-      Name: "api"
+      Name: "apiC8550315"
     }));
 
     test.done();
@@ -597,6 +595,36 @@ export = {
       Integration: { Type: 'AWS' },
       AuthorizerId: 'AUTHID2',
       AuthorizationType: 'AWS_IAM'
+    }));
+
+    test.done();
+  },
+
+  'addModel is supported'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const api = new apigateway.RestApi(stack, 'myapi');
+    api.root.addMethod('OPTIONS');
+
+    // WHEN
+    api.addModel('model', {
+      schema: {
+        $schema: "http://json-schema.org/draft-04/schema#",
+        title: "test",
+        type: "object",
+        properties: { message: { type: "string" } }
+      }
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::ApiGateway::Model', {
+      RestApiId: { Ref: stack.getLogicalId(api.node.findChild('Resource') as cdk.CfnElement) },
+      Schema: {
+        $schema: "http://json-schema.org/draft-04/schema#",
+        title: "test",
+        type: "object",
+        properties: { message: { type: "string" } }
+      }
     }));
 
     test.done();
