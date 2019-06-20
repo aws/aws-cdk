@@ -72,12 +72,10 @@ export class SendToQueue implements sfn.IStepFunctionsTask {
       })],
       parameters: {
         QueueUrl: this.queue.queueUrl,
-        ...sfn.FieldUtils.renderObject({
-          MessageBody: this.props.messageBody.value,
-          DelaySeconds: this.props.delaySeconds,
-          MessageDeduplicationId: this.props.messageDeduplicationId,
-          MessageGroupId: this.props.messageGroupId,
-        })
+        MessageBody: this.props.messageBody.value,
+        DelaySeconds: this.props.delaySeconds,
+        MessageDeduplicationId: this.props.messageDeduplicationId,
+        MessageGroupId: this.props.messageGroupId,
       }
     };
   }
