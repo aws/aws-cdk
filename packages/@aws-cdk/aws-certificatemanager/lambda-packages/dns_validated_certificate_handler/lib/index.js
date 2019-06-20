@@ -140,10 +140,10 @@ const requestCertificate = async function (requestId, domainName, subjectAlterna
 
   console.log('Waiting for validation...');
   await acm.waitFor('certificateValidated', {
-    // Wait up to 5 minutes
+    // Wait up to 9 minutes and 30 seconds
     $waiter: {
       delay: 30,
-      maxAttempts: 10
+      maxAttempts: 19
     },
     CertificateArn: reqCertResponse.CertificateArn
   }).promise();
