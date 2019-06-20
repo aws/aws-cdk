@@ -14,24 +14,22 @@ labels: needs-triage
 
 
 * **What is the current behavior?**
+*If the current behavior is a :beetle:bug:beetle:: Please provide the steps to reproduce*
 
 
 
-* **If the current behavior is a :beetle:bug:beetle:: Please provide the steps to reproduce**
+* **What is the expected behavior (or behavior of feature suggested)?**
 
 
 
-* **What is the expected behavior?**
-
-
-
-* **What is the motivation / use case for changing the behavior?**
+* **What is the motivation / use case for changing the behavior or adding this feature?**
 
 
 
 * **Please tell us about your environment:**
   
-  - CDK Version: xx.xx.xx
+  - CDK CLI Version: xx.xx.xx
+  - Module Version: xx.xx.xx
   - OS: [all | Windows 10 | OSX Mojave | Ubuntu | etc... ]
   - Language: [all | TypeScript | Java | Python ]
 
