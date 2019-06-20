@@ -9,7 +9,7 @@ const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-cdk-codepipeline-codecommit-codebuild');
 
 const repository = new codecommit.Repository(stack, 'MyRepo', {
-  repositoryName: 'my-repo',
+  repositoryName: cdk.PhysicalName.of('my-repo'),
 });
 const sourceOutput = new codepipeline.Artifact('SourceArtifact');
 const sourceAction = new cpactions.CodeCommitSourceAction({

@@ -172,6 +172,10 @@ export class Evaluation<T> {
     return this.assert(a.toString() === e.toString() || (a.fqn && e.fqn && a.type!.extends(e.type!)), scope, ` ("${a}" not assignable to "${e}")`);
   }
 
+  public assertParameterOptional(actual: boolean, expected: boolean, scope: string) {
+    return this.assert(actual === expected, scope, ` (${scope} should be ${expected ? 'optional' : 'mandatory'})`);
+  }
+
   public assertSignature(method: reflect.Callable, expectations: MethodSignatureExpectations) {
     const scope = method.parentType.fqn + '.' + method.name;
     if (expectations.returns && reflect.Method.isMethod(method)) {
@@ -197,6 +201,9 @@ export class Evaluation<T> {
             } else {
               this.assertTypesEqual(method.system, actual.type, expect.type, pscope);
             }
+          }
+          if (expect.optional !== undefined) {
+            this.assertParameterOptional(actual.optional, expect.optional, pscope);
           }
         }
       }

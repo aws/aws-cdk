@@ -20,7 +20,7 @@ export = {
         username: 'admin'
       },
       instanceProps: {
-        instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.Burstable2, ec2.InstanceSize.Small),
+        instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
         vpc
       }
     });
@@ -130,10 +130,6 @@ export = {
               {
                 "Ref": "VPCPrivateSubnet2SubnetCFCDAA7A"
               },
-              ",",
-              {
-                "Ref": "VPCPrivateSubnet3Subnet3EDCD457"
-              }
             ]
           ]
         }
@@ -172,7 +168,7 @@ export = {
         password: SecretValue.plainText('tooshort')
       },
       instanceProps: {
-        instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.Burstable2, ec2.InstanceSize.Small),
+        instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
         vpc
       }
     });
@@ -214,7 +210,7 @@ export = {
     const vpc = new ec2.Vpc(stack, 'VPC');
     const instance = new rds.DatabaseInstance(stack, 'Database', {
       engine: rds.DatabaseInstanceEngine.MariaDb,
-      instanceClass: new ec2.InstanceTypePair(ec2.InstanceClass.Burstable2, ec2.InstanceSize.Small),
+      instanceClass: new ec2.InstanceTypePair(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
       masterUsername: 'syscdk',
       vpc
     });
@@ -324,10 +320,6 @@ export = {
               {
                 "Ref": "VPCPrivateSubnet2SubnetCFCDAA7A"
               },
-              ",",
-              {
-                "Ref": "VPCPrivateSubnet3Subnet3EDCD457"
-              }
             ]
           ]
         }
@@ -361,7 +353,7 @@ export = {
     // WHEN
     const instance = new rds.DatabaseInstance(stack, 'Database', {
       engine: rds.DatabaseInstanceEngine.SqlServerEE,
-      instanceClass: new ec2.InstanceTypePair(ec2.InstanceClass.Burstable2, ec2.InstanceSize.Small),
+      instanceClass: new ec2.InstanceTypePair(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
       masterUsername: 'syscdk',
       masterUserPassword: SecretValue.plainText('tooshort'),
       vpc

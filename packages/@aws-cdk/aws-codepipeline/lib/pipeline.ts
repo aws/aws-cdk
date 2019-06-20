@@ -2,7 +2,7 @@ import events = require('@aws-cdk/aws-events');
 import iam = require('@aws-cdk/aws-iam');
 import kms = require('@aws-cdk/aws-kms');
 import s3 = require('@aws-cdk/aws-s3');
-import { App, Construct, Lazy, PhysicalName, RemovalPolicy, Resource, Stack, Token } from '@aws-cdk/cdk';
+import { App, Construct, Lazy, PhysicalName, RemovalPolicy, Resource, ResourceIdentifiers, Stack, Token } from '@aws-cdk/cdk';
 import { Action, IPipeline, IStage } from "./action";
 import { CfnPipeline } from './codepipeline.generated';
 import { Stage } from './stage';
@@ -78,7 +78,7 @@ export interface PipelineProps {
    *
    * @default - AWS CloudFormation generates an ID and uses that for the pipeline name.
    */
-  readonly pipelineName?: string;
+  readonly pipelineName?: PhysicalName;
 
   /**
    * A map of region to S3 bucket name used for cross-region CodePipeline.
@@ -114,7 +114,7 @@ abstract class PipelineBase extends Resource implements IPipeline {
    * @param id Identifier for this event handler.
    * @param options Additional options to pass to the event rule.
    */
-  public onEvent(id: string, options: events.OnEventOptions): events.Rule {
+  public onEvent(id: string, options: events.OnEventOptions = {}): events.Rule {
     const rule = new events.Rule(this, id, options);
     rule.addTarget(options.target);
     rule.addEventPattern({
@@ -131,7 +131,7 @@ abstract class PipelineBase extends Resource implements IPipeline {
    * @param id Identifier for this event handler.
    * @param options Additional options to pass to the event rule.
    */
-  public onStateChange(id: string, options: events.OnEventOptions): events.Rule {
+  public onStateChange(id: string, options: events.OnEventOptions = {}): events.Rule {
     const rule = this.onEvent(id, options);
     rule.addEventPattern({
       detailType: [ 'CodePipeline Pipeline Execution State Change' ],
@@ -219,9 +219,11 @@ export class Pipeline extends PipelineBase {
   private readonly _crossRegionScaffoldStacks: { [region: string]: CrossRegionScaffoldStack } = {};
 
   constructor(scope: Construct, id: string, props: PipelineProps = {}) {
-    super(scope, id);
+    super(scope, id, {
+      physicalName: props.pipelineName,
+    });
 
-    validateName('Pipeline', props.pipelineName);
+    validateName('Pipeline', this.physicalName.value);
 
     // If a bucket has been provided, use it - otherwise, create a bucket.
     let propsBucket = props.artifactBucket;
@@ -230,7 +232,7 @@ export class Pipeline extends PipelineBase {
       propsBucket = new s3.Bucket(this, 'ArtifactsBucket', {
         bucketName: PhysicalName.auto({ crossEnvironment: true }),
         encryptionKey,
-        encryption: s3.BucketEncryption.Kms,
+        encryption: s3.BucketEncryption.KMS,
         removalPolicy: RemovalPolicy.Retain
       });
     }
@@ -247,7 +249,7 @@ export class Pipeline extends PipelineBase {
       stages: Lazy.anyValue({ produce: () => this.renderStages() }),
       roleArn: this.role.roleArn,
       restartExecutionOnUpdate: props && props.restartExecutionOnUpdate,
-      name: props && props.pipelineName,
+      name: this.physicalName.value,
     });
 
     // this will produce a DependsOn for both the role and the policy resources.
@@ -255,7 +257,15 @@ export class Pipeline extends PipelineBase {
 
     this.artifactBucket.grantReadWrite(this.role);
 
-    this.pipelineName = codePipeline.refAsString;
+    const resourceIdentifiers = new ResourceIdentifiers(this, {
+      arn: '',
+      name: codePipeline.refAsString,
+      arnComponents: {
+        service: 'codepipeline',
+        resource: this.physicalName.value || '',
+      },
+    });
+    this.pipelineName = resourceIdentifiers.name;
     this.pipelineVersion = codePipeline.attrVersion;
     this.crossRegionReplicationBuckets = props.crossRegionReplicationBuckets || {};
     this.artifactStores = {};
