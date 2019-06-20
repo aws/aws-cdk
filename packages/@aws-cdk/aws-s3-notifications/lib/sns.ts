@@ -22,7 +22,7 @@ export class SnsDestination implements s3.IBucketNotificationDestination {
 
     return {
       arn: this.topic.topicArn,
-      type: s3.BucketNotificationDestinationType.Topic,
+      type: s3.BucketNotificationDestinationType.TOPIC,
       dependencies: [ this.topic ] // make sure the topic policy resource is created before the notification config
     };
   }

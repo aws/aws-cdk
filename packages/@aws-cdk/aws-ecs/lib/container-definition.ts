@@ -534,21 +534,21 @@ export interface Ulimit {
  * Type of resource to set a limit on
  */
 export enum UlimitName {
-  Core = "core",
-  Cpu = "cpu",
-  Data = "data",
-  Fsize = "fsize",
-  Locks = "locks",
-  Memlock = "memlock",
-  Msgqueue = "msgqueue",
-  Nice = "nice",
-  Nofile = "nofile",
-  Nproc = "nproc",
-  Rss = "rss",
-  Rtprio = "rtprio",
-  Rttime = "rttime",
-  Sigpending = "sigpending",
-  Stack = "stack"
+  CORE = "core",
+  CPU = "cpu",
+  DATA = "data",
+  FSIZE = "fsize",
+  LOCKS = "locks",
+  MEMLOCK = "memlock",
+  MSGQUEUE = "msgqueue",
+  NICE = "nice",
+  NOFILE = "nofile",
+  NPROC = "nproc",
+  RSS = "rss",
+  RTPRIO = "rtprio",
+  RTTIME = "rttime",
+  SIGPENDING = "sigpending",
+  STACK = "stack"
 }
 
 function renderUlimit(ulimit: Ulimit): CfnTaskDefinition.UlimitProperty {
@@ -594,19 +594,19 @@ export enum Protocol {
   /**
    * TCP
    */
-  Tcp = "tcp",
+  TCP = "tcp",
 
   /**
    * UDP
    */
-  Udp = "udp",
+  UDP = "udp",
 }
 
 function renderPortMapping(pm: PortMapping): CfnTaskDefinition.PortMappingProperty {
   return {
     containerPort: pm.containerPort,
     hostPort: pm.hostPort,
-    protocol: pm.protocol || Protocol.Tcp,
+    protocol: pm.protocol || Protocol.TCP,
   };
 }
 

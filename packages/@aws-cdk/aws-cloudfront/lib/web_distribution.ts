@@ -13,18 +13,18 @@ export enum HttpVersion {
  * The price class determines how many edge locations CloudFront will use for your distribution.
  */
 export enum PriceClass {
-  PriceClass100 = "PriceClass_100",
-  PriceClass200 = "PriceClass_200",
-  PriceClassAll = "PriceClass_All"
+  PRICE_CLASS_100 = "PriceClass_100",
+  PRICE_CLASS_200 = "PriceClass_200",
+  PRICE_CLASS_ALL = "PriceClass_All"
 }
 
 /**
  * How HTTPs should be handled with your distribution.
  */
 export enum ViewerProtocolPolicy {
-  HTTPSOnly = "https-only",
-  RedirectToHTTPS = "redirect-to-https",
-  AllowAll = "allow-all"
+  HTTPS_ONLY = "https-only",
+  REDIRECT_TO_HTTPS = "redirect-to-https",
+  ALLOW_ALL = "allow-all"
 }
 
 /**
@@ -95,11 +95,11 @@ export enum SSLMethod {
  * CloudFront serves your objects only to browsers or devices that support at least the SSL version that you specify.
  */
 export enum SecurityPolicyProtocol {
-  SSLv3 = "SSLv3",
-  TLSv1 = "TLSv1",
-  TLSv1_2016 = "TLSv1_2016",
-  TLSv1_1_2016 = "TLSv1.1_2016",
-  TLSv1_2_2018 = "TLSv1.2_2018"
+  SSL_V3 = "SSLv3",
+  TLS_V1 = "TLSv1",
+  TLS_V1_2016 = "TLSv1_2016",
+  TLS_V1_1_2016 = "TLSv1.1_2016",
+  TLS_V1_2_2018 = "TLSv1.2_2018"
 }
 
 /**
@@ -222,16 +222,16 @@ export interface CustomOriginConfig {
 }
 
 export enum OriginSslPolicy {
-  SSLv3 = "SSLv3",
-  TLSv1 = "TLSv1",
-  TLSv1_1 = "TLSv1.1",
-  TLSv1_2 = "TLSv1.2",
+  SSL_V3 = "SSLv3",
+  TLS_V1 = "TLSv1",
+  TLS_V1_1 = "TLSv1.1",
+  TLS_V1_2 = "TLSv1.2",
 }
 
 export enum OriginProtocolPolicy {
-  HttpOnly = "http-only",
-  MatchViewer = "match-viewer",
-  HttpsOnly = "https-only",
+  HTTP_ONLY = "http-only",
+  MATCH_VIEWER = "match-viewer",
+  HTTPS_ONLY = "https-only",
 }
 
 export interface S3OriginConfig {
@@ -373,20 +373,20 @@ export enum LambdaEdgeEventType {
    * The origin-request specifies the request to the
    * origin location (e.g. S3)
    */
-  OriginRequest = "origin-request",
+  ORIGIN_REQUEST = "origin-request",
   /**
    * The origin-response specifies the response from the
    * origin location (e.g. S3)
    */
-  OriginResponse = "origin-response",
+  ORIGIN_RESPONSE = "origin-response",
   /**
    * The viewer-request specifies the incoming request
    */
-  ViewerRequest = "viewer-request",
+  VIEWER_REQUEST = "viewer-request",
   /**
    * The viewer-response specifies the outgoing reponse
    */
-  ViewerResponse = "viewer-response",
+  VIEWER_RESPONSE = "viewer-response",
 }
 
 export interface ErrorConfiguration {
@@ -563,10 +563,10 @@ export class CloudFrontWebDistribution extends cdk.Construct implements IDistrib
    */
   private readonly VALID_SSL_PROTOCOLS: { [key: string]: string[] } = {
     "sni-only": [
-      SecurityPolicyProtocol.TLSv1, SecurityPolicyProtocol.TLSv1_1_2016,
-      SecurityPolicyProtocol.TLSv1_2016, SecurityPolicyProtocol.TLSv1_2_2018
+      SecurityPolicyProtocol.TLS_V1, SecurityPolicyProtocol.TLS_V1_1_2016,
+      SecurityPolicyProtocol.TLS_V1_2016, SecurityPolicyProtocol.TLS_V1_2_2018
     ],
-    "vip": [SecurityPolicyProtocol.SSLv3, SecurityPolicyProtocol.TLSv1],
+    "vip": [SecurityPolicyProtocol.SSL_V3, SecurityPolicyProtocol.TLS_V1],
   };
 
   constructor(scope: cdk.Construct, id: string, props: CloudFrontWebDistributionProps) {
@@ -577,7 +577,7 @@ export class CloudFrontWebDistribution extends cdk.Construct implements IDistrib
       enabled: true,
       defaultRootObject: props.defaultRootObject !== undefined ? props.defaultRootObject : "index.html",
       httpVersion: props.httpVersion || HttpVersion.HTTP2,
-      priceClass: props.priceClass || PriceClass.PriceClass100,
+      priceClass: props.priceClass || PriceClass.PRICE_CLASS_100,
       ipv6Enabled: (props.enableIpV6 !== undefined) ? props.enableIpV6 : true,
       // tslint:disable-next-line:max-line-length
       customErrorResponses: props.errorConfigurations, // TODO: validation : https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cloudfront-distribution-customerrorresponse.html#cfn-cloudfront-distribution-customerrorresponse-errorcachingminttl
@@ -627,8 +627,8 @@ export class CloudFrontWebDistribution extends cdk.Construct implements IDistrib
             httpsPort: originConfig.customOriginSource.httpsPort || 443,
             originKeepaliveTimeout: originConfig.customOriginSource.originKeepaliveTimeoutSeconds || 5,
             originReadTimeout: originConfig.customOriginSource.originReadTimeoutSeconds || 30,
-            originProtocolPolicy: originConfig.customOriginSource.originProtocolPolicy || OriginProtocolPolicy.HttpsOnly,
-            originSslProtocols: originConfig.customOriginSource.allowedOriginSSLVersions || [OriginSslPolicy.TLSv1_2]
+            originProtocolPolicy: originConfig.customOriginSource.originProtocolPolicy || OriginProtocolPolicy.HTTPS_ONLY,
+            originSslProtocols: originConfig.customOriginSource.allowedOriginSSLVersions || [OriginSslPolicy.TLS_V1_2]
           }
           : undefined
       };
@@ -729,7 +729,7 @@ export class CloudFrontWebDistribution extends cdk.Construct implements IDistrib
       minTtl: input.minTtlSeconds,
       trustedSigners: input.trustedSigners,
       targetOriginId: input.targetOriginId,
-      viewerProtocolPolicy: protoPolicy || ViewerProtocolPolicy.RedirectToHTTPS,
+      viewerProtocolPolicy: protoPolicy || ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
     };
     if (!input.isDefaultBehavior) {
       toReturn = Object.assign(toReturn, { pathPattern: input.pathPattern });

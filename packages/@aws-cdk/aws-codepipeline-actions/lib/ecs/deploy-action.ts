@@ -47,7 +47,7 @@ export class EcsDeployAction extends codepipeline.Action {
   constructor(props: EcsDeployActionProps) {
     super({
       ...props,
-      category: codepipeline.ActionCategory.Deploy,
+      category: codepipeline.ActionCategory.DEPLOY,
       provider: 'ECS',
       artifactBounds: deployArtifactBounds(),
       inputs: [determineInputArtifact(props)],

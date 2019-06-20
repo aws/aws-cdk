@@ -48,7 +48,7 @@ export class S3SourceAction extends codepipeline.Action {
   constructor(props: S3SourceActionProps) {
     super({
       ...props,
-      category: codepipeline.ActionCategory.Source,
+      category: codepipeline.ActionCategory.SOURCE,
       provider: 'S3',
       artifactBounds: sourceArtifactBounds(),
       outputs: [props.output],

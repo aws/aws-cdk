@@ -82,11 +82,11 @@ export enum StartingPosition {
    * Start reading at the last untrimmed record in the shard in the system,
    * which is the oldest data record in the shard.
    */
-  TrimHorizon = 'TRIM_HORIZON',
+  TRIM_HORIZON = 'TRIM_HORIZON',
 
   /**
    * Start reading just after the most recent record in the shard, so that you
    * always read the most recent data in the shard
    */
-  Latest = 'LATEST',
+  LATEST = 'LATEST',
 }

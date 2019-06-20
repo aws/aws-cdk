@@ -28,7 +28,7 @@ new cloudfront.CloudFrontWebDistribution(stack, 'MyDistribution', {
         s3BucketSource: sourceBucket
       },
       behaviors : [ {isDefaultBehavior: true, lambdaFunctionAssociations: [{
-        eventType: cloudfront.LambdaEdgeEventType.OriginRequest,
+        eventType: cloudfront.LambdaEdgeEventType.ORIGIN_REQUEST,
         lambdaFunction: lambdaVersion
       }]}]
     }

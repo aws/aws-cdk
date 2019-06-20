@@ -16,7 +16,7 @@ export = {
 
     // WHEN
     fn.addEventSource(new sources.S3EventSource(bucket, {
-      events: [ s3.EventType.ObjectCreated, s3.EventType.ObjectRemoved ],
+      events: [ s3.EventType.OBJECT_CREATED, s3.EventType.OBJECT_REMOVED ],
       filters: [
         { prefix: 'prefix/' },
         { suffix: '.png' }

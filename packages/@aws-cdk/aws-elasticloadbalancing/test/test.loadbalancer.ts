@@ -13,9 +13,9 @@ export = {
     const lb = new LoadBalancer(stack, 'LB', { vpc });
 
     lb.addListener({
-      externalProtocol: LoadBalancingProtocol.Http,
+      externalProtocol: LoadBalancingProtocol.HTTP,
       externalPort: 8080,
-      internalProtocol: LoadBalancingProtocol.Http,
+      internalProtocol: LoadBalancingProtocol.HTTP,
       internalPort: 8080,
     });
 
@@ -42,7 +42,7 @@ export = {
       healthCheck: {
         interval: 60,
         path: '/ping',
-        protocol: LoadBalancingProtocol.Https,
+        protocol: LoadBalancingProtocol.HTTPS,
         port: 443,
       }
     });
@@ -70,7 +70,7 @@ export = {
       healthCheck: {
         interval: 60,
         path: '/ping',
-        protocol: LoadBalancingProtocol.Https,
+        protocol: LoadBalancingProtocol.HTTPS,
         port: 443,
       }
     });

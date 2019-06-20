@@ -196,8 +196,8 @@ export = {
         bucket: new Bucket(stack, 'Bucket'),
         path: 'path',
       }),
-      cache: codebuild.Cache.local(codebuild.LocalCacheMode.Custom, codebuild.LocalCacheMode.DockerLayer,
-        codebuild.LocalCacheMode.Source)
+      cache: codebuild.Cache.local(codebuild.LocalCacheMode.CUSTOM, codebuild.LocalCacheMode.DOCKER_LAYER,
+        codebuild.LocalCacheMode.SOURCE)
     });
 
     // THEN

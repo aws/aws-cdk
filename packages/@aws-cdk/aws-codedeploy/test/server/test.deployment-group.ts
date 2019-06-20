@@ -46,7 +46,7 @@ export = {
       const stack = new cdk.Stack();
 
       const asg = new autoscaling.AutoScalingGroup(stack, 'ASG', {
-        instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.Standard3, ec2.InstanceSize.Small),
+        instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.STANDARD3, ec2.InstanceSize.SMALL),
         machineImage: new ec2.AmazonLinuxImage(),
         vpc: new ec2.Vpc(stack, 'VPC'),
       });
@@ -70,7 +70,7 @@ export = {
       const stack = new cdk.Stack();
 
       const asg = new autoscaling.AutoScalingGroup(stack, 'ASG', {
-        instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.Standard3, ec2.InstanceSize.Small),
+        instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.STANDARD3, ec2.InstanceSize.SMALL),
         machineImage: new ec2.AmazonLinuxImage(),
         vpc: new ec2.Vpc(stack, 'VPC'),
       });

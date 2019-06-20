@@ -33,7 +33,7 @@ const firstRule = ruleSet.addRule('FirstRule', {
     }),
     new ses.ReceiptRuleLambdaAction({
       function: fn,
-      invocationType: ses.LambdaInvocationType.RequestResponse,
+      invocationType: ses.LambdaInvocationType.REQUEST_RESPONSE,
       topic
     }),
     new ses.ReceiptRuleS3Action({
@@ -43,14 +43,14 @@ const firstRule = ruleSet.addRule('FirstRule', {
       topic
     }),
     new ses.ReceiptRuleSnsAction({
-      encoding: ses.EmailEncoding.Base64,
+      encoding: ses.EmailEncoding.BASE64,
       topic
     })
   ],
   receiptRuleName: cdk.PhysicalName.of('FirstRule'),
   recipients: ['cdk-ses-receipt-test@yopmail.com'],
   scanEnabled: true,
-  tlsPolicy: ses.TlsPolicy.Require,
+  tlsPolicy: ses.TlsPolicy.REQUIRE,
 });
 
 firstRule.addAction(

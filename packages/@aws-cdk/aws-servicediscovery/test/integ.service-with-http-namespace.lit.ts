@@ -19,7 +19,7 @@ service1.registerNonIpInstance('NonIpInstance', {
 const service2 = namespace.createService('IpService', {
   description: 'service registering ip instances',
   healthCheck: {
-    type: servicediscovery.HealthCheckType.Http,
+    type: servicediscovery.HealthCheckType.HTTP,
     resourcePath: '/check'
   }
 });

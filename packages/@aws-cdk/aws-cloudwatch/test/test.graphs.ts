@@ -133,7 +133,7 @@ export = {
       leftAnnotations: [{
         value: 1000,
         color: '667788',
-        fill: Shading.Below,
+        fill: Shading.BELOW,
         label: 'this is the annotation',
       }]
     });

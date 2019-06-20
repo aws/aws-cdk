@@ -287,18 +287,18 @@ export class Stream extends StreamBase {
   } {
 
     // default to unencrypted.
-    const encryptionType = props.encryption || StreamEncryption.Unencrypted;
+    const encryptionType = props.encryption || StreamEncryption.UNENCRYPTED;
 
     // if encryption key is set, encryption must be set to KMS.
-    if (encryptionType !== StreamEncryption.Kms && props.encryptionKey) {
+    if (encryptionType !== StreamEncryption.KMS && props.encryptionKey) {
       throw new Error(`encryptionKey is specified, so 'encryption' must be set to KMS (value: ${encryptionType})`);
     }
 
-    if (encryptionType === StreamEncryption.Unencrypted) {
+    if (encryptionType === StreamEncryption.UNENCRYPTED) {
       return { streamEncryption: undefined, encryptionKey: undefined };
     }
 
-    if (encryptionType === StreamEncryption.Kms) {
+    if (encryptionType === StreamEncryption.KMS) {
       const encryptionKey = props.encryptionKey || new kms.Key(this, 'Key', {
         description: `Created by ${this.node.path}`
       });
@@ -321,11 +321,11 @@ export enum StreamEncryption {
   /**
    * Records in the stream are not encrypted.
    */
-  Unencrypted = 'NONE',
+  UNENCRYPTED = 'NONE',
 
   /**
    * Server-side encryption with a KMS key managed by the user.
    * If `encryptionKey` is specified, this key will be used, otherwise, one will be defined.
    */
-  Kms = 'KMS',
+  KMS = 'KMS',
 }

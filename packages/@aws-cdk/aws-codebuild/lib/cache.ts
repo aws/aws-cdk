@@ -17,17 +17,17 @@ export enum LocalCacheMode {
   /**
    * Caches Git metadata for primary and secondary sources
    */
-  Source = 'LOCAL_SOURCE_CACHE',
+  SOURCE = 'LOCAL_SOURCE_CACHE',
 
   /**
    * Caches existing Docker layers
    */
-  DockerLayer = 'LOCAL_DOCKER_LAYER_CACHE',
+  DOCKER_LAYER = 'LOCAL_DOCKER_LAYER_CACHE',
 
   /**
    * Caches directories you specify in the buildspec file
    */
-  Custom = 'LOCAL_CUSTOM_CACHE',
+  CUSTOM = 'LOCAL_CUSTOM_CACHE',
 }
 
 /**

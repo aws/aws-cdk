@@ -227,7 +227,7 @@ export class Cluster extends Resource implements ICluster {
     });
 
     // Get subnetIds for all selected subnets
-    const placements = props.vpcSubnets || [{ subnetType: ec2.SubnetType.Public }, { subnetType: ec2.SubnetType.Private }];
+    const placements = props.vpcSubnets || [{ subnetType: ec2.SubnetType.PUBLIC }, { subnetType: ec2.SubnetType.PRIVATE }];
     const subnetIds = [...new Set(Array().concat(...placements.map(s => props.vpc.selectSubnets(s).subnetIds)))];
 
     const resource = new CfnCluster(this, 'Resource', {
@@ -272,7 +272,7 @@ export class Cluster extends Resource implements ICluster {
         nodeType: nodeTypeForInstanceType(options.instanceType),
         kubernetesVersion: this.version,
       }),
-      updateType: options.updateType || autoscaling.UpdateType.RollingUpdate,
+      updateType: options.updateType || autoscaling.UpdateType.ROLLING_UPDATE,
       instanceType: options.instanceType,
     });
 

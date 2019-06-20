@@ -9,10 +9,10 @@ export = {
 
     const bucket = new s3.Bucket(stack, 'MyBucket');
 
-    bucket.addEventNotification(s3.EventType.ObjectCreated, {
+    bucket.addEventNotification(s3.EventType.OBJECT_CREATED, {
       bind: () => ({
         arn: 'ARN',
-        type: s3.BucketNotificationDestinationType.Topic
+        type: s3.BucketNotificationDestinationType.TOPIC
       })
     });
 

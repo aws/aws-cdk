@@ -230,14 +230,14 @@ export enum LambdaInvocationType {
   /**
    * The function will be invoked asynchronously.
    */
-  Event = 'Event',
+  EVENT = 'Event',
 
   /**
    * The function will be invoked sychronously. Use RequestResponse only when
    * you want to make a mail flow decision, such as whether to stop the receipt
    * rule or the receipt rule set.
    */
-  RequestResponse = 'RequestResponse',
+  REQUEST_RESPONSE = 'RequestResponse',
 }
 
 /**
@@ -391,7 +391,7 @@ export enum EmailEncoding {
   /**
    * Base 64
    */
-  Base64 = 'Base64',
+  BASE64 = 'Base64',
 
   /**
    * UTF-8

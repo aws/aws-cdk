@@ -14,7 +14,7 @@ export = {
     // WHEN
     new LogRetention(stack, 'MyLambda', {
       logGroupName: 'group',
-      retentionDays: logs.RetentionDays.OneMonth
+      retentionDays: logs.RetentionDays.ONE_MONTH
     });
 
     // THEN

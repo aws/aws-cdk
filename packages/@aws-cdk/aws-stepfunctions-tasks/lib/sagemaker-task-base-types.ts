@@ -224,17 +224,17 @@ export enum S3DataType {
     /**
      * Manifest File Data Type
      */
-    ManifestFile = 'ManifestFile',
+    MANIFEST_FILE = 'ManifestFile',
 
     /**
      * S3 Prefix Data Type
      */
-    S3Prefix = 'S3Prefix',
+    S3_PREFIX = 'S3Prefix',
 
     /**
      * Augmented Manifest File Data Type
      */
-    AugmentedManifestFile = 'AugmentedManifestFile'
+    AUGMENTED_MANIFEST_FILE = 'AugmentedManifestFile'
 }
 
 /**
@@ -244,12 +244,12 @@ export enum S3DataDistributionType {
     /**
      * Fully replicated S3 Data Distribution Type
      */
-    FullyReplicated = 'FullyReplicated',
+    FULLY_REPLICATED = 'FullyReplicated',
 
     /**
      * Sharded By S3 Key Data Distribution Type
      */
-    ShardedByS3Key = 'ShardedByS3Key'
+    SHARDED_BY_S3_KEY = 'ShardedByS3Key'
 }
 
 /**
@@ -259,12 +259,12 @@ export enum RecordWrapperType {
     /**
      * None record wrapper type
      */
-    None = 'None',
+    NONE = 'None',
 
     /**
      * RecordIO record wrapper type
      */
-    RecordIO = 'RecordIO'
+    RECORD_IO = 'RecordIO'
 }
 
 /**
@@ -274,12 +274,12 @@ export enum InputMode {
     /**
      * Pipe mode
      */
-    Pipe = 'Pipe',
+    PIPE = 'Pipe',
 
     /**
      * File mode.
      */
-    File = 'File'
+    FILE = 'File'
 }
 
 /**
@@ -289,12 +289,12 @@ export enum CompressionType {
     /**
      * None compression type
      */
-    None = 'None',
+    NONE = 'None',
 
     /**
      * Gzip compression type
      */
-    Gzip = 'Gzip'
+    GZIP = 'Gzip'
 }
 
 //
@@ -421,12 +421,12 @@ export enum BatchStrategy {
     /**
      * Fits multiple records in a mini-batch.
      */
-    MultiRecord = 'MultiRecord',
+    MULTI_RECORD = 'MultiRecord',
 
     /**
      * Use a single record when making an invocation request.
      */
-    SingleRecord = 'SingleRecord'
+    SINGLE_RECORD = 'SingleRecord'
 }
 
 /**
@@ -437,22 +437,22 @@ export enum SplitType {
     /**
      * Input data files are not split,
      */
-    None = 'None',
+    NONE = 'None',
 
     /**
      * Split records on a newline character boundary.
      */
-    Line = 'Line',
+    LINE = 'Line',
 
     /**
      * Split using MXNet RecordIO format.
      */
-    RecordIO = 'RecordIO',
+    RECORD_IO = 'RecordIO',
 
     /**
      * Split using TensorFlow TFRecord format.
      */
-    TFRecord = 'TFRecord'
+    TF_RECORD = 'TFRecord'
 }
 
 /**
@@ -463,11 +463,11 @@ export enum AssembleWith {
     /**
      * Concatenate the results in binary format.
      */
-    None = 'None',
+    NONE = 'None',
 
     /**
      * Add a newline character at the end of every transformed record.
      */
-    Line = 'Line'
+    LINE = 'Line'
 
 }

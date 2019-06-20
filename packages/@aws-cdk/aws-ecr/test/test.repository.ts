@@ -95,8 +95,8 @@ export = {
     const repo = new ecr.Repository(stack, 'Repo');
 
     // WHEN
-    repo.addLifecycleRule({ tagStatus: ecr.TagStatus.Tagged, tagPrefixList: ['a'], maxImageCount: 5 });
-    repo.addLifecycleRule({ rulePriority: 10, tagStatus: ecr.TagStatus.Tagged, tagPrefixList: ['b'], maxImageCount: 5 });
+    repo.addLifecycleRule({ tagStatus: ecr.TagStatus.TAGGED, tagPrefixList: ['a'], maxImageCount: 5 });
+    repo.addLifecycleRule({ rulePriority: 10, tagStatus: ecr.TagStatus.TAGGED, tagPrefixList: ['b'], maxImageCount: 5 });
 
     // THEN
     expect(stack).to(haveResource('AWS::ECR::Repository', {
@@ -116,7 +116,7 @@ export = {
 
     // WHEN
     repo.addLifecycleRule({ maxImageCount: 5 });
-    repo.addLifecycleRule({ tagStatus: ecr.TagStatus.Tagged, tagPrefixList: ['important'], maxImageCount: 999 });
+    repo.addLifecycleRule({ tagStatus: ecr.TagStatus.TAGGED, tagPrefixList: ['important'], maxImageCount: 999 });
 
     // THEN
     expect(stack).to(haveResource('AWS::ECR::Repository', {

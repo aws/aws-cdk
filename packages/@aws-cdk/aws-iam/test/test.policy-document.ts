@@ -45,7 +45,7 @@ export = {
     p1.addResources('*');
 
     const p2 = new PolicyStatement();
-    p2.effect = Effect.Deny;
+    p2.effect = Effect.DENY;
     p2.addActions('cloudformation:CreateStack');
 
     doc.addStatements(p1);

@@ -118,8 +118,8 @@ export = {
 
     // WHEN
     new cognito.UserPool(stack, 'Pool', {
-      signInType: cognito.SignInType.Email,
-      autoVerifiedAttributes: [cognito.UserPoolAttribute.Email]
+      signInType: cognito.SignInType.EMAIL,
+      autoVerifiedAttributes: [cognito.UserPoolAttribute.EMAIL]
     });
 
     // THEN
@@ -138,8 +138,8 @@ export = {
     // WHEN
     const toThrow = () => {
       new cognito.UserPool(stack, 'Pool', {
-        signInType: cognito.SignInType.Email,
-        usernameAliasAttributes: [cognito.UserPoolAttribute.PreferredUsername]
+        signInType: cognito.SignInType.EMAIL,
+        usernameAliasAttributes: [cognito.UserPoolAttribute.PREFERRED_USERNAME]
       });
     };
 
@@ -155,8 +155,8 @@ export = {
     // WHEN
     const toThrow = () => {
       new cognito.UserPool(stack, 'Pool', {
-        signInType: cognito.SignInType.Username,
-        usernameAliasAttributes: [cognito.UserPoolAttribute.GivenName]
+        signInType: cognito.SignInType.USERNAME,
+        usernameAliasAttributes: [cognito.UserPoolAttribute.GIVEN_NAME]
       });
     };
 
@@ -172,8 +172,8 @@ export = {
     // WHEN
     const toThrow = () => {
       new cognito.UserPool(stack, 'Pool', {
-        signInType: cognito.SignInType.Email,
-        autoVerifiedAttributes: [cognito.UserPoolAttribute.Email, cognito.UserPoolAttribute.Gender]
+        signInType: cognito.SignInType.EMAIL,
+        autoVerifiedAttributes: [cognito.UserPoolAttribute.EMAIL, cognito.UserPoolAttribute.GENDER]
       });
     };
 

@@ -2,15 +2,15 @@ import ec2 = require("@aws-cdk/aws-ec2");
 
 /// !show
 // Pick a Windows edition to use
-const windows = new ec2.WindowsImage(ec2.WindowsVersion.WindowsServer2019EnglishFullBase);
+const windows = new ec2.WindowsImage(ec2.WindowsVersion.WINDOWS_SERVER_2019_ENGLISH_FULL_BASE);
 
 // Pick the right Amazon Linux edition. All arguments shown are optional
 // and will default to these values when omitted.
 const amznLinux = new ec2.AmazonLinuxImage({
-  generation: ec2.AmazonLinuxGeneration.AmazonLinux,
-  edition: ec2.AmazonLinuxEdition.Standard,
+  generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX,
+  edition: ec2.AmazonLinuxEdition.STANDARD,
   virtualization: ec2.AmazonLinuxVirt.HVM,
-  storage: ec2.AmazonLinuxStorage.GeneralPurpose,
+  storage: ec2.AmazonLinuxStorage.GENERAL_PURPOSE,
 });
 
 // For other custom (Linux) images, instantiate a `GenericLinuxImage` with

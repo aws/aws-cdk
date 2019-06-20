@@ -35,27 +35,27 @@ export = {
   'action type validation': {
 
     'must be source and is source'(test: Test) {
-      const result = validations.validateSourceAction(true, codepipeline.ActionCategory.Source, 'test action', 'test stage');
+      const result = validations.validateSourceAction(true, codepipeline.ActionCategory.SOURCE, 'test action', 'test stage');
       test.deepEqual(result.length, 0);
       test.done();
     },
 
     'must be source and is not source'(test: Test) {
-      const result = validations.validateSourceAction(true, codepipeline.ActionCategory.Deploy, 'test action', 'test stage');
+      const result = validations.validateSourceAction(true, codepipeline.ActionCategory.DEPLOY, 'test action', 'test stage');
       test.deepEqual(result.length, 1);
       test.ok(result[0].match(/may only contain Source actions/), 'the validation should have failed');
       test.done();
     },
 
     'cannot be source and is source'(test: Test) {
-      const result = validations.validateSourceAction(false, codepipeline.ActionCategory.Source, 'test action', 'test stage');
+      const result = validations.validateSourceAction(false, codepipeline.ActionCategory.SOURCE, 'test action', 'test stage');
       test.deepEqual(result.length, 1);
       test.ok(result[0].match(/may only occur in first stage/), 'the validation should have failed');
       test.done();
     },
 
     'cannot be source and is not source'(test: Test) {
-      const result = validations.validateSourceAction(false, codepipeline.ActionCategory.Deploy, 'test action', 'test stage');
+      const result = validations.validateSourceAction(false, codepipeline.ActionCategory.DEPLOY, 'test action', 'test stage');
       test.deepEqual(result.length, 0);
       test.done();
     },

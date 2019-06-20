@@ -17,7 +17,7 @@ new codebuild.Project(stack, 'MyProject', {
     path: 'path/to/my/source.zip',
   }),
   environment: {
-    computeType: codebuild.ComputeType.Large
+    computeType: codebuild.ComputeType.LARGE
   }
 });
 

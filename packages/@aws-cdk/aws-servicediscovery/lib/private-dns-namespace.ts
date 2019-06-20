@@ -40,7 +40,7 @@ export class PrivateDnsNamespace extends Resource implements IPrivateDnsNamespac
       public namespaceName = attrs.namespaceName;
       public namespaceId = attrs.namespaceId;
       public namespaceArn = attrs.namespaceArn;
-      public type = NamespaceType.DnsPrivate;
+      public type = NamespaceType.DNS_PRIVATE;
     }
     return new Import(scope, id);
   }
@@ -80,7 +80,7 @@ export class PrivateDnsNamespace extends Resource implements IPrivateDnsNamespac
     this.namespaceName = props.name;
     this.namespaceId = ns.attrId;
     this.namespaceArn = ns.attrArn;
-    this.type = NamespaceType.DnsPrivate;
+    this.type = NamespaceType.DNS_PRIVATE;
   }
 
   /** @attribute */

@@ -142,11 +142,11 @@ export interface IPortRange {
  * Protocol for use in Connection Rules
  */
 export enum Protocol {
-  All = '-1',
-  Tcp = 'tcp',
-  Udp = 'udp',
-  Icmp = 'icmp',
-  Icmpv6 = '58',
+  ALL = '-1',
+  TCP = 'tcp',
+  UDP = 'udp',
+  ICMP = 'icmp',
+  ICMP_V6 = '58',
 }
 
 /**
@@ -160,7 +160,7 @@ export class TcpPort implements IPortRange {
 
   public toRuleJSON(): any {
     return {
-      ipProtocol: Protocol.Tcp,
+      ipProtocol: Protocol.TCP,
       fromPort: this.port,
       toPort: this.port
     };
@@ -182,7 +182,7 @@ export class TcpPortRange implements IPortRange {
 
   public toRuleJSON(): any {
     return {
-      ipProtocol: Protocol.Tcp,
+      ipProtocol: Protocol.TCP,
       fromPort: this.startPort,
       toPort: this.endPort
     };
@@ -201,7 +201,7 @@ export class TcpAllPorts implements IPortRange {
 
   public toRuleJSON(): any {
     return {
-      ipProtocol: Protocol.Tcp,
+      ipProtocol: Protocol.TCP,
       fromPort: 0,
       toPort: 65535
     };
@@ -223,7 +223,7 @@ export class UdpPort implements IPortRange {
 
   public toRuleJSON(): any {
     return {
-      ipProtocol: Protocol.Udp,
+      ipProtocol: Protocol.UDP,
       fromPort: this.port,
       toPort: this.port
     };
@@ -246,7 +246,7 @@ export class UdpPortRange implements IPortRange {
 
   public toRuleJSON(): any {
     return {
-      ipProtocol: Protocol.Udp,
+      ipProtocol: Protocol.UDP,
       fromPort: this.startPort,
       toPort: this.endPort
     };
@@ -265,7 +265,7 @@ export class UdpAllPorts implements IPortRange {
 
   public toRuleJSON(): any {
     return {
-      ipProtocol: Protocol.Udp,
+      ipProtocol: Protocol.UDP,
       fromPort: 0,
       toPort: 65535
     };
@@ -287,7 +287,7 @@ export class IcmpTypeAndCode implements IPortRange {
 
   public toRuleJSON(): any {
     return {
-      ipProtocol: Protocol.Icmp,
+      ipProtocol: Protocol.ICMP,
       fromPort: this.type,
       toPort: this.code
     };
@@ -306,7 +306,7 @@ export class IcmpPing implements IPortRange {
 
   public toRuleJSON(): any {
     return {
-      ipProtocol: Protocol.Icmp,
+      ipProtocol: Protocol.ICMP,
       fromPort: 8,
       toPort: -1
     };
@@ -328,7 +328,7 @@ export class IcmpAllTypeCodes implements IPortRange {
 
   public toRuleJSON(): any {
     return {
-      ipProtocol: Protocol.Icmp,
+      ipProtocol: Protocol.ICMP,
       fromPort: this.type,
       toPort: -1
     };
@@ -347,7 +347,7 @@ export class IcmpAllTypesAndCodes implements IPortRange {
 
   public toRuleJSON(): any {
     return {
-      ipProtocol: Protocol.Icmp,
+      ipProtocol: Protocol.ICMP,
       fromPort: -1,
       toPort: -1
     };

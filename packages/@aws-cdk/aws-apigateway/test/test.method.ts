@@ -112,7 +112,7 @@ export = {
   'use default integration from api'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
-    const defaultIntegration = new apigateway.Integration({ type: apigateway.IntegrationType.HttpProxy, uri: 'https://amazon.com' });
+    const defaultIntegration = new apigateway.Integration({ type: apigateway.IntegrationType.HTTP_PROXY, uri: 'https://amazon.com' });
     const api = new apigateway.RestApi(stack, 'test-api', {
       cloudWatchRole: false,
       deploy: false,
@@ -223,7 +223,7 @@ export = {
 
     // WHEN
     api.root.addMethod('GET', new apigateway.Integration({
-      type: apigateway.IntegrationType.AwsProxy,
+      type: apigateway.IntegrationType.AWS_PROXY,
       options: {
         credentialsRole: role
       }
@@ -245,7 +245,7 @@ export = {
 
     // WHEN
     api.root.addMethod('GET', new apigateway.Integration({
-      type: apigateway.IntegrationType.AwsProxy,
+      type: apigateway.IntegrationType.AWS_PROXY,
       options: {
         credentialsPassthrough: true
       }
@@ -268,7 +268,7 @@ export = {
 
     // WHEN
     const integration = new apigateway.Integration({
-      type: apigateway.IntegrationType.AwsProxy,
+      type: apigateway.IntegrationType.AWS_PROXY,
       options: {
         credentialsPassthrough: true,
         credentialsRole: role
@@ -287,10 +287,10 @@ export = {
 
     // WHEN
     const integration = new apigateway.Integration({
-      type: apigateway.IntegrationType.HttpProxy,
+      type: apigateway.IntegrationType.HTTP_PROXY,
       integrationHttpMethod: 'ANY',
       options: {
-        connectionType: ConnectionType.VpcLink,
+        connectionType: ConnectionType.VPC_LINK,
       }
     });
 
@@ -313,10 +313,10 @@ export = {
 
     // WHEN
     const integration = new apigateway.Integration({
-      type: apigateway.IntegrationType.HttpProxy,
+      type: apigateway.IntegrationType.HTTP_PROXY,
       integrationHttpMethod: 'ANY',
       options: {
-        connectionType: ConnectionType.Internet,
+        connectionType: ConnectionType.INTERNET,
         vpcLink: link
       }
     });

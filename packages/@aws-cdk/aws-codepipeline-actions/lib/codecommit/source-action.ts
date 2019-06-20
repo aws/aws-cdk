@@ -41,7 +41,7 @@ export class CodeCommitSourceAction extends codepipeline.Action {
   constructor(props: CodeCommitSourceActionProps) {
     super({
       ...props,
-      category: codepipeline.ActionCategory.Source,
+      category: codepipeline.ActionCategory.SOURCE,
       provider: 'CodeCommit',
       artifactBounds: sourceArtifactBounds(),
       outputs: [props.output],

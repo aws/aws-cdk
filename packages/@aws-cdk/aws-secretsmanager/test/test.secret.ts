@@ -315,7 +315,7 @@ export = {
     const target: secretsmanager.ISecretAttachmentTarget = {
       asSecretAttachmentTarget: () => ({
         targetId: 'instance',
-        targetType: secretsmanager.AttachmentTargetType.Instance
+        targetType: secretsmanager.AttachmentTargetType.INSTANCE
       })
     };
 
@@ -341,7 +341,7 @@ export = {
     const target: secretsmanager.ISecretAttachmentTarget = {
       asSecretAttachmentTarget: () => ({
         targetId: 'cluster',
-        targetType: secretsmanager.AttachmentTargetType.Cluster
+        targetType: secretsmanager.AttachmentTargetType.CLUSTER
       })
     };
     const attachedSecret = secret.addTargetAttachment('AttachedSecret', { target });

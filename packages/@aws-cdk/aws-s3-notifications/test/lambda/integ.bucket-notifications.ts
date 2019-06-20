@@ -22,7 +22,7 @@ const bucketB = new s3.Bucket(stack, 'YourBucket', {
 });
 
 bucketA.addObjectCreatedNotification(new s3n.LambdaDestination(fn), { suffix: '.png' });
-bucketB.addEventNotification(s3.EventType.ObjectRemoved, new s3n.LambdaDestination(fn));
+bucketB.addEventNotification(s3.EventType.OBJECT_REMOVED, new s3n.LambdaDestination(fn));
 
 app.synth();
 

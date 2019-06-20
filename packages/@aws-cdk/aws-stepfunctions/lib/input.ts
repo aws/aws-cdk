@@ -10,7 +10,7 @@ export class TaskInput {
    * This might be a JSON-encoded object, or just a text.
    */
   public static fromText(text: string) {
-    return new TaskInput(InputType.Text, text);
+    return new TaskInput(InputType.TEXT, text);
   }
 
   /**
@@ -20,7 +20,7 @@ export class TaskInput {
    * as object values, if desired.
    */
   public static fromObject(obj: {[key: string]: any}) {
-    return new TaskInput(InputType.Object, obj);
+    return new TaskInput(InputType.OBJECT, obj);
   }
 
   /**
@@ -31,7 +31,7 @@ export class TaskInput {
    * to a task.
    */
   public static fromDataAt(path: string) {
-    return new TaskInput(InputType.Text, Data.stringAt(path));
+    return new TaskInput(InputType.TEXT, Data.stringAt(path));
   }
 
   /**
@@ -42,7 +42,7 @@ export class TaskInput {
    * to a task.
    */
   public static fromContextAt(path: string) {
-    return new TaskInput(InputType.Text, Context.stringAt(path));
+    return new TaskInput(InputType.TEXT, Context.stringAt(path));
   }
 
   private constructor(public readonly type: InputType, public readonly value: any) {
@@ -53,6 +53,6 @@ export class TaskInput {
  * The type of task input
  */
 export enum InputType {
-  Text,
-  Object
+  TEXT,
+  OBJECT
 }

@@ -38,7 +38,7 @@ export class S3DeployAction extends codepipeline.Action {
   constructor(props: S3DeployActionProps) {
     super({
       ...props,
-      category: codepipeline.ActionCategory.Deploy,
+      category: codepipeline.ActionCategory.DEPLOY,
       provider: 'S3',
       artifactBounds: deployArtifactBounds(),
       inputs: [props.input],

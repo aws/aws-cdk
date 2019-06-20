@@ -312,7 +312,7 @@ export = {
     });
 
     const service = namespace.createService('MyService', {
-      routingPolicy: servicediscovery.RoutingPolicy.Multivalue
+      routingPolicy: servicediscovery.RoutingPolicy.MULTIVALUE
     });
 
     const vpc = new ec2.Vpc(stack, 'MyVPC');

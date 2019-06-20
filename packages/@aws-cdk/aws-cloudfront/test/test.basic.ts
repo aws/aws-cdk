@@ -252,7 +252,7 @@ export = {
     const sourceBucket = new s3.Bucket(stack, 'Bucket');
 
     new CloudFrontWebDistribution(stack, 'AnAmazingWebsiteProbably', {
-      viewerProtocolPolicy: ViewerProtocolPolicy.AllowAll,
+      viewerProtocolPolicy: ViewerProtocolPolicy.ALLOW_ALL,
       originConfigs: [
         {
           s3OriginSource: {

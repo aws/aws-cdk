@@ -30,7 +30,7 @@ test('when notification are added, a custom resource is provisioned + a lambda h
   const bucket = new s3.Bucket(stack, 'MyBucket');
   const topic = new sns.Topic(stack, 'MyTopic');
 
-  bucket.addEventNotification(s3.EventType.ObjectCreated, new s3n.SnsDestination(topic));
+  bucket.addEventNotification(s3.EventType.OBJECT_CREATED, new s3n.SnsDestination(topic));
 
   expect(stack).toHaveResource('AWS::S3::Bucket');
   expect(stack).toHaveResource('AWS::Lambda::Function', { Description: 'AWS CloudFormation handler for "Custom::S3BucketNotifications" resources (@aws-cdk/aws-s3)' });
@@ -45,7 +45,7 @@ test('when notification are added, you can tag the lambda', () => {
 
   const topic = new sns.Topic(stack, 'MyTopic');
 
-  bucket.addEventNotification(s3.EventType.ObjectCreated, new s3n.SnsDestination(topic));
+  bucket.addEventNotification(s3.EventType.OBJECT_CREATED, new s3n.SnsDestination(topic));
 
   expect(stack).toHaveResource('AWS::S3::Bucket');
   expect(stack).toHaveResource('AWS::Lambda::Function', {
@@ -106,27 +106,27 @@ test('subscription types', () => {
 
   const queueTarget: s3.IBucketNotificationDestination = {
     bind: _ => ({
-      type: s3.BucketNotificationDestinationType.Queue,
+      type: s3.BucketNotificationDestinationType.QUEUE,
       arn: 'arn:aws:sqs:...'
     })
   };
 
   const lambdaTarget: s3.IBucketNotificationDestination = {
     bind: _ => ({
-      type: s3.BucketNotificationDestinationType.Lambda,
+      type: s3.BucketNotificationDestinationType.LAMBDA,
       arn: 'arn:aws:lambda:...'
     })
   };
 
   const topicTarget: s3.IBucketNotificationDestination = {
     bind: _ => ({
-      type: s3.BucketNotificationDestinationType.Topic,
+      type: s3.BucketNotificationDestinationType.TOPIC,
       arn: 'arn:aws:sns:...'
     })
   };
 
-  bucket.addEventNotification(s3.EventType.ObjectCreated, queueTarget);
-  bucket.addEventNotification(s3.EventType.ObjectCreated, lambdaTarget);
+  bucket.addEventNotification(s3.EventType.OBJECT_CREATED, queueTarget);
+  bucket.addEventNotification(s3.EventType.OBJECT_CREATED, lambdaTarget);
   bucket.addObjectRemovedNotification(topicTarget, { prefix: 'prefix' });
 
   expect(stack).toHaveResource('Custom::S3BucketNotifications', {
@@ -183,16 +183,16 @@ test('multiple subscriptions of the same type', () => {
 
   const bucket = new s3.Bucket(stack, 'TestBucket');
 
-  bucket.addEventNotification(s3.EventType.ObjectRemovedDelete, {
+  bucket.addEventNotification(s3.EventType.OBJECT_REMOVED_DELETE, {
     bind: _ => ({
-      type: s3.BucketNotificationDestinationType.Queue,
+      type: s3.BucketNotificationDestinationType.QUEUE,
       arn: 'arn:aws:sqs:...:queue1'
     })
   });
 
-  bucket.addEventNotification(s3.EventType.ObjectRemovedDelete, {
+  bucket.addEventNotification(s3.EventType.OBJECT_REMOVED_DELETE, {
     bind: _ => ({
-      type: s3.BucketNotificationDestinationType.Queue,
+      type: s3.BucketNotificationDestinationType.QUEUE,
       arn: 'arn:aws:sqs:...:queue2'
     })
   });
@@ -232,11 +232,11 @@ test('prefix/suffix filters', () => {
   const bucket = new s3.Bucket(stack, 'TestBucket');
 
   const bucketNotificationTarget = {
-    type: s3.BucketNotificationDestinationType.Queue,
+    type: s3.BucketNotificationDestinationType.QUEUE,
     arn: 'arn:aws:sqs:...'
   };
 
-  bucket.addEventNotification(s3.EventType.ObjectRemovedDelete, { bind: _ => bucketNotificationTarget }, { prefix: 'images/', suffix: '.jpg' });
+  bucket.addEventNotification(s3.EventType.OBJECT_REMOVED_DELETE, { bind: _ => bucketNotificationTarget }, { prefix: 'images/', suffix: '.jpg' });
 
   expect(stack).toHaveResource('Custom::S3BucketNotifications', {
     "ServiceToken": {
@@ -283,7 +283,7 @@ test('a notification destination can specify a set of dependencies that must be 
   const dest: s3.IBucketNotificationDestination = {
     bind: () => ({
       arn: 'arn',
-      type: s3.BucketNotificationDestinationType.Queue,
+      type: s3.BucketNotificationDestinationType.QUEUE,
       dependencies: [ dependent ]
     })
   };

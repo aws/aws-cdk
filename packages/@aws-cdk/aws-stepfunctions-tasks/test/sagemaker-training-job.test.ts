@@ -93,7 +93,7 @@ test('create complex training job', () => {
         role,
         algorithmSpecification: {
             algorithmName: "BlazingText",
-            trainingInputMode: tasks.InputMode.File,
+            trainingInputMode: tasks.InputMode.FILE,
             metricDefinitions: [
                 {
                     name: 'mymetric', regex: 'regex_pattern'
@@ -107,11 +107,11 @@ test('create complex training job', () => {
             {
                 channelName: "train",
                 contentType: "image/jpeg",
-                compressionType: tasks.CompressionType.None,
-                recordWrapperType: tasks.RecordWrapperType.RecordIO,
+                compressionType: tasks.CompressionType.NONE,
+                recordWrapperType: tasks.RecordWrapperType.RECORD_IO,
                 dataSource: {
                     s3DataSource: {
-                        s3DataType: tasks.S3DataType.S3Prefix,
+                        s3DataType: tasks.S3DataType.S3_PREFIX,
                         s3Uri: "s3://mybucket/mytrainpath",
                     }
                 }
@@ -119,11 +119,11 @@ test('create complex training job', () => {
             {
                 channelName: "test",
                 contentType: "image/jpeg",
-                compressionType: tasks.CompressionType.Gzip,
-                recordWrapperType: tasks.RecordWrapperType.RecordIO,
+                compressionType: tasks.CompressionType.GZIP,
+                recordWrapperType: tasks.RecordWrapperType.RECORD_IO,
                 dataSource: {
                     s3DataSource: {
-                        s3DataType: tasks.S3DataType.S3Prefix,
+                        s3DataType: tasks.S3DataType.S3_PREFIX,
                         s3Uri: "s3://mybucket/mytestpath",
                     }
                 }
@@ -135,7 +135,7 @@ test('create complex training job', () => {
         },
         resourceConfig: {
             instanceCount: 1,
-            instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.P3, ec2.InstanceSize.XLarge2),
+            instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.P3, ec2.InstanceSize.XLARGE2),
             volumeSizeInGB: 50,
             volumeKmsKeyId: kmsKey,
         },
@@ -237,14 +237,14 @@ test('pass param to training job', () => {
         role,
         algorithmSpecification: {
             algorithmName: "BlazingText",
-            trainingInputMode: tasks.InputMode.File
+            trainingInputMode: tasks.InputMode.FILE
         },
         inputDataConfig: [
             {
                 channelName: 'train',
                 dataSource: {
                     s3DataSource: {
-                        s3DataType: tasks.S3DataType.S3Prefix,
+                        s3DataType: tasks.S3DataType.S3_PREFIX,
                         s3Uri: sfn.Data.stringAt('$.S3Bucket')
                     }
                 }
@@ -255,7 +255,7 @@ test('pass param to training job', () => {
         },
         resourceConfig: {
             instanceCount: 1,
-            instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.P3, ec2.InstanceSize.XLarge2),
+            instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.P3, ec2.InstanceSize.XLARGE2),
             volumeSizeInGB: 50
         },
         stoppingCondition: {

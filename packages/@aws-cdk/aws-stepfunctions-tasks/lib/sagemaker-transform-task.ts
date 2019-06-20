@@ -110,7 +110,7 @@ export class SagemakerTransformTask implements sfn.IStepFunctionsTask {
                 { transformDataSource:
                     { s3DataSource:
                         { ...props.transformInput.transformDataSource.s3DataSource,
-                        s3DataType: S3DataType.S3Prefix
+                        s3DataType: S3DataType.S3_PREFIX
                         }
                     }
             });
@@ -118,7 +118,7 @@ export class SagemakerTransformTask implements sfn.IStepFunctionsTask {
         // set the default value for the transform resources
         this.transformResources = props.transformResources || {
             instanceCount: 1,
-            instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.M4, ec2.InstanceSize.XLarge),
+            instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.M4, ec2.InstanceSize.XLARGE),
         };
     }
 
