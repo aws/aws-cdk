@@ -62,7 +62,7 @@ export enum VpcEndpointType {
    * address that serves as an entry point for traffic destined to a supported
    * service.
    */
-  Interface = 'Interface',
+  INTERFACE = 'Interface',
 
   /**
    * Gateway
@@ -70,7 +70,7 @@ export enum VpcEndpointType {
    * A gateway endpoint is a gateway that is a target for a specified route in
    * your route table, used for traffic destined to a supported AWS service.
    */
-  Gateway = 'Gateway'
+  GATEWAY = 'Gateway'
 }
 
 /**
@@ -165,7 +165,7 @@ export class GatewayVpcEndpoint extends VpcEndpoint implements IGatewayVpcEndpoi
   constructor(scope: Construct, id: string, props: GatewayVpcEndpointProps) {
     super(scope, id);
 
-    const subnets = props.subnets || [{ subnetType: SubnetType.Private }];
+    const subnets = props.subnets || [{ subnetType: SubnetType.PRIVATE }];
     const routeTableIds = allRouteTableIds(...subnets.map(s => props.vpc.selectSubnets(s)));
 
     if (routeTableIds.length === 0) {
@@ -176,7 +176,7 @@ export class GatewayVpcEndpoint extends VpcEndpoint implements IGatewayVpcEndpoi
       policyDocument: Lazy.anyValue({ produce: () => this.policyDocument }),
       routeTableIds,
       serviceName: props.service.name,
-      vpcEndpointType: VpcEndpointType.Gateway,
+      vpcEndpointType: VpcEndpointType.GATEWAY,
       vpcId: props.vpc.vpcId
     });
 
@@ -377,7 +377,7 @@ export class InterfaceVpcEndpoint extends VpcEndpoint implements IInterfaceVpcEn
       policyDocument: Lazy.anyValue({ produce: () => this.policyDocument }),
       securityGroupIds: [this.securityGroupId],
       serviceName: props.service.name,
-      vpcEndpointType: VpcEndpointType.Interface,
+      vpcEndpointType: VpcEndpointType.INTERFACE,
       subnetIds,
       vpcId: props.vpc.vpcId
     });

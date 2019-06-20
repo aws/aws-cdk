@@ -26,7 +26,7 @@ export class LambdaDestination implements s3.IBucketNotificationDestination {
     const permission = this.fn.node.findChild(permissionId) as CfnResource;
 
     return {
-      type: s3.BucketNotificationDestinationType.Lambda,
+      type: s3.BucketNotificationDestinationType.LAMBDA,
       arn: this.fn.functionArn,
       dependencies: permission ? [ permission ] : undefined
     };

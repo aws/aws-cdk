@@ -1,4 +1,5 @@
-import { Construct, Context, Stack, Token } from '@aws-cdk/cdk';
+import ssm = require('@aws-cdk/aws-ssm');
+import { Construct, Stack, Token } from '@aws-cdk/cdk';
 import { UserData } from './user-data';
 import { WindowsVersion } from './windows-versions';
 
@@ -27,7 +28,8 @@ export class WindowsImage implements IMachineImageSource  {
    * Return the image to use in the given context
    */
   public getImage(scope: Construct): MachineImage {
-    const ami = Context.getSsmParameter(scope, this.imageParameterName(this.version));
+    const parameterName = this.imageParameterName(this.version);
+    const ami = ssm.StringParameter.valueForStringParameter(scope, parameterName);
     return new MachineImage(ami, OperatingSystem.windows());
   }
 
@@ -84,10 +86,10 @@ export class AmazonLinuxImage implements IMachineImageSource {
   private readonly storage: AmazonLinuxStorage;
 
   constructor(props?: AmazonLinuxImageProps) {
-    this.generation = (props && props.generation) || AmazonLinuxGeneration.AmazonLinux;
-    this.edition = (props && props.edition) || AmazonLinuxEdition.Standard;
+    this.generation = (props && props.generation) || AmazonLinuxGeneration.AMAZON_LINUX;
+    this.edition = (props && props.edition) || AmazonLinuxEdition.STANDARD;
     this.virtualization = (props && props.virtualization) || AmazonLinuxVirt.HVM;
-    this.storage = (props && props.storage) || AmazonLinuxStorage.GeneralPurpose;
+    this.storage = (props && props.storage) || AmazonLinuxStorage.GENERAL_PURPOSE;
   }
 
   /**
@@ -97,14 +99,14 @@ export class AmazonLinuxImage implements IMachineImageSource {
     const parts: Array<string|undefined> = [
       this.generation,
       'ami',
-      this.edition !== AmazonLinuxEdition.Standard ? this.edition : undefined,
+      this.edition !== AmazonLinuxEdition.STANDARD ? this.edition : undefined,
       this.virtualization,
       'x86_64', // No 32-bits images vended through this
       this.storage
     ].filter(x => x !== undefined); // Get rid of undefineds
 
     const parameterName = '/aws/service/ami-amazon-linux-latest/' + parts.join('-');
-    const ami = Context.getSsmParameter(scope, parameterName);
+    const ami = ssm.StringParameter.valueForStringParameter(scope, parameterName);
     return new MachineImage(ami, OperatingSystem.linux());
   }
 }
@@ -116,12 +118,12 @@ export enum AmazonLinuxGeneration {
   /**
    * Amazon Linux
    */
-  AmazonLinux = 'amzn',
+  AMAZON_LINUX = 'amzn',
 
   /**
    * Amazon Linux 2
    */
-  AmazonLinux2 = 'amzn2',
+  AMAZON_LINUX_2 = 'amzn2',
 }
 
 /**
@@ -131,12 +133,12 @@ export enum AmazonLinuxEdition {
   /**
    * Standard edition
    */
-  Standard = 'standard',
+  STANDARD = 'standard',
 
   /**
    * Minimal edition
    */
-  Minimal = 'minimal'
+  MINIMAL = 'minimal'
 }
 
 /**
@@ -168,7 +170,7 @@ export enum AmazonLinuxStorage {
   /**
    * General Purpose-based storage (recommended)
    */
-  GeneralPurpose = 'gp2',
+  GENERAL_PURPOSE = 'gp2',
 }
 
 /**
@@ -182,9 +184,9 @@ export class GenericLinuxImage implements IMachineImageSource  {
   }
 
   public getImage(scope: Construct): MachineImage {
-    let region = Stack.of(scope).region;
+    const region = Stack.of(scope).region;
     if (Token.isUnresolved(region)) {
-      region = Context.getDefaultRegion(scope);
+      throw new Error(`Unable to determine AMI from AMI map since stack is region-agnostic`);
     }
 
     const ami = region !== 'test-region' ? this.amiMap[region] : 'ami-12345';
@@ -210,8 +212,8 @@ export class MachineImage {
  * The OS type of a particular image
  */
 export enum OperatingSystemType {
-  Linux,
-  Windows,
+  LINUX,
+  WINDOWS,
 }
 
 /**
@@ -223,7 +225,7 @@ export abstract class OperatingSystem {
    */
   public static windows(): OperatingSystem {
     class WindowsOS extends OperatingSystem {
-      public readonly type = OperatingSystemType.Windows;
+      public readonly type = OperatingSystemType.WINDOWS;
       public createDefaultUserData() {
         return UserData.forWindows();
       }
@@ -236,7 +238,7 @@ export abstract class OperatingSystem {
    */
   public static linux(): OperatingSystem {
     class LinuxOS extends OperatingSystem {
-      public readonly type = OperatingSystemType.Linux;
+      public readonly type = OperatingSystemType.LINUX;
       public createDefaultUserData() {
         return UserData.forLinux();
       }

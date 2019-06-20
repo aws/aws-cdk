@@ -174,7 +174,7 @@ abstract class DatabaseClusterBase extends Resource implements IDatabaseCluster 
   public asSecretAttachmentTarget(): secretsmanager.SecretAttachmentTargetProps {
     return {
       targetId: this.clusterIdentifier,
-      targetType: secretsmanager.AttachmentTargetType.Cluster
+      targetType: secretsmanager.AttachmentTargetType.CLUSTER
     };
   }
 }
@@ -352,7 +352,7 @@ export class DatabaseCluster extends DatabaseClusterBase {
                      props.clusterIdentifier != null ? `${props.clusterIdentifier}instance${instanceIndex}` :
                      undefined;
 
-      const publiclyAccessible = props.instanceProps.vpcSubnets && props.instanceProps.vpcSubnets.subnetType === ec2.SubnetType.Public;
+      const publiclyAccessible = props.instanceProps.vpcSubnets && props.instanceProps.vpcSubnets.subnetType === ec2.SubnetType.PUBLIC;
 
       const instance = new CfnDBInstance(this, `Instance${instanceIndex}`, {
         // Link to cluster

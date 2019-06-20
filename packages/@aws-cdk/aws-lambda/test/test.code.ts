@@ -1,5 +1,4 @@
 import { expect, haveResource, haveResourceLike, ResourcePart } from '@aws-cdk/assert';
-import assets = require('@aws-cdk/assets');
 import cdk = require('@aws-cdk/cdk');
 import cxapi = require('@aws-cdk/cx-api');
 import { Test } from 'nodeunit';
@@ -23,17 +22,6 @@ export = {
     }
   },
   'lambda.Code.asset': {
-    'determines packaging type from file type'(test: Test) {
-      // WHEN
-      const fileAsset = lambda.Code.asset(path.join(__dirname, 'handler.zip'));
-      const directoryAsset = lambda.Code.asset(path.join(__dirname, 'my-lambda-handler'));
-
-      // THEN
-      test.deepEqual(fileAsset.packaging, assets.AssetPackaging.File);
-      test.deepEqual(directoryAsset.packaging, assets.AssetPackaging.ZipDirectory);
-      test.done();
-    },
-
     'fails if a non-zip asset is used'(test: Test) {
       // GIVEN
       const fileAsset = lambda.Code.asset(path.join(__dirname, 'my-lambda-handler', 'index.py'));

@@ -602,6 +602,8 @@ export = {
 };
 
 class Promise2 implements IResolvable {
+  public readonly creationStack = [];
+
   public resolve() {
     return {
       Data: {
@@ -614,6 +616,7 @@ class Promise2 implements IResolvable {
 }
 
 class Promise1 implements IResolvable {
+  public readonly creationStack = [];
   public p2 = [ new Promise2(), new Promise2() ];
 
   public resolve() {

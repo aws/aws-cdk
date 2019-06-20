@@ -89,13 +89,13 @@ export enum VpnConnectionType {
   /**
    * The IPsec 1 VPN connection type.
    */
-  IPsec1 = 'ipsec.1',
+  IPSEC_1 = 'ipsec.1',
 
   /**
    * Dummy member
    * TODO: remove once https://github.com/awslabs/jsii/issues/231 is fixed
    */
-  Dummy = 'dummy'
+  DUMMY = 'dummy'
 }
 
 /**
@@ -158,7 +158,7 @@ export class VpnConnection extends cdk.Resource implements IVpnConnection {
       throw new Error(`The \`ip\` ${props.ip} is not a valid IPv4 address.`);
     }
 
-    const type = VpnConnectionType.IPsec1;
+    const type = VpnConnectionType.IPSEC_1;
     const bgpAsn = props.asn || 65000;
 
     const customerGateway = new CfnCustomerGateway(this, 'CustomerGateway', {

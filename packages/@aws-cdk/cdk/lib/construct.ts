@@ -1,8 +1,8 @@
 import cxapi = require('@aws-cdk/cx-api');
 import { IAspect } from './aspect';
 import { DependableTrait, IDependable } from './dependency';
-import { createStackTrace } from './private/stack-trace';
 import { IResolvable } from './resolvable';
+import { captureStackTrace } from './stack-trace';
 import { Token } from './token';
 import { makeUniqueId } from './uniqueid';
 
@@ -267,6 +267,10 @@ export class ConstructNode {
    * @param value The context value
    */
   public setContext(key: string, value: any) {
+    if (Token.isUnresolved(key)) {
+      throw new Error(`Invalid context key "${key}". It contains unresolved tokens`);
+    }
+
     if (this.children.length > 0) {
       const names = this.children.map(c => c.node.id);
       throw new Error('Cannot set context after children have been added: ' + names.join(','));
@@ -283,6 +287,10 @@ export class ConstructNode {
    * @returns The context value or `undefined` if there is no context value for thie key.
    */
   public tryGetContext(key: string): any {
+    if (Token.isUnresolved(key)) {
+      throw new Error(`Invalid context key "${key}". It contains unresolved tokens`);
+    }
+
     const value = this._context[key];
     if (value !== undefined) { return value; }
 
@@ -312,7 +320,7 @@ export class ConstructNode {
       return;
     }
 
-    const trace = this.tryGetContext(cxapi.DISABLE_METADATA_STACK_TRACE) ? undefined : createStackTrace(from || this.addMetadata);
+    const trace = this.tryGetContext(cxapi.DISABLE_METADATA_STACK_TRACE) ? undefined : captureStackTrace(from || this.addMetadata);
     this._metadata.push({ type, data, trace });
   }
 

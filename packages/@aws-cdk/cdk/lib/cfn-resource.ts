@@ -248,7 +248,7 @@ export class CfnResource extends CfnRefElement {
       // Change message
       e.message = `While synthesizing ${this.node.path}: ${e.message}`;
       // Adjust stack trace (make it look like node built it, too...)
-      const trace = this.creationStackTrace;
+      const trace = this.creationStack;
       if (trace) {
         const creationStack = ['--- resource created at ---', ...trace].join('\n  at ');
         const problemTrace = e.stack.substr(e.stack.indexOf(e.message) + e.message.length);

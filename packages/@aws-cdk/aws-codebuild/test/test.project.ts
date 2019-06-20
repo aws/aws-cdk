@@ -1,4 +1,6 @@
 import { expect, haveResource, haveResourceLike, not } from '@aws-cdk/assert';
+import ec2 = require('@aws-cdk/aws-ec2');
+import iam = require('@aws-cdk/aws-iam');
 import { Bucket } from '@aws-cdk/aws-s3';
 import cdk = require('@aws-cdk/cdk');
 import { Test } from 'nodeunit';
@@ -194,8 +196,8 @@ export = {
         bucket: new Bucket(stack, 'Bucket'),
         path: 'path',
       }),
-      cache: codebuild.Cache.local(codebuild.LocalCacheMode.Custom, codebuild.LocalCacheMode.DockerLayer,
-        codebuild.LocalCacheMode.Source)
+      cache: codebuild.Cache.local(codebuild.LocalCacheMode.CUSTOM, codebuild.LocalCacheMode.DOCKER_LAYER,
+        codebuild.LocalCacheMode.SOURCE)
     });
 
     // THEN
@@ -229,6 +231,27 @@ export = {
     expect(stack).to(not(haveResourceLike('AWS::CodeBuild::Project', {
       Cache: {}
     })));
+
+    test.done();
+  },
+
+  'can use an imported Role for a Project within a VPC'(test: Test) {
+    const stack = new cdk.Stack();
+
+    const importedRole = iam.Role.fromRoleArn(stack, 'Role', 'arn:aws:iam::1234567890:role/service-role/codebuild-bruiser-service-role');
+    const vpc = new ec2.Vpc(stack, 'Vpc');
+
+    new codebuild.Project(stack, 'Project', {
+      source: codebuild.Source.gitHubEnterprise({
+        httpsCloneUrl: 'https://mygithub-enterprise.com/myuser/myrepo',
+      }),
+      role: importedRole,
+      vpc,
+    });
+
+    expect(stack).to(haveResourceLike('AWS::CodeBuild::Project', {
+      // no need to do any assertions
+    }));
 
     test.done();
   },

@@ -1,11 +1,11 @@
-import { DockerImageAsset, DockerImageAssetProps } from '@aws-cdk/assets-docker';
 import cloudwatch = require('@aws-cdk/aws-cloudwatch');
 import ec2 = require('@aws-cdk/aws-ec2');
 import ecr = require('@aws-cdk/aws-ecr');
+import { DockerImageAsset, DockerImageAssetProps } from '@aws-cdk/aws-ecr-assets';
 import events = require('@aws-cdk/aws-events');
 import iam = require('@aws-cdk/aws-iam');
 import kms = require('@aws-cdk/aws-kms');
-import { Aws, Construct, IResource, Lazy, PhysicalName, Resource, ResourceIdentifiers, Stack } from '@aws-cdk/cdk';
+import { Aws, CfnResource, Construct, IResource, Lazy, PhysicalName, Resource, ResourceIdentifiers, Stack } from '@aws-cdk/cdk';
 import { IArtifacts } from './artifacts';
 import { BuildSpec } from './build-spec';
 import { Cache } from './cache';
@@ -202,7 +202,7 @@ abstract class ProjectBase extends Resource implements IProject {
    *
    * @see https://docs.aws.amazon.com/codebuild/latest/userguide/sample-build-notifications.html
    */
-  public onEvent(id: string, options: events.OnEventOptions): events.Rule {
+  public onEvent(id: string, options: events.OnEventOptions = {}): events.Rule {
     const rule = new events.Rule(this, id, options);
     rule.addTarget(options.target);
     rule.addEventPattern({
@@ -239,7 +239,7 @@ abstract class ProjectBase extends Resource implements IProject {
    *
    * @see https://docs.aws.amazon.com/codebuild/latest/userguide/sample-build-notifications.html
    */
-  public onStateChange(id: string, options: events.OnEventOptions) {
+  public onStateChange(id: string, options: events.OnEventOptions = {}) {
     const rule = this.onEvent(id, options);
     rule.addEventPattern({
       detailType: ['CodeBuild Build State Change'],
@@ -253,7 +253,7 @@ abstract class ProjectBase extends Resource implements IProject {
    *
    * @see https://docs.aws.amazon.com/codebuild/latest/userguide/sample-build-notifications.html
    */
-  public onPhaseChange(id: string, options: events.OnEventOptions) {
+  public onPhaseChange(id: string, options: events.OnEventOptions = {}) {
     const rule = this.onEvent(id, options);
     rule.addEventPattern({
       detailType: ['CodeBuild Build Phase Change'],
@@ -267,7 +267,7 @@ abstract class ProjectBase extends Resource implements IProject {
    * To access fields from the event in the event target input,
    * use the static fields on the `StateChangeEvent` class.
    */
-  public onBuildStarted(id: string, options: events.OnEventOptions) {
+  public onBuildStarted(id: string, options: events.OnEventOptions = {}) {
     const rule = this.onStateChange(id, options);
     rule.addEventPattern({
       detail: {
@@ -283,7 +283,7 @@ abstract class ProjectBase extends Resource implements IProject {
    * To access fields from the event in the event target input,
    * use the static fields on the `StateChangeEvent` class.
    */
-  public onBuildFailed(id: string, options: events.OnEventOptions) {
+  public onBuildFailed(id: string, options: events.OnEventOptions = {}) {
     const rule = this.onStateChange(id, options);
     rule.addEventPattern({
       detail: {
@@ -299,7 +299,7 @@ abstract class ProjectBase extends Resource implements IProject {
    * To access fields from the event in the event target input,
    * use the static fields on the `StateChangeEvent` class.
    */
-  public onBuildSucceeded(id: string, options: events.OnEventOptions) {
+  public onBuildSucceeded(id: string, options: events.OnEventOptions = {}) {
     const rule = this.onStateChange(id, options);
     rule.addEventPattern({
       detail: {
@@ -699,6 +699,8 @@ export class Project extends ProjectBase {
       vpcConfig: this.configureVpc(props),
     });
 
+    this.addVpcRequiredPermissions(props, resource);
+
     const resourceIdentifiers = new ResourceIdentifiers(this, {
       arn: resource.attrArn,
       name: resource.refAsString,
@@ -715,20 +717,6 @@ export class Project extends ProjectBase {
 
     if (props.encryptionKey) {
       props.encryptionKey.grantEncryptDecrypt(this);
-    }
-  }
-
-  /**
-   * Add a permission only if there's a policy attached.
-   * @param statement The permissions statement to add
-   */
-  public addToRoleInlinePolicy(statement: iam.PolicyStatement) {
-    if (this.role) {
-      const policy = new iam.Policy(this, 'PolicyDocument', {
-        policyName: 'CodeBuildEC2Policy',
-        statements: [statement]
-      });
-      this.role.attachInlinePolicy(policy);
     }
   }
 
@@ -821,7 +809,7 @@ export class Project extends ProjectBase {
       computeType: env.computeType || this.buildImage.defaultComputeType,
       environmentVariables: !hasEnvironmentVars ? undefined : Object.keys(vars).map(name => ({
         name,
-        type: vars[name].type || BuildEnvironmentVariableType.PlainText,
+        type: vars[name].type || BuildEnvironmentVariableType.PLAINTEXT,
         value: vars[name].value
       }))
     };
@@ -869,31 +857,55 @@ export class Project extends ProjectBase {
     }
     this._connections = new ec2.Connections({ securityGroups });
 
-    this.addToRoleInlinePolicy(new iam.PolicyStatement({
-      resources: ['*'],
-      actions: [
-        'ec2:CreateNetworkInterface', 'ec2:DescribeNetworkInterfaces',
-        'ec2:DeleteNetworkInterface', 'ec2:DescribeSubnets',
-        'ec2:DescribeSecurityGroups', 'ec2:DescribeDhcpOptions',
-        'ec2:DescribeVpcs']
-    }));
-    this.addToRolePolicy(new iam.PolicyStatement({
-      resources: [`arn:aws:ec2:${Aws.region}:${Aws.accountId}:network-interface/*`],
-      actions: ['ec2:CreateNetworkInterfacePermission'],
-      conditions: {
-        StringEquals: {
-          "ec2:Subnet": props.vpc
-            .selectSubnets(props.subnetSelection).subnetIds
-            .map(si => `arn:aws:ec2:${Aws.region}:${Aws.accountId}:subnet/${si}`),
-          "ec2:AuthorizedService": "codebuild.amazonaws.com"
-        }
-      }
-    }));
     return {
       vpcId: props.vpc.vpcId,
       subnets: props.vpc.selectSubnets(props.subnetSelection).subnetIds,
       securityGroupIds: this.connections.securityGroups.map(s => s.securityGroupId)
     };
+  }
+
+  private addVpcRequiredPermissions(props: ProjectProps, project: CfnProject): void {
+    if (!props.vpc || !this.role) {
+      return;
+    }
+
+    this.role.addToPolicy(new iam.PolicyStatement({
+      resources: [`arn:aws:ec2:${Aws.region}:${Aws.accountId}:network-interface/*`],
+      actions: ['ec2:CreateNetworkInterfacePermission'],
+      conditions: {
+        StringEquals: {
+          'ec2:Subnet': props.vpc
+            .selectSubnets(props.subnetSelection).subnetIds
+            .map(si => `arn:aws:ec2:${Aws.region}:${Aws.accountId}:subnet/${si}`),
+          'ec2:AuthorizedService': 'codebuild.amazonaws.com'
+        },
+      },
+    }));
+
+    const policy = new iam.Policy(this, 'PolicyDocument', {
+      policyName: PhysicalName.of('CodeBuildEC2Policy'),
+      statements: [
+        new iam.PolicyStatement({
+          resources: ['*'],
+          actions: [
+            'ec2:CreateNetworkInterface',
+            'ec2:DescribeNetworkInterfaces',
+            'ec2:DeleteNetworkInterface',
+            'ec2:DescribeSubnets',
+            'ec2:DescribeSecurityGroups',
+            'ec2:DescribeDhcpOptions',
+            'ec2:DescribeVpcs',
+          ],
+        }),
+      ],
+    });
+    this.role.attachInlinePolicy(policy);
+
+    // add an explicit dependency between the EC2 Policy and this Project -
+    // otherwise, creating the Project fails,
+    // as it requires these permissions to be already attached to the Project's Role
+    const cfnPolicy = policy.node.findChild('Resource') as CfnResource;
+    project.addDependsOn(cfnPolicy);
   }
 
   private validateCodePipelineSettings(artifacts: IArtifacts) {
@@ -912,9 +924,9 @@ export class Project extends ProjectBase {
  * Build machine compute type.
  */
 export enum ComputeType {
-  Small = 'BUILD_GENERAL1_SMALL',
-  Medium = 'BUILD_GENERAL1_MEDIUM',
-  Large = 'BUILD_GENERAL1_LARGE'
+  SMALL = 'BUILD_GENERAL1_SMALL',
+  MEDIUM = 'BUILD_GENERAL1_MEDIUM',
+  LARGE = 'BUILD_GENERAL1_LARGE'
 }
 
 export interface BuildEnvironment {
@@ -1075,7 +1087,7 @@ export class LinuxBuildImage implements IBuildImage {
   }
 
   public readonly type = 'LINUX_CONTAINER';
-  public readonly defaultComputeType = ComputeType.Small;
+  public readonly defaultComputeType = ComputeType.SMALL;
 
   private constructor(public readonly imageId: string) {
   }
@@ -1167,14 +1179,14 @@ export class WindowsBuildImage implements IBuildImage {
     return image;
   }
   public readonly type = 'WINDOWS_CONTAINER';
-  public readonly defaultComputeType = ComputeType.Medium;
+  public readonly defaultComputeType = ComputeType.MEDIUM;
 
   private constructor(public readonly imageId: string) {
   }
 
   public validate(buildEnvironment: BuildEnvironment): string[] {
     const ret: string[] = [];
-    if (buildEnvironment.computeType === ComputeType.Small) {
+    if (buildEnvironment.computeType === ComputeType.SMALL) {
       ret.push("Windows images do not support the Small ComputeType");
     }
     return ret;
@@ -1224,12 +1236,12 @@ export enum BuildEnvironmentVariableType {
   /**
    * An environment variable in plaintext format.
    */
-  PlainText = 'PLAINTEXT',
+  PLAINTEXT = 'PLAINTEXT',
 
   /**
    * An environment variable stored in Systems Manager Parameter Store.
    */
-  ParameterStore = 'PARAMETER_STORE'
+  PARAMETER_STORE = 'PARAMETER_STORE'
 }
 
 function ecrAccessForCodeBuildService(): iam.PolicyStatement {

@@ -37,7 +37,6 @@ export = {
           SubnetIds: [
             {Ref: "VPCPrivateSubnet1Subnet8BCA10E0"},
             {Ref: "VPCPrivateSubnet2SubnetCFCDAA7A"},
-            {Ref: "VPCPrivateSubnet3Subnet3EDCD457"}
           ]
         }
       }));
@@ -152,7 +151,7 @@ export = {
         handler: 'index.handler',
         runtime: lambda.Runtime.Nodejs810,
         vpc,
-        vpcSubnets: { subnetType: ec2.SubnetType.Public }
+        vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC }
       });
     });
 

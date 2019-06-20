@@ -235,7 +235,7 @@ abstract class AutoScalingGroupBase extends Resource implements IAutoScalingGrou
   public scaleOnCpuUtilization(id: string, props: CpuUtilizationScalingProps): TargetTrackingScalingPolicy {
     return new TargetTrackingScalingPolicy(this, `ScalingPolicy${id}`, {
       autoScalingGroup: this,
-      predefinedMetric: PredefinedMetric.ASGAverageCPUUtilization,
+      predefinedMetric: PredefinedMetric.ASG_AVERAGE_CPU_UTILIZATION,
       targetValue: props.targetUtilizationPercent,
       ...props
     });
@@ -247,7 +247,7 @@ abstract class AutoScalingGroupBase extends Resource implements IAutoScalingGrou
   public scaleOnIncomingBytes(id: string, props: NetworkUtilizationScalingProps): TargetTrackingScalingPolicy {
     return new TargetTrackingScalingPolicy(this, `ScalingPolicy${id}`, {
       autoScalingGroup: this,
-      predefinedMetric: PredefinedMetric.ASGAverageNetworkIn,
+      predefinedMetric: PredefinedMetric.ASG_AVERAGE_NETWORK_IN,
       targetValue: props.targetBytesPerSecond,
       ...props
     });
@@ -259,7 +259,7 @@ abstract class AutoScalingGroupBase extends Resource implements IAutoScalingGrou
   public scaleOnOutgoingBytes(id: string, props: NetworkUtilizationScalingProps): TargetTrackingScalingPolicy {
     return new TargetTrackingScalingPolicy(this, `ScalingPolicy${id}`, {
       autoScalingGroup: this,
-      predefinedMetric: PredefinedMetric.ASGAverageNetworkOut,
+      predefinedMetric: PredefinedMetric.ASG_AVERAGE_NETWORK_OUT,
       targetValue: props.targetBytesPerSecond,
       ...props
     });
@@ -280,7 +280,7 @@ abstract class AutoScalingGroupBase extends Resource implements IAutoScalingGrou
 
     const policy = new TargetTrackingScalingPolicy(this, `ScalingPolicy${id}`, {
       autoScalingGroup: this,
-      predefinedMetric: PredefinedMetric.ALBRequestCountPerTarget,
+      predefinedMetric: PredefinedMetric.ALB_REQUEST_COUNT_PER_TARGET,
       targetValue: props.targetRequestsPerSecond,
       resourceLabel,
       ...props
@@ -521,7 +521,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
    * Apply CloudFormation update policies for the AutoScalingGroup
    */
   private applyUpdatePolicies(props: AutoScalingGroupProps) {
-    if (props.updateType === UpdateType.ReplacingUpdate) {
+    if (props.updateType === UpdateType.REPLACING_UPDATE) {
       this.autoScalingGroup.options.updatePolicy = {
         ...this.autoScalingGroup.options.updatePolicy,
         autoScalingReplacingUpdate: {
@@ -542,7 +542,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
           }
         };
       }
-    } else if (props.updateType === UpdateType.RollingUpdate) {
+    } else if (props.updateType === UpdateType.ROLLING_UPDATE) {
       this.autoScalingGroup.options.updatePolicy = {
         ...this.autoScalingGroup.options.updatePolicy,
         autoScalingRollingUpdate: renderRollingUpdateConfig(props.rollingUpdateConfiguration)
@@ -576,19 +576,19 @@ export enum UpdateType {
   /**
    * Don't do anything
    */
-  None = 'None',
+  NONE = 'None',
 
   /**
    * Replace the entire AutoScalingGroup
    *
    * Builds a new AutoScalingGroup first, then delete the old one.
    */
-  ReplacingUpdate = 'Replace',
+  REPLACING_UPDATE = 'Replace',
 
   /**
    * Replace the instances in the AutoScalingGroup.
    */
-  RollingUpdate = 'RollingUpdate',
+  ROLLING_UPDATE = 'RollingUpdate',
 }
 
 /**
@@ -667,14 +667,14 @@ export interface RollingUpdateConfiguration {
 }
 
 export enum ScalingProcess {
-  Launch = 'Launch',
-  Terminate = 'Terminate',
-  HealthCheck = 'HealthCheck',
-  ReplaceUnhealthy = 'ReplaceUnhealthy',
-  AZRebalance = 'AZRebalance',
-  AlarmNotification = 'AlarmNotification',
-  ScheduledActions = 'ScheduledActions',
-  AddToLoadBalancer = 'AddToLoadBalancer'
+  LAUNCH = 'Launch',
+  TERMINATE = 'Terminate',
+  HEALTH_CHECK = 'HealthCheck',
+  REPLACE_UNHEALTHY = 'ReplaceUnhealthy',
+  AZ_REBALANCE = 'AZRebalance',
+  ALARM_NOTIFICATION = 'AlarmNotification',
+  SCHEDULED_ACTIONS = 'ScheduledActions',
+  ADD_TO_LOAD_BALANCER = 'AddToLoadBalancer'
 }
 
 /**
@@ -693,8 +693,8 @@ function renderRollingUpdateConfig(config: RollingUpdateConfiguration = {}): Aut
     suspendProcesses: config.suspendProcesses !== undefined ? config.suspendProcesses :
       // Recommended list of processes to suspend from here:
       // https://aws.amazon.com/premiumsupport/knowledge-center/auto-scaling-group-rolling-updates/
-      [ScalingProcess.HealthCheck, ScalingProcess.ReplaceUnhealthy, ScalingProcess.AZRebalance,
-        ScalingProcess.AlarmNotification, ScalingProcess.ScheduledActions],
+      [ScalingProcess.HEALTH_CHECK, ScalingProcess.REPLACE_UNHEALTHY, ScalingProcess.AZ_REBALANCE,
+        ScalingProcess.ALARM_NOTIFICATION, ScalingProcess.SCHEDULED_ACTIONS],
   };
 }
 

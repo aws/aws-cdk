@@ -26,9 +26,10 @@ export * from './cfn-dynamic-reference';
 export * from './tag';
 export * from './removal-policy';
 export * from './arn';
+export * from './stack-trace';
 
 export * from './app';
-export * from './context';
+export * from './context-provider';
 export * from './environment';
 
 export * from './runtime';
