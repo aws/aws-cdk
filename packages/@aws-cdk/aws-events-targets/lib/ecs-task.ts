@@ -115,8 +115,8 @@ export class EcsTask implements events.IRuleTarget {
     // Use a custom resource to "enhance" the target with network configuration
     // when using awsvpc network mode.
     if (this.taskDefinition.networkMode === ecs.NetworkMode.AwsVpc) {
-      const subnetSelection = this.props.subnetSelection || { subnetType: ec2.SubnetType.Private };
-      const assignPublicIp = subnetSelection.subnetType === ec2.SubnetType.Private ? 'DISABLED' : 'ENABLED';
+      const subnetSelection = this.props.subnetSelection || { subnetType: ec2.SubnetType.PRIVATE };
+      const assignPublicIp = subnetSelection.subnetType === ec2.SubnetType.PRIVATE ? 'DISABLED' : 'ENABLED';
 
       new cloudformation.AwsCustomResource(this.taskDefinition, 'PutTargets', {
         // `onCreate´ defaults to `onUpdate` and we don't need an `onDelete` here

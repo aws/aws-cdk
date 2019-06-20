@@ -46,7 +46,7 @@ export class SqsSubscription implements sns.ITopicSubscription {
     return {
       subscriberId: this.queue.node.id,
       endpoint: this.queue.queueArn,
-      protocol: sns.SubscriptionProtocol.Sqs,
+      protocol: sns.SubscriptionProtocol.SQS,
       rawMessageDelivery: this.props.rawMessageDelivery,
       filterPolicy: this.props.filterPolicy,
     };

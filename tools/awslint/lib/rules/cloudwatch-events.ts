@@ -48,13 +48,13 @@ eventsLinter.add({
 
 eventsLinter.add({
   code: 'events-method-signature',
-  message: `all 'onXxx()' methods should have the CloudWatch Events signature (id: string, options: events.OnEventOptions) => events.Rule`,
+  message: `all 'onXxx()' methods should have the CloudWatch Events signature (id: string, options: events.OnEventOptions = {}) => events.Rule`,
   eval: e => {
     for (const method of e.ctx.directEventMethods) {
       e.assertSignature(method, {
         parameters: [
           { type: 'string' },
-          { type: ON_EVENT_OPTIONS_FQN, subtypeAllowed: true },
+          { type: ON_EVENT_OPTIONS_FQN, subtypeAllowed: true, optional: true },
         ],
         returns: EVENT_RULE_FQN
       });

@@ -288,7 +288,9 @@
     "EcsClusterDefaultAutoScalingGroupLaunchConfigB7E376C1": {
       "Type": "AWS::AutoScaling::LaunchConfiguration",
       "Properties": {
-        "ImageId": "ami-1234",
+        "ImageId": {
+          "Ref": "SsmParameterValueawsserviceecsoptimizedamiamazonlinuxrecommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
+        },
         "InstanceType": "t2.micro",
         "IamInstanceProfile": {
           "Ref": "EcsClusterDefaultAutoScalingGroupInstanceProfile2CE606B3"
@@ -813,7 +815,8 @@
       "DependsOn": [
         "AdoptEcrRepositorydbc60defc59544bcaa5c28c95d68f62cServiceRoleDefaultPolicy6BC8737C",
         "AdoptEcrRepositorydbc60defc59544bcaa5c28c95d68f62cServiceRoleD788AA17"
-      ]
+      ],
+      "DeletionPolicy": "Delete"
     },
     "TaskDefExecutionRoleB4775C97": {
       "Type": "AWS::IAM::Role",
@@ -1173,6 +1176,10 @@
     }
   },
   "Parameters": {
+    "SsmParameterValueawsserviceecsoptimizedamiamazonlinuxrecommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter": {
+      "Type": "AWS::SSM::Parameter::Value<String>",
+      "Default": "/aws/service/ecs/optimized-ami/amazon-linux/recommended/image_id"
+    },
     "TaskDefTheContainerAssetImageImageName92ECAC22": {
       "Type": "String",
       "Description": "ECR repository name and tag asset \"aws-ecs-integ-ecs/TaskDef/TheContainer/AssetImage\""

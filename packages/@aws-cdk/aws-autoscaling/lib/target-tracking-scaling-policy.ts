@@ -121,7 +121,7 @@ export class TargetTrackingScalingPolicy extends cdk.Construct {
       throw new RangeError(`estimatedInstanceWarmupSeconds cannot be negative, got: ${props.estimatedInstanceWarmupSeconds}`);
     }
 
-    if (props.predefinedMetric === PredefinedMetric.ALBRequestCountPerTarget && !props.resourceLabel) {
+    if (props.predefinedMetric === PredefinedMetric.ALB_REQUEST_COUNT_PER_TARGET && !props.resourceLabel) {
       throw new Error('When tracking the ALBRequestCountPerTarget metric, the ALB identifier must be supplied in resourceLabel');
     }
 
@@ -171,22 +171,22 @@ export enum PredefinedMetric {
   /**
    * Average CPU utilization of the Auto Scaling group
    */
-  ASGAverageCPUUtilization = 'ASGAverageCPUUtilization',
+  ASG_AVERAGE_CPU_UTILIZATION = 'ASGAverageCPUUtilization',
 
   /**
    * Average number of bytes received on all network interfaces by the Auto Scaling group
    */
-  ASGAverageNetworkIn = 'ASGAverageNetworkIn',
+  ASG_AVERAGE_NETWORK_IN = 'ASGAverageNetworkIn',
 
   /**
    * Average number of bytes sent out on all network interfaces by the Auto Scaling group
    */
-  ASGAverageNetworkOut = 'ASGAverageNetworkOut',
+  ASG_AVERAGE_NETWORK_OUT = 'ASGAverageNetworkOut',
 
   /**
    * Number of requests completed per target in an Application Load Balancer target group
    *
    * Specify the ALB to look at in the `resourceLabel` field.
    */
-  ALBRequestCountPerTarget = 'ALBRequestCountPerTarget',
+  ALB_REQUEST_COUNT_PER_TARGET = 'ALBRequestCountPerTarget',
 }

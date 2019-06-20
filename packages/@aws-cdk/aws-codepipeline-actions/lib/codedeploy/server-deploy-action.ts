@@ -24,7 +24,7 @@ export class CodeDeployServerDeployAction extends codepipeline.Action {
   constructor(props: CodeDeployServerDeployActionProps) {
     super({
       ...props,
-      category: codepipeline.ActionCategory.Deploy,
+      category: codepipeline.ActionCategory.DEPLOY,
       provider: 'CodeDeploy',
       artifactBounds: deployArtifactBounds(),
       inputs: [props.input],

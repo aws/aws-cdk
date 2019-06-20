@@ -97,40 +97,40 @@ export enum SubscriptionProtocol {
   /**
    * JSON-encoded message is POSTED to an HTTP url.
    */
-  Http = 'http',
+  HTTP = 'http',
 
   /**
    * JSON-encoded message is POSTed to an HTTPS url.
    */
-  Https = 'https',
+  HTTPS = 'https',
 
   /**
    * Notifications are sent via email.
    */
-  Email = 'email',
+  EMAIL = 'email',
 
   /**
    * Notifications are JSON-encoded and sent via mail.
    */
-  EmailJson = 'email-json',
+  EMAIL_JSON = 'email-json',
 
   /**
    * Notification is delivered by SMS
    */
-  Sms = 'sms',
+  SMS = 'sms',
 
   /**
    * Notifications are enqueued into an SQS queue.
    */
-  Sqs = 'sqs',
+  SQS = 'sqs',
 
   /**
    * JSON-encoded notifications are sent to a mobile app endpoint.
    */
-  Application = 'application',
+  APPLICATION = 'application',
 
   /**
    * Notifications trigger a Lambda function.
    */
-  Lambda = 'lambda'
+  LAMBDA = 'lambda'
 }
