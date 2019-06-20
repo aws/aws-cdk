@@ -203,7 +203,7 @@ class MyResource extends Resource {
         region: '',
         account: '',
         resource:  'my-resource',
-        resourceName: this.physicalName.value,
+        resourceName: this.physicalName,
         service: 'myservice',
       },
     });

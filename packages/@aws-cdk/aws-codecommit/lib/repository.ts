@@ -210,9 +210,11 @@ abstract class RepositoryBase extends Resource implements IRepository {
 
 export interface RepositoryProps {
   /**
-   * Name of the repository. This property is required for all repositories.
+   * Name of the repository.
+   *
+   * This property is required for all CodeCommit repositories.
    */
-  readonly repositoryName: PhysicalName;
+  readonly repositoryName: string;
 
   /**
    * A description of the repository. Use the description to identify the
@@ -277,11 +279,11 @@ export class Repository extends RepositoryBase {
 
   constructor(scope: Construct, id: string, props: RepositoryProps) {
     super(scope, id, {
-      physicalName: props.repositoryName,
+      physicalName: PhysicalName.of(props.repositoryName),
     });
 
     this.repository = new CfnRepository(this, 'Resource', {
-      repositoryName: this.physicalName.value || '',
+      repositoryName: props.repositoryName,
       repositoryDescription: props.description,
       triggers: this.triggers
     });
@@ -291,7 +293,7 @@ export class Repository extends RepositoryBase {
       name: this.repository.attrName,
       arnComponents: {
         service: 'codecommit',
-        resource: this.physicalName.value || '',
+        resource: props.repositoryName,
       },
     });
 

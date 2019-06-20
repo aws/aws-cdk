@@ -231,7 +231,7 @@ export class Cluster extends Resource implements ICluster {
     const subnetIds = [...new Set(Array().concat(...placements.map(s => props.vpc.selectSubnets(s).subnetIds)))];
 
     const resource = new CfnCluster(this, 'Resource', {
-      name: this.physicalName.value,
+      name: this.physicalName,
       roleArn: this.role.roleArn,
       version: props.version,
       resourcesVpcConfig: {
@@ -242,11 +242,11 @@ export class Cluster extends Resource implements ICluster {
 
     const resourceIdentifiers = new ResourceIdentifiers(this, {
       arn: resource.attrArn,
-      name: resource.refAsString,
+      name: resource.ref,
       arnComponents: {
         service: 'eks',
         resource: 'cluster',
-        resourceName: this.physicalName.value,
+        resourceName: this.physicalName,
       },
     });
     this.clusterName = resourceIdentifiers.name;
@@ -255,7 +255,7 @@ export class Cluster extends Resource implements ICluster {
     this.clusterEndpoint = resource.attrEndpoint;
     this.clusterCertificateAuthorityData = resource.attrCertificateAuthorityData;
 
-    new CfnOutput(this, 'ClusterName', { value: this.clusterName, disableExport: true });
+    new CfnOutput(this, 'ClusterName', { value: this.clusterName });
   }
 
   /**
@@ -329,7 +329,6 @@ export class Cluster extends Resource implements ICluster {
 
     // Create an CfnOutput for the Instance Role ARN (need to paste it into aws-auth-cm.yaml)
     new CfnOutput(autoScalingGroup, 'InstanceRoleARN', {
-      disableExport: true,
       value: autoScalingGroup.role.roleArn
     });
   }

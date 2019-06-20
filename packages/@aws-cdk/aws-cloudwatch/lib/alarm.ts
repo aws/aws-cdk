@@ -126,7 +126,7 @@ export class Alarm extends Resource implements IAlarm {
     const alarm = new CfnAlarm(this, 'Resource', {
       // Meta
       alarmDescription: props.alarmDescription,
-      alarmName: this.physicalName.value,
+      alarmName: this.physicalName,
 
       // Evaluation
       comparisonOperator,
@@ -153,11 +153,11 @@ export class Alarm extends Resource implements IAlarm {
 
     const resourceIdentifiers = new ResourceIdentifiers(this, {
       arn: alarm.attrArn,
-      name: alarm.refAsString,
+      name: alarm.ref,
       arnComponents: {
         service: 'cloudwatch',
         resource: 'alarm',
-        resourceName: this.physicalName.value,
+        resourceName: this.physicalName,
         sep: ':',
       },
     });

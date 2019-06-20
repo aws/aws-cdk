@@ -1,6 +1,6 @@
 import { ArnComponents } from '../arn';
 import { IResolvable, IResolveContext } from '../resolvable';
-import { IResource } from '../resource';
+import { Resource } from '../resource';
 import { Stack } from '../stack';
 import { captureStackTrace } from '../stack-trace';
 
@@ -21,7 +21,7 @@ export abstract class CrossEnvironmentToken implements IResolvable {
    * @param displayName a short name to be used in Token display
    */
   protected constructor(private readonly regularValue: string, private readonly crossEnvironmentValue: any,
-                        private readonly resource: IResource) {
+                        private readonly resource: Resource) {
     this.resource = resource;
     this.creationStack = captureStackTrace();
   }
@@ -31,7 +31,7 @@ export abstract class CrossEnvironmentToken implements IResolvable {
     const owningStack = Stack.of(this.resource);
 
     if (consumingStack.environment !== owningStack.environment) {
-      this.resource.physicalName._resolveCrossEnvironment(this.resource);
+      this.resource._enableCrossEnvironment();
       return this.crossEnvironmentValue;
     } else {
       return this.regularValue;
@@ -40,13 +40,13 @@ export abstract class CrossEnvironmentToken implements IResolvable {
 }
 
 export class CrossEnvironmentPhysicalArnToken extends CrossEnvironmentToken {
-  constructor(regularValue: string, arnComponents: ArnComponents, resource: IResource) {
+  constructor(regularValue: string, arnComponents: ArnComponents, resource: Resource) {
     super(regularValue, Stack.of(resource).formatArn(arnComponents), resource);
   }
 }
 
 export class CrossEnvironmentPhysicalNameToken extends CrossEnvironmentToken {
-  constructor(regularValue: string, resource: IResource) {
-    super(regularValue, resource.physicalName.value, resource);
+  constructor(regularValue: string, resource: Resource) {
+    super(regularValue, resource.physicalName, resource);
   }
 }

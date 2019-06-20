@@ -54,4 +54,4 @@ new sfn.StateMachine(stack, 'StateMachine', {
   timeoutSec: 30
 });
 
-app.run();
+app.synth();

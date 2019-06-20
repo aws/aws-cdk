@@ -147,7 +147,7 @@ export abstract class BaseService extends Resource
 
     this.resource = new CfnService(this, "Service", {
       desiredCount: props.desiredCount,
-      serviceName: this.physicalName.value,
+      serviceName: this.physicalName,
       loadBalancers: Lazy.anyValue({ produce: () => this.loadBalancers }),
       deploymentConfiguration: {
         maximumPercent: props.maximumPercent || 200,
@@ -164,16 +164,16 @@ export abstract class BaseService extends Resource
     // are enabled for the principal in a given region.
     const longArnEnabled = props.longArnEnabled !== undefined ? props.longArnEnabled : false;
     const serviceName = longArnEnabled
-      ? cdk.Fn.select(2, cdk.Fn.split('/', this.resource.refAsString))
+      ? cdk.Fn.select(2, cdk.Fn.split('/', this.resource.ref))
       : this.resource.attrName;
 
     const resourceIdentifiers = new ResourceIdentifiers(this, {
-      arn: this.resource.refAsString,
+      arn: this.resource.ref,
       name: serviceName,
       arnComponents: {
         service: 'ecs',
         resource: 'service',
-        resourceName: `${props.cluster.physicalName.value}/${this.physicalName.value}`,
+        resourceName: `${props.cluster.physicalName}/${this.physicalName}`,
       },
     });
     this.serviceArn = resourceIdentifiers.arn;

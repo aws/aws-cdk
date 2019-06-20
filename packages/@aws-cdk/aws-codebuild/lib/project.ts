@@ -691,7 +691,7 @@ export class Project extends ProjectBase {
       encryptionKey: props.encryptionKey && props.encryptionKey.keyArn,
       badgeEnabled: props.badge,
       cache: cache._toCloudFormation(),
-      name: this.physicalName.value,
+      name: this.physicalName,
       timeoutInMinutes: props.timeout,
       secondarySources: Lazy.anyValue({ produce: () => this.renderSecondarySources() }),
       secondaryArtifacts: Lazy.anyValue({ produce: () => this.renderSecondaryArtifacts() }),
@@ -703,11 +703,11 @@ export class Project extends ProjectBase {
 
     const resourceIdentifiers = new ResourceIdentifiers(this, {
       arn: resource.attrArn,
-      name: resource.refAsString,
+      name: resource.ref,
       arnComponents: {
         service: 'codebuild',
         resource: 'project',
-        resourceName: this.physicalName.value,
+        resourceName: this.physicalName,
       },
     });
     this.projectArn = resourceIdentifiers.arn;

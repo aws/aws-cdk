@@ -1,6 +1,6 @@
 import { ArnComponents } from './arn';
 import { CrossEnvironmentPhysicalArnToken, CrossEnvironmentPhysicalNameToken } from './private/cross-environment-token';
-import { IResource } from './resource';
+import { Resource } from './resource';
 import { Token } from './token';
 
 /**
@@ -26,12 +26,14 @@ export interface ResourceIdentifiersProps {
 /**
  * The identifiers (name and ARN) for a given L2.
  * These should be only used inside the Construct Library implementation.
+ *
+ * @experimental
  */
 export class ResourceIdentifiers {
   public readonly arn: string;
   public readonly name: string;
 
-  constructor(resource: IResource, props: ResourceIdentifiersProps) {
+  constructor(resource: Resource, props: ResourceIdentifiersProps) {
     this.arn = Token.asString(new CrossEnvironmentPhysicalArnToken(
       props.arn,
       props.arnComponents,

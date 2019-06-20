@@ -419,7 +419,7 @@ export class Function extends FunctionBase {
     }
 
     const resource: CfnFunction = new CfnFunction(this, 'Resource', {
-      functionName: this.physicalName.value,
+      functionName: this.physicalName,
       description: props.description,
       code: Lazy.anyValue({ produce: () => props.code._toJSON(resource) }),
       layers: Lazy.listValue({ produce: () => this.layers.map(layer => layer.layerVersionArn) }, { omitEmpty: true }),
@@ -439,11 +439,11 @@ export class Function extends FunctionBase {
 
     const resourceIdentifiers = new ResourceIdentifiers(this, {
       arn: resource.attrArn,
-      name: resource.refAsString,
+      name: resource.ref,
       arnComponents: {
         service: 'lambda',
         resource: 'function',
-        resourceName: this.physicalName.value,
+        resourceName: this.physicalName,
         sep: ':',
       },
     });

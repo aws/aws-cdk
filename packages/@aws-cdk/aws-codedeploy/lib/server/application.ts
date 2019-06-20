@@ -66,17 +66,17 @@ export class ServerApplication extends Resource implements IServerApplication {
     });
 
     const resource = new CfnApplication(this, 'Resource', {
-      applicationName: this.physicalName.value,
+      applicationName: this.physicalName,
       computePlatform: 'Server',
     });
 
     const resourceIdentifiers = new ResourceIdentifiers(this, {
-      arn: arnForApplication(resource.refAsString),
-      name: resource.refAsString,
+      arn: arnForApplication(resource.ref),
+      name: resource.ref,
       arnComponents: {
         service: 'codedeploy',
         resource: 'application',
-        resourceName: this.physicalName.value,
+        resourceName: this.physicalName,
         sep: ':',
       },
     });

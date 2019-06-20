@@ -175,7 +175,7 @@ export class Trail extends Resource {
       enableLogFileValidation: props.enableFileValidation == null ? true : props.enableFileValidation,
       isMultiRegionTrail: props.isMultiRegionTrail == null ? true : props.isMultiRegionTrail,
       includeGlobalServiceEvents: props.includeGlobalServiceEvents == null ? true : props.includeGlobalServiceEvents,
-      trailName: this.physicalName.value,
+      trailName: this.physicalName,
       kmsKeyId:  props.kmsKey && props.kmsKey.keyArn,
       s3BucketName: s3bucket.bucketName,
       s3KeyPrefix: props.s3KeyPrefix,
@@ -191,7 +191,7 @@ export class Trail extends Resource {
       arnComponents: {
         service: 'cloudtrail',
         resource: 'trail',
-        resourceName: this.physicalName.value,
+        resourceName: this.physicalName,
       },
     });
     this.trailArn = resourceIdentifiers.arn;

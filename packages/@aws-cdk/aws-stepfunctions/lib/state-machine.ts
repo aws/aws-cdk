@@ -99,7 +99,7 @@ export class StateMachine extends StateMachineBase {
         graph.timeoutSeconds = props.timeoutSec;
 
         const resource = new CfnStateMachine(this, 'Resource', {
-            stateMachineName: this.physicalName.value,
+            stateMachineName: this.physicalName,
             roleArn: this.role.roleArn,
             definitionString: Stack.of(this).toJsonString(graph.toGraphJson()),
         });
@@ -109,12 +109,12 @@ export class StateMachine extends StateMachineBase {
         }
 
         const resourceIdentifiers = new ResourceIdentifiers(this, {
-            arn: resource.refAsString,
+            arn: resource.ref,
             name: resource.attrName,
             arnComponents: {
                 service: 'states',
                 resource: 'stateMachine',
-                resourceName: this.physicalName.value,
+                resourceName: this.physicalName,
                 sep: ':',
             },
         });

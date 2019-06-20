@@ -52,15 +52,15 @@ export class Topic extends TopicBase {
 
     const resource = new CfnTopic(this, 'Resource', {
       displayName: props.displayName,
-      topicName: this.physicalName.value,
+      topicName: this.physicalName,
     });
 
     const resourceIdentifiers = new ResourceIdentifiers(this, {
-      arn: resource.refAsString,
+      arn: resource.ref,
       name: resource.attrTopicName,
       arnComponents: {
         service: 'sns',
-        resource: this.physicalName.value || '',
+        resource: this.physicalName,
       },
     });
     this.topicArn = resourceIdentifiers.arn;

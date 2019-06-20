@@ -232,7 +232,7 @@ export class Table extends Resource {
     this.validateProvisioning(props);
 
     this.table = new CfnTable(this, 'Resource', {
-      tableName: this.physicalName.value,
+      tableName: this.physicalName,
       keySchema: this.keySchema,
       attributeDefinitions: this.attributeDefinitions,
       globalSecondaryIndexes: Lazy.anyValue({ produce: () => this.globalSecondaryIndexes }, { omitEmptyArray: true }),
@@ -252,11 +252,11 @@ export class Table extends Resource {
 
     const resourceIdentifiers = new ResourceIdentifiers(this, {
       arn: this.table.attrArn,
-      name: this.table.refAsString,
+      name: this.table.ref,
       arnComponents: {
         service: 'dynamodb',
         resource: 'table',
-        resourceName: this.physicalName.value,
+        resourceName: this.physicalName,
       },
     });
     this.tableArn = resourceIdentifiers.arn;

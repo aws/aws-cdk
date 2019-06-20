@@ -254,7 +254,7 @@ export class Stream extends StreamBase {
     const { streamEncryption, encryptionKey } = this.parseEncryption(props);
 
     this.stream = new CfnStream(this, "Resource", {
-      name: this.physicalName.value,
+      name: this.physicalName,
       retentionPeriodHours,
       shardCount,
       streamEncryption
@@ -262,11 +262,11 @@ export class Stream extends StreamBase {
 
     const resourceIdentifiers = new ResourceIdentifiers(this, {
       arn: this.stream.attrArn,
-      name: this.stream.refAsString,
+      name: this.stream.ref,
       arnComponents: {
         service: 'kinesis',
         resource: 'stream',
-        resourceName: this.physicalName.value,
+        resourceName: this.physicalName,
       },
     });
     this.streamArn = resourceIdentifiers.arn;

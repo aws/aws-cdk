@@ -122,7 +122,7 @@ export class RecordSet extends Resource implements IRecordSet {
       comment: props.comment
     });
 
-    this.domainName = recordSet.refAsString;
+    this.domainName = recordSet.ref;
   }
 }
 

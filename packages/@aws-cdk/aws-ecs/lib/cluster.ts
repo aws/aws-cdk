@@ -72,16 +72,16 @@ export class Cluster extends Resource implements ICluster {
     });
 
     const cluster = new CfnCluster(this, 'Resource', {
-      clusterName: this.physicalName.value,
+      clusterName: this.physicalName,
     });
 
     const resourceIdentifiers = new ResourceIdentifiers(this, {
       arn: cluster.attrArn,
-      name: cluster.refAsString,
+      name: cluster.ref,
       arnComponents: {
         service: 'ecs',
         resource: 'cluster',
-        resourceName: this.physicalName.value,
+        resourceName: this.physicalName,
       },
     });
     this.clusterArn = resourceIdentifiers.arn;

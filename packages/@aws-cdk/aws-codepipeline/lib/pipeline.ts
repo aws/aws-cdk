@@ -223,7 +223,7 @@ export class Pipeline extends PipelineBase {
       physicalName: props.pipelineName,
     });
 
-    validateName('Pipeline', this.physicalName.value);
+    validateName('Pipeline', this.physicalName);
 
     // If a bucket has been provided, use it - otherwise, create a bucket.
     let propsBucket = props.artifactBucket;
@@ -249,7 +249,7 @@ export class Pipeline extends PipelineBase {
       stages: Lazy.anyValue({ produce: () => this.renderStages() }),
       roleArn: this.role.roleArn,
       restartExecutionOnUpdate: props && props.restartExecutionOnUpdate,
-      name: this.physicalName.value,
+      name: this.physicalName,
     });
 
     // this will produce a DependsOn for both the role and the policy resources.
@@ -259,10 +259,10 @@ export class Pipeline extends PipelineBase {
 
     const resourceIdentifiers = new ResourceIdentifiers(this, {
       arn: '',
-      name: codePipeline.refAsString,
+      name: codePipeline.ref,
       arnComponents: {
         service: 'codepipeline',
-        resource: this.physicalName.value || '',
+        resource: this.physicalName,
       },
     });
     this.pipelineName = resourceIdentifiers.name;

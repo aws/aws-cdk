@@ -1,7 +1,7 @@
 import cxapi = require('@aws-cdk/cx-api');
 import { Test } from 'nodeunit';
 import { App, App as Root, CfnCondition,
-    CfnResource, Construct, ConstructNode, DeletionPolicy,
+    CfnDeletionPolicy, CfnResource, Construct, ConstructNode,
     Fn, RemovalPolicy, Stack } from '../lib';
 import { toCloudFormation } from './util';
 
@@ -215,8 +215,8 @@ export = {
         beforeAllowTrafficHook: 'lambda1',
       },
     };
-    r1.options.deletionPolicy = DeletionPolicy.Retain;
-    r1.options.updateReplacePolicy = DeletionPolicy.Snapshot;
+    r1.options.deletionPolicy = CfnDeletionPolicy.Retain;
+    r1.options.updateReplacePolicy = CfnDeletionPolicy.Snapshot;
 
     test.deepEqual(toCloudFormation(stack), {
       Resources: {
@@ -667,7 +667,7 @@ export = {
     resB.node.addDependency(resA);
 
     // THEN
-    const assembly = app.run();
+    const assembly = app.synth();
     const templateB = assembly.getStack(stackB.stackName).template;
 
     test.deepEqual(templateB, {

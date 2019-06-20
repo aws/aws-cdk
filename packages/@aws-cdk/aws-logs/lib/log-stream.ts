@@ -70,18 +70,18 @@ export class LogStream extends Resource implements ILogStream {
 
     const resource = new CfnLogStream(this, 'Resource', {
       logGroupName: props.logGroup.logGroupName,
-      logStreamName: this.physicalName.value,
+      logStreamName: this.physicalName,
     });
 
     resource.applyRemovalPolicy(props.removalPolicy);
 
     const resourceIdentifiers = new ResourceIdentifiers(this, {
       arn: '',
-      name: resource.refAsString,
+      name: resource.ref,
       arnComponents: {
         service: 'logs',
         resource: 'log-group',
-        resourceName: `log-stream:${this.physicalName.value}`,
+        resourceName: `log-stream:${this.physicalName}`,
         sep: ':',
       },
     });

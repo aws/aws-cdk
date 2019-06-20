@@ -58,16 +58,16 @@ export class Activity extends Resource implements IActivity {
         });
 
         const resource = new CfnActivity(this, 'Resource', {
-            name: this.physicalName.value! // not null because of above call to `super`
+            name: this.physicalName! // not null because of above call to `super`
         });
 
         const resourceIdentifiers = new ResourceIdentifiers(this, {
-            arn: resource.refAsString,
+            arn: resource.ref,
             name: resource.attrName,
             arnComponents: {
                 service: 'states',
                 resource: 'activity',
-                resourceName: this.physicalName.value,
+                resourceName: this.physicalName,
                 sep: ':',
             },
         });

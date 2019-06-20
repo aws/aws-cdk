@@ -335,7 +335,7 @@ export class LogGroup extends LogGroupBase {
     }
 
     const resource = new CfnLogGroup(this, 'Resource', {
-      logGroupName: this.physicalName.value,
+      logGroupName: this.physicalName,
       retentionInDays,
     });
 
@@ -343,11 +343,11 @@ export class LogGroup extends LogGroupBase {
 
     const resourceIdentifiers = new ResourceIdentifiers(this, {
       arn: resource.attrArn,
-      name: resource.refAsString,
+      name: resource.ref,
       arnComponents: {
         service: 'logs',
         resource: 'log-group',
-        resourceName: this.physicalName.value,
+        resourceName: this.physicalName,
         sep: ':',
       },
     });

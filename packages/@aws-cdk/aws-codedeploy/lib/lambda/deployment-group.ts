@@ -158,7 +158,7 @@ export class LambdaDeploymentGroup extends cdk.Resource implements ILambdaDeploy
     const resource = new CfnDeploymentGroup(this, 'Resource', {
       applicationName: this.application.applicationName,
       serviceRoleArn: this.role.roleArn,
-      deploymentGroupName: this.physicalName.value,
+      deploymentGroupName: this.physicalName,
       deploymentConfigName: (props.deploymentConfig || LambdaDeploymentConfig.AllAtOnce).deploymentConfigName,
       deploymentStyle: {
         deploymentType: 'BLUE_GREEN',
@@ -169,12 +169,12 @@ export class LambdaDeploymentGroup extends cdk.Resource implements ILambdaDeploy
     });
 
     const resourceIdentifiers = new cdk.ResourceIdentifiers(this, {
-      arn: arnForDeploymentGroup(this.application.applicationName, resource.refAsString),
-      name: resource.refAsString,
+      arn: arnForDeploymentGroup(this.application.applicationName, resource.ref),
+      name: resource.ref,
       arnComponents: {
         service: 'codedeploy',
         resource: 'deploymentgroup',
-        resourceName: `${this.application.physicalName.value}/${this.physicalName.value}`,
+        resourceName: `${this.application.physicalName}/${this.physicalName}`,
         sep: ':',
       },
     });
@@ -188,10 +188,10 @@ export class LambdaDeploymentGroup extends cdk.Resource implements ILambdaDeploy
       this.addPostHook(props.postHook);
     }
 
-    (props.alias.node.findChild('Resource') as lambda.CfnAlias).options.updatePolicy = {
+    (props.alias.node.defaultChild as lambda.CfnAlias).options.updatePolicy = {
       codeDeployLambdaAliasUpdate: {
         applicationName: this.application.applicationName,
-        deploymentGroupName: resource.refAsString,
+        deploymentGroupName: resource.ref,
         beforeAllowTrafficHook: cdk.Lazy.stringValue({ produce: () => this.preHook && this.preHook.functionName }),
         afterAllowTrafficHook: cdk.Lazy.stringValue({ produce: () => this.postHook && this.postHook.functionName }),
       }

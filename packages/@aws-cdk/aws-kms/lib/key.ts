@@ -68,7 +68,7 @@ abstract class KeyBase extends Resource implements IKey {
    * Defines a new alias for the key.
    */
   public addAlias(alias: string): Alias {
-    return new Alias(this, 'Alias', { name: alias, targetKey: this });
+    return new Alias(this, 'Alias', { aliasName: alias, targetKey: this });
   }
 
   /**

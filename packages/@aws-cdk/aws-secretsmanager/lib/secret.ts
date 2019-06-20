@@ -187,16 +187,16 @@ export class Secret extends SecretBase {
       description: props.description,
       kmsKeyId: props.encryptionKey && props.encryptionKey.keyArn,
       generateSecretString: props.generateSecretString || {},
-      name: this.physicalName.value,
+      name: this.physicalName,
     });
 
     const resourceIdentifiers = new ResourceIdentifiers(this, {
-      arn: resource.refAsString,
-      name: this.physicalName.value || '',
+      arn: resource.ref,
+      name: this.physicalName,
       arnComponents: {
         service: 'secretsmanager',
         resource: 'secret',
-        resourceName: this.physicalName.value,
+        resourceName: this.physicalName,
         sep: ':',
       },
     });
@@ -322,8 +322,8 @@ export class SecretTargetAttachment extends SecretBase implements ISecretTargetA
     this.encryptionKey = props.secret.encryptionKey;
 
     // This allows to reference the secret after attachment (dependency).
-    this.secretArn = attachment.refAsString;
-    this.secretTargetAttachmentSecretArn = attachment.refAsString;
+    this.secretArn = attachment.ref;
+    this.secretTargetAttachmentSecretArn = attachment.ref;
   }
 }
 

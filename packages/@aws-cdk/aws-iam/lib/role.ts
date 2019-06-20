@@ -214,19 +214,19 @@ export class Role extends Resource implements IRole {
       managedPolicyArns: Lazy.listValue({ produce: () => this.managedPolicies.map(p => p.managedPolicyArn) }, { omitEmpty: true }),
       policies: _flatten(props.inlinePolicies),
       path: props.path,
-      roleName: this.physicalName.value,
+      roleName: this.physicalName,
       maxSessionDuration: props.maxSessionDurationSec,
     });
 
     this.roleId = role.attrRoleId;
     const resourceIdentifiers = new ResourceIdentifiers(this, {
       arn: role.attrArn,
-      name: role.refAsString,
+      name: role.ref,
       arnComponents: {
         region: '', // IAM is global in each partition
         service: 'iam',
         resource: 'role',
-        resourceName: this.physicalName.value,
+        resourceName: this.physicalName,
       },
     });
     this.roleArn = resourceIdentifiers.arn;

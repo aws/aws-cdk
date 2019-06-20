@@ -108,7 +108,7 @@ export class User extends Resource implements IIdentity {
     });
 
     const user = new CfnUser(this, 'Resource', {
-      userName: this.physicalName.value,
+      userName: this.physicalName,
       groups: undefinedIfEmpty(() => this.groups),
       managedPolicyArns: Lazy.listValue({ produce: () => this.managedPolicies.map(p => p.managedPolicyArn) }, { omitEmpty: true }),
       path: props.path,
@@ -117,12 +117,12 @@ export class User extends Resource implements IIdentity {
 
     const resourceIdentifiers = new ResourceIdentifiers(this, {
       arn: user.attrArn,
-      name: user.refAsString,
+      name: user.ref,
       arnComponents: {
         region: '', // IAM is global in each partition
         service: 'iam',
         resource: 'user',
-        resourceName: this.physicalName.value,
+        resourceName: this.physicalName,
       },
     });
     this.userName = resourceIdentifiers.name;

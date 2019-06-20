@@ -340,7 +340,7 @@ export class Repository extends RepositoryBase {
     });
 
     const resource = new CfnRepository(this, 'Resource', {
-      repositoryName: this.physicalName.value,
+      repositoryName: this.physicalName,
       // It says "Text", but they actually mean "Object".
       repositoryPolicyText: Lazy.anyValue({ produce: () => this.policyDocument }),
       lifecyclePolicy: Lazy.anyValue({ produce: () => this.renderLifecyclePolicy() }),
@@ -355,11 +355,11 @@ export class Repository extends RepositoryBase {
 
     const resourceIdentifiers = new ResourceIdentifiers(this, {
       arn: resource.attrArn,
-      name: resource.refAsString,
+      name: resource.ref,
       arnComponents: {
         service: 'ecr',
         resource: 'repository',
-        resourceName: this.physicalName.value,
+        resourceName: this.physicalName,
       },
     });
     this.repositoryName = resourceIdentifiers.name;

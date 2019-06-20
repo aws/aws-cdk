@@ -73,7 +73,7 @@ export class CrossAccountDestination extends cdk.Resource implements ILogSubscri
     });
 
     this.resource = new CfnDestination(this, 'Resource', {
-      destinationName: this.physicalName.value!,
+      destinationName: this.physicalName!,
       // Must be stringified policy
       destinationPolicy: this.lazyStringifiedPolicyDocument(),
       roleArn: props.role.roleArn,
@@ -82,11 +82,11 @@ export class CrossAccountDestination extends cdk.Resource implements ILogSubscri
 
     const resourceIdentifiers = new ResourceIdentifiers(this, {
       arn: this.resource.attrArn,
-      name: this.resource.refAsString,
+      name: this.resource.ref,
       arnComponents: {
         service: 'logs',
         resource: 'destination',
-        resourceName: this.physicalName.value,
+        resourceName: this.physicalName,
         sep: ':',
       },
     });

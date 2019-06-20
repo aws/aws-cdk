@@ -39,7 +39,7 @@ export interface AliasProps {
   /**
    * Name of this alias
    */
-  readonly aliasName: PhysicalName;
+  readonly aliasName: string;
 
   /**
    * Additional versions with individual weights this alias points to
@@ -115,11 +115,11 @@ export class Alias extends QualifiedFunctionBase implements IAlias {
 
   constructor(scope: Construct, id: string, props: AliasProps) {
     super(scope, id, {
-      physicalName: props.aliasName,
+      physicalName: PhysicalName.of(props.aliasName),
     });
 
     this.lambda = props.version.lambda;
-    this.aliasName = this.physicalName.value || '';
+    this.aliasName = this.physicalName;
     this.version = props.version;
 
     const alias = new CfnAlias(this, 'Resource', {
@@ -131,12 +131,12 @@ export class Alias extends QualifiedFunctionBase implements IAlias {
     });
 
     const resourceIdentifiers = new ResourceIdentifiers(this, {
-      arn: alias.refAsString,
+      arn: alias.ref,
       name: this.aliasName,
       arnComponents: {
         service: 'lambda',
         resource: 'function',
-        resourceName: `${this.lambda.physicalName.value}:${this.physicalName.value}`,
+        resourceName: `${this.lambda.physicalName}:${this.physicalName}`,
         sep: ':',
       },
     });

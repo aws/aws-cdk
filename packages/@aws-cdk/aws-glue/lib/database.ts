@@ -32,7 +32,7 @@ export interface DatabaseProps {
   /**
    * The name of the database.
    */
-  readonly databaseName: PhysicalName;
+  readonly databaseName: string;
 
   /**
    * The location of the database (for example, an HDFS path).
@@ -87,21 +87,21 @@ export class Database extends Resource implements IDatabase {
 
   constructor(scope: Construct, id: string, props: DatabaseProps) {
     super(scope, id, {
-      physicalName: props.databaseName,
+      physicalName: PhysicalName.of(props.databaseName),
     });
 
     if (props.locationUri) {
       this.locationUri = props.locationUri;
     } else {
       const bucket = new s3.Bucket(this, 'Bucket');
-      this.locationUri = `s3://${bucket.bucketName}/${props.databaseName.value}`;
+      this.locationUri = `s3://${bucket.bucketName}/${props.databaseName}`;
     }
 
     this.catalogId = Stack.of(this).account;
     const resource = new CfnDatabase(this, 'Resource', {
       catalogId: this.catalogId,
       databaseInput: {
-        name: this.physicalName.value,
+        name: this.physicalName,
         locationUri: this.locationUri
       }
     });
@@ -111,13 +111,13 @@ export class Database extends Resource implements IDatabase {
       arn: Stack.of(this).formatArn({
         service: 'glue',
         resource: 'database',
-        resourceName: resource.refAsString,
+        resourceName: resource.ref,
       }),
-      name: resource.refAsString,
+      name: resource.ref,
       arnComponents: {
         service: 'glue',
         resource: 'database',
-        resourceName: this.physicalName.value,
+        resourceName: this.physicalName,
       },
     });
     this.databaseName = resourceIdentifiers.name;

@@ -206,7 +206,7 @@ export interface UserPoolProps {
    *
    * @default - automatically generated name by CloudFormation at deploy time
    */
-  readonly poolName?: PhysicalName;
+  readonly userPoolName?: PhysicalName;
 
   /**
    * Method used for user registration & sign in.
@@ -336,7 +336,7 @@ export class UserPool extends Resource implements IUserPool {
 
   constructor(scope: Construct, id: string, props: UserPoolProps = {}) {
     super(scope, id, {
-      physicalName: props.poolName,
+      physicalName: props.userPoolName,
     });
 
     let aliasAttributes: UserPoolAttribute[] | undefined;
@@ -391,7 +391,7 @@ export class UserPool extends Resource implements IUserPool {
     }
 
     const userPool = new CfnUserPool(this, 'Resource', {
-      userPoolName: this.physicalName.value,
+      userPoolName: this.physicalName,
       usernameAttributes,
       aliasAttributes,
       autoVerifiedAttributes: props.autoVerifiedAttributes,
@@ -400,11 +400,11 @@ export class UserPool extends Resource implements IUserPool {
 
     const resourceIdentifiers = new ResourceIdentifiers(this, {
       arn: userPool.attrArn,
-      name: userPool.refAsString,
+      name: userPool.ref,
       arnComponents: {
         service: 'cognito',
         resource: 'userpool',
-        resourceName: this.physicalName.value,
+        resourceName: this.physicalName,
       },
     });
     this.userPoolId = resourceIdentifiers.name;
