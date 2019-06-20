@@ -16,7 +16,7 @@ export = {
     new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NodeJS810,
+      runtime: lambda.Runtime.Nodejs810,
     });
 
     expect(stack).toMatch({ Resources:
@@ -50,8 +50,8 @@ export = {
     new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NodeJS810,
-      initialPolicy: [new iam.PolicyStatement().addAction("*").addAllResources()]
+      runtime: lambda.Runtime.Nodejs810,
+      initialPolicy: [new iam.PolicyStatement({ actions: ["*"], resources: ["*"]  })]
     });
     expect(stack).toMatch({ Resources:
       { MyLambdaServiceRole4539ECB6:
@@ -118,7 +118,7 @@ export = {
       fn.addPermission('S3Permission', {
         action: 'lambda:*',
         principal: new iam.ServicePrincipal('s3.amazonaws.com'),
-        sourceAccount: stack.accountId,
+        sourceAccount: stack.account,
         sourceArn: 'arn:aws:s3:::my_bucket'
       });
 
@@ -205,7 +205,7 @@ export = {
       const role = new iam.Role(stack, 'SomeRole', {
         assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
       });
-      role.addToPolicy(new iam.PolicyStatement().addAction('confirm:itsthesame'));
+      role.addToPolicy(new iam.PolicyStatement({ actions: ['confirm:itsthesame'] }));
 
       // WHEN
       const fn = new lambda.Function(stack, 'Function', {
@@ -214,11 +214,11 @@ export = {
         handler: 'index.test',
         role,
         initialPolicy: [
-          new iam.PolicyStatement().addAction('inline:inline')
+          new iam.PolicyStatement({ actions: ['inline:inline'] })
         ]
       });
 
-      fn.addToRolePolicy(new iam.PolicyStatement().addAction('explicit:explicit'));
+      fn.addToRolePolicy(new iam.PolicyStatement({ actions: ['explicit:explicit'] }));
 
       // THEN
       expect(stack).to(haveResource('AWS::IAM::Policy', {
@@ -258,7 +258,7 @@ export = {
     // GIVEN
     const stack = new cdk.Stack();
     new lambda.Function(stack, 'MyLambda', {
-      code: lambda.Code.directory(path.join(__dirname, 'my-lambda-handler')),
+      code: lambda.Code.asset(path.join(__dirname, 'my-lambda-handler')),
       handler: 'index.handler',
       runtime: lambda.Runtime.Python36
     });
@@ -293,8 +293,8 @@ export = {
     new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NodeJS810,
-      functionName: 'OneFunctionToRuleThemAll',
+      runtime: lambda.Runtime.Nodejs810,
+      functionName: cdk.PhysicalName.of('OneFunctionToRuleThemAll'),
       deadLetterQueueEnabled: true
     });
 
@@ -405,7 +405,7 @@ export = {
     new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NodeJS810,
+      runtime: lambda.Runtime.Nodejs810,
       deadLetterQueueEnabled: true,
     });
 
@@ -515,7 +515,7 @@ export = {
     new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NodeJS810,
+      runtime: lambda.Runtime.Nodejs810,
       deadLetterQueueEnabled: false,
     });
 
@@ -582,14 +582,14 @@ export = {
     const stack = new cdk.Stack();
 
     const dlQueue = new sqs.Queue(stack, 'DeadLetterQueue', {
-      queueName: 'MyLambda_DLQ',
-      retentionPeriodSec: 1209600
+      queueName: cdk.PhysicalName.of('MyLambda_DLQ'),
+      retentionPeriod: cdk.Duration.days(14)
     });
 
     new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NodeJS810,
+      runtime: lambda.Runtime.Nodejs810,
       deadLetterQueue: dlQueue,
     });
 
@@ -691,14 +691,14 @@ export = {
     const stack = new cdk.Stack();
 
     const dlQueue = new sqs.Queue(stack, 'DeadLetterQueue', {
-      queueName: 'MyLambda_DLQ',
-      retentionPeriodSec: 1209600
+      queueName: cdk.PhysicalName.of('MyLambda_DLQ'),
+      retentionPeriod: cdk.Duration.days(14)
     });
 
     new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NodeJS810,
+      runtime: lambda.Runtime.Nodejs810,
       deadLetterQueueEnabled: true,
       deadLetterQueue: dlQueue,
     });
@@ -801,14 +801,14 @@ export = {
     const stack = new cdk.Stack();
 
     const dlQueue = new sqs.Queue(stack, 'DeadLetterQueue', {
-      queueName: 'MyLambda_DLQ',
-      retentionPeriodSec: 1209600
+      queueName: cdk.PhysicalName.of('MyLambda_DLQ'),
+      retentionPeriod: cdk.Duration.days(14),
     });
 
     test.throws(() => new lambda.Function(stack, 'MyLambda', {
     code: new lambda.InlineCode('foo'),
     handler: 'index.handler',
-    runtime: lambda.Runtime.NodeJS810,
+    runtime: lambda.Runtime.Nodejs810,
     deadLetterQueueEnabled: false,
     deadLetterQueue: dlQueue,
     }), /deadLetterQueue defined but deadLetterQueueEnabled explicitly set to false/);
@@ -822,8 +822,8 @@ export = {
     new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NodeJS810,
-      tracing: lambda.Tracing.Active
+      runtime: lambda.Runtime.Nodejs810,
+      tracing: lambda.Tracing.ACTIVE
     });
 
     expect(stack).to(haveResource('AWS::IAM::Policy', {
@@ -880,8 +880,8 @@ export = {
     new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NodeJS810,
-      tracing: lambda.Tracing.PassThrough
+      runtime: lambda.Runtime.Nodejs810,
+      tracing: lambda.Tracing.PASS_THROUGH
     });
 
     expect(stack).to(haveResource('AWS::IAM::Policy', {
@@ -938,8 +938,8 @@ export = {
     new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NodeJS810,
-      tracing: lambda.Tracing.Disabled
+      runtime: lambda.Runtime.Nodejs810,
+      tracing: lambda.Tracing.DISABLED
     });
 
     expect(stack).notTo(haveResource('AWS::IAM::Policy', {
@@ -995,7 +995,7 @@ export = {
     const fn = new lambda.Function(stack, 'Function', {
       code: lambda.Code.inline('xxx'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NodeJS810,
+      runtime: lambda.Runtime.Nodejs810,
     });
 
     // WHEN
@@ -1024,7 +1024,7 @@ export = {
     const fn = new lambda.Function(stack, 'Function', {
       code: lambda.Code.inline('xxx'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NodeJS810,
+      runtime: lambda.Runtime.Nodejs810,
     });
     const service = new iam.ServicePrincipal('apigateway.amazonaws.com');
 
@@ -1052,7 +1052,7 @@ export = {
     const fn = new lambda.Function(stack, 'Function', {
       code: lambda.Code.inline('xxx'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NodeJS810,
+      runtime: lambda.Runtime.Nodejs810,
     });
     const account = new iam.AccountPrincipal('123456789012');
 
@@ -1080,15 +1080,15 @@ export = {
     const fn = new lambda.Function(stack, 'Function', {
       code: lambda.Code.inline('xxx'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NodeJS810,
+      runtime: lambda.Runtime.Nodejs810,
     });
 
     // THEN
-    test.deepEqual(stack.node.resolve(fn.metricErrors()), {
+    test.deepEqual(stack.resolve(fn.metricErrors()), {
       dimensions: { FunctionName: { Ref: 'Function76856677' }},
       namespace: 'AWS/Lambda',
       metricName: 'Errors',
-      periodSec: 300,
+      period: cdk.Duration.minutes(5),
       statistic: 'Sum',
     });
 
@@ -1101,7 +1101,7 @@ export = {
     const fn = new lambda.Function(stack, 'Function', {
       code: lambda.Code.inline('xxx'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NodeJS810,
+      runtime: lambda.Runtime.Nodejs810,
     });
 
     let bindTarget;
@@ -1159,13 +1159,13 @@ export = {
     const stack = new cdk.Stack(undefined, 'TestStack');
     const layer = lambda.LayerVersion.fromLayerVersionAttributes(stack, 'TestLayer', {
       layerVersionArn: 'arn:aws:...',
-      compatibleRuntimes: [lambda.Runtime.NodeJS810],
+      compatibleRuntimes: [lambda.Runtime.Nodejs810],
     });
 
     // THEN
     test.throws(() => new lambda.Function(stack, 'Function', {
                   layers: [layer],
-                  runtime: lambda.Runtime.NodeJS610,
+                  runtime: lambda.Runtime.Nodejs610,
                   code: lambda.Code.inline('exports.main = function() { console.log("DONE"); }'),
                   handler: 'index.main'
                 }),
@@ -1179,13 +1179,13 @@ export = {
     const stack = new cdk.Stack(undefined, 'TestStack');
     const layers = new Array(6).fill(lambda.LayerVersion.fromLayerVersionAttributes(stack, 'TestLayer', {
       layerVersionArn: 'arn:aws:...',
-      compatibleRuntimes: [lambda.Runtime.NodeJS810],
+      compatibleRuntimes: [lambda.Runtime.Nodejs810],
     }));
 
     // THEN
     test.throws(() => new lambda.Function(stack, 'Function', {
                   layers,
-                  runtime: lambda.Runtime.NodeJS810,
+                  runtime: lambda.Runtime.Nodejs810,
                   code: lambda.Code.inline('exports.main = function() { console.log("DONE"); }'),
                   handler: 'index.main'
                 }),
@@ -1203,7 +1203,7 @@ export = {
       new lambda.Function(stack, 'MyLambda', {
         code: new lambda.InlineCode('foo'),
         handler: 'index.handler',
-        runtime: lambda.Runtime.NodeJS,
+        runtime: lambda.Runtime.Nodejs,
         environment: {
           SOME: 'Variable'
         }
@@ -1221,7 +1221,7 @@ export = {
     new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NodeJS,
+      runtime: lambda.Runtime.Nodejs,
       environment: {
         SOME: 'Variable'
       }
@@ -1246,7 +1246,7 @@ export = {
     new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NodeJS,
+      runtime: lambda.Runtime.Nodejs,
       reservedConcurrentExecutions: 10
     });
 
@@ -1284,7 +1284,7 @@ export = {
     let bindCount = 0;
 
     class EventSource implements lambda.IEventSource {
-      public bind(_: lambda.FunctionBase): void {
+      public bind(_: lambda.IFunction): void {
         bindCount++;
       }
     }
@@ -1292,7 +1292,7 @@ export = {
     // WHEN
     new lambda.Function(stack, 'fn', {
       code: lambda.Code.inline('boom'),
-      runtime: lambda.Runtime.NodeJS810,
+      runtime: lambda.Runtime.Nodejs810,
       handler: 'index.bam',
       events: [
         new EventSource(),
@@ -1322,8 +1322,8 @@ export = {
     new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NodeJS,
-      logRetentionDays: logs.RetentionDays.OneMonth
+      runtime: lambda.Runtime.Nodejs,
+      logRetention: logs.RetentionDays.ONE_MONTH
     });
 
     // THEN

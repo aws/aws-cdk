@@ -13,7 +13,7 @@ echo "installing repo-global dependencies..."
 npm ci --global-style
 
 # Now that we have lerna available...
-export PATH=node_modules/.bin:$PATH
+export PATH=$(npm bin):$PATH
 
 echo "============================================================================================="
 echo "cleanup and start bootstrapping..."

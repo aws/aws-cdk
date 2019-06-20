@@ -28,7 +28,7 @@ export class LambdaFunction implements events.IRuleTarget {
    * Returns a RuleTarget that can be used to trigger this Lambda as a
    * result from a CloudWatch event.
    */
-  public bind(rule: events.IRule): events.RuleTargetProperties {
+  public bind(rule: events.IRule): events.RuleTargetConfig {
     const permissionId = `AllowEventRule${rule.node.uniqueId}`;
     if (!this.handler.node.tryFindChild(permissionId)) {
       this.handler.addPermission(permissionId, {
@@ -39,7 +39,7 @@ export class LambdaFunction implements events.IRuleTarget {
     }
 
     return {
-      id: this.handler.node.id,
+      id: this.handler.node.uniqueId,
       arn: this.handler.functionArn,
       input: this.props.event,
     };

@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/cx-api",
-  "version": "0.32.0",
+  "version": "0.35.0",
   "description": "Cloud executable protocol",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -42,10 +42,27 @@
     "url": "https://aws.amazon.com",
     "organization": true
   },
+  "dependencies": {
+    "semver": "^6.1.1"
+  },
+  "jest": {
+    "moduleFileExtensions": [
+      "js"
+    ],
+    "coverageThreshold": {
+      "global": {
+        "branches": 80,
+        "statements": 80
+      }
+    }
+  },
   "license": "Apache-2.0",
   "devDependencies": {
-    "cdk-build-tools": "^0.32.0",
-    "pkglint": "^0.32.0"
+    "@types/jest": "^24.0.15",
+    "@types/semver": "^6.0.0",
+    "cdk-build-tools": "^0.35.0",
+    "jest": "^24.8.0",
+    "pkglint": "^0.35.0"
   },
   "repository": {
     "url": "https://github.com/awslabs/aws-cdk.git",
@@ -57,7 +74,11 @@
     "cdk"
   ],
   "homepage": "https://github.com/awslabs/aws-cdk",
+  "bundledDependencies": [
+    "semver"
+  ],
   "engines": {
     "node": ">= 8.10.0"
-  }
+  },
+  "stability": "experimental"
 }

@@ -33,7 +33,7 @@ const frontend = frontendTD.addContainer('frontend', {
 frontend.addPortMappings({
   containerPort: 80,
   hostPort: 80,
-  protocol: ecs.Protocol.Tcp
+  protocol: ecs.Protocol.TCP
 });
 
 new ecs.Ec2Service(stack, "FrontendService", {
@@ -44,4 +44,4 @@ new ecs.Ec2Service(stack, "FrontendService", {
   }
 });
 
-app.run();
+app.synth();

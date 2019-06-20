@@ -1,4 +1,19 @@
 ## AWS Lambda Event Sources
+<!--BEGIN STABILITY BANNER-->
+
+---
+
+![Stability: Experimental](https://img.shields.io/badge/stability-Experimental-important.svg?style=for-the-badge)
+
+> **This is a _developer preview_ (public beta) module. Releases might lack important features and might have
+> future breaking changes.**
+> 
+> This API is still under active development and subject to non-backward
+> compatible changes or removal in any future version. Use of the API is not recommended in production
+> environments. Experimental APIs are not subject to the Semantic Versioning model.
+
+---
+<!--END STABILITY BANNER-->
 
 This module includes classes that allow using various AWS services as event
 sources for AWS Lambda via the high-level `lambda.addEventSource(source)` API.
@@ -99,10 +114,10 @@ CloudWatch.
 You can write Lambda functions to process change events from a DynamoDB Table. An event is emitted to a DynamoDB stream (if configured) whenever a write (Put, Delete, Update) 
 operation is performed against the table. See [Using AWS Lambda with Amazon DynamoDB](https://docs.aws.amazon.com/lambda/latest/dg/with-ddb.html) for more information.
 
-To process events with a Lambda function, first create or update a DynamoDB table and enable a `streamSpecification` configuration. Then, create a `DynamoEventSource` 
+To process events with a Lambda function, first create or update a DynamoDB table and enable a `stream` specification. Then, create a `DynamoEventSource`
 and add it to your Lambda function. The following parameters will impact Amazon DynamoDB's polling behavior:
 
-* __batchSize__: Determines how many records are buffered before invoking your lambnda function - could impact your function's memory usage (if too high) and ability to keep up with incoming data velocity (if too low).
+* __batchSize__: Determines how many records are buffered before invoking your lambda function - could impact your function's memory usage (if too high) and ability to keep up with incoming data velocity (if too low).
 * __startingPosition__: Will determine where to being consumption, either at the most recent ('LATEST') record or the oldest record ('TRIM_HORIZON'). 'TRIM_HORIZON' will ensure you process all available data, while 'LATEST' will ignore all reocrds that arrived prior to attaching the event source.
 
 ```ts
@@ -112,7 +127,7 @@ import { DynamoEventSource } from '@aws-cdk/aws-lambda-event-sources';
 
 const table = new dynamodb.Table(..., {
   partitionKey: ...,
-  streamSpecification: dynamodb.StreamViewType.NewImage // make sure stream is configured
+  stream: dynamodb.StreamViewType.NewImage // make sure stream is configured
 });
 
 const function = new lambda.Function(...);

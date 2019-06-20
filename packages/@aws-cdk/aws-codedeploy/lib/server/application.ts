@@ -1,4 +1,4 @@
-import { Construct, IResource, Resource } from '@aws-cdk/cdk';
+import { Construct, IResource, PhysicalName, Resource, ResourceIdentifiers } from '@aws-cdk/cdk';
 import { CfnApplication } from '../codedeploy.generated';
 import { arnForApplication } from '../utils';
 
@@ -29,7 +29,7 @@ export interface ServerApplicationProps {
    *
    * @default an auto-generated name will be used
    */
-  readonly applicationName?: string;
+  readonly applicationName?: PhysicalName;
 }
 
 /**
@@ -61,14 +61,26 @@ export class ServerApplication extends Resource implements IServerApplication {
   public readonly applicationName: string;
 
   constructor(scope: Construct, id: string, props: ServerApplicationProps = {}) {
-    super(scope, id);
+    super(scope, id, {
+      physicalName: props.applicationName,
+    });
 
     const resource = new CfnApplication(this, 'Resource', {
-      applicationName: props.applicationName,
+      applicationName: this.physicalName.value,
       computePlatform: 'Server',
     });
 
-    this.applicationName = resource.ref;
-    this.applicationArn = arnForApplication(this.applicationName);
+    const resourceIdentifiers = new ResourceIdentifiers(this, {
+      arn: arnForApplication(resource.refAsString),
+      name: resource.refAsString,
+      arnComponents: {
+        service: 'codedeploy',
+        resource: 'application',
+        resourceName: this.physicalName.value,
+        sep: ':',
+      },
+    });
+    this.applicationName = resourceIdentifiers.name;
+    this.applicationArn = resourceIdentifiers.arn;
   }
 }

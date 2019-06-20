@@ -1,6 +1,7 @@
 import codepipeline = require('@aws-cdk/aws-codepipeline');
 import iam = require('@aws-cdk/aws-iam');
 import lambda = require('@aws-cdk/aws-lambda');
+import { Stack } from '@aws-cdk/cdk';
 
 /**
  * Construction properties of the {@link LambdaInvokeAction Lambda invoke CodePipeline Action}.
@@ -20,8 +21,6 @@ export interface LambdaInvokeActionProps extends codepipeline.CommonActionProps 
    */
   readonly inputs?: codepipeline.Artifact[];
 
-  // tslint:enable:max-line-length
-
   /**
    * The optional names of the output Artifacts of the Action.
    * A Lambda Action can have up to 5 outputs.
@@ -34,30 +33,14 @@ export interface LambdaInvokeActionProps extends codepipeline.CommonActionProps 
   readonly outputs?: codepipeline.Artifact[];
 
   /**
-   * String to be used in the event data parameter passed to the Lambda
-   * function
+   * A set of key-value pairs that will be accessible to the invoked Lambda
+   * inside the event that the Pipeline will call it with.
    *
-   * See an example JSON event in the CodePipeline documentation.
-   *
-   * https://docs.aws.amazon.com/codepipeline/latest/userguide/actions-invoke-lambda-function.html#actions-invoke-lambda-function-json-event-example
+   * @see https://docs.aws.amazon.com/codepipeline/latest/userguide/actions-invoke-lambda-function.html#actions-invoke-lambda-function-json-event-example
    */
-  readonly userParameters?: any;
+  readonly userParameters?: { [key: string]: any };
 
-  /**
-   * Adds the "codepipeline:PutJobSuccessResult" and
-   * "codepipeline:PutJobFailureResult" for '*' resource to the Lambda
-   * execution role policy.
-   *
-   * NOTE: the reason we can't add the specific pipeline ARN as a resource is
-   * to avoid a cyclic dependency between the pipeline and the Lambda function
-   * (the pipeline references) the Lambda and the Lambda needs permissions on
-   * the pipeline.
-   *
-   * @see https://docs.aws.amazon.com/codepipeline/latest/userguide/actions-invoke-lambda-function.html#actions-invoke-lambda-function-create-function
-   *
-   * @default true
-   */
-  readonly addPutJobResultPolicy?: boolean;
+  // tslint:enable:max-line-length
 
   /**
    * The lambda function to invoke.
@@ -76,7 +59,7 @@ export class LambdaInvokeAction extends codepipeline.Action {
   constructor(props: LambdaInvokeActionProps) {
     super({
       ...props,
-      category: codepipeline.ActionCategory.Invoke,
+      category: codepipeline.ActionCategory.INVOKE,
       provider: 'Lambda',
       artifactBounds: {
         minInputs: 0,
@@ -86,8 +69,8 @@ export class LambdaInvokeAction extends codepipeline.Action {
       },
       configuration: {
         FunctionName: props.lambda.functionName,
-        UserParameters: props.userParameters
-      }
+        UserParameters: Stack.of(props.lambda).toJsonString(props.userParameters),
+      },
     });
 
     this.props = props;
@@ -95,22 +78,23 @@ export class LambdaInvokeAction extends codepipeline.Action {
 
   protected bind(info: codepipeline.ActionBind): void {
     // allow pipeline to list functions
-    info.role.addToPolicy(new iam.PolicyStatement()
-      .addAction('lambda:ListFunctions')
-      .addAllResources());
+    info.role.addToPolicy(new iam.PolicyStatement({
+      actions: ['lambda:ListFunctions'],
+      resources: ['*']
+    }));
 
     // allow pipeline to invoke this lambda functionn
-    info.role.addToPolicy(new iam.PolicyStatement()
-      .addAction('lambda:InvokeFunction')
-      .addResource(this.props.lambda.functionArn));
+    info.role.addToPolicy(new iam.PolicyStatement({
+      actions: ['lambda:InvokeFunction'],
+      resources: [this.props.lambda.functionArn]
+    }));
 
-    // allow lambda to put job results for this pipeline.
-    const addToPolicy = this.props.addPutJobResultPolicy !== undefined ? this.props.addPutJobResultPolicy : true;
-    if (addToPolicy) {
-      this.props.lambda.addToRolePolicy(new iam.PolicyStatement()
-        .addAllResources() // to avoid cycles (see docs)
-        .addAction('codepipeline:PutJobSuccessResult')
-        .addAction('codepipeline:PutJobFailureResult'));
-    }
+    // allow lambda to put job results for this pipeline
+    // CodePipeline requires this to be granted to '*'
+    // (the Pipeline ARN will not be enough)
+    this.props.lambda.addToRolePolicy(new iam.PolicyStatement({
+      resources: ['*'],
+      actions: ['codepipeline:PutJobSuccessResult', 'codepipeline:PutJobFailureResult']
+    }));
   }
 }

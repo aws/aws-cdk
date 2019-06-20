@@ -1,9 +1,12 @@
 import iam = require('@aws-cdk/aws-iam');
 import { PolicyDocument, PolicyStatement } from '@aws-cdk/aws-iam';
-import { Construct, DeletionPolicy, IResource } from '@aws-cdk/cdk';
-import { EncryptionKeyAlias } from './alias';
+import { Construct, IResource, RemovalPolicy, Resource, Stack } from '@aws-cdk/cdk';
+import { Alias } from './alias';
 import { CfnKey } from './kms.generated';
 
+/**
+ * A KMS Key, either managed by this CDK app, or imported.
+ */
 export interface IKey extends IResource {
   /**
    * The ARN of the key.
@@ -15,7 +18,7 @@ export interface IKey extends IResource {
   /**
    * Defines a new alias for the key.
    */
-  addAlias(alias: string): EncryptionKeyAlias;
+  addAlias(alias: string): Alias;
 
   /**
    * Adds a statement to the KMS key resource policy.
@@ -47,7 +50,7 @@ export interface IKey extends IResource {
   grantEncryptDecrypt(grantee: iam.IGrantable): iam.Grant;
 }
 
-abstract class KeyBase extends Construct implements IKey {
+abstract class KeyBase extends Resource implements IKey {
   /**
    * The ARN of the key.
    */
@@ -64,8 +67,8 @@ abstract class KeyBase extends Construct implements IKey {
   /**
    * Defines a new alias for the key.
    */
-  public addAlias(alias: string): EncryptionKeyAlias {
-    return new EncryptionKeyAlias(this, 'Alias', { alias, key: this });
+  public addAlias(alias: string): Alias {
+    return new Alias(this, 'Alias', { name: alias, targetKey: this });
   }
 
   /**
@@ -76,12 +79,14 @@ abstract class KeyBase extends Construct implements IKey {
    * no-op.
    */
   public addToResourcePolicy(statement: PolicyStatement, allowNoOp = true) {
+    const stack = Stack.of(this);
+
     if (!this.policy) {
       if (allowNoOp) { return; }
-      throw new Error(`Unable to add statement to IAM resource policy for KMS key: ${JSON.stringify(this.node.resolve(this.keyArn))}`);
+      throw new Error(`Unable to add statement to IAM resource policy for KMS key: ${JSON.stringify(stack.resolve(this.keyArn))}`);
     }
 
-    this.policy.addStatement(statement);
+    this.policy.addStatements(statement);
   }
 
   /**
@@ -172,16 +177,24 @@ export interface KeyProps {
    * Whether the encryption key should be retained when it is removed from the Stack. This is useful when one wants to
    * retain access to data that was encrypted with a key that is being retired.
    *
-   * @default true
+   * @default RemovalPolicy.Retain
    */
-  readonly retain?: boolean;
+  readonly removalPolicy?: RemovalPolicy;
 }
 
 /**
  * Defines a KMS key.
+ *
+ * @resource AWS::KMS::Key
  */
 export class Key extends KeyBase {
-
+  /**
+   * Import an externally defined KMS Key using its ARN.
+   *
+   * @param scope  the construct that will "own" the imported key.
+   * @param id     the id of the imported key in the construct tree.
+   * @param keyArn the ARN of an existing KMS key.
+   */
   public static fromKeyArn(scope: Construct, id: string, keyArn: string): IKey {
     class Import extends KeyBase {
       public keyArn = keyArn;
@@ -211,10 +224,8 @@ export class Key extends KeyBase {
       keyPolicy: this.policy,
     });
 
-    this.keyArn = resource.keyArn;
-    resource.options.deletionPolicy = props.retain === false
-                                    ? DeletionPolicy.Delete
-                                    : DeletionPolicy.Retain;
+    this.keyArn = resource.attrArn;
+    resource.applyRemovalPolicy(props.removalPolicy);
   }
 
   /**
@@ -237,9 +248,10 @@ export class Key extends KeyBase {
       "kms:CancelKeyDeletion"
     ];
 
-    this.addToResourcePolicy(new PolicyStatement()
-      .addAllResources()
-      .addActions(...actions)
-      .addAccountRootPrincipal());
+    this.addToResourcePolicy(new PolicyStatement({
+      resources: ['*'],
+      actions,
+      principals: [new iam.AccountRootPrincipal()]
+    }));
   }
 }

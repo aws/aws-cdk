@@ -1,5 +1,5 @@
-import { CfnReference } from './cfn-reference';
 import { Construct } from './construct';
+import { CfnReference } from './private/cfn-reference';
 import { Token } from './token';
 
 const AWS_ACCOUNTID = 'AWS::AccountId';
@@ -19,40 +19,16 @@ const AWS_NOVALUE = 'AWS::NoValue';
  * values can be obtained as properties from an scoped object.
  */
 export class Aws {
-  private constructor() {
-  }
+  public static readonly accountId = pseudoString(AWS_ACCOUNTID);
+  public static readonly urlSuffix = pseudoString(AWS_URLSUFFIX);
+  public static readonly notificationArns = Token.asList({ Ref: AWS_NOTIFICATIONARNS }, { displayHint: AWS_NOTIFICATIONARNS });
+  public static readonly partition = pseudoString(AWS_PARTITION);
+  public static readonly region = pseudoString(AWS_REGION);
+  public static readonly stackId = pseudoString(AWS_STACKID);
+  public static readonly stackName = pseudoString(AWS_STACKNAME);
+  public static readonly noValue = pseudoString(AWS_NOVALUE);
 
-  public static get accountId(): string {
-    return new UnscopedPseudo(AWS_ACCOUNTID).toString();
-  }
-
-  public static get urlSuffix(): string {
-    return new UnscopedPseudo(AWS_URLSUFFIX).toString();
-  }
-
-  public static get notificationArns(): string[] {
-    return new UnscopedPseudo(AWS_NOTIFICATIONARNS).toList();
-  }
-
-  public static get partition(): string {
-    return new UnscopedPseudo(AWS_PARTITION).toString();
-  }
-
-  public static get region(): string {
-    return new UnscopedPseudo(AWS_REGION).toString();
-  }
-
-  public static get stackId(): string {
-    return new UnscopedPseudo(AWS_STACKID).toString();
-  }
-
-  public static get stackName(): string {
-    return new UnscopedPseudo(AWS_STACKNAME).toString();
-  }
-
-  public static get noValue(): string {
-    return new UnscopedPseudo(AWS_NOVALUE).toString();
-  }
+  private constructor() { }
 }
 
 /**
@@ -66,36 +42,40 @@ export class ScopedAws {
   }
 
   public get accountId(): string {
-    return CfnReference.forPseudo(AWS_ACCOUNTID, this.scope).toString();
+    return this.asString(AWS_ACCOUNTID);
   }
 
   public get urlSuffix(): string {
-    return CfnReference.forPseudo(AWS_URLSUFFIX, this.scope).toString();
+    return this.asString(AWS_URLSUFFIX);
   }
 
   public get notificationArns(): string[] {
-    return CfnReference.forPseudo(AWS_NOTIFICATIONARNS, this.scope).toList();
+    return Token.asList(CfnReference.forPseudo(AWS_NOTIFICATIONARNS, this.scope), {
+      displayHint: AWS_NOTIFICATIONARNS
+    });
   }
 
   public get partition(): string {
-    return CfnReference.forPseudo(AWS_PARTITION, this.scope).toString();
+    return this.asString(AWS_PARTITION);
   }
 
   public get region(): string {
-    return CfnReference.forPseudo(AWS_REGION, this.scope).toString();
+    return this.asString(AWS_REGION);
   }
 
   public get stackId(): string {
-    return CfnReference.forPseudo(AWS_STACKID, this.scope).toString();
+    return this.asString(AWS_STACKID);
   }
 
   public get stackName(): string {
-    return CfnReference.forPseudo(AWS_STACKNAME, this.scope).toString();
+    return this.asString(AWS_STACKNAME);
+  }
+
+  private asString(name: string) {
+    return Token.asString(CfnReference.forPseudo(name, this.scope), { displayHint: name });
   }
 }
 
-class UnscopedPseudo extends Token {
-  constructor(name: string) {
-    super({ Ref: name }, name);
-  }
+function pseudoString(name: string): string {
+  return Token.asString({ Ref: name }, { displayHint: name });
 }

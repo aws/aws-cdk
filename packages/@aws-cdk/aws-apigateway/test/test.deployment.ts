@@ -144,7 +144,7 @@ export = {
 
     // tokens supported, and are resolved upon synthesis
     const value = 'hello hello';
-    deployment.addToLogicalId({ foo: new cdk.Token(() => value) });
+    deployment.addToLogicalId({ foo: cdk.Lazy.stringValue({ produce: () => value }) });
 
     const template2 = synthesize();
     test.ok(template2.Resources.deployment33381975a12dfe81474913364dc31c06e37f9449);
@@ -152,8 +152,7 @@ export = {
     test.done();
 
     function synthesize() {
-      stack.node.prepareTree();
-      return SynthUtils.toCloudFormation(stack);
+      return SynthUtils.synthesize(stack).template;
     }
   },
 

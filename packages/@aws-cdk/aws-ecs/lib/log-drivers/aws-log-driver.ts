@@ -1,5 +1,6 @@
 import logs = require('@aws-cdk/aws-logs');
 import cdk = require('@aws-cdk/cdk');
+import { Stack } from '@aws-cdk/cdk';
 import { ContainerDefinition } from '../container-definition';
 import { CfnTaskDefinition } from '../ecs.generated';
 import { LogDriver } from "./log-driver";
@@ -33,7 +34,7 @@ export interface AwsLogDriverProps {
    *
    * @default - Logs never expire.
    */
-  readonly logRetentionDays?: logs.RetentionDays;
+  readonly logRetention?: logs.RetentionDays;
 
   /**
    * This option defines a multiline start pattern in Python strftime format.
@@ -72,12 +73,12 @@ export class AwsLogDriver extends LogDriver {
   constructor(scope: cdk.Construct, id: string, private readonly props: AwsLogDriverProps) {
     super(scope, id);
 
-    if (props.logGroup && props.logRetentionDays) {
+    if (props.logGroup && props.logRetention) {
       throw new Error('Cannot specify both `logGroup` and `logRetentionDays`.');
     }
 
     this.logGroup = props.logGroup || new logs.LogGroup(this, 'LogGroup', {
-        retentionDays: props.logRetentionDays || Infinity,
+        retention: props.logRetention || Infinity,
     });
   }
 
@@ -97,7 +98,7 @@ export class AwsLogDriver extends LogDriver {
       options: removeEmpty({
         'awslogs-group': this.logGroup.logGroupName,
         'awslogs-stream-prefix': this.props.streamPrefix,
-        'awslogs-region': this.node.stack.region,
+        'awslogs-region': Stack.of(this).region,
         'awslogs-datetime-format': this.props.datetimeFormat,
         'awslogs-multiline-pattern': this.props.multilinePattern,
       }),

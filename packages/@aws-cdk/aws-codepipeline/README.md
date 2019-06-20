@@ -1,4 +1,19 @@
 ## AWS CodePipeline Construct Library
+<!--BEGIN STABILITY BANNER-->
+
+---
+
+![Stability: Experimental](https://img.shields.io/badge/stability-Experimental-important.svg?style=for-the-badge)
+
+> **This is a _developer preview_ (public beta) module. Releases might lack important features and might have
+> future breaking changes.**
+> 
+> This API is still under active development and subject to non-backward
+> compatible changes or removal in any future version. Use of the API is not recommended in production
+> environments. Experimental APIs are not subject to the Semantic Versioning model.
+
+---
+<!--END STABILITY BANNER-->
 
 ### Pipeline
 
@@ -26,7 +41,7 @@ You can provide Stages when creating the Pipeline:
 const pipeline = new codepipeline.Pipeline(this, 'MyFirstPipeline', {
   stages: [
     {
-      name: 'Source',
+      stageName: 'Source',
       actions: [
         // see below...
       ],
@@ -39,7 +54,7 @@ Or append a Stage to an existing Pipeline:
 
 ```ts
 const sourceStage = pipeline.addStage({
-  name: 'Source',
+  stageName: 'Source',
   actions: [ // optional property
     // see below...
   ],
@@ -50,7 +65,7 @@ You can insert the new Stage at an arbitrary point in the Pipeline:
 
 ```ts
 const someStage = pipeline.addStage({
-  name: 'SomeStage',
+  stageName: 'SomeStage',
   placement: {
     // note: you can only specify one of the below properties
     rightBefore: anotherStage,

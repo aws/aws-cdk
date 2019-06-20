@@ -8,7 +8,7 @@ import eks = require('../lib');
 export = {
   'a default cluster spans all subnets'(test: Test) {
     // GIVEN
-    const [stack, vpc] = testFixture();
+    const { stack, vpc } = testFixture();
 
     // WHEN
     new eks.Cluster(stack, 'Cluster', { vpc });
@@ -19,10 +19,8 @@ export = {
         SubnetIds: [
           { Ref: "VPCPublicSubnet1SubnetB4246D30" },
           { Ref: "VPCPublicSubnet2Subnet74179F39" },
-          { Ref: "VPCPublicSubnet3Subnet631C5E25" },
           { Ref: "VPCPrivateSubnet1Subnet8BCA10E0" },
           { Ref: "VPCPrivateSubnet2SubnetCFCDAA7A" },
-          { Ref: "VPCPrivateSubnet3Subnet3EDCD457" }
         ]
       }
     }));
@@ -32,7 +30,7 @@ export = {
 
   'creating a cluster tags the private VPC subnets'(test: Test) {
     // GIVEN
-    const [stack, vpc] = testFixture();
+    const { stack, vpc } = testFixture();
 
     // WHEN
     new eks.Cluster(stack, 'Cluster', { vpc });
@@ -40,7 +38,7 @@ export = {
     // THEN
     expect(stack).to(haveResource('AWS::EC2::Subnet', {
       Tags: [
-        { Key: "Name", Value: "VPC/PrivateSubnet1" },
+        { Key: "Name", Value: "Stack/VPC/PrivateSubnet1" },
         { Key: "aws-cdk:subnet-name", Value: "Private" },
         { Key: "aws-cdk:subnet-type", Value: "Private" },
         { Key: "kubernetes.io/role/internal-elb", Value: "1" }
@@ -52,7 +50,7 @@ export = {
 
   'adding capacity creates an ASG with tags'(test: Test) {
     // GIVEN
-    const [stack, vpc] = testFixture();
+    const { stack, vpc } = testFixture();
     const cluster = new eks.Cluster(stack, 'Cluster', { vpc });
 
     // WHEN
@@ -66,7 +64,7 @@ export = {
         {
           Key: "Name",
           PropagateAtLaunch: true,
-          Value: "Cluster/Default"
+          Value: "Stack/Cluster/Default"
         },
         {
           Key: { "Fn::Join": [ "", [ "kubernetes.io/cluster/", { Ref: "ClusterEB0386A7" } ] ] },
@@ -81,7 +79,7 @@ export = {
 
   'adding capacity correctly deduces maxPods and adds userdata'(test: Test) {
     // GIVEN
-    const [stack, vpc] = testFixture();
+    const { stack, vpc } = testFixture();
     const cluster = new eks.Cluster(stack, 'Cluster', { vpc });
 
     // WHEN
@@ -110,8 +108,8 @@ export = {
 
   'exercise export/import'(test: Test) {
     // GIVEN
-    const [stack1, vpc] = testFixture();
-    const stack2 = new cdk.Stack(undefined, 'stack2', { env: { region: 'us-east-1' } });
+    const { stack: stack1, vpc, app } = testFixture();
+    const stack2 = new cdk.Stack(app, 'stack2', { env: { region: 'us-east-1' } });
     const cluster = new eks.Cluster(stack1, 'Cluster', { vpc });
 
     // WHEN
@@ -141,9 +139,10 @@ export = {
   },
 };
 
-function testFixture(): [cdk.Stack, ec2.Vpc] {
-  const stack = new cdk.Stack(undefined, 'Stack', { env: { region: 'us-east-1' }});
+function testFixture() {
+  const app = new cdk.App();
+  const stack = new cdk.Stack(app, 'Stack', { env: { region: 'us-east-1' }});
   const vpc = new ec2.Vpc(stack, 'VPC');
 
-  return [stack, vpc];
+  return { stack, vpc, app };
 }

@@ -1,13 +1,15 @@
 import cxapi = require('@aws-cdk/cx-api');
 import { CfnCondition } from './cfn-condition';
-import { Construct, IConstruct } from './construct';
-import { CreationPolicy, DeletionPolicy, UpdatePolicy } from './resource-policy';
-import { TagManager } from './tag-manager';
-import { capitalizePropertyNames, ignoreEmpty, PostResolveToken } from './util';
 // import required to be here, otherwise causes a cycle when running the generated JavaScript
 // tslint:disable-next-line:ordered-imports
 import { CfnRefElement } from './cfn-element';
-import { CfnReference } from './cfn-reference';
+import { Construct, IConstruct } from './construct';
+import { CfnReference } from './private/cfn-reference';
+import { RemovalPolicy, RemovalPolicyOptions } from './removal-policy';
+import { IResolvable } from './resolvable';
+import { CreationPolicy, DeletionPolicy, UpdatePolicy } from './resource-policy';
+import { TagManager } from './tag-manager';
+import { capitalizePropertyNames, ignoreEmpty, PostResolveToken } from './util';
 
 export interface CfnResourceProps {
   /**
@@ -23,12 +25,6 @@ export interface CfnResourceProps {
   readonly properties?: any;
 }
 
-export interface ITaggable {
-  /**
-   * TagManager to set, remove and format tags
-   */
-  readonly tags: TagManager;
-}
 /**
  * Represents a CloudFormation resource.
  */
@@ -53,14 +49,7 @@ export class CfnResource extends CfnRefElement {
    * Check whether the given construct is a CfnResource
    */
   public static isCfnResource(construct: IConstruct): construct is CfnResource {
-    return (construct as any).resourceType !== undefined;
-  }
-
-  /**
-   * Check whether the given construct is Taggable
-   */
-  public static isTaggable(construct: any): construct is ITaggable {
-    return (construct as any).tags !== undefined;
+    return (construct as any).cfnResourceType !== undefined;
   }
 
   /**
@@ -71,31 +60,20 @@ export class CfnResource extends CfnRefElement {
   /**
    * AWS resource type.
    */
-  public readonly resourceType: string;
+  public readonly cfnResourceType: string;
 
   /**
-   * AWS resource properties.
+   * AWS CloudFormation resource properties.
    *
-   * This object is rendered via a call to "renderProperties(this.properties)".
+   * This object is returned via cfnProperties
+   * @internal
    */
-  protected readonly properties: any;
-
-  /**
-   * AWS resource property overrides.
-   *
-   * During synthesis, the method "renderProperties(this.overrides)" is called
-   * with this object, and merged on top of the output of
-   * "renderProperties(this.properties)".
-   *
-   * Derived classes should expose a strongly-typed version of this object as
-   * a public property called `propertyOverrides`.
-   */
-  protected readonly untypedPropertyOverrides: any = { };
+  protected readonly _cfnProperties: any;
 
   /**
    * An object to be merged on top of the entire resource definition.
    */
-  private readonly rawOverrides: any = { };
+  private readonly rawOverrides: any = {};
 
   /**
    * Logical IDs of dependencies.
@@ -106,7 +84,7 @@ export class CfnResource extends CfnRefElement {
 
   /**
    * Creates a resource construct.
-   * @param resourceType The CloudFormation type of this resource (e.g. AWS::DynamoDB::Table)
+   * @param cfnResourceType The CloudFormation type of this resource (e.g. AWS::DynamoDB::Table)
    */
   constructor(scope: Construct, id: string, props: CfnResourceProps) {
     super(scope, id);
@@ -115,16 +93,43 @@ export class CfnResource extends CfnRefElement {
       throw new Error('The `type` property is required');
     }
 
-    this.resourceType = props.type;
-    this.properties = props.properties || { };
+    this.cfnResourceType = props.type;
+    this._cfnProperties = props.properties || {};
 
     // if aws:cdk:enable-path-metadata is set, embed the current construct's
     // path in the CloudFormation template, so it will be possible to trace
     // back to the actual construct path.
-    if (this.node.getContext(cxapi.PATH_METADATA_ENABLE_CONTEXT)) {
+    if (this.node.tryGetContext(cxapi.PATH_METADATA_ENABLE_CONTEXT)) {
       this.options.metadata = {
         [cxapi.PATH_METADATA_KEY]: this.node.path
       };
+    }
+  }
+
+  /**
+   * Sets the deletion policy of the resource based on the removal policy specified.
+   */
+  public applyRemovalPolicy(policy: RemovalPolicy | undefined, options: RemovalPolicyOptions = {}) {
+    policy = policy || options.default || RemovalPolicy.Retain;
+
+    let deletionPolicy;
+
+    switch (policy) {
+      case RemovalPolicy.Destroy:
+        deletionPolicy = DeletionPolicy.Delete;
+        break;
+
+      case RemovalPolicy.Retain:
+        deletionPolicy = DeletionPolicy.Retain;
+        break;
+
+      default:
+        throw new Error(`Invalid removal policy: ${policy}`);
+    }
+
+    this.options.deletionPolicy = deletionPolicy;
+    if (options.applyToUpdateReplacePolicy) {
+      this.options.updateReplacePolicy = deletionPolicy;
     }
   }
 
@@ -134,7 +139,7 @@ export class CfnResource extends CfnRefElement {
    * in case there is no generated attribute.
    * @param attributeName The name of the attribute.
    */
-  public getAtt(attributeName: string) {
+  public getAtt(attributeName: string): IResolvable {
     return CfnReference.for(this, attributeName);
   }
 
@@ -159,7 +164,7 @@ export class CfnResource extends CfnRefElement {
       // object overwrite it with an object.
       const isObject = curr[key] != null && typeof(curr[key]) === 'object' && !Array.isArray(curr[key]);
       if (!isObject) {
-        curr[key] = { };
+        curr[key] = {};
       }
 
       curr = curr[key];
@@ -206,37 +211,35 @@ export class CfnResource extends CfnRefElement {
   }
 
   /**
+   * @returns a string representation of this resource
+   */
+  public toString() {
+    return `${super.toString()} [${this.cfnResourceType}]`;
+  }
+
+  /**
    * Emits CloudFormation for this resource.
    * @internal
    */
   public _toCloudFormation(): object {
     try {
-      // merge property overrides onto properties and then render (and validate).
-      const tags = CfnResource.isTaggable(this) ? this.tags.renderTags() : undefined;
-      const properties = deepMerge(
-        this.properties || {},
-        { tags },
-        this.untypedPropertyOverrides
-      );
-
       const ret = {
         Resources: {
           // Post-Resolve operation since otherwise deepMerge is going to mix values into
           // the Token objects returned by ignoreEmpty.
           [this.logicalId]: new PostResolveToken({
-            Type: this.resourceType,
-            Properties: ignoreEmpty(properties),
+            Type: this.cfnResourceType,
+            Properties: ignoreEmpty(this.cfnProperties),
             DependsOn: ignoreEmpty(renderDependsOn(this.dependsOn)),
-            CreationPolicy:  capitalizePropertyNames(this, this.options.creationPolicy),
+            CreationPolicy:  capitalizePropertyNames(this, renderCreationPolicy(this.options.creationPolicy)),
             UpdatePolicy: capitalizePropertyNames(this, this.options.updatePolicy),
             UpdateReplacePolicy: capitalizePropertyNames(this, this.options.updateReplacePolicy),
             DeletionPolicy: capitalizePropertyNames(this, this.options.deletionPolicy),
             Metadata: ignoreEmpty(this.options.metadata),
             Condition: this.options.condition && this.options.condition.logicalId
           }, props => {
-            const r = deepMerge(props, this.rawOverrides);
-            r.Properties = this.renderProperties(r.Properties);
-            return r;
+            props.Properties = this.renderProperties(props.Properties);
+            return deepMerge(props, this.rawOverrides);
           })
         }
       };
@@ -245,9 +248,13 @@ export class CfnResource extends CfnRefElement {
       // Change message
       e.message = `While synthesizing ${this.node.path}: ${e.message}`;
       // Adjust stack trace (make it look like node built it, too...)
-      const creationStack = ['--- resource created at ---', ...this.creationStackTrace].join('\n  at ');
-      const problemTrace = e.stack.substr(e.stack.indexOf(e.message) + e.message.length);
-      e.stack = `${e.message}\n  ${creationStack}\n  --- problem discovered at ---${problemTrace}`;
+      const trace = this.creationStack;
+      if (trace) {
+        const creationStack = ['--- resource created at ---', ...trace].join('\n  at ');
+        const problemTrace = e.stack.substr(e.stack.indexOf(e.message) + e.message.length);
+        e.stack = `${e.message}\n  ${creationStack}\n  --- problem discovered at ---${problemTrace}`;
+      }
+
       // Re-throw
       throw e;
     }
@@ -260,10 +267,34 @@ export class CfnResource extends CfnRefElement {
         .sort((x, y) => x.node.path.localeCompare(y.node.path))
         .map(r => r.logicalId);
     }
+
+    function renderCreationPolicy(policy: CreationPolicy | undefined): any {
+      if (!policy) { return undefined; }
+      const result: any = { ...policy };
+      if (policy.resourceSignal && policy.resourceSignal.timeout) {
+        result.resourceSignal = policy.resourceSignal;
+      }
+      return result;
+    }
   }
 
-  protected renderProperties(properties: any): { [key: string]: any } {
-    return properties;
+  protected get cfnProperties(): { [key: string]: any } {
+    const tags = TagManager.isTaggable(this) ? this.tags.renderTags() : {};
+    return deepMerge(this._cfnProperties || {}, {tags});
+  }
+
+  protected renderProperties(props: {[key: string]: any}): { [key: string]: any } {
+    return props;
+  }
+
+  /**
+   * Return properties modified after initiation
+   *
+   * Resources that expose mutable properties should override this function to
+   * collect and return the properties object for this resource.
+   */
+  protected get updatedProperites(): { [key: string]: any } {
+    return this._cfnProperties;
   }
 
   protected validateProperties(_properties: any) {
@@ -275,6 +306,7 @@ export enum TagType {
   Standard = 'StandardTag',
   AutoScalingGroup = 'AutoScalingGroupTag',
   Map = 'StringToStringMap',
+  KeyValue = 'KeyValue',
   NotTaggable = 'NotTaggable',
 }
 
@@ -338,7 +370,7 @@ export function deepMerge(target: any, ...sources: any[]) {
         // if the value at the target is not an object, override it with an
         // object so we can continue the recursion
         if (typeof(target[key]) !== 'object') {
-          target[key] = { };
+          target[key] = {};
         }
 
         deepMerge(target[key], value);

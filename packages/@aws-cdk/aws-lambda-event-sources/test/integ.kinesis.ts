@@ -12,11 +12,11 @@ class KinesisEventSourceTest extends cdk.Stack {
     const stream = new kinesis.Stream(this, 'Q');
 
     fn.addEventSource(new KinesisEventSource(stream, {
-      startingPosition: lambda.StartingPosition.TrimHorizon
+      startingPosition: lambda.StartingPosition.TRIM_HORIZON
     }));
   }
 }
 
 const app = new cdk.App();
 new KinesisEventSourceTest(app, 'lambda-event-source-kinesis');
-app.run();
+app.synth();

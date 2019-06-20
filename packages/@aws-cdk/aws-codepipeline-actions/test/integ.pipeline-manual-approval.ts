@@ -13,7 +13,7 @@ new codepipeline.Pipeline(stack, 'Pipeline', {
   artifactBucket: bucket,
   stages: [
     {
-      name: 'Source',
+      stageName: 'Source',
       actions: [
         new cpactions.S3SourceAction({
           actionName: 'S3',
@@ -24,7 +24,7 @@ new codepipeline.Pipeline(stack, 'Pipeline', {
       ],
     },
     {
-      name: 'Approve',
+      stageName: 'Approve',
       actions: [
         new cpactions.ManualApprovalAction({
           actionName: 'ManualApproval',
@@ -35,4 +35,4 @@ new codepipeline.Pipeline(stack, 'Pipeline', {
   ],
 });
 
-app.run();
+app.synth();

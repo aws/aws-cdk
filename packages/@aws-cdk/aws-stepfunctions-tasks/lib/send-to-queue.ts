@@ -1,17 +1,16 @@
 import iam = require('@aws-cdk/aws-iam');
 import sqs = require('@aws-cdk/aws-sqs');
 import sfn = require('@aws-cdk/aws-stepfunctions');
-import { renderNumber, renderString } from './json-path';
-import { NumberValue } from './number-value';
+import { Duration } from '@aws-cdk/cdk';
 
 /**
  * Properties for SendMessageTask
  */
 export interface SendToQueueProps {
   /**
-   * The message body to send to the queue.
+   * The text message to send to the queue.
    */
-  readonly messageBody: string;
+  readonly messageBody: sfn.TaskInput;
 
   /**
    * The length of time, in seconds, for which to delay a specific message.
@@ -20,7 +19,7 @@ export interface SendToQueueProps {
    *
    * @default Default value of the queue is used
    */
-  readonly delaySeconds?: NumberValue;
+  readonly delay?: Duration;
 
   /**
    * The token used for deduplication of sent messages.
@@ -38,6 +37,13 @@ export interface SendToQueueProps {
    * @default No group ID
    */
   readonly messageGroupId?: string;
+
+  /**
+   * Whether to pause the workflow until a task token is returned
+   *
+   * @default false
+   */
+  readonly waitForTaskToken?: boolean;
 }
 
 /**
@@ -47,22 +53,32 @@ export interface SendToQueueProps {
  * integration with other AWS services via a specific class instance.
  */
 export class SendToQueue implements sfn.IStepFunctionsTask {
+
+  private readonly waitForTaskToken: boolean;
+
   constructor(private readonly queue: sqs.IQueue, private readonly props: SendToQueueProps) {
+    this.waitForTaskToken = props.waitForTaskToken === true;
+
+    if (this.waitForTaskToken && !sfn.FieldUtils.containsTaskToken(props.messageBody.value)) {
+      throw new Error('Task Token is missing in messageBody (pass Context.taskToken somewhere in messageBody)');
+    }
   }
 
-  public bind(_task: sfn.Task): sfn.StepFunctionsTaskProperties {
+  public bind(_task: sfn.Task): sfn.StepFunctionsTaskConfig {
     return {
-      resourceArn: 'arn:aws:states:::sqs:sendMessage',
-      policyStatements: [new iam.PolicyStatement()
-        .addAction('sqs:SendMessage')
-        .addResource(this.queue.queueArn)
-      ],
+      resourceArn: 'arn:aws:states:::sqs:sendMessage' + (this.waitForTaskToken ? '.waitForTaskToken' : ''),
+      policyStatements: [new iam.PolicyStatement({
+        actions: ['sqs:SendMessage'],
+        resources: [this.queue.queueArn]
+      })],
       parameters: {
         QueueUrl: this.queue.queueUrl,
-        ...renderString('MessageBody', this.props.messageBody),
-        ...renderNumber('DelaySeconds', this.props.delaySeconds),
-        ...renderString('MessageDeduplicationId', this.props.messageDeduplicationId),
-        ...renderString('MessageGroupId', this.props.messageGroupId),
+        ...sfn.FieldUtils.renderObject({
+          MessageBody: this.props.messageBody.value,
+          DelaySeconds: this.props.delay && this.props.delay.toSeconds(),
+          MessageDeduplicationId: this.props.messageDeduplicationId,
+          MessageGroupId: this.props.messageGroupId,
+        })
       }
     };
   }

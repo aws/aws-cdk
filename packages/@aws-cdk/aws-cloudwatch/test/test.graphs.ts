@@ -17,7 +17,7 @@ export = {
     });
 
     // THEN
-    test.deepEqual(stack.node.resolve(widget.toJson()), [{
+    test.deepEqual(stack.resolve(widget.toJson()), [{
       type: 'metric',
       width: 6,
       height: 6,
@@ -45,7 +45,7 @@ export = {
     });
 
     // THEN
-    test.deepEqual(stack.node.resolve(widget.toJson()), [{
+    test.deepEqual(stack.resolve(widget.toJson()), [{
       type: 'metric',
       width: 6,
       height: 6,
@@ -74,7 +74,7 @@ export = {
     });
 
     // THEN
-    test.deepEqual(stack.node.resolve(widget.toJson()), [{
+    test.deepEqual(stack.resolve(widget.toJson()), [{
       type: 'metric',
       width: 6,
       height: 3,
@@ -94,7 +94,7 @@ export = {
     // GIVEN
     const stack = new Stack();
 
-    const alarm = new Metric({ namespace: 'CDK', metricName: 'Test' }).newAlarm(stack, 'Alarm', {
+    const alarm = new Metric({ namespace: 'CDK', metricName: 'Test' }).createAlarm(stack, 'Alarm', {
       evaluationPeriods: 2,
       threshold: 1000
     });
@@ -105,7 +105,7 @@ export = {
     });
 
     // THEN
-    test.deepEqual(stack.node.resolve(widget.toJson()), [{
+    test.deepEqual(stack.resolve(widget.toJson()), [{
       type: 'metric',
       width: 6,
       height: 6,
@@ -133,13 +133,13 @@ export = {
       leftAnnotations: [{
         value: 1000,
         color: '667788',
-        fill: Shading.Below,
+        fill: Shading.BELOW,
         label: 'this is the annotation',
       }]
     });
 
     // THEN
-    test.deepEqual(stack.node.resolve(widget.toJson()), [{
+    test.deepEqual(stack.resolve(widget.toJson()), [{
       type: 'metric',
       width: 6,
       height: 6,
@@ -170,7 +170,7 @@ export = {
 
     const metric = new Metric({ namespace: 'CDK', metricName: 'Test' });
 
-    const alarm = metric.newAlarm(stack, 'Alarm', {
+    const alarm = metric.createAlarm(stack, 'Alarm', {
       evaluationPeriods: 2,
       threshold: 1000
     });
@@ -182,7 +182,7 @@ export = {
     });
 
     // THEN
-    test.deepEqual(stack.node.resolve(widget.toJson()), [{
+    test.deepEqual(stack.resolve(widget.toJson()), [{
       type: 'metric',
       width: 6,
       height: 6,
@@ -229,7 +229,7 @@ export = {
     });
 
     // THEN
-    test.deepEqual(stack.node.resolve(widget.toJson()), [{
+    test.deepEqual(stack.resolve(widget.toJson()), [{
       type: 'metric',
       width: 6,
       height: 6,

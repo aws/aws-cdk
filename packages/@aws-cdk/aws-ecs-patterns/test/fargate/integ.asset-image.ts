@@ -17,12 +17,10 @@ Array.isArray(path);
 const fargateService = new ecsPatterns.LoadBalancedFargateService(stack, "FargateService", {
   cluster,
   containerPort: 8000,
-  image: new ecs.AssetImage(stack, 'Image', {
-    directory: path.join(__dirname, '..', 'demo-image')
-  })
+  image: new ecs.AssetImage(path.join(__dirname, '..', 'demo-image')),
 });
 
 // CfnOutput the DNS where you can access your service
 new cdk.CfnOutput(stack, 'LoadBalancerDNS', { value: fargateService.loadBalancer.loadBalancerDnsName });
 
-app.run();
+app.synth();

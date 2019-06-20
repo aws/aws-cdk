@@ -40,6 +40,7 @@ for (const templateFile of fs.readdirSync(dir)) {
       typeSystem
     });
 
-    expect(app.synthesizeStack(stackName).template).toMatchSnapshot(stackName);
+    const output = app.synth().getStack(stackName);
+    expect(output.template).toMatchSnapshot(stackName);
   });
 }

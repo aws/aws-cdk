@@ -1,5 +1,5 @@
 import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
-import { CodePipelineBuildArtifacts, CodePipelineSource, Project } from '@aws-cdk/aws-codebuild';
+import codebuild = require('@aws-cdk/aws-codebuild');
 import { Repository } from '@aws-cdk/aws-codecommit';
 import codepipeline = require('@aws-cdk/aws-codepipeline');
 import { Role } from '@aws-cdk/aws-iam';
@@ -21,7 +21,9 @@ export = {
   });
 
   /** Source! */
-  const repo = new Repository(stack, 'MyVeryImportantRepo', { repositoryName: 'my-very-important-repo' });
+  const repo = new Repository(stack, 'MyVeryImportantRepo', {
+    repositoryName: cdk.PhysicalName.of('my-very-important-repo'),
+  });
 
   const sourceOutput = new codepipeline.Artifact('SourceArtifact');
   const source = new cpactions.CodeCommitSourceAction({
@@ -31,39 +33,35 @@ export = {
     pollForSourceChanges: true,
   });
   pipeline.addStage({
-    name: 'source',
+    stageName: 'source',
     actions: [source]
   });
 
   /** Build! */
 
-  const buildArtifacts = new CodePipelineBuildArtifacts();
-  const project = new Project(stack, 'MyBuildProject', {
-    source: new CodePipelineSource(),
-    artifacts: buildArtifacts,
-  });
+  const project = new codebuild.PipelineProject(stack, 'MyBuildProject');
 
   const buildOutput = new codepipeline.Artifact('OutputYo');
   const buildAction = new cpactions.CodeBuildAction({
     actionName: 'build',
     project,
     input: sourceOutput,
-    output: buildOutput,
+    outputs: [buildOutput],
   });
   pipeline.addStage({
-    name: 'build',
+    stageName: 'build',
     actions: [buildAction],
   });
 
   /** Deploy! */
 
   // To execute a change set - yes, you probably do need *:* 🤷‍♀️
-  changeSetExecRole.addToPolicy(new PolicyStatement().addAllResources().addAction("*"));
+  changeSetExecRole.addToPolicy(new PolicyStatement({ resources: ['*'], actions: ['*'] }));
 
   const stackName = 'BrelandsStack';
   const changeSetName = 'MyMagicalChangeSet';
   pipeline.addStage({
-    name: 'prod',
+    stageName: 'prod',
     actions: [
       new cpactions.CloudFormationCreateReplaceChangeSetAction({
         actionName: 'BuildChangeSetProd',
@@ -432,9 +430,11 @@ class TestFixture extends cdk.Stack {
     super();
 
     this.pipeline = new codepipeline.Pipeline(this, 'Pipeline');
-    this.sourceStage = this.pipeline.addStage({ name: 'Source' });
-    this.deployStage = this.pipeline.addStage({ name: 'Deploy' });
-    this.repo = new Repository(this, 'MyVeryImportantRepo', { repositoryName: 'my-very-important-repo' });
+    this.sourceStage = this.pipeline.addStage({ stageName: 'Source' });
+    this.deployStage = this.pipeline.addStage({ stageName: 'Deploy' });
+    this.repo = new Repository(this, 'MyVeryImportantRepo', {
+      repositoryName: cdk.PhysicalName.of('my-very-important-repo'),
+    });
     this.sourceOutput = new codepipeline.Artifact('SourceArtifact');
     const source = new cpactions.CodeCommitSourceAction({
       actionName: 'Source',

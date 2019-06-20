@@ -1,11 +1,12 @@
-import cxapi = require('@aws-cdk/cx-api');
 import { Test } from 'nodeunit';
-import { App, CfnCondition, CfnOutput, CfnParameter, CfnResource, Construct, Include, ScopedAws, Stack, Token } from '../lib';
+import { App, CfnCondition, CfnOutput, CfnParameter, CfnResource, Construct, ConstructNode, Include, Lazy, ScopedAws, Stack } from '../lib';
+import { Intrinsic } from '../lib/private/intrinsic';
+import { toCloudFormation } from './util';
 
 export = {
   'a stack can be serialized into a CloudFormation template, initially it\'s empty'(test: Test) {
     const stack = new Stack();
-    test.deepEqual(stack._toCloudFormation(), { });
+    test.deepEqual(toCloudFormation(stack), { });
     test.done();
   },
 
@@ -14,7 +15,7 @@ export = {
     stack.templateOptions.templateFormatVersion = 'MyTemplateVersion';
     stack.templateOptions.description = 'This is my description';
     stack.templateOptions.transform = 'SAMy';
-    test.deepEqual(stack._toCloudFormation(), {
+    test.deepEqual(toCloudFormation(stack), {
       Description: 'This is my description',
       AWSTemplateFormatVersion: 'MyTemplateVersion',
       Transform: 'SAMy'
@@ -34,7 +35,7 @@ export = {
     const stack = new Stack(undefined, 'MyStack');
     new CfnResource(stack, 'MyResource', { type: 'MyResourceType' });
 
-    test.deepEqual(stack._toCloudFormation(), { Resources: { MyResource: { Type: 'MyResourceType' } } });
+    test.deepEqual(toCloudFormation(stack), { Resources: { MyResource: { Type: 'MyResourceType' } } });
     test.done();
   },
 
@@ -48,7 +49,7 @@ export = {
       MetadataKey: 'MetadataValue'
     };
 
-    test.deepEqual(stack._toCloudFormation(), {
+    test.deepEqual(toCloudFormation(stack), {
       Description: 'StackDescription',
       Transform: 'Transform',
       AWSTemplateFormatVersion: 'TemplateVersion',
@@ -88,31 +89,6 @@ export = {
     test.done();
   },
 
-  'Construct.findResource(logicalId) can be used to retrieve a resource by its path'(test: Test) {
-    const stack = new Stack();
-
-    test.ok(!stack.node.tryFindChild('foo'), 'empty stack');
-
-    const r1 = new CfnResource(stack, 'Hello', { type: 'MyResource' });
-    test.equal(stack.findResource(r1.stackPath), r1, 'look up top-level');
-
-    const child = new Construct(stack, 'Child');
-    const r2 = new CfnResource(child, 'Hello', { type: 'MyResource' });
-
-    test.equal(stack.findResource(r2.stackPath), r2, 'look up child');
-
-    test.done();
-  },
-
-  'Stack.findResource will fail if the element is not a resource'(test: Test) {
-    const stack = new Stack();
-
-    const p = new CfnParameter(stack, 'MyParam', { type: 'String' });
-
-    test.throws(() => stack.findResource(p.node.path));
-    test.done();
-  },
-
   'Stack.getByPath can be used to find any CloudFormation element (Parameter, Output, etc)'(test: Test) {
 
     const stack = new Stack();
@@ -146,7 +122,7 @@ export = {
 
     new Include(stack, 'Include', { template });
 
-    const output = stack._toCloudFormation();
+    const output = toCloudFormation(stack);
 
     test.equal(typeof output.Description, 'string');
     test.done();
@@ -163,11 +139,11 @@ export = {
     new CfnParameter(stack2, 'SomeParameter', { type: 'String', default: account1 });
 
     // THEN
-    // Need to do this manually now, since we're in testing mode. In a normal CDK app,
-    // this happens as part of app.run().
-    app.node.prepareTree();
+    const assembly = app.synth();
+    const template1 = assembly.getStack(stack1.stackName).template;
+    const template2 = assembly.getStack(stack2.stackName).template;
 
-    test.deepEqual(stack1._toCloudFormation(), {
+    test.deepEqual(template1, {
       Outputs: {
         ExportsOutputRefAWSAccountIdAD568057: {
           Value: { Ref: 'AWS::AccountId' },
@@ -176,7 +152,7 @@ export = {
       }
     });
 
-    test.deepEqual(stack2._toCloudFormation(), {
+    test.deepEqual(template2, {
       Parameters: {
         SomeParameter: {
           Type: 'String',
@@ -197,15 +173,14 @@ export = {
 
     // WHEN - used in another resource
     new CfnResource(stack2, 'SomeResource', { type: 'AWS::Some::Resource', properties: {
-      someProperty: new Token(() => resource1.ref),
+      someProperty: new Intrinsic(resource1.ref),
     }});
 
     // THEN
-    // Need to do this manually now, since we're in testing mode. In a normal CDK app,
-    // this happens as part of app.run().
-    app.node.prepareTree();
+    const assembly = app.synth();
+    const template2 = assembly.getStack(stack2.stackName).template;
 
-    test.deepEqual(stack2._toCloudFormation(), {
+    test.deepEqual(template2, {
       Resources: {
         SomeResource: {
           Type: 'AWS::Some::Resource',
@@ -226,12 +201,14 @@ export = {
     const stack2 = new Stack(app, 'Stack2');
 
     // WHEN - used in another stack
-    new CfnParameter(stack2, 'SomeParameter', { type: 'String', default: new Token(() => account1) });
+    new CfnParameter(stack2, 'SomeParameter', { type: 'String', default: Lazy.stringValue({ produce: () => account1 }) });
 
-    app.node.prepareTree();
+    const assembly = app.synth();
+    const template1 = assembly.getStack(stack1.stackName).template;
+    const template2 = assembly.getStack(stack2.stackName).template;
 
     // THEN
-    test.deepEqual(stack1._toCloudFormation(), {
+    test.deepEqual(template1, {
       Outputs: {
         ExportsOutputRefAWSAccountIdAD568057: {
           Value: { Ref: 'AWS::AccountId' },
@@ -240,7 +217,7 @@ export = {
       }
     });
 
-    test.deepEqual(stack2._toCloudFormation(), {
+    test.deepEqual(template2, {
       Parameters: {
         SomeParameter: {
           Type: 'String',
@@ -252,7 +229,7 @@ export = {
     test.done();
   },
 
-  'Cross-stack use of Region returns nonscoped intrinsic'(test: Test) {
+  'Cross-stack use of Region and account returns nonscoped intrinsic because the two stacks must be in the same region anyway'(test: Test) {
     // GIVEN
     const app = new App();
     const stack1 = new Stack(app, 'Stack1');
@@ -260,16 +237,19 @@ export = {
 
     // WHEN - used in another stack
     new CfnOutput(stack2, 'DemOutput', { value: stack1.region });
+    new CfnOutput(stack2, 'DemAccount', { value: stack1.account });
 
     // THEN
-    // Need to do this manually now, since we're in testing mode. In a normal CDK app,
-    // this happens as part of app.run().
-    app.node.prepareTree();
+    const assembly = app.synth();
+    const template2 = assembly.getStack(stack2.stackName).template;
 
-    test.deepEqual(stack2._toCloudFormation(), {
+    test.deepEqual(template2, {
       Outputs: {
         DemOutput: {
           Value: { Ref: 'AWS::Region' },
+        },
+        DemAccount: {
+          Value: { Ref: 'AWS::AccountId' },
         }
       }
     });
@@ -287,10 +267,11 @@ export = {
     // WHEN - used in another stack
     new CfnParameter(stack2, 'SomeParameter', { type: 'String', default: `TheAccountIs${account1}` });
 
-    app.node.prepareTree();
+    const assembly = app.synth();
+    const template2 = assembly.getStack(stack2.stackName).template;
 
     // THEN
-    test.deepEqual(stack2._toCloudFormation(), {
+    test.deepEqual(template2, {
       Parameters: {
         SomeParameter: {
           Type: 'String',
@@ -315,7 +296,7 @@ export = {
     new CfnParameter(stack1, 'SomeParameter', { type: 'String', default: account2 });
 
     test.throws(() => {
-      app.node.prepareTree();
+      ConstructNode.prepare(app.node);
       // tslint:disable-next-line:max-line-length
     }, "'Stack2' depends on 'Stack1' (Stack2/SomeParameter -> Stack1.AWS::AccountId). Adding this dependency (Stack1/SomeParameter -> Stack2.AWS::AccountId) would create a cyclic reference.");
 
@@ -332,10 +313,10 @@ export = {
     // WHEN
     new CfnParameter(stack2, 'SomeParameter', { type: 'String', default: account1 });
 
-    app.node.prepareTree();
+    ConstructNode.prepare(app.node);
 
     // THEN
-    test.deepEqual(stack2.dependencies().map(s => s.node.id), ['Stack1']);
+    test.deepEqual(stack2.dependencies.map(s => s.node.id), ['Stack1']);
 
     test.done();
   },
@@ -351,7 +332,7 @@ export = {
     new CfnParameter(stack2, 'SomeParameter', { type: 'String', default: account1 });
 
     test.throws(() => {
-      app.node.prepareTree();
+      ConstructNode.prepare(app.node);
     }, /Can only reference cross stacks in the same region and account/);
 
     test.done();
@@ -363,20 +344,7 @@ export = {
     const stack = new Stack(app, 'Stack1', { env: { account: '123456789012', region: 'es-norst-1' }});
 
     // THEN
-    test.equal(stack.node.resolve(stack.region), 'es-norst-1');
-
-    test.done();
-  },
-
-  'stack with region supplied via context returns symbolic value'(test: Test) {
-    // GIVEN
-    const app = new App();
-
-    app.node.setContext(cxapi.DEFAULT_REGION_CONTEXT_KEY, 'es-norst-1');
-    const stack = new Stack(app, 'Stack1');
-
-    // THEN
-    test.deepEqual(stack.node.resolve(stack.region), { Ref: 'AWS::Region' });
+    test.equal(stack.resolve(stack.region), 'es-norst-1');
 
     test.done();
   },
@@ -388,14 +356,14 @@ export = {
 
     // { Ref } and { GetAtt }
     new CfnResource(stack, 'RefToBonjour', { type: 'Other::Resource', properties: {
-      RefToBonjour: bonjour.ref.toString(),
+      RefToBonjour: bonjour.refAsString,
       GetAttBonjour: bonjour.getAtt('TheAtt').toString()
     }});
 
     bonjour.overrideLogicalId('BOOM');
 
     // THEN
-    test.deepEqual(stack._toCloudFormation(), { Resources:
+    test.deepEqual(toCloudFormation(stack), { Resources:
       { BOOM: { Type: 'Resource::Type' },
         RefToBonjour:
          { Type: 'Other::Resource',
@@ -410,7 +378,7 @@ export = {
     const stack = new Stack(undefined, 'Stack', { stackName: 'otherName' });
 
     // THEN
-    test.deepEqual(stack.name, 'otherName');
+    test.deepEqual(stack.stackName, 'otherName');
 
     test.done();
   },
@@ -422,7 +390,7 @@ export = {
     const stack = new Stack(app, 'Stack');
 
     // THEN
-    test.deepEqual(stack.name, 'ProdStackD5279B22');
+    test.deepEqual(stack.stackName, 'ProdStackD5279B22');
 
     test.done();
   },
@@ -437,9 +405,9 @@ export = {
     });
 
     // THEN
-    const session = app.run();
-    test.deepEqual(stack.name, 'valid-stack-name');
-    test.ok('valid-stack-name' in (session.manifest.artifacts || {}));
+    const session = app.synth();
+    test.deepEqual(stack.stackName, 'valid-stack-name');
+    test.ok(session.tryGetArtifact('valid-stack-name'));
     test.done();
   },
 
@@ -451,6 +419,38 @@ export = {
     test.throws(() => new Stack(app, 'boom', { stackName: 'invalid:stack:name' }),
       /Stack name must match the regular expression/);
 
+    test.done();
+  },
+
+  'Stack.of(stack) returns the correct stack'(test: Test) {
+    const stack = new Stack();
+    test.same(Stack.of(stack), stack);
+    const parent = new Construct(stack, 'Parent');
+    const construct = new Construct(parent, 'Construct');
+    test.same(Stack.of(construct), stack);
+    test.done();
+  },
+
+  'Stack.of() throws when there is no parent Stack'(test: Test) {
+    const root = new Construct(undefined as any, 'Root');
+    const construct = new Construct(root, 'Construct');
+    test.throws(() => Stack.of(construct), /No stack could be identified for the construct at path/);
+    test.done();
+  },
+
+  'stack.availabilityZones falls back to Fn::GetAZ[0],[2] if region is not specified'(test: Test) {
+    // GIVEN
+    const app = new App();
+    const stack = new Stack(app, 'MyStack');
+
+    // WHEN
+    const azs = stack.availabilityZones;
+
+    // THEN
+    test.deepEqual(stack.resolve(azs), [
+      { "Fn::Select": [ 0, { "Fn::GetAZs": "" } ] },
+      { "Fn::Select": [ 1, { "Fn::GetAZs": "" } ] }
+    ]);
     test.done();
   }
 };

@@ -16,14 +16,14 @@ const pipeline = new codepipeline.Pipeline(stack, 'MyPipeline', {
 });
 
 const repository = new ecr.Repository(stack, 'MyEcrRepo');
-const sourceStage = pipeline.addStage({ name: 'Source' });
+const sourceStage = pipeline.addStage({ stageName: 'Source' });
 sourceStage.addAction(new cpactions.EcrSourceAction({
   actionName: 'ECR_Source',
   output: new codepipeline.Artifact(),
   repository,
 }));
 
-const approveStage = pipeline.addStage({ name: 'Approve' });
+const approveStage = pipeline.addStage({ stageName: 'Approve' });
 approveStage.addAction(new cpactions.ManualApprovalAction({ actionName: 'ManualApproval' }));
 
-app.run();
+app.synth();

@@ -1,26 +1,15 @@
 import iam = require('@aws-cdk/aws-iam');
 import sns = require('@aws-cdk/aws-sns');
 import sfn = require('@aws-cdk/aws-stepfunctions');
-import cdk = require('@aws-cdk/cdk');
-import { renderString } from './json-path';
 
 /**
  * Properties for PublishTask
  */
 export interface PublishToTopicProps {
   /**
-   * The text message to send to the queue.
-   *
-   * Exactly one of `message` and `messageObject` is required.
+   * The text message to send to the topic.
    */
-  readonly message?: string;
-
-  /**
-   * Object to be JSON-encoded and used as message
-   *
-   * Exactly one of `message`, `messageObject` and `messagePath` is required.
-   */
-  readonly messageObject?: string;
+  readonly message: sfn.TaskInput;
 
   /**
    * If true, send a different message to every subscription type
@@ -38,6 +27,13 @@ export interface PublishToTopicProps {
    * Message subject
    */
   readonly subject?: string;
+
+  /**
+   * Whether to pause the workflow until a task token is returned
+   *
+   * @default false
+   */
+  readonly waitForTaskToken?: boolean;
 }
 
 /**
@@ -47,26 +43,31 @@ export interface PublishToTopicProps {
  * integration with other AWS services via a specific class instance.
  */
 export class PublishToTopic implements sfn.IStepFunctionsTask {
+
+  private readonly waitForTaskToken: boolean;
+
   constructor(private readonly topic: sns.ITopic, private readonly props: PublishToTopicProps) {
-    if ((props.message === undefined) === (props.messageObject === undefined)) {
-      throw new Error(`Supply exactly one of 'message' or 'messageObject'`);
+    this.waitForTaskToken = props.waitForTaskToken === true;
+
+    if (this.waitForTaskToken && !sfn.FieldUtils.containsTaskToken(props.message.value)) {
+      throw new Error('Task Token is missing in message (pass Context.taskToken somewhere in message)');
     }
   }
 
-  public bind(task: sfn.Task): sfn.StepFunctionsTaskProperties {
+  public bind(_task: sfn.Task): sfn.StepFunctionsTaskConfig {
     return {
-      resourceArn: 'arn:aws:states:::sns:publish',
-      policyStatements: [new iam.PolicyStatement()
-        .addAction('sns:Publish')
-        .addResource(this.topic.topicArn)
-      ],
+      resourceArn: 'arn:aws:states:::sns:publish' + (this.waitForTaskToken ? '.waitForTaskToken' : ''),
+      policyStatements: [new iam.PolicyStatement({
+        actions: ['sns:Publish'],
+        resources: [this.topic.topicArn]
+      })],
       parameters: {
         TopicArn: this.topic.topicArn,
-        ...(this.props.messageObject
-            ? { Message: new cdk.Token(() => task.node.stringifyJson(this.props.messageObject)) }
-            : renderString('Message', this.props.message)),
-        MessageStructure: this.props.messagePerSubscriptionType ? "json" : undefined,
-        ...renderString('Subject', this.props.subject),
+        ...sfn.FieldUtils.renderObject({
+          Message: this.props.message.value,
+          MessageStructure: this.props.messagePerSubscriptionType ? "json" : undefined,
+          Subject: this.props.subject,
+        })
       }
     };
   }

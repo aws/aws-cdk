@@ -6,20 +6,22 @@ import lambda = require('../lib');
 
 export = {
   'lambda in a VPC': classFixture(class Henk {
+    private readonly app: cdk.App;
     private readonly stack: cdk.Stack;
     private readonly vpc: ec2.Vpc;
     private readonly lambda: lambda.Function;
 
     constructor() {
       // GIVEN
-      this.stack = new cdk.Stack();
+      this.app = new cdk.App();
+      this.stack = new cdk.Stack(this.app, 'stack');
       this.vpc = new ec2.Vpc(this.stack, 'VPC');
 
       // WHEN
       this.lambda = new lambda.Function(this.stack, 'Lambda', {
         code: new lambda.InlineCode('foo'),
         handler: 'index.handler',
-        runtime: lambda.Runtime.NodeJS810,
+        runtime: lambda.Runtime.Nodejs810,
         vpc: this.vpc,
         allowAllOutbound: false
       });
@@ -35,7 +37,6 @@ export = {
           SubnetIds: [
             {Ref: "VPCPrivateSubnet1Subnet8BCA10E0"},
             {Ref: "VPCPrivateSubnet2SubnetCFCDAA7A"},
-            {Ref: "VPCPrivateSubnet3Subnet3EDCD457"}
           ]
         }
       }));
@@ -76,43 +77,43 @@ export = {
 
     public 'can still make Connections after export/import'(test: Test) {
       // GIVEN
-      const stack2 = new cdk.Stack();
+      const stack2 = new cdk.Stack(this.app, 'stack2');
       const securityGroup = new ec2.SecurityGroup(stack2, 'SomeSecurityGroup', { vpc: this.vpc });
       const somethingConnectable = new SomethingConnectable(new ec2.Connections({ securityGroups: [securityGroup] }));
 
       // WHEN
-      this.lambda.connections.allowTo(somethingConnectable, new ec2.TcpAllPorts(), 'Lambda can call connectable');
+      somethingConnectable.connections.allowFrom(this.lambda.connections, new ec2.TcpAllPorts(), 'Lambda can call connectable');
 
       // THEN: SomeSecurityGroup accepts connections from Lambda
-      expect(this.stack).to(haveResource("AWS::EC2::SecurityGroupEgress", {
+      expect(stack2).to(haveResource("AWS::EC2::SecurityGroupEgress", {
         GroupId: {
-          "Fn::GetAtt": [
-            "LambdaSecurityGroupE74659A1",
-            "GroupId"
-          ]
+          "Fn::ImportValue": "stack:ExportsOutputFnGetAttLambdaSecurityGroupE74659A1GroupId8F3EC6F1"
         },
         IpProtocol: "tcp",
         Description: "Lambda can call connectable",
         DestinationSecurityGroupId: {
-          "Fn::ImportValue": "Stack:ExportsOutputFnGetAttSomeSecurityGroupEF219AD6GroupId09FCF7BE"
+          "Fn::GetAtt": [
+            "SomeSecurityGroupEF219AD6",
+            "GroupId"
+          ]
         },
         FromPort: 0,
         ToPort: 65535
       }));
 
       // THEN: Lambda can connect to SomeSecurityGroup
-      expect(this.stack).to(haveResource("AWS::EC2::SecurityGroupIngress", {
+      expect(stack2).to(haveResource("AWS::EC2::SecurityGroupIngress", {
         IpProtocol: "tcp",
         Description: "Lambda can call connectable",
         FromPort: 0,
         GroupId: {
-          "Fn::ImportValue": "Stack:ExportsOutputFnGetAttSomeSecurityGroupEF219AD6GroupId09FCF7BE"
-        },
-        SourceSecurityGroupId: {
           "Fn::GetAtt": [
-            "LambdaSecurityGroupE74659A1",
+            "SomeSecurityGroupEF219AD6",
             "GroupId"
           ]
+        },
+        SourceSecurityGroupId: {
+          "Fn::ImportValue": "stack:ExportsOutputFnGetAttLambdaSecurityGroupE74659A1GroupId8F3EC6F1"
         },
         ToPort: 65535
       }));
@@ -127,7 +128,7 @@ export = {
     const lambdaFn = new lambda.Function(stack, 'Lambda', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NodeJS810,
+      runtime: lambda.Runtime.Nodejs810,
     });
 
     // WHEN
@@ -148,9 +149,9 @@ export = {
       new lambda.Function(stack, 'Lambda', {
         code: new lambda.InlineCode('foo'),
         handler: 'index.handler',
-        runtime: lambda.Runtime.NodeJS810,
+        runtime: lambda.Runtime.Nodejs810,
         vpc,
-        vpcSubnets: { subnetType: ec2.SubnetType.Public }
+        vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC }
       });
     });
 

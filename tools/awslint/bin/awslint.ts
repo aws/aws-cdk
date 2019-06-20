@@ -5,8 +5,8 @@ import fs = require('fs-extra');
 import reflect = require('jsii-reflect');
 import path = require('path');
 import yargs = require('yargs');
-import { AggregateLinter, apiLinter, attributesLinter, cfnResourceLinter, constructLinter, DiagnosticLevel, eventsLinter, exportsLinter, importsLinter,
-  moduleLinter, resourceLinter } from '../lib';
+import { AggregateLinter, apiLinter, attributesLinter, cfnResourceLinter, constructLinter, DiagnosticLevel, durationsLinter, eventsLinter, exportsLinter,
+  importsLinter, integrationLinter, moduleLinter, resourceLinter } from '../lib';
 
 const linter = new AggregateLinter(
   moduleLinter,
@@ -17,7 +17,9 @@ const linter = new AggregateLinter(
   importsLinter,
   attributesLinter,
   exportsLinter,
-  eventsLinter
+  eventsLinter,
+  integrationLinter,
+  durationsLinter
 );
 
 let stackTrace = false;

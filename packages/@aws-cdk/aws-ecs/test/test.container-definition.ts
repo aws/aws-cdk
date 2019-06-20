@@ -372,9 +372,9 @@ export = {
       memoryLimitMiB: 1024,
       healthCheck: {
         command: [hcCommand],
-        intervalSeconds: 20,
+        interval: cdk.Duration.seconds(20),
         retries: 5,
-        startPeriod: 10
+        startPeriod: cdk.Duration.seconds(10)
       }
     });
 
@@ -408,9 +408,9 @@ export = {
       memoryLimitMiB: 1024,
       healthCheck: {
         command: ["CMD-SHELL", hcCommand],
-        intervalSeconds: 20,
+        interval: cdk.Duration.seconds(20),
         retries: 5,
-        startPeriod: 10
+        startPeriod: cdk.Duration.seconds(10)
       }
     });
 
@@ -444,9 +444,9 @@ export = {
       memoryLimitMiB: 1024,
       healthCheck: {
         command: ["CMD", hcCommand],
-        intervalSeconds: 20,
+        interval: cdk.Duration.seconds(20),
         retries: 5,
-        startPeriod: 10
+        startPeriod: cdk.Duration.seconds(10)
       }
     });
 
@@ -522,8 +522,8 @@ export = {
         sharedMemorySize: 1024,
       });
 
-      linuxParameters.addCapabilities(ecs.Capability.All);
-      linuxParameters.dropCapabilities(ecs.Capability.Kill);
+      linuxParameters.addCapabilities(ecs.Capability.ALL);
+      linuxParameters.dropCapabilities(ecs.Capability.KILL);
 
       // WHEN
       taskDefinition.addContainer('cont', {
@@ -564,7 +564,7 @@ export = {
         sharedMemorySize: 1024,
       });
 
-      linuxParameters.addCapabilities(ecs.Capability.All);
+      linuxParameters.addCapabilities(ecs.Capability.ALL);
 
       // WHEN
       taskDefinition.addContainer('cont', {
@@ -574,7 +574,7 @@ export = {
       });
 
       // Mutate linuxParameter after added to a container
-      linuxParameters.dropCapabilities(ecs.Capability.Setuid);
+      linuxParameters.dropCapabilities(ecs.Capability.SETUID);
 
       // THEN
       expect(stack).to(haveResourceLike('AWS::ECS::TaskDefinition', {

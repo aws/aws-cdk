@@ -1,5 +1,7 @@
 version: 0.2
 
+# This buildspec is intended to be run by CodePipeline builds.
+
 phases:
   install:
     commands:

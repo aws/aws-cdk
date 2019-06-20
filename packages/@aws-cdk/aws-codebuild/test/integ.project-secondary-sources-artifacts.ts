@@ -11,18 +11,18 @@ const bucket = new s3.Bucket(stack, 'MyBucket', {
 });
 
 new codebuild.Project(stack, 'MyProject', {
-  buildSpec: {
+  buildSpec: codebuild.BuildSpec.fromObject({
     version: '0.2',
-  },
+  }),
   secondarySources: [
-    new codebuild.S3BucketSource({
+    codebuild.Source.s3({
       bucket,
       path: 'some/path',
       identifier: 'AddSource1',
     }),
   ],
   secondaryArtifacts: [
-    new codebuild.S3BucketBuildArtifacts({
+    codebuild.Artifacts.s3({
       bucket,
       path: 'another/path',
       name: 'name',
@@ -31,4 +31,4 @@ new codebuild.Project(stack, 'MyProject', {
   ],
 });
 
-app.run();
+app.synth();

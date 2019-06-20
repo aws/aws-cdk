@@ -25,7 +25,7 @@ const source = new cpactions.S3SourceAction({
   bucketKey: 'key',
 });
 const sourceStage = {
-  name: 'Source',
+  stageName: 'Source',
   actions: [
     source,
     new cpactions.S3SourceAction({
@@ -45,7 +45,7 @@ const role = new Role(stack, 'CfnChangeSetRole', {
 
 pipeline.addStage(sourceStage);
 pipeline.addStage({
-  name: 'CFN',
+  stageName: 'CFN',
   actions: [
     new cpactions.CloudFormationCreateReplaceChangeSetAction({
       actionName: 'DeployCFN',
@@ -65,4 +65,4 @@ pipeline.addStage({
   ],
 });
 
-app.run();
+app.synth();

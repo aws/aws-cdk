@@ -131,7 +131,7 @@ export = {
     api.root.addResource('bar').addResource('goo');
 
     // THEN
-    test.throws(() => app.synthesizeStack(stack.name), /The REST API doesn't contain any methods/);
+    test.throws(() => app.synth(), /The REST API doesn't contain any methods/);
     test.done();
   },
 
@@ -141,7 +141,7 @@ export = {
     const api = new apigateway.RestApi(stack, 'restapi', {
       deploy: false,
       cloudWatchRole: false,
-      restApiName: 'my-rest-api'
+      restApiName: cdk.PhysicalName.of('my-rest-api'),
     });
 
     api.root.addMethod('GET');
@@ -176,7 +176,7 @@ export = {
     const api = new apigateway.RestApi(stack, 'restapi', {
       deploy: false,
       cloudWatchRole: false,
-      restApiName: 'my-rest-api'
+      restApiName: cdk.PhysicalName.of('my-rest-api'),
     });
 
     // WHEN
@@ -336,7 +336,7 @@ export = {
     const imported = apigateway.RestApi.fromRestApiId(stack, 'imported-api', 'api-rxt4498f');
 
     // THEN
-    test.deepEqual(imported.node.resolve(imported.restApiId), 'api-rxt4498f');
+    test.deepEqual(stack.resolve(imported.restApiId), 'api-rxt4498f');
     test.done();
   },
 
@@ -347,7 +347,7 @@ export = {
     api.root.addMethod('GET');
 
     // THEN
-    test.deepEqual(api.node.resolve(api.url), { 'Fn::Join':
+    test.deepEqual(stack.resolve(api.url), { 'Fn::Join':
     [ '',
       [ 'https://',
       { Ref: 'apiC8550315' },
@@ -358,7 +358,7 @@ export = {
       "/",
       { Ref: 'apiDeploymentStageprod896C8101' },
       '/' ] ] });
-    test.deepEqual(api.node.resolve(api.urlForPath('/foo/bar')), { 'Fn::Join':
+    test.deepEqual(stack.resolve(api.urlForPath('/foo/bar')), { 'Fn::Join':
     [ '',
       [ 'https://',
       { Ref: 'apiC8550315' },
@@ -402,10 +402,10 @@ export = {
     api.root.addMethod('GET');
 
     // WHEN
-    const arn = api.executeApiArn('method', '/path', 'stage');
+    const arn = api.arnForExecuteApi('method', '/path', 'stage');
 
     // THEN
-    test.deepEqual(api.node.resolve(arn), { 'Fn::Join':
+    test.deepEqual(stack.resolve(arn), { 'Fn::Join':
     [ '',
       [ 'arn:',
       { Ref: 'AWS::Partition' },
@@ -426,7 +426,7 @@ export = {
     api.root.addMethod('GET');
 
     // THEN
-    test.throws(() => api.executeApiArn('method', 'hey-path', 'stage'), /"path" must begin with a "\/": 'hey-path'/);
+    test.throws(() => api.arnForExecuteApi('method', 'hey-path', 'stage'), /"path" must begin with a "\/": 'hey-path'/);
     test.done();
   },
 
@@ -438,7 +438,7 @@ export = {
     const method = api.root.addMethod('ANY');
 
     // THEN
-    test.deepEqual(api.node.resolve(method.methodArn), { 'Fn::Join':
+    test.deepEqual(stack.resolve(method.methodArn), { 'Fn::Join':
     [ '',
       [ 'arn:',
       { Ref: 'AWS::Partition' },
@@ -460,7 +460,7 @@ export = {
 
     // WHEN
     const api = new apigateway.RestApi(stack, 'api', {
-      endpointTypes: [ apigateway.EndpointType.Edge, apigateway.EndpointType.Private ]
+      endpointTypes: [ apigateway.EndpointType.EDGE, apigateway.EndpointType.PRIVATE ]
     });
 
     api.root.addMethod('GET');
@@ -534,7 +534,7 @@ export = {
     const api = new apigateway.RestApi(stack, 'myapi', {
       defaultIntegration: rootInteg,
       defaultMethodOptions: {
-        authorizerId: 'AUTHID',
+        authorizer: { authorizerId: 'AUTHID' },
         authorizationType: apigateway.AuthorizationType.IAM,
       }
     });
@@ -547,13 +547,13 @@ export = {
     // CASE #2: should inherit integration from root and method options, but
     // "authorizationType" will be overridden to "None" instead of "IAM"
     child.addMethod('POST', undefined, {
-      authorizationType: apigateway.AuthorizationType.Cognito
+      authorizationType: apigateway.AuthorizationType.COGNITO
     });
 
     const child2 = api.root.addResource('child2', {
       defaultIntegration: new apigateway.MockIntegration(),
       defaultMethodOptions: {
-        authorizerId: 'AUTHID2',
+        authorizer: { authorizerId: 'AUTHID2' },
       }
     });
 

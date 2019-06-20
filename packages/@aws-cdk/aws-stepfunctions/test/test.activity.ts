@@ -28,17 +28,17 @@ export = {
 
         // THEN
         const sharedMetric = {
-            periodSec: 300,
+            period: cdk.Duration.minutes(5),
             namespace: 'AWS/States',
             dimensions: { ActivityArn: { Ref: 'Activity04690B0A' }},
         };
-        test.deepEqual(stack.node.resolve(activity.metricRunTime()), {
+        test.deepEqual(stack.resolve(activity.metricRunTime()), {
             ...sharedMetric,
             metricName: 'ActivityRunTime',
             statistic: 'Average'
         });
 
-        test.deepEqual(stack.node.resolve(activity.metricFailed()), {
+        test.deepEqual(stack.resolve(activity.metricFailed()), {
             ...sharedMetric,
             metricName: 'ActivitiesFailed',
             statistic: 'Sum'

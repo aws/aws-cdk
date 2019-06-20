@@ -25,10 +25,8 @@ export = {
             "Action": [
               "sqs:ReceiveMessage",
               "sqs:ChangeMessageVisibility",
-              "sqs:ChangeMessageVisibilityBatch",
               "sqs:GetQueueUrl",
               "sqs:DeleteMessage",
-              "sqs:DeleteMessageBatch",
               "sqs:GetQueueAttributes"
             ],
             "Effect": "Allow",

@@ -27,6 +27,19 @@ export = {
 
     test.done();
   },
+
+  'stream from attributes'(test: Test) {
+    const stack = new Stack();
+
+    const s = Stream.fromStreamAttributes(stack, 'MyStream', {
+      streamArn: 'arn:aws:kinesis:region:account-id:stream/stream-name'
+    });
+
+    test.equals(s.streamArn, 'arn:aws:kinesis:region:account-id:stream/stream-name');
+
+    test.done();
+  },
+
   "uses explicit shard count"(test: Test) {
     const stack = new Stack();
 
@@ -94,7 +107,7 @@ export = {
     const stack = new Stack();
 
     new Stream(stack, 'MyStream', {
-      encryption: StreamEncryption.Kms
+      encryption: StreamEncryption.KMS
     });
 
     expect(stack).toMatch({
@@ -176,7 +189,7 @@ export = {
     });
 
     new Stream(stack, 'MyStream', {
-      encryption: StreamEncryption.Kms,
+      encryption: StreamEncryption.KMS,
       encryptionKey: explicitKey
     });
 
@@ -256,7 +269,7 @@ export = {
       "grantRead creates and attaches a policy with read only access to Stream and EncryptionKey"(test: Test) {
         const stack = new Stack();
         const stream = new Stream(stack, 'MyStream', {
-          encryption: StreamEncryption.Kms
+          encryption: StreamEncryption.KMS
         });
 
         const user = new iam.User(stack, "MyUser");
@@ -392,7 +405,7 @@ export = {
       "grantWrite creates and attaches a policy with write only access to Stream and EncryptionKey"(test: Test) {
         const stack = new Stack();
         const stream = new Stream(stack, 'MyStream', {
-          encryption: StreamEncryption.Kms
+          encryption: StreamEncryption.KMS
         });
 
         const user = new iam.User(stack, "MyUser");
@@ -536,7 +549,7 @@ export = {
       "grantReadWrite creates and attaches a policy with access to Stream and EncryptionKey"(test: Test) {
         const stack = new Stack();
         const stream = new Stream(stack, 'MyStream', {
-          encryption: StreamEncryption.Kms
+          encryption: StreamEncryption.KMS
         });
 
         const user = new iam.User(stack, "MyUser");
@@ -851,10 +864,11 @@ export = {
   },
   "cross-stack permissions": {
     "no encryption"(test: Test) {
-      const stackA = new Stack();
+      const app = new App();
+      const stackA = new Stack(app, 'stackA');
       const streamFromStackA = new Stream(stackA, 'MyStream');
 
-      const stackB = new Stack();
+      const stackB = new Stack(app, 'stackB');
       const user = new iam.User(stackB, 'UserWhoNeedsAccess');
       streamFromStackA.grantRead(user);
 
@@ -865,6 +879,19 @@ export = {
             "Properties": {
               "RetentionPeriodHours": 24,
               "ShardCount": 1
+            }
+          }
+        },
+        "Outputs": {
+          "ExportsOutputFnGetAttMyStream5C050E93Arn4ABF30CD": {
+            "Value": {
+              "Fn::GetAtt": [
+                "MyStream5C050E93",
+                "Arn"
+              ]
+            },
+            "Export": {
+              "Name": "stackA:ExportsOutputFnGetAttMyStream5C050E93Arn4ABF30CD"
             }
           }
         }
@@ -888,7 +915,7 @@ export = {
                     ],
                     "Effect": "Allow",
                     "Resource": {
-                      "Fn::ImportValue": "Stack:ExportsOutputFnGetAttMyStream5C050E93Arn4ABF30CD"
+                      "Fn::ImportValue": "stackA:ExportsOutputFnGetAttMyStream5C050E93Arn4ABF30CD"
                     }
                   }
                 ],
@@ -911,14 +938,14 @@ export = {
       const app = new App();
       const stackA = new Stack(app, 'stackA');
       const streamFromStackA = new Stream(stackA, 'MyStream', {
-        encryption: StreamEncryption.Kms
+        encryption: StreamEncryption.KMS
       });
 
       const stackB = new Stack(app, 'stackB');
       const user = new iam.User(stackB, 'UserWhoNeedsAccess');
       streamFromStackA.grantRead(user);
 
-      test.throws(() => app.run(), /'stackB' depends on 'stackA'/);
+      test.throws(() => app.synth(), /'stackB' depends on 'stackA'/);
       test.done();
     }
   }

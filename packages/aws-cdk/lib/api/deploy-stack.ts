@@ -2,6 +2,7 @@ import cxapi = require('@aws-cdk/cx-api');
 import aws = require('aws-sdk');
 import colors = require('colors/safe');
 import uuid = require('uuid');
+import { Tag } from "../api/cxapp/stacks";
 import { prepareAssets } from '../assets';
 import { debug, error, print } from '../logging';
 import { toYAML } from '../serialize';
@@ -10,7 +11,7 @@ import { ToolkitInfo } from './toolkit-info';
 import { changeSetHasNoChanges, describeStack, stackExists, stackFailedCreating, waitForChangeSet, waitForStack  } from './util/cloudformation';
 import { StackActivityMonitor } from './util/cloudformation/stack-activity-monitor';
 import { StackStatus } from './util/cloudformation/stack-status';
-import { SDK } from './util/sdk';
+import { SDK } from './util/sdk';
 
 type TemplateBodyParameter = {
   TemplateBody?: string
@@ -24,7 +25,7 @@ export interface DeployStackResult {
 }
 
 export interface DeployStackOptions {
-  stack: cxapi.SynthesizedStack;
+  stack: cxapi.CloudFormationStackArtifact;
   sdk: SDK;
   toolkitInfo?: ToolkitInfo;
   roleArn?: string;
@@ -32,6 +33,7 @@ export interface DeployStackOptions {
   quiet?: boolean;
   ci?: boolean;
   reuseAssets?: string[];
+  tags?: Tag[];
 }
 
 const LARGE_TEMPLATE_SIZE_KB = 50;
@@ -47,7 +49,7 @@ export async function deployStack(options: DeployStackOptions): Promise<DeploySt
 
   const executionId = uuid.v4();
 
-  const cfn = await options.sdk.cloudFormation(options.stack.environment, Mode.ForWriting);
+  const cfn = await options.sdk.cloudFormation(options.stack.environment.account, options.stack.environment.region, Mode.ForWriting);
   const bodyParameter = await makeBodyParameter(options.stack, options.toolkitInfo);
 
   if (await stackFailedCreating(cfn, deployName)) {
@@ -73,7 +75,8 @@ export async function deployStack(options: DeployStackOptions): Promise<DeploySt
     TemplateURL: bodyParameter.TemplateURL,
     Parameters: params,
     RoleARN: options.roleArn,
-    Capabilities: [ 'CAPABILITY_IAM', 'CAPABILITY_NAMED_IAM', 'CAPABILITY_AUTO_EXPAND' ]
+    Capabilities: [ 'CAPABILITY_IAM', 'CAPABILITY_NAMED_IAM', 'CAPABILITY_AUTO_EXPAND' ],
+    Tags: options.tags
   }).promise();
   debug('Initiated creation of changeset: %s; waiting for it to finish creating...', changeSet.Id);
   const changeSetDescription = await waitForChangeSet(cfn, deployName, changeSetName);
@@ -115,7 +118,7 @@ async function getStackOutputs(cfn: aws.CloudFormation, stackName: string): Prom
  * @param sdk     an AWS SDK to use when interacting with S3
  * @param toolkitInfo information about the toolkit stack
  */
-async function makeBodyParameter(stack: cxapi.SynthesizedStack, toolkitInfo?: ToolkitInfo): Promise<TemplateBodyParameter> {
+async function makeBodyParameter(stack: cxapi.CloudFormationStackArtifact, toolkitInfo?: ToolkitInfo): Promise<TemplateBodyParameter> {
   const templateJson = toYAML(stack.template);
   if (toolkitInfo) {
     const s3KeyPrefix = `cdk/${stack.name}/`;
@@ -140,7 +143,7 @@ async function makeBodyParameter(stack: cxapi.SynthesizedStack, toolkitInfo?: To
 }
 
 export interface DestroyStackOptions {
-  stack: cxapi.SynthesizedStack;
+  stack: cxapi.CloudFormationStackArtifact;
   sdk: SDK;
   roleArn?: string;
   deployName?: string;
@@ -153,7 +156,7 @@ export async function destroyStack(options: DestroyStackOptions) {
   }
 
   const deployName = options.deployName || options.stack.name;
-  const cfn = await options.sdk.cloudFormation(options.stack.environment, Mode.ForWriting);
+  const cfn = await options.sdk.cloudFormation(options.stack.environment.account, options.stack.environment.region, Mode.ForWriting);
   if (!await stackExists(cfn, deployName)) {
     return;
   }

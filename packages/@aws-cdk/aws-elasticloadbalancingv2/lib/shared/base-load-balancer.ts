@@ -1,5 +1,5 @@
 import ec2 = require('@aws-cdk/aws-ec2');
-import { Construct, IResource, Resource, Token } from '@aws-cdk/cdk';
+import { Construct, IResource, Lazy, PhysicalName, Resource } from '@aws-cdk/cdk';
 import { CfnLoadBalancer } from '../elasticloadbalancingv2.generated';
 import { Attributes, ifUndefined, renderAttributes } from './util';
 
@@ -12,7 +12,7 @@ export interface BaseLoadBalancerProps {
    *
    * @default - Automatically generated name.
    */
-  readonly loadBalancerName?: string;
+  readonly loadBalancerName?: PhysicalName;
 
   /**
    * The VPC network to place the load balancer in
@@ -121,22 +121,24 @@ export abstract class BaseLoadBalancer extends Resource {
   private readonly attributes: Attributes = {};
 
   constructor(scope: Construct, id: string, baseProps: BaseLoadBalancerProps, additionalProps: any) {
-    super(scope, id);
+    super(scope, id, {
+      physicalName: baseProps.loadBalancerName,
+    });
 
     const internetFacing = ifUndefined(baseProps.internetFacing, false);
 
     const vpcSubnets = ifUndefined(baseProps.vpcSubnets,
-      { subnetType: internetFacing ? ec2.SubnetType.Public : ec2.SubnetType.Private });
+      { subnetType: internetFacing ? ec2.SubnetType.PUBLIC : ec2.SubnetType.PRIVATE });
 
     const { subnetIds, internetConnectedDependency } = baseProps.vpc.selectSubnets(vpcSubnets);
 
     this.vpc = baseProps.vpc;
 
     const resource = new CfnLoadBalancer(this, 'Resource', {
-      name: baseProps.loadBalancerName,
+      name: this.physicalName.value,
       subnets: subnetIds,
       scheme: internetFacing ? 'internet-facing' : 'internal',
-      loadBalancerAttributes: new Token(() => renderAttributes(this.attributes)),
+      loadBalancerAttributes: Lazy.anyValue({ produce: () => renderAttributes(this.attributes) }),
       ...additionalProps
     });
     if (internetFacing) {
@@ -145,12 +147,12 @@ export abstract class BaseLoadBalancer extends Resource {
 
     if (baseProps.deletionProtection) { this.setAttribute('deletion_protection.enabled', 'true'); }
 
-    this.loadBalancerCanonicalHostedZoneId = resource.loadBalancerCanonicalHostedZoneId;
-    this.loadBalancerDnsName = resource.loadBalancerDnsName;
-    this.loadBalancerFullName = resource.loadBalancerFullName;
-    this.loadBalancerName = resource.loadBalancerName;
-    this.loadBalancerArn = resource.ref;
-    this.loadBalancerSecurityGroups = resource.loadBalancerSecurityGroups;
+    this.loadBalancerCanonicalHostedZoneId = resource.attrCanonicalHostedZoneId;
+    this.loadBalancerDnsName = resource.attrDnsName;
+    this.loadBalancerFullName = resource.attrLoadBalancerFullName;
+    this.loadBalancerName = resource.attrLoadBalancerName;
+    this.loadBalancerArn = resource.refAsString;
+    this.loadBalancerSecurityGroups = resource.attrSecurityGroups;
   }
 
   /**

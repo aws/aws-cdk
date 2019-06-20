@@ -1,10 +1,10 @@
-import { Construct, IResource, Resource, Token } from '@aws-cdk/cdk';
+import { Construct, IResource, Lazy, PhysicalName, Resource, ResourceProps, Stack } from '@aws-cdk/cdk';
 import { Connections, IConnectable } from './connections';
 import { CfnSecurityGroup, CfnSecurityGroupEgress, CfnSecurityGroupIngress } from './ec2.generated';
 import { IPortRange, ISecurityGroupRule } from './security-group-rule';
 import { IVpc } from './vpc';
 
-const isSecurityGroupSymbol = Symbol.for('aws-cdk:isSecurityGroup');
+const SECURITY_GROUP_SYMBOL = Symbol.for('@aws-cdk/iam.SecurityGroup');
 
 export interface ISecurityGroup extends IResource, ISecurityGroupRule, IConnectable {
   /**
@@ -43,8 +43,8 @@ abstract class SecurityGroupBase extends Resource implements ISecurityGroup {
   /**
    * Return whether the indicated object is a security group
    */
-  public static isSecurityGroup(construct: any): construct is SecurityGroupBase {
-    return (construct as any)[isSecurityGroupSymbol] === true;
+  public static isSecurityGroup(x: any): x is SecurityGroupBase {
+    return SECURITY_GROUP_SYMBOL in x;
   }
 
   public abstract readonly securityGroupId: string;
@@ -57,10 +57,10 @@ abstract class SecurityGroupBase extends Resource implements ISecurityGroup {
    */
   public readonly defaultPortRange?: IPortRange;
 
-  constructor(scope: Construct, id: string) {
-    super(scope, id);
+  constructor(scope: Construct, id: string, props?: ResourceProps) {
+    super(scope, id, props);
 
-    Object.defineProperty(this, isSecurityGroupSymbol, { value: true });
+    Object.defineProperty(this, SECURITY_GROUP_SYMBOL, { value: true });
   }
 
   public get uniqueId() {
@@ -178,7 +178,7 @@ function determineRuleScope(
 }
 
 function differentStacks(group1: SecurityGroupBase, group2: SecurityGroupBase) {
-  return group1.node.stack !== group2.node.stack;
+  return Stack.of(group1) !== Stack.of(group2);
 }
 
 export interface SecurityGroupProps {
@@ -192,7 +192,7 @@ export interface SecurityGroupProps {
    * @default If you don't specify a GroupName, AWS CloudFormation generates a
    * unique physical ID and uses that ID for the group name.
    */
-  readonly groupName?: string;
+  readonly groupName?: PhysicalName;
 
   /**
    * A description of the security group.
@@ -266,23 +266,25 @@ export class SecurityGroup extends SecurityGroupBase {
   private readonly allowAllOutbound: boolean;
 
   constructor(scope: Construct, id: string, props: SecurityGroupProps) {
-    super(scope, id);
+    super(scope, id, {
+      physicalName: props.groupName
+    });
 
     const groupDescription = props.description || this.node.path;
 
     this.allowAllOutbound = props.allowAllOutbound !== false;
 
     this.securityGroup = new CfnSecurityGroup(this, 'Resource', {
-      groupName: props.groupName,
+      groupName: this.physicalName.value,
       groupDescription,
-      securityGroupIngress: new Token(() => this.directIngressRules),
-      securityGroupEgress: new Token(() => this.directEgressRules),
+      securityGroupIngress: Lazy.anyValue({ produce: () => this.directIngressRules }),
+      securityGroupEgress: Lazy.anyValue({ produce: () => this.directEgressRules }),
       vpcId: props.vpc.vpcId,
     });
 
-    this.securityGroupId = this.securityGroup.securityGroupId;
-    this.securityGroupVpcId = this.securityGroup.securityGroupVpcId;
-    this.securityGroupName = this.securityGroup.securityGroupName;
+    this.securityGroupId = this.securityGroup.attrGroupId;
+    this.securityGroupVpcId = this.securityGroup.attrVpcId;
+    this.securityGroupName = this.securityGroup.refAsString;
 
     this.addDefaultEgressRule();
   }

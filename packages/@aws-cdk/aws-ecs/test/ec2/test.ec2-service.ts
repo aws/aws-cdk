@@ -221,8 +221,36 @@ export = {
             cluster,
             taskDefinition,
             vpcSubnets: {
-              subnetType: ec2.SubnetType.Public
+              subnetType: ec2.SubnetType.PUBLIC
             }
+          });
+        });
+
+        // THEN
+        test.done();
+      },
+
+      "it errors if assignPublicIp is true"(test: Test) {
+        // GIVEN
+        const stack = new cdk.Stack();
+        const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+        const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+        cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
+        const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', {
+          networkMode: NetworkMode.Bridge
+        });
+
+        taskDefinition.addContainer("web", {
+          image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
+          memoryLimitMiB: 512
+        });
+
+      // THEN
+        test.throws(() => {
+          new ecs.Ec2Service(stack, "Ec2Service", {
+            cluster,
+            taskDefinition,
+            assignPublicIp: true
           });
         });
 
@@ -272,9 +300,6 @@ export = {
                 {
                   Ref: "MyVpcPrivateSubnet2Subnet0040C983"
                 },
-                {
-                  Ref: "MyVpcPrivateSubnet3Subnet772D6AD7"
-                }
               ]
             }
           }
@@ -302,7 +327,7 @@ export = {
           cluster,
           taskDefinition,
           vpcSubnets: {
-            subnetType: ec2.SubnetType.Public
+            subnetType: ec2.SubnetType.PUBLIC
           }
         });
 
@@ -504,7 +529,7 @@ export = {
         taskDefinition
       });
 
-      service.placePackedBy(BinPackResource.Memory);
+      service.placePackedBy(BinPackResource.MEMORY);
 
       // THEN
       expect(stack).to(haveResource("AWS::ECS::Service", {
@@ -538,7 +563,7 @@ export = {
 
       // THEN
       test.throws(() => {
-        service.placePackedBy(BinPackResource.Memory);
+        service.placePackedBy(BinPackResource.MEMORY);
       });
 
       test.done();
@@ -658,7 +683,7 @@ export = {
       // WHEN
       cluster.addDefaultCloudMapNamespace({
         name: 'foo.com',
-        type: NamespaceType.PrivateDns
+        type: NamespaceType.PRIVATE_DNS
       });
 
       new ecs.Ec2Service(stack, 'Service', {
@@ -735,7 +760,7 @@ export = {
       // WHEN
       cluster.addDefaultCloudMapNamespace({
         name: 'foo.com',
-        type: NamespaceType.PrivateDns
+        type: NamespaceType.PRIVATE_DNS
       });
 
       new ecs.Ec2Service(stack, 'Service', {
@@ -846,7 +871,7 @@ export = {
       // WHEN
       cluster.addDefaultCloudMapNamespace({
         name: 'foo.com',
-        type: NamespaceType.PrivateDns
+        type: NamespaceType.PRIVATE_DNS
       });
 
       new ecs.Ec2Service(stack, 'Service', {
@@ -921,7 +946,7 @@ export = {
       // WHEN
       cluster.addDefaultCloudMapNamespace({
         name: 'foo.com',
-        type: NamespaceType.PrivateDns
+        type: NamespaceType.PRIVATE_DNS
       });
 
       new ecs.Ec2Service(stack, 'Service', {
@@ -979,5 +1004,37 @@ export = {
 
       test.done();
     },
+  },
+
+  'Metric'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+    const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+    cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
+    const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'FargateTaskDef');
+    taskDefinition.addContainer('Container', {
+      image: ecs.ContainerImage.fromRegistry('hello')
+    });
+
+    // WHEN
+    const service = new ecs.Ec2Service(stack, 'Service', {
+      cluster,
+      taskDefinition,
+    });
+
+    // THEN
+    test.deepEqual(stack.resolve(service.metricMemoryUtilization()), {
+      dimensions: {
+        ClusterName: { Ref: 'EcsCluster97242B84' },
+        ServiceName: { 'Fn::GetAtt': ['ServiceD69D759B', 'Name'] }
+      },
+      namespace: 'AWS/ECS',
+      metricName: 'MemoryUtilization',
+      period: cdk.Duration.minutes(5),
+      statistic: 'Average'
+    });
+
+    test.done();
   }
 };

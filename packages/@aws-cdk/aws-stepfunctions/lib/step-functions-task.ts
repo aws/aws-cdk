@@ -1,5 +1,6 @@
 import cloudwatch = require('@aws-cdk/aws-cloudwatch');
 import iam = require('@aws-cdk/aws-iam');
+import { Duration } from '@aws-cdk/cdk';
 import { Task } from './states/task';
 
 /**
@@ -9,13 +10,13 @@ export interface IStepFunctionsTask {
   /**
    * Called when the task object is used in a workflow
    */
-  bind(task: Task): StepFunctionsTaskProperties;
+  bind(task: Task): StepFunctionsTaskConfig;
 }
 
 /**
  * Properties that define what kind of task should be created
  */
-export interface StepFunctionsTaskProperties {
+export interface StepFunctionsTaskConfig {
   /**
    * The resource that represents the work to be executed
    *
@@ -47,7 +48,7 @@ export interface StepFunctionsTaskProperties {
    *
    * @default No heart beat timeout
    */
-  readonly heartbeatSeconds?: number;
+  readonly heartbeat?: Duration;
 
   /**
    * Additional policy statements to add to the execution role

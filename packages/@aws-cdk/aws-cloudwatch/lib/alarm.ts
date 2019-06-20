@@ -1,8 +1,10 @@
-import { Construct, IResource, Resource, Token } from '@aws-cdk/cdk';
+import { Construct, IResource, Lazy, Resource, ResourceIdentifiers, Stack } from '@aws-cdk/cdk';
+import { IAlarmAction } from './alarm-action';
 import { CfnAlarm } from './cloudwatch.generated';
 import { HorizontalAnnotation } from './graph';
-import { Dimension, Metric, MetricAlarmProps, Statistic, Unit } from './metric';
-import { parseStatistic } from './util.statistic';
+import { CreateAlarmOptions } from './metric';
+import { IMetric } from './metric-types';
+import { normalizeStatistic } from './util.statistic';
 
 export interface IAlarm extends IResource {
   /**
@@ -19,24 +21,24 @@ export interface IAlarm extends IResource {
 /**
  * Properties for Alarms
  */
-export interface AlarmProps extends MetricAlarmProps {
+export interface AlarmProps extends CreateAlarmOptions {
   /**
    * The metric to add the alarm on
    *
    * Metric objects can be obtained from most resources, or you can construct
    * custom Metric objects by instantiating one.
    */
-  readonly metric: Metric;
+  readonly metric: IMetric;
 }
 
 /**
  * Comparison operator for evaluating alarms
  */
 export enum ComparisonOperator {
-  GreaterThanOrEqualToThreshold = 'GreaterThanOrEqualToThreshold',
-  GreaterThanThreshold = 'GreaterThanThreshold',
-  LessThanThreshold = 'LessThanThreshold',
-  LessThanOrEqualToThreshold = 'LessThanOrEqualToThreshold',
+  GREATER_THAN_OR_EQUAL_TO_THRESHOLD = 'GreaterThanOrEqualToThreshold',
+  GREATER_THAN_THRESHOLD = 'GreaterThanThreshold',
+  LESS_THAN_THRESHOLD = 'LessThanThreshold',
+  LESS_THAN_OR_EQUAL_TO_THRESHOLD = 'LessThanOrEqualToThreshold',
 }
 
 const OPERATOR_SYMBOLS: {[key: string]: string} = {
@@ -53,22 +55,22 @@ export enum TreatMissingData {
   /**
    * Missing data points are treated as breaching the threshold
    */
-  Breaching = 'breaching',
+  BREACHING = 'breaching',
 
   /**
    * Missing data points are treated as being within the threshold
    */
-  NotBreaching = 'notBreaching',
+  NOT_BREACHING = 'notBreaching',
 
   /**
    * The current alarm state is maintained
    */
-  Ignore = 'ignore',
+  IGNORE = 'ignore',
 
   /**
    * The alarm does not consider missing data points when evaluating whether to change state
    */
-  Missing = 'missing'
+  MISSING = 'missing'
 }
 
 /**
@@ -79,7 +81,7 @@ export class Alarm extends Resource implements IAlarm {
   public static fromAlarmArn(scope: Construct, id: string, alarmArn: string): IAlarm {
     class Import extends Resource implements IAlarm {
       public readonly alarmArn = alarmArn;
-      public readonly alarmName = scope.node.stack.parseArn(alarmArn, ':').resourceName!;
+      public readonly alarmName = Stack.of(scope).parseArn(alarmArn, ':').resourceName!;
     }
     return new Import(scope, id);
   }
@@ -101,7 +103,7 @@ export class Alarm extends Resource implements IAlarm {
   /**
    * The metric object this alarm was based on
    */
-  public readonly metric: Metric;
+  public readonly metric: IMetric;
 
   private alarmActionArns?: string[];
   private insufficientDataActionArns?: string[];
@@ -113,14 +115,18 @@ export class Alarm extends Resource implements IAlarm {
   private readonly annotation: HorizontalAnnotation;
 
   constructor(scope: Construct, id: string, props: AlarmProps) {
-    super(scope, id);
+    super(scope, id, {
+      physicalName: props.alarmName,
+    });
 
-    const comparisonOperator = props.comparisonOperator || ComparisonOperator.GreaterThanOrEqualToThreshold;
+    const comparisonOperator = props.comparisonOperator || ComparisonOperator.GREATER_THAN_OR_EQUAL_TO_THRESHOLD;
+
+    const config = props.metric.toAlarmConfig();
 
     const alarm = new CfnAlarm(this, 'Resource', {
       // Meta
       alarmDescription: props.alarmDescription,
-      alarmName: props.alarmName,
+      alarmName: this.physicalName.value,
 
       // Evaluation
       comparisonOperator,
@@ -132,20 +138,36 @@ export class Alarm extends Resource implements IAlarm {
 
       // Actions
       actionsEnabled: props.actionsEnabled,
-      alarmActions: new Token(() => this.alarmActionArns).toList(),
-      insufficientDataActions: new Token(() => this.insufficientDataActionArns).toList(),
-      okActions: new Token(() => this.okActionArns).toList(),
+      alarmActions: Lazy.listValue({ produce: () => this.alarmActionArns }),
+      insufficientDataActions: Lazy.listValue({ produce: (() => this.insufficientDataActionArns) }),
+      okActions: Lazy.listValue({ produce: () => this.okActionArns }),
 
       // Metric
-      ...metricJson(props.metric)
+      ...dropUndef(config),
+      ...dropUndef({
+        // Alarm overrides
+        period: props.period && props.period.toSeconds(),
+        statistic: props.statistic && normalizeStatistic(props.statistic),
+      })
     });
 
-    this.alarmArn = alarm.alarmArn;
-    this.alarmName = alarm.alarmName;
+    const resourceIdentifiers = new ResourceIdentifiers(this, {
+      arn: alarm.attrArn,
+      name: alarm.refAsString,
+      arnComponents: {
+        service: 'cloudwatch',
+        resource: 'alarm',
+        resourceName: this.physicalName.value,
+        sep: ':',
+      },
+    });
+    this.alarmArn = resourceIdentifiers.arn;
+    this.alarmName = resourceIdentifiers.name;
+
     this.metric = props.metric;
     this.annotation = {
       // tslint:disable-next-line:max-line-length
-      label: `${this.metric.label || this.metric.metricName} ${OPERATOR_SYMBOLS[comparisonOperator]} ${props.threshold} for ${props.evaluationPeriods} datapoints within ${describePeriod(props.evaluationPeriods * props.metric.periodSec)}`,
+      label: `${this.metric} ${OPERATOR_SYMBOLS[comparisonOperator]} ${props.threshold} for ${props.evaluationPeriods} datapoints within ${describePeriod(props.evaluationPeriods * config.period)}`,
       value: props.threshold,
     };
   }
@@ -160,7 +182,7 @@ export class Alarm extends Resource implements IAlarm {
       this.alarmActionArns = [];
     }
 
-    this.alarmActionArns.push(...actions.map(a => a.alarmActionArn));
+    this.alarmActionArns.push(...actions.map(a => a.bind(this, this).alarmActionArn));
   }
 
   /**
@@ -173,7 +195,7 @@ export class Alarm extends Resource implements IAlarm {
       this.insufficientDataActionArns = [];
     }
 
-    this.insufficientDataActionArns.push(...actions.map(a => a.alarmActionArn));
+    this.insufficientDataActionArns.push(...actions.map(a => a.bind(this, this).alarmActionArn));
   }
 
   /**
@@ -186,7 +208,7 @@ export class Alarm extends Resource implements IAlarm {
       this.okActionArns = [];
     }
 
-    this.okActionArns.push(...actions.map(a => a.alarmActionArn));
+    this.okActionArns.push(...actions.map(a => a.bind(this, this).alarmActionArn));
   }
 
   /**
@@ -222,71 +244,12 @@ function describePeriod(seconds: number) {
   return seconds + ' seconds';
 }
 
-/**
- * Interface for objects that can be the targets of CloudWatch alarm actions
- */
-export interface IAlarmAction {
-  /**
-   * Return the ARN that should be used for a CloudWatch Alarm action
-   */
-  readonly alarmActionArn: string;
-}
-
-/**
- * Return the JSON structure which represents the given metric in an alarm.
- */
-function metricJson(metric: Metric): AlarmMetricJson {
-  const stat = parseStatistic(metric.statistic);
-
-  const dims = metric.dimensionsAsList();
-
-  return {
-    dimensions: dims.length > 0 ? dims : undefined,
-    namespace: metric.namespace,
-    metricName: metric.metricName,
-    period: metric.periodSec,
-    statistic: stat.type === 'simple' ? stat.statistic : undefined,
-    extendedStatistic: stat.type === 'percentile' ? 'p' + stat.percentile : undefined,
-    unit: metric.unit
-  };
-}
-
-/**
- * Properties used to construct the Metric identifying part of an Alarm
- */
-export interface AlarmMetricJson {
-  /**
-   * The dimensions to apply to the alarm
-   */
-  readonly dimensions?: Dimension[];
-
-  /**
-   * Namespace of the metric
-   */
-  readonly namespace: string;
-
-  /**
-   * Name of the metric
-   */
-  readonly metricName: string;
-
-  /**
-   * How many seconds to aggregate over
-   */
-  readonly period: number;
-
-  /**
-   * Simple aggregation function to use
-   */
-  readonly statistic?: Statistic;
-
-  /**
-   * Percentile aggregation function to use
-   */
-  readonly extendedStatistic?: string;
-
-  /**
-   * The unit of the alarm
-   */
-  readonly unit?: Unit;
+function dropUndef<T extends object>(x: T): T {
+  const ret: any = {};
+  for (const [key, value] of Object.entries(x)) {
+    if (value !== undefined) {
+      ret[key] = value;
+    }
+  }
+  return ret;
 }

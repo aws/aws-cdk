@@ -1,7 +1,8 @@
 {
   "name": "@aws-cdk/aws-quickstarts",
-  "version": "0.32.0",
+  "version": "0.35.0",
   "description": "AWS Quickstarts for the CDK",
+  "deprecated": "This module has been deprecated. Use `@aws-cdk/aws-cloudformation.CfnStack` instead",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "jsii": {
@@ -55,24 +56,10 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "cdk-build-tools": "^0.32.0",
-    "pkglint": "^0.32.0"
-  },
-  "dependencies": {
-    "@aws-cdk/aws-cloudformation": "^0.32.0",
-    "@aws-cdk/aws-ec2": "^0.32.0",
-    "@aws-cdk/aws-iam": "^0.32.0",
-    "@aws-cdk/aws-rds": "^0.32.0",
-    "@aws-cdk/cdk": "^0.32.0"
+    "cdk-build-tools": "^0.35.0",
+    "pkglint": "^0.35.0"
   },
   "homepage": "https://github.com/awslabs/aws-cdk",
-  "peerDependencies": {
-    "@aws-cdk/aws-cloudformation": "^0.32.0",
-    "@aws-cdk/aws-ec2": "^0.32.0",
-    "@aws-cdk/aws-iam": "^0.32.0",
-    "@aws-cdk/aws-rds": "^0.32.0",
-    "@aws-cdk/cdk": "^0.32.0"
-  },
   "engines": {
     "node": ">= 8.10.0"
   },
@@ -80,5 +67,6 @@
     "exclude": [
       "props-default-doc"
     ]
-  }
+  },
+  "stability": "deprecated"
 }

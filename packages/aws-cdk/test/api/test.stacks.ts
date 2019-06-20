@@ -1,47 +1,36 @@
 import cxapi = require('@aws-cdk/cx-api');
 import { Test } from 'nodeunit';
 import { SDK } from '../../lib';
-import { AppStacks, ExtendedStackSelection } from '../../lib/api/cxapp/stacks';
-import { Renames } from '../../lib/renames';
+import { AppStacks, DefaultSelection } from '../../lib/api/cxapp/stacks';
 import { Configuration } from '../../lib/settings';
+import { testAssembly } from '../util';
 
-const FIXED_RESULT: cxapi.SynthesizeResponse = {
-  version: '1',
-  stacks: [
-    {
-      name: 'withouterrors',
-      template: { resource: 'noerrorresource' },
-      environment: { name: 'dev', account: '12345', region: 'here' },
-      metadata: {},
-    },
-    {
-      name: 'witherrors',
-      template: { resource: 'errorresource' },
-      environment: { name: 'dev', account: '12345', region: 'here' },
-      metadata: {
-        '/resource': [
-          {
-            type: cxapi.ERROR_METADATA_KEY,
-            data: 'this is an error',
-            trace: []
-          }
-        ]
+const FIXED_RESULT = testAssembly({
+  stackName: 'withouterrors',
+  template: { resource: 'noerrorresource' },
+},
+{
+  stackName: 'witherrors',
+  template: { resource: 'errorresource' },
+  metadata: {
+    '/resource': [
+      {
+        type: cxapi.ERROR_METADATA_KEY,
+        data: 'this is an error'
       }
-    }
-  ]
-};
+    ]
+  },
+});
 
 export = {
   async 'do not throw when selecting stack without errors'(test: Test) {
     // GIVEN
-    const stacks = new AppStacks({
-      configuration: new Configuration(),
-      aws: new SDK(),
-      synthesizer: async () => FIXED_RESULT,
-    });
+    const stacks = testStacks();
 
     // WHEN
-    const selected = await stacks.selectStacks(['withouterrors'], ExtendedStackSelection.None);
+    const selected = await stacks.selectStacks(['withouterrors'], {
+      defaultBehavior: DefaultSelection.AllStacks
+    });
 
     // THEN
     test.equal(selected[0].template.resource, 'noerrorresource');
@@ -51,15 +40,14 @@ export = {
 
   async 'do throw when selecting stack with errors'(test: Test) {
     // GIVEN
-    const stacks = new AppStacks({
-      configuration: new Configuration(),
-      aws: new SDK(),
-      synthesizer: async () => FIXED_RESULT,
-    });
+    const stacks = testStacks();
 
     // WHEN
     try {
-      await stacks.selectStacks(['witherrors'], ExtendedStackSelection.None);
+      await stacks.selectStacks(['witherrors'], {
+        defaultBehavior: DefaultSelection.AllStacks
+      });
+
       test.ok(false, 'Did not get exception');
     } catch (e) {
       test.ok(/Found errors/.test(e.toString()), 'Wrong error');
@@ -68,104 +56,53 @@ export = {
     test.done();
   },
 
-  async 'renames get applied when stacks are selected'(test: Test) {
+  async 'select behavior: all'(test: Test) {
     // GIVEN
-    const stacks = new AppStacks({
-      configuration: new Configuration(),
-      aws: new SDK(),
-      synthesizer: async () => FIXED_RESULT,
-      renames: new Renames({ withouterrors: 'withoutbananas' }),
-    });
+    const stacks = testStacks();
 
     // WHEN
-    const synthed = await stacks.selectStacks(['withouterrors'], ExtendedStackSelection.None);
+    const x = await stacks.selectStacks([], { defaultBehavior: DefaultSelection.AllStacks });
 
     // THEN
-    test.equal(synthed[0].name, 'withoutbananas');
-    test.equal(synthed[0].originalName, 'withouterrors');
-
+    test.deepEqual(x.length, 2);
     test.done();
   },
 
-  async 'does not return non-autoDeployed Stacks when called without any selectors'(test: Test) {
+  async 'select behavior: none'(test: Test) {
     // GIVEN
-    const stacks = appStacksWith([
-      {
-        name: 'NotAutoDeployedStack',
-        template: { resource: 'Resource' },
-        environment: { name: 'dev', account: '12345', region: 'here' },
-        metadata: {},
-        autoDeploy: false,
-      },
-    ]);
+    const stacks = testStacks();
 
     // WHEN
-    const synthed = await stacks.selectStacks([], ExtendedStackSelection.None);
+    const x = await stacks.selectStacks([], { defaultBehavior: DefaultSelection.None });
 
     // THEN
-    test.equal(synthed.length, 0);
-
+    test.deepEqual(x.length, 0);
     test.done();
   },
 
-  async 'does return non-autoDeployed Stacks when called with selectors matching it'(test: Test) {
+  async 'select behavior: single'(test: Test) {
     // GIVEN
-    const stacks = appStacksWith([
-      {
-        name: 'NotAutoDeployedStack',
-        template: { resource: 'Resource' },
-        environment: { name: 'dev', account: '12345', region: 'here' },
-        metadata: {},
-        autoDeploy: false,
-      },
-    ]);
+    const stacks = testStacks();
 
     // WHEN
-    const synthed = await stacks.selectStacks(['NotAutoDeployedStack'], ExtendedStackSelection.None);
+    let thrown: string | undefined;
+    try {
+      await stacks.selectStacks([], { defaultBehavior: DefaultSelection.OnlySingle });
+    } catch (e) {
+      thrown = e.message;
+    }
 
     // THEN
-    test.equal(synthed.length, 1);
-
+    test.ok(thrown && thrown.includes('Since this app includes more than a single stack, specify which stacks to use (wildcards are supported)'));
     test.done();
-  },
+  }
 
-  async "does return an non-autoDeployed Stack when it's a dependency of a selected Stack"(test: Test) {
-    // GIVEN
-    const stacks = appStacksWith([
-      {
-        name: 'NotAutoDeployedStack',
-        template: { resource: 'Resource' },
-        environment: { name: 'dev', account: '12345', region: 'here' },
-        metadata: {},
-        autoDeploy: false,
-      },
-      {
-        name: 'AutoDeployedStack',
-        template: { resource: 'Resource' },
-        environment: { name: 'dev', account: '12345', region: 'here' },
-        metadata: {},
-        dependsOn: ['NotAutoDeployedStack'],
-      },
-    ]);
-
-    // WHEN
-    const synthed = await stacks.selectStacks(['AutoDeployedStack'], ExtendedStackSelection.Upstream);
-
-    // THEN
-    test.equal(synthed.length, 2);
-
-    test.done();
-  },
 };
 
-function appStacksWith(stacks: cxapi.SynthesizedStack[]): AppStacks {
-  const response: cxapi.SynthesizeResponse = {
-    version: '1',
-    stacks,
-  };
+function testStacks() {
   return new AppStacks({
     configuration: new Configuration(),
     aws: new SDK(),
-    synthesizer: async () => response,
+    synthesizer: async () => FIXED_RESULT,
   });
 }

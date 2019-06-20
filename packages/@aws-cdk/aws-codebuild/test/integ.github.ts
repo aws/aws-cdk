@@ -5,7 +5,7 @@ class TestStack extends cdk.Stack {
   constructor(scope: cdk.App, id: string) {
     super(scope, id);
 
-    const source = new codebuild.GitHubSource({
+    const source = codebuild.Source.gitHub({
       owner: 'awslabs',
       repo: 'aws-cdk',
       reportBuildStatus: false,
@@ -20,4 +20,4 @@ const app = new cdk.App();
 
 new TestStack(app, 'test-codebuild-github');
 
-app.run();
+app.synth();

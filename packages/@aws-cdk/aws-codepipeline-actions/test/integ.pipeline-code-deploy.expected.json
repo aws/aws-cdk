@@ -46,7 +46,18 @@
           "Version": "2012-10-17"
         },
         "ManagedPolicyArns": [
-          "arn:aws:iam::aws:policy/service-role/AWSCodeDeployRole"
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":iam::aws:policy/service-role/AWSCodeDeployRole"
+              ]
+            ]
+          }
         ]
       }
     },
@@ -76,6 +87,7 @@
     },
     "CodeDeployPipelineIntegTest9F618D61": {
       "Type": "AWS::S3::Bucket",
+      "DeletionPolicy": "Delete",
       "Properties": {
         "VersioningConfiguration": {
           "Status": "Enabled"

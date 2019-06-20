@@ -1,7 +1,8 @@
+import { expect, haveResource } from '@aws-cdk/assert';
 import { App, Stack } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
 import { Key } from '../lib';
-import { EncryptionKeyAlias } from '../lib/alias';
+import { Alias } from '../lib/alias';
 
 export = {
   'default alias'(test: Test) {
@@ -9,15 +10,12 @@ export = {
     const stack = new Stack(app, 'Test');
     const key = new Key(stack, 'Key');
 
-    new EncryptionKeyAlias(stack, 'Alias', { key, alias: 'alias/foo' });
+    new Alias(stack, 'Alias', { targetKey: key, name: 'alias/foo' });
 
-    test.deepEqual(app.synthesizeStack(stack.name).template.Resources.Alias325C5727, {
-      Type: 'AWS::KMS::Alias',
-      Properties: {
-        AliasName: 'alias/foo',
-        TargetKeyId: { 'Fn::GetAtt': [ 'Key961B73FD', 'Arn' ] }
-      }
-    });
+    expect(stack).to(haveResource('AWS::KMS::Alias', {
+      AliasName: 'alias/foo',
+      TargetKeyId: { 'Fn::GetAtt': [ 'Key961B73FD', 'Arn' ] }
+    }));
 
     test.done();
   },
@@ -31,9 +29,9 @@ export = {
       enabled: false
     });
 
-    test.throws(() => new EncryptionKeyAlias(stack, 'Alias', {
-      alias: 'foo',
-      key
+    test.throws(() => new Alias(stack, 'Alias', {
+      name: 'foo',
+      targetKey: key
     }));
 
     test.done();
@@ -48,15 +46,15 @@ export = {
       enabled: false
     });
 
-    test.throws(() => new EncryptionKeyAlias(stack, 'Alias', {
-      alias: 'alias/',
-      key
+    test.throws(() => new Alias(stack, 'Alias', {
+      name: 'alias/',
+      targetKey: key
     }));
 
     test.done();
   },
 
-  'fails if alias starts with "alias/AWS"'(test: Test) {
+  'fails if alias contains illegal characters'(test: Test) {
     const app = new App();
     const stack = new Stack(app, 'Test');
 
@@ -65,19 +63,36 @@ export = {
       enabled: false
     });
 
-    test.throws(() => new EncryptionKeyAlias(stack, 'Alias', {
-      alias: 'alias/AWS',
-      key
+    test.throws(() => new Alias(stack, 'Alias', {
+      name: 'alias/@Nope',
+      targetKey: key
+    }), 'a-zA-Z0-9:/_-');
+
+    test.done();
+  },
+
+  'fails if alias starts with "alias/aws/"'(test: Test) {
+    const app = new App();
+    const stack = new Stack(app, 'Test');
+
+    const key = new Key(stack, 'MyKey', {
+      enableKeyRotation: true,
+      enabled: false
+    });
+
+    test.throws(() => new Alias(stack, 'Alias', {
+      name: 'alias/aws/',
+      targetKey: key
     }));
 
-    test.throws(() => new EncryptionKeyAlias(stack, 'Alias', {
-      alias: 'alias/AWSAwesome',
-      key
+    test.throws(() => new Alias(stack, 'Alias', {
+      name: 'alias/aws/Awesome',
+      targetKey: key
     }));
 
-    test.throws(() => new EncryptionKeyAlias(stack, 'Alias', {
-      alias: 'alias/AWS/awesome',
-      key
+    test.throws(() => new Alias(stack, 'Alias', {
+      name: 'alias/AWS/awesome',
+      targetKey: key
     }));
 
     test.done();

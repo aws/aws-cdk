@@ -25,7 +25,7 @@ const container = taskDefinition.addContainer('web', {
 
 container.addPortMappings({
   containerPort: 80,
-  protocol: ecs.Protocol.Tcp
+  protocol: ecs.Protocol.TCP
 });
 
 const service = new ecs.Ec2Service(stack, "Service", {
@@ -42,4 +42,4 @@ listener.addTargets('ECS', {
 
 new cdk.CfnOutput(stack, 'LoadBalancerDNS', { value: lb.loadBalancerDnsName, });
 
-app.run();
+app.synth();

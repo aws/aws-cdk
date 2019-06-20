@@ -142,32 +142,32 @@ export interface IPortRange {
  * Protocol for use in Connection Rules
  */
 export enum Protocol {
-  All = '-1',
-  Tcp = 'tcp',
-  Udp = 'udp',
-  Icmp = 'icmp',
-  Icmpv6 = '58',
+  ALL = '-1',
+  TCP = 'tcp',
+  UDP = 'udp',
+  ICMP = 'icmp',
+  ICMP_V6 = '58',
 }
 
 /**
  * A single TCP port
  */
 export class TcpPort implements IPortRange {
-  public readonly canInlineRule = !Token.isToken(this.port);
+  public readonly canInlineRule = !Token.isUnresolved(this.port);
 
   constructor(private readonly port: number) {
   }
 
   public toRuleJSON(): any {
     return {
-      ipProtocol: Protocol.Tcp,
+      ipProtocol: Protocol.TCP,
       fromPort: this.port,
       toPort: this.port
     };
   }
 
   public toString() {
-    return Token.isToken(this.port) ? `{IndirectPort}` : this.port.toString();
+    return Token.isUnresolved(this.port) ? `{IndirectPort}` : this.port.toString();
   }
 }
 
@@ -175,14 +175,14 @@ export class TcpPort implements IPortRange {
  * A TCP port range
  */
 export class TcpPortRange implements IPortRange {
-  public readonly canInlineRule = !Token.isToken(this.startPort) && !Token.isToken(this.endPort);
+  public readonly canInlineRule = !Token.isUnresolved(this.startPort) && !Token.isUnresolved(this.endPort);
 
   constructor(private readonly startPort: number, private readonly endPort: number) {
   }
 
   public toRuleJSON(): any {
     return {
-      ipProtocol: Protocol.Tcp,
+      ipProtocol: Protocol.TCP,
       fromPort: this.startPort,
       toPort: this.endPort
     };
@@ -201,7 +201,7 @@ export class TcpAllPorts implements IPortRange {
 
   public toRuleJSON(): any {
     return {
-      ipProtocol: Protocol.Tcp,
+      ipProtocol: Protocol.TCP,
       fromPort: 0,
       toPort: 65535
     };
@@ -216,21 +216,21 @@ export class TcpAllPorts implements IPortRange {
  * A single UDP port
  */
 export class UdpPort implements IPortRange {
-  public readonly canInlineRule = !Token.isToken(this.port);
+  public readonly canInlineRule = !Token.isUnresolved(this.port);
 
   constructor(private readonly port: number) {
   }
 
   public toRuleJSON(): any {
     return {
-      ipProtocol: Protocol.Udp,
+      ipProtocol: Protocol.UDP,
       fromPort: this.port,
       toPort: this.port
     };
   }
 
   public toString() {
-    const port = Token.isToken(this.port) ? '{IndirectPort}' : this.port;
+    const port = Token.isUnresolved(this.port) ? '{IndirectPort}' : this.port;
     return `UDP ${port}`;
   }
 }
@@ -239,14 +239,14 @@ export class UdpPort implements IPortRange {
  * A UDP port range
  */
 export class UdpPortRange implements IPortRange {
-  public readonly canInlineRule = !Token.isToken(this.startPort) && !Token.isToken(this.endPort);
+  public readonly canInlineRule = !Token.isUnresolved(this.startPort) && !Token.isUnresolved(this.endPort);
 
   constructor(private readonly startPort: number, private readonly endPort: number) {
   }
 
   public toRuleJSON(): any {
     return {
-      ipProtocol: Protocol.Udp,
+      ipProtocol: Protocol.UDP,
       fromPort: this.startPort,
       toPort: this.endPort
     };
@@ -265,7 +265,7 @@ export class UdpAllPorts implements IPortRange {
 
   public toRuleJSON(): any {
     return {
-      ipProtocol: Protocol.Udp,
+      ipProtocol: Protocol.UDP,
       fromPort: 0,
       toPort: 65535
     };
@@ -280,14 +280,14 @@ export class UdpAllPorts implements IPortRange {
  * A set of matching ICMP Type & Code
  */
 export class IcmpTypeAndCode implements IPortRange {
-  public readonly canInlineRule = !Token.isToken(this.type) && !Token.isToken(this.code);
+  public readonly canInlineRule = !Token.isUnresolved(this.type) && !Token.isUnresolved(this.code);
 
   constructor(private readonly type: number, private readonly code: number) {
   }
 
   public toRuleJSON(): any {
     return {
-      ipProtocol: Protocol.Icmp,
+      ipProtocol: Protocol.ICMP,
       fromPort: this.type,
       toPort: this.code
     };
@@ -306,7 +306,7 @@ export class IcmpPing implements IPortRange {
 
   public toRuleJSON(): any {
     return {
-      ipProtocol: Protocol.Icmp,
+      ipProtocol: Protocol.ICMP,
       fromPort: 8,
       toPort: -1
     };
@@ -321,14 +321,14 @@ export class IcmpPing implements IPortRange {
  * All ICMP Codes for a given ICMP Type
  */
 export class IcmpAllTypeCodes implements IPortRange {
-  public readonly canInlineRule = !Token.isToken(this.type);
+  public readonly canInlineRule = !Token.isUnresolved(this.type);
 
   constructor(private readonly type: number) {
   }
 
   public toRuleJSON(): any {
     return {
-      ipProtocol: Protocol.Icmp,
+      ipProtocol: Protocol.ICMP,
       fromPort: this.type,
       toPort: -1
     };
@@ -347,7 +347,7 @@ export class IcmpAllTypesAndCodes implements IPortRange {
 
   public toRuleJSON(): any {
     return {
-      ipProtocol: Protocol.Icmp,
+      ipProtocol: Protocol.ICMP,
       fromPort: -1,
       toPort: -1
     };

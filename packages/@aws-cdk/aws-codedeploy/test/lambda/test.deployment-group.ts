@@ -11,12 +11,12 @@ function mockFunction(stack: cdk.Stack, id: string) {
   return new lambda.Function(stack, id, {
     code: lambda.Code.inline('mock'),
     handler: 'index.handler',
-    runtime: lambda.Runtime.NodeJS810
+    runtime: lambda.Runtime.Nodejs810
   });
 }
 function mockAlias(stack: cdk.Stack) {
   return new lambda.Alias(stack, 'Alias', {
-    aliasName: 'my-alias',
+    aliasName: cdk.PhysicalName.of('my-alias'),
     version: new lambda.Version(stack, 'Version', {
       lambda: mockFunction(stack, 'Function')
     })
@@ -95,7 +95,18 @@ export = {
           }],
           Version: "2012-10-17"
         },
-        ManagedPolicyArns: ['arn:aws:iam::aws:policy/service-role/AWSCodeDeployRoleForLambda']
+        ManagedPolicyArns: [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                { Ref: "AWS::Partition" },
+                ':iam::aws:policy/service-role/AWSCodeDeployRoleForLambda'
+              ]
+            ]
+          }
+        ]
       }));
 
       test.done();
@@ -108,7 +119,7 @@ export = {
         application,
         alias,
         deploymentConfig: LambdaDeploymentConfig.AllAtOnce,
-        deploymentGroupName: 'test'
+        deploymentGroupName: cdk.PhysicalName.of('test'),
       });
 
       expect(stack).to(haveResourceLike('AWS::CodeDeploy::DeploymentGroup', {
@@ -143,7 +154,18 @@ export = {
           }],
           Version: "2012-10-17"
         },
-        ManagedPolicyArns: ['arn:aws:iam::aws:policy/service-role/AWSCodeDeployRoleForLambda']
+        ManagedPolicyArns: [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                { Ref: "AWS::Partition" },
+                ':iam::aws:policy/service-role/AWSCodeDeployRoleForLambda'
+              ]
+            ]
+          }
+        ]
       }));
 
       test.done();
@@ -193,7 +215,7 @@ export = {
         deploymentConfig: codedeploy.LambdaDeploymentConfig.AllAtOnce,
         alarms: [new cloudwatch.Alarm(stack, 'Failures', {
           metric: alias.metricErrors(),
-          comparisonOperator: cloudwatch.ComparisonOperator.GreaterThanThreshold,
+          comparisonOperator: cloudwatch.ComparisonOperator.GREATER_THAN_THRESHOLD,
           threshold: 1,
           evaluationPeriods: 1
         })]
@@ -449,7 +471,7 @@ export = {
         ignorePollAlarmsFailure: true,
         alarms: [new cloudwatch.Alarm(stack, 'Failures', {
           metric: alias.metricErrors(),
-          comparisonOperator: cloudwatch.ComparisonOperator.GreaterThanThreshold,
+          comparisonOperator: cloudwatch.ComparisonOperator.GREATER_THAN_THRESHOLD,
           threshold: 1,
           evaluationPeriods: 1
         })]
@@ -542,7 +564,7 @@ export = {
         },
         alarms: [new cloudwatch.Alarm(stack, 'Failures', {
           metric: alias.metricErrors(),
-          comparisonOperator: cloudwatch.ComparisonOperator.GreaterThanThreshold,
+          comparisonOperator: cloudwatch.ComparisonOperator.GREATER_THAN_THRESHOLD,
           threshold: 1,
           evaluationPeriods: 1
         })]

@@ -135,7 +135,7 @@ export = {
     const fn = new lambda.Function(stack, 'Function', {
       code: lambda.Code.inline(''),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NodeJS810
+      runtime: lambda.Runtime.Nodejs810
     });
 
     // WHEN
@@ -145,7 +145,7 @@ export = {
           actions: [
             new ReceiptRuleLambdaAction({
               function: fn,
-              invocationType: LambdaInvocationType.RequestResponse,
+              invocationType: LambdaInvocationType.REQUEST_RESPONSE,
               topic
             })
           ]
@@ -385,7 +385,7 @@ export = {
         {
           actions: [
             new ReceiptRuleSnsAction({
-              encoding: EmailEncoding.Base64,
+              encoding: EmailEncoding.BASE64,
               topic
             })
           ]

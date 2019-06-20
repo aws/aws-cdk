@@ -13,14 +13,14 @@ export class CodeBuildProject implements events.IRuleTarget {
   /**
    * Allows using build projects as event rule targets.
    */
-  public bind(_rule: events.IRule): events.RuleTargetProperties {
+  public bind(_rule: events.IRule): events.RuleTargetConfig {
     return {
-      id: this.project.node.id,
+      id: this.project.node.uniqueId,
       arn: this.project.projectArn,
-      role: singletonEventRole(this.project, [new iam.PolicyStatement()
-        .addAction('codebuild:StartBuild')
-        .addResource(this.project.projectArn)
-      ]),
+      role: singletonEventRole(this.project, [new iam.PolicyStatement({
+        actions: ['codebuild:StartBuild'],
+        resources: [this.project.projectArn],
+      })]),
     };
   }
 }

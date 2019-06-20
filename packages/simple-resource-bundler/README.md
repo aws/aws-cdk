@@ -1,18 +1,14 @@
-cdk-bundler
-===========
+# simple-resource-bundler
+<!--BEGIN STABILITY BANNER-->
 
-Build tool to bundle static resources into the source of a NodeJS library.
+---
 
-Usage
------
+![Stability: Deprecated](https://img.shields.io/badge/stability-Deprecated-critical.svg?style=for-the-badge)
 
-Bundles all files in the `resources/` directory of an NPM package into a file named `resources.js`,
-which exports the files as `Buffers` by name in the top-level exports.
+> This API may emit warnings. Backward compatibility is not guaranteed.
 
-Use as follows:
+---
+<!--END STABILITY BANNER-->
 
-    const resources = require('./resources');
+This tool has been deprecated. Use @aws-cdk/assets instead.
 
-    const buffer = resources['myfile.txt'];
-
-    console.log(buffer.toString('utf-8'));

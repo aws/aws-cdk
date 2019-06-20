@@ -1,6 +1,7 @@
 import reflect = require('jsii-reflect');
 import { Linter, MethodSignatureParameterExpectation } from '../linter';
 import { CoreTypes } from './core-types';
+import { ResourceReflection } from './resource';
 
 export const constructLinter = new Linter<ConstructReflection>(assembly => assembly.classes
   .filter(t => CoreTypes.isConstructClass(t))
@@ -189,12 +190,12 @@ constructLinter.add({
 
 constructLinter.add({
   code: 'props-no-unions',
-  message: 'props should not use TypeScript unions',
+  message: 'props must not use TypeScript unions',
   eval: e => {
     if (!e.ctx.propsType) { return; }
     if (!e.ctx.hasPropsArgument) { return; }
 
-    // this rule only applies to L2 constructs
+    // this rule does not apply to L1 constructs
     if (CoreTypes.isCfnResource(e.ctx.classType)) { return; }
 
     for (const property of e.ctx.propsType.ownProperties) {
@@ -205,12 +206,12 @@ constructLinter.add({
 
 constructLinter.add({
   code: 'props-no-arn-refs',
-  message: 'props should use strong types instead of attributes. props should not have "arn" suffix',
+  message: 'props must use strong types instead of attributes. props should not have "arn" suffix',
   eval: e => {
     if (!e.ctx.propsType) { return; }
     if (!e.ctx.hasPropsArgument) { return; }
 
-    // this rule only applies to L2 constructs
+    // this rule does not apply to L1 constructs
     if (CoreTypes.isCfnResource(e.ctx.classType)) { return; }
 
     for (const property of e.ctx.propsType.ownProperties) {
@@ -221,12 +222,12 @@ constructLinter.add({
 
 constructLinter.add({
   code: 'props-no-tokens',
-  message: 'props should not use the "Token" type',
+  message: 'props must not use the "Token" type',
   eval: e => {
     if (!e.ctx.propsType) { return; }
     if (!e.ctx.hasPropsArgument) { return; }
 
-    // this rule only applies to L2 constructs
+    // this rule does not apply to L1 constructs
     if (CoreTypes.isCfnResource(e.ctx.classType)) { return; }
 
     for (const property of e.ctx.propsType.allProperties) {
@@ -234,7 +235,7 @@ constructLinter.add({
 
       const found = (fqn && e.ctx.sys.tryFindFqn(fqn));
       if (found) {
-        e.assert(!(fqn === e.ctx.core.tokenClass.fqn), `${e.ctx.propsFqn}.${property.name}`);
+        e.assert(!(fqn === e.ctx.core.tokenInterface.fqn), `${e.ctx.propsFqn}.${property.name}`);
       }
     }
   }
@@ -242,12 +243,12 @@ constructLinter.add({
 
 constructLinter.add({
   code: 'props-no-cfn-types',
-  message: 'props should not expose L1 types (types which start with "Cfn")',
+  message: 'props must not expose L1 types (types which start with "Cfn")',
   eval: e => {
     if (!e.ctx.propsType) { return; }
     if (!e.ctx.hasPropsArgument) { return; }
 
-    // this rule only applies to L2 constructs
+    // this rule does not apply to L1 constructs
     if (CoreTypes.isCfnResource(e.ctx.classType)) { return; }
 
     for (const property of e.ctx.propsType.ownProperties) {
@@ -263,12 +264,12 @@ constructLinter.add({
 
 constructLinter.add({
   code: 'props-default-doc',
-  message: 'All optional props should have @default documentation',
+  message: 'All optional props must have @default documentation',
   eval: e => {
     if (!e.ctx.propsType) { return; }
     if (!e.ctx.hasPropsArgument) { return; }
 
-    // this rule only applies to L2 constructs
+    // this rule does not apply to L1 constructs
     if (CoreTypes.isCfnResource(e.ctx.classType)) { return; }
 
     for (const property of e.ctx.propsType.allProperties) {
@@ -277,3 +278,45 @@ constructLinter.add({
     }
   }
   });
+
+constructLinter.add({
+  code: 'props-no-any',
+  message: 'props must not use Typescript "any" type',
+  eval: e => {
+    if (!e.ctx.propsType) { return; }
+    if (!e.ctx.hasPropsArgument) { return; }
+
+    // this rule does not apply to L1 constructs
+    if (CoreTypes.isCfnResource(e.ctx.classType)) { return; }
+
+    for (const property of e.ctx.propsType.ownProperties) {
+    e.assert(!property.type.isAny, `${e.ctx.propsFqn}.${property.name}`);
+    }
+  }
+});
+
+constructLinter.add({
+  code: 'props-physical-name',
+  message: "Every Resource must have a single physical name construction property, " +
+    "with a name that is an ending substring of <baseNameOfResource>Name",
+  eval: e => {
+    if (!e.ctx.propsType) { return; }
+    if (!e.ctx.hasPropsArgument) { return; }
+
+    // this rule only applies to Resources
+    if (!CoreTypes.isResourceClass(e.ctx.classType)) { return; }
+
+    const physicalNameProps = e.ctx.propsType.allProperties.filter(p => p.type.toString() === '@aws-cdk/cdk.PhysicalName');
+    if (physicalNameProps.length !== 1) {
+      e.assert(false, `${e.ctx.propsFqn}`);
+    } else {
+      const physicalNameProp = physicalNameProps[0];
+
+      // check the name of the property
+      const resourceName = new ResourceReflection(e.ctx).cfn.fullname.split('::')[2];
+      const capitalizedProp = physicalNameProp.name[0].toUpperCase() + physicalNameProp.name.slice(1);
+
+      e.assert(`${resourceName}Name`.endsWith(capitalizedProp), `${e.ctx.propsFqn}.${physicalNameProp.name}`);
+    }
+  },
+});

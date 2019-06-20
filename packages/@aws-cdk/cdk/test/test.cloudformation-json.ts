@@ -1,5 +1,6 @@
 import { Test } from 'nodeunit';
-import { CloudFormationLang, Fn, Stack, Token } from '../lib';
+import { Fn, Lazy, Stack, Token } from '../lib';
+import { Intrinsic } from '../lib/private/intrinsic';
 import { evaluateCFN } from './evaluate-cfn';
 
 export = {
@@ -11,7 +12,7 @@ export = {
       const fido = { name: 'Fido', speaks: token };
 
       // WHEN
-      const resolved = stack.node.resolve(CloudFormationLang.toJSON(fido));
+      const resolved = stack.resolve(stack.toJsonString(fido));
 
       // THEN
       test.deepEqual(evaluateCFN(resolved), '{"name":"Fido","speaks":"woof woof"}');
@@ -28,7 +29,7 @@ export = {
       const fido = { name: 'Fido', speaks: `deep ${token}` };
 
       // WHEN
-      const resolved = stack.node.resolve(CloudFormationLang.toJSON(fido));
+      const resolved = stack.resolve(stack.toJsonString(fido));
 
       // THEN
       test.deepEqual(evaluateCFN(resolved), '{"name":"Fido","speaks":"deep woof woof"}');
@@ -43,7 +44,7 @@ export = {
     const inputString = 'Hello, "world"';
 
     // WHEN
-    const resolved = stack.node.resolve(CloudFormationLang.toJSON(inputString));
+    const resolved = stack.resolve(stack.toJsonString(inputString));
 
     // THEN
     test.deepEqual(evaluateCFN(resolved), JSON.stringify(inputString));
@@ -54,13 +55,13 @@ export = {
   'integer Tokens behave correctly in stringification and JSONification'(test: Test) {
     // GIVEN
     const stack = new Stack();
-    const num = new Token(() => 1);
+    const num = new Intrinsic(1);
     const embedded = `the number is ${num}`;
 
     // WHEN
-    test.equal(evaluateCFN(stack.node.resolve(embedded)), "the number is 1");
-    test.equal(evaluateCFN(stack.node.resolve(CloudFormationLang.toJSON({ embedded }))), "{\"embedded\":\"the number is 1\"}");
-    test.equal(evaluateCFN(stack.node.resolve(CloudFormationLang.toJSON({ num }))), "{\"num\":1}");
+    test.equal(evaluateCFN(stack.resolve(embedded)), "the number is 1");
+    test.equal(evaluateCFN(stack.resolve(stack.toJsonString({ embedded }))), "{\"embedded\":\"the number is 1\"}");
+    test.equal(evaluateCFN(stack.resolve(stack.toJsonString({ num }))), "{\"num\":1}");
 
     test.done();
   },
@@ -70,10 +71,10 @@ export = {
     const stack = new Stack();
     for (const token of tokensThatResolveTo('pong!')) {
       // WHEN
-      const stringified = CloudFormationLang.toJSON(`ping? ${token}`);
+      const stringified = stack.toJsonString(`ping? ${token}`);
 
       // THEN
-      test.equal(evaluateCFN(stack.node.resolve(stringified)), '"ping? pong!"');
+      test.equal(evaluateCFN(stack.resolve(stringified)), '"ping? pong!"');
     }
 
     test.done();
@@ -82,10 +83,10 @@ export = {
   'intrinsic Tokens embed correctly in JSONification'(test: Test) {
     // GIVEN
     const stack = new Stack();
-    const bucketName = new Token({ Ref: 'MyBucket' });
+    const bucketName = new Intrinsic({ Ref: 'MyBucket' });
 
     // WHEN
-    const resolved = stack.node.resolve(CloudFormationLang.toJSON({ theBucket: bucketName }));
+    const resolved = stack.resolve(stack.toJsonString({ theBucket: bucketName }));
 
     // THEN
     const context = {MyBucket: 'TheName'};
@@ -96,7 +97,7 @@ export = {
 
   'fake intrinsics are serialized to objects'(test: Test) {
     const stack = new Stack();
-    const fakeIntrinsics = new Token(() => ({
+    const fakeIntrinsics = new Intrinsic({
       a: {
         'Fn::GetArtifactAtt': {
           key: 'val',
@@ -108,10 +109,10 @@ export = {
           'val2',
         ],
       },
-    }));
+    });
 
-    const stringified = CloudFormationLang.toJSON(fakeIntrinsics);
-    test.equal(evaluateCFN(stack.node.resolve(stringified)),
+    const stringified = stack.toJsonString(fakeIntrinsics);
+    test.equal(evaluateCFN(stack.resolve(stringified)),
         '{"a":{"Fn::GetArtifactAtt":{"key":"val"}},"b":{"Fn::GetParam":["val1","val2"]}}');
 
     test.done();
@@ -123,7 +124,7 @@ export = {
     const token = Fn.join('', [ 'Hello', 'This\nIs', 'Very "cool"' ]);
 
     // WHEN
-    const resolved = stack.node.resolve(CloudFormationLang.toJSON({
+    const resolved = stack.resolve(stack.toJsonString({
       literal: 'I can also "contain" quotes',
       token
     }));
@@ -138,11 +139,11 @@ export = {
   'Tokens in Tokens are handled correctly'(test: Test) {
     // GIVEN
     const stack = new Stack();
-    const bucketName = new Token({ Ref: 'MyBucket' });
+    const bucketName = new Intrinsic({ Ref: 'MyBucket' });
     const combinedName = Fn.join('', [ 'The bucket name is ', bucketName.toString() ]);
 
     // WHEN
-    const resolved = stack.node.resolve(CloudFormationLang.toJSON({ theBucket: combinedName }));
+    const resolved = stack.resolve(stack.toJsonString({ theBucket: combinedName }));
 
     // THEN
     const context = {MyBucket: 'TheName'};
@@ -154,10 +155,10 @@ export = {
   'Doubly nested strings evaluate correctly in JSON context'(test: Test) {
     // WHEN
     const stack = new Stack();
-    const fidoSays = new Token(() => 'woof');
+    const fidoSays = Lazy.stringValue({ produce: () => 'woof' });
 
     // WHEN
-    const resolved = stack.node.resolve(CloudFormationLang.toJSON({
+    const resolved = stack.resolve(stack.toJsonString({
       information: `Did you know that Fido says: ${fidoSays}`
     }));
 
@@ -170,10 +171,10 @@ export = {
   'Doubly nested intrinsics evaluate correctly in JSON context'(test: Test) {
     // GIVEN
     const stack = new Stack();
-    const fidoSays = new Token(() => ({ Ref: 'Something' }));
+    const fidoSays = Lazy.anyValue({ produce: () => ({ Ref: 'Something' }) });
 
     // WHEN
-    const resolved = stack.node.resolve(CloudFormationLang.toJSON({
+    const resolved = stack.resolve(stack.toJsonString({
       information: `Did you know that Fido says: ${fidoSays}`
     }));
 
@@ -187,10 +188,10 @@ export = {
   'Quoted strings in embedded JSON context are escaped'(test: Test) {
     // GIVEN
     const stack = new Stack();
-    const fidoSays = new Token(() => '"woof"');
+    const fidoSays = Lazy.stringValue({ produce: () => '"woof"' });
 
     // WHEN
-    const resolved = stack.node.resolve(CloudFormationLang.toJSON({
+    const resolved = stack.resolve(stack.toJsonString({
       information: `Did you know that Fido says: ${fidoSays}`
     }));
 
@@ -206,7 +207,7 @@ export = {
  */
 function tokensThatResolveTo(value: any): Token[] {
   return [
-    new Token(value),
-    new Token(() => value)
+    new Intrinsic(value),
+    Lazy.anyValue({ produce: () => value })
   ];
 }

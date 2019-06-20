@@ -1,5 +1,4 @@
 import { expect, haveResource, haveResourceLike, ResourcePart } from '@aws-cdk/assert';
-import assets = require('@aws-cdk/assets');
 import cdk = require('@aws-cdk/cdk');
 import cxapi = require('@aws-cdk/cx-api');
 import { Test } from 'nodeunit';
@@ -17,23 +16,12 @@ export = {
     },
     'fails if larger than 4096 bytes'(test: Test) {
       test.throws(
-        () => defineFunction(lambda.Code.inline(generateRandomString(4097)), lambda.Runtime.NodeJS810),
+        () => defineFunction(lambda.Code.inline(generateRandomString(4097)), lambda.Runtime.Nodejs810),
         /Lambda source is too large, must be <= 4096 but is 4097/);
       test.done();
     }
   },
   'lambda.Code.asset': {
-    'determines packaging type from file type'(test: Test) {
-      // WHEN
-      const fileAsset = lambda.Code.asset(path.join(__dirname, 'handler.zip'));
-      const directoryAsset = lambda.Code.asset(path.join(__dirname, 'my-lambda-handler'));
-
-      // THEN
-      test.deepEqual(fileAsset.packaging, assets.AssetPackaging.File);
-      test.deepEqual(directoryAsset.packaging, assets.AssetPackaging.ZipDirectory);
-      test.done();
-    },
-
     'fails if a non-zip asset is used'(test: Test) {
       // GIVEN
       const fileAsset = lambda.Code.asset(path.join(__dirname, 'my-lambda-handler', 'index.py'));
@@ -52,22 +40,26 @@ export = {
       // WHEN
       new lambda.Function(stack, 'Func1', {
         handler: 'foom',
-        runtime: lambda.Runtime.NodeJS810,
+        runtime: lambda.Runtime.Nodejs810,
         code: directoryAsset
       });
 
       new lambda.Function(stack, 'Func2', {
         handler: 'foom',
-        runtime: lambda.Runtime.NodeJS810,
+        runtime: lambda.Runtime.Nodejs810,
         code: directoryAsset
       });
 
       // THEN
-      const synthesized = app.synthesizeStack('MyStack');
+      const assembly = app.synth();
+      const synthesized = assembly.stacks[0];
 
       // Func1 has an asset, Func2 does not
-      test.deepEqual(synthesized.metadata['/MyStack/Func1/Code'][0].type, 'aws:cdk:asset');
-      test.deepEqual(synthesized.metadata['/MyStack/Func2/Code'], undefined);
+      const metadata = synthesized.manifest.metadata || {};
+      test.ok(metadata['/MyStack/Func1/Code']);
+      test.deepEqual(metadata['/MyStack/Func1/Code'].length, 1);
+      test.deepEqual(metadata['/MyStack/Func1/Code'][0].type, 'aws:cdk:asset');
+      test.deepEqual(metadata['/MyStack/Func2/Code'], undefined);
 
       test.done();
     },
@@ -82,14 +74,14 @@ export = {
       // WHEN
       new lambda.Function(stack, 'Func1', {
         code: lambda.Code.asset(location),
-        runtime: lambda.Runtime.NodeJS810,
+        runtime: lambda.Runtime.Nodejs810,
         handler: 'foom',
       });
 
       // THEN
       expect(stack).to(haveResource('AWS::Lambda::Function', {
         Metadata: {
-          [cxapi.ASSET_RESOURCE_METADATA_PATH_KEY]: location,
+          [cxapi.ASSET_RESOURCE_METADATA_PATH_KEY]: 'asset.9678c34eca93259d11f2d714177347afd66c50116e1e08996eff893d3ca81232',
           [cxapi.ASSET_RESOURCE_METADATA_PROPERTY_KEY]: 'Code'
         }
       }, ResourcePart.CompleteDefinition));
@@ -103,7 +95,7 @@ export = {
       const code = new lambda.CfnParametersCode();
       new lambda.Function(stack, 'Function', {
         code,
-        runtime: lambda.Runtime.NodeJS810,
+        runtime: lambda.Runtime.Nodejs810,
         handler: 'index.handler',
       });
 
@@ -118,8 +110,8 @@ export = {
         },
       }));
 
-      test.equal(stack.node.resolve(code.bucketNameParam), 'FunctionLambdaSourceBucketNameParameter9E9E108F');
-      test.equal(stack.node.resolve(code.objectKeyParam), 'FunctionLambdaSourceObjectKeyParameter1C7AED11');
+      test.equal(stack.resolve(code.bucketNameParam), 'FunctionLambdaSourceBucketNameParameter9E9E108F');
+      test.equal(stack.resolve(code.objectKeyParam), 'FunctionLambdaSourceObjectKeyParameter1C7AED11');
 
       test.done();
     },
@@ -152,12 +144,12 @@ export = {
         objectKeyParam: bucketKeyParam,
       });
 
-      test.equal(stack.node.resolve(code.bucketNameParam), 'BucketNameParam');
-      test.equal(stack.node.resolve(code.objectKeyParam), 'ObjectKeyParam');
+      test.equal(stack.resolve(code.bucketNameParam), 'BucketNameParam');
+      test.equal(stack.resolve(code.objectKeyParam), 'ObjectKeyParam');
 
       new lambda.Function(stack, 'Function', {
         code,
-        runtime: lambda.Runtime.NodeJS810,
+        runtime: lambda.Runtime.Nodejs810,
         handler: 'index.handler',
       });
 
@@ -188,7 +180,7 @@ export = {
       });
 
       // when
-      const overrides = stack.node.resolve(code.assign({
+      const overrides = stack.resolve(code.assign({
         bucketName: 'SomeBucketName',
         objectKey: 'SomeObjectKey',
       }));
@@ -202,7 +194,7 @@ export = {
   },
 };
 
-function defineFunction(code: lambda.Code, runtime: lambda.Runtime = lambda.Runtime.NodeJS810) {
+function defineFunction(code: lambda.Code, runtime: lambda.Runtime = lambda.Runtime.Nodejs810) {
   const stack = new cdk.Stack();
   return new lambda.Function(stack, 'Func', {
     handler: 'foom',

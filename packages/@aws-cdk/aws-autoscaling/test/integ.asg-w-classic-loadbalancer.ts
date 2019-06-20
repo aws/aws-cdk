@@ -13,7 +13,7 @@ const vpc = new ec2.Vpc(stack, 'VPC', {
 
 const asg = new autoscaling.AutoScalingGroup(stack, 'Fleet', {
   vpc,
-  instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.Burstable2, ec2.InstanceSize.Micro),
+  instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.MICRO),
   machineImage: new ec2.AmazonLinuxImage(),
 });
 
@@ -28,4 +28,4 @@ const lb = new elb.LoadBalancer(stack, 'LB', {
 lb.addTarget(asg);
 lb.addListener({ externalPort: 80 });
 
-app.run();
+app.synth();

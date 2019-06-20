@@ -19,12 +19,12 @@ const sourceAction = new cpactions.S3SourceAction({
   bucketKey: 'key',
 });
 const sourceStage = {
-  name: 'Source',
+  stageName: 'Source',
   actions: [sourceAction],
 };
 
 const deployStage = {
-  name: 'Deploy',
+  stageName: 'Deploy',
   actions: [
     new cpactions.AlexaSkillDeployAction({
       actionName: 'DeploySkill',
@@ -45,4 +45,4 @@ new codepipeline.Pipeline(stack, 'Pipeline', {
   ],
 });
 
-app.run();
+app.synth();

@@ -8,12 +8,12 @@ export interface LambdaRuntimeProps {
 
 export enum RuntimeFamily {
   NodeJS,
-  Java,
-  Python,
-  DotNetCore,
-  Go,
-  Ruby,
-  Other
+  JAVA,
+  PYTHON,
+  DOTNET_CORE,
+  GO,
+  RUBY,
+  OTHER
 }
 
 /**
@@ -26,25 +26,25 @@ export class Runtime {
   /** A list of all known `Runtime`'s. */
   public static readonly All = new Array<Runtime>();
 
-  /** @deprecated Use `NodeJS810` or `NodeJS10x` */
-  public static readonly NodeJS =       new Runtime('nodejs',         RuntimeFamily.NodeJS, { supportsInlineCode: true });
-  /** @deprecated Use `NodeJS810` or `NodeJS10x` */
-  public static readonly NodeJS43 =     new Runtime('nodejs4.3',      RuntimeFamily.NodeJS, { supportsInlineCode: true });
-  /** @deprecated Use `NodeJS810` or `NodeJS10x` */
-  public static readonly NodeJS610 =    new Runtime('nodejs6.10',     RuntimeFamily.NodeJS, { supportsInlineCode: true });
-  public static readonly NodeJS810 =    new Runtime('nodejs8.10',     RuntimeFamily.NodeJS, { supportsInlineCode: true });
-  public static readonly NodeJS10x =    new Runtime('nodejs10.x',     RuntimeFamily.NodeJS, { supportsInlineCode: false });
-  public static readonly Python27 =     new Runtime('python2.7',      RuntimeFamily.Python, { supportsInlineCode: true });
-  public static readonly Python36 =     new Runtime('python3.6',      RuntimeFamily.Python, { supportsInlineCode: true });
-  public static readonly Python37 =     new Runtime('python3.7',      RuntimeFamily.Python, { supportsInlineCode: true });
-  public static readonly Java8 =        new Runtime('java8',          RuntimeFamily.Java);
-  public static readonly DotNetCore1 =  new Runtime('dotnetcore1.0',  RuntimeFamily.DotNetCore);
+  /** @deprecated Use `Nodejs810` or `Nodejs10x` */
+  public static readonly Nodejs =       new Runtime('nodejs',         RuntimeFamily.NodeJS, { supportsInlineCode: true });
+  /** @deprecated Use `Nodejs810` or `Nodejs10x` */
+  public static readonly Nodejs43 =     new Runtime('nodejs4.3',      RuntimeFamily.NodeJS, { supportsInlineCode: true });
+  /** @deprecated Use `Nodejs810` or `Nodejs10x` */
+  public static readonly Nodejs610 =    new Runtime('nodejs6.10',     RuntimeFamily.NodeJS, { supportsInlineCode: true });
+  public static readonly Nodejs810 =    new Runtime('nodejs8.10',     RuntimeFamily.NodeJS, { supportsInlineCode: true });
+  public static readonly Nodejs10x =    new Runtime('nodejs10.x',     RuntimeFamily.NodeJS, { supportsInlineCode: false });
+  public static readonly Python27 =     new Runtime('python2.7',      RuntimeFamily.PYTHON, { supportsInlineCode: true });
+  public static readonly Python36 =     new Runtime('python3.6',      RuntimeFamily.PYTHON, { supportsInlineCode: true });
+  public static readonly Python37 =     new Runtime('python3.7',      RuntimeFamily.PYTHON, { supportsInlineCode: true });
+  public static readonly Java8 =        new Runtime('java8',          RuntimeFamily.JAVA);
+  public static readonly DotNetCore1 =  new Runtime('dotnetcore1.0',  RuntimeFamily.DOTNET_CORE);
   /** @deprecated Use `DotNetCore21` */
-  public static readonly DotNetCore2 =  new Runtime('dotnetcore2.0',  RuntimeFamily.DotNetCore);
-  public static readonly DotNetCore21 = new Runtime('dotnetcore2.1',  RuntimeFamily.DotNetCore);
-  public static readonly Go1x =         new Runtime('go1.x',          RuntimeFamily.Go);
-  public static readonly Ruby25 =       new Runtime('ruby2.5',        RuntimeFamily.Ruby, { supportsInlineCode: true });
-  public static readonly Provided =     new Runtime('provided',       RuntimeFamily.Other);
+  public static readonly DotNetCore2 =  new Runtime('dotnetcore2.0',  RuntimeFamily.DOTNET_CORE);
+  public static readonly DotNetCore21 = new Runtime('dotnetcore2.1',  RuntimeFamily.DOTNET_CORE);
+  public static readonly Go1x =         new Runtime('go1.x',          RuntimeFamily.GO);
+  public static readonly Ruby25 =       new Runtime('ruby2.5',        RuntimeFamily.RUBY, { supportsInlineCode: true });
+  public static readonly Provided =     new Runtime('provided',       RuntimeFamily.OTHER);
 
   /**
    * The name of this runtime, as expected by the Lambda resource.

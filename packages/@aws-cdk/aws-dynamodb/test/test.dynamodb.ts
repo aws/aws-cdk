@@ -1,6 +1,7 @@
 import { expect, haveResource } from '@aws-cdk/assert';
+import appscaling = require('@aws-cdk/aws-applicationautoscaling');
 import iam = require('@aws-cdk/aws-iam');
-import { Stack, Tag } from '@aws-cdk/cdk';
+import { ConstructNode, PhysicalName, Stack, Tag } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
 import {
   Attribute,
@@ -20,13 +21,13 @@ const CONSTRUCT_NAME = 'MyTable';
 
 // DynamoDB table parameters
 const TABLE_NAME = 'MyTable';
-const TABLE_PARTITION_KEY: Attribute = { name: 'hashKey', type: AttributeType.String };
-const TABLE_SORT_KEY: Attribute = { name: 'sortKey', type: AttributeType.Number };
+const TABLE_PARTITION_KEY: Attribute = { name: 'hashKey', type: AttributeType.STRING };
+const TABLE_SORT_KEY: Attribute = { name: 'sortKey', type: AttributeType.NUMBER };
 
 // DynamoDB global secondary index parameters
 const GSI_NAME = 'MyGSI';
-const GSI_PARTITION_KEY: Attribute = { name: 'gsiHashKey', type: AttributeType.String };
-const GSI_SORT_KEY: Attribute = { name: 'gsiSortKey', type: AttributeType.Binary };
+const GSI_PARTITION_KEY: Attribute = { name: 'gsiHashKey', type: AttributeType.STRING };
+const GSI_SORT_KEY: Attribute = { name: 'gsiSortKey', type: AttributeType.BINARY };
 const GSI_NON_KEY = 'gsiNonKey';
 function* GSI_GENERATOR() {
   let n = 0;
@@ -49,7 +50,7 @@ function* NON_KEY_ATTRIBUTE_GENERATOR(nonKeyPrefix: string) {
 
 // DynamoDB local secondary index parameters
 const LSI_NAME = 'MyLSI';
-const LSI_SORT_KEY: Attribute = { name: 'lsiSortKey', type: AttributeType.Number };
+const LSI_SORT_KEY: Attribute = { name: 'lsiSortKey', type: AttributeType.NUMBER };
 const LSI_NON_KEY = 'lsiNonKey';
 function* LSI_GENERATOR() {
   let n = 0;
@@ -218,10 +219,10 @@ export = {
     const stack = new Stack();
 
     new Table(stack, CONSTRUCT_NAME, {
-      tableName: TABLE_NAME,
+      tableName: PhysicalName.of(TABLE_NAME),
       readCapacity: 42,
       writeCapacity: 1337,
-      streamSpecification: StreamViewType.NewAndOldImages,
+      stream: StreamViewType.NEW_AND_OLD_IMAGES,
       partitionKey: TABLE_PARTITION_KEY,
       sortKey: TABLE_SORT_KEY
     });
@@ -248,10 +249,10 @@ export = {
     const stack = new Stack();
 
     new Table(stack, CONSTRUCT_NAME, {
-      tableName: TABLE_NAME,
+      tableName: PhysicalName.of(TABLE_NAME),
       readCapacity: 42,
       writeCapacity: 1337,
-      streamSpecification: StreamViewType.NewImage,
+      stream: StreamViewType.NEW_IMAGE,
       partitionKey: TABLE_PARTITION_KEY,
       sortKey: TABLE_SORT_KEY
     });
@@ -278,10 +279,10 @@ export = {
     const stack = new Stack();
 
     new Table(stack, CONSTRUCT_NAME, {
-      tableName: TABLE_NAME,
+      tableName: PhysicalName.of(TABLE_NAME),
       readCapacity: 42,
       writeCapacity: 1337,
-      streamSpecification: StreamViewType.OldImage,
+      stream: StreamViewType.OLD_IMAGE,
       partitionKey: TABLE_PARTITION_KEY,
       sortKey: TABLE_SORT_KEY
     });
@@ -308,18 +309,18 @@ export = {
   'when specifying every property'(test: Test) {
     const stack = new Stack();
     const table = new Table(stack, CONSTRUCT_NAME, {
-      tableName: TABLE_NAME,
+      tableName: PhysicalName.of(TABLE_NAME),
       readCapacity: 42,
       writeCapacity: 1337,
-      pitrEnabled: true,
-      sseEnabled: true,
-      billingMode: BillingMode.Provisioned,
-      streamSpecification: StreamViewType.KeysOnly,
-      ttlAttributeName: 'timeToLive',
+      pointInTimeRecovery: true,
+      serverSideEncryption: true,
+      billingMode: BillingMode.PROVISIONED,
+      stream: StreamViewType.KEYS_ONLY,
+      timeToLiveAttribute: 'timeToLive',
       partitionKey: TABLE_PARTITION_KEY,
       sortKey: TABLE_SORT_KEY,
     });
-    table.node.apply(new Tag('Environment', 'Production'));
+    table.node.applyAspect(new Tag('Environment', 'Production'));
 
     expect(stack).to(haveResource('AWS::DynamoDB::Table',
       {
@@ -349,8 +350,8 @@ export = {
   'when specifying PAY_PER_REQUEST billing mode'(test: Test) {
     const stack = new Stack();
     new Table(stack, CONSTRUCT_NAME, {
-      tableName: TABLE_NAME,
-      billingMode: BillingMode.PayPerRequest,
+      tableName: PhysicalName.of(TABLE_NAME),
+      billingMode: BillingMode.PAY_PER_REQUEST,
       partitionKey: TABLE_PARTITION_KEY
     });
 
@@ -372,20 +373,20 @@ export = {
   'error when specifying read or write capacity with a PAY_PER_REQUEST billing mode'(test: Test) {
     const stack = new Stack();
     test.throws(() => new Table(stack, CONSTRUCT_NAME, {
-      tableName: TABLE_NAME,
-      billingMode: BillingMode.PayPerRequest,
+      tableName: PhysicalName.of(TABLE_NAME),
+      billingMode: BillingMode.PAY_PER_REQUEST,
       partitionKey: TABLE_PARTITION_KEY,
       readCapacity: 1
     }));
     test.throws(() => new Table(stack, CONSTRUCT_NAME, {
-      tableName: TABLE_NAME,
-      billingMode: BillingMode.PayPerRequest,
+      tableName: PhysicalName.of(TABLE_NAME),
+      billingMode: BillingMode.PAY_PER_REQUEST,
       partitionKey: TABLE_PARTITION_KEY,
       writeCapacity: 1
     }));
     test.throws(() => new Table(stack, CONSTRUCT_NAME, {
-      tableName: TABLE_NAME,
-      billingMode: BillingMode.PayPerRequest,
+      tableName: PhysicalName.of(TABLE_NAME),
+      billingMode: BillingMode.PAY_PER_REQUEST,
       partitionKey: TABLE_PARTITION_KEY,
       readCapacity: 1,
       writeCapacity: 1
@@ -446,7 +447,7 @@ export = {
       indexName: GSI_NAME,
       partitionKey: GSI_PARTITION_KEY,
       sortKey: GSI_SORT_KEY,
-      projectionType: ProjectionType.All,
+      projectionType: ProjectionType.ALL,
       readCapacity: 42,
       writeCapacity: 1337
     });
@@ -491,7 +492,7 @@ export = {
       indexName: GSI_NAME,
       partitionKey: GSI_PARTITION_KEY,
       sortKey: GSI_SORT_KEY,
-      projectionType: ProjectionType.KeysOnly,
+      projectionType: ProjectionType.KEYS_ONLY,
     });
 
     expect(stack).to(haveResource('AWS::DynamoDB::Table',
@@ -531,7 +532,7 @@ export = {
       indexName: GSI_NAME,
       partitionKey: GSI_PARTITION_KEY,
       sortKey: GSI_SORT_KEY,
-      projectionType: ProjectionType.Include,
+      projectionType: ProjectionType.INCLUDE,
       nonKeyAttributes: [gsiNonKeyAttributeGenerator.next().value, gsiNonKeyAttributeGenerator.next().value],
       readCapacity: 42,
       writeCapacity: 1337
@@ -569,7 +570,7 @@ export = {
   'when adding a global secondary index on a table with PAY_PER_REQUEST billing mode'(test: Test) {
     const stack = new Stack();
     new Table(stack, CONSTRUCT_NAME, {
-      billingMode: BillingMode.PayPerRequest,
+      billingMode: BillingMode.PAY_PER_REQUEST,
       partitionKey: TABLE_PARTITION_KEY,
       sortKey: TABLE_SORT_KEY
     }).addGlobalSecondaryIndex({
@@ -610,7 +611,7 @@ export = {
       indexName: GSI_NAME,
       partitionKey: GSI_PARTITION_KEY,
       sortKey: GSI_SORT_KEY,
-      projectionType: ProjectionType.Include
+      projectionType: ProjectionType.INCLUDE
     }), /non-key attributes should be specified when using INCLUDE projection type/);
 
     test.done();
@@ -638,7 +639,7 @@ export = {
     test.throws(() => table.addGlobalSecondaryIndex({
       indexName: GSI_NAME,
       partitionKey: GSI_PARTITION_KEY,
-      projectionType: ProjectionType.KeysOnly,
+      projectionType: ProjectionType.KEYS_ONLY,
       nonKeyAttributes: [gsiNonKeyAttributeGenerator.next().value]
     }), /non-key attributes should not be specified when not using INCLUDE projection type/);
 
@@ -658,7 +659,7 @@ export = {
       indexName: GSI_NAME,
       partitionKey: GSI_PARTITION_KEY,
       sortKey: GSI_SORT_KEY,
-      projectionType: ProjectionType.Include,
+      projectionType: ProjectionType.INCLUDE,
       nonKeyAttributes: gsiNonKeyAttributes
     }), /a maximum number of nonKeyAttributes across all of secondary indexes is 20/);
 
@@ -673,7 +674,7 @@ export = {
       indexName: GSI_NAME,
       partitionKey: GSI_PARTITION_KEY,
       sortKey: GSI_SORT_KEY,
-      projectionType: ProjectionType.Include,
+      projectionType: ProjectionType.INCLUDE,
       nonKeyAttributes: [GSI_NON_KEY, TABLE_PARTITION_KEY.name]
       // tslint:disable-next-line:max-line-length
     }), /a key attribute, hashKey, is part of a list of non-key attributes, gsiNonKey,hashKey, which is not allowed since all key attributes are added automatically and this configuration causes stack creation failure/);
@@ -685,7 +686,7 @@ export = {
     const stack = new Stack();
     const table = new Table(stack, CONSTRUCT_NAME, {
       partitionKey: TABLE_PARTITION_KEY,
-      billingMode: BillingMode.PayPerRequest
+      billingMode: BillingMode.PAY_PER_REQUEST
     });
 
     test.throws(() => table.addGlobalSecondaryIndex({
@@ -860,7 +861,7 @@ export = {
     table.addLocalSecondaryIndex({
       indexName: LSI_NAME,
       sortKey: LSI_SORT_KEY,
-      projectionType: ProjectionType.KeysOnly
+      projectionType: ProjectionType.KEYS_ONLY
     });
 
     expect(stack).to(haveResource('AWS::DynamoDB::Table',
@@ -897,7 +898,7 @@ export = {
     table.addLocalSecondaryIndex({
       indexName: LSI_NAME,
       sortKey: LSI_SORT_KEY,
-      projectionType: ProjectionType.Include,
+      projectionType: ProjectionType.INCLUDE,
       nonKeyAttributes: [ lsiNonKeyAttributeGenerator.next().value, lsiNonKeyAttributeGenerator.next().value ]
     });
 
@@ -967,7 +968,7 @@ export = {
       sortKey: LSI_SORT_KEY
     });
 
-    const errors = table.node.validateTree();
+    const errors = ConstructNode.validate(table.node);
 
     test.strictEqual(1, errors.length);
     test.strictEqual('a sort key of the table must be specified to add local secondary indexes', errors[0].message);
@@ -1044,7 +1045,7 @@ export = {
   'error when enabling AutoScaling on the PAY_PER_REQUEST table'(test: Test) {
     // GIVEN
     const stack = new Stack();
-    const table = new Table(stack, CONSTRUCT_NAME, { billingMode: BillingMode.PayPerRequest, partitionKey: TABLE_PARTITION_KEY });
+    const table = new Table(stack, CONSTRUCT_NAME, { billingMode: BillingMode.PAY_PER_REQUEST, partitionKey: TABLE_PARTITION_KEY });
     table.addGlobalSecondaryIndex({
       indexName: GSI_NAME,
       partitionKey: GSI_PARTITION_KEY
@@ -1095,13 +1096,13 @@ export = {
     const table = new Table(stack, CONSTRUCT_NAME, {
       readCapacity: 42,
       writeCapacity: 1337,
-      partitionKey: { name: 'Hash', type: AttributeType.String }
+      partitionKey: { name: 'Hash', type: AttributeType.STRING }
     });
 
     // WHEN
     const scaling = table.autoScaleReadCapacity({ minCapacity: 1, maxCapacity: 100 });
     scaling.scaleOnSchedule('SaveMoneyByNotScalingUp', {
-      schedule: 'cron(* * ? * * )',
+      schedule: appscaling.Schedule.cron({}),
       maxCapacity: 10
     });
 
@@ -1110,7 +1111,7 @@ export = {
       ScheduledActions: [
         {
           ScalableTargetAction: { "MaxCapacity": 10 },
-          Schedule: "cron(* * ? * * )",
+          Schedule: "cron(* * * * ? *)",
           ScheduledActionName: "SaveMoneyByNotScalingUp"
         }
       ]
@@ -1177,9 +1178,9 @@ export = {
       const table = new Table(stack, 'my-table', {
         partitionKey: {
           name: 'id',
-          type: AttributeType.String
+          type: AttributeType.STRING
         },
-        streamSpecification: StreamViewType.NewImage
+        stream: StreamViewType.NEW_IMAGE
       });
       const user = new iam.User(stack, 'user');
 
@@ -1215,8 +1216,8 @@ export = {
       // GIVEN
       const stack = new Stack();
 
-      const table = new Table(stack, 'my-table', { partitionKey: { name: 'ID', type: AttributeType.String } });
-      table.addGlobalSecondaryIndex({ indexName: 'MyIndex', partitionKey: { name: 'Age', type: AttributeType.Number }});
+      const table = new Table(stack, 'my-table', { partitionKey: { name: 'ID', type: AttributeType.STRING } });
+      table.addGlobalSecondaryIndex({ indexName: 'MyIndex', partitionKey: { name: 'Age', type: AttributeType.NUMBER }});
       const user = new iam.User(stack, 'user');
 
       // WHEN
@@ -1254,7 +1255,7 @@ export = {
 function testGrant(test: Test, expectedActions: string[], invocation: (user: iam.IPrincipal, table: Table) => void) {
   // GIVEN
   const stack = new Stack();
-  const table = new Table(stack, 'my-table', { partitionKey: { name: 'ID', type:  AttributeType.String } });
+  const table = new Table(stack, 'my-table', { partitionKey: { name: 'ID', type:  AttributeType.STRING } });
   const user = new iam.User(stack, 'user');
 
   // WHEN

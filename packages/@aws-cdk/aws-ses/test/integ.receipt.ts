@@ -14,7 +14,7 @@ const topic = new sns.Topic(stack, 'Topic');
 const fn = new lambda.Function(stack, 'Function', {
   code: lambda.Code.inline('exports.handler = async (event) => event;'),
   handler: 'index.handler',
-  runtime: lambda.Runtime.NodeJS810
+  runtime: lambda.Runtime.Nodejs810
 });
 
 const bucket = new s3.Bucket(stack, 'Bucket');
@@ -33,7 +33,7 @@ const firstRule = ruleSet.addRule('FirstRule', {
     }),
     new ses.ReceiptRuleLambdaAction({
       function: fn,
-      invocationType: ses.LambdaInvocationType.RequestResponse,
+      invocationType: ses.LambdaInvocationType.REQUEST_RESPONSE,
       topic
     }),
     new ses.ReceiptRuleS3Action({
@@ -43,14 +43,14 @@ const firstRule = ruleSet.addRule('FirstRule', {
       topic
     }),
     new ses.ReceiptRuleSnsAction({
-      encoding: ses.EmailEncoding.Base64,
+      encoding: ses.EmailEncoding.BASE64,
       topic
     })
   ],
-  name: 'FirstRule',
+  receiptRuleName: cdk.PhysicalName.of('FirstRule'),
   recipients: ['cdk-ses-receipt-test@yopmail.com'],
   scanEnabled: true,
-  tlsPolicy: ses.TlsPolicy.Require,
+  tlsPolicy: ses.TlsPolicy.REQUIRE,
 });
 
 firstRule.addAction(
@@ -73,4 +73,4 @@ new ses.WhiteListReceiptFilter(stack, 'WhiteList', {
   ]
 });
 
-app.run();
+app.synth();

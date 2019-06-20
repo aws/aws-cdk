@@ -2,6 +2,305 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.35.0](https://github.com/awslabs/aws-cdk/compare/v0.34.0...v0.35.0) (2019-06-19)
+
+
+### Bug Fixes
+
+* **cli:** Move version check TTL file to home directory ([#2774](https://github.com/awslabs/aws-cdk/issues/2774)) ([1ae11c0](https://github.com/awslabs/aws-cdk/commit/1ae11c0))
+* **cli:** correctly pass Stack-level Tags ([#2829](https://github.com/awslabs/aws-cdk/issues/2829)) ([e0718ef](https://github.com/awslabs/aws-cdk/commit/e0718ef)), closes [#2822](https://github.com/awslabs/aws-cdk/issues/2822)
+* **cli:** Hide @types/yargs types from types ([#2907](https://github.com/awslabs/aws-cdk/issues/2907)) ([095d8e2](https://github.com/awslabs/aws-cdk/commit/095d8e2)), closes [#2895](https://github.com/awslabs/aws-cdk/issues/2895)
+* **cloudformation-diff:** string.replace error on `cdk context` ([#2870](https://github.com/awslabs/aws-cdk/issues/2870)) ([b8a1c8e](https://github.com/awslabs/aws-cdk/commit/b8a1c8e)), closes [#2854](https://github.com/awslabs/aws-cdk/issues/2854)
+* **codebuild:** API cleanup. ([#2745](https://github.com/awslabs/aws-cdk/issues/2745)) ([c3667d7](https://github.com/awslabs/aws-cdk/commit/c3667d7))
+* **codebuild:** correctly handle permissions for Projects inside VPC. ([#2662](https://github.com/awslabs/aws-cdk/issues/2662)) ([390baf1](https://github.com/awslabs/aws-cdk/commit/390baf1)), closes [#2651](https://github.com/awslabs/aws-cdk/issues/2651) [#2652](https://github.com/awslabs/aws-cdk/issues/2652)
+* **core:** make IResolvable.creationStack required ([#2912](https://github.com/awslabs/aws-cdk/issues/2912)) ([7c6ebb6](https://github.com/awslabs/aws-cdk/commit/7c6ebb6))
+* **core:** use default account/region when environment is not specified ([#2867](https://github.com/awslabs/aws-cdk/issues/2867)) ([e9a4a79](https://github.com/awslabs/aws-cdk/commit/e9a4a79)), closes [#2728](https://github.com/awslabs/aws-cdk/issues/2728) [#2853](https://github.com/awslabs/aws-cdk/issues/2853) [#2866](https://github.com/awslabs/aws-cdk/issues/2866)
+* **ecs:** downscope permissions required by instance draining hook ([#2761](https://github.com/awslabs/aws-cdk/issues/2761)) ([9ea6148](https://github.com/awslabs/aws-cdk/commit/9ea6148))
+* **ecs-patterns:** update constructs for ECS/Fargate consistency ([#2795](https://github.com/awslabs/aws-cdk/issues/2795)) ([1378e2d](https://github.com/awslabs/aws-cdk/commit/1378e2d))
+* **events-targets:** event targets can have the same construct id ([#2744](https://github.com/awslabs/aws-cdk/issues/2744)) ([210dd0f](https://github.com/awslabs/aws-cdk/commit/210dd0f)), closes [#2377](https://github.com/awslabs/aws-cdk/issues/2377)
+* **iam:** support adding permissions to imported roles ([#2805](https://github.com/awslabs/aws-cdk/issues/2805)) ([936464f](https://github.com/awslabs/aws-cdk/commit/936464f)), closes [#2381](https://github.com/awslabs/aws-cdk/issues/2381) [#2651](https://github.com/awslabs/aws-cdk/issues/2651) [#2652](https://github.com/awslabs/aws-cdk/issues/2652) [#2662](https://github.com/awslabs/aws-cdk/issues/2662)
+* **cli:** Correct java init template ([#2889](https://github.com/awslabs/aws-cdk/issues/2889)) ([b3b3ba9](https://github.com/awslabs/aws-cdk/commit/b3b3ba9))
+* **rds:** allow setting backupRetentionPeriod=0 ([#2875](https://github.com/awslabs/aws-cdk/issues/2875)) ([b0730dd](https://github.com/awslabs/aws-cdk/commit/b0730dd))
+* **rds:** fix unresolved endpoint socket address ([#2846](https://github.com/awslabs/aws-cdk/issues/2846)) ([902636a](https://github.com/awslabs/aws-cdk/commit/902636a)), closes [#2711](https://github.com/awslabs/aws-cdk/issues/2711)
+* **sqs:** remove 'Batch' permissions ([#2806](https://github.com/awslabs/aws-cdk/issues/2806)) ([654cb37](https://github.com/awslabs/aws-cdk/commit/654cb37)), closes [#2381](https://github.com/awslabs/aws-cdk/issues/2381)
+
+
+### Code Refactoring
+
+* **apigateway:** API cleanups ([#2903](https://github.com/awslabs/aws-cdk/issues/2903)) ([53e1191](https://github.com/awslabs/aws-cdk/commit/53e1191))
+* **assets:** API cleanups ([#2910](https://github.com/awslabs/aws-cdk/issues/2910)) ([83eee09](https://github.com/awslabs/aws-cdk/commit/83eee09))
+* **codebuild:** introduce BuildSpec object ([#2820](https://github.com/awslabs/aws-cdk/issues/2820)) ([86a2192](https://github.com/awslabs/aws-cdk/commit/86a2192))
+* **codepipeline:** rename `name` in `StageProps` to `stageName`. ([#2882](https://github.com/awslabs/aws-cdk/issues/2882)) ([be574a1](https://github.com/awslabs/aws-cdk/commit/be574a1))
+* **core:** revisit the Stack API ([#2818](https://github.com/awslabs/aws-cdk/issues/2818)) ([47afdc2](https://github.com/awslabs/aws-cdk/commit/47afdc2)), closes [#2728](https://github.com/awslabs/aws-cdk/issues/2728)
+* **dynamodb:** API cleanups ([#2905](https://github.com/awslabs/aws-cdk/issues/2905)) ([d229836](https://github.com/awslabs/aws-cdk/commit/d229836))
+* **ecs:** Asset ContainerImage no longer takes Construct arguments ([#2906](https://github.com/awslabs/aws-cdk/issues/2906)) ([8f400e7](https://github.com/awslabs/aws-cdk/commit/8f400e7))
+* **ecs:** rename `hwType` to `hardwareType` ([#2916](https://github.com/awslabs/aws-cdk/issues/2916)) ([1aa0589](https://github.com/awslabs/aws-cdk/commit/1aa0589)), closes [#2896](https://github.com/awslabs/aws-cdk/issues/2896)
+* **lambda:** renamed the lambda.Runtime enum values from NodeJS to Nodejs ([#2815](https://github.com/awslabs/aws-cdk/issues/2815)) ([10c37dd](https://github.com/awslabs/aws-cdk/commit/10c37dd)), closes [#980](https://github.com/awslabs/aws-cdk/issues/980)
+* **lambda:** Standardize Lambda API ([#2876](https://github.com/awslabs/aws-cdk/issues/2876)) ([6446b78](https://github.com/awslabs/aws-cdk/commit/6446b78))
+* **logs:** API cleanups ([#2909](https://github.com/awslabs/aws-cdk/issues/2909)) ([06221ac](https://github.com/awslabs/aws-cdk/commit/06221ac))
+* **secretsmanager:** API cleanups ([#2908](https://github.com/awslabs/aws-cdk/issues/2908)) ([60f46c8](https://github.com/awslabs/aws-cdk/commit/60f46c8))
+* **ssm:** API cleanups ([#2904](https://github.com/awslabs/aws-cdk/issues/2904)) ([bd1bcf5](https://github.com/awslabs/aws-cdk/commit/bd1bcf5))
+* clean up API for removal policy across the library ([#2893](https://github.com/awslabs/aws-cdk/issues/2893)) ([65014ab](https://github.com/awslabs/aws-cdk/commit/65014ab))
+* **sns:** move subscribers to `aws-sns-subscribers` ([#2804](https://github.com/awslabs/aws-cdk/issues/2804)) ([9ef899c](https://github.com/awslabs/aws-cdk/commit/9ef899c))
+* **events:** clean up Events APIs (#2840) ([1e23921](https://github.com/awslabs/aws-cdk/commit/1e23921)), closes [#2840](https://github.com/awslabs/aws-cdk/issues/2840)
+* **iam:** cleanup of IAM library (#2823) ([b735d1c](https://github.com/awslabs/aws-cdk/commit/b735d1c)), closes [#2823](https://github.com/awslabs/aws-cdk/issues/2823)
+
+
+### Features
+
+* **cli:** Expose props in CFN resources and remove propertyOverrides ([#2372](https://github.com/awslabs/aws-cdk/issues/2372)) ([#2372](https://github.com/awslabs/aws-cdk/issues/2372)) ([aa61dfb](https://github.com/awslabs/aws-cdk/commit/aa61dfb)), closes [#2100](https://github.com/awslabs/aws-cdk/issues/2100)
+* **cli:** deploy/destory require explicit stack selection if app contains more than a single stack ([#2772](https://github.com/awslabs/aws-cdk/issues/2772)) ([118a716](https://github.com/awslabs/aws-cdk/commit/118a716)), closes [#2731](https://github.com/awslabs/aws-cdk/issues/2731)
+* **cli:** Remove stack rename support ([#2819](https://github.com/awslabs/aws-cdk/issues/2819)) ([0f30e39](https://github.com/awslabs/aws-cdk/commit/0f30e39)), closes [#2670](https://github.com/awslabs/aws-cdk/issues/2670)
+* **cloudformation:** add option to restrict data returned AwsCustomResource ([#2859](https://github.com/awslabs/aws-cdk/issues/2859)) ([a691900](https://github.com/awslabs/aws-cdk/commit/a691900)), closes [#2825](https://github.com/awslabs/aws-cdk/issues/2825)
+* **cloudformation:** Add removalPolicy on CustomResource ([#2770](https://github.com/awslabs/aws-cdk/issues/2770)) ([859248a](https://github.com/awslabs/aws-cdk/commit/859248a))
+* **cloudfront:** add Lambda associations ([#2760](https://github.com/awslabs/aws-cdk/issues/2760)) ([b088c8c](https://github.com/awslabs/aws-cdk/commit/b088c8c))
+* **codepipeline:** final form of the CodeBuild Pipeline action. ([#2716](https://github.com/awslabs/aws-cdk/issues/2716)) ([c10fc9a](https://github.com/awslabs/aws-cdk/commit/c10fc9a))
+* **core:** show token creation stack trace upon resolve error ([#2886](https://github.com/awslabs/aws-cdk/issues/2886)) ([f4c8dcd](https://github.com/awslabs/aws-cdk/commit/f4c8dcd))
+* **ecs:** add metrics for Fargate services ([#2798](https://github.com/awslabs/aws-cdk/issues/2798)) ([acf015d](https://github.com/awslabs/aws-cdk/commit/acf015d))
+* **ecs-patterns:** LoadBalancedFargateService - allow specifying containerName and role ([#2764](https://github.com/awslabs/aws-cdk/issues/2764)) ([df12197](https://github.com/awslabs/aws-cdk/commit/df12197))
+* **elasticloadbalancing:** add crossZone load balancing ([#2787](https://github.com/awslabs/aws-cdk/issues/2787)) ([192bab7](https://github.com/awslabs/aws-cdk/commit/192bab7)), closes [#2786](https://github.com/awslabs/aws-cdk/issues/2786)
+* **lambda:** Expose $LATEST function version ([#2792](https://github.com/awslabs/aws-cdk/issues/2792)) ([55d1bc8](https://github.com/awslabs/aws-cdk/commit/55d1bc8)), closes [#2776](https://github.com/awslabs/aws-cdk/issues/2776)
+* **s3:** add CORS Property to S3 Bucket ([#2101](https://github.com/awslabs/aws-cdk/issues/2101)) ([#2843](https://github.com/awslabs/aws-cdk/issues/2843)) ([1a386d8](https://github.com/awslabs/aws-cdk/commit/1a386d8))
+* **s3:** add missing storage classes and API cleanups ([#2834](https://github.com/awslabs/aws-cdk/issues/2834)) ([5cd9609](https://github.com/awslabs/aws-cdk/commit/5cd9609)), closes [#2708](https://github.com/awslabs/aws-cdk/issues/2708)
+* **stepfunctions:** add grantStartExecution() ([#2793](https://github.com/awslabs/aws-cdk/issues/2793)) ([da32176](https://github.com/awslabs/aws-cdk/commit/da32176))
+* **stepfunctions:** add support for AmazonSageMaker APIs ([#2808](https://github.com/awslabs/aws-cdk/issues/2808)) ([8b1f3ed](https://github.com/awslabs/aws-cdk/commit/8b1f3ed)), closes [#1314](https://github.com/awslabs/aws-cdk/issues/1314)
+* **stepfunctions:** waitForTaskToken for Lambda, SQS, SNS ([#2686](https://github.com/awslabs/aws-cdk/issues/2686)) ([d017a14](https://github.com/awslabs/aws-cdk/commit/d017a14)), closes [#2658](https://github.com/awslabs/aws-cdk/issues/2658) [#2735](https://github.com/awslabs/aws-cdk/issues/2735)
+* formalize the concept of physical names, and use them for cross-environment CodePipelines. ([#1924](https://github.com/awslabs/aws-cdk/issues/1924)) ([6daaca8](https://github.com/awslabs/aws-cdk/commit/6daaca8))
+
+
+### BREAKING CHANGES
+
+* **assets:** `AssetProps.packaging` has been removed and is now automatically discovered based on the file type.
+* **assets:** `ZipDirectoryAsset` has been removed, use `aws-s3-assets.Asset`.
+* **assets:** `FileAsset` has been removed, use `aws-s3-assets.Asset`.
+* **lambda:** `Code.directory` and `Code.file` have been removed. Use `Code.asset`.
+* **assets-docker:** The module has been renamed to **aws-ecr-assets**
+* **ecs:** the property that specifies the type of EC2 AMI optimized for ECS was renamed to `hardwareType` from `hwType`.
+* **codebuild:** the method addToRoleInlinePolicy in CodeBuild's Project class has been removed.
+* **dynamodb:** `TableOptions.pitrEnabled` renamed to `pointInTimeRecovery`.
+* **dynamodb:** `TableOptions.sseEnabled` renamed to `serverSideEncryption`.
+* **dynamodb:** `TableOptions.ttlAttributeName` renamed to `timeToLiveAttribute`.
+* **dynamodb:** `TableOptions.streamSpecification` renamed `stream`.
+* **ecs:** `ContainerImage.fromAsset()` now takes only build directory
+  directly (no need to pass `scope` or `id` anymore).
+* **secretsmanager:** `ISecret.secretJsonValue` renamed to `secretValueFromJson`.
+* **ssm:** `ParameterStoreString` has been removed. Use `StringParameter.fromStringParameterAttributes`.
+* **ssm:** `ParameterStoreSecureString` has been removed. Use `StringParameter.fromSecureStringParameterAttributes`.
+* **ssm:** `ParameterOptions.name` was renamed to `parameterName`.
+* **logs:** `newStream` renamed to `addStream` and doesn't need a scope
+* **logs:** `newSubscriptionFilter` renamed to `addSubscriptionFilter` and doesn't need a scope
+* **logs:** `newMetricFilter` renamed to `addMetricFilter` and doesn't need a scope
+* **logs:** `NewSubscriptionFilterProps` renamed to `SubscriptionProps`
+* **logs:** `NewLogStreamProps` renamed to `LogStreamOptions`
+* **logs:** `NewMetricFilterProps` renamed to `MetricFilterOptions`
+* **logs:** `JSONPattern` renamed to `JsonPattern`
+* **apigateway:** `MethodOptions.authorizerId` is now called `authorizer` and accepts an `IAuthorizer` which is a placeholder interface for the authorizer resource.
+* **apigateway:** `restapi.executeApiArn` renamed to `arnForExecuteApi`.
+* **apigateway:** `restapi.latestDeployment` and `deploymentStage` are now read-only.
+* **events**: `EventPattern.detail` is now a map.
+* **events**: `scheduleExpression: string` is now `schedule: Schedule`.
+* multiple modules have been changed to use `cdk.RemovalPolicy`
+to configure the resource's removal policy.
+* **core:** `applyRemovalPolicy` is now `CfnResource.applyRemovalPolicy`.
+* **core:** `RemovalPolicy.Orphan` has been renamed to `Retain`.
+* **core:** `RemovalPolicy.Forbid` has been removed, use `Retain`.
+* **ecr:** `RepositoryProps.retain` is now `removalPolicy`, and defaults to `Retain` instead of remove since ECR is a stateful resource
+* **kms:** `KeyProps.retain` is now `removalPolicy`
+* **logs:** `LogGroupProps.retainLogGroup` is now `removalPolicy`
+* **logs:** `LogStreamProps.retainLogStream` is now `removalPolicy`
+* **rds:** `DatabaseClusterProps.deleteReplacePolicy` is now `removalPolicy`
+* **rds:** `DatabaseInstanceNewProps.deleteReplacePolicy` is now `removalPolicy`
+* **codebuild:** rename BuildSource to Source, S3BucketSource to S3Source, BuildArtifacts to Artifacts, S3BucketBuildArtifacts to S3Artifacts
+* **codebuild:** the classes CodePipelineBuildSource, CodePipelineBuildArtifacts, NoBuildSource, and NoBuildArtifacts have been removed
+* **codebuild:** rename buildScriptAsset and buildScriptAssetEntrypoint to buildScript and buildScriptEntrypoint, respectively
+* **cli:** All L1 ("Cfn") Resources attributes are now prefixed with
+`attr` instead of the resource type. For example, in S3 `bucket.bucketArn` is now `bucket.attrArn`.
+* `propertyOverrides` has been removed from all "Cfn" resources, instead
+users can now read/write resource properties directly on the resource class. For example, instead of `lambda.propertyOverrides.runtime` just use `lambda.runtime`.
+* **codepipeline:** the property designating the name of the stage when creating a CodePipeline is now called `stageName` instead of `name`
+* **codepipeline:** the output and extraOutputs properties of the CodeBuildAction were merged into one property, outputs.
+* **lambda:**
+  - Renamed `Function.addLayer` to `addLayers` and made it variadic
+  - Removed `IFunction.handler` property
+  - Removed `IVersion.versionArn` property (the value is at `functionArn`)
+  - Removed `SingletonLayerVersion`
+  - Stopped exporting `LogRetention`
+* **cli:** if an app includes more than one stack "cdk deploy" and "cdk destroy" now require that an explicit selector will be passed. Use "cdk deploy '*'" if you want to select all stacks.
+* **iam**: `PolicyStatement` no longer has a fluid API, and accepts a
+  props object to be able to set the important fields.
+* **iam**: rename `ImportedResourcePrincipal` to `UnknownPrincipal`.
+* **iam**: `managedPolicyArns` renamed to `managedPolicies`, takes
+  return value from `ManagedPolicy.fromAwsManagedPolicyName()`.
+* **iam**: `PolicyDocument.postProcess()` is now removed.
+* **iam**: `PolicyDocument.addStatement()` renamed to `addStatements`.
+* **iam**: `PolicyStatement` is no longer `IResolvable`, call `.toStatementJson()`
+  to retrieve the IAM policy statement JSON.
+* **iam**:  `AwsPrincipal` has been removed, use `ArnPrincipal` instead.
+* **s3:** `s3.StorageClass` is now an enum-like class instead of a regular
+enum. This means that you need to call `.value` in order to obtain it's value.
+* **s3:** `s3.Coordinates` renamed to `s3.Location`
+* **codepipeline:** `Artifact.s3Coordinates` renamed to `Artifact.s3Location`.
+* **codebuild:** buildSpec argument is now a `BuildSpec` object.
+* **lambda:** `lambda.Runtime.NodeJS*` are now `lambda.Runtime.Nodejs*`
+* **core:** multiple changes to the `Stack` API
+* **core:** `stack.name` renamed to `stack.stackName`
+* **core:** `stack.stackName` will return the concrete stack name. Use `Aws.stackName` to indicate { Ref: "AWS::StackName" }.
+* **core:** `stack.account` and `stack.region` will return the concrete account/region only if they are explicitly specified when the stack is defined (under the `env` prop). Otherwise, they will return a token that resolves to the AWS::AccountId and AWS::Region intrinsic references. Use `Context.getDefaultAccount()` and `Context.getDefaultRegion()` to obtain the defaults passed through the toolkit in case those are needed. Use `Token.isUnresolved(v)` to check if you have a concrete or intrinsic.
+* **core:** `stack.logicalId` has been removed. Use `stack.getLogicalId()`
+* **core:** `stack.env` has been removed, use `stack.account`, `stack.region` and `stack.environment` instead
+* **core:** `stack.accountId` renamed to `stack.account` (to allow treating account more abstractly)
+* **core:** `AvailabilityZoneProvider` can now be accessed through `Context.getAvailabilityZones()`
+* **core:** `SSMParameterProvider` can now be accessed through `Context.getSsmParameter()`
+* **core:** `parseArn` is now `Arn.parse`
+* **core:** `arnFromComponents` is now `arn.format`
+* **core:** `node.lock` and `node.unlock` are now private
+* **core:** `stack.requireRegion` and `requireAccountId` have been removed. Use `Token.unresolved(stack.region)` instead
+* **core:** `stack.parentApp` have been removed. Use `App.isApp(stack.node.root)` instead.
+* **core:** `stack.missingContext` is now private
+* **core:** `stack.renameLogical` have been renamed to `stack.renameLogicalId`
+* **core:** `IAddressingScheme`, `HashedAddressingScheme` and `LogicalIDs` are now internal. Override `Stack.allocateLogicalId` to customize how logical IDs are allocated to resources.
+* **cli:** The CLI no longer accepts `--rename`, and the stack
+                 names are now immutable on the stack artifact.
+* **sns:** using a queue, lambda, email, URL as SNS Subscriber now
+requires an integration object from the `@aws-cdk/aws-sns-subscribers`
+package.
+* **ecs-patterns:** Renamed QueueWorkerService for base, ec2 and fargate to QueueProcessingService, QueueProcessingEc2Service, and QueueProcessingFargateService.
+* **iam:** `roleName` in `RoleProps` is now of type `PhysicalName`
+* **s3:** `bucketName` in `BucketProps` is now of type `PhysicalName`
+* **codebuild:** `roleName` in `RoleProps` is now of type `PhysicalName`
+
+
+
+## [0.34.0](https://github.com/awslabs/aws-cdk/compare/v0.33.0...v0.34.0) (2019-06-07)
+
+### Bug Fixes
+
+* **build:** Correct buildspec so it does not fail ([#2737](https://github.com/awslabs/aws-cdk/issues/2737)) ([e362ac8](https://github.com/awslabs/aws-cdk/commit/e362ac8))
+* **certificatemanager:** correct certificateArn typo in the README ([#2712](https://github.com/awslabs/aws-cdk/issues/2712)) ([2bfc1c2](https://github.com/awslabs/aws-cdk/commit/2bfc1c2))
+* **cli:** don't fail if region cannot be determined ([#2721](https://github.com/awslabs/aws-cdk/issues/2721)) ([0c72ef3](https://github.com/awslabs/aws-cdk/commit/0c72ef3)), closes [#2697](https://github.com/awslabs/aws-cdk/issues/2697)
+* **cli:** remove support for applets ([#2691](https://github.com/awslabs/aws-cdk/issues/2691)) ([0997ee2](https://github.com/awslabs/aws-cdk/commit/0997ee2))
+* **cloudwatch:** move SNS Alarm Action to `aws-cloudwatch-actions` ([#2688](https://github.com/awslabs/aws-cdk/issues/2688)) ([e3df21a](https://github.com/awslabs/aws-cdk/commit/e3df21a))
+* **codebuild:** grant the Project's Role permissions to the KMS Key if it was passed. ([#2715](https://github.com/awslabs/aws-cdk/issues/2715)) ([4e12fe6](https://github.com/awslabs/aws-cdk/commit/4e12fe6))
+* **core:** apply overrides after rendering properties ([#2685](https://github.com/awslabs/aws-cdk/issues/2685)) ([f2636e5](https://github.com/awslabs/aws-cdk/commit/f2636e5)), closes [#2677](https://github.com/awslabs/aws-cdk/issues/2677)
+* **core:** Make filterUndefined null-safe ([#2789](https://github.com/awslabs/aws-cdk/issues/2789)) ([e4fb811](https://github.com/awslabs/aws-cdk/commit/e4fb811)), closes [awslabs/jsii#523](https://github.com/awslabs/jsii/issues/523)
+* **ecs:** remove LoadBalancedFargateServiceApplet, no longer supported ([#2779](https://github.com/awslabs/aws-cdk/issues/2779)) ([a610017](https://github.com/awslabs/aws-cdk/commit/a610017))
+* **ecs-patterns:** expose service on queue worker services ([#2780](https://github.com/awslabs/aws-cdk/issues/2780)) ([6d83cb9](https://github.com/awslabs/aws-cdk/commit/6d83cb9))
+* **pkglint:** Adjust stability banner style ([#2768](https://github.com/awslabs/aws-cdk/issues/2768)) ([da94d8b](https://github.com/awslabs/aws-cdk/commit/da94d8b))
+* **route53:** support zone roots as record names ([#2705](https://github.com/awslabs/aws-cdk/issues/2705)) ([08a2852](https://github.com/awslabs/aws-cdk/commit/08a2852))
+* **stepfunctions:** improve Task payload encoding ([#2706](https://github.com/awslabs/aws-cdk/issues/2706)) ([1c13faa](https://github.com/awslabs/aws-cdk/commit/1c13faa))
+
+
+### Code Refactoring
+
+* Construct props must not use the 'any' type (awslint:props-no-any) ([#2701](https://github.com/awslabs/aws-cdk/issues/2701)) ([cb2b334](https://github.com/awslabs/aws-cdk/commit/cb2b334)), closes [#2673](https://github.com/awslabs/aws-cdk/issues/2673)
+* remove deprecated modules ([#2693](https://github.com/awslabs/aws-cdk/issues/2693)) ([421bf6d](https://github.com/awslabs/aws-cdk/commit/421bf6d))
+* **core:** improvements to Construct API ([#2767](https://github.com/awslabs/aws-cdk/issues/2767)) ([3f7a0ad](https://github.com/awslabs/aws-cdk/commit/3f7a0ad)), closes [#1934](https://github.com/awslabs/aws-cdk/issues/1934) [#2766](https://github.com/awslabs/aws-cdk/issues/2766)
+* **core:** misc cleanups to App-related APIs ([#2731](https://github.com/awslabs/aws-cdk/issues/2731)) ([b2e1964](https://github.com/awslabs/aws-cdk/commit/b2e1964)), closes [#1891](https://github.com/awslabs/aws-cdk/issues/1891) [#2750](https://github.com/awslabs/aws-cdk/issues/2750)
+* **kms:** Rename EncryptionKeyAlias to Alias ([#2769](https://github.com/awslabs/aws-cdk/issues/2769)) ([da8e1d5](https://github.com/awslabs/aws-cdk/commit/da8e1d5))
+
+
+### Features
+
+* **core:** node.defaultChild as a shortcut to escape hatch ([#2684](https://github.com/awslabs/aws-cdk/issues/2684)) ([8cd3c23](https://github.com/awslabs/aws-cdk/commit/8cd3c23)), closes [#2290](https://github.com/awslabs/aws-cdk/issues/2290)
+* **core+cli:** support tagging of stacks ([#2185](https://github.com/awslabs/aws-cdk/issues/2185)) ([d0e19d5](https://github.com/awslabs/aws-cdk/commit/d0e19d5)), closes [#932](https://github.com/awslabs/aws-cdk/issues/932)
+* **event-targets:** add support for fargate/awsvpc tasks ([#2707](https://github.com/awslabs/aws-cdk/issues/2707)) ([2754dde](https://github.com/awslabs/aws-cdk/commit/2754dde))
+* **events:** support SQS queues as rule targets ([#2683](https://github.com/awslabs/aws-cdk/issues/2683)) ([078e34a](https://github.com/awslabs/aws-cdk/commit/078e34a)), closes [#1786](https://github.com/awslabs/aws-cdk/issues/1786)
+* **rds:** add engineVersion to DatabaseCluster ([#2698](https://github.com/awslabs/aws-cdk/issues/2698)) ([0593d51](https://github.com/awslabs/aws-cdk/commit/0593d51)), closes [#2212](https://github.com/awslabs/aws-cdk/issues/2212)
+* **rds:** add support for database instances ([#2187](https://github.com/awslabs/aws-cdk/issues/2187)) ([b864041](https://github.com/awslabs/aws-cdk/commit/b864041)), closes [#2075](https://github.com/awslabs/aws-cdk/issues/2075) [#1693](https://github.com/awslabs/aws-cdk/issues/1693)
+* **route53:** improve constructs for basic records ([#2741](https://github.com/awslabs/aws-cdk/issues/2741)) ([696f53f](https://github.com/awslabs/aws-cdk/commit/696f53f))
+* **s3:** default to KMS if encryptionKey is specified ([#2719](https://github.com/awslabs/aws-cdk/issues/2719)) ([ae4a04f](https://github.com/awslabs/aws-cdk/commit/ae4a04f)), closes [#2714](https://github.com/awslabs/aws-cdk/issues/2714)
+* **tokens:** enable type coercion ([#2680](https://github.com/awslabs/aws-cdk/issues/2680)) ([0f54698](https://github.com/awslabs/aws-cdk/commit/0f54698)), closes [#2679](https://github.com/awslabs/aws-cdk/issues/2679)
+
+
+### BREAKING CHANGES
+
+* **route53:** `recordValue: string` prop in `route53.TxtRecord` changed to `values: string[]`
+* `recordValue` prop in `route53.CnameRecord` renamed to `domainName`
+* `route53.AliasRecord` has been removed, use `route53.ARecord` or `route53.AaaaRecord` with the `target` prop.
+* **kms:** The `EncryptionKeyAlias` class was renamed to `Alias`.
+Associated types (such as `EncryptionKeyAliasProps`) were renamed in the
+same way.
+* **cli:** This release requires CDK CLI >= 0.34.0
+* **core:** `App.run()` was renamed to `App.synth()` (soft deprecation, it will be removed in the next release).
+* **core:** `node.stack` is now `Stack.of(construct)` (fixes #2766)
+* **core:** `node.resolve` has been moved to `stack.resolve`.
+* **core:** `node.stringifyJson` has been moved to `stack.stringifyJson`.
+* **core:** `node.validateTree` is now `ConstructNode.validate(node)`
+* **core:** `node.prepareTree` is now `ConstructNode.prepare(node)`
+* **core:** `node.getContext` is now `node.tryGetContext`
+* **core:** `node.recordReference` is now `node.addReference`
+* **core:** `node.apply` is now `node.applyAspect`
+* **core:** `node.ancestors()` is now `node.scopes`
+* **core:** `node.required` has been removed.
+* **core:** `node.typename` has been removed.
+* **core:** `node.addChild` is now private
+* **core:** `node.findReferences()` is now `node.references`
+* **core:** `node.findDependencies()` is now `node.dependencies`
+* **core:** `stack.dependencies()` is now `stack.dependencies`
+* **core:** `CfnElement.stackPath` has been removed.
+* **core:** `CloudFormationLang` is now internal (use `stack.toJsonString()`)
+* **cloudwatch:** using an SNS topic as CloudWatch Alarm Actxion now
+requires an integration object from the `@aws-cdk/aws-cloudwatch-actions`
+package.
+* **event-targets:** `targets.EcsEc2Task` renamed to `targets.EcsTask`
+* SNS - Subscription `endpoint` is now type `string` (previously `any`)
+* Step Functions - `result` in the Pass state is now type `map` (previously `any`)
+* the following modules are no longer released: `@aws-cdk/applet-js`, `@aws-cdk/aws-autoscaling-api`, `@aws-cdk/aws-codedeploy-api`
+* **cli:** applets are no longer supported as an app type, use "decdk" instead.
+* **core:** Properties passed to `addPropertyOverride` should match in capitalization to the CloudFormation schema (normally pascal case). For example, `addPropertyOverride('accessControl', 'xxx')` should now be `addPropertyOverride('AccessControl', 'xxx')`.
+* **rds**: `rds.RotationSingleUser` renamed to `rds.SecretRotation`
+* **rds**: `rds.ClusterParameterGroup` no longer has `setParameter()` and `removeParameter()` methods, use the parameters prop directly in the constructor instead.
+
+
+
+## [0.33.0](https://github.com/awslabs/aws-cdk/compare/v0.32.0...v0.33.0) (2019-05-30)
+
+**IMPORTANT**: apps created with the CDK version 0.33.0 and above cannot be used with an older CLI version.
+
+### Bug Fixes
+
+* **core:** Fn.cidr should return a list and not a string ([#2678](https://github.com/awslabs/aws-cdk/issues/2678)) ([9d2ea2a](https://github.com/awslabs/aws-cdk/commit/9d2ea2a)), closes [#2671](https://github.com/awslabs/aws-cdk/issues/2671)
+* **cli:** fix ts-node usage on Windows ([#2660](https://github.com/awslabs/aws-cdk/issues/2660)) ([5fe0af5](https://github.com/awslabs/aws-cdk/commit/5fe0af5))
+* **cli:** make `cdk docs` open the new API reference ([#2633](https://github.com/awslabs/aws-cdk/issues/2633)) ([6450758](https://github.com/awslabs/aws-cdk/commit/6450758))
+* **cli:** correctly pass build args to docker build ([#2634](https://github.com/awslabs/aws-cdk/issues/2634)) ([9c58d6f](https://github.com/awslabs/aws-cdk/commit/9c58d6f))
+* **core:** hide `dependencyRoots` from public API ([#2668](https://github.com/awslabs/aws-cdk/issues/2668)) ([2ba5ad2](https://github.com/awslabs/aws-cdk/commit/2ba5ad2)), closes [#2348](https://github.com/awslabs/aws-cdk/issues/2348)
+* **autoscaling:** move lifecycle hook targets to their own module ([#2628](https://github.com/awslabs/aws-cdk/issues/2628)) ([b282132](https://github.com/awslabs/aws-cdk/commit/b282132)), closes [#2447](https://github.com/awslabs/aws-cdk/issues/2447)
+* **codepipeline:** no longer allow providing an index when adding a Stage to a Pipeline. ([#2624](https://github.com/awslabs/aws-cdk/issues/2624)) ([ce39b12](https://github.com/awslabs/aws-cdk/commit/ce39b12))
+* **codepipeline-actions:** correctly serialize the userParameters passed to the Lambda invoke Action. ([#2537](https://github.com/awslabs/aws-cdk/issues/2537)) ([ceaf54a](https://github.com/awslabs/aws-cdk/commit/ceaf54a))
+* **cx-api:** improve compatibility messages for cli <=> app ([#2676](https://github.com/awslabs/aws-cdk/issues/2676)) ([38a9894](https://github.com/awslabs/aws-cdk/commit/38a9894))
+* **ecs:** move high level ECS constructs into aws-ecs-patterns ([#2623](https://github.com/awslabs/aws-cdk/issues/2623)) ([f901313](https://github.com/awslabs/aws-cdk/commit/f901313))
+* **logs:** move log destinations into 'aws-logs-destinations' ([#2655](https://github.com/awslabs/aws-cdk/issues/2655)) ([01601c2](https://github.com/awslabs/aws-cdk/commit/01601c2)), closes [#2444](https://github.com/awslabs/aws-cdk/issues/2444)
+* **s3:** move notification destinations into their own module ([#2659](https://github.com/awslabs/aws-cdk/issues/2659)) ([185951c](https://github.com/awslabs/aws-cdk/commit/185951c)), closes [#2445](https://github.com/awslabs/aws-cdk/issues/2445)
+
+### Features
+
+* **cli:** decouple "synth" and "deploy" through cloud assemblies ([#2636](https://github.com/awslabs/aws-cdk/issues/2636)) ([c52bcfc](https://github.com/awslabs/aws-cdk/commit/c52bcfc)), closes [#1893](https://github.com/awslabs/aws-cdk/issues/1893) [#2093](https://github.com/awslabs/aws-cdk/issues/2093) [#1954](https://github.com/awslabs/aws-cdk/issues/1954) [#2310](https://github.com/awslabs/aws-cdk/issues/2310) [#2073](https://github.com/awslabs/aws-cdk/issues/2073) [#1245](https://github.com/awslabs/aws-cdk/issues/1245) [#341](https://github.com/awslabs/aws-cdk/issues/341) [#956](https://github.com/awslabs/aws-cdk/issues/956) [#233](https://github.com/awslabs/aws-cdk/issues/233) [#2016](https://github.com/awslabs/aws-cdk/issues/2016)
+* **acm:** allow specifying region for validated certificates ([#2626](https://github.com/awslabs/aws-cdk/issues/2626)) ([1a7d4db](https://github.com/awslabs/aws-cdk/commit/1a7d4db))
+* **apigateway:** support for UsagePlan, ApiKey, UsagePlanKey ([#2564](https://github.com/awslabs/aws-cdk/issues/2564)) ([203f114](https://github.com/awslabs/aws-cdk/commit/203f114)), closes [#723](https://github.com/awslabs/aws-cdk/issues/723)
+* **autoscaling:** allow setting spotPrice ([#2571](https://github.com/awslabs/aws-cdk/issues/2571)) ([d640055](https://github.com/awslabs/aws-cdk/commit/d640055)), closes [#2208](https://github.com/awslabs/aws-cdk/issues/2208)
+* **cfn:** update CloudFormation spec to v3.3.0 ([#2669](https://github.com/awslabs/aws-cdk/issues/2669)) ([0f553ee](https://github.com/awslabs/aws-cdk/commit/0f553ee))
+* **cli:** disable `noUnusedLocals` and `noUnusedParameters` from typescript templates ([#2654](https://github.com/awslabs/aws-cdk/issues/2654)) ([b061826](https://github.com/awslabs/aws-cdk/commit/b061826))
+* **cloudformation:** aws-api custom resource ([#1850](https://github.com/awslabs/aws-cdk/issues/1850)) ([9a48b66](https://github.com/awslabs/aws-cdk/commit/9a48b66))
+* **cloudwatch:** support all Y-Axis properties ([#2406](https://github.com/awslabs/aws-cdk/issues/2406)) ([8904c3e](https://github.com/awslabs/aws-cdk/commit/8904c3e)), closes [#2385](https://github.com/awslabs/aws-cdk/issues/2385)
+
+
+### BREAKING CHANGES
+
+* **logs:** using a Lambda or Kinesis Stream as CloudWatch log subscription destination now requires an integration object from the `@aws-cdk/aws-logs-destinations` package.
+* **codepipeline-actions:** removed the `addPutJobResultPolicy` property when creating LambdaInvokeAction.
+* **cli:** `--interactive` has been removed
+* **cli:** `--numbered` has been removed
+* **cli:** `--staging` is now a boolean flag that indicates whether assets should be copied to the `--output` directory or directly referenced (`--no-staging` is useful for e.g. local debugging with SAM CLI)
+* **assets:** Assets (e.g. Lambda code assets) are now referenced relative to the output directory.
+* **assert:** `SynthUtils.templateForStackName` has been removed (use `SynthUtils.synthesize(stack).template`).
+* **cx-api:** `cxapi.SynthesizedStack` renamed to `cxapi.CloudFormationStackArtifact` with multiple API changes.
+* **core:** `cdk.App.run()` now returns a `cxapi.CloudAssembly` instead of `cdk.ISynthesisSession`.
+* **s3:** using a Topic, Queue or Lambda as bucket notification destination now requires an integration object from the `@aws-cdk/aws-s3-notifications` package.
+* **autoscaling:** using a Topic, Queue or Lambda as Lifecycle Hook Target now requires an integration object from the `@aws-cdk/aws-autoscaling-hooktargets` package.
+* **codepipeline:** the property atIndex has been removed from the StagePlacement interface.
+* **aws-ecs:** These changes move all L3 and higher constructs out of the aws-ecs module into the aws-ecs-patterns module. The following constructs have been moved into the aws-ecs-patterns module: `EcsQueueWorkerService`, `FargateQueueWorkerService`, `LoadBalancedEcsService`, `LoadBalancedFargateService` and `LoadBalancedFargateServiceApplets`.
+* **cloudwatch:** rename `leftAxisRange` => `leftYAxis`, `rightAxisRange` => `rightYAxis`, rename `YAxisRange` => `YAxisProps`.
+
 
 ## [0.32.0](https://github.com/awslabs/aws-cdk/compare/v0.31.0...v0.32.0) (2019-05-24)
 

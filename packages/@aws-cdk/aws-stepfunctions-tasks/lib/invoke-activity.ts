@@ -1,4 +1,5 @@
 import sfn = require('@aws-cdk/aws-stepfunctions');
+import { Duration } from '@aws-cdk/cdk';
 
 /**
  * Properties for FunctionTask
@@ -11,7 +12,7 @@ export interface InvokeActivityProps {
    *
    * @default No heart beat timeout
    */
-  readonly heartbeatSeconds?: number;
+  readonly heartbeat?: Duration;
 }
 
 /**
@@ -24,11 +25,11 @@ export class InvokeActivity implements sfn.IStepFunctionsTask {
   constructor(private readonly activity: sfn.IActivity, private readonly props: InvokeActivityProps = {}) {
   }
 
-  public bind(_task: sfn.Task): sfn.StepFunctionsTaskProperties {
+  public bind(_task: sfn.Task): sfn.StepFunctionsTaskConfig {
     return {
       resourceArn: this.activity.activityArn,
       metricDimensions: { ActivityArn: this.activity.activityArn },
-      heartbeatSeconds: this.props.heartbeatSeconds,
+      heartbeat: this.props.heartbeat,
       // No IAM permissions necessary, execution role implicitly has Activity permissions.
       metricPrefixSingular: 'Activity',
       metricPrefixPlural: 'Activities',

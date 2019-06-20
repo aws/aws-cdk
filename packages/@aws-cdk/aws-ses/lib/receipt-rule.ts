@@ -1,5 +1,5 @@
 import lambda = require('@aws-cdk/aws-lambda');
-import { Construct, IResource, Resource, Token } from '@aws-cdk/cdk';
+import { Construct, IResource, Lazy, PhysicalName, Resource } from '@aws-cdk/cdk';
 import { IReceiptRuleAction, LambdaInvocationType, ReceiptRuleActionProps, ReceiptRuleLambdaAction } from './receipt-rule-action';
 import { IReceiptRuleSet } from './receipt-rule-set';
 import { CfnReceiptRule } from './ses.generated';
@@ -22,12 +22,12 @@ export enum TlsPolicy {
   /**
    * Do not check for TLS.
    */
-  Optional = 'Optional',
+  OPTIONAL = 'Optional',
 
   /**
    * Bounce emails that are not received over TLS.
    */
-  Require = 'Require'
+  REQUIRE = 'Require'
 }
 
 /**
@@ -62,7 +62,7 @@ export interface ReceiptRuleOptions {
    *
    * @default - A CloudFormation generated name.
    */
-  readonly name?: string;
+  readonly receiptRuleName?: PhysicalName;
 
   /**
    * The recipient domains and email addresses that the receipt rule applies to.
@@ -103,7 +103,7 @@ export interface ReceiptRuleProps extends ReceiptRuleOptions {
 export class ReceiptRule extends Resource implements IReceiptRule {
 
   public static fromReceiptRuleName(scope: Construct, id: string, receiptRuleName: string): IReceiptRule {
-    class Import extends Construct implements IReceiptRule {
+    class Import extends Resource implements IReceiptRule {
       public readonly receiptRuleName = receiptRuleName;
     }
     return new Import(scope, id);
@@ -113,14 +113,16 @@ export class ReceiptRule extends Resource implements IReceiptRule {
   private readonly renderedActions = new Array<ReceiptRuleActionProps>();
 
   constructor(scope: Construct, id: string, props: ReceiptRuleProps) {
-    super(scope, id);
+    super(scope, id, {
+      physicalName: props.receiptRuleName,
+    });
 
     const resource = new CfnReceiptRule(this, 'Resource', {
       after: props.after ? props.after.receiptRuleName : undefined,
       rule: {
-        actions: new Token(() => this.getRenderedActions()),
+        actions: Lazy.anyValue({ produce: () => this.getRenderedActions() }),
         enabled: props.enabled === undefined ? true : props.enabled,
-        name: props.name,
+        name: this.physicalName.value,
         recipients: props.recipients,
         scanEnabled: props.scanEnabled,
         tlsPolicy: props.tlsPolicy
@@ -128,7 +130,7 @@ export class ReceiptRule extends Resource implements IReceiptRule {
       ruleSetName: props.ruleSet.receiptRuleSetName
     });
 
-    this.receiptRuleName = resource.receiptRuleName;
+    this.receiptRuleName = resource.refAsString;
 
     if (props.actions) {
       props.actions.forEach(action => this.addAction(action));
@@ -170,7 +172,7 @@ export class DropSpamReceiptRule extends Construct {
     super(scope, id);
 
     const fn = new lambda.SingletonFunction(this, 'Function', {
-      runtime: lambda.Runtime.NodeJS810,
+      runtime: lambda.Runtime.Nodejs810,
       handler: 'index.handler',
       code: lambda.Code.inline(`exports.handler = ${dropSpamCode}`),
       uuid: '224e77f9-a32e-4b4d-ac32-983477abba16'
@@ -180,7 +182,7 @@ export class DropSpamReceiptRule extends Construct {
       actions: [
         new ReceiptRuleLambdaAction({
           function: fn,
-          invocationType: LambdaInvocationType.RequestResponse
+          invocationType: LambdaInvocationType.REQUEST_RESPONSE
         })
       ],
       scanEnabled: true,

@@ -1,13 +1,14 @@
 import ec2 = require('@aws-cdk/aws-ec2');
 import kms = require('@aws-cdk/aws-kms');
 import secretsmanager = require('@aws-cdk/aws-secretsmanager');
-import { Construct, DeletionPolicy, Resource, Token } from '@aws-cdk/cdk';
-import { IClusterParameterGroup } from './cluster-parameter-group';
-import { DatabaseClusterAttributes, Endpoint, IDatabaseCluster } from './cluster-ref';
+import { Construct,   RemovalPolicy, Resource, Token } from '@aws-cdk/cdk';
+import { DatabaseClusterAttributes, IDatabaseCluster } from './cluster-ref';
 import { DatabaseSecret } from './database-secret';
+import { Endpoint } from './endpoint';
+import { IParameterGroup } from './parameter-group';
 import { BackupProps, DatabaseClusterEngine, InstanceProps, Login } from './props';
 import { CfnDBCluster, CfnDBInstance, CfnDBSubnetGroup } from './rds.generated';
-import { DatabaseEngine, RotationSingleUser, RotationSingleUserOptions } from './rotation-single-user';
+import { SecretRotation, SecretRotationApplication, SecretRotationOptions } from './secret-rotation';
 
 /**
  * Properties for a new database cluster
@@ -17,6 +18,13 @@ export interface DatabaseClusterProps {
    * What kind of database to start
    */
   readonly engine: DatabaseClusterEngine;
+
+  /**
+   * What version of the database to start
+   *
+   * @default - The default for the engine is used.
+   */
+  readonly engineVersion?: string;
 
   /**
    * How many replicas/instances to create
@@ -111,15 +119,15 @@ export interface DatabaseClusterProps {
    *
    * @default - No parameter group.
    */
-  readonly parameterGroup?: IClusterParameterGroup;
+  readonly parameterGroup?: IParameterGroup;
 
   /**
-   * The CloudFormation policy to apply when the cluster and its instances
-   * are removed from the stack or replaced during an update.
+   * The removal policy to apply when the cluster and its instances are removed
+   * from the stack or replaced during an update.
    *
    * @default - Retain cluster.
    */
-  readonly deleteReplacePolicy?: DeletionPolicy
+  readonly removalPolicy?: RemovalPolicy
 }
 
 /**
@@ -166,7 +174,7 @@ abstract class DatabaseClusterBase extends Resource implements IDatabaseCluster 
   public asSecretAttachmentTarget(): secretsmanager.SecretAttachmentTargetProps {
     return {
       targetId: this.clusterIdentifier,
-      targetType: secretsmanager.AttachmentTargetType.Cluster
+      targetType: secretsmanager.AttachmentTargetType.CLUSTER
     };
   }
 }
@@ -241,7 +249,7 @@ export class DatabaseCluster extends DatabaseClusterBase {
   /**
    * The database engine of this cluster
    */
-  public readonly engine: DatabaseClusterEngine;
+  private readonly secretRotationApplication: SecretRotationApplication;
 
   /**
    * The VPC where the DB subnet group is created.
@@ -286,24 +294,25 @@ export class DatabaseCluster extends DatabaseClusterBase {
       });
     }
 
-    this.engine = props.engine;
+    this.secretRotationApplication = props.engine.secretRotationApplication;
 
     const cluster = new CfnDBCluster(this, 'Resource', {
       // Basic
-      engine: this.engine,
+      engine: props.engine.name,
+      engineVersion: props.engineVersion,
       dbClusterIdentifier: props.clusterIdentifier,
-      dbSubnetGroupName: subnetGroup.ref,
+      dbSubnetGroupName: subnetGroup.refAsString,
       vpcSecurityGroupIds: [this.securityGroupId],
       port: props.port,
       dbClusterParameterGroupName: props.parameterGroup && props.parameterGroup.parameterGroupName,
       // Admin
-      masterUsername: secret ? secret.secretJsonValue('username').toString() : props.masterUser.username,
+      masterUsername: secret ? secret.secretValueFromJson('username').toString() : props.masterUser.username,
       masterUserPassword: secret
-        ? secret.secretJsonValue('password').toString()
+        ? secret.secretValueFromJson('password').toString()
         : (props.masterUser.password
             ? props.masterUser.password.toString()
             : undefined),
-      backupRetentionPeriod: props.backup && props.backup.retentionDays,
+      backupRetentionPeriod: props.backup && props.backup.retention && props.backup.retention.toDays(),
       preferredBackupWindow: props.backup && props.backup.preferredWindow,
       preferredMaintenanceWindow: props.preferredMaintenanceWindow,
       databaseName: props.defaultDatabaseName,
@@ -312,16 +321,16 @@ export class DatabaseCluster extends DatabaseClusterBase {
       storageEncrypted: props.kmsKey ? true : props.storageEncrypted
     });
 
-    const deleteReplacePolicy = props.deleteReplacePolicy || DeletionPolicy.Retain;
-    cluster.options.deletionPolicy = deleteReplacePolicy;
-    cluster.options.updateReplacePolicy = deleteReplacePolicy;
+    cluster.applyRemovalPolicy(props.removalPolicy, {
+      applyToUpdateReplacePolicy: true
+    });
 
-    this.clusterIdentifier = cluster.ref;
+    this.clusterIdentifier = cluster.refAsString;
 
     // create a number token that represents the port of the cluster
-    const portAttribute = new Token(() => cluster.dbClusterEndpointPort).toNumber();
-    this.clusterEndpoint = new Endpoint(cluster.dbClusterEndpointAddress, portAttribute);
-    this.clusterReadEndpoint = new Endpoint(cluster.dbClusterReadEndpointAddress, portAttribute);
+    const portAttribute = Token.asNumber(cluster.attrEndpointPort);
+    this.clusterEndpoint = new Endpoint(cluster.attrEndpointAddress, portAttribute);
+    this.clusterReadEndpoint = new Endpoint(cluster.attrEndpointAddress, portAttribute);
 
     if (secret) {
       this.secret = secret.addTargetAttachment('AttachedSecret', {
@@ -343,29 +352,32 @@ export class DatabaseCluster extends DatabaseClusterBase {
                      props.clusterIdentifier != null ? `${props.clusterIdentifier}instance${instanceIndex}` :
                      undefined;
 
-      const publiclyAccessible = props.instanceProps.vpcSubnets && props.instanceProps.vpcSubnets.subnetType === ec2.SubnetType.Public;
+      const publiclyAccessible = props.instanceProps.vpcSubnets && props.instanceProps.vpcSubnets.subnetType === ec2.SubnetType.PUBLIC;
 
       const instance = new CfnDBInstance(this, `Instance${instanceIndex}`, {
         // Link to cluster
-        engine: props.engine,
-        dbClusterIdentifier: cluster.ref,
+        engine: props.engine.name,
+        engineVersion: props.engineVersion,
+        dbClusterIdentifier: cluster.refAsString,
         dbInstanceIdentifier: instanceIdentifier,
         // Instance properties
         dbInstanceClass: databaseInstanceType(props.instanceProps.instanceType),
         publiclyAccessible,
         // This is already set on the Cluster. Unclear to me whether it should be repeated or not. Better yes.
-        dbSubnetGroupName: subnetGroup.ref,
+        dbSubnetGroupName: subnetGroup.refAsString,
+        dbParameterGroupName: props.instanceProps.parameterGroup && props.instanceProps.parameterGroup.parameterGroupName,
       });
 
-      instance.options.deletionPolicy = deleteReplacePolicy;
-      instance.options.updateReplacePolicy = deleteReplacePolicy;
+      instance.applyRemovalPolicy(props.removalPolicy, {
+        applyToUpdateReplacePolicy: true
+      });
 
       // We must have a dependency on the NAT gateway provider here to create
       // things in the right order.
       instance.node.addDependency(internetConnected);
 
-      this.instanceIdentifiers.push(instance.ref);
-      this.instanceEndpoints.push(new Endpoint(instance.dbInstanceEndpointAddress, portAttribute));
+      this.instanceIdentifiers.push(instance.refAsString);
+      this.instanceEndpoints.push(new Endpoint(instance.attrEndpointAddress, portAttribute));
     }
 
     const defaultPortRange = new ec2.TcpPort(this.clusterEndpoint.port);
@@ -375,13 +387,13 @@ export class DatabaseCluster extends DatabaseClusterBase {
   /**
    * Adds the single user rotation of the master password to this cluster.
    */
-  public addRotationSingleUser(id: string, options: RotationSingleUserOptions = {}): RotationSingleUser {
+  public addRotationSingleUser(id: string, options: SecretRotationOptions = {}): SecretRotation {
     if (!this.secret) {
       throw new Error('Cannot add single user rotation for a cluster without secret.');
     }
-    return new RotationSingleUser(this, id, {
+    return new SecretRotation(this, id, {
       secret: this.secret,
-      engine: toDatabaseEngine(this.engine),
+      application: this.secretRotationApplication,
       vpc: this.vpc,
       vpcSubnets: this.vpcSubnets,
       target: this,
@@ -395,21 +407,4 @@ export class DatabaseCluster extends DatabaseClusterBase {
  */
 function databaseInstanceType(instanceType: ec2.InstanceType) {
   return 'db.' + instanceType.toString();
-}
-
-/**
- * Transforms a DatbaseClusterEngine to a DatabaseEngine.
- *
- * @param engine the engine to transform
- */
-function toDatabaseEngine(engine: DatabaseClusterEngine): DatabaseEngine {
-  switch (engine) {
-    case DatabaseClusterEngine.Aurora:
-    case DatabaseClusterEngine.AuroraMysql:
-      return DatabaseEngine.Mysql;
-    case DatabaseClusterEngine.AuroraPostgresql:
-      return DatabaseEngine.Postgres;
-    default:
-      throw new Error('Unknown engine');
-  }
 }

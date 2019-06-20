@@ -1,9 +1,19 @@
-## S3 Bucket Notifications API
+## S3 Bucket Notifications Destinations
+<!--BEGIN STABILITY BANNER-->
 
-This module includes the API that constructs should implement in order to be
-able to be used as destinations for bucket notifications.
+---
 
-To implement the `IBucketNotificationDestination`, a construct should implement
-a method `asBucketNotificationDestination(bucketArn, bucketId)` which registers
-this resource as a destination for bucket notifications _for the specified
-bucket_ and returns the ARN of the destination and it's type.
+![Stability: Experimental](https://img.shields.io/badge/stability-Experimental-important.svg?style=for-the-badge)
+
+> **This is a _developer preview_ (public beta) module. Releases might lack important features and might have
+> future breaking changes.**
+> 
+> This API is still under active development and subject to non-backward
+> compatible changes or removal in any future version. Use of the API is not recommended in production
+> environments. Experimental APIs are not subject to the Semantic Versioning model.
+
+---
+<!--END STABILITY BANNER-->
+
+This module includes integration classes for using Topics, Queues or Lambdas
+as S3 Notification Destinations.
