@@ -108,6 +108,6 @@ function makeAutoScalingGroup(scope: cdk.Construct) {
     vpc,
     instanceType: new ec2.InstanceType('t2.micro'),
     machineImage: new ec2.AmazonLinuxImage(),
-    updateType: autoscaling.UpdateType.RollingUpdate,
+    updateType: autoscaling.UpdateType.ROLLING_UPDATE,
   });
 }

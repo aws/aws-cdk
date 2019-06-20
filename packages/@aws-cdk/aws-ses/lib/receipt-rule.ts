@@ -22,12 +22,12 @@ export enum TlsPolicy {
   /**
    * Do not check for TLS.
    */
-  Optional = 'Optional',
+  OPTIONAL = 'Optional',
 
   /**
    * Bounce emails that are not received over TLS.
    */
-  Require = 'Require'
+  REQUIRE = 'Require'
 }
 
 /**
@@ -182,7 +182,7 @@ export class DropSpamReceiptRule extends Construct {
       actions: [
         new ReceiptRuleLambdaAction({
           function: fn,
-          invocationType: LambdaInvocationType.RequestResponse
+          invocationType: LambdaInvocationType.REQUEST_RESPONSE
         })
       ],
       scanEnabled: true,

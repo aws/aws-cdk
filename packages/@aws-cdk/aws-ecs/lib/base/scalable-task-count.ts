@@ -36,7 +36,7 @@ export class ScalableTaskCount extends appscaling.BaseScalableAttribute {
    */
   public scaleOnCpuUtilization(id: string, props: CpuUtilizationScalingProps) {
     return super.doScaleToTrackMetric(id, {
-      predefinedMetric: appscaling.PredefinedMetric.ECSServiceAverageCPUUtilization,
+      predefinedMetric: appscaling.PredefinedMetric.ECS_SERVICE_AVERAGE_CPU_UTILIZATION,
       policyName: props.policyName,
       disableScaleIn: props.disableScaleIn,
       targetValue: props.targetUtilizationPercent,
@@ -50,7 +50,7 @@ export class ScalableTaskCount extends appscaling.BaseScalableAttribute {
    */
   public scaleOnMemoryUtilization(id: string, props: MemoryUtilizationScalingProps) {
     return super.doScaleToTrackMetric(id, {
-      predefinedMetric: appscaling.PredefinedMetric.ECSServiceAverageMemoryUtilization,
+      predefinedMetric: appscaling.PredefinedMetric.ECS_SERVICE_AVERAGE_MEMORY_UTILIZATION,
       targetValue: props.targetUtilizationPercent,
       policyName: props.policyName,
       disableScaleIn: props.disableScaleIn,
@@ -67,7 +67,7 @@ export class ScalableTaskCount extends appscaling.BaseScalableAttribute {
        '/' + props.targetGroup.targetGroupFullName;
 
     return super.doScaleToTrackMetric(id, {
-      predefinedMetric: appscaling.PredefinedMetric.ALBRequestCountPerTarget,
+      predefinedMetric: appscaling.PredefinedMetric.ALB_REQUEST_COUNT_PER_TARGET,
       resourceLabel,
       targetValue: props.requestsPerTarget,
       policyName: props.policyName,

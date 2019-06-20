@@ -24,7 +24,7 @@ pipeline.addStage({
   stageName: 'Source',
   actions: [new MockAction({
     actionName: 'CodeCommit',
-    category: codepipeline.ActionCategory.Source,
+    category: codepipeline.ActionCategory.SOURCE,
     provider: 'CodeCommit',
     artifactBounds: { minInputs: 0, maxInputs: 0 , minOutputs: 1, maxOutputs: 1, },
     configuration: {
@@ -37,7 +37,7 @@ pipeline.addStage({
   stageName: 'Build',
   actions: [new MockAction({
     actionName: 'Hello',
-    category: codepipeline.ActionCategory.Approval,
+    category: codepipeline.ActionCategory.APPROVAL,
     provider: 'Manual',
     artifactBounds: { minInputs: 0, maxInputs: 0 , minOutputs: 0, maxOutputs: 0, }})]
 });

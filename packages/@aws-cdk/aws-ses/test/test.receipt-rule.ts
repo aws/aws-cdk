@@ -21,7 +21,7 @@ export = {
           receiptRuleName: PhysicalName.of('SecondRule'),
           recipients: ['hello@aws.com'],
           scanEnabled: true,
-          tlsPolicy: TlsPolicy.Require
+          tlsPolicy: TlsPolicy.REQUIRE
         }
       ]
     });

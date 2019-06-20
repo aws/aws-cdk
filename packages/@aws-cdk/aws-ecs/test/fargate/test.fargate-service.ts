@@ -361,7 +361,7 @@ export = {
       // WHEN
       cluster.addDefaultCloudMapNamespace({
         name: 'foo.com',
-        type: NamespaceType.PrivateDns
+        type: NamespaceType.PRIVATE_DNS
       });
 
       new ecs.FargateService(stack, 'Service', {
@@ -421,7 +421,7 @@ export = {
       // WHEN
       cluster.addDefaultCloudMapNamespace({
         name: 'foo.com',
-        type: NamespaceType.PrivateDns
+        type: NamespaceType.PRIVATE_DNS
       });
 
       new ecs.FargateService(stack, 'Service', {

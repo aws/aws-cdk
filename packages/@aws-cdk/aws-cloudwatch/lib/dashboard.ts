@@ -4,8 +4,8 @@ import { Column, Row } from "./layout";
 import { IWidget } from "./widget";
 
 export enum PeriodOverride {
-  Auto = 'auto',
-  Inherit = 'inherit',
+  AUTO = 'auto',
+  INHERIT = 'inherit',
 }
 
 export interface DashboardProps {

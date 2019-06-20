@@ -110,7 +110,7 @@ export class SagemakerTrainTask implements ec2.IConnectable, sfn.IStepFunctionsT
         // set the default resource config if not defined.
         this.resourceConfig = props.resourceConfig || {
             instanceCount: 1,
-            instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.M4, ec2.InstanceSize.XLarge),
+            instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.M4, ec2.InstanceSize.XLARGE),
             volumeSizeInGB: 10
         };
 
@@ -130,13 +130,13 @@ export class SagemakerTrainTask implements ec2.IConnectable, sfn.IStepFunctionsT
         // set the input mode to 'File' if not defined
         this.algorithmSpecification = ( props.algorithmSpecification.trainingInputMode ) ?
             ( props.algorithmSpecification ) :
-            ( { ...props.algorithmSpecification, trainingInputMode: InputMode.File } );
+            ( { ...props.algorithmSpecification, trainingInputMode: InputMode.FILE } );
 
         // set the S3 Data type of the input data config objects to be 'S3Prefix' if not defined
         this.inputDataConfig = props.inputDataConfig.map(config => {
             if (!config.dataSource.s3DataSource.s3DataType) {
                 return Object.assign({}, config, { dataSource: { s3DataSource:
-                    { ...config.dataSource.s3DataSource, s3DataType: S3DataType.S3Prefix } } });
+                    { ...config.dataSource.s3DataSource, s3DataType: S3DataType.S3_PREFIX } } });
             } else {
                 return config;
             }

@@ -726,7 +726,7 @@ export = {
       });
       const sourceBucket = new s3.Bucket(pipelineStack, 'ArtifactBucket', {
         bucketName: PhysicalName.of('source-bucket'),
-        encryption: s3.BucketEncryption.Kms,
+        encryption: s3.BucketEncryption.KMS,
       });
       const sourceOutput = new codepipeline.Artifact();
       new codepipeline.Pipeline(pipelineStack, 'Pipeline', {

@@ -3,9 +3,9 @@ import { ISubnet, SubnetType, Vpc } from '../lib';
 import { defaultSubnetName, range, subnetName } from '../lib/util';
 
 export function exportVpc(vpc: Vpc) {
-  const pub = new ExportSubnetGroup(vpc, 'PublicSubnetIDs', vpc.publicSubnets, SubnetType.Public, vpc.availabilityZones.length);
-  const priv = new ExportSubnetGroup(vpc, 'PrivateSubnetIDs', vpc.privateSubnets, SubnetType.Private, vpc.availabilityZones.length);
-  const iso = new ExportSubnetGroup(vpc, 'IsolatedSubnetIDs', vpc.isolatedSubnets, SubnetType.Isolated, vpc.availabilityZones.length);
+  const pub = new ExportSubnetGroup(vpc, 'PublicSubnetIDs', vpc.publicSubnets, SubnetType.PUBLIC, vpc.availabilityZones.length);
+  const priv = new ExportSubnetGroup(vpc, 'PrivateSubnetIDs', vpc.privateSubnets, SubnetType.PRIVATE, vpc.availabilityZones.length);
+  const iso = new ExportSubnetGroup(vpc, 'IsolatedSubnetIDs', vpc.isolatedSubnets, SubnetType.ISOLATED, vpc.availabilityZones.length);
 
   const vpnGatewayId = vpc.vpnGatewayId
     ? new CfnOutput(vpc, 'VpnGatewayId', { value: vpc.vpnGatewayId }).makeImportValue().toString()

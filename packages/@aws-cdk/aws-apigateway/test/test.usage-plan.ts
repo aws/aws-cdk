@@ -90,7 +90,7 @@ export = {
     new apigateway.UsagePlan(stack, 'my-usage-plan', {
       quota: {
         limit: 10000,
-        period: apigateway.Period.Month
+        period: apigateway.Period.MONTH
       }
     });
 
