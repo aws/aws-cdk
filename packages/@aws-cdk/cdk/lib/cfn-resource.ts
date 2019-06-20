@@ -272,10 +272,7 @@ export class CfnResource extends CfnRefElement {
       if (!policy) { return undefined; }
       const result: any = { ...policy };
       if (policy.resourceSignal && policy.resourceSignal.timeout) {
-        result.resourceSignal = {
-          ...policy.resourceSignal,
-          timeout: policy.resourceSignal.timeout.toISOString(),
-        };
+        result.resourceSignal = policy.resourceSignal;
       }
       return result;
     }

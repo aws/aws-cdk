@@ -9,9 +9,12 @@ export = nodeunit.testCase({
   },
 
   'unresolved amount'(test: nodeunit.Test) {
+    const stack = new Stack();
+    const lazyDuration = Duration.seconds(Token.asNumber({ resolve: () => 1337 }));
+    test.equals(stack.resolve(lazyDuration.toSeconds()), 1337);
     test.throws(
-      () => new Stack().resolve(Duration.seconds(Token.asNumber({ resolve: () => 1337 }))),
-      /Duration amounts cannot be unresolved tokens./
+      () => stack.resolve(lazyDuration.toMinutes()),
+      /Unable to perform time unit conversion on un-resolved token/
     );
 
     test.done();

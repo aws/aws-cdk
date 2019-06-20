@@ -2,6 +2,11 @@ import { Token } from "./token";
 
 /**
  * Represents a length of time.
+ *
+ * The amount can be specified either as a literal value (e.g: `10`) which
+ * cannot be negative, or as an unresolved number token.
+ *
+ * Whent he amount is passed as an token, unit conversion is not possible.
  */
 export class Duration {
   /**
@@ -37,6 +42,8 @@ export class Duration {
   }
 
   /**
+   * Parse a period formatted according to the ISO 8601 standard (see https://www.iso.org/fr/standard/70907.html).
+   *
    * @param duration an ISO-formtted duration to be parsed.
    * @returns the parsed `Duration`.
    */
@@ -51,9 +58,9 @@ export class Duration {
     }
     return Duration.seconds(
       _toInt(seconds)
-      + (_toInt(minutes) * 60)
-      + (_toInt(hours) * 3_600)
-      + (_toInt(days) * 86_400)
+      + (_toInt(minutes) * TimeUnit.Minutes.inSeconds)
+      + (_toInt(hours) * TimeUnit.Hours.inSeconds)
+      + (_toInt(days) * TimeUnit.Days.inSeconds)
     );
 
     function _toInt(str: string): number {
@@ -66,10 +73,7 @@ export class Duration {
   private readonly unit: TimeUnit;
 
   private constructor(amount: number, unit: TimeUnit) {
-    if (Token.isUnresolved(amount)) {
-      throw new Error(`Duration amounts cannot be unresolved tokens. Received ${amount}`);
-    }
-    if (amount < 0) {
+    if (!Token.isUnresolved(amount) && amount < 0) {
       throw new Error(`Duration amounts cannot be negative. Received: ${amount}`);
     }
 
@@ -81,25 +85,28 @@ export class Duration {
    * @returns the value of this `Duration` expressed in Seconds.
    */
   public toSeconds(opts: TimeConversionOptions = {}): number {
-    return _ensureIntegral(this.amount * this.unit.inSeconds, opts);
+    if (this.unit === TimeUnit.Seconds) { return this.amount; }
+    return _ensureIntegral(this.amount, this.unit.inSeconds, opts);
   }
 
   /**
    * @returns the value of this `Duration` expressed in Minutes.
    */
   public toMinutes(opts: TimeConversionOptions = {}): number {
-    return _ensureIntegral(this.amount * this.unit.inMinutes, opts);
+    if (this.unit === TimeUnit.Minutes) { return this.amount; }
+    return _ensureIntegral(this.amount, this.unit.inMinutes, opts);
   }
 
   /**
    * @returns the value of this `Duration` expressed in Days.
    */
   public toDays(opts: TimeConversionOptions = {}): number {
-    return _ensureIntegral(this.amount * this.unit.inDays, opts);
+    if (this.unit === TimeUnit.Days) { return this.amount; }
+    return _ensureIntegral(this.amount, this.unit.inDays, opts);
   }
 
   /**
-   * @returns ISO representation of this period.
+   * @returns an ISO 8601 representation of this period (see https://www.iso.org/fr/standard/70907.html).
    */
   public toISOString(): string {
     if (this.amount === 0) { return 'PT0S'; }
@@ -117,6 +124,11 @@ export class Duration {
     }
   }
 
+  /**
+   * Returns a string representation of this `Duration` that is also a Token that cannot be successfully resolved. This
+   * protects users against inadvertently stringifying a `Duration` object, when they should have called one of the
+   * `to*` methods instead.
+   */
   public toString(): string {
     return Token.asString(
       () => {
@@ -170,7 +182,11 @@ class TimeUnit {
   }
 }
 
-function _ensureIntegral(value: number, { integral = true }: TimeConversionOptions) {
+function _ensureIntegral(amount: number, multiplier: number, { integral = true }: TimeConversionOptions): number {
+  if (Token.isUnresolved(amount)) {
+    throw new Error(`Unable to perform time unit conversion on un-resolved token ${amount}.`);
+  }
+  const value = amount * multiplier;
   if (!Number.isInteger(value) && integral) {
     throw new Error(`Required integral time unit conversion, but value ${value} is not integral.`);
   }
