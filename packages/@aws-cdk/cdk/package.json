@@ -36,6 +36,7 @@
       "construct-ctor:@aws-cdk/cdk.App.<initializer>",
       "construct-ctor:@aws-cdk/cdk.Root.<initializer>",
       "construct-ctor:@aws-cdk/cdk.Stack.<initializer>.params*",
+      "duration-prop-type:@aws-cdk/cdk.ResourceSignal.timeout",
       "props-no-any:@aws-cdk/cdk.CfnOutputProps.value",
       "props-no-any:@aws-cdk/cdk.CfnParameterProps.default",
       "props-no-any:@aws-cdk/cdk.CfnResourceProps.properties",

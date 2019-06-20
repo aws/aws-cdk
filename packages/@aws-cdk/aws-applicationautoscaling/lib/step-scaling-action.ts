@@ -37,7 +37,7 @@ export interface StepScalingActionProps {
    * @see https://docs.aws.amazon.com/autoscaling/application/APIReference/API_StepScalingPolicyConfiguration.html
    * @default No cooldown period
    */
-  readonly cooldownSec?: number;
+  readonly cooldown?: cdk.Duration;
 
   /**
    * Minimum absolute number to adjust capacity with as result of percentage scaling.
@@ -86,7 +86,7 @@ export class StepScalingAction extends cdk.Construct {
       scalingTargetId: props.scalingTarget.scalableTargetId,
       stepScalingPolicyConfiguration: {
         adjustmentType: props.adjustmentType,
-        cooldown: props.cooldownSec,
+        cooldown: props.cooldown && props.cooldown.toSeconds(),
         minAdjustmentMagnitude: props.minAdjustmentMagnitude,
         metricAggregationType: props.metricAggregationType,
         stepAdjustments: cdk.Lazy.anyValue({ produce: () => this.adjustments }),
@@ -120,7 +120,7 @@ export enum AdjustmentType {
    *
    * A positive number increases capacity, a negative number decreases capacity.
    */
-  ChangeInCapacity = 'ChangeInCapacity',
+  CHANGE_IN_CAPACITY = 'ChangeInCapacity',
 
   /**
    * Add this percentage of the current capacity to itself.
@@ -128,12 +128,12 @@ export enum AdjustmentType {
    * The number must be between -100 and 100; a positive number increases
    * capacity and a negative number decreases it.
    */
-  PercentChangeInCapacity = 'PercentChangeInCapacity',
+  PERCENT_CHANGE_IN_CAPACITY = 'PercentChangeInCapacity',
 
   /**
    * Make the capacity equal to the exact number given.
    */
-  ExactCapacity = 'ExactCapacity',
+  EXACT_CAPACITY = 'ExactCapacity',
 }
 
 /**
@@ -143,17 +143,17 @@ export enum MetricAggregationType {
   /**
    * Average
    */
-  Average = 'Average',
+  AVERAGE = 'Average',
 
   /**
    * Minimum
    */
-  Minimum = 'Minimum',
+  MINIMUM = 'Minimum',
 
   /**
    * Maximum
    */
-  Maximum = 'Maximum'
+  MAXIMUM = 'Maximum'
 }
 
 /**

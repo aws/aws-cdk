@@ -1,11 +1,11 @@
 import { QueueProps } from './index';
 
 export function validateProps(props: QueueProps) {
-  validateRange('delivery delay', props.deliveryDelaySec, 0, 900, 'seconds');
+  validateRange('delivery delay', props.deliveryDelay && props.deliveryDelay.toSeconds(), 0, 900, 'seconds');
   validateRange('maximum message size', props.maxMessageSizeBytes, 1_024, 262_144, 'bytes');
-  validateRange('message retention period', props.retentionPeriodSec, 60, 1_209_600, 'seconds');
-  validateRange('receive wait time', props.receiveMessageWaitTimeSec, 0, 20, 'seconds');
-  validateRange('visibility timeout', props.visibilityTimeoutSec, 0, 43_200, 'seconds');
+  validateRange('message retention period', props.retentionPeriod && props.retentionPeriod.toSeconds(), 60, 1_209_600, 'seconds');
+  validateRange('receive wait time', props.receiveMessageWaitTime && props.receiveMessageWaitTime.toSeconds(), 0, 20, 'seconds');
+  validateRange('visibility timeout', props.visibilityTimeout && props.visibilityTimeout.toSeconds(), 0, 43_200, 'seconds');
   validateRange('dead letter target maximum receive count', props.deadLetterQueue && props.deadLetterQueue.maxReceiveCount, 1, +Infinity);
 }
 

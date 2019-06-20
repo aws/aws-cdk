@@ -27,7 +27,7 @@ export class LambdaSubscription implements sns.ITopicSubscription {
     new sns.Subscription(this.fn, subscriptionName, {
       topic,
       endpoint: this.fn.functionArn,
-      protocol: sns.SubscriptionProtocol.Lambda,
+      protocol: sns.SubscriptionProtocol.LAMBDA,
     });
 
     this.fn.addPermission(topic.node.id, {

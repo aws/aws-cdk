@@ -70,11 +70,13 @@
     "pkglint": "^0.35.0"
   },
   "dependencies": {
+    "@aws-cdk/cx-api": "^0.35.0",
     "@aws-cdk/aws-iam": "^0.35.0",
     "@aws-cdk/cdk": "^0.35.0"
   },
   "homepage": "https://github.com/awslabs/aws-cdk",
   "peerDependencies": {
+    "@aws-cdk/cx-api": "^0.35.0",
     "@aws-cdk/aws-iam": "^0.35.0",
     "@aws-cdk/cdk": "^0.35.0"
   },
@@ -87,7 +89,9 @@
       "import-props-interface:@aws-cdk/aws-ssm.ParameterImportProps",
       "resource-attribute:@aws-cdk/aws-ssm.IParameter.parameterValue",
       "from-attributes:fromStringParameterAttributes",
-      "from-attributes:fromStringListParameterAttributes"
+      "from-attributes:fromStringListParameterAttributes",
+      "props-physical-name:@aws-cdk/aws-ssm.StringListParameterProps",
+      "props-physical-name:@aws-cdk/aws-ssm.StringParameterProps"
     ]
   },
   "stability": "experimental"

@@ -4,8 +4,7 @@ import ec2 = require('@aws-cdk/aws-ec2');
 import elbv2 = require('@aws-cdk/aws-elasticloadbalancingv2');
 import iam = require('@aws-cdk/aws-iam');
 import cloudmap = require('@aws-cdk/aws-servicediscovery');
-import { IResource, Lazy, Resource, Stack } from '@aws-cdk/cdk';
-import cdk = require('@aws-cdk/cdk');
+import { Construct, Duration, Fn, IResource, Lazy, PhysicalName, Resource, ResourceIdentifiers, Stack } from '@aws-cdk/cdk';
 import { NetworkMode, TaskDefinition } from '../base/task-definition';
 import { ICluster } from '../cluster';
 import { CfnService } from '../ecs.generated';
@@ -41,7 +40,7 @@ export interface BaseServiceProps {
    *
    * @default - CloudFormation-generated name.
    */
-  readonly serviceName?: string;
+  readonly serviceName?: PhysicalName;
 
   /**
    * The maximum number of tasks, specified as a percentage of the Amazon ECS
@@ -66,7 +65,7 @@ export interface BaseServiceProps {
    *
    * @default - defaults to 60 seconds if not set and at least one load balancer is in-use
    */
-  readonly healthCheckGracePeriodSeconds?: number;
+  readonly healthCheckGracePeriod?: Duration;
 
   /**
    * Options for enabling AWS Cloud Map service discovery for the service
@@ -133,44 +132,51 @@ export abstract class BaseService extends Resource
   private readonly resource: CfnService;
   private scalableTaskCount?: ScalableTaskCount;
 
-  constructor(scope: cdk.Construct,
+  constructor(scope: Construct,
               id: string,
               props: BaseServiceProps,
               additionalProps: any,
               clusterName: string,
               taskDefinition: TaskDefinition) {
-    super(scope, id);
+    super(scope, id, {
+      physicalName: props.serviceName,
+    });
 
     this.taskDefinition = taskDefinition;
 
     this.resource = new CfnService(this, "Service", {
       desiredCount: props.desiredCount,
-      serviceName: props.serviceName,
+      serviceName: this.physicalName.value,
       loadBalancers: Lazy.anyValue({ produce: () => this.loadBalancers }),
       deploymentConfiguration: {
         maximumPercent: props.maximumPercent || 200,
         minimumHealthyPercent: props.minimumHealthyPercent === undefined ? 50 : props.minimumHealthyPercent
       },
-      // only set the grace period when load balancers are configured and
-      // healthCheckGracePeriodSeconds is not already set
-      healthCheckGracePeriodSeconds: Lazy.anyValue({ produce: () =>
-        this.loadBalancers
-        && this.loadBalancers.length
-        && props.healthCheckGracePeriodSeconds === undefined ? 60 : props.healthCheckGracePeriodSeconds}),
+      healthCheckGracePeriodSeconds: props.healthCheckGracePeriod && props.healthCheckGracePeriod.toSeconds(),
       /* role: never specified, supplanted by Service Linked Role */
       networkConfiguration: Lazy.anyValue({ produce: () => this.networkConfiguration }),
       serviceRegistries: Lazy.anyValue({ produce: () => this.serviceRegistries }),
       ...additionalProps
     });
 
-    this.serviceArn = this.resource.refAsString;
-
     // This is a workaround for CFN bug that returns the cluster name instead of the service name when long ARN formats
     // are enabled for the principal in a given region.
     const longArnEnabled = props.longArnEnabled !== undefined ? props.longArnEnabled : false;
-    this.serviceName = longArnEnabled
-      ? cdk.Fn.select(2, cdk.Fn.split('/', this.serviceArn))
+    const serviceName = longArnEnabled
+      ? Fn.select(2, Fn.split('/', this.resource.refAsString))
       : this.resource.attrName;
+
+    const resourceIdentifiers = new ResourceIdentifiers(this, {
+      arn: this.resource.refAsString,
+      name: serviceName,
+      arnComponents: {
+        service: 'ecs',
+        resource: 'service',
+        resourceName: `${props.cluster.physicalName.value}/${this.physicalName.value}`,
+      },
+    });
+    this.serviceArn = resourceIdentifiers.arn;
+    this.serviceName = resourceIdentifiers.name;
 
     this.clusterName = clusterName;
     this.cluster = props.cluster;
@@ -217,7 +223,7 @@ export abstract class BaseService extends Resource
     }
 
     return this.scalableTaskCount = new ScalableTaskCount(this, 'TaskCount', {
-      serviceNamespace: appscaling.ServiceNamespace.Ecs,
+      serviceNamespace: appscaling.ServiceNamespace.ECS,
       resourceId: `service/${this.clusterName}/${this.serviceName}`,
       dimension: 'ecs:service:DesiredCount',
       role: this.makeAutoScalingRole(),
@@ -261,7 +267,7 @@ export abstract class BaseService extends Resource
   // tslint:disable-next-line:max-line-length
   protected configureAwsVpcNetworking(vpc: ec2.IVpc, assignPublicIp?: boolean, vpcSubnets?: ec2.SubnetSelection, securityGroup?: ec2.ISecurityGroup) {
     if (vpcSubnets === undefined) {
-      vpcSubnets = { subnetType: assignPublicIp ? ec2.SubnetType.Public : ec2.SubnetType.Private };
+      vpcSubnets = { subnetType: assignPublicIp ? ec2.SubnetType.PUBLIC : ec2.SubnetType.PRIVATE };
     }
     if (securityGroup === undefined) {
       securityGroup = new ec2.SecurityGroup(this, 'SecurityGroup', { vpc });
@@ -416,7 +422,7 @@ export interface ServiceDiscoveryOptions {
    *
    * @default 60
    */
-  readonly dnsTtlSec?: number;
+  readonly dnsTtl?: Duration;
 
   /**
    * The number of 30-second intervals that you want Cloud Map to wait after receiving an

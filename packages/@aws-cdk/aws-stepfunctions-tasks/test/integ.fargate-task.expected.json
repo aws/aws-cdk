@@ -54,15 +54,7 @@
                                 {
                                   "Ref": "AWS::Partition"
                                 },
-                                ":ecr:",
-                                {
-                                  "Ref": "AWS::Region"
-                                },
-                                ":",
-                                {
-                                  "Ref": "AWS::AccountId"
-                                },
-                                ":repository/",
+                                ":ecr:test-region:12345678:repository/",
                                 {
                                   "Fn::GetAtt": [
                                     "TaskDefTheContainerAssetImageAdoptRepository997406C3",
@@ -91,15 +83,7 @@
                                 {
                                   "Ref": "AWS::Partition"
                                 },
-                                ":ecr:",
-                                {
-                                  "Ref": "AWS::Region"
-                                },
-                                ":",
-                                {
-                                  "Ref": "AWS::AccountId"
-                                },
-                                ":repository/",
+                                ":ecr:test-region:12345678:repository/",
                                 {
                                   "Fn::GetAtt": [
                                     "TaskDefTheContainerAssetImageAdoptRepository997406C3",
@@ -145,9 +129,7 @@
                   "Ref": "TaskLoggingLogGroupC7E938D4"
                 },
                 "awslogs-stream-prefix": "EventDemo",
-                "awslogs-region": {
-                  "Ref": "AWS::Region"
-                }
+                "awslogs-region": "test-region"
               }
             },
             "Memory": 256,
@@ -256,15 +238,7 @@
                     {
                       "Ref": "AWS::Partition"
                     },
-                    ":ecr:",
-                    {
-                      "Ref": "AWS::Region"
-                    },
-                    ":",
-                    {
-                      "Ref": "AWS::AccountId"
-                    },
-                    ":repository/",
+                    ":ecr:test-region:12345678:repository/",
                     {
                       "Fn::GetAtt": [
                         "TaskDefTheContainerAssetImageAdoptRepository997406C3",
@@ -371,15 +345,7 @@
                     {
                       "Ref": "AWS::Partition"
                     },
-                    ":ecr:",
-                    {
-                      "Ref": "AWS::Region"
-                    },
-                    ":",
-                    {
-                      "Ref": "AWS::AccountId"
-                    },
-                    ":repository/",
+                    ":ecr:test-region:12345678:repository/",
                     {
                       "Fn::Select": [
                         0,
@@ -488,18 +454,7 @@
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": {
-                "Service": {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "states.",
-                      {
-                        "Ref": "AWS::Region"
-                      },
-                      ".amazonaws.com"
-                    ]
-                  ]
-                }
+                "Service": "states.test-region.amazonaws.com"
               }
             }
           ],
@@ -560,15 +515,7 @@
                     {
                       "Ref": "AWS::Partition"
                     },
-                    ":events:",
-                    {
-                      "Ref": "AWS::Region"
-                    },
-                    ":",
-                    {
-                      "Ref": "AWS::AccountId"
-                    },
-                    ":rule/StepFunctionsGetEventsForECSTaskRule"
+                    ":events:test-region:12345678:rule/StepFunctionsGetEventsForECSTaskRule"
                   ]
                 ]
               }

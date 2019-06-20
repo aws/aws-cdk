@@ -1,6 +1,6 @@
 import { beASupersetOfTemplate, expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
 import cloudwatch = require('@aws-cdk/aws-cloudwatch');
-import { Stack } from '@aws-cdk/cdk';
+import { PhysicalName, Stack } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
 import lambda = require('../lib');
 
@@ -16,7 +16,7 @@ export = {
     const version = fn.addVersion('1');
 
     new lambda.Alias(stack, 'Alias', {
-      aliasName: 'prod',
+      aliasName: PhysicalName.of('prod'),
       version,
     });
 
@@ -49,7 +49,7 @@ export = {
     });
 
     new lambda.Alias(stack, 'Alias', {
-      aliasName: 'latest',
+      aliasName: PhysicalName.of('latest'),
       version: fn.latestVersion,
     });
 
@@ -74,7 +74,7 @@ export = {
     const version = fn.addVersion('NewVersion');
 
     new lambda.Alias(stack, 'Alias', {
-      aliasName: 'prod',
+      aliasName: PhysicalName.of('prod'),
       version,
     });
 
@@ -103,7 +103,7 @@ export = {
     const version2 = fn.addVersion('2');
 
     new lambda.Alias(stack, 'Alias', {
-      aliasName: 'prod',
+      aliasName: PhysicalName.of('prod'),
       version: version1,
       additionalVersions: [{ version: version2, weight: 0.1 }]
     });
@@ -137,7 +137,7 @@ export = {
     // WHEN: Individual weight too high
     test.throws(() => {
       new lambda.Alias(stack, 'Alias1', {
-        aliasName: 'prod', version,
+        aliasName: PhysicalName.of('prod'), version,
         additionalVersions: [{ version, weight: 5 }]
       });
     });
@@ -145,7 +145,7 @@ export = {
     // WHEN: Sum too high
     test.throws(() => {
       new lambda.Alias(stack, 'Alias2', {
-        aliasName: 'prod', version,
+        aliasName: PhysicalName.of('prod'), version,
         additionalVersions: [{ version, weight: 0.5 }, { version, weight: 0.6 }]
       });
     });
@@ -164,12 +164,12 @@ export = {
     });
 
     const version = fn.addVersion('1');
-    const alias = new lambda.Alias(stack, 'Alias', { aliasName: 'prod', version });
+    const alias = new lambda.Alias(stack, 'Alias', { aliasName: PhysicalName.of('prod'), version });
 
     // WHEN
     new cloudwatch.Alarm(stack, 'Alarm', {
       metric: alias.metric('Test'),
-      alarmName: 'Test',
+      alarmName: PhysicalName.of('Test'),
       threshold: 1,
       evaluationPeriods: 1
     });
@@ -214,7 +214,7 @@ export = {
     });
 
     const version = fn.addVersion('1');
-    const alias = new lambda.Alias(stack, 'Alias', { aliasName: 'prod', version });
+    const alias = new lambda.Alias(stack, 'Alias', { aliasName: PhysicalName.of('prod'), version });
 
     // THEN
     test.equals(alias.role, fn.role);
@@ -233,7 +233,7 @@ export = {
     });
 
     const version = fn.addVersion('1');
-    const alias = new lambda.Alias(stack, 'Alias', { aliasName: 'prod', version });
+    const alias = new lambda.Alias(stack, 'Alias', { aliasName: PhysicalName.of('prod'), version });
 
     // WHEN
     test.deepEqual(stack.resolve(alias.functionName), {
