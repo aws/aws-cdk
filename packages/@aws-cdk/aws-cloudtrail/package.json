@@ -88,12 +88,6 @@
     "@aws-cdk/aws-s3": "^0.35.0",
     "@aws-cdk/cdk": "^0.35.0"
   },
-  "awslint": {
-    "exclude": [
-      "duration-prop-type:@aws-cdk/aws-cloudtrail.TrailProps.cloudWatchLogsRetentionTimeDays",
-      "duration-prop-name:@aws-cdk/aws-cloudtrail.TrailProps.cloudWatchLogsRetentionTimeDays"
-    ]
-  },
   "engines": {
     "node": ">= 8.10.0"
   },
