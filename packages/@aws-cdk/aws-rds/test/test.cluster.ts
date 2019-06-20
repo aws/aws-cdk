@@ -20,7 +20,7 @@ export = {
         password: SecretValue.plainText('tooshort'),
       },
       instanceProps: {
-        instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+        instanceType: ec2.InstanceType.pair(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
         vpc
       }
     });
@@ -59,7 +59,7 @@ export = {
         password: SecretValue.plainText('tooshort'),
       },
       instanceProps: {
-        instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+        instanceType: ec2.InstanceType.pair(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
         vpc
       }
     });
@@ -93,7 +93,7 @@ export = {
         password: SecretValue.plainText('tooshort'),
       },
       instanceProps: {
-        instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+        instanceType: ec2.InstanceType.pair(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
         vpc,
         securityGroup: sg
       }
@@ -131,7 +131,7 @@ export = {
         password: SecretValue.plainText('tooshort'),
       },
       instanceProps: {
-        instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+        instanceType: ec2.InstanceType.pair(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
         vpc
       },
       parameterGroup: group
@@ -157,7 +157,7 @@ export = {
         username: 'admin'
       },
       instanceProps: {
-        instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+        instanceType: ec2.InstanceType.pair(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
         vpc
       }
     });
@@ -214,7 +214,7 @@ export = {
         username: 'admin'
       },
       instanceProps: {
-        instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+        instanceType: ec2.InstanceType.pair(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
         vpc
       },
       kmsKey: new kms.Key(stack, 'Key')
@@ -251,7 +251,7 @@ export = {
         username: 'admin',
       },
       instanceProps: {
-        instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+        instanceType: ec2.InstanceType.pair(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
         parameterGroup,
         vpc
       }
@@ -280,7 +280,7 @@ export = {
         username: 'admin'
       },
       instanceProps: {
-        instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+        instanceType: ec2.InstanceType.pair(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
         vpc
       },
     });
@@ -307,7 +307,7 @@ export = {
         username: 'admin'
       },
       instanceProps: {
-        instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+        instanceType: ec2.InstanceType.pair(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
         vpc
       },
     });

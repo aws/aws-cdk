@@ -4,11 +4,11 @@ import { Token } from '@aws-cdk/cdk';
  * Protocol for use in Connection Rules
  */
 export enum Protocol {
-  All = '-1',
-  Tcp = 'tcp',
-  Udp = 'udp',
-  Icmp = 'icmp',
-  Icmpv6 = '58',
+  ALL = '-1',
+  TCP = 'tcp',
+  UDP = 'udp',
+  ICMP = 'icmp',
+  ICMPV6 = '58',
 }
 
 /**
@@ -49,7 +49,7 @@ export class Port {
    */
   public static tcpPort(port: number): Port {
     return new Port({
-      ipProtocol: Protocol.Tcp,
+      ipProtocol: Protocol.TCP,
       fromPort: port,
       toPort: port,
       stringRepresentation: renderPort(port),
@@ -61,7 +61,7 @@ export class Port {
    */
   public static tcpPortRange(startPort: number, endPort: number) {
     return new Port({
-      ipProtocol: Protocol.Tcp,
+      ipProtocol: Protocol.TCP,
       fromPort: startPort,
       toPort: endPort,
       stringRepresentation: `${renderPort(startPort)}-${renderPort(endPort)}`
@@ -73,7 +73,7 @@ export class Port {
    */
   public static allTcp() {
     return new Port({
-      ipProtocol: Protocol.Tcp,
+      ipProtocol: Protocol.TCP,
       fromPort: 0,
       toPort: 65535,
       stringRepresentation: 'ALL PORTS',
@@ -85,7 +85,7 @@ export class Port {
    */
   public static udpPort(port: number): Port {
     return new Port({
-      ipProtocol: Protocol.Udp,
+      ipProtocol: Protocol.UDP,
       fromPort: port,
       toPort: port,
       stringRepresentation: `UDP ${renderPort(port)}`,
@@ -97,7 +97,7 @@ export class Port {
    */
   public static udpPortRange(startPort: number, endPort: number) {
     return new Port({
-      ipProtocol: Protocol.Udp,
+      ipProtocol: Protocol.UDP,
       fromPort: startPort,
       toPort: endPort,
       stringRepresentation: `UDP ${renderPort(startPort)}-${renderPort(endPort)}`
@@ -109,7 +109,7 @@ export class Port {
    */
   public static allUdp() {
     return new Port({
-      ipProtocol: Protocol.Udp,
+      ipProtocol: Protocol.UDP,
       fromPort: 0,
       toPort: 65535,
       stringRepresentation: 'UDP ALL PORTS',
@@ -123,7 +123,7 @@ export class Port {
    */
   public static icmpTypeAndCode(type: number, code: number) {
     return new Port({
-      ipProtocol: Protocol.Icmp,
+      ipProtocol: Protocol.ICMP,
       fromPort: type,
       toPort: code,
       stringRepresentation: `ICMP Type ${type} Code ${code}`
@@ -135,7 +135,7 @@ export class Port {
    */
   public static icmpType(type: number): Port {
     return new Port({
-      ipProtocol: Protocol.Icmp,
+      ipProtocol: Protocol.ICMP,
       fromPort: type,
       toPort: -1,
       stringRepresentation: `ICMP Type ${type}`,
@@ -154,7 +154,7 @@ export class Port {
    */
   public static allIcmp() {
     return new Port({
-      ipProtocol: Protocol.Icmp,
+      ipProtocol: Protocol.ICMP,
       fromPort: -1,
       toPort: -1,
       stringRepresentation: 'ALL ICMP',
@@ -166,7 +166,7 @@ export class Port {
    */
   public static allTraffic() {
     return new Port({
-      ipProtocol: Protocol.All,
+      ipProtocol: Protocol.ALL,
       stringRepresentation: 'ALL TRAFFIC',
     });
   }

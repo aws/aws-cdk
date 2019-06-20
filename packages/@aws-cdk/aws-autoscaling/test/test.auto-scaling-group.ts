@@ -13,7 +13,7 @@ export = {
     const vpc = mockVpc(stack);
 
     new autoscaling.AutoScalingGroup(stack, 'MyFleet', {
-      instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
+      instanceType: ec2.InstanceType.pair(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
       machineImage: new ec2.AmazonLinuxImage(),
       vpc
     });
@@ -137,7 +137,7 @@ export = {
     const vpc = mockVpc(stack);
 
     new autoscaling.AutoScalingGroup(stack, 'MyFleet', {
-      instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
+      instanceType: ec2.InstanceType.pair(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
       machineImage: new ec2.AmazonLinuxImage(),
       vpc,
       minCapacity: 0,
@@ -162,7 +162,7 @@ export = {
 
     // WHEN
     new autoscaling.AutoScalingGroup(stack, 'MyFleet', {
-      instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
+      instanceType: ec2.InstanceType.pair(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
       machineImage: new ec2.AmazonLinuxImage(),
       vpc,
       minCapacity: 10
@@ -186,7 +186,7 @@ export = {
 
     // WHEN
     new autoscaling.AutoScalingGroup(stack, 'MyFleet', {
-      instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
+      instanceType: ec2.InstanceType.pair(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
       machineImage: new ec2.AmazonLinuxImage(),
       vpc,
       maxCapacity: 10
@@ -210,7 +210,7 @@ export = {
 
     // WHEN
     new autoscaling.AutoScalingGroup(stack, 'MyFleet', {
-      instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
+      instanceType: ec2.InstanceType.pair(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
       machineImage: new ec2.AmazonLinuxImage(),
       vpc,
       desiredCapacity: 10
@@ -232,7 +232,7 @@ export = {
     const vpc = mockVpc(stack);
 
     const fleet = new autoscaling.AutoScalingGroup(stack, 'MyFleet', {
-      instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
+      instanceType: ec2.InstanceType.pair(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
       machineImage: new ec2.AmazonLinuxImage(),
       vpc
     });
@@ -264,7 +264,7 @@ export = {
 
     // WHEN
     new autoscaling.AutoScalingGroup(stack, 'MyFleet', {
-      instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
+      instanceType: ec2.InstanceType.pair(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
       machineImage: new ec2.AmazonLinuxImage(),
       vpc,
       updateType: autoscaling.UpdateType.REPLACING_UPDATE,
@@ -295,7 +295,7 @@ export = {
 
     // WHEN
     new autoscaling.AutoScalingGroup(stack, 'MyFleet', {
-      instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
+      instanceType: ec2.InstanceType.pair(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
       machineImage: new ec2.AmazonLinuxImage(),
       vpc,
       updateType: autoscaling.UpdateType.ROLLING_UPDATE,
@@ -327,7 +327,7 @@ export = {
 
     // WHEN
     new autoscaling.AutoScalingGroup(stack, 'MyFleet', {
-      instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
+      instanceType: ec2.InstanceType.pair(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
       machineImage: new ec2.AmazonLinuxImage(),
       vpc,
       resourceSignalCount: 5,
@@ -354,7 +354,7 @@ export = {
 
     // WHEN
     const asg = new autoscaling.AutoScalingGroup(stack, 'MyFleet', {
-      instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
+      instanceType: ec2.InstanceType.pair(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
       machineImage: new ec2.AmazonLinuxImage(),
       vpc,
     });
@@ -380,7 +380,7 @@ export = {
 
     // WHEN
     const asg = new autoscaling.AutoScalingGroup(stack, 'MyFleet', {
-      instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
+      instanceType: ec2.InstanceType.pair(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
       machineImage: new ec2.AmazonLinuxImage(),
       vpc,
       updateType: autoscaling.UpdateType.ROLLING_UPDATE,
@@ -422,7 +422,7 @@ export = {
 
     // WHEN
     new autoscaling.AutoScalingGroup(stack, 'MyStack', {
-      instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
+      instanceType: ec2.InstanceType.pair(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
       machineImage: new ec2.AmazonLinuxImage(),
       vpc,
 
@@ -444,7 +444,7 @@ export = {
 
     // WHEN
     new autoscaling.AutoScalingGroup(stack, 'MyStack', {
-      instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
+      instanceType: ec2.InstanceType.pair(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
       machineImage: new ec2.AmazonLinuxImage(),
       vpc,
       minCapacity: 0,
@@ -471,7 +471,7 @@ export = {
     // WHEN
     test.throws(() => {
       new autoscaling.AutoScalingGroup(stack, 'MyStack', {
-        instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
+        instanceType: ec2.InstanceType.pair(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
         machineImage: new ec2.AmazonLinuxImage(),
         vpc,
         minCapacity: 0,
@@ -490,7 +490,7 @@ export = {
 
     // WHEN
     new autoscaling.AutoScalingGroup(stack, 'MyStack', {
-      instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
+      instanceType: ec2.InstanceType.pair(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
       machineImage: new ec2.AmazonLinuxImage(),
       vpc,
       minCapacity: 0,
@@ -514,7 +514,7 @@ export = {
 
     // WHEN
     new autoscaling.AutoScalingGroup(stack, 'MyStack', {
-      instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
+      instanceType: ec2.InstanceType.pair(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
       machineImage: new ec2.AmazonLinuxImage(),
       vpc,
       minCapacity: 0,
@@ -544,7 +544,7 @@ export = {
     // WHEN
     const asg = new autoscaling.AutoScalingGroup(stack, 'MyASG', {
       vpc,
-      instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
+      instanceType: ec2.InstanceType.pair(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
       machineImage: new ec2.AmazonLinuxImage(),
       role: importedRole
     });

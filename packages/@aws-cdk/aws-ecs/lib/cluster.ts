@@ -287,7 +287,7 @@ export class EcsOptimizedAmi implements ec2.IMachineImageSource {
    */
   public getImage(scope: Construct): ec2.MachineImage {
     const ami = ssm.StringParameter.valueForStringParameter(scope, this.amiParameterName);
-    return new ec2.MachineImage(ami, new ec2.LinuxOS());
+    return new ec2.MachineImage(ami, ec2.OperatingSystem.linux());
   }
 }
 

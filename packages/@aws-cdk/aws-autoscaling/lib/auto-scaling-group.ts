@@ -5,7 +5,7 @@ import elbv2 = require('@aws-cdk/aws-elasticloadbalancingv2');
 import iam = require('@aws-cdk/aws-iam');
 import sns = require('@aws-cdk/aws-sns');
 
-import { AutoScalingRollingUpdate, Construct, IResource, Lazy, Resource, Stack, Tag } from '@aws-cdk/cdk';
+import { AutoScalingRollingUpdate, Construct, Fn, IResource, Lazy, Resource, Stack, Tag } from '@aws-cdk/cdk';
 import { CfnAutoScalingGroup, CfnAutoScalingGroupProps, CfnLaunchConfiguration } from './autoscaling.generated';
 import { BasicLifecycleHookProps, LifecycleHook } from './lifecycle-hook';
 import { BasicScheduledActionProps, ScheduledAction } from './scheduled-action';
@@ -401,7 +401,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
     // use delayed evaluation
     const machineImage = props.machineImage.getImage(this);
     this.userData = machineImage.os.createDefaultUserData();
-    const userDataToken = Lazy.stringValue({ produce: () => this.userData.render() });
+    const userDataToken = Lazy.stringValue({ produce: () => Fn.base64(this.userData.render()) });
     const securityGroupsToken = Lazy.listValue({ produce: () => this.securityGroups.map(sg => sg.securityGroupId) });
 
     const launchConfig = new CfnLaunchConfiguration(this, 'LaunchConfig', {

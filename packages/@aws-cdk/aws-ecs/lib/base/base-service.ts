@@ -199,7 +199,7 @@ export abstract class BaseService extends Resource
     // Open up security groups. For dynamic port mapping, we won't know the port range
     // in advance so we need to open up all ports.
     const port = this.taskDefinition.defaultContainer!.ingressPort;
-    const portRange = port === 0 ? EPHEMERAL_PORT_RANGE : new ec2.TcpPort(port);
+    const portRange = port === 0 ? EPHEMERAL_PORT_RANGE : ec2.Port.tcpPort(port);
     targetGroup.registerConnectable(this, portRange);
 
     return ret;
@@ -398,7 +398,7 @@ export abstract class BaseService extends Resource
 /**
  * The port range to open up for dynamic port mapping
  */
-const EPHEMERAL_PORT_RANGE = new ec2.TcpPortRange(32768, 65535);
+const EPHEMERAL_PORT_RANGE = ec2.Port.tcpPortRange(32768, 65535);
 
 /**
  * Options for enabling service discovery on an ECS service

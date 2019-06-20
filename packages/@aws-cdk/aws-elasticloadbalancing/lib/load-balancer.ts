@@ -1,6 +1,4 @@
-import {
-  AnyIPv4, Connections, IConnectable, IPortRange, ISecurityGroup,
-  ISubnet, IVpc, SecurityGroup, TcpPort  } from '@aws-cdk/aws-ec2';
+import { Connections, IConnectable, ISecurityGroup, ISubnet, IVpc, Peer, Port, SecurityGroup  } from '@aws-cdk/aws-ec2';
 import { Construct, Lazy, Resource } from '@aws-cdk/cdk';
 import { CfnLoadBalancer } from './elasticloadbalancing.generated';
 
@@ -267,10 +265,10 @@ export class LoadBalancer extends Resource implements IConnectable {
       policyNames: listener.policyNames
     });
 
-    const port = new ListenerPort(this.securityGroup, new TcpPort(listener.externalPort));
+    const port = new ListenerPort(this.securityGroup, Port.tcpPort(listener.externalPort));
 
     // Allow connections on the public port for all supplied peers (default: everyone)
-    ifUndefined(listener.allowConnectionsFrom, [new AnyIPv4()]).forEach(peer => {
+    ifUndefined(listener.allowConnectionsFrom, [Peer.anyIpv4()]).forEach(peer => {
       port.connections.allowDefaultPortFrom(peer, `Default rule allow on ${listener.externalPort}`);
     });
 
@@ -356,7 +354,7 @@ export class LoadBalancer extends Resource implements IConnectable {
   private allowTargetConnection(instancePort: number, target: ILoadBalancerTarget) {
     this.connections.allowTo(
       target,
-      new TcpPort(instancePort),
+      Port.tcpPort(instancePort),
       `Port ${instancePort} LB to fleet`);
   }
 }
@@ -377,7 +375,7 @@ export class LoadBalancer extends Resource implements IConnectable {
 export class ListenerPort implements IConnectable {
   public readonly connections: Connections;
 
-  constructor(securityGroup: ISecurityGroup, defaultPortRange: IPortRange) {
+  constructor(securityGroup: ISecurityGroup, defaultPortRange: Port) {
     this.connections = new Connections({ securityGroups: [securityGroup] , defaultPortRange });
   }
 }

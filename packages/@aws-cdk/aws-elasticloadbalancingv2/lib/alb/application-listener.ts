@@ -127,13 +127,13 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
     // but adds its own default port.
     this.connections = new ec2.Connections({
       securityGroups: props.loadBalancer.connections.securityGroups,
-      defaultPortRange: new ec2.TcpPort(port),
+      defaultPortRange: ec2.Port.tcpPort(port),
     });
 
     (props.defaultTargetGroups || []).forEach(this.addDefaultTargetGroup.bind(this));
 
     if (props.open !== false) {
-      this.connections.allowDefaultPortFrom(new ec2.AnyIPv4(), `Allow from anyone on port ${port}`);
+      this.connections.allowDefaultPortFrom(ec2.Peer.anyIpv4(), `Allow from anyone on port ${port}`);
     }
   }
 
@@ -245,7 +245,7 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
    *
    * Don't call this directly. It is called by ApplicationTargetGroup.
    */
-  public registerConnectable(connectable: ec2.IConnectable, portRange: ec2.IPortRange): void {
+  public registerConnectable(connectable: ec2.IConnectable, portRange: ec2.Port): void {
     this.connections.allowTo(connectable, portRange, 'Load balancer to target');
   }
 
@@ -310,7 +310,7 @@ export interface IApplicationListener extends IResource, ec2.IConnectable {
    *
    * Don't call this directly. It is called by ApplicationTargetGroup.
    */
-  registerConnectable(connectable: ec2.IConnectable, portRange: ec2.IPortRange): void;
+  registerConnectable(connectable: ec2.IConnectable, portRange: ec2.Port): void;
 }
 
 /**
@@ -346,7 +346,7 @@ class ImportedApplicationListener extends Resource implements IApplicationListen
 
     this.listenerArn = props.listenerArn;
 
-    const defaultPortRange = props.defaultPort !== undefined ? new ec2.TcpPort(props.defaultPort) : undefined;
+    const defaultPortRange = props.defaultPort !== undefined ? ec2.Port.tcpPort(props.defaultPort) : undefined;
 
     this.connections = new ec2.Connections({
       securityGroups: [ec2.SecurityGroup.fromSecurityGroupId(this, 'SecurityGroup', props.securityGroupId)],
@@ -410,7 +410,7 @@ class ImportedApplicationListener extends Resource implements IApplicationListen
    *
    * Don't call this directly. It is called by ApplicationTargetGroup.
    */
-  public registerConnectable(connectable: ec2.IConnectable, portRange: ec2.IPortRange): void {
+  public registerConnectable(connectable: ec2.IConnectable, portRange: ec2.Port): void {
     this.connections.allowTo(connectable, portRange, 'Load balancer to target');
   }
 }

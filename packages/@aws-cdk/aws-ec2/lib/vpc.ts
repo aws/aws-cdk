@@ -76,6 +76,10 @@ export interface IVpc extends IResource {
    * Identifier for the VPN gateway
    */
   readonly vpnGatewayId?: string;
+  /**
+   * Dependable that can be depended upon to force internet connectivity established on the VPC
+   */
+  readonly internetConnectivityEstablished: IDependable;
 
   /**
    * Return information on the subnets appropriate for the given selection strategy
@@ -240,7 +244,7 @@ abstract class VpcBase extends Resource implements IVpc {
   /**
    * Dependencies for internet connectivity
    */
-  protected readonly internetDependencies = new Array<IConstruct>();
+  public abstract readonly internetConnectivityEstablished: IDependable;
 
   /**
    * Dependencies for NAT connectivity
@@ -728,6 +732,8 @@ export class Vpc extends VpcBase {
    */
   public readonly vpnGatewayId?: string;
 
+  public readonly internetConnectivityEstablished: IDependable;
+
   /**
    * The VPC resource
    */
@@ -747,6 +753,8 @@ export class Vpc extends VpcBase {
    * Subnet configurations for this VPC
    */
   private subnetConfiguration: SubnetConfiguration[] = [];
+
+  private readonly _internetConnectivityEstablished = new ConcreteDependable();
 
   /**
    * VpcNetwork creates a VPC that spans a whole region.
@@ -770,6 +778,7 @@ export class Vpc extends VpcBase {
     const enableDnsHostnames = props.enableDnsHostnames == null ? true : props.enableDnsHostnames;
     const enableDnsSupport = props.enableDnsSupport == null ? true : props.enableDnsSupport;
     const instanceTenancy = props.defaultInstanceTenancy || 'default';
+    this.internetConnectivityEstablished = this._internetConnectivityEstablished;
 
     // Define a VPC using the provided CIDR range
     this.resource = new CfnVPC(this, 'Resource', {
@@ -805,7 +814,7 @@ export class Vpc extends VpcBase {
     if (allowOutbound) {
       const igw = new CfnInternetGateway(this, 'IGW', {
       });
-      this.internetDependencies.push(igw);
+      this._internetConnectivityEstablished.add(igw);
       const att = new CfnVPCGatewayAttachment(this, 'VPCGW', {
         internetGatewayId: igw.refAsString,
         vpcId: this.resource.refAsString
@@ -1096,7 +1105,9 @@ export class Subnet extends Resource implements ISubnet {
    */
   public readonly routeTable: IRouteTable;
 
-  private readonly internetDependencies = new ConcreteDependable();
+  public readonly internetConnectivityEstablished: IDependable;
+
+  private readonly _internetConnectivityEstablished = new ConcreteDependable();
 
   constructor(scope: Construct, id: string, props: SubnetProps) {
     super(scope, id);
@@ -1128,10 +1139,8 @@ export class Subnet extends Resource implements ISubnet {
       subnetId: this.subnetId,
       routeTableId: table.refAsString
     });
-  }
 
-  public get internetConnectivityEstablished(): IDependable {
-    return this.internetDependencies;
+    this.internetConnectivityEstablished = this._internetConnectivityEstablished;
   }
 
   /**
@@ -1151,7 +1160,7 @@ export class Subnet extends Resource implements ISubnet {
 
     // Since the 'route' depends on the gateway attachment, just
     // depending on the route is enough.
-    this.internetDependencies.add(route);
+    this._internetConnectivityEstablished.add(route);
   }
 
   /**
@@ -1164,7 +1173,7 @@ export class Subnet extends Resource implements ISubnet {
       destinationCidrBlock: '0.0.0.0/0',
       natGatewayId
     });
-    this.internetDependencies.add(route);
+    this._internetConnectivityEstablished.add(route);
   }
 }
 
@@ -1240,6 +1249,7 @@ class ImportedVpc extends VpcBase {
   public readonly isolatedSubnets: ISubnet[];
   public readonly availabilityZones: string[];
   public readonly vpnGatewayId?: string;
+  public readonly internetConnectivityEstablished: IDependable = new ConcreteDependable();
 
   constructor(scope: Construct, id: string, props: VpcAttributes) {
     super(scope, id);
