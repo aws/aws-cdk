@@ -24,8 +24,8 @@ export = {
       vpc,
       databaseName: 'ORCL',
       storageEncrypted: true,
-      backupRetentionPeriod: 7,
-      monitoringInterval: 60,
+      backupRetention: cdk.Duration.days(7),
+      monitoringInterval: cdk.Duration.minutes(1),
       enablePerformanceInsights: true,
       cloudwatchLogsExports: [
         'trace',
@@ -430,7 +430,7 @@ export = {
       dimensions: { DBInstanceIdentifier: { Ref: 'InstanceC1063A87' } },
       namespace: 'AWS/RDS',
       metricName: 'CPUUtilization',
-      periodSec: 300,
+      period: cdk.Duration.minutes(5),
       statistic: 'Average'
     });
 
@@ -479,7 +479,7 @@ export = {
       instanceClass: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
       masterUsername: 'admin',
       vpc,
-      backupRetentionPeriod: 0,
+      backupRetention: cdk.Duration.seconds(0),
     });
 
     // THEN

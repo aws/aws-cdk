@@ -351,7 +351,7 @@ export = {
       updateType: autoscaling.UpdateType.ROLLING_UPDATE,
       rollingUpdateConfiguration: {
         minSuccessfulInstancesPercent: 50,
-        pauseTimeSec: 345
+        pauseTime: cdk.Duration.seconds(345)
       }
     });
 
@@ -381,7 +381,7 @@ export = {
       machineImage: new ec2.AmazonLinuxImage(),
       vpc,
       resourceSignalCount: 5,
-      resourceSignalTimeoutSec: 666
+      resourceSignalTimeout: cdk.Duration.seconds(666)
     });
 
     // THEN
@@ -436,7 +436,7 @@ export = {
       updateType: autoscaling.UpdateType.ROLLING_UPDATE,
       rollingUpdateConfiguration: {
         minSuccessfulInstancesPercent: 50,
-        pauseTimeSec: 345
+        pauseTime: cdk.Duration.seconds(345)
       },
     });
     asg.node.applyAspect(new cdk.Tag('superfood', 'acai'));

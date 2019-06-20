@@ -11,7 +11,7 @@ test('State machine can be used as Event Rule target', () => {
     schedule: events.Schedule.rate(1, events.TimeUnit.Minute),
   });
   const stateMachine = new sfn.StateMachine(stack, 'SM', {
-    definition: new sfn.Wait(stack, 'Hello', { duration: sfn.WaitDuration.seconds(10) })
+    definition: new sfn.Wait(stack, 'Hello', { time: sfn.WaitTime.duration(cdk.Duration.seconds(10)) })
   });
 
   // WHEN

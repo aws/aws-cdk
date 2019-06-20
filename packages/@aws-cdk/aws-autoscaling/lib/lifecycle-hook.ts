@@ -1,5 +1,5 @@
 import iam = require('@aws-cdk/aws-iam');
-import { Construct, IResource, PhysicalName, Resource } from '@aws-cdk/cdk';
+import { Construct, Duration, IResource, PhysicalName, Resource } from '@aws-cdk/cdk';
 import { IAutoScalingGroup } from './auto-scaling-group';
 import { CfnLifecycleHook } from './autoscaling.generated';
 import { ILifecycleHookTarget } from './lifecycle-hook-target';
@@ -29,7 +29,7 @@ export interface BasicLifecycleHookProps {
    *
    * @default - No heartbeat timeout.
    */
-  readonly heartbeatTimeoutSec?: number;
+  readonly heartbeatTimeout?: Duration;
 
   /**
    * The state of the Amazon EC2 instance to which you want to attach the lifecycle hook.
@@ -105,7 +105,7 @@ export class LifecycleHook extends Resource implements ILifecycleHook {
     const resource = new CfnLifecycleHook(this, 'Resource', {
       autoScalingGroupName: props.autoScalingGroup.autoScalingGroupName,
       defaultResult: props.defaultResult,
-      heartbeatTimeout: props.heartbeatTimeoutSec,
+      heartbeatTimeout: props.heartbeatTimeout && props.heartbeatTimeout.toSeconds(),
       lifecycleHookName: this.physicalName.value,
       lifecycleTransition: props.lifecycleTransition,
       notificationMetadata: props.notificationMetadata,

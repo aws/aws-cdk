@@ -28,7 +28,7 @@ export = {
 
         // THEN
         const sharedMetric = {
-            periodSec: 300,
+            period: cdk.Duration.minutes(5),
             namespace: 'AWS/States',
             dimensions: { ActivityArn: { Ref: 'Activity04690B0A' }},
         };
