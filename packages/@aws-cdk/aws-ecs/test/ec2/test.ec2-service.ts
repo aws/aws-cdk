@@ -48,7 +48,6 @@ export = {
       test.done();
     },
 
-
     "errors if daemon and desiredCount both specified"(test: Test) {
       // GIVEN
       const stack = new cdk.Stack();
