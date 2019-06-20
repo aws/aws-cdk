@@ -1,34 +1,27 @@
-import { CfnResource } from './cfn-resource';
-import { DeletionPolicy } from './resource-policy';
-
 export enum RemovalPolicy {
   /**
-   * This is the default removal policy for most resources. It means that when the resource
-   * is removed from the app, it will be physically destroyed.
+   * This is the default removal policy. It means that when the resource is
+   * removed from the app, it will be physically destroyed.
    */
-  Destroy = 0,
+  Destroy = 'destroy',
 
   /**
    * This uses the 'Retain' DeletionPolicy, which will cause the resource to be retained
    * in the account, but orphaned from the stack.
    */
-  Orphan,
-
-  /**
-   * This will apply the 'Retain' DeletionPolicy and also add metadata for the toolkit
-   * to apply a CloudFormation stack policy which forbids the deletion of resource.
-   */
-  Forbid
+  Retain = 'retain',
 }
 
-export function applyRemovalPolicy(resource: CfnResource, removalPolicy: RemovalPolicy | undefined) {
-  if (removalPolicy === RemovalPolicy.Orphan || removalPolicy === RemovalPolicy.Forbid) {
-    resource.options.deletionPolicy = DeletionPolicy.Retain;
-  }
+export interface RemovalPolicyOptions {
+  /**
+   * The default policy to apply in case the removal policy is not defined.
+   *
+   * @default RemovalPolicy.Retain
+   */
+  readonly default?: RemovalPolicy;
 
-  // attach metadata that will tell the toolkit to protect this resource by
-  // applying an appropriate stack update policy.
-  if (removalPolicy === RemovalPolicy.Forbid) {
-    resource.node.addMetadata('aws:cdk:protected', true);
-  }
+  /**
+   * Apply the same deletion policy to the resource's "UpdateReplacePolicy"
+   */
+  readonly applyToUpdateReplacePolicy?: boolean;
 }

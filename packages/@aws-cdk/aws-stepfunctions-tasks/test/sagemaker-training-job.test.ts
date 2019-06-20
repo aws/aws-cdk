@@ -82,8 +82,8 @@ test('create complex training job', () => {
 
     const role = new iam.Role(stack, 'Role', {
         assumedBy: new iam.ServicePrincipal('sagemaker.amazonaws.com'),
-        managedPolicyArns: [
-            new iam.AwsManagedPolicy('AmazonSageMakerFullAccess', stack).policyArn
+        managedPolicies: [
+            iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonSageMakerFullAccess')
         ],
     });
 
@@ -217,7 +217,6 @@ test('create complex training job', () => {
             Subnets: [
                 { Ref: "VPCPrivateSubnet1Subnet8BCA10E0" },
                 { Ref: "VPCPrivateSubnet2SubnetCFCDAA7A" },
-                { Ref: "VPCPrivateSubnet3Subnet3EDCD457" }
             ]
         }
       },
@@ -228,8 +227,8 @@ test('pass param to training job', () => {
     // WHEN
     const role = new iam.Role(stack, 'Role', {
         assumedBy: new iam.ServicePrincipal('sagemaker.amazonaws.com'),
-        managedPolicyArns: [
-            new iam.AwsManagedPolicy('AmazonSageMakerFullAccess', stack).policyArn
+        managedPolicies: [
+            iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonSageMakerFullAccess'),
         ],
     });
 

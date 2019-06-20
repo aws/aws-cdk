@@ -28,7 +28,7 @@ export class GlobalTableCoordinator extends cdk.Stack {
       properties: {
         regions: props.regions,
         resourceType: "Custom::DynamoGlobalTableCoordinator",
-        tableName: props.tableName,
+        tableName: props.tableName.value,
       },
     });
   }
@@ -40,16 +40,16 @@ export class GlobalTableCoordinator extends cdk.Stack {
  */
 function grantCreateGlobalTableLambda(principal?: iam.IPrincipal): void {
   if (principal) {
-    principal.addToPolicy(new iam.PolicyStatement()
-      .allow()
-      .addAllResources()
-      .addAction("iam:CreateServiceLinkedRole")
-      .addAction("application-autoscaling:DeleteScalingPolicy")
-      .addAction("application-autoscaling:DeregisterScalableTarget")
-      .addAction("dynamodb:CreateGlobalTable")
-      .addAction("dynamodb:DescribeLimits")
-      .addAction("dynamodb:DeleteTable")
-      .addAction("dynamodb:DescribeGlobalTable")
-      .addAction("dynamodb:UpdateGlobalTable"));
+    principal.addToPolicy(new iam.PolicyStatement({
+      resources: ['*'],
+      actions: [
+        "iam:CreateServiceLinkedRole",
+        "application-autoscaling:DeleteScalingPolicy",
+        "application-autoscaling:DeregisterScalableTarget",
+        "dynamodb:CreateGlobalTable", "dynamodb:DescribeLimits",
+        "dynamodb:DeleteTable", "dynamodb:DescribeGlobalTable",
+        "dynamodb:UpdateGlobalTable",
+      ]
+    }));
   }
 }

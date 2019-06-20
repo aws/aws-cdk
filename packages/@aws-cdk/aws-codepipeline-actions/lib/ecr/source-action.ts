@@ -53,11 +53,10 @@ export class EcrSourceAction extends codepipeline.Action {
   }
 
   protected bind(info: codepipeline.ActionBind): void {
-    info.role.addToPolicy(new iam.PolicyStatement()
-      .addActions(
-        'ecr:DescribeImages',
-      )
-      .addResource(this.props.repository.repositoryArn));
+    info.role.addToPolicy(new iam.PolicyStatement({
+      actions: ['ecr:DescribeImages'],
+      resources: [this.props.repository.repositoryArn]
+    }));
 
     this.props.repository.onCloudTrailImagePushed(info.pipeline.node.uniqueId + 'SourceEventRule', {
         target: new targets.CodePipeline(info.pipeline),

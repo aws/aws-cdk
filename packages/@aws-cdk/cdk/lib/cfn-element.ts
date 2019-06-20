@@ -77,7 +77,7 @@ export abstract class CfnElement extends Construct {
    *      from the +metadata+ entry typed +aws:cdk:logicalId+, and with the bottom-most
    *      node +internal+ entries filtered.
    */
-  public get creationStackTrace(): string[] | undefined {
+  public get creationStack(): string[] | undefined {
     const trace = this.node.metadata.find(md => md.type === cxapi.LOGICAL_ID_METADATA_KEY)!.trace;
     if (!trace) {
       return undefined;
@@ -139,13 +139,6 @@ export abstract class CfnElement extends Construct {
   }
 
   /**
-   * Return a token that will CloudFormation { Ref } this stack element
-   */
-  protected get ref(): IResolvable {
-    return CfnReference.for(this, 'Ref');
-  }
-
-  /**
    * Called during synthesize to render the logical ID of this element. If
    * `overrideLogicalId` was it will be used, otherwise, we will allocate the
    * logical ID through the stack.
@@ -174,7 +167,7 @@ export abstract class CfnRefElement extends CfnElement {
    * Return a token that will CloudFormation { Ref } this stack element
    */
   public get ref(): IResolvable {
-    return super.ref;
+    return CfnReference.for(this, 'Ref');
   }
 
   /**

@@ -14,7 +14,7 @@ export = {
 
     // WHEN
     new CrossAccountDestination(stack, 'Dest', {
-      destinationName: 'MyDestination',
+      destinationName: cdk.PhysicalName.of('MyDestination'),
       role,
       targetArn: 'arn:bogus'
     });
@@ -37,14 +37,15 @@ export = {
     });
 
     const dest = new CrossAccountDestination(stack, 'Dest', {
-      destinationName: 'MyDestination',
+      destinationName: cdk.PhysicalName.of('MyDestination'),
       role,
       targetArn: 'arn:bogus'
     });
 
     // WHEN
-    dest.addToPolicy(new iam.PolicyStatement()
-      .addAction('logs:TalkToMe'));
+    dest.addToPolicy(new iam.PolicyStatement({
+      actions: ['logs:TalkToMe']
+    }));
 
     // THEN
     expect(stack).to(haveResource('AWS::Logs::Destination', (props: any) => {

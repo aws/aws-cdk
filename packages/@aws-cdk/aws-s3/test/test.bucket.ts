@@ -429,7 +429,7 @@ export = {
       const stack = new cdk.Stack();
       const bucket = new s3.Bucket(stack, 'MyBucket', { encryption: s3.BucketEncryption.Unencrypted });
 
-      bucket.addToResourcePolicy(new iam.PolicyStatement().addResource('foo').addAction('bar'));
+      bucket.addToResourcePolicy(new iam.PolicyStatement({ resources: ['foo'], actions: [ 'bar' ]}));
 
       expect(stack).toMatch({
         "Resources": {
@@ -466,9 +466,9 @@ export = {
 
       const bucket = new s3.Bucket(stack, 'MyBucket', { encryption: s3.BucketEncryption.Unencrypted });
 
-      const x = new iam.PolicyStatement().addResource(bucket.bucketArn).addAction('s3:ListBucket');
+      const x = new iam.PolicyStatement({ resources: [bucket.bucketArn], actions: ['s3:ListBucket'] });
 
-      test.deepEqual(stack.resolve(x), {
+      test.deepEqual(stack.resolve(x.toStatementJson()), {
         Action: 's3:ListBucket',
         Effect: 'Allow',
         Resource: { 'Fn::GetAtt': ['MyBucketF68F3FF0', 'Arn'] }
@@ -482,9 +482,9 @@ export = {
 
       const bucket = new s3.Bucket(stack, 'MyBucket', { encryption: s3.BucketEncryption.Unencrypted });
 
-      const p = new iam.PolicyStatement().addResource(bucket.arnForObjects('hello/world')).addAction('s3:GetObject');
+      const p = new iam.PolicyStatement({ resources: [bucket.arnForObjects('hello/world')], actions: ['s3:GetObject'] });
 
-      test.deepEqual(stack.resolve(p), {
+      test.deepEqual(stack.resolve(p.toStatementJson()), {
         Action: 's3:GetObject',
         Effect: 'Allow',
         Resource: {
@@ -508,9 +508,9 @@ export = {
       const team = new iam.Group(stack, 'MyTeam');
 
       const resource = bucket.arnForObjects(`home/${team.groupName}/${user.userName}/*`);
-      const p = new iam.PolicyStatement().addResource(resource).addAction('s3:GetObject');
+      const p = new iam.PolicyStatement({ resources: [resource], actions: ['s3:GetObject'] });
 
-      test.deepEqual(stack.resolve(p), {
+      test.deepEqual(stack.resolve(p.toStatementJson()), {
         Action: 's3:GetObject',
         Effect: 'Allow',
         Resource: {
@@ -534,7 +534,10 @@ export = {
 
   'removal policy can be used to specify behavior upon delete'(test: Test) {
     const stack = new cdk.Stack();
-    new s3.Bucket(stack, 'MyBucket', { removalPolicy: cdk.RemovalPolicy.Orphan, encryption: s3.BucketEncryption.Unencrypted });
+    new s3.Bucket(stack, 'MyBucket', {
+      removalPolicy: cdk.RemovalPolicy.Retain,
+      encryption: s3.BucketEncryption.Unencrypted
+    });
 
     expect(stack).toMatch({
       Resources: {
@@ -557,12 +560,12 @@ export = {
       const bucket = s3.Bucket.fromBucketAttributes(stack, 'ImportedBucket', { bucketArn });
 
       // this is a no-op since the bucket is external
-      bucket.addToResourcePolicy(new iam.PolicyStatement().addResource('foo').addAction('bar'));
+      bucket.addToResourcePolicy(new iam.PolicyStatement({ resources: ['foo'], actions: ['bar']}));
 
-      const p = new iam.PolicyStatement().addResource(bucket.bucketArn).addAction('s3:ListBucket');
+      const p = new iam.PolicyStatement({ resources: [bucket.bucketArn], actions: ['s3:ListBucket'] });
 
       // it is possible to obtain a permission statement for a ref
-      test.deepEqual(stack.resolve(p), {
+      test.deepEqual(p.toStatementJson(), {
         Action: 's3:ListBucket',
         Effect: 'Allow',
         Resource: 'arn:aws:s3:::my-bucket'
@@ -578,7 +581,7 @@ export = {
     'import can also be used to import arbitrary ARNs'(test: Test) {
       const stack = new cdk.Stack();
       const bucket = s3.Bucket.fromBucketAttributes(stack, 'ImportedBucket', { bucketArn: 'arn:aws:s3:::my-bucket' });
-      bucket.addToResourcePolicy(new iam.PolicyStatement().addAllResources().addAction('*'));
+      bucket.addToResourcePolicy(new iam.PolicyStatement({ resources: ['*'], actions: ['*'] }));
 
       // at this point we technically didn't create any resources in the consuming stack.
       expect(stack).toMatch({});
@@ -586,9 +589,9 @@ export = {
       // but now we can reference the bucket
       // you can even use the bucket name, which will be extracted from the arn provided.
       const user = new iam.User(stack, 'MyUser');
-      user.addToPolicy(new iam.PolicyStatement()
-        .addResource(bucket.arnForObjects(`my/folder/${bucket.bucketName}`))
-        .addAction('s3:*'));
+      user.addToPolicy(new iam.PolicyStatement({
+        resources: [bucket.arnForObjects(`my/folder/${bucket.bucketName}`)],
+        actions: ['s3:*'] }));
 
       expect(stack).toMatch({
         "Resources": {

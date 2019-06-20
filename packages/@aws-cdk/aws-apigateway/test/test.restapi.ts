@@ -141,7 +141,7 @@ export = {
     const api = new apigateway.RestApi(stack, 'restapi', {
       deploy: false,
       cloudWatchRole: false,
-      restApiName: 'my-rest-api'
+      restApiName: cdk.PhysicalName.of('my-rest-api'),
     });
 
     api.root.addMethod('GET');
@@ -176,7 +176,7 @@ export = {
     const api = new apigateway.RestApi(stack, 'restapi', {
       deploy: false,
       cloudWatchRole: false,
-      restApiName: 'my-rest-api'
+      restApiName: cdk.PhysicalName.of('my-rest-api'),
     });
 
     // WHEN
@@ -402,7 +402,7 @@ export = {
     api.root.addMethod('GET');
 
     // WHEN
-    const arn = api.executeApiArn('method', '/path', 'stage');
+    const arn = api.arnForExecuteApi('method', '/path', 'stage');
 
     // THEN
     test.deepEqual(stack.resolve(arn), { 'Fn::Join':
@@ -426,7 +426,7 @@ export = {
     api.root.addMethod('GET');
 
     // THEN
-    test.throws(() => api.executeApiArn('method', 'hey-path', 'stage'), /"path" must begin with a "\/": 'hey-path'/);
+    test.throws(() => api.arnForExecuteApi('method', 'hey-path', 'stage'), /"path" must begin with a "\/": 'hey-path'/);
     test.done();
   },
 
@@ -534,7 +534,7 @@ export = {
     const api = new apigateway.RestApi(stack, 'myapi', {
       defaultIntegration: rootInteg,
       defaultMethodOptions: {
-        authorizerId: 'AUTHID',
+        authorizer: { authorizerId: 'AUTHID' },
         authorizationType: apigateway.AuthorizationType.IAM,
       }
     });
@@ -553,7 +553,7 @@ export = {
     const child2 = api.root.addResource('child2', {
       defaultIntegration: new apigateway.MockIntegration(),
       defaultMethodOptions: {
-        authorizerId: 'AUTHID2',
+        authorizer: { authorizerId: 'AUTHID2' },
       }
     });
 

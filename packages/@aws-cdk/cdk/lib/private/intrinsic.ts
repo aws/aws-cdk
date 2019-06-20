@@ -1,6 +1,6 @@
 import { IResolvable, IResolveContext } from "../resolvable";
+import { captureStackTrace } from "../stack-trace";
 import { Token } from "../token";
-import { createStackTrace } from "./stack-trace";
 
 /**
  * Token subclass that represents values intrinsic to the target document language
@@ -16,7 +16,7 @@ export class Intrinsic implements IResolvable {
   /**
    * The captured stack trace which represents the location in which this token was created.
    */
-  protected readonly trace: string[];
+  public readonly creationStack: string[];
 
   private readonly value: any;
 
@@ -25,7 +25,7 @@ export class Intrinsic implements IResolvable {
       throw new Error(`Argument to Intrinsic must be a plain value object, got ${value}`);
     }
 
-    this.trace = createStackTrace();
+    this.creationStack = captureStackTrace();
     this.value = value;
   }
 
@@ -68,7 +68,7 @@ export class Intrinsic implements IResolvable {
    * @param message Error message
    */
   protected newError(message: string): any {
-    return new Error(`${message}\nToken created:\n    at ${this.trace.join('\n    at ')}\nError thrown:`);
+    return new Error(`${message}\nToken created:\n    at ${this.creationStack.join('\n    at ')}\nError thrown:`);
   }
 }
 

@@ -1,7 +1,7 @@
 import cdk = require('@aws-cdk/cdk');
-import { Stack } from '@aws-cdk/cdk';
+import { captureStackTrace, Stack } from '@aws-cdk/cdk';
 import { Default, RegionInfo } from '@aws-cdk/region-info';
-import { PolicyStatement } from './policy-document';
+import { PolicyStatement } from './policy-statement';
 import { mergePrincipal } from './util';
 
 /**
@@ -312,7 +312,9 @@ export class CompositePrincipal extends PrincipalBase {
  * A lazy token that requires an instance of Stack to evaluate
  */
 class StackDependentToken implements cdk.IResolvable {
+  public readonly creationStack: string[];
   constructor(private readonly fn: (stack: cdk.Stack) => any) {
+    this.creationStack = captureStackTrace();
   }
 
   public resolve(context: cdk.IResolveContext) {
@@ -329,8 +331,10 @@ class StackDependentToken implements cdk.IResolvable {
 }
 
 class ServicePrincipalToken implements cdk.IResolvable {
+  public readonly creationStack: string[];
   constructor(private readonly service: string,
               private readonly opts: ServicePrincipalOpts) {
+    this.creationStack = captureStackTrace();
   }
 
   public resolve(ctx: cdk.IResolveContext) {

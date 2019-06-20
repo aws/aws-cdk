@@ -16,7 +16,7 @@ function mockFunction(stack: cdk.Stack, id: string) {
 }
 function mockAlias(stack: cdk.Stack) {
   return new lambda.Alias(stack, 'Alias', {
-    aliasName: 'my-alias',
+    aliasName: cdk.PhysicalName.of('my-alias'),
     version: new lambda.Version(stack, 'Version', {
       lambda: mockFunction(stack, 'Function')
     })
@@ -95,7 +95,18 @@ export = {
           }],
           Version: "2012-10-17"
         },
-        ManagedPolicyArns: ['arn:aws:iam::aws:policy/service-role/AWSCodeDeployRoleForLambda']
+        ManagedPolicyArns: [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                { Ref: "AWS::Partition" },
+                ':iam::aws:policy/service-role/AWSCodeDeployRoleForLambda'
+              ]
+            ]
+          }
+        ]
       }));
 
       test.done();
@@ -108,7 +119,7 @@ export = {
         application,
         alias,
         deploymentConfig: LambdaDeploymentConfig.AllAtOnce,
-        deploymentGroupName: 'test'
+        deploymentGroupName: cdk.PhysicalName.of('test'),
       });
 
       expect(stack).to(haveResourceLike('AWS::CodeDeploy::DeploymentGroup', {
@@ -143,7 +154,18 @@ export = {
           }],
           Version: "2012-10-17"
         },
-        ManagedPolicyArns: ['arn:aws:iam::aws:policy/service-role/AWSCodeDeployRoleForLambda']
+        ManagedPolicyArns: [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                { Ref: "AWS::Partition" },
+                ':iam::aws:policy/service-role/AWSCodeDeployRoleForLambda'
+              ]
+            ]
+          }
+        ]
       }));
 
       test.done();

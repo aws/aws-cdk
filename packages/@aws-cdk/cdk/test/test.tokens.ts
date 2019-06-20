@@ -477,7 +477,7 @@ export = {
       function fn2() {
         class ExposeTrace extends Intrinsic {
           public get creationTrace() {
-            return this.trace;
+            return this.creationStack;
           }
         }
 
@@ -582,9 +582,28 @@ export = {
 
     return tests;
   })(),
+
+  'creation stack is attached to errors emitted during resolve'(test: Test) {
+    function showMeInTheStackTrace() {
+      return Lazy.stringValue({ produce: () => { throw new Error('fooError'); } });
+    }
+
+    const x = showMeInTheStackTrace();
+    let message;
+    try {
+      resolve(x);
+    } catch (e) {
+      message = e.message;
+    }
+
+    test.ok(message && message.includes('showMeInTheStackTrace'));
+    test.done();
+  }
 };
 
 class Promise2 implements IResolvable {
+  public readonly creationStack = [];
+
   public resolve() {
     return {
       Data: {
@@ -597,6 +616,7 @@ class Promise2 implements IResolvable {
 }
 
 class Promise1 implements IResolvable {
+  public readonly creationStack = [];
   public p2 = [ new Promise2(), new Promise2() ];
 
   public resolve() {

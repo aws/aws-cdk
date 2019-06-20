@@ -12,7 +12,7 @@ export = {
 
     // WHEN
     asg.scaleOnSchedule('ScaleOutInTheMorning', {
-      schedule: autoscaling.Cron.dailyUtc(8),
+      schedule: autoscaling.Schedule.cron({ hour: '8', minute: '0' }),
       minCapacity: 10,
     });
 
@@ -32,7 +32,7 @@ export = {
 
     // WHEN
     asg.scaleOnSchedule('ScaleOutInTheMorning', {
-      schedule: autoscaling.Cron.dailyUtc(8),
+      schedule: autoscaling.Schedule.cron({ hour: '8' }),
       startTime: new Date(Date.UTC(2033, 8, 10, 12, 0, 0)),      // JavaScript's Date is a little silly.
       minCapacity: 11,
     });
@@ -52,7 +52,7 @@ export = {
 
     // WHEN
     asg.scaleOnSchedule('ScaleOutInTheMorning', {
-      schedule: autoscaling.Cron.dailyUtc(8),
+      schedule: autoscaling.Schedule.cron({ hour: '8' }),
       minCapacity: 10,
     });
 
@@ -76,7 +76,6 @@ export = {
             VPCZoneIdentifier: [
               { Ref: "VPCPrivateSubnet1Subnet8BCA10E0" },
               { Ref: "VPCPrivateSubnet2SubnetCFCDAA7A" },
-              { Ref: "VPCPrivateSubnet3Subnet3EDCD457" }
             ]
           },
           UpdatePolicy: {

@@ -71,6 +71,18 @@ export interface AwsSdkCall {
    * @default use latest available API version
    */
   readonly apiVersion?: string;
+
+  /**
+   * Restrict the data returned by the custom resource to a specific path in
+   * the API response. Use this to limit the data returned by the custom
+   * resource if working with API calls that could potentially result in custom
+   * response objects exceeding the hard limit of 4096 bytes.
+   *
+   * Example for ECS / updateService: 'service.deploymentConfiguration.maximumPercent'
+   *
+   * @default return all data
+   */
+  readonly outputPath?: string;
 }
 
 export interface AwsCustomResourceProps {
@@ -136,11 +148,10 @@ export class AwsCustomResource extends cdk.Construct {
     } else { // Derive statements from AWS SDK calls
       for (const call of [props.onCreate, props.onUpdate, props.onDelete]) {
         if (call) {
-          provider.addToRolePolicy(
-            new iam.PolicyStatement()
-              .addAction(awsSdkToIamAction(call.service, call.action))
-              .addAllResources()
-          );
+          provider.addToRolePolicy(new iam.PolicyStatement({
+            actions: [awsSdkToIamAction(call.service, call.action)],
+            resources: ['*']
+          }));
         }
       }
     }
@@ -158,6 +169,7 @@ export class AwsCustomResource extends cdk.Construct {
 
   /**
    * Returns response data for the AWS SDK call.
+   *
    * Example for S3 / listBucket : 'Buckets.0.Name'
    *
    * @param dataPath the path to the data

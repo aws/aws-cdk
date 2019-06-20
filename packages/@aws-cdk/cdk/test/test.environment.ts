@@ -1,6 +1,5 @@
-import { DEFAULT_ACCOUNT_CONTEXT_KEY, DEFAULT_REGION_CONTEXT_KEY } from '@aws-cdk/cx-api';
 import { Test } from 'nodeunit';
-import { App, Stack, Token } from '../lib';
+import { App, Aws, Stack, Token } from '../lib';
 
 export = {
   'By default, environment region and account are not defined and resolve to intrinsics'(test: Test) {
@@ -9,20 +8,6 @@ export = {
     test.ok(Token.isUnresolved(stack.region));
     test.deepEqual(stack.resolve(stack.account), { Ref: "AWS::AccountId" });
     test.deepEqual(stack.resolve(stack.region), { Ref: "AWS::Region" });
-    test.done();
-  },
-
-  'Even if account and region are set in context, stack.account and region returns Refs)'(test: Test) {
-    const app = new App();
-
-    app.node.setContext(DEFAULT_ACCOUNT_CONTEXT_KEY, 'my-default-account');
-    app.node.setContext(DEFAULT_REGION_CONTEXT_KEY, 'my-default-region');
-
-    const stack = new Stack(app, 'my-stack');
-
-    test.deepEqual(stack.resolve(stack.account), { Ref: 'AWS::AccountId' });
-    test.deepEqual(stack.resolve(stack.region), { Ref: 'AWS::Region' });
-
     test.done();
   },
 
@@ -39,5 +24,115 @@ export = {
     test.deepEqual(stack2.resolve(stack2.region), { Ref: 'AWS::Region' });
 
     test.done();
+  },
+
+  'environment defaults': {
+    'if "env" is not specified, it implies account/region agnostic'(test: Test) {
+      // GIVEN
+      const app = new App();
+
+      // WHEN
+      const stack = new Stack(app, 'stack');
+
+      // THEN
+      test.deepEqual(stack.resolve(stack.account), { Ref: 'AWS::AccountId' });
+      test.deepEqual(stack.resolve(stack.region), { Ref: 'AWS::Region' });
+      test.deepEqual(app.synth().getStack(stack.stackName).environment, {
+        account: 'unknown-account',
+        region: 'unknown-region',
+        name: 'aws://unknown-account/unknown-region'
+      });
+
+      test.done();
+    },
+
+    'only region is set'(test: Test) {
+      // GIVEN
+      const app = new App();
+
+      // WHEN
+      const stack = new Stack(app, 'stack', { env: { region: 'explicit-region' }});
+
+      // THEN
+      test.deepEqual(stack.resolve(stack.account), { Ref: 'AWS::AccountId' });
+      test.deepEqual(stack.resolve(stack.region), 'explicit-region');
+      test.deepEqual(app.synth().getStack(stack.stackName).environment, {
+        account: 'unknown-account',
+        region: 'explicit-region',
+        name: 'aws://unknown-account/explicit-region'
+      });
+
+      test.done();
+    },
+
+    'both "region" and "account" are set'(test: Test) {
+      // GIVEN
+      const app = new App();
+
+      // WHEN
+      const stack = new Stack(app, 'stack', { env: {
+        account: 'explicit-account',
+        region: 'explicit-region'
+      }});
+
+      // THEN
+      test.deepEqual(stack.resolve(stack.account), 'explicit-account');
+      test.deepEqual(stack.resolve(stack.region), 'explicit-region');
+      test.deepEqual(app.synth().getStack(stack.stackName).environment, {
+        account: 'explicit-account',
+        region: 'explicit-region',
+        name: 'aws://explicit-account/explicit-region'
+      });
+
+      test.done();
+    },
+
+    'token-account and token-region'(test: Test) {
+      // GIVEN
+      const app = new App();
+
+      // WHEN
+      const stack = new Stack(app, 'stack', {
+        env: {
+          account: Aws.accountId,
+          region: Aws.region
+        }
+      });
+
+      // THEN
+      test.deepEqual(stack.resolve(stack.account), { Ref: 'AWS::AccountId' });
+      test.deepEqual(stack.resolve(stack.region), { Ref: 'AWS::Region' });
+      test.deepEqual(app.synth().getStack(stack.stackName).environment, {
+        account: 'unknown-account',
+        region: 'unknown-region',
+        name: 'aws://unknown-account/unknown-region'
+      });
+
+      test.done();
+    },
+
+    'token-account explicit region'(test: Test) {
+      // GIVEN
+      const app = new App();
+
+      // WHEN
+      const stack = new Stack(app, 'stack', {
+        env: {
+          account: Aws.accountId,
+          region: 'us-east-2'
+        }
+      });
+
+      // THEN
+      test.deepEqual(stack.resolve(stack.account), { Ref: 'AWS::AccountId' });
+      test.deepEqual(stack.resolve(stack.region), 'us-east-2');
+      test.deepEqual(app.synth().getStack(stack.stackName).environment, {
+        account: 'unknown-account',
+        region: 'us-east-2',
+        name: 'aws://unknown-account/us-east-2'
+      });
+
+      test.done();
+    }
   },
 };

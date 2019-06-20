@@ -71,36 +71,37 @@ export class InstanceDrainHook extends cdk.Construct {
 
     // Describe actions cannot be restricted and restrict the CompleteLifecycleAction to the ASG arn
     // https://docs.aws.amazon.com/autoscaling/ec2/userguide/control-access-using-iam.html
-    fn.addToRolePolicy(new iam.PolicyStatement()
-      .addActions(
+    fn.addToRolePolicy(new iam.PolicyStatement({
+      actions: [
         'ec2:DescribeInstances',
         'ec2:DescribeInstanceAttribute',
         'ec2:DescribeInstanceStatus',
         'ec2:DescribeHosts'
-      )
-      .addAllResources());
+      ],
+      resources: ['*']
+    }));
 
     // Restrict to the ASG
-    fn.addToRolePolicy(new iam.PolicyStatement()
-      .addActions(
-        'autoscaling:CompleteLifecycleAction'
-      )
-      .addResource(props.autoScalingGroup.autoScalingGroupArn));
+    fn.addToRolePolicy(new iam.PolicyStatement({
+      actions: ['autoscaling:CompleteLifecycleAction'],
+      resources: [props.autoScalingGroup.autoScalingGroupArn],
+    }));
 
-    fn.addToRolePolicy(new iam.PolicyStatement()
-      .addActions(
-        'ecs:DescribeContainerInstances',
-        'ecs:DescribeTasks')
-      .addAllResources());
+    fn.addToRolePolicy(new iam.PolicyStatement({
+      actions: ['ecs:DescribeContainerInstances', 'ecs:DescribeTasks'],
+      resources: ['*'],
+    }));
 
     // Restrict to the ECS Cluster
-    fn.addToRolePolicy(new iam.PolicyStatement()
-      .addActions(
+    fn.addToRolePolicy(new iam.PolicyStatement({
+      actions: [
         'ecs:ListContainerInstances',
         'ecs:SubmitContainerStateChange',
         'ecs:SubmitTaskStateChange',
         'ecs:UpdateContainerInstancesState',
-        'ecs:ListTasks')
-      .addResource(props.cluster.clusterArn));
+        'ecs:ListTasks'
+      ],
+      resources: [props.cluster.clusterArn]
+    }));
   }
 }

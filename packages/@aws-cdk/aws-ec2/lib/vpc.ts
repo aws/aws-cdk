@@ -1,12 +1,22 @@
-import cdk = require('@aws-cdk/cdk');
-import { ConcreteDependable, Construct, IConstruct, IDependable, IResource, Resource, Stack } from '@aws-cdk/cdk';
+import {
+  ConcreteDependable,
+  Construct,
+  ContextProvider,
+  DependableTrait,
+  IConstruct,
+  IDependable,
+  IResource,
+  Resource,
+  Stack,
+  Tag } from '@aws-cdk/cdk';
+import cxapi = require('@aws-cdk/cx-api');
 import { CfnEIP, CfnInternetGateway, CfnNatGateway, CfnRoute, CfnVPNGateway, CfnVPNGatewayRoutePropagation } from './ec2.generated';
 import { CfnRouteTable, CfnSubnet, CfnSubnetRouteTableAssociation, CfnVPC, CfnVPCGatewayAttachment } from './ec2.generated';
 import { NetworkBuilder } from './network-util';
 import { defaultSubnetName, ImportSubnetGroup, subnetId, subnetName  } from './util';
 import { GatewayVpcEndpoint, GatewayVpcEndpointAwsService, GatewayVpcEndpointOptions } from './vpc-endpoint';
 import { InterfaceVpcEndpoint, InterfaceVpcEndpointOptions } from './vpc-endpoint';
-import { VpcLookupOptions, VpcNetworkProvider } from './vpc-network-provider';
+import { VpcLookupOptions } from './vpc-lookup';
 import { VpnConnection, VpnConnectionOptions, VpnConnectionType } from './vpn';
 
 const VPC_SUBNET_SYMBOL = Symbol.for('@aws-cdk/aws-ec2.VpcSubnet');
@@ -666,15 +676,30 @@ export class Vpc extends VpcBase {
   /**
    * Import an exported VPC
    */
-  public static fromVpcAttributes(scope: cdk.Construct, id: string, attrs: VpcAttributes): IVpc {
+  public static fromVpcAttributes(scope: Construct, id: string, attrs: VpcAttributes): IVpc {
     return new ImportedVpc(scope, id, attrs);
   }
 
   /**
    * Import an existing VPC from by querying the AWS environment this stack is deployed to.
    */
-  public static fromLookup(scope: cdk.Construct, id: string, options: VpcLookupOptions): IVpc {
-    return Vpc.fromVpcAttributes(scope, id, new VpcNetworkProvider(scope, options).vpcProps);
+  public static fromLookup(scope: Construct, id: string, options: VpcLookupOptions): IVpc {
+    const filter: {[key: string]: string} = options.tags || {};
+
+    // We give special treatment to some tags
+    if (options.vpcId) { filter['vpc-id'] = options.vpcId; }
+    if (options.vpcName) { filter['tag:Name'] = options.vpcName; }
+    if (options.isDefault !== undefined) {
+      filter.isDefault = options.isDefault ? 'true' : 'false';
+    }
+
+    const attributes = ContextProvider.getValue(scope, {
+      provider: cxapi.VPC_PROVIDER,
+      props: { filter } as cxapi.VpcContextQuery,
+      dummyValue: DUMMY_VPC_PROPS
+    });
+
+    return this.fromVpcAttributes(scope, id, attributes);
   }
 
   /**
@@ -758,8 +783,10 @@ export class Vpc extends VpcBase {
    * Network routing for the public subnets will be configured to allow outbound access directly via an Internet Gateway.
    * Network routing for the private subnets will be configured to allow outbound access via a set of resilient NAT Gateways (one per AZ).
    */
-  constructor(scope: cdk.Construct, id: string, props: VpcProps = {}) {
+  constructor(scope: Construct, id: string, props: VpcProps = {}) {
     super(scope, id);
+
+    const stack = Stack.of(this);
 
     // Can't have enabledDnsHostnames without enableDnsSupport
     if (props.enableDnsHostnames && !props.enableDnsSupport) {
@@ -781,20 +808,20 @@ export class Vpc extends VpcBase {
       instanceTenancy,
     });
 
-    this.vpcDefaultNetworkAcl = this.resource.vpcDefaultNetworkAcl;
-    this.vpcCidrBlockAssociations = this.resource.vpcCidrBlockAssociations;
-    this.vpcCidrBlock = this.resource.vpcCidrBlock;
-    this.vpcDefaultSecurityGroup = this.resource.vpcDefaultSecurityGroup;
-    this.vpcIpv6CidrBlocks = this.resource.vpcIpv6CidrBlocks;
+    this.vpcDefaultNetworkAcl = this.resource.attrDefaultNetworkAcl;
+    this.vpcCidrBlockAssociations = this.resource.attrCidrBlockAssociations;
+    this.vpcCidrBlock = this.resource.attrCidrBlock;
+    this.vpcDefaultSecurityGroup = this.resource.attrDefaultSecurityGroup;
+    this.vpcIpv6CidrBlocks = this.resource.attrIpv6CidrBlocks;
 
-    this.node.applyAspect(new cdk.Tag(NAME_TAG, this.node.path));
+    this.node.applyAspect(new Tag(NAME_TAG, this.node.path));
 
-    this.availabilityZones = cdk.Context.getAvailabilityZones(this);
+    this.availabilityZones = stack.availabilityZones;
 
     const maxAZs = props.maxAZs !== undefined ? props.maxAZs : 3;
     this.availabilityZones = this.availabilityZones.slice(0, maxAZs);
 
-    this.vpcId = this.resource.vpcId;
+    this.vpcId = this.resource.refAsString;
 
     this.subnetConfiguration = ifUndefined(props.subnetConfiguration, Vpc.DEFAULT_SUBNETS);
     // subnetConfiguration and natGateways must be set before calling createSubnets
@@ -843,10 +870,10 @@ export class Vpc extends VpcBase {
 
       const attachment = new CfnVPCGatewayAttachment(this, 'VPCVPNGW', {
         vpcId: this.vpcId,
-        vpnGatewayId: vpnGateway.vpnGatewayName
+        vpnGatewayId: vpnGateway.refAsString,
       });
 
-      this.vpnGatewayId = vpnGateway.vpnGatewayName;
+      this.vpnGatewayId = vpnGateway.refAsString;
 
       // Propagate routes on route tables associated with the right subnets
       const vpnRoutePropagation = props.vpnRoutePropagation || [{ subnetType: SubnetType.Private }];
@@ -877,7 +904,6 @@ export class Vpc extends VpcBase {
       }
     }
   }
-
   /**
    * Adds a new gateway endpoint to this VPC
    */
@@ -933,7 +959,7 @@ export class Vpc extends VpcBase {
     natSubnets = natSubnets.slice(0, natCount);
     for (const sub of natSubnets) {
       const gateway = sub.addNatGateway();
-      this.natGatewayByAZ[sub.availabilityZone] = gateway.natGatewayId;
+      this.natGatewayByAZ[sub.availabilityZone] = gateway.refAsString;
       this.natDependencies.push(gateway);
     }
   }
@@ -998,9 +1024,9 @@ export class Vpc extends VpcBase {
       }
 
       // These values will be used to recover the config upon provider import
-      const includeResourceTypes = [CfnSubnet.resourceTypeName];
-      subnet.node.applyAspect(new cdk.Tag(SUBNETNAME_TAG, subnetConfig.name, {includeResourceTypes}));
-      subnet.node.applyAspect(new cdk.Tag(SUBNETTYPE_TAG, subnetTypeTagValue(subnetConfig.subnetType), {includeResourceTypes}));
+      const includeResourceTypes = [CfnSubnet.cfnResourceTypeName];
+      subnet.node.applyAspect(new Tag(SUBNETNAME_TAG, subnetConfig.name, {includeResourceTypes}));
+      subnet.node.applyAspect(new Tag(SUBNETTYPE_TAG, subnetTypeTagValue(subnetConfig.subnetType), {includeResourceTypes}));
     });
   }
 }
@@ -1049,13 +1075,13 @@ export interface SubnetProps {
  *
  * @resource AWS::EC2::Subnet
  */
-export class Subnet extends cdk.Resource implements ISubnet {
+export class Subnet extends Resource implements ISubnet {
 
   public static isVpcSubnet(x: any): x is Subnet {
     return VPC_SUBNET_SYMBOL in x;
   }
 
-  public static fromSubnetAttributes(scope: cdk.Construct, id: string, attrs: SubnetAttributes): ISubnet {
+  public static fromSubnetAttributes(scope: Construct, id: string, attrs: SubnetAttributes): ISubnet {
     return new ImportedSubnet(scope, id, attrs);
   }
 
@@ -1092,7 +1118,7 @@ export class Subnet extends cdk.Resource implements ISubnet {
   /**
    * Parts of this VPC subnet
    */
-  public readonly dependencyElements: cdk.IDependable[] = [];
+  public readonly dependencyElements: IDependable[] = [];
 
   /**
    * The routeTableId attached to this subnet.
@@ -1101,12 +1127,12 @@ export class Subnet extends cdk.Resource implements ISubnet {
 
   private readonly internetDependencies = new ConcreteDependable();
 
-  constructor(scope: cdk.Construct, id: string, props: SubnetProps) {
+  constructor(scope: Construct, id: string, props: SubnetProps) {
     super(scope, id);
 
     Object.defineProperty(this, VPC_SUBNET_SYMBOL, { value: true });
 
-    this.node.applyAspect(new cdk.Tag(NAME_TAG, this.node.path));
+    this.node.applyAspect(new Tag(NAME_TAG, this.node.path));
 
     this.availabilityZone = props.availabilityZone;
     const subnet = new CfnSubnet(this, 'Subnet', {
@@ -1115,11 +1141,11 @@ export class Subnet extends cdk.Resource implements ISubnet {
       availabilityZone: props.availabilityZone,
       mapPublicIpOnLaunch: props.mapPublicIpOnLaunch,
     });
-    this.subnetId = subnet.subnetId;
-    this.subnetVpcId = subnet.subnetVpcId;
-    this.subnetAvailabilityZone = subnet.subnetAvailabilityZone;
-    this.subnetIpv6CidrBlocks = subnet.subnetIpv6CidrBlocks;
-    this.subnetNetworkAclAssociationId = subnet.subnetNetworkAclAssociationId;
+    this.subnetId = subnet.refAsString;
+    this.subnetVpcId = subnet.attrVpcId;
+    this.subnetAvailabilityZone = subnet.attrAvailabilityZone;
+    this.subnetIpv6CidrBlocks = subnet.attrIpv6CidrBlocks;
+    this.subnetNetworkAclAssociationId = subnet.attrNetworkAclAssociationId;
 
     const table = new CfnRouteTable(this, 'RouteTable', {
       vpcId: props.vpcId,
@@ -1144,7 +1170,7 @@ export class Subnet extends cdk.Resource implements ISubnet {
    * @param gatewayId the logical ID (ref) of the gateway attached to your VPC
    * @param gatewayAttachment the gateway attachment construct to be added as a dependency
    */
-  public addDefaultInternetRoute(gatewayId: string, gatewayAttachment: cdk.IDependable) {
+  public addDefaultInternetRoute(gatewayId: string, gatewayAttachment: IDependable) {
     const route = new CfnRoute(this, `DefaultRoute`, {
       routeTableId: this.routeTableId!,
       destinationCidrBlock: '0.0.0.0/0',
@@ -1188,7 +1214,7 @@ export class PublicSubnet extends Subnet implements IPublicSubnet {
     return new ImportedSubnet(scope, id, attrs);
   }
 
-  constructor(scope: cdk.Construct, id: string, props: PublicSubnetProps) {
+  constructor(scope: Construct, id: string, props: PublicSubnetProps) {
     super(scope, id, props);
   }
 
@@ -1203,7 +1229,7 @@ export class PublicSubnet extends Subnet implements IPublicSubnet {
       subnetId: this.subnetId,
       allocationId: new CfnEIP(this, `EIP`, {
         domain: 'vpc'
-      }).eipAllocationId,
+      }).attrAllocationId,
     });
     return ngw;
   }
@@ -1227,7 +1253,7 @@ export class PrivateSubnet extends Subnet implements IPrivateSubnet {
     return new ImportedSubnet(scope, id, attrs);
   }
 
-  constructor(scope: cdk.Construct, id: string, props: PrivateSubnetProps) {
+  constructor(scope: Construct, id: string, props: PrivateSubnetProps) {
     super(scope, id, props);
   }
 }
@@ -1244,7 +1270,7 @@ class ImportedVpc extends VpcBase {
   public readonly availabilityZones: string[];
   public readonly vpnGatewayId?: string;
 
-  constructor(scope: cdk.Construct, id: string, props: VpcAttributes) {
+  constructor(scope: Construct, id: string, props: VpcAttributes) {
     super(scope, id);
 
     this.vpcId = props.vpcId;
@@ -1299,11 +1325,11 @@ class CompositeDependable implements IDependable {
 
   constructor() {
     const self = this;
-    cdk.DependableTrait.implement(this, {
+    DependableTrait.implement(this, {
       get dependencyRoots() {
         const ret = [];
         for (const dep of self.dependables) {
-          ret.push(...cdk.DependableTrait.get(dep).dependencyRoots);
+          ret.push(...DependableTrait.get(dep).dependencyRoots);
         }
         return ret;
       }
@@ -1330,8 +1356,8 @@ function notUndefined<T>(x: T | undefined): x is T {
   return x !== undefined;
 }
 
-class ImportedSubnet extends cdk.Resource implements ISubnet, IPublicSubnet, IPrivateSubnet {
-  public readonly internetConnectivityEstablished: cdk.IDependable = new cdk.ConcreteDependable();
+class ImportedSubnet extends Resource implements ISubnet, IPublicSubnet, IPrivateSubnet {
+  public readonly internetConnectivityEstablished: IDependable = new ConcreteDependable();
   public readonly availabilityZone: string;
   public readonly subnetId: string;
   public readonly routeTableId?: string = undefined;
@@ -1343,3 +1369,15 @@ class ImportedSubnet extends cdk.Resource implements ISubnet, IPublicSubnet, IPr
     this.subnetId = attrs.subnetId;
   }
 }
+
+/**
+ * There are returned when the provider has not supplied props yet
+ *
+ * It's only used for testing and on the first run-through.
+ */
+const DUMMY_VPC_PROPS: cxapi.VpcContextResponse = {
+  availabilityZones: ['dummy-1a', 'dummy-1b'],
+  vpcId: 'vpc-12345',
+  publicSubnetIds: ['s-12345', 's-67890'],
+  privateSubnetIds: ['p-12345', 'p-67890'],
+};

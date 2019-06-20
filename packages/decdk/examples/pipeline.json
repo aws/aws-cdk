@@ -4,7 +4,11 @@
     "Repo": {
       "Type": "@aws-cdk/aws-codecommit.Repository",
       "Properties": {
-        "repositoryName": "my-first-decdk-repo"
+        "repositoryName": {
+         "of": {
+          "name": "my-first-decdk-repo"
+         }
+        }
       }
     },
     "Key": {
@@ -21,7 +25,7 @@
       "Properties": {
         "stages": [
           {
-            "name": "Source",
+            "stageName": "Source",
             "actions": [
               {
                 "@aws-cdk/aws-codepipeline-actions.CodeCommitSourceAction":  {
@@ -37,7 +41,7 @@
             ]
           },
           {
-            "name": "Build",
+            "stageName": "Build",
             "actions": [
               {
                 "@aws-cdk/aws-codepipeline-actions.CodeBuildAction":   {
@@ -48,17 +52,19 @@
                       "name": "Source"
                     }
                   },
-                  "output": {
-                    "artifact": {
-                      "name": "Build"
+                  "outputs": [
+                    {
+                      "artifact": {
+                        "name": "Build"
+                      }
                     }
-                  }
+                  ]
                 }
               }
             ]
           },
           {
-            "name": "Deploy",
+            "stageName": "Deploy",
             "actions": [
               {
                 "@aws-cdk/aws-codepipeline-actions.CloudFormationCreateUpdateStackAction": {

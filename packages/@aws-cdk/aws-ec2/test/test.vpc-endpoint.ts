@@ -1,5 +1,5 @@
 import { expect, haveResource } from '@aws-cdk/assert';
-import { PolicyStatement } from '@aws-cdk/aws-iam';
+import { AnyPrincipal, PolicyStatement } from '@aws-cdk/aws-iam';
 import { Stack } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
 // tslint:disable-next-line:max-line-length
@@ -44,9 +44,6 @@ export = {
           {
             Ref: 'VpcNetworkPrivateSubnet2RouteTableE97B328B'
           },
-          {
-            Ref: 'VpcNetworkPrivateSubnet3RouteTableE0C661A2'
-          }
         ],
         VpcEndpointType: 'Gateway'
       }));
@@ -100,17 +97,11 @@ export = {
             Ref: 'VpcNetworkPublicSubnet2RouteTableE5F348DF'
           },
           {
-            Ref: 'VpcNetworkPublicSubnet3RouteTable36E30B07'
-          },
-          {
             Ref: 'VpcNetworkPrivateSubnet1RouteTableCD085FF1'
           },
           {
             Ref: 'VpcNetworkPrivateSubnet2RouteTableE97B328B'
           },
-          {
-            Ref: 'VpcNetworkPrivateSubnet3RouteTableE0C661A2'
-          }
         ],
         VpcEndpointType: 'Gateway'
       }));
@@ -127,12 +118,11 @@ export = {
       });
 
       // WHEN
-      endpoint.addToPolicy(
-        new PolicyStatement()
-          .addAnyPrincipal()
-          .addActions('s3:GetObject', 's3:ListBucket')
-          .addAllResources()
-      );
+      endpoint.addToPolicy(new PolicyStatement({
+        principals: [new AnyPrincipal()],
+        actions: ['s3:GetObject', 's3:ListBucket'],
+        resources: ['*']
+      }));
 
       // THEN
       expect(stack).to(haveResource('AWS::EC2::VPCEndpoint', {
@@ -164,11 +154,10 @@ export = {
       });
 
       // THEN
-      test.throws(() => endpoint.addToPolicy(
-        new PolicyStatement()
-          .addActions('s3:GetObject', 's3:ListBucket')
-          .addAllResources()
-      ), /`Principal`/);
+      test.throws(() => endpoint.addToPolicy(new PolicyStatement({
+        actions: ['s3:GetObject', 's3:ListBucket'],
+        resources: ['*']
+      })), /`Principal`/);
 
       test.done();
     },
@@ -291,9 +280,6 @@ export = {
           {
             Ref: 'VpcNetworkPrivateSubnet2Subnet5E4189D6'
           },
-          {
-            Ref: 'VpcNetworkPrivateSubnet3Subnet5D16E0FB'
-          }
         ],
         VpcEndpointType: 'Interface'
       }));

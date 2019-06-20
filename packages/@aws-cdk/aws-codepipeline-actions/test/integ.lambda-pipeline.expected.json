@@ -378,6 +378,7 @@
     },
     "PipelineBucketB967BD35": {
       "Type": "AWS::S3::Bucket",
+      "DeletionPolicy": "Delete",
       "Properties": {
         "VersioningConfiguration": {
           "Status": "Enabled"
@@ -444,7 +445,7 @@
                 ]
               ]
             },
-            "Id": "Pipeline",
+            "Id": "awscdkcodepipelinelambdaPipeline87A4B3D3",
             "RoleArn": {
               "Fn::GetAtt": [
                 "PipelineEventsRole46BEEA7C",

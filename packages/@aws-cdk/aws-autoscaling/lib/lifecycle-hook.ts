@@ -1,5 +1,5 @@
 import iam = require('@aws-cdk/aws-iam');
-import { Construct, IResource, Resource } from '@aws-cdk/cdk';
+import { Construct, IResource, PhysicalName, Resource } from '@aws-cdk/cdk';
 import { IAutoScalingGroup } from './auto-scaling-group';
 import { CfnLifecycleHook } from './autoscaling.generated';
 import { ILifecycleHookTarget } from './lifecycle-hook-target';
@@ -13,7 +13,7 @@ export interface BasicLifecycleHookProps {
    *
    * @default - Automatically generated name.
    */
-  readonly lifecycleHookName?: string;
+  readonly lifecycleHookName?: PhysicalName;
 
   /**
    * The action the Auto Scaling group takes when the lifecycle hook timeout elapses or if an unexpected failure occurs.
@@ -92,7 +92,9 @@ export class LifecycleHook extends Resource implements ILifecycleHook {
   public readonly lifecycleHookName: string;
 
   constructor(scope: Construct, id: string, props: LifecycleHookProps) {
-    super(scope, id);
+    super(scope, id, {
+      physicalName: props.lifecycleHookName,
+    });
 
     this.role = props.role || new iam.Role(this, 'Role', {
       assumedBy: new iam.ServicePrincipal('autoscaling.amazonaws.com')
@@ -104,7 +106,7 @@ export class LifecycleHook extends Resource implements ILifecycleHook {
       autoScalingGroupName: props.autoScalingGroup.autoScalingGroupName,
       defaultResult: props.defaultResult,
       heartbeatTimeout: props.heartbeatTimeoutSec,
-      lifecycleHookName: props.lifecycleHookName,
+      lifecycleHookName: this.physicalName.value,
       lifecycleTransition: props.lifecycleTransition,
       notificationMetadata: props.notificationMetadata,
       notificationTargetArn: targetProps.notificationTargetArn,
@@ -116,7 +118,7 @@ export class LifecycleHook extends Resource implements ILifecycleHook {
     // lifecycle hook.
     resource.node.addDependency(this.role);
 
-    this.lifecycleHookName = resource.lifecycleHookName;
+    this.lifecycleHookName = resource.refAsString;
   }
 }
 

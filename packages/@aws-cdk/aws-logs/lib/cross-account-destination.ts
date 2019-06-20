@@ -1,6 +1,6 @@
 import iam = require('@aws-cdk/aws-iam');
 import cdk = require('@aws-cdk/cdk');
-import { Construct, Lazy, Stack } from '@aws-cdk/cdk';
+import { Construct, Lazy, PhysicalName, ResourceIdentifiers, Stack } from '@aws-cdk/cdk';
 import { ILogGroup } from './log-group';
 import { CfnDestination } from './logs.generated';
 import { ILogSubscriptionDestination, LogSubscriptionDestinationConfig } from './subscription-filter';
@@ -14,7 +14,7 @@ export interface CrossAccountDestinationProps {
    *
    * @default Automatically generated
    */
-  readonly destinationName?: string;
+  readonly destinationName?: PhysicalName;
 
   /**
    * The role to assume that grants permissions to write to 'target'.
@@ -39,8 +39,10 @@ export interface CrossAccountDestinationProps {
  * subscribe a Kinesis stream using the integration class in the
  * `@aws-cdk/aws-logs-destinations` package; if necessary, a
  * `CrossAccountDestination` will be created automatically.
+ *
+ * @resource AWS::Logs::Destination
  */
-export class CrossAccountDestination extends cdk.Construct implements ILogSubscriptionDestination {
+export class CrossAccountDestination extends cdk.Resource implements ILogSubscriptionDestination {
   /**
    * Policy object of this CrossAccountDestination object
    */
@@ -48,11 +50,13 @@ export class CrossAccountDestination extends cdk.Construct implements ILogSubscr
 
   /**
    * The name of this CrossAccountDestination object
+   * @attribute
    */
   public readonly destinationName: string;
 
   /**
    * The ARN of this CrossAccountDestination object
+   * @attribute
    */
   public readonly destinationArn: string;
 
@@ -62,25 +66,36 @@ export class CrossAccountDestination extends cdk.Construct implements ILogSubscr
   private readonly resource: CfnDestination;
 
   constructor(scope: cdk.Construct, id: string, props: CrossAccountDestinationProps) {
-    super(scope, id);
-
-    // In the underlying model, the name is not optional, but we make it so anyway.
-    const destinationName = props.destinationName || Lazy.stringValue({ produce: () => this.generateUniqueName() });
+    super(scope, id, {
+      physicalName: props.destinationName ||
+        // In the underlying model, the name is not optional, but we make it so anyway.
+        PhysicalName.of(Lazy.stringValue({ produce: () => this.generateUniqueName() })),
+    });
 
     this.resource = new CfnDestination(this, 'Resource', {
-      destinationName,
+      destinationName: this.physicalName.value!,
       // Must be stringified policy
       destinationPolicy: this.lazyStringifiedPolicyDocument(),
       roleArn: props.role.roleArn,
       targetArn: props.targetArn
     });
 
-    this.destinationArn = this.resource.destinationArn;
-    this.destinationName = this.resource.destinationName;
+    const resourceIdentifiers = new ResourceIdentifiers(this, {
+      arn: this.resource.attrArn,
+      name: this.resource.refAsString,
+      arnComponents: {
+        service: 'logs',
+        resource: 'destination',
+        resourceName: this.physicalName.value,
+        sep: ':',
+      },
+    });
+    this.destinationArn = resourceIdentifiers.arn;
+    this.destinationName = resourceIdentifiers.name;
   }
 
   public addToPolicy(statement: iam.PolicyStatement) {
-    this.policyDocument.addStatement(statement);
+    this.policyDocument.addStatements(statement);
   }
 
   public bind(_scope: Construct, _sourceLogGroup: ILogGroup): LogSubscriptionDestinationConfig {

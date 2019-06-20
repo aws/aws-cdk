@@ -4,7 +4,7 @@ import ec2 = require('@aws-cdk/aws-ec2');
 import elbv2 = require('@aws-cdk/aws-elasticloadbalancingv2');
 import iam = require('@aws-cdk/aws-iam');
 import cloudmap = require('@aws-cdk/aws-servicediscovery');
-import { IResource, Lazy, Resource, Stack } from '@aws-cdk/cdk';
+import { IResource, Lazy, PhysicalName, Resource, ResourceIdentifiers, Stack } from '@aws-cdk/cdk';
 import cdk = require('@aws-cdk/cdk');
 import { NetworkMode, TaskDefinition } from '../base/task-definition';
 import { ICluster } from '../cluster';
@@ -41,7 +41,7 @@ export interface BaseServiceProps {
    *
    * @default - CloudFormation-generated name.
    */
-  readonly serviceName?: string;
+  readonly serviceName?: PhysicalName;
 
   /**
    * The maximum number of tasks, specified as a percentage of the Amazon ECS
@@ -139,13 +139,15 @@ export abstract class BaseService extends Resource
               additionalProps: any,
               clusterName: string,
               taskDefinition: TaskDefinition) {
-    super(scope, id);
+    super(scope, id, {
+      physicalName: props.serviceName,
+    });
 
     this.taskDefinition = taskDefinition;
 
     this.resource = new CfnService(this, "Service", {
       desiredCount: props.desiredCount,
-      serviceName: props.serviceName,
+      serviceName: this.physicalName.value,
       loadBalancers: Lazy.anyValue({ produce: () => this.loadBalancers }),
       deploymentConfiguration: {
         maximumPercent: props.maximumPercent || 200,
@@ -158,14 +160,24 @@ export abstract class BaseService extends Resource
       ...additionalProps
     });
 
-    this.serviceArn = this.resource.serviceArn;
-
     // This is a workaround for CFN bug that returns the cluster name instead of the service name when long ARN formats
     // are enabled for the principal in a given region.
     const longArnEnabled = props.longArnEnabled !== undefined ? props.longArnEnabled : false;
-    this.serviceName = longArnEnabled
-      ? cdk.Fn.select(2, cdk.Fn.split('/', this.serviceArn))
-      : this.resource.serviceName;
+    const serviceName = longArnEnabled
+      ? cdk.Fn.select(2, cdk.Fn.split('/', this.resource.refAsString))
+      : this.resource.attrName;
+
+    const resourceIdentifiers = new ResourceIdentifiers(this, {
+      arn: this.resource.refAsString,
+      name: serviceName,
+      arnComponents: {
+        service: 'ecs',
+        resource: 'service',
+        resourceName: `${props.cluster.physicalName.value}/${this.physicalName.value}`,
+      },
+    });
+    this.serviceArn = resourceIdentifiers.arn;
+    this.serviceName = resourceIdentifiers.name;
 
     this.clusterName = clusterName;
     this.cluster = props.cluster;

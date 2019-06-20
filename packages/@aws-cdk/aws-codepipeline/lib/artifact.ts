@@ -70,10 +70,10 @@ export class Artifact {
   }
 
   /**
-   * Returns the coordinates of the .zip file in S3 that this Artifact represents.
+   * Returns the location of the .zip file in S3 that this Artifact represents.
    * Used by Lambda's `CfnParametersCode` when being deployed in a CodePipeline.
    */
-  public get s3Coordinates(): s3.Coordinates {
+  public get s3Location(): s3.Location {
     return {
       bucketName: this.bucketName,
       objectKey: this.objectKey,
