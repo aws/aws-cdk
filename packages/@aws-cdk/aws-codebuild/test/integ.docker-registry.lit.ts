@@ -7,17 +7,17 @@ class TestStack extends cdk.Stack {
     super(scope, id);
 
     const secrets = secretsmanager.Secret.fromSecretArn(this, "MySecrets",
-    `arn:aws:secretsmanager:${this.region}:${this.accountId}:secret:my-secrets-123456`);
+    `arn:aws:secretsmanager:${this.region}:${this.account}:secret:my-secrets-123456`);
 
     new codebuild.Project(this, 'MyProject', {
-      buildSpec: {
+      buildSpec: codebuild.BuildSpec.fromObject({
         version: "0.2",
         phases: {
           build: {
             commands: [ 'ls' ]
           }
         }
-      },
+      }),
       /// !show
       environment: {
         buildImage: codebuild.LinuxBuildImage.fromDockerRegistry("my-registry/my-repo", secrets)

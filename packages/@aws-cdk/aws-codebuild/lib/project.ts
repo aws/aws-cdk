@@ -6,7 +6,7 @@ import events = require('@aws-cdk/aws-events');
 import iam = require('@aws-cdk/aws-iam');
 import kms = require('@aws-cdk/aws-kms');
 import secretsmanager = require('@aws-cdk/aws-secretsmanager');
-import { Aws, CfnResource, Construct, Duration, IResource, Lazy, PhysicalName, Resource, ResourceIdentifiers, Stack } from '@aws-cdk/cdk';
+import { Aws, CfnResource, Construct, Duration, IResource, Lazy, PhysicalName, Resource, ResourceIdentifiers, Stack, Token } from '@aws-cdk/cdk';
 import { IArtifacts } from './artifacts';
 import { BuildSpec } from './build-spec';
 import { Cache } from './cache';
@@ -782,14 +782,15 @@ export class Project extends ProjectBase {
   }
 
   private attachEcrPermission() {
-    this.addToRolePolicy(new iam.PolicyStatement()
-    .addAllResources()
-    .addActions(
-      'ecr:GetAutheticationToken',
-      'ecr:GetDownloadUrlForLayer',
-      'ecr:BatchGetImage',
-      'ecr:BatchCheckLayerAvailability'
-    ));
+    this.addToRolePolicy(new iam.PolicyStatement({
+      resources: ['*'],
+      actions: [
+        'ecr:GetAutheticationToken',
+        'ecr:GetDownloadUrlForLayer',
+        'ecr:BatchGetImage',
+        'ecr:BatchCheckLayerAvailability'
+      ]
+    }));
   }
 
   private renderEnvironment(env: BuildEnvironment = {},
@@ -1271,16 +1272,9 @@ export enum BuildEnvironmentVariableType {
   PARAMETER_STORE = 'PARAMETER_STORE'
 }
 
-<<<<<<< HEAD
 function isECRImage(imageUri: string) {
-  return /^(.+).dkr.ecr.(.+).amazonaws.com[.]{0,1}[a-z]{0,3}\/([^:]+):?.*$/.test(imageUri);
-=======
-function ecrAccessForCodeBuildService(): iam.PolicyStatement {
-  const s = new iam.PolicyStatement({
-    principals: [new iam.ServicePrincipal('codebuild.amazonaws.com')],
-    actions: ['ecr:GetDownloadUrlForLayer', 'ecr:BatchGetImage', 'ecr:BatchCheckLayerAvailability'],
-  });
-  s.sid = 'CodeBuild';
-  return s;
->>>>>>> upstream/master
+  if (!Token.isUnresolved(imageUri)) {
+    return /^(.+).dkr.ecr.(.+).amazonaws.com[.]{0,1}[a-z]{0,3}\/([^:]+):?.*$/.test(imageUri);
+  }
+  return false;
 }
