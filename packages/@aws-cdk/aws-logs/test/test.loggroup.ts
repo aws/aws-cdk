@@ -11,7 +11,7 @@ export = {
 
     // WHEN
     new LogGroup(stack, 'LogGroup', {
-      retentionDays: RetentionDays.OneWeek
+      retention: RetentionDays.ONE_WEEK
     });
 
     // THEN
@@ -43,7 +43,7 @@ export = {
 
     // WHEN
     new LogGroup(stack, 'LogGroup', {
-      retentionDays: Infinity
+      retention: Infinity
     });
 
     // THEN
@@ -65,7 +65,7 @@ export = {
 
     // WHEN
     new LogGroup(stack, 'LogGroup', {
-      retentionDays: Infinity,
+      retention: Infinity,
       removalPolicy: RemovalPolicy.Destroy
     });
 

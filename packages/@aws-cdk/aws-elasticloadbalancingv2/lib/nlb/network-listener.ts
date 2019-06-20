@@ -1,4 +1,4 @@
-import { Construct, IResource, Resource } from '@aws-cdk/cdk';
+import { Construct, Duration, IResource, Resource } from '@aws-cdk/cdk';
 import { BaseListener } from '../shared/base-listener';
 import { HealthCheck } from '../shared/base-target-group';
 import { Protocol, SslPolicy } from '../shared/enums';
@@ -140,7 +140,7 @@ export class NetworkListener extends BaseListener implements INetworkListener {
     }
 
     const group = new NetworkTargetGroup(this, id + 'Group', {
-      deregistrationDelaySec: props.deregistrationDelaySec,
+      deregistrationDelay: props.deregistrationDelay,
       healthCheck: props.healthCheck,
       port: props.port,
       proxyProtocolV2: props.proxyProtocolV2,
@@ -202,9 +202,9 @@ export interface AddNetworkTargetsProps {
    *
    * The range is 0-3600 seconds.
    *
-   * @default 300
+   * @default Duration.minutes(5)
    */
-  readonly deregistrationDelaySec?: number;
+  readonly deregistrationDelay?: Duration;
 
   /**
    * Indicates whether Proxy Protocol version 2 is enabled.

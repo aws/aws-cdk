@@ -12,7 +12,7 @@ test('can use topic as alarm action', () => {
     maxCapacity: 100,
     resourceId: 'asdf',
     scalableDimension: 'height',
-    serviceNamespace: appscaling.ServiceNamespace.CustomResource,
+    serviceNamespace: appscaling.ServiceNamespace.CUSTOM_RESOURCE,
   });
   const action = new appscaling.StepScalingAction(stack, 'Action', {
     scalingTarget,

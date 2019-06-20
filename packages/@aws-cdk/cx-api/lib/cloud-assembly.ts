@@ -218,8 +218,8 @@ export class CloudAssemblyBuilder {
 
 export interface AssemblyBuildOptions {
   /**
-   * Include runtime information (module versions) in manifest.
-   * @default true
+   * Include the specified runtime information (module versions) in manifest.
+   * @default - if this option is not specified, runtime info will not be included
    */
   readonly runtimeInfo?: RuntimeInfo;
 }

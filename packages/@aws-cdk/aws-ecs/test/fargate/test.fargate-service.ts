@@ -58,9 +58,6 @@ export = {
               {
                 Ref: "MyVpcPrivateSubnet2Subnet0040C983"
               },
-              {
-                Ref: "MyVpcPrivateSubnet3Subnet772D6AD7"
-              }
             ]
           }
         }
@@ -174,7 +171,7 @@ export = {
       new ecs.FargateService(stack, 'Svc', {
         cluster,
         taskDefinition,
-        healthCheckGracePeriodSeconds: 10
+        healthCheckGracePeriod: cdk.Duration.seconds(10)
       });
 
       // THEN
@@ -364,7 +361,7 @@ export = {
       // WHEN
       cluster.addDefaultCloudMapNamespace({
         name: 'foo.com',
-        type: NamespaceType.PrivateDns
+        type: NamespaceType.PRIVATE_DNS
       });
 
       new ecs.FargateService(stack, 'Service', {
@@ -424,7 +421,7 @@ export = {
       // WHEN
       cluster.addDefaultCloudMapNamespace({
         name: 'foo.com',
-        type: NamespaceType.PrivateDns
+        type: NamespaceType.PRIVATE_DNS
       });
 
       new ecs.FargateService(stack, 'Service', {
@@ -493,7 +490,7 @@ export = {
       },
       namespace: 'AWS/ECS',
       metricName: 'CPUUtilization',
-      periodSec: 300,
+      period: cdk.Duration.minutes(5),
       statistic: 'Average'
     });
 

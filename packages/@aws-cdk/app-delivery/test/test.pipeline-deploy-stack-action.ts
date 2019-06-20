@@ -307,7 +307,7 @@ class FakeAction extends codepipeline.Action {
     super({
       actionName,
       artifactBounds: { minInputs: 0, maxInputs: 5, minOutputs: 0, maxOutputs: 5 },
-      category: codepipeline.ActionCategory.Test,
+      category: codepipeline.ActionCategory.TEST,
       provider: 'Test',
     });
 

@@ -15,7 +15,7 @@ const handler = new lambda.Function(stack, `Handler`, {
 });
 const version = handler.addVersion('1');
 const blueGreenAlias = new lambda.Alias(stack, `Alias`, {
-  aliasName: `alias`,
+  aliasName: cdk.PhysicalName.of('alias'),
   version
 });
 
@@ -35,7 +35,7 @@ new codedeploy.LambdaDeploymentGroup(stack, 'BlueGreenDeployment', {
   deploymentConfig: codedeploy.LambdaDeploymentConfig.Linear10PercentEvery1Minute,
   alarms: [
     new cloudwatch.Alarm(stack, 'BlueGreenErrors', {
-      comparisonOperator: cloudwatch.ComparisonOperator.GreaterThanThreshold,
+      comparisonOperator: cloudwatch.ComparisonOperator.GREATER_THAN_THRESHOLD,
       threshold: 1,
       evaluationPeriods: 1,
       metric: blueGreenAlias.metricErrors()

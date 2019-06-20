@@ -85,5 +85,17 @@
   "engines": {
     "node": ">= 8.10.0"
   },
+  "awslint": {
+    "exclude": [
+      "props-physical-name:@aws-cdk/aws-servicediscovery.HttpNamespaceProps",
+      "props-physical-name:@aws-cdk/aws-servicediscovery.PublicDnsNamespaceProps",
+      "props-physical-name:@aws-cdk/aws-servicediscovery.PrivateDnsNamespaceProps",
+      "props-physical-name:@aws-cdk/aws-servicediscovery.AliasTargetInstanceProps",
+      "props-physical-name:@aws-cdk/aws-servicediscovery.CnameInstanceProps",
+      "props-physical-name:@aws-cdk/aws-servicediscovery.IpInstanceProps",
+      "props-physical-name:@aws-cdk/aws-servicediscovery.NonIpInstanceProps",
+      "props-physical-name:@aws-cdk/aws-servicediscovery.ServiceProps"
+    ]
+  },
   "stability": "experimental"
 }

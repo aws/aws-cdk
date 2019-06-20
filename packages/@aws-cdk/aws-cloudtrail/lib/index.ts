@@ -3,7 +3,7 @@ import iam = require('@aws-cdk/aws-iam');
 import kms = require('@aws-cdk/aws-kms');
 import logs = require('@aws-cdk/aws-logs');
 import s3 = require('@aws-cdk/aws-s3');
-import { Construct, Resource, Stack } from '@aws-cdk/cdk';
+import { Construct, PhysicalName, Resource, ResourceIdentifiers, Stack } from '@aws-cdk/cdk';
 import { CfnTrail } from './cloudtrail.generated';
 
 // AWS::CloudTrail CloudFormation Resources:
@@ -67,7 +67,7 @@ export interface TrailProps {
    *
    *  @default logs.RetentionDays.OneYear
    */
-  readonly cloudWatchLogsRetentionTimeDays?: logs.RetentionDays;
+  readonly cloudWatchLogsRetention?: logs.RetentionDays;
 
   /** The AWS Key Management Service (AWS KMS) key ID that you want to use to encrypt CloudTrail logs.
    *
@@ -86,7 +86,7 @@ export interface TrailProps {
    *
    * @default - AWS CloudFormation generated name.
    */
-  readonly trailName?: string;
+  readonly trailName?: PhysicalName;
 
   /** An Amazon S3 object key prefix that precedes the name of all log files.
    *
@@ -96,9 +96,9 @@ export interface TrailProps {
 }
 
 export enum ReadWriteType {
-  ReadOnly = "ReadOnly",
-  WriteOnly = "WriteOnly",
-  All = "All"
+  READ_ONLY = "ReadOnly",
+  WRITE_ONLY = "WriteOnly",
+  ALL = "All"
 }
 
 /**
@@ -125,9 +125,11 @@ export class Trail extends Resource {
   private eventSelectors: EventSelector[] = [];
 
   constructor(scope: Construct, id: string, props: TrailProps = {}) {
-    super(scope, id);
+    super(scope, id, {
+      physicalName: props.trailName,
+    });
 
-    const s3bucket = new s3.Bucket(this, 'S3', {encryption: s3.BucketEncryption.Unencrypted});
+    const s3bucket = new s3.Bucket(this, 'S3', {encryption: s3.BucketEncryption.UNENCRYPTED});
     const cloudTrailPrincipal = new iam.ServicePrincipal("cloudtrail.amazonaws.com");
 
     s3bucket.addToResourcePolicy(new iam.PolicyStatement({
@@ -149,7 +151,7 @@ export class Trail extends Resource {
     let logsRole: iam.IRole | undefined;
     if (props.sendToCloudWatchLogs) {
       logGroup = new logs.CfnLogGroup(this, "LogGroup", {
-        retentionInDays: props.cloudWatchLogsRetentionTimeDays || logs.RetentionDays.OneYear
+        retentionInDays: props.cloudWatchLogsRetention || logs.RetentionDays.ONE_YEAR
       });
 
       logsRole = new iam.Role(this, 'LogsRole', { assumedBy: cloudTrailPrincipal });
@@ -173,7 +175,7 @@ export class Trail extends Resource {
       enableLogFileValidation: props.enableFileValidation == null ? true : props.enableFileValidation,
       isMultiRegionTrail: props.isMultiRegionTrail == null ? true : props.isMultiRegionTrail,
       includeGlobalServiceEvents: props.includeGlobalServiceEvents == null ? true : props.includeGlobalServiceEvents,
-      trailName: props.trailName,
+      trailName: this.physicalName.value,
       kmsKeyId:  props.kmsKey && props.kmsKey.keyArn,
       s3BucketName: s3bucket.bucketName,
       s3KeyPrefix: props.s3KeyPrefix,
@@ -183,7 +185,16 @@ export class Trail extends Resource {
       eventSelectors: this.eventSelectors
     });
 
-    this.trailArn = trail.attrArn;
+    const resourceIdentifiers = new ResourceIdentifiers(this, {
+      arn: trail.attrArn,
+      name: trail.trailName || '',
+      arnComponents: {
+        service: 'cloudtrail',
+        resource: 'trail',
+        resourceName: this.physicalName.value,
+      },
+    });
+    this.trailArn = resourceIdentifiers.arn;
     this.trailSnsTopicArn = trail.attrSnsTopicArn;
 
     const s3BucketPolicy = s3bucket.node.findChild("Policy").node.findChild("Resource") as s3.CfnBucketPolicy;
@@ -234,7 +245,7 @@ export class Trail extends Resource {
    *
    * Be sure to filter the event further down using an event pattern.
    */
-  public onCloudTrailEvent(id: string, options: events.OnEventOptions): events.Rule {
+  public onCloudTrailEvent(id: string, options: events.OnEventOptions = {}): events.Rule {
     const rule = new events.Rule(this, id, options);
     rule.addTarget(options.target);
     rule.addEventPattern({

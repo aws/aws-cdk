@@ -76,7 +76,6 @@ export = {
             VPCZoneIdentifier: [
               { Ref: "VPCPrivateSubnet1Subnet8BCA10E0" },
               { Ref: "VPCPrivateSubnet2SubnetCFCDAA7A" },
-              { Ref: "VPCPrivateSubnet3Subnet3EDCD457" }
             ]
           },
           UpdatePolicy: {
@@ -109,6 +108,6 @@ function makeAutoScalingGroup(scope: cdk.Construct) {
     vpc,
     instanceType: new ec2.InstanceType('t2.micro'),
     machineImage: new ec2.AmazonLinuxImage(),
-    updateType: autoscaling.UpdateType.RollingUpdate,
+    updateType: autoscaling.UpdateType.ROLLING_UPDATE,
   });
 }

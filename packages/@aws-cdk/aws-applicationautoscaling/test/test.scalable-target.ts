@@ -11,7 +11,7 @@ export = {
 
     // WHEN
     new appscaling.ScalableTarget(stack, 'Target', {
-      serviceNamespace: appscaling.ServiceNamespace.DynamoDb,
+      serviceNamespace: appscaling.ServiceNamespace.DYNAMODB,
       scalableDimension: 'test:TestCount',
       resourceId: 'test:this/test',
       minCapacity: 1,
