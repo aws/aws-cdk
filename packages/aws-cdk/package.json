@@ -36,6 +36,7 @@
   "devDependencies": {
     "@types/archiver": "^3.0.0",
     "@types/fs-extra": "^7.0.0",
+    "@types/jszip": "^3.1.6",
     "@types/minimatch": "^3.0.3",
     "@types/mockery": "^1.4.29",
     "@types/request": "^2.48.1",
@@ -46,6 +47,7 @@
     "@types/yaml": "^1.0.2",
     "@types/yargs": "^13.0.0",
     "cdk-build-tools": "^0.34.0",
+    "jszip": "^3.2.1",
     "mockery": "^2.1.0",
     "pkglint": "^0.34.0",
     "sinon": "^7.3.2"

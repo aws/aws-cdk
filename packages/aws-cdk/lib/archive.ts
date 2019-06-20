@@ -31,10 +31,10 @@ export function zipDirectory(directory: string, outputFile: string): Promise<voi
         };
       }));
 
-      contents.forEach(content => { // Append files serially to ensure file order
+      contents.forEach((content) => { // Append files serially to ensure file order
         archive.append(content.data, {
           name: content.name,
-          date: new Date(0), // reset dates to get the same hash for the same content
+          date: new Date('1980-01-01T00:00:00.000Z'), // reset dates to get the same hash for the same content
         });
       });
 

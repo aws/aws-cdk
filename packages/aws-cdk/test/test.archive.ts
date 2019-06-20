@@ -1,5 +1,6 @@
 import { exec as _exec } from 'child_process';
 import fs = require('fs-extra');
+import jszip = require('jszip');
 import { Test } from 'nodeunit';
 import os = require('os');
 import path = require('path');
@@ -23,6 +24,13 @@ export = {
     } catch (e) {
       test.ok(false, `extracted directory ${extractDir} differs from original ${originalDir}`);
     }
+
+    // inspect the zile file to check that dates are reset
+    const zip = await fs.readFile(zipFile);
+    const zipData = await jszip.loadAsync(zip);
+    const dates = Object.values(zipData.files).map(file => file.date.toISOString());
+    test.equals(dates[0], '1980-01-01T00:00:00.000Z', 'Dates are not reset');
+    test.equal(new Set(dates).size, 1, 'Dates are not equal');
 
     await fs.remove(stagingDir);
     await fs.remove(extractDir);
