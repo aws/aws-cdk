@@ -1,5 +1,5 @@
 import { expect, haveResource } from '@aws-cdk/assert';
-import { Construct, Stack } from '@aws-cdk/cdk';
+import { Construct, Duration, Stack } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
 import { Alarm, IAlarm, IAlarmAction, Metric } from '../lib';
 
@@ -28,6 +28,58 @@ export = {
       Namespace: "CDK/Test",
       Period: 300,
       Statistic: 'Average',
+      Threshold: 1000,
+    }));
+
+    test.done();
+  },
+
+  'override metric period in Alarm'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    new Alarm(stack, 'Alarm', {
+      metric: testMetric,
+      period: Duration.minutes(10),
+      threshold: 1000,
+      evaluationPeriods: 3,
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::CloudWatch::Alarm', {
+      ComparisonOperator: "GreaterThanOrEqualToThreshold",
+      EvaluationPeriods: 3,
+      MetricName: "Metric",
+      Namespace: "CDK/Test",
+      Period: 600,
+      Statistic: 'Average',
+      Threshold: 1000,
+    }));
+
+    test.done();
+  },
+
+  'override statistic Alarm'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    new Alarm(stack, 'Alarm', {
+      metric: testMetric,
+      statistic: 'max',
+      threshold: 1000,
+      evaluationPeriods: 3,
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::CloudWatch::Alarm', {
+      ComparisonOperator: "GreaterThanOrEqualToThreshold",
+      EvaluationPeriods: 3,
+      MetricName: "Metric",
+      Namespace: "CDK/Test",
+      Period: 300,
+      Statistic: 'Maximum',
       Threshold: 1000,
     }));
 
@@ -91,11 +143,11 @@ export = {
     const stack = new Stack();
 
     // WHEN
-    testMetric.newAlarm(stack, 'Alarm', {
+    testMetric.createAlarm(stack, 'Alarm', {
       threshold: 1000,
       evaluationPeriods: 2,
       statistic: 'min',
-      periodSec: 10,
+      period: Duration.seconds(10),
     });
 
     // THEN
@@ -117,7 +169,7 @@ export = {
     const stack = new Stack();
 
     // WHEN
-    testMetric.newAlarm(stack, 'Alarm', {
+    testMetric.createAlarm(stack, 'Alarm', {
       threshold: 1000,
       evaluationPeriods: 2,
       statistic: 'p99.9'

@@ -19,7 +19,7 @@ const bucket2 = new s3.Bucket(stack, 'Bucket2', {
 });
 bucket2.addObjectCreatedNotification(new s3n.SqsDestination(queue), { suffix: '.png' });
 
-const encryptedQueue = new sqs.Queue(stack, 'EncryptedQueue', { encryption: sqs.QueueEncryption.Kms });
+const encryptedQueue = new sqs.Queue(stack, 'EncryptedQueue', { encryption: sqs.QueueEncryption.KMS });
 bucket1.addObjectRemovedNotification(new s3n.SqsDestination(encryptedQueue));
 
 app.synth();

@@ -129,7 +129,7 @@ export class CustomActionRegistration extends cdk.Construct {
         maximumCount: props.artifactBounds.maxOutputs,
       },
       provider: props.provider,
-      version: props.version,
+      version: props.version || '1',
       settings: {
         entityUrlTemplate: props.entityUrl,
         executionUrlTemplate: props.executionUrl,

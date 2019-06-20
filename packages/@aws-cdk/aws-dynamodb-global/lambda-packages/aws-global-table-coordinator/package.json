@@ -1,7 +1,7 @@
 {
   "name": "aws-global-lambda-coordinator",
   "private": true,
-  "version": "0.33.0",
+  "version": "0.35.0",
   "description": "This module is part of the [AWS Cloud Development Kit](https://github.com/awslabs/aws-cdk) project.",
   "main": "lib/handler.js",
   "directories": {
@@ -36,7 +36,7 @@
     "eslint-plugin-promise": "^4.1.1",
     "eslint-plugin-standard": "^4.0.0",
     "jest": "^24.8.0",
-    "lambda-tester": "^3.5.0",
+    "lambda-tester": "^3.6.0",
     "nock": "^10.0.6"
   }
 }

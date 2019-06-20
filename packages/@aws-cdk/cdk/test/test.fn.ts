@@ -2,6 +2,7 @@ import fc = require('fast-check');
 import _ = require('lodash');
 import nodeunit = require('nodeunit');
 import { Fn, Stack, Token } from '../lib';
+import { Intrinsic } from '../lib/private/intrinsic';
 
 function asyncTest(cb: (test: nodeunit.Test) => Promise<void>): (test: nodeunit.Test) => void {
   return async (test: nodeunit.Test) => {
@@ -125,12 +126,25 @@ export = nodeunit.testCase({
         { verbose: true }
       );
     }),
+    'Fn::EachMemberIn': asyncTest(async (test) => {
+      const stack = new Stack();
+      const eachMemberIn = Fn.conditionEachMemberIn(
+        Fn.valueOfAll('AWS::EC2::Subnet::Id', 'VpcId'),
+        Fn.refAll('AWS::EC2::VPC::Id')
+      );
+      test.deepEqual(stack.resolve(eachMemberIn), {
+        'Fn::EachMemberIn': [
+          { 'Fn::ValueOfAll': ['AWS::EC2::Subnet::Id', 'VpcId'] },
+          { 'Fn::RefAll': 'AWS::EC2::VPC::Id'}
+        ]
+      });
+    }),
   },
 });
 
 function stringListToken(o: any): string[] {
-  return new Token(o).toList();
+  return Token.asList(new Intrinsic(o));
 }
 function stringToken(o: any): string {
-  return new Token(o).toString();
+  return Token.asString(new Intrinsic(o));
 }

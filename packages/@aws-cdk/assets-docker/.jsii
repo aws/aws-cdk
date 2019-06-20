@@ -1,0 +1,843 @@
+{
+  "author": {
+    "name": "Amazon Web Services",
+    "organization": true,
+    "roles": [
+      "author"
+    ],
+    "url": "https://aws.amazon.com"
+  },
+  "dependencies": {
+    "@aws-cdk/assets": {
+      "targets": {
+        "dotnet": {
+          "assemblyOriginatorKeyFile": "../../key.snk",
+          "namespace": "Amazon.CDK.Assets",
+          "packageId": "Amazon.CDK.Assets",
+          "signAssembly": true
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-assets",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.assets"
+        },
+        "js": {
+          "npm": "@aws-cdk/assets"
+        },
+        "python": {
+          "distName": "aws-cdk.assets",
+          "module": "aws_cdk.assets"
+        }
+      },
+      "version": "0.33.0"
+    },
+    "@aws-cdk/aws-cloudformation": {
+      "targets": {
+        "dotnet": {
+          "assemblyOriginatorKeyFile": "../../key.snk",
+          "namespace": "Amazon.CDK.AWS.CloudFormation",
+          "packageId": "Amazon.CDK.AWS.CloudFormation",
+          "signAssembly": true
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cloudformation",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.cloudformation"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-cloudformation"
+        },
+        "python": {
+          "distName": "aws-cdk.aws-cloudformation",
+          "module": "aws_cdk.aws_cloudformation"
+        }
+      },
+      "version": "0.33.0"
+    },
+    "@aws-cdk/aws-ecr": {
+      "targets": {
+        "dotnet": {
+          "assemblyOriginatorKeyFile": "../../key.snk",
+          "namespace": "Amazon.CDK.AWS.ECR",
+          "packageId": "Amazon.CDK.AWS.ECR",
+          "signAssembly": true
+        },
+        "java": {
+          "maven": {
+            "artifactId": "ecr",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.ecr"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-ecr"
+        },
+        "python": {
+          "distName": "aws-cdk.aws-ecr",
+          "module": "aws_cdk.aws_ecr"
+        }
+      },
+      "version": "0.33.0"
+    },
+    "@aws-cdk/aws-iam": {
+      "targets": {
+        "dotnet": {
+          "assemblyOriginatorKeyFile": "../../key.snk",
+          "namespace": "Amazon.CDK.AWS.IAM",
+          "packageId": "Amazon.CDK.AWS.IAM",
+          "signAssembly": true
+        },
+        "java": {
+          "maven": {
+            "artifactId": "iam",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.iam"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-iam"
+        },
+        "python": {
+          "distName": "aws-cdk.aws-iam",
+          "module": "aws_cdk.aws_iam"
+        }
+      },
+      "version": "0.33.0"
+    },
+    "@aws-cdk/aws-lambda": {
+      "targets": {
+        "dotnet": {
+          "assemblyOriginatorKeyFile": "../../key.snk",
+          "namespace": "Amazon.CDK.AWS.Lambda",
+          "packageId": "Amazon.CDK.AWS.Lambda",
+          "signAssembly": true
+        },
+        "java": {
+          "maven": {
+            "artifactId": "lambda",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.lambda"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-lambda"
+        },
+        "python": {
+          "distName": "aws-cdk.aws-lambda",
+          "module": "aws_cdk.aws_lambda"
+        }
+      },
+      "version": "0.33.0"
+    },
+    "@aws-cdk/aws-s3": {
+      "targets": {
+        "dotnet": {
+          "assemblyOriginatorKeyFile": "../../key.snk",
+          "namespace": "Amazon.CDK.AWS.S3",
+          "packageId": "Amazon.CDK.AWS.S3",
+          "signAssembly": true
+        },
+        "java": {
+          "maven": {
+            "artifactId": "s3",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.s3"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-s3"
+        },
+        "python": {
+          "distName": "aws-cdk.aws-s3",
+          "module": "aws_cdk.aws_s3"
+        }
+      },
+      "version": "0.33.0"
+    },
+    "@aws-cdk/cdk": {
+      "targets": {
+        "dotnet": {
+          "assemblyOriginatorKeyFile": "../../key.snk",
+          "namespace": "Amazon.CDK",
+          "packageId": "Amazon.CDK",
+          "signAssembly": true
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk"
+        },
+        "js": {
+          "npm": "@aws-cdk/cdk"
+        },
+        "python": {
+          "distName": "aws-cdk.cdk",
+          "module": "aws_cdk.cdk"
+        }
+      },
+      "version": "0.33.0"
+    },
+    "@aws-cdk/cx-api": {
+      "targets": {
+        "dotnet": {
+          "assemblyOriginatorKeyFile": "../../key.snk",
+          "namespace": "Amazon.CDK.CXAPI",
+          "packageId": "Amazon.CDK.CXAPI",
+          "signAssembly": true
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-cx-api",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.cxapi"
+        },
+        "js": {
+          "npm": "@aws-cdk/cx-api"
+        },
+        "python": {
+          "distName": "aws-cdk.cx-api",
+          "module": "aws_cdk.cx_api"
+        }
+      },
+      "version": "0.33.0"
+    }
+  },
+  "dependencyClosure": {
+    "@aws-cdk/assets": {
+      "targets": {
+        "dotnet": {
+          "assemblyOriginatorKeyFile": "../../key.snk",
+          "namespace": "Amazon.CDK.Assets",
+          "packageId": "Amazon.CDK.Assets",
+          "signAssembly": true
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-assets",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.assets"
+        },
+        "js": {
+          "npm": "@aws-cdk/assets"
+        },
+        "python": {
+          "distName": "aws-cdk.assets",
+          "module": "aws_cdk.assets"
+        }
+      },
+      "version": "0.33.0"
+    },
+    "@aws-cdk/aws-cloudformation": {
+      "targets": {
+        "dotnet": {
+          "assemblyOriginatorKeyFile": "../../key.snk",
+          "namespace": "Amazon.CDK.AWS.CloudFormation",
+          "packageId": "Amazon.CDK.AWS.CloudFormation",
+          "signAssembly": true
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cloudformation",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.cloudformation"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-cloudformation"
+        },
+        "python": {
+          "distName": "aws-cdk.aws-cloudformation",
+          "module": "aws_cdk.aws_cloudformation"
+        }
+      },
+      "version": "0.33.0"
+    },
+    "@aws-cdk/aws-cloudwatch": {
+      "targets": {
+        "dotnet": {
+          "assemblyOriginatorKeyFile": "../../key.snk",
+          "namespace": "Amazon.CDK.AWS.CloudWatch",
+          "packageId": "Amazon.CDK.AWS.CloudWatch",
+          "signAssembly": true
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cloudwatch",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.cloudwatch"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-cloudwatch"
+        },
+        "python": {
+          "distName": "aws-cdk.aws-cloudwatch",
+          "module": "aws_cdk.aws_cloudwatch"
+        }
+      },
+      "version": "0.33.0"
+    },
+    "@aws-cdk/aws-ec2": {
+      "targets": {
+        "dotnet": {
+          "assemblyOriginatorKeyFile": "../../key.snk",
+          "namespace": "Amazon.CDK.AWS.EC2",
+          "packageId": "Amazon.CDK.AWS.EC2",
+          "signAssembly": true
+        },
+        "java": {
+          "maven": {
+            "artifactId": "ec2",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.ec2"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-ec2"
+        },
+        "python": {
+          "distName": "aws-cdk.aws-ec2",
+          "module": "aws_cdk.aws_ec2"
+        }
+      },
+      "version": "0.33.0"
+    },
+    "@aws-cdk/aws-ecr": {
+      "targets": {
+        "dotnet": {
+          "assemblyOriginatorKeyFile": "../../key.snk",
+          "namespace": "Amazon.CDK.AWS.ECR",
+          "packageId": "Amazon.CDK.AWS.ECR",
+          "signAssembly": true
+        },
+        "java": {
+          "maven": {
+            "artifactId": "ecr",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.ecr"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-ecr"
+        },
+        "python": {
+          "distName": "aws-cdk.aws-ecr",
+          "module": "aws_cdk.aws_ecr"
+        }
+      },
+      "version": "0.33.0"
+    },
+    "@aws-cdk/aws-events": {
+      "targets": {
+        "dotnet": {
+          "assemblyOriginatorKeyFile": "../../key.snk",
+          "namespace": "Amazon.CDK.AWS.Events",
+          "packageId": "Amazon.CDK.AWS.Events",
+          "signAssembly": true
+        },
+        "java": {
+          "maven": {
+            "artifactId": "events",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.events"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-events"
+        },
+        "python": {
+          "distName": "aws-cdk.aws-events",
+          "module": "aws_cdk.aws_events"
+        }
+      },
+      "version": "0.33.0"
+    },
+    "@aws-cdk/aws-iam": {
+      "targets": {
+        "dotnet": {
+          "assemblyOriginatorKeyFile": "../../key.snk",
+          "namespace": "Amazon.CDK.AWS.IAM",
+          "packageId": "Amazon.CDK.AWS.IAM",
+          "signAssembly": true
+        },
+        "java": {
+          "maven": {
+            "artifactId": "iam",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.iam"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-iam"
+        },
+        "python": {
+          "distName": "aws-cdk.aws-iam",
+          "module": "aws_cdk.aws_iam"
+        }
+      },
+      "version": "0.33.0"
+    },
+    "@aws-cdk/aws-kms": {
+      "targets": {
+        "dotnet": {
+          "assemblyOriginatorKeyFile": "../../key.snk",
+          "namespace": "Amazon.CDK.AWS.KMS",
+          "packageId": "Amazon.CDK.AWS.KMS",
+          "signAssembly": true
+        },
+        "java": {
+          "maven": {
+            "artifactId": "kms",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.kms"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-kms"
+        },
+        "python": {
+          "distName": "aws-cdk.aws-kms",
+          "module": "aws_cdk.aws_kms"
+        }
+      },
+      "version": "0.33.0"
+    },
+    "@aws-cdk/aws-lambda": {
+      "targets": {
+        "dotnet": {
+          "assemblyOriginatorKeyFile": "../../key.snk",
+          "namespace": "Amazon.CDK.AWS.Lambda",
+          "packageId": "Amazon.CDK.AWS.Lambda",
+          "signAssembly": true
+        },
+        "java": {
+          "maven": {
+            "artifactId": "lambda",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.lambda"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-lambda"
+        },
+        "python": {
+          "distName": "aws-cdk.aws-lambda",
+          "module": "aws_cdk.aws_lambda"
+        }
+      },
+      "version": "0.33.0"
+    },
+    "@aws-cdk/aws-logs": {
+      "targets": {
+        "dotnet": {
+          "assemblyOriginatorKeyFile": "../../key.snk",
+          "namespace": "Amazon.CDK.AWS.Logs",
+          "packageId": "Amazon.CDK.AWS.Logs",
+          "signAssembly": true
+        },
+        "java": {
+          "maven": {
+            "artifactId": "logs",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.logs"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-logs"
+        },
+        "python": {
+          "distName": "aws-cdk.aws-logs",
+          "module": "aws_cdk.aws_logs"
+        }
+      },
+      "version": "0.33.0"
+    },
+    "@aws-cdk/aws-s3": {
+      "targets": {
+        "dotnet": {
+          "assemblyOriginatorKeyFile": "../../key.snk",
+          "namespace": "Amazon.CDK.AWS.S3",
+          "packageId": "Amazon.CDK.AWS.S3",
+          "signAssembly": true
+        },
+        "java": {
+          "maven": {
+            "artifactId": "s3",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.s3"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-s3"
+        },
+        "python": {
+          "distName": "aws-cdk.aws-s3",
+          "module": "aws_cdk.aws_s3"
+        }
+      },
+      "version": "0.33.0"
+    },
+    "@aws-cdk/aws-sns": {
+      "targets": {
+        "dotnet": {
+          "assemblyOriginatorKeyFile": "../../key.snk",
+          "namespace": "Amazon.CDK.AWS.SNS",
+          "packageId": "Amazon.CDK.AWS.SNS",
+          "signAssembly": true
+        },
+        "java": {
+          "maven": {
+            "artifactId": "sns",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.sns"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-sns"
+        },
+        "python": {
+          "distName": "aws-cdk.aws-sns",
+          "module": "aws_cdk.aws_sns"
+        }
+      },
+      "version": "0.33.0"
+    },
+    "@aws-cdk/aws-sqs": {
+      "targets": {
+        "dotnet": {
+          "assemblyOriginatorKeyFile": "../../key.snk",
+          "namespace": "Amazon.CDK.AWS.SQS",
+          "packageId": "Amazon.CDK.AWS.SQS",
+          "signAssembly": true
+        },
+        "java": {
+          "maven": {
+            "artifactId": "sqs",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.sqs"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-sqs"
+        },
+        "python": {
+          "distName": "aws-cdk.aws-sqs",
+          "module": "aws_cdk.aws_sqs"
+        }
+      },
+      "version": "0.33.0"
+    },
+    "@aws-cdk/cdk": {
+      "targets": {
+        "dotnet": {
+          "assemblyOriginatorKeyFile": "../../key.snk",
+          "namespace": "Amazon.CDK",
+          "packageId": "Amazon.CDK",
+          "signAssembly": true
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk"
+        },
+        "js": {
+          "npm": "@aws-cdk/cdk"
+        },
+        "python": {
+          "distName": "aws-cdk.cdk",
+          "module": "aws_cdk.cdk"
+        }
+      },
+      "version": "0.33.0"
+    },
+    "@aws-cdk/cx-api": {
+      "targets": {
+        "dotnet": {
+          "assemblyOriginatorKeyFile": "../../key.snk",
+          "namespace": "Amazon.CDK.CXAPI",
+          "packageId": "Amazon.CDK.CXAPI",
+          "signAssembly": true
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-cx-api",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.cxapi"
+        },
+        "js": {
+          "npm": "@aws-cdk/cx-api"
+        },
+        "python": {
+          "distName": "aws-cdk.cx-api",
+          "module": "aws_cdk.cx_api"
+        }
+      },
+      "version": "0.33.0"
+    },
+    "@aws-cdk/region-info": {
+      "targets": {
+        "dotnet": {
+          "assemblyOriginatorKeyFile": "../../key.snk",
+          "namespace": "Amazon.CDK.RegionInfo",
+          "packageId": "Amazon.CDK.RegionInfo",
+          "signAssembly": true
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-region-info",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.regioninfo"
+        },
+        "js": {
+          "npm": "@aws-cdk/region-info"
+        },
+        "python": {
+          "distName": "aws-cdk.region-info",
+          "module": "aws_cdk.region_info"
+        }
+      },
+      "version": "0.33.0"
+    }
+  },
+  "description": "Docker image assets",
+  "docs": {
+    "stability": "experimental"
+  },
+  "homepage": "https://github.com/awslabs/aws-cdk",
+  "jsiiVersion": "0.11.1 (build 09c4828)",
+  "license": "Apache-2.0",
+  "name": "@aws-cdk/assets-docker",
+  "readme": {
+    "markdown": "# AWS CDK Docker Image Assets\n<!--BEGIN STABILITY BANNER-->\n\n---\n\n![Stability: Experimental](https://img.shields.io/badge/stability-Experimental-important.svg?style=for-the-badge)\n\n> This API is still under active development and subject to non-backward\n> compatible changes or removal in any future version. Use of the API is not recommended in production\n> environments. Experimental APIs are not subject to the Semantic Versioning model.\n\n---\n<!--END STABILITY BANNER-->\n\nThis module allows bundling Docker images as assets.\n\nImages are built from a local Docker context directory (with a `Dockerfile`),\nuploaded to ECR by the CDK toolkit and/or your app's CI-CD pipeline, and can be\nnaturally referenced in your CDK app.\n\n```typescript\nimport { DockerImageAsset } from '@aws-cdk/assets-docker';\n\nconst asset = new DockerImageAsset(this, 'MyBuildImage', {\n  directory: path.join(__dirname, 'my-image')\n});\n```\n\nThe directory `my-image` must include a `Dockerfile`.\n\nThis will instruct the toolkit to build a Docker image from `my-image`, push it\nto an AWS ECR repository and wire the name of the repository as CloudFormation\nparameters to your stack.\n\nUse `asset.imageUri` to reference the image (it includes both the ECR image URL\nand tag.\n\nYou can optionally pass build args to the `docker build` command by specifying\nthe `buildArgs` property:\n\n```typescript\nconst asset = new DockerImageAsset(this, 'MyBuildImage', {\n  directory: path.join(__dirname, 'my-image'),\n  buildArgs: {\n    HTTP_PROXY: 'http://10.20.30.2:1234'\n  }\n});\n```\n\n### Pull Permissions\n\nDepending on the consumer of your image asset, you will need to make sure\nthe principal has permissions to pull the image.\n\nIn most cases, you should use the `asset.repository.grantPull(principal)`\nmethod. This will modify the IAM policy of the principal to allow it to\npull images from this repository.\n\nIf the pulling principal is not in the same account or is an AWS service that\ndoesn't assume a role in your account (e.g. AWS CodeBuild), pull permissions\nmust be granted on the __resource policy__ (and not on the principal's policy).\nTo do that, you can use `asset.repository.addToResourcePolicy(statement)` to\ngrant the desired principal the following permissions: \"ecr:GetDownloadUrlForLayer\",\n\"ecr:BatchGetImage\" and \"ecr:BatchCheckLayerAvailability\".\n"
+  },
+  "repository": {
+    "directory": "packages/@aws-cdk/assets-docker",
+    "type": "git",
+    "url": "https://github.com/awslabs/aws-cdk.git"
+  },
+  "schema": "jsii/0.10.0",
+  "targets": {
+    "dotnet": {
+      "assemblyOriginatorKeyFile": "../../key.snk",
+      "namespace": "Amazon.CDK.Assets.Docker",
+      "packageId": "Amazon.CDK.Assets.Docker",
+      "signAssembly": true
+    },
+    "java": {
+      "maven": {
+        "artifactId": "cdk-assets-docker",
+        "groupId": "software.amazon.awscdk"
+      },
+      "package": "software.amazon.awscdk.assets.docker"
+    },
+    "js": {
+      "npm": "@aws-cdk/assets-docker"
+    },
+    "python": {
+      "distName": "aws-cdk.assets-docker",
+      "module": "aws_cdk.assets_docker"
+    }
+  },
+  "types": {
+    "@aws-cdk/assets-docker.DockerImageAsset": {
+      "assembly": "@aws-cdk/assets-docker",
+      "base": "@aws-cdk/cdk.Construct",
+      "docs": {
+        "remarks": "The image will be created in build time and uploaded to an ECR repository.",
+        "stability": "experimental",
+        "summary": "An asset that represents a Docker image."
+      },
+      "fqn": "@aws-cdk/assets-docker.DockerImageAsset",
+      "initializer": {
+        "docs": {
+          "stability": "experimental"
+        },
+        "parameters": [
+          {
+            "name": "scope",
+            "type": {
+              "fqn": "@aws-cdk/cdk.Construct"
+            }
+          },
+          {
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/assets-docker.DockerImageAssetProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/assets.IAsset"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/image-asset.ts",
+        "line": 39
+      },
+      "name": "DockerImageAsset",
+      "properties": [
+        {
+          "docs": {
+            "remarks": "As this is\na late-bound token, it may not be used in construct IDs, but can be passed as a resource\nproperty in order to force a change on a resource when an asset is effectively updated. This is\nmore reliable than `sourceHash` in particular for assets which bundling phase involve external\nresources that can change over time (such as Docker image builds).",
+            "stability": "experimental",
+            "summary": "A hash of the bundle for of this asset, which is only available at deployment time."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/image-asset.ts",
+            "line": 52
+          },
+          "name": "artifactHash",
+          "overrides": "@aws-cdk/assets.IAsset",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "remarks": "As this is a plain\nstring, it can be used in construct IDs in order to enforce creation of a new resource when\nthe content hash has changed.",
+            "stability": "experimental",
+            "summary": "A hash of the source of this asset, which is available at construction time."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/image-asset.ts",
+            "line": 51
+          },
+          "name": "sourceHash",
+          "overrides": "@aws-cdk/assets.IAsset",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "remarks": "Use this reference to pull\nthe asset.",
+            "stability": "experimental",
+            "summary": "The full URI of the image (including a tag)."
+          },
+          "locationInModule": {
+            "filename": "lib/image-asset.ts",
+            "line": 44
+          },
+          "name": "imageUri",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "experimental",
+            "summary": "Repository where the image is stored."
+          },
+          "locationInModule": {
+            "filename": "lib/image-asset.ts",
+            "line": 49
+          },
+          "name": "repository",
+          "type": {
+            "fqn": "@aws-cdk/aws-ecr.IRepository"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/assets-docker.DockerImageAssetProps": {
+      "assembly": "@aws-cdk/assets-docker",
+      "datatype": true,
+      "docs": {
+        "stability": "experimental"
+      },
+      "fqn": "@aws-cdk/assets-docker.DockerImageAssetProps",
+      "interfaces": [
+        "@aws-cdk/assets.CopyOptions"
+      ],
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/image-asset.ts",
+        "line": 9
+      },
+      "name": "DockerImageAssetProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "experimental",
+            "summary": "The directory where the Dockerfile is stored."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/image-asset.ts",
+            "line": 13
+          },
+          "name": "directory",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "no build args are passed",
+            "stability": "experimental",
+            "summary": "Build args to pass to the `docker build` command."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/image-asset.ts",
+            "line": 31
+          },
+          "name": "buildArgs",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "automatically derived from the asset's ID.",
+            "remarks": "Specify this property if you need to statically address the image, e.g.\nfrom a Kubernetes Pod. Note, this is only the repository name, without the\nregistry and the tag parts.",
+            "stability": "experimental",
+            "summary": "ECR repository name."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/image-asset.ts",
+            "line": 24
+          },
+          "name": "repositoryName",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ]
+    }
+  },
+  "version": "0.33.0",
+  "fingerprint": "+ZrmcyQsOTTV1npBL41G5NTX6CiW/95mBvT0++AdlhY="
+}

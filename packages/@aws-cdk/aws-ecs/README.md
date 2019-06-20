@@ -5,6 +5,9 @@
 
 ![Stability: Experimental](https://img.shields.io/badge/stability-Experimental-important.svg?style=for-the-badge)
 
+> **This is a _developer preview_ (public beta) module. Releases might lack important features and might have
+> future breaking changes.**
+> 
 > This API is still under active development and subject to non-backward
 > compatible changes or removal in any future version. Use of the API is not recommended in production
 > environments. Experimental APIs are not subject to the Semantic Versioning model.
@@ -135,12 +138,12 @@ To run a task or service with Amazon EC2 launch type, use the `Ec2TaskDefinition
 `FargateTaskDefinition`. These classes provide a simplified API that only contain
 properties relevant for that specific launch type.
 
-For a `FargateTaskDefinition`, specify the task size (`memoryMiB` and `cpu`):
+For a `FargateTaskDefinition`, specify the task size (`memoryLimitMiB` and `cpu`):
 
 ```ts
 const fargateTaskDefinition = new ecs.FargateTaskDefinition(this, 'TaskDef', {
-  memoryMiB: '512',
-  cpu: '256'
+  memoryLimitMiB: 512,
+  cpu: 256
 });
 ```
 To add containers to a task definition, call `addContainer()`:
@@ -186,7 +189,7 @@ The following example uses both:
 ```ts
 const taskDefinition = new ecs.TaskDefinition(this, 'TaskDef', {
   memoryMiB: '512',
-  cpu: 256,
+  cpu: '256',
   networkMode: 'awsvpc',
   compatibility: ecs.Compatibility.Ec2AndFargate,
 });
@@ -201,7 +204,7 @@ obtained from either DockerHub or from ECR repositories, or built directly from 
 * `ecs.ContainerImage.fromRegistry(imageName, { credentials: mySecret })`: use a private image that requires credentials.
 * `ecs.ContainerImage.fromEcrRepository(repo, tag)`: use the given ECR repository as the image
   to start. If no tag is provided, "latest" is assumed.
-* `ecs.ContainerImage.fromAsset(this, 'Image', { directory: './image' })`: build and upload an
+* `ecs.ContainerImage.fromAsset('./image')`: build and upload an
   image directly from a `Dockerfile` in your source directory.
 
 ## Service
@@ -307,9 +310,7 @@ import targets = require('@aws-cdk/aws-events-targets');
 // Create a Task Definition for the container to start
 const taskDefinition = new ecs.Ec2TaskDefinition(this, 'TaskDef');
 taskDefinition.addContainer('TheContainer', {
-  image: ecs.ContainerImage.fromAsset(this, 'EventImage', {
-    directory: path.resolve(__dirname, '..', 'eventhandler-image')
-  }),
+  image: ecs.ContainerImage.fromAsset(path.resolve(__dirname, '..', 'eventhandler-image')),
   memoryLimitMiB: 256,
   logging: new ecs.AwsLogDriver(this, 'TaskLogging', { streamPrefix: 'EventDemo' })
 });

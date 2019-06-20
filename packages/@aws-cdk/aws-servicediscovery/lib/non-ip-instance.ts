@@ -38,7 +38,7 @@ export class NonIpInstance extends InstanceBase {
   constructor(scope: cdk.Construct, id: string, props: NonIpInstanceProps) {
     super(scope, id);
 
-    if (props.service.namespace.type !== NamespaceType.Http) {
+    if (props.service.namespace.type !== NamespaceType.HTTP) {
       throw new Error('This type of instance can only be registered for HTTP namespaces.');
     }
 
@@ -55,6 +55,6 @@ export class NonIpInstance extends InstanceBase {
     });
 
     this.service = props.service;
-    this.instanceId = resource.instanceId;
+    this.instanceId = resource.refAsString;
   }
 }

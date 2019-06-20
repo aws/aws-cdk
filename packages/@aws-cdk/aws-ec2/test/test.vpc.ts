@@ -1,5 +1,5 @@
 import { countResources, expect, haveResource, haveResourceLike, isSuperObject } from '@aws-cdk/assert';
-import { AvailabilityZoneProvider, Construct, Stack, Tag } from '@aws-cdk/cdk';
+import { Construct, Stack, Tag } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
 import { CfnVPC, DefaultInstanceTenancy, IVpc, SubnetType, Vpc } from '../lib';
 import { exportVpc } from './export-helper';
@@ -22,7 +22,7 @@ export = {
           CidrBlock: Vpc.DEFAULT_CIDR_RANGE,
           EnableDnsHostnames: true,
           EnableDnsSupport: true,
-          InstanceTenancy: DefaultInstanceTenancy.Default,
+          InstanceTenancy: DefaultInstanceTenancy.DEFAULT,
         }));
         test.done();
       },
@@ -48,14 +48,14 @@ export = {
         cidr: "192.168.0.0/16",
         enableDnsHostnames: false,
         enableDnsSupport: false,
-        defaultInstanceTenancy: DefaultInstanceTenancy.Dedicated,
+        defaultInstanceTenancy: DefaultInstanceTenancy.DEDICATED,
       });
 
       expect(stack).to(haveResource('AWS::EC2::VPC', {
         CidrBlock: '192.168.0.0/16',
         EnableDnsHostnames: false,
         EnableDnsSupport: false,
-        InstanceTenancy: DefaultInstanceTenancy.Dedicated,
+        InstanceTenancy: DefaultInstanceTenancy.DEDICATED,
       }));
       test.done();
     },
@@ -63,7 +63,7 @@ export = {
     "contains the correct number of subnets"(test: Test) {
       const stack = getTestStack();
       const vpc = new Vpc(stack, 'TheVPC');
-      const zones = new AvailabilityZoneProvider(stack).availabilityZones.length;
+      const zones = stack.availabilityZones.length;
       test.equal(vpc.publicSubnets.length, zones);
       test.equal(vpc.privateSubnets.length, zones);
       test.deepEqual(stack.resolve(vpc.vpcId), { Ref: 'TheVPC92636AB0' });
@@ -75,7 +75,7 @@ export = {
       new Vpc(stack, 'TheVPC', {
         subnetConfiguration: [
           {
-            subnetType: SubnetType.Isolated,
+            subnetType: SubnetType.ISOLATED,
             name: 'Isolated',
           }
         ]
@@ -93,11 +93,11 @@ export = {
       new Vpc(stack, 'TheVPC', {
         subnetConfiguration: [
           {
-            subnetType: SubnetType.Public,
+            subnetType: SubnetType.PUBLIC,
             name: 'Public',
           },
           {
-            subnetType: SubnetType.Isolated,
+            subnetType: SubnetType.ISOLATED,
             name: 'Isolated',
           }
         ]
@@ -109,7 +109,7 @@ export = {
 
     "with no subnets defined, the VPC should have an IGW, and a NAT Gateway per AZ"(test: Test) {
       const stack = getTestStack();
-      const zones = new AvailabilityZoneProvider(stack).availabilityZones.length;
+      const zones = stack.availabilityZones.length;
       new Vpc(stack, 'TheVPC', { });
       expect(stack).to(countResources("AWS::EC2::InternetGateway", 1));
       expect(stack).to(countResources("AWS::EC2::NatGateway", zones));
@@ -123,19 +123,19 @@ export = {
         subnetConfiguration: [
           {
             cidrMask: 24,
-            subnetType: SubnetType.Private,
+            subnetType: SubnetType.PRIVATE,
             name: 'Private',
           },
           {
             cidrMask: 24,
             name: 'reserved',
-            subnetType: SubnetType.Private,
+            subnetType: SubnetType.PRIVATE,
             reserved: true,
           },
           {
             cidrMask: 28,
             name: 'rds',
-            subnetType: SubnetType.Isolated,
+            subnetType: SubnetType.ISOLATED,
           }
         ],
         maxAZs: 3
@@ -151,18 +151,18 @@ export = {
           {
             cidrMask: 24,
             name: 'ingress',
-            subnetType: SubnetType.Private,
+            subnetType: SubnetType.PRIVATE,
           },
           {
             cidrMask: 24,
             name: 'reserved',
-            subnetType: SubnetType.Private,
+            subnetType: SubnetType.PRIVATE,
             reserved: true,
           },
           {
             cidrMask: 24,
             name: 'rds',
-            subnetType: SubnetType.Private,
+            subnetType: SubnetType.PRIVATE,
           }
         ],
         maxAZs: 3
@@ -186,24 +186,24 @@ export = {
     },
     "with custom subnets, the VPC should have the right number of subnets, an IGW, and a NAT Gateway per AZ"(test: Test) {
       const stack = getTestStack();
-      const zones = new AvailabilityZoneProvider(stack).availabilityZones.length;
+      const zones = stack.availabilityZones.length;
       new Vpc(stack, 'TheVPC', {
         cidr: '10.0.0.0/21',
         subnetConfiguration: [
           {
             cidrMask: 24,
             name: 'ingress',
-            subnetType: SubnetType.Public,
+            subnetType: SubnetType.PUBLIC,
           },
           {
             cidrMask: 24,
             name: 'application',
-            subnetType: SubnetType.Private,
+            subnetType: SubnetType.PRIVATE,
           },
           {
             cidrMask: 28,
             name: 'rds',
-            subnetType: SubnetType.Isolated,
+            subnetType: SubnetType.ISOLATED,
           }
         ],
         maxAZs: 3
@@ -232,17 +232,17 @@ export = {
           {
             cidrMask: 24,
             name: 'ingress',
-            subnetType: SubnetType.Public,
+            subnetType: SubnetType.PUBLIC,
           },
           {
             cidrMask: 24,
             name: 'application',
-            subnetType: SubnetType.Private,
+            subnetType: SubnetType.PRIVATE,
           },
           {
             cidrMask: 28,
             name: 'rds',
-            subnetType: SubnetType.Isolated,
+            subnetType: SubnetType.ISOLATED,
           }
         ],
         maxAZs: 3
@@ -278,7 +278,7 @@ export = {
           {
             cidrMask: 24,
             name: 'ingress',
-            subnetType: SubnetType.Public,
+            subnetType: SubnetType.PUBLIC,
           }
         ],
       });
@@ -345,17 +345,17 @@ export = {
           {
             cidrMask: 24,
             name: 'ingress',
-            subnetType: SubnetType.Public,
+            subnetType: SubnetType.PUBLIC,
           },
           {
             cidrMask: 24,
             name: 'egress',
-            subnetType: SubnetType.Public,
+            subnetType: SubnetType.PUBLIC,
           },
           {
             cidrMask: 24,
             name: 'private',
-            subnetType: SubnetType.Private,
+            subnetType: SubnetType.PRIVATE,
           },
         ],
         natGatewaySubnets: {
@@ -378,12 +378,12 @@ export = {
           {
             cidrMask: 24,
             name: 'ingress',
-            subnetType: SubnetType.Public,
+            subnetType: SubnetType.PUBLIC,
           },
           {
             cidrMask: 24,
             name: 'private',
-            subnetType: SubnetType.Private,
+            subnetType: SubnetType.PRIVATE,
           },
         ],
         natGatewaySubnets: {
@@ -436,13 +436,13 @@ export = {
       const stack = getTestStack();
       new Vpc(stack, 'VPC', {
         subnetConfiguration: [
-          { subnetType: SubnetType.Private, name: 'Private' },
-          { subnetType: SubnetType.Isolated, name: 'Isolated' },
+          { subnetType: SubnetType.PRIVATE, name: 'Private' },
+          { subnetType: SubnetType.ISOLATED, name: 'Isolated' },
         ],
         vpnGateway: true,
         vpnRoutePropagation: [
           {
-            subnetType: SubnetType.Isolated
+            subnetType: SubnetType.ISOLATED
           }
         ]
       });
@@ -470,16 +470,16 @@ export = {
       const stack = getTestStack();
       new Vpc(stack, 'VPC', {
         subnetConfiguration: [
-          { subnetType: SubnetType.Private, name: 'Private' },
-          { subnetType: SubnetType.Isolated, name: 'Isolated' },
+          { subnetType: SubnetType.PRIVATE, name: 'Private' },
+          { subnetType: SubnetType.ISOLATED, name: 'Isolated' },
         ],
         vpnGateway: true,
         vpnRoutePropagation: [
           {
-            subnetType: SubnetType.Private
+            subnetType: SubnetType.PRIVATE
           },
           {
-            subnetType: SubnetType.Isolated
+            subnetType: SubnetType.ISOLATED
           }
         ]
       });
@@ -565,7 +565,7 @@ export = {
 
       const vpc = new Vpc(stack, 'TheVPC');
       // overwrite to set propagate
-      vpc.node.applyAspect(new Tag('BusinessUnit', 'Marketing', {includeResourceTypes: [CfnVPC.resourceTypeName]}));
+      vpc.node.applyAspect(new Tag('BusinessUnit', 'Marketing', {includeResourceTypes: [CfnVPC.cfnResourceTypeName]}));
       vpc.node.applyAspect(new Tag('VpcType', 'Good'));
       expect(stack).to(haveResource("AWS::EC2::VPC", hasTags(toCfnTags(allTags))));
       const taggables = ['Subnet', 'InternetGateway', 'NatGateway', 'RouteTable'];
@@ -623,7 +623,7 @@ export = {
       const vpc = new Vpc(stack, 'VPC');
 
       // WHEN
-      const { subnetIds } = vpc.selectSubnets({ subnetType: SubnetType.Public });
+      const { subnetIds } = vpc.selectSubnets({ subnetType: SubnetType.PUBLIC });
 
       // THEN
       test.deepEqual(subnetIds, vpc.publicSubnets.map(s => s.subnetId));
@@ -636,13 +636,13 @@ export = {
       const stack = getTestStack();
       const vpc = new Vpc(stack, 'VPC', {
         subnetConfiguration: [
-          { subnetType: SubnetType.Private, name: 'Private' },
-          { subnetType: SubnetType.Isolated, name: 'Isolated' },
+          { subnetType: SubnetType.PRIVATE, name: 'Private' },
+          { subnetType: SubnetType.ISOLATED, name: 'Isolated' },
         ]
       });
 
       // WHEN
-      const { subnetIds } = vpc.selectSubnets({ subnetType: SubnetType.Isolated });
+      const { subnetIds } = vpc.selectSubnets({ subnetType: SubnetType.ISOLATED });
 
       // THEN
       test.deepEqual(subnetIds, vpc.isolatedSubnets.map(s => s.subnetId));
@@ -655,8 +655,8 @@ export = {
       const stack = getTestStack();
       const vpc = new Vpc(stack, 'VPC', {
         subnetConfiguration: [
-          { subnetType: SubnetType.Private, name: 'DontTalkToMe' },
-          { subnetType: SubnetType.Isolated, name: 'DontTalkAtAll' },
+          { subnetType: SubnetType.PRIVATE, name: 'DontTalkToMe' },
+          { subnetType: SubnetType.ISOLATED, name: 'DontTalkAtAll' },
         ]
       });
 
@@ -690,8 +690,8 @@ export = {
       const vpc = new Vpc(stack, 'VpcNetwork', {
         maxAZs: 1,
         subnetConfiguration: [
-          {name: 'app', subnetType: SubnetType.Private },
-          {name: 'db', subnetType: SubnetType.Private },
+          {name: 'app', subnetType: SubnetType.PRIVATE },
+          {name: 'db', subnetType: SubnetType.PRIVATE },
         ]
       });
 
@@ -725,8 +725,8 @@ export = {
       const imported = doImportExportTest(stack => {
         return new Vpc(stack, 'TheVPC', {
           subnetConfiguration: [
-            { name: 'Ingress', subnetType: SubnetType.Public },
-            { name: 'Egress', subnetType: SubnetType.Public },
+            { name: 'Ingress', subnetType: SubnetType.PUBLIC },
+            { name: 'Egress', subnetType: SubnetType.PUBLIC },
           ]
         });
       });
@@ -755,14 +755,14 @@ export = {
       const importedVpc = doImportExportTest(stack => {
         return new Vpc(stack, 'TheVPC', {
           subnetConfiguration: [
-            { subnetType: SubnetType.Private, name: 'Private' },
-            { subnetType: SubnetType.Isolated, name: 'Isolated' },
+            { subnetType: SubnetType.PRIVATE, name: 'Private' },
+            { subnetType: SubnetType.ISOLATED, name: 'Isolated' },
           ]
         });
       });
 
       // WHEN
-      const { subnetIds } = importedVpc.selectSubnets({ subnetType: SubnetType.Isolated });
+      const { subnetIds } = importedVpc.selectSubnets({ subnetType: SubnetType.ISOLATED });
 
       // THEN
       test.equal(3, importedVpc.isolatedSubnets.length);
@@ -778,8 +778,8 @@ export = {
         const importedVpc = doImportExportTest(stack => {
           return new Vpc(stack, 'TheVPC', {
             subnetConfiguration: [
-              { subnetType: SubnetType.Private, name: 'Private' },
-              { subnetType: SubnetType.Isolated, name: isolatedName },
+              { subnetType: SubnetType.PRIVATE, name: 'Private' },
+              { subnetType: SubnetType.ISOLATED, name: isolatedName },
             ]
           });
         });

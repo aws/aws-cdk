@@ -32,7 +32,7 @@ export class HttpNamespace extends Resource implements IHttpNamespace {
       public namespaceName = attrs.namespaceName;
       public namespaceId = attrs.namespaceId;
       public namespaceArn = attrs.namespaceArn;
-      public type = NamespaceType.Http;
+      public type = NamespaceType.HTTP;
     }
     return new Import(scope, id);
   }
@@ -66,9 +66,9 @@ export class HttpNamespace extends Resource implements IHttpNamespace {
     });
 
     this.namespaceName = props.name;
-    this.namespaceId = ns.httpNamespaceId;
-    this.namespaceArn = ns.httpNamespaceArn;
-    this.type = NamespaceType.Http;
+    this.namespaceId = ns.attrId;
+    this.namespaceArn = ns.attrArn;
+    this.type = NamespaceType.HTTP;
   }
 
   /** @attribute */

@@ -304,7 +304,7 @@ export = {
     test.equals(secret.secretArn, secretArn);
     test.same(secret.encryptionKey, encryptionKey);
     test.deepEqual(stack.resolve(secret.secretValue), '{{resolve:secretsmanager:arn::of::a::secret:SecretString:::}}');
-    test.deepEqual(stack.resolve(secret.secretJsonValue('password')), '{{resolve:secretsmanager:arn::of::a::secret:SecretString:password::}}');
+    test.deepEqual(stack.resolve(secret.secretValueFromJson('password')), '{{resolve:secretsmanager:arn::of::a::secret:SecretString:password::}}');
     test.done();
   },
 
@@ -315,7 +315,7 @@ export = {
     const target: secretsmanager.ISecretAttachmentTarget = {
       asSecretAttachmentTarget: () => ({
         targetId: 'instance',
-        targetType: secretsmanager.AttachmentTargetType.Instance
+        targetType: secretsmanager.AttachmentTargetType.INSTANCE
       })
     };
 
@@ -341,12 +341,12 @@ export = {
     const target: secretsmanager.ISecretAttachmentTarget = {
       asSecretAttachmentTarget: () => ({
         targetId: 'cluster',
-        targetType: secretsmanager.AttachmentTargetType.Cluster
+        targetType: secretsmanager.AttachmentTargetType.CLUSTER
       })
     };
     const attachedSecret = secret.addTargetAttachment('AttachedSecret', { target });
     const rotationLambda = new lambda.Function(stack, 'Lambda', {
-      runtime: lambda.Runtime.NodeJS810,
+      runtime: lambda.Runtime.Nodejs810,
       code: lambda.Code.inline('export.handler = event => event;'),
       handler: 'index.handler'
     });
@@ -399,7 +399,7 @@ export = {
     const stack = new Stack();
 
     // WHEN
-    const imported = secretsmanager.Secret.fromSecretAttributes(stack, 'Imported', { secretArn: 'my-secret-arn' }).secretJsonValue('password');
+    const imported = secretsmanager.Secret.fromSecretAttributes(stack, 'Imported', { secretArn: 'my-secret-arn' }).secretValueFromJson('password');
     const value = SecretValue.secretsManager('my-secret-arn', { jsonField: 'password' });
 
     // THEN

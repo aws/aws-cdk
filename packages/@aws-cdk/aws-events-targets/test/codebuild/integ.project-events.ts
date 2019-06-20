@@ -3,6 +3,7 @@ import codebuild = require('@aws-cdk/aws-codebuild');
 import codecommit = require('@aws-cdk/aws-codecommit');
 import events = require('@aws-cdk/aws-events');
 import sns = require('@aws-cdk/aws-sns');
+import subs = require('@aws-cdk/aws-sns-subscriptions');
 import sqs = require('@aws-cdk/aws-sqs');
 import cdk = require('@aws-cdk/cdk');
 import targets = require('../../lib');
@@ -11,15 +12,17 @@ const app = new cdk.App();
 
 const stack = new cdk.Stack(app, 'aws-cdk-codebuild-events');
 
-const repo = new codecommit.Repository(stack, 'MyRepo', { repositoryName: 'aws-cdk-codebuild-events' });
+const repo = new codecommit.Repository(stack, 'MyRepo', {
+  repositoryName: cdk.PhysicalName.of('aws-cdk-codebuild-events'),
+});
 const project = new codebuild.Project(stack, 'MyProject', {
-  source: new codebuild.CodeCommitSource({ repository: repo }),
+  source: codebuild.Source.codeCommit({ repository: repo }),
 });
 
 const queue = new sqs.Queue(stack, 'MyQueue');
 
 const topic = new sns.Topic(stack, 'MyTopic');
-topic.subscribeQueue(queue);
+topic.addSubscription(new subs.SqsSubscription(queue));
 
 // this will send an email with the JSON event for every state change of this
 // build project.

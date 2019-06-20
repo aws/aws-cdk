@@ -18,7 +18,7 @@ export = {
         key: 'value'
       },
       maximumExecutionFrequency: config.MaximumExecutionFrequency.THREE_HOURS,
-      name: 'cool rule'
+      ruleName: cdk.PhysicalName.of('cool rule'),
     });
 
     // THEN
@@ -44,7 +44,7 @@ export = {
     const fn = new lambda.Function(stack, 'Function', {
       code: lambda.AssetCode.inline('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NodeJS810
+      runtime: lambda.Runtime.Nodejs810
     });
 
     // WHEN
@@ -56,7 +56,7 @@ export = {
       },
       lambdaFunction: fn,
       maximumExecutionFrequency: config.MaximumExecutionFrequency.SIX_HOURS,
-      name: 'cool rule',
+      ruleName: cdk.PhysicalName.of('cool rule'),
       periodic: true
     });
 
@@ -210,7 +210,7 @@ export = {
     const fn = new lambda.Function(stack, 'Function', {
       code: lambda.AssetCode.inline('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NodeJS810
+      runtime: lambda.Runtime.Nodejs810
     });
 
     // WHEN
@@ -231,7 +231,7 @@ export = {
     const fn = new lambda.Function(stack, 'Function', {
       code: lambda.AssetCode.inline('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NodeJS810
+      runtime: lambda.Runtime.Nodejs810
     });
 
     // THEN
@@ -252,7 +252,7 @@ export = {
     const fn = new lambda.Function(stack, 'Function', {
       code: lambda.Code.inline('dummy'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NodeJS810
+      runtime: lambda.Runtime.Nodejs810
     });
 
     // WHEN

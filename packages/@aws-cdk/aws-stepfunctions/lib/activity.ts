@@ -1,5 +1,5 @@
 import cloudwatch = require('@aws-cdk/aws-cloudwatch');
-import { Construct, IResource, Resource, Stack } from '@aws-cdk/cdk';
+import { Construct, IResource, Lazy, PhysicalName, Resource, ResourceIdentifiers, Stack } from '@aws-cdk/cdk';
 import { CfnActivity } from './stepfunctions.generated';
 
 export interface ActivityProps {
@@ -8,7 +8,7 @@ export interface ActivityProps {
      *
      * @default If not supplied, a name is generated
      */
-    readonly activityName?: string;
+    readonly activityName?: PhysicalName;
 }
 
 /**
@@ -19,7 +19,7 @@ export class Activity extends Resource implements IActivity {
      * Construct an Activity from an existing Activity ARN
      */
     public static fromActivityArn(scope: Construct, id: string, activityArn: string): IActivity {
-        class Imported extends Construct implements IActivity {
+        class Imported extends Resource implements IActivity {
             public get activityArn() { return activityArn; }
             public get activityName() {
                 return Stack.of(this).parseArn(activityArn, ':').resourceName || '';
@@ -52,14 +52,27 @@ export class Activity extends Resource implements IActivity {
     public readonly activityName: string;
 
     constructor(scope: Construct, id: string, props: ActivityProps = {}) {
-        super(scope, id);
-
-        const resource = new CfnActivity(this, 'Resource', {
-            name: props.activityName || this.generateName()
+        super(scope, id, {
+            physicalName: props.activityName ||
+                PhysicalName.of(Lazy.stringValue({ produce: () => this.generateName() })),
         });
 
-        this.activityArn = resource.activityArn;
-        this.activityName = resource.activityName;
+        const resource = new CfnActivity(this, 'Resource', {
+            name: this.physicalName.value! // not null because of above call to `super`
+        });
+
+        const resourceIdentifiers = new ResourceIdentifiers(this, {
+            arn: resource.refAsString,
+            name: resource.attrName,
+            arnComponents: {
+                service: 'states',
+                resource: 'activity',
+                resourceName: this.physicalName.value,
+                sep: ':',
+            },
+        });
+        this.activityArn = resourceIdentifiers.arn;
+        this.activityName = resourceIdentifiers.name;
     }
 
     /**

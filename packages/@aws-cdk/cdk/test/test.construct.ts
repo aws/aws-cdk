@@ -1,6 +1,6 @@
 import cxapi = require('@aws-cdk/cx-api');
 import { Test } from 'nodeunit';
-import { App as Root, Construct, ConstructNode, ConstructOrder, IConstruct, Token, ValidationError } from '../lib';
+import { App as Root, Aws, Construct, ConstructNode, ConstructOrder, IConstruct, Lazy, ValidationError } from '../lib';
 
 // tslint:disable:variable-name
 // tslint:disable:max-line-length
@@ -66,7 +66,7 @@ export = {
   "dont allow unresolved tokens to be used in construct IDs"(test: Test) {
     // GIVEN
     const root = new Root();
-    const token = new Token(() => 'lazy');
+    const token = Lazy.stringValue({ produce: () => 'lazy' });
 
     // WHEN + THEN
     test.throws(() => new Construct(root, `MyID: ${token}`), /Cannot use tokens in construct ID: MyID: \${Token/);
@@ -182,6 +182,13 @@ export = {
     const root = new Root();
     new Construct(root, 'child1');
     test.throws(() => root.node.setContext('k', 'v'));
+    test.done();
+  },
+
+  'fails if context key contains unresolved tokens'(test: Test) {
+    const root = new Root();
+    test.throws(() => root.node.setContext(`my-${Aws.region}`, 'foo'), /Invalid context key/);
+    test.throws(() => root.node.tryGetContext(Aws.region), /Invalid context key/);
     test.done();
   },
 
@@ -359,11 +366,11 @@ export = {
 
     class LockableConstruct extends Construct {
       public lockMe() {
-        this.node.lock();
+        (this.node as any)._lock();
       }
 
       public unlockMe() {
-        this.node.unlock();
+        (this.node as any)._unlock();
       }
     }
 

@@ -1,5 +1,7 @@
 import ec2 = require('@aws-cdk/aws-ec2');
-import { Construct, Resource, Token } from '@aws-cdk/cdk';
+import { Construct, ContextProvider, Duration, Lazy, Resource } from '@aws-cdk/cdk';
+import cxapi = require('@aws-cdk/cx-api');
+import { HostedZoneProviderProps } from './hosted-zone-provider';
 import { HostedZoneAttributes, IHostedZone } from './hosted-zone-ref';
 import { CaaAmazonRecord, ZoneDelegationRecord } from './record-set';
 import { CfnHostedZone } from './route53.generated';
@@ -45,7 +47,7 @@ export interface HostedZoneProps extends CommonHostedZoneProps {
 export class HostedZone extends Resource implements IHostedZone {
 
   public static fromHostedZoneId(scope: Construct, id: string, hostedZoneId: string): IHostedZone {
-    class Import extends Construct implements IHostedZone {
+    class Import extends Resource implements IHostedZone {
       public readonly hostedZoneId = hostedZoneId;
       public get zoneName(): string {
         throw new Error(`HostedZone.fromHostedZoneId doesn't support "zoneName"`);
@@ -59,12 +61,43 @@ export class HostedZone extends Resource implements IHostedZone {
    * Imports a hosted zone from another stack.
    */
   public static fromHostedZoneAttributes(scope: Construct, id: string, attrs: HostedZoneAttributes): IHostedZone {
-    class Import extends Construct implements IHostedZone {
+    class Import extends Resource implements IHostedZone {
       public readonly hostedZoneId = attrs.hostedZoneId;
       public readonly zoneName = attrs.zoneName;
     }
 
     return new Import(scope, id);
+  }
+
+  /**
+   * Lookup a hosted zone in the current account/region based on query parameters.
+   */
+  public static fromLookup(scope: Construct, id: string, query: HostedZoneProviderProps): IHostedZone {
+    const DEFAULT_HOSTED_ZONE: HostedZoneContextResponse = {
+      Id: '/hostedzone/DUMMY',
+      Name: 'example.com',
+    };
+
+    interface HostedZoneContextResponse {
+      Id: string;
+      Name: string;
+    }
+
+    const response: HostedZoneContextResponse = ContextProvider.getValue(scope, {
+      provider: cxapi.HOSTED_ZONE_PROVIDER,
+      dummyValue: DEFAULT_HOSTED_ZONE,
+      props: query
+    });
+
+    // CDK handles the '.' at the end, so remove it here
+    if (response.Name.endsWith('.')) {
+      response.Name = response.Name.substring(0, response.Name.length - 1);
+    }
+
+    return this.fromHostedZoneAttributes(scope, id, {
+      hostedZoneId: response.Id,
+      zoneName: response.Name,
+    });
   }
 
   public readonly hostedZoneId: string;
@@ -85,11 +118,11 @@ export class HostedZone extends Resource implements IHostedZone {
       name: props.zoneName + '.',
       hostedZoneConfig: props.comment ? { comment: props.comment } : undefined,
       queryLoggingConfig: props.queryLogsLogGroupArn ? { cloudWatchLogsLogGroupArn: props.queryLogsLogGroupArn } : undefined,
-      vpcs: new Token(() => this.vpcs.length === 0 ? undefined : this.vpcs)
+      vpcs: Lazy.anyValue({ produce: () => this.vpcs.length === 0 ? undefined : this.vpcs })
     });
 
-    this.hostedZoneId = resource.ref;
-    this.hostedZoneNameServers = resource.hostedZoneNameServers;
+    this.hostedZoneId = resource.refAsString;
+    this.hostedZoneNameServers = resource.attrNameServers;
     this.zoneName = props.zoneName;
 
     for (const vpc of props.vpcs || []) {
@@ -184,7 +217,7 @@ export interface ZoneDelegationOptions {
    *
    * @default 172800
    */
-  readonly ttl?: number;
+  readonly ttl?: Duration;
 }
 
 export interface PrivateHostedZoneProps extends CommonHostedZoneProps {

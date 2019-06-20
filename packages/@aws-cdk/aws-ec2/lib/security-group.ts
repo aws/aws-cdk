@@ -1,4 +1,4 @@
-import { Construct, IResource, Resource, Stack, Token } from '@aws-cdk/cdk';
+import { Construct, IResource, Lazy, PhysicalName, Resource, ResourceProps, Stack } from '@aws-cdk/cdk';
 import { Connections, IConnectable } from './connections';
 import { CfnSecurityGroup, CfnSecurityGroupEgress, CfnSecurityGroupIngress } from './ec2.generated';
 import { IPortRange, ISecurityGroupRule } from './security-group-rule';
@@ -57,8 +57,8 @@ abstract class SecurityGroupBase extends Resource implements ISecurityGroup {
    */
   public readonly defaultPortRange?: IPortRange;
 
-  constructor(scope: Construct, id: string) {
-    super(scope, id);
+  constructor(scope: Construct, id: string, props?: ResourceProps) {
+    super(scope, id, props);
 
     Object.defineProperty(this, SECURITY_GROUP_SYMBOL, { value: true });
   }
@@ -192,7 +192,7 @@ export interface SecurityGroupProps {
    * @default If you don't specify a GroupName, AWS CloudFormation generates a
    * unique physical ID and uses that ID for the group name.
    */
-  readonly groupName?: string;
+  readonly groupName?: PhysicalName;
 
   /**
    * A description of the security group.
@@ -266,23 +266,25 @@ export class SecurityGroup extends SecurityGroupBase {
   private readonly allowAllOutbound: boolean;
 
   constructor(scope: Construct, id: string, props: SecurityGroupProps) {
-    super(scope, id);
+    super(scope, id, {
+      physicalName: props.groupName
+    });
 
     const groupDescription = props.description || this.node.path;
 
     this.allowAllOutbound = props.allowAllOutbound !== false;
 
     this.securityGroup = new CfnSecurityGroup(this, 'Resource', {
-      groupName: props.groupName,
+      groupName: this.physicalName.value,
       groupDescription,
-      securityGroupIngress: new Token(() => this.directIngressRules),
-      securityGroupEgress: new Token(() => this.directEgressRules),
+      securityGroupIngress: Lazy.anyValue({ produce: () => this.directIngressRules }),
+      securityGroupEgress: Lazy.anyValue({ produce: () => this.directEgressRules }),
       vpcId: props.vpc.vpcId,
     });
 
-    this.securityGroupId = this.securityGroup.securityGroupId;
-    this.securityGroupVpcId = this.securityGroup.securityGroupVpcId;
-    this.securityGroupName = this.securityGroup.securityGroupName;
+    this.securityGroupId = this.securityGroup.attrGroupId;
+    this.securityGroupVpcId = this.securityGroup.attrVpcId;
+    this.securityGroupName = this.securityGroup.refAsString;
 
     this.addDefaultEgressRule();
   }

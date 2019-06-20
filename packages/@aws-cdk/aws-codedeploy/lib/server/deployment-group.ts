@@ -4,7 +4,7 @@ import ec2 = require('@aws-cdk/aws-ec2');
 import iam = require('@aws-cdk/aws-iam');
 import s3 = require('@aws-cdk/aws-s3');
 import cdk = require('@aws-cdk/cdk');
-import { Stack } from '@aws-cdk/cdk';
+import { PhysicalName, Stack } from '@aws-cdk/cdk';
 import { CfnDeploymentGroup } from '../codedeploy.generated';
 import { AutoRollbackConfig } from '../rollback-config';
 import { arnForDeploymentGroup, renderAlarmConfiguration, renderAutoRollbackConfiguration } from '../utils';
@@ -73,8 +73,8 @@ abstract class ServerDeploymentGroupBase extends cdk.Resource implements IServer
   public readonly deploymentConfig: IServerDeploymentConfig;
   public abstract readonly autoScalingGroups?: autoscaling.AutoScalingGroup[];
 
-  constructor(scope: cdk.Construct, id: string, deploymentConfig?: IServerDeploymentConfig) {
-    super(scope, id);
+  constructor(scope: cdk.Construct, id: string, deploymentConfig?: IServerDeploymentConfig, props?: cdk.ResourceProps) {
+    super(scope, id, props);
     this.deploymentConfig = deploymentConfig || ServerDeploymentConfig.OneAtATime;
   }
 }
@@ -153,7 +153,7 @@ export interface ServerDeploymentGroupProps {
    *
    * @default - An auto-generated name will be used.
    */
-  readonly deploymentGroupName?: string;
+  readonly deploymentGroupName?: PhysicalName;
 
   /**
    * The EC2/on-premise Deployment Configuration to use for this Deployment Group.
@@ -266,13 +266,15 @@ export class ServerDeploymentGroup extends ServerDeploymentGroupBase {
   private readonly alarms: cloudwatch.IAlarm[];
 
   constructor(scope: cdk.Construct, id: string, props: ServerDeploymentGroupProps = {}) {
-    super(scope, id, props.deploymentConfig);
+    super(scope, id, props.deploymentConfig, {
+      physicalName: props.deploymentGroupName,
+    });
 
     this.application = props.application || new ServerApplication(this, 'Application');
 
     this.role = props.role || new iam.Role(this, 'Role', {
       assumedBy: new iam.ServicePrincipal('codedeploy.amazonaws.com'),
-      managedPolicyArns: ['arn:aws:iam::aws:policy/service-role/AWSCodeDeployRole'],
+      managedPolicies: [iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSCodeDeployRole')],
     });
 
     this._autoScalingGroups = props.autoScalingGroups || [];
@@ -286,14 +288,11 @@ export class ServerDeploymentGroup extends ServerDeploymentGroupBase {
 
     const resource = new CfnDeploymentGroup(this, 'Resource', {
       applicationName: this.application.applicationName,
-      deploymentGroupName: props.deploymentGroupName,
+      deploymentGroupName: this.physicalName.value,
       serviceRoleArn: this.role.roleArn,
       deploymentConfigName: props.deploymentConfig &&
         props.deploymentConfig.deploymentConfigName,
-      autoScalingGroups: new cdk.Token(() =>
-        this._autoScalingGroups.length === 0
-          ? undefined
-          : this._autoScalingGroups.map(asg => asg.autoScalingGroupName)).toList(),
+      autoScalingGroups: cdk.Lazy.listValue({ produce: () => this._autoScalingGroups.map(asg => asg.autoScalingGroupName) }, { omitEmpty: true }),
       loadBalancerInfo: this.loadBalancerInfo(props.loadBalancer),
       deploymentStyle: props.loadBalancer === undefined
         ? undefined
@@ -302,12 +301,22 @@ export class ServerDeploymentGroup extends ServerDeploymentGroupBase {
         },
       ec2TagSet: this.ec2TagSet(props.ec2InstanceTags),
       onPremisesTagSet: this.onPremiseTagSet(props.onPremiseInstanceTags),
-      alarmConfiguration: new cdk.Token(() => renderAlarmConfiguration(this.alarms, props.ignorePollAlarmsFailure)),
-      autoRollbackConfiguration: new cdk.Token(() => renderAutoRollbackConfiguration(this.alarms, props.autoRollback)),
+      alarmConfiguration: cdk.Lazy.anyValue({ produce: () => renderAlarmConfiguration(this.alarms, props.ignorePollAlarmsFailure) }),
+      autoRollbackConfiguration: cdk.Lazy.anyValue({ produce: () => renderAutoRollbackConfiguration(this.alarms, props.autoRollback) }),
     });
 
-    this.deploymentGroupName = resource.deploymentGroupName;
-    this.deploymentGroupArn = arnForDeploymentGroup(this.application.applicationName, this.deploymentGroupName);
+    const resourceIdentifiers = new cdk.ResourceIdentifiers(this, {
+      arn: arnForDeploymentGroup(this.application.applicationName, resource.refAsString),
+      name: resource.refAsString,
+      arnComponents: {
+        service: 'codedeploy',
+        resource: 'deploymentgroup',
+        resourceName: `${this.application.physicalName.value}/${this.physicalName.value}`,
+        sep: ':',
+      },
+    });
+    this.deploymentGroupName = resourceIdentifiers.name;
+    this.deploymentGroupArn = resourceIdentifiers.arn;
   }
 
   /**
@@ -343,7 +352,7 @@ export class ServerDeploymentGroup extends ServerDeploymentGroupBase {
     this.codeDeployBucket.grantRead(asg.role, 'latest/*');
 
     switch (asg.osType) {
-      case ec2.OperatingSystemType.Linux:
+      case ec2.OperatingSystemType.LINUX:
         asg.addUserData(
           'PKG_CMD=`which yum 2>/dev/null`',
           'if [ -z "$PKG_CMD" ]; then',
@@ -365,7 +374,7 @@ export class ServerDeploymentGroup extends ServerDeploymentGroupBase {
           'rm -fr $TMP_DIR',
         );
         break;
-      case ec2.OperatingSystemType.Windows:
+      case ec2.OperatingSystemType.WINDOWS:
         asg.addUserData(
           'Set-Variable -Name TEMPDIR -Value (New-TemporaryFile).DirectoryName',
           `aws s3 cp s3://aws-codedeploy-${Stack.of(this).region}/latest/codedeploy-agent.msi $TEMPDIR\\codedeploy-agent.msi`,

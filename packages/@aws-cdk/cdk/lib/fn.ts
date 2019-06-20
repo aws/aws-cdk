@@ -1,6 +1,9 @@
 import { ICfnConditionExpression } from './cfn-condition';
-import { minimalCloudFormationJoin } from './instrinsics';
-import { IResolveContext, Token } from './token';
+import { minimalCloudFormationJoin } from './cloudformation-lang';
+import { Intrinsic } from './private/intrinsic';
+import { IResolvable, IResolveContext } from './resolvable';
+import { captureStackTrace } from './stack-trace';
+import { Token } from './token';
 
 // tslint:disable:max-line-length
 
@@ -53,11 +56,11 @@ export class Fn {
   public static split(delimiter: string, source: string): string[] {
 
     // short-circut if source is not a token
-    if (!Token.isToken(source)) {
+    if (!Token.isUnresolved(source)) {
       return source.split(delimiter);
     }
 
-    return new FnSplit(delimiter, source).toList();
+    return Token.asList(new FnSplit(delimiter, source));
   }
 
   /**
@@ -67,7 +70,7 @@ export class Fn {
    * @returns a token represented as a string
    */
   public static select(index: number, array: string[]): string {
-    if (!Token.isToken(array)) {
+    if (!Token.isUnresolved(array)) {
       return array[index];
     }
 
@@ -113,7 +116,7 @@ export class Fn {
    * @returns a token represented as a string
    */
   public static cidr(ipBlock: string, count: number, sizeMask?: string): string[] {
-    return new FnCidr(ipBlock, count, sizeMask).toList();
+    return Token.asList(new FnCidr(ipBlock, count, sizeMask));
   }
 
   /**
@@ -130,7 +133,7 @@ export class Fn {
    * @returns a token represented as a string array
    */
   public static getAZs(region?: string): string[] {
-    return new FnGetAZs(region).toList();
+    return Token.asList(new FnGetAZs(region));
   }
 
   /**
@@ -237,7 +240,7 @@ export class Fn {
    * of strings.
    * @returns an FnCondition token
    */
-  public conditionEachMemberEquals(listOfStrings: string[], value: string): ICfnConditionExpression {
+  public static conditionEachMemberEquals(listOfStrings: string[], value: string): ICfnConditionExpression {
     return new FnEachMemberEquals(listOfStrings, value);
   }
 
@@ -252,7 +255,7 @@ export class Fn {
    * strings_to_check parameter.
    * @returns an FnCondition token
    */
-  public conditionEachMemberIn(stringsToCheck: string[], stringsToMatch: string): ICfnConditionExpression {
+  public static conditionEachMemberIn(stringsToCheck: string[], stringsToMatch: string[]): ICfnConditionExpression {
     return new FnEachMemberIn(stringsToCheck, stringsToMatch);
   }
 
@@ -263,8 +266,8 @@ export class Fn {
    * Parameters in the AWS CloudFormation User Guide.
    * @returns a token represented as a string array
    */
-  public refAll(parameterType: string): string[] {
-    return new FnRefAll(parameterType).toList();
+  public static refAll(parameterType: string): string[] {
+    return Token.asList(new FnRefAll(parameterType));
   }
 
   /**
@@ -277,7 +280,7 @@ export class Fn {
    * value.
    * @returns a token represented as a string
    */
-  public valueOf(parameterOrLogicalId: string, attribute: string): string {
+  public static valueOf(parameterOrLogicalId: string, attribute: string): string {
     return new FnValueOf(parameterOrLogicalId, attribute).toString();
   }
 
@@ -291,15 +294,17 @@ export class Fn {
    * value. For more information about attributes, see Supported Attributes.
    * @returns a token represented as a string array
    */
-  public valueOfAll(parameterType: string, attribute: string): string[] {
-    return new FnValueOfAll(parameterType, attribute).toList();
+  public static valueOfAll(parameterType: string, attribute: string): string[] {
+    return Token.asList(new FnValueOfAll(parameterType, attribute));
   }
+
+  private constructor() { }
 }
 
 /**
  * Base class for tokens that represent CloudFormation intrinsic functions.
  */
-class FnBase extends Token {
+class FnBase extends Intrinsic {
   constructor(name: string, value: any) {
     super({ [name]: value });
   }
@@ -456,7 +461,7 @@ class FnCidr extends FnBase {
   }
 }
 
-class FnConditionBase extends Token implements ICfnConditionExpression {
+class FnConditionBase extends Intrinsic implements ICfnConditionExpression {
   constructor(type: string, value: any) {
     super({ [type]: value });
   }
@@ -574,8 +579,8 @@ class FnEachMemberIn extends FnConditionBase {
    * @param stringsToCheck A list of strings, such as "A", "B", "C". AWS CloudFormation checks whether each member in the strings_to_check parameter is in the strings_to_match parameter.
    * @param stringsToMatch A list of strings, such as "A", "B", "C". Each member in the strings_to_match parameter is compared against the members of the strings_to_check parameter.
    */
-  constructor(stringsToCheck: any, stringsToMatch: any) {
-    super('Fn::EachMemberIn', [ [stringsToCheck], stringsToMatch ]);
+  constructor(stringsToCheck: string[], stringsToMatch: string[]) {
+    super('Fn::EachMemberIn', [stringsToCheck, stringsToMatch]);
   }
 }
 
@@ -627,7 +632,9 @@ class FnValueOfAll extends FnBase {
  * the specified delimiter. If a delimiter is the empty string, the set of values are concatenated
  * with no delimiter.
  */
-class FnJoin extends Token {
+class FnJoin implements IResolvable {
+  public readonly creationStack: string[];
+
   private readonly delimiter: string;
   private readonly listOfValues: any[];
   // Cache for the result of resolveValues() - since it otherwise would be computed several times
@@ -643,14 +650,14 @@ class FnJoin extends Token {
     if (listOfValues.length === 0) {
       throw new Error(`FnJoin requires at least one value to be provided`);
     }
-    super();
 
     this.delimiter = delimiter;
     this.listOfValues = listOfValues;
+    this.creationStack = captureStackTrace();
   }
 
   public resolve(context: IResolveContext): any {
-    if (Token.isToken(this.listOfValues)) {
+    if (Token.isUnresolved(this.listOfValues)) {
       // This is a list token, don't try to do smart things with it.
       return { 'Fn::Join': [ this.delimiter, this.listOfValues ] };
     }
@@ -659,6 +666,14 @@ class FnJoin extends Token {
       return resolved[0];
     }
     return { 'Fn::Join': [ this.delimiter, resolved ] };
+  }
+
+  public toString() {
+    return Token.asString(this, { displayHint: 'Fn::Join' });
+  }
+
+  public toJSON() {
+    return `<Fn::Join>`;
   }
 
   /**

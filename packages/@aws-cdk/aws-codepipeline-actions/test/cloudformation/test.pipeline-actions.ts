@@ -72,7 +72,7 @@ export = nodeunit.testCase({
       });
 
       test.deepEqual(
-        stack.resolve(pipelineRole.statements),
+        stack.resolve(pipelineRole.statements.map(s => s.toStatementJson())),
         [
           {
             Action: 'iam:PassRole',
@@ -153,7 +153,7 @@ export = nodeunit.testCase({
       });
 
       test.deepEqual(
-        stack.resolve(pipelineRole.statements),
+        stack.resolve(pipelineRole.statements.map(s => s.toStatementJson())),
         [
           {
             Action: 'cloudformation:ExecuteChangeSet',
@@ -267,7 +267,7 @@ function _assertPermissionGranted(test: nodeunit.Test, statements: iam.PolicySta
   const conditionStr = conditions
                      ? ` with condition(s) ${JSON.stringify(resolve(conditions))}`
                      : '';
-  const resolvedStatements = resolve(statements);
+  const resolvedStatements = resolve(statements.map(s => s.toStatementJson()));
   const statementsStr = JSON.stringify(resolvedStatements, null, 2);
   test.ok(_grantsPermission(resolvedStatements, action, resource, conditions),
           `Expected to find a statement granting ${action} on ${JSON.stringify(resolve(resource))}${conditionStr}, found:\n${statementsStr}`);
@@ -302,7 +302,7 @@ function _stackArn(stackName: string, scope: cdk.IConstruct): string {
   });
 }
 
-class PipelineDouble extends cdk.Construct implements codepipeline.IPipeline {
+class PipelineDouble extends cdk.Resource implements codepipeline.IPipeline {
   public readonly pipelineName: string;
   public readonly pipelineArn: string;
   public readonly role: iam.Role;

@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/aws-codebuild",
-  "version": "0.33.0",
+  "version": "0.35.0",
   "description": "CDK Constructs for AWS CodeBuild",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -67,50 +67,54 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "^0.33.0",
-    "@aws-cdk/aws-sns": "^0.33.0",
-    "@aws-cdk/aws-sqs": "^0.33.0",
+    "@aws-cdk/assert": "^0.35.0",
+    "@aws-cdk/aws-sns": "^0.35.0",
+    "@aws-cdk/aws-sqs": "^0.35.0",
     "aws-sdk": "^2.438.0",
-    "cdk-build-tools": "^0.33.0",
-    "cdk-integ-tools": "^0.33.0",
-    "cfn2ts": "^0.33.0",
-    "pkglint": "^0.33.0"
+    "cdk-build-tools": "^0.35.0",
+    "cdk-integ-tools": "^0.35.0",
+    "cfn2ts": "^0.35.0",
+    "pkglint": "^0.35.0"
   },
   "dependencies": {
-    "@aws-cdk/assets": "^0.33.0",
-    "@aws-cdk/assets-docker": "^0.33.0",
-    "@aws-cdk/aws-cloudwatch": "^0.33.0",
-    "@aws-cdk/aws-codecommit": "^0.33.0",
-    "@aws-cdk/aws-ec2": "^0.33.0",
-    "@aws-cdk/aws-ecr": "^0.33.0",
-    "@aws-cdk/aws-events": "^0.33.0",
-    "@aws-cdk/aws-iam": "^0.33.0",
-    "@aws-cdk/aws-kms": "^0.33.0",
-    "@aws-cdk/aws-s3": "^0.33.0",
-    "@aws-cdk/aws-secretsmanager": "^0.33.0",
-    "@aws-cdk/cdk": "^0.33.0"
+    "@aws-cdk/assets": "^0.35.0",
+    "@aws-cdk/aws-cloudwatch": "^0.35.0",
+    "@aws-cdk/aws-codecommit": "^0.35.0",
+    "@aws-cdk/aws-ec2": "^0.35.0",
+    "@aws-cdk/aws-ecr": "^0.35.0",
+    "@aws-cdk/aws-ecr-assets": "^0.35.0",
+    "@aws-cdk/aws-events": "^0.35.0",
+    "@aws-cdk/aws-iam": "^0.35.0",
+    "@aws-cdk/aws-kms": "^0.35.0",
+    "@aws-cdk/aws-s3": "^0.35.0",
+    "@aws-cdk/aws-s3-assets": "^0.35.0",
+    "@aws-cdk/aws-secretsmanager": "^0.35.0",
+    "@aws-cdk/cdk": "^0.35.0"
   },
   "homepage": "https://github.com/awslabs/aws-cdk",
   "peerDependencies": {
-    "@aws-cdk/assets": "^0.33.0",
-    "@aws-cdk/assets-docker": "^0.33.0",
-    "@aws-cdk/aws-cloudwatch": "^0.33.0",
-    "@aws-cdk/aws-codecommit": "^0.33.0",
-    "@aws-cdk/aws-ec2": "^0.33.0",
-    "@aws-cdk/aws-ecr": "^0.33.0",
-    "@aws-cdk/aws-events": "^0.33.0",
-    "@aws-cdk/aws-iam": "^0.33.0",
-    "@aws-cdk/aws-kms": "^0.33.0",
-    "@aws-cdk/aws-s3": "^0.33.0",
-    "@aws-cdk/aws-secretsmanager": "^0.33.0",
-    "@aws-cdk/cdk": "^0.33.0"
+    "@aws-cdk/assets": "^0.35.0",
+    "@aws-cdk/aws-cloudwatch": "^0.35.0",
+    "@aws-cdk/aws-codecommit": "^0.35.0",
+    "@aws-cdk/aws-ec2": "^0.35.0",
+    "@aws-cdk/aws-ecr": "^0.35.0",
+    "@aws-cdk/aws-ecr-assets": "^0.35.0",
+    "@aws-cdk/aws-events": "^0.35.0",
+    "@aws-cdk/aws-iam": "^0.35.0",
+    "@aws-cdk/aws-kms": "^0.35.0",
+    "@aws-cdk/aws-s3": "^0.35.0",
+    "@aws-cdk/aws-s3-assets": "^0.35.0",
+    "@aws-cdk/aws-secretsmanager": "^0.35.0",
+    "@aws-cdk/cdk": "^0.35.0"
   },
   "engines": {
     "node": ">= 8.10.0"
   },
   "awslint": {
     "exclude": [
-      "construct-ctor-props-optional:@aws-cdk/aws-codebuild.Project"
+      "construct-ctor-props-optional:@aws-cdk/aws-codebuild.Project",
+      "duration-prop-type:@aws-cdk/aws-codebuild.PhaseChangeEvent.completedPhaseDurationSeconds",
+      "duration-prop-name:@aws-cdk/aws-codebuild.PhaseChangeEvent.completedPhaseDurationSeconds"
     ]
   },
   "stability": "experimental"

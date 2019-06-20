@@ -1,5 +1,5 @@
 import { expect } from '@aws-cdk/assert';
-import { App, Stack } from '@aws-cdk/cdk';
+import { App, PhysicalName, Stack } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
 import { Group, Policy, PolicyStatement, Role, ServicePrincipal, User } from '../lib';
 import { generatePolicyName } from '../lib/util';
@@ -18,9 +18,9 @@ export = {
     const app = new App();
     const stack = new Stack(app, 'MyStack');
 
-    const policy = new Policy(stack, 'MyPolicy', { policyName: 'MyPolicyName' });
-    policy.addStatement(new PolicyStatement().addResource('*').addAction('sqs:SendMessage'));
-    policy.addStatement(new PolicyStatement().addResource('arn').addAction('sns:Subscribe'));
+    const policy = new Policy(stack, 'MyPolicy', { policyName: PhysicalName.of('MyPolicyName') });
+    policy.addStatements(new PolicyStatement({ resources: ['*'], actions: ['sqs:SendMessage'] }));
+    policy.addStatements(new PolicyStatement({ resources: ['arn'], actions: ['sns:Subscribe'] }));
 
     const group = new Group(stack, 'MyGroup');
     group.attachInlinePolicy(policy);
@@ -45,8 +45,8 @@ export = {
     const stack = new Stack(app, 'MyStack');
 
     const policy = new Policy(stack, 'MyPolicy');
-    policy.addStatement(new PolicyStatement().addResource('*').addAction('sqs:SendMessage'));
-    policy.addStatement(new PolicyStatement().addResource('arn').addAction('sns:Subscribe'));
+    policy.addStatements(new PolicyStatement({ resources: ['*'], actions: ['sqs:SendMessage'] }));
+    policy.addStatements(new PolicyStatement({ resources: ['arn'], actions: ['sns:Subscribe'] }));
 
     const user = new User(stack, 'MyUser');
     user.attachInlinePolicy(policy);
@@ -78,11 +78,11 @@ export = {
     });
 
     new Policy(stack, 'MyTestPolicy', {
-      policyName: 'Foo',
+      policyName: PhysicalName.of('Foo'),
       users: [ user1 ],
       groups: [ group1 ],
       roles: [ role1 ],
-      statements: [ new PolicyStatement().addResource('*').addAction('dynamodb:PutItem') ],
+      statements: [ new PolicyStatement({ resources: ['*'], actions: ['dynamodb:PutItem'] }) ],
     });
 
     expect(stack).toMatch({ Resources:
@@ -116,7 +116,7 @@ export = {
     const app = new App();
     const stack = new Stack(app, 'MyStack');
     const p = new Policy(stack, 'MyPolicy');
-    p.addStatement(new PolicyStatement().addAction('*').addResource('*'));
+    p.addStatements(new PolicyStatement({ actions: ['*'], resources: ['*'] }));
 
     const user = new User(stack, 'MyUser');
     p.attachToUser(user);
@@ -141,14 +141,14 @@ export = {
     const stack = new Stack(app, 'MyStack');
 
     const p = new Policy(stack, 'MyTestPolicy', {
-      policyName: 'Foo',
+      policyName: PhysicalName.of('Foo'),
     });
 
     p.attachToUser(new User(stack, 'User1'));
     p.attachToUser(new User(stack, 'User2'));
     p.attachToGroup(new Group(stack, 'Group1'));
     p.attachToRole(new Role(stack, 'Role1', { assumedBy: new ServicePrincipal('test.service') }));
-    p.addStatement(new PolicyStatement().addResource('*').addAction('dynamodb:GetItem'));
+    p.addStatements(new PolicyStatement({ resources: ['*'], actions: ['dynamodb:GetItem'] }));
 
     expect(stack).toMatch({ Resources:
       { MyTestPolicy316BDB50:
@@ -190,7 +190,7 @@ export = {
     group.attachInlinePolicy(policy);
     role.attachInlinePolicy(policy);
 
-    policy.addStatement(new PolicyStatement().addResource('*').addAction('*'));
+    policy.addStatements(new PolicyStatement({ resources: ['*'], actions: ['*'] }));
 
     expect(stack).toMatch({ Resources:
       { MyPolicy39D66CF6:
@@ -222,8 +222,8 @@ export = {
     const stack = new Stack(app, 'MyStack');
 
     // create two policies named Foo and attach them both to the same user/group/role
-    const p1 = new Policy(stack, 'P1', { policyName: 'Foo' });
-    const p2 = new Policy(stack, 'P2', { policyName: 'Foo' });
+    const p1 = new Policy(stack, 'P1', { policyName: PhysicalName.of('Foo') });
+    const p2 = new Policy(stack, 'P2', { policyName: PhysicalName.of('Foo') });
     const p3 = new Policy(stack, 'P3'); // uses logicalID as name
 
     const user = new User(stack, 'MyUser');

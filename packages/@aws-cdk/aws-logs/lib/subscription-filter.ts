@@ -1,8 +1,7 @@
 import iam = require('@aws-cdk/aws-iam');
 import { Construct, Resource } from '@aws-cdk/cdk';
-import { ILogGroup } from './log-group';
+import { ILogGroup, SubscriptionFilterOptions } from './log-group';
 import { CfnSubscriptionFilter } from './logs.generated';
-import { IFilterPattern } from './pattern';
 
 /**
  * Interface for classes that can be the destination of a log Subscription
@@ -41,23 +40,11 @@ export interface LogSubscriptionDestinationConfig {
 /**
  * Properties for a SubscriptionFilter
  */
-export interface SubscriptionFilterProps {
+export interface SubscriptionFilterProps extends SubscriptionFilterOptions {
   /**
    * The log group to create the subscription on.
    */
   readonly logGroup: ILogGroup;
-
-  /**
-   * The destination to send the filtered events to.
-   *
-   * For example, a Kinesis stream or a Lambda function.
-   */
-  readonly destination: ILogSubscriptionDestination;
-
-  /**
-   * Log events matching this pattern will be sent to the destination.
-   */
-  readonly filterPattern: IFilterPattern;
 }
 
 /**

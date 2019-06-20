@@ -2,7 +2,7 @@ import cloudwatch = require('@aws-cdk/aws-cloudwatch');
 import ec2 = require('@aws-cdk/aws-ec2');
 import iam = require('@aws-cdk/aws-iam');
 import s3 = require('@aws-cdk/aws-s3');
-import { Construct, Stack, Token } from '@aws-cdk/cdk';
+import { Construct, Duration, Lazy, Resource, Stack, Token } from '@aws-cdk/cdk';
 import { BaseLoadBalancer, BaseLoadBalancerProps, ILoadBalancerV2 } from '../shared/base-load-balancer';
 import { IpAddressType } from '../shared/enums';
 import { ApplicationListener, BaseApplicationListenerProps } from './application-listener';
@@ -39,7 +39,7 @@ export interface ApplicationLoadBalancerProps extends BaseLoadBalancerProps {
    *
    * @default 60
    */
-  readonly idleTimeoutSecs?: number;
+  readonly idleTimeout?: Duration;
 }
 
 /**
@@ -63,7 +63,7 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
   constructor(scope: Construct, id: string, props: ApplicationLoadBalancerProps) {
     super(scope, id, props, {
       type: "application",
-      securityGroups: new Token(() => [this.securityGroup.securityGroupId]),
+      securityGroups: Lazy.listValue({ produce: () => [this.securityGroup.securityGroupId] }),
       ipAddressType: props.ipAddressType,
     });
 
@@ -75,7 +75,7 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
     this.connections = new ec2.Connections({ securityGroups: [this.securityGroup] });
 
     if (props.http2Enabled === false) { this.setAttribute('routing.http2.enabled', 'false'); }
-    if (props.idleTimeoutSecs !== undefined) { this.setAttribute('idle_timeout.timeout_seconds', props.idleTimeoutSecs.toString()); }
+    if (props.idleTimeout !== undefined) { this.setAttribute('idle_timeout.timeout_seconds', props.idleTimeout.toSeconds().toString()); }
   }
 
   /**
@@ -86,7 +86,11 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
     this.setAttribute('access_logs.s3.bucket', bucket.bucketName.toString());
     this.setAttribute('access_logs.s3.prefix', prefix);
 
-    const region = Stack.of(this).requireRegion('Enable ELBv2 access logging');
+    const region = Stack.of(this).region;
+    if (Token.isUnresolved(region)) {
+      throw new Error(`Region is required to enable ELBv2 access logging`);
+    }
+
     const account = ELBV2_ACCOUNTS[region];
     if (!account) {
       throw new Error(`Cannot enable access logging; don't know ELBv2 account for region ${region}`);
@@ -540,7 +544,7 @@ const ELBV2_ACCOUNTS: {[region: string]: string } = {
 /**
  * An ApplicationLoadBalancer that has been defined elsewhere
  */
-class ImportedApplicationLoadBalancer extends Construct implements IApplicationLoadBalancer {
+class ImportedApplicationLoadBalancer extends Resource implements IApplicationLoadBalancer {
   /**
    * Manage connections for this load balancer
    */

@@ -5,6 +5,9 @@
 
 ![Stability: Experimental](https://img.shields.io/badge/stability-Experimental-important.svg?style=for-the-badge)
 
+> **This is a _developer preview_ (public beta) module. Releases might lack important features and might have
+> future breaking changes.**
+> 
 > This API is still under active development and subject to non-backward
 > compatible changes or removal in any future version. Use of the API is not recommended in production
 > environments. Experimental APIs are not subject to the Semantic Versioning model.
@@ -70,7 +73,7 @@ const definition = submitJob
 
 new sfn.StateMachine(this, 'StateMachine', {
     definition,
-    timeoutSec: 300
+    timeout: Duration.minutes(5)
 });
 ```
 
@@ -126,6 +129,8 @@ couple of the tasks available are:
 * `tasks.SendToQueue` -- send a message to an SQS queue
 * `tasks.RunEcsFargateTask`/`ecs.RunEcsEc2Task` -- run a container task,
   depending on the type of capacity.
+* `tasks.SagemakerTrainTask` -- run a SageMaker training job
+* `tasks.SagemakerTransformTask` -- run a SageMaker transform job
 
 #### Task parameters from the state json
 
@@ -143,12 +148,12 @@ similar to (for example) `inputPath`.
 const task = new sfn.Task(this, 'Invoke The Lambda', {
     task: new tasks.InvokeFunction(myLambda),
     inputPath: '$.input',
-    timeoutSeconds: 300,
+    timeout: Duration.minutes(5),
 });
 
 // Add a retry policy
 task.addRetry({
-    intervalSeconds: 5,
+    interval: Duration.seconds(5),
     maxAttempts: 10
 });
 
@@ -246,6 +251,34 @@ fargateTask.connections.allowToDefaultPort(rdsCluster, 'Read the database');
 
 const task = new sfn.Task(this, 'CallFargate', {
     task: fargateTask
+});
+```
+
+#### SageMaker Transform example
+
+```ts
+const transformJob = new tasks.SagemakerTransformTask(        
+    transformJobName: "MyTransformJob",
+    modelName: "MyModelName",
+    role,
+    transformInput: {
+        transformDataSource: {
+            s3DataSource: {
+                s3Uri: 's3://inputbucket/train',
+                s3DataType: S3DataType.S3Prefix,
+            }
+        }
+    },
+    transformOutput: {
+        s3OutputPath: 's3://outputbucket/TransformJobOutputPath',
+    },
+    transformResources: {
+        instanceCount: 1,
+        instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.M4, ec2.InstanceSize.XLarge),
+});
+
+const task = new sfn.Task(this, 'Batch Inference', {
+    task: transformJob
 });
 ```
 

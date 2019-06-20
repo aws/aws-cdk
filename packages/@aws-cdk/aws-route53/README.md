@@ -5,6 +5,9 @@
 
 ![Stability: Experimental](https://img.shields.io/badge/stability-Experimental-important.svg?style=for-the-badge)
 
+> **This is a _developer preview_ (public beta) module. Releases might lack important features and might have
+> future breaking changes.**
+> 
 > This API is still under active development and subject to non-backward
 > compatible changes or removal in any future version. Use of the API is not recommended in production
 > environments. Experimental APIs are not subject to the Semantic Versioning model.
@@ -30,7 +33,7 @@ VPC you're configuring for private hosted zones.
 import ec2 = require('@aws-cdk/aws-ec2');
 import route53 = require('@aws-cdk/aws-route53');
 
-const vpc = new ec2.VpcNetwork(this, 'VPC');
+const vpc = new ec2.Vpc(this, 'VPC');
 
 const zone = new route53.PrivateHostedZone(this, 'HostedZone', {
   zoneName: 'fully.qualified.domain.com',

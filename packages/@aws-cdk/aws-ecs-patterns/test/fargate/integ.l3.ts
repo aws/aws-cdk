@@ -12,8 +12,8 @@ const cluster = new ecs.Cluster(stack, 'FargateCluster', { vpc });
 
 new ecsPatterns.LoadBalancedFargateService(stack, 'L3', {
   cluster,
-  memoryMiB: '1GB',
-  cpu: '512',
+  memoryLimitMiB: 1024,
+  cpu: 512,
   image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
 });
 

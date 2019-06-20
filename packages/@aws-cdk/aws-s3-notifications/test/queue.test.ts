@@ -19,7 +19,6 @@ test('queues can be used as destinations', () => {
         {
           Action: [
             "sqs:SendMessage",
-            "sqs:SendMessageBatch",
             "sqs:GetQueueAttributes",
             "sqs:GetQueueUrl"
           ],
@@ -76,7 +75,7 @@ test('queues can be used as destinations', () => {
 test('if the queue is encrypted with a custom kms key, the key resource policy is updated to allow s3 to read messages', () => {
   const stack = new Stack();
   const bucket = new s3.Bucket(stack, 'Bucket');
-  const queue = new sqs.Queue(stack, 'Queue', { encryption: sqs.QueueEncryption.Kms });
+  const queue = new sqs.Queue(stack, 'Queue', { encryption: sqs.QueueEncryption.KMS });
 
   bucket.addObjectCreatedNotification(new notif.SqsDestination(queue));
 
@@ -143,7 +142,7 @@ test('if the queue is encrypted with a custom kms key, the key resource policy i
 
 test('fails if trying to subscribe to a queue with managed kms encryption', () => {
   const stack = new Stack();
-  const queue = new sqs.Queue(stack, 'Queue', { encryption: sqs.QueueEncryption.KmsManaged });
+  const queue = new sqs.Queue(stack, 'Queue', { encryption: sqs.QueueEncryption.KMS_MANAGED });
   const bucket = new s3.Bucket(stack, 'Bucket');
   expect(() => {
     bucket.addObjectRemovedNotification(new notif.SqsDestination(queue));

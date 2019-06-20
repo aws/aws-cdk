@@ -1,7 +1,7 @@
 import cdk = require('@aws-cdk/cdk');
-import { Stack } from '@aws-cdk/cdk';
+import { captureStackTrace, Stack } from '@aws-cdk/cdk';
 import { Default, RegionInfo } from '@aws-cdk/region-info';
-import { PolicyStatement } from './policy-document';
+import { PolicyStatement } from './policy-statement';
 import { mergePrincipal } from './util';
 
 /**
@@ -232,7 +232,7 @@ export class FederatedPrincipal extends PrincipalBase {
 
 export class AccountRootPrincipal extends AccountPrincipal {
   constructor() {
-    super(new StackDependentToken(stack => stack.accountId).toString());
+    super(new StackDependentToken(stack => stack.account).toString());
   }
 
   public toString() {
@@ -311,25 +311,45 @@ export class CompositePrincipal extends PrincipalBase {
 /**
  * A lazy token that requires an instance of Stack to evaluate
  */
-class StackDependentToken extends cdk.Token {
+class StackDependentToken implements cdk.IResolvable {
+  public readonly creationStack: string[];
   constructor(private readonly fn: (stack: cdk.Stack) => any) {
-    super();
+    this.creationStack = captureStackTrace();
   }
 
   public resolve(context: cdk.IResolveContext) {
     return this.fn(Stack.of(context.scope));
   }
+
+  public toString() {
+    return cdk.Token.asString(this);
+  }
+
+  public toJSON() {
+    return `<unresolved-token>`;
+  }
 }
 
-class ServicePrincipalToken extends cdk.Token {
+class ServicePrincipalToken implements cdk.IResolvable {
+  public readonly creationStack: string[];
   constructor(private readonly service: string,
               private readonly opts: ServicePrincipalOpts) {
-    super();
+    this.creationStack = captureStackTrace();
   }
 
   public resolve(ctx: cdk.IResolveContext) {
     const region = this.opts.region || Stack.of(ctx.scope).region;
     const fact = RegionInfo.get(region).servicePrincipal(this.service);
     return fact || Default.servicePrincipal(this.service, region, Stack.of(ctx.scope).urlSuffix);
+  }
+
+  public toString() {
+    return cdk.Token.asString(this, {
+      displayHint: this.service
+    });
+  }
+
+  public toJSON() {
+    return `<${this.service}>`;
   }
 }

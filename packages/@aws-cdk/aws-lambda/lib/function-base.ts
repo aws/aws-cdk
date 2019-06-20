@@ -4,15 +4,11 @@ import iam = require('@aws-cdk/aws-iam');
 import { IResource, Resource } from '@aws-cdk/cdk';
 import { IEventSource } from './event-source';
 import { EventSourceMapping, EventSourceMappingOptions } from './event-source-mapping';
+import { IVersion } from './lambda-version';
 import { CfnPermission } from './lambda.generated';
 import { Permission } from './permission';
 
 export interface IFunction extends IResource, ec2.IConnectable, iam.IGrantable {
-
-  /**
-   * Logical ID of this Function.
-   */
-  readonly id: string;
 
   /**
    * The name of the function.
@@ -39,6 +35,11 @@ export interface IFunction extends IResource, ec2.IConnectable, iam.IGrantable {
    * If this is is `false`, trying to access the `connections` object will fail.
    */
   readonly isBoundToVpc: boolean;
+
+  /**
+   * The `$LATEST` version of this function.
+   */
+  readonly latestVersion: IVersion;
 
   /**
    * Adds an event source that maps to this AWS Lambda function.
@@ -116,7 +117,7 @@ export interface FunctionAttributes {
   readonly securityGroupId?: string;
 }
 
-export abstract class FunctionBase extends Resource implements IFunction  {
+export abstract class FunctionBase extends Resource implements IFunction {
   /**
    * The principal this Lambda Function is running as
    */
@@ -177,10 +178,6 @@ export abstract class FunctionBase extends Resource implements IFunction  {
     });
   }
 
-  public get id() {
-    return this.node.id;
-  }
-
   public addToRolePolicy(statement: iam.PolicyStatement) {
     if (!this.role) {
       return;
@@ -200,6 +197,11 @@ export abstract class FunctionBase extends Resource implements IFunction  {
       throw new Error('Only VPC-associated Lambda Functions have security groups to manage. Supply the "vpc" parameter when creating the Lambda, or "securityGroupId" when importing it.');
     }
     return this._connections;
+  }
+
+  public get latestVersion(): IVersion {
+    // Dynamic to avoid invinite recursion when creating the LatestVersion instance...
+    return new LatestVersion(this);
   }
 
   /**
@@ -275,5 +277,48 @@ export abstract class FunctionBase extends Resource implements IFunction  {
 
     throw new Error(`Invalid principal type for Lambda permission statement: ${principal.constructor.name}. ` +
       'Supported: AccountPrincipal, ServicePrincipal');
+  }
+}
+
+export abstract class QualifiedFunctionBase extends FunctionBase {
+  public abstract readonly lambda: IFunction;
+
+  public get latestVersion() {
+    return this.lambda.latestVersion;
+  }
+}
+
+/**
+ * The $LATEST version of a function, useful when attempting to create aliases.
+ */
+class LatestVersion extends FunctionBase implements IVersion {
+  public readonly lambda: IFunction;
+  public readonly version = '$LATEST';
+
+  protected readonly canCreatePermissions = true;
+
+  constructor(lambda: FunctionBase) {
+    super(lambda, '$LATEST');
+    this.lambda = lambda;
+  }
+
+  public get functionArn() {
+    return `${this.lambda.functionArn}:${this.version}`;
+  }
+
+  public get functionName() {
+    return `${this.lambda.functionName}:${this.version}`;
+  }
+
+  public get grantPrincipal() {
+    return this.lambda.grantPrincipal;
+  }
+
+  public get latestVersion() {
+    return this;
+  }
+
+  public get role() {
+    return this.lambda.role;
   }
 }

@@ -18,11 +18,11 @@ export = testCase({
     });
     const layer = new lambda.LayerVersion(stack, 'myLayer', {
       code,
-      compatibleRuntimes: [lambda.Runtime.NodeJS]
+      compatibleRuntimes: [lambda.Runtime.Nodejs]
     });
 
     // THEN
-    test.throws(() => func.addLayer(layer),
+    test.throws(() => func.addLayers(layer),
       /This lambda function uses a runtime that is incompatible with this layer/);
 
     test.done();
@@ -45,7 +45,7 @@ export = testCase({
 
     // THEN
     // should not throw
-    func.addLayer(layer);
+    func.addLayers(layer);
 
     test.done();
   },
@@ -69,7 +69,7 @@ export = testCase({
 
     // THEN
     // should not throw
-    func.addLayer(layer);
+    func.addLayers(layer);
 
     test.done();
   },

@@ -1,7 +1,8 @@
 import cxapi = require('@aws-cdk/cx-api');
 import { IAspect } from './aspect';
 import { DependableTrait, IDependable } from './dependency';
-import { createStackTrace } from './stack-trace';
+import { IResolvable } from './resolvable';
+import { captureStackTrace } from './stack-trace';
 import { Token } from './token';
 import { makeUniqueId } from './uniqueid';
 
@@ -39,19 +40,26 @@ export class ConstructNode {
     // prepare
     this.prepare(root);
 
-    // validate
-    const validate = options.skipValidation === undefined ? true : !options.skipValidation;
-    if (validate) {
-      const errors = this.validate(root);
-      if (errors.length > 0) {
-        const errorList = errors.map(e => `[${e.source.node.path}] ${e.message}`).join('\n  ');
-        throw new Error(`Validation failed with the following errors:\n  ${errorList}`);
-      }
-    }
+    // do not allow adding children after this stage
+    root._lock();
 
-    // synthesize (leaves first)
-    for (const construct of root.findAll(ConstructOrder.PostOrder)) {
-      (construct as any).synthesize({ assembly: builder }); // "as any" is needed because we want to keep "synthesize" protected
+    try {
+      // validate
+      const validate = options.skipValidation === undefined ? true : !options.skipValidation;
+      if (validate) {
+        const errors = this.validate(root);
+        if (errors.length > 0) {
+          const errorList = errors.map(e => `[${e.source.node.path}] ${e.message}`).join('\n  ');
+          throw new Error(`Validation failed with the following errors:\n  ${errorList}`);
+        }
+      }
+
+      // synthesize (leaves first)
+      for (const construct of root.findAll(ConstructOrder.PostOrder)) {
+        (construct as any).synthesize({ assembly: builder }); // "as any" is needed because we want to keep "synthesize" protected
+      }
+    } finally {
+      root._unlock();
     }
 
     // write session manifest and lock store
@@ -141,7 +149,7 @@ export class ConstructNode {
     // escape any path separators so they don't wreck havoc
     this.id = this._escapePathSeparator(this.id);
 
-    if (Token.isToken(id)) {
+    if (Token.isUnresolved(id)) {
       throw new Error(`Cannot use tokens in construct ID: ${id}`);
     }
   }
@@ -259,6 +267,10 @@ export class ConstructNode {
    * @param value The context value
    */
   public setContext(key: string, value: any) {
+    if (Token.isUnresolved(key)) {
+      throw new Error(`Invalid context key "${key}". It contains unresolved tokens`);
+    }
+
     if (this.children.length > 0) {
       const names = this.children.map(c => c.node.id);
       throw new Error('Cannot set context after children have been added: ' + names.join(','));
@@ -275,6 +287,10 @@ export class ConstructNode {
    * @returns The context value or `undefined` if there is no context value for thie key.
    */
   public tryGetContext(key: string): any {
+    if (Token.isUnresolved(key)) {
+      throw new Error(`Invalid context key "${key}". It contains unresolved tokens`);
+    }
+
     const value = this._context[key];
     if (value !== undefined) { return value; }
 
@@ -304,7 +320,7 @@ export class ConstructNode {
       return;
     }
 
-    const trace = this.tryGetContext(cxapi.DISABLE_METADATA_STACK_TRACE) ? undefined : createStackTrace(from || this.addMetadata);
+    const trace = this.tryGetContext(cxapi.DISABLE_METADATA_STACK_TRACE) ? undefined : captureStackTrace(from || this.addMetadata);
     this._metadata.push({ type, data, trace });
   }
 
@@ -371,21 +387,6 @@ export class ConstructNode {
   }
 
   /**
-   * Locks this construct from allowing more children to be added. After this
-   * call, no more children can be added to this construct or to any children.
-   */
-  public lock() {
-    this._locked = true;
-  }
-
-  /**
-   * Unlocks this costruct and allows mutations (adding children).
-   */
-  public unlock() {
-    this._locked = false;
-  }
-
-  /**
    * Returns true if this construct or the scopes in which it is defined are
    * locked.
    */
@@ -404,7 +405,7 @@ export class ConstructNode {
   /**
    * Record a reference originating from this construct node
    */
-  public addReference(...refs: Token[]) {
+  public addReference(...refs: IResolvable[]) {
     for (const ref of refs) {
       if (Reference.isReference(ref)) {
         this._references.add(ref);
@@ -470,6 +471,23 @@ export class ConstructNode {
   }
 
   /**
+   * Locks this construct from allowing more children to be added. After this
+   * call, no more children can be added to this construct or to any children.
+   * @internal
+   */
+  private _lock() {
+    this._locked = true;
+  }
+
+  /**
+   * Unlocks this costruct and allows mutations (adding children).
+   * @internal
+   */
+  private _unlock() {
+    this._locked = false;
+  }
+
+  /**
    * Adds a child construct to this node.
    *
    * @param child The child construct
@@ -530,7 +548,7 @@ export class Construct implements IConstruct {
    * Return whether the given object is a Construct
    */
   public static isConstruct(x: any): x is Construct {
-    return CONSTRUCT_SYMBOL in x;
+    return typeof x === 'object' && x !== null && CONSTRUCT_SYMBOL in x;
   }
 
   /**

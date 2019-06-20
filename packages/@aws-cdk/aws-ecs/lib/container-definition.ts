@@ -1,7 +1,7 @@
 import iam = require('@aws-cdk/aws-iam');
 import cdk = require('@aws-cdk/cdk');
 import { NetworkMode, TaskDefinition } from './base/task-definition';
-import { ContainerImage } from './container-image';
+import { ContainerImage, ContainerImageConfig } from './container-image';
 import { CfnTaskDefinition } from './ecs.generated';
 import { LinuxParameters } from './linux-parameters';
 import { LogDriver } from './log-drivers/log-driver';
@@ -247,6 +247,8 @@ export class ContainerDefinition extends cdk.Construct {
    */
   private readonly links = new Array<string>();
 
+  private readonly imageConfig: ContainerImageConfig;
+
   constructor(scope: cdk.Construct, id: string, private readonly props: ContainerDefinitionProps) {
     super(scope, id);
     this.essential = props.essential !== undefined ? props.essential : true;
@@ -254,7 +256,7 @@ export class ContainerDefinition extends cdk.Construct {
     this.memoryLimitSpecified = props.memoryLimitMiB !== undefined || props.memoryReservationMiB !== undefined;
     this.linuxParameters = props.linuxParameters;
 
-    props.image.bind(this);
+    this.imageConfig = props.image.bind(this, this);
     if (props.logging) { props.logging.bind(this); }
     props.taskDefinition._linkContainer(this);
   }
@@ -395,7 +397,7 @@ export class ContainerDefinition extends cdk.Construct {
       entryPoint: this.props.entryPoint,
       essential: this.essential,
       hostname: this.props.hostname,
-      image: this.props.image.imageName,
+      image: this.imageConfig.imageName,
       memory: this.props.memoryLimitMiB,
       memoryReservation: this.props.memoryReservationMiB,
       mountPoints: this.mountPoints.map(renderMountPoint),
@@ -403,7 +405,7 @@ export class ContainerDefinition extends cdk.Construct {
       portMappings: this.portMappings.map(renderPortMapping),
       privileged: this.props.privileged,
       readonlyRootFilesystem: this.props.readonlyRootFilesystem,
-      repositoryCredentials: this.props.image.toRepositoryCredentialsJson(),
+      repositoryCredentials: this.imageConfig.repositoryCredentials,
       ulimits: this.ulimits.map(renderUlimit),
       user: this.props.user,
       volumesFrom: this.volumesFrom.map(renderVolumeFrom),
@@ -434,9 +436,9 @@ export interface HealthCheck {
    *
    * You may specify between 5 and 300 seconds.
    *
-   * @default 30
+   * @default Duration.seconds(30)
    */
-  readonly intervalSeconds?: number;
+  readonly interval?: cdk.Duration;
 
   /**
    * Number of times to retry a failed health check before the container is considered unhealthy.
@@ -454,16 +456,16 @@ export interface HealthCheck {
    *
    * @default No start period
    */
-  readonly startPeriod?: number;
+  readonly startPeriod?: cdk.Duration;
 
   /**
    * The time period in seconds to wait for a health check to succeed before it is considered a failure.
    *
    * You may specify between 2 and 60 seconds.
    *
-   * @default 5
+   * @default Duration.seconds(5)
    */
-  readonly timeout?: number;
+  readonly timeout?: cdk.Duration;
 }
 
 function renderKV(env: { [key: string]: string }, keyName: string, valueName: string): any {
@@ -477,10 +479,10 @@ function renderKV(env: { [key: string]: string }, keyName: string, valueName: st
 function renderHealthCheck(hc: HealthCheck): CfnTaskDefinition.HealthCheckProperty {
   return {
     command: getHealthCheckCommand(hc),
-    interval: hc.intervalSeconds !== undefined ? hc.intervalSeconds : 30,
+    interval: hc.interval != null ? hc.interval.toSeconds() : 30,
     retries: hc.retries !== undefined ? hc.retries : 3,
-    startPeriod: hc.startPeriod,
-    timeout: hc.timeout !== undefined ? hc.timeout : 5,
+    startPeriod: hc.startPeriod && hc.startPeriod.toSeconds(),
+    timeout: hc.timeout !== undefined ? hc.timeout.toSeconds() : 5,
   };
 }
 
@@ -532,21 +534,21 @@ export interface Ulimit {
  * Type of resource to set a limit on
  */
 export enum UlimitName {
-  Core = "core",
-  Cpu = "cpu",
-  Data = "data",
-  Fsize = "fsize",
-  Locks = "locks",
-  Memlock = "memlock",
-  Msgqueue = "msgqueue",
-  Nice = "nice",
-  Nofile = "nofile",
-  Nproc = "nproc",
-  Rss = "rss",
-  Rtprio = "rtprio",
-  Rttime = "rttime",
-  Sigpending = "sigpending",
-  Stack = "stack"
+  CORE = "core",
+  CPU = "cpu",
+  DATA = "data",
+  FSIZE = "fsize",
+  LOCKS = "locks",
+  MEMLOCK = "memlock",
+  MSGQUEUE = "msgqueue",
+  NICE = "nice",
+  NOFILE = "nofile",
+  NPROC = "nproc",
+  RSS = "rss",
+  RTPRIO = "rtprio",
+  RTTIME = "rttime",
+  SIGPENDING = "sigpending",
+  STACK = "stack"
 }
 
 function renderUlimit(ulimit: Ulimit): CfnTaskDefinition.UlimitProperty {
@@ -592,19 +594,19 @@ export enum Protocol {
   /**
    * TCP
    */
-  Tcp = "tcp",
+  TCP = "tcp",
 
   /**
    * UDP
    */
-  Udp = "udp",
+  UDP = "udp",
 }
 
 function renderPortMapping(pm: PortMapping): CfnTaskDefinition.PortMappingProperty {
   return {
     containerPort: pm.containerPort,
     hostPort: pm.hostPort,
-    protocol: pm.protocol || Protocol.Tcp,
+    protocol: pm.protocol || Protocol.TCP,
   };
 }
 
