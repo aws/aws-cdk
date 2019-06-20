@@ -33,7 +33,7 @@ export = {
 
     // WHEN
     const sg = new SecurityGroup(stack, 'SG1', { vpc, allowAllOutbound: true });
-    sg.addEgressRule(Peer.anyIpv4(), Port.tcpPort(86), 'This does not show up');
+    sg.addEgressRule(Peer.anyIpv4(), Port.tcp(86), 'This does not show up');
 
     // THEN
     expect(stack).to(haveResource('AWS::EC2::SecurityGroup', {
@@ -80,7 +80,7 @@ export = {
 
     // WHEN
     const sg = new SecurityGroup(stack, 'SG1', { vpc, allowAllOutbound: false });
-    sg.addEgressRule(Peer.anyIpv4(), Port.tcpPort(86), 'This replaces the other one');
+    sg.addEgressRule(Peer.anyIpv4(), Port.tcp(86), 'This replaces the other one');
 
     // THEN
     expect(stack).to(haveResource('AWS::EC2::SecurityGroup', {
@@ -126,14 +126,14 @@ export = {
     ];
 
     const ports = [
-      Port.tcpPort(1234),
-      Port.tcpPort(Lazy.numberValue({ produce: () => 5000 })),
+      Port.tcp(1234),
+      Port.tcp(Lazy.numberValue({ produce: () => 5000 })),
       Port.allTcp(),
-      Port.tcpPortRange(80, 90),
-      Port.udpPort(2345),
-      Port.udpPort(Lazy.numberValue({ produce: () => 7777 })),
+      Port.tcpRange(80, 90),
+      Port.udp(2345),
+      Port.udp(Lazy.numberValue({ produce: () => 7777 })),
       Port.allUdp(),
-      Port.udpPortRange(85, 95),
+      Port.udpRange(85, 95),
       Port.icmpTypeAndCode(5, 1),
       Port.icmpType(8),
       Port.allIcmp(),
@@ -161,15 +161,15 @@ export = {
 
     // WHEN
     const ports = [
-      Port.tcpPort(p1),
-      Port.tcpPort(p2),
-      Port.tcpPortRange(p1, 90),
-      Port.tcpPortRange(80, p2),
-      Port.tcpPortRange(p1, p2),
-      Port.udpPort(p1),
-      Port.udpPortRange(p1, 95),
-      Port.udpPortRange(85, p2),
-      Port.udpPortRange(p1, p2),
+      Port.tcp(p1),
+      Port.tcp(p2),
+      Port.tcpRange(p1, 90),
+      Port.tcpRange(80, p2),
+      Port.tcpRange(p1, p2),
+      Port.udp(p1),
+      Port.udpRange(p1, 95),
+      Port.udpRange(85, p2),
+      Port.udpRange(p1, p2),
       Port.icmpTypeAndCode(p1, 1),
       Port.icmpTypeAndCode(5, p1),
       Port.icmpTypeAndCode(p1, p2),

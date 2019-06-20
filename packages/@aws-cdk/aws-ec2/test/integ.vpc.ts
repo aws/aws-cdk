@@ -14,8 +14,8 @@ const rules = [
   ec2.Port.icmpType(128),
   ec2.Port.allIcmp(),
   ec2.Port.allUdp(),
-  ec2.Port.udpPort(123),
-  ec2.Port.udpPortRange(800, 801),
+  ec2.Port.udp(123),
+  ec2.Port.udpRange(800, 801),
 ];
 
 for (const rule of rules) {

@@ -223,7 +223,7 @@ export class Cluster extends Resource implements ICluster {
 
     this.connections = new ec2.Connections({
       securityGroups: [securityGroup],
-      defaultPortRange: ec2.Port.tcpPort(443), // Control Plane has an HTTPS API
+      defaultPort: ec2.Port.tcp(443), // Control Plane has an HTTPS API
     });
 
     // Get subnetIds for all selected subnets
@@ -302,11 +302,11 @@ export class Cluster extends Resource implements ICluster {
     autoScalingGroup.connections.allowInternally(ec2.Port.allTraffic());
 
     // Cluster to:nodes rules
-    autoScalingGroup.connections.allowFrom(this, ec2.Port.tcpPort(443));
-    autoScalingGroup.connections.allowFrom(this, ec2.Port.tcpPortRange(1025, 65535));
+    autoScalingGroup.connections.allowFrom(this, ec2.Port.tcp(443));
+    autoScalingGroup.connections.allowFrom(this, ec2.Port.tcpRange(1025, 65535));
 
     // Allow HTTPS from Nodes to Cluster
-    autoScalingGroup.connections.allowTo(this, ec2.Port.tcpPort(443));
+    autoScalingGroup.connections.allowTo(this, ec2.Port.tcp(443));
 
     // Allow all node outbound traffic
     autoScalingGroup.connections.allowToAnyIPv4(ec2.Port.allTcp());

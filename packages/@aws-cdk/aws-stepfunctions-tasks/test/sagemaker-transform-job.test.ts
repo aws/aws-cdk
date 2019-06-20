@@ -87,7 +87,7 @@ test('create complex transform job', () => {
         },
         transformResources: {
             instanceCount: 1,
-            instanceType: ec2.InstanceType.pair(ec2.InstanceClass.P3, ec2.InstanceSize.XLARGE2),
+            instanceType: ec2.InstanceType.of(ec2.InstanceClass.P3, ec2.InstanceSize.XLARGE2),
             volumeKmsKeyId: kmsKey,
         },
         tags: {
@@ -158,7 +158,7 @@ test('pass param to transform job', () => {
         },
         transformResources: {
             instanceCount: 1,
-            instanceType: ec2.InstanceType.pair(ec2.InstanceClass.P3, ec2.InstanceSize.XLARGE2),
+            instanceType: ec2.InstanceType.of(ec2.InstanceClass.P3, ec2.InstanceSize.XLARGE2),
         }
     }) });
 

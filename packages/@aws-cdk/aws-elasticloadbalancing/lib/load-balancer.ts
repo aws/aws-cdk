@@ -265,7 +265,7 @@ export class LoadBalancer extends Resource implements IConnectable {
       policyNames: listener.policyNames
     });
 
-    const port = new ListenerPort(this.securityGroup, Port.tcpPort(listener.externalPort));
+    const port = new ListenerPort(this.securityGroup, Port.tcp(listener.externalPort));
 
     // Allow connections on the public port for all supplied peers (default: everyone)
     ifUndefined(listener.allowConnectionsFrom, [Peer.anyIpv4()]).forEach(peer => {
@@ -354,7 +354,7 @@ export class LoadBalancer extends Resource implements IConnectable {
   private allowTargetConnection(instancePort: number, target: ILoadBalancerTarget) {
     this.connections.allowTo(
       target,
-      Port.tcpPort(instancePort),
+      Port.tcp(instancePort),
       `Port ${instancePort} LB to fleet`);
   }
 }
@@ -375,8 +375,8 @@ export class LoadBalancer extends Resource implements IConnectable {
 export class ListenerPort implements IConnectable {
   public readonly connections: Connections;
 
-  constructor(securityGroup: ISecurityGroup, defaultPortRange: Port) {
-    this.connections = new Connections({ securityGroups: [securityGroup] , defaultPortRange });
+  constructor(securityGroup: ISecurityGroup, defaultPort: Port) {
+    this.connections = new Connections({ securityGroups: [securityGroup], defaultPort });
   }
 }
 

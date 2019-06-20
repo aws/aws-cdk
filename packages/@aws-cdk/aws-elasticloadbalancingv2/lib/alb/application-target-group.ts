@@ -121,7 +121,7 @@ export class ApplicationTargetGroup extends TargetGroupBase implements IApplicat
    * Don't call this directly. It will be called by load balancing targets.
    */
   public registerConnectable(connectable: ec2.IConnectable, portRange?: ec2.Port) {
-    portRange = portRange || ec2.Port.tcpPort(this.defaultPort);
+    portRange = portRange || ec2.Port.tcp(this.defaultPort);
 
     // Notify all listeners that we already know about of this new connectable.
     // Then remember for new listeners that might get added later.

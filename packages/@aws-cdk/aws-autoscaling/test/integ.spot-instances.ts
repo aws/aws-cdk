@@ -12,7 +12,7 @@ const vpc = new ec2.Vpc(stack, 'VPC', {
 
 new autoscaling.AutoScalingGroup(stack, 'Fleet', {
   vpc,
-  instanceType: ec2.InstanceType.pair(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.MICRO),
+  instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.MICRO),
   machineImage: new ec2.AmazonLinuxImage({ generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX_2 }),
   spotPrice: '0.20'
 });

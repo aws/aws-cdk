@@ -1,14 +1,26 @@
 import { OperatingSystemType } from "./machine-image";
 
 /**
+ * Options when constructing UserData for Linux
+ */
+export interface LinuxUserDataOptions {
+  /**
+   * Shebang for the UserData script
+   *
+   * @default "#!/bin/bash"
+   */
+  readonly shebang?: string;
+}
+
+/**
  * Instance User Data
  */
 export abstract class UserData {
   /**
    * Create a userdata object for Linux hosts
    */
-  public static forLinux(): UserData {
-    return new LinuxUserData();
+  public static forLinux(options: LinuxUserDataOptions = {}): UserData {
+    return new LinuxUserData(options);
   }
 
   /**
@@ -39,7 +51,7 @@ export abstract class UserData {
 class LinuxUserData extends UserData {
   private readonly lines: string[] = [];
 
-  constructor() {
+  constructor(private readonly props: LinuxUserDataOptions = {}) {
     super();
   }
 
@@ -48,7 +60,8 @@ class LinuxUserData extends UserData {
   }
 
   public render(): string {
-    return '#!/bin/bash\n' + this.lines.join('\n');
+    const shebang = this.props.shebang !== undefined ? this.props.shebang : '#!/bin/bash';
+    return [shebang, ...this.lines].join('\n');
   }
 }
 

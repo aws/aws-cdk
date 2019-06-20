@@ -127,7 +127,7 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
     // but adds its own default port.
     this.connections = new ec2.Connections({
       securityGroups: props.loadBalancer.connections.securityGroups,
-      defaultPortRange: ec2.Port.tcpPort(port),
+      defaultPort: ec2.Port.tcp(port),
     });
 
     (props.defaultTargetGroups || []).forEach(this.addDefaultTargetGroup.bind(this));
@@ -346,11 +346,11 @@ class ImportedApplicationListener extends Resource implements IApplicationListen
 
     this.listenerArn = props.listenerArn;
 
-    const defaultPortRange = props.defaultPort !== undefined ? ec2.Port.tcpPort(props.defaultPort) : undefined;
+    const defaultPort = props.defaultPort !== undefined ? ec2.Port.tcp(props.defaultPort) : undefined;
 
     this.connections = new ec2.Connections({
       securityGroups: [ec2.SecurityGroup.fromSecurityGroupId(this, 'SecurityGroup', props.securityGroupId)],
-      defaultPortRange,
+      defaultPort,
     });
   }
 

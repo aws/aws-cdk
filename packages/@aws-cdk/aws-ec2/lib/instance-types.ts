@@ -236,7 +236,7 @@ export class InstanceType {
    * Be aware that not all combinations of class and size are available, and not all
    * classes are available in all regions.
    */
-  public static pair(instanceClass: InstanceClass, instanceSize: InstanceSize) {
+  public static of(instanceClass: InstanceClass, instanceSize: InstanceSize) {
     return new InstanceType(`${instanceClass}.${instanceSize}`);
   }
 

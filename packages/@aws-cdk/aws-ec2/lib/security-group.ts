@@ -52,11 +52,7 @@ abstract class SecurityGroupBase extends Resource implements ISecurityGroup {
 
   public readonly canInlineRule = false;
   public readonly connections: Connections = new Connections({ securityGroups: [this] });
-
-  /**
-   * FIXME: Where to place this??
-   */
-  public readonly defaultPortRange?: Port;
+  public readonly defaultPort?: Port;
 
   constructor(scope: Construct, id: string, props?: ResourceProps) {
     super(scope, id, props);
@@ -79,7 +75,7 @@ abstract class SecurityGroupBase extends Resource implements ISecurityGroup {
     if (scope.node.tryFindChild(id) === undefined) {
       new CfnSecurityGroupIngress(scope, id, {
         groupId: this.securityGroupId,
-        ...peer.toIngressRuleJSON(),
+        ...peer.toIngressRuleConfig(),
         ...connection.toRuleJSON(),
         description
       });
@@ -97,18 +93,18 @@ abstract class SecurityGroupBase extends Resource implements ISecurityGroup {
     if (scope.node.tryFindChild(id) === undefined) {
       new CfnSecurityGroupEgress(scope, id, {
         groupId: this.securityGroupId,
-        ...peer.toEgressRuleJSON(),
+        ...peer.toEgressRuleConfig(),
         ...connection.toRuleJSON(),
         description
       });
     }
   }
 
-  public toIngressRuleJSON(): any {
+  public toIngressRuleConfig(): any {
     return { sourceSecurityGroupId: this.securityGroupId };
   }
 
-  public toEgressRuleJSON(): any {
+  public toEgressRuleConfig(): any {
     return { destinationSecurityGroupId: this.securityGroupId };
   }
 }
@@ -301,7 +297,7 @@ export class SecurityGroup extends SecurityGroupBase {
     }
 
     this.addDirectIngressRule({
-      ...peer.toIngressRuleJSON(),
+      ...peer.toIngressRuleConfig(),
       ...connection.toRuleJSON(),
       description
     });
@@ -330,7 +326,7 @@ export class SecurityGroup extends SecurityGroupBase {
     }
 
     const rule = {
-      ...peer.toEgressRuleJSON(),
+      ...peer.toEgressRuleConfig(),
       ...connection.toRuleJSON(),
       description
     };

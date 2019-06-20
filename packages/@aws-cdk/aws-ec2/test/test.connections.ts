@@ -23,7 +23,7 @@ export = {
     const conn2 = new SomethingConnectable(new Connections({ securityGroups: [sg2] }));
 
     // WHEN
-    conn1.connections.allowTo(conn2, Port.tcpPort(80), 'Test');
+    conn1.connections.allowTo(conn2, Port.tcp(80), 'Test');
 
     // THEN -- it finishes!
     test.done();
@@ -73,7 +73,7 @@ export = {
     const connections = new Connections({ securityGroups: [sg1] });
 
     // WHEN
-    connections.allowFromAnyIPv4(Port.tcpPort(88));
+    connections.allowFromAnyIPv4(Port.tcp(88));
     connections.addSecurityGroup(sg2);
 
     // THEN
@@ -118,7 +118,7 @@ export = {
     const connectable = new SomethingConnectable(connections2);
 
     // WHEN
-    connections1.allowTo(connectable, Port.tcpPort(88));
+    connections1.allowTo(connectable, Port.tcp(88));
     connections2.addSecurityGroup(sg3);
 
     // THEN
@@ -148,7 +148,7 @@ export = {
     const connections = new Connections({ securityGroups: [sg1] });
 
     // WHEN
-    connections.allowInternally(Port.tcpPort(88));
+    connections.allowInternally(Port.tcp(88));
     connections.addSecurityGroup(sg2);
 
     // THEN
@@ -175,7 +175,7 @@ export = {
     const sg2 = new SecurityGroup(stack2, 'SecurityGroup', { vpc: vpc2, allowAllOutbound: false });
 
     // WHEN
-    sg2.connections.allowFrom(sg1, Port.tcpPort(100));
+    sg2.connections.allowFrom(sg1, Port.tcp(100));
 
     // THEN -- both rules are in Stack2
     ConstructNode.prepare(app.node);
@@ -206,7 +206,7 @@ export = {
     const sg2 = new SecurityGroup(stack2, 'SecurityGroup', { vpc: vpc2, allowAllOutbound: false });
 
     // WHEN
-    sg2.connections.allowTo(sg1, Port.tcpPort(100));
+    sg2.connections.allowTo(sg1, Port.tcp(100));
 
     // THEN -- both rules are in Stack2
     ConstructNode.prepare(app.node);
@@ -238,8 +238,8 @@ export = {
     const sg2 = new SecurityGroup(stack2, 'SecurityGroup', { vpc: vpc2, allowAllOutbound: false });
 
     // WHEN
-    sg2.connections.allowFrom(sg1a, Port.tcpPort(100));
-    sg2.connections.allowFrom(sg1b, Port.tcpPort(100));
+    sg2.connections.allowFrom(sg1a, Port.tcp(100));
+    sg2.connections.allowFrom(sg1b, Port.tcp(100));
 
     // THEN -- both egress rules are in Stack2
     ConstructNode.prepare(app.node);

@@ -18,7 +18,7 @@ export interface PortProps {
   /**
    * The protocol for the range
    */
-  readonly ipProtocol: Protocol;
+  readonly protocol: Protocol;
 
   /**
    * The starting port for the range
@@ -47,9 +47,9 @@ export class Port {
   /**
    * A single TCP port
    */
-  public static tcpPort(port: number): Port {
+  public static tcp(port: number): Port {
     return new Port({
-      ipProtocol: Protocol.TCP,
+      protocol: Protocol.TCP,
       fromPort: port,
       toPort: port,
       stringRepresentation: renderPort(port),
@@ -59,9 +59,9 @@ export class Port {
   /**
    * A TCP port range
    */
-  public static tcpPortRange(startPort: number, endPort: number) {
+  public static tcpRange(startPort: number, endPort: number) {
     return new Port({
-      ipProtocol: Protocol.TCP,
+      protocol: Protocol.TCP,
       fromPort: startPort,
       toPort: endPort,
       stringRepresentation: `${renderPort(startPort)}-${renderPort(endPort)}`
@@ -73,7 +73,7 @@ export class Port {
    */
   public static allTcp() {
     return new Port({
-      ipProtocol: Protocol.TCP,
+      protocol: Protocol.TCP,
       fromPort: 0,
       toPort: 65535,
       stringRepresentation: 'ALL PORTS',
@@ -83,9 +83,9 @@ export class Port {
   /**
    * A single UDP port
    */
-  public static udpPort(port: number): Port {
+  public static udp(port: number): Port {
     return new Port({
-      ipProtocol: Protocol.UDP,
+      protocol: Protocol.UDP,
       fromPort: port,
       toPort: port,
       stringRepresentation: `UDP ${renderPort(port)}`,
@@ -95,9 +95,9 @@ export class Port {
   /**
    * A UDP port range
    */
-  public static udpPortRange(startPort: number, endPort: number) {
+  public static udpRange(startPort: number, endPort: number) {
     return new Port({
-      ipProtocol: Protocol.UDP,
+      protocol: Protocol.UDP,
       fromPort: startPort,
       toPort: endPort,
       stringRepresentation: `UDP ${renderPort(startPort)}-${renderPort(endPort)}`
@@ -109,7 +109,7 @@ export class Port {
    */
   public static allUdp() {
     return new Port({
-      ipProtocol: Protocol.UDP,
+      protocol: Protocol.UDP,
       fromPort: 0,
       toPort: 65535,
       stringRepresentation: 'UDP ALL PORTS',
@@ -123,7 +123,7 @@ export class Port {
    */
   public static icmpTypeAndCode(type: number, code: number) {
     return new Port({
-      ipProtocol: Protocol.ICMP,
+      protocol: Protocol.ICMP,
       fromPort: type,
       toPort: code,
       stringRepresentation: `ICMP Type ${type} Code ${code}`
@@ -135,7 +135,7 @@ export class Port {
    */
   public static icmpType(type: number): Port {
     return new Port({
-      ipProtocol: Protocol.ICMP,
+      protocol: Protocol.ICMP,
       fromPort: type,
       toPort: -1,
       stringRepresentation: `ICMP Type ${type}`,
@@ -154,7 +154,7 @@ export class Port {
    */
   public static allIcmp() {
     return new Port({
-      ipProtocol: Protocol.ICMP,
+      protocol: Protocol.ICMP,
       fromPort: -1,
       toPort: -1,
       stringRepresentation: 'ALL ICMP',
@@ -166,7 +166,7 @@ export class Port {
    */
   public static allTraffic() {
     return new Port({
-      ipProtocol: Protocol.ALL,
+      protocol: Protocol.ALL,
       stringRepresentation: 'ALL TRAFFIC',
     });
   }
@@ -185,7 +185,7 @@ export class Port {
    */
   public toRuleJSON(): any {
     return {
-      ipProtocol: this.props.ipProtocol,
+      ipProtocol: this.props.protocol,
       fromPort: this.props.fromPort,
       toPort: this.props.toPort,
     };

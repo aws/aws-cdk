@@ -233,7 +233,7 @@ class ASGFixture extends cdk.Construct {
     this.vpc = new ec2.Vpc(this, 'VPC');
     this.asg = new autoscaling.AutoScalingGroup(this, 'ASG', {
       vpc: this.vpc,
-      instanceType: ec2.InstanceType.pair(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
       machineImage: new ec2.AmazonLinuxImage(),
     });
   }

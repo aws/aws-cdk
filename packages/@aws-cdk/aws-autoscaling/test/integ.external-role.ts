@@ -13,7 +13,7 @@ class TestStack extends cdk.Stack {
     });
 
     new asg.AutoScalingGroup(this, 'ASG', {
-      instanceType: ec2.InstanceType.pair(ec2.InstanceClass.T2, ec2.InstanceSize.MICRO),
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.T2, ec2.InstanceSize.MICRO),
       vpc,
       machineImage: new ec2.AmazonLinuxImage(),
       role

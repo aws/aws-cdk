@@ -155,7 +155,7 @@ export = {
 
 class FakeTarget implements ILoadBalancerTarget {
   public readonly connections = new Connections({
-    securityGroupRule: Peer.cidrIpv4('666.666.666.666/666')
+    peer: Peer.ipv4('666.666.666.666/666')
   });
 
   public attachToClassicLB(_loadBalancer: LoadBalancer): void {

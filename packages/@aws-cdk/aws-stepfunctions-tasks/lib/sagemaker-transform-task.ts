@@ -118,7 +118,7 @@ export class SagemakerTransformTask implements sfn.IStepFunctionsTask {
         // set the default value for the transform resources
         this.transformResources = props.transformResources || {
             instanceCount: 1,
-            instanceType: ec2.InstanceType.pair(ec2.InstanceClass.M4, ec2.InstanceSize.XLARGE),
+            instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.XLARGE),
         };
     }
 

@@ -190,10 +190,10 @@ export class DatabaseCluster extends DatabaseClusterBase {
    */
   public static fromDatabaseClusterAttributes(scope: Construct, id: string, attrs: DatabaseClusterAttributes): IDatabaseCluster {
     class Import extends DatabaseClusterBase implements IDatabaseCluster {
-      public readonly defaultPortRange = ec2.Port.tcpPort(attrs.port);
+      public readonly defaultPort = ec2.Port.tcp(attrs.port);
       public readonly connections = new ec2.Connections({
         securityGroups: [ec2.SecurityGroup.fromSecurityGroupId(this, 'SecurityGroup', attrs.securityGroupId)],
-        defaultPortRange: this.defaultPortRange
+        defaultPort: this.defaultPort
       });
       public readonly clusterIdentifier = attrs.clusterIdentifier;
       public readonly instanceIdentifiers: string[] = [];
@@ -380,8 +380,8 @@ export class DatabaseCluster extends DatabaseClusterBase {
       this.instanceEndpoints.push(new Endpoint(instance.attrEndpointAddress, portAttribute));
     }
 
-    const defaultPortRange = ec2.Port.tcpPort(this.clusterEndpoint.port);
-    this.connections = new ec2.Connections({ securityGroups: [securityGroup], defaultPortRange });
+    const defaultPort = ec2.Port.tcp(this.clusterEndpoint.port);
+    this.connections = new ec2.Connections({ securityGroups: [securityGroup], defaultPort });
   }
 
   /**

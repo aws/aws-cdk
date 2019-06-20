@@ -315,7 +315,7 @@ export class InterfaceVpcEndpoint extends VpcEndpoint implements IInterfaceVpcEn
       public readonly vpcEndpointId = attrs.vpcEndpointId;
       public readonly securityGroupId = attrs.securityGroupId;
       public readonly connections = new Connections({
-        defaultPortRange: Port.tcpPort(attrs.port),
+        defaultPort: Port.tcp(attrs.port),
         securityGroups: [SecurityGroup.fromSecurityGroupId(this, 'SecurityGroup', attrs.securityGroupId)],
       });
     }
@@ -365,7 +365,7 @@ export class InterfaceVpcEndpoint extends VpcEndpoint implements IInterfaceVpcEn
     });
     this.securityGroupId = securityGroup.securityGroupId;
     this.connections = new Connections({
-      defaultPortRange: Port.tcpPort(props.service.port),
+      defaultPort: Port.tcp(props.service.port),
       securityGroups: [securityGroup]
     });
 

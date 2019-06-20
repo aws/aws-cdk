@@ -17,12 +17,12 @@ export interface IPeer extends IConnectable {
   /**
    * Produce the ingress rule JSON for the given connection
    */
-  toIngressRuleJSON(): any;
+  toIngressRuleConfig(): any;
 
   /**
    * Produce the egress rule JSON for the given connection
    */
-  toEgressRuleJSON(): any;
+  toEgressRuleConfig(): any;
 }
 
 /**
@@ -32,7 +32,7 @@ export class Peer {
   /**
    * Create an IPv4 peer from a CIDR
    */
-  public static cidrIpv4(cidrIp: string): IPeer {
+  public static ipv4(cidrIp: string): IPeer {
     return new CidrIPv4(cidrIp);
   }
 
@@ -46,7 +46,7 @@ export class Peer {
   /**
    * Create an IPv6 peer from a CIDR
    */
-  public static cidrIpv6(cidrIp: string): IPeer {
+  public static ipv6(cidrIp: string): IPeer {
     return new CidrIPv6(cidrIp);
   }
 
@@ -73,7 +73,7 @@ export class Peer {
  */
 class CidrIPv4 implements IPeer {
   public readonly canInlineRule = true;
-  public readonly connections: Connections = new Connections({ securityGroupRule: this });
+  public readonly connections: Connections = new Connections({ peer: this });
   public readonly uniqueId: string;
 
   constructor(private readonly cidrIp: string) {
@@ -83,13 +83,13 @@ class CidrIPv4 implements IPeer {
   /**
    * Produce the ingress rule JSON for the given connection
    */
-  public toIngressRuleJSON(): any {
+  public toIngressRuleConfig(): any {
     return { cidrIp: this.cidrIp };
   }
   /**
    * Produce the egress rule JSON for the given connection
    */
-  public toEgressRuleJSON(): any {
+  public toEgressRuleConfig(): any {
     return { cidrIp: this.cidrIp };
   }
 }
@@ -108,7 +108,7 @@ class AnyIPv4 extends CidrIPv4 {
  */
 class CidrIPv6 implements IPeer {
   public readonly canInlineRule = true;
-  public readonly connections: Connections = new Connections({ securityGroupRule: this });
+  public readonly connections: Connections = new Connections({ peer: this });
   public readonly uniqueId: string;
 
   constructor(private readonly cidrIpv6: string) {
@@ -118,13 +118,13 @@ class CidrIPv6 implements IPeer {
   /**
    * Produce the ingress rule JSON for the given connection
    */
-  public toIngressRuleJSON(): any {
+  public toIngressRuleConfig(): any {
     return { cidrIpv6: this.cidrIpv6 };
   }
   /**
    * Produce the egress rule JSON for the given connection
    */
-  public toEgressRuleJSON(): any {
+  public toEgressRuleConfig(): any {
     return { cidrIpv6: this.cidrIpv6 };
   }
 }
@@ -149,18 +149,18 @@ class AnyIPv6 extends CidrIPv6 {
  */
 class PrefixList implements IPeer {
   public readonly canInlineRule = false;
-  public readonly connections: Connections = new Connections({ securityGroupRule: this });
+  public readonly connections: Connections = new Connections({ peer: this });
   public readonly uniqueId: string;
 
   constructor(private readonly prefixListId: string) {
     this.uniqueId = prefixListId;
   }
 
-  public toIngressRuleJSON(): any {
+  public toIngressRuleConfig(): any {
     return { sourcePrefixListId: this.prefixListId };
   }
 
-  public toEgressRuleJSON(): any {
+  public toEgressRuleConfig(): any {
     return { destinationPrefixListId: this.prefixListId };
   }
 }

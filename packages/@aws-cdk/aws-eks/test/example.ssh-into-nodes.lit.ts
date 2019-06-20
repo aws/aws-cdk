@@ -20,7 +20,7 @@ class EksClusterStack extends cdk.Stack {
     });
 
     // Replace with desired IP
-    asg.connections.allowFrom(ec2.Peer.cidrIpv4('1.2.3.4/32'), ec2.Port.tcpPort(22));
+    asg.connections.allowFrom(ec2.Peer.ipv4('1.2.3.4/32'), ec2.Port.tcp(22));
     /// !hide
   }
 }

@@ -14,7 +14,7 @@ const cluster = new rds.DatabaseCluster(stack, 'Database', {
     username: 'admin'
   },
   instanceProps: {
-    instanceType: ec2.InstanceType.pair(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+    instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
     vpc
   }
 });
