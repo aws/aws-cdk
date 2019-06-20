@@ -44,9 +44,6 @@ export = {
           {
             Ref: 'VpcNetworkPrivateSubnet2RouteTableE97B328B'
           },
-          {
-            Ref: 'VpcNetworkPrivateSubnet3RouteTableE0C661A2'
-          }
         ],
         VpcEndpointType: 'Gateway'
       }));
@@ -65,10 +62,10 @@ export = {
             service: GatewayVpcEndpointAwsService.S3,
             subnets: [
               {
-                subnetType: SubnetType.Public
+                subnetType: SubnetType.PUBLIC
               },
               {
-                subnetType: SubnetType.Private
+                subnetType: SubnetType.PRIVATE
               }
             ]
           }
@@ -100,17 +97,11 @@ export = {
             Ref: 'VpcNetworkPublicSubnet2RouteTableE5F348DF'
           },
           {
-            Ref: 'VpcNetworkPublicSubnet3RouteTable36E30B07'
-          },
-          {
             Ref: 'VpcNetworkPrivateSubnet1RouteTableCD085FF1'
           },
           {
             Ref: 'VpcNetworkPrivateSubnet2RouteTableE97B328B'
           },
-          {
-            Ref: 'VpcNetworkPrivateSubnet3RouteTableE0C661A2'
-          }
         ],
         VpcEndpointType: 'Gateway'
       }));
@@ -289,9 +280,6 @@ export = {
           {
             Ref: 'VpcNetworkPrivateSubnet2Subnet5E4189D6'
           },
-          {
-            Ref: 'VpcNetworkPrivateSubnet3Subnet5D16E0FB'
-          }
         ],
         VpcEndpointType: 'Interface'
       }));

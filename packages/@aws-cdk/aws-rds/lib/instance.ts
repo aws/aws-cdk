@@ -5,7 +5,7 @@ import kms = require('@aws-cdk/aws-kms');
 import lambda = require('@aws-cdk/aws-lambda');
 import logs = require('@aws-cdk/aws-logs');
 import secretsmanager = require('@aws-cdk/aws-secretsmanager');
-import { Construct, IResource, RemovalPolicy, Resource, SecretValue, Stack, Token } from '@aws-cdk/cdk';
+import { Construct, Duration, IResource, RemovalPolicy, Resource, SecretValue, Stack, Token } from '@aws-cdk/cdk';
 import { DatabaseSecret } from './database-secret';
 import { Endpoint } from './endpoint';
 import { IOptionGroup} from './option-group';
@@ -116,7 +116,7 @@ export abstract class DatabaseInstanceBase extends Resource implements IDatabase
    * Defines a CloudWatch event rule which triggers for instance events. Use
    * `rule.addEventPattern(pattern)` to specify a filter.
    */
-  public onEvent(id: string, options: events.OnEventOptions) {
+  public onEvent(id: string, options: events.OnEventOptions = {}) {
     const rule = new events.Rule(this, id, options);
     rule.addEventPattern({
       source: ['aws.rds'],
@@ -144,7 +144,7 @@ export abstract class DatabaseInstanceBase extends Resource implements IDatabase
   public asSecretAttachmentTarget(): secretsmanager.SecretAttachmentTargetProps {
     return {
       targetId: this.instanceIdentifier,
-      targetType: secretsmanager.AttachmentTargetType.Instance
+      targetType: secretsmanager.AttachmentTargetType.INSTANCE
     };
   }
 }
@@ -174,17 +174,17 @@ export enum LicenseModel {
   /**
    * License included.
    */
-  LicenseIncluded = 'license-included',
+  LICENSE_INCLUDED = 'license-included',
 
   /**
    * Bring your own licencse.
    */
-  BringYourOwnLicense = 'bring-your-own-license',
+  BRING_YOUR_OWN_LICENSE = 'bring-your-own-license',
 
   /**
    * General public license.
    */
-  GeneralPublicLicense = 'general-public-license'
+  GENERAL_PUBLIC_LICENSE = 'general-public-license'
 }
 
 /**
@@ -209,7 +209,7 @@ export enum StorageType {
   /**
    * Standard.
    */
-  Standard = 'standard',
+  STANDARD = 'standard',
 
   /**
    * General purpose (SSD).
@@ -225,16 +225,16 @@ export enum StorageType {
 /**
  * The retention period for Performance Insight.
  */
-export enum PerformanceInsightRetentionPeriod {
+export enum PerformanceInsightRetention {
   /**
    * Default retention period of 7 days.
    */
-  Default = 7,
+  DEFAULT = 7,
 
   /**
    * Long term retention period of 2 years.
    */
-  LongTerm = 731
+  LONG_TERM = 731
 }
 
 /**
@@ -333,7 +333,7 @@ export interface DatabaseInstanceNewProps {
    *
    * @default 1 day
    */
-  readonly backupRetentionPeriod?: number;
+  readonly backupRetention?: Duration;
 
   /**
    * The daily time range during which automated backups are performed.
@@ -372,7 +372,7 @@ export interface DatabaseInstanceNewProps {
    *
    * @default no enhanced monitoring
    */
-  readonly monitoringInterval?: number;
+  readonly monitoringInterval?: Duration;
 
   /**
    * Whether to enable Performance Insights for the DB instance.
@@ -386,7 +386,7 @@ export interface DatabaseInstanceNewProps {
    *
    * @default 7 days
    */
-  readonly performanceInsightRetentionPeriod?: PerformanceInsightRetentionPeriod;
+  readonly performanceInsightRetention?: PerformanceInsightRetention;
 
   /**
    * The AWS KMS key for encryption of Performance Insights data.
@@ -501,7 +501,7 @@ abstract class DatabaseInstanceNew extends DatabaseInstanceBase implements IData
     this.newCfnProps = {
       autoMinorVersionUpgrade: props.autoMinorVersionUpgrade,
       availabilityZone: props.multiAz ? undefined : props.availabilityZone,
-      backupRetentionPeriod: props.backupRetentionPeriod !== undefined ? props.backupRetentionPeriod : undefined,
+      backupRetentionPeriod: props.backupRetention ? props.backupRetention.toDays() : undefined,
       copyTagsToSnapshot: props.copyTagsToSnapshot !== undefined ? props.copyTagsToSnapshot : true,
       dbInstanceClass: `db.${props.instanceClass}`,
       dbInstanceIdentifier: props.instanceIdentifier,
@@ -512,7 +512,7 @@ abstract class DatabaseInstanceNew extends DatabaseInstanceBase implements IData
       enableIamDatabaseAuthentication: props.iamAuthentication,
       enablePerformanceInsights: props.enablePerformanceInsights,
       iops,
-      monitoringInterval: props.monitoringInterval,
+      monitoringInterval: props.monitoringInterval && props.monitoringInterval.toSeconds(),
       monitoringRoleArn: monitoringRole && monitoringRole.roleArn,
       multiAz: props.multiAz,
       optionGroupName: props.optionGroup && props.optionGroup.optionGroupName,
@@ -520,13 +520,13 @@ abstract class DatabaseInstanceNew extends DatabaseInstanceBase implements IData
         ? props.performanceInsightKmsKey && props.performanceInsightKmsKey.keyArn
         : undefined,
       performanceInsightsRetentionPeriod: props.enablePerformanceInsights
-        ? (props.performanceInsightRetentionPeriod || PerformanceInsightRetentionPeriod.Default)
+        ? (props.performanceInsightRetention || PerformanceInsightRetention.DEFAULT)
         : undefined,
       port: props.port ? props.port.toString() : undefined,
       preferredBackupWindow: props.preferredBackupWindow,
       preferredMaintenanceWindow: props.preferredMaintenanceWindow,
       processorFeatures: props.processorFeatures && renderProcessorFeatures(props.processorFeatures),
-      publiclyAccessible: props.vpcPlacement && props.vpcPlacement.subnetType === ec2.SubnetType.Public,
+      publiclyAccessible: props.vpcPlacement && props.vpcPlacement.subnetType === ec2.SubnetType.PUBLIC,
       storageType,
       vpcSecurityGroups: [this.securityGroupId]
     };
@@ -537,7 +537,7 @@ abstract class DatabaseInstanceNew extends DatabaseInstanceBase implements IData
       for (const log of this.cloudwatchLogsExports) {
         new lambda.LogRetention(this, `LogRetention${log}`, {
           logGroupName: `/aws/rds/instance/${this.instanceIdentifier}/${log}`,
-          retentionDays: this.cloudwatchLogsRetention
+          retention: this.cloudwatchLogsRetention
         });
       }
     }

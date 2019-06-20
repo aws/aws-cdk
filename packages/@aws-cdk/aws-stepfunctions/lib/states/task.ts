@@ -60,7 +60,7 @@ export interface TaskProps {
      *
      * @default 60
      */
-    readonly timeoutSeconds?: number;
+    readonly timeout?: cdk.Duration;
 }
 
 /**
@@ -75,13 +75,13 @@ export interface TaskProps {
  */
 export class Task extends State implements INextable {
     public readonly endStates: INextable[];
-    private readonly timeoutSeconds?: number;
+    private readonly timeout?: cdk.Duration;
     private readonly taskProps: StepFunctionsTaskConfig;
 
     constructor(scope: cdk.Construct, id: string, props: TaskProps) {
         super(scope, id, props);
 
-        this.timeoutSeconds = props.timeoutSeconds;
+        this.timeout = props.timeout;
         this.taskProps = props.task.bind(this);
         this.endStates = [this];
     }
@@ -129,8 +129,8 @@ export class Task extends State implements INextable {
             Resource: this.taskProps.resourceArn,
             Parameters: this.taskProps.parameters && FieldUtils.renderObject(this.taskProps.parameters),
             ResultPath: renderJsonPath(this.resultPath),
-            TimeoutSeconds: this.timeoutSeconds,
-            HeartbeatSeconds: this.taskProps.heartbeatSeconds,
+            TimeoutSeconds: this.timeout && this.timeout.toSeconds(),
+            HeartbeatSeconds: this.taskProps.heartbeat && this.taskProps.heartbeat.toSeconds(),
         };
     }
 

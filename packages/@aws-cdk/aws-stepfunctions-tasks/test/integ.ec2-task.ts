@@ -6,7 +6,12 @@ import path = require('path');
 import tasks = require('../lib');
 
 const app = new cdk.App();
-const stack = new cdk.Stack(app, 'aws-ecs-integ2');
+const stack = new cdk.Stack(app, 'aws-ecs-integ2', {
+  env: {
+    account: process.env.CDK_INTEG_ACCOUNT || process.env.CDK_DEFAULT_ACCOUNT,
+    region: process.env.CDK_INTEG_REGION || process.env.CDK_DEFAULT_REGION
+  }
+});
 
 const vpc = ec2.Vpc.fromLookup(stack, 'Vpc', {
   isDefault: true
@@ -15,7 +20,7 @@ const vpc = ec2.Vpc.fromLookup(stack, 'Vpc', {
 const cluster = new ecs.Cluster(stack, 'FargateCluster', { vpc });
 cluster.addCapacity('DefaultAutoScalingGroup', {
   instanceType: new ec2.InstanceType('t2.micro'),
-  vpcSubnets: { subnetType: ec2.SubnetType.Public },
+  vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC },
 });
 
 // Build task definition

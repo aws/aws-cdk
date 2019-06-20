@@ -1,6 +1,6 @@
 import iam = require('@aws-cdk/aws-iam');
 import cdk = require('@aws-cdk/cdk');
-import { Construct, Lazy, Stack } from '@aws-cdk/cdk';
+import { Construct, Lazy, PhysicalName, ResourceIdentifiers, Stack } from '@aws-cdk/cdk';
 import { ILogGroup } from './log-group';
 import { CfnDestination } from './logs.generated';
 import { ILogSubscriptionDestination, LogSubscriptionDestinationConfig } from './subscription-filter';
@@ -14,7 +14,7 @@ export interface CrossAccountDestinationProps {
    *
    * @default Automatically generated
    */
-  readonly destinationName?: string;
+  readonly destinationName?: PhysicalName;
 
   /**
    * The role to assume that grants permissions to write to 'target'.
@@ -66,21 +66,32 @@ export class CrossAccountDestination extends cdk.Resource implements ILogSubscri
   private readonly resource: CfnDestination;
 
   constructor(scope: cdk.Construct, id: string, props: CrossAccountDestinationProps) {
-    super(scope, id);
-
-    // In the underlying model, the name is not optional, but we make it so anyway.
-    const destinationName = props.destinationName || Lazy.stringValue({ produce: () => this.generateUniqueName() });
+    super(scope, id, {
+      physicalName: props.destinationName ||
+        // In the underlying model, the name is not optional, but we make it so anyway.
+        PhysicalName.of(Lazy.stringValue({ produce: () => this.generateUniqueName() })),
+    });
 
     this.resource = new CfnDestination(this, 'Resource', {
-      destinationName,
+      destinationName: this.physicalName.value!,
       // Must be stringified policy
       destinationPolicy: this.lazyStringifiedPolicyDocument(),
       roleArn: props.role.roleArn,
       targetArn: props.targetArn
     });
 
-    this.destinationArn = this.resource.attrArn;
-    this.destinationName = this.resource.refAsString;
+    const resourceIdentifiers = new ResourceIdentifiers(this, {
+      arn: this.resource.attrArn,
+      name: this.resource.refAsString,
+      arnComponents: {
+        service: 'logs',
+        resource: 'destination',
+        resourceName: this.physicalName.value,
+        sep: ':',
+      },
+    });
+    this.destinationArn = resourceIdentifiers.arn;
+    this.destinationName = resourceIdentifiers.name;
   }
 
   public addToPolicy(statement: iam.PolicyStatement) {

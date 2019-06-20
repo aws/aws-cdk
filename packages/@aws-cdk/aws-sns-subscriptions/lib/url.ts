@@ -33,7 +33,7 @@ export class UrlSubscription implements sns.ITopicSubscription {
     new sns.Subscription(scope, this.url, {
       topic,
       endpoint: this.url,
-      protocol: this.url.startsWith('https:') ? sns.SubscriptionProtocol.Https : sns.SubscriptionProtocol.Http,
+      protocol: this.url.startsWith('https:') ? sns.SubscriptionProtocol.HTTPS : sns.SubscriptionProtocol.HTTP,
       rawMessageDelivery: this.props.rawMessageDelivery,
     });
   }

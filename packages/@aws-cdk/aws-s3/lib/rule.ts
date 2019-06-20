@@ -1,3 +1,5 @@
+import { Duration } from "@aws-cdk/cdk";
+
 /**
  * Declaration of a Life cycle rule
  */
@@ -24,7 +26,7 @@ export interface LifecycleRule {
    *
    * @default Incomplete uploads are never aborted
    */
-  readonly abortIncompleteMultipartUploadAfterDays?: number;
+  readonly abortIncompleteMultipartUploadAfter?: Duration;
 
   /**
    * Indicates when objects are deleted from Amazon S3 and Amazon Glacier.
@@ -48,7 +50,7 @@ export interface LifecycleRule {
    *
    * @default No expiration timeout
    */
-  readonly expirationInDays?: number;
+  readonly expiration?: Duration;
 
   /**
    * Time between when a new version of the object is uploaded to the bucket and when old versions of the object expire.
@@ -62,7 +64,7 @@ export interface LifecycleRule {
    *
    * @default No noncurrent version expiration
    */
-  readonly noncurrentVersionExpirationInDays?: number;
+  readonly noncurrentVersionExpiration?: Duration;
 
   /**
    * One or more transition rules that specify when non-current objects transition to a specified storage class.
@@ -123,7 +125,7 @@ export interface Transition {
    *
    * @default No transition count.
    */
-  readonly transitionInDays?: number;
+  readonly transitionAfter?: Duration;
 }
 
 /**
@@ -140,7 +142,7 @@ export interface NoncurrentVersionTransition {
    *
    * @default No transition count.
    */
-  readonly transitionInDays: number;
+  readonly transitionAfter: Duration;
 }
 
 /**

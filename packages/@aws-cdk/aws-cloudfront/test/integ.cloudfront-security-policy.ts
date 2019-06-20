@@ -26,7 +26,7 @@ new cloudfront.CloudFrontWebDistribution(stack, 'AnAmazingWebsiteProbably', {
     acmCertRef: 'testACM',
     names: ['test.test.com'],
     sslMethod: cloudfront.SSLMethod.SNI,
-    securityPolicy: cloudfront.SecurityPolicyProtocol.TLSv1
+    securityPolicy: cloudfront.SecurityPolicyProtocol.TLS_V1
   }
 });
 

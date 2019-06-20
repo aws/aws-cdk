@@ -19,10 +19,8 @@ export = {
         SubnetIds: [
           { Ref: "VPCPublicSubnet1SubnetB4246D30" },
           { Ref: "VPCPublicSubnet2Subnet74179F39" },
-          { Ref: "VPCPublicSubnet3Subnet631C5E25" },
           { Ref: "VPCPrivateSubnet1Subnet8BCA10E0" },
           { Ref: "VPCPrivateSubnet2SubnetCFCDAA7A" },
-          { Ref: "VPCPrivateSubnet3Subnet3EDCD457" }
         ]
       }
     }));

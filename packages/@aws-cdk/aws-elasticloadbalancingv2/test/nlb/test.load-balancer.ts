@@ -22,7 +22,6 @@ export = {
       Subnets: [
         { Ref: "StackPublicSubnet1Subnet0AD81D22" },
         { Ref: "StackPublicSubnet2Subnet3C7D2288" },
-        { Ref: "StackPublicSubnet3SubnetCC1055D9" }
       ],
       Type: "network"
     }));
@@ -44,7 +43,6 @@ export = {
       Subnets: [
         { Ref: "StackPrivateSubnet1Subnet47AC2BC7" },
         { Ref: "StackPrivateSubnet2SubnetA2F8EDD8" },
-        { Ref: "StackPrivateSubnet3Subnet28548F2E" }
       ],
       Type: "network"
     }));
@@ -83,7 +81,7 @@ export = {
 
     // WHEN
     new elbv2.NetworkLoadBalancer(stack, 'ALB', {
-      loadBalancerName: 'myLoadBalancer',
+      loadBalancerName: cdk.PhysicalName.of('myLoadBalancer'),
       vpc
     });
 
