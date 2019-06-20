@@ -157,7 +157,7 @@ export class Cluster extends Resource implements ICluster {
     // Tie instances to cluster
     autoScalingGroup.addUserData(`echo ECS_CLUSTER=${this.clusterName} >> /etc/ecs/ecs.config`);
 
-    if (!options.containersAccessInstanceRole) {
+    if (!options.canContainersAccessInstanceRole) {
       // Deny containers access to instance metadata service
       // Source: https://docs.aws.amazon.com/AmazonECS/latest/developerguide/instance_IAM_role.html
       autoScalingGroup.addUserData('sudo iptables --insert FORWARD 1 --in-interface docker+ --destination 169.254.169.254/32 --jump DROP');
@@ -437,7 +437,7 @@ export interface AddAutoScalingGroupCapacityOptions {
    *
    * @default false
    */
-  readonly containersAccessInstanceRole?: boolean;
+  readonly canContainersAccessInstanceRole?: boolean;
 
   /**
    * Give tasks this many seconds to complete when instances are being scaled in.
