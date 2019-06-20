@@ -1,3 +1,5 @@
+import { OperatingSystemType } from "./machine-image";
+
 /**
  * Instance User Data
  */
@@ -14,6 +16,13 @@ export abstract class UserData {
    */
   public static forWindows(): UserData {
     return new WindowsUserData();
+  }
+
+  public static forOperatingSystem(os: OperatingSystemType): UserData {
+    switch (os) {
+      case OperatingSystemType.LINUX: return UserData.forLinux();
+      case OperatingSystemType.WINDOWS: return UserData.forWindows();
+    }
   }
 
   /**

@@ -175,7 +175,7 @@ export interface AutoScalingGroupProps extends CommonAutoScalingGroupProps {
   /**
    * AMI to launch
    */
-  readonly machineImage: ec2.IMachineImageSource;
+  readonly machineImage: ec2.IMachineImage;
 
   /**
    * Specific UserData to use
@@ -399,13 +399,13 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
     });
 
     // use delayed evaluation
-    const machineImage = props.machineImage.getImage(this);
-    this.userData = machineImage.os.createDefaultUserData();
+    const imageConfig = props.machineImage.getImage(this);
+    this.userData = props.userData || imageConfig.userData || ec2.UserData.forOperatingSystem(imageConfig.osType);
     const userDataToken = Lazy.stringValue({ produce: () => Fn.base64(this.userData.render()) });
     const securityGroupsToken = Lazy.listValue({ produce: () => this.securityGroups.map(sg => sg.securityGroupId) });
 
     const launchConfig = new CfnLaunchConfiguration(this, 'LaunchConfig', {
-      imageId: machineImage.imageId,
+      imageId: imageConfig.imageId,
       keyName: props.keyName,
       instanceType: props.instanceType.toString(),
       securityGroups: securityGroupsToken,
@@ -456,7 +456,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
     }
 
     this.autoScalingGroup = new CfnAutoScalingGroup(this, 'ASG', asgProps);
-    this.osType = machineImage.os.type;
+    this.osType = imageConfig.osType;
     this.autoScalingGroupName = this.autoScalingGroup.refAsString;
     this.autoScalingGroupArn = Stack.of(this).formatArn({
       service: 'autoscaling',
