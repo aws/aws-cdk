@@ -113,7 +113,7 @@ export = {
 
   'Access logging'(test: Test) {
     // GIVEN
-    const stack = new cdk.Stack(undefined, undefined, { env: { region: 'us-east-1' }});
+    const stack = new cdk.Stack(undefined, undefined, { env: { region: 'us-east-1' } });
     const vpc = new ec2.Vpc(stack, 'Stack');
     const bucket = new s3.Bucket(stack, 'AccessLoggingBucket');
     const lb = new elbv2.ApplicationLoadBalancer(stack, 'LB', { vpc });
@@ -143,11 +143,13 @@ export = {
         Version: '2012-10-17',
         Statement: [
           {
-            Action: [ "s3:PutObject*", "s3:Abort*" ],
+            Action: ["s3:PutObject*", "s3:Abort*"],
             Effect: 'Allow',
-            Principal: { AWS: { "Fn::Join": [ "", [ "arn:", { Ref: "AWS::Partition" }, ":iam::127311923021:root" ] ] } },
-            Resource: { "Fn::Join": [ "", [ { "Fn::GetAtt": [ "AccessLoggingBucketA6D88F29", "Arn" ] }, "/",
-            { "Fn::Sub": "AWSLogs/${AWS::AccountId}/*" } ] ] }
+            Principal: { AWS: { "Fn::Join": ["", ["arn:", { Ref: "AWS::Partition" }, ":iam::127311923021:root"]] } },
+            Resource: {
+              "Fn::Join": ["", [{ "Fn::GetAtt": ["AccessLoggingBucketA6D88F29", "Arn"] }, "/AWSLogs/",
+              { Ref: "AWS::AccountId" }, "/*"]]
+            }
           }
         ]
       }
@@ -155,7 +157,7 @@ export = {
 
     // verify the ALB depends on the bucket *and* the bucket policy
     expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::LoadBalancer', {
-      DependsOn: [ 'AccessLoggingBucketPolicy700D7CC6', 'AccessLoggingBucketA6D88F29' ]
+      DependsOn: ['AccessLoggingBucketPolicy700D7CC6', 'AccessLoggingBucketA6D88F29']
     }, ResourcePart.CompleteDefinition));
 
     test.done();
@@ -163,7 +165,7 @@ export = {
 
   'access logging with prefix'(test: Test) {
     // GIVEN
-    const stack = new cdk.Stack(undefined, undefined, { env: { region: 'us-east-1' }});
+    const stack = new cdk.Stack(undefined, undefined, { env: { region: 'us-east-1' } });
     const vpc = new ec2.Vpc(stack, 'Stack');
     const bucket = new s3.Bucket(stack, 'AccessLoggingBucket');
     const lb = new elbv2.ApplicationLoadBalancer(stack, 'LB', { vpc });
@@ -196,11 +198,13 @@ export = {
         Version: '2012-10-17',
         Statement: [
           {
-            Action: [ "s3:PutObject*", "s3:Abort*" ],
+            Action: ["s3:PutObject*", "s3:Abort*"],
             Effect: 'Allow',
-            Principal: { AWS: { "Fn::Join": [ "", [ "arn:", { Ref: "AWS::Partition" }, ":iam::127311923021:root" ] ] } },
-            Resource: { "Fn::Join": [ "", [ { "Fn::GetAtt": [ "AccessLoggingBucketA6D88F29", "Arn" ] }, "/",
-            { "Fn::Sub": "prefix-of-access-logs/AWSLogs/${AWS::AccountId}/*" } ] ] }
+            Principal: { AWS: { "Fn::Join": ["", ["arn:", { Ref: "AWS::Partition" }, ":iam::127311923021:root"]] } },
+            Resource: {
+              "Fn::Join": ["", [{ "Fn::GetAtt": ["AccessLoggingBucketA6D88F29", "Arn"] }, "/prefix-of-access-logs/AWSLogs/",
+              { Ref: "AWS::AccountId" }, "/*"]]
+            }
           }
         ]
       }
