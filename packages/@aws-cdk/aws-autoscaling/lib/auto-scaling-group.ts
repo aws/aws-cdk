@@ -543,7 +543,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
         ...this.autoScalingGroup.options.creationPolicy,
         resourceSignal: {
           count: props.resourceSignalCount,
-          timeout: props.resourceSignalTimeout,
+          timeout: props.resourceSignalTimeout && props.resourceSignalTimeout.toISOString(),
         }
       };
     }
