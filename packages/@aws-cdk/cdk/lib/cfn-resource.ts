@@ -252,7 +252,7 @@ export class CfnResource extends CfnRefElement {
         .map(r => r.logicalId);
     }
 
-    function renderCreationPolicy(policy: CreationPolicy | undefined): any {
+    function renderCreationPolicy(policy: CfnCreationPolicy | undefined): any {
       if (!policy) { return undefined; }
       const result: any = { ...policy };
       if (policy.resourceSignal && policy.resourceSignal.timeout) {
