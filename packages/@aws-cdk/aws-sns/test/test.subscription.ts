@@ -12,7 +12,7 @@ export = {
     // WHEN
     new sns.Subscription(stack, 'Subscription', {
       endpoint: 'endpoint',
-      protocol: sns.SubscriptionProtocol.Lambda,
+      protocol: sns.SubscriptionProtocol.LAMBDA,
       topic
     });
 
@@ -51,7 +51,7 @@ export = {
           lessThanOrEqualTo: -2,
         })
       },
-      protocol: sns.SubscriptionProtocol.Lambda,
+      protocol: sns.SubscriptionProtocol.LAMBDA,
       topic
     });
 
@@ -88,7 +88,7 @@ export = {
     // THEN
     test.throws(() => new sns.Subscription(stack, 'Subscription', {
       endpoint: 'endpoint',
-      protocol: sns.SubscriptionProtocol.Lambda,
+      protocol: sns.SubscriptionProtocol.LAMBDA,
       topic,
       rawMessageDelivery: true
     }), /Raw message delivery/);
@@ -104,7 +104,7 @@ export = {
     // THEN
     test.throws(() => new sns.Subscription(stack, 'Subscription', {
       endpoint: 'endpoint',
-      protocol: sns.SubscriptionProtocol.Lambda,
+      protocol: sns.SubscriptionProtocol.LAMBDA,
       topic,
       filterPolicy: {
         a: cond,
@@ -126,7 +126,7 @@ export = {
     // THEN
     test.throws(() => new sns.Subscription(stack, 'Subscription', {
       endpoint: 'endpoint',
-      protocol: sns.SubscriptionProtocol.Lambda,
+      protocol: sns.SubscriptionProtocol.LAMBDA,
       topic,
       filterPolicy: {
         a: { conditions: [...Array.from(Array(2).keys())] },
