@@ -951,7 +951,7 @@ export class Bucket extends BucketBase {
    * @param rule The rule to add
    */
   public addLifecycleRule(rule: LifecycleRule) {
-    if ((rule.noncurrentVersionExpirationInDays !== undefined
+    if ((rule.noncurrentVersionExpiration !== undefined
       || (rule.noncurrentVersionTransitions && rule.noncurrentVersionTransitions.length > 0))
       && !this.versioned) {
       throw new Error("Cannot use 'noncurrent' rules on a nonversioned bucket");
@@ -1148,21 +1148,21 @@ export class Bucket extends BucketBase {
 
       const x: CfnBucket.RuleProperty = {
         // tslint:disable-next-line:max-line-length
-        abortIncompleteMultipartUpload: rule.abortIncompleteMultipartUploadAfterDays !== undefined ? { daysAfterInitiation: rule.abortIncompleteMultipartUploadAfterDays } : undefined,
+        abortIncompleteMultipartUpload: rule.abortIncompleteMultipartUploadAfter !== undefined ? { daysAfterInitiation: rule.abortIncompleteMultipartUploadAfter.toDays() } : undefined,
         expirationDate: rule.expirationDate,
-        expirationInDays: rule.expirationInDays,
+        expirationInDays: rule.expiration && rule.expiration.toDays(),
         id: rule.id,
-        noncurrentVersionExpirationInDays: rule.noncurrentVersionExpirationInDays,
+        noncurrentVersionExpirationInDays: rule.noncurrentVersionExpiration && rule.noncurrentVersionExpiration.toDays(),
         noncurrentVersionTransitions: mapOrUndefined(rule.noncurrentVersionTransitions, t => ({
           storageClass: t.storageClass.value,
-          transitionInDays: t.transitionInDays
+          transitionInDays: t.transitionAfter.toDays()
         })),
         prefix: rule.prefix,
         status: enabled ? 'Enabled' : 'Disabled',
         transitions: mapOrUndefined(rule.transitions, t => ({
           storageClass: t.storageClass.value,
           transitionDate: t.transitionDate,
-          transitionInDays: t.transitionInDays
+          transitionInDays: t.transitionAfter && t.transitionAfter.toDays()
         })),
         tagFilters: self.parseTagFilters(rule.tagFilters)
       };

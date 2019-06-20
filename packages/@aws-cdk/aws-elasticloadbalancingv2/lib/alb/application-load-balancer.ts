@@ -2,7 +2,7 @@ import cloudwatch = require('@aws-cdk/aws-cloudwatch');
 import ec2 = require('@aws-cdk/aws-ec2');
 import iam = require('@aws-cdk/aws-iam');
 import s3 = require('@aws-cdk/aws-s3');
-import { Construct, Lazy, Resource, Stack, Token } from '@aws-cdk/cdk';
+import { Construct, Duration, Lazy, Resource, Stack, Token } from '@aws-cdk/cdk';
 import { BaseLoadBalancer, BaseLoadBalancerProps, ILoadBalancerV2 } from '../shared/base-load-balancer';
 import { IpAddressType } from '../shared/enums';
 import { ApplicationListener, BaseApplicationListenerProps } from './application-listener';
@@ -39,7 +39,7 @@ export interface ApplicationLoadBalancerProps extends BaseLoadBalancerProps {
    *
    * @default 60
    */
-  readonly idleTimeoutSecs?: number;
+  readonly idleTimeout?: Duration;
 }
 
 /**
@@ -75,7 +75,7 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
     this.connections = new ec2.Connections({ securityGroups: [this.securityGroup] });
 
     if (props.http2Enabled === false) { this.setAttribute('routing.http2.enabled', 'false'); }
-    if (props.idleTimeoutSecs !== undefined) { this.setAttribute('idle_timeout.timeout_seconds', props.idleTimeoutSecs.toString()); }
+    if (props.idleTimeout !== undefined) { this.setAttribute('idle_timeout.timeout_seconds', props.idleTimeout.toSeconds().toString()); }
   }
 
   /**

@@ -1,7 +1,7 @@
 import {
   AnyIPv4, Connections, IConnectable, IPortRange, ISecurityGroup,
   ISubnet, IVpc, SecurityGroup, TcpPort  } from '@aws-cdk/aws-ec2';
-import { Construct, Lazy, Resource } from '@aws-cdk/cdk';
+import { Construct, Duration, Lazy, Resource } from '@aws-cdk/cdk';
 import { CfnLoadBalancer } from './elasticloadbalancing.generated';
 
 /**
@@ -106,16 +106,16 @@ export interface HealthCheck {
   /**
    * Number of seconds between health checks
    *
-   * @default 30
+   * @default Duration.seconds(30)
    */
-  readonly interval?: number;
+  readonly interval?: Duration;
 
   /**
    * Health check timeout
    *
-   * @default 5
+   * @default Duration.seconds(5)
    */
-  readonly timeout?: number;
+  readonly timeout?: Duration;
 }
 
 /**
@@ -422,9 +422,9 @@ function healthCheckToJSON(healthCheck: HealthCheck): CfnLoadBalancer.HealthChec
 
   return {
     healthyThreshold: ifUndefined(healthCheck.healthyThreshold, 2).toString(),
-    interval: ifUndefined(healthCheck.interval, 30).toString(),
+    interval: (healthCheck.interval || Duration.seconds(30)).toSeconds().toString(),
     target,
-    timeout: ifUndefined(healthCheck.timeout, 5).toString(),
+    timeout: (healthCheck.timeout || Duration.seconds(5)).toSeconds().toString(),
     unhealthyThreshold: ifUndefined(healthCheck.unhealthyThreshold, 5).toString(),
   };
 }

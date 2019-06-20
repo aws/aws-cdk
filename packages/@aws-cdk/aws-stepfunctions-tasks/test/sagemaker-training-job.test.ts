@@ -140,7 +140,7 @@ test('create complex training job', () => {
             volumeKmsKeyId: kmsKey,
         },
         stoppingCondition: {
-            maxRuntimeInSeconds: 3600
+            maxRuntime: cdk.Duration.hours(1)
         },
         tags: {
            Project: "MyProject"
@@ -259,7 +259,7 @@ test('pass param to training job', () => {
             volumeSizeInGB: 50
         },
         stoppingCondition: {
-            maxRuntimeInSeconds: 3600
+            maxRuntime: cdk.Duration.hours(1)
         }
     })});
 

@@ -29,14 +29,14 @@ export interface BasicStepScalingPolicyProps {
    *
    * @default Default cooldown period on your AutoScalingGroup
    */
-  readonly cooldownSeconds?: number;
+  readonly cooldown?: cdk.Duration;
 
   /**
    * Estimated time until a newly launched instance can send metrics to CloudWatch.
    *
    * @default Same as the cooldown
    */
-  readonly estimatedInstanceWarmupSeconds?: number;
+  readonly estimatedInstanceWarmup?: cdk.Duration;
 
   /**
    * Minimum absolute number to adjust capacity with as result of percentage scaling.
@@ -87,7 +87,7 @@ export class StepScalingPolicy extends cdk.Construct {
 
       this.lowerAction = new StepScalingAction(this, 'LowerPolicy', {
         adjustmentType: props.adjustmentType,
-        cooldownSeconds: props.cooldownSeconds,
+        cooldown: props.cooldown,
         metricAggregationType: aggregationTypeFromMetric(props.metric),
         minAdjustmentMagnitude: props.minAdjustmentMagnitude,
         autoScalingGroup: props.autoScalingGroup,
@@ -102,8 +102,9 @@ export class StepScalingPolicy extends cdk.Construct {
       }
 
       this.lowerAlarm = new cloudwatch.Alarm(this, 'LowerAlarm', {
+        // Recommended by AutoScaling
         metric: props.metric,
-        periodSec: 60, // Recommended by AutoScaling
+        period: cdk.Duration.minutes(1), // Recommended by AutoScaling
         alarmDescription: 'Lower threshold scaling alarm',
         comparisonOperator: cloudwatch.ComparisonOperator.LESS_THAN_OR_EQUAL_TO_THRESHOLD,
         evaluationPeriods: 1,
@@ -117,7 +118,7 @@ export class StepScalingPolicy extends cdk.Construct {
 
       this.upperAction = new StepScalingAction(this, 'UpperPolicy', {
         adjustmentType: props.adjustmentType,
-        cooldownSeconds: props.cooldownSeconds,
+        cooldown: props.cooldown,
         metricAggregationType: aggregationTypeFromMetric(props.metric),
         minAdjustmentMagnitude: props.minAdjustmentMagnitude,
         autoScalingGroup: props.autoScalingGroup,
@@ -134,7 +135,7 @@ export class StepScalingPolicy extends cdk.Construct {
       this.upperAlarm = new cloudwatch.Alarm(this, 'UpperAlarm', {
         // Recommended by AutoScaling
         metric: props.metric,
-        periodSec: 60, // Recommended by AutoScaling
+        period: cdk.Duration.minutes(1), // Recommended by AutoScaling
         alarmDescription: 'Upper threshold scaling alarm',
         comparisonOperator: cloudwatch.ComparisonOperator.GREATER_THAN_OR_EQUAL_TO_THRESHOLD,
         evaluationPeriods: 1,
