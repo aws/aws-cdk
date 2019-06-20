@@ -29,7 +29,7 @@ export = {
     const zip = await fs.readFile(zipFile);
     const zipData = await jszip.loadAsync(zip);
     const dates = Object.values(zipData.files).map(file => file.date.toISOString());
-    test.equals(dates[0], '1980-01-01T00:00:00.000Z', 'Dates are not reset');
+    test.equal(dates[0], '1980-01-01T00:00:00.000Z', 'Dates are not reset');
     test.equal(new Set(dates).size, 1, 'Dates are not equal');
 
     await fs.remove(stagingDir);
