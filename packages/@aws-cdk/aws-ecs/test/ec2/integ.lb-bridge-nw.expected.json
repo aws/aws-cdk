@@ -874,6 +874,7 @@
           "MinimumHealthyPercent": 50
         },
         "DesiredCount": 1,
+        "HealthCheckGracePeriodSeconds": 60,
         "LaunchType": "EC2",
         "LoadBalancers": [
           {

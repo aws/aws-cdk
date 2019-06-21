@@ -4,7 +4,7 @@ import ec2 = require('@aws-cdk/aws-ec2');
 import elbv2 = require('@aws-cdk/aws-elasticloadbalancingv2');
 import iam = require('@aws-cdk/aws-iam');
 import cloudmap = require('@aws-cdk/aws-servicediscovery');
-import { Construct, Duration, Fn, IResource, Lazy, PhysicalName, Resource, Stack } from '@aws-cdk/cdk';
+import { Construct, Duration, Fn, IResolvable, IResource, Lazy, PhysicalName, Resource, Stack } from '@aws-cdk/cdk';
 import { NetworkMode, TaskDefinition } from '../base/task-definition';
 import { ICluster } from '../cluster';
 import { CfnService } from '../ecs.generated';
@@ -63,7 +63,7 @@ export interface BaseServiceProps {
   /**
    * Time after startup to ignore unhealthy load balancer checks.
    *
-   * @default ??? FIXME
+   * @default - defaults to 60 seconds if at least one load balancer is in-use and it is not already set
    */
   readonly healthCheckGracePeriod?: Duration;
 
@@ -72,7 +72,7 @@ export interface BaseServiceProps {
    *
    * @default - AWS Cloud Map service discovery is not enabled.
    */
-  readonly serviceDiscoveryOptions?: ServiceDiscoveryOptions;
+  readonly cloudMapOptions?: CloudMapOptions;
 
   /**
    * Whether the new long ARN format has been enabled on ECS services.
@@ -150,7 +150,7 @@ export abstract class BaseService extends Resource
         maximumPercent: props.maximumPercent || 200,
         minimumHealthyPercent: props.minimumHealthyPercent === undefined ? 50 : props.minimumHealthyPercent
       },
-      healthCheckGracePeriodSeconds: props.healthCheckGracePeriod && props.healthCheckGracePeriod.toSeconds(),
+      healthCheckGracePeriodSeconds: this.evaluateHealthGracePeriod(props.healthCheckGracePeriod),
       /* role: never specified, supplanted by Service Linked Role */
       networkConfiguration: Lazy.anyValue({ produce: () => this.networkConfiguration }),
       serviceRegistries: Lazy.anyValue({ produce: () => this.serviceRegistries }),
@@ -178,8 +178,8 @@ export abstract class BaseService extends Resource
 
     this.cluster = props.cluster;
 
-    if (props.serviceDiscoveryOptions) {
-      this.enableServiceDiscovery(props.serviceDiscoveryOptions);
+    if (props.cloudMapOptions) {
+      this.enableCloudMap(props.cloudMapOptions);
     }
   }
 
@@ -195,7 +195,7 @@ export abstract class BaseService extends Resource
     // Open up security groups. For dynamic port mapping, we won't know the port range
     // in advance so we need to open up all ports.
     const port = this.taskDefinition.defaultContainer!.ingressPort;
-    const portRange = port === 0 ? EPHEMERAL_PORT_RANGE : new ec2.TcpPort(port);
+    const portRange = port === 0 ? EPHEMERAL_PORT_RANGE : ec2.Port.tcp(port);
     targetGroup.registerConnectable(this, portRange);
 
     return ret;
@@ -333,7 +333,7 @@ export abstract class BaseService extends Resource
   /**
    * Enable CloudMap service discovery for the service
    */
-  private enableServiceDiscovery(options: ServiceDiscoveryOptions): cloudmap.Service {
+  private enableCloudMap(options: CloudMapOptions): cloudmap.Service {
     const sdNamespace = this.cluster.defaultNamespace;
     if (sdNamespace === undefined) {
       throw new Error("Cannot enable service discovery if a Cloudmap Namespace has not been created in the cluster.");
@@ -389,17 +389,29 @@ export abstract class BaseService extends Resource
 
     return cloudmapService;
   }
+
+  /**
+   *  Return the default grace period when load balancers are configured and
+   *  healthCheckGracePeriod is not already set
+   */
+  private evaluateHealthGracePeriod(providedHealthCheckGracePeriod?: Duration): IResolvable {
+    return Lazy.anyValue({
+      produce: () => providedHealthCheckGracePeriod !== undefined ? providedHealthCheckGracePeriod.toSeconds() :
+                     this.loadBalancers.length > 0 ? 60 :
+                     undefined
+    });
+  }
 }
 
 /**
  * The port range to open up for dynamic port mapping
  */
-const EPHEMERAL_PORT_RANGE = new ec2.TcpPortRange(32768, 65535);
+const EPHEMERAL_PORT_RANGE = ec2.Port.tcpRange(32768, 65535);
 
 /**
- * Options for enabling service discovery on an ECS service
+ * Options for enabling CloudMap on an ECS service
  */
-export interface ServiceDiscoveryOptions {
+export interface CloudMapOptions {
   /**
    * Name of the cloudmap service to attach to the ECS Service
    *

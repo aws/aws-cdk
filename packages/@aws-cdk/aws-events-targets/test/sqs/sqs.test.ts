@@ -1,7 +1,7 @@
 import { expect, haveResource } from '@aws-cdk/assert';
 import events = require('@aws-cdk/aws-events');
 import sqs = require('@aws-cdk/aws-sqs');
-import { Stack } from '@aws-cdk/cdk';
+import { Duration, Stack } from '@aws-cdk/cdk';
 import targets = require('../../lib');
 
 test('sns topic as an event rule target', () => {
@@ -9,7 +9,7 @@ test('sns topic as an event rule target', () => {
   const stack = new Stack();
   const queue = new sqs.Queue(stack, 'MyQueue');
   const rule = new events.Rule(stack, 'MyRule', {
-    schedule: events.Schedule.rate(1, events.TimeUnit.HOUR),
+    schedule: events.Schedule.rate(Duration.hours(1)),
   });
 
   // WHEN
@@ -75,7 +75,7 @@ test('multiple uses of a queue as a target results in multi policy statement bec
   // WHEN
   for (let i = 0; i < 2; ++i) {
     const rule = new events.Rule(stack, `Rule${i}`, {
-      schedule: events.Schedule.rate(1, events.TimeUnit.HOUR),
+      schedule: events.Schedule.rate(Duration.hours(1)),
     });
     rule.addTarget(new targets.SqsQueue(queue));
   }

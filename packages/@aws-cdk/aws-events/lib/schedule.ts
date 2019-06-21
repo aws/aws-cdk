@@ -1,3 +1,5 @@
+import { Duration } from "@aws-cdk/cdk";
+
 /**
  * Schedule for scheduled event rules
  */
@@ -14,10 +16,15 @@ export abstract class Schedule {
   /**
    * Construct a schedule from an interval and a time unit
    */
-  public static rate(interval: number, unit: TimeUnit): Schedule {
-    const unitStr = interval !== 1 ? `${unit}s` : unit;
+  public static rate(duration: Duration): Schedule {
+    if (duration.toSeconds() === 0) {
+      throw new Error('Duration cannot be 0');
+    }
 
-    return new LiteralSchedule(`rate(${interval} ${unitStr})`);
+    let rate = maybeRate(duration.toDays({ integral: false }), 'day');
+    if (rate === undefined) { rate = maybeRate(duration.toHours({ integral: false }), 'hour'); }
+    if (rate === undefined) { rate = makeRate(duration.toMinutes({ integral: true }), 'minute'); }
+    return new LiteralSchedule(rate);
   }
 
   /**
@@ -129,4 +136,19 @@ class LiteralSchedule extends Schedule {
 
 function fallback<T>(x: T | undefined, def: T): T {
   return x === undefined ? def : x;
+}
+
+/**
+ * Return the rate if the rate is whole number
+ */
+function maybeRate(interval: number, singular: string) {
+  if (interval === 0 || !Number.isInteger(interval)) { return undefined; }
+  return makeRate(interval, singular);
+}
+
+/**
+ * Return 'rate(${interval} ${singular}(s))` for the interval
+ */
+function makeRate(interval: number, singular: string) {
+  return interval === 1 ? `rate(1 ${singular})` : `rate(${interval} ${singular}s)`;
 }

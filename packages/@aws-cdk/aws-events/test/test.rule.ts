@@ -4,7 +4,7 @@ import { ServicePrincipal } from '@aws-cdk/aws-iam';
 import cdk = require('@aws-cdk/cdk');
 import { Stack } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
-import { EventField, IRule, IRuleTarget, RuleTargetInput, Schedule, TimeUnit } from '../lib';
+import { EventField, IRule, IRuleTarget, RuleTargetInput, Schedule } from '../lib';
 import { Rule } from '../lib/rule';
 
 // tslint:disable:object-literal-key-quotes
@@ -14,7 +14,7 @@ export = {
     const stack = new cdk.Stack();
 
     new Rule(stack, 'MyRule', {
-        schedule: Schedule.rate(10, TimeUnit.MINUTE),
+      schedule: Schedule.rate(cdk.Duration.minutes(10)),
     });
 
     expect(stack).toMatch({
@@ -38,7 +38,7 @@ export = {
     // WHEN
     new Rule(stack, 'MyRule', {
       ruleName: cdk.PhysicalName.of('PhysicalName'),
-      schedule: Schedule.rate(10, TimeUnit.MINUTE),
+      schedule: Schedule.rate(cdk.Duration.minutes(10)),
     });
 
     // THEN
@@ -174,7 +174,7 @@ export = {
 
     const rule = new Rule(stack, 'EventRule', {
       targets: [ t1 ],
-      schedule: Schedule.rate(5, TimeUnit.MINUTE),
+      schedule: Schedule.rate(cdk.Duration.minutes(5)),
     });
 
     rule.addTarget(t2);
@@ -216,7 +216,7 @@ export = {
     const stack = new cdk.Stack();
 
     const rule = new Rule(stack, 'EventRule', {
-      schedule: Schedule.rate(1, TimeUnit.MINUTE),
+      schedule: Schedule.rate(cdk.Duration.minutes(1)),
     });
 
     // a plain string should just be stringified (i.e. double quotes added and escaped)
@@ -301,7 +301,7 @@ export = {
     const stack = new cdk.Stack();
 
     const rule = new Rule(stack, 'EventRule', {
-      schedule: Schedule.rate(1, TimeUnit.MINUTE),
+      schedule: Schedule.rate(cdk.Duration.minutes(1)),
     });
 
     const role = new iam.Role(stack, 'SomeRole', {

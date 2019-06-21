@@ -598,11 +598,17 @@ export = {
             ContainerPort: 808,
             LoadBalancerName: { Ref: "LB8A12904C" }
           }
-        ],
+        ]
+      }));
+
+      expect(stack).to(haveResource('AWS::ECS::Service', {
+        // if any load balancer is configured and healthCheckGracePeriodSeconds is not
+        // set, then it should default to 60 seconds.
+        HealthCheckGracePeriodSeconds: 60
       }));
 
       test.done();
-    },
+    }
   },
 
   'When enabling service discovery': {
@@ -626,7 +632,7 @@ export = {
         new ecs.Ec2Service(stack, 'Service', {
           cluster,
           taskDefinition,
-          serviceDiscoveryOptions: {
+          cloudMapOptions: {
             name: 'myApp',
           }
         });
@@ -657,7 +663,7 @@ export = {
         new ecs.Ec2Service(stack, 'Service', {
           cluster,
           taskDefinition,
-          serviceDiscoveryOptions: {
+          cloudMapOptions: {
             name: 'myApp',
           }
         });
@@ -690,7 +696,7 @@ export = {
       new ecs.Ec2Service(stack, 'Service', {
         cluster,
         taskDefinition,
-        serviceDiscoveryOptions: {
+        cloudMapOptions: {
           name: 'myApp',
         }
       });
@@ -767,7 +773,7 @@ export = {
       new ecs.Ec2Service(stack, 'Service', {
         cluster,
         taskDefinition,
-        serviceDiscoveryOptions: {
+        cloudMapOptions: {
           name: 'myApp',
         }
       });
@@ -843,7 +849,7 @@ export = {
         new ecs.Ec2Service(stack, 'Service', {
           cluster,
           taskDefinition,
-          serviceDiscoveryOptions: {
+          cloudMapOptions: {
             name: 'myApp',
             dnsRecordType: cloudmap.DnsRecordType.A
           }
@@ -878,7 +884,7 @@ export = {
       new ecs.Ec2Service(stack, 'Service', {
         cluster,
         taskDefinition,
-        serviceDiscoveryOptions: {
+        cloudMapOptions: {
           name: 'myApp',
         }
       });
@@ -953,7 +959,7 @@ export = {
       new ecs.Ec2Service(stack, 'Service', {
         cluster,
         taskDefinition,
-        serviceDiscoveryOptions: {
+        cloudMapOptions: {
           name: 'myApp',
           dnsRecordType: cloudmap.DnsRecordType.SRV
         }

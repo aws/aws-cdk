@@ -90,10 +90,10 @@ export abstract class DatabaseInstanceBase extends Resource implements IDatabase
    */
   public static fromDatabaseInstanceAttributes(scope: Construct, id: string, attrs: DatabaseInstanceAttributes): IDatabaseInstance {
     class Import extends DatabaseInstanceBase implements IDatabaseInstance {
-      public readonly defaultPortRange = new ec2.TcpPort(attrs.port);
+      public readonly defaultPort = ec2.Port.tcp(attrs.port);
       public readonly connections = new ec2.Connections({
         securityGroups: [ec2.SecurityGroup.fromSecurityGroupId(this, 'SecurityGroup', attrs.securityGroupId)],
-        defaultPortRange: this.defaultPortRange
+        defaultPort: this.defaultPort
       });
       public readonly instanceIdentifier = attrs.instanceIdentifier;
       public readonly dbInstanceEndpointAddress = attrs.instanceEndpointAddress;
@@ -753,7 +753,7 @@ export class DatabaseInstance extends DatabaseInstanceSource implements IDatabas
 
     this.connections = new ec2.Connections({
       securityGroups: [this.securityGroup],
-      defaultPortRange: new ec2.TcpPort(this.instanceEndpoint.port)
+      defaultPort: ec2.Port.tcp(this.instanceEndpoint.port)
     });
 
     this.setLogRetention();
@@ -847,7 +847,7 @@ export class DatabaseInstanceFromSnapshot extends DatabaseInstanceSource impleme
 
     this.connections = new ec2.Connections({
       securityGroups: [this.securityGroup],
-      defaultPortRange: new ec2.TcpPort(this.instanceEndpoint.port)
+      defaultPort: ec2.Port.tcp(this.instanceEndpoint.port)
     });
 
     this.setLogRetention();
@@ -918,7 +918,7 @@ export class DatabaseInstanceReadReplica extends DatabaseInstanceNew implements 
 
     this.connections = new ec2.Connections({
       securityGroups: [this.securityGroup],
-      defaultPortRange: new ec2.TcpPort(this.instanceEndpoint.port)
+      defaultPort: ec2.Port.tcp(this.instanceEndpoint.port)
     });
 
     this.setLogRetention();

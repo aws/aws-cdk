@@ -510,7 +510,7 @@
         "SecurityGroupIngress": [
           {
             "CidrIp": "0.0.0.0/0",
-            "Description": "from 0.0.0.0/0:ICMP PING",
+            "Description": "from 0.0.0.0/0:ICMP Type 8",
             "FromPort": 8,
             "IpProtocol": "icmp",
             "ToPort": -1
