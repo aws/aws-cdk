@@ -39,6 +39,8 @@ export class ConcreteDependable implements IDependable {
   }
 }
 
+const DEPENDABLE_SYMBOL = Symbol.for('@aws-cdk/core.DependableTrait');
+
 /**
  * Trait for IDependable
  *
@@ -68,21 +70,19 @@ export abstract class DependableTrait {
     // I would also like to reference classes (to cut down on the list of objects
     // we need to manage), but we can't do that either since jsii doesn't have the
     // concept of a class reference.
-    DependableTrait.traitMap.set(instance, trait);
+    (instance as any)[DEPENDABLE_SYMBOL] = trait;
   }
 
   /**
    * Return the matching DependableTrait for the given class instance.
    */
   public static get(instance: IDependable): DependableTrait {
-    const ret = DependableTrait.traitMap.get(instance);
+    const ret = (instance as any)[DEPENDABLE_SYMBOL];
     if (!ret) {
       throw new Error(`${instance} does not implement DependableTrait`);
     }
     return ret;
   }
-
-  private static traitMap = new WeakMap<IDependable, DependableTrait>();
 
   /**
    * The set of constructs that form the root of this dependable

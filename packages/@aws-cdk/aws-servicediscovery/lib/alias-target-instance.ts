@@ -70,7 +70,7 @@ export class AliasTargetInstance extends InstanceBase {
     });
 
     this.service = props.service;
-    this.instanceId = resource.refAsString;
+    this.instanceId = resource.ref;
     this.dnsName = props.dnsName;
   }
 }

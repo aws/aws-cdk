@@ -106,7 +106,7 @@ export class LifecycleHook extends Resource implements ILifecycleHook {
       autoScalingGroupName: props.autoScalingGroup.autoScalingGroupName,
       defaultResult: props.defaultResult,
       heartbeatTimeout: props.heartbeatTimeout && props.heartbeatTimeout.toSeconds(),
-      lifecycleHookName: this.physicalName.value,
+      lifecycleHookName: this.physicalName,
       lifecycleTransition: props.lifecycleTransition,
       notificationMetadata: props.notificationMetadata,
       notificationTargetArn: targetProps.notificationTargetArn,
@@ -118,7 +118,7 @@ export class LifecycleHook extends Resource implements ILifecycleHook {
     // lifecycle hook.
     resource.node.addDependency(this.role);
 
-    this.lifecycleHookName = resource.refAsString;
+    this.lifecycleHookName = resource.ref;
   }
 }
 

@@ -189,7 +189,7 @@ export interface SecurityGroupProps {
    * @default If you don't specify a GroupName, AWS CloudFormation generates a
    * unique physical ID and uses that ID for the group name.
    */
-  readonly groupName?: PhysicalName;
+  readonly securityGroupName?: PhysicalName;
 
   /**
    * A description of the security group.
@@ -264,7 +264,7 @@ export class SecurityGroup extends SecurityGroupBase {
 
   constructor(scope: Construct, id: string, props: SecurityGroupProps) {
     super(scope, id, {
-      physicalName: props.groupName
+      physicalName: props.securityGroupName
     });
 
     const groupDescription = props.description || this.node.path;
@@ -272,7 +272,7 @@ export class SecurityGroup extends SecurityGroupBase {
     this.allowAllOutbound = props.allowAllOutbound !== false;
 
     this.securityGroup = new CfnSecurityGroup(this, 'Resource', {
-      groupName: this.physicalName.value,
+      groupName: this.physicalName,
       groupDescription,
       securityGroupIngress: Lazy.anyValue({ produce: () => this.directIngressRules }),
       securityGroupEgress: Lazy.anyValue({ produce: () => this.directEgressRules }),
@@ -281,7 +281,7 @@ export class SecurityGroup extends SecurityGroupBase {
 
     this.securityGroupId = this.securityGroup.attrGroupId;
     this.securityGroupVpcId = this.securityGroup.attrVpcId;
-    this.securityGroupName = this.securityGroup.refAsString;
+    this.securityGroupName = this.securityGroup.ref;
 
     this.addDefaultEgressRule();
   }

@@ -801,7 +801,7 @@ export class Vpc extends VpcBase {
     const maxAZs = props.maxAZs !== undefined ? props.maxAZs : 3;
     this.availabilityZones = this.availabilityZones.slice(0, maxAZs);
 
-    this.vpcId = this.resource.refAsString;
+    this.vpcId = this.resource.ref;
 
     this.subnetConfiguration = ifUndefined(props.subnetConfiguration, Vpc.DEFAULT_SUBNETS);
     // subnetConfiguration and natGateways must be set before calling createSubnets
@@ -816,12 +816,12 @@ export class Vpc extends VpcBase {
       });
       this._internetConnectivityEstablished.add(igw);
       const att = new CfnVPCGatewayAttachment(this, 'VPCGW', {
-        internetGatewayId: igw.refAsString,
-        vpcId: this.resource.refAsString
+        internetGatewayId: igw.ref,
+        vpcId: this.resource.ref
       });
 
       (this.publicSubnets as PublicSubnet[]).forEach(publicSubnet => {
-        publicSubnet.addDefaultInternetRoute(igw.refAsString, att);
+        publicSubnet.addDefaultInternetRoute(igw.ref, att);
       });
 
       // if gateways are needed create them
@@ -850,10 +850,10 @@ export class Vpc extends VpcBase {
 
       const attachment = new CfnVPCGatewayAttachment(this, 'VPCVPNGW', {
         vpcId: this.vpcId,
-        vpnGatewayId: vpnGateway.refAsString,
+        vpnGatewayId: vpnGateway.ref,
       });
 
-      this.vpnGatewayId = vpnGateway.refAsString;
+      this.vpnGatewayId = vpnGateway.ref;
 
       // Propagate routes on route tables associated with the right subnets
       const vpnRoutePropagation = props.vpnRoutePropagation || [{ subnetType: SubnetType.PRIVATE }];
@@ -939,7 +939,7 @@ export class Vpc extends VpcBase {
     natSubnets = natSubnets.slice(0, natCount);
     for (const sub of natSubnets) {
       const gateway = sub.addNatGateway();
-      this.natGatewayByAZ[sub.availabilityZone] = gateway.refAsString;
+      this.natGatewayByAZ[sub.availabilityZone] = gateway.ref;
       this.natDependencies.push(gateway);
     }
   }
@@ -1123,7 +1123,7 @@ export class Subnet extends Resource implements ISubnet {
       availabilityZone: props.availabilityZone,
       mapPublicIpOnLaunch: props.mapPublicIpOnLaunch,
     });
-    this.subnetId = subnet.refAsString;
+    this.subnetId = subnet.ref;
     this.subnetVpcId = subnet.attrVpcId;
     this.subnetAvailabilityZone = subnet.attrAvailabilityZone;
     this.subnetIpv6CidrBlocks = subnet.attrIpv6CidrBlocks;
@@ -1132,12 +1132,12 @@ export class Subnet extends Resource implements ISubnet {
     const table = new CfnRouteTable(this, 'RouteTable', {
       vpcId: props.vpcId,
     });
-    this.routeTable = { routeTableId: table.refAsString };
+    this.routeTable = { routeTableId: table.ref };
 
     // Associate the public route table for this subnet, to this subnet
     new CfnSubnetRouteTableAssociation(this, 'RouteTableAssociation', {
       subnetId: this.subnetId,
-      routeTableId: table.refAsString
+      routeTableId: table.ref
     });
 
     this.internetConnectivityEstablished = this._internetConnectivityEstablished;

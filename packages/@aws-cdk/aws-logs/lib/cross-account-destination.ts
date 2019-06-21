@@ -1,6 +1,6 @@
 import iam = require('@aws-cdk/aws-iam');
 import cdk = require('@aws-cdk/cdk');
-import { Construct, Lazy, PhysicalName, ResourceIdentifiers, Stack } from '@aws-cdk/cdk';
+import { Construct, Lazy, PhysicalName, Stack } from '@aws-cdk/cdk';
 import { ILogGroup } from './log-group';
 import { CfnDestination } from './logs.generated';
 import { ILogSubscriptionDestination, LogSubscriptionDestinationConfig } from './subscription-filter';
@@ -73,20 +73,20 @@ export class CrossAccountDestination extends cdk.Resource implements ILogSubscri
     });
 
     this.resource = new CfnDestination(this, 'Resource', {
-      destinationName: this.physicalName.value!,
+      destinationName: this.physicalName!,
       // Must be stringified policy
       destinationPolicy: this.lazyStringifiedPolicyDocument(),
       roleArn: props.role.roleArn,
       targetArn: props.targetArn
     });
 
-    const resourceIdentifiers = new ResourceIdentifiers(this, {
+    const resourceIdentifiers = this.getCrossEnvironmentAttributes({
       arn: this.resource.attrArn,
-      name: this.resource.refAsString,
+      name: this.resource.ref,
       arnComponents: {
         service: 'logs',
         resource: 'destination',
-        resourceName: this.physicalName.value,
+        resourceName: this.physicalName,
         sep: ':',
       },
     });

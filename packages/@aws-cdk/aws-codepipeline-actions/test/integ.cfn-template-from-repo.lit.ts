@@ -9,7 +9,7 @@ const stack = new cdk.Stack(app, 'aws-cdk-codepipeline-cloudformation');
 /// !show
 // Source stage: read from repository
 const repo = new codecommit.Repository(stack, 'TemplateRepo', {
-  repositoryName: cdk.PhysicalName.of('template-repo'),
+  repositoryName: 'template-repo',
 });
 const sourceOutput = new codepipeline.Artifact('SourceArtifact');
 const source = new cpactions.CodeCommitSourceAction({
