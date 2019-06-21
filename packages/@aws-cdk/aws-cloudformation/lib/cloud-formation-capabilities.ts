@@ -28,4 +28,13 @@ export enum CloudFormationCapabilities {
    * @link https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-iam-template.html#using-iam-capabilities
    */
   NamedIAM = 'CAPABILITY_NAMED_IAM',
+
+  /**
+   * Capability to run CloudFormation macros
+   *
+   * Pass this capability if your template includes macros, for example AWS::Include or AWS::Serverless.
+   *
+   * @link https://docs.aws.amazon.com/AWSCloudFormation/latest/APIReference/API_CreateStack.html
+   */
+  AutoExpand = 'CAPABILITY_AUTO_EXPAND'
 }
