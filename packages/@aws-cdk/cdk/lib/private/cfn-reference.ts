@@ -1,4 +1,5 @@
 import { Reference } from "../reference";
+import { makeUniqueId } from './uniqueid';
 
 const CFN_REFERENCE_SYMBOL = Symbol.for('@aws-cdk/cdk.CfnReference');
 
@@ -122,7 +123,7 @@ export class CfnReference extends Reference {
     if (this.producingStack && this.producingStack !== consumingStack && !this.replacementTokens.has(consumingStack)) {
       // We're trying to resolve a cross-stack reference
       consumingStack.addDependency(this.producingStack, `${consumingConstruct.node.path} -> ${this.target.node.path}.${this.originalDisplayName}`);
-      this.replacementTokens.set(consumingStack, this.exportValue(this, consumingStack));
+      this.replacementTokens.set(consumingStack, this.exportValue(consumingStack));
     }
   }
 
@@ -140,7 +141,7 @@ export class CfnReference extends Reference {
    *
    * Works by mutating the producing stack in-place.
    */
-  private exportValue(tokenValue: Token, consumingStack: Stack): IResolvable {
+  private exportValue(consumingStack: Stack): IResolvable {
     const producingStack = this.producingStack!;
 
     if (producingStack.environment !== consumingStack.environment) {
@@ -159,16 +160,25 @@ export class CfnReference extends Reference {
     }
 
     // Ensure a singleton CfnOutput for this value
-    const resolved = producingStack.resolve(tokenValue);
+    const resolved = producingStack.resolve(this);
     const id = 'Output' + JSON.stringify(resolved);
+    const exportName = this.generateExportName(stackExports, id);
     let output = stackExports.node.tryFindChild(id) as CfnOutput;
     if (!output) {
-      output = new CfnOutput(stackExports, id, { value: tokenValue });
+      output = new CfnOutput(stackExports, id, { value: Token.asString(this), exportName });
     }
 
     // We want to return an actual FnImportValue Token here, but Fn.importValue() returns a 'string',
     // so construct one in-place.
-    return new Intrinsic({ 'Fn::ImportValue': output.obtainExportName() });
+    return new Intrinsic({ 'Fn::ImportValue': exportName });
+  }
+
+  private generateExportName(stackExports: Construct, id: string) {
+    const stack = Stack.of(stackExports);
+    const components = [...stackExports.node.scopes.slice(2).map(c => c.node.id), id];
+    const prefix = stack.stackName ? stack.stackName + ':' : '';
+    const exportName = prefix + makeUniqueId(components);
+    return exportName;
   }
 }
 

@@ -3,7 +3,7 @@ import { Intrinsic } from "./private/intrinsic";
 /**
  * Properties for a Dynamic Reference
  */
-export interface DynamicReferenceProps {
+export interface CfnDynamicReferenceProps {
   /**
    * The service to retrieve the dynamic reference from
    */

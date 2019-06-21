@@ -1,7 +1,7 @@
 import { CfnElement } from './cfn-element';
 import { Construct } from './construct';
 
-export interface IncludeProps {
+export interface CfnIncludeProps {
   /**
    * The CloudFormation template to include in the stack (as is).
    */
@@ -12,7 +12,7 @@ export interface IncludeProps {
  * Includes a CloudFormation template into a stack. All elements of the template will be merged into
  * the current stack, together with any elements created programmatically.
  */
-export class Include extends CfnElement {
+export class CfnInclude extends CfnElement {
   /**
    * The included template.
    */
@@ -26,7 +26,7 @@ export class Include extends CfnElement {
    * @param id The ID of this construct
    * @param template The template to adopt.
    */
-  constructor(scope: Construct, id: string, props: IncludeProps) {
+  constructor(scope: Construct, id: string, props: CfnIncludeProps) {
     super(scope, id);
     this.template = props.template;
   }

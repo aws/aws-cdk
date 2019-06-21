@@ -1,5 +1,6 @@
 // tslint:disable-next-line:no-var-requires
 import crypto = require('crypto');
+import { unresolved } from './encoding';
 
 /**
  * Resources with this ID are hidden from humans
@@ -36,7 +37,7 @@ export function makeUniqueId(components: string[]) {
   }
 
   // Lazy require in order to break a module dependency cycle
-  const unresolvedTokens = components.filter(c => require('./private/encoding').unresolved(c));
+  const unresolvedTokens = components.filter(c => unresolved(c));
   if (unresolvedTokens.length > 0) {
     throw new Error(`ID components may not include unresolved tokens: ${unresolvedTokens.join(',')}`);
   }

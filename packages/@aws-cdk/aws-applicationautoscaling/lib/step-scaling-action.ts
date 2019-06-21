@@ -93,7 +93,7 @@ export class StepScalingAction extends cdk.Construct {
       } as CfnScalingPolicy.StepScalingPolicyConfigurationProperty
     });
 
-    this.scalingPolicyArn = resource.refAsString;
+    this.scalingPolicyArn = resource.ref;
   }
 
   /**

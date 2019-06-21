@@ -1,6 +1,5 @@
-import { ArnComponents } from '../arn';
 import { IResolvable, IResolveContext } from '../resolvable';
-import { IResource } from '../resource';
+import { Resource } from '../resource';
 import { Stack } from '../stack';
 import { captureStackTrace } from '../stack-trace';
 
@@ -8,10 +7,9 @@ import { captureStackTrace } from '../stack-trace';
  * A Token that represents a reference that spans accounts and/or regions,
  * and so requires the resources to have physical names.
  * You should never need to interact with these directly,
- * instead use the {@link ResourceIdentifiers} class.
- * This class is private to the @aws-cdk/cdk package.
+ * instead use the `resource.crossEnvironmentTokens` method.
  */
-export abstract class CrossEnvironmentToken implements IResolvable {
+export class CrossEnvironmentAttribute implements IResolvable {
   public readonly creationStack: string[];
 
   /**
@@ -20,9 +18,10 @@ export abstract class CrossEnvironmentToken implements IResolvable {
    * @param resource the scope this reference is mastered in. Used to determine the owning Stack
    * @param displayName a short name to be used in Token display
    */
-  protected constructor(private readonly regularValue: string, private readonly crossEnvironmentValue: any,
-                        private readonly resource: IResource) {
-    this.resource = resource;
+  constructor(
+    private readonly regularValue: string,
+    private readonly crossEnvironmentValue: string,
+    private readonly resource: Resource) {
     this.creationStack = captureStackTrace();
   }
 
@@ -31,22 +30,10 @@ export abstract class CrossEnvironmentToken implements IResolvable {
     const owningStack = Stack.of(this.resource);
 
     if (consumingStack.environment !== owningStack.environment) {
-      this.resource.physicalName._resolveCrossEnvironment(this.resource);
+      this.resource._enableCrossEnvironment();
       return this.crossEnvironmentValue;
     } else {
       return this.regularValue;
     }
-  }
-}
-
-export class CrossEnvironmentPhysicalArnToken extends CrossEnvironmentToken {
-  constructor(regularValue: string, arnComponents: ArnComponents, resource: IResource) {
-    super(regularValue, Stack.of(resource).formatArn(arnComponents), resource);
-  }
-}
-
-export class CrossEnvironmentPhysicalNameToken extends CrossEnvironmentToken {
-  constructor(regularValue: string, resource: IResource) {
-    super(regularValue, resource.physicalName.value, resource);
   }
 }

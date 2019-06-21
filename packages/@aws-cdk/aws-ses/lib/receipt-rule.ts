@@ -122,7 +122,7 @@ export class ReceiptRule extends Resource implements IReceiptRule {
       rule: {
         actions: Lazy.anyValue({ produce: () => this.getRenderedActions() }),
         enabled: props.enabled === undefined ? true : props.enabled,
-        name: this.physicalName.value,
+        name: this.physicalName,
         recipients: props.recipients,
         scanEnabled: props.scanEnabled,
         tlsPolicy: props.tlsPolicy
@@ -130,7 +130,7 @@ export class ReceiptRule extends Resource implements IReceiptRule {
       ruleSetName: props.ruleSet.receiptRuleSetName
     });
 
-    this.receiptRuleName = resource.refAsString;
+    this.receiptRuleName = resource.ref;
 
     if (props.actions) {
       props.actions.forEach(action => this.addAction(action));

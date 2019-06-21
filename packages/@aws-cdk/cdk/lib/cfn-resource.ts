@@ -3,48 +3,32 @@ import { CfnCondition } from './cfn-condition';
 // import required to be here, otherwise causes a cycle when running the generated JavaScript
 // tslint:disable-next-line:ordered-imports
 import { CfnRefElement } from './cfn-element';
+import { CfnCreationPolicy, CfnDeletionPolicy, CfnUpdatePolicy } from './cfn-resource-policy';
 import { Construct, IConstruct } from './construct';
 import { CfnReference } from './private/cfn-reference';
 import { RemovalPolicy, RemovalPolicyOptions } from './removal-policy';
 import { IResolvable } from './resolvable';
-import { CreationPolicy, DeletionPolicy, UpdatePolicy } from './resource-policy';
 import { TagManager } from './tag-manager';
 import { capitalizePropertyNames, ignoreEmpty, PostResolveToken } from './util';
 
 export interface CfnResourceProps {
   /**
-   * CloudFormation resource type.
+   * CloudFormation resource type (e.g. `AWS::S3::Bucket`).
    */
   readonly type: string;
 
   /**
-   * CloudFormation properties.
+   * Resource properties.
    *
    * @default - No resource properties.
    */
-  readonly properties?: any;
+  readonly properties?: { [name: string]: any };
 }
 
 /**
  * Represents a CloudFormation resource.
  */
 export class CfnResource extends CfnRefElement {
-  /**
-   * A decoration used to create a CloudFormation attribute property.
-   * @param customName Custom name for the attribute (default is the name of the property)
-   * NOTE: we return "any" here to satistfy jsii, which doesn't support lambdas.
-   */
-  public static attribute(customName?: string): any {
-    return (prototype: any, key: string) => {
-      const name = customName || key;
-      Object.defineProperty(prototype, key, {
-        get() {
-          return (this as any).getAtt(name);
-        }
-      });
-    };
-  }
-
   /**
    * Check whether the given construct is a CfnResource
    */
@@ -116,11 +100,11 @@ export class CfnResource extends CfnRefElement {
 
     switch (policy) {
       case RemovalPolicy.Destroy:
-        deletionPolicy = DeletionPolicy.Delete;
+        deletionPolicy = CfnDeletionPolicy.Delete;
         break;
 
       case RemovalPolicy.Retain:
-        deletionPolicy = DeletionPolicy.Retain;
+        deletionPolicy = CfnDeletionPolicy.Retain;
         break;
 
       default:
@@ -268,7 +252,7 @@ export class CfnResource extends CfnRefElement {
         .map(r => r.logicalId);
     }
 
-    function renderCreationPolicy(policy: CreationPolicy | undefined): any {
+    function renderCreationPolicy(policy: CfnCreationPolicy | undefined): any {
       if (!policy) { return undefined; }
       const result: any = { ...policy };
       if (policy.resourceSignal && policy.resourceSignal.timeout) {
@@ -324,7 +308,7 @@ export interface IResourceOptions {
    * resource, you can use the cfn-signal helper script or SignalResource API. AWS CloudFormation publishes valid signals
    * to the stack events so that you track the number of signals sent.
    */
-  creationPolicy?: CreationPolicy;
+  creationPolicy?: CfnCreationPolicy;
 
   /**
    * With the DeletionPolicy attribute you can preserve or (in some cases) backup a resource when its stack is deleted.
@@ -332,20 +316,20 @@ export interface IResourceOptions {
    * attribute, AWS CloudFormation deletes the resource by default. Note that this capability also applies to update operations
    * that lead to resources being removed.
    */
-  deletionPolicy?: DeletionPolicy;
+  deletionPolicy?: CfnDeletionPolicy;
 
   /**
    * Use the UpdatePolicy attribute to specify how AWS CloudFormation handles updates to the AWS::AutoScaling::AutoScalingGroup
    * resource. AWS CloudFormation invokes one of three update policies depending on the type of change you make or whether a
    * scheduled action is associated with the Auto Scaling group.
    */
-  updatePolicy?: UpdatePolicy;
+  updatePolicy?: CfnUpdatePolicy;
 
   /**
    * Use the UpdateReplacePolicy attribute to retain or (in some cases) backup the existing physical instance of a resource
    * when it is replaced during a stack update operation.
    */
-  updateReplacePolicy?: DeletionPolicy;
+  updateReplacePolicy?: CfnDeletionPolicy;
 
   /**
    * Metadata associated with the CloudFormation resource. This is not the same as the construct metadata which can be added
@@ -358,7 +342,7 @@ export interface IResourceOptions {
  * Merges `source` into `target`, overriding any existing values.
  * `null`s will cause a value to be deleted.
  */
-export function deepMerge(target: any, ...sources: any[]) {
+function deepMerge(target: any, ...sources: any[]) {
   for (const source of sources) {
     if (typeof(source) !== 'object' || typeof(target) !== 'object') {
       throw new Error(`Invalid usage. Both source (${JSON.stringify(source)}) and target (${JSON.stringify(target)}) must be objects`);

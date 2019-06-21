@@ -114,7 +114,7 @@ export class IpInstance extends InstanceBase {
     });
 
     this.service = props.service;
-    this.instanceId = resource.refAsString;
+    this.instanceId = resource.ref;
     this.ipv4 = props.ipv4 || '';
     this.ipv6 = props.ipv6 || '';
     this.port = port;

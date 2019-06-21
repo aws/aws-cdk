@@ -1,6 +1,6 @@
 import iam = require('@aws-cdk/aws-iam');
 import kms = require('@aws-cdk/aws-kms');
-import { Construct, IResource, PhysicalName, Resource, ResourceIdentifiers, Stack } from '@aws-cdk/cdk';
+import { Construct, IResource, PhysicalName, Resource, Stack } from '@aws-cdk/cdk';
 import { CfnStream } from './kinesis.generated';
 
 export interface IStream extends IResource {
@@ -254,19 +254,19 @@ export class Stream extends StreamBase {
     const { streamEncryption, encryptionKey } = this.parseEncryption(props);
 
     this.stream = new CfnStream(this, "Resource", {
-      name: this.physicalName.value,
+      name: this.physicalName,
       retentionPeriodHours,
       shardCount,
       streamEncryption
     });
 
-    const resourceIdentifiers = new ResourceIdentifiers(this, {
+    const resourceIdentifiers = this.getCrossEnvironmentAttributes({
       arn: this.stream.attrArn,
-      name: this.stream.refAsString,
+      name: this.stream.ref,
       arnComponents: {
         service: 'kinesis',
         resource: 'stream',
-        resourceName: this.physicalName.value,
+        resourceName: this.physicalName,
       },
     });
     this.streamArn = resourceIdentifiers.arn;

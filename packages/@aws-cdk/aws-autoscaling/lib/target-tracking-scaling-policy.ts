@@ -135,7 +135,7 @@ export class TargetTrackingScalingPolicy extends cdk.Construct {
       }
     });
 
-    this.scalingPolicyArn = this.resource.refAsString;
+    this.scalingPolicyArn = this.resource.ref;
   }
 }
 

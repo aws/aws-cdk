@@ -35,4 +35,4 @@ new cloudfront.CloudFrontWebDistribution(stack, 'MyDistribution', {
   ]
  });
 
-app.run();
+app.synth();

@@ -111,11 +111,11 @@ export class ServerDeploymentConfig extends cdk.Resource implements IServerDeplo
     });
 
     const resource = new CfnDeploymentConfig(this, 'Resource', {
-      deploymentConfigName: this.physicalName.value,
+      deploymentConfigName: this.physicalName,
       minimumHealthyHosts: props.minimumHealthyHosts._json,
     });
 
-    this.deploymentConfigName = resource.refAsString;
+    this.deploymentConfigName = resource.ref;
     this.deploymentConfigArn = arnForDeploymentConfig(this.deploymentConfigName);
   }
 }

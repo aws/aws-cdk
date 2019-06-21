@@ -45,6 +45,7 @@ export class ResourceReflection {
   public readonly cfn: CfnResourceReflection;
   public readonly basename: string; // i.e. Bucket
   public readonly core: CoreTypes;
+  public readonly physicalNameProp?: reflect.Property;
 
   constructor(public readonly construct: ConstructReflection) {
     this.assembly = construct.classType.assembly;
@@ -62,6 +63,17 @@ export class ResourceReflection {
     this.basename = construct.classType.name;
     this.fqn = construct.fqn;
     this.attributes = this.findAttributeProperties();
+    this.physicalNameProp = this.findPhysicalNameProp();
+  }
+
+  private findPhysicalNameProp() {
+    if (!this.construct.propsType) {
+      return undefined;
+    }
+
+    const resourceName = camelcase(this.cfn.basename);
+    const physicalNameProp = `${resourceName}Name`;
+    return this.construct.propsType.allProperties.find(x => x.name === physicalNameProp);
   }
 
   /**
@@ -173,6 +185,30 @@ resourceLinter.add({
         returns: grantResultType
       });
     }
+  }
+});
+
+resourceLinter.add({
+  code: 'props-physical-name',
+  message: "Every Resource must have a single physical name construction property, " +
+    "with a name that is an ending substring of <cfnResource>Name",
+  eval: e => {
+    if (!e.ctx.construct.propsType) { return; }
+    e.assert(e.ctx.physicalNameProp, e.ctx.construct.propsFqn);
+  }
+});
+
+resourceLinter.add({
+  code: 'props-physical-name-type',
+  message: 'The type of the physical name prop should be "PhysicalName" if the name is optional and "string" if it is required',
+  eval: e => {
+    if (!e.ctx.physicalNameProp) { return; }
+    const prop = e.ctx.physicalNameProp;
+    const expectedType = prop.optional
+      ? e.ctx.core.physicalNameClass
+      : 'string';
+
+    e.assertTypesEqual(e.ctx.sys, prop.type, expectedType, `${e.ctx.construct.propsFqn}.${prop.name}`);
   }
 });
 

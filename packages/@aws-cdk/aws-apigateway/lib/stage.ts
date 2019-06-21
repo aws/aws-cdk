@@ -197,7 +197,7 @@ export class Stage extends Resource {
       methodSettings,
     });
 
-    this.stageName = resource.refAsString;
+    this.stageName = resource.ref;
     this.restApi = props.deployment.api;
   }
 

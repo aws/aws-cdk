@@ -1,6 +1,6 @@
 import appscaling = require('@aws-cdk/aws-applicationautoscaling');
 import iam = require('@aws-cdk/aws-iam');
-import { Aws, Construct, Lazy, PhysicalName, Resource, ResourceIdentifiers, Stack } from '@aws-cdk/cdk';
+import { Aws, Construct, Lazy, PhysicalName, Resource, Stack } from '@aws-cdk/cdk';
 import { CfnTable } from './dynamodb.generated';
 import { EnableScalingProps, IScalableTableAttribute } from './scalable-attribute-api';
 import { ScalableTableAttribute } from './scalable-table-attribute';
@@ -232,7 +232,7 @@ export class Table extends Resource {
     this.validateProvisioning(props);
 
     this.table = new CfnTable(this, 'Resource', {
-      tableName: this.physicalName.value,
+      tableName: this.physicalName,
       keySchema: this.keySchema,
       attributeDefinitions: this.attributeDefinitions,
       globalSecondaryIndexes: Lazy.anyValue({ produce: () => this.globalSecondaryIndexes }, { omitEmptyArray: true }),
@@ -250,13 +250,13 @@ export class Table extends Resource {
 
     if (props.tableName) { this.node.addMetadata('aws:cdk:hasPhysicalName', props.tableName); }
 
-    const resourceIdentifiers = new ResourceIdentifiers(this, {
+    const resourceIdentifiers = this.getCrossEnvironmentAttributes({
       arn: this.table.attrArn,
-      name: this.table.refAsString,
+      name: this.table.ref,
       arnComponents: {
         service: 'dynamodb',
         resource: 'table',
-        resourceName: this.physicalName.value,
+        resourceName: this.physicalName,
       },
     });
     this.tableArn = resourceIdentifiers.arn;

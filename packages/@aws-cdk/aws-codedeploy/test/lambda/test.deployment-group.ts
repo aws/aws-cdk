@@ -16,7 +16,7 @@ function mockFunction(stack: cdk.Stack, id: string) {
 }
 function mockAlias(stack: cdk.Stack) {
   return new lambda.Alias(stack, 'Alias', {
-    aliasName: cdk.PhysicalName.of('my-alias'),
+    aliasName: 'my-alias',
     version: new lambda.Version(stack, 'Version', {
       lambda: mockFunction(stack, 'Function')
     })

@@ -83,7 +83,6 @@
   },
   "awslint": {
     "exclude": [
-      "props-physical-name:@aws-cdk/aws-kms.AliasProps",
       "props-physical-name:@aws-cdk/aws-kms.KeyProps"
     ]
   },

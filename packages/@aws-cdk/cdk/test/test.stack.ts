@@ -1,5 +1,5 @@
 import { Test } from 'nodeunit';
-import { App, CfnCondition, CfnOutput, CfnParameter, CfnResource, Construct, ConstructNode, Include, Lazy, ScopedAws, Stack } from '../lib';
+import { App, CfnCondition, CfnInclude, CfnOutput, CfnParameter, CfnResource, Construct, ConstructNode, Lazy, ScopedAws, Stack } from '../lib';
 import { Intrinsic } from '../lib/private/intrinsic';
 import { toCloudFormation } from './util';
 
@@ -120,7 +120,7 @@ export = {
       Description: 'hello, world'
     };
 
-    new Include(stack, 'Include', { template });
+    new CfnInclude(stack, 'Include', { template });
 
     const output = toCloudFormation(stack);
 
@@ -356,7 +356,7 @@ export = {
 
     // { Ref } and { GetAtt }
     new CfnResource(stack, 'RefToBonjour', { type: 'Other::Resource', properties: {
-      RefToBonjour: bonjour.refAsString,
+      RefToBonjour: bonjour.ref,
       GetAttBonjour: bonjour.getAtt('TheAtt').toString()
     }});
 

@@ -54,4 +54,4 @@ new sfn.StateMachine(stack, 'StateMachine', {
   timeout: cdk.Duration.seconds(30)
 });
 
-app.run();
+app.synth();

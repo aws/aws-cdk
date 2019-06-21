@@ -57,7 +57,7 @@ export function cfnTagToCloudFormation(x: any): any {
 
 export function listMapper(elementMapper: Mapper): Mapper {
   return (x: any) => {
-    if (!canInspect(x)) { return x; }
+    if (!canInspect(x)) { return x; }
     return x.map(elementMapper);
   };
 }
@@ -250,7 +250,7 @@ export function validateObject(x: any): ValidationResult {
 }
 
 export function validateCfnTag(x: any): ValidationResult {
-  if (!canInspect(x)) { return VALIDATION_SUCCESS; }
+  if (!canInspect(x)) { return VALIDATION_SUCCESS; }
 
   if (x.key == null || x.value == null) {
     return new ValidationResult(`${JSON.stringify(x)} should have a 'key' and a 'value' property`);
@@ -264,7 +264,7 @@ export function validateCfnTag(x: any): ValidationResult {
  */
 export function listValidator(elementValidator: Validator): Validator {
   return (x: any) => {
-    if (!canInspect(x)) { return VALIDATION_SUCCESS; }
+    if (!canInspect(x)) { return VALIDATION_SUCCESS; }
 
     if (!x.forEach) {
       return new ValidationResult(`${JSON.stringify(x)} should be a list`);

@@ -1,6 +1,6 @@
 import iam = require('@aws-cdk/aws-iam');
 import kms = require('@aws-cdk/aws-kms');
-import { Construct, IResource, PhysicalName, Resource, ResourceIdentifiers, SecretValue, Stack } from '@aws-cdk/cdk';
+import { Construct, IResource, PhysicalName, Resource, SecretValue, Stack } from '@aws-cdk/cdk';
 import { RotationSchedule, RotationScheduleOptions } from './rotation-schedule';
 import secretsmanager = require('./secretsmanager.generated');
 
@@ -187,16 +187,16 @@ export class Secret extends SecretBase {
       description: props.description,
       kmsKeyId: props.encryptionKey && props.encryptionKey.keyArn,
       generateSecretString: props.generateSecretString || {},
-      name: this.physicalName.value,
+      name: this.physicalName,
     });
 
-    const resourceIdentifiers = new ResourceIdentifiers(this, {
-      arn: resource.refAsString,
-      name: this.physicalName.value || '',
+    const resourceIdentifiers = this.getCrossEnvironmentAttributes({
+      arn: resource.ref,
+      name: this.physicalName,
       arnComponents: {
         service: 'secretsmanager',
         resource: 'secret',
-        resourceName: this.physicalName.value,
+        resourceName: this.physicalName,
         sep: ':',
       },
     });
@@ -322,8 +322,8 @@ export class SecretTargetAttachment extends SecretBase implements ISecretTargetA
     this.encryptionKey = props.secret.encryptionKey;
 
     // This allows to reference the secret after attachment (dependency).
-    this.secretArn = attachment.refAsString;
-    this.secretTargetAttachmentSecretArn = attachment.refAsString;
+    this.secretArn = attachment.ref;
+    this.secretTargetAttachmentSecretArn = attachment.ref;
   }
 }
 

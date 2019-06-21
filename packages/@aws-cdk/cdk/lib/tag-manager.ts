@@ -1,5 +1,5 @@
 import { TagType } from './cfn-resource';
-import { CfnTag } from './tag';
+import { CfnTag } from './cfn-tag';
 
 interface Tag {
   key: string;

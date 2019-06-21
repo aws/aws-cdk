@@ -193,7 +193,7 @@ export interface RuleProps {
    *
    * @default a CloudFormation generated name
    */
-  readonly ruleName?: PhysicalName;
+  readonly configRuleName?: PhysicalName;
 
   /**
    * A description about this AWS Config rule.
@@ -249,11 +249,11 @@ export class ManagedRule extends RuleNew {
 
   constructor(scope: Construct, id: string, props: ManagedRuleProps) {
     super(scope, id, {
-      physicalName: props.ruleName,
+      physicalName: props.configRuleName,
     });
 
     const rule = new CfnConfigRule(this, 'Resource', {
-      configRuleName: this.physicalName.value,
+      configRuleName: this.physicalName,
       description: props.description,
       inputParameters: props.inputParameters,
       maximumExecutionFrequency: props.maximumExecutionFrequency,
@@ -264,7 +264,7 @@ export class ManagedRule extends RuleNew {
       }
     });
 
-    this.configRuleName = rule.refAsString;
+    this.configRuleName = rule.ref;
     this.configRuleArn = rule.attrArn;
     this.configRuleId = rule.attrConfigRuleId;
     this.configRuleComplianceType = rule.attrComplianceType;
@@ -316,7 +316,7 @@ export class CustomRule extends RuleNew {
 
   constructor(scope: Construct, id: string, props: CustomRuleProps) {
     super(scope, id, {
-      physicalName: props.ruleName,
+      physicalName: props.configRuleName,
     });
 
     if (!props.configurationChanges && !props.periodic) {
@@ -358,7 +358,7 @@ export class CustomRule extends RuleNew {
     this.node.addDependency(props.lambdaFunction);
 
     const rule = new CfnConfigRule(this, 'Resource', {
-      configRuleName: this.physicalName.value,
+      configRuleName: this.physicalName,
       description: props.description,
       inputParameters: props.inputParameters,
       maximumExecutionFrequency: props.maximumExecutionFrequency,
@@ -370,7 +370,7 @@ export class CustomRule extends RuleNew {
       }
     });
 
-    this.configRuleName = rule.refAsString;
+    this.configRuleName = rule.ref;
     this.configRuleArn = rule.attrArn;
     this.configRuleId = rule.attrConfigRuleId;
     this.configRuleComplianceType = rule.attrComplianceType;

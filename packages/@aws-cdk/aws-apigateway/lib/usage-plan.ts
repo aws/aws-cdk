@@ -165,7 +165,7 @@ export class UsagePlan extends Resource {
 
     this.apiStages.push(...(props.apiStages || []));
 
-    this.usagePlanId = resource.refAsString;
+    this.usagePlanId = resource.ref;
 
     // Add ApiKey when
     if (props.apiKey) {

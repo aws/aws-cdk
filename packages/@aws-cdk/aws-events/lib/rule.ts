@@ -1,4 +1,4 @@
-import { Construct, Lazy, PhysicalName, Resource, ResourceIdentifiers } from '@aws-cdk/cdk';
+import { Construct, Lazy, PhysicalName, Resource } from '@aws-cdk/cdk';
 import { EventPattern } from './event-pattern';
 import { CfnRule } from './events.generated';
 import { IRule } from './rule-ref';
@@ -96,7 +96,7 @@ export class Rule extends Resource implements IRule {
     });
 
     const resource = new CfnRule(this, 'Resource', {
-      name: this.physicalName.value,
+      name: this.physicalName,
       description: props.description,
       state: props.enabled == null ? 'ENABLED' : (props.enabled ? 'ENABLED' : 'DISABLED'),
       scheduleExpression: Lazy.stringValue({ produce: () => this.scheduleExpression }),
@@ -104,13 +104,13 @@ export class Rule extends Resource implements IRule {
       targets: Lazy.anyValue({ produce: () => this.renderTargets() }),
     });
 
-    const resourceIdentifiers = new ResourceIdentifiers(this, {
+    const resourceIdentifiers = this.getCrossEnvironmentAttributes({
       arn: resource.attrArn,
       name: resource.name || '',
       arnComponents: {
         service: 'events',
         resource: 'rule',
-        resourceName: this.physicalName.value,
+        resourceName: this.physicalName,
       },
     });
     this.ruleArn = resourceIdentifiers.arn;

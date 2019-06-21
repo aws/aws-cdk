@@ -1,6 +1,6 @@
 import events = require('@aws-cdk/aws-events');
 import iam = require('@aws-cdk/aws-iam');
-import { Construct, IConstruct, IResource, Lazy, PhysicalName, RemovalPolicy, Resource, ResourceIdentifiers, Stack, Token } from '@aws-cdk/cdk';
+import { Construct, IConstruct, IResource, Lazy, PhysicalName, RemovalPolicy, Resource, Stack, Token } from '@aws-cdk/cdk';
 import { CfnRepository } from './ecr.generated';
 import { CountType, LifecycleRule, TagStatus } from './lifecycle';
 
@@ -340,7 +340,7 @@ export class Repository extends RepositoryBase {
     });
 
     const resource = new CfnRepository(this, 'Resource', {
-      repositoryName: this.physicalName.value,
+      repositoryName: this.physicalName,
       // It says "Text", but they actually mean "Object".
       repositoryPolicyText: Lazy.anyValue({ produce: () => this.policyDocument }),
       lifecyclePolicy: Lazy.anyValue({ produce: () => this.renderLifecyclePolicy() }),
@@ -353,13 +353,13 @@ export class Repository extends RepositoryBase {
       props.lifecycleRules.forEach(this.addLifecycleRule.bind(this));
     }
 
-    const resourceIdentifiers = new ResourceIdentifiers(this, {
+    const resourceIdentifiers = this.getCrossEnvironmentAttributes({
       arn: resource.attrArn,
-      name: resource.refAsString,
+      name: resource.ref,
       arnComponents: {
         service: 'ecr',
         resource: 'repository',
-        resourceName: this.physicalName.value,
+        resourceName: this.physicalName,
       },
     });
     this.repositoryName = resourceIdentifiers.name;

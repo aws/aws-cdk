@@ -11,7 +11,7 @@ export = {
 
     // WHEN
     new cognito.UserPool(stack, 'Pool', {
-      poolName: cdk.PhysicalName.of('myPool'),
+      userPoolName: cdk.PhysicalName.of('myPool'),
     });
 
     // THEN

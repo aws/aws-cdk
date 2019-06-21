@@ -58,7 +58,7 @@ export class ReceiptFilter extends Resource {
           cidr: props.ip || '0.0.0.0/0',
           policy: props.policy || ReceiptFilterPolicy.BLOCK,
         },
-        name: this.physicalName.value,
+        name: this.physicalName,
       }
     });
   }

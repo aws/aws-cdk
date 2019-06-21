@@ -22,7 +22,7 @@ export = {
 
   /** Source! */
   const repo = new Repository(stack, 'MyVeryImportantRepo', {
-    repositoryName: cdk.PhysicalName.of('my-very-important-repo'),
+    repositoryName: 'my-very-important-repo',
   });
 
   const sourceOutput = new codepipeline.Artifact('SourceArtifact');
@@ -433,7 +433,7 @@ class TestFixture extends cdk.Stack {
     this.sourceStage = this.pipeline.addStage({ stageName: 'Source' });
     this.deployStage = this.pipeline.addStage({ stageName: 'Deploy' });
     this.repo = new Repository(this, 'MyVeryImportantRepo', {
-      repositoryName: cdk.PhysicalName.of('my-very-important-repo'),
+      repositoryName: 'my-very-important-repo',
     });
     this.sourceOutput = new codepipeline.Artifact('SourceArtifact');
     const source = new cpactions.CodeCommitSourceAction({

@@ -38,7 +38,7 @@ export interface CfnRuleProps {
    *
    * @default - No assertions for the rule.
    */
-  readonly assertions?: RuleAssertion[];
+  readonly assertions?: CfnRuleAssertion[];
 }
 
 /**
@@ -57,16 +57,8 @@ export interface CfnRuleProps {
  * @link https://docs.aws.amazon.com/servicecatalog/latest/adminguide/reference-template_constraint_rules.html
  */
 export class CfnRule extends CfnRefElement {
-  /**
-   * If the rule condition evaluates to false, the rule doesn't take effect.
-   * If the function in the rule condition evaluates to true, expressions in each assert are evaluated and applied.
-   */
-  public ruleCondition?: ICfnConditionExpression;
-
-  /**
-   * Assertions which define the rule.
-   */
-  public assertions?: RuleAssertion[];
+  private ruleCondition?: ICfnConditionExpression;
+  private assertions?: CfnRuleAssertion[];
 
   /**
    * Creates and adds a rule.
@@ -114,7 +106,7 @@ export class CfnRule extends CfnRefElement {
 /**
  * A rule assertion.
  */
-export interface RuleAssertion {
+export interface CfnRuleAssertion {
   /**
    * The assertion.
    */

@@ -55,6 +55,6 @@ export class NonIpInstance extends InstanceBase {
     });
 
     this.service = props.service;
-    this.instanceId = resource.refAsString;
+    this.instanceId = resource.ref;
   }
 }

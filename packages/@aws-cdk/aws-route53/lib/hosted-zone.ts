@@ -121,7 +121,7 @@ export class HostedZone extends Resource implements IHostedZone {
       vpcs: Lazy.anyValue({ produce: () => this.vpcs.length === 0 ? undefined : this.vpcs })
     });
 
-    this.hostedZoneId = resource.refAsString;
+    this.hostedZoneId = resource.ref;
     this.hostedZoneNameServers = resource.attrNameServers;
     this.zoneName = props.zoneName;
 

@@ -203,7 +203,7 @@ export class RestApi extends Resource implements IRestApi {
     });
 
     const resource = new CfnRestApi(this, 'Resource', {
-      name: this.physicalName.value!,
+      name: this.physicalName,
       description: props.description,
       policy: props.policy,
       failOnWarnings: props.failOnWarnings,
@@ -215,7 +215,7 @@ export class RestApi extends Resource implements IRestApi {
       parameters: props.parameters,
     });
 
-    this.restApiId = resource.refAsString;
+    this.restApiId = resource.ref;
 
     this.configureDeployment(props);
 

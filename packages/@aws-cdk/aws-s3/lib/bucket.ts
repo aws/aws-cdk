@@ -2,7 +2,7 @@ import events = require('@aws-cdk/aws-events');
 import iam = require('@aws-cdk/aws-iam');
 import kms = require('@aws-cdk/aws-kms');
 import { Construct, IResource, Lazy, PhysicalName,
-  RemovalPolicy, Resource, ResourceIdentifiers, Stack, Token } from '@aws-cdk/cdk';
+  RemovalPolicy, Resource, Stack, Token } from '@aws-cdk/cdk';
 import { EOL } from 'os';
 import { BucketPolicy } from './bucket-policy';
 import { IBucketNotificationDestination } from './destination';
@@ -889,12 +889,11 @@ export class Bucket extends BucketBase {
     });
 
     const { bucketEncryption, encryptionKey } = this.parseEncryption(props);
-    if (props.bucketName && !Token.isUnresolved(props.bucketName)) {
-      this.validateBucketName(props.bucketName);
-    }
+
+    this.validateBucketName(this.physicalName);
 
     const resource = new CfnBucket(this, 'Resource', {
-      bucketName: this.physicalName.value,
+      bucketName: this.physicalName,
       bucketEncryption,
       versioningConfiguration: props.versioned ? { status: 'Enabled' } : undefined,
       lifecycleConfiguration: Lazy.anyValue({ produce: () => this.parseLifecycleConfiguration() }),
@@ -909,14 +908,14 @@ export class Bucket extends BucketBase {
     this.versioned = props.versioned;
     this.encryptionKey = encryptionKey;
 
-    const resourceIdentifiers = new ResourceIdentifiers(this, {
+    const resourceIdentifiers = this.getCrossEnvironmentAttributes({
       arn: resource.attrArn,
-      name: resource.refAsString,
+      name: resource.ref,
       arnComponents: {
         region: '',
         account: '',
         service: 's3',
-        resource: this.physicalName.value || '',
+        resource: this.physicalName,
       },
     });
     this.bucketArn = resourceIdentifiers.arn;
@@ -1025,8 +1024,8 @@ export class Bucket extends BucketBase {
     return this.addEventNotification(EventType.OBJECT_REMOVED, dest, ...filters);
   }
 
-  private validateBucketName(physicalName: PhysicalName): void {
-    const bucketName = physicalName.value;
+  private validateBucketName(physicalName: string): void {
+    const bucketName = physicalName;
     if (!bucketName || Token.isUnresolved(bucketName)) {
       // the name is a late-bound value, not a defined string,
       // so skip validation

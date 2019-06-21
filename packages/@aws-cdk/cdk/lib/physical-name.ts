@@ -1,5 +1,5 @@
 import { Lazy } from "./lazy";
-import { generatePhysicalName } from "./physical-name-generator";
+import { generatePhysicalName } from "./private/physical-name-generator";
 import { IResource } from './resource';
 
 /**
@@ -62,7 +62,7 @@ export abstract class PhysicalName {
    * can be `undefined`, if a physical name was not provided,
    * or an opaque Token, if a generated name should be assigned lazily at synthesis time.
    */
-  public abstract get value(): string | undefined;
+  public abstract get value(): string;
 
   /**
    * A callback method called if the resource this physical name
@@ -96,20 +96,18 @@ class LateBoundPhysicalName extends PhysicalName {
    * either a Token string if crossEnvironment is true,
    * or undefined otherwise.
    */
-  public readonly value: string | undefined;
+  public readonly value: string;
+
   private name?: string;
 
-  constructor(options: AutoPhysicalNameOptions) {
+  constructor(private readonly options: AutoPhysicalNameOptions) {
     super();
-
-    this.value = options.crossEnvironment
-      ? Lazy.stringValue({ produce: () => this.name })
-      : undefined;
+    this.value = Lazy.stringValue({ produce: () => this.name });
   }
 
   /** @internal */
   public _resolveCrossEnvironment(resource: IResource): void {
-    if (!this.value) {
+    if (!this.options.crossEnvironment) {
       // error out - a deploy-time name cannot be used across environments
       throw new Error(`Cannot use resource '${resource.node.path}' in a cross-environment fashion, ` +
         "as it doesn't have a physical name set. Use PhysicalName.auto({ crossEnvironment: true }) to enable cross env name allocation");

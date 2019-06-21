@@ -16,8 +16,6 @@ export interface CfnConditionProps {
  * the determination must be made at deploy time.
  */
 export class CfnCondition extends CfnElement implements ICfnConditionExpression, IResolvable {
-  public readonly displayHint: string | undefined;
-
   /**
    * The condition statement.
    */
@@ -29,7 +27,6 @@ export class CfnCondition extends CfnElement implements ICfnConditionExpression,
    */
   constructor(scope: Construct, id: string, props?: CfnConditionProps) {
     super(scope, id);
-    this.displayHint = `Cond${id}`;
     this.expression = props && props.expression;
   }
 
@@ -79,29 +76,14 @@ export class CfnCondition extends CfnElement implements ICfnConditionExpression,
  * capabilities; however, for the test environment, you want to use less
  * capabilities to save costs. With conditions, you can define which resources
  * are created and how they're configured for each environment type.
+ *
+ * You can use `toString` when you wish to embed a condition expression
+ * in a property value that accepts a `string`. For example:
+ *
+ * ```ts
+ * new sqs.Queue(this, 'MyQueue', {
+ *   queueName: Fn.conditionIf('Condition', 'Hello', 'World').toString()
+ * });
+ * ```
  */
-export interface ICfnConditionExpression {
-  /**
-   * Returns a JSON node that represents this condition expression
-   */
-  resolve(context: IResolveContext): any;
-
-  /**
-   * Returns a string token representation of this condition expression, which
-   * resolves to the CloudFormation condition JSON during synthesis.
-   *
-   * You can use `toString` when you wish to embed a condition expression
-   * in a property value that accepts a `string`. For example:
-   *
-   * ```ts
-   * new sqs.Queue(this, 'MyQueue', {
-   *   queueName: Fn.conditionIf('Condition', 'Hello', 'World').toString()
-   * });
-   * ```
-   *
-   * NOTE: we need this explicitly here despite the fact that in JavaScript this would
-   * "just work" since conditions are eventually tokens that implement `toString`,
-   * in order for jsii languages like Java to proxy this to jsii.
-   */
-  toString(): string;
-}
+export interface ICfnConditionExpression extends IResolvable { }

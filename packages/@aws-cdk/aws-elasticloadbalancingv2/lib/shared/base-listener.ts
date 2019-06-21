@@ -21,7 +21,7 @@ export abstract class BaseListener extends Resource {
       defaultActions: Lazy.anyValue({ produce: () => this.defaultActions }),
     });
 
-    this.listenerArn = resource.refAsString;
+    this.listenerArn = resource.ref;
   }
 
   /**

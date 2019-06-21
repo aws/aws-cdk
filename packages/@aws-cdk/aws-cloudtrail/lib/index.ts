@@ -3,7 +3,7 @@ import iam = require('@aws-cdk/aws-iam');
 import kms = require('@aws-cdk/aws-kms');
 import logs = require('@aws-cdk/aws-logs');
 import s3 = require('@aws-cdk/aws-s3');
-import { Construct, PhysicalName, Resource, ResourceIdentifiers, Stack } from '@aws-cdk/cdk';
+import { Construct, PhysicalName, Resource, Stack } from '@aws-cdk/cdk';
 import { CfnTrail } from './cloudtrail.generated';
 
 // AWS::CloudTrail CloudFormation Resources:
@@ -175,7 +175,7 @@ export class Trail extends Resource {
       enableLogFileValidation: props.enableFileValidation == null ? true : props.enableFileValidation,
       isMultiRegionTrail: props.isMultiRegionTrail == null ? true : props.isMultiRegionTrail,
       includeGlobalServiceEvents: props.includeGlobalServiceEvents == null ? true : props.includeGlobalServiceEvents,
-      trailName: this.physicalName.value,
+      trailName: this.physicalName,
       kmsKeyId:  props.kmsKey && props.kmsKey.keyArn,
       s3BucketName: s3bucket.bucketName,
       s3KeyPrefix: props.s3KeyPrefix,
@@ -185,13 +185,13 @@ export class Trail extends Resource {
       eventSelectors: this.eventSelectors
     });
 
-    const resourceIdentifiers = new ResourceIdentifiers(this, {
+    const resourceIdentifiers = this.getCrossEnvironmentAttributes({
       arn: trail.attrArn,
       name: trail.trailName || '',
       arnComponents: {
         service: 'cloudtrail',
         resource: 'trail',
-        resourceName: this.physicalName.value,
+        resourceName: this.physicalName,
       },
     });
     this.trailArn = resourceIdentifiers.arn;

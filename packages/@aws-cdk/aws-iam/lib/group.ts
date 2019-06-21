@@ -1,4 +1,4 @@
-import { Construct, Lazy, PhysicalName, Resource, ResourceIdentifiers, Stack } from '@aws-cdk/cdk';
+import { Construct, Lazy, PhysicalName, Resource, Stack } from '@aws-cdk/cdk';
 import { CfnGroup } from './iam.generated';
 import { IIdentity } from './identity-base';
 import { IManagedPolicy } from './managed-policy';
@@ -133,19 +133,19 @@ export class Group extends GroupBase {
     this.managedPolicies.push(...props.managedPolicyArns || []);
 
     const group = new CfnGroup(this, 'Resource', {
-      groupName: this.physicalName.value,
+      groupName: this.physicalName,
       managedPolicyArns: Lazy.listValue({ produce: () => this.managedPolicies.map(p => p.managedPolicyArn) }, { omitEmpty: true }),
       path: props.path,
     });
 
-    const resourceIdentifiers = new ResourceIdentifiers(this, {
+    const resourceIdentifiers = this.getCrossEnvironmentAttributes({
       arn: group.attrArn,
-      name: group.refAsString,
+      name: group.ref,
       arnComponents: {
         region: '', // IAM is global in each partition
         service: 'iam',
         resource: 'group',
-        resourceName: this.physicalName.value,
+        resourceName: this.physicalName,
       },
     });
     this.groupName = resourceIdentifiers.name;

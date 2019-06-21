@@ -17,7 +17,7 @@ const dist = new cloudfront.CloudFrontWebDistribution(stack, 'Distribution', {
     behaviors: [{ isDefaultBehavior: true }],
     s3OriginSource: {
       s3BucketSource: bucket,
-      originAccessIdentityId: oai.refAsString,
+      originAccessIdentityId: oai.ref,
     },
   }]
 });

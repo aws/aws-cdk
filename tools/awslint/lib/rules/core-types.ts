@@ -9,7 +9,8 @@ enum CoreTypesFqn {
   ConstructInterface = "@aws-cdk/cdk.IConstruct",
   Resource = "@aws-cdk/cdk.Resource",
   ResourceInterface = "@aws-cdk/cdk.IResource",
-  ResolvableInterface = "@aws-cdk/cdk.IResolvable"
+  ResolvableInterface = "@aws-cdk/cdk.IResolvable",
+  PhysicalName = "@aws-cdk/cdk.PhysicalName"
 }
 
 export class CoreTypes {
@@ -110,6 +111,10 @@ export class CoreTypes {
    */
   public get tokenInterface() {
     return this.sys.findInterface(CoreTypesFqn.ResolvableInterface);
+  }
+
+  public get physicalNameClass() {
+    return this.sys.findClass(CoreTypesFqn.PhysicalName)
   }
 
   private readonly sys: TypeSystem;

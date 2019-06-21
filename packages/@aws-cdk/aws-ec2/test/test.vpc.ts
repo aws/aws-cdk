@@ -1,8 +1,7 @@
 import { countResources, expect, haveResource, haveResourceLike, isSuperObject } from '@aws-cdk/assert';
-import { Construct, Stack, Tag } from '@aws-cdk/cdk';
+import { Stack, Tag } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
-import { CfnVPC, DefaultInstanceTenancy, IVpc, SubnetType, Vpc } from '../lib';
-import { exportVpc } from './export-helper';
+import { CfnVPC, DefaultInstanceTenancy, SubnetType, Vpc } from '../lib';
 
 export = {
   "When creating a VPC": {
@@ -704,116 +703,10 @@ export = {
       test.done();
     }
   },
-
-  'export/import': {
-    'simple VPC'(test: Test) {
-      // WHEN
-      const vpc2 = doImportExportTest(stack => {
-        return new Vpc(stack, 'TheVPC');
-      });
-
-      // THEN
-      test.deepEqual(Stack.of(vpc2).resolve(vpc2.vpcId), {
-        'Fn::ImportValue': 'TestStack:TheVPCVpcIdD346CDBA'
-      });
-
-      test.done();
-    },
-
-    'multiple subnets of the same type'(test: Test) {
-      // WHEN
-      const imported = doImportExportTest(stack => {
-        return new Vpc(stack, 'TheVPC', {
-          subnetConfiguration: [
-            { name: 'Ingress', subnetType: SubnetType.PUBLIC },
-            { name: 'Egress', subnetType: SubnetType.PUBLIC },
-          ]
-        });
-      });
-
-      // THEN
-      test.deepEqual(Stack.of(imported).resolve(imported.vpcId), {
-        'Fn::ImportValue': 'TestStack:TheVPCVpcIdD346CDBA'
-      });
-
-      test.equal(6, imported.publicSubnets.length);
-
-      for (let i = 0; i < 3; i++) {
-        // tslint:disable-next-line:max-line-length
-        test.equal(true, imported.publicSubnets[i].node.id.startsWith('Ingress'), `${imported.publicSubnets[i].node.id} does not start with "Ingress"`);
-      }
-      for (let i = 3; i < 6; i++) {
-        // tslint:disable-next-line:max-line-length
-        test.equal(true, imported.publicSubnets[i].node.id.startsWith('Egress'), `${imported.publicSubnets[i].node.id} does not start with "Egress"`);
-      }
-
-      test.done();
-    },
-
-    'can select isolated subnets by type'(test: Test) {
-      // GIVEN
-      const importedVpc = doImportExportTest(stack => {
-        return new Vpc(stack, 'TheVPC', {
-          subnetConfiguration: [
-            { subnetType: SubnetType.PRIVATE, name: 'Private' },
-            { subnetType: SubnetType.ISOLATED, name: 'Isolated' },
-          ]
-        });
-      });
-
-      // WHEN
-      const { subnetIds } = importedVpc.selectSubnets({ subnetType: SubnetType.ISOLATED });
-
-      // THEN
-      test.equal(3, importedVpc.isolatedSubnets.length);
-      test.deepEqual(subnetIds, importedVpc.isolatedSubnets.map(s => s.subnetId));
-
-      test.done();
-    },
-
-    'can select isolated subnets by name'(test: Test) {
-      // Do the test with both default name and custom name
-      for (const isolatedName of ['Isolated', 'LeaveMeAlone']) {
-        // GIVEN
-        const importedVpc = doImportExportTest(stack => {
-          return new Vpc(stack, 'TheVPC', {
-            subnetConfiguration: [
-              { subnetType: SubnetType.PRIVATE, name: 'Private' },
-              { subnetType: SubnetType.ISOLATED, name: isolatedName },
-            ]
-          });
-        });
-
-        // WHEN
-        const { subnetIds } = importedVpc.selectSubnets({ subnetName: isolatedName });
-
-        // THEN
-        test.equal(3, importedVpc.isolatedSubnets.length);
-        test.deepEqual(subnetIds, importedVpc.isolatedSubnets.map(s => s.subnetId));
-      }
-
-      test.done();
-    },
-  },
-
 };
 
 function getTestStack(): Stack {
   return new Stack(undefined, 'TestStack', { env: { account: '123456789012', region: 'us-east-1' } });
-}
-
-/**
- * Do a complete import/export test, return the imported VPC
- */
-function doImportExportTest(constructFn: (scope: Construct) => Vpc): IVpc {
-  // GIVEN
-  const stack1 = getTestStack();
-  const stack2 = getTestStack();
-
-  const vpc1 = constructFn(stack1);
-
-  // WHEN
-  return Vpc.fromVpcAttributes(stack2, 'VPC2', exportVpc(vpc1));
 }
 
 function toCfnTags(tags: any): Array<{Key: string, Value: string}> {

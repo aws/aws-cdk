@@ -1,5 +1,5 @@
 import { ICfnConditionExpression } from './cfn-condition';
-import { minimalCloudFormationJoin } from './cloudformation-lang';
+import { minimalCloudFormationJoin } from './private/cloudformation-lang';
 import { Intrinsic } from './private/intrinsic';
 import { IResolvable, IResolveContext } from './resolvable';
 import { captureStackTrace } from './stack-trace';

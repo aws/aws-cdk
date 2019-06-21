@@ -1,5 +1,5 @@
 import events = require('@aws-cdk/aws-events');
-import { Construct, IConstruct, IResource, PhysicalName, Resource, ResourceIdentifiers, Stack } from '@aws-cdk/cdk';
+import { Construct, IConstruct, IResource, PhysicalName, Resource, Stack } from '@aws-cdk/cdk';
 import { CfnRepository } from './codecommit.generated';
 
 export interface IRepository extends IResource {
@@ -210,9 +210,11 @@ abstract class RepositoryBase extends Resource implements IRepository {
 
 export interface RepositoryProps {
   /**
-   * Name of the repository. This property is required for all repositories.
+   * Name of the repository.
+   *
+   * This property is required for all CodeCommit repositories.
    */
-  readonly repositoryName: PhysicalName;
+  readonly repositoryName: string;
 
   /**
    * A description of the repository. Use the description to identify the
@@ -277,21 +279,21 @@ export class Repository extends RepositoryBase {
 
   constructor(scope: Construct, id: string, props: RepositoryProps) {
     super(scope, id, {
-      physicalName: props.repositoryName,
+      physicalName: PhysicalName.of(props.repositoryName),
     });
 
     this.repository = new CfnRepository(this, 'Resource', {
-      repositoryName: this.physicalName.value || '',
+      repositoryName: props.repositoryName,
       repositoryDescription: props.description,
       triggers: this.triggers
     });
 
-    const resourceIdentifiers = new ResourceIdentifiers(this, {
+    const resourceIdentifiers = this.getCrossEnvironmentAttributes({
       arn: this.repository.attrArn,
       name: this.repository.attrName,
       arnComponents: {
         service: 'codecommit',
-        resource: this.physicalName.value || '',
+        resource: props.repositoryName,
       },
     });
 

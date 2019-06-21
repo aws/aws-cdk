@@ -1,10 +1,10 @@
 import cxapi = require('@aws-cdk/cx-api');
 import { IAspect } from './aspect';
 import { DependableTrait, IDependable } from './dependency';
+import { makeUniqueId } from './private/uniqueid';
 import { IResolvable } from './resolvable';
 import { captureStackTrace } from './stack-trace';
 import { Token } from './token';
-import { makeUniqueId } from './uniqueid';
 
 const CONSTRUCT_SYMBOL = Symbol.for('@aws-cdk/cdk.Construct');
 
@@ -13,7 +13,7 @@ const CONSTRUCT_SYMBOL = Symbol.for('@aws-cdk/cdk.Construct');
  */
 export interface IConstruct extends IDependable {
   /**
-   * The construct node in the scope tree.
+   * The construct node in the tree.
    */
   readonly node: ConstructNode;
 }
@@ -198,7 +198,7 @@ export class ConstructNode {
   /**
    * Return a descendant by path
    *
-   * Throws an exception if the descendant is not found.
+   * Throws an error if the descendant is not found.
    *
    * Note that if the original ID of the construct you are looking for contained
    * a '/', then it would have been replaced by '--'.
@@ -215,7 +215,7 @@ export class ConstructNode {
   }
 
   /**
-   * Returns the child construct that has the id "Default" or "Resource".
+   * Returns the child construct that has the id `Default` or `Resource"`
    * @throws if there is more than one child
    * @returns a construct or undefined if there is no default child
    */

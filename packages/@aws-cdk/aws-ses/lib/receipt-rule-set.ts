@@ -102,10 +102,10 @@ export class ReceiptRuleSet extends ReceiptRuleSetBase {
     });
 
     const resource = new CfnReceiptRuleSet(this, 'Resource', {
-      ruleSetName: this.physicalName.value,
+      ruleSetName: this.physicalName,
     });
 
-    this.receiptRuleSetName = resource.refAsString;
+    this.receiptRuleSetName = resource.ref;
 
     if (props) {
       const rules = props.rules || [];

@@ -1,5 +1,5 @@
 import { expect } from '@aws-cdk/assert';
-import { PhysicalName, Stack } from '@aws-cdk/cdk';
+import { Stack } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
 import glue = require('../lib');
 
@@ -8,7 +8,7 @@ export = {
     const stack = new Stack();
 
     new glue.Database(stack, 'Database', {
-      databaseName: PhysicalName.of('test_database'),
+      databaseName: 'test_database',
     });
 
     expect(stack).toMatch({
@@ -50,7 +50,7 @@ export = {
     const stack = new Stack();
 
     new glue.Database(stack, 'Database', {
-      databaseName: PhysicalName.of('test_database'),
+      databaseName: 'test_database',
       locationUri: 's3://my-uri/'
     });
 
