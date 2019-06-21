@@ -3,7 +3,7 @@ import { captureStackTrace, IResolvable, IResolveContext, Token, Tokenization } 
 const JSON_PATH_TOKEN_SYMBOL = Symbol.for('@aws-cdk/aws-stepfunctions.JsonPathToken');
 
 export class JsonPathToken implements IResolvable {
-  public static isJsonPathToken(x: any): x is JsonPathToken {
+  public static isJsonPathToken(x: IResolvable): x is JsonPathToken {
     return (x as any)[JSON_PATH_TOKEN_SYMBOL] === true;
   }
 

@@ -8,7 +8,7 @@ import { AlgorithmSpecification, Channel, InputMode, OutputDataConfig, ResourceC
 /**
  *  @experimental
  */
-export interface SagemakerTrainProps {
+export interface SagemakerTrainTaskProps {
 
     /**
      * Training Job Name.
@@ -16,7 +16,12 @@ export interface SagemakerTrainProps {
     readonly trainingJobName: string;
 
     /**
-     * Role for thte Training Job.
+     * Role for the Training Job. The role must be granted all necessary permissions for the SageMaker training job to
+     * be able to operate.
+     *
+     * See https://docs.aws.amazon.com/fr_fr/sagemaker/latest/dg/sagemaker-roles.html#sagemaker-roles-createtrainingjob-perms
+     *
+     * @default - a role with appropriate permissions will be created.
      */
     readonly role?: iam.IRole;
 
@@ -71,7 +76,7 @@ export interface SagemakerTrainProps {
 /**
  * Class representing the SageMaker Create Training Job task.
  */
-export class SagemakerTrainTask implements ec2.IConnectable, sfn.IStepFunctionsTask {
+export class SagemakerTrainTask implements iam.IGrantable, ec2.IConnectable, sfn.IStepFunctionsTask {
 
     /**
      * Allows specify security group connections for instances of this fleet.
@@ -105,7 +110,7 @@ export class SagemakerTrainTask implements ec2.IConnectable, sfn.IStepFunctionsT
      */
     private readonly stoppingCondition: StoppingCondition;
 
-    constructor(scope: Construct, private readonly props: SagemakerTrainProps) {
+    constructor(scope: Construct, private readonly props: SagemakerTrainTaskProps) {
 
         // set the default resource config if not defined.
         this.resourceConfig = props.resourceConfig || {
@@ -122,10 +127,54 @@ export class SagemakerTrainTask implements ec2.IConnectable, sfn.IStepFunctionsT
         // set the sagemaker role or create new one
         this.role = props.role || new iam.Role(scope, 'SagemakerRole', {
             assumedBy: new iam.ServicePrincipal('sagemaker.amazonaws.com'),
-            managedPolicies: [
-                iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonSageMakerFullAccess')
-            ]
+            inlinePolicies: {
+                CreateTrainingJob: new iam.PolicyDocument({
+                    statements: [
+                        new iam.PolicyStatement({
+                            actions: [
+                                'cloudwatch:PutMetricData',
+                                'logs:CreateLogStream',
+                                'logs:PutLogEvents',
+                                'logs:CreateLogGroup',
+                                'logs:DescribeLogStreams',
+                                'ecr:GetAuthorizationToken',
+                                ...props.vpcConfig
+                                    ? [
+                                        'ec2:CreateNetworkInterface',
+                                        'ec2:CreateNetworkInterfacePermission',
+                                        'ec2:DeleteNetworkInterface',
+                                        'ec2:DeleteNetworkInterfacePermission',
+                                        'ec2:DescribeNetworkInterfaces',
+                                        'ec2:DescribeVpcs',
+                                        'ec2:DescribeDhcpOptions',
+                                        'ec2:DescribeSubnets',
+                                        'ec2:DescribeSecurityGroups',
+                                    ]
+                                    : [],
+                            ],
+                            resources: ['*'], // Those permissions cannot be resource-scoped
+                        })
+                    ]
+                }),
+            }
         });
+
+        for (const input of props.inputDataConfig) {
+            input.dataSource.s3DataSource.s3Location.grantRead(this.role);
+        }
+        props.outputDataConfig.s3OutputLocation.grantWrite(this.role);
+
+        if (props.outputDataConfig.encryptionKey) {
+            props.outputDataConfig.encryptionKey.grantEncrypt(this.role);
+        }
+
+        if (props.algorithmSpecification.trainingImage) {
+            props.algorithmSpecification.trainingImage.grantRead(this.role);
+        }
+
+        if (props.resourceConfig && props.resourceConfig.volumeEncryptionKey) {
+            props.resourceConfig.volumeEncryptionKey.grant(this.role, 'kms:CreateGrant');
+        }
 
         // set the input mode to 'File' if not defined
         this.algorithmSpecification = ( props.algorithmSpecification.trainingInputMode ) ?
@@ -146,6 +195,10 @@ export class SagemakerTrainTask implements ec2.IConnectable, sfn.IStepFunctionsT
         if (this.props.vpcConfig) {
             this.props.vpcConfig.securityGroups.forEach(sg => this.connections.addSecurityGroup(sg));
         }
+    }
+
+    public get grantPrincipal(): iam.IPrincipal {
+        return this.role;
     }
 
     public bind(task: sfn.Task): sfn.StepFunctionsTaskConfig  {
@@ -190,7 +243,7 @@ export class SagemakerTrainTask implements ec2.IConnectable, sfn.IStepFunctionsT
                 ChannelName: channel.channelName,
                 DataSource: {
                     S3DataSource: {
-                        S3Uri: channel.dataSource.s3DataSource.s3Uri,
+                        S3Uri: channel.dataSource.s3DataSource.s3Location.uri,
                         S3DataType: channel.dataSource.s3DataSource.s3DataType,
                         ...(channel.dataSource.s3DataSource.s3DataDistributionType) ?
                             { S3DataDistributionType: channel.dataSource.s3DataSource.s3DataDistributionType} : {},
@@ -209,7 +262,7 @@ export class SagemakerTrainTask implements ec2.IConnectable, sfn.IStepFunctionsT
     private renderOutputDataConfig(config: OutputDataConfig): {[key: string]: any} {
         return {
             OutputDataConfig: {
-                S3OutputPath: config.s3OutputPath,
+                S3OutputPath: config.s3OutputLocation.uri,
                 ...(config.encryptionKey) ? { KmsKeyId: config.encryptionKey.keyArn } : {},
             }
         };
@@ -221,7 +274,7 @@ export class SagemakerTrainTask implements ec2.IConnectable, sfn.IStepFunctionsT
                 InstanceCount: config.instanceCount,
                 InstanceType: 'ml.' + config.instanceType,
                 VolumeSizeInGB: config.volumeSizeInGB,
-                ...(config.volumeKmsKeyId) ? { VolumeKmsKeyId: config.volumeKmsKeyId.keyArn } : {},
+                ...(config.volumeEncryptionKey) ? { VolumeKmsKeyId: config.volumeEncryptionKey.keyArn } : {},
             }
         };
     }
@@ -260,7 +313,8 @@ export class SagemakerTrainTask implements ec2.IConnectable, sfn.IStepFunctionsT
                     stack.formatArn({
                         service: 'sagemaker',
                         resource: 'training-job',
-                        resourceName: '*'
+                        // If the job name comes from input, we cannot target the policy to a particular ARN prefix reliably...
+                        resourceName: sfn.Data.isJsonPath(this.props.trainingJobName) ? '*' : `${this.props.trainingJobName}*`
                     })
                 ],
             }),

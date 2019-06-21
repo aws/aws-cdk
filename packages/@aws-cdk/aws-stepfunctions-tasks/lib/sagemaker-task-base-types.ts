@@ -1,5 +1,9 @@
 import ec2 = require('@aws-cdk/aws-ec2');
+import ecr = require('@aws-cdk/aws-ecr');
+import iam = require('@aws-cdk/aws-iam');
 import kms = require('@aws-cdk/aws-kms');
+import s3 = require('@aws-cdk/aws-s3');
+import sfn = require('@aws-cdk/aws-stepfunctions');
 import { Duration } from '@aws-cdk/cdk';
 
 //
@@ -24,7 +28,7 @@ export interface AlgorithmSpecification {
     /**
      * Registry path of the Docker image that contains the training algorithm.
      */
-    readonly trainingImage?: string;
+    readonly trainingImage?: IDockerImage;
 
     /**
      * Input mode that the algorithm supports.
@@ -125,7 +129,7 @@ export interface S3DataSource {
     /**
      * S3 Uri
      */
-    readonly s3Uri: string;
+    readonly s3Location: IS3Location;
 }
 
 /**
@@ -140,7 +144,7 @@ export interface OutputDataConfig {
   /**
    * Identifies the S3 path where you want Amazon SageMaker to store the model artifacts.
    */
-  readonly s3OutputPath: string;
+  readonly s3OutputLocation: IS3Location;
 }
 
 export interface StoppingCondition {
@@ -169,7 +173,7 @@ export interface ResourceConfig {
     /**
      * KMS key that Amazon SageMaker uses to encrypt data on the storage volume attached to the ML compute instance(s) that run the training job.
      */
-    readonly volumeKmsKeyId?: kms.IKey;
+    readonly volumeEncryptionKey?: kms.IKey;
 
     /**
      * Size of the ML storage volume that you want to provision.
@@ -216,6 +220,148 @@ export interface MetricDefinition {
      * Regular expression that searches the output of a training job and gets the value of the metric.
      */
     readonly regex: string;
+}
+
+/**
+ * Specifies a location in a S3 Bucket.
+ *
+ * @experimental
+ */
+export interface IS3Location {
+    /** The URI of the location in S3 */
+    readonly uri: string;
+
+    /** Grants read permissions to the S3 location. */
+    grantRead(grantee: iam.IGrantable): void;
+    /** Grants write permissions to the S3 location. */
+    grantWrite(grantee: iam.IGrantable): void;
+}
+
+/**
+ * Constructs `IS3Location` objects.
+ */
+export class S3Location {
+    /**
+     * An `IS3Location` built with a determined bucket and key prefix.
+     *
+     * @param bucket    is the bucket where the objects are to be stored.
+     * @param keyPrefix is the key prefix used by the location.
+     */
+    public static inBucket(bucket: s3.IBucket, keyPrefix: string): IS3Location {
+        return {
+            uri: bucket.urlForObject(keyPrefix),
+            grantRead: (grantee) => bucket.grantRead(grantee, keyPrefix + '*'),
+            grantWrite: (grantee) => bucket.grantWrite(grantee, keyPrefix + '*'),
+        };
+    }
+
+    /**
+     * An `IS3Location` determined fully by a JSON Path from the task input.
+     *
+     * Due to the dynamic nature of those locations, the IAM grants that will be set by `grantRead` and `grantWrite`
+     * apply to the `*` resource.
+     *
+     * @param expression the JSON expression resolving to an S3 location URI.
+     */
+    public static fromJsonExpression(expression: string): IS3Location {
+        return {
+            uri: sfn.Data.stringAt(expression),
+            grantRead: grantee => grantee.grantPrincipal.addToPolicy(new iam.PolicyStatement({
+                actions: ['s3:GetObject', `s3:ListBucket`],
+                resources: ['*']
+            })),
+            grantWrite: grantee => grantee.grantPrincipal.addToPolicy(new iam.PolicyStatement({
+                actions: ['s3:PutObject'],
+                resources: ['*']
+            })),
+        };
+    }
+
+    private constructor() { }
+}
+
+export interface IDockerImage {
+    readonly name: string;
+    grantRead(grantee: iam.IGrantable): void;
+}
+
+/**
+ * Specifies options for accessing images in ECR.
+ */
+export interface EcrImageOptions {
+    /**
+     * The tag to use for this ECR Image. This option is mutually exclusive with `digest`.
+     */
+    readonly tag?: string;
+
+    /**
+     * The digest to use for this ECR Image. This option is mutually exclusive with `tag`.
+     */
+    readonly digest?: string;
+}
+
+/**
+ * Creates `IDockerImage` instances.
+ */
+export class DockerImage {
+    /**
+     * Reference a Docker image stored in an ECR repository.
+     *
+     * @param repo the ECR repository where the image is hosted.
+     * @param opts an optional `tag` or `digest` to use.
+     */
+    public static inEcr(repo: ecr.IRepository, opts: EcrImageOptions = {}): IDockerImage {
+        if (opts.tag && opts.digest) {
+            throw new Error(`The tag and digest options are mutually exclusive, but both were specified`);
+        }
+        const suffix = opts.tag
+            ? `:${opts.tag}`
+            : opts.digest
+                ? `@${opts.digest}`
+                : '';
+        return {
+            name: repo.repositoryUri + suffix,
+            grantRead: repo.grantPull.bind(repo),
+        };
+    }
+
+    /**
+     * Reference a Docker image which URI is obtained from the task's input.
+     *
+     * @param expression      the JSON path expression with the task input.
+     * @param enableEcrAccess whether ECR access should be permitted (set to `false` if the image will never be in ECR).
+     */
+    public static fromJsonExpression(expression: string, enableEcrAccess = true): IDockerImage {
+        return this.fromImageUri(sfn.Data.stringAt(expression), enableEcrAccess);
+    }
+
+    /**
+     * Reference a Docker image by it's URI.
+     *
+     * When referencing ECR images, prefer using `inEcr`.
+     *
+     * @param uri             the URI to the docker image.
+     * @param enableEcrAccess whether ECR access should be permitted (set to `true` if the image is located in an ECR
+     *                        repository).
+     */
+    public static fromImageUri(uri: string, enableEcrAccess = false): IDockerImage {
+        return {
+            name: uri,
+            grantRead(grantee) {
+                if (!enableEcrAccess) { return; }
+                grantee.grantPrincipal.addToPolicy(new iam.PolicyStatement({
+                    actions: [
+                        'ecr:BatchCheckLayerAvailability',
+                        'ecr:GetDownloadUrlForLayer',
+                        'ecr:BatchGetImage'
+                    ],
+                    resources: ['*']
+                }));
+            },
+        };
+    }
+
+    private constructor() { }
 }
 
 /**
