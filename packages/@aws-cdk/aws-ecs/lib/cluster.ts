@@ -100,9 +100,9 @@ export class Cluster extends Resource implements ICluster {
       throw new Error("Can only add default namespace once.");
     }
 
-    const namespaceType = options.type === undefined
-      ? cloudmap.NamespaceType.DNS_PRIVATE
-      : cloudmap.NamespaceType.DNS_PUBLIC;
+    const namespaceType = options.type !== undefined
+      ? options.type
+      : cloudmap.NamespaceType.DNS_PRIVATE;
 
     const sdNamespace = namespaceType === cloudmap.NamespaceType.DNS_PRIVATE ?
       new cloudmap.PrivateDnsNamespace(this, 'DefaultServiceDiscoveryNamespace', {

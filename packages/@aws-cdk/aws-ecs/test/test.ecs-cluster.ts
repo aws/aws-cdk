@@ -321,13 +321,15 @@ export = {
     // WHEN
     cluster.addDefaultCloudMapNamespace({
       name: "foo.com",
-      type: cloudmap.NamespaceType.DNS_PRIVATE
+      type: cloudmap.NamespaceType.DNS_PUBLIC
     });
 
     // THEN
     expect(stack).to(haveResource("AWS::ServiceDiscovery::PublicDnsNamespace", {
        Name: 'foo.com',
     }));
+
+    test.equal(cluster.defaultNamespace!.type, cloudmap.NamespaceType.DNS_PUBLIC);
 
     test.done();
   },
