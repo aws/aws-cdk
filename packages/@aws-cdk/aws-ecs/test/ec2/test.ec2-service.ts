@@ -146,7 +146,7 @@ export = {
 
       // THEN
       expect(stack).to(haveResource('AWS::ECS::Service', (service: any) => {
-        return service.LaunchType === 'EC2' && service.DesiredCount === undefined;
+        return service.LaunchType === LaunchType.EC2 && service.DesiredCount === undefined;
       }));
 
       test.done();

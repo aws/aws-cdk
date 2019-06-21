@@ -112,11 +112,11 @@ export class Ec2Service extends BaseService implements IEc2Service, elb.ILoadBal
       desiredCount: props.daemon || props.desiredCount !== undefined ? props.desiredCount : 1,
       maximumPercent: props.daemon && props.maximumPercent === undefined ? 100 : props.maximumPercent,
       minimumHealthyPercent: props.daemon && props.minimumHealthyPercent === undefined ? 0 : props.minimumHealthyPercent ,
+      launchType: LaunchType.EC2,
     },
     {
       cluster: props.cluster.clusterName,
       taskDefinition: props.taskDefinition.taskDefinitionArn,
-      launchType: LaunchType.EC2,
       placementConstraints: Lazy.anyValue({ produce: () => this.constraints }, { omitEmptyArray: true }),
       placementStrategies: Lazy.anyValue({ produce: () => this.strategies }, { omitEmptyArray: true }),
       schedulingStrategy: props.daemon ? 'DAEMON' : 'REPLICA',

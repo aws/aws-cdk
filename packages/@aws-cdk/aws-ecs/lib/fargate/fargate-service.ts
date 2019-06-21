@@ -73,10 +73,10 @@ export class FargateService extends BaseService implements IFargateService {
     super(scope, id, {
       ...props,
       desiredCount: props.desiredCount !== undefined ? props.desiredCount : 1,
+      launchType: LaunchType.FARGATE,
     }, {
       cluster: props.cluster.clusterName,
       taskDefinition: props.taskDefinition.taskDefinitionArn,
-      launchType: LaunchType.FARGATE,
       platformVersion: props.platformVersion,
     }, props.taskDefinition);
 

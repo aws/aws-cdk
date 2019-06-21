@@ -88,6 +88,13 @@ export interface BaseServiceProps {
    * @default false
    */
   readonly longArnEnabled?: boolean;
+
+  /**
+   * The launch type on which to run your service.
+   *
+   * @default - not defined
+   */
+  readonly launchType?: LaunchType;
 }
 
 /**
@@ -150,6 +157,7 @@ export abstract class BaseService extends Resource
         maximumPercent: props.maximumPercent || 200,
         minimumHealthyPercent: props.minimumHealthyPercent === undefined ? 50 : props.minimumHealthyPercent
       },
+      launchType: props.launchType,
       healthCheckGracePeriodSeconds: this.evaluateHealthGracePeriod(props.healthCheckGracePeriod),
       /* role: never specified, supplanted by Service Linked Role */
       networkConfiguration: Lazy.anyValue({ produce: () => this.networkConfiguration }),
