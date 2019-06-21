@@ -20,7 +20,10 @@ test('Invoke lambda with default magic ARN', () => {
     task: new tasks.RunLambdaTask(fn, {
       payload: {
         foo: 'bar'
-      }
+      },
+      invocationType: tasks.InvocationType.RequestResponse,
+      clientContext: "eyJoZWxsbyI6IndvcmxkIn0=",
+      qualifier: "1",
     })
   });
   new sfn.StateMachine(stack, 'SM', {
@@ -32,7 +35,8 @@ test('Invoke lambda with default magic ARN', () => {
       "Fn::Join": ["", [
           "{\"StartAt\":\"Task\",\"States\":{\"Task\":{\"End\":true,\"Parameters\":{\"FunctionName\":\"",
           { Ref: "Fn9270CBC0" },
-          "\",\"Payload\":{\"foo\":\"bar\"}},\"Type\":\"Task\",\"Resource\":\"arn:aws:states:::lambda:invoke\"}}}"
+          "\",\"Payload\":{\"foo\":\"bar\"},\"InvocationType\":\"RequestResponse\",\"ClientContext\":\"eyJoZWxsbyI6IndvcmxkIn0=\","
+          + "\"Qualifier\":\"1\"},\"Type\":\"Task\",\"Resource\":\"arn:aws:states:::lambda:invoke\"}}}"
       ]]
     },
   });
@@ -62,7 +66,7 @@ test('Lambda function can be used in a Task with Task Token', () => {
   });
 });
 
-test('Task throws if waitForTaskToken is supplied but task token is not included', () => {
+test('Task throws if waitForTaskToken is supplied but task token is not included in payLoad', () => {
   expect(() => {
     new sfn.Task(stack, 'Task', {
       task: new tasks.RunLambdaTask(fn, {
