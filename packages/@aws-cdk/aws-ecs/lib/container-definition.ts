@@ -1,10 +1,58 @@
 import iam = require('@aws-cdk/aws-iam');
+import secretsmanager = require('@aws-cdk/aws-secretsmanager');
+import ssm = require('@aws-cdk/aws-ssm');
 import cdk = require('@aws-cdk/cdk');
 import { NetworkMode, TaskDefinition } from './base/task-definition';
 import { ContainerImage, ContainerImageConfig } from './container-image';
 import { CfnTaskDefinition } from './ecs.generated';
 import { LinuxParameters } from './linux-parameters';
 import { LogDriver } from './log-drivers/log-driver';
+
+/**
+ * Environment variable value type.
+ */
+export enum EnvironmentValueType {
+  /**
+   * A string in clear text.
+   */
+  STRING = 'string',
+
+  /**
+   * The full ARN of the AWS Secrets Manager secret or the full ARN of the
+   * parameter in the AWS Systems Manager Parameter Store.
+   */
+  SECRET = 'secret',
+}
+
+/**
+ * An environment variable value.
+ */
+export class EnvironmentValue {
+  /**
+   * Creates a environment variable value from a string.
+   */
+  public static fromString(value: string) {
+    return new EnvironmentValue(value, EnvironmentValueType.STRING);
+  }
+
+  /**
+   * Creates a environment variable value from a parameter stored in AWS
+   * Systems Manager Parameter Store.
+   */
+  public static fromSsmParameter(parameter: ssm.IParameter) {
+    return new EnvironmentValue(parameter.parameterArn, EnvironmentValueType.SECRET);
+  }
+
+  /**
+   * Creates a environment variable value from a secret stored in AWS Secrets
+   * Manager.
+   */
+  public static fromSecretsManager(secret: secretsmanager.ISecret) {
+    return new EnvironmentValue(secret.secretArn, EnvironmentValueType.SECRET);
+  }
+
+  constructor(public readonly value: string, public readonly type: EnvironmentValueType) {}
+}
 
 export interface ContainerDefinitionOptions {
   /**
@@ -81,7 +129,7 @@ export interface ContainerDefinitionOptions {
    *
    * @default - No environment variables.
    */
-  readonly environment?: { [key: string]: string };
+  readonly environment?: { [key: string]: EnvironmentValue };
 
   /**
    * Indicates whether the task stops if this container fails.
@@ -386,6 +434,17 @@ export class ContainerDefinition extends cdk.Construct {
    * Render this container definition to a CloudFormation object
    */
   public renderContainerDefinition(): CfnTaskDefinition.ContainerDefinitionProperty {
+    const environment = [];
+    const secrets = [];
+    for (const [k, v] of Object.entries(this.props.environment || {})) {
+      if (v.type === EnvironmentValueType.STRING) {
+        environment.push({ name: k, value: v.value });
+      }
+      if (v.type === EnvironmentValueType.SECRET) {
+        secrets.push({ name: k, valueFrom: v.value });
+      }
+    }
+
     return {
       command: this.props.command,
       cpu: this.props.cpu,
@@ -411,8 +470,10 @@ export class ContainerDefinition extends cdk.Construct {
       volumesFrom: this.volumesFrom.map(renderVolumeFrom),
       workingDirectory: this.props.workingDirectory,
       logConfiguration: this.props.logging && this.props.logging.renderLogDriver(),
-      environment: this.props.environment && renderKV(this.props.environment, 'name', 'value'),
-      extraHosts: this.props.extraHosts && renderKV(this.props.extraHosts, 'hostname', 'ipAddress'),
+      environment: environment.length !== 0 ? environment : undefined,
+      secrets: secrets.length !== 0 ? secrets : undefined,
+      extraHosts: this.props.extraHosts && Object.entries(this.props.extraHosts)
+        .map(([k, v]) => ({ hostname: k, ipAddress: v })),
       healthCheck: this.props.healthCheck && renderHealthCheck(this.props.healthCheck),
       links: this.links,
       linuxParameters: this.linuxParameters && this.linuxParameters.renderLinuxParameters(),
@@ -466,14 +527,6 @@ export interface HealthCheck {
    * @default Duration.seconds(5)
    */
   readonly timeout?: cdk.Duration;
-}
-
-function renderKV(env: { [key: string]: string }, keyName: string, valueName: string): any {
-  const ret = [];
-  for (const [key, value] of Object.entries(env)) {
-    ret.push({ [keyName]: key, [valueName]: value });
-  }
-  return ret;
 }
 
 function renderHealthCheck(hc: HealthCheck): CfnTaskDefinition.HealthCheckProperty {

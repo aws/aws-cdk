@@ -1,5 +1,6 @@
 import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
 import secretsmanager = require('@aws-cdk/aws-secretsmanager');
+import ssm = require('@aws-cdk/aws-ssm');
 import cdk = require('@aws-cdk/cdk');
 import { Test } from 'nodeunit';
 import ecs = require('../lib');
@@ -265,7 +266,7 @@ export = {
       image: ecs.ContainerImage.fromRegistry('test'),
       memoryLimitMiB: 1024,
       environment: {
-        TEST_ENVIRONMENT_VARIABLE: "test environment variable value"
+        TEST_ENVIRONMENT_VARIABLE: ecs.EnvironmentValue.fromString("test environment variable value")
       }
     });
 
@@ -277,6 +278,70 @@ export = {
             Name: "TEST_ENVIRONMENT_VARIABLE",
             Value: "test environment variable value"
           }]
+        }
+      ]
+    }));
+
+    test.done();
+
+  },
+
+  'can add secret environment variables to the container definition'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
+
+    const secret = new secretsmanager.Secret(stack, 'Secret');
+    const parameter = ssm.StringParameter.fromSecureStringParameterAttributes(stack, 'Parameter', {
+      parameterName: '/name',
+      version: 1
+    });
+
+    // WHEN
+    taskDefinition.addContainer('cont', {
+      image: ecs.ContainerImage.fromRegistry('test'),
+      memoryLimitMiB: 1024,
+      environment: {
+        SECRET: ecs.EnvironmentValue.fromSecretsManager(secret),
+        PARAMETER: ecs.EnvironmentValue.fromSsmParameter(parameter),
+      }
+    });
+
+    // THEN
+    expect(stack).to(haveResourceLike('AWS::ECS::TaskDefinition', {
+      ContainerDefinitions: [
+        {
+          Secrets: [
+            {
+              Name: "SECRET",
+              ValueFrom: {
+                Ref: "SecretA720EF05"
+              }
+            },
+            {
+              Name: "PARAMETER",
+              ValueFrom: {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      Ref: "AWS::Partition"
+                    },
+                    ":ssm:",
+                    {
+                      Ref: "AWS::Region"
+                    },
+                    ":",
+                    {
+                      Ref: "AWS::AccountId"
+                    },
+                    ":parameter/name"
+                  ]
+                ]
+              }
+            },
+          ]
         }
       ]
     }));

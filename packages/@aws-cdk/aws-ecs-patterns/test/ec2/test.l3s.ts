@@ -22,8 +22,8 @@ export = {
       image: ecs.ContainerImage.fromRegistry('test'),
       desiredCount: 2,
       environment: {
-        TEST_ENVIRONMENT_VARIABLE1: "test environment variable 1 value",
-        TEST_ENVIRONMENT_VARIABLE2: "test environment variable 2 value"
+        TEST_ENVIRONMENT_VARIABLE1: ecs.EnvironmentValue.fromString("test environment variable 1 value"),
+        TEST_ENVIRONMENT_VARIABLE2: ecs.EnvironmentValue.fromString("test environment variable 2 value")
       }
     });
 
@@ -96,8 +96,8 @@ export = {
       image: ecs.ContainerImage.fromRegistry('test'),
       desiredCount: 2,
       environment: {
-        TEST_ENVIRONMENT_VARIABLE1: "test environment variable 1 value",
-        TEST_ENVIRONMENT_VARIABLE2: "test environment variable 2 value"
+        TEST_ENVIRONMENT_VARIABLE1: ecs.EnvironmentValue.fromString("test environment variable 1 value"),
+        TEST_ENVIRONMENT_VARIABLE2: ecs.EnvironmentValue.fromString("test environment variable 2 value")
       }
     });
 
@@ -153,8 +153,8 @@ export = {
       desiredCount: 2,
       enableLogging: false,
       environment: {
-        TEST_ENVIRONMENT_VARIABLE1: "test environment variable 1 value",
-        TEST_ENVIRONMENT_VARIABLE2: "test environment variable 2 value"
+        TEST_ENVIRONMENT_VARIABLE1: ecs.EnvironmentValue.fromString("test environment variable 1 value"),
+        TEST_ENVIRONMENT_VARIABLE2: ecs.EnvironmentValue.fromString("test environment variable 2 value")
       }
     });
 

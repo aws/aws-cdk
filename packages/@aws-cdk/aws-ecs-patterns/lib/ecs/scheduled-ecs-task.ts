@@ -49,7 +49,7 @@ export interface ScheduledEc2TaskProps {
    *
    * @default none
    */
-  readonly environment?: { [key: string]: string };
+  readonly environment?: { [key: string]: ecs.EnvironmentValue };
 
   /**
    * The hard limit (in MiB) of memory to present to the container.

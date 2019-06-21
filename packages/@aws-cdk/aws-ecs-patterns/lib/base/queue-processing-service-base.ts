@@ -43,7 +43,7 @@ export interface QueueProcessingServiceBaseProps {
    *
    * @default 'QUEUE_NAME: queue.queueName'
    */
-  readonly environment?: { [key: string]: string };
+  readonly environment?: { [key: string]: ecs.EnvironmentValue };
 
   /**
    * A queue for which to process items from.
@@ -88,7 +88,7 @@ export abstract class QueueProcessingServiceBase extends cdk.Construct {
   /**
    * Environment variables that will include the queue name
    */
-  public readonly environment: { [key: string]: string };
+  public readonly environment: { [key: string]: ecs.EnvironmentValue };
   /**
    * The minimum number of tasks to run
    */
@@ -121,7 +121,7 @@ export abstract class QueueProcessingServiceBase extends cdk.Construct {
     this.logDriver = enableLogging ? this.createAWSLogDriver(this.node.id) : undefined;
 
     // Add the queue name to environment variables
-    this.environment = { ...(props.environment || {}), QUEUE_NAME: this.sqsQueue.queueName };
+    this.environment = { ...(props.environment || {}), QUEUE_NAME: ecs.EnvironmentValue.fromString(this.sqsQueue.queueName) };
 
     // Determine the desired task count (minimum) and maximum scaling capacity
     this.desiredCount = props.desiredTaskCount || 1;

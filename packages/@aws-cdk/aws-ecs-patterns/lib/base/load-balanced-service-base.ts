@@ -65,7 +65,7 @@ export interface LoadBalancedServiceBaseProps {
    *
    * @default - No environment variables.
    */
-  readonly environment?: { [key: string]: string };
+  readonly environment?: { [key: string]: ecs.EnvironmentValue };
 
   /**
    * Whether to create an AWS log driver
