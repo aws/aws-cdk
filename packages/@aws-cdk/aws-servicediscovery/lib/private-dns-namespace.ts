@@ -2,7 +2,7 @@ import ec2 = require('@aws-cdk/aws-ec2');
 import { Construct, Resource } from '@aws-cdk/cdk';
 import { BaseNamespaceProps, INamespace, NamespaceType } from './namespace';
 import { DnsServiceProps, Service } from './service';
-import { CfnPrivateDnsNamespace} from './servicediscovery.generated';
+import { CfnPrivateDnsNamespace } from './servicediscovery.generated';
 
 export interface PrivateDnsNamespaceProps extends BaseNamespaceProps {
   /**

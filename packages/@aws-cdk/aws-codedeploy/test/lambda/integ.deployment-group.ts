@@ -15,7 +15,7 @@ const handler = new lambda.Function(stack, `Handler`, {
 });
 const version = handler.addVersion('1');
 const blueGreenAlias = new lambda.Alias(stack, `Alias`, {
-  aliasName: cdk.PhysicalName.of('alias'),
+  aliasName: 'alias',
   version
 });
 

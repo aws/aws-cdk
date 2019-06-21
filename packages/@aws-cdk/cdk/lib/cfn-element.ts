@@ -164,17 +164,13 @@ export abstract class CfnElement extends Construct {
  */
 export abstract class CfnRefElement extends CfnElement {
   /**
-   * Return a token that will CloudFormation { Ref } this stack element
+   * Return a string that will be resolved to a CloudFormation `{ Ref }` for this element.
+   *
+   * If, by any chance, the intrinsic reference of a resource is not a string, you could
+   * coerce it to an IResolvable through `Lazy.any({ produce: resource.ref })`.
    */
-  public get ref(): IResolvable {
-    return CfnReference.for(this, 'Ref');
-  }
-
-  /**
-   * Return a string that will CloudFormation { Ref } this stack element
-   */
-  public get refAsString(): string {
-    return Token.asString(this.ref);
+  public get ref(): string {
+    return Token.asString(CfnReference.for(this, 'Ref'));
   }
 }
 
@@ -185,5 +181,4 @@ function notTooLong(x: string) {
 
 import { CfnReference } from "./private/cfn-reference";
 import { findTokens } from "./private/resolve";
-import { IResolvable } from "./resolvable";
 import { Stack } from './stack';

@@ -99,8 +99,8 @@
       "props-physical-name:@aws-cdk/aws-apigateway.MethodProps",
       "props-physical-name:@aws-cdk/aws-apigateway.ProxyResourceProps",
       "props-physical-name:@aws-cdk/aws-apigateway.ResourceProps",
-      "props-physical-name:@aws-cdk/aws-apigateway.StageProps",
       "props-physical-name:@aws-cdk/aws-apigateway.UsagePlanProps",
+      "props-physical-name-type:@aws-cdk/aws-apigateway.StageProps.stageName",
       "props-physical-name:@aws-cdk/aws-apigateway.LambdaRestApiProps"
     ]
   },

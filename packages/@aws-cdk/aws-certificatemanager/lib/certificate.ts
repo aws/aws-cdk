@@ -87,7 +87,7 @@ export class Certificate extends Resource implements ICertificate {
       domainValidationOptions: allDomainNames.map(domainValidationOption),
     });
 
-    this.certificateArn = cert.refAsString;
+    this.certificateArn = cert.ref;
 
     /**
      * Return the domain validation options for the given domain

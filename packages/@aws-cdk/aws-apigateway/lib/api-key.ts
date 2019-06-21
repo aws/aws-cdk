@@ -92,11 +92,11 @@ export class ApiKey extends Resource implements IApiKey {
       description: props.description,
       enabled: props.enabled || true,
       generateDistinctId: props.generateDistinctId,
-      name: this.physicalName.value,
+      name: this.physicalName,
       stageKeys: this.renderStageKeys(props.resources)
     });
 
-    this.keyId = resource.refAsString;
+    this.keyId = resource.ref;
   }
 
   private renderStageKeys(resources: RestApi[] | undefined): CfnApiKey.StageKeyProperty[] | undefined {
