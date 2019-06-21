@@ -25,8 +25,7 @@ export function zipDirectory(directory: string, outputFile: string): Promise<voi
     archive.pipe(output);
 
     files.forEach(file => { // Append files serially to ensure file order
-      const stream = fs.createReadStream(path.join(directory, file));
-      archive.append(stream, {
+      archive.append(fs.createReadStream(path.join(directory, file)), {
         name: file,
         date: new Date('1980-01-01T00:00:00.000Z'), // reset dates to get the same hash for the same content
       });
@@ -34,6 +33,7 @@ export function zipDirectory(directory: string, outputFile: string): Promise<voi
 
     archive.finalize();
 
+    // archive has been finalized and the output file descriptor has closed, resolve promise
     output.once('close', () => ok());
   });
 }
