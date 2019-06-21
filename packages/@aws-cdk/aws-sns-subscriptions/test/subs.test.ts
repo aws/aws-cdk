@@ -19,7 +19,7 @@ beforeEach(() => {
 });
 
 test('url subscription', () => {
-  topic.addSubscription(new subs.UrlSubscription('https://foobar.com/', sns.SubscriptionProtocol.Https));
+  topic.addSubscription(new subs.UrlSubscription('https://foobar.com/', sns.SubscriptionProtocol.HTTPS));
 
   expect(stack).toMatchTemplate({
     "Resources": {
@@ -45,7 +45,7 @@ test('url subscription', () => {
 });
 
 test('url subscription (with raw delivery)', () => {
-  topic.addSubscription(new subs.UrlSubscription('https://foobar.com/', sns.SubscriptionProtocol.Https, {
+  topic.addSubscription(new subs.UrlSubscription('https://foobar.com/', sns.SubscriptionProtocol.HTTPS, {
     rawMessageDelivery: true
   }));
 

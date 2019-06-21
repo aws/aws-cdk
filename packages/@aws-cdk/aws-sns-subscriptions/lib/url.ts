@@ -1,5 +1,6 @@
 import sns = require('@aws-cdk/aws-sns');
-import { Construct, Token } from '@aws-cdk/cdk';
+import { Token } from '@aws-cdk/cdk';
+import { SubscriptionProps } from './subscription';
 
 /**
  * Options for URL subscriptions.
@@ -29,9 +30,9 @@ export class UrlSubscription implements sns.ITopicSubscription {
     }
   }
 
-  public bind(scope: Construct, topic: sns.ITopic): void {
-    new sns.Subscription(scope, Token.isUnresolved(this.url) ? 'UnresolvedUrl' : this.url, {
-      topic,
+  public bind(_topic: sns.ITopic): sns.TopicSubscriptionConfig {
+    return {
+      subscriberId: this.url,
       endpoint: this.url,
       protocol: this.protocol,
       rawMessageDelivery: this.props.rawMessageDelivery,
