@@ -330,7 +330,7 @@ export class DatabaseCluster extends DatabaseClusterBase {
     // create a number token that represents the port of the cluster
     const portAttribute = Token.asNumber(cluster.attrEndpointPort);
     this.clusterEndpoint = new Endpoint(cluster.attrEndpointAddress, portAttribute);
-    this.clusterReadEndpoint = new Endpoint(cluster.attrEndpointAddress, portAttribute);
+    this.clusterReadEndpoint = new Endpoint(cluster.attrReadEndpointAddress, portAttribute);
 
     if (secret) {
       this.secret = secret.addTargetAttachment('AttachedSecret', {
