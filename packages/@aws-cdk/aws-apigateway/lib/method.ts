@@ -123,7 +123,7 @@ export class Method extends Resource {
 
     const resource = new CfnMethod(this, 'Resource', methodProps);
 
-    this.methodId = resource.refAsString;
+    this.methodId = resource.ref;
 
     props.resource.restApi._attachMethod(this);
 

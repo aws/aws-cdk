@@ -1,5 +1,5 @@
 import kms = require('@aws-cdk/aws-kms');
-import { Construct, Duration, PhysicalName, ResourceIdentifiers, Stack } from '@aws-cdk/cdk';
+import { Construct, Duration, PhysicalName, Stack } from '@aws-cdk/cdk';
 import { IQueue, QueueAttributes, QueueBase } from './queue-base';
 import { CfnQueue } from './sqs.generated';
 import { validateProps } from './validate-props';
@@ -246,7 +246,7 @@ export class Queue extends QueueBase {
     const { encryptionMasterKey, encryptionProps } = _determineEncryptionProps.call(this);
 
     const queue = new CfnQueue(this, 'Resource', {
-      queueName: this.physicalName.value,
+      queueName: this.physicalName,
       ...this.determineFifoProps(props),
       ...encryptionProps,
       redrivePolicy,
@@ -257,18 +257,18 @@ export class Queue extends QueueBase {
       visibilityTimeout: props.visibilityTimeout && props.visibilityTimeout.toSeconds(),
     });
 
-    const resourceIdentifiers = new ResourceIdentifiers(this, {
+    const resourceIdentifiers = this.getCrossEnvironmentAttributes({
       arn: queue.attrArn,
       name: queue.attrQueueName,
       arnComponents: {
         service: 'sqs',
-        resource: this.physicalName.value || '',
+        resource: this.physicalName,
       },
     });
     this.queueArn = resourceIdentifiers.arn;
     this.queueName = resourceIdentifiers.name;
     this.encryptionMasterKey = encryptionMasterKey;
-    this.queueUrl = queue.refAsString;
+    this.queueUrl = queue.ref;
 
     function _determineEncryptionProps(this: Queue): { encryptionProps: EncryptionProps, encryptionMasterKey?: kms.IKey } {
       let encryption = props.encryption || QueueEncryption.UNENCRYPTED;

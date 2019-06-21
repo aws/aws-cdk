@@ -6,7 +6,7 @@ const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-cdk-codecommit-events');
 
 const repo = new codecommit.Repository(stack, 'Repo', {
-  repositoryName: cdk.PhysicalName.of('aws-cdk-codecommit-events'),
+  repositoryName: 'aws-cdk-codecommit-events',
 });
 const topic = new sns.Topic(stack, 'MyTopic');
 

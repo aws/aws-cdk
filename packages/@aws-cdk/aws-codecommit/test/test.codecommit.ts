@@ -1,5 +1,5 @@
 import { expect } from '@aws-cdk/assert';
-import { PhysicalName, Stack } from '@aws-cdk/cdk';
+import { Stack } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
 import { Repository, RepositoryProps } from '../lib';
 
@@ -9,7 +9,7 @@ export = {
       const stack = new Stack();
 
       const props: RepositoryProps = {
-        repositoryName: PhysicalName.of('MyRepository'),
+        repositoryName: 'MyRepository',
       };
 
       const snsArn = 'arn:aws:sns:*:123456789012:my_topic';
@@ -43,7 +43,7 @@ export = {
       const stack = new Stack();
 
       const myRepository = new Repository(stack, 'MyRepository', {
-        repositoryName: PhysicalName.of('MyRepository'),
+        repositoryName: 'MyRepository',
       }).notify('myTrigger');
 
       test.throws(() => myRepository.notify('myTrigger'));

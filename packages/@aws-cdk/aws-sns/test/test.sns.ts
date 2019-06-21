@@ -88,8 +88,6 @@ export = {
       test.done();
     },
   },
-  'subscription tests': {
-  },
 
   'can add a policy to the topic'(test: Test) {
     // GIVEN

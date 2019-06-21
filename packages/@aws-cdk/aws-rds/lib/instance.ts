@@ -8,7 +8,7 @@ import secretsmanager = require('@aws-cdk/aws-secretsmanager');
 import { Construct, Duration, IResource, RemovalPolicy, Resource, SecretValue, Stack, Token } from '@aws-cdk/cdk';
 import { DatabaseSecret } from './database-secret';
 import { Endpoint } from './endpoint';
-import { IOptionGroup} from './option-group';
+import { IOptionGroup } from './option-group';
 import { IParameterGroup } from './parameter-group';
 import { DatabaseClusterEngine } from './props';
 import { CfnDBInstance, CfnDBInstanceProps, CfnDBSubnetGroup } from './rds.generated';
@@ -505,7 +505,7 @@ abstract class DatabaseInstanceNew extends DatabaseInstanceBase implements IData
       copyTagsToSnapshot: props.copyTagsToSnapshot !== undefined ? props.copyTagsToSnapshot : true,
       dbInstanceClass: `db.${props.instanceClass}`,
       dbInstanceIdentifier: props.instanceIdentifier,
-      dbSubnetGroupName: subnetGroup.refAsString,
+      dbSubnetGroupName: subnetGroup.ref,
       deleteAutomatedBackups: props.deleteAutomatedBackups,
       deletionProtection,
       enableCloudwatchLogsExports: this.cloudwatchLogsExports,
@@ -733,7 +733,7 @@ export class DatabaseInstance extends DatabaseInstanceSource implements IDatabas
       storageEncrypted: props.kmsKey ? true : props.storageEncrypted
     });
 
-    this.instanceIdentifier = instance.refAsString;
+    this.instanceIdentifier = instance.ref;
     this.dbInstanceEndpointAddress = instance.attrEndpointAddress;
     this.dbInstanceEndpointPort = instance.attrEndpointPort;
 
@@ -827,7 +827,7 @@ export class DatabaseInstanceFromSnapshot extends DatabaseInstanceSource impleme
           : undefined),
     });
 
-    this.instanceIdentifier = instance.refAsString;
+    this.instanceIdentifier = instance.ref;
     this.dbInstanceEndpointAddress = instance.attrEndpointAddress;
     this.dbInstanceEndpointPort = instance.attrEndpointPort;
 
@@ -904,7 +904,7 @@ export class DatabaseInstanceReadReplica extends DatabaseInstanceNew implements 
       storageEncrypted: props.kmsKey ? true : props.storageEncrypted,
     });
 
-    this.instanceIdentifier = instance.refAsString;
+    this.instanceIdentifier = instance.ref;
     this.dbInstanceEndpointAddress = instance.attrEndpointAddress;
     this.dbInstanceEndpointPort = instance.attrEndpointPort;
 

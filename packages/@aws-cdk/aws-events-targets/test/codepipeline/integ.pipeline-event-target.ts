@@ -14,7 +14,7 @@ const app = new cdk.App();
 const stack = new cdk.Stack(app, 'pipeline-events');
 
 const repo = new codecommit.Repository(stack, 'Repo', {
-  repositoryName: cdk.PhysicalName.of('TestRepository'),
+  repositoryName: 'TestRepository',
 });
 
 const pipeline = new codepipeline.Pipeline(stack, 'pipelinePipeline22F2A91D');

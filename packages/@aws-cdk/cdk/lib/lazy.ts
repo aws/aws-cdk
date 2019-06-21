@@ -5,7 +5,7 @@ import { Token } from "./token";
 /**
  * Interface for lazy string producers
  */
-export interface IStringValue {
+export interface IStringProducer {
   /**
    * Produce the string value
    */
@@ -99,7 +99,7 @@ export interface LazyAnyValueOptions {
  * will only be calculated later, during synthesis.
  */
 export class Lazy {
-  public static stringValue(producer: IStringValue, options: LazyStringValueOptions = {}) {
+  public static stringValue(producer: IStringProducer, options: LazyStringValueOptions = {}) {
     return Token.asString(new LazyString(producer), options);
   }
 
@@ -143,7 +143,7 @@ abstract class LazyBase implements IResolvable {
 }
 
 class LazyString extends LazyBase {
-  constructor(private readonly producer: IStringValue) {
+  constructor(private readonly producer: IStringProducer) {
     super();
   }
 

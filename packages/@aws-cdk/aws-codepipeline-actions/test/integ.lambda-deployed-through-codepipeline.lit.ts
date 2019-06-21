@@ -26,7 +26,7 @@ const pipeline = new codepipeline.Pipeline(pipelineStack, 'Pipeline');
 const cdkSourceOutput = new codepipeline.Artifact();
 const cdkSourceAction = new codepipeline_actions.CodeCommitSourceAction({
   repository: new codecommit.Repository(pipelineStack, 'CdkCodeRepo', {
-    repositoryName: cdk.PhysicalName.of('CdkCodeRepo'),
+    repositoryName: 'CdkCodeRepo',
   }),
   actionName: 'CdkCode_Source',
   output: cdkSourceOutput,
@@ -34,7 +34,7 @@ const cdkSourceAction = new codepipeline_actions.CodeCommitSourceAction({
 const lambdaSourceOutput = new codepipeline.Artifact();
 const lambdaSourceAction = new codepipeline_actions.CodeCommitSourceAction({
   repository: new codecommit.Repository(pipelineStack, 'LambdaCodeRepo', {
-    repositoryName: cdk.PhysicalName.of('LambdaCodeRepo'),
+    repositoryName: 'LambdaCodeRepo',
   }),
   actionName: 'LambdaCode_Source',
   output: lambdaSourceOutput,
