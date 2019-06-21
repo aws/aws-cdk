@@ -257,7 +257,7 @@ const task = new sfn.Task(this, 'CallFargate', {
 #### SageMaker Transform example
 
 ```ts
-const transformJob = new tasks.SagemakerTransformTask(        
+const transformJob = new tasks.SagemakerTransformTask(
     transformJobName: "MyTransformJob",
     modelName: "MyModelName",
     role,
@@ -274,7 +274,7 @@ const transformJob = new tasks.SagemakerTransformTask(
     },
     transformResources: {
         instanceCount: 1,
-        instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.M4, ec2.InstanceSize.XLarge),
+        instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.XLarge),
 });
 
 const task = new sfn.Task(this, 'Batch Inference', {
