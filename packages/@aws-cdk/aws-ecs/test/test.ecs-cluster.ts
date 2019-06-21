@@ -321,7 +321,7 @@ export = {
     // WHEN
     cluster.addDefaultCloudMapNamespace({
       name: "foo.com",
-      type: ecs.NamespaceType.PUBLIC_DNS
+      type: cloudmap.NamespaceType.DNS_PRIVATE
     });
 
     // THEN
