@@ -23,7 +23,7 @@ test('Cannot create a Fargate task with a fargate-incompatible task definition',
   const taskDefinition = new ecs.TaskDefinition(stack, 'TD', {
     memoryMiB: '512',
     cpu: '256',
-    compatibility: ecs.Compatibility.Ec2,
+    compatibility: ecs.Compatibility.EC2,
   });
   taskDefinition.addContainer('TheContainer', {
     image: ecs.ContainerImage.fromRegistry('foo/bar'),
@@ -38,7 +38,7 @@ test('Cannot create a Fargate task without a default container', () => {
   const taskDefinition = new ecs.TaskDefinition(stack, 'TD', {
     memoryMiB: '512',
     cpu: '256',
-    compatibility: ecs.Compatibility.Fargate,
+    compatibility: ecs.Compatibility.FARGATE,
   });
   expect(() => new tasks.RunEcsFargateTask({ cluster, taskDefinition }))
     .toThrowError(/must have at least one essential container/);
@@ -48,7 +48,7 @@ test('Running a Fargate Task', () => {
   const taskDefinition = new ecs.TaskDefinition(stack, 'TD', {
     memoryMiB: '512',
     cpu: '256',
-    compatibility: ecs.Compatibility.Fargate
+    compatibility: ecs.Compatibility.FARGATE
   });
   taskDefinition.addContainer('TheContainer', {
     image: ecs.ContainerImage.fromRegistry('foo/bar'),
@@ -145,7 +145,7 @@ test('Running a Fargate Task', () => {
 
 test('Running an EC2 Task with bridge network', () => {
   const taskDefinition = new ecs.TaskDefinition(stack, 'TD', {
-    compatibility: ecs.Compatibility.Ec2
+    compatibility: ecs.Compatibility.EC2
   });
   taskDefinition.addContainer('TheContainer', {
     image: ecs.ContainerImage.fromRegistry('foo/bar'),
@@ -233,7 +233,7 @@ test('Running an EC2 Task with bridge network', () => {
 
 test('Running an EC2 Task with placement strategies', () => {
   const taskDefinition = new ecs.TaskDefinition(stack, 'TD', {
-    compatibility: ecs.Compatibility.Ec2
+    compatibility: ecs.Compatibility.EC2
   });
   taskDefinition.addContainer('TheContainer', {
     image: ecs.ContainerImage.fromRegistry('foo/bar'),
@@ -281,7 +281,7 @@ test('Running an EC2 Task with placement strategies', () => {
 
 test('Running an EC2 Task with overridden number values', () => {
   const taskDefinition = new ecs.TaskDefinition(stack, 'TD', {
-    compatibility: ecs.Compatibility.Ec2
+    compatibility: ecs.Compatibility.EC2
   });
   taskDefinition.addContainer('TheContainer', {
     image: ecs.ContainerImage.fromRegistry('foo/bar'),

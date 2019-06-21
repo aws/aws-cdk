@@ -7,7 +7,7 @@ class TestStack extends cdk.Stack {
 
     /// !show
     const bucket = new s3.Bucket(this, 'MyBucket', {
-      removalPolicy: cdk.RemovalPolicy.Destroy
+      removalPolicy: cdk.RemovalPolicy.DESTROY
     });
 
     new cdk.CfnOutput(this, 'BucketURL', { value: bucket.bucketWebsiteUrl });

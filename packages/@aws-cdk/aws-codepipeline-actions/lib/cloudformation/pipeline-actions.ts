@@ -222,7 +222,7 @@ export abstract class CloudFormationDeployAction extends CloudFormationAction {
 
   constructor(props: CloudFormationDeployActionProps, configuration: any) {
     const capabilities = props.adminPermissions && props.capabilities === undefined
-      ? [cloudformation.CloudFormationCapabilities.NamedIAM]
+      ? [cloudformation.CloudFormationCapabilities.NAMED_IAM]
       : props.capabilities;
     super(props, {
       ...configuration,
