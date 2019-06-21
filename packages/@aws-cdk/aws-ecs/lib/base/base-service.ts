@@ -72,7 +72,7 @@ export interface BaseServiceProps {
    *
    * @default - AWS Cloud Map service discovery is not enabled.
    */
-  readonly awsCloudMapOptions?: AWSCloudMapOptions;
+  readonly cloudMapOptions?: CloudMapOptions;
 
   /**
    * Whether the new long ARN format has been enabled on ECS services.
@@ -181,8 +181,8 @@ export abstract class BaseService extends Resource
     this.clusterName = clusterName;
     this.cluster = props.cluster;
 
-    if (props.awsCloudMapOptions) {
-      this.enableCloudMap(props.awsCloudMapOptions);
+    if (props.cloudMapOptions) {
+      this.enableCloudMap(props.cloudMapOptions);
     }
   }
 
@@ -336,7 +336,7 @@ export abstract class BaseService extends Resource
   /**
    * Enable CloudMap service discovery for the service
    */
-  private enableCloudMap(options: AWSCloudMapOptions): cloudmap.Service {
+  private enableCloudMap(options: CloudMapOptions): cloudmap.Service {
     const sdNamespace = this.cluster.defaultNamespace;
     if (sdNamespace === undefined) {
       throw new Error("Cannot enable service discovery if a Cloudmap Namespace has not been created in the cluster.");
@@ -402,7 +402,7 @@ const EPHEMERAL_PORT_RANGE = new ec2.TcpPortRange(32768, 65535);
 /**
  * Options for enabling CloudMap on an ECS service
  */
-export interface AWSCloudMapOptions {
+export interface CloudMapOptions {
   /**
    * Name of the cloudmap service to attach to the ECS Service
    *

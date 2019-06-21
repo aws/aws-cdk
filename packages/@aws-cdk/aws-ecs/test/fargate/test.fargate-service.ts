@@ -338,7 +338,7 @@ export = {
         new ecs.FargateService(stack, 'Service', {
           cluster,
           taskDefinition,
-          awsCloudMapOptions: {
+          cloudMapOptions: {
             name: 'myApp',
           }
         });
@@ -367,7 +367,7 @@ export = {
       new ecs.FargateService(stack, 'Service', {
         cluster,
         taskDefinition,
-        awsCloudMapOptions: {
+        cloudMapOptions: {
           name: 'myApp'
         }
       });
@@ -427,7 +427,7 @@ export = {
       new ecs.FargateService(stack, 'Service', {
         cluster,
         taskDefinition,
-        awsCloudMapOptions: {
+        cloudMapOptions: {
           name: 'myApp',
           dnsRecordType: cloudmap.DnsRecordType.SRV
         }
