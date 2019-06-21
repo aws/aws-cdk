@@ -24,7 +24,7 @@ sourceStage.addAction(new cpactions.S3SourceAction({
   output: new codepipeline.Artifact('SourceArtifact'),
   bucket,
   bucketKey: key,
-  pollForSourceChanges: false,
+  trigger: cpactions.S3Trigger.EVENTS,
 }));
 
 const lambdaFun = new lambda.Function(stack, 'LambdaFun', {
