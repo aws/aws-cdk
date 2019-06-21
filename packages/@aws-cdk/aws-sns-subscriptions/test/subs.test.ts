@@ -2,6 +2,7 @@ import '@aws-cdk/assert/jest';
 import lambda = require('@aws-cdk/aws-lambda');
 import sns = require('@aws-cdk/aws-sns');
 import sqs = require('@aws-cdk/aws-sqs');
+import cdk = require('@aws-cdk/cdk');
 import { PhysicalName, Stack } from '@aws-cdk/cdk';
 import subs = require('../lib');
 
@@ -19,7 +20,7 @@ beforeEach(() => {
 });
 
 test('url subscription', () => {
-  topic.addSubscription(new subs.UrlSubscription('https://foobar.com/', sns.SubscriptionProtocol.HTTPS));
+  topic.addSubscription(new subs.UrlSubscription('https://foobar.com/'));
 
   expect(stack).toMatchTemplate({
     "Resources": {
@@ -45,7 +46,7 @@ test('url subscription', () => {
 });
 
 test('url subscription (with raw delivery)', () => {
-  topic.addSubscription(new subs.UrlSubscription('https://foobar.com/', sns.SubscriptionProtocol.HTTPS, {
+  topic.addSubscription(new subs.UrlSubscription('https://foobar.com/', {
     rawMessageDelivery: true
   }));
 
@@ -69,6 +70,44 @@ test('url subscription (with raw delivery)', () => {
       }
     }
   });
+});
+
+test('url subscription (unresolved url with protocol)', () => {
+  const secret = cdk.SecretValue.secretsManager('my-secret');
+  const url = secret.toString();
+  topic.addSubscription(new subs.UrlSubscription(url, {protocol: sns.SubscriptionProtocol.HTTPS}));
+
+  expect(stack).toMatchTemplate({
+    "Resources": {
+      "MyTopic86869434": {
+        "Type": "AWS::SNS::Topic",
+        "Properties": {
+          "DisplayName": "displayName",
+          "TopicName": "topicName"
+        }
+      },
+      "MyTopicUnresolvedUrlBA127FB3": {
+        "Type": "AWS::SNS::Subscription",
+        "Properties": {
+          "Endpoint": "{{resolve:secretsmanager:my-secret:SecretString:::}}",
+          "Protocol": "https",
+          "TopicArn": { "Ref": "MyTopic86869434" },
+        }
+      }
+    }
+  });
+});
+
+test('url subscription (unknown protocol)', () => {
+  expect(() => topic.addSubscription(new subs.UrlSubscription('some-protocol://foobar.com/')))
+   .toThrowError(/URL must start with either http:\/\/ or https:\/\//);
+});
+
+test('url subscription (unresolved url without protocol)', () => {
+  const secret = cdk.SecretValue.secretsManager('my-secret');
+  const url = secret.toString();
+  expect(() => topic.addSubscription(new subs.UrlSubscription(url)))
+   .toThrowError(/Must provide protocol if url is unresolved/);
 });
 
 test('queue subscription', () => {
