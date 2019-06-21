@@ -48,7 +48,7 @@ export class NetworkTargetGroup extends TargetGroupBase implements INetworkTarge
 
   constructor(scope: cdk.Construct, id: string, props: NetworkTargetGroupProps) {
     super(scope, id, props, {
-      protocol: Protocol.Tcp,
+      protocol: Protocol.TCP,
       port: props.port,
     });
 

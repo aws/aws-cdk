@@ -87,17 +87,17 @@ export class NetworkListener extends BaseListener implements INetworkListener {
 
   constructor(scope: Construct, id: string, props: NetworkListenerProps) {
     const certs = props.certificates || [];
-    const proto = props.protocol || (certs.length > 0 ? Protocol.Tls : Protocol.Tcp);
+    const proto = props.protocol || (certs.length > 0 ? Protocol.TLS : Protocol.TCP);
 
-    if ([Protocol.Tcp, Protocol.Tls].indexOf(proto) === -1) {
-      throw new Error(`The protocol must be either ${Protocol.Tcp} or ${Protocol.Tls}. Found ${props.protocol}`);
+    if ([Protocol.TCP, Protocol.TLS].indexOf(proto) === -1) {
+      throw new Error(`The protocol must be either ${Protocol.TCP} or ${Protocol.TLS}. Found ${props.protocol}`);
     }
 
-    if (proto === Protocol.Tls && certs.filter(v => v != null).length === 0) {
+    if (proto === Protocol.TLS && certs.filter(v => v != null).length === 0) {
       throw new Error(`When the protocol is set to TLS, you must specify certificates`);
     }
 
-    if (proto !== Protocol.Tls && certs.length > 0) {
+    if (proto !== Protocol.TLS && certs.length > 0) {
       throw new Error(`Protocol must be TLS when certificates have been specified`);
     }
 

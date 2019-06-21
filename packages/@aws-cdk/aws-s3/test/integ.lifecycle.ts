@@ -10,7 +10,7 @@ new Bucket(stack, 'MyBucket', {
   lifecycleRules: [{
     expirationDate: new Date('2019-10-01')
   }],
-  removalPolicy: RemovalPolicy.Destroy
+  removalPolicy: RemovalPolicy.DESTROY
 });
 
 app.synth();

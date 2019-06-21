@@ -34,7 +34,7 @@ export = {
 
         const mockFsExists = ImportMock.mockFunction(fs, 'existsSync', true);
         try {
-          test.ok(util.shouldFollow(FollowMode.Always, sourceRoot, linkTarget));
+          test.ok(util.shouldFollow(FollowMode.ALWAYS, sourceRoot, linkTarget));
           test.ok(mockFsExists.calledOnceWith(linkTarget));
           test.done();
         } finally {
@@ -47,7 +47,7 @@ export = {
         const linkTarget = path.join('alternate', 'referent');
         const mockFsExists = ImportMock.mockFunction(fs, 'existsSync', true);
         try {
-          test.ok(util.shouldFollow(FollowMode.Always, sourceRoot, linkTarget));
+          test.ok(util.shouldFollow(FollowMode.ALWAYS, sourceRoot, linkTarget));
           test.ok(mockFsExists.calledOnceWith(linkTarget));
           test.done();
         } finally {
@@ -60,7 +60,7 @@ export = {
         const linkTarget = path.join(sourceRoot, 'referent');
         const mockFsExists = ImportMock.mockFunction(fs, 'existsSync', false);
         try {
-          test.ok(!util.shouldFollow(FollowMode.Always, sourceRoot, linkTarget));
+          test.ok(!util.shouldFollow(FollowMode.ALWAYS, sourceRoot, linkTarget));
           test.ok(mockFsExists.calledOnceWith(linkTarget));
           test.done();
         } finally {
@@ -73,7 +73,7 @@ export = {
         const linkTarget = path.join('alternate', 'referent');
         const mockFsExists = ImportMock.mockFunction(fs, 'existsSync', false);
         try {
-          test.ok(!util.shouldFollow(FollowMode.Always, sourceRoot, linkTarget));
+          test.ok(!util.shouldFollow(FollowMode.ALWAYS, sourceRoot, linkTarget));
           test.ok(mockFsExists.calledOnceWith(linkTarget));
           test.done();
         } finally {
@@ -88,7 +88,7 @@ export = {
         const linkTarget = path.join(sourceRoot, 'referent');
         const mockFsExists = ImportMock.mockFunction(fs, 'existsSync');
         try {
-          test.ok(!util.shouldFollow(FollowMode.External, sourceRoot, linkTarget));
+          test.ok(!util.shouldFollow(FollowMode.EXTERNAL, sourceRoot, linkTarget));
           test.ok(mockFsExists.notCalled);
           test.done();
         } finally {
@@ -101,7 +101,7 @@ export = {
         const linkTarget = path.join('alternate', 'referent');
         const mockFsExists = ImportMock.mockFunction(fs, 'existsSync', true);
         try {
-          test.ok(util.shouldFollow(FollowMode.External, sourceRoot, linkTarget));
+          test.ok(util.shouldFollow(FollowMode.EXTERNAL, sourceRoot, linkTarget));
           test.ok(mockFsExists.calledOnceWith(linkTarget));
           test.done();
         } finally {
@@ -114,7 +114,7 @@ export = {
         const linkTarget = path.join('alternate', 'referent');
         const mockFsExists = ImportMock.mockFunction(fs, 'existsSync', false);
         try {
-          test.ok(!util.shouldFollow(FollowMode.External, sourceRoot, linkTarget));
+          test.ok(!util.shouldFollow(FollowMode.EXTERNAL, sourceRoot, linkTarget));
           test.ok(mockFsExists.calledOnceWith(linkTarget));
           test.done();
         } finally {
@@ -129,7 +129,7 @@ export = {
         const linkTarget = path.join(sourceRoot, 'referent');
         const mockFsExists = ImportMock.mockFunction(fs, 'existsSync', true);
         try {
-          test.ok(util.shouldFollow(FollowMode.BlockExternal, sourceRoot, linkTarget));
+          test.ok(util.shouldFollow(FollowMode.BLOCK_EXTERNAL, sourceRoot, linkTarget));
           test.ok(mockFsExists.calledOnceWith(linkTarget));
           test.done();
         } finally {
@@ -142,7 +142,7 @@ export = {
         const linkTarget = path.join(sourceRoot, 'referent');
         const mockFsExists = ImportMock.mockFunction(fs, 'existsSync', false);
         try {
-          test.ok(!util.shouldFollow(FollowMode.BlockExternal, sourceRoot, linkTarget));
+          test.ok(!util.shouldFollow(FollowMode.BLOCK_EXTERNAL, sourceRoot, linkTarget));
           test.ok(mockFsExists.calledOnceWith(linkTarget));
           test.done();
         } finally {
@@ -155,7 +155,7 @@ export = {
         const linkTarget = path.join('alternate', 'referent');
         const mockFsExists = ImportMock.mockFunction(fs, 'existsSync');
         try {
-          test.ok(!util.shouldFollow(FollowMode.BlockExternal, sourceRoot, linkTarget));
+          test.ok(!util.shouldFollow(FollowMode.BLOCK_EXTERNAL, sourceRoot, linkTarget));
           test.ok(mockFsExists.notCalled);
           test.done();
         } finally {
@@ -170,7 +170,7 @@ export = {
         const linkTarget = path.join(sourceRoot, 'referent');
         const mockFsExists = ImportMock.mockFunction(fs, 'existsSync');
         try {
-          test.ok(!util.shouldFollow(FollowMode.Never, sourceRoot, linkTarget));
+          test.ok(!util.shouldFollow(FollowMode.NEVER, sourceRoot, linkTarget));
           test.ok(mockFsExists.notCalled);
           test.done();
         } finally {
@@ -183,7 +183,7 @@ export = {
         const linkTarget = path.join('alternate', 'referent');
         const mockFsExists = ImportMock.mockFunction(fs, 'existsSync');
         try {
-          test.ok(!util.shouldFollow(FollowMode.Never, sourceRoot, linkTarget));
+          test.ok(!util.shouldFollow(FollowMode.NEVER, sourceRoot, linkTarget));
           test.ok(mockFsExists.notCalled);
           test.done();
         } finally {

@@ -95,7 +95,7 @@ export = {
 function mkStack(template: any): cxapi.CloudFormationStackArtifact {
   const assembly = new cxapi.CloudAssemblyBuilder();
   assembly.addArtifact('test', {
-    type: cxapi.ArtifactType.AwsCloudFormationStack,
+    type: cxapi.ArtifactType.AWS_CLOUDFORMATION_STACK,
     environment: cxapi.EnvironmentUtils.format('123456789', 'us-west-2'),
     properties: {
       templateFile: 'template.json'

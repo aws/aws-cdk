@@ -55,7 +55,7 @@ export class ConstructNode {
       }
 
       // synthesize (leaves first)
-      for (const construct of root.findAll(ConstructOrder.PostOrder)) {
+      for (const construct of root.findAll(ConstructOrder.POSTORDER)) {
         (construct as any).synthesize({ assembly: builder }); // "as any" is needed because we want to keep "synthesize" protected
       }
     } finally {
@@ -71,7 +71,7 @@ export class ConstructNode {
    * @param node The root node
    */
   public static prepare(node: ConstructNode) {
-    const constructs = node.findAll(ConstructOrder.PreOrder);
+    const constructs = node.findAll(ConstructOrder.PREORDER);
 
     // Aspects are applied root to leaf
     for (const construct of constructs) {
@@ -239,13 +239,13 @@ export class ConstructNode {
   /**
    * Return this construct and all of its children in the given order
    */
-  public findAll(order: ConstructOrder = ConstructOrder.PreOrder): IConstruct[] {
+  public findAll(order: ConstructOrder = ConstructOrder.PREORDER): IConstruct[] {
     const ret = new Array<IConstruct>();
     visit(this.host);
     return ret;
 
     function visit(node: IConstruct) {
-      if (order === ConstructOrder.PreOrder) {
+      if (order === ConstructOrder.PREORDER) {
         ret.push(node);
       }
 
@@ -253,7 +253,7 @@ export class ConstructNode {
         visit(child);
       }
 
-      if (order === ConstructOrder.PostOrder) {
+      if (order === ConstructOrder.POSTORDER) {
         ret.push(node);
       }
     }
@@ -643,12 +643,12 @@ export enum ConstructOrder {
   /**
    * Depth-first, pre-order
    */
-  PreOrder,
+  PREORDER,
 
   /**
    * Depth-first, post-order (leaf nodes first)
    */
-  PostOrder
+  POSTORDER
 }
 
 /**

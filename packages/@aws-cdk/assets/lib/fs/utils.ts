@@ -42,13 +42,13 @@ export function shouldExclude(exclude: string[], filePath: string): boolean {
  */
 export function shouldFollow(mode: FollowMode, sourceRoot: string, realPath: string): boolean {
   switch (mode) {
-    case FollowMode.Always:
+    case FollowMode.ALWAYS:
       return fs.existsSync(realPath);
-    case FollowMode.External:
+    case FollowMode.EXTERNAL:
       return !_isInternal() && fs.existsSync(realPath);
-    case FollowMode.BlockExternal:
+    case FollowMode.BLOCK_EXTERNAL:
       return _isInternal() && fs.existsSync(realPath);
-    case FollowMode.Never:
+    case FollowMode.NEVER:
       return false;
     default:
       throw new Error(`Unsupported FollowMode: ${mode}`);

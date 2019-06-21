@@ -87,7 +87,7 @@ export class Wait extends State implements INextable {
      */
     public toStateJson(): object {
         return {
-            Type: StateType.Wait,
+            Type: StateType.WAIT,
             Comment: this.comment,
             ...this.time._json,
             ...this.renderNextEnd(),

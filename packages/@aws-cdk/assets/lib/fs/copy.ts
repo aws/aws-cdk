@@ -5,7 +5,7 @@ import { FollowMode } from './follow-mode';
 import { shouldExclude, shouldFollow } from './utils';
 
 export function copyDirectory(srcDir: string, destDir: string, options: CopyOptions = { }, rootDir?: string) {
-  const follow = options.follow !== undefined ? options.follow : FollowMode.External;
+  const follow = options.follow !== undefined ? options.follow : FollowMode.EXTERNAL;
   const exclude = options.exclude || [];
 
   rootDir = rootDir || srcDir;
@@ -24,7 +24,7 @@ export function copyDirectory(srcDir: string, destDir: string, options: CopyOpti
 
     const destFilePath = path.join(destDir, file);
 
-    let stat: fs.Stats | undefined = follow === FollowMode.Always
+    let stat: fs.Stats | undefined = follow === FollowMode.ALWAYS
       ? fs.statSync(sourceFilePath)
       : fs.lstatSync(sourceFilePath);
 

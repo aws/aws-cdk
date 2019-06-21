@@ -139,15 +139,15 @@ export = {
       // now dir2 contains a symlink to a file in dir1
 
       // WHEN
-      const original = libfs.fingerprint(dir2, { follow: libfs.FollowMode.Never });
+      const original = libfs.fingerprint(dir2, { follow: libfs.FollowMode.NEVER });
 
       // now change the contents of the target
       fs.writeFileSync(target, 'changning you!');
-      const afterChange = libfs.fingerprint(dir2, { follow: libfs.FollowMode.Never });
+      const afterChange = libfs.fingerprint(dir2, { follow: libfs.FollowMode.NEVER });
 
       // revert the content to original and expect hash to be reverted
       fs.writeFileSync(target, content);
-      const afterRevert = libfs.fingerprint(dir2, { follow: libfs.FollowMode.Never });
+      const afterRevert = libfs.fingerprint(dir2, { follow: libfs.FollowMode.NEVER });
 
       // THEN
       test.deepEqual(original, afterChange);

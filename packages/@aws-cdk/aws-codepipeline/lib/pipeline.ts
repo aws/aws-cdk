@@ -233,7 +233,7 @@ export class Pipeline extends PipelineBase {
         bucketName: PhysicalName.auto({ crossEnvironment: true }),
         encryptionKey,
         encryption: s3.BucketEncryption.KMS,
-        removalPolicy: RemovalPolicy.Retain
+        removalPolicy: RemovalPolicy.RETAIN
       });
     }
     this.artifactBucket = propsBucket;

@@ -14,7 +14,7 @@ const stack = new cdk.Stack(app, 'aws-cdk-codepipeline-cloudformation-cross-regi
 
 const bucket = new s3.Bucket(stack, 'MyBucket', {
   versioned: true,
-  removalPolicy: cdk.RemovalPolicy.Destroy,
+  removalPolicy: cdk.RemovalPolicy.DESTROY,
 });
 
 const sourceOutput = new codepipeline.Artifact();

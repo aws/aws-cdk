@@ -84,7 +84,7 @@ export = {
           oauthToken: SecretValue.plainText(secret.valueAsString),
           owner: 'foo',
           repo: 'bar',
-          trigger: cpactions.GitHubTrigger.Poll
+          trigger: cpactions.GitHubTrigger.POLL
         }),
       ],
     });
@@ -143,7 +143,7 @@ export = {
           oauthToken: SecretValue.plainText(secret.valueAsString),
           owner: 'foo',
           repo: 'bar',
-          trigger: cpactions.GitHubTrigger.None
+          trigger: cpactions.GitHubTrigger.NONE
         }),
       ],
     });

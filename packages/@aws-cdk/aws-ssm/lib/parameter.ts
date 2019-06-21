@@ -192,7 +192,7 @@ export class StringParameter extends ParameterBase implements IStringParameter {
     }
 
     const stringValue = attrs.version
-      ? new CfnDynamicReference(CfnDynamicReferenceService.Ssm, `${attrs.parameterName}:${attrs.version}`).toString()
+      ? new CfnDynamicReference(CfnDynamicReferenceService.SSM, `${attrs.parameterName}:${attrs.version}`).toString()
       : new CfnParameter(scope, `${id}.Parameter`, { type: 'AWS::SSM::Parameter::Value<String>', default: attrs.parameterName }).valueAsString;
 
     class Import extends ParameterBase {
@@ -209,7 +209,7 @@ export class StringParameter extends ParameterBase implements IStringParameter {
    * Imports a secure string parameter from the SSM parameter store.
    */
   public static fromSecureStringParameterAttributes(scope: Construct, id: string, attrs: SecureStringParameterAttributes): IStringParameter {
-    const stringValue = new CfnDynamicReference(CfnDynamicReferenceService.SsmSecure, `${attrs.parameterName}:${attrs.version}`).toString();
+    const stringValue = new CfnDynamicReference(CfnDynamicReferenceService.SSM_SECURE, `${attrs.parameterName}:${attrs.version}`).toString();
 
     class Import extends ParameterBase {
       public readonly parameterName = attrs.parameterName;
@@ -322,7 +322,7 @@ export class StringListParameter extends ParameterBase implements IStringListPar
       public readonly parameterName = stringListParameterName;
       public readonly parameterArn = arnForParameterName(this, this.parameterName);
       public readonly parameterType = STRINGLIST_PARAM_TYPE;
-      public readonly stringListValue = Fn.split(',', new CfnDynamicReference(CfnDynamicReferenceService.Ssm, stringListParameterName).toString());
+      public readonly stringListValue = Fn.split(',', new CfnDynamicReference(CfnDynamicReferenceService.SSM, stringListParameterName).toString());
     }
 
     return new Import(scope, id);

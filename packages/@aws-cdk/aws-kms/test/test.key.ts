@@ -68,7 +68,7 @@ export = {
     const app = new App();
     const stack = new Stack(app, 'TestStack');
 
-    new Key(stack, 'MyKey', { removalPolicy: RemovalPolicy.Destroy });
+    new Key(stack, 'MyKey', { removalPolicy: RemovalPolicy.DESTROY });
 
     expect(stack).to(haveResource('AWS::KMS::Key', { DeletionPolicy: "Delete" }, ResourcePart.CompleteDefinition));
     test.done();

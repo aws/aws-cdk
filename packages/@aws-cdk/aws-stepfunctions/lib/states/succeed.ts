@@ -52,7 +52,7 @@ export class Succeed extends State {
      */
     public toStateJson(): object {
         return {
-            Type: StateType.Succeed,
+            Type: StateType.SUCCEED,
             Comment: this.comment,
             ...this.renderInputOutput(),
         };

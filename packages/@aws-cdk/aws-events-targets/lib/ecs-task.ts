@@ -69,7 +69,7 @@ export class EcsTask implements events.IRuleTarget {
     this.taskDefinition = props.taskDefinition;
     this.taskCount = props.taskCount !== undefined ? props.taskCount : 1;
 
-    if (this.taskDefinition.networkMode === ecs.NetworkMode.AwsVpc) {
+    if (this.taskDefinition.networkMode === ecs.NetworkMode.AWS_VPC) {
       this.securityGroup = props.securityGroup || new ec2.SecurityGroup(this.taskDefinition, 'SecurityGroup', { vpc: this.props.cluster.vpc });
     }
   }
@@ -114,7 +114,7 @@ export class EcsTask implements events.IRuleTarget {
 
     // Use a custom resource to "enhance" the target with network configuration
     // when using awsvpc network mode.
-    if (this.taskDefinition.networkMode === ecs.NetworkMode.AwsVpc) {
+    if (this.taskDefinition.networkMode === ecs.NetworkMode.AWS_VPC) {
       const subnetSelection = this.props.subnetSelection || { subnetType: ec2.SubnetType.PRIVATE };
       const assignPublicIp = subnetSelection.subnetType === ec2.SubnetType.PRIVATE ? 'DISABLED' : 'ENABLED';
 

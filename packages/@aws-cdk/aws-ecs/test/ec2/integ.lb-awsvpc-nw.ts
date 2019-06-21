@@ -15,7 +15,7 @@ cluster.addCapacity('DefaultAutoScalingGroup', {
 });
 
 const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef', {
-  networkMode: NetworkMode.AwsVpc
+  networkMode: NetworkMode.AWS_VPC
 });
 
 const container = taskDefinition.addContainer('web', {

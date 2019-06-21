@@ -17,10 +17,10 @@ export class FakeSelfRegisteringTarget extends cdk.Construct implements elbv2.IA
 
   public attachToApplicationTargetGroup(targetGroup: elbv2.ApplicationTargetGroup): elbv2.LoadBalancerTargetProps {
     targetGroup.registerConnectable(this);
-    return { targetType: elbv2.TargetType.Instance };
+    return { targetType: elbv2.TargetType.INSTANCE };
   }
 
   public attachToNetworkTargetGroup(_targetGroup: elbv2.NetworkTargetGroup): elbv2.LoadBalancerTargetProps {
-    return { targetType: elbv2.TargetType.Instance };
+    return { targetType: elbv2.TargetType.INSTANCE };
   }
 }

@@ -16,12 +16,12 @@ export enum AssetPackaging {
    * Path refers to a directory on disk, the contents of the directory is
    * archived into a .zip.
    */
-  ZipDirectory = 'zip',
+  ZIP_DIRECTORY = 'zip',
 
   /**
    * Path refers to a single file on disk. The file is uploaded as-is.
    */
-  File = 'file',
+  FILE = 'file',
 }
 
 export interface AssetProps extends assets.CopyOptions {
@@ -106,7 +106,7 @@ export class Asset extends cdk.Construct implements assets.IAsset {
     const packaging = determinePackaging(staging.sourcePath);
 
     // sets isZipArchive based on the type of packaging and file extension
-    this.isZipArchive = packaging === AssetPackaging.ZipDirectory
+    this.isZipArchive = packaging === AssetPackaging.ZIP_DIRECTORY
       ? true
       : ARCHIVE_EXTENSIONS.some(ext => staging.sourcePath.toLowerCase().endsWith(ext));
 
@@ -208,11 +208,11 @@ function determinePackaging(assetPath: string): AssetPackaging {
   }
 
   if (fs.statSync(assetPath).isDirectory()) {
-    return AssetPackaging.ZipDirectory;
+    return AssetPackaging.ZIP_DIRECTORY;
   }
 
   if (fs.statSync(assetPath).isFile()) {
-    return AssetPackaging.File;
+    return AssetPackaging.FILE;
   }
 
   throw new Error(`Asset ${assetPath} is expected to be either a directory or a regular file`);

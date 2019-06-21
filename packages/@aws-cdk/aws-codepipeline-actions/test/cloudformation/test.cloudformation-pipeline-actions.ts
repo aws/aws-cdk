@@ -427,7 +427,7 @@ export = {
     templatePath: stack.sourceOutput.atPath('template.yaml'),
     adminPermissions: false,
     capabilities: [
-      CloudFormationCapabilities.NamedIAM
+      CloudFormationCapabilities.NAMED_IAM
     ]
   }));
 
@@ -470,8 +470,8 @@ export = {
     templatePath: stack.sourceOutput.atPath('template.yaml'),
     adminPermissions: false,
     capabilities: [
-      CloudFormationCapabilities.NamedIAM,
-      CloudFormationCapabilities.AutoExpand
+      CloudFormationCapabilities.NAMED_IAM,
+      CloudFormationCapabilities.AUTO_EXPAND
     ]
   }));
 
@@ -514,7 +514,7 @@ export = {
     templatePath: stack.sourceOutput.atPath('template.yaml'),
     adminPermissions: false,
     capabilities: [
-      CloudFormationCapabilities.None
+      CloudFormationCapabilities.NONE
     ]
   }));
 

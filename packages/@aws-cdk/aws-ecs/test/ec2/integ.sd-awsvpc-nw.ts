@@ -22,7 +22,7 @@ cluster.addDefaultCloudMapNamespace({
 
 // Create frontend service
 const frontendTD = new ecs.Ec2TaskDefinition(stack, 'TaskDef', {
-  networkMode: NetworkMode.AwsVpc
+  networkMode: NetworkMode.AWS_VPC
 });
 
 const frontend = frontendTD.addContainer('frontend', {

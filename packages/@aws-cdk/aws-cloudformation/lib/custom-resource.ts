@@ -97,7 +97,7 @@ export class CustomResource extends Resource {
       }
     });
 
-    this.resource.applyRemovalPolicy(props.removalPolicy, { default: RemovalPolicy.Destroy });
+    this.resource.applyRemovalPolicy(props.removalPolicy, { default: RemovalPolicy.DESTROY });
   }
 
   public getAtt(attributeName: string) {

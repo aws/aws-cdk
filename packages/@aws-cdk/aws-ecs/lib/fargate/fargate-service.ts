@@ -97,33 +97,33 @@ export enum FargatePlatformVersion {
   /**
    * The latest, recommended platform version
    */
-  Latest = 'LATEST',
+  LATEST = 'LATEST',
 
   /**
    * Version 1.3.0
    *
    * Supports secrets, task recycling.
    */
-  Version1_3 = '1.3.0',
+  VERSION1_3 = '1.3.0',
 
   /**
    * Version 1.2.0
    *
    * Supports private registries.
    */
-  Version1_2 = '1.2.0',
+  VERSION1_2 = '1.2.0',
 
   /**
    * Version 1.1.0
    *
    * Supports task metadata, health checks, service discovery.
    */
-  Version1_1 = '1.1.0',
+  VERSION1_1 = '1.1.0',
 
   /**
    * Initial release
    *
    * Based on Amazon Linux 2017.09.
    */
-  Version1_0 = '1.0.0',
+  VERSION1_0 = '1.0.0',
 }

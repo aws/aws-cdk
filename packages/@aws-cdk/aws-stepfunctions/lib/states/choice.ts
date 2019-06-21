@@ -89,7 +89,7 @@ export class Choice extends State {
      */
     public toStateJson(): object {
         return {
-            Type: StateType.Choice,
+            Type: StateType.CHOICE,
             Comment: this.comment,
             ...this.renderInputOutput(),
             ...this.renderChoices(),

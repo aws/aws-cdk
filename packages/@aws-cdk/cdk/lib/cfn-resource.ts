@@ -94,17 +94,17 @@ export class CfnResource extends CfnRefElement {
    * Sets the deletion policy of the resource based on the removal policy specified.
    */
   public applyRemovalPolicy(policy: RemovalPolicy | undefined, options: RemovalPolicyOptions = {}) {
-    policy = policy || options.default || RemovalPolicy.Retain;
+    policy = policy || options.default || RemovalPolicy.RETAIN;
 
     let deletionPolicy;
 
     switch (policy) {
-      case RemovalPolicy.Destroy:
-        deletionPolicy = CfnDeletionPolicy.Delete;
+      case RemovalPolicy.DESTROY:
+        deletionPolicy = CfnDeletionPolicy.DELETE;
         break;
 
-      case RemovalPolicy.Retain:
-        deletionPolicy = CfnDeletionPolicy.Retain;
+      case RemovalPolicy.RETAIN:
+        deletionPolicy = CfnDeletionPolicy.RETAIN;
         break;
 
       default:
@@ -287,11 +287,11 @@ export class CfnResource extends CfnRefElement {
 }
 
 export enum TagType {
-  Standard = 'StandardTag',
-  AutoScalingGroup = 'AutoScalingGroupTag',
-  Map = 'StringToStringMap',
-  KeyValue = 'KeyValue',
-  NotTaggable = 'NotTaggable',
+  STANDARD = 'StandardTag',
+  AUTOSCALING_GROUP = 'AutoScalingGroupTag',
+  MAP = 'StringToStringMap',
+  KEY_VALUE = 'KeyValue',
+  NOT_TAGGABLE = 'NotTaggable',
 }
 
 export interface IResourceOptions {

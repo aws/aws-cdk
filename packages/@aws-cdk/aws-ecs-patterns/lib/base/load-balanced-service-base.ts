@@ -6,8 +6,8 @@ import route53targets = require('@aws-cdk/aws-route53-targets');
 import cdk = require('@aws-cdk/cdk');
 
 export enum LoadBalancerType {
-  Application,
-  Network
+  APPLICATION,
+  NETWORK
 }
 
 /**
@@ -118,9 +118,9 @@ export abstract class LoadBalancedServiceBase extends cdk.Construct {
     this.logDriver = enableLogging ? this.createAWSLogDriver(this.node.id) : undefined;
 
     // Load balancer
-    this.loadBalancerType = props.loadBalancerType !== undefined ? props.loadBalancerType : LoadBalancerType.Application;
+    this.loadBalancerType = props.loadBalancerType !== undefined ? props.loadBalancerType : LoadBalancerType.APPLICATION;
 
-    if (this.loadBalancerType !== LoadBalancerType.Application && this.loadBalancerType !== LoadBalancerType.Network) {
+    if (this.loadBalancerType !== LoadBalancerType.APPLICATION && this.loadBalancerType !== LoadBalancerType.NETWORK) {
        throw new Error(`invalid loadBalancerType`);
     }
 
@@ -131,7 +131,7 @@ export abstract class LoadBalancedServiceBase extends cdk.Construct {
       internetFacing
     };
 
-    if (this.loadBalancerType === LoadBalancerType.Application) {
+    if (this.loadBalancerType === LoadBalancerType.APPLICATION) {
       this.loadBalancer = new elbv2.ApplicationLoadBalancer(this, 'LB', lbProps);
     } else {
       this.loadBalancer = new elbv2.NetworkLoadBalancer(this, 'LB', lbProps);
@@ -142,11 +142,11 @@ export abstract class LoadBalancedServiceBase extends cdk.Construct {
     };
 
     const hasCertificate = props.certificate !== undefined;
-    if (hasCertificate && this.loadBalancerType !== LoadBalancerType.Application) {
+    if (hasCertificate && this.loadBalancerType !== LoadBalancerType.APPLICATION) {
       throw new Error("Cannot add certificate to an NLB");
     }
 
-    if (this.loadBalancerType === LoadBalancerType.Application) {
+    if (this.loadBalancerType === LoadBalancerType.APPLICATION) {
       this.listener = (this.loadBalancer as elbv2.ApplicationLoadBalancer).addListener('PublicListener', {
         port: hasCertificate ? 443 : 80,
         open: true
@@ -177,7 +177,7 @@ export abstract class LoadBalancedServiceBase extends cdk.Construct {
   }
 
   protected addServiceAsTarget(service: ecs.BaseService) {
-    if (this.loadBalancerType === LoadBalancerType.Application) {
+    if (this.loadBalancerType === LoadBalancerType.APPLICATION) {
       (this.targetGroup as elbv2.ApplicationTargetGroup).addTarget(service);
     } else {
       (this.targetGroup as elbv2.NetworkTargetGroup).addTarget(service);

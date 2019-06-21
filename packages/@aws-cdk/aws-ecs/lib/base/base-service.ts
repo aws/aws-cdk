@@ -292,7 +292,7 @@ export abstract class BaseService extends Resource
    * Shared logic for attaching to an ELBv2
    */
   private attachToELBv2(targetGroup: elbv2.ITargetGroup): elbv2.LoadBalancerTargetProps {
-    if (this.taskDefinition.networkMode === NetworkMode.None) {
+    if (this.taskDefinition.networkMode === NetworkMode.NONE) {
       throw new Error("Cannot use a load balancer if NetworkMode is None. Use Bridge, Host or AwsVpc instead.");
     }
 
@@ -306,7 +306,7 @@ export abstract class BaseService extends Resource
     // been associated with our target group(s), so add ordering dependency.
     this.resource.node.addDependency(targetGroup.loadBalancerAttached);
 
-    const targetType = this.taskDefinition.networkMode === NetworkMode.AwsVpc ? elbv2.TargetType.Ip : elbv2.TargetType.Instance;
+    const targetType = this.taskDefinition.networkMode === NetworkMode.AWS_VPC ? elbv2.TargetType.IP : elbv2.TargetType.INSTANCE;
     return { targetType };
   }
 
@@ -341,14 +341,14 @@ export abstract class BaseService extends Resource
 
     // Determine DNS type based on network mode
     const networkMode = this.taskDefinition.networkMode;
-    if (networkMode === NetworkMode.None) {
+    if (networkMode === NetworkMode.NONE) {
       throw new Error("Cannot use a service discovery if NetworkMode is None. Use Bridge, Host or AwsVpc instead.");
     }
 
     // Bridge or host network mode requires SRV records
     let dnsRecordType = options.dnsRecordType;
 
-    if (networkMode === NetworkMode.Bridge || networkMode === NetworkMode.Host) {
+    if (networkMode === NetworkMode.BRIDGE || networkMode === NetworkMode.HOST) {
       if (dnsRecordType ===  undefined) {
         dnsRecordType = cloudmap.DnsRecordType.SRV;
       }
@@ -358,7 +358,7 @@ export abstract class BaseService extends Resource
     }
 
     // Default DNS record type for AwsVpc network mode is A Records
-    if (networkMode === NetworkMode.AwsVpc) {
+    if (networkMode === NetworkMode.AWS_VPC) {
       if (dnsRecordType ===  undefined) {
         dnsRecordType = cloudmap.DnsRecordType.A;
       }

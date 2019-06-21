@@ -7,7 +7,7 @@ export = {
     const stack = new Stack();
 
     // WHEN
-    const ref = new CfnDynamicReference(CfnDynamicReferenceService.Ssm, 'a:b:c');
+    const ref = new CfnDynamicReference(CfnDynamicReferenceService.SSM, 'a:b:c');
 
     // THEN
     test.equal(stack.resolve(ref), '{{resolve:ssm:a:b:c}}');

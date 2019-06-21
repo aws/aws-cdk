@@ -6,7 +6,7 @@ class MetricFilterIntegStack extends Stack {
     super(scope, id, props);
 
     const logGroup = new LogGroup(this, 'LogGroup', {
-      removalPolicy: RemovalPolicy.Destroy
+      removalPolicy: RemovalPolicy.DESTROY
     });
 
     /// !show

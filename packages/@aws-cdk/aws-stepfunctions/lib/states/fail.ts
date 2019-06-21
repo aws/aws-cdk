@@ -51,7 +51,7 @@ export class Fail extends State {
      */
     public toStateJson(): object {
         return {
-            Type: StateType.Fail,
+            Type: StateType.FAIL,
             Comment: this.comment,
             Error: this.error,
             Cause: this.cause,

@@ -15,7 +15,7 @@ export = {
         Family: "FargateTaskDef",
         ContainerDefinitions: [],
         Volumes: [],
-        NetworkMode: ecs.NetworkMode.AwsVpc,
+        NetworkMode: ecs.NetworkMode.AWS_VPC,
         RequiresCompatibilities: ["FARGATE"],
         Cpu: "256",
         Memory: "512",

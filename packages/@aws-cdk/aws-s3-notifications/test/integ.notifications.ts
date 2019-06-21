@@ -9,7 +9,7 @@ const app = new cdk.App();
 const stack = new Stack(app, 'test-3');
 
 const bucket = new s3.Bucket(stack, 'Bucket', {
-  removalPolicy: cdk.RemovalPolicy.Destroy
+  removalPolicy: cdk.RemovalPolicy.DESTROY
 });
 const topic = new sns.Topic(stack, 'Topic');
 const topic3 = new sns.Topic(stack, 'Topic3');
@@ -18,7 +18,7 @@ bucket.addEventNotification(s3.EventType.OBJECT_CREATED_PUT, new s3n.SnsDestinat
 bucket.addEventNotification(s3.EventType.OBJECT_REMOVED, new s3n.SnsDestination(topic3), { prefix: 'home/myusername/' });
 
 const bucket2 = new s3.Bucket(stack, 'Bucket2', {
-  removalPolicy: cdk.RemovalPolicy.Destroy
+  removalPolicy: cdk.RemovalPolicy.DESTROY
 });
 bucket2.addObjectRemovedNotification(new s3n.SnsDestination(topic3), { prefix: 'foo' }, { suffix: 'foo/bar' });
 

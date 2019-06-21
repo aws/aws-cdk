@@ -109,7 +109,7 @@ export class Parallel extends State implements INextable {
      */
     public toStateJson(): object {
         return {
-            Type: StateType.Parallel,
+            Type: StateType.PARALLEL,
             Comment: this.comment,
             ResultPath: renderJsonPath(this.resultPath),
             ...this.renderNextEnd(),

@@ -21,7 +21,7 @@ test('Invoke lambda with default magic ARN', () => {
       payload: {
         foo: 'bar'
       },
-      invocationType: tasks.InvocationType.RequestResponse,
+      invocationType: tasks.InvocationType.REQUEST_RESPONSE,
       clientContext: "eyJoZWxsbyI6IndvcmxkIn0=",
       qualifier: "1",
     })

@@ -9,7 +9,7 @@ const stack = new Stack(app, 'aws-cdk-codepipeline-alexa-deploy');
 
 const bucket = new s3.Bucket(stack, 'PipelineBucket', {
   versioned: true,
-  removalPolicy: RemovalPolicy.Destroy,
+  removalPolicy: RemovalPolicy.DESTROY,
 });
 const sourceOutput = new codepipeline.Artifact('SourceArtifact');
 const sourceAction = new cpactions.S3SourceAction({

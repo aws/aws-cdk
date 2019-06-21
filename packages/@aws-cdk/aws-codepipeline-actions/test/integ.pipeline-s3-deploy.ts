@@ -9,7 +9,7 @@ const stack = new cdk.Stack(app, 'aws-cdk-codepipeline-s3-deploy');
 
 const bucket = new s3.Bucket(stack, 'PipelineBucket', {
   versioned: true,
-  removalPolicy: cdk.RemovalPolicy.Destroy,
+  removalPolicy: cdk.RemovalPolicy.DESTROY,
 });
 const sourceOutput = new codepipeline.Artifact('SourceArtifact');
 const sourceAction = new cpactions.S3SourceAction({

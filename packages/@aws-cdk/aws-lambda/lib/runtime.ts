@@ -7,7 +7,7 @@ export interface LambdaRuntimeProps {
 }
 
 export enum RuntimeFamily {
-  NodeJS,
+  NODEJS,
   JAVA,
   PYTHON,
   DOTNET_CORE,
@@ -27,13 +27,13 @@ export class Runtime {
   public static readonly All = new Array<Runtime>();
 
   /** @deprecated Use `Nodejs810` or `Nodejs10x` */
-  public static readonly Nodejs =       new Runtime('nodejs',         RuntimeFamily.NodeJS, { supportsInlineCode: true });
+  public static readonly Nodejs =       new Runtime('nodejs',         RuntimeFamily.NODEJS, { supportsInlineCode: true });
   /** @deprecated Use `Nodejs810` or `Nodejs10x` */
-  public static readonly Nodejs43 =     new Runtime('nodejs4.3',      RuntimeFamily.NodeJS, { supportsInlineCode: true });
+  public static readonly Nodejs43 =     new Runtime('nodejs4.3',      RuntimeFamily.NODEJS, { supportsInlineCode: true });
   /** @deprecated Use `Nodejs810` or `Nodejs10x` */
-  public static readonly Nodejs610 =    new Runtime('nodejs6.10',     RuntimeFamily.NodeJS, { supportsInlineCode: true });
-  public static readonly Nodejs810 =    new Runtime('nodejs8.10',     RuntimeFamily.NodeJS, { supportsInlineCode: true });
-  public static readonly Nodejs10x =    new Runtime('nodejs10.x',     RuntimeFamily.NodeJS, { supportsInlineCode: false });
+  public static readonly Nodejs610 =    new Runtime('nodejs6.10',     RuntimeFamily.NODEJS, { supportsInlineCode: true });
+  public static readonly Nodejs810 =    new Runtime('nodejs8.10',     RuntimeFamily.NODEJS, { supportsInlineCode: true });
+  public static readonly Nodejs10x =    new Runtime('nodejs10.x',     RuntimeFamily.NODEJS, { supportsInlineCode: false });
   public static readonly Python27 =     new Runtime('python2.7',      RuntimeFamily.PYTHON, { supportsInlineCode: true });
   public static readonly Python36 =     new Runtime('python3.6',      RuntimeFamily.PYTHON, { supportsInlineCode: true });
   public static readonly Python37 =     new Runtime('python3.7',      RuntimeFamily.PYTHON, { supportsInlineCode: true });
