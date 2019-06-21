@@ -49,7 +49,7 @@ export = {
             LogDriver: "awslogs",
             Options: {
               "awslogs-group": {
-                Ref: "ScheduledEc2TaskScheduledTaskLoggingLogGroupDBEF2BF3"
+                Ref: "ScheduledEc2TaskScheduledTaskDefScheduledContainerLogGroupA85E11E6"
               },
               "awslogs-stream-prefix": "ScheduledEc2Task",
               "awslogs-region": {
@@ -122,7 +122,7 @@ export = {
             LogDriver: "awslogs",
             Options: {
               "awslogs-group": {
-                Ref: "ScheduledEc2TaskScheduledTaskLoggingLogGroupDBEF2BF3"
+                Ref: "ScheduledEc2TaskScheduledTaskDefScheduledContainerLogGroupA85E11E6"
               },
               "awslogs-stream-prefix": "ScheduledEc2Task",
               "awslogs-region": {
@@ -170,7 +170,7 @@ export = {
             LogDriver: "awslogs",
             Options: {
               "awslogs-group": {
-                Ref: "ScheduledEc2TaskScheduledTaskLoggingLogGroupDBEF2BF3"
+                Ref: "ScheduledEc2TaskScheduledTaskDefScheduledContainerLogGroupA85E11E6"
               },
               "awslogs-stream-prefix": "ScheduledEc2Task",
               "awslogs-region": {
@@ -224,7 +224,7 @@ export = {
             LogDriver: "awslogs",
             Options: {
               "awslogs-group": {
-                Ref: "ScheduledEc2TaskScheduledTaskLoggingLogGroupDBEF2BF3"
+                Ref: "ScheduledEc2TaskScheduledTaskDefScheduledContainerLogGroupA85E11E6"
               },
               "awslogs-stream-prefix": "ScheduledEc2Task",
               "awslogs-region": {

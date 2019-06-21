@@ -94,7 +94,7 @@ export class ScheduledEc2Task extends cdk.Construct {
       cpu: props.cpu,
       command: props.command,
       environment: props.environment,
-      logging: new ecs.AwsLogDriver(this, 'ScheduledTaskLogging', { streamPrefix: this.node.id })
+      logging: new ecs.AwsLogDriver({ streamPrefix: this.node.id })
     });
 
     // Use Ec2TaskEventRuleTarget as the target of the EventRule

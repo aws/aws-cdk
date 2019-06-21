@@ -359,7 +359,7 @@ export = {
     taskDefinition.addContainer('cont', {
       image: ecs.ContainerImage.fromRegistry('test'),
       memoryLimitMiB: 1024,
-      logging: new ecs.AwsLogDriver(stack, 'Logging', { streamPrefix: 'prefix' })
+      logging: new ecs.AwsLogDriver({ streamPrefix: 'prefix' })
     });
 
     // THEN
@@ -369,7 +369,7 @@ export = {
           LogConfiguration: {
             LogDriver: "awslogs",
             Options: {
-              "awslogs-group": { Ref: "LoggingLogGroupC6B8E20B" },
+              "awslogs-group": { Ref: "TaskDefcontLogGroup4E10DCBF" },
               "awslogs-stream-prefix": "prefix",
               "awslogs-region": { Ref: "AWS::Region" }
             }
@@ -384,7 +384,7 @@ export = {
           {
             Action: ["logs:CreateLogStream", "logs:PutLogEvents"],
             Effect: "Allow",
-            Resource: { "Fn::GetAtt": ["LoggingLogGroupC6B8E20B", "Arn"] }
+            Resource: { "Fn::GetAtt": ["TaskDefcontLogGroup4E10DCBF", "Arn"] }
           }
         ],
         Version: "2012-10-17"

@@ -153,6 +153,6 @@ export abstract class QueueProcessingServiceBase extends cdk.Construct {
    * @param prefix the Cloudwatch logging prefix
    */
   private createAWSLogDriver(prefix: string): ecs.AwsLogDriver {
-    return new ecs.AwsLogDriver(this, 'ProcessingContainerLogging', { streamPrefix: prefix });
+    return new ecs.AwsLogDriver({ streamPrefix: prefix });
   }
 }
