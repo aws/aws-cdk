@@ -5,35 +5,27 @@ import {renderJsonPath, State, StateType} from './state';
 
 export class Result {
     public static fromString(value: string): Result {
-        return new Result(ResultType.Text, value);
+        return new Result(value);
     }
 
     public static fromNumber(value: number): Result {
-        return new Result(ResultType.Number, value);
+        return new Result(value);
     }
 
     public static fromBoolean(value: boolean): Result {
-        return new Result(ResultType.Boolean, value);
+        return new Result(value);
     }
 
     public static fromObject(value: {[key: string]: any}): Result {
-        return new Result(ResultType.Object, value);
+        return new Result(value);
     }
 
     public static fromArray(value: any[]): Result {
-        return new Result(ResultType.Array, value);
+        return new Result(value);
     }
 
-    private constructor(public readonly type: ResultType, public readonly value: any) {
+    protected constructor(public readonly value: any) {
     }
-}
-
-export enum ResultType {
-    Text,
-    Number,
-    Boolean,
-    Object,
-    Array,
 }
 
 /**
