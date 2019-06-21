@@ -81,10 +81,20 @@ export class Version extends QualifiedFunctionBase implements IVersion {
    * @param versionArn The version ARN to create this version from
    */
   public static fromVersionArn(scope: Construct, id: string, versionArn: string): IVersion {
-    return Version.fromVersionAttributes(scope, id, {
-      version: extractVersionFromArn(versionArn),
-      lambda: Function.fromFunctionArn(scope, `${id}Function`, extractFunctionArnFromVersionArn(versionArn)),
-    });
+    const version = extractVersionFromArn(versionArn);
+    const lambda = Function.fromFunctionArn(scope, `${id}Function`, versionArn);
+
+    class Import extends QualifiedFunctionBase implements IVersion {
+      public readonly version = version;
+      public readonly lambda = lambda;
+      public readonly functionName = `${lambda.functionName}:${version}`;
+      public readonly functionArn = versionArn;
+      public readonly grantPrincipal = lambda.grantPrincipal;
+      public readonly role = lambda.role;
+
+      protected readonly canCreatePermissions = false;
+    }
+    return new Import(scope, id);
   }
 
   public static fromVersionAttributes(scope: Construct, id: string, attrs: VersionAttributes): IVersion {
@@ -120,7 +130,7 @@ export class Version extends QualifiedFunctionBase implements IVersion {
     });
 
     this.version = version.attrVersion;
-    this.functionArn = version.ref;
+    this.functionArn = `${this.lambda.functionArn}:${this.version}`;
     this.functionName = `${this.lambda.functionName}:${this.version}`;
   }
 
@@ -145,29 +155,6 @@ export class Version extends QualifiedFunctionBase implements IVersion {
       ...props
     });
   }
-}
-
-/**
- * Given an opaque (token) ARN, returns a CloudFormation expression that extracts the function
- * ARN from the ARN.
- *
- * Version ARNs look like this:
- *
- *   arn:aws:lambda:region:account-id:function:function-name:version
- *
- * ..which means that in order to extract the `function arn` component from the ARN, we can
- * split the ARN using ":" and join indices 0-6.
- */
-function extractFunctionArnFromVersionArn(arn: string) {
-  return Fn.join(':', [
-    Fn.select(0, Fn.split(':', arn)),
-    Fn.select(1, Fn.split(':', arn)),
-    Fn.select(2, Fn.split(':', arn)),
-    Fn.select(3, Fn.split(':', arn)),
-    Fn.select(4, Fn.split(':', arn)),
-    Fn.select(5, Fn.split(':', arn)),
-    Fn.select(6, Fn.split(':', arn))
-  ]);
 }
 
 /**
