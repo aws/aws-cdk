@@ -319,6 +319,32 @@ export = {
     }));
 
     test.done();
+  },
+
+  'cluster exposes different read and write endpoints'(test: Test) {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    const cluster = new DatabaseCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.Aurora,
+      masterUser: {
+        username: 'admin',
+      },
+      instanceProps: {
+        instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+        vpc
+      }
+    });
+
+    // THEN
+    test.notDeepEqual(
+      stack.resolve(cluster.clusterEndpoint),
+      stack.resolve(cluster.clusterReadEndpoint)
+    );
+
+    test.done();
   }
 };
 
