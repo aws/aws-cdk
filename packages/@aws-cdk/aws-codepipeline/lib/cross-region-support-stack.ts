@@ -1,12 +1,18 @@
 import s3 = require('@aws-cdk/aws-s3');
 import cdk = require('@aws-cdk/cdk');
 import crypto = require('crypto');
-import { CrossRegionScaffolding } from './pipeline';
 
 /**
- * Construction properties for {@link CrossRegionScaffoldStack}.
+ * Construction properties for {@link CrossRegionSupportStack}.
+ * This interface is private to the aws-codepipeline package.
  */
-export interface CrossRegionScaffoldStackProps {
+export interface CrossRegionSupportStackProps {
+  /**
+   * The name of the Stack the Pipeline itself belongs to.
+   * Used to generate a more friendly name for the support Stack.
+   */
+  readonly pipelineStackName: string;
+
   /**
    * The AWS region this Stack resides in.
    */
@@ -22,14 +28,15 @@ export interface CrossRegionScaffoldStackProps {
 
 /**
  * A Stack containing resources required for the cross-region CodePipeline functionality to work.
+ * This class is private to the aws-codepipeline package.
  */
-export class CrossRegionScaffoldStack extends CrossRegionScaffolding {
+export class CrossRegionSupportStack extends cdk.Stack {
   /**
    * The name of the S3 Bucket used for replicating the Pipeline's artifacts into the region.
    */
-  public readonly replicationBucketName: string;
+  public readonly replicationBucket: s3.IBucket;
 
-  constructor(scope: cdk.Construct, id: string, props: CrossRegionScaffoldStackProps) {
+  constructor(scope: cdk.Construct, id: string, props: CrossRegionSupportStackProps) {
     super(scope, id, {
       stackName: generateStackName(props),
       env: {
@@ -41,15 +48,14 @@ export class CrossRegionScaffoldStack extends CrossRegionScaffolding {
     const replicationBucketName = generateUniqueName('cdk-cross-region-codepipeline-replication-bucket-',
       props.region, props.account, false, 12);
 
-    new s3.Bucket(this, 'CrossRegionCodePipelineReplicationBucket', {
+    this.replicationBucket = new s3.Bucket(this, 'CrossRegionCodePipelineReplicationBucket', {
       bucketName: cdk.PhysicalName.of(replicationBucketName),
     });
-    this.replicationBucketName = replicationBucketName;
   }
 }
 
-function generateStackName(props: CrossRegionScaffoldStackProps): string {
-  return `aws-cdk-codepipeline-cross-region-scaffolding-${props.region}`;
+function generateStackName(props: CrossRegionSupportStackProps): string {
+  return `${props.pipelineStackName}-support-${props.region}`;
 }
 
 function generateUniqueName(baseName: string, region: string, account: string,
