@@ -1,7 +1,7 @@
 import iam = require('@aws-cdk/aws-iam');
 import {
   CfnDynamicReference, CfnDynamicReferenceService, CfnParameter,
-  Construct, ContextProvider, Fn, IConstruct, IResource, PhysicalName, Resource, ResourceIdentifiers, Stack, Token
+  Construct, ContextProvider, Fn, IConstruct, IResource, PhysicalName, Resource, Stack, Token
 } from '@aws-cdk/cdk';
 import cxapi = require('@aws-cdk/cx-api');
 import ssm = require('./ssm.generated');
@@ -192,7 +192,7 @@ export class StringParameter extends ParameterBase implements IStringParameter {
     }
 
     const stringValue = attrs.version
-      ? new CfnDynamicReference(CfnDynamicReferenceService.Ssm, `${attrs.parameterName}:${attrs.version}`).toString()
+      ? new CfnDynamicReference(CfnDynamicReferenceService.SSM, `${attrs.parameterName}:${attrs.version}`).toString()
       : new CfnParameter(scope, `${id}.Parameter`, { type: 'AWS::SSM::Parameter::Value<String>', default: attrs.parameterName }).valueAsString;
 
     class Import extends ParameterBase {
@@ -209,7 +209,7 @@ export class StringParameter extends ParameterBase implements IStringParameter {
    * Imports a secure string parameter from the SSM parameter store.
    */
   public static fromSecureStringParameterAttributes(scope: Construct, id: string, attrs: SecureStringParameterAttributes): IStringParameter {
-    const stringValue = new CfnDynamicReference(CfnDynamicReferenceService.SsmSecure, `${attrs.parameterName}:${attrs.version}`).toString();
+    const stringValue = new CfnDynamicReference(CfnDynamicReferenceService.SSM_SECURE, `${attrs.parameterName}:${attrs.version}`).toString();
 
     class Import extends ParameterBase {
       public readonly parameterName = attrs.parameterName;
@@ -285,18 +285,18 @@ export class StringParameter extends ParameterBase implements IStringParameter {
     const resource = new ssm.CfnParameter(this, 'Resource', {
       allowedPattern: props.allowedPattern,
       description: props.description,
-      name: this.physicalName.value,
+      name: this.physicalName,
       type: STRING_PARAM_TYPE,
       value: props.stringValue,
     });
 
-    const resourceIdentifiers = new ResourceIdentifiers(this, {
-      arn: arnForParameterName(this, resource.refAsString),
-      name: resource.refAsString,
+    const resourceIdentifiers = this.getCrossEnvironmentAttributes({
+      arn: arnForParameterName(this, resource.ref),
+      name: resource.ref,
       arnComponents: {
         service: 'ssm',
         resource: 'parameter',
-        resourceName: this.physicalName.value,
+        resourceName: this.physicalName,
         sep: '', // `sep` is empty because parameterName starts with a / already!
       },
     });
@@ -322,7 +322,7 @@ export class StringListParameter extends ParameterBase implements IStringListPar
       public readonly parameterName = stringListParameterName;
       public readonly parameterArn = arnForParameterName(this, this.parameterName);
       public readonly parameterType = STRINGLIST_PARAM_TYPE;
-      public readonly stringListValue = Fn.split(',', new CfnDynamicReference(CfnDynamicReferenceService.Ssm, stringListParameterName).toString());
+      public readonly stringListValue = Fn.split(',', new CfnDynamicReference(CfnDynamicReferenceService.SSM, stringListParameterName).toString());
     }
 
     return new Import(scope, id);
@@ -349,17 +349,17 @@ export class StringListParameter extends ParameterBase implements IStringListPar
     const resource = new ssm.CfnParameter(this, 'Resource', {
       allowedPattern: props.allowedPattern,
       description: props.description,
-      name: this.physicalName.value,
+      name: this.physicalName,
       type: STRINGLIST_PARAM_TYPE,
       value: props.stringListValue.join(','),
     });
-    const resourceIdentifiers = new ResourceIdentifiers(this, {
-      arn: arnForParameterName(this, resource.refAsString),
-      name: resource.refAsString,
+    const resourceIdentifiers = this.getCrossEnvironmentAttributes({
+      arn: arnForParameterName(this, resource.ref),
+      name: resource.ref,
       arnComponents: {
         service: 'ssm',
         resource: 'parameter',
-        resourceName: this.physicalName.value,
+        resourceName: this.physicalName,
         sep: '', // `sep` is empty because parameterName starts with a / already!
       },
     });

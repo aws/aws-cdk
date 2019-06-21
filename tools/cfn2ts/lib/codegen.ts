@@ -720,20 +720,20 @@ function tagType(resource: schema.ResourceType): string {
   if (schema.isTaggableResource(resource)) {
     const prop = resource.Properties.Tags;
     if (schema.isTagPropertyStandard(prop)) {
-      return `${TAG_TYPE}.Standard`;
+      return `${TAG_TYPE}.STANDARD`;
     }
     if (schema.isTagPropertyAutoScalingGroup(prop)) {
-      return `${TAG_TYPE}.AutoScalingGroup`;
+      return `${TAG_TYPE}.AUTOSCALING_GROUP`;
     }
     if (schema.isTagPropertyJson(prop) || schema.isTagPropertyStringMap(prop)) {
-      return `${TAG_TYPE}.Map`;
+      return `${TAG_TYPE}.MAP`;
     }
   }
-  return `${TAG_TYPE}.NotTaggable`;
+  return `${TAG_TYPE}.NOT_TAGGABLE`;
 }
 
 function isTaggable(resource: schema.ResourceType): boolean {
-  return tagType(resource) !== `${TAG_TYPE}.NotTaggable`;
+  return tagType(resource) !== `${TAG_TYPE}.NOT_TAGGABLE`;
 }
 
 enum Container {

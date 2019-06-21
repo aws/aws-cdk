@@ -1,5 +1,5 @@
 import { TagType } from './cfn-resource';
-import { CfnTag } from './tag';
+import { CfnTag } from './cfn-tag';
 
 interface Tag {
   key: string;
@@ -186,11 +186,11 @@ class NoFormat implements ITagFormatter {
 }
 
 const TAG_FORMATTERS: {[key: string]: ITagFormatter} = {
-  [TagType.AutoScalingGroup]: new AsgFormatter(),
-  [TagType.Standard]: new StandardFormatter(),
-  [TagType.Map]: new MapFormatter(),
-  [TagType.KeyValue]: new KeyValueFormatter(),
-  [TagType.NotTaggable]: new NoFormat(),
+  [TagType.AUTOSCALING_GROUP]: new AsgFormatter(),
+  [TagType.STANDARD]: new StandardFormatter(),
+  [TagType.MAP]: new MapFormatter(),
+  [TagType.KEY_VALUE]: new KeyValueFormatter(),
+  [TagType.NOT_TAGGABLE]: new NoFormat(),
 };
 
 /**

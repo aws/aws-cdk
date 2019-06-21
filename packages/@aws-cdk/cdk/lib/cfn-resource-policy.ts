@@ -14,25 +14,25 @@
  * signal to the instance after the applications are installed and configured. For a detailed example, see Deploying Applications
  * on Amazon EC2 with AWS CloudFormation.
  */
-export interface CreationPolicy {
+export interface CfnCreationPolicy {
   /**
    * For an Auto Scaling group replacement update, specifies how many instances must signal success for the
    * update to succeed.
    */
-  readonly autoScalingCreationPolicy?: AutoScalingCreationPolicy;
+  readonly autoScalingCreationPolicy?: CfnResourceAutoScalingCreationPolicy;
 
   /**
    * When AWS CloudFormation creates the associated resource, configures the number of required success signals and
    * the length of time that AWS CloudFormation waits for those signals.
    */
-  readonly resourceSignal?: ResourceSignal;
+  readonly resourceSignal?: CfnResourceSignal;
 }
 
 /**
  * For an Auto Scaling group replacement update, specifies how many instances must signal success for the
  * update to succeed.
  */
-export interface AutoScalingCreationPolicy {
+export interface CfnResourceAutoScalingCreationPolicy {
   /**
    * Specifies the percentage of instances in an Auto Scaling replacement update that must signal success for the
    * update to succeed. You can specify a value from 0 to 100. AWS CloudFormation rounds to the nearest tenth of a percent.
@@ -47,7 +47,7 @@ export interface AutoScalingCreationPolicy {
  * When AWS CloudFormation creates the associated resource, configures the number of required success signals and
  * the length of time that AWS CloudFormation waits for those signals.
  */
-export interface ResourceSignal {
+export interface CfnResourceSignal {
 
   /**
    * The number of success signals AWS CloudFormation must receive before it sets the resource status as CREATE_COMPLETE.
@@ -70,13 +70,13 @@ export interface ResourceSignal {
  * attribute, AWS CloudFormation deletes the resource by default. Note that this capability also applies to update operations
  * that lead to resources being removed.
  */
-export enum DeletionPolicy {
+export enum CfnDeletionPolicy {
   /**
    * AWS CloudFormation deletes the resource and all its content if applicable during stack deletion. You can add this
    * deletion policy to any resource type. By default, if you don't specify a DeletionPolicy, AWS CloudFormation deletes
    * your resources. However, be aware of the following considerations:
    */
-  Delete = 'Delete',
+  DELETE = 'Delete',
 
   /**
    * AWS CloudFormation keeps the resource without deleting the resource or its contents when its stack is deleted.
@@ -84,7 +84,7 @@ export enum DeletionPolicy {
    * the stack will be in Delete_Complete state; however, resources that are retained continue to exist and continue to incur
    * applicable charges until you delete those resources.
    */
-  Retain = 'Retain',
+  RETAIN = 'Retain',
 
   /**
    * For resources that support snapshots (AWS::EC2::Volume, AWS::ElastiCache::CacheCluster, AWS::ElastiCache::ReplicationGroup,
@@ -93,7 +93,7 @@ export enum DeletionPolicy {
    * Delete_Complete state; however, the snapshots that are created with this policy continue to exist and continue to
    * incur applicable charges until you delete those snapshots.
    */
-  Snapshot = 'Snapshot',
+  SNAPSHOT = 'Snapshot',
 }
 
 /**
@@ -101,34 +101,34 @@ export enum DeletionPolicy {
  * resource. AWS CloudFormation invokes one of three update policies depending on the type of change you make or whether a
  * scheduled action is associated with the Auto Scaling group.
  */
-export interface UpdatePolicy {
+export interface CfnUpdatePolicy {
 
   /**
    * Specifies whether an Auto Scaling group and the instances it contains are replaced during an update. During replacement,
    * AWS CloudFormation retains the old group until it finishes creating the new one. If the update fails, AWS CloudFormation
    * can roll back to the old Auto Scaling group and delete the new Auto Scaling group.
    */
-  readonly autoScalingReplacingUpdate?: AutoScalingReplacingUpdate;
+  readonly autoScalingReplacingUpdate?: CfnAutoScalingReplacingUpdate;
 
   /**
    * To specify how AWS CloudFormation handles rolling updates for an Auto Scaling group, use the AutoScalingRollingUpdate
    * policy. Rolling updates enable you to specify whether AWS CloudFormation updates instances that are in an Auto Scaling
    * group in batches or all at once.
    */
-  readonly autoScalingRollingUpdate?: AutoScalingRollingUpdate;
+  readonly autoScalingRollingUpdate?: CfnAutoScalingRollingUpdate;
 
   /**
    * To specify how AWS CloudFormation handles updates for the MinSize, MaxSize, and DesiredCapacity properties when
    * the AWS::AutoScaling::AutoScalingGroup resource has an associated scheduled action, use the AutoScalingScheduledAction
    * policy.
    */
-  readonly autoScalingScheduledAction?: AutoScalingScheduledAction;
+  readonly autoScalingScheduledAction?: CfnAutoScalingScheduledAction;
 
   /**
    * To perform an AWS CodeDeploy deployment when the version changes on an AWS::Lambda::Alias resource,
    * use the CodeDeployLambdaAliasUpdate update policy.
    */
-  readonly codeDeployLambdaAliasUpdate?: CodeDeployLambdaAliasUpdate;
+  readonly codeDeployLambdaAliasUpdate?: CfnCodeDeployLambdaAliasUpdate;
 
   /**
    * To modify a replication group's shards by adding or removing shards, rather than replacing the entire
@@ -143,7 +143,7 @@ export interface UpdatePolicy {
  * policy. Rolling updates enable you to specify whether AWS CloudFormation updates instances that are in an Auto Scaling
  * group in batches or all at once.
  */
-export interface AutoScalingRollingUpdate {
+export interface CfnAutoScalingRollingUpdate {
 
   /**
    * Specifies the maximum number of instances that AWS CloudFormation updates.
@@ -219,7 +219,7 @@ export interface AutoScalingRollingUpdate {
  * (specified in the CreationPolicy policy), the replacement update fails and AWS CloudFormation rolls back to the old
  * Auto Scaling group.
  */
-export interface AutoScalingReplacingUpdate {
+export interface CfnAutoScalingReplacingUpdate {
   readonly willReplace?: boolean;
 }
 
@@ -233,7 +233,7 @@ export interface AutoScalingReplacingUpdate {
  * effect, use the AutoScalingScheduledAction update policy to prevent AWS CloudFormation from changing the MinSize, MaxSize,
  * or DesiredCapacity properties unless you have modified these values in your template.\
  */
-export interface AutoScalingScheduledAction {
+export interface CfnAutoScalingScheduledAction {
   /*
   * Specifies whether AWS CloudFormation ignores differences in group size properties between your current Auto Scaling
   * group and the Auto Scaling group described in the AWS::AutoScaling::AutoScalingGroup resource of your template during
@@ -247,7 +247,7 @@ export interface AutoScalingScheduledAction {
  * To perform an AWS CodeDeploy deployment when the version changes on an AWS::Lambda::Alias resource,
  * use the CodeDeployLambdaAliasUpdate update policy.
  */
-export interface CodeDeployLambdaAliasUpdate {
+export interface CfnCodeDeployLambdaAliasUpdate {
   /**
    * The name of the AWS CodeDeploy application.
    */

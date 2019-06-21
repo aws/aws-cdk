@@ -101,13 +101,13 @@ export class Policy extends Resource implements IPolicy {
 
     const resource = new CfnPolicy(this, 'Resource', {
       policyDocument: this.document,
-      policyName: this.physicalName.value!, // guaranteed to be not null because of above `super` call
+      policyName: this.physicalName, // guaranteed to be not null because of above `super` call
       roles: undefinedIfEmpty(() => this.roles.map(r => r.roleName)),
       users: undefinedIfEmpty(() => this.users.map(u => u.userName)),
       groups: undefinedIfEmpty(() => this.groups.map(g => g.groupName)),
     });
 
-    this.policyName = this.physicalName.value!;
+    this.policyName = this.physicalName!;
 
     if (props.users) {
       props.users.forEach(u => this.attachToUser(u));

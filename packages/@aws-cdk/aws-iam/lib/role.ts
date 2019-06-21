@@ -1,4 +1,4 @@
-import { Construct, Duration, Lazy, PhysicalName, Resource, ResourceIdentifiers, Stack } from '@aws-cdk/cdk';
+import { Construct, Duration, Lazy, PhysicalName, Resource, Stack } from '@aws-cdk/cdk';
 import { Grant } from './grant';
 import { CfnRole } from './iam.generated';
 import { IIdentity } from './identity-base';
@@ -214,19 +214,19 @@ export class Role extends Resource implements IRole {
       managedPolicyArns: Lazy.listValue({ produce: () => this.managedPolicies.map(p => p.managedPolicyArn) }, { omitEmpty: true }),
       policies: _flatten(props.inlinePolicies),
       path: props.path,
-      roleName: this.physicalName.value,
+      roleName: this.physicalName,
       maxSessionDuration,
     });
 
     this.roleId = role.attrRoleId;
-    const resourceIdentifiers = new ResourceIdentifiers(this, {
+    const resourceIdentifiers = this.getCrossEnvironmentAttributes({
       arn: role.attrArn,
-      name: role.refAsString,
+      name: role.ref,
       arnComponents: {
         region: '', // IAM is global in each partition
         service: 'iam',
         resource: 'role',
-        resourceName: this.physicalName.value,
+        resourceName: this.physicalName,
       },
     });
     this.roleArn = resourceIdentifiers.arn;

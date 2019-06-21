@@ -13,7 +13,7 @@ const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-cdk-sqs-event-target');
 
 const event = new events.Rule(stack, 'MyRule', {
-  schedule: events.Schedule.rate(1, events.TimeUnit.Minute),
+  schedule: events.Schedule.rate(cdk.Duration.minutes(1)),
 });
 
 const queue = new sqs.Queue(stack, 'MyQueue');

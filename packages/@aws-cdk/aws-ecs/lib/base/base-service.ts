@@ -4,7 +4,7 @@ import ec2 = require('@aws-cdk/aws-ec2');
 import elbv2 = require('@aws-cdk/aws-elasticloadbalancingv2');
 import iam = require('@aws-cdk/aws-iam');
 import cloudmap = require('@aws-cdk/aws-servicediscovery');
-import { Construct, Duration, Fn, IResource, Lazy, PhysicalName, Resource, ResourceIdentifiers, Stack } from '@aws-cdk/cdk';
+import { Construct, Duration, Fn, IResolvable, IResource, Lazy, PhysicalName, Resource, Stack } from '@aws-cdk/cdk';
 import { NetworkMode, TaskDefinition } from '../base/task-definition';
 import { ICluster } from '../cluster';
 import { CfnService } from '../ecs.generated';
@@ -63,7 +63,7 @@ export interface BaseServiceProps {
   /**
    * Time after startup to ignore unhealthy load balancer checks.
    *
-   * @default ??? FIXME
+   * @default - defaults to 60 seconds if at least one load balancer is in-use and it is not already set
    */
   readonly healthCheckGracePeriod?: Duration;
 
@@ -72,7 +72,7 @@ export interface BaseServiceProps {
    *
    * @default - AWS Cloud Map service discovery is not enabled.
    */
-  readonly serviceDiscoveryOptions?: ServiceDiscoveryOptions;
+  readonly cloudMapOptions?: CloudMapOptions;
 
   /**
    * Whether the new long ARN format has been enabled on ECS services.
@@ -114,17 +114,16 @@ export abstract class BaseService extends Resource
   public readonly serviceName: string;
 
   /**
-   * Name of this service's cluster
-   */
-  public readonly clusterName: string;
-
-  /**
    * Task definition this service is associated with
    */
   public readonly taskDefinition: TaskDefinition;
 
+  /**
+   * The cluster this service is scheduled on
+   */
+  public readonly cluster: ICluster;
+
   protected cloudmapService?: cloudmap.Service;
-  protected cluster: ICluster;
   protected loadBalancers = new Array<CfnService.LoadBalancerProperty>();
   protected networkConfiguration?: CfnService.NetworkConfigurationProperty;
   protected serviceRegistries = new Array<CfnService.ServiceRegistryProperty>();
@@ -136,7 +135,6 @@ export abstract class BaseService extends Resource
               id: string,
               props: BaseServiceProps,
               additionalProps: any,
-              clusterName: string,
               taskDefinition: TaskDefinition) {
     super(scope, id, {
       physicalName: props.serviceName,
@@ -146,13 +144,13 @@ export abstract class BaseService extends Resource
 
     this.resource = new CfnService(this, "Service", {
       desiredCount: props.desiredCount,
-      serviceName: this.physicalName.value,
+      serviceName: this.physicalName,
       loadBalancers: Lazy.anyValue({ produce: () => this.loadBalancers }),
       deploymentConfiguration: {
         maximumPercent: props.maximumPercent || 200,
         minimumHealthyPercent: props.minimumHealthyPercent === undefined ? 50 : props.minimumHealthyPercent
       },
-      healthCheckGracePeriodSeconds: props.healthCheckGracePeriod && props.healthCheckGracePeriod.toSeconds(),
+      healthCheckGracePeriodSeconds: this.evaluateHealthGracePeriod(props.healthCheckGracePeriod),
       /* role: never specified, supplanted by Service Linked Role */
       networkConfiguration: Lazy.anyValue({ produce: () => this.networkConfiguration }),
       serviceRegistries: Lazy.anyValue({ produce: () => this.serviceRegistries }),
@@ -163,26 +161,25 @@ export abstract class BaseService extends Resource
     // are enabled for the principal in a given region.
     const longArnEnabled = props.longArnEnabled !== undefined ? props.longArnEnabled : false;
     const serviceName = longArnEnabled
-      ? Fn.select(2, Fn.split('/', this.resource.refAsString))
+      ? Fn.select(2, Fn.split('/', this.resource.ref))
       : this.resource.attrName;
 
-    const resourceIdentifiers = new ResourceIdentifiers(this, {
-      arn: this.resource.refAsString,
+    const resourceIdentifiers = this.getCrossEnvironmentAttributes({
+      arn: this.resource.ref,
       name: serviceName,
       arnComponents: {
         service: 'ecs',
         resource: 'service',
-        resourceName: `${props.cluster.physicalName.value}/${this.physicalName.value}`,
+        resourceName: `${props.cluster.clusterName}/${this.physicalName}`,
       },
     });
     this.serviceArn = resourceIdentifiers.arn;
     this.serviceName = resourceIdentifiers.name;
 
-    this.clusterName = clusterName;
     this.cluster = props.cluster;
 
-    if (props.serviceDiscoveryOptions) {
-      this.enableServiceDiscovery(props.serviceDiscoveryOptions);
+    if (props.cloudMapOptions) {
+      this.enableCloudMap(props.cloudMapOptions);
     }
   }
 
@@ -198,7 +195,7 @@ export abstract class BaseService extends Resource
     // Open up security groups. For dynamic port mapping, we won't know the port range
     // in advance so we need to open up all ports.
     const port = this.taskDefinition.defaultContainer!.ingressPort;
-    const portRange = port === 0 ? EPHEMERAL_PORT_RANGE : new ec2.TcpPort(port);
+    const portRange = port === 0 ? EPHEMERAL_PORT_RANGE : ec2.Port.tcp(port);
     targetGroup.registerConnectable(this, portRange);
 
     return ret;
@@ -224,7 +221,7 @@ export abstract class BaseService extends Resource
 
     return this.scalableTaskCount = new ScalableTaskCount(this, 'TaskCount', {
       serviceNamespace: appscaling.ServiceNamespace.ECS,
-      resourceId: `service/${this.clusterName}/${this.serviceName}`,
+      resourceId: `service/${this.cluster.clusterName}/${this.serviceName}`,
       dimension: 'ecs:service:DesiredCount',
       role: this.makeAutoScalingRole(),
       ...props
@@ -238,7 +235,7 @@ export abstract class BaseService extends Resource
     return new cloudwatch.Metric({
       namespace: 'AWS/ECS',
       metricName,
-      dimensions: { ClusterName: this.clusterName, ServiceName: this.serviceName },
+      dimensions: { ClusterName: this.cluster.clusterName, ServiceName: this.serviceName },
       ...props
     });
   }
@@ -295,7 +292,7 @@ export abstract class BaseService extends Resource
    * Shared logic for attaching to an ELBv2
    */
   private attachToELBv2(targetGroup: elbv2.ITargetGroup): elbv2.LoadBalancerTargetProps {
-    if (this.taskDefinition.networkMode === NetworkMode.None) {
+    if (this.taskDefinition.networkMode === NetworkMode.NONE) {
       throw new Error("Cannot use a load balancer if NetworkMode is None. Use Bridge, Host or AwsVpc instead.");
     }
 
@@ -309,7 +306,7 @@ export abstract class BaseService extends Resource
     // been associated with our target group(s), so add ordering dependency.
     this.resource.node.addDependency(targetGroup.loadBalancerAttached);
 
-    const targetType = this.taskDefinition.networkMode === NetworkMode.AwsVpc ? elbv2.TargetType.Ip : elbv2.TargetType.Instance;
+    const targetType = this.taskDefinition.networkMode === NetworkMode.AWS_VPC ? elbv2.TargetType.IP : elbv2.TargetType.INSTANCE;
     return { targetType };
   }
 
@@ -336,7 +333,7 @@ export abstract class BaseService extends Resource
   /**
    * Enable CloudMap service discovery for the service
    */
-  private enableServiceDiscovery(options: ServiceDiscoveryOptions): cloudmap.Service {
+  private enableCloudMap(options: CloudMapOptions): cloudmap.Service {
     const sdNamespace = this.cluster.defaultNamespace;
     if (sdNamespace === undefined) {
       throw new Error("Cannot enable service discovery if a Cloudmap Namespace has not been created in the cluster.");
@@ -344,14 +341,14 @@ export abstract class BaseService extends Resource
 
     // Determine DNS type based on network mode
     const networkMode = this.taskDefinition.networkMode;
-    if (networkMode === NetworkMode.None) {
+    if (networkMode === NetworkMode.NONE) {
       throw new Error("Cannot use a service discovery if NetworkMode is None. Use Bridge, Host or AwsVpc instead.");
     }
 
     // Bridge or host network mode requires SRV records
     let dnsRecordType = options.dnsRecordType;
 
-    if (networkMode === NetworkMode.Bridge || networkMode === NetworkMode.Host) {
+    if (networkMode === NetworkMode.BRIDGE || networkMode === NetworkMode.HOST) {
       if (dnsRecordType ===  undefined) {
         dnsRecordType = cloudmap.DnsRecordType.SRV;
       }
@@ -361,7 +358,7 @@ export abstract class BaseService extends Resource
     }
 
     // Default DNS record type for AwsVpc network mode is A Records
-    if (networkMode === NetworkMode.AwsVpc) {
+    if (networkMode === NetworkMode.AWS_VPC) {
       if (dnsRecordType ===  undefined) {
         dnsRecordType = cloudmap.DnsRecordType.A;
       }
@@ -392,17 +389,29 @@ export abstract class BaseService extends Resource
 
     return cloudmapService;
   }
+
+  /**
+   *  Return the default grace period when load balancers are configured and
+   *  healthCheckGracePeriod is not already set
+   */
+  private evaluateHealthGracePeriod(providedHealthCheckGracePeriod?: Duration): IResolvable {
+    return Lazy.anyValue({
+      produce: () => providedHealthCheckGracePeriod !== undefined ? providedHealthCheckGracePeriod.toSeconds() :
+                     this.loadBalancers.length > 0 ? 60 :
+                     undefined
+    });
+  }
 }
 
 /**
  * The port range to open up for dynamic port mapping
  */
-const EPHEMERAL_PORT_RANGE = new ec2.TcpPortRange(32768, 65535);
+const EPHEMERAL_PORT_RANGE = ec2.Port.tcpRange(32768, 65535);
 
 /**
- * Options for enabling service discovery on an ECS service
+ * Options for enabling CloudMap on an ECS service
  */
-export interface ServiceDiscoveryOptions {
+export interface CloudMapOptions {
   /**
    * Name of the cloudmap service to attach to the ECS Service
    *

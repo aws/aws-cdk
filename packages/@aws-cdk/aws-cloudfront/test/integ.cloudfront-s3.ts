@@ -6,7 +6,7 @@ import cloudfront = require('../lib');
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'integ-cloudfront-s3');
 
-const bucket = new s3.Bucket(stack, 'Bucket', { removalPolicy: cdk.RemovalPolicy.Destroy });
+const bucket = new s3.Bucket(stack, 'Bucket', { removalPolicy: cdk.RemovalPolicy.DESTROY });
 const oai = new cloudfront.CfnCloudFrontOriginAccessIdentity(stack, 'OAI', {
   cloudFrontOriginAccessIdentityConfig: {
     comment: 'Allows CloudFront to reach to the bucket!',
@@ -17,7 +17,7 @@ const dist = new cloudfront.CloudFrontWebDistribution(stack, 'Distribution', {
     behaviors: [{ isDefaultBehavior: true }],
     s3OriginSource: {
       s3BucketSource: bucket,
-      originAccessIdentityId: oai.refAsString,
+      originAccessIdentityId: oai.ref,
     },
   }]
 });

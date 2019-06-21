@@ -1,4 +1,4 @@
-import { Fn } from './fn';
+import { Fn } from './cfn-fn';
 import { Stack } from './stack';
 import { Token } from './token';
 import { filterUndefined } from './util';

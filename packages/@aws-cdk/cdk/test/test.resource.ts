@@ -1,7 +1,7 @@
 import cxapi = require('@aws-cdk/cx-api');
 import { Test } from 'nodeunit';
 import { App, App as Root, CfnCondition,
-    CfnResource, Construct, ConstructNode, DeletionPolicy,
+    CfnDeletionPolicy, CfnResource, Construct, ConstructNode,
     Fn, RemovalPolicy, Stack } from '../lib';
 import { toCloudFormation } from './util';
 
@@ -215,8 +215,8 @@ export = {
         beforeAllowTrafficHook: 'lambda1',
       },
     };
-    r1.options.deletionPolicy = DeletionPolicy.Retain;
-    r1.options.updateReplacePolicy = DeletionPolicy.Snapshot;
+    r1.options.deletionPolicy = CfnDeletionPolicy.RETAIN;
+    r1.options.updateReplacePolicy = CfnDeletionPolicy.SNAPSHOT;
 
     test.deepEqual(toCloudFormation(stack), {
       Resources: {
@@ -299,9 +299,9 @@ export = {
     const def = new CfnResource(stack, 'Default1', { type: 'T4' });
     const def2 = new CfnResource(stack, 'Default2', { type: 'T4' });
 
-    retain.applyRemovalPolicy(RemovalPolicy.Retain);
-    destroy.applyRemovalPolicy(RemovalPolicy.Destroy);
-    def.applyRemovalPolicy(undefined, { default: RemovalPolicy.Destroy });
+    retain.applyRemovalPolicy(RemovalPolicy.RETAIN);
+    destroy.applyRemovalPolicy(RemovalPolicy.DESTROY);
+    def.applyRemovalPolicy(undefined, { default: RemovalPolicy.DESTROY });
     def2.applyRemovalPolicy(undefined);
 
     test.deepEqual(toCloudFormation(stack), {
@@ -667,7 +667,7 @@ export = {
     resB.node.addDependency(resA);
 
     // THEN
-    const assembly = app.run();
+    const assembly = app.synth();
     const templateB = assembly.getStack(stackB.stackName).template;
 
     test.deepEqual(templateB, {

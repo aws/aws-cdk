@@ -1,3 +1,4 @@
+import { Duration } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
 import events = require('../lib');
 
@@ -27,6 +28,20 @@ export = {
       minute: '0',
       hour: '10',
     }).expressionString);
+    test.done();
+  },
+
+  'rate must be whole number of minutes'(test: Test) {
+    test.throws(() => {
+      events.Schedule.rate(Duration.seconds(12345));
+    }, /'12345 seconds' cannot be converted into a whole number of minutes/);
+    test.done();
+  },
+
+  'rate cannot be 0'(test: Test) {
+    test.throws(() => {
+      events.Schedule.rate(Duration.days(0));
+    }, /Duration cannot be 0/);
     test.done();
   },
 };

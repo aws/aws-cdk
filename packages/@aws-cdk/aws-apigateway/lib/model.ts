@@ -121,7 +121,7 @@ export class Model extends Resource implements IModelRef {
     }
 
     const modelProps: CfnModelProps = {
-      name: this.physicalName.value!,
+      name: this.physicalName,
       restApiId: this.restApi.restApiId,
       contentType: props.contentType,
       description: props.description,
@@ -130,7 +130,7 @@ export class Model extends Resource implements IModelRef {
 
     const resource = new CfnModel(this, 'Resource', modelProps);
 
-    this.modelName = resource.refAsString;
+    this.modelName = resource.ref;
 
     const deployment = (this.restApi instanceof RestApi) ? this.restApi.latestDeployment : undefined;
     if (deployment) {

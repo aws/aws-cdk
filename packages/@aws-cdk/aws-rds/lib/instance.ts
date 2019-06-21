@@ -8,7 +8,7 @@ import secretsmanager = require('@aws-cdk/aws-secretsmanager');
 import { Construct, Duration, IResource, RemovalPolicy, Resource, SecretValue, Stack, Token } from '@aws-cdk/cdk';
 import { DatabaseSecret } from './database-secret';
 import { Endpoint } from './endpoint';
-import { IOptionGroup} from './option-group';
+import { IOptionGroup } from './option-group';
 import { IParameterGroup } from './parameter-group';
 import { DatabaseClusterEngine } from './props';
 import { CfnDBInstance, CfnDBInstanceProps, CfnDBSubnetGroup } from './rds.generated';
@@ -90,10 +90,10 @@ export abstract class DatabaseInstanceBase extends Resource implements IDatabase
    */
   public static fromDatabaseInstanceAttributes(scope: Construct, id: string, attrs: DatabaseInstanceAttributes): IDatabaseInstance {
     class Import extends DatabaseInstanceBase implements IDatabaseInstance {
-      public readonly defaultPortRange = new ec2.TcpPort(attrs.port);
+      public readonly defaultPort = ec2.Port.tcp(attrs.port);
       public readonly connections = new ec2.Connections({
         securityGroups: [ec2.SecurityGroup.fromSecurityGroupId(this, 'SecurityGroup', attrs.securityGroupId)],
-        defaultPortRange: this.defaultPortRange
+        defaultPort: this.defaultPort
       });
       public readonly instanceIdentifier = attrs.instanceIdentifier;
       public readonly dbInstanceEndpointAddress = attrs.instanceEndpointAddress;
@@ -505,7 +505,7 @@ abstract class DatabaseInstanceNew extends DatabaseInstanceBase implements IData
       copyTagsToSnapshot: props.copyTagsToSnapshot !== undefined ? props.copyTagsToSnapshot : true,
       dbInstanceClass: `db.${props.instanceClass}`,
       dbInstanceIdentifier: props.instanceIdentifier,
-      dbSubnetGroupName: subnetGroup.refAsString,
+      dbSubnetGroupName: subnetGroup.ref,
       deleteAutomatedBackups: props.deleteAutomatedBackups,
       deletionProtection,
       enableCloudwatchLogsExports: this.cloudwatchLogsExports,
@@ -733,7 +733,7 @@ export class DatabaseInstance extends DatabaseInstanceSource implements IDatabas
       storageEncrypted: props.kmsKey ? true : props.storageEncrypted
     });
 
-    this.instanceIdentifier = instance.refAsString;
+    this.instanceIdentifier = instance.ref;
     this.dbInstanceEndpointAddress = instance.attrEndpointAddress;
     this.dbInstanceEndpointPort = instance.attrEndpointPort;
 
@@ -753,7 +753,7 @@ export class DatabaseInstance extends DatabaseInstanceSource implements IDatabas
 
     this.connections = new ec2.Connections({
       securityGroups: [this.securityGroup],
-      defaultPortRange: new ec2.TcpPort(this.instanceEndpoint.port)
+      defaultPort: ec2.Port.tcp(this.instanceEndpoint.port)
     });
 
     this.setLogRetention();
@@ -827,7 +827,7 @@ export class DatabaseInstanceFromSnapshot extends DatabaseInstanceSource impleme
           : undefined),
     });
 
-    this.instanceIdentifier = instance.refAsString;
+    this.instanceIdentifier = instance.ref;
     this.dbInstanceEndpointAddress = instance.attrEndpointAddress;
     this.dbInstanceEndpointPort = instance.attrEndpointPort;
 
@@ -847,7 +847,7 @@ export class DatabaseInstanceFromSnapshot extends DatabaseInstanceSource impleme
 
     this.connections = new ec2.Connections({
       securityGroups: [this.securityGroup],
-      defaultPortRange: new ec2.TcpPort(this.instanceEndpoint.port)
+      defaultPort: ec2.Port.tcp(this.instanceEndpoint.port)
     });
 
     this.setLogRetention();
@@ -904,7 +904,7 @@ export class DatabaseInstanceReadReplica extends DatabaseInstanceNew implements 
       storageEncrypted: props.kmsKey ? true : props.storageEncrypted,
     });
 
-    this.instanceIdentifier = instance.refAsString;
+    this.instanceIdentifier = instance.ref;
     this.dbInstanceEndpointAddress = instance.attrEndpointAddress;
     this.dbInstanceEndpointPort = instance.attrEndpointPort;
 
@@ -918,7 +918,7 @@ export class DatabaseInstanceReadReplica extends DatabaseInstanceNew implements 
 
     this.connections = new ec2.Connections({
       securityGroups: [this.securityGroup],
-      defaultPortRange: new ec2.TcpPort(this.instanceEndpoint.port)
+      defaultPort: ec2.Port.tcp(this.instanceEndpoint.port)
     });
 
     this.setLogRetention();

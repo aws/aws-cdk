@@ -343,7 +343,7 @@ export = {
 
     // WHEN
     new ecr.Repository(stack, 'Repo', {
-      removalPolicy: RemovalPolicy.Destroy
+      removalPolicy: RemovalPolicy.DESTROY
     });
 
     // THEN

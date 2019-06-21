@@ -12,15 +12,15 @@ beforeEach(() => {
   queue = new sqs.Queue(stack, 'Queue');
 });
 
-test('publish to queue', () => {
+test('Send message to queue', () => {
   // WHEN
-  const pub = new sfn.Task(stack, 'Send', { task: new tasks.SendToQueue(queue, {
+  const task = new sfn.Task(stack, 'Send', { task: new tasks.SendToQueue(queue, {
     messageBody: sfn.TaskInput.fromText('Send this message'),
     messageDeduplicationId: sfn.Data.stringAt('$.deduping'),
   }) });
 
   // THEN
-  expect(stack.resolve(pub.toStateJson())).toEqual({
+  expect(stack.resolve(task.toStateJson())).toEqual({
     Type: 'Task',
     Resource: 'arn:aws:states:::sqs:sendMessage',
     End: true,
@@ -32,16 +32,52 @@ test('publish to queue', () => {
   });
 });
 
-test('message body can come from state', () => {
+test('Send message to SQS queue with task token', () => {
   // WHEN
-  const pub = new sfn.Task(stack, 'Send', {
+  const task = new sfn.Task(stack, 'Send', { task: new tasks.SendToQueue(queue, {
+    waitForTaskToken: true,
+    messageBody: sfn.TaskInput.fromObject({
+      Input: 'Send this message',
+      Token: sfn.Context.taskToken
+    })
+  }) });
+
+  // THEN
+  expect(stack.resolve(task.toStateJson())).toEqual({
+    Type: 'Task',
+    Resource: 'arn:aws:states:::sqs:sendMessage.waitForTaskToken',
+    End: true,
+    Parameters: {
+      QueueUrl: { Ref: 'Queue4A7E3555' },
+      MessageBody: {
+        'Input': 'Send this message',
+        'Token.$': '$$.Task.Token'
+      }
+    },
+  });
+});
+
+test('Task throws if waitForTaskToken is supplied but task token is not included in messageBody', () => {
+  expect(() => {
+    // WHEN
+    new sfn.Task(stack, 'Send', { task: new tasks.SendToQueue(queue, {
+      waitForTaskToken: true,
+      messageBody: sfn.TaskInput.fromText('Send this message')
+    }) });
+    // THEN
+  }).toThrow(/Task Token is missing in messageBody/i);
+});
+
+test('Message body can come from state', () => {
+  // WHEN
+  const task = new sfn.Task(stack, 'Send', {
     task: new tasks.SendToQueue(queue, {
       messageBody: sfn.TaskInput.fromDataAt('$.theMessage')
     })
   });
 
   // THEN
-  expect(stack.resolve(pub.toStateJson())).toEqual({
+  expect(stack.resolve(task.toStateJson())).toEqual({
     Type: 'Task',
     Resource: 'arn:aws:states:::sqs:sendMessage',
     End: true,
@@ -52,9 +88,9 @@ test('message body can come from state', () => {
   });
 });
 
-test('message body can be an object', () => {
+test('Message body can be an object', () => {
   // WHEN
-  const pub = new sfn.Task(stack, 'Send', {
+  const task = new sfn.Task(stack, 'Send', {
     task: new tasks.SendToQueue(queue, {
       messageBody: sfn.TaskInput.fromObject({
         literal: 'literal',
@@ -64,7 +100,7 @@ test('message body can be an object', () => {
   });
 
   // THEN
-  expect(stack.resolve(pub.toStateJson())).toEqual({
+  expect(stack.resolve(task.toStateJson())).toEqual({
     Type: 'Task',
     Resource: 'arn:aws:states:::sqs:sendMessage',
     End: true,
@@ -78,9 +114,9 @@ test('message body can be an object', () => {
   });
 });
 
-test('message body object can contain references', () => {
+test('Message body object can contain references', () => {
   // WHEN
-  const pub = new sfn.Task(stack, 'Send', {
+  const task = new sfn.Task(stack, 'Send', {
     task: new tasks.SendToQueue(queue, {
       messageBody: sfn.TaskInput.fromObject({
         queueArn: queue.queueArn
@@ -89,7 +125,7 @@ test('message body object can contain references', () => {
   });
 
   // THEN
-  expect(stack.resolve(pub.toStateJson())).toEqual({
+  expect(stack.resolve(task.toStateJson())).toEqual({
     Type: 'Task',
     Resource: 'arn:aws:states:::sqs:sendMessage',
     End: true,

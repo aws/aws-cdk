@@ -66,7 +66,7 @@ export class RequestValidator extends Resource implements IRequestValidatorRef {
     }
 
     const validatorProps: CfnRequestValidatorProps = {
-      name: this.physicalName.value!,
+      name: this.physicalName,
       restApiId: this.restApi.restApiId,
       validateRequestBody: props.validateRequestBody,
       validateRequestParameters: props.validateRequestParameters
@@ -74,7 +74,7 @@ export class RequestValidator extends Resource implements IRequestValidatorRef {
 
     const resource = new CfnRequestValidator(this, 'Resource', validatorProps);
 
-    this.requestValidatorId = resource.refAsString;
+    this.requestValidatorId = resource.ref;
 
     const deployment = (this.restApi instanceof RestApi) ? this.restApi.latestDeployment : undefined;
     if (deployment) {

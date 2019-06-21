@@ -4,7 +4,7 @@ import ec2 = require('@aws-cdk/aws-ec2');
 import iam = require('@aws-cdk/aws-iam');
 import cloudmap = require('@aws-cdk/aws-servicediscovery');
 import ssm = require('@aws-cdk/aws-ssm');
-import { Construct, Duration, IResource, PhysicalName, Resource, ResourceIdentifiers, Stack } from '@aws-cdk/cdk';
+import { Construct, Duration, IResource, PhysicalName, Resource, Stack } from '@aws-cdk/cdk';
 import { InstanceDrainHook } from './drain-hook/instance-drain-hook';
 import { CfnCluster } from './ecs.generated';
 
@@ -72,16 +72,16 @@ export class Cluster extends Resource implements ICluster {
     });
 
     const cluster = new CfnCluster(this, 'Resource', {
-      clusterName: this.physicalName.value,
+      clusterName: this.physicalName,
     });
 
-    const resourceIdentifiers = new ResourceIdentifiers(this, {
+    const resourceIdentifiers = this.getCrossEnvironmentAttributes({
       arn: cluster.attrArn,
-      name: cluster.refAsString,
+      name: cluster.ref,
       arnComponents: {
         service: 'ecs',
         resource: 'cluster',
-        resourceName: this.physicalName.value,
+        resourceName: this.physicalName,
       },
     });
     this.clusterArn = resourceIdentifiers.arn;
@@ -251,7 +251,7 @@ export interface EcsOptimizedAmiProps {
 /**
  * Construct a Linux machine image from the latest ECS Optimized AMI published in SSM
  */
-export class EcsOptimizedAmi implements ec2.IMachineImageSource {
+export class EcsOptimizedAmi implements ec2.IMachineImage {
   private readonly generation: ec2.AmazonLinuxGeneration;
   private readonly hwType: AmiHardwareType;
 
@@ -285,9 +285,12 @@ export class EcsOptimizedAmi implements ec2.IMachineImageSource {
   /**
    * Return the correct image
    */
-  public getImage(scope: Construct): ec2.MachineImage {
+  public getImage(scope: Construct): ec2.MachineImageConfig {
     const ami = ssm.StringParameter.valueForStringParameter(scope, this.amiParameterName);
-    return new ec2.MachineImage(ami, new ec2.LinuxOS());
+    return {
+      imageId: ami,
+      osType: ec2.OperatingSystemType.LINUX
+    };
   }
 }
 
@@ -467,7 +470,7 @@ export interface AddCapacityOptions extends AddAutoScalingGroupCapacityOptions, 
    *
    * @default - Amazon Linux 1
    */
-  readonly machineImage?: ec2.IMachineImageSource;
+  readonly machineImage?: ec2.IMachineImage;
 }
 
 export interface NamespaceOptions {

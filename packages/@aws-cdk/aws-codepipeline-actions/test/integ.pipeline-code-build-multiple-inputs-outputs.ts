@@ -10,11 +10,11 @@ const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-cdk-codepipeline-codebuild-multiple-inputs-outputs');
 
 const repository = new codecommit.Repository(stack, 'MyRepo', {
-  repositoryName: cdk.PhysicalName.of('MyIntegTestTempRepo'),
+  repositoryName: 'MyIntegTestTempRepo',
 });
 const bucket = new s3.Bucket(stack, 'MyBucket', {
   versioned: true,
-  removalPolicy: cdk.RemovalPolicy.Destroy,
+  removalPolicy: cdk.RemovalPolicy.DESTROY,
 });
 
 const pipeline = new codepipeline.Pipeline(stack, 'Pipeline', {

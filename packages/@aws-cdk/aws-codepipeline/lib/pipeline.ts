@@ -2,7 +2,7 @@ import events = require('@aws-cdk/aws-events');
 import iam = require('@aws-cdk/aws-iam');
 import kms = require('@aws-cdk/aws-kms');
 import s3 = require('@aws-cdk/aws-s3');
-import { App, Construct, Lazy, PhysicalName, RemovalPolicy, Resource, ResourceIdentifiers, Stack, Token } from '@aws-cdk/cdk';
+import { App, Construct, Lazy, PhysicalName, RemovalPolicy, Resource, Stack, Token } from '@aws-cdk/cdk';
 import { Action, IPipeline, IStage } from "./action";
 import { CfnPipeline } from './codepipeline.generated';
 import { Stage } from './stage';
@@ -223,7 +223,7 @@ export class Pipeline extends PipelineBase {
       physicalName: props.pipelineName,
     });
 
-    validateName('Pipeline', this.physicalName.value);
+    validateName('Pipeline', this.physicalName);
 
     // If a bucket has been provided, use it - otherwise, create a bucket.
     let propsBucket = props.artifactBucket;
@@ -233,7 +233,7 @@ export class Pipeline extends PipelineBase {
         bucketName: PhysicalName.auto({ crossEnvironment: true }),
         encryptionKey,
         encryption: s3.BucketEncryption.KMS,
-        removalPolicy: RemovalPolicy.Retain
+        removalPolicy: RemovalPolicy.RETAIN
       });
     }
     this.artifactBucket = propsBucket;
@@ -249,7 +249,7 @@ export class Pipeline extends PipelineBase {
       stages: Lazy.anyValue({ produce: () => this.renderStages() }),
       roleArn: this.role.roleArn,
       restartExecutionOnUpdate: props && props.restartExecutionOnUpdate,
-      name: this.physicalName.value,
+      name: this.physicalName,
     });
 
     // this will produce a DependsOn for both the role and the policy resources.
@@ -257,12 +257,12 @@ export class Pipeline extends PipelineBase {
 
     this.artifactBucket.grantReadWrite(this.role);
 
-    const resourceIdentifiers = new ResourceIdentifiers(this, {
+    const resourceIdentifiers = this.getCrossEnvironmentAttributes({
       arn: '',
-      name: codePipeline.refAsString,
+      name: codePipeline.ref,
       arnComponents: {
         service: 'codepipeline',
-        resource: this.physicalName.value || '',
+        resource: this.physicalName,
       },
     });
     this.pipelineName = resourceIdentifiers.name;

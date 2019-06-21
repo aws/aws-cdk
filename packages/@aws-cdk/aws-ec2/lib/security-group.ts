@@ -1,12 +1,13 @@
 import { Construct, IResource, Lazy, PhysicalName, Resource, ResourceProps, Stack } from '@aws-cdk/cdk';
-import { Connections, IConnectable } from './connections';
+import { Connections } from './connections';
 import { CfnSecurityGroup, CfnSecurityGroupEgress, CfnSecurityGroupIngress } from './ec2.generated';
-import { IPortRange, ISecurityGroupRule } from './security-group-rule';
+import { IPeer } from './peer';
+import { Port } from './port';
 import { IVpc } from './vpc';
 
 const SECURITY_GROUP_SYMBOL = Symbol.for('@aws-cdk/iam.SecurityGroup');
 
-export interface ISecurityGroup extends IResource, ISecurityGroupRule, IConnectable {
+export interface ISecurityGroup extends IResource, IPeer {
   /**
    * ID for the current security group
    * @attribute
@@ -22,7 +23,7 @@ export interface ISecurityGroup extends IResource, ISecurityGroupRule, IConnecta
    * peer is also a SecurityGroup, the rule object is created under the remote
    * SecurityGroup object.
    */
-  addIngressRule(peer: ISecurityGroupRule, connection: IPortRange, description?: string, remoteRule?: boolean): void;
+  addIngressRule(peer: IPeer, connection: Port, description?: string, remoteRule?: boolean): void;
 
   /**
    * Add an egress rule for the current security group
@@ -33,7 +34,7 @@ export interface ISecurityGroup extends IResource, ISecurityGroupRule, IConnecta
    * peer is also a SecurityGroup, the rule object is created under the remote
    * SecurityGroup object.
    */
-  addEgressRule(peer: ISecurityGroupRule, connection: IPortRange, description?: string, remoteRule?: boolean): void;
+  addEgressRule(peer: IPeer, connection: Port, description?: string, remoteRule?: boolean): void;
 }
 
 /**
@@ -51,11 +52,7 @@ abstract class SecurityGroupBase extends Resource implements ISecurityGroup {
 
   public readonly canInlineRule = false;
   public readonly connections: Connections = new Connections({ securityGroups: [this] });
-
-  /**
-   * FIXME: Where to place this??
-   */
-  public readonly defaultPortRange?: IPortRange;
+  public readonly defaultPort?: Port;
 
   constructor(scope: Construct, id: string, props?: ResourceProps) {
     super(scope, id, props);
@@ -67,7 +64,7 @@ abstract class SecurityGroupBase extends Resource implements ISecurityGroup {
     return this.node.uniqueId;
   }
 
-  public addIngressRule(peer: ISecurityGroupRule, connection: IPortRange, description?: string, remoteRule?: boolean) {
+  public addIngressRule(peer: IPeer, connection: Port, description?: string, remoteRule?: boolean) {
     if (description === undefined) {
       description = `from ${peer.uniqueId}:${connection}`;
     }
@@ -78,14 +75,14 @@ abstract class SecurityGroupBase extends Resource implements ISecurityGroup {
     if (scope.node.tryFindChild(id) === undefined) {
       new CfnSecurityGroupIngress(scope, id, {
         groupId: this.securityGroupId,
-        ...peer.toIngressRuleJSON(),
+        ...peer.toIngressRuleConfig(),
         ...connection.toRuleJSON(),
         description
       });
     }
   }
 
-  public addEgressRule(peer: ISecurityGroupRule, connection: IPortRange, description?: string, remoteRule?: boolean) {
+  public addEgressRule(peer: IPeer, connection: Port, description?: string, remoteRule?: boolean) {
     if (description === undefined) {
       description = `to ${peer.uniqueId}:${connection}`;
     }
@@ -96,18 +93,18 @@ abstract class SecurityGroupBase extends Resource implements ISecurityGroup {
     if (scope.node.tryFindChild(id) === undefined) {
       new CfnSecurityGroupEgress(scope, id, {
         groupId: this.securityGroupId,
-        ...peer.toEgressRuleJSON(),
+        ...peer.toEgressRuleConfig(),
         ...connection.toRuleJSON(),
         description
       });
     }
   }
 
-  public toIngressRuleJSON(): any {
+  public toIngressRuleConfig(): any {
     return { sourceSecurityGroupId: this.securityGroupId };
   }
 
-  public toEgressRuleJSON(): any {
+  public toEgressRuleConfig(): any {
     return { destinationSecurityGroupId: this.securityGroupId };
   }
 }
@@ -162,8 +159,8 @@ abstract class SecurityGroupBase extends Resource implements ISecurityGroup {
  */
 function determineRuleScope(
       group: SecurityGroupBase,
-      peer: ISecurityGroupRule,
-      connection: IPortRange,
+      peer: IPeer,
+      connection: Port,
       fromTo: 'from' | 'to',
       remoteRule?: boolean): [SecurityGroupBase, string] {
 
@@ -192,7 +189,7 @@ export interface SecurityGroupProps {
    * @default If you don't specify a GroupName, AWS CloudFormation generates a
    * unique physical ID and uses that ID for the group name.
    */
-  readonly groupName?: PhysicalName;
+  readonly securityGroupName?: PhysicalName;
 
   /**
    * A description of the security group.
@@ -267,7 +264,7 @@ export class SecurityGroup extends SecurityGroupBase {
 
   constructor(scope: Construct, id: string, props: SecurityGroupProps) {
     super(scope, id, {
-      physicalName: props.groupName
+      physicalName: props.securityGroupName
     });
 
     const groupDescription = props.description || this.node.path;
@@ -275,7 +272,7 @@ export class SecurityGroup extends SecurityGroupBase {
     this.allowAllOutbound = props.allowAllOutbound !== false;
 
     this.securityGroup = new CfnSecurityGroup(this, 'Resource', {
-      groupName: this.physicalName.value,
+      groupName: this.physicalName,
       groupDescription,
       securityGroupIngress: Lazy.anyValue({ produce: () => this.directIngressRules }),
       securityGroupEgress: Lazy.anyValue({ produce: () => this.directEgressRules }),
@@ -284,12 +281,12 @@ export class SecurityGroup extends SecurityGroupBase {
 
     this.securityGroupId = this.securityGroup.attrGroupId;
     this.securityGroupVpcId = this.securityGroup.attrVpcId;
-    this.securityGroupName = this.securityGroup.refAsString;
+    this.securityGroupName = this.securityGroup.ref;
 
     this.addDefaultEgressRule();
   }
 
-  public addIngressRule(peer: ISecurityGroupRule, connection: IPortRange, description?: string, remoteRule?: boolean) {
+  public addIngressRule(peer: IPeer, connection: Port, description?: string, remoteRule?: boolean) {
     if (!peer.canInlineRule || !connection.canInlineRule) {
       super.addIngressRule(peer, connection, description, remoteRule);
       return;
@@ -300,13 +297,13 @@ export class SecurityGroup extends SecurityGroupBase {
     }
 
     this.addDirectIngressRule({
-      ...peer.toIngressRuleJSON(),
+      ...peer.toIngressRuleConfig(),
       ...connection.toRuleJSON(),
       description
     });
   }
 
-  public addEgressRule(peer: ISecurityGroupRule, connection: IPortRange, description?: string, remoteRule?: boolean) {
+  public addEgressRule(peer: IPeer, connection: Port, description?: string, remoteRule?: boolean) {
     if (this.allowAllOutbound) {
       // In the case of "allowAllOutbound", we don't add any more rules. There
       // is only one rule which allows all traffic and that subsumes any other
@@ -329,7 +326,7 @@ export class SecurityGroup extends SecurityGroupBase {
     }
 
     const rule = {
-      ...peer.toEgressRuleJSON(),
+      ...peer.toEgressRuleConfig(),
       ...connection.toRuleJSON(),
       description
     };

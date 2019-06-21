@@ -2,13 +2,13 @@ import cxapi = require('@aws-cdk/cx-api');
 import { EnvironmentUtils } from '@aws-cdk/cx-api';
 import fs = require('fs');
 import path = require('path');
-import { CLOUDFORMATION_TOKEN_RESOLVER, CloudFormationLang } from './cloudformation-lang';
 import { Construct, ConstructNode, IConstruct, ISynthesisSession } from './construct';
 import { ContextProvider } from './context-provider';
 import { Environment } from './environment';
-import { LogicalIDs } from './logical-id';
+import { CLOUDFORMATION_TOKEN_RESOLVER, CloudFormationLang } from './private/cloudformation-lang';
+import { LogicalIDs } from './private/logical-id';
 import { resolve } from './private/resolve';
-import { makeUniqueId } from './uniqueid';
+import { makeUniqueId } from './private/uniqueid';
 
 const STACK_SYMBOL = Symbol.for('@aws-cdk/cdk.Stack');
 const VALID_STACK_NAME_REGEX = /^[A-Za-z][A-Za-z0-9-]*$/;
@@ -192,7 +192,7 @@ export class Stack extends Construct implements ITaggable {
     this.environment = environment;
 
     this.stackName = props.stackName !== undefined ? props.stackName : this.calculateStackName();
-    this.tags = new TagManager(TagType.KeyValue, 'aws:cdk:stack', props.tags);
+    this.tags = new TagManager(TagType.KEY_VALUE, 'aws:cdk:stack', props.tags);
 
     if (!VALID_STACK_NAME_REGEX.test(this.stackName)) {
       throw new Error(`Stack name must match the regular expression: ${VALID_STACK_NAME_REGEX.toString()}, got '${name}'`);
@@ -336,43 +336,6 @@ export class Stack extends Construct implements ITaggable {
   }
 
   /**
-   * Returnst the list of AZs that are availability in the AWS environment
-   * (account/region) associated with this stack.
-   *
-   * If the stack is environment-agnostic (either account and/or region are
-   * tokens), this property will return an array with 2 tokens that will resolve
-   * at deploy-time to the first two availability zones returned from CloudFormation's
-   * `Fn::GetAZs` intrinsic function.
-   *
-   * If they are not available in the context, returns a set of dummy values and
-   * reports them as missing, and let the CLI resolve them by calling EC2
-   * `DescribeAvailabilityZones` on the target environment.
-   */
-  public get availabilityZones() {
-    // if account/region are tokens, we can't obtain AZs through the context
-    // provider, so we fallback to use Fn::GetAZs. the current lowest common
-    // denominator is 2 AZs across all AWS regions.
-    const agnostic = Token.isUnresolved(this.account) || Token.isUnresolved(this.region);
-    if (agnostic) {
-      return this.node.tryGetContext(cxapi.AVAILABILITY_ZONE_FALLBACK_CONTEXT_KEY) || [
-        Fn.select(0, Fn.getAZs()),
-        Fn.select(1, Fn.getAZs())
-      ];
-    }
-
-    const value = ContextProvider.getValue(this, {
-      provider: cxapi.AVAILABILITY_ZONE_PROVIDER,
-      dummyValue: ['dummy1a', 'dummy1b', 'dummy1c'],
-    });
-
-    if (!Array.isArray(value)) {
-      throw new Error(`Provider ${cxapi.AVAILABILITY_ZONE_PROVIDER} expects a list`);
-    }
-
-    return value;
-  }
-
-  /**
    * Given an ARN, parses it and returns components.
    *
    * If the ARN is a concrete string, it will be parsed and validated. The
@@ -412,6 +375,43 @@ export class Stack extends Construct implements ITaggable {
    */
   public parseArn(arn: string, sepIfToken: string = '/', hasName: boolean = true): ArnComponents {
     return Arn.parse(arn, sepIfToken, hasName);
+  }
+
+  /**
+   * Returnst the list of AZs that are availability in the AWS environment
+   * (account/region) associated with this stack.
+   *
+   * If the stack is environment-agnostic (either account and/or region are
+   * tokens), this property will return an array with 2 tokens that will resolve
+   * at deploy-time to the first two availability zones returned from CloudFormation's
+   * `Fn::GetAZs` intrinsic function.
+   *
+   * If they are not available in the context, returns a set of dummy values and
+   * reports them as missing, and let the CLI resolve them by calling EC2
+   * `DescribeAvailabilityZones` on the target environment.
+   */
+  public get availabilityZones() {
+    // if account/region are tokens, we can't obtain AZs through the context
+    // provider, so we fallback to use Fn::GetAZs. the current lowest common
+    // denominator is 2 AZs across all AWS regions.
+    const agnostic = Token.isUnresolved(this.account) || Token.isUnresolved(this.region);
+    if (agnostic) {
+      return this.node.tryGetContext(cxapi.AVAILABILITY_ZONE_FALLBACK_CONTEXT_KEY) || [
+        Fn.select(0, Fn.getAZs()),
+        Fn.select(1, Fn.getAZs())
+      ];
+    }
+
+    const value = ContextProvider.getValue(this, {
+      provider: cxapi.AVAILABILITY_ZONE_PROVIDER,
+      dummyValue: ['dummy1a', 'dummy1b', 'dummy1c'],
+    });
+
+    if (!Array.isArray(value)) {
+      throw new Error(`Provider ${cxapi.AVAILABILITY_ZONE_PROVIDER} expects a list`);
+    }
+
+    return value;
   }
 
   /**
@@ -526,7 +526,7 @@ export class Stack extends Construct implements ITaggable {
 
     // add an artifact that represents this stack
     builder.addArtifact(this.stackName, {
-      type: cxapi.ArtifactType.AwsCloudFormationStack,
+      type: cxapi.ArtifactType.AWS_CLOUDFORMATION_STACK,
       environment: this.environment,
       properties,
       dependencies: deps.length > 0 ? deps : undefined,
@@ -724,10 +724,10 @@ function cfnElements(node: IConstruct, into: CfnElement[] = []): CfnElement[] {
 // These imports have to be at the end to prevent circular imports
 import { Arn, ArnComponents } from './arn';
 import { CfnElement } from './cfn-element';
+import { Fn } from './cfn-fn';
+import { Aws, ScopedAws } from './cfn-pseudo';
 import { CfnResource, TagType } from './cfn-resource';
-import { Fn } from './fn';
 import { CfnReference } from './private/cfn-reference';
-import { Aws, ScopedAws } from './pseudo';
 import { ITaggable, TagManager } from './tag-manager';
 import { Token } from './token';
 

@@ -1,7 +1,7 @@
 import crypto = require('crypto');
-import { IResource } from './resource';
-import { Stack } from './stack';
-import { Token } from './token';
+import { IResource } from '../resource';
+import { Stack } from '../stack';
+import { Token } from '../token';
 
 export function generatePhysicalName(resource: IResource): string {
   const stack = Stack.of(resource);

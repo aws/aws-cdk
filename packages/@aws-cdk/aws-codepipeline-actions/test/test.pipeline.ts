@@ -18,7 +18,7 @@ export = {
     const stack = new Stack();
 
     const repository = new codecommit.Repository(stack, 'MyRepo', {
-       repositoryName: PhysicalName.of('my-repo'),
+       repositoryName: 'my-repo',
     });
 
     const pipeline = new codepipeline.Pipeline(stack, 'Pipeline');
@@ -84,7 +84,7 @@ export = {
           oauthToken: SecretValue.plainText(secret.valueAsString),
           owner: 'foo',
           repo: 'bar',
-          trigger: cpactions.GitHubTrigger.Poll
+          trigger: cpactions.GitHubTrigger.POLL
         }),
       ],
     });
@@ -143,7 +143,7 @@ export = {
           oauthToken: SecretValue.plainText(secret.valueAsString),
           owner: 'foo',
           repo: 'bar',
-          trigger: cpactions.GitHubTrigger.None
+          trigger: cpactions.GitHubTrigger.NONE
         }),
       ],
     });
@@ -870,6 +870,6 @@ function stageForTesting(stack: Stack): codepipeline.IStage {
 
 function repositoryForTesting(stack: Stack): codecommit.Repository {
   return new codecommit.Repository(stack, 'Repository', {
-    repositoryName: PhysicalName.of('Repository'),
+    repositoryName: 'Repository',
   });
 }
