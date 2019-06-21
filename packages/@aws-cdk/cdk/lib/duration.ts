@@ -85,24 +85,28 @@ export class Duration {
    * @returns the value of this `Duration` expressed in Seconds.
    */
   public toSeconds(opts: TimeConversionOptions = {}): number {
-    if (this.unit === TimeUnit.Seconds) { return this.amount; }
-    return _ensureIntegral(this.amount, this.unit.inSeconds, opts);
+    return convert(this.amount, this.unit, TimeUnit.Seconds, opts);
   }
 
   /**
    * @returns the value of this `Duration` expressed in Minutes.
    */
   public toMinutes(opts: TimeConversionOptions = {}): number {
-    if (this.unit === TimeUnit.Minutes) { return this.amount; }
-    return _ensureIntegral(this.amount, this.unit.inMinutes, opts);
+    return convert(this.amount, this.unit, TimeUnit.Minutes, opts);
+  }
+
+  /**
+   * @returns the value of this `Duration` expressed in Hours.
+   */
+  public toHours(opts: TimeConversionOptions = {}): number {
+    return convert(this.amount, this.unit, TimeUnit.Hours, opts);
   }
 
   /**
    * @returns the value of this `Duration` expressed in Days.
    */
   public toDays(opts: TimeConversionOptions = {}): number {
-    if (this.unit === TimeUnit.Days) { return this.amount; }
-    return _ensureIntegral(this.amount, this.unit.inDays, opts);
+    return convert(this.amount, this.unit, TimeUnit.Days, opts);
   }
 
   /**
@@ -169,12 +173,7 @@ class TimeUnit {
   public static readonly Hours = new TimeUnit('hours', 3_600);
   public static readonly Days = new TimeUnit('days', 86_400);
 
-  public readonly inMinutes: number;
-  public readonly inDays: number;
-
   private constructor(public readonly label: string, public readonly inSeconds: number) {
-    this.inMinutes = inSeconds / 60;
-    this.inDays = inSeconds / 86_400;
   }
 
   public toString() {
@@ -182,13 +181,16 @@ class TimeUnit {
   }
 }
 
-function _ensureIntegral(amount: number, multiplier: number, { integral = true }: TimeConversionOptions): number {
+function convert(amount: number, fromUnit: TimeUnit, toUnit: TimeUnit, { integral = true }: TimeConversionOptions) {
+  if (fromUnit.inSeconds === toUnit.inSeconds) { return amount; }
+  const multiplier = fromUnit.inSeconds / toUnit.inSeconds;
+
   if (Token.isUnresolved(amount)) {
     throw new Error(`Unable to perform time unit conversion on un-resolved token ${amount}.`);
   }
   const value = amount * multiplier;
   if (!Number.isInteger(value) && integral) {
-    throw new Error(`Required integral time unit conversion, but value ${value} is not integral.`);
+    throw new Error(`'${amount} ${fromUnit}' cannot be converted into a whole number of ${toUnit}.`);
   }
   return value;
 }

@@ -1,8 +1,8 @@
 import { expect, haveResourceLike } from '@aws-cdk/assert';
 import cdk = require('@aws-cdk/cdk');
-import { Stack } from '@aws-cdk/cdk';
+import { Duration, Stack } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
-import { IRuleTarget, RuleTargetInput, Schedule, TimeUnit } from '../lib';
+import { IRuleTarget, RuleTargetInput, Schedule } from '../lib';
 import { Rule } from '../lib/rule';
 
 export = {
@@ -11,7 +11,7 @@ export = {
       // GIVEN
       const stack = new Stack();
       const rule = new Rule(stack, 'Rule', {
-        schedule: Schedule.rate(1, TimeUnit.Minute),
+        schedule: Schedule.rate(Duration.minutes(1)),
       });
 
       // WHEN
@@ -34,7 +34,7 @@ export = {
       // GIVEN
       const stack = new Stack();
       const rule = new Rule(stack, 'Rule', {
-        schedule: Schedule.rate(1, TimeUnit.Minute),
+        schedule: Schedule.rate(Duration.minutes(1)),
       });
 
       // WHEN
@@ -56,7 +56,7 @@ export = {
       // GIVEN
       const stack = new Stack();
       const rule = new Rule(stack, 'Rule', {
-        schedule: Schedule.rate(1, TimeUnit.Minute),
+        schedule: Schedule.rate(Duration.minutes(1)),
       });
 
       // WHEN
@@ -78,7 +78,7 @@ export = {
       // GIVEN
       const stack = new Stack();
       const rule = new Rule(stack, 'Rule', {
-        schedule: Schedule.rate(1, TimeUnit.Minute),
+        schedule: Schedule.rate(Duration.minutes(1)),
       });
 
       const world = cdk.Lazy.stringValue({ produce: () => 'world' });

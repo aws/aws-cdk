@@ -25,7 +25,7 @@ export = nodeunit.testCase({
 
     test.equal(duration.toSeconds(), 300);
     test.equal(duration.toMinutes(), 5);
-    test.throws(() => duration.toDays(), /Required integral time unit conversion, but value/);
+    test.throws(() => duration.toDays(), /'300 seconds' cannot be converted into a whole number of days/);
     floatEqual(test, duration.toDays({ integral: false }), 300 / 86_400);
 
     test.equal(Duration.seconds(60 * 60 * 24).toDays(), 1);
@@ -38,7 +38,7 @@ export = nodeunit.testCase({
 
     test.equal(duration.toSeconds(), 300);
     test.equal(duration.toMinutes(), 5);
-    test.throws(() => duration.toDays(), /Required integral time unit conversion, but value/);
+    test.throws(() => duration.toDays(), /'5 minutes' cannot be converted into a whole number of days/);
     floatEqual(test, duration.toDays({ integral: false }), 300 / 86_400);
 
     test.equal(Duration.minutes(60 * 24).toDays(), 1);
@@ -51,7 +51,7 @@ export = nodeunit.testCase({
 
     test.equal(duration.toSeconds(), 18_000);
     test.equal(duration.toMinutes(), 300);
-    test.throws(() => duration.toDays(), /Required integral time unit conversion, but value/);
+    test.throws(() => duration.toDays(), /'5 hours' cannot be converted into a whole number of days/);
     floatEqual(test, duration.toDays({ integral: false }), 5 / 24);
 
     test.equal(Duration.hours(24).toDays(), 1);

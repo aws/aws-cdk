@@ -1,3 +1,5 @@
+import { Duration } from '@aws-cdk/cdk';
+
 /**
  * Schedule for scheduled scaling actions
  */
@@ -14,10 +16,15 @@ export abstract class Schedule {
   /**
    * Construct a schedule from an interval and a time unit
    */
-  public static rate(interval: number, unit: TimeUnit): Schedule {
-    const unitStr = interval !== 1 ? `${unit}s` : unit;
+  public static rate(duration: Duration): Schedule {
+    if (duration.toSeconds() === 0) {
+      throw new Error('Duration cannot be 0');
+    }
 
-    return new LiteralSchedule(`rate(${interval} ${unitStr})`);
+    let rate = maybeRate(duration.toDays({ integral: false }), 'day');
+    if (rate === undefined) { rate = maybeRate(duration.toHours({ integral: false }), 'hour'); }
+    if (rate === undefined) { rate = makeRate(duration.toMinutes({ integral: true }), 'minute'); }
+    return new LiteralSchedule(rate);
   }
 
   /**
@@ -54,26 +61,6 @@ export abstract class Schedule {
 
   protected constructor() {
   }
-}
-
-/**
- * What unit to interpret the rate in
- */
-export enum TimeUnit {
-  /**
-   * The rate is in minutes
-   */
-  Minute = 'minute',
-
-  /**
-   * The rate is in hours
-   */
-  Hour = 'hour',
-
-  /**
-   * The rate is in days
-   */
-  Day = 'day'
 }
 
 /**
@@ -154,4 +141,19 @@ function formatISO(date?: Date) {
     }
     return num;
   }
+}
+
+/**
+ * Return the rate if the rate is whole number
+ */
+function maybeRate(interval: number, singular: string) {
+  if (interval === 0 || !Number.isInteger(interval)) { return undefined; }
+  return makeRate(interval, singular);
+}
+
+/**
+ * Return 'rate(${interval} ${singular}(s))` for the interval
+ */
+function makeRate(interval: number, singular: string) {
+  return interval === 1 ? `rate(1 ${singular})` : `rate(${interval} ${singular}s)`;
 }
