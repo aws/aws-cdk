@@ -63,9 +63,9 @@ export interface PipelineDeployStackActionProps {
    * information
    *
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-iam-template.html#using-iam-capabilities
-   * @default AnonymousIAM, unless `adminPermissions` is true
+   * @default [AnonymousIAM, AutoExpand], unless `adminPermissions` is true
    */
-  readonly capabilities?: cfn.CloudFormationCapabilities;
+  readonly capabilities?: cfn.CloudFormationCapabilities[];
 
   /**
    * Whether to grant admin permissions to CloudFormation while deploying this template.
@@ -166,13 +166,13 @@ export class PipelineDeployStackAction extends cdk.Construct {
   }
 }
 
-function cfnCapabilities(adminPermissions: boolean, capabilities?: cfn.CloudFormationCapabilities): cfn.CloudFormationCapabilities {
+function cfnCapabilities(adminPermissions: boolean, capabilities?: cfn.CloudFormationCapabilities[]): cfn.CloudFormationCapabilities[] {
   if (adminPermissions && capabilities === undefined) {
-    // admin true default capability to NamedIAM
-    return cfn.CloudFormationCapabilities.NamedIAM;
+    // admin true default capability to NamedIAM and AutoExpand
+    return [cfn.CloudFormationCapabilities.NamedIAM, cfn.CloudFormationCapabilities.AutoExpand];
   } else if (capabilities === undefined) {
-    // else capabilities are undefined set AnonymousIAM
-    return cfn.CloudFormationCapabilities.AnonymousIAM;
+    // else capabilities are undefined set AnonymousIAM and AutoExpand
+    return [cfn.CloudFormationCapabilities.AnonymousIAM, cfn.CloudFormationCapabilities.AutoExpand];
   } else {
     // else capabilities are defined use them
     return capabilities;
