@@ -399,7 +399,7 @@
               "Effect": "Allow",
               "Resource": {
                 "Fn::GetAtt": [
-                  "L3LoggingLogGroupBD1F02DD",
+                  "L3TaskDefwebLogGroupC6E4A38A",
                   "Arn"
                 ]
               }
@@ -554,7 +554,7 @@
               "LogDriver": "awslogs",
               "Options": {
                 "awslogs-group": {
-                  "Ref": "L3LoggingLogGroupBD1F02DD"
+                  "Ref": "L3TaskDefwebLogGroupC6E4A38A"
                 },
                 "awslogs-stream-prefix": "L3",
                 "awslogs-region": {
@@ -596,7 +596,7 @@
         "Volumes": []
       }
     },
-    "L3LoggingLogGroupBD1F02DD": {
+    "L3TaskDefwebLogGroupC6E4A38A": {
       "Type": "AWS::Logs::LogGroup",
       "DeletionPolicy": "Retain"
     },
