@@ -20,8 +20,8 @@ export function renderAttributes(attributes: Attributes) {
  */
 export function defaultPortForProtocol(proto: ApplicationProtocol): number {
   switch (proto) {
-    case ApplicationProtocol.Http: return 80;
-    case ApplicationProtocol.Https: return 443;
+    case ApplicationProtocol.HTTP: return 80;
+    case ApplicationProtocol.HTTPS: return 443;
     default:
       throw new Error(`Unrecognized protocol: ${proto}`);
   }
@@ -36,11 +36,11 @@ export function defaultProtocolForPort(port: number): ApplicationProtocol {
     case 8000:
     case 8008:
     case 8080:
-      return ApplicationProtocol.Http;
+      return ApplicationProtocol.HTTP;
 
     case 443:
     case 8443:
-      return ApplicationProtocol.Https;
+      return ApplicationProtocol.HTTPS;
 
     default:
       throw new Error(`Don't know default protocol for port: ${port}; please supply a protocol`);

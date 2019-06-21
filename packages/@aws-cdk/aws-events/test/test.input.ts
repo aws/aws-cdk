@@ -11,7 +11,7 @@ export = {
       // GIVEN
       const stack = new Stack();
       const rule = new Rule(stack, 'Rule', {
-        schedule: Schedule.rate(1, TimeUnit.Minute),
+        schedule: Schedule.rate(1, TimeUnit.MINUTE),
       });
 
       // WHEN
@@ -34,7 +34,7 @@ export = {
       // GIVEN
       const stack = new Stack();
       const rule = new Rule(stack, 'Rule', {
-        schedule: Schedule.rate(1, TimeUnit.Minute),
+        schedule: Schedule.rate(1, TimeUnit.MINUTE),
       });
 
       // WHEN
@@ -56,7 +56,7 @@ export = {
       // GIVEN
       const stack = new Stack();
       const rule = new Rule(stack, 'Rule', {
-        schedule: Schedule.rate(1, TimeUnit.Minute),
+        schedule: Schedule.rate(1, TimeUnit.MINUTE),
       });
 
       // WHEN
@@ -78,7 +78,7 @@ export = {
       // GIVEN
       const stack = new Stack();
       const rule = new Rule(stack, 'Rule', {
-        schedule: Schedule.rate(1, TimeUnit.Minute),
+        schedule: Schedule.rate(1, TimeUnit.MINUTE),
       });
 
       const world = cdk.Lazy.stringValue({ produce: () => 'world' });

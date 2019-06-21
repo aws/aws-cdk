@@ -15,7 +15,7 @@ class KeyStack extends cdk.Stack {
 
   constructor(scope: cdk.App, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
-    this.key = new kms.Key(this, 'MyKey', { removalPolicy: RemovalPolicy.Destroy });
+    this.key = new kms.Key(this, 'MyKey', { removalPolicy: RemovalPolicy.DESTROY });
   }
 }
 

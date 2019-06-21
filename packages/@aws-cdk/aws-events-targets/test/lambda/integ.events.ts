@@ -14,12 +14,12 @@ const fn = new lambda.Function(stack, 'MyFunc', {
 });
 
 const timer = new events.Rule(stack, 'Timer', {
-  schedule: events.Schedule.rate(1, events.TimeUnit.Minute),
+  schedule: events.Schedule.rate(1, events.TimeUnit.MINUTE),
 });
 timer.addTarget(new targets.LambdaFunction(fn));
 
 const timer2 = new events.Rule(stack, 'Timer2', {
-  schedule: events.Schedule.rate(2, events.TimeUnit.Minute),
+  schedule: events.Schedule.rate(2, events.TimeUnit.MINUTE),
 });
 timer2.addTarget(new targets.LambdaFunction(fn));
 

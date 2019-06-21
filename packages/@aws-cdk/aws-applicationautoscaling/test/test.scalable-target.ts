@@ -37,7 +37,7 @@ export = {
 
     // WHEN
     target.scaleOnSchedule('ScaleUp', {
-      schedule: appscaling.Schedule.rate(1, appscaling.TimeUnit.Minute),
+      schedule: appscaling.Schedule.rate(1, appscaling.TimeUnit.MINUTE),
       maxCapacity: 50,
       minCapacity: 1,
     });

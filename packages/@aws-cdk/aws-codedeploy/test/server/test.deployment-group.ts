@@ -95,8 +95,8 @@ export = {
       const alb = new lbv2.ApplicationLoadBalancer(stack, 'ALB', {
         vpc: new ec2.Vpc(stack, 'VPC'),
       });
-      const listener = alb.addListener('Listener', { protocol: lbv2.ApplicationProtocol.Http });
-      const targetGroup = listener.addTargets('Fleet', { protocol: lbv2.ApplicationProtocol.Http });
+      const listener = alb.addListener('Listener', { protocol: lbv2.ApplicationProtocol.HTTP });
+      const targetGroup = listener.addTargets('Fleet', { protocol: lbv2.ApplicationProtocol.HTTP });
 
       new codedeploy.ServerDeploymentGroup(stack, 'DeploymentGroup', {
         loadBalancer: codedeploy.LoadBalancer.application(targetGroup),

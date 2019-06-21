@@ -219,8 +219,8 @@ export = {
     metrics.push(lb.metricElbAuthFailure());
     metrics.push(lb.metricElbAuthLatency());
     metrics.push(lb.metricElbAuthSuccess());
-    metrics.push(lb.metricHttpCodeElb(elbv2.HttpCodeElb.Elb3xxCount));
-    metrics.push(lb.metricHttpCodeTarget(elbv2.HttpCodeTarget.Target3xxCount));
+    metrics.push(lb.metricHttpCodeElb(elbv2.HttpCodeElb.ELB_3XX_COUNT));
+    metrics.push(lb.metricHttpCodeTarget(elbv2.HttpCodeTarget.TARGET_3XX_COUNT));
     metrics.push(lb.metricHttpFixedResponseCount());
     metrics.push(lb.metricHttpRedirectCount());
     metrics.push(lb.metricHttpRedirectUrlLimitExceededCount());

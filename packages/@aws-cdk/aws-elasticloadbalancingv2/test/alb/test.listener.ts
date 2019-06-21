@@ -36,7 +36,7 @@ export = {
 
     // WHEN
     lb.addListener('Listener', {
-      protocol: elbv2.ApplicationProtocol.Http,
+      protocol: elbv2.ApplicationProtocol.HTTP,
       defaultTargetGroups: [new elbv2.ApplicationTargetGroup(stack, 'Group', { vpc, port: 80 })]
     });
 
@@ -104,7 +104,7 @@ export = {
     new elbv2.ApplicationTargetGroup(stack, 'TargetGroup', {
       vpc,
       port: 80,
-      targetType: elbv2.TargetType.Ip
+      targetType: elbv2.TargetType.IP
     });
 
     // THEN
@@ -418,7 +418,7 @@ export = {
 
     // WHEN
     const metrics = [];
-    metrics.push(group.metricHttpCodeTarget(elbv2.HttpCodeTarget.Target3xxCount));
+    metrics.push(group.metricHttpCodeTarget(elbv2.HttpCodeTarget.TARGET_3XX_COUNT));
     metrics.push(group.metricIPv6RequestCount());
     metrics.push(group.metricUnhealthyHostCount());
     metrics.push(group.metricUnhealthyHostCount());

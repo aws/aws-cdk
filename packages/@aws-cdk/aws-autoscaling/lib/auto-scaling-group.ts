@@ -472,7 +472,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
     this.targetGroupArns.push(targetGroup.targetGroupArn);
     this.albTargetGroup = targetGroup;
     targetGroup.registerConnectable(this);
-    return { targetType: elbv2.TargetType.Instance };
+    return { targetType: elbv2.TargetType.INSTANCE };
   }
 
   /**
@@ -480,7 +480,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
    */
   public attachToNetworkTargetGroup(targetGroup: elbv2.NetworkTargetGroup): elbv2.LoadBalancerTargetProps {
     this.targetGroupArns.push(targetGroup.targetGroupArn);
-    return { targetType: elbv2.TargetType.Instance };
+    return { targetType: elbv2.TargetType.INSTANCE };
   }
 
   /**

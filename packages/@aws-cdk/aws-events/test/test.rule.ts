@@ -14,7 +14,7 @@ export = {
     const stack = new cdk.Stack();
 
     new Rule(stack, 'MyRule', {
-        schedule: Schedule.rate(10, TimeUnit.Minute),
+        schedule: Schedule.rate(10, TimeUnit.MINUTE),
     });
 
     expect(stack).toMatch({
@@ -38,7 +38,7 @@ export = {
     // WHEN
     new Rule(stack, 'MyRule', {
       ruleName: cdk.PhysicalName.of('PhysicalName'),
-      schedule: Schedule.rate(10, TimeUnit.Minute),
+      schedule: Schedule.rate(10, TimeUnit.MINUTE),
     });
 
     // THEN
@@ -174,7 +174,7 @@ export = {
 
     const rule = new Rule(stack, 'EventRule', {
       targets: [ t1 ],
-      schedule: Schedule.rate(5, TimeUnit.Minute),
+      schedule: Schedule.rate(5, TimeUnit.MINUTE),
     });
 
     rule.addTarget(t2);
@@ -216,7 +216,7 @@ export = {
     const stack = new cdk.Stack();
 
     const rule = new Rule(stack, 'EventRule', {
-      schedule: Schedule.rate(1, TimeUnit.Minute),
+      schedule: Schedule.rate(1, TimeUnit.MINUTE),
     });
 
     // a plain string should just be stringified (i.e. double quotes added and escaped)
@@ -301,7 +301,7 @@ export = {
     const stack = new cdk.Stack();
 
     const rule = new Rule(stack, 'EventRule', {
-      schedule: Schedule.rate(1, TimeUnit.Minute),
+      schedule: Schedule.rate(1, TimeUnit.MINUTE),
     });
 
     const role = new iam.Role(stack, 'SomeRole', {

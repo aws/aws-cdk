@@ -169,10 +169,10 @@ export class PipelineDeployStackAction extends cdk.Construct {
 function cfnCapabilities(adminPermissions: boolean, capabilities?: cfn.CloudFormationCapabilities): cfn.CloudFormationCapabilities {
   if (adminPermissions && capabilities === undefined) {
     // admin true default capability to NamedIAM
-    return cfn.CloudFormationCapabilities.NamedIAM;
+    return cfn.CloudFormationCapabilities.NAMED_IAM;
   } else if (capabilities === undefined) {
     // else capabilities are undefined set AnonymousIAM
-    return cfn.CloudFormationCapabilities.AnonymousIAM;
+    return cfn.CloudFormationCapabilities.ANONYMOUS_IAM;
   } else {
     // else capabilities are defined use them
     return capabilities;

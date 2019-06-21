@@ -8,7 +8,7 @@ test('State machine can be used as Event Rule target', () => {
   // GIVEN
   const stack = new cdk.Stack();
   const rule = new events.Rule(stack, 'Rule', {
-    schedule: events.Schedule.rate(1, events.TimeUnit.Minute),
+    schedule: events.Schedule.rate(1, events.TimeUnit.MINUTE),
   });
   const stateMachine = new sfn.StateMachine(stack, 'SM', {
     definition: new sfn.Wait(stack, 'Hello', { time: sfn.WaitTime.duration(cdk.Duration.seconds(10)) })

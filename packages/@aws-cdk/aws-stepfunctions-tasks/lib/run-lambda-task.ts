@@ -89,7 +89,7 @@ export enum InvocationType {
    *
    * The API response includes the function response and additional data.
    */
-  RequestResponse = 'RequestResponse',
+  REQUEST_RESPONSE = 'RequestResponse',
 
   /**
    * Invoke asynchronously
@@ -97,5 +97,5 @@ export enum InvocationType {
    * Send events that fail multiple times to the function's dead-letter queue (if it's configured).
    * The API response only includes a status code.
    */
-  Event = 'Event',
+  EVENT = 'Event',
 }

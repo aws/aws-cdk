@@ -9,10 +9,10 @@ test('use lambda as an event rule target', () => {
   const stack = new cdk.Stack();
   const fn = newTestLambda(stack);
   const rule1 = new events.Rule(stack, 'Rule', {
-    schedule: events.Schedule.rate(1, events.TimeUnit.Minute),
+    schedule: events.Schedule.rate(1, events.TimeUnit.MINUTE),
   });
   const rule2 = new events.Rule(stack, 'Rule2', {
-    schedule: events.Schedule.rate(5, events.TimeUnit.Minute),
+    schedule: events.Schedule.rate(5, events.TimeUnit.MINUTE),
   });
 
   // WHEN

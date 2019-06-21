@@ -84,7 +84,7 @@ export class Pass extends State implements INextable {
      */
     public toStateJson(): object {
         return {
-            Type: StateType.Pass,
+            Type: StateType.PASS,
             Comment: this.comment,
             Result: this.result,
             ResultPath: renderJsonPath(this.resultPath),
