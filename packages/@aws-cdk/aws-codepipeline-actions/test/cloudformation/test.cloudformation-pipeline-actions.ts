@@ -31,7 +31,7 @@ export = {
     actionName: 'source',
     output: sourceOutput,
     repository: repo,
-    pollForSourceChanges: true,
+    trigger: cpactions.CodeCommitTrigger.POLL,
   });
   pipeline.addStage({
     stageName: 'source',
