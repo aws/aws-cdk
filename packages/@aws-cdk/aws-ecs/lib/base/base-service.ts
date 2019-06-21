@@ -118,13 +118,16 @@ export abstract class BaseService extends Resource
    */
   public readonly taskDefinition: TaskDefinition;
 
+  /**
+   * The cluster this service is scheduled on
+   */
+  public readonly cluster: ICluster;
+
   protected cloudmapService?: cloudmap.Service;
-  protected cluster: ICluster;
   protected loadBalancers = new Array<CfnService.LoadBalancerProperty>();
   protected networkConfiguration?: CfnService.NetworkConfigurationProperty;
   protected serviceRegistries = new Array<CfnService.ServiceRegistryProperty>();
 
-  private readonly clusterName: string;
   private readonly resource: CfnService;
   private scalableTaskCount?: ScalableTaskCount;
 
@@ -173,7 +176,6 @@ export abstract class BaseService extends Resource
     this.serviceArn = resourceIdentifiers.arn;
     this.serviceName = resourceIdentifiers.name;
 
-    this.clusterName = props.cluster.clusterName;
     this.cluster = props.cluster;
 
     if (props.serviceDiscoveryOptions) {
@@ -219,7 +221,7 @@ export abstract class BaseService extends Resource
 
     return this.scalableTaskCount = new ScalableTaskCount(this, 'TaskCount', {
       serviceNamespace: appscaling.ServiceNamespace.ECS,
-      resourceId: `service/${this.clusterName}/${this.serviceName}`,
+      resourceId: `service/${this.cluster.clusterName}/${this.serviceName}`,
       dimension: 'ecs:service:DesiredCount',
       role: this.makeAutoScalingRole(),
       ...props
@@ -233,7 +235,7 @@ export abstract class BaseService extends Resource
     return new cloudwatch.Metric({
       namespace: 'AWS/ECS',
       metricName,
-      dimensions: { ClusterName: this.clusterName, ServiceName: this.serviceName },
+      dimensions: { ClusterName: this.cluster.clusterName, ServiceName: this.serviceName },
       ...props
     });
   }
