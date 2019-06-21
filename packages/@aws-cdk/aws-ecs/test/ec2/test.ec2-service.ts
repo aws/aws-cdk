@@ -92,7 +92,7 @@ export = {
           cluster,
           taskDefinition,
           daemon: true,
-          maximumPercent: 300
+          maxPercent: 300
         });
       }, /Maximum percent must be 100 for daemon mode./);
 
@@ -117,7 +117,7 @@ export = {
           cluster,
           taskDefinition,
           daemon: true,
-          minimumHealthyPercent: 50
+          minHealthyPercent: 50
         });
       }, /Minimum healthy percent must be 0 for daemon mode./);
 
