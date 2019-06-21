@@ -15,7 +15,7 @@ new elb.LoadBalancer(stack, 'LB', {
   internetFacing: true,
   listeners: [{
     externalPort: 80,
-    allowConnectionsFrom: [new ec2.AnyIPv4()]
+    allowConnectionsFrom: [ec2.Peer.anyIpv4()]
   }],
   healthCheck: {
     port: 80

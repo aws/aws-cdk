@@ -190,10 +190,10 @@ export class DatabaseCluster extends DatabaseClusterBase {
    */
   public static fromDatabaseClusterAttributes(scope: Construct, id: string, attrs: DatabaseClusterAttributes): IDatabaseCluster {
     class Import extends DatabaseClusterBase implements IDatabaseCluster {
-      public readonly defaultPortRange = new ec2.TcpPort(attrs.port);
+      public readonly defaultPort = ec2.Port.tcp(attrs.port);
       public readonly connections = new ec2.Connections({
         securityGroups: [ec2.SecurityGroup.fromSecurityGroupId(this, 'SecurityGroup', attrs.securityGroupId)],
-        defaultPortRange: this.defaultPortRange
+        defaultPort: this.defaultPort
       });
       public readonly clusterIdentifier = attrs.clusterIdentifier;
       public readonly instanceIdentifiers: string[] = [];
@@ -344,7 +344,7 @@ export class DatabaseCluster extends DatabaseClusterBase {
     }
 
     // Get the actual subnet objects so we can depend on internet connectivity.
-    const internetConnected = props.instanceProps.vpc.selectSubnets(props.instanceProps.vpcSubnets).internetConnectedDependency;
+    const internetConnected = props.instanceProps.vpc.selectSubnets(props.instanceProps.vpcSubnets).internetConnectivityEstablished;
     for (let i = 0; i < instanceCount; i++) {
       const instanceIndex = i + 1;
 
@@ -380,8 +380,8 @@ export class DatabaseCluster extends DatabaseClusterBase {
       this.instanceEndpoints.push(new Endpoint(instance.attrEndpointAddress, portAttribute));
     }
 
-    const defaultPortRange = new ec2.TcpPort(this.clusterEndpoint.port);
-    this.connections = new ec2.Connections({ securityGroups: [securityGroup], defaultPortRange });
+    const defaultPort = ec2.Port.tcp(this.clusterEndpoint.port);
+    this.connections = new ec2.Connections({ securityGroups: [securityGroup], defaultPort });
   }
 
   /**

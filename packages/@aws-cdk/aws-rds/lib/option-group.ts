@@ -149,7 +149,7 @@ export class OptionGroup extends Resource implements IOptionGroup {
 
         this.optionConnections[config.name] = new ec2.Connections({
           securityGroups: [securityGroup],
-          defaultPortRange: new ec2.TcpPort(config.port)
+          defaultPort: ec2.Port.tcp(config.port)
         });
 
         configuration = {

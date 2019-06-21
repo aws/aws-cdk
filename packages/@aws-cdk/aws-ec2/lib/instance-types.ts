@@ -228,6 +228,18 @@ export enum InstanceSize {
  * know the identifier of the type you want.
  */
 export class InstanceType {
+  /**
+   * Instance type for EC2 instances
+   *
+   * This class takes a combination of a class and size.
+   *
+   * Be aware that not all combinations of class and size are available, and not all
+   * classes are available in all regions.
+   */
+  public static of(instanceClass: InstanceClass, instanceSize: InstanceSize) {
+    return new InstanceType(`${instanceClass}.${instanceSize}`);
+  }
+
   constructor(private readonly instanceTypeIdentifier: string) {
   }
 
@@ -236,20 +248,5 @@ export class InstanceType {
    */
   public toString(): string {
     return this.instanceTypeIdentifier;
-  }
-}
-
-/**
- * Instance type for EC2 instances
- *
- * This class takes a combination of a class and size.
- *
- * Be aware that not all combinations of class and size are available, and not all
- * classes are available in all regions.
- */
-export class InstanceTypePair extends InstanceType {
-  constructor(public readonly instanceClass: InstanceClass,
-              public readonly instanceSize: InstanceSize) {
-    super(instanceClass + '.' + instanceSize);
   }
 }

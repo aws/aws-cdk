@@ -130,7 +130,7 @@ export abstract class BaseLoadBalancer extends Resource {
     const vpcSubnets = ifUndefined(baseProps.vpcSubnets,
       { subnetType: internetFacing ? ec2.SubnetType.PUBLIC : ec2.SubnetType.PRIVATE });
 
-    const { subnetIds, internetConnectedDependency } = baseProps.vpc.selectSubnets(vpcSubnets);
+    const { subnetIds, internetConnectivityEstablished } = baseProps.vpc.selectSubnets(vpcSubnets);
 
     this.vpc = baseProps.vpc;
 
@@ -142,7 +142,7 @@ export abstract class BaseLoadBalancer extends Resource {
       ...additionalProps
     });
     if (internetFacing) {
-      resource.node.addDependency(internetConnectedDependency);
+      resource.node.addDependency(internetConnectivityEstablished);
     }
 
     if (baseProps.deletionProtection) { this.setAttribute('deletion_protection.enabled', 'true'); }
