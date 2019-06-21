@@ -573,7 +573,7 @@
     "booksapiE1885304": {
       "Type": "AWS::ApiGateway::RestApi",
       "Properties": {
-        "Name": "booksapiE1885304"
+        "Name": "books-api"
       }
     },
     "booksapiDeployment308B08F1c828b08824c062376eba921738884f85": {

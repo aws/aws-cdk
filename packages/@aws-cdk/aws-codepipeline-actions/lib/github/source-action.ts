@@ -68,7 +68,7 @@ export class GitHubSourceAction extends codepipeline.Action {
   constructor(props: GitHubSourceActionProps) {
     super({
       ...props,
-      category: codepipeline.ActionCategory.Source,
+      category: codepipeline.ActionCategory.SOURCE,
       owner: 'ThirdParty',
       provider: 'GitHub',
       artifactBounds: sourceArtifactBounds(),

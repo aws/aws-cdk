@@ -3,7 +3,7 @@
     "myapi4C7BF186": {
       "Type": "AWS::ApiGateway::RestApi",
       "Properties": {
-        "Name": "myapi4C7BF186"
+        "Name": "my-api"
       }
     },
     "myapiDeployment92F2CB4919460d935da8177bcfbc418506e514ff": {
@@ -644,6 +644,7 @@
             }
           }
         ],
+        "Throttle": { "RateLimit": 5 },
         "Description": "Free tier monthly usage plan",
         "Quota": {
           "Limit": 10000,

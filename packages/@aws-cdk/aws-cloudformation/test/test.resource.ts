@@ -1,16 +1,65 @@
-import { expect, haveResource } from '@aws-cdk/assert';
+import { expect, haveResource, ResourcePart } from '@aws-cdk/assert';
 import lambda = require('@aws-cdk/aws-lambda');
 import sns = require('@aws-cdk/aws-sns');
 import cdk = require('@aws-cdk/cdk');
-import { Test } from 'nodeunit';
+import { Test, testCase } from 'nodeunit';
 import { CustomResource, CustomResourceProvider } from '../lib';
 
 // tslint:disable:object-literal-key-quotes
 
-export = {
+export = testCase({
+  'custom resources honor removalPolicy': {
+    'unspecified (aka .Destroy)'(test: Test) {
+      // GIVEN
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'Test');
+
+      // WHEN
+      new TestCustomResource(stack, 'Custom');
+
+      // THEN
+      expect(stack).to(haveResource('AWS::CloudFormation::CustomResource', {}, ResourcePart.CompleteDefinition));
+      test.equal(app.synth().tryGetArtifact(stack.stackName)!.findMetadataByType('aws:cdk:protected').length, 0);
+
+      test.done();
+    },
+
+    '.Destroy'(test: Test) {
+      // GIVEN
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'Test');
+
+      // WHEN
+      new TestCustomResource(stack, 'Custom', { removalPolicy: cdk.RemovalPolicy.Destroy });
+
+      // THEN
+      expect(stack).to(haveResource('AWS::CloudFormation::CustomResource', {}, ResourcePart.CompleteDefinition));
+      test.equal(app.synth().tryGetArtifact(stack.stackName)!.findMetadataByType('aws:cdk:protected').length, 0);
+
+      test.done();
+    },
+
+    '.Retain'(test: Test) {
+      // GIVEN
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'Test');
+
+      // WHEN
+      new TestCustomResource(stack, 'Custom', {  removalPolicy: cdk.RemovalPolicy.Retain });
+
+      // THEN
+      expect(stack).to(haveResource('AWS::CloudFormation::CustomResource', {
+        DeletionPolicy: 'Retain',
+      }, ResourcePart.CompleteDefinition));
+
+      test.done();
+    },
+  },
+
   'custom resource is added twice, lambda is added once'(test: Test) {
     // GIVEN
-    const stack = new cdk.Stack();
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'Test');
 
     // WHEN
     new TestCustomResource(stack, 'Custom1');
@@ -61,26 +110,28 @@ export = {
         ]
         },
         "Custom1D319B237": {
-        "Type": "AWS::CloudFormation::CustomResource",
-        "Properties": {
-          "ServiceToken": {
-          "Fn::GetAtt": [
-            "SingletonLambdaTestCustomResourceProviderA9255269",
-            "Arn"
-          ]
+          "Type": "AWS::CloudFormation::CustomResource",
+          "DeletionPolicy": "Delete",
+          "Properties": {
+            "ServiceToken": {
+              "Fn::GetAtt": [
+                "SingletonLambdaTestCustomResourceProviderA9255269",
+                "Arn"
+              ]
+            }
           }
-        }
         },
         "Custom2DD5FB44D": {
-        "Type": "AWS::CloudFormation::CustomResource",
-        "Properties": {
-          "ServiceToken": {
-          "Fn::GetAtt": [
-            "SingletonLambdaTestCustomResourceProviderA9255269",
-            "Arn"
-          ]
+          "Type": "AWS::CloudFormation::CustomResource",
+          "DeletionPolicy": "Delete",
+          "Properties": {
+            "ServiceToken": {
+              "Fn::GetAtt": [
+                "SingletonLambdaTestCustomResourceProviderA9255269",
+                "Arn"
+              ]
+            }
           }
-        }
         }
       }
     });
@@ -88,7 +139,8 @@ export = {
   },
 
   'custom resources can specify a resource type that starts with Custom::'(test: Test) {
-    const stack = new cdk.Stack();
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'Test');
     new CustomResource(stack, 'MyCustomResource', {
       resourceType: 'Custom::MyCustomResourceType',
       provider: CustomResourceProvider.topic(new sns.Topic(stack, 'Provider'))
@@ -99,7 +151,8 @@ export = {
 
   'fails if custom resource type is invalid': {
     'does not start with "Custom::"'(test: Test) {
-      const stack = new cdk.Stack();
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'Test');
 
       test.throws(() => {
         new CustomResource(stack, 'MyCustomResource', {
@@ -112,7 +165,8 @@ export = {
     },
 
     'has invalid characters'(test: Test) {
-      const stack = new cdk.Stack();
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'Test');
 
       test.throws(() => {
         new CustomResource(stack, 'MyCustomResource', {
@@ -125,7 +179,8 @@ export = {
     },
 
     'is longer than 60 characters'(test: Test) {
-      const stack = new cdk.Stack();
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'Test');
 
       test.throws(() => {
         new CustomResource(stack, 'MyCustomResource', {
@@ -138,10 +193,10 @@ export = {
     },
 
   },
-};
+});
 
 class TestCustomResource extends cdk.Construct {
-  constructor(scope: cdk.Construct, id: string) {
+  constructor(scope: cdk.Construct, id: string, opts: { removalPolicy?: cdk.RemovalPolicy } = {}) {
     super(scope, id);
 
     const singletonLambda = new lambda.SingletonFunction(this, 'Lambda', {
@@ -149,11 +204,12 @@ class TestCustomResource extends cdk.Construct {
       code: new lambda.InlineCode('def hello(): pass'),
       runtime: lambda.Runtime.Python27,
       handler: 'index.hello',
-      timeout: 300,
+      timeout: cdk.Duration.minutes(5),
     });
 
     new CustomResource(this, 'Resource', {
-      provider: CustomResourceProvider.lambda(singletonLambda)
+      ...opts,
+      provider: CustomResourceProvider.lambda(singletonLambda),
     });
   }
 }

@@ -1,5 +1,5 @@
 import { expect, haveResource, isSuperObject } from '@aws-cdk/assert';
-import { App, Stack } from '@aws-cdk/cdk';
+import { App, PhysicalName, Stack } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
 import { Dashboard, GraphWidget, PeriodOverride, TextWidget } from '../lib';
 
@@ -10,17 +10,17 @@ export = {
     const dashboard = new Dashboard(stack, 'Dash');
 
     // WHEN
-    dashboard.add(new TextWidget({
+    dashboard.addWidgets(new TextWidget({
       width: 10,
       height: 2,
       markdown: "first"
     }));
-    dashboard.add(new TextWidget({
+    dashboard.addWidgets(new TextWidget({
       width: 1,
       height: 4,
       markdown: "second"
     }));
-    dashboard.add(new TextWidget({
+    dashboard.addWidgets(new TextWidget({
       width: 4,
       height: 1,
       markdown: "third"
@@ -42,7 +42,7 @@ export = {
     const dashboard = new Dashboard(stack, 'Dash');
 
     // WHEN
-    dashboard.add(
+    dashboard.addWidgets(
       new TextWidget({
         width: 10,
         height: 2,
@@ -76,7 +76,7 @@ export = {
     const dashboard = new Dashboard(stack, 'Dash');
 
     // WHEN
-    dashboard.add(
+    dashboard.addWidgets(
       new GraphWidget({ width: 1, height: 1 }) // GraphWidget has internal reference to current region
     );
 
@@ -99,11 +99,11 @@ export = {
     {
       start: '-9H',
       end: '2018-12-17T06:00:00.000Z',
-      periodOverride: PeriodOverride.Inherit
+      periodOverride: PeriodOverride.INHERIT
     });
 
     // WHEN
-    dashboard.add(
+    dashboard.addWidgets(
       new GraphWidget({ width: 1, height: 1 }) // GraphWidget has internal reference to current region
     );
 
@@ -127,7 +127,7 @@ export = {
 
     // WHEN
     new Dashboard(stack, 'MyDashboard', {
-      dashboardName: 'MyCustomDashboardName'
+      dashboardName: PhysicalName.of('MyCustomDashboardName'),
     });
 
     // THEN

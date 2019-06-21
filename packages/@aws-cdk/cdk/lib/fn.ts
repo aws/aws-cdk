@@ -2,6 +2,7 @@ import { ICfnConditionExpression } from './cfn-condition';
 import { minimalCloudFormationJoin } from './cloudformation-lang';
 import { Intrinsic } from './private/intrinsic';
 import { IResolvable, IResolveContext } from './resolvable';
+import { captureStackTrace } from './stack-trace';
 import { Token } from './token';
 
 // tslint:disable:max-line-length
@@ -239,7 +240,7 @@ export class Fn {
    * of strings.
    * @returns an FnCondition token
    */
-  public conditionEachMemberEquals(listOfStrings: string[], value: string): ICfnConditionExpression {
+  public static conditionEachMemberEquals(listOfStrings: string[], value: string): ICfnConditionExpression {
     return new FnEachMemberEquals(listOfStrings, value);
   }
 
@@ -254,7 +255,7 @@ export class Fn {
    * strings_to_check parameter.
    * @returns an FnCondition token
    */
-  public conditionEachMemberIn(stringsToCheck: string[], stringsToMatch: string): ICfnConditionExpression {
+  public static conditionEachMemberIn(stringsToCheck: string[], stringsToMatch: string[]): ICfnConditionExpression {
     return new FnEachMemberIn(stringsToCheck, stringsToMatch);
   }
 
@@ -265,7 +266,7 @@ export class Fn {
    * Parameters in the AWS CloudFormation User Guide.
    * @returns a token represented as a string array
    */
-  public refAll(parameterType: string): string[] {
+  public static refAll(parameterType: string): string[] {
     return Token.asList(new FnRefAll(parameterType));
   }
 
@@ -279,7 +280,7 @@ export class Fn {
    * value.
    * @returns a token represented as a string
    */
-  public valueOf(parameterOrLogicalId: string, attribute: string): string {
+  public static valueOf(parameterOrLogicalId: string, attribute: string): string {
     return new FnValueOf(parameterOrLogicalId, attribute).toString();
   }
 
@@ -293,9 +294,11 @@ export class Fn {
    * value. For more information about attributes, see Supported Attributes.
    * @returns a token represented as a string array
    */
-  public valueOfAll(parameterType: string, attribute: string): string[] {
+  public static valueOfAll(parameterType: string, attribute: string): string[] {
     return Token.asList(new FnValueOfAll(parameterType, attribute));
   }
+
+  private constructor() { }
 }
 
 /**
@@ -576,8 +579,8 @@ class FnEachMemberIn extends FnConditionBase {
    * @param stringsToCheck A list of strings, such as "A", "B", "C". AWS CloudFormation checks whether each member in the strings_to_check parameter is in the strings_to_match parameter.
    * @param stringsToMatch A list of strings, such as "A", "B", "C". Each member in the strings_to_match parameter is compared against the members of the strings_to_check parameter.
    */
-  constructor(stringsToCheck: any, stringsToMatch: any) {
-    super('Fn::EachMemberIn', [ [stringsToCheck], stringsToMatch ]);
+  constructor(stringsToCheck: string[], stringsToMatch: string[]) {
+    super('Fn::EachMemberIn', [stringsToCheck, stringsToMatch]);
   }
 }
 
@@ -630,6 +633,8 @@ class FnValueOfAll extends FnBase {
  * with no delimiter.
  */
 class FnJoin implements IResolvable {
+  public readonly creationStack: string[];
+
   private readonly delimiter: string;
   private readonly listOfValues: any[];
   // Cache for the result of resolveValues() - since it otherwise would be computed several times
@@ -648,6 +653,7 @@ class FnJoin implements IResolvable {
 
     this.delimiter = delimiter;
     this.listOfValues = listOfValues;
+    this.creationStack = captureStackTrace();
   }
 
   public resolve(context: IResolveContext): any {

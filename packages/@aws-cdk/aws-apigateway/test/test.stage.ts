@@ -20,7 +20,7 @@ export = {
         testapiD6451F70: {
         Type: "AWS::ApiGateway::RestApi",
         Properties: {
-          Name: "testapiD6451F70"
+          Name: "test-api"
         }
         },
         testapiGETD8DE4ED1: {
@@ -78,7 +78,7 @@ export = {
     // WHEN
     new apigateway.Stage(stack, 'my-stage', {
       deployment,
-      loggingLevel: apigateway.MethodLoggingLevel.Info,
+      loggingLevel: apigateway.MethodLoggingLevel.INFO,
       throttlingRateLimit: 12
     });
 
@@ -107,11 +107,11 @@ export = {
     // WHEN
     new apigateway.Stage(stack, 'my-stage', {
       deployment,
-      loggingLevel: apigateway.MethodLoggingLevel.Info,
+      loggingLevel: apigateway.MethodLoggingLevel.INFO,
       throttlingRateLimit: 12,
       methodOptions: {
         '/goo/bar/GET': {
-          loggingLevel: apigateway.MethodLoggingLevel.Error,
+          loggingLevel: apigateway.MethodLoggingLevel.ERROR,
         }
       }
     });

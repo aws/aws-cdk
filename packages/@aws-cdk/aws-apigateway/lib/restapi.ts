@@ -1,12 +1,12 @@
 import iam = require('@aws-cdk/aws-iam');
-import { CfnOutput, Construct, IResource as IResourceBase, Resource, Stack } from '@aws-cdk/cdk';
+import { CfnOutput, Construct, IResource as IResourceBase, PhysicalName, Resource, Stack } from '@aws-cdk/cdk';
 import { ApiKey, IApiKey } from './api-key';
 import { CfnAccount, CfnRestApi } from './apigateway.generated';
 import { Deployment } from './deployment';
 import { Integration } from './integration';
 import { Method, MethodOptions } from './method';
-import { Model, ModelOptions } from './model';
-import { RequestValidator, RequestValidatorOptions } from './requestvalidator';
+import { Model, ModelProps } from './model';
+import { RequestValidator, RequestValidatorProps } from './requestvalidator';
 import { IResource, ResourceBase, ResourceOptions } from './resource';
 import { Stage, StageOptions } from './stage';
 import { UsagePlan, UsagePlanProps } from './usage-plan';
@@ -66,7 +66,7 @@ export interface RestApiProps extends ResourceOptions {
    *
    * @default - ID of the RestApi construct.
    */
-  readonly restApiName?: string;
+  readonly restApiName?: PhysicalName;
 
   /**
    * Custom header parameters for the request.
@@ -180,21 +180,6 @@ export class RestApi extends Resource implements IRestApi {
   public readonly restApiRootResourceId: string;
 
   /**
-   * API Gateway deployment that represents the latest changes of the API.
-   * This resource will be automatically updated every time the REST API model changes.
-   * This will be undefined if `deploy` is false.
-   */
-  public latestDeployment?: Deployment;
-
-  /**
-   * API Gateway stage that points to the latest deployment (if defined).
-   *
-   * If `deploy` is disabled, you will need to explicitly assign this value in order to
-   * set up integrations.
-   */
-  public deploymentStage?: Stage;
-
-  /**
    * Represents the root resource ("/") of this API. Use it to define the API model:
    *
    *    api.root.addMethod('ANY', redirectToHomePage); // "ANY /"
@@ -203,12 +188,24 @@ export class RestApi extends Resource implements IRestApi {
    */
   public readonly root: IResource;
 
+  /**
+   * API Gateway stage that points to the latest deployment (if defined).
+   *
+   * If `deploy` is disabled, you will need to explicitly assign this value in order to
+   * set up integrations.
+   */
+  public deploymentStage: Stage;
+
   private readonly methods = new Array<Method>();
+  private _latestDeployment: Deployment | undefined;
 
   constructor(scope: Construct, id: string, props: RestApiProps = { }) {
-    super(scope, id);
+    super(scope, id, {
+      physicalName: props.restApiName || PhysicalName.of(id),
+    });
 
     const resource = new CfnRestApi(this, 'Resource', {
+      name: this.physicalName.value!,
       description: props.description,
       policy: props.policy,
       failOnWarnings: props.failOnWarnings,
@@ -217,10 +214,8 @@ export class RestApi extends Resource implements IRestApi {
       endpointConfiguration: props.endpointTypes ? { types: props.endpointTypes } : undefined,
       apiKeySourceType: props.apiKeySourceType,
       cloneFrom: props.cloneFrom ? props.cloneFrom.restApiId : undefined,
-      parameters: props.parameters,
-      name: '@@Error@@'
+      parameters: props.parameters
     });
-    resource.addPropertyOverride('Name', props.restApiName || resource.logicalId);
     this.restApiId = resource.refAsString;
 
     this.configureDeployment(props);
@@ -230,7 +225,16 @@ export class RestApi extends Resource implements IRestApi {
       this.configureCloudWatchRole(resource);
     }
 
-    this.root = new RootResource(this, props, resource.restApiRootResourceId);
+    this.root = new RootResource(this, props, resource.attrRootResourceId);
+  }
+
+  /**
+   * API Gateway deployment that represents the latest changes of the API.
+   * This resource will be automatically updated every time the REST API model changes.
+   * This will be undefined if `deploy` is false.
+   */
+  public get latestDeployment() {
+    return this._latestDeployment;
   }
 
   /**
@@ -272,20 +276,20 @@ export class RestApi extends Resource implements IRestApi {
   /**
    * Adds a new model.
    */
-  public addModel(id: string, props: ModelOptions): Model {
+  public addModel(id: string, props: ModelProps): Model {
     return new Model(this, id, {
-      restApi: this,
-      options: props
+      ...props,
+      restApi: this
     });
   }
 
   /**
    * Adds a new model.
    */
-  public addRequestValidator(id: string, props: RequestValidatorOptions): RequestValidator {
+  public addRequestValidator(id: string, props: RequestValidatorProps): RequestValidator {
     return new RequestValidator(this, id, {
-      restApi: this,
-      options: props
+      ...props,
+      restApi: this
     });
   }
 
@@ -297,7 +301,7 @@ export class RestApi extends Resource implements IRestApi {
    * @param path The resource path. Must start with '/' (default `*`)
    * @param stage The stage (default `*`)
    */
-  public executeApiArn(method: string = '*', path: string = '/*', stage: string = '*') {
+  public arnForExecuteApi(method: string = '*', path: string = '/*', stage: string = '*') {
     if (!path.startsWith('/')) {
       throw new Error(`"path" must begin with a "/": '${path}'`);
     }
@@ -339,7 +343,7 @@ export class RestApi extends Resource implements IRestApi {
     const deploy = props.deploy === undefined ? true : props.deploy;
     if (deploy) {
 
-      this.latestDeployment = new Deployment(this, 'Deployment', {
+      this._latestDeployment = new Deployment(this, 'Deployment', {
         description: 'Automatically created by the RestApi construct',
         api: this,
         retainDeployments: props.retainDeployments
@@ -350,7 +354,7 @@ export class RestApi extends Resource implements IRestApi {
       const stageName = (props.deployOptions && props.deployOptions.stageName) || 'prod';
 
       this.deploymentStage = new Stage(this, `DeploymentStage.${stageName}`, {
-        deployment: this.latestDeployment,
+        deployment: this._latestDeployment,
         ...props.deployOptions
       });
 
@@ -380,29 +384,29 @@ export enum ApiKeySourceType {
   /**
    * To read the API key from the `X-API-Key` header of a request.
    */
-  Header = 'HEADER',
+  HEADER = 'HEADER',
 
   /**
    * To read the API key from the `UsageIdentifierKey` from a custom authorizer.
    */
-  Authorizer = 'AUTHORIZER',
+  AUTHORIZER = 'AUTHORIZER',
 }
 
 export enum EndpointType {
   /**
    * For an edge-optimized API and its custom domain name.
    */
-  Edge = 'EDGE',
+  EDGE = 'EDGE',
 
   /**
    * For a regional API and its custom domain name.
    */
-  Regional = 'REGIONAL',
+  REGIONAL = 'REGIONAL',
 
   /**
    * For a private API and its custom domain name.
    */
-  Private = 'PRIVATE'
+  PRIVATE = 'PRIVATE'
 }
 
 class RootResource extends ResourceBase {

@@ -1,8 +1,9 @@
 import { expect, haveResource, haveResourceLike, ResourcePart } from '@aws-cdk/assert';
 import cdk = require('@aws-cdk/cdk');
-import { App, Stack } from '@aws-cdk/cdk';
+import { App, PhysicalName, Stack } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
 import apigateway = require('../lib');
+import { JsonSchemaType, JsonSchemaVersion } from '../lib';
 
 // tslint:disable:max-line-length
 
@@ -21,7 +22,7 @@ export = {
         myapi4C7BF186: {
           Type: "AWS::ApiGateway::RestApi",
           Properties: {
-            Name: "myapi4C7BF186"
+            Name: "my-api"
           }
         },
         myapiGETF990CE3C: {
@@ -100,7 +101,7 @@ export = {
     test.done();
   },
 
-  '"name" is defaulted to resource unique id'(test: Test) {
+  '"name" is defaulted to resource physical name'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
 
@@ -114,7 +115,7 @@ export = {
 
     // THEN
     expect(stack).to(haveResource('AWS::ApiGateway::RestApi', {
-      Name: "restapiC5611D27"
+      Name: PhysicalName.of('restapi').value
     }));
 
     test.done();
@@ -140,7 +141,8 @@ export = {
     const stack = new cdk.Stack();
     const api = new apigateway.RestApi(stack, 'restapi', {
       deploy: false,
-      cloudWatchRole: false
+      cloudWatchRole: false,
+      restApiName: cdk.PhysicalName.of('my-rest-api'),
     });
 
     api.root.addMethod('GET');
@@ -174,7 +176,8 @@ export = {
     const stack = new cdk.Stack();
     const api = new apigateway.RestApi(stack, 'restapi', {
       deploy: false,
-      cloudWatchRole: false
+      cloudWatchRole: false,
+      restApiName: cdk.PhysicalName.of('my-rest-api'),
     });
 
     // WHEN
@@ -206,7 +209,7 @@ export = {
       restapiC5611D27: {
         Type: "AWS::ApiGateway::RestApi",
         Properties: {
-        Name: "restapiC5611D27"
+        Name: "restapi"
         }
       },
       restapir1CF2997EA: {
@@ -400,7 +403,7 @@ export = {
     api.root.addMethod('GET');
 
     // WHEN
-    const arn = api.executeApiArn('method', '/path', 'stage');
+    const arn = api.arnForExecuteApi('method', '/path', 'stage');
 
     // THEN
     test.deepEqual(stack.resolve(arn), { 'Fn::Join':
@@ -424,7 +427,7 @@ export = {
     api.root.addMethod('GET');
 
     // THEN
-    test.throws(() => api.executeApiArn('method', 'hey-path', 'stage'), /"path" must begin with a "\/": 'hey-path'/);
+    test.throws(() => api.arnForExecuteApi('method', 'hey-path', 'stage'), /"path" must begin with a "\/": 'hey-path'/);
     test.done();
   },
 
@@ -458,7 +461,7 @@ export = {
 
     // WHEN
     const api = new apigateway.RestApi(stack, 'api', {
-      endpointTypes: [ apigateway.EndpointType.Edge, apigateway.EndpointType.Private ]
+      endpointTypes: [ apigateway.EndpointType.EDGE, apigateway.EndpointType.PRIVATE ]
     });
 
     api.root.addMethod('GET');
@@ -489,7 +492,7 @@ export = {
 
     expect(stack).to(haveResource('AWS::ApiGateway::RestApi', {
       CloneFrom: "foobar",
-      Name: "apiC8550315"
+      Name: "api"
     }));
 
     test.done();
@@ -532,7 +535,7 @@ export = {
     const api = new apigateway.RestApi(stack, 'myapi', {
       defaultIntegration: rootInteg,
       defaultMethodOptions: {
-        authorizerId: 'AUTHID',
+        authorizer: { authorizerId: 'AUTHID' },
         authorizationType: apigateway.AuthorizationType.IAM,
       }
     });
@@ -545,13 +548,13 @@ export = {
     // CASE #2: should inherit integration from root and method options, but
     // "authorizationType" will be overridden to "None" instead of "IAM"
     child.addMethod('POST', undefined, {
-      authorizationType: apigateway.AuthorizationType.Cognito
+      authorizationType: apigateway.AuthorizationType.COGNITO
     });
 
     const child2 = api.root.addResource('child2', {
       defaultIntegration: new apigateway.MockIntegration(),
       defaultMethodOptions: {
-        authorizerId: 'AUTHID2',
+        authorizer: { authorizerId: 'AUTHID2' },
       }
     });
 
@@ -609,10 +612,10 @@ export = {
     // WHEN
     api.addModel('model', {
       schema: {
-        $schema: "http://json-schema.org/draft-04/schema#",
+        schema: JsonSchemaVersion.DRAFT4,
         title: "test",
-        type: "object",
-        properties: { message: { type: "string" } }
+        type: JsonSchemaType.OBJECT,
+        properties: { message: { type: JsonSchemaType.STRING } }
       }
     });
 
@@ -623,7 +626,7 @@ export = {
         $schema: "http://json-schema.org/draft-04/schema#",
         title: "test",
         type: "object",
-        properties: { message: { type: "string" } }
+        properties: { message: { type: JsonSchemaType.STRING } }
       }
     }));
 

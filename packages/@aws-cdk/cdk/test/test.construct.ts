@@ -1,6 +1,6 @@
 import cxapi = require('@aws-cdk/cx-api');
 import { Test } from 'nodeunit';
-import { App as Root, Construct, ConstructNode, ConstructOrder, IConstruct, Lazy, ValidationError } from '../lib';
+import { App as Root, Aws, Construct, ConstructNode, ConstructOrder, IConstruct, Lazy, ValidationError } from '../lib';
 
 // tslint:disable:variable-name
 // tslint:disable:max-line-length
@@ -182,6 +182,13 @@ export = {
     const root = new Root();
     new Construct(root, 'child1');
     test.throws(() => root.node.setContext('k', 'v'));
+    test.done();
+  },
+
+  'fails if context key contains unresolved tokens'(test: Test) {
+    const root = new Root();
+    test.throws(() => root.node.setContext(`my-${Aws.region}`, 'foo'), /Invalid context key/);
+    test.throws(() => root.node.tryGetContext(Aws.region), /Invalid context key/);
     test.done();
   },
 

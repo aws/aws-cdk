@@ -18,7 +18,7 @@ export = {
     const stack = new Stack();
 
     const repository = new codecommit.Repository(stack, 'MyRepo', {
-       repositoryName: 'my-repo',
+       repositoryName: PhysicalName.of('my-repo'),
     });
 
     const pipeline = new codepipeline.Pipeline(stack, 'Pipeline');
@@ -33,9 +33,7 @@ export = {
       actions: [source],
     });
 
-    const project = new codebuild.Project(stack, 'MyBuildProject', {
-       source: new codebuild.CodePipelineSource()
-    });
+    const project = new codebuild.PipelineProject(stack, 'MyBuildProject');
     pipeline.addStage({
       stageName: 'build',
       actions: [
@@ -56,7 +54,7 @@ export = {
     const stack = new Stack(undefined, 'StackName');
 
     new codepipeline.Pipeline(stack, 'Pipeline', {
-      pipelineName: Aws.stackName,
+      pipelineName: PhysicalName.of(Aws.stackName),
     });
 
     expect(stack, true).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
@@ -728,7 +726,7 @@ export = {
       });
       const sourceBucket = new s3.Bucket(pipelineStack, 'ArtifactBucket', {
         bucketName: PhysicalName.of('source-bucket'),
-        encryption: s3.BucketEncryption.Kms,
+        encryption: s3.BucketEncryption.KMS,
       });
       const sourceOutput = new codepipeline.Artifact();
       new codepipeline.Pipeline(pipelineStack, 'Pipeline', {
@@ -872,6 +870,6 @@ function stageForTesting(stack: Stack): codepipeline.IStage {
 
 function repositoryForTesting(stack: Stack): codecommit.Repository {
   return new codecommit.Repository(stack, 'Repository', {
-    repositoryName: 'Repository'
+    repositoryName: PhysicalName.of('Repository'),
   });
 }

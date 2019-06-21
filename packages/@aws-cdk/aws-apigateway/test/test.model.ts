@@ -2,6 +2,7 @@ import { expect, haveResource } from '@aws-cdk/assert';
 import cdk = require('@aws-cdk/cdk');
 import { Test } from 'nodeunit';
 import apigateway = require('../lib');
+import { JsonSchemaType, JsonSchemaVersion } from '../lib';
 
 export = {
   'default setup'(test: Test) {
@@ -16,13 +17,11 @@ export = {
     // WHEN
     new apigateway.Model(stack, 'my-model', {
       restApi: api,
-      options: {
-        schema: {
-          $schema: "http://json-schema.org/draft-04/schema#",
-          title: "test",
-          type: "object",
-          properties: { message: { type: "string" } }
-        }
+      schema: {
+        schema: JsonSchemaVersion.DRAFT4,
+        title: "test",
+        type: JsonSchemaType.OBJECT,
+        properties: { message: { type: JsonSchemaType.STRING } }
       }
     });
 
@@ -52,13 +51,11 @@ export = {
     // WHEN
     new apigateway.Model(stack, 'my-model', {
       restApi: api,
-      options: {
-        schema: {
-          $schema: "http://json-schema.org/draft-04/schema#",
-          title: "test",
-          type: "object",
-          properties: { message: { type: "string" } }
-        }
+      schema: {
+        schema: JsonSchemaVersion.DRAFT4,
+        title: "test",
+        type: JsonSchemaType.OBJECT,
+        properties: { message: { type: JsonSchemaType.STRING } }
       }
     });
 

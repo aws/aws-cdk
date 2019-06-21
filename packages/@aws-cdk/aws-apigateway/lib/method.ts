@@ -1,5 +1,6 @@
 import { Construct, Resource, Stack } from '@aws-cdk/cdk';
 import { CfnMethod, CfnMethodProps } from './apigateway.generated';
+import { IAuthorizer } from './authorizer';
 import { ConnectionType, Integration } from './integration';
 import { MockIntegration } from './integrations/mock';
 import { MethodResponse } from './methodresponse';
@@ -25,11 +26,8 @@ export interface MethodOptions {
   /**
    * If `authorizationType` is `Custom`, this specifies the ID of the method
    * authorizer resource.
-   *
-   * NOTE: in the future this will be replaced with an `IAuthorizer`
-   * construct.
    */
-  readonly authorizerId?: string;
+  readonly authorizer?: IAuthorizer;
 
   /**
    * Indicates whether the method requires clients to submit a valid API key.
@@ -118,6 +116,7 @@ export class Method extends Resource {
     const options = props.options || {};
 
     const defaultMethodOptions = props.resource.defaultMethodOptions || {};
+    const authorizer = options.authorizer || defaultMethodOptions.authorizer;
 
     const methodProps: CfnMethodProps = {
       resourceId: props.resource.resourceId,
@@ -125,8 +124,8 @@ export class Method extends Resource {
       httpMethod: this.httpMethod,
       operationName: options.operationName || defaultMethodOptions.operationName,
       apiKeyRequired: options.apiKeyRequired || defaultMethodOptions.apiKeyRequired,
-      authorizationType: options.authorizationType || defaultMethodOptions.authorizationType || AuthorizationType.None,
-      authorizerId: options.authorizerId || defaultMethodOptions.authorizerId,
+      authorizationType: options.authorizationType || defaultMethodOptions.authorizationType || AuthorizationType.NONE,
+      authorizerId: authorizer && authorizer.authorizerId,
       requestParameters: options.requestParameters,
       integration: this.renderIntegration(props.integration),
       methodResponses: this.renderMethodResponses(options.methodResponses),
@@ -165,7 +164,7 @@ export class Method extends Resource {
     }
 
     const stage = this.restApi.deploymentStage.stageName.toString();
-    return this.restApi.executeApiArn(this.httpMethod, this.resource.path, stage);
+    return this.restApi.arnForExecuteApi(this.httpMethod, this.resource.path, stage);
   }
 
   /**
@@ -173,7 +172,7 @@ export class Method extends Resource {
    * This stage is used by the AWS Console UI when testing the method.
    */
   public get testMethodArn(): string {
-    return this.restApi.executeApiArn(this.httpMethod, this.resource.path, 'test-invoke-stage');
+    return this.restApi.arnForExecuteApi(this.httpMethod, this.resource.path, 'test-invoke-stage');
   }
 
   private renderIntegration(integration?: Integration): CfnMethod.IntegrationProperty {
@@ -196,11 +195,11 @@ export class Method extends Resource {
       throw new Error(`'credentialsPassthrough' and 'credentialsRole' are mutually exclusive`);
     }
 
-    if (options.connectionType === ConnectionType.VpcLink && options.vpcLink === undefined) {
+    if (options.connectionType === ConnectionType.VPC_LINK && options.vpcLink === undefined) {
       throw new Error(`'connectionType' of VPC_LINK requires 'vpcLink' prop to be set`);
     }
 
-    if (options.connectionType === ConnectionType.Internet && options.vpcLink !== undefined) {
+    if (options.connectionType === ConnectionType.INTERNET && options.vpcLink !== undefined) {
       throw new Error(`cannot set 'vpcLink' where 'connectionType' is INTERNET`);
     }
 
@@ -278,7 +277,7 @@ export enum AuthorizationType {
   /**
    * Open access.
    */
-  None = 'NONE',
+  NONE = 'NONE',
 
   /**
    * Use AWS IAM permissions.
@@ -288,10 +287,10 @@ export enum AuthorizationType {
   /**
    * Use a custom authorizer.
    */
-  Custom = 'CUSTOM',
+  CUSTOM = 'CUSTOM',
 
   /**
    * Use an AWS Cognito user pool.
    */
-  Cognito = 'COGNITO_USER_POOLS',
+  COGNITO = 'COGNITO_USER_POOLS',
 }

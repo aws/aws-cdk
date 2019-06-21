@@ -12,6 +12,8 @@ export * from './vpc-link';
 export * from './methodresponse';
 export * from './model';
 export * from './requestvalidator';
+export * from './authorizer';
+export * from './json-schema';
 
 // AWS::ApiGateway CloudFormation Resources:
 export * from './apigateway.generated';

@@ -126,6 +126,19 @@ export = nodeunit.testCase({
         { verbose: true }
       );
     }),
+    'Fn::EachMemberIn': asyncTest(async (test) => {
+      const stack = new Stack();
+      const eachMemberIn = Fn.conditionEachMemberIn(
+        Fn.valueOfAll('AWS::EC2::Subnet::Id', 'VpcId'),
+        Fn.refAll('AWS::EC2::VPC::Id')
+      );
+      test.deepEqual(stack.resolve(eachMemberIn), {
+        'Fn::EachMemberIn': [
+          { 'Fn::ValueOfAll': ['AWS::EC2::Subnet::Id', 'VpcId'] },
+          { 'Fn::RefAll': 'AWS::EC2::VPC::Id'}
+        ]
+      });
+    }),
   },
 });
 

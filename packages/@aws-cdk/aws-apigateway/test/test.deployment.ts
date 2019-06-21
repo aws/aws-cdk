@@ -38,7 +38,7 @@ export = {
         apiC8550315: {
         Type: "AWS::ApiGateway::RestApi",
         Properties: {
-          Name: "apiC8550315"
+          Name: "api"
         }
         },
         deployment33381975: {
@@ -89,7 +89,7 @@ export = {
         apiC8550315: {
         Type: "AWS::ApiGateway::RestApi",
         Properties: {
-          Name: "apiC8550315"
+          Name: "api"
         }
         },
         deployment33381975: {

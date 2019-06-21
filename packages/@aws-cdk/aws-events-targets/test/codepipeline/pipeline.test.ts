@@ -15,7 +15,7 @@ test('use codebuild project as an eventrule target', () => {
     stageName: 'Source',
     actions: [new TestAction({
       actionName: 'Hello',
-      category: codepipeline.ActionCategory.Source,
+      category: codepipeline.ActionCategory.SOURCE,
       provider: 'x',
       artifactBounds: { minInputs: 0, maxInputs: 0 , minOutputs: 1, maxOutputs: 1, },
       outputs: [srcArtifact]})]
@@ -24,14 +24,16 @@ test('use codebuild project as an eventrule target', () => {
     stageName: 'Build',
     actions: [new TestAction({
       actionName: 'Hello',
-      category: codepipeline.ActionCategory.Build,
+      category: codepipeline.ActionCategory.BUILD,
       provider: 'y',
       inputs: [srcArtifact],
       outputs: [buildArtifact],
       artifactBounds: { minInputs: 1, maxInputs: 1 , minOutputs: 1, maxOutputs: 1, }})]
   });
 
-  const rule = new events.Rule(stack, 'rule', { scheduleExpression: 'rate(1 min)' });
+  const rule = new events.Rule(stack, 'rule', {
+    schedule: events.Schedule.expression('rate(1 minute)'),
+  });
 
   // WHEN
   rule.addTarget(new targets.CodePipeline(pipeline));

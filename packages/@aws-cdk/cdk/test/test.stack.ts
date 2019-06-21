@@ -1,4 +1,3 @@
-import cxapi = require('@aws-cdk/cx-api');
 import { Test } from 'nodeunit';
 import { App, CfnCondition, CfnOutput, CfnParameter, CfnResource, Construct, ConstructNode, Include, Lazy, ScopedAws, Stack } from '../lib';
 import { Intrinsic } from '../lib/private/intrinsic';
@@ -350,19 +349,6 @@ export = {
     test.done();
   },
 
-  'stack with region supplied via context returns symbolic value'(test: Test) {
-    // GIVEN
-    const app = new App();
-
-    app.node.setContext(cxapi.DEFAULT_REGION_CONTEXT_KEY, 'es-norst-1');
-    const stack = new Stack(app, 'Stack1');
-
-    // THEN
-    test.deepEqual(stack.resolve(stack.region), { Ref: 'AWS::Region' });
-
-    test.done();
-  },
-
   'overrideLogicalId(id) can be used to override the logical ID of a resource'(test: Test) {
     // GIVEN
     const stack = new Stack();
@@ -451,6 +437,22 @@ export = {
     test.throws(() => Stack.of(construct), /No stack could be identified for the construct at path/);
     test.done();
   },
+
+  'stack.availabilityZones falls back to Fn::GetAZ[0],[2] if region is not specified'(test: Test) {
+    // GIVEN
+    const app = new App();
+    const stack = new Stack(app, 'MyStack');
+
+    // WHEN
+    const azs = stack.availabilityZones;
+
+    // THEN
+    test.deepEqual(stack.resolve(azs), [
+      { "Fn::Select": [ 0, { "Fn::GetAZs": "" } ] },
+      { "Fn::Select": [ 1, { "Fn::GetAZs": "" } ] }
+    ]);
+    test.done();
+  }
 };
 
 class StackWithPostProcessor extends Stack {

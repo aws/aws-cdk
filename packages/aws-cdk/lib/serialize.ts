@@ -1,10 +1,19 @@
 import YAML = require('yaml');
 
+// tslint:disable-next-line: no-var-requires
+const yamlTypes = require('yaml/types');
+
 /**
  * Stringify to YAML
  */
 export function toYAML(obj: any): string {
+  const oldFold = yamlTypes.strOptions.fold.lineWidth;
+  try {
+    yamlTypes.strOptions.fold.lineWidth = 0;
     return YAML.stringify(obj, { schema: 'yaml-1.1' });
+  } finally {
+    yamlTypes.strOptions.fold.lineWidth = oldFold;
+  }
 }
 
 /**

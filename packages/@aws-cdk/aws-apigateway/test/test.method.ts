@@ -5,7 +5,7 @@ import iam = require('@aws-cdk/aws-iam');
 import cdk = require('@aws-cdk/cdk');
 import { Test } from 'nodeunit';
 import apigateway = require('../lib');
-import { ConnectionType } from '../lib';
+import { ConnectionType, JsonSchemaType, JsonSchemaVersion } from '../lib';
 
 export = {
   'default setup'(test: Test) {
@@ -112,7 +112,7 @@ export = {
   'use default integration from api'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
-    const defaultIntegration = new apigateway.Integration({ type: apigateway.IntegrationType.HttpProxy, uri: 'https://amazon.com' });
+    const defaultIntegration = new apigateway.Integration({ type: apigateway.IntegrationType.HTTP_PROXY, uri: 'https://amazon.com' });
     const api = new apigateway.RestApi(stack, 'test-api', {
       cloudWatchRole: false,
       deploy: false,
@@ -223,7 +223,7 @@ export = {
 
     // WHEN
     api.root.addMethod('GET', new apigateway.Integration({
-      type: apigateway.IntegrationType.AwsProxy,
+      type: apigateway.IntegrationType.AWS_PROXY,
       options: {
         credentialsRole: role
       }
@@ -245,7 +245,7 @@ export = {
 
     // WHEN
     api.root.addMethod('GET', new apigateway.Integration({
-      type: apigateway.IntegrationType.AwsProxy,
+      type: apigateway.IntegrationType.AWS_PROXY,
       options: {
         credentialsPassthrough: true
       }
@@ -268,7 +268,7 @@ export = {
 
     // WHEN
     const integration = new apigateway.Integration({
-      type: apigateway.IntegrationType.AwsProxy,
+      type: apigateway.IntegrationType.AWS_PROXY,
       options: {
         credentialsPassthrough: true,
         credentialsRole: role
@@ -287,10 +287,10 @@ export = {
 
     // WHEN
     const integration = new apigateway.Integration({
-      type: apigateway.IntegrationType.HttpProxy,
+      type: apigateway.IntegrationType.HTTP_PROXY,
       integrationHttpMethod: 'ANY',
       options: {
-        connectionType: ConnectionType.VpcLink,
+        connectionType: ConnectionType.VPC_LINK,
       }
     });
 
@@ -313,10 +313,10 @@ export = {
 
     // WHEN
     const integration = new apigateway.Integration({
-      type: apigateway.IntegrationType.HttpProxy,
+      type: apigateway.IntegrationType.HTTP_PROXY,
       integrationHttpMethod: 'ANY',
       options: {
-        connectionType: ConnectionType.Internet,
+        connectionType: ConnectionType.INTERNET,
         vpcLink: link
       }
     });
@@ -450,15 +450,13 @@ export = {
     // GIVEN
     const stack = new cdk.Stack();
     const api = new apigateway.RestApi(stack, 'test-api', { deploy: false });
-    const model = new apigateway.CfnModel(stack, 'test-model', {
+    const model = api.addModel('test-model', {
       contentType: "application/json",
-      name: 'TestModel',
-      restApiId: api.restApiId,
+      modelName: cdk.PhysicalName.of('test-model'),
       schema: {
-        $schema: "http://json-schema.org/draft-04/schema#",
         title: "test",
-        type: "object",
-        properties: { message: { type: "string" } }
+        type: JsonSchemaType.OBJECT,
+        properties: { message: { type: JsonSchemaType.STRING } }
       }
     });
 
@@ -468,7 +466,7 @@ export = {
       resource: api.root,
       options: {
         requestModels: {
-          "application/json": { modelName: model.modelName }
+          "application/json": model
         }
       }
     });
@@ -477,7 +475,7 @@ export = {
     expect(stack).to(haveResource('AWS::ApiGateway::Method', {
       HttpMethod: 'GET',
       RequestModels: {
-        "application/json": { Ref: stack.getLogicalId(model) }
+        "application/json": { Ref: stack.getLogicalId(model.node.findChild('Resource') as cdk.CfnElement) }
       }
     }));
 
@@ -490,10 +488,10 @@ export = {
     const api = new apigateway.RestApi(stack, 'test-api', { deploy: false });
     const htmlModel = api.addModel('my-model', {
       schema: {
-        $schema: "http://json-schema.org/draft-04/schema#",
+        schema: JsonSchemaVersion.DRAFT4,
         title: "test",
-        type: "object",
-        properties: { message: { type: "string" } }
+        type: JsonSchemaType.OBJECT,
+        properties: { message: { type: JsonSchemaType.STRING } }
       }
     });
 

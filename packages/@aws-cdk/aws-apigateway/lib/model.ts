@@ -1,5 +1,6 @@
-import { Construct, Resource } from '@aws-cdk/cdk';
+import { Construct, PhysicalName, Resource } from '@aws-cdk/cdk';
 import { CfnModel, CfnModelProps } from './apigateway.generated';
+import jsonSchema = require('./json-schema');
 import { IRestApi, RestApi } from './restapi';
 
 export interface IModelRef {
@@ -7,7 +8,19 @@ export interface IModelRef {
   readonly modelName: string;
 }
 
-export interface ModelOptions {
+export interface ModelProps {
+  /**
+   * The rest API that this model is part of.
+   *
+   * The reason we need the RestApi object itself and not just the ID is because the model
+   * is being tracked by the top-level RestApi object for the purpose of calculating it's
+   * hash to determine the ID of the deployment. This allows us to automatically update
+   * the deployment when the model of the REST API changes.
+   *
+   * @default None: This is automatically populated by the api.addRequestValidator method
+   */
+  readonly restApi?: IRestApi;
+
   /**
    * The content type for the model.
    * @default None
@@ -21,41 +34,26 @@ export interface ModelOptions {
   readonly description?: string;
 
   /**
-   * A name for the model. If you don't specify a name,
-   *  AWS CloudFormation generates a unique physical ID and
-   *  uses that ID for the model name. For more information,
-   *  see Name Type.
+   * A name for the model.
    *
    * Important
    *  If you specify a name, you cannot perform updates that
    *  require replacement of this resource. You can perform
    *  updates that require no or some interruption. If you
-   *  must replace the resource, specify a new name..
+   *  must replace the resource, specify a new name.
+   *
+   * @default <auto> If you don't specify a name,
+   *  AWS CloudFormation generates a unique physical ID and
+   *  uses that ID for the model name. For more information,
+   *  see Name Type.
    */
-  readonly name?: string;
+  readonly modelName?: PhysicalName;
 
   /**
    * The schema to use to transform data to one or more output formats.
    * Specify null ({}) if you don't want to specify a schema.
    */
-  readonly schema: any;
-}
-
-export interface ModelProps {
-  /**
-   * The rest API that this model is part of.
-   *
-   * The reason we need the RestApi object itself and not just the ID is because the model
-   * is being tracked by the top-level RestApi object for the purpose of calculating it's
-   * hash to determine the ID of the deployment. This allows us to automatically update
-   * the deployment when the model of the REST API changes.
-   */
-  readonly restApi: IRestApi;
-
-  /**
-   * Model options.
-   */
-  readonly options: ModelOptions;
+  readonly schema: jsonSchema.JsonSchema;
 }
 
 export class Model extends Resource implements IModelRef {
@@ -99,24 +97,40 @@ export class Model extends Resource implements IModelRef {
   /** @attribute */
   public readonly modelName: string;
 
-  /** @attribute */
+  /**
+   * The rest API that this model is part of.
+   *
+   * The reason we need the RestApi object itself and not just the ID is because the model
+   * is being tracked by the top-level RestApi object for the purpose of calculating it's
+   * hash to determine the ID of the deployment. This allows us to automatically update
+   * the deployment when the model of the REST API changes.
+   *
+   * @attribute
+   */
   public readonly restApi: IRestApi;
 
   constructor(scope: Construct, id: string, props: ModelProps) {
-    super(scope, id);
+    super(scope, id, {
+      physicalName: props.modelName || PhysicalName.of(id),
+    });
 
-    this.restApi = props.restApi;
-
-    const options = props.options;
+    if (props.restApi === undefined) {
+      throw Error("You must define a parent rest Api");
+    } else {
+      this.restApi = props.restApi;
+    }
 
     const modelProps: CfnModelProps = {
-      ...options,
-      restApiId: this.restApi.restApiId
+      name: this.physicalName.value!,
+      restApiId: this.restApi.restApiId,
+      contentType: props.contentType,
+      description: props.description,
+      schema: jsonSchema.JsonSchemaMapper.toCfnJsonSchema(props.schema)
     };
 
     const resource = new CfnModel(this, 'Resource', modelProps);
 
-    this.modelName = resource.modelName;
+    this.modelName = resource.refAsString;
 
     const deployment = (this.restApi instanceof RestApi) ? this.restApi.latestDeployment : undefined;
     if (deployment) {

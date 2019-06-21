@@ -5,7 +5,7 @@ import elbv2 = require('@aws-cdk/aws-elasticloadbalancingv2');
 import iam = require('@aws-cdk/aws-iam');
 import sns = require('@aws-cdk/aws-sns');
 
-import { AutoScalingRollingUpdate, Construct, Fn, IResource, Lazy, Resource, Stack, Tag } from '@aws-cdk/cdk';
+import { AutoScalingRollingUpdate, Construct, Duration, Fn, IResource, Lazy, Resource, Stack, Tag } from '@aws-cdk/cdk';
 import { CfnAutoScalingGroup, CfnAutoScalingGroupProps, CfnLaunchConfiguration } from './autoscaling.generated';
 import { BasicLifecycleHookProps, LifecycleHook } from './lifecycle-hook';
 import { BasicScheduledActionProps, ScheduledAction } from './scheduled-action';
@@ -130,16 +130,16 @@ export interface CommonAutoScalingGroupProps {
    *
    * The maximum value is 43200 (12 hours).
    *
-   * @default 300 (5 minutes)
+   * @default Duration.minutes(5)
    */
-  readonly resourceSignalTimeoutSec?: number;
+  readonly resourceSignalTimeout?: Duration;
 
   /**
    * Default scaling cooldown for this AutoScalingGroup
    *
-   * @default 300 (5 minutes)
+   * @default Duration.minutes(5)
    */
-  readonly cooldownSeconds?: number;
+  readonly cooldown?: Duration;
 
   /**
    * Whether instances in the Auto Scaling Group should have public
@@ -225,7 +225,7 @@ abstract class AutoScalingGroupBase extends Resource implements IAutoScalingGrou
   public scaleOnCpuUtilization(id: string, props: CpuUtilizationScalingProps): TargetTrackingScalingPolicy {
     return new TargetTrackingScalingPolicy(this, `ScalingPolicy${id}`, {
       autoScalingGroup: this,
-      predefinedMetric: PredefinedMetric.ASGAverageCPUUtilization,
+      predefinedMetric: PredefinedMetric.ASG_AVERAGE_CPU_UTILIZATION,
       targetValue: props.targetUtilizationPercent,
       ...props
     });
@@ -237,7 +237,7 @@ abstract class AutoScalingGroupBase extends Resource implements IAutoScalingGrou
   public scaleOnIncomingBytes(id: string, props: NetworkUtilizationScalingProps): TargetTrackingScalingPolicy {
     return new TargetTrackingScalingPolicy(this, `ScalingPolicy${id}`, {
       autoScalingGroup: this,
-      predefinedMetric: PredefinedMetric.ASGAverageNetworkIn,
+      predefinedMetric: PredefinedMetric.ASG_AVERAGE_NETWORK_IN,
       targetValue: props.targetBytesPerSecond,
       ...props
     });
@@ -249,7 +249,7 @@ abstract class AutoScalingGroupBase extends Resource implements IAutoScalingGrou
   public scaleOnOutgoingBytes(id: string, props: NetworkUtilizationScalingProps): TargetTrackingScalingPolicy {
     return new TargetTrackingScalingPolicy(this, `ScalingPolicy${id}`, {
       autoScalingGroup: this,
-      predefinedMetric: PredefinedMetric.ASGAverageNetworkOut,
+      predefinedMetric: PredefinedMetric.ASG_AVERAGE_NETWORK_OUT,
       targetValue: props.targetBytesPerSecond,
       ...props
     });
@@ -270,7 +270,7 @@ abstract class AutoScalingGroupBase extends Resource implements IAutoScalingGrou
 
     const policy = new TargetTrackingScalingPolicy(this, `ScalingPolicy${id}`, {
       autoScalingGroup: this,
-      predefinedMetric: PredefinedMetric.ALBRequestCountPerTarget,
+      predefinedMetric: PredefinedMetric.ALB_REQUEST_COUNT_PER_TARGET,
       targetValue: props.targetRequestsPerSecond,
       resourceLabel,
       ...props
@@ -364,10 +364,6 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
   constructor(scope: Construct, id: string, props: AutoScalingGroupProps) {
     super(scope, id);
 
-    if (props.cooldownSeconds !== undefined && props.cooldownSeconds < 0) {
-      throw new RangeError(`cooldownSeconds cannot be negative, got: ${props.cooldownSeconds}`);
-    }
-
     this.securityGroup = new ec2.SecurityGroup(this, 'InstanceSecurityGroup', {
       vpc: props.vpc,
       allowAllOutbound: props.allowAllOutbound !== false
@@ -415,7 +411,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
 
     const { subnetIds } = props.vpc.selectSubnets(props.vpcSubnets);
     const asgProps: CfnAutoScalingGroupProps = {
-      cooldown: props.cooldownSeconds !== undefined ? `${props.cooldownSeconds}` : undefined,
+      cooldown: props.cooldown !== undefined ? props.cooldown.toSeconds().toString() : undefined,
       minSize: minCapacity.toString(),
       maxSize: maxCapacity.toString(),
       desiredCapacity: desiredCapacity.toString(),
@@ -442,7 +438,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
 
     this.autoScalingGroup = new CfnAutoScalingGroup(this, 'ASG', asgProps);
     this.osType = machineImage.os.type;
-    this.autoScalingGroupName = this.autoScalingGroup.autoScalingGroupName;
+    this.autoScalingGroupName = this.autoScalingGroup.refAsString;
     this.autoScalingGroupArn = Stack.of(this).formatArn({
       service: 'autoscaling',
       resource: 'autoScalingGroup:*:autoScalingGroupName',
@@ -506,7 +502,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
    * Apply CloudFormation update policies for the AutoScalingGroup
    */
   private applyUpdatePolicies(props: AutoScalingGroupProps) {
-    if (props.updateType === UpdateType.ReplacingUpdate) {
+    if (props.updateType === UpdateType.REPLACING_UPDATE) {
       this.autoScalingGroup.options.updatePolicy = {
         ...this.autoScalingGroup.options.updatePolicy,
         autoScalingReplacingUpdate: {
@@ -527,7 +523,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
           }
         };
       }
-    } else if (props.updateType === UpdateType.RollingUpdate) {
+    } else if (props.updateType === UpdateType.ROLLING_UPDATE) {
       this.autoScalingGroup.options.updatePolicy = {
         ...this.autoScalingGroup.options.updatePolicy,
         autoScalingRollingUpdate: renderRollingUpdateConfig(props.rollingUpdateConfiguration)
@@ -542,12 +538,12 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
       };
     }
 
-    if (props.resourceSignalCount !== undefined || props.resourceSignalTimeoutSec !== undefined) {
+    if (props.resourceSignalCount !== undefined || props.resourceSignalTimeout !== undefined) {
       this.autoScalingGroup.options.creationPolicy = {
         ...this.autoScalingGroup.options.creationPolicy,
         resourceSignal: {
           count: props.resourceSignalCount,
-          timeout: props.resourceSignalTimeoutSec !== undefined ? renderIsoDuration(props.resourceSignalTimeoutSec) : undefined,
+          timeout: props.resourceSignalTimeout && props.resourceSignalTimeout.toISOString(),
         }
       };
     }
@@ -561,19 +557,19 @@ export enum UpdateType {
   /**
    * Don't do anything
    */
-  None = 'None',
+  NONE = 'None',
 
   /**
    * Replace the entire AutoScalingGroup
    *
    * Builds a new AutoScalingGroup first, then delete the old one.
    */
-  ReplacingUpdate = 'Replace',
+  REPLACING_UPDATE = 'Replace',
 
   /**
    * Replace the instances in the AutoScalingGroup.
    */
-  RollingUpdate = 'RollingUpdate',
+  ROLLING_UPDATE = 'RollingUpdate',
 }
 
 /**
@@ -621,9 +617,9 @@ export interface RollingUpdateConfiguration {
    * PT#H#M#S, where each # is the number of hours, minutes, and seconds,
    * respectively). The maximum PauseTime is one hour (PT1H).
    *
-   * @default 300 if the waitOnResourceSignals property is true, otherwise 0
+   * @default Duration.minutes(5) if the waitOnResourceSignals property is true, otherwise 0
    */
-  readonly pauseTimeSec?: number;
+  readonly pauseTime?: Duration;
 
   /**
    * Specifies whether the Auto Scaling group waits on signals from new instances during an update.
@@ -652,14 +648,14 @@ export interface RollingUpdateConfiguration {
 }
 
 export enum ScalingProcess {
-  Launch = 'Launch',
-  Terminate = 'Terminate',
-  HealthCheck = 'HealthCheck',
-  ReplaceUnhealthy = 'ReplaceUnhealthy',
-  AZRebalance = 'AZRebalance',
-  AlarmNotification = 'AlarmNotification',
-  ScheduledActions = 'ScheduledActions',
-  AddToLoadBalancer = 'AddToLoadBalancer'
+  LAUNCH = 'Launch',
+  TERMINATE = 'Terminate',
+  HEALTH_CHECK = 'HealthCheck',
+  REPLACE_UNHEALTHY = 'ReplaceUnhealthy',
+  AZ_REBALANCE = 'AZRebalance',
+  ALARM_NOTIFICATION = 'AlarmNotification',
+  SCHEDULED_ACTIONS = 'ScheduledActions',
+  ADD_TO_LOAD_BALANCER = 'AddToLoadBalancer'
 }
 
 /**
@@ -667,45 +663,20 @@ export enum ScalingProcess {
  */
 function renderRollingUpdateConfig(config: RollingUpdateConfiguration = {}): AutoScalingRollingUpdate {
   const waitOnResourceSignals = config.minSuccessfulInstancesPercent !== undefined ? true : false;
-  const pauseTimeSec = config.pauseTimeSec !== undefined ? config.pauseTimeSec : (waitOnResourceSignals ? 300 : 0);
+  const pauseTime = config.pauseTime || (waitOnResourceSignals ? Duration.minutes(5) : Duration.seconds(0));
 
   return {
     maxBatchSize: config.maxBatchSize,
     minInstancesInService: config.minInstancesInService,
     minSuccessfulInstancesPercent: validatePercentage(config.minSuccessfulInstancesPercent),
     waitOnResourceSignals,
-    pauseTime: renderIsoDuration(pauseTimeSec),
+    pauseTime: pauseTime && pauseTime.toISOString(),
     suspendProcesses: config.suspendProcesses !== undefined ? config.suspendProcesses :
       // Recommended list of processes to suspend from here:
       // https://aws.amazon.com/premiumsupport/knowledge-center/auto-scaling-group-rolling-updates/
-      [ScalingProcess.HealthCheck, ScalingProcess.ReplaceUnhealthy, ScalingProcess.AZRebalance,
-        ScalingProcess.AlarmNotification, ScalingProcess.ScheduledActions],
+      [ScalingProcess.HEALTH_CHECK, ScalingProcess.REPLACE_UNHEALTHY, ScalingProcess.AZ_REBALANCE,
+        ScalingProcess.ALARM_NOTIFICATION, ScalingProcess.SCHEDULED_ACTIONS],
   };
-}
-
-/**
- * Render a number of seconds to a PTnX string.
- */
-function renderIsoDuration(seconds: number): string {
-  const ret: string[] = [];
-
-  if (seconds === 0) {
-    return 'PT0S';
-  }
-
-  if (seconds >= 3600) {
-    ret.push(`${Math.floor(seconds / 3600)}H`);
-    seconds %= 3600;
-  }
-  if (seconds >= 60) {
-    ret.push(`${Math.floor(seconds / 60)}M`);
-    seconds %= 60;
-  }
-  if (seconds > 0) {
-    ret.push(`${seconds}S`);
-  }
-
-  return 'PT' + ret.join('');
 }
 
 function validatePercentage(x?: number): number | undefined {
@@ -806,7 +777,7 @@ export interface MetricTargetTrackingProps extends BaseTargetTrackingProps {
    * target value, your ASG should scale out, and if it's lower it should
    * scale in.
    */
-  readonly metric: cloudwatch.Metric;
+  readonly metric: cloudwatch.IMetric;
 
   /**
    * Value to keep the metric around

@@ -1,28 +1,10 @@
-import { Construct, Resource } from '@aws-cdk/cdk';
+import { Construct, PhysicalName, Resource } from '@aws-cdk/cdk';
 import { CfnRequestValidator, CfnRequestValidatorProps } from './apigateway.generated';
 import { IRestApi, RestApi } from './restapi';
 
 export interface IRequestValidatorRef {
   /** @attribute */
   readonly requestValidatorId: string;
-}
-
-export interface RequestValidatorOptions {
-    /**
-     * The name of this request validator.
-     */
-    readonly name?: string;
-
-    /**
-     * Indicates whether to validate the request body according to
-     * the configured schema for the targeted API and method.
-     */
-    readonly validateRequestBody?: boolean;
-
-    /**
-     * Indicates whether to validate request parameters.
-     */
-    readonly validateRequestParameters?: boolean;
 }
 
 export interface RequestValidatorProps {
@@ -33,13 +15,32 @@ export interface RequestValidatorProps {
    * is being tracked by the top-level RestApi object for the purpose of calculating it's
    * hash to determine the ID of the deployment. This allows us to automatically update
    * the deployment when the model of the REST API changes.
+   *
+   * @default None: This is automatically populated by the api.addRequestValidator method
    */
-  readonly restApi: IRestApi;
+  readonly restApi?: IRestApi;
 
   /**
-   * Validator options.
+   * The name of this request validator.
+   *
+   * @default None
    */
-  readonly options: RequestValidatorOptions;
+  readonly requestValidatorName?: PhysicalName;
+
+  /**
+   * Indicates whether to validate the request body according to
+   * the configured schema for the targeted API and method.
+   *
+   * @default false
+   */
+  readonly validateRequestBody?: boolean;
+
+  /**
+   * Indicates whether to validate request parameters.
+   *
+   * @default false
+   */
+  readonly validateRequestParameters?: boolean;
 }
 
 export class RequestValidator extends Resource implements IRequestValidatorRef {
@@ -49,21 +50,31 @@ export class RequestValidator extends Resource implements IRequestValidatorRef {
   /** @attribute */
   public readonly restApi: IRestApi;
 
-  constructor(scope: Construct, id: string, props: RequestValidatorProps) {
-    super(scope, id);
+  constructor(scope: Construct, id: string, props?: RequestValidatorProps) {
+    if (props === undefined) {
+      props = {};
+    }
 
-    this.restApi = props.restApi;
+    super(scope, id, {
+      physicalName: props.requestValidatorName || PhysicalName.of(id),
+    });
 
-    const options = props.options;
+    if (props.restApi === undefined) {
+      throw Error("You must define a parent rest Api");
+    } else {
+      this.restApi = props.restApi;
+    }
 
     const validatorProps: CfnRequestValidatorProps = {
-      ...options,
-      restApiId: this.restApi.restApiId
+      name: this.physicalName.value!,
+      restApiId: this.restApi.restApiId,
+      validateRequestBody: props.validateRequestBody,
+      validateRequestParameters: props.validateRequestParameters
     };
 
     const resource = new CfnRequestValidator(this, 'Resource', validatorProps);
 
-    this.requestValidatorId = resource.requestValidatorId;
+    this.requestValidatorId = resource.refAsString;
 
     const deployment = (this.restApi instanceof RestApi) ? this.restApi.latestDeployment : undefined;
     if (deployment) {

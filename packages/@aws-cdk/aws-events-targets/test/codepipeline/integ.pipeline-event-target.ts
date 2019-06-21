@@ -14,7 +14,7 @@ const app = new cdk.App();
 const stack = new cdk.Stack(app, 'pipeline-events');
 
 const repo = new codecommit.Repository(stack, 'Repo', {
-  repositoryName: 'TestRepository'
+  repositoryName: cdk.PhysicalName.of('TestRepository'),
 });
 
 const pipeline = new codepipeline.Pipeline(stack, 'pipelinePipeline22F2A91D');
@@ -24,7 +24,7 @@ pipeline.addStage({
   stageName: 'Source',
   actions: [new MockAction({
     actionName: 'CodeCommit',
-    category: codepipeline.ActionCategory.Source,
+    category: codepipeline.ActionCategory.SOURCE,
     provider: 'CodeCommit',
     artifactBounds: { minInputs: 0, maxInputs: 0 , minOutputs: 1, maxOutputs: 1, },
     configuration: {
@@ -37,13 +37,13 @@ pipeline.addStage({
   stageName: 'Build',
   actions: [new MockAction({
     actionName: 'Hello',
-    category: codepipeline.ActionCategory.Approval,
+    category: codepipeline.ActionCategory.APPROVAL,
     provider: 'Manual',
     artifactBounds: { minInputs: 0, maxInputs: 0 , minOutputs: 0, maxOutputs: 0, }})]
 });
 
 new events.Rule(stack, 'rule', {
-  scheduleExpression: 'rate(1 minute)',
+  schedule: events.Schedule.expression('rate(1 minute)'),
   targets: [new targets.CodePipeline(pipeline)]
 });
 

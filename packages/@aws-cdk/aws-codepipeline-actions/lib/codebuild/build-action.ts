@@ -71,8 +71,8 @@ export class CodeBuildAction extends codepipeline.Action {
     super({
       ...props,
       category: props.type === CodeBuildActionType.TEST
-        ? codepipeline.ActionCategory.Test
-        : codepipeline.ActionCategory.Build,
+        ? codepipeline.ActionCategory.TEST
+        : codepipeline.ActionCategory.BUILD,
       provider: 'CodeBuild',
       artifactBounds: { minInputs: 1, maxInputs: 5, minOutputs: 0, maxOutputs: 5 },
       inputs: [props.input, ...props.extraInputs || []],

@@ -14,7 +14,7 @@ export = {
 
     // WHEN
     new CrossAccountDestination(stack, 'Dest', {
-      destinationName: 'MyDestination',
+      destinationName: cdk.PhysicalName.of('MyDestination'),
       role,
       targetArn: 'arn:bogus'
     });
@@ -37,7 +37,7 @@ export = {
     });
 
     const dest = new CrossAccountDestination(stack, 'Dest', {
-      destinationName: 'MyDestination',
+      destinationName: cdk.PhysicalName.of('MyDestination'),
       role,
       targetArn: 'arn:bogus'
     });
