@@ -94,7 +94,7 @@ export class Ec2Service extends BaseService implements IEc2Service, elb.ILoadBal
       throw new Error('Daemon mode launches one task on every instance. Don\'t supply desiredCount.');
     }
 
-    if (props.daemon && props.maxPercent !== undefined && props.maxPercent !== 100) {
+    if (props.daemon && props.maxHealthyPercent !== undefined && props.maxHealthyPercent !== 100) {
       throw new Error('Maximum percent must be 100 for daemon mode.');
     }
 
@@ -110,7 +110,7 @@ export class Ec2Service extends BaseService implements IEc2Service, elb.ILoadBal
       ...props,
       // If daemon, desiredCount must be undefined and that's what we want. Otherwise, default to 1.
       desiredCount: props.daemon || props.desiredCount !== undefined ? props.desiredCount : 1,
-      maxPercent: props.daemon && props.maxPercent === undefined ? 100 : props.maxPercent,
+      maxHealthyPercent: props.daemon && props.maxHealthyPercent === undefined ? 100 : props.maxHealthyPercent,
       minHealthyPercent: props.daemon && props.minHealthyPercent === undefined ? 0 : props.minHealthyPercent ,
     },
     {
