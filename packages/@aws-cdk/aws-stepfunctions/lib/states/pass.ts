@@ -1,7 +1,50 @@
 import cdk = require('@aws-cdk/cdk');
-import { Chain } from '../chain';
-import { IChainable, INextable } from '../types';
-import { renderJsonPath, State, StateType } from './state';
+import {Chain} from '../chain';
+import {IChainable, INextable} from '../types';
+import {renderJsonPath, State, StateType} from './state';
+
+/**
+ * The result of a Pass operation
+ */
+export class Result {
+    /**
+     * The result of the operation is a string
+     */
+    public static fromString(value: string): Result {
+        return new Result(value);
+    }
+
+    /**
+     * The result of the operation is a number
+     */
+    public static fromNumber(value: number): Result {
+        return new Result(value);
+    }
+
+    /**
+     * The result of the operation is a boolean
+     */
+    public static fromBoolean(value: boolean): Result {
+        return new Result(value);
+    }
+
+    /**
+     * The result of the operation is an object
+     */
+    public static fromObject(value: {[key: string]: any}): Result {
+        return new Result(value);
+    }
+
+    /**
+     * The result of the operation is an array
+     */
+    public static fromArray(value: any[]): Result {
+        return new Result(value);
+    }
+
+    protected constructor(public readonly value: any) {
+    }
+}
 
 /**
  * Properties for defining a Pass state
@@ -51,7 +94,7 @@ export interface PassProps {
      *
      * @default No injected result
      */
-    readonly result?: {[key: string]: any};
+    readonly result?: Result;
 }
 
 /**
@@ -62,7 +105,7 @@ export interface PassProps {
 export class Pass extends State implements INextable {
     public readonly endStates: INextable[];
 
-    private readonly result?: any;
+    private readonly result?: Result;
 
     constructor(scope: cdk.Construct, id: string, props: PassProps = {}) {
         super(scope, id, props);
@@ -86,10 +129,10 @@ export class Pass extends State implements INextable {
         return {
             Type: StateType.Pass,
             Comment: this.comment,
-            Result: this.result,
+            Result: this.result ? this.result.value : undefined,
             ResultPath: renderJsonPath(this.resultPath),
             ...this.renderInputOutput(),
-            ...this.renderNextEnd(),
+            ...this.renderNextEnd()
         };
     }
 }
