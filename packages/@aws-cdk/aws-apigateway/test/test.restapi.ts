@@ -141,7 +141,7 @@ export = {
     const api = new apigateway.RestApi(stack, 'restapi', {
       deploy: false,
       cloudWatchRole: false,
-      restApiName: 'my-rest-api'
+      restApiName: cdk.PhysicalName.of('my-rest-api'),
     });
 
     api.root.addMethod('GET');
@@ -176,7 +176,7 @@ export = {
     const api = new apigateway.RestApi(stack, 'restapi', {
       deploy: false,
       cloudWatchRole: false,
-      restApiName: 'my-rest-api'
+      restApiName: cdk.PhysicalName.of('my-rest-api'),
     });
 
     // WHEN
@@ -460,7 +460,7 @@ export = {
 
     // WHEN
     const api = new apigateway.RestApi(stack, 'api', {
-      endpointTypes: [ apigateway.EndpointType.Edge, apigateway.EndpointType.Private ]
+      endpointTypes: [ apigateway.EndpointType.EDGE, apigateway.EndpointType.PRIVATE ]
     });
 
     api.root.addMethod('GET');
@@ -547,7 +547,7 @@ export = {
     // CASE #2: should inherit integration from root and method options, but
     // "authorizationType" will be overridden to "None" instead of "IAM"
     child.addMethod('POST', undefined, {
-      authorizationType: apigateway.AuthorizationType.Cognito
+      authorizationType: apigateway.AuthorizationType.COGNITO
     });
 
     const child2 = api.root.addResource('child2', {

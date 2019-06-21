@@ -51,7 +51,7 @@ const chain = sfn.Chain
 
 new sfn.StateMachine(stack, 'StateMachine', {
   definition: chain,
-  timeoutSec: 30
+  timeout: cdk.Duration.seconds(30)
 });
 
-app.run();
+app.synth();

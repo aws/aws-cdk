@@ -1,12 +1,12 @@
 import { Test } from 'nodeunit';
-import { CfnOutput, CfnParameter, CfnResource, Include, Stack } from '../lib';
+import { CfnInclude, CfnOutput, CfnParameter, CfnResource, Stack } from '../lib';
 import { toCloudFormation } from './util';
 
 export = {
   'the Include construct can be used to embed an existing template as-is into a stack'(test: Test) {
     const stack = new Stack();
 
-    new Include(stack, 'T1', { template: clone(template) });
+    new CfnInclude(stack, 'T1', { template: clone(template) });
 
     test.deepEqual(toCloudFormation(stack), {
       Parameters: { MyParam: { Type: 'String', Default: 'Hello' } },
@@ -20,9 +20,9 @@ export = {
   'included templates can co-exist with elements created programmatically'(test: Test) {
     const stack = new Stack();
 
-    new Include(stack, 'T1', { template: clone(template) });
+    new CfnInclude(stack, 'T1', { template: clone(template) });
     new CfnResource(stack, 'MyResource3', { type: 'ResourceType3', properties: { P3: 'Hello' } });
-    new CfnOutput(stack, 'MyOutput', { description: 'Out!', disableExport: true, value: 'hey' });
+    new CfnOutput(stack, 'MyOutput', { description: 'Out!', value: 'hey' });
     new CfnParameter(stack, 'MyParam2', { type: 'Integer' });
 
     test.deepEqual(toCloudFormation(stack), {
@@ -42,7 +42,7 @@ export = {
   'exception is thrown in construction if an entity from an included template has the same id as a programmatic entity'(test: Test) {
     const stack = new Stack();
 
-    new Include(stack, 'T1', { template });
+    new CfnInclude(stack, 'T1', { template });
     new CfnResource(stack, 'MyResource3', { type: 'ResourceType3', properties: { P3: 'Hello' } });
     new CfnOutput(stack, 'MyOutput', { description: 'Out!', value: 'in' });
     new CfnParameter(stack, 'MyParam', { type: 'Integer' }); // duplicate!

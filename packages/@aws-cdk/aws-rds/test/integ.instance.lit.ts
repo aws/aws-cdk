@@ -45,16 +45,16 @@ class DatabaseInstanceStack extends cdk.Stack {
     // Database instance with production values
     const instance = new rds.DatabaseInstance(this, 'Instance', {
       engine: rds.DatabaseInstanceEngine.OracleSE1,
-      licenseModel: rds.LicenseModel.BringYourOwnLicense,
-      instanceClass: new ec2.InstanceTypePair(ec2.InstanceClass.Burstable2, ec2.InstanceSize.Medium),
+      licenseModel: rds.LicenseModel.BRING_YOUR_OWN_LICENSE,
+      instanceClass: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.MEDIUM),
       multiAz: true,
       storageType: rds.StorageType.IO1,
       masterUsername: 'syscdk',
       vpc,
       databaseName: 'ORCL',
       storageEncrypted: true,
-      backupRetentionPeriod: 7,
-      monitoringInterval: 60,
+      backupRetention: cdk.Duration.days(7),
+      monitoringInterval: cdk.Duration.seconds(60),
       enablePerformanceInsights: true,
       cloudwatchLogsExports: [
         'trace',
@@ -62,7 +62,7 @@ class DatabaseInstanceStack extends cdk.Stack {
         'alert',
         'listener'
       ],
-      cloudwatchLogsRetention: logs.RetentionDays.OneMonth,
+      cloudwatchLogsRetention: logs.RetentionDays.ONE_MONTH,
       autoMinorVersionUpgrade: false,
       optionGroup,
       parameterGroup

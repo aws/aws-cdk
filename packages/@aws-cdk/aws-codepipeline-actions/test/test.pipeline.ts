@@ -54,7 +54,7 @@ export = {
     const stack = new Stack(undefined, 'StackName');
 
     new codepipeline.Pipeline(stack, 'Pipeline', {
-      pipelineName: Aws.stackName,
+      pipelineName: PhysicalName.of(Aws.stackName),
     });
 
     expect(stack, true).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
@@ -726,7 +726,7 @@ export = {
       });
       const sourceBucket = new s3.Bucket(pipelineStack, 'ArtifactBucket', {
         bucketName: PhysicalName.of('source-bucket'),
-        encryption: s3.BucketEncryption.Kms,
+        encryption: s3.BucketEncryption.KMS,
       });
       const sourceOutput = new codepipeline.Artifact();
       new codepipeline.Pipeline(pipelineStack, 'Pipeline', {
@@ -870,6 +870,6 @@ function stageForTesting(stack: Stack): codepipeline.IStage {
 
 function repositoryForTesting(stack: Stack): codecommit.Repository {
   return new codecommit.Repository(stack, 'Repository', {
-    repositoryName: 'Repository'
+    repositoryName: 'Repository',
   });
 }

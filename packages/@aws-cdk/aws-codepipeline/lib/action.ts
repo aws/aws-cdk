@@ -5,12 +5,12 @@ import { Artifact } from './artifact';
 import validation = require('./validation');
 
 export enum ActionCategory {
-  Source = 'Source',
-  Build = 'Build',
-  Test = 'Test',
-  Approval = 'Approval',
-  Deploy = 'Deploy',
-  Invoke = 'Invoke'
+  SOURCE = 'Source',
+  BUILD = 'Build',
+  TEST = 'Test',
+  APPROVAL = 'Approval',
+  DEPLOY = 'Deploy',
+  INVOKE = 'Invoke'
 }
 
 /**

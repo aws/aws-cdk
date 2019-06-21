@@ -26,8 +26,8 @@ const cluster = new DatabaseCluster(stack, 'Database', {
     password: SecretValue.plainText('7959866cacc02c2d243ecfe177464fe6'),
   },
   instanceProps: {
-    instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.Burstable2, ec2.InstanceSize.Small),
-    vpcSubnets: { subnetType: ec2.SubnetType.Public },
+    instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+    vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC },
     vpc
   },
   parameterGroup: params,

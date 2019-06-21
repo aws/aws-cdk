@@ -1,4 +1,4 @@
-import { Construct, IResource, RemovalPolicy, Resource } from '@aws-cdk/cdk';
+import { Construct, IResource, PhysicalName, RemovalPolicy, Resource } from '@aws-cdk/cdk';
 import { ILogGroup } from './log-group';
 import { CfnLogStream } from './logs.generated';
 
@@ -26,7 +26,7 @@ export interface LogStreamProps {
    *
    * @default Automatically generated
    */
-  readonly logStreamName?: string;
+  readonly logStreamName?: PhysicalName;
 
   /**
    * Determine what happens when the log stream resource is removed from the
@@ -64,15 +64,27 @@ export class LogStream extends Resource implements ILogStream {
   public readonly logStreamName: string;
 
   constructor(scope: Construct, id: string, props: LogStreamProps) {
-    super(scope, id);
+    super(scope, id, {
+      physicalName: props.logStreamName,
+    });
 
     const resource = new CfnLogStream(this, 'Resource', {
       logGroupName: props.logGroup.logGroupName,
-      logStreamName: props.logStreamName
+      logStreamName: this.physicalName,
     });
 
     resource.applyRemovalPolicy(props.removalPolicy);
 
-    this.logStreamName = resource.refAsString;
+    const resourceIdentifiers = this.getCrossEnvironmentAttributes({
+      arn: '',
+      name: resource.ref,
+      arnComponents: {
+        service: 'logs',
+        resource: 'log-group',
+        resourceName: `log-stream:${this.physicalName}`,
+        sep: ':',
+      },
+    });
+    this.logStreamName = resourceIdentifiers.name;
   }
 }

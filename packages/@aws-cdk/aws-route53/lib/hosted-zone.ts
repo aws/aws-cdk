@@ -1,5 +1,5 @@
 import ec2 = require('@aws-cdk/aws-ec2');
-import { Construct, ContextProvider, Lazy, Resource } from '@aws-cdk/cdk';
+import { Construct, ContextProvider, Duration, Lazy, Resource, Stack } from '@aws-cdk/cdk';
 import cxapi = require('@aws-cdk/cx-api');
 import { HostedZoneProviderProps } from './hosted-zone-provider';
 import { HostedZoneAttributes, IHostedZone } from './hosted-zone-ref';
@@ -121,7 +121,7 @@ export class HostedZone extends Resource implements IHostedZone {
       vpcs: Lazy.anyValue({ produce: () => this.vpcs.length === 0 ? undefined : this.vpcs })
     });
 
-    this.hostedZoneId = resource.refAsString;
+    this.hostedZoneId = resource.ref;
     this.hostedZoneNameServers = resource.attrNameServers;
     this.zoneName = props.zoneName;
 
@@ -136,7 +136,7 @@ export class HostedZone extends Resource implements IHostedZone {
    * @param vpc the other VPC to add.
    */
   public addVpc(vpc: ec2.IVpc) {
-    this.vpcs.push({ vpcId: vpc.vpcId, vpcRegion: vpc.region });
+    this.vpcs.push({ vpcId: vpc.vpcId, vpcRegion: Stack.of(vpc).region });
   }
 }
 
@@ -217,7 +217,7 @@ export interface ZoneDelegationOptions {
    *
    * @default 172800
    */
-  readonly ttl?: number;
+  readonly ttl?: Duration;
 }
 
 export interface PrivateHostedZoneProps extends CommonHostedZoneProps {

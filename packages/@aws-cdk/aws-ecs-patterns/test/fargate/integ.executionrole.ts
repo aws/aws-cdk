@@ -24,4 +24,4 @@ new ecsPatterns.LoadBalancedFargateService(stack, 'L3', {
   })
 });
 
-app.run();
+app.synth();

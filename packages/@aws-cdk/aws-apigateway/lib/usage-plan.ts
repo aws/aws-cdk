@@ -29,9 +29,9 @@ export interface ThrottleSettings {
  * Time period for which quota settings apply.
  */
 export enum Period {
-  Day = 'DAY',
-  Week = 'WEEK',
-  Month = 'MONTH'
+  DAY = 'DAY',
+  WEEK = 'WEEK',
+  MONTH = 'MONTH'
 }
 
 /**
@@ -76,7 +76,7 @@ export interface ThrottlingPerMethod {
 }
 
 /**
- * Type of Usage Plan Key. Currently the only supported type is 'API_KEY'
+ * Type of Usage Plan Key. Currently the only supported type is 'ApiKey'
  */
 export enum UsagePlanKeyType {
   ApiKey = 'API_KEY'
@@ -165,7 +165,7 @@ export class UsagePlan extends Resource {
 
     this.apiStages.push(...(props.apiStages || []));
 
-    this.usagePlanId = resource.refAsString;
+    this.usagePlanId = resource.ref;
 
     // Add ApiKey when
     if (props.apiKey) {

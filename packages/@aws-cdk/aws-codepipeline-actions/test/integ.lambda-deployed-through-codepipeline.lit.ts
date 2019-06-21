@@ -25,13 +25,17 @@ const pipeline = new codepipeline.Pipeline(pipelineStack, 'Pipeline');
 // and the source code of the Lambda Function, if they're separate
 const cdkSourceOutput = new codepipeline.Artifact();
 const cdkSourceAction = new codepipeline_actions.CodeCommitSourceAction({
-  repository: new codecommit.Repository(pipelineStack, 'CdkCodeRepo', { repositoryName: 'CdkCodeRepo' }),
+  repository: new codecommit.Repository(pipelineStack, 'CdkCodeRepo', {
+    repositoryName: 'CdkCodeRepo',
+  }),
   actionName: 'CdkCode_Source',
   output: cdkSourceOutput,
 });
 const lambdaSourceOutput = new codepipeline.Artifact();
 const lambdaSourceAction = new codepipeline_actions.CodeCommitSourceAction({
-  repository: new codecommit.Repository(pipelineStack, 'LambdaCodeRepo', { repositoryName: 'LambdaCodeRepo' }),
+  repository: new codecommit.Repository(pipelineStack, 'LambdaCodeRepo', {
+    repositoryName: 'LambdaCodeRepo',
+  }),
   actionName: 'LambdaCode_Source',
   output: lambdaSourceOutput,
 });

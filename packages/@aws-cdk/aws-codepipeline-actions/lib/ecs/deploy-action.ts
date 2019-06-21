@@ -47,12 +47,12 @@ export class EcsDeployAction extends codepipeline.Action {
   constructor(props: EcsDeployActionProps) {
     super({
       ...props,
-      category: codepipeline.ActionCategory.Deploy,
+      category: codepipeline.ActionCategory.DEPLOY,
       provider: 'ECS',
       artifactBounds: deployArtifactBounds(),
       inputs: [determineInputArtifact(props)],
       configuration: {
-        ClusterName: props.service.clusterName,
+        ClusterName: props.service.cluster.clusterName,
         ServiceName: props.service.serviceName,
         FileName: props.imageFile && props.imageFile.fileName,
       },

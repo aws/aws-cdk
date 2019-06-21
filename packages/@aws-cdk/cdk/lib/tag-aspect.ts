@@ -57,7 +57,7 @@ export interface TagProps {
 /**
  * The common functionality for Tag and Remove Tag Aspects
  */
-export abstract class TagBase implements IAspect {
+abstract class TagBase implements IAspect {
 
   /**
    * The string key for the tag

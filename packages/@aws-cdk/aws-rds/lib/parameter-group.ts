@@ -85,7 +85,7 @@ export class ParameterGroup extends ParameterGroupBase {
       parameters: props.parameters,
     });
 
-    this.parameterGroupName = resource.refAsString;
+    this.parameterGroupName = resource.ref;
   }
 }
 
@@ -116,6 +116,6 @@ export class ClusterParameterGroup extends ParameterGroupBase {
       parameters: props.parameters,
     });
 
-    this.parameterGroupName = resource.refAsString;
+    this.parameterGroupName = resource.ref;
   }
 }

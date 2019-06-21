@@ -102,7 +102,7 @@ export class EcsRunTaskBase implements ec2.IConnectable, sfn.IStepFunctionsTask 
       securityGroup?: ec2.ISecurityGroup) {
 
     if (subnetSelection === undefined) {
-      subnetSelection = { subnetType: assignPublicIp ? ec2.SubnetType.Public : ec2.SubnetType.Private };
+      subnetSelection = { subnetType: assignPublicIp ? ec2.SubnetType.PUBLIC : ec2.SubnetType.PRIVATE };
     }
 
     // If none is given here, one will be created later on during bind()
@@ -166,7 +166,7 @@ function renderOverrides(containerOverrides?: ContainerOverride[]) {
 
   const ret = new Array<any>();
   for (const override of containerOverrides) {
-    ret.push(sfn.FieldUtils.renderObject({
+    ret.push({
       Name: override.containerName,
       Command: override.command,
       Cpu: override.cpu,
@@ -176,7 +176,7 @@ function renderOverrides(containerOverrides?: ContainerOverride[]) {
         Name: e.name,
         Value: e.value,
       }))
-    }));
+    });
   }
 
   return { ContainerOverrides: ret };

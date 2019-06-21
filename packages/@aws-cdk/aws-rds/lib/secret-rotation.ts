@@ -2,7 +2,7 @@ import ec2 = require('@aws-cdk/aws-ec2');
 import lambda = require('@aws-cdk/aws-lambda');
 import serverless = require('@aws-cdk/aws-sam');
 import secretsmanager = require('@aws-cdk/aws-secretsmanager');
-import { Construct, Stack } from '@aws-cdk/cdk';
+import { Construct, Duration, Stack } from '@aws-cdk/cdk';
 
 /**
  * A secret rotation serverless application.
@@ -40,9 +40,9 @@ export interface SecretRotationOptions {
    * Specifies the number of days after the previous rotation before
    * Secrets Manager triggers the next automatic rotation.
    *
-   * @default 30 days
+   * @default Duration.days(30)
    */
-  readonly automaticallyAfterDays?: number;
+  readonly automaticallyAfter?: Duration;
 }
 
 /**
@@ -96,7 +96,7 @@ export class SecretRotation extends Construct {
   constructor(scope: Construct, id: string, props: SecretRotationProps) {
     super(scope, id);
 
-    if (!props.target.connections.defaultPortRange) {
+    if (!props.target.connections.defaultPort) {
       throw new Error('The `target` connections must have a default port range.');
     }
 
@@ -139,7 +139,7 @@ export class SecretRotation extends Construct {
 
     const rotationSchedule = props.secret.addRotationSchedule('RotationSchedule', {
       rotationLambda,
-      automaticallyAfterDays: props.automaticallyAfterDays
+      automaticallyAfter: props.automaticallyAfter
     });
     rotationSchedule.node.addDependency(permission); // Cannot rotate without permission
   }

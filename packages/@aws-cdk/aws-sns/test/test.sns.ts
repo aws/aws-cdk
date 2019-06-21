@@ -27,7 +27,7 @@ export = {
       const stack = new cdk.Stack();
 
       new sns.Topic(stack, 'MyTopic', {
-        topicName: 'topicName'
+        topicName: cdk.PhysicalName.of('topicName'),
       });
 
       expect(stack).toMatch({
@@ -69,7 +69,7 @@ export = {
       const stack = new cdk.Stack();
 
       new sns.Topic(stack, 'MyTopic', {
-        topicName: 'topicName',
+        topicName: cdk.PhysicalName.of('topicName'),
         displayName: 'displayName'
       });
 
@@ -87,8 +87,6 @@ export = {
 
       test.done();
     },
-  },
-  'subscription tests': {
   },
 
   'can add a policy to the topic'(test: Test) {
@@ -213,7 +211,7 @@ export = {
       dimensions: {TopicName: { 'Fn::GetAtt': [ 'TopicBFC7AF6E', 'TopicName' ] }},
       namespace: 'AWS/SNS',
       metricName: 'NumberOfMessagesPublished',
-      periodSec: 300,
+      period: cdk.Duration.minutes(5),
       statistic: 'Sum'
     });
 
@@ -221,7 +219,7 @@ export = {
       dimensions: {TopicName: { 'Fn::GetAtt': [ 'TopicBFC7AF6E', 'TopicName' ] }},
       namespace: 'AWS/SNS',
       metricName: 'PublishSize',
-      periodSec: 300,
+      period: cdk.Duration.minutes(5),
       statistic: 'Average'
     });
 

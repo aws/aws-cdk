@@ -78,7 +78,7 @@ export interface PipelineProps {
    *
    * @default - AWS CloudFormation generates an ID and uses that for the pipeline name.
    */
-  readonly pipelineName?: string;
+  readonly pipelineName?: PhysicalName;
 
   /**
    * A map of region to S3 bucket name used for cross-region CodePipeline.
@@ -219,9 +219,11 @@ export class Pipeline extends PipelineBase {
   private readonly _crossRegionScaffoldStacks: { [region: string]: CrossRegionScaffoldStack } = {};
 
   constructor(scope: Construct, id: string, props: PipelineProps = {}) {
-    super(scope, id);
+    super(scope, id, {
+      physicalName: props.pipelineName,
+    });
 
-    validateName('Pipeline', props.pipelineName);
+    validateName('Pipeline', this.physicalName);
 
     // If a bucket has been provided, use it - otherwise, create a bucket.
     let propsBucket = props.artifactBucket;
@@ -230,7 +232,7 @@ export class Pipeline extends PipelineBase {
       propsBucket = new s3.Bucket(this, 'ArtifactsBucket', {
         bucketName: PhysicalName.auto({ crossEnvironment: true }),
         encryptionKey,
-        encryption: s3.BucketEncryption.Kms,
+        encryption: s3.BucketEncryption.KMS,
         removalPolicy: RemovalPolicy.Retain
       });
     }
@@ -247,7 +249,7 @@ export class Pipeline extends PipelineBase {
       stages: Lazy.anyValue({ produce: () => this.renderStages() }),
       roleArn: this.role.roleArn,
       restartExecutionOnUpdate: props && props.restartExecutionOnUpdate,
-      name: props && props.pipelineName,
+      name: this.physicalName,
     });
 
     // this will produce a DependsOn for both the role and the policy resources.
@@ -255,7 +257,15 @@ export class Pipeline extends PipelineBase {
 
     this.artifactBucket.grantReadWrite(this.role);
 
-    this.pipelineName = codePipeline.refAsString;
+    const resourceIdentifiers = this.getCrossEnvironmentAttributes({
+      arn: '',
+      name: codePipeline.ref,
+      arnComponents: {
+        service: 'codepipeline',
+        resource: this.physicalName,
+      },
+    });
+    this.pipelineName = resourceIdentifiers.name;
     this.pipelineVersion = codePipeline.attrVersion;
     this.crossRegionReplicationBuckets = props.crossRegionReplicationBuckets || {};
     this.artifactStores = {};

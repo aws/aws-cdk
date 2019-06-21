@@ -29,14 +29,14 @@ export interface BaseTargetTrackingProps {
    *
    * @default - The default cooldown configured on the AutoScalingGroup.
    */
-  readonly cooldownSeconds?: number;
+  readonly cooldown?: cdk.Duration;
 
   /**
    * Estimated time until a newly launched instance can send metrics to CloudWatch.
    *
    * @default - Same as the cooldown.
    */
-  readonly estimatedInstanceWarmupSeconds?: number;
+  readonly estimatedInstanceWarmup?: cdk.Duration;
 }
 
 /**
@@ -113,15 +113,7 @@ export class TargetTrackingScalingPolicy extends cdk.Construct {
       throw new Error(`Exactly one of 'customMetric' or 'predefinedMetric' must be specified.`);
     }
 
-    if (props.cooldownSeconds !== undefined && props.cooldownSeconds < 0) {
-      throw new RangeError(`cooldownSeconds cannot be negative, got: ${props.cooldownSeconds}`);
-    }
-
-    if (props.estimatedInstanceWarmupSeconds !== undefined && props.estimatedInstanceWarmupSeconds < 0) {
-      throw new RangeError(`estimatedInstanceWarmupSeconds cannot be negative, got: ${props.estimatedInstanceWarmupSeconds}`);
-    }
-
-    if (props.predefinedMetric === PredefinedMetric.ALBRequestCountPerTarget && !props.resourceLabel) {
+    if (props.predefinedMetric === PredefinedMetric.ALB_REQUEST_COUNT_PER_TARGET && !props.resourceLabel) {
       throw new Error('When tracking the ALBRequestCountPerTarget metric, the ALB identifier must be supplied in resourceLabel');
     }
 
@@ -130,8 +122,8 @@ export class TargetTrackingScalingPolicy extends cdk.Construct {
     this.resource = new CfnScalingPolicy(this, 'Resource', {
       policyType: 'TargetTrackingScaling',
       autoScalingGroupName: props.autoScalingGroup.autoScalingGroupName,
-      cooldown: props.cooldownSeconds !== undefined ? `${props.cooldownSeconds}` : undefined,
-      estimatedInstanceWarmup: props.estimatedInstanceWarmupSeconds,
+      cooldown: props.cooldown && props.cooldown.toSeconds().toString(),
+      estimatedInstanceWarmup: props.estimatedInstanceWarmup && props.estimatedInstanceWarmup.toSeconds(),
       targetTrackingConfiguration: {
         customizedMetricSpecification: renderCustomMetric(props.customMetric),
         disableScaleIn: props.disableScaleIn,
@@ -143,7 +135,7 @@ export class TargetTrackingScalingPolicy extends cdk.Construct {
       }
     });
 
-    this.scalingPolicyArn = this.resource.refAsString;
+    this.scalingPolicyArn = this.resource.ref;
   }
 }
 
@@ -171,22 +163,22 @@ export enum PredefinedMetric {
   /**
    * Average CPU utilization of the Auto Scaling group
    */
-  ASGAverageCPUUtilization = 'ASGAverageCPUUtilization',
+  ASG_AVERAGE_CPU_UTILIZATION = 'ASGAverageCPUUtilization',
 
   /**
    * Average number of bytes received on all network interfaces by the Auto Scaling group
    */
-  ASGAverageNetworkIn = 'ASGAverageNetworkIn',
+  ASG_AVERAGE_NETWORK_IN = 'ASGAverageNetworkIn',
 
   /**
    * Average number of bytes sent out on all network interfaces by the Auto Scaling group
    */
-  ASGAverageNetworkOut = 'ASGAverageNetworkOut',
+  ASG_AVERAGE_NETWORK_OUT = 'ASGAverageNetworkOut',
 
   /**
    * Number of requests completed per target in an Application Load Balancer target group
    *
    * Specify the ALB to look at in the `resourceLabel` field.
    */
-  ALBRequestCountPerTarget = 'ALBRequestCountPerTarget',
+  ALB_REQUEST_COUNT_PER_TARGET = 'ALBRequestCountPerTarget',
 }

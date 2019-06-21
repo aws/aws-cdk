@@ -1,7 +1,5 @@
-import {
-  AnyIPv4, Connections, IConnectable, IPortRange, ISecurityGroup,
-  ISubnet, IVpc, SecurityGroup, TcpPort  } from '@aws-cdk/aws-ec2';
-import { Construct, Lazy, Resource } from '@aws-cdk/cdk';
+import { Connections, IConnectable, ISecurityGroup, ISubnet, IVpc, Peer, Port, SecurityGroup  } from '@aws-cdk/aws-ec2';
+import { Construct, Duration, Lazy, Resource } from '@aws-cdk/cdk';
 import { CfnLoadBalancer } from './elasticloadbalancing.generated';
 
 /**
@@ -106,16 +104,16 @@ export interface HealthCheck {
   /**
    * Number of seconds between health checks
    *
-   * @default 30
+   * @default Duration.seconds(30)
    */
-  readonly interval?: number;
+  readonly interval?: Duration;
 
   /**
    * Health check timeout
    *
-   * @default 5
+   * @default Duration.seconds(5)
    */
-  readonly timeout?: number;
+  readonly timeout?: Duration;
 }
 
 /**
@@ -192,10 +190,10 @@ export interface LoadBalancerListener {
 }
 
 export enum LoadBalancingProtocol {
-  Tcp = 'tcp',
-  Ssl = 'ssl',
-  Http = 'http',
-  Https = 'https'
+  TCP = 'tcp',
+  SSL = 'ssl',
+  HTTP = 'http',
+  HTTPS = 'https'
 }
 
 /**
@@ -256,7 +254,7 @@ export class LoadBalancer extends Resource implements IConnectable {
     const instancePort = listener.internalPort || listener.externalPort;
     const instanceProtocol = ifUndefined(listener.internalProtocol,
                  ifUndefined(tryWellKnownProtocol(instancePort),
-                 isHttpProtocol(protocol) ? LoadBalancingProtocol.Http : LoadBalancingProtocol.Tcp));
+                 isHttpProtocol(protocol) ? LoadBalancingProtocol.HTTP : LoadBalancingProtocol.TCP));
 
     this.listeners.push({
       loadBalancerPort: listener.externalPort.toString(),
@@ -267,10 +265,10 @@ export class LoadBalancer extends Resource implements IConnectable {
       policyNames: listener.policyNames
     });
 
-    const port = new ListenerPort(this.securityGroup, new TcpPort(listener.externalPort));
+    const port = new ListenerPort(this.securityGroup, Port.tcp(listener.externalPort));
 
     // Allow connections on the public port for all supplied peers (default: everyone)
-    ifUndefined(listener.allowConnectionsFrom, [new AnyIPv4()]).forEach(peer => {
+    ifUndefined(listener.allowConnectionsFrom, [Peer.anyIpv4()]).forEach(peer => {
       port.connections.allowDefaultPortFrom(peer, `Default rule allow on ${listener.externalPort}`);
     });
 
@@ -292,7 +290,7 @@ export class LoadBalancer extends Resource implements IConnectable {
    * @attribute
    */
   public get loadBalancerName() {
-    return this.elb.refAsString;
+    return this.elb.ref;
   }
 
   /**
@@ -356,7 +354,7 @@ export class LoadBalancer extends Resource implements IConnectable {
   private allowTargetConnection(instancePort: number, target: ILoadBalancerTarget) {
     this.connections.allowTo(
       target,
-      new TcpPort(instancePort),
+      Port.tcp(instancePort),
       `Port ${instancePort} LB to fleet`);
   }
 }
@@ -377,8 +375,8 @@ export class LoadBalancer extends Resource implements IConnectable {
 export class ListenerPort implements IConnectable {
   public readonly connections: Connections;
 
-  constructor(securityGroup: ISecurityGroup, defaultPortRange: IPortRange) {
-    this.connections = new Connections({ securityGroups: [securityGroup] , defaultPortRange });
+  constructor(securityGroup: ISecurityGroup, defaultPort: Port) {
+    this.connections = new Connections({ securityGroups: [securityGroup], defaultPort });
   }
 }
 
@@ -391,13 +389,13 @@ function wellKnownProtocol(port: number): LoadBalancingProtocol {
 }
 
 function tryWellKnownProtocol(port: number): LoadBalancingProtocol | undefined {
-  if (port === 80) { return LoadBalancingProtocol.Http; }
-  if (port === 443) { return LoadBalancingProtocol.Https; }
+  if (port === 80) { return LoadBalancingProtocol.HTTP; }
+  if (port === 443) { return LoadBalancingProtocol.HTTPS; }
   return undefined;
 }
 
 function isHttpProtocol(proto: LoadBalancingProtocol): boolean {
-  return proto === LoadBalancingProtocol.Https || proto === LoadBalancingProtocol.Http;
+  return proto === LoadBalancingProtocol.HTTPS || proto === LoadBalancingProtocol.HTTP;
 }
 
 function ifUndefined<T>(x: T | undefined, def: T): T {
@@ -414,17 +412,17 @@ function ifUndefinedLazy<T>(x: T | undefined, def: () => T): T {
 function healthCheckToJSON(healthCheck: HealthCheck): CfnLoadBalancer.HealthCheckProperty {
   const protocol = ifUndefined(healthCheck.protocol,
            ifUndefined(tryWellKnownProtocol(healthCheck.port),
-           LoadBalancingProtocol.Tcp));
+           LoadBalancingProtocol.TCP));
 
-  const path = protocol === LoadBalancingProtocol.Http || protocol === LoadBalancingProtocol.Https ? ifUndefined(healthCheck.path, "/") : "";
+  const path = protocol === LoadBalancingProtocol.HTTP || protocol === LoadBalancingProtocol.HTTPS ? ifUndefined(healthCheck.path, "/") : "";
 
   const target = `${protocol.toUpperCase()}:${healthCheck.port}${path}`;
 
   return {
     healthyThreshold: ifUndefined(healthCheck.healthyThreshold, 2).toString(),
-    interval: ifUndefined(healthCheck.interval, 30).toString(),
+    interval: (healthCheck.interval || Duration.seconds(30)).toSeconds().toString(),
     target,
-    timeout: ifUndefined(healthCheck.timeout, 5).toString(),
+    timeout: (healthCheck.timeout || Duration.seconds(5)).toSeconds().toString(),
     unhealthyThreshold: ifUndefined(healthCheck.unhealthyThreshold, 5).toString(),
   };
 }

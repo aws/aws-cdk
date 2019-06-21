@@ -2,7 +2,7 @@ import cloudwatch = require('@aws-cdk/aws-cloudwatch');
 import ec2 = require('@aws-cdk/aws-ec2');
 import iam = require('@aws-cdk/aws-iam');
 import s3 = require('@aws-cdk/aws-s3');
-import { Construct, Lazy, Resource, Stack, Token } from '@aws-cdk/cdk';
+import { Construct, Duration, Lazy, Resource, Stack, Token } from '@aws-cdk/cdk';
 import { BaseLoadBalancer, BaseLoadBalancerProps, ILoadBalancerV2 } from '../shared/base-load-balancer';
 import { IpAddressType } from '../shared/enums';
 import { ApplicationListener, BaseApplicationListenerProps } from './application-listener';
@@ -39,7 +39,7 @@ export interface ApplicationLoadBalancerProps extends BaseLoadBalancerProps {
    *
    * @default 60
    */
-  readonly idleTimeoutSecs?: number;
+  readonly idleTimeout?: Duration;
 }
 
 /**
@@ -52,7 +52,7 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
    * Import an existing Application Load Balancer
    */
   public static fromApplicationLoadBalancerAttributes(
-      scope: Construct, id: string, attrs: ApplicationLoadBalancerAttributes): IApplicationLoadBalancer {
+    scope: Construct, id: string, attrs: ApplicationLoadBalancerAttributes): IApplicationLoadBalancer {
 
     return new ImportedApplicationLoadBalancer(scope, id, attrs);
   }
@@ -75,7 +75,7 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
     this.connections = new ec2.Connections({ securityGroups: [this.securityGroup] });
 
     if (props.http2Enabled === false) { this.setAttribute('routing.http2.enabled', 'false'); }
-    if (props.idleTimeoutSecs !== undefined) { this.setAttribute('idle_timeout.timeout_seconds', props.idleTimeoutSecs.toString()); }
+    if (props.idleTimeout !== undefined) { this.setAttribute('idle_timeout.timeout_seconds', props.idleTimeout.toSeconds().toString()); }
   }
 
   /**
@@ -97,7 +97,7 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
     }
 
     prefix = prefix || '';
-    bucket.grantPut(new iam.AccountPrincipal(account), prefix + '*');
+    bucket.grantPut(new iam.AccountPrincipal(account), `${(prefix ? prefix + "/" : "")}AWSLogs/${Stack.of(this).account}/*`);
 
     // make sure the bucket's policy is created before the ALB (see https://github.com/awslabs/aws-cdk/issues/1633)
     this.node.addDependency(bucket);
@@ -519,7 +519,7 @@ export interface ApplicationLoadBalancerAttributes {
 }
 
 // https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-access-logs.html#access-logging-bucket-permissions
-const ELBV2_ACCOUNTS: {[region: string]: string } = {
+const ELBV2_ACCOUNTS: { [region: string]: string } = {
   'us-east-1': '127311923021',
   'us-east-2': '033677994240',
   'us-west-1': '027434742980',

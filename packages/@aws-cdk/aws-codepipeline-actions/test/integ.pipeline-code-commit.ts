@@ -7,7 +7,9 @@ const app = new cdk.App();
 
 const stack = new cdk.Stack(app, 'aws-cdk-codepipeline-codecommit');
 
-const repo = new codecommit.Repository(stack, 'MyRepo', { repositoryName: 'my-repo' });
+const repo = new codecommit.Repository(stack, 'MyRepo', {
+  repositoryName: 'my-repo',
+});
 
 new codepipeline.Pipeline(stack, 'Pipeline', {
   stages: [

@@ -1,5 +1,5 @@
 import events = require('@aws-cdk/aws-events');
-import { Construct, IConstruct, IResource, Resource, Stack } from '@aws-cdk/cdk';
+import { Construct, IConstruct, IResource, PhysicalName, Resource, Stack } from '@aws-cdk/cdk';
 import { CfnRepository } from './codecommit.generated';
 
 export interface IRepository extends IResource {
@@ -210,7 +210,9 @@ abstract class RepositoryBase extends Resource implements IRepository {
 
 export interface RepositoryProps {
   /**
-   * Name of the repository. This property is required for all repositories.
+   * Name of the repository.
+   *
+   * This property is required for all CodeCommit repositories.
    */
   readonly repositoryName: string;
 
@@ -270,21 +272,33 @@ export class Repository extends RepositoryBase {
     });
   }
 
+  public readonly repositoryArn: string;
+  public readonly repositoryName: string;
   private readonly repository: CfnRepository;
   private readonly triggers = new Array<CfnRepository.RepositoryTriggerProperty>();
 
   constructor(scope: Construct, id: string, props: RepositoryProps) {
-    super(scope, id);
+    super(scope, id, {
+      physicalName: PhysicalName.of(props.repositoryName),
+    });
 
     this.repository = new CfnRepository(this, 'Resource', {
       repositoryName: props.repositoryName,
       repositoryDescription: props.description,
       triggers: this.triggers
     });
-  }
 
-  public get repositoryArn() {
-    return this.repository.attrArn;
+    const resourceIdentifiers = this.getCrossEnvironmentAttributes({
+      arn: this.repository.attrArn,
+      name: this.repository.attrName,
+      arnComponents: {
+        service: 'codecommit',
+        resource: props.repositoryName,
+      },
+    });
+
+    this.repositoryArn = resourceIdentifiers.arn;
+    this.repositoryName = resourceIdentifiers.name;
   }
 
   public get repositoryCloneUrlHttp() {
@@ -295,10 +309,6 @@ export class Repository extends RepositoryBase {
     return this.repository.attrCloneUrlSsh;
   }
 
-  public get repositoryName() {
-    return this.repository.attrName;
-  }
-
   /**
    * Create a trigger to notify another service to run actions on repository events.
    * @param arn   Arn of the resource that repository events will notify
@@ -307,8 +317,8 @@ export class Repository extends RepositoryBase {
   public notify(arn: string, options?: RepositoryTriggerOptions): Repository {
 
     let evt = options && options.events;
-    if (evt && evt.length > 1 && evt.indexOf(RepositoryEventTrigger.All) > -1) {
-      evt = [RepositoryEventTrigger.All];
+    if (evt && evt.length > 1 && evt.indexOf(RepositoryEventTrigger.ALL) > -1) {
+      evt = [RepositoryEventTrigger.ALL];
     }
 
     const customData = options && options.customData;
@@ -328,7 +338,7 @@ export class Repository extends RepositoryBase {
       name,
       customData,
       branches,
-      events: evt || [RepositoryEventTrigger.All],
+      events: evt || [RepositoryEventTrigger.ALL],
     });
     return this;
   }
@@ -368,8 +378,8 @@ export interface RepositoryTriggerOptions {
  * Repository events that will cause the trigger to run actions in another service.
  */
 export enum RepositoryEventTrigger {
-  All = 'all',
-  UpdateRef = 'updateReference',
-  CreateRef = 'createReference',
-  DeleteRef = 'deleteReference'
+  ALL = 'all',
+  UPDATE_REF = 'updateReference',
+  CREATE_REF = 'createReference',
+  DELETE_REF = 'deleteReference'
 }

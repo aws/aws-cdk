@@ -22,13 +22,13 @@ export interface EksOptimizedAmiProps {
 /**
  * Source for EKS optimized AMIs
  */
-export class EksOptimizedAmi extends ec2.GenericLinuxImage implements ec2.IMachineImageSource {
+export class EksOptimizedAmi extends ec2.GenericLinuxImage implements ec2.IMachineImage {
   constructor(props: EksOptimizedAmiProps = {}) {
     const version = props.kubernetesVersion || LATEST_KUBERNETES_VERSION;
     if (!(version in EKS_AMI)) {
       throw new Error(`We don't have an AMI for kubernetes version ${version}`);
     }
-    super(EKS_AMI[version][props.nodeType || NodeType.Normal]);
+    super(EKS_AMI[version][props.nodeType || NodeType.NORMAL]);
   }
 }
 
@@ -41,7 +41,7 @@ export enum NodeType {
   /**
    * Normal instances
    */
-  Normal = 'Normal',
+  NORMAL = 'Normal',
 
   /**
    * GPU instances
@@ -50,7 +50,7 @@ export enum NodeType {
 }
 
 export function nodeTypeForInstanceType(instanceType: ec2.InstanceType) {
-  return instanceType.toString().startsWith('p2') || instanceType.toString().startsWith('p3') ? NodeType.GPU : NodeType.Normal;
+  return instanceType.toString().startsWith('p2') || instanceType.toString().startsWith('p3') ? NodeType.GPU : NodeType.NORMAL;
 }
 
 /**
@@ -119,6 +119,6 @@ function parseTable(contents: string): {[type: string]: {[region: string]: strin
 
   return {
     [NodeType.GPU]: gpuTable,
-    [NodeType.Normal]: normalTable
+    [NodeType.NORMAL]: normalTable
   };
 }

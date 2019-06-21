@@ -9,7 +9,7 @@ const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-cdk-glue');
 
 const database = new glue.Database(stack, 'MyDatabase', {
-  databaseName: 'my_database'
+  databaseName: 'my_database',
 });
 
 const ordinaryTable = new glue.Table(stack, 'MyTable', {
@@ -70,7 +70,7 @@ const encryptedTable = new glue.Table(stack, 'MyEncryptedTable', {
     type: glue.Schema.smallint
   }],
   dataFormat: glue.DataFormat.Json,
-  encryption: glue.TableEncryption.Kms,
+  encryption: glue.TableEncryption.KMS,
   encryptionKey: new kms.Key(stack, 'MyKey')
 });
 

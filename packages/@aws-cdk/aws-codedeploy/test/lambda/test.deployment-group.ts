@@ -119,7 +119,7 @@ export = {
         application,
         alias,
         deploymentConfig: LambdaDeploymentConfig.AllAtOnce,
-        deploymentGroupName: 'test'
+        deploymentGroupName: cdk.PhysicalName.of('test'),
       });
 
       expect(stack).to(haveResourceLike('AWS::CodeDeploy::DeploymentGroup', {
@@ -215,7 +215,7 @@ export = {
         deploymentConfig: codedeploy.LambdaDeploymentConfig.AllAtOnce,
         alarms: [new cloudwatch.Alarm(stack, 'Failures', {
           metric: alias.metricErrors(),
-          comparisonOperator: cloudwatch.ComparisonOperator.GreaterThanThreshold,
+          comparisonOperator: cloudwatch.ComparisonOperator.GREATER_THAN_THRESHOLD,
           threshold: 1,
           evaluationPeriods: 1
         })]
@@ -471,7 +471,7 @@ export = {
         ignorePollAlarmsFailure: true,
         alarms: [new cloudwatch.Alarm(stack, 'Failures', {
           metric: alias.metricErrors(),
-          comparisonOperator: cloudwatch.ComparisonOperator.GreaterThanThreshold,
+          comparisonOperator: cloudwatch.ComparisonOperator.GREATER_THAN_THRESHOLD,
           threshold: 1,
           evaluationPeriods: 1
         })]
@@ -564,7 +564,7 @@ export = {
         },
         alarms: [new cloudwatch.Alarm(stack, 'Failures', {
           metric: alias.metricErrors(),
-          comparisonOperator: cloudwatch.ComparisonOperator.GreaterThanThreshold,
+          comparisonOperator: cloudwatch.ComparisonOperator.GREATER_THAN_THRESHOLD,
           threshold: 1,
           evaluationPeriods: 1
         })]
