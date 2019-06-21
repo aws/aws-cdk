@@ -166,7 +166,7 @@ function renderOverrides(containerOverrides?: ContainerOverride[]) {
 
   const ret = new Array<any>();
   for (const override of containerOverrides) {
-    ret.push(sfn.FieldUtils.renderObject({
+    ret.push({
       Name: override.containerName,
       Command: override.command,
       Cpu: override.cpu,
@@ -176,7 +176,7 @@ function renderOverrides(containerOverrides?: ContainerOverride[]) {
         Name: e.name,
         Value: e.value,
       }))
-    }));
+    });
   }
 
   return { ContainerOverrides: ret };

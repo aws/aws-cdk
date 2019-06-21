@@ -151,7 +151,7 @@ export class SagemakerTrainTask implements ec2.IConnectable, sfn.IStepFunctionsT
     public bind(task: sfn.Task): sfn.StepFunctionsTaskConfig  {
         return {
           resourceArn: 'arn:aws:states:::sagemaker:createTrainingJob' + (this.props.synchronous ? '.sync' : ''),
-          parameters: sfn.FieldUtils.renderObject(this.renderParameters()),
+          parameters: this.renderParameters(),
           policyStatements: this.makePolicyStatements(task),
         };
     }

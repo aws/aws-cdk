@@ -36,7 +36,8 @@ export function renderObject(obj: object | undefined): object | undefined {
   return recurseObject(obj, {
     handleString: renderString,
     handleList: renderStringList,
-    handleNumber: renderNumber
+    handleNumber: renderNumber,
+    handleBoolean: renderBoolean,
   });
 }
 
@@ -63,6 +64,10 @@ export function findReferencedPaths(obj: object | undefined): Set<string> {
       const path = jsonPathNumber(x);
       if (path !== undefined) { found.add(path); }
       return {};
+    },
+
+    handleBoolean(_key: string, _x: boolean) {
+      return {};
     }
   });
 
@@ -73,6 +78,7 @@ interface FieldHandlers {
   handleString(key: string, x: string): {[key: string]: string};
   handleList(key: string, x: string[]): {[key: string]: string[] | string };
   handleNumber(key: string, x: number): {[key: string]: number | string};
+  handleBoolean(key: string, x: boolean): {[key: string]: boolean};
 }
 
 export function recurseObject(obj: object | undefined, handlers: FieldHandlers): object | undefined {
@@ -86,6 +92,8 @@ export function recurseObject(obj: object | undefined, handlers: FieldHandlers):
       Object.assign(ret, handlers.handleNumber(key, value));
     } else if (Array.isArray(value)) {
       Object.assign(ret, recurseArray(key, value, handlers));
+    } else if (typeof value === 'boolean') {
+      Object.assign(ret, handlers.handleBoolean(key, value));
     } else if (value === null || value === undefined) {
       // Nothing
     } else if (typeof value === 'object') {
@@ -144,7 +152,7 @@ function renderString(key: string, value: string): {[key: string]: string} {
 }
 
 /**
- * Render a parameter string
+ * Render a parameter string list
  *
  * If the string value starts with '$.', render it as a path string, otherwise as a direct string.
  */
@@ -158,7 +166,7 @@ function renderStringList(key: string, value: string[]): {[key: string]: string[
 }
 
 /**
- * Render a parameter string
+ * Render a parameter number
  *
  * If the string value starts with '$.', render it as a path string, otherwise as a direct string.
  */
@@ -169,6 +177,13 @@ function renderNumber(key: string, value: number): {[key: string]: number | stri
   } else {
     return { [key]: value };
   }
+}
+
+/**
+ * Render a parameter boolean
+ */
+function renderBoolean(key: string, value: boolean): {[key: string]: boolean} {
+    return { [key]: value };
 }
 
 /**

@@ -4,6 +4,8 @@ import { Context, Data, FieldUtils } from "../lib";
 export = {
   'deep replace correctly handles fields in arrays'(test: Test) {
     test.deepEqual(FieldUtils.renderObject({
+      unknown: undefined,
+      bool: true,
       literal: 'literal',
       field: Data.stringAt('$.stringField'),
       listField: Data.listAt('$.listField'),
@@ -14,6 +16,7 @@ export = {
         }
       ]
     }), {
+      'bool': true,
       'literal': 'literal',
       'field.$': '$.stringField',
       'listField.$': '$.listField',
@@ -33,10 +36,12 @@ export = {
       str: Context.stringAt('$$.Execution.StartTime'),
       count: Context.numberAt('$$.State.RetryCount'),
       token: Context.taskToken,
+      entire: Context.entireContext
     }), {
       'str.$': '$$.Execution.StartTime',
       'count.$': '$$.State.RetryCount',
-      'token.$': '$$.Task.Token'
+      'token.$': '$$.Task.Token',
+      'entire.$': '$$'
     });
 
     test.done();
@@ -44,6 +49,7 @@ export = {
 
   'find all referenced paths'(test: Test) {
     test.deepEqual(FieldUtils.findReferencedPaths({
+      bool: false,
       literal: 'literal',
       field: Data.stringAt('$.stringField'),
       listField: Data.listAt('$.listField'),

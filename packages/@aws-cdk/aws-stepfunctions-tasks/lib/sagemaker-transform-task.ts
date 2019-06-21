@@ -125,7 +125,7 @@ export class SagemakerTransformTask implements sfn.IStepFunctionsTask {
     public bind(task: sfn.Task): sfn.StepFunctionsTaskConfig {
         return {
           resourceArn: 'arn:aws:states:::sagemaker:createTransformJob' + (this.props.synchronous ? '.sync' : ''),
-          parameters: sfn.FieldUtils.renderObject(this.renderParameters()),
+          parameters: this.renderParameters(),
           policyStatements: this.makePolicyStatements(task),
         };
     }
