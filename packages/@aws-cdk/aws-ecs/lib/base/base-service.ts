@@ -114,11 +114,6 @@ export abstract class BaseService extends Resource
   public readonly serviceName: string;
 
   /**
-   * Name of this service's cluster
-   */
-  public readonly clusterName: string;
-
-  /**
    * Task definition this service is associated with
    */
   public readonly taskDefinition: TaskDefinition;
@@ -129,6 +124,7 @@ export abstract class BaseService extends Resource
   protected networkConfiguration?: CfnService.NetworkConfigurationProperty;
   protected serviceRegistries = new Array<CfnService.ServiceRegistryProperty>();
 
+  private readonly clusterName: string;
   private readonly resource: CfnService;
   private scalableTaskCount?: ScalableTaskCount;
 
@@ -136,7 +132,6 @@ export abstract class BaseService extends Resource
               id: string,
               props: BaseServiceProps,
               additionalProps: any,
-              clusterName: string,
               taskDefinition: TaskDefinition) {
     super(scope, id, {
       physicalName: props.serviceName,
@@ -178,7 +173,7 @@ export abstract class BaseService extends Resource
     this.serviceArn = resourceIdentifiers.arn;
     this.serviceName = resourceIdentifiers.name;
 
-    this.clusterName = clusterName;
+    this.clusterName = props.cluster.clusterName;
     this.cluster = props.cluster;
 
     if (props.serviceDiscoveryOptions) {
