@@ -60,7 +60,7 @@
         "FServiceRole3AC82EE1"
       ]
     },
-    "FTSubscription775EAF05": {
+    "TF2453034D": {
       "Type": "AWS::SNS::Subscription",
       "Properties": {
         "Protocol": "lambda",
