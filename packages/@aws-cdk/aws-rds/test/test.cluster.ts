@@ -333,7 +333,7 @@ export = {
         username: 'admin',
       },
       instanceProps: {
-        instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+        instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
         vpc
       }
     });
