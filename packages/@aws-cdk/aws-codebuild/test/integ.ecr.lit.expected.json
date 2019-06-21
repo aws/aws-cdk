@@ -1,7 +1,8 @@
 {
   "Resources": {
     "MyRepoF4F48043": {
-      "Type": "AWS::ECR::Repository"
+      "Type": "AWS::ECR::Repository",
+      "DeletionPolicy": "Retain"
     },
     "MyProjectRole9BBE5233": {
       "Type": "AWS::IAM::Role",
@@ -35,16 +36,6 @@
       "Properties": {
         "PolicyDocument": {
           "Statement": [
-            {
-              "Action": [
-                "ecr:GetAutheticationToken",
-                "ecr:GetDownloadUrlForLayer",
-                "ecr:BatchGetImage",
-                "ecr:BatchCheckLayerAvailability"
-              ],
-              "Effect": "Allow",
-              "Resource": "*"
-            },
             {
               "Action": [
                 "logs:CreateLogGroup",
