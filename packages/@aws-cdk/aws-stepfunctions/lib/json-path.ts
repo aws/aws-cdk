@@ -191,7 +191,7 @@ function renderBoolean(key: string, value: boolean): {[key: string]: boolean} {
  *
  * Otherwise return undefined.
  */
-function jsonPathString(x: string): string | undefined {
+export function jsonPathString(x: string): string | undefined {
   const fragments = Tokenization.reverseString(x);
   const jsonPathTokens = fragments.tokens.filter(JsonPathToken.isJsonPathToken);
 

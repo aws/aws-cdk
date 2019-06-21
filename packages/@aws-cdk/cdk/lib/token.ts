@@ -36,19 +36,6 @@ export class Token {
   }
 
   /**
-   * Retrieves the `IResolvable` for of an encoded token.
-   *
-   * @param encodedToken an encoded Token.
-   *
-   * @returns the resolvable object for the given encoded token, or `undefined` if `encodedToken` is not an encoded
-   *          token (`Token.isUnresolved(encodedToken)` is `false`), or the token is a `string` composed of the
-   *          concatenation of multiple tokens and/or literals.
-   */
-  public static decode(encodedToken: any): IResolvable | undefined {
-    return TokenMap.instance().tokenFromEncoding(encodedToken);
-  }
-
-  /**
    * Return a reversible string representation of this token
    *
    * If the Token is initialized with a literal, the stringified value of the

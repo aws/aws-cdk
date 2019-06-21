@@ -314,7 +314,7 @@ export class SagemakerTrainTask implements iam.IGrantable, ec2.IConnectable, sfn
                         service: 'sagemaker',
                         resource: 'training-job',
                         // If the job name comes from input, we cannot target the policy to a particular ARN prefix reliably...
-                        resourceName: sfn.Data.isJsonPath(this.props.trainingJobName) ? '*' : `${this.props.trainingJobName}*`
+                        resourceName: sfn.Data.isJsonPathString(this.props.trainingJobName) ? '*' : `${this.props.trainingJobName}*`
                     })
                 ],
             }),
