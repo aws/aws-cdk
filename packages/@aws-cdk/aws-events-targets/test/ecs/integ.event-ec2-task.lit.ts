@@ -25,7 +25,7 @@ class EventStack extends cdk.Stack {
     taskDefinition.addContainer('TheContainer', {
       image: ecs.ContainerImage.fromAsset(path.resolve(__dirname, 'eventhandler-image')),
       memoryLimitMiB: 256,
-      logging: new ecs.AwsLogDriver(this, 'TaskLogging', { streamPrefix: 'EventDemo' })
+      logging: new ecs.AwsLogDriver({ streamPrefix: 'EventDemo' })
     });
 
     // An Rule that describes the event trigger (in this case a scheduled run)
