@@ -4,7 +4,7 @@ import ec2 = require('@aws-cdk/aws-ec2');
 import elbv2 = require('@aws-cdk/aws-elasticloadbalancingv2');
 import iam = require('@aws-cdk/aws-iam');
 import cloudmap = require('@aws-cdk/aws-servicediscovery');
-import { Construct, Duration, Fn, IResource, Lazy, PhysicalName, Resource, Stack } from '@aws-cdk/cdk';
+import { Construct, Duration, Fn, IResolvable, IResource, Lazy, PhysicalName, Resource, Stack } from '@aws-cdk/cdk';
 import { NetworkMode, TaskDefinition } from '../base/task-definition';
 import { ICluster } from '../cluster';
 import { CfnService } from '../ecs.generated';
@@ -63,7 +63,7 @@ export interface BaseServiceProps {
   /**
    * Time after startup to ignore unhealthy load balancer checks.
    *
-   * @default ??? FIXME
+   * @default - defaults to 60 seconds if at least one load balancer is in-use and it is not already set
    */
   readonly healthCheckGracePeriod?: Duration;
 
@@ -150,7 +150,7 @@ export abstract class BaseService extends Resource
         maximumPercent: props.maximumPercent || 200,
         minimumHealthyPercent: props.minimumHealthyPercent === undefined ? 50 : props.minimumHealthyPercent
       },
-      healthCheckGracePeriodSeconds: props.healthCheckGracePeriod && props.healthCheckGracePeriod.toSeconds(),
+      healthCheckGracePeriodSeconds: this.evaluateHealthGracePeriod(props.healthCheckGracePeriod),
       /* role: never specified, supplanted by Service Linked Role */
       networkConfiguration: Lazy.anyValue({ produce: () => this.networkConfiguration }),
       serviceRegistries: Lazy.anyValue({ produce: () => this.serviceRegistries }),
@@ -388,6 +388,18 @@ export abstract class BaseService extends Resource
     this.cloudmapService = cloudmapService;
 
     return cloudmapService;
+  }
+
+  /**
+   *  Return the default grace period when load balancers are configured and
+   *  healthCheckGracePeriod is not already set
+   */
+  private evaluateHealthGracePeriod(providedHealthCheckGracePeriod?: Duration): IResolvable {
+    return Lazy.anyValue({
+      produce: () => providedHealthCheckGracePeriod !== undefined ? providedHealthCheckGracePeriod.toSeconds() :
+                     this.loadBalancers.length > 0 ? 60 :
+                     undefined
+    });
   }
 }
 

@@ -598,11 +598,17 @@ export = {
             ContainerPort: 808,
             LoadBalancerName: { Ref: "LB8A12904C" }
           }
-        ],
+        ]
+      }));
+
+      expect(stack).to(haveResource('AWS::ECS::Service', {
+        // if any load balancer is configured and healthCheckGracePeriodSeconds is not
+        // set, then it should default to 60 seconds.
+        HealthCheckGracePeriodSeconds: 60
       }));
 
       test.done();
-    },
+    }
   },
 
   'When enabling service discovery': {
