@@ -236,7 +236,7 @@ export interface EcsOptimizedAmiProps {
   /**
    * What generation of Amazon Linux to use
    *
-   * @default AmazonLinuxGeneration.AmazonLinux if hardwareType equal to AmiHardwareType.Standard else AmazonLinuxGeneration.AmazonLinux2
+   * @default AmazonLinuxGeneration.AmazonLinux2
    */
   readonly generation?: ec2.AmazonLinuxGeneration;
 
@@ -266,11 +266,8 @@ export class EcsOptimizedAmi implements ec2.IMachineImage {
         this.generation = props.generation;
       }
     } else {                              // generation not defined in props object
-      if (this.hwType === AmiHardwareType.STANDARD) {    // default to Amazon Linux v1 if no HW is standard
-        this.generation = ec2.AmazonLinuxGeneration.AMAZON_LINUX;
-      } else {                                         // default to Amazon Linux v2 if special HW
-        this.generation = ec2.AmazonLinuxGeneration.AMAZON_LINUX_2;
-      }
+      // always default to Amazon Linux v2 regardless of HW
+      this.generation = ec2.AmazonLinuxGeneration.AMAZON_LINUX_2;
     }
 
     // set the SSM parameter name
