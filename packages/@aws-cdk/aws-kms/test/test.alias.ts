@@ -10,7 +10,7 @@ export = {
     const stack = new Stack(app, 'Test');
     const key = new Key(stack, 'Key');
 
-    new Alias(stack, 'Alias', { targetKey: key, name: 'alias/foo' });
+    new Alias(stack, 'Alias', { targetKey: key, aliasName: 'alias/foo' });
 
     expect(stack).to(haveResource('AWS::KMS::Alias', {
       AliasName: 'alias/foo',
@@ -30,7 +30,7 @@ export = {
     });
 
     test.throws(() => new Alias(stack, 'Alias', {
-      name: 'foo',
+      aliasName: 'foo',
       targetKey: key
     }));
 
@@ -47,7 +47,7 @@ export = {
     });
 
     test.throws(() => new Alias(stack, 'Alias', {
-      name: 'alias/',
+      aliasName: 'alias/',
       targetKey: key
     }));
 
@@ -64,7 +64,7 @@ export = {
     });
 
     test.throws(() => new Alias(stack, 'Alias', {
-      name: 'alias/@Nope',
+      aliasName: 'alias/@Nope',
       targetKey: key
     }), 'a-zA-Z0-9:/_-');
 
@@ -81,17 +81,17 @@ export = {
     });
 
     test.throws(() => new Alias(stack, 'Alias', {
-      name: 'alias/aws/',
+      aliasName: 'alias/aws/',
       targetKey: key
     }));
 
     test.throws(() => new Alias(stack, 'Alias', {
-      name: 'alias/aws/Awesome',
+      aliasName: 'alias/aws/Awesome',
       targetKey: key
     }));
 
     test.throws(() => new Alias(stack, 'Alias', {
-      name: 'alias/AWS/awesome',
+      aliasName: 'alias/AWS/awesome',
       targetKey: key
     }));
 

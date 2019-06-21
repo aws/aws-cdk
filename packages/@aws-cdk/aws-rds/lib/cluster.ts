@@ -301,7 +301,7 @@ export class DatabaseCluster extends DatabaseClusterBase {
       engine: props.engine.name,
       engineVersion: props.engineVersion,
       dbClusterIdentifier: props.clusterIdentifier,
-      dbSubnetGroupName: subnetGroup.refAsString,
+      dbSubnetGroupName: subnetGroup.ref,
       vpcSecurityGroupIds: [this.securityGroupId],
       port: props.port,
       dbClusterParameterGroupName: props.parameterGroup && props.parameterGroup.parameterGroupName,
@@ -325,7 +325,7 @@ export class DatabaseCluster extends DatabaseClusterBase {
       applyToUpdateReplacePolicy: true
     });
 
-    this.clusterIdentifier = cluster.refAsString;
+    this.clusterIdentifier = cluster.ref;
 
     // create a number token that represents the port of the cluster
     const portAttribute = Token.asNumber(cluster.attrEndpointPort);
@@ -358,13 +358,13 @@ export class DatabaseCluster extends DatabaseClusterBase {
         // Link to cluster
         engine: props.engine.name,
         engineVersion: props.engineVersion,
-        dbClusterIdentifier: cluster.refAsString,
+        dbClusterIdentifier: cluster.ref,
         dbInstanceIdentifier: instanceIdentifier,
         // Instance properties
         dbInstanceClass: databaseInstanceType(props.instanceProps.instanceType),
         publiclyAccessible,
         // This is already set on the Cluster. Unclear to me whether it should be repeated or not. Better yes.
-        dbSubnetGroupName: subnetGroup.refAsString,
+        dbSubnetGroupName: subnetGroup.ref,
         dbParameterGroupName: props.instanceProps.parameterGroup && props.instanceProps.parameterGroup.parameterGroupName,
       });
 
@@ -376,7 +376,7 @@ export class DatabaseCluster extends DatabaseClusterBase {
       // things in the right order.
       instance.node.addDependency(internetConnected);
 
-      this.instanceIdentifiers.push(instance.refAsString);
+      this.instanceIdentifiers.push(instance.ref);
       this.instanceEndpoints.push(new Endpoint(instance.attrEndpointAddress, portAttribute));
     }
 

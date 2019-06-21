@@ -1,7 +1,6 @@
 import reflect = require('jsii-reflect');
 import { Linter, MethodSignatureParameterExpectation } from '../linter';
 import { CoreTypes } from './core-types';
-import { ResourceReflection } from './resource';
 
 export const constructLinter = new Linter<ConstructReflection>(assembly => assembly.classes
   .filter(t => CoreTypes.isConstructClass(t))
@@ -293,30 +292,4 @@ constructLinter.add({
     e.assert(!property.type.isAny, `${e.ctx.propsFqn}.${property.name}`);
     }
   }
-});
-
-constructLinter.add({
-  code: 'props-physical-name',
-  message: "Every Resource must have a single physical name construction property, " +
-    "with a name that is an ending substring of <baseNameOfResource>Name",
-  eval: e => {
-    if (!e.ctx.propsType) { return; }
-    if (!e.ctx.hasPropsArgument) { return; }
-
-    // this rule only applies to Resources
-    if (!CoreTypes.isResourceClass(e.ctx.classType)) { return; }
-
-    const physicalNameProps = e.ctx.propsType.allProperties.filter(p => p.type.toString() === '@aws-cdk/cdk.PhysicalName');
-    if (physicalNameProps.length !== 1) {
-      e.assert(false, `${e.ctx.propsFqn}`);
-    } else {
-      const physicalNameProp = physicalNameProps[0];
-
-      // check the name of the property
-      const resourceName = new ResourceReflection(e.ctx).cfn.fullname.split('::')[2];
-      const capitalizedProp = physicalNameProp.name[0].toUpperCase() + physicalNameProp.name.slice(1);
-
-      e.assert(`${resourceName}Name`.endsWith(capitalizedProp), `${e.ctx.propsFqn}.${physicalNameProp.name}`);
-    }
-  },
 });

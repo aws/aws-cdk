@@ -1,4 +1,4 @@
-import { Construct, PhysicalName, ResourceIdentifiers, Stack } from '@aws-cdk/cdk';
+import { Construct, PhysicalName, Stack } from '@aws-cdk/cdk';
 import { CfnTopic } from './sns.generated';
 import { ITopic, TopicBase } from './topic-base';
 
@@ -52,15 +52,15 @@ export class Topic extends TopicBase {
 
     const resource = new CfnTopic(this, 'Resource', {
       displayName: props.displayName,
-      topicName: this.physicalName.value,
+      topicName: this.physicalName,
     });
 
-    const resourceIdentifiers = new ResourceIdentifiers(this, {
-      arn: resource.refAsString,
+    const resourceIdentifiers = this.getCrossEnvironmentAttributes({
+      arn: resource.ref,
       name: resource.attrTopicName,
       arnComponents: {
         service: 'sns',
-        resource: this.physicalName.value || '',
+        resource: this.physicalName,
       },
     });
     this.topicArn = resourceIdentifiers.arn;

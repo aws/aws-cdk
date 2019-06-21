@@ -90,21 +90,14 @@ export interface CfnParameterProps {
 }
 
 /**
+ * A CloudFormation parameter.
+ *
  * Use the optional Parameters section to customize your templates.
  * Parameters enable you to input custom values to your template each time you create or
  * update a stack.
  */
-export class CfnParameter extends CfnElement implements IResolvable {
-  public readonly displayHint: string | undefined;
-
-  /**
-   * Indicates if this parameter has "NoEcho" set.
-   */
-  public readonly noEcho: boolean;
-
+export class CfnParameter extends CfnElement {
   private readonly type: string;
-
-  private properties: CfnParameterProps;
 
   /**
    * Creates a parameter construct.
@@ -114,12 +107,17 @@ export class CfnParameter extends CfnElement implements IResolvable {
    * @param scope The parent construct.
    * @param props The parameter properties.
    */
-  constructor(scope: Construct, id: string, props: CfnParameterProps = {}) {
+  constructor(scope: Construct, id: string, private readonly props: CfnParameterProps = {}) {
     super(scope, id);
+
     this.type = props.type || 'String';
-    this.displayHint = `Param${id}`;
-    this.properties = props;
-    this.noEcho = props.noEcho || false;
+  }
+
+  /**
+   * Indicates if this parameter is configured with "NoEcho" enabled.
+   */
+  public get noEcho(): boolean {
+    return !!this.props.noEcho;
   }
 
   /**
@@ -167,16 +165,16 @@ export class CfnParameter extends CfnElement implements IResolvable {
       Parameters: {
         [this.logicalId]: {
           Type: this.type,
-          Default: this.properties.default,
-          AllowedPattern: this.properties.allowedPattern,
-          AllowedValues: this.properties.allowedValues,
-          ConstraintDescription: this.properties.constraintDescription,
-          Description: this.properties.description,
-          MaxLength: this.properties.maxLength,
-          MaxValue: this.properties.maxValue,
-          MinLength: this.properties.minLength,
-          MinValue: this.properties.minValue,
-          NoEcho: this.properties.noEcho
+          Default: this.props.default,
+          AllowedPattern: this.props.allowedPattern,
+          AllowedValues: this.props.allowedValues,
+          ConstraintDescription: this.props.constraintDescription,
+          Description: this.props.description,
+          MaxLength: this.props.maxLength,
+          MaxValue: this.props.maxValue,
+          MinLength: this.props.minLength,
+          MinValue: this.props.minValue,
+          NoEcho: this.props.noEcho
         }
       }
     };

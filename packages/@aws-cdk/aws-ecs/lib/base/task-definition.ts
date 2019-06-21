@@ -283,7 +283,7 @@ export class TaskDefinition extends TaskDefinitionBase {
       props.placementConstraints.forEach(pc => this.addPlacementConstraint(pc));
     }
 
-    this.taskDefinitionArn = taskDef.refAsString;
+    this.taskDefinitionArn = taskDef.ref;
   }
 
   public get executionRole(): iam.IRole | undefined {

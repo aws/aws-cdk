@@ -27,7 +27,7 @@ export interface UserPoolClientProps {
    * Name of the application client
    * @default cloudformation generated name
    */
-  readonly clientName?: PhysicalName;
+  readonly userPoolClientName?: PhysicalName;
 
   /**
    * The UserPool resource this client will have access to
@@ -68,17 +68,17 @@ export class UserPoolClient extends Resource {
 
   constructor(scope: Construct, id: string, props: UserPoolClientProps) {
     super(scope, id, {
-      physicalName: props.clientName,
+      physicalName: props.userPoolClientName,
     });
 
     const resource = new CfnUserPoolClient(this, 'Resource', {
-      clientName: this.physicalName.value,
+      clientName: this.physicalName,
       generateSecret: props.generateSecret,
       userPoolId: props.userPool.userPoolId,
       explicitAuthFlows: props.enabledAuthFlows
     });
 
-    this.userPoolClientId = resource.refAsString;
+    this.userPoolClientId = resource.ref;
     this.userPoolClientClientSecret = resource.attrClientSecret;
     this.userPoolClientName = resource.attrName;
   }

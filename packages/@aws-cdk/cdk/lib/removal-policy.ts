@@ -22,6 +22,7 @@ export interface RemovalPolicyOptions {
 
   /**
    * Apply the same deletion policy to the resource's "UpdateReplacePolicy"
+   * @default false
    */
   readonly applyToUpdateReplacePolicy?: boolean;
 }
