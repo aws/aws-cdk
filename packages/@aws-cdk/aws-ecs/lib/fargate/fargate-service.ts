@@ -1,7 +1,7 @@
 import ec2 = require('@aws-cdk/aws-ec2');
 import cdk = require('@aws-cdk/cdk');
 import { Construct, Resource } from '@aws-cdk/cdk';
-import { BaseService, BaseServiceProps, IService } from '../base/base-service';
+import { BaseService, BaseServiceProps, IService, LaunchType } from '../base/base-service';
 import { TaskDefinition } from '../base/task-definition';
 
 /**
@@ -76,7 +76,7 @@ export class FargateService extends BaseService implements IFargateService {
     }, {
       cluster: props.cluster.clusterName,
       taskDefinition: props.taskDefinition.taskDefinitionArn,
-      launchType: 'FARGATE',
+      launchType: LaunchType.FARGATE,
       platformVersion: props.platformVersion,
     }, props.taskDefinition);
 

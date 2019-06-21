@@ -1,7 +1,7 @@
 import ec2 = require('@aws-cdk/aws-ec2');
 import elb = require('@aws-cdk/aws-elasticloadbalancing');
 import { Construct, Lazy, Resource } from '@aws-cdk/cdk';
-import { BaseService, BaseServiceProps, IService } from '../base/base-service';
+import { BaseService, BaseServiceProps, IService, LaunchType } from '../base/base-service';
 import { NetworkMode, TaskDefinition } from '../base/task-definition';
 import { CfnService } from '../ecs.generated';
 import { PlacementConstraint, PlacementStrategy } from '../placement';
@@ -116,7 +116,7 @@ export class Ec2Service extends BaseService implements IEc2Service, elb.ILoadBal
     {
       cluster: props.cluster.clusterName,
       taskDefinition: props.taskDefinition.taskDefinitionArn,
-      launchType: 'EC2',
+      launchType: LaunchType.EC2,
       placementConstraints: Lazy.anyValue({ produce: () => this.constraints }, { omitEmptyArray: true }),
       placementStrategies: Lazy.anyValue({ produce: () => this.strategies }, { omitEmptyArray: true }),
       schedulingStrategy: props.daemon ? 'DAEMON' : 'REPLICA',

@@ -468,3 +468,18 @@ export interface ServiceRegistry {
    */
   readonly containerPort?: number;
 }
+
+/**
+ * The launch type of an ECS service
+ */
+export enum LaunchType {
+  /**
+   * The service will be launched using the EC2 launch type
+   */
+  EC2 = 'EC2',
+
+  /**
+   * The service will be launched using the FARGATE launch type
+   */
+  FARGATE = 'FARGATE'
+}

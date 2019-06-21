@@ -6,6 +6,7 @@ import cdk = require('@aws-cdk/cdk');
 import { Test } from 'nodeunit';
 import ecs = require('../../lib');
 import { ContainerImage, NamespaceType } from '../../lib';
+import { LaunchType } from '../../lib/base/base-service';
 
 export = {
   "When creating a Fargate Service": {
@@ -38,7 +39,7 @@ export = {
           MinimumHealthyPercent: 50
         },
         DesiredCount: 1,
-        LaunchType: "FARGATE",
+        LaunchType: LaunchType.FARGATE,
         LoadBalancers: [],
         NetworkConfiguration: {
           AwsvpcConfiguration: {

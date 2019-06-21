@@ -6,6 +6,7 @@ import cdk = require('@aws-cdk/cdk');
 import { Test } from 'nodeunit';
 import ecs = require('../../lib');
 import { BinPackResource, BuiltInAttributes, ContainerImage, NamespaceType, NetworkMode } from '../../lib';
+import { LaunchType } from '../../lib/base/base-service';
 import { PlacementConstraint, PlacementStrategy } from '../../lib/placement';
 
 export = {
@@ -41,7 +42,7 @@ export = {
           MinimumHealthyPercent: 50
         },
         DesiredCount: 1,
-        LaunchType: "EC2",
+        LaunchType: LaunchType.EC2,
         LoadBalancers: [],
         SchedulingStrategy: "REPLICA"
       }));
