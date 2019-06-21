@@ -85,11 +85,6 @@ export class Ec2Service extends BaseService implements IEc2Service, elb.ILoadBal
     return new Import(scope, id);
   }
 
-  /**
-   * Name of the cluster
-   */
-  public readonly clusterName: string;
-
   private readonly constraints: CfnService.PlacementConstraintProperty[];
   private readonly strategies: CfnService.PlacementStrategyProperty[];
   private readonly daemon: boolean;
@@ -125,9 +120,8 @@ export class Ec2Service extends BaseService implements IEc2Service, elb.ILoadBal
       placementConstraints: Lazy.anyValue({ produce: () => this.constraints }, { omitEmptyArray: true }),
       placementStrategies: Lazy.anyValue({ produce: () => this.strategies }, { omitEmptyArray: true }),
       schedulingStrategy: props.daemon ? 'DAEMON' : 'REPLICA',
-    }, props.cluster.clusterName, props.taskDefinition);
+    }, props.taskDefinition);
 
-    this.clusterName = props.cluster.clusterName;
     this.constraints = [];
     this.strategies = [];
     this.daemon = props.daemon || false;

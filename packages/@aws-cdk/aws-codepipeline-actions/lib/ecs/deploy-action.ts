@@ -52,7 +52,7 @@ export class EcsDeployAction extends codepipeline.Action {
       artifactBounds: deployArtifactBounds(),
       inputs: [determineInputArtifact(props)],
       configuration: {
-        ClusterName: props.service.clusterName,
+        ClusterName: props.service.cluster.clusterName,
         ServiceName: props.service.serviceName,
         FileName: props.imageFile && props.imageFile.fileName,
       },
