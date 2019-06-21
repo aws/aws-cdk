@@ -78,7 +78,7 @@ export class FargateService extends BaseService implements IFargateService {
       taskDefinition: props.taskDefinition.taskDefinitionArn,
       launchType: 'FARGATE',
       platformVersion: props.platformVersion,
-    }, props.cluster.clusterName, props.taskDefinition);
+    }, props.taskDefinition);
 
     this.configureAwsVpcNetworking(props.cluster.vpc, props.assignPublicIp, props.vpcSubnets, props.securityGroup);
 
