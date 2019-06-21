@@ -1,7 +1,7 @@
 import iam = require('@aws-cdk/aws-iam');
 import {
   CfnDynamicReference, CfnDynamicReferenceService, CfnParameter,
-  Construct, ContextProvider, Fn, IConstruct, IResource, PhysicalName, Resource, ResourceIdentifiers, Stack, Token
+  Construct, ContextProvider, Fn, IConstruct, IResource, PhysicalName, Resource, Stack, Token
 } from '@aws-cdk/cdk';
 import cxapi = require('@aws-cdk/cx-api');
 import ssm = require('./ssm.generated');
@@ -285,18 +285,18 @@ export class StringParameter extends ParameterBase implements IStringParameter {
     const resource = new ssm.CfnParameter(this, 'Resource', {
       allowedPattern: props.allowedPattern,
       description: props.description,
-      name: this.physicalName.value,
+      name: this.physicalName,
       type: STRING_PARAM_TYPE,
       value: props.stringValue,
     });
 
-    const resourceIdentifiers = new ResourceIdentifiers(this, {
-      arn: arnForParameterName(this, resource.refAsString),
-      name: resource.refAsString,
+    const resourceIdentifiers = this.getCrossEnvironmentAttributes({
+      arn: arnForParameterName(this, resource.ref),
+      name: resource.ref,
       arnComponents: {
         service: 'ssm',
         resource: 'parameter',
-        resourceName: this.physicalName.value,
+        resourceName: this.physicalName,
         sep: '', // `sep` is empty because parameterName starts with a / already!
       },
     });
@@ -349,17 +349,17 @@ export class StringListParameter extends ParameterBase implements IStringListPar
     const resource = new ssm.CfnParameter(this, 'Resource', {
       allowedPattern: props.allowedPattern,
       description: props.description,
-      name: this.physicalName.value,
+      name: this.physicalName,
       type: STRINGLIST_PARAM_TYPE,
       value: props.stringListValue.join(','),
     });
-    const resourceIdentifiers = new ResourceIdentifiers(this, {
-      arn: arnForParameterName(this, resource.refAsString),
-      name: resource.refAsString,
+    const resourceIdentifiers = this.getCrossEnvironmentAttributes({
+      arn: arnForParameterName(this, resource.ref),
+      name: resource.ref,
       arnComponents: {
         service: 'ssm',
         resource: 'parameter',
-        resourceName: this.physicalName.value,
+        resourceName: this.physicalName,
         sep: '', // `sep` is empty because parameterName starts with a / already!
       },
     });

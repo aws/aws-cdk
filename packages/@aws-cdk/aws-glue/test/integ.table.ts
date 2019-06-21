@@ -9,12 +9,12 @@ const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-cdk-glue');
 
 const database = new glue.Database(stack, 'MyDatabase', {
-  databaseName: cdk.PhysicalName.of('my_database'),
+  databaseName: 'my_database',
 });
 
 const ordinaryTable = new glue.Table(stack, 'MyTable', {
   database,
-  tableName: cdk.PhysicalName.of('my_table'),
+  tableName: 'my_table',
   columns: [{
     name: 'col1',
     type: glue.Schema.string
@@ -44,7 +44,7 @@ const ordinaryTable = new glue.Table(stack, 'MyTable', {
 
 const encryptedTable = new glue.Table(stack, 'MyEncryptedTable', {
   database,
-  tableName: cdk.PhysicalName.of('my_encrypted_table'),
+  tableName: 'my_encrypted_table',
   columns: [{
     name: 'col1',
     type: glue.Schema.string

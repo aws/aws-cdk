@@ -176,11 +176,11 @@ export class LayerVersion extends LayerVersionBase {
       compatibleRuntimes: props.compatibleRuntimes && props.compatibleRuntimes.map(r => r.name),
       content: Lazy.anyValue({ produce: () => props.code._toJSON(resource) }),
       description: props.description,
-      layerName: this.physicalName.value,
+      layerName: this.physicalName,
       licenseInfo: props.license,
     });
 
-    this.layerVersionArn = resource.refAsString;
+    this.layerVersionArn = resource.ref;
     this.compatibleRuntimes = props.compatibleRuntimes;
   }
 }

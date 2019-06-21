@@ -11,13 +11,13 @@ export = {
     const app = new cdk.App();
     const dbStack = new cdk.Stack(app, 'db');
     const database = new glue.Database(dbStack, 'Database', {
-      databaseName: cdk.PhysicalName.of('database'),
+      databaseName: 'database',
     });
 
     const tableStack = new cdk.Stack(app, 'table');
     const table = new glue.Table(tableStack, 'Table', {
       database,
-      tableName: cdk.PhysicalName.of('table'),
+      tableName: 'table',
       columns: [{
         name: 'col',
         type: glue.Schema.string
@@ -82,13 +82,13 @@ export = {
     const app = new cdk.App();
     const dbStack = new cdk.Stack(app, 'db');
     const database = new glue.Database(dbStack, 'Database', {
-      databaseName: cdk.PhysicalName.of('database'),
+      databaseName: 'database',
     });
 
     const tableStack = new cdk.Stack(app, 'table');
     const table = new glue.Table(tableStack, 'Table', {
       database,
-      tableName: cdk.PhysicalName.of('table'),
+      tableName: 'table',
       columns: [{
         name: 'col',
         type: glue.Schema.string
@@ -159,12 +159,12 @@ export = {
   'compressed table'(test: Test) {
     const stack = new cdk.Stack();
     const database = new glue.Database(stack, 'Database', {
-      databaseName: cdk.PhysicalName.of('database'),
+      databaseName: 'database',
     });
 
     const table = new glue.Table(stack, 'Table', {
       database,
-      tableName: cdk.PhysicalName.of('table'),
+      tableName: 'table',
       columns: [{
         name: 'col',
         type: glue.Schema.string
@@ -226,12 +226,12 @@ export = {
     'SSE-S3'(test: Test) {
       const stack = new cdk.Stack();
       const database = new glue.Database(stack, 'Database', {
-        databaseName: cdk.PhysicalName.of('database'),
+        databaseName: 'database',
       });
 
       const table = new glue.Table(stack, 'Table', {
         database,
-        tableName: cdk.PhysicalName.of('table'),
+        tableName: 'table',
         columns: [{
           name: 'col',
           type: glue.Schema.string
@@ -305,12 +305,12 @@ export = {
     'SSE-KMS (implicitly created key)'(test: Test) {
       const stack = new cdk.Stack();
       const database = new glue.Database(stack, 'Database', {
-        databaseName: cdk.PhysicalName.of('database'),
+        databaseName: 'database',
       });
 
       const table = new glue.Table(stack, 'Table', {
         database,
-        tableName: cdk.PhysicalName.of('table'),
+        tableName: 'table',
         columns: [{
           name: 'col',
           type: glue.Schema.string
@@ -434,13 +434,13 @@ export = {
     'SSE-KMS (explicitly created key)'(test: Test) {
       const stack = new cdk.Stack();
       const database = new glue.Database(stack, 'Database', {
-        databaseName: cdk.PhysicalName.of('database'),
+        databaseName: 'database',
       });
       const encryptionKey = new kms.Key(stack, 'MyKey');
 
       const table = new glue.Table(stack, 'Table', {
         database,
-        tableName: cdk.PhysicalName.of('table'),
+        tableName: 'table',
         columns: [{
           name: 'col',
           type: glue.Schema.string
@@ -565,12 +565,12 @@ export = {
     'SSE-KMS_MANAGED'(test: Test) {
       const stack = new cdk.Stack();
       const database = new glue.Database(stack, 'Database', {
-        databaseName: cdk.PhysicalName.of('database'),
+        databaseName: 'database',
       });
 
       const table = new glue.Table(stack, 'Table', {
         database,
-        tableName: cdk.PhysicalName.of('table'),
+        tableName: 'table',
         columns: [{
           name: 'col',
           type: glue.Schema.string
@@ -644,12 +644,12 @@ export = {
     'CSE-KMS (implicitly created key)'(test: Test) {
       const stack = new cdk.Stack();
       const database = new glue.Database(stack, 'Database', {
-        databaseName: cdk.PhysicalName.of('database'),
+        databaseName: 'database',
       });
 
       const table = new glue.Table(stack, 'Table', {
         database,
-        tableName: cdk.PhysicalName.of('table'),
+        tableName: 'table',
         columns: [{
           name: 'col',
           type: glue.Schema.string
@@ -755,13 +755,13 @@ export = {
     'CSE-KMS (explicitly created key)'(test: Test) {
       const stack = new cdk.Stack();
       const database = new glue.Database(stack, 'Database', {
-        databaseName: cdk.PhysicalName.of('database'),
+        databaseName: 'database',
       });
       const encryptionKey = new kms.Key(stack, 'MyKey');
 
       const table = new glue.Table(stack, 'Table', {
         database,
-        tableName: cdk.PhysicalName.of('table'),
+        tableName: 'table',
         columns: [{
           name: 'col',
           type: glue.Schema.string
@@ -868,14 +868,14 @@ export = {
     'CSE-KMS (explicitly passed bucket and key)'(test: Test) {
       const stack = new cdk.Stack();
       const database = new glue.Database(stack, 'Database', {
-        databaseName: cdk.PhysicalName.of('database'),
+        databaseName: 'database',
       });
       const bucket = new s3.Bucket(stack, 'Bucket');
       const encryptionKey = new kms.Key(stack, 'MyKey');
 
       const table = new glue.Table(stack, 'Table', {
         database,
-        tableName: cdk.PhysicalName.of('table'),
+        tableName: 'table',
         columns: [{
           name: 'col',
           type: glue.Schema.string
@@ -987,14 +987,14 @@ export = {
     const stack = new cdk.Stack(app, 'app');
     const bucket = new s3.Bucket(stack, 'ExplicitBucket');
     const database = new glue.Database(dbStack, 'Database', {
-      databaseName: cdk.PhysicalName.of('database'),
+      databaseName: 'database',
     });
 
     new glue.Table(stack, 'Table', {
       database,
       bucket,
       s3Prefix: 'prefix/',
-      tableName: cdk.PhysicalName.of('table'),
+      tableName: 'table',
       columns: [{
         name: 'col',
         type: glue.Schema.string
@@ -1054,12 +1054,12 @@ export = {
       const stack = new cdk.Stack();
       const user = new iam.User(stack, 'User');
       const database = new glue.Database(stack, 'Database', {
-        databaseName: cdk.PhysicalName.of('database'),
+        databaseName: 'database',
       });
 
       const table = new glue.Table(stack, 'Table', {
         database,
-        tableName: cdk.PhysicalName.of('table'),
+        tableName: 'table',
         columns: [{
           name: 'col',
           type: glue.Schema.string
@@ -1160,12 +1160,12 @@ export = {
       const stack = new cdk.Stack();
       const user = new iam.User(stack, 'User');
       const database = new glue.Database(stack, 'Database', {
-        databaseName: cdk.PhysicalName.of('database'),
+        databaseName: 'database',
       });
 
       const table = new glue.Table(stack, 'Table', {
         database,
-        tableName: cdk.PhysicalName.of('table'),
+        tableName: 'table',
         columns: [{
           name: 'col',
           type: glue.Schema.string
@@ -1264,12 +1264,12 @@ export = {
       const stack = new cdk.Stack();
       const user = new iam.User(stack, 'User');
       const database = new glue.Database(stack, 'Database', {
-        databaseName: cdk.PhysicalName.of('database'),
+        databaseName: 'database',
       });
 
       const table = new glue.Table(stack, 'Table', {
         database,
-        tableName: cdk.PhysicalName.of('table'),
+        tableName: 'table',
         columns: [{
           name: 'col',
           type: glue.Schema.string
@@ -1380,7 +1380,7 @@ export = {
       test.throws(() => {
         createTable({
           columns: [],
-          tableName: cdk.PhysicalName.of('name'),
+          tableName: 'name',
         });
       }, undefined, 'you must specify at least one column for the table');
 
@@ -1390,7 +1390,7 @@ export = {
     'unique column names'(test: Test) {
       test.throws(() => {
         createTable({
-          tableName: cdk.PhysicalName.of('name'),
+          tableName: 'name',
           columns: [{
             name: 'col1',
             type: glue.Schema.string
@@ -1406,7 +1406,7 @@ export = {
 
     'unique partition keys'(test: Test) {
       test.throws(() => createTable({
-        tableName: cdk.PhysicalName.of('name'),
+        tableName: 'name',
         columns: [{
           name: 'col1',
           type: glue.Schema.string
@@ -1425,7 +1425,7 @@ export = {
 
     'column names and partition keys are all unique'(test: Test) {
       test.throws(() => createTable({
-        tableName: cdk.PhysicalName.of('name'),
+        tableName: 'name',
         columns: [{
           name: 'col1',
           type: glue.Schema.string
@@ -1441,7 +1441,7 @@ export = {
 
     'can not specify an explicit bucket and encryption'(test: Test) {
       test.throws(() => createTable({
-        tableName: cdk.PhysicalName.of('name'),
+        tableName: 'name',
         columns: [{
           name: 'col1',
           type: glue.Schema.string
@@ -1454,7 +1454,7 @@ export = {
 
     'can explicitly pass bucket if Encryption undefined'(test: Test) {
       test.doesNotThrow(() => createTable({
-        tableName: cdk.PhysicalName.of('name'),
+        tableName: 'name',
         columns: [{
           name: 'col1',
           type: glue.Schema.string
@@ -1467,7 +1467,7 @@ export = {
 
     'can explicitly pass bucket if Unencrypted'(test: Test) {
       test.doesNotThrow(() => createTable({
-        tableName: cdk.PhysicalName.of('name'),
+        tableName: 'name',
         columns: [{
           name: 'col1',
           type: glue.Schema.string
@@ -1480,7 +1480,7 @@ export = {
 
     'can explicitly pass bucket if ClientSideKms'(test: Test) {
       test.doesNotThrow(() => createTable({
-        tableName: cdk.PhysicalName.of('name'),
+        tableName: 'name',
         columns: [{
           name: 'col1',
           type: glue.Schema.string
@@ -1511,7 +1511,7 @@ function createTable(props: Pick<glue.TableProps, Exclude<keyof glue.TableProps,
   new glue.Table(stack, 'table', {
     ...props,
     database: new glue.Database(stack, 'db', {
-      databaseName: cdk.PhysicalName.of('database_name'),
+      databaseName: 'database_name',
     }),
     dataFormat: glue.DataFormat.Json
   });

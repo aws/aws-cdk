@@ -698,7 +698,7 @@ export class CloudFrontWebDistribution extends cdk.Construct implements IDistrib
 
     const distribution = new CfnDistribution(this, 'CFDistribution', { distributionConfig });
     this.domainName = distribution.attrDomainName;
-    this.distributionId = distribution.refAsString;
+    this.distributionId = distribution.ref;
   }
 
   private toBehavior(input: BehaviorWithOrigin, protoPolicy?: ViewerProtocolPolicy) {

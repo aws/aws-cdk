@@ -5,7 +5,7 @@ import elbv2 = require('@aws-cdk/aws-elasticloadbalancingv2');
 import iam = require('@aws-cdk/aws-iam');
 import sns = require('@aws-cdk/aws-sns');
 
-import { AutoScalingRollingUpdate, Construct, Duration, Fn, IResource, Lazy, Resource, Stack, Tag } from '@aws-cdk/cdk';
+import { CfnAutoScalingRollingUpdate, Construct, Duration, Fn, IResource, Lazy, Resource, Stack, Tag } from '@aws-cdk/cdk';
 import { CfnAutoScalingGroup, CfnAutoScalingGroupProps, CfnLaunchConfiguration } from './autoscaling.generated';
 import { BasicLifecycleHookProps, LifecycleHook } from './lifecycle-hook';
 import { BasicScheduledActionProps, ScheduledAction } from './scheduled-action';
@@ -390,7 +390,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
       keyName: props.keyName,
       instanceType: props.instanceType.toString(),
       securityGroups: securityGroupsToken,
-      iamInstanceProfile: iamProfile.refAsString,
+      iamInstanceProfile: iamProfile.ref,
       userData: userDataToken,
       associatePublicIpAddress: props.associatePublicIpAddress,
       spotPrice: props.spotPrice,
@@ -415,7 +415,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
       minSize: minCapacity.toString(),
       maxSize: maxCapacity.toString(),
       desiredCapacity: desiredCapacity.toString(),
-      launchConfigurationName: launchConfig.refAsString,
+      launchConfigurationName: launchConfig.ref,
       loadBalancerNames: Lazy.listValue({ produce: () => this.loadBalancerNames }, { omitEmpty: true }),
       targetGroupArns: Lazy.listValue({ produce: () => this.targetGroupArns }, { omitEmpty: true }),
       notificationConfigurations: !props.notificationsTopic ? undefined : [
@@ -438,7 +438,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
 
     this.autoScalingGroup = new CfnAutoScalingGroup(this, 'ASG', asgProps);
     this.osType = machineImage.os.type;
-    this.autoScalingGroupName = this.autoScalingGroup.refAsString;
+    this.autoScalingGroupName = this.autoScalingGroup.ref;
     this.autoScalingGroupArn = Stack.of(this).formatArn({
       service: 'autoscaling',
       resource: 'autoScalingGroup:*:autoScalingGroupName',
@@ -661,7 +661,7 @@ export enum ScalingProcess {
 /**
  * Render the rolling update configuration into the appropriate object
  */
-function renderRollingUpdateConfig(config: RollingUpdateConfiguration = {}): AutoScalingRollingUpdate {
+function renderRollingUpdateConfig(config: RollingUpdateConfiguration = {}): CfnAutoScalingRollingUpdate {
   const waitOnResourceSignals = config.minSuccessfulInstancesPercent !== undefined ? true : false;
   const pauseTime = config.pauseTime || (waitOnResourceSignals ? Duration.minutes(5) : Duration.seconds(0));
 

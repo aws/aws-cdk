@@ -1,4 +1,4 @@
-import { Construct, Lazy, PhysicalName, Resource, ResourceIdentifiers, SecretValue } from '@aws-cdk/cdk';
+import { Construct, Lazy, PhysicalName, Resource, SecretValue } from '@aws-cdk/cdk';
 import { IGroup } from './group';
 import { CfnUser } from './iam.generated';
 import { IIdentity } from './identity-base';
@@ -108,21 +108,21 @@ export class User extends Resource implements IIdentity {
     });
 
     const user = new CfnUser(this, 'Resource', {
-      userName: this.physicalName.value,
+      userName: this.physicalName,
       groups: undefinedIfEmpty(() => this.groups),
       managedPolicyArns: Lazy.listValue({ produce: () => this.managedPolicies.map(p => p.managedPolicyArn) }, { omitEmpty: true }),
       path: props.path,
       loginProfile: this.parseLoginProfile(props)
     });
 
-    const resourceIdentifiers = new ResourceIdentifiers(this, {
+    const resourceIdentifiers = this.getCrossEnvironmentAttributes({
       arn: user.attrArn,
-      name: user.refAsString,
+      name: user.ref,
       arnComponents: {
         region: '', // IAM is global in each partition
         service: 'iam',
         resource: 'user',
-        resourceName: this.physicalName.value,
+        resourceName: this.physicalName,
       },
     });
     this.userName = resourceIdentifiers.name;
