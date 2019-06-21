@@ -602,6 +602,7 @@
         },
         "DesiredCount": 1,
         "LaunchType": "FARGATE",
+        "HealthCheckGracePeriodSeconds": 60,
         "LoadBalancers": [
           {
             "ContainerName": "web",

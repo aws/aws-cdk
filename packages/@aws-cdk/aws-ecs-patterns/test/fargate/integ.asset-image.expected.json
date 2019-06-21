@@ -779,6 +779,7 @@
             }
           }
         ],
+        "HealthCheckGracePeriodSeconds": 60,
         "NetworkConfiguration": {
           "AwsvpcConfiguration": {
             "AssignPublicIp": "DISABLED",
