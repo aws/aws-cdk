@@ -39,7 +39,7 @@ frontend.addPortMappings({
 new ecs.Ec2Service(stack, "FrontendService", {
   cluster,
   taskDefinition: frontendTD,
-  serviceDiscoveryOptions: {
+  awsCloudMapOptions: {
     name: "frontend"
   }
 });

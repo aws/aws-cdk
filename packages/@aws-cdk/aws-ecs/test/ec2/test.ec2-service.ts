@@ -625,7 +625,7 @@ export = {
         new ecs.Ec2Service(stack, 'Service', {
           cluster,
           taskDefinition,
-          serviceDiscoveryOptions: {
+          awsCloudMapOptions: {
             name: 'myApp',
           }
         });
@@ -656,7 +656,7 @@ export = {
         new ecs.Ec2Service(stack, 'Service', {
           cluster,
           taskDefinition,
-          serviceDiscoveryOptions: {
+          awsCloudMapOptions: {
             name: 'myApp',
           }
         });
@@ -689,7 +689,7 @@ export = {
       new ecs.Ec2Service(stack, 'Service', {
         cluster,
         taskDefinition,
-        serviceDiscoveryOptions: {
+        awsCloudMapOptions: {
           name: 'myApp',
         }
       });
@@ -766,7 +766,7 @@ export = {
       new ecs.Ec2Service(stack, 'Service', {
         cluster,
         taskDefinition,
-        serviceDiscoveryOptions: {
+        awsCloudMapOptions: {
           name: 'myApp',
         }
       });
@@ -842,7 +842,7 @@ export = {
         new ecs.Ec2Service(stack, 'Service', {
           cluster,
           taskDefinition,
-          serviceDiscoveryOptions: {
+          awsCloudMapOptions: {
             name: 'myApp',
             dnsRecordType: cloudmap.DnsRecordType.A
           }
@@ -877,7 +877,7 @@ export = {
       new ecs.Ec2Service(stack, 'Service', {
         cluster,
         taskDefinition,
-        serviceDiscoveryOptions: {
+        awsCloudMapOptions: {
           name: 'myApp',
         }
       });
@@ -952,7 +952,7 @@ export = {
       new ecs.Ec2Service(stack, 'Service', {
         cluster,
         taskDefinition,
-        serviceDiscoveryOptions: {
+        awsCloudMapOptions: {
           name: 'myApp',
           dnsRecordType: cloudmap.DnsRecordType.SRV
         }
