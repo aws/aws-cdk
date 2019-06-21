@@ -75,7 +75,7 @@ export class HostedZone extends Resource implements IHostedZone {
   public static fromLookup(scope: Construct, id: string, query: HostedZoneProviderProps): IHostedZone {
     const DEFAULT_HOSTED_ZONE: HostedZoneContextResponse = {
       Id: '/hostedzone/DUMMY',
-      Name: 'example.com',
+      Name: query.domainName,
     };
 
     interface HostedZoneContextResponse {
