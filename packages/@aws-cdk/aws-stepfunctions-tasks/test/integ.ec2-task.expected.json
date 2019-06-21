@@ -306,7 +306,7 @@
         "FargateClusterDefaultAutoScalingGroupDrainECSHookFunctionServiceRole7FEDCD32"
       ]
     },
-    "FargateClusterDefaultAutoScalingGroupDrainECSHookFunctionTopicSubscriptionA4A8D57E": {
+    "FargateClusterDefaultAutoScalingGroupLifecycleHookDrainHookTopicFunctionE74B772A": {
       "Type": "AWS::SNS::Subscription",
       "Properties": {
         "Protocol": "lambda",

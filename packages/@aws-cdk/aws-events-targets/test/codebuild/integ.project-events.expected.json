@@ -327,7 +327,7 @@
     "MyQueueE6CA6235": {
       "Type": "AWS::SQS::Queue"
     },
-    "MyQueueMyTopicSubscriptionEB66AD1B": {
+    "MyTopicMyQueueFA241964": {
       "Type": "AWS::SNS::Subscription",
       "Properties": {
         "Protocol": "sqs",

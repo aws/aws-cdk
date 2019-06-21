@@ -85,7 +85,7 @@ test('queue subscription', () => {
       "TopicName": "topicName"
       }
     },
-    "MyQueueMyTopicSubscriptionEB66AD1B": {
+    "MyTopicMyQueueFA241964": {
       "Type": "AWS::SNS::Subscription",
       "Properties": {
       "Endpoint": {
@@ -180,7 +180,7 @@ test('lambda subscription', () => {
       "TopicName": "topicName"
       }
     },
-    "MyFuncMyTopicSubscription708A6535": {
+    "MyTopicMyFunc853BC1D3": {
       "Type": "AWS::SNS::Subscription",
       "Properties": {
       "Endpoint": {
@@ -300,7 +300,7 @@ test('multiple subscriptions', () => {
           "TopicName": "topicName"
         }
       },
-      "MyQueueMyTopicSubscriptionEB66AD1B": {
+      "MyTopicMyQueueFA241964": {
         "Type": "AWS::SNS::Subscription",
         "Properties": {
           "Endpoint": {
@@ -315,7 +315,7 @@ test('multiple subscriptions', () => {
           }
         }
       },
-      "MyFuncMyTopicSubscription708A6535": {
+      "MyTopicMyFunc853BC1D3": {
         "Type": "AWS::SNS::Subscription",
         "Properties": {
           "Endpoint": {
@@ -434,6 +434,70 @@ test('multiple subscriptions', () => {
           }
         }
       }
+    }
+  });
+});
+
+test('throws with mutliple subscriptions of the same subscriber', () => {
+  const queue = new sqs.Queue(stack, 'MyQueue');
+
+  topic.addSubscription(new subs.SqsSubscription(queue));
+
+  expect(() => topic.addSubscription(new subs.SqsSubscription(queue)))
+    .toThrowError(/subscriber MyQueue already exists/);
+});
+
+test('with filter policy', () => {
+  const fction = new lambda.Function(stack, 'MyFunc', {
+    runtime: lambda.Runtime.Nodejs810,
+    handler: 'index.handler',
+    code: lambda.Code.inline('exports.handler = function(e, c, cb) { return cb() }')
+  });
+
+  topic.addSubscription(new subs.LambdaSubscription(fction, {
+    filterPolicy: {
+      color: sns.SubscriptionFilter.stringFilter({
+        whitelist: ['red'],
+        matchPrefixes: ['bl', 'ye'],
+      }),
+      size: sns.SubscriptionFilter.stringFilter({
+        blacklist: ['small', 'medium'],
+      }),
+      price: sns.SubscriptionFilter.numericFilter({
+        between: { start: 100, stop: 200 }
+      })
+    }
+  }));
+
+  expect(stack).toHaveResource('AWS::SNS::Subscription', {
+    "FilterPolicy": {
+      "color": [
+        "red",
+        {
+          "prefix": "bl"
+        },
+        {
+          "prefix": "ye"
+        }
+      ],
+      "size": [
+        {
+          "anything-but": [
+            "small",
+            "medium"
+          ]
+        }
+      ],
+      "price": [
+        {
+          "numeric": [
+            ">=",
+            100,
+            "<=",
+            200
+          ]
+        }
+      ]
     }
   });
 });

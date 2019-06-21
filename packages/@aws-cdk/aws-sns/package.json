@@ -92,7 +92,6 @@
   "awslint": {
     "exclude": [
       "construct-base-is-private:@aws-cdk/aws-sns.TopicBase",
-      "integ-return-type:@aws-cdk/aws-sns.ITopicSubscription.bind",
       "props-physical-name:@aws-cdk/aws-sns.SubscriptionProps",
       "props-physical-name:@aws-cdk/aws-sns.TopicPolicyProps"
     ]

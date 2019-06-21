@@ -3,7 +3,7 @@ import sns = require('@aws-cdk/aws-sns');
 import cdk = require('@aws-cdk/cdk');
 import subs = require('../lib');
 
-class SnsToSqs extends cdk.Stack {
+class SnsToLambda extends cdk.Stack {
   constructor(scope: cdk.App, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
@@ -16,12 +16,33 @@ class SnsToSqs extends cdk.Stack {
     });
 
     topic.addSubscription(new subs.LambdaSubscription(fction));
+
+    const fctionFiltered = new lambda.Function(this, 'Filtered', {
+      handler: 'index.handler',
+      runtime: lambda.Runtime.Nodejs810,
+      code: lambda.Code.inline(`exports.handler = ${handler.toString()}`)
+    });
+
+    topic.addSubscription(new subs.LambdaSubscription(fctionFiltered, {
+      filterPolicy: {
+        color: sns.SubscriptionFilter.stringFilter({
+          whitelist: ['red'],
+          matchPrefixes: ['bl', 'ye'],
+        }),
+        size: sns.SubscriptionFilter.stringFilter({
+          blacklist: ['small', 'medium'],
+        }),
+        price: sns.SubscriptionFilter.numericFilter({
+          between: { start: 100, stop: 200 }
+        })
+      }
+    }));
   }
 }
 
 const app = new cdk.App();
 
-new SnsToSqs(app, 'aws-cdk-sns-lambda');
+new SnsToLambda(app, 'aws-cdk-sns-lambda');
 
 app.synth();
 
