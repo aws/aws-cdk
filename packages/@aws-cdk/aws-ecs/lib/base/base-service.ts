@@ -397,14 +397,11 @@ export abstract class BaseService extends Resource
    *  Return the default grace period when load balancers are configured and
    *  healthCheckGracePeriod is not already set
    */
-  private evaluateHealthGracePeriod(providedHealthCheckGracePeriod: any): IResolvable {
+  private evaluateHealthGracePeriod(providedHealthCheckGracePeriod?: Duration): IResolvable {
     return Lazy.anyValue({
-      produce: () =>
-        this.loadBalancers
-        && this.loadBalancers.length
-        && providedHealthCheckGracePeriod === undefined ?
-          60 : providedHealthCheckGracePeriod
-               && providedHealthCheckGracePeriod.toSeconds()
+      produce: () => providedHealthCheckGracePeriod !== undefined ? providedHealthCheckGracePeriod.toSeconds() :
+                     this.loadBalancers.length > 0 ? 60 :
+                     undefined
     });
   }
 }
