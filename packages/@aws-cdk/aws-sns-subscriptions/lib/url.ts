@@ -30,7 +30,7 @@ export class UrlSubscription implements sns.ITopicSubscription {
   }
 
   public bind(scope: Construct, topic: sns.ITopic): void {
-    new sns.Subscription(scope, topic.node.uniqueId + 'Url', {
+    new sns.Subscription(scope, Token.isUnresolved(this.url) ? 'UnresolvedUrl' : this.url, {
       topic,
       endpoint: this.url,
       protocol: this.protocol,
