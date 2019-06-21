@@ -106,35 +106,35 @@ export = nodeunit.testCase({
       stage: selfUpdateStage1,
       stack: pipelineStack,
       input: selfUpdatingStack.synthesizedApp,
-      capabilities: [cfn.CloudFormationCapabilities.NamedIAM],
+      capabilities: [cfn.CloudFormationCapabilities.NAMED_IAM],
       adminPermissions: false,
     });
     new PipelineDeployStackAction(pipelineStack, 'DeployStack', {
       stage: selfUpdateStage2,
       stack: stackWithNoCapability,
       input: selfUpdatingStack.synthesizedApp,
-      capabilities: [cfn.CloudFormationCapabilities.None],
+      capabilities: [cfn.CloudFormationCapabilities.NONE],
       adminPermissions: false,
     });
     new PipelineDeployStackAction(pipelineStack, 'DeployStack2', {
       stage: selfUpdateStage3,
       stack: stackWithAnonymousCapability,
       input: selfUpdatingStack.synthesizedApp,
-      capabilities: [cfn.CloudFormationCapabilities.AnonymousIAM],
+      capabilities: [cfn.CloudFormationCapabilities.ANONYMOUS_IAM],
       adminPermissions: false,
     });
     new PipelineDeployStackAction(pipelineStack, 'DeployStack3', {
       stage: selfUpdateStage4,
       stack: stackWithAutoExpandCapability,
       input: selfUpdatingStack.synthesizedApp,
-      capabilities: [cfn.CloudFormationCapabilities.AutoExpand],
+      capabilities: [cfn.CloudFormationCapabilities.AUTO_EXPAND],
       adminPermissions: false,
     });
     new PipelineDeployStackAction(pipelineStack, 'DeployStack4', {
       stage: selfUpdateStage5,
       stack: stackWithAnonymousAndAutoExpandCapability,
       input: selfUpdatingStack.synthesizedApp,
-      capabilities: [cfn.CloudFormationCapabilities.AnonymousIAM, cfn.CloudFormationCapabilities.AutoExpand],
+      capabilities: [cfn.CloudFormationCapabilities.ANONYMOUS_IAM, cfn.CloudFormationCapabilities.AUTO_EXPAND],
       adminPermissions: false,
     });
     expect(pipelineStack).to(haveResource('AWS::CodePipeline::Pipeline', hasPipelineAction({

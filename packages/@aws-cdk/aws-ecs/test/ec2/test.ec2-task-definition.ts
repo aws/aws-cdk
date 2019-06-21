@@ -17,7 +17,7 @@ export = {
         Family: "Ec2TaskDef",
         ContainerDefinitions: [],
         Volumes: [],
-        NetworkMode: ecs.NetworkMode.Bridge,
+        NetworkMode: ecs.NetworkMode.BRIDGE,
         RequiresCompatibilities: ["EC2"]
       }));
 
@@ -29,12 +29,12 @@ export = {
       // GIVEN
       const stack = new cdk.Stack();
       new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', {
-        networkMode: ecs.NetworkMode.AwsVpc
+        networkMode: ecs.NetworkMode.AWS_VPC
       });
 
       // THEN
       expect(stack).to(haveResource("AWS::ECS::TaskDefinition", {
-        NetworkMode: ecs.NetworkMode.AwsVpc,
+        NetworkMode: ecs.NetworkMode.AWS_VPC,
       }));
 
       test.done();
@@ -235,7 +235,7 @@ export = {
         name: "scratch",
         dockerVolumeConfiguration: {
           driver: "local",
-          scope: ecs.Scope.Task
+          scope: ecs.Scope.TASK
         }
       };
 

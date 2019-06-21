@@ -63,17 +63,17 @@ export enum TimeUnit {
   /**
    * The rate is in minutes
    */
-  Minute = 'minute',
+  MINUTE = 'minute',
 
   /**
    * The rate is in hours
    */
-  Hour = 'hour',
+  HOUR = 'hour',
 
   /**
    * The rate is in days
    */
-  Day = 'day'
+  DAY = 'day'
 }
 
 /**

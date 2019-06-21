@@ -30,7 +30,7 @@ export = testCase({
       const stack = new cdk.Stack(app, 'Test');
 
       // WHEN
-      new TestCustomResource(stack, 'Custom', { removalPolicy: cdk.RemovalPolicy.Destroy });
+      new TestCustomResource(stack, 'Custom', { removalPolicy: cdk.RemovalPolicy.DESTROY });
 
       // THEN
       expect(stack).to(haveResource('AWS::CloudFormation::CustomResource', {}, ResourcePart.CompleteDefinition));
@@ -45,7 +45,7 @@ export = testCase({
       const stack = new cdk.Stack(app, 'Test');
 
       // WHEN
-      new TestCustomResource(stack, 'Custom', {  removalPolicy: cdk.RemovalPolicy.Retain });
+      new TestCustomResource(stack, 'Custom', {  removalPolicy: cdk.RemovalPolicy.RETAIN });
 
       // THEN
       expect(stack).to(haveResource('AWS::CloudFormation::CustomResource', {

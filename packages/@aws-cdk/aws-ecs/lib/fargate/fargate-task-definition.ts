@@ -52,7 +52,7 @@ export class FargateTaskDefinition extends TaskDefinition implements IFargateTas
   public static fromFargateTaskDefinitionArn(scope: Construct, id: string, fargateTaskDefinitionArn: string): IFargateTaskDefinition {
     class Import extends Resource implements IFargateTaskDefinition {
       public readonly taskDefinitionArn = fargateTaskDefinitionArn;
-      public readonly compatibility = Compatibility.Fargate;
+      public readonly compatibility = Compatibility.FARGATE;
       public readonly isEc2Compatible = false;
       public readonly isFargateCompatible = true;
     }
@@ -63,7 +63,7 @@ export class FargateTaskDefinition extends TaskDefinition implements IFargateTas
   /**
    * The configured network mode
    */
-  public readonly networkMode: NetworkMode = NetworkMode.AwsVpc;
+  public readonly networkMode: NetworkMode = NetworkMode.AWS_VPC;
   // NOTE: Until the fix to https://github.com/Microsoft/TypeScript/issues/26969 gets released,
   // we need to explicitly write the type here, as type deduction for enums won't lead to
   // the import being generated in the .d.ts file.
@@ -73,8 +73,8 @@ export class FargateTaskDefinition extends TaskDefinition implements IFargateTas
       ...props,
       cpu: props.cpu !== undefined ? String(props.cpu) : '256',
       memoryMiB: props.memoryLimitMiB !== undefined ? String(props.memoryLimitMiB) : '512',
-      compatibility: Compatibility.Fargate,
-      networkMode: NetworkMode.AwsVpc,
+      compatibility: Compatibility.FARGATE,
+      networkMode: NetworkMode.AWS_VPC,
     });
   }
 }

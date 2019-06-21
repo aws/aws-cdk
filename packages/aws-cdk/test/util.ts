@@ -26,7 +26,7 @@ export function testAssembly(...stacks: TestStackArtifact[]): cxapi.CloudAssembl
     }
 
     builder.addArtifact(stack.stackName, {
-      type: cxapi.ArtifactType.AwsCloudFormationStack,
+      type: cxapi.ArtifactType.AWS_CLOUDFORMATION_STACK,
       environment: 'aws://12345/here',
 
       dependencies: stack.depends,
