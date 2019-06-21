@@ -6,6 +6,7 @@ import cdk = require('@aws-cdk/cdk');
 import { Test } from 'nodeunit';
 import ecs = require('../../lib');
 import { BinPackResource, BuiltInAttributes, ContainerImage, NamespaceType, NetworkMode } from '../../lib';
+import { PlacementConstraint, PlacementStrategy } from '../../lib/placement';
 
 export = {
   "When creating an ECS Service": {
@@ -383,7 +384,7 @@ export = {
         taskDefinition
       });
 
-      service.placeOnMemberOf("attribute:ecs.instance-type =~ t2.*");
+      service.addPlacementConstraints(PlacementConstraint.memberOf("attribute:ecs.instance-type =~ t2.*"));
 
       // THEN
       expect(stack).to(haveResource("AWS::ECS::Service", {
@@ -396,7 +397,7 @@ export = {
       test.done();
     },
 
-    "with placeSpreadAcross placement strategy"(test: Test) {
+    "with spreadAcross placement strategy"(test: Test) {
       // GIVEN
       const stack = new cdk.Stack();
       const vpc = new ec2.Vpc(stack, 'MyVpc', {});
@@ -414,7 +415,7 @@ export = {
         taskDefinition
       });
 
-      service.placeSpreadAcross(BuiltInAttributes.AvailabilityZone);
+      service.addPlacementStrategies(PlacementStrategy.spreadAcross(BuiltInAttributes.AvailabilityZone));
 
       // THEN
       expect(stack).to(haveResource("AWS::ECS::Service", {
@@ -427,7 +428,7 @@ export = {
       test.done();
     },
 
-    "errors with placeSpreadAcross placement strategy if daemon specified"(test: Test) {
+    "errors with spreadAcross placement strategy if daemon specified"(test: Test) {
       // GIVEN
       const stack = new cdk.Stack();
       const vpc = new ec2.Vpc(stack, 'MyVpc', {});
@@ -448,13 +449,13 @@ export = {
 
       // THEN
       test.throws(() => {
-        service.placeSpreadAcross(BuiltInAttributes.AvailabilityZone);
+        service.addPlacementStrategies(PlacementStrategy.spreadAcross(BuiltInAttributes.AvailabilityZone));
       });
 
       test.done();
     },
 
-    "with placeRandomly placement strategy"(test: Test) {
+    "with random placement strategy"(test: Test) {
       // GIVEN
       const stack = new cdk.Stack();
       const vpc = new ec2.Vpc(stack, 'MyVpc');
@@ -472,7 +473,7 @@ export = {
         taskDefinition
       });
 
-      service.placeRandomly();
+      service.addPlacementStrategies(PlacementStrategy.randomly());
 
       // THEN
       expect(stack).to(haveResource("AWS::ECS::Service", {
@@ -484,7 +485,7 @@ export = {
       test.done();
     },
 
-    "errors with placeRandomly placement strategy if daemon specified"(test: Test) {
+    "errors with random placement strategy if daemon specified"(test: Test) {
       // GIVEN
       const stack = new cdk.Stack();
       const vpc = new ec2.Vpc(stack, 'MyVpc');
@@ -505,13 +506,13 @@ export = {
 
       // THEN
       test.throws(() => {
-        service.placeRandomly();
+        service.addPlacementStrategies(PlacementStrategy.randomly());
       });
 
       test.done();
     },
 
-    "with placePackedBy placement strategy"(test: Test) {
+    "with packedBy placement strategy"(test: Test) {
       // GIVEN
       const stack = new cdk.Stack();
       const vpc = new ec2.Vpc(stack, 'MyVpc', {});
@@ -529,7 +530,7 @@ export = {
         taskDefinition
       });
 
-      service.placePackedBy(BinPackResource.MEMORY);
+      service.addPlacementStrategies(PlacementStrategy.packedBy(BinPackResource.MEMORY));
 
       // THEN
       expect(stack).to(haveResource("AWS::ECS::Service", {
@@ -542,7 +543,7 @@ export = {
       test.done();
     },
 
-    "errors with placePackedBy placement strategy if daemon specified"(test: Test) {
+    "errors with packedBy placement strategy if daemon specified"(test: Test) {
       // GIVEN
       const stack = new cdk.Stack();
       const vpc = new ec2.Vpc(stack, 'MyVpc', {});
@@ -563,7 +564,7 @@ export = {
 
       // THEN
       test.throws(() => {
-        service.placePackedBy(BinPackResource.MEMORY);
+        service.addPlacementStrategies(PlacementStrategy.packedBy(BinPackResource.MEMORY));
       });
 
       test.done();
