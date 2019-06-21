@@ -119,7 +119,7 @@ export = {
           LogConfiguration: {
             LogDriver: "awslogs",
             Options: {
-              "awslogs-group": { Ref: "ServiceLoggingLogGroupC3D6A581" },
+              "awslogs-group": { Ref: "ServiceTaskDefwebLogGroup2A898F61" },
               "awslogs-stream-prefix": "Service",
               "awslogs-region": { Ref: "AWS::Region" }
             }
@@ -175,7 +175,7 @@ export = {
           LogConfiguration: {
             LogDriver: "awslogs",
             Options: {
-              "awslogs-group": { Ref: "ServiceLoggingLogGroupC3D6A581" },
+              "awslogs-group": { Ref: "ServiceTaskDefwebLogGroup2A898F61" },
               "awslogs-stream-prefix": "Service",
               "awslogs-region": { Ref: "AWS::Region" }
             }

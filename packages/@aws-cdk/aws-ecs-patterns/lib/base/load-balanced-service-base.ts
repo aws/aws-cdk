@@ -185,6 +185,6 @@ export abstract class LoadBalancedServiceBase extends cdk.Construct {
   }
 
   private createAWSLogDriver(prefix: string): ecs.AwsLogDriver {
-    return new ecs.AwsLogDriver(this, 'Logging', { streamPrefix: prefix });
+    return new ecs.AwsLogDriver({ streamPrefix: prefix });
   }
 }

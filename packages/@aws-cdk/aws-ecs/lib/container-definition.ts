@@ -4,7 +4,7 @@ import { NetworkMode, TaskDefinition } from './base/task-definition';
 import { ContainerImage, ContainerImageConfig } from './container-image';
 import { CfnTaskDefinition } from './ecs.generated';
 import { LinuxParameters } from './linux-parameters';
-import { LogDriver } from './log-drivers/log-driver';
+import { LogDriver, LogDriverConfig } from './log-drivers/log-driver';
 
 export interface ContainerDefinitionOptions {
   /**
@@ -249,6 +249,8 @@ export class ContainerDefinition extends cdk.Construct {
 
   private readonly imageConfig: ContainerImageConfig;
 
+  private readonly logDriverConfig?: LogDriverConfig;
+
   constructor(scope: cdk.Construct, id: string, private readonly props: ContainerDefinitionProps) {
     super(scope, id);
     this.essential = props.essential !== undefined ? props.essential : true;
@@ -257,7 +259,9 @@ export class ContainerDefinition extends cdk.Construct {
     this.linuxParameters = props.linuxParameters;
 
     this.imageConfig = props.image.bind(this, this);
-    if (props.logging) { props.logging.bind(this); }
+    if (props.logging) {
+      this.logDriverConfig = props.logging.bind(this, this);
+    }
     props.taskDefinition._linkContainer(this);
   }
 
@@ -410,7 +414,7 @@ export class ContainerDefinition extends cdk.Construct {
       user: this.props.user,
       volumesFrom: this.volumesFrom.map(renderVolumeFrom),
       workingDirectory: this.props.workingDirectory,
-      logConfiguration: this.props.logging && this.props.logging.renderLogDriver(),
+      logConfiguration: this.logDriverConfig,
       environment: this.props.environment && renderKV(this.props.environment, 'name', 'value'),
       extraHosts: this.props.extraHosts && renderKV(this.props.extraHosts, 'hostname', 'ipAddress'),
       healthCheck: this.props.healthCheck && renderHealthCheck(this.props.healthCheck),

@@ -47,7 +47,7 @@ export = {
             LogDriver: "awslogs",
             Options: {
               "awslogs-group": {
-                Ref: "ServiceProcessingContainerLoggingLogGroupF40B9C5D"
+                Ref: "ServiceQueueProcessingTaskDefQueueProcessingContainerLogGroupD52338D1"
               },
               "awslogs-stream-prefix": "Service",
               "awslogs-region": {
