@@ -65,7 +65,7 @@ const sourceAction = new codepipeline_actions.GitHubSourceAction({
   oauthToken: token.value,
   output: sourceOutput,
   branch: 'develop', // default: 'master'
-  trigger: codepipeline_actions.GitHubTrigger.Poll // default: 'WebHook', 'None' is also possible for no Source trigger
+  trigger: codepipeline_actions.GitHubTrigger.POLL // default: 'WEBHOOK', 'NONE' is also possible for no Source trigger
 });
 pipeline.addStage({
   stageName: 'Source',
@@ -99,8 +99,8 @@ pipeline.addStage({
 ```
 
 By default, the Pipeline will poll the Bucket to detect changes.
-You can change that behavior to use CloudWatch Events by setting the `pollForSourceChanges`
-property to `false` (it's `true` by default).
+You can change that behavior to use CloudWatch Events by setting the `trigger`
+property to `S3Trigger.EVENTS` (it's `S3Trigger.POLL` by default).
 If you do that, make sure the source Bucket is part of an AWS CloudTrail Trail -
 otherwise, the CloudWatch Events will not be emitted,
 and your Pipeline will not react to changes in the Bucket.
@@ -119,7 +119,7 @@ const sourceAction = new codepipeline_actions.S3SourceAction({
   bucketKey: key,
   bucket: sourceBucket,
   output: sourceOutput,
-  pollForSourceChanges: false, // default: true
+  trigger: codepipeline_actions.S3Trigger.EVENTS, // default: S3Trigger.POLL
 });
 ```
 

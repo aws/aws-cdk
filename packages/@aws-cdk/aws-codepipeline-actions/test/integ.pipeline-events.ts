@@ -25,7 +25,7 @@ const sourceAction = new cpactions.CodeCommitSourceAction({
   actionName: 'CodeCommitSource',
   output: sourceOutput,
   repository,
-  pollForSourceChanges: true,
+  trigger: cpactions.CodeCommitTrigger.POLL,
 });
 const sourceStage = pipeline.addStage({
   stageName: 'Source',

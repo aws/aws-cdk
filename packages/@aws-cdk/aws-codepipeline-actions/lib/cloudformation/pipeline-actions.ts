@@ -8,7 +8,7 @@ import { Stack } from '@aws-cdk/cdk';
 /**
  * Properties common to all CloudFormation actions
  */
-export interface CloudFormationActionProps extends codepipeline.CommonActionProps {
+interface CloudFormationActionProps extends codepipeline.CommonActionProps {
   /**
    * The name of the stack to apply this action to
    */
@@ -60,7 +60,7 @@ export interface CloudFormationActionProps extends codepipeline.CommonActionProp
 /**
  * Base class for Actions that execute CloudFormation
  */
-export abstract class CloudFormationAction extends codepipeline.Action {
+abstract class CloudFormationAction extends codepipeline.Action {
   constructor(props: CloudFormationActionProps, configuration?: any) {
     super({
       ...props,
@@ -119,7 +119,7 @@ export class CloudFormationExecuteChangeSetAction extends CloudFormationAction {
 /**
  * Properties common to CloudFormation actions that stage deployments
  */
-export interface CloudFormationDeployActionProps extends CloudFormationActionProps {
+interface CloudFormationDeployActionProps extends CloudFormationActionProps {
   /**
    * IAM role to assume when deploying changes.
    *
@@ -216,7 +216,7 @@ export interface CloudFormationDeployActionProps extends CloudFormationActionPro
 /**
  * Base class for all CloudFormation actions that execute or stage deployments.
  */
-export abstract class CloudFormationDeployAction extends CloudFormationAction {
+abstract class CloudFormationDeployAction extends CloudFormationAction {
   private _deploymentRole?: iam.IRole;
   private readonly props: CloudFormationDeployActionProps;
 
