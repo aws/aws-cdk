@@ -7,7 +7,7 @@
 
 > **This is a _developer preview_ (public beta) module. Releases might lack important features and might have
 > future breaking changes.**
-> 
+>
 > This API is still under active development and subject to non-backward
 > compatible changes or removal in any future version. Use of the API is not recommended in production
 > environments. Experimental APIs are not subject to the Semantic Versioning model.
@@ -257,7 +257,7 @@ const task = new sfn.Task(this, 'CallFargate', {
 #### SageMaker Transform example
 
 ```ts
-const transformJob = new tasks.SagemakerTransformTask(        
+const transformJob = new tasks.SagemakerTransformTask(
     transformJobName: "MyTransformJob",
     modelName: "MyModelName",
     role,
@@ -274,7 +274,7 @@ const transformJob = new tasks.SagemakerTransformTask(
     },
     transformResources: {
         instanceCount: 1,
-        instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.M4, ec2.InstanceSize.XLarge),
+        instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.XLarge),
 });
 
 const task = new sfn.Task(this, 'Batch Inference', {
