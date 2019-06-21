@@ -66,7 +66,7 @@ export = {
     // WHEN
     new LogGroup(stack, 'LogGroup', {
       retention: Infinity,
-      removalPolicy: RemovalPolicy.Destroy
+      removalPolicy: RemovalPolicy.DESTROY
     });
 
     // THEN

@@ -11,7 +11,7 @@ const stack = new cdk.Stack(app, 'aws-cdk-cloudfront');
 const zone = new route53.PublicHostedZone(stack, 'HostedZone', { zoneName: 'test.public' });
 
 const sourceBucket = new s3.Bucket(stack, 'Bucket', {
-  removalPolicy: cdk.RemovalPolicy.Destroy
+  removalPolicy: cdk.RemovalPolicy.DESTROY
 });
 
 const distribution = new cloudfront.CloudFrontWebDistribution(stack, 'MyDistribution', {

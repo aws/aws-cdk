@@ -13,7 +13,7 @@ const pipeline = new codepipeline.Pipeline(stack, 'Pipeline');
 
 const bucket = new s3.Bucket(stack, 'PipelineBucket', {
   versioned: true,
-  removalPolicy: cdk.RemovalPolicy.Destroy,
+  removalPolicy: cdk.RemovalPolicy.DESTROY,
 });
 
 const sourceOutput = new codepipeline.Artifact('SourceArtifact');

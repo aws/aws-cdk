@@ -32,7 +32,7 @@ const service = new ecs.FargateService(stack, 'FargateService', {
 
 const bucket = new s3.Bucket(stack, 'MyBucket', {
   versioned: true,
-  removalPolicy: cdk.RemovalPolicy.Destroy,
+  removalPolicy: cdk.RemovalPolicy.DESTROY,
 });
 const sourceOutput = new codepipeline.Artifact('SourceArtifact');
 const sourceAction = new cpactions.S3SourceAction({

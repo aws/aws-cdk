@@ -96,7 +96,7 @@ export class SecretRotation extends Construct {
   constructor(scope: Construct, id: string, props: SecretRotationProps) {
     super(scope, id);
 
-    if (!props.target.connections.defaultPortRange) {
+    if (!props.target.connections.defaultPort) {
       throw new Error('The `target` connections must have a default port range.');
     }
 

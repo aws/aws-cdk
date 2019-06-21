@@ -208,7 +208,7 @@ export = {
         const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
         cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
         const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', {
-          networkMode: NetworkMode.Bridge
+          networkMode: NetworkMode.BRIDGE
         });
 
         taskDefinition.addContainer("web", {
@@ -238,7 +238,7 @@ export = {
         const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
         cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
         const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', {
-          networkMode: NetworkMode.Bridge
+          networkMode: NetworkMode.BRIDGE
         });
 
         taskDefinition.addContainer("web", {
@@ -268,7 +268,7 @@ export = {
         const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
         cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
         const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', {
-          networkMode: NetworkMode.AwsVpc
+          networkMode: NetworkMode.AWS_VPC
         });
 
         taskDefinition.addContainer("web", {
@@ -316,7 +316,7 @@ export = {
         const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
         cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
         const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', {
-          networkMode: NetworkMode.AwsVpc
+          networkMode: NetworkMode.AWS_VPC
         });
 
         taskDefinition.addContainer("web", {
@@ -578,7 +578,7 @@ export = {
       const vpc = new ec2.Vpc(stack, 'VPC');
       const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
       cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
-      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TD', { networkMode: ecs.NetworkMode.Host });
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TD', { networkMode: ecs.NetworkMode.HOST });
       const container = taskDefinition.addContainer('web', {
         image: ecs.ContainerImage.fromRegistry('test'),
         memoryLimitMiB: 1024,
@@ -598,11 +598,17 @@ export = {
             ContainerPort: 808,
             LoadBalancerName: { Ref: "LB8A12904C" }
           }
-        ],
+        ]
+      }));
+
+      expect(stack).to(haveResource('AWS::ECS::Service', {
+        // if any load balancer is configured and healthCheckGracePeriodSeconds is not
+        // set, then it should default to 60 seconds.
+        HealthCheckGracePeriodSeconds: 60
       }));
 
       test.done();
-    },
+    }
   },
 
   'When enabling service discovery': {
@@ -626,7 +632,7 @@ export = {
         new ecs.Ec2Service(stack, 'Service', {
           cluster,
           taskDefinition,
-          serviceDiscoveryOptions: {
+          cloudMapOptions: {
             name: 'myApp',
           }
         });
@@ -642,7 +648,7 @@ export = {
       const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
       cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', {
-        networkMode: NetworkMode.None
+        networkMode: NetworkMode.NONE
       });
       const container = taskDefinition.addContainer('MainContainer', {
         image: ContainerImage.fromRegistry('hello'),
@@ -657,7 +663,7 @@ export = {
         new ecs.Ec2Service(stack, 'Service', {
           cluster,
           taskDefinition,
-          serviceDiscoveryOptions: {
+          cloudMapOptions: {
             name: 'myApp',
           }
         });
@@ -690,7 +696,7 @@ export = {
       new ecs.Ec2Service(stack, 'Service', {
         cluster,
         taskDefinition,
-        serviceDiscoveryOptions: {
+        cloudMapOptions: {
           name: 'myApp',
         }
       });
@@ -750,7 +756,7 @@ export = {
       cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
 
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', {
-        networkMode: NetworkMode.Host
+        networkMode: NetworkMode.HOST
       });
       const container = taskDefinition.addContainer('MainContainer', {
         image: ContainerImage.fromRegistry('hello'),
@@ -767,7 +773,7 @@ export = {
       new ecs.Ec2Service(stack, 'Service', {
         cluster,
         taskDefinition,
-        serviceDiscoveryOptions: {
+        cloudMapOptions: {
           name: 'myApp',
         }
       });
@@ -843,7 +849,7 @@ export = {
         new ecs.Ec2Service(stack, 'Service', {
           cluster,
           taskDefinition,
-          serviceDiscoveryOptions: {
+          cloudMapOptions: {
             name: 'myApp',
             dnsRecordType: cloudmap.DnsRecordType.A
           }
@@ -861,7 +867,7 @@ export = {
       cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
 
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', {
-        networkMode: NetworkMode.AwsVpc
+        networkMode: NetworkMode.AWS_VPC
       });
       const container = taskDefinition.addContainer('MainContainer', {
         image: ContainerImage.fromRegistry('hello'),
@@ -878,7 +884,7 @@ export = {
       new ecs.Ec2Service(stack, 'Service', {
         cluster,
         taskDefinition,
-        serviceDiscoveryOptions: {
+        cloudMapOptions: {
           name: 'myApp',
         }
       });
@@ -936,7 +942,7 @@ export = {
       cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
 
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', {
-        networkMode: NetworkMode.AwsVpc
+        networkMode: NetworkMode.AWS_VPC
       });
       const container = taskDefinition.addContainer('MainContainer', {
         image: ContainerImage.fromRegistry('hello'),
@@ -953,7 +959,7 @@ export = {
       new ecs.Ec2Service(stack, 'Service', {
         cluster,
         taskDefinition,
-        serviceDiscoveryOptions: {
+        cloudMapOptions: {
           name: 'myApp',
           dnsRecordType: cloudmap.DnsRecordType.SRV
         }

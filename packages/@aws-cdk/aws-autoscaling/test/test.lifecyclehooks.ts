@@ -13,7 +13,7 @@ export = {
     const vpc = new ec2.Vpc(stack, 'VPC');
     const asg = new autoscaling.AutoScalingGroup(stack, 'ASG', {
       vpc,
-      instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
       machineImage: new ec2.AmazonLinuxImage(),
     });
 

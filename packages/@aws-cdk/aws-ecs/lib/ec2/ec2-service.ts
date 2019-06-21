@@ -85,11 +85,6 @@ export class Ec2Service extends BaseService implements IEc2Service, elb.ILoadBal
     return new Import(scope, id);
   }
 
-  /**
-   * Name of the cluster
-   */
-  public readonly clusterName: string;
-
   private readonly constraints: CfnService.PlacementConstraintProperty[];
   private readonly strategies: CfnService.PlacementStrategyProperty[];
   private readonly daemon: boolean;
@@ -125,14 +120,13 @@ export class Ec2Service extends BaseService implements IEc2Service, elb.ILoadBal
       placementConstraints: Lazy.anyValue({ produce: () => this.constraints }, { omitEmptyArray: true }),
       placementStrategies: Lazy.anyValue({ produce: () => this.strategies }, { omitEmptyArray: true }),
       schedulingStrategy: props.daemon ? 'DAEMON' : 'REPLICA',
-    }, props.cluster.clusterName, props.taskDefinition);
+    }, props.taskDefinition);
 
-    this.clusterName = props.cluster.clusterName;
     this.constraints = [];
     this.strategies = [];
     this.daemon = props.daemon || false;
 
-    if (props.taskDefinition.networkMode === NetworkMode.AwsVpc) {
+    if (props.taskDefinition.networkMode === NetworkMode.AWS_VPC) {
       this.configureAwsVpcNetworking(props.cluster.vpc, props.assignPublicIp, props.vpcSubnets, props.securityGroup);
     } else {
       // Either None, Bridge or Host networking. Copy SecurityGroup from ASG.
@@ -176,10 +170,10 @@ export class Ec2Service extends BaseService implements IEc2Service, elb.ILoadBal
    * Don't call this. Call `loadBalancer.addTarget()` instead.
    */
   public attachToClassicLB(loadBalancer: elb.LoadBalancer): void {
-    if (this.taskDefinition.networkMode === NetworkMode.Bridge) {
+    if (this.taskDefinition.networkMode === NetworkMode.BRIDGE) {
       throw new Error("Cannot use a Classic Load Balancer if NetworkMode is Bridge. Use Host or AwsVpc instead.");
     }
-    if (this.taskDefinition.networkMode === NetworkMode.None) {
+    if (this.taskDefinition.networkMode === NetworkMode.NONE) {
       throw new Error("Cannot use a load balancer if NetworkMode is None. Use Host or AwsVpc instead.");
     }
 

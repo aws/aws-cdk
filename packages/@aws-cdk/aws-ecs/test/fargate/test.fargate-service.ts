@@ -251,6 +251,12 @@ export = {
         }
       }));
 
+      expect(stack).to(haveResource('AWS::ECS::Service', {
+        // if any load balancer is configured and healthCheckGracePeriodSeconds is not
+        // set, then it should default to 60 seconds.
+        HealthCheckGracePeriodSeconds: 60
+      }));
+
       test.done();
     },
 
@@ -338,7 +344,7 @@ export = {
         new ecs.FargateService(stack, 'Service', {
           cluster,
           taskDefinition,
-          serviceDiscoveryOptions: {
+          cloudMapOptions: {
             name: 'myApp',
           }
         });
@@ -367,7 +373,7 @@ export = {
       new ecs.FargateService(stack, 'Service', {
         cluster,
         taskDefinition,
-        serviceDiscoveryOptions: {
+        cloudMapOptions: {
           name: 'myApp'
         }
       });
@@ -427,7 +433,7 @@ export = {
       new ecs.FargateService(stack, 'Service', {
         cluster,
         taskDefinition,
-        serviceDiscoveryOptions: {
+        cloudMapOptions: {
           name: 'myApp',
           dnsRecordType: cloudmap.DnsRecordType.SRV
         }
