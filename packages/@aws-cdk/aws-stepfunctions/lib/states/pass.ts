@@ -3,23 +3,41 @@ import {Chain} from '../chain';
 import {IChainable, INextable} from '../types';
 import {renderJsonPath, State, StateType} from './state';
 
+/**
+ * The result of a Pass operation
+ */
 export class Result {
+    /**
+     * The result of the operation is a string
+     */
     public static fromString(value: string): Result {
         return new Result(value);
     }
 
+    /**
+     * The result of the operation is a number
+     */
     public static fromNumber(value: number): Result {
         return new Result(value);
     }
 
+    /**
+     * The result of the operation is a boolean
+     */
     public static fromBoolean(value: boolean): Result {
         return new Result(value);
     }
 
+    /**
+     * The result of the operation is an object
+     */
     public static fromObject(value: {[key: string]: any}): Result {
         return new Result(value);
     }
 
+    /**
+     * The result of the operation is an array
+     */
     public static fromArray(value: any[]): Result {
         return new Result(value);
     }
