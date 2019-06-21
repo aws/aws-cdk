@@ -1,4 +1,5 @@
 import cloudformation = require('@aws-cdk/aws-cloudformation');
+import { CloudFormationCapabilities } from '@aws-cdk/aws-cloudformation';
 import codepipeline = require('@aws-cdk/aws-codepipeline');
 import iam = require('@aws-cdk/aws-iam');
 import cdk = require('@aws-cdk/cdk');
@@ -141,7 +142,7 @@ export interface CloudFormationDeployActionProps extends CloudFormationActionPro
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-iam-template.html#using-iam-capabilities
    * @default None, unless `adminPermissions` is true
    */
-  readonly capabilities?: cloudformation.CloudFormationCapabilities;
+  readonly capabilities?: cloudformation.CloudFormationCapabilities[];
 
   /**
    * Whether to grant full permissions to CloudFormation while deploying this template.
@@ -221,12 +222,12 @@ export abstract class CloudFormationDeployAction extends CloudFormationAction {
 
   constructor(props: CloudFormationDeployActionProps, configuration: any) {
     const capabilities = props.adminPermissions && props.capabilities === undefined
-      ? cloudformation.CloudFormationCapabilities.NAMED_IAM
+      ? [cloudformation.CloudFormationCapabilities.NAMED_IAM]
       : props.capabilities;
     super(props, {
       ...configuration,
       // None evaluates to empty string which is falsey and results in undefined
-      Capabilities: (capabilities && capabilities.toString()) || undefined,
+      Capabilities: parseCapabilities(capabilities),
       RoleArn: cdk.Lazy.stringValue({ produce: () => this.deploymentRole.roleArn }),
       ParameterOverrides: cdk.Lazy.stringValue({ produce: () => Stack.of(this.scope).toJsonString(props.parameterOverrides) }),
       TemplateConfiguration: props.templateConfiguration ? props.templateConfiguration.location : undefined,
@@ -543,3 +544,16 @@ interface StatementTemplate {
 }
 
 type StatementCondition = { [op: string]: { [attribute: string]: string } };
+
+function parseCapabilities(capabilities: CloudFormationCapabilities[] | undefined): string | undefined {
+  if (capabilities === undefined) {
+    return undefined;
+  } else if (capabilities.length === 1) {
+    const capability = capabilities.toString();
+    return (capability === '') ? undefined : capability;
+  } else if (capabilities.length > 1) {
+    return capabilities.join(',');
+  }
+
+  return undefined;
+}

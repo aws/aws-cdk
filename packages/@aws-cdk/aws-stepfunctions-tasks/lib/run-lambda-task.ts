@@ -36,6 +36,13 @@ export interface RunLambdaTaskProps {
    * @default - No context
    */
   readonly clientContext?: string;
+
+  /**
+   * Version or alias of the function to be invoked
+   *
+   * @default - No qualifier
+   */
+  readonly qualifier?: string;
 }
 
 /**
@@ -75,6 +82,7 @@ export class RunLambdaTask implements sfn.IStepFunctionsTask {
         Payload: this.props.payload,
         InvocationType: this.props.invocationType,
         ClientContext: this.props.clientContext,
+        Qualifier: this.props.qualifier
       }
     };
   }

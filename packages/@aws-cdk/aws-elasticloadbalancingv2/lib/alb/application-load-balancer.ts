@@ -52,7 +52,7 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
    * Import an existing Application Load Balancer
    */
   public static fromApplicationLoadBalancerAttributes(
-      scope: Construct, id: string, attrs: ApplicationLoadBalancerAttributes): IApplicationLoadBalancer {
+    scope: Construct, id: string, attrs: ApplicationLoadBalancerAttributes): IApplicationLoadBalancer {
 
     return new ImportedApplicationLoadBalancer(scope, id, attrs);
   }
@@ -97,7 +97,7 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
     }
 
     prefix = prefix || '';
-    bucket.grantPut(new iam.AccountPrincipal(account), prefix + '*');
+    bucket.grantPut(new iam.AccountPrincipal(account), `${(prefix ? prefix + "/" : "")}AWSLogs/${Stack.of(this).account}/*`);
 
     // make sure the bucket's policy is created before the ALB (see https://github.com/awslabs/aws-cdk/issues/1633)
     this.node.addDependency(bucket);
@@ -519,7 +519,7 @@ export interface ApplicationLoadBalancerAttributes {
 }
 
 // https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-access-logs.html#access-logging-bucket-permissions
-const ELBV2_ACCOUNTS: {[region: string]: string } = {
+const ELBV2_ACCOUNTS: { [region: string]: string } = {
   'us-east-1': '127311923021',
   'us-east-2': '033677994240',
   'us-west-1': '027434742980',

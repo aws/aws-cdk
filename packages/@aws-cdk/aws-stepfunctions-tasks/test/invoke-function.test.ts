@@ -15,7 +15,7 @@ beforeEach(() => {
   });
 });
 
-test('Lambda function can be used in a Task', () => {
+test('Invoke lambda with function ARN', () => {
   // WHEN
   const task = new sfn.Task(stack, 'Task', { task: new tasks.InvokeFunction(fn) });
   new sfn.StateMachine(stack, 'SM', {
@@ -39,7 +39,7 @@ test('Lambda function payload ends up in Parameters', () => {
     definition: new sfn.Task(stack, 'Task', {
       task: new tasks.InvokeFunction(fn, {
         payload: {
-          foo: 'bar'
+          foo: sfn.Data.stringAt('$.bar')
         }
       })
     })
@@ -48,45 +48,10 @@ test('Lambda function payload ends up in Parameters', () => {
   expect(stack).toHaveResource('AWS::StepFunctions::StateMachine', {
     DefinitionString: {
       "Fn::Join": ["", [
-        "{\"StartAt\":\"Task\",\"States\":{\"Task\":{\"End\":true,\"Parameters\":{\"foo\":\"bar\"},\"Type\":\"Task\",\"Resource\":\"",
+        "{\"StartAt\":\"Task\",\"States\":{\"Task\":{\"End\":true,\"Parameters\":{\"foo.$\":\"$.bar\"},\"Type\":\"Task\",\"Resource\":\"",
         { "Fn::GetAtt": ["Fn9270CBC0", "Arn"] },
         "\"}}}"
       ]]
     },
   });
-});
-
-test('Lambda function can be used in a Task with Task Token', () => {
-  const task = new sfn.Task(stack, 'Task', {
-    task: new tasks.RunLambdaTask(fn, {
-      waitForTaskToken: true,
-      payload: {
-        token: sfn.Context.taskToken
-      }
-    })
-  });
-  new sfn.StateMachine(stack, 'SM', {
-    definition: task
-  });
-
-  // THEN
-  expect(stack).toHaveResource('AWS::StepFunctions::StateMachine', {
-    DefinitionString: {
-      "Fn::Join": ["", [
-          "{\"StartAt\":\"Task\",\"States\":{\"Task\":{\"End\":true,\"Parameters\":{\"FunctionName\":\"",
-          { Ref: "Fn9270CBC0" },
-          "\",\"Payload\":{\"token\":\"$$.Task.Token\"}},\"Type\":\"Task\",\"Resource\":\"arn:aws:states:::lambda:invoke.waitForTaskToken\"}}}"
-      ]]
-    },
-  });
-});
-
-test('Task throws if waitForTaskToken is supplied but task token is not included', () => {
-  expect(() => {
-    new sfn.Task(stack, 'Task', {
-      task: new tasks.RunLambdaTask(fn, {
-        waitForTaskToken: true
-      })
-    });
-  }).toThrow(/Task Token is missing in payload/i);
 });

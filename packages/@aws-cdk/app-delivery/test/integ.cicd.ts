@@ -35,7 +35,7 @@ new cicd.PipelineDeployStackAction(stack, 'DeployStack', {
   executeChangeSetRunOrder: 999,
   input: sourceOutput,
   adminPermissions: false,
-  capabilities: cfn.CloudFormationCapabilities.NONE,
+  capabilities: [cfn.CloudFormationCapabilities.NONE],
 });
 
 app.synth();

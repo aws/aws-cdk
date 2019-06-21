@@ -114,17 +114,16 @@ export abstract class BaseService extends Resource
   public readonly serviceName: string;
 
   /**
-   * Name of this service's cluster
-   */
-  public readonly clusterName: string;
-
-  /**
    * Task definition this service is associated with
    */
   public readonly taskDefinition: TaskDefinition;
 
+  /**
+   * The cluster this service is scheduled on
+   */
+  public readonly cluster: ICluster;
+
   protected cloudmapService?: cloudmap.Service;
-  protected cluster: ICluster;
   protected loadBalancers = new Array<CfnService.LoadBalancerProperty>();
   protected networkConfiguration?: CfnService.NetworkConfigurationProperty;
   protected serviceRegistries = new Array<CfnService.ServiceRegistryProperty>();
@@ -136,7 +135,6 @@ export abstract class BaseService extends Resource
               id: string,
               props: BaseServiceProps,
               additionalProps: any,
-              clusterName: string,
               taskDefinition: TaskDefinition) {
     super(scope, id, {
       physicalName: props.serviceName,
@@ -178,7 +176,6 @@ export abstract class BaseService extends Resource
     this.serviceArn = resourceIdentifiers.arn;
     this.serviceName = resourceIdentifiers.name;
 
-    this.clusterName = clusterName;
     this.cluster = props.cluster;
 
     if (props.serviceDiscoveryOptions) {
@@ -224,7 +221,7 @@ export abstract class BaseService extends Resource
 
     return this.scalableTaskCount = new ScalableTaskCount(this, 'TaskCount', {
       serviceNamespace: appscaling.ServiceNamespace.ECS,
-      resourceId: `service/${this.clusterName}/${this.serviceName}`,
+      resourceId: `service/${this.cluster.clusterName}/${this.serviceName}`,
       dimension: 'ecs:service:DesiredCount',
       role: this.makeAutoScalingRole(),
       ...props
@@ -238,7 +235,7 @@ export abstract class BaseService extends Resource
     return new cloudwatch.Metric({
       namespace: 'AWS/ECS',
       metricName,
-      dimensions: { ClusterName: this.clusterName, ServiceName: this.serviceName },
+      dimensions: { ClusterName: this.cluster.clusterName, ServiceName: this.serviceName },
       ...props
     });
   }
