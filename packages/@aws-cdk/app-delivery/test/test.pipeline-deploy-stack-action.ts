@@ -127,14 +127,14 @@ export = nodeunit.testCase({
       stage: selfUpdateStage4,
       stack: stackWithAutoExpandCapability,
       input: selfUpdatingStack.synthesizedApp,
-      capabilities: [cfn.CloudFormationCapabilities.AutoExpand],
+      capabilities: [cfn.CloudFormationCapabilities.AUTO_EXPAND],
       adminPermissions: false,
     });
     new PipelineDeployStackAction(pipelineStack, 'DeployStack4', {
       stage: selfUpdateStage5,
       stack: stackWithAnonymousAndAutoExpandCapability,
       input: selfUpdatingStack.synthesizedApp,
-      capabilities: [cfn.CloudFormationCapabilities.ANONYMOUS_IAM, cfn.CloudFormationCapabilities.AutoExpand],
+      capabilities: [cfn.CloudFormationCapabilities.ANONYMOUS_IAM, cfn.CloudFormationCapabilities.AUTO_EXPAND],
       adminPermissions: false,
     });
     expect(pipelineStack).to(haveResource('AWS::CodePipeline::Pipeline', hasPipelineAction({

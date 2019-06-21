@@ -36,5 +36,5 @@ export enum CloudFormationCapabilities {
    *
    * @link https://docs.aws.amazon.com/AWSCloudFormation/latest/APIReference/API_CreateStack.html
    */
-  AutoExpand = 'CAPABILITY_AUTO_EXPAND'
+  AUTO_EXPAND = 'CAPABILITY_AUTO_EXPAND'
 }
