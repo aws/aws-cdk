@@ -47,7 +47,7 @@ export interface StageProps {
   readonly actions?: Action[];
 }
 
-export interface StageAddToPipelineProps extends StageProps {
+export interface StageOptions extends StageProps {
   readonly placement?: StagePlacement;
 }
 
@@ -287,7 +287,7 @@ export class Pipeline extends PipelineBase {
    * @param props the creation properties of the new Stage
    * @returns the newly created Stage
    */
-  public addStage(props: StageAddToPipelineProps): IStage {
+  public addStage(props: StageOptions): IStage {
     // check for duplicate Stages and names
     if (this.stages.find(s => s.stageName === props.stageName)) {
       throw new Error(`Stage with duplicate name '${props.stageName}' added to the Pipeline`);

@@ -50,11 +50,11 @@ export interface GitHubSourceActionProps extends codepipeline.CommonActionProps 
   /**
    * How AWS CodePipeline should be triggered
    *
-   * With the default value "WebHook", a webhook is created in GitHub that triggers the action
-   * With "Poll", CodePipeline periodically checks the source for changes
+   * With the default value "WEBHOOK", a webhook is created in GitHub that triggers the action
+   * With "POLL", CodePipeline periodically checks the source for changes
    * With "None", the action is not triggered through changes in the source
    *
-   * @default GitHubTrigger.WebHook
+   * @default GitHubTrigger.WEBHOOK
    */
   readonly trigger?: GitHubTrigger;
 }

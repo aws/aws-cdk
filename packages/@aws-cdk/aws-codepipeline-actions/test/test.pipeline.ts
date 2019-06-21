@@ -554,35 +554,6 @@ export = {
     test.done();
   },
 
-  'CodeCommit Action': {
-    'does not poll for changes by default'(test: Test) {
-      const stack = new Stack();
-      const sourceAction = new cpactions.CodeCommitSourceAction({
-        actionName: 'stage',
-        output: new codepipeline.Artifact('SomeArtifact'),
-        repository: repositoryForTesting(stack),
-      });
-
-      test.equal(sourceAction.configuration.PollForSourceChanges, false);
-
-      test.done();
-    },
-
-    'does not poll for source changes when explicitly set to false'(test: Test) {
-      const stack = new Stack();
-      const sourceAction = new cpactions.CodeCommitSourceAction({
-        actionName: 'stage',
-        output: new codepipeline.Artifact('SomeArtifact'),
-        repository: repositoryForTesting(stack),
-        pollForSourceChanges: false,
-      });
-
-      test.equal(sourceAction.configuration.PollForSourceChanges, false);
-
-      test.done();
-    },
-  },
-
   'cross-region Pipeline': {
     'generates the required Action & ArtifactStores properties in the template'(test: Test) {
       const pipelineRegion = 'us-west-2';
@@ -866,10 +837,4 @@ export = {
 function stageForTesting(stack: Stack): codepipeline.IStage {
   const pipeline = new codepipeline.Pipeline(stack, 'pipeline');
   return pipeline.addStage({ stageName: 'stage' });
-}
-
-function repositoryForTesting(stack: Stack): codecommit.Repository {
-  return new codecommit.Repository(stack, 'Repository', {
-    repositoryName: 'Repository',
-  });
 }
