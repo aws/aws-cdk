@@ -156,7 +156,11 @@ export = {
   new Child(parent, 'C1');
   new Child(parent, 'C2');
 
-  test.throws(() => app.synth(), /Validation failed with the following errors/);
+  const assembly = app.synth();
+  test.deepEqual(assembly.getStack('Parent').messages.filter(m => m.level === cxapi.SynthesisMessageLevel.ERROR).map(m => m.entry.data), [
+    'Error from C1',
+    'Error from C2',
+  ]);
 
   test.done();
 },

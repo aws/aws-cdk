@@ -48,10 +48,11 @@ export class ConstructNode {
       const validate = options.skipValidation === undefined ? true : !options.skipValidation;
       if (validate) {
         const errors = this.validate(root);
-        if (errors.length > 0) {
-          const errorList = errors.map(e => `[${e.source.node.path}] ${e.message}`).join('\n  ');
-          throw new Error(`Validation failed with the following errors:\n  ${errorList}`);
-        }
+        // Turn the errors into metadata errors, so they will prevent deploying but will not
+        // prevent CDK from executing again.
+        errors.forEach(e => {
+          e.source.node.addError(e.message);
+        });
       }
 
       // synthesize (leaves first)
