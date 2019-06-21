@@ -30,7 +30,7 @@ import ec2 = require('@aws-cdk/aws-ec2');
 
 new autoscaling.AutoScalingGroup(this, 'ASG', {
     vpc,
-    instanceType: new ec2.InstanceTypePair(InstanceClass.Burstable2, InstanceSize.Micro),
+    instanceType: ec2.InstanceType.of(InstanceClass.Burstable2, InstanceSize.Micro),
     machineImage: new ec2.AmazonLinuxImage() // get the latest Amazon Linux image
 });
 ```
