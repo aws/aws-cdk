@@ -95,7 +95,7 @@ export class Cluster extends Resource implements ICluster {
    * NOTE: HttpNamespaces are not supported, as ECS always requires a DNSConfig when registering an instance to a Cloud
    * Map service.
    */
-  public addDefaultCloudMapNamespace(options: NamespaceOptions): cloudmap.INamespace {
+  public addDefaultCloudMapNamespace(options: CloudMapNamespaceOptions): cloudmap.INamespace {
     if (this._defaultNamespace !== undefined) {
       throw new Error("Can only add default namespace once.");
     }
@@ -473,7 +473,7 @@ export interface AddCapacityOptions extends AddAutoScalingGroupCapacityOptions, 
   readonly machineImage?: ec2.IMachineImage;
 }
 
-export interface NamespaceOptions {
+export interface CloudMapNamespaceOptions {
   /**
    * The domain name for the namespace, such as foo.com
    */
