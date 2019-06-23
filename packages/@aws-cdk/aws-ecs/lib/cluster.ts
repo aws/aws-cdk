@@ -23,6 +23,27 @@ export interface ClusterProps {
    * The VPC to associate with the cluster.
    */
   readonly vpc: ec2.IVpc;
+
+  /**
+   * The service discovery namespace created in this cluster
+   *
+   * @default none
+   */
+  readonly defaultCloudMapNamespace?: NamespaceOptions;
+
+  /**
+   * The name of the autoscaling group to be added
+   *
+   * @default none
+   */
+  readonly autoscalingGroupName?: string;
+
+  /**
+   * The ec2 capacity to add to the cluster
+   *
+   * @default none
+   */
+  readonly capacity?: AddCapacityOptions;
 }
 
 /**
@@ -67,6 +88,11 @@ export class Cluster extends Resource implements ICluster {
   private _hasEc2Capacity: boolean = false;
 
   /**
+   * The autoscaling group for added Ec2 capacity
+   */
+  private _autoscalingGroup?: autoscaling.IAutoScalingGroup;
+
+  /**
    * Constructs a new instance of the Cluster class.
    */
   constructor(scope: Construct, id: string, props: ClusterProps) {
@@ -86,6 +112,14 @@ export class Cluster extends Resource implements ICluster {
     this.clusterName = this.getResourceNameAttribute(cluster.ref);
 
     this.vpc = props.vpc;
+
+    this._defaultCloudMapNamespace = props.defaultCloudMapNamespace !== undefined
+      ? this.addDefaultCloudMapNamespace(props.defaultCloudMapNamespace)
+      : undefined;
+
+    this._autoscalingGroup = props.capacity !== undefined && props.autoscalingGroupName !== undefined
+      ? this.addCapacity(props.autoscalingGroupName, props.capacity)
+      : undefined;
   }
 
   /**
@@ -191,6 +225,13 @@ export class Cluster extends Resource implements ICluster {
         drainTime: options.taskDrainTime
       });
     }
+  }
+
+  /**
+   * Getter for autoscaling group added to cluster
+   */
+  public get autoscalingGroup(): autoscaling.AutoScalingGroup | undefined {
+    return this._autoscalingGroup;
   }
 
   /**
@@ -331,6 +372,11 @@ export interface ICluster extends IResource {
    * The AWS Cloud Map namespace to associate with the cluster.
    */
   readonly defaultCloudMapNamespace?: cloudmap.INamespace;
+
+  /**
+   * Getter for autoscaling group added to the cluster
+   */
+  readonly autoscalingGroup?: autoscaling.IAutoScalingGroup;
 }
 
 /**
@@ -372,6 +418,13 @@ export interface ClusterAttributes {
    * @default - No default namespace
    */
   readonly defaultCloudMapNamespace?: cloudmap.INamespace;
+
+  /**
+   * Getter for autoscaling group added to the cluster
+   *
+   * @default - No default autoscaling group
+   */
+  readonly autoscalingGroup?: autoscaling.IAutoScalingGroup;
 }
 
 /**
