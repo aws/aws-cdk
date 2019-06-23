@@ -3,6 +3,7 @@ import elbv2 = require('@aws-cdk/aws-elasticloadbalancingv2');
 import cdk = require('@aws-cdk/cdk');
 import ecs = require('../../lib');
 import { NetworkMode } from '../../lib';
+import { LaunchType } from '../../lib/base/base-service';
 
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-ecs-integ');
@@ -31,6 +32,7 @@ container.addPortMappings({
 const service = new ecs.Ec2Service(stack, "Service", {
   cluster,
   taskDefinition,
+  launchType: LaunchType.EC2,
 });
 
 const lb = new elbv2.ApplicationLoadBalancer(stack, 'LB', { vpc, internetFacing: true });

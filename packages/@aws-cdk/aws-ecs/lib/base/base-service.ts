@@ -29,6 +29,13 @@ export interface BaseServiceProps {
   readonly cluster: ICluster;
 
   /**
+   * The launch type on which to run your service.
+   *
+   * Valid values are: LaunchType.ECS or LaunchType.FARGATE
+   */
+  readonly launchType: LaunchType;
+
+  /**
    * Number of desired copies of running tasks
    *
    * @default 1
@@ -88,13 +95,6 @@ export interface BaseServiceProps {
    * @default false
    */
   readonly longArnEnabled?: boolean;
-
-  /**
-   * The launch type on which to run your service.
-   *
-   * @default - not defined
-   */
-  readonly launchType?: LaunchType;
 }
 
 /**
