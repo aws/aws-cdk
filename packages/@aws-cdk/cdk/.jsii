@@ -1,0 +1,47 @@
+{
+  "author": {
+    "name": "Amazon Web Services",
+    "organization": true,
+    "roles": [
+      "author"
+    ],
+    "url": "https://aws.amazon.com"
+  },
+  "description": "Deprecated: this module ha been renamed to @aws-cdk/core",
+  "docs": {
+    "deprecated": "This module has been renamed to @aws-cdk/core",
+    "stability": "deprecated"
+  },
+  "homepage": "https://github.com/awslabs/aws-cdk",
+  "jsiiVersion": "0.11.3 (build 464b8c6)",
+  "license": "Apache-2.0",
+  "name": "@aws-cdk/cdk",
+  "readme": {
+    "markdown": "This module has been renamed to @aws-cdk/core\n<!--BEGIN STABILITY BANNER-->\n\n---\n\n![Stability: Deprecated](https://img.shields.io/badge/stability-Deprecated-critical.svg?style=for-the-badge)\n\n> This API may emit warnings. Backward compatibility is not guaranteed.\n\n---\n<!--END STABILITY BANNER-->\n\n"
+  },
+  "repository": {
+    "directory": "packages/@aws-cdk/cdk",
+    "type": "git",
+    "url": "https://github.com/awslabs/aws-cdk.git"
+  },
+  "schema": "jsii/0.10.0",
+  "targets": {
+    "java": {
+      "maven": {
+        "artifactId": "cdk",
+        "groupId": "software.amazon.awscdk"
+      },
+      "package": "software.amazon.awscdk"
+    },
+    "js": {
+      "npm": "@aws-cdk/cdk"
+    },
+    "python": {
+      "distName": "aws-cdk.cdk",
+      "module": "aws_cdk.cdk"
+    }
+  },
+  "types": {},
+  "version": "0.35.0",
+  "fingerprint": "ia0gOKzBkyR6GiGt0pvF9/ZEsI2wa9dGr/PZyezy1zI="
+}
