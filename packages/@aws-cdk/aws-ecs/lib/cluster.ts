@@ -230,7 +230,7 @@ export class Cluster extends Resource implements ICluster {
   /**
    * Getter for autoscaling group added to cluster
    */
-  public get autoscalingGroup(): autoscaling.AutoScalingGroup | undefined {
+  public get autoscalingGroup(): autoscaling.IAutoScalingGroup | undefined {
     return this._autoscalingGroup;
   }
 
