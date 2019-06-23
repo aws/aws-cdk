@@ -742,7 +742,7 @@ on all objects, `subnetsToUse` has been renamed to `subnetType`.
 
 ### Bug Fixes
 
-* **awslint:** Don't fail if the `@aws-cdk/core` module is not present ([#1953](https://github.com/awslabs/aws-cdk/issues/1953)) ([929e854](https://github.com/awslabs/aws-cdk/commit/929e854))
+* **awslint:** Don't fail if the `@aws-cdk/cdk` module is not present ([#1953](https://github.com/awslabs/aws-cdk/issues/1953)) ([929e854](https://github.com/awslabs/aws-cdk/commit/929e854))
 * **cdk-integ:** Update cdk-integ to use new context file ([#1962](https://github.com/awslabs/aws-cdk/issues/1962)) ([dbd2401](https://github.com/awslabs/aws-cdk/commit/dbd2401))
 * **cloudfront:** allow IBucket as CloudFront source ([855f1f5](https://github.com/awslabs/aws-cdk/commit/855f1f5)), closes [#1946](https://github.com/awslabs/aws-cdk/issues/1946)
 * **cloudfront:** pass `viewerProtocolPolicy` to the distribution's behaviors ([#1932](https://github.com/awslabs/aws-cdk/issues/1932)) ([615ecd4](https://github.com/awslabs/aws-cdk/commit/615ecd4))
@@ -1509,7 +1509,7 @@ Java (maven)                | [`mvn versions:use-latest-versions`](https://www.m
   ```
 
 - **framework:** The CDK is no longer shipped with built-in support for JSX. You can still use JSX but you will have to manually configure it.
-- **aws-iam:** `PolicyDocument`, `PolicyStatement` and all `PolicyPrincipal` classes moved from the @aws-cdk/core module and into the @aws-cdk/aws-iam module.
+- **aws-iam:** `PolicyDocument`, `PolicyStatement` and all `PolicyPrincipal` classes moved from the @aws-cdk/cdk module and into the @aws-cdk/aws-iam module.
 - **aws-codepipeline-api**: `Artifact.subartifact` method of the CodePipeline API was renamed to `Artifact.atPath`.
 - constructor signature of `TagManager` has changed. `initialTags` is now passed inside a props object.
 - **util:** @aws-cdk/util is no longer available
@@ -1955,9 +1955,9 @@ The headliners of this release are **.NET support**, and a wealth of commits by 
 
 ## Features
 
-- **@aws-cdk/core**: Tokens can now be transparently embedded into strings and encoded into JSON without losing their semantics. This makes it possible to treat late-bound (deploy-time) values as if they were regular strings ([@rix0rrr] in [#518](https://github.com/awslabs/aws-cdk/pull/518)).
+- **@aws-cdk/cdk**: Tokens can now be transparently embedded into strings and encoded into JSON without losing their semantics. This makes it possible to treat late-bound (deploy-time) values as if they were regular strings ([@rix0rrr] in [#518](https://github.com/awslabs/aws-cdk/pull/518)).
 - **@aws-cdk/aws-s3**: add support for bucket notifications to Lambda, SNS, and SQS targets ([@eladb] in [#201](https://github.com/awslabs/aws-cdk/pull/201), [#560](https://github.com/awslabs/aws-cdk/pull/560), [#561](https://github.com/awslabs/aws-cdk/pull/561), [#564](https://github.com/awslabs/aws-cdk/pull/564))
-- **@aws-cdk/core**: non-alphanumeric characters can now be used as construct identifiers ([@eladb] in [#556](https://github.com/awslabs/aws-cdk/pull/556))
+- **@aws-cdk/cdk**: non-alphanumeric characters can now be used as construct identifiers ([@eladb] in [#556](https://github.com/awslabs/aws-cdk/pull/556))
 - **@aws-cdk/aws-iam**: add support for `maxSessionDuration` for Roles ([@eladb] in [#545](https://github.com/awslabs/aws-cdk/pull/545)).
 
 ## Changes
@@ -1983,7 +1983,7 @@ The headliners of this release are **.NET support**, and a wealth of commits by 
 ## Features
 
 - **aws-cdk**: Support `--profile` in command-line toolkit ([@rix0rrr] in [#517](https://github.com/awslabs/aws-cdk/issues/517))
-- **@aws-cdk/core**: Introduce `Default` construct id ([@rix0rrr] in [#496](https://github.com/awslabs/aws-cdk/issues/496))
+- **@aws-cdk/cdk**: Introduce `Default` construct id ([@rix0rrr] in [#496](https://github.com/awslabs/aws-cdk/issues/496))
 - **@aws-cdk/aws-lambda**: Add `LambdaRuntime.DotNetCore21` ([@Mortifera] in [#507](https://github.com/awslabs/aws-cdk/issues/507))
 - **@aws-cdk/runtime-values** (_**BREAKING**_): rename 'rtv' to 'runtime-values' ([@rix0rrr] in [#494](https://github.com/awslabs/aws-cdk/issues/494))
 - **@aws-cdk/aws-ec2**: Combine `Connections` and `DefaultConnections` classes ([@rix0rrr] in [#453](https://github.com/awslabs/aws-cdk/issues/453))
@@ -1996,7 +1996,7 @@ The headliners of this release are **.NET support**, and a wealth of commits by 
 ## Bug fixes
 
 - **aws-cdk** (toolkit): Fix java `cdk init` template ([@RomainMuller] in [#490](https://github.com/awslabs/aws-cdk/issues/490))
-- **@aws-cdk/core** (_**BREAKING**_): Align `FnJoin` signature to CloudFormation ([@RomainMuller] in [#516](https://github.com/awslabs/aws-cdk/issues/516))
+- **@aws-cdk/cdk** (_**BREAKING**_): Align `FnJoin` signature to CloudFormation ([@RomainMuller] in [#516](https://github.com/awslabs/aws-cdk/issues/516))
 - **@aws-cdk/aws-cloudfront**: Fix origin error ([@mindstorms6] in [#514](https://github.com/awslabs/aws-cdk/issues/514))
 - **@aws-cdk/aws-lambda**: Invalid cast for inline LambdaRuntime members in Java ([@eladb] in [#505](https://github.com/awslabs/aws-cdk/issues/505))
 - **examples**: Fixed java examples ([@RomainMuller] in [#498](https://github.com/awslabs/aws-cdk/issues/498))
@@ -2633,7 +2633,7 @@ new codepipeline.PipelineResource(this, {
 - Introduce a new scheme for generating CloudFormation logical IDs which adds a hash of the construct path to the generated ID to avoid ID collisions. To opt-in for the new scheme, set `hashedLogicalIDs` to `true` when creating a **Stack**.
 - Allow specifying explicit **logicalID** for stack elements like **Resource** **Parameter** and **Output**.
 - `async exec()` changed to `run()` and `validate` was changed to be a synchronous method instead of async.
-- Merged **@aws-cdk/core** into **aws-cdk**, which now where the core classes of the CDK framework live.
+- Merged **@aws-cdk/cdk** into **aws-cdk**, which now where the core classes of the CDK framework live.
 - The **Runtime Values** library, which was under **@aws-cdk/rtv** is now **@aws-cdk/rtv**.
 - Bugfix: Tags could not be used because they failed validation.
 - Bugfix: Allow "-" in stack names.
