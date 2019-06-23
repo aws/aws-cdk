@@ -209,7 +209,7 @@ export class CloudAssemblyBuilder {
 
     // "backwards compatibility": in order for the old CLI to tell the user they
     // need a new version, we'll emit the legacy manifest with only "version".
-    // this will result in an error "CDK Toolkit >= 0.34.0 is required in order to interact with this program."
+    // this will result in an error "CDK Toolkit >= CLOUD_ASSEMBLY_VERSION is required in order to interact with this program."
     fs.writeFileSync(path.join(this.outdir, 'cdk.out'), JSON.stringify({ version: CLOUD_ASSEMBLY_VERSION }));
 
     return new CloudAssembly(this.outdir);

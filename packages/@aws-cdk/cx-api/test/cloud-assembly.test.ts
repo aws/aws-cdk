@@ -87,7 +87,7 @@ test('fails for invalid dependencies', () => {
 });
 
 test('verifyManifestVersion', () => {
-  verifyManifestVersion('0.34.0');
-  expect(() => verifyManifestVersion('0.31.0')).toThrow('CDK CLI can only be used with apps created by CDK >= 0.34.0');
-  expect(() => verifyManifestVersion('0.35.0')).toThrow('CDK CLI >= 0.35.0 is required to interact with this app');
+  verifyManifestVersion(CLOUD_ASSEMBLY_VERSION);
+  expect(() => verifyManifestVersion('0.31.0')).toThrow(`CDK CLI can only be used with apps created by CDK >= ${CLOUD_ASSEMBLY_VERSION}`);
+  expect(() => verifyManifestVersion('99.99.99')).toThrow(`CDK CLI >= 99.99.99 is required to interact with this app`);
 });
