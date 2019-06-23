@@ -1,5 +1,5 @@
 import cloudwatch = require('@aws-cdk/aws-cloudwatch');
-import { Construct, Stack } from '@aws-cdk/cdk';
+import { Construct } from '@aws-cdk/cdk';
 import { IFunction, QualifiedFunctionBase } from './function-base';
 import { IVersion } from './lambda-version';
 import { CfnAlias } from './lambda.generated';
