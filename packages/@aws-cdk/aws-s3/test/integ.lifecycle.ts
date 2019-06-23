@@ -1,4 +1,4 @@
-import { App, RemovalPolicy, Stack } from '@aws-cdk/cdk';
+import { App, RemovalPolicy, Stack } from '@aws-cdk/core';
 import { Bucket } from '../lib';
 
 const app = new App();

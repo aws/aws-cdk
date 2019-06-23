@@ -1,4 +1,4 @@
-import { Duration } from '@aws-cdk/cdk';
+import { Duration } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import events = require('../lib');
 

@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import iam = require('@aws-cdk/aws-iam');
 import kms = require('@aws-cdk/aws-kms');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import glue = require('../lib');
 
 const app = new cdk.App();

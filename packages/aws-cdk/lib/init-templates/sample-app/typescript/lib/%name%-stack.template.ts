@@ -1,7 +1,7 @@
 import sns = require('@aws-cdk/aws-sns');
 const subs = require('@aws-cdk/aws-sns-subscriptions');
 import sqs = require('@aws-cdk/aws-sqs');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 
 export class %name.PascalCased%Stack extends cdk.Stack {
   constructor(scope: cdk.App, id: string, props?: cdk.StackProps) {

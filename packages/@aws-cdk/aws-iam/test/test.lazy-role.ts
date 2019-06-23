@@ -1,5 +1,5 @@
 import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import nodeunit = require('nodeunit');
 import iam = require('../lib');
 

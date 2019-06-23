@@ -73,7 +73,7 @@
     "@aws-cdk/aws-sns": "^0.35.0",
     "@aws-cdk/aws-sns-subscriptions": "^0.35.0",
     "@aws-cdk/aws-sqs": "^0.35.0",
-    "@aws-cdk/cdk": "^0.35.0"
+    "@aws-cdk/core": "^0.35.0"
   },
   "homepage": "https://github.com/awslabs/aws-cdk",
   "peerDependencies": {
@@ -88,7 +88,7 @@
     "@aws-cdk/aws-sns": "^0.35.0",
     "@aws-cdk/aws-sns-subscriptions": "^0.35.0",
     "@aws-cdk/aws-sqs": "^0.35.0",
-    "@aws-cdk/cdk": "^0.35.0"
+    "@aws-cdk/core": "^0.35.0"
   },
   "engines": {
     "node": ">= 8.10.0"

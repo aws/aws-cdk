@@ -1,4 +1,4 @@
-import { Token } from '@aws-cdk/cdk';
+import { Token } from '@aws-cdk/core';
 
 /**
  * Connection endpoint of a database cluster or instance

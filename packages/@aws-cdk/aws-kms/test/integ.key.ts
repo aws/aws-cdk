@@ -1,6 +1,6 @@
 import { PolicyStatement } from '@aws-cdk/aws-iam';
 import iam = require('@aws-cdk/aws-iam');
-import { App, RemovalPolicy, Stack } from '@aws-cdk/cdk';
+import { App, RemovalPolicy, Stack } from '@aws-cdk/core';
 import { Key } from '../lib';
 
 const app = new App();

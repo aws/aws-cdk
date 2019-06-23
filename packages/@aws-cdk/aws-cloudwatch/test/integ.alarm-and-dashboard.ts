@@ -4,7 +4,7 @@
 // to the very lowest level to create CloudFormation resources by hand, without even generated
 // library support.
 
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import cloudwatch = require('../lib');
 import { PeriodOverride } from '../lib';
 

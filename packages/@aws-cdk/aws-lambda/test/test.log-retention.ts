@@ -1,6 +1,6 @@
 import { expect, haveResource } from '@aws-cdk/assert';
 import logs = require('@aws-cdk/aws-logs');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import { Test } from 'nodeunit';
 import { LogRetention } from '../lib/log-retention';
 

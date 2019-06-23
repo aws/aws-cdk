@@ -1,5 +1,5 @@
 import iam = require('@aws-cdk/aws-iam');
-import { App, Stack, Tag } from '@aws-cdk/cdk';
+import { App, Stack, Tag } from '@aws-cdk/core';
 import { Attribute, AttributeType, ProjectionType, StreamViewType, Table } from '../lib';
 
 // CDK parameters

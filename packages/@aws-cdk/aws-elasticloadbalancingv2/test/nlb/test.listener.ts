@@ -1,7 +1,7 @@
 import { expect, haveResource, MatchStyle } from '@aws-cdk/assert';
 import acm = require('@aws-cdk/aws-certificatemanager');
 import ec2 = require('@aws-cdk/aws-ec2');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import { Test } from 'nodeunit';
 import elbv2 = require('../../lib');
 import { FakeSelfRegisteringTarget } from '../helpers';

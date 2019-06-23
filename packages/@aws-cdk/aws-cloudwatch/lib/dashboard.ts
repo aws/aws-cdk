@@ -1,4 +1,4 @@
-import { Construct, Lazy, Resource, Stack } from "@aws-cdk/cdk";
+import { Construct, Lazy, Resource, Stack } from "@aws-cdk/core";
 import { CfnDashboard } from './cloudwatch.generated';
 import { Column, Row } from "./layout";
 import { IWidget } from "./widget";

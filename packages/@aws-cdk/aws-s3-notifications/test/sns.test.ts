@@ -1,7 +1,7 @@
 import '@aws-cdk/assert/jest';
 import s3 = require('@aws-cdk/aws-s3');
 import sns = require('@aws-cdk/aws-sns');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import notif = require('../lib');
 
 test('asBucketNotificationDestination adds bucket permissions only once for each bucket', () => {

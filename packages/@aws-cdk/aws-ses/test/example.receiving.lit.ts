@@ -1,6 +1,6 @@
 import s3 = require('@aws-cdk/aws-s3');
 import sns = require('@aws-cdk/aws-sns');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import ses = require('../lib');
 
 const stack = new cdk.Stack();

@@ -50,7 +50,7 @@ A simple example, if you create a stack and want anything in the stack to receiv
 tag:
 
 ```ts
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 
 const app = new cdk.App();
 const theBestStack = new cdk.Stack(app, 'MarketingSystem');

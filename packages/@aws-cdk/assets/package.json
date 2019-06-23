@@ -72,13 +72,13 @@
     "ts-mock-imports": "^1.2.3"
   },
   "dependencies": {
-    "@aws-cdk/cdk": "^0.35.0",
+    "@aws-cdk/core": "^0.35.0",
     "@aws-cdk/cx-api": "^0.35.0",
     "minimatch": "^3.0.4"
   },
   "homepage": "https://github.com/awslabs/aws-cdk",
   "peerDependencies": {
-    "@aws-cdk/cdk": "^0.35.0",
+    "@aws-cdk/core": "^0.35.0",
     "@aws-cdk/cx-api": "^0.35.0"
   },
   "engines": {

@@ -1,7 +1,7 @@
 import { expect, haveResource } from '@aws-cdk/assert';
 import { SynthUtils } from '@aws-cdk/assert';
 import cloudwatch = require('@aws-cdk/aws-cloudwatch');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import fc = require('fast-check');
 import { Test } from 'nodeunit';
 import appscaling = require('../lib');

@@ -1,5 +1,5 @@
 import sns = require('@aws-cdk/aws-sns');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import codecommit = require('../lib');
 
 const app = new cdk.App();

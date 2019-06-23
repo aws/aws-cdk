@@ -1,4 +1,4 @@
-import { Lazy, Stack, Token } from '@aws-cdk/cdk';
+import { Lazy, Stack, Token } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import { Anyone, AnyPrincipal, CanonicalUserPrincipal, Effect, IPrincipal, PolicyDocument, PolicyStatement } from '../lib';
 import { ArnPrincipal, CompositePrincipal, FederatedPrincipal, PrincipalPolicyFragment, ServicePrincipal } from '../lib';

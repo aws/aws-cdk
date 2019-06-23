@@ -1,6 +1,6 @@
 import ec2 = require('@aws-cdk/aws-ec2');
 import iam = require('@aws-cdk/aws-iam');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import asg = require('../lib');
 
 class TestStack extends cdk.Stack {

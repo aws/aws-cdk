@@ -1,7 +1,7 @@
 import iam = require('@aws-cdk/aws-iam');
 import lambda = require('@aws-cdk/aws-lambda');
 import sns = require('@aws-cdk/aws-sns');
-import { Construct } from '@aws-cdk/cdk';
+import { Construct } from '@aws-cdk/core';
 import { SubscriptionProps } from './subscription';
 
 /**

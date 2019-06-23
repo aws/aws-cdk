@@ -1,6 +1,6 @@
 import kms = require('@aws-cdk/aws-kms');
 import secretsmanager = require('@aws-cdk/aws-secretsmanager');
-import { Construct } from '@aws-cdk/cdk';
+import { Construct } from '@aws-cdk/core';
 
 /**
  * Construction properties for a DatabaseSecret.

@@ -1,7 +1,7 @@
 import { expect } from '@aws-cdk/assert';
 import iam = require('@aws-cdk/aws-iam');
 import kms = require('@aws-cdk/aws-kms');
-import { App, Stack } from '@aws-cdk/cdk';
+import { App, Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import { Stream, StreamEncryption } from '../lib';
 

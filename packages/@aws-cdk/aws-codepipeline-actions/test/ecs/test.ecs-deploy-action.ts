@@ -1,7 +1,7 @@
 import codepipeline = require('@aws-cdk/aws-codepipeline');
 import ec2 = require('@aws-cdk/aws-ec2');
 import ecs = require('@aws-cdk/aws-ecs');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import { Test } from 'nodeunit';
 import cpactions = require('../../lib');
 

@@ -1,5 +1,5 @@
 import iam = require('@aws-cdk/aws-iam');
-import { Construct, IConstruct } from "@aws-cdk/cdk";
+import { Construct, IConstruct } from "@aws-cdk/core";
 
 /**
  * Obtain the Role for the CloudWatch event

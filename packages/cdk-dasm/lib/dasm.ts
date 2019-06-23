@@ -53,7 +53,7 @@ export async function dasmTypeScript(template: Template, options: DisassemblerOp
   // imports
   //
 
-  code.line(`import { Stack, StackProps, Construct, Fn } from '@aws-cdk/cdk';`);
+  code.line(`import { Stack, StackProps, Construct, Fn } from '@aws-cdk/core';`);
 
   for (const def of definitions) {
     const importName = `@aws-cdk/aws-${def.namespace}`;

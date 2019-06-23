@@ -1,7 +1,7 @@
 import ec2 = require('@aws-cdk/aws-ec2');
 import kms = require('@aws-cdk/aws-kms');
-import cdk = require('@aws-cdk/cdk');
-import { SecretValue } from '@aws-cdk/cdk';
+import cdk = require('@aws-cdk/core');
+import { SecretValue } from '@aws-cdk/core';
 import { DatabaseCluster, DatabaseClusterEngine } from '../lib';
 import { ClusterParameterGroup } from '../lib/parameter-group';
 

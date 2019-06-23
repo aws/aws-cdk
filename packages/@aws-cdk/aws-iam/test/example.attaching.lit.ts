@@ -1,5 +1,5 @@
-import cdk = require('@aws-cdk/cdk');
-import { SecretValue } from '@aws-cdk/cdk';
+import cdk = require('@aws-cdk/core');
+import { SecretValue } from '@aws-cdk/core';
 import { Group, Policy, User } from '../lib';
 
 export class ExampleConstruct extends cdk.Construct {

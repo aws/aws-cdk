@@ -7,7 +7,7 @@ import iam = require('@aws-cdk/aws-iam');
 import lambda = require('@aws-cdk/aws-lambda');
 import s3 = require('@aws-cdk/aws-s3');
 import sns = require('@aws-cdk/aws-sns');
-import { App, Aws, CfnParameter, ConstructNode, SecretValue, Stack } from '@aws-cdk/cdk';
+import { App, Aws, CfnParameter, ConstructNode, SecretValue, Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import cpactions = require('../lib');
 

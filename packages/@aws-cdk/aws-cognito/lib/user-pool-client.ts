@@ -1,4 +1,4 @@
-import { Construct, Resource } from '@aws-cdk/cdk';
+import { Construct, Resource } from '@aws-cdk/core';
 import { CfnUserPoolClient } from './cognito.generated';
 import { IUserPool } from './user-pool';
 

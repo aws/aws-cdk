@@ -1,4 +1,4 @@
-import { Construct, Lazy, Resource } from '@aws-cdk/cdk';
+import { Construct, Lazy, Resource } from '@aws-cdk/core';
 import { EventPattern } from './event-pattern';
 import { CfnRule } from './events.generated';
 import { IRule } from './rule-ref';

@@ -1,4 +1,4 @@
-import { Construct, ISynthesisSession } from '@aws-cdk/cdk';
+import { Construct, ISynthesisSession } from '@aws-cdk/core';
 import cxapi = require('@aws-cdk/cx-api');
 import fs = require('fs');
 import path = require('path');

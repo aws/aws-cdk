@@ -1,4 +1,4 @@
-import { Construct, Resource } from '@aws-cdk/cdk';
+import { Construct, Resource } from '@aws-cdk/core';
 import { ILogGroup, MetricFilterOptions } from './log-group';
 import { CfnMetricFilter } from './logs.generated';
 

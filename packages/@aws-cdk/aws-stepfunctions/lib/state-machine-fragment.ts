@@ -1,4 +1,4 @@
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import { Chain } from './chain';
 import { Parallel, ParallelProps } from './states/parallel';
 import { State } from './states/state';

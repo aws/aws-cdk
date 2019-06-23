@@ -1,4 +1,4 @@
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import { BaseInstanceProps, InstanceBase } from './instance';
 import { DnsRecordType, IService } from './service';
 import { CfnInstance } from './servicediscovery.generated';

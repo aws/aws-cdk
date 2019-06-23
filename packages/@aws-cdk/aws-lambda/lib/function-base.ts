@@ -1,7 +1,7 @@
 import cloudwatch = require('@aws-cdk/aws-cloudwatch');
 import ec2 = require('@aws-cdk/aws-ec2');
 import iam = require('@aws-cdk/aws-iam');
-import { IResource, Resource } from '@aws-cdk/cdk';
+import { IResource, Resource } from '@aws-cdk/core';
 import { IEventSource } from './event-source';
 import { EventSourceMapping, EventSourceMappingOptions } from './event-source-mapping';
 import { IVersion } from './lambda-version';

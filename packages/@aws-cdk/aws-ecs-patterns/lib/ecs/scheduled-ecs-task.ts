@@ -1,7 +1,7 @@
 import ecs = require('@aws-cdk/aws-ecs');
 import events = require('@aws-cdk/aws-events');
 import eventsTargets = require('@aws-cdk/aws-events-targets');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 
 export interface ScheduledEc2TaskProps {
   /**

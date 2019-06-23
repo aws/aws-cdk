@@ -1,6 +1,6 @@
 import sns = require('@aws-cdk/aws-sns');
 import sfn = require('@aws-cdk/aws-stepfunctions');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import tasks = require('../lib');
 
 test('Publish literal message to SNS topic', () => {

@@ -1,5 +1,5 @@
 import sfn = require('@aws-cdk/aws-stepfunctions');
-import { Duration } from '@aws-cdk/cdk';
+import { Duration } from '@aws-cdk/core';
 
 /**
  * Properties for FunctionTask

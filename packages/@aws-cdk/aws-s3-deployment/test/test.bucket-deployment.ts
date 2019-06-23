@@ -1,6 +1,6 @@
 import { expect, haveResource } from '@aws-cdk/assert';
 import s3 = require('@aws-cdk/aws-s3');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import { Test } from 'nodeunit';
 import path = require('path');
 import s3deploy = require('../lib');

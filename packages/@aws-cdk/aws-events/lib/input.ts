@@ -1,5 +1,5 @@
 import { captureStackTrace, DefaultTokenResolver, IResolvable,
-  IResolveContext, Lazy, Stack, StringConcat, Token, Tokenization } from '@aws-cdk/cdk';
+  IResolveContext, Lazy, Stack, StringConcat, Token, Tokenization } from '@aws-cdk/core';
 import { IRule } from './rule-ref';
 
 /**

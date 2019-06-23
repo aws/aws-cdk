@@ -1,4 +1,4 @@
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import { PolicyStatement, Role, ServicePrincipal } from '../lib';
 
 export class ExampleConstruct extends cdk.Construct {

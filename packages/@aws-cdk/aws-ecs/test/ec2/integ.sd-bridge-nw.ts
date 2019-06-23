@@ -1,5 +1,5 @@
 import ec2 = require('@aws-cdk/aws-ec2');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import ecs = require('../../lib');
 
 const app = new cdk.App();

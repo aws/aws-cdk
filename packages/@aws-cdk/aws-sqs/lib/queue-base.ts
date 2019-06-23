@@ -1,6 +1,6 @@
 import iam = require('@aws-cdk/aws-iam');
 import kms = require('@aws-cdk/aws-kms');
-import { IResource, Resource } from '@aws-cdk/cdk';
+import { IResource, Resource } from '@aws-cdk/core';
 import { QueuePolicy } from './policy';
 
 export interface IQueue extends IResource {

@@ -1,6 +1,6 @@
 import cloudwatch = require('@aws-cdk/aws-cloudwatch');
 import ec2 = require('@aws-cdk/aws-ec2');
-import { Construct, Duration, IConstruct } from '@aws-cdk/cdk';
+import { Construct, Duration, IConstruct } from '@aws-cdk/core';
 import { BaseTargetGroupProps, ITargetGroup, loadBalancerNameFromListenerArn, LoadBalancerTargetProps,
          TargetGroupBase, TargetGroupImportProps } from '../shared/base-target-group';
 import { ApplicationProtocol } from '../shared/enums';

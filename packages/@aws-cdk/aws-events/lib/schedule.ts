@@ -1,4 +1,4 @@
-import { Duration } from "@aws-cdk/cdk";
+import { Duration } from "@aws-cdk/core";
 
 /**
  * Schedule for scheduled event rules

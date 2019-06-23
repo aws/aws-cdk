@@ -1,5 +1,5 @@
-import cdk = require('@aws-cdk/cdk');
-import { Resource } from '@aws-cdk/cdk';
+import cdk = require('@aws-cdk/core');
+import { Resource } from '@aws-cdk/core';
 import { IFunction } from './function-base';
 import { CfnEventSourceMapping } from './lambda.generated';
 

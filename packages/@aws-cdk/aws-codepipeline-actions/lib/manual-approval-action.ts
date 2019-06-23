@@ -1,7 +1,7 @@
 import codepipeline = require('@aws-cdk/aws-codepipeline');
 import sns = require('@aws-cdk/aws-sns');
 import subs = require('@aws-cdk/aws-sns-subscriptions');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 
 /**
  * Construction properties of the {@link ManualApprovalAction}.

@@ -1,5 +1,5 @@
 import { expect, SynthUtils } from '@aws-cdk/assert';
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import { Test } from 'nodeunit';
 import iam = require('../lib');
 

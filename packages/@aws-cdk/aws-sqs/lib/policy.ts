@@ -1,5 +1,5 @@
 import { PolicyDocument } from '@aws-cdk/aws-iam';
-import { Construct, Resource } from '@aws-cdk/cdk';
+import { Construct, Resource } from '@aws-cdk/core';
 import { IQueue } from './queue-base';
 import { CfnQueuePolicy } from './sqs.generated';
 

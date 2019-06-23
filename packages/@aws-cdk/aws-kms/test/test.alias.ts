@@ -1,5 +1,5 @@
 import { expect, haveResource } from '@aws-cdk/assert';
-import { App, Stack } from '@aws-cdk/cdk';
+import { App, Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import { Key } from '../lib';
 import { Alias } from '../lib/alias';

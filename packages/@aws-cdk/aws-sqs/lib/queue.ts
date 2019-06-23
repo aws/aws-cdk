@@ -1,5 +1,5 @@
 import kms = require('@aws-cdk/aws-kms');
-import { Construct, Duration, Stack, Token } from '@aws-cdk/cdk';
+import { Construct, Duration, Stack, Token } from '@aws-cdk/core';
 import { IQueue, QueueAttributes, QueueBase } from './queue-base';
 import { CfnQueue } from './sqs.generated';
 import { validateProps } from './validate-props';

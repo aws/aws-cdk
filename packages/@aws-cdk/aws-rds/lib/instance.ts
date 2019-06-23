@@ -5,7 +5,7 @@ import kms = require('@aws-cdk/aws-kms');
 import lambda = require('@aws-cdk/aws-lambda');
 import logs = require('@aws-cdk/aws-logs');
 import secretsmanager = require('@aws-cdk/aws-secretsmanager');
-import { Construct, Duration, IResource, RemovalPolicy, Resource, SecretValue, Stack, Token } from '@aws-cdk/cdk';
+import { Construct, Duration, IResource, RemovalPolicy, Resource, SecretValue, Stack, Token } from '@aws-cdk/core';
 import { DatabaseSecret } from './database-secret';
 import { Endpoint } from './endpoint';
 import { IOptionGroup } from './option-group';

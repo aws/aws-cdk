@@ -1,7 +1,7 @@
 import '@aws-cdk/assert/jest';
 import events = require('@aws-cdk/aws-events');
 import sfn = require('@aws-cdk/aws-stepfunctions');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import targets = require('../../lib');
 
 test('State machine can be used as Event Rule target', () => {

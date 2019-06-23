@@ -1,4 +1,4 @@
-import { Construct, Resource } from '@aws-cdk/cdk';
+import { Construct, Resource } from '@aws-cdk/core';
 import { BaseNamespaceProps, INamespace, NamespaceType } from './namespace';
 import { BaseServiceProps, Service } from './service';
 import { CfnHttpNamespace } from './servicediscovery.generated';

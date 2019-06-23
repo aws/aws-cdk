@@ -3,7 +3,7 @@ import codecommit = require('@aws-cdk/aws-codecommit');
 import ec2 = require('@aws-cdk/aws-ec2');
 import kms = require('@aws-cdk/aws-kms');
 import s3 = require('@aws-cdk/aws-s3');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import { Test } from 'nodeunit';
 import codebuild = require('../lib');
 import { CodePipelineSource } from '../lib/codepipeline-source';

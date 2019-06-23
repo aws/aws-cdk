@@ -2,7 +2,7 @@ import { expect, haveResource, MatchStyle, ResourcePart } from '@aws-cdk/assert'
 import iam = require('@aws-cdk/aws-iam');
 import logs = require('@aws-cdk/aws-logs');
 import sqs = require('@aws-cdk/aws-sqs');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import { Test } from 'nodeunit';
 import path = require('path');
 import lambda = require('../lib');

@@ -1,5 +1,5 @@
 import elbv2 = require('@aws-cdk/aws-elasticloadbalancingv2');
-import { Construct, Lazy, Resource } from '@aws-cdk/cdk';
+import { Construct, Lazy, Resource } from '@aws-cdk/core';
 import { CfnVpcLink } from './apigateway.generated';
 
 /**

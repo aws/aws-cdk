@@ -1,4 +1,4 @@
-import { App, Stack } from '@aws-cdk/cdk';
+import { App, Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import { SynthUtils } from '../lib';
 

@@ -1,5 +1,5 @@
 import { ConcreteDependable, Construct, ContextProvider, DependableTrait, IConstruct,
-    IDependable, IResource, Resource, Stack, Tag } from '@aws-cdk/cdk';
+    IDependable, IResource, Resource, Stack, Tag } from '@aws-cdk/core';
 import cxapi = require('@aws-cdk/cx-api');
 import { CfnEIP, CfnInternetGateway, CfnNatGateway, CfnRoute, CfnVPNGateway, CfnVPNGatewayRoutePropagation } from './ec2.generated';
 import { CfnRouteTable, CfnSubnet, CfnSubnetRouteTableAssociation, CfnVPC, CfnVPCGatewayAttachment } from './ec2.generated';

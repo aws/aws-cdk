@@ -1,4 +1,4 @@
-import { Construct, IResource as IResourceBase, Resource as ResourceConstruct } from '@aws-cdk/cdk';
+import { Construct, IResource as IResourceBase, Resource as ResourceConstruct } from '@aws-cdk/core';
 import { CfnResource, CfnResourceProps } from './apigateway.generated';
 import { Integration } from './integration';
 import { Method, MethodOptions } from './method';

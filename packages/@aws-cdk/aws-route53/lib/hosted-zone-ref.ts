@@ -1,4 +1,4 @@
-import { IResource } from '@aws-cdk/cdk';
+import { IResource } from '@aws-cdk/core';
 
 /**
  * Imported or created hosted zone

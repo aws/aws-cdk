@@ -1,5 +1,5 @@
 import codepipeline = require('@aws-cdk/aws-codepipeline');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 
 /**
  * The creation attributes used for defining a configuration property

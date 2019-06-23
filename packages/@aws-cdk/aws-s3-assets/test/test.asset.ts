@@ -1,7 +1,7 @@
 import { expect, haveResource, ResourcePart, SynthUtils } from '@aws-cdk/assert';
 import iam = require('@aws-cdk/aws-iam');
-import cdk = require('@aws-cdk/cdk');
-import { App, Stack } from '@aws-cdk/cdk';
+import cdk = require('@aws-cdk/core');
+import { App, Stack } from '@aws-cdk/core';
 import cxapi = require('@aws-cdk/cx-api');
 import fs = require('fs');
 import { Test } from 'nodeunit';

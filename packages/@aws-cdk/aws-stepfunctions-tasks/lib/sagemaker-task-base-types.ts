@@ -1,6 +1,6 @@
 import ec2 = require('@aws-cdk/aws-ec2');
 import kms = require('@aws-cdk/aws-kms');
-import { Duration } from '@aws-cdk/cdk';
+import { Duration } from '@aws-cdk/core';
 
 //
 // Create Training Job types

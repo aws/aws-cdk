@@ -1,7 +1,7 @@
 import cloudfront = require('@aws-cdk/aws-cloudfront');
 import route53 = require('@aws-cdk/aws-route53');
 import s3 = require('@aws-cdk/aws-s3');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import targets = require('../lib');
 
 const app = new cdk.App();

@@ -1,5 +1,5 @@
 import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
-import { Duration, Stack } from '@aws-cdk/cdk';
+import { Duration, Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import { ArnPrincipal, CompositePrincipal, FederatedPrincipal, PolicyStatement, Role, ServicePrincipal, User } from '../lib';
 

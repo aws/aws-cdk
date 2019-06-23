@@ -1,7 +1,7 @@
 import '@aws-cdk/assert/jest';
 import kinesis = require('@aws-cdk/aws-kinesis');
 import logs = require('@aws-cdk/aws-logs');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import dests = require('../lib');
 
 test('stream can be subscription destination', () => {

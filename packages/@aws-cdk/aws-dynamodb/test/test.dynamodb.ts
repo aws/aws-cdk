@@ -1,7 +1,7 @@
 import { expect, haveResource } from '@aws-cdk/assert';
 import appscaling = require('@aws-cdk/aws-applicationautoscaling');
 import iam = require('@aws-cdk/aws-iam');
-import { ConstructNode, Stack, Tag } from '@aws-cdk/cdk';
+import { ConstructNode, Stack, Tag } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import {
   Attribute,

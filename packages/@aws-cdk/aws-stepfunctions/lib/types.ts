@@ -1,4 +1,4 @@
-import { Duration } from '@aws-cdk/cdk';
+import { Duration } from '@aws-cdk/core';
 import { Chain } from './chain';
 import { State } from './states/state';
 

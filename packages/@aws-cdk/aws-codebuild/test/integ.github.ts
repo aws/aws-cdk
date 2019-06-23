@@ -1,4 +1,4 @@
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import codebuild = require('../lib');
 
 class TestStack extends cdk.Stack {

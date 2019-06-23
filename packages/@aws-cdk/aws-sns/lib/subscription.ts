@@ -1,4 +1,4 @@
-import { Construct, Resource } from '@aws-cdk/cdk';
+import { Construct, Resource } from '@aws-cdk/core';
 import { CfnSubscription } from './sns.generated';
 import { SubscriptionFilter } from './subscription-filter';
 import { ITopic } from './topic-base';

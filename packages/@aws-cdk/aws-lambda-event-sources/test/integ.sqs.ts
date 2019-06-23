@@ -1,5 +1,5 @@
 import sqs = require('@aws-cdk/aws-sqs');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import { SqsEventSource } from '../lib';
 import { TestFunction } from './test-function';
 

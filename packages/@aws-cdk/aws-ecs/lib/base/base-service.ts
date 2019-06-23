@@ -4,7 +4,7 @@ import ec2 = require('@aws-cdk/aws-ec2');
 import elbv2 = require('@aws-cdk/aws-elasticloadbalancingv2');
 import iam = require('@aws-cdk/aws-iam');
 import cloudmap = require('@aws-cdk/aws-servicediscovery');
-import { Construct, Duration, Fn, IResolvable, IResource, Lazy, Resource, Stack } from '@aws-cdk/cdk';
+import { Construct, Duration, Fn, IResolvable, IResource, Lazy, Resource, Stack } from '@aws-cdk/core';
 import { NetworkMode, TaskDefinition } from '../base/task-definition';
 import { ICluster } from '../cluster';
 import { CfnService } from '../ecs.generated';

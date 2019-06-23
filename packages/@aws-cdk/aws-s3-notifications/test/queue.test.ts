@@ -2,7 +2,7 @@ import { SynthUtils } from '@aws-cdk/assert';
 import '@aws-cdk/assert/jest';
 import s3 = require('@aws-cdk/aws-s3');
 import sqs = require('@aws-cdk/aws-sqs');
-import { Stack } from '@aws-cdk/cdk';
+import { Stack } from '@aws-cdk/core';
 import notif = require('../lib');
 
 test('queues can be used as destinations', () => {

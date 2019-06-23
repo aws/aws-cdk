@@ -1,4 +1,4 @@
-import { Token } from "@aws-cdk/cdk";
+import { Token } from "@aws-cdk/core";
 import { findReferencedPaths, JsonPathToken, renderObject } from "./json-path";
 
 /**

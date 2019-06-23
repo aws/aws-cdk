@@ -1,5 +1,5 @@
 import {expect} from '@aws-cdk/assert';
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import { Test } from 'nodeunit';
 import { CfnApplication } from '../lib';
 

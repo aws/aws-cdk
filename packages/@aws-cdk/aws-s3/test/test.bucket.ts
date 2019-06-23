@@ -1,8 +1,8 @@
 import { expect, haveResource, haveResourceLike, SynthUtils } from '@aws-cdk/assert';
 import iam = require('@aws-cdk/aws-iam');
 import kms = require('@aws-cdk/aws-kms');
-import cdk = require('@aws-cdk/cdk');
-import { Stack } from '@aws-cdk/cdk';
+import cdk = require('@aws-cdk/core');
+import { Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import { EOL } from 'os';
 import s3 = require('../lib');

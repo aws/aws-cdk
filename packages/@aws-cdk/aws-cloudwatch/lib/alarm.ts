@@ -1,4 +1,4 @@
-import { Construct, IResource, Lazy, Resource, Stack } from '@aws-cdk/cdk';
+import { Construct, IResource, Lazy, Resource, Stack } from '@aws-cdk/core';
 import { IAlarmAction } from './alarm-action';
 import { CfnAlarm } from './cloudwatch.generated';
 import { HorizontalAnnotation } from './graph';

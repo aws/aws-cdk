@@ -1,7 +1,7 @@
 import ec2 = require('@aws-cdk/aws-ec2');
 import kms = require('@aws-cdk/aws-kms');
 import secretsmanager = require('@aws-cdk/aws-secretsmanager');
-import { Construct,   RemovalPolicy, Resource, Token } from '@aws-cdk/cdk';
+import { Construct,   RemovalPolicy, Resource, Token } from '@aws-cdk/core';
 import { DatabaseClusterAttributes, IDatabaseCluster } from './cluster-ref';
 import { DatabaseSecret } from './database-secret';
 import { Endpoint } from './endpoint';

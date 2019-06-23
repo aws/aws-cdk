@@ -20,7 +20,7 @@ beforeAll(async () => {
 
   // load the resulting file system
   await typesys.loadFile(path.join(fixturedir, '.jsii'));
-  await typesys.load(path.dirname(require.resolve('@aws-cdk/cdk/.jsii')));
+  await typesys.load(path.dirname(require.resolve('@aws-cdk/core/.jsii')));
 });
 
 test('schemaForInterface: interface with primitives', async () => {

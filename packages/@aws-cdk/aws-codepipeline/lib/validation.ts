@@ -1,4 +1,4 @@
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import { ActionCategory } from "./action";
 import { Artifact } from "./artifact";
 

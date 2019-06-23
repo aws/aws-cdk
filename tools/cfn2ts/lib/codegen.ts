@@ -42,7 +42,7 @@ export default class CodeGenerator {
     this.code.line();
     this.code.line('// tslint:disable:max-line-length | This is generated code - line lengths are difficult to control');
     this.code.line();
-    this.code.line(`import ${CORE} = require('@aws-cdk/cdk');`);
+    this.code.line(`import ${CORE} = require('@aws-cdk/core');`);
   }
 
   public async upToDate(outPath: string): Promise<boolean> {

@@ -2,7 +2,7 @@ import '@aws-cdk/assert/jest';
 import autoscaling = require('@aws-cdk/aws-autoscaling');
 import cloudwatch = require('@aws-cdk/aws-cloudwatch');
 import ec2 = require('@aws-cdk/aws-ec2');
-import { Stack } from '@aws-cdk/cdk';
+import { Stack } from '@aws-cdk/core';
 import actions = require('../lib');
 
 test('can use topic as alarm action', () => {

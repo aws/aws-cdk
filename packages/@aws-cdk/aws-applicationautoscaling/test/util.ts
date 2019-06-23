@@ -1,5 +1,5 @@
 import scalingcommon = require('@aws-cdk/aws-autoscaling-common');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import fc = require('fast-check');
 import appscaling = require('../lib');
 import { ServiceNamespace } from '../lib';
