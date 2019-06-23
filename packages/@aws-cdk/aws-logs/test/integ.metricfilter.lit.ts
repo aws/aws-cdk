@@ -1,4 +1,4 @@
-import { App, RemovalPolicy, Stack, StackProps } from '@aws-cdk/cdk';
+import { App, RemovalPolicy, Stack, StackProps } from '@aws-cdk/core';
 import { FilterPattern, LogGroup, MetricFilter } from '../lib';
 
 class MetricFilterIntegStack extends Stack {

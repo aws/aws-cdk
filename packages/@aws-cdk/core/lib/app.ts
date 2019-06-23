@@ -3,7 +3,7 @@ import { CloudAssembly } from '@aws-cdk/cx-api';
 import { Construct, ConstructNode } from './construct';
 import { collectRuntimeInformation } from './private/runtime-info';
 
-const APP_SYMBOL = Symbol.for('@aws-cdk/cdk.App');
+const APP_SYMBOL = Symbol.for('@aws-cdk/core.App');
 
 /**
  * Initialization props for apps.

@@ -1,4 +1,4 @@
-import { Duration } from '@aws-cdk/cdk';
+import { Duration } from '@aws-cdk/core';
 
 /**
  * An ECR life cycle rule

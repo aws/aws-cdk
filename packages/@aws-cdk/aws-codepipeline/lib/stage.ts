@@ -1,5 +1,5 @@
 import events = require('@aws-cdk/aws-events');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import { Action, IPipeline, IStage } from "./action";
 import { Artifact } from "./artifact";
 import { CfnPipeline } from './codepipeline.generated';

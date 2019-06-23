@@ -1,5 +1,5 @@
-import cdk = require('@aws-cdk/cdk');
-import { captureStackTrace, IPostProcessor } from '@aws-cdk/cdk';
+import cdk = require('@aws-cdk/core');
+import { captureStackTrace, IPostProcessor } from '@aws-cdk/core';
 import { PolicyStatement } from './policy-statement';
 
 /**

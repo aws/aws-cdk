@@ -1,5 +1,5 @@
 import s3 = require('@aws-cdk/aws-s3');
-import { Construct, IResource, Resource, Stack } from '@aws-cdk/cdk';
+import { Construct, IResource, Resource, Stack } from '@aws-cdk/core';
 import { CfnDatabase } from './glue.generated';
 
 export interface IDatabase extends IResource {
