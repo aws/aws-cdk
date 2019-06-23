@@ -79,7 +79,7 @@ export interface PipelineProps {
    *
    * @default - AWS CloudFormation generates an ID and uses that for the pipeline name.
    */
-  readonly pipelineName?: PhysicalName;
+  readonly pipelineName?: string;
 
   /**
    * A map of region to S3 bucket name used for cross-region CodePipeline.
@@ -235,7 +235,7 @@ export class Pipeline extends PipelineBase {
     if (!propsBucket) {
       const encryptionKey = new kms.Key(this, 'ArtifactsBucketEncryptionKey');
       propsBucket = new s3.Bucket(this, 'ArtifactsBucket', {
-        bucketName: PhysicalName.auto({ crossEnvironment: true }),
+        bucketName: PhysicalName.GENERATE_IF_NEEDED,
         encryptionKey,
         encryption: s3.BucketEncryption.KMS,
         removalPolicy: RemovalPolicy.RETAIN
@@ -462,7 +462,7 @@ export class Pipeline extends PipelineBase {
         actionRole = new iam.Role(resourceStack,
             `${this.node.uniqueId}-${stage.stageName}-${action.actionName}-ActionRole`, {
           assumedBy: new iam.AccountPrincipal(pipelineStack.account),
-          roleName: PhysicalName.auto({ crossEnvironment: true }),
+          roleName: PhysicalName.GENERATE_IF_NEEDED,
         });
 
         // the other stack has to be deployed before the pipeline stack

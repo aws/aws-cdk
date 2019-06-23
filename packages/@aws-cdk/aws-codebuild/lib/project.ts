@@ -464,7 +464,7 @@ export interface CommonProjectProps {
    *
    * @default - Name is automatically generated.
    */
-  readonly projectName?: PhysicalName;
+  readonly projectName?: string;
 
   /**
    * VPC network to place codebuild network interfaces
@@ -633,7 +633,7 @@ export class Project extends ProjectBase {
     });
 
     this.role = props.role || new iam.Role(this, 'Role', {
-      roleName: PhysicalName.auto({ crossEnvironment: true }),
+      roleName: PhysicalName.GENERATE_IF_NEEDED,
       assumedBy: new iam.ServicePrincipal('codebuild.amazonaws.com')
     });
     this.grantPrincipal = this.role;
@@ -883,7 +883,7 @@ export class Project extends ProjectBase {
     }));
 
     const policy = new iam.Policy(this, 'PolicyDocument', {
-      policyName: PhysicalName.of('CodeBuildEC2Policy'),
+      policyName: 'CodeBuildEC2Policy',
       statements: [
         new iam.PolicyStatement({
           resources: ['*'],

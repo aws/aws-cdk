@@ -1,5 +1,5 @@
 import ec2 = require('@aws-cdk/aws-ec2');
-import { Construct, IResource, Lazy, PhysicalName, Resource } from '@aws-cdk/cdk';
+import { Construct, IResource, Lazy, Resource } from '@aws-cdk/cdk';
 import { CfnLoadBalancer } from '../elasticloadbalancingv2.generated';
 import { Attributes, ifUndefined, renderAttributes } from './util';
 
@@ -12,7 +12,7 @@ export interface BaseLoadBalancerProps {
    *
    * @default - Automatically generated name.
    */
-  readonly loadBalancerName?: PhysicalName;
+  readonly loadBalancerName?: string;
 
   /**
    * The VPC network to place the load balancer in

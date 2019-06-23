@@ -1,4 +1,4 @@
-import { Construct, IResource, PhysicalName, RemovalPolicy, Resource } from '@aws-cdk/cdk';
+import { Construct, IResource, RemovalPolicy, Resource } from '@aws-cdk/cdk';
 import { ILogGroup } from './log-group';
 import { CfnLogStream } from './logs.generated';
 
@@ -26,7 +26,7 @@ export interface LogStreamProps {
    *
    * @default Automatically generated
    */
-  readonly logStreamName?: PhysicalName;
+  readonly logStreamName?: string;
 
   /**
    * Determine what happens when the log stream resource is removed from the

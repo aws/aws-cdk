@@ -47,7 +47,7 @@ export interface LambdaDeploymentGroupProps {
    *
    * @default - An auto-generated name will be used.
    */
-  readonly deploymentGroupName?: cdk.PhysicalName;
+  readonly deploymentGroupName?: string;
 
   /**
    * The Deployment Configuration this Deployment Group uses.

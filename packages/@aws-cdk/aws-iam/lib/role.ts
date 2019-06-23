@@ -1,4 +1,4 @@
-import { Construct, Duration, Lazy, PhysicalName, Resource, Stack } from '@aws-cdk/cdk';
+import { Construct, Duration, Lazy, Resource, Stack } from '@aws-cdk/cdk';
 import { Grant } from './grant';
 import { CfnRole } from './iam.generated';
 import { IIdentity } from './identity-base';
@@ -70,7 +70,7 @@ export interface RoleProps {
    * @default - AWS CloudFormation generates a unique physical ID and uses that ID
    * for the group name.
    */
-  readonly roleName?: PhysicalName;
+  readonly roleName?: string;
 
   /**
    * The maximum session duration that you want to set for the specified role.

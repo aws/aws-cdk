@@ -4,7 +4,7 @@ import ec2 = require('@aws-cdk/aws-ec2');
 import elbv2 = require('@aws-cdk/aws-elasticloadbalancingv2');
 import iam = require('@aws-cdk/aws-iam');
 import cloudmap = require('@aws-cdk/aws-servicediscovery');
-import { Construct, Duration, Fn, IResolvable, IResource, Lazy, PhysicalName, Resource, Stack } from '@aws-cdk/cdk';
+import { Construct, Duration, Fn, IResolvable, IResource, Lazy, Resource, Stack } from '@aws-cdk/cdk';
 import { NetworkMode, TaskDefinition } from '../base/task-definition';
 import { ICluster } from '../cluster';
 import { CfnService } from '../ecs.generated';
@@ -40,7 +40,7 @@ export interface BaseServiceProps {
    *
    * @default - CloudFormation-generated name.
    */
-  readonly serviceName?: PhysicalName;
+  readonly serviceName?: string;
 
   /**
    * The maximum number of tasks, specified as a percentage of the Amazon ECS

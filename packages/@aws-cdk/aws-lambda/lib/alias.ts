@@ -1,5 +1,5 @@
 import cloudwatch = require('@aws-cdk/aws-cloudwatch');
-import { Construct, PhysicalName, Stack } from '@aws-cdk/cdk';
+import { Construct, Stack } from '@aws-cdk/cdk';
 import { IFunction, QualifiedFunctionBase } from './function-base';
 import { IVersion } from './lambda-version';
 import { CfnAlias } from './lambda.generated';
@@ -115,7 +115,7 @@ export class Alias extends QualifiedFunctionBase implements IAlias {
 
   constructor(scope: Construct, id: string, props: AliasProps) {
     super(scope, id, {
-      physicalName: PhysicalName.of(props.aliasName),
+      physicalName: props.aliasName,
     });
 
     this.lambda = props.version.lambda;

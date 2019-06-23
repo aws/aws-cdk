@@ -3,7 +3,7 @@ import ec2 = require('@aws-cdk/aws-ec2');
 import iam = require('@aws-cdk/aws-iam');
 import logs = require('@aws-cdk/aws-logs');
 import sqs = require('@aws-cdk/aws-sqs');
-import { Construct, Duration, Fn, Lazy, PhysicalName, Stack, Token } from '@aws-cdk/cdk';
+import { Construct, Duration, Fn, Lazy, Stack, Token } from '@aws-cdk/cdk';
 import { Code } from './code';
 import { IEventSource } from './event-source';
 import { FunctionAttributes, FunctionBase, IFunction } from './function-base';
@@ -91,7 +91,7 @@ export interface FunctionProps {
    * @default - AWS CloudFormation generates a unique physical ID and uses that
    * ID for the function's name. For more information, see Name Type.
    */
-  readonly functionName?: PhysicalName;
+  readonly functionName?: string;
 
   /**
    * The amount of memory, in MB, that is allocated to your Lambda function.

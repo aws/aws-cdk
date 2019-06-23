@@ -1,4 +1,4 @@
-import { Construct, IResource, PhysicalName, Resource } from '@aws-cdk/cdk';
+import { Construct, IResource, Resource } from '@aws-cdk/cdk';
 import { CfnApplication } from '../codedeploy.generated';
 import { arnForApplication } from '../utils';
 
@@ -29,7 +29,7 @@ export interface ServerApplicationProps {
    *
    * @default an auto-generated name will be used
    */
-  readonly applicationName?: PhysicalName;
+  readonly applicationName?: string;
 }
 
 /**

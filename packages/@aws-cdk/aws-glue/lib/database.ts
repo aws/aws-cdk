@@ -1,5 +1,5 @@
 import s3 = require('@aws-cdk/aws-s3');
-import { Construct, IResource, PhysicalName, Resource, Stack } from '@aws-cdk/cdk';
+import { Construct, IResource, Resource, Stack } from '@aws-cdk/cdk';
 import { CfnDatabase } from './glue.generated';
 
 export interface IDatabase extends IResource {
@@ -87,7 +87,7 @@ export class Database extends Resource implements IDatabase {
 
   constructor(scope: Construct, id: string, props: DatabaseProps) {
     super(scope, id, {
-      physicalName: PhysicalName.of(props.databaseName),
+      physicalName: props.databaseName,
     });
 
     if (props.locationUri) {

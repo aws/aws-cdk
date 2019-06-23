@@ -1,4 +1,4 @@
-import { Construct, PhysicalName, Stack } from '@aws-cdk/cdk';
+import { Construct, Stack } from '@aws-cdk/cdk';
 import { CfnTopic } from './sns.generated';
 import { ITopic, TopicBase } from './topic-base';
 
@@ -22,7 +22,7 @@ export interface TopicProps {
    *
    * @default Generated name
    */
-  readonly topicName?: PhysicalName;
+  readonly topicName?: string;
 }
 
 /**

@@ -14,7 +14,7 @@ export = {
           account: '123456789012',
         },
       });
-      const myResource = new MyResource(stack1, 'MyResource', PhysicalName.of('PhysicalName'));
+      const myResource = new MyResource(stack1, 'MyResource', 'PhysicalName');
 
       const stack2 = new Stack(app, 'Stack2', {
         env: {
@@ -65,7 +65,7 @@ export = {
       });
 
       // WHEN
-      const myResource = new MyResource(stack1, 'MyResource', PhysicalName.of('PhysicalName'));
+      const myResource = new MyResource(stack1, 'MyResource', 'PhysicalName');
       new CfnOutput(stack2, 'Output', {
         value: myResource.name,
       });
@@ -90,7 +90,7 @@ export = {
           account: '123456789012',
         },
       });
-      const myResource = new MyResource(stack1, 'MyResource', PhysicalName.auto({ crossEnvironment: true }));
+      const myResource = new MyResource(stack1, 'MyResource', PhysicalName.GENERATE_IF_NEEDED);
 
       const stack2 = new Stack(app, 'Stack2', {
         env: {
@@ -141,7 +141,7 @@ export = {
       });
 
       // WHEN
-      const myResource = new MyResource(stack1, 'MyResource', PhysicalName.auto({ crossEnvironment: true }));
+      const myResource = new MyResource(stack1, 'MyResource', PhysicalName.GENERATE_IF_NEEDED);
       new CfnOutput(stack2, 'Output', {
         value: myResource.name,
       });
@@ -174,14 +174,14 @@ export = {
     });
 
     // WHEN
-    const myResource = new MyResource(stack1, 'MyResource', PhysicalName.auto());
+    const myResource = new MyResource(stack1, 'MyResource');
     new CfnOutput(stack2, 'Output', {
       value: myResource.name,
     });
 
     // THEN
     test.throws(() => toCloudFormation(stack2),
-      /Cannot use resource 'Stack1\/MyResource' in a cross-environment fashion, as it doesn't have a physical name set/);
+      /Cannot use resource 'Stack1\/MyResource' in a cross-environment fashion/);
 
     test.done();
   },
@@ -191,7 +191,7 @@ class MyResource extends Resource {
   public readonly arn: string;
   public readonly name: string;
 
-  constructor(scope: Construct, id: string, physicalName: PhysicalName) {
+  constructor(scope: Construct, id: string, physicalName?: string) {
     super(scope, id, {
       physicalName,
     });

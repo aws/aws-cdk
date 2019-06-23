@@ -1,6 +1,6 @@
 import iam = require('@aws-cdk/aws-iam');
 import lambda = require('@aws-cdk/aws-lambda');
-import { Construct, IResource, Lazy, PhysicalName, Resource } from '@aws-cdk/cdk';
+import { Construct, IResource, Lazy, Resource } from '@aws-cdk/cdk';
 import { CfnUserPool } from './cognito.generated';
 
 /**
@@ -206,7 +206,7 @@ export interface UserPoolProps {
    *
    * @default - automatically generated name by CloudFormation at deploy time
    */
-  readonly userPoolName?: PhysicalName;
+  readonly userPoolName?: string;
 
   /**
    * Method used for user registration & sign in.

@@ -1,6 +1,6 @@
 import appscaling = require('@aws-cdk/aws-applicationautoscaling');
 import iam = require('@aws-cdk/aws-iam');
-import { Aws, Construct, Lazy, PhysicalName, Resource, Stack } from '@aws-cdk/cdk';
+import { Aws, Construct, Lazy, Resource, Stack } from '@aws-cdk/cdk';
 import { CfnTable } from './dynamodb.generated';
 import { EnableScalingProps, IScalableTableAttribute } from './scalable-attribute-api';
 import { ScalableTableAttribute } from './scalable-table-attribute';
@@ -114,7 +114,7 @@ export interface TableProps extends TableOptions {
    * Enforces a particular physical table name.
    * @default <generated>
    */
-  readonly tableName?: PhysicalName;
+  readonly tableName?: string;
 }
 
 export interface SecondaryIndexProps {

@@ -18,7 +18,7 @@ export = {
         key: 'value'
       },
       maximumExecutionFrequency: config.MaximumExecutionFrequency.THREE_HOURS,
-      configRuleName: cdk.PhysicalName.of('cool rule'),
+      configRuleName: 'cool rule',
     });
 
     // THEN
@@ -56,7 +56,7 @@ export = {
       },
       lambdaFunction: fn,
       maximumExecutionFrequency: config.MaximumExecutionFrequency.SIX_HOURS,
-      configRuleName: cdk.PhysicalName.of('cool rule'),
+      configRuleName: 'cool rule',
       periodic: true
     });
 

@@ -4,7 +4,7 @@ import ec2 = require('@aws-cdk/aws-ec2');
 import iam = require('@aws-cdk/aws-iam');
 import s3 = require('@aws-cdk/aws-s3');
 import cdk = require('@aws-cdk/cdk');
-import { PhysicalName, Stack } from '@aws-cdk/cdk';
+import { Stack } from '@aws-cdk/cdk';
 import { CfnDeploymentGroup } from '../codedeploy.generated';
 import { AutoRollbackConfig } from '../rollback-config';
 import { arnForDeploymentGroup, renderAlarmConfiguration, renderAutoRollbackConfiguration } from '../utils';
@@ -153,7 +153,7 @@ export interface ServerDeploymentGroupProps {
    *
    * @default - An auto-generated name will be used.
    */
-  readonly deploymentGroupName?: PhysicalName;
+  readonly deploymentGroupName?: string;
 
   /**
    * The EC2/on-premise Deployment Configuration to use for this Deployment Group.

@@ -1,4 +1,4 @@
-import { Construct, Lazy, PhysicalName, Resource } from '@aws-cdk/cdk';
+import { Construct, Lazy, Resource } from '@aws-cdk/cdk';
 import { EventPattern } from './event-pattern';
 import { CfnRule } from './events.generated';
 import { IRule } from './rule-ref';
@@ -20,7 +20,7 @@ export interface RuleProps {
    * @default - AWS CloudFormation generates a unique physical ID and uses that ID
    * for the rule name. For more information, see Name Type.
    */
-  readonly ruleName?: PhysicalName;
+  readonly ruleName?: string;
 
   /**
    * Indicates whether the rule is enabled.

@@ -1,6 +1,6 @@
 import cloudwatch = require('@aws-cdk/aws-cloudwatch');
 import iam = require('@aws-cdk/aws-iam');
-import { Construct, IResource, PhysicalName, RemovalPolicy, Resource, Stack } from '@aws-cdk/cdk';
+import { Construct, IResource, RemovalPolicy, Resource, Stack } from '@aws-cdk/cdk';
 import { LogStream } from './log-stream';
 import { CfnLogGroup } from './logs.generated';
 import { MetricFilter } from './metric-filter';
@@ -271,7 +271,7 @@ export interface LogGroupProps {
    *
    * @default Automatically generated
    */
-  readonly logGroupName?: PhysicalName;
+  readonly logGroupName?: string;
 
   /**
    * How long, in days, the log contents will be retained.
@@ -367,7 +367,7 @@ export interface StreamOptions {
    *
    * @default Automatically generated
    */
-  readonly logStreamName?: PhysicalName;
+  readonly logStreamName?: string;
 }
 
 /**

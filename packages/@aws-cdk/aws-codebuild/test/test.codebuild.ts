@@ -630,7 +630,7 @@ export = {
       const bucket = new s3.Bucket(stack, 'MyBucket');
       const vpc = new ec2.Vpc(stack, 'MyVPC');
       const securityGroup = new ec2.SecurityGroup(stack, 'SecurityGroup1', {
-          securityGroupName: cdk.PhysicalName.of('Bob'),
+          securityGroupName: 'Bob',
           vpc,
           allowAllOutbound: true,
           description: 'Example',
@@ -677,7 +677,7 @@ export = {
       const bucket = new s3.Bucket(stack, 'MyBucket');
       const vpc = new ec2.Vpc(stack, 'MyVPC');
       const securityGroup = new ec2.SecurityGroup(stack, 'SecurityGroup1', {
-          securityGroupName: cdk.PhysicalName.of('Bob'),
+          securityGroupName: 'Bob',
           vpc,
           allowAllOutbound: true,
           description: 'Example',
@@ -699,7 +699,7 @@ export = {
       const bucket = new s3.Bucket(stack, 'MyBucket');
       const vpc = new ec2.Vpc(stack, 'MyVPC');
       const securityGroup = new ec2.SecurityGroup(stack, 'SecurityGroup1', {
-          securityGroupName: cdk.PhysicalName.of('Bob'),
+          securityGroupName: 'Bob',
           vpc,
           allowAllOutbound: true,
           description: 'Example',

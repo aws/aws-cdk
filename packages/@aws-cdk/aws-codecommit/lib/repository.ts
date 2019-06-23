@@ -1,5 +1,5 @@
 import events = require('@aws-cdk/aws-events');
-import { Construct, IConstruct, IResource, PhysicalName, Resource, Stack } from '@aws-cdk/cdk';
+import { Construct, IConstruct, IResource, Resource, Stack } from '@aws-cdk/cdk';
 import { CfnRepository } from './codecommit.generated';
 
 export interface IRepository extends IResource {
@@ -279,7 +279,7 @@ export class Repository extends RepositoryBase {
 
   constructor(scope: Construct, id: string, props: RepositoryProps) {
     super(scope, id, {
-      physicalName: PhysicalName.of(props.repositoryName),
+      physicalName: props.repositoryName,
     });
 
     this.repository = new CfnRepository(this, 'Resource', {

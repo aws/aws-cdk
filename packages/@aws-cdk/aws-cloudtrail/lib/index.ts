@@ -3,7 +3,7 @@ import iam = require('@aws-cdk/aws-iam');
 import kms = require('@aws-cdk/aws-kms');
 import logs = require('@aws-cdk/aws-logs');
 import s3 = require('@aws-cdk/aws-s3');
-import { Construct, PhysicalName, Resource, Stack } from '@aws-cdk/cdk';
+import { Construct, Resource, Stack } from '@aws-cdk/cdk';
 import { CfnTrail } from './cloudtrail.generated';
 
 // AWS::CloudTrail CloudFormation Resources:
@@ -86,7 +86,7 @@ export interface TrailProps {
    *
    * @default - AWS CloudFormation generated name.
    */
-  readonly trailName?: PhysicalName;
+  readonly trailName?: string;
 
   /** An Amazon S3 object key prefix that precedes the name of all log files.
    *

@@ -4,7 +4,7 @@ import ec2 = require('@aws-cdk/aws-ec2');
 import iam = require('@aws-cdk/aws-iam');
 import cloudmap = require('@aws-cdk/aws-servicediscovery');
 import ssm = require('@aws-cdk/aws-ssm');
-import { Construct, Duration, IResource, PhysicalName, Resource, Stack } from '@aws-cdk/cdk';
+import { Construct, Duration, IResource, Resource, Stack } from '@aws-cdk/cdk';
 import { InstanceDrainHook } from './drain-hook/instance-drain-hook';
 import { CfnCluster } from './ecs.generated';
 
@@ -17,7 +17,7 @@ export interface ClusterProps {
    *
    * @default CloudFormation-generated name
    */
-  readonly clusterName?: PhysicalName;
+  readonly clusterName?: string;
 
   /**
    * The VPC where your ECS instances will be running or your ENIs will be deployed

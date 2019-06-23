@@ -1,8 +1,7 @@
 import events = require('@aws-cdk/aws-events');
 import iam = require('@aws-cdk/aws-iam');
 import kms = require('@aws-cdk/aws-kms');
-import { Construct, IResource, Lazy, PhysicalName,
-  RemovalPolicy, Resource, Stack, Token } from '@aws-cdk/cdk';
+import { Construct, IResource, Lazy, RemovalPolicy, Resource, Stack, Token } from '@aws-cdk/cdk';
 import { EOL } from 'os';
 import { BucketPolicy } from './bucket-policy';
 import { IBucketNotificationDestination } from './destination';
@@ -724,7 +723,7 @@ export interface BucketProps {
    *
    * @default - Assigned by CloudFormation (recommended).
    */
-  readonly bucketName?: PhysicalName;
+  readonly bucketName?: string;
 
   /**
    * Policy to apply when the bucket is removed from this stack.

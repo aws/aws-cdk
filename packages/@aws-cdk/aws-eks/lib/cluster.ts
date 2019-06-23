@@ -2,7 +2,7 @@ import autoscaling = require('@aws-cdk/aws-autoscaling');
 import ec2 = require('@aws-cdk/aws-ec2');
 import { Subnet } from '@aws-cdk/aws-ec2';
 import iam = require('@aws-cdk/aws-iam');
-import { CfnOutput, Construct, IResource, PhysicalName, Resource, Tag } from '@aws-cdk/cdk';
+import { CfnOutput, Construct, IResource, Resource, Tag } from '@aws-cdk/cdk';
 import { EksOptimizedAmi, nodeTypeForInstanceType } from './ami';
 import { CfnCluster } from './eks.generated';
 import { maxPodsForInstanceType } from './instance-data';
@@ -110,7 +110,7 @@ export interface ClusterProps {
    *
    * @default Automatically generated name
    */
-  readonly clusterName?: PhysicalName;
+  readonly clusterName?: string;
 
   /**
    * Security Group to use for Control Plane ENIs

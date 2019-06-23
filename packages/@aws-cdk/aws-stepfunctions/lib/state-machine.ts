@@ -1,6 +1,6 @@
 import cloudwatch = require('@aws-cdk/aws-cloudwatch');
 import iam = require('@aws-cdk/aws-iam');
-import { Construct, Duration, IResource, PhysicalName, Resource, Stack } from '@aws-cdk/cdk';
+import { Construct, Duration, IResource, Resource, Stack } from '@aws-cdk/cdk';
 import { StateGraph } from './state-graph';
 import { CfnStateMachine } from './stepfunctions.generated';
 import { IChainable } from './types';
@@ -14,7 +14,7 @@ export interface StateMachineProps {
      *
      * @default A name is automatically generated
      */
-    readonly stateMachineName?: PhysicalName;
+    readonly stateMachineName?: string;
 
     /**
      * Definition for this state machine

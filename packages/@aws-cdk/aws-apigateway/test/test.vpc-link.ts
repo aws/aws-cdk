@@ -16,7 +16,7 @@ export = {
 
     // WHEN
     new apigateway.VpcLink(stack, 'VpcLink', {
-      vpcLinkName: cdk.PhysicalName.of('MyLink'),
+      vpcLinkName: 'MyLink',
       targets: [nlb]
     });
 
