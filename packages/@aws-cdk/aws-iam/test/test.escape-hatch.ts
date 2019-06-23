@@ -2,7 +2,7 @@
 // because we want to verify them end-to-end, as a complement to the unit
 // tests in the @aws-cdk/cdk module
 import { expect } from '@aws-cdk/assert';
-import { PhysicalName, Stack } from '@aws-cdk/cdk';
+import { Stack } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
 import iam = require('../lib');
 
@@ -12,7 +12,7 @@ export = {
   'addPropertyOverride should allow overriding supported properties'(test: Test) {
     const stack = new Stack();
     const user = new iam.User(stack, 'user', {
-      userName: PhysicalName.of('MyUserName'),
+      userName: 'MyUserName',
     });
 
     const cfn = user.node.findChild('Resource') as iam.CfnUser;
@@ -33,7 +33,7 @@ export = {
   'addPropertyOverrides should allow specifying arbitrary properties'(test: Test) {
     // GIVEN
     const stack = new Stack();
-    const user = new iam.User(stack, 'user', { userName: PhysicalName.of('MyUserName') });
+    const user = new iam.User(stack, 'user', { userName: 'MyUserName' });
     const cfn = user.node.findChild('Resource') as iam.CfnUser;
 
     // WHEN
@@ -59,7 +59,7 @@ export = {
   'addOverride should allow overriding properties'(test: Test) {
     // GIVEN
     const stack = new Stack();
-    const user = new iam.User(stack, 'user', { userName: PhysicalName.of('MyUserName') });
+    const user = new iam.User(stack, 'user', { userName: 'MyUserName' });
     const cfn = user.node.findChild('Resource') as iam.CfnUser;
     cfn.options.updatePolicy = { useOnlineResharding: true };
 

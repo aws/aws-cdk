@@ -13,7 +13,7 @@ export = {
     new ssm.StringParameter(stack, 'Parameter', {
       allowedPattern: '.*',
       description: 'The value Foo',
-      parameterName: cdk.PhysicalName.of('FooParameter'),
+      parameterName: 'FooParameter',
       stringValue: 'Foo',
     });
 
@@ -60,7 +60,7 @@ export = {
     new ssm.StringListParameter(stack, 'Parameter', {
       allowedPattern: '(Foo|Bar)',
       description: 'The values Foo and Bar',
-      parameterName: cdk.PhysicalName.of('FooParameter'),
+      parameterName: 'FooParameter',
       stringListValue: ['Foo', 'Bar'],
     });
 

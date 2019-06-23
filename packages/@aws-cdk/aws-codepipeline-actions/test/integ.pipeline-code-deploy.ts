@@ -9,7 +9,7 @@ const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-cdk-codepipeline-codedeploy');
 
 const application = new codedeploy.ServerApplication(stack, 'CodeDeployApplication', {
-  applicationName: cdk.PhysicalName.of('IntegTestDeployApp'),
+  applicationName: 'IntegTestDeployApp',
 });
 
 const deploymentConfig = new codedeploy.ServerDeploymentConfig(stack, 'CustomDeployConfig', {
@@ -18,7 +18,7 @@ const deploymentConfig = new codedeploy.ServerDeploymentConfig(stack, 'CustomDep
 
 const deploymentGroup = new codedeploy.ServerDeploymentGroup(stack, 'CodeDeployGroup', {
   application,
-  deploymentGroupName: cdk.PhysicalName.of('IntegTestDeploymentGroup'),
+  deploymentGroupName: 'IntegTestDeploymentGroup',
   deploymentConfig,
 });
 

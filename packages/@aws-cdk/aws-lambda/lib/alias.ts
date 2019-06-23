@@ -1,5 +1,5 @@
 import cloudwatch = require('@aws-cdk/aws-cloudwatch');
-import { Construct, PhysicalName, Stack } from '@aws-cdk/cdk';
+import { Construct } from '@aws-cdk/cdk';
 import { IFunction, QualifiedFunctionBase } from './function-base';
 import { IVersion } from './lambda-version';
 import { CfnAlias } from './lambda.generated';
@@ -115,7 +115,7 @@ export class Alias extends QualifiedFunctionBase implements IAlias {
 
   constructor(scope: Construct, id: string, props: AliasProps) {
     super(scope, id, {
-      physicalName: PhysicalName.of(props.aliasName),
+      physicalName: props.aliasName,
     });
 
     this.lambda = props.version.lambda;
@@ -130,22 +130,17 @@ export class Alias extends QualifiedFunctionBase implements IAlias {
       routingConfig: this.determineRoutingConfig(props)
     });
 
-    const resourceIdentifiers = this.getCrossEnvironmentAttributes({
-      arn: alias.ref,
-      name: this.aliasName,
-      arnComponents: {
-        service: 'lambda',
-        resource: 'function',
-        resourceName: `${this.lambda.functionName}:${this.physicalName}`,
-        sep: ':',
-      },
+    this.functionArn = this.getResourceArnAttribute(alias.ref, {
+      service: 'lambda',
+      resource: 'function',
+      resourceName: `${this.lambda.functionName}:${this.physicalName}`,
+      sep: ':',
     });
 
-    this.functionArn = resourceIdentifiers.arn;
     // ARN parsing splits on `:`, so we can only get the function's name from the ARN as resourceName...
     // And we're parsing it out (instead of using the underlying function directly) in order to have use of it incur
     // an implicit dependency on the resource.
-    this.functionName = `${Stack.of(this).parseArn(this.functionArn, ":").resourceName!}:${this.aliasName}`;
+    this.functionName = `${this.stack.parseArn(this.functionArn, ":").resourceName!}:${this.aliasName}`;
   }
 
   public get grantPrincipal() {

@@ -4,7 +4,7 @@ import ec2 = require('@aws-cdk/aws-ec2');
 import iam = require('@aws-cdk/aws-iam');
 import cloudmap = require('@aws-cdk/aws-servicediscovery');
 import ssm = require('@aws-cdk/aws-ssm');
-import { Construct, Duration, IResource, PhysicalName, Resource, Stack } from '@aws-cdk/cdk';
+import { Construct, Duration, IResource, Resource, Stack } from '@aws-cdk/cdk';
 import { InstanceDrainHook } from './drain-hook/instance-drain-hook';
 import { CfnCluster } from './ecs.generated';
 
@@ -17,7 +17,7 @@ export interface ClusterProps {
    *
    * @default CloudFormation-generated name
    */
-  readonly clusterName?: PhysicalName;
+  readonly clusterName?: string;
 
   /**
    * The VPC where your ECS instances will be running or your ENIs will be deployed
@@ -75,17 +75,12 @@ export class Cluster extends Resource implements ICluster {
       clusterName: this.physicalName,
     });
 
-    const resourceIdentifiers = this.getCrossEnvironmentAttributes({
-      arn: cluster.attrArn,
-      name: cluster.ref,
-      arnComponents: {
-        service: 'ecs',
-        resource: 'cluster',
-        resourceName: this.physicalName,
-      },
+    this.clusterArn = this.getResourceArnAttribute(cluster.attrArn, {
+      service: 'ecs',
+      resource: 'cluster',
+      resourceName: this.physicalName,
     });
-    this.clusterArn = resourceIdentifiers.arn;
-    this.clusterName = resourceIdentifiers.name;
+    this.clusterName = this.getResourceNameAttribute(cluster.ref);
 
     this.vpc = props.vpc;
   }
