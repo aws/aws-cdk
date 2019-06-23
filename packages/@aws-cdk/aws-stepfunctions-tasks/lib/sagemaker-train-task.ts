@@ -171,7 +171,6 @@ export class SagemakerTrainTask implements ec2.IConnectable, sfn.IStepFunctionsT
      * @param securityGroup: The security group to add
      */
     public addSecurityGroup(securityGroup: ec2.ISecurityGroup): void {
-        console.log("Adding security group");
         this.securityGroups.push(securityGroup);
     }
 
@@ -270,7 +269,6 @@ export class SagemakerTrainTask implements ec2.IConnectable, sfn.IStepFunctionsT
     }
 
     private renderVpcConfig(config: VpcConfig | undefined): {[key: string]: any} {
-        console.log("Render vpc config");
         return (config) ? { VpcConfig: {
             SecurityGroupIds: Lazy.listValue({ produce: () => (this.securityGroups.map(sg => (sg.securityGroupId))) }),
             Subnets: this.subnets,

@@ -315,7 +315,7 @@ test('Cannot create a SageMaker train task with both algorithm name and image na
                 channelName: 'train',
                 dataSource: {
                     s3DataSource: {
-                        s3DataType: tasks.S3DataType.S3Prefix,
+                        s3DataType: tasks.S3DataType.S3_PREFIX,
                         s3Uri: sfn.Data.stringAt('$.S3Bucket')
                     }
                 }
