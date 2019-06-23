@@ -2,7 +2,7 @@ import { expect, haveResource } from '@aws-cdk/assert';
 import ec2 = require('@aws-cdk/aws-ec2');
 import { InstanceType } from '@aws-cdk/aws-ec2';
 import cloudmap = require('@aws-cdk/aws-servicediscovery');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import { Test } from 'nodeunit';
 import ecs = require('../lib');
 

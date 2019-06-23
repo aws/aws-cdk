@@ -1,6 +1,6 @@
 import appscaling = require('@aws-cdk/aws-applicationautoscaling');
 import iam = require('@aws-cdk/aws-iam');
-import { Aws, Construct, Lazy, Resource, Stack } from '@aws-cdk/cdk';
+import { Aws, Construct, Lazy, Resource, Stack } from '@aws-cdk/core';
 import { CfnTable } from './dynamodb.generated';
 import { EnableScalingProps, IScalableTableAttribute } from './scalable-attribute-api';
 import { ScalableTableAttribute } from './scalable-table-attribute';

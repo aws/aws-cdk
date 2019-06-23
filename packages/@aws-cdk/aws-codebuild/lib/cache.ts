@@ -1,5 +1,5 @@
 import { IBucket } from "@aws-cdk/aws-s3";
-import { Aws, Fn } from "@aws-cdk/cdk";
+import { Aws, Fn } from "@aws-cdk/core";
 import { CfnProject } from "./codebuild.generated";
 import { IProject } from "./project";
 

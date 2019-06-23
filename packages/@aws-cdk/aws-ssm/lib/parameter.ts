@@ -2,7 +2,7 @@ import iam = require('@aws-cdk/aws-iam');
 import {
   CfnDynamicReference, CfnDynamicReferenceService, CfnParameter,
   Construct, ContextProvider, Fn, IConstruct, IResource, Resource, Stack, Token
-} from '@aws-cdk/cdk';
+} from '@aws-cdk/core';
 import cxapi = require('@aws-cdk/cx-api');
 import ssm = require('./ssm.generated');
 

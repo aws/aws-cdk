@@ -1,5 +1,5 @@
 import iam = require('@aws-cdk/aws-iam');
-import { CfnOutput, Construct, IResource as IResourceBase, Resource, Stack } from '@aws-cdk/cdk';
+import { CfnOutput, Construct, IResource as IResourceBase, Resource, Stack } from '@aws-cdk/core';
 import { ApiKey, IApiKey } from './api-key';
 import { CfnAccount, CfnRestApi } from './apigateway.generated';
 import { Deployment } from './deployment';

@@ -1,6 +1,6 @@
 import lambda = require('@aws-cdk/aws-lambda');
 import s3 = require('@aws-cdk/aws-s3');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import s3n = require('../../lib');
 
 const app = new cdk.App();

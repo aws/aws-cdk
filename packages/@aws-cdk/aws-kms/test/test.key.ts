@@ -1,6 +1,6 @@
 import { exactlyMatchTemplate, expect, haveResource, ResourcePart } from '@aws-cdk/assert';
 import { PolicyStatement, User } from '@aws-cdk/aws-iam';
-import { App, RemovalPolicy, Stack, Tag } from '@aws-cdk/cdk';
+import { App, RemovalPolicy, Stack, Tag } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import { Key } from '../lib';
 

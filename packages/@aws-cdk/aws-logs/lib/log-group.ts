@@ -1,6 +1,6 @@
 import cloudwatch = require('@aws-cdk/aws-cloudwatch');
 import iam = require('@aws-cdk/aws-iam');
-import { Construct, IResource, RemovalPolicy, Resource, Stack } from '@aws-cdk/cdk';
+import { Construct, IResource, RemovalPolicy, Resource, Stack } from '@aws-cdk/core';
 import { LogStream } from './log-stream';
 import { CfnLogGroup } from './logs.generated';
 import { MetricFilter } from './metric-filter';

@@ -1,5 +1,5 @@
 import iam = require('@aws-cdk/aws-iam');
-import { Construct, Duration, IResource, Resource } from '@aws-cdk/cdk';
+import { Construct, Duration, IResource, Resource } from '@aws-cdk/core';
 import { IAutoScalingGroup } from './auto-scaling-group';
 import { CfnLifecycleHook } from './autoscaling.generated';
 import { ILifecycleHookTarget } from './lifecycle-hook-target';

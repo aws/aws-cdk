@@ -1,5 +1,5 @@
 import iam = require('@aws-cdk/aws-iam');
-import { Construct, IResource, Lazy, Resource } from '@aws-cdk/cdk';
+import { Construct, IResource, Lazy, Resource } from '@aws-cdk/core';
 import { ContainerDefinition, ContainerDefinitionOptions } from '../container-definition';
 import { CfnTaskDefinition } from '../ecs.generated';
 import { PlacementConstraint } from '../placement';

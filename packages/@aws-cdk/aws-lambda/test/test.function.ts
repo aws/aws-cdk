@@ -1,5 +1,5 @@
 import s3 = require('@aws-cdk/aws-s3');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import _ = require('lodash');
 import {Test, testCase} from 'nodeunit';
 import lambda = require('../lib');

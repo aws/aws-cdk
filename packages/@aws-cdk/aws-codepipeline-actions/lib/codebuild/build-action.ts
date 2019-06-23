@@ -1,7 +1,7 @@
 import codebuild = require('@aws-cdk/aws-codebuild');
 import codepipeline = require('@aws-cdk/aws-codepipeline');
 import iam = require('@aws-cdk/aws-iam');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 
 /**
  * The type of the CodeBuild action that determines its CodePipeline Category -

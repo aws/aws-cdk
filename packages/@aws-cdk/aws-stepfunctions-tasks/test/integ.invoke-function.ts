@@ -1,5 +1,5 @@
 import sfn = require('@aws-cdk/aws-stepfunctions');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import path = require('path');
 import { Code, Function, Runtime } from '../../aws-lambda/lib';
 import tasks = require('../lib');

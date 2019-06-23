@@ -1,6 +1,6 @@
 /// !cdk-integ *
 import { AttributeType } from '@aws-cdk/aws-dynamodb';
-import { App } from '@aws-cdk/cdk';
+import { App } from '@aws-cdk/core';
 import { GlobalTable } from '../lib';
 
 const app = new App();

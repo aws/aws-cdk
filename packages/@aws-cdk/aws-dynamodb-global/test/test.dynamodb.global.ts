@@ -1,7 +1,7 @@
 import { expect, haveResource } from '@aws-cdk/assert';
 import { Attribute, AttributeType, StreamViewType } from '@aws-cdk/aws-dynamodb';
 import { Table } from '@aws-cdk/aws-dynamodb';
-import { Stack } from '@aws-cdk/cdk';
+import { Stack } from '@aws-cdk/core';
 import * as assert from 'assert';
 import { Test } from 'nodeunit';
 import {

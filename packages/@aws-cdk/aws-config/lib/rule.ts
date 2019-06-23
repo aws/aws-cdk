@@ -1,7 +1,7 @@
 import events = require('@aws-cdk/aws-events');
 import iam = require('@aws-cdk/aws-iam');
 import lambda = require('@aws-cdk/aws-lambda');
-import { Construct, IResource, Lazy, Resource } from '@aws-cdk/cdk';
+import { Construct, IResource, Lazy, Resource } from '@aws-cdk/core';
 import { CfnConfigRule } from './config.generated';
 
 /**

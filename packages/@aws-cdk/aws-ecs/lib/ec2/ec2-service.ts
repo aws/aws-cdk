@@ -1,6 +1,6 @@
 import ec2 = require('@aws-cdk/aws-ec2');
 import elb = require('@aws-cdk/aws-elasticloadbalancing');
-import { Construct, Lazy, Resource } from '@aws-cdk/cdk';
+import { Construct, Lazy, Resource } from '@aws-cdk/core';
 import { BaseService, BaseServiceProps, IService } from '../base/base-service';
 import { NetworkMode, TaskDefinition } from '../base/task-definition';
 import { CfnService } from '../ecs.generated';

@@ -1,5 +1,5 @@
-import cdk = require('@aws-cdk/cdk');
-import { captureStackTrace, Stack } from '@aws-cdk/cdk';
+import cdk = require('@aws-cdk/core');
+import { captureStackTrace, Stack } from '@aws-cdk/core';
 import { Default, RegionInfo } from '@aws-cdk/region-info';
 import { PolicyStatement } from './policy-statement';
 import { mergePrincipal } from './util';
