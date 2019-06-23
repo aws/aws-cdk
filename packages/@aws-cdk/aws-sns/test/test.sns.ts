@@ -27,7 +27,7 @@ export = {
       const stack = new cdk.Stack();
 
       new sns.Topic(stack, 'MyTopic', {
-        topicName: cdk.PhysicalName.of('topicName'),
+        topicName: 'topicName',
       });
 
       expect(stack).toMatch({
@@ -69,7 +69,7 @@ export = {
       const stack = new cdk.Stack();
 
       new sns.Topic(stack, 'MyTopic', {
-        topicName: cdk.PhysicalName.of('topicName'),
+        topicName: 'topicName',
         displayName: 'displayName'
       });
 

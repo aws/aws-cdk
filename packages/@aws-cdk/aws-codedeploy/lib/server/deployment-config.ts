@@ -65,7 +65,7 @@ export interface ServerDeploymentConfigProps {
    *
    * @default a name will be auto-generated
    */
-  readonly deploymentConfigName?: cdk.PhysicalName;
+  readonly deploymentConfigName?: string;
 
   /**
    * Minimum number of healthy hosts.

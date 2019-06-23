@@ -7,7 +7,7 @@ class CreatingStack extends cdk.Stack {
     super(scope, id);
 
     new ssm.StringParameter(this, 'String', {
-      parameterName: cdk.PhysicalName.of('/My/Public/Parameter'),
+      parameterName: '/My/Public/Parameter',
       stringValue: 'abcdef'
     });
   }

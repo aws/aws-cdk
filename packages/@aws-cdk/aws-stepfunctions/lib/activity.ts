@@ -1,5 +1,5 @@
 import cloudwatch = require('@aws-cdk/aws-cloudwatch');
-import { Construct, IResource, Lazy, PhysicalName, Resource, Stack } from '@aws-cdk/cdk';
+import { Construct, IResource, Lazy, Resource, Stack } from '@aws-cdk/cdk';
 import { CfnActivity } from './stepfunctions.generated';
 
 export interface ActivityProps {
@@ -8,7 +8,7 @@ export interface ActivityProps {
      *
      * @default If not supplied, a name is generated
      */
-    readonly activityName?: PhysicalName;
+    readonly activityName?: string;
 }
 
 /**
@@ -54,25 +54,20 @@ export class Activity extends Resource implements IActivity {
     constructor(scope: Construct, id: string, props: ActivityProps = {}) {
         super(scope, id, {
             physicalName: props.activityName ||
-                PhysicalName.of(Lazy.stringValue({ produce: () => this.generateName() })),
+                Lazy.stringValue({ produce: () => this.generateName() }),
         });
 
         const resource = new CfnActivity(this, 'Resource', {
             name: this.physicalName! // not null because of above call to `super`
         });
 
-        const resourceIdentifiers = this.getCrossEnvironmentAttributes({
-            arn: resource.ref,
-            name: resource.attrName,
-            arnComponents: {
-                service: 'states',
-                resource: 'activity',
-                resourceName: this.physicalName,
-                sep: ':',
-            },
+        this.activityArn = this.getResourceArnAttribute(resource.ref, {
+          service: 'states',
+          resource: 'activity',
+          resourceName: this.physicalName,
+          sep: ':',
         });
-        this.activityArn = resourceIdentifiers.arn;
-        this.activityName = resourceIdentifiers.name;
+        this.activityName = this.getResourceNameAttribute(resource.attrName);
     }
 
     /**

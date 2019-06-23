@@ -1,5 +1,5 @@
 import elbv2 = require('@aws-cdk/aws-elasticloadbalancingv2');
-import { Construct, Lazy, PhysicalName, Resource } from '@aws-cdk/cdk';
+import { Construct, Lazy, Resource } from '@aws-cdk/cdk';
 import { CfnVpcLink } from './apigateway.generated';
 
 /**
@@ -10,7 +10,7 @@ export interface VpcLinkProps {
    * The name used to label and identify the VPC link.
    * @default - automatically generated name
    */
-  readonly vpcLinkName?: PhysicalName;
+  readonly vpcLinkName?: string;
 
   /**
    * The description of the VPC link.
@@ -43,7 +43,7 @@ export class VpcLink extends Resource {
   constructor(scope: Construct, id: string, props: VpcLinkProps = {}) {
     super(scope, id, {
       physicalName: props.vpcLinkName ||
-        PhysicalName.of(Lazy.stringValue({ produce: () => this.node.uniqueId })),
+        Lazy.stringValue({ produce: () => this.node.uniqueId }),
     });
 
     const cfnResource = new CfnVpcLink(this, 'Resource', {
