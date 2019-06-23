@@ -329,7 +329,7 @@ export abstract class BaseService extends Resource
    * Enable CloudMap service discovery for the service
    */
   private enableCloudMap(options: CloudMapOptions): cloudmap.Service {
-    const sdNamespace = this.cluster.defaultNamespace;
+    const sdNamespace = this.cluster.defaultCloudMapNamespace;
     if (sdNamespace === undefined) {
       throw new Error("Cannot enable service discovery if a Cloudmap Namespace has not been created in the cluster.");
     }
