@@ -12,7 +12,7 @@ export = {
     new ecs.TaskDefinition(stack, 'TD', {
       cpu: '512',
       memoryMiB: '512',
-      compatibility: ecs.Compatibility.Ec2AndFargate,
+      compatibility: ecs.Compatibility.EC2_AND_FARGATE,
     });
 
     // THEN

@@ -8,7 +8,7 @@ const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-cdk-codebuild');
 
 const bucket = new s3.Bucket(stack, 'MyBucket', {
-  removalPolicy: cdk.RemovalPolicy.Destroy
+  removalPolicy: cdk.RemovalPolicy.DESTROY
 });
 
 new codebuild.Project(stack, 'MyProject', {
@@ -17,7 +17,7 @@ new codebuild.Project(stack, 'MyProject', {
     path: 'path/to/my/source.zip',
   }),
   environment: {
-    computeType: codebuild.ComputeType.Large
+    computeType: codebuild.ComputeType.LARGE
   }
 });
 

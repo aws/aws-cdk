@@ -16,7 +16,7 @@ const sourceAction = new cpactions.CodeCommitSourceAction({
   actionName: 'source',
   output: sourceOutput,
   repository,
-  pollForSourceChanges: true,
+  trigger: cpactions.CodeCommitTrigger.POLL,
 });
 
 const project = new codebuild.PipelineProject(stack, 'MyBuildProject');

@@ -110,7 +110,7 @@ export class SagemakerTransformTask implements sfn.IStepFunctionsTask {
                 { transformDataSource:
                     { s3DataSource:
                         { ...props.transformInput.transformDataSource.s3DataSource,
-                        s3DataType: S3DataType.S3Prefix
+                        s3DataType: S3DataType.S3_PREFIX
                         }
                     }
             });
@@ -118,14 +118,14 @@ export class SagemakerTransformTask implements sfn.IStepFunctionsTask {
         // set the default value for the transform resources
         this.transformResources = props.transformResources || {
             instanceCount: 1,
-            instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.M4, ec2.InstanceSize.XLarge),
+            instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.XLARGE),
         };
     }
 
     public bind(task: sfn.Task): sfn.StepFunctionsTaskConfig {
         return {
           resourceArn: 'arn:aws:states:::sagemaker:createTransformJob' + (this.props.synchronous ? '.sync' : ''),
-          parameters: sfn.FieldUtils.renderObject(this.renderParameters()),
+          parameters: this.renderParameters(),
           policyStatements: this.makePolicyStatements(task),
         };
     }

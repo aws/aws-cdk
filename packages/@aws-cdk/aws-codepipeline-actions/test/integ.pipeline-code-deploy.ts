@@ -9,7 +9,7 @@ const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-cdk-codepipeline-codedeploy');
 
 const application = new codedeploy.ServerApplication(stack, 'CodeDeployApplication', {
-  applicationName: 'IntegTestDeployApp',
+  applicationName: cdk.PhysicalName.of('IntegTestDeployApp'),
 });
 
 const deploymentConfig = new codedeploy.ServerDeploymentConfig(stack, 'CustomDeployConfig', {
@@ -18,13 +18,13 @@ const deploymentConfig = new codedeploy.ServerDeploymentConfig(stack, 'CustomDep
 
 const deploymentGroup = new codedeploy.ServerDeploymentGroup(stack, 'CodeDeployGroup', {
   application,
-  deploymentGroupName: 'IntegTestDeploymentGroup',
+  deploymentGroupName: cdk.PhysicalName.of('IntegTestDeploymentGroup'),
   deploymentConfig,
 });
 
 const bucket = new s3.Bucket(stack, 'CodeDeployPipelineIntegTest', {
   versioned: true,
-  removalPolicy: cdk.RemovalPolicy.Destroy,
+  removalPolicy: cdk.RemovalPolicy.DESTROY,
 });
 
 const pipeline = new codepipeline.Pipeline(stack, 'Pipeline', {

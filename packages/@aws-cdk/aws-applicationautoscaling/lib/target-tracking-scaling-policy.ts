@@ -37,14 +37,14 @@ export interface BaseTargetTrackingProps {
    *
    * @default - No scale in cooldown.
    */
-  readonly scaleInCooldownSec?: number;
+  readonly scaleInCooldown?: cdk.Duration;
 
   /**
    * Period after a scale out activity completes before another scale out activity can start.
    *
    * @default - No scale out cooldown.
    */
-  readonly scaleOutCooldownSec?: number;
+  readonly scaleOutCooldown?: cdk.Duration;
 }
 
 /**
@@ -115,13 +115,6 @@ export class TargetTrackingScalingPolicy extends cdk.Construct {
       throw new Error(`Exactly one of 'customMetric' or 'predefinedMetric' must be specified.`);
     }
 
-    if (props.scaleInCooldownSec !== undefined && props.scaleInCooldownSec < 0) {
-      throw new RangeError(`scaleInCooldown cannot be negative, got: ${props.scaleInCooldownSec}`);
-    }
-    if (props.scaleOutCooldownSec !== undefined && props.scaleOutCooldownSec < 0) {
-      throw new RangeError(`scaleOutCooldown cannot be negative, got: ${props.scaleOutCooldownSec}`);
-    }
-
     super(scope, id);
 
     const resource = new CfnScalingPolicy(this, 'Resource', {
@@ -135,13 +128,13 @@ export class TargetTrackingScalingPolicy extends cdk.Construct {
           predefinedMetricType: props.predefinedMetric,
           resourceLabel: props.resourceLabel,
         } : undefined,
-        scaleInCooldown: props.scaleInCooldownSec,
-        scaleOutCooldown: props.scaleOutCooldownSec,
+        scaleInCooldown: props.scaleInCooldown && props.scaleInCooldown.toSeconds(),
+        scaleOutCooldown: props.scaleOutCooldown && props.scaleOutCooldown.toSeconds(),
         targetValue: props.targetValue
       }
     });
 
-    this.scalingPolicyArn = resource.refAsString;
+    this.scalingPolicyArn = resource.ref;
   }
 }
 
@@ -166,15 +159,15 @@ function renderCustomMetric(metric?: cloudwatch.IMetric): CfnScalingPolicy.Custo
  * One of the predefined autoscaling metrics
  */
 export enum PredefinedMetric {
-  DynamoDBReadCapacityUtilization = 'DynamoDBReadCapacityUtilization',
-  DynamoDBWriteCapacityUtilization = 'DynamoDBWriteCapacityUtilization',
-  ALBRequestCountPerTarget = 'ALBRequestCountPerTarget',
-  RDSReaderAverageCPUUtilization = 'RDSReaderAverageCPUUtilization',
-  RDSReaderAverageDatabaseConnections = 'RDSReaderAverageDatabaseConnections',
-  EC2SpotFleetRequestAverageCPUUtilization = 'EC2SpotFleetRequestAverageCPUUtilization',
-  EC2SpotFleetRequestAverageNetworkIn = 'EC2SpotFleetRequestAverageNetworkIn',
-  EC2SpotFleetRequestAverageNetworkOut = 'EC2SpotFleetRequestAverageNetworkOut',
-  SageMakerVariantInvocationsPerInstance = 'SageMakerVariantInvocationsPerInstance',
-  ECSServiceAverageCPUUtilization = 'ECSServiceAverageCPUUtilization',
-  ECSServiceAverageMemoryUtilization = 'ECSServiceAverageMemoryUtilization',
+  DYNAMODB_READ_CAPACITY_UTILIZATION = 'DynamoDBReadCapacityUtilization',
+  DYANMODB_WRITE_CAPACITY_UTILIZATION = 'DynamoDBWriteCapacityUtilization',
+  ALB_REQUEST_COUNT_PER_TARGET = 'ALBRequestCountPerTarget',
+  RDS_READER_AVERAGE_CPU_UTILIZATION = 'RDSReaderAverageCPUUtilization',
+  RDS_READER_AVERAGE_DATABASE_CONNECTIONS = 'RDSReaderAverageDatabaseConnections',
+  EC2_SPOT_FLEET_REQUEST_AVERAGE_CPU_UTILIZATION = 'EC2SpotFleetRequestAverageCPUUtilization',
+  EC2_SPOT_FLEET_REQUEST_AVERAGE_NETWORK_IN = 'EC2SpotFleetRequestAverageNetworkIn',
+  EC2_SPOT_FLEET_REQUEST_AVERAGE_NETWORK_OUT = 'EC2SpotFleetRequestAverageNetworkOut',
+  SAGEMAKER_VARIANT_INVOCATIONS_PER_INSTANCE = 'SageMakerVariantInvocationsPerInstance',
+  ECS_SERVICE_AVERAGE_CPU_UTILIZATION = 'ECSServiceAverageCPUUtilization',
+  ECS_SERVICE_AVERAGE_MEMORY_UTILIZATION = 'ECSServiceAverageMemoryUtilization',
 }

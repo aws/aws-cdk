@@ -1,10 +1,10 @@
 import cxapi = require('@aws-cdk/cx-api');
 import { IAspect } from './aspect';
 import { DependableTrait, IDependable } from './dependency';
+import { makeUniqueId } from './private/uniqueid';
 import { IResolvable } from './resolvable';
 import { captureStackTrace } from './stack-trace';
 import { Token } from './token';
-import { makeUniqueId } from './uniqueid';
 
 const CONSTRUCT_SYMBOL = Symbol.for('@aws-cdk/cdk.Construct');
 
@@ -13,7 +13,7 @@ const CONSTRUCT_SYMBOL = Symbol.for('@aws-cdk/cdk.Construct');
  */
 export interface IConstruct extends IDependable {
   /**
-   * The construct node in the scope tree.
+   * The construct node in the tree.
    */
   readonly node: ConstructNode;
 }
@@ -55,7 +55,7 @@ export class ConstructNode {
       }
 
       // synthesize (leaves first)
-      for (const construct of root.findAll(ConstructOrder.PostOrder)) {
+      for (const construct of root.findAll(ConstructOrder.POSTORDER)) {
         (construct as any).synthesize({ assembly: builder }); // "as any" is needed because we want to keep "synthesize" protected
       }
     } finally {
@@ -71,7 +71,7 @@ export class ConstructNode {
    * @param node The root node
    */
   public static prepare(node: ConstructNode) {
-    const constructs = node.findAll(ConstructOrder.PreOrder);
+    const constructs = node.findAll(ConstructOrder.PREORDER);
 
     // Aspects are applied root to leaf
     for (const construct of constructs) {
@@ -198,7 +198,7 @@ export class ConstructNode {
   /**
    * Return a descendant by path
    *
-   * Throws an exception if the descendant is not found.
+   * Throws an error if the descendant is not found.
    *
    * Note that if the original ID of the construct you are looking for contained
    * a '/', then it would have been replaced by '--'.
@@ -215,7 +215,7 @@ export class ConstructNode {
   }
 
   /**
-   * Returns the child construct that has the id "Default" or "Resource".
+   * Returns the child construct that has the id `Default` or `Resource"`
    * @throws if there is more than one child
    * @returns a construct or undefined if there is no default child
    */
@@ -239,13 +239,13 @@ export class ConstructNode {
   /**
    * Return this construct and all of its children in the given order
    */
-  public findAll(order: ConstructOrder = ConstructOrder.PreOrder): IConstruct[] {
+  public findAll(order: ConstructOrder = ConstructOrder.PREORDER): IConstruct[] {
     const ret = new Array<IConstruct>();
     visit(this.host);
     return ret;
 
     function visit(node: IConstruct) {
-      if (order === ConstructOrder.PreOrder) {
+      if (order === ConstructOrder.PREORDER) {
         ret.push(node);
       }
 
@@ -253,7 +253,7 @@ export class ConstructNode {
         visit(child);
       }
 
-      if (order === ConstructOrder.PostOrder) {
+      if (order === ConstructOrder.POSTORDER) {
         ret.push(node);
       }
     }
@@ -643,12 +643,12 @@ export enum ConstructOrder {
   /**
    * Depth-first, pre-order
    */
-  PreOrder,
+  PREORDER,
 
   /**
    * Depth-first, post-order (leaf nodes first)
    */
-  PostOrder
+  POSTORDER
 }
 
 /**

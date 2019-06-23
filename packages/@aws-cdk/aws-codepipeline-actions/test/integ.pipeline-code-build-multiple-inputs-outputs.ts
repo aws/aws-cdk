@@ -14,7 +14,7 @@ const repository = new codecommit.Repository(stack, 'MyRepo', {
 });
 const bucket = new s3.Bucket(stack, 'MyBucket', {
   versioned: true,
-  removalPolicy: cdk.RemovalPolicy.Destroy,
+  removalPolicy: cdk.RemovalPolicy.DESTROY,
 });
 
 const pipeline = new codepipeline.Pipeline(stack, 'Pipeline', {

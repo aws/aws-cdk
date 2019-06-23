@@ -1,3 +1,4 @@
+import { Duration } from '@aws-cdk/cdk';
 import { Chain } from './chain';
 import { State } from './states/state';
 
@@ -93,9 +94,9 @@ export interface RetryProps {
     /**
      * How many seconds to wait initially before retrying
      *
-     * @default 1
+     * @default Duration.seconds(1)
      */
-    readonly intervalSeconds?: number;
+    readonly interval?: Duration;
 
     /**
      * How many times to retry this particular error.

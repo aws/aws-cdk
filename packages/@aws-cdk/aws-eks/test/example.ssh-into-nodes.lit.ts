@@ -15,12 +15,12 @@ class EksClusterStack extends cdk.Stack {
     /// !show
     const asg = cluster.addCapacity('Nodes', {
       instanceType: new ec2.InstanceType('t2.medium'),
-      vpcSubnets: { subnetType: ec2.SubnetType.Public },
+      vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC },
       keyName: 'my-key-name',
     });
 
     // Replace with desired IP
-    asg.connections.allowFrom(new ec2.CidrIPv4('1.2.3.4/32'), new ec2.TcpPort(22));
+    asg.connections.allowFrom(ec2.Peer.ipv4('1.2.3.4/32'), ec2.Port.tcp(22));
     /// !hide
   }
 }

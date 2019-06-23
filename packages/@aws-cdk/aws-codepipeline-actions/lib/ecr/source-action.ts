@@ -39,7 +39,7 @@ export class EcrSourceAction extends codepipeline.Action {
   constructor(props: EcrSourceActionProps) {
     super({
       ...props,
-      category: codepipeline.ActionCategory.Source,
+      category: codepipeline.ActionCategory.SOURCE,
       provider: 'ECR',
       artifactBounds: sourceArtifactBounds(),
       outputs: [props.output],

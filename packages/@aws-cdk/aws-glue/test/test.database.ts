@@ -8,7 +8,7 @@ export = {
     const stack = new Stack();
 
     new glue.Database(stack, 'Database', {
-      databaseName: 'test_database'
+      databaseName: 'test_database',
     });
 
     expect(stack).toMatch({

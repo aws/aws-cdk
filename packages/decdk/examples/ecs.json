@@ -16,11 +16,11 @@
     "MyTaskDef": {
       "Type": "@aws-cdk/aws-ecs.TaskDefinition",
       "Properties": {
-        "compatibility": "Fargate",
+        "compatibility": "FARGATE",
         "family": "redis",
         "cpu": "1024",
         "memoryMiB": "1GB",
-        "networkMode": "AwsVpc"
+        "networkMode": "AWS_VPC"
       }
     },
     "ContainerDef": {

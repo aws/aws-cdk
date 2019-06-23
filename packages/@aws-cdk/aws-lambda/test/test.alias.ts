@@ -1,6 +1,6 @@
 import { beASupersetOfTemplate, expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
 import cloudwatch = require('@aws-cdk/aws-cloudwatch');
-import { Stack } from '@aws-cdk/cdk';
+import { PhysicalName, Stack } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
 import lambda = require('../lib');
 
@@ -169,7 +169,7 @@ export = {
     // WHEN
     new cloudwatch.Alarm(stack, 'Alarm', {
       metric: alias.metric('Test'),
-      alarmName: 'Test',
+      alarmName: PhysicalName.of('Test'),
       threshold: 1,
       evaluationPeriods: 1
     });

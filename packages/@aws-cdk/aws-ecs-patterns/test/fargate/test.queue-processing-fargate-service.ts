@@ -47,7 +47,7 @@ export = {
             LogDriver: "awslogs",
             Options: {
               "awslogs-group": {
-                Ref: "ServiceProcessingContainerLoggingLogGroupF40B9C5D"
+                Ref: "ServiceQueueProcessingTaskDefQueueProcessingContainerLogGroupD52338D1"
               },
               "awslogs-stream-prefix": "Service",
               "awslogs-region": {
@@ -69,7 +69,9 @@ export = {
     const vpc = new ec2.Vpc(stack, 'VPC');
     const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
     cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
-    const queue = new sqs.Queue(stack, 'fargate-test-queue', { queueName: 'fargate-test-sqs-queue'});
+    const queue = new sqs.Queue(stack, 'fargate-test-queue', {
+      queueName: cdk.PhysicalName.of('fargate-test-sqs-queue'),
+    });
 
     // WHEN
     new ecsPatterns.QueueProcessingFargateService(stack, 'Service', {

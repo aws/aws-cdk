@@ -26,7 +26,7 @@ export = {
         CidrBlock: '10.0.0.0/16',
         EnableDnsHostnames: true,
         EnableDnsSupport: true,
-        InstanceTenancy: ec2.DefaultInstanceTenancy.Default,
+        InstanceTenancy: ec2.DefaultInstanceTenancy.DEFAULT,
         Tags: [
           {
             Key: "Name",
@@ -228,7 +228,7 @@ export = {
     cluster.addCapacity('GpuAutoScalingGroup', {
       instanceType: new ec2.InstanceType('t2.micro'),
       machineImage: new ecs.EcsOptimizedAmi({
-        hardwareType: ecs.AmiHardwareType.Gpu
+        hardwareType: ecs.AmiHardwareType.GPU
       }),
     });
 
@@ -254,8 +254,8 @@ export = {
       cluster.addCapacity('GpuAutoScalingGroup', {
         instanceType: new ec2.InstanceType('t2.micro'),
         machineImage: new ecs.EcsOptimizedAmi({
-          generation: ec2.AmazonLinuxGeneration.AmazonLinux,
-          hardwareType: ecs.AmiHardwareType.Gpu,
+          generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX,
+          hardwareType: ecs.AmiHardwareType.GPU,
         }),
       });
     });
@@ -321,7 +321,7 @@ export = {
     // WHEN
     cluster.addDefaultCloudMapNamespace({
       name: "foo.com",
-      type: ecs.NamespaceType.PublicDns
+      type: ecs.NamespaceType.PUBLIC_DNS
     });
 
     // THEN
@@ -381,7 +381,7 @@ export = {
     });
 
     // THEN
-    test.equal(cluster2.defaultNamespace!.type, cloudmap.NamespaceType.DnsPrivate);
+    test.equal(cluster2.defaultNamespace!.type, cloudmap.NamespaceType.DNS_PRIVATE);
     test.deepEqual(stack2.resolve(cluster2.defaultNamespace!.namespaceId), 'import-namespace-id');
 
     // Can retrieve subnets from VPC - will throw 'There are no 'Private' subnets in this VPC. Use a different VPC subnet selection.' if broken.

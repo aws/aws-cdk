@@ -14,17 +14,17 @@ const pipeline = new codepipeline.Pipeline(stack, 'Pipeline');
 const sourceStage = pipeline.addStage({ stageName: 'Source' });
 const bucket = new s3.Bucket(stack, 'PipelineBucket', {
   versioned: true,
-  removalPolicy: cdk.RemovalPolicy.Destroy,
+  removalPolicy: cdk.RemovalPolicy.DESTROY,
 });
 const key = 'key';
 const trail = new cloudtrail.Trail(stack, 'CloudTrail');
-trail.addS3EventSelector([bucket.arnForObjects(key)], { readWriteType: cloudtrail.ReadWriteType.WriteOnly, includeManagementEvents: false });
+trail.addS3EventSelector([bucket.arnForObjects(key)], { readWriteType: cloudtrail.ReadWriteType.WRITE_ONLY, includeManagementEvents: false });
 sourceStage.addAction(new cpactions.S3SourceAction({
   actionName: 'Source',
   output: new codepipeline.Artifact('SourceArtifact'),
   bucket,
   bucketKey: key,
-  pollForSourceChanges: false,
+  trigger: cpactions.S3Trigger.EVENTS,
 }));
 
 const lambdaFun = new lambda.Function(stack, 'LambdaFun', {

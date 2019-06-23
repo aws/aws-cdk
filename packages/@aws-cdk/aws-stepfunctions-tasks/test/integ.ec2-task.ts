@@ -20,7 +20,7 @@ const vpc = ec2.Vpc.fromLookup(stack, 'Vpc', {
 const cluster = new ecs.Cluster(stack, 'FargateCluster', { vpc });
 cluster.addCapacity('DefaultAutoScalingGroup', {
   instanceType: new ec2.InstanceType('t2.micro'),
-  vpcSubnets: { subnetType: ec2.SubnetType.Public },
+  vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC },
 });
 
 // Build task definition
@@ -28,12 +28,12 @@ const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
 taskDefinition.addContainer('TheContainer', {
   image: ecs.ContainerImage.fromAsset(path.resolve(__dirname, 'eventhandler-image')),
   memoryLimitMiB: 256,
-  logging: new ecs.AwsLogDriver(stack, 'TaskLogging', { streamPrefix: 'EventDemo' })
+  logging: new ecs.AwsLogDriver({ streamPrefix: 'EventDemo' })
 });
 
 // Build state machine
 const definition = new sfn.Pass(stack, 'Start', {
-    result: { SomeKey: 'SomeValue' }
+    result: sfn.Result.fromObject({ SomeKey: 'SomeValue' })
 }).next(new sfn.Task(stack, 'Run', { task: new tasks.RunEcsEc2Task({
   cluster, taskDefinition,
   containerOverrides: [

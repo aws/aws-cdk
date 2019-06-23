@@ -85,7 +85,9 @@
   },
   "awslint": {
     "exclude": [
-      "props-no-arn-refs:@aws-cdk/aws-logs.CrossAccountDestinationProps.targetArn"
+      "props-no-arn-refs:@aws-cdk/aws-logs.CrossAccountDestinationProps.targetArn",
+      "props-physical-name:@aws-cdk/aws-logs.MetricFilterProps",
+      "props-physical-name:@aws-cdk/aws-logs.SubscriptionFilterProps"
     ]
   },
   "stability": "experimental"

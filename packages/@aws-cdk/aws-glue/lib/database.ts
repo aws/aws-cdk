@@ -1,5 +1,5 @@
 import s3 = require('@aws-cdk/aws-s3');
-import { Construct, IResource, Resource, Stack } from '@aws-cdk/cdk';
+import { Construct, IResource, PhysicalName, Resource, Stack } from '@aws-cdk/cdk';
 import { CfnDatabase } from './glue.generated';
 
 export interface IDatabase extends IResource {
@@ -86,7 +86,9 @@ export class Database extends Resource implements IDatabase {
   public readonly locationUri: string;
 
   constructor(scope: Construct, id: string, props: DatabaseProps) {
-    super(scope, id);
+    super(scope, id, {
+      physicalName: PhysicalName.of(props.databaseName),
+    });
 
     if (props.locationUri) {
       this.locationUri = props.locationUri;
@@ -99,18 +101,28 @@ export class Database extends Resource implements IDatabase {
     const resource = new CfnDatabase(this, 'Resource', {
       catalogId: this.catalogId,
       databaseInput: {
-        name: props.databaseName,
+        name: this.physicalName,
         locationUri: this.locationUri
       }
     });
 
     // see https://docs.aws.amazon.com/glue/latest/dg/glue-specifying-resource-arns.html#data-catalog-resource-arns
-    this.databaseName = resource.refAsString;
-    this.databaseArn = Stack.of(this).formatArn({
-      service: 'glue',
-      resource: 'database',
-      resourceName: this.databaseName
+    const resourceIdentifiers = this.getCrossEnvironmentAttributes({
+      arn: Stack.of(this).formatArn({
+        service: 'glue',
+        resource: 'database',
+        resourceName: resource.ref,
+      }),
+      name: resource.ref,
+      arnComponents: {
+        service: 'glue',
+        resource: 'database',
+        resourceName: this.physicalName,
+      },
     });
+    this.databaseName = resourceIdentifiers.name;
+    this.databaseArn = resourceIdentifiers.arn;
+
     // catalogId is implicitly the accountId, which is why we don't pass the catalogId here
     this.catalogArn = Stack.of(this).formatArn({
       service: 'glue',

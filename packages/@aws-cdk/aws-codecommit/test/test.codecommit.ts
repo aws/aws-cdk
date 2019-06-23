@@ -9,7 +9,7 @@ export = {
       const stack = new Stack();
 
       const props: RepositoryProps = {
-        repositoryName: 'MyRepository'
+        repositoryName: 'MyRepository',
       };
 
       const snsArn = 'arn:aws:sns:*:123456789012:my_topic';
@@ -42,8 +42,9 @@ export = {
     'fails when triggers have duplicate names'(test: Test) {
       const stack = new Stack();
 
-      const props = { repositoryName: 'MyRepository' };
-      const myRepository = new Repository(stack, 'MyRepository', props).notify('myTrigger');
+      const myRepository = new Repository(stack, 'MyRepository', {
+        repositoryName: 'MyRepository',
+      }).notify('myTrigger');
 
       test.throws(() => myRepository.notify('myTrigger'));
 

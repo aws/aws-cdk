@@ -9,11 +9,11 @@ class S3EventSourceTest extends cdk.Stack {
 
     const fn = new TestFunction(this, 'F');
     const bucket = new s3.Bucket(this, 'B', {
-      removalPolicy: cdk.RemovalPolicy.Destroy
+      removalPolicy: cdk.RemovalPolicy.DESTROY
     });
 
     fn.addEventSource(new S3EventSource(bucket, {
-      events: [ s3.EventType.ObjectCreated ],
+      events: [ s3.EventType.OBJECT_CREATED ],
       filters: [ { prefix: 'subdir/' } ]
     }));
   }

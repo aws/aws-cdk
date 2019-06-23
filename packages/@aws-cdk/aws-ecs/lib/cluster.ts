@@ -4,7 +4,7 @@ import ec2 = require('@aws-cdk/aws-ec2');
 import iam = require('@aws-cdk/aws-iam');
 import cloudmap = require('@aws-cdk/aws-servicediscovery');
 import ssm = require('@aws-cdk/aws-ssm');
-import { Construct, IResource, Resource, Stack } from '@aws-cdk/cdk';
+import { Construct, Duration, IResource, PhysicalName, Resource, Stack } from '@aws-cdk/cdk';
 import { InstanceDrainHook } from './drain-hook/instance-drain-hook';
 import { CfnCluster } from './ecs.generated';
 
@@ -17,7 +17,7 @@ export interface ClusterProps {
    *
    * @default CloudFormation-generated name
    */
-  readonly clusterName?: string;
+  readonly clusterName?: PhysicalName;
 
   /**
    * The VPC where your ECS instances will be running or your ENIs will be deployed
@@ -67,13 +67,27 @@ export class Cluster extends Resource implements ICluster {
   private _hasEc2Capacity: boolean = false;
 
   constructor(scope: Construct, id: string, props: ClusterProps) {
-    super(scope, id);
+    super(scope, id, {
+      physicalName: props.clusterName,
+    });
 
-    const cluster = new CfnCluster(this, 'Resource', {clusterName: props.clusterName});
+    const cluster = new CfnCluster(this, 'Resource', {
+      clusterName: this.physicalName,
+    });
+
+    const resourceIdentifiers = this.getCrossEnvironmentAttributes({
+      arn: cluster.attrArn,
+      name: cluster.ref,
+      arnComponents: {
+        service: 'ecs',
+        resource: 'cluster',
+        resourceName: this.physicalName,
+      },
+    });
+    this.clusterArn = resourceIdentifiers.arn;
+    this.clusterName = resourceIdentifiers.name;
 
     this.vpc = props.vpc;
-    this.clusterArn = cluster.attrArn;
-    this.clusterName = cluster.refAsString;
   }
 
   /**
@@ -86,11 +100,11 @@ export class Cluster extends Resource implements ICluster {
       throw new Error("Can only add default namespace once.");
     }
 
-    const namespaceType = options.type === undefined || options.type === NamespaceType.PrivateDns
-      ? cloudmap.NamespaceType.DnsPrivate
-      : cloudmap.NamespaceType.DnsPublic;
+    const namespaceType = options.type === undefined || options.type === NamespaceType.PRIVATE_DNS
+      ? cloudmap.NamespaceType.DNS_PRIVATE
+      : cloudmap.NamespaceType.DNS_PUBLIC;
 
-    const sdNamespace = namespaceType === cloudmap.NamespaceType.DnsPrivate ?
+    const sdNamespace = namespaceType === cloudmap.NamespaceType.DNS_PRIVATE ?
       new cloudmap.PrivateDnsNamespace(this, 'DefaultServiceDiscoveryNamespace', {
         name: options.name,
         vpc: this.vpc
@@ -121,7 +135,7 @@ export class Cluster extends Resource implements ICluster {
       ...options,
       vpc: this.vpc,
       machineImage: options.machineImage || new EcsOptimizedAmi(),
-      updateType: options.updateType || autoscaling.UpdateType.ReplacingUpdate,
+      updateType: options.updateType || autoscaling.UpdateType.REPLACING_UPDATE,
       instanceType: options.instanceType,
     });
 
@@ -143,7 +157,7 @@ export class Cluster extends Resource implements ICluster {
     // Tie instances to cluster
     autoScalingGroup.addUserData(`echo ECS_CLUSTER=${this.clusterName} >> /etc/ecs/ecs.config`);
 
-    if (!options.containersAccessInstanceRole) {
+    if (!options.canContainersAccessInstanceRole) {
       // Deny containers access to instance metadata service
       // Source: https://docs.aws.amazon.com/AmazonECS/latest/developerguide/instance_IAM_role.html
       autoScalingGroup.addUserData('sudo iptables --insert FORWARD 1 --in-interface docker+ --destination 169.254.169.254/32 --jump DROP');
@@ -171,11 +185,11 @@ export class Cluster extends Resource implements ICluster {
     }));
 
     // 0 disables, otherwise forward to underlying implementation which picks the sane default
-    if (options.taskDrainTimeSeconds !== 0) {
+    if (!options.taskDrainTime || options.taskDrainTime.toSeconds() !== 0) {
       new InstanceDrainHook(autoScalingGroup, 'DrainECSHook', {
         autoScalingGroup,
         cluster: this,
-        drainTimeSec: options.taskDrainTimeSeconds
+        drainTime: options.taskDrainTime
       });
     }
   }
@@ -237,43 +251,46 @@ export interface EcsOptimizedAmiProps {
 /**
  * Construct a Linux machine image from the latest ECS Optimized AMI published in SSM
  */
-export class EcsOptimizedAmi implements ec2.IMachineImageSource {
+export class EcsOptimizedAmi implements ec2.IMachineImage {
   private readonly generation: ec2.AmazonLinuxGeneration;
   private readonly hwType: AmiHardwareType;
 
   private readonly amiParameterName: string;
 
   constructor(props?: EcsOptimizedAmiProps) {
-    this.hwType = (props && props.hardwareType) || AmiHardwareType.Standard;
+    this.hwType = (props && props.hardwareType) || AmiHardwareType.STANDARD;
     if (props && props.generation) {      // generation defined in the props object
-      if (props.generation === ec2.AmazonLinuxGeneration.AmazonLinux && this.hwType !== AmiHardwareType.Standard) {
+      if (props.generation === ec2.AmazonLinuxGeneration.AMAZON_LINUX && this.hwType !== AmiHardwareType.STANDARD) {
         throw new Error(`Amazon Linux does not support special hardware type. Use Amazon Linux 2 instead`);
       } else {
         this.generation = props.generation;
       }
     } else {                              // generation not defined in props object
-      if (this.hwType === AmiHardwareType.Standard) {    // default to Amazon Linux v1 if no HW is standard
-        this.generation = ec2.AmazonLinuxGeneration.AmazonLinux;
+      if (this.hwType === AmiHardwareType.STANDARD) {    // default to Amazon Linux v1 if no HW is standard
+        this.generation = ec2.AmazonLinuxGeneration.AMAZON_LINUX;
       } else {                                         // default to Amazon Linux v2 if special HW
-        this.generation = ec2.AmazonLinuxGeneration.AmazonLinux2;
+        this.generation = ec2.AmazonLinuxGeneration.AMAZON_LINUX_2;
       }
     }
 
     // set the SSM parameter name
     this.amiParameterName = "/aws/service/ecs/optimized-ami/"
-                          + ( this.generation === ec2.AmazonLinuxGeneration.AmazonLinux ? "amazon-linux/" : "" )
-                          + ( this.generation === ec2.AmazonLinuxGeneration.AmazonLinux2 ? "amazon-linux-2/" : "" )
-                          + ( this.hwType === AmiHardwareType.Gpu ? "gpu/" : "" )
-                          + ( this.hwType === AmiHardwareType.Arm ? "arm64/" : "" )
+                          + ( this.generation === ec2.AmazonLinuxGeneration.AMAZON_LINUX ? "amazon-linux/" : "" )
+                          + ( this.generation === ec2.AmazonLinuxGeneration.AMAZON_LINUX_2 ? "amazon-linux-2/" : "" )
+                          + ( this.hwType === AmiHardwareType.GPU ? "gpu/" : "" )
+                          + ( this.hwType === AmiHardwareType.ARM ? "arm64/" : "" )
                           + "recommended/image_id";
   }
 
   /**
    * Return the correct image
    */
-  public getImage(scope: Construct): ec2.MachineImage {
+  public getImage(scope: Construct): ec2.MachineImageConfig {
     const ami = ssm.StringParameter.valueForStringParameter(scope, this.amiParameterName);
-    return new ec2.MachineImage(ami, new ec2.LinuxOS());
+    return {
+      imageId: ami,
+      osType: ec2.OperatingSystemType.LINUX
+    };
   }
 }
 
@@ -423,7 +440,7 @@ export interface AddAutoScalingGroupCapacityOptions {
    *
    * @default false
    */
-  readonly containersAccessInstanceRole?: boolean;
+  readonly canContainersAccessInstanceRole?: boolean;
 
   /**
    * Give tasks this many seconds to complete when instances are being scaled in.
@@ -434,9 +451,9 @@ export interface AddAutoScalingGroupCapacityOptions {
    *
    * Set to 0 to disable task draining.
    *
-   * @default 300
+   * @default Duration.minutes(5)
    */
-  readonly taskDrainTimeSeconds?: number;
+  readonly taskDrainTime?: Duration;
 }
 
 /**
@@ -453,7 +470,7 @@ export interface AddCapacityOptions extends AddAutoScalingGroupCapacityOptions, 
    *
    * @default - Amazon Linux 1
    */
-  readonly machineImage?: ec2.IMachineImageSource;
+  readonly machineImage?: ec2.IMachineImage;
 }
 
 export interface NamespaceOptions {
@@ -484,12 +501,12 @@ export enum NamespaceType {
   /**
    * Create a private DNS namespace
    */
-  PrivateDns = 'PrivateDns',
+  PRIVATE_DNS = 'PrivateDns',
 
   /**
    * Create a public DNS namespace
    */
-  PublicDns = 'PublicDns',
+  PUBLIC_DNS = 'PublicDns',
 }
 
 /**
@@ -500,15 +517,15 @@ export enum AmiHardwareType {
   /**
    * Create a standard AMI
    */
-  Standard = 'Standard',
+  STANDARD = 'Standard',
 
   /**
    * Create a GPU optimized AMI
    */
-  Gpu = 'GPU',
+  GPU = 'GPU',
 
   /**
    * Create a ARM64 optimized AMI
    */
-  Arm = 'ARM64',
+  ARM = 'ARM64',
 }

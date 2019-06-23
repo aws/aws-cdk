@@ -3,7 +3,7 @@
  *
  * Note that this function is not production quality, it exists to support tests.
  */
-import { isNameOfCloudFormationIntrinsic } from '../lib/cloudformation-lang';
+import { isNameOfCloudFormationIntrinsic } from '../lib/private/cloudformation-lang';
 
 export function evaluateCFN(object: any, context: {[key: string]: string} = {}): any {
   const intrinsics: any = {

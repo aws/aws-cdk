@@ -17,7 +17,7 @@ class Producer extends cdk.Stack {
         super(scope, id, props);
 
         const bucket = new s3.Bucket(this, 'MyBucket', {
-          removalPolicy: cdk.RemovalPolicy.Destroy
+          removalPolicy: cdk.RemovalPolicy.DESTROY
         });
         this.myBucket = bucket;
     }

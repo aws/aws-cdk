@@ -2,8 +2,9 @@ import iam = require('@aws-cdk/aws-iam');
 import { Aws, Construct, IResource, Lazy, Resource } from '@aws-cdk/cdk';
 import { Connections, IConnectable } from './connections';
 import { CfnVPCEndpoint } from './ec2.generated';
+import { Port } from './port';
 import { SecurityGroup } from './security-group';
-import { TcpPort } from './security-group-rule';
+import { allRouteTableIds } from './util';
 import { IVpc, SubnetSelection, SubnetType } from './vpc';
 
 /**
@@ -61,7 +62,7 @@ export enum VpcEndpointType {
    * address that serves as an entry point for traffic destined to a supported
    * service.
    */
-  Interface = 'Interface',
+  INTERFACE = 'Interface',
 
   /**
    * Gateway
@@ -69,7 +70,7 @@ export enum VpcEndpointType {
    * A gateway endpoint is a gateway that is a target for a specified route in
    * your route table, used for traffic destined to a supported AWS service.
    */
-  Gateway = 'Gateway'
+  GATEWAY = 'Gateway'
 }
 
 /**
@@ -164,8 +165,8 @@ export class GatewayVpcEndpoint extends VpcEndpoint implements IGatewayVpcEndpoi
   constructor(scope: Construct, id: string, props: GatewayVpcEndpointProps) {
     super(scope, id);
 
-    const subnets = props.subnets || [{ subnetType: SubnetType.Private }];
-    const routeTableIds = [...new Set(Array().concat(...subnets.map(s => props.vpc.selectSubnets(s).routeTableIds)))];
+    const subnets = props.subnets || [{ subnetType: SubnetType.PRIVATE }];
+    const routeTableIds = allRouteTableIds(...subnets.map(s => props.vpc.selectSubnets(s)));
 
     if (routeTableIds.length === 0) {
       throw new Error(`Can't add a gateway endpoint to VPC; route table IDs are not available`);
@@ -175,11 +176,11 @@ export class GatewayVpcEndpoint extends VpcEndpoint implements IGatewayVpcEndpoi
       policyDocument: Lazy.anyValue({ produce: () => this.policyDocument }),
       routeTableIds,
       serviceName: props.service.name,
-      vpcEndpointType: VpcEndpointType.Gateway,
+      vpcEndpointType: VpcEndpointType.GATEWAY,
       vpcId: props.vpc.vpcId
     });
 
-    this.vpcEndpointId = endpoint.refAsString;
+    this.vpcEndpointId = endpoint.ref;
     this.vpcEndpointCreationTimestamp = endpoint.attrCreationTimestamp;
     this.vpcEndpointDnsEntries = endpoint.attrDnsEntries;
     this.vpcEndpointNetworkInterfaceIds = endpoint.attrNetworkInterfaceIds;
@@ -314,7 +315,7 @@ export class InterfaceVpcEndpoint extends VpcEndpoint implements IInterfaceVpcEn
       public readonly vpcEndpointId = attrs.vpcEndpointId;
       public readonly securityGroupId = attrs.securityGroupId;
       public readonly connections = new Connections({
-        defaultPortRange: new TcpPort(attrs.port),
+        defaultPort: Port.tcp(attrs.port),
         securityGroups: [SecurityGroup.fromSecurityGroupId(this, 'SecurityGroup', attrs.securityGroupId)],
       });
     }
@@ -364,7 +365,7 @@ export class InterfaceVpcEndpoint extends VpcEndpoint implements IInterfaceVpcEn
     });
     this.securityGroupId = securityGroup.securityGroupId;
     this.connections = new Connections({
-      defaultPortRange: new TcpPort(props.service.port),
+      defaultPort: Port.tcp(props.service.port),
       securityGroups: [securityGroup]
     });
 
@@ -376,12 +377,12 @@ export class InterfaceVpcEndpoint extends VpcEndpoint implements IInterfaceVpcEn
       policyDocument: Lazy.anyValue({ produce: () => this.policyDocument }),
       securityGroupIds: [this.securityGroupId],
       serviceName: props.service.name,
-      vpcEndpointType: VpcEndpointType.Interface,
+      vpcEndpointType: VpcEndpointType.INTERFACE,
       subnetIds,
       vpcId: props.vpc.vpcId
     });
 
-    this.vpcEndpointId = endpoint.refAsString;
+    this.vpcEndpointId = endpoint.ref;
     this.vpcEndpointCreationTimestamp = endpoint.attrCreationTimestamp;
     this.vpcEndpointDnsEntries = endpoint.attrDnsEntries;
     this.vpcEndpointNetworkInterfaceIds = endpoint.attrNetworkInterfaceIds;

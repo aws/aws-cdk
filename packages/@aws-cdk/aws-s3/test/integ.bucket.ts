@@ -8,13 +8,13 @@ const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-cdk-s3');
 
 const bucket = new s3.Bucket(stack, 'MyBucket', {
-  encryption: s3.BucketEncryption.Kms,
-  removalPolicy: cdk.RemovalPolicy.Destroy
+  encryption: s3.BucketEncryption.KMS,
+  removalPolicy: cdk.RemovalPolicy.DESTROY
 });
 
 const otherwiseEncryptedBucket = new s3.Bucket(stack, 'MyOtherBucket', {
-  encryption: s3.BucketEncryption.S3Managed,
-  removalPolicy: cdk.RemovalPolicy.Destroy
+  encryption: s3.BucketEncryption.S3_MANAGED,
+  removalPolicy: cdk.RemovalPolicy.DESTROY
 });
 
 const user = new iam.User(stack, 'MyUser');

@@ -34,13 +34,11 @@
   "awslint": {
     "exclude": [
       "construct-ctor:@aws-cdk/cdk.App.<initializer>",
-      "construct-ctor:@aws-cdk/cdk.Root.<initializer>",
-      "construct-ctor:@aws-cdk/cdk.Stack.<initializer>.params*",
-      "props-no-any:@aws-cdk/cdk.CfnOutputProps.value",
+      "props-no-cfn-types:@aws-cdk/cdk.CfnOutputProps.condition",
+      "duration-prop-type:@aws-cdk/cdk.ResourceSignal.timeout",
       "props-no-any:@aws-cdk/cdk.CfnParameterProps.default",
-      "props-no-any:@aws-cdk/cdk.CfnResourceProps.properties",
-      "props-no-cfn-types:@aws-cdk/cdk.CfnOutputProps*",
-      "props-no-cfn-types:@aws-cdk/cdk.StringListCfnOutputProps*"
+      "props-no-cfn-types:@aws-cdk/cdk.CfnRuleProps.assertions",
+      "construct-ctor:@aws-cdk/cdk.Stack.<initializer>.params[1]"
     ]
   },
   "scripts": {

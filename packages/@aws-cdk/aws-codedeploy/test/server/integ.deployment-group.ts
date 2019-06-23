@@ -12,7 +12,7 @@ const stack = new cdk.Stack(app, 'aws-cdk-codedeploy-server-dg');
 const vpc = new ec2.Vpc(stack, 'VPC');
 
 const asg = new autoscaling.AutoScalingGroup(stack, 'ASG', {
-  instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.M5, ec2.InstanceSize.Large),
+  instanceType: ec2.InstanceType.of(ec2.InstanceClass.M5, ec2.InstanceSize.LARGE),
   machineImage: new ec2.AmazonLinuxImage(),
   vpc,
 });

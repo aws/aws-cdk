@@ -78,7 +78,7 @@ export = {
     // WHEN
     new apigateway.Stage(stack, 'my-stage', {
       deployment,
-      loggingLevel: apigateway.MethodLoggingLevel.Info,
+      loggingLevel: apigateway.MethodLoggingLevel.INFO,
       throttlingRateLimit: 12
     });
 
@@ -107,11 +107,11 @@ export = {
     // WHEN
     new apigateway.Stage(stack, 'my-stage', {
       deployment,
-      loggingLevel: apigateway.MethodLoggingLevel.Info,
+      loggingLevel: apigateway.MethodLoggingLevel.INFO,
       throttlingRateLimit: 12,
       methodOptions: {
         '/goo/bar/GET': {
-          loggingLevel: apigateway.MethodLoggingLevel.Error,
+          loggingLevel: apigateway.MethodLoggingLevel.ERROR,
         }
       }
     });

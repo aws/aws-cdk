@@ -5,6 +5,7 @@ import s3 = require('@aws-cdk/aws-s3');
 import { App, Construct, Lazy, PhysicalName, RemovalPolicy, Resource, Stack, Token } from '@aws-cdk/cdk';
 import { Action, IPipeline, IStage } from "./action";
 import { CfnPipeline } from './codepipeline.generated';
+import { CrossRegionSupportStack } from './cross-region-support-stack';
 import { Stage } from './stage';
 import { validateName, validateSourceAction } from "./validation";
 
@@ -47,7 +48,7 @@ export interface StageProps {
   readonly actions?: Action[];
 }
 
-export interface StageAddToPipelineProps extends StageProps {
+export interface StageOptions extends StageProps {
   readonly placement?: StagePlacement;
 }
 
@@ -78,19 +79,17 @@ export interface PipelineProps {
    *
    * @default - AWS CloudFormation generates an ID and uses that for the pipeline name.
    */
-  readonly pipelineName?: string;
+  readonly pipelineName?: PhysicalName;
 
   /**
    * A map of region to S3 bucket name used for cross-region CodePipeline.
    * For every Action that you specify targeting a different region than the Pipeline itself,
    * if you don't provide an explicit Bucket for that region using this property,
-   * the construct will automatically create a scaffold Stack containing an S3 Bucket in that region.
-   * Note that you will have to `cdk deploy` that Stack before you can deploy your Pipeline-containing Stack.
-   * You can query the generated Stacks using the {@link Pipeline#crossRegionScaffoldStacks} property.
+   * the construct will automatically create a Stack containing an S3 Bucket in that region.
    *
    * @default - None.
    */
-  readonly crossRegionReplicationBuckets?: { [region: string]: string };
+  readonly crossRegionReplicationBuckets?: { [region: string]: s3.IBucket };
 
   /**
    * The list of Stages, in order,
@@ -114,7 +113,7 @@ abstract class PipelineBase extends Resource implements IPipeline {
    * @param id Identifier for this event handler.
    * @param options Additional options to pass to the event rule.
    */
-  public onEvent(id: string, options: events.OnEventOptions): events.Rule {
+  public onEvent(id: string, options: events.OnEventOptions = {}): events.Rule {
     const rule = new events.Rule(this, id, options);
     rule.addTarget(options.target);
     rule.addEventPattern({
@@ -131,7 +130,7 @@ abstract class PipelineBase extends Resource implements IPipeline {
    * @param id Identifier for this event handler.
    * @param options Additional options to pass to the event rule.
    */
-  public onStateChange(id: string, options: events.OnEventOptions): events.Rule {
+  public onStateChange(id: string, options: events.OnEventOptions = {}): events.Rule {
     const rule = this.onEvent(id, options);
     rule.addEventPattern({
       detailType: [ 'CodePipeline Pipeline Execution State Change' ],
@@ -214,24 +213,32 @@ export class Pipeline extends PipelineBase {
   public readonly artifactBucket: s3.IBucket;
 
   private readonly stages = new Array<Stage>();
-  private readonly crossRegionReplicationBuckets: { [region: string]: string };
+  private readonly crossRegionReplicationBuckets: { [region: string]: s3.IBucket };
+  private readonly crossRegionBucketsPassed: boolean;
   private readonly artifactStores: { [region: string]: CfnPipeline.ArtifactStoreProperty };
-  private readonly _crossRegionScaffoldStacks: { [region: string]: CrossRegionScaffoldStack } = {};
+  private readonly _crossRegionSupport: { [region: string]: CrossRegionSupport } = {};
 
   constructor(scope: Construct, id: string, props: PipelineProps = {}) {
-    super(scope, id);
+    super(scope, id, {
+      physicalName: props.pipelineName,
+    });
 
-    validateName('Pipeline', props.pipelineName);
+    validateName('Pipeline', this.physicalName);
+
+    // only one of artifactBucket and crossRegionReplicationBuckets can be supplied
+    if (props.artifactBucket && props.crossRegionReplicationBuckets) {
+      throw new Error('Only one of artifactBucket and crossRegionReplicationBuckets can be specified!');
+    }
 
     // If a bucket has been provided, use it - otherwise, create a bucket.
-    let propsBucket = props.artifactBucket;
+    let propsBucket = this.getArtifactBucketFromProps(props);
     if (!propsBucket) {
       const encryptionKey = new kms.Key(this, 'ArtifactsBucketEncryptionKey');
       propsBucket = new s3.Bucket(this, 'ArtifactsBucket', {
         bucketName: PhysicalName.auto({ crossEnvironment: true }),
         encryptionKey,
-        encryption: s3.BucketEncryption.Kms,
-        removalPolicy: RemovalPolicy.Retain
+        encryption: s3.BucketEncryption.KMS,
+        removalPolicy: RemovalPolicy.RETAIN
       });
     }
     this.artifactBucket = propsBucket;
@@ -247,7 +254,7 @@ export class Pipeline extends PipelineBase {
       stages: Lazy.anyValue({ produce: () => this.renderStages() }),
       roleArn: this.role.roleArn,
       restartExecutionOnUpdate: props && props.restartExecutionOnUpdate,
-      name: props && props.pipelineName,
+      name: this.physicalName,
     });
 
     // this will produce a DependsOn for both the role and the policy resources.
@@ -255,9 +262,18 @@ export class Pipeline extends PipelineBase {
 
     this.artifactBucket.grantReadWrite(this.role);
 
-    this.pipelineName = codePipeline.refAsString;
+    const resourceIdentifiers = this.getCrossEnvironmentAttributes({
+      arn: '',
+      name: codePipeline.ref,
+      arnComponents: {
+        service: 'codepipeline',
+        resource: this.physicalName,
+      },
+    });
+    this.pipelineName = resourceIdentifiers.name;
     this.pipelineVersion = codePipeline.attrVersion;
     this.crossRegionReplicationBuckets = props.crossRegionReplicationBuckets || {};
+    this.crossRegionBucketsPassed = !!props.crossRegionReplicationBuckets;
     this.artifactStores = {};
 
     // Does not expose a Fn::GetAtt for the ARN so we'll have to make it ourselves
@@ -277,7 +293,7 @@ export class Pipeline extends PipelineBase {
    * @param props the creation properties of the new Stage
    * @returns the newly created Stage
    */
-  public addStage(props: StageAddToPipelineProps): IStage {
+  public addStage(props: StageOptions): IStage {
     // check for duplicate Stages and names
     if (this.stages.find(s => s.stageName === props.stageName)) {
       throw new Error(`Stage with duplicate name '${props.stageName}' added to the Pipeline`);
@@ -317,13 +333,13 @@ export class Pipeline extends PipelineBase {
   }
 
   /**
-   * Returns all of the {@link CrossRegionScaffoldStack}s that were generated automatically
+   * Returns all of the {@link CrossRegionSupportStack}s that were generated automatically
    * when dealing with Actions that reside in a different region than the Pipeline itself.
    */
-  public get crossRegionScaffolding(): { [region: string]: CrossRegionScaffolding } {
-    const ret: { [region: string]: CrossRegionScaffoldStack }  = {};
-    Object.keys(this._crossRegionScaffoldStacks).forEach((key) => {
-      ret[key] = this._crossRegionScaffoldStacks[key];
+  public get crossRegionSupport(): { [region: string]: CrossRegionSupport } {
+    const ret: { [region: string]: CrossRegionSupport }  = {};
+    Object.keys(this._crossRegionSupport).forEach((key) => {
+      ret[key] = this._crossRegionSupport[key];
     });
     return ret;
   }
@@ -364,7 +380,7 @@ export class Pipeline extends PipelineBase {
     });
   }
 
-  private requireRegion() {
+  private requireRegion(): string {
     const region = Stack.of(this).region;
     if (Token.isUnresolved(region)) {
       throw new Error(`You need to specify an explicit region when using CodePipeline's cross-region support`);
@@ -385,9 +401,10 @@ export class Pipeline extends PipelineBase {
       return;
     }
 
-    let replicationBucketName = this.crossRegionReplicationBuckets[region];
-    if (!replicationBucketName) {
-      const pipelineAccount = Stack.of(this).account;
+    let replicationBucket = this.crossRegionReplicationBuckets[region];
+    if (!replicationBucket) {
+      const pipelineStack = Stack.of(this);
+      const pipelineAccount = pipelineStack.account;
       if (Token.isUnresolved(pipelineAccount)) {
         throw new Error("You need to specify an explicit account when using CodePipeline's cross-region support");
       }
@@ -396,17 +413,18 @@ export class Pipeline extends PipelineBase {
       if (!app || !App.isApp(app)) {
         throw new Error(`Pipeline stack which uses cross region actions must be part of a CDK app`);
       }
-      const crossRegionScaffoldStack = new CrossRegionScaffoldStack(this, `cross-region-stack-${pipelineAccount}:${region}`, {
+      const crossRegionScaffoldStack = new CrossRegionSupportStack(app, `cross-region-stack-${pipelineAccount}:${region}`, {
+        pipelineStackName: pipelineStack.stackName,
         region,
         account: pipelineAccount,
       });
-      this._crossRegionScaffoldStacks[region] = crossRegionScaffoldStack;
-      replicationBucketName = crossRegionScaffoldStack.replicationBucketName;
+      replicationBucket = crossRegionScaffoldStack.replicationBucket;
+      pipelineStack.addDependency(crossRegionScaffoldStack);
+      this._crossRegionSupport[region] = {
+        stack: crossRegionScaffoldStack,
+        replicationBucket,
+      };
     }
-
-    const replicationBucket = s3.Bucket.fromBucketAttributes(this, 'CrossRegionCodePipelineReplicationBucket-' + region, {
-      bucketName: replicationBucketName,
-    });
     replicationBucket.grantReadWrite(this.role);
 
     this.artifactStores[region] = {
@@ -461,6 +479,17 @@ export class Pipeline extends PipelineBase {
     }
 
     return actionRole;
+  }
+
+  private getArtifactBucketFromProps(props: PipelineProps): s3.IBucket | undefined {
+    if (props.artifactBucket) {
+      return props.artifactBucket;
+    }
+    if (props.crossRegionReplicationBuckets) {
+      const pipelineRegion = this.requireRegion();
+      return props.crossRegionReplicationBuckets[pipelineRegion];
+    }
+    return undefined;
   }
 
   private calculateInsertIndexFromPlacement(placement: StagePlacement): number {
@@ -566,11 +595,7 @@ export class Pipeline extends PipelineBase {
     // add the Pipeline's artifact store
     const primaryStore = this.renderPrimaryArtifactStore();
     const primaryRegion = this.requireRegion();
-    this.artifactStores[primaryRegion] = {
-      location: primaryStore.location,
-      type: primaryStore.type,
-      encryptionKey: primaryStore.encryptionKey,
-    };
+    this.artifactStores[primaryRegion] = primaryStore;
 
     return Object.entries(this.artifactStores).map(([region, artifactStore]) => ({
       region, artifactStore
@@ -605,8 +630,8 @@ export class Pipeline extends PipelineBase {
   }
 
   private get crossRegion(): boolean {
+    if (this.crossRegionBucketsPassed) { return true; }
     return this.stages.some(stage => stage.actions.some(action => action.region !== undefined));
-    // this.pipelineResource.addPropertyOverride(`Stages.${i}.Actions.${j}.Region`, action.region);
   }
 
   private renderStages(): CfnPipeline.StageDeclarationProperty[] {
@@ -615,14 +640,20 @@ export class Pipeline extends PipelineBase {
 }
 
 /**
- * A Stack containing resources required for the cross-region CodePipeline functionality to work.
+ * An interface representing resources generated in order to support
+ * the cross-region capabilities of CodePipeline.
+ * You get instances of this interface from the {@link Pipeline#crossRegionSupport} property.
  */
-export abstract class CrossRegionScaffolding extends Stack {
+export interface CrossRegionSupport {
   /**
-   * The name of the S3 Bucket used for replicating the Pipeline's artifacts into the region.
+   * The Stack that has been created to house the replication Bucket
+   * required for this  region.
    */
-  public abstract readonly replicationBucketName: string;
-}
+  readonly stack: Stack;
 
-// cyclic dependency
-import { CrossRegionScaffoldStack } from './cross-region-scaffold-stack';
+  /**
+   * The replication Bucket used by CodePipeline to operate in this region.
+   * Belongs to {@link stack}.
+   */
+  readonly replicationBucket: s3.IBucket;
+}

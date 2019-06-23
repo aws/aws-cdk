@@ -5,6 +5,29 @@ import iam = require('@aws-cdk/aws-iam');
 import { sourceArtifactBounds } from '../common';
 
 /**
+ * How should the CodeCommit Action detect changes.
+ * This is the type of the {@link CodeCommitSourceAction.trigger} property.
+ */
+export enum CodeCommitTrigger {
+  /**
+   * The Action will never detect changes -
+   * the Pipeline it's part of will only begin a run when explicitly started.
+   */
+  NONE = 'None',
+
+  /**
+   * CodePipeline will poll the repository to detect changes.
+   */
+  POLL = 'Poll',
+
+  /**
+   * CodePipeline will use CloudWatch Events to be notified of changes.
+   * This is the default method of detecting changes.
+   */
+  EVENTS = 'Events',
+}
+
+/**
  * Construction properties of the {@link CodeCommitSourceAction CodeCommit source CodePipeline Action}.
  */
 export interface CodeCommitSourceActionProps extends codepipeline.CommonActionProps {
@@ -19,12 +42,11 @@ export interface CodeCommitSourceActionProps extends codepipeline.CommonActionPr
   readonly branch?: string;
 
   /**
-   * Whether AWS CodePipeline should poll for source changes.
-   * If this is `false`, the Pipeline will use CloudWatch Events to detect source changes instead.
+   * How should CodePipeline detect source changes for this Action.
    *
-   * @default false
+   * @default CodeCommitTrigger.EVENTS
    */
-  readonly pollForSourceChanges?: boolean;
+  readonly trigger?: CodeCommitTrigger;
 
   /**
    * The CodeCommit repository.
@@ -36,45 +58,50 @@ export interface CodeCommitSourceActionProps extends codepipeline.CommonActionPr
  * CodePipeline Source that is provided by an AWS CodeCommit repository.
  */
 export class CodeCommitSourceAction extends codepipeline.Action {
-  private readonly props: CodeCommitSourceActionProps;
+  private readonly repository: codecommit.IRepository;
+  private readonly branch: string;
+  private readonly createEvent: boolean;
 
   constructor(props: CodeCommitSourceActionProps) {
+    const branch = props.branch || 'master';
+
     super({
       ...props,
-      category: codepipeline.ActionCategory.Source,
+      category: codepipeline.ActionCategory.SOURCE,
       provider: 'CodeCommit',
       artifactBounds: sourceArtifactBounds(),
       outputs: [props.output],
       configuration: {
         RepositoryName: props.repository.repositoryName,
-        BranchName: props.branch || 'master',
-        PollForSourceChanges: props.pollForSourceChanges || false,
+        BranchName: branch,
+        PollForSourceChanges: props.trigger === CodeCommitTrigger.POLL,
       },
     });
 
-    this.props = props;
+    this.repository = props.repository;
+    this.branch = branch;
+    this.createEvent = props.trigger === undefined ||
+      props.trigger === CodeCommitTrigger.EVENTS;
   }
 
   protected bind(info: codepipeline.ActionBind): void {
-    if (!this.props.pollForSourceChanges) {
-      this.props.repository.onCommit(info.pipeline.node.uniqueId + 'EventRule', {
+    if (this.createEvent) {
+      this.repository.onCommit(info.pipeline.node.uniqueId + 'EventRule', {
         target: new targets.CodePipeline(info.pipeline),
-        branches: [this.props.branch || 'master']
+        branches: [this.branch],
       });
     }
 
     // https://docs.aws.amazon.com/codecommit/latest/userguide/auth-and-access-control-permissions-reference.html#aa-acp
-    const actions = [
-      'codecommit:GetBranch',
-      'codecommit:GetCommit',
-      'codecommit:UploadArchive',
-      'codecommit:GetUploadArchiveStatus',
-      'codecommit:CancelUploadArchive',
-    ];
-
     info.role.addToPolicy(new iam.PolicyStatement({
-      resources: [this.props.repository.repositoryArn],
-      actions
+      resources: [this.repository.repositoryArn],
+      actions: [
+        'codecommit:GetBranch',
+        'codecommit:GetCommit',
+        'codecommit:UploadArchive',
+        'codecommit:GetUploadArchiveStatus',
+        'codecommit:CancelUploadArchive',
+      ],
     }));
   }
 }

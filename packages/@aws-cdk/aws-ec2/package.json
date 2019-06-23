@@ -89,7 +89,14 @@
   },
   "awslint": {
     "exclude": [
-      "resource-attribute:@aws-cdk/aws-ec2.ISecurityGroup.securityGroupVpcId"
+      "resource-attribute:@aws-cdk/aws-ec2.ISecurityGroup.securityGroupVpcId",
+      "props-physical-name:@aws-cdk/aws-ec2.VpnConnectionProps",
+      "props-physical-name:@aws-cdk/aws-ec2.GatewayVpcEndpointProps",
+      "props-physical-name:@aws-cdk/aws-ec2.PrivateSubnetProps",
+      "props-physical-name:@aws-cdk/aws-ec2.PublicSubnetProps",
+      "props-physical-name:@aws-cdk/aws-ec2.SubnetProps",
+      "props-physical-name:@aws-cdk/aws-ec2.VpcProps",
+      "props-physical-name:@aws-cdk/aws-ec2.InterfaceVpcEndpointProps"
     ]
   },
   "stability": "experimental"
