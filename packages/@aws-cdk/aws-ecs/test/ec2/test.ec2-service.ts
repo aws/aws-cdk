@@ -5,7 +5,7 @@ import cloudmap = require('@aws-cdk/aws-servicediscovery');
 import cdk = require('@aws-cdk/cdk');
 import { Test } from 'nodeunit';
 import ecs = require('../../lib');
-import { BinPackResource, BuiltInAttributes, ContainerImage, NamespaceType, NetworkMode } from '../../lib';
+import { BinPackResource, BuiltInAttributes, ContainerImage, NetworkMode } from '../../lib';
 import { PlacementConstraint, PlacementStrategy } from '../../lib/placement';
 
 export = {
@@ -690,7 +690,7 @@ export = {
       // WHEN
       cluster.addDefaultCloudMapNamespace({
         name: 'foo.com',
-        type: NamespaceType.PRIVATE_DNS
+        type: cloudmap.NamespaceType.DNS_PRIVATE
       });
 
       new ecs.Ec2Service(stack, 'Service', {
@@ -767,7 +767,7 @@ export = {
       // WHEN
       cluster.addDefaultCloudMapNamespace({
         name: 'foo.com',
-        type: NamespaceType.PRIVATE_DNS
+        type: cloudmap.NamespaceType.DNS_PRIVATE
       });
 
       new ecs.Ec2Service(stack, 'Service', {
@@ -878,7 +878,7 @@ export = {
       // WHEN
       cluster.addDefaultCloudMapNamespace({
         name: 'foo.com',
-        type: NamespaceType.PRIVATE_DNS
+        type: cloudmap.NamespaceType.DNS_PRIVATE
       });
 
       new ecs.Ec2Service(stack, 'Service', {
@@ -953,7 +953,7 @@ export = {
       // WHEN
       cluster.addDefaultCloudMapNamespace({
         name: 'foo.com',
-        type: NamespaceType.PRIVATE_DNS
+        type: cloudmap.NamespaceType.DNS_PRIVATE
       });
 
       new ecs.Ec2Service(stack, 'Service', {
