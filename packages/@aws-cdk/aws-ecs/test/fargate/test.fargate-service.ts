@@ -142,7 +142,7 @@ export = {
       new ecs.FargateService(stack, "FargateService", {
         cluster,
         taskDefinition,
-        minimumHealthyPercent: 0,
+        minHealthyPercent: 0,
       });
 
       // THEN
