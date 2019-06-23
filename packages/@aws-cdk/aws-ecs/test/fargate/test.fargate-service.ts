@@ -5,7 +5,7 @@ import cloudmap = require('@aws-cdk/aws-servicediscovery');
 import cdk = require('@aws-cdk/cdk');
 import { Test } from 'nodeunit';
 import ecs = require('../../lib');
-import { ContainerImage, NamespaceType } from '../../lib';
+import { ContainerImage } from '../../lib';
 
 export = {
   "When creating a Fargate Service": {
@@ -142,7 +142,7 @@ export = {
       new ecs.FargateService(stack, "FargateService", {
         cluster,
         taskDefinition,
-        minimumHealthyPercent: 0,
+        minHealthyPercent: 0,
       });
 
       // THEN
@@ -367,7 +367,7 @@ export = {
       // WHEN
       cluster.addDefaultCloudMapNamespace({
         name: 'foo.com',
-        type: NamespaceType.PRIVATE_DNS
+        type: cloudmap.NamespaceType.DNS_PRIVATE
       });
 
       new ecs.FargateService(stack, 'Service', {
@@ -427,7 +427,7 @@ export = {
       // WHEN
       cluster.addDefaultCloudMapNamespace({
         name: 'foo.com',
-        type: NamespaceType.PRIVATE_DNS
+        type: cloudmap.NamespaceType.DNS_PRIVATE
       });
 
       new ecs.FargateService(stack, 'Service', {

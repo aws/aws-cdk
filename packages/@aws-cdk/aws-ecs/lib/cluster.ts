@@ -95,9 +95,9 @@ export class Cluster extends Resource implements ICluster {
       throw new Error("Can only add default namespace once.");
     }
 
-    const namespaceType = options.type === undefined || options.type === NamespaceType.PRIVATE_DNS
-      ? cloudmap.NamespaceType.DNS_PRIVATE
-      : cloudmap.NamespaceType.DNS_PUBLIC;
+    const namespaceType = options.type !== undefined
+      ? options.type
+      : cloudmap.NamespaceType.DNS_PRIVATE;
 
     const sdNamespace = namespaceType === cloudmap.NamespaceType.DNS_PRIVATE ?
       new cloudmap.PrivateDnsNamespace(this, 'DefaultServiceDiscoveryNamespace', {
@@ -479,7 +479,7 @@ export interface NamespaceOptions {
    *
    * @default PrivateDns
    */
-  readonly type?: NamespaceType;
+  readonly type?: cloudmap.NamespaceType;
 
   /**
    * The Amazon VPC that you want to associate the namespace with. Required for Private DNS namespaces
@@ -487,21 +487,6 @@ export interface NamespaceOptions {
    * @default VPC of the cluster for Private DNS Namespace, otherwise none
    */
   readonly vpc?: ec2.IVpc;
-}
-
-/**
- * The type of CloudMap namespace to create
- */
-export enum NamespaceType {
-  /**
-   * Create a private DNS namespace
-   */
-  PRIVATE_DNS = 'PrivateDns',
-
-  /**
-   * Create a public DNS namespace
-   */
-  PUBLIC_DNS = 'PublicDns',
 }
 
 /**

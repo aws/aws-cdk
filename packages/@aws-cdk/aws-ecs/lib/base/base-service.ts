@@ -49,7 +49,7 @@ export interface BaseServiceProps {
    *
    * @default - 100 if daemon, otherwise 200
    */
-  readonly maximumPercent?: number;
+  readonly maxHealthyPercent?: number;
 
   /**
    * The minimum number of tasks, specified as a percentage of
@@ -58,7 +58,7 @@ export interface BaseServiceProps {
    *
    * @default - 0 if daemon, otherwise 50
    */
-  readonly minimumHealthyPercent?: number;
+  readonly minHealthyPercent?: number;
 
   /**
    * Time after startup to ignore unhealthy load balancer checks.
@@ -147,8 +147,8 @@ export abstract class BaseService extends Resource
       serviceName: this.physicalName,
       loadBalancers: Lazy.anyValue({ produce: () => this.loadBalancers }),
       deploymentConfiguration: {
-        maximumPercent: props.maximumPercent || 200,
-        minimumHealthyPercent: props.minimumHealthyPercent === undefined ? 50 : props.minimumHealthyPercent
+        maximumPercent: props.maxHealthyPercent || 200,
+        minimumHealthyPercent: props.minHealthyPercent === undefined ? 50 : props.minHealthyPercent
       },
       healthCheckGracePeriodSeconds: this.evaluateHealthGracePeriod(props.healthCheckGracePeriod),
       /* role: never specified, supplanted by Service Linked Role */
