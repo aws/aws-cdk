@@ -5,14 +5,18 @@ import { Lazy } from "./lazy";
  */
 export class PhysicalName {
   /**
-   * Use this markers to indicate that the physical name of the resource should be
-   * automatically generate either during deployment-time by CloudFormation or,
-   * if the resource is referenced across environments, a name will be generated
-   * automatically during synthesis.
+   * Use this to automatically generate a physical name for an AWS resource only
+   * if the resource is referenced across environments (account/region).
+   * Otherwise, the name will be allocated during deployment by CloudFormation.
+   *
+   * If you are certain that a resource will be referenced across environments,
+   * you may also specify an explicit physical name for it. This option is
+   * mostly designed for reusable constructs which may or may not be referenced
+   * acrossed environments.
    */
   public static readonly GENERATE_IF_NEEDED = Lazy.stringValue({
     produce: () => {
-      throw new Error(`Do not use the value passed as physical name directly`);
+      throw new Error(`Invalid physical name passed to CloudFormation. Use "this.physicalName" instead`);
     }
   });
 

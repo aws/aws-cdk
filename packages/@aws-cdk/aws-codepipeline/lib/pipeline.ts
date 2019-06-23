@@ -450,8 +450,7 @@ export class Pipeline extends PipelineBase {
         }
 
         // generate a role in the other stack, that the Pipeline will assume for executing this action
-        actionRole = new iam.Role(resourceStack,
-            `${this.node.uniqueId}-${stage.stageName}-${action.actionName}-ActionRole`, {
+        actionRole = new iam.Role(resourceStack, `${this.node.uniqueId}-${stage.stageName}-${action.actionName}-ActionRole`, {
           assumedBy: new iam.AccountPrincipal(pipelineStack.account),
           roleName: PhysicalName.GENERATE_IF_NEEDED,
         });

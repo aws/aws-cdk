@@ -98,7 +98,7 @@ export abstract class Resource extends Construct implements IResource {
     if (!this._allowCrossEnvironment) {
       // error out - a deploy-time name cannot be used across environments
       throw new Error(`Cannot use resource '${this.node.path}' in a cross-environment fashion, ` +
-        "the resource's physical name must be explicit set or use PhysicalName.GENERATE_IF_NEEDED");
+        "the resource's physical name must be explicit set or use `PhysicalName.GENERATE_IF_NEEDED`");
     }
 
     if (!this._physicalName) {

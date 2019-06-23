@@ -114,7 +114,7 @@ export class StateMachine extends StateMachineBase {
           resource: 'stateMachine',
           resourceName: this.physicalName,
           sep: ':',
-        })
+        });
     }
 
     /**
