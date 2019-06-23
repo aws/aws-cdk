@@ -59,7 +59,7 @@ export class Cluster extends Resource implements ICluster {
   /**
    * The service discovery namespace created in this cluster
    */
-  private _defaultNamespace?: cloudmap.INamespace;
+  private _defaultCloudMapNamespace?: cloudmap.INamespace;
 
   /**
    * Whether the cluster has EC2 capacity associated with it
@@ -96,7 +96,7 @@ export class Cluster extends Resource implements ICluster {
    * Map service.
    */
   public addDefaultCloudMapNamespace(options: NamespaceOptions): cloudmap.INamespace {
-    if (this._defaultNamespace !== undefined) {
+    if (this._defaultCloudMapNamespace !== undefined) {
       throw new Error("Can only add default namespace once.");
     }
 
@@ -113,7 +113,7 @@ export class Cluster extends Resource implements ICluster {
         name: options.name,
       });
 
-    this._defaultNamespace = sdNamespace;
+    this._defaultCloudMapNamespace = sdNamespace;
 
     return sdNamespace;
   }
@@ -121,8 +121,8 @@ export class Cluster extends Resource implements ICluster {
   /**
    * Getter for namespace added to cluster
    */
-  public get defaultNamespace(): cloudmap.INamespace | undefined {
-    return this._defaultNamespace;
+  public get defaultCloudMapNamespace(): cloudmap.INamespace | undefined {
+    return this._defaultCloudMapNamespace;
   }
 
   /**
@@ -328,7 +328,7 @@ export interface ICluster extends IResource {
   /**
    * Getter for Cloudmap namespace created in the cluster
    */
-  readonly defaultNamespace?: cloudmap.INamespace;
+  readonly defaultCloudMapNamespace?: cloudmap.INamespace;
 }
 
 /**
@@ -369,7 +369,7 @@ export interface ClusterAttributes {
    *
    * @default - No default namespace
    */
-  readonly defaultNamespace?: cloudmap.INamespace;
+  readonly defaultCloudMapNamespace?: cloudmap.INamespace;
 }
 
 /**
@@ -404,14 +404,14 @@ class ImportedCluster extends Resource implements ICluster {
   /**
    * Cloudmap namespace created in the cluster
    */
-  private _defaultNamespace?: cloudmap.INamespace;
+  private _defaultCloudMapNamespace?: cloudmap.INamespace;
 
   constructor(scope: Construct, id: string, props: ClusterAttributes) {
     super(scope, id);
     this.clusterName = props.clusterName;
     this.vpc = props.vpc;
     this.hasEc2Capacity = props.hasEc2Capacity !== false;
-    this._defaultNamespace = props.defaultNamespace;
+    this._defaultCloudMapNamespace = props.defaultCloudMapNamespace;
 
     this.clusterArn = props.clusterArn !== undefined ? props.clusterArn : Stack.of(this).formatArn({
       service: 'ecs',
@@ -426,8 +426,8 @@ class ImportedCluster extends Resource implements ICluster {
     }
   }
 
-  public get defaultNamespace(): cloudmap.INamespace | undefined {
-    return this._defaultNamespace;
+  public get defaultCloudMapNamespace(): cloudmap.INamespace | undefined {
+    return this._defaultCloudMapNamespace;
   }
 }
 
