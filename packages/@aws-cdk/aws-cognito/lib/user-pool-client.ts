@@ -1,4 +1,4 @@
-import { Construct, PhysicalName, Resource } from '@aws-cdk/cdk';
+import { Construct, Resource } from '@aws-cdk/cdk';
 import { CfnUserPoolClient } from './cognito.generated';
 import { IUserPool } from './user-pool';
 
@@ -27,7 +27,7 @@ export interface UserPoolClientProps {
    * Name of the application client
    * @default cloudformation generated name
    */
-  readonly userPoolClientName?: PhysicalName;
+  readonly userPoolClientName?: string;
 
   /**
    * The UserPool resource this client will have access to

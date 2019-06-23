@@ -329,7 +329,7 @@ export = {
        Name: 'foo.com',
     }));
 
-    test.equal(cluster.defaultNamespace!.type, cloudmap.NamespaceType.DNS_PUBLIC);
+    test.equal(cluster.defaultCloudMapNamespace!.type, cloudmap.NamespaceType.DNS_PUBLIC);
 
     test.done();
   },

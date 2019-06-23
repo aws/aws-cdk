@@ -70,7 +70,7 @@ export interface LoadBalancedFargateServiceProps extends LoadBalancedServiceBase
    *
    * @default CloudFormation-generated name
    */
-  readonly serviceName?: cdk.PhysicalName;
+  readonly serviceName?: string;
 }
 
 /**

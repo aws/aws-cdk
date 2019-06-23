@@ -49,7 +49,7 @@ export class CrossRegionSupportStack extends cdk.Stack {
       props.region, props.account, false, 12);
 
     this.replicationBucket = new s3.Bucket(this, 'CrossRegionCodePipelineReplicationBucket', {
-      bucketName: cdk.PhysicalName.of(replicationBucketName),
+      bucketName: replicationBucketName,
     });
   }
 }

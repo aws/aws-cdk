@@ -47,7 +47,7 @@ export interface LambdaDeploymentGroupProps {
    *
    * @default - An auto-generated name will be used.
    */
-  readonly deploymentGroupName?: cdk.PhysicalName;
+  readonly deploymentGroupName?: string;
 
   /**
    * The Deployment Configuration this Deployment Group uses.
@@ -168,18 +168,13 @@ export class LambdaDeploymentGroup extends cdk.Resource implements ILambdaDeploy
       autoRollbackConfiguration: cdk.Lazy.anyValue({ produce: () => renderAutoRollbackConfiguration(this.alarms, props.autoRollback) }),
     });
 
-    const resourceIdentifiers = this.getCrossEnvironmentAttributes({
-      arn: arnForDeploymentGroup(this.application.applicationName, resource.ref),
-      name: resource.ref,
-      arnComponents: {
-        service: 'codedeploy',
-        resource: 'deploymentgroup',
-        resourceName: `${this.application.applicationName}/${this.physicalName}`,
-        sep: ':',
-      },
+    this.deploymentGroupName = this.getResourceNameAttribute(resource.ref);
+    this.deploymentGroupArn = this.getResourceArnAttribute(arnForDeploymentGroup(this.application.applicationName, resource.ref), {
+      service: 'codedeploy',
+      resource: 'deploymentgroup',
+      resourceName: `${this.application.applicationName}/${this.physicalName}`,
+      sep: ':',
     });
-    this.deploymentGroupName = resourceIdentifiers.name;
-    this.deploymentGroupArn = resourceIdentifiers.arn;
 
     if (props.preHook) {
       this.addPreHook(props.preHook);

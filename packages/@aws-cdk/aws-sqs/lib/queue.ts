@@ -1,5 +1,5 @@
 import kms = require('@aws-cdk/aws-kms');
-import { Construct, Duration, PhysicalName, Stack } from '@aws-cdk/cdk';
+import { Construct, Duration, Stack, Token } from '@aws-cdk/cdk';
 import { IQueue, QueueAttributes, QueueBase } from './queue-base';
 import { CfnQueue } from './sqs.generated';
 import { validateProps } from './validate-props';
@@ -15,7 +15,7 @@ export interface QueueProps {
    *
    * @default CloudFormation-generated name
    */
-  readonly queueName?: PhysicalName;
+  readonly queueName?: string;
 
   /**
    * The number of seconds that Amazon SQS retains a message.
@@ -257,16 +257,11 @@ export class Queue extends QueueBase {
       visibilityTimeout: props.visibilityTimeout && props.visibilityTimeout.toSeconds(),
     });
 
-    const resourceIdentifiers = this.getCrossEnvironmentAttributes({
-      arn: queue.attrArn,
-      name: queue.attrQueueName,
-      arnComponents: {
-        service: 'sqs',
-        resource: this.physicalName,
-      },
+    this.queueArn = this.getResourceArnAttribute(queue.attrArn, {
+      service: 'sqs',
+      resource: this.physicalName,
     });
-    this.queueArn = resourceIdentifiers.arn;
-    this.queueName = resourceIdentifiers.name;
+    this.queueName = this.getResourceNameAttribute(queue.attrQueueName);
     this.encryptionMasterKey = encryptionMasterKey;
     this.queueUrl = queue.ref;
 
@@ -317,8 +312,8 @@ export class Queue extends QueueBase {
   private determineFifoProps(props: QueueProps): FifoProps {
     // Check if any of the signals that we have say that this is a FIFO queue.
     let fifoQueue = props.fifo;
-    const queueName = props.queueName && props.queueName.value;
-    if (typeof fifoQueue === 'undefined' && typeof queueName === 'string' && queueName.endsWith('.fifo')) { fifoQueue = true; }
+    const queueName = props.queueName;
+    if (typeof fifoQueue === 'undefined' && queueName && !Token.isUnresolved(queueName) && queueName.endsWith('.fifo')) { fifoQueue = true; }
     if (typeof fifoQueue === 'undefined' && props.contentBasedDeduplication) { fifoQueue = true; }
 
     // If we have a name, see that it agrees with the FIFO setting

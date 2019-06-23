@@ -1,6 +1,6 @@
 import iam = require('@aws-cdk/aws-iam');
 import cdk = require('@aws-cdk/cdk');
-import { Construct, Lazy, PhysicalName, Stack } from '@aws-cdk/cdk';
+import { Construct, Lazy, Stack } from '@aws-cdk/cdk';
 import { ILogGroup } from './log-group';
 import { CfnDestination } from './logs.generated';
 import { ILogSubscriptionDestination, LogSubscriptionDestinationConfig } from './subscription-filter';
@@ -14,7 +14,7 @@ export interface CrossAccountDestinationProps {
    *
    * @default Automatically generated
    */
-  readonly destinationName?: PhysicalName;
+  readonly destinationName?: string;
 
   /**
    * The role to assume that grants permissions to write to 'target'.
@@ -69,7 +69,7 @@ export class CrossAccountDestination extends cdk.Resource implements ILogSubscri
     super(scope, id, {
       physicalName: props.destinationName ||
         // In the underlying model, the name is not optional, but we make it so anyway.
-        PhysicalName.of(Lazy.stringValue({ produce: () => this.generateUniqueName() })),
+        Lazy.stringValue({ produce: () => this.generateUniqueName() }),
     });
 
     this.resource = new CfnDestination(this, 'Resource', {
@@ -80,18 +80,13 @@ export class CrossAccountDestination extends cdk.Resource implements ILogSubscri
       targetArn: props.targetArn
     });
 
-    const resourceIdentifiers = this.getCrossEnvironmentAttributes({
-      arn: this.resource.attrArn,
-      name: this.resource.ref,
-      arnComponents: {
-        service: 'logs',
-        resource: 'destination',
-        resourceName: this.physicalName,
-        sep: ':',
-      },
+    this.destinationArn = this.getResourceArnAttribute(this.resource.attrArn, {
+      service: 'logs',
+      resource: 'destination',
+      resourceName: this.physicalName,
+      sep: ':',
     });
-    this.destinationArn = resourceIdentifiers.arn;
-    this.destinationName = resourceIdentifiers.name;
+    this.destinationName = this.getResourceNameAttribute(this.resource.ref);
   }
 
   public addToPolicy(statement: iam.PolicyStatement) {

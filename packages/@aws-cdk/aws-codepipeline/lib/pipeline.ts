@@ -79,7 +79,7 @@ export interface PipelineProps {
    *
    * @default - AWS CloudFormation generates an ID and uses that for the pipeline name.
    */
-  readonly pipelineName?: PhysicalName;
+  readonly pipelineName?: string;
 
   /**
    * A map of region to S3 bucket name used for cross-region CodePipeline.
@@ -235,7 +235,7 @@ export class Pipeline extends PipelineBase {
     if (!propsBucket) {
       const encryptionKey = new kms.Key(this, 'ArtifactsBucketEncryptionKey');
       propsBucket = new s3.Bucket(this, 'ArtifactsBucket', {
-        bucketName: PhysicalName.auto({ crossEnvironment: true }),
+        bucketName: PhysicalName.GENERATE_IF_NEEDED,
         encryptionKey,
         encryption: s3.BucketEncryption.KMS,
         removalPolicy: RemovalPolicy.RETAIN
@@ -261,16 +261,7 @@ export class Pipeline extends PipelineBase {
     codePipeline.node.addDependency(this.role);
 
     this.artifactBucket.grantReadWrite(this.role);
-
-    const resourceIdentifiers = this.getCrossEnvironmentAttributes({
-      arn: '',
-      name: codePipeline.ref,
-      arnComponents: {
-        service: 'codepipeline',
-        resource: this.physicalName,
-      },
-    });
-    this.pipelineName = resourceIdentifiers.name;
+    this.pipelineName = this.getResourceNameAttribute(codePipeline.ref);
     this.pipelineVersion = codePipeline.attrVersion;
     this.crossRegionReplicationBuckets = props.crossRegionReplicationBuckets || {};
     this.crossRegionBucketsPassed = !!props.crossRegionReplicationBuckets;
@@ -459,10 +450,9 @@ export class Pipeline extends PipelineBase {
         }
 
         // generate a role in the other stack, that the Pipeline will assume for executing this action
-        actionRole = new iam.Role(resourceStack,
-            `${this.node.uniqueId}-${stage.stageName}-${action.actionName}-ActionRole`, {
+        actionRole = new iam.Role(resourceStack, `${this.node.uniqueId}-${stage.stageName}-${action.actionName}-ActionRole`, {
           assumedBy: new iam.AccountPrincipal(pipelineStack.account),
-          roleName: PhysicalName.auto({ crossEnvironment: true }),
+          roleName: PhysicalName.GENERATE_IF_NEEDED,
         });
 
         // the other stack has to be deployed before the pipeline stack

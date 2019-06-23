@@ -155,7 +155,7 @@ export = {
       cluster,
       loadBalancerType: ecsPatterns.LoadBalancerType.NETWORK,
       image: ecs.ContainerImage.fromRegistry("/aws/aws-example-app"),
-      serviceName: cdk.PhysicalName.of('bob'),
+      serviceName: 'bob',
     });
     // THEN
     const serviceTaskDefinition = SynthUtils.synthesize(stack).template.Resources.Service9571FDD8;

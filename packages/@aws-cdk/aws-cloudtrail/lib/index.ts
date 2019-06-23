@@ -3,7 +3,7 @@ import iam = require('@aws-cdk/aws-iam');
 import kms = require('@aws-cdk/aws-kms');
 import logs = require('@aws-cdk/aws-logs');
 import s3 = require('@aws-cdk/aws-s3');
-import { Construct, PhysicalName, Resource, Stack } from '@aws-cdk/cdk';
+import { Construct, Resource, Stack } from '@aws-cdk/cdk';
 import { CfnTrail } from './cloudtrail.generated';
 
 // AWS::CloudTrail CloudFormation Resources:
@@ -86,7 +86,7 @@ export interface TrailProps {
    *
    * @default - AWS CloudFormation generated name.
    */
-  readonly trailName?: PhysicalName;
+  readonly trailName?: string;
 
   /** An Amazon S3 object key prefix that precedes the name of all log files.
    *
@@ -185,16 +185,11 @@ export class Trail extends Resource {
       eventSelectors: this.eventSelectors
     });
 
-    const resourceIdentifiers = this.getCrossEnvironmentAttributes({
-      arn: trail.attrArn,
-      name: trail.trailName || '',
-      arnComponents: {
-        service: 'cloudtrail',
-        resource: 'trail',
-        resourceName: this.physicalName,
-      },
+    this.trailArn = this.getResourceArnAttribute(trail.attrArn, {
+      service: 'cloudtrail',
+      resource: 'trail',
+      resourceName: this.physicalName,
     });
-    this.trailArn = resourceIdentifiers.arn;
     this.trailSnsTopicArn = trail.attrSnsTopicArn;
 
     const s3BucketPolicy = s3bucket.node.findChild("Policy").node.findChild("Resource") as s3.CfnBucketPolicy;

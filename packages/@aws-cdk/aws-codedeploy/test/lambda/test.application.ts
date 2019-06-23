@@ -16,7 +16,7 @@ export = {
     "can be created with explicit name"(test: Test) {
       const stack = new cdk.Stack();
       new codedeploy.LambdaApplication(stack, 'MyApp', {
-        applicationName: cdk.PhysicalName.of('my-name'),
+        applicationName: 'my-name',
       });
       expect(stack).to(haveResource('AWS::CodeDeploy::Application', {
         ApplicationName: 'my-name',

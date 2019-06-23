@@ -1,7 +1,7 @@
 import { expect, haveResource } from '@aws-cdk/assert';
 import appscaling = require('@aws-cdk/aws-applicationautoscaling');
 import iam = require('@aws-cdk/aws-iam');
-import { ConstructNode, PhysicalName, Stack, Tag } from '@aws-cdk/cdk';
+import { ConstructNode, Stack, Tag } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
 import {
   Attribute,
@@ -219,7 +219,7 @@ export = {
     const stack = new Stack();
 
     new Table(stack, CONSTRUCT_NAME, {
-      tableName: PhysicalName.of(TABLE_NAME),
+      tableName: TABLE_NAME,
       readCapacity: 42,
       writeCapacity: 1337,
       stream: StreamViewType.NEW_AND_OLD_IMAGES,
@@ -249,7 +249,7 @@ export = {
     const stack = new Stack();
 
     new Table(stack, CONSTRUCT_NAME, {
-      tableName: PhysicalName.of(TABLE_NAME),
+      tableName: TABLE_NAME,
       readCapacity: 42,
       writeCapacity: 1337,
       stream: StreamViewType.NEW_IMAGE,
@@ -279,7 +279,7 @@ export = {
     const stack = new Stack();
 
     new Table(stack, CONSTRUCT_NAME, {
-      tableName: PhysicalName.of(TABLE_NAME),
+      tableName: TABLE_NAME,
       readCapacity: 42,
       writeCapacity: 1337,
       stream: StreamViewType.OLD_IMAGE,
@@ -309,7 +309,7 @@ export = {
   'when specifying every property'(test: Test) {
     const stack = new Stack();
     const table = new Table(stack, CONSTRUCT_NAME, {
-      tableName: PhysicalName.of(TABLE_NAME),
+      tableName: TABLE_NAME,
       readCapacity: 42,
       writeCapacity: 1337,
       pointInTimeRecovery: true,
@@ -350,7 +350,7 @@ export = {
   'when specifying PAY_PER_REQUEST billing mode'(test: Test) {
     const stack = new Stack();
     new Table(stack, CONSTRUCT_NAME, {
-      tableName: PhysicalName.of(TABLE_NAME),
+      tableName: TABLE_NAME,
       billingMode: BillingMode.PAY_PER_REQUEST,
       partitionKey: TABLE_PARTITION_KEY
     });
@@ -373,19 +373,19 @@ export = {
   'error when specifying read or write capacity with a PAY_PER_REQUEST billing mode'(test: Test) {
     const stack = new Stack();
     test.throws(() => new Table(stack, CONSTRUCT_NAME, {
-      tableName: PhysicalName.of(TABLE_NAME),
+      tableName: TABLE_NAME,
       billingMode: BillingMode.PAY_PER_REQUEST,
       partitionKey: TABLE_PARTITION_KEY,
       readCapacity: 1
     }));
     test.throws(() => new Table(stack, CONSTRUCT_NAME, {
-      tableName: PhysicalName.of(TABLE_NAME),
+      tableName: TABLE_NAME,
       billingMode: BillingMode.PAY_PER_REQUEST,
       partitionKey: TABLE_PARTITION_KEY,
       writeCapacity: 1
     }));
     test.throws(() => new Table(stack, CONSTRUCT_NAME, {
-      tableName: PhysicalName.of(TABLE_NAME),
+      tableName: TABLE_NAME,
       billingMode: BillingMode.PAY_PER_REQUEST,
       partitionKey: TABLE_PARTITION_KEY,
       readCapacity: 1,

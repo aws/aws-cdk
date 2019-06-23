@@ -1,4 +1,4 @@
-import { Construct, IResource, Lazy, PhysicalName, Resource } from '@aws-cdk/cdk';
+import { Construct, IResource, Lazy, Resource } from '@aws-cdk/cdk';
 import { Code } from './code';
 import { CfnLayerVersion, CfnLayerVersionPermission } from './lambda.generated';
 import { Runtime } from './runtime';
@@ -35,7 +35,7 @@ export interface LayerVersionProps {
    *
    * @default - A name will be generated.
    */
-  readonly layerVersionName?: PhysicalName;
+  readonly layerVersionName?: string;
 }
 
 export interface ILayerVersion extends IResource {

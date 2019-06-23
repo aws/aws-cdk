@@ -255,7 +255,7 @@ export interface CreateAlarmOptions {
    *
    * @default Automatically generated name
    */
-  readonly alarmName?: cdk.PhysicalName;
+  readonly alarmName?: string;
 
   /**
    * Description for the alarm

@@ -70,7 +70,7 @@ export = {
     const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
     cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
     const queue = new sqs.Queue(stack, 'fargate-test-queue', {
-      queueName: cdk.PhysicalName.of('fargate-test-sqs-queue'),
+      queueName: 'fargate-test-sqs-queue',
     });
 
     // WHEN

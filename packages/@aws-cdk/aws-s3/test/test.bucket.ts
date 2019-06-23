@@ -32,7 +32,7 @@ export = {
   'CFN properties are type-validated during resolution'(test: Test) {
     const stack = new cdk.Stack();
     new s3.Bucket(stack, 'MyBucket', {
-      bucketName: cdk.PhysicalName.of(cdk.Token.asString(5))  // Oh no
+      bucketName: cdk.Token.asString(5)  // Oh no
     });
 
     test.throws(() => {
@@ -92,11 +92,11 @@ export = {
     const stack = new cdk.Stack();
 
     test.doesNotThrow(() => new s3.Bucket(stack, 'MyBucket1', {
-      bucketName: cdk.PhysicalName.of('abc.xyz-34ab'),
+      bucketName: 'abc.xyz-34ab',
     }));
 
     test.doesNotThrow(() => new s3.Bucket(stack, 'MyBucket2', {
-      bucketName: cdk.PhysicalName.of('124.pp--33'),
+      bucketName: '124.pp--33',
     }));
 
     test.done();
@@ -106,7 +106,7 @@ export = {
     const stack = new cdk.Stack();
 
     test.doesNotThrow(() => new s3.Bucket(stack, 'MyBucket', {
-      bucketName: cdk.PhysicalName.of(cdk.Lazy.stringValue({ produce: () => '_BUCKET' })),
+      bucketName: cdk.Lazy.stringValue({ produce: () => '_BUCKET' }),
     }));
 
     test.done();
@@ -125,7 +125,7 @@ export = {
     ].join(EOL);
 
     test.throws(() => new s3.Bucket(stack, 'MyBucket', {
-      bucketName: cdk.PhysicalName.of(bucket),
+      bucketName: bucket,
       // tslint:disable-next-line:only-arrow-functions
     }), function(err: Error) {
       return expectedErrors === err.message;
@@ -138,11 +138,11 @@ export = {
     const stack = new cdk.Stack();
 
     test.throws(() => new s3.Bucket(stack, 'MyBucket1', {
-      bucketName: cdk.PhysicalName.of('a'),
+      bucketName: 'a',
     }), /at least 3/);
 
     test.throws(() => new s3.Bucket(stack, 'MyBucket2', {
-      bucketName: cdk.PhysicalName.of(new Array(65).join('x')),
+      bucketName: new Array(65).join('x'),
     }), /no more than 63/);
 
     test.done();
@@ -152,15 +152,15 @@ export = {
     const stack = new cdk.Stack();
 
     test.throws(() => new s3.Bucket(stack, 'MyBucket1', {
-      bucketName: cdk.PhysicalName.of('b@cket'),
+      bucketName: 'b@cket',
     }), /offset: 1/);
 
     test.throws(() => new s3.Bucket(stack, 'MyBucket2', {
-      bucketName: cdk.PhysicalName.of('bucKet'),
+      bucketName: 'bucKet',
     }), /offset: 3/);
 
     test.throws(() => new s3.Bucket(stack, 'MyBucket3', {
-      bucketName: cdk.PhysicalName.of('bučket'),
+      bucketName: 'bučket',
     }), /offset: 2/);
 
     test.done();
@@ -170,11 +170,11 @@ export = {
     const stack = new cdk.Stack();
 
     test.throws(() => new s3.Bucket(stack, 'MyBucket1', {
-      bucketName: cdk.PhysicalName.of('-ucket'),
+      bucketName: '-ucket',
     }), /offset: 0/);
 
     test.throws(() => new s3.Bucket(stack, 'MyBucket2', {
-      bucketName: cdk.PhysicalName.of('bucke.'),
+      bucketName: 'bucke.',
     }), /offset: 5/);
 
     test.done();
@@ -184,19 +184,19 @@ export = {
     const stack = new cdk.Stack();
 
     test.throws(() => new s3.Bucket(stack, 'MyBucket1', {
-      bucketName: cdk.PhysicalName.of('buc..ket'),
+      bucketName: 'buc..ket',
     }), /offset: 3/);
 
     test.throws(() => new s3.Bucket(stack, 'MyBucket2', {
-      bucketName: cdk.PhysicalName.of('buck.-et'),
+      bucketName: 'buck.-et',
     }), /offset: 4/);
 
     test.throws(() => new s3.Bucket(stack, 'MyBucket3', {
-      bucketName: cdk.PhysicalName.of('b-.ucket'),
+      bucketName: 'b-.ucket',
     }), /offset: 1/);
 
     test.doesNotThrow(() => new s3.Bucket(stack, 'MyBucket4', {
-      bucketName: cdk.PhysicalName.of('bu--cket'),
+      bucketName: 'bu--cket',
     }));
 
     test.done();
@@ -206,19 +206,19 @@ export = {
     const stack = new cdk.Stack();
 
     test.throws(() => new s3.Bucket(stack, 'MyBucket1', {
-      bucketName: cdk.PhysicalName.of('1.2.3.4'),
+      bucketName: '1.2.3.4',
     }), /must not resemble an IP address/);
 
     test.doesNotThrow(() => new s3.Bucket(stack, 'MyBucket2', {
-      bucketName: cdk.PhysicalName.of('1.2.3'),
+      bucketName: '1.2.3',
     }));
 
     test.doesNotThrow(() => new s3.Bucket(stack, 'MyBucket3', {
-      bucketName: cdk.PhysicalName.of('1.2.3.a'),
+      bucketName: '1.2.3.a',
     }));
 
     test.doesNotThrow(() => new s3.Bucket(stack, 'MyBucket4', {
-      bucketName: cdk.PhysicalName.of('1000.2.3.4'),
+      bucketName: '1000.2.3.4',
     }));
 
     test.done();
@@ -1099,13 +1099,13 @@ export = {
       // given
       const stackA = new cdk.Stack(undefined, 'StackA', { env: { account: '123456789012' }});
       const bucketFromStackA = new s3.Bucket(stackA, 'MyBucket', {
-        bucketName: cdk.PhysicalName.of('my-bucket-physical-name'),
+        bucketName: 'my-bucket-physical-name',
       });
 
       const stackB = new cdk.Stack(undefined, 'StackB', { env: { account: '234567890123' }});
       const roleFromStackB = new iam.Role(stackB, 'MyRole', {
         assumedBy: new iam.AccountPrincipal('234567890123'),
-        roleName: cdk.PhysicalName.of('MyRolePhysicalName'),
+        roleName: 'MyRolePhysicalName',
       });
 
       // when
@@ -1190,7 +1190,7 @@ export = {
       const stackA = new cdk.Stack(undefined, 'StackA', { env: { account: '123456789012' }});
       const key = new kms.Key(stackA, 'MyKey');
       const bucketFromStackA = new s3.Bucket(stackA, 'MyBucket', {
-        bucketName: cdk.PhysicalName.of('my-bucket-physical-name'),
+        bucketName: 'my-bucket-physical-name',
         encryptionKey: key,
         encryption: s3.BucketEncryption.KMS,
       });
@@ -1198,7 +1198,7 @@ export = {
       const stackB = new cdk.Stack(undefined, 'StackB', { env: { account: '234567890123' }});
       const roleFromStackB = new iam.Role(stackB, 'MyRole', {
         assumedBy: new iam.AccountPrincipal('234567890123'),
-        roleName: cdk.PhysicalName.of('MyRolePhysicalName'),
+        roleName: 'MyRolePhysicalName',
       });
 
       // when

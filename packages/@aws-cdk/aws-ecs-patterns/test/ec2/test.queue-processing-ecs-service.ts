@@ -72,7 +72,7 @@ export = {
     const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
     cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
     const queue = new sqs.Queue(stack, 'ecs-test-queue', {
-      queueName: cdk.PhysicalName.of('ecs-test-sqs-queue'),
+      queueName: 'ecs-test-sqs-queue',
     });
 
     // WHEN

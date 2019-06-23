@@ -7,7 +7,7 @@ import iam = require('@aws-cdk/aws-iam');
 import lambda = require('@aws-cdk/aws-lambda');
 import s3 = require('@aws-cdk/aws-s3');
 import sns = require('@aws-cdk/aws-sns');
-import { App, Aws, CfnParameter, ConstructNode, PhysicalName, SecretValue, Stack } from '@aws-cdk/cdk';
+import { App, Aws, CfnParameter, ConstructNode, SecretValue, Stack } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
 import cpactions = require('../lib');
 
@@ -54,7 +54,7 @@ export = {
     const stack = new Stack(undefined, 'StackName');
 
     new codepipeline.Pipeline(stack, 'Pipeline', {
-      pipelineName: PhysicalName.of(Aws.stackName),
+      pipelineName: Aws.stackName,
     });
 
     expect(stack, true).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
@@ -396,7 +396,7 @@ export = {
         const stack = new Stack();
 
         new codebuild.PipelineProject(stack, 'MyProject', {
-          projectName: PhysicalName.of('MyProject'),
+          projectName: 'MyProject',
         });
 
         expect(stack).to(haveResourceLike('AWS::CodeBuild::Project', {
@@ -704,7 +704,7 @@ export = {
       new codepipeline.Pipeline(stack, 'Pipeline', {
         crossRegionReplicationBuckets: {
           [pipelineRegion]: new s3.Bucket(stack, 'Bucket', {
-            bucketName: PhysicalName.of('my-pipeline-bucket'),
+            bucketName: 'my-pipeline-bucket',
           })
         },
         stages: [
@@ -762,11 +762,11 @@ export = {
       const rolePhysicalName = 'ProjectRolePhysicalName';
       const projectRole = new iam.Role(buildStack, 'ProjectRole', {
         assumedBy: new iam.ServicePrincipal('codebuild.amazonaws.com'),
-        roleName: PhysicalName.of(rolePhysicalName),
+        roleName: rolePhysicalName,
       });
       const projectPhysicalName = 'ProjectPhysicalName';
       const project = new codebuild.PipelineProject(buildStack, 'Project', {
-        projectName: PhysicalName.of(projectPhysicalName),
+        projectName: projectPhysicalName,
         role: projectRole,
       });
 
@@ -774,7 +774,7 @@ export = {
         env: { account: '123456789012' },
       });
       const sourceBucket = new s3.Bucket(pipelineStack, 'ArtifactBucket', {
-        bucketName: PhysicalName.of('source-bucket'),
+        bucketName: 'source-bucket',
         encryption: s3.BucketEncryption.KMS,
       });
       const sourceOutput = new codepipeline.Artifact();

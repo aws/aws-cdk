@@ -1,6 +1,6 @@
 import iam = require('@aws-cdk/aws-iam');
 import kms = require('@aws-cdk/aws-kms');
-import { Construct, IResource, PhysicalName, Resource, Stack } from '@aws-cdk/cdk';
+import { Construct, IResource, Resource, Stack } from '@aws-cdk/cdk';
 import { CfnStream } from './kinesis.generated';
 
 export interface IStream extends IResource {
@@ -173,7 +173,7 @@ export interface StreamProps {
    * Enforces a particular physical stream name.
    * @default <generated>
    */
-  readonly streamName?: PhysicalName;
+  readonly streamName?: string;
 
   /**
    * The number of hours for the data records that are stored in shards to remain accessible.
@@ -260,21 +260,14 @@ export class Stream extends StreamBase {
       streamEncryption
     });
 
-    const resourceIdentifiers = this.getCrossEnvironmentAttributes({
-      arn: this.stream.attrArn,
-      name: this.stream.ref,
-      arnComponents: {
-        service: 'kinesis',
-        resource: 'stream',
-        resourceName: this.physicalName,
-      },
+    this.streamArn = this.getResourceArnAttribute(this.stream.attrArn, {
+      service: 'kinesis',
+      resource: 'stream',
+      resourceName: this.physicalName,
     });
-    this.streamArn = resourceIdentifiers.arn;
-    this.streamName = resourceIdentifiers.name;
+    this.streamName = this.getResourceNameAttribute(this.stream.ref);
 
     this.encryptionKey = encryptionKey;
-
-    if (props.streamName) { this.node.addMetadata('aws:cdk:hasPhysicalName', props.streamName); }
   }
 
   /**
