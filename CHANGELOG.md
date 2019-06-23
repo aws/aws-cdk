@@ -2633,7 +2633,7 @@ new codepipeline.PipelineResource(this, {
 - Introduce a new scheme for generating CloudFormation logical IDs which adds a hash of the construct path to the generated ID to avoid ID collisions. To opt-in for the new scheme, set `hashedLogicalIDs` to `true` when creating a **Stack**.
 - Allow specifying explicit **logicalID** for stack elements like **Resource** **Parameter** and **Output**.
 - `async exec()` changed to `run()` and `validate` was changed to be a synchronous method instead of async.
-- Merged **@aws-cdk/cdk** into **aws-cdk**, which now where the core classes of the CDK framework live.
+- Merged **@aws-cdk/core** into **aws-cdk**, which now where the core classes of the CDK framework live.
 - The **Runtime Values** library, which was under **@aws-cdk/rtv** is now **@aws-cdk/rtv**.
 - Bugfix: Tags could not be used because they failed validation.
 - Bugfix: Allow "-" in stack names.
