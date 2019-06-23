@@ -907,18 +907,14 @@ export class Bucket extends BucketBase {
     this.versioned = props.versioned;
     this.encryptionKey = encryptionKey;
 
-    const resourceIdentifiers = this.getCrossEnvironmentAttributes({
-      arn: resource.attrArn,
-      name: resource.ref,
-      arnComponents: {
-        region: '',
-        account: '',
-        service: 's3',
-        resource: this.physicalName,
-      },
+    this.bucketName = this.getResourceNameAttribute(resource.ref);
+    this.bucketArn = this.getResourceArnAttribute(resource.attrArn, {
+      region: '',
+      account: '',
+      service: 's3',
+      resource: this.physicalName,
     });
-    this.bucketArn = resourceIdentifiers.arn;
-    this.bucketName = resourceIdentifiers.name;
+
     this.bucketDomainName = resource.attrDomainName;
     this.bucketWebsiteUrl = resource.attrWebsiteUrl;
     this.bucketDualStackDomainName = resource.attrDualStackDomainName;

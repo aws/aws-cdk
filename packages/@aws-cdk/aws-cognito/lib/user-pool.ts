@@ -398,17 +398,12 @@ export class UserPool extends Resource implements IUserPool {
       lambdaConfig: Lazy.anyValue({ produce: () => this.triggers })
     });
 
-    const resourceIdentifiers = this.getCrossEnvironmentAttributes({
-      arn: userPool.attrArn,
-      name: userPool.ref,
-      arnComponents: {
-        service: 'cognito',
-        resource: 'userpool',
-        resourceName: this.physicalName,
-      },
+    this.userPoolId = this.getResourceNameAttribute(userPool.ref);
+    this.userPoolArn = this.getResourceArnAttribute(userPool.attrArn, {
+      service: 'cognito',
+      resource: 'userpool',
+      resourceName: this.physicalName,
     });
-    this.userPoolId = resourceIdentifiers.name;
-    this.userPoolArn = resourceIdentifiers.arn;
 
     this.userPoolProviderName = userPool.attrProviderName;
     this.userPoolProviderUrl = userPool.attrProviderUrl;

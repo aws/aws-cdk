@@ -192,22 +192,15 @@ class MyResource extends Resource {
   public readonly name: string;
 
   constructor(scope: Construct, id: string, physicalName?: string) {
-    super(scope, id, {
-      physicalName,
-    });
+    super(scope, id, { physicalName });
 
-    const resourceIdentifiers = this.getCrossEnvironmentAttributes({
-      arn: 'simple-arn',
-      name: 'simple-name',
-      arnComponents: {
-        region: '',
-        account: '',
-        resource:  'my-resource',
-        resourceName: this.physicalName,
-        service: 'myservice',
-      },
+    this.arn = this.getResourceArnAttribute('simple-arn', {
+      region: '',
+      account: '',
+      resource:  'my-resource',
+      resourceName: this.physicalName,
+      service: 'myservice',
     });
-    this.arn = resourceIdentifiers.arn;
-    this.name = resourceIdentifiers.name;
+    this.name = this.getResourceNameAttribute('simple-name');
   }
 }

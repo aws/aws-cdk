@@ -437,18 +437,13 @@ export class Function extends FunctionBase {
 
     resource.node.addDependency(this.role);
 
-    const resourceIdentifiers = this.getCrossEnvironmentAttributes({
-      arn: resource.attrArn,
-      name: resource.ref,
-      arnComponents: {
-        service: 'lambda',
-        resource: 'function',
-        resourceName: this.physicalName,
-        sep: ':',
-      },
+    this.functionName = this.getResourceNameAttribute(resource.ref);
+    this.functionArn = this.getResourceArnAttribute(resource.attrArn, {
+      service: 'lambda',
+      resource: 'function',
+      resourceName: this.physicalName,
+      sep: ':',
     });
-    this.functionName = resourceIdentifiers.name;
-    this.functionArn = resourceIdentifiers.arn;
     this.runtime = props.runtime;
 
     // allow code to bind to stack.

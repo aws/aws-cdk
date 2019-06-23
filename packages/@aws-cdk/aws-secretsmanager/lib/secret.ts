@@ -190,17 +190,12 @@ export class Secret extends SecretBase {
       name: this.physicalName,
     });
 
-    const resourceIdentifiers = this.getCrossEnvironmentAttributes({
-      arn: resource.ref,
-      name: this.physicalName,
-      arnComponents: {
-        service: 'secretsmanager',
-        resource: 'secret',
-        resourceName: this.physicalName,
-        sep: ':',
-      },
+    this.secretArn = this.getResourceArnAttribute(resource.ref, {
+      service: 'secretsmanager',
+      resource: 'secret',
+      resourceName: this.physicalName,
+      sep: ':',
     });
-    this.secretArn = resourceIdentifiers.arn;
 
     this.encryptionKey = props.encryptionKey;
   }

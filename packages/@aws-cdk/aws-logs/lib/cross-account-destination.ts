@@ -80,18 +80,13 @@ export class CrossAccountDestination extends cdk.Resource implements ILogSubscri
       targetArn: props.targetArn
     });
 
-    const resourceIdentifiers = this.getCrossEnvironmentAttributes({
-      arn: this.resource.attrArn,
-      name: this.resource.ref,
-      arnComponents: {
-        service: 'logs',
-        resource: 'destination',
-        resourceName: this.physicalName,
-        sep: ':',
-      },
+    this.destinationArn = this.getResourceArnAttribute(this.resource.attrArn, {
+      service: 'logs',
+      resource: 'destination',
+      resourceName: this.physicalName,
+      sep: ':',
     });
-    this.destinationArn = resourceIdentifiers.arn;
-    this.destinationName = resourceIdentifiers.name;
+    this.destinationName = this.getResourceNameAttribute(this.resource.ref);
   }
 
   public addToPolicy(statement: iam.PolicyStatement) {

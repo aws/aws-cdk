@@ -341,18 +341,13 @@ export class LogGroup extends LogGroupBase {
 
     resource.applyRemovalPolicy(props.removalPolicy);
 
-    const resourceIdentifiers = this.getCrossEnvironmentAttributes({
-      arn: resource.attrArn,
-      name: resource.ref,
-      arnComponents: {
-        service: 'logs',
-        resource: 'log-group',
-        resourceName: this.physicalName,
-        sep: ':',
-      },
+    this.logGroupArn = this.getResourceArnAttribute(resource.attrArn, {
+      service: 'logs',
+      resource: 'log-group',
+      resourceName: this.physicalName,
+      sep: ':',
     });
-    this.logGroupArn = resourceIdentifiers.arn;
-    this.logGroupName = resourceIdentifiers.name;
+    this.logGroupName = this.getResourceNameAttribute(resource.ref);
   }
 }
 

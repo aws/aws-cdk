@@ -115,18 +115,13 @@ export class User extends Resource implements IIdentity {
       loginProfile: this.parseLoginProfile(props)
     });
 
-    const resourceIdentifiers = this.getCrossEnvironmentAttributes({
-      arn: user.attrArn,
-      name: user.ref,
-      arnComponents: {
-        region: '', // IAM is global in each partition
-        service: 'iam',
-        resource: 'user',
-        resourceName: this.physicalName,
-      },
+    this.userName = this.getResourceNameAttribute(user.ref);
+    this.userArn = this.getResourceArnAttribute(user.attrArn, {
+      region: '', // IAM is global in each partition
+      service: 'iam',
+      resource: 'user',
+      resourceName: this.physicalName,
     });
-    this.userName = resourceIdentifiers.name;
-    this.userArn = resourceIdentifiers.arn;
 
     this.policyFragment = new ArnPrincipal(this.userArn).policyFragment;
 

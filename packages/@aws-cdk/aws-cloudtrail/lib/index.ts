@@ -185,16 +185,11 @@ export class Trail extends Resource {
       eventSelectors: this.eventSelectors
     });
 
-    const resourceIdentifiers = this.getCrossEnvironmentAttributes({
-      arn: trail.attrArn,
-      name: trail.trailName || '',
-      arnComponents: {
-        service: 'cloudtrail',
-        resource: 'trail',
-        resourceName: this.physicalName,
-      },
+    this.trailArn = this.getResourceArnAttribute(trail.attrArn, {
+      service: 'cloudtrail',
+      resource: 'trail',
+      resourceName: this.physicalName,
     });
-    this.trailArn = resourceIdentifiers.arn;
     this.trailSnsTopicArn = trail.attrSnsTopicArn;
 
     const s3BucketPolicy = s3bucket.node.findChild("Policy").node.findChild("Resource") as s3.CfnBucketPolicy;

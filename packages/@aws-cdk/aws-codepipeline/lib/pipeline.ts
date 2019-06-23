@@ -261,16 +261,7 @@ export class Pipeline extends PipelineBase {
     codePipeline.node.addDependency(this.role);
 
     this.artifactBucket.grantReadWrite(this.role);
-
-    const resourceIdentifiers = this.getCrossEnvironmentAttributes({
-      arn: '',
-      name: codePipeline.ref,
-      arnComponents: {
-        service: 'codepipeline',
-        resource: this.physicalName,
-      },
-    });
-    this.pipelineName = resourceIdentifiers.name;
+    this.pipelineName = this.getResourceNameAttribute(codePipeline.ref);
     this.pipelineVersion = codePipeline.attrVersion;
     this.crossRegionReplicationBuckets = props.crossRegionReplicationBuckets || {};
     this.crossRegionBucketsPassed = !!props.crossRegionReplicationBuckets;

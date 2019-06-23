@@ -219,18 +219,13 @@ export class Role extends Resource implements IRole {
     });
 
     this.roleId = role.attrRoleId;
-    const resourceIdentifiers = this.getCrossEnvironmentAttributes({
-      arn: role.attrArn,
-      name: role.ref,
-      arnComponents: {
-        region: '', // IAM is global in each partition
-        service: 'iam',
-        resource: 'role',
-        resourceName: this.physicalName,
-      },
+    this.roleArn = this.getResourceArnAttribute(role.attrArn, {
+      region: '', // IAM is global in each partition
+      service: 'iam',
+      resource: 'role',
+      resourceName: this.physicalName,
     });
-    this.roleArn = resourceIdentifiers.arn;
-    this.roleName = resourceIdentifiers.name;
+    this.roleName = this.getResourceNameAttribute(role.ref);
     this.policyFragment = new ArnPrincipal(this.roleArn).policyFragment;
 
     function _flatten(policies?: { [name: string]: PolicyDocument }) {

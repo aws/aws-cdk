@@ -61,18 +61,13 @@ export class Activity extends Resource implements IActivity {
             name: this.physicalName! // not null because of above call to `super`
         });
 
-        const resourceIdentifiers = this.getCrossEnvironmentAttributes({
-            arn: resource.ref,
-            name: resource.attrName,
-            arnComponents: {
-                service: 'states',
-                resource: 'activity',
-                resourceName: this.physicalName,
-                sep: ':',
-            },
+        this.activityArn = this.getResourceArnAttribute(resource.ref, {
+          service: 'states',
+          resource: 'activity',
+          resourceName: this.physicalName,
+          sep: ':',
         });
-        this.activityArn = resourceIdentifiers.arn;
-        this.activityName = resourceIdentifiers.name;
+        this.activityName = this.getResourceNameAttribute(resource.attrName);
     }
 
     /**

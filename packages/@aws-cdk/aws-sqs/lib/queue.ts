@@ -257,16 +257,11 @@ export class Queue extends QueueBase {
       visibilityTimeout: props.visibilityTimeout && props.visibilityTimeout.toSeconds(),
     });
 
-    const resourceIdentifiers = this.getCrossEnvironmentAttributes({
-      arn: queue.attrArn,
-      name: queue.attrQueueName,
-      arnComponents: {
-        service: 'sqs',
-        resource: this.physicalName,
-      },
+    this.queueArn = this.getResourceArnAttribute(queue.attrArn, {
+      service: 'sqs',
+      resource: this.physicalName,
     });
-    this.queueArn = resourceIdentifiers.arn;
-    this.queueName = resourceIdentifiers.name;
+    this.queueName = this.getResourceNameAttribute(queue.attrQueueName);
     this.encryptionMasterKey = encryptionMasterKey;
     this.queueUrl = queue.ref;
 

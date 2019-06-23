@@ -70,17 +70,12 @@ export class ServerApplication extends Resource implements IServerApplication {
       computePlatform: 'Server',
     });
 
-    const resourceIdentifiers = this.getCrossEnvironmentAttributes({
-      arn: arnForApplication(resource.ref),
-      name: resource.ref,
-      arnComponents: {
-        service: 'codedeploy',
-        resource: 'application',
-        resourceName: this.physicalName,
-        sep: ':',
-      },
+    this.applicationName = this.getResourceNameAttribute(resource.ref);
+    this.applicationArn = this.getResourceArnAttribute(arnForApplication(resource.ref), {
+      service: 'codedeploy',
+      resource: 'application',
+      resourceName: this.physicalName,
+      sep: ':',
     });
-    this.applicationName = resourceIdentifiers.name;
-    this.applicationArn = resourceIdentifiers.arn;
   }
 }

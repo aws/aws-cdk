@@ -353,17 +353,12 @@ export class Repository extends RepositoryBase {
       props.lifecycleRules.forEach(this.addLifecycleRule.bind(this));
     }
 
-    const resourceIdentifiers = this.getCrossEnvironmentAttributes({
-      arn: resource.attrArn,
-      name: resource.ref,
-      arnComponents: {
-        service: 'ecr',
-        resource: 'repository',
-        resourceName: this.physicalName,
-      },
+    this.repositoryName = this.getResourceNameAttribute(resource.ref);
+    this.repositoryArn = this.getResourceArnAttribute(resource.attrArn, {
+      service: 'ecr',
+      resource: 'repository',
+      resourceName: this.physicalName,
     });
-    this.repositoryName = resourceIdentifiers.name;
-    this.repositoryArn = resourceIdentifiers.arn;
   }
 
   public addToResourcePolicy(statement: iam.PolicyStatement) {

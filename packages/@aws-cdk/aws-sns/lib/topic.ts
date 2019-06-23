@@ -55,15 +55,10 @@ export class Topic extends TopicBase {
       topicName: this.physicalName,
     });
 
-    const resourceIdentifiers = this.getCrossEnvironmentAttributes({
-      arn: resource.ref,
-      name: resource.attrTopicName,
-      arnComponents: {
-        service: 'sns',
-        resource: this.physicalName,
-      },
+    this.topicArn = this.getResourceArnAttribute(resource.ref, {
+      service: 'sns',
+      resource: this.physicalName,
     });
-    this.topicArn = resourceIdentifiers.arn;
-    this.topicName = resourceIdentifiers.name;
+    this.topicName = this.getResourceNameAttribute(resource.attrTopicName);
   }
 }

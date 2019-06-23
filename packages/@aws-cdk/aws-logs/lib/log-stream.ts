@@ -74,17 +74,6 @@ export class LogStream extends Resource implements ILogStream {
     });
 
     resource.applyRemovalPolicy(props.removalPolicy);
-
-    const resourceIdentifiers = this.getCrossEnvironmentAttributes({
-      arn: '',
-      name: resource.ref,
-      arnComponents: {
-        service: 'logs',
-        resource: 'log-group',
-        resourceName: `log-stream:${this.physicalName}`,
-        sep: ':',
-      },
-    });
-    this.logStreamName = resourceIdentifiers.name;
+    this.logStreamName = this.getResourceNameAttribute(resource.ref);
   }
 }

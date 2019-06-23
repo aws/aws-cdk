@@ -701,17 +701,12 @@ export class Project extends ProjectBase {
 
     this.addVpcRequiredPermissions(props, resource);
 
-    const resourceIdentifiers = this.getCrossEnvironmentAttributes({
-      arn: resource.attrArn,
-      name: resource.ref,
-      arnComponents: {
-        service: 'codebuild',
-        resource: 'project',
-        resourceName: this.physicalName,
-      },
+    this.projectArn = this.getResourceArnAttribute(resource.attrArn, {
+      service: 'codebuild',
+      resource: 'project',
+      resourceName: this.physicalName,
     });
-    this.projectArn = resourceIdentifiers.arn;
-    this.projectName = resourceIdentifiers.name;
+    this.projectName = this.getResourceNameAttribute(resource.ref);
 
     this.addToRolePolicy(this.createLoggingPermission());
 

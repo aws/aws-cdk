@@ -138,18 +138,13 @@ export class Group extends GroupBase {
       path: props.path,
     });
 
-    const resourceIdentifiers = this.getCrossEnvironmentAttributes({
-      arn: group.attrArn,
-      name: group.ref,
-      arnComponents: {
-        region: '', // IAM is global in each partition
-        service: 'iam',
-        resource: 'group',
-        resourceName: this.physicalName,
-      },
+    this.groupName = this.getResourceNameAttribute(group.ref);
+    this.groupArn = this.getResourceArnAttribute(group.attrArn, {
+      region: '', // IAM is global in each partition
+      service: 'iam',
+      resource: 'group',
+      resourceName: this.physicalName,
     });
-    this.groupName = resourceIdentifiers.name;
-    this.groupArn = resourceIdentifiers.arn;
   }
 
   /**

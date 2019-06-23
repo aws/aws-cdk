@@ -288,17 +288,11 @@ export class Repository extends RepositoryBase {
       triggers: this.triggers
     });
 
-    const resourceIdentifiers = this.getCrossEnvironmentAttributes({
-      arn: this.repository.attrArn,
-      name: this.repository.attrName,
-      arnComponents: {
-        service: 'codecommit',
-        resource: props.repositoryName,
-      },
+    this.repositoryName = this.getResourceNameAttribute(this.repository.attrName);
+    this.repositoryArn = this.getResourceArnAttribute(this.repository.attrArn, {
+      service: 'codecommit',
+      resource: this.physicalName,
     });
-
-    this.repositoryArn = resourceIdentifiers.arn;
-    this.repositoryName = resourceIdentifiers.name;
   }
 
   public get repositoryCloneUrlHttp() {

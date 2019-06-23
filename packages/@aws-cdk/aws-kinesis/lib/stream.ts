@@ -260,17 +260,12 @@ export class Stream extends StreamBase {
       streamEncryption
     });
 
-    const resourceIdentifiers = this.getCrossEnvironmentAttributes({
-      arn: this.stream.attrArn,
-      name: this.stream.ref,
-      arnComponents: {
-        service: 'kinesis',
-        resource: 'stream',
-        resourceName: this.physicalName,
-      },
+    this.streamArn = this.getResourceArnAttribute(this.stream.attrArn, {
+      service: 'kinesis',
+      resource: 'stream',
+      resourceName: this.physicalName,
     });
-    this.streamArn = resourceIdentifiers.arn;
-    this.streamName = resourceIdentifiers.name;
+    this.streamName = this.getResourceNameAttribute(this.stream.ref);
 
     this.encryptionKey = encryptionKey;
   }

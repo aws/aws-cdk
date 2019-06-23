@@ -250,17 +250,12 @@ export class Table extends Resource {
 
     if (props.tableName) { this.node.addMetadata('aws:cdk:hasPhysicalName', props.tableName); }
 
-    const resourceIdentifiers = this.getCrossEnvironmentAttributes({
-      arn: this.table.attrArn,
-      name: this.table.ref,
-      arnComponents: {
-        service: 'dynamodb',
-        resource: 'table',
-        resourceName: this.physicalName,
-      },
+    this.tableArn = this.getResourceArnAttribute(this.table.attrArn, {
+      service: 'dynamodb',
+      resource: 'table',
+      resourceName: this.physicalName,
     });
-    this.tableArn = resourceIdentifiers.arn;
-    this.tableName = resourceIdentifiers.name;
+    this.tableName = this.getResourceNameAttribute(this.table.ref);
 
     this.tableStreamArn = this.table.attrStreamArn;
 

@@ -104,16 +104,11 @@ export class Rule extends Resource implements IRule {
       targets: Lazy.anyValue({ produce: () => this.renderTargets() }),
     });
 
-    const resourceIdentifiers = this.getCrossEnvironmentAttributes({
-      arn: resource.attrArn,
-      name: resource.name || '',
-      arnComponents: {
-        service: 'events',
-        resource: 'rule',
-        resourceName: this.physicalName,
-      },
+    this.ruleArn = this.getResourceArnAttribute(resource.attrArn, {
+      service: 'events',
+      resource: 'rule',
+      resourceName: this.physicalName,
     });
-    this.ruleArn = resourceIdentifiers.arn;
 
     this.addEventPattern(props.eventPattern);
     this.scheduleExpression = props.schedule && props.schedule.expressionString;

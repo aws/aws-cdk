@@ -107,21 +107,12 @@ export class Database extends Resource implements IDatabase {
     });
 
     // see https://docs.aws.amazon.com/glue/latest/dg/glue-specifying-resource-arns.html#data-catalog-resource-arns
-    const resourceIdentifiers = this.getCrossEnvironmentAttributes({
-      arn: Stack.of(this).formatArn({
-        service: 'glue',
-        resource: 'database',
-        resourceName: resource.ref,
-      }),
-      name: resource.ref,
-      arnComponents: {
-        service: 'glue',
-        resource: 'database',
-        resourceName: this.physicalName,
-      },
+    this.databaseName = this.getResourceNameAttribute(resource.ref);
+    this.databaseArn = this.stack.formatArn({
+      service: 'glue',
+      resource: 'database',
+      resourceName: this.databaseName,
     });
-    this.databaseName = resourceIdentifiers.name;
-    this.databaseArn = resourceIdentifiers.arn;
 
     // catalogId is implicitly the accountId, which is why we don't pass the catalogId here
     this.catalogArn = Stack.of(this).formatArn({

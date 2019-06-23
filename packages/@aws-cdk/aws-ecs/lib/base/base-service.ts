@@ -164,17 +164,12 @@ export abstract class BaseService extends Resource
       ? Fn.select(2, Fn.split('/', this.resource.ref))
       : this.resource.attrName;
 
-    const resourceIdentifiers = this.getCrossEnvironmentAttributes({
-      arn: this.resource.ref,
-      name: serviceName,
-      arnComponents: {
-        service: 'ecs',
-        resource: 'service',
-        resourceName: `${props.cluster.clusterName}/${this.physicalName}`,
-      },
+    this.serviceArn = this.getResourceArnAttribute(this.resource.ref, {
+      service: 'ecs',
+      resource: 'service',
+      resourceName: `${props.cluster.clusterName}/${this.physicalName}`,
     });
-    this.serviceArn = resourceIdentifiers.arn;
-    this.serviceName = resourceIdentifiers.name;
+    this.serviceName = this.getResourceNameAttribute(serviceName);
 
     this.cluster = props.cluster;
 

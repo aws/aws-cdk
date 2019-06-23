@@ -290,18 +290,8 @@ export class StringParameter extends ParameterBase implements IStringParameter {
       value: props.stringValue,
     });
 
-    const resourceIdentifiers = this.getCrossEnvironmentAttributes({
-      arn: arnForParameterName(this, resource.ref),
-      name: resource.ref,
-      arnComponents: {
-        service: 'ssm',
-        resource: 'parameter',
-        resourceName: this.physicalName,
-        sep: '', // `sep` is empty because parameterName starts with a / already!
-      },
-    });
-    this.parameterArn = resourceIdentifiers.arn;
-    this.parameterName = resourceIdentifiers.name;
+    this.parameterName = this.getResourceNameAttribute(resource.ref);
+    this.parameterArn = arnForParameterName(this, this.parameterName);
 
     this.parameterType = resource.attrType;
     this.stringValue = resource.attrValue;
@@ -353,18 +343,8 @@ export class StringListParameter extends ParameterBase implements IStringListPar
       type: STRINGLIST_PARAM_TYPE,
       value: props.stringListValue.join(','),
     });
-    const resourceIdentifiers = this.getCrossEnvironmentAttributes({
-      arn: arnForParameterName(this, resource.ref),
-      name: resource.ref,
-      arnComponents: {
-        service: 'ssm',
-        resource: 'parameter',
-        resourceName: this.physicalName,
-        sep: '', // `sep` is empty because parameterName starts with a / already!
-      },
-    });
-    this.parameterArn = resourceIdentifiers.arn;
-    this.parameterName = resourceIdentifiers.name;
+    this.parameterName = this.getResourceNameAttribute(resource.ref);
+    this.parameterArn = arnForParameterName(this, this.parameterName);
 
     this.parameterType = resource.attrType;
     this.stringListValue = Fn.split(',', resource.attrValue);

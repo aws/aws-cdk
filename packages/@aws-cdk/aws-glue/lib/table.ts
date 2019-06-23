@@ -278,21 +278,12 @@ export class Table extends Resource implements ITable {
       }
     });
 
-    const resourceIdentifiers = this.getCrossEnvironmentAttributes({
-      arn: Stack.of(this).formatArn({
-        service: 'glue',
-        resource: 'table',
-        resourceName: `${this.database.databaseName}/${tableResource.ref}`
-      }),
-      name: tableResource.ref,
-      arnComponents: {
-        service: 'glue',
-        resource: 'table',
-        resourceName: `${this.database.databaseName}/${this.physicalName}`
-      },
+    this.tableName = this.getResourceNameAttribute(tableResource.ref);
+    this.tableArn = this.stack.formatArn({
+      service: 'glue',
+      resource: 'table',
+      resourceName: `${this.database.databaseName}/${this.tableName}`
     });
-    this.tableName = resourceIdentifiers.name;
-    this.tableArn = resourceIdentifiers.arn;
   }
 
   /**

@@ -75,17 +75,12 @@ export class Cluster extends Resource implements ICluster {
       clusterName: this.physicalName,
     });
 
-    const resourceIdentifiers = this.getCrossEnvironmentAttributes({
-      arn: cluster.attrArn,
-      name: cluster.ref,
-      arnComponents: {
-        service: 'ecs',
-        resource: 'cluster',
-        resourceName: this.physicalName,
-      },
+    this.clusterArn = this.getResourceArnAttribute(cluster.attrArn, {
+      service: 'ecs',
+      resource: 'cluster',
+      resourceName: this.physicalName,
     });
-    this.clusterArn = resourceIdentifiers.arn;
-    this.clusterName = resourceIdentifiers.name;
+    this.clusterName = this.getResourceNameAttribute(cluster.ref);
 
     this.vpc = props.vpc;
   }
