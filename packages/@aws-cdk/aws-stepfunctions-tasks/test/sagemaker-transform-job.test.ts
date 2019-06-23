@@ -19,7 +19,7 @@ beforeEach(() => {
             iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonSageMakerFullAccess')
         ],
     });
-  });
+});
 
 test('create basic transform job', () => {
     // WHEN

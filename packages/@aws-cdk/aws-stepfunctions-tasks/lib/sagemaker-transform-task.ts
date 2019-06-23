@@ -32,7 +32,7 @@ export interface SagemakerTransformProps {
     /**
      * Environment variables to set in the Docker container.
      */
-    readonly environment?: {[key: string]: any};
+    readonly environment?: {[key: string]: string};
 
     /**
      * Maximum number of parallel requests that can be sent to each instance in a transform job.
@@ -52,7 +52,7 @@ export interface SagemakerTransformProps {
     /**
      * Tags to be applied to the train job.
      */
-    readonly tags?: {[key: string]: any};
+    readonly tags?: {[key: string]: string};
 
     /**
      * Dataset to be transformed and the Amazon S3 location where it is stored.
@@ -97,7 +97,7 @@ export class SagemakerTransformTask implements sfn.IStepFunctionsTask {
     constructor(scope: Construct, private readonly props: SagemakerTransformProps) {
 
         // set the sagemaker role or create new one
-        this.role = props.role || new iam.Role(scope, 'SagemakerRole', {
+        this.role = props.role || new iam.Role(scope, 'SagemakerTransformRole', {
             assumedBy: new iam.ServicePrincipal('sagemaker.amazonaws.com'),
             managedPolicies: [
                 iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonSageMakerFullAccess')

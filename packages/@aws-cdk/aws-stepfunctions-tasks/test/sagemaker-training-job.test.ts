@@ -11,7 +11,7 @@ let stack: cdk.Stack;
 beforeEach(() => {
     // GIVEN
     stack = new cdk.Stack();
-  });
+});
 
 test('create basic training job', () => {
     // WHEN
@@ -64,7 +64,7 @@ test('create basic training job', () => {
             InstanceType: 'ml.m4.xlarge',
             VolumeSizeInGB: 10
         },
-        RoleArn: { "Fn::GetAtt": [ "SagemakerRole5FDB64E1", "Arn" ] },
+        RoleArn: { "Fn::GetAtt": [ "SagemakerTrainRoleCBF0A724", "Arn" ] },
         StoppingCondition: {
             MaxRuntimeInSeconds: 3600
         },
@@ -87,7 +87,7 @@ test('create complex training job', () => {
         ],
     });
 
-    const task = new sfn.Task(stack, 'TrainSagemaker', { task: new tasks.SagemakerTrainTask(stack, {
+    const trainTask = new tasks.SagemakerTrainTask(stack, {
         trainingJobName: "MyTrainJob",
         synchronous: true,
         role,
@@ -148,9 +148,10 @@ test('create complex training job', () => {
         vpcConfig: {
             vpc,
             subnets: vpc.privateSubnets,
-            securityGroups: [ securityGroup ]
         }
-    })});
+    });
+    trainTask.addSecurityGroup(securityGroup);
+    const task = new sfn.Task(stack, 'TrainSagemaker', { task: trainTask });
 
     // THEN
     expect(stack.resolve(task.toStateJson())).toEqual({
@@ -213,7 +214,10 @@ test('create complex training job', () => {
             { Key: "Project", Value: "MyProject" }
         ],
         VpcConfig: {
-            SecurityGroupIds: [ { "Fn::GetAtt": [ "SecurityGroupDD263621", "GroupId" ] } ],
+            SecurityGroupIds: [
+                { "Fn::GetAtt": [ "TrainJobSecurityGroupBECEDCDC", "GroupId" ] },
+                { "Fn::GetAtt": [ "SecurityGroupDD263621", "GroupId" ] },
+            ],
             Subnets: [
                 { Ref: "VPCPrivateSubnet1Subnet8BCA10E0" },
                 { Ref: "VPCPrivateSubnet2SubnetCFCDAA7A" },
@@ -299,4 +303,27 @@ test('pass param to training job', () => {
         }
       },
     });
+});
+
+test('Cannot create a SageMaker train task with both algorithm name and image name missing', () => {
+
+    expect(() => new tasks.SagemakerTrainTask(stack, {
+        trainingJobName: 'myTrainJob',
+        algorithmSpecification: {},
+        inputDataConfig: [
+            {
+                channelName: 'train',
+                dataSource: {
+                    s3DataSource: {
+                        s3DataType: tasks.S3DataType.S3Prefix,
+                        s3Uri: sfn.Data.stringAt('$.S3Bucket')
+                    }
+                }
+            }
+        ],
+        outputDataConfig: {
+            s3OutputPath: 's3://mybucket/myoutputpath'
+        },
+    }))
+      .toThrowError(/Must define either an algorithm name or training image URI in the algorithm specification/);
 });

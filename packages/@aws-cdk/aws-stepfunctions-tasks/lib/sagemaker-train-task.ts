@@ -1,7 +1,7 @@
 import ec2 = require('@aws-cdk/aws-ec2');
 import iam = require('@aws-cdk/aws-iam');
 import sfn = require('@aws-cdk/aws-stepfunctions');
-import { Construct, Stack } from '@aws-cdk/cdk';
+import { Construct, Lazy, Stack } from '@aws-cdk/cdk';
 import { AlgorithmSpecification, Channel, InputMode, OutputDataConfig, ResourceConfig,
          S3DataType, StoppingCondition, VpcConfig,  } from './sagemaker-task-base-types';
 
@@ -45,7 +45,7 @@ export interface SagemakerTrainProps {
     /**
      * Tags to be applied to the train job.
      */
-    readonly tags?: {[key: string]: any};
+    readonly tags?: {[key: string]: string};
 
     /**
      * Identifies the Amazon S3 location where you want Amazon SageMaker to save the results of model training.
@@ -76,7 +76,7 @@ export class SagemakerTrainTask implements ec2.IConnectable, sfn.IStepFunctionsT
     /**
      * Allows specify security group connections for instances of this fleet.
      */
-    public readonly connections: ec2.Connections = new ec2.Connections();
+    public readonly connections: ec2.Connections;
 
     /**
      * The execution role for the Sagemaker training job.
@@ -105,6 +105,11 @@ export class SagemakerTrainTask implements ec2.IConnectable, sfn.IStepFunctionsT
      */
     private readonly stoppingCondition: StoppingCondition;
 
+    private readonly vpc: ec2.IVpc;
+    private readonly securityGroup: ec2.ISecurityGroup;
+    private readonly securityGroups: ec2.ISecurityGroup[] = [];
+    private readonly subnets: string[];
+
     constructor(scope: Construct, private readonly props: SagemakerTrainProps) {
 
         // set the default resource config if not defined.
@@ -120,12 +125,17 @@ export class SagemakerTrainTask implements ec2.IConnectable, sfn.IStepFunctionsT
         };
 
         // set the sagemaker role or create new one
-        this.role = props.role || new iam.Role(scope, 'SagemakerRole', {
+        this.role = props.role || new iam.Role(scope, 'SagemakerTrainRole', {
             assumedBy: new iam.ServicePrincipal('sagemaker.amazonaws.com'),
             managedPolicies: [
                 iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonSageMakerFullAccess')
             ]
         });
+
+        // check that either algorithm name or image is defined
+        if ((!props.algorithmSpecification.algorithmName) && (!props.algorithmSpecification.trainingImage)) {
+            throw new Error("Must define either an algorithm name or training image URI in the algorithm specification");
+        }
 
         // set the input mode to 'File' if not defined
         this.algorithmSpecification = ( props.algorithmSpecification.trainingInputMode ) ?
@@ -143,9 +153,26 @@ export class SagemakerTrainTask implements ec2.IConnectable, sfn.IStepFunctionsT
         });
 
         // add the security groups to the connections object
-        if (this.props.vpcConfig) {
-            this.props.vpcConfig.securityGroups.forEach(sg => this.connections.addSecurityGroup(sg));
+        if (props.vpcConfig) {
+            this.vpc = props.vpcConfig.vpc;
+            this.securityGroup = new ec2.SecurityGroup(scope, 'TrainJobSecurityGroup', {
+                vpc: this.vpc
+            });
+            this.connections = new ec2.Connections({ securityGroups: [this.securityGroup] });
+            this.securityGroups.push(this.securityGroup);
+            this.subnets = (props.vpcConfig.subnets) ? (props.vpcConfig.subnets.map(s => (s.subnetId))) : this.vpc.selectSubnets().subnetIds;
         }
+    }
+
+    /**
+     * Add the security group to all instances via the launch configuration
+     * security groups array.
+     *
+     * @param securityGroup: The security group to add
+     */
+    public addSecurityGroup(securityGroup: ec2.ISecurityGroup): void {
+        console.log("Adding security group");
+        this.securityGroups.push(securityGroup);
     }
 
     public bind(task: sfn.Task): sfn.StepFunctionsTaskConfig  {
@@ -243,9 +270,10 @@ export class SagemakerTrainTask implements ec2.IConnectable, sfn.IStepFunctionsT
     }
 
     private renderVpcConfig(config: VpcConfig | undefined): {[key: string]: any} {
+        console.log("Render vpc config");
         return (config) ? { VpcConfig: {
-            SecurityGroupIds: config.securityGroups.map(sg => ( sg.securityGroupId )),
-            Subnets: config.subnets.map(subnet => ( subnet.subnetId )),
+            SecurityGroupIds: Lazy.listValue({ produce: () => (this.securityGroups.map(sg => (sg.securityGroupId))) }),
+            Subnets: this.subnets,
         }} : {};
     }
 

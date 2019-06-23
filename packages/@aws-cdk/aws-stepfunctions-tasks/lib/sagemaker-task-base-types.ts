@@ -184,19 +184,14 @@ export interface ResourceConfig {
  */
 export interface VpcConfig {
     /**
-     * VPC security groups.
-     */
-    readonly securityGroups: ec2.ISecurityGroup[];
-
-    /**
      * VPC id
      */
-    readonly vpc: ec2.Vpc;
+    readonly vpc: ec2.IVpc;
 
     /**
      * VPC subnets.
      */
-    readonly subnets: ec2.ISubnet[];
+    readonly subnets?: ec2.ISubnet[];
 }
 
 /**
