@@ -1,4 +1,4 @@
-import { Construct, Lazy, Resource, Stack } from '@aws-cdk/cdk';
+import { Construct, Lazy, Resource, Stack } from '@aws-cdk/core';
 import { CfnGroup } from './iam.generated';
 import { IIdentity } from './identity-base';
 import { IManagedPolicy } from './managed-policy';

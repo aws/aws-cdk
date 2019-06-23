@@ -3,7 +3,7 @@ import { Construct } from "./construct";
 import { Lazy } from "./lazy";
 import { Token } from './token';
 
-const CFN_ELEMENT_SYMBOL = Symbol.for('@aws-cdk/cdk.CfnElement');
+const CFN_ELEMENT_SYMBOL = Symbol.for('@aws-cdk/core.CfnElement');
 
 /**
  * An element of a CloudFormation stack.

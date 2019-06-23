@@ -1,5 +1,5 @@
 import { expect, haveResource } from '@aws-cdk/assert';
-import { Lazy, Stack } from '@aws-cdk/cdk';
+import { Lazy, Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import { Peer, Port, SecurityGroup, Vpc } from "../lib";
 

@@ -22,7 +22,7 @@
     "include": ["**/*.ts" ],
     "exclude": ["node_modules"],
     "references": [
-        { "path": "../cdk" },
+        { "path": "../core" },
         { "path": "../cx-api" },
         { "path": "../cfnspec" },
         { "path": "../cloudformation-diff" }

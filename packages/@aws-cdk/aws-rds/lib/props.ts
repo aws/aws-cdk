@@ -1,6 +1,6 @@
 import ec2 = require('@aws-cdk/aws-ec2');
 import kms = require('@aws-cdk/aws-kms');
-import { Duration, SecretValue } from '@aws-cdk/cdk';
+import { Duration, SecretValue } from '@aws-cdk/core';
 import { IParameterGroup } from './parameter-group';
 import { SecretRotationApplication } from './secret-rotation';
 

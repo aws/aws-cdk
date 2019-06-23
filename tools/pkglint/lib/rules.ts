@@ -472,7 +472,7 @@ export class NoAtTypesInDependencies extends ValidationRule {
  * Computes the module name for various other purposes (java package, ...)
  */
 function cdkModuleName(name: string) {
-  const isCdkPkg = name === '@aws-cdk/cdk';
+  const isCdkPkg = name === '@aws-cdk/core';
 
   name = name.replace(/^aws-cdk-/, '');
   name = name.replace(/^@aws-cdk\//, '');
@@ -486,7 +486,7 @@ function cdkModuleName(name: string) {
   return {
     javaPackage: `software.amazon.awscdk${isCdkPkg ? '' : `.${name.replace(/^aws-/, 'services-').replace(/-/g, '.')}`}`,
     mavenArtifactId:
-      isCdkPkg ? 'cdk'
+      isCdkPkg ? 'core'
                : name.startsWith('aws-') || name.startsWith('alexa-') ? name.replace(/^aws-/, '')
                                                                       : `cdk-${name}`,
     dotnetNamespace: `Amazon.CDK${isCdkPkg ? '' : `.${dotnetSuffix}`}`,

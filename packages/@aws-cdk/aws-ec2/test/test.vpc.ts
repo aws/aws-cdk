@@ -1,5 +1,5 @@
 import { countResources, expect, haveResource, haveResourceLike, isSuperObject } from '@aws-cdk/assert';
-import { Stack, Tag } from '@aws-cdk/cdk';
+import { Stack, Tag } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import { CfnVPC, DefaultInstanceTenancy, SubnetType, Vpc } from '../lib';
 

@@ -1,6 +1,6 @@
 import { expect, haveResource } from '@aws-cdk/assert';
 import ec2 = require('@aws-cdk/aws-ec2');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import { ICallbackFunction, Test } from 'nodeunit';
 import lambda = require('../lib');
 

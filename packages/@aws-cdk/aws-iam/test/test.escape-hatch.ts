@@ -1,8 +1,8 @@
 // tests for the L1 escape hatches (overrides). those are in the IAM module
 // because we want to verify them end-to-end, as a complement to the unit
-// tests in the @aws-cdk/cdk module
+// tests in the @aws-cdk/core module
 import { expect } from '@aws-cdk/assert';
-import { Stack } from '@aws-cdk/cdk';
+import { Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import iam = require('../lib');
 

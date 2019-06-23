@@ -1,5 +1,5 @@
 import iam = require('@aws-cdk/aws-iam');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import secretsManager = require('../lib');
 
 class SecretsManagerStack extends cdk.Stack {

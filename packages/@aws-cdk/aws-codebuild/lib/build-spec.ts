@@ -1,4 +1,4 @@
-import { IResolveContext, Lazy, Stack } from '@aws-cdk/cdk';
+import { IResolveContext, Lazy, Stack } from '@aws-cdk/core';
 
 /**
  * BuildSpec for CodeBuild projects
