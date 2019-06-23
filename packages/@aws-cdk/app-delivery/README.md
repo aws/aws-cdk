@@ -50,7 +50,7 @@ The example below defines a *CDK App* that contains 3 stacks:
 import codebuild = require('@aws-cdk/aws-codebuild');
 import codepipeline = require('@aws-cdk/aws-codepipeline');
 import codepipeline_actions = require('@aws-cdk/aws-codepipeline-actions');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import cicd = require('@aws-cdk/cicd');
 
 const app = new cdk.App();

@@ -1,5 +1,5 @@
 import sfn = require('@aws-cdk/aws-stepfunctions');
-import cdk = require( '@aws-cdk/cdk');
+import cdk = require( '@aws-cdk/core');
 import tasks = require('../lib');
 
 class JobPollerStack extends cdk.Stack {

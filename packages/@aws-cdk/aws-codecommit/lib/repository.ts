@@ -1,5 +1,5 @@
 import events = require('@aws-cdk/aws-events');
-import { Construct, IConstruct, IResource, Resource, Stack } from '@aws-cdk/cdk';
+import { Construct, IConstruct, IResource, Resource, Stack } from '@aws-cdk/core';
 import { CfnRepository } from './codecommit.generated';
 
 export interface IRepository extends IResource {

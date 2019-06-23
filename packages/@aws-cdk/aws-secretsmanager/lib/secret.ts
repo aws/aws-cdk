@@ -1,6 +1,6 @@
 import iam = require('@aws-cdk/aws-iam');
 import kms = require('@aws-cdk/aws-kms');
-import { Construct, IResource, Resource, SecretValue, Stack } from '@aws-cdk/cdk';
+import { Construct, IResource, Resource, SecretValue, Stack } from '@aws-cdk/core';
 import { RotationSchedule, RotationScheduleOptions } from './rotation-schedule';
 import secretsmanager = require('./secretsmanager.generated');
 

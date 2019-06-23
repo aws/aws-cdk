@@ -1,7 +1,7 @@
 import '@aws-cdk/assert/jest';
 import lambda = require('@aws-cdk/aws-lambda');
 import logs = require('@aws-cdk/aws-logs');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import dests = require('../lib');
 
 test('lambda can be used as metric subscription destination', () => {

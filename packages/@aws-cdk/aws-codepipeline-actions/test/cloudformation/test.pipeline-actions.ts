@@ -1,8 +1,8 @@
 import codepipeline = require('@aws-cdk/aws-codepipeline');
 import events = require('@aws-cdk/aws-events');
 import iam = require('@aws-cdk/aws-iam');
-import cdk = require('@aws-cdk/cdk');
-import { Stack } from '@aws-cdk/cdk';
+import cdk = require('@aws-cdk/core');
+import { Stack } from '@aws-cdk/core';
 import _ = require('lodash');
 import nodeunit = require('nodeunit');
 import cpactions = require('../../lib');

@@ -1,6 +1,6 @@
 import cloudwatch = require('@aws-cdk/aws-cloudwatch');
 import iam = require('@aws-cdk/aws-iam');
-import { Construct, Duration, IResource, Resource, Stack } from '@aws-cdk/cdk';
+import { Construct, Duration, IResource, Resource, Stack } from '@aws-cdk/core';
 import { StateGraph } from './state-graph';
 import { CfnStateMachine } from './stepfunctions.generated';
 import { IChainable } from './types';

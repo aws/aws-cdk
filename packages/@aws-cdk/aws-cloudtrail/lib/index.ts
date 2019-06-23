@@ -3,7 +3,7 @@ import iam = require('@aws-cdk/aws-iam');
 import kms = require('@aws-cdk/aws-kms');
 import logs = require('@aws-cdk/aws-logs');
 import s3 = require('@aws-cdk/aws-s3');
-import { Construct, Resource, Stack } from '@aws-cdk/cdk';
+import { Construct, Resource, Stack } from '@aws-cdk/core';
 import { CfnTrail } from './cloudtrail.generated';
 
 // AWS::CloudTrail CloudFormation Resources:

@@ -2,8 +2,8 @@ import cloudformation = require('@aws-cdk/aws-cloudformation');
 import { CloudFormationCapabilities } from '@aws-cdk/aws-cloudformation';
 import codepipeline = require('@aws-cdk/aws-codepipeline');
 import iam = require('@aws-cdk/aws-iam');
-import cdk = require('@aws-cdk/cdk');
-import { Stack } from '@aws-cdk/cdk';
+import cdk = require('@aws-cdk/core');
+import { Stack } from '@aws-cdk/core';
 
 /**
  * Properties common to all CloudFormation actions

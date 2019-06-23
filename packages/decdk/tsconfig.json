@@ -22,7 +22,7 @@
     "test/enrichments/**"
   ],
   "references": [
-    { "path": "../@aws-cdk/cdk" },
+    { "path": "../@aws-cdk/core" },
     { "path": "../@aws-cdk/cx-api" }
   ]
 }

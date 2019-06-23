@@ -14,12 +14,12 @@
     "typescript": "^3.3.3333"
   },
   "peerDependencies": {
-    "@aws-cdk/cdk": "^%cdk-version%"
+    "@aws-cdk/core": "^%cdk-version%"
   },
   "dependencies": {
     "@aws-cdk/aws-sns": "^%cdk-version%",
     "@aws-cdk/aws-sns-subscriptions": "^%cdk-version%",
     "@aws-cdk/aws-sqs": "^%cdk-version%",
-    "@aws-cdk/cdk": "^%cdk-version%"
+    "@aws-cdk/core": "^%cdk-version%"
   }
 }

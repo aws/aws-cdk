@@ -1,7 +1,7 @@
 import { expect, haveResource } from '@aws-cdk/assert';
 import codepipeline = require('@aws-cdk/aws-codepipeline');
 import events = require('@aws-cdk/aws-events');
-import { Stack } from '@aws-cdk/cdk';
+import { Stack } from '@aws-cdk/core';
 import targets = require('../../lib');
 
 test('use codebuild project as an eventrule target', () => {

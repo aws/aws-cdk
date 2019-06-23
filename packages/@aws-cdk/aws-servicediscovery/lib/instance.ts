@@ -1,4 +1,4 @@
-import { IResource, Resource } from '@aws-cdk/cdk';
+import { IResource, Resource } from '@aws-cdk/core';
 import { IService } from './service';
 
 export interface IInstance extends IResource {

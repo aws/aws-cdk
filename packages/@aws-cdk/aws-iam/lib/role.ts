@@ -1,4 +1,4 @@
-import { Construct, Duration, Lazy, Resource, Stack } from '@aws-cdk/cdk';
+import { Construct, Duration, Lazy, Resource, Stack } from '@aws-cdk/core';
 import { Grant } from './grant';
 import { CfnRole } from './iam.generated';
 import { IIdentity } from './identity-base';
