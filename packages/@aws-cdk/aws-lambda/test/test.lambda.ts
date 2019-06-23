@@ -2,7 +2,7 @@ import { expect, haveResource, MatchStyle, ResourcePart } from '@aws-cdk/assert'
 import iam = require('@aws-cdk/aws-iam');
 import logs = require('@aws-cdk/aws-logs');
 import sqs = require('@aws-cdk/aws-sqs');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import { Test } from 'nodeunit';
 import path = require('path');
 import lambda = require('../lib');
@@ -294,7 +294,7 @@ export = {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
       runtime: lambda.Runtime.Nodejs810,
-      functionName: cdk.PhysicalName.of('OneFunctionToRuleThemAll'),
+      functionName: 'OneFunctionToRuleThemAll',
       deadLetterQueueEnabled: true
     });
 
@@ -582,7 +582,7 @@ export = {
     const stack = new cdk.Stack();
 
     const dlQueue = new sqs.Queue(stack, 'DeadLetterQueue', {
-      queueName: cdk.PhysicalName.of('MyLambda_DLQ'),
+      queueName: 'MyLambda_DLQ',
       retentionPeriod: cdk.Duration.days(14)
     });
 
@@ -691,7 +691,7 @@ export = {
     const stack = new cdk.Stack();
 
     const dlQueue = new sqs.Queue(stack, 'DeadLetterQueue', {
-      queueName: cdk.PhysicalName.of('MyLambda_DLQ'),
+      queueName: 'MyLambda_DLQ',
       retentionPeriod: cdk.Duration.days(14)
     });
 
@@ -801,7 +801,7 @@ export = {
     const stack = new cdk.Stack();
 
     const dlQueue = new sqs.Queue(stack, 'DeadLetterQueue', {
-      queueName: cdk.PhysicalName.of('MyLambda_DLQ'),
+      queueName: 'MyLambda_DLQ',
       retentionPeriod: cdk.Duration.days(14),
     });
 

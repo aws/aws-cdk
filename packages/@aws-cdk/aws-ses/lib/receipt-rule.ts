@@ -1,5 +1,5 @@
 import lambda = require('@aws-cdk/aws-lambda');
-import { Construct, IResource, Lazy, PhysicalName, Resource } from '@aws-cdk/cdk';
+import { Construct, IResource, Lazy, Resource } from '@aws-cdk/core';
 import { IReceiptRuleAction, LambdaInvocationType, ReceiptRuleActionProps, ReceiptRuleLambdaAction } from './receipt-rule-action';
 import { IReceiptRuleSet } from './receipt-rule-set';
 import { CfnReceiptRule } from './ses.generated';
@@ -62,7 +62,7 @@ export interface ReceiptRuleOptions {
    *
    * @default - A CloudFormation generated name.
    */
-  readonly receiptRuleName?: PhysicalName;
+  readonly receiptRuleName?: string;
 
   /**
    * The recipient domains and email addresses that the receipt rule applies to.

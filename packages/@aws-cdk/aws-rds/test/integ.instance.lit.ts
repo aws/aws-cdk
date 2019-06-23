@@ -3,7 +3,7 @@ import ec2 = require('@aws-cdk/aws-ec2');
 import targets = require('@aws-cdk/aws-events-targets');
 import lambda = require('@aws-cdk/aws-lambda');
 import logs = require('@aws-cdk/aws-logs');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import rds = require('../lib');
 
 const app = new cdk.App();

@@ -6,9 +6,9 @@ import { BEGIN_LIST_TOKEN_MARKER, BEGIN_STRING_TOKEN_MARKER, createTokenDouble,
 
 const glob = global as any;
 
-const STRING_SYMBOL = Symbol.for('@aws-cdk/cdk.TokenMap.STRING');
-const LIST_SYMBOL = Symbol.for('@aws-cdk/cdk.TokenMap.LIST');
-const NUMBER_SYMBOL = Symbol.for('@aws-cdk/cdk.TokenMap.NUMBER');
+const STRING_SYMBOL = Symbol.for('@aws-cdk/core.TokenMap.STRING');
+const LIST_SYMBOL = Symbol.for('@aws-cdk/core.TokenMap.LIST');
+const NUMBER_SYMBOL = Symbol.for('@aws-cdk/core.TokenMap.NUMBER');
 
 /**
  * Central place where we keep a mapping from Tokens to their String representation

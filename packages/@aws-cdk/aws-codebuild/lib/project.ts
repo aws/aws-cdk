@@ -5,7 +5,7 @@ import { DockerImageAsset, DockerImageAssetProps } from '@aws-cdk/aws-ecr-assets
 import events = require('@aws-cdk/aws-events');
 import iam = require('@aws-cdk/aws-iam');
 import kms = require('@aws-cdk/aws-kms');
-import { Aws, CfnResource, Construct, Duration, IResource, Lazy, PhysicalName, Resource, Stack } from '@aws-cdk/cdk';
+import { Aws, CfnResource, Construct, Duration, IResource, Lazy, PhysicalName, Resource, Stack } from '@aws-cdk/core';
 import { IArtifacts } from './artifacts';
 import { BuildSpec } from './build-spec';
 import { Cache } from './cache';
@@ -464,7 +464,7 @@ export interface CommonProjectProps {
    *
    * @default - Name is automatically generated.
    */
-  readonly projectName?: PhysicalName;
+  readonly projectName?: string;
 
   /**
    * VPC network to place codebuild network interfaces
@@ -633,7 +633,7 @@ export class Project extends ProjectBase {
     });
 
     this.role = props.role || new iam.Role(this, 'Role', {
-      roleName: PhysicalName.auto({ crossEnvironment: true }),
+      roleName: PhysicalName.GENERATE_IF_NEEDED,
       assumedBy: new iam.ServicePrincipal('codebuild.amazonaws.com')
     });
     this.grantPrincipal = this.role;
@@ -701,17 +701,12 @@ export class Project extends ProjectBase {
 
     this.addVpcRequiredPermissions(props, resource);
 
-    const resourceIdentifiers = this.getCrossEnvironmentAttributes({
-      arn: resource.attrArn,
-      name: resource.ref,
-      arnComponents: {
-        service: 'codebuild',
-        resource: 'project',
-        resourceName: this.physicalName,
-      },
+    this.projectArn = this.getResourceArnAttribute(resource.attrArn, {
+      service: 'codebuild',
+      resource: 'project',
+      resourceName: this.physicalName,
     });
-    this.projectArn = resourceIdentifiers.arn;
-    this.projectName = resourceIdentifiers.name;
+    this.projectName = this.getResourceNameAttribute(resource.ref);
 
     this.addToRolePolicy(this.createLoggingPermission());
 
@@ -883,7 +878,7 @@ export class Project extends ProjectBase {
     }));
 
     const policy = new iam.Policy(this, 'PolicyDocument', {
-      policyName: PhysicalName.of('CodeBuildEC2Policy'),
+      policyName: 'CodeBuildEC2Policy',
       statements: [
         new iam.PolicyStatement({
           resources: ['*'],

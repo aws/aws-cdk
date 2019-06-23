@@ -238,7 +238,7 @@ export = {
   const libs = (response.runtime && response.runtime.libraries) || {};
 
   const version = require('../package.json').version;
-  test.deepEqual(libs['@aws-cdk/cdk'], version);
+  test.deepEqual(libs['@aws-cdk/core'], version);
   test.deepEqual(libs['@aws-cdk/cx-api'], version);
   test.deepEqual(libs['jsii-runtime'], `node.js/${process.version}`);
   test.done();
@@ -269,7 +269,7 @@ export = {
 
   const version = require('../package.json').version;
   test.deepEqual(libs, {
-    '@aws-cdk/cdk': version,
+    '@aws-cdk/core': version,
     '@aws-cdk/cx-api': version,
     'jsii-runtime': `node.js/${process.version}`
   });

@@ -1,6 +1,6 @@
 import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
 import secretsmanager = require('@aws-cdk/aws-secretsmanager');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import { Test } from 'nodeunit';
 import ecs = require('../lib');
 

@@ -1,5 +1,5 @@
 import logs = require('@aws-cdk/aws-logs');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import lambda = require('../lib');
 
 const app = new cdk.App();

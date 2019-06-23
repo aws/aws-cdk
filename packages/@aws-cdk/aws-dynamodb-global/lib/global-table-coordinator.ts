@@ -1,7 +1,7 @@
 import cfn = require("@aws-cdk/aws-cloudformation");
 import iam = require("@aws-cdk/aws-iam");
 import lambda = require("@aws-cdk/aws-lambda");
-import cdk = require("@aws-cdk/cdk");
+import cdk = require("@aws-cdk/core");
 import path = require("path");
 import { GlobalTableProps } from "./aws-dynamodb-global";
 
@@ -28,7 +28,7 @@ export class GlobalTableCoordinator extends cdk.Stack {
       properties: {
         regions: props.regions,
         resourceType: "Custom::DynamoGlobalTableCoordinator",
-        tableName: props.tableName.value,
+        tableName: props.tableName,
       },
     });
   }

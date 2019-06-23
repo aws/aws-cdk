@@ -1,4 +1,4 @@
-import { Lazy } from '@aws-cdk/cdk';
+import { Lazy } from '@aws-cdk/core';
 import { IPolicy } from './policy';
 
 const MAX_POLICY_NAME_LEN = 128;

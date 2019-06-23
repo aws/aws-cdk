@@ -1,7 +1,7 @@
 import { expect, haveResource, ResourcePart } from '@aws-cdk/assert';
 import targets = require('@aws-cdk/aws-events-targets');
 import lambda = require('@aws-cdk/aws-lambda');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import { Test } from 'nodeunit';
 import config = require('../lib');
 
@@ -18,7 +18,7 @@ export = {
         key: 'value'
       },
       maximumExecutionFrequency: config.MaximumExecutionFrequency.THREE_HOURS,
-      configRuleName: cdk.PhysicalName.of('cool rule'),
+      configRuleName: 'cool rule',
     });
 
     // THEN
@@ -56,7 +56,7 @@ export = {
       },
       lambdaFunction: fn,
       maximumExecutionFrequency: config.MaximumExecutionFrequency.SIX_HOURS,
-      configRuleName: cdk.PhysicalName.of('cool rule'),
+      configRuleName: 'cool rule',
       periodic: true
     });
 

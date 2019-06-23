@@ -22,7 +22,7 @@ Here is a minimal deployable Global DynamoDB tables definition:
 ```typescript
 import { AttributeType } from '@aws-cdk/aws-dynamodb';
 import { GlobalTable } from '@aws-cdk/aws-dynamodb-global';
-import { App } from '@aws-cdk/cdk';
+import { App } from '@aws-cdk/core';
 
 const app = new App();
 new GlobalTable(app, 'globdynamodb', {

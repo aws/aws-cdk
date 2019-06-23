@@ -5,7 +5,7 @@ import elbv2 = require('@aws-cdk/aws-elasticloadbalancingv2');
 import iam = require('@aws-cdk/aws-iam');
 import sns = require('@aws-cdk/aws-sns');
 
-import { CfnAutoScalingRollingUpdate, Construct, Duration, Fn, IResource, Lazy, Resource, Stack, Tag } from '@aws-cdk/cdk';
+import { CfnAutoScalingRollingUpdate, Construct, Duration, Fn, IResource, Lazy, Resource, Stack, Tag } from '@aws-cdk/core';
 import { CfnAutoScalingGroup, CfnAutoScalingGroupProps, CfnLaunchConfiguration } from './autoscaling.generated';
 import { BasicLifecycleHookProps, LifecycleHook } from './lifecycle-hook';
 import { BasicScheduledActionProps, ScheduledAction } from './scheduled-action';

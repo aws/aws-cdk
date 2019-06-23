@@ -1,5 +1,5 @@
-import cdk = require('@aws-cdk/cdk');
-import { Stack } from '@aws-cdk/cdk';
+import cdk = require('@aws-cdk/core');
+import { Stack } from '@aws-cdk/core';
 import { BucketAttributes } from './bucket';
 
 export function parseBucketArn(construct: cdk.IConstruct, props: BucketAttributes): string {

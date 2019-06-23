@@ -1,5 +1,5 @@
 import codepipeline = require('@aws-cdk/aws-codepipeline');
-import { SecretValue } from '@aws-cdk/cdk';
+import { SecretValue } from '@aws-cdk/core';
 
 /**
  * Construction properties of the {@link AlexaSkillDeployAction Alexa deploy Action}.

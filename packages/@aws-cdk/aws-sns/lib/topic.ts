@@ -1,4 +1,4 @@
-import { Construct, PhysicalName, Stack } from '@aws-cdk/cdk';
+import { Construct, Stack } from '@aws-cdk/core';
 import { CfnTopic } from './sns.generated';
 import { ITopic, TopicBase } from './topic-base';
 
@@ -22,7 +22,7 @@ export interface TopicProps {
    *
    * @default Generated name
    */
-  readonly topicName?: PhysicalName;
+  readonly topicName?: string;
 }
 
 /**
@@ -55,15 +55,10 @@ export class Topic extends TopicBase {
       topicName: this.physicalName,
     });
 
-    const resourceIdentifiers = this.getCrossEnvironmentAttributes({
-      arn: resource.ref,
-      name: resource.attrTopicName,
-      arnComponents: {
-        service: 'sns',
-        resource: this.physicalName,
-      },
+    this.topicArn = this.getResourceArnAttribute(resource.ref, {
+      service: 'sns',
+      resource: this.physicalName,
     });
-    this.topicArn = resourceIdentifiers.arn;
-    this.topicName = resourceIdentifiers.name;
+    this.topicName = this.getResourceNameAttribute(resource.attrTopicName);
   }
 }

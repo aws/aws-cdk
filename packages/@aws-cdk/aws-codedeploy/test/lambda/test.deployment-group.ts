@@ -2,7 +2,7 @@ import { expect, haveResource, haveResourceLike, ResourcePart } from '@aws-cdk/a
 import cloudwatch = require('@aws-cdk/aws-cloudwatch');
 import iam = require('@aws-cdk/aws-iam');
 import lambda = require('@aws-cdk/aws-lambda');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import { Test } from 'nodeunit';
 import codedeploy = require('../../lib');
 import { LambdaDeploymentConfig } from '../../lib';
@@ -119,7 +119,7 @@ export = {
         application,
         alias,
         deploymentConfig: LambdaDeploymentConfig.AllAtOnce,
-        deploymentGroupName: cdk.PhysicalName.of('test'),
+        deploymentGroupName: 'test',
       });
 
       expect(stack).to(haveResourceLike('AWS::CodeDeploy::DeploymentGroup', {

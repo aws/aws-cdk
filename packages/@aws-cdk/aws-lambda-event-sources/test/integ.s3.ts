@@ -1,5 +1,5 @@
 import s3 = require('@aws-cdk/aws-s3');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import { S3EventSource } from '../lib';
 import { TestFunction } from './test-function';
 

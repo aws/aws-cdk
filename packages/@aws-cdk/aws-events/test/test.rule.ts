@@ -1,8 +1,8 @@
 import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
 import iam = require('@aws-cdk/aws-iam');
 import { ServicePrincipal } from '@aws-cdk/aws-iam';
-import cdk = require('@aws-cdk/cdk');
-import { Stack } from '@aws-cdk/cdk';
+import cdk = require('@aws-cdk/core');
+import { Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import { EventField, IRule, IRuleTarget, RuleTargetInput, Schedule } from '../lib';
 import { Rule } from '../lib/rule';
@@ -37,7 +37,7 @@ export = {
 
     // WHEN
     new Rule(stack, 'MyRule', {
-      ruleName: cdk.PhysicalName.of('PhysicalName'),
+      ruleName: 'PhysicalName',
       schedule: Schedule.rate(cdk.Duration.minutes(10)),
     });
 

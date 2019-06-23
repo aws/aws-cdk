@@ -1,4 +1,4 @@
-import { App, PhysicalName, Stack, StackProps } from '@aws-cdk/cdk';
+import { App, Stack, StackProps } from '@aws-cdk/core';
 import { Topic } from '../lib';
 
 class SNSInteg extends Stack {
@@ -6,7 +6,7 @@ class SNSInteg extends Stack {
     super(scope, id, props);
 
     new Topic(this, 'MyTopic', {
-      topicName: PhysicalName.of('fooTopic'),
+      topicName: 'fooTopic',
       displayName: 'fooDisplayName'
     });
   }

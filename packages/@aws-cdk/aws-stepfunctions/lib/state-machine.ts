@@ -1,6 +1,6 @@
 import cloudwatch = require('@aws-cdk/aws-cloudwatch');
 import iam = require('@aws-cdk/aws-iam');
-import { Construct, Duration, IResource, PhysicalName, Resource, Stack } from '@aws-cdk/cdk';
+import { Construct, Duration, IResource, Resource, Stack } from '@aws-cdk/core';
 import { StateGraph } from './state-graph';
 import { CfnStateMachine } from './stepfunctions.generated';
 import { IChainable } from './types';
@@ -14,7 +14,7 @@ export interface StateMachineProps {
      *
      * @default A name is automatically generated
      */
-    readonly stateMachineName?: PhysicalName;
+    readonly stateMachineName?: string;
 
     /**
      * Definition for this state machine
@@ -108,18 +108,13 @@ export class StateMachine extends StateMachineBase {
             this.addToRolePolicy(statement);
         }
 
-        const resourceIdentifiers = this.getCrossEnvironmentAttributes({
-            arn: resource.ref,
-            name: resource.attrName,
-            arnComponents: {
-                service: 'states',
-                resource: 'stateMachine',
-                resourceName: this.physicalName,
-                sep: ':',
-            },
+        this.stateMachineName = this.getResourceNameAttribute(resource.attrName);
+        this.stateMachineArn = this.getResourceArnAttribute(resource.ref, {
+          service: 'states',
+          resource: 'stateMachine',
+          resourceName: this.physicalName,
+          sep: ':',
         });
-        this.stateMachineName = resourceIdentifiers.name;
-        this.stateMachineArn = resourceIdentifiers.arn;
     }
 
     /**

@@ -38,7 +38,7 @@
         <!-- AWS Cloud Development Kit -->
         <dependency>
             <groupId>software.amazon.awscdk</groupId>
-            <artifactId>cdk</artifactId>
+            <artifactId>core</artifactId>
             <version>%cdk-version%</version>
         </dependency>
 

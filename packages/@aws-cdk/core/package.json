@@ -1,5 +1,5 @@
 {
-  "name": "@aws-cdk/cdk",
+  "name": "@aws-cdk/core",
   "version": "0.35.0",
   "description": "AWS Cloud Development Kit Core Library",
   "main": "lib/index.js",
@@ -11,7 +11,7 @@
         "package": "software.amazon.awscdk",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "cdk"
+          "artifactId": "core"
         }
       },
       "dotnet": {
@@ -21,24 +21,24 @@
         "assemblyOriginatorKeyFile": "../../key.snk"
       },
       "python": {
-        "distName": "aws-cdk.cdk",
-        "module": "aws_cdk.cdk"
+        "distName": "aws-cdk.core",
+        "module": "aws_cdk.core"
       }
     }
   },
   "repository": {
     "type": "git",
     "url": "https://github.com/awslabs/aws-cdk.git",
-    "directory": "packages/@aws-cdk/cdk"
+    "directory": "packages/@aws-cdk/core"
   },
   "awslint": {
     "exclude": [
-      "construct-ctor:@aws-cdk/cdk.App.<initializer>",
-      "props-no-cfn-types:@aws-cdk/cdk.CfnOutputProps.condition",
-      "duration-prop-type:@aws-cdk/cdk.ResourceSignal.timeout",
-      "props-no-any:@aws-cdk/cdk.CfnParameterProps.default",
-      "props-no-cfn-types:@aws-cdk/cdk.CfnRuleProps.assertions",
-      "construct-ctor:@aws-cdk/cdk.Stack.<initializer>.params[1]"
+      "construct-ctor:@aws-cdk/core.App.<initializer>",
+      "props-no-cfn-types:@aws-cdk/core.CfnOutputProps.condition",
+      "duration-prop-type:@aws-cdk/core.ResourceSignal.timeout",
+      "props-no-any:@aws-cdk/core.CfnParameterProps.default",
+      "props-no-cfn-types:@aws-cdk/core.CfnRuleProps.assertions",
+      "construct-ctor:@aws-cdk/core.Stack.<initializer>.params[1]"
     ]
   },
   "scripts": {

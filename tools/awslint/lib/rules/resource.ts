@@ -200,15 +200,11 @@ resourceLinter.add({
 
 resourceLinter.add({
   code: 'props-physical-name-type',
-  message: 'The type of the physical name prop should be "PhysicalName" if the name is optional and "string" if it is required',
+  message: 'The type of the physical name prop should always be a "string"',
   eval: e => {
     if (!e.ctx.physicalNameProp) { return; }
     const prop = e.ctx.physicalNameProp;
-    const expectedType = prop.optional
-      ? e.ctx.core.physicalNameClass
-      : 'string';
-
-    e.assertTypesEqual(e.ctx.sys, prop.type, expectedType, `${e.ctx.construct.propsFqn}.${prop.name}`);
+    e.assertTypesEqual(e.ctx.sys, prop.type, 'string', `${e.ctx.construct.propsFqn}.${prop.name}`);
   }
 });
 

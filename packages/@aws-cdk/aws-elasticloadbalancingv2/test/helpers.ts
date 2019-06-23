@@ -1,5 +1,5 @@
 import ec2 = require('@aws-cdk/aws-ec2');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import elbv2 = require('../lib');
 
 export class FakeSelfRegisteringTarget extends cdk.Construct implements elbv2.IApplicationLoadBalancerTarget, elbv2.INetworkLoadBalancerTarget,
