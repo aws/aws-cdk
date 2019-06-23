@@ -7,7 +7,7 @@ const app = new App();
 
 const stack = new Stack(app, `aws-cdk-kms-1`);
 
-const key = new Key(stack, 'MyKey', { removalPolicy: RemovalPolicy.Destroy });
+const key = new Key(stack, 'MyKey', { removalPolicy: RemovalPolicy.DESTROY });
 
 key.addToResourcePolicy(new PolicyStatement({
   resources: ['*'],

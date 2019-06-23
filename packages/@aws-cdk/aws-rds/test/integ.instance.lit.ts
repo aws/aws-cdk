@@ -46,15 +46,15 @@ class DatabaseInstanceStack extends cdk.Stack {
     const instance = new rds.DatabaseInstance(this, 'Instance', {
       engine: rds.DatabaseInstanceEngine.OracleSE1,
       licenseModel: rds.LicenseModel.BRING_YOUR_OWN_LICENSE,
-      instanceClass: new ec2.InstanceTypePair(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.MEDIUM),
+      instanceClass: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.MEDIUM),
       multiAz: true,
       storageType: rds.StorageType.IO1,
       masterUsername: 'syscdk',
       vpc,
       databaseName: 'ORCL',
       storageEncrypted: true,
-      backupRetentionPeriod: 7,
-      monitoringInterval: 60,
+      backupRetention: cdk.Duration.days(7),
+      monitoringInterval: cdk.Duration.seconds(60),
       enablePerformanceInsights: true,
       cloudwatchLogsExports: [
         'trace',

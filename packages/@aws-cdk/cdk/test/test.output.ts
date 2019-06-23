@@ -9,7 +9,7 @@ export = {
     const ref = res.ref;
 
     new CfnOutput(stack, 'MyOutput', {
-      export: 'ExportName',
+      exportName: 'ExportName',
       value: ref,
       description: 'CfnOutput properties'
     });
@@ -19,45 +19,6 @@ export = {
       { Description: 'CfnOutput properties',
         Export: { Name: 'ExportName' },
         Value: { Ref: 'MyResource' } } } });
-    test.done();
-  },
-
-  'disableExport can be used to disable the auto-export behavior'(test: Test) {
-    const stack = new Stack();
-    const output = new CfnOutput(stack, 'MyOutput', { disableExport: true, value: 'boom' });
-
-    test.equal(output.export, null);
-
-    // cannot specify `export` and `disableExport` at the same time.
-    test.throws(() => new CfnOutput(stack, 'YourOutput', {
-      disableExport: true,
-      export: 'bla',
-      value: 'boom'
-    }), /Cannot set `disableExport` and specify an export name/);
-
-    test.done();
-  },
-
-  'if stack name is undefined, we will only use the logical ID for the export name'(test: Test) {
-    const stack = new Stack();
-    const output = new CfnOutput(stack, 'MyOutput', { value: 'boom' });
-    test.deepEqual(stack.resolve(output.makeImportValue()), { 'Fn::ImportValue': 'Stack:MyOutput' });
-    test.done();
-  },
-
-  'makeImportValue can be used to create an Fn::ImportValue from an output'(test: Test) {
-    const stack = new Stack(undefined, 'MyStack');
-    const output = new CfnOutput(stack, 'MyOutput', { value: 'boom' });
-    test.deepEqual(stack.resolve(output.makeImportValue()), { 'Fn::ImportValue': 'MyStack:MyOutput' });
-
-    test.deepEqual(toCloudFormation(stack), {
-      Outputs: {
-        MyOutput: {
-          Value: 'boom',
-          Export: { Name: 'MyStack:MyOutput' }
-        }
-      }
-    });
     test.done();
   },
 

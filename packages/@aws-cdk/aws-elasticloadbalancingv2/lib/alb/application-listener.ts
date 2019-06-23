@@ -1,5 +1,5 @@
 import ec2 = require('@aws-cdk/aws-ec2');
-import { Construct, IResource, Lazy, Resource } from '@aws-cdk/cdk';
+import { Construct, Duration, IResource, Lazy, Resource } from '@aws-cdk/cdk';
 import { BaseListener } from '../shared/base-listener';
 import { HealthCheck } from '../shared/base-target-group';
 import { ApplicationProtocol, SslPolicy } from '../shared/enums';
@@ -127,13 +127,13 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
     // but adds its own default port.
     this.connections = new ec2.Connections({
       securityGroups: props.loadBalancer.connections.securityGroups,
-      defaultPortRange: new ec2.TcpPort(port),
+      defaultPort: ec2.Port.tcp(port),
     });
 
     (props.defaultTargetGroups || []).forEach(this.addDefaultTargetGroup.bind(this));
 
     if (props.open !== false) {
-      this.connections.allowDefaultPortFrom(new ec2.AnyIPv4(), `Allow from anyone on port ${port}`);
+      this.connections.allowDefaultPortFrom(ec2.Peer.anyIpv4(), `Allow from anyone on port ${port}`);
     }
   }
 
@@ -190,12 +190,12 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
     }
 
     const group = new ApplicationTargetGroup(this, id + 'Group', {
-      deregistrationDelaySec: props.deregistrationDelaySec,
+      deregistrationDelay: props.deregistrationDelay,
       healthCheck: props.healthCheck,
       port: props.port,
       protocol: props.protocol,
-      slowStartSec: props.slowStartSec,
-      stickinessCookieDurationSec: props.stickinessCookieDurationSec,
+      slowStart: props.slowStart,
+      stickinessCookieDuration: props.stickinessCookieDuration,
       targetGroupName: props.targetGroupName,
       targets: props.targets,
       vpc: this.loadBalancer.vpc,
@@ -245,7 +245,7 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
    *
    * Don't call this directly. It is called by ApplicationTargetGroup.
    */
-  public registerConnectable(connectable: ec2.IConnectable, portRange: ec2.IPortRange): void {
+  public registerConnectable(connectable: ec2.IConnectable, portRange: ec2.Port): void {
     this.connections.allowTo(connectable, portRange, 'Load balancer to target');
   }
 
@@ -254,7 +254,7 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
    */
   protected validate(): string[] {
     const errors = super.validate();
-    if (this.protocol === ApplicationProtocol.Https && this.certificateArns.length === 0) {
+    if (this.protocol === ApplicationProtocol.HTTPS && this.certificateArns.length === 0) {
       errors.push('HTTPS Listener needs at least one certificate (call addCertificateArns)');
     }
     return errors;
@@ -310,7 +310,7 @@ export interface IApplicationListener extends IResource, ec2.IConnectable {
    *
    * Don't call this directly. It is called by ApplicationTargetGroup.
    */
-  registerConnectable(connectable: ec2.IConnectable, portRange: ec2.IPortRange): void;
+  registerConnectable(connectable: ec2.IConnectable, portRange: ec2.Port): void;
 }
 
 /**
@@ -346,11 +346,11 @@ class ImportedApplicationListener extends Resource implements IApplicationListen
 
     this.listenerArn = props.listenerArn;
 
-    const defaultPortRange = props.defaultPort !== undefined ? new ec2.TcpPort(props.defaultPort) : undefined;
+    const defaultPort = props.defaultPort !== undefined ? ec2.Port.tcp(props.defaultPort) : undefined;
 
     this.connections = new ec2.Connections({
       securityGroups: [ec2.SecurityGroup.fromSecurityGroupId(this, 'SecurityGroup', props.securityGroupId)],
-      defaultPortRange,
+      defaultPort,
     });
   }
 
@@ -410,7 +410,7 @@ class ImportedApplicationListener extends Resource implements IApplicationListen
    *
    * Don't call this directly. It is called by ApplicationTargetGroup.
    */
-  public registerConnectable(connectable: ec2.IConnectable, portRange: ec2.IPortRange): void {
+  public registerConnectable(connectable: ec2.IConnectable, portRange: ec2.Port): void {
     this.connections.allowTo(connectable, portRange, 'Load balancer to target');
   }
 }
@@ -491,11 +491,11 @@ export interface AddApplicationTargetsProps extends AddRuleProps {
    * The time period during which the load balancer sends a newly registered
    * target a linearly increasing share of the traffic to the target group.
    *
-   * The range is 30–900 seconds (15 minutes).
+   * The range is 30-900 seconds (15 minutes).
    *
    * @default 0
    */
-  readonly slowStartSec?: number;
+  readonly slowStart?: Duration;
 
   /**
    * The stickiness cookie expiration period.
@@ -505,9 +505,9 @@ export interface AddApplicationTargetsProps extends AddRuleProps {
    * After this period, the cookie is considered stale. The minimum value is
    * 1 second and the maximum value is 7 days (604800 seconds).
    *
-   * @default 86400 (1 day)
+   * @default Duration.days(1)
    */
-  readonly stickinessCookieDurationSec?: number;
+  readonly stickinessCookieDuration?: Duration;
 
   /**
    * The targets to add to this target group.
@@ -532,11 +532,11 @@ export interface AddApplicationTargetsProps extends AddRuleProps {
   /**
    * The amount of time for Elastic Load Balancing to wait before deregistering a target.
    *
-   * The range is 0–3600 seconds.
+   * The range is 0-3600 seconds.
    *
-   * @default 300
+   * @default Duration.minutes(5)
    */
-  readonly deregistrationDelaySec?: number;
+  readonly deregistrationDelay?: Duration;
 
   /**
    * Health check configuration

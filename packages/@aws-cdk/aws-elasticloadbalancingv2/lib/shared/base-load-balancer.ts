@@ -130,19 +130,19 @@ export abstract class BaseLoadBalancer extends Resource {
     const vpcSubnets = ifUndefined(baseProps.vpcSubnets,
       { subnetType: internetFacing ? ec2.SubnetType.PUBLIC : ec2.SubnetType.PRIVATE });
 
-    const { subnetIds, internetConnectedDependency } = baseProps.vpc.selectSubnets(vpcSubnets);
+    const { subnetIds, internetConnectivityEstablished } = baseProps.vpc.selectSubnets(vpcSubnets);
 
     this.vpc = baseProps.vpc;
 
     const resource = new CfnLoadBalancer(this, 'Resource', {
-      name: this.physicalName.value,
+      name: this.physicalName,
       subnets: subnetIds,
       scheme: internetFacing ? 'internet-facing' : 'internal',
       loadBalancerAttributes: Lazy.anyValue({ produce: () => renderAttributes(this.attributes) }),
       ...additionalProps
     });
     if (internetFacing) {
-      resource.node.addDependency(internetConnectedDependency);
+      resource.node.addDependency(internetConnectivityEstablished);
     }
 
     if (baseProps.deletionProtection) { this.setAttribute('deletion_protection.enabled', 'true'); }
@@ -151,7 +151,7 @@ export abstract class BaseLoadBalancer extends Resource {
     this.loadBalancerDnsName = resource.attrDnsName;
     this.loadBalancerFullName = resource.attrLoadBalancerFullName;
     this.loadBalancerName = resource.attrLoadBalancerName;
-    this.loadBalancerArn = resource.refAsString;
+    this.loadBalancerArn = resource.ref;
     this.loadBalancerSecurityGroups = resource.attrSecurityGroups;
   }
 

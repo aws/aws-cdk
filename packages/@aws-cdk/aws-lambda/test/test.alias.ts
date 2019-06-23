@@ -16,7 +16,7 @@ export = {
     const version = fn.addVersion('1');
 
     new lambda.Alias(stack, 'Alias', {
-      aliasName: PhysicalName.of('prod'),
+      aliasName: 'prod',
       version,
     });
 
@@ -49,7 +49,7 @@ export = {
     });
 
     new lambda.Alias(stack, 'Alias', {
-      aliasName: PhysicalName.of('latest'),
+      aliasName: 'latest',
       version: fn.latestVersion,
     });
 
@@ -74,7 +74,7 @@ export = {
     const version = fn.addVersion('NewVersion');
 
     new lambda.Alias(stack, 'Alias', {
-      aliasName: PhysicalName.of('prod'),
+      aliasName: 'prod',
       version,
     });
 
@@ -103,7 +103,7 @@ export = {
     const version2 = fn.addVersion('2');
 
     new lambda.Alias(stack, 'Alias', {
-      aliasName: PhysicalName.of('prod'),
+      aliasName: 'prod',
       version: version1,
       additionalVersions: [{ version: version2, weight: 0.1 }]
     });
@@ -137,7 +137,7 @@ export = {
     // WHEN: Individual weight too high
     test.throws(() => {
       new lambda.Alias(stack, 'Alias1', {
-        aliasName: PhysicalName.of('prod'), version,
+        aliasName: 'prod', version,
         additionalVersions: [{ version, weight: 5 }]
       });
     });
@@ -145,7 +145,7 @@ export = {
     // WHEN: Sum too high
     test.throws(() => {
       new lambda.Alias(stack, 'Alias2', {
-        aliasName: PhysicalName.of('prod'), version,
+        aliasName: 'prod', version,
         additionalVersions: [{ version, weight: 0.5 }, { version, weight: 0.6 }]
       });
     });
@@ -164,7 +164,7 @@ export = {
     });
 
     const version = fn.addVersion('1');
-    const alias = new lambda.Alias(stack, 'Alias', { aliasName: PhysicalName.of('prod'), version });
+    const alias = new lambda.Alias(stack, 'Alias', { aliasName: 'prod', version });
 
     // WHEN
     new cloudwatch.Alarm(stack, 'Alarm', {
@@ -214,7 +214,7 @@ export = {
     });
 
     const version = fn.addVersion('1');
-    const alias = new lambda.Alias(stack, 'Alias', { aliasName: PhysicalName.of('prod'), version });
+    const alias = new lambda.Alias(stack, 'Alias', { aliasName: 'prod', version });
 
     // THEN
     test.equals(alias.role, fn.role);
@@ -233,7 +233,7 @@ export = {
     });
 
     const version = fn.addVersion('1');
-    const alias = new lambda.Alias(stack, 'Alias', { aliasName: PhysicalName.of('prod'), version });
+    const alias = new lambda.Alias(stack, 'Alias', { aliasName: 'prod', version });
 
     // WHEN
     test.deepEqual(stack.resolve(alias.functionName), {

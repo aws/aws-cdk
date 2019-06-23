@@ -4,7 +4,7 @@ import ec2 = require('@aws-cdk/aws-ec2');
 import iam = require('@aws-cdk/aws-iam');
 import cloudmap = require('@aws-cdk/aws-servicediscovery');
 import ssm = require('@aws-cdk/aws-ssm');
-import { Construct, IResource, PhysicalName, Resource, ResourceIdentifiers, Stack } from '@aws-cdk/cdk';
+import { Construct, Duration, IResource, PhysicalName, Resource, Stack } from '@aws-cdk/cdk';
 import { InstanceDrainHook } from './drain-hook/instance-drain-hook';
 import { CfnCluster } from './ecs.generated';
 
@@ -59,7 +59,7 @@ export class Cluster extends Resource implements ICluster {
   /**
    * The service discovery namespace created in this cluster
    */
-  private _defaultNamespace?: cloudmap.INamespace;
+  private _defaultCloudMapNamespace?: cloudmap.INamespace;
 
   /**
    * Whether the cluster has EC2 capacity associated with it
@@ -72,16 +72,16 @@ export class Cluster extends Resource implements ICluster {
     });
 
     const cluster = new CfnCluster(this, 'Resource', {
-      clusterName: this.physicalName.value,
+      clusterName: this.physicalName,
     });
 
-    const resourceIdentifiers = new ResourceIdentifiers(this, {
+    const resourceIdentifiers = this.getCrossEnvironmentAttributes({
       arn: cluster.attrArn,
-      name: cluster.refAsString,
+      name: cluster.ref,
       arnComponents: {
         service: 'ecs',
         resource: 'cluster',
-        resourceName: this.physicalName.value,
+        resourceName: this.physicalName,
       },
     });
     this.clusterArn = resourceIdentifiers.arn;
@@ -96,13 +96,13 @@ export class Cluster extends Resource implements ICluster {
    * Map service.
    */
   public addDefaultCloudMapNamespace(options: NamespaceOptions): cloudmap.INamespace {
-    if (this._defaultNamespace !== undefined) {
+    if (this._defaultCloudMapNamespace !== undefined) {
       throw new Error("Can only add default namespace once.");
     }
 
-    const namespaceType = options.type === undefined || options.type === NamespaceType.PRIVATE_DNS
-      ? cloudmap.NamespaceType.DNS_PRIVATE
-      : cloudmap.NamespaceType.DNS_PUBLIC;
+    const namespaceType = options.type !== undefined
+      ? options.type
+      : cloudmap.NamespaceType.DNS_PRIVATE;
 
     const sdNamespace = namespaceType === cloudmap.NamespaceType.DNS_PRIVATE ?
       new cloudmap.PrivateDnsNamespace(this, 'DefaultServiceDiscoveryNamespace', {
@@ -113,7 +113,7 @@ export class Cluster extends Resource implements ICluster {
         name: options.name,
       });
 
-    this._defaultNamespace = sdNamespace;
+    this._defaultCloudMapNamespace = sdNamespace;
 
     return sdNamespace;
   }
@@ -121,8 +121,8 @@ export class Cluster extends Resource implements ICluster {
   /**
    * Getter for namespace added to cluster
    */
-  public get defaultNamespace(): cloudmap.INamespace | undefined {
-    return this._defaultNamespace;
+  public get defaultCloudMapNamespace(): cloudmap.INamespace | undefined {
+    return this._defaultCloudMapNamespace;
   }
 
   /**
@@ -185,11 +185,11 @@ export class Cluster extends Resource implements ICluster {
     }));
 
     // 0 disables, otherwise forward to underlying implementation which picks the sane default
-    if (options.taskDrainTimeSeconds !== 0) {
+    if (!options.taskDrainTime || options.taskDrainTime.toSeconds() !== 0) {
       new InstanceDrainHook(autoScalingGroup, 'DrainECSHook', {
         autoScalingGroup,
         cluster: this,
-        drainTimeSec: options.taskDrainTimeSeconds
+        drainTime: options.taskDrainTime
       });
     }
   }
@@ -251,7 +251,7 @@ export interface EcsOptimizedAmiProps {
 /**
  * Construct a Linux machine image from the latest ECS Optimized AMI published in SSM
  */
-export class EcsOptimizedAmi implements ec2.IMachineImageSource {
+export class EcsOptimizedAmi implements ec2.IMachineImage {
   private readonly generation: ec2.AmazonLinuxGeneration;
   private readonly hwType: AmiHardwareType;
 
@@ -285,9 +285,12 @@ export class EcsOptimizedAmi implements ec2.IMachineImageSource {
   /**
    * Return the correct image
    */
-  public getImage(scope: Construct): ec2.MachineImage {
+  public getImage(scope: Construct): ec2.MachineImageConfig {
     const ami = ssm.StringParameter.valueForStringParameter(scope, this.amiParameterName);
-    return new ec2.MachineImage(ami, new ec2.LinuxOS());
+    return {
+      imageId: ami,
+      osType: ec2.OperatingSystemType.LINUX
+    };
   }
 }
 
@@ -325,7 +328,7 @@ export interface ICluster extends IResource {
   /**
    * Getter for Cloudmap namespace created in the cluster
    */
-  readonly defaultNamespace?: cloudmap.INamespace;
+  readonly defaultCloudMapNamespace?: cloudmap.INamespace;
 }
 
 /**
@@ -366,7 +369,7 @@ export interface ClusterAttributes {
    *
    * @default - No default namespace
    */
-  readonly defaultNamespace?: cloudmap.INamespace;
+  readonly defaultCloudMapNamespace?: cloudmap.INamespace;
 }
 
 /**
@@ -401,14 +404,14 @@ class ImportedCluster extends Resource implements ICluster {
   /**
    * Cloudmap namespace created in the cluster
    */
-  private _defaultNamespace?: cloudmap.INamespace;
+  private _defaultCloudMapNamespace?: cloudmap.INamespace;
 
   constructor(scope: Construct, id: string, props: ClusterAttributes) {
     super(scope, id);
     this.clusterName = props.clusterName;
     this.vpc = props.vpc;
     this.hasEc2Capacity = props.hasEc2Capacity !== false;
-    this._defaultNamespace = props.defaultNamespace;
+    this._defaultCloudMapNamespace = props.defaultCloudMapNamespace;
 
     this.clusterArn = props.clusterArn !== undefined ? props.clusterArn : Stack.of(this).formatArn({
       service: 'ecs',
@@ -423,8 +426,8 @@ class ImportedCluster extends Resource implements ICluster {
     }
   }
 
-  public get defaultNamespace(): cloudmap.INamespace | undefined {
-    return this._defaultNamespace;
+  public get defaultCloudMapNamespace(): cloudmap.INamespace | undefined {
+    return this._defaultCloudMapNamespace;
   }
 }
 
@@ -448,9 +451,9 @@ export interface AddAutoScalingGroupCapacityOptions {
    *
    * Set to 0 to disable task draining.
    *
-   * @default 300
+   * @default Duration.minutes(5)
    */
-  readonly taskDrainTimeSeconds?: number;
+  readonly taskDrainTime?: Duration;
 }
 
 /**
@@ -467,7 +470,7 @@ export interface AddCapacityOptions extends AddAutoScalingGroupCapacityOptions, 
    *
    * @default - Amazon Linux 1
    */
-  readonly machineImage?: ec2.IMachineImageSource;
+  readonly machineImage?: ec2.IMachineImage;
 }
 
 export interface NamespaceOptions {
@@ -481,7 +484,7 @@ export interface NamespaceOptions {
    *
    * @default PrivateDns
    */
-  readonly type?: NamespaceType;
+  readonly type?: cloudmap.NamespaceType;
 
   /**
    * The Amazon VPC that you want to associate the namespace with. Required for Private DNS namespaces
@@ -489,21 +492,6 @@ export interface NamespaceOptions {
    * @default VPC of the cluster for Private DNS Namespace, otherwise none
    */
   readonly vpc?: ec2.IVpc;
-}
-
-/**
- * The type of CloudMap namespace to create
- */
-export enum NamespaceType {
-  /**
-   * Create a private DNS namespace
-   */
-  PRIVATE_DNS = 'PrivateDns',
-
-  /**
-   * Create a public DNS namespace
-   */
-  PUBLIC_DNS = 'PublicDns',
 }
 
 /**

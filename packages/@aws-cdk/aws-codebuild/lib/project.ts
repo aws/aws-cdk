@@ -5,7 +5,7 @@ import { DockerImageAsset, DockerImageAssetProps } from '@aws-cdk/aws-ecr-assets
 import events = require('@aws-cdk/aws-events');
 import iam = require('@aws-cdk/aws-iam');
 import kms = require('@aws-cdk/aws-kms');
-import { Aws, CfnResource, Construct, IResource, Lazy, PhysicalName, Resource, ResourceIdentifiers, Stack } from '@aws-cdk/cdk';
+import { Aws, CfnResource, Construct, Duration, IResource, Lazy, PhysicalName, Resource, Stack } from '@aws-cdk/cdk';
 import { IArtifacts } from './artifacts';
 import { BuildSpec } from './build-spec';
 import { Cache } from './cache';
@@ -448,9 +448,9 @@ export interface CommonProjectProps {
    * not complete. For valid values, see the timeoutInMinutes field in the AWS
    * CodeBuild User Guide.
    *
-   * @default 60
+   * @default Duration.hours(1)
    */
-  readonly timeout?: number;
+  readonly timeout?: Duration;
 
   /**
    * Additional environment variables to add to the build environment.
@@ -691,8 +691,8 @@ export class Project extends ProjectBase {
       encryptionKey: props.encryptionKey && props.encryptionKey.keyArn,
       badgeEnabled: props.badge,
       cache: cache._toCloudFormation(),
-      name: this.physicalName.value,
-      timeoutInMinutes: props.timeout,
+      name: this.physicalName,
+      timeoutInMinutes: props.timeout && props.timeout.toMinutes(),
       secondarySources: Lazy.anyValue({ produce: () => this.renderSecondarySources() }),
       secondaryArtifacts: Lazy.anyValue({ produce: () => this.renderSecondaryArtifacts() }),
       triggers: sourceConfig.buildTriggers,
@@ -701,13 +701,13 @@ export class Project extends ProjectBase {
 
     this.addVpcRequiredPermissions(props, resource);
 
-    const resourceIdentifiers = new ResourceIdentifiers(this, {
+    const resourceIdentifiers = this.getCrossEnvironmentAttributes({
       arn: resource.attrArn,
-      name: resource.refAsString,
+      name: resource.ref,
       arnComponents: {
         service: 'codebuild',
         resource: 'project',
-        resourceName: this.physicalName.value,
+        resourceName: this.physicalName,
       },
     });
     this.projectArn = resourceIdentifiers.arn;

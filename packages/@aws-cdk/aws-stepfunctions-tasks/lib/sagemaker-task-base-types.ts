@@ -1,5 +1,6 @@
 import ec2 = require('@aws-cdk/aws-ec2');
 import kms = require('@aws-cdk/aws-kms');
+import { Duration } from '@aws-cdk/cdk';
 
 //
 // Create Training Job types
@@ -146,7 +147,7 @@ export interface StoppingCondition {
     /**
      * The maximum length of time, in seconds, that the training or compilation job can run.
      */
-    readonly maxRuntimeInSeconds?: number;
+    readonly maxRuntime?: Duration;
 }
 
 export interface ResourceConfig {

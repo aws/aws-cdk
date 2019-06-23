@@ -142,7 +142,7 @@ export = {
       const stack = new cdk.Stack();
 
       const repo = new codecommit.Repository(stack, 'MyRepo', {
-        repositoryName: cdk.PhysicalName.of('hello-cdk'),
+        repositoryName: 'hello-cdk',
       });
 
       const source = codebuild.Source.codeCommit({ repository: repo, cloneDepth: 2 });
@@ -630,7 +630,7 @@ export = {
       const bucket = new s3.Bucket(stack, 'MyBucket');
       const vpc = new ec2.Vpc(stack, 'MyVPC');
       const securityGroup = new ec2.SecurityGroup(stack, 'SecurityGroup1', {
-          groupName: cdk.PhysicalName.of('Bob'),
+          securityGroupName: cdk.PhysicalName.of('Bob'),
           vpc,
           allowAllOutbound: true,
           description: 'Example',
@@ -677,7 +677,7 @@ export = {
       const bucket = new s3.Bucket(stack, 'MyBucket');
       const vpc = new ec2.Vpc(stack, 'MyVPC');
       const securityGroup = new ec2.SecurityGroup(stack, 'SecurityGroup1', {
-          groupName: cdk.PhysicalName.of('Bob'),
+          securityGroupName: cdk.PhysicalName.of('Bob'),
           vpc,
           allowAllOutbound: true,
           description: 'Example',
@@ -699,7 +699,7 @@ export = {
       const bucket = new s3.Bucket(stack, 'MyBucket');
       const vpc = new ec2.Vpc(stack, 'MyVPC');
       const securityGroup = new ec2.SecurityGroup(stack, 'SecurityGroup1', {
-          groupName: cdk.PhysicalName.of('Bob'),
+          securityGroupName: cdk.PhysicalName.of('Bob'),
           vpc,
           allowAllOutbound: true,
           description: 'Example',
@@ -782,7 +782,7 @@ export = {
         name: 'some_name',
         bucket,
       }),
-      timeout: 123,
+      timeout: cdk.Duration.minutes(123),
     });
 
     expect(stack).to(haveResourceLike('AWS::CodeBuild::Project', {
@@ -1210,7 +1210,7 @@ export = {
     }
 
     const repo = new codecommit.Repository(stack, 'MyRepo', {
-      repositoryName: cdk.PhysicalName.of('hello-cdk'),
+      repositoryName: 'hello-cdk',
     });
     const bucket = new s3.Bucket(stack, 'MyBucket');
 

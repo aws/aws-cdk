@@ -4,7 +4,7 @@ import { NetworkMode, TaskDefinition } from './base/task-definition';
 import { ContainerImage, ContainerImageConfig } from './container-image';
 import { CfnTaskDefinition } from './ecs.generated';
 import { LinuxParameters } from './linux-parameters';
-import { LogDriver } from './log-drivers/log-driver';
+import { LogDriver, LogDriverConfig } from './log-drivers/log-driver';
 
 export interface ContainerDefinitionOptions {
   /**
@@ -249,6 +249,8 @@ export class ContainerDefinition extends cdk.Construct {
 
   private readonly imageConfig: ContainerImageConfig;
 
+  private readonly logDriverConfig?: LogDriverConfig;
+
   constructor(scope: cdk.Construct, id: string, private readonly props: ContainerDefinitionProps) {
     super(scope, id);
     this.essential = props.essential !== undefined ? props.essential : true;
@@ -257,7 +259,9 @@ export class ContainerDefinition extends cdk.Construct {
     this.linuxParameters = props.linuxParameters;
 
     this.imageConfig = props.image.bind(this, this);
-    if (props.logging) { props.logging.bind(this); }
+    if (props.logging) {
+      this.logDriverConfig = props.logging.bind(this, this);
+    }
     props.taskDefinition._linkContainer(this);
   }
 
@@ -268,7 +272,7 @@ export class ContainerDefinition extends cdk.Construct {
    * Warning: The --link flag is a legacy feature of Docker. It may eventually be removed.
    */
   public addLink(container: ContainerDefinition, alias?: string) {
-    if (this.taskDefinition.networkMode !== NetworkMode.Bridge) {
+    if (this.taskDefinition.networkMode !== NetworkMode.BRIDGE) {
       throw new Error(`You must use network mode Bridge to add container links.`);
     }
     if (alias !== undefined) {
@@ -312,13 +316,13 @@ export class ContainerDefinition extends cdk.Construct {
    */
   public addPortMappings(...portMappings: PortMapping[]) {
     this.portMappings.push(...portMappings.map(pm => {
-      if (this.taskDefinition.networkMode === NetworkMode.AwsVpc || this.taskDefinition.networkMode === NetworkMode.Host) {
+      if (this.taskDefinition.networkMode === NetworkMode.AWS_VPC || this.taskDefinition.networkMode === NetworkMode.HOST) {
         if (pm.containerPort !== pm.hostPort && pm.hostPort !== undefined) {
           throw new Error(`Host port ${pm.hostPort} does not match container port ${pm.containerPort}.`);
         }
       }
 
-      if (this.taskDefinition.networkMode === NetworkMode.Bridge) {
+      if (this.taskDefinition.networkMode === NetworkMode.BRIDGE) {
         if (pm.hostPort === undefined) {
           pm = {
             ...pm,
@@ -365,7 +369,7 @@ export class ContainerDefinition extends cdk.Construct {
       return defaultPortMapping.hostPort;
     }
 
-    if (this.taskDefinition.networkMode === NetworkMode.Bridge) {
+    if (this.taskDefinition.networkMode === NetworkMode.BRIDGE) {
       return 0;
     }
     return defaultPortMapping.containerPort;
@@ -410,7 +414,7 @@ export class ContainerDefinition extends cdk.Construct {
       user: this.props.user,
       volumesFrom: this.volumesFrom.map(renderVolumeFrom),
       workingDirectory: this.props.workingDirectory,
-      logConfiguration: this.props.logging && this.props.logging.renderLogDriver(),
+      logConfiguration: this.logDriverConfig,
       environment: this.props.environment && renderKV(this.props.environment, 'name', 'value'),
       extraHosts: this.props.extraHosts && renderKV(this.props.extraHosts, 'hostname', 'ipAddress'),
       healthCheck: this.props.healthCheck && renderHealthCheck(this.props.healthCheck),
@@ -436,9 +440,9 @@ export interface HealthCheck {
    *
    * You may specify between 5 and 300 seconds.
    *
-   * @default 30
+   * @default Duration.seconds(30)
    */
-  readonly intervalSeconds?: number;
+  readonly interval?: cdk.Duration;
 
   /**
    * Number of times to retry a failed health check before the container is considered unhealthy.
@@ -456,16 +460,16 @@ export interface HealthCheck {
    *
    * @default No start period
    */
-  readonly startPeriod?: number;
+  readonly startPeriod?: cdk.Duration;
 
   /**
    * The time period in seconds to wait for a health check to succeed before it is considered a failure.
    *
    * You may specify between 2 and 60 seconds.
    *
-   * @default 5
+   * @default Duration.seconds(5)
    */
-  readonly timeout?: number;
+  readonly timeout?: cdk.Duration;
 }
 
 function renderKV(env: { [key: string]: string }, keyName: string, valueName: string): any {
@@ -479,10 +483,10 @@ function renderKV(env: { [key: string]: string }, keyName: string, valueName: st
 function renderHealthCheck(hc: HealthCheck): CfnTaskDefinition.HealthCheckProperty {
   return {
     command: getHealthCheckCommand(hc),
-    interval: hc.intervalSeconds !== undefined ? hc.intervalSeconds : 30,
+    interval: hc.interval != null ? hc.interval.toSeconds() : 30,
     retries: hc.retries !== undefined ? hc.retries : 3,
-    startPeriod: hc.startPeriod,
-    timeout: hc.timeout !== undefined ? hc.timeout : 5,
+    startPeriod: hc.startPeriod && hc.startPeriod.toSeconds(),
+    timeout: hc.timeout !== undefined ? hc.timeout.toSeconds() : 5,
   };
 }
 

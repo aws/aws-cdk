@@ -1,4 +1,4 @@
-import { Construct, IResource, Lazy, Resource, ResourceIdentifiers, Stack } from '@aws-cdk/cdk';
+import { Construct, IResource, Lazy, Resource, Stack } from '@aws-cdk/cdk';
 import { IAlarmAction } from './alarm-action';
 import { CfnAlarm } from './cloudwatch.generated';
 import { HorizontalAnnotation } from './graph';
@@ -126,7 +126,7 @@ export class Alarm extends Resource implements IAlarm {
     const alarm = new CfnAlarm(this, 'Resource', {
       // Meta
       alarmDescription: props.alarmDescription,
-      alarmName: this.physicalName.value,
+      alarmName: this.physicalName,
 
       // Evaluation
       comparisonOperator,
@@ -146,18 +146,18 @@ export class Alarm extends Resource implements IAlarm {
       ...dropUndef(config),
       ...dropUndef({
         // Alarm overrides
-        period: props.periodSec,
+        period: props.period && props.period.toSeconds(),
         statistic: props.statistic && normalizeStatistic(props.statistic),
       })
     });
 
-    const resourceIdentifiers = new ResourceIdentifiers(this, {
+    const resourceIdentifiers = this.getCrossEnvironmentAttributes({
       arn: alarm.attrArn,
-      name: alarm.refAsString,
+      name: alarm.ref,
       arnComponents: {
         service: 'cloudwatch',
         resource: 'alarm',
-        resourceName: this.physicalName.value,
+        resourceName: this.physicalName,
         sep: ':',
       },
     });

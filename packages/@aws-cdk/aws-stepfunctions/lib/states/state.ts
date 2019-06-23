@@ -437,7 +437,7 @@ interface CatchTransition {
 function renderRetry(retry: RetryProps) {
     return {
         ErrorEquals: retry.errors,
-        IntervalSeconds: retry.intervalSeconds,
+        IntervalSeconds: retry.interval && retry.interval.toSeconds(),
         MaxAttempts: retry.maxAttempts,
         BackoffRate: retry.backoffRate
     };
@@ -500,11 +500,11 @@ function isNextable(x: any): x is INextable {
  * State types
  */
 export enum StateType {
-    Pass = 'Pass',
-    Task = 'Task',
-    Choice = 'Choice',
-    Wait = 'Wait',
-    Succeed = 'Succeed',
-    Fail = 'Fail',
-    Parallel = 'Parallel'
+    PASS = 'Pass',
+    TASK = 'Task',
+    CHOICE = 'Choice',
+    WAIT = 'Wait',
+    SUCCEED = 'Succeed',
+    FAIL = 'Fail',
+    PARALLEL = 'Parallel'
 }

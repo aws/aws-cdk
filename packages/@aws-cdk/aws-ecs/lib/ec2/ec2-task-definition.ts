@@ -41,7 +41,7 @@ export class Ec2TaskDefinition extends TaskDefinition implements IEc2TaskDefinit
   public static fromEc2TaskDefinitionArn(scope: Construct, id: string, ec2TaskDefinitionArn: string): IEc2TaskDefinition {
     class Import extends Resource implements IEc2TaskDefinition {
       public readonly taskDefinitionArn = ec2TaskDefinitionArn;
-      public readonly compatibility = Compatibility.Ec2;
+      public readonly compatibility = Compatibility.EC2;
       public readonly isEc2Compatible = true;
       public readonly isFargateCompatible = false;
     }
@@ -51,7 +51,7 @@ export class Ec2TaskDefinition extends TaskDefinition implements IEc2TaskDefinit
   constructor(scope: Construct, id: string, props: Ec2TaskDefinitionProps = {}) {
     super(scope, id, {
       ...props,
-      compatibility: Compatibility.Ec2,
+      compatibility: Compatibility.EC2,
       placementConstraints: props.placementConstraints,
     });
   }

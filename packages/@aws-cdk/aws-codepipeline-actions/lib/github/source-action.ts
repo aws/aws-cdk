@@ -6,9 +6,9 @@ import { sourceArtifactBounds } from '../common';
  * If and how the GitHub source action should be triggered
  */
 export enum GitHubTrigger {
-  None = 'None',
-  Poll = 'Poll',
-  WebHook = 'WebHook',
+  NONE = 'None',
+  POLL = 'Poll',
+  WEBHOOK = 'WebHook',
 }
 
 /**
@@ -50,11 +50,11 @@ export interface GitHubSourceActionProps extends codepipeline.CommonActionProps 
   /**
    * How AWS CodePipeline should be triggered
    *
-   * With the default value "WebHook", a webhook is created in GitHub that triggers the action
-   * With "Poll", CodePipeline periodically checks the source for changes
+   * With the default value "WEBHOOK", a webhook is created in GitHub that triggers the action
+   * With "POLL", CodePipeline periodically checks the source for changes
    * With "None", the action is not triggered through changes in the source
    *
-   * @default GitHubTrigger.WebHook
+   * @default GitHubTrigger.WEBHOOK
    */
   readonly trigger?: GitHubTrigger;
 }
@@ -78,7 +78,7 @@ export class GitHubSourceAction extends codepipeline.Action {
         Repo: props.repo,
         Branch: props.branch || "master",
         OAuthToken: props.oauthToken.toString(),
-        PollForSourceChanges: props.trigger === GitHubTrigger.Poll,
+        PollForSourceChanges: props.trigger === GitHubTrigger.POLL,
       },
     });
 
@@ -86,7 +86,7 @@ export class GitHubSourceAction extends codepipeline.Action {
   }
 
   protected bind(info: codepipeline.ActionBind): void {
-    if (!this.props.trigger || this.props.trigger === GitHubTrigger.WebHook) {
+    if (!this.props.trigger || this.props.trigger === GitHubTrigger.WEBHOOK) {
       new codepipeline.CfnWebhook(info.scope, 'WebhookResource', {
         authentication: 'GITHUB_HMAC',
         authenticationConfiguration: {

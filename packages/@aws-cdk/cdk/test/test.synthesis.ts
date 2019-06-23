@@ -55,7 +55,7 @@ export = {
       protected synthesize(s: ISynthesisSession) {
         writeJson(s.assembly.outdir, 'foo.json', { bar: 123 });
         s.assembly.addArtifact('my-random-construct', {
-          type: cxapi.ArtifactType.AwsCloudFormationStack,
+          type: cxapi.ArtifactType.AWS_CLOUDFORMATION_STACK,
           environment: 'aws://12345/bar',
           properties: {
             templateFile: 'foo.json'
@@ -107,7 +107,7 @@ export = {
         calls.push('synthesize');
 
         session.assembly.addArtifact('art', {
-          type: cxapi.ArtifactType.AwsCloudFormationStack,
+          type: cxapi.ArtifactType.AWS_CLOUDFORMATION_STACK,
           properties: {
             templateFile: 'hey.json',
             parameters: {

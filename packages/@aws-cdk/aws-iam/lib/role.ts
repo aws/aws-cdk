@@ -1,4 +1,4 @@
-import { Construct, Lazy, PhysicalName, Resource, ResourceIdentifiers, Stack } from '@aws-cdk/cdk';
+import { Construct, Duration, Lazy, PhysicalName, Resource, Stack } from '@aws-cdk/cdk';
 import { Grant } from './grant';
 import { CfnRole } from './iam.generated';
 import { IIdentity } from './identity-base';
@@ -73,9 +73,8 @@ export interface RoleProps {
   readonly roleName?: PhysicalName;
 
   /**
-   * The maximum session duration (in seconds) that you want to set for the
-   * specified role. This setting can have a value from 1 hour (3600sec) to
-   * 12 (43200sec) hours.
+   * The maximum session duration that you want to set for the specified role.
+   * This setting can have a value from 1 hour (3600sec) to 12 (43200sec) hours.
    *
    * Anyone who assumes the role from the AWS CLI or API can use the
    * DurationSeconds API parameter or the duration-seconds CLI parameter to
@@ -90,9 +89,9 @@ export interface RoleProps {
    *
    * @link https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_use.html
    *
-   * @default 3600 (1 hour)
+   * @default Duration.hours(1)
    */
-  readonly maxSessionDurationSec?: number;
+  readonly maxSessionDuration?: Duration;
 }
 
 /**
@@ -207,26 +206,27 @@ export class Role extends Resource implements IRole {
     this.assumeRolePolicy = createAssumeRolePolicy(props.assumedBy, props.externalId);
     this.managedPolicies.push(...props.managedPolicies || []);
 
-    validateMaxSessionDuration(props.maxSessionDurationSec);
+    const maxSessionDuration = props.maxSessionDuration && props.maxSessionDuration.toSeconds();
+    validateMaxSessionDuration(maxSessionDuration);
 
     const role = new CfnRole(this, 'Resource', {
       assumeRolePolicyDocument: this.assumeRolePolicy as any,
       managedPolicyArns: Lazy.listValue({ produce: () => this.managedPolicies.map(p => p.managedPolicyArn) }, { omitEmpty: true }),
       policies: _flatten(props.inlinePolicies),
       path: props.path,
-      roleName: this.physicalName.value,
-      maxSessionDuration: props.maxSessionDurationSec,
+      roleName: this.physicalName,
+      maxSessionDuration,
     });
 
     this.roleId = role.attrRoleId;
-    const resourceIdentifiers = new ResourceIdentifiers(this, {
+    const resourceIdentifiers = this.getCrossEnvironmentAttributes({
       arn: role.attrArn,
-      name: role.refAsString,
+      name: role.ref,
       arnComponents: {
         region: '', // IAM is global in each partition
         service: 'iam',
         resource: 'role',
-        resourceName: this.physicalName.value,
+        resourceName: this.physicalName,
       },
     });
     this.roleArn = resourceIdentifiers.arn;

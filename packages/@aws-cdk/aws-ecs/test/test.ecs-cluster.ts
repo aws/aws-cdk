@@ -321,13 +321,15 @@ export = {
     // WHEN
     cluster.addDefaultCloudMapNamespace({
       name: "foo.com",
-      type: ecs.NamespaceType.PUBLIC_DNS
+      type: cloudmap.NamespaceType.DNS_PUBLIC
     });
 
     // THEN
     expect(stack).to(haveResource("AWS::ServiceDiscovery::PublicDnsNamespace", {
        Name: 'foo.com',
     }));
+
+    test.equal(cluster.defaultCloudMapNamespace!.type, cloudmap.NamespaceType.DNS_PUBLIC);
 
     test.done();
   },
@@ -372,7 +374,7 @@ export = {
     const cluster2 = ecs.Cluster.fromClusterAttributes(stack2, 'Cluster', {
       vpc: vpc1,
       securityGroups: cluster1.connections.securityGroups,
-      defaultNamespace: cloudmap.PrivateDnsNamespace.fromPrivateDnsNamespaceAttributes(stack2, 'ns', {
+      defaultCloudMapNamespace: cloudmap.PrivateDnsNamespace.fromPrivateDnsNamespaceAttributes(stack2, 'ns', {
         namespaceId: 'import-namespace-id',
         namespaceArn: 'import-namespace-arn',
         namespaceName: 'import-namespace-name',
@@ -381,8 +383,8 @@ export = {
     });
 
     // THEN
-    test.equal(cluster2.defaultNamespace!.type, cloudmap.NamespaceType.DNS_PRIVATE);
-    test.deepEqual(stack2.resolve(cluster2.defaultNamespace!.namespaceId), 'import-namespace-id');
+    test.equal(cluster2.defaultCloudMapNamespace!.type, cloudmap.NamespaceType.DNS_PRIVATE);
+    test.deepEqual(stack2.resolve(cluster2.defaultCloudMapNamespace!.namespaceId), 'import-namespace-id');
 
     // Can retrieve subnets from VPC - will throw 'There are no 'Private' subnets in this VPC. Use a different VPC subnet selection.' if broken.
     cluster2.vpc.selectSubnets();

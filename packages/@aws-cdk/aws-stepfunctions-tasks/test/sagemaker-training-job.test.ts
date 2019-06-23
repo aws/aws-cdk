@@ -78,7 +78,7 @@ test('create complex training job', () => {
     const kmsKey = new kms.Key(stack, 'Key');
     const vpc = new ec2.Vpc(stack, "VPC");
     const securityGroup = new ec2.SecurityGroup(stack, 'SecurityGroup', { vpc, description: 'My SG' });
-    securityGroup.addIngressRule(new ec2.AnyIPv4(), new ec2.TcpPort(22), 'allow ssh access from the world');
+    securityGroup.addIngressRule(ec2.Peer.anyIpv4(), ec2.Port.tcp(22), 'allow ssh access from the world');
 
     const role = new iam.Role(stack, 'Role', {
         assumedBy: new iam.ServicePrincipal('sagemaker.amazonaws.com'),
@@ -135,12 +135,12 @@ test('create complex training job', () => {
         },
         resourceConfig: {
             instanceCount: 1,
-            instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.P3, ec2.InstanceSize.XLARGE2),
+            instanceType: ec2.InstanceType.of(ec2.InstanceClass.P3, ec2.InstanceSize.XLARGE2),
             volumeSizeInGB: 50,
             volumeKmsKeyId: kmsKey,
         },
         stoppingCondition: {
-            maxRuntimeInSeconds: 3600
+            maxRuntime: cdk.Duration.hours(1)
         },
         tags: {
            Project: "MyProject"
@@ -255,11 +255,11 @@ test('pass param to training job', () => {
         },
         resourceConfig: {
             instanceCount: 1,
-            instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.P3, ec2.InstanceSize.XLARGE2),
+            instanceType: ec2.InstanceType.of(ec2.InstanceClass.P3, ec2.InstanceSize.XLARGE2),
             volumeSizeInGB: 50
         },
         stoppingCondition: {
-            maxRuntimeInSeconds: 3600
+            maxRuntime: cdk.Duration.hours(1)
         }
     })});
 

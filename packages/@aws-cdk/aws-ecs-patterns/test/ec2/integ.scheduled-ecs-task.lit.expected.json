@@ -506,7 +506,7 @@
         "EcsClusterDefaultAutoScalingGroupDrainECSHookFunctionServiceRole94543EDA"
       ]
     },
-    "EcsClusterDefaultAutoScalingGroupDrainECSHookFunctionTopicSubscriptionDA5F8A10": {
+    "EcsClusterDefaultAutoScalingGroupLifecycleHookDrainHookTopicFunctionA8966A35": {
       "Type": "AWS::SNS::Subscription",
       "Properties": {
         "Protocol": "lambda",
@@ -664,7 +664,7 @@
               "LogDriver": "awslogs",
               "Options": {
                 "awslogs-group": {
-                  "Ref": "ScheduledEc2TaskScheduledTaskLoggingLogGroupDBEF2BF3"
+                  "Ref": "ScheduledEc2TaskScheduledTaskDefScheduledContainerLogGroupA85E11E6"
                 },
                 "awslogs-stream-prefix": "ScheduledEc2Task",
                 "awslogs-region": {
@@ -740,7 +740,7 @@
               "Effect": "Allow",
               "Resource": {
                 "Fn::GetAtt": [
-                  "ScheduledEc2TaskScheduledTaskLoggingLogGroupDBEF2BF3",
+                  "ScheduledEc2TaskScheduledTaskDefScheduledContainerLogGroupA85E11E6",
                   "Arn"
                 ]
               }
@@ -826,7 +826,7 @@
         ]
       }
     },
-    "ScheduledEc2TaskScheduledTaskLoggingLogGroupDBEF2BF3": {
+    "ScheduledEc2TaskScheduledTaskDefScheduledContainerLogGroupA85E11E6": {
       "Type": "AWS::Logs::LogGroup",
       "DeletionPolicy": "Retain"
     },

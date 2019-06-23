@@ -37,7 +37,7 @@ export interface StepScalingActionProps {
    * @see https://docs.aws.amazon.com/autoscaling/application/APIReference/API_StepScalingPolicyConfiguration.html
    * @default No cooldown period
    */
-  readonly cooldownSec?: number;
+  readonly cooldown?: cdk.Duration;
 
   /**
    * Minimum absolute number to adjust capacity with as result of percentage scaling.
@@ -86,14 +86,14 @@ export class StepScalingAction extends cdk.Construct {
       scalingTargetId: props.scalingTarget.scalableTargetId,
       stepScalingPolicyConfiguration: {
         adjustmentType: props.adjustmentType,
-        cooldown: props.cooldownSec,
+        cooldown: props.cooldown && props.cooldown.toSeconds(),
         minAdjustmentMagnitude: props.minAdjustmentMagnitude,
         metricAggregationType: props.metricAggregationType,
         stepAdjustments: cdk.Lazy.anyValue({ produce: () => this.adjustments }),
       } as CfnScalingPolicy.StepScalingPolicyConfigurationProperty
     });
 
-    this.scalingPolicyArn = resource.refAsString;
+    this.scalingPolicyArn = resource.ref;
   }
 
   /**

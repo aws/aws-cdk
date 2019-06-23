@@ -3,7 +3,7 @@ import { Intrinsic } from "./private/intrinsic";
 /**
  * Properties for a Dynamic Reference
  */
-export interface DynamicReferenceProps {
+export interface CfnDynamicReferenceProps {
   /**
    * The service to retrieve the dynamic reference from
    */
@@ -36,15 +36,15 @@ export enum CfnDynamicReferenceService {
   /**
    * Plaintext value stored in AWS Systems Manager Parameter Store
    */
-  Ssm = 'ssm',
+  SSM = 'ssm',
 
   /**
    * Secure string stored in AWS Systems Manager Parameter Store
    */
-  SsmSecure = 'ssm-secure',
+  SSM_SECURE = 'ssm-secure',
 
   /**
    * Secret stored in AWS Secrets Manager
    */
-  SecretsManager = 'secretsmanager',
+  SECRETS_MANAGER = 'secretsmanager',
 }

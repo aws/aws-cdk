@@ -1,6 +1,6 @@
 import cloudwatch = require('@aws-cdk/aws-cloudwatch');
 import iam = require('@aws-cdk/aws-iam');
-import { Construct, IResource, PhysicalName, RemovalPolicy, Resource, ResourceIdentifiers, Stack } from '@aws-cdk/cdk';
+import { Construct, IResource, PhysicalName, RemovalPolicy, Resource, Stack } from '@aws-cdk/cdk';
 import { LogStream } from './log-stream';
 import { CfnLogGroup } from './logs.generated';
 import { MetricFilter } from './metric-filter';
@@ -278,9 +278,9 @@ export interface LogGroupProps {
    *
    * To retain all logs, set this value to Infinity.
    *
-   * @default 731 days (2 years)
+   * @default RetentionDays.TwoYears
    */
-  readonly retentionDays?: RetentionDays;
+  readonly retention?: RetentionDays;
 
   /**
    * Determine the removal policy of this log group.
@@ -326,7 +326,7 @@ export class LogGroup extends LogGroupBase {
       physicalName: props.logGroupName,
     });
 
-    let retentionInDays = props.retentionDays;
+    let retentionInDays = props.retention;
     if (retentionInDays === undefined) { retentionInDays = RetentionDays.TWO_YEARS; }
     if (retentionInDays === Infinity) { retentionInDays = undefined; }
 
@@ -335,19 +335,19 @@ export class LogGroup extends LogGroupBase {
     }
 
     const resource = new CfnLogGroup(this, 'Resource', {
-      logGroupName: this.physicalName.value,
+      logGroupName: this.physicalName,
       retentionInDays,
     });
 
     resource.applyRemovalPolicy(props.removalPolicy);
 
-    const resourceIdentifiers = new ResourceIdentifiers(this, {
+    const resourceIdentifiers = this.getCrossEnvironmentAttributes({
       arn: resource.attrArn,
-      name: resource.refAsString,
+      name: resource.ref,
       arnComponents: {
         service: 'logs',
         resource: 'log-group',
-        resourceName: this.physicalName.value,
+        resourceName: this.physicalName,
         sep: ':',
       },
     });

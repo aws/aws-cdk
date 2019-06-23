@@ -4,7 +4,7 @@ import { Construct, Lazy, Resource } from '@aws-cdk/cdk';
 import { BaseService, BaseServiceProps, IService } from '../base/base-service';
 import { NetworkMode, TaskDefinition } from '../base/task-definition';
 import { CfnService } from '../ecs.generated';
-import { BinPackResource, PlacementConstraint, PlacementStrategy } from '../placement';
+import { PlacementConstraint, PlacementStrategy } from '../placement';
 
 /**
  * Properties to define an ECS service
@@ -85,11 +85,6 @@ export class Ec2Service extends BaseService implements IEc2Service, elb.ILoadBal
     return new Import(scope, id);
   }
 
-  /**
-   * Name of the cluster
-   */
-  public readonly clusterName: string;
-
   private readonly constraints: CfnService.PlacementConstraintProperty[];
   private readonly strategies: CfnService.PlacementStrategyProperty[];
   private readonly daemon: boolean;
@@ -99,11 +94,11 @@ export class Ec2Service extends BaseService implements IEc2Service, elb.ILoadBal
       throw new Error('Daemon mode launches one task on every instance. Don\'t supply desiredCount.');
     }
 
-    if (props.daemon && props.maximumPercent !== undefined && props.maximumPercent !== 100) {
+    if (props.daemon && props.maxHealthyPercent !== undefined && props.maxHealthyPercent !== 100) {
       throw new Error('Maximum percent must be 100 for daemon mode.');
     }
 
-    if (props.daemon && props.minimumHealthyPercent !== undefined && props.minimumHealthyPercent !== 0) {
+    if (props.daemon && props.minHealthyPercent !== undefined && props.minHealthyPercent !== 0) {
       throw new Error('Minimum healthy percent must be 0 for daemon mode.');
     }
 
@@ -115,8 +110,8 @@ export class Ec2Service extends BaseService implements IEc2Service, elb.ILoadBal
       ...props,
       // If daemon, desiredCount must be undefined and that's what we want. Otherwise, default to 1.
       desiredCount: props.daemon || props.desiredCount !== undefined ? props.desiredCount : 1,
-      maximumPercent: props.daemon && props.maximumPercent === undefined ? 100 : props.maximumPercent,
-      minimumHealthyPercent: props.daemon && props.minimumHealthyPercent === undefined ? 0 : props.minimumHealthyPercent ,
+      maxHealthyPercent: props.daemon && props.maxHealthyPercent === undefined ? 100 : props.maxHealthyPercent,
+      minHealthyPercent: props.daemon && props.minHealthyPercent === undefined ? 0 : props.minHealthyPercent ,
     },
     {
       cluster: props.cluster.clusterName,
@@ -125,14 +120,13 @@ export class Ec2Service extends BaseService implements IEc2Service, elb.ILoadBal
       placementConstraints: Lazy.anyValue({ produce: () => this.constraints }, { omitEmptyArray: true }),
       placementStrategies: Lazy.anyValue({ produce: () => this.strategies }, { omitEmptyArray: true }),
       schedulingStrategy: props.daemon ? 'DAEMON' : 'REPLICA',
-    }, props.cluster.clusterName, props.taskDefinition);
+    }, props.taskDefinition);
 
-    this.clusterName = props.cluster.clusterName;
     this.constraints = [];
     this.strategies = [];
     this.daemon = props.daemon || false;
 
-    if (props.taskDefinition.networkMode === NetworkMode.AwsVpc) {
+    if (props.taskDefinition.networkMode === NetworkMode.AWS_VPC) {
       this.configureAwsVpcNetworking(props.cluster.vpc, props.assignPublicIp, props.vpcSubnets, props.securityGroup);
     } else {
       // Either None, Bridge or Host networking. Copy SecurityGroup from ASG.
@@ -146,57 +140,6 @@ export class Ec2Service extends BaseService implements IEc2Service, elb.ILoadBal
     if (!this.taskDefinition.defaultContainer) {
       throw new Error('A TaskDefinition must have at least one essential container');
     }
-  }
-
-  /**
-   * Place tasks only on instances matching the given query expression
-   *
-   * You can specify multiple expressions in one call. The tasks will only
-   * be placed on instances matching all expressions.
-   *
-   * @see https://docs.aws.amazon.com/AmazonECS/latest/developerguide/cluster-query-language.html
-   * @deprecated Use addPlacementConstraints() instead.
-   */
-  public placeOnMemberOf(...expressions: string[]) {
-    this.addPlacementConstraints(PlacementConstraint.memberOf(...expressions));
-  }
-
-  /**
-   * Try to place tasks spread across instance attributes.
-   *
-   * You can use one of the built-in attributes found on `BuiltInAttributes`
-   * or supply your own custom instance attributes. If more than one attribute
-   * is supplied, spreading is done in order.
-   *
-   * @default attributes instanceId
-   * @deprecated Use addPlacementStrategies() instead.
-   */
-  public placeSpreadAcross(...fields: string[]) {
-    if (fields.length === 0) {
-      this.addPlacementStrategies(PlacementStrategy.spreadAcrossInstances());
-    } else {
-      this.addPlacementStrategies(PlacementStrategy.spreadAcross(...fields));
-    }
-  }
-
-  /**
-   * Try to place tasks on instances with the least amount of indicated resource available
-   *
-   * This ensures the total consumption of this resource is lowest.
-   *
-   * @deprecated Use addPlacementStrategies() instead.
-   */
-  public placePackedBy(resource: BinPackResource) {
-    this.addPlacementStrategies(PlacementStrategy.packedBy(resource));
-  }
-
-  /**
-   * Place tasks randomly across the available instances.
-   *
-   * @deprecated Use addPlacementStrategies() instead.
-   */
-  public placeRandomly() {
-    this.addPlacementStrategies(PlacementStrategy.randomly());
   }
 
   /**
@@ -227,10 +170,10 @@ export class Ec2Service extends BaseService implements IEc2Service, elb.ILoadBal
    * Don't call this. Call `loadBalancer.addTarget()` instead.
    */
   public attachToClassicLB(loadBalancer: elb.LoadBalancer): void {
-    if (this.taskDefinition.networkMode === NetworkMode.Bridge) {
+    if (this.taskDefinition.networkMode === NetworkMode.BRIDGE) {
       throw new Error("Cannot use a Classic Load Balancer if NetworkMode is Bridge. Use Host or AwsVpc instead.");
     }
-    if (this.taskDefinition.networkMode === NetworkMode.None) {
+    if (this.taskDefinition.networkMode === NetworkMode.NONE) {
       throw new Error("Cannot use a load balancer if NetworkMode is None. Use Host or AwsVpc instead.");
     }
 

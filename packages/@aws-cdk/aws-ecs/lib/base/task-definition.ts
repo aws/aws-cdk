@@ -172,7 +172,7 @@ export class TaskDefinition extends TaskDefinitionBase {
   public static fromTaskDefinitionArn(scope: Construct, id: string, taskDefinitionArn: string): ITaskDefinition {
     class Import extends TaskDefinitionBase {
       public readonly taskDefinitionArn = taskDefinitionArn;
-      public readonly compatibility = Compatibility.Ec2AndFargate;
+      public readonly compatibility = Compatibility.EC2_AND_FARGATE;
       public readonly executionRole?: iam.IRole = undefined;
     }
 
@@ -242,8 +242,8 @@ export class TaskDefinition extends TaskDefinitionBase {
     }
 
     this.networkMode = props.networkMode !== undefined ? props.networkMode :
-                       this.isFargateCompatible ? NetworkMode.AwsVpc : NetworkMode.Bridge;
-    if (this.isFargateCompatible && this.networkMode !== NetworkMode.AwsVpc) {
+                       this.isFargateCompatible ? NetworkMode.AWS_VPC : NetworkMode.BRIDGE;
+    if (this.isFargateCompatible && this.networkMode !== NetworkMode.AWS_VPC) {
       throw new Error(`Fargate tasks can only have AwsVpc network mode, got: ${this.networkMode}`);
     }
 
@@ -283,7 +283,7 @@ export class TaskDefinition extends TaskDefinitionBase {
       props.placementConstraints.forEach(pc => this.addPlacementConstraint(pc));
     }
 
-    this.taskDefinitionArn = taskDef.refAsString;
+    this.taskDefinitionArn = taskDef.ref;
   }
 
   public get executionRole(): iam.IRole | undefined {
@@ -388,17 +388,17 @@ export enum NetworkMode {
   /**
    * The task's containers do not have external connectivity and port mappings can't be specified in the container definition.
    */
-  None = 'none',
+  NONE = 'none',
 
   /**
    * The task utilizes Docker's built-in virtual network which runs inside each container instance.
    */
-  Bridge = 'bridge',
+  BRIDGE = 'bridge',
 
   /**
    * The task is allocated an elastic network interface.
    */
-  AwsVpc = 'awsvpc',
+  AWS_VPC = 'awsvpc',
 
   /**
    * The task bypasses Docker's built-in virtual network and maps container ports directly to the EC2 instance's network interface directly.
@@ -406,7 +406,7 @@ export enum NetworkMode {
    * In this mode, you can't run multiple instantiations of the same task on a
    * single container instance when port mappings are used.
    */
-  Host = 'host',
+  HOST = 'host',
 }
 
 /**
@@ -475,12 +475,12 @@ export enum Scope {
   /**
    * Docker volumes are automatically provisioned when the task starts and destroyed when the task stops
    */
-  Task = "task",
+  TASK = "task",
 
   /**
    * Docker volumes are persist after the task stops
    */
-  Shared = "shared"
+  SHARED = "shared"
 }
 
 /**
@@ -490,17 +490,17 @@ export enum Compatibility {
   /**
    * Task should be launchable on EC2 clusters
    */
-  Ec2,
+  EC2,
 
   /**
    * Task should be launchable on Fargate clusters
    */
-  Fargate,
+  FARGATE,
 
   /**
    * Task should be launchable on both types of clusters
    */
-  Ec2AndFargate
+  EC2_AND_FARGATE
 }
 
 /**
@@ -525,12 +525,12 @@ export interface ITaskDefinitionExtension {
  * Return true if the given task definition can be run on an EC2 cluster
  */
 function isEc2Compatible(compatibility: Compatibility): boolean {
-  return [Compatibility.Ec2, Compatibility.Ec2AndFargate].includes(compatibility);
+  return [Compatibility.EC2, Compatibility.EC2_AND_FARGATE].includes(compatibility);
 }
 
 /**
  * Return true if the given task definition can be run on a Fargate cluster
  */
 function isFargateCompatible(compatibility: Compatibility): boolean {
-  return [Compatibility.Fargate, Compatibility.Ec2AndFargate].includes(compatibility);
+  return [Compatibility.FARGATE, Compatibility.EC2_AND_FARGATE].includes(compatibility);
 }

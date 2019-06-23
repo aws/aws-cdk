@@ -8,7 +8,7 @@ const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-cdk-cloudfront');
 
 const sourceBucket = new s3.Bucket(stack, 'Bucket', {
-  removalPolicy: cdk.RemovalPolicy.Destroy
+  removalPolicy: cdk.RemovalPolicy.DESTROY
 });
 
 const lambdaFunction = new lambda.Function(stack, 'Lambda', {
@@ -35,4 +35,4 @@ new cloudfront.CloudFrontWebDistribution(stack, 'MyDistribution', {
   ]
  });
 
-app.run();
+app.synth();
