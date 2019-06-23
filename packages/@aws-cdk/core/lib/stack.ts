@@ -10,7 +10,7 @@ import { LogicalIDs } from './private/logical-id';
 import { resolve } from './private/resolve';
 import { makeUniqueId } from './private/uniqueid';
 
-const STACK_SYMBOL = Symbol.for('@aws-cdk/cdk.Stack');
+const STACK_SYMBOL = Symbol.for('@aws-cdk/core.Stack');
 const VALID_STACK_NAME_REGEX = /^[A-Za-z][A-Za-z0-9-]*$/;
 
 export interface StackProps {

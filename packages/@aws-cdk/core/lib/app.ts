@@ -3,20 +3,23 @@ import { CloudAssembly } from '@aws-cdk/cx-api';
 import { Construct, ConstructNode } from './construct';
 import { collectRuntimeInformation } from './private/runtime-info';
 
-const APP_SYMBOL = Symbol.for('@aws-cdk/cdk.App');
+const APP_SYMBOL = Symbol.for('@aws-cdk/core.App');
 
 /**
  * Initialization props for apps.
  */
 export interface AppProps {
   /**
-   * Automatically call run before the application exits
+   * Automatically call `synth()` before the program exits.
    *
-   * If you set this, you don't have to call `synth()` anymore.
+   * If you set this, you don't have to call `synth()` explicitly. Note that
+   * this feature is only available for certain programming languages, and
+   * calling `synth()` is still recommended.
    *
-   * @default true if running via CDK toolkit (`CDK_OUTDIR` is set), false otherwise
+   * @default true if running via CDK CLI (`CDK_OUTDIR` is set), `false`
+   * otherwise
    */
-  readonly autoRun?: boolean;
+  readonly autoSynth?: boolean;
 
   /**
    * The output directory into which to emit synthesized artifacts.
@@ -101,8 +104,8 @@ export class App extends Construct {
     this.runtimeInfo = this.node.tryGetContext(cxapi.DISABLE_VERSION_REPORTING) ? false : true;
     this.outdir = props.outdir || process.env[cxapi.OUTDIR_ENV];
 
-    const autoRun = props.autoRun !== undefined ? props.autoRun : cxapi.OUTDIR_ENV in process.env;
-    if (autoRun) {
+    const autoSynth = props.autoSynth !== undefined ? props.autoSynth : cxapi.OUTDIR_ENV in process.env;
+    if (autoSynth) {
       // synth() guarantuees it will only execute once, so a default of 'true'
       // doesn't bite manual calling of the function.
       process.once('beforeExit', () => this.synth());

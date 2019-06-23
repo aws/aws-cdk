@@ -1,6 +1,6 @@
 import { expect, haveResource } from '@aws-cdk/assert';
 import ec2 = require('@aws-cdk/aws-ec2');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import { Test } from 'nodeunit';
 import elbv2 = require('../../lib');
 
@@ -81,7 +81,7 @@ export = {
 
     // WHEN
     new elbv2.NetworkLoadBalancer(stack, 'ALB', {
-      loadBalancerName: cdk.PhysicalName.of('myLoadBalancer'),
+      loadBalancerName: 'myLoadBalancer',
       vpc
     });
 

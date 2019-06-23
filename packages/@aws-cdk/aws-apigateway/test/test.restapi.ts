@@ -1,6 +1,6 @@
 import { expect, haveResource, haveResourceLike, ResourcePart } from '@aws-cdk/assert';
-import cdk = require('@aws-cdk/cdk');
-import { App, Stack } from '@aws-cdk/cdk';
+import cdk = require('@aws-cdk/core');
+import { App, Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import apigateway = require('../lib');
 
@@ -141,7 +141,7 @@ export = {
     const api = new apigateway.RestApi(stack, 'restapi', {
       deploy: false,
       cloudWatchRole: false,
-      restApiName: cdk.PhysicalName.of('my-rest-api'),
+      restApiName: 'my-rest-api',
     });
 
     api.root.addMethod('GET');
@@ -176,7 +176,7 @@ export = {
     const api = new apigateway.RestApi(stack, 'restapi', {
       deploy: false,
       cloudWatchRole: false,
-      restApiName: cdk.PhysicalName.of('my-rest-api'),
+      restApiName: 'my-rest-api',
     });
 
     // WHEN

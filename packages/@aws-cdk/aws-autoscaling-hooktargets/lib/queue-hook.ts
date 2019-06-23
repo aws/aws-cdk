@@ -1,6 +1,6 @@
 import autoscaling = require('@aws-cdk/aws-autoscaling');
 import sqs = require('@aws-cdk/aws-sqs');
-import { Construct } from '@aws-cdk/cdk';
+import { Construct } from '@aws-cdk/core';
 
 /**
  * Use an SQS queue as a hook target

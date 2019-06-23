@@ -2,7 +2,7 @@
 import '@aws-cdk/assert/jest';
 import lambda = require('@aws-cdk/aws-lambda');
 import s3 = require('@aws-cdk/aws-s3');
-import { Stack } from '@aws-cdk/cdk';
+import { Stack } from '@aws-cdk/core';
 import s3n = require('../../lib');
 
 test('lambda as notification target', () => {

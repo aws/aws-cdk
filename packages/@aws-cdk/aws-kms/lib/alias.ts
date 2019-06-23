@@ -1,4 +1,4 @@
-import { Construct, IResource, Resource, Token } from '@aws-cdk/cdk';
+import { Construct, IResource, Resource, Token } from '@aws-cdk/core';
 import { IKey } from './key';
 import { CfnAlias } from './kms.generated';
 

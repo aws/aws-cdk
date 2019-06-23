@@ -1,6 +1,6 @@
 import { expect, haveResource } from '@aws-cdk/assert';
 import { HostedZone, PublicHostedZone } from '@aws-cdk/aws-route53';
-import { App, Stack } from '@aws-cdk/cdk';
+import { App, Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import { DnsValidatedCertificate } from '../lib/dns-validated-certificate';
 

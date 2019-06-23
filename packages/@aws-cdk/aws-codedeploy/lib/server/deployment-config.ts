@@ -1,4 +1,4 @@
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import { CfnDeploymentConfig } from '../codedeploy.generated';
 import { arnForDeploymentConfig } from '../utils';
 
@@ -65,7 +65,7 @@ export interface ServerDeploymentConfigProps {
    *
    * @default a name will be auto-generated
    */
-  readonly deploymentConfigName?: cdk.PhysicalName;
+  readonly deploymentConfigName?: string;
 
   /**
    * Minimum number of healthy hosts.

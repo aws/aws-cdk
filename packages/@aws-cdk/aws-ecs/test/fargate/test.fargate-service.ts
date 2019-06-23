@@ -2,10 +2,10 @@ import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
 import ec2 = require('@aws-cdk/aws-ec2');
 import elbv2 = require("@aws-cdk/aws-elasticloadbalancingv2");
 import cloudmap = require('@aws-cdk/aws-servicediscovery');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import { Test } from 'nodeunit';
 import ecs = require('../../lib');
-import { ContainerImage, NamespaceType } from '../../lib';
+import { ContainerImage } from '../../lib';
 import { LaunchType } from '../../lib/base/base-service';
 
 export = {
@@ -147,7 +147,7 @@ export = {
         cluster,
         taskDefinition,
         launchType: LaunchType.FARGATE,
-        minimumHealthyPercent: 0,
+        minHealthyPercent: 0,
       });
 
       // THEN
@@ -376,7 +376,7 @@ export = {
       // WHEN
       cluster.addDefaultCloudMapNamespace({
         name: 'foo.com',
-        type: NamespaceType.PRIVATE_DNS
+        type: cloudmap.NamespaceType.DNS_PRIVATE
       });
 
       new ecs.FargateService(stack, 'Service', {
@@ -437,7 +437,7 @@ export = {
       // WHEN
       cluster.addDefaultCloudMapNamespace({
         name: 'foo.com',
-        type: NamespaceType.PRIVATE_DNS
+        type: cloudmap.NamespaceType.DNS_PRIVATE
       });
 
       new ecs.FargateService(stack, 'Service', {

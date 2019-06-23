@@ -1,7 +1,7 @@
 import { Reference } from "../reference";
 import { makeUniqueId } from './uniqueid';
 
-const CFN_REFERENCE_SYMBOL = Symbol.for('@aws-cdk/cdk.CfnReference');
+const CFN_REFERENCE_SYMBOL = Symbol.for('@aws-cdk/core.CfnReference');
 
 /**
  * A Token that represents a CloudFormation reference to another resource

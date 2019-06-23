@@ -1,6 +1,6 @@
 import events = require('@aws-cdk/aws-events');
 import iam = require('@aws-cdk/aws-iam');
-import { Construct, IConstruct, IResource, Lazy, PhysicalName, RemovalPolicy, Resource, Stack, Token } from '@aws-cdk/cdk';
+import { Construct, IConstruct, IResource, Lazy, RemovalPolicy, Resource, Stack, Token } from '@aws-cdk/core';
 import { CfnRepository } from './ecr.generated';
 import { CountType, LifecycleRule, TagStatus } from './lifecycle';
 
@@ -230,7 +230,7 @@ export interface RepositoryProps {
    *
    * @default Automatically generated name.
    */
-  readonly repositoryName?: PhysicalName;
+  readonly repositoryName?: string;
 
   /**
    * Life cycle rules to apply to this registry
@@ -353,17 +353,12 @@ export class Repository extends RepositoryBase {
       props.lifecycleRules.forEach(this.addLifecycleRule.bind(this));
     }
 
-    const resourceIdentifiers = this.getCrossEnvironmentAttributes({
-      arn: resource.attrArn,
-      name: resource.ref,
-      arnComponents: {
-        service: 'ecr',
-        resource: 'repository',
-        resourceName: this.physicalName,
-      },
+    this.repositoryName = this.getResourceNameAttribute(resource.ref);
+    this.repositoryArn = this.getResourceArnAttribute(resource.attrArn, {
+      service: 'ecr',
+      resource: 'repository',
+      resourceName: this.physicalName,
     });
-    this.repositoryName = resourceIdentifiers.name;
-    this.repositoryArn = resourceIdentifiers.arn;
   }
 
   public addToResourcePolicy(statement: iam.PolicyStatement) {

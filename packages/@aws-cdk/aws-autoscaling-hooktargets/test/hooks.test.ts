@@ -4,7 +4,7 @@ import ec2 = require('@aws-cdk/aws-ec2');
 import lambda = require('@aws-cdk/aws-lambda');
 import sns = require('@aws-cdk/aws-sns');
 import sqs = require('@aws-cdk/aws-sqs');
-import { Stack } from '@aws-cdk/cdk';
+import { Stack } from '@aws-cdk/core';
 import hooks = require('../lib');
 
 describe('given an AutoScalingGroup', () => {
