@@ -3,8 +3,8 @@ import cloudwatch = require('@aws-cdk/aws-cloudwatch');
 import ec2 = require('@aws-cdk/aws-ec2');
 import iam = require('@aws-cdk/aws-iam');
 import s3 = require('@aws-cdk/aws-s3');
-import cdk = require('@aws-cdk/cdk');
-import { Stack } from '@aws-cdk/cdk';
+import cdk = require('@aws-cdk/core');
+import { Stack } from '@aws-cdk/core';
 import { CfnDeploymentGroup } from '../codedeploy.generated';
 import { AutoRollbackConfig } from '../rollback-config';
 import { arnForDeploymentGroup, renderAlarmConfiguration, renderAutoRollbackConfiguration } from '../utils';
@@ -73,9 +73,9 @@ abstract class ServerDeploymentGroupBase extends cdk.Resource implements IServer
   public readonly deploymentConfig: IServerDeploymentConfig;
   public abstract readonly autoScalingGroups?: autoscaling.AutoScalingGroup[];
 
-  constructor(scope: cdk.Construct, id: string, deploymentConfig?: IServerDeploymentConfig) {
-    super(scope, id);
-    this.deploymentConfig = deploymentConfig || ServerDeploymentConfig.OneAtATime;
+  constructor(scope: cdk.Construct, id: string, deploymentConfig?: IServerDeploymentConfig, props?: cdk.ResourceProps) {
+    super(scope, id, props);
+    this.deploymentConfig = deploymentConfig || ServerDeploymentConfig.ONE_AT_A_TIME;
   }
 }
 
@@ -266,13 +266,15 @@ export class ServerDeploymentGroup extends ServerDeploymentGroupBase {
   private readonly alarms: cloudwatch.IAlarm[];
 
   constructor(scope: cdk.Construct, id: string, props: ServerDeploymentGroupProps = {}) {
-    super(scope, id, props.deploymentConfig);
+    super(scope, id, props.deploymentConfig, {
+      physicalName: props.deploymentGroupName,
+    });
 
     this.application = props.application || new ServerApplication(this, 'Application');
 
     this.role = props.role || new iam.Role(this, 'Role', {
       assumedBy: new iam.ServicePrincipal('codedeploy.amazonaws.com'),
-      managedPolicyArns: ['arn:aws:iam::aws:policy/service-role/AWSCodeDeployRole'],
+      managedPolicies: [iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSCodeDeployRole')],
     });
 
     this._autoScalingGroups = props.autoScalingGroups || [];
@@ -286,7 +288,7 @@ export class ServerDeploymentGroup extends ServerDeploymentGroupBase {
 
     const resource = new CfnDeploymentGroup(this, 'Resource', {
       applicationName: this.application.applicationName,
-      deploymentGroupName: props.deploymentGroupName,
+      deploymentGroupName: this.physicalName,
       serviceRoleArn: this.role.roleArn,
       deploymentConfigName: props.deploymentConfig &&
         props.deploymentConfig.deploymentConfigName,
@@ -303,8 +305,13 @@ export class ServerDeploymentGroup extends ServerDeploymentGroupBase {
       autoRollbackConfiguration: cdk.Lazy.anyValue({ produce: () => renderAutoRollbackConfiguration(this.alarms, props.autoRollback) }),
     });
 
-    this.deploymentGroupName = resource.deploymentGroupName;
-    this.deploymentGroupArn = arnForDeploymentGroup(this.application.applicationName, this.deploymentGroupName);
+    this.deploymentGroupName = this.getResourceNameAttribute(resource.ref);
+    this.deploymentGroupArn = this.getResourceArnAttribute(arnForDeploymentGroup(this.application.applicationName, resource.ref), {
+      service: 'codedeploy',
+      resource: 'deploymentgroup',
+      resourceName: `${this.application.applicationName}/${this.physicalName}`,
+      sep: ':',
+    });
   }
 
   /**
@@ -340,7 +347,7 @@ export class ServerDeploymentGroup extends ServerDeploymentGroupBase {
     this.codeDeployBucket.grantRead(asg.role, 'latest/*');
 
     switch (asg.osType) {
-      case ec2.OperatingSystemType.Linux:
+      case ec2.OperatingSystemType.LINUX:
         asg.addUserData(
           'PKG_CMD=`which yum 2>/dev/null`',
           'if [ -z "$PKG_CMD" ]; then',
@@ -362,7 +369,7 @@ export class ServerDeploymentGroup extends ServerDeploymentGroupBase {
           'rm -fr $TMP_DIR',
         );
         break;
-      case ec2.OperatingSystemType.Windows:
+      case ec2.OperatingSystemType.WINDOWS:
         asg.addUserData(
           'Set-Variable -Name TEMPDIR -Value (New-TemporaryFile).DirectoryName',
           `aws s3 cp s3://aws-codedeploy-${Stack.of(this).region}/latest/codedeploy-agent.msi $TEMPDIR\\codedeploy-agent.msi`,

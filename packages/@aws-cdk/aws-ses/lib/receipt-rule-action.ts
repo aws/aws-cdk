@@ -3,7 +3,7 @@ import kms = require('@aws-cdk/aws-kms');
 import lambda = require('@aws-cdk/aws-lambda');
 import s3 = require('@aws-cdk/aws-s3');
 import sns = require('@aws-cdk/aws-sns');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import { CfnReceiptRule } from './ses.generated';
 
 /**
@@ -138,31 +138,31 @@ export interface ReceiptRuleBounceActionTemplateProps {
  * A bounce action template.
  */
 export class ReceiptRuleBounceActionTemplate {
-  public static readonly MailboxDoesNotExist = new ReceiptRuleBounceActionTemplate({
+  public static readonly MAILBOX_DOES_NOT_EXIST = new ReceiptRuleBounceActionTemplate({
     message: 'Mailbox does not exist',
     smtpReplyCode: '550',
     statusCode: '5.1.1'
   });
 
-  public static readonly MessageTooLarge = new ReceiptRuleBounceActionTemplate({
+  public static readonly MESSAGE_TOO_LARGE = new ReceiptRuleBounceActionTemplate({
     message: 'Message too large',
     smtpReplyCode: '552',
     statusCode: '5.3.4'
   });
 
-  public static readonly MailboxFull = new ReceiptRuleBounceActionTemplate({
+  public static readonly MAILBOX_FULL = new ReceiptRuleBounceActionTemplate({
     message: 'Mailbox full',
     smtpReplyCode: '552',
     statusCode: '5.2.2'
   });
 
-  public static readonly MessageContentRejected = new ReceiptRuleBounceActionTemplate({
+  public static readonly MESSAGE_CONTENT_REJECTED = new ReceiptRuleBounceActionTemplate({
     message: 'Message content rejected',
     smtpReplyCode: '500',
     statusCode: '5.6.1'
   });
 
-  public static readonly TemporaryFailure = new ReceiptRuleBounceActionTemplate({
+  public static readonly TEMPORARY_FAILURE = new ReceiptRuleBounceActionTemplate({
     message: 'Temporary failure',
     smtpReplyCode: '450',
     statusCode: '4.0.0'
@@ -230,14 +230,14 @@ export enum LambdaInvocationType {
   /**
    * The function will be invoked asynchronously.
    */
-  Event = 'Event',
+  EVENT = 'Event',
 
   /**
    * The function will be invoked sychronously. Use RequestResponse only when
    * you want to make a mail flow decision, such as whether to stop the receipt
    * rule or the receipt rule set.
    */
-  RequestResponse = 'RequestResponse',
+  REQUEST_RESPONSE = 'RequestResponse',
 }
 
 /**
@@ -280,7 +280,7 @@ export class ReceiptRuleLambdaAction implements IReceiptRuleAction {
       this.props.function.addPermission(permissionId, {
         action: 'lambda:InvokeFunction',
         principal: new iam.ServicePrincipal('ses.amazonaws.com'),
-        sourceAccount: cdk.Aws.accountId
+        sourceAccount: cdk.Aws.ACCOUNT_ID
       });
     }
 
@@ -339,32 +339,36 @@ export class ReceiptRuleS3Action implements IReceiptRuleAction {
     // See https://docs.aws.amazon.com/ses/latest/DeveloperGuide/receiving-email-permissions.html#receiving-email-permissions-s3
     const keyPattern = this.props.objectKeyPrefix || '';
 
-    const s3Statement = new iam.PolicyStatement()
-      .addAction('s3:PutObject')
-      .addServicePrincipal('ses.amazonaws.com')
-      .addResource(this.props.bucket.arnForObjects(`${keyPattern}*`))
-      .addCondition('StringEquals', {
-        'aws:Referer': cdk.Aws.accountId
-      });
+    const s3Statement = new iam.PolicyStatement({
+      actions: ['s3:PutObject'],
+      principals: [new iam.ServicePrincipal('ses.amazonaws.com')],
+      resources: [this.props.bucket.arnForObjects(`${keyPattern}*`)],
+      conditions: {
+        StringEquals: {
+          'aws:Referer': cdk.Aws.ACCOUNT_ID
+        }
+      }
+    });
 
     this.props.bucket.addToResourcePolicy(s3Statement);
 
     // Allow SES to use KMS master key
     // See https://docs.aws.amazon.com/ses/latest/DeveloperGuide/receiving-email-permissions.html#receiving-email-permissions-kms
     if (this.props.kmsKey && !/alias\/aws\/ses$/.test(this.props.kmsKey.keyArn)) {
-      const kmsStatement = new iam.PolicyStatement()
-        .addActions('km:Encrypt', 'kms:GenerateDataKey')
-        .addServicePrincipal('ses.amazonaws.com')
-        .addAllResources()
-        .addConditions({
+      const kmsStatement = new iam.PolicyStatement({
+        actions: ['km:Encrypt', 'kms:GenerateDataKey'],
+        principals: [ new iam.ServicePrincipal('ses.amazonaws.com')],
+        resources: ['*'],
+        conditions: {
           Null: {
             'kms:EncryptionContext:aws:ses:rule-name': 'false',
             'kms:EncryptionContext:aws:ses:message-id': 'false'
           },
           StringEquals: {
-            'kms:EncryptionContext:aws:ses:source-account': cdk.Aws.accountId
+            'kms:EncryptionContext:aws:ses:source-account': cdk.Aws.ACCOUNT_ID
           }
-        });
+        }
+      });
 
       this.props.kmsKey.addToResourcePolicy(kmsStatement);
     }
@@ -387,7 +391,7 @@ export enum EmailEncoding {
   /**
    * Base 64
    */
-  Base64 = 'Base64',
+  BASE64 = 'Base64',
 
   /**
    * UTF-8

@@ -49,7 +49,7 @@ export class CloudFormationDeploymentTarget implements IDeploymentTarget {
   public async readCurrentTemplate(stack: CloudFormationStackArtifact): Promise<Template> {
     debug(`Reading existing template for stack ${stack.name}.`);
 
-    const cfn = await this.aws.cloudFormation(stack.environment, Mode.ForReading);
+    const cfn = await this.aws.cloudFormation(stack.environment.account, stack.environment.region, Mode.ForReading);
     try {
       const response = await cfn.getTemplate({ StackName: stack.name }).promise();
       return (response.TemplateBody && deserializeStructure(response.TemplateBody)) || {};

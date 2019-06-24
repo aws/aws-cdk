@@ -1,6 +1,6 @@
 import sns = require('@aws-cdk/aws-sns');
 import sqs = require('@aws-cdk/aws-sqs');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import subs = require('../lib');
 
 class SnsToSqs extends cdk.Stack {

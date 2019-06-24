@@ -1,4 +1,4 @@
-import { Construct, IResource, Resource, Token } from '@aws-cdk/cdk';
+import { Construct, Duration, IResource, Resource, Token } from '@aws-cdk/core';
 import { IAliasRecordTarget } from './alias-record-target';
 import { IHostedZone } from './hosted-zone-ref';
 import { CfnRecordSet } from './route53.generated';
@@ -49,11 +49,11 @@ export interface RecordSetOptions {
   readonly recordName?: string;
 
   /**
-   * The resource record cache time to live (TTL) in seconds.
+   * The resource record cache time to live (TTL).
    *
-   * @default 1800 seconds
+   * @default Duration.minutes(30)
    */
-  readonly ttl?: number;
+  readonly ttl?: Duration;
 
   /**
    * A comment to add on the record.
@@ -110,7 +110,7 @@ export class RecordSet extends Resource implements IRecordSet {
   constructor(scope: Construct, id: string, props: RecordSetProps) {
     super(scope, id);
 
-    const ttl = props.target.aliasTarget ? undefined : (props.ttl || 1800).toString();
+    const ttl = props.target.aliasTarget ? undefined : ((props.ttl && props.ttl.toSeconds()) || 1800).toString();
 
     const recordSet = new CfnRecordSet(this, 'Resource', {
       hostedZoneId: props.zone.hostedZoneId,
@@ -122,7 +122,7 @@ export class RecordSet extends Resource implements IRecordSet {
       comment: props.comment
     });
 
-    this.domainName = recordSet.refAsString;
+    this.domainName = recordSet.ref;
   }
 }
 
@@ -446,7 +446,7 @@ export class ZoneDelegationRecord extends RecordSet {
         ? props.nameServers // Can't map a string-array token!
         : props.nameServers.map(ns => (Token.isUnresolved(ns) || ns.endsWith('.')) ? ns : `${ns}.`)
       ),
-      ttl: props.ttl || 172_800
+      ttl: props.ttl || Duration.days(2)
     });
   }
 }

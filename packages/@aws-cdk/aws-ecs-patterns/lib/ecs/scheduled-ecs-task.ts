@@ -1,7 +1,7 @@
 import ecs = require('@aws-cdk/aws-ecs');
 import events = require('@aws-cdk/aws-events');
 import eventsTargets = require('@aws-cdk/aws-events-targets');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 
 export interface ScheduledEc2TaskProps {
   /**
@@ -21,7 +21,7 @@ export interface ScheduledEc2TaskProps {
    *
    * @see http://docs.aws.amazon.com/AmazonCloudWatch/latest/events/ScheduledEvents.html
    */
-  readonly scheduleExpression: string;
+  readonly schedule: events.Schedule;
 
   /**
    * The CMD value to pass to the container. A string with commands delimited by commas.
@@ -94,7 +94,7 @@ export class ScheduledEc2Task extends cdk.Construct {
       cpu: props.cpu,
       command: props.command,
       environment: props.environment,
-      logging: new ecs.AwsLogDriver(this, 'ScheduledTaskLogging', { streamPrefix: this.node.id })
+      logging: new ecs.AwsLogDriver({ streamPrefix: this.node.id })
     });
 
     // Use Ec2TaskEventRuleTarget as the target of the EventRule
@@ -106,7 +106,7 @@ export class ScheduledEc2Task extends cdk.Construct {
 
     // An EventRule that describes the event trigger (in this case a scheduled run)
     const eventRule = new events.Rule(this, 'ScheduledEventRule', {
-      scheduleExpression: props.scheduleExpression,
+      schedule: props.schedule,
     });
     eventRule.addTarget(eventRuleTarget);
   }

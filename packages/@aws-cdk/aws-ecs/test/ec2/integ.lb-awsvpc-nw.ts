@@ -1,6 +1,6 @@
 import ec2 = require('@aws-cdk/aws-ec2');
 import elbv2 = require('@aws-cdk/aws-elasticloadbalancingv2');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import ecs = require('../../lib');
 import { NetworkMode } from '../../lib';
 
@@ -15,7 +15,7 @@ cluster.addCapacity('DefaultAutoScalingGroup', {
 });
 
 const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef', {
-  networkMode: NetworkMode.AwsVpc
+  networkMode: NetworkMode.AWS_VPC
 });
 
 const container = taskDefinition.addContainer('web', {
@@ -25,7 +25,7 @@ const container = taskDefinition.addContainer('web', {
 
 container.addPortMappings({
   containerPort: 80,
-  protocol: ecs.Protocol.Tcp
+  protocol: ecs.Protocol.TCP
 });
 
 const service = new ecs.Ec2Service(stack, "Service", {

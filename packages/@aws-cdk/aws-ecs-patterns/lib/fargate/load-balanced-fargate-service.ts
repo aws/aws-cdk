@@ -1,6 +1,6 @@
 import ecs = require('@aws-cdk/aws-ecs');
 import iam = require('@aws-cdk/aws-iam');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import { LoadBalancedServiceBase, LoadBalancedServiceBaseProps } from '../base/load-balanced-service-base';
 
 /**
@@ -68,7 +68,7 @@ export interface LoadBalancedFargateServiceProps extends LoadBalancedServiceBase
   /**
    * Override value for the service name
    *
-   * @default - No value
+   * @default CloudFormation-generated name
    */
   readonly serviceName?: string;
 }
@@ -110,7 +110,7 @@ export class LoadBalancedFargateService extends LoadBalancedServiceBase {
       desiredCount: props.desiredCount || 1,
       taskDefinition,
       assignPublicIp,
-      serviceName: props.serviceName || undefined
+      serviceName: props.serviceName,
     });
     this.service = service;
 

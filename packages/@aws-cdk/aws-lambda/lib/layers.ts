@@ -1,4 +1,4 @@
-import { Construct, IResource, Lazy, Resource, Stack } from '@aws-cdk/cdk';
+import { Construct, IResource, Lazy, Resource } from '@aws-cdk/core';
 import { Code } from './code';
 import { CfnLayerVersion, CfnLayerVersionPermission } from './lambda.generated';
 import { Runtime } from './runtime';
@@ -35,7 +35,7 @@ export interface LayerVersionProps {
    *
    * @default - A name will be generated.
    */
-  readonly name?: string;
+  readonly layerVersionName?: string;
 }
 
 export interface ILayerVersion extends IResource {
@@ -131,7 +131,7 @@ export class LayerVersion extends LayerVersionBase {
   public static fromLayerVersionArn(scope: Construct, id: string, layerVersionArn: string): ILayerVersion {
     return LayerVersion.fromLayerVersionAttributes(scope, id, {
       layerVersionArn,
-      compatibleRuntimes: Runtime.All
+      compatibleRuntimes: Runtime.ALL
     });
   }
 
@@ -159,7 +159,10 @@ export class LayerVersion extends LayerVersionBase {
   public readonly compatibleRuntimes?: Runtime[];
 
   constructor(scope: Construct, id: string, props: LayerVersionProps) {
-    super(scope, id);
+    super(scope, id, {
+      physicalName: props.layerVersionName,
+    });
+
     if (props.compatibleRuntimes && props.compatibleRuntimes.length === 0) {
       throw new Error('Attempted to define a Lambda layer that supports no runtime!');
     }
@@ -173,62 +176,11 @@ export class LayerVersion extends LayerVersionBase {
       compatibleRuntimes: props.compatibleRuntimes && props.compatibleRuntimes.map(r => r.name),
       content: Lazy.anyValue({ produce: () => props.code._toJSON(resource) }),
       description: props.description,
-      layerName: props.name,
+      layerName: this.physicalName,
       licenseInfo: props.license,
     });
 
-    this.layerVersionArn = resource.layerVersionArn;
+    this.layerVersionArn = resource.ref;
     this.compatibleRuntimes = props.compatibleRuntimes;
-  }
-}
-
-/**
- * Properties of a Singleton Lambda Layer Version.
- */
-export interface SingletonLayerVersionProps extends LayerVersionProps {
-  /**
-   * A unique identifier to identify this lambda layer version.
-   *
-   * The identifier should be unique across all layer providers.
-   * We recommend generating a UUID per provider.
-   */
-  readonly uuid: string;
-}
-
-/**
- * A Singleton Lambda Layer Version. The construct gurantees exactly one LayerVersion will be created in a given Stack
- * for the provided ``uuid``. It is recommended to use ``uuidgen`` to create a new ``uuid`` each time a new singleton
- * layer is created.
- *
- * @resource AWS::Lambda::LayerVersion
- */
-export class SingletonLayerVersion extends Resource implements ILayerVersion {
-  private readonly layerVersion: ILayerVersion;
-
-  constructor(scope: Construct, id: string, props: SingletonLayerVersionProps) {
-    super(scope, id);
-
-    this.layerVersion = this.ensureLayerVersion(props);
-  }
-
-  public get layerVersionArn(): string {
-    return this.layerVersion.layerVersionArn;
-  }
-
-  public get compatibleRuntimes(): Runtime[] | undefined {
-    return this.layerVersion.compatibleRuntimes;
-  }
-
-  public addPermission(id: string, grantee: LayerVersionPermission) {
-    this.layerVersion.addPermission(id, grantee);
-  }
-
-  private ensureLayerVersion(props: SingletonLayerVersionProps): ILayerVersion {
-    const singletonId = `SingletonLayer-${props.uuid}`;
-    const existing = Stack.of(this).node.tryFindChild(singletonId);
-    if (existing) {
-      return existing as unknown as ILayerVersion;
-    }
-    return new LayerVersion(Stack.of(this), singletonId, props);
   }
 }

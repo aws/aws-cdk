@@ -1,7 +1,7 @@
 import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
 import ec2 = require('@aws-cdk/aws-ec2');
-import cdk = require('@aws-cdk/cdk');
-import { CfnOutput } from '@aws-cdk/cdk';
+import cdk = require('@aws-cdk/core');
+import { CfnOutput } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import eks = require('../lib');
 
@@ -19,10 +19,8 @@ export = {
         SubnetIds: [
           { Ref: "VPCPublicSubnet1SubnetB4246D30" },
           { Ref: "VPCPublicSubnet2Subnet74179F39" },
-          { Ref: "VPCPublicSubnet3Subnet631C5E25" },
           { Ref: "VPCPrivateSubnet1Subnet8BCA10E0" },
           { Ref: "VPCPrivateSubnet2SubnetCFCDAA7A" },
-          { Ref: "VPCPrivateSubnet3Subnet3EDCD457" }
         ]
       }
     }));

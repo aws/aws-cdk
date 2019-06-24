@@ -1,7 +1,7 @@
 import cloudformation = require('@aws-cdk/aws-cloudformation');
 import lambda = require('@aws-cdk/aws-lambda');
 import s3 = require('@aws-cdk/aws-s3');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import path = require('path');
 import { ISource } from './source';
 
@@ -45,11 +45,11 @@ export class BucketDeployment extends cdk.Construct {
 
     const handler = new lambda.SingletonFunction(this, 'CustomResourceHandler', {
       uuid: '8693BB64-9689-44B6-9AAF-B0CC9EB8756C',
-      code: lambda.Code.file(handlerCodeBundle),
-      runtime: lambda.Runtime.Python36,
+      code: lambda.Code.asset(handlerCodeBundle),
+      runtime: lambda.Runtime.PYTHON_3_6,
       handler: 'index.handler',
       lambdaPurpose: 'Custom::CDKBucketDeployment',
-      timeout: 15 * 60
+      timeout: cdk.Duration.minutes(15)
     });
 
     const source = props.source.bind(this);

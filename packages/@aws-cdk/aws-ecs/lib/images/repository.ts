@@ -1,39 +1,34 @@
 import secretsmanager = require('@aws-cdk/aws-secretsmanager');
+import { Construct } from '@aws-cdk/core';
 import { ContainerDefinition } from "../container-definition";
-import { ContainerImage } from "../container-image";
-import { CfnTaskDefinition } from '../ecs.generated';
+import { ContainerImage, ContainerImageConfig } from "../container-image";
 
 export interface RepositoryImageProps {
-    /**
-     * Optional secret that houses credentials for the image registry
-     */
-    readonly credentials?: secretsmanager.ISecret;
+  /**
+   * Optional secret that houses credentials for the image registry
+   */
+  readonly credentials?: secretsmanager.ISecret;
 }
 
 /**
  * A container image hosted on DockerHub or another online registry
  */
 export class RepositoryImage extends ContainerImage {
-  public readonly imageName: string;
 
-  private credentialsSecret?: secretsmanager.ISecret;
-
-  constructor(imageName: string, props: RepositoryImageProps = {}) {
+  constructor(private readonly imageName: string, private readonly props: RepositoryImageProps = {}) {
     super();
-    this.imageName = imageName;
-    this.credentialsSecret = props.credentials;
   }
 
-  public bind(containerDefinition: ContainerDefinition): void {
-    if (this.credentialsSecret) {
-      this.credentialsSecret.grantRead(containerDefinition.taskDefinition.obtainExecutionRole());
+  public bind(_scope: Construct, containerDefinition: ContainerDefinition): ContainerImageConfig {
+    if (this.props.credentials) {
+      this.props.credentials.grantRead(containerDefinition.taskDefinition.obtainExecutionRole());
     }
-  }
 
-  public toRepositoryCredentialsJson(): CfnTaskDefinition.RepositoryCredentialsProperty | undefined {
-    if (!this.credentialsSecret) { return undefined; }
     return {
-      credentialsParameter: this.credentialsSecret.secretArn
+      imageName: this.imageName,
+      repositoryCredentials: this.props.credentials && {
+        credentialsParameter: this.props.credentials.secretArn
+      }
     };
   }
 }

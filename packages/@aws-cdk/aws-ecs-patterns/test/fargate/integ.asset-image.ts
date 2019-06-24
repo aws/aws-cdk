@@ -1,6 +1,6 @@
 import ec2 = require('@aws-cdk/aws-ec2');
 import ecs = require('@aws-cdk/aws-ecs');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import path = require('path');
 import ecsPatterns = require('../../lib');
 
@@ -17,9 +17,7 @@ Array.isArray(path);
 const fargateService = new ecsPatterns.LoadBalancedFargateService(stack, "FargateService", {
   cluster,
   containerPort: 8000,
-  image: new ecs.AssetImage(stack, 'Image', {
-    directory: path.join(__dirname, '..', 'demo-image')
-  })
+  image: new ecs.AssetImage(path.join(__dirname, '..', 'demo-image')),
 });
 
 // CfnOutput the DNS where you can access your service

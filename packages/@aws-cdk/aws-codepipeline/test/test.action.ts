@@ -1,5 +1,5 @@
 import { expect, haveResourceLike } from '@aws-cdk/assert';
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import { Test } from 'nodeunit';
 import codepipeline = require('../lib');
 import validations = require('../lib/validation');
@@ -35,27 +35,27 @@ export = {
   'action type validation': {
 
     'must be source and is source'(test: Test) {
-      const result = validations.validateSourceAction(true, codepipeline.ActionCategory.Source, 'test action', 'test stage');
+      const result = validations.validateSourceAction(true, codepipeline.ActionCategory.SOURCE, 'test action', 'test stage');
       test.deepEqual(result.length, 0);
       test.done();
     },
 
     'must be source and is not source'(test: Test) {
-      const result = validations.validateSourceAction(true, codepipeline.ActionCategory.Deploy, 'test action', 'test stage');
+      const result = validations.validateSourceAction(true, codepipeline.ActionCategory.DEPLOY, 'test action', 'test stage');
       test.deepEqual(result.length, 1);
       test.ok(result[0].match(/may only contain Source actions/), 'the validation should have failed');
       test.done();
     },
 
     'cannot be source and is source'(test: Test) {
-      const result = validations.validateSourceAction(false, codepipeline.ActionCategory.Source, 'test action', 'test stage');
+      const result = validations.validateSourceAction(false, codepipeline.ActionCategory.SOURCE, 'test action', 'test stage');
       test.deepEqual(result.length, 1);
       test.ok(result[0].match(/may only occur in first stage/), 'the validation should have failed');
       test.done();
     },
 
     'cannot be source and is not source'(test: Test) {
-      const result = validations.validateSourceAction(false, codepipeline.ActionCategory.Deploy, 'test action', 'test stage');
+      const result = validations.validateSourceAction(false, codepipeline.ActionCategory.DEPLOY, 'test action', 'test stage');
       test.deepEqual(result.length, 0);
       test.done();
     },
@@ -72,7 +72,7 @@ export = {
       new codepipeline.Pipeline(stack, 'Pipeline', {
         stages: [
           {
-            name: 'Source',
+            stageName: 'Source',
             actions: [
               new FakeSourceAction({
                 actionName: 'Source',
@@ -86,7 +86,7 @@ export = {
             ],
           },
           {
-            name: 'Build',
+            stageName: 'Build',
             actions: [
               new FakeBuildAction({
                 actionName: 'Build',
@@ -121,7 +121,7 @@ export = {
       new codepipeline.Pipeline(stack, 'Pipeline', {
         stages: [
           {
-            name: 'Source',
+            stageName: 'Source',
             actions: [
               new FakeSourceAction({
                 actionName: 'Source',
@@ -136,7 +136,7 @@ export = {
             ],
           },
           {
-            name: 'Build',
+            stageName: 'Build',
             actions: [
               new FakeBuildAction({
                 actionName: 'Build',
@@ -166,12 +166,12 @@ export = {
       output: sourceOutput,
     });
     pipeline.addStage({
-      name: 'Source',
+      stageName: 'Source',
       actions: [sourceAction],
     });
 
     pipeline.addStage({
-      name: 'Build',
+      stageName: 'Build',
       actions: [
         new FakeBuildAction({
           actionName: 'CodeBuild',
@@ -228,7 +228,7 @@ export = {
     const pipeline = new codepipeline.Pipeline(stack, 'Pipeline', {
       stages: [
         {
-          name: 'Source',
+          stageName: 'Source',
           actions: [
             new FakeSourceAction({
               actionName: 'Source',
@@ -240,12 +240,12 @@ export = {
     });
 
     const action = new FakeBuildAction({ actionName: 'FakeAction', input: sourceOutput });
-    const stage2 = {
-      name: 'Stage2',
+    const stage2: codepipeline.StageProps = {
+      stageName: 'Stage2',
       actions: [action],
     };
-    const stage3 = {
-      name: 'Stage3',
+    const stage3: codepipeline.StageProps = {
+      stageName: 'Stage3',
       actions: [action],
     };
 

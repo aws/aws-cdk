@@ -2,7 +2,7 @@ import autoscaling = require('@aws-cdk/aws-autoscaling');
 import hooks = require('@aws-cdk/aws-autoscaling-hooktargets');
 import iam = require('@aws-cdk/aws-iam');
 import lambda = require('@aws-cdk/aws-lambda');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import fs = require('fs');
 import path = require('path');
 import { ICluster } from '../cluster';
@@ -28,11 +28,11 @@ export interface InstanceDrainHookProps {
   /**
    * How many seconds to give tasks to drain before the instance is terminated anyway
    *
-   * Must be between 0 and 900.
+   * Must be between 0 and 15 minutes.
    *
-   * @default 900
+   * @default Duration.minutes(15)
    */
-  drainTimeSec?: number;
+  drainTime?: cdk.Duration;
 }
 
 /**
@@ -42,20 +42,16 @@ export class InstanceDrainHook extends cdk.Construct {
   constructor(scope: cdk.Construct, id: string, props: InstanceDrainHookProps) {
     super(scope, id);
 
-    const drainTimeSeconds = props.drainTimeSec !== undefined ? props.drainTimeSec : 300;
-
-    if (drainTimeSeconds < 0 || drainTimeSeconds > 900) {
-      throw new Error(`Drain time must be between 0 and 900 seconds, got: ${drainTimeSeconds}`);
-    }
+    const drainTime = props.drainTime || cdk.Duration.minutes(5);
 
     // Invoke Lambda via SNS Topic
     const fn = new lambda.Function(this, 'Function', {
       code: lambda.Code.inline(fs.readFileSync(path.join(__dirname, 'lambda-source', 'index.py'), { encoding: 'utf-8' })),
       handler: 'index.lambda_handler',
-      runtime: lambda.Runtime.Python36,
+      runtime: lambda.Runtime.PYTHON_3_6,
       // Timeout: some extra margin for additional API calls made by the Lambda,
       // up to a maximum of 15 minutes.
-      timeout: Math.min(drainTimeSeconds + 10, 900),
+      timeout: cdk.Duration.seconds(Math.min(drainTime.toSeconds() + 10, 900)),
       environment: {
         CLUSTER: props.cluster.clusterName
       }
@@ -63,44 +59,45 @@ export class InstanceDrainHook extends cdk.Construct {
 
     // Hook everything up: ASG -> Topic, Topic -> Lambda
     props.autoScalingGroup.addLifecycleHook('DrainHook', {
-      lifecycleTransition: autoscaling.LifecycleTransition.InstanceTerminating,
-      defaultResult: autoscaling.DefaultResult.Continue,
+      lifecycleTransition: autoscaling.LifecycleTransition.INSTANCE_TERMINATING,
+      defaultResult: autoscaling.DefaultResult.CONTINUE,
       notificationTarget: new hooks.FunctionHook(fn),
-      heartbeatTimeoutSec: drainTimeSeconds,
+      heartbeatTimeout: drainTime,
     });
 
     // Describe actions cannot be restricted and restrict the CompleteLifecycleAction to the ASG arn
     // https://docs.aws.amazon.com/autoscaling/ec2/userguide/control-access-using-iam.html
-    fn.addToRolePolicy(new iam.PolicyStatement()
-      .addActions(
+    fn.addToRolePolicy(new iam.PolicyStatement({
+      actions: [
         'ec2:DescribeInstances',
         'ec2:DescribeInstanceAttribute',
         'ec2:DescribeInstanceStatus',
         'ec2:DescribeHosts'
-      )
-      .addAllResources());
+      ],
+      resources: ['*']
+    }));
 
     // Restrict to the ASG
-    fn.addToRolePolicy(new iam.PolicyStatement()
-      .addActions(
-        'autoscaling:CompleteLifecycleAction'
-      )
-      .addResource(props.autoScalingGroup.autoScalingGroupArn));
+    fn.addToRolePolicy(new iam.PolicyStatement({
+      actions: ['autoscaling:CompleteLifecycleAction'],
+      resources: [props.autoScalingGroup.autoScalingGroupArn],
+    }));
 
-    fn.addToRolePolicy(new iam.PolicyStatement()
-      .addActions(
-        'ecs:DescribeContainerInstances',
-        'ecs:DescribeTasks')
-      .addAllResources());
+    fn.addToRolePolicy(new iam.PolicyStatement({
+      actions: ['ecs:DescribeContainerInstances', 'ecs:DescribeTasks'],
+      resources: ['*'],
+    }));
 
     // Restrict to the ECS Cluster
-    fn.addToRolePolicy(new iam.PolicyStatement()
-      .addActions(
+    fn.addToRolePolicy(new iam.PolicyStatement({
+      actions: [
         'ecs:ListContainerInstances',
         'ecs:SubmitContainerStateChange',
         'ecs:SubmitTaskStateChange',
         'ecs:UpdateContainerInstancesState',
-        'ecs:ListTasks')
-      .addResource(props.cluster.clusterArn));
+        'ecs:ListTasks'
+      ],
+      resources: [props.cluster.clusterArn]
+    }));
   }
 }

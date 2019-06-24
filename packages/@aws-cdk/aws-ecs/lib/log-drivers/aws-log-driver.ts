@@ -1,9 +1,7 @@
 import logs = require('@aws-cdk/aws-logs');
-import cdk = require('@aws-cdk/cdk');
-import { Stack } from '@aws-cdk/cdk';
+import { Construct, Stack } from '@aws-cdk/core';
 import { ContainerDefinition } from '../container-definition';
-import { CfnTaskDefinition } from '../ecs.generated';
-import { LogDriver } from "./log-driver";
+import { LogDriver, LogDriverConfig } from "./log-driver";
 
 /**
  * Properties for defining a new AWS Log Driver
@@ -34,7 +32,7 @@ export interface AwsLogDriverProps {
    *
    * @default - Logs never expire.
    */
-  readonly logRetentionDays?: logs.RetentionDays;
+  readonly logRetention?: logs.RetentionDays;
 
   /**
    * This option defines a multiline start pattern in Python strftime format.
@@ -67,38 +65,35 @@ export interface AwsLogDriverProps {
 export class AwsLogDriver extends LogDriver {
   /**
    * The log group that the logs will be sent to
+   *
+   * Only available after the LogDriver has been bound to a ContainerDefinition.
    */
-  public readonly logGroup: logs.ILogGroup;
+  public logGroup?: logs.ILogGroup;
 
-  constructor(scope: cdk.Construct, id: string, private readonly props: AwsLogDriverProps) {
-    super(scope, id);
+  constructor(private readonly props: AwsLogDriverProps) {
+    super();
 
-    if (props.logGroup && props.logRetentionDays) {
+    if (props.logGroup && props.logRetention) {
       throw new Error('Cannot specify both `logGroup` and `logRetentionDays`.');
     }
-
-    this.logGroup = props.logGroup || new logs.LogGroup(this, 'LogGroup', {
-        retentionDays: props.logRetentionDays || Infinity,
-    });
   }
 
   /**
    * Called when the log driver is configured on a container
    */
-  public bind(containerDefinition: ContainerDefinition): void {
-    this.logGroup.grantWrite(containerDefinition.taskDefinition.obtainExecutionRole());
-  }
+  public bind(scope: Construct, containerDefinition: ContainerDefinition): LogDriverConfig {
+    this.logGroup = this.props.logGroup || new logs.LogGroup(scope, 'LogGroup', {
+        retention: this.props.logRetention || Infinity,
+    });
 
-  /**
-   * Return the log driver CloudFormation JSON
-   */
-  public renderLogDriver(): CfnTaskDefinition.LogConfigurationProperty {
+    this.logGroup.grantWrite(containerDefinition.taskDefinition.obtainExecutionRole());
+
     return {
       logDriver: 'awslogs',
       options: removeEmpty({
         'awslogs-group': this.logGroup.logGroupName,
         'awslogs-stream-prefix': this.props.streamPrefix,
-        'awslogs-region': Stack.of(this).region,
+        'awslogs-region': Stack.of(containerDefinition).region,
         'awslogs-datetime-format': this.props.datetimeFormat,
         'awslogs-multiline-pattern': this.props.multilinePattern,
       }),

@@ -1,7 +1,7 @@
 import codepipeline = require('@aws-cdk/aws-codepipeline');
 import iam = require('@aws-cdk/aws-iam');
 import lambda = require('@aws-cdk/aws-lambda');
-import { Stack } from '@aws-cdk/cdk';
+import { Stack } from '@aws-cdk/core';
 
 /**
  * Construction properties of the {@link LambdaInvokeAction Lambda invoke CodePipeline Action}.
@@ -59,7 +59,7 @@ export class LambdaInvokeAction extends codepipeline.Action {
   constructor(props: LambdaInvokeActionProps) {
     super({
       ...props,
-      category: codepipeline.ActionCategory.Invoke,
+      category: codepipeline.ActionCategory.INVOKE,
       provider: 'Lambda',
       artifactBounds: {
         minInputs: 0,
@@ -78,21 +78,23 @@ export class LambdaInvokeAction extends codepipeline.Action {
 
   protected bind(info: codepipeline.ActionBind): void {
     // allow pipeline to list functions
-    info.role.addToPolicy(new iam.PolicyStatement()
-      .addAction('lambda:ListFunctions')
-      .addAllResources());
+    info.role.addToPolicy(new iam.PolicyStatement({
+      actions: ['lambda:ListFunctions'],
+      resources: ['*']
+    }));
 
     // allow pipeline to invoke this lambda functionn
-    info.role.addToPolicy(new iam.PolicyStatement()
-      .addAction('lambda:InvokeFunction')
-      .addResource(this.props.lambda.functionArn));
+    info.role.addToPolicy(new iam.PolicyStatement({
+      actions: ['lambda:InvokeFunction'],
+      resources: [this.props.lambda.functionArn]
+    }));
 
     // allow lambda to put job results for this pipeline
     // CodePipeline requires this to be granted to '*'
     // (the Pipeline ARN will not be enough)
-    this.props.lambda.addToRolePolicy(new iam.PolicyStatement()
-      .addAllResources()
-      .addAction('codepipeline:PutJobSuccessResult')
-      .addAction('codepipeline:PutJobFailureResult'));
+    this.props.lambda.addToRolePolicy(new iam.PolicyStatement({
+      resources: ['*'],
+      actions: ['codepipeline:PutJobSuccessResult', 'codepipeline:PutJobFailureResult']
+    }));
   }
 }

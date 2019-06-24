@@ -1,6 +1,6 @@
 import { expect, haveResource } from '@aws-cdk/assert';
 import iam = require('@aws-cdk/aws-iam');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import { Test } from 'nodeunit';
 import { AwsCustomResource } from '../lib';
 
@@ -134,9 +134,10 @@ export = {
         physicalResourceIdPath: 'ETag'
       },
       policyStatements: [
-        new iam.PolicyStatement()
-          .addAction('s3:PutObject')
-          .addResource('arn:aws:s3:::my-bucket/my-key')
+        new iam.PolicyStatement({
+          actions: ['s3:PutObject'],
+          resources: ['arn:aws:s3:::my-bucket/my-key']
+        })
       ]
     });
 

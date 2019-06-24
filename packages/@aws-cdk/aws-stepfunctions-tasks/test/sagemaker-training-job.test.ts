@@ -3,7 +3,7 @@ import ec2 = require('@aws-cdk/aws-ec2');
 import iam = require('@aws-cdk/aws-iam');
 import kms = require('@aws-cdk/aws-kms');
 import sfn = require('@aws-cdk/aws-stepfunctions');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import tasks = require('../lib');
 
 let stack: cdk.Stack;
@@ -78,12 +78,12 @@ test('create complex training job', () => {
     const kmsKey = new kms.Key(stack, 'Key');
     const vpc = new ec2.Vpc(stack, "VPC");
     const securityGroup = new ec2.SecurityGroup(stack, 'SecurityGroup', { vpc, description: 'My SG' });
-    securityGroup.addIngressRule(new ec2.AnyIPv4(), new ec2.TcpPort(22), 'allow ssh access from the world');
+    securityGroup.addIngressRule(ec2.Peer.anyIpv4(), ec2.Port.tcp(22), 'allow ssh access from the world');
 
     const role = new iam.Role(stack, 'Role', {
         assumedBy: new iam.ServicePrincipal('sagemaker.amazonaws.com'),
-        managedPolicyArns: [
-            new iam.AwsManagedPolicy('AmazonSageMakerFullAccess', stack).policyArn
+        managedPolicies: [
+            iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonSageMakerFullAccess')
         ],
     });
 
@@ -93,7 +93,7 @@ test('create complex training job', () => {
         role,
         algorithmSpecification: {
             algorithmName: "BlazingText",
-            trainingInputMode: tasks.InputMode.File,
+            trainingInputMode: tasks.InputMode.FILE,
             metricDefinitions: [
                 {
                     name: 'mymetric', regex: 'regex_pattern'
@@ -107,11 +107,11 @@ test('create complex training job', () => {
             {
                 channelName: "train",
                 contentType: "image/jpeg",
-                compressionType: tasks.CompressionType.None,
-                recordWrapperType: tasks.RecordWrapperType.RecordIO,
+                compressionType: tasks.CompressionType.NONE,
+                recordWrapperType: tasks.RecordWrapperType.RECORD_IO,
                 dataSource: {
                     s3DataSource: {
-                        s3DataType: tasks.S3DataType.S3Prefix,
+                        s3DataType: tasks.S3DataType.S3_PREFIX,
                         s3Uri: "s3://mybucket/mytrainpath",
                     }
                 }
@@ -119,11 +119,11 @@ test('create complex training job', () => {
             {
                 channelName: "test",
                 contentType: "image/jpeg",
-                compressionType: tasks.CompressionType.Gzip,
-                recordWrapperType: tasks.RecordWrapperType.RecordIO,
+                compressionType: tasks.CompressionType.GZIP,
+                recordWrapperType: tasks.RecordWrapperType.RECORD_IO,
                 dataSource: {
                     s3DataSource: {
-                        s3DataType: tasks.S3DataType.S3Prefix,
+                        s3DataType: tasks.S3DataType.S3_PREFIX,
                         s3Uri: "s3://mybucket/mytestpath",
                     }
                 }
@@ -135,12 +135,12 @@ test('create complex training job', () => {
         },
         resourceConfig: {
             instanceCount: 1,
-            instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.P3, ec2.InstanceSize.XLarge2),
+            instanceType: ec2.InstanceType.of(ec2.InstanceClass.P3, ec2.InstanceSize.XLARGE2),
             volumeSizeInGB: 50,
             volumeKmsKeyId: kmsKey,
         },
         stoppingCondition: {
-            maxRuntimeInSeconds: 3600
+            maxRuntime: cdk.Duration.hours(1)
         },
         tags: {
            Project: "MyProject"
@@ -217,7 +217,6 @@ test('create complex training job', () => {
             Subnets: [
                 { Ref: "VPCPrivateSubnet1Subnet8BCA10E0" },
                 { Ref: "VPCPrivateSubnet2SubnetCFCDAA7A" },
-                { Ref: "VPCPrivateSubnet3Subnet3EDCD457" }
             ]
         }
       },
@@ -228,8 +227,8 @@ test('pass param to training job', () => {
     // WHEN
     const role = new iam.Role(stack, 'Role', {
         assumedBy: new iam.ServicePrincipal('sagemaker.amazonaws.com'),
-        managedPolicyArns: [
-            new iam.AwsManagedPolicy('AmazonSageMakerFullAccess', stack).policyArn
+        managedPolicies: [
+            iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonSageMakerFullAccess'),
         ],
     });
 
@@ -238,14 +237,14 @@ test('pass param to training job', () => {
         role,
         algorithmSpecification: {
             algorithmName: "BlazingText",
-            trainingInputMode: tasks.InputMode.File
+            trainingInputMode: tasks.InputMode.FILE
         },
         inputDataConfig: [
             {
                 channelName: 'train',
                 dataSource: {
                     s3DataSource: {
-                        s3DataType: tasks.S3DataType.S3Prefix,
+                        s3DataType: tasks.S3DataType.S3_PREFIX,
                         s3Uri: sfn.Data.stringAt('$.S3Bucket')
                     }
                 }
@@ -256,11 +255,11 @@ test('pass param to training job', () => {
         },
         resourceConfig: {
             instanceCount: 1,
-            instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.P3, ec2.InstanceSize.XLarge2),
+            instanceType: ec2.InstanceType.of(ec2.InstanceClass.P3, ec2.InstanceSize.XLARGE2),
             volumeSizeInGB: 50
         },
         stoppingCondition: {
-            maxRuntimeInSeconds: 3600
+            maxRuntime: cdk.Duration.hours(1)
         }
     })});
 

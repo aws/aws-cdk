@@ -1,4 +1,4 @@
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import { PolicyStatement, Role, ServicePrincipal } from '../lib';
 
 export class ExampleConstruct extends cdk.Construct {
@@ -10,9 +10,9 @@ export class ExampleConstruct extends cdk.Construct {
       assumedBy: new ServicePrincipal('sns.amazonaws.com')
     });
 
-    role.addToPolicy(new PolicyStatement()
-        .addAllResources()
-        .addAction('lambda:InvokeFunction'));
+    role.addToPolicy(new PolicyStatement({
+      resources: ['*'],
+      actions: ['lambda:InvokeFunction'] }));
     /// !hide
   }
 }

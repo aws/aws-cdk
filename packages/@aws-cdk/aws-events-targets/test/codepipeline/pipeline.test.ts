@@ -1,7 +1,7 @@
 import { expect, haveResource } from '@aws-cdk/assert';
 import codepipeline = require('@aws-cdk/aws-codepipeline');
 import events = require('@aws-cdk/aws-events');
-import { Stack } from '@aws-cdk/cdk';
+import { Stack } from '@aws-cdk/core';
 import targets = require('../../lib');
 
 test('use codebuild project as an eventrule target', () => {
@@ -12,26 +12,28 @@ test('use codebuild project as an eventrule target', () => {
   const srcArtifact = new codepipeline.Artifact('Src');
   const buildArtifact = new codepipeline.Artifact('Bld');
   pipeline.addStage({
-    name: 'Source',
+    stageName: 'Source',
     actions: [new TestAction({
       actionName: 'Hello',
-      category: codepipeline.ActionCategory.Source,
+      category: codepipeline.ActionCategory.SOURCE,
       provider: 'x',
       artifactBounds: { minInputs: 0, maxInputs: 0 , minOutputs: 1, maxOutputs: 1, },
       outputs: [srcArtifact]})]
   });
   pipeline.addStage({
-    name: 'Build',
+    stageName: 'Build',
     actions: [new TestAction({
       actionName: 'Hello',
-      category: codepipeline.ActionCategory.Build,
+      category: codepipeline.ActionCategory.BUILD,
       provider: 'y',
       inputs: [srcArtifact],
       outputs: [buildArtifact],
       artifactBounds: { minInputs: 1, maxInputs: 1 , minOutputs: 1, maxOutputs: 1, }})]
   });
 
-  const rule = new events.Rule(stack, 'rule', { scheduleExpression: 'rate(1 min)' });
+  const rule = new events.Rule(stack, 'rule', {
+    schedule: events.Schedule.expression('rate(1 minute)'),
+  });
 
   // WHEN
   rule.addTarget(new targets.CodePipeline(pipeline));

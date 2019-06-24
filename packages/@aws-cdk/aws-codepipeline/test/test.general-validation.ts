@@ -1,5 +1,5 @@
-import cdk = require('@aws-cdk/cdk');
-import { ConstructNode } from '@aws-cdk/cdk';
+import cdk = require('@aws-cdk/core');
+import { ConstructNode } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import { IStage } from '../lib/action';
 import { Artifact } from '../lib/artifact';
@@ -60,7 +60,7 @@ export = {
       const pipeline = new Pipeline(stack, 'Pipeline');
 
       pipeline.addStage({
-        name: 'FirstStage',
+        stageName: 'FirstStage',
         actions: [
           new FakeSourceAction({
             actionName: 'FakeSource',
@@ -79,5 +79,5 @@ export = {
 function stageForTesting(): IStage {
   const stack = new cdk.Stack();
   const pipeline = new Pipeline(stack, 'Pipeline');
-  return pipeline.addStage({ name: 'stage' });
+  return pipeline.addStage({ stageName: 'stage' });
 }

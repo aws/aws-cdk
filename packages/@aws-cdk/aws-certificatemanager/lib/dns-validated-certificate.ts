@@ -2,7 +2,7 @@ import cfn = require('@aws-cdk/aws-cloudformation');
 import iam = require('@aws-cdk/aws-iam');
 import lambda = require('@aws-cdk/aws-lambda');
 import route53 = require('@aws-cdk/aws-route53');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import path = require('path');
 import { CertificateProps, ICertificate } from './certificate';
 
@@ -50,24 +50,21 @@ export class DnsValidatedCertificate extends cdk.Resource implements ICertificat
         const requestorFunction = new lambda.Function(this, 'CertificateRequestorFunction', {
             code: lambda.Code.asset(path.resolve(__dirname, '..', 'lambda-packages', 'dns_validated_certificate_handler', 'lib')),
             handler: 'index.certificateRequestHandler',
-            runtime: lambda.Runtime.Nodejs810,
-            timeout: 15 * 60 // 15 minutes
+            runtime: lambda.Runtime.NODEJS_8_10,
+            timeout: cdk.Duration.minutes(15)
         });
-        requestorFunction.addToRolePolicy(
-            new iam.PolicyStatement()
-                .addActions('acm:RequestCertificate', 'acm:DescribeCertificate', 'acm:DeleteCertificate')
-                .addResource('*')
-        );
-        requestorFunction.addToRolePolicy(
-            new iam.PolicyStatement()
-                .addActions('route53:GetChange')
-                .addResource('*')
-        );
-        requestorFunction.addToRolePolicy(
-            new iam.PolicyStatement()
-                .addActions('route53:changeResourceRecordSets')
-                .addResource(`arn:aws:route53:::hostedzone/${this.hostedZoneId}`)
-        );
+        requestorFunction.addToRolePolicy(new iam.PolicyStatement({
+            actions: ['acm:RequestCertificate', 'acm:DescribeCertificate', 'acm:DeleteCertificate'],
+            resources: ['*'],
+        }));
+        requestorFunction.addToRolePolicy(new iam.PolicyStatement({
+            actions: ['route53:GetChange'],
+            resources: ['*'],
+        }));
+        requestorFunction.addToRolePolicy(new iam.PolicyStatement({
+            actions: ['route53:changeResourceRecordSets'],
+            resources: [`arn:aws:route53:::hostedzone/${this.hostedZoneId}`],
+        }));
 
         const certificate = new cfn.CustomResource(this, 'CertificateRequestorResource', {
             provider: cfn.CustomResourceProvider.lambda(requestorFunction),

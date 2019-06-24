@@ -55,4 +55,6 @@ echo "==========================================================================
 echo "building..."
 time lerna run $bail --stream build+test || fail
 
+/bin/bash scripts/check-api-compatibility.sh
+
 touch $BUILD_INDICATOR

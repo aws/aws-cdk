@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/aws-cloudformation",
-  "version": "0.34.0",
+  "version": "0.35.0",
   "description": "CDK Constructs for AWS CloudFormation",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -63,24 +63,25 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "^0.34.0",
-    "@aws-cdk/aws-events": "^0.34.0",
-    "@types/aws-lambda": "^8.10.26",
+    "@aws-cdk/assert": "^0.35.0",
+    "@aws-cdk/aws-events": "^0.35.0",
+    "@aws-cdk/aws-ssm": "^0.35.0",
+    "@types/aws-lambda": "^8.10.27",
     "@types/nock": "^10.0.3",
-    "@types/sinon": "^7.0.12",
+    "@types/sinon": "^7.0.13",
     "aws-sdk-mock": "^4.4.0",
-    "cdk-build-tools": "^0.34.0",
-    "cdk-integ-tools": "^0.34.0",
-    "cfn2ts": "^0.34.0",
+    "cdk-build-tools": "^0.35.0",
+    "cdk-integ-tools": "^0.35.0",
+    "cfn2ts": "^0.35.0",
     "nock": "^10.0.6",
-    "pkglint": "^0.34.0",
+    "pkglint": "^0.35.0",
     "sinon": "^7.3.2"
   },
   "dependencies": {
-    "@aws-cdk/aws-iam": "^0.34.0",
-    "@aws-cdk/aws-lambda": "^0.34.0",
-    "@aws-cdk/aws-sns": "^0.34.0",
-    "@aws-cdk/cdk": "^0.34.0",
+    "@aws-cdk/aws-iam": "^0.35.0",
+    "@aws-cdk/aws-lambda": "^0.35.0",
+    "@aws-cdk/aws-sns": "^0.35.0",
+    "@aws-cdk/core": "^0.35.0",
     "aws-sdk": "^2.409.0"
   },
   "bundledDependencies": [
@@ -88,10 +89,10 @@
   ],
   "homepage": "https://github.com/awslabs/aws-cdk",
   "peerDependencies": {
-    "@aws-cdk/aws-iam": "^0.34.0",
-    "@aws-cdk/aws-lambda": "^0.34.0",
-    "@aws-cdk/aws-sns": "^0.34.0",
-    "@aws-cdk/cdk": "^0.34.0"
+    "@aws-cdk/aws-iam": "^0.35.0",
+    "@aws-cdk/aws-lambda": "^0.35.0",
+    "@aws-cdk/aws-sns": "^0.35.0",
+    "@aws-cdk/core": "^0.35.0"
   },
   "engines": {
     "node": ">= 8.10.0"
@@ -100,7 +101,8 @@
     "exclude": [
       "construct-ctor:@aws-cdk/aws-cloudformation.PipelineCloudFormationAction.<initializer>",
       "construct-ctor:@aws-cdk/aws-cloudformation.PipelineCloudFormationDeployAction.<initializer>",
-      "construct-ctor-props-optional:@aws-cdk/aws-cloudformation.AwsCustomResource"
+      "construct-ctor-props-optional:@aws-cdk/aws-cloudformation.AwsCustomResource",
+      "props-physical-name:@aws-cdk/aws-cloudformation.CustomResourceProps"
     ]
   },
   "stability": "experimental"

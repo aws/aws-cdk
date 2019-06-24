@@ -1,5 +1,5 @@
 import { expect } from '@aws-cdk/assert';
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import { Test } from 'nodeunit';
 import ssm = require('../lib');
 
@@ -9,7 +9,7 @@ export = {
     const stack = new cdk.Stack();
 
     // WHEN
-    const ref = new ssm.ParameterStoreString(stack, 'Ref', {
+    const ref = ssm.StringParameter.fromStringParameterAttributes(stack, 'Ref', {
       parameterName: '/some/key',
       version: 123
     });
@@ -25,21 +25,21 @@ export = {
     const stack = new cdk.Stack();
 
     // WHEN
-    const ref = new ssm.ParameterStoreString(stack, 'Ref', {
+    const ref = ssm.StringParameter.fromStringParameterAttributes(stack, 'Ref', {
       parameterName: '/some/key',
     });
 
     // THEN
     expect(stack).toMatch({
       Parameters: {
-        RefParameter407AF5C8: {
+        RefParameter: {
           Type: "AWS::SSM::Parameter::Value<String>",
           Default: "/some/key"
         }
       }
     });
 
-    test.deepEqual(stack.resolve(ref.stringValue), { Ref: 'RefParameter407AF5C8' });
+    test.deepEqual(stack.resolve(ref.stringValue), { Ref: 'RefParameter' });
 
     test.done();
   },
@@ -49,10 +49,10 @@ export = {
     const stack = new cdk.Stack();
 
     // WHEN
-    const ref = new ssm.ParameterStoreSecureString({
+    const ref = ssm.StringParameter.fromSecureStringParameterAttributes(stack, 'Ref', {
       parameterName: '/some/key',
       version: 123
-    });
+    }).stringValue;
 
     // THEN
     test.equal(stack.resolve(ref), '{{resolve:ssm-secure:/some/key:123}}');
@@ -66,10 +66,10 @@ export = {
 
     // WHEN
     test.throws(() => {
-      new ssm.ParameterStoreString(stack, 'Ref', {
+      ssm.StringParameter.fromStringParameterAttributes(stack, 'Ref', {
         parameterName: '',
       });
-    }, /parameterName cannot be empty/);
+    }, /parameterName cannot be an empty string/);
 
     test.done();
   },

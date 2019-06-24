@@ -1,6 +1,6 @@
 import ec2 = require('@aws-cdk/aws-ec2');
-import cdk = require('@aws-cdk/cdk');
-import { Construct, Resource } from '@aws-cdk/cdk';
+import cdk = require('@aws-cdk/core');
+import { Construct, Resource } from '@aws-cdk/core';
 import { BaseService, BaseServiceProps, IService } from '../base/base-service';
 import { TaskDefinition } from '../base/task-definition';
 
@@ -78,7 +78,7 @@ export class FargateService extends BaseService implements IFargateService {
       taskDefinition: props.taskDefinition.taskDefinitionArn,
       launchType: 'FARGATE',
       platformVersion: props.platformVersion,
-    }, props.cluster.clusterName, props.taskDefinition);
+    }, props.taskDefinition);
 
     this.configureAwsVpcNetworking(props.cluster.vpc, props.assignPublicIp, props.vpcSubnets, props.securityGroup);
 
@@ -97,33 +97,33 @@ export enum FargatePlatformVersion {
   /**
    * The latest, recommended platform version
    */
-  Latest = 'LATEST',
+  LATEST = 'LATEST',
 
   /**
    * Version 1.3.0
    *
    * Supports secrets, task recycling.
    */
-  Version1_3 = '1.3.0',
+  VERSION1_3 = '1.3.0',
 
   /**
    * Version 1.2.0
    *
    * Supports private registries.
    */
-  Version1_2 = '1.2.0',
+  VERSION1_2 = '1.2.0',
 
   /**
    * Version 1.1.0
    *
    * Supports task metadata, health checks, service discovery.
    */
-  Version1_1 = '1.1.0',
+  VERSION1_1 = '1.1.0',
 
   /**
    * Initial release
    *
    * Based on Amazon Linux 2017.09.
    */
-  Version1_0 = '1.0.0',
+  VERSION1_0 = '1.0.0',
 }

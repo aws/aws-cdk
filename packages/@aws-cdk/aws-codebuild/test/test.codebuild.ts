@@ -3,9 +3,11 @@ import codecommit = require('@aws-cdk/aws-codecommit');
 import ec2 = require('@aws-cdk/aws-ec2');
 import kms = require('@aws-cdk/aws-kms');
 import s3 = require('@aws-cdk/aws-s3');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import { Test } from 'nodeunit';
 import codebuild = require('../lib');
+import { CodePipelineSource } from '../lib/codepipeline-source';
+import { NoSource } from '../lib/no-source';
 
 // tslint:disable:object-literal-key-quotes
 
@@ -14,10 +16,7 @@ export = {
     'with CodePipeline source'(test: Test) {
       const stack = new cdk.Stack();
 
-      const source = new codebuild.CodePipelineSource();
-      new codebuild.Project(stack, 'MyProject', {
-        source
-      });
+      new codebuild.PipelineProject(stack, 'MyProject');
 
       expect(stack).toMatch({
         "Resources": {
@@ -142,9 +141,11 @@ export = {
     'with CodeCommit source'(test: Test) {
       const stack = new cdk.Stack();
 
-      const repo = new codecommit.Repository(stack, 'MyRepo', { repositoryName: 'hello-cdk' });
+      const repo = new codecommit.Repository(stack, 'MyRepo', {
+        repositoryName: 'hello-cdk',
+      });
 
-      const source = new codebuild.CodeCommitSource({ repository: repo, cloneDepth: 2 });
+      const source = codebuild.Source.codeCommit({ repository: repo, cloneDepth: 2 });
 
       new codebuild.Project(stack, 'MyProject', {
         source
@@ -298,7 +299,7 @@ export = {
       const bucket = new s3.Bucket(stack, 'MyBucket');
 
       new codebuild.Project(stack, 'MyProject', {
-        source: new codebuild.S3BucketSource({
+        source: codebuild.Source.s3({
           bucket,
           path: 'path/to/source.zip',
         }),
@@ -475,7 +476,7 @@ export = {
       const stack = new cdk.Stack();
 
       new codebuild.Project(stack, 'Project', {
-        source: new codebuild.GitHubSource({
+        source: codebuild.Source.gitHub({
           owner: 'testowner',
           repo: 'testrepo',
           cloneDepth: 3,
@@ -520,7 +521,7 @@ export = {
 
       const pushFilterGroup = codebuild.FilterGroup.inEventOf(codebuild.EventAction.PUSH);
       new codebuild.Project(stack, 'MyProject', {
-        source: new codebuild.GitHubEnterpriseSource({
+        source: codebuild.Source.gitHubEnterprise({
           httpsCloneUrl: 'https://github.testcompany.com/testowner/testrepo',
           ignoreSslErrors: true,
           cloneDepth: 4,
@@ -570,7 +571,7 @@ export = {
       const stack = new cdk.Stack();
 
       new codebuild.Project(stack, 'Project', {
-        source: new codebuild.BitBucketSource({
+        source: codebuild.Source.bitBucket({
           owner: 'testowner',
           repo: 'testrepo',
           cloneDepth: 5,
@@ -629,13 +630,13 @@ export = {
       const bucket = new s3.Bucket(stack, 'MyBucket');
       const vpc = new ec2.Vpc(stack, 'MyVPC');
       const securityGroup = new ec2.SecurityGroup(stack, 'SecurityGroup1', {
-          groupName: 'Bob',
+          securityGroupName: 'Bob',
           vpc,
           allowAllOutbound: true,
           description: 'Example',
       });
-      new codebuild.Project(stack, 'MyProject', {
-        source: new codebuild.S3BucketSource({
+      const project = new codebuild.Project(stack, 'MyProject', {
+        source: codebuild.Source.s3({
           bucket,
           path: 'path/to/source.zip',
         }),
@@ -658,9 +659,6 @@ export = {
             },
             {
               "Ref": "MyVPCPrivateSubnet2SubnetA420D3F0"
-            },
-            {
-              "Ref": "MyVPCPrivateSubnet3SubnetE1B8B1B4"
             }
           ],
           "VpcId": {
@@ -668,6 +666,9 @@ export = {
           }
         }
       }));
+
+      test.notEqual(project.connections, undefined);
+
       test.done();
     },
     'without VPC configuration but security group identified'(test: Test) {
@@ -676,7 +677,7 @@ export = {
       const bucket = new s3.Bucket(stack, 'MyBucket');
       const vpc = new ec2.Vpc(stack, 'MyVPC');
       const securityGroup = new ec2.SecurityGroup(stack, 'SecurityGroup1', {
-          groupName: 'Bob',
+          securityGroupName: 'Bob',
           vpc,
           allowAllOutbound: true,
           description: 'Example',
@@ -684,7 +685,7 @@ export = {
 
       test.throws(() =>
         new codebuild.Project(stack, 'MyProject', {
-          source: new codebuild.S3BucketSource({
+          source: codebuild.Source.s3({
             bucket,
             path: 'path/to/source.zip',
           }),
@@ -698,14 +699,14 @@ export = {
       const bucket = new s3.Bucket(stack, 'MyBucket');
       const vpc = new ec2.Vpc(stack, 'MyVPC');
       const securityGroup = new ec2.SecurityGroup(stack, 'SecurityGroup1', {
-          groupName: 'Bob',
+          securityGroupName: 'Bob',
           vpc,
           allowAllOutbound: true,
           description: 'Example',
       });
       test.throws(() =>
         new codebuild.Project(stack, 'MyProject', {
-          source: new codebuild.S3BucketSource({
+          source: codebuild.Source.s3({
             bucket,
             path: 'path/to/source.zip',
           }),
@@ -714,6 +715,17 @@ export = {
           securityGroups: [securityGroup]
         })
       , /Configure 'allowAllOutbound' directly on the supplied SecurityGroup/);
+      test.done();
+    },
+
+    'without passing a VPC cannot access the connections property'(test: Test) {
+      const stack = new cdk.Stack();
+
+      const project = new codebuild.PipelineProject(stack, 'MyProject');
+
+      test.throws(() => project.connections,
+        /Only VPC-associated Projects have security groups to manage. Supply the "vpc" parameter when creating the Project/);
+
       test.done();
     },
 
@@ -765,12 +777,12 @@ export = {
       buildSpec: codebuild.BuildSpec.fromObject({
         version: '0.2',
       }),
-      artifacts: new codebuild.S3BucketBuildArtifacts({
+      artifacts: codebuild.Artifacts.s3({
         path: 'some/path',
         name: 'some_name',
         bucket,
       }),
-      timeout: 123,
+      timeout: cdk.Duration.minutes(123),
     });
 
     expect(stack).to(haveResourceLike('AWS::CodeBuild::Project', {
@@ -795,7 +807,10 @@ export = {
             version: '0.2',
           }),
           secondarySources: [
-            new codebuild.CodePipelineSource(),
+            codebuild.Source.s3({
+              bucket: new s3.Bucket(stack, 'MyBucket'),
+              path: 'path',
+            }),
           ],
         });
       }, /identifier/);
@@ -805,11 +820,9 @@ export = {
 
     'are not allowed for a Project with CodePipeline as Source'(test: Test) {
       const stack = new cdk.Stack();
-      const project = new codebuild.Project(stack, 'MyProject', {
-        source: new codebuild.CodePipelineSource(),
-      });
+      const project = new codebuild.PipelineProject(stack, 'MyProject');
 
-      project.addSecondarySource(new codebuild.S3BucketSource({
+      project.addSecondarySource(codebuild.Source.s3({
         bucket: new s3.Bucket(stack, 'MyBucket'),
         path: 'some/path',
         identifier: 'id',
@@ -826,13 +839,13 @@ export = {
       const stack = new cdk.Stack();
       const bucket = new s3.Bucket(stack, 'MyBucket');
       const project = new codebuild.Project(stack, 'MyProject', {
-        source: new codebuild.S3BucketSource({
+        source: codebuild.Source.s3({
           bucket,
           path: 'some/path',
         }),
       });
 
-      project.addSecondarySource(new codebuild.S3BucketSource({
+      project.addSecondarySource(codebuild.Source.s3({
         bucket,
         path: 'another/path',
         identifier: 'source1',
@@ -861,7 +874,7 @@ export = {
             version: '0.2',
           }),
           secondaryArtifacts: [
-            new codebuild.S3BucketBuildArtifacts({
+            codebuild.Artifacts.s3({
               bucket: new s3.Bucket(stack, 'MyBucket'),
               path: 'some/path',
               name: 'name',
@@ -875,11 +888,9 @@ export = {
 
     'are not allowed for a Project with CodePipeline as Source'(test: Test) {
       const stack = new cdk.Stack();
-      const project = new codebuild.Project(stack, 'MyProject', {
-        source: new codebuild.CodePipelineSource(),
-      });
+      const project = new codebuild.PipelineProject(stack, 'MyProject');
 
-      project.addSecondaryArtifact(new codebuild.S3BucketBuildArtifacts({
+      project.addSecondaryArtifact(codebuild.Artifacts.s3({
         bucket: new s3.Bucket(stack, 'MyBucket'),
         path: 'some/path',
         name: 'name',
@@ -897,13 +908,13 @@ export = {
       const stack = new cdk.Stack();
       const bucket = new s3.Bucket(stack, 'MyBucket');
       const project = new codebuild.Project(stack, 'MyProject', {
-        source: new codebuild.S3BucketSource({
+        source: codebuild.Source.s3({
           bucket,
           path: 'some/path',
         }),
       });
 
-      project.addSecondaryArtifact(new codebuild.S3BucketBuildArtifacts({
+      project.addSecondaryArtifact(codebuild.Artifacts.s3({
         bucket,
         path: 'another/path',
         name: 'name',
@@ -928,10 +939,7 @@ export = {
       'both source and artifacs are set to CodePipeline'(test: Test) {
         const stack = new cdk.Stack();
 
-        new codebuild.Project(stack, 'MyProject', {
-          source: new codebuild.CodePipelineSource(),
-          artifacts: new codebuild.CodePipelineBuildArtifacts()
-        });
+        new codebuild.PipelineProject(stack, 'MyProject');
 
         expect(stack).to(haveResource('AWS::CodeBuild::Project', {
           "Source": {
@@ -956,62 +964,16 @@ export = {
 
         test.done();
       },
-
-      'if source is set to CodePipeline, and artifacts are not set, they are defaulted to CodePipeline'(test: Test) {
-        const stack = new cdk.Stack();
-
-        new codebuild.Project(stack, 'MyProject', {
-          source: new codebuild.CodePipelineSource()
-        });
-
-        expect(stack).to(haveResource('AWS::CodeBuild::Project', {
-          "Source": {
-          "Type": "CODEPIPELINE"
-          },
-          "Artifacts": {
-          "Type": "CODEPIPELINE"
-          },
-          "ServiceRole": {
-          "Fn::GetAtt": [
-            "MyProjectRole9BBE5233",
-            "Arn"
-          ]
-          },
-          "Environment": {
-          "Type": "LINUX_CONTAINER",
-          "PrivilegedMode": false,
-          "Image": "aws/codebuild/standard:1.0",
-          "ComputeType": "BUILD_GENERAL1_SMALL"
-          }
-        }));
-
-        test.done();
-      },
-
-      'fails if one of source/artifacts is set to CodePipeline and the other isn\'t'(test: Test) {
-          const stack = new cdk.Stack();
-
-          test.throws(() => new codebuild.Project(stack, 'MyProject', {
-            source: new codebuild.CodePipelineSource(),
-            artifacts: new codebuild.NoBuildArtifacts()
-          }), /Both source and artifacts must be set to CodePipeline/);
-
-          test.throws(() => new codebuild.Project(stack, 'YourProject', {
-            source: new codebuild.CodeCommitSource({
-              repository: new codecommit.Repository(stack, 'MyRepo', { repositoryName: 'boo' })
-            }),
-            artifacts: new codebuild.CodePipelineBuildArtifacts()
-          }), /Both source and artifacts must be set to CodePipeline/);
-
-          test.done();
-      }
-    }
+    },
   },
 
   'events'(test: Test) {
     const stack = new cdk.Stack();
     const project = new codebuild.Project(stack, 'MyProject', {
-      source: new codebuild.CodePipelineSource()
+      source: codebuild.Source.s3({
+        bucket: new s3.Bucket(stack, 'MyBucket'),
+        path: 'path',
+      }),
     });
 
     project.onBuildFailed('OnBuildFailed', { target: { bind: () => ({ arn: 'ARN', id: 'ID' }) }});
@@ -1130,12 +1092,11 @@ export = {
   'environment variables can be overridden at the project level'(test: Test) {
     const stack = new cdk.Stack();
 
-    new codebuild.Project(stack, 'Project', {
-      source: new codebuild.CodePipelineSource(),
+    new codebuild.PipelineProject(stack, 'Project', {
       environment: {
         environmentVariables: {
           FOO: { value: '1234' },
-          BAR: { value: `111${cdk.Token.asString({ twotwotwo: '222' })}`, type: codebuild.BuildEnvironmentVariableType.ParameterStore }
+          BAR: { value: `111${cdk.Token.asString({ twotwotwo: '222' })}`, type: codebuild.BuildEnvironmentVariableType.PARAMETER_STORE }
         }
       },
       environmentVariables: {
@@ -1196,7 +1157,12 @@ export = {
   '.metricXxx() methods can be used to obtain Metrics for CodeBuild projects'(test: Test) {
     const stack = new cdk.Stack();
 
-    const project = new codebuild.Project(stack, 'MyBuildProject', { source: new codebuild.CodePipelineSource() });
+    const project = new codebuild.Project(stack, 'MyBuildProject', {
+      source: codebuild.Source.s3({
+        bucket: new s3.Bucket(stack, 'MyBucket'),
+        path: 'path',
+      }),
+    });
 
     const metricBuilds = project.metricBuilds();
     test.same(metricBuilds.dimensions!.ProjectName, project.projectName);
@@ -1219,12 +1185,15 @@ export = {
     const stack = new cdk.Stack();
     const invalidEnvironment: codebuild.BuildEnvironment = {
       buildImage: codebuild.WindowsBuildImage.WIN_SERVER_CORE_2016_BASE,
-      computeType: codebuild.ComputeType.Small,
+      computeType: codebuild.ComputeType.SMALL,
     };
 
     test.throws(() => {
       new codebuild.Project(stack, 'MyProject', {
-        source: new codebuild.CodePipelineSource(),
+        source: codebuild.Source.s3({
+          bucket: new s3.Bucket(stack, 'MyBucket'),
+          path: 'path',
+        }),
         environment: invalidEnvironment,
       });
     }, /Windows images do not support the Small ComputeType/);
@@ -1236,21 +1205,23 @@ export = {
     const stack = new cdk.Stack();
 
     interface BadgeValidationTestCase {
-      source: codebuild.BuildSource,
+      source: codebuild.Source,
       shouldPassValidation: boolean
     }
 
-    const repo = new codecommit.Repository(stack, 'MyRepo', { repositoryName: 'hello-cdk' });
+    const repo = new codecommit.Repository(stack, 'MyRepo', {
+      repositoryName: 'hello-cdk',
+    });
     const bucket = new s3.Bucket(stack, 'MyBucket');
 
     const cases: BadgeValidationTestCase[] = [
-      { source: new codebuild.NoSource(), shouldPassValidation: false },
-      { source: new codebuild.CodePipelineSource(), shouldPassValidation: false },
-      { source: new codebuild.CodeCommitSource({ repository: repo }), shouldPassValidation: false },
-      { source: new codebuild.S3BucketSource({ bucket, path: 'path/to/source.zip' }), shouldPassValidation: false },
-      { source: new codebuild.GitHubSource({ owner: 'awslabs', repo: 'aws-cdk' }), shouldPassValidation: true },
-      { source: new codebuild.GitHubEnterpriseSource({ httpsCloneUrl: 'url' }), shouldPassValidation: true },
-      { source: new codebuild.BitBucketSource({ owner: 'awslabs', repo: 'aws-cdk' }), shouldPassValidation: true }
+      { source: new NoSource(), shouldPassValidation: false },
+      { source: new CodePipelineSource(), shouldPassValidation: false },
+      { source: codebuild.Source.codeCommit({ repository: repo }), shouldPassValidation: false },
+      { source: codebuild.Source.s3({ bucket, path: 'path/to/source.zip' }), shouldPassValidation: false },
+      { source: codebuild.Source.gitHub({ owner: 'awslabs', repo: 'aws-cdk' }), shouldPassValidation: true },
+      { source: codebuild.Source.gitHubEnterprise({ httpsCloneUrl: 'url' }), shouldPassValidation: true },
+      { source: codebuild.Source.bitBucket({ owner: 'awslabs', repo: 'aws-cdk' }), shouldPassValidation: true }
     ];
 
     cases.forEach(testCase => {
@@ -1302,7 +1273,7 @@ export = {
 
       test.throws(() => {
         new codebuild.Project(stack, 'Project', {
-          source: new codebuild.BitBucketSource({
+          source: codebuild.Source.bitBucket({
             owner: 'owner',
             repo: 'repo',
             webhookFilters: [
@@ -1321,7 +1292,7 @@ export = {
 
       test.throws(() => {
         new codebuild.Project(stack, 'Project', {
-          source: new codebuild.BitBucketSource({
+          source: codebuild.Source.bitBucket({
             owner: 'owner',
             repo: 'repo',
             webhookFilters: [filterGroup],
