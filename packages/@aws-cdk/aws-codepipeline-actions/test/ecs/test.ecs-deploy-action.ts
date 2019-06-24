@@ -81,5 +81,6 @@ function anyEcsService(): ecs.FargateService {
   return new ecs.FargateService(stack, 'FargateService', {
     cluster,
     taskDefinition,
+    launchType: ecs.LaunchType.FARGATE,
   });
 }
