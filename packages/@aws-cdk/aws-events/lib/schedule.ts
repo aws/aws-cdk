@@ -57,26 +57,6 @@ export abstract class Schedule {
 }
 
 /**
- * What unit to interpret the rate in
- */
-export enum TimeUnit {
-  /**
-   * The rate is in minutes
-   */
-  MINUTE = 'minute',
-
-  /**
-   * The rate is in hours
-   */
-  HOUR = 'hour',
-
-  /**
-   * The rate is in days
-   */
-  DAY = 'day'
-}
-
-/**
  * Options to configure a cron expression
  *
  * All fields are strings so you can use complex expresions. Absence of

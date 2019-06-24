@@ -2,7 +2,8 @@ import cdk = require('@aws-cdk/core');
 import { Chain } from '../chain';
 import { Condition } from '../condition';
 import { IChainable, INextable } from '../types';
-import { State, StateType } from './state';
+import { StateType } from './private/state-type';
+import { State } from './state';
 
 /**
  * Properties for defining a Choice state

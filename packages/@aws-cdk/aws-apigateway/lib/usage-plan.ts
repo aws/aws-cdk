@@ -78,7 +78,7 @@ export interface ThrottlingPerMethod {
 /**
  * Type of Usage Plan Key. Currently the only supported type is 'ApiKey'
  */
-export enum UsagePlanKeyType {
+const enum UsagePlanKeyType {
   API_KEY = 'API_KEY'
 }
 

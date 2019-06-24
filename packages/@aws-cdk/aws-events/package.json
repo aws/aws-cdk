@@ -83,7 +83,8 @@
   },
   "awslint": {
     "exclude": [
-      "from-method:@aws-cdk/aws-events.Rule"
+      "from-method:@aws-cdk/aws-events.Rule",
+      "no-unused-type:@aws-cdk/aws-events.OnEventOptions"
     ]
   },
   "stability": "experimental"

@@ -5,7 +5,8 @@ import { FieldUtils } from '../fields';
 import { StateGraph } from '../state-graph';
 import { IStepFunctionsTask, StepFunctionsTaskConfig } from '../step-functions-task';
 import { CatchProps, IChainable, INextable, RetryProps } from '../types';
-import { renderJsonPath, State, StateType } from './state';
+import { StateType } from './private/state-type';
+import { renderJsonPath, State } from './state';
 
 /**
  * Props that are common to all tasks

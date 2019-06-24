@@ -7,18 +7,6 @@ import { RestApi } from './restapi';
  * API keys are alphanumeric string values that you distribute to
  * app developer customers to grant access to your API
  */
-export interface ApiKeyAttributes {
-  /**
-   * The API key ID.
-   * @attribute
-   */
-  readonly keyId: string;
-}
-
-/**
- * API keys are alphanumeric string values that you distribute to
- * app developer customers to grant access to your API
- */
 export interface IApiKey extends IResourceBase {
   /**
    * The API key ID.

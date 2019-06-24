@@ -439,7 +439,7 @@ export interface CloudMapOptions {
 /**
  * Service Registry for ECS service
  */
-export interface ServiceRegistry {
+interface ServiceRegistry {
   /**
    * Arn of the Cloud Map Service that will register a Cloud Map Instance for your ECS Service
    */

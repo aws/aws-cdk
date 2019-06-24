@@ -33,32 +33,9 @@ export interface IRule extends IResource {
 }
 
 /**
- * Reference to an existing rule.
- */
-export interface RuleAttributes {
-  /**
-   * The rule name.
-   */
-  readonly configRuleName: string;
-}
-
-/**
  * A new or imported rule.
  */
 abstract class RuleBase extends Resource implements IRule {
-  /**
-   * Imports an existing rule.
-   *
-   * @param configRuleName the name of the rule
-   */
-  public static fromConfigRuleName(scope: Construct, id: string, configRuleName: string): IRule {
-    class Import extends RuleBase {
-      public readonly configRuleName = configRuleName;
-    }
-
-    return new Import(scope, id);
-  }
-
   public abstract readonly configRuleName: string;
 
   /**
@@ -104,6 +81,19 @@ abstract class RuleBase extends Resource implements IRule {
  * A new managed or custom rule.
  */
 abstract class RuleNew extends RuleBase {
+  /**
+   * Imports an existing rule.
+   *
+   * @param configRuleName the name of the rule
+   */
+  public static fromConfigRuleName(scope: Construct, id: string, configRuleName: string): IRule {
+    class Import extends RuleBase {
+      public readonly configRuleName = configRuleName;
+    }
+
+    return new Import(scope, id);
+  }
+
   /**
    * The arn of the rule.
    */
