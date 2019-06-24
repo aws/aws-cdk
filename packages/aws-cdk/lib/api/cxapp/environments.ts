@@ -9,8 +9,10 @@ export async function globEnvironmentsFromStacks(appStacks: AppStacks, environme
 
   const stacks = await appStacks.listStacks();
 
-  const availableEnvironments = distinct(stacks.map(stack => stack.environment)
-                            .filter(env => env !== undefined) as cxapi.Environment[]);
+  const availableEnvironments = distinct(stacks
+    .map(stack => stack.environment)
+    .filter(env => env && env.account !== cxapi.UNKNOWN_ACCOUNT && env.region !== cxapi.UNKNOWN_REGION) as cxapi.Environment[]);
+
   const environments = availableEnvironments.filter(env => environmentGlobs.find(glob => minimatch(env!.name, glob)));
   if (environments.length === 0) {
     const globs = JSON.stringify(environmentGlobs);
