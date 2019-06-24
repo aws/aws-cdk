@@ -346,6 +346,49 @@ export = {
       ]
     }));
 
+    expect(stack).to(haveResourceLike('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: 'secretsmanager:GetSecretValue',
+            Effect: 'Allow',
+            Resource: {
+              Ref: 'SecretA720EF05'
+            }
+          },
+          {
+            Action: [
+              'ssm:DescribeParameters',
+              'ssm:GetParameter',
+              'ssm:GetParameterHistory'
+            ],
+            Effect: 'Allow',
+            Resource: {
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  {
+                    Ref: 'AWS::Partition'
+                  },
+                  ':ssm:',
+                  {
+                    Ref: 'AWS::Region'
+                  },
+                  ':',
+                  {
+                    Ref: 'AWS::AccountId'
+                  },
+                  ':parameter/name'
+                ]
+              ]
+            }
+          }
+        ],
+        Version: '2012-10-17'
+      }
+    }));
+
     test.done();
 
   },

@@ -9,19 +9,23 @@ import { LinuxParameters } from './linux-parameters';
 import { LogDriver, LogDriverConfig } from './log-drivers/log-driver';
 
 /**
- * Environment variable value type.
+ * Propertiers for an EnvironmentValue
  */
-export enum EnvironmentValueType {
+export interface EnvironmentValueProps {
   /**
    * A string in clear text.
    */
-  STRING = 'string',
+  readonly value?: string;
 
   /**
-   * The full ARN of the AWS Secrets Manager secret or the full ARN of the
-   * parameter in the AWS Systems Manager Parameter Store.
+   * A SSM parameter that will be retrieved at container startup.
    */
-  SECRET = 'secret',
+  readonly parameter?: ssm.IParameter;
+
+  /**
+   * An AWS Secrets Manager secret that will be retrieved at container startup.
+   */
+  readonly secret?: secretsmanager.ISecret
 }
 
 /**
@@ -32,7 +36,7 @@ export class EnvironmentValue {
    * Creates a environment variable value from a string.
    */
   public static fromString(value: string) {
-    return new EnvironmentValue(value, EnvironmentValueType.STRING);
+    return new EnvironmentValue({ value });
   }
 
   /**
@@ -40,7 +44,7 @@ export class EnvironmentValue {
    * Systems Manager Parameter Store.
    */
   public static fromSsmParameter(parameter: ssm.IParameter) {
-    return new EnvironmentValue(parameter.parameterArn, EnvironmentValueType.SECRET);
+    return new EnvironmentValue({ parameter });
   }
 
   /**
@@ -48,10 +52,10 @@ export class EnvironmentValue {
    * Manager.
    */
   public static fromSecretsManager(secret: secretsmanager.ISecret) {
-    return new EnvironmentValue(secret.secretArn, EnvironmentValueType.SECRET);
+    return new EnvironmentValue({ secret });
   }
 
-  constructor(public readonly value: string, public readonly type: EnvironmentValueType) {}
+  constructor(public readonly props: EnvironmentValueProps) {}
 }
 
 export interface ContainerDefinitionOptions {
@@ -437,15 +441,18 @@ export class ContainerDefinition extends cdk.Construct {
   /**
    * Render this container definition to a CloudFormation object
    */
-  public renderContainerDefinition(): CfnTaskDefinition.ContainerDefinitionProperty {
+  public renderContainerDefinition(task: TaskDefinition): CfnTaskDefinition.ContainerDefinitionProperty {
     const environment = [];
     const secrets = [];
     for (const [k, v] of Object.entries(this.props.environment || {})) {
-      if (v.type === EnvironmentValueType.STRING) {
-        environment.push({ name: k, value: v.value });
-      }
-      if (v.type === EnvironmentValueType.SECRET) {
-        secrets.push({ name: k, valueFrom: v.value });
+      if (v.props.value) {
+        environment.push({ name: k, value: v.props.value });
+      } else if (v.props.parameter) {
+        secrets.push({ name: k, valueFrom: v.props.parameter.parameterArn });
+        v.props.parameter.grantRead(task.obtainExecutionRole());
+      } else if (v.props.secret) {
+        secrets.push({ name: k, valueFrom: v.props.secret.secretArn });
+        v.props.secret.grantRead(task.obtainExecutionRole());
       }
     }
 
