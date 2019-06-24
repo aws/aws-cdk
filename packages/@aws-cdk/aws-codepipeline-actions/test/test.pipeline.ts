@@ -1,12 +1,13 @@
-import { expect, haveResource, haveResourceLike, not, SynthUtils } from '@aws-cdk/assert';
+import { countResources, expect, haveResource, haveResourceLike, not, SynthUtils } from '@aws-cdk/assert';
 import codebuild = require('@aws-cdk/aws-codebuild');
 import codecommit = require('@aws-cdk/aws-codecommit');
 import codepipeline = require('@aws-cdk/aws-codepipeline');
 import targets = require('@aws-cdk/aws-events-targets');
+import iam = require('@aws-cdk/aws-iam');
 import lambda = require('@aws-cdk/aws-lambda');
 import s3 = require('@aws-cdk/aws-s3');
 import sns = require('@aws-cdk/aws-sns');
-import { App, CfnParameter, SecretValue, Stack } from '@aws-cdk/cdk';
+import { App, Aws, CfnParameter, ConstructNode, SecretValue, Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import cpactions = require('../lib');
 
@@ -28,15 +29,13 @@ export = {
       repository,
     });
     pipeline.addStage({
-      name: 'source',
+      stageName: 'source',
       actions: [source],
     });
 
-    const project = new codebuild.Project(stack, 'MyBuildProject', {
-       source: new codebuild.CodePipelineSource()
-    });
+    const project = new codebuild.PipelineProject(stack, 'MyBuildProject');
     pipeline.addStage({
-      name: 'build',
+      stageName: 'build',
       actions: [
         new cpactions.CodeBuildAction({
           actionName: 'build',
@@ -47,7 +46,7 @@ export = {
     });
 
     test.notDeepEqual(SynthUtils.toCloudFormation(stack), {});
-    test.deepEqual([], pipeline.node.validateTree());
+    test.deepEqual([], ConstructNode.validate(pipeline.node));
     test.done();
   },
 
@@ -55,7 +54,7 @@ export = {
     const stack = new Stack(undefined, 'StackName');
 
     new codepipeline.Pipeline(stack, 'Pipeline', {
-      pipelineName: stack.stackName,
+      pipelineName: Aws.STACK_NAME,
     });
 
     expect(stack, true).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
@@ -75,23 +74,23 @@ export = {
     const p = new codepipeline.Pipeline(stack, 'P');
 
     p.addStage({
-      name: 'Source',
+      stageName: 'Source',
       actions: [
         new cpactions.GitHubSourceAction({
           actionName: 'GH',
           runOrder: 8,
           output: new codepipeline.Artifact('A'),
           branch: 'branch',
-          oauthToken: SecretValue.plainText(secret.stringValue),
+          oauthToken: SecretValue.plainText(secret.valueAsString),
           owner: 'foo',
           repo: 'bar',
-          trigger: cpactions.GitHubTrigger.Poll
+          trigger: cpactions.GitHubTrigger.POLL
         }),
       ],
     });
 
     p.addStage({
-      name: 'Two',
+      stageName: 'Two',
       actions: [
         new cpactions.ManualApprovalAction({ actionName: 'Boo' }),
       ],
@@ -134,23 +133,23 @@ export = {
     const p = new codepipeline.Pipeline(stack, 'P');
 
     p.addStage({
-      name: 'Source',
+      stageName: 'Source',
       actions: [
         new cpactions.GitHubSourceAction({
           actionName: 'GH',
           runOrder: 8,
           output: new codepipeline.Artifact('A'),
           branch: 'branch',
-          oauthToken: SecretValue.plainText(secret.stringValue),
+          oauthToken: SecretValue.plainText(secret.valueAsString),
           owner: 'foo',
           repo: 'bar',
-          trigger: cpactions.GitHubTrigger.None
+          trigger: cpactions.GitHubTrigger.NONE
         }),
       ],
     });
 
     p.addStage({
-      name: 'Two',
+      stageName: 'Two',
       actions: [
         new cpactions.ManualApprovalAction({ actionName: 'Boo' }),
       ],
@@ -193,14 +192,14 @@ export = {
     const p = new codepipeline.Pipeline(stack, 'P');
 
     p.addStage({
-      name: 'Source',
+      stageName: 'Source',
       actions: [
         new cpactions.GitHubSourceAction({
           actionName: 'GH',
           runOrder: 8,
           output: new codepipeline.Artifact('A'),
           branch: 'branch',
-          oauthToken: SecretValue.plainText(secret.stringValue),
+          oauthToken: SecretValue.plainText(secret.valueAsString),
           owner: 'foo',
           repo: 'bar'
         }),
@@ -208,7 +207,7 @@ export = {
     });
 
     p.addStage({
-      name: 'Two',
+      stageName: 'Two',
       actions: [
         new cpactions.ManualApprovalAction({ actionName: 'Boo' }),
       ],
@@ -280,7 +279,7 @@ export = {
       ]
     }));
 
-    test.deepEqual([], p.node.validateTree());
+    test.deepEqual([], ConstructNode.validate(p.node));
     test.done();
   },
 
@@ -292,7 +291,7 @@ export = {
     const pipeline = new codepipeline.Pipeline(stack, 'PL');
 
     pipeline.addStage({
-      name: 'S1',
+      stageName: 'S1',
       actions: [
         new cpactions.S3SourceAction({
           actionName: 'A1',
@@ -304,7 +303,7 @@ export = {
     });
 
     pipeline.addStage({
-      name: 'S2',
+      stageName: 'S2',
       actions: [
         new cpactions.ManualApprovalAction({ actionName: 'A2' }),
       ],
@@ -371,7 +370,7 @@ export = {
       ]
     }));
 
-    test.deepEqual([], pipeline.node.validateTree());
+    test.deepEqual([], ConstructNode.validate(pipeline.node));
     test.done();
   },
 
@@ -433,7 +432,7 @@ export = {
     const lambdaFun = new lambda.Function(stack, 'Function', {
       code: new lambda.InlineCode('bla'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NodeJS810,
+      runtime: lambda.Runtime.NODEJS_8_10,
     });
 
     const pipeline = new codepipeline.Pipeline(stack, 'Pipeline');
@@ -454,7 +453,7 @@ export = {
       bucket,
     });
     pipeline.addStage({
-      name: 'Source',
+      stageName: 'Source',
       actions: [
         source1,
         source2,
@@ -475,7 +474,7 @@ export = {
       ],
     });
     pipeline.addStage({
-      name: 'Stage',
+      stageName: 'Stage',
       actions: [lambdaAction],
     });
 
@@ -555,35 +554,6 @@ export = {
     test.done();
   },
 
-  'CodeCommit Action': {
-    'does not poll for changes by default'(test: Test) {
-      const stack = new Stack();
-      const sourceAction = new cpactions.CodeCommitSourceAction({
-        actionName: 'stage',
-        output: new codepipeline.Artifact('SomeArtifact'),
-        repository: repositoryForTesting(stack),
-      });
-
-      test.equal(sourceAction.configuration.PollForSourceChanges, false);
-
-      test.done();
-    },
-
-    'does not poll for source changes when explicitly set to false'(test: Test) {
-      const stack = new Stack();
-      const sourceAction = new cpactions.CodeCommitSourceAction({
-        actionName: 'stage',
-        output: new codepipeline.Artifact('SomeArtifact'),
-        repository: repositoryForTesting(stack),
-        pollForSourceChanges: false,
-      });
-
-      test.equal(sourceAction.configuration.PollForSourceChanges, false);
-
-      test.done();
-    },
-  },
-
   'cross-region Pipeline': {
     'generates the required Action & ArtifactStores properties in the template'(test: Test) {
       const pipelineRegion = 'us-west-2';
@@ -597,27 +567,27 @@ export = {
           account: pipelineAccount,
         },
       });
-      const bucket = new s3.Bucket(stack, 'MyBucket');
       const pipeline = new codepipeline.Pipeline(stack, 'MyPipeline', {
         crossRegionReplicationBuckets: {
-          'us-west-1': 'sfo-replication-bucket',
+          'us-west-1': s3.Bucket.fromBucketName(stack, 'ImportedBucket', 'sfo-replication-bucket'),
         },
       });
 
+      const sourceBucket = new s3.Bucket(stack, 'MyBucket');
       const sourceOutput = new codepipeline.Artifact('SourceOutput');
       const sourceAction = new cpactions.S3SourceAction({
         actionName: 'BucketSource',
         bucketKey: '/some/key',
         output: sourceOutput,
-        bucket,
+        bucket: sourceBucket,
       });
       pipeline.addStage({
-        name: 'Stage1',
+        stageName: 'Stage1',
         actions: [sourceAction],
       });
 
       pipeline.addStage({
-        name: 'Stage2',
+        stageName: 'Stage2',
         actions: [
           new cpactions.CloudFormationCreateReplaceChangeSetAction({
             actionName: 'Action1',
@@ -649,19 +619,25 @@ export = {
             "Region": "us-east-1",
             "ArtifactStore": {
               "Type": "S3",
+              "Location": "cdk-cross-region-codepipeline-replication-bucket-685c6feea5fb",
             },
           },
           {
             "Region": "us-west-1",
             "ArtifactStore": {
-              "Location": "sfo-replication-bucket",
               "Type": "S3",
+              "Location": "sfo-replication-bucket",
             },
           },
           {
             "Region": "us-west-2",
             "ArtifactStore": {
               "Type": "S3",
+              "EncryptionKey": {
+                "Type": "KMS",
+                "Id": {
+                },
+              },
             },
           },
         ],
@@ -686,18 +662,237 @@ export = {
               },
             ],
           },
-        ]
+        ],
       }));
 
-      test.equal(pipeline.crossRegionScaffolding[pipelineRegion], undefined);
-      test.equal(pipeline.crossRegionScaffolding['us-west-1'], undefined);
+      test.equal(pipeline.crossRegionSupport[pipelineRegion], undefined);
+      test.equal(pipeline.crossRegionSupport['us-west-1'], undefined);
 
-      const usEast1ScaffoldStack = pipeline.crossRegionScaffolding['us-east-1'];
-      test.notEqual(usEast1ScaffoldStack, undefined);
-      test.equal(usEast1ScaffoldStack.env.region, 'us-east-1');
-      test.equal(usEast1ScaffoldStack.env.account, pipelineAccount);
-      test.ok(usEast1ScaffoldStack.node.id.indexOf('us-east-1') !== -1,
-        `expected '${usEast1ScaffoldStack.node.id}' to contain 'us-east-1'`);
+      const usEast1Support = pipeline.crossRegionSupport['us-east-1'];
+      test.notEqual(usEast1Support, undefined);
+      test.equal(usEast1Support.stack.region, 'us-east-1');
+      test.equal(usEast1Support.stack.account, pipelineAccount);
+      test.ok(usEast1Support.stack.node.id.indexOf('us-east-1') !== -1,
+        `expected '${usEast1Support.stack.node.id}' to contain 'us-east-1'`);
+
+      test.done();
+    },
+
+    'allows specifying only one of artifactBucket and crossRegionReplicationBuckets'(test: Test) {
+      const stack = new Stack();
+
+      test.throws(() => {
+        new codepipeline.Pipeline(stack, 'Pipeline', {
+          artifactBucket: new s3.Bucket(stack, 'Bucket'),
+          crossRegionReplicationBuckets: {
+            // even an empty map should trigger this validation...
+          },
+        });
+      }, /Only one of artifactBucket and crossRegionReplicationBuckets can be specified!/);
+      test.done();
+    },
+
+    'does not create a new artifact Bucket if one was provided in the cross-region Buckets for the Pipeline region'(test: Test) {
+      const pipelineRegion = 'us-west-2';
+
+      const stack = new Stack(undefined, undefined, {
+        env: {
+          region: pipelineRegion,
+        },
+      });
+      const sourceOutput = new codepipeline.Artifact();
+      new codepipeline.Pipeline(stack, 'Pipeline', {
+        crossRegionReplicationBuckets: {
+          [pipelineRegion]: new s3.Bucket(stack, 'Bucket', {
+            bucketName: 'my-pipeline-bucket',
+          })
+        },
+        stages: [
+          {
+            stageName: 'Source',
+            actions: [
+              new cpactions.CodeCommitSourceAction({
+                actionName: 'Source',
+                output: sourceOutput,
+                repository: new codecommit.Repository(stack, 'Repo', { repositoryName: 'Repo' }),
+              }),
+            ],
+          },
+          {
+            stageName: 'Build',
+            actions: [
+              new cpactions.CodeBuildAction({
+                actionName: 'Build',
+                input: sourceOutput,
+                project: new codebuild.PipelineProject(stack, 'Project'),
+              }),
+            ],
+          },
+        ],
+      });
+
+      expect(stack).to(countResources('AWS::S3::Bucket', 1));
+
+      expect(stack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
+        "ArtifactStores": [
+          {
+            "Region": pipelineRegion,
+            "ArtifactStore": {
+              "Type": "S3",
+              "Location": {
+                "Ref": "Bucket83908E77",
+              },
+            },
+          },
+        ],
+      }));
+
+      test.done();
+    },
+  },
+
+  'cross-account Pipeline': {
+    'with a CodeBuild Project in a different account works correctly'(test: Test) {
+      const app = new App();
+
+      const buildAccount = '901234567890';
+      const buildStack = new Stack(app, 'BuildStack', {
+        env: { account: buildAccount },
+      });
+      const rolePhysicalName = 'ProjectRolePhysicalName';
+      const projectRole = new iam.Role(buildStack, 'ProjectRole', {
+        assumedBy: new iam.ServicePrincipal('codebuild.amazonaws.com'),
+        roleName: rolePhysicalName,
+      });
+      const projectPhysicalName = 'ProjectPhysicalName';
+      const project = new codebuild.PipelineProject(buildStack, 'Project', {
+        projectName: projectPhysicalName,
+        role: projectRole,
+      });
+
+      const pipelineStack = new Stack(app, 'PipelineStack', {
+        env: { account: '123456789012' },
+      });
+      const sourceBucket = new s3.Bucket(pipelineStack, 'ArtifactBucket', {
+        bucketName: 'source-bucket',
+        encryption: s3.BucketEncryption.KMS,
+      });
+      const sourceOutput = new codepipeline.Artifact();
+      new codepipeline.Pipeline(pipelineStack, 'Pipeline', {
+        stages: [
+          {
+            stageName: 'Source',
+            actions: [
+              new cpactions.S3SourceAction({
+                actionName: 'S3',
+                bucket: sourceBucket,
+                bucketKey: 'path/to/file.zip',
+                output: sourceOutput,
+              }),
+            ],
+          },
+          {
+            stageName: 'Build',
+            actions: [
+              new cpactions.CodeBuildAction({
+                actionName: 'CodeBuild',
+                project,
+                input: sourceOutput,
+                outputs: [new codepipeline.Artifact()],
+              }),
+            ],
+          },
+        ],
+      });
+
+      expect(pipelineStack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
+        "Stages": [
+          {
+            "Name": "Source",
+          },
+          {
+            "Name": "Build",
+            "Actions": [
+              {
+                "Name": "CodeBuild",
+                "Configuration": {
+                  "ProjectName": projectPhysicalName,
+                },
+                "RoleArn": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition",
+                      },
+                      `:iam::${buildAccount}:role/buildstackebuildactionrole166c75d145cdaa010350`,
+                    ],
+                  ],
+                },
+              },
+            ],
+          },
+        ],
+      }));
+
+      expect(buildStack).to(haveResourceLike('AWS::IAM::Policy', {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              // log permissions from the CodeBuild Project Construct...
+            },
+            {
+              "Action": [
+                "s3:GetObject*",
+                "s3:GetBucket*",
+                "s3:List*",
+                "s3:DeleteObject*",
+                "s3:PutObject*",
+                "s3:Abort*",
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition",
+                      },
+                      `:s3:::pipelinestackeartifactsbucket5409dc8418216ab8debe`,
+                    ],
+                  ],
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition",
+                      },
+                      `:s3:::pipelinestackeartifactsbucket5409dc8418216ab8debe/*`,
+                    ],
+                  ],
+                },
+              ],
+            },
+            {
+              "Action": [
+                "kms:Decrypt",
+                "kms:DescribeKey",
+                "kms:Encrypt",
+                "kms:ReEncrypt*",
+                "kms:GenerateDataKey*",
+              ],
+              "Effect": "Allow",
+              "Resource": "*",
+            },
+          ],
+        },
+      }));
 
       test.done();
     },
@@ -719,11 +914,5 @@ export = {
 
 function stageForTesting(stack: Stack): codepipeline.IStage {
   const pipeline = new codepipeline.Pipeline(stack, 'pipeline');
-  return pipeline.addStage({ name: 'stage' });
-}
-
-function repositoryForTesting(stack: Stack): codecommit.Repository {
-  return new codecommit.Repository(stack, 'Repository', {
-    repositoryName: 'Repository'
-  });
+  return pipeline.addStage({ stageName: 'stage' });
 }

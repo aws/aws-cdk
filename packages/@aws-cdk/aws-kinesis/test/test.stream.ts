@@ -1,7 +1,7 @@
 import { expect } from '@aws-cdk/assert';
 import iam = require('@aws-cdk/aws-iam');
 import kms = require('@aws-cdk/aws-kms');
-import { App, Stack } from '@aws-cdk/cdk';
+import { App, Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import { Stream, StreamEncryption } from '../lib';
 
@@ -107,7 +107,7 @@ export = {
     const stack = new Stack();
 
     new Stream(stack, 'MyStream', {
-      encryption: StreamEncryption.Kms
+      encryption: StreamEncryption.KMS
     });
 
     expect(stack).toMatch({
@@ -189,7 +189,7 @@ export = {
     });
 
     new Stream(stack, 'MyStream', {
-      encryption: StreamEncryption.Kms,
+      encryption: StreamEncryption.KMS,
       encryptionKey: explicitKey
     });
 
@@ -269,7 +269,7 @@ export = {
       "grantRead creates and attaches a policy with read only access to Stream and EncryptionKey"(test: Test) {
         const stack = new Stack();
         const stream = new Stream(stack, 'MyStream', {
-          encryption: StreamEncryption.Kms
+          encryption: StreamEncryption.KMS
         });
 
         const user = new iam.User(stack, "MyUser");
@@ -405,7 +405,7 @@ export = {
       "grantWrite creates and attaches a policy with write only access to Stream and EncryptionKey"(test: Test) {
         const stack = new Stack();
         const stream = new Stream(stack, 'MyStream', {
-          encryption: StreamEncryption.Kms
+          encryption: StreamEncryption.KMS
         });
 
         const user = new iam.User(stack, "MyUser");
@@ -549,7 +549,7 @@ export = {
       "grantReadWrite creates and attaches a policy with access to Stream and EncryptionKey"(test: Test) {
         const stack = new Stack();
         const stream = new Stream(stack, 'MyStream', {
-          encryption: StreamEncryption.Kms
+          encryption: StreamEncryption.KMS
         });
 
         const user = new iam.User(stack, "MyUser");
@@ -938,7 +938,7 @@ export = {
       const app = new App();
       const stackA = new Stack(app, 'stackA');
       const streamFromStackA = new Stream(stackA, 'MyStream', {
-        encryption: StreamEncryption.Kms
+        encryption: StreamEncryption.KMS
       });
 
       const stackB = new Stack(app, 'stackB');

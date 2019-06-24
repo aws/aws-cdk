@@ -1,4 +1,4 @@
-import { Construct, ISynthesisSession } from '@aws-cdk/cdk';
+import { Construct, ISynthesisSession } from '@aws-cdk/core';
 import cxapi = require('@aws-cdk/cx-api');
 import fs = require('fs');
 import path = require('path');
@@ -12,7 +12,7 @@ export interface StagingProps extends CopyOptions {
  * Stages a file or directory from a location on the file system into a staging
  * directory.
  *
- * This is controlled by the context key 'aws:cdk:asset-staging-dir' and enabled
+ * This is controlled by the context key 'aws:cdk:asset-staging' and enabled
  * by the CLI by default in order to ensure that when the CDK app exists, all
  * assets are available for deployment. Otherwise, if an app references assets
  * in temporary locations, those will not be available when it exists (see
@@ -57,7 +57,7 @@ export class Staging extends Construct {
     this.copyOptions = props;
     this.sourceHash = fingerprint(this.sourcePath, props);
 
-    const stagingDisabled = this.node.getContext(cxapi.DISABLE_ASSET_STAGING_CONTEXT);
+    const stagingDisabled = this.node.tryGetContext(cxapi.DISABLE_ASSET_STAGING_CONTEXT);
     if (stagingDisabled) {
       this.stagedPath = this.sourcePath;
     } else {

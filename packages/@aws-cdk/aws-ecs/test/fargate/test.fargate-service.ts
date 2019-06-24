@@ -2,10 +2,10 @@ import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
 import ec2 = require('@aws-cdk/aws-ec2');
 import elbv2 = require("@aws-cdk/aws-elasticloadbalancingv2");
 import cloudmap = require('@aws-cdk/aws-servicediscovery');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import { Test } from 'nodeunit';
 import ecs = require('../../lib');
-import { ContainerImage, NamespaceType } from '../../lib';
+import { ContainerImage } from '../../lib';
 
 export = {
   "When creating a Fargate Service": {
@@ -58,9 +58,6 @@ export = {
               {
                 Ref: "MyVpcPrivateSubnet2Subnet0040C983"
               },
-              {
-                Ref: "MyVpcPrivateSubnet3Subnet772D6AD7"
-              }
             ]
           }
         }
@@ -145,7 +142,7 @@ export = {
       new ecs.FargateService(stack, "FargateService", {
         cluster,
         taskDefinition,
-        minimumHealthyPercent: 0,
+        minHealthyPercent: 0,
       });
 
       // THEN
@@ -174,7 +171,7 @@ export = {
       new ecs.FargateService(stack, 'Svc', {
         cluster,
         taskDefinition,
-        healthCheckGracePeriodSeconds: 10
+        healthCheckGracePeriod: cdk.Duration.seconds(10)
       });
 
       // THEN
@@ -252,6 +249,12 @@ export = {
           },
           TargetValue: 1000
         }
+      }));
+
+      expect(stack).to(haveResource('AWS::ECS::Service', {
+        // if any load balancer is configured and healthCheckGracePeriodSeconds is not
+        // set, then it should default to 60 seconds.
+        HealthCheckGracePeriodSeconds: 60
       }));
 
       test.done();
@@ -341,7 +344,7 @@ export = {
         new ecs.FargateService(stack, 'Service', {
           cluster,
           taskDefinition,
-          serviceDiscoveryOptions: {
+          cloudMapOptions: {
             name: 'myApp',
           }
         });
@@ -364,13 +367,13 @@ export = {
       // WHEN
       cluster.addDefaultCloudMapNamespace({
         name: 'foo.com',
-        type: NamespaceType.PrivateDns
+        type: cloudmap.NamespaceType.DNS_PRIVATE
       });
 
       new ecs.FargateService(stack, 'Service', {
         cluster,
         taskDefinition,
-        serviceDiscoveryOptions: {
+        cloudMapOptions: {
           name: 'myApp'
         }
       });
@@ -424,13 +427,13 @@ export = {
       // WHEN
       cluster.addDefaultCloudMapNamespace({
         name: 'foo.com',
-        type: NamespaceType.PrivateDns
+        type: cloudmap.NamespaceType.DNS_PRIVATE
       });
 
       new ecs.FargateService(stack, 'Service', {
         cluster,
         taskDefinition,
-        serviceDiscoveryOptions: {
+        cloudMapOptions: {
           name: 'myApp',
           dnsRecordType: cloudmap.DnsRecordType.SRV
         }
@@ -467,5 +470,36 @@ export = {
 
       test.done();
     },
+  },
+
+  'Metric'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+    const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+    const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
+    taskDefinition.addContainer('Container', {
+      image: ecs.ContainerImage.fromRegistry('hello')
+    });
+
+    // WHEN
+    const service = new ecs.FargateService(stack, 'Service', {
+      cluster,
+      taskDefinition,
+    });
+
+    // THEN
+    test.deepEqual(stack.resolve(service.metricCpuUtilization()), {
+      dimensions: {
+        ClusterName: { Ref: 'EcsCluster97242B84' },
+        ServiceName: { 'Fn::GetAtt': ['ServiceD69D759B', 'Name'] }
+      },
+      namespace: 'AWS/ECS',
+      metricName: 'CPUUtilization',
+      period: cdk.Duration.minutes(5),
+      statistic: 'Average'
+    });
+
+    test.done();
   }
 };

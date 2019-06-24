@@ -1,5 +1,5 @@
 import { expect } from '@aws-cdk/assert';
-import { Stack } from '@aws-cdk/cdk';
+import { Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import { ReceiptFilter, ReceiptFilterPolicy, WhiteListReceiptFilter } from '../lib';
 
@@ -13,8 +13,8 @@ export = {
     // WHEN
     new ReceiptFilter(stack, 'Filter', {
       ip: '1.2.3.4/16',
-      name: 'MyFilter',
-      policy: ReceiptFilterPolicy.Block
+      receiptFilterName: 'MyFilter',
+      policy: ReceiptFilterPolicy.BLOCK
     });
 
     // THEN

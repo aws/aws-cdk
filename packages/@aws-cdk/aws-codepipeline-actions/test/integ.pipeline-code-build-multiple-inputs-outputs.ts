@@ -2,7 +2,7 @@ import codebuild = require('@aws-cdk/aws-codebuild');
 import codecommit = require('@aws-cdk/aws-codecommit');
 import codepipeline = require('@aws-cdk/aws-codepipeline');
 import s3 = require('@aws-cdk/aws-s3');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import cpactions = require('../lib');
 
 const app = new cdk.App();
@@ -14,7 +14,7 @@ const repository = new codecommit.Repository(stack, 'MyRepo', {
 });
 const bucket = new s3.Bucket(stack, 'MyBucket', {
   versioned: true,
-  removalPolicy: cdk.RemovalPolicy.Destroy,
+  removalPolicy: cdk.RemovalPolicy.DESTROY,
 });
 
 const pipeline = new codepipeline.Pipeline(stack, 'Pipeline', {
@@ -35,7 +35,7 @@ const sourceAction2 = new cpactions.S3SourceAction({
   output: source2Output,
 });
 pipeline.addStage({
-  name: 'Source',
+  stageName: 'Source',
   actions: [
     sourceAction1,
     sourceAction2,
@@ -50,8 +50,8 @@ const buildAction = new cpactions.CodeBuildAction({
   extraInputs: [
     source2Output,
   ],
-  output: new codepipeline.Artifact(),
-  extraOutputs: [
+  outputs: [
+    new codepipeline.Artifact(),
     new codepipeline.Artifact(),
   ],
 });
@@ -63,12 +63,12 @@ const testAction = new cpactions.CodeBuildAction({
   extraInputs: [
     source1Output,
   ],
-  extraOutputs: [
+  outputs: [
     new codepipeline.Artifact('CustomOutput2'),
   ],
 });
 pipeline.addStage({
-  name: 'Build',
+  stageName: 'Build',
   actions: [
     buildAction,
     testAction,

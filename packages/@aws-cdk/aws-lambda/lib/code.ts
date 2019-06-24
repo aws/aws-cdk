@@ -1,7 +1,6 @@
-import assets = require('@aws-cdk/assets');
 import s3 = require('@aws-cdk/aws-s3');
-import cdk = require('@aws-cdk/cdk');
-import fs = require('fs');
+import s3_assets = require('@aws-cdk/aws-s3-assets');
+import cdk = require('@aws-cdk/core');
 import { CfnFunction } from './lambda.generated';
 
 export abstract class Code {
@@ -29,25 +28,6 @@ export abstract class Code {
    */
   public static asset(path: string): AssetCode {
     return new AssetCode(path);
-  }
-
-  /**
-   * @returns Zip archives the contents of a directory on disk and uses this
-   * as the lambda handler's code.
-   * @param directoryToZip The directory to zip
-   * @deprecated use `lambda.Code.asset(path)` (no need to specify if it's a file or a directory)
-   */
-  public static directory(directoryToZip: string): AssetCode {
-    return new AssetCode(directoryToZip, assets.AssetPackaging.ZipDirectory);
-  }
-
-  /**
-   * @returns Uses a file on disk as a lambda handler's code.
-   * @param filePath The file path
-   * @deprecated use `lambda.Code.asset(path)` (no need to specify if it's a file or a directory)
-   */
-  public static file(filePath: string): AssetCode {
-    return new AssetCode(filePath, assets.AssetPackaging.File);
   }
 
   /**
@@ -149,37 +129,19 @@ export class InlineCode extends Code {
  */
 export class AssetCode extends Code {
   public readonly isInline = false;
-
-  /**
-   * The asset packaging.
-   */
-  public readonly packaging: assets.AssetPackaging;
-
-  private asset?: assets.Asset;
+  private asset?: s3_assets.Asset;
 
   /**
    * @param path The path to the asset file or directory.
-   * @param packaging The asset packaging format (optional, determined automatically)
    */
-  constructor(public readonly path: string, packaging?: assets.AssetPackaging) {
+  constructor(public readonly path: string) {
     super();
-
-    if (packaging !== undefined) {
-      this.packaging = packaging;
-    } else {
-      this.packaging = fs.lstatSync(path).isDirectory()
-        ? assets.AssetPackaging.ZipDirectory
-        : assets.AssetPackaging.File;
-    }
   }
 
   public bind(construct: cdk.Construct) {
     // If the same AssetCode is used multiple times, retain only the first instantiation.
     if (!this.asset) {
-      this.asset = new assets.Asset(construct, 'Code', {
-        path: this.path,
-        packaging: this.packaging
-      });
+      this.asset = new s3_assets.Asset(construct, 'Code', { path: this.path });
     }
 
     if (!this.asset.isZipArchive) {
@@ -262,26 +224,26 @@ export class CfnParametersCode extends Code {
    * Create a parameters map from this instance's CloudFormation parameters.
    *
    * It returns a map with 2 keys that correspond to the names of the parameters defined in this Lambda code,
-   * and as values it contains the appropriate expressions pointing at the provided S3 coordinates
-   * (most likely, obtained from a CodePipeline Artifact by calling the `artifact.s3Coordinates` method).
+   * and as values it contains the appropriate expressions pointing at the provided S3 location
+   * (most likely, obtained from a CodePipeline Artifact by calling the `artifact.s3Location` method).
    * The result should be provided to the CloudFormation Action
    * that is deploying the Stack that the Lambda with this code is part of,
    * in the `parameterOverrides` property.
    *
-   * @param coordinates the coordinates of the object in S3 that represents the Lambda code
+   * @param location the location of the object in S3 that represents the Lambda code
    */
-  public assign(coordinates: s3.Coordinates): { [name: string]: any } {
+  public assign(location: s3.Location): { [name: string]: any } {
     const ret: { [name: string]: any } = {};
-    ret[this.bucketNameParam] = coordinates.bucketName;
-    ret[this.objectKeyParam] = coordinates.objectKey;
+    ret[this.bucketNameParam] = location.bucketName;
+    ret[this.objectKeyParam] = location.objectKey;
     return ret;
   }
 
   /** @internal */
   public _toJSON(_?: cdk.CfnResource): CfnFunction.CodeProperty {
     return {
-      s3Bucket: this._bucketNameParam!.stringValue,
-      s3Key: this._objectKeyParam!.stringValue,
+      s3Bucket: this._bucketNameParam!.valueAsString,
+      s3Key: this._objectKeyParam!.valueAsString,
     };
   }
 

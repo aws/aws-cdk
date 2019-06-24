@@ -1,22 +1,25 @@
-import assets = require('@aws-cdk/assets');
-import { DockerImageAsset, DockerImageAssetProps } from '@aws-cdk/assets-docker';
 import cloudwatch = require('@aws-cdk/aws-cloudwatch');
 import ec2 = require('@aws-cdk/aws-ec2');
 import ecr = require('@aws-cdk/aws-ecr');
+import { DockerImageAsset, DockerImageAssetProps } from '@aws-cdk/aws-ecr-assets';
 import events = require('@aws-cdk/aws-events');
 import iam = require('@aws-cdk/aws-iam');
 import kms = require('@aws-cdk/aws-kms');
-import { Aws, Construct, IResource, Resource, Token } from '@aws-cdk/cdk';
-import { BuildArtifacts, CodePipelineBuildArtifacts, NoBuildArtifacts } from './artifacts';
+import { Aws, CfnResource, Construct, Duration, IResource, Lazy, PhysicalName, Resource, Stack } from '@aws-cdk/core';
+import { IArtifacts } from './artifacts';
+import { BuildSpec } from './build-spec';
 import { Cache } from './cache';
 import { CfnProject } from './codebuild.generated';
-import { BuildSource, NoSource, SourceType } from './source';
+import { CodePipelineArtifacts } from './codepipeline-artifacts';
+import { NoArtifacts } from './no-artifacts';
+import { NoSource } from './no-source';
+import { ISource } from './source';
+import { CODEPIPELINE_SOURCE_ARTIFACTS_TYPE, NO_SOURCE_TYPE } from './source-types';
 
-const CODEPIPELINE_TYPE = 'CODEPIPELINE';
 const S3_BUCKET_ENV = 'SCRIPT_S3_BUCKET';
 const S3_KEY_ENV = 'SCRIPT_S3_KEY';
 
-export interface IProject extends IResource, iam.IGrantable {
+export interface IProject extends IResource, iam.IGrantable, ec2.IConnectable {
   /**
    * The ARN of this Project.
    * @attribute
@@ -31,6 +34,8 @@ export interface IProject extends IResource, iam.IGrantable {
 
   /** The IAM service Role of this Project. Undefined for imported Projects. */
   readonly role?: iam.IRole;
+
+  addToRolePolicy(policyStatement: iam.PolicyStatement): void;
 
   /**
    * Defines a CloudWatch event rule triggered when something happens with this project.
@@ -165,11 +170,39 @@ abstract class ProjectBase extends Resource implements IProject {
   public abstract readonly role?: iam.IRole;
 
   /**
+   * Actual connections object for this Project.
+   * May be unset, in which case this Project is not configured to use a VPC.
+   * @internal
+   */
+  protected _connections: ec2.Connections;
+
+  /**
+   * Access the Connections object.
+   * Will fail if this Project does not have a VPC set.
+   */
+  public get connections(): ec2.Connections {
+    if (!this._connections) {
+      throw new Error('Only VPC-associated Projects have security groups to manage. Supply the "vpc" parameter when creating the Project');
+    }
+    return this._connections;
+  }
+
+  /**
+   * Add a permission only if there's a policy attached.
+   * @param statement The permissions statement to add
+   */
+  public addToRolePolicy(statement: iam.PolicyStatement) {
+    if (this.role) {
+      this.role.addToPolicy(statement);
+    }
+  }
+
+  /**
    * Defines a CloudWatch event rule triggered when something happens with this project.
    *
    * @see https://docs.aws.amazon.com/codebuild/latest/userguide/sample-build-notifications.html
    */
-  public onEvent(id: string, options: events.OnEventOptions): events.Rule {
+  public onEvent(id: string, options: events.OnEventOptions = {}): events.Rule {
     const rule = new events.Rule(this, id, options);
     rule.addTarget(options.target);
     rule.addEventPattern({
@@ -206,7 +239,7 @@ abstract class ProjectBase extends Resource implements IProject {
    *
    * @see https://docs.aws.amazon.com/codebuild/latest/userguide/sample-build-notifications.html
    */
-  public onStateChange(id: string, options: events.OnEventOptions) {
+  public onStateChange(id: string, options: events.OnEventOptions = {}) {
     const rule = this.onEvent(id, options);
     rule.addEventPattern({
       detailType: ['CodeBuild Build State Change'],
@@ -220,7 +253,7 @@ abstract class ProjectBase extends Resource implements IProject {
    *
    * @see https://docs.aws.amazon.com/codebuild/latest/userguide/sample-build-notifications.html
    */
-  public onPhaseChange(id: string, options: events.OnEventOptions) {
+  public onPhaseChange(id: string, options: events.OnEventOptions = {}) {
     const rule = this.onEvent(id, options);
     rule.addEventPattern({
       detailType: ['CodeBuild Build Phase Change'],
@@ -234,7 +267,7 @@ abstract class ProjectBase extends Resource implements IProject {
    * To access fields from the event in the event target input,
    * use the static fields on the `StateChangeEvent` class.
    */
-  public onBuildStarted(id: string, options: events.OnEventOptions) {
+  public onBuildStarted(id: string, options: events.OnEventOptions = {}) {
     const rule = this.onStateChange(id, options);
     rule.addEventPattern({
       detail: {
@@ -250,7 +283,7 @@ abstract class ProjectBase extends Resource implements IProject {
    * To access fields from the event in the event target input,
    * use the static fields on the `StateChangeEvent` class.
    */
-  public onBuildFailed(id: string, options: events.OnEventOptions) {
+  public onBuildFailed(id: string, options: events.OnEventOptions = {}) {
     const rule = this.onStateChange(id, options);
     rule.addEventPattern({
       detail: {
@@ -266,7 +299,7 @@ abstract class ProjectBase extends Resource implements IProject {
    * To access fields from the event in the event target input,
    * use the static fields on the `StateChangeEvent` class.
    */
-  public onBuildSucceeded(id: string, options: events.OnEventOptions) {
+  public onBuildSucceeded(id: string, options: events.OnEventOptions = {}) {
     const rule = this.onStateChange(id, options);
     rule.addEventPattern({
       detail: {
@@ -371,27 +404,7 @@ export interface CommonProjectProps {
    *
    * @default - Empty buildspec.
    */
-  readonly buildSpec?: any;
-
-  /**
-   * Run a script from an asset as build script
-   *
-   * If supplied together with buildSpec, the asset script will be run
-   * _after_ the existing commands in buildspec.
-   *
-   * This feature can also be used without a source, to simply run an
-   * arbitrary script in a serverless way.
-   *
-   * @default - No asset build script.
-   */
-  readonly buildScriptAsset?: assets.Asset;
-
-  /**
-   * The script in the asset to run.
-   *
-   * @default build.sh
-   */
-  readonly buildScriptAssetEntrypoint?: string;
+  readonly buildSpec?: BuildSpec;
 
   /**
    * Service Role to assume while running the build.
@@ -435,9 +448,9 @@ export interface CommonProjectProps {
    * not complete. For valid values, see the timeoutInMinutes field in the AWS
    * CodeBuild User Guide.
    *
-   * @default 60
+   * @default Duration.hours(1)
    */
-  readonly timeout?: number;
+  readonly timeout?: Duration;
 
   /**
    * Additional environment variables to add to the build environment.
@@ -503,15 +516,15 @@ export interface ProjectProps extends CommonProjectProps {
    *
    * @default - NoSource
    */
-  readonly source?: BuildSource;
+  readonly source?: ISource;
 
   /**
    * Defines where build artifacts will be stored.
-   * Could be: PipelineBuildArtifacts, NoBuildArtifacts and S3BucketBuildArtifacts.
+   * Could be: PipelineBuildArtifacts, NoArtifacts and S3Artifacts.
    *
-   * @default NoBuildArtifacts
+   * @default NoArtifacts
    */
-  readonly artifacts?: BuildArtifacts;
+  readonly artifacts?: IArtifacts;
 
   /**
    * The secondary sources for the Project.
@@ -520,7 +533,7 @@ export interface ProjectProps extends CommonProjectProps {
    * @default - No secondary sources.
    * @see https://docs.aws.amazon.com/codebuild/latest/userguide/sample-multi-in-out.html
    */
-  readonly secondarySources?: BuildSource[];
+  readonly secondarySources?: ISource[];
 
   /**
    * The secondary artifacts for the Project.
@@ -529,7 +542,7 @@ export interface ProjectProps extends CommonProjectProps {
    * @default - No secondary artifacts.
    * @see https://docs.aws.amazon.com/codebuild/latest/userguide/sample-multi-in-out.html
    */
-  readonly secondaryArtifacts?: BuildArtifacts[];
+  readonly secondaryArtifacts?: IArtifacts[];
 }
 
 /**
@@ -541,12 +554,12 @@ export class Project extends ProjectBase {
     class Import extends ProjectBase {
       public readonly grantPrincipal: iam.IPrincipal;
       public readonly projectArn = projectArn;
-      public readonly projectName = scope.node.stack.parseArn(projectArn).resourceName!;
+      public readonly projectName = Stack.of(scope).parseArn(projectArn).resourceName!;
       public readonly role?: iam.Role = undefined;
 
       constructor(s: Construct, i: string) {
         super(s, i);
-        this.grantPrincipal = new iam.ImportedResourcePrincipal({ resource: this });
+        this.grantPrincipal = new iam.UnknownPrincipal({ resource: this });
       }
     }
 
@@ -578,13 +591,13 @@ export class Project extends ProjectBase {
       constructor(s: Construct, i: string) {
         super(s, i);
 
-        this.projectArn = this.node.stack.formatArn({
+        this.projectArn = Stack.of(this).formatArn({
           service: 'codebuild',
           resource: 'project',
           resourceName: projectName,
         });
 
-        this.grantPrincipal = new iam.ImportedResourcePrincipal({ resource: this });
+        this.grantPrincipal = new iam.UnknownPrincipal({ resource: this });
         this.projectName = projectName;
       }
     }
@@ -609,20 +622,18 @@ export class Project extends ProjectBase {
    */
   public readonly projectName: string;
 
-  private readonly source: BuildSource;
+  private readonly source: ISource;
   private readonly buildImage: IBuildImage;
-  private readonly _secondarySources: BuildSource[];
-  private readonly _secondaryArtifacts: BuildArtifacts[];
-  private _securityGroups: ec2.ISecurityGroup[] = [];
+  private readonly _secondarySources: CfnProject.SourceProperty[];
+  private readonly _secondaryArtifacts: CfnProject.ArtifactsProperty[];
 
   constructor(scope: Construct, id: string, props: ProjectProps) {
-    super(scope, id);
-
-    if (props.buildScriptAssetEntrypoint && !props.buildScriptAsset) {
-      throw new Error('To use buildScriptAssetEntrypoint, supply buildScriptAsset as well.');
-    }
+    super(scope, id, {
+      physicalName: props.projectName,
+    });
 
     this.role = props.role || new iam.Role(this, 'Role', {
+      roleName: PhysicalName.GENERATE_IF_NEEDED,
       assumedBy: new iam.ServicePrincipal('codebuild.amazonaws.com')
     });
     this.grantPrincipal = this.role;
@@ -632,10 +643,17 @@ export class Project extends ProjectBase {
     // let source "bind" to the project. this usually involves granting permissions
     // for the code build role to interact with the source.
     this.source = props.source || new NoSource();
-    this.source._bind(this);
+    const sourceConfig = this.source.bind(this, this);
+    if (props.badge && !this.source.badgeSupported) {
+      throw new Error(`Badge is not supported for source type ${this.source.type}`);
+    }
 
-    const artifacts = this.parseArtifacts(props);
-    artifacts._bind(this);
+    const artifacts = props.artifacts
+      ? props.artifacts
+      : (this.source.type === CODEPIPELINE_SOURCE_ARTIFACTS_TYPE
+        ? new CodePipelineArtifacts()
+        : new NoArtifacts());
+    const artifactsConfig = artifacts.bind(this, this);
 
     const cache = props.cache || Cache.none();
 
@@ -644,40 +662,10 @@ export class Project extends ProjectBase {
 
     // Inject download commands for asset if requested
     const environmentVariables = props.environmentVariables || {};
-    const buildSpec = props.buildSpec || {};
-
-    if (props.buildScriptAsset) {
-      environmentVariables[S3_BUCKET_ENV] = { value: props.buildScriptAsset.s3BucketName };
-      environmentVariables[S3_KEY_ENV] = { value: props.buildScriptAsset.s3ObjectKey };
-      extendBuildSpec(buildSpec, this.buildImage.runScriptBuildspec(props.buildScriptAssetEntrypoint || 'build.sh'));
-      props.buildScriptAsset.grantRead(this.role);
+    const buildSpec = props.buildSpec;
+    if (this.source.type === NO_SOURCE_TYPE && (buildSpec === undefined || !buildSpec.isImmediate)) {
+      throw new Error("If the Project's source is NoSource, you need to provide a concrete buildSpec");
     }
-
-    // Render the source and add in the buildspec
-    const renderSource = () => {
-      if (props.badge && !this.source.badgeSupported) {
-        throw new Error(`Badge is not supported for source type ${this.source.type}`);
-      }
-
-      const sourceJson = this.source._toSourceJSON();
-      if (typeof buildSpec === 'string') {
-        return {
-          ...sourceJson,
-          buildSpec // Filename to buildspec file
-        };
-      } else if (Object.keys(buildSpec).length > 0) {
-        // We have to pretty-print the buildspec, otherwise
-        // CodeBuild will not recognize it as an inline buildspec.
-        return {
-          ...sourceJson,
-          buildSpec: JSON.stringify(buildSpec, undefined, 2)
-        };
-      } else if (this.source.type === SourceType.None) {
-        throw new Error("If the Project's source is NoSource, you need to provide a buildSpec");
-      } else {
-        return sourceJson;
-      }
-    };
 
     this._secondarySources = [];
     for (const secondarySource of props.secondarySources || []) {
@@ -693,56 +681,37 @@ export class Project extends ProjectBase {
 
     const resource = new CfnProject(this, 'Resource', {
       description: props.description,
-      source: renderSource(),
-      artifacts: artifacts.toArtifactsJSON(),
+      source: {
+        ...sourceConfig.sourceProperty,
+        buildSpec: buildSpec && buildSpec.toBuildSpec()
+      },
+      artifacts: artifactsConfig.artifactsProperty,
       serviceRole: this.role.roleArn,
       environment: this.renderEnvironment(props.environment, environmentVariables),
       encryptionKey: props.encryptionKey && props.encryptionKey.keyArn,
       badgeEnabled: props.badge,
       cache: cache._toCloudFormation(),
-      name: props.projectName,
-      timeoutInMinutes: props.timeout,
-      secondarySources: new Token(() => this.renderSecondarySources()),
-      secondaryArtifacts: new Token(() => this.renderSecondaryArtifacts()),
-      triggers: this.source._buildTriggers(),
+      name: this.physicalName,
+      timeoutInMinutes: props.timeout && props.timeout.toMinutes(),
+      secondarySources: Lazy.anyValue({ produce: () => this.renderSecondarySources() }),
+      secondaryArtifacts: Lazy.anyValue({ produce: () => this.renderSecondaryArtifacts() }),
+      triggers: sourceConfig.buildTriggers,
       vpcConfig: this.configureVpc(props),
     });
 
-    this.projectArn = resource.projectArn;
-    this.projectName = resource.projectName;
+    this.addVpcRequiredPermissions(props, resource);
+
+    this.projectArn = this.getResourceArnAttribute(resource.attrArn, {
+      service: 'codebuild',
+      resource: 'project',
+      resourceName: this.physicalName,
+    });
+    this.projectName = this.getResourceNameAttribute(resource.ref);
 
     this.addToRolePolicy(this.createLoggingPermission());
 
     if (props.encryptionKey) {
       props.encryptionKey.grantEncryptDecrypt(this);
-    }
-  }
-
-  public get securityGroups(): ec2.ISecurityGroup[] {
-    return this._securityGroups.slice();
-  }
-
-  /**
-   * Add a permission only if there's a policy attached.
-   * @param statement The permissions statement to add
-   */
-  public addToRolePolicy(statement: iam.PolicyStatement) {
-    if (this.role) {
-      this.role.addToPolicy(statement);
-    }
-  }
-
-  /**
-   * Add a permission only if there's a policy attached.
-   * @param statement The permissions statement to add
-   */
-  public addToRoleInlinePolicy(statement: iam.PolicyStatement) {
-    if (this.role) {
-      const policy = new iam.Policy(this, 'PolicyDocument', {
-        policyName: 'CodeBuildEC2Policy',
-        statements: [statement]
-      });
-      this.role.attachInlinePolicy(policy);
     }
   }
 
@@ -752,12 +721,11 @@ export class Project extends ProjectBase {
    * @param secondarySource the source to add as a secondary source
    * @see https://docs.aws.amazon.com/codebuild/latest/userguide/sample-multi-in-out.html
    */
-  public addSecondarySource(secondarySource: BuildSource): void {
+  public addSecondarySource(secondarySource: ISource): void {
     if (!secondarySource.identifier) {
       throw new Error('The identifier attribute is mandatory for secondary sources');
     }
-    secondarySource._bind(this);
-    this._secondarySources.push(secondarySource);
+    this._secondarySources.push(secondarySource.bind(this, this).sourceProperty);
   }
 
   /**
@@ -766,12 +734,11 @@ export class Project extends ProjectBase {
    * @param secondaryArtifact the artifact to add as a secondary artifact
    * @see https://docs.aws.amazon.com/codebuild/latest/userguide/sample-multi-in-out.html
    */
-  public addSecondaryArtifact(secondaryArtifact: BuildArtifacts): any {
+  public addSecondaryArtifact(secondaryArtifact: IArtifacts): any {
     if (!secondaryArtifact.identifier) {
       throw new Error("The identifier attribute is mandatory for secondary artifacts");
     }
-    secondaryArtifact._bind(this);
-    this._secondaryArtifacts.push(secondaryArtifact);
+    this._secondaryArtifacts.push(secondaryArtifact.bind(this, this).artifactsProperty);
   }
 
   /**
@@ -779,7 +746,7 @@ export class Project extends ProjectBase {
    */
   protected validate(): string[] {
     const ret = new Array<string>();
-    if (this.source.type === SourceType.CodePipeline) {
+    if (this.source.type === CODEPIPELINE_SOURCE_ARTIFACTS_TYPE) {
       if (this._secondarySources.length > 0) {
         ret.push('A Project with a CodePipeline Source cannot have secondary sources. ' +
           "Use the CodeBuild Pipeline Actions' `extraInputs` property instead");
@@ -793,7 +760,7 @@ export class Project extends ProjectBase {
   }
 
   private createLoggingPermission() {
-    const logGroupArn = this.node.stack.formatArn({
+    const logGroupArn = Stack.of(this).formatArn({
       service: 'logs',
       resource: 'log-group',
       sep: ':',
@@ -802,15 +769,10 @@ export class Project extends ProjectBase {
 
     const logGroupStarArn = `${logGroupArn}:*`;
 
-    const p = new iam.PolicyStatement();
-    p.allow();
-    p.addResource(logGroupArn);
-    p.addResource(logGroupStarArn);
-    p.addAction('logs:CreateLogGroup');
-    p.addAction('logs:CreateLogStream');
-    p.addAction('logs:PutLogEvents');
-
-    return p;
+    return new iam.PolicyStatement({
+      resources: [logGroupArn, logGroupStarArn],
+      actions: ['logs:CreateLogGroup', 'logs:CreateLogStream', 'logs:PutLogEvents'],
+    });
   }
 
   private renderEnvironment(env: BuildEnvironment = {},
@@ -842,7 +804,7 @@ export class Project extends ProjectBase {
       computeType: env.computeType || this.buildImage.defaultComputeType,
       environmentVariables: !hasEnvironmentVars ? undefined : Object.keys(vars).map(name => ({
         name,
-        type: vars[name].type || BuildEnvironmentVariableType.PlainText,
+        type: vars[name].type || BuildEnvironmentVariableType.PLAINTEXT,
         value: vars[name].value
       }))
     };
@@ -851,13 +813,13 @@ export class Project extends ProjectBase {
   private renderSecondarySources(): CfnProject.SourceProperty[] | undefined {
     return this._secondarySources.length === 0
       ? undefined
-      : this._secondarySources.map((secondarySource) => secondarySource._toSourceJSON());
+      : this._secondarySources;
   }
 
   private renderSecondaryArtifacts(): CfnProject.ArtifactsProperty[] | undefined {
     return this._secondaryArtifacts.length === 0
       ? undefined
-      : this._secondaryArtifacts.map((secondaryArtifact) => secondaryArtifact.toArtifactsJSON());
+      : this._secondaryArtifacts;
   }
 
   /**
@@ -877,60 +839,77 @@ export class Project extends ProjectBase {
       throw new Error(`Configure 'allowAllOutbound' directly on the supplied SecurityGroup.`);
     }
 
+    let securityGroups: ec2.ISecurityGroup[];
     if (props.securityGroups && props.securityGroups.length > 0) {
-      this._securityGroups = props.securityGroups.slice();
+      securityGroups = props.securityGroups;
     } else {
       const securityGroup = new ec2.SecurityGroup(this, 'SecurityGroup', {
         vpc: props.vpc,
         description: 'Automatic generated security group for CodeBuild ' + this.node.uniqueId,
         allowAllOutbound: props.allowAllOutbound
       });
-      this._securityGroups = [securityGroup];
+      securityGroups = [securityGroup];
     }
-    this.addToRoleInlinePolicy(new iam.PolicyStatement()
-      .addAllResources()
-      .addActions(
-        'ec2:CreateNetworkInterface',
-        'ec2:DescribeNetworkInterfaces',
-        'ec2:DeleteNetworkInterface',
-        'ec2:DescribeSubnets',
-        'ec2:DescribeSecurityGroups',
-        'ec2:DescribeDhcpOptions',
-        'ec2:DescribeVpcs'
-      ));
-    this.addToRolePolicy(new iam.PolicyStatement()
-      .addResource(`arn:aws:ec2:${Aws.region}:${Aws.accountId}:network-interface/*`)
-      .addCondition('StringEquals', {
-        "ec2:Subnet": props.vpc
-          .selectSubnets(props.subnetSelection).subnetIds
-          .map(si => `arn:aws:ec2:${Aws.region}:${Aws.accountId}:subnet/${si}`),
-        "ec2:AuthorizedService": "codebuild.amazonaws.com"
-      })
-      .addAction('ec2:CreateNetworkInterfacePermission'));
+    this._connections = new ec2.Connections({ securityGroups });
+
     return {
       vpcId: props.vpc.vpcId,
       subnets: props.vpc.selectSubnets(props.subnetSelection).subnetIds,
-      securityGroupIds: this._securityGroups.map(s => s.securityGroupId)
+      securityGroupIds: this.connections.securityGroups.map(s => s.securityGroupId)
     };
   }
 
-  private parseArtifacts(props: ProjectProps) {
-    if (props.artifacts) {
-      return props.artifacts;
+  private addVpcRequiredPermissions(props: ProjectProps, project: CfnProject): void {
+    if (!props.vpc || !this.role) {
+      return;
     }
-    if (this.source._toSourceJSON().type === CODEPIPELINE_TYPE) {
-      return new CodePipelineBuildArtifacts();
-    } else {
-      return new NoBuildArtifacts();
-    }
+
+    this.role.addToPolicy(new iam.PolicyStatement({
+      resources: [`arn:aws:ec2:${Aws.REGION}:${Aws.ACCOUNT_ID}:network-interface/*`],
+      actions: ['ec2:CreateNetworkInterfacePermission'],
+      conditions: {
+        StringEquals: {
+          'ec2:Subnet': props.vpc
+            .selectSubnets(props.subnetSelection).subnetIds
+            .map(si => `arn:aws:ec2:${Aws.REGION}:${Aws.ACCOUNT_ID}:subnet/${si}`),
+          'ec2:AuthorizedService': 'codebuild.amazonaws.com'
+        },
+      },
+    }));
+
+    const policy = new iam.Policy(this, 'PolicyDocument', {
+      policyName: 'CodeBuildEC2Policy',
+      statements: [
+        new iam.PolicyStatement({
+          resources: ['*'],
+          actions: [
+            'ec2:CreateNetworkInterface',
+            'ec2:DescribeNetworkInterfaces',
+            'ec2:DeleteNetworkInterface',
+            'ec2:DescribeSubnets',
+            'ec2:DescribeSecurityGroups',
+            'ec2:DescribeDhcpOptions',
+            'ec2:DescribeVpcs',
+          ],
+        }),
+      ],
+    });
+    this.role.attachInlinePolicy(policy);
+
+    // add an explicit dependency between the EC2 Policy and this Project -
+    // otherwise, creating the Project fails,
+    // as it requires these permissions to be already attached to the Project's Role
+    const cfnPolicy = policy.node.findChild('Resource') as CfnResource;
+    project.addDependsOn(cfnPolicy);
   }
 
-  private validateCodePipelineSettings(artifacts: BuildArtifacts) {
-    const sourceType = this.source._toSourceJSON().type;
-    const artifactsType = artifacts.toArtifactsJSON().type;
+  private validateCodePipelineSettings(artifacts: IArtifacts) {
+    const sourceType = this.source.type;
+    const artifactsType = artifacts.type;
 
-    if ((sourceType === CODEPIPELINE_TYPE || artifactsType === CODEPIPELINE_TYPE) &&
-      (sourceType !== artifactsType)) {
+    if ((sourceType === CODEPIPELINE_SOURCE_ARTIFACTS_TYPE ||
+        artifactsType === CODEPIPELINE_SOURCE_ARTIFACTS_TYPE) &&
+        (sourceType !== artifactsType)) {
       throw new Error('Both source and artifacts must be set to CodePipeline');
     }
   }
@@ -940,9 +919,9 @@ export class Project extends ProjectBase {
  * Build machine compute type.
  */
 export enum ComputeType {
-  Small = 'BUILD_GENERAL1_SMALL',
-  Medium = 'BUILD_GENERAL1_MEDIUM',
-  Large = 'BUILD_GENERAL1_LARGE'
+  SMALL = 'BUILD_GENERAL1_SMALL',
+  MEDIUM = 'BUILD_GENERAL1_MEDIUM',
+  LARGE = 'BUILD_GENERAL1_LARGE'
 }
 
 export interface BuildEnvironment {
@@ -1013,7 +992,7 @@ export interface IBuildImage {
   /**
    * Make a buildspec to run the indicated script
    */
-  runScriptBuildspec(entrypoint: string): any;
+  runScriptBuildspec(entrypoint: string): BuildSpec;
 }
 
 /**
@@ -1103,7 +1082,7 @@ export class LinuxBuildImage implements IBuildImage {
   }
 
   public readonly type = 'LINUX_CONTAINER';
-  public readonly defaultComputeType = ComputeType.Small;
+  public readonly defaultComputeType = ComputeType.SMALL;
 
   private constructor(public readonly imageId: string) {
   }
@@ -1112,8 +1091,8 @@ export class LinuxBuildImage implements IBuildImage {
     return [];
   }
 
-  public runScriptBuildspec(entrypoint: string): any {
-    return {
+  public runScriptBuildspec(entrypoint: string): BuildSpec {
+    return BuildSpec.fromObject({
       version: '0.2',
       phases: {
         pre_build: {
@@ -1137,7 +1116,7 @@ export class LinuxBuildImage implements IBuildImage {
           ]
         }
       }
-    };
+    });
   }
 }
 
@@ -1195,21 +1174,21 @@ export class WindowsBuildImage implements IBuildImage {
     return image;
   }
   public readonly type = 'WINDOWS_CONTAINER';
-  public readonly defaultComputeType = ComputeType.Medium;
+  public readonly defaultComputeType = ComputeType.MEDIUM;
 
   private constructor(public readonly imageId: string) {
   }
 
   public validate(buildEnvironment: BuildEnvironment): string[] {
     const ret: string[] = [];
-    if (buildEnvironment.computeType === ComputeType.Small) {
+    if (buildEnvironment.computeType === ComputeType.SMALL) {
       ret.push("Windows images do not support the Small ComputeType");
     }
     return ret;
   }
 
-  public runScriptBuildspec(entrypoint: string): any {
-    return {
+  public runScriptBuildspec(entrypoint: string): BuildSpec {
+    return BuildSpec.fromObject({
       version: '0.2',
       phases: {
         pre_build: {
@@ -1230,7 +1209,7 @@ export class WindowsBuildImage implements IBuildImage {
           ]
         }
       }
-    };
+    });
   }
 }
 
@@ -1252,48 +1231,19 @@ export enum BuildEnvironmentVariableType {
   /**
    * An environment variable in plaintext format.
    */
-  PlainText = 'PLAINTEXT',
+  PLAINTEXT = 'PLAINTEXT',
 
   /**
    * An environment variable stored in Systems Manager Parameter Store.
    */
-  ParameterStore = 'PARAMETER_STORE'
-}
-
-/**
- * Extend buildSpec phases with the contents of another one
- */
-function extendBuildSpec(buildSpec: any, extend: any) {
-  if (typeof buildSpec === 'string') {
-    throw new Error('Cannot extend buildspec that is given as a string. Pass the buildspec as a structure instead.');
-  }
-  if (buildSpec.version === '0.1') {
-    throw new Error('Cannot extend buildspec at version "0.1". Set the version to "0.2" or higher instead.');
-  }
-  if (buildSpec.version === undefined) {
-    buildSpec.version = extend.version;
-  }
-
-  if (!buildSpec.phases) {
-    buildSpec.phases = {};
-  }
-
-  for (const phaseName of Object.keys(extend.phases)) {
-    if (!(phaseName in buildSpec.phases)) { buildSpec.phases[phaseName] = {}; }
-    const phase = buildSpec.phases[phaseName];
-
-    if (!(phase.commands)) { phase.commands = []; }
-    phase.commands.push(...extend.phases[phaseName].commands);
-  }
+  PARAMETER_STORE = 'PARAMETER_STORE'
 }
 
 function ecrAccessForCodeBuildService(): iam.PolicyStatement {
-  return new iam.PolicyStatement()
-    .describe('CodeBuild')
-    .addServicePrincipal('codebuild.amazonaws.com')
-    .addActions(
-      'ecr:GetDownloadUrlForLayer',
-      'ecr:BatchGetImage',
-      'ecr:BatchCheckLayerAvailability'
-    );
+  const s = new iam.PolicyStatement({
+    principals: [new iam.ServicePrincipal('codebuild.amazonaws.com')],
+    actions: ['ecr:GetDownloadUrlForLayer', 'ecr:BatchGetImage', 'ecr:BatchCheckLayerAvailability'],
+  });
+  s.sid = 'CodeBuild';
+  return s;
 }

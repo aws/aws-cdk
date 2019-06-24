@@ -1,5 +1,5 @@
 import { expect } from '@aws-cdk/assert';
-import { Stack } from '@aws-cdk/cdk';
+import { Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import { Repository, RepositoryProps } from '../lib';
 
@@ -9,7 +9,7 @@ export = {
       const stack = new Stack();
 
       const props: RepositoryProps = {
-        repositoryName: 'MyRepository'
+        repositoryName: 'MyRepository',
       };
 
       const snsArn = 'arn:aws:sns:*:123456789012:my_topic';
@@ -42,8 +42,9 @@ export = {
     'fails when triggers have duplicate names'(test: Test) {
       const stack = new Stack();
 
-      const props = { repositoryName: 'MyRepository' };
-      const myRepository = new Repository(stack, 'MyRepository', props).notify('myTrigger');
+      const myRepository = new Repository(stack, 'MyRepository', {
+        repositoryName: 'MyRepository',
+      }).notify('myTrigger');
 
       test.throws(() => myRepository.notify('myTrigger'));
 
@@ -59,8 +60,8 @@ export = {
       const repo = Repository.fromRepositoryArn(stack, 'ImportedRepo', repositoryArn);
 
       // THEN
-      test.deepEqual(repo.node.resolve(repo.repositoryArn), repositoryArn);
-      test.deepEqual(repo.node.resolve(repo.repositoryName), 'my-repo');
+      test.deepEqual(stack.resolve(repo.repositoryArn), repositoryArn);
+      test.deepEqual(stack.resolve(repo.repositoryName), 'my-repo');
 
       test.done();
     },
@@ -73,7 +74,7 @@ export = {
       const repo = Repository.fromRepositoryName(stack, 'ImportedRepo', 'my-repo');
 
       // THEN
-      test.deepEqual(repo.node.resolve(repo.repositoryArn), {
+      test.deepEqual(stack.resolve(repo.repositoryArn), {
         'Fn::Join': ['', [
           'arn:',
           { Ref: 'AWS::Partition' },
@@ -84,7 +85,7 @@ export = {
           ':my-repo'
         ]],
       });
-      test.deepEqual(repo.node.resolve(repo.repositoryName), 'my-repo');
+      test.deepEqual(stack.resolve(repo.repositoryName), 'my-repo');
 
       test.done();
     },

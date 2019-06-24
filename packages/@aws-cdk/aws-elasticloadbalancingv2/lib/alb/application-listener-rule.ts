@@ -1,4 +1,4 @@
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import { CfnListenerRule } from '../elasticloadbalancingv2.generated';
 import { IApplicationListener } from './application-listener';
 import { IApplicationTargetGroup } from './application-target-group';
@@ -130,8 +130,8 @@ export class ApplicationListenerRule extends cdk.Construct {
     const resource = new CfnListenerRule(this, 'Resource', {
       listenerArn: props.listener.listenerArn,
       priority: props.priority,
-      conditions: new cdk.Token(() => this.renderConditions()),
-      actions: new cdk.Token(() => this.actions),
+      conditions: cdk.Lazy.anyValue({ produce: () => this.renderConditions() }),
+      actions: cdk.Lazy.anyValue({ produce: () => this.actions }),
     });
 
     if (props.hostHeader) {

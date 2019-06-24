@@ -1,5 +1,5 @@
 import ecs = require('@aws-cdk/aws-ecs');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import { LoadBalancedServiceBase, LoadBalancedServiceBaseProps } from '../base/load-balanced-service-base';
 
 /**
@@ -52,17 +52,20 @@ export class LoadBalancedEc2Service extends LoadBalancedServiceBase {
       image: props.image,
       memoryLimitMiB: props.memoryLimitMiB,
       memoryReservationMiB: props.memoryReservationMiB,
-      environment: props.environment
+      environment: props.environment,
+      logging: this.logDriver,
     });
 
     container.addPortMappings({
       containerPort: props.containerPort || 80
     });
 
+    const assignPublicIp = props.publicTasks !== undefined ? props.publicTasks : false;
     const service = new ecs.Ec2Service(this, "Service", {
       cluster: props.cluster,
       desiredCount: props.desiredCount || 1,
-      taskDefinition
+      taskDefinition,
+      assignPublicIp
     });
 
     this.service = service;

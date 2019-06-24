@@ -3,7 +3,7 @@ import ec2 = require('@aws-cdk/aws-ec2');
 import targets = require('@aws-cdk/aws-events-targets');
 import lambda = require('@aws-cdk/aws-lambda');
 import logs = require('@aws-cdk/aws-logs');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import { Test } from 'nodeunit';
 import rds = require('../lib');
 
@@ -15,17 +15,17 @@ export = {
 
     // WHEN
     new rds.DatabaseInstance(stack, 'Instance', {
-      engine: rds.DatabaseInstanceEngine.OracleSE1,
-      licenseModel: rds.LicenseModel.BringYourOwnLicense,
-      instanceClass: new ec2.InstanceTypePair(ec2.InstanceClass.Burstable2, ec2.InstanceSize.Medium),
+      engine: rds.DatabaseInstanceEngine.ORACLE_SE1,
+      licenseModel: rds.LicenseModel.BRING_YOUR_OWN_LICENSE,
+      instanceClass: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.MEDIUM),
       multiAz: true,
       storageType: rds.StorageType.IO1,
       masterUsername: 'syscdk',
       vpc,
       databaseName: 'ORCL',
       storageEncrypted: true,
-      backupRetentionPeriod: 7,
-      monitoringInterval: 60,
+      backupRetention: cdk.Duration.days(7),
+      monitoringInterval: cdk.Duration.minutes(1),
       enablePerformanceInsights: true,
       cloudwatchLogsExports: [
         'trace',
@@ -33,7 +33,7 @@ export = {
         'alert',
         'listener'
       ],
-      cloudwatchLogsRetention: logs.RetentionDays.OneMonth,
+      cloudwatchLogsRetention: logs.RetentionDays.ONE_MONTH,
       autoMinorVersionUpgrade: false,
     });
 
@@ -43,7 +43,7 @@ export = {
         DBInstanceClass: 'db.t2.medium',
         AllocatedStorage: '100',
         AutoMinorVersionUpgrade: false,
-        BackupRetentionPeriod: '7',
+        BackupRetentionPeriod: 7,
         CopyTagsToSnapshot: true,
         DBName: 'ORCL',
         DBSubnetGroupName: {
@@ -121,9 +121,6 @@ export = {
         },
         {
           Ref: 'VPCPrivateSubnet2SubnetCFCDAA7A'
-        },
-        {
-          Ref: 'VPCPrivateSubnet3Subnet3EDCD457'
         }
       ]
     }));
@@ -191,7 +188,7 @@ export = {
     const vpc = new ec2.Vpc(stack, 'VPC');
 
     const optionGroup = new rds.OptionGroup(stack, 'OptionGroup', {
-      engine: rds.DatabaseInstanceEngine.OracleSE1,
+      engine: rds.DatabaseInstanceEngine.ORACLE_SE1,
       majorEngineVersion: '11.2',
       configurations: [
         {
@@ -210,8 +207,8 @@ export = {
 
     // WHEN
     new rds.DatabaseInstance(stack, 'Database', {
-      engine: rds.DatabaseInstanceEngine.SqlServerEE,
-      instanceClass: new ec2.InstanceTypePair(ec2.InstanceClass.Burstable2, ec2.InstanceSize.Small),
+      engine: rds.DatabaseInstanceEngine.SQL_SERVER_EE,
+      instanceClass: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
       masterUsername: 'syscdk',
       masterUserPassword: cdk.SecretValue.plainText('tooshort'),
       vpc,
@@ -239,8 +236,8 @@ export = {
     // WHEN
     new rds.DatabaseInstanceFromSnapshot(stack, 'Instance', {
       snapshotIdentifier: 'my-snapshot',
-      engine: rds.DatabaseInstanceEngine.Postgres,
-      instanceClass: new ec2.InstanceTypePair(ec2.InstanceClass.Burstable2, ec2.InstanceSize.Large),
+      engine: rds.DatabaseInstanceEngine.POSTGRES,
+      instanceClass: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.LARGE),
       vpc
     });
 
@@ -259,8 +256,8 @@ export = {
     // THEN
     test.throws(() => new rds.DatabaseInstanceFromSnapshot(stack, 'Instance', {
       snapshotIdentifier: 'my-snapshot',
-      engine: rds.DatabaseInstanceEngine.Mysql,
-      instanceClass: new ec2.InstanceTypePair(ec2.InstanceClass.Burstable2, ec2.InstanceSize.Large),
+      engine: rds.DatabaseInstanceEngine.MYSQL,
+      instanceClass: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.LARGE),
       vpc,
       generateMasterUserPassword: true,
     }), /`masterUsername`.*`generateMasterUserPassword`/);
@@ -273,8 +270,8 @@ export = {
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'VPC');
     const sourceInstance = new rds.DatabaseInstance(stack, 'Instance', {
-      engine: rds.DatabaseInstanceEngine.Mysql,
-      instanceClass: new ec2.InstanceTypePair(ec2.InstanceClass.Burstable2, ec2.InstanceSize.Small),
+      engine: rds.DatabaseInstanceEngine.MYSQL,
+      instanceClass: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
       masterUsername: 'admin',
       vpc
     });
@@ -282,8 +279,8 @@ export = {
     // WHEN
     new rds.DatabaseInstanceReadReplica(stack, 'ReadReplica', {
       sourceDatabaseInstance: sourceInstance,
-      engine: rds.DatabaseInstanceEngine.Mysql,
-      instanceClass: new ec2.InstanceTypePair(ec2.InstanceClass.Burstable2, ec2.InstanceSize.Large),
+      engine: rds.DatabaseInstanceEngine.MYSQL,
+      instanceClass: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.LARGE),
       vpc
     });
 
@@ -302,19 +299,81 @@ export = {
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'VPC');
     const instance = new rds.DatabaseInstance(stack, 'Instance', {
-      engine: rds.DatabaseInstanceEngine.Mysql,
-      instanceClass: new ec2.InstanceTypePair(ec2.InstanceClass.Burstable2, ec2.InstanceSize.Small),
+      engine: rds.DatabaseInstanceEngine.MYSQL,
+      instanceClass: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
       masterUsername: 'admin',
       vpc
     });
     const fn = new lambda.Function(stack, 'Function', {
       code: lambda.Code.inline('dummy'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NodeJS810
+      runtime: lambda.Runtime.NODEJS_8_10
     });
 
     // WHEN
     instance.onEvent('InstanceEvent', { target: new targets.LambdaFunction(fn) });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::Events::Rule', {
+      EventPattern: {
+        source: [
+          'aws.rds'
+        ],
+        resources: [
+          {
+            'Fn::Join': [
+              '',
+              [
+                'arn:',
+                {
+                  Ref: 'AWS::Partition'
+                },
+                ':rds:',
+                {
+                  Ref: 'AWS::Region'
+                },
+                ':',
+                {
+                  Ref: 'AWS::AccountId'
+                },
+                ':db:',
+                {
+                  Ref: 'InstanceC1063A87'
+                }
+              ]
+            ]
+          }
+        ]
+      },
+      Targets: [
+        {
+          Arn: {
+            'Fn::GetAtt': [
+              'Function76856677',
+              'Arn'
+            ],
+          },
+          Id: 'Function'
+        }
+      ]
+    }));
+
+    test.done();
+  },
+
+  'on event without target'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const instance = new rds.DatabaseInstance(stack, 'Instance', {
+      engine: rds.DatabaseInstanceEngine.MYSQL,
+      instanceClass: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+      masterUsername: 'admin',
+      vpc
+    });
+
+    // WHEN
+    instance.onEvent('InstanceEvent');
 
     // THEN
     expect(stack).to(haveResource('AWS::Events::Rule', {
@@ -360,20 +419,73 @@ export = {
 
     // WHEN
     const instance = new rds.DatabaseInstance(stack, 'Instance', {
-      engine: rds.DatabaseInstanceEngine.Mysql,
-      instanceClass: new ec2.InstanceTypePair(ec2.InstanceClass.Burstable2, ec2.InstanceSize.Small),
+      engine: rds.DatabaseInstanceEngine.MYSQL,
+      instanceClass: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
       masterUsername: 'admin',
       vpc
     });
 
     // THEN
-    test.deepEqual(stack.node.resolve(instance.metricCPUUtilization()), {
+    test.deepEqual(stack.resolve(instance.metricCPUUtilization()), {
       dimensions: { DBInstanceIdentifier: { Ref: 'InstanceC1063A87' } },
       namespace: 'AWS/RDS',
       metricName: 'CPUUtilization',
-      periodSec: 300,
+      period: cdk.Duration.minutes(5),
       statistic: 'Average'
     });
+
+    test.done();
+  },
+
+  'can resolve endpoint port and socket address'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    const instance = new rds.DatabaseInstance(stack, 'Instance', {
+      engine: rds.DatabaseInstanceEngine.MYSQL,
+      instanceClass: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+      masterUsername: 'admin',
+      vpc
+    });
+
+    test.deepEqual(stack.resolve(instance.instanceEndpoint.port), {
+      'Fn::GetAtt': ['InstanceC1063A87', 'Endpoint.Port']
+    });
+
+    test.deepEqual(stack.resolve(instance.instanceEndpoint.socketAddress), {
+      'Fn::Join': [
+        '',
+        [
+          { 'Fn::GetAtt': ['InstanceC1063A87', 'Endpoint.Address'] },
+          ':',
+          { 'Fn::GetAtt': ['InstanceC1063A87', 'Endpoint.Port'] },
+        ]
+      ]
+    });
+
+    test.done();
+  },
+
+  'can deactivate backup'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    new rds.DatabaseInstance(stack, 'Instance', {
+      engine: rds.DatabaseInstanceEngine.MYSQL,
+      instanceClass: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+      masterUsername: 'admin',
+      vpc,
+      backupRetention: cdk.Duration.seconds(0),
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::RDS::DBInstance', {
+      BackupRetentionPeriod: 0
+    }));
 
     test.done();
   }

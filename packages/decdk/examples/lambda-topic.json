@@ -8,7 +8,7 @@
       "Type": "@aws-cdk/aws-lambda.Function",
       "Properties": {
         "code": { "asset": { "path": "." } },
-        "runtime": "NodeJS",
+        "runtime": "NODEJS",
         "handler": "index.handler",
         "events": [
           { "@aws-cdk/aws-lambda-event-sources.SnsEventSource": { "topic": { "Ref": "Topic" } } }

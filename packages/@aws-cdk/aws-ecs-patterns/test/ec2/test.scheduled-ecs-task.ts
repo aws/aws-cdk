@@ -1,7 +1,8 @@
 import { expect, haveResource } from '@aws-cdk/assert';
 import ec2 = require('@aws-cdk/aws-ec2');
 import ecs = require('@aws-cdk/aws-ecs');
-import cdk = require('@aws-cdk/cdk');
+import events = require('@aws-cdk/aws-events');
+import cdk = require('@aws-cdk/core');
 import { Test } from 'nodeunit';
 import { ScheduledEc2Task } from '../../lib';
 
@@ -19,7 +20,7 @@ export = {
       cluster,
       image: ecs.ContainerImage.fromRegistry('henk'),
       memoryLimitMiB: 512,
-      scheduleExpression: 'rate(1 minute)'
+      schedule: events.Schedule.expression('rate(1 minute)')
     });
 
     // THEN
@@ -31,7 +32,7 @@ export = {
             TaskCount: 1,
             TaskDefinitionArn: { Ref: "ScheduledEc2TaskScheduledTaskDef56328BA4" }
           },
-          Id: "ScheduledTaskDef-on-EcsCluster",
+          Id: "ScheduledEc2TaskScheduledTaskDef1EA607E3",
           Input: "{}",
           RoleArn: { "Fn::GetAtt": ["ScheduledEc2TaskScheduledTaskDefEventsRole64113C5F", "Arn"] }
         }
@@ -48,7 +49,7 @@ export = {
             LogDriver: "awslogs",
             Options: {
               "awslogs-group": {
-                Ref: "ScheduledEc2TaskScheduledTaskLoggingLogGroupDBEF2BF3"
+                Ref: "ScheduledEc2TaskScheduledTaskDefScheduledContainerLogGroupA85E11E6"
               },
               "awslogs-stream-prefix": "ScheduledEc2Task",
               "awslogs-region": {
@@ -85,7 +86,7 @@ export = {
       memoryLimitMiB: 512,
       cpu: 2,
       environment: { name: 'TRIGGER', value: 'CloudWatch Events' },
-      scheduleExpression: 'rate(1 minute)'
+      schedule: events.Schedule.expression('rate(1 minute)')
     });
 
     // THEN
@@ -97,7 +98,7 @@ export = {
             TaskCount: 2,
             TaskDefinitionArn: { Ref: "ScheduledEc2TaskScheduledTaskDef56328BA4" }
           },
-          Id: "ScheduledTaskDef-on-EcsCluster",
+          Id: "ScheduledEc2TaskScheduledTaskDef1EA607E3",
           Input: "{}",
           RoleArn: { "Fn::GetAtt": ["ScheduledEc2TaskScheduledTaskDefEventsRole64113C5F", "Arn"] }
         }
@@ -125,7 +126,7 @@ export = {
             LogDriver: "awslogs",
             Options: {
               "awslogs-group": {
-                Ref: "ScheduledEc2TaskScheduledTaskLoggingLogGroupDBEF2BF3"
+                Ref: "ScheduledEc2TaskScheduledTaskDefScheduledContainerLogGroupA85E11E6"
               },
               "awslogs-stream-prefix": "ScheduledEc2Task",
               "awslogs-region": {
@@ -159,7 +160,7 @@ export = {
       cluster,
       image: ecs.ContainerImage.fromRegistry('henk'),
       memoryReservationMiB: 512,
-      scheduleExpression: 'rate(1 minute)'
+      schedule: events.Schedule.expression('rate(1 minute)')
     });
 
     // THEN
@@ -173,7 +174,7 @@ export = {
             LogDriver: "awslogs",
             Options: {
               "awslogs-group": {
-                Ref: "ScheduledEc2TaskScheduledTaskLoggingLogGroupDBEF2BF3"
+                Ref: "ScheduledEc2TaskScheduledTaskDefScheduledContainerLogGroupA85E11E6"
               },
               "awslogs-stream-prefix": "ScheduledEc2Task",
               "awslogs-region": {
@@ -208,7 +209,7 @@ export = {
       image: ecs.ContainerImage.fromRegistry('henk'),
       memoryReservationMiB: 512,
       command: ["-c", "4", "amazon.com"],
-      scheduleExpression: 'rate(1 minute)'
+      schedule: events.Schedule.expression('rate(1 minute)')
     });
 
     // THEN
@@ -227,7 +228,7 @@ export = {
             LogDriver: "awslogs",
             Options: {
               "awslogs-group": {
-                Ref: "ScheduledEc2TaskScheduledTaskLoggingLogGroupDBEF2BF3"
+                Ref: "ScheduledEc2TaskScheduledTaskDefScheduledContainerLogGroupA85E11E6"
               },
               "awslogs-stream-prefix": "ScheduledEc2Task",
               "awslogs-region": {

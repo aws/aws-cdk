@@ -1,6 +1,6 @@
 import ec2 = require('@aws-cdk/aws-ec2');
 import elbv2 = require('@aws-cdk/aws-elasticloadbalancingv2');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import ecs = require('../../lib');
 
 const app = new cdk.App();
@@ -11,8 +11,8 @@ const vpc = new ec2.Vpc(stack, 'Vpc', { maxAZs: 2 });
 const cluster = new ecs.Cluster(stack, 'FargateCluster', { vpc });
 
 const taskDefinition = new ecs.FargateTaskDefinition(stack, 'TaskDef', {
-  memoryMiB: '1GB',
-  cpu: '512'
+  memoryLimitMiB: 1024,
+  cpu: 512
 });
 
 const container = taskDefinition.addContainer('web', {
@@ -21,7 +21,7 @@ const container = taskDefinition.addContainer('web', {
 
 container.addPortMappings({
   containerPort: 80,
-  protocol: ecs.Protocol.Tcp
+  protocol: ecs.Protocol.TCP
 });
 
 const service = new ecs.FargateService(stack, "Service", {

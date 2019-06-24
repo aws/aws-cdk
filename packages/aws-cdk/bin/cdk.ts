@@ -7,14 +7,13 @@ import yargs = require('yargs');
 import { bootstrapEnvironment, destroyStack, SDK } from '../lib';
 import { environmentsFromDescriptors, globEnvironmentsFromStacks } from '../lib/api/cxapp/environments';
 import { execProgram } from '../lib/api/cxapp/exec';
-import { AppStacks, ExtendedStackSelection } from '../lib/api/cxapp/stacks';
+import { AppStacks, DefaultSelection, ExtendedStackSelection } from '../lib/api/cxapp/stacks';
 import { CloudFormationDeploymentTarget, DEFAULT_TOOLKIT_STACK_NAME } from '../lib/api/deployment-target';
 import { CdkToolkit } from '../lib/cdk-toolkit';
 import { RequireApproval } from '../lib/diff';
 import { availableInitLanguages, cliInit, printAvailableTemplates } from '../lib/init';
 import { data, debug, error, print, setVerbose, success } from '../lib/logging';
 import { PluginHost } from '../lib/plugin';
-import { parseRenames } from '../lib/renames';
 import { serializeStructure } from '../lib/serialize';
 import { Configuration, Settings } from '../lib/settings';
 import version = require('../lib/version');
@@ -31,7 +30,6 @@ async function parseCommandLineArguments() {
     .option('app', { type: 'string', alias: 'a', desc: 'REQUIRED: command-line for executing your app or a cloud assembly directory (e.g. "node bin/my-app.js")', requiresArg: true })
     .option('context', { type: 'array', alias: 'c', desc: 'Add contextual string parameter (KEY=VALUE)', nargs: 1, requiresArg: true })
     .option('plugin', { type: 'array', alias: 'p', desc: 'Name or path of a node package that extend the CDK features. Can be specified multiple times', nargs: 1 })
-    .option('rename', { type: 'string', desc: 'Rename stack name if different from the one defined in the cloud executable ([ORIGINAL:]RENAMED)', requiresArg: true })
     .option('trace', { type: 'boolean', desc: 'Print trace for stack warnings' })
     .option('strict', { type: 'boolean', desc: 'Do not construct stacks with warnings' })
     .option('ignore-errors', { type: 'boolean', default: false, desc: 'Ignores synthesis errors, which will likely produce an invalid output' })
@@ -47,7 +45,7 @@ async function parseCommandLineArguments() {
     .option('toolkit-stack-name', { type: 'string', desc: 'The name of the CDK toolkit stack', requiresArg: true })
     .option('staging', { type: 'boolean', desc: 'copy assets to the output directory (use --no-staging to disable, needed for local debugging the source files with SAM CLI)', default: true })
     .option('output', { type: 'string', alias: 'o', desc: 'emits the synthesized cloud assembly into a directory (default: cdk.out)', requiresArg: true })
-    .command([ 'list', 'ls' ], 'Lists all stacks in the app', yargs => yargs
+    .command([ 'list [STACKS..]', 'ls [STACKS..]' ], 'Lists all stacks in the app', yargs => yargs
       .option('long', { type: 'boolean', default: false, alias: 'l', desc: 'display environment information for each stack' }))
     .command([ 'synthesize [STACKS..]', 'synth [STACKS..]' ], 'Synthesizes and prints the CloudFormation template for this stack', yargs => yargs
       .option('exclusively', { type: 'boolean', alias: 'e', desc: 'only deploy requested stacks, don\'t include dependencies' }))
@@ -112,7 +110,6 @@ async function initCommandLine() {
     configuration,
     aws,
     synthesizer: execProgram,
-    renames: parseRenames(argv.rename)
   });
 
   /** Function to load plug-ins, using configurations additively. */
@@ -176,7 +173,7 @@ async function initCommandLine() {
     switch (command) {
       case 'ls':
       case 'list':
-        return await cliList({ long: args.long });
+        return await cliList(args.STACKS, { long: args.long });
 
       case 'diff':
         return await cli.diff({
@@ -279,7 +276,10 @@ async function initCommandLine() {
     // Only autoselect dependencies if it doesn't interfere with user request or output options
     const autoSelectDependencies = !exclusively;
 
-    const stacks = await appStacks.selectStacks(stackNames, autoSelectDependencies ? ExtendedStackSelection.Upstream : ExtendedStackSelection.None);
+    const stacks = await appStacks.selectStacks(stackNames, {
+      extend: autoSelectDependencies ? ExtendedStackSelection.Upstream : ExtendedStackSelection.None,
+      defaultBehavior: DefaultSelection.AllStacks
+    });
 
     // if we have a single stack, print it to STDOUT
     if (stacks.length === 1) {
@@ -298,11 +298,12 @@ async function initCommandLine() {
       return stacks.map(s => s.template);
     }
 
-    return appStacks.assembly!.directory;
+    // no output to stdout
+    return undefined;
   }
 
-  async function cliList(options: { long?: boolean } = { }) {
-    const stacks = await appStacks.listStacks();
+  async function cliList(selectors: string[], options: { long?: boolean } = { }) {
+    const stacks = await appStacks.selectStacks(selectors, { defaultBehavior: DefaultSelection.AllStacks });
 
     // if we are in "long" mode, emit the array as-is (JSON/YAML)
     if (options.long) {
@@ -325,7 +326,10 @@ async function initCommandLine() {
   }
 
   async function cliDestroy(stackNames: string[], exclusively: boolean, force: boolean, roleArn: string | undefined) {
-    const stacks = await appStacks.selectStacks(stackNames, exclusively ? ExtendedStackSelection.None : ExtendedStackSelection.Downstream);
+    const stacks = await appStacks.selectStacks(stackNames, {
+      extend: exclusively ? ExtendedStackSelection.None : ExtendedStackSelection.Downstream,
+      defaultBehavior: DefaultSelection.OnlySingle
+    });
 
     // The stacks will have been ordered for deployment, so reverse them for deletion.
     stacks.reverse();
@@ -354,7 +358,10 @@ async function initCommandLine() {
    * Match a single stack from the list of available stacks
    */
   async function findStack(name: string): Promise<string> {
-    const stacks = await appStacks.selectStacks([name], ExtendedStackSelection.None);
+    const stacks = await appStacks.selectStacks([name], {
+      extend: ExtendedStackSelection.None,
+      defaultBehavior: DefaultSelection.None
+    });
 
     // Could have been a glob so check that we evaluated to exactly one
     if (stacks.length > 1) {

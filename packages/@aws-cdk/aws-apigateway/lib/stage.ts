@@ -1,4 +1,4 @@
-import { Construct, Resource } from '@aws-cdk/cdk';
+import { Construct, Duration, Resource, Stack } from '@aws-cdk/core';
 import { CfnStage } from './apigateway.generated';
 import { Deployment } from './deployment';
 import { IRestApi } from './restapi';
@@ -85,9 +85,9 @@ export interface StageProps extends StageOptions {
 }
 
 export enum MethodLoggingLevel {
-  Off = 'OFF',
-  Error = 'ERROR',
-  Info = 'INFO'
+  OFF = 'OFF',
+  ERROR = 'ERROR',
+  INFO = 'INFO'
 }
 
 export interface MethodDeploymentOptions {
@@ -145,9 +145,9 @@ export interface MethodDeploymentOptions {
    * higher the TTL, the longer the response will be cached.
    * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-caching.html
    *
-   * @default 300
+   * @default Duration.minutes(5)
    */
-  readonly cacheTtlSeconds?: number;
+  readonly cacheTtl?: Duration;
 
   /**
    * Indicates whether the cached responses are encrypted.
@@ -209,7 +209,7 @@ export class Stage extends Resource {
     if (!path.startsWith('/')) {
       throw new Error(`Path must begin with "/": ${path}`);
     }
-    return `https://${this.restApi.restApiId}.execute-api.${this.node.stack.region}.${this.node.stack.urlSuffix}/${this.stageName}${path}`;
+    return `https://${this.restApi.restApiId}.execute-api.${Stack.of(this).region}.${Stack.of(this).urlSuffix}/${this.stageName}${path}`;
   }
 
   private renderMethodSettings(props: StageProps): CfnStage.MethodSettingProperty[] | undefined {
@@ -224,7 +224,7 @@ export class Stage extends Resource {
       throttlingBurstLimit: props.throttlingBurstLimit,
       throttlingRateLimit: props.throttlingRateLimit,
       cachingEnabled: props.cachingEnabled,
-      cacheTtlSeconds: props.cacheTtlSeconds,
+      cacheTtl: props.cacheTtl,
       cacheDataEncrypted: props.cacheDataEncrypted
     };
 
@@ -256,7 +256,7 @@ export class Stage extends Resource {
       return {
         httpMethod, resourcePath,
         cacheDataEncrypted: options.cacheDataEncrypted,
-        cacheTtlInSeconds: options.cacheTtlSeconds,
+        cacheTtlInSeconds: options.cacheTtl && options.cacheTtl.toSeconds(),
         cachingEnabled: options.cachingEnabled,
         dataTraceEnabled: options.dataTraceEnabled,
         loggingLevel: options.loggingLevel,

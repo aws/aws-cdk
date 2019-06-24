@@ -2,7 +2,7 @@ import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
 import ec2 = require('@aws-cdk/aws-ec2');
 import elbv2 = require('@aws-cdk/aws-elasticloadbalancingv2');
 import iam = require('@aws-cdk/aws-iam');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import { Test } from 'nodeunit';
 import apigateway = require('../lib');
 import { ConnectionType, EmptyModel, ErrorModel } from '../lib';
@@ -112,7 +112,7 @@ export = {
   'use default integration from api'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
-    const defaultIntegration = new apigateway.Integration({ type: apigateway.IntegrationType.HttpProxy, uri: 'https://amazon.com' });
+    const defaultIntegration = new apigateway.Integration({ type: apigateway.IntegrationType.HTTP_PROXY, uri: 'https://amazon.com' });
     const api = new apigateway.RestApi(stack, 'test-api', {
       cloudWatchRole: false,
       deploy: false,
@@ -148,7 +148,7 @@ export = {
     });
 
     // THEN
-    test.deepEqual(method.node.resolve(method.methodArn), {
+    test.deepEqual(stack.resolve(method.methodArn), {
       "Fn::Join": [
         "",
         [
@@ -182,7 +182,7 @@ export = {
     });
 
     // THEN
-    test.deepEqual(method.node.resolve(method.testMethodArn), {
+    test.deepEqual(stack.resolve(method.testMethodArn), {
       "Fn::Join": [
         "",
         [
@@ -223,7 +223,7 @@ export = {
 
     // WHEN
     api.root.addMethod('GET', new apigateway.Integration({
-      type: apigateway.IntegrationType.AwsProxy,
+      type: apigateway.IntegrationType.AWS_PROXY,
       options: {
         credentialsRole: role
       }
@@ -245,7 +245,7 @@ export = {
 
     // WHEN
     api.root.addMethod('GET', new apigateway.Integration({
-      type: apigateway.IntegrationType.AwsProxy,
+      type: apigateway.IntegrationType.AWS_PROXY,
       options: {
         credentialsPassthrough: true
       }
@@ -268,7 +268,7 @@ export = {
 
     // WHEN
     const integration = new apigateway.Integration({
-      type: apigateway.IntegrationType.AwsProxy,
+      type: apigateway.IntegrationType.AWS_PROXY,
       options: {
         credentialsPassthrough: true,
         credentialsRole: role
@@ -287,10 +287,10 @@ export = {
 
     // WHEN
     const integration = new apigateway.Integration({
-      type: apigateway.IntegrationType.HttpProxy,
+      type: apigateway.IntegrationType.HTTP_PROXY,
       integrationHttpMethod: 'ANY',
       options: {
-        connectionType: ConnectionType.VpcLink,
+        connectionType: ConnectionType.VPC_LINK,
       }
     });
 
@@ -313,10 +313,10 @@ export = {
 
     // WHEN
     const integration = new apigateway.Integration({
-      type: apigateway.IntegrationType.HttpProxy,
+      type: apigateway.IntegrationType.HTTP_PROXY,
       integrationHttpMethod: 'ANY',
       options: {
-        connectionType: ConnectionType.Internet,
+        connectionType: ConnectionType.INTERNET,
         vpcLink: link
       }
     });

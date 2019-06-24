@@ -1,4 +1,4 @@
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import servicediscovery = require('../lib');
 
 const app = new cdk.App();
@@ -11,7 +11,7 @@ const namespace = new servicediscovery.PublicDnsNamespace(stack, 'Namespace', {
 const service = namespace.createService('Service', {
   name: 'foo',
   dnsRecordType: servicediscovery.DnsRecordType.CNAME,
-  dnsTtlSec: 30
+  dnsTtl: cdk.Duration.seconds(30)
 });
 
 service.registerCnameInstance('CnameInstance', {

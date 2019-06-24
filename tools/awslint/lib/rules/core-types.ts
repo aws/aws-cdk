@@ -2,14 +2,15 @@ import reflect = require("jsii-reflect");
 import { TypeSystem } from "jsii-reflect";
 import { getDocTag } from "./util";
 
-const CORE_MODULE = "@aws-cdk/cdk";
+const CORE_MODULE = "@aws-cdk/core";
 enum CoreTypesFqn {
-  CfnResource = "@aws-cdk/cdk.CfnResource",
-  Construct = "@aws-cdk/cdk.Construct",
-  ConstructInterface = "@aws-cdk/cdk.IConstruct",
-  Resource = "@aws-cdk/cdk.Resource",
-  ResourceInterface = "@aws-cdk/cdk.IResource",
-  Token = "@aws-cdk/cdk.Token"
+  CfnResource = "@aws-cdk/core.CfnResource",
+  Construct = "@aws-cdk/core.Construct",
+  ConstructInterface = "@aws-cdk/core.IConstruct",
+  Resource = "@aws-cdk/core.Resource",
+  ResourceInterface = "@aws-cdk/core.IResource",
+  ResolvableInterface = "@aws-cdk/core.IResolvable",
+  PhysicalName = "@aws-cdk/core.PhysicalName"
 }
 
 export class CoreTypes {
@@ -108,8 +109,12 @@ export class CoreTypes {
   /**
    * @returns `classType` for the core type Token
    */
-  public get tokenClass() {
-    return this.sys.findClass(CoreTypesFqn.Token);
+  public get tokenInterface() {
+    return this.sys.findInterface(CoreTypesFqn.ResolvableInterface);
+  }
+
+  public get physicalNameClass() {
+    return this.sys.findClass(CoreTypesFqn.PhysicalName)
   }
 
   private readonly sys: TypeSystem;

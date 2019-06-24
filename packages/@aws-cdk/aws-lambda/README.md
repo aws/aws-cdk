@@ -5,6 +5,9 @@
 
 ![Stability: Experimental](https://img.shields.io/badge/stability-Experimental-important.svg?style=for-the-badge)
 
+> **This is a _developer preview_ (public beta) module. Releases might lack important features and might have
+> future breaking changes.**
+> 
 > This API is still under active development and subject to non-backward
 > compatible changes or removal in any future version. Use of the API is not recommended in production
 > environments. Experimental APIs are not subject to the Semantic Versioning model.
@@ -18,7 +21,7 @@ This construct library allows you to define AWS Lambda Functions.
 import lambda = require('@aws-cdk/aws-lambda');
 
 const fn = new lambda.Function(this, 'MyFunction', {
-    runtime: lambda.Runtime.NodeJS810,
+    runtime: lambda.Runtime.Nodejs810,
     handler: 'index.handler',
     code: lambda.Code.asset('./lambda-handler'),
 });
@@ -100,7 +103,7 @@ See the documentation for the __@aws-cdk/aws-lambda-event-sources__ module for m
 import lambda = require('@aws-cdk/aws-lambda');
 
 const fn = new lambda.Function(this, 'MyFunction', {
-    runtime: lambda.Runtime.NodeJS810,
+    runtime: lambda.Runtime.Nodejs810,
     handler: 'index.handler',
     code: lambda.Code.inline('exports.handler = function(event, ctx, cb) { return cb(null, "hi"); }'),
     deadLetterQueueEnabled: true
@@ -115,7 +118,7 @@ to learn more about AWS Lambdas and DLQs.
 import lambda = require('@aws-cdk/aws-lambda');
 
 const fn = new lambda.Function(this, 'MyFunction', {
-    runtime: lambda.Runtime.NodeJS810,
+    runtime: lambda.Runtime.Nodejs810,
     handler: 'index.handler',
     code: lambda.Code.inline('exports.handler = function(event, ctx, cb) { return cb(null, "hi"); }'),
     tracing: lambda.Tracing.Active
@@ -130,7 +133,7 @@ to learn more about AWS Lambda's X-Ray support.
 import lambda = require('@aws-cdk/aws-lambda');
 
 const fn = new lambda.Function(this, 'MyFunction', {
-    runtime: lambda.Runtime.NodeJS810,
+    runtime: lambda.Runtime.Nodejs810,
     handler: 'index.handler',
     code: lambda.Code.inline('exports.handler = function(event, ctx, cb) { return cb(null, "hi"); }'),
     reservedConcurrentExecutions: 100

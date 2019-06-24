@@ -1,7 +1,7 @@
 import '@aws-cdk/assert/jest';
 import lambda = require('@aws-cdk/aws-lambda');
 import logs = require('@aws-cdk/aws-logs');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import dests = require('../lib');
 
 test('lambda can be used as metric subscription destination', () => {
@@ -10,7 +10,7 @@ test('lambda can be used as metric subscription destination', () => {
   const fn = new lambda.Function(stack, 'MyLambda', {
     code: new lambda.InlineCode('foo'),
     handler: 'index.handler',
-    runtime: lambda.Runtime.NodeJS810,
+    runtime: lambda.Runtime.NODEJS_8_10,
   });
   const logGroup = new logs.LogGroup(stack, 'LogGroup');
 

@@ -1,5 +1,5 @@
-import cdk = require('@aws-cdk/cdk');
-import { Resource } from '@aws-cdk/cdk';
+import cdk = require('@aws-cdk/core');
+import { Resource } from '@aws-cdk/core';
 import { IFunction } from './function-base';
 import { CfnEventSourceMapping } from './lambda.generated';
 
@@ -82,11 +82,11 @@ export enum StartingPosition {
    * Start reading at the last untrimmed record in the shard in the system,
    * which is the oldest data record in the shard.
    */
-  TrimHorizon = 'TRIM_HORIZON',
+  TRIM_HORIZON = 'TRIM_HORIZON',
 
   /**
    * Start reading just after the most recent record in the shard, so that you
    * always read the most recent data in the shard
    */
-  Latest = 'LATEST',
+  LATEST = 'LATEST',
 }

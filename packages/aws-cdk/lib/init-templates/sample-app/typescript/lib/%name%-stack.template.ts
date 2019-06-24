@@ -1,6 +1,7 @@
 import sns = require('@aws-cdk/aws-sns');
+const subs = require('@aws-cdk/aws-sns-subscriptions');
 import sqs = require('@aws-cdk/aws-sqs');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 
 export class %name.PascalCased%Stack extends cdk.Stack {
   constructor(scope: cdk.App, id: string, props?: cdk.StackProps) {
@@ -12,6 +13,6 @@ export class %name.PascalCased%Stack extends cdk.Stack {
 
     const topic = new sns.Topic(this, '%name.PascalCased%Topic');
 
-    topic.subscribeQueue(queue);
+    topic.addSubscription(new subs.SqsSubscription(queue));
   }
 }

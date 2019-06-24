@@ -1,4 +1,4 @@
-import { Construct, Resource } from '@aws-cdk/cdk';
+import { Construct, Resource } from '@aws-cdk/core';
 import { CommonTaskDefinitionProps, Compatibility, ITaskDefinition, NetworkMode, TaskDefinition } from '../base/task-definition';
 
 /**
@@ -16,7 +16,7 @@ export interface FargateTaskDefinitionProps extends CommonTaskDefinitionProps {
    *
    * @default 256
    */
-  readonly cpu?: string;
+  readonly cpu?: number;
 
   /**
    * The amount (in MiB) of memory used by the task.
@@ -36,7 +36,7 @@ export interface FargateTaskDefinitionProps extends CommonTaskDefinitionProps {
    *
    * @default 512
    */
-  readonly memoryMiB?: string;
+  readonly memoryLimitMiB?: number;
 }
 
 export interface IFargateTaskDefinition extends ITaskDefinition {
@@ -52,7 +52,7 @@ export class FargateTaskDefinition extends TaskDefinition implements IFargateTas
   public static fromFargateTaskDefinitionArn(scope: Construct, id: string, fargateTaskDefinitionArn: string): IFargateTaskDefinition {
     class Import extends Resource implements IFargateTaskDefinition {
       public readonly taskDefinitionArn = fargateTaskDefinitionArn;
-      public readonly compatibility = Compatibility.Fargate;
+      public readonly compatibility = Compatibility.FARGATE;
       public readonly isEc2Compatible = false;
       public readonly isFargateCompatible = true;
     }
@@ -63,7 +63,7 @@ export class FargateTaskDefinition extends TaskDefinition implements IFargateTas
   /**
    * The configured network mode
    */
-  public readonly networkMode: NetworkMode = NetworkMode.AwsVpc;
+  public readonly networkMode: NetworkMode = NetworkMode.AWS_VPC;
   // NOTE: Until the fix to https://github.com/Microsoft/TypeScript/issues/26969 gets released,
   // we need to explicitly write the type here, as type deduction for enums won't lead to
   // the import being generated in the .d.ts file.
@@ -71,10 +71,10 @@ export class FargateTaskDefinition extends TaskDefinition implements IFargateTas
   constructor(scope: Construct, id: string, props: FargateTaskDefinitionProps = {}) {
     super(scope, id, {
       ...props,
-      cpu: props.cpu || '256',
-      memoryMiB: props.memoryMiB || '512',
-      compatibility: Compatibility.Fargate,
-      networkMode: NetworkMode.AwsVpc,
+      cpu: props.cpu !== undefined ? String(props.cpu) : '256',
+      memoryMiB: props.memoryLimitMiB !== undefined ? String(props.memoryLimitMiB) : '512',
+      compatibility: Compatibility.FARGATE,
+      networkMode: NetworkMode.AWS_VPC,
     });
   }
 }

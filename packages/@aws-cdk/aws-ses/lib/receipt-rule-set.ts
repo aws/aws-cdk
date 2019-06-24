@@ -1,4 +1,4 @@
-import { Construct, IResource, Resource } from '@aws-cdk/cdk';
+import { Construct, IResource, Resource } from '@aws-cdk/core';
 import { DropSpamReceiptRule, ReceiptRule, ReceiptRuleOptions } from './receipt-rule';
 import { CfnReceiptRuleSet } from './ses.generated';
 
@@ -28,7 +28,7 @@ export interface ReceiptRuleSetProps {
    *
    * @default - A CloudFormation generated name.
    */
-  readonly name?: string;
+  readonly receiptRuleSetName?: string;
 
   /**
    * The list of rules to add to this rule set. Rules are added in the same
@@ -96,14 +96,16 @@ export class ReceiptRuleSet extends ReceiptRuleSetBase {
 
   public readonly receiptRuleSetName: string;
 
-  constructor(scope: Construct, id: string, props?: ReceiptRuleSetProps) {
-    super(scope, id);
-
-    const resource = new CfnReceiptRuleSet(this, 'Resource', {
-      ruleSetName: props ? props.name : undefined
+  constructor(scope: Construct, id: string, props: ReceiptRuleSetProps = {}) {
+    super(scope, id, {
+      physicalName: props.receiptRuleSetName,
     });
 
-    this.receiptRuleSetName = resource.receiptRuleSetName;
+    const resource = new CfnReceiptRuleSet(this, 'Resource', {
+      ruleSetName: this.physicalName,
+    });
+
+    this.receiptRuleSetName = resource.ref;
 
     if (props) {
       const rules = props.rules || [];

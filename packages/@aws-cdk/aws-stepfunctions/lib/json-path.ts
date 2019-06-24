@@ -1,15 +1,31 @@
-import { Token, TokenMap } from '@aws-cdk/cdk';
+import { captureStackTrace, IResolvable, IResolveContext, Token, Tokenization } from '@aws-cdk/core';
 
 const JSON_PATH_TOKEN_SYMBOL = Symbol.for('@aws-cdk/aws-stepfunctions.JsonPathToken');
 
-export class JsonPathToken extends Token {
+export class JsonPathToken implements IResolvable {
   public static isJsonPathToken(x: any): x is JsonPathToken {
     return (x as any)[JSON_PATH_TOKEN_SYMBOL] === true;
   }
 
+  public readonly creationStack: string[];
+  public displayHint: string;
+
   constructor(public readonly path: string) {
-    super(() => path, `field${path}`); // Make function to prevent eager evaluation in superclass
+    this.creationStack = captureStackTrace();
+    this.displayHint = path.replace(/^[^a-zA-Z]+/, '');
     Object.defineProperty(this, JSON_PATH_TOKEN_SYMBOL, { value: true });
+  }
+
+  public resolve(_ctx: IResolveContext): any {
+    return this.path;
+  }
+
+  public toString() {
+    return Token.asString(this, { displayHint: this.displayHint });
+  }
+
+  public toJSON() {
+    return `<path:${this.path}>`;
   }
 }
 
@@ -20,7 +36,8 @@ export function renderObject(obj: object | undefined): object | undefined {
   return recurseObject(obj, {
     handleString: renderString,
     handleList: renderStringList,
-    handleNumber: renderNumber
+    handleNumber: renderNumber,
+    handleBoolean: renderBoolean,
   });
 }
 
@@ -47,6 +64,10 @@ export function findReferencedPaths(obj: object | undefined): Set<string> {
       const path = jsonPathNumber(x);
       if (path !== undefined) { found.add(path); }
       return {};
+    },
+
+    handleBoolean(_key: string, _x: boolean) {
+      return {};
     }
   });
 
@@ -57,6 +78,7 @@ interface FieldHandlers {
   handleString(key: string, x: string): {[key: string]: string};
   handleList(key: string, x: string[]): {[key: string]: string[] | string };
   handleNumber(key: string, x: number): {[key: string]: number | string};
+  handleBoolean(key: string, x: boolean): {[key: string]: boolean};
 }
 
 export function recurseObject(obj: object | undefined, handlers: FieldHandlers): object | undefined {
@@ -70,6 +92,8 @@ export function recurseObject(obj: object | undefined, handlers: FieldHandlers):
       Object.assign(ret, handlers.handleNumber(key, value));
     } else if (Array.isArray(value)) {
       Object.assign(ret, recurseArray(key, value, handlers));
+    } else if (typeof value === 'boolean') {
+      Object.assign(ret, handlers.handleBoolean(key, value));
     } else if (value === null || value === undefined) {
       // Nothing
     } else if (typeof value === 'object') {
@@ -128,7 +152,7 @@ function renderString(key: string, value: string): {[key: string]: string} {
 }
 
 /**
- * Render a parameter string
+ * Render a parameter string list
  *
  * If the string value starts with '$.', render it as a path string, otherwise as a direct string.
  */
@@ -142,7 +166,7 @@ function renderStringList(key: string, value: string[]): {[key: string]: string[
 }
 
 /**
- * Render a parameter string
+ * Render a parameter number
  *
  * If the string value starts with '$.', render it as a path string, otherwise as a direct string.
  */
@@ -156,12 +180,19 @@ function renderNumber(key: string, value: number): {[key: string]: number | stri
 }
 
 /**
+ * Render a parameter boolean
+ */
+function renderBoolean(key: string, value: boolean): {[key: string]: boolean} {
+    return { [key]: value };
+}
+
+/**
  * If the indicated string is an encoded JSON path, return the path
  *
  * Otherwise return undefined.
  */
 function jsonPathString(x: string): string | undefined {
-  const fragments = TokenMap.instance().splitString(x);
+  const fragments = Tokenization.reverseString(x);
   const jsonPathTokens = fragments.tokens.filter(JsonPathToken.isJsonPathToken);
 
   if (jsonPathTokens.length > 0 && fragments.length > 1) {
@@ -179,7 +210,7 @@ function jsonPathString(x: string): string | undefined {
  * Otherwise return undefined.
  */
 function jsonPathStringList(x: string[]): string | undefined {
-  return pathFromToken(TokenMap.instance().lookupList(x));
+  return pathFromToken(Tokenization.reverseList(x));
 }
 
 /**
@@ -188,9 +219,9 @@ function jsonPathStringList(x: string[]): string | undefined {
  * Otherwise return undefined.
  */
 function jsonPathNumber(x: number): string | undefined {
-  return pathFromToken(TokenMap.instance().lookupNumberToken(x));
+  return pathFromToken(Tokenization.reverseNumber(x));
 }
 
-function pathFromToken(token: Token | undefined) {
+function pathFromToken(token: IResolvable | undefined) {
   return token && (JsonPathToken.isJsonPathToken(token) ? token.path : undefined);
 }

@@ -1,4 +1,4 @@
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import reflect = require('jsii-reflect');
 import jsonschema = require('jsonschema');
 import { renderFullSchema } from './cdk-schema';
@@ -50,7 +50,7 @@ export class DeclarativeStack extends cdk.Stack {
     delete template.$schema;
 
     // Add an Include construct with what's left of the template
-    new cdk.Include(this, 'Include', { template });
+    new cdk.CfnInclude(this, 'Include', { template });
 
     // replace all "Fn::GetAtt" with tokens that resolve correctly both for
     // constructs and raw resources.
@@ -382,10 +382,10 @@ function invokeMethod(stack: cdk.Stack, method: reflect.Callable, parameters: an
  * an `Fn::GetAtt`.
  */
 function deconstructGetAtt(stack: cdk.Stack, id: string, attribute: string) {
-  new cdk.Token(() => {
+  return cdk.Lazy.stringValue({ produce: () => {
     const res = stack.node.tryFindChild(id);
     if (!res) {
-      const include = stack.node.tryFindChild('Include') as cdk.Include;
+      const include = stack.node.tryFindChild('Include') as cdk.CfnInclude;
       if (!include) {
         throw new Error(`Unexpected - "Include" should be in the stack at this point`);
       }
@@ -399,7 +399,7 @@ function deconstructGetAtt(stack: cdk.Stack, id: string, attribute: string) {
       return { "Fn::GetAtt": [ id, attribute ] };
     }
     return (res as any)[attribute];
-  }).toString();
+  }});
 }
 
 function findConstruct(stack: cdk.Stack, id: string) {
@@ -411,7 +411,7 @@ function findConstruct(stack: cdk.Stack, id: string) {
 }
 
 function processReferences(stack: cdk.Stack) {
-  const include = stack.node.findChild('Include') as cdk.Include;
+  const include = stack.node.findChild('Include') as cdk.CfnInclude;
   if (!include) {
     throw new Error('Unexpected');
   }

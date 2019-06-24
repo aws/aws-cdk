@@ -1,4 +1,4 @@
-import { Construct, Resource, Token } from '@aws-cdk/cdk';
+import { Construct, Lazy, Resource } from '@aws-cdk/core';
 import { CfnListener } from '../elasticloadbalancingv2.generated';
 import { ITargetGroup } from './base-target-group';
 
@@ -18,7 +18,7 @@ export abstract class BaseListener extends Resource {
 
     const resource = new CfnListener(this, 'Resource', {
       ...additionalProps,
-      defaultActions: new Token(() => this.defaultActions),
+      defaultActions: Lazy.anyValue({ produce: () => this.defaultActions }),
     });
 
     this.listenerArn = resource.ref;

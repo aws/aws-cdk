@@ -1,7 +1,8 @@
-import { Construct, Resource, Token } from '@aws-cdk/cdk';
+import { Construct, Lazy, Resource } from '@aws-cdk/core';
 import { EventPattern } from './event-pattern';
 import { CfnRule } from './events.generated';
 import { IRule } from './rule-ref';
+import { Schedule } from './schedule';
 import { IRuleTarget } from './target';
 import { mergeEventPattern } from './util';
 
@@ -39,7 +40,7 @@ export interface RuleProps {
    *
    * @default - None.
    */
-  readonly scheduleExpression?: string;
+  readonly schedule?: Schedule;
 
   /**
    * Describes which events CloudWatch Events routes to the specified target.
@@ -90,21 +91,27 @@ export class Rule extends Resource implements IRule {
   private scheduleExpression?: string;
 
   constructor(scope: Construct, id: string, props: RuleProps = { }) {
-    super(scope, id);
-
-    const resource = new CfnRule(this, 'Resource', {
-      name: props.ruleName,
-      description: props.description,
-      state: props.enabled == null ? 'ENABLED' : (props.enabled ? 'ENABLED' : 'DISABLED'),
-      scheduleExpression: new Token(() => this.scheduleExpression).toString(),
-      eventPattern: new Token(() => this.renderEventPattern()),
-      targets: new Token(() => this.renderTargets()),
+    super(scope, id, {
+      physicalName: props.ruleName,
     });
 
-    this.ruleArn = resource.ruleArn;
+    const resource = new CfnRule(this, 'Resource', {
+      name: this.physicalName,
+      description: props.description,
+      state: props.enabled == null ? 'ENABLED' : (props.enabled ? 'ENABLED' : 'DISABLED'),
+      scheduleExpression: Lazy.stringValue({ produce: () => this.scheduleExpression }),
+      eventPattern: Lazy.anyValue({ produce: () => this.renderEventPattern() }),
+      targets: Lazy.anyValue({ produce: () => this.renderTargets() }),
+    });
+
+    this.ruleArn = this.getResourceArnAttribute(resource.attrArn, {
+      service: 'events',
+      resource: 'rule',
+      resourceName: this.physicalName,
+    });
 
     this.addEventPattern(props.eventPattern);
-    this.scheduleExpression = props.scheduleExpression;
+    this.scheduleExpression = props.schedule && props.schedule.expressionString;
 
     for (const target of props.targets || []) {
       this.addTarget(target);
@@ -189,7 +196,7 @@ export class Rule extends Resource implements IRule {
 
   protected validate() {
     if (Object.keys(this.eventPattern).length === 0 && !this.scheduleExpression) {
-      return [ `Either 'eventPattern' or 'scheduleExpression' must be defined` ];
+      return [ `Either 'eventPattern' or 'schedule' must be defined` ];
     }
 
     return [ ];
@@ -230,5 +237,7 @@ export class Rule extends Resource implements IRule {
  * Result must match regex [\.\-_A-Za-z0-9]+
  */
 function sanitizeId(id: string) {
-  return id.replace(/[^\.\-_A-Za-z0-9]/g, '-');
+  const _id = id.replace(/[^\.\-_A-Za-z0-9]/g, '-');
+  // cut to 64 chars to respect AWS::Events::Rule Target Id field specification
+  return _id.substring(Math.max(_id.length - 64, 0), _id.length);
 }

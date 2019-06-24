@@ -1,4 +1,5 @@
-import { CloudFormationLang, DefaultTokenResolver, IResolveContext, resolve, StringConcat, Token } from '@aws-cdk/cdk';
+import { captureStackTrace, DefaultTokenResolver, IResolvable,
+  IResolveContext, Lazy, Stack, StringConcat, Token, Tokenization } from '@aws-cdk/core';
 import { IRule } from './rule-ref';
 
 /**
@@ -134,7 +135,7 @@ class FieldAwareEventInput extends RuleTargetInput {
       if (existing !== undefined) { return existing; }
 
       fieldCounter += 1;
-      const key = f.nameHint || `f${fieldCounter}`;
+      const key = f.displayHint || `f${fieldCounter}`;
       pathToKey.set(f.path, key);
       return key;
     }
@@ -159,16 +160,18 @@ class FieldAwareEventInput extends RuleTargetInput {
       }
     }
 
+    const stack = Stack.of(rule);
+
     let resolved: string;
     if (this.inputType === InputType.Multiline) {
       // JSONify individual lines
-      resolved = resolve(this.input, {
+      resolved = Tokenization.resolve(this.input, {
         scope: rule,
         resolver: new EventFieldReplacer()
       });
-      resolved = resolved.split('\n').map(CloudFormationLang.toJSON).join('\n');
+      resolved = resolved.split('\n').map(stack.toJsonString).join('\n');
     } else {
-      resolved = CloudFormationLang.toJSON(resolve(this.input, {
+      resolved = stack.toJsonString(Tokenization.resolve(this.input, {
         scope: rule,
         resolver: new EventFieldReplacer()
       }));
@@ -205,9 +208,9 @@ class FieldAwareEventInput extends RuleTargetInput {
   private unquoteKeyPlaceholders(sub: string) {
     if (this.inputType !== InputType.Object) { return sub; }
 
-    return new Token((ctx: IResolveContext) =>
+    return Lazy.stringValue({ produce: (ctx: IResolveContext) =>
       ctx.resolve(sub).replace(OPENING_STRING_REGEX, '<').replace(CLOSING_STRING_REGEX, '>')
-    ).toString();
+    });
   }
 }
 
@@ -220,60 +223,75 @@ const CLOSING_STRING_REGEX = new RegExp(regexQuote(UNLIKELY_CLOSING_STRING + '"'
 /**
  * Represents a field in the event pattern
  */
-export class EventField extends Token {
+export class EventField implements IResolvable {
   /**
    * Extract the event ID from the event
    */
   public static get eventId(): string {
-    return this.fromPath('$.id', 'eventId');
+    return this.fromPath('$.id');
   }
 
   /**
    * Extract the detail type from the event
    */
   public static get detailType(): string {
-    return this.fromPath('$.detail-type', 'detailType');
+    return this.fromPath('$.detail-type');
   }
 
   /**
    * Extract the source from the event
    */
   public static get source(): string {
-    return this.fromPath('$.source', 'source');
+    return this.fromPath('$.source');
   }
 
   /**
    * Extract the account from the event
    */
   public static get account(): string {
-    return this.fromPath('$.account', 'account');
+    return this.fromPath('$.account');
   }
 
   /**
    * Extract the time from the event
    */
   public static get time(): string {
-    return this.fromPath('$.time', 'time');
+    return this.fromPath('$.time');
   }
 
   /**
    * Extract the region from the event
    */
   public static get region(): string {
-    return this.fromPath('$.region', 'region');
+    return this.fromPath('$.region');
   }
 
   /**
    * Extract a custom JSON path from the event
    */
-  public static fromPath(path: string, nameHint?: string): string {
-    return new EventField(path, nameHint).toString();
+  public static fromPath(path: string): string {
+    return new EventField(path).toString();
   }
 
-  private constructor(public readonly path: string, public readonly nameHint?: string) {
-    super(() => path);
+  public readonly displayHint: string;
+  public readonly creationStack: string[];
 
+  private constructor(public readonly path: string) {
+    this.displayHint = this.path.replace(/^[^a-zA-Z0-9_-]+/, '').replace(/[^a-zA-Z0-9_-]/g, '-');
     Object.defineProperty(this, EVENT_FIELD_SYMBOL, { value: true });
+    this.creationStack = captureStackTrace();
+  }
+
+  public resolve(_ctx: IResolveContext): any {
+    return this.path;
+  }
+
+  public toString() {
+    return Token.asString(this, { displayHint: this.displayHint });
+  }
+
+  public toJSON() {
+    return `<path:${this.path}>`;
   }
 }
 

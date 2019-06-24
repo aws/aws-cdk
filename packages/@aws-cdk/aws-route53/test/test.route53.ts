@@ -1,6 +1,6 @@
 import { beASupersetOfTemplate, exactlyMatchTemplate, expect, haveResource } from '@aws-cdk/assert';
 import ec2 = require('@aws-cdk/aws-ec2');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import { Test } from 'nodeunit';
 import { HostedZone, PrivateHostedZone, PublicHostedZone, TxtRecord } from '../lib';
 
@@ -80,7 +80,7 @@ export = {
     new TxtRecord(importedZone as any, 'Record', {
       zone: importedZone,
       recordName: 'lookHere',
-      recordValue: 'SeeThere'
+      values: ['SeeThere']
     });
 
     expect(stack2).to(haveResource("AWS::Route53::RecordSet", {
@@ -182,18 +182,39 @@ export = {
     const delegate = new PublicHostedZone(stack, 'SubZone', { zoneName: 'sub.top.test' });
 
     // WHEN
-    zone.addDelegation(delegate, { ttl: 1337 });
+    zone.addDelegation(delegate, { ttl: cdk.Duration.seconds(1337) });
 
     // THEN
     expect(stack).to(haveResource('AWS::Route53::RecordSet', {
       Type: 'NS',
       Name: 'sub.top.test.',
-      HostedZoneId: zone.node.resolve(zone.hostedZoneId),
-      ResourceRecords: zone.node.resolve(delegate.hostedZoneNameServers),
+      HostedZoneId: stack.resolve(zone.hostedZoneId),
+      ResourceRecords: stack.resolve(delegate.hostedZoneNameServers),
       TTL: '1337',
     }));
     test.done();
   },
+
+  'public hosted zone wiht caaAmazon set to true'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new PublicHostedZone(stack, 'MyHostedZone', {
+      zoneName: 'protected.com',
+      caaAmazon: true
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::Route53::RecordSet', {
+      Type: 'CAA',
+      Name: 'protected.com.',
+      ResourceRecords: [
+        '0 issue "amazon.com"'
+      ]
+    }));
+    test.done();
+  }
 };
 
 class TestApp {

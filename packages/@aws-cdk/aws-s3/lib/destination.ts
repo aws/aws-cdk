@@ -1,4 +1,4 @@
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import { IBucket } from './bucket';
 
 /**
@@ -40,7 +40,7 @@ export interface BucketNotificationDestinationConfig {
  * Supported types of notification destinations.
  */
 export enum BucketNotificationDestinationType {
-  Lambda,
-  Queue,
-  Topic
+  LAMBDA,
+  QUEUE,
+  TOPIC
 }

@@ -1,7 +1,7 @@
 import { expect, haveResource } from '@aws-cdk/assert';
 import dynamodb = require('@aws-cdk/aws-dynamodb');
 import lambda = require('@aws-cdk/aws-lambda');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import { Test } from 'nodeunit';
 import sources = require('../lib');
 import { TestFunction } from './test-function';
@@ -16,14 +16,14 @@ export = {
     const table = new dynamodb.Table(stack, 'T', {
       partitionKey: {
         name: 'id',
-        type: dynamodb.AttributeType.String
+        type: dynamodb.AttributeType.STRING
       },
-      streamSpecification: dynamodb.StreamViewType.NewImage
+      stream: dynamodb.StreamViewType.NEW_IMAGE
     });
 
     // WHEN
     fn.addEventSource(new sources.DynamoEventSource(table, {
-      startingPosition: lambda.StartingPosition.TrimHorizon
+      startingPosition: lambda.StartingPosition.TRIM_HORIZON
     }));
 
     // THEN
@@ -82,15 +82,15 @@ export = {
     const table = new dynamodb.Table(stack, 'T', {
       partitionKey: {
         name: 'id',
-        type: dynamodb.AttributeType.String
+        type: dynamodb.AttributeType.STRING
       },
-      streamSpecification: dynamodb.StreamViewType.NewImage
+      stream: dynamodb.StreamViewType.NEW_IMAGE
     });
 
     // WHEN
     fn.addEventSource(new sources.DynamoEventSource(table, {
       batchSize: 50,
-      startingPosition: lambda.StartingPosition.Latest
+      startingPosition: lambda.StartingPosition.LATEST
     }));
 
     // THEN
@@ -118,15 +118,15 @@ export = {
     const table = new dynamodb.Table(stack, 'T', {
       partitionKey: {
         name: 'id',
-        type: dynamodb.AttributeType.String
+        type: dynamodb.AttributeType.STRING
       },
-      streamSpecification: dynamodb.StreamViewType.NewImage
+      stream: dynamodb.StreamViewType.NEW_IMAGE
     });
 
     // WHEN
     test.throws(() => fn.addEventSource(new sources.DynamoEventSource(table, {
       batchSize: 0,
-      startingPosition: lambda.StartingPosition.Latest
+      startingPosition: lambda.StartingPosition.LATEST
     })), /Maximum batch size must be between 1 and 1000 inclusive \(given 0\)/);
 
     test.done();
@@ -139,15 +139,15 @@ export = {
     const table = new dynamodb.Table(stack, 'T', {
       partitionKey: {
         name: 'id',
-        type: dynamodb.AttributeType.String
+        type: dynamodb.AttributeType.STRING
       },
-      streamSpecification: dynamodb.StreamViewType.NewImage
+      stream: dynamodb.StreamViewType.NEW_IMAGE
     });
 
     // WHEN
     test.throws(() => fn.addEventSource(new sources.DynamoEventSource(table, {
       batchSize: 1001,
-      startingPosition: lambda.StartingPosition.Latest
+      startingPosition: lambda.StartingPosition.LATEST
     })), /Maximum batch size must be between 1 and 1000 inclusive \(given 1001\)/);
 
     test.done();

@@ -1,5 +1,5 @@
 import lambda = require('@aws-cdk/aws-lambda');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import { LambdaIntegration } from './integrations';
 import { Method } from './method';
 import { ProxyResource, Resource } from './resource';

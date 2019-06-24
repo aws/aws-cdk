@@ -1,4 +1,4 @@
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import { Bucket, EventType, NotificationKeyFilter } from '../bucket';
 import { BucketNotificationDestinationType, IBucketNotificationDestination } from '../destination';
 import { NotificationsResourceHandler } from './notifications-resource-handler';
@@ -68,15 +68,15 @@ export class BucketNotifications extends cdk.Construct {
 
     // based on the target type, add the the correct configurations array
     switch (targetProps.type) {
-      case BucketNotificationDestinationType.Lambda:
+      case BucketNotificationDestinationType.LAMBDA:
         this.lambdaNotifications.push({ ...commonConfig, LambdaFunctionArn: targetProps.arn });
         break;
 
-      case BucketNotificationDestinationType.Queue:
+      case BucketNotificationDestinationType.QUEUE:
         this.queueNotifications.push({ ...commonConfig, QueueArn: targetProps.arn });
         break;
 
-      case BucketNotificationDestinationType.Topic:
+      case BucketNotificationDestinationType.TOPIC:
         this.topicNotifications.push({ ...commonConfig, TopicArn: targetProps.arn });
         break;
 
@@ -107,7 +107,7 @@ export class BucketNotifications extends cdk.Construct {
         properties: {
           ServiceToken: handlerArn,
           BucketName: this.bucket.bucketName,
-          NotificationConfiguration: new cdk.Token(() => this.renderNotificationConfiguration())
+          NotificationConfiguration: cdk.Lazy.anyValue({ produce: () => this.renderNotificationConfiguration() })
         }
       });
     }

@@ -1,6 +1,6 @@
 import ec2 = require('@aws-cdk/aws-ec2');
 import kms = require('@aws-cdk/aws-kms');
-import { SecretValue } from '@aws-cdk/cdk';
+import { Duration, SecretValue } from '@aws-cdk/core';
 import { IParameterGroup } from './parameter-group';
 import { SecretRotationApplication } from './secret-rotation';
 
@@ -9,9 +9,9 @@ import { SecretRotationApplication } from './secret-rotation';
  * used for secret rotation.
  */
 export class DatabaseClusterEngine {
-  public static readonly Aurora = new DatabaseClusterEngine('aurora', SecretRotationApplication.MysqlRotationSingleUser);
-  public static readonly AuroraMysql = new DatabaseClusterEngine('aurora-mysql', SecretRotationApplication.MysqlRotationSingleUser);
-  public static readonly AuroraPostgresql = new DatabaseClusterEngine('aurora-postgresql', SecretRotationApplication.PostgresRotationSingleUser);
+  public static readonly AURORA = new DatabaseClusterEngine('aurora', SecretRotationApplication.MYSQL_ROTATION_SINGLE_USER);
+  public static readonly AURORA_MYSQL = new DatabaseClusterEngine('aurora-mysql', SecretRotationApplication.MYSQL_ROTATION_SINGLE_USER);
+  public static readonly AURORA_POSTGRESQL = new DatabaseClusterEngine('aurora-postgresql', SecretRotationApplication.POSTGRES_ROTATION_SINGLE_USER);
 
   /**
    * The engine.
@@ -80,7 +80,7 @@ export interface BackupProps {
   /**
    * How many days to retain the backup
    */
-  readonly retentionDays: number;
+  readonly retention: Duration;
 
   /**
    * A daily time range in 24-hours UTC format in which backups preferably execute.

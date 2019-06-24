@@ -1,5 +1,5 @@
 import s3 = require('@aws-cdk/aws-s3');
-import { Construct, IResource, Resource } from '@aws-cdk/cdk';
+import { Construct, IResource, Resource, Stack } from '@aws-cdk/core';
 import { CfnDatabase } from './glue.generated';
 
 export interface IDatabase extends IResource {
@@ -48,11 +48,13 @@ export interface DatabaseProps {
 export class Database extends Resource implements IDatabase {
 
   public static fromDatabaseArn(scope: Construct, id: string, databaseArn: string): IDatabase {
-    class Import extends Construct implements IDatabase {
+    const stack = Stack.of(scope);
+
+    class Import extends Resource implements IDatabase {
       public databaseArn = databaseArn;
-      public databaseName = scope.node.stack.parseArn(databaseArn).resourceName!;
-      public catalogArn = scope.node.stack.formatArn({ service: 'glue', resource: 'catalog' });
-      public catalogId = scope.node.stack.accountId;
+      public databaseName = stack.parseArn(databaseArn).resourceName!;
+      public catalogArn = stack.formatArn({ service: 'glue', resource: 'catalog' });
+      public catalogId = stack.account;
     }
 
     return new Import(scope, id);
@@ -84,7 +86,9 @@ export class Database extends Resource implements IDatabase {
   public readonly locationUri: string;
 
   constructor(scope: Construct, id: string, props: DatabaseProps) {
-    super(scope, id);
+    super(scope, id, {
+      physicalName: props.databaseName,
+    });
 
     if (props.locationUri) {
       this.locationUri = props.locationUri;
@@ -93,24 +97,25 @@ export class Database extends Resource implements IDatabase {
       this.locationUri = `s3://${bucket.bucketName}/${props.databaseName}`;
     }
 
-    this.catalogId = this.node.stack.accountId;
+    this.catalogId = Stack.of(this).account;
     const resource = new CfnDatabase(this, 'Resource', {
       catalogId: this.catalogId,
       databaseInput: {
-        name: props.databaseName,
+        name: this.physicalName,
         locationUri: this.locationUri
       }
     });
 
     // see https://docs.aws.amazon.com/glue/latest/dg/glue-specifying-resource-arns.html#data-catalog-resource-arns
-    this.databaseName = resource.databaseName;
-    this.databaseArn = this.node.stack.formatArn({
+    this.databaseName = this.getResourceNameAttribute(resource.ref);
+    this.databaseArn = this.stack.formatArn({
       service: 'glue',
       resource: 'database',
-      resourceName: this.databaseName
+      resourceName: this.databaseName,
     });
+
     // catalogId is implicitly the accountId, which is why we don't pass the catalogId here
-    this.catalogArn = this.node.stack.formatArn({
+    this.catalogArn = Stack.of(this).formatArn({
       service: 'glue',
       resource: 'catalog'
     });

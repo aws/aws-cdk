@@ -3,7 +3,7 @@ import { Certificate } from '@aws-cdk/aws-certificatemanager';
 import ec2 = require('@aws-cdk/aws-ec2');
 import ecs = require('@aws-cdk/aws-ecs');
 import { PublicHostedZone } from '@aws-cdk/aws-route53';
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import { Test } from 'nodeunit';
 import ecsPatterns = require('../../lib');
 
@@ -119,7 +119,7 @@ export = {
           LogConfiguration: {
             LogDriver: "awslogs",
             Options: {
-              "awslogs-group": { Ref: "ServiceLoggingLogGroupC3D6A581" },
+              "awslogs-group": { Ref: "ServiceTaskDefwebLogGroup2A898F61" },
               "awslogs-stream-prefix": "Service",
               "awslogs-region": { Ref: "AWS::Region" }
             }
@@ -151,7 +151,7 @@ export = {
       cluster,
       image: ecs.ContainerImage.fromRegistry('test'),
       desiredCount: 2,
-      createLogs: false,
+      enableLogging: false,
       environment: {
         TEST_ENVIRONMENT_VARIABLE1: "test environment variable 1 value",
         TEST_ENVIRONMENT_VARIABLE2: "test environment variable 2 value"
@@ -175,7 +175,7 @@ export = {
           LogConfiguration: {
             LogDriver: "awslogs",
             Options: {
-              "awslogs-group": { Ref: "ServiceLoggingLogGroupC3D6A581" },
+              "awslogs-group": { Ref: "ServiceTaskDefwebLogGroup2A898F61" },
               "awslogs-stream-prefix": "Service",
               "awslogs-region": { Ref: "AWS::Region" }
             }
@@ -249,95 +249,4 @@ export = {
 
     test.done();
   },
-
-  'test Fargateloadbalanced applet'(test: Test) {
-    // WHEN
-    const app = new cdk.App();
-    const stack = new ecsPatterns.LoadBalancedFargateServiceApplet(app, 'Service', {
-      image: 'test',
-      desiredCount: 2,
-      environment: {
-        TEST_ENVIRONMENT_VARIABLE1: "test environment variable 1 value",
-        TEST_ENVIRONMENT_VARIABLE2: "test environment variable 2 value"
-      }
-    });
-
-    // THEN - stack contains a load balancer and a service
-    expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::LoadBalancer'));
-
-    expect(stack).to(haveResource("AWS::ECS::Service", {
-      DesiredCount: 2,
-      LaunchType: "FARGATE",
-    }));
-
-    expect(stack).to(haveResourceLike('AWS::ECS::TaskDefinition', {
-      ContainerDefinitions: [
-        {
-          Environment: [
-            {
-              Name: "TEST_ENVIRONMENT_VARIABLE1",
-              Value: "test environment variable 1 value"
-            },
-            {
-              Name: "TEST_ENVIRONMENT_VARIABLE2",
-              Value: "test environment variable 2 value"
-            }
-          ],
-        }
-      ]
-    }));
-
-    test.done();
-  },
-
-  'test Fargateloadbalanced applet with TLS'(test: Test) {
-    // WHEN
-    const app = new cdk.App();
-    const stack = new ecsPatterns.LoadBalancedFargateServiceApplet(app, 'Service', {
-      image: 'test',
-      desiredCount: 2,
-      domainName: 'api.example.com',
-      domainZone: 'example.com',
-      certificate: 'helloworld'
-    });
-
-    // THEN - stack contains a load balancer and a service
-    expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::LoadBalancer'));
-
-    expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::Listener', {
-      Port: 443,
-      Certificates: [{
-        CertificateArn: "helloworld"
-      }]
-    }));
-
-    expect(stack).to(haveResource("AWS::ECS::Service", {
-      DesiredCount: 2,
-      LaunchType: "FARGATE",
-    }));
-
-    expect(stack).to(haveResource('AWS::Route53::RecordSet', {
-      Name: 'api.example.com.',
-      HostedZoneId: "/hostedzone/DUMMY",
-      Type: 'A',
-      AliasTarget: {
-        HostedZoneId: { 'Fn::GetAtt': ['FargateServiceLBB353E155', 'CanonicalHostedZoneID'] },
-        DNSName: { 'Fn::GetAtt': ['FargateServiceLBB353E155', 'DNSName'] },
-      }
-    }));
-
-    test.done();
-  },
-
-  "errors when setting domainName but not domainZone on applet"(test: Test) {
-    // THEN
-    test.throws(() => {
-      new ecsPatterns.LoadBalancedFargateServiceApplet(new cdk.App(), 'Service', {
-        image: 'test',
-        domainName: 'api.example.com'
-      });
-    });
-
-    test.done();
-  }
 };

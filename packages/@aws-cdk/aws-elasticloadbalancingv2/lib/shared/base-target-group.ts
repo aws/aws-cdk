@@ -1,5 +1,5 @@
 import ec2 = require('@aws-cdk/aws-ec2');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import { CfnTargetGroup } from '../elasticloadbalancingv2.generated';
 import { Protocol, TargetType } from './enums';
 import { Attributes, renderAttributes } from './util';
@@ -31,7 +31,7 @@ export interface BaseTargetGroupProps {
    *
    * @default 300
    */
-  readonly deregistrationDelaySec?: number;
+  readonly deregistrationDelay?: cdk.Duration;
 
   /**
    * Health check configuration
@@ -59,9 +59,9 @@ export interface HealthCheck {
   /**
    * The approximate number of seconds between health checks for an individual target.
    *
-   * @default 30
+   * @default Duration.seconds(30)
    */
-  readonly intervalSecs?: number;
+  readonly interval?: cdk.Duration;
 
   /**
    * The ping path destination where Elastic Load Balancing sends health check requests.
@@ -90,13 +90,13 @@ export interface HealthCheck {
   /**
    * The amount of time, in seconds, during which no response from a target means a failed health check.
    *
-   * For Application Load Balancers, the range is 2–60 seconds and the
+   * For Application Load Balancers, the range is 2-60 seconds and the
    * default is 5 seconds. For Network Load Balancers, this is 10 seconds for
    * TCP and HTTPS health checks and 6 seconds for HTTP health checks.
    *
-   * @default 5 for ALBs, 10 or 6 for NLBs
+   * @default Duration.seconds(5) for ALBs, Duration.seconds(10) or Duration.seconds(6) for NLBs
    */
-  readonly timeoutSeconds?: number;
+  readonly timeout?: cdk.Duration;
 
   /**
    * The number of consecutive health checks successes required before considering an unhealthy target healthy.
@@ -204,8 +204,8 @@ export abstract class TargetGroupBase extends cdk.Construct implements ITargetGr
   constructor(scope: cdk.Construct, id: string, baseProps: BaseTargetGroupProps, additionalProps: any) {
     super(scope, id);
 
-    if (baseProps.deregistrationDelaySec !== undefined) {
-      this.setAttribute('deregistration_delay.timeout_seconds', baseProps.deregistrationDelaySec.toString());
+    if (baseProps.deregistrationDelay !== undefined) {
+      this.setAttribute('deregistration_delay.timeout_seconds', baseProps.deregistrationDelay.toString());
     }
 
     this.healthCheck = baseProps.healthCheck || {};
@@ -213,31 +213,35 @@ export abstract class TargetGroupBase extends cdk.Construct implements ITargetGr
 
     this.resource = new CfnTargetGroup(this, 'Resource', {
       name: baseProps.targetGroupName,
-      targetGroupAttributes: new cdk.Token(() => renderAttributes(this.attributes)),
-      targetType: new cdk.Token(() => this.targetType),
-      targets: new cdk.Token(() => this.targetsJson),
+      targetGroupAttributes: cdk.Lazy.anyValue({ produce: () => renderAttributes(this.attributes) }),
+      targetType: cdk.Lazy.stringValue({ produce: () => this.targetType }),
+      targets: cdk.Lazy.anyValue({ produce: () => this.targetsJson }),
       vpcId: baseProps.vpc.vpcId,
 
       // HEALTH CHECK
-      healthCheckIntervalSeconds: new cdk.Token(() => this.healthCheck && this.healthCheck.intervalSecs),
-      healthCheckPath: new cdk.Token(() => this.healthCheck && this.healthCheck.path),
-      healthCheckPort: new cdk.Token(() => this.healthCheck && this.healthCheck.port),
-      healthCheckProtocol: new cdk.Token(() => this.healthCheck && this.healthCheck.protocol),
-      healthCheckTimeoutSeconds: new cdk.Token(() => this.healthCheck && this.healthCheck.timeoutSeconds),
-      healthyThresholdCount: new cdk.Token(() => this.healthCheck && this.healthCheck.healthyThresholdCount),
-      unhealthyThresholdCount: new cdk.Token(() => this.healthCheck && this.healthCheck.unhealthyThresholdCount),
-      matcher: new cdk.Token(() => this.healthCheck && this.healthCheck.healthyHttpCodes !== undefined ? {
+      healthCheckIntervalSeconds: cdk.Lazy.numberValue({
+        produce: () => this.healthCheck && this.healthCheck.interval && this.healthCheck.interval.toSeconds()
+      }),
+      healthCheckPath: cdk.Lazy.stringValue({ produce: () => this.healthCheck && this.healthCheck.path }),
+      healthCheckPort: cdk.Lazy.stringValue({ produce: () => this.healthCheck && this.healthCheck.port }),
+      healthCheckProtocol: cdk.Lazy.stringValue({ produce: () => this.healthCheck && this.healthCheck.protocol }),
+      healthCheckTimeoutSeconds: cdk.Lazy.numberValue({
+        produce: () => this.healthCheck && this.healthCheck.timeout && this.healthCheck.timeout.toSeconds()
+      }),
+      healthyThresholdCount: cdk.Lazy.numberValue({ produce: () => this.healthCheck && this.healthCheck.healthyThresholdCount }),
+      unhealthyThresholdCount: cdk.Lazy.numberValue({ produce: () => this.healthCheck && this.healthCheck.unhealthyThresholdCount }),
+      matcher: cdk.Lazy.anyValue({ produce: () => this.healthCheck && this.healthCheck.healthyHttpCodes !== undefined ? {
         httpCode: this.healthCheck.healthyHttpCodes
-      } : undefined),
+      } : undefined }),
 
       ...additionalProps
     });
 
-    this.targetGroupLoadBalancerArns = this.resource.targetGroupLoadBalancerArns;
+    this.targetGroupLoadBalancerArns = this.resource.attrLoadBalancerArns;
     this.targetGroupArn = this.resource.ref;
-    this.targetGroupFullName = this.resource.targetGroupFullName;
-    this.loadBalancerArns = this.resource.targetGroupLoadBalancerArns.toString();
-    this.targetGroupName = this.resource.targetGroupName;
+    this.targetGroupFullName = this.resource.attrTargetGroupFullName;
+    this.loadBalancerArns = this.resource.attrLoadBalancerArns.toString();
+    this.targetGroupName = this.resource.attrTargetGroupName;
     this.defaultPort = additionalProps.port;
   }
 

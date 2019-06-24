@@ -1,13 +1,18 @@
 import { ICertificate } from '@aws-cdk/aws-certificatemanager';
 import ecs = require('@aws-cdk/aws-ecs');
 import elbv2 = require('@aws-cdk/aws-elasticloadbalancingv2');
-import cdk = require('@aws-cdk/cdk');
+import { AddressRecordTarget, ARecord, IHostedZone } from '@aws-cdk/aws-route53';
+import route53targets = require('@aws-cdk/aws-route53-targets');
+import cdk = require('@aws-cdk/core');
 
 export enum LoadBalancerType {
-  Application,
-  Network
+  APPLICATION,
+  NETWORK
 }
 
+/**
+ * Base properties for load-balanced Fargate and ECS services
+ */
 export interface LoadBalancedServiceBaseProps {
   /**
    * The cluster where your service will be deployed
@@ -61,10 +66,38 @@ export interface LoadBalancedServiceBaseProps {
    * @default - No environment variables.
    */
   readonly environment?: { [key: string]: string };
+
+  /**
+   * Whether to create an AWS log driver
+   *
+   * @default true
+   */
+  readonly enableLogging?: boolean;
+
+  /**
+   * Determines whether your Fargate Service will be assigned a public IP address.
+   *
+   * @default false
+   */
+  readonly publicTasks?: boolean;
+
+  /**
+   * Domain name for the service, e.g. api.example.com
+   *
+   * @default - No domain name.
+   */
+  readonly domainName?: string;
+
+  /**
+   * Route53 hosted zone for the domain, e.g. "example.com."
+   *
+   * @default - No Route53 hosted domain zone.
+   */
+  readonly domainZone?: IHostedZone;
 }
 
 /**
- * Base class for load-balanced Fargate and ECS service
+ * Base class for load-balanced Fargate and ECS services
  */
 export abstract class LoadBalancedServiceBase extends cdk.Construct {
   public readonly loadBalancerType: LoadBalancerType;
@@ -75,13 +108,19 @@ export abstract class LoadBalancedServiceBase extends cdk.Construct {
 
   public readonly targetGroup: elbv2.ApplicationTargetGroup | elbv2.NetworkTargetGroup;
 
+  public readonly logDriver?: ecs.LogDriver;
+
   constructor(scope: cdk.Construct, id: string, props: LoadBalancedServiceBaseProps) {
     super(scope, id);
 
-    // Load balancer
-    this.loadBalancerType = props.loadBalancerType !== undefined ? props.loadBalancerType : LoadBalancerType.Application;
+    // Create log driver if logging is enabled
+    const enableLogging = props.enableLogging !== undefined ? props.enableLogging : true;
+    this.logDriver = enableLogging ? this.createAWSLogDriver(this.node.id) : undefined;
 
-    if (this.loadBalancerType !== LoadBalancerType.Application && this.loadBalancerType !== LoadBalancerType.Network) {
+    // Load balancer
+    this.loadBalancerType = props.loadBalancerType !== undefined ? props.loadBalancerType : LoadBalancerType.APPLICATION;
+
+    if (this.loadBalancerType !== LoadBalancerType.APPLICATION && this.loadBalancerType !== LoadBalancerType.NETWORK) {
        throw new Error(`invalid loadBalancerType`);
     }
 
@@ -92,7 +131,7 @@ export abstract class LoadBalancedServiceBase extends cdk.Construct {
       internetFacing
     };
 
-    if (this.loadBalancerType === LoadBalancerType.Application) {
+    if (this.loadBalancerType === LoadBalancerType.APPLICATION) {
       this.loadBalancer = new elbv2.ApplicationLoadBalancer(this, 'LB', lbProps);
     } else {
       this.loadBalancer = new elbv2.NetworkLoadBalancer(this, 'LB', lbProps);
@@ -103,11 +142,11 @@ export abstract class LoadBalancedServiceBase extends cdk.Construct {
     };
 
     const hasCertificate = props.certificate !== undefined;
-    if (hasCertificate && this.loadBalancerType !== LoadBalancerType.Application) {
+    if (hasCertificate && this.loadBalancerType !== LoadBalancerType.APPLICATION) {
       throw new Error("Cannot add certificate to an NLB");
     }
 
-    if (this.loadBalancerType === LoadBalancerType.Application) {
+    if (this.loadBalancerType === LoadBalancerType.APPLICATION) {
       this.listener = (this.loadBalancer as elbv2.ApplicationLoadBalancer).addListener('PublicListener', {
         port: hasCertificate ? 443 : 80,
         open: true
@@ -122,14 +161,30 @@ export abstract class LoadBalancedServiceBase extends cdk.Construct {
       this.targetGroup = this.listener.addTargets('ECS', targetProps);
     }
 
+    if (typeof props.domainName !== 'undefined') {
+      if (typeof props.domainZone === 'undefined') {
+        throw new Error('A Route53 hosted domain zone name is required to configure the specified domain name');
+      }
+
+      new ARecord(this, "DNS", {
+        zone: props.domainZone,
+        recordName: props.domainName,
+        target: AddressRecordTarget.fromAlias(new route53targets.LoadBalancerTarget(this.loadBalancer)),
+      });
+    }
+
     new cdk.CfnOutput(this, 'LoadBalancerDNS', { value: this.loadBalancer.loadBalancerDnsName });
   }
 
   protected addServiceAsTarget(service: ecs.BaseService) {
-    if (this.loadBalancerType === LoadBalancerType.Application) {
+    if (this.loadBalancerType === LoadBalancerType.APPLICATION) {
       (this.targetGroup as elbv2.ApplicationTargetGroup).addTarget(service);
     } else {
       (this.targetGroup as elbv2.NetworkTargetGroup).addTarget(service);
     }
+  }
+
+  private createAWSLogDriver(prefix: string): ecs.AwsLogDriver {
+    return new ecs.AwsLogDriver({ streamPrefix: prefix });
   }
 }

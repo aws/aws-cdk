@@ -1,8 +1,8 @@
 import { expect, haveResourceLike } from '@aws-cdk/assert';
-import cdk = require('@aws-cdk/cdk');
-import { Stack } from '@aws-cdk/cdk';
+import cdk = require('@aws-cdk/core');
+import { Duration, Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import { IRuleTarget, RuleTargetInput } from '../lib';
+import { IRuleTarget, RuleTargetInput, Schedule } from '../lib';
 import { Rule } from '../lib/rule';
 
 export = {
@@ -11,7 +11,7 @@ export = {
       // GIVEN
       const stack = new Stack();
       const rule = new Rule(stack, 'Rule', {
-        scheduleExpression: 'rate(1 minute)'
+        schedule: Schedule.rate(Duration.minutes(1)),
       });
 
       // WHEN
@@ -34,7 +34,7 @@ export = {
       // GIVEN
       const stack = new Stack();
       const rule = new Rule(stack, 'Rule', {
-        scheduleExpression: 'rate(1 minute)'
+        schedule: Schedule.rate(Duration.minutes(1)),
       });
 
       // WHEN
@@ -56,7 +56,7 @@ export = {
       // GIVEN
       const stack = new Stack();
       const rule = new Rule(stack, 'Rule', {
-        scheduleExpression: 'rate(1 minute)'
+        schedule: Schedule.rate(Duration.minutes(1)),
       });
 
       // WHEN
@@ -78,10 +78,10 @@ export = {
       // GIVEN
       const stack = new Stack();
       const rule = new Rule(stack, 'Rule', {
-        scheduleExpression: 'rate(1 minute)'
+        schedule: Schedule.rate(Duration.minutes(1)),
       });
 
-      const world = new cdk.Token(() => 'world');
+      const world = cdk.Lazy.stringValue({ produce: () => 'world' });
 
       // WHEN
       rule.addTarget(new SomeTarget(RuleTargetInput.fromText(`hello ${world}`)));

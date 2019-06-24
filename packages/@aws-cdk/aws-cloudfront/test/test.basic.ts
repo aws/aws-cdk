@@ -1,6 +1,6 @@
 import { expect } from '@aws-cdk/assert';
 import s3 = require('@aws-cdk/aws-s3');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import { Test } from 'nodeunit';
 import { CloudFrontWebDistribution, ViewerProtocolPolicy } from '../lib';
 
@@ -252,7 +252,7 @@ export = {
     const sourceBucket = new s3.Bucket(stack, 'Bucket');
 
     new CloudFrontWebDistribution(stack, 'AnAmazingWebsiteProbably', {
-      viewerProtocolPolicy: ViewerProtocolPolicy.AllowAll,
+      viewerProtocolPolicy: ViewerProtocolPolicy.ALLOW_ALL,
       originConfigs: [
         {
           s3OriginSource: {

@@ -1,9 +1,19 @@
 /// !cdk-integ *
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import ec2 = require("../lib");
 
 const app = new cdk.App();
-const stack = new cdk.Stack(app, 'aws-cdk-ec2-import');
+
+// we associate this stack with an explicit environment since this is required by the
+// environmental context provider used in `fromLookup`. CDK_INTEG_XXX are set
+// when producing the .expected file and CDK_DEFAULT_XXX is passed in through from
+// the CLI in actual deployment.
+const env = {
+  account: process.env.CDK_INTEG_ACCOUNT || process.env.CDK_DEFAULT_ACCOUNT,
+  region: process.env.CDK_INTEG_REGION || process.env.CDK_DEFAULT_REGION
+};
+
+const stack = new cdk.Stack(app, 'aws-cdk-ec2-import', { env });
 
 /// !show
 const vpc = ec2.Vpc.fromLookup(stack, 'VPC', {

@@ -1,4 +1,10 @@
 {
+  "Parameters": {
+    "SsmParameterValueawsserviceecsoptimizedamiamazonlinuxrecommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter": {
+      "Type": "AWS::SSM::Parameter::Value<String>",
+      "Default": "/aws/service/ecs/optimized-ami/amazon-linux/recommended/image_id"
+    }
+  },
   "Resources": {
     "Vpc8378EB38": {
       "Type": "AWS::EC2::VPC",
@@ -462,7 +468,9 @@
     "EcsClusterDefaultAutoScalingGroupLaunchConfigB7E376C1": {
       "Type": "AWS::AutoScaling::LaunchConfiguration",
       "Properties": {
-        "ImageId": "ami-1234",
+        "ImageId": {
+          "Ref": "SsmParameterValueawsserviceecsoptimizedamiamazonlinuxrecommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
+        },
         "InstanceType": "t2.micro",
         "IamInstanceProfile": {
           "Ref": "EcsClusterDefaultAutoScalingGroupInstanceProfile2CE606B3"
@@ -580,7 +588,6 @@
           "Statement": [
             {
               "Action": [
-                "autoscaling:CompleteLifecycleAction",
                 "ec2:DescribeInstances",
                 "ec2:DescribeInstanceAttribute",
                 "ec2:DescribeInstanceStatus",
@@ -590,17 +597,55 @@
               "Resource": "*"
             },
             {
+              "Action": "autoscaling:CompleteLifecycleAction",
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":autoscaling:",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ":",
+                    {
+                      "Ref": "AWS::AccountId"
+                    },
+                    ":autoScalingGroup:*:autoScalingGroupName/",
+                    {
+                      "Ref": "EcsClusterDefaultAutoScalingGroupASGC1A785DB"
+                    }
+                  ]
+                ]
+              }
+            },
+            {
               "Action": [
-                "ecs:ListContainerInstances",
-                "ecs:SubmitContainerStateChange",
-                "ecs:SubmitTaskStateChange",
                 "ecs:DescribeContainerInstances",
-                "ecs:UpdateContainerInstancesState",
-                "ecs:ListTasks",
                 "ecs:DescribeTasks"
               ],
               "Effect": "Allow",
               "Resource": "*"
+            },
+            {
+              "Action": [
+                "ecs:ListContainerInstances",
+                "ecs:SubmitContainerStateChange",
+                "ecs:SubmitTaskStateChange",
+                "ecs:UpdateContainerInstancesState",
+                "ecs:ListTasks"
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "EcsCluster97242B84",
+                  "Arn"
+                ]
+              }
             }
           ],
           "Version": "2012-10-17"
@@ -647,7 +692,7 @@
         "EcsClusterDefaultAutoScalingGroupDrainECSHookFunctionServiceRole94543EDA"
       ]
     },
-    "EcsClusterDefaultAutoScalingGroupDrainECSHookFunctionTopicSubscriptionDA5F8A10": {
+    "EcsClusterDefaultAutoScalingGroupLifecycleHookDrainHookTopicFunctionA8966A35": {
       "Type": "AWS::SNS::Subscription",
       "Properties": {
         "Protocol": "lambda",
@@ -829,6 +874,7 @@
           "MinimumHealthyPercent": 50
         },
         "DesiredCount": 1,
+        "HealthCheckGracePeriodSeconds": 60,
         "LaunchType": "EC2",
         "LoadBalancers": [
           {

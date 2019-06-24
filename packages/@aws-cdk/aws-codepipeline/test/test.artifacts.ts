@@ -1,5 +1,6 @@
 import { expect, haveResourceLike } from '@aws-cdk/assert';
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
+import { ConstructNode } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import codepipeline = require('../lib');
 import { FakeBuildAction } from './fake-build-action';
@@ -21,7 +22,7 @@ export = {
       const pipeline = new codepipeline.Pipeline(stack, 'Pipeline', {
         stages: [
           {
-            name: 'Source',
+            stageName: 'Source',
             actions: [
               new FakeSourceAction({
                 actionName: 'Source',
@@ -30,7 +31,7 @@ export = {
             ],
           },
           {
-            name: 'Build',
+            stageName: 'Build',
             actions: [
               new FakeBuildAction({
                 actionName: 'Build',
@@ -57,7 +58,7 @@ export = {
       const pipeline = new codepipeline.Pipeline(stack, 'Pipeline', {
         stages: [
           {
-            name: 'Source',
+            stageName: 'Source',
             actions: [
               new FakeSourceAction({
                 actionName: 'Source',
@@ -66,7 +67,7 @@ export = {
             ],
           },
           {
-            name: 'Build',
+            stageName: 'Build',
             actions: [
               new FakeBuildAction({
                 actionName: 'Build',
@@ -93,7 +94,7 @@ export = {
       const pipeline = new codepipeline.Pipeline(stack, 'Pipeline', {
         stages: [
           {
-            name: 'Source',
+            stageName: 'Source',
             actions: [
               new FakeSourceAction({
                 actionName: 'Source',
@@ -102,7 +103,7 @@ export = {
             ],
           },
           {
-            name: 'Build',
+            stageName: 'Build',
             actions: [
               new FakeBuildAction({
                 actionName: 'Build',
@@ -134,7 +135,7 @@ export = {
       new codepipeline.Pipeline(stack, 'Pipeline', {
         stages: [
           {
-            name: 'Source',
+            stageName: 'Source',
             actions: [
               new FakeSourceAction({
                 actionName: 'source1',
@@ -147,7 +148,7 @@ export = {
             ],
           },
           {
-            name: 'Build',
+            stageName: 'Build',
             actions: [
               new FakeBuildAction({
                 actionName: 'build1',
@@ -176,6 +177,6 @@ export = {
 };
 
 function validate(construct: cdk.IConstruct): cdk.ValidationError[] {
-  construct.node.prepareTree();
-  return construct.node.validateTree();
+  ConstructNode.prepare(construct.node);
+  return ConstructNode.validate(construct.node);
 }

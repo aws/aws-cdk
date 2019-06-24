@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/aws-ec2",
-  "version": "0.33.0",
+  "version": "0.35.0",
   "description": "CDK Constructs for AWS EC2",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -63,31 +63,40 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "^0.33.0",
-    "cdk-build-tools": "^0.33.0",
-    "cdk-integ-tools": "^0.33.0",
-    "cfn2ts": "^0.33.0",
-    "pkglint": "^0.33.0"
+    "@aws-cdk/assert": "^0.35.0",
+    "cdk-build-tools": "^0.35.0",
+    "cdk-integ-tools": "^0.35.0",
+    "cfn2ts": "^0.35.0",
+    "pkglint": "^0.35.0"
   },
   "dependencies": {
-    "@aws-cdk/aws-cloudwatch": "^0.33.0",
-    "@aws-cdk/aws-iam": "^0.33.0",
-    "@aws-cdk/cdk": "^0.33.0",
-    "@aws-cdk/cx-api": "^0.33.0"
+    "@aws-cdk/aws-cloudwatch": "^0.35.0",
+    "@aws-cdk/aws-ssm": "^0.35.0",
+    "@aws-cdk/aws-iam": "^0.35.0",
+    "@aws-cdk/core": "^0.35.0",
+    "@aws-cdk/cx-api": "^0.35.0"
   },
   "homepage": "https://github.com/awslabs/aws-cdk",
   "peerDependencies": {
-    "@aws-cdk/aws-cloudwatch": "^0.33.0",
-    "@aws-cdk/aws-iam": "^0.33.0",
-    "@aws-cdk/cdk": "^0.33.0",
-    "@aws-cdk/cx-api": "^0.33.0"
+    "@aws-cdk/aws-cloudwatch": "^0.35.0",
+    "@aws-cdk/aws-ssm": "^0.35.0",
+    "@aws-cdk/aws-iam": "^0.35.0",
+    "@aws-cdk/core": "^0.35.0",
+    "@aws-cdk/cx-api": "^0.35.0"
   },
   "engines": {
     "node": ">= 8.10.0"
   },
   "awslint": {
     "exclude": [
-      "resource-attribute:@aws-cdk/aws-ec2.ISecurityGroup.securityGroupVpcId"
+      "resource-attribute:@aws-cdk/aws-ec2.ISecurityGroup.securityGroupVpcId",
+      "props-physical-name:@aws-cdk/aws-ec2.VpnConnectionProps",
+      "props-physical-name:@aws-cdk/aws-ec2.GatewayVpcEndpointProps",
+      "props-physical-name:@aws-cdk/aws-ec2.PrivateSubnetProps",
+      "props-physical-name:@aws-cdk/aws-ec2.PublicSubnetProps",
+      "props-physical-name:@aws-cdk/aws-ec2.SubnetProps",
+      "props-physical-name:@aws-cdk/aws-ec2.VpcProps",
+      "props-physical-name:@aws-cdk/aws-ec2.InterfaceVpcEndpointProps"
     ]
   },
   "stability": "experimental"

@@ -1,5 +1,5 @@
-import { Token } from '@aws-cdk/cdk';
-import { Construct, Resource } from '@aws-cdk/cdk';
+import { Lazy, Token } from '@aws-cdk/core';
+import { Construct, Resource } from '@aws-cdk/core';
 import { IApiKey } from './api-key';
 import { CfnUsagePlan, CfnUsagePlanKey } from './apigateway.generated';
 import { Method } from './method';
@@ -29,9 +29,9 @@ export interface ThrottleSettings {
  * Time period for which quota settings apply.
  */
 export enum Period {
-  Day = 'DAY',
-  Week = 'WEEK',
-  Month = 'MONTH'
+  DAY = 'DAY',
+  WEEK = 'WEEK',
+  MONTH = 'MONTH'
 }
 
 /**
@@ -66,20 +66,20 @@ export interface ThrottlingPerMethod {
    * The method for which you specify the throttling settings.
    * @default none
    */
-  readonly method: Method,
+  readonly method: Method;
 
   /**
    * Specifies the overall request rate (average requests per second) and burst capacity.
    * @default none
    */
-  readonly throttle: ThrottleSettings
+  readonly throttle: ThrottleSettings;
 }
 
 /**
- * Type of Usage Plan Key. Currently the only supported type is 'API_KEY'
+ * Type of Usage Plan Key. Currently the only supported type is 'ApiKey'
  */
 export enum UsagePlanKeyType {
-  ApiKey = 'API_KEY'
+  API_KEY = 'API_KEY'
 }
 
 /**
@@ -90,19 +90,19 @@ export interface UsagePlanPerApiStage {
   /**
    * @default none
    */
-  readonly api?: IRestApi,
+  readonly api?: IRestApi;
 
   /**
    *
    * [disable-awslint:ref-via-interface]
    * @default none
    */
-  readonly stage?: Stage,
+  readonly stage?: Stage;
 
   /**
    * @default none
    */
-  readonly throttle?: ThrottlingPerMethod[]
+  readonly throttle?: ThrottlingPerMethod[];
 }
 
 export interface UsagePlanProps {
@@ -110,37 +110,37 @@ export interface UsagePlanProps {
    * API Stages to be associated which the usage plan.
    * @default none
    */
-  readonly apiStages?: UsagePlanPerApiStage[],
+  readonly apiStages?: UsagePlanPerApiStage[];
 
   /**
    * Represents usage plan purpose.
    * @default none
    */
-  readonly description?: string,
+  readonly description?: string;
 
   /**
    * Number of requests clients can make in a given time period.
    * @default none
    */
-  readonly quota?: QuotaSettings
+  readonly quota?: QuotaSettings;
 
   /**
    * Overall throttle settings for the API.
    * @default none
    */
-  readonly throttle?: ThrottleSettings,
+  readonly throttle?: ThrottleSettings;
 
   /**
    * Name for this usage plan.
    * @default none
    */
-  readonly name?: string
+  readonly name?: string;
 
   /**
    * ApiKey to be associated with the usage plan.
    * @default none
    */
-  readonly apiKey?: IApiKey
+  readonly apiKey?: IApiKey;
 }
 
 export class UsagePlan extends Resource {
@@ -156,7 +156,7 @@ export class UsagePlan extends Resource {
     let resource: CfnUsagePlan;
 
     resource = new CfnUsagePlan(this, 'Resource', {
-      apiStages: new Token(() => this.renderApiStages(this.apiStages)),
+      apiStages: Lazy.anyValue({ produce: () => this.renderApiStages(this.apiStages) }),
       description: props.description,
       quota: this.renderQuota(props),
       throttle: this.renderThrottle(props.throttle),
@@ -181,7 +181,7 @@ export class UsagePlan extends Resource {
   public addApiKey(apiKey: IApiKey): void {
     new CfnUsagePlanKey(this, 'UsagePlanKeyResource', {
       keyId: apiKey.keyId,
-      keyType: UsagePlanKeyType.ApiKey,
+      keyType: UsagePlanKeyType.API_KEY,
       usagePlanId: this.usagePlanId
     });
   }

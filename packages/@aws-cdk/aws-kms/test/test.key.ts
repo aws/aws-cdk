@@ -1,6 +1,6 @@
 import { exactlyMatchTemplate, expect, haveResource, ResourcePart } from '@aws-cdk/assert';
 import { PolicyStatement, User } from '@aws-cdk/aws-iam';
-import { App, Stack, Tag } from '@aws-cdk/cdk';
+import { App, RemovalPolicy, Stack, Tag } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import { Key } from '../lib';
 
@@ -68,7 +68,7 @@ export = {
     const app = new App();
     const stack = new Stack(app, 'TestStack');
 
-    new Key(stack, 'MyKey', { retain: false });
+    new Key(stack, 'MyKey', { removalPolicy: RemovalPolicy.DESTROY });
 
     expect(stack).to(haveResource('AWS::KMS::Key', { DeletionPolicy: "Delete" }, ResourcePart.CompleteDefinition));
     test.done();
@@ -79,8 +79,8 @@ export = {
     const stack = new Stack(app, 'Test');
 
     const key = new Key(stack, 'MyKey');
-    const p = new PolicyStatement().addAllResources().addAction('kms:encrypt');
-    p.addAwsPrincipal('arn');
+    const p = new PolicyStatement({ resources: ['*'], actions: ['kms:encrypt'] });
+    p.addArnPrincipal('arn');
     key.addToResourcePolicy(p);
 
     expect(stack).to(exactlyMatchTemplate({
@@ -153,13 +153,13 @@ export = {
       enableKeyRotation: true,
       enabled: false,
     });
-    const p = new PolicyStatement().addAllResources().addAction('kms:encrypt');
-    p.addAwsPrincipal('arn');
+    const p = new PolicyStatement({ resources: ['*'], actions: ['kms:encrypt'] });
+    p.addArnPrincipal('arn');
     key.addToResourcePolicy(p);
 
-    key.node.apply(new Tag('tag1', 'value1'));
-    key.node.apply(new Tag('tag2', 'value2'));
-    key.node.apply(new Tag('tag3', ''));
+    key.node.applyAspect(new Tag('tag1', 'value1'));
+    key.node.applyAspect(new Tag('tag2', 'value2'));
+    key.node.applyAspect(new Tag('tag3', ''));
 
     expect(stack).to(exactlyMatchTemplate({
       Resources: {
@@ -398,7 +398,7 @@ export = {
 
       const key = Key.fromKeyArn(stack, 'Imported', 'foo/bar');
 
-      key.addToResourcePolicy(new PolicyStatement().addAllResources().addAction('*'));
+      key.addToResourcePolicy(new PolicyStatement({ resources: ['*'], actions: ['*'] }));
 
       test.done();
     },
@@ -410,7 +410,7 @@ export = {
       const key = Key.fromKeyArn(stack, 'Imported', 'foo/bar');
 
       test.throws(() =>
-        key.addToResourcePolicy(new PolicyStatement().addAllResources().addAction('*'), /* allowNoOp */ false),
+        key.addToResourcePolicy(new PolicyStatement({ resources: ['*'], actions: ['*'] }), /* allowNoOp */ false),
         'Unable to add statement to IAM resource policy for KMS key: "foo/bar"');
 
       test.done();

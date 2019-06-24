@@ -1,7 +1,7 @@
 import { expect, haveResource } from '@aws-cdk/assert';
 import events = require('@aws-cdk/aws-events');
 import sqs = require('@aws-cdk/aws-sqs');
-import { Stack } from '@aws-cdk/cdk';
+import { Duration, Stack } from '@aws-cdk/core';
 import targets = require('../../lib');
 
 test('sns topic as an event rule target', () => {
@@ -9,7 +9,7 @@ test('sns topic as an event rule target', () => {
   const stack = new Stack();
   const queue = new sqs.Queue(stack, 'MyQueue');
   const rule = new events.Rule(stack, 'MyRule', {
-    scheduleExpression: 'rate(1 hour)',
+    schedule: events.Schedule.rate(Duration.hours(1)),
   });
 
   // WHEN
@@ -22,7 +22,6 @@ test('sns topic as an event rule target', () => {
         {
           Action: [
             "sqs:SendMessage",
-            "sqs:SendMessageBatch",
             "sqs:GetQueueAttributes",
             "sqs:GetQueueUrl"
           ],
@@ -75,7 +74,9 @@ test('multiple uses of a queue as a target results in multi policy statement bec
 
   // WHEN
   for (let i = 0; i < 2; ++i) {
-    const rule = new events.Rule(stack, `Rule${i}`, { scheduleExpression: 'rate(1 hour)' });
+    const rule = new events.Rule(stack, `Rule${i}`, {
+      schedule: events.Schedule.rate(Duration.hours(1)),
+    });
     rule.addTarget(new targets.SqsQueue(queue));
   }
 
@@ -86,7 +87,6 @@ test('multiple uses of a queue as a target results in multi policy statement bec
         {
           Action: [
             "sqs:SendMessage",
-            "sqs:SendMessageBatch",
             "sqs:GetQueueAttributes",
             "sqs:GetQueueUrl"
           ],
@@ -112,7 +112,6 @@ test('multiple uses of a queue as a target results in multi policy statement bec
         {
           Action: [
             "sqs:SendMessage",
-            "sqs:SendMessageBatch",
             "sqs:GetQueueAttributes",
             "sqs:GetQueueUrl"
           ],

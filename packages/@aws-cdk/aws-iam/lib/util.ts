@@ -1,13 +1,13 @@
-import { Token } from '@aws-cdk/cdk';
+import { Lazy } from '@aws-cdk/core';
 import { IPolicy } from './policy';
 
 const MAX_POLICY_NAME_LEN = 128;
 
 export function undefinedIfEmpty(f: () => string[]): string[] {
-  return new Token(() => {
+  return Lazy.listValue({ produce: () => {
     const array = f();
     return (array && array.length > 0) ? array : undefined;
-  }).toList();
+  }});
 }
 
 /**

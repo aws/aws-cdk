@@ -586,7 +586,7 @@
         "DBInstanceClass": "db.t2.medium",
         "AllocatedStorage": "100",
         "AutoMinorVersionUpgrade": false,
-        "BackupRetentionPeriod": "7",
+        "BackupRetentionPeriod": 7,
         "CopyTagsToSnapshot": true,
         "DBName": "ORCL",
         "DBParameterGroupName": {
@@ -884,7 +884,7 @@
                 "Arn"
               ]
             },
-            "Id": "Function"
+            "Id": "awscdkrdsinstanceFunctionD515EE19"
           }
         ]
       }

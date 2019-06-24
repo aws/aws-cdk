@@ -485,7 +485,7 @@
               "LogDriver": "awslogs",
               "Options": {
                 "awslogs-group": {
-                  "Ref": "L3LoggingLogGroupBD1F02DD"
+                  "Ref": "L3TaskDefwebLogGroupC6E4A38A"
                 },
                 "awslogs-stream-prefix": "L3",
                 "awslogs-region": {
@@ -513,7 +513,7 @@
           ]
         },
         "Family": "awsecsintegL3TaskDefAA25240E",
-        "Memory": "1GB",
+        "Memory": "1024",
         "NetworkMode": "awsvpc",
         "RequiresCompatibilities": [
           "FARGATE"
@@ -567,7 +567,7 @@
               "Effect": "Allow",
               "Resource": {
                 "Fn::GetAtt": [
-                  "L3LoggingLogGroupBD1F02DD",
+                  "L3TaskDefwebLogGroupC6E4A38A",
                   "Arn"
                 ]
               }
@@ -583,7 +583,7 @@
         ]
       }
     },
-    "L3LoggingLogGroupBD1F02DD": {
+    "L3TaskDefwebLogGroupC6E4A38A": {
       "Type": "AWS::Logs::LogGroup",
       "DeletionPolicy": "Retain"
     },
@@ -602,6 +602,7 @@
         },
         "DesiredCount": 1,
         "LaunchType": "FARGATE",
+        "HealthCheckGracePeriodSeconds": 60,
         "LoadBalancers": [
           {
             "ContainerName": "web",

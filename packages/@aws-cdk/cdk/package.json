@@ -1,7 +1,8 @@
 {
   "name": "@aws-cdk/cdk",
-  "version": "0.33.0",
-  "description": "AWS Cloud Development Kit Core Library",
+  "deprecated": "This module has been renamed to @aws-cdk/core",
+  "version": "0.35.0",
+  "description": "Deprecated: this module ha been renamed to @aws-cdk/core",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "jsii": {
@@ -14,12 +15,6 @@
           "artifactId": "cdk"
         }
       },
-      "dotnet": {
-        "namespace": "Amazon.CDK",
-        "packageId": "Amazon.CDK",
-        "signAssembly": true,
-        "assemblyOriginatorKeyFile": "../../key.snk"
-      },
       "python": {
         "distName": "aws-cdk.cdk",
         "module": "aws_cdk.cdk"
@@ -31,18 +26,6 @@
     "url": "https://github.com/awslabs/aws-cdk.git",
     "directory": "packages/@aws-cdk/cdk"
   },
-  "awslint": {
-    "exclude": [
-      "construct-ctor:@aws-cdk/cdk.App.<initializer>",
-      "construct-ctor:@aws-cdk/cdk.Root.<initializer>",
-      "construct-ctor:@aws-cdk/cdk.Stack.<initializer>.params*",
-      "props-no-any:@aws-cdk/cdk.CfnOutputProps.value",
-      "props-no-any:@aws-cdk/cdk.CfnParameterProps.default",
-      "props-no-any:@aws-cdk/cdk.CfnResourceProps.properties",
-      "props-no-cfn-types:@aws-cdk/cdk.CfnOutputProps*",
-      "props-no-cfn-types:@aws-cdk/cdk.StringListCfnOutputProps*"
-    ]
-  },
   "scripts": {
     "build": "cdk-build",
     "watch": "cdk-watch",
@@ -53,11 +36,6 @@
     "awslint": "cdk-awslint",
     "build+test+package": "npm run build+test && npm run package",
     "build+test": "npm run build && npm test"
-  },
-  "nyc": {
-    "statements": 55,
-    "lines": 55,
-    "branches": 35
   },
   "keywords": [
     "aws",
@@ -72,22 +50,12 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@types/lodash": "^4.14.133",
-    "cdk-build-tools": "^0.33.0",
-    "cfn2ts": "^0.33.0",
-    "fast-check": "^1.15.1",
-    "lodash": "^4.17.11",
-    "pkglint": "^0.33.0"
-  },
-  "dependencies": {
-    "@aws-cdk/cx-api": "^0.33.0"
+    "cdk-build-tools": "^0.35.0",
+    "pkglint": "^0.35.0"
   },
   "homepage": "https://github.com/awslabs/aws-cdk",
-  "peerDependencies": {
-    "@aws-cdk/cx-api": "^0.33.0"
-  },
   "engines": {
     "node": ">= 8.10.0"
   },
-  "stability": "experimental"
+  "stability": "deprecated"
 }

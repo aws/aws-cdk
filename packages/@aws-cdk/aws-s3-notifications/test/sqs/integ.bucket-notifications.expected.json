@@ -1,6 +1,7 @@
 {
   "Resources": {
     "Bucket12520700A": {
+      "DeletionPolicy": "Delete",
       "Type": "AWS::S3::Bucket"
     },
     "Bucket1NotificationsBC5D9A45": {
@@ -61,7 +62,6 @@
             {
               "Action": [
                 "sqs:SendMessage",
-                "sqs:SendMessageBatch",
                 "sqs:GetQueueAttributes",
                 "sqs:GetQueueUrl"
               ],
@@ -99,7 +99,6 @@
             {
               "Action": [
                 "sqs:SendMessage",
-                "sqs:SendMessageBatch",
                 "sqs:GetQueueAttributes",
                 "sqs:GetQueueUrl"
               ],
@@ -225,6 +224,7 @@
       }
     },
     "Bucket25524B414": {
+      "DeletionPolicy": "Delete",
       "Type": "AWS::S3::Bucket"
     },
     "Bucket2NotificationsD9BA2A77": {
@@ -390,7 +390,6 @@
             {
               "Action": [
                 "sqs:SendMessage",
-                "sqs:SendMessageBatch",
                 "sqs:GetQueueAttributes",
                 "sqs:GetQueueUrl"
               ],

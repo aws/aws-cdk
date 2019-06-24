@@ -1,6 +1,7 @@
 import sns = require('@aws-cdk/aws-sns');
+import subs = require('@aws-cdk/aws-sns-subscriptions');
 import sqs = require('@aws-cdk/aws-sqs');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 
 export interface %name.PascalCased%Props {
   /**
@@ -24,7 +25,7 @@ export class %name.PascalCased% extends cdk.Construct {
 
     const topic = new sns.Topic(this, '%name.PascalCased%Topic');
 
-    topic.subscribeQueue(queue);
+    topic.addSubscription(new subs.SqsSubscription(queue));
 
     this.queueArn = queue.queueArn;
   }

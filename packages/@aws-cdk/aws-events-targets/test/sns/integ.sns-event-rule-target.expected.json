@@ -49,7 +49,7 @@
             "Arn": {
               "Ref": "MyTopic86869434"
             },
-            "Id": "MyTopic"
+            "Id": "awscdksnseventtargetMyTopicB7575CD8"
           }
         ]
       }
@@ -57,7 +57,7 @@
     "MyQueueE6CA6235": {
       "Type": "AWS::SQS::Queue"
     },
-    "MyQueueMyTopicSubscriptionEB66AD1B": {
+    "MyTopicMyQueueFA241964": {
       "Type": "AWS::SNS::Subscription",
       "Properties": {
         "Protocol": "sqs",

@@ -2,7 +2,7 @@ import '@aws-cdk/assert/jest';
 import ec2 = require('@aws-cdk/aws-ec2');
 import elbv2 = require('@aws-cdk/aws-elasticloadbalancingv2');
 import route53 = require('@aws-cdk/aws-route53');
-import { Stack } from '@aws-cdk/cdk';
+import { Stack } from '@aws-cdk/core';
 import targets = require('../lib');
 
 test('use ALB as record target', () => {
@@ -19,10 +19,10 @@ test('use ALB as record target', () => {
   const zone = new route53.PublicHostedZone(stack, 'HostedZone', { zoneName: 'test.public' });
 
   // WHEN
-  new route53.AliasRecord(zone, 'Alias', {
+  new route53.ARecord(zone, 'Alias', {
     zone,
     recordName: '_foo',
-    target: new targets.LoadBalancerTarget(lb)
+    target: route53.AddressRecordTarget.fromAlias(new targets.LoadBalancerTarget(lb))
   });
 
   // THEN

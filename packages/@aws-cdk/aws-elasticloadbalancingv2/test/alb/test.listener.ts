@@ -1,6 +1,7 @@
 import { expect, haveResource, MatchStyle } from '@aws-cdk/assert';
 import ec2 = require('@aws-cdk/aws-ec2');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
+import { ConstructNode } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import elbv2 = require('../../lib');
 import { FakeSelfRegisteringTarget } from '../helpers';
@@ -35,7 +36,7 @@ export = {
 
     // WHEN
     lb.addListener('Listener', {
-      protocol: elbv2.ApplicationProtocol.Http,
+      protocol: elbv2.ApplicationProtocol.HTTP,
       defaultTargetGroups: [new elbv2.ApplicationTargetGroup(stack, 'Group', { vpc, port: 80 })]
     });
 
@@ -88,7 +89,7 @@ export = {
     });
 
     // THEN
-    const errors = stack.node.validateTree();
+    const errors = ConstructNode.validate(stack.node);
     test.deepEqual(errors.map(e => e.message), ['HTTPS Listener needs at least one certificate (call addCertificateArns)']);
 
     test.done();
@@ -103,7 +104,7 @@ export = {
     new elbv2.ApplicationTargetGroup(stack, 'TargetGroup', {
       vpc,
       port: 80,
-      targetType: elbv2.TargetType.Ip
+      targetType: elbv2.TargetType.IP
     });
 
     // THEN
@@ -291,7 +292,7 @@ export = {
       port: 80,
       targets: [new FakeSelfRegisteringTarget(stack, 'Target', vpc)]
     });
-    group.enableCookieStickiness(3600);
+    group.enableCookieStickiness(cdk.Duration.hours(1));
 
     // THEN
     expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::TargetGroup', {
@@ -328,8 +329,8 @@ export = {
     });
     group.configureHealthCheck({
       unhealthyThresholdCount: 3,
-      timeoutSeconds: 3600,
-      intervalSecs: 30,
+      timeout: cdk.Duration.hours(1),
+      interval: cdk.Duration.seconds(30),
       path: '/test',
     });
 
@@ -417,7 +418,7 @@ export = {
 
     // WHEN
     const metrics = [];
-    metrics.push(group.metricHttpCodeTarget(elbv2.HttpCodeTarget.Target3xxCount));
+    metrics.push(group.metricHttpCodeTarget(elbv2.HttpCodeTarget.TARGET_3XX_COUNT));
     metrics.push(group.metricIPv6RequestCount());
     metrics.push(group.metricUnhealthyHostCount());
     metrics.push(group.metricUnhealthyHostCount());
@@ -430,7 +431,7 @@ export = {
       test.equal('AWS/ApplicationELB', metric.namespace);
       const loadBalancerArn = { Ref: "LBSomeListenerCA01F1A0" };
 
-      test.deepEqual(lb.node.resolve(metric.dimensions), {
+      test.deepEqual(stack.resolve(metric.dimensions), {
          TargetGroup: { 'Fn::GetAtt': [ 'TargetGroup3D7CD9B8', 'TargetGroupFullName' ] },
          LoadBalancer: { 'Fn::Join':
             [ '',
