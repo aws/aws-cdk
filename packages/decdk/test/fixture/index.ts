@@ -29,7 +29,7 @@ export interface InterfaceWithPrimitives {
 }
 
 export enum MyNormalEnum {
-  EnumMember1,
-  EnumMember2,
-  EnumMember3
+  ENUM_MEMBER_1,
+  ENUM_MEMBER_2,
+  ENUM_MEMBER_3
 }
