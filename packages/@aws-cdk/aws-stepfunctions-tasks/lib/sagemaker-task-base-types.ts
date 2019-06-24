@@ -192,7 +192,7 @@ export interface VpcConfig {
     /**
      * VPC subnets.
      */
-    readonly subnets?: ec2.ISubnet[];
+    readonly subnets?: ec2.SubnetSelection;
 }
 
 /**

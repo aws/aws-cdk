@@ -1,7 +1,7 @@
 import ec2 = require('@aws-cdk/aws-ec2');
 import iam = require('@aws-cdk/aws-iam');
 import sfn = require('@aws-cdk/aws-stepfunctions');
-import { Construct, Stack } from '@aws-cdk/cdk';
+import { Stack } from '@aws-cdk/cdk';
 import { BatchStrategy, S3DataType, TransformInput, TransformOutput, TransformResources } from './sagemaker-task-base-types';
 
 /**
@@ -78,13 +78,6 @@ export interface SagemakerTransformProps {
 export class SagemakerTransformTask implements sfn.IStepFunctionsTask {
 
     /**
-     * The execution role for the Sagemaker training job.
-     *
-     * @default new role for Amazon SageMaker to assume is automatically created.
-     */
-    public readonly role: iam.IRole;
-
-    /**
      * Dataset to be transformed and the Amazon S3 location where it is stored.
      */
     private readonly transformInput: TransformInput;
@@ -93,16 +86,14 @@ export class SagemakerTransformTask implements sfn.IStepFunctionsTask {
      * ML compute instances for the transform job.
      */
     private readonly transformResources: TransformResources;
+    private role: iam.IRole;
 
-    constructor(scope: Construct, private readonly props: SagemakerTransformProps) {
+    constructor(private readonly props: SagemakerTransformProps) {
 
         // set the sagemaker role or create new one
-        this.role = props.role || new iam.Role(scope, 'SagemakerTransformRole', {
-            assumedBy: new iam.ServicePrincipal('sagemaker.amazonaws.com'),
-            managedPolicies: [
-                iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonSageMakerFullAccess')
-            ]
-        });
+        if (props.role) {
+            this.role = props.role;
+        }
 
         // set the S3 Data type of the input data config objects to be 'S3Prefix' if not defined
         this.transformInput = (props.transformInput.transformDataSource.s3DataSource.s3DataType) ? (props.transformInput) :
@@ -123,6 +114,16 @@ export class SagemakerTransformTask implements sfn.IStepFunctionsTask {
     }
 
     public bind(task: sfn.Task): sfn.StepFunctionsTaskConfig {
+        // create new role if doesn't exist
+        if (this.role === undefined) {
+            this.role = new iam.Role(task, 'SagemakerTransformRole', {
+                assumedBy: new iam.ServicePrincipal('sagemaker.amazonaws.com'),
+                managedPolicies: [
+                    iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonSageMakerFullAccess')
+                ]
+            });
+        }
+
         return {
           resourceArn: 'arn:aws:states:::sagemaker:createTransformJob' + (this.props.synchronous ? '.sync' : ''),
           parameters: this.renderParameters(),

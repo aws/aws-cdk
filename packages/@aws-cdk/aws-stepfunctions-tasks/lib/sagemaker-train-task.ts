@@ -1,7 +1,7 @@
 import ec2 = require('@aws-cdk/aws-ec2');
 import iam = require('@aws-cdk/aws-iam');
 import sfn = require('@aws-cdk/aws-stepfunctions');
-import { Construct, Duration, Lazy, Stack } from '@aws-cdk/cdk';
+import { Duration, Lazy, Stack } from '@aws-cdk/cdk';
 import { AlgorithmSpecification, Channel, InputMode, OutputDataConfig, ResourceConfig,
          S3DataType, StoppingCondition, VpcConfig,  } from './sagemaker-task-base-types';
 
@@ -76,14 +76,7 @@ export class SagemakerTrainTask implements ec2.IConnectable, sfn.IStepFunctionsT
     /**
      * Allows specify security group connections for instances of this fleet.
      */
-    public readonly connections: ec2.Connections;
-
-    /**
-     * The execution role for the Sagemaker training job.
-     *
-     * @default new role for Amazon SageMaker to assume is automatically created.
-     */
-    public readonly role: iam.IRole;
+    public readonly connections: ec2.Connections = new ec2.Connections();
 
     /**
      * The Algorithm Specification
@@ -106,11 +99,12 @@ export class SagemakerTrainTask implements ec2.IConnectable, sfn.IStepFunctionsT
     private readonly stoppingCondition: StoppingCondition;
 
     private readonly vpc: ec2.IVpc;
-    private readonly securityGroup: ec2.ISecurityGroup;
+    private role: iam.IRole;
+    private securityGroup: ec2.ISecurityGroup;
     private readonly securityGroups: ec2.ISecurityGroup[] = [];
     private readonly subnets: string[];
 
-    constructor(scope: Construct, private readonly props: SagemakerTrainProps) {
+    constructor(private readonly props: SagemakerTrainProps) {
 
         // set the default resource config if not defined.
         this.resourceConfig = props.resourceConfig || {
@@ -125,12 +119,9 @@ export class SagemakerTrainTask implements ec2.IConnectable, sfn.IStepFunctionsT
         };
 
         // set the sagemaker role or create new one
-        this.role = props.role || new iam.Role(scope, 'SagemakerTrainRole', {
-            assumedBy: new iam.ServicePrincipal('sagemaker.amazonaws.com'),
-            managedPolicies: [
-                iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonSageMakerFullAccess')
-            ]
-        });
+        if (props.role) {
+            this.role = props.role;
+        }
 
         // check that either algorithm name or image is defined
         if ((!props.algorithmSpecification.algorithmName) && (!props.algorithmSpecification.trainingImage)) {
@@ -155,12 +146,8 @@ export class SagemakerTrainTask implements ec2.IConnectable, sfn.IStepFunctionsT
         // add the security groups to the connections object
         if (props.vpcConfig) {
             this.vpc = props.vpcConfig.vpc;
-            this.securityGroup = new ec2.SecurityGroup(scope, 'TrainJobSecurityGroup', {
-                vpc: this.vpc
-            });
-            this.connections = new ec2.Connections({ securityGroups: [this.securityGroup] });
-            this.securityGroups.push(this.securityGroup);
-            this.subnets = (props.vpcConfig.subnets) ? (props.vpcConfig.subnets.map(s => (s.subnetId))) : this.vpc.selectSubnets().subnetIds;
+            this.subnets = (props.vpcConfig.subnets) ?
+                (this.vpc.selectSubnets(props.vpcConfig.subnets).subnetIds) : this.vpc.selectSubnets().subnetIds;
         }
     }
 
@@ -175,6 +162,26 @@ export class SagemakerTrainTask implements ec2.IConnectable, sfn.IStepFunctionsT
     }
 
     public bind(task: sfn.Task): sfn.StepFunctionsTaskConfig  {
+
+        // create a role if not created
+        if (this.role === undefined) {
+            this.role = new iam.Role(task, 'SagemakerTrainRole', {
+                assumedBy: new iam.ServicePrincipal('sagemaker.amazonaws.com'),
+                managedPolicies: [
+                    iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonSageMakerFullAccess')
+                ]
+            });
+        }
+
+        // create a security group if not defined
+        if (this.vpc && this.securityGroup === undefined) {
+            this.securityGroup = new ec2.SecurityGroup(task, 'TrainJobSecurityGroup', {
+                vpc: this.vpc
+            });
+            this.connections.addSecurityGroup(this.securityGroup);
+            this.securityGroups.push(this.securityGroup);
+        }
+
         return {
           resourceArn: 'arn:aws:states:::sagemaker:createTrainingJob' + (this.props.synchronous ? '.sync' : ''),
           parameters: this.renderParameters(),

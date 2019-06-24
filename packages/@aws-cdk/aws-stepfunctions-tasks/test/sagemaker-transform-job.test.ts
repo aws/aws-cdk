@@ -23,7 +23,7 @@ beforeEach(() => {
 
 test('create basic transform job', () => {
     // WHEN
-    const task = new sfn.Task(stack, 'TransformTask', { task: new tasks.SagemakerTransformTask(stack, {
+    const task = new sfn.Task(stack, 'TransformTask', { task: new tasks.SagemakerTransformTask({
         transformJobName: "MyTransformJob",
         modelName: "MyModelName",
         transformInput: {
@@ -68,7 +68,7 @@ test('create basic transform job', () => {
 test('create complex transform job', () => {
     // WHEN
     const kmsKey = new kms.Key(stack, 'Key');
-    const task = new sfn.Task(stack, 'TransformTask', { task: new tasks.SagemakerTransformTask(stack, {
+    const task = new sfn.Task(stack, 'TransformTask', { task: new tasks.SagemakerTransformTask({
         transformJobName: "MyTransformJob",
         modelName: "MyModelName",
         synchronous: true,
@@ -141,7 +141,7 @@ test('create complex transform job', () => {
 
 test('pass param to transform job', () => {
     // WHEN
-    const task = new sfn.Task(stack, 'TransformTask', { task: new tasks.SagemakerTransformTask(stack, {
+    const task = new sfn.Task(stack, 'TransformTask', { task: new tasks.SagemakerTransformTask({
         transformJobName: sfn.Data.stringAt('$.TransformJobName'),
         modelName: sfn.Data.stringAt('$.ModelName'),
         role,

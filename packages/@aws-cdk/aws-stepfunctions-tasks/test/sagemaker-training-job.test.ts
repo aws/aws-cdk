@@ -15,7 +15,7 @@ beforeEach(() => {
 
 test('create basic training job', () => {
     // WHEN
-    const task = new sfn.Task(stack, 'TrainSagemaker', { task: new tasks.SagemakerTrainTask(stack, {
+    const task = new sfn.Task(stack, 'TrainSagemaker', { task: new tasks.SagemakerTrainTask({
         trainingJobName: "MyTrainJob",
         algorithmSpecification: {
             algorithmName: "BlazingText",
@@ -64,7 +64,7 @@ test('create basic training job', () => {
             InstanceType: 'ml.m4.xlarge',
             VolumeSizeInGB: 10
         },
-        RoleArn: { "Fn::GetAtt": [ "SagemakerTrainRoleCBF0A724", "Arn" ] },
+        RoleArn: { "Fn::GetAtt": [ "TrainSagemakerSagemakerTrainRole86DF0D73", "Arn" ] },
         StoppingCondition: {
             MaxRuntimeInSeconds: 3600
         },
@@ -87,7 +87,7 @@ test('create complex training job', () => {
         ],
     });
 
-    const trainTask = new tasks.SagemakerTrainTask(stack, {
+    const trainTask = new tasks.SagemakerTrainTask({
         trainingJobName: "MyTrainJob",
         synchronous: true,
         role,
@@ -147,7 +147,6 @@ test('create complex training job', () => {
         },
         vpcConfig: {
             vpc,
-            subnets: vpc.privateSubnets,
         }
     });
     trainTask.addSecurityGroup(securityGroup);
@@ -215,8 +214,8 @@ test('create complex training job', () => {
         ],
         VpcConfig: {
             SecurityGroupIds: [
-                { "Fn::GetAtt": [ "TrainJobSecurityGroupBECEDCDC", "GroupId" ] },
                 { "Fn::GetAtt": [ "SecurityGroupDD263621", "GroupId" ] },
+                { "Fn::GetAtt": [ "TrainSagemakerTrainJobSecurityGroup7C858EB9", "GroupId" ] },
             ],
             Subnets: [
                 { Ref: "VPCPrivateSubnet1Subnet8BCA10E0" },
@@ -236,7 +235,7 @@ test('pass param to training job', () => {
         ],
     });
 
-    const task = new sfn.Task(stack, 'TrainSagemaker', { task: new tasks.SagemakerTrainTask(stack, {
+    const task = new sfn.Task(stack, 'TrainSagemaker', { task: new tasks.SagemakerTrainTask({
         trainingJobName: sfn.Data.stringAt('$.JobName'),
         role,
         algorithmSpecification: {
@@ -307,7 +306,7 @@ test('pass param to training job', () => {
 
 test('Cannot create a SageMaker train task with both algorithm name and image name missing', () => {
 
-    expect(() => new tasks.SagemakerTrainTask(stack, {
+    expect(() => new tasks.SagemakerTrainTask({
         trainingJobName: 'myTrainJob',
         algorithmSpecification: {},
         inputDataConfig: [
