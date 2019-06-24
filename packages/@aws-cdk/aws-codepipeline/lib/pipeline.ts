@@ -3,9 +3,10 @@ import iam = require('@aws-cdk/aws-iam');
 import kms = require('@aws-cdk/aws-kms');
 import s3 = require('@aws-cdk/aws-s3');
 import { App, Construct, Lazy, PhysicalName, RemovalPolicy, Resource, Stack, Token } from '@aws-cdk/core';
-import { Action, IPipeline, IStage } from "./action";
+import { IAction, IPipeline, IStage } from "./action";
 import { CfnPipeline } from './codepipeline.generated';
 import { CrossRegionSupportStack } from './cross-region-support-stack';
+import { FullActionDescriptor } from './full-action-descriptor';
 import { Stage } from './stage';
 import { validateName, validateSourceAction } from "./validation";
 
@@ -16,7 +17,6 @@ import { validateName, validateSourceAction } from "./validation";
  *
  * @see #rightBefore
  * @see #justAfter
- * @see #atIndex
  */
 export interface StagePlacement {
   /**
@@ -45,7 +45,7 @@ export interface StageProps {
    * The list of Actions to create this Stage with.
    * You can always add more Actions later by calling {@link IStage#addAction}.
    */
-  readonly actions?: Action[];
+  readonly actions?: IAction[];
 }
 
 export interface StageOptions extends StageProps {
@@ -104,8 +104,7 @@ export interface PipelineProps {
 abstract class PipelineBase extends Resource implements IPipeline {
   public abstract pipelineName: string;
   public abstract pipelineArn: string;
-  public abstract grantBucketRead(identity: iam.IGrantable): iam.Grant;
-  public abstract grantBucketReadWrite(identity: iam.IGrantable): iam.Grant;
+  public abstract artifactBucket: s3.IBucket;
 
   /**
    * Defines an event rule triggered by this CodePipeline.
@@ -160,30 +159,6 @@ abstract class PipelineBase extends Resource implements IPipeline {
  * // ... add more stages
  */
 export class Pipeline extends PipelineBase {
-
-  /**
-   * Import a pipeline into this app.
-   * @param scope the scope into which to import this pipeline
-   * @param pipelineArn The ARN of the pipeline (e.g. `arn:aws:codepipeline:us-east-1:123456789012:MyDemoPipeline`)
-   */
-  public static fromPipelineArn(scope: Construct, id: string, pipelineArn: string): IPipeline {
-
-    class Import extends PipelineBase {
-      public pipelineName = Stack.of(scope).parseArn(pipelineArn).resource;
-      public pipelineArn = pipelineArn;
-
-      public grantBucketRead(identity: iam.IGrantable): iam.Grant {
-        return iam.Grant.drop(identity, `grant read permissions to the artifacts bucket of ${pipelineArn}`);
-      }
-
-      public grantBucketReadWrite(identity: iam.IGrantable): iam.Grant {
-        return iam.Grant.drop(identity, `grant read/write permissions to the artifacts bucket of ${pipelineArn}`);
-      }
-    }
-
-    return new Import(scope, id);
-  }
-
   /**
    * The IAM role AWS CodePipeline will use to perform actions or assume roles for actions with
    * a more specific IAM role.
@@ -315,14 +290,6 @@ export class Pipeline extends PipelineBase {
     return this.stages.length;
   }
 
-  public grantBucketRead(identity: iam.IGrantable): iam.Grant {
-    return this.artifactBucket.grantRead(identity);
-  }
-
-  public grantBucketReadWrite(identity: iam.IGrantable): iam.Grant {
-    return this.artifactBucket.grantReadWrite(identity);
-  }
-
   /**
    * Returns all of the {@link CrossRegionSupportStack}s that were generated automatically
    * when dealing with Actions that reside in a different region than the Pipeline itself.
@@ -333,6 +300,22 @@ export class Pipeline extends PipelineBase {
       ret[key] = this._crossRegionSupport[key];
     });
     return ret;
+  }
+
+  /** @internal */
+  public _attachActionToPipeline(stage: Stage, action: IAction, actionScope: Construct): FullActionDescriptor {
+    // handle cross-region actions here
+    this.ensureReplicationBucketExistsFor(action.actionProperties.region);
+
+    // get the role for the given action
+    const actionRole = this.getRoleForAction(stage, action);
+
+    // bind the Action
+    const actionDescriptor = action.bind(actionScope, stage, {
+      role: actionRole ? actionRole : this.role,
+    });
+
+    return new FullActionDescriptor(action, actionDescriptor, actionRole);
   }
 
   /**
@@ -350,25 +333,6 @@ export class Pipeline extends PipelineBase {
       ...this.validateStages(),
       ...this.validateArtifacts(),
     ];
-  }
-
-  // ignore unused private method (it's actually used in Stage)
-  // @ts-ignore
-  private _attachActionToPipeline(stage: Stage, action: Action, actionScope: cdk.Construct): void {
-    // handle cross-region actions here
-    this.ensureReplicationBucketExistsFor(action.region);
-
-    // get the role for the given action
-    const actionRole = this.getRoleForAction(stage, action);
-
-    // call the action callback which eventually calls bind()
-    action._actionAttachedToPipeline({
-      pipeline: this,
-      stage,
-      scope: actionScope,
-      role: actionRole ? actionRole : this.role,
-      actionRole,
-    });
   }
 
   private requireRegion(): string {
@@ -431,14 +395,14 @@ export class Pipeline extends PipelineBase {
    * @param stage the stage the action belongs to
    * @param action the action to return/create a role for
    */
-  private getRoleForAction(stage: Stage, action: Action): iam.IRole | undefined {
+  private getRoleForAction(stage: Stage, action: IAction): iam.IRole | undefined {
     let actionRole: iam.IRole | undefined;
 
-    if (action.role) {
-      actionRole = action.role;
-    } else if (action.resource) {
+    if (action.actionProperties.role) {
+      actionRole = action.actionProperties.role;
+    } else if (action.actionProperties.resource) {
       const pipelineStack = Stack.of(this);
-      const resourceStack = Stack.of(action.resource);
+      const resourceStack = Stack.of(action.actionProperties.resource);
       // check if resource is from a different account
       if (pipelineStack.environment !== resourceStack.environment) {
         // if it is, the pipeline's bucket must have a KMS key
@@ -450,7 +414,8 @@ export class Pipeline extends PipelineBase {
         }
 
         // generate a role in the other stack, that the Pipeline will assume for executing this action
-        actionRole = new iam.Role(resourceStack, `${this.node.uniqueId}-${stage.stageName}-${action.actionName}-ActionRole`, {
+        actionRole = new iam.Role(resourceStack,
+            `${this.node.uniqueId}-${stage.stageName}-${action.actionProperties.actionName}-ActionRole`, {
           assumedBy: new iam.AccountPrincipal(pipelineStack.account),
           roleName: PhysicalName.GENERATE_IF_NEEDED,
         });

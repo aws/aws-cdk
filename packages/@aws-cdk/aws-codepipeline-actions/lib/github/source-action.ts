@@ -1,5 +1,6 @@
 import codepipeline = require('@aws-cdk/aws-codepipeline');
-import { SecretValue } from '@aws-cdk/core';
+import { Construct, SecretValue } from '@aws-cdk/core';
+import { Action } from '../action';
 import { sourceArtifactBounds } from '../common';
 
 /**
@@ -62,7 +63,7 @@ export interface GitHubSourceActionProps extends codepipeline.CommonActionProps 
 /**
  * Source that is provided by a GitHub repository.
  */
-export class GitHubSourceAction extends codepipeline.Action {
+export class GitHubSourceAction extends Action {
   private readonly props: GitHubSourceActionProps;
 
   constructor(props: GitHubSourceActionProps) {
@@ -73,21 +74,15 @@ export class GitHubSourceAction extends codepipeline.Action {
       provider: 'GitHub',
       artifactBounds: sourceArtifactBounds(),
       outputs: [props.output],
-      configuration: {
-        Owner: props.owner,
-        Repo: props.repo,
-        Branch: props.branch || "master",
-        OAuthToken: props.oauthToken.toString(),
-        PollForSourceChanges: props.trigger === GitHubTrigger.POLL,
-      },
     });
 
     this.props = props;
   }
 
-  protected bind(info: codepipeline.ActionBind): void {
+  protected bound(scope: Construct, stage: codepipeline.IStage, _options: codepipeline.ActionBindOptions):
+      codepipeline.ActionConfig {
     if (!this.props.trigger || this.props.trigger === GitHubTrigger.WEBHOOK) {
-      new codepipeline.CfnWebhook(info.scope, 'WebhookResource', {
+      new codepipeline.CfnWebhook(scope, 'WebhookResource', {
         authentication: 'GITHUB_HMAC',
         authenticationConfiguration: {
           secretToken: this.props.oauthToken.toString(),
@@ -98,11 +93,21 @@ export class GitHubSourceAction extends codepipeline.Action {
             matchEquals: 'refs/heads/{Branch}',
           },
         ],
-        targetAction: this.actionName,
-        targetPipeline: info.pipeline.pipelineName,
+        targetAction: this.actionProperties.actionName,
+        targetPipeline: stage.pipeline.pipelineName,
         targetPipelineVersion: 1,
         registerWithThirdParty: true,
       });
     }
+
+    return {
+      configuration: {
+        Owner: this.props.owner,
+        Repo: this.props.repo,
+        Branch: this.props.branch || "master",
+        OAuthToken: this.props.oauthToken.toString(),
+        PollForSourceChanges: this.props.trigger === GitHubTrigger.POLL,
+      },
+    };
   }
 }
