@@ -77,10 +77,10 @@ export abstract class CfnElement extends Construct {
    *      from the +metadata+ entry typed +aws:cdk:logicalId+, and with the bottom-most
    *      node +internal+ entries filtered.
    */
-  public get creationStack(): string[] | undefined {
+  public get creationStack(): string[] {
     const trace = this.node.metadata.find(md => md.type === cxapi.LOGICAL_ID_METADATA_KEY)!.trace;
     if (!trace) {
-      return undefined;
+      return [];
     }
 
     return filterStackTrace(trace);
