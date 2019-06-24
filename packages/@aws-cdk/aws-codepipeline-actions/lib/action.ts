@@ -4,6 +4,8 @@ import { Construct } from '@aws-cdk/core';
 
 /**
  * Low-level class for generic CodePipeline Actions.
+ *
+ * @experimental
  */
 export abstract class Action implements codepipeline.IAction {
   private _pipeline?: codepipeline.IPipeline;
