@@ -36,10 +36,18 @@ export class CfnResource extends CfnRefElement {
     return (construct as any).cfnResourceType !== undefined;
   }
 
+  // MAINTAINERS NOTE: this class serves as the base class for the generated L1
+  // ("CFN") resources (such as `s3.CfnBucket`). These resources will have a
+  // property for each CloudFormation property of the resource. This means that
+  // if at some point in the future a property is introduced with a name similar
+  // to one of the properties here, it will be "masked" by the derived class. To
+  // that end, we prefix all properties in this class with `cfnXxx` with the
+  // hope to avoid those conflicts in the future.
+
   /**
    * Options for this resource, such as condition, update policy etc.
    */
-  public readonly options: IResourceOptions = {};
+  public readonly cfnOptions: ICfnResourceOptions = {};
 
   /**
    * AWS resource type.
@@ -84,7 +92,7 @@ export class CfnResource extends CfnRefElement {
     // path in the CloudFormation template, so it will be possible to trace
     // back to the actual construct path.
     if (this.node.tryGetContext(cxapi.PATH_METADATA_ENABLE_CONTEXT)) {
-      this.options.metadata = {
+      this.cfnOptions.metadata = {
         [cxapi.PATH_METADATA_KEY]: this.node.path
       };
     }
@@ -111,9 +119,9 @@ export class CfnResource extends CfnRefElement {
         throw new Error(`Invalid removal policy: ${policy}`);
     }
 
-    this.options.deletionPolicy = deletionPolicy;
+    this.cfnOptions.deletionPolicy = deletionPolicy;
     if (options.applyToUpdateReplacePolicy) {
-      this.options.updateReplacePolicy = deletionPolicy;
+      this.cfnOptions.updateReplacePolicy = deletionPolicy;
     }
   }
 
@@ -215,12 +223,12 @@ export class CfnResource extends CfnRefElement {
             Type: this.cfnResourceType,
             Properties: ignoreEmpty(this.cfnProperties),
             DependsOn: ignoreEmpty(renderDependsOn(this.dependsOn)),
-            CreationPolicy:  capitalizePropertyNames(this, renderCreationPolicy(this.options.creationPolicy)),
-            UpdatePolicy: capitalizePropertyNames(this, this.options.updatePolicy),
-            UpdateReplacePolicy: capitalizePropertyNames(this, this.options.updateReplacePolicy),
-            DeletionPolicy: capitalizePropertyNames(this, this.options.deletionPolicy),
-            Metadata: ignoreEmpty(this.options.metadata),
-            Condition: this.options.condition && this.options.condition.logicalId
+            CreationPolicy:  capitalizePropertyNames(this, renderCreationPolicy(this.cfnOptions.creationPolicy)),
+            UpdatePolicy: capitalizePropertyNames(this, this.cfnOptions.updatePolicy),
+            UpdateReplacePolicy: capitalizePropertyNames(this, this.cfnOptions.updateReplacePolicy),
+            DeletionPolicy: capitalizePropertyNames(this, this.cfnOptions.deletionPolicy),
+            Metadata: ignoreEmpty(this.cfnOptions.metadata),
+            Condition: this.cfnOptions.condition && this.cfnOptions.condition.logicalId
           }, props => {
             props.Properties = this.renderProperties(props.Properties);
             return deepMerge(props, this.rawOverrides);
@@ -294,7 +302,7 @@ export enum TagType {
   NOT_TAGGABLE = 'NotTaggable',
 }
 
-export interface IResourceOptions {
+export interface ICfnResourceOptions {
   /**
    * A condition to associate with this resource. This means that only if the condition evaluates to 'true' when the stack
    * is deployed, the resource will be included. This is provided to allow CDK projects to produce legacy templates, but noramlly

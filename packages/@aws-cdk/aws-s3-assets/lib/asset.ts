@@ -169,9 +169,9 @@ export class Asset extends cdk.Construct implements assets.IAsset {
 
     // tell tools such as SAM CLI that the "Code" property of this resource
     // points to a local path in order to enable local invocation of this function.
-    resource.options.metadata = resource.options.metadata || { };
-    resource.options.metadata[cxapi.ASSET_RESOURCE_METADATA_PATH_KEY] = this.assetPath;
-    resource.options.metadata[cxapi.ASSET_RESOURCE_METADATA_PROPERTY_KEY] = resourceProperty;
+    resource.cfnOptions.metadata = resource.cfnOptions.metadata || { };
+    resource.cfnOptions.metadata[cxapi.ASSET_RESOURCE_METADATA_PATH_KEY] = this.assetPath;
+    resource.cfnOptions.metadata[cxapi.ASSET_RESOURCE_METADATA_PROPERTY_KEY] = resourceProperty;
   }
 
   /**

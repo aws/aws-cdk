@@ -61,7 +61,7 @@ export = {
     const stack = new Stack();
     const user = new iam.User(stack, 'user', { userName: 'MyUserName' });
     const cfn = user.node.findChild('Resource') as iam.CfnUser;
-    cfn.options.updatePolicy = { useOnlineResharding: true };
+    cfn.cfnOptions.updatePolicy = { useOnlineResharding: true };
 
     // WHEN
     cfn.addOverride('Properties.Hello.World', 'Bam');
