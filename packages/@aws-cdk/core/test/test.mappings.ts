@@ -56,8 +56,8 @@ export = {
       }
     });
 
-    const v1 = mapping.findInMap('instanceCount', Aws.region);
-    const v2 = Fn.findInMap(mapping.logicalId, 'instanceCount', Aws.region);
+    const v1 = mapping.findInMap('instanceCount', Aws.REGION);
+    const v2 = Fn.findInMap(mapping.logicalId, 'instanceCount', Aws.REGION);
 
     const expected = { 'Fn::FindInMap': [ 'mapping', 'instanceCount', { Ref: 'AWS::Region' } ] };
     test.deepEqual(stack.resolve(v1), expected);
@@ -77,7 +77,7 @@ export = {
     });
 
     // WHEN
-    const v = mapping.findInMap(Aws.region, 'size');
+    const v = mapping.findInMap(Aws.REGION, 'size');
 
     // THEN
     test.deepEqual(stack.resolve(v), {
@@ -98,10 +98,10 @@ export = {
     });
 
     // WHEN
-    const v = mapping.findInMap('size', Aws.region);
+    const v = mapping.findInMap('size', Aws.REGION);
 
     // THEN
-    test.throws(() => mapping.findInMap('not-found', Aws.region), /Mapping doesn't contain top-level key 'not-found'/);
+    test.throws(() => mapping.findInMap('not-found', Aws.REGION), /Mapping doesn't contain top-level key 'not-found'/);
     test.deepEqual(stack.resolve(v), { 'Fn::FindInMap': [ 'mapping', 'size', { Ref: 'AWS::Region' } ] });
     test.done();
   },

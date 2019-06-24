@@ -356,7 +356,7 @@ export = {
   'bucket with block public access set to BlockAll'(test: Test) {
     const stack = new cdk.Stack();
     new s3.Bucket(stack, 'MyBucket', {
-      blockPublicAccess: s3.BlockPublicAccess.BlockAll,
+      blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
     });
 
     expect(stack).toMatch({
@@ -381,7 +381,7 @@ export = {
   'bucket with block public access set to BlockAcls'(test: Test) {
     const stack = new cdk.Stack();
     new s3.Bucket(stack, 'MyBucket', {
-      blockPublicAccess: s3.BlockPublicAccess.BlockAcls,
+      blockPublicAccess: s3.BlockPublicAccess.BLOCK_ACLS,
     });
 
     expect(stack).toMatch({

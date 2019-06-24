@@ -50,7 +50,7 @@ export class DnsValidatedCertificate extends cdk.Resource implements ICertificat
         const requestorFunction = new lambda.Function(this, 'CertificateRequestorFunction', {
             code: lambda.Code.asset(path.resolve(__dirname, '..', 'lambda-packages', 'dns_validated_certificate_handler', 'lib')),
             handler: 'index.certificateRequestHandler',
-            runtime: lambda.Runtime.Nodejs810,
+            runtime: lambda.Runtime.NODEJS_8_10,
             timeout: cdk.Duration.minutes(15)
         });
         requestorFunction.addToRolePolicy(new iam.PolicyStatement({

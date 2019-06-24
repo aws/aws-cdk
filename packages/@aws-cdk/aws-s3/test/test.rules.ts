@@ -83,7 +83,7 @@ export = {
     new Bucket(stack, 'Bucket', {
       lifecycleRules: [{
         transitions: [{
-          storageClass: StorageClass.Glacier,
+          storageClass: StorageClass.GLACIER,
           transitionAfter: Duration.days(30)
         }]
       }]

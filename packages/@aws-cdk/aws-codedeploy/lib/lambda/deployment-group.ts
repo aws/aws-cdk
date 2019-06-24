@@ -159,7 +159,7 @@ export class LambdaDeploymentGroup extends cdk.Resource implements ILambdaDeploy
       applicationName: this.application.applicationName,
       serviceRoleArn: this.role.roleArn,
       deploymentGroupName: this.physicalName,
-      deploymentConfigName: (props.deploymentConfig || LambdaDeploymentConfig.AllAtOnce).deploymentConfigName,
+      deploymentConfigName: (props.deploymentConfig || LambdaDeploymentConfig.ALL_AT_ONCE).deploymentConfigName,
       deploymentStyle: {
         deploymentType: 'BLUE_GREEN',
         deploymentOption: 'WITH_TRAFFIC_CONTROL'

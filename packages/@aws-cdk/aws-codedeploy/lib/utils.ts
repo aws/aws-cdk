@@ -4,15 +4,15 @@ import { CfnDeploymentGroup } from './codedeploy.generated';
 import { AutoRollbackConfig } from './rollback-config';
 
 export function arnForApplication(applicationName: string): string {
-  return `arn:${Aws.partition}:codedeploy:${Aws.region}:${Aws.accountId}:application:${applicationName}`;
+  return `arn:${Aws.PARTITION}:codedeploy:${Aws.REGION}:${Aws.ACCOUNT_ID}:application:${applicationName}`;
 }
 
 export function arnForDeploymentGroup(applicationName: string, deploymentGroupName: string): string {
-  return `arn:${Aws.partition}:codedeploy:${Aws.region}:${Aws.accountId}:deploymentgroup:${applicationName}/${deploymentGroupName}`;
+  return `arn:${Aws.PARTITION}:codedeploy:${Aws.REGION}:${Aws.ACCOUNT_ID}:deploymentgroup:${applicationName}/${deploymentGroupName}`;
 }
 
 export function arnForDeploymentConfig(name: string): string {
-  return `arn:${Aws.partition}:codedeploy:${Aws.region}:${Aws.accountId}:deploymentconfig:${name}`;
+  return `arn:${Aws.PARTITION}:codedeploy:${Aws.REGION}:${Aws.ACCOUNT_ID}:deploymentconfig:${name}`;
 }
 
 export function renderAlarmConfiguration(alarms: cloudwatch.IAlarm[], ignorePollAlarmFailure?: boolean):

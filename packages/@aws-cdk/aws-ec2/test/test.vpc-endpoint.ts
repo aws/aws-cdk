@@ -244,7 +244,7 @@ export = {
 
       // WHEN
       vpc.addInterfaceEndpoint('EcrDocker', {
-        service: InterfaceVpcEndpointAwsService.EcrDocker
+        service: InterfaceVpcEndpointAwsService.ECR_DOCKER
       });
 
       // THEN

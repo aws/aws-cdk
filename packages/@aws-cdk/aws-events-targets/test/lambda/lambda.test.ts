@@ -61,6 +61,6 @@ function newTestLambda(scope: cdk.Construct) {
   return new lambda.Function(scope, 'MyLambda', {
     code: new lambda.InlineCode('foo'),
     handler: 'bar',
-    runtime: lambda.Runtime.Python27
+    runtime: lambda.Runtime.PYTHON_2_7
   });
 }
