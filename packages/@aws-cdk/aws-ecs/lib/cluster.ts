@@ -368,7 +368,7 @@ export interface ICluster extends IResource {
   readonly defaultCloudMapNamespace?: cloudmap.INamespace;
 
   /**
-   * Getter for autoscaling group added to the cluster
+   * The autoscaling group added to the cluster if capacity is associated to the cluster
    */
   readonly autoscalingGroup?: autoscaling.IAutoScalingGroup;
 }
@@ -414,7 +414,7 @@ export interface ClusterAttributes {
   readonly defaultCloudMapNamespace?: cloudmap.INamespace;
 
   /**
-   * Getter for autoscaling group added to the cluster
+   * Autoscaling group added to the cluster if capacity is added
    *
    * @default - No default autoscaling group
    */
