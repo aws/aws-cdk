@@ -172,7 +172,7 @@ export class DropSpamReceiptRule extends Construct {
     super(scope, id);
 
     const fn = new lambda.SingletonFunction(this, 'Function', {
-      runtime: lambda.Runtime.Nodejs810,
+      runtime: lambda.Runtime.NODEJS_8_10,
       handler: 'index.handler',
       code: lambda.Code.inline(`exports.handler = ${dropSpamCode}`),
       uuid: '224e77f9-a32e-4b4d-ac32-983477abba16'

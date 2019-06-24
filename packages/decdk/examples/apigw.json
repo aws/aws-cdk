@@ -7,7 +7,7 @@
         "code": {
           "asset": { "path": "." }
         },
-        "runtime": "Python36",
+        "runtime": "PYTHON_3_6",
         "handler": "index.handler"
       }
     },

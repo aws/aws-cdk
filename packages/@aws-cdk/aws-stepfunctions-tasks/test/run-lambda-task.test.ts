@@ -11,7 +11,7 @@ beforeEach(() => {
   fn = new lambda.Function(stack, 'Fn', {
     code: lambda.Code.inline('hello'),
     handler: 'index.hello',
-    runtime: lambda.Runtime.Python27,
+    runtime: lambda.Runtime.PYTHON_2_7,
   });
 });
 

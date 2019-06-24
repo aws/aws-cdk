@@ -26,7 +26,7 @@ export class PlacementStrategy {
    * Try to place tasks spread across instances
    */
   public static spreadAcrossInstances() {
-    return new PlacementStrategy([{ type: 'spread', field: BuiltInAttributes.InstanceId }]);
+    return new PlacementStrategy([{ type: 'spread', field: BuiltInAttributes.INSTANCE_ID }]);
   }
 
   /**

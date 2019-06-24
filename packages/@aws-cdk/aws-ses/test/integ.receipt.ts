@@ -14,7 +14,7 @@ const topic = new sns.Topic(stack, 'Topic');
 const fn = new lambda.Function(stack, 'Function', {
   code: lambda.Code.inline('exports.handler = async (event) => event;'),
   handler: 'index.handler',
-  runtime: lambda.Runtime.Nodejs810
+  runtime: lambda.Runtime.NODEJS_8_10
 });
 
 const bucket = new s3.Bucket(stack, 'Bucket');
@@ -56,7 +56,7 @@ const firstRule = ruleSet.addRule('FirstRule', {
 firstRule.addAction(
   new ses.ReceiptRuleBounceAction({
     sender: 'cdk-ses-receipt-test@yopmail.com',
-    template: ses.ReceiptRuleBounceActionTemplate.MessageContentRejected,
+    template: ses.ReceiptRuleBounceActionTemplate.MESSAGE_CONTENT_REJECTED,
     topic
   })
 );

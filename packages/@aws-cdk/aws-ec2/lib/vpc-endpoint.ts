@@ -87,7 +87,7 @@ export interface IGatewayVpcEndpointService {
  * An AWS service for a gateway VPC endpoint.
  */
 export class GatewayVpcEndpointAwsService implements IGatewayVpcEndpointService {
-  public static readonly DynamoDb = new GatewayVpcEndpointAwsService('dynamodb');
+  public static readonly DYNAMODB = new GatewayVpcEndpointAwsService('dynamodb');
   public static readonly S3 = new GatewayVpcEndpointAwsService('s3');
 
   /**
@@ -96,7 +96,7 @@ export class GatewayVpcEndpointAwsService implements IGatewayVpcEndpointService 
   public readonly name: string;
 
   constructor(name: string, prefix?: string) {
-    this.name = `${prefix || 'com.amazonaws'}.${Aws.region}.${name}`;
+    this.name = `${prefix || 'com.amazonaws'}.${Aws.REGION}.${name}`;
   }
 }
 
@@ -206,43 +206,43 @@ export interface IInterfaceVpcEndpointService {
  * An AWS service for an interface VPC endpoint.
  */
 export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointService {
-  public static readonly SageMakerNotebook = new InterfaceVpcEndpointAwsService('notebook', 'aws.sagemaker');
-  public static readonly CloudFormation = new InterfaceVpcEndpointAwsService('cloudformation');
-  public static readonly CloudTrail = new InterfaceVpcEndpointAwsService('cloudtrail');
-  public static readonly CodeBuild = new InterfaceVpcEndpointAwsService('codebuild');
-  public static readonly CodeBuildFips = new InterfaceVpcEndpointAwsService('codebuil-fips');
-  public static readonly CodeCommit = new InterfaceVpcEndpointAwsService('codecommit');
-  public static readonly CodeCommitFips = new InterfaceVpcEndpointAwsService('codecommit-fips');
-  public static readonly CodePipeline = new InterfaceVpcEndpointAwsService('codepipeline');
-  public static readonly Config = new InterfaceVpcEndpointAwsService('config');
-  public static readonly Ec2 = new InterfaceVpcEndpointAwsService('ec2');
-  public static readonly Ec2Messages = new InterfaceVpcEndpointAwsService('ec2messages');
-  public static readonly Ecr = new InterfaceVpcEndpointAwsService('ecr.api');
-  public static readonly EcrDocker = new InterfaceVpcEndpointAwsService('ecr.dkr');
-  public static readonly Ecs = new InterfaceVpcEndpointAwsService('ecs');
-  public static readonly EcsAgent = new InterfaceVpcEndpointAwsService('ecs-agent');
-  public static readonly EcsTelemetry = new InterfaceVpcEndpointAwsService('ecs-telemetry');
-  public static readonly ElasticInferenceRuntime = new InterfaceVpcEndpointAwsService('elastic-inference.runtime');
-  public static readonly ElasticLoadBalancing = new InterfaceVpcEndpointAwsService('elasticloadbalancing');
-  public static readonly CloudWatchEvents = new InterfaceVpcEndpointAwsService('events');
-  public static readonly ApiGateway = new InterfaceVpcEndpointAwsService('execute-api');
-  public static readonly CodeCommitGit = new InterfaceVpcEndpointAwsService('git-codecommit');
-  public static readonly CodeCommitGitFips = new InterfaceVpcEndpointAwsService('git-codecommit-fips');
-  public static readonly KinesisStreams = new InterfaceVpcEndpointAwsService('kinesis-streams');
-  public static readonly Kms = new InterfaceVpcEndpointAwsService('kms');
-  public static readonly CloudWatchLogs = new InterfaceVpcEndpointAwsService('logs');
-  public static readonly CloudWatch = new InterfaceVpcEndpointAwsService('monitoring');
-  public static readonly SageMakerApi = new InterfaceVpcEndpointAwsService('sagemaker.api');
-  public static readonly SageMakerRuntime = new InterfaceVpcEndpointAwsService('sagemaker.runtime');
-  public static readonly SageMakerRuntimeFips = new InterfaceVpcEndpointAwsService('sagemaker.runtime-fips');
-  public static readonly SecretsManager = new InterfaceVpcEndpointAwsService('secretsmanager');
-  public static readonly ServiceCatalog = new InterfaceVpcEndpointAwsService('servicecatalog');
-  public static readonly Sns = new InterfaceVpcEndpointAwsService('sns');
-  public static readonly Sqs = new InterfaceVpcEndpointAwsService('sqs');
-  public static readonly Ssm = new InterfaceVpcEndpointAwsService('ssm');
-  public static readonly SsmMessages = new InterfaceVpcEndpointAwsService('ssmmessages');
-  public static readonly Sts = new InterfaceVpcEndpointAwsService('sts');
-  public static readonly Transfer = new InterfaceVpcEndpointAwsService('transfer.server');
+  public static readonly SAGEMAKER_NOTEBOOK = new InterfaceVpcEndpointAwsService('notebook', 'aws.sagemaker');
+  public static readonly CLOUDFORMATION = new InterfaceVpcEndpointAwsService('cloudformation');
+  public static readonly CLOUDTRAIL = new InterfaceVpcEndpointAwsService('cloudtrail');
+  public static readonly CODEBUILD = new InterfaceVpcEndpointAwsService('codebuild');
+  public static readonly CODEBUILD_FIPS = new InterfaceVpcEndpointAwsService('codebuil-fips');
+  public static readonly CODECOMMIT = new InterfaceVpcEndpointAwsService('codecommit');
+  public static readonly CODECOMMIT_FIPS = new InterfaceVpcEndpointAwsService('codecommit-fips');
+  public static readonly CODEPIPELINE = new InterfaceVpcEndpointAwsService('codepipeline');
+  public static readonly CONFIG = new InterfaceVpcEndpointAwsService('config');
+  public static readonly EC2 = new InterfaceVpcEndpointAwsService('ec2');
+  public static readonly EC2_MESSAGES = new InterfaceVpcEndpointAwsService('ec2messages');
+  public static readonly ECR = new InterfaceVpcEndpointAwsService('ecr.api');
+  public static readonly ECR_DOCKER = new InterfaceVpcEndpointAwsService('ecr.dkr');
+  public static readonly ECS = new InterfaceVpcEndpointAwsService('ecs');
+  public static readonly ECS_AGENT = new InterfaceVpcEndpointAwsService('ecs-agent');
+  public static readonly ECS_TELEMETRY = new InterfaceVpcEndpointAwsService('ecs-telemetry');
+  public static readonly ELASTIC_INFERENCE_RUNTIME = new InterfaceVpcEndpointAwsService('elastic-inference.runtime');
+  public static readonly ELASTIC_LOAD_BALANCING = new InterfaceVpcEndpointAwsService('elasticloadbalancing');
+  public static readonly CLOUDWATCH_EVENTS = new InterfaceVpcEndpointAwsService('events');
+  public static readonly APIGATEWAY = new InterfaceVpcEndpointAwsService('execute-api');
+  public static readonly CODECOMMIT_GIT = new InterfaceVpcEndpointAwsService('git-codecommit');
+  public static readonly CODECOMMIT_GIT_FIPS = new InterfaceVpcEndpointAwsService('git-codecommit-fips');
+  public static readonly KINESIS_STREAMS = new InterfaceVpcEndpointAwsService('kinesis-streams');
+  public static readonly KMS = new InterfaceVpcEndpointAwsService('kms');
+  public static readonly CLOUDWATCH_LOGS = new InterfaceVpcEndpointAwsService('logs');
+  public static readonly CLOUDWATCH = new InterfaceVpcEndpointAwsService('monitoring');
+  public static readonly SAGEMAKER_API = new InterfaceVpcEndpointAwsService('sagemaker.api');
+  public static readonly SAGEMAKER_RUNTIME = new InterfaceVpcEndpointAwsService('sagemaker.runtime');
+  public static readonly SAGEMAKER_RUNTIME_FIPS = new InterfaceVpcEndpointAwsService('sagemaker.runtime-fips');
+  public static readonly SECRETS_MANAGER = new InterfaceVpcEndpointAwsService('secretsmanager');
+  public static readonly SERVICE_CATALOG = new InterfaceVpcEndpointAwsService('servicecatalog');
+  public static readonly SNS = new InterfaceVpcEndpointAwsService('sns');
+  public static readonly SQS = new InterfaceVpcEndpointAwsService('sqs');
+  public static readonly SSM = new InterfaceVpcEndpointAwsService('ssm');
+  public static readonly SSM_MESSAGES = new InterfaceVpcEndpointAwsService('ssmmessages');
+  public static readonly STS = new InterfaceVpcEndpointAwsService('sts');
+  public static readonly TRANSFER = new InterfaceVpcEndpointAwsService('transfer.server');
 
   /**
    * The name of the service.
@@ -255,7 +255,7 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
   public readonly port: number;
 
   constructor(name: string, prefix?: string, port?: number) {
-    this.name = `${prefix || 'com.amazonaws'}.${Aws.region}.${name}`;
+    this.name = `${prefix || 'com.amazonaws'}.${Aws.REGION}.${name}`;
     this.port = port || 443;
   }
 }

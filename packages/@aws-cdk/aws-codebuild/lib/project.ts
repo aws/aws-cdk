@@ -865,13 +865,13 @@ export class Project extends ProjectBase {
     }
 
     this.role.addToPolicy(new iam.PolicyStatement({
-      resources: [`arn:aws:ec2:${Aws.region}:${Aws.accountId}:network-interface/*`],
+      resources: [`arn:aws:ec2:${Aws.REGION}:${Aws.ACCOUNT_ID}:network-interface/*`],
       actions: ['ec2:CreateNetworkInterfacePermission'],
       conditions: {
         StringEquals: {
           'ec2:Subnet': props.vpc
             .selectSubnets(props.subnetSelection).subnetIds
-            .map(si => `arn:aws:ec2:${Aws.region}:${Aws.accountId}:subnet/${si}`),
+            .map(si => `arn:aws:ec2:${Aws.REGION}:${Aws.ACCOUNT_ID}:subnet/${si}`),
           'ec2:AuthorizedService': 'codebuild.amazonaws.com'
         },
       },

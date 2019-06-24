@@ -587,14 +587,14 @@ export interface BlockPublicAccessOptions {
 }
 
 export class BlockPublicAccess {
-  public static readonly BlockAll = new BlockPublicAccess({
+  public static readonly BLOCK_ALL = new BlockPublicAccess({
     blockPublicAcls: true,
     blockPublicPolicy: true,
     ignorePublicAcls: true,
     restrictPublicBuckets: true
   });
 
-  public static readonly BlockAcls = new BlockPublicAccess({
+  public static readonly BLOCK_ACLS = new BlockPublicAccess({
     blockPublicAcls: true,
     ignorePublicAcls: true
   });

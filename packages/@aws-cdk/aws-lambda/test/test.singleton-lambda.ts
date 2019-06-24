@@ -13,7 +13,7 @@ export = {
     new lambda.SingletonFunction(stack, `Singleton${i}`, {
     uuid: '84c0de93-353f-4217-9b0b-45b6c993251a',
     code: new lambda.InlineCode('def hello(): pass'),
-    runtime: lambda.Runtime.Python27,
+    runtime: lambda.Runtime.PYTHON_2_7,
     handler: 'index.hello',
     timeout: cdk.Duration.minutes(5),
     });

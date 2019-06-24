@@ -9,7 +9,7 @@ export class InputFormat {
    *
    * @see https://hadoop.apache.org/docs/stable/api/org/apache/hadoop/mapred/TextInputFormat.html
    */
-  public static readonly TextInputFormat = new InputFormat('org.apache.hadoop.mapred.TextInputFormat');
+  public static readonly TEXT_INPUT_FORMAT = new InputFormat('org.apache.hadoop.mapred.TextInputFormat');
 
   constructor(public readonly className: string) {}
 }
@@ -23,7 +23,7 @@ export class OutputFormat {
    *
    * @see https://hive.apache.org/javadocs/r2.2.0/api/org/apache/hadoop/hive/ql/io/HiveIgnoreKeyTextOutputFormat.html
    */
-  public static readonly HiveIgnoreKeyTextOutputFormat = new OutputFormat('org.apache.hadoop.hive.ql.io.HiveIgnoreKeyTextOutputFormat');
+  public static readonly HIVE_IGNORE_KEY_TEXT_OUTPUT_FORMAT = new OutputFormat('org.apache.hadoop.hive.ql.io.HiveIgnoreKeyTextOutputFormat');
 
   constructor(public readonly className: string) {}
 }
@@ -37,12 +37,12 @@ export class SerializationLibrary {
   /**
    * @see https://cwiki.apache.org/confluence/display/Hive/LanguageManual+DDL#LanguageManualDDL-JSON
    */
-  public static readonly HiveJson = new SerializationLibrary('org.apache.hive.hcatalog.data.JsonSerDe');
+  public static readonly HIVE_JSON = new SerializationLibrary('org.apache.hive.hcatalog.data.JsonSerDe');
 
   /**
    * @see https://github.com/rcongiu/Hive-JSON-Serde
    */
-  public static readonly OpenXJson = new SerializationLibrary('org.openx.data.jsonserde.JsonSerDe');
+  public static readonly OPENX_JSON = new SerializationLibrary('org.openx.data.jsonserde.JsonSerDe');
 
   constructor(public readonly className: string) {}
 }
@@ -76,8 +76,8 @@ export namespace DataFormat {
    * @see https://docs.aws.amazon.com/athena/latest/ug/json.html
    */
   export const Json: DataFormat = {
-    inputFormat: InputFormat.TextInputFormat,
-    outputFormat: OutputFormat.HiveIgnoreKeyTextOutputFormat,
-    serializationLibrary: SerializationLibrary.OpenXJson
+    inputFormat: InputFormat.TEXT_INPUT_FORMAT,
+    outputFormat: OutputFormat.HIVE_IGNORE_KEY_TEXT_OUTPUT_FORMAT,
+    serializationLibrary: SerializationLibrary.OPENX_JSON
   };
 }

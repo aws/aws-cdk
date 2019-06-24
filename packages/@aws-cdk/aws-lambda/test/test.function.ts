@@ -12,13 +12,13 @@ export = testCase({
     const code = new lambda.S3Code(bucket, 'ObjectKey');
 
     const func = new lambda.Function(stack, 'myFunc', {
-      runtime: lambda.Runtime.Python37,
+      runtime: lambda.Runtime.PYTHON_3_7,
       handler: 'index.handler',
       code,
     });
     const layer = new lambda.LayerVersion(stack, 'myLayer', {
       code,
-      compatibleRuntimes: [lambda.Runtime.Nodejs]
+      compatibleRuntimes: [lambda.Runtime.NODEJS]
     });
 
     // THEN
@@ -34,13 +34,13 @@ export = testCase({
     const code = new lambda.S3Code(bucket, 'ObjectKey');
 
     const func = new lambda.Function(stack, 'myFunc', {
-      runtime: lambda.Runtime.Python37,
+      runtime: lambda.Runtime.PYTHON_3_7,
       handler: 'index.handler',
       code,
     });
     const layer = new lambda.LayerVersion(stack, 'myLayer', {
       code,
-      compatibleRuntimes: [lambda.Runtime.Python37]
+      compatibleRuntimes: [lambda.Runtime.PYTHON_3_7]
     });
 
     // THEN
@@ -55,7 +55,7 @@ export = testCase({
     const bucket = new s3.Bucket(stack, 'Bucket');
     const code = new lambda.S3Code(bucket, 'ObjectKey');
 
-    const runtime = lambda.Runtime.Python37;
+    const runtime = lambda.Runtime.PYTHON_3_7;
     const func = new lambda.Function(stack, 'myFunc', {
       runtime,
       handler: 'index.handler',

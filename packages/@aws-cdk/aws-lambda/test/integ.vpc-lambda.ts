@@ -10,7 +10,7 @@ const vpc = new ec2.Vpc(stack, 'VPC', { maxAZs: 2 });
 new lambda.Function(stack, 'MyLambda', {
   code: new lambda.InlineCode('def main(event, context): pass'),
   handler: 'index.main',
-  runtime: lambda.Runtime.Python36,
+  runtime: lambda.Runtime.PYTHON_3_6,
   vpc
 });
 

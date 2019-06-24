@@ -9,7 +9,7 @@ const vpc = new ec2.Vpc(stack, 'VPC');
 
 /// !show
 const cluster = new rds.DatabaseCluster(stack, 'Database', {
-  engine: rds.DatabaseClusterEngine.Aurora,
+  engine: rds.DatabaseClusterEngine.AURORA,
   masterUser: {
     username: 'admin'
   },

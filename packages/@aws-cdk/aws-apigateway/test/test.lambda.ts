@@ -10,7 +10,7 @@ export = {
     const stack = new cdk.Stack();
     const api = new apigateway.RestApi(stack, 'my-api');
     const handler = new lambda.Function(stack, 'Handler', {
-      runtime: lambda.Runtime.Python27,
+      runtime: lambda.Runtime.PYTHON_2_7,
       handler: 'boom',
       code: lambda.Code.inline('foo')
     });
@@ -56,7 +56,7 @@ export = {
     // GIVEN
     const stack = new cdk.Stack();
     const fn = new lambda.Function(stack, 'Handler', {
-      runtime: lambda.Runtime.Nodejs810,
+      runtime: lambda.Runtime.NODEJS_8_10,
       code: lambda.Code.inline('foo'),
       handler: 'index.handler'
     });
@@ -106,7 +106,7 @@ export = {
     // GIVEN
     const stack = new cdk.Stack();
     const fn = new lambda.Function(stack, 'Handler', {
-      runtime: lambda.Runtime.Nodejs810,
+      runtime: lambda.Runtime.NODEJS_8_10,
       code: lambda.Code.inline('foo'),
       handler: 'index.handler'
     });
@@ -132,7 +132,7 @@ export = {
     const api = new apigateway.RestApi(stack, 'test-api');
 
     const handler = new lambda.Function(stack, 'MyFunc', {
-      runtime: lambda.Runtime.Nodejs810,
+      runtime: lambda.Runtime.NODEJS_8_10,
       handler: 'index.handler',
       code: lambda.Code.inline(``)
     });

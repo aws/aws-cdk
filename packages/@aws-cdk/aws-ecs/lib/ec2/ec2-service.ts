@@ -212,27 +212,27 @@ export class BuiltInAttributes {
   /**
    * The Instance ID of the instance
    */
-  public static readonly InstanceId = 'instanceId';
+  public static readonly INSTANCE_ID = 'instanceId';
 
   /**
    * The AZ where the instance is running
    */
-  public static readonly AvailabilityZone = 'attribute:ecs.availability-zone';
+  public static readonly AVAILABILITY_ZONE = 'attribute:ecs.availability-zone';
 
   /**
    * The AMI ID of the instance
    */
-  public static readonly AmiId = 'attribute:ecs.ami-id';
+  public static readonly AMI_ID = 'attribute:ecs.ami-id';
 
   /**
    * The instance type
    */
-  public static readonly InstanceType = 'attribute:ecs.instance-type';
+  public static readonly INSTANCE_TYPE = 'attribute:ecs.instance-type';
 
   /**
    * The OS type
    *
    * Either 'linux' or 'windows'.
    */
-  public static readonly OsType = 'attribute:ecs.os-type';
+  public static readonly OS_TYPE = 'attribute:ecs.os-type';
 }

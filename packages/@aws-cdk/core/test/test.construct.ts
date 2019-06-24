@@ -187,8 +187,8 @@ export = {
 
   'fails if context key contains unresolved tokens'(test: Test) {
     const root = new Root();
-    test.throws(() => root.node.setContext(`my-${Aws.region}`, 'foo'), /Invalid context key/);
-    test.throws(() => root.node.tryGetContext(Aws.region), /Invalid context key/);
+    test.throws(() => root.node.setContext(`my-${Aws.REGION}`, 'foo'), /Invalid context key/);
+    test.throws(() => root.node.tryGetContext(Aws.REGION), /Invalid context key/);
     test.done();
   },
 
