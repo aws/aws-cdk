@@ -21,8 +21,10 @@ export interface ClusterProps {
 
   /**
    * The VPC where your ECS instances will be running or your ENIs will be deployed
+   *
+   * @default 'autocreate a new vpc'
    */
-  readonly vpc: ec2.IVpc;
+  readonly vpc?: ec2.IVpc;
 }
 
 /**
@@ -66,9 +68,9 @@ export class Cluster extends Resource implements ICluster {
    */
   private _hasEc2Capacity: boolean = false;
 
-  constructor(scope: Construct, id: string, props: ClusterProps) {
+  constructor(scope: Construct, id: string, props?: ClusterProps) {
     super(scope, id, {
-      physicalName: props.clusterName,
+      physicalName: props !== undefined ? props.clusterName : undefined,
     });
 
     const cluster = new CfnCluster(this, 'Resource', {
@@ -82,7 +84,9 @@ export class Cluster extends Resource implements ICluster {
     });
     this.clusterName = this.getResourceNameAttribute(cluster.ref);
 
-    this.vpc = props.vpc;
+    this.vpc = props !== undefined && props.vpc !== undefined
+      ? props.vpc
+      : new ec2.Vpc(this, id.concat('Vpc'), {});
   }
 
   /**
