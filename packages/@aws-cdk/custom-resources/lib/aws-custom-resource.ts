@@ -1,9 +1,9 @@
+import { CustomResource, CustomResourceProvider } from '@aws-cdk/aws-cloudformation';
 import iam = require('@aws-cdk/aws-iam');
 import lambda = require('@aws-cdk/aws-lambda');
 import cdk = require('@aws-cdk/core');
-import metadata = require('aws-sdk/apis/metadata.json');
 import path = require('path');
-import { CustomResource, CustomResourceProvider } from './custom-resource';
+import metadata = require('./sdk-api-metadata.json');
 
 /**
  * AWS SDK service metadata.

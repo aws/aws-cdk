@@ -1,9 +1,9 @@
-import cloudformation = require('@aws-cdk/aws-cloudformation');
 import ec2 = require('@aws-cdk/aws-ec2');
 import ecs = require('@aws-cdk/aws-ecs');
 import events = require ('@aws-cdk/aws-events');
 import iam = require('@aws-cdk/aws-iam');
 import { Stack } from '@aws-cdk/core';
+import custom = require('@aws-cdk/custom-resources');
 import { ContainerOverride } from './ecs-task-properties';
 import { singletonEventRole } from './util';
 
@@ -118,7 +118,7 @@ export class EcsTask implements events.IRuleTarget {
       const subnetSelection = this.props.subnetSelection || { subnetType: ec2.SubnetType.PRIVATE };
       const assignPublicIp = subnetSelection.subnetType === ec2.SubnetType.PRIVATE ? 'DISABLED' : 'ENABLED';
 
-      new cloudformation.AwsCustomResource(this.taskDefinition, 'PutTargets', {
+      new custom.AwsCustomResource(this.taskDefinition, 'PutTargets', {
         // `onCreate´ defaults to `onUpdate` and we don't need an `onDelete` here
         // because the rule/target will be owned by CF anyway.
         onUpdate: {
