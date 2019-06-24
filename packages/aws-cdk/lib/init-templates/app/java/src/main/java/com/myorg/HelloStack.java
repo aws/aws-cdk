@@ -1,6 +1,7 @@
 package com.myorg;
 
 import software.amazon.awscdk.Construct;
+import software.amazon.awscdk.Duration;
 import software.amazon.awscdk.Stack;
 import software.amazon.awscdk.StackProps;
 import software.amazon.awscdk.services.iam.User;
@@ -20,7 +21,7 @@ public class HelloStack extends Stack {
         super(parent, id, props);
 
         Queue queue = new Queue(this, "MyFirstQueue", QueueProps.builder()
-                .withVisibilityTimeoutSec(300)
+                .withVisibilityTimeout(Duration.seconds(300))
                 .build());
 
         Topic topic = new Topic(this, "MyFirstTopic", TopicProps.builder()
