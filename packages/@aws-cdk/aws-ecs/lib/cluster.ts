@@ -84,7 +84,7 @@ export class Cluster extends Resource implements ICluster {
     });
     this.clusterName = this.getResourceNameAttribute(cluster.ref);
 
-    this.vpc = props.vpc || new ec2.Vpc(this, id.concat('Vpc'), {});
+    this.vpc = props.vpc || new ec2.Vpc(this, 'Vpc');
   }
 
   /**
