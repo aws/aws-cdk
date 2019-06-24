@@ -19,17 +19,17 @@ export interface IRule extends IResource {
    * Defines a CloudWatch event rule which triggers for rule events. Use
    * `rule.addEventPattern(pattern)` to specify a filter.
    */
-  onEvent(id: string, options: events.OnEventOptions): events.Rule;
+  onEvent(id: string, options?: events.OnEventOptions): events.Rule;
 
   /**
    * Defines a CloudWatch event rule which triggers for rule compliance events.
    */
-  onComplianceChange(id: string, options: events.OnEventOptions): events.Rule;
+  onComplianceChange(id: string, options?: events.OnEventOptions): events.Rule;
 
   /**
    * Defines a CloudWatch event rule which triggers for rule re-evaluation status events.
    */
-  onReEvaluationStatus(id: string, options: events.OnEventOptions): events.Rule;
+  onReEvaluationStatus(id: string, options?: events.OnEventOptions): events.Rule;
 }
 
 /**
