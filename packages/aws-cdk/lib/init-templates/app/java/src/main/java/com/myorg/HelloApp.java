@@ -12,6 +12,6 @@ public class HelloApp {
         new HelloStack(app, "hello-cdk-2");
 
         // required until https://github.com/awslabs/jsii/issues/456 is resolved
-        app.run();
+        app.synth();
     }
 }
