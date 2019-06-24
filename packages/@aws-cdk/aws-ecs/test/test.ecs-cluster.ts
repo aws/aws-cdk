@@ -203,7 +203,6 @@ export = {
       const vpc = new ec2.Vpc(stack, 'MyVpc', {});
       new ecs.Cluster(stack, 'EcsCluster', {
         vpc,
-        autoscalingGroupName: 'DefaultAutoScalingGroup',
         capacity: {
           instanceType: new ec2.InstanceType('t2.micro')
         },
@@ -237,7 +236,7 @@ export = {
 
       expect(stack).to(haveResource("AWS::AutoScaling::LaunchConfiguration", {
         ImageId: {
-          Ref: "SsmParameterValueawsserviceecsoptimizedamiamazonlinuxrecommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
+          Ref: "SsmParameterValueawsserviceecsoptimizedamiamazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
         },
         InstanceType: "t2.micro",
         IamInstanceProfile: {
