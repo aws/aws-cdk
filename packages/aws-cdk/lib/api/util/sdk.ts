@@ -111,7 +111,7 @@ export class SDK {
     return new AWS.SSM({
       ...this.retryOptions,
       region: environment.account,
-      credentials: await this.credentialsCache.get(environment.region, mode)
+      credentials: await this.credentialsCache.get(environment.account, mode)
     });
   }
 
