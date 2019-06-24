@@ -184,6 +184,13 @@ export interface ContainerDefinitionOptions {
    * @default - No Linux paramters.
    */
   readonly linuxParameters?: LinuxParameters;
+
+  /**
+   * The number of GPUs assigned to the container.
+   *
+   * @default - No GPUs assigned.
+   */
+  readonly gpuCount?: number;
 }
 
 /**
@@ -416,6 +423,7 @@ export class ContainerDefinition extends cdk.Construct {
       healthCheck: this.props.healthCheck && renderHealthCheck(this.props.healthCheck),
       links: this.links,
       linuxParameters: this.linuxParameters && this.linuxParameters.renderLinuxParameters(),
+      resourceRequirements: (this.props.gpuCount !== undefined) ? renderResourceRequirements(this.props.gpuCount) : undefined,
     };
   }
 }
@@ -468,6 +476,17 @@ export interface HealthCheck {
   readonly timeout?: number;
 }
 
+/**
+ * Type of resource requirement.
+ */
+export enum ResourceRequirementType {
+
+  /**
+   * The GPU resource requirement type.
+   */
+  GPU = 'GPU',
+}
+
 function renderKV(env: { [key: string]: string }, keyName: string, valueName: string): any {
   const ret = [];
   for (const [key, value] of Object.entries(env)) {
@@ -504,6 +523,14 @@ function getHealthCheckCommand(hc: HealthCheck): string[] {
   }
 
   return hcCommand.concat(cmd);
+}
+
+function renderResourceRequirements(gpuCount: number): CfnTaskDefinition.ResourceRequirementProperty[] | undefined {
+  if (gpuCount === 0) { return undefined; }
+  return [{
+    type: ResourceRequirementType.GPU,
+    value: gpuCount.toString(),
+  }];
 }
 
 /**
