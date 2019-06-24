@@ -68,9 +68,9 @@ export class Cluster extends Resource implements ICluster {
    */
   private _hasEc2Capacity: boolean = false;
 
-  constructor(scope: Construct, id: string, props?: ClusterProps) {
+  constructor(scope: Construct, id: string, props: ClusterProps = {}) {
     super(scope, id, {
-      physicalName: props !== undefined ? props.clusterName : undefined,
+      physicalName: props.clusterName,
     });
 
     const cluster = new CfnCluster(this, 'Resource', {
