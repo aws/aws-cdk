@@ -1,7 +1,7 @@
 import targets = require('@aws-cdk/aws-events-targets');
 import lambda = require('@aws-cdk/aws-lambda');
 import sns = require('@aws-cdk/aws-sns');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import config = require('../lib');
 
 const app = new cdk.App();
@@ -15,7 +15,7 @@ class ConfigStack extends cdk.Stack {
     const fn = new lambda.Function(this, 'CustomFunction', {
       code: lambda.AssetCode.inline('exports.handler = (event) => console.log(event);'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.Nodejs810
+      runtime: lambda.Runtime.NODEJS_8_10
     });
 
     const customRule = new config.CustomRule(this, 'Custom', {

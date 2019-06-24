@@ -1,6 +1,6 @@
 import lambda = require('@aws-cdk/aws-lambda');
 import s3 = require('@aws-cdk/aws-s3');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import s3n = require('../../lib');
 
 const app = new cdk.App();
@@ -12,7 +12,7 @@ const bucketA = new s3.Bucket(stack, 'MyBucket', {
 });
 
 const fn = new lambda.Function(stack, 'MyFunction', {
-  runtime: lambda.Runtime.Nodejs810,
+  runtime: lambda.Runtime.NODEJS_8_10,
   handler: 'index.handler',
   code: lambda.Code.inline(`exports.handler = ${handler.toString()}`)
 });

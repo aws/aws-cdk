@@ -1,4 +1,4 @@
-import { Construct, Duration, Lazy, PhysicalName, Resource, Stack } from '@aws-cdk/cdk';
+import { Construct, Duration, Lazy, Resource, Stack } from '@aws-cdk/core';
 import { Grant } from './grant';
 import { CfnRole } from './iam.generated';
 import { IIdentity } from './identity-base';
@@ -70,7 +70,7 @@ export interface RoleProps {
    * @default - AWS CloudFormation generates a unique physical ID and uses that ID
    * for the group name.
    */
-  readonly roleName?: PhysicalName;
+  readonly roleName?: string;
 
   /**
    * The maximum session duration that you want to set for the specified role.
@@ -219,18 +219,13 @@ export class Role extends Resource implements IRole {
     });
 
     this.roleId = role.attrRoleId;
-    const resourceIdentifiers = this.getCrossEnvironmentAttributes({
-      arn: role.attrArn,
-      name: role.ref,
-      arnComponents: {
-        region: '', // IAM is global in each partition
-        service: 'iam',
-        resource: 'role',
-        resourceName: this.physicalName,
-      },
+    this.roleArn = this.getResourceArnAttribute(role.attrArn, {
+      region: '', // IAM is global in each partition
+      service: 'iam',
+      resource: 'role',
+      resourceName: this.physicalName,
     });
-    this.roleArn = resourceIdentifiers.arn;
-    this.roleName = resourceIdentifiers.name;
+    this.roleName = this.getResourceNameAttribute(role.ref);
     this.policyFragment = new ArnPrincipal(this.roleArn).policyFragment;
 
     function _flatten(policies?: { [name: string]: PolicyDocument }) {

@@ -5,7 +5,7 @@ import { Repository } from '@aws-cdk/aws-codecommit';
 import codepipeline = require('@aws-cdk/aws-codepipeline');
 import { Role } from '@aws-cdk/aws-iam';
 import { PolicyStatement, ServicePrincipal } from '@aws-cdk/aws-iam';
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import { Test } from 'nodeunit';
 import cpactions = require('../../lib');
 
@@ -31,7 +31,7 @@ export = {
     actionName: 'source',
     output: sourceOutput,
     repository: repo,
-    pollForSourceChanges: true,
+    trigger: cpactions.CodeCommitTrigger.POLL,
   });
   pipeline.addStage({
     stageName: 'source',

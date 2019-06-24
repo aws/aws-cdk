@@ -6,7 +6,7 @@ import codepipeline = require('@aws-cdk/aws-codepipeline');
 import events = require('@aws-cdk/aws-events');
 import targets = require('@aws-cdk/aws-events-targets');
 import sns = require('@aws-cdk/aws-sns');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import cpactions = require('../lib');
 
 const app = new cdk.App();
@@ -25,7 +25,7 @@ const sourceAction = new cpactions.CodeCommitSourceAction({
   actionName: 'CodeCommitSource',
   output: sourceOutput,
   repository,
-  pollForSourceChanges: true,
+  trigger: cpactions.CodeCommitTrigger.POLL,
 });
 const sourceStage = pipeline.addStage({
   stageName: 'Source',

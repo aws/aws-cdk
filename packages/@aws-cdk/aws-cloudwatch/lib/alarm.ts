@@ -1,4 +1,4 @@
-import { Construct, IResource, Lazy, Resource, Stack } from '@aws-cdk/cdk';
+import { Construct, IResource, Lazy, Resource, Stack } from '@aws-cdk/core';
 import { IAlarmAction } from './alarm-action';
 import { CfnAlarm } from './cloudwatch.generated';
 import { HorizontalAnnotation } from './graph';
@@ -151,18 +151,13 @@ export class Alarm extends Resource implements IAlarm {
       })
     });
 
-    const resourceIdentifiers = this.getCrossEnvironmentAttributes({
-      arn: alarm.attrArn,
-      name: alarm.ref,
-      arnComponents: {
-        service: 'cloudwatch',
-        resource: 'alarm',
-        resourceName: this.physicalName,
-        sep: ':',
-      },
+    this.alarmArn = this.getResourceArnAttribute(alarm.attrArn, {
+      service: 'cloudwatch',
+      resource: 'alarm',
+      resourceName: this.physicalName,
+      sep: ':',
     });
-    this.alarmArn = resourceIdentifiers.arn;
-    this.alarmName = resourceIdentifiers.name;
+    this.alarmName = this.getResourceNameAttribute(alarm.ref);
 
     this.metric = props.metric;
     this.annotation = {

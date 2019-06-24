@@ -1,6 +1,6 @@
 import { Intrinsic } from "./private/intrinsic";
 
-const REFERENCE_SYMBOL = Symbol.for('@aws-cdk/cdk.Reference');
+const REFERENCE_SYMBOL = Symbol.for('@aws-cdk/core.Reference');
 
 /**
  * An intrinsic Token that represents a reference to a construct.

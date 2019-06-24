@@ -1,4 +1,4 @@
-import { Stack } from '@aws-cdk/cdk';
+import { Stack } from '@aws-cdk/core';
 import { LogGroup, RetentionDays } from '../lib';
 
 const stack = new Stack();

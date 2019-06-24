@@ -1,7 +1,7 @@
 import codedeploy = require('@aws-cdk/aws-codedeploy');
 import codepipeline = require('@aws-cdk/aws-codepipeline');
 import s3 = require('@aws-cdk/aws-s3');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import cpactions = require('../lib');
 
 const app = new cdk.App();
@@ -9,7 +9,7 @@ const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-cdk-codepipeline-codedeploy');
 
 const application = new codedeploy.ServerApplication(stack, 'CodeDeployApplication', {
-  applicationName: cdk.PhysicalName.of('IntegTestDeployApp'),
+  applicationName: 'IntegTestDeployApp',
 });
 
 const deploymentConfig = new codedeploy.ServerDeploymentConfig(stack, 'CustomDeployConfig', {
@@ -18,7 +18,7 @@ const deploymentConfig = new codedeploy.ServerDeploymentConfig(stack, 'CustomDep
 
 const deploymentGroup = new codedeploy.ServerDeploymentGroup(stack, 'CodeDeployGroup', {
   application,
-  deploymentGroupName: cdk.PhysicalName.of('IntegTestDeploymentGroup'),
+  deploymentGroupName: 'IntegTestDeploymentGroup',
   deploymentConfig,
 });
 

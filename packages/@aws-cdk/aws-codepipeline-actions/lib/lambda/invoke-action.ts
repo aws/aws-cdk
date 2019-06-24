@@ -1,7 +1,8 @@
 import codepipeline = require('@aws-cdk/aws-codepipeline');
 import iam = require('@aws-cdk/aws-iam');
 import lambda = require('@aws-cdk/aws-lambda');
-import { Stack } from '@aws-cdk/cdk';
+import { Construct, Stack } from "@aws-cdk/core";
+import { Action } from '../action';
 
 /**
  * Construction properties of the {@link LambdaInvokeAction Lambda invoke CodePipeline Action}.
@@ -53,7 +54,7 @@ export interface LambdaInvokeActionProps extends codepipeline.CommonActionProps 
  *
  * @see https://docs.aws.amazon.com/codepipeline/latest/userguide/actions-invoke-lambda-function.html
  */
-export class LambdaInvokeAction extends codepipeline.Action {
+export class LambdaInvokeAction extends Action {
   private readonly props: LambdaInvokeActionProps;
 
   constructor(props: LambdaInvokeActionProps) {
@@ -67,24 +68,21 @@ export class LambdaInvokeAction extends codepipeline.Action {
         minOutputs: 0,
         maxOutputs: 5,
       },
-      configuration: {
-        FunctionName: props.lambda.functionName,
-        UserParameters: Stack.of(props.lambda).toJsonString(props.userParameters),
-      },
     });
 
     this.props = props;
   }
 
-  protected bind(info: codepipeline.ActionBind): void {
+  protected bound(scope: Construct, _stage: codepipeline.IStage, options: codepipeline.ActionBindOptions):
+      codepipeline.ActionConfig {
     // allow pipeline to list functions
-    info.role.addToPolicy(new iam.PolicyStatement({
+    options.role.addToPolicy(new iam.PolicyStatement({
       actions: ['lambda:ListFunctions'],
       resources: ['*']
     }));
 
     // allow pipeline to invoke this lambda functionn
-    info.role.addToPolicy(new iam.PolicyStatement({
+    options.role.addToPolicy(new iam.PolicyStatement({
       actions: ['lambda:InvokeFunction'],
       resources: [this.props.lambda.functionArn]
     }));
@@ -96,5 +94,12 @@ export class LambdaInvokeAction extends codepipeline.Action {
       resources: ['*'],
       actions: ['codepipeline:PutJobSuccessResult', 'codepipeline:PutJobFailureResult']
     }));
+
+    return {
+      configuration: {
+        FunctionName: this.props.lambda.functionName,
+        UserParameters: Stack.of(scope).toJsonString(this.props.userParameters),
+      },
+    };
   }
 }

@@ -5,7 +5,7 @@ import kms = require('@aws-cdk/aws-kms');
 import lambda = require('@aws-cdk/aws-lambda');
 import logs = require('@aws-cdk/aws-logs');
 import secretsmanager = require('@aws-cdk/aws-secretsmanager');
-import { Construct, Duration, IResource, RemovalPolicy, Resource, SecretValue, Stack, Token } from '@aws-cdk/cdk';
+import { Construct, Duration, IResource, RemovalPolicy, Resource, SecretValue, Stack, Token } from '@aws-cdk/core';
 import { DatabaseSecret } from './database-secret';
 import { Endpoint } from './endpoint';
 import { IOptionGroup } from './option-group';
@@ -154,17 +154,17 @@ export abstract class DatabaseInstanceBase extends Resource implements IDatabase
  * secret rotation.
  */
 export class DatabaseInstanceEngine extends DatabaseClusterEngine {
-  public static readonly MariaDb = new DatabaseInstanceEngine('mariadb', SecretRotationApplication.MariaDbRotationSingleUser);
-  public static readonly Mysql = new DatabaseInstanceEngine('mysql', SecretRotationApplication.MysqlRotationSingleUser);
-  public static readonly OracleEE = new DatabaseInstanceEngine('oracle-ee', SecretRotationApplication.OracleRotationSingleUser);
-  public static readonly OracleSE2 = new DatabaseInstanceEngine('oracle-se2', SecretRotationApplication.OracleRotationSingleUser);
-  public static readonly OracleSE1 = new DatabaseInstanceEngine('oracle-se1', SecretRotationApplication.OracleRotationSingleUser);
-  public static readonly OracleSE = new DatabaseInstanceEngine('oracle-se', SecretRotationApplication.OracleRotationSingleUser);
-  public static readonly Postgres = new DatabaseInstanceEngine('postgres', SecretRotationApplication.PostgresRotationSingleUser);
-  public static readonly SqlServerEE = new DatabaseInstanceEngine('sqlserver-ee', SecretRotationApplication.SqlServerRotationSingleUser);
-  public static readonly SqlServerSE = new DatabaseInstanceEngine('sqlserver-se', SecretRotationApplication.SqlServerRotationSingleUser);
-  public static readonly SqlServerEX = new DatabaseInstanceEngine('sqlserver-ex', SecretRotationApplication.SqlServerRotationSingleUser);
-  public static readonly SqlServerWeb = new DatabaseInstanceEngine('sqlserver-web', SecretRotationApplication.SqlServerRotationSingleUser);
+  public static readonly MARIADB = new DatabaseInstanceEngine('mariadb', SecretRotationApplication.MARIADB_ROTATION_SINGLE_USER);
+  public static readonly MYSQL = new DatabaseInstanceEngine('mysql', SecretRotationApplication.MYSQL_ROTATION_SINGLE_USER);
+  public static readonly ORACLE_EE = new DatabaseInstanceEngine('oracle-ee', SecretRotationApplication.ORACLE_ROTATION_SINGLE_USER);
+  public static readonly ORACLE_SE2 = new DatabaseInstanceEngine('oracle-se2', SecretRotationApplication.ORACLE_ROTATION_SINGLE_USER);
+  public static readonly ORACLE_SE1 = new DatabaseInstanceEngine('oracle-se1', SecretRotationApplication.ORACLE_ROTATION_SINGLE_USER);
+  public static readonly ORACLE_SE = new DatabaseInstanceEngine('oracle-se', SecretRotationApplication.ORACLE_ROTATION_SINGLE_USER);
+  public static readonly POSTGRES = new DatabaseInstanceEngine('postgres', SecretRotationApplication.POSTGRES_ROTATION_SINGLE_USER);
+  public static readonly SQL_SERVER_EE = new DatabaseInstanceEngine('sqlserver-ee', SecretRotationApplication.SQLSERVER_ROTATION_SINGLE_USER);
+  public static readonly SQL_SERVER_SE = new DatabaseInstanceEngine('sqlserver-se', SecretRotationApplication.SQLSERVER_ROTATION_SINGLE_USER);
+  public static readonly SQL_SERVER_EX = new DatabaseInstanceEngine('sqlserver-ex', SecretRotationApplication.SQLSERVER_ROTATION_SINGLE_USER);
+  public static readonly SQL_SERVER_WEB = new DatabaseInstanceEngine('sqlserver-web', SecretRotationApplication.SQLSERVER_ROTATION_SINGLE_USER);
 }
 
 /**

@@ -1,7 +1,7 @@
 import { expect, haveResource } from '@aws-cdk/assert';
 import kinesis = require('@aws-cdk/aws-kinesis');
 import lambda = require('@aws-cdk/aws-lambda');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import { Test } from 'nodeunit';
 import sources = require('../lib');
 import { TestFunction } from './test-function';

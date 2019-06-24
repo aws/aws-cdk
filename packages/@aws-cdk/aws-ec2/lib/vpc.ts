@@ -1,5 +1,5 @@
 import { ConcreteDependable, Construct, ContextProvider, DependableTrait, IConstruct,
-    IDependable, IResource, Resource, Stack, Tag } from '@aws-cdk/cdk';
+    IDependable, IResource, Resource, Stack, Tag } from '@aws-cdk/core';
 import cxapi = require('@aws-cdk/cx-api');
 import { CfnEIP, CfnInternetGateway, CfnNatGateway, CfnRoute, CfnVPNGateway, CfnVPNGatewayRoutePropagation } from './ec2.generated';
 import { CfnRouteTable, CfnSubnet, CfnSubnetRouteTableAssociation, CfnVPC, CfnVPCGatewayAttachment } from './ec2.generated';
@@ -910,7 +910,7 @@ export class Vpc extends VpcBase {
    */
   public addDynamoDbEndpoint(id: string, subnets?: SubnetSelection[]): GatewayVpcEndpoint {
     return new GatewayVpcEndpoint(this, id, {
-      service: GatewayVpcEndpointAwsService.DynamoDb,
+      service: GatewayVpcEndpointAwsService.DYNAMODB,
       vpc: this,
       subnets
     });
@@ -1004,7 +1004,7 @@ export class Vpc extends VpcBase {
       }
 
       // These values will be used to recover the config upon provider import
-      const includeResourceTypes = [CfnSubnet.cfnResourceTypeName];
+      const includeResourceTypes = [CfnSubnet.CFN_RESOURCE_TYPE_NAME];
       subnet.node.applyAspect(new Tag(SUBNETNAME_TAG, subnetConfig.name, {includeResourceTypes}));
       subnet.node.applyAspect(new Tag(SUBNETTYPE_TAG, subnetTypeTagValue(subnetConfig.subnetType), {includeResourceTypes}));
     });

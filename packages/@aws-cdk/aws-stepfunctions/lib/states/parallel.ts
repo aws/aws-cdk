@@ -1,8 +1,9 @@
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import { Chain } from '../chain';
 import { StateGraph } from '../state-graph';
 import { CatchProps, IChainable, INextable, RetryProps } from '../types';
-import { renderJsonPath, State, StateType } from './state';
+import { StateType } from './private/state-type';
+import { renderJsonPath, State } from './state';
 
 /**
  * Properties for defining a Parallel state

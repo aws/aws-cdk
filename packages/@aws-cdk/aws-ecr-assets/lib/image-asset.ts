@@ -1,6 +1,6 @@
 import assets = require('@aws-cdk/assets');
 import ecr = require('@aws-cdk/aws-ecr');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import cxapi = require('@aws-cdk/cx-api');
 import fs = require('fs');
 import path = require('path');

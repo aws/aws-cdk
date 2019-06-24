@@ -10,7 +10,7 @@ import { LogicalIDs } from './private/logical-id';
 import { resolve } from './private/resolve';
 import { makeUniqueId } from './private/uniqueid';
 
-const STACK_SYMBOL = Symbol.for('@aws-cdk/cdk.Stack');
+const STACK_SYMBOL = Symbol.for('@aws-cdk/core.Stack');
 const VALID_STACK_NAME_REGEX = /^[A-Za-z][A-Za-z0-9-]*$/;
 
 export interface StackProps {
@@ -288,7 +288,7 @@ export class Stack extends Construct implements ITaggable {
     // Always return a non-scoped partition intrinsic. These will usually
     // be used to construct an ARN, but there are no cross-partition
     // calls anyway.
-    return Aws.partition;
+    return Aws.PARTITION;
   }
 
   /**
@@ -578,8 +578,8 @@ export class Stack extends Construct implements ITaggable {
     // they do not need to be scoped, the only situation in which
     // export/fn::importvalue would work if { Ref: "AWS::AccountId" } is the
     // same for provider and consumer anyway.
-    const account = env.account || Aws.accountId;
-    const region  = env.region  || Aws.region;
+    const account = env.account || Aws.ACCOUNT_ID;
+    const region  = env.region  || Aws.REGION;
 
     // this is the "aws://" env specification that will be written to the cloud assembly
     // manifest. it will use "unknown-account" and "unknown-region" to indicate

@@ -1,8 +1,8 @@
 import { expect, haveResource } from '@aws-cdk/assert';
 import ec2 = require('@aws-cdk/aws-ec2');
 import secretsmanager = require('@aws-cdk/aws-secretsmanager');
-import cdk = require('@aws-cdk/cdk');
-import { SecretValue } from '@aws-cdk/cdk';
+import cdk = require('@aws-cdk/core');
+import { SecretValue } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import rds = require('../lib');
 import { SecretRotationApplication } from '../lib';
@@ -15,7 +15,7 @@ export = {
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'VPC');
     const cluster = new rds.DatabaseCluster(stack, 'Database', {
-      engine: rds.DatabaseClusterEngine.AuroraMysql,
+      engine: rds.DatabaseClusterEngine.AURORA_MYSQL,
       masterUser: {
         username: 'admin'
       },
@@ -162,7 +162,7 @@ export = {
 
     // WHEN
     const cluster = new rds.DatabaseCluster(stack, 'Database', {
-      engine: rds.DatabaseClusterEngine.AuroraMysql,
+      engine: rds.DatabaseClusterEngine.AURORA_MYSQL,
       masterUser: {
         username: 'admin',
         password: SecretValue.plainText('tooshort')
@@ -196,7 +196,7 @@ export = {
     // THEN
     test.throws(() => new rds.SecretRotation(stack, 'Rotation', {
       secret,
-      application: SecretRotationApplication.MysqlRotationSingleUser,
+      application: SecretRotationApplication.MYSQL_ROTATION_SINGLE_USER,
       vpc,
       target
     }), /`target`.+default port range/);
@@ -209,7 +209,7 @@ export = {
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'VPC');
     const instance = new rds.DatabaseInstance(stack, 'Database', {
-      engine: rds.DatabaseInstanceEngine.MariaDb,
+      engine: rds.DatabaseInstanceEngine.MARIADB,
       instanceClass: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
       masterUsername: 'syscdk',
       vpc
@@ -352,7 +352,7 @@ export = {
 
     // WHEN
     const instance = new rds.DatabaseInstance(stack, 'Database', {
-      engine: rds.DatabaseInstanceEngine.SqlServerEE,
+      engine: rds.DatabaseInstanceEngine.SQL_SERVER_EE,
       instanceClass: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
       masterUsername: 'syscdk',
       masterUserPassword: SecretValue.plainText('tooshort'),
