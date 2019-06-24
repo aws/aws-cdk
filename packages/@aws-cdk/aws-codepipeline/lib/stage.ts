@@ -1,5 +1,5 @@
 import events = require('@aws-cdk/aws-events');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import { Action, IPipeline, IStage } from "./action";
 import { Artifact } from "./artifact";
 import { CfnPipeline } from './codepipeline.generated';
@@ -27,9 +27,9 @@ export class Stage implements IStage {
    * Create a new Stage.
    */
   constructor(props: StageProps, pipeline: Pipeline) {
-    validateName('Stage', props.name);
+    validateName('Stage', props.stageName);
 
-    this.stageName = props.name;
+    this.stageName = props.stageName;
     this.pipeline = pipeline;
     this.scope = new cdk.Construct(pipeline, this.stageName);
 

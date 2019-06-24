@@ -1,3 +1,4 @@
+import camelcase = require('camelcase');
 import reflect = require('jsii-reflect');
 import { Linter } from '../linter';
 import { CfnResourceReflection } from './cfn-resource';
@@ -44,6 +45,7 @@ export class ResourceReflection {
   public readonly cfn: CfnResourceReflection;
   public readonly basename: string; // i.e. Bucket
   public readonly core: CoreTypes;
+  public readonly physicalNameProp?: reflect.Property;
 
   constructor(public readonly construct: ConstructReflection) {
     this.assembly = construct.classType.assembly;
@@ -56,11 +58,22 @@ export class ResourceReflection {
         `If not, use the "@resource" doc tag to indicate the full resource name (e.g. "@resource AWS::Route53::HostedZone")`);
     }
 
+    this.core = new CoreTypes(this.sys);
     this.cfn = cfn;
     this.basename = construct.classType.name;
     this.fqn = construct.fqn;
     this.attributes = this.findAttributeProperties();
-    this.core = new CoreTypes(this.sys);
+    this.physicalNameProp = this.findPhysicalNameProp();
+  }
+
+  private findPhysicalNameProp() {
+    if (!this.construct.propsType) {
+      return undefined;
+    }
+
+    const resourceName = camelcase(this.cfn.basename);
+    const physicalNameProp = `${resourceName}Name`;
+    return this.construct.propsType.allProperties.find(x => x.name === physicalNameProp);
   }
 
   /**
@@ -77,7 +90,7 @@ export class ResourceReflection {
       // an attribute property is a property which starts with the type name
       // (e.g. "bucketXxx") and/or has an @attribute doc tag.
       const tag = getDocTag(p, 'attribute');
-      if (!p.name.startsWith(this.cfn.attributePrefix) && !tag) {
+      if (!p.name.startsWith(camelcase(this.basename)) && !tag) {
         continue;
       }
 
@@ -149,10 +162,12 @@ resourceLinter.add({
 
 resourceLinter.add({
   code: 'resource-attribute',
-  message: 'resources must represent all cloudformation attributes as attribute properties. missing property: ',
+  message: 'resources must represent all cloudformation attributes as attribute properties. missing property:',
   eval: e => {
     for (const name of e.ctx.cfn.attributeNames) {
-      const found = e.ctx.attributes.find(a => a.names.includes(name));
+      const lookup = camelcase(name).startsWith(camelcase(e.ctx.cfn.basename)) ?
+        camelcase(name) : camelcase(e.ctx.cfn.basename + name);
+      const found = e.ctx.attributes.find(a => a.names.includes(lookup));
       e.assert(found, `${e.ctx.fqn}.${name}`, name);
     }
   }
@@ -170,6 +185,26 @@ resourceLinter.add({
         returns: grantResultType
       });
     }
+  }
+});
+
+resourceLinter.add({
+  code: 'props-physical-name',
+  message: "Every Resource must have a single physical name construction property, " +
+    "with a name that is an ending substring of <cfnResource>Name",
+  eval: e => {
+    if (!e.ctx.construct.propsType) { return; }
+    e.assert(e.ctx.physicalNameProp, e.ctx.construct.propsFqn);
+  }
+});
+
+resourceLinter.add({
+  code: 'props-physical-name-type',
+  message: 'The type of the physical name prop should always be a "string"',
+  eval: e => {
+    if (!e.ctx.physicalNameProp) { return; }
+    const prop = e.ctx.physicalNameProp;
+    e.assertTypesEqual(e.ctx.sys, prop.type, 'string', `${e.ctx.construct.propsFqn}.${prop.name}`);
   }
 });
 

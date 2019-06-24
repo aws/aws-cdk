@@ -2,7 +2,7 @@ import '@aws-cdk/assert/jest';
 import ec2 = require('@aws-cdk/aws-ec2');
 import ecs = require('@aws-cdk/aws-ecs');
 import events = require('@aws-cdk/aws-events');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import targets = require('../../lib');
 
 test("Can use EC2 taskdef as EventRule target", () => {
@@ -21,7 +21,7 @@ test("Can use EC2 taskdef as EventRule target", () => {
   });
 
   const rule = new events.Rule(stack, 'Rule', {
-    scheduleExpression: 'rate(1 minute)',
+    schedule: events.Schedule.expression('rate(1 min)')
   });
 
   // WHEN
@@ -50,7 +50,8 @@ test("Can use EC2 taskdef as EventRule target", () => {
           },
           InputTemplate: "{\"containerOverrides\":[{\"name\":\"TheContainer\",\"command\":[\"echo\",<detail-event>]}]}"
         },
-        RoleArn: { "Fn::GetAtt": ["TaskDefEventsRoleFB3B67B8", "Arn"] }
+        RoleArn: { "Fn::GetAtt": ["TaskDefEventsRoleFB3B67B8", "Arn"] },
+        Id: taskDefinition.node.uniqueId
       }
     ]
   });
@@ -68,7 +69,7 @@ test("Can use Fargate taskdef as EventRule target", () => {
   });
 
   const rule = new events.Rule(stack, 'Rule', {
-    scheduleExpression: 'rate(1 minute)',
+    schedule: events.Schedule.expression('rate(1 min)')
   });
 
   // WHEN
@@ -123,7 +124,7 @@ test("Can use Fargate taskdef as EventRule target", () => {
                 "Arn"
               ]
             },
-            Id: "TaskDef-on-EcsCluster",
+            Id: taskDefinition.node.uniqueId,
             EcsParameters: {
               TaskDefinitionArn: {
                 Ref: "TaskDef54694570"
@@ -159,7 +160,29 @@ test("Can use Fargate taskdef as EventRule target", () => {
           }
         ]
       },
-      physicalResourceId: "TaskDef-on-EcsCluster"
+      physicalResourceId: taskDefinition.node.uniqueId
     }
   });
+
+  // THEN
+  expect(stack).toHaveResourceLike('AWS::Events::Rule', {
+    Targets: [
+      {
+        Arn: { "Fn::GetAtt": ["EcsCluster97242B84", "Arn"] },
+        EcsParameters: {
+          TaskCount: 1,
+          TaskDefinitionArn: { Ref: "TaskDef54694570" }
+        },
+        InputTransformer: {
+          InputPathsMap: {
+            "detail-event": "$.detail.event"
+          },
+          InputTemplate: "{\"containerOverrides\":[{\"name\":\"TheContainer\",\"command\":[\"echo\",<detail-event>]}]}"
+        },
+        RoleArn: { "Fn::GetAtt": ["TaskDefEventsRoleFB3B67B8", "Arn"] },
+        Id: taskDefinition.node.uniqueId
+      }
+    ]
+  });
+
 });

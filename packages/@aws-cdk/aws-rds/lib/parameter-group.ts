@@ -1,4 +1,4 @@
-import { Construct, IResource, Resource } from '@aws-cdk/cdk';
+import { Construct, IResource, Resource } from '@aws-cdk/core';
 import { CfnDBClusterParameterGroup, CfnDBParameterGroup } from './rds.generated';
 
 /**
@@ -7,6 +7,8 @@ import { CfnDBClusterParameterGroup, CfnDBParameterGroup } from './rds.generated
 export interface IParameterGroup extends IResource {
   /**
    * The name of this parameter group
+   *
+   * @attribute
    */
   readonly parameterGroupName: string;
 }
@@ -73,7 +75,7 @@ export class ParameterGroup extends ParameterGroupBase {
       parameters: props.parameters,
     });
 
-    this.parameterGroupName = resource.dbParameterGroupName;
+    this.parameterGroupName = resource.ref;
   }
 }
 
@@ -104,6 +106,6 @@ export class ClusterParameterGroup extends ParameterGroupBase {
       parameters: props.parameters,
     });
 
-    this.parameterGroupName = resource.dbClusterParameterGroupName;
+    this.parameterGroupName = resource.ref;
   }
 }

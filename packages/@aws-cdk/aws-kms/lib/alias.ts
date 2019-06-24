@@ -1,4 +1,4 @@
-import { Construct, IResource, Resource, Token } from '@aws-cdk/cdk';
+import { Construct, IResource, Resource, Token } from '@aws-cdk/core';
 import { IKey } from './key';
 import { CfnAlias } from './kms.generated';
 
@@ -33,7 +33,7 @@ export interface AliasProps {
    * forward slash, such as alias/. You can't specify aliases that begin with
    * alias/AWS. These aliases are reserved.
    */
-  readonly name: string;
+  readonly aliasName: string;
 
   /**
    * The ID of the key for which you are creating the alias. Specify the key's
@@ -81,26 +81,26 @@ export class Alias extends AliasBase {
   constructor(scope: Construct, id: string, props: AliasProps) {
     super(scope, id);
 
-    if (!Token.isUnresolved(props.name)) {
-      if (!props.name.startsWith(REQUIRED_ALIAS_PREFIX)) {
-        throw new Error(`Alias must start with the prefix "${REQUIRED_ALIAS_PREFIX}": ${props.name}`);
+    if (!Token.isUnresolved(props.aliasName)) {
+      if (!props.aliasName.startsWith(REQUIRED_ALIAS_PREFIX)) {
+        throw new Error(`Alias must start with the prefix "${REQUIRED_ALIAS_PREFIX}": ${props.aliasName}`);
       }
 
-      if (props.name === REQUIRED_ALIAS_PREFIX) {
-        throw new Error(`Alias must include a value after "${REQUIRED_ALIAS_PREFIX}": ${props.name}`);
+      if (props.aliasName === REQUIRED_ALIAS_PREFIX) {
+        throw new Error(`Alias must include a value after "${REQUIRED_ALIAS_PREFIX}": ${props.aliasName}`);
       }
 
-      if (props.name.startsWith(DISALLOWED_PREFIX)) {
-        throw new Error(`Alias cannot start with ${DISALLOWED_PREFIX}: ${props.name}`);
+      if (props.aliasName.startsWith(DISALLOWED_PREFIX)) {
+        throw new Error(`Alias cannot start with ${DISALLOWED_PREFIX}: ${props.aliasName}`);
       }
 
-      if (!props.name.match(/^[a-zA-Z0-9:/_-]{1,256}$/)) {
+      if (!props.aliasName.match(/^[a-zA-Z0-9:/_-]{1,256}$/)) {
         throw new Error(`Alias name must be between 1 and 256 characters in a-zA-Z0-9:/_-`);
       }
     }
 
     const resource = new CfnAlias(this, 'Resource', {
-      aliasName: props.name,
+      aliasName: props.aliasName,
       targetKeyId: props.targetKey.keyArn
     });
 

@@ -1,6 +1,6 @@
 import iam = require('@aws-cdk/aws-iam');
 import { PolicyDocument, PolicyStatement } from '@aws-cdk/aws-iam';
-import { Construct, DeletionPolicy, IResource, Resource, Stack } from '@aws-cdk/cdk';
+import { Construct, IResource, RemovalPolicy, Resource, Stack } from '@aws-cdk/core';
 import { Alias } from './alias';
 import { CfnKey } from './kms.generated';
 
@@ -68,7 +68,7 @@ abstract class KeyBase extends Resource implements IKey {
    * Defines a new alias for the key.
    */
   public addAlias(alias: string): Alias {
-    return new Alias(this, 'Alias', { name: alias, targetKey: this });
+    return new Alias(this, 'Alias', { aliasName: alias, targetKey: this });
   }
 
   /**
@@ -86,7 +86,7 @@ abstract class KeyBase extends Resource implements IKey {
       throw new Error(`Unable to add statement to IAM resource policy for KMS key: ${JSON.stringify(stack.resolve(this.keyArn))}`);
     }
 
-    this.policy.addStatement(statement);
+    this.policy.addStatements(statement);
   }
 
   /**
@@ -177,9 +177,9 @@ export interface KeyProps {
    * Whether the encryption key should be retained when it is removed from the Stack. This is useful when one wants to
    * retain access to data that was encrypted with a key that is being retired.
    *
-   * @default true
+   * @default RemovalPolicy.Retain
    */
-  readonly retain?: boolean;
+  readonly removalPolicy?: RemovalPolicy;
 }
 
 /**
@@ -224,10 +224,8 @@ export class Key extends KeyBase {
       keyPolicy: this.policy,
     });
 
-    this.keyArn = resource.keyArn;
-    resource.options.deletionPolicy = props.retain === false
-                                    ? DeletionPolicy.Delete
-                                    : DeletionPolicy.Retain;
+    this.keyArn = resource.attrArn;
+    resource.applyRemovalPolicy(props.removalPolicy);
   }
 
   /**
@@ -250,9 +248,10 @@ export class Key extends KeyBase {
       "kms:CancelKeyDeletion"
     ];
 
-    this.addToResourcePolicy(new PolicyStatement()
-      .addAllResources()
-      .addActions(...actions)
-      .addAccountRootPrincipal());
+    this.addToResourcePolicy(new PolicyStatement({
+      resources: ['*'],
+      actions,
+      principals: [new iam.AccountRootPrincipal()]
+    }));
   }
 }

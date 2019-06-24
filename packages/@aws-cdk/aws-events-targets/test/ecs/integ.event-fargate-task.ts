@@ -1,7 +1,7 @@
 import ec2 = require('@aws-cdk/aws-ec2');
 import ecs = require('@aws-cdk/aws-ecs');
 import events = require('@aws-cdk/aws-events');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import targets = require('../../lib');
 
 import path = require('path');
@@ -20,15 +20,13 @@ class EventStack extends cdk.Stack {
     // Create a Task Definition for the container to start
     const taskDefinition = new ecs.FargateTaskDefinition(this, 'TaskDef');
     taskDefinition.addContainer('TheContainer', {
-      image: ecs.ContainerImage.fromAsset(this, 'EventImage', {
-        directory: path.resolve(__dirname, 'eventhandler-image')
-      }),
-      logging: new ecs.AwsLogDriver(this, 'TaskLogging', { streamPrefix: 'EventDemo' })
+      image: ecs.ContainerImage.fromAsset(path.resolve(__dirname, 'eventhandler-image')),
+      logging: new ecs.AwsLogDriver({ streamPrefix: 'EventDemo' })
     });
 
     // A rule that describes the event trigger (in this case a scheduled run)
     const rule = new events.Rule(this, 'Rule', {
-      scheduleExpression: 'rate(1 minute)',
+      schedule: events.Schedule.rate(cdk.Duration.minutes(1)),
     });
 
     // Use EcsTask as the target of the Rule

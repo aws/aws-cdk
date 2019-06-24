@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/aws-elasticbeanstalk",
-  "version": "0.34.0",
+  "version": "0.35.0",
   "description": "The CDK Construct Library for AWS::ElasticBeanstalk",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -63,17 +63,17 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "^0.34.0",
-    "cdk-build-tools": "^0.34.0",
-    "cfn2ts": "^0.34.0",
-    "pkglint": "^0.34.0"
+    "@aws-cdk/assert": "^0.35.0",
+    "cdk-build-tools": "^0.35.0",
+    "cfn2ts": "^0.35.0",
+    "pkglint": "^0.35.0"
   },
   "dependencies": {
-    "@aws-cdk/cdk": "^0.34.0"
+    "@aws-cdk/core": "^0.35.0"
   },
   "homepage": "https://github.com/awslabs/aws-cdk",
   "peerDependencies": {
-    "@aws-cdk/cdk": "^0.34.0"
+    "@aws-cdk/core": "^0.35.0"
   },
   "engines": {
     "node": ">= 8.10.0"

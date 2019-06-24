@@ -1,5 +1,5 @@
 import iam = require('@aws-cdk/aws-iam');
-import { Construct, IResource, Resource } from '@aws-cdk/cdk';
+import { Construct, Duration, IResource, Resource } from '@aws-cdk/core';
 import { IAutoScalingGroup } from './auto-scaling-group';
 import { CfnLifecycleHook } from './autoscaling.generated';
 import { ILifecycleHookTarget } from './lifecycle-hook-target';
@@ -29,7 +29,7 @@ export interface BasicLifecycleHookProps {
    *
    * @default - No heartbeat timeout.
    */
-  readonly heartbeatTimeoutSec?: number;
+  readonly heartbeatTimeout?: Duration;
 
   /**
    * The state of the Amazon EC2 instance to which you want to attach the lifecycle hook.
@@ -92,7 +92,9 @@ export class LifecycleHook extends Resource implements ILifecycleHook {
   public readonly lifecycleHookName: string;
 
   constructor(scope: Construct, id: string, props: LifecycleHookProps) {
-    super(scope, id);
+    super(scope, id, {
+      physicalName: props.lifecycleHookName,
+    });
 
     this.role = props.role || new iam.Role(this, 'Role', {
       assumedBy: new iam.ServicePrincipal('autoscaling.amazonaws.com')
@@ -103,8 +105,8 @@ export class LifecycleHook extends Resource implements ILifecycleHook {
     const resource = new CfnLifecycleHook(this, 'Resource', {
       autoScalingGroupName: props.autoScalingGroup.autoScalingGroupName,
       defaultResult: props.defaultResult,
-      heartbeatTimeout: props.heartbeatTimeoutSec,
-      lifecycleHookName: props.lifecycleHookName,
+      heartbeatTimeout: props.heartbeatTimeout && props.heartbeatTimeout.toSeconds(),
+      lifecycleHookName: this.physicalName,
       lifecycleTransition: props.lifecycleTransition,
       notificationMetadata: props.notificationMetadata,
       notificationTargetArn: targetProps.notificationTargetArn,
@@ -116,13 +118,13 @@ export class LifecycleHook extends Resource implements ILifecycleHook {
     // lifecycle hook.
     resource.node.addDependency(this.role);
 
-    this.lifecycleHookName = resource.lifecycleHookName;
+    this.lifecycleHookName = resource.ref;
   }
 }
 
 export enum DefaultResult {
-  Continue = 'CONTINUE',
-  Abandon = 'ABANDON',
+  CONTINUE = 'CONTINUE',
+  ABANDON = 'ABANDON',
 }
 
 /**
@@ -132,10 +134,10 @@ export enum LifecycleTransition {
   /**
    * Execute the hook when an instance is about to be added
    */
-  InstanceLaunching = 'autoscaling:EC2_INSTANCE_LAUNCHING',
+  INSTANCE_LAUNCHING = 'autoscaling:EC2_INSTANCE_LAUNCHING',
 
   /**
    * Execute the hook when an instance is about to be terminated
    */
-  InstanceTerminating = 'autoscaling:EC2_INSTANCE_TERMINATING',
+  INSTANCE_TERMINATING = 'autoscaling:EC2_INSTANCE_TERMINATING',
 }

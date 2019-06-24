@@ -1,3 +1,5 @@
+import { Statistic } from "./metric-types";
+
 export interface SimpleStatistic {
   type: 'simple';
   statistic: Statistic;
@@ -15,15 +17,15 @@ export function parseStatistic(stat: string): SimpleStatistic | PercentileStatis
 
   // Simple statistics
   const statMap: {[k: string]: Statistic} = {
-    average: Statistic.Average,
-    avg: Statistic.Average,
-    minimum: Statistic.Minimum,
-    min: Statistic.Minimum,
-    maximum: Statistic.Maximum,
-    max: Statistic.Maximum,
-    samplecount: Statistic.SampleCount,
-    n: Statistic.SampleCount,
-    sum: Statistic.Sum,
+    average: Statistic.AVERAGE,
+    avg: Statistic.AVERAGE,
+    minimum: Statistic.MINIMUM,
+    min: Statistic.MINIMUM,
+    maximum: Statistic.MAXIMUM,
+    max: Statistic.MAXIMUM,
+    samplecount: Statistic.SAMPLE_COUNT,
+    n: Statistic.SAMPLE_COUNT,
+    sum: Statistic.SUM,
   };
 
   if (lowerStat in statMap) {
@@ -55,15 +57,4 @@ export function normalizeStatistic(stat: string): string {
     // floating point rounding issues, return as-is but lowercase the p.
     return stat.toLowerCase();
   }
-}
-
-/**
- * Statistic to use over the aggregation period
- */
-const enum Statistic {
-  SampleCount = 'SampleCount',
-  Average = 'Average',
-  Sum = 'Sum',
-  Minimum = 'Minimum',
-  Maximum = 'Maximum',
 }

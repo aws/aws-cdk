@@ -1,7 +1,7 @@
 import { expect, haveResource } from '@aws-cdk/assert';
 import { Attribute, AttributeType, StreamViewType } from '@aws-cdk/aws-dynamodb';
 import { Table } from '@aws-cdk/aws-dynamodb';
-import { Stack } from '@aws-cdk/cdk';
+import { Stack } from '@aws-cdk/core';
 import * as assert from 'assert';
 import { Test } from 'nodeunit';
 import {
@@ -16,7 +16,7 @@ const CONSTRUCT_NAME = 'aws-cdk-dynamodb-global';
 
 // DynamoDB table parameters
 const TABLE_NAME = 'GlobalTable';
-const TABLE_PARTITION_KEY: Attribute = { name: 'hashKey', type: AttributeType.String };
+const TABLE_PARTITION_KEY: Attribute = { name: 'hashKey', type: AttributeType.STRING };
 
 const STACK_PROPS: GlobalTableProps = {
     partitionKey: TABLE_PARTITION_KEY,
@@ -60,7 +60,7 @@ export = {
       expect(customResourceStack).to(haveResource('AWS::CloudFormation::CustomResource', {
         Regions: STACK_PROPS.regions,
         ResourceType: "Custom::DynamoGlobalTableCoordinator",
-        TableName: STACK_PROPS.tableName
+        TableName: TABLE_NAME,
       }));
       test.done();
     },
@@ -71,7 +71,7 @@ export = {
       try {
         new GlobalTable(stack, CONSTRUCT_NAME, {
           tableName: TABLE_NAME,
-          streamSpecification: StreamViewType.KeysOnly,
+          stream: StreamViewType.KEYS_ONLY,
           partitionKey: TABLE_PARTITION_KEY,
           regions: [ 'us-east-1', 'us-east-2', 'us-west-2' ]
         });

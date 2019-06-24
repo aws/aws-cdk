@@ -1,6 +1,6 @@
 import { expect, haveResource } from '@aws-cdk/assert';
 import iam = require('@aws-cdk/aws-iam');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import { Test } from 'nodeunit';
 import sns = require('../lib');
 
@@ -27,7 +27,7 @@ export = {
       const stack = new cdk.Stack();
 
       new sns.Topic(stack, 'MyTopic', {
-        topicName: 'topicName'
+        topicName: 'topicName',
       });
 
       expect(stack).toMatch({
@@ -88,8 +88,6 @@ export = {
       test.done();
     },
   },
-  'subscription tests': {
-  },
 
   'can add a policy to the topic'(test: Test) {
     // GIVEN
@@ -97,10 +95,11 @@ export = {
     const topic = new sns.Topic(stack, 'Topic');
 
     // WHEN
-    topic.addToResourcePolicy(new iam.PolicyStatement()
-      .addAllResources()
-      .addActions('sns:*')
-      .addPrincipal(new iam.ArnPrincipal('arn')));
+    topic.addToResourcePolicy(new iam.PolicyStatement({
+      resources: ['*'],
+      actions: ['sns:*'],
+      principals: [new iam.ArnPrincipal('arn')]
+    }));
 
     // THEN
     expect(stack).to(haveResource('AWS::SNS::TopicPolicy', {
@@ -150,8 +149,8 @@ export = {
 
     const topic = new sns.Topic(stack, 'MyTopic');
 
-    topic.addToResourcePolicy(new iam.PolicyStatement().addAction('statement0'));
-    topic.addToResourcePolicy(new iam.PolicyStatement().addAction('statement1'));
+    topic.addToResourcePolicy(new iam.PolicyStatement({ actions: ['statement0'] }));
+    topic.addToResourcePolicy(new iam.PolicyStatement({ actions: ['statement1'] }));
 
     expect(stack).toMatch({
       "Resources": {
@@ -212,7 +211,7 @@ export = {
       dimensions: {TopicName: { 'Fn::GetAtt': [ 'TopicBFC7AF6E', 'TopicName' ] }},
       namespace: 'AWS/SNS',
       metricName: 'NumberOfMessagesPublished',
-      periodSec: 300,
+      period: cdk.Duration.minutes(5),
       statistic: 'Sum'
     });
 
@@ -220,7 +219,7 @@ export = {
       dimensions: {TopicName: { 'Fn::GetAtt': [ 'TopicBFC7AF6E', 'TopicName' ] }},
       namespace: 'AWS/SNS',
       metricName: 'PublishSize',
-      periodSec: 300,
+      period: cdk.Duration.minutes(5),
       statistic: 'Average'
     });
 

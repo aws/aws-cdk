@@ -2,26 +2,26 @@ import ec2 = require('@aws-cdk/aws-ec2');
 import lambda = require('@aws-cdk/aws-lambda');
 import serverless = require('@aws-cdk/aws-sam');
 import secretsmanager = require('@aws-cdk/aws-secretsmanager');
-import { Construct, Stack } from '@aws-cdk/cdk';
+import { Construct, Duration, Stack } from '@aws-cdk/core';
 
 /**
  * A secret rotation serverless application.
  */
 export class SecretRotationApplication {
-  public static readonly MariaDbRotationSingleUser = new SecretRotationApplication('SecretsManagerRDSMariaDBRotationSingleUser', '1.0.57');
-  public static readonly MariaDBRotationMultiUser = new SecretRotationApplication('SecretsManagerRDSMariaDBRotationMultiUser', '1.0.57');
+  public static readonly MARIADB_ROTATION_SINGLE_USER = new SecretRotationApplication('SecretsManagerRDSMariaDBRotationSingleUser', '1.0.57');
+  public static readonly MARIADB_ROTATION_MULTI_USER = new SecretRotationApplication('SecretsManagerRDSMariaDBRotationMultiUser', '1.0.57');
 
-  public static readonly MysqlRotationSingleUser = new SecretRotationApplication('SecretsManagerRDSMySQLRotationSingleUser', '1.0.85');
-  public static readonly MysqlRotationMultiUser = new SecretRotationApplication('SecretsManagerRDSMySQLRotationMultiUser', '1.0.85');
+  public static readonly MYSQL_ROTATION_SINGLE_USER = new SecretRotationApplication('SecretsManagerRDSMySQLRotationSingleUser', '1.0.85');
+  public static readonly MYSQL_ROTATION_MULTI_USER = new SecretRotationApplication('SecretsManagerRDSMySQLRotationMultiUser', '1.0.85');
 
-  public static readonly OracleRotationSingleUser = new SecretRotationApplication('SecretsManagerRDSOracleRotationSingleUser', '1.0.56');
-  public static readonly OracleRotationMultiUser = new SecretRotationApplication('SecretsManagerRDSOracleRotationMultiUser', '1.0.56');
+  public static readonly ORACLE_ROTATION_SINGLE_USER = new SecretRotationApplication('SecretsManagerRDSOracleRotationSingleUser', '1.0.56');
+  public static readonly ORACLE_ROTATION_MULTI_USER = new SecretRotationApplication('SecretsManagerRDSOracleRotationMultiUser', '1.0.56');
 
-  public static readonly PostgresRotationSingleUser = new SecretRotationApplication('SecretsManagerRDSPostgreSQLRotationSingleUser', '1.0.86');
-  public static readonly PostgreSQLRotationMultiUser  = new SecretRotationApplication('SecretsManagerRDSPostgreSQLRotationMultiUser ', '1.0.86');
+  public static readonly POSTGRES_ROTATION_SINGLE_USER = new SecretRotationApplication('SecretsManagerRDSPostgreSQLRotationSingleUser', '1.0.86');
+  public static readonly POSTGRES_ROTATION_MULTI_USER  = new SecretRotationApplication('SecretsManagerRDSPostgreSQLRotationMultiUser ', '1.0.86');
 
-  public static readonly SqlServerRotationSingleUser = new SecretRotationApplication('SecretsManagerRDSSQLServerRotationSingleUser', '1.0.57');
-  public static readonly SqlServerRotationMultiUser = new SecretRotationApplication('SecretsManagerRDSSQLServerRotationMultiUser', '1.0.57');
+  public static readonly SQLSERVER_ROTATION_SINGLE_USER = new SecretRotationApplication('SecretsManagerRDSSQLServerRotationSingleUser', '1.0.57');
+  public static readonly SQLSERVER_ROTATION_MULTI_USER = new SecretRotationApplication('SecretsManagerRDSSQLServerRotationMultiUser', '1.0.57');
 
   public readonly applicationId: string;
   public readonly semanticVersion: string;
@@ -40,9 +40,9 @@ export interface SecretRotationOptions {
    * Specifies the number of days after the previous rotation before
    * Secrets Manager triggers the next automatic rotation.
    *
-   * @default 30 days
+   * @default Duration.days(30)
    */
-  readonly automaticallyAfterDays?: number;
+  readonly automaticallyAfter?: Duration;
 }
 
 /**
@@ -96,7 +96,7 @@ export class SecretRotation extends Construct {
   constructor(scope: Construct, id: string, props: SecretRotationProps) {
     super(scope, id);
 
-    if (!props.target.connections.defaultPortRange) {
+    if (!props.target.connections.defaultPort) {
       throw new Error('The `target` connections must have a default port range.');
     }
 
@@ -139,7 +139,7 @@ export class SecretRotation extends Construct {
 
     const rotationSchedule = props.secret.addRotationSchedule('RotationSchedule', {
       rotationLambda,
-      automaticallyAfterDays: props.automaticallyAfterDays
+      automaticallyAfter: props.automaticallyAfter
     });
     rotationSchedule.node.addDependency(permission); // Cannot rotate without permission
   }

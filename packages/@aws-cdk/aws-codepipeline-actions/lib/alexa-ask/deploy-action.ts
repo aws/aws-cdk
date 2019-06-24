@@ -1,5 +1,5 @@
 import codepipeline = require('@aws-cdk/aws-codepipeline');
-import { SecretValue } from '@aws-cdk/cdk';
+import { SecretValue } from '@aws-cdk/core';
 
 /**
  * Construction properties of the {@link AlexaSkillDeployAction Alexa deploy Action}.
@@ -43,7 +43,7 @@ export class AlexaSkillDeployAction extends codepipeline.Action {
   constructor(props: AlexaSkillDeployActionProps) {
     super({
       ...props,
-      category: codepipeline.ActionCategory.Deploy,
+      category: codepipeline.ActionCategory.DEPLOY,
       owner: 'ThirdParty',
       provider: 'AlexaSkillsKit',
       artifactBounds: {

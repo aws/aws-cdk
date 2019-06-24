@@ -232,6 +232,9 @@ export class StabilitySetting extends ValidationRule {
       case 'experimental':
         return _div(
           { label: 'Experimental', color: 'important' },
+          '**This is a _developer preview_ (public beta) module. Releases might lack important features and might have',
+          'future breaking changes.**',
+          '',
           'This API is still under active development and subject to non-backward',
           'compatible changes or removal in any future version. Use of the API is not recommended in production',
           'environments. Experimental APIs are not subject to the Semantic Versioning model.',
@@ -469,7 +472,8 @@ export class NoAtTypesInDependencies extends ValidationRule {
  * Computes the module name for various other purposes (java package, ...)
  */
 function cdkModuleName(name: string) {
-  const isCdkPkg = name === '@aws-cdk/cdk';
+  const isCdkPkg = name === '@aws-cdk/core';
+  const isLegacyCdkPkg = name === '@aws-cdk/cdk';
 
   name = name.replace(/^aws-cdk-/, '');
   name = name.replace(/^@aws-cdk\//, '');
@@ -481,11 +485,13 @@ function cdkModuleName(name: string) {
   const pythonName = name.replace(/^@/g, "").replace(/\//g, ".").split(".").map(caseUtils.kebab).join(".");
 
   return {
-    javaPackage: `software.amazon.awscdk${isCdkPkg ? '' : `.${name.replace(/^aws-/, 'services-').replace(/-/g, '.')}`}`,
+    javaPackage: `software.amazon.awscdk${(isCdkPkg || isLegacyCdkPkg) ? '' : `.${name.replace(/^aws-/, 'services-').replace(/-/g, '.')}`}`,
     mavenArtifactId:
-      isCdkPkg ? 'cdk'
-               : name.startsWith('aws-') || name.startsWith('alexa-') ? name.replace(/^aws-/, '')
-                                                                      : `cdk-${name}`,
+        isCdkPkg ? 'core'
+      : isLegacyCdkPkg ? 'cdk'
+      : name.startsWith('aws-') || name.startsWith('alexa-')
+          ? name.replace(/^aws-/, '')
+          : `cdk-${name}`,
     dotnetNamespace: `Amazon.CDK${isCdkPkg ? '' : `.${dotnetSuffix}`}`,
     python: {
       distName: `aws-cdk.${pythonName}`,
@@ -502,6 +508,10 @@ export class JSIIDotNetNamespaceIsRequired extends ValidationRule {
 
   public validate(pkg: PackageJson): void {
     if (!isJSII(pkg)) { return; }
+
+    // skip the legacy @aws-cdk/cdk because we actually did not rename
+    // the .NET module, so we are not publishing the deprecated one
+    if (pkg.packageName === '@aws-cdk/cdk') { return; }
 
     const dotnet = deepGet(pkg.json, ['jsii', 'targets', 'dotnet', 'namespace']) as string | undefined;
     const moduleName = cdkModuleName(pkg.json.name);
@@ -529,6 +539,10 @@ export class JSIIDotNetStrongNameIsRequired extends ValidationRule {
 
   public validate(pkg: PackageJson): void {
     if (!isJSII(pkg)) { return; }
+
+    // skip the legacy @aws-cdk/cdk because we actually did not rename
+    // the .NET module, so we are not publishing the deprecated one
+    if (pkg.packageName === '@aws-cdk/cdk') { return; }
 
     const signAssembly = deepGet(pkg.json, ['jsii', 'targets', 'dotnet', 'signAssembly']) as boolean | undefined;
     const signAssemblyExpected = true;

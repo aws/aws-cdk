@@ -1,7 +1,7 @@
 import ec2 = require('@aws-cdk/aws-ec2');
 import ecs = require('@aws-cdk/aws-ecs');
 import iam = require('@aws-cdk/aws-iam');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import ecsPatterns = require('../../lib');
 
 const app = new cdk.App();
@@ -24,4 +24,4 @@ new ecsPatterns.LoadBalancedFargateService(stack, 'L3', {
   })
 });
 
-app.run();
+app.synth();

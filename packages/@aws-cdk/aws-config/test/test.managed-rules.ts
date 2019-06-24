@@ -1,6 +1,6 @@
 import { expect, haveResource } from '@aws-cdk/assert';
 import sns = require('@aws-cdk/aws-sns');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import { Test } from 'nodeunit';
 import config = require('../lib');
 

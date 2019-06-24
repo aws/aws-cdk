@@ -1,6 +1,8 @@
 #!/usr/bin/env node
 import sns = require('@aws-cdk/aws-sns');
-import cdk = require('@aws-cdk/cdk');
+import ssm = require('@aws-cdk/aws-ssm');
+import cdk = require('@aws-cdk/core');
+import { Token } from '@aws-cdk/core';
 import { AwsCustomResource } from '../lib';
 
 const app = new cdk.App();
@@ -28,21 +30,25 @@ const listTopics = new AwsCustomResource(stack, 'ListTopics', {
     physicalResourceIdPath: 'Topics.0.TopicArn'
   }
 });
+listTopics.node.addDependency(topic);
 
+const ssmParameter = new ssm.StringParameter(stack, 'DummyParameter', {
+  stringValue: '1337',
+});
 const getParameter = new AwsCustomResource(stack, 'GetParameter', {
   onUpdate: {
     service: 'SSM',
     action: 'getParameter',
     parameters: {
-      Name: 'my-parameter',
+      Name: ssmParameter.parameterName,
       WithDecryption: true
     },
     physicalResourceIdPath: 'Parameter.ARN'
   }
 });
 
-new cdk.CfnOutput(stack, 'MessageId', { value: snsPublish.getData('MessageId') });
-new cdk.CfnOutput(stack, 'TopicArn', { value: listTopics.getData('Topics.0.TopicArn') });
-new cdk.CfnOutput(stack, 'ParameterValue', { value: getParameter.getData('Parameter.Value') });
+new cdk.CfnOutput(stack, 'MessageId', { value: Token.asString(snsPublish.getData('MessageId')) });
+new cdk.CfnOutput(stack, 'TopicArn', { value: Token.asString(listTopics.getData('Topics.0.TopicArn')) });
+new cdk.CfnOutput(stack, 'ParameterValue', { value: Token.asString(getParameter.getData('Parameter.Value')) });
 
 app.synth();

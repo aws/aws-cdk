@@ -1,16 +1,16 @@
 import events = require('@aws-cdk/aws-events');
 import iam = require('@aws-cdk/aws-iam');
-import { Construct, IResource } from '@aws-cdk/cdk';
+import { Construct, IResource } from '@aws-cdk/core';
 import { Artifact } from './artifact';
 import validation = require('./validation');
 
 export enum ActionCategory {
-  Source = 'Source',
-  Build = 'Build',
-  Test = 'Test',
-  Approval = 'Approval',
-  Deploy = 'Deploy',
-  Invoke = 'Invoke'
+  SOURCE = 'Source',
+  BUILD = 'Build',
+  TEST = 'Test',
+  APPROVAL = 'Approval',
+  DEPLOY = 'Deploy',
+  INVOKE = 'Invoke'
 }
 
 /**

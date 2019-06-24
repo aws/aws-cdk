@@ -1,7 +1,7 @@
 import events = require('@aws-cdk/aws-events');
 import iam = require('@aws-cdk/aws-iam');
 import lambda = require('@aws-cdk/aws-lambda');
-import { Construct, IResource, Lazy, Resource } from '@aws-cdk/cdk';
+import { Construct, IResource, Lazy, Resource } from '@aws-cdk/core';
 import { CfnConfigRule } from './config.generated';
 
 /**
@@ -42,7 +42,7 @@ abstract class RuleBase extends Resource implements IRule {
    * Defines a CloudWatch event rule which triggers for rule events. Use
    * `rule.addEventPattern(pattern)` to specify a filter.
    */
-  public onEvent(id: string, options: events.OnEventOptions) {
+  public onEvent(id: string, options: events.OnEventOptions = {}) {
     const rule = new events.Rule(this, id, options);
     rule.addEventPattern({
       source: ['aws.config'],
@@ -57,7 +57,7 @@ abstract class RuleBase extends Resource implements IRule {
   /**
    * Defines a CloudWatch event rule which triggers for rule compliance events.
    */
-  public onComplianceChange(id: string, options: events.OnEventOptions): events.Rule {
+  public onComplianceChange(id: string, options: events.OnEventOptions = {}): events.Rule {
     const rule = this.onEvent(id, options);
     rule.addEventPattern({
       detailType: [ 'Config Rules Compliance Change' ],
@@ -68,7 +68,7 @@ abstract class RuleBase extends Resource implements IRule {
   /**
    * Defines a CloudWatch event rule which triggers for rule re-evaluation status events.
    */
-  public onReEvaluationStatus(id: string, options: events.OnEventOptions): events.Rule {
+  public onReEvaluationStatus(id: string, options: events.OnEventOptions = {}): events.Rule {
     const rule = this.onEvent(id, options);
     rule.addEventPattern({
       detailType: [ 'Config Rules Re-evaluation Status' ],
@@ -183,7 +183,7 @@ export interface RuleProps {
    *
    * @default a CloudFormation generated name
    */
-  readonly name?: string;
+  readonly configRuleName?: string;
 
   /**
    * A description about this AWS Config rule.
@@ -238,10 +238,12 @@ export class ManagedRule extends RuleNew {
   public readonly configRuleComplianceType: string;
 
   constructor(scope: Construct, id: string, props: ManagedRuleProps) {
-    super(scope, id);
+    super(scope, id, {
+      physicalName: props.configRuleName,
+    });
 
     const rule = new CfnConfigRule(this, 'Resource', {
-      configRuleName: props.name,
+      configRuleName: this.physicalName,
       description: props.description,
       inputParameters: props.inputParameters,
       maximumExecutionFrequency: props.maximumExecutionFrequency,
@@ -252,10 +254,10 @@ export class ManagedRule extends RuleNew {
       }
     });
 
-    this.configRuleName = rule.configRuleName;
-    this.configRuleArn = rule.configRuleArn;
-    this.configRuleId = rule.configRuleId;
-    this.configRuleComplianceType = rule.configRuleComplianceType;
+    this.configRuleName = rule.ref;
+    this.configRuleArn = rule.attrArn;
+    this.configRuleId = rule.attrConfigRuleId;
+    this.configRuleComplianceType = rule.attrComplianceType;
 
     this.isManaged = true;
   }
@@ -303,7 +305,9 @@ export class CustomRule extends RuleNew {
   public readonly configRuleComplianceType: string;
 
   constructor(scope: Construct, id: string, props: CustomRuleProps) {
-    super(scope, id);
+    super(scope, id, {
+      physicalName: props.configRuleName,
+    });
 
     if (!props.configurationChanges && !props.periodic) {
       throw new Error('At least one of `configurationChanges` or `periodic` must be set to true.');
@@ -335,8 +339,8 @@ export class CustomRule extends RuleNew {
     });
 
     if (props.lambdaFunction.role) {
-      props.lambdaFunction.role.attachManagedPolicy(
-        new iam.AwsManagedPolicy('service-role/AWSConfigRulesExecutionRole', this).policyArn
+      props.lambdaFunction.role.addManagedPolicy(
+        iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSConfigRulesExecutionRole')
       );
     }
 
@@ -344,7 +348,7 @@ export class CustomRule extends RuleNew {
     this.node.addDependency(props.lambdaFunction);
 
     const rule = new CfnConfigRule(this, 'Resource', {
-      configRuleName: props.name,
+      configRuleName: this.physicalName,
       description: props.description,
       inputParameters: props.inputParameters,
       maximumExecutionFrequency: props.maximumExecutionFrequency,
@@ -356,10 +360,10 @@ export class CustomRule extends RuleNew {
       }
     });
 
-    this.configRuleName = rule.configRuleName;
-    this.configRuleArn = rule.configRuleArn;
-    this.configRuleId = rule.configRuleId;
-    this.configRuleComplianceType = rule.configRuleComplianceType;
+    this.configRuleName = rule.ref;
+    this.configRuleArn = rule.attrArn;
+    this.configRuleId = rule.attrConfigRuleId;
+    this.configRuleComplianceType = rule.attrComplianceType;
 
     if (props.configurationChanges) {
       this.isCustomWithChanges = true;

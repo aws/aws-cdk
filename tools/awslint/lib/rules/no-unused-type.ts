@@ -47,7 +47,6 @@ function _collectUsedTypes(assm: Assembly): Set<string> {
       if (type.base) { _visitType(type.base); }
       if (type.initializer) {
         for (const param of type.initializer.parameters) {
-          if (!param.type.fqn) { continue; }
           _visitTypeRef(param.type);
         }
       }

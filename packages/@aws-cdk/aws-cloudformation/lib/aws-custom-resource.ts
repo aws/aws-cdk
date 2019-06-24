@@ -1,6 +1,6 @@
 import iam = require('@aws-cdk/aws-iam');
 import lambda = require('@aws-cdk/aws-lambda');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import metadata = require('aws-sdk/apis/metadata.json');
 import path = require('path');
 import { CustomResource, CustomResourceProvider } from './custom-resource';
@@ -135,7 +135,7 @@ export class AwsCustomResource extends cdk.Construct {
 
     const provider = new lambda.SingletonFunction(this, 'Provider', {
       code: lambda.Code.asset(path.join(__dirname, 'aws-custom-resource-provider')),
-      runtime: lambda.Runtime.Nodejs10x,
+      runtime: lambda.Runtime.NODEJS_10_X,
       handler: 'index.handler',
       uuid: '679f53fa-c002-430c-b0da-5b7982bd2287',
       lambdaPurpose: 'AWS'
@@ -148,11 +148,10 @@ export class AwsCustomResource extends cdk.Construct {
     } else { // Derive statements from AWS SDK calls
       for (const call of [props.onCreate, props.onUpdate, props.onDelete]) {
         if (call) {
-          provider.addToRolePolicy(
-            new iam.PolicyStatement()
-              .addAction(awsSdkToIamAction(call.service, call.action))
-              .addAllResources()
-          );
+          provider.addToRolePolicy(new iam.PolicyStatement({
+            actions: [awsSdkToIamAction(call.service, call.action)],
+            resources: ['*']
+          }));
         }
       }
     }

@@ -1,5 +1,5 @@
 import { expect, haveResource, ResourcePart } from '@aws-cdk/assert';
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import { Test } from "nodeunit";
 import apigateway = require('../lib');
 
@@ -90,7 +90,7 @@ export = {
     new apigateway.UsagePlan(stack, 'my-usage-plan', {
       quota: {
         limit: 10000,
-        period: apigateway.Period.Month
+        period: apigateway.Period.MONTH
       }
     });
 

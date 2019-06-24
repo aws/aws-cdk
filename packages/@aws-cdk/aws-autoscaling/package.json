@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/aws-autoscaling",
-  "version": "0.34.0",
+  "version": "0.35.0",
   "description": "The CDK Construct Library for AWS::AutoScaling",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -63,32 +63,32 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "^0.34.0",
-    "cdk-build-tools": "^0.34.0",
-    "cdk-integ-tools": "^0.34.0",
-    "cfn2ts": "^0.34.0",
-    "pkglint": "^0.34.0"
+    "@aws-cdk/assert": "^0.35.0",
+    "cdk-build-tools": "^0.35.0",
+    "cdk-integ-tools": "^0.35.0",
+    "cfn2ts": "^0.35.0",
+    "pkglint": "^0.35.0"
   },
   "dependencies": {
-    "@aws-cdk/aws-autoscaling-common": "^0.34.0",
-    "@aws-cdk/aws-cloudwatch": "^0.34.0",
-    "@aws-cdk/aws-ec2": "^0.34.0",
-    "@aws-cdk/aws-elasticloadbalancing": "^0.34.0",
-    "@aws-cdk/aws-elasticloadbalancingv2": "^0.34.0",
-    "@aws-cdk/aws-iam": "^0.34.0",
-    "@aws-cdk/aws-sns": "^0.34.0",
-    "@aws-cdk/cdk": "^0.34.0"
+    "@aws-cdk/aws-autoscaling-common": "^0.35.0",
+    "@aws-cdk/aws-cloudwatch": "^0.35.0",
+    "@aws-cdk/aws-ec2": "^0.35.0",
+    "@aws-cdk/aws-elasticloadbalancing": "^0.35.0",
+    "@aws-cdk/aws-elasticloadbalancingv2": "^0.35.0",
+    "@aws-cdk/aws-iam": "^0.35.0",
+    "@aws-cdk/aws-sns": "^0.35.0",
+    "@aws-cdk/core": "^0.35.0"
   },
   "homepage": "https://github.com/awslabs/aws-cdk",
   "peerDependencies": {
-    "@aws-cdk/aws-autoscaling-common": "^0.34.0",
-    "@aws-cdk/aws-cloudwatch": "^0.34.0",
-    "@aws-cdk/aws-ec2": "^0.34.0",
-    "@aws-cdk/aws-elasticloadbalancing": "^0.34.0",
-    "@aws-cdk/aws-elasticloadbalancingv2": "^0.34.0",
-    "@aws-cdk/aws-iam": "^0.34.0",
-    "@aws-cdk/aws-sns": "^0.34.0",
-    "@aws-cdk/cdk": "^0.34.0"
+    "@aws-cdk/aws-autoscaling-common": "^0.35.0",
+    "@aws-cdk/aws-cloudwatch": "^0.35.0",
+    "@aws-cdk/aws-ec2": "^0.35.0",
+    "@aws-cdk/aws-elasticloadbalancing": "^0.35.0",
+    "@aws-cdk/aws-elasticloadbalancingv2": "^0.35.0",
+    "@aws-cdk/aws-iam": "^0.35.0",
+    "@aws-cdk/aws-sns": "^0.35.0",
+    "@aws-cdk/core": "^0.35.0"
   },
   "engines": {
     "node": ">= 8.10.0"
@@ -97,7 +97,9 @@
     "exclude": [
       "import-props-interface:@aws-cdk/aws-autoscaling.AutoScalingGroupImportProps",
       "resource-interface-extends-construct:@aws-cdk/aws-autoscaling.IAutoScalingGroup",
-      "export:@aws-cdk/aws-autoscaling.IAutoScalingGroup"
+      "export:@aws-cdk/aws-autoscaling.IAutoScalingGroup",
+      "props-physical-name:@aws-cdk/aws-autoscaling.AutoScalingGroupProps",
+      "props-physical-name:@aws-cdk/aws-autoscaling.ScheduledActionProps"
     ]
   },
   "stability": "experimental"

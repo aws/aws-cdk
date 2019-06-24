@@ -1,11 +1,13 @@
-import { Construct, PhysicalName, Resource, ResourceIdentifiers, Stack } from '@aws-cdk/cdk';
+import { Construct, Duration, Lazy, Resource, Stack } from '@aws-cdk/core';
 import { Grant } from './grant';
 import { CfnRole } from './iam.generated';
 import { IIdentity } from './identity-base';
+import { IManagedPolicy } from './managed-policy';
 import { Policy } from './policy';
-import { PolicyDocument, PolicyStatement } from './policy-document';
+import { PolicyDocument } from './policy-document';
+import { PolicyStatement } from './policy-statement';
 import { ArnPrincipal, IPrincipal, PrincipalPolicyFragment } from './principals';
-import { AttachedPolicies, undefinedIfEmpty } from './util';
+import { AttachedPolicies } from './util';
 
 export interface RoleProps {
   /**
@@ -33,7 +35,7 @@ export interface RoleProps {
    *
    * @default - No managed policies.
    */
-  readonly managedPolicyArns?: string[];
+  readonly managedPolicies?: IManagedPolicy[];
 
   /**
    * A list of named policies to inline into this role. These policies will be
@@ -68,12 +70,11 @@ export interface RoleProps {
    * @default - AWS CloudFormation generates a unique physical ID and uses that ID
    * for the group name.
    */
-  readonly roleName?: PhysicalName;
+  readonly roleName?: string;
 
   /**
-   * The maximum session duration (in seconds) that you want to set for the
-   * specified role. This setting can have a value from 1 hour (3600sec) to
-   * 12 (43200sec) hours.
+   * The maximum session duration that you want to set for the specified role.
+   * This setting can have a value from 1 hour (3600sec) to 12 (43200sec) hours.
    *
    * Anyone who assumes the role from the AWS CLI or API can use the
    * DurationSeconds API parameter or the duration-seconds CLI parameter to
@@ -88,9 +89,9 @@ export interface RoleProps {
    *
    * @link https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_use.html
    *
-   * @default 3600 (1 hour)
+   * @default Duration.hours(1)
    */
-  readonly maxSessionDurationSec?: number;
+  readonly maxSessionDuration?: Duration;
 }
 
 /**
@@ -116,16 +117,24 @@ export class Role extends Resource implements IRole {
       public readonly roleArn = roleArn;
       public readonly roleName = Stack.of(scope).parseArn(roleArn).resourceName!;
 
-      public addToPolicy(_statement: PolicyStatement): boolean {
-        // Statement will be added to resource instead
-        return false;
+      private readonly attachedPolicies = new AttachedPolicies();
+      private defaultPolicy?: Policy;
+
+      public addToPolicy(statement: PolicyStatement): boolean {
+        if (!this.defaultPolicy) {
+          this.defaultPolicy = new Policy(this, 'Policy');
+          this.attachInlinePolicy(this.defaultPolicy);
+        }
+        this.defaultPolicy.addStatements(statement);
+        return true;
       }
 
-      public attachInlinePolicy(_policy: Policy): void {
-        // FIXME: Add warning that we're ignoring this
+      public attachInlinePolicy(policy: Policy): void {
+        this.attachedPolicies.attach(policy);
+        policy.attachToRole(this);
       }
 
-      public attachManagedPolicy(_arn: string): void {
+      public addManagedPolicy(_policy: IManagedPolicy): void {
         // FIXME: Add warning that we're ignoring this
       }
 
@@ -186,7 +195,7 @@ export class Role extends Resource implements IRole {
   public readonly policyFragment: PrincipalPolicyFragment;
 
   private defaultPolicy?: Policy;
-  private readonly managedPolicyArns: string[];
+  private readonly managedPolicies: IManagedPolicy[] = [];
   private readonly attachedPolicies = new AttachedPolicies();
 
   constructor(scope: Construct, id: string, props: RoleProps) {
@@ -195,32 +204,28 @@ export class Role extends Resource implements IRole {
     });
 
     this.assumeRolePolicy = createAssumeRolePolicy(props.assumedBy, props.externalId);
-    this.managedPolicyArns = props.managedPolicyArns || [ ];
+    this.managedPolicies.push(...props.managedPolicies || []);
 
-    validateMaxSessionDuration(props.maxSessionDurationSec);
+    const maxSessionDuration = props.maxSessionDuration && props.maxSessionDuration.toSeconds();
+    validateMaxSessionDuration(maxSessionDuration);
 
     const role = new CfnRole(this, 'Resource', {
       assumeRolePolicyDocument: this.assumeRolePolicy as any,
-      managedPolicyArns: undefinedIfEmpty(() => this.managedPolicyArns),
+      managedPolicyArns: Lazy.listValue({ produce: () => this.managedPolicies.map(p => p.managedPolicyArn) }, { omitEmpty: true }),
       policies: _flatten(props.inlinePolicies),
       path: props.path,
-      roleName: this.physicalName.value,
-      maxSessionDuration: props.maxSessionDurationSec,
+      roleName: this.physicalName,
+      maxSessionDuration,
     });
 
-    this.roleId = role.roleId;
-    const resourceIdentifiers = new ResourceIdentifiers(this, {
-      arn: role.roleArn,
-      name: role.roleName,
-      arnComponents: {
-        region: '', // IAM is global in each partition
-        service: 'iam',
-        resource: 'role',
-        resourceName: this.physicalName.value,
-      },
+    this.roleId = role.attrRoleId;
+    this.roleArn = this.getResourceArnAttribute(role.attrArn, {
+      region: '', // IAM is global in each partition
+      service: 'iam',
+      resource: 'role',
+      resourceName: this.physicalName,
     });
-    this.roleArn = resourceIdentifiers.arn;
-    this.roleName = resourceIdentifiers.name;
+    this.roleName = this.getResourceNameAttribute(role.ref);
     this.policyFragment = new ArnPrincipal(this.roleArn).policyFragment;
 
     function _flatten(policies?: { [name: string]: PolicyDocument }) {
@@ -246,16 +251,16 @@ export class Role extends Resource implements IRole {
       this.defaultPolicy = new Policy(this, 'DefaultPolicy');
       this.attachInlinePolicy(this.defaultPolicy);
     }
-    this.defaultPolicy.addStatement(statement);
+    this.defaultPolicy.addStatements(statement);
     return true;
   }
 
   /**
    * Attaches a managed policy to this role.
-   * @param arn The ARN of the managed policy to attach.
+   * @param policy The the managed policy to attach.
    */
-  public attachManagedPolicy(arn: string) {
-    this.managedPolicyArns.push(arn);
+  public addManagedPolicy(policy: IManagedPolicy) {
+    this.managedPolicies.push(policy);
   }
 
   /**
@@ -318,15 +323,16 @@ export interface IRole extends IIdentity {
 
 function createAssumeRolePolicy(principal: IPrincipal, externalId?: string) {
   const statement = new PolicyStatement();
-  statement
-      .addPrincipal(principal)
-      .addAction(principal.assumeRoleAction);
+  statement.addPrincipals(principal);
+  statement.addActions(principal.assumeRoleAction);
 
   if (externalId !== undefined) {
     statement.addCondition('StringEquals', { 'sts:ExternalId': externalId });
   }
 
-  return new PolicyDocument().addStatement(statement);
+  const doc = new PolicyDocument();
+  doc.addStatements(statement);
+  return doc;
 }
 
 function validateMaxSessionDuration(duration?: number) {

@@ -1,4 +1,4 @@
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import { Condition } from '../condition';
 import { StateGraph } from '../state-graph';
 import { CatchProps, DISCARD, Errors, IChainable, INextable, RetryProps } from '../types';
@@ -224,7 +224,7 @@ export abstract class State extends cdk.Construct implements IChainable {
     protected _addRetry(props: RetryProps = {}) {
         this.retries.push({
             ...props,
-            errors: props.errors ? props.errors : [Errors.All],
+            errors: props.errors ? props.errors : [Errors.ALL],
         });
     }
 
@@ -236,7 +236,7 @@ export abstract class State extends cdk.Construct implements IChainable {
         this.catches.push({
             next: handler,
             props: {
-                errors: props.errors ? props.errors : [Errors.All],
+                errors: props.errors ? props.errors : [Errors.ALL],
                 resultPath: props.resultPath
             }
         });
@@ -437,7 +437,7 @@ interface CatchTransition {
 function renderRetry(retry: RetryProps) {
     return {
         ErrorEquals: retry.errors,
-        IntervalSeconds: retry.intervalSeconds,
+        IntervalSeconds: retry.interval && retry.interval.toSeconds(),
         MaxAttempts: retry.maxAttempts,
         BackoffRate: retry.backoffRate
     };
@@ -501,12 +501,12 @@ function isNextable(x: any): x is INextable {
  *
  * @internal
  */
-export const enum StateType {
-    Pass = 'Pass',
-    Task = 'Task',
-    Choice = 'Choice',
-    Wait = 'Wait',
-    Succeed = 'Succeed',
-    Fail = 'Fail',
-    Parallel = 'Parallel'
+export enum StateType {
+    PASS = 'Pass',
+    TASK = 'Task',
+    CHOICE = 'Choice',
+    WAIT = 'Wait',
+    SUCCEED = 'Succeed',
+    FAIL = 'Fail',
+    PARALLEL = 'Parallel'
 }

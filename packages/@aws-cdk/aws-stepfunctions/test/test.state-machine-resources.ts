@@ -1,6 +1,6 @@
 import { expect, haveResource } from '@aws-cdk/assert';
 import iam = require('@aws-cdk/aws-iam');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import { Test } from 'nodeunit';
 import stepfunctions = require('../lib');
 
@@ -12,10 +12,10 @@ export = {
             task: {
                 bind: () => ({
                     resourceArn: 'resource',
-                    policyStatements: [new iam.PolicyStatement()
-                        .addAction('resource:Everything')
-                        .addResource('resource')
-                    ],
+                    policyStatements: [new iam.PolicyStatement({
+                        actions: ['resource:Everything'],
+                        resources: ['resource']
+                    })],
                 })
             }
         });
@@ -50,9 +50,10 @@ export = {
                 bind: () => ({
                     resourceArn: 'resource',
                     policyStatements: [
-                        new iam.PolicyStatement()
-                            .addAction('resource:Everything')
-                            .addResource('resource')
+                        new iam.PolicyStatement({
+                            actions: ['resource:Everything'],
+                            resources: ['resource']
+                        })
                     ]
                 })
             }

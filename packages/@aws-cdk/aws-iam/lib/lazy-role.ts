@@ -1,7 +1,8 @@
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import { Grant } from './grant';
+import { IManagedPolicy } from './managed-policy';
 import { Policy } from './policy';
-import { PolicyStatement } from './policy-document';
+import { PolicyStatement } from './policy-statement';
 import { IPrincipal, PrincipalPolicyFragment } from './principals';
 import { IRole, Role, RoleProps } from './role';
 
@@ -27,7 +28,7 @@ export class LazyRole extends cdk.Resource implements IRole {
   private role?: Role;
   private readonly statements = new Array<PolicyStatement>();
   private readonly policies = new Array<Policy>();
-  private readonly managedPolicies = new Array<string>();
+  private readonly managedPolicies = new Array<IManagedPolicy>();
 
   constructor(scope: cdk.Construct, id: string, private readonly props: LazyRoleProps) {
     super(scope, id);
@@ -61,13 +62,13 @@ export class LazyRole extends cdk.Resource implements IRole {
 
   /**
    * Attaches a managed policy to this role.
-   * @param arn The ARN of the managed policy to attach.
+   * @param policy The managed policy to attach.
    */
-  public attachManagedPolicy(arn: string): void {
+  public addManagedPolicy(policy: IManagedPolicy): void {
     if (this.role) {
-      this.role.attachManagedPolicy(arn);
+      this.role.addManagedPolicy(policy);
     } else {
-      this.managedPolicies.push(arn);
+      this.managedPolicies.push(policy);
     }
   }
 
@@ -110,7 +111,7 @@ export class LazyRole extends cdk.Resource implements IRole {
       const role = new Role(this, 'Default', this.props);
       this.statements.forEach(role.addToPolicy.bind(role));
       this.policies.forEach(role.attachInlinePolicy.bind(role));
-      this.managedPolicies.forEach(role.attachManagedPolicy.bind(role));
+      this.managedPolicies.forEach(role.addManagedPolicy.bind(role));
       this.role = role;
     }
     return this.role;

@@ -1,5 +1,5 @@
 import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
-import { Stack } from '@aws-cdk/cdk';
+import { Duration, Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import { ArnPrincipal, CompositePrincipal, FederatedPrincipal, PolicyStatement, Role, ServicePrincipal, User } from '../lib';
 
@@ -89,7 +89,7 @@ export = {
     // add a policy to the role
     const after = new Stack();
     const afterRole = new Role(after, 'MyRole', { assumedBy: new ServicePrincipal('sns.amazonaws.com') });
-    afterRole.addToPolicy(new PolicyStatement().addResource('myresource').addAction('myaction'));
+    afterRole.addToPolicy(new PolicyStatement({ resources: ['myresource'], actions: ['myaction'] }));
     expect(after).to(haveResource('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
@@ -116,10 +116,10 @@ export = {
 
     const role = new Role(stack, 'MyRole', {
       assumedBy: new ServicePrincipal('test.service'),
-      managedPolicyArns: [ 'managed1', 'managed2' ]
+      managedPolicies: [ { managedPolicyArn: 'managed1' }, { managedPolicyArn: 'managed2' } ]
     });
 
-    role.attachManagedPolicy('managed3');
+    role.addManagedPolicy({ managedPolicyArn: 'managed3' });
     expect(stack).toMatch({ Resources:
       { MyRoleF48FFE04:
          { Type: 'AWS::IAM::Role',
@@ -194,7 +194,7 @@ export = {
     'can be used to specify the maximum session duration for assuming the role'(test: Test) {
       const stack = new Stack();
 
-      new Role(stack, 'MyRole', { maxSessionDurationSec: 3700, assumedBy: new ServicePrincipal('sns.amazonaws.com') });
+      new Role(stack, 'MyRole', { maxSessionDuration: Duration.seconds(3700), assumedBy: new ServicePrincipal('sns.amazonaws.com') });
 
       expect(stack).to(haveResource('AWS::IAM::Role', {
         MaxSessionDuration: 3700
@@ -208,13 +208,13 @@ export = {
 
       const assumedBy = new ServicePrincipal('bla');
 
-      new Role(stack, 'MyRole1', { assumedBy, maxSessionDurationSec: 3600 });
-      new Role(stack, 'MyRole2', { assumedBy, maxSessionDurationSec: 43200 });
+      new Role(stack, 'MyRole1', { assumedBy, maxSessionDuration: Duration.hours(1) });
+      new Role(stack, 'MyRole2', { assumedBy, maxSessionDuration: Duration.hours(12) });
 
       const expected = (val: any) => `maxSessionDuration is set to ${val}, but must be >= 3600sec (1hr) and <= 43200sec (12hrs)`;
-      test.throws(() => new Role(stack, 'MyRole3', { assumedBy, maxSessionDurationSec: 60 }), expected(60));
-      test.throws(() => new Role(stack, 'MyRole4', { assumedBy, maxSessionDurationSec: 3599 }), expected(3599));
-      test.throws(() => new Role(stack, 'MyRole5', { assumedBy, maxSessionDurationSec: 43201 }), expected(43201));
+      test.throws(() => new Role(stack, 'MyRole3', { assumedBy, maxSessionDuration: Duration.minutes(1) }), expected(60));
+      test.throws(() => new Role(stack, 'MyRole4', { assumedBy, maxSessionDuration: Duration.seconds(3599) }), expected(3599));
+      test.throws(() => new Role(stack, 'MyRole5', { assumedBy, maxSessionDuration: Duration.seconds(43201) }), expected(43201));
 
       test.done();
     }
@@ -259,6 +259,34 @@ export = {
     // THEN
     test.deepEqual(importedRole.roleArn, 'arn:aws:iam::123456789012:role/S3Access');
     test.deepEqual(importedRole.roleName, 'S3Access');
+    test.done();
+  },
+
+  'add policy to imported role'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+    const importedRole = Role.fromRoleArn(stack, 'ImportedRole', 'arn:aws:iam::123456789012:role/MyRole');
+
+    // WHEN
+    importedRole.addToPolicy(new PolicyStatement({
+      actions: ['s3:*'],
+      resources: ['xyz']
+    }));
+
+    // THEN
+    expect(stack).to(haveResource('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: "s3:*",
+            Effect: "Allow",
+            Resource: "xyz"
+          }
+        ],
+        Version: "2012-10-17"
+      },
+      Roles: [ "MyRole" ]
+    }));
     test.done();
   }
 };

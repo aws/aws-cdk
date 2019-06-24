@@ -5,6 +5,9 @@
 
 ![Stability: Experimental](https://img.shields.io/badge/stability-Experimental-important.svg?style=for-the-badge)
 
+> **This is a _developer preview_ (public beta) module. Releases might lack important features and might have
+> future breaking changes.**
+> 
 > This API is still under active development and subject to non-backward
 > compatible changes or removal in any future version. Use of the API is not recommended in production
 > environments. Experimental APIs are not subject to the Semantic Versioning model.
@@ -25,7 +28,7 @@ const cluster = new DatabaseCluster(this, 'Database', {
         username: 'admin'
     },
     instanceProps: {
-        instanceType: new InstanceTypePair(InstanceClass.Burstable2, InstanceSize.Small),
+        instanceType: ec2.InstanceType.of(InstanceClass.Burstable2, InstanceSize.Small),
         vpcSubnets: {
             subnetType: ec2.SubnetType.Public,
         },
@@ -46,7 +49,7 @@ your instances will be launched privately or publicly:
 ```ts
 const instance = new DatabaseInstance(stack, 'Instance', {
     engine: rds.DatabaseInstanceEngine.OracleSE1,
-    instanceClass: new ec2.InstanceTypePair(ec2.InstanceClass.Burstable2, ec2.InstanceSize.Small),
+    instanceClass: ec2.InstanceType.of(ec2.InstanceClass.Burstable2, ec2.InstanceSize.Small),
     masterUsername: 'syscdk',
     vpc
 });
@@ -60,14 +63,14 @@ a source database respectively:
 new DatabaseInstanceFromSnapshot(stack, 'Instance', {
     snapshotIdentifier: 'my-snapshot',
     engine: rds.DatabaseInstanceEngine.Postgres,
-    instanceClass: new ec2.InstanceTypePair(ec2.InstanceClass.Burstable2, ec2.InstanceSize.Large),
+    instanceClass: ec2.InstanceType.of(ec2.InstanceClass.Burstable2, ec2.InstanceSize.Large),
     vpc
 });
 
 new DatabaseInstanceReadReplica(stack, 'ReadReplica', {
     sourceDatabaseInstance: sourceInstance,
     engine: rds.DatabaseInstanceEngine.Postgres,
-    instanceClass: new ec2.InstanceTypePair(ec2.InstanceClass.Burstable2, ec2.InstanceSize.Large),
+    instanceClass: ec2.InstanceType.of(ec2.InstanceClass.Burstable2, ec2.InstanceSize.Large),
     vpc
 });
 ```

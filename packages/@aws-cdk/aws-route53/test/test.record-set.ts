@@ -1,5 +1,5 @@
 import { expect, haveResource } from '@aws-cdk/assert';
-import { Stack } from '@aws-cdk/cdk';
+import { Duration, Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import route53 = require('../lib');
 
@@ -49,7 +49,7 @@ export = {
       recordName: 'aa',
       recordType: route53.RecordType.CNAME,
       target: route53.RecordTarget.fromValues('bbb'),
-      ttl: 6077
+      ttl: Duration.seconds(6077)
     });
 
     // THEN

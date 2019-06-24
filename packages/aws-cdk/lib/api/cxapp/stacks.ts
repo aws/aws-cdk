@@ -51,6 +51,37 @@ export interface AppStacksProps {
   synthesizer: Synthesizer;
 }
 
+export interface SelectStacksOptions {
+  /**
+   * Extend the selection to upstread/downstream stacks
+   * @default ExtendedStackSelection.None only select the specified stacks.
+   */
+  extend?: ExtendedStackSelection;
+
+  /**
+   * The behavior if if no selectors are privided.
+   */
+  defaultBehavior: DefaultSelection;
+}
+
+export enum DefaultSelection {
+  /**
+   * Returns an empty selection in case there are no selectors.
+   */
+  None = 'none',
+
+  /**
+   * If the app includes a single stack, returns it. Otherwise throws an exception.
+   * This behavior is used by "deploy".
+   */
+  OnlySingle = 'single',
+
+  /**
+   * If no selectors are provided, returns all stacks in the app.
+   */
+  AllStacks = 'all',
+}
+
 /**
  * Routines to get stacks from an app
  *
@@ -72,7 +103,7 @@ export class AppStacks {
    * It's an error if there are no stacks to select, or if one of the requested parameters
    * refers to a nonexistant stack.
    */
-  public async selectStacks(selectors: string[], extendedSelection: ExtendedStackSelection): Promise<cxapi.CloudFormationStackArtifact[]> {
+  public async selectStacks(selectors: string[], options: SelectStacksOptions): Promise<cxapi.CloudFormationStackArtifact[]> {
     selectors = selectors.filter(s => s != null); // filter null/undefined
 
     const stacks = await this.listStacks();
@@ -81,9 +112,21 @@ export class AppStacks {
     }
 
     if (selectors.length === 0) {
-      // remove non-auto deployed Stacks
-      debug('Stack name not specified, so defaulting to all available stacks: ' + listStackNames(stacks));
-      return stacks;
+      switch (options.defaultBehavior) {
+        case DefaultSelection.AllStacks:
+          return stacks;
+        case DefaultSelection.None:
+          return [];
+        case DefaultSelection.OnlySingle:
+          if (stacks.length === 1) {
+            return stacks;
+          } else {
+            throw new Error(`Since this app includes more than a single stack, specify which stacks to use (wildcards are supported)\n` +
+              `Stacks: ${stacks.map(x => x.name).join(' ')}`);
+          }
+        default:
+          throw new Error(`invalid default behavior: ${options.defaultBehavior}`);
+      }
     }
 
     const allStacks = new Map<string, cxapi.CloudFormationStackArtifact>();
@@ -108,7 +151,8 @@ export class AppStacks {
       }
     }
 
-    switch (extendedSelection) {
+    const extend = options.extend || ExtendedStackSelection.None;
+    switch (extend) {
       case ExtendedStackSelection.Downstream:
         includeDownstreamStacks(selectedStacks, allStacks);
         break;
@@ -180,7 +224,7 @@ export class AppStacks {
             stack.template.Resources = {};
           }
           const resourcePresent = stack.environment.region === 'default-region'
-            || regionInfo.Fact.find(stack.environment.region, regionInfo.FactName.cdkMetadataResourceAvailable) === 'YES';
+            || regionInfo.Fact.find(stack.environment.region, regionInfo.FactName.CDK_METADATA_RESOURCE_AVAILABLE) === 'YES';
           if (resourcePresent) {
             if (!stack.template.Resources.CDKMetadata) {
               stack.template.Resources.CDKMetadata = {

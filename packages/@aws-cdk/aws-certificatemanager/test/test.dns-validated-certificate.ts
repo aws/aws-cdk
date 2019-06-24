@@ -1,6 +1,6 @@
 import { expect, haveResource } from '@aws-cdk/assert';
-import { PublicHostedZone } from '@aws-cdk/aws-route53';
-import { Stack } from '@aws-cdk/cdk';
+import { HostedZone, PublicHostedZone } from '@aws-cdk/aws-route53';
+import { App, Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import { DnsValidatedCertificate } from '../lib/dns-validated-certificate';
 
@@ -121,6 +121,37 @@ export = {
           Ref: 'ExampleDotCom4D1B83AA'
         }
       }));
+    test.done();
+  },
+
+  'works with imported zone'(test: Test) {
+    // GIVEN
+    const app = new App();
+    const stack = new Stack(app, 'Stack', {
+      env: { account: '12345678', region: 'us-blue-5' },
+    });
+    const imported = HostedZone.fromLookup(stack, 'ExampleDotCom', {
+      domainName: 'mydomain.com',
+    });
+
+    // WHEN
+    new DnsValidatedCertificate(stack, 'Cert', {
+      domainName: 'mydomain.com',
+      hostedZone: imported,
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::CloudFormation::CustomResource', {
+        ServiceToken: {
+        'Fn::GetAtt': [
+          'CertCertificateRequestorFunction98FDF273',
+          'Arn'
+          ]
+        },
+        DomainName: 'mydomain.com',
+        HostedZoneId: 'DUMMY'
+      }));
+
     test.done();
   },
 };

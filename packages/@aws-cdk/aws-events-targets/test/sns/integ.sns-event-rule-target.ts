@@ -2,7 +2,7 @@ import events = require('@aws-cdk/aws-events');
 import sns = require('@aws-cdk/aws-sns');
 import subs = require('@aws-cdk/aws-sns-subscriptions');
 import sqs = require('@aws-cdk/aws-sqs');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import targets = require('../../lib');
 
 // ---------------------------------
@@ -16,7 +16,7 @@ const stack = new cdk.Stack(app, 'aws-cdk-sns-event-target');
 
 const topic = new sns.Topic(stack, 'MyTopic');
 const event = new events.Rule(stack, 'EveryMinute', {
-  scheduleExpression: 'rate(1 minute)'
+  schedule: events.Schedule.rate(cdk.Duration.minutes(1)),
 });
 
 const queue = new sqs.Queue(stack, 'MyQueue');

@@ -1,8 +1,8 @@
-import { Construct, IResource as IResourceBase, Resource as ResourceConstruct } from '@aws-cdk/cdk';
+import { Construct, IResource as IResourceBase, Resource as ResourceConstruct } from '@aws-cdk/core';
 import { CfnResource, CfnResourceProps } from './apigateway.generated';
 import { Integration } from './integration';
 import { Method, MethodOptions } from './method';
-import { RestApi, RestApiProps } from './restapi';
+import { RestApi } from './restapi';
 
 export interface IResource extends IResourceBase {
   /**
@@ -118,7 +118,7 @@ export interface ResourceProps extends ResourceOptions {
   readonly pathPart: string;
 }
 
-abstract class ResourceBase extends ResourceConstruct implements IResource {
+export abstract class ResourceBase extends ResourceConstruct implements IResource {
   public abstract readonly parentResource?: IResource;
   public abstract readonly restApi: RestApi;
   public abstract readonly resourceId: string;
@@ -184,29 +184,6 @@ abstract class ResourceBase extends ResourceConstruct implements IResource {
   }
 }
 
-/**
- * @internal
- */
-export class RootResource extends ResourceBase {
-  public readonly parentResource?: IResource;
-  public readonly restApi: RestApi;
-  public readonly resourceId: string;
-  public readonly path: string;
-  public readonly defaultIntegration?: Integration | undefined;
-  public readonly defaultMethodOptions?: MethodOptions | undefined;
-
-  constructor(api: RestApi, props: RestApiProps, resourceId: string) {
-    super(api, 'Default');
-
-    this.parentResource = undefined;
-    this.defaultIntegration = props.defaultIntegration;
-    this.defaultMethodOptions = props.defaultMethodOptions;
-    this.restApi = api;
-    this.resourceId = resourceId;
-    this.path = '/';
-  }
-}
-
 export class Resource extends ResourceBase {
   public readonly parentResource?: IResource;
   public readonly restApi: RestApi;
@@ -234,7 +211,7 @@ export class Resource extends ResourceBase {
     };
     const resource = new CfnResource(this, 'Resource', resourceProps);
 
-    this.resourceId = resource.resourceId;
+    this.resourceId = resource.ref;
     this.restApi = props.parent.restApi;
 
     // render resource path (special case for root)

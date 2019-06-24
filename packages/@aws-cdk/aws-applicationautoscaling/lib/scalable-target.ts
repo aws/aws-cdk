@@ -1,6 +1,7 @@
 import iam = require('@aws-cdk/aws-iam');
-import { Construct, IResource, Resource } from '@aws-cdk/cdk';
+import { Construct, IResource, Resource } from '@aws-cdk/core';
 import { CfnScalableTarget } from './applicationautoscaling.generated';
+import { Schedule } from './schedule';
 import { BasicStepScalingPolicyProps, StepScalingPolicy } from './step-scaling-policy';
 import { BasicTargetTrackingScalingPolicyProps, TargetTrackingScalingPolicy } from './target-tracking-scaling-policy';
 
@@ -119,7 +120,7 @@ export class ScalableTarget extends Resource implements IScalableTarget {
       serviceNamespace: props.serviceNamespace
     });
 
-    this.scalableTargetId = resource.scalableTargetId;
+    this.scalableTargetId = resource.ref;
   }
 
   /**
@@ -138,7 +139,7 @@ export class ScalableTarget extends Resource implements IScalableTarget {
     }
     this.actions.push({
       scheduledActionName: id,
-      schedule: action.schedule,
+      schedule: action.schedule.expressionString,
       startTime: action.startTime,
       endTime: action.endTime,
       scalableTargetAction: {
@@ -169,23 +170,8 @@ export class ScalableTarget extends Resource implements IScalableTarget {
 export interface ScalingSchedule {
   /**
    * When to perform this action.
-   *
-   * Support formats:
-   * - at(yyyy-mm-ddThh:mm:ss)
-   * - rate(value unit)
-   * - cron(fields)
-   *
-   * "At" expressions are useful for one-time schedules. Specify the time in
-   * UTC.
-   *
-   * For "rate" expressions, value is a positive integer, and unit is minute,
-   * minutes, hour, hours, day, or days.
-   *
-   * For more information about cron expressions, see https://en.wikipedia.org/wiki/Cron.
-   *
-   * @example rate(12 hours)
    */
-  readonly schedule: string;
+  readonly schedule: Schedule;
 
   /**
    * When this scheduled action becomes active.
@@ -233,40 +219,40 @@ export enum ServiceNamespace {
   /**
    * Elastic Container Service
    */
-  Ecs = 'ecs',
+  ECS = 'ecs',
 
   /**
    * Elastic Map Reduce
    */
-  ElasticMapReduce = 'elasticmapreduce',
+  ELASTIC_MAP_REDUCE = 'elasticmapreduce',
 
   /**
    * Elastic Compute Cloud
    */
-  Ec2 = 'ec2',
+  EC2 = 'ec2',
 
   /**
    * App Stream
    */
-  AppStream = 'appstream',
+  APPSTREAM = 'appstream',
 
   /**
    * Dynamo DB
    */
-  DynamoDb = 'dynamodb',
+  DYNAMODB = 'dynamodb',
 
   /**
    * Relational Database Service
    */
-  Rds = 'rds',
+  RDS = 'rds',
 
   /**
    * SageMaker
    */
-  SageMaker = 'sagemaker',
+  SAGEMAKER = 'sagemaker',
 
   /**
    * Custom Resource
    */
-  CustomResource = 'custom-resource',
+  CUSTOM_RESOURCE = 'custom-resource',
 }

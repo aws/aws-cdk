@@ -1,5 +1,5 @@
 import ec2 = require('@aws-cdk/aws-ec2');
-import { Construct, IResource, Resource } from '@aws-cdk/cdk';
+import { Construct, IResource, Resource } from '@aws-cdk/core';
 import { DatabaseInstanceEngine } from './instance';
 import { CfnOptionGroup } from './rds.generated';
 
@@ -112,7 +112,7 @@ export class OptionGroup extends Resource implements IOptionGroup {
       optionConfigurations: this.renderConfigurations(props.configurations)
     });
 
-    this.optionGroupName = optionGroup.optionGroupName;
+    this.optionGroupName = optionGroup.ref;
   }
 
   /**
@@ -139,7 +139,7 @@ export class OptionGroup extends Resource implements IOptionGroup {
 
         this.optionConnections[config.name] = new ec2.Connections({
           securityGroups: [securityGroup],
-          defaultPortRange: new ec2.TcpPort(config.port)
+          defaultPort: ec2.Port.tcp(config.port)
         });
 
         configuration = {

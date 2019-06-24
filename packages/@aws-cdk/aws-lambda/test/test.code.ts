@@ -1,6 +1,5 @@
 import { expect, haveResource, haveResourceLike, ResourcePart } from '@aws-cdk/assert';
-import assets = require('@aws-cdk/assets');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import cxapi = require('@aws-cdk/cx-api');
 import { Test } from 'nodeunit';
 import path = require('path');
@@ -11,29 +10,18 @@ import lambda = require('../lib');
 export = {
   'lambda.Code.inline': {
     'fails if used with unsupported runtimes'(test: Test) {
-      test.throws(() => defineFunction(lambda.Code.inline('boom'), lambda.Runtime.Go1x), /Inline source not allowed for go1\.x/);
-      test.throws(() => defineFunction(lambda.Code.inline('boom'), lambda.Runtime.Java8), /Inline source not allowed for java8/);
+      test.throws(() => defineFunction(lambda.Code.inline('boom'), lambda.Runtime.GO_1_X), /Inline source not allowed for go1\.x/);
+      test.throws(() => defineFunction(lambda.Code.inline('boom'), lambda.Runtime.JAVA_8), /Inline source not allowed for java8/);
       test.done();
     },
     'fails if larger than 4096 bytes'(test: Test) {
       test.throws(
-        () => defineFunction(lambda.Code.inline(generateRandomString(4097)), lambda.Runtime.Nodejs810),
+        () => defineFunction(lambda.Code.inline(generateRandomString(4097)), lambda.Runtime.NODEJS_8_10),
         /Lambda source is too large, must be <= 4096 but is 4097/);
       test.done();
     }
   },
   'lambda.Code.asset': {
-    'determines packaging type from file type'(test: Test) {
-      // WHEN
-      const fileAsset = lambda.Code.asset(path.join(__dirname, 'handler.zip'));
-      const directoryAsset = lambda.Code.asset(path.join(__dirname, 'my-lambda-handler'));
-
-      // THEN
-      test.deepEqual(fileAsset.packaging, assets.AssetPackaging.File);
-      test.deepEqual(directoryAsset.packaging, assets.AssetPackaging.ZipDirectory);
-      test.done();
-    },
-
     'fails if a non-zip asset is used'(test: Test) {
       // GIVEN
       const fileAsset = lambda.Code.asset(path.join(__dirname, 'my-lambda-handler', 'index.py'));
@@ -52,13 +40,13 @@ export = {
       // WHEN
       new lambda.Function(stack, 'Func1', {
         handler: 'foom',
-        runtime: lambda.Runtime.Nodejs810,
+        runtime: lambda.Runtime.NODEJS_8_10,
         code: directoryAsset
       });
 
       new lambda.Function(stack, 'Func2', {
         handler: 'foom',
-        runtime: lambda.Runtime.Nodejs810,
+        runtime: lambda.Runtime.NODEJS_8_10,
         code: directoryAsset
       });
 
@@ -86,7 +74,7 @@ export = {
       // WHEN
       new lambda.Function(stack, 'Func1', {
         code: lambda.Code.asset(location),
-        runtime: lambda.Runtime.Nodejs810,
+        runtime: lambda.Runtime.NODEJS_8_10,
         handler: 'foom',
       });
 
@@ -107,7 +95,7 @@ export = {
       const code = new lambda.CfnParametersCode();
       new lambda.Function(stack, 'Function', {
         code,
-        runtime: lambda.Runtime.Nodejs810,
+        runtime: lambda.Runtime.NODEJS_8_10,
         handler: 'index.handler',
       });
 
@@ -161,7 +149,7 @@ export = {
 
       new lambda.Function(stack, 'Function', {
         code,
-        runtime: lambda.Runtime.Nodejs810,
+        runtime: lambda.Runtime.NODEJS_8_10,
         handler: 'index.handler',
       });
 
@@ -206,7 +194,7 @@ export = {
   },
 };
 
-function defineFunction(code: lambda.Code, runtime: lambda.Runtime = lambda.Runtime.Nodejs810) {
+function defineFunction(code: lambda.Code, runtime: lambda.Runtime = lambda.Runtime.NODEJS_8_10) {
   const stack = new cdk.Stack();
   return new lambda.Function(stack, 'Func', {
     handler: 'foom',

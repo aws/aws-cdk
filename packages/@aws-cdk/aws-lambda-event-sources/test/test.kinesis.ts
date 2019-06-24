@@ -1,7 +1,7 @@
 import { expect, haveResource } from '@aws-cdk/assert';
 import kinesis = require('@aws-cdk/aws-kinesis');
 import lambda = require('@aws-cdk/aws-lambda');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import { Test } from 'nodeunit';
 import sources = require('../lib');
 import { TestFunction } from './test-function';
@@ -17,7 +17,7 @@ export = {
 
     // WHEN
     fn.addEventSource(new sources.KinesisEventSource(stream, {
-      startingPosition: lambda.StartingPosition.TrimHorizon
+      startingPosition: lambda.StartingPosition.TRIM_HORIZON
     }));
 
     // THEN
@@ -73,7 +73,7 @@ export = {
     // WHEN
     fn.addEventSource(new sources.KinesisEventSource(stream, {
       batchSize: 50,
-      startingPosition: lambda.StartingPosition.Latest
+      startingPosition: lambda.StartingPosition.LATEST
     }));
 
     // THEN
@@ -103,7 +103,7 @@ export = {
     // WHEN
     test.throws(() => fn.addEventSource(new sources.KinesisEventSource(stream, {
       batchSize: 0,
-      startingPosition: lambda.StartingPosition.Latest
+      startingPosition: lambda.StartingPosition.LATEST
     })), /Maximum batch size must be between 1 and 10000 inclusive \(given 0\)/);
 
     test.done();
@@ -118,7 +118,7 @@ export = {
     // WHEN
     test.throws(() => fn.addEventSource(new sources.KinesisEventSource(stream, {
       batchSize: 10001,
-      startingPosition: lambda.StartingPosition.Latest
+      startingPosition: lambda.StartingPosition.LATEST
     })), /Maximum batch size must be between 1 and 10000 inclusive \(given 10001\)/);
 
     test.done();
