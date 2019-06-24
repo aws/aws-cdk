@@ -53,7 +53,7 @@ export interface IDatabaseInstance extends IResource, ec2.IConnectable, secretsm
    * Defines a CloudWatch event rule which triggers for instance events. Use
    * `rule.addEventPattern(pattern)` to specify a filter.
    */
-  onEvent(id: string, options: events.OnEventOptions): events.Rule;
+  onEvent(id: string, options?: events.OnEventOptions): events.Rule;
 }
 
 /**
