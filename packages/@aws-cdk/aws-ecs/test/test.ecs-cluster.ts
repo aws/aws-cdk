@@ -37,7 +37,7 @@ export = {
 
       expect(stack).to(haveResource("AWS::AutoScaling::LaunchConfiguration", {
         ImageId: {
-          Ref: "SsmParameterValueawsserviceecsoptimizedamiamazonlinuxrecommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
+          Ref: "SsmParameterValueawsserviceecsoptimizedamiamazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
         },
         InstanceType: "t2.micro",
         IamInstanceProfile: {
