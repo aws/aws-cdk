@@ -9,9 +9,9 @@ import { SecretRotationApplication } from './secret-rotation';
  * used for secret rotation.
  */
 export class DatabaseClusterEngine {
-  public static readonly Aurora = new DatabaseClusterEngine('aurora', SecretRotationApplication.MysqlRotationSingleUser);
-  public static readonly AuroraMysql = new DatabaseClusterEngine('aurora-mysql', SecretRotationApplication.MysqlRotationSingleUser);
-  public static readonly AuroraPostgresql = new DatabaseClusterEngine('aurora-postgresql', SecretRotationApplication.PostgresRotationSingleUser);
+  public static readonly AURORA = new DatabaseClusterEngine('aurora', SecretRotationApplication.MYSQL_ROTATION_SINGLE_USER);
+  public static readonly AURORA_MYSQL = new DatabaseClusterEngine('aurora-mysql', SecretRotationApplication.MYSQL_ROTATION_SINGLE_USER);
+  public static readonly AURORA_POSTGRESQL = new DatabaseClusterEngine('aurora-postgresql', SecretRotationApplication.POSTGRES_ROTATION_SINGLE_USER);
 
   /**
    * The engine.

@@ -54,7 +54,7 @@ export = {
     const stack = new Stack(undefined, 'StackName');
 
     new codepipeline.Pipeline(stack, 'Pipeline', {
-      pipelineName: Aws.stackName,
+      pipelineName: Aws.STACK_NAME,
     });
 
     expect(stack, true).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
@@ -432,7 +432,7 @@ export = {
     const lambdaFun = new lambda.Function(stack, 'Function', {
       code: new lambda.InlineCode('bla'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.Nodejs810,
+      runtime: lambda.Runtime.NODEJS_8_10,
     });
 
     const pipeline = new codepipeline.Pipeline(stack, 'Pipeline');

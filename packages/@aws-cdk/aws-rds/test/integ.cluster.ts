@@ -20,7 +20,7 @@ const params = new ClusterParameterGroup(stack, 'Params', {
 
 const kmsKey = new kms.Key(stack, 'DbSecurity');
 const cluster = new DatabaseCluster(stack, 'Database', {
-  engine: DatabaseClusterEngine.Aurora,
+  engine: DatabaseClusterEngine.AURORA,
   masterUser: {
     username: 'admin',
     password: SecretValue.plainText('7959866cacc02c2d243ecfe177464fe6'),

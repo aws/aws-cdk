@@ -19,14 +19,14 @@ const AWS_NOVALUE = 'AWS::NoValue';
  * values can be obtained as properties from an scoped object.
  */
 export class Aws {
-  public static readonly accountId = pseudoString(AWS_ACCOUNTID);
-  public static readonly urlSuffix = pseudoString(AWS_URLSUFFIX);
-  public static readonly notificationArns = Token.asList({ Ref: AWS_NOTIFICATIONARNS }, { displayHint: AWS_NOTIFICATIONARNS });
-  public static readonly partition = pseudoString(AWS_PARTITION);
-  public static readonly region = pseudoString(AWS_REGION);
-  public static readonly stackId = pseudoString(AWS_STACKID);
-  public static readonly stackName = pseudoString(AWS_STACKNAME);
-  public static readonly noValue = pseudoString(AWS_NOVALUE);
+  public static readonly ACCOUNT_ID = pseudoString(AWS_ACCOUNTID);
+  public static readonly URL_SUFFIX = pseudoString(AWS_URLSUFFIX);
+  public static readonly NOTIFICATION_ARNS = Token.asList({ Ref: AWS_NOTIFICATIONARNS }, { displayHint: AWS_NOTIFICATIONARNS });
+  public static readonly PARTITION = pseudoString(AWS_PARTITION);
+  public static readonly REGION = pseudoString(AWS_REGION);
+  public static readonly STACK_ID = pseudoString(AWS_STACKID);
+  public static readonly STACK_NAME = pseudoString(AWS_STACKNAME);
+  public static readonly NO_VALUE = pseudoString(AWS_NOVALUE);
 
   private constructor() { }
 }

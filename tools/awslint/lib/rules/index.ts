@@ -9,3 +9,4 @@ export * from './imports';
 export * from './integrations';
 export * from './module';
 export * from './resource';
+export * from './public-static-properties';

@@ -23,7 +23,7 @@ elb.addListener({
 });
 
 new codedeploy.ServerDeploymentGroup(stack, 'CodeDeployGroup', {
-  deploymentConfig: codedeploy.ServerDeploymentConfig.AllAtOnce,
+  deploymentConfig: codedeploy.ServerDeploymentConfig.ALL_AT_ONCE,
   autoScalingGroups: [asg],
   loadBalancer: codedeploy.LoadBalancer.classic(elb),
   alarms: [
