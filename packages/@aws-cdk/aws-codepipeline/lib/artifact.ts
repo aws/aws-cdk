@@ -1,5 +1,5 @@
 import s3 = require("@aws-cdk/aws-s3");
-import { Lazy, Token } from "@aws-cdk/cdk";
+import { Lazy, Token } from "@aws-cdk/core";
 import validation = require('./validation');
 
 /**

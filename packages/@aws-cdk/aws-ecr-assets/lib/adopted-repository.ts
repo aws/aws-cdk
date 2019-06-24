@@ -2,7 +2,7 @@ import cfn = require('@aws-cdk/aws-cloudformation');
 import ecr = require('@aws-cdk/aws-ecr');
 import iam = require('@aws-cdk/aws-iam');
 import lambda = require('@aws-cdk/aws-lambda');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import path = require('path');
 
 interface AdoptedRepositoryProps {
@@ -33,7 +33,7 @@ export class AdoptedRepository extends ecr.RepositoryBase {
     super(scope, id);
 
     const fn = new lambda.SingletonFunction(this, 'Function', {
-      runtime: lambda.Runtime.Nodejs810,
+      runtime: lambda.Runtime.NODEJS_8_10,
       lambdaPurpose: 'AdoptEcrRepository',
       handler: 'handler.handler',
       code: lambda.Code.asset(path.join(__dirname, 'adopt-repository')),

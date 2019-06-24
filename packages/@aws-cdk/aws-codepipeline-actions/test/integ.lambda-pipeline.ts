@@ -2,7 +2,7 @@ import cloudtrail = require('@aws-cdk/aws-cloudtrail');
 import codepipeline = require('@aws-cdk/aws-codepipeline');
 import lambda = require('@aws-cdk/aws-lambda');
 import s3 = require('@aws-cdk/aws-s3');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import cpactions = require('../lib');
 
 const app = new cdk.App();
@@ -34,7 +34,7 @@ const lambdaFun = new lambda.Function(stack, 'LambdaFun', {
     };
   `),
   handler: 'index.handler',
-  runtime: lambda.Runtime.Nodejs810,
+  runtime: lambda.Runtime.NODEJS_8_10,
 });
 const lambdaStage = pipeline.addStage({ stageName: 'Lambda' });
 lambdaStage.addAction(new cpactions.LambdaInvokeAction({

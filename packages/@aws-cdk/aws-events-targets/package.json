@@ -87,19 +87,21 @@
     "@aws-cdk/aws-events": "^0.35.0",
     "@aws-cdk/aws-iam": "^0.35.0",
     "@aws-cdk/aws-lambda": "^0.35.0",
+    "@aws-cdk/custom-resources": "^0.35.0",
     "@aws-cdk/aws-sns": "^0.35.0",
     "@aws-cdk/aws-sns-subscriptions": "^0.35.0",
     "@aws-cdk/aws-sqs": "^0.35.0",
     "@aws-cdk/aws-stepfunctions": "^0.35.0",
-    "@aws-cdk/cdk": "^0.35.0"
+    "@aws-cdk/core": "^0.35.0"
   },
   "homepage": "https://github.com/awslabs/aws-cdk",
   "peerDependencies": {
     "@aws-cdk/aws-cloudformation": "^0.35.0",
     "@aws-cdk/aws-codebuild": "^0.35.0",
-    "@aws-cdk/aws-codepipeline": "^0.35.0",
     "@aws-cdk/aws-ec2": "^0.35.0",
+    "@aws-cdk/aws-codepipeline": "^0.35.0",
     "@aws-cdk/aws-ecs": "^0.35.0",
+    "@aws-cdk/custom-resources": "^0.35.0",
     "@aws-cdk/aws-events": "^0.35.0",
     "@aws-cdk/aws-iam": "^0.35.0",
     "@aws-cdk/aws-lambda": "^0.35.0",
@@ -107,7 +109,7 @@
     "@aws-cdk/aws-sns-subscriptions": "^0.35.0",
     "@aws-cdk/aws-sqs": "^0.35.0",
     "@aws-cdk/aws-stepfunctions": "^0.35.0",
-    "@aws-cdk/cdk": "^0.35.0"
+    "@aws-cdk/core": "^0.35.0"
   },
   "engines": {
     "node": ">= 8.10.0"

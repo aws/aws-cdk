@@ -2,7 +2,7 @@
 
 // @ts-ignore: Cannot find declaration file
 require('source-map-support/register');
-const cdk = require('@aws-cdk/cdk');
+const cdk = require('@aws-cdk/core');
 const { %name.PascalCased%Stack } = require('../lib/%name%-stack');
 
 const app = new cdk.App();

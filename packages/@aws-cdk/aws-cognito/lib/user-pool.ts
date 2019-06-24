@@ -1,6 +1,6 @@
 import iam = require('@aws-cdk/aws-iam');
 import lambda = require('@aws-cdk/aws-lambda');
-import { Construct, IResource, Lazy, PhysicalName, Resource } from '@aws-cdk/cdk';
+import { Construct, IResource, Lazy, Resource } from '@aws-cdk/core';
 import { CfnUserPool } from './cognito.generated';
 
 /**
@@ -206,7 +206,7 @@ export interface UserPoolProps {
    *
    * @default - automatically generated name by CloudFormation at deploy time
    */
-  readonly userPoolName?: PhysicalName;
+  readonly userPoolName?: string;
 
   /**
    * Method used for user registration & sign in.
@@ -398,17 +398,12 @@ export class UserPool extends Resource implements IUserPool {
       lambdaConfig: Lazy.anyValue({ produce: () => this.triggers })
     });
 
-    const resourceIdentifiers = this.getCrossEnvironmentAttributes({
-      arn: userPool.attrArn,
-      name: userPool.ref,
-      arnComponents: {
-        service: 'cognito',
-        resource: 'userpool',
-        resourceName: this.physicalName,
-      },
+    this.userPoolId = this.getResourceNameAttribute(userPool.ref);
+    this.userPoolArn = this.getResourceArnAttribute(userPool.attrArn, {
+      service: 'cognito',
+      resource: 'userpool',
+      resourceName: this.physicalName,
     });
-    this.userPoolId = resourceIdentifiers.name;
-    this.userPoolArn = resourceIdentifiers.arn;
 
     this.userPoolProviderName = userPool.attrProviderName;
     this.userPoolProviderUrl = userPool.attrProviderUrl;

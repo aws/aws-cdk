@@ -1,5 +1,5 @@
 import ssm = require('@aws-cdk/aws-ssm');
-import { Construct, Stack, Token } from '@aws-cdk/cdk';
+import { Construct, Stack, Token } from '@aws-cdk/core';
 import { UserData } from './user-data';
 import { WindowsVersion } from './windows-versions';
 

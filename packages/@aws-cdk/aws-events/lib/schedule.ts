@@ -1,4 +1,4 @@
-import { Duration } from "@aws-cdk/cdk";
+import { Duration } from "@aws-cdk/core";
 
 /**
  * Schedule for scheduled event rules
@@ -54,26 +54,6 @@ export abstract class Schedule {
 
   protected constructor() {
   }
-}
-
-/**
- * What unit to interpret the rate in
- */
-export enum TimeUnit {
-  /**
-   * The rate is in minutes
-   */
-  MINUTE = 'minute',
-
-  /**
-   * The rate is in hours
-   */
-  HOUR = 'hour',
-
-  /**
-   * The rate is in days
-   */
-  DAY = 'day'
 }
 
 /**

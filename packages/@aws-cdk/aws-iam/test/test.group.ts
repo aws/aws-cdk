@@ -1,5 +1,5 @@
 import { expect } from '@aws-cdk/assert';
-import { App, Stack } from '@aws-cdk/cdk';
+import { App, Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import { Group, User } from '../lib';
 

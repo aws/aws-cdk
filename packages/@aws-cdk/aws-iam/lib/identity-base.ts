@@ -1,4 +1,4 @@
-import { IResource } from '@aws-cdk/cdk';
+import { IResource } from '@aws-cdk/core';
 import { IManagedPolicy } from './managed-policy';
 import { Policy } from "./policy";
 import { IPrincipal } from "./principals";

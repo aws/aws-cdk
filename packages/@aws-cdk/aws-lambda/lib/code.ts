@@ -1,6 +1,6 @@
 import s3 = require('@aws-cdk/aws-s3');
 import s3_assets = require('@aws-cdk/aws-s3-assets');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import { CfnFunction } from './lambda.generated';
 
 export abstract class Code {

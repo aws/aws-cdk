@@ -1,5 +1,5 @@
 import s3 = require('@aws-cdk/aws-s3');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import crypto = require('crypto');
 
 /**
@@ -49,7 +49,7 @@ export class CrossRegionSupportStack extends cdk.Stack {
       props.region, props.account, false, 12);
 
     this.replicationBucket = new s3.Bucket(this, 'CrossRegionCodePipelineReplicationBucket', {
-      bucketName: cdk.PhysicalName.of(replicationBucketName),
+      bucketName: replicationBucketName,
     });
   }
 }

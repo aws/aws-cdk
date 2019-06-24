@@ -7,7 +7,7 @@ import iam = require('@aws-cdk/aws-iam');
 import lambda = require('@aws-cdk/aws-lambda');
 import s3 = require('@aws-cdk/aws-s3');
 import sns = require('@aws-cdk/aws-sns');
-import { App, Aws, CfnParameter, ConstructNode, PhysicalName, SecretValue, Stack } from '@aws-cdk/cdk';
+import { App, Aws, CfnParameter, ConstructNode, SecretValue, Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import cpactions = require('../lib');
 
@@ -54,7 +54,7 @@ export = {
     const stack = new Stack(undefined, 'StackName');
 
     new codepipeline.Pipeline(stack, 'Pipeline', {
-      pipelineName: PhysicalName.of(Aws.stackName),
+      pipelineName: Aws.STACK_NAME,
     });
 
     expect(stack, true).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
@@ -396,7 +396,7 @@ export = {
         const stack = new Stack();
 
         new codebuild.PipelineProject(stack, 'MyProject', {
-          projectName: PhysicalName.of('MyProject'),
+          projectName: 'MyProject',
         });
 
         expect(stack).to(haveResourceLike('AWS::CodeBuild::Project', {
@@ -432,7 +432,7 @@ export = {
     const lambdaFun = new lambda.Function(stack, 'Function', {
       code: new lambda.InlineCode('bla'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.Nodejs810,
+      runtime: lambda.Runtime.NODEJS_8_10,
     });
 
     const pipeline = new codepipeline.Pipeline(stack, 'Pipeline');
@@ -527,7 +527,7 @@ export = {
       ]
     }));
 
-    test.equal(lambdaAction.outputs.length, 3);
+    test.equal((lambdaAction.actionProperties.outputs || []).length, 3);
 
     expect(stack, /* skip validation */ true).to(haveResource('AWS::IAM::Policy', {
       "PolicyDocument": {
@@ -704,7 +704,7 @@ export = {
       new codepipeline.Pipeline(stack, 'Pipeline', {
         crossRegionReplicationBuckets: {
           [pipelineRegion]: new s3.Bucket(stack, 'Bucket', {
-            bucketName: PhysicalName.of('my-pipeline-bucket'),
+            bucketName: 'my-pipeline-bucket',
           })
         },
         stages: [
@@ -762,11 +762,11 @@ export = {
       const rolePhysicalName = 'ProjectRolePhysicalName';
       const projectRole = new iam.Role(buildStack, 'ProjectRole', {
         assumedBy: new iam.ServicePrincipal('codebuild.amazonaws.com'),
-        roleName: PhysicalName.of(rolePhysicalName),
+        roleName: rolePhysicalName,
       });
       const projectPhysicalName = 'ProjectPhysicalName';
       const project = new codebuild.PipelineProject(buildStack, 'Project', {
-        projectName: PhysicalName.of(projectPhysicalName),
+        projectName: projectPhysicalName,
         role: projectRole,
       });
 
@@ -774,7 +774,7 @@ export = {
         env: { account: '123456789012' },
       });
       const sourceBucket = new s3.Bucket(pipelineStack, 'ArtifactBucket', {
-        bucketName: PhysicalName.of('source-bucket'),
+        bucketName: 'source-bucket',
         encryption: s3.BucketEncryption.KMS,
       });
       const sourceOutput = new codepipeline.Artifact();
@@ -897,19 +897,6 @@ export = {
       test.done();
     },
   },
-
-  'Pipeline.fromPipelineArn'(test: Test) {
-    // GIVEN
-    const stack = new Stack();
-
-    // WHEN
-    const pl = codepipeline.Pipeline.fromPipelineArn(stack, 'imported', 'arn:aws:codepipeline:us-east-1:123456789012:MyDemoPipeline');
-
-    // THEN
-    test.deepEqual(pl.pipelineArn, 'arn:aws:codepipeline:us-east-1:123456789012:MyDemoPipeline');
-    test.deepEqual(pl.pipelineName, 'MyDemoPipeline');
-    test.done();
-  }
 };
 
 function stageForTesting(stack: Stack): codepipeline.IStage {

@@ -1,6 +1,6 @@
 import appscaling = require('@aws-cdk/aws-applicationautoscaling');
 import iam = require('@aws-cdk/aws-iam');
-import { Aws, Construct, Lazy, PhysicalName, Resource, Stack } from '@aws-cdk/cdk';
+import { Aws, Construct, Lazy, Resource, Stack } from '@aws-cdk/core';
 import { CfnTable } from './dynamodb.generated';
 import { EnableScalingProps, IScalableTableAttribute } from './scalable-attribute-api';
 import { ScalableTableAttribute } from './scalable-table-attribute';
@@ -114,7 +114,7 @@ export interface TableProps extends TableOptions {
    * Enforces a particular physical table name.
    * @default <generated>
    */
-  readonly tableName?: PhysicalName;
+  readonly tableName?: string;
 }
 
 export interface SecondaryIndexProps {
@@ -250,17 +250,12 @@ export class Table extends Resource {
 
     if (props.tableName) { this.node.addMetadata('aws:cdk:hasPhysicalName', props.tableName); }
 
-    const resourceIdentifiers = this.getCrossEnvironmentAttributes({
-      arn: this.table.attrArn,
-      name: this.table.ref,
-      arnComponents: {
-        service: 'dynamodb',
-        resource: 'table',
-        resourceName: this.physicalName,
-      },
+    this.tableArn = this.getResourceArnAttribute(this.table.attrArn, {
+      service: 'dynamodb',
+      resource: 'table',
+      resourceName: this.physicalName,
     });
-    this.tableArn = resourceIdentifiers.arn;
-    this.tableName = resourceIdentifiers.name;
+    this.tableName = this.getResourceNameAttribute(this.table.ref);
 
     this.tableStreamArn = this.table.attrStreamArn;
 
@@ -435,7 +430,7 @@ export class Table extends Resource {
       actions,
       resourceArns: [
         this.tableArn,
-        Lazy.stringValue({ produce: () => this.hasIndex ? `${this.tableArn}/index/*` : Aws.noValue })
+        Lazy.stringValue({ produce: () => this.hasIndex ? `${this.tableArn}/index/*` : Aws.NO_VALUE })
       ],
       scope: this,
     });

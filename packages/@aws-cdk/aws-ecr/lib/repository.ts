@@ -1,8 +1,8 @@
 import events = require('@aws-cdk/aws-events');
 import iam = require('@aws-cdk/aws-iam');
-import { Construct, IConstruct, IResource, Lazy, PhysicalName, RemovalPolicy, Resource, Stack, Token } from '@aws-cdk/cdk';
+import { Construct, IConstruct, IResource, Lazy, RemovalPolicy, Resource, Stack, Token } from '@aws-cdk/core';
 import { CfnRepository } from './ecr.generated';
-import { CountType, LifecycleRule, TagStatus } from './lifecycle';
+import { LifecycleRule, TagStatus } from './lifecycle';
 
 /**
  * Represents an ECR repository.
@@ -67,7 +67,7 @@ export interface IRepository extends IResource {
    * @param id The id of the rule
    * @param options Options for adding the rule
    */
-  onCloudTrailEvent(id: string, options: events.OnEventOptions): events.Rule;
+  onCloudTrailEvent(id: string, options?: events.OnEventOptions): events.Rule;
 
   /**
    * Defines an AWS CloudWatch event rule that can trigger a target when an image is pushed to this
@@ -79,7 +79,7 @@ export interface IRepository extends IResource {
    * @param id The id of the rule
    * @param options Options for adding the rule
    */
-  onCloudTrailImagePushed(id: string, options: OnCloudTrailImagePushedOptions): events.Rule;
+  onCloudTrailImagePushed(id: string, options?: OnCloudTrailImagePushedOptions): events.Rule;
 }
 
 /**
@@ -230,7 +230,7 @@ export interface RepositoryProps {
    *
    * @default Automatically generated name.
    */
-  readonly repositoryName?: PhysicalName;
+  readonly repositoryName?: string;
 
   /**
    * Life cycle rules to apply to this registry
@@ -353,17 +353,12 @@ export class Repository extends RepositoryBase {
       props.lifecycleRules.forEach(this.addLifecycleRule.bind(this));
     }
 
-    const resourceIdentifiers = this.getCrossEnvironmentAttributes({
-      arn: resource.attrArn,
-      name: resource.ref,
-      arnComponents: {
-        service: 'ecr',
-        resource: 'repository',
-        resourceName: this.physicalName,
-      },
+    this.repositoryName = this.getResourceNameAttribute(resource.ref);
+    this.repositoryArn = this.getResourceArnAttribute(resource.attrArn, {
+      service: 'ecr',
+      resource: 'repository',
+      resourceName: this.physicalName,
     });
-    this.repositoryName = resourceIdentifiers.name;
-    this.repositoryArn = resourceIdentifiers.arn;
   }
 
   public addToResourcePolicy(statement: iam.PolicyStatement) {
@@ -484,4 +479,19 @@ function renderLifecycleRule(rule: LifecycleRule) {
       type: 'expire'
     }
   };
+}
+
+/**
+ * Select images based on counts
+ */
+const enum CountType {
+  /**
+   * Set a limit on the number of images in your repository
+   */
+  IMAGE_COUNT_MORE_THAN = 'imageCountMoreThan',
+
+  /**
+   * Set an age limit on the images in your repository
+   */
+  SINCE_IMAGE_PUSHED = 'sinceImagePushed',
 }
