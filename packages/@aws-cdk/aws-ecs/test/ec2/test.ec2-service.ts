@@ -2,10 +2,10 @@ import { expect, haveResource } from '@aws-cdk/assert';
 import ec2 = require('@aws-cdk/aws-ec2');
 import elb = require('@aws-cdk/aws-elasticloadbalancing');
 import cloudmap = require('@aws-cdk/aws-servicediscovery');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import { Test } from 'nodeunit';
 import ecs = require('../../lib');
-import { BinPackResource, BuiltInAttributes, ContainerImage, NamespaceType, NetworkMode } from '../../lib';
+import { BinPackResource, BuiltInAttributes, ContainerImage, NetworkMode } from '../../lib';
 import { PlacementConstraint, PlacementStrategy } from '../../lib/placement';
 
 export = {
@@ -92,7 +92,7 @@ export = {
           cluster,
           taskDefinition,
           daemon: true,
-          maximumPercent: 300
+          maxHealthyPercent: 300
         });
       }, /Maximum percent must be 100 for daemon mode./);
 
@@ -117,7 +117,7 @@ export = {
           cluster,
           taskDefinition,
           daemon: true,
-          minimumHealthyPercent: 50
+          minHealthyPercent: 50
         });
       }, /Minimum healthy percent must be 0 for daemon mode./);
 
@@ -415,7 +415,7 @@ export = {
         taskDefinition
       });
 
-      service.addPlacementStrategies(PlacementStrategy.spreadAcross(BuiltInAttributes.AvailabilityZone));
+      service.addPlacementStrategies(PlacementStrategy.spreadAcross(BuiltInAttributes.AVAILABILITY_ZONE));
 
       // THEN
       expect(stack).to(haveResource("AWS::ECS::Service", {
@@ -449,7 +449,7 @@ export = {
 
       // THEN
       test.throws(() => {
-        service.addPlacementStrategies(PlacementStrategy.spreadAcross(BuiltInAttributes.AvailabilityZone));
+        service.addPlacementStrategies(PlacementStrategy.spreadAcross(BuiltInAttributes.AVAILABILITY_ZONE));
       });
 
       test.done();
@@ -690,7 +690,7 @@ export = {
       // WHEN
       cluster.addDefaultCloudMapNamespace({
         name: 'foo.com',
-        type: NamespaceType.PRIVATE_DNS
+        type: cloudmap.NamespaceType.DNS_PRIVATE
       });
 
       new ecs.Ec2Service(stack, 'Service', {
@@ -767,7 +767,7 @@ export = {
       // WHEN
       cluster.addDefaultCloudMapNamespace({
         name: 'foo.com',
-        type: NamespaceType.PRIVATE_DNS
+        type: cloudmap.NamespaceType.DNS_PRIVATE
       });
 
       new ecs.Ec2Service(stack, 'Service', {
@@ -878,7 +878,7 @@ export = {
       // WHEN
       cluster.addDefaultCloudMapNamespace({
         name: 'foo.com',
-        type: NamespaceType.PRIVATE_DNS
+        type: cloudmap.NamespaceType.DNS_PRIVATE
       });
 
       new ecs.Ec2Service(stack, 'Service', {
@@ -953,7 +953,7 @@ export = {
       // WHEN
       cluster.addDefaultCloudMapNamespace({
         name: 'foo.com',
-        type: NamespaceType.PRIVATE_DNS
+        type: cloudmap.NamespaceType.DNS_PRIVATE
       });
 
       new ecs.Ec2Service(stack, 'Service', {

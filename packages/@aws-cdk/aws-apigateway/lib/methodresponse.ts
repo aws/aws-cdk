@@ -1,4 +1,4 @@
-import { IModelRef } from './model';
+import { IModel } from './model';
 
 export interface MethodResponse {
 
@@ -24,5 +24,5 @@ export interface MethodResponse {
      * resource name as the value.
      * @default None
      */
-    readonly responseModels?: { [contentType: string]: IModelRef };
+    readonly responseModels?: { [contentType: string]: IModel };
 }

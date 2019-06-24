@@ -2,7 +2,7 @@ import kms = require('@aws-cdk/aws-kms');
 import lambda = require('@aws-cdk/aws-lambda');
 import s3 = require('@aws-cdk/aws-s3');
 import sns = require('@aws-cdk/aws-sns');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import ses = require('../lib');
 
 const app = new cdk.App();
@@ -14,7 +14,7 @@ const topic = new sns.Topic(stack, 'Topic');
 const fn = new lambda.Function(stack, 'Function', {
   code: lambda.Code.inline('exports.handler = async (event) => event;'),
   handler: 'index.handler',
-  runtime: lambda.Runtime.Nodejs810
+  runtime: lambda.Runtime.NODEJS_8_10
 });
 
 const bucket = new s3.Bucket(stack, 'Bucket');
@@ -47,7 +47,7 @@ const firstRule = ruleSet.addRule('FirstRule', {
       topic
     })
   ],
-  receiptRuleName: cdk.PhysicalName.of('FirstRule'),
+  receiptRuleName: 'FirstRule',
   recipients: ['cdk-ses-receipt-test@yopmail.com'],
   scanEnabled: true,
   tlsPolicy: ses.TlsPolicy.REQUIRE,
@@ -56,7 +56,7 @@ const firstRule = ruleSet.addRule('FirstRule', {
 firstRule.addAction(
   new ses.ReceiptRuleBounceAction({
     sender: 'cdk-ses-receipt-test@yopmail.com',
-    template: ses.ReceiptRuleBounceActionTemplate.MessageContentRejected,
+    template: ses.ReceiptRuleBounceActionTemplate.MESSAGE_CONTENT_REJECTED,
     topic
   })
 );

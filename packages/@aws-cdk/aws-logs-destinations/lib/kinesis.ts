@@ -1,7 +1,7 @@
 import iam = require('@aws-cdk/aws-iam');
 import kinesis = require('@aws-cdk/aws-kinesis');
 import logs = require('@aws-cdk/aws-logs');
-import { Construct } from '@aws-cdk/cdk';
+import { Construct } from '@aws-cdk/core';
 
 /**
  * Use a Kinesis stream as the destination for a log subscription

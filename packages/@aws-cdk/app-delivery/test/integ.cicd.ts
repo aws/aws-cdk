@@ -2,7 +2,7 @@ import cfn = require('@aws-cdk/aws-cloudformation');
 import codepipeline = require('@aws-cdk/aws-codepipeline');
 import cpactions = require('@aws-cdk/aws-codepipeline-actions');
 import s3 = require('@aws-cdk/aws-s3');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import cicd = require('../lib');
 
 const app = new cdk.App();
@@ -27,8 +27,7 @@ pipeline.addStage({
   actions: [source],
 });
 const stage = pipeline.addStage({ stageName: 'Deploy' });
-new cicd.PipelineDeployStackAction(stack, 'DeployStack', {
-  stage,
+stage.addAction(new cicd.PipelineDeployStackAction({
   stack,
   changeSetName: 'CICD-ChangeSet',
   createChangeSetRunOrder: 10,
@@ -36,6 +35,6 @@ new cicd.PipelineDeployStackAction(stack, 'DeployStack', {
   input: sourceOutput,
   adminPermissions: false,
   capabilities: [cfn.CloudFormationCapabilities.NONE],
-});
+}));
 
 app.synth();

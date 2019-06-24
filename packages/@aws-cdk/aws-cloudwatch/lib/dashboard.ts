@@ -1,4 +1,4 @@
-import { Construct, Lazy, PhysicalName, Resource, Stack } from "@aws-cdk/cdk";
+import { Construct, Lazy, Resource, Stack } from "@aws-cdk/core";
 import { CfnDashboard } from './cloudwatch.generated';
 import { Column, Row } from "./layout";
 import { IWidget } from "./widget";
@@ -14,7 +14,7 @@ export interface DashboardProps {
    *
    * @default Automatically generated name
    */
-  readonly dashboardName?: PhysicalName;
+  readonly dashboardName?: string;
 
   /**
    * The start of the time range to use for each widget on the dashboard.

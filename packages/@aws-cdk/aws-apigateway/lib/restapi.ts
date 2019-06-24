@@ -1,12 +1,12 @@
 import iam = require('@aws-cdk/aws-iam');
-import { CfnOutput, Construct, IResource as IResourceBase, PhysicalName, Resource, Stack } from '@aws-cdk/cdk';
+import { CfnOutput, Construct, IResource as IResourceBase, Resource, Stack } from '@aws-cdk/core';
 import { ApiKey, IApiKey } from './api-key';
 import { CfnAccount, CfnRestApi } from './apigateway.generated';
 import { Deployment } from './deployment';
 import { Integration } from './integration';
 import { Method, MethodOptions } from './method';
-import { Model, ModelProps } from './model';
-import { RequestValidator, RequestValidatorProps } from './requestvalidator';
+import { Model, ModelOptions } from './model';
+import { RequestValidator, RequestValidatorOptions } from './requestvalidator';
 import { IResource, ResourceBase, ResourceOptions } from './resource';
 import { Stage, StageOptions } from './stage';
 import { UsagePlan, UsagePlanProps } from './usage-plan';
@@ -66,7 +66,7 @@ export interface RestApiProps extends ResourceOptions {
    *
    * @default - ID of the RestApi construct.
    */
-  readonly restApiName?: PhysicalName;
+  readonly restApiName?: string;
 
   /**
    * Custom header parameters for the request.
@@ -201,7 +201,7 @@ export class RestApi extends Resource implements IRestApi {
 
   constructor(scope: Construct, id: string, props: RestApiProps = { }) {
     super(scope, id, {
-      physicalName: props.restApiName || PhysicalName.of(id),
+      physicalName: props.restApiName || id,
     });
 
     const resource = new CfnRestApi(this, 'Resource', {
@@ -277,7 +277,7 @@ export class RestApi extends Resource implements IRestApi {
   /**
    * Adds a new model.
    */
-  public addModel(id: string, props: ModelProps): Model {
+  public addModel(id: string, props: ModelOptions): Model {
     return new Model(this, id, {
       ...props,
       restApi: this
@@ -287,7 +287,7 @@ export class RestApi extends Resource implements IRestApi {
   /**
    * Adds a new model.
    */
-  public addRequestValidator(id: string, props: RequestValidatorProps): RequestValidator {
+  public addRequestValidator(id: string, props: RequestValidatorOptions): RequestValidator {
     return new RequestValidator(this, id, {
       ...props,
       restApi: this

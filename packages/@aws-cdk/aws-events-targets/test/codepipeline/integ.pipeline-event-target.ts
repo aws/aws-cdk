@@ -1,12 +1,31 @@
 import codecommit = require('@aws-cdk/aws-codecommit');
 import codepipeline = require('@aws-cdk/aws-codepipeline');
 import events = require('@aws-cdk/aws-events');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import targets = require('../../lib');
 
-class MockAction extends codepipeline.Action {
-  protected bind(_info: codepipeline.ActionBind): void {
-    // void
+interface MockActionProps extends codepipeline.ActionProperties {
+  configuration?: any;
+}
+
+class MockAction implements codepipeline.IAction {
+  public readonly actionProperties: codepipeline.ActionProperties;
+  private readonly configuration: any;
+
+  constructor(props: MockActionProps) {
+    this.actionProperties = props;
+    this.configuration = props.configuration;
+  }
+
+  public bind(_scope: cdk.Construct, _stage: codepipeline.IStage, _options: codepipeline.ActionBindOptions):
+      codepipeline.ActionConfig {
+    return {
+      configuration: this.configuration,
+    };
+  }
+
+  public onStateChange(_name: string, _target?: events.IRuleTarget, _options?: events.RuleProps): events.Rule {
+    throw new Error('onStateChange() is not available on MockAction');
   }
 }
 

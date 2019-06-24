@@ -1,5 +1,5 @@
 import ec2 = require('@aws-cdk/aws-ec2');
-import { Construct, IResource, Resource } from '@aws-cdk/cdk';
+import { Construct, IResource, Resource } from '@aws-cdk/core';
 import { DatabaseInstanceEngine } from './instance';
 import { CfnOptionGroup } from './rds.generated';
 
@@ -11,16 +11,6 @@ export interface IOptionGroup extends IResource {
    * The name of the option group.
    *
    * @attribute
-   */
-  readonly optionGroupName: string;
-}
-
-/**
- * Reference to an existing option group.
- */
-export interface OptionGroupAttributes {
-  /**
-   * The name of the option group.
    */
   readonly optionGroupName: string;
 }

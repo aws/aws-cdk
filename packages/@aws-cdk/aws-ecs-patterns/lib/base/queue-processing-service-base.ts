@@ -1,7 +1,7 @@
 import autoscaling = require('@aws-cdk/aws-applicationautoscaling');
 import ecs = require('@aws-cdk/aws-ecs');
 import sqs = require('@aws-cdk/aws-sqs');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 
 /**
  * Properties to define a queue processing service

@@ -1,6 +1,6 @@
 import { expect, haveResource, SynthUtils } from '@aws-cdk/assert';
 import iam = require('@aws-cdk/aws-iam');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import fs = require('fs');
 import { Test } from 'nodeunit';
 import path = require('path');

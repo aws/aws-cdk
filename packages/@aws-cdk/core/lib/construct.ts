@@ -6,7 +6,7 @@ import { IResolvable } from './resolvable';
 import { captureStackTrace } from './stack-trace';
 import { Token } from './token';
 
-const CONSTRUCT_SYMBOL = Symbol.for('@aws-cdk/cdk.Construct');
+const CONSTRUCT_SYMBOL = Symbol.for('@aws-cdk/core.Construct');
 
 /**
  * Represents a construct.

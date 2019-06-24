@@ -1,5 +1,5 @@
 import secretsmanager = require('@aws-cdk/aws-secretsmanager');
-import { Construct } from '@aws-cdk/cdk';
+import { Construct } from '@aws-cdk/core';
 import { ContainerDefinition } from "../container-definition";
 import { ContainerImage, ContainerImageConfig } from "../container-image";
 

@@ -2,7 +2,7 @@ import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
 import ec2 = require('@aws-cdk/aws-ec2');
 import elbv2 = require('@aws-cdk/aws-elasticloadbalancingv2');
 import iam = require('@aws-cdk/aws-iam');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import { Test } from 'nodeunit';
 import apigateway = require('../lib');
 import { ConnectionType, JsonSchemaType, JsonSchemaVersion } from '../lib';
@@ -349,8 +349,8 @@ export = {
               'method.response.header.errthing': true
             },
             responseModels: {
-              'application/json': apigateway.Model.EmptyModel,
-              'text/plain': apigateway.Model.ErrorModel
+              'application/json': apigateway.Model.EMPTY_MODEL,
+              'text/plain': apigateway.Model.ERROR_MODEL
             }
           }
         ]
@@ -452,7 +452,7 @@ export = {
     const api = new apigateway.RestApi(stack, 'test-api', { deploy: false });
     const model = api.addModel('test-model', {
       contentType: "application/json",
-      modelName: cdk.PhysicalName.of('test-model'),
+      modelName: 'test-model',
       schema: {
         title: "test",
         type: JsonSchemaType.OBJECT,
@@ -513,8 +513,8 @@ export = {
               'method.response.header.errthing': true
             },
             responseModels: {
-              'application/json': apigateway.Model.EmptyModel,
-              'text/plain': apigateway.Model.ErrorModel,
+              'application/json': apigateway.Model.EMPTY_MODEL,
+              'text/plain': apigateway.Model.ERROR_MODEL,
               'text/html': htmlModel
             }
           }

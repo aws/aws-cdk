@@ -1,5 +1,5 @@
 import dynamodb = require("@aws-cdk/aws-dynamodb");
-import cdk = require("@aws-cdk/cdk");
+import cdk = require("@aws-cdk/core");
 import { GlobalTableCoordinator } from "./global-table-coordinator";
 
 /**
@@ -11,7 +11,7 @@ export interface GlobalTableProps extends cdk.StackProps, dynamodb.TableOptions 
    * Name of the DynamoDB table to use across all regional tables.
    * This is required for global tables.
    */
-  readonly tableName: cdk.PhysicalName;
+  readonly tableName: string;
 
   /**
    * Array of environments to create DynamoDB tables in.

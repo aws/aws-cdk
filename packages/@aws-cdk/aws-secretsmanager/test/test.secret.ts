@@ -2,8 +2,8 @@ import { expect, haveResource } from '@aws-cdk/assert';
 import iam = require('@aws-cdk/aws-iam');
 import kms = require('@aws-cdk/aws-kms');
 import lambda = require('@aws-cdk/aws-lambda');
-import cdk = require('@aws-cdk/cdk');
-import { SecretValue, Stack } from '@aws-cdk/cdk';
+import cdk = require('@aws-cdk/core');
+import { SecretValue, Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import secretsmanager = require('../lib');
 
@@ -346,7 +346,7 @@ export = {
     };
     const attachedSecret = secret.addTargetAttachment('AttachedSecret', { target });
     const rotationLambda = new lambda.Function(stack, 'Lambda', {
-      runtime: lambda.Runtime.Nodejs810,
+      runtime: lambda.Runtime.NODEJS_8_10,
       code: lambda.Code.inline('export.handler = event => event;'),
       handler: 'index.handler'
     });

@@ -1,6 +1,5 @@
 import { expect, haveResource } from '@aws-cdk/assert';
-import cdk = require('@aws-cdk/cdk');
-import { PhysicalName } from '@aws-cdk/cdk';
+import cdk = require('@aws-cdk/core');
 import { Test } from 'nodeunit';
 import apigateway = require('../lib');
 
@@ -43,7 +42,7 @@ export = {
     // WHEN
     new apigateway.RequestValidator(stack, 'my-model', {
       restApi: api,
-      requestValidatorName: PhysicalName.of('my-model'),
+      requestValidatorName: 'my-model',
       validateRequestBody: false,
       validateRequestParameters: true
     });

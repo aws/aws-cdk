@@ -1,4 +1,4 @@
-import { Construct, IResource, Resource } from '@aws-cdk/cdk';
+import { Construct, IResource, Resource } from '@aws-cdk/core';
 import { CfnDBClusterParameterGroup, CfnDBParameterGroup } from './rds.generated';
 
 /**
@@ -9,16 +9,6 @@ export interface IParameterGroup extends IResource {
    * The name of this parameter group
    *
    * @attribute
-   */
-  readonly parameterGroupName: string;
-}
-
-/**
- * Reference to an existing parameter group
- */
-export interface ParameterGroupAttributes {
-  /**
-   * The name of the parameter group
    */
   readonly parameterGroupName: string;
 }

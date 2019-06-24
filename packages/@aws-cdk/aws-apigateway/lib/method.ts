@@ -1,11 +1,11 @@
-import { Construct, Resource, Stack } from '@aws-cdk/cdk';
+import { Construct, Resource, Stack } from '@aws-cdk/core';
 import { CfnMethod, CfnMethodProps } from './apigateway.generated';
 import { IAuthorizer } from './authorizer';
 import { ConnectionType, Integration } from './integration';
 import { MockIntegration } from './integrations/mock';
 import { MethodResponse } from './methodresponse';
-import { IModelRef } from './model';
-import { IRequestValidatorRef } from './requestvalidator';
+import { IModel } from './model';
+import { IRequestValidator } from './requestvalidator';
 import { IResource } from './resource';
 import { RestApi } from './restapi';
 import { validateHttpMethod } from './util';
@@ -61,12 +61,12 @@ export interface MethodOptions {
    * models as key-value pairs (string-to-string mapping), with a content type
    * as the key and a Model resource name as the value
    */
-  readonly requestModels?: { [param: string]: IModelRef };
+  readonly requestModels?: { [param: string]: IModel };
 
   /**
    * The ID of the associated request validator.
    */
-  readonly requestValidator?: IRequestValidatorRef;
+  readonly requestValidator?: IRequestValidator;
 }
 
 export interface MethodProps {
@@ -256,7 +256,7 @@ export class Method extends Resource {
     });
   }
 
-  private renderRequestModels(requestModels: { [param: string]: IModelRef } | undefined): { [param: string]: string } | undefined {
+  private renderRequestModels(requestModels: { [param: string]: IModel } | undefined): { [param: string]: string } | undefined {
     if (!requestModels) {
       // Fall back to nothing
       return undefined;

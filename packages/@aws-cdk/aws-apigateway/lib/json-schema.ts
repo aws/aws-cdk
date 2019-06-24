@@ -22,7 +22,7 @@ export enum JsonSchemaType {
  */
 export interface JsonSchema {
   // Special keywords
-  readonly schema?: JsonSchemaVersion | string;
+  readonly schema?: JsonSchemaVersion;
   readonly id?: string;
   readonly ref?: string;
 

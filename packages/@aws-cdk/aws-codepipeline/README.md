@@ -100,7 +100,9 @@ It works like this:
 const pipeline = new codepipeline.Pipeline(this, 'MyFirstPipeline', {
   // ...
   crossRegionReplicationBuckets: {
-    'us-west-1': 'my-us-west-1-replication-bucket',
+    // note that a physical name of the replication Bucket must be known at synthesis time
+    'us-west-1': s3.Bucket.fromBucketName(this, 'UsWest1ReplicationBucket',
+      'my-us-west-1-replication-bucket'),
   },
 });
 
@@ -115,22 +117,20 @@ new codepipeline_actions.CloudFormationCreateUpdateStackAction({
 This way, the `CFN_US_West_1` Action will operate in the `us-west-1` region,
 regardless of which region your Pipeline is in.
 
-If you don't provide a bucket name for a region (other than the Pipeline's region)
-that you're using for an Action with the `crossRegionReplicationBuckets` property,
-there will be a new Stack, named `aws-cdk-codepipeline-cross-region-scaffolding-<region>`,
+If you don't provide a bucket for a region (other than the Pipeline's region)
+that you're using for an Action,
+there will be a new Stack, called `<nameOfYourPipelineStack>-support-<region>`,
 defined for you, containing a replication Bucket.
-Note that you have to make sure to `cdk deploy` all of these automatically created Stacks
-before you can deploy your main Stack (the one containing your Pipeline).
-Use the `cdk ls` command to see all of the Stacks comprising your CDK application.
+This new Stack will depend on your Pipeline Stack,
+so deploying the Pipeline Stack will deploy the support Stack(s) first.
 Example:
 
 ```bash
 $ cdk ls
 MyMainStack
-aws-cdk-codepipeline-cross-region-scaffolding-us-west-1
-$ cdk deploy aws-cdk-codepipeline-cross-region-scaffolding-us-west-1
-# output of cdk deploy here...
+MyMainStack-support-us-west-1
 $ cdk deploy MyMainStack
+# output of cdk deploy here...
 ```
 
 See [the AWS docs here](https://docs.aws.amazon.com/codepipeline/latest/userguide/actions-create-cross-region.html)

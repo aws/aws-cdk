@@ -81,7 +81,7 @@
     "@aws-cdk/aws-iam": "^0.35.0",
     "@aws-cdk/aws-lambda": "^0.35.0",
     "@aws-cdk/aws-sns": "^0.35.0",
-    "@aws-cdk/cdk": "^0.35.0",
+    "@aws-cdk/core": "^0.35.0",
     "aws-sdk": "^2.409.0"
   },
   "bundledDependencies": [
@@ -92,7 +92,7 @@
     "@aws-cdk/aws-iam": "^0.35.0",
     "@aws-cdk/aws-lambda": "^0.35.0",
     "@aws-cdk/aws-sns": "^0.35.0",
-    "@aws-cdk/cdk": "^0.35.0"
+    "@aws-cdk/core": "^0.35.0"
   },
   "engines": {
     "node": ">= 8.10.0"
@@ -102,6 +102,7 @@
       "construct-ctor:@aws-cdk/aws-cloudformation.PipelineCloudFormationAction.<initializer>",
       "construct-ctor:@aws-cdk/aws-cloudformation.PipelineCloudFormationDeployAction.<initializer>",
       "construct-ctor-props-optional:@aws-cdk/aws-cloudformation.AwsCustomResource",
+      "no-unused-type:@aws-cdk/aws-cloudformation.CloudFormationCapabilities",
       "props-physical-name:@aws-cdk/aws-cloudformation.CustomResourceProps"
     ]
   },

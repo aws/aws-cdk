@@ -2,7 +2,7 @@ import autoscaling = require('@aws-cdk/aws-autoscaling');
 import hooks = require('@aws-cdk/aws-autoscaling-hooktargets');
 import iam = require('@aws-cdk/aws-iam');
 import lambda = require('@aws-cdk/aws-lambda');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import fs = require('fs');
 import path = require('path');
 import { ICluster } from '../cluster';
@@ -48,7 +48,7 @@ export class InstanceDrainHook extends cdk.Construct {
     const fn = new lambda.Function(this, 'Function', {
       code: lambda.Code.inline(fs.readFileSync(path.join(__dirname, 'lambda-source', 'index.py'), { encoding: 'utf-8' })),
       handler: 'index.lambda_handler',
-      runtime: lambda.Runtime.Python36,
+      runtime: lambda.Runtime.PYTHON_3_6,
       // Timeout: some extra margin for additional API calls made by the Lambda,
       // up to a maximum of 15 minutes.
       timeout: cdk.Duration.seconds(Math.min(drainTime.toSeconds() + 10, 900)),

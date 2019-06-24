@@ -1,6 +1,6 @@
 /// !cdk-integ *
-import cdk = require('@aws-cdk/cdk');
-import { RemovalPolicy } from '@aws-cdk/cdk';
+import cdk = require('@aws-cdk/core');
+import { RemovalPolicy } from '@aws-cdk/core';
 import kms = require('../lib');
 
 const app = new cdk.App();

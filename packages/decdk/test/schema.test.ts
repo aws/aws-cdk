@@ -7,8 +7,8 @@ const fixturedir = path.join(__dirname, 'fixture');
 
 // tslint:disable:no-console
 
-// JSII often does not complete in the default 5 second Jest timeout
-jest.setTimeout(10_000);
+// building the decdk schema often does not complete in the default 5 second Jest timeout
+jest.setTimeout(60_000);
 
 let typesys: reflect.TypeSystem;
 
@@ -20,7 +20,7 @@ beforeAll(async () => {
 
   // load the resulting file system
   await typesys.loadFile(path.join(fixturedir, '.jsii'));
-  await typesys.load(path.dirname(require.resolve('@aws-cdk/cdk/.jsii')));
+  await typesys.load(path.dirname(require.resolve('@aws-cdk/core/.jsii')));
 });
 
 test('schemaForInterface: interface with primitives', async () => {

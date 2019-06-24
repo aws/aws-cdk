@@ -1,28 +1,12 @@
 import assets = require('@aws-cdk/assets');
 import iam = require('@aws-cdk/aws-iam');
 import s3 = require('@aws-cdk/aws-s3');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import cxapi = require('@aws-cdk/cx-api');
 import fs = require('fs');
 import path = require('path');
 
 const ARCHIVE_EXTENSIONS = [ '.zip', '.jar' ];
-
-/**
- * Defines the way an asset is packaged before it is uploaded to S3.
- */
-export enum AssetPackaging {
-  /**
-   * Path refers to a directory on disk, the contents of the directory is
-   * archived into a .zip.
-   */
-  ZIP_DIRECTORY = 'zip',
-
-  /**
-   * Path refers to a single file on disk. The file is uploaded as-is.
-   */
-  FILE = 'file',
-}
 
 export interface AssetProps extends assets.CopyOptions {
   /**
@@ -216,4 +200,20 @@ function determinePackaging(assetPath: string): AssetPackaging {
   }
 
   throw new Error(`Asset ${assetPath} is expected to be either a directory or a regular file`);
+}
+
+/**
+ * Defines the way an asset is packaged before it is uploaded to S3.
+ */
+enum AssetPackaging {
+  /**
+   * Path refers to a directory on disk, the contents of the directory is
+   * archived into a .zip.
+   */
+  ZIP_DIRECTORY = 'zip',
+
+  /**
+   * Path refers to a single file on disk. The file is uploaded as-is.
+   */
+  FILE = 'file',
 }

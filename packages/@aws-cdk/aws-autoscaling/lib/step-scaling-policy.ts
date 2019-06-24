@@ -1,6 +1,6 @@
 import { findAlarmThresholds, normalizeIntervals } from '@aws-cdk/aws-autoscaling-common';
 import cloudwatch = require('@aws-cdk/aws-cloudwatch');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import { IAutoScalingGroup } from './auto-scaling-group';
 import { AdjustmentType, MetricAggregationType, StepScalingAction } from './step-scaling-action';
 

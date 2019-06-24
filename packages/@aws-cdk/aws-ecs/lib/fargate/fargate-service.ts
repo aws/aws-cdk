@@ -1,6 +1,6 @@
 import ec2 = require('@aws-cdk/aws-ec2');
-import cdk = require('@aws-cdk/cdk');
-import { Construct, Resource } from '@aws-cdk/cdk';
+import cdk = require('@aws-cdk/core');
+import { Construct, Resource } from '@aws-cdk/core';
 import { BaseService, BaseServiceProps, IService } from '../base/base-service';
 import { TaskDefinition } from '../base/task-definition';
 

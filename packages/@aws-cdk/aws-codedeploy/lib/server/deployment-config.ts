@@ -1,4 +1,4 @@
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import { CfnDeploymentConfig } from '../codedeploy.generated';
 import { arnForDeploymentConfig } from '../utils';
 
@@ -65,7 +65,7 @@ export interface ServerDeploymentConfigProps {
    *
    * @default a name will be auto-generated
    */
-  readonly deploymentConfigName?: cdk.PhysicalName;
+  readonly deploymentConfigName?: string;
 
   /**
    * Minimum number of healthy hosts.
@@ -79,9 +79,9 @@ export interface ServerDeploymentConfigProps {
  * @resource AWS::CodeDeploy::DeploymentConfig
  */
 export class ServerDeploymentConfig extends cdk.Resource implements IServerDeploymentConfig {
-  public static readonly OneAtATime  = deploymentConfig('CodeDeployDefault.OneAtATime');
-  public static readonly HalfAtATime = deploymentConfig('CodeDeployDefault.HalfAtATime');
-  public static readonly AllAtOnce   = deploymentConfig('CodeDeployDefault.AllAtOnce');
+  public static readonly ONE_AT_A_TIME  = deploymentConfig('CodeDeployDefault.OneAtATime');
+  public static readonly HALF_AT_A_TIME = deploymentConfig('CodeDeployDefault.HalfAtATime');
+  public static readonly ALL_AT_ONCE   = deploymentConfig('CodeDeployDefault.AllAtOnce');
 
   /**
    * Import a custom Deployment Configuration for an EC2/on-premise Deployment Group defined either outside the CDK,
