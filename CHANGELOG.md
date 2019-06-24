@@ -2,6 +2,89 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+
+# [0.36.0](https://github.com/awslabs/aws-cdk/compare/v0.35.0...v0.36.0) (2019-06-24)
+
+### Bug Fixes
+
+* **certificatemanager:** increase wait time for DNS validation ([#2961](https://github.com/awslabs/aws-cdk/issues/2961)) ([5b5ca48](https://github.com/awslabs/aws-cdk/commit/5b5ca48)), closes [#2914](https://github.com/awslabs/aws-cdk/issues/2914)
+* **cli:** disable line folding in YAML ([#2964](https://github.com/awslabs/aws-cdk/issues/2964)) ([0dabb02](https://github.com/awslabs/aws-cdk/commit/0dabb02)), closes [#2703](https://github.com/awslabs/aws-cdk/issues/2703)
+* **cloudfront:** fixes typos in cloudfront docs ([#3021](https://github.com/awslabs/aws-cdk/issues/3021)) ([46b3292](https://github.com/awslabs/aws-cdk/commit/46b3292)), closes [#3019](https://github.com/awslabs/aws-cdk/issues/3019)
+* **core:** incorrect arg type on Fn.eachMemberIn ([#2958](https://github.com/awslabs/aws-cdk/issues/2958)) ([5baa31f](https://github.com/awslabs/aws-cdk/commit/5baa31f)), closes [#2950](https://github.com/awslabs/aws-cdk/issues/2950)
+* **core:** record DependableTrait directly on instance ([#2962](https://github.com/awslabs/aws-cdk/issues/2962)) ([e535929](https://github.com/awslabs/aws-cdk/commit/e535929)), closes [#2713](https://github.com/awslabs/aws-cdk/issues/2713)
+* **elbv2:** restrict ALB access logs bucket permissions to minimum ([#2929](https://github.com/awslabs/aws-cdk/issues/2929)) ([370b905](https://github.com/awslabs/aws-cdk/commit/370b905))
+* **rds:** correctly expose DatabaseCluster's read endpoint ([#2970](https://github.com/awslabs/aws-cdk/issues/2970)) ([2d50c18](https://github.com/awslabs/aws-cdk/commit/2d50c18)), closes [#2969](https://github.com/awslabs/aws-cdk/issues/2969)
+* **ecr:** align IRepository events to RepositoryBase ([#3036](https://github.com/awslabs/aws-cdk/issues/3036)) ([f51760f](https://github.com/awslabs/aws-cdk/commit/f51760f)), closes [#2921](https://github.com/awslabs/aws-cdk/issues/2921)
+* **route53:** dummy hosted zone has right name ([#2995](https://github.com/awslabs/aws-cdk/issues/2995)) ([76b5309](https://github.com/awslabs/aws-cdk/commit/76b5309)), closes [#2076](https://github.com/awslabs/aws-cdk/issues/2076)
+* **sfn:** pass support non-object Result types ([#2811](https://github.com/awslabs/aws-cdk/issues/2811)) ([5282a08](https://github.com/awslabs/aws-cdk/commit/5282a08))
+* **stepfunctions:** fix passing of Token in RunLambdaTask ([#2939](https://github.com/awslabs/aws-cdk/issues/2939)) ([58a80ab](https://github.com/awslabs/aws-cdk/commit/58a80ab)), closes [#2937](https://github.com/awslabs/aws-cdk/issues/2937)
+* **cli:** ensure asset zips are consistently produced ([#2931](https://github.com/awslabs/aws-cdk/issues/2931)) ([9101161](https://github.com/awslabs/aws-cdk/commit/9101161)), closes [#1997](https://github.com/awslabs/aws-cdk/issues/1997) [#2759](https://github.com/awslabs/aws-cdk/issues/2759)
+
+### Code Refactoring
+
+* rename all L1 enum-like members to ALL_CAPS [#3024](https://github.com/awslabs/aws-cdk/issues/3024) [#3023](https://github.com/awslabs/aws-cdk/issues/3023), [#3018](https://github.com/awslabs/aws-cdk/issues/3018) [#980](https://github.com/awslabs/aws-cdk/issues/980) [#2989](https://github.com/awslabs/aws-cdk/issues/2989) [#2918](https://github.com/awslabs/aws-cdk/issues/2918) [#2287](https://github.com/awslabs/aws-cdk/issues/2287)
+* **cx-api:** bump cli <=> cdk protocol version ([#2956](https://github.com/awslabs/aws-cdk/issues/2956)) ([8ab84ec](https://github.com/awslabs/aws-cdk/commit/8ab84ec)), closes [#2922](https://github.com/awslabs/aws-cdk/issues/2922)
+* **cloudformation:** extract "custom-resources" module ([#3027](https://github.com/awslabs/aws-cdk/issues/3027)) ([767687d](https://github.com/awslabs/aws-cdk/commit/767687d)), closes [#2951](https://github.com/awslabs/aws-cdk/issues/2951)
+* **codepipeline:** API cleanup. ([#2982](https://github.com/awslabs/aws-cdk/issues/2982)) ([13025c4](https://github.com/awslabs/aws-cdk/commit/13025c4))
+* **codepipeline:** change the API of cross-region replication Buckets. ([#2977](https://github.com/awslabs/aws-cdk/issues/2977)) ([98afdeb](https://github.com/awslabs/aws-cdk/commit/98afdeb))
+* **codepipeline:** introduce IAction and unify the Action.bind() signature ([#3012](https://github.com/awslabs/aws-cdk/issues/3012)) ([089fc93](https://github.com/awslabs/aws-cdk/commit/089fc93))
+* **core:** additional api cleanups ([#2972](https://github.com/awslabs/aws-cdk/issues/2972)) ([7fb6fd6](https://github.com/awslabs/aws-cdk/commit/7fb6fd6)), closes [#2971](https://github.com/awslabs/aws-cdk/issues/2971)
+* **core:** CfnResource.options => cfnOptions ([#3030](https://github.com/awslabs/aws-cdk/issues/3030)) ([e537e4c](https://github.com/awslabs/aws-cdk/commit/e537e4c))
+* **core:** rename "Stack.autoRun" to "autoSynth" ([#3016](https://github.com/awslabs/aws-cdk/issues/3016)) ([3b44791](https://github.com/awslabs/aws-cdk/commit/3b44791))
+* **core:** rename @aws-cdk/cdk to @aws-cdk/core ([#2932](https://github.com/awslabs/aws-cdk/issues/2932)) ([4a0272d](https://github.com/awslabs/aws-cdk/commit/4a0272d)), closes [#2733](https://github.com/awslabs/aws-cdk/issues/2733)
+* **ecs:** hide `clusterName` from Services ([#2980](https://github.com/awslabs/aws-cdk/issues/2980)) ([a6e4f6a](https://github.com/awslabs/aws-cdk/commit/a6e4f6a))
+
+### Features
+
+* Support physical names in the entire Construct Library ([#2894](https://github.com/awslabs/aws-cdk/issues/2894)) ([d9d3a99](https://github.com/awslabs/aws-cdk/commit/d9d3a99))
+* **codepipeline-actions:** Add CAPABILITY_AUTO_EXPAND ([#2851](https://github.com/awslabs/aws-cdk/issues/2851)) ([#2852](https://github.com/awslabs/aws-cdk/issues/2852)) ([c9340a6](https://github.com/awslabs/aws-cdk/commit/c9340a6))
+* **core:** environment-agnostic cloud assemblies ([#2922](https://github.com/awslabs/aws-cdk/issues/2922)) ([c75d245](https://github.com/awslabs/aws-cdk/commit/c75d245)), closes [#2866](https://github.com/awslabs/aws-cdk/issues/2866)
+* **core:** Introduced Duration class ([#2857](https://github.com/awslabs/aws-cdk/issues/2857)) ([2ceec6c](https://github.com/awslabs/aws-cdk/commit/2ceec6c))
+* **ecs:** change the default Amazon Linux generation to v2 ([#3009](https://github.com/awslabs/aws-cdk/issues/3009)) ([32e3421](https://github.com/awslabs/aws-cdk/commit/32e3421)), closes [#3005](https://github.com/awslabs/aws-cdk/issues/3005)
+* **ecs:** set default health check grace period to 60s ([#2942](https://github.com/awslabs/aws-cdk/issues/2942)) ([0535d36](https://github.com/awslabs/aws-cdk/commit/0535d36)), closes [#2936](https://github.com/awslabs/aws-cdk/issues/2936)
+* **events:** make target optional in `onXxx()` methods ([#2921](https://github.com/awslabs/aws-cdk/issues/2921)) ([ea10f0d](https://github.com/awslabs/aws-cdk/commit/ea10f0d)), closes [#2913](https://github.com/awslabs/aws-cdk/issues/2913)
+* **issues:** new format for issue templates ([#2917](https://github.com/awslabs/aws-cdk/issues/2917)) ([67f6de0](https://github.com/awslabs/aws-cdk/commit/67f6de0))
+* **sns:** add support for subscription filter policy ([#2778](https://github.com/awslabs/aws-cdk/issues/2778)) ([ae789ed](https://github.com/awslabs/aws-cdk/commit/ae789ed))
+
+### BREAKING CHANGES
+
+* *IMPORTANT*: previous versions of the CDK CLI will not be fully compatible with this version of the framework and vice versa.
+* **core:** the `@aws-cdk/cdk` module was renamed to `@aws-cdk/core`, **python:** `aws_cdk.core`, **java:** the artifact `cdk` in groupId `software.amazon.awscdk` was renamed to `core`
+* all enum and public static readonly members have been renamed to use "ALL_CAPS" capitalization
+* properties throughout the AWS Construct Libraries that represent lengths of time have been re-typed to be `@aws-cdk/cdk.Duration` instead of `number`, and were renamed to exclude any unit indication.
+* **core:** The deprecated `app.run()` has been removed (use `app.synth()`).
+* **core:** The `CfnResource.options` property was renamed to `CfnResource.cfnOptions` to avoid conflicts with properties introduced by derived classes.
+* **core** `CfnXxx.cfnResourceTypeName` is now `CFN_RESOURCE_TYPE_NAME` in generated CFN resources.
+* **core:** `ContextProvider` is no longer designed to be extended. Use `ContextProvider.getValue` and `ContextProvider.getKey` as utilities.
+* **core:** `Context.getSsmParameter` has been removed. Use `ssm.StringParameter.valueFromLookup`
+* **core:** `Context.getAvailabilityZones` has been removed. Use `stack.availabilityZones`
+* **core:** `Context.getDefaultAccount` and `getDefaultRegion` have been removed an no longer available. Use the environment variables `CDK_DEFAULT_ACCOUNT` and `CDK_DEFAULT_REGION` instead.
+* **core:** `StackProps.autoRun` was renamed to `StackProps.autoSynth`.
+* **core:** `CfnElement.refAsString` renamed to `ref` of `string` type. The `IResolvable` version have been removed.
+* **core:** `IStringValue` renamed to `IStringProducer`
+* **core:** `Include` renamed to `CfnInclude`
+* **core:** `Cfn` prefix was added to the following types: `CfnCreationPolicy`, `CfnResourceAutoScalingCreationPolicy`, `CfnResourceAutoScalingCreationPolicy`, `CfnDeletionPolicy`, `CfnUpdatePolicy`, `CfnAutoScalingRollingUpdate`, `CfnAutoScalingReplacingUpdate`, `CfnAutoScalingScheduledAction`, `CfnCodeDeployLambdaAliasUpdate`, `CfnTag` `CfnRuleAssertion`, `CfnDynamicReferenceProps`
+* **core:** `deepMerge` is no longer exported.
+* **core:** `CfnOutputProps.export` was renamed to `exportName`.
+* **core:** `CfnOutput` all properties are now private
+* **core:** `StringListCfnOutput` has been removed
+* **core:** all instance methods of `Fn` were made `static`, and the `Fn` constructor was made private.
+* **ec2:** `VpcNetworkProvider` has been removed. Use `Vpc.fromLookup`.
+* **ec2:** `ec2.MachineImage` will now resolve AMIs from SSM during deployment.
+* **ecs:** `ecs.EcsOptimizedAmi` will now resolve AMis from SSM during deployment.
+* **ecs:** previously, the default generation is conditionally set to Amazon Linux v1 if `hardwareType` was `STANDARD`. Now it always defaults to Amazon Linux v2.
+* **ecs:** `service.clusterName` has been replaced with `.cluster`.
+* **sam** `requiredTransform` is now `REQUIRED_TRANSFORM` in generated code.
+* **cloudformation:** the `AwsCustomResource` class was moved to a new module called @aws-cdk/custom-resource
+* **codepipeline**: the `capabilities` property is now an array to support multiple capabilities.
+* **codepipeline:** the Pipeline construction property crossRegionReplicationBuckets now takes values of type IBucket instead of string.
+* **corepipeline:** the property `Pipeline.crossRegionScaffoldStacks` has been renamed to `crossRegionSupport`, and its type changed from `CrossRegionScaffoldStack` to `CrossRegionSupport`.
+* **codepipeline-actions:** rename `CodeCommitAction.pollForSourceChanges` to `trigger` and make it an enum.
+* **codepipeline-actions:** rename S3SourceAction.pollForSourceChanges to `trigger`, and make it an enum.
+* **codepipeline-actions:** rename StageAddToPipelineProps interface to StageOptions.
+* **codepipeline-actions:** remove the classes `CloudFormationAction` and `CloudFormationDeployAction`.
+* **route52:** `HostedZoneProvider` has been removed. Use `HostedZone.fromLookup`.
+
 ## [0.35.0](https://github.com/awslabs/aws-cdk/compare/v0.34.0...v0.35.0) (2019-06-19)
 
 
