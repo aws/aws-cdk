@@ -20,7 +20,7 @@ public class HelloStack extends Stack {
         super(parent, id, props);
 
         Queue queue = new Queue(this, "MyFirstQueue", QueueProps.builder()
-                .withVisibilityTimeoutSec(300)
+                .withVisibilityTimeout(300)
                 .build());
 
         Topic topic = new Topic(this, "MyFirstTopic", TopicProps.builder()
