@@ -3,7 +3,7 @@
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
 
-# [0.36.0](https://github.com/awslabs/aws-cdk/compare/v0.35.0...v0.36.0) (2019-06-24)
+## [0.36.0](https://github.com/awslabs/aws-cdk/compare/v0.35.0...v0.36.0) (2019-06-24)
 
 ### Bug Fixes
 
