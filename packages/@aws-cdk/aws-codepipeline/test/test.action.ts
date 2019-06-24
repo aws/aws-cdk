@@ -61,6 +61,24 @@ export = {
     },
   },
 
+  'action name validation': {
+    'throws an exception when adding an Action with an empty name to the Pipeline'(test: Test) {
+      const stack = new cdk.Stack();
+      const action = new FakeSourceAction({
+        actionName: '',
+        output: new codepipeline.Artifact(),
+      });
+
+      const pipeline = new codepipeline.Pipeline(stack, 'Pipeline');
+      const stage = pipeline.addStage({ stageName: 'Source' });
+      test.throws(() => {
+        stage.addAction(action);
+      }, /Action name must match regular expression:/);
+
+      test.done();
+    },
+  },
+
   'action Artifacts validation': {
     'validates that input Artifacts are within bounds'(test: Test) {
       const stack = new cdk.Stack();
@@ -221,7 +239,7 @@ export = {
     test.done();
   },
 
-  'the same Action cannot be added to 2 different Stages'(test: Test) {
+  'the same Action can be safely added to 2 different Stages'(test: Test) {
     const stack = new cdk.Stack();
 
     const sourceOutput = new codepipeline.Artifact();
@@ -249,8 +267,8 @@ export = {
       actions: [action],
     };
 
-    pipeline.addStage(stage2); // fine
-    test.throws(() => {
+    pipeline.addStage(stage2);
+    test.doesNotThrow(() => {
       pipeline.addStage(stage3);
     }, /FakeAction/);
 
@@ -260,13 +278,14 @@ export = {
   'input Artifacts': {
     'can be added multiple times to an Action safely'(test: Test) {
       const artifact = new codepipeline.Artifact('SomeArtifact');
-      const action = new FakeBuildAction({
-        actionName: 'CodeBuild',
-        input: artifact,
-        extraInputs: [artifact],
-      });
 
-      test.equal(action.inputs.length, 1);
+      test.doesNotThrow(() => {
+        new FakeBuildAction({
+          actionName: 'CodeBuild',
+          input: artifact,
+          extraInputs: [artifact],
+        });
+      });
 
       test.done();
     },
@@ -289,16 +308,16 @@ export = {
 
   'output Artifacts': {
     'accept multiple Artifacts with the same name safely'(test: Test) {
-      const action = new FakeSourceAction({
-        actionName: 'CodeBuild',
-        output: new codepipeline.Artifact('Artifact1'),
-        extraOutputs: [
-          new codepipeline.Artifact('Artifact1'),
-          new codepipeline.Artifact('Artifact1'),
-        ],
+      test.doesNotThrow(() => {
+        new FakeSourceAction({
+          actionName: 'CodeBuild',
+          output: new codepipeline.Artifact('Artifact1'),
+          extraOutputs: [
+            new codepipeline.Artifact('Artifact1'),
+            new codepipeline.Artifact('Artifact1'),
+          ],
+        });
       });
-
-      test.equal(action.outputs.length, 1);
 
       test.done();
     },

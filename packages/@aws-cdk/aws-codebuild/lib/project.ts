@@ -42,7 +42,7 @@ export interface IProject extends IResource, iam.IGrantable, ec2.IConnectable {
    *
    * @see https://docs.aws.amazon.com/codebuild/latest/userguide/sample-build-notifications.html
    */
-  onEvent(id: string, options: events.OnEventOptions): events.Rule;
+  onEvent(id: string, options?: events.OnEventOptions): events.Rule;
 
   /**
    * Defines a CloudWatch event rule triggered when the build project state
@@ -69,7 +69,7 @@ export interface IProject extends IResource, iam.IGrantable, ec2.IConnectable {
    *
    * @see https://docs.aws.amazon.com/codebuild/latest/userguide/sample-build-notifications.html
    */
-  onStateChange(id: string, options: events.OnEventOptions): events.Rule;
+  onStateChange(id: string, options?: events.OnEventOptions): events.Rule;
 
   /**
    * Defines a CloudWatch event rule that triggers upon phase change of this
@@ -77,22 +77,22 @@ export interface IProject extends IResource, iam.IGrantable, ec2.IConnectable {
    *
    * @see https://docs.aws.amazon.com/codebuild/latest/userguide/sample-build-notifications.html
    */
-  onPhaseChange(id: string, options: events.OnEventOptions): events.Rule;
+  onPhaseChange(id: string, options?: events.OnEventOptions): events.Rule;
 
   /**
    * Defines an event rule which triggers when a build starts.
    */
-  onBuildStarted(id: string, options: events.OnEventOptions): events.Rule;
+  onBuildStarted(id: string, options?: events.OnEventOptions): events.Rule;
 
   /**
    * Defines an event rule which triggers when a build fails.
    */
-  onBuildFailed(id: string, options: events.OnEventOptions): events.Rule;
+  onBuildFailed(id: string, options?: events.OnEventOptions): events.Rule;
 
   /**
    * Defines an event rule which triggers when a build completes successfully.
    */
-  onBuildSucceeded(id: string, options: events.OnEventOptions): events.Rule;
+  onBuildSucceeded(id: string, options?: events.OnEventOptions): events.Rule;
 
   /**
    * @returns a CloudWatch metric associated with this build project.
@@ -865,13 +865,13 @@ export class Project extends ProjectBase {
     }
 
     this.role.addToPolicy(new iam.PolicyStatement({
-      resources: [`arn:aws:ec2:${Aws.region}:${Aws.accountId}:network-interface/*`],
+      resources: [`arn:aws:ec2:${Aws.REGION}:${Aws.ACCOUNT_ID}:network-interface/*`],
       actions: ['ec2:CreateNetworkInterfacePermission'],
       conditions: {
         StringEquals: {
           'ec2:Subnet': props.vpc
             .selectSubnets(props.subnetSelection).subnetIds
-            .map(si => `arn:aws:ec2:${Aws.region}:${Aws.accountId}:subnet/${si}`),
+            .map(si => `arn:aws:ec2:${Aws.REGION}:${Aws.ACCOUNT_ID}:subnet/${si}`),
           'ec2:AuthorizedService': 'codebuild.amazonaws.com'
         },
       },

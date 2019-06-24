@@ -224,7 +224,7 @@ export abstract class State extends cdk.Construct implements IChainable {
     protected _addRetry(props: RetryProps = {}) {
         this.retries.push({
             ...props,
-            errors: props.errors ? props.errors : [Errors.All],
+            errors: props.errors ? props.errors : [Errors.ALL],
         });
     }
 
@@ -236,7 +236,7 @@ export abstract class State extends cdk.Construct implements IChainable {
         this.catches.push({
             next: handler,
             props: {
-                errors: props.errors ? props.errors : [Errors.All],
+                errors: props.errors ? props.errors : [Errors.ALL],
                 resultPath: props.resultPath
             }
         });
@@ -494,17 +494,4 @@ function isPrefixable(x: any): x is Prefixable {
  */
 function isNextable(x: any): x is INextable {
     return typeof(x) === 'object' && x.next;
-}
-
-/**
- * State types
- */
-export enum StateType {
-    PASS = 'Pass',
-    TASK = 'Task',
-    CHOICE = 'Choice',
-    WAIT = 'Wait',
-    SUCCEED = 'Succeed',
-    FAIL = 'Fail',
-    PARALLEL = 'Parallel'
 }

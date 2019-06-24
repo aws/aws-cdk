@@ -79,9 +79,9 @@ export interface ServerDeploymentConfigProps {
  * @resource AWS::CodeDeploy::DeploymentConfig
  */
 export class ServerDeploymentConfig extends cdk.Resource implements IServerDeploymentConfig {
-  public static readonly OneAtATime  = deploymentConfig('CodeDeployDefault.OneAtATime');
-  public static readonly HalfAtATime = deploymentConfig('CodeDeployDefault.HalfAtATime');
-  public static readonly AllAtOnce   = deploymentConfig('CodeDeployDefault.AllAtOnce');
+  public static readonly ONE_AT_A_TIME  = deploymentConfig('CodeDeployDefault.OneAtATime');
+  public static readonly HALF_AT_A_TIME = deploymentConfig('CodeDeployDefault.HalfAtATime');
+  public static readonly ALL_AT_ONCE   = deploymentConfig('CodeDeployDefault.AllAtOnce');
 
   /**
    * Import a custom Deployment Configuration for an EC2/on-premise Deployment Group defined either outside the CDK,

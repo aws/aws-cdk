@@ -589,5 +589,5 @@ function allSubclasses(base: jsiiReflect.ClassType) {
 }
 
 function allImplementations(base: jsiiReflect.InterfaceType) {
-  return base.system.classes.filter(x => x.getInterfaces().some(i => i.extends(base)));
+  return base.system.classes.filter(x => x.getInterfaces(true).some(i => i.extends(base)));
 }
