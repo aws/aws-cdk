@@ -78,18 +78,3 @@ export enum TagStatus {
    */
   UNTAGGED = 'untagged',
 }
-
-/**
- * Select images based on counts
- */
-export enum CountType {
-  /**
-   * Set a limit on the number of images in your repository
-   */
-  IMAGE_COUNT_MORE_THAN = 'imageCountMoreThan',
-
-  /**
-   * Set an age limit on the images in your repository
-   */
-  SINCE_IMAGE_PUSHED = 'sinceImagePushed',
-}

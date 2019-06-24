@@ -1,7 +1,7 @@
 import { expect, haveResource } from '@aws-cdk/assert';
 import codepipeline = require('@aws-cdk/aws-codepipeline');
 import events = require('@aws-cdk/aws-events');
-import { Stack } from '@aws-cdk/core';
+import { Construct, Stack } from '@aws-cdk/core';
 import targets = require('../../lib');
 
 test('use codebuild project as an eventrule target', () => {
@@ -76,8 +76,17 @@ test('use codebuild project as an eventrule target', () => {
   }));
 });
 
-class TestAction extends codepipeline.Action {
-  protected bind(_info: codepipeline.ActionBind): void {
-    // void
+class TestAction implements codepipeline.IAction {
+  constructor(public readonly actionProperties: codepipeline.ActionProperties) {
+    // nothing to do
+  }
+
+  public bind(_scope: Construct, _stage: codepipeline.IStage, _options: codepipeline.ActionBindOptions):
+      codepipeline.ActionConfig {
+    return {};
+  }
+
+  public onStateChange(_name: string, _target?: events.IRuleTarget, _options?: events.RuleProps): events.Rule {
+    throw new Error('onStateChange() is not available on MockAction');
   }
 }
