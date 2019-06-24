@@ -518,8 +518,8 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
    */
   private applyUpdatePolicies(props: AutoScalingGroupProps) {
     if (props.updateType === UpdateType.REPLACING_UPDATE) {
-      this.autoScalingGroup.options.updatePolicy = {
-        ...this.autoScalingGroup.options.updatePolicy,
+      this.autoScalingGroup.cfnOptions.updatePolicy = {
+        ...this.autoScalingGroup.cfnOptions.updatePolicy,
         autoScalingReplacingUpdate: {
           willReplace: true
         }
@@ -531,31 +531,31 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
         // during the update?
         //
         // https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-attribute-creationpolicy.html
-        this.autoScalingGroup.options.creationPolicy = {
-          ...this.autoScalingGroup.options.creationPolicy,
+        this.autoScalingGroup.cfnOptions.creationPolicy = {
+          ...this.autoScalingGroup.cfnOptions.creationPolicy,
           autoScalingCreationPolicy: {
             minSuccessfulInstancesPercent: validatePercentage(props.replacingUpdateMinSuccessfulInstancesPercent)
           }
         };
       }
     } else if (props.updateType === UpdateType.ROLLING_UPDATE) {
-      this.autoScalingGroup.options.updatePolicy = {
-        ...this.autoScalingGroup.options.updatePolicy,
+      this.autoScalingGroup.cfnOptions.updatePolicy = {
+        ...this.autoScalingGroup.cfnOptions.updatePolicy,
         autoScalingRollingUpdate: renderRollingUpdateConfig(props.rollingUpdateConfiguration)
       };
     }
 
     // undefined is treated as 'true'
     if (props.ignoreUnmodifiedSizeProperties !== false) {
-      this.autoScalingGroup.options.updatePolicy = {
-        ...this.autoScalingGroup.options.updatePolicy,
+      this.autoScalingGroup.cfnOptions.updatePolicy = {
+        ...this.autoScalingGroup.cfnOptions.updatePolicy,
         autoScalingScheduledAction: { ignoreUnmodifiedGroupSizeProperties: true }
       };
     }
 
     if (props.resourceSignalCount !== undefined || props.resourceSignalTimeout !== undefined) {
-      this.autoScalingGroup.options.creationPolicy = {
-        ...this.autoScalingGroup.options.creationPolicy,
+      this.autoScalingGroup.cfnOptions.creationPolicy = {
+        ...this.autoScalingGroup.cfnOptions.creationPolicy,
         resourceSignal: {
           count: props.resourceSignalCount,
           timeout: props.resourceSignalTimeout && props.resourceSignalTimeout.toISOString(),
