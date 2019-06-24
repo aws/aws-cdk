@@ -1004,7 +1004,7 @@ export class Vpc extends VpcBase {
       }
 
       // These values will be used to recover the config upon provider import
-      const includeResourceTypes = [CfnSubnet.cfnResourceTypeName];
+      const includeResourceTypes = [CfnSubnet.CFN_RESOURCE_TYPE_NAME];
       subnet.node.applyAspect(new Tag(SUBNETNAME_TAG, subnetConfig.name, {includeResourceTypes}));
       subnet.node.applyAspect(new Tag(SUBNETTYPE_TAG, subnetTypeTagValue(subnetConfig.subnetType), {includeResourceTypes}));
     });

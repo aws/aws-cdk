@@ -1,14 +1,11 @@
 import { Property } from 'jsii-reflect';
 import { Linter } from '../linter';
-import { CoreTypes } from './core-types';
 
 const UPPER_SNAKE_CASE_ALLOWED_PATTERN = new RegExp('^[A-Z0-9][A-Z0-9_]*[A-Z0-9]+$');
 
 export const publicStaticPropertiesLinter = new Linter(assembly => {
   const result = new Array<Property>();
   for (const c of assembly.classes) {
-    // L1 classes are exempted
-    if (CoreTypes.isCfnResource(c)) { continue; }
     for (const property of c.allProperties) {
         if (property.const && property.static) {
             result.push(property);
