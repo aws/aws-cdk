@@ -495,18 +495,3 @@ function isPrefixable(x: any): x is Prefixable {
 function isNextable(x: any): x is INextable {
     return typeof(x) === 'object' && x.next;
 }
-
-/**
- * State types
- *
- * @internal
- */
-export enum StateType {
-    PASS = 'Pass',
-    TASK = 'Task',
-    CHOICE = 'Choice',
-    WAIT = 'Wait',
-    SUCCEED = 'Succeed',
-    FAIL = 'Fail',
-    PARALLEL = 'Parallel'
-}
