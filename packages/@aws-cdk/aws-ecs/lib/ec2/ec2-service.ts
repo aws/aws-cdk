@@ -1,7 +1,7 @@
 import ec2 = require('@aws-cdk/aws-ec2');
 import elb = require('@aws-cdk/aws-elasticloadbalancing');
 import { Construct, Lazy, Resource } from '@aws-cdk/core';
-import { BaseService, BaseServiceProps, IService, LaunchType } from '../base/base-service';
+import { BaseService, BaseServiceOptions, IService, LaunchType } from '../base/base-service';
 import { NetworkMode, TaskDefinition } from '../base/task-definition';
 import { CfnService } from '../ecs.generated';
 import { PlacementConstraint, PlacementStrategy } from '../placement';
@@ -9,7 +9,7 @@ import { PlacementConstraint, PlacementStrategy } from '../placement';
 /**
  * Properties to define an ECS service
  */
-export interface Ec2ServiceProps extends BaseServiceProps {
+export interface Ec2ServiceProps extends BaseServiceOptions {
   /**
    * Task Definition used for running tasks in the service
    *

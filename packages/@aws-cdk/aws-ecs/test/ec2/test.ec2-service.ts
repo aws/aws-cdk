@@ -27,7 +27,6 @@ export = {
       new ecs.Ec2Service(stack, "Ec2Service", {
         cluster,
         taskDefinition,
-        launchType: LaunchType.EC2
       });
 
       // THEN
@@ -68,7 +67,6 @@ export = {
         new ecs.Ec2Service(stack, "Ec2Service", {
           cluster,
           taskDefinition,
-          launchType: LaunchType.EC2,
           daemon: true,
           desiredCount: 2
         });
@@ -94,7 +92,6 @@ export = {
         new ecs.Ec2Service(stack, "Ec2Service", {
           cluster,
           taskDefinition,
-          launchType: LaunchType.EC2,
           daemon: true,
           maxHealthyPercent: 300
         });
@@ -120,7 +117,6 @@ export = {
         new ecs.Ec2Service(stack, "Ec2Service", {
           cluster,
           taskDefinition,
-          launchType: LaunchType.EC2,
           daemon: true,
           minHealthyPercent: 50
         });
@@ -145,7 +141,6 @@ export = {
       new ecs.Ec2Service(stack, "Ec2Service", {
         cluster,
         taskDefinition,
-        launchType: LaunchType.EC2,
         daemon: true,
       });
 
@@ -169,7 +164,6 @@ export = {
         new ecs.Ec2Service(stack, "Ec2Service", {
           cluster,
           taskDefinition,
-          launchType: LaunchType.EC2
         });
       });
 
@@ -192,7 +186,6 @@ export = {
       new ecs.Ec2Service(stack, "Ec2Service", {
         cluster,
         taskDefinition,
-        launchType: LaunchType.EC2,
         daemon: true
       });
 
@@ -229,7 +222,6 @@ export = {
           new ecs.Ec2Service(stack, "Ec2Service", {
             cluster,
             taskDefinition,
-            launchType: LaunchType.EC2,
             vpcSubnets: {
               subnetType: ec2.SubnetType.PUBLIC
             }
@@ -260,7 +252,6 @@ export = {
           new ecs.Ec2Service(stack, "Ec2Service", {
             cluster,
             taskDefinition,
-            launchType: LaunchType.EC2,
             assignPublicIp: true
           });
         });
@@ -289,7 +280,6 @@ export = {
         new ecs.Ec2Service(stack, "Ec2Service", {
           cluster,
           taskDefinition,
-          launchType: LaunchType.EC2
         });
 
         // THEN
@@ -338,7 +328,6 @@ export = {
         new ecs.Ec2Service(stack, "Ec2Service", {
           cluster,
           taskDefinition,
-          launchType: LaunchType.EC2,
           vpcSubnets: {
             subnetType: ec2.SubnetType.PUBLIC
           }
@@ -365,7 +354,6 @@ export = {
       new ecs.Ec2Service(stack, "Ec2Service", {
         cluster,
         taskDefinition,
-        launchType: LaunchType.EC2,
         placementConstraints: [ecs.PlacementConstraint.distinctInstances()]
       });
 
@@ -395,7 +383,6 @@ export = {
       const service = new ecs.Ec2Service(stack, "Ec2Service", {
         cluster,
         taskDefinition,
-        launchType: LaunchType.EC2
       });
 
       service.addPlacementConstraints(PlacementConstraint.memberOf("attribute:ecs.instance-type =~ t2.*"));
@@ -427,7 +414,6 @@ export = {
       const service = new ecs.Ec2Service(stack, "Ec2Service", {
         cluster,
         taskDefinition,
-        launchType: LaunchType.EC2
       });
 
       service.addPlacementStrategies(PlacementStrategy.spreadAcross(BuiltInAttributes.AvailabilityZone));
@@ -459,7 +445,6 @@ export = {
       const service = new ecs.Ec2Service(stack, "Ec2Service", {
         cluster,
         taskDefinition,
-        launchType: LaunchType.EC2,
         daemon: true
       });
 
@@ -487,7 +472,6 @@ export = {
       const service = new ecs.Ec2Service(stack, "Ec2Service", {
         cluster,
         taskDefinition,
-        launchType: LaunchType.EC2
       });
 
       service.addPlacementStrategies(PlacementStrategy.randomly());
@@ -518,7 +502,6 @@ export = {
       const service = new ecs.Ec2Service(stack, "Ec2Service", {
         cluster,
         taskDefinition,
-        launchType: LaunchType.EC2,
         daemon: true
       });
 
@@ -546,7 +529,6 @@ export = {
       const service = new ecs.Ec2Service(stack, "Ec2Service", {
         cluster,
         taskDefinition,
-        launchType: LaunchType.EC2,
       });
 
       service.addPlacementStrategies(PlacementStrategy.packedBy(BinPackResource.MEMORY));
@@ -578,7 +560,6 @@ export = {
       const service = new ecs.Ec2Service(stack, "Ec2Service", {
         cluster,
         taskDefinition,
-        launchType: LaunchType.EC2,
         daemon: true
       });
 
@@ -604,8 +585,7 @@ export = {
         memoryLimitMiB: 1024,
       });
       container.addPortMappings({ containerPort: 808 });
-      const service = new ecs.Ec2Service(stack, 'Service', { cluster, taskDefinition,
-        launchType: LaunchType.EC2 });
+      const service = new ecs.Ec2Service(stack, 'Service', { cluster, taskDefinition});
 
       // WHEN
       const lb = new elb.LoadBalancer(stack, 'LB', { vpc });
@@ -653,7 +633,6 @@ export = {
         new ecs.Ec2Service(stack, 'Service', {
           cluster,
           taskDefinition,
-          launchType: LaunchType.EC2,
           cloudMapOptions: {
             name: 'myApp',
           }
@@ -685,7 +664,6 @@ export = {
         new ecs.Ec2Service(stack, 'Service', {
           cluster,
           taskDefinition,
-          launchType: LaunchType.EC2,
           cloudMapOptions: {
             name: 'myApp',
           }
@@ -719,7 +697,6 @@ export = {
       new ecs.Ec2Service(stack, 'Service', {
         cluster,
         taskDefinition,
-        launchType: LaunchType.EC2,
         cloudMapOptions: {
           name: 'myApp',
         }
@@ -797,7 +774,6 @@ export = {
       new ecs.Ec2Service(stack, 'Service', {
         cluster,
         taskDefinition,
-        launchType: LaunchType.EC2,
         cloudMapOptions: {
           name: 'myApp',
         }
@@ -874,7 +850,6 @@ export = {
         new ecs.Ec2Service(stack, 'Service', {
           cluster,
           taskDefinition,
-          launchType: LaunchType.EC2,
           cloudMapOptions: {
             name: 'myApp',
             dnsRecordType: cloudmap.DnsRecordType.A
@@ -910,7 +885,6 @@ export = {
       new ecs.Ec2Service(stack, 'Service', {
         cluster,
         taskDefinition,
-        launchType: LaunchType.EC2,
         cloudMapOptions: {
           name: 'myApp',
         }
@@ -986,7 +960,6 @@ export = {
       new ecs.Ec2Service(stack, 'Service', {
         cluster,
         taskDefinition,
-        launchType: LaunchType.EC2,
         cloudMapOptions: {
           name: 'myApp',
           dnsRecordType: cloudmap.DnsRecordType.SRV
@@ -1056,7 +1029,6 @@ export = {
     const service = new ecs.Ec2Service(stack, 'Service', {
       cluster,
       taskDefinition,
-      launchType: LaunchType.EC2
     });
 
     // THEN

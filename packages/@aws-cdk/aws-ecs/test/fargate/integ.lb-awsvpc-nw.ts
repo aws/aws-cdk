@@ -2,7 +2,6 @@ import ec2 = require('@aws-cdk/aws-ec2');
 import elbv2 = require('@aws-cdk/aws-elasticloadbalancingv2');
 import cdk = require('@aws-cdk/core');
 import ecs = require('../../lib');
-import { LaunchType } from '../../lib/base/base-service';
 
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-ecs-integ');
@@ -28,7 +27,6 @@ container.addPortMappings({
 const service = new ecs.FargateService(stack, "Service", {
   cluster,
   taskDefinition,
-  launchType: LaunchType.FARGATE
 });
 
 const scaling = service.autoScaleTaskCount({ maxCapacity: 10 });

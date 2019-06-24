@@ -22,18 +22,11 @@ export interface IService extends IResource {
 /**
  * Basic service properties
  */
-export interface BaseServiceProps {
+export interface BaseServiceOptions {
   /**
    * Cluster where service will be deployed
    */
   readonly cluster: ICluster;
-
-  /**
-   * The launch type on which to run your service.
-   *
-   * Valid values are: LaunchType.ECS or LaunchType.FARGATE
-   */
-  readonly launchType: LaunchType;
 
   /**
    * Number of desired copies of running tasks
@@ -95,6 +88,19 @@ export interface BaseServiceProps {
    * @default false
    */
   readonly longArnEnabled?: boolean;
+}
+
+/**
+ * Complete base service properties that are required to be supplied by the implementation
+ * of the BaseService class.
+ */
+export interface BaseServiceProps extends BaseServiceOptions {
+  /**
+   * The launch type on which to run your service.
+   *
+   * Valid values are: LaunchType.ECS or LaunchType.FARGATE
+   */
+  readonly launchType: LaunchType;
 }
 
 /**

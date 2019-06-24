@@ -24,7 +24,6 @@ export = {
       new ecs.FargateService(stack, "FargateService", {
         cluster,
         taskDefinition,
-        launchType: LaunchType.FARGATE
       });
 
       // THEN
@@ -95,7 +94,6 @@ export = {
         new ecs.FargateService(stack, "FargateService", {
           cluster,
           taskDefinition,
-          launchType: LaunchType.FARGATE
         });
       });
 
@@ -116,7 +114,6 @@ export = {
       new ecs.FargateService(stack, "FargateService", {
         cluster,
         taskDefinition,
-        launchType: LaunchType.FARGATE,
         assignPublicIp: true
       });
 
@@ -146,7 +143,6 @@ export = {
       new ecs.FargateService(stack, "FargateService", {
         cluster,
         taskDefinition,
-        launchType: LaunchType.FARGATE,
         minHealthyPercent: 0,
       });
 
@@ -176,7 +172,6 @@ export = {
       new ecs.FargateService(stack, 'Svc', {
         cluster,
         taskDefinition,
-        launchType: LaunchType.FARGATE,
         healthCheckGracePeriod: cdk.Duration.seconds(10)
       });
 
@@ -200,8 +195,7 @@ export = {
         image: ContainerImage.fromRegistry('hello'),
       });
       container.addPortMappings({ containerPort: 8000 });
-      const service = new ecs.FargateService(stack, 'Service', { cluster, taskDefinition,
-        launchType: LaunchType.FARGATE });
+      const service = new ecs.FargateService(stack, 'Service', { cluster, taskDefinition});
 
       const lb = new elbv2.ApplicationLoadBalancer(stack, "lb", { vpc });
       const listener = lb.addListener("listener", { port: 80 });
@@ -281,7 +275,6 @@ export = {
       const service = new ecs.FargateService(stack, 'Service', {
         cluster,
         taskDefinition,
-        launchType: LaunchType.FARGATE,
         longArnEnabled: true
       });
 
@@ -352,7 +345,6 @@ export = {
         new ecs.FargateService(stack, 'Service', {
           cluster,
           taskDefinition,
-          launchType: LaunchType.FARGATE,
           cloudMapOptions: {
             name: 'myApp',
           }
@@ -382,7 +374,6 @@ export = {
       new ecs.FargateService(stack, 'Service', {
         cluster,
         taskDefinition,
-        launchType: LaunchType.FARGATE,
         cloudMapOptions: {
           name: 'myApp'
         }
@@ -443,7 +434,6 @@ export = {
       new ecs.FargateService(stack, 'Service', {
         cluster,
         taskDefinition,
-        launchType: LaunchType.FARGATE,
         cloudMapOptions: {
           name: 'myApp',
           dnsRecordType: cloudmap.DnsRecordType.SRV
@@ -497,7 +487,6 @@ export = {
     const service = new ecs.FargateService(stack, 'Service', {
       cluster,
       taskDefinition,
-      launchType: LaunchType.FARGATE
     });
 
     // THEN

@@ -1,13 +1,13 @@
 import ec2 = require('@aws-cdk/aws-ec2');
 import cdk = require('@aws-cdk/core');
 import { Construct, Resource } from '@aws-cdk/core';
-import { BaseService, BaseServiceProps, IService, LaunchType } from '../base/base-service';
+import { BaseService, BaseServiceOptions, IService, LaunchType } from '../base/base-service';
 import { TaskDefinition } from '../base/task-definition';
 
 /**
  * Properties to define a Fargate service
  */
-export interface FargateServiceProps extends BaseServiceProps {
+export interface FargateServiceProps extends BaseServiceOptions {
   /**
    * Task Definition used for running tasks in the service
    *
