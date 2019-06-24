@@ -527,7 +527,7 @@ export = {
       ]
     }));
 
-    test.equal(lambdaAction.outputs.length, 3);
+    test.equal((lambdaAction.actionProperties.outputs || []).length, 3);
 
     expect(stack, /* skip validation */ true).to(haveResource('AWS::IAM::Policy', {
       "PolicyDocument": {
@@ -897,19 +897,6 @@ export = {
       test.done();
     },
   },
-
-  'Pipeline.fromPipelineArn'(test: Test) {
-    // GIVEN
-    const stack = new Stack();
-
-    // WHEN
-    const pl = codepipeline.Pipeline.fromPipelineArn(stack, 'imported', 'arn:aws:codepipeline:us-east-1:123456789012:MyDemoPipeline');
-
-    // THEN
-    test.deepEqual(pl.pipelineArn, 'arn:aws:codepipeline:us-east-1:123456789012:MyDemoPipeline');
-    test.deepEqual(pl.pipelineName, 'MyDemoPipeline');
-    test.done();
-  }
 };
 
 function stageForTesting(stack: Stack): codepipeline.IStage {

@@ -87,7 +87,8 @@
   },
   "awslint": {
     "exclude": [
-      "props-physical-name:@aws-cdk/aws-s3.BucketPolicyProps"
+      "props-physical-name:@aws-cdk/aws-s3.BucketPolicyProps",
+      "no-unused-type:@aws-cdk/aws-s3.Location"
     ]
   },
   "stability": "experimental"
