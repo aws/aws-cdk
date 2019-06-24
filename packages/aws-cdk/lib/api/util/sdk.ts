@@ -110,7 +110,7 @@ export class SDK {
     const environment = await this.resolveEnvironment(account, region);
     return new AWS.SSM({
       ...this.retryOptions,
-      region: environment.account,
+      region: environment.region,
       credentials: await this.credentialsCache.get(environment.account, mode)
     });
   }
