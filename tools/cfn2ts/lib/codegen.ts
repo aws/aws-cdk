@@ -209,13 +209,13 @@ export default class CodeGenerator {
     this.code.line('/**');
     this.code.line(` * The CloudFormation resource type name for this resource class.`);
     this.code.line(' */');
-    this.code.line(`public static readonly cfnResourceTypeName = ${cfnResourceTypeName};`);
+    this.code.line(`public static readonly CFN_RESOURCE_TYPE_NAME = ${cfnResourceTypeName};`);
 
     if (spec.RequiredTransform) {
       this.code.line('/**');
       this.code.line(' * The `Transform` a template must use in order to use this resource');
       this.code.line(' */');
-      this.code.line(`public static readonly requiredTransform = ${JSON.stringify(spec.RequiredTransform)};`);
+      this.code.line(`public static readonly REQUIRED_TRANSFORM = ${JSON.stringify(spec.RequiredTransform)};`);
     }
 
     //
@@ -260,7 +260,7 @@ export default class CodeGenerator {
     const optionalProps = spec.Properties && !Object.values(spec.Properties).some(p => p.Required || false);
     const propsArgument = propsType ? `, props: ${propsType.className}${optionalProps ? ' = {}' : ''}` : '';
     this.code.openBlock(`constructor(scope: ${CONSTRUCT_CLASS}, id: string${propsArgument})`);
-    this.code.line(`super(scope, id, { type: ${resourceName.className}.cfnResourceTypeName${propsType ? ', properties: props' : ''} });`);
+    this.code.line(`super(scope, id, { type: ${resourceName.className}.CFN_RESOURCE_TYPE_NAME${propsType ? ', properties: props' : ''} });`);
     // verify all required properties
     if (spec.Properties) {
       for (const propName of Object.keys(spec.Properties)) {
@@ -271,14 +271,14 @@ export default class CodeGenerator {
       }
     }
     if (spec.RequiredTransform) {
-      const transformField = `${resourceName.className}.requiredTransform`;
+      const transformField = `${resourceName.className}.REQUIRED_TRANSFORM`;
       this.code.line('// If a different transform than the required one is in use, this resource cannot be used');
       this.code.openBlock(`if (this.stack.templateOptions.transform && this.stack.templateOptions.transform !== ${transformField})`);
       // tslint:disable-next-line:max-line-length
       this.code.line(`throw new Error(\`The \${JSON.stringify(${transformField})} transform is required when using ${resourceName.className}, but the \${JSON.stringify(this.stack.templateOptions.transform)} is used.\`);`);
       this.code.closeBlock();
       this.code.line('// Automatically configure the required transform');
-      this.code.line(`this.stack.templateOptions.transform = ${resourceName.className}.requiredTransform;`);
+      this.code.line(`this.stack.templateOptions.transform = ${resourceName.className}.REQUIRED_TRANSFORM;`);
     }
 
     // initialize all attribute properties
