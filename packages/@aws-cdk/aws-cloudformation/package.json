@@ -102,6 +102,7 @@
       "construct-ctor:@aws-cdk/aws-cloudformation.PipelineCloudFormationAction.<initializer>",
       "construct-ctor:@aws-cdk/aws-cloudformation.PipelineCloudFormationDeployAction.<initializer>",
       "construct-ctor-props-optional:@aws-cdk/aws-cloudformation.AwsCustomResource",
+      "no-unused-type:@aws-cdk/aws-cloudformation.CloudFormationCapabilities",
       "props-physical-name:@aws-cdk/aws-cloudformation.CustomResourceProps"
     ]
   },
