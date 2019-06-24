@@ -84,9 +84,7 @@ export class Cluster extends Resource implements ICluster {
     });
     this.clusterName = this.getResourceNameAttribute(cluster.ref);
 
-    this.vpc = props !== undefined && props.vpc !== undefined
-      ? props.vpc
-      : new ec2.Vpc(this, id.concat('Vpc'), {});
+    this.vpc = props.vpc || new ec2.Vpc(this, id.concat('Vpc'), {});
   }
 
   /**
@@ -215,7 +213,7 @@ export class Cluster extends Resource implements ICluster {
    * @default average over 5 minutes
    */
   public metricMemoryReservation(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    return this.metric('MemoryReservation', props );
+    return this.metric('MemoryReservation', props);
   }
 
   /**
