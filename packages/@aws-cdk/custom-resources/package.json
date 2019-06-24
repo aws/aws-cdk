@@ -1,5 +1,5 @@
 {
-  "name": "@aws-cdk/customresources",
+  "name": "@aws-cdk/custom-resources",
   "version": "0.35.0",
   "description": "Constructs for implementing CDK custom resources",
   "main": "lib/index.js",
@@ -21,15 +21,15 @@
         "assemblyOriginatorKeyFile": "../../key.snk"
       },
       "python": {
-        "distName": "aws-cdk.customresources",
-        "module": "aws_cdk.customresources"
+        "distName": "aws-cdk.custom-resources",
+        "module": "aws_cdk.custom_resources"
       }
     }
   },
   "repository": {
     "type": "git",
     "url": "https://github.com/awslabs/aws-cdk.git",
-    "directory": "packages/@aws-cdk/customresources"
+    "directory": "packages/@aws-cdk/custom-resources"
   },
   "scripts": {
     "build": "cdk-build",
