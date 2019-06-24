@@ -27,21 +27,15 @@ export interface ClusterProps {
   /**
    * The service discovery namespace created in this cluster
    *
-   * @default none
+   * @default - no service discovery namespace created, you can use `addDefaultCloudMapNamespace` to add a
+   * default service discovery namespace later.
    */
-  readonly defaultCloudMapNamespace?: NamespaceOptions;
-
-  /**
-   * The name of the autoscaling group to be added
-   *
-   * @default none
-   */
-  readonly autoscalingGroupName?: string;
+  readonly defaultCloudMapNamespace?: CloudMapNamespaceOptions;
 
   /**
    * The ec2 capacity to add to the cluster
    *
-   * @default none
+   * @default - no EC2 capacity will be added, you can use `addCapacity` to add capacity later.
    */
   readonly capacity?: AddCapacityOptions;
 }
@@ -117,8 +111,8 @@ export class Cluster extends Resource implements ICluster {
       ? this.addDefaultCloudMapNamespace(props.defaultCloudMapNamespace)
       : undefined;
 
-    this._autoscalingGroup = props.capacity !== undefined && props.autoscalingGroupName !== undefined
-      ? this.addCapacity(props.autoscalingGroupName, props.capacity)
+    this._autoscalingGroup = props.capacity !== undefined
+      ? this.addCapacity("DefaultAutoScalingGroup", props.capacity)
       : undefined;
   }
 
