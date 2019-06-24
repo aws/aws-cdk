@@ -67,7 +67,7 @@ export interface IRepository extends IResource {
    * @param id The id of the rule
    * @param options Options for adding the rule
    */
-  onCloudTrailEvent(id: string, options: events.OnEventOptions): events.Rule;
+  onCloudTrailEvent(id: string, options?: events.OnEventOptions): events.Rule;
 
   /**
    * Defines an AWS CloudWatch event rule that can trigger a target when an image is pushed to this
@@ -79,7 +79,7 @@ export interface IRepository extends IResource {
    * @param id The id of the rule
    * @param options Options for adding the rule
    */
-  onCloudTrailImagePushed(id: string, options: OnCloudTrailImagePushedOptions): events.Rule;
+  onCloudTrailImagePushed(id: string, options?: OnCloudTrailImagePushedOptions): events.Rule;
 }
 
 /**
