@@ -94,8 +94,8 @@ export = {
       // WHEN
       const stack = new Stack(app, 'stack', {
         env: {
-          account: Aws.accountId,
-          region: Aws.region
+          account: Aws.ACCOUNT_ID,
+          region: Aws.REGION
         }
       });
 
@@ -118,7 +118,7 @@ export = {
       // WHEN
       const stack = new Stack(app, 'stack', {
         env: {
-          account: Aws.accountId,
+          account: Aws.ACCOUNT_ID,
           region: 'us-east-2'
         }
       });

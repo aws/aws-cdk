@@ -28,7 +28,7 @@ class DemoResource extends cdk.Construct {
         code: new lambda.InlineCode(fs.readFileSync('integ.trivial-lambda-provider.py', { encoding: 'utf-8' })),
         handler: 'index.main',
         timeout: cdk.Duration.minutes(5),
-        runtime: lambda.Runtime.Python27,
+        runtime: lambda.Runtime.PYTHON_2_7,
       })),
       properties: props
     });

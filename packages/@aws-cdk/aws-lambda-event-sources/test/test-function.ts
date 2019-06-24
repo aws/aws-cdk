@@ -6,7 +6,7 @@ export class TestFunction extends lambda.Function {
     super(scope, id, {
       handler: 'index.handler',
       code: lambda.Code.inline(`exports.handler = ${handler.toString()}`),
-      runtime: lambda.Runtime.Nodejs810
+      runtime: lambda.Runtime.NODEJS_8_10
     });
   }
 }

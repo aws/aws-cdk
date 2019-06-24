@@ -75,7 +75,7 @@ abstract class ServerDeploymentGroupBase extends cdk.Resource implements IServer
 
   constructor(scope: cdk.Construct, id: string, deploymentConfig?: IServerDeploymentConfig, props?: cdk.ResourceProps) {
     super(scope, id, props);
-    this.deploymentConfig = deploymentConfig || ServerDeploymentConfig.OneAtATime;
+    this.deploymentConfig = deploymentConfig || ServerDeploymentConfig.ONE_AT_A_TIME;
   }
 }
 

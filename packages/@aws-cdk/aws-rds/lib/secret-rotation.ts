@@ -8,20 +8,20 @@ import { Construct, Duration, Stack } from '@aws-cdk/core';
  * A secret rotation serverless application.
  */
 export class SecretRotationApplication {
-  public static readonly MariaDbRotationSingleUser = new SecretRotationApplication('SecretsManagerRDSMariaDBRotationSingleUser', '1.0.57');
-  public static readonly MariaDBRotationMultiUser = new SecretRotationApplication('SecretsManagerRDSMariaDBRotationMultiUser', '1.0.57');
+  public static readonly MARIADB_ROTATION_SINGLE_USER = new SecretRotationApplication('SecretsManagerRDSMariaDBRotationSingleUser', '1.0.57');
+  public static readonly MARIADB_ROTATION_MULTI_USER = new SecretRotationApplication('SecretsManagerRDSMariaDBRotationMultiUser', '1.0.57');
 
-  public static readonly MysqlRotationSingleUser = new SecretRotationApplication('SecretsManagerRDSMySQLRotationSingleUser', '1.0.85');
-  public static readonly MysqlRotationMultiUser = new SecretRotationApplication('SecretsManagerRDSMySQLRotationMultiUser', '1.0.85');
+  public static readonly MYSQL_ROTATION_SINGLE_USER = new SecretRotationApplication('SecretsManagerRDSMySQLRotationSingleUser', '1.0.85');
+  public static readonly MYSQL_ROTATION_MULTI_USER = new SecretRotationApplication('SecretsManagerRDSMySQLRotationMultiUser', '1.0.85');
 
-  public static readonly OracleRotationSingleUser = new SecretRotationApplication('SecretsManagerRDSOracleRotationSingleUser', '1.0.56');
-  public static readonly OracleRotationMultiUser = new SecretRotationApplication('SecretsManagerRDSOracleRotationMultiUser', '1.0.56');
+  public static readonly ORACLE_ROTATION_SINGLE_USER = new SecretRotationApplication('SecretsManagerRDSOracleRotationSingleUser', '1.0.56');
+  public static readonly ORACLE_ROTATION_MULTI_USER = new SecretRotationApplication('SecretsManagerRDSOracleRotationMultiUser', '1.0.56');
 
-  public static readonly PostgresRotationSingleUser = new SecretRotationApplication('SecretsManagerRDSPostgreSQLRotationSingleUser', '1.0.86');
-  public static readonly PostgreSQLRotationMultiUser  = new SecretRotationApplication('SecretsManagerRDSPostgreSQLRotationMultiUser ', '1.0.86');
+  public static readonly POSTGRES_ROTATION_SINGLE_USER = new SecretRotationApplication('SecretsManagerRDSPostgreSQLRotationSingleUser', '1.0.86');
+  public static readonly POSTGRES_ROTATION_MULTI_USER  = new SecretRotationApplication('SecretsManagerRDSPostgreSQLRotationMultiUser ', '1.0.86');
 
-  public static readonly SqlServerRotationSingleUser = new SecretRotationApplication('SecretsManagerRDSSQLServerRotationSingleUser', '1.0.57');
-  public static readonly SqlServerRotationMultiUser = new SecretRotationApplication('SecretsManagerRDSSQLServerRotationMultiUser', '1.0.57');
+  public static readonly SQLSERVER_ROTATION_SINGLE_USER = new SecretRotationApplication('SecretsManagerRDSSQLServerRotationSingleUser', '1.0.57');
+  public static readonly SQLSERVER_ROTATION_MULTI_USER = new SecretRotationApplication('SecretsManagerRDSSQLServerRotationMultiUser', '1.0.57');
 
   public readonly applicationId: string;
   public readonly semanticVersion: string;
