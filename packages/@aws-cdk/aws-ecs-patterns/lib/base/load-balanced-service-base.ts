@@ -1,7 +1,6 @@
 import { ICertificate } from '@aws-cdk/aws-certificatemanager';
 import ec2 = require('@aws-cdk/aws-ec2');
 import ecs = require('@aws-cdk/aws-ecs');
-import { Cluster } from '@aws-cdk/aws-ecs';
 import elbv2 = require('@aws-cdk/aws-elasticloadbalancingv2');
 import { AddressRecordTarget, ARecord, IHostedZone } from '@aws-cdk/aws-route53';
 import route53targets = require('@aws-cdk/aws-route53-targets');
@@ -133,7 +132,7 @@ export abstract class LoadBalancedServiceBase extends cdk.Construct {
     } else if (props.cluster) {
       this.cluster = props.cluster;
     } else {
-      this.cluster = new Cluster(this, 'Cluster', { vpc: props.vpc });
+      this.cluster = new ecs.Cluster(this, 'Cluster', { vpc: props.vpc });
     }
 
     // Create log driver if logging is enabled

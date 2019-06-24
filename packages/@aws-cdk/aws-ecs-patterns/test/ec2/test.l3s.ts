@@ -66,7 +66,7 @@ export = {
     test.throws(() => new ecsPatterns.LoadBalancedEc2Service(stack, 'Service', {
       cluster,
       vpc,
-      loadBalancerType: ecsPatterns.LoadBalancerType.Network,
+      loadBalancerType: ecsPatterns.LoadBalancerType.NETWORK,
       image: ecs.ContainerImage.fromRegistry("/aws/aws-example-app")
     }));
 

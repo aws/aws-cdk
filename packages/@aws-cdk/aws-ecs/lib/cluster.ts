@@ -1,7 +1,6 @@
 import autoscaling = require('@aws-cdk/aws-autoscaling');
 import cloudwatch = require ('@aws-cdk/aws-cloudwatch');
 import ec2 = require('@aws-cdk/aws-ec2');
-import { Vpc } from '@aws-cdk/aws-ec2';
 import iam = require('@aws-cdk/aws-iam');
 import cloudmap = require('@aws-cdk/aws-servicediscovery');
 import ssm = require('@aws-cdk/aws-ssm');
@@ -88,10 +87,8 @@ export class Cluster extends Resource implements ICluster {
     if (props.vpc) {
       this.vpc = props.vpc;
     } else {
-      this.vpc = new Vpc(this, 'Vpc', { maxAZs: 2 });
+      this.vpc = new ec2.Vpc(this, 'Vpc', { maxAZs: 2 });
     }
-    this.clusterArn = cluster.clusterArn;
-    this.clusterName = cluster.clusterName;
   }
 
   /**

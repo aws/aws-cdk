@@ -23,7 +23,7 @@ export = {
         CidrBlock: '10.0.0.0/16',
         EnableDnsHostnames: true,
         EnableDnsSupport: true,
-        InstanceTenancy: ec2.DefaultInstanceTenancy.Default,
+        InstanceTenancy: ec2.DefaultInstanceTenancy.DEFAULT,
         Tags: [
           {
             Key: "Name",
@@ -33,7 +33,9 @@ export = {
       }));
 
       expect(stack).to(haveResource("AWS::AutoScaling::LaunchConfiguration", {
-        ImageId: "", // Should this not be the latest image ID?
+        ImageId: {
+          Ref: "SsmParameterValueawsserviceecsoptimizedamiamazonlinuxrecommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
+        },
         InstanceType: "t2.micro",
         IamInstanceProfile: {
           Ref: "EcsClusterDefaultAutoScalingGroupInstanceProfile2CE606B3"
