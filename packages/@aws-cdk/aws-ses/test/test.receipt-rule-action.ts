@@ -95,7 +95,7 @@ export = {
           actions: [
             new ReceiptRuleBounceAction({
               sender: 'noreply@aws.com',
-              template: ReceiptRuleBounceActionTemplate.MessageContentRejected,
+              template: ReceiptRuleBounceActionTemplate.MESSAGE_CONTENT_REJECTED,
               topic
             })
           ]
@@ -135,7 +135,7 @@ export = {
     const fn = new lambda.Function(stack, 'Function', {
       code: lambda.Code.inline(''),
       handler: 'index.handler',
-      runtime: lambda.Runtime.Nodejs810
+      runtime: lambda.Runtime.NODEJS_8_10
     });
 
     // WHEN

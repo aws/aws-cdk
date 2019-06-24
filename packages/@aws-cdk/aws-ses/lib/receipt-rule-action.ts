@@ -138,31 +138,31 @@ export interface ReceiptRuleBounceActionTemplateProps {
  * A bounce action template.
  */
 export class ReceiptRuleBounceActionTemplate {
-  public static readonly MailboxDoesNotExist = new ReceiptRuleBounceActionTemplate({
+  public static readonly MAILBOX_DOES_NOT_EXIST = new ReceiptRuleBounceActionTemplate({
     message: 'Mailbox does not exist',
     smtpReplyCode: '550',
     statusCode: '5.1.1'
   });
 
-  public static readonly MessageTooLarge = new ReceiptRuleBounceActionTemplate({
+  public static readonly MESSAGE_TOO_LARGE = new ReceiptRuleBounceActionTemplate({
     message: 'Message too large',
     smtpReplyCode: '552',
     statusCode: '5.3.4'
   });
 
-  public static readonly MailboxFull = new ReceiptRuleBounceActionTemplate({
+  public static readonly MAILBOX_FULL = new ReceiptRuleBounceActionTemplate({
     message: 'Mailbox full',
     smtpReplyCode: '552',
     statusCode: '5.2.2'
   });
 
-  public static readonly MessageContentRejected = new ReceiptRuleBounceActionTemplate({
+  public static readonly MESSAGE_CONTENT_REJECTED = new ReceiptRuleBounceActionTemplate({
     message: 'Message content rejected',
     smtpReplyCode: '500',
     statusCode: '5.6.1'
   });
 
-  public static readonly TemporaryFailure = new ReceiptRuleBounceActionTemplate({
+  public static readonly TEMPORARY_FAILURE = new ReceiptRuleBounceActionTemplate({
     message: 'Temporary failure',
     smtpReplyCode: '450',
     statusCode: '4.0.0'
@@ -280,7 +280,7 @@ export class ReceiptRuleLambdaAction implements IReceiptRuleAction {
       this.props.function.addPermission(permissionId, {
         action: 'lambda:InvokeFunction',
         principal: new iam.ServicePrincipal('ses.amazonaws.com'),
-        sourceAccount: cdk.Aws.accountId
+        sourceAccount: cdk.Aws.ACCOUNT_ID
       });
     }
 
@@ -345,7 +345,7 @@ export class ReceiptRuleS3Action implements IReceiptRuleAction {
       resources: [this.props.bucket.arnForObjects(`${keyPattern}*`)],
       conditions: {
         StringEquals: {
-          'aws:Referer': cdk.Aws.accountId
+          'aws:Referer': cdk.Aws.ACCOUNT_ID
         }
       }
     });
@@ -365,7 +365,7 @@ export class ReceiptRuleS3Action implements IReceiptRuleAction {
             'kms:EncryptionContext:aws:ses:message-id': 'false'
           },
           StringEquals: {
-            'kms:EncryptionContext:aws:ses:source-account': cdk.Aws.accountId
+            'kms:EncryptionContext:aws:ses:source-account': cdk.Aws.ACCOUNT_ID
           }
         }
       });

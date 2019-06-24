@@ -910,7 +910,7 @@ export class Vpc extends VpcBase {
    */
   public addDynamoDbEndpoint(id: string, subnets?: SubnetSelection[]): GatewayVpcEndpoint {
     return new GatewayVpcEndpoint(this, id, {
-      service: GatewayVpcEndpointAwsService.DynamoDb,
+      service: GatewayVpcEndpointAwsService.DYNAMODB,
       vpc: this,
       subnets
     });
