@@ -1,5 +1,5 @@
 import cloudwatch = require('@aws-cdk/aws-cloudwatch');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import { Chain } from '../chain';
 import { FieldUtils } from '../fields';
 import { StateGraph } from '../state-graph';
@@ -124,7 +124,7 @@ export class Task extends State implements INextable {
             ...this.renderNextEnd(),
             ...this.renderRetryCatch(),
             ...this.renderInputOutput(),
-            Type: StateType.Task,
+            Type: StateType.TASK,
             Comment: this.comment,
             Resource: this.taskProps.resourceArn,
             Parameters: this.taskProps.parameters && FieldUtils.renderObject(this.taskProps.parameters),

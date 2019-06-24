@@ -2,13 +2,13 @@ import cloudformation = require('@aws-cdk/aws-cloudformation');
 import { CloudFormationCapabilities } from '@aws-cdk/aws-cloudformation';
 import codepipeline = require('@aws-cdk/aws-codepipeline');
 import iam = require('@aws-cdk/aws-iam');
-import cdk = require('@aws-cdk/cdk');
-import { Stack } from '@aws-cdk/cdk';
+import cdk = require('@aws-cdk/core');
+import { Stack } from '@aws-cdk/core';
 
 /**
  * Properties common to all CloudFormation actions
  */
-export interface CloudFormationActionProps extends codepipeline.CommonActionProps {
+interface CloudFormationActionProps extends codepipeline.CommonActionProps {
   /**
    * The name of the stack to apply this action to
    */
@@ -60,7 +60,7 @@ export interface CloudFormationActionProps extends codepipeline.CommonActionProp
 /**
  * Base class for Actions that execute CloudFormation
  */
-export abstract class CloudFormationAction extends codepipeline.Action {
+abstract class CloudFormationAction extends codepipeline.Action {
   constructor(props: CloudFormationActionProps, configuration?: any) {
     super({
       ...props,
@@ -119,7 +119,7 @@ export class CloudFormationExecuteChangeSetAction extends CloudFormationAction {
 /**
  * Properties common to CloudFormation actions that stage deployments
  */
-export interface CloudFormationDeployActionProps extends CloudFormationActionProps {
+interface CloudFormationDeployActionProps extends CloudFormationActionProps {
   /**
    * IAM role to assume when deploying changes.
    *
@@ -216,13 +216,13 @@ export interface CloudFormationDeployActionProps extends CloudFormationActionPro
 /**
  * Base class for all CloudFormation actions that execute or stage deployments.
  */
-export abstract class CloudFormationDeployAction extends CloudFormationAction {
+abstract class CloudFormationDeployAction extends CloudFormationAction {
   private _deploymentRole?: iam.IRole;
   private readonly props: CloudFormationDeployActionProps;
 
   constructor(props: CloudFormationDeployActionProps, configuration: any) {
     const capabilities = props.adminPermissions && props.capabilities === undefined
-      ? [cloudformation.CloudFormationCapabilities.NamedIAM]
+      ? [cloudformation.CloudFormationCapabilities.NAMED_IAM]
       : props.capabilities;
     super(props, {
       ...configuration,

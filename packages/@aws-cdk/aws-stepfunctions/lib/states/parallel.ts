@@ -1,4 +1,4 @@
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import { Chain } from '../chain';
 import { StateGraph } from '../state-graph';
 import { CatchProps, IChainable, INextable, RetryProps } from '../types';
@@ -109,7 +109,7 @@ export class Parallel extends State implements INextable {
      */
     public toStateJson(): object {
         return {
-            Type: StateType.Parallel,
+            Type: StateType.PARALLEL,
             Comment: this.comment,
             ResultPath: renderJsonPath(this.resultPath),
             ...this.renderNextEnd(),

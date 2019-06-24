@@ -1,5 +1,5 @@
 import ec2 = require('@aws-cdk/aws-ec2');
-import { Construct, Duration, IResource, Lazy, Resource } from '@aws-cdk/cdk';
+import { Construct, Duration, IResource, Lazy, Resource } from '@aws-cdk/core';
 import { BaseListener } from '../shared/base-listener';
 import { HealthCheck } from '../shared/base-target-group';
 import { ApplicationProtocol, SslPolicy } from '../shared/enums';
@@ -254,7 +254,7 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
    */
   protected validate(): string[] {
     const errors = super.validate();
-    if (this.protocol === ApplicationProtocol.Https && this.certificateArns.length === 0) {
+    if (this.protocol === ApplicationProtocol.HTTPS && this.certificateArns.length === 0) {
       errors.push('HTTPS Listener needs at least one certificate (call addCertificateArns)');
     }
     return errors;

@@ -1,5 +1,5 @@
 import { expect } from '@aws-cdk/assert';
-import { App, PhysicalName, Stack } from '@aws-cdk/cdk';
+import { App, Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import { Group, Policy, PolicyStatement, Role, ServicePrincipal, User } from '../lib';
 import { generatePolicyName } from '../lib/util';
@@ -18,7 +18,7 @@ export = {
     const app = new App();
     const stack = new Stack(app, 'MyStack');
 
-    const policy = new Policy(stack, 'MyPolicy', { policyName: PhysicalName.of('MyPolicyName') });
+    const policy = new Policy(stack, 'MyPolicy', { policyName: 'MyPolicyName' });
     policy.addStatements(new PolicyStatement({ resources: ['*'], actions: ['sqs:SendMessage'] }));
     policy.addStatements(new PolicyStatement({ resources: ['arn'], actions: ['sns:Subscribe'] }));
 
@@ -78,7 +78,7 @@ export = {
     });
 
     new Policy(stack, 'MyTestPolicy', {
-      policyName: PhysicalName.of('Foo'),
+      policyName: 'Foo',
       users: [ user1 ],
       groups: [ group1 ],
       roles: [ role1 ],
@@ -141,7 +141,7 @@ export = {
     const stack = new Stack(app, 'MyStack');
 
     const p = new Policy(stack, 'MyTestPolicy', {
-      policyName: PhysicalName.of('Foo'),
+      policyName: 'Foo',
     });
 
     p.attachToUser(new User(stack, 'User1'));
@@ -222,8 +222,8 @@ export = {
     const stack = new Stack(app, 'MyStack');
 
     // create two policies named Foo and attach them both to the same user/group/role
-    const p1 = new Policy(stack, 'P1', { policyName: PhysicalName.of('Foo') });
-    const p2 = new Policy(stack, 'P2', { policyName: PhysicalName.of('Foo') });
+    const p1 = new Policy(stack, 'P1', { policyName: 'Foo' });
+    const p2 = new Policy(stack, 'P2', { policyName: 'Foo' });
     const p3 = new Policy(stack, 'P3'); // uses logicalID as name
 
     const user = new User(stack, 'MyUser');

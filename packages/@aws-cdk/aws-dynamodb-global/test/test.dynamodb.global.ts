@@ -1,7 +1,7 @@
 import { expect, haveResource } from '@aws-cdk/assert';
 import { Attribute, AttributeType, StreamViewType } from '@aws-cdk/aws-dynamodb';
 import { Table } from '@aws-cdk/aws-dynamodb';
-import { PhysicalName, Stack } from '@aws-cdk/cdk';
+import { Stack } from '@aws-cdk/core';
 import * as assert from 'assert';
 import { Test } from 'nodeunit';
 import {
@@ -20,7 +20,7 @@ const TABLE_PARTITION_KEY: Attribute = { name: 'hashKey', type: AttributeType.ST
 
 const STACK_PROPS: GlobalTableProps = {
     partitionKey: TABLE_PARTITION_KEY,
-    tableName: PhysicalName.of(TABLE_NAME),
+    tableName: TABLE_NAME,
     regions: [ 'us-east-1', 'us-east-2', 'us-west-2' ]
 };
 
@@ -70,7 +70,7 @@ export = {
       const stack = new Stack();
       try {
         new GlobalTable(stack, CONSTRUCT_NAME, {
-          tableName: PhysicalName.of(TABLE_NAME),
+          tableName: TABLE_NAME,
           stream: StreamViewType.KEYS_ONLY,
           partitionKey: TABLE_PARTITION_KEY,
           regions: [ 'us-east-1', 'us-east-2', 'us-west-2' ]
@@ -89,7 +89,7 @@ export = {
     'global dynamo should only allow NEW_AND_OLD_IMAGES'(test: Test) {
       const stack = new Stack();
       const regTables = new GlobalTable(stack, CONSTRUCT_NAME, {
-        tableName: PhysicalName.of(TABLE_NAME),
+        tableName: TABLE_NAME,
         partitionKey: TABLE_PARTITION_KEY,
         regions: [ 'us-east-1', 'us-east-2', 'us-west-2' ]
       });

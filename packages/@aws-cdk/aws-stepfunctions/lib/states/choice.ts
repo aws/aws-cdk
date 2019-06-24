@@ -1,4 +1,4 @@
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import { Chain } from '../chain';
 import { Condition } from '../condition';
 import { IChainable, INextable } from '../types';
@@ -89,7 +89,7 @@ export class Choice extends State {
      */
     public toStateJson(): object {
         return {
-            Type: StateType.Choice,
+            Type: StateType.CHOICE,
             Comment: this.comment,
             ...this.renderInputOutput(),
             ...this.renderChoices(),

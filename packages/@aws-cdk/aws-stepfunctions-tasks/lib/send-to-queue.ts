@@ -1,7 +1,7 @@
 import iam = require('@aws-cdk/aws-iam');
 import sqs = require('@aws-cdk/aws-sqs');
 import sfn = require('@aws-cdk/aws-stepfunctions');
-import { Duration } from '@aws-cdk/cdk';
+import { Duration } from '@aws-cdk/core';
 
 /**
  * Properties for SendMessageTask

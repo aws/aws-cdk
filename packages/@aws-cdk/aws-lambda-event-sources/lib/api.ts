@@ -1,6 +1,6 @@
 import apigw = require('@aws-cdk/aws-apigateway');
 import lambda = require('@aws-cdk/aws-lambda');
-import { Stack } from '@aws-cdk/cdk';
+import { Stack } from '@aws-cdk/core';
 
 export class ApiEventSource implements lambda.IEventSource {
   constructor(private readonly method: string, private readonly path: string, private readonly options?: apigw.MethodOptions) {

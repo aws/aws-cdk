@@ -2,10 +2,10 @@ import { expect, haveResource } from '@aws-cdk/assert';
 import ec2 = require('@aws-cdk/aws-ec2');
 import elb = require('@aws-cdk/aws-elasticloadbalancing');
 import cloudmap = require('@aws-cdk/aws-servicediscovery');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import { Test } from 'nodeunit';
 import ecs = require('../../lib');
-import { BinPackResource, BuiltInAttributes, ContainerImage, NamespaceType, NetworkMode } from '../../lib';
+import { BinPackResource, BuiltInAttributes, ContainerImage, NetworkMode } from '../../lib';
 import { PlacementConstraint, PlacementStrategy } from '../../lib/placement';
 
 export = {
@@ -92,7 +92,7 @@ export = {
           cluster,
           taskDefinition,
           daemon: true,
-          maximumPercent: 300
+          maxHealthyPercent: 300
         });
       }, /Maximum percent must be 100 for daemon mode./);
 
@@ -117,7 +117,7 @@ export = {
           cluster,
           taskDefinition,
           daemon: true,
-          minimumHealthyPercent: 50
+          minHealthyPercent: 50
         });
       }, /Minimum healthy percent must be 0 for daemon mode./);
 
@@ -208,7 +208,7 @@ export = {
         const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
         cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
         const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', {
-          networkMode: NetworkMode.Bridge
+          networkMode: NetworkMode.BRIDGE
         });
 
         taskDefinition.addContainer("web", {
@@ -238,7 +238,7 @@ export = {
         const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
         cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
         const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', {
-          networkMode: NetworkMode.Bridge
+          networkMode: NetworkMode.BRIDGE
         });
 
         taskDefinition.addContainer("web", {
@@ -268,7 +268,7 @@ export = {
         const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
         cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
         const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', {
-          networkMode: NetworkMode.AwsVpc
+          networkMode: NetworkMode.AWS_VPC
         });
 
         taskDefinition.addContainer("web", {
@@ -316,7 +316,7 @@ export = {
         const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
         cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
         const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', {
-          networkMode: NetworkMode.AwsVpc
+          networkMode: NetworkMode.AWS_VPC
         });
 
         taskDefinition.addContainer("web", {
@@ -415,7 +415,7 @@ export = {
         taskDefinition
       });
 
-      service.addPlacementStrategies(PlacementStrategy.spreadAcross(BuiltInAttributes.AvailabilityZone));
+      service.addPlacementStrategies(PlacementStrategy.spreadAcross(BuiltInAttributes.AVAILABILITY_ZONE));
 
       // THEN
       expect(stack).to(haveResource("AWS::ECS::Service", {
@@ -449,7 +449,7 @@ export = {
 
       // THEN
       test.throws(() => {
-        service.addPlacementStrategies(PlacementStrategy.spreadAcross(BuiltInAttributes.AvailabilityZone));
+        service.addPlacementStrategies(PlacementStrategy.spreadAcross(BuiltInAttributes.AVAILABILITY_ZONE));
       });
 
       test.done();
@@ -578,7 +578,7 @@ export = {
       const vpc = new ec2.Vpc(stack, 'VPC');
       const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
       cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
-      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TD', { networkMode: ecs.NetworkMode.Host });
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TD', { networkMode: ecs.NetworkMode.HOST });
       const container = taskDefinition.addContainer('web', {
         image: ecs.ContainerImage.fromRegistry('test'),
         memoryLimitMiB: 1024,
@@ -648,7 +648,7 @@ export = {
       const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
       cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', {
-        networkMode: NetworkMode.None
+        networkMode: NetworkMode.NONE
       });
       const container = taskDefinition.addContainer('MainContainer', {
         image: ContainerImage.fromRegistry('hello'),
@@ -690,7 +690,7 @@ export = {
       // WHEN
       cluster.addDefaultCloudMapNamespace({
         name: 'foo.com',
-        type: NamespaceType.PRIVATE_DNS
+        type: cloudmap.NamespaceType.DNS_PRIVATE
       });
 
       new ecs.Ec2Service(stack, 'Service', {
@@ -756,7 +756,7 @@ export = {
       cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
 
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', {
-        networkMode: NetworkMode.Host
+        networkMode: NetworkMode.HOST
       });
       const container = taskDefinition.addContainer('MainContainer', {
         image: ContainerImage.fromRegistry('hello'),
@@ -767,7 +767,7 @@ export = {
       // WHEN
       cluster.addDefaultCloudMapNamespace({
         name: 'foo.com',
-        type: NamespaceType.PRIVATE_DNS
+        type: cloudmap.NamespaceType.DNS_PRIVATE
       });
 
       new ecs.Ec2Service(stack, 'Service', {
@@ -867,7 +867,7 @@ export = {
       cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
 
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', {
-        networkMode: NetworkMode.AwsVpc
+        networkMode: NetworkMode.AWS_VPC
       });
       const container = taskDefinition.addContainer('MainContainer', {
         image: ContainerImage.fromRegistry('hello'),
@@ -878,7 +878,7 @@ export = {
       // WHEN
       cluster.addDefaultCloudMapNamespace({
         name: 'foo.com',
-        type: NamespaceType.PRIVATE_DNS
+        type: cloudmap.NamespaceType.DNS_PRIVATE
       });
 
       new ecs.Ec2Service(stack, 'Service', {
@@ -942,7 +942,7 @@ export = {
       cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
 
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', {
-        networkMode: NetworkMode.AwsVpc
+        networkMode: NetworkMode.AWS_VPC
       });
       const container = taskDefinition.addContainer('MainContainer', {
         image: ContainerImage.fromRegistry('hello'),
@@ -953,7 +953,7 @@ export = {
       // WHEN
       cluster.addDefaultCloudMapNamespace({
         name: 'foo.com',
-        type: NamespaceType.PRIVATE_DNS
+        type: cloudmap.NamespaceType.DNS_PRIVATE
       });
 
       new ecs.Ec2Service(stack, 'Service', {

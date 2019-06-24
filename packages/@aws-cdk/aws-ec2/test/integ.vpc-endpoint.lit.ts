@@ -1,5 +1,5 @@
 import iam = require('@aws-cdk/aws-iam');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import ec2 = require('../lib');
 
 const app = new cdk.App();
@@ -20,7 +20,7 @@ class VpcEndpointStack extends cdk.Stack {
 
     // Alternatively gateway endpoints can be added on the VPC
     const dynamoDbEndpoint = vpc.addGatewayEndpoint('DynamoDbEndpoint', {
-      service: ec2.GatewayVpcEndpointAwsService.DynamoDb
+      service: ec2.GatewayVpcEndpointAwsService.DYNAMODB
     });
 
     // This allows to customize the endpoint policy
@@ -33,7 +33,7 @@ class VpcEndpointStack extends cdk.Stack {
 
     // Add an interface endpoint
     const ecrDockerEndpoint = vpc.addInterfaceEndpoint('EcrDockerEndpoint', {
-      service: ec2.InterfaceVpcEndpointAwsService.EcrDocker
+      service: ec2.InterfaceVpcEndpointAwsService.ECR_DOCKER
     });
 
     // When working with an interface endpoint, use the connections object to

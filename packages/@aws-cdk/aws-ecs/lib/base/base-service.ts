@@ -4,7 +4,7 @@ import ec2 = require('@aws-cdk/aws-ec2');
 import elbv2 = require('@aws-cdk/aws-elasticloadbalancingv2');
 import iam = require('@aws-cdk/aws-iam');
 import cloudmap = require('@aws-cdk/aws-servicediscovery');
-import { Construct, Duration, Fn, IResolvable, IResource, Lazy, PhysicalName, Resource, Stack } from '@aws-cdk/cdk';
+import { Construct, Duration, Fn, IResolvable, IResource, Lazy, Resource, Stack } from '@aws-cdk/core';
 import { NetworkMode, TaskDefinition } from '../base/task-definition';
 import { ICluster } from '../cluster';
 import { CfnService } from '../ecs.generated';
@@ -40,7 +40,7 @@ export interface BaseServiceProps {
    *
    * @default - CloudFormation-generated name.
    */
-  readonly serviceName?: PhysicalName;
+  readonly serviceName?: string;
 
   /**
    * The maximum number of tasks, specified as a percentage of the Amazon ECS
@@ -49,7 +49,7 @@ export interface BaseServiceProps {
    *
    * @default - 100 if daemon, otherwise 200
    */
-  readonly maximumPercent?: number;
+  readonly maxHealthyPercent?: number;
 
   /**
    * The minimum number of tasks, specified as a percentage of
@@ -58,7 +58,7 @@ export interface BaseServiceProps {
    *
    * @default - 0 if daemon, otherwise 50
    */
-  readonly minimumHealthyPercent?: number;
+  readonly minHealthyPercent?: number;
 
   /**
    * Time after startup to ignore unhealthy load balancer checks.
@@ -147,8 +147,8 @@ export abstract class BaseService extends Resource
       serviceName: this.physicalName,
       loadBalancers: Lazy.anyValue({ produce: () => this.loadBalancers }),
       deploymentConfiguration: {
-        maximumPercent: props.maximumPercent || 200,
-        minimumHealthyPercent: props.minimumHealthyPercent === undefined ? 50 : props.minimumHealthyPercent
+        maximumPercent: props.maxHealthyPercent || 200,
+        minimumHealthyPercent: props.minHealthyPercent === undefined ? 50 : props.minHealthyPercent
       },
       healthCheckGracePeriodSeconds: this.evaluateHealthGracePeriod(props.healthCheckGracePeriod),
       /* role: never specified, supplanted by Service Linked Role */
@@ -164,17 +164,12 @@ export abstract class BaseService extends Resource
       ? Fn.select(2, Fn.split('/', this.resource.ref))
       : this.resource.attrName;
 
-    const resourceIdentifiers = this.getCrossEnvironmentAttributes({
-      arn: this.resource.ref,
-      name: serviceName,
-      arnComponents: {
-        service: 'ecs',
-        resource: 'service',
-        resourceName: `${props.cluster.clusterName}/${this.physicalName}`,
-      },
+    this.serviceArn = this.getResourceArnAttribute(this.resource.ref, {
+      service: 'ecs',
+      resource: 'service',
+      resourceName: `${props.cluster.clusterName}/${this.physicalName}`,
     });
-    this.serviceArn = resourceIdentifiers.arn;
-    this.serviceName = resourceIdentifiers.name;
+    this.serviceName = this.getResourceNameAttribute(serviceName);
 
     this.cluster = props.cluster;
 
@@ -292,7 +287,7 @@ export abstract class BaseService extends Resource
    * Shared logic for attaching to an ELBv2
    */
   private attachToELBv2(targetGroup: elbv2.ITargetGroup): elbv2.LoadBalancerTargetProps {
-    if (this.taskDefinition.networkMode === NetworkMode.None) {
+    if (this.taskDefinition.networkMode === NetworkMode.NONE) {
       throw new Error("Cannot use a load balancer if NetworkMode is None. Use Bridge, Host or AwsVpc instead.");
     }
 
@@ -306,7 +301,7 @@ export abstract class BaseService extends Resource
     // been associated with our target group(s), so add ordering dependency.
     this.resource.node.addDependency(targetGroup.loadBalancerAttached);
 
-    const targetType = this.taskDefinition.networkMode === NetworkMode.AwsVpc ? elbv2.TargetType.Ip : elbv2.TargetType.Instance;
+    const targetType = this.taskDefinition.networkMode === NetworkMode.AWS_VPC ? elbv2.TargetType.IP : elbv2.TargetType.INSTANCE;
     return { targetType };
   }
 
@@ -334,21 +329,21 @@ export abstract class BaseService extends Resource
    * Enable CloudMap service discovery for the service
    */
   private enableCloudMap(options: CloudMapOptions): cloudmap.Service {
-    const sdNamespace = this.cluster.defaultNamespace;
+    const sdNamespace = this.cluster.defaultCloudMapNamespace;
     if (sdNamespace === undefined) {
       throw new Error("Cannot enable service discovery if a Cloudmap Namespace has not been created in the cluster.");
     }
 
     // Determine DNS type based on network mode
     const networkMode = this.taskDefinition.networkMode;
-    if (networkMode === NetworkMode.None) {
+    if (networkMode === NetworkMode.NONE) {
       throw new Error("Cannot use a service discovery if NetworkMode is None. Use Bridge, Host or AwsVpc instead.");
     }
 
     // Bridge or host network mode requires SRV records
     let dnsRecordType = options.dnsRecordType;
 
-    if (networkMode === NetworkMode.Bridge || networkMode === NetworkMode.Host) {
+    if (networkMode === NetworkMode.BRIDGE || networkMode === NetworkMode.HOST) {
       if (dnsRecordType ===  undefined) {
         dnsRecordType = cloudmap.DnsRecordType.SRV;
       }
@@ -358,7 +353,7 @@ export abstract class BaseService extends Resource
     }
 
     // Default DNS record type for AwsVpc network mode is A Records
-    if (networkMode === NetworkMode.AwsVpc) {
+    if (networkMode === NetworkMode.AWS_VPC) {
       if (dnsRecordType ===  undefined) {
         dnsRecordType = cloudmap.DnsRecordType.A;
       }

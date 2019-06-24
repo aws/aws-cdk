@@ -1,7 +1,7 @@
 import iam = require('@aws-cdk/aws-iam');
 import secretsmanager = require('@aws-cdk/aws-secretsmanager');
 import ssm = require('@aws-cdk/aws-ssm');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import { NetworkMode, TaskDefinition } from './base/task-definition';
 import { ContainerImage, ContainerImageConfig } from './container-image';
 import { CfnTaskDefinition } from './ecs.generated';
@@ -324,7 +324,7 @@ export class ContainerDefinition extends cdk.Construct {
    * Warning: The --link flag is a legacy feature of Docker. It may eventually be removed.
    */
   public addLink(container: ContainerDefinition, alias?: string) {
-    if (this.taskDefinition.networkMode !== NetworkMode.Bridge) {
+    if (this.taskDefinition.networkMode !== NetworkMode.BRIDGE) {
       throw new Error(`You must use network mode Bridge to add container links.`);
     }
     if (alias !== undefined) {
@@ -368,13 +368,13 @@ export class ContainerDefinition extends cdk.Construct {
    */
   public addPortMappings(...portMappings: PortMapping[]) {
     this.portMappings.push(...portMappings.map(pm => {
-      if (this.taskDefinition.networkMode === NetworkMode.AwsVpc || this.taskDefinition.networkMode === NetworkMode.Host) {
+      if (this.taskDefinition.networkMode === NetworkMode.AWS_VPC || this.taskDefinition.networkMode === NetworkMode.HOST) {
         if (pm.containerPort !== pm.hostPort && pm.hostPort !== undefined) {
           throw new Error(`Host port ${pm.hostPort} does not match container port ${pm.containerPort}.`);
         }
       }
 
-      if (this.taskDefinition.networkMode === NetworkMode.Bridge) {
+      if (this.taskDefinition.networkMode === NetworkMode.BRIDGE) {
         if (pm.hostPort === undefined) {
           pm = {
             ...pm,
@@ -421,7 +421,7 @@ export class ContainerDefinition extends cdk.Construct {
       return defaultPortMapping.hostPort;
     }
 
-    if (this.taskDefinition.networkMode === NetworkMode.Bridge) {
+    if (this.taskDefinition.networkMode === NetworkMode.BRIDGE) {
       return 0;
     }
     return defaultPortMapping.containerPort;

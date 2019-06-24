@@ -1,7 +1,7 @@
 import ec2 = require('@aws-cdk/aws-ec2');
 import ecs = require('@aws-cdk/aws-ecs');
 import sfn = require('@aws-cdk/aws-stepfunctions');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import path = require('path');
 import tasks = require('../lib');
 
@@ -33,7 +33,7 @@ taskDefinition.addContainer('TheContainer', {
 
 // Build state machine
 const definition = new sfn.Pass(stack, 'Start', {
-    result: { SomeKey: 'SomeValue' }
+    result: sfn.Result.fromObject({ SomeKey: 'SomeValue' })
 }).next(new sfn.Task(stack, 'Run', { task: new tasks.RunEcsEc2Task({
   cluster, taskDefinition,
   containerOverrides: [

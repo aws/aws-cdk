@@ -1,7 +1,7 @@
 import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
 import secretsmanager = require('@aws-cdk/aws-secretsmanager');
 import ssm = require('@aws-cdk/aws-ssm');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import { Test } from 'nodeunit';
 import ecs = require('../lib');
 
@@ -13,7 +13,7 @@ export = {
         // GIVEN
         const stack = new cdk.Stack();
         const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef', {
-          networkMode: ecs.NetworkMode.AwsVpc,
+          networkMode: ecs.NetworkMode.AWS_VPC,
         });
 
         const container = taskDefinition.addContainer("Container", {
@@ -36,7 +36,7 @@ export = {
         // GIVEN
         const stack = new cdk.Stack();
         const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef', {
-          networkMode: ecs.NetworkMode.AwsVpc,
+          networkMode: ecs.NetworkMode.AWS_VPC,
         });
 
         const container = taskDefinition.addContainer("Container", {
@@ -59,7 +59,7 @@ export = {
         // GIVEN
         const stack = new cdk.Stack();
         const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef', {
-          networkMode: ecs.NetworkMode.Host,
+          networkMode: ecs.NetworkMode.HOST,
         });
 
         const container = taskDefinition.addContainer("Container", {
@@ -82,7 +82,7 @@ export = {
         // GIVEN
         const stack = new cdk.Stack();
         const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef', {
-          networkMode: ecs.NetworkMode.Host,
+          networkMode: ecs.NetworkMode.HOST,
         });
 
         const container = taskDefinition.addContainer("Container", {
@@ -103,7 +103,7 @@ export = {
         // GIVEN
         const stack = new cdk.Stack();
         const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef', {
-          networkMode: ecs.NetworkMode.Host,
+          networkMode: ecs.NetworkMode.HOST,
         });
 
         const container = taskDefinition.addContainer("Container", {
@@ -130,7 +130,7 @@ export = {
         // GIVEN
         const stack = new cdk.Stack();
         const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef', {
-          networkMode: ecs.NetworkMode.Bridge,
+          networkMode: ecs.NetworkMode.BRIDGE,
         });
 
         const container = taskDefinition.addContainer("Container", {
@@ -157,7 +157,7 @@ export = {
         // GIVEN
         const stack = new cdk.Stack();
         const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef', {
-          networkMode: ecs.NetworkMode.AwsVpc,
+          networkMode: ecs.NetworkMode.AWS_VPC,
         });
 
         const container = taskDefinition.addContainer("Container", {
@@ -183,7 +183,7 @@ export = {
         // GIVEN
         const stack = new cdk.Stack();
         const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef', {
-          networkMode: ecs.NetworkMode.Host,
+          networkMode: ecs.NetworkMode.HOST,
         });
 
         const container = taskDefinition.addContainer("Container", {
@@ -209,7 +209,7 @@ export = {
         // GIVEN
         const stack = new cdk.Stack();
         const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef', {
-          networkMode: ecs.NetworkMode.Bridge,
+          networkMode: ecs.NetworkMode.BRIDGE,
         });
 
         const container = taskDefinition.addContainer("Container", {
@@ -234,7 +234,7 @@ export = {
         // GIVEN
         const stack = new cdk.Stack();
         const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef', {
-          networkMode: ecs.NetworkMode.Bridge,
+          networkMode: ecs.NetworkMode.BRIDGE,
         });
 
         const container = taskDefinition.addContainer("Container", {

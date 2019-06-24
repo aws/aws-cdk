@@ -1,6 +1,6 @@
 import dynamodb = require('@aws-cdk/aws-dynamodb');
 import lambda = require('@aws-cdk/aws-lambda');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import { DynamoEventSource } from '../lib';
 import { TestFunction } from './test-function';
 

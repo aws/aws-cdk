@@ -1,4 +1,4 @@
-import { Duration } from "@aws-cdk/cdk";
+import { Duration } from "@aws-cdk/core";
 
 /**
  * Declaration of a Life cycle rule
@@ -155,14 +155,14 @@ export class StorageClass {
    *
    * Has lower availability than Standard storage.
    */
-  public static readonly InfrequentAccess = new StorageClass('STANDARD_IA');
+  public static readonly INFREQUENT_ACCESS = new StorageClass('STANDARD_IA');
 
   /**
    * Infrequent Access that's only stored in one availability zone.
    *
    * Has lower availability than standard InfrequentAccess.
    */
-  public static readonly OneZoneInfrequentAccess = new StorageClass('ONEZONE_IA');
+  public static readonly ONE_ZONE_INFREQUENT_ACCESS = new StorageClass('ONEZONE_IA');
 
   /**
    * Storage class for long-term archival that can take between minutes and
@@ -174,7 +174,7 @@ export class StorageClass {
    * using expedited retrieval. If you delete an object before the 90-day
    * minimum, you are charged for 90 days.
    */
-  public static readonly Glacier = new StorageClass('GLACIER');
+  public static readonly GLACIER = new StorageClass('GLACIER');
 
   /**
    * Use for archiving data that rarely needs to be accessed. Data stored in the
@@ -183,7 +183,7 @@ export class StorageClass {
    * before the 180-day minimum, you are charged for 180 days. For pricing
    * information, see Amazon S3 Pricing.
    */
-  public static readonly DeepArchive = new StorageClass('DEEP_ARCHIVE');
+  public static readonly DEEP_ARCHIVE = new StorageClass('DEEP_ARCHIVE');
 
   /**
    * The INTELLIGENT_TIERING storage class is designed to optimize storage costs
@@ -196,7 +196,7 @@ export class StorageClass {
    * costs automatically for long-lived data when access patterns are unknown or
    * unpredictable.
    */
-  public static readonly IntelligentTiering = new StorageClass('INTELLIGENT_TIERING');
+  public static readonly INTELLIGENT_TIERING = new StorageClass('INTELLIGENT_TIERING');
 
   constructor(public readonly value: string) { }
 
