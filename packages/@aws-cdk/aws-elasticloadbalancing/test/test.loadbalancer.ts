@@ -1,6 +1,6 @@
 import { expect, haveResource } from '@aws-cdk/assert';
-import { CidrIPv4, Connections, Vpc } from '@aws-cdk/aws-ec2';
-import { Duration, Stack } from '@aws-cdk/cdk';
+import { Connections, Peer, Vpc } from '@aws-cdk/aws-ec2';
+import { Duration, Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import { ILoadBalancerTarget, LoadBalancer, LoadBalancingProtocol } from '../lib';
 
@@ -155,7 +155,7 @@ export = {
 
 class FakeTarget implements ILoadBalancerTarget {
   public readonly connections = new Connections({
-    securityGroupRule: new CidrIPv4('666.666.666.666/666')
+    peer: Peer.ipv4('666.666.666.666/666')
   });
 
   public attachToClassicLB(_loadBalancer: LoadBalancer): void {

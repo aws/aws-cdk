@@ -1,4 +1,4 @@
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import { Chain } from '../chain';
 import { IChainable, INextable } from '../types';
 import { State, StateType } from './state';
@@ -87,7 +87,7 @@ export class Wait extends State implements INextable {
      */
     public toStateJson(): object {
         return {
-            Type: StateType.Wait,
+            Type: StateType.WAIT,
             Comment: this.comment,
             ...this.time._json,
             ...this.renderNextEnd(),

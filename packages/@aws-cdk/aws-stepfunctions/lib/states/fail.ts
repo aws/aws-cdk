@@ -1,4 +1,4 @@
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import { INextable } from '../types';
 import { State, StateType } from './state';
 
@@ -51,7 +51,7 @@ export class Fail extends State {
      */
     public toStateJson(): object {
         return {
-            Type: StateType.Fail,
+            Type: StateType.FAIL,
             Comment: this.comment,
             Error: this.error,
             Cause: this.cause,

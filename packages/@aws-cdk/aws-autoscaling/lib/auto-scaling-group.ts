@@ -5,7 +5,7 @@ import elbv2 = require('@aws-cdk/aws-elasticloadbalancingv2');
 import iam = require('@aws-cdk/aws-iam');
 import sns = require('@aws-cdk/aws-sns');
 
-import { CfnAutoScalingRollingUpdate, Construct, Duration, Fn, IResource, Lazy, Resource, Stack, Tag } from '@aws-cdk/cdk';
+import { CfnAutoScalingRollingUpdate, Construct, Duration, Fn, IResource, Lazy, Resource, Stack, Tag } from '@aws-cdk/core';
 import { CfnAutoScalingGroup, CfnAutoScalingGroupProps, CfnLaunchConfiguration } from './autoscaling.generated';
 import { BasicLifecycleHookProps, LifecycleHook } from './lifecycle-hook';
 import { BasicScheduledActionProps, ScheduledAction } from './scheduled-action';
@@ -175,7 +175,17 @@ export interface AutoScalingGroupProps extends CommonAutoScalingGroupProps {
   /**
    * AMI to launch
    */
-  readonly machineImage: ec2.IMachineImageSource;
+  readonly machineImage: ec2.IMachineImage;
+
+  /**
+   * Specific UserData to use
+   *
+   * The UserData may still be mutated after creation.
+   *
+   * @default - A UserData object appropriate for the MachineImage's
+   * Operating System is created.
+   */
+  readonly userData?: ec2.UserData;
 
   /**
    * An IAM role to associate with the instance profile assigned to this Auto Scaling Group.
@@ -354,7 +364,11 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
    */
   public readonly autoScalingGroupArn: string;
 
-  private readonly userDataLines = new Array<string>();
+  /**
+   * UserData for the instances
+   */
+  public readonly userData: ec2.UserData;
+
   private readonly autoScalingGroup: CfnAutoScalingGroup;
   private readonly securityGroup: ec2.ISecurityGroup;
   private readonly securityGroups: ec2.ISecurityGroup[] = [];
@@ -381,12 +395,13 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
     });
 
     // use delayed evaluation
-    const machineImage = props.machineImage.getImage(this);
-    const userDataToken = Lazy.stringValue({ produce: () => Fn.base64((machineImage.os.createUserData(this.userDataLines))) });
+    const imageConfig = props.machineImage.getImage(this);
+    this.userData = props.userData || imageConfig.userData || ec2.UserData.forOperatingSystem(imageConfig.osType);
+    const userDataToken = Lazy.stringValue({ produce: () => Fn.base64(this.userData.render()) });
     const securityGroupsToken = Lazy.listValue({ produce: () => this.securityGroups.map(sg => sg.securityGroupId) });
 
     const launchConfig = new CfnLaunchConfiguration(this, 'LaunchConfig', {
-      imageId: machineImage.imageId,
+      imageId: imageConfig.imageId,
       keyName: props.keyName,
       instanceType: props.instanceType.toString(),
       securityGroups: securityGroupsToken,
@@ -409,7 +424,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
       throw new Error(`Should have minCapacity (${minCapacity}) <= desiredCapacity (${desiredCapacity}) <= maxCapacity (${maxCapacity})`);
     }
 
-    const { subnetIds } = props.vpc.selectSubnets(props.vpcSubnets);
+    const { subnetIds, hasPublic } = props.vpc.selectSubnets(props.vpcSubnets);
     const asgProps: CfnAutoScalingGroupProps = {
       cooldown: props.cooldown !== undefined ? props.cooldown.toSeconds().toString() : undefined,
       minSize: minCapacity.toString(),
@@ -432,12 +447,12 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
       vpcZoneIdentifier: subnetIds
     };
 
-    if (!props.vpc.isPublicSubnets(subnetIds) && props.associatePublicIpAddress) {
+    if (!hasPublic && props.associatePublicIpAddress) {
       throw new Error("To set 'associatePublicIpAddress: true' you must select Public subnets (vpcSubnets: { subnetType: SubnetType.Public })");
     }
 
     this.autoScalingGroup = new CfnAutoScalingGroup(this, 'ASG', asgProps);
-    this.osType = machineImage.os.type;
+    this.osType = imageConfig.osType;
     this.autoScalingGroupName = this.autoScalingGroup.ref;
     this.autoScalingGroupArn = Stack.of(this).formatArn({
       service: 'autoscaling',
@@ -472,7 +487,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
     this.targetGroupArns.push(targetGroup.targetGroupArn);
     this.albTargetGroup = targetGroup;
     targetGroup.registerConnectable(this);
-    return { targetType: elbv2.TargetType.Instance };
+    return { targetType: elbv2.TargetType.INSTANCE };
   }
 
   /**
@@ -480,15 +495,15 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
    */
   public attachToNetworkTargetGroup(targetGroup: elbv2.NetworkTargetGroup): elbv2.LoadBalancerTargetProps {
     this.targetGroupArns.push(targetGroup.targetGroupArn);
-    return { targetType: elbv2.TargetType.Instance };
+    return { targetType: elbv2.TargetType.INSTANCE };
   }
 
   /**
    * Add command to the startup script of fleet instances.
    * The command must be in the scripting language supported by the fleet's OS (i.e. Linux/Windows).
    */
-  public addUserData(...scriptLines: string[]) {
-    scriptLines.forEach(scriptLine => this.userDataLines.push(scriptLine));
+  public addUserData(...commands: string[]) {
+    this.userData.addCommands(...commands);
   }
 
   /**

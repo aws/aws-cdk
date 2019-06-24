@@ -2,7 +2,7 @@ import autoscaling = require('@aws-cdk/aws-autoscaling');
 import ec2 = require('@aws-cdk/aws-ec2');
 import { Subnet } from '@aws-cdk/aws-ec2';
 import iam = require('@aws-cdk/aws-iam');
-import { CfnOutput, Construct, IResource, PhysicalName, Resource, Tag } from '@aws-cdk/cdk';
+import { CfnOutput, Construct, IResource, Resource, Tag } from '@aws-cdk/core';
 import { EksOptimizedAmi, nodeTypeForInstanceType } from './ami';
 import { CfnCluster } from './eks.generated';
 import { maxPodsForInstanceType } from './instance-data';
@@ -110,7 +110,7 @@ export interface ClusterProps {
    *
    * @default Automatically generated name
    */
-  readonly clusterName?: PhysicalName;
+  readonly clusterName?: string;
 
   /**
    * Security Group to use for Control Plane ENIs
@@ -223,7 +223,7 @@ export class Cluster extends Resource implements ICluster {
 
     this.connections = new ec2.Connections({
       securityGroups: [securityGroup],
-      defaultPortRange: new ec2.TcpPort(443), // Control Plane has an HTTPS API
+      defaultPort: ec2.Port.tcp(443), // Control Plane has an HTTPS API
     });
 
     // Get subnetIds for all selected subnets
@@ -240,17 +240,12 @@ export class Cluster extends Resource implements ICluster {
       }
     });
 
-    const resourceIdentifiers = this.getCrossEnvironmentAttributes({
-      arn: resource.attrArn,
-      name: resource.ref,
-      arnComponents: {
-        service: 'eks',
-        resource: 'cluster',
-        resourceName: this.physicalName,
-      },
+    this.clusterName = this.getResourceNameAttribute(resource.ref);
+    this.clusterArn = this.getResourceArnAttribute(resource.attrArn, {
+      service: 'eks',
+      resource: 'cluster',
+      resourceName: this.physicalName,
     });
-    this.clusterName = resourceIdentifiers.name;
-    this.clusterArn = resourceIdentifiers.arn;
 
     this.clusterEndpoint = resource.attrEndpoint;
     this.clusterCertificateAuthorityData = resource.attrCertificateAuthorityData;
@@ -299,19 +294,19 @@ export class Cluster extends Resource implements ICluster {
    */
   public addAutoScalingGroup(autoScalingGroup: autoscaling.AutoScalingGroup, options: AddAutoScalingGroupOptions) {
     // self rules
-    autoScalingGroup.connections.allowInternally(new ec2.AllTraffic());
+    autoScalingGroup.connections.allowInternally(ec2.Port.allTraffic());
 
     // Cluster to:nodes rules
-    autoScalingGroup.connections.allowFrom(this, new ec2.TcpPort(443));
-    autoScalingGroup.connections.allowFrom(this, new ec2.TcpPortRange(1025, 65535));
+    autoScalingGroup.connections.allowFrom(this, ec2.Port.tcp(443));
+    autoScalingGroup.connections.allowFrom(this, ec2.Port.tcpRange(1025, 65535));
 
     // Allow HTTPS from Nodes to Cluster
-    autoScalingGroup.connections.allowTo(this, new ec2.TcpPort(443));
+    autoScalingGroup.connections.allowTo(this, ec2.Port.tcp(443));
 
     // Allow all node outbound traffic
-    autoScalingGroup.connections.allowToAnyIPv4(new ec2.TcpAllPorts());
-    autoScalingGroup.connections.allowToAnyIPv4(new ec2.UdpAllPorts());
-    autoScalingGroup.connections.allowToAnyIPv4(new ec2.IcmpAllTypesAndCodes());
+    autoScalingGroup.connections.allowToAnyIPv4(ec2.Port.allTcp());
+    autoScalingGroup.connections.allowToAnyIPv4(ec2.Port.allUdp());
+    autoScalingGroup.connections.allowToAnyIPv4(ec2.Port.allIcmp());
 
     autoScalingGroup.addUserData(
       'set -o xtrace',

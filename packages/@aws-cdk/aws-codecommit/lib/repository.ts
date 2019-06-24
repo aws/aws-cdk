@@ -1,5 +1,5 @@
 import events = require('@aws-cdk/aws-events');
-import { Construct, IConstruct, IResource, PhysicalName, Resource, Stack } from '@aws-cdk/cdk';
+import { Construct, IConstruct, IResource, Resource, Stack } from '@aws-cdk/core';
 import { CfnRepository } from './codecommit.generated';
 
 export interface IRepository extends IResource {
@@ -279,7 +279,7 @@ export class Repository extends RepositoryBase {
 
   constructor(scope: Construct, id: string, props: RepositoryProps) {
     super(scope, id, {
-      physicalName: PhysicalName.of(props.repositoryName),
+      physicalName: props.repositoryName,
     });
 
     this.repository = new CfnRepository(this, 'Resource', {
@@ -288,17 +288,11 @@ export class Repository extends RepositoryBase {
       triggers: this.triggers
     });
 
-    const resourceIdentifiers = this.getCrossEnvironmentAttributes({
-      arn: this.repository.attrArn,
-      name: this.repository.attrName,
-      arnComponents: {
-        service: 'codecommit',
-        resource: props.repositoryName,
-      },
+    this.repositoryName = this.getResourceNameAttribute(this.repository.attrName);
+    this.repositoryArn = this.getResourceArnAttribute(this.repository.attrArn, {
+      service: 'codecommit',
+      resource: this.physicalName,
     });
-
-    this.repositoryArn = resourceIdentifiers.arn;
-    this.repositoryName = resourceIdentifiers.name;
   }
 
   public get repositoryCloneUrlHttp() {

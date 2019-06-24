@@ -1,7 +1,7 @@
 import autoscaling = require('@aws-cdk/aws-applicationautoscaling');
 import ecs = require('@aws-cdk/aws-ecs');
 import sqs = require('@aws-cdk/aws-sqs');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 
 /**
  * Properties to define a queue processing service
@@ -153,6 +153,6 @@ export abstract class QueueProcessingServiceBase extends cdk.Construct {
    * @param prefix the Cloudwatch logging prefix
    */
   private createAWSLogDriver(prefix: string): ecs.AwsLogDriver {
-    return new ecs.AwsLogDriver(this, 'ProcessingContainerLogging', { streamPrefix: prefix });
+    return new ecs.AwsLogDriver({ streamPrefix: prefix });
   }
 }

@@ -2,8 +2,8 @@ import ec2 = require('@aws-cdk/aws-ec2');
 import ecs = require('@aws-cdk/aws-ecs');
 import iam = require('@aws-cdk/aws-iam');
 import sfn = require('@aws-cdk/aws-stepfunctions');
-import cdk = require('@aws-cdk/cdk');
-import { Stack } from '@aws-cdk/cdk';
+import cdk = require('@aws-cdk/core');
+import { Stack } from '@aws-cdk/core';
 import { ContainerOverride } from './run-ecs-task-base-types';
 
 /**
@@ -166,7 +166,7 @@ function renderOverrides(containerOverrides?: ContainerOverride[]) {
 
   const ret = new Array<any>();
   for (const override of containerOverrides) {
-    ret.push(sfn.FieldUtils.renderObject({
+    ret.push({
       Name: override.containerName,
       Command: override.command,
       Cpu: override.cpu,
@@ -176,7 +176,7 @@ function renderOverrides(containerOverrides?: ContainerOverride[]) {
         Name: e.name,
         Value: e.value,
       }))
-    }));
+    });
   }
 
   return { ContainerOverrides: ret };

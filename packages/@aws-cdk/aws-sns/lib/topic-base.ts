@@ -1,7 +1,8 @@
 import iam = require('@aws-cdk/aws-iam');
-import { IResource, Resource } from '@aws-cdk/cdk';
+import { IResource, Resource } from '@aws-cdk/core';
 import { TopicPolicy } from './policy';
 import { ITopicSubscription } from './subscriber';
+import { Subscription } from './subscription';
 
 export interface ITopic extends IResource {
   /**
@@ -55,7 +56,18 @@ export abstract class TopicBase extends Resource implements ITopic {
    * Subscribe some endpoint to this topic
    */
   public addSubscription(subscription: ITopicSubscription) {
-    subscription.bind(this, this);
+    const subscriptionConfig = subscription.bind(this);
+
+    // We use the subscriber's id as the construct id. There's no meaning
+    // to subscribing the same subscriber twice on the same topic.
+    if (this.node.tryFindChild(subscriptionConfig.subscriberId)) {
+      throw new Error(`A subscription between the topic ${this.node.id} and the subscriber ${subscriptionConfig.subscriberId} already exists`);
+    }
+
+    new Subscription(this, subscriptionConfig.subscriberId, {
+      topic: this,
+      ...subscriptionConfig,
+    });
   }
 
   /**

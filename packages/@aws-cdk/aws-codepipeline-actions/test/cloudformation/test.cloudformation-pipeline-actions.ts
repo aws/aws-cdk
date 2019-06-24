@@ -1,10 +1,11 @@
 import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
+import { CloudFormationCapabilities } from '@aws-cdk/aws-cloudformation';
 import codebuild = require('@aws-cdk/aws-codebuild');
 import { Repository } from '@aws-cdk/aws-codecommit';
 import codepipeline = require('@aws-cdk/aws-codepipeline');
 import { Role } from '@aws-cdk/aws-iam';
 import { PolicyStatement, ServicePrincipal } from '@aws-cdk/aws-iam';
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import { Test } from 'nodeunit';
 import cpactions = require('../../lib');
 
@@ -30,7 +31,7 @@ export = {
     actionName: 'source',
     output: sourceOutput,
     repository: repo,
-    pollForSourceChanges: true,
+    trigger: cpactions.CodeCommitTrigger.POLL,
   });
   pipeline.addStage({
     stageName: 'source',
@@ -413,7 +414,136 @@ export = {
     }));
 
     test.done();
-  }
+  },
+
+  'Single capability is passed to template'(test: Test) {
+  // GIVEN
+  const stack = new TestFixture();
+
+  // WHEN
+  stack.deployStage.addAction(new cpactions.CloudFormationCreateUpdateStackAction({
+    actionName: 'CreateUpdate',
+    stackName: 'MyStack',
+    templatePath: stack.sourceOutput.atPath('template.yaml'),
+    adminPermissions: false,
+    capabilities: [
+      CloudFormationCapabilities.NAMED_IAM
+    ]
+  }));
+
+  const roleId = "PipelineDeployCreateUpdateRole515CB7D4";
+
+  // THEN: Action in Pipeline has named IAM capabilities
+  expect(stack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
+    "Stages": [
+    { "Name": "Source" /* don't care about the rest */ },
+    {
+      "Name": "Deploy",
+      "Actions": [
+      {
+        "Configuration": {
+        "Capabilities": "CAPABILITY_NAMED_IAM",
+        "RoleArn": { "Fn::GetAtt": [ roleId, "Arn" ] },
+        "ActionMode": "CREATE_UPDATE",
+        "StackName": "MyStack",
+        "TemplatePath": "SourceArtifact::template.yaml"
+        },
+        "InputArtifacts": [{"Name": "SourceArtifact"}],
+        "Name": "CreateUpdate",
+      },
+      ],
+    }
+    ]
+  }));
+
+  test.done();
+  },
+
+  'Multiple capabilities are passed to template'(test: Test) {
+  // GIVEN
+  const stack = new TestFixture();
+
+  // WHEN
+  stack.deployStage.addAction(new cpactions.CloudFormationCreateUpdateStackAction({
+    actionName: 'CreateUpdate',
+    stackName: 'MyStack',
+    templatePath: stack.sourceOutput.atPath('template.yaml'),
+    adminPermissions: false,
+    capabilities: [
+      CloudFormationCapabilities.NAMED_IAM,
+      CloudFormationCapabilities.AUTO_EXPAND
+    ]
+  }));
+
+  const roleId = "PipelineDeployCreateUpdateRole515CB7D4";
+
+  // THEN: Action in Pipeline has named IAM and AUTOEXPAND capabilities
+  expect(stack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
+    "Stages": [
+    { "Name": "Source" /* don't care about the rest */ },
+    {
+      "Name": "Deploy",
+      "Actions": [
+      {
+        "Configuration": {
+        "Capabilities": "CAPABILITY_NAMED_IAM,CAPABILITY_AUTO_EXPAND",
+        "RoleArn": { "Fn::GetAtt": [ roleId, "Arn" ] },
+        "ActionMode": "CREATE_UPDATE",
+        "StackName": "MyStack",
+        "TemplatePath": "SourceArtifact::template.yaml"
+        },
+        "InputArtifacts": [{"Name": "SourceArtifact"}],
+        "Name": "CreateUpdate",
+      },
+      ],
+    }
+    ]
+  }));
+
+  test.done();
+  },
+
+  'Empty capabilities is not passed to template'(test: Test) {
+  // GIVEN
+  const stack = new TestFixture();
+
+  // WHEN
+  stack.deployStage.addAction(new cpactions.CloudFormationCreateUpdateStackAction({
+    actionName: 'CreateUpdate',
+    stackName: 'MyStack',
+    templatePath: stack.sourceOutput.atPath('template.yaml'),
+    adminPermissions: false,
+    capabilities: [
+      CloudFormationCapabilities.NONE
+    ]
+  }));
+
+  const roleId = "PipelineDeployCreateUpdateRole515CB7D4";
+
+  // THEN: Action in Pipeline has no capabilities
+  expect(stack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
+    "Stages": [
+    { "Name": "Source" /* don't care about the rest */ },
+    {
+      "Name": "Deploy",
+      "Actions": [
+      {
+        "Configuration": {
+        "RoleArn": { "Fn::GetAtt": [ roleId, "Arn" ] },
+        "ActionMode": "CREATE_UPDATE",
+        "StackName": "MyStack",
+        "TemplatePath": "SourceArtifact::template.yaml"
+        },
+        "InputArtifacts": [{"Name": "SourceArtifact"}],
+        "Name": "CreateUpdate",
+      },
+      ],
+    }
+    ]
+  }));
+
+  test.done();
+  },
 };
 
 /**

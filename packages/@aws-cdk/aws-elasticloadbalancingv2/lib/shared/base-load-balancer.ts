@@ -1,5 +1,5 @@
 import ec2 = require('@aws-cdk/aws-ec2');
-import { Construct, IResource, Lazy, PhysicalName, Resource } from '@aws-cdk/cdk';
+import { Construct, IResource, Lazy, Resource } from '@aws-cdk/core';
 import { CfnLoadBalancer } from '../elasticloadbalancingv2.generated';
 import { Attributes, ifUndefined, renderAttributes } from './util';
 
@@ -12,7 +12,7 @@ export interface BaseLoadBalancerProps {
    *
    * @default - Automatically generated name.
    */
-  readonly loadBalancerName?: PhysicalName;
+  readonly loadBalancerName?: string;
 
   /**
    * The VPC network to place the load balancer in
@@ -130,7 +130,7 @@ export abstract class BaseLoadBalancer extends Resource {
     const vpcSubnets = ifUndefined(baseProps.vpcSubnets,
       { subnetType: internetFacing ? ec2.SubnetType.PUBLIC : ec2.SubnetType.PRIVATE });
 
-    const { subnetIds, internetConnectedDependency } = baseProps.vpc.selectSubnets(vpcSubnets);
+    const { subnetIds, internetConnectivityEstablished } = baseProps.vpc.selectSubnets(vpcSubnets);
 
     this.vpc = baseProps.vpc;
 
@@ -142,7 +142,7 @@ export abstract class BaseLoadBalancer extends Resource {
       ...additionalProps
     });
     if (internetFacing) {
-      resource.node.addDependency(internetConnectedDependency);
+      resource.node.addDependency(internetConnectivityEstablished);
     }
 
     if (baseProps.deletionProtection) { this.setAttribute('deletion_protection.enabled', 'true'); }

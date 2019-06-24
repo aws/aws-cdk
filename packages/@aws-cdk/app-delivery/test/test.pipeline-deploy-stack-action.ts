@@ -5,8 +5,8 @@ import codepipeline = require('@aws-cdk/aws-codepipeline');
 import cpactions = require('@aws-cdk/aws-codepipeline-actions');
 import iam = require('@aws-cdk/aws-iam');
 import s3 = require('@aws-cdk/aws-s3');
-import cdk = require('@aws-cdk/cdk');
-import { ConstructNode } from '@aws-cdk/cdk';
+import cdk = require('@aws-cdk/core');
+import { ConstructNode } from '@aws-cdk/core';
 import cxapi = require('@aws-cdk/cx-api');
 import fc = require('fast-check');
 import nodeunit = require('nodeunit');
@@ -86,32 +86,55 @@ export = nodeunit.testCase({
     const stackWithAnonymousCapability = new cdk.Stack(undefined, 'AnonymousIAM',
       { env: { account: '123456789012', region: 'us-east-1' } });
 
+    const stackWithAutoExpandCapability = new cdk.Stack(undefined, 'AutoExpand',
+      { env: { account: '123456789012', region: 'us-east-1' } });
+
+    const stackWithAnonymousAndAutoExpandCapability = new cdk.Stack(undefined, 'AnonymousIAMAndAutoExpand',
+      { env: { account: '123456789012', region: 'us-east-1' } });
+
     const selfUpdatingStack = createSelfUpdatingStack(pipelineStack);
 
     const pipeline = selfUpdatingStack.pipeline;
+
     const selfUpdateStage1 = pipeline.addStage({ stageName: 'SelfUpdate1' });
     const selfUpdateStage2 = pipeline.addStage({ stageName: 'SelfUpdate2' });
     const selfUpdateStage3 = pipeline.addStage({ stageName: 'SelfUpdate3' });
+    const selfUpdateStage4 = pipeline.addStage({ stageName: 'SelfUpdate4' });
+    const selfUpdateStage5 = pipeline.addStage({ stageName: 'SelfUpdate5' });
 
     new PipelineDeployStackAction(pipelineStack, 'SelfUpdatePipeline', {
       stage: selfUpdateStage1,
       stack: pipelineStack,
       input: selfUpdatingStack.synthesizedApp,
-      capabilities: cfn.CloudFormationCapabilities.NamedIAM,
+      capabilities: [cfn.CloudFormationCapabilities.NAMED_IAM],
       adminPermissions: false,
     });
     new PipelineDeployStackAction(pipelineStack, 'DeployStack', {
       stage: selfUpdateStage2,
       stack: stackWithNoCapability,
       input: selfUpdatingStack.synthesizedApp,
-      capabilities: cfn.CloudFormationCapabilities.None,
+      capabilities: [cfn.CloudFormationCapabilities.NONE],
       adminPermissions: false,
     });
     new PipelineDeployStackAction(pipelineStack, 'DeployStack2', {
       stage: selfUpdateStage3,
       stack: stackWithAnonymousCapability,
       input: selfUpdatingStack.synthesizedApp,
-      capabilities: cfn.CloudFormationCapabilities.AnonymousIAM,
+      capabilities: [cfn.CloudFormationCapabilities.ANONYMOUS_IAM],
+      adminPermissions: false,
+    });
+    new PipelineDeployStackAction(pipelineStack, 'DeployStack3', {
+      stage: selfUpdateStage4,
+      stack: stackWithAutoExpandCapability,
+      input: selfUpdatingStack.synthesizedApp,
+      capabilities: [cfn.CloudFormationCapabilities.AUTO_EXPAND],
+      adminPermissions: false,
+    });
+    new PipelineDeployStackAction(pipelineStack, 'DeployStack4', {
+      stage: selfUpdateStage5,
+      stack: stackWithAnonymousAndAutoExpandCapability,
+      input: selfUpdatingStack.synthesizedApp,
+      capabilities: [cfn.CloudFormationCapabilities.ANONYMOUS_IAM, cfn.CloudFormationCapabilities.AUTO_EXPAND],
       adminPermissions: false,
     });
     expect(pipelineStack).to(haveResource('AWS::CodePipeline::Pipeline', hasPipelineAction({
@@ -148,6 +171,20 @@ export = nodeunit.testCase({
         ActionMode: "CHANGE_SET_REPLACE",
       }
     })));
+    expect(pipelineStack).to(haveResource('AWS::CodePipeline::Pipeline', hasPipelineAction({
+      Configuration: {
+        StackName: "AutoExpand",
+        ActionMode: "CHANGE_SET_REPLACE",
+        Capabilities: "CAPABILITY_AUTO_EXPAND",
+      }
+    })));
+    expect(pipelineStack).to(haveResource('AWS::CodePipeline::Pipeline', hasPipelineAction({
+      Configuration: {
+        StackName: "AnonymousIAMAndAutoExpand",
+        ActionMode: "CHANGE_SET_REPLACE",
+        Capabilities: "CAPABILITY_IAM,CAPABILITY_AUTO_EXPAND",
+      }
+    })));
     test.done();
   },
   'users can use admin permissions'(test: nodeunit.Test) {
@@ -178,7 +215,7 @@ export = nodeunit.testCase({
       Configuration: {
         StackName: "TestStack",
         ActionMode: "CHANGE_SET_REPLACE",
-        Capabilities: "CAPABILITY_NAMED_IAM",
+        Capabilities: "CAPABILITY_NAMED_IAM,CAPABILITY_AUTO_EXPAND",
       }
     })));
     test.done();

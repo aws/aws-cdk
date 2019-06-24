@@ -1,10 +1,10 @@
 import cloudwatch = require('@aws-cdk/aws-cloudwatch');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import net = require('net');
 import { CfnCustomerGateway, CfnVPNConnection, CfnVPNConnectionRoute } from './ec2.generated';
 import { IVpc } from './vpc';
 
-export interface IVpnConnection extends cdk.IConstruct {
+export interface IVpnConnection extends cdk.IResource {
   /**
    * The id of the VPN connection.
    */
@@ -98,7 +98,12 @@ export enum VpnConnectionType {
   DUMMY = 'dummy'
 }
 
-export class VpnConnection extends cdk.Construct implements IVpnConnection {
+/**
+ * Define a VPN Connection
+ *
+ * @resource AWS::EC2::VPNConnection
+ */
+export class VpnConnection extends cdk.Resource implements IVpnConnection {
   /**
    * Return the given named metric for all VPN connections in the account/region.
    */
@@ -116,7 +121,7 @@ export class VpnConnection extends cdk.Construct implements IVpnConnection {
    * @default average over 5 minutes
    */
   public static metricAllTunnelState(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    return this.metricAll('TunnelSate', { statistic: 'avg', ...props });
+    return this.metricAll('TunnelState', { statistic: 'avg', ...props });
   }
 
   /**

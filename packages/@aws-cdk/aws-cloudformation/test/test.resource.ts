@@ -1,7 +1,7 @@
 import { expect, haveResource, ResourcePart } from '@aws-cdk/assert';
 import lambda = require('@aws-cdk/aws-lambda');
 import sns = require('@aws-cdk/aws-sns');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import { Test, testCase } from 'nodeunit';
 import { CustomResource, CustomResourceProvider } from '../lib';
 
@@ -30,7 +30,7 @@ export = testCase({
       const stack = new cdk.Stack(app, 'Test');
 
       // WHEN
-      new TestCustomResource(stack, 'Custom', { removalPolicy: cdk.RemovalPolicy.Destroy });
+      new TestCustomResource(stack, 'Custom', { removalPolicy: cdk.RemovalPolicy.DESTROY });
 
       // THEN
       expect(stack).to(haveResource('AWS::CloudFormation::CustomResource', {}, ResourcePart.CompleteDefinition));
@@ -45,7 +45,7 @@ export = testCase({
       const stack = new cdk.Stack(app, 'Test');
 
       // WHEN
-      new TestCustomResource(stack, 'Custom', {  removalPolicy: cdk.RemovalPolicy.Retain });
+      new TestCustomResource(stack, 'Custom', {  removalPolicy: cdk.RemovalPolicy.RETAIN });
 
       // THEN
       expect(stack).to(haveResource('AWS::CloudFormation::CustomResource', {
@@ -202,7 +202,7 @@ class TestCustomResource extends cdk.Construct {
     const singletonLambda = new lambda.SingletonFunction(this, 'Lambda', {
       uuid: 'TestCustomResourceProvider',
       code: new lambda.InlineCode('def hello(): pass'),
-      runtime: lambda.Runtime.Python27,
+      runtime: lambda.Runtime.PYTHON_2_7,
       handler: 'index.hello',
       timeout: cdk.Duration.minutes(5),
     });

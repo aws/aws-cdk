@@ -1,5 +1,5 @@
 import ec2 = require('@aws-cdk/aws-ec2');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import eks = require('../lib');
 
 class EksClusterStack extends cdk.Stack {
@@ -20,7 +20,7 @@ class EksClusterStack extends cdk.Stack {
     });
 
     // Replace with desired IP
-    asg.connections.allowFrom(new ec2.CidrIPv4('1.2.3.4/32'), new ec2.TcpPort(22));
+    asg.connections.allowFrom(ec2.Peer.ipv4('1.2.3.4/32'), ec2.Port.tcp(22));
     /// !hide
   }
 }

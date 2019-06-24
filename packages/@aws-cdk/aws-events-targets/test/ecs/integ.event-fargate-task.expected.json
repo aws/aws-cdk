@@ -332,7 +332,7 @@
               "LogDriver": "awslogs",
               "Options": {
                 "awslogs-group": {
-                  "Ref": "TaskLoggingLogGroupC7E938D4"
+                  "Ref": "TaskDefTheContainerLogGroupD94C8EF5"
                 },
                 "awslogs-stream-prefix": "EventDemo",
                 "awslogs-region": {
@@ -477,7 +477,7 @@
               "Effect": "Allow",
               "Resource": {
                 "Fn::GetAtt": [
-                  "TaskLoggingLogGroupC7E938D4",
+                  "TaskDefTheContainerLogGroupD94C8EF5",
                   "Arn"
                 ]
               }
@@ -756,7 +756,7 @@
       },
       "DeletionPolicy": "Delete"
     },
-    "TaskLoggingLogGroupC7E938D4": {
+    "TaskDefTheContainerLogGroupD94C8EF5": {
       "Type": "AWS::Logs::LogGroup",
       "DeletionPolicy": "Retain"
     },

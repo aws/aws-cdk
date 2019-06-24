@@ -63,11 +63,9 @@ export class PublishToTopic implements sfn.IStepFunctionsTask {
       })],
       parameters: {
         TopicArn: this.topic.topicArn,
-        ...sfn.FieldUtils.renderObject({
-          Message: this.props.message.value,
-          MessageStructure: this.props.messagePerSubscriptionType ? "json" : undefined,
-          Subject: this.props.subject,
-        })
+        Message: this.props.message.value,
+        MessageStructure: this.props.messagePerSubscriptionType ? "json" : undefined,
+        Subject: this.props.subject,
       }
     };
   }

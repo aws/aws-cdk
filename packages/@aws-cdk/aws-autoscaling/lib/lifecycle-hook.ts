@@ -1,5 +1,5 @@
 import iam = require('@aws-cdk/aws-iam');
-import { Construct, Duration, IResource, PhysicalName, Resource } from '@aws-cdk/cdk';
+import { Construct, Duration, IResource, Resource } from '@aws-cdk/core';
 import { IAutoScalingGroup } from './auto-scaling-group';
 import { CfnLifecycleHook } from './autoscaling.generated';
 import { ILifecycleHookTarget } from './lifecycle-hook-target';
@@ -13,7 +13,7 @@ export interface BasicLifecycleHookProps {
    *
    * @default - Automatically generated name.
    */
-  readonly lifecycleHookName?: PhysicalName;
+  readonly lifecycleHookName?: string;
 
   /**
    * The action the Auto Scaling group takes when the lifecycle hook timeout elapses or if an unexpected failure occurs.

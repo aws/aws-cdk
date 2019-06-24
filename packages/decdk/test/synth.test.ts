@@ -1,4 +1,4 @@
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import fs = require('fs');
 import reflect = require('jsii-reflect');
 import path = require('path');

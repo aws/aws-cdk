@@ -3,7 +3,7 @@ import ec2 = require('@aws-cdk/aws-ec2');
 import iam = require('@aws-cdk/aws-iam');
 import kms = require('@aws-cdk/aws-kms');
 import sfn = require('@aws-cdk/aws-stepfunctions');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import tasks = require('../lib');
 import { BatchStrategy, S3DataType } from '../lib';
 
@@ -87,7 +87,7 @@ test('create complex transform job', () => {
         },
         transformResources: {
             instanceCount: 1,
-            instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.P3, ec2.InstanceSize.XLARGE2),
+            instanceType: ec2.InstanceType.of(ec2.InstanceClass.P3, ec2.InstanceSize.XLARGE2),
             volumeKmsKeyId: kmsKey,
         },
         tags: {
@@ -158,7 +158,7 @@ test('pass param to transform job', () => {
         },
         transformResources: {
             instanceCount: 1,
-            instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.P3, ec2.InstanceSize.XLARGE2),
+            instanceType: ec2.InstanceType.of(ec2.InstanceClass.P3, ec2.InstanceSize.XLARGE2),
         }
     }) });
 

@@ -1,7 +1,7 @@
 import ec2 = require('@aws-cdk/aws-ec2');
 import iam = require('@aws-cdk/aws-iam');
 import sfn = require('@aws-cdk/aws-stepfunctions');
-import { Construct, Duration, Stack } from '@aws-cdk/cdk';
+import { Construct, Duration, Stack } from '@aws-cdk/core';
 import { AlgorithmSpecification, Channel, InputMode, OutputDataConfig, ResourceConfig,
          S3DataType, StoppingCondition, VpcConfig,  } from './sagemaker-task-base-types';
 
@@ -110,7 +110,7 @@ export class SagemakerTrainTask implements ec2.IConnectable, sfn.IStepFunctionsT
         // set the default resource config if not defined.
         this.resourceConfig = props.resourceConfig || {
             instanceCount: 1,
-            instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.M4, ec2.InstanceSize.XLARGE),
+            instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.XLARGE),
             volumeSizeInGB: 10
         };
 
@@ -151,7 +151,7 @@ export class SagemakerTrainTask implements ec2.IConnectable, sfn.IStepFunctionsT
     public bind(task: sfn.Task): sfn.StepFunctionsTaskConfig  {
         return {
           resourceArn: 'arn:aws:states:::sagemaker:createTrainingJob' + (this.props.synchronous ? '.sync' : ''),
-          parameters: sfn.FieldUtils.renderObject(this.renderParameters()),
+          parameters: this.renderParameters(),
           policyStatements: this.makePolicyStatements(task),
         };
     }

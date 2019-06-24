@@ -1,7 +1,7 @@
 import ec2 = require('@aws-cdk/aws-ec2');
 import ecs = require('@aws-cdk/aws-ecs');
 import events = require('@aws-cdk/aws-events');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 
 import { ScheduledEc2Task } from '../../lib';
 
@@ -27,7 +27,7 @@ class EventStack extends cdk.Stack {
       memoryLimitMiB: 512,
       cpu: 1,
       environment: { name: 'TRIGGER', value: 'CloudWatch Events' },
-      schedule: events.Schedule.rate(1, events.TimeUnit.Minute),
+      schedule: events.Schedule.rate(cdk.Duration.minutes(1)),
     });
     /// !hide
   }

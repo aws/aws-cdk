@@ -1,6 +1,6 @@
 import lambda = require('@aws-cdk/aws-lambda');
 import s3 = require('@aws-cdk/aws-s3');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import { CfnDistribution } from './cloudfront.generated';
 import { IDistribution } from './distribution';
 
@@ -489,17 +489,17 @@ interface BehaviorWithOrigin extends Behavior {
  * Here's how you can use this construct:
  *
  * ```ts
- * import { CloudFront } from '@aws-cdk/aws-cloudfront'
+ * import { CloudFrontWebDistribution } from '@aws-cdk/aws-cloudfront'
  *
  * const sourceBucket = new Bucket(this, 'Bucket');
  *
- * const distribution = new CloudFrontDistribution(this, 'MyDistribution', {
+ * const distribution = new CloudFrontWebDistribution(this, 'MyDistribution', {
  *  originConfigs: [
  *    {
  *      s3OriginSource: {
  *      s3BucketSource: sourceBucket
  *      },
- *      behaviors : [ {isDefaultBehavior}]
+ *      behaviors : [ {isDefaultBehavior: true}]
  *    }
  *  ]
  * });

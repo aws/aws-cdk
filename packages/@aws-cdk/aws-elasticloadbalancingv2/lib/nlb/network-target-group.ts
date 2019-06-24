@@ -1,4 +1,4 @@
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import { BaseTargetGroupProps, ITargetGroup, loadBalancerNameFromListenerArn, LoadBalancerTargetProps,
          TargetGroupBase, TargetGroupImportProps } from '../shared/base-target-group';
 import { Protocol } from '../shared/enums';
@@ -48,7 +48,7 @@ export class NetworkTargetGroup extends TargetGroupBase implements INetworkTarge
 
   constructor(scope: cdk.Construct, id: string, props: NetworkTargetGroupProps) {
     super(scope, id, props, {
-      protocol: Protocol.Tcp,
+      protocol: Protocol.TCP,
       port: props.port,
     });
 

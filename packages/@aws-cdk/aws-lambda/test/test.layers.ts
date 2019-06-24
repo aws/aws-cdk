@@ -1,6 +1,6 @@
 import { expect, haveResource } from '@aws-cdk/assert';
 import s3 = require('@aws-cdk/aws-s3');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import { Test, testCase } from 'nodeunit';
 import lambda = require('../lib');
 
@@ -14,7 +14,7 @@ export = testCase({
     // WHEN
     new lambda.LayerVersion(stack, 'LayerVersion', {
       code,
-      compatibleRuntimes: [lambda.Runtime.Nodejs810]
+      compatibleRuntimes: [lambda.Runtime.NODEJS_8_10]
     });
 
     // THEN
@@ -36,7 +36,7 @@ export = testCase({
     const code = new lambda.S3Code(bucket, 'ObjectKey');
     const layer = new lambda.LayerVersion(stack, 'LayerVersion', {
       code,
-      compatibleRuntimes: [lambda.Runtime.Nodejs810]
+      compatibleRuntimes: [lambda.Runtime.NODEJS_8_10]
     });
 
     // WHEN

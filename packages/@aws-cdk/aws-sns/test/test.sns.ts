@@ -1,6 +1,6 @@
 import { expect, haveResource } from '@aws-cdk/assert';
 import iam = require('@aws-cdk/aws-iam');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import { Test } from 'nodeunit';
 import sns = require('../lib');
 
@@ -27,7 +27,7 @@ export = {
       const stack = new cdk.Stack();
 
       new sns.Topic(stack, 'MyTopic', {
-        topicName: cdk.PhysicalName.of('topicName'),
+        topicName: 'topicName',
       });
 
       expect(stack).toMatch({
@@ -69,7 +69,7 @@ export = {
       const stack = new cdk.Stack();
 
       new sns.Topic(stack, 'MyTopic', {
-        topicName: cdk.PhysicalName.of('topicName'),
+        topicName: 'topicName',
         displayName: 'displayName'
       });
 
@@ -87,8 +87,6 @@ export = {
 
       test.done();
     },
-  },
-  'subscription tests': {
   },
 
   'can add a policy to the topic'(test: Test) {
