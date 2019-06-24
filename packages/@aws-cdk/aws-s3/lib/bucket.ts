@@ -174,7 +174,7 @@ export interface IBucket extends IResource {
    * @param id The id of the rule
    * @param options Options for adding the rule
    */
-  onCloudTrailEvent(id: string, options: OnCloudTrailBucketEventOptions): events.Rule;
+  onCloudTrailEvent(id: string, options?: OnCloudTrailBucketEventOptions): events.Rule;
 
   /**
    * Defines an AWS CloudWatch event rule that can trigger a target when an image is pushed to this
@@ -186,7 +186,7 @@ export interface IBucket extends IResource {
    * @param id The id of the rule
    * @param options Options for adding the rule
    */
-  onCloudTrailPutObject(id: string, options: OnCloudTrailBucketEventOptions): events.Rule;
+  onCloudTrailPutObject(id: string, options?: OnCloudTrailBucketEventOptions): events.Rule;
 }
 
 /**
