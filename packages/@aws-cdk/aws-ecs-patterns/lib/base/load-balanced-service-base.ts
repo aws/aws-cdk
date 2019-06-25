@@ -132,7 +132,7 @@ export abstract class LoadBalancedServiceBase extends cdk.Construct {
     } else if (props.cluster) {
       this.cluster = props.cluster;
     } else {
-      this.cluster = new ecs.Cluster(this, 'Cluster', { vpc: props.vpc });
+      this.cluster = this.getCreateDefaultCluster(this, props.vpc);
     }
 
     // Create log driver if logging is enabled
@@ -196,6 +196,12 @@ export abstract class LoadBalancedServiceBase extends cdk.Construct {
     }
 
     new cdk.CfnOutput(this, 'LoadBalancerDNS', { value: this.loadBalancer.loadBalancerDnsName });
+  }
+
+  protected getCreateDefaultCluster(scope: cdk.Construct, vpc?: ec2.IVpc): ecs.Cluster {
+    const DEFAULT_CLUSTER_ID = 'EcsDefaultCluster';
+    const stack = cdk.Stack.of(scope);
+    return stack.node.tryFindChild(DEFAULT_CLUSTER_ID) as ecs.Cluster || new ecs.Cluster(stack, DEFAULT_CLUSTER_ID, { vpc });
   }
 
   protected addServiceAsTarget(service: ecs.BaseService) {
