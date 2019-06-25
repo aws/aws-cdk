@@ -84,7 +84,7 @@ export class Model extends Resource implements IModel {
    *   }
    * }
    */
-  public static readonly ERROR_MODEL: IModel = ({ modelName: "Error", stack: null, node: null } as unknown) as IModel;
+  public static readonly ERROR_MODEL: IModel = ({ modelId: "Error", stack: null, node: null } as unknown) as IModel;
 
   /**
    * Represents a reference to a REST API's Empty model, which is available
@@ -103,7 +103,7 @@ export class Model extends Resource implements IModel {
    *
    * @see https://docs.amazonaws.cn/en_us/apigateway/latest/developerguide/models-mappings.html#models-mappings-models
    */
-  public static readonly EMPTY_MODEL: IModel = ({ modelName: "Empty", stack: null, node: null } as unknown) as IModel;
+  public static readonly EMPTY_MODEL: IModel = ({ modelId: "Empty", stack: null, node: null } as unknown) as IModel;
 
   public static fromModelName(scope: Construct, id: string, modelName: string): IModel {
     class Import extends Resource implements IModel {
