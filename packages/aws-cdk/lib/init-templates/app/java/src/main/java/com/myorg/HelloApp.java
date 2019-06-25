@@ -1,6 +1,6 @@
 package com.myorg;
 
-import software.amazon.awscdk.App;
+import software.amazon.awscdk.core.App;
 
 import java.util.Arrays;
 
