@@ -190,7 +190,7 @@ export = {
     const stack = new Stack();
     const r1 = new CfnResource(stack, 'Resource', { type: 'Type' });
     const cond = new CfnCondition(stack, 'MyCondition', { expression: Fn.conditionNot(Fn.conditionEquals('a', 'b')) });
-    r1.options.condition = cond;
+    r1.cfnOptions.condition = cond;
 
     test.deepEqual(toCloudFormation(stack), {
       Resources: { Resource: { Type: 'Type', Condition: 'MyCondition' } },
@@ -204,9 +204,9 @@ export = {
     const stack = new Stack();
     const r1 = new CfnResource(stack, 'Resource', { type: 'Type' });
 
-    r1.options.creationPolicy = { autoScalingCreationPolicy: { minSuccessfulInstancesPercent: 10 } };
+    r1.cfnOptions.creationPolicy = { autoScalingCreationPolicy: { minSuccessfulInstancesPercent: 10 } };
     // tslint:disable-next-line:max-line-length
-    r1.options.updatePolicy = {
+    r1.cfnOptions.updatePolicy = {
       autoScalingScheduledAction: { ignoreUnmodifiedGroupSizeProperties: false },
       autoScalingReplacingUpdate: { willReplace: true },
       codeDeployLambdaAliasUpdate: {
@@ -215,8 +215,8 @@ export = {
         beforeAllowTrafficHook: 'lambda1',
       },
     };
-    r1.options.deletionPolicy = CfnDeletionPolicy.RETAIN;
-    r1.options.updateReplacePolicy = CfnDeletionPolicy.SNAPSHOT;
+    r1.cfnOptions.deletionPolicy = CfnDeletionPolicy.RETAIN;
+    r1.cfnOptions.updateReplacePolicy = CfnDeletionPolicy.SNAPSHOT;
 
     test.deepEqual(toCloudFormation(stack), {
       Resources: {
@@ -245,7 +245,7 @@ export = {
     const stack = new Stack();
     const r1 = new CfnResource(stack, 'Resource', { type: 'Type' });
 
-    r1.options.updatePolicy = { useOnlineResharding: true };
+    r1.cfnOptions.updatePolicy = { useOnlineResharding: true };
 
     test.deepEqual(toCloudFormation(stack), {
       Resources: {
@@ -265,7 +265,7 @@ export = {
     const stack = new Stack();
     const r1 = new CfnResource(stack, 'Resource', { type: 'Type' });
 
-    r1.options.metadata = {
+    r1.cfnOptions.metadata = {
       MyKey: 10,
       MyValue: 99
     };
