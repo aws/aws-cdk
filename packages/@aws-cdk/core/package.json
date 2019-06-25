@@ -8,7 +8,7 @@
     "outdir": "dist",
     "targets": {
       "java": {
-        "package": "software.amazon.awscdk",
+        "package": "software.amazon.awscdk.core",
         "maven": {
           "groupId": "software.amazon.awscdk",
           "artifactId": "core"
