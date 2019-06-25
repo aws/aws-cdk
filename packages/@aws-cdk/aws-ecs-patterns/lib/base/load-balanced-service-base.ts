@@ -199,7 +199,7 @@ export abstract class LoadBalancedServiceBase extends cdk.Construct {
   }
 
   protected getCreateDefaultCluster(scope: cdk.Construct, vpc?: ec2.IVpc): ecs.Cluster {
-    const DEFAULT_CLUSTER_ID = 'EcsDefaultCluster';
+    const DEFAULT_CLUSTER_ID = `EcsDefaultCluster${vpc ? vpc.node.id : ''}`;
     const stack = cdk.Stack.of(scope);
     return stack.node.tryFindChild(DEFAULT_CLUSTER_ID) as ecs.Cluster || new ecs.Cluster(stack, DEFAULT_CLUSTER_ID, { vpc });
   }

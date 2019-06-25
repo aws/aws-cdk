@@ -11,4 +11,10 @@ new ecsPatterns.LoadBalancedFargateService(stack, 'L3', {
   image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
 });
 
+new ecsPatterns.LoadBalancedFargateService(stack, 'L3b', {
+  memoryLimitMiB: 1024,
+  cpu: 512,
+  image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
+});
+
 app.synth();

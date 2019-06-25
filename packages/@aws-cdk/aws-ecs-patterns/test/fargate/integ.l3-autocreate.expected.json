@@ -1,351 +1,5 @@
 {
   "Resources": {
-    "L3Cluster7CE43D51": {
-      "Type": "AWS::ECS::Cluster"
-    },
-    "L3ClusterVpc43AC6BC1": {
-      "Type": "AWS::EC2::VPC",
-      "Properties": {
-        "CidrBlock": "10.0.0.0/16",
-        "EnableDnsHostnames": true,
-        "EnableDnsSupport": true,
-        "InstanceTenancy": "default",
-        "Tags": [
-          {
-            "Key": "Name",
-            "Value": "aws-ecs-integ/L3/Cluster/Vpc"
-          }
-        ]
-      }
-    },
-    "L3ClusterVpcPublicSubnet1Subnet47357688": {
-      "Type": "AWS::EC2::Subnet",
-      "Properties": {
-        "CidrBlock": "10.0.0.0/18",
-        "VpcId": {
-          "Ref": "L3ClusterVpc43AC6BC1"
-        },
-        "AvailabilityZone": "test-region-1a",
-        "MapPublicIpOnLaunch": true,
-        "Tags": [
-          {
-            "Key": "Name",
-            "Value": "aws-ecs-integ/L3/Cluster/Vpc/PublicSubnet1"
-          },
-          {
-            "Key": "aws-cdk:subnet-name",
-            "Value": "Public"
-          },
-          {
-            "Key": "aws-cdk:subnet-type",
-            "Value": "Public"
-          }
-        ]
-      }
-    },
-    "L3ClusterVpcPublicSubnet1RouteTableD456E7ED": {
-      "Type": "AWS::EC2::RouteTable",
-      "Properties": {
-        "VpcId": {
-          "Ref": "L3ClusterVpc43AC6BC1"
-        },
-        "Tags": [
-          {
-            "Key": "Name",
-            "Value": "aws-ecs-integ/L3/Cluster/Vpc/PublicSubnet1"
-          }
-        ]
-      }
-    },
-    "L3ClusterVpcPublicSubnet1RouteTableAssociationC74D4249": {
-      "Type": "AWS::EC2::SubnetRouteTableAssociation",
-      "Properties": {
-        "RouteTableId": {
-          "Ref": "L3ClusterVpcPublicSubnet1RouteTableD456E7ED"
-        },
-        "SubnetId": {
-          "Ref": "L3ClusterVpcPublicSubnet1Subnet47357688"
-        }
-      }
-    },
-    "L3ClusterVpcPublicSubnet1DefaultRoute942E7D20": {
-      "Type": "AWS::EC2::Route",
-      "Properties": {
-        "RouteTableId": {
-          "Ref": "L3ClusterVpcPublicSubnet1RouteTableD456E7ED"
-        },
-        "DestinationCidrBlock": "0.0.0.0/0",
-        "GatewayId": {
-          "Ref": "L3ClusterVpcIGW43EECE0E"
-        }
-      },
-      "DependsOn": [
-        "L3ClusterVpcVPCGW05D6769C"
-      ]
-    },
-    "L3ClusterVpcPublicSubnet1EIP5CDFF0CB": {
-      "Type": "AWS::EC2::EIP",
-      "Properties": {
-        "Domain": "vpc"
-      }
-    },
-    "L3ClusterVpcPublicSubnet1NATGateway97DF0997": {
-      "Type": "AWS::EC2::NatGateway",
-      "Properties": {
-        "AllocationId": {
-          "Fn::GetAtt": [
-            "L3ClusterVpcPublicSubnet1EIP5CDFF0CB",
-            "AllocationId"
-          ]
-        },
-        "SubnetId": {
-          "Ref": "L3ClusterVpcPublicSubnet1Subnet47357688"
-        },
-        "Tags": [
-          {
-            "Key": "Name",
-            "Value": "aws-ecs-integ/L3/Cluster/Vpc/PublicSubnet1"
-          }
-        ]
-      }
-    },
-    "L3ClusterVpcPublicSubnet2Subnet0A7EB0BD": {
-      "Type": "AWS::EC2::Subnet",
-      "Properties": {
-        "CidrBlock": "10.0.64.0/18",
-        "VpcId": {
-          "Ref": "L3ClusterVpc43AC6BC1"
-        },
-        "AvailabilityZone": "test-region-1b",
-        "MapPublicIpOnLaunch": true,
-        "Tags": [
-          {
-            "Key": "Name",
-            "Value": "aws-ecs-integ/L3/Cluster/Vpc/PublicSubnet2"
-          },
-          {
-            "Key": "aws-cdk:subnet-name",
-            "Value": "Public"
-          },
-          {
-            "Key": "aws-cdk:subnet-type",
-            "Value": "Public"
-          }
-        ]
-      }
-    },
-    "L3ClusterVpcPublicSubnet2RouteTable4F59E35C": {
-      "Type": "AWS::EC2::RouteTable",
-      "Properties": {
-        "VpcId": {
-          "Ref": "L3ClusterVpc43AC6BC1"
-        },
-        "Tags": [
-          {
-            "Key": "Name",
-            "Value": "aws-ecs-integ/L3/Cluster/Vpc/PublicSubnet2"
-          }
-        ]
-      }
-    },
-    "L3ClusterVpcPublicSubnet2RouteTableAssociation3EF2091A": {
-      "Type": "AWS::EC2::SubnetRouteTableAssociation",
-      "Properties": {
-        "RouteTableId": {
-          "Ref": "L3ClusterVpcPublicSubnet2RouteTable4F59E35C"
-        },
-        "SubnetId": {
-          "Ref": "L3ClusterVpcPublicSubnet2Subnet0A7EB0BD"
-        }
-      }
-    },
-    "L3ClusterVpcPublicSubnet2DefaultRouteFD136F14": {
-      "Type": "AWS::EC2::Route",
-      "Properties": {
-        "RouteTableId": {
-          "Ref": "L3ClusterVpcPublicSubnet2RouteTable4F59E35C"
-        },
-        "DestinationCidrBlock": "0.0.0.0/0",
-        "GatewayId": {
-          "Ref": "L3ClusterVpcIGW43EECE0E"
-        }
-      },
-      "DependsOn": [
-        "L3ClusterVpcVPCGW05D6769C"
-      ]
-    },
-    "L3ClusterVpcPublicSubnet2EIP5E82D0CD": {
-      "Type": "AWS::EC2::EIP",
-      "Properties": {
-        "Domain": "vpc"
-      }
-    },
-    "L3ClusterVpcPublicSubnet2NATGatewayA42D1A44": {
-      "Type": "AWS::EC2::NatGateway",
-      "Properties": {
-        "AllocationId": {
-          "Fn::GetAtt": [
-            "L3ClusterVpcPublicSubnet2EIP5E82D0CD",
-            "AllocationId"
-          ]
-        },
-        "SubnetId": {
-          "Ref": "L3ClusterVpcPublicSubnet2Subnet0A7EB0BD"
-        },
-        "Tags": [
-          {
-            "Key": "Name",
-            "Value": "aws-ecs-integ/L3/Cluster/Vpc/PublicSubnet2"
-          }
-        ]
-      }
-    },
-    "L3ClusterVpcPrivateSubnet1Subnet322AE14A": {
-      "Type": "AWS::EC2::Subnet",
-      "Properties": {
-        "CidrBlock": "10.0.128.0/18",
-        "VpcId": {
-          "Ref": "L3ClusterVpc43AC6BC1"
-        },
-        "AvailabilityZone": "test-region-1a",
-        "MapPublicIpOnLaunch": false,
-        "Tags": [
-          {
-            "Key": "Name",
-            "Value": "aws-ecs-integ/L3/Cluster/Vpc/PrivateSubnet1"
-          },
-          {
-            "Key": "aws-cdk:subnet-name",
-            "Value": "Private"
-          },
-          {
-            "Key": "aws-cdk:subnet-type",
-            "Value": "Private"
-          }
-        ]
-      }
-    },
-    "L3ClusterVpcPrivateSubnet1RouteTable7DAD9450": {
-      "Type": "AWS::EC2::RouteTable",
-      "Properties": {
-        "VpcId": {
-          "Ref": "L3ClusterVpc43AC6BC1"
-        },
-        "Tags": [
-          {
-            "Key": "Name",
-            "Value": "aws-ecs-integ/L3/Cluster/Vpc/PrivateSubnet1"
-          }
-        ]
-      }
-    },
-    "L3ClusterVpcPrivateSubnet1RouteTableAssociationDE7F4324": {
-      "Type": "AWS::EC2::SubnetRouteTableAssociation",
-      "Properties": {
-        "RouteTableId": {
-          "Ref": "L3ClusterVpcPrivateSubnet1RouteTable7DAD9450"
-        },
-        "SubnetId": {
-          "Ref": "L3ClusterVpcPrivateSubnet1Subnet322AE14A"
-        }
-      }
-    },
-    "L3ClusterVpcPrivateSubnet1DefaultRoute9957E3CA": {
-      "Type": "AWS::EC2::Route",
-      "Properties": {
-        "RouteTableId": {
-          "Ref": "L3ClusterVpcPrivateSubnet1RouteTable7DAD9450"
-        },
-        "DestinationCidrBlock": "0.0.0.0/0",
-        "NatGatewayId": {
-          "Ref": "L3ClusterVpcPublicSubnet1NATGateway97DF0997"
-        }
-      }
-    },
-    "L3ClusterVpcPrivateSubnet2Subnet623DC6DA": {
-      "Type": "AWS::EC2::Subnet",
-      "Properties": {
-        "CidrBlock": "10.0.192.0/18",
-        "VpcId": {
-          "Ref": "L3ClusterVpc43AC6BC1"
-        },
-        "AvailabilityZone": "test-region-1b",
-        "MapPublicIpOnLaunch": false,
-        "Tags": [
-          {
-            "Key": "Name",
-            "Value": "aws-ecs-integ/L3/Cluster/Vpc/PrivateSubnet2"
-          },
-          {
-            "Key": "aws-cdk:subnet-name",
-            "Value": "Private"
-          },
-          {
-            "Key": "aws-cdk:subnet-type",
-            "Value": "Private"
-          }
-        ]
-      }
-    },
-    "L3ClusterVpcPrivateSubnet2RouteTable64ABB5EA": {
-      "Type": "AWS::EC2::RouteTable",
-      "Properties": {
-        "VpcId": {
-          "Ref": "L3ClusterVpc43AC6BC1"
-        },
-        "Tags": [
-          {
-            "Key": "Name",
-            "Value": "aws-ecs-integ/L3/Cluster/Vpc/PrivateSubnet2"
-          }
-        ]
-      }
-    },
-    "L3ClusterVpcPrivateSubnet2RouteTableAssociation63B768FF": {
-      "Type": "AWS::EC2::SubnetRouteTableAssociation",
-      "Properties": {
-        "RouteTableId": {
-          "Ref": "L3ClusterVpcPrivateSubnet2RouteTable64ABB5EA"
-        },
-        "SubnetId": {
-          "Ref": "L3ClusterVpcPrivateSubnet2Subnet623DC6DA"
-        }
-      }
-    },
-    "L3ClusterVpcPrivateSubnet2DefaultRouteDDDC1176": {
-      "Type": "AWS::EC2::Route",
-      "Properties": {
-        "RouteTableId": {
-          "Ref": "L3ClusterVpcPrivateSubnet2RouteTable64ABB5EA"
-        },
-        "DestinationCidrBlock": "0.0.0.0/0",
-        "NatGatewayId": {
-          "Ref": "L3ClusterVpcPublicSubnet2NATGatewayA42D1A44"
-        }
-      }
-    },
-    "L3ClusterVpcIGW43EECE0E": {
-      "Type": "AWS::EC2::InternetGateway",
-      "Properties": {
-        "Tags": [
-          {
-            "Key": "Name",
-            "Value": "aws-ecs-integ/L3/Cluster/Vpc"
-          }
-        ]
-      }
-    },
-    "L3ClusterVpcVPCGW05D6769C": {
-      "Type": "AWS::EC2::VPCGatewayAttachment",
-      "Properties": {
-        "VpcId": {
-          "Ref": "L3ClusterVpc43AC6BC1"
-        },
-        "InternetGatewayId": {
-          "Ref": "L3ClusterVpcIGW43EECE0E"
-        }
-      }
-    },
     "L3LB212FC0E0": {
       "Type": "AWS::ElasticLoadBalancingV2::LoadBalancer",
       "Properties": {
@@ -361,17 +15,17 @@
         ],
         "Subnets": [
           {
-            "Ref": "L3ClusterVpcPublicSubnet1Subnet47357688"
+            "Ref": "EcsDefaultClusterVpcPublicSubnet1Subnet134B5BCC"
           },
           {
-            "Ref": "L3ClusterVpcPublicSubnet2Subnet0A7EB0BD"
+            "Ref": "EcsDefaultClusterVpcPublicSubnet2SubnetC0BFE532"
           }
         ],
         "Type": "application"
       },
       "DependsOn": [
-        "L3ClusterVpcPublicSubnet1DefaultRoute942E7D20",
-        "L3ClusterVpcPublicSubnet2DefaultRouteFD136F14"
+        "EcsDefaultClusterVpcPublicSubnet1DefaultRoute4FCFDAB0",
+        "EcsDefaultClusterVpcPublicSubnet2DefaultRoute972C30B9"
       ]
     },
     "L3LBSecurityGroupEDE61198": {
@@ -389,7 +43,7 @@
           }
         ],
         "VpcId": {
-          "Ref": "L3ClusterVpc43AC6BC1"
+          "Ref": "EcsDefaultClusterVpc332E2889"
         }
       }
     },
@@ -442,7 +96,7 @@
         "Targets": [],
         "TargetType": "ip",
         "VpcId": {
-          "Ref": "L3ClusterVpc43AC6BC1"
+          "Ref": "EcsDefaultClusterVpc332E2889"
         }
       }
     },
@@ -527,6 +181,10 @@
         "Volumes": []
       }
     },
+    "L3TaskDefwebLogGroupC6E4A38A": {
+      "Type": "AWS::Logs::LogGroup",
+      "DeletionPolicy": "Retain"
+    },
     "L3TaskDefExecutionRole49AF0996": {
       "Type": "AWS::IAM::Role",
       "Properties": {
@@ -583,10 +241,6 @@
         ]
       }
     },
-    "L3TaskDefwebLogGroupC6E4A38A": {
-      "Type": "AWS::Logs::LogGroup",
-      "DeletionPolicy": "Retain"
-    },
     "L3Service616D5A93": {
       "Type": "AWS::ECS::Service",
       "Properties": {
@@ -594,15 +248,15 @@
           "Ref": "L3TaskDef48D8ACB8"
         },
         "Cluster": {
-          "Ref": "L3Cluster7CE43D51"
+          "Ref": "EcsDefaultCluster4A168C60"
         },
         "DeploymentConfiguration": {
           "MaximumPercent": 200,
           "MinimumHealthyPercent": 50
         },
         "DesiredCount": 1,
-        "LaunchType": "FARGATE",
         "HealthCheckGracePeriodSeconds": 60,
+        "LaunchType": "FARGATE",
         "LoadBalancers": [
           {
             "ContainerName": "web",
@@ -625,10 +279,10 @@
             ],
             "Subnets": [
               {
-                "Ref": "L3ClusterVpcPrivateSubnet1Subnet322AE14A"
+                "Ref": "EcsDefaultClusterVpcPrivateSubnet1Subnet49EBDBEA"
               },
               {
-                "Ref": "L3ClusterVpcPrivateSubnet2Subnet623DC6DA"
+                "Ref": "EcsDefaultClusterVpcPrivateSubnet2Subnet3BCDB986"
               }
             ]
           }
@@ -653,7 +307,7 @@
         ],
         "SecurityGroupIngress": [],
         "VpcId": {
-          "Ref": "L3ClusterVpc43AC6BC1"
+          "Ref": "EcsDefaultClusterVpc332E2889"
         }
       }
     },
@@ -677,6 +331,684 @@
         },
         "ToPort": 80
       }
+    },
+    "EcsDefaultCluster4A168C60": {
+      "Type": "AWS::ECS::Cluster"
+    },
+    "EcsDefaultClusterVpc332E2889": {
+      "Type": "AWS::EC2::VPC",
+      "Properties": {
+        "CidrBlock": "10.0.0.0/16",
+        "EnableDnsHostnames": true,
+        "EnableDnsSupport": true,
+        "InstanceTenancy": "default",
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-ecs-integ/EcsDefaultCluster/Vpc"
+          }
+        ]
+      }
+    },
+    "EcsDefaultClusterVpcPublicSubnet1Subnet134B5BCC": {
+      "Type": "AWS::EC2::Subnet",
+      "Properties": {
+        "CidrBlock": "10.0.0.0/18",
+        "VpcId": {
+          "Ref": "EcsDefaultClusterVpc332E2889"
+        },
+        "AvailabilityZone": "test-region-1a",
+        "MapPublicIpOnLaunch": true,
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-ecs-integ/EcsDefaultCluster/Vpc/PublicSubnet1"
+          },
+          {
+            "Key": "aws-cdk:subnet-name",
+            "Value": "Public"
+          },
+          {
+            "Key": "aws-cdk:subnet-type",
+            "Value": "Public"
+          }
+        ]
+      }
+    },
+    "EcsDefaultClusterVpcPublicSubnet1RouteTableE4FA7EB3": {
+      "Type": "AWS::EC2::RouteTable",
+      "Properties": {
+        "VpcId": {
+          "Ref": "EcsDefaultClusterVpc332E2889"
+        },
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-ecs-integ/EcsDefaultCluster/Vpc/PublicSubnet1"
+          }
+        ]
+      }
+    },
+    "EcsDefaultClusterVpcPublicSubnet1RouteTableAssociation279699CB": {
+      "Type": "AWS::EC2::SubnetRouteTableAssociation",
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "EcsDefaultClusterVpcPublicSubnet1RouteTableE4FA7EB3"
+        },
+        "SubnetId": {
+          "Ref": "EcsDefaultClusterVpcPublicSubnet1Subnet134B5BCC"
+        }
+      }
+    },
+    "EcsDefaultClusterVpcPublicSubnet1DefaultRoute4FCFDAB0": {
+      "Type": "AWS::EC2::Route",
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "EcsDefaultClusterVpcPublicSubnet1RouteTableE4FA7EB3"
+        },
+        "DestinationCidrBlock": "0.0.0.0/0",
+        "GatewayId": {
+          "Ref": "EcsDefaultClusterVpcIGWA1FE237C"
+        }
+      },
+      "DependsOn": [
+        "EcsDefaultClusterVpcVPCGWA2924D7C"
+      ]
+    },
+    "EcsDefaultClusterVpcPublicSubnet1EIPD5CD8D33": {
+      "Type": "AWS::EC2::EIP",
+      "Properties": {
+        "Domain": "vpc"
+      }
+    },
+    "EcsDefaultClusterVpcPublicSubnet1NATGatewayFDE724D4": {
+      "Type": "AWS::EC2::NatGateway",
+      "Properties": {
+        "AllocationId": {
+          "Fn::GetAtt": [
+            "EcsDefaultClusterVpcPublicSubnet1EIPD5CD8D33",
+            "AllocationId"
+          ]
+        },
+        "SubnetId": {
+          "Ref": "EcsDefaultClusterVpcPublicSubnet1Subnet134B5BCC"
+        },
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-ecs-integ/EcsDefaultCluster/Vpc/PublicSubnet1"
+          }
+        ]
+      }
+    },
+    "EcsDefaultClusterVpcPublicSubnet2SubnetC0BFE532": {
+      "Type": "AWS::EC2::Subnet",
+      "Properties": {
+        "CidrBlock": "10.0.64.0/18",
+        "VpcId": {
+          "Ref": "EcsDefaultClusterVpc332E2889"
+        },
+        "AvailabilityZone": "test-region-1b",
+        "MapPublicIpOnLaunch": true,
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-ecs-integ/EcsDefaultCluster/Vpc/PublicSubnet2"
+          },
+          {
+            "Key": "aws-cdk:subnet-name",
+            "Value": "Public"
+          },
+          {
+            "Key": "aws-cdk:subnet-type",
+            "Value": "Public"
+          }
+        ]
+      }
+    },
+    "EcsDefaultClusterVpcPublicSubnet2RouteTableE5404C0B": {
+      "Type": "AWS::EC2::RouteTable",
+      "Properties": {
+        "VpcId": {
+          "Ref": "EcsDefaultClusterVpc332E2889"
+        },
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-ecs-integ/EcsDefaultCluster/Vpc/PublicSubnet2"
+          }
+        ]
+      }
+    },
+    "EcsDefaultClusterVpcPublicSubnet2RouteTableAssociationC5835280": {
+      "Type": "AWS::EC2::SubnetRouteTableAssociation",
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "EcsDefaultClusterVpcPublicSubnet2RouteTableE5404C0B"
+        },
+        "SubnetId": {
+          "Ref": "EcsDefaultClusterVpcPublicSubnet2SubnetC0BFE532"
+        }
+      }
+    },
+    "EcsDefaultClusterVpcPublicSubnet2DefaultRoute972C30B9": {
+      "Type": "AWS::EC2::Route",
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "EcsDefaultClusterVpcPublicSubnet2RouteTableE5404C0B"
+        },
+        "DestinationCidrBlock": "0.0.0.0/0",
+        "GatewayId": {
+          "Ref": "EcsDefaultClusterVpcIGWA1FE237C"
+        }
+      },
+      "DependsOn": [
+        "EcsDefaultClusterVpcVPCGWA2924D7C"
+      ]
+    },
+    "EcsDefaultClusterVpcPublicSubnet2EIPCE97543D": {
+      "Type": "AWS::EC2::EIP",
+      "Properties": {
+        "Domain": "vpc"
+      }
+    },
+    "EcsDefaultClusterVpcPublicSubnet2NATGateway0AE951B4": {
+      "Type": "AWS::EC2::NatGateway",
+      "Properties": {
+        "AllocationId": {
+          "Fn::GetAtt": [
+            "EcsDefaultClusterVpcPublicSubnet2EIPCE97543D",
+            "AllocationId"
+          ]
+        },
+        "SubnetId": {
+          "Ref": "EcsDefaultClusterVpcPublicSubnet2SubnetC0BFE532"
+        },
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-ecs-integ/EcsDefaultCluster/Vpc/PublicSubnet2"
+          }
+        ]
+      }
+    },
+    "EcsDefaultClusterVpcPrivateSubnet1Subnet49EBDBEA": {
+      "Type": "AWS::EC2::Subnet",
+      "Properties": {
+        "CidrBlock": "10.0.128.0/18",
+        "VpcId": {
+          "Ref": "EcsDefaultClusterVpc332E2889"
+        },
+        "AvailabilityZone": "test-region-1a",
+        "MapPublicIpOnLaunch": false,
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-ecs-integ/EcsDefaultCluster/Vpc/PrivateSubnet1"
+          },
+          {
+            "Key": "aws-cdk:subnet-name",
+            "Value": "Private"
+          },
+          {
+            "Key": "aws-cdk:subnet-type",
+            "Value": "Private"
+          }
+        ]
+      }
+    },
+    "EcsDefaultClusterVpcPrivateSubnet1RouteTable19BA58D5": {
+      "Type": "AWS::EC2::RouteTable",
+      "Properties": {
+        "VpcId": {
+          "Ref": "EcsDefaultClusterVpc332E2889"
+        },
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-ecs-integ/EcsDefaultCluster/Vpc/PrivateSubnet1"
+          }
+        ]
+      }
+    },
+    "EcsDefaultClusterVpcPrivateSubnet1RouteTableAssociation64164F48": {
+      "Type": "AWS::EC2::SubnetRouteTableAssociation",
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "EcsDefaultClusterVpcPrivateSubnet1RouteTable19BA58D5"
+        },
+        "SubnetId": {
+          "Ref": "EcsDefaultClusterVpcPrivateSubnet1Subnet49EBDBEA"
+        }
+      }
+    },
+    "EcsDefaultClusterVpcPrivateSubnet1DefaultRoute6A3412DD": {
+      "Type": "AWS::EC2::Route",
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "EcsDefaultClusterVpcPrivateSubnet1RouteTable19BA58D5"
+        },
+        "DestinationCidrBlock": "0.0.0.0/0",
+        "NatGatewayId": {
+          "Ref": "EcsDefaultClusterVpcPublicSubnet1NATGatewayFDE724D4"
+        }
+      }
+    },
+    "EcsDefaultClusterVpcPrivateSubnet2Subnet3BCDB986": {
+      "Type": "AWS::EC2::Subnet",
+      "Properties": {
+        "CidrBlock": "10.0.192.0/18",
+        "VpcId": {
+          "Ref": "EcsDefaultClusterVpc332E2889"
+        },
+        "AvailabilityZone": "test-region-1b",
+        "MapPublicIpOnLaunch": false,
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-ecs-integ/EcsDefaultCluster/Vpc/PrivateSubnet2"
+          },
+          {
+            "Key": "aws-cdk:subnet-name",
+            "Value": "Private"
+          },
+          {
+            "Key": "aws-cdk:subnet-type",
+            "Value": "Private"
+          }
+        ]
+      }
+    },
+    "EcsDefaultClusterVpcPrivateSubnet2RouteTable5CAA45FB": {
+      "Type": "AWS::EC2::RouteTable",
+      "Properties": {
+        "VpcId": {
+          "Ref": "EcsDefaultClusterVpc332E2889"
+        },
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-ecs-integ/EcsDefaultCluster/Vpc/PrivateSubnet2"
+          }
+        ]
+      }
+    },
+    "EcsDefaultClusterVpcPrivateSubnet2RouteTableAssociationDCD2D245": {
+      "Type": "AWS::EC2::SubnetRouteTableAssociation",
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "EcsDefaultClusterVpcPrivateSubnet2RouteTable5CAA45FB"
+        },
+        "SubnetId": {
+          "Ref": "EcsDefaultClusterVpcPrivateSubnet2Subnet3BCDB986"
+        }
+      }
+    },
+    "EcsDefaultClusterVpcPrivateSubnet2DefaultRouteF00BB3CB": {
+      "Type": "AWS::EC2::Route",
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "EcsDefaultClusterVpcPrivateSubnet2RouteTable5CAA45FB"
+        },
+        "DestinationCidrBlock": "0.0.0.0/0",
+        "NatGatewayId": {
+          "Ref": "EcsDefaultClusterVpcPublicSubnet2NATGateway0AE951B4"
+        }
+      }
+    },
+    "EcsDefaultClusterVpcIGWA1FE237C": {
+      "Type": "AWS::EC2::InternetGateway",
+      "Properties": {
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-ecs-integ/EcsDefaultCluster/Vpc"
+          }
+        ]
+      }
+    },
+    "EcsDefaultClusterVpcVPCGWA2924D7C": {
+      "Type": "AWS::EC2::VPCGatewayAttachment",
+      "Properties": {
+        "VpcId": {
+          "Ref": "EcsDefaultClusterVpc332E2889"
+        },
+        "InternetGatewayId": {
+          "Ref": "EcsDefaultClusterVpcIGWA1FE237C"
+        }
+      }
+    },
+    "L3bLBB8FADA4E": {
+      "Type": "AWS::ElasticLoadBalancingV2::LoadBalancer",
+      "Properties": {
+        "LoadBalancerAttributes": [],
+        "Scheme": "internet-facing",
+        "SecurityGroups": [
+          {
+            "Fn::GetAtt": [
+              "L3bLBSecurityGroup7A2B0AA0",
+              "GroupId"
+            ]
+          }
+        ],
+        "Subnets": [
+          {
+            "Ref": "EcsDefaultClusterVpcPublicSubnet1Subnet134B5BCC"
+          },
+          {
+            "Ref": "EcsDefaultClusterVpcPublicSubnet2SubnetC0BFE532"
+          }
+        ],
+        "Type": "application"
+      },
+      "DependsOn": [
+        "EcsDefaultClusterVpcPublicSubnet1DefaultRoute4FCFDAB0",
+        "EcsDefaultClusterVpcPublicSubnet2DefaultRoute972C30B9"
+      ]
+    },
+    "L3bLBSecurityGroup7A2B0AA0": {
+      "Type": "AWS::EC2::SecurityGroup",
+      "Properties": {
+        "GroupDescription": "Automatically created Security Group for ELB awsecsintegL3bLB9C1497A7",
+        "SecurityGroupEgress": [],
+        "SecurityGroupIngress": [
+          {
+            "CidrIp": "0.0.0.0/0",
+            "Description": "Allow from anyone on port 80",
+            "FromPort": 80,
+            "IpProtocol": "tcp",
+            "ToPort": 80
+          }
+        ],
+        "VpcId": {
+          "Ref": "EcsDefaultClusterVpc332E2889"
+        }
+      }
+    },
+    "L3bLBSecurityGrouptoawsecsintegL3bServiceSecurityGroupC2BD1A598019C4C37D": {
+      "Type": "AWS::EC2::SecurityGroupEgress",
+      "Properties": {
+        "GroupId": {
+          "Fn::GetAtt": [
+            "L3bLBSecurityGroup7A2B0AA0",
+            "GroupId"
+          ]
+        },
+        "IpProtocol": "tcp",
+        "Description": "Load balancer to target",
+        "DestinationSecurityGroupId": {
+          "Fn::GetAtt": [
+            "L3bServiceSecurityGroupA8DA736E",
+            "GroupId"
+          ]
+        },
+        "FromPort": 80,
+        "ToPort": 80
+      }
+    },
+    "L3bLBPublicListenerA825925B": {
+      "Type": "AWS::ElasticLoadBalancingV2::Listener",
+      "Properties": {
+        "DefaultActions": [
+          {
+            "TargetGroupArn": {
+              "Ref": "L3bLBPublicListenerECSGroup0070C5CA"
+            },
+            "Type": "forward"
+          }
+        ],
+        "LoadBalancerArn": {
+          "Ref": "L3bLBB8FADA4E"
+        },
+        "Port": 80,
+        "Protocol": "HTTP",
+        "Certificates": []
+      }
+    },
+    "L3bLBPublicListenerECSGroup0070C5CA": {
+      "Type": "AWS::ElasticLoadBalancingV2::TargetGroup",
+      "Properties": {
+        "Port": 80,
+        "Protocol": "HTTP",
+        "TargetGroupAttributes": [],
+        "Targets": [],
+        "TargetType": "ip",
+        "VpcId": {
+          "Ref": "EcsDefaultClusterVpc332E2889"
+        }
+      }
+    },
+    "L3bTaskDefTaskRoleADAB80C8": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "ecs-tasks.",
+                      {
+                        "Ref": "AWS::URLSuffix"
+                      }
+                    ]
+                  ]
+                }
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      }
+    },
+    "L3bTaskDef5506864D": {
+      "Type": "AWS::ECS::TaskDefinition",
+      "Properties": {
+        "ContainerDefinitions": [
+          {
+            "Essential": true,
+            "Image": "amazon/amazon-ecs-sample",
+            "Links": [],
+            "LogConfiguration": {
+              "LogDriver": "awslogs",
+              "Options": {
+                "awslogs-group": {
+                  "Ref": "L3bTaskDefwebLogGroup8E5F1183"
+                },
+                "awslogs-stream-prefix": "L3b",
+                "awslogs-region": {
+                  "Ref": "AWS::Region"
+                }
+              }
+            },
+            "MountPoints": [],
+            "Name": "web",
+            "PortMappings": [
+              {
+                "ContainerPort": 80,
+                "Protocol": "tcp"
+              }
+            ],
+            "Ulimits": [],
+            "VolumesFrom": []
+          }
+        ],
+        "Cpu": "512",
+        "ExecutionRoleArn": {
+          "Fn::GetAtt": [
+            "L3bTaskDefExecutionRole9A3E2688",
+            "Arn"
+          ]
+        },
+        "Family": "awsecsintegL3bTaskDef24D7E4F1",
+        "Memory": "1024",
+        "NetworkMode": "awsvpc",
+        "RequiresCompatibilities": [
+          "FARGATE"
+        ],
+        "TaskRoleArn": {
+          "Fn::GetAtt": [
+            "L3bTaskDefTaskRoleADAB80C8",
+            "Arn"
+          ]
+        },
+        "Volumes": []
+      }
+    },
+    "L3bTaskDefwebLogGroup8E5F1183": {
+      "Type": "AWS::Logs::LogGroup",
+      "DeletionPolicy": "Retain"
+    },
+    "L3bTaskDefExecutionRole9A3E2688": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "ecs-tasks.",
+                      {
+                        "Ref": "AWS::URLSuffix"
+                      }
+                    ]
+                  ]
+                }
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      }
+    },
+    "L3bTaskDefExecutionRoleDefaultPolicy0CEA0ED2": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "logs:CreateLogStream",
+                "logs:PutLogEvents"
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "L3bTaskDefwebLogGroup8E5F1183",
+                  "Arn"
+                ]
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "L3bTaskDefExecutionRoleDefaultPolicy0CEA0ED2",
+        "Roles": [
+          {
+            "Ref": "L3bTaskDefExecutionRole9A3E2688"
+          }
+        ]
+      }
+    },
+    "L3bServiceF9D33D5A": {
+      "Type": "AWS::ECS::Service",
+      "Properties": {
+        "TaskDefinition": {
+          "Ref": "L3bTaskDef5506864D"
+        },
+        "Cluster": {
+          "Ref": "EcsDefaultCluster4A168C60"
+        },
+        "DeploymentConfiguration": {
+          "MaximumPercent": 200,
+          "MinimumHealthyPercent": 50
+        },
+        "DesiredCount": 1,
+        "HealthCheckGracePeriodSeconds": 60,
+        "LaunchType": "FARGATE",
+        "LoadBalancers": [
+          {
+            "ContainerName": "web",
+            "ContainerPort": 80,
+            "TargetGroupArn": {
+              "Ref": "L3bLBPublicListenerECSGroup0070C5CA"
+            }
+          }
+        ],
+        "NetworkConfiguration": {
+          "AwsvpcConfiguration": {
+            "AssignPublicIp": "DISABLED",
+            "SecurityGroups": [
+              {
+                "Fn::GetAtt": [
+                  "L3bServiceSecurityGroupA8DA736E",
+                  "GroupId"
+                ]
+              }
+            ],
+            "Subnets": [
+              {
+                "Ref": "EcsDefaultClusterVpcPrivateSubnet1Subnet49EBDBEA"
+              },
+              {
+                "Ref": "EcsDefaultClusterVpcPrivateSubnet2Subnet3BCDB986"
+              }
+            ]
+          }
+        },
+        "ServiceRegistries": []
+      },
+      "DependsOn": [
+        "L3bLBPublicListenerECSGroup0070C5CA",
+        "L3bLBPublicListenerA825925B"
+      ]
+    },
+    "L3bServiceSecurityGroupA8DA736E": {
+      "Type": "AWS::EC2::SecurityGroup",
+      "Properties": {
+        "GroupDescription": "aws-ecs-integ/L3b/Service/SecurityGroup",
+        "SecurityGroupEgress": [
+          {
+            "CidrIp": "0.0.0.0/0",
+            "Description": "Allow all outbound traffic by default",
+            "IpProtocol": "-1"
+          }
+        ],
+        "SecurityGroupIngress": [],
+        "VpcId": {
+          "Ref": "EcsDefaultClusterVpc332E2889"
+        }
+      }
+    },
+    "L3bServiceSecurityGroupfromawsecsintegL3bLBSecurityGroupA7B79A628034042CE5": {
+      "Type": "AWS::EC2::SecurityGroupIngress",
+      "Properties": {
+        "IpProtocol": "tcp",
+        "Description": "Load balancer to target",
+        "FromPort": 80,
+        "GroupId": {
+          "Fn::GetAtt": [
+            "L3bServiceSecurityGroupA8DA736E",
+            "GroupId"
+          ]
+        },
+        "SourceSecurityGroupId": {
+          "Fn::GetAtt": [
+            "L3bLBSecurityGroup7A2B0AA0",
+            "GroupId"
+          ]
+        },
+        "ToPort": 80
+      }
     }
   },
   "Outputs": {
@@ -684,6 +1016,14 @@
       "Value": {
         "Fn::GetAtt": [
           "L3LB212FC0E0",
+          "DNSName"
+        ]
+      }
+    },
+    "L3bLoadBalancerDNSED096132": {
+      "Value": {
+        "Fn::GetAtt": [
+          "L3bLBB8FADA4E",
           "DNSName"
         ]
       }
