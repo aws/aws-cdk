@@ -1,6 +1,6 @@
 import { beASupersetOfTemplate, expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
 import cloudwatch = require('@aws-cdk/aws-cloudwatch');
-import { Stack } from '@aws-cdk/cdk';
+import { Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import lambda = require('../lib');
 
@@ -10,7 +10,7 @@ export = {
     const fn = new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('hello()'),
       handler: 'index.hello',
-      runtime: lambda.Runtime.Nodejs810,
+      runtime: lambda.Runtime.NODEJS_8_10,
     });
 
     const version = fn.addVersion('1');
@@ -45,7 +45,7 @@ export = {
     const fn = new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('hello()'),
       handler: 'index.hello',
-      runtime: lambda.Runtime.Nodejs810,
+      runtime: lambda.Runtime.NODEJS_8_10,
     });
 
     new lambda.Alias(stack, 'Alias', {
@@ -68,10 +68,10 @@ export = {
     const fn = new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('hello()'),
       handler: 'index.hello',
-      runtime: lambda.Runtime.Nodejs810,
+      runtime: lambda.Runtime.NODEJS_8_10,
     });
 
-    const version = fn.newVersion();
+    const version = fn.addVersion('NewVersion');
 
     new lambda.Alias(stack, 'Alias', {
       aliasName: 'prod',
@@ -96,7 +96,7 @@ export = {
     const fn = new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('hello()'),
       handler: 'index.hello',
-      runtime: lambda.Runtime.Nodejs810,
+      runtime: lambda.Runtime.NODEJS_8_10,
     });
 
     const version1 = fn.addVersion('1');
@@ -129,7 +129,7 @@ export = {
     const fn = new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('hello()'),
       handler: 'index.hello',
-      runtime: lambda.Runtime.Nodejs810,
+      runtime: lambda.Runtime.NODEJS_8_10,
     });
 
     const version = fn.addVersion('1');
@@ -160,7 +160,7 @@ export = {
     const fn = new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('hello()'),
       handler: 'index.hello',
-      runtime: lambda.Runtime.Nodejs810,
+      runtime: lambda.Runtime.NODEJS_8_10,
     });
 
     const version = fn.addVersion('1');
@@ -210,7 +210,7 @@ export = {
     const fn = new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('hello()'),
       handler: 'index.hello',
-      runtime: lambda.Runtime.Nodejs810,
+      runtime: lambda.Runtime.NODEJS_8_10,
     });
 
     const version = fn.addVersion('1');
@@ -229,7 +229,7 @@ export = {
     const fn = new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('hello()'),
       handler: 'index.hello',
-      runtime: lambda.Runtime.Nodejs810,
+      runtime: lambda.Runtime.NODEJS_8_10,
     });
 
     const version = fn.addVersion('1');

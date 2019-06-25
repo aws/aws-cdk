@@ -1,4 +1,4 @@
-import { Lazy, Stack, Token } from '@aws-cdk/cdk';
+import { Lazy, Stack, Token } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import { Anyone, AnyPrincipal, CanonicalUserPrincipal, Effect, IPrincipal, PolicyDocument, PolicyStatement } from '../lib';
 import { ArnPrincipal, CompositePrincipal, FederatedPrincipal, PrincipalPolicyFragment, ServicePrincipal } from '../lib';
@@ -45,7 +45,7 @@ export = {
     p1.addResources('*');
 
     const p2 = new PolicyStatement();
-    p2.effect = Effect.Deny;
+    p2.effect = Effect.DENY;
     p2.addActions('cloudformation:CreateStack');
 
     doc.addStatements(p1);

@@ -168,10 +168,10 @@ async function main() {
         "pkglint": `^${version}`,
       },
       dependencies: {
-        "@aws-cdk/cdk": `^${version}`,
+        "@aws-cdk/core": `^${version}`,
       },
       peerDependencies: {
-        "@aws-cdk/cdk": `^${version}`,
+        "@aws-cdk/core": `^${version}`,
       },
       engines: {
         node: '>= 8.10.0'

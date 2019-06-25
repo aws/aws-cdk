@@ -1,5 +1,5 @@
 import iam = require('@aws-cdk/aws-iam');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import secretsManager = require('../lib');
 
 class SecretsManagerStack extends cdk.Stack {
@@ -26,8 +26,8 @@ class SecretsManagerStack extends cdk.Stack {
     });
 
     new iam.User(this, 'OtherUser', {
-      userName: templatedSecret.secretJsonValue('username').toString(),
-      password: templatedSecret.secretJsonValue('password')
+      userName: templatedSecret.secretValueFromJson('username').toString(),
+      password: templatedSecret.secretValueFromJson('password')
     });
     /// !hide
   }

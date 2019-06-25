@@ -3,7 +3,7 @@ import ec2 = require('@aws-cdk/aws-ec2');
 import iam = require('@aws-cdk/aws-iam');
 import logs = require('@aws-cdk/aws-logs');
 import sqs = require('@aws-cdk/aws-sqs');
-import { Construct, Fn, Lazy, Stack, Token } from '@aws-cdk/cdk';
+import { Construct, Duration, Fn, Lazy, Stack, Token } from '@aws-cdk/core';
 import { Code } from './code';
 import { IEventSource } from './event-source';
 import { FunctionAttributes, FunctionBase, IFunction } from './function-base';
@@ -21,16 +21,16 @@ export enum Tracing {
    * Lambda will respect any tracing header it receives from an upstream service.
    * If no tracing header is received, Lambda will call X-Ray for a tracing decision.
    */
-  Active,
+  ACTIVE = "Active",
   /**
    * Lambda will only trace the request from an upstream service
    * if it contains a tracing header with "sampled=1"
    */
-  PassThrough,
+  PASS_THROUGH = "PassThrough",
   /**
    * Lambda will not trace any request.
    */
-  Disabled
+  DISABLED = "Disabled"
 }
 
 export interface FunctionProps {
@@ -64,9 +64,9 @@ export interface FunctionProps {
    * the function. Because the execution time affects cost, set this value
    * based on the function's expected execution time.
    *
-   * @default 3
+   * @default Duration.seconds(3)
    */
-  readonly timeout?: number;
+  readonly timeout?: Duration;
 
   /**
    * Key-value pairs that Lambda caches and makes available for your Lambda
@@ -219,7 +219,7 @@ export interface FunctionProps {
    *
    * @default - Logs never expire.
    */
-  readonly logRetentionDays?: logs.RetentionDays;
+  readonly logRetention?: logs.RetentionDays;
 }
 
 /**
@@ -257,8 +257,8 @@ export class Function extends FunctionBase {
     class Import extends FunctionBase {
       public readonly functionName = functionName;
       public readonly functionArn = functionArn;
-      public readonly role = role;
       public readonly grantPrincipal: iam.IPrincipal;
+      public readonly role = role;
 
       protected readonly canCreatePermissions = false;
 
@@ -371,11 +371,6 @@ export class Function extends FunctionBase {
   public readonly runtime: Runtime;
 
   /**
-   * The name of the handler configured for this lambda.
-   */
-  public readonly handler: string;
-
-  /**
    * The principal this Lambda Function is running as
    */
   public readonly grantPrincipal: iam.IPrincipal;
@@ -390,7 +385,9 @@ export class Function extends FunctionBase {
   private readonly environment?: { [key: string]: any };
 
   constructor(scope: Construct, id: string, props: FunctionProps) {
-    super(scope, id);
+    super(scope, id, {
+      physicalName: props.functionName,
+    });
 
     this.environment = props.environment || { };
 
@@ -422,12 +419,12 @@ export class Function extends FunctionBase {
     }
 
     const resource: CfnFunction = new CfnFunction(this, 'Resource', {
-      functionName: props.functionName,
+      functionName: this.physicalName,
       description: props.description,
       code: Lazy.anyValue({ produce: () => props.code._toJSON(resource) }),
       layers: Lazy.listValue({ produce: () => this.layers.map(layer => layer.layerVersionArn) }, { omitEmpty: true }),
       handler: props.handler,
-      timeout: props.timeout,
+      timeout: props.timeout && props.timeout.toSeconds(),
       runtime: props.runtime.name,
       role: this.role.roleArn,
       environment: Lazy.anyValue({ produce: () => this.renderEnvironment() }),
@@ -440,16 +437,20 @@ export class Function extends FunctionBase {
 
     resource.node.addDependency(this.role);
 
-    this.functionName = resource.refAsString;
-    this.functionArn = resource.functionArn;
-    this.handler = props.handler;
+    this.functionName = this.getResourceNameAttribute(resource.ref);
+    this.functionArn = this.getResourceArnAttribute(resource.attrArn, {
+      service: 'lambda',
+      resource: 'function',
+      resourceName: this.physicalName,
+      sep: ':',
+    });
     this.runtime = props.runtime;
 
     // allow code to bind to stack.
     props.code.bind(this);
 
-    for (const layer of props.layers || []) {
-      this.addLayer(layer);
+    if (props.layers) {
+      this.addLayers(...props.layers);
     }
 
     for (const event of props.events || []) {
@@ -457,10 +458,10 @@ export class Function extends FunctionBase {
     }
 
     // Log retention
-    if (props.logRetentionDays) {
+    if (props.logRetention) {
       new LogRetention(this, 'LogRetention', {
         logGroupName: `/aws/lambda/${this.functionName}`,
-        retentionDays: props.logRetentionDays
+        retention: props.logRetention
       });
     }
   }
@@ -481,22 +482,23 @@ export class Function extends FunctionBase {
   }
 
   /**
-   * Adds a Lambda Layer to this Lambda function.
+   * Adds one or more Lambda Layers to this Lambda function.
    *
-   * @param layer the layer to be added.
+   * @param layers the layers to be added.
    *
    * @throws if there are already 5 layers on this function, or the layer is incompatible with this function's runtime.
    */
-  public addLayer(layer: ILayerVersion): this {
-    if (this.layers.length === 5) {
-      throw new Error('Unable to add layer: this lambda function already uses 5 layers.');
+  public addLayers(...layers: ILayerVersion[]): void {
+    for (const layer of layers) {
+      if (this.layers.length === 5) {
+        throw new Error('Unable to add layer: this lambda function already uses 5 layers.');
+      }
+      if (layer.compatibleRuntimes && !layer.compatibleRuntimes.find(runtime => runtime.runtimeEquals(this.runtime))) {
+        const runtimes = layer.compatibleRuntimes.map(runtime => runtime.name).join(', ');
+        throw new Error(`This lambda function uses a runtime that is incompatible with this layer (${this.runtime.name} is not in [${runtimes}])`);
+      }
+      this.layers.push(layer);
     }
-    if (layer.compatibleRuntimes && !layer.compatibleRuntimes.find(runtime => runtime.runtimeEquals(this.runtime))) {
-      const runtimes = layer.compatibleRuntimes.map(runtime => runtime.name).join(', ');
-      throw new Error(`This lambda function uses a runtime that is incompatible with this layer (${this.runtime.name} is not in [${runtimes}])`);
-    }
-    this.layers.push(layer);
-    return this;
   }
 
   /**
@@ -521,25 +523,6 @@ export class Function extends FunctionBase {
       codeSha256,
       description,
     });
-  }
-
-  /**
-   * Add a new version for this Lambda, always with a different name.
-   *
-   * This is similar to the {@link addVersion} method,
-   * but useful when deploying this Lambda through CodePipeline with blue/green deployments.
-   * When using {@link addVersion},
-   * your Alias will not be updated until you change the name passed to {@link addVersion} in your CDK code.
-   * When deploying through a Pipeline,
-   * that might lead to a situation where a change to your Lambda application code will never be activated,
-   * even though it traveled through the entire Pipeline,
-   * because the Alias is still pointing to an old Version.
-   * This method creates a new, unique Version every time the CDK code is executed,
-   * and so prevents that from happening.
-   */
-  public newVersion(): Version {
-    const now = new Date();
-    return this.addVersion(now.toISOString());
   }
 
   private renderEnvironment() {
@@ -609,7 +592,7 @@ export class Function extends FunctionBase {
     }
 
     const deadLetterQueue = props.deadLetterQueue || new sqs.Queue(this, 'DeadLetterQueue', {
-      retentionPeriodSec: 1209600
+      retentionPeriod: Duration.days(14)
     });
 
     this.addToRolePolicy(new iam.PolicyStatement({
@@ -623,7 +606,7 @@ export class Function extends FunctionBase {
   }
 
   private buildTracingConfig(props: FunctionProps) {
-    if (props.tracing === undefined || props.tracing === Tracing.Disabled) {
+    if (props.tracing === undefined || props.tracing === Tracing.DISABLED) {
       return undefined;
     }
 
@@ -633,7 +616,7 @@ export class Function extends FunctionBase {
     }));
 
     return {
-      mode: Tracing[props.tracing]
+      mode: props.tracing
     };
   }
 }

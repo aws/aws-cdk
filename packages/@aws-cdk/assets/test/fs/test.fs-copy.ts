@@ -35,7 +35,7 @@ export = {
 
     // WHEN
     copyDirectory(path.join(__dirname, 'fixtures', 'symlinks'), outdir, {
-      follow: FollowMode.Always
+      follow: FollowMode.ALWAYS
     });
 
     // THEN
@@ -60,7 +60,7 @@ export = {
 
     // WHEN
     copyDirectory(path.join(__dirname, 'fixtures', 'symlinks'), outdir, {
-      follow: FollowMode.Never
+      follow: FollowMode.NEVER
     });
 
     // THEN
@@ -83,7 +83,7 @@ export = {
 
     // WHEN
     copyDirectory(path.join(__dirname, 'fixtures', 'symlinks'), outdir, {
-      follow: FollowMode.External
+      follow: FollowMode.EXTERNAL
     });
 
     // THEN

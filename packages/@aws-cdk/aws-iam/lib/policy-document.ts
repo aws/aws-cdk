@@ -1,5 +1,5 @@
-import cdk = require('@aws-cdk/cdk');
-import { IPostProcessor } from '@aws-cdk/cdk';
+import cdk = require('@aws-cdk/core');
+import { captureStackTrace, IPostProcessor } from '@aws-cdk/core';
 import { PolicyStatement } from './policy-statement';
 
 /**
@@ -25,10 +25,12 @@ export interface PolicyDocumentProps {
  * A PolicyDocument is a collection of statements
  */
 export class PolicyDocument implements cdk.IResolvable {
+  public readonly creationStack: string[];
   private readonly statements = new Array<PolicyStatement>();
   private readonly autoAssignSids: boolean;
 
   constructor(props: PolicyDocumentProps = {}) {
+    this.creationStack = captureStackTrace();
     this.autoAssignSids = !!props.assignSids;
 
     this.addStatements(...props.statements || []);

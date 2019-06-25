@@ -1,5 +1,5 @@
 import ecs = require('@aws-cdk/aws-ecs');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import { QueueProcessingServiceBase, QueueProcessingServiceBaseProps } from '../base/queue-processing-service-base';
 
 /**

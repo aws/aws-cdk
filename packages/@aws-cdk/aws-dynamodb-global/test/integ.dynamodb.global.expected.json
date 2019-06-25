@@ -232,7 +232,8 @@
           ],
           "ResourceType": "Custom::DynamoGlobalTableCoordinator",
           "TableName": "integrationtest"
-        }
+        },
+        "DeletionPolicy": "Delete"
       }
     },
     "Parameters": {

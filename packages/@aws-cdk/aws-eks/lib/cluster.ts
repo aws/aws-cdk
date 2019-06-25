@@ -2,7 +2,7 @@ import autoscaling = require('@aws-cdk/aws-autoscaling');
 import ec2 = require('@aws-cdk/aws-ec2');
 import { Subnet } from '@aws-cdk/aws-ec2';
 import iam = require('@aws-cdk/aws-iam');
-import { CfnOutput, Construct, IResource, Resource, Tag } from '@aws-cdk/cdk';
+import { CfnOutput, Construct, IResource, Resource, Tag } from '@aws-cdk/core';
 import { EksOptimizedAmi, nodeTypeForInstanceType } from './ami';
 import { CfnCluster } from './eks.generated';
 import { maxPodsForInstanceType } from './instance-data';
@@ -199,7 +199,9 @@ export class Cluster extends Resource implements ICluster {
    * @param props properties in the IClusterProps interface
    */
   constructor(scope: Construct, id: string, props: ClusterProps) {
-    super(scope, id);
+    super(scope, id, {
+      physicalName: props.clusterName,
+    });
 
     this.vpc = props.vpc;
     this.version = props.version;
@@ -221,15 +223,15 @@ export class Cluster extends Resource implements ICluster {
 
     this.connections = new ec2.Connections({
       securityGroups: [securityGroup],
-      defaultPortRange: new ec2.TcpPort(443), // Control Plane has an HTTPS API
+      defaultPort: ec2.Port.tcp(443), // Control Plane has an HTTPS API
     });
 
     // Get subnetIds for all selected subnets
-    const placements = props.vpcSubnets || [{ subnetType: ec2.SubnetType.Public }, { subnetType: ec2.SubnetType.Private }];
+    const placements = props.vpcSubnets || [{ subnetType: ec2.SubnetType.PUBLIC }, { subnetType: ec2.SubnetType.PRIVATE }];
     const subnetIds = [...new Set(Array().concat(...placements.map(s => props.vpc.selectSubnets(s).subnetIds)))];
 
     const resource = new CfnCluster(this, 'Resource', {
-      name: props.clusterName,
+      name: this.physicalName,
       roleArn: this.role.roleArn,
       version: props.version,
       resourcesVpcConfig: {
@@ -238,12 +240,17 @@ export class Cluster extends Resource implements ICluster {
       }
     });
 
-    this.clusterName = resource.clusterName;
-    this.clusterArn = resource.clusterArn;
-    this.clusterEndpoint = resource.clusterEndpoint;
-    this.clusterCertificateAuthorityData = resource.clusterCertificateAuthorityData;
+    this.clusterName = this.getResourceNameAttribute(resource.ref);
+    this.clusterArn = this.getResourceArnAttribute(resource.attrArn, {
+      service: 'eks',
+      resource: 'cluster',
+      resourceName: this.physicalName,
+    });
 
-    new CfnOutput(this, 'ClusterName', { value: this.clusterName, disableExport: true });
+    this.clusterEndpoint = resource.attrEndpoint;
+    this.clusterCertificateAuthorityData = resource.attrCertificateAuthorityData;
+
+    new CfnOutput(this, 'ClusterName', { value: this.clusterName });
   }
 
   /**
@@ -260,7 +267,7 @@ export class Cluster extends Resource implements ICluster {
         nodeType: nodeTypeForInstanceType(options.instanceType),
         kubernetesVersion: this.version,
       }),
-      updateType: options.updateType || autoscaling.UpdateType.RollingUpdate,
+      updateType: options.updateType || autoscaling.UpdateType.ROLLING_UPDATE,
       instanceType: options.instanceType,
     });
 
@@ -287,19 +294,19 @@ export class Cluster extends Resource implements ICluster {
    */
   public addAutoScalingGroup(autoScalingGroup: autoscaling.AutoScalingGroup, options: AddAutoScalingGroupOptions) {
     // self rules
-    autoScalingGroup.connections.allowInternally(new ec2.AllTraffic());
+    autoScalingGroup.connections.allowInternally(ec2.Port.allTraffic());
 
     // Cluster to:nodes rules
-    autoScalingGroup.connections.allowFrom(this, new ec2.TcpPort(443));
-    autoScalingGroup.connections.allowFrom(this, new ec2.TcpPortRange(1025, 65535));
+    autoScalingGroup.connections.allowFrom(this, ec2.Port.tcp(443));
+    autoScalingGroup.connections.allowFrom(this, ec2.Port.tcpRange(1025, 65535));
 
     // Allow HTTPS from Nodes to Cluster
-    autoScalingGroup.connections.allowTo(this, new ec2.TcpPort(443));
+    autoScalingGroup.connections.allowTo(this, ec2.Port.tcp(443));
 
     // Allow all node outbound traffic
-    autoScalingGroup.connections.allowToAnyIPv4(new ec2.TcpAllPorts());
-    autoScalingGroup.connections.allowToAnyIPv4(new ec2.UdpAllPorts());
-    autoScalingGroup.connections.allowToAnyIPv4(new ec2.IcmpAllTypesAndCodes());
+    autoScalingGroup.connections.allowToAnyIPv4(ec2.Port.allTcp());
+    autoScalingGroup.connections.allowToAnyIPv4(ec2.Port.allUdp());
+    autoScalingGroup.connections.allowToAnyIPv4(ec2.Port.allIcmp());
 
     autoScalingGroup.addUserData(
       'set -o xtrace',
@@ -317,7 +324,6 @@ export class Cluster extends Resource implements ICluster {
 
     // Create an CfnOutput for the Instance Role ARN (need to paste it into aws-auth-cm.yaml)
     new CfnOutput(autoScalingGroup, 'InstanceRoleARN', {
-      disableExport: true,
       value: autoScalingGroup.role.roleArn
     });
   }

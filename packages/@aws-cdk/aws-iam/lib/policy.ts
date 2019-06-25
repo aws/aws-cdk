@@ -1,4 +1,4 @@
-import { Construct, IResource, Lazy, Resource } from '@aws-cdk/cdk';
+import { Construct, IResource, Lazy, Resource } from '@aws-cdk/core';
 import { IGroup } from './group';
 import { CfnPolicy } from './iam.generated';
 import { PolicyDocument } from './policy-document';
@@ -91,20 +91,23 @@ export class Policy extends Resource implements IPolicy {
   private readonly groups = new Array<IGroup>();
 
   constructor(scope: Construct, id: string, props: PolicyProps = {}) {
-    super(scope, id);
+    super(scope, id, {
+      physicalName: props.policyName ||
+        // generatePolicyName will take the last 128 characters of the logical id since
+        // policy names are limited to 128. the last 8 chars are a stack-unique hash, so
+        // that shouod be sufficient to ensure uniqueness within a principal.
+        Lazy.stringValue({ produce: () => generatePolicyName(resource.logicalId) })
+    });
 
     const resource = new CfnPolicy(this, 'Resource', {
       policyDocument: this.document,
-      policyName: Lazy.stringValue({ produce: () => this.policyName }).toString(),
+      policyName: this.physicalName,
       roles: undefinedIfEmpty(() => this.roles.map(r => r.roleName)),
       users: undefinedIfEmpty(() => this.users.map(u => u.userName)),
       groups: undefinedIfEmpty(() => this.groups.map(g => g.groupName)),
     });
 
-    // generatePolicyName will take the last 128 characters of the logical id since
-    // policy names are limited to 128. the last 8 chars are a stack-unique hash, so
-    // that shouod be sufficient to ensure uniqueness within a principal.
-    this.policyName = props.policyName || generatePolicyName(resource.logicalId);
+    this.policyName = this.physicalName!;
 
     if (props.users) {
       props.users.forEach(u => this.attachToUser(u));

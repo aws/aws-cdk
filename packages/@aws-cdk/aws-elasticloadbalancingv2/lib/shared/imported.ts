@@ -1,4 +1,4 @@
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import { ITargetGroup, TargetGroupImportProps } from './base-target-group';
 
 /**
@@ -24,6 +24,6 @@ export abstract class ImportedTargetGroupBase extends cdk.Construct implements I
     super(scope, id);
 
     this.targetGroupArn = props.targetGroupArn;
-    this.loadBalancerArns = props.loadBalancerArns || cdk.Aws.noValue;
+    this.loadBalancerArns = props.loadBalancerArns || cdk.Aws.NO_VALUE;
   }
 }

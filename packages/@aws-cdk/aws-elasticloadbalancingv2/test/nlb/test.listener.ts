@@ -1,7 +1,7 @@
 import { expect, haveResource, MatchStyle } from '@aws-cdk/assert';
 import acm = require('@aws-cdk/aws-certificatemanager');
 import ec2 = require('@aws-cdk/aws-ec2');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import { Test } from 'nodeunit';
 import elbv2 = require('../../lib');
 import { FakeSelfRegisteringTarget } from '../helpers';
@@ -99,8 +99,8 @@ export = {
       targets: [new FakeSelfRegisteringTarget(stack, 'Target', vpc)]
     });
     group.configureHealthCheck({
-      timeoutSeconds: 3600,
-      intervalSecs: 30,
+      timeout: cdk.Duration.hours(1),
+      interval: cdk.Duration.seconds(30),
       path: '/test',
     });
 
@@ -158,7 +158,7 @@ export = {
     // WHEN
     lb.addListener('Listener', {
       port: 443,
-      protocol: elbv2.Protocol.Tls,
+      protocol: elbv2.Protocol.TLS,
       certificates: [ { certificateArn: cert.certificateArn } ],
       sslPolicy: elbv2.SslPolicy.TLS12,
       defaultTargetGroups: [new elbv2.NetworkTargetGroup(stack, 'Group', { vpc, port: 80 })]
@@ -184,7 +184,7 @@ export = {
 
     test.throws(() => lb.addListener('Listener', {
         port: 443,
-        protocol: elbv2.Protocol.Http,
+        protocol: elbv2.Protocol.HTTP,
         defaultTargetGroups: [new elbv2.NetworkTargetGroup(stack, 'Group', { vpc, port: 80 })]
       }), Error, '/The protocol must be either TCP or TLS. Found HTTP/');
 
@@ -198,7 +198,7 @@ export = {
 
     test.throws(() => lb.addListener('Listener', {
       port: 443,
-      protocol: elbv2.Protocol.Tls,
+      protocol: elbv2.Protocol.TLS,
       defaultTargetGroups: [new elbv2.NetworkTargetGroup(stack, 'Group', { vpc, port: 80 })]
     }), Error, '/When the protocol is set to TLS, you must specify certificates/');
 
@@ -215,7 +215,7 @@ export = {
 
     test.throws(() => lb.addListener('Listener', {
       port: 443,
-      protocol: elbv2.Protocol.Tcp,
+      protocol: elbv2.Protocol.TCP,
       certificates: [ { certificateArn: cert.certificateArn } ],
       defaultTargetGroups: [new elbv2.NetworkTargetGroup(stack, 'Group', { vpc, port: 80 })]
     }), Error, '/Protocol must be TLS when certificates have been specified/');

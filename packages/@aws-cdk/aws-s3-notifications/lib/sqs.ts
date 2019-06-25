@@ -1,7 +1,7 @@
 import iam = require('@aws-cdk/aws-iam');
 import s3 = require('@aws-cdk/aws-s3');
 import sqs = require('@aws-cdk/aws-sqs');
-import { Construct } from '@aws-cdk/cdk';
+import { Construct } from '@aws-cdk/core';
 
 /**
  * Use an SQS queue as a bucket notification destination
@@ -33,7 +33,7 @@ export class SqsDestination implements s3.IBucketNotificationDestination {
 
     return {
       arn: this.queue.queueArn,
-      type: s3.BucketNotificationDestinationType.Queue,
+      type: s3.BucketNotificationDestinationType.QUEUE,
       dependencies: [ this.queue ]
     };
   }

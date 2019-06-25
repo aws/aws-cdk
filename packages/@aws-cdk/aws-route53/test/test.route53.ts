@@ -1,6 +1,6 @@
 import { beASupersetOfTemplate, exactlyMatchTemplate, expect, haveResource } from '@aws-cdk/assert';
 import ec2 = require('@aws-cdk/aws-ec2');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import { Test } from 'nodeunit';
 import { HostedZone, PrivateHostedZone, PublicHostedZone, TxtRecord } from '../lib';
 
@@ -182,7 +182,7 @@ export = {
     const delegate = new PublicHostedZone(stack, 'SubZone', { zoneName: 'sub.top.test' });
 
     // WHEN
-    zone.addDelegation(delegate, { ttl: 1337 });
+    zone.addDelegation(delegate, { ttl: cdk.Duration.seconds(1337) });
 
     // THEN
     expect(stack).to(haveResource('AWS::Route53::RecordSet', {

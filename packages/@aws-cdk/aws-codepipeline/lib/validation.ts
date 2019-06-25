@@ -1,4 +1,4 @@
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import { ActionCategory } from "./action";
 import { Artifact } from "./artifact";
 
@@ -26,7 +26,7 @@ export function validateArtifactBounds( type: string, artifacts: Artifact[],
  * in the first stage of a pipeline, and the first stage can only contain source actions.
  */
 export function validateSourceAction(mustBeSource: boolean, category: string, actionName: string, stageName: string): string[] {
-  if (mustBeSource !== (category === ActionCategory.Source)) {
+  if (mustBeSource !== (category === ActionCategory.SOURCE)) {
     return [`Action ${actionName} in stage ${stageName}: ` + (mustBeSource ? 'first stage may only contain Source actions'
       : 'Source actions may only occur in first stage')];
   }

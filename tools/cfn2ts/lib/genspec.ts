@@ -141,7 +141,8 @@ function overridePackageName(name: string) {
 export function cfnMapperName(typeName: CodeName): CodeName {
   if (!typeName.packageName) {
     // Built-in or intrinsic type, built-in mappers
-    return new CodeName('', CORE_NAMESPACE, '', undefined, util.downcaseFirst(`${typeName.className}ToCloudFormation`));
+    const mappedType = typeName.className === 'any' ? 'object' : typeName.className;
+    return new CodeName('', CORE_NAMESPACE, '', undefined, util.downcaseFirst(`${mappedType}ToCloudFormation`));
   }
 
   return new CodeName(typeName.packageName, '', util.downcaseFirst(`${typeName.namespace}${typeName.className}ToCloudFormation`));
@@ -153,7 +154,8 @@ export function cfnMapperName(typeName: CodeName): CodeName {
 export function validatorName(typeName: CodeName): CodeName {
   if (typeName.packageName === '') {
     // Built-in or intrinsic type, built-in validators
-    return new CodeName('', CORE_NAMESPACE, '', undefined, `validate${codemaker.toPascalCase(typeName.className)}`);
+    const validatedType = typeName.className === 'any' ? 'Object' : codemaker.toPascalCase(typeName.className);
+    return new CodeName('', CORE_NAMESPACE, '', undefined, `validate${validatedType}`);
   }
 
   return new CodeName(typeName.packageName, '', `${util.joinIf(typeName.namespace, '_', typeName.className)}Validator`);
@@ -167,9 +169,10 @@ export function validatorName(typeName: CodeName): CodeName {
  * - The type we will generate for the attribute, including its base class and docs.
  * - The property name we will use to refer to the attribute.
  */
-export function attributeDefinition(resourceName: CodeName, attributeName: string, spec: schema.Attribute): Attribute {
-  const descriptiveName = descriptiveAttributeName(resourceName, attributeName);  // "BucketArn"
-  const propertyName = cloudFormationToScriptName(descriptiveName);      // "bucketArn"
+export function attributeDefinition(attributeName: string, spec: schema.Attribute): Attribute {
+  const descriptiveName = attributeName.replace(/\./g, '');
+  const suffixName = codemaker.toPascalCase(cloudFormationToScriptName(descriptiveName));
+  const propertyName = `attr${suffixName}`;      // "attrArn"
 
   let attrType: string;
   if ('PrimitiveType' in spec && spec.PrimitiveType === 'String') {
@@ -186,43 +189,6 @@ export function attributeDefinition(resourceName: CodeName, attributeName: strin
 
   const constructorArguments = `this.getAtt('${attributeName}')`;
   return new Attribute(propertyName, attrType, constructorArguments);
-}
-
-/**
- * Return an attribute definition name for the RefKind for this class
- */
-export function refAttributeDefinition(resourceName: CodeName, refKind: string): Attribute {
-  const propertyName = codemaker.toCamelCase(descriptiveAttributeName(resourceName, refKind));
-
-  const constructorArguments = 'this.ref';
-
-  return new Attribute(propertyName, 'string', constructorArguments);
-}
-
-/**
- * In the CDK, attribute names will be prefixed with the name of the resource (unless they already
- * have the name of the resource as a prefix). There are a few reasons for that, mainly to avoid name
- * collisions with base class properties, but also to allow certain constructs to expose multiple attributes
- * of different sub-resources using the same names (i.e. 'bucketArn' and 'topicArn' can co-exist while 'arn' and 'arn' cannot).
- */
-function descriptiveAttributeName(resourceName: CodeName, attributeName: string): string {
-  // remove '.'s
-  attributeName = attributeName.replace(/\./g, '');
-
-  const resName = resourceName.specName!.resourceName;
-
-  // special case (someone was smart)
-  if (resName === 'SecurityGroup' && attributeName === 'GroupId') {
-    attributeName = 'SecurityGroupId';
-  }
-
-  // if property name already starts with the resource name, then just use it as-is
-  // otherwise, prepend the resource name
-  if (!attributeName.toLowerCase().startsWith(resName.toLowerCase())) {
-    attributeName = `${resName}${codemaker.toPascalCase(attributeName)}`;
-  }
-
-  return attributeName;
 }
 
 /**
@@ -254,7 +220,7 @@ function specPrimitiveToCodePrimitive(type: schema.PrimitiveType): CodeName {
     case 'Boolean': return CodeName.forPrimitive('boolean');
     case 'Double': return CodeName.forPrimitive('number');
     case 'Integer': return CodeName.forPrimitive('number');
-    case 'Json': return CodeName.forPrimitive('object');
+    case 'Json': return CodeName.forPrimitive('any');
     case 'Long': return CodeName.forPrimitive('number');
     case 'String': return CodeName.forPrimitive('string');
     case 'Timestamp': return CodeName.forPrimitive('Date');
@@ -265,7 +231,7 @@ function specPrimitiveToCodePrimitive(type: schema.PrimitiveType): CodeName {
 export function isPrimitive(type: CodeName): boolean {
   return type.className === 'boolean'
     || type.className === 'number'
-    || type.className === 'object'
+    || type.className === 'any'
     || type.className === 'string'
     || type.className === 'Date';
 }

@@ -1,7 +1,6 @@
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import { Alarm } from "./alarm";
-import { Metric } from "./metric";
-import { parseStatistic } from './util.statistic';
+import { IMetric } from "./metric-types";
 import { ConcreteWidget } from "./widget";
 
 /**
@@ -104,7 +103,7 @@ export class AlarmWidget extends ConcreteWidget {
       properties: {
         view: 'timeSeries',
         title: this.props.title,
-        region: this.props.region || cdk.Aws.region,
+        region: this.props.region || cdk.Aws.REGION,
         annotations: {
           alarms: [this.props.alarm.alarmArn]
         },
@@ -123,12 +122,12 @@ export interface GraphWidgetProps extends MetricWidgetProps {
   /**
    * Metrics to display on left Y axis
    */
-  readonly left?: Metric[];
+  readonly left?: IMetric[];
 
   /**
    * Metrics to display on right Y axis
    */
-  readonly right?: Metric[];
+  readonly right?: IMetric[];
 
   /**
    * Annotations for the left Y axis
@@ -177,7 +176,7 @@ export class GraphWidget extends ConcreteWidget {
       properties: {
         view: 'timeSeries',
         title: this.props.title,
-        region: this.props.region || cdk.Aws.region,
+        region: this.props.region || cdk.Aws.REGION,
         metrics: (this.props.left || []).map(m => metricJson(m, 'left')).concat(
              (this.props.right || []).map(m => metricJson(m, 'right'))),
         annotations: {
@@ -200,7 +199,7 @@ export interface SingleValueWidgetProps extends MetricWidgetProps {
   /**
    * Metrics to display
    */
-  readonly metrics: Metric[];
+  readonly metrics: IMetric[];
 }
 
 /**
@@ -224,7 +223,7 @@ export class SingleValueWidget extends ConcreteWidget {
       properties: {
         view: 'singleValue',
         title: this.props.title,
-        region: this.props.region || cdk.Aws.region,
+        region: this.props.region || cdk.Aws.REGION,
         metrics: this.props.metrics.map(m => metricJson(m, 'left'))
       }
     }];
@@ -273,17 +272,17 @@ export enum Shading {
   /**
    * Don't add shading
    */
-  None = 'none',
+  NONE = 'none',
 
   /**
    * Add shading above the annotation
    */
-  Above = 'above',
+  ABOVE = 'above',
 
   /**
    * Add shading below the annotation
    */
-  Below = 'below'
+  BELOW = 'below'
 }
 
 function mapAnnotation(yAxis: string): ((x: HorizontalAnnotation) => any) {
@@ -297,26 +296,27 @@ function mapAnnotation(yAxis: string): ((x: HorizontalAnnotation) => any) {
  *
  * This will be called by GraphWidget, no need for clients to call this.
  */
-function metricJson(metric: Metric, yAxis: string): any[] {
+function metricJson(metric: IMetric, yAxis: string): any[] {
+  const config = metric.toGraphConfig();
+
   // Namespace and metric Name
   const ret: any[] = [
-    metric.namespace,
-    metric.metricName,
+    config.namespace,
+    config.metricName,
   ];
 
   // Dimensions
-  for (const dim of metric.dimensionsAsList()) {
+  for (const dim of (config.dimensions || [])) {
     ret.push(dim.name, dim.value);
   }
 
   // Options
-  const stat = parseStatistic(metric.statistic);
   ret.push({
     yAxis,
-    label: metric.label,
-    color: metric.color,
-    period: metric.periodSec,
-    stat: stat.type === 'simple' ? stat.statistic : 'p' + stat.percentile.toString(),
+    label: config.label,
+    color: config.color,
+    period: config.period,
+    stat: config.statistic,
   });
 
   return ret;

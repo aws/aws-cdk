@@ -1,4 +1,4 @@
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import s3 = require('../lib');
 
 class TestStack extends cdk.Stack {
@@ -7,7 +7,7 @@ class TestStack extends cdk.Stack {
 
     /// !show
     const bucket = new s3.Bucket(this, 'MyBucket', {
-      removalPolicy: cdk.RemovalPolicy.Destroy
+      removalPolicy: cdk.RemovalPolicy.DESTROY
     });
 
     new cdk.CfnOutput(this, 'BucketURL', { value: bucket.bucketWebsiteUrl });

@@ -1,4 +1,4 @@
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import { AccountPrincipal, AccountRootPrincipal, Anyone, ArnPrincipal, CanonicalUserPrincipal,
   FederatedPrincipal, IPrincipal, ServicePrincipal, ServicePrincipalOpts } from './principals';
 import { mergePrincipal } from './util';
@@ -19,7 +19,7 @@ export class PolicyStatement {
   private condition: { [key: string]: any } = { };
 
   constructor(props: PolicyStatementProps = {}) {
-    this.effect = Effect.Allow;
+    this.effect = Effect.ALLOW;
 
     this.addActions(...props.actions || []);
     this.addPrincipals(...props.principals || []);
@@ -214,8 +214,8 @@ export class PolicyStatement {
 }
 
 export enum Effect {
-  Allow = 'Allow',
-  Deny = 'Deny',
+  ALLOW = 'Allow',
+  DENY = 'Deny',
 }
 
 /**

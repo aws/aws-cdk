@@ -1,4 +1,4 @@
-import { Construct, Stack } from '@aws-cdk/cdk';
+import { Construct, Stack } from '@aws-cdk/core';
 import { CfnTopic } from './sns.generated';
 import { ITopic, TopicBase } from './topic-base';
 
@@ -46,14 +46,19 @@ export class Topic extends TopicBase {
   protected readonly autoCreatePolicy: boolean = true;
 
   constructor(scope: Construct, id: string, props: TopicProps = {}) {
-    super(scope, id);
+    super(scope, id, {
+      physicalName: props.topicName,
+    });
 
     const resource = new CfnTopic(this, 'Resource', {
       displayName: props.displayName,
-      topicName: props.topicName
+      topicName: this.physicalName,
     });
 
-    this.topicArn = resource.refAsString;
-    this.topicName = resource.topicName;
+    this.topicArn = this.getResourceArnAttribute(resource.ref, {
+      service: 'sns',
+      resource: this.physicalName,
+    });
+    this.topicName = this.getResourceNameAttribute(resource.attrTopicName);
   }
 }

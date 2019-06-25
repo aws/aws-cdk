@@ -1,6 +1,6 @@
 import iam = require('@aws-cdk/aws-iam');
-import cdk = require('@aws-cdk/cdk');
-import { Stack } from '@aws-cdk/cdk';
+import cdk = require('@aws-cdk/core');
+import { Stack } from '@aws-cdk/core';
 
 /**
  * A Lambda-based custom resource handler that provisions S3 bucket
@@ -63,7 +63,7 @@ export class NotificationsResourceHandler extends cdk.Construct {
 
     const resourceType = 'AWS::Lambda::Function';
     class InLineLambda extends cdk.CfnResource {
-      public readonly tags: cdk.TagManager = new cdk.TagManager(cdk.TagType.Standard, resourceType);
+      public readonly tags: cdk.TagManager = new cdk.TagManager(cdk.TagType.STANDARD, resourceType);
 
       protected renderProperties(properties: any): { [key: string]: any } {
         properties.Tags = cdk.listMapper(

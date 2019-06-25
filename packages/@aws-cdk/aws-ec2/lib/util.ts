@@ -1,5 +1,5 @@
-import cdk = require('@aws-cdk/cdk');
-import { ISubnet, Subnet, SubnetType } from './vpc';
+import cdk = require('@aws-cdk/core');
+import { ISubnet, SelectedSubnets, Subnet, SubnetType } from './vpc';
 
 /**
  * Turn an arbitrary string into one that can be used as a CloudFormation identifier by stripping special characters
@@ -15,9 +15,9 @@ export function slugify(x: string): string {
  */
 export function defaultSubnetName(type: SubnetType) {
   switch (type) {
-    case SubnetType.Public: return 'Public';
-    case SubnetType.Private: return 'Private';
-    case SubnetType.Isolated: return  'Isolated';
+    case SubnetType.PUBLIC: return 'Public';
+    case SubnetType.PRIVATE: return 'Private';
+    case SubnetType.ISOLATED: return  'Isolated';
   }
 }
 
@@ -105,4 +105,19 @@ export function range(n: number): number[] {
     ret.push(i);
   }
   return ret;
+}
+
+/**
+ * Return the union of table IDs from all selected subnets
+ */
+export function allRouteTableIds(...ssns: SelectedSubnets[]): string[] {
+  const ret = new Set<string>();
+  for (const ssn of ssns) {
+    for (const subnet of ssn.subnets) {
+      if (subnet.routeTable) {
+        ret.add(subnet.routeTable.routeTableId);
+      }
+    }
+  }
+  return Array.from(ret);
 }

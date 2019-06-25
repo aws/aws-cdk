@@ -2,7 +2,7 @@ import '@aws-cdk/assert/jest';
 import ec2 = require('@aws-cdk/aws-ec2');
 import ecs = require('@aws-cdk/aws-ecs');
 import events = require('@aws-cdk/aws-events');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import targets = require('../../lib');
 
 test("Can use EC2 taskdef as EventRule target", () => {
@@ -21,7 +21,7 @@ test("Can use EC2 taskdef as EventRule target", () => {
   });
 
   const rule = new events.Rule(stack, 'Rule', {
-    scheduleExpression: 'rate(1 minute)',
+    schedule: events.Schedule.expression('rate(1 min)')
   });
 
   // WHEN
@@ -69,7 +69,7 @@ test("Can use Fargate taskdef as EventRule target", () => {
   });
 
   const rule = new events.Rule(stack, 'Rule', {
-    scheduleExpression: 'rate(1 minute)',
+    schedule: events.Schedule.expression('rate(1 min)')
   });
 
   // WHEN

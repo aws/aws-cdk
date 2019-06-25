@@ -2,7 +2,7 @@ import { expect, haveResource } from '@aws-cdk/assert';
 import ec2 = require('@aws-cdk/aws-ec2');
 import { InstanceType } from '@aws-cdk/aws-ec2';
 import cloudmap = require('@aws-cdk/aws-servicediscovery');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import { Test } from 'nodeunit';
 import ecs = require('../lib');
 
@@ -26,7 +26,7 @@ export = {
         CidrBlock: '10.0.0.0/16',
         EnableDnsHostnames: true,
         EnableDnsSupport: true,
-        InstanceTenancy: ec2.DefaultInstanceTenancy.Default,
+        InstanceTenancy: ec2.DefaultInstanceTenancy.DEFAULT,
         Tags: [
           {
             Key: "Name",
@@ -36,7 +36,9 @@ export = {
       }));
 
       expect(stack).to(haveResource("AWS::AutoScaling::LaunchConfiguration", {
-        ImageId: "", // Should this not be the latest image ID?
+        ImageId: {
+          Ref: "SsmParameterValueawsserviceecsoptimizedamiamazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
+        },
         InstanceType: "t2.micro",
         IamInstanceProfile: {
           Ref: "EcsClusterDefaultAutoScalingGroupInstanceProfile2CE606B3"
@@ -86,9 +88,6 @@ export = {
           },
           {
             Ref: "MyVpcPrivateSubnet2Subnet0040C983"
-          },
-          {
-            Ref: "MyVpcPrivateSubnet3Subnet772D6AD7"
           }
         ]
       }));
@@ -229,13 +228,15 @@ export = {
     cluster.addCapacity('GpuAutoScalingGroup', {
       instanceType: new ec2.InstanceType('t2.micro'),
       machineImage: new ecs.EcsOptimizedAmi({
-        hwType: ecs.AmiHardwareType.Gpu
+        hardwareType: ecs.AmiHardwareType.GPU
       }),
     });
 
     // THEN
     expect(stack).to(haveResource("AWS::AutoScaling::LaunchConfiguration", {
-      ImageId: ""
+      ImageId: {
+        Ref: "SsmParameterValueawsserviceecsoptimizedamiamazonlinux2gpurecommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
+      }
     }));
 
     test.done();
@@ -253,8 +254,8 @@ export = {
       cluster.addCapacity('GpuAutoScalingGroup', {
         instanceType: new ec2.InstanceType('t2.micro'),
         machineImage: new ecs.EcsOptimizedAmi({
-          generation: ec2.AmazonLinuxGeneration.AmazonLinux,
-          hwType: ecs.AmiHardwareType.Gpu,
+          generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX,
+          hardwareType: ecs.AmiHardwareType.GPU,
         }),
       });
     });
@@ -320,13 +321,15 @@ export = {
     // WHEN
     cluster.addDefaultCloudMapNamespace({
       name: "foo.com",
-      type: ecs.NamespaceType.PublicDns
+      type: cloudmap.NamespaceType.DNS_PUBLIC
     });
 
     // THEN
     expect(stack).to(haveResource("AWS::ServiceDiscovery::PublicDnsNamespace", {
        Name: 'foo.com',
     }));
+
+    test.equal(cluster.defaultCloudMapNamespace!.type, cloudmap.NamespaceType.DNS_PUBLIC);
 
     test.done();
   },
@@ -371,7 +374,7 @@ export = {
     const cluster2 = ecs.Cluster.fromClusterAttributes(stack2, 'Cluster', {
       vpc: vpc1,
       securityGroups: cluster1.connections.securityGroups,
-      defaultNamespace: cloudmap.PrivateDnsNamespace.fromPrivateDnsNamespaceAttributes(stack2, 'ns', {
+      defaultCloudMapNamespace: cloudmap.PrivateDnsNamespace.fromPrivateDnsNamespaceAttributes(stack2, 'ns', {
         namespaceId: 'import-namespace-id',
         namespaceArn: 'import-namespace-arn',
         namespaceName: 'import-namespace-name',
@@ -380,8 +383,8 @@ export = {
     });
 
     // THEN
-    test.equal(cluster2.defaultNamespace!.type, cloudmap.NamespaceType.DnsPrivate);
-    test.deepEqual(stack2.resolve(cluster2.defaultNamespace!.namespaceId), 'import-namespace-id');
+    test.equal(cluster2.defaultCloudMapNamespace!.type, cloudmap.NamespaceType.DNS_PRIVATE);
+    test.deepEqual(stack2.resolve(cluster2.defaultCloudMapNamespace!.namespaceId), 'import-namespace-id');
 
     // Can retrieve subnets from VPC - will throw 'There are no 'Private' subnets in this VPC. Use a different VPC subnet selection.' if broken.
     cluster2.vpc.selectSubnets();

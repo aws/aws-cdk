@@ -1,8 +1,7 @@
 import events = require('@aws-cdk/aws-events');
 import iam = require('@aws-cdk/aws-iam');
 import kms = require('@aws-cdk/aws-kms');
-import { applyRemovalPolicy, Construct, IResource, Lazy, PhysicalName,
-  RemovalPolicy, Resource, ResourceIdentifiers, Stack, Token } from '@aws-cdk/cdk';
+import { Construct, IResource, Lazy, RemovalPolicy, Resource, Stack, Token } from '@aws-cdk/core';
 import { EOL } from 'os';
 import { BucketPolicy } from './bucket-policy';
 import { IBucketNotificationDestination } from './destination';
@@ -175,7 +174,7 @@ export interface IBucket extends IResource {
    * @param id The id of the rule
    * @param options Options for adding the rule
    */
-  onCloudTrailEvent(id: string, options: OnCloudTrailBucketEventOptions): events.Rule;
+  onCloudTrailEvent(id: string, options?: OnCloudTrailBucketEventOptions): events.Rule;
 
   /**
    * Defines an AWS CloudWatch event rule that can trigger a target when an image is pushed to this
@@ -187,7 +186,7 @@ export interface IBucket extends IResource {
    * @param id The id of the rule
    * @param options Options for adding the rule
    */
-  onCloudTrailPutObject(id: string, options: OnCloudTrailBucketEventOptions): events.Rule;
+  onCloudTrailPutObject(id: string, options?: OnCloudTrailBucketEventOptions): events.Rule;
 }
 
 /**
@@ -301,7 +300,7 @@ abstract class BucketBase extends Resource implements IBucket {
    * @param id The id of the rule
    * @param options Options for adding the rule
    */
-  public onCloudTrailEvent(id: string, options: OnCloudTrailBucketEventOptions): events.Rule {
+  public onCloudTrailEvent(id: string, options: OnCloudTrailBucketEventOptions = {}): events.Rule {
     const rule = new events.Rule(this, id, options);
     rule.addTarget(options.target);
     rule.addEventPattern({
@@ -326,7 +325,7 @@ abstract class BucketBase extends Resource implements IBucket {
    * @param id The id of the rule
    * @param options Options for adding the rule
    */
-  public onCloudTrailPutObject(id: string, options: OnCloudTrailBucketEventOptions): events.Rule {
+  public onCloudTrailPutObject(id: string, options: OnCloudTrailBucketEventOptions = {}): events.Rule {
     const rule = this.onCloudTrailEvent(id, options);
     rule.addEventPattern({
       detail: {
@@ -588,14 +587,14 @@ export interface BlockPublicAccessOptions {
 }
 
 export class BlockPublicAccess {
-  public static readonly BlockAll = new BlockPublicAccess({
+  public static readonly BLOCK_ALL = new BlockPublicAccess({
     blockPublicAcls: true,
     blockPublicPolicy: true,
     ignorePublicAcls: true,
     restrictPublicBuckets: true
   });
 
-  public static readonly BlockAcls = new BlockPublicAccess({
+  public static readonly BLOCK_ACLS = new BlockPublicAccess({
     blockPublicAcls: true,
     ignorePublicAcls: true
   });
@@ -724,7 +723,7 @@ export interface BucketProps {
    *
    * @default - Assigned by CloudFormation (recommended).
    */
-  readonly bucketName?: PhysicalName;
+  readonly bucketName?: string;
 
   /**
    * Policy to apply when the bucket is removed from this stack.
@@ -889,12 +888,11 @@ export class Bucket extends BucketBase {
     });
 
     const { bucketEncryption, encryptionKey } = this.parseEncryption(props);
-    if (props.bucketName && !Token.isUnresolved(props.bucketName)) {
-      this.validateBucketName(props.bucketName);
-    }
+
+    this.validateBucketName(this.physicalName);
 
     const resource = new CfnBucket(this, 'Resource', {
-      bucketName: this.physicalName.value,
+      bucketName: this.physicalName,
       bucketEncryption,
       versioningConfiguration: props.versioned ? { status: 'Enabled' } : undefined,
       lifecycleConfiguration: Lazy.anyValue({ produce: () => this.parseLifecycleConfiguration() }),
@@ -904,27 +902,23 @@ export class Bucket extends BucketBase {
       corsConfiguration: Lazy.anyValue({ produce: () => this.parseCorsConfiguration() })
     });
 
-    applyRemovalPolicy(resource, props.removalPolicy !== undefined ? props.removalPolicy : RemovalPolicy.Orphan);
+    resource.applyRemovalPolicy(props.removalPolicy);
 
     this.versioned = props.versioned;
     this.encryptionKey = encryptionKey;
 
-    const resourceIdentifiers = new ResourceIdentifiers(this, {
-      arn: resource.bucketArn,
-      name: resource.bucketName,
-      arnComponents: {
-        region: '',
-        account: '',
-        service: 's3',
-        resource: this.physicalName.value || '',
-      },
+    this.bucketName = this.getResourceNameAttribute(resource.ref);
+    this.bucketArn = this.getResourceArnAttribute(resource.attrArn, {
+      region: '',
+      account: '',
+      service: 's3',
+      resource: this.physicalName,
     });
-    this.bucketArn = resourceIdentifiers.arn;
-    this.bucketName = resourceIdentifiers.name;
-    this.bucketDomainName = resource.bucketDomainName;
-    this.bucketWebsiteUrl = resource.bucketWebsiteUrl;
-    this.bucketDualStackDomainName = resource.bucketDualStackDomainName;
-    this.bucketRegionalDomainName = resource.bucketRegionalDomainName;
+
+    this.bucketDomainName = resource.attrDomainName;
+    this.bucketWebsiteUrl = resource.attrWebsiteUrl;
+    this.bucketDualStackDomainName = resource.attrDualStackDomainName;
+    this.bucketRegionalDomainName = resource.attrRegionalDomainName;
 
     this.disallowPublicAccess = props.blockPublicAccess && props.blockPublicAccess.blockPublicPolicy;
 
@@ -951,7 +945,7 @@ export class Bucket extends BucketBase {
    * @param rule The rule to add
    */
   public addLifecycleRule(rule: LifecycleRule) {
-    if ((rule.noncurrentVersionExpirationInDays !== undefined
+    if ((rule.noncurrentVersionExpiration !== undefined
       || (rule.noncurrentVersionTransitions && rule.noncurrentVersionTransitions.length > 0))
       && !this.versioned) {
       throw new Error("Cannot use 'noncurrent' rules on a nonversioned bucket");
@@ -1010,7 +1004,7 @@ export class Bucket extends BucketBase {
    * @param filters Filters (see onEvent)
    */
   public addObjectCreatedNotification(dest: IBucketNotificationDestination, ...filters: NotificationKeyFilter[]) {
-    return this.addEventNotification(EventType.ObjectCreated, dest, ...filters);
+    return this.addEventNotification(EventType.OBJECT_CREATED, dest, ...filters);
   }
 
   /**
@@ -1022,11 +1016,11 @@ export class Bucket extends BucketBase {
    * @param filters Filters (see onEvent)
    */
   public addObjectRemovedNotification(dest: IBucketNotificationDestination, ...filters: NotificationKeyFilter[]) {
-    return this.addEventNotification(EventType.ObjectRemoved, dest, ...filters);
+    return this.addEventNotification(EventType.OBJECT_REMOVED, dest, ...filters);
   }
 
-  private validateBucketName(physicalName: PhysicalName): void {
-    const bucketName = physicalName.value;
+  private validateBucketName(physicalName: string): void {
+    const bucketName = physicalName;
     if (!bucketName || Token.isUnresolved(bucketName)) {
       // the name is a late-bound value, not a defined string,
       // so skip validation
@@ -1078,19 +1072,19 @@ export class Bucket extends BucketBase {
     // default based on whether encryptionKey is specified
     let encryptionType = props.encryption;
     if (encryptionType === undefined) {
-      encryptionType = props.encryptionKey ? BucketEncryption.Kms : BucketEncryption.Unencrypted;
+      encryptionType = props.encryptionKey ? BucketEncryption.KMS : BucketEncryption.UNENCRYPTED;
     }
 
     // if encryption key is set, encryption must be set to KMS.
-    if (encryptionType !== BucketEncryption.Kms && props.encryptionKey) {
+    if (encryptionType !== BucketEncryption.KMS && props.encryptionKey) {
       throw new Error(`encryptionKey is specified, so 'encryption' must be set to KMS (value: ${encryptionType})`);
     }
 
-    if (encryptionType === BucketEncryption.Unencrypted) {
+    if (encryptionType === BucketEncryption.UNENCRYPTED) {
       return { bucketEncryption: undefined, encryptionKey: undefined };
     }
 
-    if (encryptionType === BucketEncryption.Kms) {
+    if (encryptionType === BucketEncryption.KMS) {
       const encryptionKey = props.encryptionKey || new kms.Key(this, 'Key', {
         description: `Created by ${this.node.path}`
       });
@@ -1108,7 +1102,7 @@ export class Bucket extends BucketBase {
       return { encryptionKey, bucketEncryption };
     }
 
-    if (encryptionType === BucketEncryption.S3Managed) {
+    if (encryptionType === BucketEncryption.S3_MANAGED) {
       const bucketEncryption = {
         serverSideEncryptionConfiguration: [
           { serverSideEncryptionByDefault: { sseAlgorithm: 'AES256' } }
@@ -1118,7 +1112,7 @@ export class Bucket extends BucketBase {
       return { bucketEncryption };
     }
 
-    if (encryptionType === BucketEncryption.KmsManaged) {
+    if (encryptionType === BucketEncryption.KMS_MANAGED) {
       const bucketEncryption = {
         serverSideEncryptionConfiguration: [
           { serverSideEncryptionByDefault: { sseAlgorithm: 'aws:kms' } }
@@ -1148,21 +1142,21 @@ export class Bucket extends BucketBase {
 
       const x: CfnBucket.RuleProperty = {
         // tslint:disable-next-line:max-line-length
-        abortIncompleteMultipartUpload: rule.abortIncompleteMultipartUploadAfterDays !== undefined ? { daysAfterInitiation: rule.abortIncompleteMultipartUploadAfterDays } : undefined,
+        abortIncompleteMultipartUpload: rule.abortIncompleteMultipartUploadAfter !== undefined ? { daysAfterInitiation: rule.abortIncompleteMultipartUploadAfter.toDays() } : undefined,
         expirationDate: rule.expirationDate,
-        expirationInDays: rule.expirationInDays,
+        expirationInDays: rule.expiration && rule.expiration.toDays(),
         id: rule.id,
-        noncurrentVersionExpirationInDays: rule.noncurrentVersionExpirationInDays,
+        noncurrentVersionExpirationInDays: rule.noncurrentVersionExpiration && rule.noncurrentVersionExpiration.toDays(),
         noncurrentVersionTransitions: mapOrUndefined(rule.noncurrentVersionTransitions, t => ({
           storageClass: t.storageClass.value,
-          transitionInDays: t.transitionInDays
+          transitionInDays: t.transitionAfter.toDays()
         })),
         prefix: rule.prefix,
         status: enabled ? 'Enabled' : 'Disabled',
         transitions: mapOrUndefined(rule.transitions, t => ({
           storageClass: t.storageClass.value,
           transitionDate: t.transitionDate,
-          transitionInDays: t.transitionInDays
+          transitionInDays: t.transitionAfter && t.transitionAfter.toDays()
         })),
         tagFilters: self.parseTagFilters(rule.tagFilters)
       };
@@ -1242,23 +1236,23 @@ export enum BucketEncryption {
   /**
    * Objects in the bucket are not encrypted.
    */
-  Unencrypted = 'NONE',
+  UNENCRYPTED = 'NONE',
 
   /**
    * Server-side KMS encryption with a master key managed by KMS.
    */
-  KmsManaged = 'MANAGED',
+  KMS_MANAGED = 'MANAGED',
 
   /**
    * Server-side encryption with a master key managed by S3.
    */
-  S3Managed = 'S3MANAGED',
+  S3_MANAGED = 'S3MANAGED',
 
   /**
    * Server-side encryption with a KMS key managed by the user.
    * If `encryptionKey` is specified, this key will be used, otherwise, one will be defined.
    */
-  Kms = 'KMS',
+  KMS = 'KMS',
 }
 
 /**
@@ -1272,7 +1266,7 @@ export enum EventType {
    * request notification regardless of the API that was used to create an
    * object.
    */
-  ObjectCreated = 's3:ObjectCreated:*',
+  OBJECT_CREATED = 's3:ObjectCreated:*',
 
   /**
    * Amazon S3 APIs such as PUT, POST, and COPY can create an object. Using
@@ -1281,7 +1275,7 @@ export enum EventType {
    * request notification regardless of the API that was used to create an
    * object.
    */
-  ObjectCreatedPut = 's3:ObjectCreated:Put',
+  OBJECT_CREATED_PUT = 's3:ObjectCreated:Put',
 
   /**
    * Amazon S3 APIs such as PUT, POST, and COPY can create an object. Using
@@ -1290,7 +1284,7 @@ export enum EventType {
    * request notification regardless of the API that was used to create an
    * object.
    */
-  ObjectCreatedPost = 's3:ObjectCreated:Post',
+  OBJECT_CREATED_POST = 's3:ObjectCreated:Post',
 
   /**
    * Amazon S3 APIs such as PUT, POST, and COPY can create an object. Using
@@ -1299,7 +1293,7 @@ export enum EventType {
    * request notification regardless of the API that was used to create an
    * object.
    */
-  ObjectCreatedCopy = 's3:ObjectCreated:Copy',
+  OBJECT_CREATED_COPY = 's3:ObjectCreated:Copy',
 
   /**
    * Amazon S3 APIs such as PUT, POST, and COPY can create an object. Using
@@ -1308,7 +1302,7 @@ export enum EventType {
    * request notification regardless of the API that was used to create an
    * object.
    */
-  ObjectCreatedCompleteMultipartUpload = 's3:ObjectCreated:CompleteMultipartUpload',
+  OBJECT_CREATED_COMPLETE_MULTIPART_UPLOAD = 's3:ObjectCreated:CompleteMultipartUpload',
 
   /**
    * By using the ObjectRemoved event types, you can enable notification when
@@ -1325,7 +1319,7 @@ export enum EventType {
    * You will not receive event notifications from automatic deletes from
    * lifecycle policies or from failed operations.
    */
-  ObjectRemoved = 's3:ObjectRemoved:*',
+  OBJECT_REMOVED = 's3:ObjectRemoved:*',
 
   /**
    * By using the ObjectRemoved event types, you can enable notification when
@@ -1342,7 +1336,7 @@ export enum EventType {
    * You will not receive event notifications from automatic deletes from
    * lifecycle policies or from failed operations.
    */
-  ObjectRemovedDelete = 's3:ObjectRemoved:Delete',
+  OBJECT_REMOVED_DELETE = 's3:ObjectRemoved:Delete',
 
   /**
    * By using the ObjectRemoved event types, you can enable notification when
@@ -1359,14 +1353,14 @@ export enum EventType {
    * You will not receive event notifications from automatic deletes from
    * lifecycle policies or from failed operations.
    */
-  ObjectRemovedDeleteMarkerCreated = 's3:ObjectRemoved:DeleteMarkerCreated',
+  OBJECT_REMOVED_DELETE_MARKER_CREATED = 's3:ObjectRemoved:DeleteMarkerCreated',
 
   /**
    * You can use this event type to request Amazon S3 to send a notification
    * message when Amazon S3 detects that an object of the RRS storage class is
    * lost.
    */
-  ReducedRedundancyLostObject = 's3:ReducedRedundancyLostObject',
+  REDUCED_REDUNDANCY_LOST_OBJECT = 's3:ReducedRedundancyLostObject',
 }
 
 export interface NotificationKeyFilter {
