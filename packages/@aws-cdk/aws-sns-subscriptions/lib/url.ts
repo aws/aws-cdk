@@ -1,5 +1,5 @@
 import sns = require('@aws-cdk/aws-sns');
-import { Token } from '@aws-cdk/cdk';
+import { Token } from '@aws-cdk/core';
 import { SubscriptionProps } from './subscription';
 
 /**
