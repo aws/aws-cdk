@@ -485,13 +485,12 @@ function cdkModuleName(name: string) {
   const pythonName = name.replace(/^@/g, "").replace(/\//g, ".").split(".").map(caseUtils.kebab).join(".");
 
   return {
-    javaPackage: `software.amazon.awscdk${(isCdkPkg || isLegacyCdkPkg) ? '' : `.${name.replace(/^aws-/, 'services-').replace(/-/g, '.')}`}`,
+    javaPackage: `software.amazon.awscdk${isLegacyCdkPkg ? '' : `.${name.replace(/^aws-/, 'services-').replace(/-/g, '.')}`}`,
     mavenArtifactId:
-        isCdkPkg ? 'core'
-      : isLegacyCdkPkg ? 'cdk'
-      : name.startsWith('aws-') || name.startsWith('alexa-')
-          ? name.replace(/^aws-/, '')
-          : `cdk-${name}`,
+      isLegacyCdkPkg ? 'cdk'
+        : isCdkPkg ? 'core'
+          : name.startsWith('aws-') || name.startsWith('alexa-') ? name.replace(/^aws-/, '')
+            : `cdk-${name}`,
     dotnetNamespace: `Amazon.CDK${isCdkPkg ? '' : `.${dotnetSuffix}`}`,
     python: {
       distName: `aws-cdk.${pythonName}`,
