@@ -23,7 +23,7 @@ export = {
 
       new ecs.FargateService(stack, "FargateService", {
         cluster,
-        taskDefinition,
+        taskDefinition
       });
 
       // THEN
@@ -93,7 +93,7 @@ export = {
       test.throws(() => {
         new ecs.FargateService(stack, "FargateService", {
           cluster,
-          taskDefinition,
+          taskDefinition
         });
       });
 
@@ -486,7 +486,7 @@ export = {
     // WHEN
     const service = new ecs.FargateService(stack, 'Service', {
       cluster,
-      taskDefinition,
+      taskDefinition
     });
 
     // THEN
