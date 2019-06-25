@@ -1,4 +1,4 @@
-import { Stack } from '@aws-cdk/cdk';
+import { Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import { Grant } from '../lib';
 import iam = require('../lib');

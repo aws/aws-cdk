@@ -1,4 +1,3 @@
-import { PhysicalName } from "@aws-cdk/cdk";
 import { EventPattern } from "./event-pattern";
 import { IRuleTarget } from "./target";
 
@@ -25,7 +24,7 @@ export interface OnEventOptions {
    *
    * @default AWS CloudFormation generates a unique physical ID.
    */
-  readonly ruleName?: PhysicalName;
+  readonly ruleName?: string;
 
   /**
    * Additional restrictions for the event to route to the specified target

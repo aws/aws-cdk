@@ -1,17 +1,22 @@
 import cxapi = require('@aws-cdk/cx-api');
 import minimatch = require('minimatch');
+import { SDK } from '../util/sdk';
 import { AppStacks } from './stacks';
 
-export async function globEnvironmentsFromStacks(appStacks: AppStacks, environmentGlobs: string[]): Promise<cxapi.Environment[]> {
+export async function globEnvironmentsFromStacks(appStacks: AppStacks, environmentGlobs: string[], sdk: SDK): Promise<cxapi.Environment[]> {
   if (environmentGlobs.length === 0) {
     environmentGlobs = [ '**' ]; // default to ALL
   }
 
   const stacks = await appStacks.listStacks();
 
-  const availableEnvironments = distinct(stacks.map(stack => stack.environment)
-                            .filter(env => env !== undefined) as cxapi.Environment[]);
-  const environments = availableEnvironments.filter(env => environmentGlobs.find(glob => minimatch(env!.name, glob)));
+  const availableEnvironments = new Array<cxapi.Environment>();
+  for (const stack of stacks) {
+    const actual = await parseEnvironment(sdk, stack.environment);
+    availableEnvironments.push(actual);
+  }
+
+  const environments = distinct(availableEnvironments).filter(env => environmentGlobs.find(glob => minimatch(env!.name, glob)));
   if (environments.length === 0) {
     const globs = JSON.stringify(environmentGlobs);
     const envList = availableEnvironments.length > 0 ? availableEnvironments.map(env => env!.name).join(', ') : '<none>';
@@ -19,6 +24,20 @@ export async function globEnvironmentsFromStacks(appStacks: AppStacks, environme
   }
 
   return environments;
+}
+
+async function parseEnvironment(sdk: SDK, env: cxapi.Environment): Promise<cxapi.Environment> {
+  const account = env.account === cxapi.UNKNOWN_ACCOUNT ? await sdk.defaultAccount() : env.account;
+  const region = env.region === cxapi.UNKNOWN_REGION ? await sdk.defaultRegion() : env.region;
+
+  if (!account || !region) {
+    throw new Error(`Unable to determine default account and/or region`);
+  }
+
+  return {
+    account, region,
+    name: cxapi.EnvironmentUtils.format(account, region)
+  };
 }
 
 /**

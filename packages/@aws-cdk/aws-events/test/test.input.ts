@@ -1,6 +1,6 @@
 import { expect, haveResourceLike } from '@aws-cdk/assert';
-import cdk = require('@aws-cdk/cdk');
-import { Duration, Stack } from '@aws-cdk/cdk';
+import cdk = require('@aws-cdk/core');
+import { Duration, Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import { IRuleTarget, RuleTargetInput, Schedule } from '../lib';
 import { Rule } from '../lib/rule';

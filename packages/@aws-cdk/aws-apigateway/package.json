@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/aws-apigateway",
-  "version": "0.35.0",
+  "version": "0.36.0",
   "description": "The CDK Construct Library for AWS::ApiGateway",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -66,25 +66,25 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "^0.35.0",
-    "@aws-cdk/aws-ec2": "^0.35.0",
-    "cdk-build-tools": "^0.35.0",
-    "cdk-integ-tools": "^0.35.0",
-    "cfn2ts": "^0.35.0",
-    "pkglint": "^0.35.0"
+    "@aws-cdk/assert": "^0.36.0",
+    "@aws-cdk/aws-ec2": "^0.36.0",
+    "cdk-build-tools": "^0.36.0",
+    "cdk-integ-tools": "^0.36.0",
+    "cfn2ts": "^0.36.0",
+    "pkglint": "^0.36.0"
   },
   "dependencies": {
-    "@aws-cdk/aws-elasticloadbalancingv2": "^0.35.0",
-    "@aws-cdk/aws-iam": "^0.35.0",
-    "@aws-cdk/aws-lambda": "^0.35.0",
-    "@aws-cdk/cdk": "^0.35.0"
+    "@aws-cdk/aws-elasticloadbalancingv2": "^0.36.0",
+    "@aws-cdk/aws-iam": "^0.36.0",
+    "@aws-cdk/aws-lambda": "^0.36.0",
+    "@aws-cdk/core": "^0.36.0"
   },
   "homepage": "https://github.com/awslabs/aws-cdk",
   "peerDependencies": {
-    "@aws-cdk/aws-elasticloadbalancingv2": "^0.35.0",
-    "@aws-cdk/aws-iam": "^0.35.0",
-    "@aws-cdk/aws-lambda": "^0.35.0",
-    "@aws-cdk/cdk": "^0.35.0"
+    "@aws-cdk/aws-elasticloadbalancingv2": "^0.36.0",
+    "@aws-cdk/aws-iam": "^0.36.0",
+    "@aws-cdk/aws-lambda": "^0.36.0",
+    "@aws-cdk/core": "^0.36.0"
   },
   "engines": {
     "node": ">= 8.10.0"

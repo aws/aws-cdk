@@ -1,5 +1,5 @@
 import iam = require('@aws-cdk/aws-iam');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import { Alarm, ComparisonOperator, TreatMissingData } from './alarm';
 import { Dimension, IMetric, MetricAlarmConfig, MetricGraphConfig, Unit } from './metric-types';
 import { normalizeStatistic, parseStatistic } from './util.statistic';
@@ -255,7 +255,7 @@ export interface CreateAlarmOptions {
    *
    * @default Automatically generated name
    */
-  readonly alarmName?: cdk.PhysicalName;
+  readonly alarmName?: string;
 
   /**
    * Description for the alarm

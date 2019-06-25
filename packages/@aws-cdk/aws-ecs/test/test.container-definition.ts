@@ -1,6 +1,6 @@
 import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
 import secretsmanager = require('@aws-cdk/aws-secretsmanager');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import { Test } from 'nodeunit';
 import ecs = require('../lib');
 
@@ -12,7 +12,7 @@ export = {
         // GIVEN
         const stack = new cdk.Stack();
         const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef', {
-          networkMode: ecs.NetworkMode.AwsVpc,
+          networkMode: ecs.NetworkMode.AWS_VPC,
         });
 
         const container = taskDefinition.addContainer("Container", {
@@ -35,7 +35,7 @@ export = {
         // GIVEN
         const stack = new cdk.Stack();
         const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef', {
-          networkMode: ecs.NetworkMode.AwsVpc,
+          networkMode: ecs.NetworkMode.AWS_VPC,
         });
 
         const container = taskDefinition.addContainer("Container", {
@@ -58,7 +58,7 @@ export = {
         // GIVEN
         const stack = new cdk.Stack();
         const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef', {
-          networkMode: ecs.NetworkMode.Host,
+          networkMode: ecs.NetworkMode.HOST,
         });
 
         const container = taskDefinition.addContainer("Container", {
@@ -81,7 +81,7 @@ export = {
         // GIVEN
         const stack = new cdk.Stack();
         const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef', {
-          networkMode: ecs.NetworkMode.Host,
+          networkMode: ecs.NetworkMode.HOST,
         });
 
         const container = taskDefinition.addContainer("Container", {
@@ -102,7 +102,7 @@ export = {
         // GIVEN
         const stack = new cdk.Stack();
         const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef', {
-          networkMode: ecs.NetworkMode.Host,
+          networkMode: ecs.NetworkMode.HOST,
         });
 
         const container = taskDefinition.addContainer("Container", {
@@ -129,7 +129,7 @@ export = {
         // GIVEN
         const stack = new cdk.Stack();
         const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef', {
-          networkMode: ecs.NetworkMode.Bridge,
+          networkMode: ecs.NetworkMode.BRIDGE,
         });
 
         const container = taskDefinition.addContainer("Container", {
@@ -156,7 +156,7 @@ export = {
         // GIVEN
         const stack = new cdk.Stack();
         const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef', {
-          networkMode: ecs.NetworkMode.AwsVpc,
+          networkMode: ecs.NetworkMode.AWS_VPC,
         });
 
         const container = taskDefinition.addContainer("Container", {
@@ -182,7 +182,7 @@ export = {
         // GIVEN
         const stack = new cdk.Stack();
         const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef', {
-          networkMode: ecs.NetworkMode.Host,
+          networkMode: ecs.NetworkMode.HOST,
         });
 
         const container = taskDefinition.addContainer("Container", {
@@ -208,7 +208,7 @@ export = {
         // GIVEN
         const stack = new cdk.Stack();
         const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef', {
-          networkMode: ecs.NetworkMode.Bridge,
+          networkMode: ecs.NetworkMode.BRIDGE,
         });
 
         const container = taskDefinition.addContainer("Container", {
@@ -233,7 +233,7 @@ export = {
         // GIVEN
         const stack = new cdk.Stack();
         const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef', {
-          networkMode: ecs.NetworkMode.Bridge,
+          networkMode: ecs.NetworkMode.BRIDGE,
         });
 
         const container = taskDefinition.addContainer("Container", {
@@ -294,7 +294,7 @@ export = {
     taskDefinition.addContainer('cont', {
       image: ecs.ContainerImage.fromRegistry('test'),
       memoryLimitMiB: 1024,
-      logging: new ecs.AwsLogDriver(stack, 'Logging', { streamPrefix: 'prefix' })
+      logging: new ecs.AwsLogDriver({ streamPrefix: 'prefix' })
     });
 
     // THEN
@@ -304,7 +304,7 @@ export = {
           LogConfiguration: {
             LogDriver: "awslogs",
             Options: {
-              "awslogs-group": { Ref: "LoggingLogGroupC6B8E20B" },
+              "awslogs-group": { Ref: "TaskDefcontLogGroup4E10DCBF" },
               "awslogs-stream-prefix": "prefix",
               "awslogs-region": { Ref: "AWS::Region" }
             }
@@ -319,7 +319,7 @@ export = {
           {
             Action: ["logs:CreateLogStream", "logs:PutLogEvents"],
             Effect: "Allow",
-            Resource: { "Fn::GetAtt": ["LoggingLogGroupC6B8E20B", "Arn"] }
+            Resource: { "Fn::GetAtt": ["TaskDefcontLogGroup4E10DCBF", "Arn"] }
           }
         ],
         Version: "2012-10-17"

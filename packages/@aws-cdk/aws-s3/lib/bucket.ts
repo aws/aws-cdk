@@ -1,8 +1,7 @@
 import events = require('@aws-cdk/aws-events');
 import iam = require('@aws-cdk/aws-iam');
 import kms = require('@aws-cdk/aws-kms');
-import { Construct, IResource, Lazy, PhysicalName,
-  RemovalPolicy, Resource, Stack, Token } from '@aws-cdk/cdk';
+import { Construct, IResource, Lazy, RemovalPolicy, Resource, Stack, Token } from '@aws-cdk/core';
 import { EOL } from 'os';
 import { BucketPolicy } from './bucket-policy';
 import { IBucketNotificationDestination } from './destination';
@@ -175,7 +174,7 @@ export interface IBucket extends IResource {
    * @param id The id of the rule
    * @param options Options for adding the rule
    */
-  onCloudTrailEvent(id: string, options: OnCloudTrailBucketEventOptions): events.Rule;
+  onCloudTrailEvent(id: string, options?: OnCloudTrailBucketEventOptions): events.Rule;
 
   /**
    * Defines an AWS CloudWatch event rule that can trigger a target when an image is pushed to this
@@ -187,7 +186,7 @@ export interface IBucket extends IResource {
    * @param id The id of the rule
    * @param options Options for adding the rule
    */
-  onCloudTrailPutObject(id: string, options: OnCloudTrailBucketEventOptions): events.Rule;
+  onCloudTrailPutObject(id: string, options?: OnCloudTrailBucketEventOptions): events.Rule;
 }
 
 /**
@@ -588,14 +587,14 @@ export interface BlockPublicAccessOptions {
 }
 
 export class BlockPublicAccess {
-  public static readonly BlockAll = new BlockPublicAccess({
+  public static readonly BLOCK_ALL = new BlockPublicAccess({
     blockPublicAcls: true,
     blockPublicPolicy: true,
     ignorePublicAcls: true,
     restrictPublicBuckets: true
   });
 
-  public static readonly BlockAcls = new BlockPublicAccess({
+  public static readonly BLOCK_ACLS = new BlockPublicAccess({
     blockPublicAcls: true,
     ignorePublicAcls: true
   });
@@ -724,7 +723,7 @@ export interface BucketProps {
    *
    * @default - Assigned by CloudFormation (recommended).
    */
-  readonly bucketName?: PhysicalName;
+  readonly bucketName?: string;
 
   /**
    * Policy to apply when the bucket is removed from this stack.
@@ -908,18 +907,14 @@ export class Bucket extends BucketBase {
     this.versioned = props.versioned;
     this.encryptionKey = encryptionKey;
 
-    const resourceIdentifiers = this.getCrossEnvironmentAttributes({
-      arn: resource.attrArn,
-      name: resource.ref,
-      arnComponents: {
-        region: '',
-        account: '',
-        service: 's3',
-        resource: this.physicalName,
-      },
+    this.bucketName = this.getResourceNameAttribute(resource.ref);
+    this.bucketArn = this.getResourceArnAttribute(resource.attrArn, {
+      region: '',
+      account: '',
+      service: 's3',
+      resource: this.physicalName,
     });
-    this.bucketArn = resourceIdentifiers.arn;
-    this.bucketName = resourceIdentifiers.name;
+
     this.bucketDomainName = resource.attrDomainName;
     this.bucketWebsiteUrl = resource.attrWebsiteUrl;
     this.bucketDualStackDomainName = resource.attrDualStackDomainName;

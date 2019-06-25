@@ -1,7 +1,7 @@
 import { expect, haveResourceLike } from "@aws-cdk/assert";
 import codepipeline = require('@aws-cdk/aws-codepipeline');
 import lambda = require('@aws-cdk/aws-lambda');
-import { Aws, Lazy, SecretValue, Stack, Token } from "@aws-cdk/cdk";
+import { Aws, Lazy, SecretValue, Stack, Token } from "@aws-cdk/core";
 import { Test } from 'nodeunit';
 import cpactions = require('../../lib');
 
@@ -34,7 +34,7 @@ export = {
 
     'properly resolves any Tokens passed in userParameters'(test: Test) {
       const stack = stackIncludingLambdaInvokeCodePipeline({
-        key: Lazy.stringValue({ produce: () => Aws.region }),
+        key: Lazy.stringValue({ produce: () => Aws.REGION }),
       });
 
       expect(stack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
@@ -116,7 +116,7 @@ function stackIncludingLambdaInvokeCodePipeline(userParams: { [key: string]: any
             lambda: new lambda.Function(stack, 'Lambda', {
               code: lambda.Code.cfnParameters(),
               handler: 'index.handler',
-              runtime: lambda.Runtime.Nodejs810,
+              runtime: lambda.Runtime.NODEJS_8_10,
             }),
             userParameters: userParams,
           }),

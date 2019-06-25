@@ -289,7 +289,7 @@
       "Type": "AWS::AutoScaling::LaunchConfiguration",
       "Properties": {
         "ImageId": {
-          "Ref": "SsmParameterValueawsserviceecsoptimizedamiamazonlinuxrecommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
+          "Ref": "SsmParameterValueawsserviceecsoptimizedamiamazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
         },
         "InstanceType": "t2.micro",
         "IamInstanceProfile": {
@@ -664,7 +664,7 @@
               "LogDriver": "awslogs",
               "Options": {
                 "awslogs-group": {
-                  "Ref": "ScheduledEc2TaskScheduledTaskLoggingLogGroupDBEF2BF3"
+                  "Ref": "ScheduledEc2TaskScheduledTaskDefScheduledContainerLogGroupA85E11E6"
                 },
                 "awslogs-stream-prefix": "ScheduledEc2Task",
                 "awslogs-region": {
@@ -740,7 +740,7 @@
               "Effect": "Allow",
               "Resource": {
                 "Fn::GetAtt": [
-                  "ScheduledEc2TaskScheduledTaskLoggingLogGroupDBEF2BF3",
+                  "ScheduledEc2TaskScheduledTaskDefScheduledContainerLogGroupA85E11E6",
                   "Arn"
                 ]
               }
@@ -826,7 +826,7 @@
         ]
       }
     },
-    "ScheduledEc2TaskScheduledTaskLoggingLogGroupDBEF2BF3": {
+    "ScheduledEc2TaskScheduledTaskDefScheduledContainerLogGroupA85E11E6": {
       "Type": "AWS::Logs::LogGroup",
       "DeletionPolicy": "Retain"
     },
@@ -863,9 +863,9 @@
     }
   },
   "Parameters": {
-    "SsmParameterValueawsserviceecsoptimizedamiamazonlinuxrecommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter": {
+    "SsmParameterValueawsserviceecsoptimizedamiamazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter": {
       "Type": "AWS::SSM::Parameter::Value<String>",
-      "Default": "/aws/service/ecs/optimized-ami/amazon-linux/recommended/image_id"
+      "Default": "/aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id"
     }
   }
 }

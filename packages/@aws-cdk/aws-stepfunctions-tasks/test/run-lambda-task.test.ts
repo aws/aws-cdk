@@ -1,7 +1,7 @@
 import '@aws-cdk/assert/jest';
 import lambda = require('@aws-cdk/aws-lambda');
 import sfn = require('@aws-cdk/aws-stepfunctions');
-import { Stack } from '@aws-cdk/cdk';
+import { Stack } from '@aws-cdk/core';
 import tasks = require('../lib');
 
 let stack: Stack;
@@ -11,7 +11,7 @@ beforeEach(() => {
   fn = new lambda.Function(stack, 'Fn', {
     code: lambda.Code.inline('hello'),
     handler: 'index.hello',
-    runtime: lambda.Runtime.Python27,
+    runtime: lambda.Runtime.PYTHON_2_7,
   });
 });
 
@@ -21,7 +21,7 @@ test('Invoke lambda with default magic ARN', () => {
       payload: {
         foo: 'bar'
       },
-      invocationType: tasks.InvocationType.RequestResponse,
+      invocationType: tasks.InvocationType.REQUEST_RESPONSE,
       clientContext: "eyJoZWxsbyI6IndvcmxkIn0=",
       qualifier: "1",
     })

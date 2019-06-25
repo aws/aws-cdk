@@ -1,4 +1,4 @@
-import { Construct } from "@aws-cdk/cdk";
+import { Construct } from "@aws-cdk/core";
 import { IAlarm } from "./alarm";
 
 /**

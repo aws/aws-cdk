@@ -1,6 +1,6 @@
 import { exactlyMatchTemplate, expect, haveResource, ResourcePart } from '@aws-cdk/assert';
 import { PolicyStatement, User } from '@aws-cdk/aws-iam';
-import { App, RemovalPolicy, Stack, Tag } from '@aws-cdk/cdk';
+import { App, RemovalPolicy, Stack, Tag } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import { Key } from '../lib';
 
@@ -68,7 +68,7 @@ export = {
     const app = new App();
     const stack = new Stack(app, 'TestStack');
 
-    new Key(stack, 'MyKey', { removalPolicy: RemovalPolicy.Destroy });
+    new Key(stack, 'MyKey', { removalPolicy: RemovalPolicy.DESTROY });
 
     expect(stack).to(haveResource('AWS::KMS::Key', { DeletionPolicy: "Delete" }, ResourcePart.CompleteDefinition));
     test.done();

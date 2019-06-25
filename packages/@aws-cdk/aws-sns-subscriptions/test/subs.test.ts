@@ -2,8 +2,7 @@ import '@aws-cdk/assert/jest';
 import lambda = require('@aws-cdk/aws-lambda');
 import sns = require('@aws-cdk/aws-sns');
 import sqs = require('@aws-cdk/aws-sqs');
-import cdk = require('@aws-cdk/cdk');
-import { PhysicalName, Stack } from '@aws-cdk/cdk';
+import { Stack } from '@aws-cdk/core';
 import subs = require('../lib');
 
 // tslint:disable:object-literal-key-quotes
@@ -14,7 +13,7 @@ let topic: sns.Topic;
 beforeEach(() => {
   stack = new Stack();
   topic = new sns.Topic(stack, 'MyTopic', {
-    topicName: PhysicalName.of('topicName'),
+    topicName: 'topicName',
     displayName: 'displayName'
   });
 });
@@ -203,7 +202,7 @@ test('queue subscription (with raw delivery)', () => {
 
 test('lambda subscription', () => {
   const fction = new lambda.Function(stack, 'MyFunc', {
-    runtime: lambda.Runtime.Nodejs810,
+    runtime: lambda.Runtime.NODEJS_8_10,
     handler: 'index.handler',
     code: lambda.Code.inline('exports.handler = function(e, c, cb) { return cb() }')
   });
@@ -322,7 +321,7 @@ test('email subscription', () => {
 test('multiple subscriptions', () => {
   const queue = new sqs.Queue(stack, 'MyQueue');
   const func = new lambda.Function(stack, 'MyFunc', {
-    runtime: lambda.Runtime.Nodejs810,
+    runtime: lambda.Runtime.NODEJS_8_10,
     handler: 'index.handler',
     code: lambda.Code.inline('exports.handler = function(e, c, cb) { return cb() }')
   });
@@ -488,7 +487,7 @@ test('throws with mutliple subscriptions of the same subscriber', () => {
 
 test('with filter policy', () => {
   const fction = new lambda.Function(stack, 'MyFunc', {
-    runtime: lambda.Runtime.Nodejs810,
+    runtime: lambda.Runtime.NODEJS_8_10,
     handler: 'index.handler',
     code: lambda.Code.inline('exports.handler = function(e, c, cb) { return cb() }')
   });

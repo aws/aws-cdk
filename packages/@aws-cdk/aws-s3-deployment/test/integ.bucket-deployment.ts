@@ -1,5 +1,5 @@
 import s3 = require('@aws-cdk/aws-s3');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import path = require('path');
 import s3deploy = require('../lib');
 
@@ -10,7 +10,7 @@ class TestBucketDeployment extends cdk.Stack {
     const destinationBucket = new s3.Bucket(this, 'Destination', {
       websiteIndexDocument: 'index.html',
       publicReadAccess: true,
-      removalPolicy: cdk.RemovalPolicy.Destroy
+      removalPolicy: cdk.RemovalPolicy.DESTROY
     });
 
     new s3deploy.BucketDeployment(this, 'DeployMe', {

@@ -1,7 +1,7 @@
 import events = require('@aws-cdk/aws-events');
 import iam = require('@aws-cdk/aws-iam');
 import lambda = require('@aws-cdk/aws-lambda');
-import { Construct, IResource, Lazy, PhysicalName, Resource } from '@aws-cdk/cdk';
+import { Construct, IResource, Lazy, Resource } from '@aws-cdk/core';
 import { CfnConfigRule } from './config.generated';
 
 /**
@@ -19,46 +19,23 @@ export interface IRule extends IResource {
    * Defines a CloudWatch event rule which triggers for rule events. Use
    * `rule.addEventPattern(pattern)` to specify a filter.
    */
-  onEvent(id: string, options: events.OnEventOptions): events.Rule;
+  onEvent(id: string, options?: events.OnEventOptions): events.Rule;
 
   /**
    * Defines a CloudWatch event rule which triggers for rule compliance events.
    */
-  onComplianceChange(id: string, options: events.OnEventOptions): events.Rule;
+  onComplianceChange(id: string, options?: events.OnEventOptions): events.Rule;
 
   /**
    * Defines a CloudWatch event rule which triggers for rule re-evaluation status events.
    */
-  onReEvaluationStatus(id: string, options: events.OnEventOptions): events.Rule;
-}
-
-/**
- * Reference to an existing rule.
- */
-export interface RuleAttributes {
-  /**
-   * The rule name.
-   */
-  readonly configRuleName: string;
+  onReEvaluationStatus(id: string, options?: events.OnEventOptions): events.Rule;
 }
 
 /**
  * A new or imported rule.
  */
 abstract class RuleBase extends Resource implements IRule {
-  /**
-   * Imports an existing rule.
-   *
-   * @param configRuleName the name of the rule
-   */
-  public static fromConfigRuleName(scope: Construct, id: string, configRuleName: string): IRule {
-    class Import extends RuleBase {
-      public readonly configRuleName = configRuleName;
-    }
-
-    return new Import(scope, id);
-  }
-
   public abstract readonly configRuleName: string;
 
   /**
@@ -104,6 +81,19 @@ abstract class RuleBase extends Resource implements IRule {
  * A new managed or custom rule.
  */
 abstract class RuleNew extends RuleBase {
+  /**
+   * Imports an existing rule.
+   *
+   * @param configRuleName the name of the rule
+   */
+  public static fromConfigRuleName(scope: Construct, id: string, configRuleName: string): IRule {
+    class Import extends RuleBase {
+      public readonly configRuleName = configRuleName;
+    }
+
+    return new Import(scope, id);
+  }
+
   /**
    * The arn of the rule.
    */
@@ -193,7 +183,7 @@ export interface RuleProps {
    *
    * @default a CloudFormation generated name
    */
-  readonly configRuleName?: PhysicalName;
+  readonly configRuleName?: string;
 
   /**
    * A description about this AWS Config rule.

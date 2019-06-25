@@ -1,12 +1,12 @@
 import iam = require('@aws-cdk/aws-iam');
 import s3 = require('@aws-cdk/aws-s3');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import cloudfront = require('../lib');
 
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'integ-cloudfront-s3');
 
-const bucket = new s3.Bucket(stack, 'Bucket', { removalPolicy: cdk.RemovalPolicy.Destroy });
+const bucket = new s3.Bucket(stack, 'Bucket', { removalPolicy: cdk.RemovalPolicy.DESTROY });
 const oai = new cloudfront.CfnCloudFrontOriginAccessIdentity(stack, 'OAI', {
   cloudFrontOriginAccessIdentityConfig: {
     comment: 'Allows CloudFront to reach to the bucket!',

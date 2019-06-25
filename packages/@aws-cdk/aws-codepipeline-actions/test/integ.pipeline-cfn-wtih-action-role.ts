@@ -1,7 +1,7 @@
 import codepipeline = require('@aws-cdk/aws-codepipeline');
 import iam = require('@aws-cdk/aws-iam');
 import s3 = require('@aws-cdk/aws-s3');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import cpactions = require('../lib');
 
 const app = new cdk.App();
@@ -10,7 +10,7 @@ const stack = new cdk.Stack(app, 'aws-cdk-codepipeline-cloudformation-cross-regi
 
 const bucket = new s3.Bucket(stack, 'MyBucket', {
   versioned: true,
-  removalPolicy: cdk.RemovalPolicy.Destroy,
+  removalPolicy: cdk.RemovalPolicy.DESTROY,
 });
 
 const sourceOutput = new codepipeline.Artifact();
@@ -26,7 +26,7 @@ const sourceStage = {
 };
 
 const role = new iam.Role(stack, 'ActionRole', {
-  assumedBy: new iam.AccountPrincipal(cdk.Aws.accountId)
+  assumedBy: new iam.AccountPrincipal(cdk.Aws.ACCOUNT_ID)
 });
 role.addToPolicy(new iam.PolicyStatement({
   actions: ['sqs:*'],
