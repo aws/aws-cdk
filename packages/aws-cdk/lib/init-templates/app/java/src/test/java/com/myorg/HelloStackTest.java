@@ -1,6 +1,6 @@
 package com.myorg;
 
-import software.amazon.awscdk.App;
+import software.amazon.awscdk.core.App;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
