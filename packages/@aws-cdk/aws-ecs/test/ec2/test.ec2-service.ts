@@ -26,7 +26,7 @@ export = {
 
       new ecs.Ec2Service(stack, "Ec2Service", {
         cluster,
-        taskDefinition
+        taskDefinition,
       });
 
       // THEN
@@ -163,7 +163,7 @@ export = {
       test.throws(() => {
         new ecs.Ec2Service(stack, "Ec2Service", {
           cluster,
-          taskDefinition
+          taskDefinition,
         });
       });
 
@@ -279,7 +279,7 @@ export = {
 
         new ecs.Ec2Service(stack, "Ec2Service", {
           cluster,
-          taskDefinition
+          taskDefinition,
         });
 
         // THEN
@@ -382,7 +382,7 @@ export = {
 
       const service = new ecs.Ec2Service(stack, "Ec2Service", {
         cluster,
-        taskDefinition
+        taskDefinition,
       });
 
       service.addPlacementConstraints(PlacementConstraint.memberOf("attribute:ecs.instance-type =~ t2.*"));
@@ -413,7 +413,7 @@ export = {
 
       const service = new ecs.Ec2Service(stack, "Ec2Service", {
         cluster,
-        taskDefinition
+        taskDefinition,
       });
 
       service.addPlacementStrategies(PlacementStrategy.spreadAcross(BuiltInAttributes.AVAILABILITY_ZONE));
@@ -471,7 +471,7 @@ export = {
 
       const service = new ecs.Ec2Service(stack, "Ec2Service", {
         cluster,
-        taskDefinition
+        taskDefinition,
       });
 
       service.addPlacementStrategies(PlacementStrategy.randomly());
@@ -528,7 +528,7 @@ export = {
 
       const service = new ecs.Ec2Service(stack, "Ec2Service", {
         cluster,
-        taskDefinition
+        taskDefinition,
       });
 
       service.addPlacementStrategies(PlacementStrategy.packedBy(BinPackResource.MEMORY));
@@ -1028,7 +1028,7 @@ export = {
     // WHEN
     const service = new ecs.Ec2Service(stack, 'Service', {
       cluster,
-      taskDefinition
+      taskDefinition,
     });
 
     // THEN
