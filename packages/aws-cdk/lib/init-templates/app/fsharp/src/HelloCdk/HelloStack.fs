@@ -11,7 +11,7 @@ open Amazon.CDK.AWS.SQS
 type MyStack(scope, id, props) as this =
     inherit Stack(scope, id, props)
 
-    let queue = Queue(this, "MyFirstQueue", QueueProps(VisibilityTimeout = Duration.seconds(300)))
+    let queue = Queue(this, "MyFirstQueue", QueueProps(VisibilityTimeout = Duration.Seconds(300)))
     let topic = Topic(this, "MyFirstTopic", TopicProps(DisplayName = "My First Topic Yeah"))
     let hello = HelloConstruct(this, "Buckets", { BucketCount = 5 })
     let user = User(this, "MyUser", UserProps())
