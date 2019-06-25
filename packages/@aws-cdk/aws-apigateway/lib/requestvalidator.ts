@@ -64,7 +64,9 @@ export class RequestValidator extends Resource implements IRequestValidator {
   public readonly requestValidatorId: string;
 
   constructor(scope: Construct, id: string, props: RequestValidatorProps) {
-    super(scope, id);
+    super(scope, id, {
+      physicalName: props.requestValidatorName,
+    });
 
     const validatorProps: CfnRequestValidatorProps = {
       name: props.requestValidatorName,

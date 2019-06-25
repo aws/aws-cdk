@@ -16,7 +16,7 @@ export interface IModel extends IResource {
    *
    * @attribute
    */
-  readonly modelName: string;
+  readonly modelId: string;
 }
 
 export interface ModelOptions {
@@ -107,7 +107,7 @@ export class Model extends Resource implements IModel {
 
   public static fromModelName(scope: Construct, id: string, modelName: string): IModel {
     class Import extends Resource implements IModel {
-      public readonly modelName = modelName;
+      public readonly modelId = modelName;
     }
 
     return new Import(scope, id);
@@ -125,10 +125,12 @@ export class Model extends Resource implements IModel {
    *
    * @attribute
    */
-  public readonly modelName: string;
+  public readonly modelId: string;
 
   constructor(scope: Construct, id: string, props: ModelProps) {
-    super(scope, id);
+    super(scope, id, {
+      physicalName: props.modelName,
+    });
 
     const modelProps: CfnModelProps = {
       name: props.modelName,
@@ -140,7 +142,7 @@ export class Model extends Resource implements IModel {
 
     const resource = new CfnModel(this, 'Resource', modelProps);
 
-    this.modelName = resource.ref;
+    this.modelId = resource.ref;
 
     const deployment = (props.restApi instanceof RestApi) ? props.restApi.latestDeployment : undefined;
     if (deployment) {

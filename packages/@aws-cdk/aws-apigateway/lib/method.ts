@@ -241,7 +241,7 @@ export class Method extends Resource {
         responseModels = {};
         for (const contentType in mr.responseModels) {
           if (mr.responseModels.hasOwnProperty(contentType)) {
-            responseModels[contentType] = mr.responseModels[contentType].modelName;
+            responseModels[contentType] = mr.responseModels[contentType].modelId;
           }
         }
       }
@@ -265,7 +265,7 @@ export class Method extends Resource {
     const models: {[param: string]: string} = {};
     for (const contentType in requestModels) {
       if (requestModels.hasOwnProperty(contentType)) {
-          models[contentType] = requestModels[contentType].modelName;
+          models[contentType] = requestModels[contentType].modelId;
       }
     }
 
