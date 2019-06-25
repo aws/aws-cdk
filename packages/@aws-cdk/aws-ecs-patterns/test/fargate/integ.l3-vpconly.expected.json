@@ -591,7 +591,7 @@
           "Ref": "L3TaskDef48D8ACB8"
         },
         "Cluster": {
-          "Ref": "EcsDefaultClusterVpc95221ACA"
+          "Ref": "EcsDefaultClusterMnL3mNNYNVpc18E0451A"
         },
         "DeploymentConfiguration": {
           "MaximumPercent": 200,
@@ -675,7 +675,7 @@
         "ToPort": 80
       }
     },
-    "EcsDefaultClusterVpc95221ACA": {
+    "EcsDefaultClusterMnL3mNNYNVpc18E0451A": {
       "Type": "AWS::ECS::Cluster"
     },
     "Vpc299FDBC5F": {
@@ -1269,7 +1269,7 @@
           "Ref": "L3bTaskDef5506864D"
         },
         "Cluster": {
-          "Ref": "EcsDefaultClusterVpc2DBB7E157"
+          "Ref": "EcsDefaultClusterMnL3mNNYNVpc2B5DB011D"
         },
         "DeploymentConfiguration": {
           "MaximumPercent": 200,
@@ -1353,7 +1353,7 @@
         "ToPort": 80
       }
     },
-    "EcsDefaultClusterVpc2DBB7E157": {
+    "EcsDefaultClusterMnL3mNNYNVpc2B5DB011D": {
       "Type": "AWS::ECS::Cluster"
     },
     "L3cLB041B1E8C": {
@@ -1604,7 +1604,7 @@
           "Ref": "L3cTaskDefA575AF8A"
         },
         "Cluster": {
-          "Ref": "EcsDefaultClusterVpc2DBB7E157"
+          "Ref": "EcsDefaultClusterMnL3mNNYNVpc2B5DB011D"
         },
         "DeploymentConfiguration": {
           "MaximumPercent": 200,
