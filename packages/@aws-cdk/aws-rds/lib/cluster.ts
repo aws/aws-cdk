@@ -1,7 +1,7 @@
 import ec2 = require('@aws-cdk/aws-ec2');
 import kms = require('@aws-cdk/aws-kms');
 import secretsmanager = require('@aws-cdk/aws-secretsmanager');
-import { Construct,   RemovalPolicy, Resource, Token } from '@aws-cdk/cdk';
+import { Construct,   RemovalPolicy, Resource, Token } from '@aws-cdk/core';
 import { DatabaseClusterAttributes, IDatabaseCluster } from './cluster-ref';
 import { DatabaseSecret } from './database-secret';
 import { Endpoint } from './endpoint';
@@ -174,7 +174,7 @@ abstract class DatabaseClusterBase extends Resource implements IDatabaseCluster 
   public asSecretAttachmentTarget(): secretsmanager.SecretAttachmentTargetProps {
     return {
       targetId: this.clusterIdentifier,
-      targetType: secretsmanager.AttachmentTargetType.Cluster
+      targetType: secretsmanager.AttachmentTargetType.CLUSTER
     };
   }
 }
@@ -190,10 +190,10 @@ export class DatabaseCluster extends DatabaseClusterBase {
    */
   public static fromDatabaseClusterAttributes(scope: Construct, id: string, attrs: DatabaseClusterAttributes): IDatabaseCluster {
     class Import extends DatabaseClusterBase implements IDatabaseCluster {
-      public readonly defaultPortRange = new ec2.TcpPort(attrs.port);
+      public readonly defaultPort = ec2.Port.tcp(attrs.port);
       public readonly connections = new ec2.Connections({
         securityGroups: [ec2.SecurityGroup.fromSecurityGroupId(this, 'SecurityGroup', attrs.securityGroupId)],
-        defaultPortRange: this.defaultPortRange
+        defaultPort: this.defaultPort
       });
       public readonly clusterIdentifier = attrs.clusterIdentifier;
       public readonly instanceIdentifiers: string[] = [];
@@ -301,7 +301,7 @@ export class DatabaseCluster extends DatabaseClusterBase {
       engine: props.engine.name,
       engineVersion: props.engineVersion,
       dbClusterIdentifier: props.clusterIdentifier,
-      dbSubnetGroupName: subnetGroup.refAsString,
+      dbSubnetGroupName: subnetGroup.ref,
       vpcSecurityGroupIds: [this.securityGroupId],
       port: props.port,
       dbClusterParameterGroupName: props.parameterGroup && props.parameterGroup.parameterGroupName,
@@ -312,7 +312,7 @@ export class DatabaseCluster extends DatabaseClusterBase {
         : (props.masterUser.password
             ? props.masterUser.password.toString()
             : undefined),
-      backupRetentionPeriod: props.backup && props.backup.retentionDays,
+      backupRetentionPeriod: props.backup && props.backup.retention && props.backup.retention.toDays(),
       preferredBackupWindow: props.backup && props.backup.preferredWindow,
       preferredMaintenanceWindow: props.preferredMaintenanceWindow,
       databaseName: props.defaultDatabaseName,
@@ -325,12 +325,12 @@ export class DatabaseCluster extends DatabaseClusterBase {
       applyToUpdateReplacePolicy: true
     });
 
-    this.clusterIdentifier = cluster.refAsString;
+    this.clusterIdentifier = cluster.ref;
 
     // create a number token that represents the port of the cluster
     const portAttribute = Token.asNumber(cluster.attrEndpointPort);
     this.clusterEndpoint = new Endpoint(cluster.attrEndpointAddress, portAttribute);
-    this.clusterReadEndpoint = new Endpoint(cluster.attrEndpointAddress, portAttribute);
+    this.clusterReadEndpoint = new Endpoint(cluster.attrReadEndpointAddress, portAttribute);
 
     if (secret) {
       this.secret = secret.addTargetAttachment('AttachedSecret', {
@@ -344,7 +344,7 @@ export class DatabaseCluster extends DatabaseClusterBase {
     }
 
     // Get the actual subnet objects so we can depend on internet connectivity.
-    const internetConnected = props.instanceProps.vpc.selectSubnets(props.instanceProps.vpcSubnets).internetConnectedDependency;
+    const internetConnected = props.instanceProps.vpc.selectSubnets(props.instanceProps.vpcSubnets).internetConnectivityEstablished;
     for (let i = 0; i < instanceCount; i++) {
       const instanceIndex = i + 1;
 
@@ -352,19 +352,19 @@ export class DatabaseCluster extends DatabaseClusterBase {
                      props.clusterIdentifier != null ? `${props.clusterIdentifier}instance${instanceIndex}` :
                      undefined;
 
-      const publiclyAccessible = props.instanceProps.vpcSubnets && props.instanceProps.vpcSubnets.subnetType === ec2.SubnetType.Public;
+      const publiclyAccessible = props.instanceProps.vpcSubnets && props.instanceProps.vpcSubnets.subnetType === ec2.SubnetType.PUBLIC;
 
       const instance = new CfnDBInstance(this, `Instance${instanceIndex}`, {
         // Link to cluster
         engine: props.engine.name,
         engineVersion: props.engineVersion,
-        dbClusterIdentifier: cluster.refAsString,
+        dbClusterIdentifier: cluster.ref,
         dbInstanceIdentifier: instanceIdentifier,
         // Instance properties
         dbInstanceClass: databaseInstanceType(props.instanceProps.instanceType),
         publiclyAccessible,
         // This is already set on the Cluster. Unclear to me whether it should be repeated or not. Better yes.
-        dbSubnetGroupName: subnetGroup.refAsString,
+        dbSubnetGroupName: subnetGroup.ref,
         dbParameterGroupName: props.instanceProps.parameterGroup && props.instanceProps.parameterGroup.parameterGroupName,
       });
 
@@ -376,12 +376,12 @@ export class DatabaseCluster extends DatabaseClusterBase {
       // things in the right order.
       instance.node.addDependency(internetConnected);
 
-      this.instanceIdentifiers.push(instance.refAsString);
+      this.instanceIdentifiers.push(instance.ref);
       this.instanceEndpoints.push(new Endpoint(instance.attrEndpointAddress, portAttribute));
     }
 
-    const defaultPortRange = new ec2.TcpPort(this.clusterEndpoint.port);
-    this.connections = new ec2.Connections({ securityGroups: [securityGroup], defaultPortRange });
+    const defaultPort = ec2.Port.tcp(this.clusterEndpoint.port);
+    this.connections = new ec2.Connections({ securityGroups: [securityGroup], defaultPort });
   }
 
   /**

@@ -1,5 +1,5 @@
 import iam = require('@aws-cdk/aws-iam');
-import { CfnOutput, Construct, IResource as IResourceBase, Resource, Stack } from '@aws-cdk/cdk';
+import { CfnOutput, Construct, IResource as IResourceBase, Resource, Stack } from '@aws-cdk/core';
 import { ApiKey, IApiKey } from './api-key';
 import { CfnAccount, CfnRestApi } from './apigateway.generated';
 import { Deployment } from './deployment';
@@ -198,10 +198,12 @@ export class RestApi extends Resource implements IRestApi {
   private _latestDeployment: Deployment | undefined;
 
   constructor(scope: Construct, id: string, props: RestApiProps = { }) {
-    super(scope, id);
+    super(scope, id, {
+      physicalName: props.restApiName || id,
+    });
 
     const resource = new CfnRestApi(this, 'Resource', {
-      name: props.restApiName || id,
+      name: this.physicalName,
       description: props.description,
       policy: props.policy,
       failOnWarnings: props.failOnWarnings,
@@ -213,7 +215,7 @@ export class RestApi extends Resource implements IRestApi {
       parameters: props.parameters,
     });
 
-    this.restApiId = resource.refAsString;
+    this.restApiId = resource.ref;
 
     this.configureDeployment(props);
 
@@ -361,29 +363,29 @@ export enum ApiKeySourceType {
   /**
    * To read the API key from the `X-API-Key` header of a request.
    */
-  Header = 'HEADER',
+  HEADER = 'HEADER',
 
   /**
    * To read the API key from the `UsageIdentifierKey` from a custom authorizer.
    */
-  Authorizer = 'AUTHORIZER',
+  AUTHORIZER = 'AUTHORIZER',
 }
 
 export enum EndpointType {
   /**
    * For an edge-optimized API and its custom domain name.
    */
-  Edge = 'EDGE',
+  EDGE = 'EDGE',
 
   /**
    * For a regional API and its custom domain name.
    */
-  Regional = 'REGIONAL',
+  REGIONAL = 'REGIONAL',
 
   /**
    * For a private API and its custom domain name.
    */
-  Private = 'PRIVATE'
+  PRIVATE = 'PRIVATE'
 }
 
 class RootResource extends ResourceBase {

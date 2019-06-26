@@ -3,7 +3,7 @@ import { Certificate } from '@aws-cdk/aws-certificatemanager';
 import ec2 = require('@aws-cdk/aws-ec2');
 import ecs = require('@aws-cdk/aws-ecs');
 import iam = require('@aws-cdk/aws-iam');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import { Test } from 'nodeunit';
 import ecsPatterns = require('../../lib');
 
@@ -20,7 +20,7 @@ export = {
       new ecsPatterns.LoadBalancedFargateService(stack, 'Service', {
         cluster,
         certificate: cert,
-        loadBalancerType: ecsPatterns.LoadBalancerType.Network,
+        loadBalancerType: ecsPatterns.LoadBalancerType.NETWORK,
         image: ecs.ContainerImage.fromRegistry("/aws/aws-example-app")
       });
     };
@@ -39,7 +39,7 @@ export = {
     // WHEN
     new ecsPatterns.LoadBalancedFargateService(stack, 'Service', {
       cluster,
-      loadBalancerType: ecsPatterns.LoadBalancerType.Network,
+      loadBalancerType: ecsPatterns.LoadBalancerType.NETWORK,
       image: ecs.ContainerImage.fromRegistry("/aws/aws-example-app")
     });
 
@@ -67,7 +67,7 @@ export = {
     // WHEN
     new ecsPatterns.LoadBalancedFargateService(stack, 'Service', {
       cluster,
-      loadBalancerType: ecsPatterns.LoadBalancerType.Network,
+      loadBalancerType: ecsPatterns.LoadBalancerType.NETWORK,
       image: ecs.ContainerImage.fromRegistry("/aws/aws-example-app"),
       executionRole
     });
@@ -94,7 +94,7 @@ export = {
     // WHEN
     new ecsPatterns.LoadBalancedFargateService(stack, 'Service', {
       cluster,
-      loadBalancerType: ecsPatterns.LoadBalancerType.Network,
+      loadBalancerType: ecsPatterns.LoadBalancerType.NETWORK,
       image: ecs.ContainerImage.fromRegistry("/aws/aws-example-app"),
       taskRole
     });
@@ -114,7 +114,7 @@ export = {
     // WHEN
     new ecsPatterns.LoadBalancedFargateService(stack, 'Service', {
       cluster,
-      loadBalancerType: ecsPatterns.LoadBalancerType.Network,
+      loadBalancerType: ecsPatterns.LoadBalancerType.NETWORK,
       image: ecs.ContainerImage.fromRegistry("/aws/aws-example-app"),
       containerName: 'bob'
     });
@@ -134,7 +134,7 @@ export = {
     // WHEN
     new ecsPatterns.LoadBalancedFargateService(stack, 'Service', {
       cluster,
-      loadBalancerType: ecsPatterns.LoadBalancerType.Network,
+      loadBalancerType: ecsPatterns.LoadBalancerType.NETWORK,
       image: ecs.ContainerImage.fromRegistry("/aws/aws-example-app"),
     });
 
@@ -153,9 +153,9 @@ export = {
     // WHEN
     new ecsPatterns.LoadBalancedFargateService(stack, 'Service', {
       cluster,
-      loadBalancerType: ecsPatterns.LoadBalancerType.Network,
+      loadBalancerType: ecsPatterns.LoadBalancerType.NETWORK,
       image: ecs.ContainerImage.fromRegistry("/aws/aws-example-app"),
-      serviceName: 'bob'
+      serviceName: 'bob',
     });
     // THEN
     const serviceTaskDefinition = SynthUtils.synthesize(stack).template.Resources.Service9571FDD8;
@@ -172,7 +172,7 @@ export = {
     // WHEN
     new ecsPatterns.LoadBalancedFargateService(stack, 'Service', {
       cluster,
-      loadBalancerType: ecsPatterns.LoadBalancerType.Network,
+      loadBalancerType: ecsPatterns.LoadBalancerType.NETWORK,
       image: ecs.ContainerImage.fromRegistry("/aws/aws-example-app"),
     });
 

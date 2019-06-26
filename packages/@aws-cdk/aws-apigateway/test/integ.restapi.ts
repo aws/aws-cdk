@@ -1,5 +1,5 @@
 import lambda = require('@aws-cdk/aws-lambda');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import apigateway = require('../lib');
 
 class Test extends cdk.Stack {
@@ -12,7 +12,7 @@ class Test extends cdk.Stack {
         cacheClusterEnabled: true,
         stageName: 'beta',
         description: 'beta stage',
-        loggingLevel: apigateway.MethodLoggingLevel.Info,
+        loggingLevel: apigateway.MethodLoggingLevel.INFO,
         dataTraceEnabled: true,
         methodOptions: {
           '/api/appliances/GET': {
@@ -23,7 +23,7 @@ class Test extends cdk.Stack {
     });
 
     const handler = new lambda.Function(this, 'MyHandler', {
-      runtime: lambda.Runtime.Nodejs810,
+      runtime: lambda.Runtime.NODEJS_8_10,
       code: lambda.Code.inline(`exports.handler = ${handlerCode}`),
       handler: 'index.handler',
     });
@@ -61,7 +61,7 @@ class Test extends cdk.Stack {
       throttle: { rateLimit: 5 },
       quota: {
         limit: 10000,
-        period: apigateway.Period.Month
+        period: apigateway.Period.MONTH
       }
     });
     plan.addApiStage({

@@ -1,6 +1,6 @@
 import codecommit = require('@aws-cdk/aws-codecommit');
 import codepipeline = require('@aws-cdk/aws-codepipeline');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import cpactions = require('../lib');
 
 const app = new cdk.App();
@@ -9,14 +9,14 @@ const stack = new cdk.Stack(app, 'aws-cdk-codepipeline-cloudformation');
 /// !show
 // Source stage: read from repository
 const repo = new codecommit.Repository(stack, 'TemplateRepo', {
-  repositoryName: 'template-repo'
+  repositoryName: 'template-repo',
 });
 const sourceOutput = new codepipeline.Artifact('SourceArtifact');
 const source = new cpactions.CodeCommitSourceAction({
   actionName: 'Source',
   repository: repo,
   output: sourceOutput,
-  pollForSourceChanges: true,
+  trigger: cpactions.CodeCommitTrigger.POLL,
 });
 const sourceStage = {
   stageName: 'Source',

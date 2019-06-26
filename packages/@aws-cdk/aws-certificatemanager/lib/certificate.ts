@@ -1,4 +1,4 @@
-import { Construct, IResource, Resource } from '@aws-cdk/cdk';
+import { Construct, IResource, Resource } from '@aws-cdk/core';
 import { CfnCertificate } from './certificatemanager.generated';
 import { apexDomain } from './util';
 
@@ -87,7 +87,7 @@ export class Certificate extends Resource implements ICertificate {
       domainValidationOptions: allDomainNames.map(domainValidationOption),
     });
 
-    this.certificateArn = cert.refAsString;
+    this.certificateArn = cert.ref;
 
     /**
      * Return the domain validation options for the given domain

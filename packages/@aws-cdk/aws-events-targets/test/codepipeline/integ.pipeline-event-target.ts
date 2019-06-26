@@ -1,12 +1,31 @@
 import codecommit = require('@aws-cdk/aws-codecommit');
 import codepipeline = require('@aws-cdk/aws-codepipeline');
 import events = require('@aws-cdk/aws-events');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import targets = require('../../lib');
 
-class MockAction extends codepipeline.Action {
-  protected bind(_info: codepipeline.ActionBind): void {
-    // void
+interface MockActionProps extends codepipeline.ActionProperties {
+  configuration?: any;
+}
+
+class MockAction implements codepipeline.IAction {
+  public readonly actionProperties: codepipeline.ActionProperties;
+  private readonly configuration: any;
+
+  constructor(props: MockActionProps) {
+    this.actionProperties = props;
+    this.configuration = props.configuration;
+  }
+
+  public bind(_scope: cdk.Construct, _stage: codepipeline.IStage, _options: codepipeline.ActionBindOptions):
+      codepipeline.ActionConfig {
+    return {
+      configuration: this.configuration,
+    };
+  }
+
+  public onStateChange(_name: string, _target?: events.IRuleTarget, _options?: events.RuleProps): events.Rule {
+    throw new Error('onStateChange() is not available on MockAction');
   }
 }
 
@@ -14,7 +33,7 @@ const app = new cdk.App();
 const stack = new cdk.Stack(app, 'pipeline-events');
 
 const repo = new codecommit.Repository(stack, 'Repo', {
-  repositoryName: 'TestRepository'
+  repositoryName: 'TestRepository',
 });
 
 const pipeline = new codepipeline.Pipeline(stack, 'pipelinePipeline22F2A91D');
@@ -24,7 +43,7 @@ pipeline.addStage({
   stageName: 'Source',
   actions: [new MockAction({
     actionName: 'CodeCommit',
-    category: codepipeline.ActionCategory.Source,
+    category: codepipeline.ActionCategory.SOURCE,
     provider: 'CodeCommit',
     artifactBounds: { minInputs: 0, maxInputs: 0 , minOutputs: 1, maxOutputs: 1, },
     configuration: {
@@ -37,7 +56,7 @@ pipeline.addStage({
   stageName: 'Build',
   actions: [new MockAction({
     actionName: 'Hello',
-    category: codepipeline.ActionCategory.Approval,
+    category: codepipeline.ActionCategory.APPROVAL,
     provider: 'Manual',
     artifactBounds: { minInputs: 0, maxInputs: 0 , minOutputs: 0, maxOutputs: 0, }})]
 });

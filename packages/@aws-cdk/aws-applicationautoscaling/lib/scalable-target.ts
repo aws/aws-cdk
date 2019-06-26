@@ -1,5 +1,5 @@
 import iam = require('@aws-cdk/aws-iam');
-import { Construct, IResource, Resource } from '@aws-cdk/cdk';
+import { Construct, IResource, Resource } from '@aws-cdk/core';
 import { CfnScalableTarget } from './applicationautoscaling.generated';
 import { Schedule } from './schedule';
 import { BasicStepScalingPolicyProps, StepScalingPolicy } from './step-scaling-policy';
@@ -120,7 +120,7 @@ export class ScalableTarget extends Resource implements IScalableTarget {
       serviceNamespace: props.serviceNamespace
     });
 
-    this.scalableTargetId = resource.refAsString;
+    this.scalableTargetId = resource.ref;
   }
 
   /**
@@ -219,40 +219,40 @@ export enum ServiceNamespace {
   /**
    * Elastic Container Service
    */
-  Ecs = 'ecs',
+  ECS = 'ecs',
 
   /**
    * Elastic Map Reduce
    */
-  ElasticMapReduce = 'elasticmapreduce',
+  ELASTIC_MAP_REDUCE = 'elasticmapreduce',
 
   /**
    * Elastic Compute Cloud
    */
-  Ec2 = 'ec2',
+  EC2 = 'ec2',
 
   /**
    * App Stream
    */
-  AppStream = 'appstream',
+  APPSTREAM = 'appstream',
 
   /**
    * Dynamo DB
    */
-  DynamoDb = 'dynamodb',
+  DYNAMODB = 'dynamodb',
 
   /**
    * Relational Database Service
    */
-  Rds = 'rds',
+  RDS = 'rds',
 
   /**
    * SageMaker
    */
-  SageMaker = 'sagemaker',
+  SAGEMAKER = 'sagemaker',
 
   /**
    * Custom Resource
    */
-  CustomResource = 'custom-resource',
+  CUSTOM_RESOURCE = 'custom-resource',
 }

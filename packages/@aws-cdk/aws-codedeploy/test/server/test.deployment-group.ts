@@ -3,7 +3,7 @@ import autoscaling = require('@aws-cdk/aws-autoscaling');
 import cloudwatch = require('@aws-cdk/aws-cloudwatch');
 import ec2 = require('@aws-cdk/aws-ec2');
 import lbv2 = require('@aws-cdk/aws-elasticloadbalancingv2');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import { Test } from 'nodeunit';
 import codedeploy = require('../../lib');
 
@@ -46,7 +46,7 @@ export = {
       const stack = new cdk.Stack();
 
       const asg = new autoscaling.AutoScalingGroup(stack, 'ASG', {
-        instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.Standard3, ec2.InstanceSize.Small),
+        instanceType: ec2.InstanceType.of(ec2.InstanceClass.STANDARD3, ec2.InstanceSize.SMALL),
         machineImage: new ec2.AmazonLinuxImage(),
         vpc: new ec2.Vpc(stack, 'VPC'),
       });
@@ -70,7 +70,7 @@ export = {
       const stack = new cdk.Stack();
 
       const asg = new autoscaling.AutoScalingGroup(stack, 'ASG', {
-        instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.Standard3, ec2.InstanceSize.Small),
+        instanceType: ec2.InstanceType.of(ec2.InstanceClass.STANDARD3, ec2.InstanceSize.SMALL),
         machineImage: new ec2.AmazonLinuxImage(),
         vpc: new ec2.Vpc(stack, 'VPC'),
       });
@@ -95,8 +95,8 @@ export = {
       const alb = new lbv2.ApplicationLoadBalancer(stack, 'ALB', {
         vpc: new ec2.Vpc(stack, 'VPC'),
       });
-      const listener = alb.addListener('Listener', { protocol: lbv2.ApplicationProtocol.Http });
-      const targetGroup = listener.addTargets('Fleet', { protocol: lbv2.ApplicationProtocol.Http });
+      const listener = alb.addListener('Listener', { protocol: lbv2.ApplicationProtocol.HTTP });
+      const targetGroup = listener.addTargets('Fleet', { protocol: lbv2.ApplicationProtocol.HTTP });
 
       new codedeploy.ServerDeploymentGroup(stack, 'DeploymentGroup', {
         loadBalancer: codedeploy.LoadBalancer.application(targetGroup),

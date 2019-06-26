@@ -1,6 +1,6 @@
 import { expect, haveResource } from '@aws-cdk/assert';
 import { AnyPrincipal, PolicyStatement } from '@aws-cdk/aws-iam';
-import { Stack } from '@aws-cdk/cdk';
+import { Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 // tslint:disable-next-line:max-line-length
 import { GatewayVpcEndpoint, GatewayVpcEndpointAwsService, InterfaceVpcEndpoint, InterfaceVpcEndpointAwsService, SubnetType, Vpc } from '../lib';
@@ -62,10 +62,10 @@ export = {
             service: GatewayVpcEndpointAwsService.S3,
             subnets: [
               {
-                subnetType: SubnetType.Public
+                subnetType: SubnetType.PUBLIC
               },
               {
-                subnetType: SubnetType.Private
+                subnetType: SubnetType.PRIVATE
               }
             ]
           }
@@ -244,7 +244,7 @@ export = {
 
       // WHEN
       vpc.addInterfaceEndpoint('EcrDocker', {
-        service: InterfaceVpcEndpointAwsService.EcrDocker
+        service: InterfaceVpcEndpointAwsService.ECR_DOCKER
       });
 
       // THEN

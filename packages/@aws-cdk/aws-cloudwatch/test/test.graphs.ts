@@ -1,4 +1,4 @@
-import { Stack } from '@aws-cdk/cdk';
+import { Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import { AlarmWidget, GraphWidget, Metric, Shading, SingleValueWidget } from '../lib';
 
@@ -133,7 +133,7 @@ export = {
       leftAnnotations: [{
         value: 1000,
         color: '667788',
-        fill: Shading.Below,
+        fill: Shading.BELOW,
         label: 'this is the annotation',
       }]
     });

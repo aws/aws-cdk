@@ -1,6 +1,6 @@
 import lambda = require('@aws-cdk/aws-lambda');
 import sns = require('@aws-cdk/aws-sns');
-import { CfnResource, Construct, RemovalPolicy, Resource } from '@aws-cdk/cdk';
+import { CfnResource, Construct, RemovalPolicy, Resource } from '@aws-cdk/core';
 import { CfnCustomResource } from './cloudformation.generated';
 
 /**
@@ -97,7 +97,7 @@ export class CustomResource extends Resource {
       }
     });
 
-    this.resource.applyRemovalPolicy(props.removalPolicy, { default: RemovalPolicy.Destroy });
+    this.resource.applyRemovalPolicy(props.removalPolicy, { default: RemovalPolicy.DESTROY });
   }
 
   public getAtt(attributeName: string) {
@@ -123,7 +123,7 @@ function uppercaseProperties(props: Properties): Properties {
 
 function renderResourceType(resourceType?: string) {
   if (!resourceType) {
-    return CfnCustomResource.cfnResourceTypeName;
+    return CfnCustomResource.CFN_RESOURCE_TYPE_NAME;
   }
 
   if (!resourceType.startsWith('Custom::')) {

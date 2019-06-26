@@ -1,6 +1,6 @@
 import iam = require('@aws-cdk/aws-iam');
-import cdk = require('@aws-cdk/cdk');
-import { Construct, Lazy, Stack } from '@aws-cdk/cdk';
+import cdk = require('@aws-cdk/core');
+import { Construct, Lazy, Stack } from '@aws-cdk/core';
 import { ILogGroup } from './log-group';
 import { CfnDestination } from './logs.generated';
 import { ILogSubscriptionDestination, LogSubscriptionDestinationConfig } from './subscription-filter';
@@ -66,21 +66,27 @@ export class CrossAccountDestination extends cdk.Resource implements ILogSubscri
   private readonly resource: CfnDestination;
 
   constructor(scope: cdk.Construct, id: string, props: CrossAccountDestinationProps) {
-    super(scope, id);
-
-    // In the underlying model, the name is not optional, but we make it so anyway.
-    const destinationName = props.destinationName || Lazy.stringValue({ produce: () => this.generateUniqueName() });
+    super(scope, id, {
+      physicalName: props.destinationName ||
+        // In the underlying model, the name is not optional, but we make it so anyway.
+        Lazy.stringValue({ produce: () => this.generateUniqueName() }),
+    });
 
     this.resource = new CfnDestination(this, 'Resource', {
-      destinationName,
+      destinationName: this.physicalName!,
       // Must be stringified policy
       destinationPolicy: this.lazyStringifiedPolicyDocument(),
       roleArn: props.role.roleArn,
       targetArn: props.targetArn
     });
 
-    this.destinationArn = this.resource.attrArn;
-    this.destinationName = this.resource.refAsString;
+    this.destinationArn = this.getResourceArnAttribute(this.resource.attrArn, {
+      service: 'logs',
+      resource: 'destination',
+      resourceName: this.physicalName,
+      sep: ':',
+    });
+    this.destinationName = this.getResourceNameAttribute(this.resource.ref);
   }
 
   public addToPolicy(statement: iam.PolicyStatement) {

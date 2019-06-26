@@ -1,5 +1,5 @@
 import { expect, haveResource, isSuperObject } from '@aws-cdk/assert';
-import { App, Stack } from '@aws-cdk/cdk';
+import { App, Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import { Dashboard, GraphWidget, PeriodOverride, TextWidget } from '../lib';
 
@@ -99,7 +99,7 @@ export = {
     {
       start: '-9H',
       end: '2018-12-17T06:00:00.000Z',
-      periodOverride: PeriodOverride.Inherit
+      periodOverride: PeriodOverride.INHERIT
     });
 
     // WHEN
@@ -127,7 +127,7 @@ export = {
 
     // WHEN
     new Dashboard(stack, 'MyDashboard', {
-      dashboardName: 'MyCustomDashboardName'
+      dashboardName: 'MyCustomDashboardName',
     });
 
     // THEN

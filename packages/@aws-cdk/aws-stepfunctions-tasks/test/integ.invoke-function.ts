@@ -1,5 +1,5 @@
 import sfn = require('@aws-cdk/aws-stepfunctions');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import path = require('path');
 import { Code, Function, Runtime } from '../../aws-lambda/lib';
 import tasks = require('../lib');
@@ -10,7 +10,7 @@ const stack = new cdk.Stack(app, 'aws-stepfunctions-integ');
 const handler = new Function(stack, 'Handler', {
   code: Code.asset(path.join(__dirname, 'my-lambda-handler')),
   handler: 'index.main',
-  runtime: Runtime.Python36
+  runtime: Runtime.PYTHON_3_6
 });
 
 const submitJob = new sfn.Task(stack, 'Invoke Handler', {
@@ -20,7 +20,7 @@ const submitJob = new sfn.Task(stack, 'Invoke Handler', {
 const callbackHandler = new Function(stack, 'CallbackHandler', {
   code: Code.asset(path.join(__dirname, 'my-lambda-handler')),
   handler: 'index.main',
-  runtime: Runtime.Python36
+  runtime: Runtime.PYTHON_3_6
 });
 
 const taskTokenHandler = new sfn.Task(stack, 'Invoke Handler with task token', {
@@ -51,7 +51,7 @@ const chain = sfn.Chain
 
 new sfn.StateMachine(stack, 'StateMachine', {
   definition: chain,
-  timeoutSec: 30
+  timeout: cdk.Duration.seconds(30)
 });
 
-app.run();
+app.synth();

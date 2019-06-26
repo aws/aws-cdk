@@ -1,19 +1,7 @@
-import { Construct, IResource as IResourceBase, Resource } from '@aws-cdk/cdk';
+import { Construct, IResource as IResourceBase, Resource } from '@aws-cdk/core';
 import { CfnApiKey } from './apigateway.generated';
 import { ResourceOptions } from "./resource";
 import { RestApi } from './restapi';
-
-/**
- * API keys are alphanumeric string values that you distribute to
- * app developer customers to grant access to your API
- */
-export interface ApiKeyAttributes {
-  /**
-   * The API key ID.
-   * @attribute
-   */
-  readonly keyId: string;
-}
 
 /**
  * API keys are alphanumeric string values that you distribute to
@@ -70,7 +58,7 @@ export interface ApiKeyProps extends ResourceOptions {
    * @link http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-apigateway-apikey.html#cfn-apigateway-apikey-name
    * @default automically generated name
    */
-  readonly name?: string;
+  readonly apiKeyName?: string;
 }
 
 /**
@@ -83,18 +71,20 @@ export class ApiKey extends Resource implements IApiKey {
   public readonly keyId: string;
 
   constructor(scope: Construct, id: string, props: ApiKeyProps = { }) {
-    super(scope, id);
+    super(scope, id, {
+      physicalName: props.apiKeyName,
+    });
 
     const resource = new CfnApiKey(this, 'Resource', {
       customerId: props.customerId,
       description: props.description,
       enabled: props.enabled || true,
       generateDistinctId: props.generateDistinctId,
-      name: props.name,
+      name: this.physicalName,
       stageKeys: this.renderStageKeys(props.resources)
     });
 
-    this.keyId = resource.refAsString;
+    this.keyId = resource.ref;
   }
 
   private renderStageKeys(resources: RestApi[] | undefined): CfnApiKey.StageKeyProperty[] | undefined {

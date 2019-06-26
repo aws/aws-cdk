@@ -1,4 +1,4 @@
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import { Alarm } from "./alarm";
 import { IMetric } from "./metric-types";
 import { ConcreteWidget } from "./widget";
@@ -103,7 +103,7 @@ export class AlarmWidget extends ConcreteWidget {
       properties: {
         view: 'timeSeries',
         title: this.props.title,
-        region: this.props.region || cdk.Aws.region,
+        region: this.props.region || cdk.Aws.REGION,
         annotations: {
           alarms: [this.props.alarm.alarmArn]
         },
@@ -176,7 +176,7 @@ export class GraphWidget extends ConcreteWidget {
       properties: {
         view: 'timeSeries',
         title: this.props.title,
-        region: this.props.region || cdk.Aws.region,
+        region: this.props.region || cdk.Aws.REGION,
         metrics: (this.props.left || []).map(m => metricJson(m, 'left')).concat(
              (this.props.right || []).map(m => metricJson(m, 'right'))),
         annotations: {
@@ -223,7 +223,7 @@ export class SingleValueWidget extends ConcreteWidget {
       properties: {
         view: 'singleValue',
         title: this.props.title,
-        region: this.props.region || cdk.Aws.region,
+        region: this.props.region || cdk.Aws.REGION,
         metrics: this.props.metrics.map(m => metricJson(m, 'left'))
       }
     }];
@@ -272,17 +272,17 @@ export enum Shading {
   /**
    * Don't add shading
    */
-  None = 'none',
+  NONE = 'none',
 
   /**
    * Add shading above the annotation
    */
-  Above = 'above',
+  ABOVE = 'above',
 
   /**
    * Add shading below the annotation
    */
-  Below = 'below'
+  BELOW = 'below'
 }
 
 function mapAnnotation(yAxis: string): ((x: HorizontalAnnotation) => any) {

@@ -1,7 +1,7 @@
 import appscaling = require('@aws-cdk/aws-applicationautoscaling');
 import cloudwatch = require('@aws-cdk/aws-cloudwatch');
 import elbv2 = require('@aws-cdk/aws-elasticloadbalancingv2');
-import { Construct } from '@aws-cdk/cdk';
+import { Construct } from '@aws-cdk/core';
 
 // tslint:disable-next-line:no-empty-interface
 export interface ScalableTaskCountProps extends appscaling.BaseScalableAttributeProps {
@@ -36,12 +36,12 @@ export class ScalableTaskCount extends appscaling.BaseScalableAttribute {
    */
   public scaleOnCpuUtilization(id: string, props: CpuUtilizationScalingProps) {
     return super.doScaleToTrackMetric(id, {
-      predefinedMetric: appscaling.PredefinedMetric.ECSServiceAverageCPUUtilization,
+      predefinedMetric: appscaling.PredefinedMetric.ECS_SERVICE_AVERAGE_CPU_UTILIZATION,
       policyName: props.policyName,
       disableScaleIn: props.disableScaleIn,
       targetValue: props.targetUtilizationPercent,
-      scaleInCooldownSec: props.scaleInCooldownSec,
-      scaleOutCooldownSec: props.scaleOutCooldownSec
+      scaleInCooldown: props.scaleInCooldown,
+      scaleOutCooldown: props.scaleOutCooldown
     });
   }
 
@@ -50,12 +50,12 @@ export class ScalableTaskCount extends appscaling.BaseScalableAttribute {
    */
   public scaleOnMemoryUtilization(id: string, props: MemoryUtilizationScalingProps) {
     return super.doScaleToTrackMetric(id, {
-      predefinedMetric: appscaling.PredefinedMetric.ECSServiceAverageMemoryUtilization,
+      predefinedMetric: appscaling.PredefinedMetric.ECS_SERVICE_AVERAGE_MEMORY_UTILIZATION,
       targetValue: props.targetUtilizationPercent,
       policyName: props.policyName,
       disableScaleIn: props.disableScaleIn,
-      scaleInCooldownSec: props.scaleInCooldownSec,
-      scaleOutCooldownSec: props.scaleOutCooldownSec
+      scaleInCooldown: props.scaleInCooldown,
+      scaleOutCooldown: props.scaleOutCooldown
     });
   }
 
@@ -67,13 +67,13 @@ export class ScalableTaskCount extends appscaling.BaseScalableAttribute {
        '/' + props.targetGroup.targetGroupFullName;
 
     return super.doScaleToTrackMetric(id, {
-      predefinedMetric: appscaling.PredefinedMetric.ALBRequestCountPerTarget,
+      predefinedMetric: appscaling.PredefinedMetric.ALB_REQUEST_COUNT_PER_TARGET,
       resourceLabel,
       targetValue: props.requestsPerTarget,
       policyName: props.policyName,
       disableScaleIn: props.disableScaleIn,
-      scaleInCooldownSec: props.scaleInCooldownSec,
-      scaleOutCooldownSec: props.scaleOutCooldownSec
+      scaleInCooldown: props.scaleInCooldown,
+      scaleOutCooldown: props.scaleOutCooldown
     });
   }
 
@@ -86,8 +86,8 @@ export class ScalableTaskCount extends appscaling.BaseScalableAttribute {
       targetValue: props.targetValue,
       policyName: props.policyName,
       disableScaleIn: props.disableScaleIn,
-      scaleInCooldownSec: props.scaleInCooldownSec,
-      scaleOutCooldownSec: props.scaleOutCooldownSec,
+      scaleInCooldown: props.scaleInCooldown,
+      scaleOutCooldown: props.scaleOutCooldown,
     });
   }
 }

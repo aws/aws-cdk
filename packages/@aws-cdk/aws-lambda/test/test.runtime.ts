@@ -5,8 +5,8 @@ import lambda = require('../lib');
 export = testCase({
   'runtimes are equal for different instances'(test: Test) {
     // GIVEN
-    const runtime1 = new lambda.Runtime('python3.7', RuntimeFamily.Python, {supportsInlineCode: true});
-    const runtime2 = new lambda.Runtime('python3.7', RuntimeFamily.Python, {supportsInlineCode: true});
+    const runtime1 = new lambda.Runtime('python3.7', RuntimeFamily.PYTHON, {supportsInlineCode: true});
+    const runtime2 = new lambda.Runtime('python3.7', RuntimeFamily.PYTHON, {supportsInlineCode: true});
 
     // WHEN
     const result = runtime1.runtimeEquals(runtime2);
@@ -18,7 +18,7 @@ export = testCase({
   },
   'runtimes are equal for same instance'(test: Test) {
     // GIVEN
-    const runtime = new lambda.Runtime('python3.7', RuntimeFamily.Python, {supportsInlineCode: true});
+    const runtime = new lambda.Runtime('python3.7', RuntimeFamily.PYTHON, {supportsInlineCode: true});
 
     // WHEN
     const result = runtime.runtimeEquals(runtime);
@@ -30,8 +30,8 @@ export = testCase({
   },
   'unequal when name changes'(test: Test) {
     // GIVEN
-    const runtime1 = new lambda.Runtime('python3.7', RuntimeFamily.Python, {supportsInlineCode: true});
-    const runtime2 = new lambda.Runtime('python3.6', RuntimeFamily.Python, {supportsInlineCode: true});
+    const runtime1 = new lambda.Runtime('python3.7', RuntimeFamily.PYTHON, {supportsInlineCode: true});
+    const runtime2 = new lambda.Runtime('python3.6', RuntimeFamily.PYTHON, {supportsInlineCode: true});
 
     // WHEN
     const result = runtime1.runtimeEquals(runtime2);
@@ -43,8 +43,8 @@ export = testCase({
   },
   'unequal when family changes'(test: Test) {
     // GIVEN
-    const runtime1 = new lambda.Runtime('python3.7', RuntimeFamily.Python, {supportsInlineCode: true});
-    const runtime2 = new lambda.Runtime('python3.7', RuntimeFamily.Java, {supportsInlineCode: true});
+    const runtime1 = new lambda.Runtime('python3.7', RuntimeFamily.PYTHON, {supportsInlineCode: true});
+    const runtime2 = new lambda.Runtime('python3.7', RuntimeFamily.JAVA, {supportsInlineCode: true});
 
     // WHEN
     const result = runtime1.runtimeEquals(runtime2);
@@ -56,8 +56,8 @@ export = testCase({
   },
   'unequal when supportsInlineCode changes'(test: Test) {
     // GIVEN
-    const runtime1 = new lambda.Runtime('python3.7', RuntimeFamily.Python, {supportsInlineCode: true});
-    const runtime2 = new lambda.Runtime('python3.7', RuntimeFamily.Python, {supportsInlineCode: false});
+    const runtime1 = new lambda.Runtime('python3.7', RuntimeFamily.PYTHON, {supportsInlineCode: true});
+    const runtime2 = new lambda.Runtime('python3.7', RuntimeFamily.PYTHON, {supportsInlineCode: false});
 
     // WHEN
     const result = runtime1.runtimeEquals(runtime2);

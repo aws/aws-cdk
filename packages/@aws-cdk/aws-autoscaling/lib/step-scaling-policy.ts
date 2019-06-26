@@ -1,6 +1,6 @@
 import { findAlarmThresholds, normalizeIntervals } from '@aws-cdk/aws-autoscaling-common';
 import cloudwatch = require('@aws-cdk/aws-cloudwatch');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import { IAutoScalingGroup } from './auto-scaling-group';
 import { AdjustmentType, MetricAggregationType, StepScalingAction } from './step-scaling-action';
 
@@ -29,14 +29,14 @@ export interface BasicStepScalingPolicyProps {
    *
    * @default Default cooldown period on your AutoScalingGroup
    */
-  readonly cooldownSeconds?: number;
+  readonly cooldown?: cdk.Duration;
 
   /**
    * Estimated time until a newly launched instance can send metrics to CloudWatch.
    *
    * @default Same as the cooldown
    */
-  readonly estimatedInstanceWarmupSeconds?: number;
+  readonly estimatedInstanceWarmup?: cdk.Duration;
 
   /**
    * Minimum absolute number to adjust capacity with as result of percentage scaling.
@@ -76,8 +76,8 @@ export class StepScalingPolicy extends cdk.Construct {
       throw new Error('You must supply at least 2 intervals for autoscaling');
     }
 
-    const adjustmentType = props.adjustmentType || AdjustmentType.ChangeInCapacity;
-    const changesAreAbsolute = adjustmentType === AdjustmentType.ExactCapacity;
+    const adjustmentType = props.adjustmentType || AdjustmentType.CHANGE_IN_CAPACITY;
+    const changesAreAbsolute = adjustmentType === AdjustmentType.EXACT_CAPACITY;
 
     const intervals = normalizeIntervals(props.scalingSteps, changesAreAbsolute);
     const alarms = findAlarmThresholds(intervals);
@@ -87,7 +87,7 @@ export class StepScalingPolicy extends cdk.Construct {
 
       this.lowerAction = new StepScalingAction(this, 'LowerPolicy', {
         adjustmentType: props.adjustmentType,
-        cooldownSeconds: props.cooldownSeconds,
+        cooldown: props.cooldown,
         metricAggregationType: aggregationTypeFromMetric(props.metric),
         minAdjustmentMagnitude: props.minAdjustmentMagnitude,
         autoScalingGroup: props.autoScalingGroup,
@@ -102,10 +102,11 @@ export class StepScalingPolicy extends cdk.Construct {
       }
 
       this.lowerAlarm = new cloudwatch.Alarm(this, 'LowerAlarm', {
+        // Recommended by AutoScaling
         metric: props.metric,
-        periodSec: 60, // Recommended by AutoScaling
+        period: cdk.Duration.minutes(1), // Recommended by AutoScaling
         alarmDescription: 'Lower threshold scaling alarm',
-        comparisonOperator: cloudwatch.ComparisonOperator.LessThanOrEqualToThreshold,
+        comparisonOperator: cloudwatch.ComparisonOperator.LESS_THAN_OR_EQUAL_TO_THRESHOLD,
         evaluationPeriods: 1,
         threshold,
       });
@@ -117,7 +118,7 @@ export class StepScalingPolicy extends cdk.Construct {
 
       this.upperAction = new StepScalingAction(this, 'UpperPolicy', {
         adjustmentType: props.adjustmentType,
-        cooldownSeconds: props.cooldownSeconds,
+        cooldown: props.cooldown,
         metricAggregationType: aggregationTypeFromMetric(props.metric),
         minAdjustmentMagnitude: props.minAdjustmentMagnitude,
         autoScalingGroup: props.autoScalingGroup,
@@ -134,9 +135,9 @@ export class StepScalingPolicy extends cdk.Construct {
       this.upperAlarm = new cloudwatch.Alarm(this, 'UpperAlarm', {
         // Recommended by AutoScaling
         metric: props.metric,
-        periodSec: 60, // Recommended by AutoScaling
+        period: cdk.Duration.minutes(1), // Recommended by AutoScaling
         alarmDescription: 'Upper threshold scaling alarm',
-        comparisonOperator: cloudwatch.ComparisonOperator.GreaterThanOrEqualToThreshold,
+        comparisonOperator: cloudwatch.ComparisonOperator.GREATER_THAN_OR_EQUAL_TO_THRESHOLD,
         evaluationPeriods: 1,
         threshold,
       });
@@ -149,11 +150,11 @@ function aggregationTypeFromMetric(metric: cloudwatch.IMetric): MetricAggregatio
   const statistic = metric.toAlarmConfig().statistic;
   switch (statistic) {
     case 'Average':
-      return MetricAggregationType.Average;
+      return MetricAggregationType.AVERAGE;
     case 'Minimum':
-      return MetricAggregationType.Minimum;
+      return MetricAggregationType.MINIMUM;
     case 'Maximum':
-      return MetricAggregationType.Maximum;
+      return MetricAggregationType.MAXIMUM;
     default:
       throw new Error(`Cannot only scale on 'Minimum', 'Maximum', 'Average' metrics, got ${statistic}`);
   }

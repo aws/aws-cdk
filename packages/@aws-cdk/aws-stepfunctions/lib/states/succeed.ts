@@ -1,6 +1,7 @@
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import { INextable } from '../types';
-import { State, StateType } from './state';
+import { StateType } from './private/state-type';
+import { State } from './state';
 
 /**
  * Properties for defining a Succeed state
@@ -52,7 +53,7 @@ export class Succeed extends State {
      */
     public toStateJson(): object {
         return {
-            Type: StateType.Succeed,
+            Type: StateType.SUCCEED,
             Comment: this.comment,
             ...this.renderInputOutput(),
         };

@@ -1,6 +1,6 @@
 import cloudwatch = require('@aws-cdk/aws-cloudwatch');
 import iam = require('@aws-cdk/aws-iam');
-import { Construct, IResource, Resource, Stack } from '@aws-cdk/cdk';
+import { Construct, Duration, IResource, Resource, Stack } from '@aws-cdk/core';
 import { StateGraph } from './state-graph';
 import { CfnStateMachine } from './stepfunctions.generated';
 import { IChainable } from './types';
@@ -33,7 +33,7 @@ export interface StateMachineProps {
      *
      * @default No timeout
      */
-    readonly timeoutSec?: number;
+    readonly timeout?: Duration;
 }
 
 /**
@@ -87,17 +87,19 @@ export class StateMachine extends StateMachineBase {
     public readonly stateMachineArn: string;
 
     constructor(scope: Construct, id: string, props: StateMachineProps) {
-        super(scope, id);
+        super(scope, id, {
+            physicalName: props.stateMachineName,
+        });
 
         this.role = props.role || new iam.Role(this, 'Role', {
             assumedBy: new iam.ServicePrincipal(`states.${Stack.of(this).region}.amazonaws.com`),
         });
 
         const graph = new StateGraph(props.definition.startState, `State Machine ${id} definition`);
-        graph.timeoutSeconds = props.timeoutSec;
+        graph.timeout = props.timeout;
 
         const resource = new CfnStateMachine(this, 'Resource', {
-            stateMachineName: props.stateMachineName,
+            stateMachineName: this.physicalName,
             roleArn: this.role.roleArn,
             definitionString: Stack.of(this).toJsonString(graph.toGraphJson()),
         });
@@ -106,8 +108,13 @@ export class StateMachine extends StateMachineBase {
             this.addToRolePolicy(statement);
         }
 
-        this.stateMachineName = resource.attrName;
-        this.stateMachineArn = resource.refAsString;
+        this.stateMachineName = this.getResourceNameAttribute(resource.attrName);
+        this.stateMachineArn = this.getResourceArnAttribute(resource.ref, {
+          service: 'states',
+          resource: 'stateMachine',
+          resourceName: this.physicalName,
+          sep: ':',
+        });
     }
 
     /**

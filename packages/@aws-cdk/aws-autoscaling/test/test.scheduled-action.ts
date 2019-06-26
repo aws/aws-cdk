@@ -1,6 +1,6 @@
 import { expect, haveResource, MatchStyle, } from '@aws-cdk/assert';
 import ec2 = require('@aws-cdk/aws-ec2');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import { Test } from 'nodeunit';
 import autoscaling = require('../lib');
 
@@ -108,6 +108,6 @@ function makeAutoScalingGroup(scope: cdk.Construct) {
     vpc,
     instanceType: new ec2.InstanceType('t2.micro'),
     machineImage: new ec2.AmazonLinuxImage(),
-    updateType: autoscaling.UpdateType.RollingUpdate,
+    updateType: autoscaling.UpdateType.ROLLING_UPDATE,
   });
 }

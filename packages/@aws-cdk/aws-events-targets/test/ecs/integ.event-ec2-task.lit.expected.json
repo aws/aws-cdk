@@ -289,7 +289,7 @@
       "Type": "AWS::AutoScaling::LaunchConfiguration",
       "Properties": {
         "ImageId": {
-          "Ref": "SsmParameterValueawsserviceecsoptimizedamiamazonlinuxrecommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
+          "Ref": "SsmParameterValueawsserviceecsoptimizedamiamazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
         },
         "InstanceType": "t2.micro",
         "IamInstanceProfile": {
@@ -506,7 +506,7 @@
         "EcsClusterDefaultAutoScalingGroupDrainECSHookFunctionServiceRole94543EDA"
       ]
     },
-    "EcsClusterDefaultAutoScalingGroupDrainECSHookFunctionTopicSubscriptionDA5F8A10": {
+    "EcsClusterDefaultAutoScalingGroupLifecycleHookDrainHookTopicFunctionA8966A35": {
       "Type": "AWS::SNS::Subscription",
       "Properties": {
         "Protocol": "lambda",
@@ -753,7 +753,7 @@
               "LogDriver": "awslogs",
               "Options": {
                 "awslogs-group": {
-                  "Ref": "TaskLoggingLogGroupC7E938D4"
+                  "Ref": "TaskDefTheContainerLogGroupD94C8EF5"
                 },
                 "awslogs-stream-prefix": "EventDemo",
                 "awslogs-region": {
@@ -897,7 +897,7 @@
               "Effect": "Allow",
               "Resource": {
                 "Fn::GetAtt": [
-                  "TaskLoggingLogGroupC7E938D4",
+                  "TaskDefTheContainerLogGroupD94C8EF5",
                   "Arn"
                 ]
               }
@@ -983,7 +983,7 @@
         ]
       }
     },
-    "TaskLoggingLogGroupC7E938D4": {
+    "TaskDefTheContainerLogGroupD94C8EF5": {
       "Type": "AWS::Logs::LogGroup",
       "DeletionPolicy": "Retain"
     },
@@ -1176,9 +1176,9 @@
     }
   },
   "Parameters": {
-    "SsmParameterValueawsserviceecsoptimizedamiamazonlinuxrecommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter": {
+    "SsmParameterValueawsserviceecsoptimizedamiamazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter": {
       "Type": "AWS::SSM::Parameter::Value<String>",
-      "Default": "/aws/service/ecs/optimized-ami/amazon-linux/recommended/image_id"
+      "Default": "/aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id"
     },
     "TaskDefTheContainerAssetImageImageName92ECAC22": {
       "Type": "String",

@@ -1,6 +1,6 @@
 /// !cdk-integ *
-import cdk = require('@aws-cdk/cdk');
-import { RemovalPolicy } from '@aws-cdk/cdk';
+import cdk = require('@aws-cdk/core');
+import { RemovalPolicy } from '@aws-cdk/core';
 import kms = require('../lib');
 
 const app = new cdk.App();
@@ -15,7 +15,7 @@ class KeyStack extends cdk.Stack {
 
   constructor(scope: cdk.App, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
-    this.key = new kms.Key(this, 'MyKey', { removalPolicy: RemovalPolicy.Destroy });
+    this.key = new kms.Key(this, 'MyKey', { removalPolicy: RemovalPolicy.DESTROY });
   }
 }
 

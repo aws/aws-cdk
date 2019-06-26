@@ -1,8 +1,8 @@
 import { expect, haveResource, ResourcePart } from '@aws-cdk/assert';
 import ec2 = require('@aws-cdk/aws-ec2');
 import iam = require('@aws-cdk/aws-iam');
-import cdk = require('@aws-cdk/cdk');
-import { Construct } from '@aws-cdk/cdk';
+import cdk = require('@aws-cdk/core');
+import { Construct } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import autoscaling = require('../lib');
 
@@ -13,15 +13,15 @@ export = {
     const vpc = new ec2.Vpc(stack, 'VPC');
     const asg = new autoscaling.AutoScalingGroup(stack, 'ASG', {
       vpc,
-      instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.M4, ec2.InstanceSize.Micro),
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
       machineImage: new ec2.AmazonLinuxImage(),
     });
 
     // WHEN
     asg.addLifecycleHook('Transition', {
       notificationTarget: new FakeNotificationTarget(),
-      lifecycleTransition: autoscaling.LifecycleTransition.InstanceLaunching,
-      defaultResult: autoscaling.DefaultResult.Abandon,
+      lifecycleTransition: autoscaling.LifecycleTransition.INSTANCE_LAUNCHING,
+      defaultResult: autoscaling.DefaultResult.ABANDON,
     });
 
     // THEN

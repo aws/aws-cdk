@@ -1,6 +1,6 @@
 import { expect, haveResourceLike } from '@aws-cdk/assert';
 import lambda = require('@aws-cdk/aws-lambda');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import { Test } from 'nodeunit';
 import cognito = require('../lib');
 
@@ -11,7 +11,7 @@ export = {
 
     // WHEN
     new cognito.UserPool(stack, 'Pool', {
-      poolName: 'myPool'
+      userPoolName: 'myPool',
     });
 
     // THEN
@@ -28,7 +28,7 @@ export = {
     const fn = new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.Nodejs810,
+      runtime: lambda.Runtime.NODEJS_8_10,
     });
 
     // WHEN
@@ -56,7 +56,7 @@ export = {
     const fn = new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.Nodejs810,
+      runtime: lambda.Runtime.NODEJS_8_10,
     });
 
     // WHEN
@@ -93,7 +93,7 @@ export = {
     const fn = new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.Nodejs810,
+      runtime: lambda.Runtime.NODEJS_8_10,
     });
 
     // WHEN
@@ -118,8 +118,8 @@ export = {
 
     // WHEN
     new cognito.UserPool(stack, 'Pool', {
-      signInType: cognito.SignInType.Email,
-      autoVerifiedAttributes: [cognito.UserPoolAttribute.Email]
+      signInType: cognito.SignInType.EMAIL,
+      autoVerifiedAttributes: [cognito.UserPoolAttribute.EMAIL]
     });
 
     // THEN
@@ -138,8 +138,8 @@ export = {
     // WHEN
     const toThrow = () => {
       new cognito.UserPool(stack, 'Pool', {
-        signInType: cognito.SignInType.Email,
-        usernameAliasAttributes: [cognito.UserPoolAttribute.PreferredUsername]
+        signInType: cognito.SignInType.EMAIL,
+        usernameAliasAttributes: [cognito.UserPoolAttribute.PREFERRED_USERNAME]
       });
     };
 
@@ -155,8 +155,8 @@ export = {
     // WHEN
     const toThrow = () => {
       new cognito.UserPool(stack, 'Pool', {
-        signInType: cognito.SignInType.Username,
-        usernameAliasAttributes: [cognito.UserPoolAttribute.GivenName]
+        signInType: cognito.SignInType.USERNAME,
+        usernameAliasAttributes: [cognito.UserPoolAttribute.GIVEN_NAME]
       });
     };
 
@@ -172,8 +172,8 @@ export = {
     // WHEN
     const toThrow = () => {
       new cognito.UserPool(stack, 'Pool', {
-        signInType: cognito.SignInType.Email,
-        autoVerifiedAttributes: [cognito.UserPoolAttribute.Email, cognito.UserPoolAttribute.Gender]
+        signInType: cognito.SignInType.EMAIL,
+        autoVerifiedAttributes: [cognito.UserPoolAttribute.EMAIL, cognito.UserPoolAttribute.GENDER]
       });
     };
 

@@ -1,6 +1,6 @@
 import iam = require('@aws-cdk/aws-iam');
 import { PolicyDocument, PolicyStatement } from '@aws-cdk/aws-iam';
-import { Construct, IResource, RemovalPolicy, Resource, Stack } from '@aws-cdk/cdk';
+import { Construct, IResource, RemovalPolicy, Resource, Stack } from '@aws-cdk/core';
 import { Alias } from './alias';
 import { CfnKey } from './kms.generated';
 
@@ -68,7 +68,7 @@ abstract class KeyBase extends Resource implements IKey {
    * Defines a new alias for the key.
    */
   public addAlias(alias: string): Alias {
-    return new Alias(this, 'Alias', { name: alias, targetKey: this });
+    return new Alias(this, 'Alias', { aliasName: alias, targetKey: this });
   }
 
   /**

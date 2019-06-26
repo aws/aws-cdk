@@ -1,5 +1,5 @@
 import kms = require('@aws-cdk/aws-kms');
-import { Construct, Stack } from '@aws-cdk/cdk';
+import { Construct, Duration, Stack, Token } from '@aws-cdk/core';
 import { IQueue, QueueAttributes, QueueBase } from './queue-base';
 import { CfnQueue } from './sqs.generated';
 import { validateProps } from './validate-props';
@@ -23,9 +23,9 @@ export interface QueueProps {
    * You can specify an integer value from 60 seconds (1 minute) to 1209600
    * seconds (14 days). The default value is 345600 seconds (4 days).
    *
-   * @default 345600 seconds (4 days)
+   * @default Duration.days(4)
    */
-  readonly retentionPeriodSec?: number;
+  readonly retentionPeriod?: Duration;
 
   /**
    * The time in seconds that the delivery of all messages in the queue is delayed.
@@ -35,7 +35,7 @@ export interface QueueProps {
    *
    * @default 0
    */
-  readonly deliveryDelaySec?: number;
+  readonly deliveryDelay?: Duration;
 
   /**
    * The limit of how many bytes that a message can contain before Amazon SQS rejects it.
@@ -57,7 +57,7 @@ export interface QueueProps {
    *
    *  @default 0
    */
-  readonly receiveMessageWaitTimeSec?: number;
+  readonly receiveMessageWaitTime?: Duration;
 
   /**
    * Timeout of processing a single message.
@@ -69,9 +69,9 @@ export interface QueueProps {
    * Values must be from 0 to 43200 seconds (12 hours). If you don't specify
    * a value, AWS CloudFormation uses the default value of 30 seconds.
    *
-   * @default 30
+   * @default Duration.seconds(30)
    */
-  readonly visibilityTimeoutSec?: number;
+  readonly visibilityTimeout?: Duration;
 
   /**
    * Send messages to this queue if they were unsuccessfully dequeued a number of times.
@@ -111,9 +111,9 @@ export interface QueueProps {
    * The value must be an integer between 60 (1 minute) and 86,400 (24
    * hours). The default is 300 (5 minutes).
    *
-   * @default 300 (5 minutes)
+   * @default Duration.minutes(5)
    */
-  readonly dataKeyReuseSec?: number;
+  readonly dataKeyReuse?: Duration;
 
   /**
    * Whether this a first-in-first-out (FIFO) queue.
@@ -161,19 +161,19 @@ export enum QueueEncryption {
   /**
    * Messages in the queue are not encrypted
    */
-  Unencrypted = 'NONE',
+  UNENCRYPTED = 'NONE',
 
   /**
    * Server-side KMS encryption with a master key managed by SQS.
    */
-  KmsManaged = 'MANAGED',
+  KMS_MANAGED = 'MANAGED',
 
   /**
    * Server-side encryption with a KMS key managed by the user.
    *
    * If `encryptionKey` is specified, this key will be used, otherwise, one will be defined.
    */
-  Kms = 'KMS',
+  KMS = 'KMS',
 }
 
 /**
@@ -230,7 +230,9 @@ export class Queue extends QueueBase {
   protected readonly autoCreatePolicy = true;
 
   constructor(scope: Construct, id: string, props: QueueProps = {}) {
-    super(scope, id);
+    super(scope, id, {
+      physicalName: props.queueName,
+    });
 
     validateProps(props);
 
@@ -244,45 +246,49 @@ export class Queue extends QueueBase {
     const { encryptionMasterKey, encryptionProps } = _determineEncryptionProps.call(this);
 
     const queue = new CfnQueue(this, 'Resource', {
-      queueName: props.queueName,
+      queueName: this.physicalName,
       ...this.determineFifoProps(props),
       ...encryptionProps,
       redrivePolicy,
-      delaySeconds: props.deliveryDelaySec,
+      delaySeconds: props.deliveryDelay && props.deliveryDelay.toSeconds(),
       maximumMessageSize: props.maxMessageSizeBytes,
-      messageRetentionPeriod: props.retentionPeriodSec,
-      receiveMessageWaitTimeSeconds: props.receiveMessageWaitTimeSec,
-      visibilityTimeout: props.visibilityTimeoutSec,
+      messageRetentionPeriod: props.retentionPeriod && props.retentionPeriod.toSeconds(),
+      receiveMessageWaitTimeSeconds: props.receiveMessageWaitTime && props.receiveMessageWaitTime.toSeconds(),
+      visibilityTimeout: props.visibilityTimeout && props.visibilityTimeout.toSeconds(),
     });
+
+    this.queueArn = this.getResourceArnAttribute(queue.attrArn, {
+      service: 'sqs',
+      resource: this.physicalName,
+    });
+    this.queueName = this.getResourceNameAttribute(queue.attrQueueName);
     this.encryptionMasterKey = encryptionMasterKey;
-    this.queueArn = queue.attrArn;
-    this.queueName = queue.attrQueueName;
-    this.queueUrl = queue.refAsString;
+    this.queueUrl = queue.ref;
 
     function _determineEncryptionProps(this: Queue): { encryptionProps: EncryptionProps, encryptionMasterKey?: kms.IKey } {
-      let encryption = props.encryption || QueueEncryption.Unencrypted;
+      let encryption = props.encryption || QueueEncryption.UNENCRYPTED;
 
-      if (encryption !== QueueEncryption.Kms && props.encryptionMasterKey) {
-        encryption = QueueEncryption.Kms; // KMS is implied by specifying an encryption key
+      if (encryption !== QueueEncryption.KMS && props.encryptionMasterKey) {
+        encryption = QueueEncryption.KMS; // KMS is implied by specifying an encryption key
       }
 
-      if (encryption === QueueEncryption.Unencrypted) {
+      if (encryption === QueueEncryption.UNENCRYPTED) {
         return { encryptionProps: {} };
       }
 
-      if (encryption === QueueEncryption.KmsManaged) {
+      if (encryption === QueueEncryption.KMS_MANAGED) {
         const masterKey = kms.Key.fromKeyArn(this, 'Key', 'alias/aws/sqs');
 
         return {
           encryptionMasterKey: masterKey,
           encryptionProps: {
             kmsMasterKeyId: 'alias/aws/sqs',
-            kmsDataKeyReusePeriodSeconds: props.dataKeyReuseSec
+            kmsDataKeyReusePeriodSeconds: props.dataKeyReuse && props.dataKeyReuse.toSeconds()
           }
         };
       }
 
-      if (encryption === QueueEncryption.Kms) {
+      if (encryption === QueueEncryption.KMS) {
         const masterKey = props.encryptionMasterKey || new kms.Key(this, 'Key', {
           description: `Created by ${this.node.path}`
         });
@@ -291,7 +297,7 @@ export class Queue extends QueueBase {
           encryptionMasterKey: masterKey,
           encryptionProps: {
             kmsMasterKeyId: masterKey.keyArn,
-            kmsDataKeyReusePeriodSeconds: props.dataKeyReuseSec
+            kmsDataKeyReusePeriodSeconds: props.dataKeyReuse && props.dataKeyReuse.toSeconds()
           }
         };
       }
@@ -306,15 +312,16 @@ export class Queue extends QueueBase {
   private determineFifoProps(props: QueueProps): FifoProps {
     // Check if any of the signals that we have say that this is a FIFO queue.
     let fifoQueue = props.fifo;
-    if (typeof fifoQueue === 'undefined' && typeof props.queueName === 'string' && props.queueName.endsWith('.fifo')) { fifoQueue = true; }
+    const queueName = props.queueName;
+    if (typeof fifoQueue === 'undefined' && queueName && !Token.isUnresolved(queueName) && queueName.endsWith('.fifo')) { fifoQueue = true; }
     if (typeof fifoQueue === 'undefined' && props.contentBasedDeduplication) { fifoQueue = true; }
 
     // If we have a name, see that it agrees with the FIFO setting
-    if (typeof props.queueName === 'string') {
-      if (fifoQueue && !props.queueName.endsWith('.fifo')) {
+    if (typeof queueName === 'string') {
+      if (fifoQueue && !queueName.endsWith('.fifo')) {
         throw new Error("FIFO queue names must end in '.fifo'");
       }
-      if (!fifoQueue && props.queueName.endsWith('.fifo')) {
+      if (!fifoQueue && queueName.endsWith('.fifo')) {
         throw new Error("Non-FIFO queue name may not end in '.fifo'");
       }
     }

@@ -1,6 +1,6 @@
 import { expect, haveResource, matchTemplate } from '@aws-cdk/assert';
 import iam = require('@aws-cdk/aws-iam');
-import { RemovalPolicy, Stack } from '@aws-cdk/cdk';
+import { RemovalPolicy, Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import { LogGroup, RetentionDays } from '../lib';
 
@@ -11,7 +11,7 @@ export = {
 
     // WHEN
     new LogGroup(stack, 'LogGroup', {
-      retentionDays: RetentionDays.OneWeek
+      retention: RetentionDays.ONE_WEEK
     });
 
     // THEN
@@ -43,7 +43,7 @@ export = {
 
     // WHEN
     new LogGroup(stack, 'LogGroup', {
-      retentionDays: Infinity
+      retention: Infinity
     });
 
     // THEN
@@ -65,8 +65,8 @@ export = {
 
     // WHEN
     new LogGroup(stack, 'LogGroup', {
-      retentionDays: Infinity,
-      removalPolicy: RemovalPolicy.Destroy
+      retention: Infinity,
+      removalPolicy: RemovalPolicy.DESTROY
     });
 
     // THEN

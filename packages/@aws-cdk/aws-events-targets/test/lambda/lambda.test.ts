@@ -1,7 +1,7 @@
 import { countResources, expect, haveResource } from '@aws-cdk/assert';
 import events = require('@aws-cdk/aws-events');
 import lambda = require('@aws-cdk/aws-lambda');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import targets = require('../../lib');
 
 test('use lambda as an event rule target', () => {
@@ -9,10 +9,10 @@ test('use lambda as an event rule target', () => {
   const stack = new cdk.Stack();
   const fn = newTestLambda(stack);
   const rule1 = new events.Rule(stack, 'Rule', {
-    schedule: events.Schedule.rate(1, events.TimeUnit.Minute),
+    schedule: events.Schedule.rate(cdk.Duration.minutes(1)),
   });
   const rule2 = new events.Rule(stack, 'Rule2', {
-    schedule: events.Schedule.rate(5, events.TimeUnit.Minute),
+    schedule: events.Schedule.rate(cdk.Duration.minutes(5)),
   });
 
   // WHEN
@@ -61,6 +61,6 @@ function newTestLambda(scope: cdk.Construct) {
   return new lambda.Function(scope, 'MyLambda', {
     code: new lambda.InlineCode('foo'),
     handler: 'bar',
-    runtime: lambda.Runtime.Python27
+    runtime: lambda.Runtime.PYTHON_2_7
   });
 }

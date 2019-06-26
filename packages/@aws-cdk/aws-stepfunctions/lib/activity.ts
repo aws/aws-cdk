@@ -1,5 +1,5 @@
 import cloudwatch = require('@aws-cdk/aws-cloudwatch');
-import { Construct, IResource, Resource, Stack } from '@aws-cdk/cdk';
+import { Construct, IResource, Lazy, Resource, Stack } from '@aws-cdk/core';
 import { CfnActivity } from './stepfunctions.generated';
 
 export interface ActivityProps {
@@ -52,14 +52,22 @@ export class Activity extends Resource implements IActivity {
     public readonly activityName: string;
 
     constructor(scope: Construct, id: string, props: ActivityProps = {}) {
-        super(scope, id);
-
-        const resource = new CfnActivity(this, 'Resource', {
-            name: props.activityName || this.generateName()
+        super(scope, id, {
+            physicalName: props.activityName ||
+                Lazy.stringValue({ produce: () => this.generateName() }),
         });
 
-        this.activityArn = resource.refAsString;
-        this.activityName = resource.attrName;
+        const resource = new CfnActivity(this, 'Resource', {
+            name: this.physicalName! // not null because of above call to `super`
+        });
+
+        this.activityArn = this.getResourceArnAttribute(resource.ref, {
+          service: 'states',
+          resource: 'activity',
+          resourceName: this.physicalName,
+          sep: ':',
+        });
+        this.activityName = this.getResourceNameAttribute(resource.attrName);
     }
 
     /**

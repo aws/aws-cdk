@@ -1,7 +1,7 @@
 import '@aws-cdk/assert/jest';
 import appscaling = require('@aws-cdk/aws-applicationautoscaling');
 import cloudwatch = require('@aws-cdk/aws-cloudwatch');
-import { Stack } from '@aws-cdk/cdk';
+import { Stack } from '@aws-cdk/core';
 import actions = require('../lib');
 
 test('can use topic as alarm action', () => {
@@ -12,7 +12,7 @@ test('can use topic as alarm action', () => {
     maxCapacity: 100,
     resourceId: 'asdf',
     scalableDimension: 'height',
-    serviceNamespace: appscaling.ServiceNamespace.CustomResource,
+    serviceNamespace: appscaling.ServiceNamespace.CUSTOM_RESOURCE,
   });
   const action = new appscaling.StepScalingAction(stack, 'Action', {
     scalingTarget,

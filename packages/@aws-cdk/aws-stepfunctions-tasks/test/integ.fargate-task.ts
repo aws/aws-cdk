@@ -1,7 +1,7 @@
 import ec2 = require('@aws-cdk/aws-ec2');
 import ecs = require('@aws-cdk/aws-ecs');
 import sfn = require('@aws-cdk/aws-stepfunctions');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import path = require('path');
 import tasks = require('../lib');
 
@@ -27,12 +27,12 @@ const taskDefinition = new ecs.FargateTaskDefinition(stack, 'TaskDef', {
 taskDefinition.addContainer('TheContainer', {
   image: ecs.ContainerImage.fromAsset(path.resolve(__dirname, 'eventhandler-image')),
   memoryLimitMiB: 256,
-  logging: new ecs.AwsLogDriver(stack, 'TaskLogging', { streamPrefix: 'EventDemo' })
+  logging: new ecs.AwsLogDriver({ streamPrefix: 'EventDemo' })
 });
 
 // Build state machine
 const definition = new sfn.Pass(stack, 'Start', {
-    result: { SomeKey: 'SomeValue' }
+    result: sfn.Result.fromObject({ SomeKey: 'SomeValue' })
 }).next(new sfn.Task(stack, 'FargateTask', { task: new tasks.RunEcsFargateTask({
   cluster, taskDefinition,
   assignPublicIp: true,

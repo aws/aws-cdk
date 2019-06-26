@@ -1,6 +1,6 @@
 import iam = require('@aws-cdk/aws-iam');
 import sns = require('@aws-cdk/aws-sns');
-import { Construct, Lazy, Stack } from '@aws-cdk/cdk';
+import { Construct, Duration, Lazy, Stack } from '@aws-cdk/core';
 import { ManagedRule, RuleProps } from './rule';
 
 /**
@@ -10,14 +10,14 @@ export interface AccessKeysRotatedProps extends RuleProps {
   /**
    * The maximum number of days within which the access keys must be rotated.
    *
-   * @default 90 days
+   * @default Duration.days(90)
    */
-  readonly maxDays?: number;
+  readonly maxAge?: Duration;
 }
 
 /**
  * Checks whether the active access keys are rotated within the number of days
- * specified in `maxDays`.
+ * specified in `maxAge`.
  *
  * @see https://docs.aws.amazon.com/config/latest/developerguide/access-keys-rotated.html
  *
@@ -29,9 +29,9 @@ export class AccessKeysRotated extends ManagedRule {
       ...props,
       identifier: 'ACCESS_KEYS_ROTATED',
       inputParameters: {
-        ...props.maxDays
+        ...props.maxAge
           ? {
-              maxAccessKeyAge: props.maxDays
+              maxAccessKeyAge: props.maxAge.toDays()
             }
           : {}
         }

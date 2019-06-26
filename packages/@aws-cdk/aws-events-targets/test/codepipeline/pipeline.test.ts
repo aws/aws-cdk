@@ -1,7 +1,7 @@
 import { expect, haveResource } from '@aws-cdk/assert';
 import codepipeline = require('@aws-cdk/aws-codepipeline');
 import events = require('@aws-cdk/aws-events');
-import { Stack } from '@aws-cdk/cdk';
+import { Construct, Stack } from '@aws-cdk/core';
 import targets = require('../../lib');
 
 test('use codebuild project as an eventrule target', () => {
@@ -15,7 +15,7 @@ test('use codebuild project as an eventrule target', () => {
     stageName: 'Source',
     actions: [new TestAction({
       actionName: 'Hello',
-      category: codepipeline.ActionCategory.Source,
+      category: codepipeline.ActionCategory.SOURCE,
       provider: 'x',
       artifactBounds: { minInputs: 0, maxInputs: 0 , minOutputs: 1, maxOutputs: 1, },
       outputs: [srcArtifact]})]
@@ -24,7 +24,7 @@ test('use codebuild project as an eventrule target', () => {
     stageName: 'Build',
     actions: [new TestAction({
       actionName: 'Hello',
-      category: codepipeline.ActionCategory.Build,
+      category: codepipeline.ActionCategory.BUILD,
       provider: 'y',
       inputs: [srcArtifact],
       outputs: [buildArtifact],
@@ -76,8 +76,17 @@ test('use codebuild project as an eventrule target', () => {
   }));
 });
 
-class TestAction extends codepipeline.Action {
-  protected bind(_info: codepipeline.ActionBind): void {
-    // void
+class TestAction implements codepipeline.IAction {
+  constructor(public readonly actionProperties: codepipeline.ActionProperties) {
+    // nothing to do
+  }
+
+  public bind(_scope: Construct, _stage: codepipeline.IStage, _options: codepipeline.ActionBindOptions):
+      codepipeline.ActionConfig {
+    return {};
+  }
+
+  public onStateChange(_name: string, _target?: events.IRuleTarget, _options?: events.RuleProps): events.Rule {
+    throw new Error('onStateChange() is not available on MockAction');
   }
 }

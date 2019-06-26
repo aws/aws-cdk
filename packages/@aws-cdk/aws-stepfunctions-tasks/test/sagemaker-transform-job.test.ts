@@ -3,7 +3,7 @@ import ec2 = require('@aws-cdk/aws-ec2');
 import iam = require('@aws-cdk/aws-iam');
 import kms = require('@aws-cdk/aws-kms');
 import sfn = require('@aws-cdk/aws-stepfunctions');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import tasks = require('../lib');
 import { BatchStrategy, S3DataType } from '../lib';
 
@@ -77,7 +77,7 @@ test('create complex transform job', () => {
             transformDataSource: {
                 s3DataSource: {
                     s3Uri: 's3://inputbucket/prefix',
-                    s3DataType: S3DataType.S3Prefix,
+                    s3DataType: S3DataType.S3_PREFIX,
                 }
             }
         },
@@ -87,13 +87,13 @@ test('create complex transform job', () => {
         },
         transformResources: {
             instanceCount: 1,
-            instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.P3, ec2.InstanceSize.XLarge2),
+            instanceType: ec2.InstanceType.of(ec2.InstanceClass.P3, ec2.InstanceSize.XLARGE2),
             volumeKmsKeyId: kmsKey,
         },
         tags: {
             Project: 'MyProject',
         },
-        batchStrategy: BatchStrategy.MultiRecord,
+        batchStrategy: BatchStrategy.MULTI_RECORD,
         environment: {
             SOMEVAR: 'myvalue'
         },
@@ -149,7 +149,7 @@ test('pass param to transform job', () => {
             transformDataSource: {
                 s3DataSource: {
                     s3Uri: 's3://inputbucket/prefix',
-                    s3DataType: S3DataType.S3Prefix,
+                    s3DataType: S3DataType.S3_PREFIX,
                 }
             }
         },
@@ -158,7 +158,7 @@ test('pass param to transform job', () => {
         },
         transformResources: {
             instanceCount: 1,
-            instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.P3, ec2.InstanceSize.XLarge2),
+            instanceType: ec2.InstanceType.of(ec2.InstanceClass.P3, ec2.InstanceSize.XLARGE2),
         }
     }) });
 

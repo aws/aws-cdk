@@ -1,6 +1,6 @@
 import { expect, haveResource } from '@aws-cdk/assert';
 import logs = require('@aws-cdk/aws-logs');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import { Test } from 'nodeunit';
 import { LogRetention } from '../lib/log-retention';
 
@@ -14,7 +14,7 @@ export = {
     // WHEN
     new LogRetention(stack, 'MyLambda', {
       logGroupName: 'group',
-      retentionDays: logs.RetentionDays.OneMonth
+      retention: logs.RetentionDays.ONE_MONTH
     });
 
     // THEN

@@ -1,7 +1,7 @@
 import { expect, haveResource, haveResourceLike, ResourcePart } from '@aws-cdk/assert';
 import iam = require('@aws-cdk/aws-iam');
-import cdk = require('@aws-cdk/cdk');
-import { RemovalPolicy } from '@aws-cdk/cdk';
+import cdk = require('@aws-cdk/core');
+import { RemovalPolicy } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import ecr = require('../lib');
 
@@ -54,7 +54,7 @@ export = {
     // WHEN
     const repo = new ecr.Repository(stack, 'Repo');
     repo.addLifecycleRule({
-      maxImageAgeDays: 5,
+      maxImageAge: cdk.Duration.days(5),
     });
 
     // THEN
@@ -95,8 +95,8 @@ export = {
     const repo = new ecr.Repository(stack, 'Repo');
 
     // WHEN
-    repo.addLifecycleRule({ tagStatus: ecr.TagStatus.Tagged, tagPrefixList: ['a'], maxImageCount: 5 });
-    repo.addLifecycleRule({ rulePriority: 10, tagStatus: ecr.TagStatus.Tagged, tagPrefixList: ['b'], maxImageCount: 5 });
+    repo.addLifecycleRule({ tagStatus: ecr.TagStatus.TAGGED, tagPrefixList: ['a'], maxImageCount: 5 });
+    repo.addLifecycleRule({ rulePriority: 10, tagStatus: ecr.TagStatus.TAGGED, tagPrefixList: ['b'], maxImageCount: 5 });
 
     // THEN
     expect(stack).to(haveResource('AWS::ECR::Repository', {
@@ -116,7 +116,7 @@ export = {
 
     // WHEN
     repo.addLifecycleRule({ maxImageCount: 5 });
-    repo.addLifecycleRule({ tagStatus: ecr.TagStatus.Tagged, tagPrefixList: ['important'], maxImageCount: 999 });
+    repo.addLifecycleRule({ tagStatus: ecr.TagStatus.TAGGED, tagPrefixList: ['important'], maxImageCount: 999 });
 
     // THEN
     expect(stack).to(haveResource('AWS::ECR::Repository', {
@@ -343,7 +343,7 @@ export = {
 
     // WHEN
     new ecr.Repository(stack, 'Repo', {
-      removalPolicy: RemovalPolicy.Destroy
+      removalPolicy: RemovalPolicy.DESTROY
     });
 
     // THEN

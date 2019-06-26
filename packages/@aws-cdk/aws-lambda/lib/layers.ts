@@ -1,4 +1,4 @@
-import { Construct, IResource, Lazy, Resource } from '@aws-cdk/cdk';
+import { Construct, IResource, Lazy, Resource } from '@aws-cdk/core';
 import { Code } from './code';
 import { CfnLayerVersion, CfnLayerVersionPermission } from './lambda.generated';
 import { Runtime } from './runtime';
@@ -35,7 +35,7 @@ export interface LayerVersionProps {
    *
    * @default - A name will be generated.
    */
-  readonly name?: string;
+  readonly layerVersionName?: string;
 }
 
 export interface ILayerVersion extends IResource {
@@ -131,7 +131,7 @@ export class LayerVersion extends LayerVersionBase {
   public static fromLayerVersionArn(scope: Construct, id: string, layerVersionArn: string): ILayerVersion {
     return LayerVersion.fromLayerVersionAttributes(scope, id, {
       layerVersionArn,
-      compatibleRuntimes: Runtime.All
+      compatibleRuntimes: Runtime.ALL
     });
   }
 
@@ -159,7 +159,10 @@ export class LayerVersion extends LayerVersionBase {
   public readonly compatibleRuntimes?: Runtime[];
 
   constructor(scope: Construct, id: string, props: LayerVersionProps) {
-    super(scope, id);
+    super(scope, id, {
+      physicalName: props.layerVersionName,
+    });
+
     if (props.compatibleRuntimes && props.compatibleRuntimes.length === 0) {
       throw new Error('Attempted to define a Lambda layer that supports no runtime!');
     }
@@ -173,11 +176,11 @@ export class LayerVersion extends LayerVersionBase {
       compatibleRuntimes: props.compatibleRuntimes && props.compatibleRuntimes.map(r => r.name),
       content: Lazy.anyValue({ produce: () => props.code._toJSON(resource) }),
       description: props.description,
-      layerName: props.name,
+      layerName: this.physicalName,
       licenseInfo: props.license,
     });
 
-    this.layerVersionArn = resource.refAsString;
+    this.layerVersionArn = resource.ref;
     this.compatibleRuntimes = props.compatibleRuntimes;
   }
 }

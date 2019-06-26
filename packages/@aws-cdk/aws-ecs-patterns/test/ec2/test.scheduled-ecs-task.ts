@@ -2,7 +2,7 @@ import { expect, haveResource } from '@aws-cdk/assert';
 import ec2 = require('@aws-cdk/aws-ec2');
 import ecs = require('@aws-cdk/aws-ecs');
 import events = require('@aws-cdk/aws-events');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import { Test } from 'nodeunit';
 import { ScheduledEc2Task } from '../../lib';
 
@@ -49,7 +49,7 @@ export = {
             LogDriver: "awslogs",
             Options: {
               "awslogs-group": {
-                Ref: "ScheduledEc2TaskScheduledTaskLoggingLogGroupDBEF2BF3"
+                Ref: "ScheduledEc2TaskScheduledTaskDefScheduledContainerLogGroupA85E11E6"
               },
               "awslogs-stream-prefix": "ScheduledEc2Task",
               "awslogs-region": {
@@ -126,7 +126,7 @@ export = {
             LogDriver: "awslogs",
             Options: {
               "awslogs-group": {
-                Ref: "ScheduledEc2TaskScheduledTaskLoggingLogGroupDBEF2BF3"
+                Ref: "ScheduledEc2TaskScheduledTaskDefScheduledContainerLogGroupA85E11E6"
               },
               "awslogs-stream-prefix": "ScheduledEc2Task",
               "awslogs-region": {
@@ -174,7 +174,7 @@ export = {
             LogDriver: "awslogs",
             Options: {
               "awslogs-group": {
-                Ref: "ScheduledEc2TaskScheduledTaskLoggingLogGroupDBEF2BF3"
+                Ref: "ScheduledEc2TaskScheduledTaskDefScheduledContainerLogGroupA85E11E6"
               },
               "awslogs-stream-prefix": "ScheduledEc2Task",
               "awslogs-region": {
@@ -228,7 +228,7 @@ export = {
             LogDriver: "awslogs",
             Options: {
               "awslogs-group": {
-                Ref: "ScheduledEc2TaskScheduledTaskLoggingLogGroupDBEF2BF3"
+                Ref: "ScheduledEc2TaskScheduledTaskDefScheduledContainerLogGroupA85E11E6"
               },
               "awslogs-stream-prefix": "ScheduledEc2Task",
               "awslogs-region": {

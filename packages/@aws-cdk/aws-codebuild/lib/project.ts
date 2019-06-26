@@ -5,7 +5,7 @@ import { DockerImageAsset, DockerImageAssetProps } from '@aws-cdk/aws-ecr-assets
 import events = require('@aws-cdk/aws-events');
 import iam = require('@aws-cdk/aws-iam');
 import kms = require('@aws-cdk/aws-kms');
-import { Aws, CfnResource, Construct, IResource, Lazy, PhysicalName, Resource, ResourceIdentifiers, Stack } from '@aws-cdk/cdk';
+import { Aws, CfnResource, Construct, Duration, IResource, Lazy, PhysicalName, Resource, Stack } from '@aws-cdk/core';
 import { IArtifacts } from './artifacts';
 import { BuildSpec } from './build-spec';
 import { Cache } from './cache';
@@ -42,7 +42,7 @@ export interface IProject extends IResource, iam.IGrantable, ec2.IConnectable {
    *
    * @see https://docs.aws.amazon.com/codebuild/latest/userguide/sample-build-notifications.html
    */
-  onEvent(id: string, options: events.OnEventOptions): events.Rule;
+  onEvent(id: string, options?: events.OnEventOptions): events.Rule;
 
   /**
    * Defines a CloudWatch event rule triggered when the build project state
@@ -69,7 +69,7 @@ export interface IProject extends IResource, iam.IGrantable, ec2.IConnectable {
    *
    * @see https://docs.aws.amazon.com/codebuild/latest/userguide/sample-build-notifications.html
    */
-  onStateChange(id: string, options: events.OnEventOptions): events.Rule;
+  onStateChange(id: string, options?: events.OnEventOptions): events.Rule;
 
   /**
    * Defines a CloudWatch event rule that triggers upon phase change of this
@@ -77,22 +77,22 @@ export interface IProject extends IResource, iam.IGrantable, ec2.IConnectable {
    *
    * @see https://docs.aws.amazon.com/codebuild/latest/userguide/sample-build-notifications.html
    */
-  onPhaseChange(id: string, options: events.OnEventOptions): events.Rule;
+  onPhaseChange(id: string, options?: events.OnEventOptions): events.Rule;
 
   /**
    * Defines an event rule which triggers when a build starts.
    */
-  onBuildStarted(id: string, options: events.OnEventOptions): events.Rule;
+  onBuildStarted(id: string, options?: events.OnEventOptions): events.Rule;
 
   /**
    * Defines an event rule which triggers when a build fails.
    */
-  onBuildFailed(id: string, options: events.OnEventOptions): events.Rule;
+  onBuildFailed(id: string, options?: events.OnEventOptions): events.Rule;
 
   /**
    * Defines an event rule which triggers when a build completes successfully.
    */
-  onBuildSucceeded(id: string, options: events.OnEventOptions): events.Rule;
+  onBuildSucceeded(id: string, options?: events.OnEventOptions): events.Rule;
 
   /**
    * @returns a CloudWatch metric associated with this build project.
@@ -202,7 +202,7 @@ abstract class ProjectBase extends Resource implements IProject {
    *
    * @see https://docs.aws.amazon.com/codebuild/latest/userguide/sample-build-notifications.html
    */
-  public onEvent(id: string, options: events.OnEventOptions): events.Rule {
+  public onEvent(id: string, options: events.OnEventOptions = {}): events.Rule {
     const rule = new events.Rule(this, id, options);
     rule.addTarget(options.target);
     rule.addEventPattern({
@@ -239,7 +239,7 @@ abstract class ProjectBase extends Resource implements IProject {
    *
    * @see https://docs.aws.amazon.com/codebuild/latest/userguide/sample-build-notifications.html
    */
-  public onStateChange(id: string, options: events.OnEventOptions) {
+  public onStateChange(id: string, options: events.OnEventOptions = {}) {
     const rule = this.onEvent(id, options);
     rule.addEventPattern({
       detailType: ['CodeBuild Build State Change'],
@@ -253,7 +253,7 @@ abstract class ProjectBase extends Resource implements IProject {
    *
    * @see https://docs.aws.amazon.com/codebuild/latest/userguide/sample-build-notifications.html
    */
-  public onPhaseChange(id: string, options: events.OnEventOptions) {
+  public onPhaseChange(id: string, options: events.OnEventOptions = {}) {
     const rule = this.onEvent(id, options);
     rule.addEventPattern({
       detailType: ['CodeBuild Build Phase Change'],
@@ -267,7 +267,7 @@ abstract class ProjectBase extends Resource implements IProject {
    * To access fields from the event in the event target input,
    * use the static fields on the `StateChangeEvent` class.
    */
-  public onBuildStarted(id: string, options: events.OnEventOptions) {
+  public onBuildStarted(id: string, options: events.OnEventOptions = {}) {
     const rule = this.onStateChange(id, options);
     rule.addEventPattern({
       detail: {
@@ -283,7 +283,7 @@ abstract class ProjectBase extends Resource implements IProject {
    * To access fields from the event in the event target input,
    * use the static fields on the `StateChangeEvent` class.
    */
-  public onBuildFailed(id: string, options: events.OnEventOptions) {
+  public onBuildFailed(id: string, options: events.OnEventOptions = {}) {
     const rule = this.onStateChange(id, options);
     rule.addEventPattern({
       detail: {
@@ -299,7 +299,7 @@ abstract class ProjectBase extends Resource implements IProject {
    * To access fields from the event in the event target input,
    * use the static fields on the `StateChangeEvent` class.
    */
-  public onBuildSucceeded(id: string, options: events.OnEventOptions) {
+  public onBuildSucceeded(id: string, options: events.OnEventOptions = {}) {
     const rule = this.onStateChange(id, options);
     rule.addEventPattern({
       detail: {
@@ -448,9 +448,9 @@ export interface CommonProjectProps {
    * not complete. For valid values, see the timeoutInMinutes field in the AWS
    * CodeBuild User Guide.
    *
-   * @default 60
+   * @default Duration.hours(1)
    */
-  readonly timeout?: number;
+  readonly timeout?: Duration;
 
   /**
    * Additional environment variables to add to the build environment.
@@ -464,7 +464,7 @@ export interface CommonProjectProps {
    *
    * @default - Name is automatically generated.
    */
-  readonly projectName?: PhysicalName;
+  readonly projectName?: string;
 
   /**
    * VPC network to place codebuild network interfaces
@@ -633,7 +633,7 @@ export class Project extends ProjectBase {
     });
 
     this.role = props.role || new iam.Role(this, 'Role', {
-      roleName: PhysicalName.auto({ crossEnvironment: true }),
+      roleName: PhysicalName.GENERATE_IF_NEEDED,
       assumedBy: new iam.ServicePrincipal('codebuild.amazonaws.com')
     });
     this.grantPrincipal = this.role;
@@ -691,8 +691,8 @@ export class Project extends ProjectBase {
       encryptionKey: props.encryptionKey && props.encryptionKey.keyArn,
       badgeEnabled: props.badge,
       cache: cache._toCloudFormation(),
-      name: this.physicalName.value,
-      timeoutInMinutes: props.timeout,
+      name: this.physicalName,
+      timeoutInMinutes: props.timeout && props.timeout.toMinutes(),
       secondarySources: Lazy.anyValue({ produce: () => this.renderSecondarySources() }),
       secondaryArtifacts: Lazy.anyValue({ produce: () => this.renderSecondaryArtifacts() }),
       triggers: sourceConfig.buildTriggers,
@@ -701,17 +701,12 @@ export class Project extends ProjectBase {
 
     this.addVpcRequiredPermissions(props, resource);
 
-    const resourceIdentifiers = new ResourceIdentifiers(this, {
-      arn: resource.attrArn,
-      name: resource.refAsString,
-      arnComponents: {
-        service: 'codebuild',
-        resource: 'project',
-        resourceName: this.physicalName.value,
-      },
+    this.projectArn = this.getResourceArnAttribute(resource.attrArn, {
+      service: 'codebuild',
+      resource: 'project',
+      resourceName: this.physicalName,
     });
-    this.projectArn = resourceIdentifiers.arn;
-    this.projectName = resourceIdentifiers.name;
+    this.projectName = this.getResourceNameAttribute(resource.ref);
 
     this.addToRolePolicy(this.createLoggingPermission());
 
@@ -809,7 +804,7 @@ export class Project extends ProjectBase {
       computeType: env.computeType || this.buildImage.defaultComputeType,
       environmentVariables: !hasEnvironmentVars ? undefined : Object.keys(vars).map(name => ({
         name,
-        type: vars[name].type || BuildEnvironmentVariableType.PlainText,
+        type: vars[name].type || BuildEnvironmentVariableType.PLAINTEXT,
         value: vars[name].value
       }))
     };
@@ -870,13 +865,13 @@ export class Project extends ProjectBase {
     }
 
     this.role.addToPolicy(new iam.PolicyStatement({
-      resources: [`arn:aws:ec2:${Aws.region}:${Aws.accountId}:network-interface/*`],
+      resources: [`arn:aws:ec2:${Aws.REGION}:${Aws.ACCOUNT_ID}:network-interface/*`],
       actions: ['ec2:CreateNetworkInterfacePermission'],
       conditions: {
         StringEquals: {
           'ec2:Subnet': props.vpc
             .selectSubnets(props.subnetSelection).subnetIds
-            .map(si => `arn:aws:ec2:${Aws.region}:${Aws.accountId}:subnet/${si}`),
+            .map(si => `arn:aws:ec2:${Aws.REGION}:${Aws.ACCOUNT_ID}:subnet/${si}`),
           'ec2:AuthorizedService': 'codebuild.amazonaws.com'
         },
       },
@@ -924,9 +919,9 @@ export class Project extends ProjectBase {
  * Build machine compute type.
  */
 export enum ComputeType {
-  Small = 'BUILD_GENERAL1_SMALL',
-  Medium = 'BUILD_GENERAL1_MEDIUM',
-  Large = 'BUILD_GENERAL1_LARGE'
+  SMALL = 'BUILD_GENERAL1_SMALL',
+  MEDIUM = 'BUILD_GENERAL1_MEDIUM',
+  LARGE = 'BUILD_GENERAL1_LARGE'
 }
 
 export interface BuildEnvironment {
@@ -1087,7 +1082,7 @@ export class LinuxBuildImage implements IBuildImage {
   }
 
   public readonly type = 'LINUX_CONTAINER';
-  public readonly defaultComputeType = ComputeType.Small;
+  public readonly defaultComputeType = ComputeType.SMALL;
 
   private constructor(public readonly imageId: string) {
   }
@@ -1179,14 +1174,14 @@ export class WindowsBuildImage implements IBuildImage {
     return image;
   }
   public readonly type = 'WINDOWS_CONTAINER';
-  public readonly defaultComputeType = ComputeType.Medium;
+  public readonly defaultComputeType = ComputeType.MEDIUM;
 
   private constructor(public readonly imageId: string) {
   }
 
   public validate(buildEnvironment: BuildEnvironment): string[] {
     const ret: string[] = [];
-    if (buildEnvironment.computeType === ComputeType.Small) {
+    if (buildEnvironment.computeType === ComputeType.SMALL) {
       ret.push("Windows images do not support the Small ComputeType");
     }
     return ret;
@@ -1236,12 +1231,12 @@ export enum BuildEnvironmentVariableType {
   /**
    * An environment variable in plaintext format.
    */
-  PlainText = 'PLAINTEXT',
+  PLAINTEXT = 'PLAINTEXT',
 
   /**
    * An environment variable stored in Systems Manager Parameter Store.
    */
-  ParameterStore = 'PARAMETER_STORE'
+  PARAMETER_STORE = 'PARAMETER_STORE'
 }
 
 function ecrAccessForCodeBuildService(): iam.PolicyStatement {

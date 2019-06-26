@@ -1,12 +1,13 @@
 import appscaling = require('@aws-cdk/aws-applicationautoscaling');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import dynamodb = require('../lib');
 
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-cdk-dynamodb');
 
 const table = new dynamodb.Table(stack, 'Table', {
-  partitionKey: { name: 'hashKey', type: dynamodb.AttributeType.String }
+  partitionKey: { name: 'hashKey', type: dynamodb.AttributeType.STRING },
+  removalPolicy: cdk.RemovalPolicy.DESTROY,
 });
 
 /// !show

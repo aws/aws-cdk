@@ -1,5 +1,5 @@
 import { expect, haveResource } from '@aws-cdk/assert';
-import { Construct, Stack } from '@aws-cdk/cdk';
+import { Construct, Duration, Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import { Alarm, IAlarm, IAlarmAction, Metric } from '../lib';
 
@@ -41,7 +41,7 @@ export = {
     // WHEN
     new Alarm(stack, 'Alarm', {
       metric: testMetric,
-      periodSec: 600,
+      period: Duration.minutes(10),
       threshold: 1000,
       evaluationPeriods: 3,
     });
@@ -147,7 +147,7 @@ export = {
       threshold: 1000,
       evaluationPeriods: 2,
       statistic: 'min',
-      periodSec: 10,
+      period: Duration.seconds(10),
     });
 
     // THEN

@@ -1,5 +1,5 @@
 import codepipeline = require('@aws-cdk/aws-codepipeline');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import { CustomActionRegistration } from "../custom-action-registration";
 
 /**
@@ -170,7 +170,7 @@ export class JenkinsProvider extends BaseJenkinsProvider {
       return;
     }
     this.buildIncluded = true;
-    this.registerJenkinsCustomAction('JenkinsBuildProviderResource', codepipeline.ActionCategory.Build);
+    this.registerJenkinsCustomAction('JenkinsBuildProviderResource', codepipeline.ActionCategory.BUILD);
   }
 
   /**
@@ -181,7 +181,7 @@ export class JenkinsProvider extends BaseJenkinsProvider {
       return;
     }
     this.testIncluded = true;
-    this.registerJenkinsCustomAction('JenkinsTestProviderResource', codepipeline.ActionCategory.Test);
+    this.registerJenkinsCustomAction('JenkinsTestProviderResource', codepipeline.ActionCategory.TEST);
   }
 
   private registerJenkinsCustomAction(id: string, category: codepipeline.ActionCategory) {

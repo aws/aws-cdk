@@ -1,4 +1,4 @@
-import { Construct, IResource as IResourceBase, Resource as ResourceConstruct } from '@aws-cdk/cdk';
+import { Construct, IResource as IResourceBase, Resource as ResourceConstruct } from '@aws-cdk/core';
 import { CfnResource, CfnResourceProps } from './apigateway.generated';
 import { Integration } from './integration';
 import { Method, MethodOptions } from './method';
@@ -211,7 +211,7 @@ export class Resource extends ResourceBase {
     };
     const resource = new CfnResource(this, 'Resource', resourceProps);
 
-    this.resourceId = resource.refAsString;
+    this.resourceId = resource.ref;
     this.restApi = props.parent.restApi;
 
     // render resource path (special case for root)
