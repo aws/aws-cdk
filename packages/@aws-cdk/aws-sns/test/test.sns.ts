@@ -1,10 +1,10 @@
 import { expect, haveResource } from '@aws-cdk/assert';
 import iam = require('@aws-cdk/aws-iam');
 import cdk = require('@aws-cdk/core');
+import { App, Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import sns = require('../lib');
-import { Stack, App } from '@aws-cdk/core';
-import { Topic, SubscriptionProtocol } from '../lib';
+import { SubscriptionProtocol, Topic } from '../lib';
 
 // tslint:disable:object-literal-key-quotes
 
