@@ -631,4 +631,40 @@ export = {
 
     test.done();
   },
+
+  'addRequestValidator is supported'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+    const api = new apigateway.RestApi(stack, 'myapi');
+    api.root.addMethod('OPTIONS');
+
+    // WHEN
+    api.addRequestValidator('params-validator', {
+      requestValidatorName: 'Parameters',
+      validateRequestBody: false,
+      validateRequestParameters: true
+    });
+    api.addRequestValidator('body-validator', {
+      requestValidatorName: "Body",
+      validateRequestBody: true,
+      validateRequestParameters: false
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::ApiGateway::RequestValidator', {
+      RestApiId: { Ref: stack.getLogicalId(api.node.findChild('Resource') as CfnElement) },
+      Name: "Parameters",
+      ValidateRequestBody: false,
+      ValidateRequestParameters: true
+    }));
+
+    expect(stack).to(haveResource('AWS::ApiGateway::RequestValidator', {
+      RestApiId: { Ref: stack.getLogicalId(api.node.findChild('Resource') as CfnElement) },
+      Name: "Body",
+      ValidateRequestBody: true,
+      ValidateRequestParameters: false
+    }));
+
+    test.done();
+  }
 };

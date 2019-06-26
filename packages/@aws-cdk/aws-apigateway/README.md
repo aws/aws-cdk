@@ -214,7 +214,7 @@ const integration = new LambdaIntegration(hello, {
     },
     {
       // For errors, we check if the error message is not empty, get the error data
-      selectionPattern: '.+',
+      selectionPattern: '(\n|.)+',
       // We will set the response status code to 200
       statusCode: "400",
       responseTemplates: {
@@ -237,14 +237,14 @@ You can define validation models for your responses (and requests)
 // We define the JSON Schema for the transformed valid response
 const responseModel = api.addModel('ResponseModel', {
   contentType: "application/json",
-  name: 'ResponseModel',
+  modelName: 'ResponseModel',
   schema: { "$schema": "http://json-schema.org/draft-04/schema#", "title": "pollResponse", "type": "object", "properties": { "state": { "type": "string" }, "greeting": { "type": "string" } } }
 });
 
 // We define the JSON Schema for the transformed error response
 const errorResponseModel = api.addModel('ErrorResponseModel', {
   contentType: "application/json",
-  name: 'ErrorResponseModel',
+  modelName: 'ErrorResponseModel',
   schema: { "$schema": "http://json-schema.org/draft-04/schema#", "title": "errorResponse", "type": "object", "properties": { "state": { "type": "string" }, "message": { "type": "string" } } }
 });
 

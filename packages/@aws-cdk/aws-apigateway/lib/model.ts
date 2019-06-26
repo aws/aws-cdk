@@ -1,33 +1,70 @@
-import { Construct, IResource, Resource } from '@aws-cdk/core';
+import { Construct, Resource } from '@aws-cdk/core';
 import { CfnModel, CfnModelProps } from './apigateway.generated';
 import jsonSchema = require('./json-schema');
 import { IRestApi, RestApi } from './restapi';
+import util = require('./util');
 
-export interface IModel extends IResource {
+export interface IModel {
   /**
-   * A name for the model. If you don't specify a name, AWS CloudFormation
-   * generates a unique physical ID and uses that ID for the model name.
-   * For more information, @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-name.html.
-   *
-   * Important
-   * If you specify a name, you cannot perform updates that require replacement
-   * of this resource. You can perform updates that require no or some interruption.
-   * If you must replace the resource, specify a new name.
+   * Returns the model name, such as 'myModel'
    *
    * @attribute
    */
   readonly modelId: string;
 }
 
+/**
+ * Represents a reference to a REST API's Empty model, which is available
+ * as part of the model collection by default. This can be used for mapping
+ * JSON responses from an integration to what is returned to a client,
+ * where strong typing is not required. In the absence of any defined
+ * model, the Empty model will be used to return the response payload
+ * unmapped.
+ *
+ * Definition
+ * {
+ *   "$schema" : "http://json-schema.org/draft-04/schema#",
+ *   "title" : "Empty Schema",
+ *   "type" : "object"
+ * }
+ *
+ * @see https://docs.amazonaws.cn/en_us/apigateway/latest/developerguide/models-mappings.html#models-mappings-models
+ */
+export class EmptyModel implements IModel {
+  public readonly modelId = 'Empty';
+}
+
+/**
+ * Represents a reference to a REST API's Error model, which is available
+ * as part of the model collection by default. This can be used for mapping
+ * error JSON responses from an integration to a client, where a simple
+ * generic message field is sufficient to map and return an error payload.
+ *
+ * Definition
+ * {
+ *   "$schema" : "http://json-schema.org/draft-04/schema#",
+ *   "title" : "Error Schema",
+ *   "type" : "object",
+ *   "properties" : {
+ *     "message" : { "type" : "string" }
+ *   }
+ * }
+ */
+export class ErrorModel implements IModel {
+  public readonly modelId = 'Error';
+}
+
 export interface ModelOptions {
   /**
-   * The content type for the model.
-   * @default None
+   * The content type for the model. You can also force a
+   * content type in the request or response model mapping.
+   *
+   * @default -
    */
   readonly contentType?: string;
 
   /**
-   * A description that identifies this model..
+   * A description that identifies this model.
    * @default None
    */
   readonly description?: string;
@@ -84,7 +121,7 @@ export class Model extends Resource implements IModel {
    *   }
    * }
    */
-  public static readonly ERROR_MODEL: IModel = ({ modelId: "Error", stack: null, node: null } as unknown) as IModel;
+  public static readonly ERROR_MODEL: IModel = new ErrorModel();
 
   /**
    * Represents a reference to a REST API's Empty model, which is available
@@ -103,7 +140,7 @@ export class Model extends Resource implements IModel {
    *
    * @see https://docs.amazonaws.cn/en_us/apigateway/latest/developerguide/models-mappings.html#models-mappings-models
    */
-  public static readonly EMPTY_MODEL: IModel = ({ modelId: "Empty", stack: null, node: null } as unknown) as IModel;
+  public static readonly EMPTY_MODEL: IModel = new EmptyModel();
 
   public static fromModelName(scope: Construct, id: string, modelName: string): IModel {
     class Import extends Resource implements IModel {
@@ -114,14 +151,7 @@ export class Model extends Resource implements IModel {
   }
 
   /**
-   * A name for the model. If you don't specify a name, AWS CloudFormation
-   * generates a unique physical ID and uses that ID for the model name.
-   * For more information, @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-name.html.
-   *
-   * Important
-   * If you specify a name, you cannot perform updates that require replacement
-   * of this resource. You can perform updates that require no or some interruption.
-   * If you must replace the resource, specify a new name.
+   * Returns the model name, such as 'myModel'
    *
    * @attribute
    */
@@ -133,16 +163,16 @@ export class Model extends Resource implements IModel {
     });
 
     const modelProps: CfnModelProps = {
-      name: props.modelName,
+      name: this.physicalName,
       restApiId: props.restApi.restApiId,
       contentType: props.contentType,
       description: props.description,
-      schema: jsonSchema.JsonSchemaMapper.toCfnJsonSchema(props.schema)
+      schema: util.JsonSchemaMapper.toCfnJsonSchema(props.schema)
     };
 
     const resource = new CfnModel(this, 'Resource', modelProps);
 
-    this.modelId = resource.ref;
+    this.modelId = this.getResourceNameAttribute(resource.ref);
 
     const deployment = (props.restApi instanceof RestApi) ? props.restApi.latestDeployment : undefined;
     if (deployment) {

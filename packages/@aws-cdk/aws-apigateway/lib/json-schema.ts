@@ -1,4 +1,8 @@
 export enum JsonSchemaVersion {
+  /**
+   * In API Gateway models are defined using the JSON schema draft 4.
+   * @see https://tools.ietf.org/html/draft-zyp-json-schema-04
+   */
   DRAFT4 = 'http://json-schema.org/draft-04/schema#',
   DRAFT7 = 'http://json-schema.org/draft-07/schema#'
 }
@@ -69,57 +73,4 @@ export interface JsonSchema {
   readonly anyOf?: JsonSchema[];
   readonly oneOf?: JsonSchema[];
   readonly not?: JsonSchema;
-}
-
-export class JsonSchemaMapper {
-  /**
-   * Transforms naming of some properties to prefix with a $, where needed
-   * according to the JSON schema spec
-   * @param schema The JsonSchema object to transform for CloudFormation output
-   */
-  public static toCfnJsonSchema(schema: JsonSchema): any {
-    const result = JsonSchemaMapper._toCfnJsonSchema(schema);
-    if (! ("$schema" in result)) {
-      result.$schema = JsonSchemaVersion.DRAFT7;
-    }
-    return result;
-  }
-
-  private static readonly SchemaPropsWithPrefix: { [key: string]: string } = {
-    schema: '$schema',
-    ref: '$ref',
-    id: '$id'
-  };
-  private static readonly SubSchemaProps: { [key: string]: boolean } = {
-    definitions: true,
-    items: true,
-    additionalItems: true,
-    contains: true,
-    properties: true,
-    additionalProperties: true,
-    patternProperties: true,
-    dependencies: true,
-    propertyNames: true
-  };
-
-  private static _toCfnJsonSchema(schema: any): any {
-    if (schema === null || schema === undefined) {
-      return schema;
-    }
-    if ((typeof(schema) === "string") || (typeof(schema) === "boolean") || (typeof(schema) === "number")) {
-      return schema;
-    }
-    if (Array.isArray(schema)) {
-      return schema.map((entry) => JsonSchemaMapper._toCfnJsonSchema(entry));
-    }
-    if (typeof(schema) === "object") {
-      return Object.assign({}, ...Object.entries(schema).map((entry) => {
-        const key = entry[0];
-        const newKey = (key in JsonSchemaMapper.SchemaPropsWithPrefix) ? JsonSchemaMapper.SchemaPropsWithPrefix[key] : key;
-        const value = (key in JsonSchemaMapper.SubSchemaProps) ? JsonSchemaMapper._toCfnJsonSchema(entry[1]) : entry[1];
-        return { [newKey]: value };
-      }));
-    }
-    return schema;
-  }
 }
