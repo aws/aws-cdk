@@ -1,6 +1,6 @@
 import ec2 = require('@aws-cdk/aws-ec2');
 import iam = require('@aws-cdk/aws-iam');
-import { Construct, Context, IResource, Lazy, Resource, Stack, Tag, Token } from '@aws-cdk/cdk';
+import { Construct, IResource, Lazy, Resource, Stack, Tag } from '@aws-cdk/core';
 import { CfnModel } from './sagemaker.generated';
 
 /**
@@ -108,10 +108,7 @@ export class GenericContainerDefinition implements IContainerDefinition  {
     }
 
     public getImage(scope: Construct): string {
-        let region = Stack.of(scope).region;
-        if (Token.isUnresolved(region)) {
-            region = Context.getDefaultRegion(scope);
-        }
+        const region = Stack.of(scope).region;
 
         const uri = region !== 'test-region' ? this.amiMap[region] : '123456789012.dkr.ecr.us-west-2.amazonaws.com/mymodel:latest';
         if (!uri) {
@@ -120,17 +117,17 @@ export class GenericContainerDefinition implements IContainerDefinition  {
         return uri;
     }
 
-    public getEnvironment(_scope: Construct): {[key: string]: string} | undefined {
+    public getEnvironment(_scope?: Construct): {[key: string]: string} | undefined {
         if (!(this.props)) { return undefined; }
         return this.props.environment;
     }
 
-    public getModelDataUrl(_scope: Construct): string | undefined {
+    public getModelDataUrl(_scope?: Construct): string | undefined {
         if (!(this.props)) { return undefined; }
         return this.props.modelDataUrl;
     }
 
-    public getContainerHostname(_scope: Construct): string | undefined {
+    public getContainerHostname(_scope?: Construct): string | undefined {
         if (!(this.props)) { return undefined; }
         return this.props.containerHostname;
     }
@@ -265,8 +262,12 @@ export class Model extends Resource implements IModel, ec2.IConnectable {
             vpcConfig: Lazy.anyValue({ produce: () => this.renderVpcConfig() }),
             containers: Lazy.anyValue({ produce: () => this.renderContainerList(scope, this.containers) })
         });
-        this.modelName = model.modelName;
-        this.modelArn = model.modelArn;
+        this.modelName = model.attrModelName;
+        this.modelArn = Stack.of(this).formatArn({
+            service: 'sagemaker',
+            resource: 'model',
+            resourceName: this.modelName
+          });
     }
 
     /**

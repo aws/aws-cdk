@@ -1,7 +1,7 @@
 import { expect, haveResource } from '@aws-cdk/assert';
 import ec2 = require('@aws-cdk/aws-ec2');
 import iam = require('@aws-cdk/aws-iam');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import { Test } from 'nodeunit';
 import sagemaker = require('../lib');
 import { GenericContainerDefinition } from '../lib';
@@ -83,7 +83,6 @@ export = {
                     Subnets: [
                         { Ref: "VpcPrivateSubnet1Subnet536B997A" },
                         { Ref: "VpcPrivateSubnet2Subnet3788AAA1" },
-                        { Ref: "VpcPrivateSubnet3SubnetF258B56E" },
                     ]
                 },
                 Tags: [

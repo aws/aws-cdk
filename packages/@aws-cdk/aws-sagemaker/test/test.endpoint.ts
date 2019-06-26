@@ -1,7 +1,7 @@
 import { expect, haveResource } from '@aws-cdk/assert';
 import ec2 = require('@aws-cdk/aws-ec2');
 import kms = require('@aws-cdk/aws-kms');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import { Test } from 'nodeunit';
 import sagemaker = require('../lib');
 
@@ -120,7 +120,7 @@ export = {
                     {
                         initialInstanceCount: -1,
                         initialVariantWeight: 100,
-                        instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.C4, ec2.InstanceSize.XLarge),
+                        instanceType: ec2.InstanceType.of(ec2.InstanceClass.C4, ec2.InstanceSize.XLARGE),
                         model,
                         variantName: "production",
                     }
@@ -146,7 +146,7 @@ export = {
                     {
                         initialInstanceCount: 1,
                         initialVariantWeight: -100,
-                        instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.C4, ec2.InstanceSize.XLarge),
+                        instanceType: ec2.InstanceType.of(ec2.InstanceClass.C4, ec2.InstanceSize.XLARGE),
                         model,
                         variantName: "production",
                     }

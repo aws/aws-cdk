@@ -1,6 +1,6 @@
 import ec2 = require('@aws-cdk/aws-ec2');
 import kms = require('@aws-cdk/aws-kms');
-import { Construct, Lazy, Resource, Tag } from '@aws-cdk/cdk';
+import { Construct, Lazy, Resource, Tag } from '@aws-cdk/core';
 import { IModel } from './model';
 import { CfnEndpoint, CfnEndpointConfig } from './sagemaker.generated';
 
@@ -97,11 +97,11 @@ export interface ProductionVariant {
 
 export enum AcceleratorType {
 
-    Large = 'ml.eia1.large ',
+    LARGE = 'ml.eia1.large ',
 
-    Medium = 'ml.eia1.medium',
+    MEDIUM = 'ml.eia1.medium',
 
-    XLarge = 'ml.eia1.xlarge',
+    XLARGE = 'ml.eia1.xlarge',
 }
 
 /**
@@ -144,14 +144,14 @@ export class Endpoint extends Resource {
             endpointConfigName: (props.configName) ? props.configName : (props.endpointName) ? props.endpointName + "Config" : undefined,
             productionVariants: Lazy.anyValue({ produce: () => this.renderProductionVariants(this.productionVariants) })
         });
-        this.endpointConfigName = endpointConfig.endpointConfigName;
+        this.endpointConfigName = endpointConfig.attrEndpointConfigName;
 
         // create the endpoint resource
         const endpoint = new CfnEndpoint(this, 'Endpoint', {
-            endpointConfigName: endpointConfig.endpointConfigName,
+            endpointConfigName: this.endpointConfigName,
             endpointName: (props.endpointName) ? props.endpointName : undefined,
         });
-        this.endpointName = endpoint.endpointName;
+        this.endpointName = endpoint.attrEndpointName;
     }
 
     /**
@@ -206,7 +206,7 @@ export class Endpoint extends Resource {
                 initialVariantWeight: (v.initialVariantWeight) ? v.initialVariantWeight : 100,
                 // get the instance type. Set to 'ml.c4.xlarge' if not defined
                 instanceType: 'ml.' + ((v.instanceType) ? (v.instanceType.toString()) :
-                    new ec2.InstanceTypePair(ec2.InstanceClass.C4, ec2.InstanceSize.XLarge)),
+                    ec2.InstanceType.of(ec2.InstanceClass.C4, ec2.InstanceSize.XLARGE)),
                 modelName: v.model.modelName,
                 // get the variant name. Set to the model name if not defined
                 variantName: (v.variantName) ? v.variantName : v.model.modelName,

@@ -2,7 +2,7 @@ import { expect, haveResource } from '@aws-cdk/assert';
 import ec2 = require('@aws-cdk/aws-ec2');
 import iam = require('@aws-cdk/aws-iam');
 import kms = require('@aws-cdk/aws-kms');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import { Test } from 'nodeunit';
 import sagemaker = require('../lib');
 
@@ -35,7 +35,7 @@ export = {
             const sg = new ec2.SecurityGroup(stack, 'SecurityGroup', { vpc, allowAllOutbound: true });
             const key = new kms.Key(stack, 'Key');
             const role = new iam.Role(stack, 'Role', { assumedBy: new iam.ServicePrincipal("sagemaker.amazonaws.com") } );
-            const instanceType = new ec2.InstanceTypePair(ec2.InstanceClass.M4, ec2.InstanceSize.XLarge);
+            const instanceType = ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.XLARGE);
 
             // create the notebook instance
             const notebook = new sagemaker.NotebookInstance(stack, 'Notebook', {
@@ -121,7 +121,7 @@ export = {
             const stack = new cdk.Stack();
             // WHEN
             test.throws(() => new sagemaker.NotebookInstance(stack, 'Notebook', {
-                instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.X1, ec2.InstanceSize.XLarge32)
+                instanceType: ec2.InstanceType.of(ec2.InstanceClass.X1, ec2.InstanceSize.XLARGE32)
             }), /Invalid instance type/);
             test.done();
         },

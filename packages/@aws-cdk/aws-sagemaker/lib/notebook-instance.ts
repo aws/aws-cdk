@@ -1,7 +1,7 @@
 import ec2 = require('@aws-cdk/aws-ec2');
 import iam = require('@aws-cdk/aws-iam');
 import kms = require('@aws-cdk/aws-kms');
-import { Construct, Fn, Lazy, Resource } from '@aws-cdk/cdk';
+import { Construct, Fn, Lazy, Resource } from '@aws-cdk/core';
 import { CfnNotebookInstance, CfnNotebookInstanceLifecycleConfig } from './sagemaker.generated';
 
 /**
@@ -94,13 +94,6 @@ export class NotebookInstance extends Resource implements ec2.IConnectable {
      */
     public readonly notebookInstanceName: string;
 
-    /**
-     * Notebook instance ARN.
-     *
-     * @attribute
-     */
-    public readonly notebookInstanceArn: string;
-
     private readonly vpc: ec2.IVpc;
     private readonly securityGroup: ec2.ISecurityGroup;
     private readonly securityGroups: ec2.ISecurityGroup[] = [];
@@ -110,6 +103,7 @@ export class NotebookInstance extends Resource implements ec2.IConnectable {
     private readonly instanceType: string;
     private readonly onCreateLines = new Array<string>();
     private readonly onStartLines = new Array<string>();
+    private readonly lifecycleConfigName: string;
 
     constructor(scope: Construct, id: string, props: NotebookInstanceProps = {}) {
         super(scope, id);
@@ -168,12 +162,13 @@ export class NotebookInstance extends Resource implements ec2.IConnectable {
             onCreate: [{content: onCreateToken}],
             onStart: [{content: onStartToken}],
         });
+        this.lifecycleConfigName = lifecycleConfig.attrNotebookInstanceLifecycleConfigName;
 
         // create the CfnNotebookInstance resource
         const notebook = new CfnNotebookInstance(this, 'NotebookInstance', {
             roleArn: this.role.roleArn,
             instanceType: this.instanceType,
-            lifecycleConfigName: lifecycleConfig.notebookInstanceLifecycleConfigName,
+            lifecycleConfigName: this.lifecycleConfigName,
             notebookInstanceName: this.notebookInstanceName,
             directInternetAccess: props.enableDirectInternetAccess !== undefined ?
                 (props.enableDirectInternetAccess ? 'Enabled' : 'Disabled') : undefined,
@@ -184,8 +179,7 @@ export class NotebookInstance extends Resource implements ec2.IConnectable {
             rootAccess: props.enableRootAccess !== undefined ? (props.enableRootAccess ? 'Enabled' : 'Disabled') : undefined,
             kmsKeyId: props.kmsKeyId !== undefined ? props.kmsKeyId.keyArn : undefined,
         });
-        this.notebookInstanceName = notebook.notebookInstanceName;
-        this.notebookInstanceArn = notebook.notebookInstanceArn;
+        this.notebookInstanceName = notebook.attrNotebookInstanceName;
     }
 
     /**
