@@ -45,7 +45,7 @@ export class GlobalTable extends cdk.Construct {
 
     // need to set this stream specification, otherwise global tables don't work
     // And no way to set a default value in an interface
-    const stackProps: dynamodb.TableProps = {
+    const regionalTableProps: dynamodb.TableProps = {
       ...props,
       removalPolicy: props.removalPolicy,
       stream: dynamodb.StreamViewType.NEW_AND_OLD_IMAGES,
@@ -55,7 +55,7 @@ export class GlobalTable extends cdk.Construct {
     // in each region we'll deploy a separate stack with a DynamoDB Table with identical properties in the individual stacks
     for (const reg of props.regions) {
       const regionalStack = new cdk.Stack(this, id + "-" + reg, { env: { region: reg } });
-      const regionalTable = new dynamodb.Table(regionalStack, id + '-GlobalTable-' + reg, stackProps);
+      const regionalTable = new dynamodb.Table(regionalStack, `${id}-GlobalTable-${reg}`, regionalTableProps);
       this._regionalTables.push(regionalTable);
     }
 
