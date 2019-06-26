@@ -1,7 +1,7 @@
-import { expect, haveResource } from '@aws-cdk/assert';
+import { expect, haveResource, ResourcePart } from '@aws-cdk/assert';
 import appscaling = require('@aws-cdk/aws-applicationautoscaling');
 import iam = require('@aws-cdk/aws-iam');
-import { ConstructNode, Stack, Tag } from '@aws-cdk/core';
+import { CfnDeletionPolicy, ConstructNode, RemovalPolicy, Stack, Tag } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import {
   Attribute,
@@ -75,236 +75,248 @@ export = {
         KeySchema: [{ AttributeName: 'hashKey', KeyType: 'HASH' }],
         ProvisionedThroughput: { ReadCapacityUnits: 5, WriteCapacityUnits: 5 }
       }));
+
+      expect(stack).to(haveResource('AWS::DynamoDB::Table', { DeletionPolicy: CfnDeletionPolicy.RETAIN }, ResourcePart.CompleteDefinition));
+
       test.done();
     },
 
-  'hash + range key'(test: Test) {
-    const stack = new Stack();
-    new Table(stack, CONSTRUCT_NAME, {
-      partitionKey: TABLE_PARTITION_KEY,
-      sortKey: TABLE_SORT_KEY
-    });
+    'removalPolicy is DESTROY'(test: Test) {
+      const stack = new Stack();
+      new Table(stack, CONSTRUCT_NAME, { partitionKey: TABLE_PARTITION_KEY, removalPolicy: RemovalPolicy.DESTROY });
 
-    expect(stack).to(haveResource('AWS::DynamoDB::Table', {
-            AttributeDefinitions: [
-              { AttributeName: 'hashKey', AttributeType: 'S' },
-              { AttributeName: 'sortKey', AttributeType: 'N' }
-            ],
-            KeySchema: [
-              { AttributeName: 'hashKey', KeyType: 'HASH' },
-              { AttributeName: 'sortKey', KeyType: 'RANGE' }
-            ],
-            ProvisionedThroughput: { ReadCapacityUnits: 5, WriteCapacityUnits: 5 },
-    }));
-    test.done();
-  },
+      expect(stack).to(haveResource('AWS::DynamoDB::Table', { DeletionPolicy: CfnDeletionPolicy.DELETE }, ResourcePart.CompleteDefinition));
 
-  'hash + range key can also be specified in props'(test: Test) {
-    const stack = new Stack();
+      test.done();
+    },
 
-    new Table(stack, CONSTRUCT_NAME, {
-      partitionKey: TABLE_PARTITION_KEY,
-      sortKey: TABLE_SORT_KEY
-    });
+    'hash + range key'(test: Test) {
+      const stack = new Stack();
+      new Table(stack, CONSTRUCT_NAME, {
+        partitionKey: TABLE_PARTITION_KEY,
+        sortKey: TABLE_SORT_KEY
+      });
 
-    expect(stack).to(haveResource('AWS::DynamoDB::Table',
-      {
-        AttributeDefinitions: [
-          { AttributeName: 'hashKey', AttributeType: 'S' },
-          { AttributeName: 'sortKey', AttributeType: 'N' }
-        ],
-        KeySchema: [
-          { AttributeName: 'hashKey', KeyType: 'HASH' },
-          { AttributeName: 'sortKey', KeyType: 'RANGE' }
-        ],
-        ProvisionedThroughput: { ReadCapacityUnits: 5, WriteCapacityUnits: 5 },
+      expect(stack).to(haveResource('AWS::DynamoDB::Table', {
+              AttributeDefinitions: [
+                { AttributeName: 'hashKey', AttributeType: 'S' },
+                { AttributeName: 'sortKey', AttributeType: 'N' }
+              ],
+              KeySchema: [
+                { AttributeName: 'hashKey', KeyType: 'HASH' },
+                { AttributeName: 'sortKey', KeyType: 'RANGE' }
+              ],
+              ProvisionedThroughput: { ReadCapacityUnits: 5, WriteCapacityUnits: 5 },
       }));
+      test.done();
+    },
 
-    test.done();
+    'hash + range key can also be specified in props'(test: Test) {
+      const stack = new Stack();
+
+      new Table(stack, CONSTRUCT_NAME, {
+        partitionKey: TABLE_PARTITION_KEY,
+        sortKey: TABLE_SORT_KEY
+      });
+
+      expect(stack).to(haveResource('AWS::DynamoDB::Table',
+        {
+          AttributeDefinitions: [
+            { AttributeName: 'hashKey', AttributeType: 'S' },
+            { AttributeName: 'sortKey', AttributeType: 'N' }
+          ],
+          KeySchema: [
+            { AttributeName: 'hashKey', KeyType: 'HASH' },
+            { AttributeName: 'sortKey', KeyType: 'RANGE' }
+          ],
+          ProvisionedThroughput: { ReadCapacityUnits: 5, WriteCapacityUnits: 5 },
+        }));
+
+      test.done();
+    },
+
+    'point-in-time recovery is not enabled'(test: Test) {
+      const stack = new Stack();
+      new Table(stack, CONSTRUCT_NAME, {
+        partitionKey: TABLE_PARTITION_KEY,
+        sortKey: TABLE_SORT_KEY
+      });
+
+      expect(stack).to(haveResource('AWS::DynamoDB::Table',
+        {
+          AttributeDefinitions: [
+            { AttributeName: 'hashKey', AttributeType: 'S' },
+            { AttributeName: 'sortKey', AttributeType: 'N' }
+          ],
+          KeySchema: [
+            { AttributeName: 'hashKey', KeyType: 'HASH' },
+            { AttributeName: 'sortKey', KeyType: 'RANGE' }
+          ],
+          ProvisionedThroughput: { ReadCapacityUnits: 5, WriteCapacityUnits: 5 }
+        }
+      ));
+      test.done();
+    },
+
+    'server-side encryption is not enabled'(test: Test) {
+      const stack = new Stack();
+      new Table(stack, CONSTRUCT_NAME, {
+        partitionKey: TABLE_PARTITION_KEY,
+        sortKey: TABLE_SORT_KEY,
+      });
+
+      expect(stack).to(haveResource('AWS::DynamoDB::Table',
+        {
+          AttributeDefinitions: [
+            { AttributeName: 'hashKey', AttributeType: 'S' },
+            { AttributeName: 'sortKey', AttributeType: 'N' }
+          ],
+          KeySchema: [
+            { AttributeName: 'hashKey', KeyType: 'HASH' },
+            { AttributeName: 'sortKey', KeyType: 'RANGE' }
+          ],
+          ProvisionedThroughput: { ReadCapacityUnits: 5, WriteCapacityUnits: 5 }
+        }
+      ));
+      test.done();
+    },
+
+    'stream is not enabled'(test: Test) {
+      const stack = new Stack();
+      new Table(stack, CONSTRUCT_NAME, {
+        partitionKey: TABLE_PARTITION_KEY,
+        sortKey: TABLE_SORT_KEY,
+      });
+
+      expect(stack).to(haveResource('AWS::DynamoDB::Table',
+        {
+          AttributeDefinitions: [
+            { AttributeName: 'hashKey', AttributeType: 'S' },
+            { AttributeName: 'sortKey', AttributeType: 'N' }
+          ],
+          KeySchema: [
+            { AttributeName: 'hashKey', KeyType: 'HASH' },
+            { AttributeName: 'sortKey', KeyType: 'RANGE' }
+          ],
+          ProvisionedThroughput: { ReadCapacityUnits: 5, WriteCapacityUnits: 5 }
+        }
+      ));
+      test.done();
+    },
+
+    'ttl is not enabled'(test: Test) {
+      const stack = new Stack();
+      new Table(stack, CONSTRUCT_NAME, {
+        partitionKey: TABLE_PARTITION_KEY,
+        sortKey: TABLE_SORT_KEY,
+      });
+
+      expect(stack).to(haveResource('AWS::DynamoDB::Table',
+        {
+          AttributeDefinitions: [
+            { AttributeName: 'hashKey', AttributeType: 'S' },
+            { AttributeName: 'sortKey', AttributeType: 'N' }
+          ],
+          KeySchema: [
+            { AttributeName: 'hashKey', KeyType: 'HASH' },
+            { AttributeName: 'sortKey', KeyType: 'RANGE' }
+          ],
+          ProvisionedThroughput: { ReadCapacityUnits: 5, WriteCapacityUnits: 5 }
+        }
+      ));
+      test.done();
+    },
+
+    'can specify new and old images'(test: Test) {
+      const stack = new Stack();
+
+      new Table(stack, CONSTRUCT_NAME, {
+        tableName: TABLE_NAME,
+        readCapacity: 42,
+        writeCapacity: 1337,
+        stream: StreamViewType.NEW_AND_OLD_IMAGES,
+        partitionKey: TABLE_PARTITION_KEY,
+        sortKey: TABLE_SORT_KEY
+      });
+
+      expect(stack).to(haveResource('AWS::DynamoDB::Table',
+        {
+          AttributeDefinitions: [
+            { AttributeName: 'hashKey', AttributeType: 'S' },
+            { AttributeName: 'sortKey', AttributeType: 'N' }
+          ],
+          StreamSpecification: { StreamViewType: 'NEW_AND_OLD_IMAGES' },
+          KeySchema: [
+            { AttributeName: 'hashKey', KeyType: 'HASH' },
+            { AttributeName: 'sortKey', KeyType: 'RANGE' }
+          ],
+          ProvisionedThroughput: { ReadCapacityUnits: 42, WriteCapacityUnits: 1337 },
+          TableName: 'MyTable'
+        }
+      ));
+      test.done();
+    },
+
+    'can specify new images only'(test: Test) {
+      const stack = new Stack();
+
+      new Table(stack, CONSTRUCT_NAME, {
+        tableName: TABLE_NAME,
+        readCapacity: 42,
+        writeCapacity: 1337,
+        stream: StreamViewType.NEW_IMAGE,
+        partitionKey: TABLE_PARTITION_KEY,
+        sortKey: TABLE_SORT_KEY
+      });
+
+      expect(stack).to(haveResource('AWS::DynamoDB::Table',
+        {
+          KeySchema: [
+            { AttributeName: 'hashKey', KeyType: 'HASH' },
+            { AttributeName: 'sortKey', KeyType: 'RANGE' }
+          ],
+          ProvisionedThroughput: { ReadCapacityUnits: 42, WriteCapacityUnits: 1337 },
+          AttributeDefinitions: [
+            { AttributeName: 'hashKey', AttributeType: 'S' },
+            { AttributeName: 'sortKey', AttributeType: 'N' }
+          ],
+          StreamSpecification: { StreamViewType: 'NEW_IMAGE' },
+          TableName: 'MyTable',
+        }
+      ));
+      test.done();
+    },
+
+    'can specify old images only'(test: Test) {
+      const stack = new Stack();
+
+      new Table(stack, CONSTRUCT_NAME, {
+        tableName: TABLE_NAME,
+        readCapacity: 42,
+        writeCapacity: 1337,
+        stream: StreamViewType.OLD_IMAGE,
+        partitionKey: TABLE_PARTITION_KEY,
+        sortKey: TABLE_SORT_KEY
+      });
+
+      expect(stack).to(haveResource('AWS::DynamoDB::Table',
+        {
+          KeySchema: [
+            { AttributeName: 'hashKey', KeyType: 'HASH' },
+            { AttributeName: 'sortKey', KeyType: 'RANGE' }
+          ],
+          ProvisionedThroughput: { ReadCapacityUnits: 42, WriteCapacityUnits: 1337 },
+          AttributeDefinitions: [
+            { AttributeName: 'hashKey', AttributeType: 'S' },
+            { AttributeName: 'sortKey', AttributeType: 'N' }
+          ],
+          StreamSpecification: { StreamViewType: 'OLD_IMAGE' },
+          TableName: 'MyTable',
+        }
+      ));
+      test.done();
+    }
   },
-
-  'point-in-time recovery is not enabled'(test: Test) {
-    const stack = new Stack();
-    new Table(stack, CONSTRUCT_NAME, {
-      partitionKey: TABLE_PARTITION_KEY,
-      sortKey: TABLE_SORT_KEY
-    });
-
-    expect(stack).to(haveResource('AWS::DynamoDB::Table',
-      {
-        AttributeDefinitions: [
-          { AttributeName: 'hashKey', AttributeType: 'S' },
-          { AttributeName: 'sortKey', AttributeType: 'N' }
-        ],
-        KeySchema: [
-          { AttributeName: 'hashKey', KeyType: 'HASH' },
-          { AttributeName: 'sortKey', KeyType: 'RANGE' }
-        ],
-        ProvisionedThroughput: { ReadCapacityUnits: 5, WriteCapacityUnits: 5 }
-      }
-    ));
-    test.done();
-  },
-
-  'server-side encryption is not enabled'(test: Test) {
-    const stack = new Stack();
-    new Table(stack, CONSTRUCT_NAME, {
-      partitionKey: TABLE_PARTITION_KEY,
-      sortKey: TABLE_SORT_KEY,
-    });
-
-    expect(stack).to(haveResource('AWS::DynamoDB::Table',
-      {
-        AttributeDefinitions: [
-          { AttributeName: 'hashKey', AttributeType: 'S' },
-          { AttributeName: 'sortKey', AttributeType: 'N' }
-        ],
-        KeySchema: [
-          { AttributeName: 'hashKey', KeyType: 'HASH' },
-          { AttributeName: 'sortKey', KeyType: 'RANGE' }
-        ],
-        ProvisionedThroughput: { ReadCapacityUnits: 5, WriteCapacityUnits: 5 }
-      }
-    ));
-    test.done();
-  },
-
-  'stream is not enabled'(test: Test) {
-    const stack = new Stack();
-    new Table(stack, CONSTRUCT_NAME, {
-      partitionKey: TABLE_PARTITION_KEY,
-      sortKey: TABLE_SORT_KEY,
-    });
-
-    expect(stack).to(haveResource('AWS::DynamoDB::Table',
-      {
-        AttributeDefinitions: [
-          { AttributeName: 'hashKey', AttributeType: 'S' },
-          { AttributeName: 'sortKey', AttributeType: 'N' }
-        ],
-        KeySchema: [
-          { AttributeName: 'hashKey', KeyType: 'HASH' },
-          { AttributeName: 'sortKey', KeyType: 'RANGE' }
-        ],
-        ProvisionedThroughput: { ReadCapacityUnits: 5, WriteCapacityUnits: 5 }
-      }
-    ));
-    test.done();
-  },
-
-  'ttl is not enabled'(test: Test) {
-    const stack = new Stack();
-    new Table(stack, CONSTRUCT_NAME, {
-      partitionKey: TABLE_PARTITION_KEY,
-      sortKey: TABLE_SORT_KEY,
-    });
-
-    expect(stack).to(haveResource('AWS::DynamoDB::Table',
-      {
-        AttributeDefinitions: [
-          { AttributeName: 'hashKey', AttributeType: 'S' },
-          { AttributeName: 'sortKey', AttributeType: 'N' }
-        ],
-        KeySchema: [
-          { AttributeName: 'hashKey', KeyType: 'HASH' },
-          { AttributeName: 'sortKey', KeyType: 'RANGE' }
-        ],
-        ProvisionedThroughput: { ReadCapacityUnits: 5, WriteCapacityUnits: 5 }
-      }
-    ));
-    test.done();
-  },
-
-  'can specify new and old images'(test: Test) {
-    const stack = new Stack();
-
-    new Table(stack, CONSTRUCT_NAME, {
-      tableName: TABLE_NAME,
-      readCapacity: 42,
-      writeCapacity: 1337,
-      stream: StreamViewType.NEW_AND_OLD_IMAGES,
-      partitionKey: TABLE_PARTITION_KEY,
-      sortKey: TABLE_SORT_KEY
-    });
-
-    expect(stack).to(haveResource('AWS::DynamoDB::Table',
-      {
-        AttributeDefinitions: [
-          { AttributeName: 'hashKey', AttributeType: 'S' },
-          { AttributeName: 'sortKey', AttributeType: 'N' }
-        ],
-        StreamSpecification: { StreamViewType: 'NEW_AND_OLD_IMAGES' },
-        KeySchema: [
-          { AttributeName: 'hashKey', KeyType: 'HASH' },
-          { AttributeName: 'sortKey', KeyType: 'RANGE' }
-        ],
-        ProvisionedThroughput: { ReadCapacityUnits: 42, WriteCapacityUnits: 1337 },
-        TableName: 'MyTable'
-      }
-    ));
-    test.done();
-  },
-
-  'can specify new images only'(test: Test) {
-    const stack = new Stack();
-
-    new Table(stack, CONSTRUCT_NAME, {
-      tableName: TABLE_NAME,
-      readCapacity: 42,
-      writeCapacity: 1337,
-      stream: StreamViewType.NEW_IMAGE,
-      partitionKey: TABLE_PARTITION_KEY,
-      sortKey: TABLE_SORT_KEY
-    });
-
-    expect(stack).to(haveResource('AWS::DynamoDB::Table',
-      {
-        KeySchema: [
-          { AttributeName: 'hashKey', KeyType: 'HASH' },
-          { AttributeName: 'sortKey', KeyType: 'RANGE' }
-        ],
-        ProvisionedThroughput: { ReadCapacityUnits: 42, WriteCapacityUnits: 1337 },
-        AttributeDefinitions: [
-          { AttributeName: 'hashKey', AttributeType: 'S' },
-          { AttributeName: 'sortKey', AttributeType: 'N' }
-        ],
-        StreamSpecification: { StreamViewType: 'NEW_IMAGE' },
-        TableName: 'MyTable',
-      }
-    ));
-    test.done();
-  },
-
-  'can specify old images only'(test: Test) {
-    const stack = new Stack();
-
-    new Table(stack, CONSTRUCT_NAME, {
-      tableName: TABLE_NAME,
-      readCapacity: 42,
-      writeCapacity: 1337,
-      stream: StreamViewType.OLD_IMAGE,
-      partitionKey: TABLE_PARTITION_KEY,
-      sortKey: TABLE_SORT_KEY
-    });
-
-    expect(stack).to(haveResource('AWS::DynamoDB::Table',
-      {
-        KeySchema: [
-          { AttributeName: 'hashKey', KeyType: 'HASH' },
-          { AttributeName: 'sortKey', KeyType: 'RANGE' }
-        ],
-        ProvisionedThroughput: { ReadCapacityUnits: 42, WriteCapacityUnits: 1337 },
-        AttributeDefinitions: [
-          { AttributeName: 'hashKey', AttributeType: 'S' },
-          { AttributeName: 'sortKey', AttributeType: 'N' }
-        ],
-        StreamSpecification: { StreamViewType: 'OLD_IMAGE' },
-        TableName: 'MyTable',
-      }
-    ));
-    test.done();
-  }
-},
 
   'when specifying every property'(test: Test) {
     const stack = new Stack();

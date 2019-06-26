@@ -1,4 +1,4 @@
-import { App, Stack, Tag } from '@aws-cdk/core';
+import { App, RemovalPolicy, Stack, Tag } from '@aws-cdk/core';
 import { Attribute, AttributeType, BillingMode, ProjectionType, StreamViewType, Table } from '../lib';
 
 // CDK parameters
@@ -43,7 +43,8 @@ const stack = new Stack(app, STACK_NAME);
 // Provisioned tables
 new Table(stack, TABLE, {
   billingMode: BillingMode.PAY_PER_REQUEST,
-  partitionKey: TABLE_PARTITION_KEY
+  partitionKey: TABLE_PARTITION_KEY,
+  removalPolicy: RemovalPolicy.DESTROY,
 });
 
 const tableWithGlobalAndLocalSecondaryIndex = new Table(stack, TABLE_WITH_GLOBAL_AND_LOCAL_SECONDARY_INDEX, {
@@ -53,7 +54,8 @@ const tableWithGlobalAndLocalSecondaryIndex = new Table(stack, TABLE_WITH_GLOBAL
   billingMode: BillingMode.PAY_PER_REQUEST,
   timeToLiveAttribute: 'timeToLive',
   partitionKey: TABLE_PARTITION_KEY,
-  sortKey: TABLE_SORT_KEY
+  sortKey: TABLE_SORT_KEY,
+  removalPolicy: RemovalPolicy.DESTROY,
 });
 
 tableWithGlobalAndLocalSecondaryIndex.node.applyAspect(new Tag('Environment', 'Production'));
@@ -109,6 +111,7 @@ tableWithGlobalAndLocalSecondaryIndex.addLocalSecondaryIndex({
 const tableWithGlobalSecondaryIndex = new Table(stack, TABLE_WITH_GLOBAL_SECONDARY_INDEX, {
   billingMode: BillingMode.PAY_PER_REQUEST,
   partitionKey: TABLE_PARTITION_KEY,
+  removalPolicy: RemovalPolicy.DESTROY,
 });
 tableWithGlobalSecondaryIndex.addGlobalSecondaryIndex({
   indexName: GSI_TEST_CASE_1,
@@ -119,6 +122,7 @@ const tableWithLocalSecondaryIndex = new Table(stack, TABLE_WITH_LOCAL_SECONDARY
   billingMode: BillingMode.PAY_PER_REQUEST,
   partitionKey: TABLE_PARTITION_KEY,
   sortKey: TABLE_SORT_KEY,
+  removalPolicy: RemovalPolicy.DESTROY,
 });
 
 tableWithLocalSecondaryIndex.addLocalSecondaryIndex({

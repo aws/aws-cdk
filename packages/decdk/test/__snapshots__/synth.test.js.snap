@@ -1322,6 +1322,7 @@ Object {
       "Type": "AWS::SNS::Subscription",
     },
     "TableCD117FA1": Object {
+      "DeletionPolicy": "Retain",
       "Properties": Object {
         "AttributeDefinitions": Array [
           Object {

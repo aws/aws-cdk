@@ -1,5 +1,5 @@
 import iam = require('@aws-cdk/aws-iam');
-import { App, Stack, Tag } from '@aws-cdk/core';
+import { App, RemovalPolicy, Stack, Tag } from '@aws-cdk/core';
 import { Attribute, AttributeType, ProjectionType, StreamViewType, Table } from '../lib';
 
 // CDK parameters
@@ -42,7 +42,8 @@ const app = new App();
 const stack = new Stack(app, STACK_NAME);
 
 const table = new Table(stack, TABLE, {
-  partitionKey: TABLE_PARTITION_KEY
+  partitionKey: TABLE_PARTITION_KEY,
+  removalPolicy: RemovalPolicy.DESTROY,
 });
 
 const tableWithGlobalAndLocalSecondaryIndex = new Table(stack, TABLE_WITH_GLOBAL_AND_LOCAL_SECONDARY_INDEX, {
@@ -51,7 +52,8 @@ const tableWithGlobalAndLocalSecondaryIndex = new Table(stack, TABLE_WITH_GLOBAL
   stream: StreamViewType.KEYS_ONLY,
   timeToLiveAttribute: 'timeToLive',
   partitionKey: TABLE_PARTITION_KEY,
-  sortKey: TABLE_SORT_KEY
+  sortKey: TABLE_SORT_KEY,
+  removalPolicy: RemovalPolicy.DESTROY,
 });
 
 tableWithGlobalAndLocalSecondaryIndex.node.applyAspect(new Tag('Environment', 'Production'));
@@ -106,7 +108,8 @@ tableWithGlobalAndLocalSecondaryIndex.addLocalSecondaryIndex({
 });
 
 const tableWithGlobalSecondaryIndex = new Table(stack, TABLE_WITH_GLOBAL_SECONDARY_INDEX, {
-  partitionKey: TABLE_PARTITION_KEY
+  partitionKey: TABLE_PARTITION_KEY,
+  removalPolicy: RemovalPolicy.DESTROY,
 });
 tableWithGlobalSecondaryIndex.addGlobalSecondaryIndex({
   indexName: GSI_TEST_CASE_1,
@@ -115,7 +118,8 @@ tableWithGlobalSecondaryIndex.addGlobalSecondaryIndex({
 
 const tableWithLocalSecondaryIndex = new Table(stack, TABLE_WITH_LOCAL_SECONDARY_INDEX, {
   partitionKey: TABLE_PARTITION_KEY,
-  sortKey: TABLE_SORT_KEY
+  sortKey: TABLE_SORT_KEY,
+  removalPolicy: RemovalPolicy.DESTROY,
 });
 
 tableWithLocalSecondaryIndex.addLocalSecondaryIndex({

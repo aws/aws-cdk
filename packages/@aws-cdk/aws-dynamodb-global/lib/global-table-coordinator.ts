@@ -30,6 +30,7 @@ export class GlobalTableCoordinator extends cdk.Stack {
         resourceType: "Custom::DynamoGlobalTableCoordinator",
         tableName: props.tableName,
       },
+      removalPolicy: props.removalPolicy,
     });
   }
 }
