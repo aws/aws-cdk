@@ -1,17 +1,17 @@
 from aws_cdk import (
     aws_iam as iam,
     aws_s3 as s3,
-    cdk,
+    core,
 )
 
 
-class HelloConstruct(cdk.Construct):
+class HelloConstruct(core.Construct):
 
     @property
     def buckets(self):
         return tuple(self._buckets)
 
-    def __init__(self, scope: cdk.Construct, id: str, num_buckets: int) -> None:
+    def __init__(self, scope: core.Construct, id: str, num_buckets: int) -> None:
         super().__init__(scope, id)
         self._buckets = []
         for i in range(0, num_buckets):
