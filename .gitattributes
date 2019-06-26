@@ -8,4 +8,6 @@
 *.zip binary
 *.png binary
 *.jpg binary
+*.tgz binary
+*.tar.gz binary
 packages/@aws-cdk-testing/framework-integ/test/aws-codepipeline-actions/test/integ.pipeline-environment-variables.js.snapshot/asset.*.zip filter=lfs diff=lfs merge=lfs -text
