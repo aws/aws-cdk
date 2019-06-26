@@ -9,14 +9,15 @@
             "KeyType": "HASH"
           }
         ],
-        "BillingMode": "PAY_PER_REQUEST",
         "AttributeDefinitions": [
           {
             "AttributeName": "hashKey",
             "AttributeType": "S"
           }
-        ]
-      }
+        ],
+        "BillingMode": "PAY_PER_REQUEST"
+      },
+      "DeletionPolicy": "Delete"
     },
     "TableWithGlobalAndLocalSecondaryIndexBC540710": {
       "Type": "AWS::DynamoDB::Table",
@@ -31,7 +32,6 @@
             "KeyType": "RANGE"
           }
         ],
-        "BillingMode": "PAY_PER_REQUEST",
         "AttributeDefinitions": [
           {
             "AttributeName": "hashKey",
@@ -54,6 +54,7 @@
             "AttributeType": "N"
           }
         ],
+        "BillingMode": "PAY_PER_REQUEST",
         "GlobalSecondaryIndexes": [
           {
             "IndexName": "GSI-PartitionKeyOnly",
@@ -241,7 +242,8 @@
           "AttributeName": "timeToLive",
           "Enabled": true
         }
-      }
+      },
+      "DeletionPolicy": "Delete"
     },
     "TableWithGlobalSecondaryIndexCC8E841E": {
       "Type": "AWS::DynamoDB::Table",
@@ -277,7 +279,8 @@
             }
           }
         ]
-      }
+      },
+      "DeletionPolicy": "Delete"
     },
     "TableWithLocalSecondaryIndex4DA3D08F": {
       "Type": "AWS::DynamoDB::Table",
@@ -325,7 +328,8 @@
             }
           }
         ]
-      }
+      },
+      "DeletionPolicy": "Delete"
     }
   }
 }
