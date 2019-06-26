@@ -2,7 +2,7 @@ import '@aws-cdk/assert/jest';
 import lambda = require('@aws-cdk/aws-lambda');
 import sns = require('@aws-cdk/aws-sns');
 import sqs = require('@aws-cdk/aws-sqs');
-import { Stack, SecretValue } from '@aws-cdk/core';
+import { SecretValue, Stack } from '@aws-cdk/core';
 import subs = require('../lib');
 
 // tslint:disable:object-literal-key-quotes
