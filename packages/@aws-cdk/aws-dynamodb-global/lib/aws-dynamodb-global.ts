@@ -47,7 +47,8 @@ export class GlobalTable extends cdk.Construct {
     // And no way to set a default value in an interface
     const stackProps: dynamodb.TableProps = {
       ...props,
-      stream: dynamodb.StreamViewType.NEW_AND_OLD_IMAGES
+      removalPolicy: props.removalPolicy,
+      stream: dynamodb.StreamViewType.NEW_AND_OLD_IMAGES,
     };
 
     // here we loop through the configured regions.

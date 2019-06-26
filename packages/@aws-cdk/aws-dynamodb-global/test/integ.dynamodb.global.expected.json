@@ -24,7 +24,8 @@
             "StreamViewType": "NEW_AND_OLD_IMAGES"
           },
           "TableName": "integrationtest"
-        }
+        },
+        "DeletionPolicy": "Retain"
       }
     }
   },
@@ -53,7 +54,8 @@
             "StreamViewType": "NEW_AND_OLD_IMAGES"
           },
           "TableName": "integrationtest"
-        }
+        },
+        "DeletionPolicy": "Retain"
       }
     }
   },
@@ -82,7 +84,8 @@
             "StreamViewType": "NEW_AND_OLD_IMAGES"
           },
           "TableName": "integrationtest"
-        }
+        },
+        "DeletionPolicy": "Retain"
       }
     }
   },
