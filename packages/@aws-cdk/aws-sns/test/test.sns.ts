@@ -228,24 +228,6 @@ export = {
     test.done();
   },
 
-  'addSubscription fails if both "scope" and "subscriberId" are not defined'(test: Test) {
-    // GIVEN
-    const stack = new Stack();
-    const topic = new Topic(stack, 'Topic');
-
-    // THEN
-    test.throws(() => {
-      topic.addSubscription({
-        bind: () => ({
-          protocol: SubscriptionProtocol.HTTP,
-          endpoint: 'http://foo/bar',
-        })
-      });
-    }, /Cannot create subscription with neither scope nor subscriberId/);
-
-    test.done();
-  },
-
   'subscription is created under the topic scope by default'(test: Test) {
     // GIVEN
     const stack = new Stack();
@@ -277,7 +259,8 @@ export = {
       bind: () => ({
         protocol: SubscriptionProtocol.HTTP,
         endpoint: 'http://foo/bar',
-        scope: stack2
+        subscriberScope: stack2,
+        subscriberId: 'subscriberId'
       })
     });
 

@@ -7,16 +7,6 @@ import { ITopic } from './topic-base';
  */
 export interface TopicSubscriptionConfig extends SubscriptionOptions {
   /**
-   * The id of the subscriber. Will be used as the id for the subscription in
-   * the scope defined by `scope`.
-   *
-   * @default - if `scope` is defined, the default for this will be to use the
-   * topic's unique ID. If `scope` is not defined, this field cannot be
-   * undefined.
-   */
-  readonly subscriberId?: string;
-
-  /**
    * The scope in which to create the SNS subscription resource. Normally you'd
    * want the subscription to be created on the consuming stack because the
    * topic is usually referenced by the consumer's resource policy (e.g. SQS
@@ -26,7 +16,14 @@ export interface TopicSubscriptionConfig extends SubscriptionOptions {
    *
    * @default - use the topic as the scope of the subscription, in which case `subscriberId` must be defined.
    */
-  readonly scope?: Construct;
+  readonly subscriberScope?: Construct;
+
+  /**
+   * The id of the SNS subscription resource created under `scope`. In most
+   * cases, it is recommended to use the `uniqueId` of the topic you are
+   * subscribing to.
+   */
+  readonly subscriberId: string;
 }
 
 /**

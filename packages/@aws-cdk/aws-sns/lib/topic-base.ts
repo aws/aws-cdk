@@ -58,11 +58,8 @@ export abstract class TopicBase extends Resource implements ITopic {
   public addSubscription(subscription: ITopicSubscription) {
     const subscriptionConfig = subscription.bind(this);
 
-    const scope = subscriptionConfig.scope || this;
-    const id = subscriptionConfig.subscriberId || this.node.uniqueId;
-    if (scope === this && id === this.node.uniqueId) {
-      throw new Error(`Cannot create subscription with neither scope nor subscriberId`);
-    }
+    const scope = subscriptionConfig.subscriberScope || this;
+    const id = subscriptionConfig.subscriberId;
 
     // We use the subscriber's id as the construct id. There's no meaning
     // to subscribing the same subscriber twice on the same topic.

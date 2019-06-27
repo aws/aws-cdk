@@ -30,7 +30,7 @@ export class LambdaSubscription implements sns.ITopicSubscription {
     });
 
     return {
-      scope: this.fn,
+      subscriberScope: this.fn,
       subscriberId: topic.node.id,
       endpoint: this.fn.functionArn,
       protocol: sns.SubscriptionProtocol.LAMBDA,

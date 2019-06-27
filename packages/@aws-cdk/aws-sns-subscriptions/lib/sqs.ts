@@ -44,7 +44,7 @@ export class SqsSubscription implements sns.ITopicSubscription {
     }));
 
     return {
-      scope: this.queue,
+      subscriberScope: this.queue,
       subscriberId: topic.node.uniqueId,
       endpoint: this.queue.queueArn,
       protocol: sns.SubscriptionProtocol.SQS,
