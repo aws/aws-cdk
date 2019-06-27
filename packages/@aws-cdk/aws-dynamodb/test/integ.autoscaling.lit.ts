@@ -6,7 +6,8 @@ const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-cdk-dynamodb');
 
 const table = new dynamodb.Table(stack, 'Table', {
-  partitionKey: { name: 'hashKey', type: dynamodb.AttributeType.STRING }
+  partitionKey: { name: 'hashKey', type: dynamodb.AttributeType.STRING },
+  removalPolicy: cdk.RemovalPolicy.DESTROY,
 });
 
 /// !show
