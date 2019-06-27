@@ -41,13 +41,7 @@
                 ]
             }
         },
-        "MyFirstTopic0ED1F8A4": {
-            "Type": "AWS::SNS::Topic",
-            "Properties": {
-                "DisplayName": "My First Topic Yeah"
-            }
-        },
-        "MyFirstTopicMyFirstQueue2028650A": {
+        "MyFirstQueuetestMyFirstTopic4B48EB90A3428EB7": {
             "Type": "AWS::SNS::Subscription",
             "Properties": {
                 "Protocol": "sqs",
@@ -60,6 +54,12 @@
                         "Arn"
                     ]
                 }
+            }
+        },
+        "MyFirstTopic0ED1F8A4": {
+            "Type": "AWS::SNS::Topic",
+            "Properties": {
+                "DisplayName": "My First Topic Yeah"
             }
         },
         "BucketsBucket04F23AD6D": {
