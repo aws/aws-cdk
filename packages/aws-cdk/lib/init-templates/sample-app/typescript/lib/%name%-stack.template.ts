@@ -1,5 +1,5 @@
 import sns = require('@aws-cdk/aws-sns');
-const subs = require('@aws-cdk/aws-sns-subscriptions');
+import subs = require('@aws-cdk/aws-sns-subscriptions');
 import sqs = require('@aws-cdk/aws-sqs');
 import cdk = require('@aws-cdk/core');
 
@@ -8,7 +8,7 @@ export class %name.PascalCased%Stack extends cdk.Stack {
     super(scope, id, props);
 
     const queue = new sqs.Queue(this, '%name.PascalCased%Queue', {
-      visibilityTimeoutSec: 300
+      visibilityTimeout: cdk.Duration.seconds(300)
     });
 
     const topic = new sns.Topic(this, '%name.PascalCased%Topic');
