@@ -5,6 +5,8 @@ import { CfnAccount, CfnRestApi } from './apigateway.generated';
 import { Deployment } from './deployment';
 import { Integration } from './integration';
 import { Method, MethodOptions } from './method';
+import { Model, ModelOptions } from './model';
+import { RequestValidator, RequestValidatorOptions } from './requestvalidator';
 import { IResource, ResourceBase, ResourceOptions } from './resource';
 import { Stage, StageOptions } from './stage';
 import { UsagePlan, UsagePlanProps } from './usage-plan';
@@ -212,7 +214,7 @@ export class RestApi extends Resource implements IRestApi {
       endpointConfiguration: props.endpointTypes ? { types: props.endpointTypes } : undefined,
       apiKeySourceType: props.apiKeySourceType,
       cloneFrom: props.cloneFrom ? props.cloneFrom.restApiId : undefined,
-      parameters: props.parameters,
+      parameters: props.parameters
     });
 
     this.restApiId = resource.ref;
@@ -269,6 +271,26 @@ export class RestApi extends Resource implements IRestApi {
   public addApiKey(id: string): IApiKey {
     return new ApiKey(this, id, {
       resources: [this]
+    });
+  }
+
+  /**
+   * Adds a new model.
+   */
+  public addModel(id: string, props: ModelOptions): Model {
+    return new Model(this, id, {
+      ...props,
+      restApi: this
+    });
+  }
+
+  /**
+   * Adds a new model.
+   */
+  public addRequestValidator(id: string, props: RequestValidatorOptions): RequestValidator {
+    return new RequestValidator(this, id, {
+      ...props,
+      restApi: this
     });
   }
 
