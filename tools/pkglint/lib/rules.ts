@@ -242,8 +242,12 @@ export class StabilitySetting extends ValidationRule {
       case 'stable':
         return _div(
           { label: 'Stable', color: 'success' },
-          'This API is subject to the Semantic Versioning model. It will not be subject to',
-          'non-backward compatible changes or removal in a subsequent patch or feature release.'
+          '**This is a _developer preview_ (public beta) module. Releases might lack important features and might have',
+          'future breaking changes.**',
+          // Commenting out the below because of developer preview in effect (it sends mixed messages)
+          // '',
+          // 'This API is subject to the Semantic Versioning model. It will not be subject to',
+          // 'non-backward compatible changes or removal in a subsequent patch or feature release.'
         );
       default:
         return undefined;
@@ -485,13 +489,12 @@ function cdkModuleName(name: string) {
   const pythonName = name.replace(/^@/g, "").replace(/\//g, ".").split(".").map(caseUtils.kebab).join(".");
 
   return {
-    javaPackage: `software.amazon.awscdk${(isCdkPkg || isLegacyCdkPkg) ? '' : `.${name.replace(/^aws-/, 'services-').replace(/-/g, '.')}`}`,
+    javaPackage: `software.amazon.awscdk${isLegacyCdkPkg ? '' : `.${name.replace(/^aws-/, 'services-').replace(/-/g, '.')}`}`,
     mavenArtifactId:
-        isCdkPkg ? 'core'
-      : isLegacyCdkPkg ? 'cdk'
-      : name.startsWith('aws-') || name.startsWith('alexa-')
-          ? name.replace(/^aws-/, '')
-          : `cdk-${name}`,
+      isLegacyCdkPkg ? 'cdk'
+        : isCdkPkg ? 'core'
+          : name.startsWith('aws-') || name.startsWith('alexa-') ? name.replace(/^aws-/, '')
+            : `cdk-${name}`,
     dotnetNamespace: `Amazon.CDK${isCdkPkg ? '' : `.${dotnetSuffix}`}`,
     python: {
       distName: `aws-cdk.${pythonName}`,

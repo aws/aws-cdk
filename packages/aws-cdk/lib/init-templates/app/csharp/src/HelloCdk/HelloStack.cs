@@ -13,7 +13,7 @@ namespace HelloCdk
             // The CDK includes built-in constructs for most resource types, such as Queues and Topics.
             var queue = new Queue(this, "MyFirstQueue", new QueueProps
             {
-                VisibilityTimeoutSec = 300
+                VisibilityTimeout = Duration.Seconds(300)
             });
 
             var topic = new Topic(this, "MyFirstTopic", new TopicProps
