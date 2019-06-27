@@ -306,22 +306,7 @@
         "FargateClusterDefaultAutoScalingGroupDrainECSHookFunctionServiceRole7FEDCD32"
       ]
     },
-    "FargateClusterDefaultAutoScalingGroupLifecycleHookDrainHookTopicFunctionE74B772A": {
-      "Type": "AWS::SNS::Subscription",
-      "Properties": {
-        "Protocol": "lambda",
-        "TopicArn": {
-          "Ref": "FargateClusterDefaultAutoScalingGroupLifecycleHookDrainHookTopic49146C10"
-        },
-        "Endpoint": {
-          "Fn::GetAtt": [
-            "FargateClusterDefaultAutoScalingGroupDrainECSHookFunctionE3D5BEE8",
-            "Arn"
-          ]
-        }
-      }
-    },
-    "FargateClusterDefaultAutoScalingGroupDrainECSHookFunctionTopicA1F1F9E9": {
+    "FargateClusterDefaultAutoScalingGroupDrainECSHookFunctionAllowInvokeawsecsinteg2FargateClusterDefaultAutoScalingGroupLifecycleHookDrainHookTopic9C6EC468C75B1F21": {
       "Type": "AWS::Lambda::Permission",
       "Properties": {
         "Action": "lambda:InvokeFunction",
@@ -334,6 +319,21 @@
         "Principal": "sns.amazonaws.com",
         "SourceArn": {
           "Ref": "FargateClusterDefaultAutoScalingGroupLifecycleHookDrainHookTopic49146C10"
+        }
+      }
+    },
+    "FargateClusterDefaultAutoScalingGroupDrainECSHookFunctionTopic37856E82": {
+      "Type": "AWS::SNS::Subscription",
+      "Properties": {
+        "Protocol": "lambda",
+        "TopicArn": {
+          "Ref": "FargateClusterDefaultAutoScalingGroupLifecycleHookDrainHookTopic49146C10"
+        },
+        "Endpoint": {
+          "Fn::GetAtt": [
+            "FargateClusterDefaultAutoScalingGroupDrainECSHookFunctionE3D5BEE8",
+            "Arn"
+          ]
         }
       }
     },
@@ -600,6 +600,10 @@
       ],
       "DeletionPolicy": "Delete"
     },
+    "TaskDefTheContainerLogGroupD94C8EF5": {
+      "Type": "AWS::Logs::LogGroup",
+      "DeletionPolicy": "Retain"
+    },
     "TaskDefExecutionRoleB4775C97": {
       "Type": "AWS::IAM::Role",
       "Properties": {
@@ -686,10 +690,6 @@
           }
         ]
       }
-    },
-    "TaskDefTheContainerLogGroupD94C8EF5": {
-      "Type": "AWS::Logs::LogGroup",
-      "DeletionPolicy": "Retain"
     },
     "AdoptEcrRepositorydbc60defc59544bcaa5c28c95d68f62cServiceRoleD788AA17": {
       "Type": "AWS::IAM::Role",
