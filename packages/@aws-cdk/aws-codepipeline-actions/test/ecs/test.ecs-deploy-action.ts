@@ -65,6 +65,21 @@ export = {
 
       test.done();
     },
+
+    "sets the target service as the action's backing resource"(test: Test) {
+      const service = anyEcsService();
+      const artifact = new codepipeline.Artifact('Artifact');
+
+      const action = new cpactions.EcsDeployAction({
+        actionName: 'ECS',
+        service,
+        input: artifact
+      });
+
+      test.equal(action.actionProperties.resource, service);
+
+      test.done();
+    },
   },
 };
 

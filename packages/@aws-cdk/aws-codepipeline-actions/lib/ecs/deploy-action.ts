@@ -55,6 +55,7 @@ export class EcsDeployAction extends Action {
       provider: 'ECS',
       artifactBounds: deployArtifactBounds(),
       inputs: [determineInputArtifact(props)],
+      resource: props.service
     });
 
     this.props = props;
