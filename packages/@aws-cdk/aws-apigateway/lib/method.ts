@@ -4,6 +4,8 @@ import { IAuthorizer } from './authorizer';
 import { ConnectionType, Integration } from './integration';
 import { MockIntegration } from './integrations/mock';
 import { MethodResponse } from './methodresponse';
+import { IModel } from './model';
+import { IRequestValidator } from './requestvalidator';
 import { IResource } from './resource';
 import { RestApi } from './restapi';
 import { validateHttpMethod } from './util';
@@ -54,9 +56,17 @@ export interface MethodOptions {
    */
   readonly requestParameters?: { [param: string]: boolean };
 
-  // TODO:
-  // - RequestValidatorId
-  // - RequestModels
+  /**
+   * The resources that are used for the response's content type. Specify request
+   * models as key-value pairs (string-to-string mapping), with a content type
+   * as the key and a Model resource name as the value
+   */
+  readonly requestModels?: { [param: string]: IModel };
+
+  /**
+   * The ID of the associated request validator.
+   */
+  readonly requestValidator?: IRequestValidator;
 }
 
 export interface MethodProps {
@@ -119,6 +129,8 @@ export class Method extends Resource {
       requestParameters: options.requestParameters,
       integration: this.renderIntegration(props.integration),
       methodResponses: this.renderMethodResponses(options.methodResponses),
+      requestModels: this.renderRequestModels(options.requestModels),
+      requestValidatorId: options.requestValidator ? options.requestValidator.requestValidatorId : undefined
     };
 
     const resource = new CfnMethod(this, 'Resource', methodProps);
@@ -242,6 +254,22 @@ export class Method extends Resource {
 
       return methodResponseProp;
     });
+  }
+
+  private renderRequestModels(requestModels: { [param: string]: IModel } | undefined): { [param: string]: string } | undefined {
+    if (!requestModels) {
+      // Fall back to nothing
+      return undefined;
+    }
+
+    const models: {[param: string]: string} = {};
+    for (const contentType in requestModels) {
+      if (requestModels.hasOwnProperty(contentType)) {
+          models[contentType] = requestModels[contentType].modelId;
+      }
+    }
+
+    return models;
   }
 }
 
