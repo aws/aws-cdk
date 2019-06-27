@@ -56,7 +56,7 @@ To use GitHub as the source of a CodePipeline:
 
 ```typescript
 // Read the secret from ParameterStore
-const token = new cdk.SecretParameter(this, 'GitHubToken', { ssmParameter: 'my-github-token' });
+const token = cdk.SecretValue.ssmSecure('my-github-token','1');
 const sourceOutput = new codepipeline.Artifact();
 const sourceAction = new codepipeline_actions.GitHubSourceAction({
   actionName: 'GitHub_Source',
