@@ -155,6 +155,147 @@ plan.addApiStage({
 });
 ```
 
+### Working with models
+
+When you work with Lambda integrations that are not Proxy integrations, you
+have to define your models and mappings for the request, response, and integration.
+
+```ts
+const hello = new lambda.Function(this, 'hello', {
+  runtime: lambda.Runtime.Nodejs10x,
+  handler: 'hello.handler',
+  code: lambda.Code.asset('lambda')
+});
+
+const api = new apigateway.RestApi(this, 'hello-api', { });
+const resource = api.root.addResource('v1');
+```
+
+You can define more parameters on the integration to tune the behavior of API Gateway
+
+```ts
+const integration = new LambdaIntegration(hello, {
+  proxy: false,
+  requestParameters: {
+    // You can define mapping parameters from your method to your integration
+    // - Destination parameters (the key) are the integration parameters (used in mappings)
+    // - Source parameters (the value) are the source request parameters or expressions
+    // @see: https://docs.aws.amazon.com/apigateway/latest/developerguide/request-response-data-mappings.html
+    "integration.request.querystring.who": "method.request.querystring.who"
+  },
+  allowTestInvoke: true,
+  requestTemplates: {
+    // You can define a mapping that will build a payload for your integration, based
+    //  on the integration parameters that you have specified
+    // Check: https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-mapping-template-reference.html
+    "application/json": '{ "action": "sayHello", "pollId": "$util.escapeJavaScript($input.params(\'who\'))" }'
+  },
+  // This parameter defines the behavior of the engine is no suitable response template is found
+  passthroughBehavior: PassthroughBehavior.Never,
+  integrationResponses: [
+    {
+      // Successful response from the Lambda function, no filter defined
+      //  - the selectionPattern filter only tests the error message
+      // We will set the response status code to 200
+      statusCode: "200",
+      responseTemplates: {
+        // This template takes the "message" result from the Lambda function, adn embeds it in a JSON response
+        // Check https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-mapping-template-reference.html
+        "application/json": '{ "state": "ok", "greeting": "$util.escapeJavaScript($input.body)" }'
+      },
+      responseParameters: {
+        // We can map response parameters
+        // - Destination parameters (the key) are the response parameters (used in mappings)
+        // - Source parameters (the value) are the integration response parameters or expressions
+        'method.response.header.Content-Type': "'application/json'",
+        'method.response.header.Access-Control-Allow-Origin': "'*'",
+        'method.response.header.Access-Control-Allow-Credentials': "'true'"
+      }
+    },
+    {
+      // For errors, we check if the error message is not empty, get the error data
+      selectionPattern: '(\n|.)+',
+      // We will set the response status code to 200
+      statusCode: "400",
+      responseTemplates: {
+          "application/json": '{ "state": "error", "message": "$util.escapeJavaScript($input.path(\'$.errorMessage\'))" }'
+      },
+      responseParameters: {
+          'method.response.header.Content-Type': "'application/json'",
+          'method.response.header.Access-Control-Allow-Origin': "'*'",
+          'method.response.header.Access-Control-Allow-Credentials': "'true'"
+      }
+    }
+  ]
+});
+
+```
+
+You can define validation models for your responses (and requests)
+
+```ts
+// We define the JSON Schema for the transformed valid response
+const responseModel = api.addModel('ResponseModel', {
+  contentType: "application/json",
+  modelName: 'ResponseModel',
+  schema: { "$schema": "http://json-schema.org/draft-04/schema#", "title": "pollResponse", "type": "object", "properties": { "state": { "type": "string" }, "greeting": { "type": "string" } } }
+});
+
+// We define the JSON Schema for the transformed error response
+const errorResponseModel = api.addModel('ErrorResponseModel', {
+  contentType: "application/json",
+  modelName: 'ErrorResponseModel',
+  schema: { "$schema": "http://json-schema.org/draft-04/schema#", "title": "errorResponse", "type": "object", "properties": { "state": { "type": "string" }, "message": { "type": "string" } } }
+});
+
+```
+
+And reference all on your method definition.
+
+```ts
+// If you want to define parameter mappings for the request, you need a validator
+const validator = api.addRequestValidator('DefaultValidator', {
+  validateRequestBody: false,
+  validateRequestParameters: true
+});
+resource.addMethod('GET', integration, {
+  // We can mark the parameters as required
+  requestParameters: {
+    "method.request.querystring.who": true
+  },
+  // We need to set the validator for ensuring they are passed
+  requestValidator: validator,
+  methodResponses: [
+    {
+      // Successful response from the integration
+      statusCode: "200",
+      // Define what parameters are allowed or not
+      responseParameters: {
+        'method.response.header.Content-Type': true,
+        'method.response.header.Access-Control-Allow-Origin': true,
+        'method.response.header.Access-Control-Allow-Credentials': true
+      },
+      // Validate the schema on the response
+      responseModels: {
+        "application/json": responseModel
+      }
+    },
+    {
+      // Same thing for the error responses
+      statusCode: "400",
+      responseParameters: {
+        'method.response.header.Content-Type': true,
+        'method.response.header.Access-Control-Allow-Origin': true,
+        'method.response.header.Access-Control-Allow-Credentials': true
+      },
+      responseModels: {
+        "application/json": errorResponseModel
+      }
+    }
+  ]
+});
+```
+
 #### Default Integration and Method Options
 
 The `defaultIntegration` and `defaultMethodOptions` properties can be used to
@@ -259,12 +400,9 @@ to allow users revert the stage to an old deployment manually.
 
 ### Missing Features
 
-See [awslabs/aws-cdk#723](https://github.com/awslabs/aws-cdk/issues/723) for a
-list of missing features.
 
 ### Roadmap
 
-- [ ] Support defining REST API Models [#1695](https://github.com/awslabs/aws-cdk/issues/1695)
 
 ----
 

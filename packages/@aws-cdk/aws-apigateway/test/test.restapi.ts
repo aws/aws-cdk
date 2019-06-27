@@ -1,15 +1,15 @@
 import { expect, haveResource, haveResourceLike, ResourcePart } from '@aws-cdk/assert';
-import cdk = require('@aws-cdk/core');
-import { App, Stack } from '@aws-cdk/core';
+import { App, CfnElement, CfnResource, Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import apigateway = require('../lib');
+import { JsonSchemaType, JsonSchemaVersion } from '../lib';
 
 // tslint:disable:max-line-length
 
 export = {
   'minimal setup'(test: Test) {
     // GIVEN
-    const stack = new cdk.Stack();
+    const stack = new Stack();
 
     // WHEN
     const api = new apigateway.RestApi(stack, 'my-api');
@@ -100,12 +100,12 @@ export = {
     test.done();
   },
 
-  '"name" is defaulted to construct id'(test: Test) {
+  '"name" is defaulted to resource physical name'(test: Test) {
     // GIVEN
-    const stack = new cdk.Stack();
+    const stack = new Stack();
 
     // WHEN
-    const api = new apigateway.RestApi(stack, 'my-first-api', {
+    const api = new apigateway.RestApi(stack, 'restapi', {
       deploy: false,
       cloudWatchRole: false,
     });
@@ -114,7 +114,7 @@ export = {
 
     // THEN
     expect(stack).to(haveResource('AWS::ApiGateway::RestApi', {
-      Name: "my-first-api"
+      Name: 'restapi'
     }));
 
     test.done();
@@ -137,7 +137,7 @@ export = {
 
   '"addResource" can be used on "IRestApiResource" to form a tree'(test: Test) {
     // GIVEN
-    const stack = new cdk.Stack();
+    const stack = new Stack();
     const api = new apigateway.RestApi(stack, 'restapi', {
       deploy: false,
       cloudWatchRole: false,
@@ -172,7 +172,7 @@ export = {
 
   '"addResource" allows configuration of proxy paths'(test: Test) {
     // GIVEN
-    const stack = new cdk.Stack();
+    const stack = new Stack();
     const api = new apigateway.RestApi(stack, 'restapi', {
       deploy: false,
       cloudWatchRole: false,
@@ -193,7 +193,7 @@ export = {
 
   '"addMethod" can be used to add methods to resources'(test: Test) {
     // GIVEN
-    const stack = new cdk.Stack();
+    const stack = new Stack();
 
     const api = new apigateway.RestApi(stack, 'restapi', { deploy: false, cloudWatchRole: false });
     const r1 = api.root.addResource('r1');
@@ -269,7 +269,7 @@ export = {
 
   'resourcePath returns the full path of the resource within the API'(test: Test) {
     // GIVEN
-    const stack = new cdk.Stack();
+    const stack = new Stack();
     const api = new apigateway.RestApi(stack, 'restapi');
 
     // WHEN
@@ -291,7 +291,7 @@ export = {
 
   'resource path part validation'(test: Test) {
     // GIVEN
-    const stack = new cdk.Stack();
+    const stack = new Stack();
     const api = new apigateway.RestApi(stack, 'restapi');
 
     // THEN
@@ -305,7 +305,7 @@ export = {
 
   'fails if "deployOptions" is set with "deploy" disabled'(test: Test) {
     // GIVEN
-    const stack = new cdk.Stack();
+    const stack = new Stack();
 
     // THEN
     test.throws(() => new apigateway.RestApi(stack, 'myapi', {
@@ -318,7 +318,7 @@ export = {
 
   'CloudWatch role is created for API Gateway'(test: Test) {
     // GIVEN
-    const stack = new cdk.Stack();
+    const stack = new Stack();
     const api = new apigateway.RestApi(stack, 'myapi');
     api.root.addMethod('GET');
 
@@ -330,7 +330,7 @@ export = {
 
   'fromRestApiId'(test: Test) {
     // GIVEN
-    const stack = new cdk.Stack();
+    const stack = new Stack();
 
     // WHEN
     const imported = apigateway.RestApi.fromRestApiId(stack, 'imported-api', 'api-rxt4498f');
@@ -342,7 +342,7 @@ export = {
 
   '"url" and "urlForPath" return the URL endpoints of the deployed API'(test: Test) {
     // GIVEN
-    const stack = new cdk.Stack();
+    const stack = new Stack();
     const api = new apigateway.RestApi(stack, 'api');
     api.root.addMethod('GET');
 
@@ -374,7 +374,7 @@ export = {
 
   '"urlForPath" would not work if there is no deployment'(test: Test) {
     // GIVEN
-    const stack = new cdk.Stack();
+    const stack = new Stack();
     const api = new apigateway.RestApi(stack, 'api', { deploy: false });
     api.root.addMethod('GET');
 
@@ -386,7 +386,7 @@ export = {
 
   '"urlForPath" requires that path will begin with "/"'(test: Test) {
     // GIVEN
-    const stack = new cdk.Stack();
+    const stack = new Stack();
     const api = new apigateway.RestApi(stack, 'api');
     api.root.addMethod('GET');
 
@@ -397,7 +397,7 @@ export = {
 
   '"executeApiArn" returns the execute-api ARN for a resource/method'(test: Test) {
     // GIVEN
-    const stack = new cdk.Stack();
+    const stack = new Stack();
     const api = new apigateway.RestApi(stack, 'api');
     api.root.addMethod('GET');
 
@@ -421,7 +421,7 @@ export = {
 
   '"executeApiArn" path must begin with "/"'(test: Test) {
     // GIVEN
-    const stack = new cdk.Stack();
+    const stack = new Stack();
     const api = new apigateway.RestApi(stack, 'api');
     api.root.addMethod('GET');
 
@@ -432,7 +432,7 @@ export = {
 
   '"executeApiArn" will convert ANY to "*"'(test: Test) {
     // GIVEN
-    const stack = new cdk.Stack();
+    const stack = new Stack();
 
     const api = new apigateway.RestApi(stack, 'api');
     const method = api.root.addMethod('ANY');
@@ -456,7 +456,7 @@ export = {
 
   '"endpointTypes" can be used to specify endpoint configuration for the api'(test: Test) {
     // GIVEN
-    const stack = new cdk.Stack();
+    const stack = new Stack();
 
     // WHEN
     const api = new apigateway.RestApi(stack, 'api', {
@@ -479,7 +479,7 @@ export = {
 
   '"cloneFrom" can be used to clone an existing API'(test: Test) {
     // GIVEN
-    const stack = new cdk.Stack();
+    const stack = new Stack();
     const cloneFrom = apigateway.RestApi.fromRestApiId(stack, 'RestApi', 'foobar');
 
     // WHEN
@@ -499,10 +499,10 @@ export = {
 
   'allow taking a dependency on the rest api (includes deployment and stage)'(test: Test) {
     // GIVEN
-    const stack = new cdk.Stack();
+    const stack = new Stack();
     const api = new apigateway.RestApi(stack, 'myapi');
     api.root.addMethod('GET');
-    const resource = new cdk.CfnResource(stack, 'DependsOnRestApi', { type: 'My::Resource' });
+    const resource = new CfnResource(stack, 'DependsOnRestApi', { type: 'My::Resource' });
 
     // WHEN
     resource.node.addDependency(api);
@@ -524,7 +524,7 @@ export = {
 
   'defaultIntegration and defaultMethodOptions can be used at any level'(test: Test) {
     // GIVEN
-    const stack = new cdk.Stack();
+    const stack = new Stack();
     const rootInteg = new apigateway.AwsIntegration({
       service: 's3',
       action: 'GetObject'
@@ -601,4 +601,70 @@ export = {
 
     test.done();
   },
+
+  'addModel is supported'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+    const api = new apigateway.RestApi(stack, 'myapi');
+    api.root.addMethod('OPTIONS');
+
+    // WHEN
+    api.addModel('model', {
+      schema: {
+        schema: JsonSchemaVersion.DRAFT4,
+        title: "test",
+        type: JsonSchemaType.OBJECT,
+        properties: { message: { type: JsonSchemaType.STRING } }
+      }
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::ApiGateway::Model', {
+      RestApiId: { Ref: stack.getLogicalId(api.node.findChild('Resource') as CfnElement) },
+      Schema: {
+        $schema: "http://json-schema.org/draft-04/schema#",
+        title: "test",
+        type: "object",
+        properties: { message: { type: "string" } }
+      }
+    }));
+
+    test.done();
+  },
+
+  'addRequestValidator is supported'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+    const api = new apigateway.RestApi(stack, 'myapi');
+    api.root.addMethod('OPTIONS');
+
+    // WHEN
+    api.addRequestValidator('params-validator', {
+      requestValidatorName: 'Parameters',
+      validateRequestBody: false,
+      validateRequestParameters: true
+    });
+    api.addRequestValidator('body-validator', {
+      requestValidatorName: "Body",
+      validateRequestBody: true,
+      validateRequestParameters: false
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::ApiGateway::RequestValidator', {
+      RestApiId: { Ref: stack.getLogicalId(api.node.findChild('Resource') as CfnElement) },
+      Name: "Parameters",
+      ValidateRequestBody: false,
+      ValidateRequestParameters: true
+    }));
+
+    expect(stack).to(haveResource('AWS::ApiGateway::RequestValidator', {
+      RestApiId: { Ref: stack.getLogicalId(api.node.findChild('Resource') as CfnElement) },
+      Name: "Body",
+      ValidateRequestBody: true,
+      ValidateRequestParameters: false
+    }));
+
+    test.done();
+  }
 };
