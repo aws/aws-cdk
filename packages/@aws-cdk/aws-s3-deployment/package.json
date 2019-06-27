@@ -83,6 +83,7 @@
   },
   "dependencies": {
     "@aws-cdk/aws-cloudformation": "^0.36.1",
+    "@aws-cdk/aws-cloudfront": "^0.36.1",
     "@aws-cdk/aws-iam": "^0.36.1",
     "@aws-cdk/aws-lambda": "^0.36.1",
     "@aws-cdk/aws-s3": "^0.36.1",
@@ -92,6 +93,7 @@
   "homepage": "https://github.com/awslabs/aws-cdk",
   "peerDependencies": {
     "@aws-cdk/aws-cloudformation": "^0.36.1",
+    "@aws-cdk/aws-cloudfront": "^0.36.1",
     "@aws-cdk/aws-iam": "^0.36.1",
     "@aws-cdk/aws-lambda": "^0.36.1",
     "@aws-cdk/aws-s3": "^0.36.1",

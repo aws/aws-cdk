@@ -1,3 +1,4 @@
+import cloudfront = require('@aws-cdk/aws-cloudfront');
 import s3 = require('@aws-cdk/aws-s3');
 import cdk = require('@aws-cdk/core');
 import path = require('path');
@@ -27,6 +28,26 @@ class TestBucketDeployment extends cdk.Stack {
       destinationKeyPrefix: 'deploy/here/',
       retainOnDelete: false, // default is true, which will block the integration test cleanup
     });
+
+    const bucket3 = new s3.Bucket(this, 'Destination3');
+    const distribution = new cloudfront.CloudFrontWebDistribution(this, 'Distribution', {
+      originConfigs: [
+        {
+          s3OriginSource: {
+            s3BucketSource: bucket3
+          },
+          behaviors : [ {isDefaultBehavior: true}]
+        }
+      ]
+    });
+
+    new s3deploy.BucketDeployment(this, 'DeployWithInvalidation', {
+      source: s3deploy.Source.asset(path.join(__dirname, 'my-website')),
+      destinationBucket: bucket2,
+      distribution,
+      distributionPaths: ['/images/*.png']
+    });
+
   }
 }
 
