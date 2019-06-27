@@ -1,8 +1,10 @@
 import { expect, haveResource } from '@aws-cdk/assert';
 import iam = require('@aws-cdk/aws-iam');
 import cdk = require('@aws-cdk/core');
+import { App, Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import sns = require('../lib');
+import { SubscriptionProtocol, Topic } from '../lib';
 
 // tslint:disable:object-literal-key-quotes
 
@@ -223,6 +225,48 @@ export = {
       statistic: 'Average'
     });
 
+    test.done();
+  },
+
+  'subscription is created under the topic scope by default'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+    const topic = new Topic(stack, 'Topic');
+
+    // WHEN
+    topic.addSubscription({
+      bind: () => ({
+        protocol: SubscriptionProtocol.HTTP,
+        endpoint: 'http://foo/bar',
+        subscriberId: 'my-subscription'
+      })
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::SNS::Subscription'));
+    test.done();
+  },
+
+  'if "scope" is defined, subscription will be created under that scope'(test: Test) {
+    // GIVEN
+    const app = new App();
+    const stack = new Stack(app, 'A');
+    const stack2 = new Stack(app, 'B');
+    const topic = new Topic(stack, 'Topic');
+
+    // WHEN
+    topic.addSubscription({
+      bind: () => ({
+        protocol: SubscriptionProtocol.HTTP,
+        endpoint: 'http://foo/bar',
+        subscriberScope: stack2,
+        subscriberId: 'subscriberId'
+      })
+    });
+
+    // THEN
+    expect(stack).notTo(haveResource('AWS::SNS::Subscription'));
+    expect(stack2).to(haveResource('AWS::SNS::Subscription'));
     test.done();
   }
 };

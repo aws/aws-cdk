@@ -58,13 +58,16 @@ export abstract class TopicBase extends Resource implements ITopic {
   public addSubscription(subscription: ITopicSubscription) {
     const subscriptionConfig = subscription.bind(this);
 
+    const scope = subscriptionConfig.subscriberScope || this;
+    const id = subscriptionConfig.subscriberId;
+
     // We use the subscriber's id as the construct id. There's no meaning
     // to subscribing the same subscriber twice on the same topic.
-    if (this.node.tryFindChild(subscriptionConfig.subscriberId)) {
-      throw new Error(`A subscription between the topic ${this.node.id} and the subscriber ${subscriptionConfig.subscriberId} already exists`);
+    if (scope.node.tryFindChild(id)) {
+      throw new Error(`A subscription with id "${id}" already exists under the scope ${scope.node.path}`);
     }
 
-    new Subscription(this, subscriptionConfig.subscriberId, {
+    new Subscription(scope, id, {
       topic: this,
       ...subscriptionConfig,
     });

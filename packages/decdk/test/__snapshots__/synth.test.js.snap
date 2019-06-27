@@ -979,6 +979,22 @@ Object {
     },
   },
   "Resources": Object {
+    "HelloWorldFunctionAllowInvokelambdaeventsMyTopic988FAB3E43035740": Object {
+      "Properties": Object {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": Object {
+          "Fn::GetAtt": Array [
+            "HelloWorldFunctionB2AB6E79",
+            "Arn",
+          ],
+        },
+        "Principal": "sns.amazonaws.com",
+        "SourceArn": Object {
+          "Ref": "MyTopic86869434",
+        },
+      },
+      "Type": "AWS::Lambda::Permission",
+    },
     "HelloWorldFunctionApiPermissionGEThello0F001828": Object {
       "Properties": Object {
         "Action": "lambda:InvokeFunction",
@@ -1211,21 +1227,20 @@ Object {
       },
       "Type": "AWS::Lambda::EventSourceMapping",
     },
-    "HelloWorldFunctionMyTopic7834422D": Object {
+    "HelloWorldFunctionMyTopic90F6E0EF": Object {
       "Properties": Object {
-        "Action": "lambda:InvokeFunction",
-        "FunctionName": Object {
+        "Endpoint": Object {
           "Fn::GetAtt": Array [
             "HelloWorldFunctionB2AB6E79",
             "Arn",
           ],
         },
-        "Principal": "sns.amazonaws.com",
-        "SourceArn": Object {
+        "Protocol": "lambda",
+        "TopicArn": Object {
           "Ref": "MyTopic86869434",
         },
       },
-      "Type": "AWS::Lambda::Permission",
+      "Type": "AWS::SNS::Subscription",
     },
     "HelloWorldFunctionServiceRole8E0BD458": Object {
       "Properties": Object {
@@ -1305,21 +1320,6 @@ Object {
     },
     "MyTopic86869434": Object {
       "Type": "AWS::SNS::Topic",
-    },
-    "MyTopicHelloWorldFunction831B106E": Object {
-      "Properties": Object {
-        "Endpoint": Object {
-          "Fn::GetAtt": Array [
-            "HelloWorldFunctionB2AB6E79",
-            "Arn",
-          ],
-        },
-        "Protocol": "lambda",
-        "TopicArn": Object {
-          "Ref": "MyTopic86869434",
-        },
-      },
-      "Type": "AWS::SNS::Subscription",
     },
     "TableCD117FA1": Object {
       "DeletionPolicy": "Retain",
@@ -1549,6 +1549,22 @@ Object {
     },
   },
   "Resources": Object {
+    "LambdaAllowInvokelambdatopicTopic702108A3CE1309A3": Object {
+      "Properties": Object {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": Object {
+          "Fn::GetAtt": Array [
+            "LambdaD247545B",
+            "Arn",
+          ],
+        },
+        "Principal": "sns.amazonaws.com",
+        "SourceArn": Object {
+          "Ref": "TopicBFC7AF6E",
+        },
+      },
+      "Type": "AWS::Lambda::Permission",
+    },
     "LambdaD247545B": Object {
       "DependsOn": Array [
         "LambdaServiceRoleA8ED4D3B",
@@ -1644,26 +1660,7 @@ Object {
       },
       "Type": "AWS::IAM::Role",
     },
-    "LambdaTopic59002359": Object {
-      "Properties": Object {
-        "Action": "lambda:InvokeFunction",
-        "FunctionName": Object {
-          "Fn::GetAtt": Array [
-            "LambdaD247545B",
-            "Arn",
-          ],
-        },
-        "Principal": "sns.amazonaws.com",
-        "SourceArn": Object {
-          "Ref": "TopicBFC7AF6E",
-        },
-      },
-      "Type": "AWS::Lambda::Permission",
-    },
-    "TopicBFC7AF6E": Object {
-      "Type": "AWS::SNS::Topic",
-    },
-    "TopicLambda3DD31D45": Object {
+    "LambdaTopicCCB0C2A3": Object {
       "Properties": Object {
         "Endpoint": Object {
           "Fn::GetAtt": Array [
@@ -1677,6 +1674,9 @@ Object {
         },
       },
       "Type": "AWS::SNS::Subscription",
+    },
+    "TopicBFC7AF6E": Object {
+      "Type": "AWS::SNS::Topic",
     },
   },
 }
