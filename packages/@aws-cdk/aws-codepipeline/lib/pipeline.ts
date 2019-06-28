@@ -308,7 +308,7 @@ export class Pipeline extends PipelineBase {
     this.ensureReplicationBucketExistsFor(action.actionProperties.region);
 
     // get the role for the given action
-    const actionRole = this.getRoleForAction(stage, action);
+    const actionRole = this.getRoleForAction(stage, action, actionScope);
 
     // bind the Action
     const actionDescriptor = action.bind(actionScope, stage, {
@@ -333,14 +333,6 @@ export class Pipeline extends PipelineBase {
       ...this.validateStages(),
       ...this.validateArtifacts(),
     ];
-  }
-
-  private requireRegion(): string {
-    const region = Stack.of(this).region;
-    if (Token.isUnresolved(region)) {
-      throw new Error(`You need to specify an explicit region when using CodePipeline's cross-region support`);
-    }
-    return region;
   }
 
   private ensureReplicationBucketExistsFor(region?: string) {
@@ -395,13 +387,17 @@ export class Pipeline extends PipelineBase {
    * @param stage the stage the action belongs to
    * @param action the action to return/create a role for
    */
-  private getRoleForAction(stage: Stage, action: IAction): iam.IRole | undefined {
-    let actionRole: iam.IRole | undefined;
+  private getRoleForAction(stage: Stage, action: IAction, actionScope: Construct): iam.IRole | undefined {
+    const pipelineStack = Stack.of(this);
 
+    let actionRole: iam.IRole | undefined;
     if (action.actionProperties.role) {
+      if (!this.isAwsOwned(action)) {
+        throw new Error("Specifying a Role is not supported for actions with an owner different than 'AWS' - " +
+          `got '${action.actionProperties.owner}' (Action: '${action.actionProperties.actionName}' in Stage: '${stage.stageName}')`);
+      }
       actionRole = action.actionProperties.role;
     } else if (action.actionProperties.resource) {
-      const pipelineStack = Stack.of(this);
       const resourceStack = Stack.of(action.actionProperties.resource);
       // check if resource is from a different account
       if (pipelineStack.environment !== resourceStack.environment) {
@@ -425,6 +421,13 @@ export class Pipeline extends PipelineBase {
       }
     }
 
+    if (!actionRole && this.isAwsOwned(action)) {
+      // generate a Role for this specific Action
+      actionRole = new iam.Role(actionScope, 'CodePipelineActionRole', {
+        assumedBy: new iam.AccountPrincipal(pipelineStack.account),
+      });
+    }
+
     // the pipeline role needs assumeRole permissions to the action role
     if (actionRole) {
       this.role.addToPolicy(new iam.PolicyStatement({
@@ -434,6 +437,11 @@ export class Pipeline extends PipelineBase {
     }
 
     return actionRole;
+  }
+
+  private isAwsOwned(action: IAction) {
+    const owner = action.actionProperties.owner;
+    return !owner || owner === 'AWS';
   }
 
   private getArtifactBucketFromProps(props: PipelineProps): s3.IBucket | undefined {
@@ -591,6 +599,14 @@ export class Pipeline extends PipelineBase {
 
   private renderStages(): CfnPipeline.StageDeclarationProperty[] {
     return this.stages.map(stage => stage.render());
+  }
+
+  private requireRegion(): string {
+    const region = Stack.of(this).region;
+    if (Token.isUnresolved(region)) {
+      throw new Error(`You need to specify an explicit region when using CodePipeline's cross-region support`);
+    }
+    return region;
   }
 }
 

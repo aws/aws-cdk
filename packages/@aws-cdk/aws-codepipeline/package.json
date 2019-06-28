@@ -101,6 +101,7 @@
       "export:@aws-cdk/aws-codepipeline.IPipeline",
       "import-props-interface:@aws-cdk/aws-codepipeline.PipelineImportProps",
       "no-unused-type:@aws-cdk/aws-codepipeline.CommonActionProps",
+      "no-unused-type:@aws-cdk/aws-codepipeline.CommonAwsActionProps",
       "resource-attribute:@aws-cdk/aws-codepipeline.IPipeline.pipelineVersion",
       "from-method:@aws-cdk/aws-codepipeline.Pipeline"
     ]

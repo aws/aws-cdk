@@ -8,7 +8,7 @@ import { deployArtifactBounds } from '../common';
 /**
  * Construction properties of the {@link CodeDeployServerDeployAction CodeDeploy server deploy CodePipeline Action}.
  */
-export interface CodeDeployServerDeployActionProps extends codepipeline.CommonActionProps {
+export interface CodeDeployServerDeployActionProps extends codepipeline.CommonAwsActionProps {
   /**
    * The source to use as input for deployment.
    */
@@ -59,6 +59,9 @@ export class CodeDeployServerDeployAction extends Action {
     for (const asg of this.deploymentGroup.autoScalingGroups || []) {
       stage.pipeline.artifactBucket.grantRead(asg.role);
     }
+
+    // the Action's Role needs to read from the Bucket to get artifacts
+    stage.pipeline.artifactBucket.grantRead(options.role);
 
     return {
       configuration: {

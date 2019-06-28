@@ -1,4 +1,5 @@
 import events = require('@aws-cdk/aws-events');
+import iam = require('@aws-cdk/aws-iam');
 import { Construct } from '@aws-cdk/core';
 import codepipeline = require('../lib');
 
@@ -8,6 +9,10 @@ export interface FakeBuildActionProps extends codepipeline.CommonActionProps {
   output?: codepipeline.Artifact;
 
   extraInputs?: codepipeline.Artifact[];
+
+  owner?: string;
+
+  role?: iam.IRole;
 }
 
 export class FakeBuildAction implements codepipeline.IAction {

@@ -7,7 +7,7 @@ import { Action } from './action';
 /**
  * Construction properties of the {@link ManualApprovalAction}.
  */
-export interface ManualApprovalActionProps extends codepipeline.CommonActionProps {
+export interface ManualApprovalActionProps extends codepipeline.CommonAwsActionProps {
   /**
    * Optional SNS topic to send notifications to when an approval is pending.
    */
