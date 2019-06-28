@@ -231,7 +231,7 @@ export class CfnResource extends CfnRefElement {
             Condition: this.cfnOptions.condition && this.cfnOptions.condition.logicalId
           }, props => {
             const renderedProps = this.renderProperties(props.Properties || {});
-            props.Properties = renderedProps && Object.keys(renderedProps).length === 0 ? undefined : renderedProps;
+            props.Properties = renderedProps && (Object.keys(renderedProps).length === 0 ? undefined : renderedProps);
             return deepMerge(props, this.rawOverrides);
           })
         }
