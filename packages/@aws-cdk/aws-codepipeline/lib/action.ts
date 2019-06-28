@@ -166,3 +166,21 @@ export interface CommonActionProps {
    */
   readonly runOrder?: number;
 }
+
+/**
+ * Common properties shared by all Actions whose {@link ActionProperties.owner} field is 'AWS'
+ * (or unset, as 'AWS' is the default).
+ */
+export interface CommonAwsActionProps extends CommonActionProps {
+  /**
+   * The Role in which context's this Action will be executing in.
+   * The Pipeline's Role will assume this Role
+   * (the required permissions for that will be granted automatically)
+   * right before executing this Action.
+   * This Action will be passed into your {@link IAction.bind}
+   * method in the {@link ActionBindOptions.role} property.
+   *
+   * @default a new Role will be generated
+   */
+  readonly role?: iam.IRole;
+}
