@@ -104,7 +104,6 @@ export interface PipelineProps {
 abstract class PipelineBase extends Resource implements IPipeline {
   public abstract pipelineName: string;
   public abstract pipelineArn: string;
-  public abstract artifactBucket: s3.IBucket;
 
   /**
    * Defines an event rule triggered by this CodePipeline.
@@ -305,7 +304,7 @@ export class Pipeline extends PipelineBase {
   /** @internal */
   public _attachActionToPipeline(stage: Stage, action: IAction, actionScope: Construct): FullActionDescriptor {
     // handle cross-region actions here
-    this.ensureReplicationBucketExistsFor(action.actionProperties.region);
+    const bucket = this.ensureReplicationBucketExistsFor(action.actionProperties.region);
 
     // get the role for the given action
     const actionRole = this.getRoleForAction(stage, action, actionScope);
@@ -313,6 +312,7 @@ export class Pipeline extends PipelineBase {
     // bind the Action
     const actionDescriptor = action.bind(actionScope, stage, {
       role: actionRole ? actionRole : this.role,
+      bucket,
     });
 
     return new FullActionDescriptor(action, actionDescriptor, actionRole);
@@ -335,17 +335,17 @@ export class Pipeline extends PipelineBase {
     ];
   }
 
-  private ensureReplicationBucketExistsFor(region?: string) {
+  private ensureReplicationBucketExistsFor(region?: string): s3.IBucket {
     if (!region) {
-      return;
+      return this.artifactBucket;
     }
 
     // get the region the Pipeline itself is in
     const pipelineRegion = this.requireRegion();
 
     // if we already have an ArtifactStore generated for this region, or it's the Pipeline's region, nothing to do
-    if (this.artifactStores[region] || region === pipelineRegion) {
-      return;
+    if (region === pipelineRegion) {
+      return this.artifactBucket;
     }
 
     let replicationBucket = this.crossRegionReplicationBuckets[region];
@@ -371,6 +371,7 @@ export class Pipeline extends PipelineBase {
         stack: crossRegionScaffoldStack,
         replicationBucket,
       };
+      this.crossRegionReplicationBuckets[region] = replicationBucket;
     }
     replicationBucket.grantReadWrite(this.role);
 
@@ -378,6 +379,8 @@ export class Pipeline extends PipelineBase {
       location: replicationBucket.bucketName,
       type: 'S3',
     };
+
+    return replicationBucket;
   }
 
   /**
