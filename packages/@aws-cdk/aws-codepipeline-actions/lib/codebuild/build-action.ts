@@ -25,7 +25,7 @@ export enum CodeBuildActionType {
 /**
  * Construction properties of the {@link CodeBuildAction CodeBuild build CodePipeline action}.
  */
-export interface CodeBuildActionProps extends codepipeline.CommonActionProps {
+export interface CodeBuildActionProps extends codepipeline.CommonAwsActionProps {
   /**
    * The source to use as input for this action.
    */
