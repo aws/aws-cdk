@@ -1,5 +1,5 @@
 import kms = require('@aws-cdk/aws-kms');
-import { Construct, Duration, Stack, Token } from '@aws-cdk/core';
+import { Aws, Construct, Duration, Stack, Token } from '@aws-cdk/core';
 import { IQueue, QueueAttributes, QueueBase } from './queue-base';
 import { CfnQueue } from './sqs.generated';
 import { validateProps } from './validate-props';
@@ -277,7 +277,7 @@ export class Queue extends QueueBase {
       }
 
       if (encryption === QueueEncryption.KMS_MANAGED) {
-        const masterKey = kms.Key.fromKeyArn(this, 'Key', 'alias/aws/sqs');
+        const masterKey = kms.Key.fromKeyArn(this, 'Key', `arn:aws:kms:${Aws.REGION}:${Aws.ACCOUNT_ID}:alias/aws/sqs`);
 
         return {
           encryptionMasterKey: masterKey,
