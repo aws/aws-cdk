@@ -72,7 +72,9 @@ export class ResourceReflection {
     }
 
     const resourceName = camelcase(this.cfn.basename);
-    const physicalNameProp = `${resourceName}Name`;
+
+    // if resource name ends with "Name" (e.g. DomainName, then just use it as-is, otherwise append "Name")
+    const physicalNameProp = resourceName.endsWith('Name') ? resourceName : `${resourceName}Name`;
     return this.construct.propsType.allProperties.find(x => x.name === physicalNameProp);
   }
 
@@ -87,17 +89,35 @@ export class ResourceReflection {
         continue; // skip any protected properties
       }
 
+      // determine the original type in which the property is defined. it could be
+      // an interface, a base class or the actual concrete construct class
+      // then, figure out the actual base name from it.
+      const authoritativeParent = p.overrides || p.parentType;
+      let basename = camelcase(authoritativeParent.name);
+
+      // remove "Base" from the class name (e.g. ssm.ParameterBase)
+      if (basename.endsWith('Base')) {
+        basename = basename.substring(0, basename.lastIndexOf('Base'));
+      }
+
+      // remove "I" if the parent type is an interface
+      if (authoritativeParent.isInterfaceType() && authoritativeParent.name.startsWith('I')) {
+        basename = basename.substring(1);
+      }
+
       // an attribute property is a property which starts with the type name
       // (e.g. "bucketXxx") and/or has an @attribute doc tag.
       const tag = getDocTag(p, 'attribute');
-      if (!p.name.startsWith(camelcase(this.basename)) && !tag) {
+      if (!p.name.startsWith(basename) && !tag) {
         continue;
       }
 
       // if there's an `@attribute` doc tag with a value other than "true"
-      // it should be used as the attribute name instead of the property name
+      // it should be used as the CFN attribute name instead of the property name
       // multiple attribute names can be listed as a comma-delimited list
-      const propertyNames = (tag && tag !== 'true') ? tag.split(',') : [ p.name ];
+      const propertyNames = (tag && tag !== 'true')
+        ? tag.split(',')
+        : [ camelcase(p.name.substring(basename.length), { pascalCase: true}) ];
 
       // check if this attribute is defined on an interface or on a class
       const property = findDeclarationSite(p);
@@ -162,13 +182,25 @@ resourceLinter.add({
 
 resourceLinter.add({
   code: 'resource-attribute',
-  message: 'resources must represent all cloudformation attributes as attribute properties. missing property:',
+  message:
+    'resources must represent all cloudformation attributes as attribute properties. ' +
+    '"@attribute ATTR[,ATTR]" can be used to tag non-standard attribute names. ' +
+    'missing property:',
   eval: e => {
     for (const name of e.ctx.cfn.attributeNames) {
-      const lookup = camelcase(name).startsWith(camelcase(e.ctx.cfn.basename)) ?
-        camelcase(name) : camelcase(e.ctx.cfn.basename + name);
-      const found = e.ctx.attributes.find(a => a.names.includes(lookup));
-      e.assert(found, `${e.ctx.fqn}.${name}`, name);
+      const lookup = camelcase(name).startsWith(camelcase(e.ctx.cfn.basename))
+        ? camelcase(name)
+        : camelcase(e.ctx.cfn.basename + name);
+
+      if (name === 'RootResourceId') {
+        console.error(e.ctx.fqn, {
+          lookup,
+          attributes: e.ctx.attributes.map(x => x.names)
+        });
+      }
+
+      const found = e.ctx.attributes.find(a => a.names.includes(name));
+      e.assert(found, `${e.ctx.fqn}.${lookup}`, name);
     }
   }
 });
