@@ -146,5 +146,6 @@ test('fails if trying to subscribe to a queue with managed kms encryption', () =
   const bucket = new s3.Bucket(stack, 'Bucket');
   expect(() => {
     bucket.addObjectRemovedNotification(new notif.SqsDestination(queue));
-  }).toThrow('Unable to add statement to IAM resource policy for KMS key: "alias/aws/sqs"');
+  }).toThrow('Unable to add statement to IAM resource policy for KMS key:\
+ {\"Fn::Join\":[\"\",[\"arn:aws:kms:\",{\"Ref\":\"AWS::Region\"},\":\",{\"Ref\":\"AWS::AccountId\"},\":alias/aws/sqs\"]]}');
 });
