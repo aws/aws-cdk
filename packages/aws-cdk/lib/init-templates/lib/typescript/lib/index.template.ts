@@ -7,9 +7,9 @@ export interface %name.PascalCased%Props {
   /**
    * The visibility timeout to be configured on the SQS Queue, in seconds.
    *
-   * @default 300
+   * @default Duration.seconds(300)
    */
-  visibilityTimeout?: number;
+  visibilityTimeout?: cdk.Duration;
 }
 
 export class %name.PascalCased% extends cdk.Construct {
@@ -20,7 +20,7 @@ export class %name.PascalCased% extends cdk.Construct {
     super(scope, id);
 
     const queue = new sqs.Queue(this, '%name.PascalCased%Queue', {
-      visibilityTimeoutSec: props.visibilityTimeout || 300
+      visibilityTimeout: props.visibilityTimeout || cdk.Duration.seconds(300)
     });
 
     const topic = new sns.Topic(this, '%name.PascalCased%Topic');
