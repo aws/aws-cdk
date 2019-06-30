@@ -1,4 +1,5 @@
 import { expect, haveResourceLike } from '@aws-cdk/assert';
+import { User } from '@aws-cdk/aws-iam';
 import cdk = require('@aws-cdk/core');
 import { Duration, Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
@@ -22,6 +23,42 @@ export = {
         Targets: [
           {
             Input: "{\"SomeObject\":\"withAValue\"}"
+          }
+        ]
+      }));
+      test.done();
+    },
+
+    'can use token'(test: Test) {
+      // GIVEN
+      const stack = new Stack();
+      const rule = new Rule(stack, 'Rule', {
+        schedule: Schedule.rate(Duration.minutes(1)),
+      });
+      const user = new User(stack, 'User');
+
+      // WHEN
+      rule.addTarget(new SomeTarget(RuleTargetInput.fromObject({ userArn: user.userArn })));
+
+      // THEN
+      expect(stack).to(haveResourceLike('AWS::Events::Rule', {
+        Targets: [
+          {
+            Input: {
+              'Fn::Join': [
+                '',
+                [
+                  '{\"userArn\":\"',
+                  {
+                    'Fn::GetAtt': [
+                      'User00B015A1',
+                      'Arn'
+                    ]
+                  },
+                  '\"}'
+                ]
+              ]
+            }
           }
         ]
       }));

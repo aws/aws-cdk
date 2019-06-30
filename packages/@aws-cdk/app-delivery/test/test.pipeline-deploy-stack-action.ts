@@ -1,4 +1,4 @@
-import { countResources, expect, haveResource, isSuperObject } from '@aws-cdk/assert';
+import { expect, haveResource, isSuperObject } from '@aws-cdk/assert';
 import cfn = require('@aws-cdk/aws-cloudformation');
 import codebuild = require('@aws-cdk/aws-codebuild');
 import codepipeline = require('@aws-cdk/aws-codepipeline');
@@ -268,9 +268,6 @@ export = nodeunit.testCase({
     }));
 
     // THEN //
-    // there should be 3 policies 1. CodePipeline, 2. Codebuild, 3.
-    // ChangeSetDeploy Action
-    expect(pipelineStack).to(countResources('AWS::IAM::Policy', 3));
     expect(pipelineStack).to(haveResource('AWS::IAM::Policy', {
       PolicyDocument: {
         Version: '2012-10-17',
