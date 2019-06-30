@@ -114,6 +114,17 @@ export class Tokenization {
     return resolve(obj, options);
   }
 
+  /**
+   * Return whether the given object is an IResolvable object
+   *
+   * This is different from Token.isUnresolved() which will also check for
+   * encoded Tokens, whereas this method will only do a type check on the given
+   * object.
+   */
+  public static isResolvable(obj: any): obj is IResolvable {
+    return isResolvableObject(obj);
+  }
+
   private constructor() {
   }
 }
