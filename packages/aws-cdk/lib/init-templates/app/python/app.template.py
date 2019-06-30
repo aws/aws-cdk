@@ -8,4 +8,4 @@ from %name.PythonModule%.%name.PythonModule%_stack import %name.PascalCased%Stac
 app = core.App()
 %name.PascalCased%Stack(app, "%name%-cdk-1")
 
-app.run()
+app.synth()
