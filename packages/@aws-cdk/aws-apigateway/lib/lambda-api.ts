@@ -28,6 +28,8 @@ export interface LambdaRestApiProps extends RestApiProps {
    * @deprecated the `LambdaRestApiProps` now extends `RestApiProps`, so all
    * options are just available here. Note that the options specified in
    * `options` will be overridden by any props specified at the root level.
+   *
+   * @default - no options.
    */
   readonly options?: RestApiProps;
 }

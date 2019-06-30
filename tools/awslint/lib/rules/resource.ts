@@ -13,7 +13,7 @@ export const resourceLinter = new Linter(a => ResourceReflection.findAll(a));
 export interface Attribute {
   site: AttributeSite;
   property: reflect.Property;
-  names: string[]; // bucketArn
+  cfnAttributeNames: string[]; // bucketArn
 }
 
 export enum AttributeSite {
@@ -89,21 +89,7 @@ export class ResourceReflection {
         continue; // skip any protected properties
       }
 
-      // determine the original type in which the property is defined. it could be
-      // an interface, a base class or the actual concrete construct class
-      // then, figure out the actual base name from it.
-      const authoritativeParent = p.overrides || p.parentType;
-      let basename = camelcase(authoritativeParent.name);
-
-      // remove "Base" from the class name (e.g. ssm.ParameterBase)
-      if (basename.endsWith('Base')) {
-        basename = basename.substring(0, basename.lastIndexOf('Base'));
-      }
-
-      // remove "I" if the parent type is an interface
-      if (authoritativeParent.isInterfaceType() && authoritativeParent.name.startsWith('I')) {
-        basename = basename.substring(1);
-      }
+      const basename = camelcase(this.cfn.basename);
 
       // an attribute property is a property which starts with the type name
       // (e.g. "bucketXxx") and/or has an @attribute doc tag.
@@ -112,12 +98,31 @@ export class ResourceReflection {
         continue;
       }
 
-      // if there's an `@attribute` doc tag with a value other than "true"
-      // it should be used as the CFN attribute name instead of the property name
-      // multiple attribute names can be listed as a comma-delimited list
-      const propertyNames = (tag && tag !== 'true')
-        ? tag.split(',')
-        : [ camelcase(p.name.substring(basename.length), { pascalCase: true}) ];
+      let cfnAttributeNames;
+      if (tag && tag !== 'true') {
+        // if there's an `@attribute` doc tag with a value other than "true"
+        // it should be used as the CFN attribute name instead of the property name
+        // multiple attribute names can be listed as a comma-delimited list
+        cfnAttributeNames = tag.split(',');
+      } else {
+        // okay, we don't have an explicit CFN attribute name, so we'll guess it
+        // from the name of the property.
+
+        const name = camelcase(p.name, { pascalCase: true });
+        if (this.cfn.attributeNames.includes(name)) {
+          // special case: there is a cloudformation resource type in the attribute name
+          // for example 'RoleId'.
+          cfnAttributeNames = [ name ];
+        } else if (p.name.startsWith(basename)) {
+          // begins with the resource name, just trim it
+          cfnAttributeNames = [ name.substring(this.cfn.basename.length) ];
+        } else {
+          // we couldn't determine CFN attribute name, so we don't account for this
+          // as an attribute. this could be, for example, when a construct implements
+          // an interface that represents another resource (e.g. `lambda.Alias` implements `IFunction`).
+          continue;
+        }
+      }
 
       // check if this attribute is defined on an interface or on a class
       const property = findDeclarationSite(p);
@@ -125,7 +130,7 @@ export class ResourceReflection {
 
       result.push({
         site,
-        names: propertyNames,
+        cfnAttributeNames,
         property
       });
     }
@@ -188,19 +193,12 @@ resourceLinter.add({
     'missing property:',
   eval: e => {
     for (const name of e.ctx.cfn.attributeNames) {
-      const lookup = camelcase(name).startsWith(camelcase(e.ctx.cfn.basename))
+      const expected = camelcase(name).startsWith(camelcase(e.ctx.cfn.basename))
         ? camelcase(name)
         : camelcase(e.ctx.cfn.basename + name);
 
-      if (name === 'RootResourceId') {
-        console.error(e.ctx.fqn, {
-          lookup,
-          attributes: e.ctx.attributes.map(x => x.names)
-        });
-      }
-
-      const found = e.ctx.attributes.find(a => a.names.includes(name));
-      e.assert(found, `${e.ctx.fqn}.${lookup}`, name);
+      const found = e.ctx.attributes.find(a => a.cfnAttributeNames.includes(name));
+      e.assert(found, `${e.ctx.fqn}.${expected}`, expected);
     }
   }
 });
