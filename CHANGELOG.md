@@ -1,5 +1,8 @@
-## [0.36.1](https://github.com/awslabs/aws-cdk/compare/v0.36.0...v0.36.1) (2019-07-01)
+# Change Log
 
+All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
+
+## [0.36.1](https://github.com/awslabs/aws-cdk/compare/v0.36.0...v0.36.1) (2019-07-01)
 
 ### Bug Fixes
 
@@ -27,12 +30,6 @@
 * **codepipeline:** generate a Role for every AWS-owned Action used in a Pipeline. ([#3105](https://github.com/awslabs/aws-cdk/issues/3105)) ([921dcc9](https://github.com/awslabs/aws-cdk/commit/921dcc9))
 * **core:** add Tokenization.isResolvable for aspects ([#3122](https://github.com/awslabs/aws-cdk/issues/3122)) ([d3a417e](https://github.com/awslabs/aws-cdk/commit/d3a417e)), closes [#3026](https://github.com/awslabs/aws-cdk/issues/3026)
 * **dynamodb:** support RemovalPolicy ([#3028](https://github.com/awslabs/aws-cdk/issues/3028)) ([a6175be](https://github.com/awslabs/aws-cdk/commit/a6175be)), closes [#2710](https://github.com/awslabs/aws-cdk/issues/2710)
-
-
-
-# Change Log
-
-All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
 
 ## [0.36.0](https://github.com/awslabs/aws-cdk/compare/v0.35.0...v0.36.0) (2019-06-24)
