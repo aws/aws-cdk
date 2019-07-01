@@ -50,7 +50,7 @@ export interface IStringParameter extends IParameter {
   /**
    * The parameter value. Value must not nest another parameter. Do not use {{}} in the value.
    *
-   * @attribute parameterValue
+   * @attribute Value
    */
   readonly stringValue: string;
 }
@@ -63,7 +63,7 @@ export interface IStringListParameter extends IParameter {
    * The parameter value. Value must not nest another parameter. Do not use {{}} in the value. Values in the array
    * cannot contain commas (``,``).
    *
-   * @attribute parameterValue
+   * @attribute Value
    */
   readonly stringListValue: string[];
 }
