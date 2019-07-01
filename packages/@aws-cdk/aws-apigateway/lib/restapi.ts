@@ -3,6 +3,7 @@ import { CfnOutput, Construct, IResource as IResourceBase, Resource, Stack } fro
 import { ApiKey, IApiKey } from './api-key';
 import { CfnAccount, CfnRestApi } from './apigateway.generated';
 import { Deployment } from './deployment';
+import { DomainName, DomainNameOptions } from './domain-name';
 import { Integration } from './integration';
 import { Method, MethodOptions } from './method';
 import { Model, ModelOptions } from './model';
@@ -147,6 +148,13 @@ export interface RestApiProps extends ResourceOptions {
    * @default true
    */
   readonly cloudWatchRole?: boolean;
+
+  /**
+   * Configure a custom domain name and map it to this API.
+   *
+   * @default - no domain name is defined, use `addDomainName` or directly define a `DomainName`.
+   */
+  readonly domainName?: DomainNameOptions;
 }
 
 /**
@@ -196,6 +204,12 @@ export class RestApi extends Resource implements IRestApi {
    */
   public deploymentStage: Stage;
 
+  /**
+   * The domain name mapped to this API, if defined through the `domainName`
+   * configuration prop.
+   */
+  public readonly domainName?: DomainName;
+
   private readonly methods = new Array<Method>();
   private _latestDeployment: Deployment | undefined;
 
@@ -227,6 +241,10 @@ export class RestApi extends Resource implements IRestApi {
     }
 
     this.root = new RootResource(this, props, resource.attrRootResourceId);
+
+    if (props.domainName) {
+      this.domainName = this.addDomainName('CustomDomain', props.domainName);
+    }
   }
 
   /**
@@ -256,6 +274,18 @@ export class RestApi extends Resource implements IRestApi {
     }
 
     return this.deploymentStage.urlForPath(path);
+  }
+
+  /**
+   * Defines an API Gateway domain name and maps it to this API.
+   * @param id The construct id
+   * @param options custom domain options
+   */
+  public addDomainName(id: string, options: DomainNameOptions): DomainName {
+    return new DomainName(this, id, {
+      ...options,
+      mapping: this
+    });
   }
 
   /**
