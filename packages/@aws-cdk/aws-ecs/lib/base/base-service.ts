@@ -73,22 +73,6 @@ export interface BaseServiceProps {
    * @default - AWS Cloud Map service discovery is not enabled.
    */
   readonly cloudMapOptions?: CloudMapOptions;
-
-  /**
-   * Whether the new long ARN format has been enabled on ECS services.
-   * NOTE: This assumes customer has opted into the new format for the IAM role used for the service, and is a
-   * workaround for a current bug in Cloudformation in which the service name is not correctly returned when long ARN is
-   * enabled.
-   *
-   * Old ARN format: arn:aws:ecs:region:aws_account_id:service/service-name
-   * New ARN format: arn:aws:ecs:region:aws_account_id:service/cluster-name/service-name
-   *
-   * See: https://docs.aws.amazon.com/AmazonECS/latest/userguide/ecs-resource-ids.html
-   *
-   * @default none
-   * @deprecated this property is no longer used. Long arns are automatically handled by cloud formation.
-   */
-  readonly longArnEnabled?: boolean;
 }
 
 /**
