@@ -18,7 +18,7 @@ export interface UrlSubscriptionProps extends SubscriptionProps {
   /**
    * The subscription's protocol.
    *
-   * @default Protocol is derived from url
+   * @default - Protocol is derived from url
    */
   readonly protocol?: sns.SubscriptionProtocol;
 }
