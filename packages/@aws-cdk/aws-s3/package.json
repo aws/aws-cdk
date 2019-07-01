@@ -91,5 +91,5 @@
       "no-unused-type:@aws-cdk/aws-s3.Location"
     ]
   },
-  "stability": "experimental"
+  "stability": "stable"
 }

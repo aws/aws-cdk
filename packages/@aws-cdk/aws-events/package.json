@@ -87,5 +87,5 @@
       "no-unused-type:@aws-cdk/aws-events.OnEventOptions"
     ]
   },
-  "stability": "experimental"
+  "stability": "stable"
 }
