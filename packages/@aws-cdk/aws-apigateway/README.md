@@ -404,7 +404,7 @@ To associate an API with a custom domain, use the `domainName` configuration whe
 you define your API:
 
 ```ts
-const domain = new apigw.RestApi(this, 'MyDomain', {
+const api = new apigw.RestApi(this, 'MyDomain', {
   domainName: {
     domainName: 'example.com',
     certificate: acmCertificateForExampleCom,
@@ -415,6 +415,15 @@ const domain = new apigw.RestApi(this, 'MyDomain', {
 This will define a `DomainName` resource for you, along with a `BasePathMapping`
 from the root of the domain to the deployment stage of the API. This is a common
 set up.
+
+To route domain traffic to an API Gateway API, use Amazon Route 53 to create an alias record. An alias record is a Route 53 extension to DNS. It's similar to a CNAME record, but you can create an alias record both for the root domain, such as example.com, and for subdomains, such as www.example.com. (You can create CNAME records only for subdomains.)
+
+```ts
+new route53.ARecord(this, 'CustomDomainAliasRecord', {
+  zone: hostedZoneForExampleCom,
+  target: route53.AddressRecordTarget.fromAlias(new route53_targets.ApiGateway(api)
+});
+```
 
 You can customize this by defining a `DomainName` resource directly:
 
