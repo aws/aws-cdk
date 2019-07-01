@@ -12,7 +12,7 @@ import { ScalableTaskCount } from './scalable-task-count';
 
 export interface IService extends IResource {
   /**
-   * ARN of this service
+   * The Amazon Resource Name (ARN) of the service.
    *
    * @attribute
    */
@@ -20,23 +20,23 @@ export interface IService extends IResource {
 }
 
 /**
- * Basic service properties
+ * The properties for the base Ec2Service or FargateService service.
  */
 export interface BaseServiceProps {
   /**
-   * Cluster where service will be deployed
+   * The name of the cluster that hosts the service.
    */
   readonly cluster: ICluster;
 
   /**
-   * Number of desired copies of running tasks
+   * The desired number of instantiations of the task definition to keep running on the service.
    *
    * @default 1
    */
   readonly desiredCount?: number;
 
   /**
-   * A name for the service.
+   * The name of the service.
    *
    * @default - CloudFormation-generated name.
    */
@@ -61,14 +61,15 @@ export interface BaseServiceProps {
   readonly minHealthyPercent?: number;
 
   /**
-   * Time after startup to ignore unhealthy load balancer checks.
+   * The period of time, in seconds, that the Amazon ECS service scheduler ignores unhealthy
+   * Elastic Load Balancing target health checks after a task has first started.
    *
    * @default - defaults to 60 seconds if at least one load balancer is in-use and it is not already set
    */
   readonly healthCheckGracePeriod?: Duration;
 
   /**
-   * Options for enabling AWS Cloud Map service discovery for the service
+   * The options for configuring an Amazon ECS service to use service discovery.
    *
    * @default - AWS Cloud Map service discovery is not enabled.
    */
@@ -91,46 +92,67 @@ export interface BaseServiceProps {
 }
 
 /**
- * Base class for Ecs and Fargate services
+ * The base class for Ec2Service and FargateService services.
  */
 export abstract class BaseService extends Resource
   implements IService, elbv2.IApplicationLoadBalancerTarget, elbv2.INetworkLoadBalancerTarget {
 
   /**
-   * Manage allowed network traffic for this service
+   * The security groups which manage the allowed network traffic for the service.
    */
   public readonly connections: ec2.Connections = new ec2.Connections();
 
   /**
-   * ARN of this service
+   * The Amazon Resource Name (ARN) of the service.
    */
   public readonly serviceArn: string;
 
   /**
-   * Name of this service
+   * The name of the service.
    *
    * @attribute
    */
   public readonly serviceName: string;
 
   /**
-   * Task definition this service is associated with
+   * The task definition to use for tasks in the service.
    */
   public readonly taskDefinition: TaskDefinition;
 
   /**
-   * The cluster this service is scheduled on
+   * The cluster that hosts the service.
    */
   public readonly cluster: ICluster;
 
+  /**
+   * The details of the AWS Cloud Map service.
+   */
   protected cloudmapService?: cloudmap.Service;
+
+  /**
+   * A list of Elastic Load Balancing load balancer objects, containing the load balancer name, the container
+   * name (as it appears in a container definition), and the container port to access from the load balancer.
+   */
   protected loadBalancers = new Array<CfnService.LoadBalancerProperty>();
+
+  /**
+   * A list of Elastic Load Balancing load balancer objects, containing the load balancer name, the container
+   * name (as it appears in a container definition), and the container port to access from the load balancer.
+   */
   protected networkConfiguration?: CfnService.NetworkConfigurationProperty;
+
+  /**
+   * The details of the service discovery registries to assign to this service.
+   * For more information, see Service Discovery.
+   */
   protected serviceRegistries = new Array<CfnService.ServiceRegistryProperty>();
 
   private readonly resource: CfnService;
   private scalableTaskCount?: ScalableTaskCount;
 
+  /**
+   * Constructs a new instance of the BaseService class.
+   */
   constructor(scope: Construct,
               id: string,
               props: BaseServiceProps,
@@ -179,7 +201,7 @@ export abstract class BaseService extends Resource
   }
 
   /**
-   * Called when the service is attached to an ALB
+   * This method is called to attach this service to an Application Load Balancer.
    *
    * Don't call this function directly. Instead, call listener.addTarget()
    * to add this service to a load balancer.
@@ -197,7 +219,7 @@ export abstract class BaseService extends Resource
   }
 
   /**
-   * Called when the service is attached to an NLB
+   * This method is called to attach this service to a Network Load Balancer.
    *
    * Don't call this function directly. Instead, call listener.addTarget()
    * to add this service to a load balancer.
@@ -207,7 +229,7 @@ export abstract class BaseService extends Resource
   }
 
   /**
-   * Enable autoscaling for the number of tasks in this service
+   * An attribute representing the minimum and maximum task count for an AutoScalingGroup.
    */
   public autoScaleTaskCount(props: appscaling.EnableScalingProps) {
     if (this.scalableTaskCount) {
@@ -224,7 +246,7 @@ export abstract class BaseService extends Resource
   }
 
   /**
-   * Return the given named metric for this Service
+   * This method returns the specified CloudWatch metric name for this service.
    */
   public metric(metricName: string, props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return new cloudwatch.Metric({
@@ -236,7 +258,7 @@ export abstract class BaseService extends Resource
   }
 
   /**
-   * Metric for cluster Memory utilization
+   * This method returns the CloudWatch metric for this clusters memory utilization.
    *
    * @default average over 5 minutes
    */
@@ -245,7 +267,7 @@ export abstract class BaseService extends Resource
   }
 
   /**
-   * Metric for cluster CPU utilization
+   * This method returns the CloudWatch metric for this clusters CPU utilization.
    *
    * @default average over 5 minutes
    */
@@ -254,7 +276,7 @@ export abstract class BaseService extends Resource
   }
 
   /**
-   * Set up AWSVPC networking for this construct
+   * This method is called to create a networkConfiguration.
    */
   // tslint:disable-next-line:max-line-length
   protected configureAwsVpcNetworking(vpc: ec2.IVpc, assignPublicIp?: boolean, vpcSubnets?: ec2.SubnetSelection, securityGroup?: ec2.ISecurityGroup) {

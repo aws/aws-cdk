@@ -66,6 +66,9 @@ export class Cluster extends Resource implements ICluster {
    */
   private _hasEc2Capacity: boolean = false;
 
+  /**
+   * Constructs a new instance of the Cluster class.
+   */
   constructor(scope: Construct, id: string, props: ClusterProps) {
     super(scope, id, {
       physicalName: props.clusterName,
@@ -252,6 +255,9 @@ export class EcsOptimizedAmi implements ec2.IMachineImage {
 
   private readonly amiParameterName: string;
 
+  /**
+   * Constructs a new instance of the EcsOptimizedAmi class.
+   */
   constructor(props?: EcsOptimizedAmiProps) {
     this.hwType = (props && props.hardwareType) || AmiHardwareType.STANDARD;
     if (props && props.generation) {      // generation defined in the props object
@@ -398,6 +404,9 @@ class ImportedCluster extends Resource implements ICluster {
    */
   private _defaultCloudMapNamespace?: cloudmap.INamespace;
 
+  /**
+   * Constructs a new instance of the ImportedCluster class.
+   */
   constructor(scope: Construct, id: string, props: ClusterAttributes) {
     super(scope, id);
     this.clusterName = props.clusterName;
@@ -424,22 +433,22 @@ class ImportedCluster extends Resource implements ICluster {
 }
 
 /**
- * Properties for adding an autoScalingGroup
+ * The properties for adding an AutoScalingGroup.
  */
 export interface AddAutoScalingGroupCapacityOptions {
   /**
-   * Whether or not the containers can access the instance role
+   * Specifies whether the containers can access the container instance role.
    *
    * @default false
    */
   readonly canContainersAccessInstanceRole?: boolean;
 
   /**
-   * Give tasks this many seconds to complete when instances are being scaled in.
+   * The time period to wait before force terminating an instance that is draining.
    *
-   * Task draining adds a Lambda and a Lifecycle hook to your AutoScalingGroup
-   * that will delay instance termination until all ECS tasks have drained from
-   * the instance.
+   * This creates a Lambda function that is used by a lifecycle hook for the
+   * AutoScalingGroup that will delay instance termination until all ECS tasks
+   * have drained from the instance. Set to 0 to disable task draining.
    *
    * Set to 0 to disable task draining.
    *
@@ -449,18 +458,19 @@ export interface AddAutoScalingGroupCapacityOptions {
 }
 
 /**
- * Properties for adding autoScalingGroup
+ * The properties for adding instance capacity to an AutoScalingGroup.
  */
 export interface AddCapacityOptions extends AddAutoScalingGroupCapacityOptions, autoscaling.CommonAutoScalingGroupProps {
   /**
-   * The type of EC2 instance to launch into your Autoscaling Group
+   * The EC2 instance type to use when launching instances into the AutoScalingGroup.
    */
   readonly instanceType: ec2.InstanceType;
 
   /**
-   * The machine image for the ECS instances
+   * The ECS-optimized AMI variant to use. For more information, see Amazon ECS-optimized AMIs:
+   * [https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs-optimized_AMI.html]
    *
-   * @default - Amazon Linux 1
+   * @default - Amazon Linux 2
    */
   readonly machineImage?: ec2.IMachineImage;
 }
@@ -487,22 +497,23 @@ export interface CloudMapNamespaceOptions {
 }
 
 /**
- * The type of HW for the ECS Optimized AMI
+ * The ECS-optimized AMI variant to use. For more information, see Amazon ECS-optimized AMIs:
+ * [https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs-optimized_AMI.html].
  */
 export enum AmiHardwareType {
 
   /**
-   * Create a standard AMI
+   * Use the Amazon ECS-optimized Amazon Linux 2 AMI.
    */
   STANDARD = 'Standard',
 
   /**
-   * Create a GPU optimized AMI
+   * Use the Amazon ECS GPU-optimized AMI.
    */
   GPU = 'GPU',
 
   /**
-   * Create a ARM64 optimized AMI
+   * Use the Amazon ECS-optimized Amazon Linux 2 (arm64) AMI.
    */
   ARM = 'ARM64',
 }

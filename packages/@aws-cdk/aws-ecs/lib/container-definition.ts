@@ -251,6 +251,9 @@ export class ContainerDefinition extends cdk.Construct {
 
   private readonly logDriverConfig?: LogDriverConfig;
 
+  /**
+   * Constructs a new instance of the ContainerDefinition class.
+   */
   constructor(scope: cdk.Construct, id: string, private readonly props: ContainerDefinitionProps) {
     super(scope, id);
     this.essential = props.essential !== undefined ? props.essential : true;

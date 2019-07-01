@@ -231,6 +231,9 @@ export class TaskDefinition extends TaskDefinitionBase {
 
   private _executionRole?: iam.IRole;
 
+  /**
+   * Constructs a new instance of the TaskDefinition class.
+   */
   constructor(scope: Construct, id: string, props: TaskDefinitionProps) {
     super(scope, id);
 
@@ -382,7 +385,7 @@ export class TaskDefinition extends TaskDefinitionBase {
 }
 
 /**
- * The Docker networking mode to use for the containers in the task.
+ * The networking mode to use for the containers in the task.
  */
 export enum NetworkMode {
   /**

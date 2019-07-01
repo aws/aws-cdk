@@ -89,6 +89,9 @@ export class Ec2Service extends BaseService implements IEc2Service, elb.ILoadBal
   private readonly strategies: CfnService.PlacementStrategyProperty[];
   private readonly daemon: boolean;
 
+  /**
+   * Constructs a new instance of the Ec2Service class.
+   */
   constructor(scope: Construct, id: string, props: Ec2ServiceProps) {
     if (props.daemon && props.desiredCount !== undefined) {
       throw new Error('Daemon mode launches one task on every instance. Don\'t supply desiredCount.');
@@ -206,31 +209,31 @@ function validateNoNetworkingProps(props: Ec2ServiceProps) {
 }
 
 /**
- * Built-in container instance attributes
+ * The built-in container instance attributes
  */
 export class BuiltInAttributes {
   /**
-   * The Instance ID of the instance
+   * The id of the instance.
    */
   public static readonly INSTANCE_ID = 'instanceId';
 
   /**
-   * The AZ where the instance is running
+   * The AvailabilityZone where the instance is running in.
    */
   public static readonly AVAILABILITY_ZONE = 'attribute:ecs.availability-zone';
 
   /**
-   * The AMI ID of the instance
+   * The AMI id the instance is using.
    */
   public static readonly AMI_ID = 'attribute:ecs.ami-id';
 
   /**
-   * The instance type
+   * The EC2 instance type.
    */
   public static readonly INSTANCE_TYPE = 'attribute:ecs.instance-type';
 
   /**
-   * The OS type
+   * The operating system of the instance.
    *
    * Either 'linux' or 'windows'.
    */
