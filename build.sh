@@ -2,7 +2,7 @@
 set -euo pipefail
 
 bail="--bail"
-run_tests="true"
+runtarget="build+test"
 while [[ "${1:-}" != "" ]]; do
     case $1 in
         -h|--help)
@@ -16,7 +16,7 @@ while [[ "${1:-}" != "" ]]; do
             export CDK_BUILD="--force"
             ;;
         --skip-test|--skip-tests)
-            run_tests="false"
+            runtarget="build"
             ;;
         *)
             echo "Unrecognized parameter: $1"
@@ -53,9 +53,8 @@ trap "rm -rf $MERKLE_BUILD_CACHE" EXIT
 
 echo "============================================================================================="
 echo "building..."
-time lerna run $bail --stream build+test || fail
+time lerna run $bail --stream $runtarget || fail
 
-#TEMPORARILY DISABLED (benisrae)
-#/bin/bash scripts/check-api-compatibility.sh
+/bin/bash scripts/check-api-compatibility.sh
 
 touch $BUILD_INDICATOR

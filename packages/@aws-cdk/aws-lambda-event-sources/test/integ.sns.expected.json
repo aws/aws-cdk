@@ -60,22 +60,7 @@
         "FServiceRole3AC82EE1"
       ]
     },
-    "TF2453034D": {
-      "Type": "AWS::SNS::Subscription",
-      "Properties": {
-        "Protocol": "lambda",
-        "TopicArn": {
-          "Ref": "TD925BC7E"
-        },
-        "Endpoint": {
-          "Fn::GetAtt": [
-            "FC4345940",
-            "Arn"
-          ]
-        }
-      }
-    },
-    "FT1706F790": {
+    "FAllowInvokelambdaeventsourcesnsT85539BB11B51A88E": {
       "Type": "AWS::Lambda::Permission",
       "Properties": {
         "Action": "lambda:InvokeFunction",
@@ -88,6 +73,21 @@
         "Principal": "sns.amazonaws.com",
         "SourceArn": {
           "Ref": "TD925BC7E"
+        }
+      }
+    },
+    "FTA788EE87": {
+      "Type": "AWS::SNS::Subscription",
+      "Properties": {
+        "Protocol": "lambda",
+        "TopicArn": {
+          "Ref": "TD925BC7E"
+        },
+        "Endpoint": {
+          "Fn::GetAtt": [
+            "FC4345940",
+            "Arn"
+          ]
         }
       }
     },
