@@ -88,6 +88,11 @@ export class CdkToolkit {
         throw new Error(`Stack ${stack.name} does not define an environment, and AWS credentials could not be obtained from standard locations or no region was configured.`);
       }
 
+      if (Object.keys(stack.template.Resources || {}).length === 0) {
+        print('%s: stack has no resources, skipping deployment.', colors.bold(stack.name));
+        continue;
+      }
+
       if (requireApproval !== RequireApproval.Never) {
         const currentTemplate = await this.provisioner.readCurrentTemplate(stack);
         if (printSecurityDiff(currentTemplate, stack, requireApproval)) {
