@@ -77,12 +77,14 @@
     "@aws-cdk/aws-elasticloadbalancingv2": "^0.36.0",
     "@aws-cdk/aws-iam": "^0.36.0",
     "@aws-cdk/aws-lambda": "^0.36.0",
+    "@aws-cdk/aws-certificatemanager": "^0.36.0",
     "@aws-cdk/core": "^0.36.0"
   },
   "homepage": "https://github.com/awslabs/aws-cdk",
   "peerDependencies": {
     "@aws-cdk/aws-elasticloadbalancingv2": "^0.36.0",
     "@aws-cdk/aws-iam": "^0.36.0",
+    "@aws-cdk/aws-certificatemanager": "^0.36.0",
     "@aws-cdk/aws-lambda": "^0.36.0",
     "@aws-cdk/core": "^0.36.0"
   },
@@ -101,7 +103,10 @@
       "props-physical-name:@aws-cdk/aws-apigateway.ResourceProps",
       "props-physical-name:@aws-cdk/aws-apigateway.UsagePlanProps",
       "props-physical-name-type:@aws-cdk/aws-apigateway.StageProps.stageName",
-      "props-physical-name:@aws-cdk/aws-apigateway.LambdaRestApiProps"
+      "props-physical-name:@aws-cdk/aws-apigateway.BasePathMappingProps",
+      "props-physical-name:@aws-cdk/aws-apigateway.LambdaRestApiProps",
+      "construct-interface-extends-iconstruct:@aws-cdk/aws-apigateway.IModel",
+      "resource-interface-extends-resource:@aws-cdk/aws-apigateway.IModel"
     ]
   },
   "stability": "experimental"

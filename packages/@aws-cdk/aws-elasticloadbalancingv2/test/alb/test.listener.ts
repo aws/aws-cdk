@@ -1,7 +1,7 @@
 import { expect, haveResource, MatchStyle } from '@aws-cdk/assert';
 import ec2 = require('@aws-cdk/aws-ec2');
 import cdk = require('@aws-cdk/core');
-import { ConstructNode } from '@aws-cdk/core';
+import { ConstructNode, Duration } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import elbv2 = require('../../lib');
 import { FakeSelfRegisteringTarget } from '../helpers';
@@ -527,6 +527,31 @@ export = {
             StatusCode: '503'
           },
           Type: 'fixed-response'
+        }
+      ]
+    }));
+
+    test.done();
+  },
+
+  'Can configure deregistration_delay for targets'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Stack');
+
+    // WHEN
+    new elbv2.ApplicationTargetGroup(stack, 'TargetGroup', {
+      vpc,
+      port: 80,
+      deregistrationDelay: Duration.seconds(30)
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::TargetGroup', {
+      TargetGroupAttributes: [
+        {
+          Key: "deregistration_delay.timeout_seconds",
+          Value: "30"
         }
       ]
     }));

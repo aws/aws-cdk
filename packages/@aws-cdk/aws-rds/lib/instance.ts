@@ -28,14 +28,14 @@ export interface IDatabaseInstance extends IResource, ec2.IConnectable, secretsm
   /**
    * The instance endpoint address.
    *
-   * @attribute
+   * @attribute EndpointAddress
    */
   readonly dbInstanceEndpointAddress: string;
 
   /**
    * The instance endpoint port.
    *
-   * @attribute
+   * @attribute EndpointPort
    */
   readonly dbInstanceEndpointPort: string;
 
