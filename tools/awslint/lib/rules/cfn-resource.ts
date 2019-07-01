@@ -78,7 +78,7 @@ export class CfnResourceReflection {
 
     // special case (someone was smart), special case copied from cfn2ts
     if (this.basename === 'SecurityGroup' && name === 'GroupId') {
-      return 'securityGroupId';
+      return 'Id';
     }
 
     return camelcase(name, { pascalCase: true });

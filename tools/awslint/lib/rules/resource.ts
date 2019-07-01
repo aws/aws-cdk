@@ -13,7 +13,7 @@ export const resourceLinter = new Linter(a => ResourceReflection.findAll(a));
 export interface Attribute {
   site: AttributeSite;
   property: reflect.Property;
-  names: string[]; // bucketArn
+  cfnAttributeNames: string[]; // bucketArn
 }
 
 export enum AttributeSite {
@@ -72,7 +72,9 @@ export class ResourceReflection {
     }
 
     const resourceName = camelcase(this.cfn.basename);
-    const physicalNameProp = `${resourceName}Name`;
+
+    // if resource name ends with "Name" (e.g. DomainName, then just use it as-is, otherwise append "Name")
+    const physicalNameProp = resourceName.endsWith('Name') ? resourceName : `${resourceName}Name`;
     return this.construct.propsType.allProperties.find(x => x.name === physicalNameProp);
   }
 
@@ -87,17 +89,40 @@ export class ResourceReflection {
         continue; // skip any protected properties
       }
 
+      const basename = camelcase(this.cfn.basename);
+
       // an attribute property is a property which starts with the type name
       // (e.g. "bucketXxx") and/or has an @attribute doc tag.
       const tag = getDocTag(p, 'attribute');
-      if (!p.name.startsWith(camelcase(this.basename)) && !tag) {
+      if (!p.name.startsWith(basename) && !tag) {
         continue;
       }
 
-      // if there's an `@attribute` doc tag with a value other than "true"
-      // it should be used as the attribute name instead of the property name
-      // multiple attribute names can be listed as a comma-delimited list
-      const propertyNames = (tag && tag !== 'true') ? tag.split(',') : [ p.name ];
+      let cfnAttributeNames;
+      if (tag && tag !== 'true') {
+        // if there's an `@attribute` doc tag with a value other than "true"
+        // it should be used as the CFN attribute name instead of the property name
+        // multiple attribute names can be listed as a comma-delimited list
+        cfnAttributeNames = tag.split(',');
+      } else {
+        // okay, we don't have an explicit CFN attribute name, so we'll guess it
+        // from the name of the property.
+
+        const name = camelcase(p.name, { pascalCase: true });
+        if (this.cfn.attributeNames.includes(name)) {
+          // special case: there is a cloudformation resource type in the attribute name
+          // for example 'RoleId'.
+          cfnAttributeNames = [ name ];
+        } else if (p.name.startsWith(basename)) {
+          // begins with the resource name, just trim it
+          cfnAttributeNames = [ name.substring(this.cfn.basename.length) ];
+        } else {
+          // we couldn't determine CFN attribute name, so we don't account for this
+          // as an attribute. this could be, for example, when a construct implements
+          // an interface that represents another resource (e.g. `lambda.Alias` implements `IFunction`).
+          continue;
+        }
+      }
 
       // check if this attribute is defined on an interface or on a class
       const property = findDeclarationSite(p);
@@ -105,7 +130,7 @@ export class ResourceReflection {
 
       result.push({
         site,
-        names: propertyNames,
+        cfnAttributeNames,
         property
       });
     }
@@ -162,13 +187,18 @@ resourceLinter.add({
 
 resourceLinter.add({
   code: 'resource-attribute',
-  message: 'resources must represent all cloudformation attributes as attribute properties. missing property:',
+  message:
+    'resources must represent all cloudformation attributes as attribute properties. ' +
+    '"@attribute ATTR[,ATTR]" can be used to tag non-standard attribute names. ' +
+    'missing property:',
   eval: e => {
     for (const name of e.ctx.cfn.attributeNames) {
-      const lookup = camelcase(name).startsWith(camelcase(e.ctx.cfn.basename)) ?
-        camelcase(name) : camelcase(e.ctx.cfn.basename + name);
-      const found = e.ctx.attributes.find(a => a.names.includes(lookup));
-      e.assert(found, `${e.ctx.fqn}.${name}`, name);
+      const expected = camelcase(name).startsWith(camelcase(e.ctx.cfn.basename))
+        ? camelcase(name)
+        : camelcase(e.ctx.cfn.basename + name);
+
+      const found = e.ctx.attributes.find(a => a.cfnAttributeNames.includes(name));
+      e.assert(found, `${e.ctx.fqn}.${expected}`, expected);
     }
   }
 });

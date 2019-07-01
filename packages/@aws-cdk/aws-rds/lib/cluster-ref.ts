@@ -19,13 +19,13 @@ export interface IDatabaseCluster extends IResource, ec2.IConnectable, secretsma
 
   /**
    * The endpoint to use for read/write operations
-   * @attribute dbClusterEndpointAddress,dbClusterEndpointPort
+   * @attribute EndpointAddress,EndpointPort
    */
   readonly clusterEndpoint: Endpoint;
 
   /**
    * Endpoint to use for load-balanced read-only operations.
-   * @attribute dbClusterReadEndpointAddress
+   * @attribute ReadEndpointAddress
    */
   readonly clusterReadEndpoint: Endpoint;
 
