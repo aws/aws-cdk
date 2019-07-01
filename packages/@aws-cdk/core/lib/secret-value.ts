@@ -14,7 +14,7 @@ import { Intrinsic } from './private/intrinsic';
  * secret values will not allow you to pass in a literal secret value. They do
  * so by calling `Secret.assertSafeSecret()`.
  *
- * You can escape the check by calling `Secret.plainTex()`, but doing
+ * You can escape the check by calling `Secret.plainText()`, but doing
  * so is highly discouraged.
  */
 export class SecretValue extends Intrinsic {
