@@ -4,7 +4,7 @@ import { format } from 'util';
 import { AppStacks, DefaultSelection, ExtendedStackSelection, Tag } from "./api/cxapp/stacks";
 import { IDeploymentTarget } from './api/deployment-target';
 import { printSecurityDiff, printStackDiff, RequireApproval } from './diff';
-import { data, error, highlight, print, success } from './logging';
+import { data, error, highlight, print, success, warning } from './logging';
 import { deserializeStructure } from './serialize';
 
 // tslint:disable-next-line:no-var-requires
@@ -89,7 +89,7 @@ export class CdkToolkit {
       }
 
       if (Object.keys(stack.template.Resources || {}).length === 0) {
-        print('%s: stack has no resources, skipping deployment.', colors.bold(stack.name));
+        warning('%s: stack has no resources, skipping deployment.', colors.bold(stack.name));
         continue;
       }
 
