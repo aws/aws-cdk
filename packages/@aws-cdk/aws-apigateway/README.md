@@ -425,7 +425,7 @@ new route53.ARecord(this, 'CustomDomainAliasRecord', {
 });
 ```
 
-You can also define a `DomainName` resource directly in order to customize it's behavior:
+You can also define a `DomainName` resource directly in order to customize the default behavior:
 
 ```ts
 new apigw.DomainName(this, 'custom-domain', {
