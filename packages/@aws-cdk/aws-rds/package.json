@@ -100,7 +100,6 @@
   },
   "awslint": {
     "exclude": [
-      "construct-base-is-private:@aws-cdk/aws-rds.DatabaseInstanceBase",
       "props-physical-name:@aws-cdk/aws-rds.ParameterGroupProps",
       "props-physical-name:@aws-cdk/aws-rds.ClusterParameterGroupProps",
       "props-physical-name:@aws-cdk/aws-rds.DatabaseClusterProps",
