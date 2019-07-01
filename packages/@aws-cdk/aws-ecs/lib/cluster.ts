@@ -231,16 +231,19 @@ export class Cluster extends Resource implements ICluster {
   }
 }
 
+/**
+ * The properties that define which ECS-optimized AMI is used.
+ */
 export interface EcsOptimizedAmiProps {
   /**
-   * What generation of Amazon Linux to use
+   * The Amazon Linux generation to use.
    *
    * @default AmazonLinuxGeneration.AmazonLinux2
    */
   readonly generation?: ec2.AmazonLinuxGeneration;
 
   /**
-   * What ECS Optimized AMI type to use
+   * The ECS-optimized AMI variant to use.
    *
    * @default AmiHardwareType.Standard
    */

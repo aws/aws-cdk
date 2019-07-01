@@ -90,7 +90,6 @@ export interface BaseServiceProps extends BaseServiceOptions {
 }
 
 /**
- * Base class for Ecs and Fargate services
  * The base class for Ec2Service and FargateService services.
  */
 export abstract class BaseService extends Resource
