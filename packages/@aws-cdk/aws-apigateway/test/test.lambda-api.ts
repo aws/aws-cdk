@@ -190,7 +190,12 @@ export = {
     test.throws(() => new apigw.LambdaRestApi(stack, 'lambda-rest-api', {
       handler,
       options: { defaultIntegration: new apigw.HttpIntegration('https://foo/bar') }
-    }), /Cannot specify \"options\.defaultIntegration\" since Lambda integration is automatically defined/);
+    }), /Cannot specify \"defaultIntegration\" since Lambda integration is automatically defined/);
+
+    test.throws(() => new apigw.LambdaRestApi(stack, 'lambda-rest-api', {
+      handler,
+      defaultIntegration: new apigw.HttpIntegration('https://foo/bar')
+    }), /Cannot specify \"defaultIntegration\" since Lambda integration is automatically defined/);
 
     test.done();
   },
