@@ -127,7 +127,7 @@ export class RecordSet extends Resource implements IRecordSet {
 }
 
 /**
- *
+ * @deprecated
  */
 export class AddressRecordTarget extends RecordTarget {
   /**
