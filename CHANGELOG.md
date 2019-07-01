@@ -2,6 +2,35 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.36.1](https://github.com/awslabs/aws-cdk/compare/v0.36.0...v0.36.1) (2019-07-01)
+
+### Bug Fixes
+
+* **aws-codepipeline-actions:** use SecretValue ([#3097](https://github.com/awslabs/aws-cdk/issues/3097)) ([b84caab](https://github.com/awslabs/aws-cdk/commit/b84caab))
+* **cli:** fix broken sample-app templates for TypeScript and JavaScript ([#3101](https://github.com/awslabs/aws-cdk/issues/3101)) ([800ecf2](https://github.com/awslabs/aws-cdk/commit/800ecf2))
+* **cli:** fix broken test in Java init template ([#3108](https://github.com/awslabs/aws-cdk/issues/3108)) ([f696efc](https://github.com/awslabs/aws-cdk/commit/f696efc)), closes [#3065](https://github.com/awslabs/aws-cdk/issues/3065)
+* **cli:** fix Python sample-app template ([#3071](https://github.com/awslabs/aws-cdk/issues/3071)) ([796d6bb](https://github.com/awslabs/aws-cdk/commit/796d6bb)), closes [#3058](https://github.com/awslabs/aws-cdk/issues/3058) [#3069](https://github.com/awslabs/aws-cdk/issues/3069)
+* **cli:** improve description of --json to reflect behavior ([#3086](https://github.com/awslabs/aws-cdk/issues/3086)) ([68cfa54](https://github.com/awslabs/aws-cdk/commit/68cfa54)), closes [#2965](https://github.com/awslabs/aws-cdk/issues/2965)
+* **cli:** Python blank app should call app.synth(), not app.run() ([16345dc](https://github.com/awslabs/aws-cdk/commit/16345dc)), closes [#3123](https://github.com/awslabs/aws-cdk/issues/3123)
+* **cli:** update TypeScript lib init template ([#3134](https://github.com/awslabs/aws-cdk/issues/3134)) ([629e963](https://github.com/awslabs/aws-cdk/commit/629e963))
+* **code:** make CfnResource#_toCloudFormation null-safe ([#3121](https://github.com/awslabs/aws-cdk/issues/3121)) ([71cb421](https://github.com/awslabs/aws-cdk/commit/71cb421)), closes [#3093](https://github.com/awslabs/aws-cdk/issues/3093)
+* **codepipeline-actions:** set service as backing resource for EcsDeployAction ([#3085](https://github.com/awslabs/aws-cdk/issues/3085)) ([f2293e0](https://github.com/awslabs/aws-cdk/commit/f2293e0))
+* **core:** improve context providers error message for env-agnostic stacks ([#3137](https://github.com/awslabs/aws-cdk/issues/3137)) ([5b80146](https://github.com/awslabs/aws-cdk/commit/5b80146)), closes [#2922](https://github.com/awslabs/aws-cdk/issues/2922) [#3078](https://github.com/awslabs/aws-cdk/issues/3078) [#3120](https://github.com/awslabs/aws-cdk/issues/3120) [#3130](https://github.com/awslabs/aws-cdk/issues/3130)
+* **documentation:** auto-labeling fixed ([#3089](https://github.com/awslabs/aws-cdk/issues/3089)) ([7fb82ad](https://github.com/awslabs/aws-cdk/commit/7fb82ad))
+* **documentation:** removed duplicate generated template ([#3090](https://github.com/awslabs/aws-cdk/issues/3090)) ([590b05c](https://github.com/awslabs/aws-cdk/commit/590b05c))
+* **elasticloadbalancingv2:** fix to be able to set deregistrationDelay ([#3075](https://github.com/awslabs/aws-cdk/issues/3075)) ([22ab4b4](https://github.com/awslabs/aws-cdk/commit/22ab4b4))
+* **events:** correct token resolution in RuleTargetInput ([#3127](https://github.com/awslabs/aws-cdk/issues/3127)) ([a20c841](https://github.com/awslabs/aws-cdk/commit/a20c841)), closes [#3119](https://github.com/awslabs/aws-cdk/issues/3119)
+* **sns:** create subscriptions in consumer scope ([#3065](https://github.com/awslabs/aws-cdk/issues/3065)) ([64a203f](https://github.com/awslabs/aws-cdk/commit/64a203f)), closes [#3064](https://github.com/awslabs/aws-cdk/issues/3064)
+
+
+### Features
+
+* **apigateway:** support custom domain names ([#3135](https://github.com/awslabs/aws-cdk/issues/3135)) ([52b136b](https://github.com/awslabs/aws-cdk/commit/52b136b)), closes [#3103](https://github.com/awslabs/aws-cdk/issues/3103)
+* **aws-apigateway:** expand RestApi support to models, parameters and validators ([#2960](https://github.com/awslabs/aws-cdk/issues/2960)) ([12e6380](https://github.com/awslabs/aws-cdk/commit/12e6380)), closes [#905](https://github.com/awslabs/aws-cdk/issues/905) [#1695](https://github.com/awslabs/aws-cdk/issues/1695) [#727](https://github.com/awslabs/aws-cdk/issues/727) [#723](https://github.com/awslabs/aws-cdk/issues/723) [#2957](https://github.com/awslabs/aws-cdk/issues/2957)
+* **codepipeline:** generate a Role for every AWS-owned Action used in a Pipeline. ([#3105](https://github.com/awslabs/aws-cdk/issues/3105)) ([921dcc9](https://github.com/awslabs/aws-cdk/commit/921dcc9))
+* **core:** add Tokenization.isResolvable for aspects ([#3122](https://github.com/awslabs/aws-cdk/issues/3122)) ([d3a417e](https://github.com/awslabs/aws-cdk/commit/d3a417e)), closes [#3026](https://github.com/awslabs/aws-cdk/issues/3026)
+* **dynamodb:** support RemovalPolicy ([#3028](https://github.com/awslabs/aws-cdk/issues/3028)) ([a6175be](https://github.com/awslabs/aws-cdk/commit/a6175be)), closes [#2710](https://github.com/awslabs/aws-cdk/issues/2710)
+
 
 ## [0.36.0](https://github.com/awslabs/aws-cdk/compare/v0.35.0...v0.36.0) (2019-06-24)
 

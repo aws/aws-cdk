@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/aws-ec2",
-  "version": "0.36.0",
+  "version": "0.36.1",
   "description": "CDK Constructs for AWS EC2",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -63,26 +63,26 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "^0.36.0",
-    "cdk-build-tools": "^0.36.0",
-    "cdk-integ-tools": "^0.36.0",
-    "cfn2ts": "^0.36.0",
-    "pkglint": "^0.36.0"
+    "@aws-cdk/assert": "^0.36.1",
+    "cdk-build-tools": "^0.36.1",
+    "cdk-integ-tools": "^0.36.1",
+    "cfn2ts": "^0.36.1",
+    "pkglint": "^0.36.1"
   },
   "dependencies": {
-    "@aws-cdk/aws-cloudwatch": "^0.36.0",
-    "@aws-cdk/aws-iam": "^0.36.0",
-    "@aws-cdk/aws-ssm": "^0.36.0",
-    "@aws-cdk/core": "^0.36.0",
-    "@aws-cdk/cx-api": "^0.36.0"
+    "@aws-cdk/aws-cloudwatch": "^0.36.1",
+    "@aws-cdk/aws-iam": "^0.36.1",
+    "@aws-cdk/aws-ssm": "^0.36.1",
+    "@aws-cdk/core": "^0.36.1",
+    "@aws-cdk/cx-api": "^0.36.1"
   },
   "homepage": "https://github.com/awslabs/aws-cdk",
   "peerDependencies": {
-    "@aws-cdk/aws-cloudwatch": "^0.36.0",
-    "@aws-cdk/aws-iam": "^0.36.0",
-    "@aws-cdk/aws-ssm": "^0.36.0",
-    "@aws-cdk/core": "^0.36.0",
-    "@aws-cdk/cx-api": "^0.36.0"
+    "@aws-cdk/aws-cloudwatch": "^0.36.1",
+    "@aws-cdk/aws-iam": "^0.36.1",
+    "@aws-cdk/aws-ssm": "^0.36.1",
+    "@aws-cdk/core": "^0.36.1",
+    "@aws-cdk/cx-api": "^0.36.1"
   },
   "engines": {
     "node": ">= 8.10.0"

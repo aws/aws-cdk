@@ -1,7 +1,7 @@
 {
   "name": "@aws-cdk/cdk",
   "deprecated": "This module has been renamed to @aws-cdk/core",
-  "version": "0.36.0",
+  "version": "0.36.1",
   "description": "Deprecated: this module ha been renamed to @aws-cdk/core",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -50,8 +50,8 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "cdk-build-tools": "^0.36.0",
-    "pkglint": "^0.36.0"
+    "cdk-build-tools": "^0.36.1",
+    "pkglint": "^0.36.1"
   },
   "homepage": "https://github.com/awslabs/aws-cdk",
   "engines": {
