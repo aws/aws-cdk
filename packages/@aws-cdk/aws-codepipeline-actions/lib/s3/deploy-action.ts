@@ -7,7 +7,7 @@ import { deployArtifactBounds } from '../common';
 /**
  * Construction properties of the {@link S3DeployAction S3 deploy Action}.
  */
-export interface S3DeployActionProps extends codepipeline.CommonActionProps {
+export interface S3DeployActionProps extends codepipeline.CommonAwsActionProps {
   /**
    * Should the deploy action extract the artifact before deploying to Amazon S3.
    *
@@ -49,10 +49,13 @@ export class S3DeployAction extends Action {
     this.props = props;
   }
 
-  protected bound(_scope: Construct, _stage: codepipeline.IStage, options: codepipeline.ActionBindOptions):
+  protected bound(_scope: Construct, stage: codepipeline.IStage, options: codepipeline.ActionBindOptions):
       codepipeline.ActionConfig {
     // pipeline needs permissions to write to the S3 bucket
     this.props.bucket.grantWrite(options.role);
+
+    // the Action Role also needs to read from the Pipeline's bucket
+    stage.pipeline.artifactBucket.grantRead(options.role);
 
     return {
       configuration: {

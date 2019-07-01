@@ -8,7 +8,7 @@ import { deployArtifactBounds } from '../common';
 /**
  * Construction properties of {@link EcsDeployAction}.
  */
-export interface EcsDeployActionProps extends codepipeline.CommonActionProps {
+export interface EcsDeployActionProps extends codepipeline.CommonAwsActionProps {
   /**
    * The input artifact that contains the JSON image definitions file to use for deployments.
    * The JSON file is a list of objects,
@@ -61,7 +61,7 @@ export class EcsDeployAction extends Action {
     this.props = props;
   }
 
-  protected bound(_scope: Construct, _stage: codepipeline.IStage, options: codepipeline.ActionBindOptions):
+  protected bound(_scope: Construct, stage: codepipeline.IStage, options: codepipeline.ActionBindOptions):
       codepipeline.ActionConfig {
     // permissions based on CodePipeline documentation:
     // https://docs.aws.amazon.com/codepipeline/latest/userguide/how-to-custom-role.html#how-to-update-role-new-services
@@ -89,6 +89,8 @@ export class EcsDeployAction extends Action {
         }
       }
     }));
+
+    stage.pipeline.artifactBucket.grantRead(options.role);
 
     return {
       configuration: {
