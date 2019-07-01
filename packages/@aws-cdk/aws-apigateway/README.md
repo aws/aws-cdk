@@ -421,11 +421,11 @@ To route domain traffic to an API Gateway API, use Amazon Route 53 to create an 
 ```ts
 new route53.ARecord(this, 'CustomDomainAliasRecord', {
   zone: hostedZoneForExampleCom,
-  target: route53.AddressRecordTarget.fromAlias(new route53_targets.ApiGateway(api)
+  target: route53.AddressRecordTarget.fromAlias(new route53_targets.ApiGateway(api))
 });
 ```
 
-You can customize this by defining a `DomainName` resource directly:
+You can also define a `DomainName` resource directly in order to customize it's behavior:
 
 ```ts
 new apigw.DomainName(this, 'custom-domain', {
@@ -459,6 +459,14 @@ domain.addBasePathMapping(api);
 This can also be achieved through the `mapping` configuration when defining the
 domain as demonstrated above.
 
+If you wish to setup this domain with an Amazon Route53 alias, use the `route53_targets.ApiGatewayDomain`:
+
+```ts
+new route53.ARecord(this, 'CustomDomainAliasRecord', {
+  zone: hostedZoneForExampleCom,
+  target: route53.AddressRecordTarget.fromAlias(new route53_targets.ApiGatewayDomain(domainName))
+});
+```
 
 ----
 
