@@ -1,6 +1,5 @@
 import s3 = require('@aws-cdk/aws-s3');
 import cdk = require('@aws-cdk/core');
-import crypto = require('crypto');
 
 /**
  * Construction properties for {@link CrossRegionSupportStack}.
@@ -45,27 +44,12 @@ export class CrossRegionSupportStack extends cdk.Stack {
       },
     });
 
-    const replicationBucketName = generateUniqueName('cdk-cross-region-codepipeline-replication-bucket-',
-      props.region, props.account, false, 12);
-
     this.replicationBucket = new s3.Bucket(this, 'CrossRegionCodePipelineReplicationBucket', {
-      bucketName: replicationBucketName,
+      bucketName: cdk.PhysicalName.GENERATE_IF_NEEDED,
     });
   }
 }
 
 function generateStackName(props: CrossRegionSupportStackProps): string {
   return `${props.pipelineStackName}-support-${props.region}`;
-}
-
-function generateUniqueName(baseName: string, region: string, account: string,
-                            toUpperCase: boolean, hashPartLen: number = 8): string {
-  const sha256 = crypto.createHash('sha256')
-    .update(baseName)
-    .update(region)
-    .update(account);
-
-  const hash = sha256.digest('hex').slice(0, hashPartLen);
-
-  return baseName + (toUpperCase ? hash.toUpperCase() : hash.toLowerCase());
 }

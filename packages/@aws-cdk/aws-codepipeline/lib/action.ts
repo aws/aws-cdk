@@ -77,6 +77,8 @@ export interface ActionProperties {
 
 export interface ActionBindOptions {
   readonly role: iam.IRole;
+
+  readonly bucket: s3.IBucket;
 }
 
 export interface ActionConfig {
@@ -110,8 +112,6 @@ export interface IPipeline extends IResource {
    * @attribute
    */
   readonly pipelineArn: string;
-
-  readonly artifactBucket: s3.IBucket;
 
   /**
    * Define an event rule triggered by this CodePipeline.

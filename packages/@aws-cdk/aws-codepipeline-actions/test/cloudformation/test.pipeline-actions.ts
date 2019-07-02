@@ -352,6 +352,7 @@ class StageDouble implements codepipeline.IStage {
       const actionParent = new cdk.Construct(stageParent, action.actionProperties.actionName);
       fullActions.push(new FullAction(action.actionProperties, action.bind(actionParent, this, {
         role: pipeline.role,
+        bucket: pipeline.artifactBucket,
       })));
     }
     this.actions = fullActions;

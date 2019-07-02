@@ -96,7 +96,7 @@ export class S3SourceAction extends Action {
     this.props.bucket.grantRead(options.role);
 
     // ...and write to the Pipeline bucket
-    stage.pipeline.artifactBucket.grantWrite(options.role);
+    options.bucket.grantWrite(options.role);
 
     return {
       configuration: {
