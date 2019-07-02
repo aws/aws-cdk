@@ -44,6 +44,10 @@ export class VpcNetworkContextProviderPlugin implements ContextProviderPlugin {
     const subnetsResponse = await ec2.describeSubnets({ Filters: [{ Name: 'vpc-id', Values: [vpcId] }] }).promise();
     const listedSubnets = subnetsResponse.Subnets || [];
 
+    if (listedSubnets.length === 0) {
+      throw new Error(`Unable to import VPC ${vpcId} because it does not appear to have any subnets.`);
+    }
+
     // Now comes our job to separate these subnets out into AZs and subnet groups (Public, Private, Isolated)
     // We have the following attributes to go on:
     // - Type tag, we tag subnets with their type. In absence of this tag, we
@@ -58,12 +62,16 @@ export class VpcNetworkContextProviderPlugin implements ContextProviderPlugin {
     const subnets: Subnet[] = listedSubnets.map(subnet => {
       let type = getTag('aws-cdk:subnet-type', subnet.Tags);
       if (type === undefined) {
-        type = subnet.MapPublicIpOnLaunch ? 'Public' : 'Private';
+        type = subnet.MapPublicIpOnLaunch ? SubnetType.Public : SubnetType.Private;
+      }
+      if (!isValidSubnetType(type)) {
+        // tslint:disable-next-line: max-line-length
+        throw new Error(`Subnet ${subnet.SubnetArn} has invalid subnet type ${type} (must be ${SubnetType.Public}, ${SubnetType.Private} or ${SubnetType.Isolated})`);
       }
 
       const name = getTag('aws-cdk:subnet-name', subnet.Tags) || type;
 
-      return { az: subnet.AvailabilityZone!, type: type as SubnetType, name, subnetId: subnet.SubnetId! };
+      return { az: subnet.AvailabilityZone!, type, name, subnetId: subnet.SubnetId! };
     });
 
     const grouped = groupSubnets(subnets);
@@ -151,6 +159,12 @@ enum SubnetType {
   Public = 'Public',
   Private = 'Private',
   Isolated = 'Isolated'
+}
+
+function isValidSubnetType(val: string): val is SubnetType {
+  return val === SubnetType.Public
+    || val === SubnetType.Private
+    || val === SubnetType.Isolated;
 }
 
 interface Subnet {

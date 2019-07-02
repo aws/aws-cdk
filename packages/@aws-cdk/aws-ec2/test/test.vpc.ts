@@ -366,6 +366,9 @@ export = {
         expect(stack).to(haveResource('AWS::EC2::Subnet', hasTags([{
           Key: 'Name',
           Value: `VPC/egressSubnet${i}`,
+        }, {
+            Key: 'aws-cdk:subnet-name',
+            Value: 'egress',
         }])));
       }
       test.done();
