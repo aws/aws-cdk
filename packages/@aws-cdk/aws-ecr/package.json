@@ -11,14 +11,16 @@
         "package": "software.amazon.awscdk.services.ecr",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "ecr"
+          "artifactId": "ecr",
+          "versionSuffix": ".DEVPREVIEW"
         }
       },
       "dotnet": {
         "namespace": "Amazon.CDK.AWS.ECR",
         "packageId": "Amazon.CDK.AWS.ECR",
         "signAssembly": true,
-        "assemblyOriginatorKeyFile": "../../key.snk"
+        "assemblyOriginatorKeyFile": "../../key.snk",
+        "versionSuffix": "-devpreview"
       },
       "python": {
         "distName": "aws-cdk.aws-ecr",
@@ -93,5 +95,9 @@
       "construct-base-is-private:@aws-cdk/aws-ecr.RepositoryBase"
     ]
   },
+<<<<<<< HEAD
   "stability": "stable"
+=======
+  "stability": "experimental"
+>>>>>>> origin/master
 }

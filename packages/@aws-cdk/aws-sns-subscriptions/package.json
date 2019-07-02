@@ -11,14 +11,16 @@
         "package": "software.amazon.awscdk.services.sns.subscriptions",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "sns-subscriptions"
+          "artifactId": "sns-subscriptions",
+          "versionSuffix": ".DEVPREVIEW"
         }
       },
       "dotnet": {
         "namespace": "Amazon.CDK.AWS.SNS.Subscriptions",
         "packageId": "Amazon.CDK.AWS.SNS.Subscriptions",
         "signAssembly": true,
-        "assemblyOriginatorKeyFile": "../../key.snk"
+        "assemblyOriginatorKeyFile": "../../key.snk",
+        "versionSuffix": "-devpreview"
       },
       "python": {
         "distName": "aws-cdk.aws-sns-subscriptions",
@@ -93,5 +95,9 @@
   "engines": {
     "node": ">= 8.10.0"
   },
+<<<<<<< HEAD
   "stability": "stable"
+=======
+  "stability": "experimental"
+>>>>>>> origin/master
 }

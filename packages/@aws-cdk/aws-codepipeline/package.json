@@ -11,14 +11,16 @@
         "package": "software.amazon.awscdk.services.codepipeline",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "codepipeline"
+          "artifactId": "codepipeline",
+          "versionSuffix": ".DEVPREVIEW"
         }
       },
       "dotnet": {
         "namespace": "Amazon.CDK.AWS.CodePipeline",
         "packageId": "Amazon.CDK.AWS.CodePipeline",
         "signAssembly": true,
-        "assemblyOriginatorKeyFile": "../../key.snk"
+        "assemblyOriginatorKeyFile": "../../key.snk",
+        "versionSuffix": "-devpreview"
       },
       "python": {
         "distName": "aws-cdk.aws-codepipeline",
@@ -106,5 +108,9 @@
       "from-method:@aws-cdk/aws-codepipeline.Pipeline"
     ]
   },
+<<<<<<< HEAD
   "stability": "stable"
+=======
+  "stability": "experimental"
+>>>>>>> origin/master
 }

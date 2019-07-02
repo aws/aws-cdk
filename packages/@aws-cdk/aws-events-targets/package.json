@@ -11,14 +11,16 @@
         "package": "software.amazon.awscdk.services.events.targets",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "events-targets"
+          "artifactId": "events-targets",
+          "versionSuffix": ".DEVPREVIEW"
         }
       },
       "dotnet": {
         "namespace": "Amazon.CDK.AWS.Events.Targets",
         "packageId": "Amazon.CDK.AWS.Events.Targets",
         "signAssembly": true,
-        "assemblyOriginatorKeyFile": "../../key.snk"
+        "assemblyOriginatorKeyFile": "../../key.snk",
+        "versionSuffix": "-devpreview"
       },
       "python": {
         "distName": "aws-cdk.aws-events-targets",
@@ -114,5 +116,9 @@
   "engines": {
     "node": ">= 8.10.0"
   },
+<<<<<<< HEAD
   "stability": "stable"
+=======
+  "stability": "experimental"
+>>>>>>> origin/master
 }

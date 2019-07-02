@@ -11,14 +11,16 @@
         "package": "software.amazon.awscdk.services.iam",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "iam"
+          "artifactId": "iam",
+          "versionSuffix": ".DEVPREVIEW"
         }
       },
       "dotnet": {
         "namespace": "Amazon.CDK.AWS.IAM",
         "packageId": "Amazon.CDK.AWS.IAM",
         "signAssembly": true,
-        "assemblyOriginatorKeyFile": "../../key.snk"
+        "assemblyOriginatorKeyFile": "../../key.snk",
+        "versionSuffix": "-devpreview"
       },
       "python": {
         "distName": "aws-cdk.aws-iam",
@@ -83,5 +85,9 @@
   "engines": {
     "node": ">= 8.10.0"
   },
+<<<<<<< HEAD
   "stability": "stable"
+=======
+  "stability": "experimental"
+>>>>>>> origin/master
 }

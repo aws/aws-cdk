@@ -11,14 +11,16 @@
         "package": "software.amazon.awscdk.services.applicationautoscaling",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "applicationautoscaling"
+          "artifactId": "applicationautoscaling",
+          "versionSuffix": ".DEVPREVIEW"
         }
       },
       "dotnet": {
         "namespace": "Amazon.CDK.AWS.ApplicationAutoScaling",
         "packageId": "Amazon.CDK.AWS.ApplicationAutoScaling",
         "signAssembly": true,
-        "assemblyOriginatorKeyFile": "../../key.snk"
+        "assemblyOriginatorKeyFile": "../../key.snk",
+        "versionSuffix": "-devpreview"
       },
       "python": {
         "distName": "aws-cdk.aws-applicationautoscaling",
@@ -90,5 +92,9 @@
       "props-physical-name:@aws-cdk/aws-applicationautoscaling.ScalableTargetProps"
     ]
   },
+<<<<<<< HEAD
   "stability": "stable"
+=======
+  "stability": "experimental"
+>>>>>>> origin/master
 }

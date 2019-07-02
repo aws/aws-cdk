@@ -11,14 +11,16 @@
         "package": "software.amazon.awscdk.services.kms",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "kms"
+          "artifactId": "kms",
+          "versionSuffix": ".DEVPREVIEW"
         }
       },
       "dotnet": {
         "namespace": "Amazon.CDK.AWS.KMS",
         "packageId": "Amazon.CDK.AWS.KMS",
         "signAssembly": true,
-        "assemblyOriginatorKeyFile": "../../key.snk"
+        "assemblyOriginatorKeyFile": "../../key.snk",
+        "versionSuffix": "-devpreview"
       },
       "python": {
         "distName": "aws-cdk.aws-kms",
@@ -86,5 +88,9 @@
       "props-physical-name:@aws-cdk/aws-kms.KeyProps"
     ]
   },
+<<<<<<< HEAD
   "stability": "stable"
+=======
+  "stability": "experimental"
+>>>>>>> origin/master
 }

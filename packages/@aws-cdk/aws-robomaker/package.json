@@ -11,13 +11,15 @@
         "namespace": "Amazon.CDK.AWS.RoboMaker",
         "packageId": "Amazon.CDK.AWS.RoboMaker",
         "signAssembly": true,
-        "assemblyOriginatorKeyFile": "../../key.snk"
+        "assemblyOriginatorKeyFile": "../../key.snk",
+        "versionSuffix": "-devpreview"
       },
       "java": {
         "package": "software.amazon.awscdk.services.robomaker",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "robomaker"
+          "artifactId": "robomaker",
+          "versionSuffix": ".DEVPREVIEW"
         }
       },
       "python": {

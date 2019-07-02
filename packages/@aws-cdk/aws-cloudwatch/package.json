@@ -11,14 +11,16 @@
         "package": "software.amazon.awscdk.services.cloudwatch",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "cloudwatch"
+          "artifactId": "cloudwatch",
+          "versionSuffix": ".DEVPREVIEW"
         }
       },
       "dotnet": {
         "namespace": "Amazon.CDK.AWS.CloudWatch",
         "packageId": "Amazon.CDK.AWS.CloudWatch",
         "signAssembly": true,
-        "assemblyOriginatorKeyFile": "../../key.snk"
+        "assemblyOriginatorKeyFile": "../../key.snk",
+        "versionSuffix": "-devpreview"
       },
       "python": {
         "distName": "aws-cdk.aws-cloudwatch",
@@ -87,5 +89,9 @@
   "engines": {
     "node": ">= 8.10.0"
   },
+<<<<<<< HEAD
   "stability": "stable"
+=======
+  "stability": "experimental"
+>>>>>>> origin/master
 }
