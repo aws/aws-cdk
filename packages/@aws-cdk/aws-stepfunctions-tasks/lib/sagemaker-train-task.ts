@@ -75,6 +75,8 @@ export interface SagemakerTrainTaskProps {
 
 /**
  * Class representing the SageMaker Create Training Job task.
+ *
+ * @experimental
  */
 export class SagemakerTrainTask implements iam.IGrantable, ec2.IConnectable, sfn.IStepFunctionsTask {
 
