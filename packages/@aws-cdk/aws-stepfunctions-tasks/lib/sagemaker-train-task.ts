@@ -90,6 +90,8 @@ export class SagemakerTrainTask implements iam.IGrantable, ec2.IConnectable, sfn
      */
     public readonly role: iam.IRole;
 
+    public readonly grantPrincipal: iam.IPrincipal;
+
     /**
      * The Algorithm Specification
      */
@@ -125,7 +127,7 @@ export class SagemakerTrainTask implements iam.IGrantable, ec2.IConnectable, sfn
         };
 
         // set the sagemaker role or create new one
-        this.role = props.role || new iam.Role(scope, 'SagemakerRole', {
+        this.grantPrincipal = this.role = props.role || new iam.Role(scope, 'SagemakerRole', {
             assumedBy: new iam.ServicePrincipal('sagemaker.amazonaws.com'),
             inlinePolicies: {
                 CreateTrainingJob: new iam.PolicyDocument({
@@ -159,17 +161,8 @@ export class SagemakerTrainTask implements iam.IGrantable, ec2.IConnectable, sfn
             }
         });
 
-        for (const input of props.inputDataConfig) {
-            input.dataSource.s3DataSource.s3Location.grantRead(this.role);
-        }
-        props.outputDataConfig.s3OutputLocation.grantWrite(this.role);
-
         if (props.outputDataConfig.encryptionKey) {
             props.outputDataConfig.encryptionKey.grantEncrypt(this.role);
-        }
-
-        if (props.algorithmSpecification.trainingImage) {
-            props.algorithmSpecification.trainingImage.grantRead(this.role);
         }
 
         if (props.resourceConfig && props.resourceConfig.volumeEncryptionKey) {
@@ -195,10 +188,6 @@ export class SagemakerTrainTask implements iam.IGrantable, ec2.IConnectable, sfn
         if (this.props.vpcConfig) {
             this.props.vpcConfig.securityGroups.forEach(sg => this.connections.addSecurityGroup(sg));
         }
-    }
-
-    public get grantPrincipal(): iam.IPrincipal {
-        return this.role;
     }
 
     public bind(task: sfn.Task): sfn.StepFunctionsTaskConfig  {
@@ -228,7 +217,7 @@ export class SagemakerTrainTask implements iam.IGrantable, ec2.IConnectable, sfn
         return {
             AlgorithmSpecification: {
                 TrainingInputMode: spec.trainingInputMode,
-                ...(spec.trainingImage) ? { TrainingImage: spec.trainingImage } : {},
+                ...(spec.trainingImage) ? { TrainingImage: spec.trainingImage.bind(this).imageUri } : {},
                 ...(spec.algorithmName) ? { AlgorithmName: spec.algorithmName } : {},
                 ...(spec.metricDefinitions) ?
                 { MetricDefinitions: spec.metricDefinitions
@@ -243,7 +232,7 @@ export class SagemakerTrainTask implements iam.IGrantable, ec2.IConnectable, sfn
                 ChannelName: channel.channelName,
                 DataSource: {
                     S3DataSource: {
-                        S3Uri: channel.dataSource.s3DataSource.s3Location.uri,
+                        S3Uri: channel.dataSource.s3DataSource.s3Location.bind(this, { forReading: true }).uri,
                         S3DataType: channel.dataSource.s3DataSource.s3DataType,
                         ...(channel.dataSource.s3DataSource.s3DataDistributionType) ?
                             { S3DataDistributionType: channel.dataSource.s3DataSource.s3DataDistributionType} : {},
@@ -262,7 +251,7 @@ export class SagemakerTrainTask implements iam.IGrantable, ec2.IConnectable, sfn
     private renderOutputDataConfig(config: OutputDataConfig): {[key: string]: any} {
         return {
             OutputDataConfig: {
-                S3OutputPath: config.s3OutputLocation.uri,
+                S3OutputPath: config.s3OutputLocation.bind(this, { forWriting: true }).uri,
                 ...(config.encryptionKey) ? { KmsKeyId: config.encryptionKey.keyArn } : {},
             }
         };

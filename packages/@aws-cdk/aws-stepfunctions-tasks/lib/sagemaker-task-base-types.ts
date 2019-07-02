@@ -1,10 +1,13 @@
 import ec2 = require('@aws-cdk/aws-ec2');
 import ecr = require('@aws-cdk/aws-ecr');
+import { DockerImageAsset, DockerImageAssetProps } from '@aws-cdk/aws-ecr-assets';
 import iam = require('@aws-cdk/aws-iam');
 import kms = require('@aws-cdk/aws-kms');
 import s3 = require('@aws-cdk/aws-s3');
 import sfn = require('@aws-cdk/aws-stepfunctions');
-import { Duration } from '@aws-cdk/core';
+import { Construct, Duration } from '@aws-cdk/core';
+
+export interface ISageMakerTask extends sfn.IStepFunctionsTask, iam.IGrantable {}
 
 //
 // Create Training Job types
@@ -28,7 +31,7 @@ export interface AlgorithmSpecification {
     /**
      * Registry path of the Docker image that contains the training algorithm.
      */
-    readonly trainingImage?: IDockerImage;
+    readonly trainingImage?: DockerImage;
 
     /**
      * Input mode that the algorithm supports.
@@ -129,7 +132,7 @@ export interface S3DataSource {
     /**
      * S3 Uri
      */
-    readonly s3Location: IS3Location;
+    readonly s3Location: S3Location;
 }
 
 /**
@@ -144,7 +147,7 @@ export interface OutputDataConfig {
   /**
    * Identifies the S3 path where you want Amazon SageMaker to store the model artifacts.
    */
-  readonly s3OutputLocation: IS3Location;
+  readonly s3OutputLocation: S3Location;
 }
 
 export interface StoppingCondition {
@@ -222,37 +225,22 @@ export interface MetricDefinition {
     readonly regex: string;
 }
 
-/**
- * Specifies a location in a S3 Bucket.
- *
- * @experimental
- */
-export interface IS3Location {
-    /** The URI of the location in S3 */
+export interface S3LocationConfig {
     readonly uri: string;
-
-    /** Grants read permissions to the S3 location. */
-    grantRead(grantee: iam.IGrantable): void;
-    /** Grants write permissions to the S3 location. */
-    grantWrite(grantee: iam.IGrantable): void;
 }
 
 /**
  * Constructs `IS3Location` objects.
  */
-export class S3Location {
+export abstract class S3Location {
     /**
      * An `IS3Location` built with a determined bucket and key prefix.
      *
      * @param bucket    is the bucket where the objects are to be stored.
      * @param keyPrefix is the key prefix used by the location.
      */
-    public static inBucket(bucket: s3.IBucket, keyPrefix: string): IS3Location {
-        return {
-            uri: bucket.urlForObject(keyPrefix),
-            grantRead: (grantee) => bucket.grantRead(grantee, keyPrefix + '*'),
-            grantWrite: (grantee) => bucket.grantWrite(grantee, keyPrefix + '*'),
-        };
+    public static fromBucket(bucket: s3.IBucket, keyPrefix: string): S3Location {
+        return new StandardS3Location({ bucket, keyPrefix, uri: bucket.urlForObject(keyPrefix) });
     }
 
     /**
@@ -263,76 +251,71 @@ export class S3Location {
      *
      * @param expression the JSON expression resolving to an S3 location URI.
      */
-    public static fromJsonExpression(expression: string): IS3Location {
-        return {
-            uri: sfn.Data.stringAt(expression),
-            grantRead: grantee => grantee.grantPrincipal.addToPolicy(new iam.PolicyStatement({
-                actions: ['s3:GetObject', `s3:ListBucket`],
-                resources: ['*']
-            })),
-            grantWrite: grantee => grantee.grantPrincipal.addToPolicy(new iam.PolicyStatement({
-                actions: ['s3:PutObject'],
-                resources: ['*']
-            })),
-        };
+    public static fromJsonExpression(expression: string): S3Location {
+        return new StandardS3Location({ uri: sfn.Data.stringAt(expression) });
     }
 
-    private constructor() { }
-}
-
-export interface IDockerImage {
-    readonly name: string;
-    grantRead(grantee: iam.IGrantable): void;
+    /**
+     * Called when the S3Location is bound to a StepFunctions task.
+     */
+    public abstract bind(task: ISageMakerTask, opts: S3LocationBindOptions): S3LocationConfig;
 }
 
 /**
- * Specifies options for accessing images in ECR.
+ * Options for binding an S3 Location.
  */
-export interface EcrImageOptions {
+export interface S3LocationBindOptions {
     /**
-     * The tag to use for this ECR Image. This option is mutually exclusive with `digest`.
+     * Allow reading from the S3 Location.
+     *
+     * @default false
      */
-    readonly tag?: string;
+    readonly forReading?: boolean;
 
     /**
-     * The digest to use for this ECR Image. This option is mutually exclusive with `tag`.
+     * Allow writing to the S3 Location.
+     *
+     * @default false
      */
-    readonly digest?: string;
+    readonly forWriting?: boolean;
+}
+
+/**
+ * Configuration for a using Docker image.
+ *
+ * @experimental
+ */
+export interface DockerImageConfig {
+    /**
+     * The fully qualified URI of the Docker image.
+     */
+    readonly imageUri: string;
 }
 
 /**
  * Creates `IDockerImage` instances.
+ *
+ * @experimental
  */
-export class DockerImage {
+export abstract class DockerImage {
     /**
      * Reference a Docker image stored in an ECR repository.
      *
-     * @param repo the ECR repository where the image is hosted.
-     * @param opts an optional `tag` or `digest` to use.
+     * @param repository the ECR repository where the image is hosted.
+     * @param tag an optional `tag`
      */
-    public static inEcr(repo: ecr.IRepository, opts: EcrImageOptions = {}): IDockerImage {
-        if (opts.tag && opts.digest) {
-            throw new Error(`The tag and digest options are mutually exclusive, but both were specified`);
-        }
-        const suffix = opts.tag
-            ? `:${opts.tag}`
-            : opts.digest
-                ? `@${opts.digest}`
-                : '';
-        return {
-            name: repo.repositoryUri + suffix,
-            grantRead: repo.grantPull.bind(repo),
-        };
+    public static fromEcrRepository(repository: ecr.IRepository, tag: string = 'latest'): DockerImage {
+        return new StandardDockerImage({ repository, imageUri: repository.repositoryUriForTag(tag) });
     }
 
     /**
      * Reference a Docker image which URI is obtained from the task's input.
      *
-     * @param expression      the JSON path expression with the task input.
-     * @param enableEcrAccess whether ECR access should be permitted (set to `false` if the image will never be in ECR).
+     * @param expression           the JSON path expression with the task input.
+     * @param allowAnyEcrImagePull whether ECR access should be permitted (set to `false` if the image will never be in ECR).
      */
-    public static fromJsonExpression(expression: string, enableEcrAccess = true): IDockerImage {
-        return this.fromImageUri(sfn.Data.stringAt(expression), enableEcrAccess);
+    public static fromJsonExpression(expression: string, allowAnyEcrImagePull = true): DockerImage {
+        return new StandardDockerImage({ imageUri: expression, allowAnyEcrImagePull });
     }
 
     /**
@@ -340,28 +323,28 @@ export class DockerImage {
      *
      * When referencing ECR images, prefer using `inEcr`.
      *
-     * @param uri             the URI to the docker image.
-     * @param enableEcrAccess whether ECR access should be permitted (set to `true` if the image is located in an ECR
-     *                        repository).
+     * @param imageUri the URI to the docker image.
      */
-    public static fromImageUri(uri: string, enableEcrAccess = false): IDockerImage {
-        return {
-            name: uri,
-            grantRead(grantee) {
-                if (!enableEcrAccess) { return; }
-                grantee.grantPrincipal.addToPolicy(new iam.PolicyStatement({
-                    actions: [
-                        'ecr:BatchCheckLayerAvailability',
-                        'ecr:GetDownloadUrlForLayer',
-                        'ecr:BatchGetImage'
-                    ],
-                    resources: ['*']
-                }));
-            },
-        };
+    public static fromRegistry(imageUri: string): DockerImage {
+        return new StandardDockerImage({ imageUri });
     }
 
-    private constructor() { }
+    /**
+     * Reference a Docker image that is provided as an Asset in the current app.
+     *
+     * @param scope the scope in which to create the Asset.
+     * @param id    the ID for the asset in the construct tree.
+     * @param props the configuration props of the asset.
+     */
+    public static fromAsset(scope: Construct, id: string, props: DockerImageAssetProps): DockerImage {
+        const asset = new DockerImageAsset(scope, id, props);
+        return new StandardDockerImage({ repository: asset.repository, imageUri: asset.imageUri });
+    }
+
+    /**
+     * Called when the image is used by a SageMaker task.
+     */
+    public abstract bind(task: ISageMakerTask): DockerImageConfig;
 }
 
 /**
@@ -617,4 +600,71 @@ export enum AssembleWith {
      */
     LINE = 'Line'
 
+}
+
+class StandardDockerImage extends DockerImage {
+    private readonly allowAnyEcrImagePull: boolean;
+    private readonly imageUri: string;
+    private readonly repository?: ecr.IRepository;
+
+    constructor(opts: { allowAnyEcrImagePull?: boolean, imageUri: string, repository?: ecr.IRepository }) {
+        super();
+
+        this.allowAnyEcrImagePull = !!opts.allowAnyEcrImagePull;
+        this.imageUri = opts.imageUri;
+        this.repository = opts.repository;
+    }
+
+    public bind(task: ISageMakerTask): DockerImageConfig {
+        if (this.repository) {
+            this.repository.grantPull(task);
+        }
+        if (this.allowAnyEcrImagePull) {
+            task.grantPrincipal.addToPolicy(new iam.PolicyStatement({
+                actions: [
+                    'ecr:BatchCheckLayerAvailability',
+                    'ecr:GetDownloadUrlForLayer',
+                    'ecr:BatchGetImage',
+                ],
+                resources: ['*']
+            }));
+        }
+        return {
+            imageUri: this.imageUri,
+        };
+    }
+}
+
+class StandardS3Location extends S3Location {
+    private readonly bucket?: s3.IBucket;
+    private readonly keyGlob: string;
+    private readonly uri: string;
+
+    constructor(opts: { bucket?: s3.IBucket, keyPrefix?: string, uri: string }) {
+        super();
+        this.bucket = opts.bucket;
+        this.keyGlob = `${opts.keyPrefix || ''}*`;
+        this.uri = opts.uri;
+    }
+
+    public bind(task: ISageMakerTask, opts: S3LocationBindOptions): S3LocationConfig {
+        if (this.bucket) {
+            if (opts.forReading) {
+                this.bucket.grantRead(task, this.keyGlob);
+            }
+            if (opts.forWriting) {
+                this.bucket.grantWrite(task, this.keyGlob);
+            }
+        } else {
+            const actions = new Array<string>();
+            if (opts.forReading) {
+                actions.push('s3:GetObject', 's3:ListBucket');
+            }
+            if (opts.forWriting) {
+                actions.push('s3:PutObject');
+            }
+            task.grantPrincipal.addToPolicy(new iam.PolicyStatement({ actions, resources: ['*'], }));
+        }
+        return { uri: this.uri };
+    }
 }

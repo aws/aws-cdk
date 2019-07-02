@@ -27,13 +27,13 @@ test('create basic training job', () => {
                 channelName: 'train',
                 dataSource: {
                     s3DataSource: {
-                        s3Location: S3Location.inBucket(s3.Bucket.fromBucketName(stack, 'InputBucket', 'mybucket'), 'mytrainpath')
+                        s3Location: S3Location.fromBucket(s3.Bucket.fromBucketName(stack, 'InputBucket', 'mybucket'), 'mytrainpath')
                     }
                 }
             }
         ],
         outputDataConfig: {
-            s3OutputLocation: S3Location.inBucket(s3.Bucket.fromBucketName(stack, 'OutputBucket', 'mybucket'), 'myoutputpath')
+            s3OutputLocation: S3Location.fromBucket(s3.Bucket.fromBucketName(stack, 'OutputBucket', 'mybucket'), 'myoutputpath')
         },
     })});
 
@@ -118,7 +118,7 @@ test('create complex training job', () => {
                 dataSource: {
                     s3DataSource: {
                         s3DataType: tasks.S3DataType.S3_PREFIX,
-                        s3Location: S3Location.inBucket(s3.Bucket.fromBucketName(stack, 'InputBucketA', 'mybucket'), 'mytrainpath'),
+                        s3Location: S3Location.fromBucket(s3.Bucket.fromBucketName(stack, 'InputBucketA', 'mybucket'), 'mytrainpath'),
                     }
                 }
             },
@@ -130,13 +130,13 @@ test('create complex training job', () => {
                 dataSource: {
                     s3DataSource: {
                         s3DataType: tasks.S3DataType.S3_PREFIX,
-                        s3Location: S3Location.inBucket(s3.Bucket.fromBucketName(stack, 'InputBucketB', 'mybucket'), 'mytestpath'),
+                        s3Location: S3Location.fromBucket(s3.Bucket.fromBucketName(stack, 'InputBucketB', 'mybucket'), 'mytestpath'),
                     }
                 }
             }
         ],
         outputDataConfig: {
-            s3OutputLocation: S3Location.inBucket(s3.Bucket.fromBucketName(stack, 'OutputBucket', 'mybucket'), 'myoutputpath'),
+            s3OutputLocation: S3Location.fromBucket(s3.Bucket.fromBucketName(stack, 'OutputBucket', 'mybucket'), 'myoutputpath'),
             encryptionKey: kmsKey
         },
         resourceConfig: {
@@ -263,7 +263,7 @@ test('pass param to training job', () => {
             }
         ],
         outputDataConfig: {
-            s3OutputLocation: S3Location.inBucket(s3.Bucket.fromBucketName(stack, 'Bucket', 'mybucket'), 'myoutputpath'),
+            s3OutputLocation: S3Location.fromBucket(s3.Bucket.fromBucketName(stack, 'Bucket', 'mybucket'), 'myoutputpath'),
         },
         resourceConfig: {
             instanceCount: 1,
