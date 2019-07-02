@@ -11,14 +11,16 @@
         "package": "software.amazon.awscdk.services.route53",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "route53"
+          "artifactId": "route53",
+          "versionSuffix": ".DEVPREVIEW"
         }
       },
       "dotnet": {
         "namespace": "Amazon.CDK.AWS.Route53",
         "packageId": "Amazon.CDK.AWS.Route53",
         "signAssembly": true,
-        "assemblyOriginatorKeyFile": "../../key.snk"
+        "assemblyOriginatorKeyFile": "../../key.snk",
+        "versionSuffix": "-devpreview"
       },
       "python": {
         "distName": "aws-cdk.aws-route53",

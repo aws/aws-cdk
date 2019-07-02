@@ -11,14 +11,16 @@
         "package": "software.amazon.awscdk.assets",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "cdk-assets"
+          "artifactId": "cdk-assets",
+          "versionSuffix": ".DEVPREVIEW"
         }
       },
       "dotnet": {
         "namespace": "Amazon.CDK.Assets",
         "packageId": "Amazon.CDK.Assets",
         "signAssembly": true,
-        "assemblyOriginatorKeyFile": "../../key.snk"
+        "assemblyOriginatorKeyFile": "../../key.snk",
+        "versionSuffix": "-devpreview"
       },
       "python": {
         "distName": "aws-cdk.assets",
