@@ -66,6 +66,7 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "@aws-cdk/assert": "^0.36.1",
+    "@aws-cdk/aws-kms": "^0.36.1",
     "@aws-cdk/aws-s3": "^0.36.1",
     "aws-sdk": "^2.438.0",
     "cdk-build-tools": "^0.36.1",
