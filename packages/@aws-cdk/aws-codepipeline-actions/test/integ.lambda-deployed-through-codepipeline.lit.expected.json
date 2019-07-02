@@ -62,6 +62,8 @@
             },
             {
               "Action": [
+                "kms:Decrypt",
+                "kms:DescribeKey",
                 "kms:Encrypt",
                 "kms:ReEncrypt*",
                 "kms:GenerateDataKey*"
@@ -79,6 +81,8 @@
             },
             {
               "Action": [
+                "kms:Decrypt",
+                "kms:DescribeKey",
                 "kms:Encrypt",
                 "kms:ReEncrypt*",
                 "kms:GenerateDataKey*"
@@ -567,6 +571,9 @@
           "Statement": [
             {
               "Action": [
+                "s3:GetObject*",
+                "s3:GetBucket*",
+                "s3:List*",
                 "s3:DeleteObject*",
                 "s3:PutObject*",
                 "s3:Abort*"
@@ -597,6 +604,8 @@
             },
             {
               "Action": [
+                "kms:Decrypt",
+                "kms:DescribeKey",
                 "kms:Encrypt",
                 "kms:ReEncrypt*",
                 "kms:GenerateDataKey*"
@@ -675,6 +684,9 @@
           "Statement": [
             {
               "Action": [
+                "s3:GetObject*",
+                "s3:GetBucket*",
+                "s3:List*",
                 "s3:DeleteObject*",
                 "s3:PutObject*",
                 "s3:Abort*"
@@ -705,6 +717,8 @@
             },
             {
               "Action": [
+                "kms:Decrypt",
+                "kms:DescribeKey",
                 "kms:Encrypt",
                 "kms:ReEncrypt*",
                 "kms:GenerateDataKey*"
