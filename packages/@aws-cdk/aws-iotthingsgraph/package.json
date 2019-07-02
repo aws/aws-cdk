@@ -11,13 +11,15 @@
         "namespace": "Amazon.CDK.AWS.IoTThingsGraph",
         "packageId": "Amazon.CDK.AWS.IoTThingsGraph",
         "signAssembly": true,
-        "assemblyOriginatorKeyFile": "../../key.snk"
+        "assemblyOriginatorKeyFile": "../../key.snk",
+        "versionSuffix": "-devpreview"
       },
       "java": {
         "package": "software.amazon.awscdk.services.iotthingsgraph",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "iotthingsgraph"
+          "artifactId": "iotthingsgraph",
+          "versionSuffix": ".DEVPREVIEW"
         }
       },
       "python": {

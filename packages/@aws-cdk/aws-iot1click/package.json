@@ -11,13 +11,15 @@
         "namespace": "Amazon.CDK.AWS.IoT1Click",
         "packageId": "Amazon.CDK.AWS.IoT1Click",
         "signAssembly": true,
-        "assemblyOriginatorKeyFile": "../../key.snk"
+        "assemblyOriginatorKeyFile": "../../key.snk",
+        "versionSuffix": "-devpreview"
       },
       "java": {
         "package": "software.amazon.awscdk.services.iot1click",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "iot1click"
+          "artifactId": "iot1click",
+          "versionSuffix": ".DEVPREVIEW"
         }
       },
       "python": {

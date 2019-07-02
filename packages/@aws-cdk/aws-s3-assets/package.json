@@ -11,14 +11,16 @@
         "package": "software.amazon.awscdk.services.s3.assets",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "s3-assets"
+          "artifactId": "s3-assets",
+          "versionSuffix": ".DEVPREVIEW"
         }
       },
       "dotnet": {
         "namespace": "Amazon.CDK.AWS.S3.Assets",
         "packageId": "Amazon.CDK.AWS.S3.Assets",
         "signAssembly": true,
-        "assemblyOriginatorKeyFile": "../../key.snk"
+        "assemblyOriginatorKeyFile": "../../key.snk",
+        "versionSuffix": "-devpreview"
       },
       "python": {
         "distName": "aws-cdk.aws-s3-assets",
