@@ -494,8 +494,12 @@ class SingletonPolicy extends cdk.Construct implements iam.IGrantable {
 
   public grantExecuteChangeSet(props: { stackName: string, changeSetName: string, region?: string }): void {
     this.statementFor({
-      actions: ['cloudformation:ExecuteChangeSet'],
-      conditions: { StringEquals: { 'cloudformation:ChangeSetName': props.changeSetName } },
+      actions: [
+        'cloudformation:DescribeStacks',
+        'cloudformation:DescribeChangeSet',
+        'cloudformation:ExecuteChangeSet',
+      ],
+      conditions: { StringEqualsIfExists: { 'cloudformation:ChangeSetName': props.changeSetName } },
     }).addResources(this.stackArnFromProps(props));
   }
 

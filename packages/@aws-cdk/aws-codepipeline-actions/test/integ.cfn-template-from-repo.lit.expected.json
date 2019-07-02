@@ -770,9 +770,13 @@
         "PolicyDocument": {
           "Statement": [
             {
-              "Action": "cloudformation:ExecuteChangeSet",
+              "Action": [
+                "cloudformation:DescribeChangeSet",
+                "cloudformation:DescribeStacks",
+                "cloudformation:ExecuteChangeSet"
+              ],
               "Condition": {
-                "StringEquals": {
+                "StringEqualsIfExists": {
                   "cloudformation:ChangeSetName": "StagedChangeSet"
                 }
               },
