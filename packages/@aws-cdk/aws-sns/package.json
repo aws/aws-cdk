@@ -11,14 +11,16 @@
         "package": "software.amazon.awscdk.services.sns",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "sns"
+          "artifactId": "sns",
+          "versionSuffix": ".DEVPREVIEW"
         }
       },
       "dotnet": {
         "namespace": "Amazon.CDK.AWS.SNS",
         "packageId": "Amazon.CDK.AWS.SNS",
         "signAssembly": true,
-        "assemblyOriginatorKeyFile": "../../key.snk"
+        "assemblyOriginatorKeyFile": "../../key.snk",
+        "versionSuffix": "-devpreview"
       },
       "python": {
         "distName": "aws-cdk.aws-sns",

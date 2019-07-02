@@ -11,14 +11,16 @@
         "package": "software.amazon.awscdk.services.dynamodb",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "dynamodb"
+          "artifactId": "dynamodb",
+          "versionSuffix": ".DEVPREVIEW"
         }
       },
       "dotnet": {
         "namespace": "Amazon.CDK.AWS.DynamoDB",
         "packageId": "Amazon.CDK.AWS.DynamoDB",
         "signAssembly": true,
-        "assemblyOriginatorKeyFile": "../../key.snk"
+        "assemblyOriginatorKeyFile": "../../key.snk",
+        "versionSuffix": "-devpreview"
       },
       "python": {
         "distName": "aws-cdk.aws-dynamodb",

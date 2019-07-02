@@ -11,14 +11,16 @@
         "package": "software.amazon.awscdk.services.datapipeline",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "datapipeline"
+          "artifactId": "datapipeline",
+          "versionSuffix": ".DEVPREVIEW"
         }
       },
       "dotnet": {
         "namespace": "Amazon.CDK.AWS.DataPipeline",
         "packageId": "Amazon.CDK.AWS.DataPipeline",
         "signAssembly": true,
-        "assemblyOriginatorKeyFile": "../../key.snk"
+        "assemblyOriginatorKeyFile": "../../key.snk",
+        "versionSuffix": "-devpreview"
       },
       "python": {
         "distName": "aws-cdk.aws-datapipeline",

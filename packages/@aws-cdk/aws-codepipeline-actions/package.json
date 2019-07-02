@@ -11,14 +11,16 @@
         "package": "software.amazon.awscdk.services.codepipeline.actions",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "codepipeline-actions"
+          "artifactId": "codepipeline-actions",
+          "versionSuffix": ".DEVPREVIEW"
         }
       },
       "dotnet": {
         "namespace": "Amazon.CDK.AWS.Codepipeline.Actions",
         "packageId": "Amazon.CDK.AWS.Codepipeline.Actions",
         "signAssembly": true,
-        "assemblyOriginatorKeyFile": "../../key.snk"
+        "assemblyOriginatorKeyFile": "../../key.snk",
+        "versionSuffix": "-devpreview"
       },
       "python": {
         "distName": "aws-cdk.aws-codepipeline-actions",

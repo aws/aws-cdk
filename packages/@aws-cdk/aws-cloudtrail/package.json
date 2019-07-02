@@ -11,14 +11,16 @@
         "package": "software.amazon.awscdk.services.cloudtrail",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "cloudtrail"
+          "artifactId": "cloudtrail",
+          "versionSuffix": ".DEVPREVIEW"
         }
       },
       "dotnet": {
         "namespace": "Amazon.CDK.AWS.CloudTrail",
         "packageId": "Amazon.CDK.AWS.CloudTrail",
         "signAssembly": true,
-        "assemblyOriginatorKeyFile": "../../key.snk"
+        "assemblyOriginatorKeyFile": "../../key.snk",
+        "versionSuffix": "-devpreview"
       },
       "python": {
         "distName": "aws-cdk.aws-cloudtrail",

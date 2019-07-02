@@ -11,14 +11,16 @@
         "package": "software.amazon.awscdk.services.budgets",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "budgets"
+          "artifactId": "budgets",
+          "versionSuffix": ".DEVPREVIEW"
         }
       },
       "dotnet": {
         "namespace": "Amazon.CDK.AWS.Budgets",
         "packageId": "Amazon.CDK.AWS.Budgets",
         "signAssembly": true,
-        "assemblyOriginatorKeyFile": "../../key.snk"
+        "assemblyOriginatorKeyFile": "../../key.snk",
+        "versionSuffix": "-devpreview"
       },
       "python": {
         "distName": "aws-cdk.aws-budgets",

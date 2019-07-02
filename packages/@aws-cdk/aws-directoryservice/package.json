@@ -11,14 +11,16 @@
         "package": "software.amazon.awscdk.services.directoryservice",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "directoryservice"
+          "artifactId": "directoryservice",
+          "versionSuffix": ".DEVPREVIEW"
         }
       },
       "dotnet": {
         "namespace": "Amazon.CDK.AWS.DirectoryService",
         "packageId": "Amazon.CDK.AWS.DirectoryService",
         "signAssembly": true,
-        "assemblyOriginatorKeyFile": "../../key.snk"
+        "assemblyOriginatorKeyFile": "../../key.snk",
+        "versionSuffix": "-devpreview"
       },
       "python": {
         "distName": "aws-cdk.aws-directoryservice",

@@ -11,14 +11,16 @@
         "package": "software.amazon.awscdk.services.ses",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "ses"
+          "artifactId": "ses",
+          "versionSuffix": ".DEVPREVIEW"
         }
       },
       "dotnet": {
         "namespace": "Amazon.CDK.AWS.SES",
         "packageId": "Amazon.CDK.AWS.SES",
         "signAssembly": true,
-        "assemblyOriginatorKeyFile": "../../key.snk"
+        "assemblyOriginatorKeyFile": "../../key.snk",
+        "versionSuffix": "-devpreview"
       },
       "python": {
         "distName": "aws-cdk.aws-ses",

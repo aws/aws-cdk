@@ -11,14 +11,16 @@
         "package": "software.amazon.awscdk.services.codebuild",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "codebuild"
+          "artifactId": "codebuild",
+          "versionSuffix": ".DEVPREVIEW"
         }
       },
       "dotnet": {
         "namespace": "Amazon.CDK.AWS.CodeBuild",
         "packageId": "Amazon.CDK.AWS.CodeBuild",
         "signAssembly": true,
-        "assemblyOriginatorKeyFile": "../../key.snk"
+        "assemblyOriginatorKeyFile": "../../key.snk",
+        "versionSuffix": "-devpreview"
       },
       "python": {
         "distName": "aws-cdk.aws-codebuild",

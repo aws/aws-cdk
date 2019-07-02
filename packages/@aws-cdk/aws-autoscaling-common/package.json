@@ -11,14 +11,16 @@
         "package": "software.amazon.awscdk.services.autoscaling.common",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "autoscaling-common"
+          "artifactId": "autoscaling-common",
+          "versionSuffix": ".DEVPREVIEW"
         }
       },
       "dotnet": {
         "namespace": "Amazon.CDK.AWS.AutoScaling.Common",
         "packageId": "Amazon.CDK.AWS.AutoScaling.Common",
         "signAssembly": true,
-        "assemblyOriginatorKeyFile": "../../key.snk"
+        "assemblyOriginatorKeyFile": "../../key.snk",
+        "versionSuffix": "-devpreview"
       },
       "python": {
         "distName": "aws-cdk.aws-autoscaling-common",

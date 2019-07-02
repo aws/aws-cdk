@@ -11,14 +11,16 @@
         "package": "software.amazon.awscdk.services.ecs.patterns",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "ecs-patterns"
+          "artifactId": "ecs-patterns",
+          "versionSuffix": ".DEVPREVIEW"
         }
       },
       "dotnet": {
         "namespace": "Amazon.CDK.AWS.ECS.Patterns",
         "packageId": "Amazon.CDK.AWS.ECS.Patterns",
         "signAssembly": true,
-        "assemblyOriginatorKeyFile": "../../key.snk"
+        "assemblyOriginatorKeyFile": "../../key.snk",
+        "versionSuffix": "-devpreview"
       },
       "python": {
         "distName": "aws-cdk.aws-ecs-patterns",

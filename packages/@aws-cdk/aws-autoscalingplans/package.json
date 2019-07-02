@@ -11,14 +11,16 @@
         "package": "software.amazon.awscdk.services.autoscalingplans",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "autoscalingplans"
+          "artifactId": "autoscalingplans",
+          "versionSuffix": ".DEVPREVIEW"
         }
       },
       "dotnet": {
         "namespace": "Amazon.CDK.AWS.AutoScalingPlans",
         "packageId": "Amazon.CDK.AWS.AutoScalingPlans",
         "signAssembly": true,
-        "assemblyOriginatorKeyFile": "../../key.snk"
+        "assemblyOriginatorKeyFile": "../../key.snk",
+        "versionSuffix": "-devpreview"
       },
       "python": {
         "distName": "aws-cdk.aws-autoscalingplans",
