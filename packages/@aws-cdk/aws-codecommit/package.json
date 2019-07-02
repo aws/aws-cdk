@@ -11,14 +11,16 @@
         "package": "software.amazon.awscdk.services.codecommit",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "codecommit"
+          "artifactId": "codecommit",
+          "versionSuffix": ".DEVPREVIEW"
         }
       },
       "dotnet": {
         "namespace": "Amazon.CDK.AWS.CodeCommit",
         "packageId": "Amazon.CDK.AWS.CodeCommit",
         "signAssembly": true,
-        "assemblyOriginatorKeyFile": "../../key.snk"
+        "assemblyOriginatorKeyFile": "../../key.snk",
+        "versionSuffix": "-devpreview"
       },
       "python": {
         "distName": "aws-cdk.aws-codecommit",
