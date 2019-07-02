@@ -11,14 +11,16 @@
         "package": "software.amazon.awscdk.services.dax",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "dax"
+          "artifactId": "dax",
+          "versionSuffix": ".DEVPREVIEW"
         }
       },
       "dotnet": {
         "namespace": "Amazon.CDK.AWS.DAX",
         "packageId": "Amazon.CDK.AWS.DAX",
         "signAssembly": true,
-        "assemblyOriginatorKeyFile": "../../key.snk"
+        "assemblyOriginatorKeyFile": "../../key.snk",
+        "versionSuffix": "-devpreview"
       },
       "python": {
         "distName": "aws-cdk.aws-dax",

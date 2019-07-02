@@ -11,14 +11,16 @@
         "package": "software.amazon.awscdk.services.apigateway",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "apigateway"
+          "artifactId": "apigateway",
+          "versionSuffix": ".DEVPREVIEW"
         }
       },
       "dotnet": {
         "namespace": "Amazon.CDK.AWS.APIGateway",
         "packageId": "Amazon.CDK.AWS.APIGateway",
         "signAssembly": true,
-        "assemblyOriginatorKeyFile": "../../key.snk"
+        "assemblyOriginatorKeyFile": "../../key.snk",
+        "versionSuffix": "-devpreview"
       },
       "python": {
         "distName": "aws-cdk.aws-apigateway",
@@ -109,5 +111,5 @@
       "resource-interface-extends-resource:@aws-cdk/aws-apigateway.IModel"
     ]
   },
-  "stability": "experimental"
+  "stability": "stable"
 }

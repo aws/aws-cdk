@@ -12,12 +12,16 @@
         "package": "software.amazon.awscdk",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "cdk"
+          "artifactId": "cdk",
+          "versionSuffix": ".DEVPREVIEW"
         }
       },
       "python": {
         "distName": "aws-cdk.cdk",
         "module": "aws_cdk.cdk"
+      },
+      "dotnet": {
+        "versionSuffix": "-devpreview"
       }
     }
   },

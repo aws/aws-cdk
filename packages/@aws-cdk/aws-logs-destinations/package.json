@@ -11,14 +11,16 @@
         "package": "software.amazon.awscdk.services.logs.destinations",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "logs-destinations"
+          "artifactId": "logs-destinations",
+          "versionSuffix": ".DEVPREVIEW"
         }
       },
       "dotnet": {
         "namespace": "Amazon.CDK.AWS.Logs.Destinations",
         "packageId": "Amazon.CDK.AWS.Logs.Destinations",
         "signAssembly": true,
-        "assemblyOriginatorKeyFile": "../../key.snk"
+        "assemblyOriginatorKeyFile": "../../key.snk",
+        "versionSuffix": "-devpreview"
       },
       "python": {
         "distName": "aws-cdk.aws-logs-destinations",
@@ -93,5 +95,5 @@
   "engines": {
     "node": ">= 8.10.0"
   },
-  "stability": "experimental"
+  "stability": "stable"
 }
