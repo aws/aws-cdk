@@ -150,6 +150,9 @@ export interface OutputDataConfig {
   readonly s3OutputLocation: S3Location;
 }
 
+/**
+ * @experimental
+ */
 export interface StoppingCondition {
     /**
      * The maximum length of time, in seconds, that the training or compilation job can run.
@@ -157,6 +160,9 @@ export interface StoppingCondition {
     readonly maxRuntime?: Duration;
 }
 
+/**
+ * @experimental
+ */
 export interface ResourceConfig {
 
     /**
@@ -356,6 +362,8 @@ export abstract class DockerImage {
 
 /**
  * S3 Data Type.
+ *
+ * @experimental
  */
 export enum S3DataType {
     /**
@@ -376,6 +384,8 @@ export enum S3DataType {
 
 /**
  * S3 Data Distribution Type.
+ *
+ * @experimental
  */
 export enum S3DataDistributionType {
     /**
@@ -391,6 +401,8 @@ export enum S3DataDistributionType {
 
 /**
  * Define the format of the input data.
+ *
+ * @experimental
  */
 export enum RecordWrapperType {
     /**
@@ -406,6 +418,8 @@ export enum RecordWrapperType {
 
 /**
  *  Input mode that the algorithm supports.
+ *
+ * @experimental
  */
 export enum InputMode {
     /**
@@ -421,6 +435,8 @@ export enum InputMode {
 
 /**
  * Compression type of the data.
+ *
+ * @experimental
  */
 export enum CompressionType {
     /**
@@ -552,6 +568,8 @@ export interface TransformResources {
 
 /**
  * Specifies the number of records to include in a mini-batch for an HTTP inference request.
+ *
+ * @experimental
  */
 export enum BatchStrategy {
 
@@ -568,6 +586,8 @@ export enum BatchStrategy {
 
 /**
  * Method to use to split the transform job's data files into smaller batches.
+ *
+ * @experimental
  */
 export enum SplitType {
 
@@ -594,6 +614,8 @@ export enum SplitType {
 
 /**
  * How to assemble the results of the transform job as a single S3 object.
+ *
+ * @experimental
  */
 export enum AssembleWith {
 
