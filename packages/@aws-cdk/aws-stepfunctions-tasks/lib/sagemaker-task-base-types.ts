@@ -225,12 +225,17 @@ export interface MetricDefinition {
     readonly regex: string;
 }
 
+/**
+ * @experimental
+ */
 export interface S3LocationConfig {
     readonly uri: string;
 }
 
 /**
  * Constructs `IS3Location` objects.
+ *
+ * @experimental
  */
 export abstract class S3Location {
     /**
@@ -263,6 +268,8 @@ export abstract class S3Location {
 
 /**
  * Options for binding an S3 Location.
+ *
+ * @experimental
  */
 export interface S3LocationBindOptions {
     /**
