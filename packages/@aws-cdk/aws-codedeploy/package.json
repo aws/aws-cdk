@@ -11,14 +11,16 @@
         "package": "software.amazon.awscdk.services.codedeploy",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "codedeploy"
+          "artifactId": "codedeploy",
+          "versionSuffix": ".DEVPREVIEW"
         }
       },
       "dotnet": {
         "namespace": "Amazon.CDK.AWS.CodeDeploy",
         "packageId": "Amazon.CDK.AWS.CodeDeploy",
         "signAssembly": true,
-        "assemblyOriginatorKeyFile": "../../key.snk"
+        "assemblyOriginatorKeyFile": "../../key.snk",
+        "versionSuffix": "-devpreview"
       },
       "python": {
         "distName": "aws-cdk.aws-codedeploy",
@@ -103,5 +105,5 @@
       "resource-interface-extends-resource:@aws-cdk/aws-codedeploy.IServerDeploymentConfig"
     ]
   },
-  "stability": "experimental"
+  "stability": "stable"
 }

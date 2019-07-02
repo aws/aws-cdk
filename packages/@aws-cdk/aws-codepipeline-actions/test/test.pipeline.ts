@@ -619,7 +619,7 @@ export = {
             "Region": "us-east-1",
             "ArtifactStore": {
               "Type": "S3",
-              "Location": "cdk-cross-region-codepipeline-replication-bucket-685c6feea5fb",
+              "Location": "teststack-support-us-easteplicationbucket1a8063b3cdac6e7e0e73",
             },
           },
           {
@@ -756,8 +756,9 @@ export = {
       const app = new App();
 
       const buildAccount = '901234567890';
+      const buildRegion = 'bermuda-triangle-1';
       const buildStack = new Stack(app, 'BuildStack', {
-        env: { account: buildAccount },
+        env: { account: buildAccount, region: buildRegion },
       });
       const rolePhysicalName = 'ProjectRolePhysicalName';
       const projectRole = new iam.Role(buildStack, 'ProjectRole', {
@@ -771,7 +772,7 @@ export = {
       });
 
       const pipelineStack = new Stack(app, 'PipelineStack', {
-        env: { account: '123456789012' },
+        env: { account: '123456789012', region: 'bermuda-triangle-42' },
       });
       const sourceBucket = new s3.Bucket(pipelineStack, 'ArtifactBucket', {
         bucketName: 'source-bucket',
@@ -826,7 +827,7 @@ export = {
                       {
                         "Ref": "AWS::Partition",
                       },
-                      `:iam::${buildAccount}:role/buildstackebuildactionrole166c75d145cdaa010350`,
+                      `:iam::${buildAccount}:role/buildstackebuildactionrole166c75d1d8be701b1ad8`,
                     ],
                   ],
                 },
@@ -861,7 +862,7 @@ export = {
                       {
                         "Ref": "AWS::Partition",
                       },
-                      `:s3:::pipelinestackeartifactsbucket5409dc8418216ab8debe`,
+                      ':s3:::pipelinestackeartifactsbucket5409dc84ec8d21c5e28c',
                     ],
                   ],
                 },
@@ -873,7 +874,7 @@ export = {
                       {
                         "Ref": "AWS::Partition",
                       },
-                      `:s3:::pipelinestackeartifactsbucket5409dc8418216ab8debe/*`,
+                      ':s3:::pipelinestackeartifactsbucket5409dc84ec8d21c5e28c/*',
                     ],
                   ],
                 },

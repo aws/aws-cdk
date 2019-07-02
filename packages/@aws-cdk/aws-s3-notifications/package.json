@@ -11,14 +11,16 @@
         "package": "software.amazon.awscdk.services.s3.notifications",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "s3-notifications"
+          "artifactId": "s3-notifications",
+          "versionSuffix": ".DEVPREVIEW"
         }
       },
       "dotnet": {
         "namespace": "Amazon.CDK.AWS.S3.Notifications",
         "packageId": "Amazon.CDK.AWS.S3.Notifications",
         "signAssembly": true,
-        "assemblyOriginatorKeyFile": "../../key.snk"
+        "assemblyOriginatorKeyFile": "../../key.snk",
+        "versionSuffix": "-devpreview"
       },
       "python": {
         "distName": "aws-cdk.aws-s3-notifications",
@@ -93,5 +95,5 @@
   "engines": {
     "node": ">= 8.10.0"
   },
-  "stability": "experimental"
+  "stability": "stable"
 }

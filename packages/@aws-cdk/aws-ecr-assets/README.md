@@ -3,14 +3,10 @@
 
 ---
 
-![Stability: Experimental](https://img.shields.io/badge/stability-Experimental-important.svg?style=for-the-badge)
+![Stability: Stable](https://img.shields.io/badge/stability-Stable-success.svg?style=for-the-badge)
 
 > **This is a _developer preview_ (public beta) module. Releases might lack important features and might have
 > future breaking changes.**
-> 
-> This API is still under active development and subject to non-backward
-> compatible changes or removal in any future version. Use of the API is not recommended in production
-> environments. Experimental APIs are not subject to the Semantic Versioning model.
 
 ---
 <!--END STABILITY BANNER-->
@@ -22,7 +18,7 @@ uploaded to ECR by the CDK toolkit and/or your app's CI-CD pipeline, and can be
 naturally referenced in your CDK app.
 
 ```typescript
-import { DockerImageAsset } from '@aws-cdk/assets-docker';
+import { DockerImageAsset } from '@aws-cdk/aws-ecr-assets';
 
 const asset = new DockerImageAsset(this, 'MyBuildImage', {
   directory: path.join(__dirname, 'my-image')

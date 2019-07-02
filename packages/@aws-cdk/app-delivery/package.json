@@ -9,7 +9,8 @@
       "java": {
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "cdk-app-delivery"
+          "artifactId": "cdk-app-delivery",
+          "versionSuffix": ".DEVPREVIEW"
         },
         "package": "software.amazon.awscdk.appdelivery"
       },
@@ -17,7 +18,8 @@
         "namespace": "Amazon.CDK.AppDelivery",
         "packageId": "Amazon.CDK.AppDelivery",
         "signAssembly": true,
-        "assemblyOriginatorKeyFile": "../../key.snk"
+        "assemblyOriginatorKeyFile": "../../key.snk",
+        "versionSuffix": "-devpreview"
       },
       "python": {
         "distName": "aws-cdk.app-delivery",
