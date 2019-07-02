@@ -527,7 +527,7 @@ export = {
       ]
     }));
 
-    test.equal(lambdaAction.outputs.length, 3);
+    test.equal((lambdaAction.actionProperties.outputs || []).length, 3);
 
     expect(stack, /* skip validation */ true).to(haveResource('AWS::IAM::Policy', {
       "PolicyDocument": {
@@ -619,7 +619,7 @@ export = {
             "Region": "us-east-1",
             "ArtifactStore": {
               "Type": "S3",
-              "Location": "cdk-cross-region-codepipeline-replication-bucket-685c6feea5fb",
+              "Location": "teststack-support-us-easteplicationbucket1a8063b3cdac6e7e0e73",
             },
           },
           {
@@ -898,19 +898,6 @@ export = {
       test.done();
     },
   },
-
-  'Pipeline.fromPipelineArn'(test: Test) {
-    // GIVEN
-    const stack = new Stack();
-
-    // WHEN
-    const pl = codepipeline.Pipeline.fromPipelineArn(stack, 'imported', 'arn:aws:codepipeline:us-east-1:123456789012:MyDemoPipeline');
-
-    // THEN
-    test.deepEqual(pl.pipelineArn, 'arn:aws:codepipeline:us-east-1:123456789012:MyDemoPipeline');
-    test.deepEqual(pl.pipelineName, 'MyDemoPipeline');
-    test.done();
-  }
 };
 
 function stageForTesting(stack: Stack): codepipeline.IStage {

@@ -32,7 +32,7 @@ export interface ISubnet extends IResource {
   /**
    * The route table for this subnet
    */
-  readonly routeTable?: IRouteTable;
+  readonly routeTable: IRouteTable;
 }
 
 /**

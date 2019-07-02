@@ -205,7 +205,7 @@ export abstract class TargetGroupBase extends cdk.Construct implements ITargetGr
     super(scope, id);
 
     if (baseProps.deregistrationDelay !== undefined) {
-      this.setAttribute('deregistration_delay.timeout_seconds', baseProps.deregistrationDelay.toString());
+      this.setAttribute('deregistration_delay.timeout_seconds', baseProps.deregistrationDelay.toSeconds().toString());
     }
 
     this.healthCheck = baseProps.healthCheck || {};

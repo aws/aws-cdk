@@ -2,6 +2,8 @@ import codecommit = require('@aws-cdk/aws-codecommit');
 import codepipeline = require('@aws-cdk/aws-codepipeline');
 import targets = require('@aws-cdk/aws-events-targets');
 import iam = require('@aws-cdk/aws-iam');
+import { Construct } from '@aws-cdk/core';
+import { Action } from '../action';
 import { sourceArtifactBounds } from '../common';
 
 /**
@@ -30,7 +32,7 @@ export enum CodeCommitTrigger {
 /**
  * Construction properties of the {@link CodeCommitSourceAction CodeCommit source CodePipeline Action}.
  */
-export interface CodeCommitSourceActionProps extends codepipeline.CommonActionProps {
+export interface CodeCommitSourceActionProps extends codepipeline.CommonAwsActionProps {
   /**
    *
    */
@@ -57,10 +59,9 @@ export interface CodeCommitSourceActionProps extends codepipeline.CommonActionPr
 /**
  * CodePipeline Source that is provided by an AWS CodeCommit repository.
  */
-export class CodeCommitSourceAction extends codepipeline.Action {
-  private readonly repository: codecommit.IRepository;
+export class CodeCommitSourceAction extends Action {
   private readonly branch: string;
-  private readonly createEvent: boolean;
+  private readonly props: CodeCommitSourceActionProps;
 
   constructor(props: CodeCommitSourceActionProps) {
     const branch = props.branch || 'master';
@@ -71,30 +72,30 @@ export class CodeCommitSourceAction extends codepipeline.Action {
       provider: 'CodeCommit',
       artifactBounds: sourceArtifactBounds(),
       outputs: [props.output],
-      configuration: {
-        RepositoryName: props.repository.repositoryName,
-        BranchName: branch,
-        PollForSourceChanges: props.trigger === CodeCommitTrigger.POLL,
-      },
     });
 
-    this.repository = props.repository;
     this.branch = branch;
-    this.createEvent = props.trigger === undefined ||
-      props.trigger === CodeCommitTrigger.EVENTS;
+    this.props = props;
   }
 
-  protected bind(info: codepipeline.ActionBind): void {
-    if (this.createEvent) {
-      this.repository.onCommit(info.pipeline.node.uniqueId + 'EventRule', {
-        target: new targets.CodePipeline(info.pipeline),
+  protected bound(_scope: Construct, stage: codepipeline.IStage, options: codepipeline.ActionBindOptions):
+      codepipeline.ActionConfig {
+    const createEvent = this.props.trigger === undefined ||
+      this.props.trigger === CodeCommitTrigger.EVENTS;
+    if (createEvent) {
+      this.props.repository.onCommit(stage.pipeline.node.uniqueId + 'EventRule', {
+        target: new targets.CodePipeline(stage.pipeline),
         branches: [this.branch],
       });
     }
 
+    // the Action will write the contents of the Git repository to the Bucket,
+    // so its Role needs write permissions to the Pipeline Bucket
+    options.bucket.grantWrite(options.role);
+
     // https://docs.aws.amazon.com/codecommit/latest/userguide/auth-and-access-control-permissions-reference.html#aa-acp
-    info.role.addToPolicy(new iam.PolicyStatement({
-      resources: [this.repository.repositoryArn],
+    options.role.addToPolicy(new iam.PolicyStatement({
+      resources: [this.props.repository.repositoryArn],
       actions: [
         'codecommit:GetBranch',
         'codecommit:GetCommit',
@@ -103,5 +104,13 @@ export class CodeCommitSourceAction extends codepipeline.Action {
         'codecommit:CancelUploadArchive',
       ],
     }));
+
+    return {
+      configuration: {
+        RepositoryName: this.props.repository.repositoryName,
+        BranchName: this.branch,
+        PollForSourceChanges: this.props.trigger === CodeCommitTrigger.POLL,
+      },
+    };
   }
 }

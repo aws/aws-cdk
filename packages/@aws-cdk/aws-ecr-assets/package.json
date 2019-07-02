@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/aws-ecr-assets",
-  "version": "0.35.0",
+  "version": "0.36.1",
   "description": "Docker image assets deployed to ECR",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -57,34 +57,34 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "^0.35.0",
+    "@aws-cdk/assert": "^0.36.1",
     "@types/proxyquire": "^1.3.28",
-    "aws-cdk": "^0.35.0",
-    "cdk-build-tools": "^0.35.0",
-    "cdk-integ-tools": "^0.35.0",
-    "pkglint": "^0.35.0",
+    "aws-cdk": "^0.36.1",
+    "cdk-build-tools": "^0.36.1",
+    "cdk-integ-tools": "^0.36.1",
+    "pkglint": "^0.36.1",
     "proxyquire": "^2.1.0"
   },
   "dependencies": {
-    "@aws-cdk/assets": "^0.35.0",
-    "@aws-cdk/aws-cloudformation": "^0.35.0",
-    "@aws-cdk/aws-ecr": "^0.35.0",
-    "@aws-cdk/aws-iam": "^0.35.0",
-    "@aws-cdk/aws-lambda": "^0.35.0",
-    "@aws-cdk/aws-s3": "^0.35.0",
-    "@aws-cdk/core": "^0.35.0",
-    "@aws-cdk/cx-api": "^0.35.0"
+    "@aws-cdk/assets": "^0.36.1",
+    "@aws-cdk/aws-cloudformation": "^0.36.1",
+    "@aws-cdk/aws-ecr": "^0.36.1",
+    "@aws-cdk/aws-iam": "^0.36.1",
+    "@aws-cdk/aws-lambda": "^0.36.1",
+    "@aws-cdk/aws-s3": "^0.36.1",
+    "@aws-cdk/core": "^0.36.1",
+    "@aws-cdk/cx-api": "^0.36.1"
   },
   "homepage": "https://github.com/awslabs/aws-cdk",
   "peerDependencies": {
-    "@aws-cdk/assets": "^0.35.0",
-    "@aws-cdk/aws-cloudformation": "^0.35.0",
-    "@aws-cdk/aws-ecr": "^0.35.0",
-    "@aws-cdk/aws-iam": "^0.35.0",
-    "@aws-cdk/aws-lambda": "^0.35.0",
-    "@aws-cdk/aws-s3": "^0.35.0",
-    "@aws-cdk/core": "^0.35.0",
-    "@aws-cdk/cx-api": "^0.35.0"
+    "@aws-cdk/assets": "^0.36.1",
+    "@aws-cdk/aws-cloudformation": "^0.36.1",
+    "@aws-cdk/aws-ecr": "^0.36.1",
+    "@aws-cdk/aws-iam": "^0.36.1",
+    "@aws-cdk/aws-lambda": "^0.36.1",
+    "@aws-cdk/aws-s3": "^0.36.1",
+    "@aws-cdk/core": "^0.36.1",
+    "@aws-cdk/cx-api": "^0.36.1"
   },
   "nyc": {
     "statements": 70

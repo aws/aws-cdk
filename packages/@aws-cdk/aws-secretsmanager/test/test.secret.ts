@@ -394,7 +394,7 @@ export = {
     test.done();
   },
 
-  'equivalence of SecretValue and Secret.import'(test: Test) {
+  'equivalence of SecretValue and Secret.fromSecretAttributes'(test: Test) {
     // GIVEN
     const stack = new Stack();
 

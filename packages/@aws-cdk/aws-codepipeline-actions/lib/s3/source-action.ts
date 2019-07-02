@@ -1,6 +1,8 @@
 import codepipeline = require('@aws-cdk/aws-codepipeline');
 import targets = require('@aws-cdk/aws-events-targets');
 import s3 = require('@aws-cdk/aws-s3');
+import { Construct } from '@aws-cdk/core';
+import { Action } from '../action';
 import { sourceArtifactBounds } from '../common';
 
 /**
@@ -31,7 +33,7 @@ export enum S3Trigger {
 /**
  * Construction properties of the {@link S3SourceAction S3 source Action}.
  */
-export interface S3SourceActionProps extends codepipeline.CommonActionProps {
+export interface S3SourceActionProps extends codepipeline.CommonAwsActionProps {
   /**
    *
    */
@@ -66,37 +68,42 @@ export interface S3SourceActionProps extends codepipeline.CommonActionProps {
  * Will trigger the pipeline as soon as the S3 object changes, but only if there is
  * a CloudTrail Trail in the account that captures the S3 event.
  */
-export class S3SourceAction extends codepipeline.Action {
+export class S3SourceAction extends Action {
   private readonly props: S3SourceActionProps;
 
   constructor(props: S3SourceActionProps) {
-    const pollForSourceChanges = props.trigger && props.trigger === S3Trigger.POLL;
-
     super({
       ...props,
       category: codepipeline.ActionCategory.SOURCE,
       provider: 'S3',
       artifactBounds: sourceArtifactBounds(),
       outputs: [props.output],
-      configuration: {
-        S3Bucket: props.bucket.bucketName,
-        S3ObjectKey: props.bucketKey,
-        PollForSourceChanges: pollForSourceChanges,
-      },
     });
 
     this.props = props;
   }
 
-  protected bind(info: codepipeline.ActionBind): void {
+  protected bound(_scope: Construct, stage: codepipeline.IStage, options: codepipeline.ActionBindOptions):
+      codepipeline.ActionConfig {
     if (this.props.trigger === S3Trigger.EVENTS) {
-      this.props.bucket.onCloudTrailPutObject(info.pipeline.node.uniqueId + 'SourceEventRule', {
-        target: new targets.CodePipeline(info.pipeline),
+      this.props.bucket.onCloudTrailPutObject(stage.pipeline.node.uniqueId + 'SourceEventRule', {
+        target: new targets.CodePipeline(stage.pipeline),
         paths: [this.props.bucketKey]
       });
     }
 
-    // pipeline needs permissions to read from the S3 bucket
-    this.props.bucket.grantRead(info.role);
+    // we need to read from the source bucket...
+    this.props.bucket.grantRead(options.role);
+
+    // ...and write to the Pipeline bucket
+    options.bucket.grantWrite(options.role);
+
+    return {
+      configuration: {
+        S3Bucket: this.props.bucket.bucketName,
+        S3ObjectKey: this.props.bucketKey,
+        PollForSourceChanges: this.props.trigger && this.props.trigger === S3Trigger.POLL,
+      },
+    };
   }
 }

@@ -1,14 +1,14 @@
 import unittest
 
-from aws_cdk import cdk
+from aws_cdk import core
 
 from hello.hello_construct import HelloConstruct
 
 class TestHelloConstruct(unittest.TestCase):
 
     def setUp(self):
-        self.app = cdk.App()
-        self.stack = cdk.Stack(self.app, "TestStack")
+        self.app = core.App()
+        self.stack = core.Stack(self.app, "TestStack")
     
     def test_num_buckets(self):
         num_buckets = 10
