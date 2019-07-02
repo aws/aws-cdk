@@ -12,6 +12,7 @@ export = {
       const stack1 = new Stack(app, 'Stack1', {
         env: {
           account: '123456789012',
+          region: 'bermuda-triangle-1337',
         },
       });
       const myResource = new MyResource(stack1, 'MyResource', 'PhysicalName');
@@ -19,6 +20,7 @@ export = {
       const stack2 = new Stack(app, 'Stack2', {
         env: {
           account: '234567890123',
+          region: 'bermuda-triangle-42',
         },
       });
 
@@ -56,11 +58,13 @@ export = {
       const stack1 = new Stack(app, 'Stack1', {
         env: {
           account: '123456789012',
+          region: 'bermuda-triangle-1337',
         },
       });
       const stack2 = new Stack(app, 'Stack2', {
         env: {
           account: '234567890123',
+          region: 'bermuda-triangle-42',
         },
       });
 
@@ -88,6 +92,7 @@ export = {
       const stack1 = new Stack(app, 'Stack1', {
         env: {
           account: '123456789012',
+          region: 'bermuda-triangle-1337',
         },
       });
       const myResource = new MyResource(stack1, 'MyResource', PhysicalName.GENERATE_IF_NEEDED);
@@ -95,6 +100,7 @@ export = {
       const stack2 = new Stack(app, 'Stack2', {
         env: {
           account: '234567890123',
+          region: 'bermuda-triangle-42',
         },
       });
 
@@ -115,7 +121,7 @@ export = {
                   {
                     Ref: 'AWS::Partition',
                   },
-                  ':myservice:::my-resource/stack1stack1myresourcec54ced43dab875fcfa49',
+                  ':myservice:::my-resource/stack1stack1myresourcec54ced43683ebf9a3c4c',
                 ],
               ],
             },
@@ -132,11 +138,13 @@ export = {
       const stack1 = new Stack(app, 'Stack1', {
         env: {
           account: '123456789012',
+          region: 'bermuda-triangle-1337',
         },
       });
       const stack2 = new Stack(app, 'Stack2', {
         env: {
           account: '234567890123',
+          region: 'bermuda-triangle-42',
         },
       });
 
@@ -150,7 +158,7 @@ export = {
       test.deepEqual(toCloudFormation(stack2), {
         Outputs: {
           Output: {
-            Value: 'stack1stack1myresourcec54ced43dab875fcfa49',
+            Value: 'stack1stack1myresourcec54ced43683ebf9a3c4c',
           },
         },
       });
@@ -165,11 +173,13 @@ export = {
     const stack1 = new Stack(app, 'Stack1', {
       env: {
         account: '123456789012',
+        region: 'bermuda-triangle-1337',
       },
     });
     const stack2 = new Stack(app, 'Stack2', {
       env: {
         account: '234567890123',
+        region: 'bermuda-triangle-42',
       },
     });
 
