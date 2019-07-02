@@ -89,5 +89,5 @@
   "bundledDependencies": [
     "minimatch"
   ],
-  "stability": "experimental"
+  "stability": "stable"
 }
