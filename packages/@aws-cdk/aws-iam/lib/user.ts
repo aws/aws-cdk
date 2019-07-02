@@ -62,7 +62,8 @@ export interface UserProps {
    * AWS Management Console.
    *
    * You can use `SecretValue.plainText` to specify a password in plain text or
-   * use `secretsmanager.Secret.import` to reference a secret in Secrets Manager.
+   * use `secretsmanager.Secret.fromSecretAttributes` to reference a secret in
+   * Secrets Manager.
    *
    * @default User won't be able to access the management console without a password.
    */

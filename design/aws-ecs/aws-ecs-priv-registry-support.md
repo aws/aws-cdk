@@ -112,9 +112,7 @@ Example use:
 ```ts
 const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
 
-const secret = secretsManager.Secret.import(stack, 'myRepoSecret', {
-  secretArn: 'arn:aws:secretsmanager:.....'
-})
+const secret = secretsManager.Secret.fromSecretArn(stack, 'myRepoSecret', 'arn:aws:secretsmanager:.....')
 
 taskDefinition.AddContainer('myPrivateContainer', {
   image: ecs.ContainerImage.fromInternet('userx/test', {
