@@ -164,9 +164,6 @@ export class AppStacks {
     // Filter original array because it is in the right order
     const selectedList = stacks.filter(s => selectedStacks.has(s.name));
 
-    // Only check selected stacks for errors
-    this.processMessages(selectedList);
-
     return selectedList;
   }
 
@@ -269,7 +266,7 @@ export class AppStacks {
   /**
    * Extracts 'aws:cdk:warning|info|error' metadata entries from the stack synthesis
    */
-  private processMessages(stacks: cxapi.CloudFormationStackArtifact[]) {
+  public processMetadata(stacks: cxapi.CloudFormationStackArtifact[]) {
     let warnings = false;
     let errors = false;
 
