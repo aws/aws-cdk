@@ -1,6 +1,6 @@
 import ec2 = require('@aws-cdk/aws-ec2');
 import elb = require('@aws-cdk/aws-elasticloadbalancing');
-import { Construct, Lazy, Resource } from '@aws-cdk/cdk';
+import { Construct, Lazy, Resource } from '@aws-cdk/core';
 import { BaseService, BaseServiceProps, IService } from '../base/base-service';
 import { NetworkMode, TaskDefinition } from '../base/task-definition';
 import { CfnService } from '../ecs.generated';
@@ -85,11 +85,6 @@ export class Ec2Service extends BaseService implements IEc2Service, elb.ILoadBal
     return new Import(scope, id);
   }
 
-  /**
-   * Name of the cluster
-   */
-  public readonly clusterName: string;
-
   private readonly constraints: CfnService.PlacementConstraintProperty[];
   private readonly strategies: CfnService.PlacementStrategyProperty[];
   private readonly daemon: boolean;
@@ -99,11 +94,11 @@ export class Ec2Service extends BaseService implements IEc2Service, elb.ILoadBal
       throw new Error('Daemon mode launches one task on every instance. Don\'t supply desiredCount.');
     }
 
-    if (props.daemon && props.maximumPercent !== undefined && props.maximumPercent !== 100) {
+    if (props.daemon && props.maxHealthyPercent !== undefined && props.maxHealthyPercent !== 100) {
       throw new Error('Maximum percent must be 100 for daemon mode.');
     }
 
-    if (props.daemon && props.minimumHealthyPercent !== undefined && props.minimumHealthyPercent !== 0) {
+    if (props.daemon && props.minHealthyPercent !== undefined && props.minHealthyPercent !== 0) {
       throw new Error('Minimum healthy percent must be 0 for daemon mode.');
     }
 
@@ -115,8 +110,8 @@ export class Ec2Service extends BaseService implements IEc2Service, elb.ILoadBal
       ...props,
       // If daemon, desiredCount must be undefined and that's what we want. Otherwise, default to 1.
       desiredCount: props.daemon || props.desiredCount !== undefined ? props.desiredCount : 1,
-      maximumPercent: props.daemon && props.maximumPercent === undefined ? 100 : props.maximumPercent,
-      minimumHealthyPercent: props.daemon && props.minimumHealthyPercent === undefined ? 0 : props.minimumHealthyPercent ,
+      maxHealthyPercent: props.daemon && props.maxHealthyPercent === undefined ? 100 : props.maxHealthyPercent,
+      minHealthyPercent: props.daemon && props.minHealthyPercent === undefined ? 0 : props.minHealthyPercent ,
     },
     {
       cluster: props.cluster.clusterName,
@@ -125,14 +120,13 @@ export class Ec2Service extends BaseService implements IEc2Service, elb.ILoadBal
       placementConstraints: Lazy.anyValue({ produce: () => this.constraints }, { omitEmptyArray: true }),
       placementStrategies: Lazy.anyValue({ produce: () => this.strategies }, { omitEmptyArray: true }),
       schedulingStrategy: props.daemon ? 'DAEMON' : 'REPLICA',
-    }, props.cluster.clusterName, props.taskDefinition);
+    }, props.taskDefinition);
 
-    this.clusterName = props.cluster.clusterName;
     this.constraints = [];
     this.strategies = [];
     this.daemon = props.daemon || false;
 
-    if (props.taskDefinition.networkMode === NetworkMode.AwsVpc) {
+    if (props.taskDefinition.networkMode === NetworkMode.AWS_VPC) {
       this.configureAwsVpcNetworking(props.cluster.vpc, props.assignPublicIp, props.vpcSubnets, props.securityGroup);
     } else {
       // Either None, Bridge or Host networking. Copy SecurityGroup from ASG.
@@ -176,10 +170,10 @@ export class Ec2Service extends BaseService implements IEc2Service, elb.ILoadBal
    * Don't call this. Call `loadBalancer.addTarget()` instead.
    */
   public attachToClassicLB(loadBalancer: elb.LoadBalancer): void {
-    if (this.taskDefinition.networkMode === NetworkMode.Bridge) {
+    if (this.taskDefinition.networkMode === NetworkMode.BRIDGE) {
       throw new Error("Cannot use a Classic Load Balancer if NetworkMode is Bridge. Use Host or AwsVpc instead.");
     }
-    if (this.taskDefinition.networkMode === NetworkMode.None) {
+    if (this.taskDefinition.networkMode === NetworkMode.NONE) {
       throw new Error("Cannot use a load balancer if NetworkMode is None. Use Host or AwsVpc instead.");
     }
 
@@ -218,27 +212,27 @@ export class BuiltInAttributes {
   /**
    * The Instance ID of the instance
    */
-  public static readonly InstanceId = 'instanceId';
+  public static readonly INSTANCE_ID = 'instanceId';
 
   /**
    * The AZ where the instance is running
    */
-  public static readonly AvailabilityZone = 'attribute:ecs.availability-zone';
+  public static readonly AVAILABILITY_ZONE = 'attribute:ecs.availability-zone';
 
   /**
    * The AMI ID of the instance
    */
-  public static readonly AmiId = 'attribute:ecs.ami-id';
+  public static readonly AMI_ID = 'attribute:ecs.ami-id';
 
   /**
    * The instance type
    */
-  public static readonly InstanceType = 'attribute:ecs.instance-type';
+  public static readonly INSTANCE_TYPE = 'attribute:ecs.instance-type';
 
   /**
    * The OS type
    *
    * Either 'linux' or 'windows'.
    */
-  public static readonly OsType = 'attribute:ecs.os-type';
+  public static readonly OS_TYPE = 'attribute:ecs.os-type';
 }

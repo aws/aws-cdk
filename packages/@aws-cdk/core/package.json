@@ -1,0 +1,91 @@
+{
+  "name": "@aws-cdk/core",
+  "version": "0.36.1",
+  "description": "AWS Cloud Development Kit Core Library",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "jsii": {
+    "outdir": "dist",
+    "targets": {
+      "java": {
+        "package": "software.amazon.awscdk.core",
+        "maven": {
+          "groupId": "software.amazon.awscdk",
+          "artifactId": "core"
+        }
+      },
+      "dotnet": {
+        "namespace": "Amazon.CDK",
+        "packageId": "Amazon.CDK",
+        "signAssembly": true,
+        "assemblyOriginatorKeyFile": "../../key.snk"
+      },
+      "python": {
+        "distName": "aws-cdk.core",
+        "module": "aws_cdk.core"
+      }
+    }
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/awslabs/aws-cdk.git",
+    "directory": "packages/@aws-cdk/core"
+  },
+  "awslint": {
+    "exclude": [
+      "construct-ctor:@aws-cdk/core.App.<initializer>",
+      "props-no-cfn-types:@aws-cdk/core.CfnOutputProps.condition",
+      "duration-prop-type:@aws-cdk/core.ResourceSignal.timeout",
+      "props-no-any:@aws-cdk/core.CfnParameterProps.default",
+      "props-no-cfn-types:@aws-cdk/core.CfnRuleProps.assertions",
+      "construct-ctor:@aws-cdk/core.Stack.<initializer>.params[1]"
+    ]
+  },
+  "scripts": {
+    "build": "cdk-build",
+    "watch": "cdk-watch",
+    "lint": "cdk-lint",
+    "test": "cdk-test",
+    "pkglint": "pkglint -f",
+    "package": "cdk-package",
+    "awslint": "cdk-awslint",
+    "build+test+package": "npm run build+test && npm run package",
+    "build+test": "npm run build && npm test"
+  },
+  "nyc": {
+    "statements": 55,
+    "lines": 55,
+    "branches": 35
+  },
+  "keywords": [
+    "aws",
+    "cdk",
+    "jsii",
+    "cdk-core"
+  ],
+  "author": {
+    "name": "Amazon Web Services",
+    "url": "https://aws.amazon.com",
+    "organization": true
+  },
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "@types/lodash": "^4.14.134",
+    "cdk-build-tools": "^0.36.1",
+    "cfn2ts": "^0.36.1",
+    "fast-check": "^1.15.1",
+    "lodash": "^4.17.11",
+    "pkglint": "^0.36.1"
+  },
+  "dependencies": {
+    "@aws-cdk/cx-api": "^0.36.1"
+  },
+  "homepage": "https://github.com/awslabs/aws-cdk",
+  "peerDependencies": {
+    "@aws-cdk/cx-api": "^0.36.1"
+  },
+  "engines": {
+    "node": ">= 8.10.0"
+  },
+  "stability": "experimental"
+}

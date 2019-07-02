@@ -97,7 +97,7 @@
       "Type": "AWS::AutoScaling::LaunchConfiguration",
       "Properties": {
         "ImageId": {
-          "Ref": "SsmParameterValueawsserviceecsoptimizedamiamazonlinuxrecommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
+          "Ref": "SsmParameterValueawsserviceecsoptimizedamiamazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
         },
         "InstanceType": "t2.micro",
         "IamInstanceProfile": {
@@ -306,22 +306,7 @@
         "FargateClusterDefaultAutoScalingGroupDrainECSHookFunctionServiceRole7FEDCD32"
       ]
     },
-    "FargateClusterDefaultAutoScalingGroupDrainECSHookFunctionTopicSubscriptionA4A8D57E": {
-      "Type": "AWS::SNS::Subscription",
-      "Properties": {
-        "Protocol": "lambda",
-        "TopicArn": {
-          "Ref": "FargateClusterDefaultAutoScalingGroupLifecycleHookDrainHookTopic49146C10"
-        },
-        "Endpoint": {
-          "Fn::GetAtt": [
-            "FargateClusterDefaultAutoScalingGroupDrainECSHookFunctionE3D5BEE8",
-            "Arn"
-          ]
-        }
-      }
-    },
-    "FargateClusterDefaultAutoScalingGroupDrainECSHookFunctionTopicA1F1F9E9": {
+    "FargateClusterDefaultAutoScalingGroupDrainECSHookFunctionAllowInvokeawsecsinteg2FargateClusterDefaultAutoScalingGroupLifecycleHookDrainHookTopic9C6EC468C75B1F21": {
       "Type": "AWS::Lambda::Permission",
       "Properties": {
         "Action": "lambda:InvokeFunction",
@@ -334,6 +319,21 @@
         "Principal": "sns.amazonaws.com",
         "SourceArn": {
           "Ref": "FargateClusterDefaultAutoScalingGroupLifecycleHookDrainHookTopic49146C10"
+        }
+      }
+    },
+    "FargateClusterDefaultAutoScalingGroupDrainECSHookFunctionTopic37856E82": {
+      "Type": "AWS::SNS::Subscription",
+      "Properties": {
+        "Protocol": "lambda",
+        "TopicArn": {
+          "Ref": "FargateClusterDefaultAutoScalingGroupLifecycleHookDrainHookTopic49146C10"
+        },
+        "Endpoint": {
+          "Fn::GetAtt": [
+            "FargateClusterDefaultAutoScalingGroupDrainECSHookFunctionE3D5BEE8",
+            "Arn"
+          ]
         }
       }
     },
@@ -537,7 +537,7 @@
               "LogDriver": "awslogs",
               "Options": {
                 "awslogs-group": {
-                  "Ref": "TaskLoggingLogGroupC7E938D4"
+                  "Ref": "TaskDefTheContainerLogGroupD94C8EF5"
                 },
                 "awslogs-stream-prefix": "EventDemo",
                 "awslogs-region": "test-region"
@@ -599,6 +599,10 @@
         "AdoptEcrRepositorydbc60defc59544bcaa5c28c95d68f62cServiceRoleD788AA17"
       ],
       "DeletionPolicy": "Delete"
+    },
+    "TaskDefTheContainerLogGroupD94C8EF5": {
+      "Type": "AWS::Logs::LogGroup",
+      "DeletionPolicy": "Retain"
     },
     "TaskDefExecutionRoleB4775C97": {
       "Type": "AWS::IAM::Role",
@@ -671,7 +675,7 @@
               "Effect": "Allow",
               "Resource": {
                 "Fn::GetAtt": [
-                  "TaskLoggingLogGroupC7E938D4",
+                  "TaskDefTheContainerLogGroupD94C8EF5",
                   "Arn"
                 ]
               }
@@ -686,10 +690,6 @@
           }
         ]
       }
-    },
-    "TaskLoggingLogGroupC7E938D4": {
-      "Type": "AWS::Logs::LogGroup",
-      "DeletionPolicy": "Retain"
     },
     "AdoptEcrRepositorydbc60defc59544bcaa5c28c95d68f62cServiceRoleD788AA17": {
       "Type": "AWS::IAM::Role",
@@ -957,9 +957,9 @@
     }
   },
   "Parameters": {
-    "SsmParameterValueawsserviceecsoptimizedamiamazonlinuxrecommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter": {
+    "SsmParameterValueawsserviceecsoptimizedamiamazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter": {
       "Type": "AWS::SSM::Parameter::Value<String>",
-      "Default": "/aws/service/ecs/optimized-ami/amazon-linux/recommended/image_id"
+      "Default": "/aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id"
     },
     "TaskDefTheContainerAssetImageImageName92ECAC22": {
       "Type": "String",

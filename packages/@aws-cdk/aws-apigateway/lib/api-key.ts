@@ -1,19 +1,7 @@
-import { Construct, IResource as IResourceBase, PhysicalName, Resource } from '@aws-cdk/cdk';
+import { Construct, IResource as IResourceBase, Resource } from '@aws-cdk/core';
 import { CfnApiKey } from './apigateway.generated';
 import { ResourceOptions } from "./resource";
 import { RestApi } from './restapi';
-
-/**
- * API keys are alphanumeric string values that you distribute to
- * app developer customers to grant access to your API
- */
-export interface ApiKeyAttributes {
-  /**
-   * The API key ID.
-   * @attribute
-   */
-  readonly keyId: string;
-}
 
 /**
  * API keys are alphanumeric string values that you distribute to
@@ -70,7 +58,7 @@ export interface ApiKeyProps extends ResourceOptions {
    * @link http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-apigateway-apikey.html#cfn-apigateway-apikey-name
    * @default automically generated name
    */
-  readonly apiKeyName?: PhysicalName;
+  readonly apiKeyName?: string;
 }
 
 /**

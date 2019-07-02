@@ -1,4 +1,4 @@
-import { Construct, Duration, IResource, Resource, Token } from '@aws-cdk/cdk';
+import { Construct, Duration, IResource, Resource, Token } from '@aws-cdk/core';
 import { IAliasRecordTarget } from './alias-record-target';
 import { IHostedZone } from './hosted-zone-ref';
 import { CfnRecordSet } from './route53.generated';
@@ -81,6 +81,13 @@ export class RecordTarget {
     return new RecordTarget(undefined, aliasTarget);
   }
 
+  /**
+   * Use ip adresses as target.
+   */
+  public static fromIpAddresses(...ipAddresses: string[]) {
+    return RecordTarget.fromValues(...ipAddresses);
+  }
+
   protected constructor(public readonly values?: string[], public readonly aliasTarget?: IAliasRecordTarget) {
   }
 }
@@ -130,12 +137,6 @@ export class RecordSet extends Resource implements IRecordSet {
  *
  */
 export class AddressRecordTarget extends RecordTarget {
-  /**
-   * Use ip adresses as target.
-   */
-  public static fromIpAddresses(...ipAddresses: string[]) {
-    return RecordTarget.fromValues(...ipAddresses);
-  }
 }
 
 /**
@@ -145,7 +146,7 @@ export interface ARecordProps extends RecordSetOptions {
   /**
    * The target.
    */
-  readonly target: AddressRecordTarget;
+  readonly target: RecordTarget;
 }
 
 /**

@@ -22,7 +22,7 @@ export interface EksOptimizedAmiProps {
 /**
  * Source for EKS optimized AMIs
  */
-export class EksOptimizedAmi extends ec2.GenericLinuxImage implements ec2.IMachineImageSource {
+export class EksOptimizedAmi extends ec2.GenericLinuxImage implements ec2.IMachineImage {
   constructor(props: EksOptimizedAmiProps = {}) {
     const version = props.kubernetesVersion || LATEST_KUBERNETES_VERSION;
     if (!(version in EKS_AMI)) {

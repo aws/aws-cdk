@@ -1,4 +1,4 @@
-import { Construct, IResource, Resource, Token } from '@aws-cdk/cdk';
+import { Construct, IResource, Resource, Token } from '@aws-cdk/core';
 import { IKey } from './key';
 import { CfnAlias } from './kms.generated';
 
@@ -12,14 +12,14 @@ export interface IAlias extends IResource {
   /**
    * The name of the alias.
    *
-   * @attribute AliasName
+   * @attribute
    */
   readonly aliasName: string;
 
   /**
    * The Key to which the Alias refers.
    *
-   * @attribute TargetKeyId
+   * @attribute
    */
   readonly aliasTargetKey: IKey;
 }

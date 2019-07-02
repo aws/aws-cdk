@@ -1,8 +1,9 @@
 import { expect, haveResourceLike } from '@aws-cdk/assert';
-import cdk = require('@aws-cdk/cdk');
-import { Stack } from '@aws-cdk/cdk';
+import { User } from '@aws-cdk/aws-iam';
+import cdk = require('@aws-cdk/core');
+import { Duration, Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import { IRuleTarget, RuleTargetInput, Schedule, TimeUnit } from '../lib';
+import { IRuleTarget, RuleTargetInput, Schedule } from '../lib';
 import { Rule } from '../lib/rule';
 
 export = {
@@ -11,7 +12,7 @@ export = {
       // GIVEN
       const stack = new Stack();
       const rule = new Rule(stack, 'Rule', {
-        schedule: Schedule.rate(1, TimeUnit.Minute),
+        schedule: Schedule.rate(Duration.minutes(1)),
       });
 
       // WHEN
@@ -27,6 +28,42 @@ export = {
       }));
       test.done();
     },
+
+    'can use token'(test: Test) {
+      // GIVEN
+      const stack = new Stack();
+      const rule = new Rule(stack, 'Rule', {
+        schedule: Schedule.rate(Duration.minutes(1)),
+      });
+      const user = new User(stack, 'User');
+
+      // WHEN
+      rule.addTarget(new SomeTarget(RuleTargetInput.fromObject({ userArn: user.userArn })));
+
+      // THEN
+      expect(stack).to(haveResourceLike('AWS::Events::Rule', {
+        Targets: [
+          {
+            Input: {
+              'Fn::Join': [
+                '',
+                [
+                  '{\"userArn\":\"',
+                  {
+                    'Fn::GetAtt': [
+                      'User00B015A1',
+                      'Arn'
+                    ]
+                  },
+                  '\"}'
+                ]
+              ]
+            }
+          }
+        ]
+      }));
+      test.done();
+    },
   },
 
   'text templates': {
@@ -34,7 +71,7 @@ export = {
       // GIVEN
       const stack = new Stack();
       const rule = new Rule(stack, 'Rule', {
-        schedule: Schedule.rate(1, TimeUnit.Minute),
+        schedule: Schedule.rate(Duration.minutes(1)),
       });
 
       // WHEN
@@ -56,7 +93,7 @@ export = {
       // GIVEN
       const stack = new Stack();
       const rule = new Rule(stack, 'Rule', {
-        schedule: Schedule.rate(1, TimeUnit.Minute),
+        schedule: Schedule.rate(Duration.minutes(1)),
       });
 
       // WHEN
@@ -78,7 +115,7 @@ export = {
       // GIVEN
       const stack = new Stack();
       const rule = new Rule(stack, 'Rule', {
-        schedule: Schedule.rate(1, TimeUnit.Minute),
+        schedule: Schedule.rate(Duration.minutes(1)),
       });
 
       const world = cdk.Lazy.stringValue({ produce: () => 'world' });

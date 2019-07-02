@@ -1,4 +1,4 @@
-import { IResource } from '@aws-cdk/cdk';
+import { IResource } from '@aws-cdk/core';
 
 export interface INamespace extends IResource {
   /**
@@ -37,28 +37,6 @@ export interface BaseNamespaceProps {
    * @default none
    */
   readonly description?: string;
-}
-
-export interface NamespaceAttributes {
-  /**
-   * A name for the Namespace.
-   */
-  readonly namespaceName: string;
-
-  /**
-   * Namespace Id for the Namespace.
-   */
-  readonly namespaceId: string;
-
-  /**
-   * Namespace ARN for the Namespace.
-   */
-  readonly namespaceArn: string;
-
-  /**
-   * Type of Namespace. Valid values: HTTP, DNS_PUBLIC, or DNS_PRIVATE
-   */
-  readonly type: NamespaceType;
 }
 
 export enum NamespaceType {

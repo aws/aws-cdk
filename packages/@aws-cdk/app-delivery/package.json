@@ -1,7 +1,7 @@
 {
   "name": "@aws-cdk/app-delivery",
   "description": "Continuous Integration / Continuous Delivery for CDK Applications",
-  "version": "0.35.0",
+  "version": "0.36.1",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "jsii": {
@@ -38,21 +38,22 @@
     "build+test": "npm run build && npm test"
   },
   "dependencies": {
-    "@aws-cdk/aws-cloudformation": "^0.35.0",
-    "@aws-cdk/aws-codebuild": "^0.35.0",
-    "@aws-cdk/aws-codepipeline": "^0.35.0",
-    "@aws-cdk/aws-codepipeline-actions": "^0.35.0",
-    "@aws-cdk/aws-iam": "^0.35.0",
-    "@aws-cdk/cdk": "^0.35.0",
-    "@aws-cdk/cx-api": "^0.35.0"
+    "@aws-cdk/aws-cloudformation": "^0.36.1",
+    "@aws-cdk/aws-codebuild": "^0.36.1",
+    "@aws-cdk/aws-codepipeline": "^0.36.1",
+    "@aws-cdk/aws-codepipeline-actions": "^0.36.1",
+    "@aws-cdk/aws-events": "^0.36.1",
+    "@aws-cdk/aws-iam": "^0.36.1",
+    "@aws-cdk/core": "^0.36.1",
+    "@aws-cdk/cx-api": "^0.36.1"
   },
   "devDependencies": {
-    "@aws-cdk/assert": "^0.35.0",
-    "@aws-cdk/aws-s3": "^0.35.0",
-    "cdk-build-tools": "^0.35.0",
-    "cdk-integ-tools": "^0.35.0",
+    "@aws-cdk/assert": "^0.36.1",
+    "@aws-cdk/aws-s3": "^0.36.1",
+    "cdk-build-tools": "^0.36.1",
+    "cdk-integ-tools": "^0.36.1",
     "fast-check": "^1.15.1",
-    "pkglint": "^0.35.0"
+    "pkglint": "^0.36.1"
   },
   "repository": {
     "type": "git",
@@ -71,13 +72,14 @@
     "cdk"
   ],
   "peerDependencies": {
-    "@aws-cdk/aws-cloudformation": "^0.35.0",
-    "@aws-cdk/aws-codebuild": "^0.35.0",
-    "@aws-cdk/aws-codepipeline": "^0.35.0",
-    "@aws-cdk/aws-codepipeline-actions": "^0.35.0",
-    "@aws-cdk/aws-iam": "^0.35.0",
-    "@aws-cdk/cdk": "^0.35.0",
-    "@aws-cdk/cx-api": "^0.35.0"
+    "@aws-cdk/aws-cloudformation": "^0.36.1",
+    "@aws-cdk/aws-codebuild": "^0.36.1",
+    "@aws-cdk/aws-codepipeline": "^0.36.1",
+    "@aws-cdk/aws-codepipeline-actions": "^0.36.1",
+    "@aws-cdk/aws-events": "^0.36.1",
+    "@aws-cdk/aws-iam": "^0.36.1",
+    "@aws-cdk/core": "^0.36.1",
+    "@aws-cdk/cx-api": "^0.36.1"
   },
   "engines": {
     "node": ">= 8.10.0"

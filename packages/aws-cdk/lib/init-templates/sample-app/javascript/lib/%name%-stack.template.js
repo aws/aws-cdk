@@ -1,7 +1,7 @@
 const sns = require('@aws-cdk/aws-sns');
-const subs = require('@aws-cdk/aws-sns-subscribers');
+const subs = require('@aws-cdk/aws-sns-subscriptions');
 const sqs = require('@aws-cdk/aws-sqs');
-const cdk = require('@aws-cdk/cdk');
+const cdk = require('@aws-cdk/core');
 
 class %name.PascalCased%Stack extends cdk.Stack {
   /**
@@ -13,12 +13,12 @@ class %name.PascalCased%Stack extends cdk.Stack {
     super(scope, id, props);
 
     const queue = new sqs.Queue(this, '%name.PascalCased%Queue', {
-      visibilityTimeoutSec: 300
+      visibilityTimeout: cdk.Duration.seconds(300)
     });
 
     const topic = new sns.Topic(this, '%name.PascalCased%Topic');
 
-    topic.subscribe(new subs.SqsSubscriber(queue));
+    topic.addSubscription(new subs.SqsSubscription(queue));
   }
 }
 

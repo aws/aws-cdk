@@ -4,7 +4,7 @@ import iam = require('@aws-cdk/aws-iam');
 import kms = require('@aws-cdk/aws-kms');
 import s3 = require('@aws-cdk/aws-s3');
 import sfn = require('@aws-cdk/aws-stepfunctions');
-import { Duration } from '@aws-cdk/cdk';
+import { Duration } from '@aws-cdk/core';
 
 //
 // Create Training Job types

@@ -1,7 +1,7 @@
 import { expect, haveResourceLike } from '@aws-cdk/assert';
 import ec2 = require('@aws-cdk/aws-ec2');
 import elbv2 = require('@aws-cdk/aws-elasticloadbalancingv2');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import { Test } from 'nodeunit';
 import apigateway = require('../lib');
 
@@ -16,7 +16,7 @@ export = {
 
     // WHEN
     new apigateway.VpcLink(stack, 'VpcLink', {
-      vpcLinkName: cdk.PhysicalName.of('MyLink'),
+      vpcLinkName: 'MyLink',
       targets: [nlb]
     });
 

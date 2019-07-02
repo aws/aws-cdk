@@ -1,5 +1,5 @@
 import ec2 = require('@aws-cdk/aws-ec2');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import ecs = require('../../lib');
 
 const app = new cdk.App();
@@ -37,7 +37,7 @@ frontend.addPortMappings({
 new ecs.Ec2Service(stack, "FrontendService", {
   cluster,
   taskDefinition: frontendTD,
-  serviceDiscoveryOptions: {
+  cloudMapOptions: {
     name: "frontend"
   }
 });

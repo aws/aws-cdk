@@ -1,4 +1,4 @@
-import { captureStackTrace, IResolvable, IResolveContext, Token, Tokenization } from '@aws-cdk/cdk';
+import { captureStackTrace, IResolvable, IResolveContext, Token, Tokenization } from '@aws-cdk/core';
 
 const JSON_PATH_TOKEN_SYMBOL = Symbol.for('@aws-cdk/aws-stepfunctions.JsonPathToken');
 

@@ -1,6 +1,6 @@
 import codepipeline = require('@aws-cdk/aws-codepipeline');
 import s3 = require('@aws-cdk/aws-s3');
-import { App, RemovalPolicy, SecretValue, Stack } from '@aws-cdk/cdk';
+import { App, RemovalPolicy, SecretValue, Stack } from '@aws-cdk/core';
 import cpactions = require('../lib');
 
 const app = new App();
@@ -9,7 +9,7 @@ const stack = new Stack(app, 'aws-cdk-codepipeline-alexa-deploy');
 
 const bucket = new s3.Bucket(stack, 'PipelineBucket', {
   versioned: true,
-  removalPolicy: RemovalPolicy.Destroy,
+  removalPolicy: RemovalPolicy.DESTROY,
 });
 const sourceOutput = new codepipeline.Artifact('SourceArtifact');
 const sourceAction = new cpactions.S3SourceAction({

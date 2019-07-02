@@ -1,6 +1,6 @@
 import { expect, haveResource } from '@aws-cdk/assert';
 import ec2 = require('@aws-cdk/aws-ec2');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import { ICallbackFunction, Test } from 'nodeunit';
 import lambda = require('../lib');
 
@@ -21,7 +21,7 @@ export = {
       this.lambda = new lambda.Function(this.stack, 'Lambda', {
         code: new lambda.InlineCode('foo'),
         handler: 'index.handler',
-        runtime: lambda.Runtime.Nodejs810,
+        runtime: lambda.Runtime.NODEJS_8_10,
         vpc: this.vpc,
         allowAllOutbound: false
       });
@@ -50,7 +50,7 @@ export = {
       const somethingConnectable = new SomethingConnectable(new ec2.Connections({ securityGroups: [securityGroup] }));
 
       // WHEN
-      this.lambda.connections.allowTo(somethingConnectable, new ec2.TcpAllPorts(), 'Lambda can call connectable');
+      this.lambda.connections.allowTo(somethingConnectable, ec2.Port.allTcp(), 'Lambda can call connectable');
 
       // THEN: Lambda can connect to SomeSecurityGroup
       expect(this.stack).to(haveResource("AWS::EC2::SecurityGroupEgress", {
@@ -82,7 +82,7 @@ export = {
       const somethingConnectable = new SomethingConnectable(new ec2.Connections({ securityGroups: [securityGroup] }));
 
       // WHEN
-      somethingConnectable.connections.allowFrom(this.lambda.connections, new ec2.TcpAllPorts(), 'Lambda can call connectable');
+      somethingConnectable.connections.allowFrom(this.lambda.connections, ec2.Port.allTcp(), 'Lambda can call connectable');
 
       // THEN: SomeSecurityGroup accepts connections from Lambda
       expect(stack2).to(haveResource("AWS::EC2::SecurityGroupEgress", {
@@ -128,12 +128,12 @@ export = {
     const lambdaFn = new lambda.Function(stack, 'Lambda', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.Nodejs810,
+      runtime: lambda.Runtime.NODEJS_8_10,
     });
 
     // WHEN
     test.throws(() => {
-      lambdaFn.connections.allowToAnyIPv4(new ec2.TcpAllPorts(), 'Reach for the world Lambda!');
+      lambdaFn.connections.allowToAnyIPv4(ec2.Port.allTcp(), 'Reach for the world Lambda!');
     });
 
     test.done();
@@ -149,7 +149,7 @@ export = {
       new lambda.Function(stack, 'Lambda', {
         code: new lambda.InlineCode('foo'),
         handler: 'index.handler',
-        runtime: lambda.Runtime.Nodejs810,
+        runtime: lambda.Runtime.NODEJS_8_10,
         vpc,
         vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC }
       });

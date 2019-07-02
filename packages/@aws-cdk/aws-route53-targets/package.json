@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/aws-route53-targets",
-  "version": "0.35.0",
+  "version": "0.36.1",
   "description": "CDK Constructs for AWS Route53 Alias Targets",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -68,29 +68,33 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "^0.35.0",
-    "@aws-cdk/aws-ec2": "^0.35.0",
-    "@aws-cdk/aws-s3": "^0.35.0",
-    "cdk-build-tools": "^0.35.0",
-    "cdk-integ-tools": "^0.35.0",
-    "cfn2ts": "^0.35.0",
+    "@aws-cdk/assert": "^0.36.1",
+    "@aws-cdk/aws-certificatemanager": "^0.36.1",
+    "@aws-cdk/aws-ec2": "^0.36.1",
+    "@aws-cdk/aws-lambda": "^0.36.1",
+    "@aws-cdk/aws-s3": "^0.36.1",
+    "cdk-build-tools": "^0.36.1",
+    "cdk-integ-tools": "^0.36.1",
+    "cfn2ts": "^0.36.1",
     "jest": "^24.8.0",
-    "pkglint": "^0.35.0"
+    "pkglint": "^0.36.1"
   },
   "dependencies": {
-    "@aws-cdk/aws-cloudfront": "^0.35.0",
-    "@aws-cdk/aws-elasticloadbalancingv2": "^0.35.0",
-    "@aws-cdk/aws-iam": "^0.35.0",
-    "@aws-cdk/aws-route53": "^0.35.0",
-    "@aws-cdk/cdk": "^0.35.0"
+    "@aws-cdk/aws-apigateway": "^0.36.1",
+    "@aws-cdk/aws-cloudfront": "^0.36.1",
+    "@aws-cdk/aws-elasticloadbalancingv2": "^0.36.1",
+    "@aws-cdk/aws-iam": "^0.36.1",
+    "@aws-cdk/aws-route53": "^0.36.1",
+    "@aws-cdk/core": "^0.36.1"
   },
   "homepage": "https://github.com/awslabs/aws-cdk",
   "peerDependencies": {
-    "@aws-cdk/aws-cloudfront": "^0.35.0",
-    "@aws-cdk/aws-elasticloadbalancingv2": "^0.35.0",
-    "@aws-cdk/aws-iam": "^0.35.0",
-    "@aws-cdk/aws-route53": "^0.35.0",
-    "@aws-cdk/cdk": "^0.35.0"
+    "@aws-cdk/aws-apigateway": "^0.36.1",
+    "@aws-cdk/aws-cloudfront": "^0.36.1",
+    "@aws-cdk/aws-elasticloadbalancingv2": "^0.36.1",
+    "@aws-cdk/aws-iam": "^0.36.1",
+    "@aws-cdk/aws-route53": "^0.36.1",
+    "@aws-cdk/core": "^0.36.1"
   },
   "engines": {
     "node": ">= 8.10.0"

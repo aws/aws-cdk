@@ -2,7 +2,7 @@ import { expect, haveResource, MatchStyle, ResourcePart } from '@aws-cdk/assert'
 import iam = require('@aws-cdk/aws-iam');
 import logs = require('@aws-cdk/aws-logs');
 import sqs = require('@aws-cdk/aws-sqs');
-import cdk = require('@aws-cdk/cdk');
+import cdk = require('@aws-cdk/core');
 import { Test } from 'nodeunit';
 import path = require('path');
 import lambda = require('../lib');
@@ -16,7 +16,7 @@ export = {
     new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.Nodejs810,
+      runtime: lambda.Runtime.NODEJS_8_10,
     });
 
     expect(stack).toMatch({ Resources:
@@ -50,7 +50,7 @@ export = {
     new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.Nodejs810,
+      runtime: lambda.Runtime.NODEJS_8_10,
       initialPolicy: [new iam.PolicyStatement({ actions: ["*"], resources: ["*"]  })]
     });
     expect(stack).toMatch({ Resources:
@@ -105,7 +105,7 @@ export = {
     test.throws(() => new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('foo'),
       handler: 'bar',
-      runtime: lambda.Runtime.DotNetCore2
+      runtime: lambda.Runtime.DOTNET_CORE_2
     }));
     test.done();
   },
@@ -210,7 +210,7 @@ export = {
       // WHEN
       const fn = new lambda.Function(stack, 'Function', {
         code: new lambda.InlineCode('test'),
-        runtime: lambda.Runtime.Python36,
+        runtime: lambda.Runtime.PYTHON_3_6,
         handler: 'index.test',
         role,
         initialPolicy: [
@@ -260,7 +260,7 @@ export = {
     new lambda.Function(stack, 'MyLambda', {
       code: lambda.Code.asset(path.join(__dirname, 'my-lambda-handler')),
       handler: 'index.handler',
-      runtime: lambda.Runtime.Python36
+      runtime: lambda.Runtime.PYTHON_3_6
     });
 
     // THEN
@@ -293,8 +293,8 @@ export = {
     new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.Nodejs810,
-      functionName: cdk.PhysicalName.of('OneFunctionToRuleThemAll'),
+      runtime: lambda.Runtime.NODEJS_8_10,
+      functionName: 'OneFunctionToRuleThemAll',
       deadLetterQueueEnabled: true
     });
 
@@ -405,7 +405,7 @@ export = {
     new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.Nodejs810,
+      runtime: lambda.Runtime.NODEJS_8_10,
       deadLetterQueueEnabled: true,
     });
 
@@ -515,7 +515,7 @@ export = {
     new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.Nodejs810,
+      runtime: lambda.Runtime.NODEJS_8_10,
       deadLetterQueueEnabled: false,
     });
 
@@ -582,14 +582,14 @@ export = {
     const stack = new cdk.Stack();
 
     const dlQueue = new sqs.Queue(stack, 'DeadLetterQueue', {
-      queueName: cdk.PhysicalName.of('MyLambda_DLQ'),
+      queueName: 'MyLambda_DLQ',
       retentionPeriod: cdk.Duration.days(14)
     });
 
     new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.Nodejs810,
+      runtime: lambda.Runtime.NODEJS_8_10,
       deadLetterQueue: dlQueue,
     });
 
@@ -691,14 +691,14 @@ export = {
     const stack = new cdk.Stack();
 
     const dlQueue = new sqs.Queue(stack, 'DeadLetterQueue', {
-      queueName: cdk.PhysicalName.of('MyLambda_DLQ'),
+      queueName: 'MyLambda_DLQ',
       retentionPeriod: cdk.Duration.days(14)
     });
 
     new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.Nodejs810,
+      runtime: lambda.Runtime.NODEJS_8_10,
       deadLetterQueueEnabled: true,
       deadLetterQueue: dlQueue,
     });
@@ -801,14 +801,14 @@ export = {
     const stack = new cdk.Stack();
 
     const dlQueue = new sqs.Queue(stack, 'DeadLetterQueue', {
-      queueName: cdk.PhysicalName.of('MyLambda_DLQ'),
+      queueName: 'MyLambda_DLQ',
       retentionPeriod: cdk.Duration.days(14),
     });
 
     test.throws(() => new lambda.Function(stack, 'MyLambda', {
     code: new lambda.InlineCode('foo'),
     handler: 'index.handler',
-    runtime: lambda.Runtime.Nodejs810,
+    runtime: lambda.Runtime.NODEJS_8_10,
     deadLetterQueueEnabled: false,
     deadLetterQueue: dlQueue,
     }), /deadLetterQueue defined but deadLetterQueueEnabled explicitly set to false/);
@@ -822,7 +822,7 @@ export = {
     new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.Nodejs810,
+      runtime: lambda.Runtime.NODEJS_8_10,
       tracing: lambda.Tracing.ACTIVE
     });
 
@@ -880,7 +880,7 @@ export = {
     new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.Nodejs810,
+      runtime: lambda.Runtime.NODEJS_8_10,
       tracing: lambda.Tracing.PASS_THROUGH
     });
 
@@ -938,7 +938,7 @@ export = {
     new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.Nodejs810,
+      runtime: lambda.Runtime.NODEJS_8_10,
       tracing: lambda.Tracing.DISABLED
     });
 
@@ -995,7 +995,7 @@ export = {
     const fn = new lambda.Function(stack, 'Function', {
       code: lambda.Code.inline('xxx'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.Nodejs810,
+      runtime: lambda.Runtime.NODEJS_8_10,
     });
 
     // WHEN
@@ -1024,7 +1024,7 @@ export = {
     const fn = new lambda.Function(stack, 'Function', {
       code: lambda.Code.inline('xxx'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.Nodejs810,
+      runtime: lambda.Runtime.NODEJS_8_10,
     });
     const service = new iam.ServicePrincipal('apigateway.amazonaws.com');
 
@@ -1052,7 +1052,7 @@ export = {
     const fn = new lambda.Function(stack, 'Function', {
       code: lambda.Code.inline('xxx'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.Nodejs810,
+      runtime: lambda.Runtime.NODEJS_8_10,
     });
     const account = new iam.AccountPrincipal('123456789012');
 
@@ -1080,7 +1080,7 @@ export = {
     const fn = new lambda.Function(stack, 'Function', {
       code: lambda.Code.inline('xxx'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.Nodejs810,
+      runtime: lambda.Runtime.NODEJS_8_10,
     });
 
     // THEN
@@ -1101,7 +1101,7 @@ export = {
     const fn = new lambda.Function(stack, 'Function', {
       code: lambda.Code.inline('xxx'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.Nodejs810,
+      runtime: lambda.Runtime.NODEJS_8_10,
     });
 
     let bindTarget;
@@ -1125,7 +1125,7 @@ export = {
     new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.Ruby25,
+      runtime: lambda.Runtime.RUBY_2_5,
     });
 
     expect(stack).toMatch({ Resources:
@@ -1159,13 +1159,13 @@ export = {
     const stack = new cdk.Stack(undefined, 'TestStack');
     const layer = lambda.LayerVersion.fromLayerVersionAttributes(stack, 'TestLayer', {
       layerVersionArn: 'arn:aws:...',
-      compatibleRuntimes: [lambda.Runtime.Nodejs810],
+      compatibleRuntimes: [lambda.Runtime.NODEJS_8_10],
     });
 
     // THEN
     test.throws(() => new lambda.Function(stack, 'Function', {
                   layers: [layer],
-                  runtime: lambda.Runtime.Nodejs610,
+                  runtime: lambda.Runtime.NODEJS_6_10,
                   code: lambda.Code.inline('exports.main = function() { console.log("DONE"); }'),
                   handler: 'index.main'
                 }),
@@ -1179,13 +1179,13 @@ export = {
     const stack = new cdk.Stack(undefined, 'TestStack');
     const layers = new Array(6).fill(lambda.LayerVersion.fromLayerVersionAttributes(stack, 'TestLayer', {
       layerVersionArn: 'arn:aws:...',
-      compatibleRuntimes: [lambda.Runtime.Nodejs810],
+      compatibleRuntimes: [lambda.Runtime.NODEJS_8_10],
     }));
 
     // THEN
     test.throws(() => new lambda.Function(stack, 'Function', {
                   layers,
-                  runtime: lambda.Runtime.Nodejs810,
+                  runtime: lambda.Runtime.NODEJS_8_10,
                   code: lambda.Code.inline('exports.main = function() { console.log("DONE"); }'),
                   handler: 'index.main'
                 }),
@@ -1203,7 +1203,7 @@ export = {
       new lambda.Function(stack, 'MyLambda', {
         code: new lambda.InlineCode('foo'),
         handler: 'index.handler',
-        runtime: lambda.Runtime.Nodejs,
+        runtime: lambda.Runtime.NODEJS,
         environment: {
           SOME: 'Variable'
         }
@@ -1221,7 +1221,7 @@ export = {
     new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.Nodejs,
+      runtime: lambda.Runtime.NODEJS,
       environment: {
         SOME: 'Variable'
       }
@@ -1246,7 +1246,7 @@ export = {
     new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.Nodejs,
+      runtime: lambda.Runtime.NODEJS,
       reservedConcurrentExecutions: 10
     });
 
@@ -1292,7 +1292,7 @@ export = {
     // WHEN
     new lambda.Function(stack, 'fn', {
       code: lambda.Code.inline('boom'),
-      runtime: lambda.Runtime.Nodejs810,
+      runtime: lambda.Runtime.NODEJS_8_10,
       handler: 'index.bam',
       events: [
         new EventSource(),
@@ -1306,7 +1306,7 @@ export = {
   },
 
   'Provided Runtime returns the right values'(test: Test) {
-    const rt = lambda.Runtime.Provided;
+    const rt = lambda.Runtime.PROVIDED;
 
     test.equal(rt.name, 'provided');
     test.equal(rt.supportsInlineCode, false);
@@ -1322,7 +1322,7 @@ export = {
     new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.Nodejs,
+      runtime: lambda.Runtime.NODEJS,
       logRetention: logs.RetentionDays.ONE_MONTH
     });
 
@@ -1350,6 +1350,6 @@ function newTestLambda(scope: cdk.Construct) {
   return new lambda.Function(scope, 'MyLambda', {
     code: new lambda.InlineCode('foo'),
     handler: 'bar',
-    runtime: lambda.Runtime.Python27
+    runtime: lambda.Runtime.PYTHON_2_7
   });
 }
