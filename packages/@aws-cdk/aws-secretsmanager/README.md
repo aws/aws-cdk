@@ -27,11 +27,11 @@ lead to the secret being surfaced in plain text and possibly committed to
 your source control).
 
 If you need to use a pre-existing secret, the recommended way is to manually
-provision the secret in *AWS SecretsManager* and use the `Secret.import`
-method to make it available in your CDK Application:
+provision the secret in *AWS SecretsManager* and use the `Secret.fromSecretArn`
+or `Secret.fromSecretAttributes` method to make it available in your CDK Application:
 
 ```ts
-const secret = Secret.import(scope, 'ImportedSecret', {
+const secret = Secret.fromSecretAttributes(scope, 'ImportedSecret', {
   secretArn: 'arn:aws:secretsmanager:<region>:<account-id-number>:secret:<secret-name>-<random-6-characters>',
   // If the secret is encrypted using a KMS-hosted CMK, either import or reference that key:
   encryptionKey,

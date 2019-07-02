@@ -619,7 +619,7 @@ export = {
             "Region": "us-east-1",
             "ArtifactStore": {
               "Type": "S3",
-              "Location": "cdk-cross-region-codepipeline-replication-bucket-685c6feea5fb",
+              "Location": "teststack-support-us-easteplicationbucket1a8063b3cdac6e7e0e73",
             },
           },
           {

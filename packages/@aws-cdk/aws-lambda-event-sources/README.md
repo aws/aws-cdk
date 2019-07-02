@@ -31,17 +31,18 @@ first create or update an Amazon SQS queue and select custom values for the
 queue parameters. The following parameters will impact Amazon SQS's polling
 behavior:
 
-* __visibilityTimeoutSec__: May impact the period between retries.
-* __receiveMessageWaitTimeSec__: Will determine [long
+* __visibilityTimeout__: May impact the period between retries.
+* __receiveMessageWaitTime__: Will determine [long
   poll](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-long-polling.html)
   duration. The default value is 20 seconds.
 
 ```ts
 import { SqsEventSource } from '@aws-cdk/aws-lambda-event-sources';
+import { Duration } from '@aws-cdk/core';
 
 const queue = new sqs.Queue(this, 'MyQueue', {
-  visibilityTimeoutSec: 30      // default,
-  receiveMessageWaitTimeSec: 20 // default
+  visibilityTimeout: Duration.seconds(30)      // default,
+  receiveMessageWaitTime: Duration.seconds(20) // default
 });
 
 lambda.addEventSource(new SqsEventSource(queue, {

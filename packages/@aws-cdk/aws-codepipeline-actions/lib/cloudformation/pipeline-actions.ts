@@ -75,14 +75,14 @@ abstract class CloudFormationAction extends Action {
     this.props = props;
   }
 
-  protected bound(_scope: cdk.Construct, stage: codepipeline.IStage, options: codepipeline.ActionBindOptions):
+  protected bound(_scope: cdk.Construct, _stage: codepipeline.IStage, options: codepipeline.ActionBindOptions):
       codepipeline.ActionConfig {
     const singletonPolicy = SingletonPolicy.forRole(options.role);
 
     if ((this.actionProperties.outputs || []).length > 0) {
-      stage.pipeline.artifactBucket.grantReadWrite(singletonPolicy);
+      options.bucket.grantReadWrite(singletonPolicy);
     } else if ((this.actionProperties.inputs || []).length > 0) {
-      stage.pipeline.artifactBucket.grantRead(singletonPolicy);
+      options.bucket.grantRead(singletonPolicy);
     }
 
     return {

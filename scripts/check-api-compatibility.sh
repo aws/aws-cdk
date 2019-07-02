@@ -44,12 +44,19 @@ fi
 
 #----------------------------------------------------------------------
 
+# get the current version from Lerna
+current_version=$(npx lerna ls -pl | head -n 1 | cut -d ':' -f 3)
+
 echo "Checking compatibility..." >&2
 success=true
 for i in ${!package_dirs[*]}; do
     if [[ ! -d $tmpdir/node_modules/${package_names[$i]} ]]; then continue; fi
     echo -n "${package_names[$i]}... "
-    if npx jsii-diff $tmpdir/node_modules/${package_names[$i]} ${package_dirs[$i]} 2>$tmpdir/output.txt; then
+    if npx jsii-diff \
+        --ignore-file ${package_dirs[$i]}/allowed-breaking-changes-${current_version}.txt \
+        $tmpdir/node_modules/${package_names[$i]} \
+        ${package_dirs[$i]} \
+        2>$tmpdir/output.txt; then
         echo "OK."
     else
         success=false

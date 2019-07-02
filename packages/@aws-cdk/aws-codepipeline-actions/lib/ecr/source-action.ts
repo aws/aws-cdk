@@ -63,7 +63,7 @@ export class EcrSourceAction extends Action {
     });
 
     // the Action Role also needs to write to the Pipeline's bucket
-    stage.pipeline.artifactBucket.grantWrite(options.role);
+    options.bucket.grantWrite(options.role);
 
     return {
       configuration: {
