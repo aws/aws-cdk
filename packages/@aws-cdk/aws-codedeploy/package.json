@@ -105,9 +105,5 @@
       "resource-interface-extends-resource:@aws-cdk/aws-codedeploy.IServerDeploymentConfig"
     ]
   },
-<<<<<<< HEAD
   "stability": "stable"
-=======
-  "stability": "experimental"
->>>>>>> origin/master
 }

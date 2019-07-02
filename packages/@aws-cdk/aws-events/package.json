@@ -89,9 +89,5 @@
       "no-unused-type:@aws-cdk/aws-events.OnEventOptions"
     ]
   },
-<<<<<<< HEAD
   "stability": "stable"
-=======
-  "stability": "experimental"
->>>>>>> origin/master
 }

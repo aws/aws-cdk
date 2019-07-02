@@ -95,9 +95,5 @@
       "props-physical-name:@aws-cdk/aws-sqs.QueuePolicyProps"
     ]
   },
-<<<<<<< HEAD
   "stability": "stable"
-=======
-  "stability": "experimental"
->>>>>>> origin/master
 }

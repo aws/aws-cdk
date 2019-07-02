@@ -100,9 +100,5 @@
   "engines": {
     "node": ">= 8.10.0"
   },
-<<<<<<< HEAD
   "stability": "stable"
-=======
-  "stability": "experimental"
->>>>>>> origin/master
 }

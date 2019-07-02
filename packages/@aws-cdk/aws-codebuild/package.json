@@ -117,9 +117,5 @@
       "duration-prop-name:@aws-cdk/aws-codebuild.PhaseChangeEvent.completedPhaseDurationSeconds"
     ]
   },
-<<<<<<< HEAD
   "stability": "stable"
-=======
-  "stability": "experimental"
->>>>>>> origin/master
 }

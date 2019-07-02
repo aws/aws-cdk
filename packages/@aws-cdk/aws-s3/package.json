@@ -93,9 +93,5 @@
       "no-unused-type:@aws-cdk/aws-s3.Location"
     ]
   },
-<<<<<<< HEAD
   "stability": "stable"
-=======
-  "stability": "experimental"
->>>>>>> origin/master
 }
