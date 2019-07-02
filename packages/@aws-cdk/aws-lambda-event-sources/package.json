@@ -11,14 +11,16 @@
         "package": "software.amazon.awscdk.services.lambda.eventsources",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "lambda-event-sources"
+          "artifactId": "lambda-event-sources",
+          "versionSuffix": ".DEVPREVIEW"
         }
       },
       "dotnet": {
         "namespace": "Amazon.CDK.AWS.Lambda.EventSources",
         "packageId": "Amazon.CDK.AWS.Lambda.EventSources",
         "signAssembly": true,
-        "assemblyOriginatorKeyFile": "../../key.snk"
+        "assemblyOriginatorKeyFile": "../../key.snk",
+        "versionSuffix": "-devpreview"
       },
       "python": {
         "distName": "aws-cdk.aws-lambda-event-sources",

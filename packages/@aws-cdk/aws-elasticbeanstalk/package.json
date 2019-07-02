@@ -11,14 +11,16 @@
         "package": "software.amazon.awscdk.services.elasticbeanstalk",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "elasticbeanstalk"
+          "artifactId": "elasticbeanstalk",
+          "versionSuffix": ".DEVPREVIEW"
         }
       },
       "dotnet": {
         "namespace": "Amazon.CDK.AWS.ElasticBeanstalk",
         "packageId": "Amazon.CDK.AWS.ElasticBeanstalk",
         "signAssembly": true,
-        "assemblyOriginatorKeyFile": "../../key.snk"
+        "assemblyOriginatorKeyFile": "../../key.snk",
+        "versionSuffix": "-devpreview"
       },
       "python": {
         "distName": "aws-cdk.aws-elasticbeanstalk",
