@@ -108,5 +108,5 @@
       "from-method:@aws-cdk/aws-codepipeline.Pipeline"
     ]
   },
-  "stability": "experimental"
+  "stability": "stable"
 }

@@ -6,6 +6,9 @@ import cdk = require('@aws-cdk/core');
 import path = require('path');
 import { CertificateProps, ICertificate } from './certificate';
 
+/**
+ * @experimental
+ */
 export interface DnsValidatedCertificateProps extends CertificateProps {
     /**
      * Route 53 Hosted Zone used to perform DNS validation of the request.  The zone
@@ -27,6 +30,7 @@ export interface DnsValidatedCertificateProps extends CertificateProps {
  * validated using DNS validation against the specified Route 53 hosted zone.
  *
  * @resource AWS::CertificateManager::Certificate
+ * @experimental
  */
 export class DnsValidatedCertificate extends cdk.Resource implements ICertificate {
     public readonly certificateArn: string;

@@ -95,5 +95,5 @@
       "construct-base-is-private:@aws-cdk/aws-ecr.RepositoryBase"
     ]
   },
-  "stability": "experimental"
+  "stability": "stable"
 }
