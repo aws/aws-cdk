@@ -81,6 +81,13 @@ export class RecordTarget {
     return new RecordTarget(undefined, aliasTarget);
   }
 
+  /**
+   * Use ip adresses as target.
+   */
+  public static fromIpAddresses(...ipAddresses: string[]) {
+    return RecordTarget.fromValues(...ipAddresses);
+  }
+
   protected constructor(public readonly values?: string[], public readonly aliasTarget?: IAliasRecordTarget) {
   }
 }
@@ -127,15 +134,9 @@ export class RecordSet extends Resource implements IRecordSet {
 }
 
 /**
- *
+ * @deprecated Use RecordTarget
  */
 export class AddressRecordTarget extends RecordTarget {
-  /**
-   * Use ip adresses as target.
-   */
-  public static fromIpAddresses(...ipAddresses: string[]) {
-    return RecordTarget.fromValues(...ipAddresses);
-  }
 }
 
 /**
@@ -145,7 +146,7 @@ export interface ARecordProps extends RecordSetOptions {
   /**
    * The target.
    */
-  readonly target: AddressRecordTarget;
+  readonly target: RecordTarget;
 }
 
 /**

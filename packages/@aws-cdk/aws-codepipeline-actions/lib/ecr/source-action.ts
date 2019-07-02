@@ -9,7 +9,7 @@ import { sourceArtifactBounds } from '../common';
 /**
  * Construction properties of {@link EcrSourceAction}.
  */
-export interface EcrSourceActionProps extends codepipeline.CommonActionProps {
+export interface EcrSourceActionProps extends codepipeline.CommonAwsActionProps {
   /**
    * The image tag that will be checked for changes.
    *
@@ -61,6 +61,9 @@ export class EcrSourceAction extends Action {
       target: new targets.CodePipeline(stage.pipeline),
       imageTag: this.props.imageTag
     });
+
+    // the Action Role also needs to write to the Pipeline's bucket
+    options.bucket.grantWrite(options.role);
 
     return {
       configuration: {

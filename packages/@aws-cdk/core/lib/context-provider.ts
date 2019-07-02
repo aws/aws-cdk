@@ -2,6 +2,9 @@ import { Construct } from './construct';
 import { Stack } from './stack';
 import { Token } from './token';
 
+/**
+ * @experimental
+ */
 export interface GetContextKeyOptions {
   /**
    * The context provider to query.
@@ -14,6 +17,9 @@ export interface GetContextKeyOptions {
   readonly props?: { [key: string]: any };
 }
 
+/**
+ * @experimental
+ */
 export interface GetContextValueOptions extends GetContextKeyOptions {
   /**
    * The value to return if the context value was not found and a missing
@@ -23,11 +29,17 @@ export interface GetContextValueOptions extends GetContextKeyOptions {
   readonly dummyValue: any;
 }
 
+/**
+ * @experimental
+ */
 export interface GetContextKeyResult {
   readonly key: string;
   readonly props: { [key: string]: any };
 }
 
+/**
+ * @experimental
+ */
 export interface GetContextValueResult {
   readonly value?: any;
 }
@@ -40,6 +52,8 @@ export interface GetContextValueResult {
  * more context variables (output).
  *
  * ContextProvider needs access to a Construct to hook into the context mechanism.
+ *
+ * @experimental
  */
 export class ContextProvider {
   /**
@@ -71,7 +85,10 @@ export class ContextProvider {
     const stack = Stack.of(scope);
 
     if (Token.isUnresolved(stack.account) || Token.isUnresolved(stack.region)) {
-      throw new Error(`Cannot retrieve value from context provider ${options.provider} since account/region are not specified at the stack level`);
+      throw new Error(`Cannot retrieve value from context provider ${options.provider} since account/region ` +
+                      `are not specified at the stack level. Either configure "env" with explicit account and region when ` +
+                      `you define your stack, or use the environment variables "CDK_DEFAULT_ACCOUNT" and "CDK_DEFAULT_REGION" ` +
+                      `to inherit environment information from the CLI (not recommended for production stacks)`);
     }
 
     const { key, props } = this.getKey(scope, options);

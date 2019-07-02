@@ -25,7 +25,7 @@ export enum CodeBuildActionType {
 /**
  * Construction properties of the {@link CodeBuildAction CodeBuild build CodePipeline action}.
  */
-export interface CodeBuildActionProps extends codepipeline.CommonActionProps {
+export interface CodeBuildActionProps extends codepipeline.CommonAwsActionProps {
   /**
    * The source to use as input for this action.
    */
@@ -83,7 +83,7 @@ export class CodeBuildAction extends Action {
     this.props = props;
   }
 
-  protected bound(_scope: cdk.Construct, stage: codepipeline.IStage, options: codepipeline.ActionBindOptions):
+  protected bound(_scope: cdk.Construct, _stage: codepipeline.IStage, options: codepipeline.ActionBindOptions):
       codepipeline.ActionConfig {
     // grant the Pipeline role the required permissions to this Project
     options.role.addToPolicy(new iam.PolicyStatement({
@@ -97,9 +97,9 @@ export class CodeBuildAction extends Action {
 
     // allow the Project access to the Pipeline's artifact Bucket
     if ((this.actionProperties.outputs || []).length > 0) {
-      stage.pipeline.artifactBucket.grantReadWrite(this.props.project);
+      options.bucket.grantReadWrite(this.props.project);
     } else {
-      stage.pipeline.artifactBucket.grantRead(this.props.project);
+      options.bucket.grantRead(this.props.project);
     }
 
     const configuration: any = {
