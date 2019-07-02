@@ -22,7 +22,7 @@ uploaded to ECR by the CDK toolkit and/or your app's CI-CD pipeline, and can be
 naturally referenced in your CDK app.
 
 ```typescript
-import { DockerImageAsset } from '@aws-cdk/assets-docker';
+import { DockerImageAsset } from '@aws-cdk/aws-ecr-assets';
 
 const asset = new DockerImageAsset(this, 'MyBuildImage', {
   directory: path.join(__dirname, 'my-image')

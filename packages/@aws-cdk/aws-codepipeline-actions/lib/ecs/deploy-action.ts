@@ -61,7 +61,7 @@ export class EcsDeployAction extends Action {
     this.props = props;
   }
 
-  protected bound(_scope: Construct, stage: codepipeline.IStage, options: codepipeline.ActionBindOptions):
+  protected bound(_scope: Construct, _stage: codepipeline.IStage, options: codepipeline.ActionBindOptions):
       codepipeline.ActionConfig {
     // permissions based on CodePipeline documentation:
     // https://docs.aws.amazon.com/codepipeline/latest/userguide/how-to-custom-role.html#how-to-update-role-new-services
@@ -90,7 +90,7 @@ export class EcsDeployAction extends Action {
       }
     }));
 
-    stage.pipeline.artifactBucket.grantRead(options.role);
+    options.bucket.grantRead(options.role);
 
     return {
       configuration: {
