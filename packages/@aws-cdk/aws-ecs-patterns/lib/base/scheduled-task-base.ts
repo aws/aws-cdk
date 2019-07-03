@@ -43,7 +43,7 @@ export interface ScheduledTaskBaseProps {
    *
    * @default none
    */
-  readonly environment?: { [key: string]: string };
+  readonly environment?: { [key: string]: ecs.EnvironmentValue };
 }
 
 /**

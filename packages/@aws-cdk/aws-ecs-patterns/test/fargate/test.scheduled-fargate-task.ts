@@ -78,7 +78,7 @@ export = {
       desiredTaskCount: 2,
       memoryLimitMiB: 512,
       cpu: 2,
-      environment: { name: 'TRIGGER', value: 'CloudWatch Events' },
+      environment: { TRIGGER: ecs.EnvironmentValue.fromString('CloudWatch Events') },
       schedule: events.Schedule.expression('rate(1 minute)')
     });
 
@@ -103,11 +103,7 @@ export = {
         {
           Environment: [
             {
-              Name: "name",
-              Value: "TRIGGER"
-            },
-            {
-              Name: "value",
+              Name: "TRIGGER",
               Value: "CloudWatch Events"
             }
           ],

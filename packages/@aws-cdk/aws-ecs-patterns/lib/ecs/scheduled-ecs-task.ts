@@ -11,13 +11,6 @@ export interface ScheduledEc2TaskProps extends ScheduledTaskBaseProps {
   readonly cpu?: number;
 
   /**
-   * The environment variables to pass to the container.
-   *
-   * @default none
-   */
-  readonly environment?: { [key: string]: ecs.EnvironmentValue };
-
-  /**
    * The hard limit (in MiB) of memory to present to the container.
    *
    * If your container attempts to exceed the allocated memory, the container
