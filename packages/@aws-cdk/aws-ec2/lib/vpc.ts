@@ -347,6 +347,13 @@ export interface VpcAttributes {
   readonly publicSubnetNames?: string[];
 
   /**
+   * List of IDs of routing tables for the public subnets.
+   *
+   * Must be undefined or have a name for every public subnet group.
+   */
+  readonly publicSubnetRouteTableIds?: string[];
+
+  /**
    * List of private subnet IDs
    *
    * Must be undefined or match the availability zones in length and order.
@@ -361,6 +368,13 @@ export interface VpcAttributes {
   readonly privateSubnetNames?: string[];
 
   /**
+   * List of IDs of routing tables for the private subnets.
+   *
+   * Must be undefined or have a name for every private subnet group.
+   */
+  readonly privateSubnetRouteTableIds?: string[];
+
+  /**
    * List of isolated subnet IDs
    *
    * Must be undefined or match the availability zones in length and order.
@@ -373,6 +387,13 @@ export interface VpcAttributes {
    * Must be undefined or have a name for every isolated subnet group.
    */
   readonly isolatedSubnetNames?: string[];
+
+  /**
+   * List of IDs of routing tables for the isolated subnets.
+   *
+   * Must be undefined or have a name for every isolated subnet group.
+   */
+  readonly isolatedSubnetRouteTableIds?: string[];
 
   /**
    * VPN gateway's identifier
@@ -390,6 +411,11 @@ export interface SubnetAttributes {
    * The subnetId for this particular subnet
    */
   readonly subnetId: string;
+
+  /**
+   * The ID of the route table for this particular subnet
+   */
+  readonly routeTableId: string;
 }
 
 /**
@@ -1259,9 +1285,9 @@ class ImportedVpc extends VpcBase {
     this.vpnGatewayId = props.vpnGatewayId;
 
     // tslint:disable:max-line-length
-    const pub = new ImportSubnetGroup(props.publicSubnetIds, props.publicSubnetNames, SubnetType.PUBLIC, this.availabilityZones, 'publicSubnetIds', 'publicSubnetNames');
-    const priv = new ImportSubnetGroup(props.privateSubnetIds, props.privateSubnetNames, SubnetType.PRIVATE, this.availabilityZones, 'privateSubnetIds', 'privateSubnetNames');
-    const iso = new ImportSubnetGroup(props.isolatedSubnetIds, props.isolatedSubnetNames, SubnetType.ISOLATED, this.availabilityZones, 'isolatedSubnetIds', 'isolatedSubnetNames');
+    const pub = new ImportSubnetGroup(props.publicSubnetIds, props.publicSubnetNames, props.publicSubnetRouteTableIds, SubnetType.PUBLIC, this.availabilityZones, 'publicSubnetIds', 'publicSubnetNames', 'publicSubnetRouteTableIds');
+    const priv = new ImportSubnetGroup(props.privateSubnetIds, props.privateSubnetNames, props.privateSubnetRouteTableIds, SubnetType.PRIVATE, this.availabilityZones, 'privateSubnetIds', 'privateSubnetNames', 'privateSubnetRouteTableIds');
+    const iso = new ImportSubnetGroup(props.isolatedSubnetIds, props.isolatedSubnetNames, props.isolatedSubnetRouteTableIds, SubnetType.ISOLATED, this.availabilityZones, 'isolatedSubnetIds', 'isolatedSubnetNames', 'isolatedSubnetRouteTableIds');
     // tslint:enable:max-line-length
 
     this.publicSubnets = pub.import(this);
@@ -1344,6 +1370,7 @@ class ImportedSubnet extends Resource implements ISubnet, IPublicSubnet, IPrivat
 
     this.availabilityZone = attrs.availabilityZone;
     this.subnetId = attrs.subnetId;
+    this.routeTable = { routeTableId: attrs.routeTableId };
   }
 }
 
@@ -1356,5 +1383,7 @@ const DUMMY_VPC_PROPS: cxapi.VpcContextResponse = {
   availabilityZones: ['dummy-1a', 'dummy-1b'],
   vpcId: 'vpc-12345',
   publicSubnetIds: ['s-12345', 's-67890'],
+  publicSubnetRouteTableIds: ['rtb-12345s', 'rtb-67890s'],
   privateSubnetIds: ['p-12345', 'p-67890'],
+  privateSubnetRouteTableIds: ['rtb-12345p', 'rtb-57890p'],
 };

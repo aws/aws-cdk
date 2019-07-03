@@ -41,12 +41,15 @@ export class VpcNetworkContextProviderPlugin implements ContextProviderPlugin {
   private async readVpcProps(ec2: AWS.EC2, vpcId: string): Promise<cxapi.VpcContextResponse> {
     debug(`Describing VPC ${vpcId}`);
 
-    const subnetsResponse = await ec2.describeSubnets({ Filters: [{ Name: 'vpc-id', Values: [vpcId] }] }).promise();
+    const filters = { Filters: [{ Name: 'vpc-id', Values: [vpcId] }] };
+
+    const subnetsResponse = await ec2.describeSubnets(filters).promise();
     const listedSubnets = subnetsResponse.Subnets || [];
 
-    if (listedSubnets.length === 0) {
-      throw new Error(`Unable to import VPC ${vpcId} because it does not appear to have any subnets.`);
-    }
+    const routeTablesResponse = await ec2.describeRouteTables(filters).promise();
+    const listedRouteTables = routeTablesResponse.RouteTables || [];
+
+    const mainRouteTable = listedRouteTables.find(table => table.Associations && !!table.Associations.find(assoc => assoc.Main));
 
     // Now comes our job to separate these subnets out into AZs and subnet groups (Public, Private, Isolated)
     // We have the following attributes to go on:
@@ -70,8 +73,22 @@ export class VpcNetworkContextProviderPlugin implements ContextProviderPlugin {
       }
 
       const name = getTag('aws-cdk:subnet-name', subnet.Tags) || type;
+      const specificRouteTable =
+        listedRouteTables.find(table => table.Associations && !!table.Associations.find(assoc => assoc.SubnetId === subnet.SubnetId));
+      const routeTableId = (specificRouteTable && specificRouteTable.RouteTableId)
+        || (mainRouteTable && mainRouteTable.RouteTableId);
 
-      return { az: subnet.AvailabilityZone!, type, name, subnetId: subnet.SubnetId! };
+      if (!routeTableId) {
+        throw new Error(`Subnet ${subnet.SubnetArn} does not have an associated route table (and there is no "main" table)`);
+      }
+
+      return {
+        az: subnet.AvailabilityZone!,
+        type,
+        name,
+        subnetId: subnet.SubnetId!,
+        routeTableId,
+      };
     });
 
     const grouped = groupSubnets(subnets);
@@ -102,10 +119,13 @@ export class VpcNetworkContextProviderPlugin implements ContextProviderPlugin {
       availabilityZones: grouped.azs,
       isolatedSubnetIds: collapse(flatMap(findGroups(SubnetType.Isolated, grouped), group => group.subnets.map(s => s.subnetId))),
       isolatedSubnetNames: collapse(flatMap(findGroups(SubnetType.Isolated, grouped), group => group.name ? [group.name] : [])),
+      isolatedSubnetRouteTableIds: collapse(flatMap(findGroups(SubnetType.Isolated, grouped), group => group.subnets.map(s => s.routeTableId))),
       privateSubnetIds: collapse(flatMap(findGroups(SubnetType.Private, grouped), group => group.subnets.map(s => s.subnetId))),
       privateSubnetNames: collapse(flatMap(findGroups(SubnetType.Private, grouped), group => group.name ? [group.name] : [])),
+      privateSubnetRouteTableIds: collapse(flatMap(findGroups(SubnetType.Private, grouped), group => group.subnets.map(s => s.routeTableId))),
       publicSubnetIds: collapse(flatMap(findGroups(SubnetType.Public, grouped), group => group.subnets.map(s => s.subnetId))),
       publicSubnetNames: collapse(flatMap(findGroups(SubnetType.Public, grouped), group => group.name ? [group.name] : [])),
+      publicSubnetRouteTableIds: collapse(flatMap(findGroups(SubnetType.Public, grouped), group => group.subnets.map(s => s.routeTableId))),
       vpnGatewayId,
     };
   }
@@ -171,6 +191,7 @@ interface Subnet {
   az: string;
   type: SubnetType;
   name?: string;
+  routeTableId: string;
   subnetId: string;
 }
 
