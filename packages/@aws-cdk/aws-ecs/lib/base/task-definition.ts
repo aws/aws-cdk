@@ -33,35 +33,36 @@ export interface ITaskDefinition extends IResource {
 }
 
 /**
- * Properties common to all Task definitions
+ * The common properties for all task definitions. For more information, see Task Definition Parameters:
+ * [https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task_definition_parameters.html]
  */
 export interface CommonTaskDefinitionProps {
   /**
-   * Namespace for task definition versions
+   * The name of a family that this task definition is registered to. A family groups multiple versions of a task definition.
    *
    * @default - Automatically generated name.
    */
   readonly family?: string;
 
   /**
-   * The IAM role assumed by the ECS agent.
+   * The name of the IAM task execution role that grants the ECS agent to call AWS APIs on your behalf.
    *
-   * The role will be used to retrieve container images from ECR and
-   * create CloudWatch log groups.
+   * The role will be used to retrieve container images from ECR and create CloudWatch log groups.
    *
    * @default - An execution role will be automatically created if you use ECR images in your task definition.
    */
   readonly executionRole?: iam.IRole;
 
   /**
-   * The IAM role assumable by your application code running inside the container
+   * The name of the IAM role that grants containers in the task permission to call AWS APIs on your behalf.
    *
    * @default - A task role is automatically created for you.
    */
   readonly taskRole?: iam.IRole;
 
   /**
-   * See: https://docs.aws.amazon.com/AmazonECS/latest/developerguide//task_definition_parameters.html#volumes
+   * The list of volume definitions for the task. For more information, see Task Definition Parameter Volumes:
+   * [https://docs.aws.amazon.com/AmazonECS/latest/developerguide//task_definition_parameters.html#volumes]
    *
    * @default - No volumes are passed to the Docker daemon on a container instance.
    */
@@ -487,21 +488,21 @@ export enum Scope {
 }
 
 /**
- * Task compatibility
+ * The task launch type compatibility requirement.
  */
 export enum Compatibility {
   /**
-   * Task should be launchable on EC2 clusters
+   * The task should specify the EC2 launch type.
    */
   EC2,
 
   /**
-   * Task should be launchable on Fargate clusters
+   * The task should specify the Fargate launch type.
    */
   FARGATE,
 
   /**
-   * Task should be launchable on both types of clusters
+   * The task can specify either the EC2 or Fargate launch types.
    */
   EC2_AND_FARGATE
 }

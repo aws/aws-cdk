@@ -426,33 +426,34 @@ export abstract class BaseService extends Resource
 const EPHEMERAL_PORT_RANGE = ec2.Port.tcpRange(32768, 65535);
 
 /**
- * Options for enabling CloudMap on an ECS service
+ * The options to enabling AWS Cloud Map for an Amazon ECS service.
  */
 export interface CloudMapOptions {
   /**
-   * Name of the cloudmap service to attach to the ECS Service
+   * The name of the Cloud Map service to attach to the ECS service.
    *
    * @default CloudFormation-generated name
    */
   readonly name?: string,
 
   /**
-   * The DNS type of the record that you want AWS Cloud Map to create. Supported record types include A or SRV.
+   * The DNS record type that you want AWS Cloud Map to create. The supported record types are A or SRV.
    *
    * @default: A
    */
   readonly dnsRecordType?: cloudmap.DnsRecordType.A | cloudmap.DnsRecordType.SRV,
 
   /**
-   * The amount of time, in seconds, that you want DNS resolvers to cache the settings for this record.
+   * The amount of time that you want DNS resolvers to cache the settings for this record.
    *
    * @default 60
    */
   readonly dnsTtl?: Duration;
 
   /**
-   * The number of 30-second intervals that you want Cloud Map to wait after receiving an
-   * UpdateInstanceCustomHealthStatus request before it changes the health status of a service instance.
+   * The number of 30-second intervals that you want Cloud Map to wait after receiving an UpdateInstanceCustomHealthStatus
+   * request before it changes the health status of a service instance.
+   *
    * NOTE: This is used for HealthCheckCustomConfig
    */
   readonly failureThreshold?: number,
