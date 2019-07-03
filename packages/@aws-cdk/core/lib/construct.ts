@@ -28,14 +28,6 @@ export class ConstructNode {
   public static readonly PATH_SEP = '/';
 
   /**
-   * Return a sanitized version of an arbitrary string, so it can be used as an ID
-   */
-  public static sanitizeId(id: string) {
-    // Cannot have PATH_SEPs in the ID
-    return id.replace(/\//g, '-');
-  }
-
-  /**
    * Synthesizes a CloudAssembly from a construct tree.
    * @param root The root of the construct tree.
    * @param options Synthesis options.
@@ -137,7 +129,7 @@ export class ConstructNode {
   constructor(private readonly host: Construct, scope: IConstruct, id: string) {
     id = id || ''; // if undefined, convert to empty string
 
-    this.id = id;
+    this.id = sanitizeId(id);
     this.scope = scope;
 
     // We say that scope is required, but root scopes will bypass the type
@@ -147,19 +139,12 @@ export class ConstructNode {
         throw new Error('Only root constructs may have an empty name');
       }
 
-      if (ConstructNode.sanitizeId(id) !== id) {
-        throw new Error('Invalid characters in id, use ConstructNode.sanitizeId(): ' + id);
-      }
-
       // Has side effect so must be very last thing in constructor
       scope.node.addChild(host, this.id);
     } else {
       // This is a root construct.
       this.id = id;
     }
-
-    // escape any path separators so they don't wreck havoc
-    this.id = this._escapePathSeparator(this.id);
 
     if (Token.isUnresolved(id)) {
       throw new Error(`Cannot use tokens in construct ID: ${id}`);
@@ -186,25 +171,13 @@ export class ConstructNode {
   }
 
   /**
-   * Return a descendant by path, or undefined
+   * Return a direct child by id, or undefined
    *
-   * Note that if the original ID of the construct you are looking for contained
-   * a '/', then it would have been replaced by '--'.
-   *
-   * @param path Relative path of a direct or indirect child
-   * @returns a child by path or undefined if not found.
+   * @param id Identifier of direct child
+   * @returns the child if found, or undefined
    */
-  public tryFindChild(path: string): IConstruct | undefined {
-    if (path.startsWith(ConstructNode.PATH_SEP)) {
-      throw new Error('Path must be relative');
-    }
-    const parts = path.split(ConstructNode.PATH_SEP);
-
-    let curr: IConstruct | undefined = this.host;
-    while (curr != null && parts.length > 0) {
-      curr = curr.node._children[parts.shift()!];
-    }
-    return curr;
+  public tryFindChild(id: string): IConstruct | undefined {
+    return this._children[sanitizeId(id)];
   }
 
   /**
@@ -539,14 +512,6 @@ export class ConstructNode {
       this.invokedAspects.push(aspect);
     }
   }
-
-  /**
-   * If the construct ID contains a path separator, it is replaced by double dash (`--`).
-   */
-  private _escapePathSeparator(id: string) {
-    if (!id) { return id; }
-    return id.split(ConstructNode.PATH_SEP).join('--');
-  }
 }
 
 /**
@@ -727,3 +692,11 @@ function ignore(_x: any) {
 // Import this _after_ everything else to help node work the classes out in the correct order...
 
 import { Reference } from './reference';
+
+/**
+ * Return a sanitized version of an arbitrary string, so it can be used as an ID
+ */
+function sanitizeId(id: string) {
+  // Escape path seps as double dashes
+  return id.replace(/\//g, '--');
+}

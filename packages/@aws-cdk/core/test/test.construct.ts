@@ -20,12 +20,6 @@ export = {
     test.done();
   },
 
-  'constructs names cannot have a slash in them'(test: Test) {
-    const root = new Root();
-    test.throws(() => new Construct(root, 'hello/bye'));
-    test.done();
-  },
-
   'construct.name returns the name of the construct'(test: Test) {
     const t = createTree();
 

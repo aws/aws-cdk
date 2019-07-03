@@ -1,7 +1,7 @@
 import iam = require('@aws-cdk/aws-iam');
 import {
   CfnDynamicReference, CfnDynamicReferenceService, CfnParameter,
-  Construct, ContextProvider, Fn, IConstruct, IResource, Resource, Stack, Token, ConstructNode
+  Construct, ContextProvider, Fn, IConstruct, IResource, Resource, Stack, Token
 } from '@aws-cdk/core';
 import cxapi = require('@aws-cdk/cx-api');
 import ssm = require('./ssm.generated');
@@ -372,7 +372,7 @@ function _assertValidValue(value: string, allowedPattern: string): void {
 }
 
 function makeIdentityForImportedValue(parameterName: string) {
-  return ConstructNode.sanitizeId(`SsmParameterValue:${parameterName}:C96584B6-F00A-464E-AD19-53AFF4B05118`);
+  return `SsmParameterValue:${parameterName}:C96584B6-F00A-464E-AD19-53AFF4B05118`;
 }
 
 function arnForParameterName(scope: IConstruct, parameterName: string): string {
