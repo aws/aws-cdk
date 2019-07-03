@@ -281,6 +281,8 @@ async function initCommandLine() {
       defaultBehavior: DefaultSelection.AllStacks
     });
 
+    appStacks.processMetadata(stacks);
+
     // if we have a single stack, print it to STDOUT
     if (stacks.length === 1) {
       return stacks[0].template;

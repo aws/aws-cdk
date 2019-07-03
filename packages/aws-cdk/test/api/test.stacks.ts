@@ -14,6 +14,7 @@ export = testCase({
     const selected = await stacks.selectStacks(['withouterrors'], {
       defaultBehavior: DefaultSelection.AllStacks
     });
+    stacks.processMetadata(selected);
 
     // THEN
     test.equal(selected[0].template.resource, 'noerrorresource');
@@ -27,9 +28,10 @@ export = testCase({
 
     // WHEN
     try {
-      await stacks.selectStacks(['witherrors'], {
+      const selected = await stacks.selectStacks(['witherrors'], {
         defaultBehavior: DefaultSelection.AllStacks
       });
+      stacks.processMetadata(selected);
 
       test.ok(false, 'Did not get exception');
     } catch (e) {
