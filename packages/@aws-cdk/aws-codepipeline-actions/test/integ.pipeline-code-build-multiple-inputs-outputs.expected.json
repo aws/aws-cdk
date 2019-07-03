@@ -158,9 +158,25 @@
             },
             {
               "Action": [
-                "s3:DeleteObject*",
-                "s3:PutObject*",
-                "s3:Abort*"
+                "codecommit:GetBranch",
+                "codecommit:GetCommit",
+                "codecommit:UploadArchive",
+                "codecommit:GetUploadArchiveStatus",
+                "codecommit:CancelUploadArchive"
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "MyRepoF4F48043",
+                  "Arn"
+                ]
+              }
+            },
+            {
+              "Action": [
+                "s3:GetObject*",
+                "s3:GetBucket*",
+                "s3:List*"
               ],
               "Effect": "Allow",
               "Resource": [
@@ -188,25 +204,9 @@
             },
             {
               "Action": [
-                "codecommit:GetBranch",
-                "codecommit:GetCommit",
-                "codecommit:UploadArchive",
-                "codecommit:GetUploadArchiveStatus",
-                "codecommit:CancelUploadArchive"
-              ],
-              "Effect": "Allow",
-              "Resource": {
-                "Fn::GetAtt": [
-                  "MyRepoF4F48043",
-                  "Arn"
-                ]
-              }
-            },
-            {
-              "Action": [
-                "s3:GetObject*",
-                "s3:GetBucket*",
-                "s3:List*"
+                "s3:DeleteObject*",
+                "s3:PutObject*",
+                "s3:Abort*"
               ],
               "Effect": "Allow",
               "Resource": [
