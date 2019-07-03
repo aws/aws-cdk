@@ -3,8 +3,11 @@ import { CfnOutput, Construct, IResource as IResourceBase, Resource, Stack } fro
 import { ApiKey, IApiKey } from './api-key';
 import { CfnAccount, CfnRestApi } from './apigateway.generated';
 import { Deployment } from './deployment';
+import { DomainName, DomainNameOptions } from './domain-name';
 import { Integration } from './integration';
 import { Method, MethodOptions } from './method';
+import { Model, ModelOptions } from './model';
+import { RequestValidator, RequestValidatorOptions } from './requestvalidator';
 import { IResource, ResourceBase, ResourceOptions } from './resource';
 import { Stage, StageOptions } from './stage';
 import { UsagePlan, UsagePlanProps } from './usage-plan';
@@ -145,6 +148,13 @@ export interface RestApiProps extends ResourceOptions {
    * @default true
    */
   readonly cloudWatchRole?: boolean;
+
+  /**
+   * Configure a custom domain name and map it to this API.
+   *
+   * @default - no domain name is defined, use `addDomainName` or directly define a `DomainName`.
+   */
+  readonly domainName?: DomainNameOptions;
 }
 
 /**
@@ -194,6 +204,12 @@ export class RestApi extends Resource implements IRestApi {
    */
   public deploymentStage: Stage;
 
+  /**
+   * The domain name mapped to this API, if defined through the `domainName`
+   * configuration prop.
+   */
+  public readonly domainName?: DomainName;
+
   private readonly methods = new Array<Method>();
   private _latestDeployment: Deployment | undefined;
 
@@ -212,7 +228,7 @@ export class RestApi extends Resource implements IRestApi {
       endpointConfiguration: props.endpointTypes ? { types: props.endpointTypes } : undefined,
       apiKeySourceType: props.apiKeySourceType,
       cloneFrom: props.cloneFrom ? props.cloneFrom.restApiId : undefined,
-      parameters: props.parameters,
+      parameters: props.parameters
     });
 
     this.restApiId = resource.ref;
@@ -225,6 +241,10 @@ export class RestApi extends Resource implements IRestApi {
     }
 
     this.root = new RootResource(this, props, resource.attrRootResourceId);
+
+    if (props.domainName) {
+      this.domainName = this.addDomainName('CustomDomain', props.domainName);
+    }
   }
 
   /**
@@ -257,6 +277,18 @@ export class RestApi extends Resource implements IRestApi {
   }
 
   /**
+   * Defines an API Gateway domain name and maps it to this API.
+   * @param id The construct id
+   * @param options custom domain options
+   */
+  public addDomainName(id: string, options: DomainNameOptions): DomainName {
+    return new DomainName(this, id, {
+      ...options,
+      mapping: this
+    });
+  }
+
+  /**
    * Adds a usage plan.
    */
   public addUsagePlan(id: string, props: UsagePlanProps): UsagePlan {
@@ -269,6 +301,26 @@ export class RestApi extends Resource implements IRestApi {
   public addApiKey(id: string): IApiKey {
     return new ApiKey(this, id, {
       resources: [this]
+    });
+  }
+
+  /**
+   * Adds a new model.
+   */
+  public addModel(id: string, props: ModelOptions): Model {
+    return new Model(this, id, {
+      ...props,
+      restApi: this
+    });
+  }
+
+  /**
+   * Adds a new model.
+   */
+  public addRequestValidator(id: string, props: RequestValidatorOptions): RequestValidator {
+    return new RequestValidator(this, id, {
+      ...props,
+      restApi: this
     });
   }
 

@@ -37,7 +37,7 @@ export = {
 
       expect(stack).to(haveResource("AWS::AutoScaling::LaunchConfiguration", {
         ImageId: {
-          Ref: "SsmParameterValueawsserviceecsoptimizedamiamazonlinuxrecommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
+          Ref: "SsmParameterValueawsserviceecsoptimizedamiamazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
         },
         InstanceType: "t2.micro",
         IamInstanceProfile: {
@@ -151,6 +151,22 @@ export = {
           Version: "2012-10-17"
         }
       }));
+
+      test.done();
+    },
+
+    "multiple clusters with default capacity"(test: Test) {
+      // GIVEN
+      const stack =  new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+
+      // WHEN
+      for (let i = 0; i < 2; i++) {
+        const cluster = new ecs.Cluster(stack, `EcsCluster${i}`, { vpc, });
+        cluster.addCapacity('MyCapacity', {
+          instanceType: new ec2.InstanceType('m3.medium'),
+        });
+      }
 
       test.done();
     },

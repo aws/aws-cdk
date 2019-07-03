@@ -3,14 +3,10 @@
 
 ---
 
-![Stability: Experimental](https://img.shields.io/badge/stability-Experimental-important.svg?style=for-the-badge)
+![Stability: Stable](https://img.shields.io/badge/stability-Stable-success.svg?style=for-the-badge)
 
 > **This is a _developer preview_ (public beta) module. Releases might lack important features and might have
 > future breaking changes.**
-> 
-> This API is still under active development and subject to non-backward
-> compatible changes or removal in any future version. Use of the API is not recommended in production
-> environments. Experimental APIs are not subject to the Semantic Versioning model.
 
 ---
 <!--END STABILITY BANNER-->
@@ -56,13 +52,12 @@ To use GitHub as the source of a CodePipeline:
 
 ```typescript
 // Read the secret from ParameterStore
-const token = new cdk.SecretParameter(this, 'GitHubToken', { ssmParameter: 'my-github-token' });
 const sourceOutput = new codepipeline.Artifact();
 const sourceAction = new codepipeline_actions.GitHubSourceAction({
   actionName: 'GitHub_Source',
   owner: 'awslabs',
   repo: 'aws-cdk',
-  oauthToken: token.value,
+  oauthToken: cdk.SecretValue.secretsManager('my-github-token'),
   output: sourceOutput,
   branch: 'develop', // default: 'master'
   trigger: codepipeline_actions.GitHubTrigger.POLL // default: 'WEBHOOK', 'NONE' is also possible for no Source trigger

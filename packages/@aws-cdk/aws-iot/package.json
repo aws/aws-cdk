@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/aws-iot",
-  "version": "0.35.0",
+  "version": "0.36.2",
   "description": "The CDK Construct Library for AWS::IoT",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -11,14 +11,16 @@
         "package": "software.amazon.awscdk.services.iot",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "iot"
+          "artifactId": "iot",
+          "versionSuffix": ".DEVPREVIEW"
         }
       },
       "dotnet": {
         "namespace": "Amazon.CDK.AWS.IoT",
         "packageId": "Amazon.CDK.AWS.IoT",
         "signAssembly": true,
-        "assemblyOriginatorKeyFile": "../../key.snk"
+        "assemblyOriginatorKeyFile": "../../key.snk",
+        "versionSuffix": "-devpreview"
       },
       "python": {
         "distName": "aws-cdk.aws-iot",
@@ -63,17 +65,17 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "^0.35.0",
-    "cdk-build-tools": "^0.35.0",
-    "cfn2ts": "^0.35.0",
-    "pkglint": "^0.35.0"
+    "@aws-cdk/assert": "^0.36.2",
+    "cdk-build-tools": "^0.36.2",
+    "cfn2ts": "^0.36.2",
+    "pkglint": "^0.36.2"
   },
   "dependencies": {
-    "@aws-cdk/core": "^0.35.0"
+    "@aws-cdk/core": "^0.36.2"
   },
   "homepage": "https://github.com/awslabs/aws-cdk",
   "peerDependencies": {
-    "@aws-cdk/core": "^0.35.0"
+    "@aws-cdk/core": "^0.36.2"
   },
   "engines": {
     "node": ">= 8.10.0"

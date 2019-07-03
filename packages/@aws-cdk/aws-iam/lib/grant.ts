@@ -4,6 +4,8 @@ import { IGrantable } from "./principals";
 
 /**
  * Basic options for a grant operation
+ *
+ * @experimental
  */
 export interface CommonGrantOptions {
   /**
@@ -26,6 +28,8 @@ export interface CommonGrantOptions {
 
 /**
  * Options for a grant operation
+ *
+ * @experimental
  */
 export interface GrantWithResourceOptions extends CommonGrantOptions {
   /**
@@ -48,6 +52,8 @@ export interface GrantWithResourceOptions extends CommonGrantOptions {
 
 /**
  * Options for a grant operation that only applies to principals
+ *
+ * @experimental
  */
 export interface GrantOnPrincipalOptions extends CommonGrantOptions {
   /**
@@ -58,6 +64,8 @@ export interface GrantOnPrincipalOptions extends CommonGrantOptions {
 
 /**
  * Options for a grant operation to both identity and resource
+ *
+ * @experimental
  */
 export interface GrantOnPrincipalAndResourceOptions extends CommonGrantOptions {
   /**

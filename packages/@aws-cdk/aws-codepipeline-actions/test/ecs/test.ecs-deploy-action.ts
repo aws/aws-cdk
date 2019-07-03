@@ -24,13 +24,13 @@ export = {
       const service = anyEcsService();
       const artifact = new codepipeline.Artifact('Artifact');
 
-      const action = new cpactions.EcsDeployAction({
-        actionName: 'ECS',
-        service,
-        input: artifact,
+      test.doesNotThrow(() => {
+        new cpactions.EcsDeployAction({
+          actionName: 'ECS',
+          service,
+          input: artifact,
+        });
       });
-
-      test.equal(action.configuration.FileName, undefined);
 
       test.done();
     },
@@ -39,13 +39,13 @@ export = {
       const service = anyEcsService();
       const artifact = new codepipeline.Artifact('Artifact');
 
-      const action = new cpactions.EcsDeployAction({
-        actionName: 'ECS',
-        service,
-        imageFile: artifact.atPath('imageFile.json'),
+      test.doesNotThrow(() => {
+        new cpactions.EcsDeployAction({
+          actionName: 'ECS',
+          service,
+          imageFile: artifact.atPath('imageFile.json'),
+        });
       });
-
-      test.equal(action.configuration.FileName, 'imageFile.json');
 
       test.done();
     },
@@ -62,6 +62,21 @@ export = {
           imageFile: artifact.atPath('file.json'),
         });
       }, /one of 'input' or 'imageFile' can be provided/);
+
+      test.done();
+    },
+
+    "sets the target service as the action's backing resource"(test: Test) {
+      const service = anyEcsService();
+      const artifact = new codepipeline.Artifact('Artifact');
+
+      const action = new cpactions.EcsDeployAction({
+        actionName: 'ECS',
+        service,
+        input: artifact
+      });
+
+      test.equal(action.actionProperties.resource, service);
 
       test.done();
     },

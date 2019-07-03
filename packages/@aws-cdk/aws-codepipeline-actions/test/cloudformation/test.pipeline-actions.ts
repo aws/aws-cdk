@@ -1,6 +1,7 @@
 import codepipeline = require('@aws-cdk/aws-codepipeline');
 import events = require('@aws-cdk/aws-events');
 import iam = require('@aws-cdk/aws-iam');
+import s3 = require('@aws-cdk/aws-s3');
 import cdk = require('@aws-cdk/core');
 import { Stack } from '@aws-cdk/core';
 import _ = require('lodash');
@@ -35,10 +36,10 @@ export = nodeunit.testCase({
       _assertPermissionGranted(test, pipelineRole.statements, 'cloudformation:DeleteChangeSet', stackArn, changeSetCondition);
 
       // TODO: revert "as any" once we move all actions into a single package.
-      test.deepEqual(action.inputs, [artifact],
+      test.deepEqual(stage.actions[0].actionProperties.inputs, [artifact],
                      'The input was correctly registered');
 
-      _assertActionMatches(test, stage.actions, 'AWS', 'CloudFormation', 'Deploy', {
+      _assertActionMatches(test, stage.actions, 'CloudFormation', 'Deploy', {
         ActionMode: 'CHANGE_SET_CREATE_REPLACE',
         StackName: 'MyStack',
         ChangeSetName: 'MyChangeSet'
@@ -122,9 +123,9 @@ export = nodeunit.testCase({
 
       const stackArn = _stackArn('MyStack', stack);
       _assertPermissionGranted(test, pipelineRole.statements, 'cloudformation:ExecuteChangeSet', stackArn,
-                               { StringEquals: { 'cloudformation:ChangeSetName': 'MyChangeSet' } });
+                               { StringEqualsIfExists: { 'cloudformation:ChangeSetName': 'MyChangeSet' } });
 
-      _assertActionMatches(test, stage.actions, 'AWS', 'CloudFormation', 'Deploy', {
+      _assertActionMatches(test, stage.actions, 'CloudFormation', 'Deploy', {
         ActionMode: 'CHANGE_SET_EXECUTE',
         StackName: 'MyStack',
         ChangeSetName: 'MyChangeSet'
@@ -156,8 +157,12 @@ export = nodeunit.testCase({
         stack.resolve(pipelineRole.statements.map(s => s.toStatementJson())),
         [
           {
-            Action: 'cloudformation:ExecuteChangeSet',
-            Condition: { StringEquals: { 'cloudformation:ChangeSetName': 'MyChangeSet' } },
+            Action: [
+              'cloudformation:DescribeChangeSet',
+              'cloudformation:DescribeStacks',
+              'cloudformation:ExecuteChangeSet',
+            ],
+            Condition: { StringEqualsIfExists: { 'cloudformation:ChangeSetName': 'MyChangeSet' } },
             Effect: 'Allow',
             Resource: [
               // tslint:disable-next-line:max-line-length
@@ -230,30 +235,31 @@ interface PolicyStatementJson {
 }
 
 function _assertActionMatches(test: nodeunit.Test,
-                              actions: codepipeline.Action[],
-                              owner: string,
+                              actions: FullAction[],
                               provider: string,
                               category: string,
                               configuration?: { [key: string]: any }) {
   const configurationStr = configuration
-                         ? `configuration including ${JSON.stringify(resolve(configuration), null, 2)}`
+                         ? `, configuration including ${JSON.stringify(resolve(configuration), null, 2)}`
                          : '';
   const actionsStr = JSON.stringify(actions.map(a =>
-    ({ owner: a.owner, provider: a.provider, category: a.category, configuration: resolve(a.configuration) })
+    ({ owner: a.actionProperties.owner, provider: a.actionProperties.provider,
+      category: a.actionProperties.category, configuration: resolve(a.actionConfig.configuration)
+    })
   ), null, 2);
-  test.ok(_hasAction(actions, owner, provider, category, configuration),
-          `Expected to find an action with owner ${owner}, provider ${provider}, category ${category}${configurationStr}, but found ${actionsStr}`);
+  test.ok(_hasAction(actions, provider, category, configuration),
+          `Expected to find an action with provider ${provider}, category ${category}${configurationStr}, but found ${actionsStr}`);
 }
 
-function _hasAction(actions: codepipeline.Action[], owner: string, provider: string, category: string, configuration?: { [key: string]: any}) {
+function _hasAction(actions: FullAction[], provider: string, category: string,
+                    configuration?: { [key: string]: any}) {
   for (const action of actions) {
-    if (action.owner !== owner) { continue; }
-    if (action.provider !== provider) { continue; }
-    if (action.category !== category) { continue; }
-    if (configuration && !action.configuration) { continue; }
+    if (action.actionProperties.provider !== provider) { continue; }
+    if (action.actionProperties.category !== category) { continue; }
+    if (configuration && !action.actionConfig.configuration) { continue; }
     if (configuration) {
       for (const key of Object.keys(configuration)) {
-        if (!_.isEqual(resolve(action.configuration[key]), resolve(configuration[key]))) {
+        if (!_.isEqual(resolve(action.actionConfig.configuration[key]), resolve(configuration[key]))) {
           continue;
         }
       }
@@ -306,24 +312,14 @@ class PipelineDouble extends cdk.Resource implements codepipeline.IPipeline {
   public readonly pipelineName: string;
   public readonly pipelineArn: string;
   public readonly role: iam.Role;
+  public readonly artifactBucket: s3.IBucket;
 
   constructor(scope: cdk.Construct, id: string, { pipelineName, role }: { pipelineName?: string, role: iam.Role }) {
     super(scope, id);
     this.pipelineName = pipelineName || 'TestPipeline';
     this.pipelineArn = Stack.of(this).formatArn({ service: 'codepipeline', resource: 'pipeline', resourceName: this.pipelineName });
     this.role = role;
-  }
-
-  public bind(_rule: events.IRule): events.RuleTargetConfig {
-    throw new Error('asRuleTarget() is unsupported in PipelineDouble');
-  }
-
-  public grantBucketRead(_identity?: iam.IGrantable): iam.Grant {
-    throw new Error('grantBucketRead() is unsupported in PipelineDouble');
-  }
-
-  public grantBucketReadWrite(_identity?: iam.IGrantable): iam.Grant {
-    throw new Error('grantBucketReadWrite() is unsupported in PipelineDouble');
+    this.artifactBucket = new BucketDouble(scope, 'BucketDouble');
   }
 
   public onEvent(_id: string, _options: events.OnEventOptions): events.Rule {
@@ -334,33 +330,39 @@ class PipelineDouble extends cdk.Resource implements codepipeline.IPipeline {
   }
 }
 
+class FullAction {
+  constructor(readonly actionProperties: codepipeline.ActionProperties,
+              readonly actionConfig: codepipeline.ActionConfig) {
+    // empty
+  }
+}
+
 class StageDouble implements codepipeline.IStage {
   public readonly stageName: string;
   public readonly pipeline: codepipeline.IPipeline;
-  public readonly actions: codepipeline.Action[];
+  public readonly actions: FullAction[];
 
   public get node(): cdk.ConstructNode {
     throw new Error('StageDouble is not a real construct');
   }
 
-  constructor({ name, pipeline, actions }: { name?: string, pipeline: PipelineDouble, actions: codepipeline.Action[] }) {
+  constructor({ name, pipeline, actions }: { name?: string, pipeline: PipelineDouble, actions: codepipeline.IAction[] }) {
     this.stageName = name || 'TestStage';
     this.pipeline = pipeline;
 
     const stageParent = new cdk.Construct(pipeline, this.stageName);
+    const fullActions = new Array<FullAction>();
     for (const action of actions) {
-      const actionParent = new cdk.Construct(stageParent, action.actionName);
-      (action as any)._actionAttachedToPipeline({
-        pipeline,
-        stage: this,
-        scope: actionParent,
+      const actionParent = new cdk.Construct(stageParent, action.actionProperties.actionName);
+      fullActions.push(new FullAction(action.actionProperties, action.bind(actionParent, this, {
         role: pipeline.role,
-      });
+        bucket: pipeline.artifactBucket,
+      })));
     }
-    this.actions = actions;
+    this.actions = fullActions;
   }
 
-  public addAction(_action: codepipeline.Action): void {
+  public addAction(_action: codepipeline.IAction): void {
     throw new Error('addAction() is not supported on StageDouble');
   }
 
@@ -381,6 +383,20 @@ class RoleDouble extends iam.Role {
     super.addToPolicy(statement);
     this.statements.push(statement);
     return true;
+  }
+}
+
+class BucketDouble extends s3.Bucket {
+  public grantRead(identity: iam.IGrantable, _objectsKeyPattern: any = '*'): iam.Grant {
+    return iam.Grant.drop(identity, '');
+  }
+
+  public grantWrite(identity: iam.IGrantable, _objectsKeyPattern: any = '*'): iam.Grant {
+    return iam.Grant.drop(identity, '');
+  }
+
+  public grantReadWrite(identity: iam.IGrantable, _objectsKeyPattern: any = '*'): iam.Grant {
+    return iam.Grant.drop(identity, '');
   }
 }
 

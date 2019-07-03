@@ -33,10 +33,9 @@ export interface IResolvable {
    * The creation stack of this resolvable which will be appended to errors
    * thrown during resolution.
    *
-   * If this returns an empty array or `undefined` the stack will not be
-   * attached.
+   * If this returns an empty array the stack will not be attached.
    */
-  readonly creationStack: string[] | undefined;
+  readonly creationStack: string[];
 
   /**
    * Produce the Token's value at resolution time
@@ -87,6 +86,8 @@ export interface ITokenResolver {
  * Function used to concatenate symbols in the target document language
  *
  * Interface so it could potentially be exposed over jsii.
+ *
+ * @experimental
  */
 export interface IFragmentConcatenator {
   /**
@@ -110,6 +111,8 @@ export class StringConcat implements IFragmentConcatenator {
 
 /**
  * Default resolver implementation
+ *
+ * @experimental
  */
 export class DefaultTokenResolver implements ITokenResolver {
   constructor(private readonly concat: IFragmentConcatenator) {

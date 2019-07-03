@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/aws-opsworkscm",
-  "version": "0.35.0",
+  "version": "0.36.2",
   "description": "The CDK Construct Library for AWS::OpsWorksCM",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -11,13 +11,15 @@
         "namespace": "Amazon.CDK.AWS.OpsWorksCM",
         "packageId": "Amazon.CDK.AWS.OpsWorksCM",
         "signAssembly": true,
-        "assemblyOriginatorKeyFile": "../../key.snk"
+        "assemblyOriginatorKeyFile": "../../key.snk",
+        "versionSuffix": "-devpreview"
       },
       "java": {
         "package": "software.amazon.awscdk.services.opsworkscm",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "opsworkscm"
+          "artifactId": "opsworkscm",
+          "versionSuffix": ".DEVPREVIEW"
         }
       },
       "python": {
@@ -65,16 +67,16 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "^0.35.0",
-    "cdk-build-tools": "^0.35.0",
-    "cfn2ts": "^0.35.0",
-    "pkglint": "^0.35.0"
+    "@aws-cdk/assert": "^0.36.2",
+    "cdk-build-tools": "^0.36.2",
+    "cfn2ts": "^0.36.2",
+    "pkglint": "^0.36.2"
   },
   "dependencies": {
-    "@aws-cdk/core": "^0.35.0"
+    "@aws-cdk/core": "^0.36.2"
   },
   "peerDependencies": {
-    "@aws-cdk/core": "^0.35.0"
+    "@aws-cdk/core": "^0.36.2"
   },
   "engines": {
     "node": ">= 8.10.0"
