@@ -1,55 +1,14 @@
 import ecs = require('@aws-cdk/aws-ecs');
-import events = require('@aws-cdk/aws-events');
-import eventsTargets = require('@aws-cdk/aws-events-targets');
 import cdk = require('@aws-cdk/core');
+import { ScheduledTaskBase, ScheduledTaskBaseProps } from '../base/scheduled-task-base';
 
-export interface ScheduledEc2TaskProps {
-  /**
-   * The cluster where your service will be deployed.
-   */
-  readonly cluster: ecs.ICluster;
-
-  /**
-   * The image to start.
-   */
-  readonly image: ecs.ContainerImage;
-
-  /**
-   * The schedule or rate (frequency) that determines when CloudWatch Events
-   * runs the rule. For more information, see Schedule Expression Syntax for
-   * Rules in the Amazon CloudWatch User Guide.
-   *
-   * @see http://docs.aws.amazon.com/AmazonCloudWatch/latest/events/ScheduledEvents.html
-   */
-  readonly schedule: events.Schedule;
-
-  /**
-   * The CMD value to pass to the container. A string with commands delimited by commas.
-   *
-   * @default none
-   */
-  readonly command?: string[];
-
+export interface ScheduledEc2TaskProps extends ScheduledTaskBaseProps {
   /**
    * The minimum number of CPU units to reserve for the container.
    *
    * @default none
    */
   readonly cpu?: number;
-
-  /**
-   * Number of desired copies of running tasks.
-   *
-   * @default 1
-   */
-  readonly desiredTaskCount?: number;
-
-  /**
-   * The environment variables to pass to the container.
-   *
-   * @default none
-   */
-  readonly environment?: { [key: string]: string };
 
   /**
    * The hard limit (in MiB) of memory to present to the container.
@@ -81,9 +40,9 @@ export interface ScheduledEc2TaskProps {
 /**
  * A scheduled Ec2 task that will be initiated off of cloudwatch events.
  */
-export class ScheduledEc2Task extends cdk.Construct {
+export class ScheduledEc2Task extends ScheduledTaskBase {
   constructor(scope: cdk.Construct, id: string, props: ScheduledEc2TaskProps) {
-    super(scope, id);
+    super(scope, id, props);
 
     // Create a Task Definition for the container to start, also creates a log driver
     const taskDefinition = new ecs.Ec2TaskDefinition(this, 'ScheduledTaskDef');
@@ -94,20 +53,9 @@ export class ScheduledEc2Task extends cdk.Construct {
       cpu: props.cpu,
       command: props.command,
       environment: props.environment,
-      logging: new ecs.AwsLogDriver({ streamPrefix: this.node.id })
+      logging: this.createAWSLogDriver(this.node.id)
     });
 
-    // Use Ec2TaskEventRuleTarget as the target of the EventRule
-    const eventRuleTarget = new eventsTargets.EcsTask( {
-      cluster: props.cluster,
-      taskDefinition,
-      taskCount: props.desiredTaskCount
-    });
-
-    // An EventRule that describes the event trigger (in this case a scheduled run)
-    const eventRule = new events.Rule(this, 'ScheduledEventRule', {
-      schedule: props.schedule,
-    });
-    eventRule.addTarget(eventRuleTarget);
+    this.addTaskDefinitionToEventTarget(taskDefinition);
   }
 }

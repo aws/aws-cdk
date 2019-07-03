@@ -1,7 +1,7 @@
 import ec2 = require('@aws-cdk/aws-ec2');
 import elb = require('@aws-cdk/aws-elasticloadbalancing');
 import { Construct, Lazy, Resource } from '@aws-cdk/core';
-import { BaseService, BaseServiceProps, IService } from '../base/base-service';
+import { BaseService, BaseServiceOptions, IService, LaunchType } from '../base/base-service';
 import { NetworkMode, TaskDefinition } from '../base/task-definition';
 import { CfnService } from '../ecs.generated';
 import { PlacementConstraint, PlacementStrategy } from '../placement';
@@ -9,7 +9,7 @@ import { PlacementConstraint, PlacementStrategy } from '../placement';
 /**
  * Properties to define an ECS service
  */
-export interface Ec2ServiceProps extends BaseServiceProps {
+export interface Ec2ServiceProps extends BaseServiceOptions {
   /**
    * Task Definition used for running tasks in the service
    *
@@ -89,6 +89,9 @@ export class Ec2Service extends BaseService implements IEc2Service, elb.ILoadBal
   private readonly strategies: CfnService.PlacementStrategyProperty[];
   private readonly daemon: boolean;
 
+  /**
+   * Constructs a new instance of the Ec2Service class.
+   */
   constructor(scope: Construct, id: string, props: Ec2ServiceProps) {
     if (props.daemon && props.desiredCount !== undefined) {
       throw new Error('Daemon mode launches one task on every instance. Don\'t supply desiredCount.');
@@ -112,11 +115,11 @@ export class Ec2Service extends BaseService implements IEc2Service, elb.ILoadBal
       desiredCount: props.daemon || props.desiredCount !== undefined ? props.desiredCount : 1,
       maxHealthyPercent: props.daemon && props.maxHealthyPercent === undefined ? 100 : props.maxHealthyPercent,
       minHealthyPercent: props.daemon && props.minHealthyPercent === undefined ? 0 : props.minHealthyPercent ,
+      launchType: LaunchType.EC2,
     },
     {
       cluster: props.cluster.clusterName,
       taskDefinition: props.taskDefinition.taskDefinitionArn,
-      launchType: 'EC2',
       placementConstraints: Lazy.anyValue({ produce: () => this.constraints }, { omitEmptyArray: true }),
       placementStrategies: Lazy.anyValue({ produce: () => this.strategies }, { omitEmptyArray: true }),
       schedulingStrategy: props.daemon ? 'DAEMON' : 'REPLICA',
@@ -206,31 +209,31 @@ function validateNoNetworkingProps(props: Ec2ServiceProps) {
 }
 
 /**
- * Built-in container instance attributes
+ * The built-in container instance attributes
  */
 export class BuiltInAttributes {
   /**
-   * The Instance ID of the instance
+   * The id of the instance.
    */
   public static readonly INSTANCE_ID = 'instanceId';
 
   /**
-   * The AZ where the instance is running
+   * The AvailabilityZone where the instance is running in.
    */
   public static readonly AVAILABILITY_ZONE = 'attribute:ecs.availability-zone';
 
   /**
-   * The AMI ID of the instance
+   * The AMI id the instance is using.
    */
   public static readonly AMI_ID = 'attribute:ecs.ami-id';
 
   /**
-   * The instance type
+   * The EC2 instance type.
    */
   public static readonly INSTANCE_TYPE = 'attribute:ecs.instance-type';
 
   /**
-   * The OS type
+   * The operating system of the instance.
    *
    * Either 'linux' or 'windows'.
    */

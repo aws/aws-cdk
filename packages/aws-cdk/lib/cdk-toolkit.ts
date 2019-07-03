@@ -81,6 +81,8 @@ export class CdkToolkit {
       defaultBehavior: DefaultSelection.OnlySingle
     });
 
+    this.appStacks.processMetadata(stacks);
+
     for (const stack of stacks) {
       if (stacks.length !== 1) { highlight(stack.name); }
       if (!stack.environment) {
