@@ -53,6 +53,7 @@ for i in ${!package_dirs[*]}; do
     if [[ ! -d $tmpdir/node_modules/${package_names[$i]} ]]; then continue; fi
     echo -n "${package_names[$i]}... "
     if npx jsii-diff \
+        --keys \
         --ignore-file ${package_dirs[$i]}/allowed-breaking-changes-${current_version}.txt \
         $tmpdir/node_modules/${package_names[$i]} \
         ${package_dirs[$i]} \
