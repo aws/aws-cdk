@@ -604,7 +604,7 @@ export interface PortMapping {
   /**
    * Protocol
    *
-   * @default Tcp
+   * @default TCP
    */
   readonly protocol?: Protocol
 }
