@@ -274,8 +274,7 @@ export = {
 
       const service = new ecs.FargateService(stack, 'Service', {
         cluster,
-        taskDefinition,
-        longArnEnabled: true
+        taskDefinition
       });
 
       const lb = new elbv2.ApplicationLoadBalancer(stack, "lb", { vpc });
@@ -306,16 +305,9 @@ export = {
               },
               "/",
               {
-                "Fn::Select": [
-                  2,
-                  {
-                    "Fn::Split": [
-                      "/",
-                      {
-                        Ref: "ServiceD69D759B"
-                      }
-                    ]
-                  }
+                "Fn::GetAtt": [
+                  "ServiceD69D759B",
+                  "Name"
                 ]
               }
             ]
