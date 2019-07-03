@@ -37,7 +37,7 @@ import dynamodb = require('@aws-cdk/aws-dynamodb');
 
 const table = new dynamodb.Table(this, 'Table', {
   partitionKey: { name: 'id', type: dynamodb.AttributeType.String },
-  billingMode: dynamodb.BillingMode.PayPerRequest
+  billingMode: dynamodb.BillingMode.PAY_PER_REQUEST
 });
 ```
 
