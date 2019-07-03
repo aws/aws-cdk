@@ -638,7 +638,7 @@
                     "Arn"
                   ]
                 },
-                "Id": "awsecsintegfargateTaskDef8878AF94",
+                "Id": "Target0",
                 "EcsParameters": {
                   "TaskDefinitionArn": {
                     "Ref": "TaskDef54694570"
@@ -715,7 +715,7 @@
                     "Arn"
                   ]
                 },
-                "Id": "awsecsintegfargateTaskDef8878AF94",
+                "Id": "Target0",
                 "EcsParameters": {
                   "TaskDefinitionArn": {
                     "Ref": "TaskDef54694570"
@@ -935,7 +935,7 @@
                 "Ref": "TaskDef54694570"
               }
             },
-            "Id": "awsecsintegfargateTaskDef8878AF94",
+            "Id": "Target0",
             "Input": "{\"containerOverrides\":[{\"name\":\"TheContainer\",\"environment\":[{\"name\":\"I_WAS_TRIGGERED\",\"value\":\"From CloudWatch Events\"}]}]}",
             "RoleArn": {
               "Fn::GetAtt": [

@@ -32,7 +32,7 @@ export = {
             TaskCount: 1,
             TaskDefinitionArn: { Ref: "ScheduledEc2TaskScheduledTaskDef56328BA4" }
           },
-          Id: "ScheduledEc2TaskScheduledTaskDef1EA607E3",
+          Id: "Target0",
           Input: "{}",
           RoleArn: { "Fn::GetAtt": ["ScheduledEc2TaskScheduledTaskDefEventsRole64113C5F", "Arn"] }
         }
@@ -98,7 +98,7 @@ export = {
             TaskCount: 2,
             TaskDefinitionArn: { Ref: "ScheduledEc2TaskScheduledTaskDef56328BA4" }
           },
-          Id: "ScheduledEc2TaskScheduledTaskDef1EA607E3",
+          Id: "Target0",
           Input: "{}",
           RoleArn: { "Fn::GetAtt": ["ScheduledEc2TaskScheduledTaskDefEventsRole64113C5F", "Arn"] }
         }

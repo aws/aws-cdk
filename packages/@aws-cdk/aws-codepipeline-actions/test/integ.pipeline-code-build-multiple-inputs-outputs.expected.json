@@ -61,7 +61,7 @@
                 ]
               ]
             },
-            "Id": "awscdkcodepipelinecodebuildmultipleinputsoutputsPipeline314D3A85",
+            "Id": "Target0",
             "RoleArn": {
               "Fn::GetAtt": [
                 "PipelineEventsRole46BEEA7C",

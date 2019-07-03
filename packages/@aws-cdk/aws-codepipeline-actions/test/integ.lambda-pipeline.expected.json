@@ -635,7 +635,7 @@
                 ]
               ]
             },
-            "Id": "awscdkcodepipelinelambdaPipeline87A4B3D3",
+            "Id": "Target0",
             "RoleArn": {
               "Fn::GetAtt": [
                 "PipelineEventsRole46BEEA7C",

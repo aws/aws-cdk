@@ -201,7 +201,6 @@ export = {
       target: {
         bind: () => ({
           arn: 'arn',
-          id: 'myid'
         })
       }
     });
@@ -217,7 +216,7 @@ export = {
       Targets: [
         {
           Arn: "arn",
-          Id: "myid"
+          Id: "Target0"
         }
       ]
     }));

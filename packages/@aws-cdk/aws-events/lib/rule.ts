@@ -127,14 +127,11 @@ export class Rule extends Resource implements IRule {
   public addTarget(target?: IRuleTarget) {
     if (!target) { return; }
 
-    const targetProps = target.bind(this);
-    const id = sanitizeId(targetProps.id);
-    const inputProps = targetProps.input && targetProps.input.bind(this);
+    // Simply increment id for each `addTarget` call. This is guaranteed to be unique.
+    const id = `Target${this.targets.length}`;
 
-    // check if a target with this ID already exists
-    if (this.targets.find(t => t.id === id)) {
-      throw new Error('Duplicate event rule target with ID: ' + id);
-    }
+    const targetProps = target.bind(this, id);
+    const inputProps = targetProps.input && targetProps.input.bind(this);
 
     const roleArn = targetProps.role ? targetProps.role.roleArn : undefined;
 
@@ -229,15 +226,4 @@ export class Rule extends Resource implements IRule {
 
     return out;
   }
-}
-
-/**
- * Sanitize whatever is returned to make a valid ID
- *
- * Result must match regex [\.\-_A-Za-z0-9]+
- */
-function sanitizeId(id: string) {
-  const _id = id.replace(/[^\.\-_A-Za-z0-9]/g, '-');
-  // cut to 64 chars to respect AWS::Events::Rule Target Id field specification
-  return _id.substring(Math.max(_id.length - 64, 0), _id.length);
 }

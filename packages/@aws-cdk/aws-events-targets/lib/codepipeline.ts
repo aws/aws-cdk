@@ -10,9 +10,8 @@ export class CodePipeline implements events.IRuleTarget {
   constructor(private readonly pipeline: codepipeline.IPipeline) {
   }
 
-  public bind(_rule: events.IRule): events.RuleTargetConfig {
+  public bind(_rule: events.IRule, _id: string): events.RuleTargetConfig {
     return {
-      id: this.pipeline.node.uniqueId,
       arn: this.pipeline.pipelineArn,
       role: singletonEventRole(this.pipeline, [new iam.PolicyStatement({
         resources: [this.pipeline.pipelineArn],
