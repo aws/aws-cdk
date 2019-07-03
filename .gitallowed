@@ -6,6 +6,11 @@ account: '234567890123'
 account: '000000000000'
 account: '111111111111'
 account: '333333333333'
+
+# used in physical names tests in @aws-cdk/core
+account: '012345678912'
+account: '012345678913'
+
 # Account patterns used in the CHANGELOG
 account: '123456789012'
 123456789012

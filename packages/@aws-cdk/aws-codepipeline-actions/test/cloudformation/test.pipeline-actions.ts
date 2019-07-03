@@ -123,7 +123,7 @@ export = nodeunit.testCase({
 
       const stackArn = _stackArn('MyStack', stack);
       _assertPermissionGranted(test, pipelineRole.statements, 'cloudformation:ExecuteChangeSet', stackArn,
-                               { StringEquals: { 'cloudformation:ChangeSetName': 'MyChangeSet' } });
+                               { StringEqualsIfExists: { 'cloudformation:ChangeSetName': 'MyChangeSet' } });
 
       _assertActionMatches(test, stage.actions, 'CloudFormation', 'Deploy', {
         ActionMode: 'CHANGE_SET_EXECUTE',
@@ -157,8 +157,12 @@ export = nodeunit.testCase({
         stack.resolve(pipelineRole.statements.map(s => s.toStatementJson())),
         [
           {
-            Action: 'cloudformation:ExecuteChangeSet',
-            Condition: { StringEquals: { 'cloudformation:ChangeSetName': 'MyChangeSet' } },
+            Action: [
+              'cloudformation:DescribeChangeSet',
+              'cloudformation:DescribeStacks',
+              'cloudformation:ExecuteChangeSet',
+            ],
+            Condition: { StringEqualsIfExists: { 'cloudformation:ChangeSetName': 'MyChangeSet' } },
             Effect: 'Allow',
             Resource: [
               // tslint:disable-next-line:max-line-length
