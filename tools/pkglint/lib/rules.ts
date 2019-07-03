@@ -261,7 +261,7 @@ export class StabilitySetting extends ValidationRule {
         '',
         `![Stability: ${badge.label}](https://img.shields.io/badge/stability-${badge.label}-${badge.color}.svg?style=for-the-badge)`,
         '',
-        ...messages.map(message => `> ${message}`),
+        ...messages.map(message => `> ${message}`.trimRight()),
         '',
         '---',
         '<!--END STABILITY BANNER-->',
