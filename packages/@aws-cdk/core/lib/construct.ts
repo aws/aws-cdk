@@ -693,10 +693,12 @@ function ignore(_x: any) {
 
 import { Reference } from './reference';
 
+const PATH_SEP_REGEX = new RegExp(`${ConstructNode.PATH_SEP}`, 'g');
+
 /**
  * Return a sanitized version of an arbitrary string, so it can be used as an ID
  */
 function sanitizeId(id: string) {
   // Escape path seps as double dashes
-  return id.replace(/\//g, '--');
+  return id.replace(PATH_SEP_REGEX, '--');
 }
