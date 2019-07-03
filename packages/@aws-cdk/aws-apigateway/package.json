@@ -111,5 +111,5 @@
       "resource-interface-extends-resource:@aws-cdk/aws-apigateway.IModel"
     ]
   },
-  "stability": "experimental"
+  "stability": "stable"
 }
