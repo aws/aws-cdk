@@ -1,5 +1,5 @@
 import { Token } from "@aws-cdk/core";
-import { findReferencedPaths, JsonPathToken, renderObject } from "./json-path";
+import { findReferencedPaths, jsonPathString, JsonPathToken, renderObject } from "./json-path";
 
 /**
  * Extract a field from the State Machine data that gets passed around between states
@@ -37,6 +37,10 @@ export class Data {
    */
   public static get entirePayload(): string {
     return new JsonPathToken('$').toString();
+  }
+
+  public static isJsonPathString(value: string): boolean {
+    return !!jsonPathString(value);
   }
 
   private constructor() {
