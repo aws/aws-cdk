@@ -22,7 +22,7 @@ export interface IService extends IResource {
 /**
  * The properties for the base Ec2Service or FargateService service.
  */
-export interface BaseServiceProps {
+export interface BaseServiceOptions {
   /**
    * The name of the cluster that hosts the service.
    */
@@ -77,6 +77,20 @@ export interface BaseServiceProps {
 }
 
 /**
+ * Complete base service properties that are required to be supplied by the implementation
+ * of the BaseService class.
+ */
+export interface BaseServiceProps extends BaseServiceOptions {
+  /**
+   * The launch type on which to run your service.
+   *
+   * Valid values are: LaunchType.ECS or LaunchType.FARGATE
+   */
+  readonly launchType: LaunchType;
+}
+
+/**
+ * Base class for Ecs and Fargate services
  * The base class for Ec2Service and FargateService services.
  */
 export abstract class BaseService extends Resource
@@ -157,6 +171,7 @@ export abstract class BaseService extends Resource
         maximumPercent: props.maxHealthyPercent || 200,
         minimumHealthyPercent: props.minHealthyPercent === undefined ? 50 : props.minHealthyPercent
       },
+      launchType: props.launchType,
       healthCheckGracePeriodSeconds: this.evaluateHealthGracePeriod(props.healthCheckGracePeriod),
       /* role: never specified, supplanted by Service Linked Role */
       networkConfiguration: Lazy.anyValue({ produce: () => this.networkConfiguration }),
@@ -463,4 +478,19 @@ interface ServiceRegistry {
    * used, you must specify either a containerName and containerPort combination or a port value, but not both.
    */
   readonly containerPort?: number;
+}
+
+/**
+ * The launch type of an ECS service
+ */
+export enum LaunchType {
+  /**
+   * The service will be launched using the EC2 launch type
+   */
+  EC2 = 'EC2',
+
+  /**
+   * The service will be launched using the FARGATE launch type
+   */
+  FARGATE = 'FARGATE'
 }
