@@ -7,7 +7,7 @@
 
 > **This is a _developer preview_ (public beta) module. Releases might lack important features and might have
 > future breaking changes.**
-> 
+>
 > This API is still under active development and subject to non-backward
 > compatible changes or removal in any future version. Use of the API is not recommended in production
 > environments. Experimental APIs are not subject to the Semantic Versioning model.
@@ -17,234 +17,6 @@
 
 This library includes the basic building blocks of the [AWS Cloud Development Kit](https://github.com/awslabs/aws-cdk)
 (AWS CDK).
-
-## AWS CloudFormation features
-
-A CDK application synthesizes to AWS CloudFormation templates. This section
-explains how this module allows users to access low-level CloudFormation
-features when needed.
-
-### Template Parameters
-
-CloudFormation templates support the use of [Parameters][cfn-parameters] to
-customize a template. They enable CloudFormation users to input custom values to
-a template each time a stack is created or updated. While the CDK design
-philosophy favors using build-time parameterization, users may need to use
-CloudFormation in a number of cases (for example, when migrating an existing
-stack to the AWS CDK).
-
-Template parameters can be added to a stack by using the `CfnParameter` class:
-
-```ts
-// "this" is the current Construct scope
-new CfnParameter(this, 'MyParameter');
-
-// - or -
-new CfnParameter(this, 'MyParameter', {
-  type: 'Number',
-  default: 1337,
-  // See the API reference for more configuration props
-});
-```
-
-The value of parameters can then be obtained using one of the `value` methods.
-As parameters are only resolved at deployment time, the values obtained are
-placeholder tokens for the real value (`Token.isUnresolved` would return `true`
-for those):
-
-```ts
-const param = new CfnParameter(this, 'ParameterName', { /* config */ });
-
-// If the parameter is a String
-param.valueAsString;
-
-// If the parameter is a Number
-param.valueAsNumber;
-
-// If the parameter is a List
-param.valueAsList;
-```
-
-[cfn-parameters]: https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/parameters-section-structure.html
-
-### Pseudo Parameters
-
-CloudFomration supports a number of [pseudo parameters][cfn-pseudo-params],
-which resolve to useful values at deployment time. CloudFormation pseudo
-parameters can be obtained from static members of the `Aws` class.
-
-In scenarios where cross-stack usage is expected, stack-scoped pseudo-parameters
-can be obtained using the `ScopedAws` class instead, which guarantees the values
-produced are qualifying the designated stacl:
-
-```ts
-// "this" is the current construct
-const aws = new ScopedAws(this);
-
-aws.stackName(); // Yields the AWS::StackName for the stack containing "this"
-```
-
-The `AWS::AccountId` and `AWS::Region` are best accessed directly from the
-Stack, as this resolves to the literal values when the stack was built with a
-specific `env` parameter:
-
-```ts
-const pinnedStack = new Stack(app, 'PinnedStack', {
-  env: {
-    account: '123456789012',
-    region: 'us-east-1',
-  }
-});
-pinnedStack.account; // Returns the literal '123456789012'
-pinnedStack.region;  // Returns the literal 'us-east-1'
-
-const relocatableStack = new Stack(app, 'RelocatableStack');
-relocatableStack.account; // Returns the AWS::AccountId token
-relocatableStack.region;  // Returns the AWS::Region token
-```
-
-[cfn-pseudo-params]: https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/pseudo-parameter-reference.html
-
-### Intrinsic Functions and Condition Expressions
-
-CloudFormation supports [intrinsic functions][cfn-intrinsics]. These functions
-can be accessed from the `Fn` class, which provides type-safe methods for each
-intrinsic function as well as condition expressions:
-
-```ts
-// To use Fn::Base64
-Fn.base64('SGVsbG8gQ0RLIQo=');
-
-// To compose condition expressions:
-const environmentParameter = new CfnParameter(this, 'Environment');
-Fn.conditionAnd(
-  // The "Environment" CloudFormation template parameter evaluates to "Production"
-  Fn.conditionEquals('Production', environmentParameter),
-  // The AWS::Region pseudo-parameter value is NOT equal to "us-east-1"
-  Fn.conditionNot(Fn.conditionEquals('us-east-1', Aws.REGION)),
-);
-```
-
-When working with deploy-time values (those for whic `Token.isUnresolved`
-returns `true`), idiomatic conditionals from the programming language cannot be
-used (the value will not be known until deployment time). When conditional logic
-needs to be expressed with un-resolved values, it is necessary to use
-CloudFormation conditions, thanks to the `CfnCondition` class:
-
-```ts
-const environmentParameter = new CfnParameter(this, 'Environment');
-const isProd = new CfnCondition(this, 'IsProduction', {
-  expression: Fn.conditionEquals('Production', environmentParameter),
-});
-
-// Configuration value that is different based on IsProduction
-Fn.conditionIf(isProd.logicalId, '1337', 'YOLO').toString();
-
-// Make a CfnResource creation conditional to IsProduction
-const resource = new CfnResource(this, 'RawResource', { /* ... */ });
-resource.cfnOptions.condition = isProd;
-```
-
-[cfn-intrinsics]: https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference.html
-
-### Mappings
-
-CloudFormation [mappings][cfn-mappings] are created and queried using the
-`CfnMappings` class:
-
-```ts
-const mapping = new CfnMapping(this, 'MappingTable', {
-  mapping: {
-    regionName: {
-      'us-east-1': 'US East (N. Virginia)',
-      'us-east-2': 'US East (Ohio)',
-      // ...
-    },
-    // ...
-  }
-});
-
-mapping.findInMap('regionName', Aws.REGION);
-```
-
-[cfn-mappings]: https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/mappings-section-structure.html
-
-### Stack Outputs
-
-CloudFormation [stack outputs][cfn-stack-output] and exports are created using
-the `CfnOutput` class:
-
-```ts
-new CfnOutput(this, 'OutputName', {
-  value: bucket.bucketName,
-  description: 'The name of an S3 bucket', // Optional
-  exportName: 'Global.BucketName', // Registers a CloudFormation export
-});
-```
-
-[cfn-stack-output]: https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/outputs-section-structure.html
-
-### Template Options & Transform
-
-CloudFormation templates support a number of options, including which Macros or
-[Transforms][cfn-transform] to use when deploying the stack. Those can be
-configured using the `stack.templateOptions` property:
-
-```ts
-const stack = new Stack(app, 'StackName');
-
-stack.templateOptions.description = 'This will appear in the AWS console';
-stack.templateOptions.transform = 'AWS::Serverless';
-stack.templateOptions.metadata = {
-  metadataKey: 'MetadataValue',
-};
-```
-
-[cfn-transform]: https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/transform-section-structure.html
-
-### Resource Options
-
-Similar to template options, CloudFormation resources can also specify
-[resource attributes][cfn-resource-attributes]. The `CfnResource` class allows
-accessing those though the `cfnOptions` property:
-
-```ts
-const rawBucket = new s3.CfnBucket(this, 'Bucket', { /* ... */ });
-rawBucket.condition = new CfnCondition(this, 'EnableBucket', { /* ... */ });
-rawBucket.cfnOptions.metadata = {
-  metadataKey: 'MetadataValue',
-};
-```
-
-Resource dependencies (the `DependsOn` attribute) is modified using the
-`cfnResource.addDependsOn` method:
-
-```ts
-const resourceA = new CfnResource(this, 'ResourceA', { /* ... */ });
-const resourceB = new CfnResource(this, 'ResourceB', { /* ... */ });
-
-resourceB.addDependsOn(resourceA);
-```
-
-[cfn-resource-attributes]: https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-product-attribute-reference.html
-
-### Emitting Raw Resources
-
-The `CfnResource` class allows emitting arbitrary entries in the
-[Resources][cfn-resources] section of the CloudFormation template.
-
-```ts
-new CfnResource(this, 'ResourceId', {
-  type: 'AWS::S3::Bucket',
-  properties: {
-    BucketName: 'bucket-name'
-  },
-});
-```
-
-As for any other resource, the logical ID in the CloudFormation template will be
-generated by the AWS CDK, but the type and properties will be copied verbatim in
-the synthesized template.
 
 ## Aspects
 
@@ -451,3 +223,250 @@ However, `SecretValue` supports the following additional options:
  * `SecretValue.ssmSecure(param, version)`: refers to a secret stored as a SecureString in the SSM Parameter Store.
  * `SecretValue.cfnParameter(param)`: refers to a secret passed through a CloudFormation parameter (must have `NoEcho: true`).
  * `SecretValue.cfnDynamicReference(dynref)`: refers to a secret described by a CloudFormation dynamic reference (used by `ssmSecure` and `secretsManager`).
+
+## AWS CloudFormation features
+
+A CDK stack synthesizes to AWS CloudFormation templates. This section explains
+how this module allows users to access low-level CloudFormation features when
+needed.
+
+### Template Parameters
+
+CloudFormation templates support the use of [Parameters][cfn-parameters] to
+customize a template. They enable CloudFormation users to input custom values to
+a template each time a stack is created or updated. While the CDK design
+philosophy favors using build-time parameterization, users may need to use
+CloudFormation in a number of cases (for example, when migrating an existing
+stack to the AWS CDK).
+
+Template parameters can be added to a stack by using the `CfnParameter` class:
+
+```ts
+// "this" is the current Construct scope
+new CfnParameter(this, 'MyParameter');
+
+// - or -
+new CfnParameter(this, 'MyParameter', {
+  type: 'Number',
+  default: 1337,
+  // See the API reference for more configuration props
+});
+```
+
+The value of parameters can then be obtained using one of the `value` methods.
+As parameters are only resolved at deployment time, the values obtained are
+placeholder tokens for the real value (`Token.isUnresolved` would return `true`
+for those):
+
+```ts
+const param = new CfnParameter(this, 'ParameterName', { /* config */ });
+
+// If the parameter is a String
+param.valueAsString;
+
+// If the parameter is a Number
+param.valueAsNumber;
+
+// If the parameter is a List
+param.valueAsList;
+```
+
+[cfn-parameters]: https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/parameters-section-structure.html
+
+### Pseudo Parameters
+
+CloudFomration supports a number of [pseudo parameters][cfn-pseudo-params],
+which resolve to useful values at deployment time. CloudFormation pseudo
+parameters can be obtained from static members of the `Aws` class.
+
+It is generally recommended to access pseudo parameters from the scope's `stack`
+instead, which guarantees the values produced are qualifying the designated
+stack, which is essential in cases where resources are shared cross-stack:
+
+```ts
+// "this" is the current construct
+const stack = Stack.of(this);
+
+stack.account; // Returns the AWS::AccountId for this stack (or the literal value if known)
+stack.region;  // Returns the AWS::Region for this stack (or the literal value if known)
+stack.partition;
+```
+
+[cfn-pseudo-params]: https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/pseudo-parameter-reference.html
+
+### Intrinsic Functions and Condition Expressions
+
+CloudFormation supports [intrinsic functions][cfn-intrinsics]. These functions
+can be accessed from the `Fn` class, which provides type-safe methods for each
+intrinsic function as well as condition expressions:
+
+```ts
+// To use Fn::Base64
+Fn.base64('SGVsbG8gQ0RLIQo=');
+
+// To compose condition expressions:
+const environmentParameter = new CfnParameter(this, 'Environment');
+Fn.conditionAnd(
+  // The "Environment" CloudFormation template parameter evaluates to "Production"
+  Fn.conditionEquals('Production', environmentParameter),
+  // The AWS::Region pseudo-parameter value is NOT equal to "us-east-1"
+  Fn.conditionNot(Fn.conditionEquals('us-east-1', Aws.REGION)),
+);
+```
+
+When working with deploy-time values (those for which `Token.isUnresolved`
+returns `true`), idiomatic conditionals from the programming language cannot be
+used (the value will not be known until deployment time). When conditional logic
+needs to be expressed with un-resolved values, it is necessary to use
+CloudFormation conditions, thanks to the `CfnCondition` class:
+
+```ts
+const environmentParameter = new CfnParameter(this, 'Environment');
+const isProd = new CfnCondition(this, 'IsProduction', {
+  expression: Fn.conditionEquals('Production', environmentParameter),
+});
+
+// Configuration value that is different based on IsProduction
+Fn.conditionIf(isProd.logicalId, '1337', 'YOLO').toString();
+
+// Make a CfnResource creation conditional to IsProduction
+const resource = new CfnResource(this, 'RawResource', { /* ... */ });
+resource.cfnOptions.condition = isProd;
+```
+
+[cfn-intrinsics]: https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference.html
+
+### Mappings
+
+CloudFormation [mappings][cfn-mappings] are created and queried using the
+`CfnMappings` class:
+
+```ts
+const mapping = new CfnMapping(this, 'MappingTable', {
+  mapping: {
+    regionName: {
+      'us-east-1': 'US East (N. Virginia)',
+      'us-east-2': 'US East (Ohio)',
+      // ...
+    },
+    // ...
+  }
+});
+
+mapping.findInMap('regionName', Aws.REGION);
+```
+
+[cfn-mappings]: https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/mappings-section-structure.html
+
+### Dynamic References
+
+CloudFormation supports [dynamically resolving][cfn-dynamic-references] values
+for SSM parameters (including secure strings) and Secrets Manager. Encoding such
+references is done using the `CfnDynamicReference` class:
+
+```ts
+new CfnDynamicReference(this, 'SecureStringValue', {
+  service: CfnDynamicReferenceService.SECRETS_MANAGER,
+  referenceKey: 'secret-id:secret-string:json-key:version-stage:version-id',
+});
+```
+
+[cfn-dynamic-references]: https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/dynamic-references.html
+
+### Stack Outputs
+
+CloudFormation [stack outputs][cfn-stack-output] and exports are created using
+the `CfnOutput` class:
+
+```ts
+new CfnOutput(this, 'OutputName', {
+  value: bucket.bucketName,
+  description: 'The name of an S3 bucket', // Optional
+  exportName: 'Global.BucketName', // Registers a CloudFormation export
+});
+```
+
+[cfn-stack-output]: https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/outputs-section-structure.html
+
+### Template Options & Transform
+
+CloudFormation templates support a number of options, including which Macros or
+[Transforms][cfn-transform] to use when deploying the stack. Those can be
+configured using the `stack.templateOptions` property:
+
+```ts
+const stack = new Stack(app, 'StackName');
+
+stack.templateOptions.description = 'This will appear in the AWS console';
+stack.templateOptions.transform = 'AWS::Serverless';
+stack.templateOptions.metadata = {
+  metadataKey: 'MetadataValue',
+};
+```
+
+[cfn-transform]: https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/transform-section-structure.html
+
+### Resource Options
+
+Similar to template options, CloudFormation resources can also specify
+[resource attributes][cfn-resource-attributes]. The `CfnResource` class allows
+accessing those though the `cfnOptions` property:
+
+```ts
+const rawBucket = new s3.CfnBucket(this, 'Bucket', { /* ... */ });
+rawBucket.condition = new CfnCondition(this, 'EnableBucket', { /* ... */ });
+rawBucket.cfnOptions.metadata = {
+  metadataKey: 'MetadataValue',
+};
+```
+
+Resource dependencies (the `DependsOn` attribute) is modified using the
+`cfnResource.addDependsOn` method:
+
+```ts
+const resourceA = new CfnResource(this, 'ResourceA', { /* ... */ });
+const resourceB = new CfnResource(this, 'ResourceB', { /* ... */ });
+
+resourceB.addDependsOn(resourceA);
+```
+
+[cfn-resource-attributes]: https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-product-attribute-reference.html
+
+### Emitting Raw Resources
+
+The `CfnResource` class allows emitting arbitrary entries in the
+[Resources][cfn-resources] section of the CloudFormation template.
+
+```ts
+new CfnResource(this, 'ResourceId', {
+  type: 'AWS::S3::Bucket',
+  properties: {
+    BucketName: 'bucket-name'
+  },
+});
+```
+
+As for any other resource, the logical ID in the CloudFormation template will be
+generated by the AWS CDK, but the type and properties will be copied verbatim in
+the synthesized template.
+
+### Including raw CloudFormation template fragments
+
+When migrating a CloudFormation stack to the AWS CDK, it can be useful to
+include fragments of an existing template verbatim in the synthesized template.
+This can be achieved using the `CfnInclude` class.
+
+```ts
+new CfnInclude(this, 'ID', {
+  template: {
+    Resources: {
+      Bucket: {
+        Type: 'AWS::S3::Bucket',
+        Properties: {
+          BucketName: 'my-shiny-bucket'
+        }
+      }
+    }
+  },
+});
+```
