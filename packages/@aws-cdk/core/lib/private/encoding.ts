@@ -78,7 +78,7 @@ export class TokenString {
 /**
  * Quote a string for use in a regex
  */
-function regexQuote(s: string) {
+export function regexQuote(s: string) {
   return s.replace(/[.?*+^$[\]\\(){}|-]/g, "\\$&");
 }
 
