@@ -4,7 +4,7 @@ import ec2 = require('@aws-cdk/aws-ec2');
 import elbv2 = require('@aws-cdk/aws-elasticloadbalancingv2');
 import iam = require('@aws-cdk/aws-iam');
 import cloudmap = require('@aws-cdk/aws-servicediscovery');
-import { Construct, Duration, Fn, IResolvable, IResource, Lazy, Resource, Stack } from '@aws-cdk/core';
+import { Construct, Duration, IResolvable, IResource, Lazy, Resource, Stack } from '@aws-cdk/core';
 import { NetworkMode, TaskDefinition } from '../base/task-definition';
 import { ICluster } from '../cluster';
 import { CfnService } from '../ecs.generated';
@@ -73,21 +73,6 @@ export interface BaseServiceProps {
    * @default - AWS Cloud Map service discovery is not enabled.
    */
   readonly cloudMapOptions?: CloudMapOptions;
-
-  /**
-   * Whether the new long ARN format has been enabled on ECS services.
-   * NOTE: This assumes customer has opted into the new format for the IAM role used for the service, and is a
-   * workaround for a current bug in Cloudformation in which the service name is not correctly returned when long ARN is
-   * enabled.
-   *
-   * Old ARN format: arn:aws:ecs:region:aws_account_id:service/service-name
-   * New ARN format: arn:aws:ecs:region:aws_account_id:service/cluster-name/service-name
-   *
-   * See: https://docs.aws.amazon.com/AmazonECS/latest/userguide/ecs-resource-ids.html
-   *
-   * @default false
-   */
-  readonly longArnEnabled?: boolean;
 }
 
 /**
@@ -157,19 +142,12 @@ export abstract class BaseService extends Resource
       ...additionalProps
     });
 
-    // This is a workaround for CFN bug that returns the cluster name instead of the service name when long ARN formats
-    // are enabled for the principal in a given region.
-    const longArnEnabled = props.longArnEnabled !== undefined ? props.longArnEnabled : false;
-    const serviceName = longArnEnabled
-      ? Fn.select(2, Fn.split('/', this.resource.ref))
-      : this.resource.attrName;
-
     this.serviceArn = this.getResourceArnAttribute(this.resource.ref, {
       service: 'ecs',
       resource: 'service',
       resourceName: `${props.cluster.clusterName}/${this.physicalName}`,
     });
-    this.serviceName = this.getResourceNameAttribute(serviceName);
+    this.serviceName = this.getResourceNameAttribute(this.resource.attrName);
 
     this.cluster = props.cluster;
 
