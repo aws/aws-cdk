@@ -75,7 +75,7 @@ export class TokenMap {
    * Lookup a token from an encoded value
    */
   public tokenFromEncoding(x: any): IResolvable | undefined {
-    if (typeof 'x' === 'string') { return this.lookupString(x); }
+    if (typeof x === 'string') { return this.lookupString(x); }
     if (Array.isArray(x)) { return this.lookupList(x); }
     if (Token.isUnresolved(x)) { return x; }
     return undefined;
