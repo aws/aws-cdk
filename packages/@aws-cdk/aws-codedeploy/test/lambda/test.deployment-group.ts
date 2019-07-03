@@ -581,5 +581,21 @@ export = {
 
       test.done();
     },
-  }
+
+    'imported with fromLambdaDeploymentGroupAttributes': {
+      'defaults the Deployment Config to Canary10Percent5Minutes'(test: Test) {
+        const stack = new cdk.Stack();
+
+        const lambdaApp = codedeploy.LambdaApplication.fromLambdaApplicationName(stack, 'LA', 'LambdaApplication');
+        const importedGroup = codedeploy.LambdaDeploymentGroup.fromLambdaDeploymentGroupAttributes(stack, 'LDG', {
+          application: lambdaApp,
+          deploymentGroupName: 'LambdaDeploymentGroup',
+        });
+
+        test.equal(importedGroup.deploymentConfig, LambdaDeploymentConfig.CANARY_10PERCENT_5MINUTES);
+
+        test.done();
+      },
+    },
+  },
 };

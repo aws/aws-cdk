@@ -8,14 +8,14 @@ export function generatePhysicalName(resource: IResource): string {
   const stackPart = new PrefixNamePart(stack.stackName, 25);
   const idPart = new SuffixNamePart(resource.node.uniqueId, 24);
 
-  let region: string | undefined = stack.region;
-  if (Token.isUnresolved(region)) {
-    region = undefined;
+  const region: string = stack.region;
+  if (Token.isUnresolved(region) || !region) {
+    throw new Error(`Cannot generate a physical name for ${resource.node.path}, because the region is un-resolved or missing`);
   }
 
-  let account: string | undefined = stack.account;
-  if (Token.isUnresolved(account)) {
-    account = undefined;
+  const account: string = stack.account;
+  if (Token.isUnresolved(account) || !account) {
+    throw new Error(`Cannot generate a physical name for ${resource.node.path}, because the account is un-resolved or missing`);
   }
 
   const parts = [stackPart, idPart]
@@ -25,8 +25,8 @@ export function generatePhysicalName(resource: IResource): string {
   const sha256 = crypto.createHash('sha256')
     .update(stackPart.bareStr)
     .update(idPart.bareStr)
-    .update(region || '')
-    .update(account || '');
+    .update(region)
+    .update(account);
   const hash = sha256.digest('hex').slice(0, hashLength);
 
   const ret = [...parts, hash].join('');
