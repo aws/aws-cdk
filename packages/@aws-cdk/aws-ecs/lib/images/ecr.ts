@@ -9,6 +9,9 @@ import { ContainerImage, ContainerImageConfig } from '../container-image';
 export class EcrImage extends ContainerImage {
   public readonly imageName: string;
 
+  /**
+   * Constructs a new instance of the EcrImage class.
+   */
   constructor(private readonly repository: ecr.IRepository, private readonly tag: string) {
     super();
   }

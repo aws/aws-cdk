@@ -79,6 +79,9 @@ export class PlacementStrategy {
     return new PlacementStrategy([{ type: 'random' }]);
   }
 
+  /**
+   * Constructs a new instance of the PlacementStrategy class.
+   */
   private constructor(private readonly json: CfnService.PlacementStrategyProperty[]) {
   }
 
@@ -115,6 +118,9 @@ export class PlacementConstraint {
     return new PlacementConstraint(expressions.map(expression => ({ type: 'memberOf', expression })));
   }
 
+  /**
+   * Constructs a new instance of the PlacementConstraint class.
+   */
   private constructor(private readonly json: CfnService.PlacementConstraintProperty[]) {
   }
 

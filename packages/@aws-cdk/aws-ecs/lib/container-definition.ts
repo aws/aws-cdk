@@ -6,6 +6,9 @@ import { CfnTaskDefinition } from './ecs.generated';
 import { LinuxParameters } from './linux-parameters';
 import { LogDriver, LogDriverConfig } from './log-drivers/log-driver';
 
+/**
+ * The options for creating a container definition.
+ */
 export interface ContainerDefinitionOptions {
   /**
    * The image to use for a container.
@@ -84,13 +87,14 @@ export interface ContainerDefinitionOptions {
   readonly environment?: { [key: string]: string };
 
   /**
-   * Indicates whether the task stops if this container fails.
+   * Specifies whether the container will be marked essential.
    *
-   * If you specify true and the container fails, all other containers in the
-   * task stop. If you specify false and the container fails, none of the other
-   * containers in the task is affected.
+   * If the essential parameter of a container is marked as true, and that container fails
+   * or stops for any reason, all other containers that are part of the task are stopped.
+   * If the essential parameter of a container is marked as false, then its failure does not
+   * affect the rest of the containers in a task.
    *
-   * You must have at least one essential container in a task.
+   * If this parameter is omitted, a container is assumed to be essential.
    *
    * @default true
    */
@@ -179,7 +183,7 @@ export interface ContainerDefinitionOptions {
   readonly logging?: LogDriver;
 
   /**
-   * Configures Linux Parameters
+   * The Linux-specific modifications that are applied to the container, such as Linux kernel capabilities.
    *
    * @default - No Linux paramters.
    */
@@ -191,7 +195,7 @@ export interface ContainerDefinitionOptions {
  */
 export interface ContainerDefinitionProps extends ContainerDefinitionOptions {
   /**
-   * The task this container definition belongs to.
+   * The name of the task definition that includes this container definition.
    *
    * [disable-awslint:ref-via-interface]
    */
@@ -199,36 +203,44 @@ export interface ContainerDefinitionProps extends ContainerDefinitionOptions {
 }
 
 /**
- * A definition for a single container in a Task
+ * A container definition is used in a task definition to describe the containers that are launched as part of a task.
  */
 export class ContainerDefinition extends cdk.Construct {
   /**
-   * Access Linux Parameters
+   * The Linux-specific modifications that are applied to the container, such as Linux kernel capabilities.
    */
   public readonly linuxParameters?: LinuxParameters;
 
   /**
-   * The configured mount points
+   * The mount points for data volumes in your container.
    */
   public readonly mountPoints = new Array<MountPoint>();
 
   /**
-   * The configured port mappings
+   * The list of port mappings for the container. Port mappings allow containers to access ports
+   * on the host container instance to send or receive traffic.
    */
   public readonly portMappings = new Array<PortMapping>();
 
   /**
-   * The configured volumes
+   * The data volumes to mount from another container in the same task definition.
    */
   public readonly volumesFrom = new Array<VolumeFrom>();
 
   /**
-   * The configured ulimits
+   * An array of ulimits to set in the container.
    */
   public readonly ulimits = new Array<Ulimit>();
 
   /**
-   * Whether or not this container is essential
+   * Specifies whether the container will be marked essential.
+   *
+   * If the essential parameter of a container is marked as true, and that container
+   * fails or stops for any reason, all other containers that are part of the task are
+   * stopped. If the essential parameter of a container is marked as false, then its
+   * failure does not affect the rest of the containers in a task.
+   *
+   * If this parameter isomitted, a container is assumed to be essential.
    */
   public readonly essential: boolean;
 
@@ -238,7 +250,7 @@ export class ContainerDefinition extends cdk.Construct {
   public readonly memoryLimitSpecified: boolean;
 
   /**
-   * The task definition this container definition is part of
+   * The name of the task definition that includes this container definition.
    */
   public readonly taskDefinition: TaskDefinition;
 
@@ -251,6 +263,9 @@ export class ContainerDefinition extends cdk.Construct {
 
   private readonly logDriverConfig?: LogDriverConfig;
 
+  /**
+   * Constructs a new instance of the ContainerDefinition class.
+   */
   constructor(scope: cdk.Construct, id: string, private readonly props: ContainerDefinitionProps) {
     super(scope, id);
     this.essential = props.essential !== undefined ? props.essential : true;
@@ -266,9 +281,9 @@ export class ContainerDefinition extends cdk.Construct {
   }
 
   /**
-   * Add a link from this container to a different container
-   * The link parameter allows containers to communicate with each other without the need for port mappings.
-   * Only supported if the network mode of a task definition is set to bridge.
+   * This method adds a link which allows containers to communicate with each other without the need for port mappings.
+   *
+   * This parameter is only supported if the task definition is using the bridge network mode.
    * Warning: The --link flag is a legacy feature of Docker. It may eventually be removed.
    */
   public addLink(container: ContainerDefinition, alias?: string) {
@@ -283,14 +298,15 @@ export class ContainerDefinition extends cdk.Construct {
   }
 
   /**
-   * Add one or more mount points to this container.
+   * This method adds one or more mount points for data volumes to the container.
    */
   public addMountPoints(...mountPoints: MountPoint[]) {
     this.mountPoints.push(...mountPoints);
   }
 
   /**
-   * Mount temporary disc space to a container.
+   * This method mounts temporary disk space to the container.
+   *
    * This adds the correct container mountPoint and task definition volume.
    */
   public addScratch(scratch: ScratchSpace) {
@@ -312,7 +328,7 @@ export class ContainerDefinition extends cdk.Construct {
   }
 
   /**
-   * Add one or more port mappings to this container
+   * This method adds one or more port mappings to the container.
    */
   public addPortMappings(...portMappings: PortMapping[]) {
     this.portMappings.push(...portMappings.map(pm => {
@@ -336,28 +352,30 @@ export class ContainerDefinition extends cdk.Construct {
   }
 
   /**
-   * Add one or more ulimits to this container
+   * This method adds one or more ulimits to the container.
    */
   public addUlimits(...ulimits: Ulimit[]) {
     this.ulimits.push(...ulimits);
   }
 
   /**
-   * Add one or more volumes to this container
+   * This method adds one or more volumes to the container.
    */
   public addVolumesFrom(...volumesFrom: VolumeFrom[]) {
     this.volumesFrom.push(...volumesFrom);
   }
 
   /**
-   * Add a statement to the Task Definition's Execution policy
+   * This method adds the specified statement to the IAM task execution policy in the task definition.
    */
   public addToExecutionPolicy(statement: iam.PolicyStatement) {
     this.taskDefinition.addToExecutionRolePolicy(statement);
   }
 
   /**
-   * Ingress Port is needed to set the security group ingress for the task/service
+   * The inbound rules associated with the security group the task or service will use.
+   *
+   * This property is only used for tasks that use the awsvpc network mode.
    */
   public get ingressPort(): number {
     if (this.portMappings.length === 0) {
@@ -376,7 +394,7 @@ export class ContainerDefinition extends cdk.Construct {
   }
 
   /**
-   * Return the port that the container will be listening on by default
+   * The port the container will listen on.
    */
   public get containerPort(): number {
     if (this.portMappings.length === 0) {
@@ -511,7 +529,7 @@ function getHealthCheckCommand(hc: HealthCheck): string[] {
 }
 
 /**
- * Container ulimits.
+ * A list of ulimits to set in the container.
  *
  * Correspond to ulimits options on docker run.
  *
@@ -568,7 +586,7 @@ function renderUlimit(ulimit: Ulimit): CfnTaskDefinition.UlimitProperty {
  */
 export interface PortMapping {
   /**
-   * Port inside the container
+   * The port the container will listen on.
    */
   readonly containerPort: number;
 

@@ -7,7 +7,7 @@ import { PlacementConstraint } from '../placement';
  */
 export interface Ec2TaskDefinitionProps extends CommonTaskDefinitionProps {
   /**
-   * The Docker networking mode to use for the containers in the task.
+   * The networking mode to use for the containers in the task.
    *
    * On Fargate, the only supported networking mode is AwsVpc.
    *
@@ -48,6 +48,9 @@ export class Ec2TaskDefinition extends TaskDefinition implements IEc2TaskDefinit
     return new Import(scope, id);
   }
 
+  /**
+   * Constructs a new instance of the Ec2TaskDefinition class.
+   */
   constructor(scope: Construct, id: string, props: Ec2TaskDefinitionProps = {}) {
     super(scope, id, {
       ...props,

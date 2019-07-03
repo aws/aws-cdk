@@ -54,6 +54,9 @@ export class LinuxParameters extends cdk.Construct {
    */
   private readonly tmpfs = new Array<Tmpfs>();
 
+  /**
+   * Constructs a new instance of the LinuxParameters class.
+   */
   constructor(scope: cdk.Construct, id: string, props: LinuxParametersProps = {}) {
     super(scope, id);
 

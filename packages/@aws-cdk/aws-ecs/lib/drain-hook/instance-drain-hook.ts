@@ -39,6 +39,10 @@ export interface InstanceDrainHookProps {
  * A hook to drain instances from ECS traffic before they're terminated
  */
 export class InstanceDrainHook extends cdk.Construct {
+
+  /**
+   * Constructs a new instance of the InstanceDrainHook class.
+   */
   constructor(scope: cdk.Construct, id: string, props: InstanceDrainHookProps) {
     super(scope, id);
 

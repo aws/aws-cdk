@@ -7,7 +7,9 @@ import { CommonTaskDefinitionProps, Compatibility, ITaskDefinition, NetworkMode,
 export interface FargateTaskDefinitionProps extends CommonTaskDefinitionProps {
   /**
    * The number of cpu units used by the task.
+   *
    * Valid values, which determines your range of valid values for the memory parameter:
+   *
    * 256 (.25 vCPU) - Available memory values: 0.5GB, 1GB, 2GB
    * 512 (.5 vCPU) - Available memory values: 1GB, 2GB, 3GB, 4GB
    * 1024 (1 vCPU) - Available memory values: 2GB, 3GB, 4GB, 5GB, 6GB, 7GB, 8GB
@@ -24,11 +26,11 @@ export interface FargateTaskDefinitionProps extends CommonTaskDefinitionProps {
    * This field is required and you must use one of the following values, which determines your range of valid values
    * for the cpu parameter:
    *
-   * 0.5GB, 1GB, 2GB - Available cpu values: 256 (.25 vCPU)
+   * 512, 1024, 2048 - Available cpu values: 256 (.25 vCPU)
    *
-   * 1GB, 2GB, 3GB, 4GB - Available cpu values: 512 (.5 vCPU)
+   * 1024, 2048, 3072, 4096 - Available cpu values: 512 (.5 vCPU)
    *
-   * 2GB, 3GB, 4GB, 5GB, 6GB, 7GB, 8GB - Available cpu values: 1024 (1 vCPU)
+   * 2048, 3072, 4096, 5120, 6144, 7168, 8192 - Available cpu values: 1024 (1 vCPU)
    *
    * Between 4GB and 16GB in 1GB increments - Available cpu values: 2048 (2 vCPU)
    *
@@ -68,6 +70,9 @@ export class FargateTaskDefinition extends TaskDefinition implements IFargateTas
   // we need to explicitly write the type here, as type deduction for enums won't lead to
   // the import being generated in the .d.ts file.
 
+  /**
+   * Constructs a new instance of the FargateTaskDefinition class.
+   */
   constructor(scope: Construct, id: string, props: FargateTaskDefinitionProps = {}) {
     super(scope, id, {
       ...props,

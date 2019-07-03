@@ -15,6 +15,9 @@ export interface RepositoryImageProps {
  */
 export class RepositoryImage extends ContainerImage {
 
+  /**
+   * Constructs a new instance of the RepositoryImage class.
+   */
   constructor(private readonly imageName: string, private readonly props: RepositoryImageProps = {}) {
     super();
   }

@@ -65,6 +65,9 @@ export class FargateService extends BaseService implements IFargateService {
     return new Import(scope, id);
   }
 
+  /**
+   * Constructs a new instance of the FargateService class.
+   */
   constructor(scope: cdk.Construct, id: string, props: FargateServiceProps) {
     if (!props.taskDefinition.isFargateCompatible) {
       throw new Error('Supplied TaskDefinition is not configured for compatibility with Fargate');
