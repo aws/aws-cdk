@@ -11,7 +11,7 @@ import { ToolkitInfo } from './toolkit-info';
 import { changeSetHasNoChanges, describeStack, stackExists, stackFailedCreating, waitForChangeSet, waitForStack  } from './util/cloudformation';
 import { StackActivityMonitor } from './util/cloudformation/stack-activity-monitor';
 import { StackStatus } from './util/cloudformation/stack-status';
-import { SDK } from './util/sdk';
+import { ISDK } from './util/sdk';
 
 type TemplateBodyParameter = {
   TemplateBody?: string
@@ -26,7 +26,7 @@ export interface DeployStackResult {
 
 export interface DeployStackOptions {
   stack: cxapi.CloudFormationStackArtifact;
-  sdk: SDK;
+  sdk: ISDK;
   toolkitInfo?: ToolkitInfo;
   roleArn?: string;
   deployName?: string;
@@ -144,7 +144,7 @@ async function makeBodyParameter(stack: cxapi.CloudFormationStackArtifact, toolk
 
 export interface DestroyStackOptions {
   stack: cxapi.CloudFormationStackArtifact;
-  sdk: SDK;
+  sdk: ISDK;
   roleArn?: string;
   deployName?: string;
   quiet?: boolean;

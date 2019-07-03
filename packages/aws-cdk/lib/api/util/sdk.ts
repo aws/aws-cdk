@@ -11,6 +11,24 @@ import { CredentialProviderSource, Mode } from '../aws-auth/credentials';
 import { AccountAccessKeyCache } from './account-cache';
 import { SharedIniFile } from './sdk_ini_file';
 
+export interface ISDK {
+  cloudFormation(account: string | undefined, region: string | undefined, mode: Mode): Promise<AWS.CloudFormation>;
+
+  ec2(account: string | undefined, region: string | undefined, mode: Mode): Promise<AWS.EC2>;
+
+  ssm(account: string | undefined, region: string | undefined, mode: Mode): Promise<AWS.SSM>;
+
+  s3(account: string | undefined, region: string | undefined, mode: Mode): Promise<AWS.S3>;
+
+  route53(account: string | undefined, region: string | undefined, mode: Mode): Promise<AWS.Route53>;
+
+  ecr(account: string | undefined, region: string | undefined, mode: Mode): Promise<AWS.ECR>;
+
+  defaultRegion(): Promise<string | undefined>;
+
+  defaultAccount(): Promise<string | undefined>;
+}
+
 export interface SDKOptions {
   /**
    * Profile name to use
@@ -45,7 +63,7 @@ export interface SDKOptions {
  * If those don't suffice, a list of CredentialProviderSources is interrogated for access
  * to the requested account.
  */
-export class SDK {
+export class SDK implements ISDK {
   private readonly defaultAwsAccount: DefaultAWSAccount;
   private readonly credentialsCache: CredentialsCache;
   private readonly profile?: string;

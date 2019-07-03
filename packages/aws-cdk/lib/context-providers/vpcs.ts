@@ -1,12 +1,12 @@
 import cxapi = require('@aws-cdk/cx-api');
 import AWS = require('aws-sdk');
-import { Mode, SDK } from '../api';
+import { ISDK, Mode } from '../api';
 import { debug } from '../logging';
 import { ContextProviderPlugin } from './provider';
 
 export class VpcNetworkContextProviderPlugin implements ContextProviderPlugin {
 
-  constructor(private readonly aws: SDK) {
+  constructor(private readonly aws: ISDK) {
   }
 
   public async getValue(args: cxapi.VpcContextQuery) {
