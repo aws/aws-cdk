@@ -1,7 +1,7 @@
 import iam = require('@aws-cdk/aws-iam');
 import {
   CfnDynamicReference, CfnDynamicReferenceService, CfnParameter,
-  Construct, ContextProvider, Fn, IConstruct, IResource, Resource, Stack, Token
+  Construct, ContextProvider, Fn, IConstruct, IResource, Resource, Stack, Token, ConstructNode
 } from '@aws-cdk/core';
 import cxapi = require('@aws-cdk/cx-api');
 import ssm = require('./ssm.generated');
@@ -248,6 +248,7 @@ export class StringParameter extends ParameterBase implements IStringParameter {
     const stack = Stack.of(scope);
     const id = makeIdentityForImportedValue(parameterName);
     const exists = stack.node.tryFindChild(id) as IStringParameter;
+
     if (exists) { return exists.stringValue; }
 
     return this.fromStringParameterAttributes(stack, id, { parameterName, version }).stringValue;
@@ -371,7 +372,7 @@ function _assertValidValue(value: string, allowedPattern: string): void {
 }
 
 function makeIdentityForImportedValue(parameterName: string) {
-  return `SsmParameterValue:${parameterName}:C96584B6-F00A-464E-AD19-53AFF4B05118`;
+  return ConstructNode.sanitizeId(`SsmParameterValue:${parameterName}:C96584B6-F00A-464E-AD19-53AFF4B05118`);
 }
 
 function arnForParameterName(scope: IConstruct, parameterName: string): string {

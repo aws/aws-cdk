@@ -28,6 +28,14 @@ export class ConstructNode {
   public static readonly PATH_SEP = '/';
 
   /**
+   * Return a sanitized version of an arbitrary string, so it can be used as an ID
+   */
+  public static sanitizeId(id: string) {
+    // Cannot have PATH_SEPs in the ID
+    return id.replace(/\//g, '-');
+  }
+
+  /**
    * Synthesizes a CloudAssembly from a construct tree.
    * @param root The root of the construct tree.
    * @param options Synthesis options.
@@ -137,6 +145,10 @@ export class ConstructNode {
     if (scope != null) {
       if (id === '') {
         throw new Error('Only root constructs may have an empty name');
+      }
+
+      if (ConstructNode.sanitizeId(id) !== id) {
+        throw new Error('Invalid characters in id, use ConstructNode.sanitizeId(): ' + id);
       }
 
       // Has side effect so must be very last thing in constructor
