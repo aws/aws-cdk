@@ -1,7 +1,7 @@
 import ec2 = require('@aws-cdk/aws-ec2');
 import elb = require('@aws-cdk/aws-elasticloadbalancing');
 import { Construct, Lazy, Resource } from '@aws-cdk/core';
-import { BaseService, BaseServiceProps, IService } from '../base/base-service';
+import { BaseService, BaseServiceOptions, IService, LaunchType } from '../base/base-service';
 import { NetworkMode, TaskDefinition } from '../base/task-definition';
 import { CfnService } from '../ecs.generated';
 import { PlacementConstraint, PlacementStrategy } from '../placement';
@@ -9,7 +9,7 @@ import { PlacementConstraint, PlacementStrategy } from '../placement';
 /**
  * Properties to define an ECS service
  */
-export interface Ec2ServiceProps extends BaseServiceProps {
+export interface Ec2ServiceProps extends BaseServiceOptions {
   /**
    * Task Definition used for running tasks in the service
    *
@@ -115,11 +115,11 @@ export class Ec2Service extends BaseService implements IEc2Service, elb.ILoadBal
       desiredCount: props.daemon || props.desiredCount !== undefined ? props.desiredCount : 1,
       maxHealthyPercent: props.daemon && props.maxHealthyPercent === undefined ? 100 : props.maxHealthyPercent,
       minHealthyPercent: props.daemon && props.minHealthyPercent === undefined ? 0 : props.minHealthyPercent ,
+      launchType: LaunchType.EC2,
     },
     {
       cluster: props.cluster.clusterName,
       taskDefinition: props.taskDefinition.taskDefinitionArn,
-      launchType: 'EC2',
       placementConstraints: Lazy.anyValue({ produce: () => this.constraints }, { omitEmptyArray: true }),
       placementStrategies: Lazy.anyValue({ produce: () => this.strategies }, { omitEmptyArray: true }),
       schedulingStrategy: props.daemon ? 'DAEMON' : 'REPLICA',
