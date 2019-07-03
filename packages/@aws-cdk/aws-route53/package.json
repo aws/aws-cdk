@@ -107,7 +107,7 @@
       "props-physical-name:@aws-cdk/aws-route53.AaaaRecordProps"
     ]
   },
-  "stability": "experimental",
+  "stability": "stable",
   "nyc": {
     "statements": 60,
     "lines": 60,
