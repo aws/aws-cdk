@@ -1,0 +1,2 @@
+change-return-type:@aws-cdk/aws-codebuild.PipelineProject.addSecondaryArtifact
+change-return-type:@aws-cdk/aws-codebuild.Project.addSecondaryArtifact

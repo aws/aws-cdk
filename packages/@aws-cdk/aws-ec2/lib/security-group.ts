@@ -76,7 +76,7 @@ abstract class SecurityGroupBase extends Resource implements ISecurityGroup {
       new CfnSecurityGroupIngress(scope, id, {
         groupId: this.securityGroupId,
         ...peer.toIngressRuleConfig(),
-        ...connection.toRuleJSON(),
+        ...connection.toRuleJson(),
         description
       });
     }
@@ -94,7 +94,7 @@ abstract class SecurityGroupBase extends Resource implements ISecurityGroup {
       new CfnSecurityGroupEgress(scope, id, {
         groupId: this.securityGroupId,
         ...peer.toEgressRuleConfig(),
-        ...connection.toRuleJSON(),
+        ...connection.toRuleJson(),
         description
       });
     }
@@ -298,7 +298,7 @@ export class SecurityGroup extends SecurityGroupBase {
 
     this.addDirectIngressRule({
       ...peer.toIngressRuleConfig(),
-      ...connection.toRuleJSON(),
+      ...connection.toRuleJson(),
       description
     });
   }
@@ -327,7 +327,7 @@ export class SecurityGroup extends SecurityGroupBase {
 
     const rule = {
       ...peer.toEgressRuleConfig(),
-      ...connection.toRuleJSON(),
+      ...connection.toRuleJson(),
       description
     };
 

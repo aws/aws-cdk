@@ -734,7 +734,7 @@ export class Project extends ProjectBase {
    * @param secondaryArtifact the artifact to add as a secondary artifact
    * @see https://docs.aws.amazon.com/codebuild/latest/userguide/sample-multi-in-out.html
    */
-  public addSecondaryArtifact(secondaryArtifact: IArtifacts): any {
+  public addSecondaryArtifact(secondaryArtifact: IArtifacts): void {
     if (!secondaryArtifact.identifier) {
       throw new Error("The identifier attribute is mandatory for secondary artifacts");
     }
