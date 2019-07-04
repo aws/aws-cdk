@@ -9,7 +9,7 @@ import { LinuxParameters } from './linux-parameters';
 import { LogDriver, LogDriverConfig } from './log-drivers/log-driver';
 
 /**
- * Propertiers for an EnvironmentValue
+ * Properties for an EnvironmentValue
  */
 export interface EnvironmentValueProps {
   /**
