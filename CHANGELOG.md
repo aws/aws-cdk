@@ -17,9 +17,9 @@ All notable changes to this project will be documented in this file. See [standa
 ### BREAKING CHANGES
 
 * **core:** `construct.findChild()` now only looks up direct children
-* METHOD @aws-cdk/aws-ec2.Port.toRuleJSON: has been removed [removed:@aws-cdk/aws-ec2.Port.toRuleJSON]
-* METHOD @aws-cdk/aws-codebuild.PipelineProject.addSecondaryArtifact: returns void (formerly any): now returning 'void' [change-return-type:@aws-cdk/aws-codebuild.PipelineProject.addSecondaryArtifact]
-* METHOD @aws-cdk/aws-codebuild.Project.addSecondaryArtifact: returns void (formerly any): now returning 'void' [change-return-type:@aws-cdk/aws-codebuild.Project.addSecondaryArtifact]
+* **ec2:** `Port.toRuleJSON` was renamed to `toRuleJson`
+* **codebuild:** `PipelineProject.addSecondaryArtifact` now returns void (formerly any)
+* **codebuild:** `Project.addSecondaryArtifact` now returns void (formerly any)
 
 ## [0.36.2](https://github.com/awslabs/aws-cdk/compare/v0.36.1...v0.36.2) (2019-07-03)
 
