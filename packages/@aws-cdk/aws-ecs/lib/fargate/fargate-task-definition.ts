@@ -35,6 +35,9 @@ export interface FargateTaskDefinitionProps extends CommonTaskDefinitionProps {
   readonly memoryLimitMiB?: number;
 }
 
+/**
+ * The interface of a task definition run on a Fargate cluster.
+ */
 export interface IFargateTaskDefinition extends ITaskDefinition {
 
 }

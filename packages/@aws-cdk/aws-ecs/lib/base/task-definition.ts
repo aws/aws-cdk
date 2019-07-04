@@ -4,6 +4,9 @@ import { ContainerDefinition, ContainerDefinitionOptions } from '../container-de
 import { CfnTaskDefinition } from '../ecs.generated';
 import { PlacementConstraint } from '../placement';
 
+/**
+ * The interface for all task definitions.
+ */
 export interface ITaskDefinition extends IResource {
   /**
    * ARN of this task definition

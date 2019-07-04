@@ -49,6 +49,9 @@ export interface FargateServiceProps extends BaseServiceOptions {
   readonly platformVersion?: FargatePlatformVersion;
 }
 
+/**
+ * The interface for a service using the Fargate launch type on an ECS cluster.
+ */
 export interface IFargateService extends IService {
 
 }

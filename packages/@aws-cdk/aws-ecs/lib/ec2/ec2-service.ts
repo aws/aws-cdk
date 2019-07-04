@@ -72,6 +72,9 @@ export interface Ec2ServiceProps extends BaseServiceOptions {
   readonly daemon?: boolean;
 }
 
+/**
+ * The interface for a service using the EC2 launch type on an ECS cluster.
+ */
 export interface IEc2Service extends IService {
 
 }

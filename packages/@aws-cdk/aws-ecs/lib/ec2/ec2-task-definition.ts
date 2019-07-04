@@ -25,6 +25,9 @@ export interface Ec2TaskDefinitionProps extends CommonTaskDefinitionProps {
   readonly placementConstraints?: PlacementConstraint[];
 }
 
+/**
+ * The interface of a task definition run on an EC2 cluster.
+ */
 export interface IEc2TaskDefinition extends ITaskDefinition {
 
 }

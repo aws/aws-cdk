@@ -10,6 +10,9 @@ import { ICluster } from '../cluster';
 import { CfnService } from '../ecs.generated';
 import { ScalableTaskCount } from './scalable-task-count';
 
+/**
+ * The interface for a service.
+ */
 export interface IService extends IResource {
   /**
    * The Amazon Resource Name (ARN) of the service.
