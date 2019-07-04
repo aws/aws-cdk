@@ -449,15 +449,36 @@
               "Action": [
                 "ecs:ListContainerInstances",
                 "ecs:SubmitContainerStateChange",
-                "ecs:SubmitTaskStateChange",
-                "ecs:UpdateContainerInstancesState",
-                "ecs:ListTasks"
+                "ecs:SubmitTaskStateChange"
               ],
               "Effect": "Allow",
               "Resource": {
                 "Fn::GetAtt": [
                   "EcsCluster97242B84",
                   "Arn"
+                ]
+              }
+            },
+            {
+              "Action": [
+                "ecs:UpdateContainerInstancesState",
+                "ecs:ListTasks"
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:aws:ecs:",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ":",
+                    {
+                      "Ref": "AWS::AccountId"
+                    },
+                    ":container-instance/*"
+                  ]
                 ]
               }
             }
@@ -613,6 +634,37 @@
         "EcsClusterDefaultAutoScalingGroupLifecycleHookDrainHookRoleDefaultPolicy75002F88",
         "EcsClusterDefaultAutoScalingGroupLifecycleHookDrainHookRoleA38EC83B"
       ]
+    },
+    "ScheduledEc2TaskScheduledEventRuleFE2376A2": {
+      "Type": "AWS::Events::Rule",
+      "Properties": {
+        "ScheduleExpression": "rate(1 minute)",
+        "State": "ENABLED",
+        "Targets": [
+          {
+            "Arn": {
+              "Fn::GetAtt": [
+                "EcsCluster97242B84",
+                "Arn"
+              ]
+            },
+            "EcsParameters": {
+              "TaskCount": 2,
+              "TaskDefinitionArn": {
+                "Ref": "ScheduledEc2TaskScheduledTaskDef56328BA4"
+              }
+            },
+            "Id": "awsecsintegecsScheduledEc2TaskScheduledTaskDef18FB4348",
+            "Input": "{}",
+            "RoleArn": {
+              "Fn::GetAtt": [
+                "ScheduledEc2TaskScheduledTaskDefEventsRole64113C5F",
+                "Arn"
+              ]
+            }
+          }
+        ]
+      }
     },
     "ScheduledEc2TaskScheduledTaskDefTaskRoleC3FA127C": {
       "Type": "AWS::IAM::Role",
@@ -826,37 +878,6 @@
         "Roles": [
           {
             "Ref": "ScheduledEc2TaskScheduledTaskDefEventsRole64113C5F"
-          }
-        ]
-      }
-    },
-    "ScheduledEc2TaskScheduledEventRuleFE2376A2": {
-      "Type": "AWS::Events::Rule",
-      "Properties": {
-        "ScheduleExpression": "rate(1 minute)",
-        "State": "ENABLED",
-        "Targets": [
-          {
-            "Arn": {
-              "Fn::GetAtt": [
-                "EcsCluster97242B84",
-                "Arn"
-              ]
-            },
-            "EcsParameters": {
-              "TaskCount": 2,
-              "TaskDefinitionArn": {
-                "Ref": "ScheduledEc2TaskScheduledTaskDef56328BA4"
-              }
-            },
-            "Id": "awsecsintegecsScheduledEc2TaskScheduledTaskDef18FB4348",
-            "Input": "{}",
-            "RoleArn": {
-              "Fn::GetAtt": [
-                "ScheduledEc2TaskScheduledTaskDefEventsRole64113C5F",
-                "Arn"
-              ]
-            }
           }
         ]
       }
