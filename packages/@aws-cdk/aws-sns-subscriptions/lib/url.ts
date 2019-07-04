@@ -1,4 +1,5 @@
 import sns = require('@aws-cdk/aws-sns');
+import { Token } from '@aws-cdk/core';
 import { SubscriptionProps } from './subscription';
 
 /**
@@ -13,6 +14,13 @@ export interface UrlSubscriptionProps extends SubscriptionProps {
    * @default false
    */
   readonly rawMessageDelivery?: boolean;
+
+  /**
+   * The subscription's protocol.
+   *
+   * @default - Protocol is derived from url
+   */
+  readonly protocol?: sns.SubscriptionProtocol;
 }
 
 /**
@@ -23,17 +31,31 @@ export interface UrlSubscriptionProps extends SubscriptionProps {
  * @see https://docs.aws.amazon.com/sns/latest/dg/sns-http-https-endpoint-as-subscriber.html
  */
 export class UrlSubscription implements sns.ITopicSubscription {
+  private readonly protocol: sns.SubscriptionProtocol;
+  private readonly unresolvedUrl: boolean;
+
   constructor(private readonly url: string, private readonly props: UrlSubscriptionProps = {}) {
-    if (!url.startsWith('http://') && !url.startsWith('https://')) {
+    this.unresolvedUrl = Token.isUnresolved(url);
+    if (!this.unresolvedUrl && !url.startsWith('http://') && !url.startsWith('https://')) {
       throw new Error('URL must start with either http:// or https://');
+    }
+
+    if (this.unresolvedUrl && props.protocol === undefined) {
+      throw new Error('Must provide protocol if url is unresolved');
+    }
+
+    if (this.unresolvedUrl) {
+      this.protocol = props.protocol!;
+    } else {
+      this.protocol = this.url.startsWith('https:') ? sns.SubscriptionProtocol.HTTPS : sns.SubscriptionProtocol.HTTP;
     }
   }
 
   public bind(_topic: sns.ITopic): sns.TopicSubscriptionConfig {
     return {
-      subscriberId: this.url,
+      subscriberId: this.unresolvedUrl ? 'UnresolvedUrl' : this.url,
       endpoint: this.url,
-      protocol: this.url.startsWith('https:') ? sns.SubscriptionProtocol.HTTPS : sns.SubscriptionProtocol.HTTP,
+      protocol: this.protocol,
       rawMessageDelivery: this.props.rawMessageDelivery,
       filterPolicy: this.props.filterPolicy,
     };
