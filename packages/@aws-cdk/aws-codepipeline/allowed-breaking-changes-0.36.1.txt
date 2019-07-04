@@ -1,2 +1,0 @@
-incompatible-argument:@aws-cdk/aws-codepipeline.IAction.bind
-removed:@aws-cdk/aws-codepipeline.IPipeline.artifactBucket
