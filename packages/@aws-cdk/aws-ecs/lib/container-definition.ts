@@ -40,7 +40,7 @@ export class EnvironmentValue {
   }
 
   /**
-   * Creates a environment variable value from a parameter stored in AWS
+   * Creates an environment variable value from a parameter stored in AWS
    * Systems Manager Parameter Store.
    */
   public static fromSsmParameter(parameter: ssm.IParameter) {
