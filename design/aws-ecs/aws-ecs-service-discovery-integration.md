@@ -122,7 +122,7 @@ export interface ServiceDiscoveryOptions {
 A full example would look like the following:
 
 ```
-const vpc = new ec2.Vpc(stack, 'Vpc', { maxAZs: 2 });
+const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 2 });
 
 // Cloud Map Namespace
 const namespace = new servicediscovery.PrivateDnsNamespace(stack, 'MyNamespace', {

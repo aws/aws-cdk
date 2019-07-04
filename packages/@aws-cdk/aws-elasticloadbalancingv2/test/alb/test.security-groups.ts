@@ -248,7 +248,7 @@ class TestFixture {
     this.app = new cdk.App();
     this.stack = new cdk.Stack(this.app, 'Stack');
     this.vpc = new ec2.Vpc(this.stack, 'VPC', {
-      maxAZs: 2
+      maxAzs: 2
     });
     this.lb = new elbv2.ApplicationLoadBalancer(this.stack, 'LB', { vpc: this.vpc });
 
