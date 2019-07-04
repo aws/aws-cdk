@@ -10,6 +10,9 @@ import { ICluster } from '../cluster';
 import { CfnService } from '../ecs.generated';
 import { ScalableTaskCount } from './scalable-task-count';
 
+/**
+ * The interface for a service.
+ */
 export interface IService extends IResource {
   /**
    * The Amazon Resource Name (ARN) of the service.
@@ -90,7 +93,6 @@ export interface BaseServiceProps extends BaseServiceOptions {
 }
 
 /**
- * Base class for Ecs and Fargate services
  * The base class for Ec2Service and FargateService services.
  */
 export abstract class BaseService extends Resource

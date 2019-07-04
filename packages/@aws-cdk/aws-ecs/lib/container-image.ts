@@ -37,16 +37,16 @@ export abstract class ContainerImage {
 }
 
 /**
- * Configuration for producing a container image
+ * The configuration for creating a container image.
  */
 export interface ContainerImageConfig {
   /**
-   * Name of the image
+   * Specifies the name of the container image.
    */
   readonly imageName: string;
 
   /**
-   * Credentials to use to access the repository
+   * Specifies the credentials used to access the image repository.
    */
   readonly repositoryCredentials?: CfnTaskDefinition.RepositoryCredentialsProperty;
 }
