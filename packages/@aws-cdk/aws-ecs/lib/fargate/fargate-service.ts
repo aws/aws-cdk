@@ -1,11 +1,7 @@
 import ec2 = require('@aws-cdk/aws-ec2');
-import cdk = require('@aws-cdk/core');
 import { Construct, Resource } from '@aws-cdk/core';
 import { BaseService, BaseServiceOptions, IService, LaunchType, TracingOptions } from '../base/base-service';
 import { TaskDefinition } from '../base/task-definition';
-import { Protocol } from '../container-definition';
-import { ContainerImage } from '../container-image';
-import { AwsLogDriver } from '../log-drivers/aws-log-driver';
 
 /**
  * The properties for defining a service using the Fargate launch type.
@@ -103,22 +99,14 @@ export class FargateService extends BaseService implements IFargateService {
   }
 
   /**
-   * Adds AWS X-Ray daemon as a sidecar container to enable tracing
+   * Adds AWS X-Ray daemon to enable tracing.
+   *
+   * Adds AWS X-Ray daemon as a sidecar container to the default container.
    */
   public addTracing(props: TracingOptions = {}) {
-    // TODO: adjust task size based on container-level resources (cpu/memory)?
-    const optIn = props.enableLogging !== undefined ? props.enableLogging : true;
-    const xray = this.taskDefinition.addContainer("xray-daemon", {
-      image: ContainerImage.fromRegistry("amazon/aws-xray-daemon"),
-      cpu: props.cpu,
-      memoryReservationMiB: props.memoryReservationMiB,
-      essential: props.essential || false,
-      logging: optIn ? new AwsLogDriver({ streamPrefix: this.node.id}) : undefined
-    });
-
-    xray.addPortMappings({
-      containerPort: 2000,
-      protocol: Protocol.UDP
+    return super.addTracing({
+      ...props,
+      cpu: props.cpu !== undefined ? props.cpu : 256
     });
   }
 }

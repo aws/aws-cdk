@@ -7,7 +7,10 @@ import cloudmap = require('@aws-cdk/aws-servicediscovery');
 import { Construct, Duration, IResolvable, IResource, Lazy, Resource, Stack } from '@aws-cdk/core';
 import { NetworkMode, TaskDefinition } from '../base/task-definition';
 import { ICluster } from '../cluster';
+import { Protocol } from '../container-definition';
+import { ContainerImage } from '../container-image';
 import { CfnService } from '../ecs.generated';
+import { AwsLogDriver } from '../log-drivers/aws-log-driver';
 import { ScalableTaskCount } from './scalable-task-count';
 
 /**
@@ -271,6 +274,27 @@ export abstract class BaseService extends Resource
   }
 
   /**
+   * Adds AWS X-Ray daemon as a sidecar container to enable tracing
+   */
+  public addTracing(props: TracingOptions = {}) {
+    const optIn = props.enableLogging !== undefined ? props.enableLogging : true;
+    const xray = this.taskDefinition.addContainer("xray-daemon", {
+      image: ContainerImage.fromRegistry("amazon/aws-xray-daemon"),
+      cpu: props.cpu,
+      memoryReservationMiB: props.memoryReservationMiB || 256,
+      essential: props.essential || false,
+      logging: optIn ? new AwsLogDriver({ streamPrefix: this.node.uniqueId}) : undefined
+    });
+
+    xray.addPortMappings({
+      containerPort: 2000,
+      protocol: Protocol.UDP
+    });
+
+    return xray;
+  }
+
+  /**
    * This method is called to create a networkConfiguration.
    */
   // tslint:disable-next-line:max-line-length
@@ -503,8 +527,11 @@ export enum LaunchType {
 export interface TracingOptions {
   /**
    * The minimum number of CPU units to reserve for the container.
+   *
+   * @default 256 for services running on Fargate
    */
   readonly cpu?: number
+
   /**
    * The hard limit (in MiB) of memory to present to the container.
    *
@@ -524,18 +551,20 @@ export interface TracingOptions {
    * the available memory on the container instance—whichever comes first.
    *
    * At least one of memoryLimitMiB and memoryReservationMiB is required for non-Fargate services.
+   *
+   * @default 256
    */
   readonly memoryReservationMiB?: number;
 
   /**
-   * Whether or not this container is essential
+   * Specifies whether or not this container is essential.
    *
    * @default false
    */
   readonly essential?: boolean;
 
   /**
-   * Whether to create an AWS log driver
+   * Specifies whether or not to send logs to Cloudwatch Logs.
    *
    * @default true
    */

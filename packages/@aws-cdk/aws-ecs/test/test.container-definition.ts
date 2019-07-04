@@ -52,6 +52,34 @@ export = {
         // THEN no exception raised
         test.done();
       },
+
+      "Defining the same environment variables twice "(test: Test) {
+        // GIVEN
+        const stack = new cdk.Stack();
+        const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef', {
+          networkMode: ecs.NetworkMode.AWS_VPC,
+        });
+
+        const container = taskDefinition.addContainer("Container", {
+          image: ecs.ContainerImage.fromRegistry("/aws/aws-example-app"),
+          memoryLimitMiB: 2048,
+        });
+
+        // WHEN
+        container.addPortMappings({
+          containerPort: 8080,
+        });
+
+        // Add the environment variable the first time
+        container.addEnvironment('ENV_VAR', 'test');
+
+        // THEN an exception is raised when the same environment variable is defined twice
+        test.throws(() => {
+          container.addEnvironment('ENV_VAR', 'test');
+        });
+
+        test.done();
+      },
     },
 
     "With network mode Host ": {

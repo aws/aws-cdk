@@ -356,6 +356,9 @@ export class ContainerDefinition extends cdk.Construct {
    */
   public addEnvironment(key: string, value: string) {
     this.environment = this.environment || {};
+    if (this.environment[key] !== undefined) {
+      throw new Error(`Environment variable with the key ${key} has already been defined.`);
+    }
     this.environment[key] = value;
   }
 
