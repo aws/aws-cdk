@@ -1,4 +1,3 @@
-incompatible-argument:@aws-cdk/app-delivery.PipelineDeployStackAction.bind
 removed:@aws-cdk/aws-ec2.Port.toRuleJSON
 change-return-type:@aws-cdk/aws-codebuild.PipelineProject.addSecondaryArtifact
 change-return-type:@aws-cdk/aws-codebuild.Project.addSecondaryArtifact
