@@ -33,7 +33,7 @@ export interface EnvironmentValueProps {
  */
 export class EnvironmentValue {
   /**
-   * Creates a environment variable value from a string.
+   * Creates an environment variable value from a string.
    */
   public static fromString(value: string) {
     return new EnvironmentValue({ value });
