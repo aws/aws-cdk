@@ -2,6 +2,24 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+# [0.37.0](https://github.com/awslabs/aws-cdk/compare/v0.36.2...v0.37.0) (2019-07-04)
+
+
+### Bug Fixes
+
+* **core:** fix some return types ([#3192](https://github.com/awslabs/aws-cdk/issues/3192)) ([b5997c3](https://github.com/awslabs/aws-cdk/commit/b5997c3))
+* **ecs:** grant drain-hook policy container-instance permissions ([#3199](https://github.com/awslabs/aws-cdk/issues/3199)) ([7796cd7](https://github.com/awslabs/aws-cdk/commit/7796cd7)), closes [#3190](https://github.com/awslabs/aws-cdk/issues/3190)
+* **sns:** allow tokens to be used in UrlSubscription ([#2938](https://github.com/awslabs/aws-cdk/issues/2938)) ([5ce4141](https://github.com/awslabs/aws-cdk/commit/5ce4141))
+* **ssm:** correctly deduplicate parameter names ([#3183](https://github.com/awslabs/aws-cdk/issues/3183)) ([47bf435](https://github.com/awslabs/aws-cdk/commit/47bf435)), closes [#3076](https://github.com/awslabs/aws-cdk/issues/3076)
+* **stepfunctions:** Downscope SageMaker permissions ([#2991](https://github.com/awslabs/aws-cdk/issues/2991)) ([69c82c8](https://github.com/awslabs/aws-cdk/commit/69c82c8))
+
+
+### BREAKING CHANGES
+
+* **core:** `construct.findChild()` now only looks up direct children
+* METHOD @aws-cdk/aws-ec2.Port.toRuleJSON: has been removed [removed:@aws-cdk/aws-ec2.Port.toRuleJSON]
+* METHOD @aws-cdk/aws-codebuild.PipelineProject.addSecondaryArtifact: returns void (formerly any): now returning 'void' [change-return-type:@aws-cdk/aws-codebuild.PipelineProject.addSecondaryArtifact]
+* METHOD @aws-cdk/aws-codebuild.Project.addSecondaryArtifact: returns void (formerly any): now returning 'void' [change-return-type:@aws-cdk/aws-codebuild.Project.addSecondaryArtifact]
 
 ## [0.36.2](https://github.com/awslabs/aws-cdk/compare/v0.36.1...v0.36.2) (2019-07-03)
 
