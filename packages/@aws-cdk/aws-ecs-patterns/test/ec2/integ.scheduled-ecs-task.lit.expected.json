@@ -449,9 +449,7 @@
               "Action": [
                 "ecs:ListContainerInstances",
                 "ecs:SubmitContainerStateChange",
-                "ecs:SubmitTaskStateChange",
-                "ecs:UpdateContainerInstancesState",
-                "ecs:ListTasks"
+                "ecs:SubmitTaskStateChange"
               ],
               "Effect": "Allow",
               "Resource": {
@@ -460,6 +458,24 @@
                   "Arn"
                 ]
               }
+            },
+            {
+              "Action": [
+                "ecs:UpdateContainerInstancesState",
+                "ecs:ListTasks"
+              ],
+              "Condition": {
+                "ArnEquals": {
+                  "ecs:cluster": {
+                    "Fn::GetAtt": [
+                      "EcsCluster97242B84",
+                      "Arn"
+                    ]
+                  }
+                }
+              },
+              "Effect": "Allow",
+              "Resource": "*"
             }
           ],
           "Version": "2012-10-17"
