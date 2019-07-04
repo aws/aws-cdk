@@ -97,11 +97,17 @@ export class InstanceDrainHook extends cdk.Construct {
       actions: [
         'ecs:ListContainerInstances',
         'ecs:SubmitContainerStateChange',
-        'ecs:SubmitTaskStateChange',
+        'ecs:SubmitTaskStateChange'
+      ],
+      resources: [props.cluster.clusterArn]
+    }));
+
+    fn.addToRolePolicy(new iam.PolicyStatement({
+      actions: [
         'ecs:UpdateContainerInstancesState',
         'ecs:ListTasks'
       ],
-      resources: [props.cluster.clusterArn]
+      resources: [`arn:aws:ecs:${cdk.Aws.REGION}:${cdk.Aws.ACCOUNT_ID}:container-instance/*`]
     }));
   }
 }
