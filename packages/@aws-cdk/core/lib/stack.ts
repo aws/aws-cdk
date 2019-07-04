@@ -390,7 +390,7 @@ export class Stack extends Construct implements ITaggable {
    * reports them as missing, and let the CLI resolve them by calling EC2
    * `DescribeAvailabilityZones` on the target environment.
    */
-  public get availabilityZones() {
+  public get availabilityZones(): string[] {
     // if account/region are tokens, we can't obtain AZs through the context
     // provider, so we fallback to use Fn::GetAZs. the current lowest common
     // denominator is 2 AZs across all AWS regions.
