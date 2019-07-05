@@ -57,7 +57,8 @@ export = {
           Version: "2012-10-17"
         }
         },
-        DeletionPolicy: "Retain"
+        DeletionPolicy: "Retain",
+        UpdateReplacePolicy: "Retain"
       }
       }
     }));
@@ -70,7 +71,7 @@ export = {
 
     new Key(stack, 'MyKey', { removalPolicy: RemovalPolicy.DESTROY });
 
-    expect(stack).to(haveResource('AWS::KMS::Key', { DeletionPolicy: "Delete" }, ResourcePart.CompleteDefinition));
+    expect(stack).to(haveResource('AWS::KMS::Key', { DeletionPolicy: "Delete", UpdateReplacePolicy: "Delete" }, ResourcePart.CompleteDefinition));
     test.done();
   },
 
@@ -138,7 +139,8 @@ export = {
           Version: "2012-10-17"
           }
         },
-        DeletionPolicy: "Retain"
+        DeletionPolicy: "Retain",
+        UpdateReplacePolicy: "Retain",
         }
       }
       }));
@@ -232,7 +234,8 @@ export = {
               }
             ]
           },
-          DeletionPolicy: "Retain"
+          DeletionPolicy: "Retain",
+          UpdateReplacePolicy: "Retain",
         }
       }
     }));
@@ -301,7 +304,8 @@ export = {
               Version: "2012-10-17"
             }
           },
-          DeletionPolicy: "Retain"
+          DeletionPolicy: "Retain",
+          UpdateReplacePolicy: "Retain",
         },
         MyKeyAlias1B45D9DA: {
           Type: "AWS::KMS::Alias",
