@@ -2,7 +2,19 @@ import { IRole } from '@aws-cdk/aws-iam';
 import { Construct, IResource, Resource, ResourceProps, Tag } from '@aws-cdk/core';
 import { CfnApp } from './amplify.generated';
 
+/**
+ * App
+ */
 export class App extends Resource implements IApp {
+  /**
+   * Allow creating from App ID
+   *
+   * @param scope
+   * @param id
+   * @param appId
+   *
+   * @returns Stubbed App
+   */
   public static fromAppId(scope: Construct, id: string, appId: string): IApp {
     class Import extends Resource implements IApp {
       public readonly appId = appId;
@@ -12,21 +24,29 @@ export class App extends Resource implements IApp {
   }
 
   /**
+   * App Id
+   *
    * @attribute
    */
   public readonly appId: string;
 
   /**
+   * App Name
+   *
    * @attribute
    */
   public readonly appName: string;
 
   /**
+   * App ARN
+   *
    * @attribute
    */
   public readonly appArn: string;
 
   /**
+   * App Default Domain
+   *
    * @attribute
    */
   public readonly appDefaultDomain: string;
@@ -46,88 +66,175 @@ export class App extends Resource implements IApp {
   }
 }
 
+/**
+ * App Interface
+ */
 export interface IApp extends IResource {
   /**
+   * App ID
+   *
    * @attribute
    */
   readonly appId: string;
 }
 
+/**
+ * App Options
+ */
 export interface AppOptions extends ResourceProps {
   /**
+   * App Name
+   *
+   * @todo This might cause an error, it conflicts with the construct
+   *
    * @default
    */
   readonly appName?: string;
 }
 
+/**
+ * App Properties
+ */
 export interface AppProps extends AppOptions {
   /**
+   * Access Token
+   *
    * @default
    */
   readonly accessToken?: string;
 
   /**
+   * Basic Auth Config
+   *
    * @default
    */
   readonly basicAuthConfig?: BasicAuthConfig;
 
   /**
+   * BuildSpec
+   *
    * @default
    */
   readonly buildSpec?: string;
 
   /**
+   * Custom Rules
+   *
    * @default
    */
   readonly customRules?: CustomRule[];
 
   /**
+   * Description
+   *
    * @default
    */
   readonly description?: string;
 
   /**
+   * Environment Variables
+   *
    * @default
    */
   readonly environmentVariables?: EnvironmentVariable[];
 
   /**
+   * IAM Service Role
+   *
    * @default
    */
   readonly iamServiceRole?: IRole;
 
-  readonly name: string;
   /**
+   * Name
+   */
+  readonly name: string;
+
+  /**
+   * Name
+   *
    * @default
    */
   readonly oauthToken?: string;
 
+  /**
+   * Repository
+   *
+   * Required to be in HTTP URL format: https://github.com/awslabs/aws-cdk
+   * If you use a Git URL, it will error.
+   */
   readonly repository: string;
 
   /**
+   * Tags
+   *
    * @default
    */
   readonly tags?: Tag[];
 }
 
+/**
+ * Basic Auth Config Interface
+ */
 export interface BasicAuthConfig {
+  /**
+   * Enable Basic Auth
+   *
+   * @default false
+   */
   readonly enableBasicAuth?: boolean;
+
+  /**
+   * Password
+   */
   readonly password: string;
+
+  /**
+   * Username
+   */
   readonly username: string;
 }
 
+/**
+ * Custom Rule Interface
+ */
 export interface CustomRule {
-
+  /**
+   * Condition
+   *
+   * @default Empty
+   */
   readonly condition?: string;
 
+  /**
+   * Source
+   */
   readonly source: string;
 
+  /**
+   * Status
+   *
+   * @default Empty
+   */
   readonly status?: string;
 
+  /**
+   * Target
+   */
   readonly target: string;
 }
 
+/**
+ * Environment Variable Interface
+ */
 export interface EnvironmentVariable {
+  /**
+   * Name
+   */
   readonly name: string;
+
+  /**
+   * Value
+   */
   readonly value: string;
 }
