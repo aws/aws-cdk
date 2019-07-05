@@ -59,7 +59,7 @@ export class App extends Resource implements IApp {
   constructor(scope: Construct, id: string, props: AppProps) {
     super(scope, id, props);
 
-    const resource = new CfnApp(scope, id, {
+    const resource = new CfnApp(scope, 'resource', {
       accessToken: props.accessToken,
       basicAuthConfig: props.basicAuthConfig,
       buildSpec: props.buildSpec,
@@ -82,7 +82,7 @@ export class App extends Resource implements IApp {
         assumedBy: new ServicePrincipal('amplify.amazonaws.com')
       });
 
-      this.resource.iamServiceRole = role.roleArn;
+      resource.iamServiceRole = role.roleArn;
     }
 
     this.appArn = resource.attrArn,
