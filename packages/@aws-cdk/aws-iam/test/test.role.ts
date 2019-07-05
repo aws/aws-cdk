@@ -1,7 +1,7 @@
 import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
 import { Duration, Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import { ArnPrincipal, CompositePrincipal, FederatedPrincipal, PolicyStatement, Role, ServicePrincipal, User } from '../lib';
+import { ArnPrincipal, CompositePrincipal, FederatedPrincipal, Policy, PolicyStatement, Role, ServicePrincipal, User } from '../lib';
 
 export = {
   'default role'(test: Test) {
@@ -290,13 +290,17 @@ export = {
     test.done();
   },
 
-  'can supply permissions boundary'(test: Test) {
+  'can supply permissions boundary policy'(test: Test) {
     // GIVEN
     const stack = new Stack();
 
+    const permissionsBoundaryPolicy = Policy.fromPolicyName(stack,
+                                                            "permissionsBoundary",
+                                                            "arn:aws:iam::1234567890:policy/Test-Permissions-Boundary");
+
     new Role(stack, 'MyRole', {
       assumedBy: new ServicePrincipal('sns.amazonaws.com'),
-      permissionsBoundary: 'arn:aws:iam::1234567890:policy/Test-Permissions-Boundary'
+      permissionsBoundary: permissionsBoundaryPolicy
     });
 
     expect(stack).toMatch({ Resources:

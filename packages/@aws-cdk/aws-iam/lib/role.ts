@@ -3,7 +3,7 @@ import { Grant } from './grant';
 import { CfnRole } from './iam.generated';
 import { IIdentity } from './identity-base';
 import { IManagedPolicy } from './managed-policy';
-import { Policy } from './policy';
+import { IPolicy, Policy } from './policy';
 import { PolicyDocument } from './policy-document';
 import { PolicyStatement } from './policy-statement';
 import { ArnPrincipal, IPrincipal, PrincipalPolicyFragment } from './principals';
@@ -65,7 +65,7 @@ export interface RoleProps {
    *
    * @default - No permissions boundaries required.
    */
-  readonly permissionsBoundary?: string;
+  readonly permissionsBoundary?: IPolicy;
 
   /**
    * The path associated with this role. For information about IAM paths, see
@@ -215,6 +215,7 @@ export class Role extends Resource implements IRole {
   public readonly policyFragment: PrincipalPolicyFragment;
 
   private defaultPolicy?: Policy;
+  private permissionsBoundaryPolicy?: IPolicy;
   private readonly managedPolicies: IManagedPolicy[] = [];
   private readonly attachedPolicies = new AttachedPolicies();
 
@@ -225,6 +226,7 @@ export class Role extends Resource implements IRole {
 
     this.assumeRolePolicy = createAssumeRolePolicy(props.assumedBy, props.externalId);
     this.managedPolicies.push(...props.managedPolicies || []);
+    this.permissionsBoundaryPolicy = props.permissionsBoundary;
 
     const maxSessionDuration = props.maxSessionDuration && props.maxSessionDuration.toSeconds();
     validateMaxSessionDuration(maxSessionDuration);
@@ -232,7 +234,7 @@ export class Role extends Resource implements IRole {
     const role = new CfnRole(this, 'Resource', {
       assumeRolePolicyDocument: this.assumeRolePolicy as any,
       managedPolicyArns: Lazy.listValue({ produce: () => this.managedPolicies.map(p => p.managedPolicyArn) }, { omitEmpty: true }),
-      permissionsBoundary: props.permissionsBoundary,
+      permissionsBoundary: _setPermissionsBoundary(this.permissionsBoundaryPolicy),
       policies: _flatten(props.inlinePolicies),
       path: props.path,
       roleName: this.physicalName,
@@ -259,6 +261,13 @@ export class Role extends Resource implements IRole {
         result.push({ policyName, policyDocument });
       }
       return result;
+    }
+
+    function _setPermissionsBoundary(policy?: IPolicy) {
+      if (!policy) {
+        return undefined;
+      }
+      return policy.policyName;
     }
   }
 
