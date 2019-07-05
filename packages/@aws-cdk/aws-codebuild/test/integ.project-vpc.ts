@@ -7,7 +7,7 @@ const app = new cdk.App();
 
 const stack = new cdk.Stack(app, 'aws-cdk-codebuild-project-vpc');
 const vpc = new ec2.Vpc(stack, 'MyVPC', {
-    maxAZs: 1,
+    maxAzs: 1,
     natGateways: 1,
 });
 const securityGroup = new ec2.SecurityGroup(stack, 'SecurityGroup1', {

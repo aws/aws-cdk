@@ -9,7 +9,7 @@ test('use ALB as record target', () => {
   // GIVEN
   const stack = new Stack();
   const vpc = new ec2.Vpc(stack, 'VPC', {
-    maxAZs: 2
+    maxAzs: 2
   });
   const lb = new elbv2.ApplicationLoadBalancer(stack, 'LB', {
     vpc,

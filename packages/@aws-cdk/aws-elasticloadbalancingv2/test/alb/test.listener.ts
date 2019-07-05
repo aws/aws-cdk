@@ -419,7 +419,7 @@ export = {
     // WHEN
     const metrics = [];
     metrics.push(group.metricHttpCodeTarget(elbv2.HttpCodeTarget.TARGET_3XX_COUNT));
-    metrics.push(group.metricIPv6RequestCount());
+    metrics.push(group.metricIpv6RequestCount());
     metrics.push(group.metricUnhealthyHostCount());
     metrics.push(group.metricUnhealthyHostCount());
     metrics.push(group.metricRequestCount());

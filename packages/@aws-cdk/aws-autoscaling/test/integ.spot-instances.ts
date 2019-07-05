@@ -7,7 +7,7 @@ const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-cdk-autoscaling-integ');
 
 const vpc = new ec2.Vpc(stack, 'VPC', {
-  maxAZs: 2
+  maxAzs: 2
 });
 
 new autoscaling.AutoScalingGroup(stack, 'Fleet', {

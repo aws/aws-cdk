@@ -8,7 +8,7 @@ import targets = require('../../lib');
 test("Can use EC2 taskdef as EventRule target", () => {
   // GIVEN
   const stack = new cdk.Stack();
-  const vpc = new ec2.Vpc(stack, 'Vpc', { maxAZs: 1 });
+  const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 1 });
   const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
   cluster.addCapacity('DefaultAutoScalingGroup', {
     instanceType: new ec2.InstanceType('t2.micro')
@@ -60,7 +60,7 @@ test("Can use EC2 taskdef as EventRule target", () => {
 test("Can use Fargate taskdef as EventRule target", () => {
   // GIVEN
   const stack = new cdk.Stack();
-  const vpc = new ec2.Vpc(stack, 'Vpc', { maxAZs: 1 });
+  const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 1 });
   const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
 
   const taskDefinition = new ecs.FargateTaskDefinition(stack, 'TaskDef');

@@ -230,8 +230,8 @@ export = {
     metrics.push(lb.metricHttpFixedResponseCount());
     metrics.push(lb.metricHttpRedirectCount());
     metrics.push(lb.metricHttpRedirectUrlLimitExceededCount());
-    metrics.push(lb.metricIPv6ProcessedBytes());
-    metrics.push(lb.metricIPv6RequestCount());
+    metrics.push(lb.metricIpv6ProcessedBytes());
+    metrics.push(lb.metricIpv6RequestCount());
     metrics.push(lb.metricNewConnectionCount());
     metrics.push(lb.metricProcessedBytes());
     metrics.push(lb.metricRejectedConnectionCount());

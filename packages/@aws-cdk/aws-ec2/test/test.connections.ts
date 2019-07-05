@@ -73,7 +73,7 @@ export = {
     const connections = new Connections({ securityGroups: [sg1] });
 
     // WHEN
-    connections.allowFromAnyIPv4(Port.tcp(88));
+    connections.allowFromAnyIpv4(Port.tcp(88));
     connections.addSecurityGroup(sg2);
 
     // THEN

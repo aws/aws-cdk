@@ -10,7 +10,7 @@ export = {
   "Can create a scheduled Fargate Task - with only required props"(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
-    const vpc = new ec2.Vpc(stack, 'Vpc', { maxAZs: 1 });
+    const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 1 });
     const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
 
     new ScheduledFargateTask(stack, 'ScheduledFargateTask', {
@@ -69,7 +69,7 @@ export = {
   "Can create a scheduled Fargate Task - with optional props"(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
-    const vpc = new ec2.Vpc(stack, 'Vpc', { maxAZs: 1 });
+    const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 1 });
     const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
 
     new ScheduledFargateTask(stack, 'ScheduledFargateTask', {
@@ -141,7 +141,7 @@ export = {
   "Scheduled Fargate Task - with MemoryReservation defined"(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
-    const vpc = new ec2.Vpc(stack, 'Vpc', { maxAZs: 1 });
+    const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 1 });
     const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
 
     new ScheduledFargateTask(stack, 'ScheduledFargateTask', {
@@ -184,7 +184,7 @@ export = {
   "Scheduled Fargate Task - with Command defined"(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
-    const vpc = new ec2.Vpc(stack, 'Vpc', { maxAZs: 1 });
+    const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 1 });
     const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
 
     new ScheduledFargateTask(stack, 'ScheduledFargateTask', {

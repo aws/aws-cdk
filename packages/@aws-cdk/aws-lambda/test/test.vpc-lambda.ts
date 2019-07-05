@@ -133,7 +133,7 @@ export = {
 
     // WHEN
     test.throws(() => {
-      lambdaFn.connections.allowToAnyIPv4(ec2.Port.allTcp(), 'Reach for the world Lambda!');
+      lambdaFn.connections.allowToAnyIpv4(ec2.Port.allTcp(), 'Reach for the world Lambda!');
     });
 
     test.done();

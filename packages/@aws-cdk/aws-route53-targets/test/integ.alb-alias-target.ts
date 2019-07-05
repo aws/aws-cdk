@@ -9,7 +9,7 @@ const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-cdk-elbv2-integ');
 
 const vpc = new ec2.Vpc(stack, 'VPC', {
-  maxAZs: 2
+  maxAzs: 2
 });
 
 const lb = new elbv2.ApplicationLoadBalancer(stack, 'LB', {

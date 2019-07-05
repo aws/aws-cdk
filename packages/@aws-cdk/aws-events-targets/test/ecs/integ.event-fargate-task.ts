@@ -12,7 +12,7 @@ class EventStack extends cdk.Stack {
   constructor(scope: cdk.App, id: string) {
     super(scope, id);
 
-    const vpc = new ec2.Vpc(this, 'Vpc', { maxAZs: 1 });
+    const vpc = new ec2.Vpc(this, 'Vpc', { maxAzs: 1 });
 
     const cluster = new ecs.Cluster(this, 'EcsCluster', { vpc });
 

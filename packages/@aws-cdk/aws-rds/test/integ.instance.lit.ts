@@ -12,7 +12,7 @@ class DatabaseInstanceStack extends cdk.Stack {
   constructor(scope: cdk.App, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
-    const vpc = new ec2.Vpc(this, 'VPC', { maxAZs: 2 });
+    const vpc = new ec2.Vpc(this, 'VPC', { maxAzs: 2 });
 
     /// !show
     // Set open cursors with parameter group
