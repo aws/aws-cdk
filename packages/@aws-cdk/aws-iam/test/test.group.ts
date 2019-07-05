@@ -1,7 +1,7 @@
-import { expect } from '@aws-cdk/assert';
+import { expect, haveResource } from '@aws-cdk/assert';
 import { App, Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import { Group, User } from '../lib';
+import { Group, ManagedPolicy, User } from '../lib';
 
 export = {
   'default group'(test: Test) {
@@ -35,4 +35,23 @@ export = {
          Properties: { Groups: [ { Ref: 'MyGroupCBA54B1B' } ] } } } });
     test.done();
   },
+
+  'create with managed policy'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    new Group(stack, 'MyGroup', {
+      managedPolicies: [ManagedPolicy.fromAwsManagedPolicyName('asdf')]
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::IAM::Group', {
+      ManagedPolicyArns: [
+        { "Fn::Join": [ "", [ "arn:", { Ref: "AWS::Partition" }, ":iam::aws:policy/asdf" ] ] }
+      ]
+    }));
+
+    test.done();
+  }
 };
