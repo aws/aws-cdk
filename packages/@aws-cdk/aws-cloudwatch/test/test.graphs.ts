@@ -254,7 +254,7 @@ export = {
   'can use imported alarm with graph'(test: Test) {
     // GIVEN
     const stack = new Stack();
-    const alarm = Alarm.fromAlarmArn(stack, 'Alarm', 'arn:alarm');
+    const alarm = Alarm.fromAlarmArn(stack, 'Alarm', 'arn:aws:cloudwatch:region:account-id:alarm:alarm-name');
 
     // WHEN
     new AlarmWidget({
