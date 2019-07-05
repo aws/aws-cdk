@@ -1,5 +1,5 @@
 import { IRole, LazyRole, ServicePrincipal } from '@aws-cdk/aws-iam';
-import { Construct, IResource, Resource, ResourceProps, Tag, Lazy } from '@aws-cdk/core';
+import { Construct, IResource, Resource, ResourceProps, Tag } from '@aws-cdk/core';
 import { CfnApp } from './amplify.generated';
 
 /**
