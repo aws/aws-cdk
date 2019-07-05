@@ -3,21 +3,24 @@ import cdk = require('@aws-cdk/core');
 import { ContainerDefinition } from '../container-definition';
 import { ContainerImage, ContainerImageConfig } from '../container-image';
 
+/**
+ * The properties for building an AssetImage.
+ */
 export interface AssetImageProps {
   /**
-   * Build args to pass to the `docker build` command
+   * The arguments to pass to the `docker build` command
    *
-   * @default no build args are passed
+   * @default none
    */
   readonly buildArgs?: { [key: string]: string };
 }
 
 /**
- * An image that will be built at synthesis time from a directory with a Dockerfile
+ * An image that will be built from a local directory with a Dockerfile
  */
 export class AssetImage extends ContainerImage {
   /**
-   * Create an AssetImage
+   * Constructs a new instance of the AssetImage class.
    *
    * @param directory The directory containing the Dockerfile
    */

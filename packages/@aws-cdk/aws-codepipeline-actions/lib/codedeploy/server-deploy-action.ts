@@ -8,7 +8,7 @@ import { deployArtifactBounds } from '../common';
 /**
  * Construction properties of the {@link CodeDeployServerDeployAction CodeDeploy server deploy CodePipeline Action}.
  */
-export interface CodeDeployServerDeployActionProps extends codepipeline.CommonActionProps {
+export interface CodeDeployServerDeployActionProps extends codepipeline.CommonAwsActionProps {
   /**
    * The source to use as input for deployment.
    */
@@ -35,7 +35,7 @@ export class CodeDeployServerDeployAction extends Action {
     this.deploymentGroup = props.deploymentGroup;
   }
 
-  protected bound(_scope: Construct, stage: codepipeline.IStage, options: codepipeline.ActionBindOptions):
+  protected bound(_scope: Construct, _stage: codepipeline.IStage, options: codepipeline.ActionBindOptions):
       codepipeline.ActionConfig {
     // permissions, based on:
     // https://docs.aws.amazon.com/codedeploy/latest/userguide/auth-and-access-control-permissions-reference.html
@@ -57,8 +57,11 @@ export class CodeDeployServerDeployAction extends Action {
 
     // grant the ASG Role permissions to read from the Pipeline Bucket
     for (const asg of this.deploymentGroup.autoScalingGroups || []) {
-      stage.pipeline.artifactBucket.grantRead(asg.role);
+      options.bucket.grantRead(asg.role);
     }
+
+    // the Action's Role needs to read from the Bucket to get artifacts
+    options.bucket.grantRead(options.role);
 
     return {
       configuration: {

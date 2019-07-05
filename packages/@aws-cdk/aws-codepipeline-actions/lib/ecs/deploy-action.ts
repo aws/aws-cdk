@@ -8,7 +8,7 @@ import { deployArtifactBounds } from '../common';
 /**
  * Construction properties of {@link EcsDeployAction}.
  */
-export interface EcsDeployActionProps extends codepipeline.CommonActionProps {
+export interface EcsDeployActionProps extends codepipeline.CommonAwsActionProps {
   /**
    * The input artifact that contains the JSON image definitions file to use for deployments.
    * The JSON file is a list of objects,
@@ -55,6 +55,7 @@ export class EcsDeployAction extends Action {
       provider: 'ECS',
       artifactBounds: deployArtifactBounds(),
       inputs: [determineInputArtifact(props)],
+      resource: props.service
     });
 
     this.props = props;
@@ -88,6 +89,8 @@ export class EcsDeployAction extends Action {
         }
       }
     }));
+
+    options.bucket.grantRead(options.role);
 
     return {
       configuration: {

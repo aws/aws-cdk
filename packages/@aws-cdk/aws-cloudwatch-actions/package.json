@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/aws-cloudwatch-actions",
-  "version": "0.36.0",
+  "version": "0.37.0",
   "description": "Alarm Actions for AWS CloudWatch CDK library",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -11,14 +11,16 @@
         "package": "software.amazon.awscdk.services.cloudwatch.actions",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "cloudwatch-actions"
+          "artifactId": "cloudwatch-actions",
+          "versionSuffix": ".DEVPREVIEW"
         }
       },
       "dotnet": {
         "namespace": "Amazon.CDK.AWS.CloudWatch.Actions",
         "packageId": "Amazon.CDK.AWS.CloudWatch.Actions",
         "signAssembly": true,
-        "assemblyOriginatorKeyFile": "../../key.snk"
+        "assemblyOriginatorKeyFile": "../../key.snk",
+        "versionSuffix": "-devpreview"
       },
       "python": {
         "distName": "aws-cdk.aws-cloudwatch-actions",
@@ -68,33 +70,33 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "^0.36.0",
-    "@aws-cdk/aws-ec2": "^0.36.0",
-    "cdk-build-tools": "^0.36.0",
-    "cdk-integ-tools": "^0.36.0",
-    "cfn2ts": "^0.36.0",
+    "@aws-cdk/assert": "^0.37.0",
+    "@aws-cdk/aws-ec2": "^0.37.0",
+    "cdk-build-tools": "^0.37.0",
+    "cdk-integ-tools": "^0.37.0",
+    "cfn2ts": "^0.37.0",
     "jest": "^24.8.0",
-    "pkglint": "^0.36.0"
+    "pkglint": "^0.37.0"
   },
   "dependencies": {
-    "@aws-cdk/aws-applicationautoscaling": "^0.36.0",
-    "@aws-cdk/aws-autoscaling": "^0.36.0",
-    "@aws-cdk/aws-cloudwatch": "^0.36.0",
-    "@aws-cdk/aws-iam": "^0.36.0",
-    "@aws-cdk/aws-sns": "^0.36.0",
-    "@aws-cdk/core": "^0.36.0"
+    "@aws-cdk/aws-applicationautoscaling": "^0.37.0",
+    "@aws-cdk/aws-autoscaling": "^0.37.0",
+    "@aws-cdk/aws-cloudwatch": "^0.37.0",
+    "@aws-cdk/aws-iam": "^0.37.0",
+    "@aws-cdk/aws-sns": "^0.37.0",
+    "@aws-cdk/core": "^0.37.0"
   },
   "homepage": "https://github.com/awslabs/aws-cdk",
   "peerDependencies": {
-    "@aws-cdk/aws-applicationautoscaling": "^0.36.0",
-    "@aws-cdk/aws-autoscaling": "^0.36.0",
-    "@aws-cdk/aws-cloudwatch": "^0.36.0",
-    "@aws-cdk/aws-iam": "^0.36.0",
-    "@aws-cdk/aws-sns": "^0.36.0",
-    "@aws-cdk/core": "^0.36.0"
+    "@aws-cdk/aws-applicationautoscaling": "^0.37.0",
+    "@aws-cdk/aws-autoscaling": "^0.37.0",
+    "@aws-cdk/aws-cloudwatch": "^0.37.0",
+    "@aws-cdk/aws-iam": "^0.37.0",
+    "@aws-cdk/aws-sns": "^0.37.0",
+    "@aws-cdk/core": "^0.37.0"
   },
   "engines": {
     "node": ">= 8.10.0"
   },
-  "stability": "experimental"
+  "stability": "stable"
 }

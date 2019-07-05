@@ -1,10 +1,4 @@
 {
-  "Parameters": {
-    "SsmParameterValueawsserviceecsoptimizedamiamazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter": {
-      "Type": "AWS::SSM::Parameter::Value<String>",
-      "Default": "/aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id"
-    }
-  },
   "Resources": {
     "Vpc8378EB38": {
       "Type": "AWS::EC2::VPC",
@@ -516,9 +510,6 @@
         }
       }
     },
-    "EcsClusterDefaultAutoScalingGroupLifecycleHookDrainHookTopicACD2D4A4": {
-      "Type": "AWS::SNS::Topic"
-    },
     "EcsClusterDefaultAutoScalingGroupDrainECSHookFunctionServiceRole94543EDA": {
       "Type": "AWS::IAM::Role",
       "Properties": {
@@ -614,9 +605,7 @@
               "Action": [
                 "ecs:ListContainerInstances",
                 "ecs:SubmitContainerStateChange",
-                "ecs:SubmitTaskStateChange",
-                "ecs:UpdateContainerInstancesState",
-                "ecs:ListTasks"
+                "ecs:SubmitTaskStateChange"
               ],
               "Effect": "Allow",
               "Resource": {
@@ -625,6 +614,24 @@
                   "Arn"
                 ]
               }
+            },
+            {
+              "Action": [
+                "ecs:UpdateContainerInstancesState",
+                "ecs:ListTasks"
+              ],
+              "Condition": {
+                "ArnEquals": {
+                  "ecs:cluster": {
+                    "Fn::GetAtt": [
+                      "EcsCluster97242B84",
+                      "Arn"
+                    ]
+                  }
+                }
+              },
+              "Effect": "Allow",
+              "Resource": "*"
             }
           ],
           "Version": "2012-10-17"
@@ -671,22 +678,7 @@
         "EcsClusterDefaultAutoScalingGroupDrainECSHookFunctionServiceRole94543EDA"
       ]
     },
-    "EcsClusterDefaultAutoScalingGroupLifecycleHookDrainHookTopicFunctionA8966A35": {
-      "Type": "AWS::SNS::Subscription",
-      "Properties": {
-        "Protocol": "lambda",
-        "TopicArn": {
-          "Ref": "EcsClusterDefaultAutoScalingGroupLifecycleHookDrainHookTopicACD2D4A4"
-        },
-        "Endpoint": {
-          "Fn::GetAtt": [
-            "EcsClusterDefaultAutoScalingGroupDrainECSHookFunctionE17A5F5E",
-            "Arn"
-          ]
-        }
-      }
-    },
-    "EcsClusterDefaultAutoScalingGroupDrainECSHookFunctionTopicE6B1EBA6": {
+    "EcsClusterDefaultAutoScalingGroupDrainECSHookFunctionAllowInvokeawsecsintegecsEcsClusterDefaultAutoScalingGroupLifecycleHookDrainHookTopic0C4958AFBA77E328": {
       "Type": "AWS::Lambda::Permission",
       "Properties": {
         "Action": "lambda:InvokeFunction",
@@ -699,6 +691,21 @@
         "Principal": "sns.amazonaws.com",
         "SourceArn": {
           "Ref": "EcsClusterDefaultAutoScalingGroupLifecycleHookDrainHookTopicACD2D4A4"
+        }
+      }
+    },
+    "EcsClusterDefaultAutoScalingGroupDrainECSHookFunctionTopic8F34E394": {
+      "Type": "AWS::SNS::Subscription",
+      "Properties": {
+        "Protocol": "lambda",
+        "TopicArn": {
+          "Ref": "EcsClusterDefaultAutoScalingGroupLifecycleHookDrainHookTopicACD2D4A4"
+        },
+        "Endpoint": {
+          "Fn::GetAtt": [
+            "EcsClusterDefaultAutoScalingGroupDrainECSHookFunctionE17A5F5E",
+            "Arn"
+          ]
         }
       }
     },
@@ -751,6 +758,9 @@
           }
         ]
       }
+    },
+    "EcsClusterDefaultAutoScalingGroupLifecycleHookDrainHookTopicACD2D4A4": {
+      "Type": "AWS::SNS::Topic"
     },
     "EcsClusterDefaultAutoScalingGroupLifecycleHookDrainHookFFA63029": {
       "Type": "AWS::AutoScaling::LifecycleHook",
@@ -908,6 +918,12 @@
           ]
         }
       }
+    }
+  },
+  "Parameters": {
+    "SsmParameterValueawsserviceecsoptimizedamiamazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter": {
+      "Type": "AWS::SSM::Parameter::Value<String>",
+      "Default": "/aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id"
     }
   }
 }

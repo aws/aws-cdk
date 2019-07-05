@@ -3,14 +3,10 @@
 
 ---
 
-![Stability: Experimental](https://img.shields.io/badge/stability-Experimental-important.svg?style=for-the-badge)
+![Stability: Stable](https://img.shields.io/badge/stability-Stable-success.svg?style=for-the-badge)
 
 > **This is a _developer preview_ (public beta) module. Releases might lack important features and might have
 > future breaking changes.**
-> 
-> This API is still under active development and subject to non-backward
-> compatible changes or removal in any future version. Use of the API is not recommended in production
-> environments. Experimental APIs are not subject to the Semantic Versioning model.
 
 ---
 <!--END STABILITY BANNER-->
@@ -398,11 +394,75 @@ to allow users revert the stage to an old deployment manually.
 [Deployment]: https://docs.aws.amazon.com/apigateway/api-reference/resource/deployment/
 [Stage]: https://docs.aws.amazon.com/apigateway/api-reference/resource/stage/
 
-### Missing Features
+### Custom Domains
 
+To associate an API with a custom domain, use the `domainName` configuration when
+you define your API:
 
-### Roadmap
+```ts
+const api = new apigw.RestApi(this, 'MyDomain', {
+  domainName: {
+    domainName: 'example.com',
+    certificate: acmCertificateForExampleCom,
+  },
+});
+```
 
+This will define a `DomainName` resource for you, along with a `BasePathMapping`
+from the root of the domain to the deployment stage of the API. This is a common
+set up.
+
+To route domain traffic to an API Gateway API, use Amazon Route 53 to create an alias record. An alias record is a Route 53 extension to DNS. It's similar to a CNAME record, but you can create an alias record both for the root domain, such as example.com, and for subdomains, such as www.example.com. (You can create CNAME records only for subdomains.)
+
+```ts
+new route53.ARecord(this, 'CustomDomainAliasRecord', {
+  zone: hostedZoneForExampleCom,
+  target: route53.AddressRecordTarget.fromAlias(new route53_targets.ApiGateway(api))
+});
+```
+
+You can also define a `DomainName` resource directly in order to customize the default behavior:
+
+```ts
+new apigw.DomainName(this, 'custom-domain', {
+  domainName: 'example.com',
+  certificate: acmCertificateForExampleCom,
+  endpointType: apigw.EndpointType.EDGE // default is REGIONAL
+});
+```
+
+Once you have a domain, you can map base paths of the domain to APIs.
+The following example will map the URL https://example.com/go-to-api1
+to the `api1` API and https://example.com/boom to the `api2` API.
+
+```ts
+domain.addBasePathMapping(api1, { basePath: 'go-to-api1' });
+domain.addBasePathMapping(api2, { basePath: 'boom' });
+```
+
+NOTE: currently, the mapping will always be assigned to the APIs
+`deploymentStage`, which will automatically assigned to the latest API
+deployment. Raise a GitHub issue if you require more granular control over
+mapping base paths to stages.
+
+If you don't specify `basePath`, all URLs under this domain will be mapped
+to the API, and you won't be able to map another API to the same domain:
+
+```ts
+domain.addBasePathMapping(api);
+```
+
+This can also be achieved through the `mapping` configuration when defining the
+domain as demonstrated above.
+
+If you wish to setup this domain with an Amazon Route53 alias, use the `route53_targets.ApiGatewayDomain`:
+
+```ts
+new route53.ARecord(this, 'CustomDomainAliasRecord', {
+  zone: hostedZoneForExampleCom,
+  target: route53.AddressRecordTarget.fromAlias(new route53_targets.ApiGatewayDomain(domainName))
+});
+```
 
 ----
 

@@ -6,7 +6,7 @@ const app = new cdk.App();
 
 const stack = new cdk.Stack(app, 'aws-cdk-route53-integ');
 
-const vpc = new ec2.Vpc(stack, 'VPC', { maxAZs: 1 });
+const vpc = new ec2.Vpc(stack, 'VPC', { maxAzs: 1 });
 
 const privateZone = new PrivateHostedZone(stack, 'PrivateZone', {
   zoneName: 'cdk.local', vpc

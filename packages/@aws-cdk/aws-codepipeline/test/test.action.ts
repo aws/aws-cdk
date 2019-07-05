@@ -1,4 +1,5 @@
 import { expect, haveResourceLike } from '@aws-cdk/assert';
+import iam = require('@aws-cdk/aws-iam');
 import cdk = require('@aws-cdk/core');
 import { Test } from 'nodeunit';
 import codepipeline = require('../lib');
@@ -321,6 +322,43 @@ export = {
 
       test.done();
     },
+  },
+
+  'an Action with a non-AWS owner cannot have a Role passed for it'(test: Test) {
+    const stack = new cdk.Stack();
+
+    const sourceOutput = new codepipeline.Artifact();
+    const pipeline = new codepipeline.Pipeline(stack, 'Pipeline', {
+      stages: [
+        {
+          stageName: 'Source',
+          actions: [
+            new FakeSourceAction({
+              actionName: 'source',
+              output: sourceOutput,
+            }),
+          ],
+        },
+      ],
+    });
+    const buildStage = pipeline.addStage({ stageName: 'Build' });
+
+    // constructing it is fine
+    const buildAction = new FakeBuildAction({
+      actionName: 'build',
+      input: sourceOutput,
+      owner: 'ThirdParty',
+      role: new iam.Role(stack, 'Role', {
+        assumedBy: new iam.AnyPrincipal(),
+      }),
+    });
+
+    // an attempt to add it to the Pipeline is where things blow up
+    test.throws(() => {
+      buildStage.addAction(buildAction);
+    }, /Role is not supported for actions with an owner different than 'AWS' - got 'ThirdParty' \(Action: 'build' in Stage: 'Build'\)/);
+
+    test.done();
   },
 };
 
