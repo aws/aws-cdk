@@ -1,5 +1,5 @@
-import { IRole } from '@aws-cdk/aws-iam';
-import { Construct, IResource, Resource, ResourceProps, Tag } from '@aws-cdk/core';
+import { IRole, LazyRole, ServicePrincipal } from '@aws-cdk/aws-iam';
+import { Construct, IResource, Resource, ResourceProps, Tag, Lazy } from '@aws-cdk/core';
 import { CfnApp } from './amplify.generated';
 
 /**
@@ -51,18 +51,60 @@ export class App extends Resource implements IApp {
    */
   public readonly appDefaultDomain: string;
 
+  /**
+   * Resource
+   */
+  private readonly resource: CfnApp;
+
   constructor(scope: Construct, id: string, props: AppProps) {
     super(scope, id, props);
 
     const resource = new CfnApp(scope, id, {
+      accessToken: props.accessToken,
+      basicAuthConfig: props.basicAuthConfig,
+      buildSpec: props.buildSpec,
+      customRules: props.customRules,
+      description: props.description,
+      environmentVariables: props.environmentVariables,
       name: props.name,
-      repository: props.repository
+      oauthToken: props.oauthToken,
+      repository: props.repository,
+      tags: props.tags
     });
+
+    if (props.iamServiceRole) {
+      resource.iamServiceRole = props.iamServiceRole.roleArn;
+    }
+
+    if (props.buildSpec && !props.iamServiceRole) {
+      // create lazy role
+      const role = new LazyRole(scope, 'lazy-role', {
+        assumedBy: new ServicePrincipal('amplify.amazonaws.com')
+      });
+
+      this.resource.iamServiceRole = role.roleArn;
+    }
 
     this.appArn = resource.attrArn,
     this.appDefaultDomain = resource.attrDefaultDomain;
     this.appId = resource.attrAppId;
     this.appName = resource.attrAppName;
+
+    this.resource = resource;
+  }
+
+  public validate(): string[] {
+    const errors: string[] = [];
+
+    if (this.resource.buildSpec && !this.resource.iamServiceRole) {
+      errors.push(`You need to specify a service role when using buildspecs`);
+    }
+
+    return errors;
+  }
+
+  public addServiceRole(role: IRole) {
+    this.resource.iamServiceRole = role.roleArn;
   }
 }
 
