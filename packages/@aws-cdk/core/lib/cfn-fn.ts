@@ -132,7 +132,7 @@ export class Fn {
    * equivalent to specifying AWS::Region.
    * @returns a token represented as a string array
    */
-  public static getAZs(region?: string): string[] {
+  public static getAzs(region?: string): string[] {
     return Token.asList(new FnGetAZs(region));
   }
 

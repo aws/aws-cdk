@@ -452,7 +452,7 @@ export interface VpcProps {
    *
    * @default 3
    */
-  readonly maxAZs?: number;
+  readonly maxAzs?: number;
 
   /**
    * The number of NAT Gateways to create.
@@ -798,7 +798,7 @@ export class Vpc extends VpcBase {
 
     this.availabilityZones = stack.availabilityZones;
 
-    const maxAZs = props.maxAZs !== undefined ? props.maxAZs : 3;
+    const maxAZs = props.maxAzs !== undefined ? props.maxAzs : 3;
     this.availabilityZones = this.availabilityZones.slice(0, maxAZs);
 
     this.vpcId = this.resource.ref;
