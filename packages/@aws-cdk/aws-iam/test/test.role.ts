@@ -288,5 +288,6 @@ export = {
       Roles: [ "MyRole" ]
     }));
     test.done();
-  }
+  },
+
 };
