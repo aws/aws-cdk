@@ -24,12 +24,13 @@ export interface UserProps {
   readonly groups?: IGroup[];
 
   /**
-   * A list of ARNs for managed policies attacherd to this user.
-   * You can use `addManagedPolicy(arn)` to attach a managed policy to this user.
+   * A list managed policies associated with this role.
+   *
+   * You can add managed policies later using `attachManagedPolicy(policy)`.
    *
    * @default - No managed policies.
    */
-  readonly managedPolicyArns?: any[];
+  readonly managedPolicies?: IManagedPolicy[];
 
   /**
    * The path for the user name. For more information about paths, see IAM
@@ -107,6 +108,8 @@ export class User extends Resource implements IIdentity {
     super(scope, id, {
       physicalName: props.userName,
     });
+
+    this.managedPolicies.push(...props.managedPolicies || []);
 
     const user = new CfnUser(this, 'Resource', {
       userName: this.physicalName,

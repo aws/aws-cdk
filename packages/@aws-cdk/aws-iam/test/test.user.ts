@@ -1,7 +1,7 @@
-import { expect } from '@aws-cdk/assert';
+import { expect, haveResource } from '@aws-cdk/assert';
 import { App, SecretValue, Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import { User } from '../lib';
+import { ManagedPolicy, User } from '../lib';
 
 export = {
   'default user'(test: Test) {
@@ -32,6 +32,26 @@ export = {
     const app = new App();
     const stack = new Stack(app, 'MyStack');
     test.throws(() => new User(stack, 'MyUser', { passwordResetRequired: true }));
+    test.done();
+  },
+
+  'create with managed policy'(test: Test) {
+    // GIVEN
+    const app = new App();
+    const stack = new Stack(app, 'MyStack');
+
+    // WHEN
+    new User(stack, 'MyUser', {
+      managedPolicies: [ManagedPolicy.fromAwsManagedPolicyName('asdf')]
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::IAM::User', {
+      ManagedPolicyArns: [
+        { "Fn::Join": [ "", [ "arn:", { Ref: "AWS::Partition" }, ":iam::aws:policy/asdf" ] ] }
+      ]
+    }));
+
     test.done();
   }
 };

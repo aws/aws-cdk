@@ -8,3 +8,5 @@ removed:@aws-cdk/aws-elasticloadbalancingv2.ApplicationLoadBalancer.metricIPv6Pr
 removed:@aws-cdk/aws-elasticloadbalancingv2.ApplicationLoadBalancer.metricIPv6RequestCount
 removed:@aws-cdk/aws-elasticloadbalancingv2.ApplicationTargetGroup.metricIPv6RequestCount
 removed:@aws-cdk/core.Fn.getAZs
+removed:@aws-cdk/aws-iam.UserProps.managedPolicyArns
+removed:@aws-cdk/aws-iam.GroupProps.managedPolicyArns
