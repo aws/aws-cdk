@@ -932,6 +932,36 @@ export = {
 
       test.done();
     },
+
+    'disabledEncryption is set'(test: Test) {
+      const stack = new cdk.Stack();
+      const bucket = new s3.Bucket(stack, 'MyBucket');
+      const project = new codebuild.Project(stack, 'MyProject', {
+        source: codebuild.Source.s3({
+          bucket,
+          path: 'some/path',
+        }),
+      });
+
+      project.addSecondaryArtifact(codebuild.Artifacts.s3({
+        bucket,
+        path: 'another/path',
+        name: 'name',
+        identifier: 'artifact1',
+        encryptionDisabled: true,
+      }));
+
+      expect(stack).to(haveResourceLike('AWS::CodeBuild::Project', {
+        "SecondaryArtifacts": [
+          {
+            "ArtifactIdentifier": "artifact1",
+            "EncryptionDisabled": true,
+          },
+        ],
+      }));
+
+      test.done();
+    },
   },
 
   'artifacts': {
