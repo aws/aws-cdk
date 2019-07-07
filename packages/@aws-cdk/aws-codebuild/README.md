@@ -186,8 +186,7 @@ of the constants such as `WindowsBuildImage.WIN_SERVER_CORE_2016_BASE` or
 Alternatively, you can specify a custom image using one of the static methods on
 `XxxBuildImage`:
 
-* Use `.fromDockerHub(image)` to reference an image publicly available in Docker
-  Hub.
+* Use `.fromDockerRegistry(image[, { secretsManagerCredentials }])` to reference an image in any public or private Docker registry.
 * Use `.fromEcrRepository(repo[, tag])` to reference an image available in an
   ECR repository.
 * Use `.fromAsset(directory)` to use an image created from a
@@ -200,6 +199,10 @@ The following example shows how to define an image from a Docker asset:
 The following example shows how to define an image from an ECR repository:
 
 [ECR example](./test/integ.ecr.lit.ts)
+
+The following example shows how to define an image from a private docker registry:
+
+[Docker Registry example](./test/integ.docker-registry.lit.ts)
 
 ## Events
 

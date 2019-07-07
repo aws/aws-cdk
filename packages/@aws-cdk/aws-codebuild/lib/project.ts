@@ -5,6 +5,7 @@ import { DockerImageAsset, DockerImageAssetProps } from '@aws-cdk/aws-ecr-assets
 import events = require('@aws-cdk/aws-events');
 import iam = require('@aws-cdk/aws-iam');
 import kms = require('@aws-cdk/aws-kms');
+import secretsmanager = require('@aws-cdk/aws-secretsmanager');
 import { Aws, CfnResource, Construct, Duration, IResource, Lazy, PhysicalName, Resource, Stack } from '@aws-cdk/core';
 import { IArtifacts } from './artifacts';
 import { BuildSpec } from './build-spec';
@@ -797,9 +798,32 @@ export class Project extends ProjectBase {
       throw new Error("Invalid CodeBuild environment: " + errors.join('\n'));
     }
 
+    const imagePullPrincipalType = this.buildImage.imagePullPrincipalType === ImagePullPrincipalType.CODEBUILD
+      ? undefined
+      : ImagePullPrincipalType.SERVICE_ROLE;
+    if (this.buildImage.repository) {
+      if (imagePullPrincipalType === ImagePullPrincipalType.SERVICE_ROLE) {
+        this.buildImage.repository.grantPull(this);
+      } else {
+        const statement = new iam.PolicyStatement({
+          principals: [new iam.ServicePrincipal('codebuild.amazonaws.com')],
+          actions: ['ecr:GetDownloadUrlForLayer', 'ecr:BatchGetImage', 'ecr:BatchCheckLayerAvailability'],
+        });
+        statement.sid = 'CodeBuild';
+        this.buildImage.repository.addToResourcePolicy(statement);
+      }
+    }
+
     return {
       type: this.buildImage.type,
       image: this.buildImage.imageId,
+      imagePullCredentialsType: imagePullPrincipalType,
+      registryCredential: this.buildImage.secretsManagerCredentials
+        ? {
+          credentialProvider: 'SECRETS_MANAGER',
+          credential: this.buildImage.secretsManagerCredentials.secretArn,
+        }
+        : undefined,
       privilegedMode: env.privileged || false,
       computeType: env.computeType || this.buildImage.defaultComputeType,
       environmentVariables: !hasEnvironmentVars ? undefined : Object.keys(vars).map(name => ({
@@ -924,6 +948,25 @@ export enum ComputeType {
   LARGE = 'BUILD_GENERAL1_LARGE'
 }
 
+/**
+ * The type of principal CodeBuild will use to pull your build Docker image.
+ */
+export enum ImagePullPrincipalType {
+  /**
+   * CODEBUILD specifies that CodeBuild uses its own identity when pulling the image.
+   * This means the resource policy of the ECR repository that hosts the image will be modified to trust
+   * CodeBuild's service principal.
+   * This is the required principal type when using CodeBuild's pre-defined images.
+   */
+  CODEBUILD = 'CODEBUILD',
+
+  /**
+   * SERVICE_ROLE specifies that AWS CodeBuild uses the project's role when pulling the image.
+   * The role will be granted pull permissions on the ECR repository hosting the image.
+   */
+  SERVICE_ROLE = 'SERVICE_ROLE'
+}
+
 export interface BuildEnvironment {
   /**
    * The image used for the builds.
@@ -983,6 +1026,27 @@ export interface IBuildImage {
   readonly defaultComputeType: ComputeType;
 
   /**
+   * The type of principal that CodeBuild will use to pull this build Docker image.
+   *
+   * @default ImagePullPrincipalType.SERVICE_ROLE
+   */
+  readonly imagePullPrincipalType?: ImagePullPrincipalType;
+
+  /**
+   * The secretsManagerCredentials for access to a private registry.
+   *
+   * @default no credentials will be used
+   */
+  readonly secretsManagerCredentials?: secretsmanager.ISecret;
+
+  /**
+   * An optional ECR repository that the image is hosted in.
+   *
+   * @default no repository
+   */
+  readonly repository?: ecr.IRepository;
+
+  /**
    * Allows the image a chance to validate whether the passed configuration is correct.
    *
    * @param buildEnvironment the current build environment
@@ -996,13 +1060,40 @@ export interface IBuildImage {
 }
 
 /**
+ * The options when creating a CodeBuild Docker build image
+ * using {@link LinuxBuildImage.fromDockerRegistry}
+ * or {@link WindowsBuildImage.fromDockerRegistry}.
+ */
+export interface DockerImageOptions {
+  /**
+   * The credentials, stored in Secrets Manager,
+   * used for accessing the repository holding the image,
+   * if the repository is private.
+   *
+   * @default no credentials will be used (we assume the repository is public)
+   */
+  readonly secretsManagerCredentials?: secretsmanager.ISecret;
+}
+
+/**
+ * Construction properties of {@link LinuxBuildImage}.
+ * Module-private, as the constructor of {@link LinuxBuildImage} is private.
+ */
+interface LinuxBuildImageProps {
+  readonly imageId: string;
+  readonly imagePullPrincipalType?: ImagePullPrincipalType;
+  readonly secretsManagerCredentials?: secretsmanager.ISecret;
+  readonly repository?: ecr.IRepository;
+}
+
+/**
  * A CodeBuild image running Linux.
  *
  * This class has a bunch of public constants that represent the most popular images.
  *
  * You can also specify a custom image using one of the static methods:
  *
- * - LinuxBuildImage.fromDockerHub(image)
+ * - LinuxBuildImage.fromDockerRegistry(image[, { secretsManagerCredentials }])
  * - LinuxBuildImage.fromEcrRepository(repo[, tag])
  * - LinuxBuildImage.fromAsset(parent, id, props)
  *
@@ -1010,44 +1101,48 @@ export interface IBuildImage {
  * @see https://docs.aws.amazon.com/codebuild/latest/userguide/build-env-ref-available.html
  */
 export class LinuxBuildImage implements IBuildImage {
-  public static readonly STANDARD_1_0 = new LinuxBuildImage('aws/codebuild/standard:1.0');
-  public static readonly STANDARD_2_0 = new LinuxBuildImage('aws/codebuild/standard:2.0');
-  public static readonly UBUNTU_14_04_BASE = new LinuxBuildImage('aws/codebuild/ubuntu-base:14.04');
-  public static readonly UBUNTU_14_04_ANDROID_JAVA8_24_4_1 = new LinuxBuildImage('aws/codebuild/android-java-8:24.4.1');
-  public static readonly UBUNTU_14_04_ANDROID_JAVA8_26_1_1 = new LinuxBuildImage('aws/codebuild/android-java-8:26.1.1');
-  public static readonly UBUNTU_14_04_DOCKER_17_09_0 = new LinuxBuildImage('aws/codebuild/docker:17.09.0');
-  public static readonly UBUNTU_14_04_DOCKER_18_09_0 = new LinuxBuildImage('aws/codebuild/docker:18.09.0');
-  public static readonly UBUNTU_14_04_GOLANG_1_10 = new LinuxBuildImage('aws/codebuild/golang:1.10');
-  public static readonly UBUNTU_14_04_GOLANG_1_11 = new LinuxBuildImage('aws/codebuild/golang:1.11');
-  public static readonly UBUNTU_14_04_OPEN_JDK_8 = new LinuxBuildImage('aws/codebuild/java:openjdk-8');
-  public static readonly UBUNTU_14_04_OPEN_JDK_9 = new LinuxBuildImage('aws/codebuild/java:openjdk-9');
-  public static readonly UBUNTU_14_04_OPEN_JDK_11 = new LinuxBuildImage('aws/codebuild/java:openjdk-11');
-  public static readonly UBUNTU_14_04_NODEJS_10_14_1 = new LinuxBuildImage('aws/codebuild/nodejs:10.14.1');
-  public static readonly UBUNTU_14_04_NODEJS_10_1_0 = new LinuxBuildImage('aws/codebuild/nodejs:10.1.0');
-  public static readonly UBUNTU_14_04_NODEJS_8_11_0 = new LinuxBuildImage('aws/codebuild/nodejs:8.11.0');
-  public static readonly UBUNTU_14_04_NODEJS_6_3_1 = new LinuxBuildImage('aws/codebuild/nodejs:6.3.1');
-  public static readonly UBUNTU_14_04_PHP_5_6 = new LinuxBuildImage('aws/codebuild/php:5.6');
-  public static readonly UBUNTU_14_04_PHP_7_0 = new LinuxBuildImage('aws/codebuild/php:7.0');
-  public static readonly UBUNTU_14_04_PHP_7_1 = new LinuxBuildImage('aws/codebuild/php:7.1');
-  public static readonly UBUNTU_14_04_PYTHON_3_7_1 = new LinuxBuildImage('aws/codebuild/python:3.7.1');
-  public static readonly UBUNTU_14_04_PYTHON_3_6_5 = new LinuxBuildImage('aws/codebuild/python:3.6.5');
-  public static readonly UBUNTU_14_04_PYTHON_3_5_2 = new LinuxBuildImage('aws/codebuild/python:3.5.2');
-  public static readonly UBUNTU_14_04_PYTHON_3_4_5 = new LinuxBuildImage('aws/codebuild/python:3.4.5');
-  public static readonly UBUNTU_14_04_PYTHON_3_3_6 = new LinuxBuildImage('aws/codebuild/python:3.3.6');
-  public static readonly UBUNTU_14_04_PYTHON_2_7_12 = new LinuxBuildImage('aws/codebuild/python:2.7.12');
-  public static readonly UBUNTU_14_04_RUBY_2_5_3 = new LinuxBuildImage('aws/codebuild/ruby:2.5.3');
-  public static readonly UBUNTU_14_04_RUBY_2_5_1 = new LinuxBuildImage('aws/codebuild/ruby:2.5.1');
-  public static readonly UBUNTU_14_04_RUBY_2_3_1 = new LinuxBuildImage('aws/codebuild/ruby:2.3.1');
-  public static readonly UBUNTU_14_04_RUBY_2_2_5 = new LinuxBuildImage('aws/codebuild/ruby:2.2.5');
-  public static readonly UBUNTU_14_04_DOTNET_CORE_1_1 = new LinuxBuildImage('aws/codebuild/dot-net:core-1');
-  public static readonly UBUNTU_14_04_DOTNET_CORE_2_0 = new LinuxBuildImage('aws/codebuild/dot-net:core-2.0');
-  public static readonly UBUNTU_14_04_DOTNET_CORE_2_1 = new LinuxBuildImage('aws/codebuild/dot-net:core-2.1');
+  public static readonly STANDARD_1_0 = LinuxBuildImage.codeBuildImage('aws/codebuild/standard:1.0');
+  public static readonly STANDARD_2_0 = LinuxBuildImage.codeBuildImage('aws/codebuild/standard:2.0');
+  public static readonly UBUNTU_14_04_BASE = LinuxBuildImage.codeBuildImage('aws/codebuild/ubuntu-base:14.04');
+  public static readonly UBUNTU_14_04_ANDROID_JAVA8_24_4_1 = LinuxBuildImage.codeBuildImage('aws/codebuild/android-java-8:24.4.1');
+  public static readonly UBUNTU_14_04_ANDROID_JAVA8_26_1_1 = LinuxBuildImage.codeBuildImage('aws/codebuild/android-java-8:26.1.1');
+  public static readonly UBUNTU_14_04_DOCKER_17_09_0 = LinuxBuildImage.codeBuildImage('aws/codebuild/docker:17.09.0');
+  public static readonly UBUNTU_14_04_DOCKER_18_09_0 = LinuxBuildImage.codeBuildImage('aws/codebuild/docker:18.09.0');
+  public static readonly UBUNTU_14_04_GOLANG_1_10 = LinuxBuildImage.codeBuildImage('aws/codebuild/golang:1.10');
+  public static readonly UBUNTU_14_04_GOLANG_1_11 = LinuxBuildImage.codeBuildImage('aws/codebuild/golang:1.11');
+  public static readonly UBUNTU_14_04_OPEN_JDK_8 = LinuxBuildImage.codeBuildImage('aws/codebuild/java:openjdk-8');
+  public static readonly UBUNTU_14_04_OPEN_JDK_9 = LinuxBuildImage.codeBuildImage('aws/codebuild/java:openjdk-9');
+  public static readonly UBUNTU_14_04_OPEN_JDK_11 = LinuxBuildImage.codeBuildImage('aws/codebuild/java:openjdk-11');
+  public static readonly UBUNTU_14_04_NODEJS_10_14_1 = LinuxBuildImage.codeBuildImage('aws/codebuild/nodejs:10.14.1');
+  public static readonly UBUNTU_14_04_NODEJS_10_1_0 = LinuxBuildImage.codeBuildImage('aws/codebuild/nodejs:10.1.0');
+  public static readonly UBUNTU_14_04_NODEJS_8_11_0 = LinuxBuildImage.codeBuildImage('aws/codebuild/nodejs:8.11.0');
+  public static readonly UBUNTU_14_04_NODEJS_6_3_1 = LinuxBuildImage.codeBuildImage('aws/codebuild/nodejs:6.3.1');
+  public static readonly UBUNTU_14_04_PHP_5_6 = LinuxBuildImage.codeBuildImage('aws/codebuild/php:5.6');
+  public static readonly UBUNTU_14_04_PHP_7_0 = LinuxBuildImage.codeBuildImage('aws/codebuild/php:7.0');
+  public static readonly UBUNTU_14_04_PHP_7_1 = LinuxBuildImage.codeBuildImage('aws/codebuild/php:7.1');
+  public static readonly UBUNTU_14_04_PYTHON_3_7_1 = LinuxBuildImage.codeBuildImage('aws/codebuild/python:3.7.1');
+  public static readonly UBUNTU_14_04_PYTHON_3_6_5 = LinuxBuildImage.codeBuildImage('aws/codebuild/python:3.6.5');
+  public static readonly UBUNTU_14_04_PYTHON_3_5_2 = LinuxBuildImage.codeBuildImage('aws/codebuild/python:3.5.2');
+  public static readonly UBUNTU_14_04_PYTHON_3_4_5 = LinuxBuildImage.codeBuildImage('aws/codebuild/python:3.4.5');
+  public static readonly UBUNTU_14_04_PYTHON_3_3_6 = LinuxBuildImage.codeBuildImage('aws/codebuild/python:3.3.6');
+  public static readonly UBUNTU_14_04_PYTHON_2_7_12 = LinuxBuildImage.codeBuildImage('aws/codebuild/python:2.7.12');
+  public static readonly UBUNTU_14_04_RUBY_2_5_3 = LinuxBuildImage.codeBuildImage('aws/codebuild/ruby:2.5.3');
+  public static readonly UBUNTU_14_04_RUBY_2_5_1 = LinuxBuildImage.codeBuildImage('aws/codebuild/ruby:2.5.1');
+  public static readonly UBUNTU_14_04_RUBY_2_3_1 = LinuxBuildImage.codeBuildImage('aws/codebuild/ruby:2.3.1');
+  public static readonly UBUNTU_14_04_RUBY_2_2_5 = LinuxBuildImage.codeBuildImage('aws/codebuild/ruby:2.2.5');
+  public static readonly UBUNTU_14_04_DOTNET_CORE_1_1 = LinuxBuildImage.codeBuildImage('aws/codebuild/dot-net:core-1');
+  public static readonly UBUNTU_14_04_DOTNET_CORE_2_0 = LinuxBuildImage.codeBuildImage('aws/codebuild/dot-net:core-2.0');
+  public static readonly UBUNTU_14_04_DOTNET_CORE_2_1 = LinuxBuildImage.codeBuildImage('aws/codebuild/dot-net:core-2.1');
 
   /**
    * @returns a Linux build image from a Docker Hub image.
    */
-  public static fromDockerHub(name: string): LinuxBuildImage {
-    return new LinuxBuildImage(name);
+  public static fromDockerRegistry(name: string, options: DockerImageOptions = {}): IBuildImage {
+    return new LinuxBuildImage({
+      ...options,
+      imageId: name,
+      imagePullPrincipalType: ImagePullPrincipalType.SERVICE_ROLE,
+    });
   }
 
   /**
@@ -1061,30 +1156,45 @@ export class LinuxBuildImage implements IBuildImage {
    * @param repository The ECR repository
    * @param tag Image tag (default "latest")
    */
-  public static fromEcrRepository(repository: ecr.IRepository, tag: string = 'latest'): LinuxBuildImage {
-    const image = new LinuxBuildImage(repository.repositoryUriForTag(tag));
-    repository.addToResourcePolicy(ecrAccessForCodeBuildService());
-    return image;
+  public static fromEcrRepository(repository: ecr.IRepository, tag: string = 'latest'): IBuildImage {
+    return new LinuxBuildImage({
+      imageId: repository.repositoryUriForTag(tag),
+      imagePullPrincipalType: ImagePullPrincipalType.SERVICE_ROLE,
+      repository,
+    });
   }
 
   /**
    * Uses an Docker image asset as a Linux build image.
    */
-  public static fromAsset(scope: Construct, id: string, props: DockerImageAssetProps): LinuxBuildImage {
+  public static fromAsset(scope: Construct, id: string, props: DockerImageAssetProps): IBuildImage {
     const asset = new DockerImageAsset(scope, id, props);
-    const image = new LinuxBuildImage(asset.imageUri);
+    return new LinuxBuildImage({
+      imageId: asset.imageUri,
+      imagePullPrincipalType: ImagePullPrincipalType.SERVICE_ROLE,
+      repository: asset.repository,
+    });
+  }
 
-    // allow this codebuild to pull this image (CodeBuild doesn't use a role, so
-    // we can't use `asset.grantUseImage()`.
-    asset.repository.addToResourcePolicy(ecrAccessForCodeBuildService());
-
-    return image;
+  private static codeBuildImage(name: string): IBuildImage {
+    return new LinuxBuildImage({
+      imageId: name,
+      imagePullPrincipalType: ImagePullPrincipalType.CODEBUILD,
+    });
   }
 
   public readonly type = 'LINUX_CONTAINER';
   public readonly defaultComputeType = ComputeType.SMALL;
+  public readonly imageId: string;
+  public readonly imagePullPrincipalType?: ImagePullPrincipalType;
+  public readonly secretsManagerCredentials?: secretsmanager.ISecret;
+  public readonly repository?: ecr.IRepository;
 
-  private constructor(public readonly imageId: string) {
+  private constructor(props: LinuxBuildImageProps) {
+    this.imageId = props.imageId;
+    this.imagePullPrincipalType = props.imagePullPrincipalType;
+    this.secretsManagerCredentials = props.secretsManagerCredentials;
+    this.repository = props.repository;
   }
 
   public validate(_: BuildEnvironment): string[] {
@@ -1121,26 +1231,44 @@ export class LinuxBuildImage implements IBuildImage {
 }
 
 /**
+ * Construction properties of {@link WindowsBuildImage}.
+ * Module-private, as the constructor of {@link WindowsBuildImage} is private.
+ */
+interface WindowsBuildImageProps {
+  readonly imageId: string;
+  readonly imagePullPrincipalType?: ImagePullPrincipalType;
+  readonly secretsManagerCredentials?: secretsmanager.ISecret;
+  readonly repository?: ecr.IRepository;
+}
+
+/**
  * A CodeBuild image running Windows.
  *
  * This class has a bunch of public constants that represent the most popular images.
  *
  * You can also specify a custom image using one of the static methods:
  *
- * - WindowsBuildImage.fromDockerHub(image)
+ * - WindowsBuildImage.fromDockerRegistry(image[, { secretsManagerCredentials }])
  * - WindowsBuildImage.fromEcrRepository(repo[, tag])
  * - WindowsBuildImage.fromAsset(parent, id, props)
  *
  * @see https://docs.aws.amazon.com/codebuild/latest/userguide/build-env-ref-available.html
  */
 export class WindowsBuildImage implements IBuildImage {
-  public static readonly WIN_SERVER_CORE_2016_BASE = new WindowsBuildImage('aws/codebuild/windows-base:1.0');
+  public static readonly WIN_SERVER_CORE_2016_BASE: IBuildImage = new WindowsBuildImage({
+    imageId: 'aws/codebuild/windows-base:1.0',
+    imagePullPrincipalType: ImagePullPrincipalType.CODEBUILD,
+  });
 
   /**
    * @returns a Windows build image from a Docker Hub image.
    */
-  public static fromDockerHub(name: string): WindowsBuildImage {
-    return new WindowsBuildImage(name);
+  public static fromDockerRegistry(name: string, options: DockerImageOptions): IBuildImage {
+    return new WindowsBuildImage({
+      ...options,
+      imageId: name,
+      imagePullPrincipalType: ImagePullPrincipalType.SERVICE_ROLE,
+    });
   }
 
   /**
@@ -1154,29 +1282,38 @@ export class WindowsBuildImage implements IBuildImage {
    * @param repository The ECR repository
    * @param tag Image tag (default "latest")
    */
-  public static fromEcrRepository(repository: ecr.IRepository, tag: string = 'latest'): WindowsBuildImage {
-    const image = new WindowsBuildImage(repository.repositoryUriForTag(tag));
-    repository.addToResourcePolicy(ecrAccessForCodeBuildService());
-    return image;
+  public static fromEcrRepository(repository: ecr.IRepository, tag: string = 'latest'): IBuildImage {
+    return new WindowsBuildImage({
+      imageId: repository.repositoryUriForTag(tag),
+      imagePullPrincipalType: ImagePullPrincipalType.SERVICE_ROLE,
+      repository,
+    });
   }
 
   /**
    * Uses an Docker image asset as a Windows build image.
    */
-  public static fromAsset(scope: Construct, id: string, props: DockerImageAssetProps): WindowsBuildImage {
+  public static fromAsset(scope: Construct, id: string, props: DockerImageAssetProps): IBuildImage {
     const asset = new DockerImageAsset(scope, id, props);
-    const image = new WindowsBuildImage(asset.imageUri);
-
-    // allow this codebuild to pull this image (CodeBuild doesn't use a role, so
-    // we can't use `asset.grantUseImage()`.
-    asset.repository.addToResourcePolicy(ecrAccessForCodeBuildService());
-
-    return image;
+    return new WindowsBuildImage({
+      imageId: asset.imageUri,
+      imagePullPrincipalType: ImagePullPrincipalType.SERVICE_ROLE,
+      repository: asset.repository,
+    });
   }
+
   public readonly type = 'WINDOWS_CONTAINER';
   public readonly defaultComputeType = ComputeType.MEDIUM;
+  public readonly imageId: string;
+  public readonly imagePullPrincipalType?: ImagePullPrincipalType;
+  public readonly secretsManagerCredentials?: secretsmanager.ISecret;
+  public readonly repository?: ecr.IRepository;
 
-  private constructor(public readonly imageId: string) {
+  private constructor(props: WindowsBuildImageProps) {
+    this.imageId = props.imageId;
+    this.imagePullPrincipalType = props.imagePullPrincipalType;
+    this.secretsManagerCredentials = props.secretsManagerCredentials;
+    this.repository = props.repository;
   }
 
   public validate(buildEnvironment: BuildEnvironment): string[] {
@@ -1237,13 +1374,4 @@ export enum BuildEnvironmentVariableType {
    * An environment variable stored in Systems Manager Parameter Store.
    */
   PARAMETER_STORE = 'PARAMETER_STORE'
-}
-
-function ecrAccessForCodeBuildService(): iam.PolicyStatement {
-  const s = new iam.PolicyStatement({
-    principals: [new iam.ServicePrincipal('codebuild.amazonaws.com')],
-    actions: ['ecr:GetDownloadUrlForLayer', 'ecr:BatchGetImage', 'ecr:BatchCheckLayerAvailability'],
-  });
-  s.sid = 'CodeBuild';
-  return s;
 }
