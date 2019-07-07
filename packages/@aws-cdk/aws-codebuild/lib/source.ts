@@ -50,23 +50,23 @@ export interface SourceProps {
  * Source provider definition for a CodeBuild Project.
  */
 export abstract class Source implements ISource {
-  public static s3(props: S3SourceProps): Source {
+  public static s3(props: S3SourceProps): ISource {
     return new S3Source(props);
   }
 
-  public static codeCommit(props: CodeCommitSourceProps): Source {
+  public static codeCommit(props: CodeCommitSourceProps): ISource {
     return new CodeCommitSource(props);
   }
 
-  public static gitHub(props: GitHubSourceProps): Source {
+  public static gitHub(props: GitHubSourceProps): ISource {
     return new GitHubSource(props);
   }
 
-  public static gitHubEnterprise(props: GitHubEnterpriseSourceProps): Source {
+  public static gitHubEnterprise(props: GitHubEnterpriseSourceProps): ISource {
     return new GitHubEnterpriseSource(props);
   }
 
-  public static bitBucket(props: BitBucketSourceProps): Source {
+  public static bitBucket(props: BitBucketSourceProps): ISource {
     return new BitBucketSource(props);
   }
 

@@ -1,9 +1,5 @@
 {
   "Resources": {
-    "MyRepoF4F48043": {
-      "Type": "AWS::ECR::Repository",
-      "DeletionPolicy": "Retain"
-    },
     "MyProjectRole9BBE5233": {
       "Type": "AWS::IAM::Role",
       "Properties": {
@@ -36,25 +32,6 @@
       "Properties": {
         "PolicyDocument": {
           "Statement": [
-            {
-              "Action": [
-                "ecr:BatchCheckLayerAvailability",
-                "ecr:GetDownloadUrlForLayer",
-                "ecr:BatchGetImage"
-              ],
-              "Effect": "Allow",
-              "Resource": {
-                "Fn::GetAtt": [
-                  "MyRepoF4F48043",
-                  "Arn"
-                ]
-              }
-            },
-            {
-              "Action": "ecr:GetAuthorizationToken",
-              "Effect": "Allow",
-              "Resource": "*"
-            },
             {
               "Action": [
                 "logs:CreateLogGroup",
@@ -131,53 +108,28 @@
         },
         "Environment": {
           "ComputeType": "BUILD_GENERAL1_SMALL",
-          "Image": {
-            "Fn::Join": [
-              "",
-              [
-                {
-                  "Fn::Select": [
-                    4,
-                    {
-                      "Fn::Split": [
-                        ":",
-                        {
-                          "Fn::GetAtt": [
-                            "MyRepoF4F48043",
-                            "Arn"
-                          ]
-                        }
-                      ]
-                    }
-                  ]
-                },
-                ".dkr.ecr.",
-                {
-                  "Fn::Select": [
-                    3,
-                    {
-                      "Fn::Split": [
-                        ":",
-                        {
-                          "Fn::GetAtt": [
-                            "MyRepoF4F48043",
-                            "Arn"
-                          ]
-                        }
-                      ]
-                    }
-                  ]
-                },
-                ".amazonaws.com/",
-                {
-                  "Ref": "MyRepoF4F48043"
-                },
-                ":v1.0"
-              ]
-            ]
-          },
+          "Image": "my-registry/my-repo",
           "ImagePullCredentialsType": "SERVICE_ROLE",
           "PrivilegedMode": false,
+          "RegistryCredential": {
+            "Credential": {
+              "Fn::Join": [
+                "",
+                [
+                  "arn:aws:secretsmanager:",
+                  {
+                    "Ref": "AWS::Region"
+                  },
+                  ":",
+                  {
+                    "Ref": "AWS::AccountId"
+                  },
+                  ":secret:my-secrets-123456"
+                ]
+              ]
+            },
+            "CredentialProvider": "SECRETS_MANAGER"
+          },
           "Type": "LINUX_CONTAINER"
         },
         "ServiceRole": {

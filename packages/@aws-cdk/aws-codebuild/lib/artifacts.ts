@@ -53,7 +53,7 @@ export interface ArtifactsProps {
  * Artifacts definition for a CodeBuild Project.
  */
 export abstract class Artifacts implements IArtifacts {
-  public static s3(props: S3ArtifactsProps): Artifacts {
+  public static s3(props: S3ArtifactsProps): IArtifacts {
     return new S3Artifacts(props);
   }
 

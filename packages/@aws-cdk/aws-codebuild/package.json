@@ -90,6 +90,7 @@
     "@aws-cdk/aws-kms": "^0.37.0",
     "@aws-cdk/aws-s3": "^0.37.0",
     "@aws-cdk/aws-s3-assets": "^0.37.0",
+    "@aws-cdk/aws-secretsmanager": "^0.37.0",
     "@aws-cdk/core": "^0.37.0"
   },
   "homepage": "https://github.com/awslabs/aws-cdk",
@@ -105,6 +106,7 @@
     "@aws-cdk/aws-kms": "^0.37.0",
     "@aws-cdk/aws-s3": "^0.37.0",
     "@aws-cdk/aws-s3-assets": "^0.37.0",
+    "@aws-cdk/aws-secretsmanager": "^0.37.0",
     "@aws-cdk/core": "^0.37.0"
   },
   "engines": {
