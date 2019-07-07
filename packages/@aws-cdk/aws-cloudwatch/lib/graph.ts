@@ -1,5 +1,5 @@
 import cdk = require('@aws-cdk/core');
-import { Alarm } from "./alarm";
+import { IAlarm } from "./alarm";
 import { IMetric } from "./metric-types";
 import { ConcreteWidget } from "./widget";
 
@@ -74,7 +74,7 @@ export interface AlarmWidgetProps extends MetricWidgetProps {
   /**
    * The alarm to show
    */
-  readonly alarm: Alarm;
+  readonly alarm: IAlarm;
 
   /**
    * Left Y axis
