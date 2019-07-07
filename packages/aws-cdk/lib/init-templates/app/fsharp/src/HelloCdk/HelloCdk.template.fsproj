@@ -15,6 +15,7 @@
     <PackageReference Include="Amazon.CDK" Version="%cdk-version%-devpreview" />
     <PackageReference Include="Amazon.CDK.AWS.IAM" Version="%cdk-version%-devpreview" />
     <PackageReference Include="Amazon.CDK.AWS.SNS" Version="%cdk-version%-devpreview" />
+    <PackageReference Include="Amazon.CDK.AWS.SNS.Subscriptions" Version="%cdk-version%-devpreview" />
     <PackageReference Include="Amazon.CDK.AWS.SQS" Version="%cdk-version%-devpreview" />
   </ItemGroup>
 
