@@ -115,12 +115,12 @@ export interface S3ArtifactsProps extends ArtifactsProps {
   readonly packageZip?: boolean;
 
   /**
-   * If this is true, build output will not be encrypted.
+   * If this is false, build output will not be encrypted.
    * This is useful if the artifact to publish a static website or sharing content with others
    *
-   * @default false - output will be encrypted
+   * @default true - output will be encrypted
    */
-  readonly encryptionDisabled?: boolean;
+  readonly encryption?: boolean;
 }
 
 /**
@@ -144,7 +144,7 @@ class S3Artifacts extends Artifacts {
         namespaceType: this.props.includeBuildId === false ? 'NONE' : 'BUILD_ID',
         name: this.props.name,
         packaging: this.props.packageZip === false ? 'NONE' : 'ZIP',
-        encryptionDisabled: this.props.encryptionDisabled,
+        encryptionDisabled: this.props.encryption === false ? true : undefined,
       }
     };
   }

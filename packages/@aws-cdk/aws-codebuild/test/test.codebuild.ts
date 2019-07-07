@@ -948,7 +948,7 @@ export = {
         path: 'another/path',
         name: 'name',
         identifier: 'artifact1',
-        encryptionDisabled: true,
+        encryption: false,
       }));
 
       expect(stack).to(haveResourceLike('AWS::CodeBuild::Project', {
