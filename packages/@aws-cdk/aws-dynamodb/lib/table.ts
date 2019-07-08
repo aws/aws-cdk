@@ -1,6 +1,6 @@
 import appscaling = require('@aws-cdk/aws-applicationautoscaling');
 import iam = require('@aws-cdk/aws-iam');
-import { Aws, Construct, Lazy, RemovalPolicy, Resource, Stack } from '@aws-cdk/core';
+import { Aws, Construct, IResource, Lazy, RemovalPolicy, Resource, Stack } from '@aws-cdk/core';
 import { CfnTable } from './dynamodb.generated';
 import { EnableScalingProps, IScalableTableAttribute } from './scalable-attribute-api';
 import { ScalableTableAttribute } from './scalable-table-attribute';
@@ -182,9 +182,248 @@ export interface LocalSecondaryIndexProps extends SecondaryIndexProps {
 }
 
 /**
+ * The base interface for a DynamoDB table.
+ *
+ * @experimental
+ */
+export interface ITable extends IResource {
+  /**
+   * The name of the DynamoDB table.
+   *
+   * @attribute
+   */
+  readonly tableName: string;
+
+  /**
+   * The ARN of the DynamoDB table.
+   *
+   * @attribute
+   */
+  readonly tableArn: string;
+
+  /**
+   * The Stream ARN of the DynamoDB table.
+   *
+   * @attribute
+   */
+  readonly tableStreamArn: string;
+
+  /**
+   * The partition (hash) key of the Table.
+   *
+   * @attribute
+   */
+  readonly tablePartitionKey: Attribute;
+
+  /**
+   * The sort (range) key of the Table, if there is one.
+   *
+   * @attribute
+   */
+  readonly tableSortKey?: Attribute;
+
+  /**
+   * Adds an IAM policy statement associated with this table to an IAM
+   * principal's policy.
+   * @param grantee The principal (no-op if undefined)
+   * @param actions The set of actions to allow (i.e. "dynamodb:PutItem", "dynamodb:GetItem", ...)
+   */
+  grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant;
+
+  /**
+   * Adds an IAM policy statement associated with this table's stream to an
+   * IAM principal's policy.
+   * @param grantee The principal (no-op if undefined)
+   * @param actions The set of actions to allow (i.e. "dynamodb:DescribeStream", "dynamodb:GetRecords", ...)
+   */
+  grantStream(grantee: iam.IGrantable, ...actions: string[]): iam.Grant;
+
+  /**
+   * Permits an IAM principal all data read operations from this table:
+   * BatchGetItem, GetRecords, GetShardIterator, Query, GetItem, Scan.
+   * @param grantee The principal to grant access to
+   */
+  grantReadData(grantee: iam.IGrantable): iam.Grant;
+
+  /**
+   * Permis an IAM principal all stream data read operations for this
+   * table's stream:
+   * DescribeStream, GetRecords, GetShardIterator, ListStreams.
+   * @param grantee The principal to grant access to
+   */
+  grantStreamRead(grantee: iam.IGrantable): iam.Grant;
+
+  /**
+   * Permits an IAM principal all data write operations to this table:
+   * BatchWriteItem, PutItem, UpdateItem, DeleteItem.
+   * @param grantee The principal to grant access to
+   */
+  grantWriteData(grantee: iam.IGrantable): iam.Grant;
+
+  /**
+   * Permits an IAM principal to all data read/write operations to this table.
+   * BatchGetItem, GetRecords, GetShardIterator, Query, GetItem, Scan,
+   * BatchWriteItem, PutItem, UpdateItem, DeleteItem
+   * @param grantee The principal to grant access to
+   */
+  grantReadWriteData(grantee: iam.IGrantable): iam.Grant;
+
+  /**
+   * Permits all DynamoDB operations ("dynamodb:*") to an IAM principal.
+   * @param grantee The principal to grant access to
+   */
+  grantFullAccess(grantee: iam.IGrantable): iam.Grant;
+}
+
+abstract class TableBase extends Resource implements ITable {
+  public abstract readonly tableName: string;
+  public abstract readonly tableArn: string;
+  public abstract readonly tableStreamArn: string;
+
+  public abstract readonly tablePartitionKey: Attribute;
+  public abstract readonly tableSortKey?: Attribute;
+
+  protected abstract readonly hasIndex: boolean;
+
+  /**
+   * Adds an IAM policy statement associated with this table to an IAM
+   * principal's policy.
+   * @param grantee The principal (no-op if undefined)
+   * @param actions The set of actions to allow (i.e. "dynamodb:PutItem", "dynamodb:GetItem", ...)
+   */
+  public grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant {
+    return iam.Grant.addToPrincipal({
+      grantee,
+      actions,
+      resourceArns: [
+        this.tableArn,
+        Lazy.stringValue({ produce: () => this.hasIndex ? `${this.tableArn}/index/*` : Aws.NO_VALUE })
+      ],
+      scope: this,
+    });
+  }
+
+  /**
+   * Adds an IAM policy statement associated with this table's stream to an
+   * IAM principal's policy.
+   * @param grantee The principal (no-op if undefined)
+   * @param actions The set of actions to allow (i.e. "dynamodb:DescribeStream", "dynamodb:GetRecords", ...)
+   */
+  public grantStream(grantee: iam.IGrantable, ...actions: string[]) {
+    return iam.Grant.addToPrincipal({
+      grantee,
+      actions,
+      resourceArns: [this.tableStreamArn],
+      scope: this,
+    });
+  }
+
+  /**
+   * Permits an IAM principal all data read operations from this table:
+   * BatchGetItem, GetRecords, GetShardIterator, Query, GetItem, Scan.
+   * @param grantee The principal to grant access to
+   */
+  public grantReadData(grantee: iam.IGrantable) {
+    return this.grant(grantee, ...READ_DATA_ACTIONS);
+  }
+
+  /**
+   * Permis an IAM principal all stream data read operations for this
+   * table's stream:
+   * DescribeStream, GetRecords, GetShardIterator, ListStreams.
+   * @param grantee The principal to grant access to
+   */
+  public grantStreamRead(grantee: iam.IGrantable) {
+    return this.grantStream(grantee, ...READ_STREAM_DATA_ACTIONS);
+  }
+
+  /**
+   * Permits an IAM principal all data write operations to this table:
+   * BatchWriteItem, PutItem, UpdateItem, DeleteItem.
+   * @param grantee The principal to grant access to
+   */
+  public grantWriteData(grantee: iam.IGrantable) {
+    return this.grant(grantee, ...WRITE_DATA_ACTIONS);
+  }
+
+  /**
+   * Permits an IAM principal to all data read/write operations to this table.
+   * BatchGetItem, GetRecords, GetShardIterator, Query, GetItem, Scan,
+   * BatchWriteItem, PutItem, UpdateItem, DeleteItem
+   * @param grantee The principal to grant access to
+   */
+  public grantReadWriteData(grantee: iam.IGrantable) {
+    return this.grant(grantee, ...READ_DATA_ACTIONS, ...WRITE_DATA_ACTIONS);
+  }
+
+  /**
+   * Permits all DynamoDB operations ("dynamodb:*") to an IAM principal.
+   * @param grantee The principal to grant access to
+   */
+  public grantFullAccess(grantee: iam.IGrantable) {
+    return this.grant(grantee, 'dynamodb:*');
+  }
+}
+
+/**
+ * Attributes from a DynamoDB Table.
+ */
+export interface TableAttributes {
+  /**
+   * The ARN of the DynamoDB Table.
+   */
+  readonly tableArn: string;
+
+  /**
+   * The ARN of the DYnamoDB Table's stream.
+   */
+  readonly tableStreamArn: string;
+
+  /**
+   * The partition (hash) key for this DynamoDB Table.
+   */
+  readonly tablePartitionKey: Attribute;
+
+  /**
+   * The sort (range) key for this DynamoDB Table, if any.
+   *
+   * @default - no sort key.
+   */
+  readonly tableSortKey?: Attribute;
+
+  /**
+   * Whether this table has indexes.
+   *
+   * @default false
+   */
+  readonly hasIndex ?: boolean;
+}
+
+/**
  * Provides a DynamoDB table.
  */
-export class Table extends Resource {
+export class Table extends TableBase {
+  /**
+   * Imports a DynamoDB Table that was defined externally to this CDK app.
+   *
+   * @param scope the construct that will act as the scope for the imported Table.
+   * @param id    the ID of the imported table in the construct tree.
+   * @param attrs attributes of the imported DyanmoDB Table.
+   *
+   * @experimental
+   */
+  public static fromTableAttributes(scope: Construct, id: string, attrs: TableAttributes): ITable {
+    class ImportedTable extends TableBase {
+      public readonly tableArn = attrs.tableArn;
+      public readonly tableName = Stack.of(scope).parseArn(attrs.tableArn, '/').resourceName!;
+      public readonly tableStreamArn = attrs.tableStreamArn;
+      public readonly tablePartitionKey = attrs.tablePartitionKey;
+      public readonly tableSortKey = attrs.tableSortKey;
+      protected readonly hasIndex = !!attrs.hasIndex;
+    }
+    return new ImportedTable(scope, id);
+  }
+
   /**
    * Permits an IAM Principal to list all DynamoDB Streams.
    * @param grantee The principal (no-op if undefined)
@@ -197,20 +436,14 @@ export class Table extends Resource {
     });
  }
 
- /**
-  * @attribute
-  */
   public readonly tableArn: string;
-
-  /**
-   * @attribute
-   */
   public readonly tableName: string;
-
-  /**
-   * @attribute
-   */
   public readonly tableStreamArn: string;
+
+  /** @experimental */
+  public readonly tablePartitionKey: Attribute;
+  /** @experimental */
+  public readonly tableSortKey?: Attribute;
 
   private readonly table: CfnTable;
 
@@ -221,9 +454,6 @@ export class Table extends Resource {
 
   private readonly secondaryIndexNames: string[] = [];
   private readonly nonKeyAttributes: string[] = [];
-
-  private readonly tablePartitionKey: Attribute;
-  private readonly tableSortKey?: Attribute;
 
   private readonly billingMode: BillingMode;
   private readonly tableScaling: ScalableAttributePair = {};
@@ -427,82 +657,10 @@ export class Table extends Resource {
   }
 
   /**
-   * Adds an IAM policy statement associated with this table to an IAM
-   * principal's policy.
-   * @param grantee The principal (no-op if undefined)
-   * @param actions The set of actions to allow (i.e. "dynamodb:PutItem", "dynamodb:GetItem", ...)
+   * Whether this table has indexes
    */
-  public grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant {
-    return iam.Grant.addToPrincipal({
-      grantee,
-      actions,
-      resourceArns: [
-        this.tableArn,
-        Lazy.stringValue({ produce: () => this.hasIndex ? `${this.tableArn}/index/*` : Aws.NO_VALUE })
-      ],
-      scope: this,
-    });
-  }
-
-  /**
-   * Adds an IAM policy statement associated with this table's stream to an
-   * IAM principal's policy.
-   * @param grantee The principal (no-op if undefined)
-   * @param actions The set of actions to allow (i.e. "dynamodb:DescribeStream", "dynamodb:GetRecords", ...)
-   */
-  public grantStream(grantee: iam.IGrantable, ...actions: string[]) {
-    return iam.Grant.addToPrincipal({
-      grantee,
-      actions,
-      resourceArns: [this.tableStreamArn],
-      scope: this,
-    });
-  }
-
-  /**
-   * Permits an IAM principal all data read operations from this table:
-   * BatchGetItem, GetRecords, GetShardIterator, Query, GetItem, Scan.
-   * @param grantee The principal to grant access to
-   */
-  public grantReadData(grantee: iam.IGrantable) {
-    return this.grant(grantee, ...READ_DATA_ACTIONS);
-  }
-
-  /**
-   * Permis an IAM principal all stream data read operations for this
-   * table's stream:
-   * DescribeStream, GetRecords, GetShardIterator, ListStreams.
-   * @param grantee The principal to grant access to
-   */
-  public grantStreamRead(grantee: iam.IGrantable) {
-    return this.grantStream(grantee, ...READ_STREAM_DATA_ACTIONS);
-  }
-
-  /**
-   * Permits an IAM principal all data write operations to this table:
-   * BatchWriteItem, PutItem, UpdateItem, DeleteItem.
-   * @param grantee The principal to grant access to
-   */
-  public grantWriteData(grantee: iam.IGrantable) {
-    return this.grant(grantee, ...WRITE_DATA_ACTIONS);
-  }
-
-  /**
-   * Permits an IAM principal to all data read/write operations to this table.
-   * BatchGetItem, GetRecords, GetShardIterator, Query, GetItem, Scan,
-   * BatchWriteItem, PutItem, UpdateItem, DeleteItem
-   * @param grantee The principal to grant access to
-   */
-  public grantReadWriteData(grantee: iam.IGrantable) {
-    return this.grant(grantee, ...READ_DATA_ACTIONS, ...WRITE_DATA_ACTIONS);
-  }
-
-  /**
-   * Permits all DynamoDB operations ("dynamodb:*") to an IAM principal.
-   * @param grantee The principal to grant access to
-   */
-  public grantFullAccess(grantee: iam.IGrantable) {
-    return this.grant(grantee, 'dynamodb:*');
+  protected get hasIndex(): boolean {
+    return this.globalSecondaryIndexes.length + this.localSecondaryIndexes.length > 0;
   }
 
   /**
@@ -655,13 +813,6 @@ export class Table extends Resource {
       resource: 'role/aws-service-role/dynamodb.application-autoscaling.amazonaws.com',
       resourceName: 'AWSServiceRoleForApplicationAutoScaling_DynamoDBTable'
     }));
-  }
-
-  /**
-   * Whether this table has indexes
-   */
-  private get hasIndex(): boolean {
-    return this.globalSecondaryIndexes.length + this.localSecondaryIndexes.length > 0;
   }
 }
 

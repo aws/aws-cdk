@@ -2,7 +2,7 @@ import { expect, haveResource, ResourcePart } from '@aws-cdk/assert';
 import appscaling = require('@aws-cdk/aws-applicationautoscaling');
 import iam = require('@aws-cdk/aws-iam');
 import { CfnDeletionPolicy, ConstructNode, RemovalPolicy, Stack, Tag } from '@aws-cdk/core';
-import { Test } from 'nodeunit';
+import { Test, testCase } from 'nodeunit';
 import {
   Attribute,
   AttributeType,
@@ -64,11 +64,11 @@ function* LSI_GENERATOR() {
   }
 }
 
-export = {
+export = testCase({
   'default properties': {
     'hash key only'(test: Test) {
       const stack = new Stack();
-      new Table(stack, CONSTRUCT_NAME, { partitionKey: TABLE_PARTITION_KEY });
+      const table = new Table(stack, CONSTRUCT_NAME, { partitionKey: TABLE_PARTITION_KEY });
 
       expect(stack).to(haveResource('AWS::DynamoDB::Table', {
         AttributeDefinitions: [{ AttributeName: 'hashKey', AttributeType: 'S' }],
@@ -77,6 +77,9 @@ export = {
       }));
 
       expect(stack).to(haveResource('AWS::DynamoDB::Table', { DeletionPolicy: CfnDeletionPolicy.RETAIN }, ResourcePart.CompleteDefinition));
+
+      test.deepEqual(table.tablePartitionKey, { name: 'hashKey', type: AttributeType.STRING });
+      test.equal(table.tableSortKey, null);
 
       test.done();
     },
@@ -92,7 +95,7 @@ export = {
 
     'hash + range key'(test: Test) {
       const stack = new Stack();
-      new Table(stack, CONSTRUCT_NAME, {
+      const table = new Table(stack, CONSTRUCT_NAME, {
         partitionKey: TABLE_PARTITION_KEY,
         sortKey: TABLE_SORT_KEY
       });
@@ -108,29 +111,9 @@ export = {
               ],
               ProvisionedThroughput: { ReadCapacityUnits: 5, WriteCapacityUnits: 5 },
       }));
-      test.done();
-    },
 
-    'hash + range key can also be specified in props'(test: Test) {
-      const stack = new Stack();
-
-      new Table(stack, CONSTRUCT_NAME, {
-        partitionKey: TABLE_PARTITION_KEY,
-        sortKey: TABLE_SORT_KEY
-      });
-
-      expect(stack).to(haveResource('AWS::DynamoDB::Table',
-        {
-          AttributeDefinitions: [
-            { AttributeName: 'hashKey', AttributeType: 'S' },
-            { AttributeName: 'sortKey', AttributeType: 'N' }
-          ],
-          KeySchema: [
-            { AttributeName: 'hashKey', KeyType: 'HASH' },
-            { AttributeName: 'sortKey', KeyType: 'RANGE' }
-          ],
-          ProvisionedThroughput: { ReadCapacityUnits: 5, WriteCapacityUnits: 5 },
-        }));
+      test.deepEqual(table.tablePartitionKey, { name: 'hashKey', type: AttributeType.STRING });
+      test.deepEqual(table.tableSortKey, { name: 'sortKey', type: AttributeType.NUMBER });
 
       test.done();
     },
@@ -1262,7 +1245,129 @@ export = {
       test.done();
     }
   },
-};
+
+  'fromTableAttributes': {
+    'correctly imports table'(test: Test) {
+      // GIVEN
+      const stack = new Stack();
+
+      // WHEN
+      const table = Table.fromTableAttributes(stack, 'ImportedTable', {
+        tableArn: 'arn:aws:dynamodb:bermuda-triangle-1:123456789012:table/MyTestTable',
+        tableStreamArn: 'arn:aws:dynamodb:bermuda-triangle-1:123456789012:table/MyTestTable/stream',
+        tablePartitionKey: { name: 'hash_key', type: AttributeType.STRING },
+      });
+
+      // THEN
+      test.equal(table.tableArn, 'arn:aws:dynamodb:bermuda-triangle-1:123456789012:table/MyTestTable');
+      test.equal(table.tableName, 'MyTestTable');
+      test.equal(table.tableStreamArn, 'arn:aws:dynamodb:bermuda-triangle-1:123456789012:table/MyTestTable/stream');
+      test.deepEqual(table.tablePartitionKey, { name: 'hash_key', type: AttributeType.STRING });
+      test.equal(table.tableSortKey, null);
+
+      test.done();
+    },
+
+    'correctly imports table (with sort key)'(test: Test) {
+      // GIVEN
+      const stack = new Stack();
+
+      // WHEN
+      const table = Table.fromTableAttributes(stack, 'ImportedTable', {
+        tableArn: 'arn:aws:dynamodb:bermuda-triangle-1:123456789012:table/MyTestTable',
+        tableStreamArn: 'arn:aws:dynamodb:bermuda-triangle-1:123456789012:table/MyTestTable/stream',
+        tablePartitionKey: { name: 'hash_key', type: AttributeType.STRING },
+        tableSortKey: { name: 'range_key', type: AttributeType.NUMBER },
+      });
+
+      // THEN
+      test.equal(table.tableArn, 'arn:aws:dynamodb:bermuda-triangle-1:123456789012:table/MyTestTable');
+      test.equal(table.tableName, 'MyTestTable');
+      test.equal(table.tableStreamArn, 'arn:aws:dynamodb:bermuda-triangle-1:123456789012:table/MyTestTable/stream');
+      test.deepEqual(table.tablePartitionKey, { name: 'hash_key', type: AttributeType.STRING });
+      test.deepEqual(table.tableSortKey, { name: 'range_key', type: AttributeType.NUMBER });
+
+      test.done();
+    },
+
+    'can be used ot grant permissions'(test: Test) {
+      // GIVEN
+      const stack = new Stack();
+      const table = Table.fromTableAttributes(stack, 'ImportedTable', {
+        tableArn: 'arn:aws:dynamodb:bermuda-triangle-1:123456789012:table/MyTestTable',
+        tableStreamArn: 'arn:aws:dynamodb:bermuda-triangle-1:123456789012:table/MyTestTable/stream',
+        tablePartitionKey: { name: 'hash_key', type: AttributeType.STRING },
+      });
+      const user = new iam.User(stack, 'User');
+
+      // WHEN
+      table.grantReadData(user);
+
+      // THEN
+      expect(stack).to(haveResource('AWS::IAM::Policy', {
+        PolicyDocument: {
+          Statement: [
+            {
+              Action: [
+                'dynamodb:BatchGetItem',
+                'dynamodb:GetRecords',
+                'dynamodb:GetShardIterator',
+                'dynamodb:Query',
+                'dynamodb:GetItem',
+                'dynamodb:Scan',
+              ],
+              Effect: 'Allow',
+              Resource: [table.tableArn, { Ref: 'AWS::NoValue' }]
+            }
+          ],
+          Version: '2012-10-17'
+        },
+        Users: [{ Ref: 'User00B015A1' }]
+      }));
+
+      test.done();
+    },
+
+    'can be used to grant permissions (with indexes)'(test: Test) {
+      // GIVEN
+      const stack = new Stack();
+      const table = Table.fromTableAttributes(stack, 'ImportedTable', {
+        tableArn: 'arn:aws:dynamodb:bermuda-triangle-1:123456789012:table/MyTestTable',
+        tableStreamArn: 'arn:aws:dynamodb:bermuda-triangle-1:123456789012:table/MyTestTable/stream',
+        tablePartitionKey: { name: 'hash_key', type: AttributeType.STRING },
+        hasIndex: true,
+      });
+      const user = new iam.User(stack, 'User');
+
+      // WHEN
+      table.grantReadData(user);
+
+      // THEN
+      expect(stack).to(haveResource('AWS::IAM::Policy', {
+        PolicyDocument: {
+          Statement: [
+            {
+              Action: [
+                'dynamodb:BatchGetItem',
+                'dynamodb:GetRecords',
+                'dynamodb:GetShardIterator',
+                'dynamodb:Query',
+                'dynamodb:GetItem',
+                'dynamodb:Scan',
+              ],
+              Effect: 'Allow',
+              Resource: [table.tableArn, `${table.tableArn}/index/*`]
+            }
+          ],
+          Version: '2012-10-17'
+        },
+        Users: [{ Ref: 'User00B015A1' }]
+      }));
+
+      test.done();
+    },
+  },
+});
 
 function testGrant(test: Test, expectedActions: string[], invocation: (user: iam.IPrincipal, table: Table) => void) {
   // GIVEN
