@@ -51,7 +51,7 @@ There are three ways to scale your capacity:
 The general pattern of autoscaling will look like this:
 
 ```ts
-const capacity = resource.autoScaleCapacity({
+const capacity = resource.autoScaleReadCapacity({
   minCapacity: 5,
   maxCapacity: 100
 });
@@ -64,7 +64,7 @@ capacity.scaleOnSchedule(...);
 
 ### Step Scaling
 
-This type of scaling scales in and out in deterministics steps that you
+This type of scaling scales in and out in deterministic steps that you
 configure, in response to metric values. For example, your scaling strategy
 to scale in response to CPU usage might look like this:
 
@@ -92,7 +92,7 @@ capacity.scaleOnMetric('ScaleToCPU', {
 
   // Change this to AdjustmentType.PercentChangeInCapacity to interpret the
   // 'change' numbers before as percentages instead of capacity counts.
-  adjustmentType: autoscaling.AdjustmentType.ChangeInCapacity,
+  adjustmentType: autoscaling.AdjustmentType.CHANGE_IN_CAPACITY,
 });
 ```
 
@@ -139,7 +139,7 @@ The following schedule expressions can be used:
 * `cron(mm hh dd mm dow)` -- scale on arbitrary schedules
 
 Of these, the cron expression is the most useful but also the most
-complicated. There is a `Cron` helper class to help build cron expressions.
+complicated. There is a `Schedule` helper class with a `cron` method to help build cron expressions.
 
 The following example scales the fleet out in the morning, and lets natural
 scaling take over at night:
@@ -151,11 +151,11 @@ const capacity = resource.autoScaleCapacity({
 });
 
 capacity.scaleOnSchedule('PrescaleInTheMorning', {
-  schedule: autoscaling.Cron.dailyUtc(8),
+  schedule: autoscaling.Schedule.cron({ hour: '8', minute: '0' }),
   minCapacity: 20,
 });
 
 capacity.scaleOnSchedule('AllowDownscalingAtNight', {
-  schedule: autoscaling.Cron.dailyUtc(20),
+  schedule: autoscaling.Schedule.cron({ hour: '20', minute: '0' }),
   minCapacity: 1
 });
