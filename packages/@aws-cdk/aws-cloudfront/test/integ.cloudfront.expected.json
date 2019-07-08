@@ -2,6 +2,7 @@
   "Resources": {
     "Bucket83908E77": {
       "DeletionPolicy": "Delete",
+      "UpdateReplacePolicy": "Delete",
       "Type": "AWS::S3::Bucket"
     },
     "MyDistributionCFDistributionDE147309": {

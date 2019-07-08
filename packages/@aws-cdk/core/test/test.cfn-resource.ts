@@ -25,5 +25,52 @@ export = nodeunit.testCase({
 
       test.done();
     }
-  }
+  },
+
+  'applyRemovalPolicy default includes Update policy'(test: nodeunit.Test) {
+    // GIVEN
+    const app = new core.App();
+    const stack = new core.Stack(app, 'TestStack');
+    const resource = new core.CfnResource(stack, 'DefaultResource', { type: 'Test::Resource::Fake' });
+
+    // WHEN
+    resource.applyRemovalPolicy(core.RemovalPolicy.RETAIN);
+
+    // THEN
+    test.deepEqual(app.synth().getStack(stack.stackName).template, {
+      Resources: {
+        DefaultResource: {
+          Type: 'Test::Resource::Fake',
+          DeletionPolicy: 'Retain',
+          UpdateReplacePolicy: 'Retain',
+        }
+      }
+    });
+
+    test.done();
+  },
+
+  'can switch off updating Update policy'(test: nodeunit.Test) {
+    // GIVEN
+    const app = new core.App();
+    const stack = new core.Stack(app, 'TestStack');
+    const resource = new core.CfnResource(stack, 'DefaultResource', { type: 'Test::Resource::Fake' });
+
+    // WHEN
+    resource.applyRemovalPolicy(core.RemovalPolicy.RETAIN, {
+      applyToUpdateReplacePolicy: false
+    });
+
+    // THEN
+    test.deepEqual(app.synth().getStack(stack.stackName).template, {
+      Resources: {
+        DefaultResource: {
+          Type: 'Test::Resource::Fake',
+          DeletionPolicy: 'Retain',
+        }
+      }
+    });
+
+    test.done();
+  },
 });

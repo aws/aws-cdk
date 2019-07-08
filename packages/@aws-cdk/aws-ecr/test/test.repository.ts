@@ -20,7 +20,8 @@ export = {
       Resources: {
         Repo02AC86CF: {
           Type: "AWS::ECR::Repository",
-          DeletionPolicy: "Retain"
+          DeletionPolicy: "Retain",
+          UpdateReplacePolicy: "Retain",
         }
       }
     });

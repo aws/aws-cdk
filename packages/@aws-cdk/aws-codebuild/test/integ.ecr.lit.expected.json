@@ -1,6 +1,8 @@
 {
   "Resources": {
     "MyRepoF4F48043": {
+      "DeletionPolicy": "Retain",
+      "UpdateReplacePolicy": "Retain",
       "Type": "AWS::ECR::Repository",
       "DeletionPolicy": "Retain"
     },
