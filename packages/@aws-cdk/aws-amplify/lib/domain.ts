@@ -1,5 +1,6 @@
-import { Construct, IResource, Resource, ResourceProps } from "@aws-cdk/core";
-import { CfnDomain } from "./amplify.generated";
+import { Certificate, ICertificate } from '@aws-cdk/aws-certificatemanager';
+import { Construct, IResource, Resource, ResourceProps } from '@aws-cdk/core';
+import { CfnDomain } from './amplify.generated';
 import { IApp } from './app';
 
 /**
@@ -18,7 +19,7 @@ export class Domain extends Resource implements IDomain {
    *
    * @attribute
    */
-  public readonly certificateRecord: string;
+  public readonly certificateRecord: ICertificate;
 
   /**
    * Domain Name
@@ -41,6 +42,11 @@ export class Domain extends Resource implements IDomain {
    */
   public readonly statusReason: string;
 
+  /**
+   * Resource
+   */
+  private resource: CfnDomain;
+
   constructor(scope: Construct, id: string, props: DomainProps) {
     super(scope, id, props);
 
@@ -52,10 +58,16 @@ export class Domain extends Resource implements IDomain {
 
     this.arn = resource.attrArn;
     // return as ACM cert?
-    this.certificateRecord = resource.attrCertificateRecord;
+    this.certificateRecord = Certificate.fromCertificateArn(this, 'certificate', resource.attrCertificateRecord);
     this.domainName = resource.attrDomainName;
     this.domainStatus = resource.attrDomainStatus;
     this.statusReason = resource.attrStatusReason;
+
+    this.resource = resource;
+  }
+
+  public addSubdomainSettings(prefix: string, branchName: string) {
+    // do thing
   }
 }
 
