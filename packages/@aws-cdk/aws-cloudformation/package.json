@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/aws-cloudformation",
-  "version": "0.38.0",
+  "version": "0.39.0",
   "description": "CDK Constructs for AWS CloudFormation",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -65,27 +65,27 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "^0.38.0",
-    "@aws-cdk/aws-events": "^0.38.0",
-    "@aws-cdk/aws-ssm": "^0.38.0",
+    "@aws-cdk/assert": "^0.39.0",
+    "@aws-cdk/aws-events": "^0.39.0",
+    "@aws-cdk/aws-ssm": "^0.39.0",
     "@types/aws-lambda": "^8.10.27",
-    "cdk-build-tools": "^0.38.0",
-    "cdk-integ-tools": "^0.38.0",
-    "cfn2ts": "^0.38.0",
-    "pkglint": "^0.38.0"
+    "cdk-build-tools": "^0.39.0",
+    "cdk-integ-tools": "^0.39.0",
+    "cfn2ts": "^0.39.0",
+    "pkglint": "^0.39.0"
   },
   "dependencies": {
-    "@aws-cdk/aws-iam": "^0.38.0",
-    "@aws-cdk/aws-lambda": "^0.38.0",
-    "@aws-cdk/aws-sns": "^0.38.0",
-    "@aws-cdk/core": "^0.38.0"
+    "@aws-cdk/aws-iam": "^0.39.0",
+    "@aws-cdk/aws-lambda": "^0.39.0",
+    "@aws-cdk/aws-sns": "^0.39.0",
+    "@aws-cdk/core": "^0.39.0"
   },
   "homepage": "https://github.com/awslabs/aws-cdk",
   "peerDependencies": {
-    "@aws-cdk/aws-iam": "^0.38.0",
-    "@aws-cdk/aws-lambda": "^0.38.0",
-    "@aws-cdk/aws-sns": "^0.38.0",
-    "@aws-cdk/core": "^0.38.0"
+    "@aws-cdk/aws-iam": "^0.39.0",
+    "@aws-cdk/aws-lambda": "^0.39.0",
+    "@aws-cdk/aws-sns": "^0.39.0",
+    "@aws-cdk/core": "^0.39.0"
   },
   "engines": {
     "node": ">= 8.10.0"

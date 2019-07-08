@@ -2,6 +2,25 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.39.0](https://github.com/awslabs/aws-cdk/compare/v0.38.0...v0.39.0) (2019-07-08)
+
+
+### Bug Fixes
+
+* **codepipeline:** mark crossRegionReplicationBuckets and crossRegionSupport as experimental. ([#3226](https://github.com/awslabs/aws-cdk/issues/3226)) ([f8256e7](https://github.com/awslabs/aws-cdk/commit/f8256e7))
+* **assets:**: packages `assets`, `aws-ecr-assets` and `aws-s3-assets` are now experimental instead of stable
+
+
+### BREAKING CHANGES
+
+* **codepipeline:** Pipeline.crossRegionReplicationBuckets is now experimental
+* **codepipeline:** Pipeline.crossRegionSupport is now experimental
+* **codepipeline:** CrossRegionSupport is now experimental
+* **assets:**: package `assets`is now experimental instead of stable
+* **aws-ecr-assets:**: package `aws-ecr-assets`is now experimental instead of stable
+* **aws-s3-assets:**: package `aws-s3-assets`is now experimental instead of stable
+
+
 ## [0.38.0](https://github.com/awslabs/aws-cdk/compare/v0.37.0...v0.38.0) (2019-07-08)
 
 
