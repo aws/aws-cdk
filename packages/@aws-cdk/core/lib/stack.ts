@@ -390,15 +390,15 @@ export class Stack extends Construct implements ITaggable {
    * reports them as missing, and let the CLI resolve them by calling EC2
    * `DescribeAvailabilityZones` on the target environment.
    */
-  public get availabilityZones() {
+  public get availabilityZones(): string[] {
     // if account/region are tokens, we can't obtain AZs through the context
     // provider, so we fallback to use Fn::GetAZs. the current lowest common
     // denominator is 2 AZs across all AWS regions.
     const agnostic = Token.isUnresolved(this.account) || Token.isUnresolved(this.region);
     if (agnostic) {
       return this.node.tryGetContext(cxapi.AVAILABILITY_ZONE_FALLBACK_CONTEXT_KEY) || [
-        Fn.select(0, Fn.getAZs()),
-        Fn.select(1, Fn.getAZs())
+        Fn.select(0, Fn.getAzs()),
+        Fn.select(1, Fn.getAzs())
       ];
     }
 

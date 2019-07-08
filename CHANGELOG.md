@@ -2,6 +2,45 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+# [0.37.0](https://github.com/awslabs/aws-cdk/compare/v0.36.2...v0.37.0) (2019-07-04)
+
+
+### Bug Fixes
+
+* **core:** fix some return types ([#3192](https://github.com/awslabs/aws-cdk/issues/3192)) ([b5997c3](https://github.com/awslabs/aws-cdk/commit/b5997c3))
+* **ecs:** grant drain-hook policy container-instance permissions ([#3199](https://github.com/awslabs/aws-cdk/issues/3199)) ([7796cd7](https://github.com/awslabs/aws-cdk/commit/7796cd7)), closes [#3190](https://github.com/awslabs/aws-cdk/issues/3190)
+* **sns:** allow tokens to be used in UrlSubscription ([#2938](https://github.com/awslabs/aws-cdk/issues/2938)) ([5ce4141](https://github.com/awslabs/aws-cdk/commit/5ce4141))
+* **ssm:** correctly deduplicate parameter names ([#3183](https://github.com/awslabs/aws-cdk/issues/3183)) ([47bf435](https://github.com/awslabs/aws-cdk/commit/47bf435)), closes [#3076](https://github.com/awslabs/aws-cdk/issues/3076)
+* **stepfunctions:** Downscope SageMaker permissions ([#2991](https://github.com/awslabs/aws-cdk/issues/2991)) ([69c82c8](https://github.com/awslabs/aws-cdk/commit/69c82c8))
+
+
+### BREAKING CHANGES
+
+* **core:** `construct.findChild()` now only looks up direct children
+* **ec2:** `Port.toRuleJSON` was renamed to `toRuleJson`
+* **codebuild:** `PipelineProject.addSecondaryArtifact` now returns void (formerly any)
+* **codebuild:** `Project.addSecondaryArtifact` now returns void (formerly any)
+
+## [0.36.2](https://github.com/awslabs/aws-cdk/compare/v0.36.1...v0.36.2) (2019-07-03)
+
+
+### Bug Fixes
+
+* **cli:** generate metadata resource for region-independent stacks ([#3149](https://github.com/awslabs/aws-cdk/issues/3149)) ([0fb7ea3](https://github.com/awslabs/aws-cdk/commit/0fb7ea3)), closes [#3142](https://github.com/awslabs/aws-cdk/issues/3142)
+* **cli:** stop processing on metadata errors ([#3168](https://github.com/awslabs/aws-cdk/issues/3168)) ([0936bde](https://github.com/awslabs/aws-cdk/commit/0936bde))
+* **codepipeline:** correctly pass the replication buckets to Action.bind() ([#3131](https://github.com/awslabs/aws-cdk/issues/3131)) ([99ae5e7](https://github.com/awslabs/aws-cdk/commit/99ae5e7))
+* **codepipeline:** grant missing permisisons to the CloudFormationExecuteChangeSetAction. ([#3178](https://github.com/awslabs/aws-cdk/issues/3178)) ([958acc2](https://github.com/awslabs/aws-cdk/commit/958acc2)), closes [#3160](https://github.com/awslabs/aws-cdk/issues/3160)
+* **codepipeline:** grant the CodeCommit source Action read-write permissions to the Pipeline's Bucket. ([#3175](https://github.com/awslabs/aws-cdk/issues/3175)) ([bd46e49](https://github.com/awslabs/aws-cdk/commit/bd46e49)), closes [#3170](https://github.com/awslabs/aws-cdk/issues/3170)
+* **core:** prevent volatile physical name generation ([#2984](https://github.com/awslabs/aws-cdk/issues/2984)) ([af2680c](https://github.com/awslabs/aws-cdk/commit/af2680c))
+* **ecs:** remove temporary workaround for long arn support ([#3072](https://github.com/awslabs/aws-cdk/issues/3072)) ([9fdb63f](https://github.com/awslabs/aws-cdk/commit/9fdb63f)), closes [#2176](https://github.com/awslabs/aws-cdk/issues/2176)
+
+
+### Features
+
+* **codedeploy:** allow setting a Deployment Configuration for an imported Lambda Deployment Group. ([#3158](https://github.com/awslabs/aws-cdk/issues/3158)) ([05a49f0](https://github.com/awslabs/aws-cdk/commit/05a49f0))
+* **iam:** can configure 'deny' for policy statements ([#3165](https://github.com/awslabs/aws-cdk/issues/3165)) ([6679e86](https://github.com/awslabs/aws-cdk/commit/6679e86))
+
+
 ## [0.36.1](https://github.com/awslabs/aws-cdk/compare/v0.36.0...v0.36.1) (2019-07-01)
 
 ### Bug Fixes

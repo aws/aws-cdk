@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/region-info",
-  "version": "0.36.1",
+  "version": "0.37.0",
   "description": "AWS region information, such as service principal names",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -52,9 +52,9 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "@types/fs-extra": "^7.0.0",
-    "cdk-build-tools": "^0.36.1",
+    "cdk-build-tools": "^0.37.0",
     "fs-extra": "^8.0.1",
-    "pkglint": "^0.36.1"
+    "pkglint": "^0.37.0"
   },
   "jest": {
     "coverageReporters": [

@@ -3,14 +3,10 @@
 
 ---
 
-![Stability: Experimental](https://img.shields.io/badge/stability-Experimental-important.svg?style=for-the-badge)
+![Stability: Stable](https://img.shields.io/badge/stability-Stable-success.svg?style=for-the-badge)
 
 > **This is a _developer preview_ (public beta) module. Releases might lack important features and might have
 > future breaking changes.**
-> 
-> This API is still under active development and subject to non-backward
-> compatible changes or removal in any future version. Use of the API is not recommended in production
-> environments. Experimental APIs are not subject to the Semantic Versioning model.
 
 ---
 <!--END STABILITY BANNER-->
@@ -190,8 +186,7 @@ of the constants such as `WindowsBuildImage.WIN_SERVER_CORE_2016_BASE` or
 Alternatively, you can specify a custom image using one of the static methods on
 `XxxBuildImage`:
 
-* Use `.fromDockerHub(image)` to reference an image publicly available in Docker
-  Hub.
+* Use `.fromDockerRegistry(image[, { secretsManagerCredentials }])` to reference an image in any public or private Docker registry.
 * Use `.fromEcrRepository(repo[, tag])` to reference an image available in an
   ECR repository.
 * Use `.fromAsset(directory)` to use an image created from a
@@ -204,6 +199,10 @@ The following example shows how to define an image from a Docker asset:
 The following example shows how to define an image from an ECR repository:
 
 [ECR example](./test/integ.ecr.lit.ts)
+
+The following example shows how to define an image from a private docker registry:
+
+[Docker Registry example](./test/integ.docker-registry.lit.ts)
 
 ## Events
 

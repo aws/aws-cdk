@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/aws-pinpointemail",
-  "version": "0.36.1",
+  "version": "0.37.0",
   "description": "The CDK Construct Library for AWS::PinpointEmail",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -67,16 +67,16 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "^0.36.1",
-    "cdk-build-tools": "^0.36.1",
-    "cfn2ts": "^0.36.1",
-    "pkglint": "^0.36.1"
+    "@aws-cdk/assert": "^0.37.0",
+    "cdk-build-tools": "^0.37.0",
+    "cfn2ts": "^0.37.0",
+    "pkglint": "^0.37.0"
   },
   "dependencies": {
-    "@aws-cdk/core": "^0.36.1"
+    "@aws-cdk/core": "^0.37.0"
   },
   "peerDependencies": {
-    "@aws-cdk/core": "^0.36.1"
+    "@aws-cdk/core": "^0.37.0"
   },
   "engines": {
     "node": ">= 8.10.0"
