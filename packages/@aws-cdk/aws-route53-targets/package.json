@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/aws-route53-targets",
-  "version": "0.37.0",
+  "version": "0.38.0",
   "description": "CDK Constructs for AWS Route53 Alias Targets",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -70,33 +70,33 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "^0.37.0",
-    "@aws-cdk/aws-certificatemanager": "^0.37.0",
-    "@aws-cdk/aws-ec2": "^0.37.0",
-    "@aws-cdk/aws-lambda": "^0.37.0",
-    "@aws-cdk/aws-s3": "^0.37.0",
-    "cdk-build-tools": "^0.37.0",
-    "cdk-integ-tools": "^0.37.0",
-    "cfn2ts": "^0.37.0",
+    "@aws-cdk/assert": "^0.38.0",
+    "@aws-cdk/aws-certificatemanager": "^0.38.0",
+    "@aws-cdk/aws-ec2": "^0.38.0",
+    "@aws-cdk/aws-lambda": "^0.38.0",
+    "@aws-cdk/aws-s3": "^0.38.0",
+    "cdk-build-tools": "^0.38.0",
+    "cdk-integ-tools": "^0.38.0",
+    "cfn2ts": "^0.38.0",
     "jest": "^24.8.0",
-    "pkglint": "^0.37.0"
+    "pkglint": "^0.38.0"
   },
   "dependencies": {
-    "@aws-cdk/aws-apigateway": "^0.37.0",
-    "@aws-cdk/aws-cloudfront": "^0.37.0",
-    "@aws-cdk/aws-elasticloadbalancingv2": "^0.37.0",
-    "@aws-cdk/aws-iam": "^0.37.0",
-    "@aws-cdk/aws-route53": "^0.37.0",
-    "@aws-cdk/core": "^0.37.0"
+    "@aws-cdk/aws-apigateway": "^0.38.0",
+    "@aws-cdk/aws-cloudfront": "^0.38.0",
+    "@aws-cdk/aws-elasticloadbalancingv2": "^0.38.0",
+    "@aws-cdk/aws-iam": "^0.38.0",
+    "@aws-cdk/aws-route53": "^0.38.0",
+    "@aws-cdk/core": "^0.38.0"
   },
   "homepage": "https://github.com/awslabs/aws-cdk",
   "peerDependencies": {
-    "@aws-cdk/aws-apigateway": "^0.37.0",
-    "@aws-cdk/aws-cloudfront": "^0.37.0",
-    "@aws-cdk/aws-elasticloadbalancingv2": "^0.37.0",
-    "@aws-cdk/aws-iam": "^0.37.0",
-    "@aws-cdk/aws-route53": "^0.37.0",
-    "@aws-cdk/core": "^0.37.0"
+    "@aws-cdk/aws-apigateway": "^0.38.0",
+    "@aws-cdk/aws-cloudfront": "^0.38.0",
+    "@aws-cdk/aws-elasticloadbalancingv2": "^0.38.0",
+    "@aws-cdk/aws-iam": "^0.38.0",
+    "@aws-cdk/aws-route53": "^0.38.0",
+    "@aws-cdk/core": "^0.38.0"
   },
   "engines": {
     "node": ">= 8.10.0"
