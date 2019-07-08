@@ -139,7 +139,7 @@ The following schedule expressions can be used:
 * `cron(mm hh dd mm dow)` -- scale on arbitrary schedules
 
 Of these, the cron expression is the most useful but also the most
-complicated. There is a `Schedule` helper class with a `cron` method to help build cron expressions.
+complicated. A schedule is expressed as a cron expression. The `Schedule` class has a `cron` method to help build cron expressions.
 
 The following example scales the fleet out in the morning, and lets natural
 scaling take over at night:
