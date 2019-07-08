@@ -72,11 +72,13 @@
   "dependencies": {
     "@aws-cdk/core": "^1.2.0"
   },
-  "peerDependencies": {
-    "@aws-cdk/core": "^1.2.0"
-  },
   "engines": {
     "node": ">= 8.10.0"
   },
-  "stability": "experimental"
+  "stability": "experimental",
+  "peerDependencies": {
+    "@aws-cdk/aws-iam": "^0.37.0",
+    "@aws-cdk/aws-certificatemanager": "^0.37.0",
+    "@aws-cdk/core": "^0.37.0"
+  }
 }
