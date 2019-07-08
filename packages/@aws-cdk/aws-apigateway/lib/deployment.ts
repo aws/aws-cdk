@@ -1,4 +1,4 @@
-import { CfnDeletionPolicy, Construct, Lazy, Resource, Stack } from '@aws-cdk/core';
+import { Construct, Lazy, RemovalPolicy, Resource, Stack } from '@aws-cdk/core';
 import crypto = require('crypto');
 import { CfnDeployment, CfnDeploymentProps } from './apigateway.generated';
 import { IRestApi } from './restapi';
@@ -72,7 +72,7 @@ export class Deployment extends Resource {
     });
 
     if (props.retainDeployments) {
-      this.resource.cfnOptions.deletionPolicy = CfnDeletionPolicy.RETAIN;
+      this.resource.applyRemovalPolicy(RemovalPolicy.RETAIN);
     }
 
     this.api = props.api;

@@ -7,7 +7,8 @@
           "IndexDocument": "index.html"
         }
       },
-      "DeletionPolicy": "Delete"
+      "DeletionPolicy": "Delete",
+      "UpdateReplacePolicy": "Delete"
     },
     "DestinationPolicy7982387E": {
       "Type": "AWS::S3::BucketPolicy",
@@ -91,7 +92,8 @@
         },
         "RetainOnDelete": false
       },
-      "DeletionPolicy": "Delete"
+      "DeletionPolicy": "Delete",
+      "UpdateReplacePolicy": "Delete"
     },
     "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRole89A01265": {
       "Type": "AWS::IAM::Role",
@@ -356,7 +358,8 @@
     },
     "Destination281A09BDF": {
       "Type": "AWS::S3::Bucket",
-      "DeletionPolicy": "Retain"
+      "DeletionPolicy": "Retain",
+      "UpdateReplacePolicy": "Retain"
     },
     "DeployWithPrefixCustomResource9CF7C694": {
       "Type": "Custom::CDKBucketDeployment",
@@ -409,7 +412,8 @@
         "DestinationBucketKeyPrefix": "deploy/here/",
         "RetainOnDelete": false
       },
-      "DeletionPolicy": "Delete"
+      "DeletionPolicy": "Delete",
+      "UpdateReplacePolicy": "Delete"
     }
   },
   "Parameters": {

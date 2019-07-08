@@ -7,7 +7,8 @@
           "Status": "Enabled"
         }
       },
-      "DeletionPolicy": "Delete"
+      "DeletionPolicy": "Delete",
+      "UpdateReplacePolicy": "Delete"
     },
     "MyPipelineRoleC0D47CA4": {
       "Type": "AWS::IAM::Role",

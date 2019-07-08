@@ -26,7 +26,8 @@
         "myapiv1toysPUT59AFBBC2",
         "myapiv1toysA55FCBC4"
       ],
-      "DeletionPolicy": "Retain"
+      "DeletionPolicy": "Retain",
+      "UpdateReplacePolicy": "Retain"
     },
     "myapiDeploymentStagebeta96434BEB": {
       "Type": "AWS::ApiGateway::Stage",

@@ -135,7 +135,8 @@
           "StreamViewType": "NEW_IMAGE"
         }
       },
-      "DeletionPolicy": "Delete"
+      "DeletionPolicy": "Delete",
+      "UpdateReplacePolicy": "Delete"
     }
   }
 }

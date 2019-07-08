@@ -1345,6 +1345,7 @@ Object {
         },
       },
       "Type": "AWS::DynamoDB::Table",
+      "UpdateReplacePolicy": "Retain",
     },
     "lambdaeventsHelloWorldFunctionAB27BB65ApiEventSourceA7A86A4F12449C5F": Object {
       "Properties": Object {
@@ -1942,6 +1943,7 @@ Object {
         },
       },
       "Type": "AWS::KMS::Key",
+      "UpdateReplacePolicy": "Retain",
     },
     "PipelineArtifactsBucket22248F97": Object {
       "DeletionPolicy": "Retain",
@@ -1963,6 +1965,7 @@ Object {
         },
       },
       "Type": "AWS::S3::Bucket",
+      "UpdateReplacePolicy": "Retain",
     },
     "PipelineArtifactsBucketEncryptionKey01D58D69": Object {
       "DeletionPolicy": "Retain",
@@ -2083,6 +2086,7 @@ Object {
         },
       },
       "Type": "AWS::KMS::Key",
+      "UpdateReplacePolicy": "Retain",
     },
     "PipelineBuildCodePipelineActionRoleD77A08E6": Object {
       "Properties": Object {
@@ -2931,6 +2935,7 @@ Object {
         },
       },
       "Type": "AWS::KMS::Key",
+      "UpdateReplacePolicy": "Retain",
     },
   },
 }

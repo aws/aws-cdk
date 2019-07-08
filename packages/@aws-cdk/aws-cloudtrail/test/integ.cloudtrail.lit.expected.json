@@ -2,11 +2,13 @@
   "Resources": {
     "Bucket83908E77": {
       "Type": "AWS::S3::Bucket",
-      "DeletionPolicy": "Delete"
+      "DeletionPolicy": "Delete",
+      "UpdateReplacePolicy": "Delete"
     },
     "TrailS30071F172": {
       "Type": "AWS::S3::Bucket",
-      "DeletionPolicy": "Retain"
+      "DeletionPolicy": "Retain",
+      "UpdateReplacePolicy": "Retain"
     },
     "TrailS3PolicyE42170FE": {
       "Type": "AWS::S3::BucketPolicy",

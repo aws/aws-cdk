@@ -25,7 +25,8 @@
           },
           "TableName": "integrationtest"
         },
-        "DeletionPolicy": "Delete"
+        "DeletionPolicy": "Delete",
+        "UpdateReplacePolicy": "Delete"
       }
     }
   },
@@ -55,7 +56,8 @@
           },
           "TableName": "integrationtest"
         },
-        "DeletionPolicy": "Delete"
+        "DeletionPolicy": "Delete",
+        "UpdateReplacePolicy": "Delete"
       }
     }
   },
@@ -85,7 +87,8 @@
           },
           "TableName": "integrationtest"
         },
-        "DeletionPolicy": "Delete"
+        "DeletionPolicy": "Delete",
+        "UpdateReplacePolicy": "Delete"
       }
     }
   },
@@ -236,7 +239,8 @@
           "ResourceType": "Custom::DynamoGlobalTableCoordinator",
           "TableName": "integrationtest"
         },
-        "DeletionPolicy": "Delete"
+        "DeletionPolicy": "Delete",
+        "UpdateReplacePolicy": "Delete"
       }
     },
     "Parameters": {

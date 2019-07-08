@@ -18,7 +18,8 @@ test('bucket without notifications', () => {
     "Resources": {
       "MyBucketF68F3FF0": {
         "Type": "AWS::S3::Bucket",
-        "DeletionPolicy": "Retain"
+        "DeletionPolicy": "Retain",
+        "UpdateReplacePolicy": "Retain"
       }
     }
   });

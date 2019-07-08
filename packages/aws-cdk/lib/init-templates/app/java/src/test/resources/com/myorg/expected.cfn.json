@@ -64,23 +64,28 @@
         },
         "BucketsBucket04F23AD6D": {
             "Type": "AWS::S3::Bucket",
-            "DeletionPolicy": "Retain"
+            "DeletionPolicy": "Retain",
+            "UpdateReplacePolicy": "Retain"
         },
         "BucketsBucket1B98A5B53": {
             "Type": "AWS::S3::Bucket",
-            "DeletionPolicy": "Retain"
+            "DeletionPolicy": "Retain",
+            "UpdateReplacePolicy": "Retain"
         },
         "BucketsBucket237F4E9C5": {
             "Type": "AWS::S3::Bucket",
-            "DeletionPolicy": "Retain"
+            "DeletionPolicy": "Retain",
+            "UpdateReplacePolicy": "Retain"
         },
         "BucketsBucket351AD8978": {
             "Type": "AWS::S3::Bucket",
-            "DeletionPolicy": "Retain"
+            "DeletionPolicy": "Retain",
+            "UpdateReplacePolicy": "Retain"
         },
         "BucketsBucket4AEE1AAD9": {
             "Type": "AWS::S3::Bucket",
-            "DeletionPolicy": "Retain"
+            "DeletionPolicy": "Retain",
+            "UpdateReplacePolicy": "Retain"
         },
         "MyUserDC45028B": {
             "Type": "AWS::IAM::User"

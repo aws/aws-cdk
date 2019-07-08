@@ -81,7 +81,8 @@
           "Version": "2012-10-17"
         }
       },
-      "DeletionPolicy": "Retain"
+      "DeletionPolicy": "Retain",
+      "UpdateReplacePolicy": "Retain"
     },
     "PipelineArtifactsBucket22248F97": {
       "Type": "AWS::S3::Bucket",
@@ -102,7 +103,8 @@
           ]
         }
       },
-      "DeletionPolicy": "Retain"
+      "DeletionPolicy": "Retain",
+      "UpdateReplacePolicy": "Retain"
     },
     "PipelineRoleD68726F7": {
       "Type": "AWS::IAM::Role",
@@ -573,7 +575,8 @@
           "Status": "Enabled"
         }
       },
-      "DeletionPolicy": "Delete"
+      "DeletionPolicy": "Delete",
+      "UpdateReplacePolicy": "Delete"
     },
     "PipelineBucketawscdkcodepipelinelambdaPipeline87A4B3D3SourceEventRuleCE4D4505": {
       "Type": "AWS::Events::Rule",
@@ -648,7 +651,8 @@
     },
     "CloudTrailS310CD22F2": {
       "Type": "AWS::S3::Bucket",
-      "DeletionPolicy": "Retain"
+      "DeletionPolicy": "Retain",
+      "UpdateReplacePolicy": "Retain"
     },
     "CloudTrailS3PolicyEA49A03E": {
       "Type": "AWS::S3::BucketPolicy",

@@ -46,7 +46,8 @@
             "Version": "2012-10-17"
           }
         },
-        "DeletionPolicy": "Delete"
+        "DeletionPolicy": "Delete",
+        "UpdateReplacePolicy": "Delete"
       },
       "MyKeyAlias1B45D9DA": {
         "Type": "AWS::KMS::Alias",

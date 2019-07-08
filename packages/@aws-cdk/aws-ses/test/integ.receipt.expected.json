@@ -81,7 +81,8 @@
     },
     "Bucket83908E77": {
       "Type": "AWS::S3::Bucket",
-      "DeletionPolicy": "Retain"
+      "DeletionPolicy": "Retain",
+      "UpdateReplacePolicy": "Retain"
     },
     "BucketPolicyE9A3008A": {
       "Type": "AWS::S3::BucketPolicy",
@@ -211,7 +212,8 @@
           "Version": "2012-10-17"
         }
       },
-      "DeletionPolicy": "Retain"
+      "DeletionPolicy": "Retain",
+      "UpdateReplacePolicy": "Retain"
     },
     "RuleSetE30C6C48": {
       "Type": "AWS::SES::ReceiptRuleSet"

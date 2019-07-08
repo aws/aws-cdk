@@ -158,7 +158,8 @@ export = {
               "Version": "2012-10-17"
             }
           },
-          "DeletionPolicy": "Retain"
+          "DeletionPolicy": "Retain",
+          "UpdateReplacePolicy": "Retain"
         },
         "MyStream5C050E93": {
           "Type": "AWS::Kinesis::Stream",
@@ -241,7 +242,8 @@ export = {
               "Version": "2012-10-17"
             }
           },
-          "DeletionPolicy": "Retain"
+          "DeletionPolicy": "Retain",
+          "UpdateReplacePolicy": "Retain"
         },
         "MyStream5C050E93": {
           "Type": "AWS::Kinesis::Stream",
@@ -336,7 +338,8 @@ export = {
                   "Version": "2012-10-17"
                 }
               },
-              "DeletionPolicy": "Retain"
+              "DeletionPolicy": "Retain",
+              "UpdateReplacePolicy": "Retain"
             },
             "MyStream5C050E93": {
               "Type": "AWS::Kinesis::Stream",
@@ -476,7 +479,8 @@ export = {
                   "Version": "2012-10-17"
                 }
               },
-              "DeletionPolicy": "Retain"
+              "DeletionPolicy": "Retain",
+              "UpdateReplacePolicy": "Retain"
             },
             "MyStream5C050E93": {
               "Type": "AWS::Kinesis::Stream",
@@ -621,7 +625,8 @@ export = {
                   "Version": "2012-10-17"
                 }
               },
-              "DeletionPolicy": "Retain"
+              "DeletionPolicy": "Retain",
+              "UpdateReplacePolicy": "Retain"
             },
             "MyStream5C050E93": {
               "Type": "AWS::Kinesis::Stream",

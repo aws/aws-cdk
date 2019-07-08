@@ -312,7 +312,8 @@ export = {
         "Resources": {
         "MyBucketF68F3FF0": {
           "Type": "AWS::S3::Bucket",
-          "DeletionPolicy": "Retain"
+          "DeletionPolicy": "Retain",
+          "UpdateReplacePolicy": "Retain"
         },
         "MyProjectRole9BBE5233": {
           "Type": "AWS::IAM::Role",

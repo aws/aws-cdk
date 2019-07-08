@@ -306,10 +306,10 @@ export = {
 
     test.deepEqual(toCloudFormation(stack), {
       Resources: {
-        Retain: { Type: 'T1', DeletionPolicy: 'Retain' },
-        Destroy: { Type: 'T3', DeletionPolicy: 'Delete' },
-        Default1: { Type: 'T4', DeletionPolicy: 'Delete' }, // explicit default
-        Default2: { Type: 'T4', DeletionPolicy: 'Retain' } // implicit default
+        Retain: { Type: 'T1', DeletionPolicy: 'Retain', UpdateReplacePolicy: 'Retain'  },
+        Destroy: { Type: 'T3', DeletionPolicy: 'Delete', UpdateReplacePolicy: 'Delete' },
+        Default1: { Type: 'T4', DeletionPolicy: 'Delete', UpdateReplacePolicy: 'Delete' }, // explicit default
+        Default2: { Type: 'T4', DeletionPolicy: 'Retain', UpdateReplacePolicy: 'Retain' } // implicit default
       }
     });
     test.done();

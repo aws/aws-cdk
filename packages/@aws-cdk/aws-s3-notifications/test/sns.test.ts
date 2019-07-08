@@ -21,10 +21,12 @@ test('asBucketNotificationDestination adds bucket permissions only once for each
       Bucket83908E77: {
         Type: "AWS::S3::Bucket",
         DeletionPolicy: "Retain",
+        UpdateReplacePolicy: "Retain",
       },
       Bucket25524B414: {
         Type: "AWS::S3::Bucket",
         DeletionPolicy: "Retain",
+        UpdateReplacePolicy: "Retain",
       },
       MyTopic86869434: {
         Type: "AWS::SNS::Topic"

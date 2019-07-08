@@ -28,7 +28,8 @@ export = {
 
     expect(tableStack).to(haveResource('AWS::S3::Bucket', {
       Type: "AWS::S3::Bucket",
-      DeletionPolicy: "Retain"
+      DeletionPolicy: "Retain",
+      UpdateReplacePolicy: "Retain"
     }, ResourcePart.CompleteDefinition));
 
     expect(tableStack).to(haveResource('AWS::Glue::Table', {

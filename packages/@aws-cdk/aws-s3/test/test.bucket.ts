@@ -22,6 +22,7 @@ export = {
         "MyBucketF68F3FF0": {
           "Type": "AWS::S3::Bucket",
           "DeletionPolicy": "Retain",
+          "UpdateReplacePolicy": "Retain",
         }
       }
     });
@@ -53,6 +54,7 @@ export = {
         "MyBucketF68F3FF0": {
           "Type": "AWS::S3::Bucket",
           "DeletionPolicy": "Retain",
+          "UpdateReplacePolicy": "Retain",
         }
       }
     });
@@ -82,6 +84,7 @@ export = {
             }
           },
           "DeletionPolicy": "Retain",
+          "UpdateReplacePolicy": "Retain",
         }
       }
     });
@@ -303,7 +306,8 @@ export = {
               "Version": "2012-10-17"
             }
           },
-          "DeletionPolicy": "Retain"
+          "DeletionPolicy": "Retain",
+          "UpdateReplacePolicy": "Retain"
         },
         "MyBucketF68F3FF0": {
           "Type": "AWS::S3::Bucket",
@@ -325,6 +329,7 @@ export = {
             }
           },
           "DeletionPolicy": "Retain",
+          "UpdateReplacePolicy": "Retain",
         }
       }
     });
@@ -347,6 +352,7 @@ export = {
             }
           },
           "DeletionPolicy": "Retain",
+          "UpdateReplacePolicy": "Retain",
         }
       }
     });
@@ -372,6 +378,7 @@ export = {
             }
           },
           "DeletionPolicy": "Retain",
+          "UpdateReplacePolicy": "Retain",
         }
       }
     });
@@ -395,6 +402,7 @@ export = {
             }
           },
           "DeletionPolicy": "Retain",
+          "UpdateReplacePolicy": "Retain",
         }
       }
     });
@@ -417,6 +425,7 @@ export = {
             }
           },
           "DeletionPolicy": "Retain",
+          "UpdateReplacePolicy": "Retain",
         }
       }
     });
@@ -436,6 +445,7 @@ export = {
           "MyBucketF68F3FF0": {
             "Type": "AWS::S3::Bucket",
             "DeletionPolicy": "Retain",
+            "UpdateReplacePolicy": "Retain",
           },
           "MyBucketPolicyE7FBAC7B": {
             "Type": "AWS::S3::BucketPolicy",
@@ -543,7 +553,8 @@ export = {
       Resources: {
         MyBucketF68F3FF0: {
           Type: 'AWS::S3::Bucket',
-          DeletionPolicy: 'Retain'
+          DeletionPolicy: 'Retain',
+          UpdateReplacePolicy: 'Retain'
         }
       }
     });
@@ -684,7 +695,8 @@ export = {
         },
         "MyBucketF68F3FF0": {
           "Type": "AWS::S3::Bucket",
-          "DeletionPolicy": "Retain"
+          "DeletionPolicy": "Retain",
+          "UpdateReplacePolicy": "Retain"
         },
       }
     });
@@ -703,6 +715,7 @@ export = {
           "MyBucketF68F3FF0": {
             "Type": "AWS::S3::Bucket",
             "DeletionPolicy": "Retain",
+            "UpdateReplacePolicy": "Retain",
           },
           "MyUserDC45028B": {
             "Type": "AWS::IAM::User"
@@ -894,11 +907,13 @@ export = {
                 "Version": "2012-10-17"
               }
             },
-            "DeletionPolicy": "Retain"
+            "DeletionPolicy": "Retain",
+            "UpdateReplacePolicy": "Retain"
           },
           "MyBucketF68F3FF0": {
             "Type": "AWS::S3::Bucket",
             "DeletionPolicy": "Retain",
+            "UpdateReplacePolicy": "Retain",
             "Properties": {
               "BucketEncryption": {
                 "ServerSideEncryptionConfiguration": [
@@ -1026,7 +1041,8 @@ export = {
         "Resources": {
           "MyBucketF68F3FF0": {
             "Type": "AWS::S3::Bucket",
-            "DeletionPolicy": "Retain"
+            "DeletionPolicy": "Retain",
+            "UpdateReplacePolicy": "Retain"
           }
         },
         "Outputs": {
@@ -1270,7 +1286,8 @@ export = {
       "Resources": {
         "MyBucketF68F3FF0": {
           "Type": "AWS::S3::Bucket",
-          "DeletionPolicy": "Retain"
+          "DeletionPolicy": "Retain",
+          "UpdateReplacePolicy": "Retain"
         }
       },
       "Outputs": {

@@ -119,6 +119,7 @@ export = {
         "Bucket83908E77": {
           "Type": "AWS::S3::Bucket",
           "DeletionPolicy": "Retain",
+          "UpdateReplacePolicy": "Retain",
         },
         "AnAmazingWebsiteProbablyCFDistribution47E3983B": {
           "Type": "AWS::CloudFront::Distribution",
@@ -194,6 +195,7 @@ export = {
         "Bucket83908E77": {
           "Type": "AWS::S3::Bucket",
           "DeletionPolicy": "Retain",
+          "UpdateReplacePolicy": "Retain",
         },
         "AnAmazingWebsiteProbablyCFDistribution47E3983B": {
           "Type": "AWS::CloudFront::Distribution",
@@ -272,6 +274,7 @@ export = {
         "Bucket83908E77": {
           "Type": "AWS::S3::Bucket",
           "DeletionPolicy": "Retain",
+          "UpdateReplacePolicy": "Retain",
         },
         "AnAmazingWebsiteProbablyCFDistribution47E3983B": {
           "Type": "AWS::CloudFront::Distribution",

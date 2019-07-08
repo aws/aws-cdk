@@ -99,7 +99,8 @@ export = {
           Ref: "apiC8550315"
           }
         },
-        DeletionPolicy: "Retain"
+        DeletionPolicy: "Retain",
+        UpdateReplacePolicy: "Retain"
         }
       }
     });

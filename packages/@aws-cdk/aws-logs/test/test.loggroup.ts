@@ -51,7 +51,8 @@ export = {
       Resources: {
         LogGroupF5B46931: {
           Type: "AWS::Logs::LogGroup",
-          DeletionPolicy: "Retain"
+          DeletionPolicy: "Retain",
+          UpdateReplacePolicy: "Retain"
         }
       }
     }));
@@ -74,7 +75,8 @@ export = {
       Resources: {
         LogGroupF5B46931: {
           Type: "AWS::Logs::LogGroup",
-          DeletionPolicy: "Delete"
+          DeletionPolicy: "Delete",
+          UpdateReplacePolicy: "Delete"
         }
       }
     }));
