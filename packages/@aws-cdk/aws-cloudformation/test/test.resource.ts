@@ -50,6 +50,7 @@ export = testCase({
       // THEN
       expect(stack).to(haveResource('AWS::CloudFormation::CustomResource', {
         DeletionPolicy: 'Retain',
+        UpdateReplacePolicy: 'Retain',
       }, ResourcePart.CompleteDefinition));
 
       test.done();
@@ -112,6 +113,7 @@ export = testCase({
         "Custom1D319B237": {
           "Type": "AWS::CloudFormation::CustomResource",
           "DeletionPolicy": "Delete",
+          "UpdateReplacePolicy": "Delete",
           "Properties": {
             "ServiceToken": {
               "Fn::GetAtt": [
@@ -124,6 +126,7 @@ export = testCase({
         "Custom2DD5FB44D": {
           "Type": "AWS::CloudFormation::CustomResource",
           "DeletionPolicy": "Delete",
+          "UpdateReplacePolicy": "Delete",
           "Properties": {
             "ServiceToken": {
               "Fn::GetAtt": [

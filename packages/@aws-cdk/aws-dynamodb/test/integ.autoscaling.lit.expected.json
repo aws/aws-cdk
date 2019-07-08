@@ -20,7 +20,8 @@
           "WriteCapacityUnits": 5
         }
       },
-      "DeletionPolicy": "Delete"
+      "DeletionPolicy": "Delete",
+      "UpdateReplacePolicy": "Delete"
     },
     "TableReadScalingTargetF96E9F76": {
       "Type": "AWS::ApplicationAutoScaling::ScalableTarget",
