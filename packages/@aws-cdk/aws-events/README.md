@@ -43,7 +43,7 @@ The `Rule` construct defines a CloudWatch events rule which monitors an
 event based on an [event
 pattern](https://docs.aws.amazon.com/AmazonCloudWatch/latest/events/CloudWatchEventsandEventPatterns.html)
 and invoke __event targets__ when the pattern is matched against a triggered
-event. Event targets are objects that implement the `IEventTarget` interface.
+event. Event targets are objects that implement the `IRuleTarget` interface.
 
 Normally, you will use one of the `source.onXxx(name[, target[, options]]) ->
 Rule` methods on the event source to define an event rule associated with
@@ -54,7 +54,10 @@ For example, to define an rule that triggers a CodeBuild project build when a
 commit is pushed to the "master" branch of a CodeCommit repository:
 
 ```ts
-const onCommitRule = repo.onCommit('OnCommitToMaster', project, 'master');
+const onCommitRule = repo.onCommit('OnCommit', {
+  target: new targets.CodeBuildProject(project),
+  branches: ['master']
+});
 ```
 
 You can add additional targets, with optional [input
@@ -65,13 +68,11 @@ topic target which formats a human-readable message for the commit.
 For example, this adds an SNS topic as a target:
 
 ```ts
-onCommitRule.addTarget(topic, {
-    template: 'A commit was pushed to the repository <repo> on branch <branch>',
-    pathsMap: {
-        branch: '$.detail.referenceName',
-        repo: '$.detail.repositoryName'
-    }
-});
+onCommitRule.addTarget(new targets.SnsTopic(topic, {
+  message: events.RuleTargetInput.fromText(
+    `A commit was pushed to the repository ${codecommit.ReferenceEvent.repositoryName} on branch ${codecommit.ReferenceEvent.referenceName}`
+  )
+}));
 ```
 
 ## Event Targets
