@@ -1,6 +1,7 @@
 import { IRole, LazyRole, ServicePrincipal } from '@aws-cdk/aws-iam';
 import { Construct, IResource, Resource, ResourceProps, Tag } from '@aws-cdk/core';
 import { CfnApp } from './amplify.generated';
+import { BasicAuthConfig, EnvironmentVariable } from './shared';
 
 /**
  * App
@@ -216,28 +217,6 @@ export interface AppProps extends AppOptions {
 }
 
 /**
- * Basic Auth Config Interface
- */
-export interface BasicAuthConfig {
-  /**
-   * Enable Basic Auth
-   *
-   * @default false
-   */
-  readonly enableBasicAuth?: boolean;
-
-  /**
-   * Password
-   */
-  readonly password: string;
-
-  /**
-   * Username
-   */
-  readonly username: string;
-}
-
-/**
  * Custom Rule Interface
  */
 export interface CustomRule {
@@ -264,19 +243,4 @@ export interface CustomRule {
    * Target
    */
   readonly target: string;
-}
-
-/**
- * Environment Variable Interface
- */
-export interface EnvironmentVariable {
-  /**
-   * Name
-   */
-  readonly name: string;
-
-  /**
-   * Value
-   */
-  readonly value: string;
 }
