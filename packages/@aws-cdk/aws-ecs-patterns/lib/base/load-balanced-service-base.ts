@@ -129,11 +129,8 @@ export abstract class LoadBalancedServiceBase extends cdk.Construct {
 
     if (props.cluster && props.vpc) {
       throw new Error(`You can only specify either vpc or cluster. Alternatively, you can leave both blank`);
-    } else if (props.cluster) {
-      this.cluster = props.cluster;
-    } else {
-      this.cluster = this.getCreateDefaultCluster(this, props.vpc);
     }
+    this.cluster = props.cluster || this.getDefaultCluster(this, props.vpc);
 
     // Create log driver if logging is enabled
     const enableLogging = props.enableLogging !== undefined ? props.enableLogging : true;
@@ -198,7 +195,7 @@ export abstract class LoadBalancedServiceBase extends cdk.Construct {
     new cdk.CfnOutput(this, 'LoadBalancerDNS', { value: this.loadBalancer.loadBalancerDnsName });
   }
 
-  protected getCreateDefaultCluster(scope: cdk.Construct, vpc?: ec2.IVpc): ecs.Cluster {
+  protected getDefaultCluster(scope: cdk.Construct, vpc?: ec2.IVpc): ecs.Cluster {
     // magic string to avoid collision with user-defined constructs
     const DEFAULT_CLUSTER_ID = `EcsDefaultClusterMnL3mNNYN${vpc ? vpc.node.id : ''}`;
     const stack = cdk.Stack.of(scope);

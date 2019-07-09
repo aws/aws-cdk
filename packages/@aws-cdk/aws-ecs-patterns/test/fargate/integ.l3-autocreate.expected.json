@@ -183,7 +183,8 @@
     },
     "L3TaskDefwebLogGroupC6E4A38A": {
       "Type": "AWS::Logs::LogGroup",
-      "DeletionPolicy": "Retain"
+      "DeletionPolicy": "Retain",
+      "UpdateReplacePolicy": "Retain"
     },
     "L3TaskDefExecutionRole49AF0996": {
       "Type": "AWS::IAM::Role",
@@ -861,7 +862,8 @@
     },
     "L3bTaskDefwebLogGroup8E5F1183": {
       "Type": "AWS::Logs::LogGroup",
-      "DeletionPolicy": "Retain"
+      "DeletionPolicy": "Retain",
+      "UpdateReplacePolicy": "Retain"
     },
     "L3bTaskDefExecutionRole9A3E2688": {
       "Type": "AWS::IAM::Role",

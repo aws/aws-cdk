@@ -56,6 +56,31 @@ export = {
     test.done();
   },
 
+  'set vpc instead of cluster'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    new ecsPatterns.LoadBalancedEc2Service(stack, 'Service', {
+      vpc,
+      memoryLimitMiB: 1024,
+      image: ecs.ContainerImage.fromRegistry('test'),
+      desiredCount: 2,
+      environment: {
+        TEST_ENVIRONMENT_VARIABLE1: "test environment variable 1 value",
+        TEST_ENVIRONMENT_VARIABLE2: "test environment variable 2 value"
+      }
+    });
+
+    // THEN - stack does not contain a LaunchConfiguration
+    expect(stack, true).notTo(haveResource("AWS::AutoScaling::LaunchConfiguration"));
+
+    test.throws(() => expect(stack));
+
+    test.done();
+  },
+
   'setting vpc and cluster throws error'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
