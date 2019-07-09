@@ -2,6 +2,7 @@
 import 'source-map-support/register';
 
 import colors = require('colors/safe');
+import path = require('path');
 import yargs = require('yargs');
 
 import { bootstrapEnvironment, destroyStack, SDK } from '../lib';
@@ -299,6 +300,9 @@ async function initCommandLine() {
     if (isIntegMode) {
       return stacks.map(s => s.template);
     }
+
+    success(`Successfully synthesized to ${colors.blue(path.resolve(appStacks.assembly!.directory))}`);
+    print(`Supply a stack name (${stacks.map(s => colors.green(s.name)).join(', ')}) to display its template.`);
 
     // no output to stdout
     return undefined;
