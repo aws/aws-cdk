@@ -122,8 +122,7 @@ export interface LambdaDeploymentGroupProps {
  */
 export class LambdaDeploymentGroup extends cdk.Resource implements ILambdaDeploymentGroup {
   /**
-   * Import an Lambda Deployment Group defined either outside the CDK,
-   * or in a different CDK Stack and exported using the {@link #export} method.
+   * Import an Lambda Deployment Group defined either outside the CDK app, or in a different AWS region.
    *
    * @param scope the parent Construct for this new Construct
    * @param id the logical ID of this new Construct
@@ -254,8 +253,7 @@ export class LambdaDeploymentGroup extends cdk.Resource implements ILambdaDeploy
 /**
  * Properties of a reference to a CodeDeploy Lambda Deployment Group.
  *
- * @see LambdaDeploymentGroup#import
- * @see ILambdaDeploymentGroup#export
+ * @see LambdaDeploymentGroup#fromLambdaDeploymentGroupAttributes
  */
 export interface LambdaDeploymentGroupAttributes {
   /**

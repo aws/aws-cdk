@@ -17,7 +17,7 @@ Here is a minimal deployable DynamoDB table definition:
 import dynamodb = require('@aws-cdk/aws-dynamodb');
 
 const table = new dynamodb.Table(this, 'Table', {
-  partitionKey: { name: 'id', type: dynamodb.AttributeType.String }
+  partitionKey: { name: 'id', type: dynamodb.AttributeType.STRING }
 });
 ```
 
@@ -36,7 +36,7 @@ DynamoDB supports two billing modes:
 import dynamodb = require('@aws-cdk/aws-dynamodb');
 
 const table = new dynamodb.Table(this, 'Table', {
-  partitionKey: { name: 'id', type: dynamodb.AttributeType.String },
+  partitionKey: { name: 'id', type: dynamodb.AttributeType.STRING },
   billingMode: dynamodb.BillingMode.PAY_PER_REQUEST
 });
 ```
@@ -60,4 +60,4 @@ https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/AutoScaling.htm
 https://aws.amazon.com/blogs/database/how-to-use-aws-cloudformation-to-configure-auto-scaling-for-amazon-dynamodb-tables-and-indexes/
 
 ### Amazon DynamoDB Global Tables
-Please see the `@aws-cdk/aws-dynamodb-global` package [here](../aws-dynamodb-global/).
+Please see the `@aws-cdk/aws-dynamodb-global` package.

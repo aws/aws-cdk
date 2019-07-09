@@ -19,7 +19,6 @@ export interface ILambdaDeploymentConfig {
  * Properties of a reference to a CodeDeploy Lambda Deployment Configuration.
  *
  * @see LambdaDeploymentConfig#import
- * @see LambdaDeploymentConfig#export
  */
 export interface LambdaDeploymentConfigImportProps {
   /**
