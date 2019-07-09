@@ -85,7 +85,7 @@ The following targets are supported:
 * `targets.CodeBuildProject`: Start an AWS CodeBuild build
 * `targets.CodePipeline`: Start an AWS CodePipeline pipeline execution
 * `targets.EcsTask`: Start a task on an Amazon ECS cluster
-* `targets.LambdaFunction`: invoke an AWS Lambda function
-* `targets.SnsTopic`: publish into an SNS topic
-* `targets.SqsQueue`: send a message to an Amazon SQS Queue
+* `targets.LambdaFunction`: Invoke an AWS Lambda function
+* `targets.SnsTopic`: Publish into an SNS topic
+* `targets.SqsQueue`: Send a message to an Amazon SQS Queue
 * `targets.SfnStateMachine`: Trigger an AWS Step Functions state machine
