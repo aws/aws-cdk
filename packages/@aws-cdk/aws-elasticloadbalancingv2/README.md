@@ -164,7 +164,7 @@ listener.addTargets('AppFleet', {
     targets: [asg],
     healthCheck: {
         path: '/ping',
-        intervalSecs: 60,
+        interval: cdk.Duration.minutes(1),
     }
 });
 ```
@@ -186,7 +186,7 @@ listener.addTargets('AppFleet', {
     }
 });
 
-listener.connections.allowFrom(lb, new TcpPort(8088));
+listener.connections.allowFrom(lb, ec2.Port.tcp(8088));
 ```
 
 ### Protocol for Load Balancer Targets

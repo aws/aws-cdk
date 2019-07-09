@@ -10,7 +10,7 @@ import { arnForApplication } from "../utils";
  *
  * If you want to reference an already existing Application,
  * or one defined in a different CDK Stack,
- * use the {@link LambdaApplication#import} method.
+ * use the {@link LambdaApplication#fromLambdaApplicationName} method.
  */
 export interface ILambdaApplication extends IResource {
   /** @attribute */
@@ -39,8 +39,7 @@ export interface LambdaApplicationProps {
  */
 export class LambdaApplication extends Resource implements ILambdaApplication {
   /**
-   * Import an Application defined either outside the CDK,
-   * or in a different CDK Stack and exported using the {@link ILambdaApplication#export} method.
+   * Import an Application defined either outside the CDK, or in a different CDK Stack.
    *
    * @param scope the parent Construct for this new Construct
    * @param id the logical ID of this new Construct

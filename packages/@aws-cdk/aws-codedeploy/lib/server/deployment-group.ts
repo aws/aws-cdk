@@ -32,7 +32,6 @@ export interface IServerDeploymentGroup extends cdk.IResource {
  * Properties of a reference to a CodeDeploy EC2/on-premise Deployment Group.
  *
  * @see ServerDeploymentGroup#import
- * @see IServerDeploymentGroup#export
  */
 export interface ServerDeploymentGroupAttributes {
   /**
@@ -240,8 +239,8 @@ export interface ServerDeploymentGroupProps {
  */
 export class ServerDeploymentGroup extends ServerDeploymentGroupBase {
   /**
-   * Import an EC2/on-premise Deployment Group defined either outside the CDK,
-   * or in a different CDK Stack and exported using the {@link #export} method.
+   * Import an EC2/on-premise Deployment Group defined either outside the CDK app,
+   * or in a different region.
    *
    * @param scope the parent Construct for this new Construct
    * @param id the logical ID of this new Construct
