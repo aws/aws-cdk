@@ -80,5 +80,11 @@
     "@aws-cdk/aws-iam": "^0.37.0",
     "@aws-cdk/aws-certificatemanager": "^0.37.0",
     "@aws-cdk/core": "^0.37.0"
+  },
+  "awslint": {
+    "exclude": [
+      "from-method:@aws-cdk/aws-amplify.Branch",
+      "from-method:@aws-cdk/aws-amplify.Domain"
+    ]
   }
 }
