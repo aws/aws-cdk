@@ -1,3 +1,4 @@
+import { IResolvable, IResolveContext } from "@aws-cdk/core";
 
 /**
  * Basic Auth Config Interface
@@ -22,6 +23,24 @@ export interface BasicAuthConfig {
 }
 
 /**
+ * Basic Auth Resolver
+ */
+
+export class BasicAuthResolver implements IResolvable {
+  public readonly creationStack: string[];
+
+  private bac: BasicAuthConfig;
+
+  public resolve(_context: IResolveContext): any {
+    return this.bac;
+  }
+
+  public basicAuthConfig(bac: BasicAuthConfig) {
+    this.bac = bac;
+  }
+}
+
+/**
  * Environment Variable Interface
  */
 export interface EnvironmentVariable {
@@ -34,4 +53,32 @@ export interface EnvironmentVariable {
    * Value
    */
   readonly value: string;
+}
+
+/**
+ * Environment Variables Resolver
+ */
+export class EnvironmentVariablesResolver implements IResolvable {
+  public readonly creationStack: string[];
+
+  private environmentVariables: EnvironmentVariable[] = new Array<EnvironmentVariable>();
+
+  public resolve(_context: IResolveContext): any {
+    return this.environmentVariables;
+  }
+
+  public isEmpty(): boolean {
+    return (this.environmentVariables.length !== 0);
+  }
+
+  public count(): number {
+    return this.environmentVariables.length;
+  }
+
+  public addEnvironmentVariable(name: string, value: string) {
+    this.environmentVariables.push({
+      name,
+      value
+    });
+  }
 }
