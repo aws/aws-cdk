@@ -11,5 +11,7 @@
 ---
 <!--END STABILITY BANNER-->
 
-This module includes core classes related to CDK assets.
+This module includes core classes for to CDK assets. Most CDK users should not
+need to use the classes in this package directly.
+
 

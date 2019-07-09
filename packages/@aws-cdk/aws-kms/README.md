@@ -11,18 +11,20 @@
 ---
 <!--END STABILITY BANNER-->
 
-Defines a KMS key:
+Define a KMS key:
 
-```js
-new Key(this, 'MyKey', {
+```ts
+import kms = require('@aws-cdk/aws-kms');
+
+new kms.Key(this, 'MyKey', {
     enableKeyRotation: true
 });
 ```
 
 Add a couple of aliases:
 
-```js
-const key = new Key(this, 'MyKey');
+```ts
+const key = new kms.Key(this, 'MyKey');
 key.addAlias('alias/foo');
 key.addAlias('alias/bar');
 ```
@@ -41,7 +43,6 @@ To use a KMS key that is not defined in this CDK app, but is created through oth
 `Key.fromKeyArn(parent, name, ref)`:
 
 ```ts
-import kms = require('@aws-cdk/aws-kms');
 const myKeyImported = kms.Key.fromKeyArn(this, 'MyImportedKey', 'arn:aws:...');
 
 // you can do stuff with this imported key.
