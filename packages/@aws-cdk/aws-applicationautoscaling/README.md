@@ -51,7 +51,7 @@ There are three ways to scale your capacity:
 The general pattern of autoscaling will look like this:
 
 ```ts
-const capacity = resource.autoScaleReadCapacity({
+const capacity = resource.autoScaleCapacity({
   minCapacity: 5,
   maxCapacity: 100
 });
