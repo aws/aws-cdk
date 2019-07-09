@@ -37,6 +37,7 @@ behavior:
   duration. The default value is 20 seconds.
 
 ```ts
+import sqs = require('@aws-cdk/aws-sqs');
 import { SqsEventSource } from '@aws-cdk/aws-lambda-event-sources';
 import { Duration } from '@aws-cdk/core';
 
@@ -62,6 +63,7 @@ configure the event source mapping, identifying the bucket events that you want
 Amazon S3 to publish and which Lambda function to invoke.
 
 ```ts
+import s3 = require('@aws-cdk/aws-s3');
 import { S3EventSource } from '@aws-cdk/aws-lambda-event-sources';
 
 const bucket = new s3.Bucket(...);
@@ -91,6 +93,7 @@ For an example use case, see [Using AWS Lambda with Amazon SNS from Different
 Accounts](https://docs.aws.amazon.com/lambda/latest/dg/with-sns.html).
 
 ```ts
+import sns = require('@aws-cdk/aws-sns');
 import { SnsEventSource } from '@aws-cdk/aws-lambda-event-sources';
 
 const topic = new sns.Topic(...);
@@ -108,7 +111,7 @@ CloudWatch.
 
 ### DynamoDB Streams
 
-You can write Lambda functions to process change events from a DynamoDB Table. An event is emitted to a DynamoDB stream (if configured) whenever a write (Put, Delete, Update) 
+You can write Lambda functions to process change events from a DynamoDB Table. An event is emitted to a DynamoDB stream (if configured) whenever a write (Put, Delete, Update)
 operation is performed against the table. See [Using AWS Lambda with Amazon DynamoDB](https://docs.aws.amazon.com/lambda/latest/dg/with-ddb.html) for more information.
 
 To process events with a Lambda function, first create or update a DynamoDB table and enable a `stream` specification. Then, create a `DynamoEventSource`

@@ -50,7 +50,7 @@ export interface IProject extends IResource, iam.IGrantable, ec2.IConnectable {
    * changes. You can filter specific build status events using an event
    * pattern filter on the `build-status` detail field:
    *
-   *    const rule = project.onStateChange('OnBuildStarted', target);
+   *    const rule = project.onStateChange('OnBuildStarted', { target });
    *    rule.addEventPattern({
    *      detail: {
    *        'build-status': [
@@ -220,7 +220,7 @@ abstract class ProjectBase extends Resource implements IProject {
    * changes. You can filter specific build status events using an event
    * pattern filter on the `build-status` detail field:
    *
-   *    const rule = project.onStateChange('OnBuildStarted', target);
+   *    const rule = project.onStateChange('OnBuildStarted', { target });
    *    rule.addEventPattern({
    *      detail: {
    *        'build-status': [
