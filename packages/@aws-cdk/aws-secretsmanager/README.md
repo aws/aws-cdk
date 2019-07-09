@@ -49,7 +49,7 @@ const secret = new secretsManager.Secret(this, 'Secret');
 
 secret.addRotationSchedule('RotationSchedule', {
   rotationLambda: fn,
-  automaticallyAfterDays: 15
+  automaticallyAfter: Duration.days(15)
 });
 ```
 See [Overview of the Lambda Rotation Function](https://docs.aws.amazon.com/secretsmanager/latest/userguide/rotating-secrets-lambda-function-overview.html) on how to implement a Lambda Rotation Function.
