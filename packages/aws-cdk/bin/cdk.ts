@@ -301,10 +301,10 @@ async function initCommandLine() {
       return stacks.map(s => s.template);
     }
 
+    // not outputting template to stdout, let's explain things to the user a little bit...
     success(`Successfully synthesized to ${colors.blue(path.resolve(appStacks.assembly!.directory))}`);
     print(`Supply a stack name (${stacks.map(s => colors.green(s.name)).join(', ')}) to display its template.`);
 
-    // no output to stdout
     return undefined;
   }
 
