@@ -1,7 +1,7 @@
 import { expect, haveResource, haveResourceLike, ResourcePart } from '@aws-cdk/assert';
 import iam = require('@aws-cdk/aws-iam');
 import cdk = require('@aws-cdk/core');
-import { RemovalPolicy } from '@aws-cdk/core';
+import { RemovalPolicy, Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import ecr = require('../lib');
 
@@ -20,7 +20,8 @@ export = {
       Resources: {
         Repo02AC86CF: {
           Type: "AWS::ECR::Repository",
-          DeletionPolicy: "Retain"
+          DeletionPolicy: "Retain",
+          UpdateReplacePolicy: "Retain",
         }
       }
     });
@@ -352,6 +353,35 @@ export = {
       "DeletionPolicy": "Delete"
     }, ResourcePart.CompleteDefinition));
     test.done();
-  }
+  },
 
+  'grant adds appropriate resource-*'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+    const repo = new ecr.Repository(stack, 'TestHarnessRepo');
+
+    // WHEN
+    repo.grantPull(new iam.AnyPrincipal());
+
+    // THEN
+    expect(stack).to(haveResource('AWS::ECR::Repository', {
+      "RepositoryPolicyText": {
+        "Statement": [
+          {
+            "Action": [
+              "ecr:BatchCheckLayerAvailability",
+              "ecr:GetDownloadUrlForLayer",
+              "ecr:BatchGetImage"
+            ],
+            "Effect": "Allow",
+            "Principal": "*",
+            "Resource": "*",
+          }
+        ],
+        "Version": "2012-10-17"
+      }
+    }));
+
+    test.done();
+  },
 };

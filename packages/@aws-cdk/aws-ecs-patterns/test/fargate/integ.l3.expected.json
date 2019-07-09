@@ -585,7 +585,8 @@
     },
     "L3TaskDefwebLogGroupC6E4A38A": {
       "Type": "AWS::Logs::LogGroup",
-      "DeletionPolicy": "Retain"
+      "DeletionPolicy": "Retain",
+      "UpdateReplacePolicy": "Retain"
     },
     "L3Service616D5A93": {
       "Type": "AWS::ECS::Service",

@@ -304,9 +304,9 @@ export class Cluster extends Resource implements ICluster {
     autoScalingGroup.connections.allowTo(this, ec2.Port.tcp(443));
 
     // Allow all node outbound traffic
-    autoScalingGroup.connections.allowToAnyIPv4(ec2.Port.allTcp());
-    autoScalingGroup.connections.allowToAnyIPv4(ec2.Port.allUdp());
-    autoScalingGroup.connections.allowToAnyIPv4(ec2.Port.allIcmp());
+    autoScalingGroup.connections.allowToAnyIpv4(ec2.Port.allTcp());
+    autoScalingGroup.connections.allowToAnyIpv4(ec2.Port.allUdp());
+    autoScalingGroup.connections.allowToAnyIpv4(ec2.Port.allIcmp());
 
     autoScalingGroup.addUserData(
       'set -o xtrace',

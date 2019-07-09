@@ -181,14 +181,14 @@ export class Connections implements IConnectable {
   /**
    * Allow to all IPv4 ranges
    */
-  public allowToAnyIPv4(portRange: Port, description?: string) {
+  public allowToAnyIpv4(portRange: Port, description?: string) {
     this.allowTo(Peer.anyIpv4(), portRange, description);
   }
 
   /**
    * Allow from any IPv4 ranges
    */
-  public allowFromAnyIPv4(portRange: Port, description?: string) {
+  public allowFromAnyIpv4(portRange: Port, description?: string) {
     this.allowFrom(Peer.anyIpv4(), portRange, description);
   }
 
@@ -221,7 +221,7 @@ export class Connections implements IConnectable {
     if (!this.defaultPort) {
       throw new Error('Cannot call allowDefaultPortFromAnyIpv4(): this resource has no default port');
     }
-    this.allowFromAnyIPv4(this.defaultPort, description);
+    this.allowFromAnyIpv4(this.defaultPort, description);
   }
 
   /**

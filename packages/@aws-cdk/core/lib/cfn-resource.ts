@@ -120,7 +120,7 @@ export class CfnResource extends CfnRefElement {
     }
 
     this.cfnOptions.deletionPolicy = deletionPolicy;
-    if (options.applyToUpdateReplacePolicy) {
+    if (options.applyToUpdateReplacePolicy !== false) {
       this.cfnOptions.updateReplacePolicy = deletionPolicy;
     }
   }

@@ -4,7 +4,7 @@
     "VPC": {
       "Type": "@aws-cdk/aws-ec2.Vpc",
       "Properties": {
-        "maxAZs": 1
+        "maxAzs": 1
       }
     },
     "Cluster": {

@@ -22,11 +22,15 @@ depend on.
 For further information on AWS Cloud Map,
 see the [AWS Cloud Map documentation](https://docs.aws.amazon.com/cloud-map)
 
+### HTTP Namespace Example
+
 The following example creates an AWS Cloud Map namespace that
 supports API calls, creates a service in that namespace, and
 registers an instance to it:
 
 [Creating a Cloud Map service within an HTTP namespace](test/integ.service-with-http-namespace.lit.ts)
+
+### Private DNS Namespace Example
 
 The following example creates an AWS Cloud Map namespace that
 supports both API calls and DNS queries within a vpc, creates a
@@ -34,6 +38,8 @@ service in that namespace, and registers a loadbalancer as an
 instance:
 
 [Creating a Cloud Map service within a Private DNS namespace](test/integ.service-with-private-dns-namespace.lit.ts)
+
+### Public DNS Namespace Example
 
 The following example creates an AWS Cloud Map namespace that
 supports both API calls and public DNS queries, creates a service in
