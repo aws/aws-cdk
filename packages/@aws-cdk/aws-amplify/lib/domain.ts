@@ -1,5 +1,5 @@
 import { Certificate, ICertificate } from '@aws-cdk/aws-certificatemanager';
-import { Construct, IResource, Resource, ResourceProps } from '@aws-cdk/core';
+import { Construct, IResolvable, IResolveContext, IResource, Resource, ResourceProps } from '@aws-cdk/core';
 import { CfnDomain } from './amplify.generated';
 import { IApp } from './app';
 
@@ -42,32 +42,43 @@ export class Domain extends Resource implements IDomain {
    */
   public readonly statusReason: string;
 
-  /**
-   * Resource
-   */
-  private resource: CfnDomain;
+  private readonly subdomainSettingsResolver: SubdomainSettingsResolver = new SubdomainSettingsResolver();
 
   constructor(scope: Construct, id: string, props: DomainProps) {
     super(scope, id, props);
 
+    if (props.subdomainSettings) {
+      this.subdomainSettingsResolver.addSubdomains(...props.subdomainSettings);
+    }
+
     const resource = new CfnDomain(scope, 'Domain', {
       appId: props.app.appId,
       domainName: props.domainName,
-      subDomainSettings: props.subdomainSettings
+      subDomainSettings: this.subdomainSettingsResolver
     });
 
     this.arn = resource.attrArn;
-    // return as ACM cert?
     this.certificateRecord = Certificate.fromCertificateArn(this, 'certificate', resource.attrCertificateRecord);
     this.domainName = resource.attrDomainName;
     this.domainStatus = resource.attrDomainStatus;
     this.statusReason = resource.attrStatusReason;
-
-    this.resource = resource;
   }
 
   public addSubdomainSettings(prefix: string, branchName: string) {
-    // do thing
+    this.subdomainSettingsResolver.addSubdomains({
+      prefix,
+      branchName
+    });
+  }
+
+  public validate(): string[] {
+    const errors: string[] = [];
+
+    if (this.subdomainSettingsResolver.isEmpty()) {
+      errors.push(`You must specify subdomain settings`);
+    }
+
+    return errors;
   }
 }
 
@@ -87,8 +98,10 @@ export interface DomainProps extends ResourceProps {
 
   /**
    * Subdomain Settings
+   *
+   * @default Empty
    */
-  readonly subdomainSettings: SubdomainSettings[];
+  readonly subdomainSettings?: SubdomainSettings[];
 }
 
 /**
@@ -100,3 +113,24 @@ export interface SubdomainSettings {
 }
 
 export interface IDomain extends IResource {}
+
+class SubdomainSettingsResolver implements IResolvable {
+  public readonly creationStack: string[];
+  private readonly subdomainSettings: SubdomainSettings[] = new Array<SubdomainSettings>();
+
+  public resolve(_context: IResolveContext): any {
+    return this.subdomainSettings;
+  }
+
+  public addSubdomains(...subdomain: SubdomainSettings[]) {
+    this.subdomainSettings.push(...subdomain);
+  }
+
+  public count(): number {
+    return this.subdomainSettings.length;
+  }
+
+  public isEmpty(): boolean {
+    return this.subdomainSettings.length === 0;
+  }
+}
