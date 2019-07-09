@@ -1,7 +1,8 @@
-import { Test } from 'nodeunit';
-import { parseAwsApiCall, parseMethodOptionsPath } from '../lib/util';
+import { Test, testCase } from 'nodeunit';
+import { parseAwsApiCall, parseMethodOptionsPath, JsonSchemaMapper } from '../lib/util';
+import { JsonSchema, JsonSchemaType } from '../lib';
 
-export = {
+export = testCase({
   parseMethodResourcePath: {
     'fails if path does not start with a /'(test: Test) {
       test.throws(() => parseMethodOptionsPath('foo'), /Method options path must start with \'\/\'/);
@@ -64,5 +65,73 @@ export = {
       });
       test.done();
     }
-  }
-};
+  },
+
+  'JsonSchemaMapper.toCfnJsonSchema': {
+    'maps "ref" found under properties'(test: Test) {
+      const schema: JsonSchema = {
+        type: JsonSchemaType.OBJECT,
+        properties: {
+          collection: {
+            type: JsonSchemaType.ARRAY,
+            items: {
+              ref: '#/some/reference',
+            },
+            uniqueItems: true,
+          },
+        },
+        required: ['collection'],
+      };
+
+      const actual = JsonSchemaMapper.toCfnJsonSchema(schema);
+      test.deepEqual(actual, {
+        $schema: 'http://json-schema.org/draft-04/schema#',
+        type: 'object',
+        properties: {
+          collection: {
+            type: 'array',
+            items: {
+              $ref: '#/some/reference',
+            },
+            uniqueItems: true,
+          },
+        },
+        required: ['collection'],
+      });
+      test.done();
+    },
+
+    'does not map a "ref" property name'(test: Test) {
+      const schema: JsonSchema = {
+        type: JsonSchemaType.OBJECT,
+        properties: {
+          ref: {
+            type: JsonSchemaType.ARRAY,
+            items: {
+              ref: '#/some/reference',
+            },
+            uniqueItems: true,
+          },
+        },
+        required: ['ref'],
+      };
+
+      const actual = JsonSchemaMapper.toCfnJsonSchema(schema);
+      test.deepEqual(actual, {
+        $schema: 'http://json-schema.org/draft-04/schema#',
+        type: 'object',
+        properties: {
+          ref: {
+            type: 'array',
+            items: {
+              $ref: '#/some/reference',
+            },
+            uniqueItems: true,
+          },
+        },
+        required: ['ref'],
+      });
+      test.done();
+    },
+  },
+});
