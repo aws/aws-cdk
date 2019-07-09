@@ -1,0 +1,22 @@
+import { App, CfnOutput, Construct, Stack } from '@aws-cdk/core';
+import certmgr = require('../lib');
+
+class CertStack extends Stack {
+  constructor(scope: Construct, id: string) {
+    super(scope, id);
+    /// !show
+    const cert = new certmgr.Certificate(this, 'Certificate', {
+      domainName: 'henk.com',
+    });
+    /// !hide
+
+    new CfnOutput(this, 'Output', {
+      value: cert.certificateArn
+    });
+  }
+}
+
+
+const app = new App();
+new CertStack(app, 'MyStack3');
+app.synth();
