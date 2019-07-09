@@ -242,12 +242,6 @@ export class StabilitySetting extends ValidationRule {
       case 'stable':
         return _div(
           { label: 'Stable', color: 'success' },
-          '**This is a _developer preview_ (public beta) module. Releases might lack important features and might have',
-          'future breaking changes.**',
-          // Commenting out the below because of developer preview in effect (it sends mixed messages)
-          // '',
-          // 'This API is subject to the Semantic Versioning model. It will not be subject to',
-          // 'non-backward compatible changes or removal in a subsequent patch or feature release.'
         );
       default:
         return undefined;
