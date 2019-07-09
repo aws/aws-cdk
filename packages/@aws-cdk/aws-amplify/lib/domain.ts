@@ -112,7 +112,17 @@ export interface SubdomainSettings {
   readonly prefix: string;
 }
 
-export interface IDomain extends IResource {}
+/**
+ * Domain Interface
+ */
+export interface IDomain extends IResource {
+  /**
+   * Arn
+   *
+   * @attribute
+   */
+  readonly arn: string;
+}
 
 class SubdomainSettingsResolver implements IResolvable {
   public readonly creationStack: string[];
