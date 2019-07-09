@@ -261,7 +261,7 @@ export class StabilitySetting extends ValidationRule {
         '',
         `![Stability: ${badge.label}](https://img.shields.io/badge/stability-${badge.label}-${badge.color}.svg?style=for-the-badge)`,
         '',
-        ...messages.map(message => `> ${message}`),
+        ...messages.map(message => `> ${message}`.trimRight()),
         '',
         '---',
         '<!--END STABILITY BANNER-->',
@@ -303,6 +303,17 @@ export class CDKKeywords extends ValidationRule {
         fix: () => { pkg.json.keywords.splice(0, 0, 'aws'); }
       });
     }
+  }
+}
+
+export class DeveloperPreviewVersionLabels extends ValidationRule {
+  public readonly name = 'jsii/developer-preview-version-label';
+
+  public validate(pkg: PackageJson): void {
+    if (!isJSII(pkg)) { return; }
+
+    expectJSON(this.name, pkg, 'jsii.targets.java.maven.versionSuffix', '.DEVPREVIEW');
+    expectJSON(this.name, pkg, 'jsii.targets.dotnet.versionSuffix', '-devpreview');
   }
 }
 

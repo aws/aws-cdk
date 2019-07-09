@@ -58,7 +58,7 @@ async function parseCommandLineArguments() {
       .option('ci', { type: 'boolean', desc: 'Force CI detection. Use --no-ci to disable CI autodetection.', default: process.env.CI !== undefined })
       .option('tags', { type: 'array', alias: 't', desc: 'tags to add to the stack (KEY=VALUE)', nargs: 1, requiresArg: true })
     .command('destroy [STACKS..]', 'Destroy the stack(s) named STACKS', yargs => yargs
-      .option('exclusively', { type: 'boolean', alias: 'x', desc: 'only deploy requested stacks, don\'t include dependees' })
+      .option('exclusively', { type: 'boolean', alias: 'e', desc: 'only deploy requested stacks, don\'t include dependees' })
       .option('force', { type: 'boolean', alias: 'f', desc: 'Do not ask for confirmation before destroying the stacks' }))
     .command('diff [STACKS..]', 'Compares the specified stack with the deployed stack or a local template file, and returns with status 1 if any difference is found', yargs => yargs
       .option('exclusively', { type: 'boolean', alias: 'e', desc: 'only diff requested stacks, don\'t include dependencies' })
@@ -280,6 +280,8 @@ async function initCommandLine() {
       extend: autoSelectDependencies ? ExtendedStackSelection.Upstream : ExtendedStackSelection.None,
       defaultBehavior: DefaultSelection.AllStacks
     });
+
+    appStacks.processMetadata(stacks);
 
     // if we have a single stack, print it to STDOUT
     if (stacks.length === 1) {

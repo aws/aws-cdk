@@ -75,14 +75,14 @@ abstract class CloudFormationAction extends Action {
     this.props = props;
   }
 
-  protected bound(_scope: cdk.Construct, stage: codepipeline.IStage, options: codepipeline.ActionBindOptions):
+  protected bound(_scope: cdk.Construct, _stage: codepipeline.IStage, options: codepipeline.ActionBindOptions):
       codepipeline.ActionConfig {
     const singletonPolicy = SingletonPolicy.forRole(options.role);
 
     if ((this.actionProperties.outputs || []).length > 0) {
-      stage.pipeline.artifactBucket.grantReadWrite(singletonPolicy);
+      options.bucket.grantReadWrite(singletonPolicy);
     } else if ((this.actionProperties.inputs || []).length > 0) {
-      stage.pipeline.artifactBucket.grantRead(singletonPolicy);
+      options.bucket.grantRead(singletonPolicy);
     }
 
     return {
@@ -494,8 +494,12 @@ class SingletonPolicy extends cdk.Construct implements iam.IGrantable {
 
   public grantExecuteChangeSet(props: { stackName: string, changeSetName: string, region?: string }): void {
     this.statementFor({
-      actions: ['cloudformation:ExecuteChangeSet'],
-      conditions: { StringEquals: { 'cloudformation:ChangeSetName': props.changeSetName } },
+      actions: [
+        'cloudformation:DescribeStacks',
+        'cloudformation:DescribeChangeSet',
+        'cloudformation:ExecuteChangeSet',
+      ],
+      conditions: { StringEqualsIfExists: { 'cloudformation:ChangeSetName': props.changeSetName } },
     }).addResources(this.stackArnFromProps(props));
   }
 
