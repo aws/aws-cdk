@@ -44,14 +44,14 @@ can manage yourself.
 ```ts
 // Use managed key
 new sqs.Queue(this, 'Queue', {
-    encryption: QueueEncryption.Managed,
+    encryption: QueueEncryption.KMS_MANAGED,
 });
 
 // Use custom key
-const myKey = new EncryptionKey(this, 'Key');
+const myKey = new kms.Key(this, 'Key');
 
 new sqs.Queue(this, 'Queue', {
-    encryption: QueueEncryption.Kms,
+    encryption: QueueEncryption.KMS,
     encryptionMasterKey: myKey
 });
 ```

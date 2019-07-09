@@ -65,9 +65,7 @@ const someStage = pipeline.addStage({
   placement: {
     // note: you can only specify one of the below properties
     rightBefore: anotherStage,
-    justAfter: anotherStage,
-    atIndex: 3, // indexing starts at 0
-                // pipeline.stageCount returns the number of Stages currently in the Pipeline
+    justAfter: anotherStage
   }
 });
 ```
@@ -139,9 +137,15 @@ for more information on cross-region CodePipelines.
 A pipeline can be used as a target for a CloudWatch event rule:
 
 ```ts
+import targets = require('@aws-cdk/aws-events-targets');
+import events = require('@aws-cdk/aws-events');
+
 // kick off the pipeline every day
-const rule = new EventRule(this, 'Daily', { scheduleExpression: 'rate(1 day)' });
-rule.addTarget(pipeline);
+const rule = new events.Rule(this, 'Daily', {
+  schedule: events.Schedule.rate(Duration.days(1)),
+});
+
+rule.addTarget(new targets.CodePipeline(pipeline));
 ```
 
 When a pipeline is used as an event target, the
@@ -155,7 +159,7 @@ the pipeline, stages or action, use the `onXxx` methods on the respective
 construct:
 
 ```ts
-myPipeline.onStateChange('MyPipelineStateChage', target);
+myPipeline.onStateChange('MyPipelineStateChange', target);
 myStage.onStateChange('MyStageStateChange', target);
-myAction.onStateChange('MyActioStateChange', target);
+myAction.onStateChange('MyActionStateChange', target);
 ```

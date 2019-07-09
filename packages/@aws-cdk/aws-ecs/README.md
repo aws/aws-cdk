@@ -26,19 +26,21 @@ adds capacity to it,
 and instantiates the Amazon ECS Service with an automatic load balancer.
 
 ```ts
+import ecs_patterns = require('@aws-cdk/aws-ecs-patterns');
+
 // Create an ECS cluster
 const cluster = new ecs.Cluster(this, 'Cluster', {
   vpc,
 });
 
 // Add capacity to it
-cluster.addDefaultAutoScalingGroupCapacity('Capacity', {
+cluster.addCapacity('DefaultAutoScalingGroupCapacity', {
   instanceType: new ec2.InstanceType("t2.xlarge"),
   desiredCapacity: 3,
 });
 
 // Instantiate Amazon ECS Service with an automatic load balancer
-const ecsService = new ecs.LoadBalancedEc2Service(this, 'Service', {
+const ecsService = new ecs_patterns.LoadBalancedEc2Service(this, 'Service', {
   cluster,
   memoryLimitMiB: 512,
   image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
@@ -102,7 +104,7 @@ const cluster = new ecs.Cluster(this, 'Cluster', {
 });
 
 // Either add default capacity
-cluster.addDefaultAutoScalingGroupCapacity({
+cluster.addCapacity('DefaultAutoScalingGroupCapacity', {
   instanceType: new ec2.InstanceType("t2.xlarge"),
   desiredCapacity: 3,
 });
@@ -118,7 +120,7 @@ const autoScalingGroup = new autoscaling.AutoScalingGroup(this, 'ASG', {
   // ... other options here ...
 });
 
-cluster.addAutoScalingGroupCapacity(autoScalingGroup);
+cluster.addAutoScalingGroup(autoScalingGroup);
 ```
 
 ## Task definitions
@@ -156,7 +158,7 @@ For a `Ec2TaskDefinition`:
 
 ```ts
 const ec2TaskDefinition = new ecs.Ec2TaskDefinition(this, 'TaskDef', {
-  networkMode: bridge
+  networkMode: NetworkMode.BRIDGE
 });
 
 const container = ec2TaskDefinition.addContainer("WebContainer", {
@@ -186,8 +188,8 @@ The following example uses both:
 const taskDefinition = new ecs.TaskDefinition(this, 'TaskDef', {
   memoryMiB: '512',
   cpu: '256',
-  networkMode: 'awsvpc',
-  compatibility: ecs.Compatibility.Ec2AndFargate,
+  networkMode: NetworkMode.AWS_VPC,
+  compatibility: ecs.Compatibility.EC2_AND_FARGATE,
 });
 ```
 
@@ -275,16 +277,16 @@ your Amazon EC2 instances halfway loaded, scaling up to a maximum of 30 instance
 if required:
 
 ```ts
-const autoScalingGroup = cluster.addDefaultAutoScalingGroupCapacity({
+const autoScalingGroup = cluster.addCapacity('DefaultAutoScalingGroup', {
   instanceType: new ec2.InstanceType("t2.xlarge"),
   minCapacity: 3,
-  maxCapacity: 30
+  maxCapacity: 30,
   desiredCapacity: 3,
 
   // Give instances 5 minutes to drain running tasks when an instance is
   // terminated. This is the default, turn this off by specifying 0 or
   // change the timeout up to 900 seconds.
-  taskDrainTimeSec: 300,
+  taskDrainTime: Duration.seconds(300)
 });
 
 autoScalingGroup.scaleOnCpuUtilization('KeepCpuHalfwayLoaded', {
@@ -308,16 +310,16 @@ const taskDefinition = new ecs.Ec2TaskDefinition(this, 'TaskDef');
 taskDefinition.addContainer('TheContainer', {
   image: ecs.ContainerImage.fromAsset(path.resolve(__dirname, '..', 'eventhandler-image')),
   memoryLimitMiB: 256,
-  logging: new ecs.AwsLogDriver(this, 'TaskLogging', { streamPrefix: 'EventDemo' })
+  logging: new ecs.AwsLogDriver({ streamPrefix: 'EventDemo' })
 });
 
 // An Rule that describes the event trigger (in this case a scheduled run)
 const rule = new events.Rule(this, 'Rule', {
-  scheduleExpression: 'rate(1 minute)',
+  schedule: events.Schedule.expression('rate(1 min)')
 });
 
 // Pass an environment variable to the container 'TheContainer' in the task
-rule.addTarget(new targets.EcsEc2Task({
+rule.addTarget(new targets.EcsTask({
   cluster,
   taskDefinition,
   taskCount: 1,

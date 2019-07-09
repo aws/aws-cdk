@@ -70,6 +70,6 @@ trail.addS3EventSelector(["arn:aws:s3:::magic-bucket/"]);
 // Adds an event selector to the bucket foo, with a specific configuration
 trail.addS3EventSelector(["arn:aws:s3:::foo/"], {
   includeManagementEvents: false,
-  readWriteType: ReadWriteType.All,
+  readWriteType: ReadWriteType.ALL,
 });
 ```
