@@ -31,7 +31,7 @@ provision the secret in *AWS SecretsManager* and use the `Secret.fromSecretArn`
 or `Secret.fromSecretAttributes` method to make it available in your CDK Application:
 
 ```ts
-const secret = Secret.fromSecretAttributes(scope, 'ImportedSecret', {
+const secret = secretsmanager.Secret.fromSecretAttributes(scope, 'ImportedSecret', {
   secretArn: 'arn:aws:secretsmanager:<region>:<account-id-number>:secret:<secret-name>-<random-6-characters>',
   // If the secret is encrypted using a KMS-hosted CMK, either import or reference that key:
   encryptionKey,
@@ -45,11 +45,11 @@ list of properties, see [the CloudFormation Dynamic References documentation](ht
 A rotation schedule can be added to a Secret:
 ```ts
 const fn = new lambda.Function(...);
-const secret = new secretsManager.Secret(this, 'Secret');
+const secret = new secretsmanager.Secret(this, 'Secret');
 
 secret.addRotationSchedule('RotationSchedule', {
   rotationLambda: fn,
-  automaticallyAfterDays: 15
+  automaticallyAfter: Duration.days(15)
 });
 ```
 See [Overview of the Lambda Rotation Function](https://docs.aws.amazon.com/secretsmanager/latest/userguide/rotating-secrets-lambda-function-overview.html) on how to implement a Lambda Rotation Function.
