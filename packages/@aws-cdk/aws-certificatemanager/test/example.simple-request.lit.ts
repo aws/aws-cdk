@@ -6,7 +6,7 @@ class CertStack extends Stack {
     super(scope, id);
     /// !show
     const cert = new certmgr.Certificate(this, 'Certificate', {
-      domainName: 'henk.com',
+      domainName: 'example.com',
     });
     /// !hide
 
@@ -16,7 +16,6 @@ class CertStack extends Stack {
   }
 }
 
-
 const app = new App();
-new CertStack(app, 'MyStack3');
+new CertStack(app, 'MyStack4');
 app.synth();
