@@ -1,7 +1,7 @@
 {
   "name": "@aws-cdk/app-delivery",
   "description": "Continuous Integration / Continuous Delivery for CDK Applications",
-  "version": "0.38.0",
+  "version": "0.39.0",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "jsii": {
@@ -40,22 +40,22 @@
     "build+test": "npm run build && npm test"
   },
   "dependencies": {
-    "@aws-cdk/aws-cloudformation": "^0.38.0",
-    "@aws-cdk/aws-codebuild": "^0.38.0",
-    "@aws-cdk/aws-codepipeline": "^0.38.0",
-    "@aws-cdk/aws-codepipeline-actions": "^0.38.0",
-    "@aws-cdk/aws-events": "^0.38.0",
-    "@aws-cdk/aws-iam": "^0.38.0",
-    "@aws-cdk/core": "^0.38.0",
-    "@aws-cdk/cx-api": "^0.38.0"
+    "@aws-cdk/aws-cloudformation": "^0.39.0",
+    "@aws-cdk/aws-codebuild": "^0.39.0",
+    "@aws-cdk/aws-codepipeline": "^0.39.0",
+    "@aws-cdk/aws-codepipeline-actions": "^0.39.0",
+    "@aws-cdk/aws-events": "^0.39.0",
+    "@aws-cdk/aws-iam": "^0.39.0",
+    "@aws-cdk/core": "^0.39.0",
+    "@aws-cdk/cx-api": "^0.39.0"
   },
   "devDependencies": {
-    "@aws-cdk/assert": "^0.38.0",
-    "@aws-cdk/aws-s3": "^0.38.0",
-    "cdk-build-tools": "^0.38.0",
-    "cdk-integ-tools": "^0.38.0",
+    "@aws-cdk/assert": "^0.39.0",
+    "@aws-cdk/aws-s3": "^0.39.0",
+    "cdk-build-tools": "^0.39.0",
+    "cdk-integ-tools": "^0.39.0",
     "fast-check": "^1.15.1",
-    "pkglint": "^0.38.0"
+    "pkglint": "^0.39.0"
   },
   "repository": {
     "type": "git",
@@ -74,14 +74,14 @@
     "cdk"
   ],
   "peerDependencies": {
-    "@aws-cdk/aws-cloudformation": "^0.38.0",
-    "@aws-cdk/aws-codebuild": "^0.38.0",
-    "@aws-cdk/aws-codepipeline": "^0.38.0",
-    "@aws-cdk/aws-codepipeline-actions": "^0.38.0",
-    "@aws-cdk/aws-events": "^0.38.0",
-    "@aws-cdk/aws-iam": "^0.38.0",
-    "@aws-cdk/core": "^0.38.0",
-    "@aws-cdk/cx-api": "^0.38.0"
+    "@aws-cdk/aws-cloudformation": "^0.39.0",
+    "@aws-cdk/aws-codebuild": "^0.39.0",
+    "@aws-cdk/aws-codepipeline": "^0.39.0",
+    "@aws-cdk/aws-codepipeline-actions": "^0.39.0",
+    "@aws-cdk/aws-events": "^0.39.0",
+    "@aws-cdk/aws-iam": "^0.39.0",
+    "@aws-cdk/core": "^0.39.0",
+    "@aws-cdk/cx-api": "^0.39.0"
   },
   "engines": {
     "node": ">= 8.10.0"
