@@ -110,16 +110,6 @@ export class App extends Resource implements IApp {
     this.resource = resource;
   }
 
-  protected validate(): string[] {
-    const errors: string[] = [];
-
-    if (this.resource.buildSpec && !this.resource.iamServiceRole) {
-      errors.push(`You need to specify a service role when using buildspecs`);
-    }
-
-    return errors;
-  }
-
   /**
    * Add Service Role
    *
@@ -151,6 +141,16 @@ export class App extends Resource implements IApp {
    */
   public addEnvironmentVariable(name: string, value: string) {
     this.environmentVariablesResolver.addEnvironmentVariable(name, value);
+  }
+
+  protected validate(): string[] {
+    const errors: string[] = [];
+
+    if (this.resource.buildSpec && !this.resource.iamServiceRole) {
+      errors.push(`You need to specify a service role when using buildspecs`);
+    }
+
+    return errors;
   }
 }
 
