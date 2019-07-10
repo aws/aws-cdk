@@ -8,35 +8,35 @@ import { IApp } from './app';
  */
 export class Domain extends Resource implements IDomain {
   /**
-   * Arn
+   * ARN for the Domain Association.
    *
    * @attribute
    */
   public readonly arn: string;
 
   /**
-   * Certificate Record
+   * DNS Record for certificate verification.
    *
    * @attribute
    */
   public readonly certificateRecord: ICertificate;
 
   /**
-   * Domain Name
+   * Name of the domain
    *
    * @attribute
    */
   public readonly domainName: string;
 
   /**
-   * Domain Status
+   * Status fo the Domain Association.
    *
    * @attribute
    */
   public readonly domainStatus: string;
 
   /**
-   * Status Reason
+   * Reason for the current status of the domain.
    *
    * @attribute
    */
@@ -87,17 +87,17 @@ export class Domain extends Resource implements IDomain {
  */
 export interface DomainProps extends ResourceProps {
   /**
-   * App
+   * Amplify App
    */
   readonly app: IApp;
 
   /**
-   * Domain Name
+   * Domain name for the Domain Association.
    */
   readonly domainName: string;
 
   /**
-   * Subdomain Settings
+   * Setting structure for the Subdomain.
    *
    * @default Empty
    */
@@ -105,10 +105,17 @@ export interface DomainProps extends ResourceProps {
 }
 
 /**
- * Subdomain Settings
+ * The SubDomainSetting property type allows you to connect a subdomain (e.g. foo.yourdomain.com) to a specific branch.
  */
 export interface SubdomainSettings {
+  /**
+   * Branch name setting for the Subdomain.
+   */
   readonly branchName: string;
+
+  /**
+   * Prefix setting for the Subdomain.
+   */
   readonly prefix: string;
 }
 

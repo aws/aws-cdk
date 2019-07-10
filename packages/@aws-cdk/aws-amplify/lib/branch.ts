@@ -8,14 +8,14 @@ import { BasicAuthConfig, BasicAuthResolver, EnvironmentVariable, EnvironmentVar
  */
 export class Branch extends Resource implements IBranch {
   /**
-   * ARN
+   * ARN for a branch, part of an Amplify App.
    *
    * @attribute
    */
   public readonly arn: string;
 
   /**
-   * Branch Name
+   * Name for a branch, part of an Amplify App.
    *
    * @attribute
    */
@@ -96,52 +96,52 @@ export interface IBranch extends IResource {
  */
 export interface BranchProps extends ResourceProps {
   /**
-   * App
+   * Amplify App
    */
   readonly app: IApp;
 
   /**
-   * Branch Name
+   * Name for the branch.
    */
   readonly branchName: string;
 
   /**
-   * Basic Auth Config
+   * Basic Authorization credentials for a branch, part of an Amplify App.
    *
    * @default Empty
    */
   readonly basicAuthConfig?: BasicAuthConfig;
 
   /**
-   * Build Spec
+   * BuildSpec for the branch.
    *
    * @default Empty
    */
   readonly buildSpec?: string;
 
   /**
-   * Description
+   * Description for the branch.
    *
    * @default Empty
    */
   readonly description?: string;
 
   /**
-   * Environment Variables
+   * Environment Variables for the branch.
    *
    * @default Empty
    */
   readonly environmentVariables?: EnvironmentVariable[];
 
   /**
-   * Stage
+   * Stage for the branch.
    *
    * @default Empty
    */
   readonly stage?: string;
 
   /**
-   * Tags
+   * Tag for the branch.
    *
    * @default Empty
    */

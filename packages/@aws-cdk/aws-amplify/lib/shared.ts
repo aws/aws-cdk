@@ -1,23 +1,23 @@
 import { IResolvable, IResolveContext } from "@aws-cdk/core";
 
 /**
- * Basic Auth Config Interface
+ * Use the BasicAuthConfig property type to set password protection at an app level to all your branches.
  */
 export interface BasicAuthConfig {
   /**
-   * Enable Basic Auth
+   * Enables Basic Authorization for branches for the Amplify App.
    *
    * @default false
    */
   readonly enableBasicAuth?: boolean;
 
   /**
-   * Password
+   * The password for basic authorization.
    */
   readonly password: string;
 
   /**
-   * Username
+   * The user name for basic authorization.
    */
   readonly username: string;
 }
@@ -41,16 +41,17 @@ export class BasicAuthResolver implements IResolvable {
 }
 
 /**
- * Environment Variable Interface
+ * Environment variables are key-value pairs that are available at build time.
+ * Set environment variables for all branches in your app.
  */
 export interface EnvironmentVariable {
   /**
-   * Name
+   * The environment variable name.
    */
   readonly name: string;
 
   /**
-   * Value
+   * The environment variable value.
    */
   readonly value: string;
 }

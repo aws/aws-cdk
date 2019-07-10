@@ -25,28 +25,28 @@ export class App extends Resource implements IApp {
   }
 
   /**
-   * App Id
+   * Unique Id for the Amplify App.
    *
    * @attribute
    */
   public readonly appId: string;
 
   /**
-   * App Name
+   * Name for the Amplify App.
    *
    * @attribute
    */
   public readonly appName: string;
 
   /**
-   * App ARN
+   * ARN for the Amplify App.
    *
    * @attribute
    */
   public readonly appArn: string;
 
   /**
-   * App Default Domain
+   * Default domain for the Amplify App.
    *
    * @attribute
    */
@@ -183,42 +183,43 @@ export interface AppOptions extends ResourceProps {
  */
 export interface AppProps extends AppOptions {
   /**
-   * Access Token
+   * Personal Access token for 3rd party source control system for an Amplify App, used to create webhook
+   * and read-only deploy key. Token is not stored.
    *
    * @default
    */
   readonly accessToken?: string;
 
   /**
-   * Basic Auth Config
+   * Credentials for Basic Authorization for an Amplify App.
    *
    * @default
    */
   readonly basicAuthConfig?: BasicAuthConfig;
 
   /**
-   * BuildSpec
+   * BuildSpec for an Amplify App.
    *
    * @default
    */
   readonly buildSpec?: string;
 
   /**
-   * Custom Rules
+   * Custom rewrite / redirect rules for an Amplify App.
    *
    * @default
    */
   readonly customRules?: CustomRule[];
 
   /**
-   * Description
+   * Description for an Amplify App.
    *
    * @default
    */
   readonly description?: string;
 
   /**
-   * Environment Variables
+   * Environment variables map for an Amplify App.
    *
    * @default
    */
@@ -232,19 +233,20 @@ export interface AppProps extends AppOptions {
   readonly serviceRole?: IRole;
 
   /**
-   * Name
+   * Name for the Amplify App.
    */
   readonly name: string;
 
   /**
-   * Name
+   * OAuth token for 3rd party source control system for an Amplify App, used to create webhook and read-only
+   * deploy key. OAuth token is not stored.
    *
    * @default
    */
   readonly oauthToken?: string;
 
   /**
-   * Repository
+   * Repository for an Amplify App.
    *
    * Required to be in HTTP URL format: https://github.com/awslabs/aws-cdk
    * If you use a Git URL, it will error.
@@ -252,7 +254,7 @@ export interface AppProps extends AppOptions {
   readonly repository: string;
 
   /**
-   * Tags
+   * Tag for an Amplify App
    *
    * @default
    */
@@ -260,30 +262,31 @@ export interface AppProps extends AppOptions {
 }
 
 /**
- * Custom Rule Interface
+ * The CustomRule property type allows you to specify redirects, rewrites, and reverse proxies.
+ * Redirects enable a web app to reroute navigation from one URL to another.
  */
 export interface CustomRule {
   /**
-   * Condition
+   * The condition for a URL rewrite or redirect rule, e.g. country code.
    *
    * @default Empty
    */
   readonly condition?: string;
 
   /**
-   * Source
+   * The source pattern for a URL rewrite or redirect rule.
    */
   readonly source: string;
 
   /**
-   * Status
+   * The status code for a URL rewrite or redirect rule.
    *
    * @default Empty
    */
   readonly status?: string;
 
   /**
-   * Target
+   * The target pattern for a URL rewrite or redirect rule.
    */
   readonly target: string;
 }
