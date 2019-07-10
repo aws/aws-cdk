@@ -57,7 +57,7 @@ export = {
       branchName: 'master'
     });
 
-    branch.setBasicAuth('foo', 'foo');
+    branch.addBasicAuth('foo', 'foo');
 
     expect(stack).to(haveResourceLike('AWS::Amplify::Branch', {
       BasicAuthConfig: {

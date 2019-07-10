@@ -101,7 +101,7 @@ export = {
       repository: 'https://github.com/awslabs/aws-cdk'
     });
 
-    app.setBasicAuth('foo', 'foo');
+    app.addBasicAuth('foo', 'foo');
 
     expect(stack).to(haveResourceLike('AWS::Amplify::App', {
       BasicAuthConfig: {

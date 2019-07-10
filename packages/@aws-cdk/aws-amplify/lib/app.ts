@@ -69,7 +69,7 @@ export class App extends Resource implements IApp {
     });
 
     if (props.basicAuthConfig) {
-      this.setBasicAuth(props.basicAuthConfig.username, props.basicAuthConfig.password);
+      this.addBasicAuth(props.basicAuthConfig.username, props.basicAuthConfig.password);
     }
 
     if (props.environmentVariables && props.environmentVariables.length > 0) {
@@ -130,12 +130,12 @@ export class App extends Resource implements IApp {
   }
 
   /**
-   * Set Basic Auth on App
+   * Add Basic Auth on App
    *
    * @param username
    * @param password
    */
-  public setBasicAuth(username: string, password: string) {
+  public addBasicAuth(username: string, password: string) {
     this.basicAuthResolver.basicAuthConfig({
       enableBasicAuth: true,
       password,

@@ -58,12 +58,12 @@ export class Branch extends Resource implements IBranch {
   }
 
   /**
-   * Set Basic Auth on Branch
+   * Add Basic Auth on Branch
    *
    * @param username
    * @param password
    */
-  public setBasicAuth(username: string, password: string) {
+  public addBasicAuth(username: string, password: string) {
     this.basicAuthResolver.basicAuthConfig({
       enableBasicAuth: true,
       password,
