@@ -12,7 +12,7 @@ export class Branch extends Resource implements IBranch {
    *
    * @attribute
    */
-  public readonly arn: string;
+  public readonly branchArn: string;
 
   /**
    * Name for a branch, part of an Amplify App.
@@ -53,7 +53,7 @@ export class Branch extends Resource implements IBranch {
       tags: props.tags
     });
 
-    this.arn = resource.attrArn;
+    this.branchArn = resource.attrArn;
     this.branchName = resource.attrBranchName;
   }
 
@@ -87,11 +87,11 @@ export class Branch extends Resource implements IBranch {
  */
 export interface IBranch extends IResource {
   /**
-   * ARN
+   * ARN for a branch, part of an Amplify App.
    *
    * @attribute
    */
-  readonly arn: string;
+  readonly branchArn: string;
 }
 
 /**
