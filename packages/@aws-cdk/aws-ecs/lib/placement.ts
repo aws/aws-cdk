@@ -17,8 +17,8 @@ export enum BinPackResource {
 }
 
 /**
- * The placement strategies to use for tasks in the service. For more information, see Amazon ECS Task Placement Strategies:
- * [https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task-placement-strategies.html]
+ * The placement strategies to use for tasks in the service. For more information, see
+ * [Amazon ECS Task Placement Strategies](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task-placement-strategies.html).
  *
  * Tasks will preferentially be placed on instances that match these rules.
  */
@@ -93,8 +93,8 @@ export class PlacementStrategy {
 }
 
 /**
- * The placement constraints to use for tasks in the service. For more information, see Amazon ECS Task Placement Constraints.
- * [https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task-placement-constraints.html]
+ * The placement constraints to use for tasks in the service. For more information, see
+ * [Amazon ECS Task Placement Constraints](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task-placement-constraints.html).
  *
  * Tasks will only be placed on instances that match these rules.
  */
@@ -109,8 +109,8 @@ export class PlacementConstraint {
   /**
    * Use memberOf to restrict the selection to a group of valid candidates specified by a query expression.
    *
-   * Multiple expressions can be specified. For more information, see Cluster Query Language:
-   * [https://docs.aws.amazon.com/AmazonECS/latest/developerguide/cluster-query-language.html]
+   * Multiple expressions can be specified. For more information, see
+   * [Cluster Query Language](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/cluster-query-language.html).
    *
    * You can specify multiple expressions in one call. The tasks will only be placed on instances matching all expressions.
    *
