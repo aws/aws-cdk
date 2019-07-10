@@ -1,7 +1,7 @@
 import { IRole, LazyRole, ServicePrincipal } from '@aws-cdk/aws-iam';
 import { Construct, IResource, Resource, ResourceProps, Tag } from '@aws-cdk/core';
 import { CfnApp } from './amplify.generated';
-import { BasicAuthConfig, EnvironmentVariable } from './shared';
+import { BasicAuthConfig, BasicAuthResolver, EnvironmentVariable, EnvironmentVariablesResolver } from './shared';
 
 /**
  * App
@@ -57,16 +57,28 @@ export class App extends Resource implements IApp {
    */
   private readonly resource: CfnApp;
 
+  private readonly basicAuthResolver: BasicAuthResolver = new BasicAuthResolver();
+
+  private readonly environmentVariablesResolver: EnvironmentVariablesResolver = new EnvironmentVariablesResolver();
+
   constructor(scope: Construct, id: string, props: AppProps) {
     super(scope, id, props);
 
+    if (props.basicAuthConfig) {
+      this.setBasicAuth(props.basicAuthConfig.username, props.basicAuthConfig.password);
+    }
+
+    if (props.environmentVariables && props.environmentVariables.length > 0) {
+      this.environmentVariablesResolver.addEnvironmentVariables(...props.environmentVariables);
+    }
+
     const resource = new CfnApp(scope, 'App', {
       accessToken: props.accessToken,
-      basicAuthConfig: props.basicAuthConfig,
+      basicAuthConfig: this.basicAuthResolver,
       buildSpec: props.buildSpec,
       customRules: props.customRules,
       description: props.description,
-      environmentVariables: props.environmentVariables,
+      environmentVariables: this.environmentVariablesResolver,
       name: props.name,
       oauthToken: props.oauthToken,
       repository: props.repository,
@@ -106,6 +118,18 @@ export class App extends Resource implements IApp {
 
   public addServiceRole(role: IRole) {
     this.resource.iamServiceRole = role.roleArn;
+  }
+
+  public setBasicAuth(username: string, password: string) {
+    this.basicAuthResolver.basicAuthConfig({
+      enableBasicAuth: true,
+      password,
+      username
+    });
+  }
+
+  public addEnvironmentVariable(name: string, value: string) {
+    this.environmentVariablesResolver.addEnvironmentVariable(name, value);
   }
 }
 

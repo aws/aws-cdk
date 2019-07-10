@@ -1,4 +1,4 @@
-import { expect, haveResource } from '@aws-cdk/assert';
+import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
 import { Role, ServicePrincipal } from '@aws-cdk/aws-iam';
 import { Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
@@ -55,6 +55,44 @@ export = {
     }));
 
     expect(stack).to(haveResource('AWS::IAM::Role'));
+
+    test.done();
+  },
+
+  'Test Environment Variables'(test: Test) {
+    const stack = new Stack();
+    const app = new App(stack, 'AmpApp', {
+      name: 'foo',
+      repository: 'https://github.com/awslabs/aws-cdk'
+    });
+
+    app.addEnvironmentVariable('foo', 'foo');
+
+    expect(stack).to(haveResourceLike('AWS::Amplify::App', {
+      EnvironmentVariables: [
+        { Name: 'foo', Value: 'foo' }
+      ]
+    }));
+
+    test.done();
+  },
+
+  'Test Basic Auth for App'(test: Test) {
+    const stack = new Stack();
+    const app = new App(stack, 'AmpApp', {
+      name: 'foo',
+      repository: 'https://github.com/awslabs/aws-cdk'
+    });
+
+    app.setBasicAuth('foo', 'foo');
+
+    expect(stack).to(haveResourceLike('AWS::Amplify::App', {
+      BasicAuthConfig: {
+        EnableBasicAuth: true,
+        Password: 'foo',
+        Username: 'foo'
+      }
+    }));
 
     test.done();
   }
