@@ -73,6 +73,7 @@ export class Branch extends Resource implements IBranch {
 
   /**
    * Add Environment Variable to Branch
+   *
    * @param name
    * @param value
    */
@@ -145,7 +146,7 @@ export interface BranchProps {
   /**
    * Tag for the branch.
    *
-   * @default Empty
+   * @default - No tags applied.
    */
   readonly tags?: Tag[];
 }

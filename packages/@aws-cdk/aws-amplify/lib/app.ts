@@ -244,7 +244,7 @@ export interface AppProps {
   /**
    * Tag for an Amplify App
    *
-   * @default
+   * @default - No tags applied.
    */
   readonly tags?: Tag[];
 }
