@@ -1,5 +1,5 @@
 import { IRole, LazyRole, ServicePrincipal } from '@aws-cdk/aws-iam';
-import { Construct, IResource, Resource, ResourceProps, Tag } from '@aws-cdk/core';
+import { Construct, IResolvable, IResolveContext, IResource, Resource, ResourceProps, Tag } from '@aws-cdk/core';
 import { CfnApp } from './amplify.generated';
 import { BasicAuthConfig, BasicAuthResolver, EnvironmentVariable, EnvironmentVariablesResolver } from './shared';
 
@@ -61,6 +61,8 @@ export class App extends Resource implements IApp {
 
   private readonly environmentVariablesResolver: EnvironmentVariablesResolver = new EnvironmentVariablesResolver();
 
+  private readonly customRulesResolver: EnvironmentVariablesResolver = new EnvironmentVariablesResolver();
+
   constructor(scope: Construct, id: string, props: AppProps) {
     super(scope, id, props);
 
@@ -76,7 +78,7 @@ export class App extends Resource implements IApp {
       accessToken: props.accessToken,
       basicAuthConfig: this.basicAuthResolver,
       buildSpec: props.buildSpec,
-      customRules: props.customRules,
+      customRules: this.customRulesResolver,
       description: props.description,
       environmentVariables: this.environmentVariablesResolver,
       name: props.name,
@@ -85,11 +87,11 @@ export class App extends Resource implements IApp {
       tags: props.tags
     });
 
-    if (props.iamServiceRole) {
-      resource.iamServiceRole = props.iamServiceRole.roleArn;
+    if (props.serviceRole) {
+      resource.iamServiceRole = props.serviceRole.roleArn;
     }
 
-    if (props.buildSpec && !props.iamServiceRole) {
+    if (props.buildSpec && !props.serviceRole) {
       // create lazy role
       const role = new LazyRole(scope, 'lazy-role', {
         assumedBy: new ServicePrincipal('amplify.amazonaws.com')
@@ -227,7 +229,7 @@ export interface AppProps extends AppOptions {
    *
    * @default
    */
-  readonly iamServiceRole?: IRole;
+  readonly serviceRole?: IRole;
 
   /**
    * Name
@@ -284,4 +286,25 @@ export interface CustomRule {
    * Target
    */
   readonly target: string;
+}
+
+/**
+ * Custom Rules Resolver
+ */
+export class CustomRulesResolver implements IResolvable {
+  public readonly creationStack: string[];
+
+  private customRules: CustomRule[] = new Array<CustomRule>();
+
+  public resolve(_context: IResolveContext): any {
+    return this.customRules;
+  }
+
+  public isEmpty(): boolean {
+    return (this.customRules.length !== 0);
+  }
+
+  public count(): number {
+    return this.customRules.length;
+  }
 }
