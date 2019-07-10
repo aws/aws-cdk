@@ -1,5 +1,5 @@
 import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
-import { Stack, ConstructNode } from '@aws-cdk/core';
+import { Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import { App, Branch } from '../lib';
 
@@ -69,5 +69,4 @@ export = {
 
     test.done();
   }
-
 };
