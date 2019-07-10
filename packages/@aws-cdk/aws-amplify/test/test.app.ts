@@ -2,7 +2,7 @@ import { countResources, expect, haveResource, haveResourceLike } from '@aws-cdk
 import { Role, ServicePrincipal } from '@aws-cdk/aws-iam';
 import { Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import { App } from '../lib';
+import { App, BuildSpec } from '../lib';
 
 export = {
   'Test Import Resource'(test: Test) {
@@ -51,7 +51,7 @@ export = {
     new App(stack, 'AmpApp', {
       appName: 'foo',
       repository: 'https://github.com/awslabs/aws-cdk',
-      buildSpec: 'foo'
+      buildSpec: BuildSpec.fromString('foo')
     });
 
     expect(stack).to(haveResource('AWS::IAM::Role'));
@@ -64,7 +64,7 @@ export = {
     const app = new App(stack, 'AmpApp', {
       appName: 'foo',
       repository: 'https://github.com/awslabs/aws-cdk',
-      buildSpec: 'foo'
+      buildSpec: BuildSpec.fromString('foo')
     });
 
     app.addServiceRole(new Role(stack, 'role', {

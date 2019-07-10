@@ -1,6 +1,7 @@
 import { IRole, LazyRole, ServicePrincipal } from '@aws-cdk/aws-iam';
-import { Construct, IResolvable, IResolveContext, IResource, Resource, Tag } from '@aws-cdk/core';
+import { Construct, IResolvable, IResolveContext, IResource, Resource, SecretValue, Tag } from '@aws-cdk/core';
 import { CfnApp } from './amplify.generated';
+import { BuildSpec } from './buildspec';
 import { BasicAuthConfig, BasicAuthResolver, EnvironmentVariable, EnvironmentVariablesResolver } from './shared';
 
 /**
@@ -79,12 +80,12 @@ export class App extends Resource implements IApp {
     const resource = new CfnApp(this, 'App', {
       accessToken: props.accessToken,
       basicAuthConfig: this.basicAuthResolver,
-      buildSpec: props.buildSpec,
+      buildSpec: (props.buildSpec) ? props.buildSpec.toBuildSpec() : undefined,
       customRules: this.customRulesResolver,
       description: props.description,
       environmentVariables: this.environmentVariablesResolver,
       name: props.appName,
-      oauthToken: props.oauthToken,
+      oauthToken: (props.oauthToken && props.oauthToken.toString()) ? props.oauthToken.toString() : undefined,
       repository: props.repository,
       tags: props.tags
     });
@@ -190,7 +191,7 @@ export interface AppProps {
    *
    * @default
    */
-  readonly buildSpec?: string;
+  readonly buildSpec?: BuildSpec;
 
   /**
    * Custom rewrite / redirect rules for an Amplify App.
@@ -231,7 +232,7 @@ export interface AppProps {
    *
    * @default
    */
-  readonly oauthToken?: string;
+  readonly oauthToken?: SecretValue;
 
   /**
    * Repository for an Amplify App.
