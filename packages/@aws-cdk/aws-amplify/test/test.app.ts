@@ -1,4 +1,4 @@
-import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
+import { countResources, expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
 import { Role, ServicePrincipal } from '@aws-cdk/aws-iam';
 import { Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
@@ -20,7 +20,7 @@ export = {
   'Test Basic App Resource'(test: Test) {
     const stack = new Stack();
     new App(stack, 'AmpApp', {
-        name: 'foo',
+        appName: 'foo',
         repository: 'https://github.com/awslabs/aws-cdk'
     });
 
@@ -29,10 +29,27 @@ export = {
     test.done();
   },
 
+  'Test Multiple App Resource'(test: Test) {
+    const stack = new Stack();
+    new App(stack, 'OtherAmpApp', {
+        appName: 'foo',
+        repository: 'https://github.com/awslabs/aws-cdk'
+    });
+
+    new App(stack, 'AmpApp', {
+      appName: 'foo',
+      repository: 'https://github.com/awslabs/aws-cdk-mirror'
+  });
+
+    expect(stack).to(countResources('AWS::Amplify::App', 2));
+
+    test.done();
+  },
+
   'Test IAM Role Generation'(test: Test) {
     const stack = new Stack();
     new App(stack, 'AmpApp', {
-      name: 'foo',
+      appName: 'foo',
       repository: 'https://github.com/awslabs/aws-cdk',
       buildSpec: 'foo'
     });
@@ -45,7 +62,7 @@ export = {
   'Test Manual IAM Role'(test: Test) {
     const stack = new Stack();
     const app = new App(stack, 'AmpApp', {
-      name: 'foo',
+      appName: 'foo',
       repository: 'https://github.com/awslabs/aws-cdk',
       buildSpec: 'foo'
     });
@@ -62,7 +79,7 @@ export = {
   'Test Environment Variables'(test: Test) {
     const stack = new Stack();
     const app = new App(stack, 'AmpApp', {
-      name: 'foo',
+      appName: 'foo',
       repository: 'https://github.com/awslabs/aws-cdk'
     });
 
@@ -80,7 +97,7 @@ export = {
   'Test Basic Auth for App'(test: Test) {
     const stack = new Stack();
     const app = new App(stack, 'AmpApp', {
-      name: 'foo',
+      appName: 'foo',
       repository: 'https://github.com/awslabs/aws-cdk'
     });
 

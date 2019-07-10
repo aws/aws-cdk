@@ -1,4 +1,4 @@
-import { Construct, IResource, Resource, ResourceProps, Tag } from '@aws-cdk/core';
+import { Construct, IResource, Resource, Tag } from '@aws-cdk/core';
 import { CfnBranch } from './amplify.generated';
 import { IApp } from './app';
 import { BasicAuthConfig, BasicAuthResolver, EnvironmentVariable, EnvironmentVariablesResolver } from './shared';
@@ -26,7 +26,9 @@ export class Branch extends Resource implements IBranch {
   private readonly environmentVariablesResolver: EnvironmentVariablesResolver = new EnvironmentVariablesResolver();
 
   constructor(scope: Construct, id: string, props: BranchProps) {
-    super(scope, id, props);
+    super(scope, id, {
+      physicalName: props.branchName
+    });
 
     if (props.basicAuthConfig) {
       this.basicAuthResolver.basicAuthConfig({
@@ -40,7 +42,7 @@ export class Branch extends Resource implements IBranch {
       this.environmentVariablesResolver.addEnvironmentVariables(...props.environmentVariables);
     }
 
-    const resource = new CfnBranch(scope, 'Branch', {
+    const resource = new CfnBranch(this, 'Branch', {
       appId: props.app.appId,
       basicAuthConfig: this.basicAuthResolver,
       branchName: props.branchName,
@@ -94,7 +96,7 @@ export interface IBranch extends IResource {
 /**
  * Branch Properties
  */
-export interface BranchProps extends ResourceProps {
+export interface BranchProps {
   /**
    * Amplify App
    */

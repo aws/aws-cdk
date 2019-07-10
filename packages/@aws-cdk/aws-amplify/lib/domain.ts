@@ -1,5 +1,5 @@
 import { Certificate, ICertificate } from '@aws-cdk/aws-certificatemanager';
-import { Construct, IResolvable, IResolveContext, IResource, Resource, ResourceProps } from '@aws-cdk/core';
+import { Construct, IResolvable, IResolveContext, IResource, Resource } from '@aws-cdk/core';
 import { CfnDomain } from './amplify.generated';
 import { IApp } from './app';
 
@@ -45,13 +45,15 @@ export class Domain extends Resource implements IDomain {
   private readonly subdomainSettingsResolver: SubdomainSettingsResolver = new SubdomainSettingsResolver();
 
   constructor(scope: Construct, id: string, props: DomainProps) {
-    super(scope, id, props);
+    super(scope, id, {
+      physicalName: props.domainName
+    });
 
     if (props.subdomainSettings) {
       this.subdomainSettingsResolver.addSubdomains(...props.subdomainSettings);
     }
 
-    const resource = new CfnDomain(scope, 'Domain', {
+    const resource = new CfnDomain(this, 'Domain', {
       appId: props.app.appId,
       domainName: props.domainName,
       subDomainSettings: this.subdomainSettingsResolver
@@ -85,7 +87,7 @@ export class Domain extends Resource implements IDomain {
 /**
  * Domain Properties
  */
-export interface DomainProps extends ResourceProps {
+export interface DomainProps {
   /**
    * Amplify App
    */

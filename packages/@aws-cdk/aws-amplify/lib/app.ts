@@ -1,5 +1,5 @@
 import { IRole, LazyRole, ServicePrincipal } from '@aws-cdk/aws-iam';
-import { Construct, IResolvable, IResolveContext, IResource, Resource, ResourceProps, Tag } from '@aws-cdk/core';
+import { Construct, IResolvable, IResolveContext, IResource, Resource, Tag } from '@aws-cdk/core';
 import { CfnApp } from './amplify.generated';
 import { BasicAuthConfig, BasicAuthResolver, EnvironmentVariable, EnvironmentVariablesResolver } from './shared';
 
@@ -64,7 +64,9 @@ export class App extends Resource implements IApp {
   private readonly customRulesResolver: EnvironmentVariablesResolver = new EnvironmentVariablesResolver();
 
   constructor(scope: Construct, id: string, props: AppProps) {
-    super(scope, id, props);
+    super(scope, id, {
+      physicalName: props.appName
+    });
 
     if (props.basicAuthConfig) {
       this.setBasicAuth(props.basicAuthConfig.username, props.basicAuthConfig.password);
@@ -74,14 +76,14 @@ export class App extends Resource implements IApp {
       this.environmentVariablesResolver.addEnvironmentVariables(...props.environmentVariables);
     }
 
-    const resource = new CfnApp(scope, 'App', {
+    const resource = new CfnApp(this, 'App', {
       accessToken: props.accessToken,
       basicAuthConfig: this.basicAuthResolver,
       buildSpec: props.buildSpec,
       customRules: this.customRulesResolver,
       description: props.description,
       environmentVariables: this.environmentVariablesResolver,
-      name: props.name,
+      name: props.appName,
       oauthToken: props.oauthToken,
       repository: props.repository,
       tags: props.tags
@@ -165,23 +167,9 @@ export interface IApp extends IResource {
 }
 
 /**
- * App Options
- */
-export interface AppOptions extends ResourceProps {
-  /**
-   * App Name
-   *
-   * @todo This might cause an error, it conflicts with the construct
-   *
-   * @default
-   */
-  readonly appName?: string;
-}
-
-/**
  * App Properties
  */
-export interface AppProps extends AppOptions {
+export interface AppProps {
   /**
    * Personal Access token for 3rd party source control system for an Amplify App, used to create webhook
    * and read-only deploy key. Token is not stored.
@@ -235,7 +223,7 @@ export interface AppProps extends AppOptions {
   /**
    * Name for the Amplify App.
    */
-  readonly name: string;
+  readonly appName: string;
 
   /**
    * OAuth token for 3rd party source control system for an Amplify App, used to create webhook and read-only

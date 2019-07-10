@@ -7,7 +7,7 @@ export = {
   'Test Basic Branch Resource'(test: Test) {
     const stack = new Stack();
     const app = new App(stack, 'AmpApp', {
-      name: 'foo',
+      appName: 'foo',
       repository: 'https://github.com/awslabs/aws-cdk'
     });
 
@@ -25,7 +25,7 @@ export = {
   'Test Environment Variables'(test: Test) {
     const stack = new Stack();
     const app = new App(stack, 'AmpApp', {
-      name: 'foo',
+      appName: 'foo',
       repository: 'https://github.com/awslabs/aws-cdk'
     });
 
@@ -48,7 +48,7 @@ export = {
   'Test Basic Auth'(test: Test) {
     const stack = new Stack();
     const app = new App(stack, 'AmpApp', {
-      name: 'foo',
+      appName: 'foo',
       repository: 'https://github.com/awslabs/aws-cdk'
     });
 

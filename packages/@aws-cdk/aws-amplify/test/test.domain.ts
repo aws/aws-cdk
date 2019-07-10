@@ -7,7 +7,7 @@ export = {
   'Test Basic Domain Resource'(test: Test) {
     const stack = new Stack();
     const app = new App(stack, 'AmpApp', {
-        name: 'foo',
+      appName: 'foo',
         repository: 'https://github.com/awslabs/aws-cdk'
     });
 
@@ -31,7 +31,7 @@ export = {
   'Test Empty Subdomain Domain Resource'(test: Test) {
     const stack = new Stack();
     const app = new App(stack, 'AmpApp', {
-        name: 'foo',
+        appName: 'foo',
         repository: 'https://github.com/awslabs/aws-cdk'
     });
 
@@ -51,7 +51,7 @@ export = {
   'Test Subdomain Domain Resource'(test: Test) {
     const stack = new Stack();
     const app = new App(stack, 'AmpApp', {
-        name: 'foo',
+        appName: 'foo',
         repository: 'https://github.com/awslabs/aws-cdk'
     });
 
