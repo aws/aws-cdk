@@ -81,4 +81,8 @@ export class EnvironmentVariablesResolver implements IResolvable {
       value
     });
   }
+
+  public addEnvironmentVariables(...environmentVariables: EnvironmentVariable[]) {
+    this.environmentVariables.push(...environmentVariables);
+  }
 }
