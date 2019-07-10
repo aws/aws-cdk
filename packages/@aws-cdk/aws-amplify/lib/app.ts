@@ -116,6 +116,11 @@ export class App extends Resource implements IApp {
     return errors;
   }
 
+  /**
+   * Add Service Role
+   *
+   * @param role
+   */
   public addServiceRole(role: IRole) {
     this.resource.iamServiceRole = role.roleArn;
   }
