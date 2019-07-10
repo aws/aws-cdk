@@ -189,7 +189,7 @@ export interface ContainerDefinitionOptions {
 
   /**
    * Linux-specific modifications that are applied to the container, such as Linux kernel capabilities.
-   * For more information see KernelCapabilities. [https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_KernelCapabilities.html]
+   * For more information see [KernelCapabilities](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_KernelCapabilities.html).
    *
    * @default - No Linux paramters.
    */
@@ -546,8 +546,7 @@ export interface Ulimit {
   /**
    * The type of the ulimit.
    *
-   * For more information, see UlimitName:
-   * [https://docs.aws.amazon.com/cdk/api/latest/typescript/api/aws-ecs/ulimitname.html#aws_ecs_UlimitName]
+   * For more information, see [UlimitName](https://docs.aws.amazon.com/cdk/api/latest/typescript/api/aws-ecs/ulimitname.html#aws_ecs_UlimitName).
    */
   readonly name: UlimitName,
 
