@@ -163,8 +163,8 @@ export interface Tmpfs {
   readonly size: number,
 
   /**
-   * The list of tmpfs volume mount options. For more information, see TmpfsMountOptions:
-   * [https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_Tmpfs.html]
+   * The list of tmpfs volume mount options. For more information, see
+   * [TmpfsMountOptions](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_Tmpfs.html).
    */
   readonly mountOptions?: TmpfsMountOption[],
 }

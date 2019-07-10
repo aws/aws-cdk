@@ -15,8 +15,8 @@ export interface RepositoryImageProps {
 }
 
 /**
- * An image hosted in a public or private repository. For images hosted in Amazon ECR, see EcrImage:
- * [https://docs.aws.amazon.com/AmazonECR/latest/userguide/images.html]
+ * An image hosted in a public or private repository. For images hosted in Amazon ECR, see
+ * [EcrImage](https://docs.aws.amazon.com/AmazonECR/latest/userguide/images.html).
  */
 export class RepositoryImage extends ContainerImage {
 

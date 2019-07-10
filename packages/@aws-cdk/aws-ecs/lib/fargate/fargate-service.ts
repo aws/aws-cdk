@@ -41,8 +41,9 @@ export interface FargateServiceProps extends BaseServiceOptions {
   /**
    * The platform version on which to run your service.
    *
-   * If one is not specified, the LATEST platform version is used by default. For more information, see AWS Fargate Platform Versions:
-   * [https://docs.aws.amazon.com/AmazonECS/latest/developerguide/platform_versions.html] in the Amazon Elastic Container Service Developer Guide.
+   * If one is not specified, the LATEST platform version is used by default. For more information, see
+   * [AWS Fargate Platform Versions](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/platform_versions.html)
+   * in the Amazon Elastic Container Service Developer Guide.
    *
    * @default Latest
    */

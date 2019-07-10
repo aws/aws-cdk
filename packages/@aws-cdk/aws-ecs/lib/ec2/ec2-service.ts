@@ -46,16 +46,16 @@ export interface Ec2ServiceProps extends BaseServiceOptions {
   readonly securityGroup?: ec2.ISecurityGroup;
 
   /**
-   * The placement constraints to use for tasks in the service. For more information, see Amazon ECS Task Placement Constraints:
-   * [https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task-placement-constraints.html]
+   * The placement constraints to use for tasks in the service. For more information, see
+   * [Amazon ECS Task Placement Constraints](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task-placement-constraints.html).
    *
    * @default - No constraints.
    */
   readonly placementConstraints?: PlacementConstraint[];
 
   /**
-   * The placement strategies to use for tasks in the service. For more information, see Amazon ECS Task Placement Constraints:
-   * [https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task-placement-constraints.html]
+   * The placement strategies to use for tasks in the service. For more information, see
+   * [Amazon ECS Task Placement Strategies](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task-placement-strategies.html).
    *
    * @default - No strategies.
    */
@@ -157,8 +157,8 @@ export class Ec2Service extends BaseService implements IEc2Service, elb.ILoadBal
   }
 
   /**
-   * Adds one or more placement strategies to use for tasks in the service. For more information, see Amazon ECS Task Placement Strategies:
-   * [https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task-placement-strategies.html]
+   * Adds one or more placement strategies to use for tasks in the service. For more information, see
+   * [Amazon ECS Task Placement Strategies](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task-placement-strategies.html).
    */
   public addPlacementStrategies(...strategies: PlacementStrategy[]) {
     if (strategies.length > 0 && this.daemon) {
@@ -171,8 +171,8 @@ export class Ec2Service extends BaseService implements IEc2Service, elb.ILoadBal
   }
 
   /**
-   * Adds one or more placement strategies to use for tasks in the service. For more information, see Amazon ECS Task Placement Constraints:
-   * [https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task-placement-constraints.html]
+   * Adds one or more placement strategies to use for tasks in the service. For more information, see
+   * [Amazon ECS Task Placement Constraints](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task-placement-constraints.html).
    */
   public addPlacementConstraints(...constraints: PlacementConstraint[]) {
     for (const constraint of constraints) {
