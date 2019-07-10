@@ -110,7 +110,7 @@ export class App extends Resource implements IApp {
     this.resource = resource;
   }
 
-  public validate(): string[] {
+  protected validate(): string[] {
     const errors: string[] = [];
 
     if (this.resource.buildSpec && !this.resource.iamServiceRole) {
