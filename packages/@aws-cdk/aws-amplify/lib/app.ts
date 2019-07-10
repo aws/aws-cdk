@@ -60,7 +60,7 @@ export class App extends Resource implements IApp {
   constructor(scope: Construct, id: string, props: AppProps) {
     super(scope, id, props);
 
-    const resource = new CfnApp(scope, 'resource', {
+    const resource = new CfnApp(scope, 'App', {
       accessToken: props.accessToken,
       basicAuthConfig: props.basicAuthConfig,
       buildSpec: props.buildSpec,
