@@ -28,7 +28,7 @@ export class Branch extends Resource implements IBranch {
   constructor(scope: Construct, id: string, props: BranchProps) {
     super(scope, id, props);
 
-    const resource = new CfnBranch(scope, 'resource', {
+    const resource = new CfnBranch(scope, 'Branch', {
       appId: props.app.appId,
       basicAuthConfig: this.basicAuthResolver,
       branchName: props.branchName,
