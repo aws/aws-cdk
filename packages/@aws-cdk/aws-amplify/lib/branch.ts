@@ -55,6 +55,12 @@ export class Branch extends Resource implements IBranch {
     this.branchName = resource.attrBranchName;
   }
 
+  /**
+   * Set Basic Auth on Branch
+   *
+   * @param username
+   * @param password
+   */
   public setBasicAuth(username: string, password: string) {
     this.basicAuthResolver.basicAuthConfig({
       enableBasicAuth: true,
@@ -63,6 +69,11 @@ export class Branch extends Resource implements IBranch {
     });
   }
 
+  /**
+   * Add Environment Variable to Branch
+   * @param name
+   * @param value
+   */
   public addEnvironmentVariable(name: string, value: string) {
     this.environmentVariablesResolver.addEnvironmentVariable(name, value);
   }

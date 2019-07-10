@@ -120,6 +120,12 @@ export class App extends Resource implements IApp {
     this.resource.iamServiceRole = role.roleArn;
   }
 
+  /**
+   * Set Basic Auth on App
+   *
+   * @param username
+   * @param password
+   */
   public setBasicAuth(username: string, password: string) {
     this.basicAuthResolver.basicAuthConfig({
       enableBasicAuth: true,
@@ -128,6 +134,12 @@ export class App extends Resource implements IApp {
     });
   }
 
+  /**
+   * Add Environment Variable to App
+   *
+   * @param name
+   * @param value
+   */
   public addEnvironmentVariable(name: string, value: string) {
     this.environmentVariablesResolver.addEnvironmentVariable(name, value);
   }
