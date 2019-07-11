@@ -43,7 +43,7 @@ to the metric function call:
 ```ts
 const minuteErrorRate = fn.metricErrors({
     statistic: 'avg',
-    periodSec: 60,
+    period: Duration.minutes(1),
     label: 'Lambda failure rate'
 });
 ```
@@ -83,10 +83,10 @@ new Alarm(this, 'Alarm', {
 });
 ```
 
-Alternatively, you can call `metric.newAlarm()`:
+Alternatively, you can call `metric.createAlarm()`:
 
 ```ts
-fn.metricErrors().newAlarm(this, 'Alarm', {
+fn.metricErrors().createAlarm(this, 'Alarm', {
     threshold: 100,
     evaluationPeriods: 2,
 });
@@ -120,7 +120,7 @@ A graph widget can display any number of metrics on either the `left` or
 `right` vertical axis:
 
 ```ts
-dashboard.add(new GraphWidget({
+dashboard.addWidgets(new GraphWidget({
     title: "Executions vs error rate",
 
     left: [executionCountMetric],
@@ -138,7 +138,7 @@ dashboard.add(new GraphWidget({
 An alarm widget shows the graph and the alarm line of a single alarm:
 
 ```ts
-dashboard.add(new AlarmWidget({
+dashboard.addWidgets(new AlarmWidget({
     title: "Errors",
     alarm: errorAlarm,
 }));
@@ -150,7 +150,7 @@ A single-value widget shows the latest value of a set of metrics (as opposed
 to a graph of the value over time):
 
 ```ts
-dashboard.add(new SingleValueWidget({
+dashboard.addWidgets(new SingleValueWidget({
     metrics: [visitorCount, purchaseCount],
 }));
 ```
@@ -161,7 +161,7 @@ A text widget shows an arbitrary piece of MarkDown. Use this to add explanations
 to your dashboard:
 
 ```ts
-dashboard.add(new TextWidget({
+dashboard.addWidgets(new TextWidget({
     markdown: '# Key Performance Indicators'
 }));
 ```

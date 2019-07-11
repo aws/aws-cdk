@@ -398,7 +398,8 @@
           "Version": "2012-10-17"
         }
       },
-      "DeletionPolicy": "Retain"
+      "DeletionPolicy": "Retain",
+      "UpdateReplacePolicy": "Retain"
     },
     "DatabaseSubnets56F17B9A": {
       "Type": "AWS::RDS::DBSubnetGroup",

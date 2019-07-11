@@ -2,6 +2,7 @@
   "Resources": {
     "Bucket12520700A": {
       "DeletionPolicy": "Delete",
+      "UpdateReplacePolicy": "Delete",
       "Type": "AWS::S3::Bucket"
     },
     "Bucket1NotificationsBC5D9A45": {
@@ -225,6 +226,7 @@
     },
     "Bucket25524B414": {
       "DeletionPolicy": "Delete",
+      "UpdateReplacePolicy": "Delete",
       "Type": "AWS::S3::Bucket"
     },
     "Bucket2NotificationsD9BA2A77": {
@@ -369,7 +371,8 @@
         },
         "Description": "Created by sqs-bucket-notifications/EncryptedQueue"
       },
-      "DeletionPolicy": "Retain"
+      "DeletionPolicy": "Retain",
+      "UpdateReplacePolicy": "Retain"
     },
     "EncryptedQueue0428C61A": {
       "Type": "AWS::SQS::Queue",

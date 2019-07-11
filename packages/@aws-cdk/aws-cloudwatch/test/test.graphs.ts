@@ -1,6 +1,6 @@
 import { Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import { AlarmWidget, GraphWidget, Metric, Shading, SingleValueWidget } from '../lib';
+import { Alarm, AlarmWidget, GraphWidget, Metric, Shading, SingleValueWidget } from '../lib';
 
 export = {
   'add metrics to graphs on either axis'(test: Test) {
@@ -247,6 +247,22 @@ export = {
           right: { label: "Right yAxis", min: 10, showUnits: false } }
       }
     }]);
+
+    test.done();
+  },
+
+  'can use imported alarm with graph'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+    const alarm = Alarm.fromAlarmArn(stack, 'Alarm', 'arn:aws:cloudwatch:region:account-id:alarm:alarm-name');
+
+    // WHEN
+    new AlarmWidget({
+      title: 'My fancy graph',
+      alarm
+    });
+
+    // THEN: Compiles
 
     test.done();
   },
